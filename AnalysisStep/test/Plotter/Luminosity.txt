@@ -1,0 +1,72 @@
+# scale factor = lumi * xsec * BR / # events
+#
+# the luminosity (pb-1) for the data sample is
+#
+#
+# final_state   epoch               dq  lumi (1/pb)
+#				    
+
+# All 2011, as of PRL
+4mu             Complete2011OldCalc 1   4670
+4e              Complete2011OldCalc 1   4670
+2e2mu           Complete2011OldCalc 1   4670
+
+# All 2011, as of PRL new lumiCalc
+4mu             Complete2011        1   4968
+4e              Complete2011        1   4968
+2e2mu           Complete2011        1   4968
+
+# All 2011, all2011JSON 
+4mu             All2011        1   5051
+4e              All2011        1   5051
+2e2mu           All2011        1   5051
+
+# 2012, 25May 
+4mu             25May2012       1   1616
+4e              25May2012       1   1616
+2e2mu           25May2012       1   1616
+
+# 2012, 01Jun 
+4mu             01Jun2012       1   2424
+4e              01Jun2012       1   2424
+2e2mu           01Jun2012       1   2424
+
+# 2012, 08Jun 
+4mu             08Jun2012       1   2968
+4e              08Jun2012       1   2968
+2e2mu           08Jun2012       1   2968
+
+# 2012, 08Jun + recover (3585+91)
+4mu             13Jun2012       1   3676
+4e              13Jun2012       1   3676
+2e2mu           13Jun2012       1   3676
+
+
+# 2012, topUp
+4mu             TopUp24Jun2012  1   5261
+4e              TopUp24Jun2012  1   5261
+2e2mu           TopUp24Jun2012  1   5261
+
+# HCP datasets
+4mu             HCPICHEP  1   5320
+4e              HCPICHEP  1   5320
+2e2mu           HCPICHEP  1   5320
+
+
+4mu             HCP2012  1   12210
+4e              HCP2012  1   12210
+2e2mu           HCP2012  1   12210
+
+
+# Moriond datasets
+4mu             Moriond2013  1   19630
+4e              Moriond2013  1   19630
+2e2mu           Moriond2013  1   19630
+
+# Paper
+4mu             Legacy2013  1   19712
+4e              Legacy2013  1   19712
+2e2mu           Legacy2013  1   19712
+
+# 1 fb-1 placeholder
+all             1fb-1          1   1000

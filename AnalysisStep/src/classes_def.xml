@@ -1,0 +1,6 @@
+<lcgdict>
+  <class name="cmg::Photon"/>
+  <class name="edm::Ptr<cmg::Photon>"/>
+  <class name="std::vector<edm::Ptr<cmg::Photon> >"/>
+  <class name="pat::UserHolder<std::vector<edm::Ptr<cmg::Photon> > >" />
+</lcgdict>

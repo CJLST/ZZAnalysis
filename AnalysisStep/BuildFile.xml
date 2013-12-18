@@ -1,0 +1,23 @@
+<use name="FWCore/Framework"/>
+<use name="DataFormats/PatCandidates"/>
+<use name="MagneticField/Engine"/>
+<use name="MagneticField/Records"/>
+<use name="TrackingTools/TransientTrack"/>
+<use name="AnalysisDataFormats/CMGTools"/>
+<use name="RecoParticleFlow/PFClusterTools" />
+<use name="PhysicsTools/KinFitter"/>
+<use name="TrackingTools/Records"/>
+<use name="RecoVertex/KinematicFit"/>
+<use name="root"/>
+<use name="roofit"/>
+
+
+<use name="CLHEP"/>
+
+<use name="rootrflx"/>
+
+<!-- Damn syntax! -->
+<Flags CPPDEFINES="CMSSW_VERSION=$(shell echo ${CMSSW_VERSION}|sed -e s/CMSSW_// -e s/_//g -e s/patch\.//)"/>
+<export>
+  <lib   name="1"/>
+</export>

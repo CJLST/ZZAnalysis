@@ -1,0 +1,31 @@
+<use name="FWCore/Framework"/>
+<use name="FWCore/ParameterSet"/>
+<use name="DataFormats/PatCandidates"/>
+<use name="DataFormats/Common"/>
+<use name="DataFormats/MuonReco"/>
+<use name="DataFormats/TrackReco"/>
+<use name="DataFormats/VertexReco"/>
+<use name="DataFormats/EgammaCandidates"/>
+<use name="DataFormats/METReco"/>
+<use name="TrackingTools/IPTools"/>
+<use name="TrackingTools/TransientTrack"/>
+<use name="TrackingTools/Records"/>
+<use name="CommonTools/UtilAlgos"/>
+<use name="MagneticField/Engine"/>
+<use name="MagneticField/Records"/>
+<use name="ZZAnalysis/AnalysisStep"/>
+<use name="AnalysisDataFormats/CMGTools"/>
+<!--use name="RecoEcal/EgammaCoreTools"/-->
+
+<use   name="root"/>
+<use   name="roottmva"/>
+<use name="rootrflx"/>
+<use name="roofitcore"/>
+
+<library   file="*.cc" name="ZZAnalysisAnalysisStepTest">
+  <flags   EDM_PLUGIN="1"/>
+</library>
+
+<library   file="Ntuplizers/*.cc" name="ZZAnalysisAnalysisStepTestNtupleFactories">
+  <flags   EDM_PLUGIN="1"/>
+</library>

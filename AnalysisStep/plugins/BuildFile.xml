@@ -1,0 +1,21 @@
+<use name="FWCore/Framework"/>
+<use name="FWCore/PluginManager"/>
+<use name="DataFormats/RecoCandidate"/>
+<use name="DataFormats/PatCandidates"/>
+<use name="CommonTools/Utils"/>
+<use name="CommonTools/CandAlgos"/>
+<use name="CommonTools/CandUtils"/>
+<use name="ZZAnalysis/AnalysisStep"/>
+<use name="ZZMatrixElement/MELA"/>
+<use name="ZZMatrixElement/MEKD"/>
+<use name="ZZMatrixElement/MEMCalculators"/>
+<use name="EgammaAnalysis/ElectronTools"/>
+<use name="PhysicsTools/KinFitter"/>
+<use name="JetMETCorrections/Modules"/>
+
+<library   file="*.cc" name="ZZAnalysisAnalysisStepPlugins">
+  <Flags CPPDEFINES="CMSSW_VERSION=$(shell echo ${CMSSW_VERSION}|sed -e s/CMSSW_// -e s/_//g -e s/patch\.//)"/>
+  <flags   EDM_PLUGIN="1"/>
+</library>
+
+  
