@@ -152,7 +152,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 
     MC_weight_norm_initial = getNormalizedWeight(channelType);
     if (MC_weight_norm_initial<0){
-      cout << "ERROR: MC normalization negative " << endl;
+      cout << "ERROR: MC normalization negative " << MC_weight_norm_initial  << endl;
       abort();
     }
     MC_weight_noxsec_initial = 1./Nevt_norm;
@@ -923,15 +923,17 @@ Float_t HZZ4l::getMCWeight(const int year, const Int_t CandIndex) const
 //Get the normalization for the specific final state (4mu, 4e, 2e2mu)
 Float_t HZZ4l::getNormalizedWeight(const Int_t channelType) const
 {
-  Float_t MC_normweight;
-
   // For signals, take directly the values from the Counters histogram
-  if (theSample.Contains("H")){
+  if (theSample.Contains("H") || theSample=="ZZJetsTo4L"){
     Int_t gen_4l_H = nEventComplete->GetBinContent(channelType + 2);
-    MC_normweight = 1./gen_4l_H;
+    return 1./gen_4l_H;
+  } 
 
+  /* The mechanism for efficiency weight for ZZ samples needs to be reviewed.
+     In particular, the 4tau sample is not included in the table.
+     These values are not used anyhow.
 
-  } else if (theSample.Contains("ZZ")) { // For ZZ samples, use cached values to account for tau contribution properly
+  else if (theSample.Contains("ZZ")) { // For ZZ samples, use cached values to account for tau contribution properly
     //Set the channel name
     string channelname;
     if(channelType == 0) channelname = "4mu";
@@ -951,10 +953,16 @@ Float_t HZZ4l::getNormalizedWeight(const Int_t channelType) const
 
     while(inputFile >> normName >> normValue) NormMap[normName] = normValue;
 
-    return (NormMap.find(tagName.Data()))->second;
-  } else { // Not relevant for other samples
-    return 0.;
-  }     
+    if (NormMap.find(tagName.Data())!=NormMap.end()){
+      return (NormMap.find(tagName.Data()))->second;
+    } else {
+      cout << "Sample " << theSample << " not found in table of normalization values" << endl;
+      return 0.;
+    }
+  }
+  */
+  // Not relevant for other samples
+  return 0.;     
 }
 
 
