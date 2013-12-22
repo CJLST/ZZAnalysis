@@ -442,6 +442,13 @@ all            TbartWchannelDR           1   7.87          1 # Tbar_TuneZ2_tW-ch
 all            TtWchannelDR              1   7.87          1 # T_TuneZ2_tW-channel-DR_7TeV-powheg-tauola 
 
 
+# gg2zz with interference (from Misha)
+all           ggTo2l2l_H125.6                   1       0.00084 1 #
+all           ggTo2l2l_Continuum                1       0.00262 1 #
+all           ggTo2l2l_ContinuumInterfH125.6    1       0.00325 1 #
+all           ggTo4l_H125.6                     1       0.00046 1 #
+all           ggTo4l_Continuum                  1       0.00129 1 #
+all           ggTo4l_ContinuumInterfH125.6      1       0.00162 1 #
 
 # References:
 # [Wiki] https://twiki.cern.ch/twiki/bin/view/CMS/HZZSamples7TeV

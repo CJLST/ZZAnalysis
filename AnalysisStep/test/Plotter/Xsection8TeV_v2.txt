@@ -451,6 +451,13 @@ all            TbartWchannelDR           1   11.1773       1 #  /Tbar_tW-channel
 all            TtWchannelDR              1   11.1773       1 #  /T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12
 
 
+# gg2zz with interference (from Misha)
+all           ggTo2l2l_H125.6                   1       0.00107 1 #
+all           ggTo2l2l_Continuum                1       0.00349 1 #
+all           ggTo2l2l_ContinuumInterfH125.6    1       0.00426 1 #
+all           ggTo4l_H125.6                     1       0.00059 1 #
+all           ggTo4l_Continuum                  1       0.00172 1 #
+all           ggTo4l_ContinuumInterfH125.6      1       0.00215 1 #
 
 # References:
 # [Wiki] https://twiki.cern.ch/twiki/bin/view/CMS/HZZSamples8TeV

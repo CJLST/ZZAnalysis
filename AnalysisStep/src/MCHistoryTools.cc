@@ -61,7 +61,7 @@ MCHistoryTools::MCHistoryTools(const edm::Event & event) :
 //   121 = gg to ttH
 //   122 = qq to ttH
 
-//   100 = JHU samples
+//   100 = JHU samples AND gg2zz samples with off-shell Higgs (a bit more fantasy would help)
 //   9999 = HH
   
 //   take the MC weight
@@ -200,7 +200,8 @@ MCHistoryTools::init() {
     // Lepton (as first daughter of a Z, or status = 3 for ggZZ as the Z are not present in the MC History of ggZZ Summer 12 samples; note that 
     // some special samples (HH) don't use status=3, although that would pick the original leptons in most samples (which could be interesting at some 
     // point to have the leptons in WZ and TT samples)
-    else if ((id== 13 || id==11 || id==15) && ((p->mother()!=0 && p->mother()->pdgId()==23) || (processID==661 && p->status()==3))) {
+    //gg2zz (100 or 661) doesn't have Z, check for 4 status 3 leptons. 100 is shared with JHU
+    else if ((id== 13 || id==11 || id==15) && ((p->mother()!=0 && p->mother()->pdgId()==23) || ((processID==661||processID==100) && p->status()==3))) { 
       if (processID==24 && p->mother()!=0 && p->mother()->mother()!=0 && p->mother()->mother()->pdgId()!=25) continue; // ZH: skip leptons from associated Z
       theGenLeps.push_back(&*p);
     }
@@ -209,7 +210,10 @@ MCHistoryTools::init() {
   if (theGenLeps.size()!=theGenZ.size()*2) {
     if (processID==661) {// ggZZ samples in Summer12 miss Zs in the MC history.
       // We could build Zs here, at least for 2e2mu where this is unproblematic
-    } else if (processID==24 || processID==26 || processID==121 || processID==122) { 
+    } else if (processID==100 && theGenLeps.size()==4)
+      {
+      //gg2zz samples have no Zs, we check for exactly 4 leptons to avoid troubles with JHU
+    }else if (processID==24 || processID==26 || processID==121 || processID==122) { 
       // For 2012, VH/ttH samples are inclusive in Z decays.
     } else if  (processID==0 || processID==1 || processID==2){
       // For ZZJetsTo4L (MadGraph) samples which contain events with 4 leptons and only 1 Z.
@@ -325,7 +329,7 @@ MCHistoryTools::genFinalState(){
       cout << "ERROR: MCHistoryTools: processID: " << processID << " Z flavour= " << gen_Z1_flavour << " " << gen_Z2_flavour << endl;
       abort();
     }
-  } else if (theGenZ.size()==0 && theGenLeps.size()==4 && processID==661) {
+  } else if (theGenZ.size()==0 && theGenLeps.size()==4 && (processID==661 || processID==100)) {
     // Handle samples where Zs are not explicit in the MC history
     int nele=0;
     int nmu=0;

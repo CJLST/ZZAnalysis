@@ -213,12 +213,12 @@ ZZ4lAnalysis_ZZJetsTo4L
 
 
 # Samples with off-shell production, continuum, and interference
-ggTo2l2l_H125.6
-ggTo2l2l_Continuum
-ggTo2l2l_ContinuumInterfH126.5
-ggTo4l_H125.6
-ggTo4l_Continuum
-ggTo4l_ContinuumInterfH126.5
+ZZ4lAnalysis_ggTo2l2l_H125.6
+ZZ4lAnalysis_ggTo2l2l_Continuum
+ZZ4lAnalysis_ggTo2l2l_ContinuumInterfH125.6
+ZZ4lAnalysis_ggTo4l_H125.6
+ZZ4lAnalysis_ggTo4l_Continuum
+ZZ4lAnalysis_ggTo4l_ContinuumInterfH125.6
 
 
 # Reducible Backgrounds
