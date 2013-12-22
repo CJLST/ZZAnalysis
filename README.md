@@ -11,9 +11,11 @@ To install a complete CMSSW area
 ------------------------------
 Download and execute the setup script for the given release:
 
-*   For V5_15_0/CMSSW_5_3_9 POST-LEGACY
-    ./checkout_539.csh
+*   For V5_15_0/CMSSW_5_3_9 POST-LEGACY:
 
+    ```
+    ./checkout_539.csh
+    ```
 
 
 To update this package from the release
