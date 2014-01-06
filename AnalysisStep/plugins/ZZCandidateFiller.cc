@@ -413,15 +413,30 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     //combinedMEM.computeME(MEMNames::kggZZ        ,MEMNames::kMCFM      ,partP,partId,ggzz_VAMCFM);    // background, vector algebra, MCFM for ggzz
 
     //MEs for ggZZ + signal interference
-    double coupling[2]={0.0,0.0};
-    combinedMEM.computeME(MEMNames::kSMHiggs, MEMNames::kMCFM, partP, partId, coupling, ggzz_VAMCFM);
-    coupling[0]=1.0;
-    combinedMEM.computeME(MEMNames::kSMHiggs, MEMNames::kMCFM, partP, partId, coupling, ggzz_c1_VAMCFM);
-    coupling[0]=5.0;
-    combinedMEM.computeME(MEMNames::kSMHiggs, MEMNames::kMCFM, partP, partId, coupling, ggzz_c5_VAMCFM);
-    coupling[0]=0.0;coupling[1]=1.0;
-    combinedMEM.computeME(MEMNames::kSMHiggs, MEMNames::kMCFM, partP, partId, coupling, ggzz_ci_VAMCFM);    
-  
+//    double coupling[2]={0.0,0.0};
+//    combinedMEM.computeME(MEMNames::kSMHiggs, MEMNames::kMCFM, partP, partId, coupling, ggzz_VAMCFM);
+//    coupling[0]=1.0;
+//    combinedMEM.computeME(MEMNames::kSMHiggs, MEMNames::kMCFM, partP, partId, coupling, ggzz_c1_VAMCFM);
+//    coupling[0]=5.0;
+//    combinedMEM.computeME(MEMNames::kSMHiggs, MEMNames::kMCFM, partP, partId, coupling, ggzz_c5_VAMCFM);
+//    coupling[0]=0.0;coupling[1]=1.0;
+//    combinedMEM.computeME(MEMNames::kSMHiggs, MEMNames::kMCFM, partP, partId, coupling, ggzz_ci_VAMCFM);    
+		vector<complex<double>> *coupling = new vector<complex<double> >;
+		vector<complex<double>> *couplingprod= new vector<complex<double> >;
+    combinedMEM.computeME(MEMNames::kggZZ, MEMNames::kMCFM, partP, partId, ggzz_VAMCFM);
+		
+		complex<double> coup(1.,0.); 
+		coupling->push_back(coup);
+    combinedMEM.computeME(MEMNames::kggZZ_SMHiggs, MEMNames::kJHUGen, partP, partId, couplingprod,coupling, ggzz_c1_VAMCFM);
+		coupling->clear();
+    coup=5.;
+    coupling->push_back(coup);
+    combinedMEM.computeME(MEMNames::kggZZ_SMHiggs, MEMNames::kJHUGen, partP, partId, couplingprod,coupling, ggzz_c5_VAMCFM);
+		coupling->clear();
+    coup.real(0.);
+    coup.imag(1.);
+    coupling->push_back(coup);
+    combinedMEM.computeME(MEMNames::kggZZ_SMHiggs, MEMNames::kJHUGen, partP, partId, couplingprod,coupling, ggzz_ci_VAMCFM);  
     // save sapce by not storing KDs that we can recreate 
 
     //double MorindKD_mela,MorindKD_pseudo,MorindKD_highdim,MorindKD_vec,MorindKD_psvec,MorindKD_gggrav,MorindKD_qqgrav;
@@ -485,12 +500,12 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
     // spinMELA
     double pg1g4_mela, pg1g4_VAJHU, pg1g2_mela, pg1g2_VAJHU, pg1g4_pi2_VAJHU, pg1g2_pi2_VAJHU;
-    combinedMEM.computeME(MEMNames::kg1g4,     MEMNames::kAnalytical, partP, partId, pg1g4_mela);
-    combinedMEM.computeME(MEMNames::kg1g4,     MEMNames::kJHUGen,     partP, partId, pg1g4_VAJHU);
-    combinedMEM.computeME(MEMNames::kg1g4_pi_2,MEMNames::kJHUGen,     partP, partId, pg1g4_pi2_VAJHU);
-    combinedMEM.computeME(MEMNames::kg1g2_pi_2,MEMNames::kJHUGen,     partP, partId, pg1g2_pi2_VAJHU);
-    combinedMEM.computeME(MEMNames::kg1g2,     MEMNames::kAnalytical, partP, partId, pg1g2_mela);
-    combinedMEM.computeME(MEMNames::kg1g2,     MEMNames::kJHUGen,     partP, partId, pg1g2_VAJHU);     
+    combinedMEM.computeME_Interference(MEMNames::kg1g4,     MEMNames::kAnalytical, partP, partId, pg1g4_mela);
+    combinedMEM.computeME_Interference(MEMNames::kg1g4,     MEMNames::kJHUGen,     partP, partId, pg1g4_VAJHU);
+    combinedMEM.computeME_Interference(MEMNames::kg1g4_pi_2,MEMNames::kJHUGen,     partP, partId, pg1g4_pi2_VAJHU);
+    combinedMEM.computeME_Interference(MEMNames::kg1g2_pi_2,MEMNames::kJHUGen,     partP, partId, pg1g2_pi2_VAJHU);
+    combinedMEM.computeME_Interference(MEMNames::kg1g2,     MEMNames::kAnalytical, partP, partId, pg1g2_mela);
+    combinedMEM.computeME_Interference(MEMNames::kg1g2,     MEMNames::kJHUGen,     partP, partId, pg1g2_VAJHU);     
 
     // VBF jets
     vector<const cmg::PFJet*> cleanedJets;
@@ -556,8 +571,8 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 	  partPprod.push_back(jet1);
 	  partPprod.push_back(jet2);
 	  double phjj_temp,pvbf_temp;
-	  combinedMEM.computeME(MEMNames::kSMHjj,MEMNames::kJHUGen,partPprod,partIdprod,phjj_temp);
-	  combinedMEM.computeME(MEMNames::kSMVBF,MEMNames::kJHUGen,partPprod,partIdprod,pvbf_temp);
+	  combinedMEM.computeME(MEMNames::kJJ_SMHiggs_GG,MEMNames::kJHUGen,partPprod,partIdprod,phjj_temp);
+	  combinedMEM.computeME(MEMNames::kJJ_SMHiggs_VBF,MEMNames::kJHUGen,partPprod,partIdprod,pvbf_temp);
 	  if(jecnum==0){
 	    phjj_VAJHU_old=phjj_temp;
 	    pvbf_VAJHU_old=pvbf_temp;
@@ -606,8 +621,8 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 	  jet2.SetPtEtaPhiM(jet2.Pt()*ratio2,jet2.Eta(),jet2.Phi(),jet2.M()*ratio2);
 	  partPprod.push_back(jet1);
 	  partPprod.push_back(jet2);
-	  combinedMEM.computeME(MEMNames::kSMHjj,MEMNames::kJHUGen,partPprod,partIdprod,phjj_VAJHU_old_temp);
-	  combinedMEM.computeME(MEMNames::kSMVBF,MEMNames::kJHUGen,partPprod,partIdprod,pvbf_VAJHU_old_temp);
+	  combinedMEM.computeME(MEMNames::kJJ_SMHiggs_GG,MEMNames::kJHUGen,partPprod,partIdprod,phjj_VAJHU_old_temp);
+	  combinedMEM.computeME(MEMNames::kJJ_SMHiggs_VBF,MEMNames::kJHUGen,partPprod,partIdprod,pvbf_VAJHU_old_temp);
 	  partPprod.pop_back();
 	  partPprod.pop_back();
 	  for(unsigned int firstjet=0;firstjet<cleanedJetsPt30.size();firstjet++){
@@ -631,8 +646,8 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 	      partPprod.push_back(jet2);
 	      phjj_temp=-1.;
 	      pvbf_temp=-1.;
-	      combinedMEM.computeME(MEMNames::kSMHjj,MEMNames::kJHUGen,partPprod,partIdprod,phjj_temp);
-	      combinedMEM.computeME(MEMNames::kSMVBF,MEMNames::kJHUGen,partPprod,partIdprod,pvbf_temp);
+	      combinedMEM.computeME(MEMNames::kJJ_SMHiggs_GG,MEMNames::kJHUGen,partPprod,partIdprod,phjj_temp);
+	      combinedMEM.computeME(MEMNames::kJJ_SMHiggs_VBF,MEMNames::kJHUGen,partPprod,partIdprod,pvbf_temp);
 	      double djet_temp= pvbf_temp/(pvbf_temp+phjj_temp);
 	      if(djet_temp > djet_max){
 		phjj_VAJHU_new_temp=phjj_temp;
