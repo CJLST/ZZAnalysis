@@ -9,13 +9,13 @@ rehash
 
 git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
 
-mkdir ZZMatrixElement
- (cd ZZMatrixElement; cvs co -r V00-03-06 -d MELA UserCode/CJLST/ZZMatrixElement/MELA)
- (cd ZZMatrixElement; cvs co -r V00-02-00 -d MEKD UserCode/UFL/ZZMatrixElement/MEKD)
- (cd ZZMatrixElement; cvs co -r V00-00-15 -d MEMCalculators UserCode/HZZ4l_MEM/ZZMatrixElement/MEMCalculators)
+# Legacy tags
+# mkdir ZZMatrixElement
+#  (cd ZZMatrixElement; cvs co -r V00-03-06 -d MELA UserCode/CJLST/ZZMatrixElement/MELA)
+#  (cd ZZMatrixElement; cvs co -r V00-02-00 -d MEKD UserCode/UFL/ZZMatrixElement/MEKD)
+#  (cd ZZMatrixElement; cvs co -r V00-00-15 -d MEMCalculators UserCode/HZZ4l_MEM/ZZMatrixElement/MEMCalculators)
 
-# Does not compile at the moment 
-#git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement 
+git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement 
 
 mkdir MuScleFit; (cd MuScleFit; cvs co -r muscle_v4_2_0 -d Calibration UserCode/scasasso/MuScleFit/Calibration)
 cvs co -r V02-06-00 HiggsAnalysis/CombinedLimit
