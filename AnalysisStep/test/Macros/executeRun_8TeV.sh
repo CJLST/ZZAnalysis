@@ -31,9 +31,16 @@ while read i; do
             #./run_HZZ4l_CR 1 Doublemu  $prodname/ZZ4lAnalysis_DoubleMu_1963.root $dirname/CR/HZZ4lTree_DoubleMu_CRZLLTree.root
             #./run_HZZ4l_CR 1 DoubleEle  $prodname/ZZ4lAnalysis_DoubleEle_1963.root $dirname/CR/HZZ4lTree_DoubleEle_CRZLLTree.root
 	else
-	    ./run_HZZ4l 0  1 $i $prodname/${i}.root $dirname/4mu/HZZ4lTree_`echo $i | awk -F_ '{print $2}'`.root;
-	    ./run_HZZ4l 1  1 $i $prodname/${i}.root $dirname/4e/HZZ4lTree_`echo $i | awk -F_ '{print $2}'`.root;
-	    ./run_HZZ4l 2  1 $i $prodname/${i}.root $dirname/2mu2e/HZZ4lTree_`echo $i | awk -F_ '{print $2}'`.root;
+	    export First=`echo $i | awk -F_ '{print $2}'`
+	    export Second=`echo $i | awk -F_ '{print $3}'`
+	    if [[ "$Second" != "" ]]; then 
+		export FullName=$First"_"$Second
+	    else 
+		export FullName=$First
+	    fi
+	    ./run_HZZ4l 0  1 $i $prodname/${i}.root $dirname/4mu/HZZ4lTree_$FullName.root
+	    ./run_HZZ4l 1  1 $i $prodname/${i}.root $dirname/4e/HZZ4lTree_$FullName.root
+	    ./run_HZZ4l 2  1 $i $prodname/${i}.root $dirname/2mu2e/HZZ4lTree_$FullName.root
 #	    ./run_HZZ4l_CR 1 $i $prodname/${i}.root $dirname/CR/HZZ4lTree_`echo $i | awk -F_ '{print $2}'`_CRZLLTree.root
 	fi
     fi
