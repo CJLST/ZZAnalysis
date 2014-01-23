@@ -582,7 +582,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   //const Float_t p0hplus_mela = cand.userFloat("p0hplus_mela"); // 0h+, analytic distribution
   const Float_t p0plus_VAJHU = cand.userFloat("p0plus_VAJHU");
   const Float_t p0minus_VAJHU = cand.userFloat("p0minus_VAJHU");
-  //  const Float_t p0plus_VAMCFM = cand.userFloat("p0plus_VAMCFM");
+  const Float_t p0plus_VAMCFM = cand.userFloat("p0plus_VAMCFM");
   const Float_t p0hplus_VAJHU = cand.userFloat("p0hplus_VAJHU"); // 0h+ (high dimensional operator), vector algebra, JHUgen
   //const Float_t p1_mela = cand.userFloat("p1_mela");
   //const Float_t p1_prodIndep_mela = cand.userFloat("p1_prodIndep_mela");
@@ -604,10 +604,35 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   const Float_t p2hplus_VAJHU = cand.userFloat("p2hplus_VAJHU");
   const Float_t p2hminus_VAJHU = cand.userFloat("p2hminus_VAJHU");
   const Float_t p2bplus_VAJHU = cand.userFloat("p2bplus_VAJHU");
-  //const Float_t bkg_mela = cand.userFloat("bkg_mela");
-  const Float_t bkg_VAMCFM = cand.userFloat("bkg_VAMCFM");
+  const Float_t p2hplus_qqb_VAJHU= cand.userFloat(					"p2hplus_qqb_VAJHU");					
+  const Float_t p2hplus_prodIndep_VAJHU= cand.userFloat(		"p2hplus_prodIndep_VAJHU");	
+  const Float_t p2hminus_qqb_VAJHU= cand.userFloat(				"p2hminus_qqb_VAJHU");				
+  const Float_t p2hminus_prodIndep_VAJHU= cand.userFloat(	"p2hminus_prodIndep_VAJHU");	
+  const Float_t p2bplus_qqb_VAJHU= cand.userFloat(					"p2bplus_qqb_VAJHU"				);	
+  const Float_t p2bplus_prodIndep_VAJHU= cand.userFloat(		"p2bplus_prodIndep_VAJHU"		);
+  const Float_t p2h2plus_gg_VAJHU= cand.userFloat(      		"p2h2plus_gg_VAJHU"      		);
+  const Float_t p2h2plus_qqbar_VAJHU= cand.userFloat(   		"p2h2plus_qqbar_VAJHU"   		);
+  const Float_t p2h2plus_prodIndep_VAJHU= cand.userFloat(	"p2h2plus_prodIndep_VAJHU");	
+  const Float_t p2h3plus_gg_VAJHU= cand.userFloat(       	"p2h3plus_gg_VAJHU"       );	
+  const Float_t p2h3plus_qqbar_VAJHU= cand.userFloat(    	"p2h3plus_qqbar_VAJHU"    );	
+  const Float_t p2h3plus_prodIndep_VAJHU= cand.userFloat(	"p2h3plus_prodIndep_VAJHU");	
+  const Float_t p2h6plus_gg_VAJHU= cand.userFloat(       	"p2h6plus_gg_VAJHU"       );	
+  const Float_t p2h6plus_qqbar_VAJHU= cand.userFloat(    	"p2h6plus_qqbar_VAJHU"    );	
+  const Float_t p2h6plus_prodIndep_VAJHU= cand.userFloat(	"p2h6plus_prodIndep_VAJHU");	
+  const Float_t p2h7plus_gg_VAJHU= cand.userFloat(       	"p2h7plus_gg_VAJHU"       );	
+  const Float_t p2h7plus_qqbar_VAJHU= cand.userFloat(    	"p2h7plus_qqbar_VAJHU"    );	
+  const Float_t p2h7plus_prodIndep_VAJHU= cand.userFloat(	"p2h7plus_prodIndep_VAJHU");	
+  const Float_t p2h9minus_gg_VAJHU= cand.userFloat(       	"p2h9minus_gg_VAJHU"       	);
+  const Float_t p2h9minus_qqbar_VAJHU= cand.userFloat(    	"p2h9minus_qqbar_VAJHU"    	);
+  const Float_t p2h9minus_prodIndep_VAJHU= cand.userFloat(	"p2h9minus_prodIndep_VAJHU"	);
+  const Float_t p2h10minus_gg_VAJHU= cand.userFloat(       "p2h10minus_gg_VAJHU"      ); 
+  const Float_t p2h10minus_qqbar_VAJHU= cand.userFloat(    "p2h10minus_qqbar_VAJHU"     ); 
+  const Float_t p2h10minus_prodIndep_VAJHU= cand.userFloat("p2h10minus_prodIndep_VAJHU" ); 
+//const Float_t bkg_mela = cand.userFloat("bkg_mela");
+	const Float_t bkg_VAMCFM = cand.userFloat("bkg_VAMCFM");
   const Float_t bkg_prodIndep_VAMCFM = cand.userFloat("bkg_prodIndep_VAMCFM");
   const Float_t ggzz_VAMCFM = cand.userFloat("ggzz_VAMCFM");
+  const Float_t ggzz_p0plus_VAMCFM = cand.userFloat("ggzz_p0plus_VAMCFM");
   const Float_t ggzz_c1_VAMCFM = cand.userFloat("ggzz_c1_VAMCFM");
   const Float_t ggzz_c5_VAMCFM = cand.userFloat("ggzz_c5_VAMCFM");
   const Float_t ggzz_ci_VAMCFM = cand.userFloat("ggzz_ci_VAMCFM");
@@ -646,6 +671,9 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   const Float_t pvbf_VAJHU_new_up = cand.userFloat("pvbf_VAJHU_new_up");
   const Float_t phjj_VAJHU_new_dn = cand.userFloat("phjj_VAJHU_new_dn");
   const Float_t pvbf_VAJHU_new_dn = cand.userFloat("pvbf_VAJHU_new_dn");
+  const Float_t p0_g1prime2_VAJHU= cand.userFloat("p0_g1prime2_VAJHU");
+  const Float_t pg1g1prime2_VAJHU= cand.userFloat("pg1g1prime2_VAJHU");
+  const Float_t Dgg10_VAMCFM= cand.userFloat("Dgg10_VAMCFM");
 
   Int_t isSignal = -1;
   Int_t isRightPair = -1;
@@ -719,7 +747,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 			  //p0hplus_mela, // 0h+, analytic distribution
 			  p0plus_VAJHU,
 			  p0minus_VAJHU,
-			  //p0plus_VAMCFM,
+			  p0plus_VAMCFM,
 			  p0hplus_VAJHU, // 0h+ (high dimensional operator), vector algebra, JHUgen
 			  //p1_mela,
 			  //p1_prodIndep_mela,
@@ -741,10 +769,35 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 			  p2hplus_VAJHU,
 			  p2hminus_VAJHU,
 			  p2bplus_VAJHU,
+		 	  p2hplus_qqb_VAJHU,									  
+		    p2hplus_prodIndep_VAJHU,		
+		    p2hminus_qqb_VAJHU,				
+		    p2hminus_prodIndep_VAJHU,	
+		    p2bplus_qqb_VAJHU,					
+		    p2bplus_prodIndep_VAJHU,		
+		    p2h2plus_gg_VAJHU,      		
+		    p2h2plus_qqbar_VAJHU,   		
+		    p2h2plus_prodIndep_VAJHU,	
+		    p2h3plus_gg_VAJHU,       	
+		    p2h3plus_qqbar_VAJHU,    	
+		    p2h3plus_prodIndep_VAJHU,	
+		    p2h6plus_gg_VAJHU,       	
+		    p2h6plus_qqbar_VAJHU,    	
+		    p2h6plus_prodIndep_VAJHU,	
+		    p2h7plus_gg_VAJHU,       	
+		    p2h7plus_qqbar_VAJHU,    	
+		    p2h7plus_prodIndep_VAJHU,	
+		    p2h9minus_gg_VAJHU,       	
+		    p2h9minus_qqbar_VAJHU,    	
+		    p2h9minus_prodIndep_VAJHU,	
+		    p2h10minus_gg_VAJHU,       
+		    p2h10minus_qqbar_VAJHU,    
+		    p2h10minus_prodIndep_VAJHU,
 			  //bkg_mela,
 			  bkg_VAMCFM,
 			  bkg_prodIndep_VAMCFM,
 			  ggzz_VAMCFM,
+			  ggzz_p0plus_VAMCFM,
 			  ggzz_c1_VAMCFM,
 			  ggzz_c5_VAMCFM,
 			  ggzz_ci_VAMCFM,
@@ -760,6 +813,9 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 			  pvbf_VAJHU_new_up,
 			  phjj_VAJHU_new_dn,
 			  pvbf_VAJHU_new_dn,
+			  p0_g1prime2_VAJHU,
+			  pg1g1prime2_VAJHU,
+			  Dgg10_VAMCFM,
 			  pg1g4_mela,
 			  pg1g4_VAJHU,
 			  pg1g4_pi2_VAJHU,

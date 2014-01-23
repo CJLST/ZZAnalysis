@@ -356,7 +356,10 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     // exotic spin-2 models
     double p2hplus_VAJHU, p2hminus_VAJHU,p2bplus_VAJHU;
     //double p2hplus_mela, p2hminus_mela,p2bplus_mela;
-
+		double p2hplus_qqb_VAJHU,p2hplus_prodIndep_VAJHU,p2hminus_qqb_VAJHU,p2hminus_prodIndep_VAJHU,p2bplus_qqb_VAJHU,p2bplus_prodIndep_VAJHU;
+		double p2h2plus_gg_VAJHU,p2h2plus_qqbar_VAJHU,p2h2plus_prodIndep_VAJHU,	p2h3plus_gg_VAJHU ,p2h3plus_qqbar_VAJHU ,p2h3plus_prodIndep_VAJHU;
+		double p2h6plus_gg_VAJHU,p2h6plus_qqbar_VAJHU,p2h6plus_prodIndep_VAJHU, p2h7plus_gg_VAJHU ,p2h7plus_qqbar_VAJHU ,p2h7plus_prodIndep_VAJHU;
+		double p2h9minus_gg_VAJHU,p2h9minus_qqbar_VAJHU,p2h9minus_prodIndep_VAJHU,p2h10minus_gg_VAJHU,p2h10minus_qqbar_VAJHU,p2h10minus_prodIndep_VAJHU;
     // production independent probabilites
     //double p1_prodIndep_mela,p1plus_prodIndep_mela,p2_prodIndep_mela;
     double p1_prodIndep_VAJHU,p1plus_prodIndep_VAJHU,p2_prodIndep_VAJHU;
@@ -364,6 +367,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     double p0plus_m4l,bkg_m4l; //supermela
     double p0plus_m4l_ScaleUp,bkg_m4l_ScaleUp,p0plus_m4l_ScaleDown,bkg_m4l_ScaleDown,p0plus_m4l_ResUp,bkg_m4l_ResUp,p0plus_m4l_ResDown,bkg_m4l_ResDown; // supermela uncertainties
 
+		double p0_g1prime2_VAJHU, Dgg10_VAMCFM;
     // No longer used - AJW
     //int flavor; flavor=0;
     //if(abs(id11)==abs(id21) && abs(id11)==11 )// 4e
@@ -409,8 +413,37 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     combinedMEM.computeME(MEMNames::k2hplus,MEMNames::kJHUGen    ,partP,partId,p2hplus_VAJHU);    // graviton produced by qqbar vector algebra, JHUgen,       
     combinedMEM.computeME(MEMNames::k2hminus,MEMNames::kJHUGen    ,partP,partId,p2hminus_VAJHU);    // graviton produced by qqbar vector algebra, JHUgen,       
     combinedMEM.computeME(MEMNames::k2bplus,MEMNames::kJHUGen    ,partP,partId,p2bplus_VAJHU);    // graviton produced by qqbar vector algebra, JHUgen,       
+
+    combinedMEM.computeME(MEMNames::k2hplus_qqbar,MEMNames::kJHUGen    ,partP,partId,		p2hplus_qqb_VAJHU					);    // graviton produced by qqbar vector algebra, JHUgen,       
+    combinedMEM.computeME(MEMNames::k2hplus_prodIndep,MEMNames::kJHUGen  ,partP,partId,	p2hplus_prodIndep_VAJHU		);    // graviton produced by qqbar vector algebra, JHUgen,       
+    combinedMEM.computeME(MEMNames::k2hminus_qqbar,MEMNames::kJHUGen    ,partP,partId,	p2hminus_qqb_VAJHU				);    // graviton produced by qqbar vector algebra, JHUgen,       
+    combinedMEM.computeME(MEMNames::k2hminus_prodIndep,MEMNames::kJHUGen ,partP,partId,	p2hminus_prodIndep_VAJHU	);    // graviton produced by qqbar vector algebra, JHUgen,       
+    combinedMEM.computeME(MEMNames::k2bplus_qqbar,MEMNames::kJHUGen    ,partP,partId,		p2bplus_qqb_VAJHU					);    // graviton produced by qqbar vector algebra, JHUgen,       
+    combinedMEM.computeME(MEMNames::k2bplus_prodIndep,MEMNames::kJHUGen  ,partP,partId,	p2bplus_prodIndep_VAJHU		);    // graviton produced by qqbar vector algebra, JHUgen,       
+
+    combinedMEM.computeME(MEMNames::k2h2plus_gg      		,MEMNames::kJHUGen,partP,partId,p2h2plus_gg_VAJHU      		);
+    combinedMEM.computeME(MEMNames::k2h2plus_qqbar   		,MEMNames::kJHUGen,partP,partId,p2h2plus_qqbar_VAJHU   		);
+    combinedMEM.computeME(MEMNames::k2h2plus_prodIndep	,MEMNames::kJHUGen,partP,partId,p2h2plus_prodIndep_VAJHU	);
+    combinedMEM.computeME(MEMNames::k2h3plus_gg       	,MEMNames::kJHUGen,partP,partId,p2h3plus_gg_VAJHU       	);
+    combinedMEM.computeME(MEMNames::k2h3plus_qqbar    	,MEMNames::kJHUGen,partP,partId,p2h3plus_qqbar_VAJHU    	);
+    combinedMEM.computeME(MEMNames::k2h3plus_prodIndep	,MEMNames::kJHUGen,partP,partId,p2h3plus_prodIndep_VAJHU	);
+    combinedMEM.computeME(MEMNames::k2h6plus_gg       	,MEMNames::kJHUGen,partP,partId,p2h6plus_gg_VAJHU       	);
+    combinedMEM.computeME(MEMNames::k2h6plus_qqbar    	,MEMNames::kJHUGen,partP,partId,p2h6plus_qqbar_VAJHU    	);
+    combinedMEM.computeME(MEMNames::k2h6plus_prodIndep	,MEMNames::kJHUGen,partP,partId,p2h6plus_prodIndep_VAJHU	);
+    combinedMEM.computeME(MEMNames::k2h7plus_gg       	,MEMNames::kJHUGen,partP,partId,p2h7plus_gg_VAJHU       	);
+    combinedMEM.computeME(MEMNames::k2h7plus_qqbar    	,MEMNames::kJHUGen,partP,partId,p2h7plus_qqbar_VAJHU    	);
+    combinedMEM.computeME(MEMNames::k2h7plus_prodIndep	,MEMNames::kJHUGen,partP,partId,p2h7plus_prodIndep_VAJHU	);
+    combinedMEM.computeME(MEMNames::k2h9minus_gg       	,MEMNames::kJHUGen,partP,partId,p2h9minus_gg_VAJHU       	);
+    combinedMEM.computeME(MEMNames::k2h9minus_qqbar    	,MEMNames::kJHUGen,partP,partId,p2h9minus_qqbar_VAJHU    	);
+    combinedMEM.computeME(MEMNames::k2h9minus_prodIndep	,MEMNames::kJHUGen,partP,partId,p2h9minus_prodIndep_VAJHU	);
+    combinedMEM.computeME(MEMNames::k2h10minus_gg       ,MEMNames::kJHUGen,partP,partId,p2h10minus_gg_VAJHU       );
+    combinedMEM.computeME(MEMNames::k2h10minus_qqbar    ,MEMNames::kJHUGen,partP,partId,p2h10minus_qqbar_VAJHU    );
+    combinedMEM.computeME(MEMNames::k2h10minus_prodIndep,MEMNames::kJHUGen,partP,partId,p2h10minus_prodIndep_VAJHU);
+
     combinedMEM.computeME(MEMNames::kqqZZ_prodIndep ,MEMNames::kMCFM      ,partP,partId,bkg_prodIndep_VAMCFM);     // background, vector algebra, MCFM
     combinedMEM.computeME(MEMNames::kqqZZ        ,MEMNames::kMCFM      ,partP,partId,bkg_VAMCFM);     // background, vector algebra, MCFM
+    combinedMEM.computeME(MEMNames::k0_g1prime2,MEMNames::kJHUGen,partP,partId,p0_g1prime2_VAJHU);     // background, vector algebra, MCFM
+    combinedMEM.computeME(MEMNames::kggHZZ_10,MEMNames::kMCFM,partP,partId,Dgg10_VAMCFM);     // background, vector algebra, MCFM
     //combinedMEM.computeME(MEMNames::kggZZ        ,MEMNames::kMCFM      ,partP,partId,ggzz_VAMCFM);    // background, vector algebra, MCFM for ggzz
 
     //MEs for ggZZ + signal interference
@@ -501,13 +534,14 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
 
     // spinMELA
-    double pg1g4_mela, pg1g4_VAJHU, pg1g2_mela, pg1g2_VAJHU, pg1g4_pi2_VAJHU, pg1g2_pi2_VAJHU;
+    double pg1g4_mela, pg1g4_VAJHU, pg1g2_mela, pg1g2_VAJHU, pg1g4_pi2_VAJHU, pg1g2_pi2_VAJHU, pg1g1prime2_VAJHU;
     combinedMEM.computeME_Interference(MEMNames::kg1g4,     MEMNames::kAnalytical, partP, partId, pg1g4_mela);
     combinedMEM.computeME_Interference(MEMNames::kg1g4,     MEMNames::kJHUGen,     partP, partId, pg1g4_VAJHU);
     combinedMEM.computeME_Interference(MEMNames::kg1g4_pi_2,MEMNames::kJHUGen,     partP, partId, pg1g4_pi2_VAJHU);
     combinedMEM.computeME_Interference(MEMNames::kg1g2_pi_2,MEMNames::kJHUGen,     partP, partId, pg1g2_pi2_VAJHU);
     combinedMEM.computeME_Interference(MEMNames::kg1g2,     MEMNames::kAnalytical, partP, partId, pg1g2_mela);
     combinedMEM.computeME_Interference(MEMNames::kg1g2,     MEMNames::kJHUGen,     partP, partId, pg1g2_VAJHU);     
+    combinedMEM.computeME_Interference(MEMNames::k_g1g1prime2,     MEMNames::kJHUGen,     partP, partId, pg1g1prime2_VAJHU);     
 
     // VBF jets
     vector<const cmg::PFJet*> cleanedJets;
@@ -928,6 +962,35 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     myCand.addUserFloat("p2bplus_VAJHU",    p2bplus_VAJHU);       // graviton, vector algebra, JHUgen,
     myCand.addUserFloat("bkg_prodIndep_VAMCFM",     bkg_prodIndep_VAMCFM);     // background, vector algebra, MCFM
 
+		myCand.addUserFloat("p2hplus_qqb_VAJHU"					,		p2hplus_qqb_VAJHU);					
+		myCand.addUserFloat("p2hplus_prodIndep_VAJHU"		,		p2hplus_prodIndep_VAJHU);		
+		myCand.addUserFloat("p2hminus_qqb_VAJHU"				,  	p2hminus_qqb_VAJHU);				
+		myCand.addUserFloat("p2hminus_prodIndep_VAJHU"	,  	p2hminus_prodIndep_VAJHU);	
+		myCand.addUserFloat("p2bplus_qqb_VAJHU"					,		p2bplus_qqb_VAJHU);					
+		myCand.addUserFloat("p2bplus_prodIndep_VAJHU"		,		p2bplus_prodIndep_VAJHU);		
+		
+		myCand.addUserFloat("p2h2plus_gg_VAJHU"      		,		p2h2plus_gg_VAJHU);      		                          
+		myCand.addUserFloat("p2h2plus_qqbar_VAJHU"   		,		p2h2plus_qqbar_VAJHU);   		
+		myCand.addUserFloat("p2h2plus_prodIndep_VAJHU"	,   p2h2plus_prodIndep_VAJHU);	
+		myCand.addUserFloat("p2h3plus_gg_VAJHU"       	,   p2h3plus_gg_VAJHU);       	
+		myCand.addUserFloat("p2h3plus_qqbar_VAJHU"    	,   p2h3plus_qqbar_VAJHU);    	
+		myCand.addUserFloat("p2h3plus_prodIndep_VAJHU"	,   p2h3plus_prodIndep_VAJHU);	
+		myCand.addUserFloat("p2h6plus_gg_VAJHU"       	,   p2h6plus_gg_VAJHU);       	
+		myCand.addUserFloat("p2h6plus_qqbar_VAJHU"    	,   p2h6plus_qqbar_VAJHU);    	
+		myCand.addUserFloat("p2h6plus_prodIndep_VAJHU"	,   p2h6plus_prodIndep_VAJHU);	
+		myCand.addUserFloat("p2h7plus_gg_VAJHU"       	,   p2h7plus_gg_VAJHU);	
+		myCand.addUserFloat("p2h7plus_qqbar_VAJHU"    	,   p2h7plus_qqbar_VAJHU);    	
+		myCand.addUserFloat("p2h7plus_prodIndep_VAJHU"	,   p2h7plus_prodIndep_VAJHU);	
+		myCand.addUserFloat("p2h9minus_gg_VAJHU"       	,		p2h9minus_gg_VAJHU);       	
+		myCand.addUserFloat("p2h9minus_qqbar_VAJHU"    	,		p2h9minus_qqbar_VAJHU);    	
+		myCand.addUserFloat("p2h9minus_prodIndep_VAJHU"	,		p2h9minus_prodIndep_VAJHU);	
+		myCand.addUserFloat("p2h10minus_gg_VAJHU"       , 	p2h10minus_gg_VAJHU);       
+		myCand.addUserFloat("p2h10minus_qqbar_VAJHU"    , 	p2h10minus_qqbar_VAJHU);  
+		myCand.addUserFloat("p2h10minus_prodIndep_VAJHU", 	p2h10minus_prodIndep_VAJHU);
+                                                
+
+
+
     //pt/rapidity
     //myCand.addUserFloat("p0_pt",          p0_pt);          // multiplicative probability for signal pt
     //myCand.addUserFloat("p0_y",           p0_y);           // multiplicative probability for signal y
@@ -972,6 +1035,9 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     myCand.addUserFloat("pvbf_VAJHU_new_dn",pvbf_VAJHU_new_dn);
 
 
+    myCand.addUserFloat("p0_g1prime2_VAJHU",p0_g1prime2_VAJHU);
+    myCand.addUserFloat("pg1g1prime2_VAJHU",pg1g1prime2_VAJHU);
+    myCand.addUserFloat("Dgg10_VAMCFM",Dgg10_VAMCFM);
     //--- MC matching
     if (isMC) {
       int refID = 25; // FIXME: handle ZZ (sigId = 23)

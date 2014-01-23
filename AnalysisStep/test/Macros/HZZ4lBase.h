@@ -66,9 +66,35 @@ public :
    std::vector<float>   *p2hplus_VAJHU;
    std::vector<float>   *p2hminus_VAJHU;
    std::vector<float>   *p2bplus_VAJHU;
+   std::vector<float>   *p2hplus_qqb_VAJHU;
+   std::vector<float>   *p2hplus_prodIndep_VAJHU;
+   std::vector<float>   *p2hminus_qqb_VAJHU;
+   std::vector<float>   *p2hminus_prodIndep_VAJHU;
+   std::vector<float>   *p2bplus_qqb_VAJHU;
+   std::vector<float>   *p2bplus_prodIndep_VAJHU;
+   std::vector<float>   *p2h2plus_gg_VAJHU;
+   std::vector<float>   *p2h2plus_qqbar_VAJHU;
+   std::vector<float>   *p2h2plus_prodIndep_VAJHU;
+   std::vector<float>   *p2h3plus_gg_VAJHU;
+   std::vector<float>   *p2h3plus_qqbar_VAJHU;
+   std::vector<float>   *p2h3plus_prodIndep_VAJHU;
+   std::vector<float>   *p2h6plus_gg_VAJHU;
+   std::vector<float>   *p2h6plus_qqbar_VAJHU;
+   std::vector<float>   *p2h6plus_prodIndep_VAJHU;
+   std::vector<float>   *p2h7plus_gg_VAJHU;
+   std::vector<float>   *p2h7plus_qqbar_VAJHU;
+   std::vector<float>   *p2h7plus_prodIndep_VAJHU;
+   std::vector<float>   *p2h9minus_gg_VAJHU;
+   std::vector<float>   *p2h9minus_qqbar_VAJHU;
+   std::vector<float>   *p2h9minus_prodIndep_VAJHU;
+   std::vector<float>   *p2h10minus_gg_VAJHU;
+   std::vector<float>   *p2h10minus_qqbar_VAJHU;
+   std::vector<float>   *p2h10minus_prodIndep_VAJHU;
    std::vector<float>   *bkg_VAMCFM;
    std::vector<float>   *bkg_prodIndep_VAMCFM;
    std::vector<float>   *ggzz_VAMCFM;
+   std::vector<float>   *ggzz_p0plus_VAMCFM;
+   std::vector<float>   *p0plus_VAMCFM;
    std::vector<float>   *ggzz_c1_VAMCFM;
    std::vector<float>   *ggzz_c5_VAMCFM;
    std::vector<float>   *ggzz_ci_VAMCFM;
@@ -84,6 +110,9 @@ public :
    std::vector<float>   *pvbf_VAJHU_new_up;
    std::vector<float>   *phjj_VAJHU_new_dn;
    std::vector<float>   *pvbf_VAJHU_new_dn;
+   std::vector<float>   *p0_g1prime2_VAJHU;
+   std::vector<float>   *pg1g1prime2_VAJHU;
+   std::vector<float>   *Dgg10_VAMCFM;
    std::vector<float>   *p0plus_m4l;
    std::vector<float>   *bkg_m4l;
    std::vector<float>   *p0plus_m4l_ScaleUp;
@@ -231,9 +260,35 @@ public :
    TBranch        *b_p2hplus_VAJHU;   //!
    TBranch        *b_p2hminus_VAJHU;   //!
    TBranch        *b_p2bplus_VAJHU;   //!
+   TBranch        *b_p2hplus_qqb_VAJHU;   //!
+   TBranch        *b_p2hplus_prodIndep_VAJHU;   //!
+   TBranch        *b_p2hminus_qqb_VAJHU;   //!
+   TBranch        *b_p2hminus_prodIndep_VAJHU;   //!
+   TBranch        *b_p2bplus_qqb_VAJHU;   //!
+   TBranch        *b_p2bplus_prodIndep_VAJHU;   //!
+   TBranch        *b_p2h2plus_gg_VAJHU;   //!
+   TBranch        *b_p2h2plus_qqbar_VAJHU;   //!
+   TBranch        *b_p2h2plus_prodIndep_VAJHU;   //!
+   TBranch        *b_p2h3plus_gg_VAJHU;   //!
+   TBranch        *b_p2h3plus_qqbar_VAJHU;   //!
+   TBranch        *b_p2h3plus_prodIndep_VAJHU;   //!
+   TBranch        *b_p2h6plus_gg_VAJHU;   //!
+   TBranch        *b_p2h6plus_qqbar_VAJHU;   //!
+   TBranch        *b_p2h6plus_prodIndep_VAJHU;   //!
+   TBranch        *b_p2h7plus_gg_VAJHU;   //!
+   TBranch        *b_p2h7plus_qqbar_VAJHU;   //!
+   TBranch        *b_p2h7plus_prodIndep_VAJHU;   //!
+   TBranch        *b_p2h9minus_gg_VAJHU;   //!
+   TBranch        *b_p2h9minus_qqbar_VAJHU;   //!
+   TBranch        *b_p2h9minus_prodIndep_VAJHU;   //!
+   TBranch        *b_p2h10minus_gg_VAJHU;   //!
+   TBranch        *b_p2h10minus_qqbar_VAJHU;   //!
+   TBranch        *b_p2h10minus_prodIndep_VAJHU;   //!
    TBranch        *b_bkg_VAMCFM;   //!
    TBranch        *b_bkg_prodIndep_VAMCFM;   //!
    TBranch        *b_ggzz_VAMCFM;   //!
+   TBranch        *b_ggzz_p0plus_VAMCFM;   //!
+   TBranch        *b_p0plus_VAMCFM;   //!
    TBranch        *b_ggzz_c5_VAMCFM;   //!
    TBranch        *b_ggzz_c1_VAMCFM;   //!
    TBranch        *b_ggzz_ci_VAMCFM;   //!
@@ -249,6 +304,9 @@ public :
    TBranch        *b_pvbf_VAJHU_new_up;   //!
    TBranch        *b_phjj_VAJHU_new_dn;   //!
    TBranch        *b_pvbf_VAJHU_new_dn;   //!
+   TBranch        *b_p0_g1prime2_VAJHU;   //!
+   TBranch        *b_pg1g1prime2_VAJHU;   //!
+   TBranch        *b_Dgg10_VAMCFM;   //!
    TBranch        *b_p0plus_m4l;   //!
    TBranch        *b_bkg_m4l;   //!
    TBranch        *b_p0plus_m4l_ScaleUp;   //!
@@ -436,6 +494,7 @@ void HZZ4lBase::Init(TTree *tree)
    CRflag = 0;
    p0plus_VAJHU = 0;
    p0minus_VAJHU = 0;
+   p0plus_VAMCFM = 0;
    p0hplus_VAJHU = 0;
    p1_VAJHU = 0;
    p1_prodIndep_VAJHU = 0;
@@ -447,9 +506,34 @@ void HZZ4lBase::Init(TTree *tree)
    p2hplus_VAJHU = 0;
    p2hminus_VAJHU = 0;
    p2bplus_VAJHU = 0;
+   p2hplus_qqb_VAJHU = 0;
+   p2hplus_prodIndep_VAJHU = 0;
+   p2hminus_qqb_VAJHU = 0;
+   p2hminus_prodIndep_VAJHU = 0;
+   p2bplus_qqb_VAJHU = 0;
+   p2bplus_prodIndep_VAJHU = 0;
+   p2h2plus_gg_VAJHU = 0;
+   p2h2plus_qqbar_VAJHU = 0;
+   p2h2plus_prodIndep_VAJHU = 0;
+   p2h3plus_gg_VAJHU = 0;
+   p2h3plus_qqbar_VAJHU = 0;
+   p2h3plus_prodIndep_VAJHU = 0;
+   p2h6plus_gg_VAJHU = 0;
+   p2h6plus_qqbar_VAJHU = 0;
+   p2h6plus_prodIndep_VAJHU = 0;
+   p2h7plus_gg_VAJHU = 0;
+   p2h7plus_qqbar_VAJHU = 0;
+   p2h7plus_prodIndep_VAJHU = 0;
+   p2h9minus_gg_VAJHU = 0;
+   p2h9minus_qqbar_VAJHU = 0;
+   p2h9minus_prodIndep_VAJHU = 0;
+   p2h10minus_gg_VAJHU = 0;
+   p2h10minus_qqbar_VAJHU = 0;
+   p2h10minus_prodIndep_VAJHU = 0;
    bkg_VAMCFM = 0;
    bkg_prodIndep_VAMCFM = 0;
    ggzz_VAMCFM = 0;
+   ggzz_p0plus_VAMCFM = 0;
    ggzz_c1_VAMCFM = 0;
    ggzz_c5_VAMCFM = 0;
    ggzz_ci_VAMCFM = 0;
@@ -465,6 +549,9 @@ void HZZ4lBase::Init(TTree *tree)
    pvbf_VAJHU_new_up = 0;
    phjj_VAJHU_new_dn = 0;
    pvbf_VAJHU_new_dn = 0;
+   p0_g1prime2_VAJHU = 0;
+   pg1g1prime2_VAJHU = 0;
+   Dgg10_VAMCFM = 0;
    p0plus_m4l = 0;
    bkg_m4l = 0;
    p0plus_m4l_ScaleUp = 0;
@@ -579,6 +666,7 @@ void HZZ4lBase::Init(TTree *tree)
    fChain->SetBranchAddress("CRflag", &CRflag, &b_CRflag);
    fChain->SetBranchAddress("p0plus_VAJHU", &p0plus_VAJHU, &b_p0plus_VAJHU);
    fChain->SetBranchAddress("p0minus_VAJHU", &p0minus_VAJHU, &b_p0minus_VAJHU);
+   fChain->SetBranchAddress("p0plus_VAMCFM", &p0plus_VAMCFM, &b_p0plus_VAMCFM);
    fChain->SetBranchAddress("p0hplus_VAJHU", &p0hplus_VAJHU, &b_p0hplus_VAJHU);
    fChain->SetBranchAddress("p1_VAJHU", &p1_VAJHU, &b_p1_VAJHU);
    fChain->SetBranchAddress("p1_prodIndep_VAJHU", &p1_prodIndep_VAJHU, &b_p1_prodIndep_VAJHU);
@@ -590,9 +678,34 @@ void HZZ4lBase::Init(TTree *tree)
    fChain->SetBranchAddress("p2hplus_VAJHU", &p2hplus_VAJHU, &b_p2hplus_VAJHU);
    fChain->SetBranchAddress("p2hminus_VAJHU", &p2hminus_VAJHU, &b_p2hminus_VAJHU);
    fChain->SetBranchAddress("p2bplus_VAJHU", &p2bplus_VAJHU, &b_p2bplus_VAJHU);
+   fChain->SetBranchAddress("p2hplus_qqb_VAJHU", &p2hplus_qqb_VAJHU, &b_p2hplus_qqb_VAJHU);
+   fChain->SetBranchAddress("p2hplus_prodIndep_VAJHU", &p2hplus_prodIndep_VAJHU, &b_p2hplus_prodIndep_VAJHU);
+   fChain->SetBranchAddress("p2hminus_qqb_VAJHU", &p2hminus_qqb_VAJHU, &b_p2hminus_qqb_VAJHU);
+   fChain->SetBranchAddress("p2hminus_prodIndep_VAJHU", &p2hminus_prodIndep_VAJHU, &b_p2hminus_prodIndep_VAJHU);
+   fChain->SetBranchAddress("p2bplus_qqb_VAJHU", &p2bplus_qqb_VAJHU, &b_p2bplus_qqb_VAJHU);
+   fChain->SetBranchAddress("p2bplus_prodIndep_VAJHU", &p2bplus_prodIndep_VAJHU, &b_p2bplus_prodIndep_VAJHU);
+   fChain->SetBranchAddress("p2h2plus_gg_VAJHU", &p2h2plus_gg_VAJHU, &b_p2h2plus_gg_VAJHU);
+   fChain->SetBranchAddress("p2h2plus_qqbar_VAJHU", &p2h2plus_qqbar_VAJHU, &b_p2h2plus_qqbar_VAJHU);
+   fChain->SetBranchAddress("p2h2plus_prodIndep_VAJHU", &p2h2plus_prodIndep_VAJHU, &b_p2h2plus_prodIndep_VAJHU);
+   fChain->SetBranchAddress("p2h3plus_gg_VAJHU", &p2h3plus_gg_VAJHU, &b_p2h3plus_gg_VAJHU);
+   fChain->SetBranchAddress("p2h3plus_qqbar_VAJHU", &p2h3plus_qqbar_VAJHU, &b_p2h3plus_qqbar_VAJHU);
+   fChain->SetBranchAddress("p2h3plus_prodIndep_VAJHU", &p2h3plus_prodIndep_VAJHU, &b_p2h3plus_prodIndep_VAJHU);
+   fChain->SetBranchAddress("p2h6plus_gg_VAJHU", &p2h6plus_gg_VAJHU, &b_p2h6plus_gg_VAJHU);
+   fChain->SetBranchAddress("p2h6plus_qqbar_VAJHU", &p2h6plus_qqbar_VAJHU, &b_p2h6plus_qqbar_VAJHU);
+   fChain->SetBranchAddress("p2h6plus_prodIndep_VAJHU", &p2h6plus_prodIndep_VAJHU, &b_p2h6plus_prodIndep_VAJHU);
+   fChain->SetBranchAddress("p2h7plus_gg_VAJHU", &p2h7plus_gg_VAJHU, &b_p2h7plus_gg_VAJHU);
+   fChain->SetBranchAddress("p2h7plus_qqbar_VAJHU", &p2h7plus_qqbar_VAJHU, &b_p2h7plus_qqbar_VAJHU);
+   fChain->SetBranchAddress("p2h7plus_prodIndep_VAJHU", &p2h7plus_prodIndep_VAJHU, &b_p2h7plus_prodIndep_VAJHU);
+   fChain->SetBranchAddress("p2h9minus_gg_VAJHU", &p2h9minus_gg_VAJHU, &b_p2h9minus_gg_VAJHU);
+   fChain->SetBranchAddress("p2h9minus_qqbar_VAJHU", &p2h9minus_qqbar_VAJHU, &b_p2h9minus_qqbar_VAJHU);
+   fChain->SetBranchAddress("p2h9minus_prodIndep_VAJHU", &p2h9minus_prodIndep_VAJHU, &b_p2h9minus_prodIndep_VAJHU);
+   fChain->SetBranchAddress("p2h10minus_gg_VAJHU", &p2h10minus_gg_VAJHU, &b_p2h10minus_gg_VAJHU);
+   fChain->SetBranchAddress("p2h10minus_qqbar_VAJHU", &p2h10minus_qqbar_VAJHU, &b_p2h10minus_qqbar_VAJHU);
+   fChain->SetBranchAddress("p2h10minus_prodIndep_VAJHU", &p2h10minus_prodIndep_VAJHU, &b_p2h10minus_prodIndep_VAJHU);
    fChain->SetBranchAddress("bkg_VAMCFM", &bkg_VAMCFM, &b_bkg_VAMCFM);
    fChain->SetBranchAddress("bkg_prodIndep_VAMCFM", &bkg_prodIndep_VAMCFM, &b_bkg_prodIndep_VAMCFM);
    fChain->SetBranchAddress("ggzz_VAMCFM", &ggzz_VAMCFM, &b_ggzz_VAMCFM);
+   fChain->SetBranchAddress("ggzz_p0plus_VAMCFM", &ggzz_p0plus_VAMCFM, &b_ggzz_p0plus_VAMCFM);
    fChain->SetBranchAddress("ggzz_c5_VAMCFM", &ggzz_c5_VAMCFM, &b_ggzz_c5_VAMCFM);
    fChain->SetBranchAddress("ggzz_c1_VAMCFM", &ggzz_c1_VAMCFM, &b_ggzz_c1_VAMCFM);
    fChain->SetBranchAddress("ggzz_ci_VAMCFM", &ggzz_ci_VAMCFM, &b_ggzz_ci_VAMCFM);
@@ -608,6 +721,9 @@ void HZZ4lBase::Init(TTree *tree)
    fChain->SetBranchAddress("pvbf_VAJHU_new_up", &pvbf_VAJHU_new_up, &b_pvbf_VAJHU_new_up);
    fChain->SetBranchAddress("phjj_VAJHU_new_dn", &phjj_VAJHU_new_dn, &b_phjj_VAJHU_new_dn);
    fChain->SetBranchAddress("pvbf_VAJHU_new_dn", &pvbf_VAJHU_new_dn, &b_pvbf_VAJHU_new_dn);
+   fChain->SetBranchAddress("p0_g1prime2_VAJHU", &p0_g1prime2_VAJHU, &b_p0_g1prime2_VAJHU);
+   fChain->SetBranchAddress("pg1g1prime2_VAJHU", &pg1g1prime2_VAJHU, &b_pg1g1prime2_VAJHU);
+   fChain->SetBranchAddress("Dgg10_VAMCFM", &Dgg10_VAMCFM, &b_Dgg10_VAMCFM);
    fChain->SetBranchAddress("p0plus_m4l", &p0plus_m4l, &b_p0plus_m4l);
    fChain->SetBranchAddress("bkg_m4l", &bkg_m4l, &b_bkg_m4l);
    fChain->SetBranchAddress("p0plus_m4l_ScaleUp", &p0plus_m4l_ScaleUp, &b_p0plus_m4l_ScaleUp);

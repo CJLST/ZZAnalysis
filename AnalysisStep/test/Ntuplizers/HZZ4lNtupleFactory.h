@@ -45,7 +45,7 @@ class HZZ4lNtupleFactory{
 			 //const Float_t p0hplus_mela,
 			 const Float_t p0plus_VAJHU,
 			 const Float_t p0minus_VAJHU,
-			 //const Float_t p0plus_VAMCFM,
+			 const Float_t p0plus_VAMCFM,
 			 const Float_t p0hplus_VAJHU,
 			 //const Float_t p1_mela,
 			 //const Float_t p1_prodIndep_mela,
@@ -67,10 +67,35 @@ class HZZ4lNtupleFactory{
 			 const Float_t p2hplus_VAJHU,
 			 const Float_t p2hminus_VAJHU,
 			 const Float_t p2bplus_VAJHU,
+		 	 const Float_t p2hplus_qqb_VAJHU,									  
+		   const Float_t p2hplus_prodIndep_VAJHU,		
+		   const Float_t p2hminus_qqb_VAJHU,				
+		   const Float_t p2hminus_prodIndep_VAJHU,	
+		   const Float_t p2bplus_qqb_VAJHU,					
+		   const Float_t p2bplus_prodIndep_VAJHU,		
+		   const Float_t p2h2plus_gg_VAJHU,      		
+		   const Float_t p2h2plus_qqbar_VAJHU,   		
+		   const Float_t p2h2plus_prodIndep_VAJHU,	
+		   const Float_t p2h3plus_gg_VAJHU,       	
+		   const Float_t p2h3plus_qqbar_VAJHU,    	
+		   const Float_t p2h3plus_prodIndep_VAJHU,	
+		   const Float_t p2h6plus_gg_VAJHU,       	
+		   const Float_t p2h6plus_qqbar_VAJHU,    	
+		   const Float_t p2h6plus_prodIndep_VAJHU,	
+		   const Float_t p2h7plus_gg_VAJHU,       	
+		   const Float_t p2h7plus_qqbar_VAJHU,    	
+		   const Float_t p2h7plus_prodIndep_VAJHU,	
+		   const Float_t p2h9minus_gg_VAJHU,       	
+		   const Float_t p2h9minus_qqbar_VAJHU,    	
+		   const Float_t p2h9minus_prodIndep_VAJHU,	
+		   const Float_t p2h10minus_gg_VAJHU,       
+		   const Float_t p2h10minus_qqbar_VAJHU,    
+		   const Float_t p2h10minus_prodIndep_VAJHU,
 			 //const Float_t bkg_mela,
 			 const Float_t bkg_VAMCFM,
 			 const Float_t bkg_prodIndep_VAMCFM,
 			 const Float_t ggzz_VAMCFM,
+			 const Float_t ggzz_p0plus_VAMCFM,
 			 const Float_t ggzz_c1_VAMCFM,
 			 const Float_t ggzz_c5_VAMCFM,
 			 const Float_t ggzz_ci_VAMCFM,
@@ -86,6 +111,9 @@ class HZZ4lNtupleFactory{
 			 const Float_t pvbf_VAJHU_new_up,
 			 const Float_t phjj_VAJHU_new_dn,
 			 const Float_t pvbf_VAJHU_new_dn,
+       const Float_t p0_g1prime2_VAJHU,
+       const Float_t pg1g1prime2_VAJHU,
+       const Float_t Dgg10_VAMCFM,
 			 const Float_t pg1g4_mela,
 			 const Float_t pg1g4_VAJHU,
 			 const Float_t pg1g4_pi2_VAJHU,
@@ -179,7 +207,7 @@ class HZZ4lNtupleFactory{
   //std::vector<Float_t> _p0hplus_mela;// 0h+, analytic distribution
   std::vector<Float_t> _p0plus_VAJHU; // higgs, vector algebra, JHUgen
   std::vector<Float_t> _p0minus_VAJHU;// pseudoscalar, vector algebra, JHUgen
-  //std::vector<Float_t> _p0plus_VAMCFM;// higgs, vector algebra, MCFM
+  std::vector<Float_t> _p0plus_VAMCFM;// higgs, vector algebra, MCFM
   std::vector<Float_t> _p0hplus_VAJHU;// 0h+ (high dimensional operator), vector algebra, JHUgen
   //std::vector<Float_t> _p1_mela;    // zprime, analytic distribution
   //std::vector<Float_t> _p1_prodIndep_mela;    // zprime, analytic distribution
@@ -201,11 +229,36 @@ class HZZ4lNtupleFactory{
   std::vector<Float_t> _p2hplus_VAJHU;   // graviton, vector algebra, JHUgen,
   std::vector<Float_t> _p2hminus_VAJHU;   // graviton, vector algebra, JHUgen,
   std::vector<Float_t> _p2bplus_VAJHU;   // graviton, vector algebra, JHUgen,
+  std::vector<Float_t> _p2hplus_qqb_VAJHU;									  
+  std::vector<Float_t> _p2hplus_prodIndep_VAJHU;		
+  std::vector<Float_t> _p2hminus_qqb_VAJHU;				
+  std::vector<Float_t> _p2hminus_prodIndep_VAJHU;	
+  std::vector<Float_t> _p2bplus_qqb_VAJHU;					
+  std::vector<Float_t> _p2bplus_prodIndep_VAJHU;		
+  std::vector<Float_t> _p2h2plus_gg_VAJHU;      		
+  std::vector<Float_t> _p2h2plus_qqbar_VAJHU;   		
+  std::vector<Float_t> _p2h2plus_prodIndep_VAJHU;	
+  std::vector<Float_t> _p2h3plus_gg_VAJHU;       	
+  std::vector<Float_t> _p2h3plus_qqbar_VAJHU;    	
+  std::vector<Float_t> _p2h3plus_prodIndep_VAJHU;	
+  std::vector<Float_t> _p2h6plus_gg_VAJHU;       	
+  std::vector<Float_t> _p2h6plus_qqbar_VAJHU;    	
+  std::vector<Float_t> _p2h6plus_prodIndep_VAJHU;	
+  std::vector<Float_t> _p2h7plus_gg_VAJHU;       	
+  std::vector<Float_t> _p2h7plus_qqbar_VAJHU;    	
+  std::vector<Float_t> _p2h7plus_prodIndep_VAJHU;	
+  std::vector<Float_t> _p2h9minus_gg_VAJHU;       	
+  std::vector<Float_t> _p2h9minus_qqbar_VAJHU;    	
+  std::vector<Float_t> _p2h9minus_prodIndep_VAJHU;	
+  std::vector<Float_t> _p2h10minus_gg_VAJHU;       
+  std::vector<Float_t> _p2h10minus_qqbar_VAJHU;    
+  std::vector<Float_t> _p2h10minus_prodIndep_VAJHU;
   //backgrounds
   //std::vector<Float_t> _bkg_mela;   // background,  analytic distribution
   std::vector<Float_t> _bkg_VAMCFM; // background, vector algebra, MCFM
   std::vector<Float_t> _bkg_prodIndep_VAMCFM; // background, vector algebra, MCFM
   std::vector<Float_t> _ggzz_VAMCFM; // background, vector algebra, MCFM for ggzz
+  std::vector<Float_t> _ggzz_p0plus_VAMCFM; // background, vector algebra, MCFM for ggzz
   std::vector<Float_t> _ggzz_c1_VAMCFM; // signal + background + interference w/ SM couplings, vector algebra, MCFM
   std::vector<Float_t> _ggzz_c5_VAMCFM; // signal + background + interference w/ 5xSM couplings, vector algebra, MCFM for ggzz
   std::vector<Float_t> _ggzz_ci_VAMCFM; // signal + background + interference w/ imaginary SM couplings, vector algebra, MCFM for ggzz  
@@ -245,6 +298,9 @@ class HZZ4lNtupleFactory{
   std::vector<Float_t> _pvbf_VAJHU_new_up; //VBF, vector algebra, JHUGen, New Jet Selection, JEC +
   std::vector<Float_t> _phjj_VAJHU_new_dn; //H+jj, vector algebra, JHUGen, New Jet Selection, JEC -
   std::vector<Float_t> _pvbf_VAJHU_new_dn; //VBF, vector algebra, JHUGen, New Jet Selection, JEC -
+  std::vector<Float_t> _p0_g1prime2_VAJHU; //VBF, vector algebra, JHUGen, New Jet Selection, JEC -
+  std::vector<Float_t> _pg1g1prime2_VAJHU; //VBF, vector algebra, JHUGen, New Jet Selection, JEC -
+  std::vector<Float_t> _Dgg10_VAMCFM; //VBF, vector algebra, JHUGen, New Jet Selection, JEC -
 
 
   std::vector<Float_t> _ZZmZa;

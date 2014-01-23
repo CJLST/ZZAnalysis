@@ -113,7 +113,7 @@ void HZZ4lNtupleFactory::InitializeVariables()
   //_p0hplus_mela.clear(); // 0h+, analytic distribution
   _p0plus_VAJHU.clear();
   _p0minus_VAJHU.clear();
-  //_p0plus_VAMCFM.clear();
+  _p0plus_VAMCFM.clear();
   _p0hplus_VAJHU.clear(); // 0h+ (high dimensional operator), vector algebra, JHUgen
   //_p1_mela.clear();
   //_p1_prodIndep_mela.clear();
@@ -135,10 +135,36 @@ void HZZ4lNtupleFactory::InitializeVariables()
   _p2hplus_VAJHU.clear();
   _p2hminus_VAJHU.clear();
   _p2bplus_VAJHU.clear();
+	_p2hplus_qqb_VAJHU.clear();					
+	_p2hplus_prodIndep_VAJHU.clear();		
+	_p2hminus_qqb_VAJHU.clear();				
+	_p2hminus_prodIndep_VAJHU.clear();	
+	_p2bplus_qqb_VAJHU.clear();					
+	_p2bplus_prodIndep_VAJHU.clear();		
+	_p2h2plus_gg_VAJHU.clear();      		                          
+	_p2h2plus_qqbar_VAJHU.clear();   		
+	_p2h2plus_prodIndep_VAJHU.clear();	
+	_p2h3plus_gg_VAJHU.clear();       	
+	_p2h3plus_qqbar_VAJHU.clear();    	
+	_p2h3plus_prodIndep_VAJHU.clear();	
+	_p2h6plus_gg_VAJHU.clear();       	
+	_p2h6plus_qqbar_VAJHU.clear();    	
+	_p2h6plus_prodIndep_VAJHU.clear();	
+	_p2h7plus_gg_VAJHU.clear();	
+	_p2h7plus_qqbar_VAJHU.clear();    	
+	_p2h7plus_prodIndep_VAJHU.clear();	
+	_p2h9minus_gg_VAJHU.clear();       	
+	_p2h9minus_qqbar_VAJHU.clear();    	
+	_p2h9minus_prodIndep_VAJHU.clear();	
+	_p2h10minus_gg_VAJHU.clear();       
+	_p2h10minus_qqbar_VAJHU.clear();  
+	_p2h10minus_prodIndep_VAJHU.clear();
+  //_bkg_mela.push_back(bkg_mela);
   //_bkg_mela.clear();
   _bkg_VAMCFM.clear();
   _bkg_prodIndep_VAMCFM.clear();
   _ggzz_VAMCFM.clear();
+  _ggzz_p0plus_VAMCFM.clear();
   _ggzz_c1_VAMCFM.clear();
   _ggzz_c5_VAMCFM.clear();
   _ggzz_ci_VAMCFM.clear();
@@ -177,6 +203,9 @@ void HZZ4lNtupleFactory::InitializeVariables()
   _pvbf_VAJHU_new_up.clear();
   _phjj_VAJHU_new_dn.clear();
   _pvbf_VAJHU_new_dn.clear();
+	_p0_g1prime2_VAJHU.clear();
+	_pg1g1prime2_VAJHU.clear();
+	_Dgg10_VAMCFM.clear();
 
 
   _ZZmZa.clear();
@@ -333,7 +362,7 @@ void HZZ4lNtupleFactory::InitializeBranches()
   //_outTree->Branch("p0hplus_mela",&_p0hplus_mela); // 0h+, analytic distribution
   _outTree->Branch("p0plus_VAJHU",&_p0plus_VAJHU);
   _outTree->Branch("p0minus_VAJHU",&_p0minus_VAJHU);
-  //_outTree->Branch("p0plus_VAMCFM",&_p0plus_VAMCFM);
+  _outTree->Branch("p0plus_VAMCFM",&_p0plus_VAMCFM);
   _outTree->Branch("p0hplus_VAJHU",&_p0hplus_VAJHU); // 0h+ (high dimensional operator), vector algebra, JHUgen
   //_outTree->Branch("p1_mela",&_p1_mela);
   //_outTree->Branch("p1_prodIndep_mela",&_p1_prodIndep_mela);
@@ -355,10 +384,36 @@ void HZZ4lNtupleFactory::InitializeBranches()
   _outTree->Branch("p2hplus_VAJHU",&_p2hplus_VAJHU);
   _outTree->Branch("p2hminus_VAJHU",&_p2hminus_VAJHU);
   _outTree->Branch("p2bplus_VAJHU",&_p2bplus_VAJHU);
+
+	_outTree->Branch("p2hplus_qqb_VAJHU"					,		&_p2hplus_qqb_VAJHU);					
+	_outTree->Branch("p2hplus_prodIndep_VAJHU"		,		&_p2hplus_prodIndep_VAJHU);		
+	_outTree->Branch("p2hminus_qqb_VAJHU"				,  		&_p2hminus_qqb_VAJHU);				
+	_outTree->Branch("p2hminus_prodIndep_VAJHU"	,  		&_p2hminus_prodIndep_VAJHU);	
+	_outTree->Branch("p2bplus_qqb_VAJHU"					,		&_p2bplus_qqb_VAJHU);					
+	_outTree->Branch("p2bplus_prodIndep_VAJHU"		,		&_p2bplus_prodIndep_VAJHU);		
+	_outTree->Branch("p2h2plus_gg_VAJHU"      		,		&_p2h2plus_gg_VAJHU);      		                          
+	_outTree->Branch("p2h2plus_qqbar_VAJHU"   		,		&_p2h2plus_qqbar_VAJHU);   		
+	_outTree->Branch("p2h2plus_prodIndep_VAJHU"	,   	&_p2h2plus_prodIndep_VAJHU);	
+	_outTree->Branch("p2h3plus_gg_VAJHU"       	,   	&_p2h3plus_gg_VAJHU);       	
+	_outTree->Branch("p2h3plus_qqbar_VAJHU"    	,   	&_p2h3plus_qqbar_VAJHU);    	
+	_outTree->Branch("p2h3plus_prodIndep_VAJHU"	,   	&_p2h3plus_prodIndep_VAJHU);	
+	_outTree->Branch("p2h6plus_gg_VAJHU"       	,   	&_p2h6plus_gg_VAJHU);       	
+	_outTree->Branch("p2h6plus_qqbar_VAJHU"    	,   	&_p2h6plus_qqbar_VAJHU);    	
+	_outTree->Branch("p2h6plus_prodIndep_VAJHU"	,   	&_p2h6plus_prodIndep_VAJHU);	
+	_outTree->Branch("p2h7plus_gg_VAJHU"       	,   	&_p2h7plus_gg_VAJHU);	
+	_outTree->Branch("p2h7plus_qqbar_VAJHU"    	,   	&_p2h7plus_qqbar_VAJHU);    	
+	_outTree->Branch("p2h7plus_prodIndep_VAJHU"	,   	&_p2h7plus_prodIndep_VAJHU);	
+	_outTree->Branch("p2h9minus_gg_VAJHU"       	,		&_p2h9minus_gg_VAJHU);       	
+	_outTree->Branch("p2h9minus_qqbar_VAJHU"    	,		&_p2h9minus_qqbar_VAJHU);    	
+	_outTree->Branch("p2h9minus_prodIndep_VAJHU"	,		&_p2h9minus_prodIndep_VAJHU);	
+	_outTree->Branch("p2h10minus_gg_VAJHU"       , 		&_p2h10minus_gg_VAJHU);       
+	_outTree->Branch("p2h10minus_qqbar_VAJHU"    , 		&_p2h10minus_qqbar_VAJHU);  
+	_outTree->Branch("p2h10minus_prodIndep_VAJHU", 		&_p2h10minus_prodIndep_VAJHU);
   //_outTree->Branch("bkg_mela",&_bkg_mela);
   _outTree->Branch("bkg_VAMCFM",&_bkg_VAMCFM);
   _outTree->Branch("bkg_prodIndep_VAMCFM",&_bkg_prodIndep_VAMCFM);
   _outTree->Branch("ggzz_VAMCFM",&_ggzz_VAMCFM);
+  _outTree->Branch("ggzz_p0plus_VAMCFM",&_ggzz_p0plus_VAMCFM);
   _outTree->Branch("ggzz_c1_VAMCFM",&_ggzz_c1_VAMCFM);
   _outTree->Branch("ggzz_c5_VAMCFM",&_ggzz_c5_VAMCFM);
   _outTree->Branch("ggzz_ci_VAMCFM",&_ggzz_ci_VAMCFM);
@@ -407,6 +462,9 @@ void HZZ4lNtupleFactory::InitializeBranches()
   _outTree->Branch("pvbf_VAJHU_new_up",&_pvbf_VAJHU_new_up);
   _outTree->Branch("phjj_VAJHU_new_dn",&_phjj_VAJHU_new_dn);
   _outTree->Branch("pvbf_VAJHU_new_dn",&_pvbf_VAJHU_new_dn);
+  _outTree->Branch("p0_g1prime2_VAJHU",&_p0_g1prime2_VAJHU);
+  _outTree->Branch("pg1g1prime2_VAJHU",&_pg1g1prime2_VAJHU);
+  _outTree->Branch("Dgg10_VAMCFM",&_Dgg10_VAMCFM);
 
   //Z1 variables
   _outTree->Branch("Z1Mass",&_Z1Mass);
@@ -660,7 +718,7 @@ void HZZ4lNtupleFactory::FillProbability(  //const Float_t p0plus_melaNorm,
 					   //const Float_t p0hplus_mela, // 0h+, analytic distribution
 					   const Float_t p0plus_VAJHU,
 					   const Float_t p0minus_VAJHU,
-					   //const Float_t p0plus_VAMCFM,
+					   const Float_t p0plus_VAMCFM,
 					   const Float_t p0hplus_VAJHU, // 0h+ (high dimensional operator), vector algebra, JHUgen
 					   //const Float_t p1_mela,
 					   //const Float_t p1_prodIndep_mela,
@@ -682,11 +740,35 @@ void HZZ4lNtupleFactory::FillProbability(  //const Float_t p0plus_melaNorm,
 					   const Float_t p2hplus_VAJHU,
 					   const Float_t p2hminus_VAJHU,
 					   const Float_t p2bplus_VAJHU,
-					   
+					 	 const Float_t p2hplus_qqb_VAJHU,									  
+					   const Float_t p2hplus_prodIndep_VAJHU,		
+					   const Float_t p2hminus_qqb_VAJHU,				
+					   const Float_t p2hminus_prodIndep_VAJHU,	
+					   const Float_t p2bplus_qqb_VAJHU,					
+					   const Float_t p2bplus_prodIndep_VAJHU,		
+					   const Float_t p2h2plus_gg_VAJHU,      		
+					   const Float_t p2h2plus_qqbar_VAJHU,   		
+					   const Float_t p2h2plus_prodIndep_VAJHU,	
+					   const Float_t p2h3plus_gg_VAJHU,       	
+					   const Float_t p2h3plus_qqbar_VAJHU,    	
+					   const Float_t p2h3plus_prodIndep_VAJHU,	
+					   const Float_t p2h6plus_gg_VAJHU,       	
+					   const Float_t p2h6plus_qqbar_VAJHU,    	
+					   const Float_t p2h6plus_prodIndep_VAJHU,	
+					   const Float_t p2h7plus_gg_VAJHU,       	
+					   const Float_t p2h7plus_qqbar_VAJHU,    	
+					   const Float_t p2h7plus_prodIndep_VAJHU,	
+					   const Float_t p2h9minus_gg_VAJHU,       	
+					   const Float_t p2h9minus_qqbar_VAJHU,    	
+					   const Float_t p2h9minus_prodIndep_VAJHU,	
+					   const Float_t p2h10minus_gg_VAJHU,       
+					   const Float_t p2h10minus_qqbar_VAJHU,    
+					   const Float_t p2h10minus_prodIndep_VAJHU,
 					   ///const Float_t bkg_mela,
 					   const Float_t bkg_VAMCFM,
 					   const Float_t bkg_prodIndep_VAMCFM,
 					   const Float_t ggzz_VAMCFM,
+					   const Float_t ggzz_p0plus_VAMCFM,
 					   const Float_t ggzz_c1_VAMCFM,
 					   const Float_t ggzz_c5_VAMCFM,
 					   const Float_t ggzz_ci_VAMCFM,
@@ -702,6 +784,9 @@ void HZZ4lNtupleFactory::FillProbability(  //const Float_t p0plus_melaNorm,
 					   const Float_t pvbf_VAJHU_new_up,
 					   const Float_t phjj_VAJHU_new_dn,
 					   const Float_t pvbf_VAJHU_new_dn,					   
+					   const Float_t p0_g1prime2_VAJHU,					   
+					   const Float_t pg1g1prime2_VAJHU,					   
+					   const Float_t Dgg10_VAMCFM,					   
 					   const Float_t pg1g4_mela,
 					   const Float_t pg1g4_VAJHU,
 					   const Float_t pg1g4_pi2_VAJHU,
@@ -720,7 +805,7 @@ void HZZ4lNtupleFactory::FillProbability(  //const Float_t p0plus_melaNorm,
   //_p0hplus_mela.push_back(p0hplus_mela);// 0h+, analytic distribution
   _p0plus_VAJHU.push_back(p0plus_VAJHU);
   _p0minus_VAJHU.push_back(p0minus_VAJHU);
-  //_p0plus_VAMCFM.push_back(p0plus_VAMCFM);
+  _p0plus_VAMCFM.push_back(p0plus_VAMCFM);
   _p0hplus_VAJHU.push_back(p0hplus_VAJHU);// 0h+ (high dimensional operator), vector algebra, JHUgen
   //_p1_mela.push_back(p1_mela);
   //_p1_prodIndep_mela.push_back(p1_prodIndep_mela);
@@ -742,10 +827,35 @@ void HZZ4lNtupleFactory::FillProbability(  //const Float_t p0plus_melaNorm,
   _p2hplus_VAJHU.push_back(p2hplus_VAJHU);
   _p2hminus_VAJHU.push_back(p2hminus_VAJHU);
   _p2bplus_VAJHU.push_back(p2bplus_VAJHU);
+	_p2hplus_qqb_VAJHU.push_back(					p2hplus_qqb_VAJHU);					
+	_p2hplus_prodIndep_VAJHU.push_back(		p2hplus_prodIndep_VAJHU);		
+	_p2hminus_qqb_VAJHU.push_back(				p2hminus_qqb_VAJHU);				
+	_p2hminus_prodIndep_VAJHU.push_back(	p2hminus_prodIndep_VAJHU);	
+	_p2bplus_qqb_VAJHU.push_back(					p2bplus_qqb_VAJHU);					
+	_p2bplus_prodIndep_VAJHU.push_back(		p2bplus_prodIndep_VAJHU);		
+	_p2h2plus_gg_VAJHU.push_back(      		p2h2plus_gg_VAJHU);      		                          
+	_p2h2plus_qqbar_VAJHU.push_back(   		p2h2plus_qqbar_VAJHU);   		
+	_p2h2plus_prodIndep_VAJHU.push_back(	p2h2plus_prodIndep_VAJHU);	
+	_p2h3plus_gg_VAJHU.push_back(       	p2h3plus_gg_VAJHU);       	
+	_p2h3plus_qqbar_VAJHU.push_back(    	p2h3plus_qqbar_VAJHU);    	
+	_p2h3plus_prodIndep_VAJHU.push_back(	p2h3plus_prodIndep_VAJHU);	
+	_p2h6plus_gg_VAJHU.push_back(       	p2h6plus_gg_VAJHU);       	
+	_p2h6plus_qqbar_VAJHU.push_back(    	p2h6plus_qqbar_VAJHU);    	
+	_p2h6plus_prodIndep_VAJHU.push_back(	p2h6plus_prodIndep_VAJHU);	
+	_p2h7plus_gg_VAJHU.push_back(       	p2h7plus_gg_VAJHU);	
+	_p2h7plus_qqbar_VAJHU.push_back(    	p2h7plus_qqbar_VAJHU);    	
+	_p2h7plus_prodIndep_VAJHU.push_back(	p2h7plus_prodIndep_VAJHU);	
+	_p2h9minus_gg_VAJHU.push_back(       	p2h9minus_gg_VAJHU);       	
+	_p2h9minus_qqbar_VAJHU.push_back(    	p2h9minus_qqbar_VAJHU);    	
+	_p2h9minus_prodIndep_VAJHU.push_back(	p2h9minus_prodIndep_VAJHU);	
+	_p2h10minus_gg_VAJHU.push_back(       p2h10minus_gg_VAJHU);       
+	_p2h10minus_qqbar_VAJHU.push_back(    p2h10minus_qqbar_VAJHU);  
+	_p2h10minus_prodIndep_VAJHU.push_back(p2h10minus_prodIndep_VAJHU);
   //_bkg_mela.push_back(bkg_mela);
   _bkg_VAMCFM.push_back(bkg_VAMCFM);
   _bkg_prodIndep_VAMCFM.push_back(bkg_prodIndep_VAMCFM);
   _ggzz_VAMCFM.push_back(ggzz_VAMCFM);
+  _ggzz_p0plus_VAMCFM.push_back(ggzz_p0plus_VAMCFM);
   _ggzz_c1_VAMCFM.push_back(ggzz_c1_VAMCFM);
   _ggzz_c5_VAMCFM.push_back(ggzz_c5_VAMCFM);
   _ggzz_ci_VAMCFM.push_back(ggzz_ci_VAMCFM);
@@ -761,6 +871,9 @@ void HZZ4lNtupleFactory::FillProbability(  //const Float_t p0plus_melaNorm,
   _pvbf_VAJHU_new_up.push_back(pvbf_VAJHU_new_up);
   _phjj_VAJHU_new_dn.push_back(phjj_VAJHU_new_dn);
   _pvbf_VAJHU_new_dn.push_back(pvbf_VAJHU_new_dn);
+  _p0_g1prime2_VAJHU.push_back(p0_g1prime2_VAJHU);
+  _pg1g1prime2_VAJHU.push_back(pg1g1prime2_VAJHU);
+  _Dgg10_VAMCFM.push_back(Dgg10_VAMCFM);
   _pg1g4_mela.push_back(pg1g4_mela);
   _pg1g4_VAJHU.push_back(pg1g4_VAJHU);
   _pg1g4_pi2_VAJHU.push_back(pg1g4_pi2_VAJHU);
