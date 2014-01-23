@@ -230,19 +230,13 @@ ZZ4lAnalysis_DYJetsToLLTuneZ2M50-B
 ZZ4lAnalysis_DYJetsToLLTuneZ2M50-NoB
 
 
-#######
-# JHU #
-#######
+#####################
+# JHUGenV3  spin/cp #
+#####################
 
-ZZ4lAnalysis_powheg15jhuGenV3ScaHH126
-ZZ4lAnalysis_powheg15jhuGenV3PseHH126
-ZZ4lAnalysis_powheg15jhuGenV3Vec1MH126
-ZZ4lAnalysis_powheg15jhuGenV3Vec1PH126
-ZZ4lAnalysis_powheg15jhuGenV3GravH126
-ZZ4lAnalysis_powheg15jhuGenV3qqGravH126
-ZZ4lAnalysis_powheg15jhuGenV3Grav2MHH126
-ZZ4lAnalysis_powheg15jhuGenV3Grav2PBH126
-ZZ4lAnalysis_powheg15jhuGenV3Grav2PHH126
+#126 GeV samples
+ZZ4lAnalysis_powheg15jhuGenV3-0MH126
+ZZ4lAnalysis_powheg15jhuGenV3-0PH126
 ZZ4lAnalysis_powheg15jhuGenV3-0Mf01ph0H126
 ZZ4lAnalysis_powheg15jhuGenV3-0Mf01ph180H126
 ZZ4lAnalysis_powheg15jhuGenV3-0Mf01ph270H126
@@ -251,7 +245,38 @@ ZZ4lAnalysis_powheg15jhuGenV3-0Mf05ph0H126
 ZZ4lAnalysis_powheg15jhuGenV3-0Mf05ph180H126
 ZZ4lAnalysis_powheg15jhuGenV3-0Mf05ph270H126
 ZZ4lAnalysis_powheg15jhuGenV3-0Mf05ph90H126
+ZZ4lAnalysis_powheg15jhuGenV3Vec1MH126
+ZZ4lAnalysis_powheg15jhuGenV3Vec1PH126
+ZZ4lAnalysis_powheg15jhuGenV3GravH126
+ZZ4lAnalysis_powheg15jhuGenV3qqGravH126
+ZZ4lAnalysis_powheg15jhuGenV3Grav2MHH126
+ZZ4lAnalysis_powheg15jhuGenV3Grav2PBH126
+ZZ4lAnalysis_powheg15jhuGenV3Grav2PHH126
 
-ZZ4lAnalysis_powheg15jhuGenV3-0PHf05ph90H125.6
+#125.6 GeV samples
+ZZ4lAnalysis_powheg15jhuGenV3-0L1H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0L1f01ph0H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0L1f05ph0H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0L1f05ph180H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0MH125.6
 ZZ4lAnalysis_powheg15jhuGenV3-0Mf01ph90H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0Mf05ph180H125.6
 ZZ4lAnalysis_powheg15jhuGenV3-0Mf05ph90H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf01ph0H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf01ph0Mf01ph0H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf01ph0Mf01ph90H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf01ph90H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf033ph0Mf033ph0H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf033ph0Mf033ph90H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf05ph0H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf05ph0Mf05ph0H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf05ph0Mf05ph90H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf05ph180H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf05ph180Mf05ph0H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf05ph90H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PMH125.6
+
+ZZ4lAnalysis_powheg15jhuGenV3Grav2MH10H125.6
+ZZ4lAnalysis_powheg15jhuGenV3Grav2PH3H125.6
+ZZ4lAnalysis_powheg15jhuGenV3Grav2PH6H125.6
+ZZ4lAnalysis_powheg15jhuGenV3Grav2PH7H125.6

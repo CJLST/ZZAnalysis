@@ -41,7 +41,7 @@ int main (int argc, char ** argv)
   std::string samplename(argv[3]);
   std::string inputfilename(argv[4]);
   tree->Add(inputfilename.c_str());
-	tree->Show(15); 
+  // tree->Show(15); 
 
   std::string outputfilename(argv[5]);
 

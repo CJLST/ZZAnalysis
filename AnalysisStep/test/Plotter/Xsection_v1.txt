@@ -337,16 +337,16 @@ all            jhuGenV2Grav2PHH126       1   0.0020659600        1
 
 
 #JHUGENV3 spin-0 samples, x-sec for ggH, BR(H->4l,l=e,mu,tau)
-all            powheg15jhuGenV3PseH126  1   0.0045843200  1
-all            powheg15jhuGenV3ScaHH126 1   0.0045843200  1
-all            powheg15jhuGenV3-0Mf01ph0H126	 1   0.0045843200  1
-all            powheg15jhuGenV3-0Mf01ph90H126	 1   0.0045843200  1
-all            powheg15jhuGenV3-0Mf01ph180H126	 1   0.0045843200  1
-all            powheg15jhuGenV3-0Mf01ph270H126	 1   0.0045843200  1
+all            powheg15jhuGenV3-0MH126           1   0.0045843200  1
+all            powheg15jhuGenV3-0PH126           1   0.0045843200  1
+all            powheg15jhuGenV3-0Mf01ph0H126     1   0.0045843200  1
+all            powheg15jhuGenV3-0Mf01ph90H126    1   0.0045843200  1
+all            powheg15jhuGenV3-0Mf01ph180H126   1   0.0045843200  1
+all            powheg15jhuGenV3-0Mf01ph270H126   1   0.0045843200  1
 all            powheg15jhuGenV3-0Mf05ph0H126     1   0.0045843200  1
-all            powheg15jhuGenV3-0Mf05ph90H126	 1   0.0045843200  1
-all            powheg15jhuGenV3-0Mf05ph180H126	 1   0.0045843200  1
-all            powheg15jhuGenV3-0Mf05ph270H126	 1   0.0045843200  1
+all            powheg15jhuGenV3-0Mf05ph90H126    1   0.0045843200  1
+all            powheg15jhuGenV3-0Mf05ph180H126   1   0.0045843200  1
+all            powheg15jhuGenV3-0Mf05ph270H126   1   0.0045843200  1
 
 #JHUGENV3 spin-1 and spin-2 samples, x-sec for ggH, BR(H->4l,l=e,mu)
 all            jhuGenV3Vec1MH126                 1   0.0020659600  1
@@ -356,6 +356,16 @@ all            jhuGenV3qqGravH126                1   0.0020659600  1
 all            jhuGenV3Grav2PHH126               1   0.0020659600  1
 all            jhuGenV3Grav2MHH126               1   0.0020659600  1
 all            jhuGenV3Grav2PBH126               1   0.0020659600  1
+
+#JHUGENV3 samples at 125.6, x-sec for ggH, BR(H->4l,l=e,mu)
+
+all powheg15jhuGenV3-0MH125.6                  1 0.0020659600 1
+all powheg15jhuGenV3-0Mf01ph0H125.6            1 0.0020659600 1
+all powheg15jhuGenV3-0Mf01ph90H125.6           1 0.0020659600 1
+all powheg15jhuGenV3-0PH125.6                  1 0.0020659600 1
+all powheg15jhuGenV3-0PHf01ph90H125.6          1 0.0020659600 1
+all powheg15jhuGenV3-0PHf05ph0H125.6           1 0.0020659600 1
+all powheg15jhuGenV3-0PHf05ph0Mf05ph90H125.6   1 0.0020659600 1
 
 
 # Values separated by final state including Prophecy4f correction for same-sign enhancement

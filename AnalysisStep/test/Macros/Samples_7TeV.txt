@@ -146,6 +146,16 @@ ZZ4lAnalysis_ZZTo2mu2tau
 ZZ4lAnalysis_ZZTo2e2tau
 ZZ4lAnalysis_ZZTo4tau
 
+
+# Samples with off-shell production, continuum, and interference
+ZZ4lAnalysis_ggTo2l2l_H125.6
+ZZ4lAnalysis_ggTo2l2l_Continuum
+#ZZ4lAnalysis_ggTo2l2l_ContinuumInterfH125.6
+ZZ4lAnalysis_ggTo4l_H125.6
+#ZZ4lAnalysis_ggTo4l_Continuum
+#ZZ4lAnalysis_ggTo4l_ContinuumInterfH125.6
+
+
 # Reducible Backgrounds
 
 ZZ4lAnalysis_TTTo2L2Nu2B
@@ -154,19 +164,14 @@ ZZ4lAnalysis_DYJetsToLLTuneZ2M10-NoB.root
 ZZ4lAnalysis_DYJetsToLLTuneZ2M50-B.root
 ZZ4lAnalysis_DYJetsToLLTuneZ2M50-NoB.root 
 
-#######
-# JHU #
-#######
 
-ZZ4lAnalysis_powheg15jhuGenV3ScaHH126 
-ZZ4lAnalysis_powheg15jhuGenV3PseHH126 
-ZZ4lAnalysis_powheg15jhuGenV3Vec1MH126 
-ZZ4lAnalysis_powheg15jhuGenV3Vec1PH126 
-ZZ4lAnalysis_powheg15jhuGenV3GravH126 
-ZZ4lAnalysis_powheg15jhuGenV3qqGravH126 
-ZZ4lAnalysis_powheg15jhuGenV3Grav2MHH126 
-ZZ4lAnalysis_powheg15jhuGenV3Grav2PBH126 
-ZZ4lAnalysis_powheg15jhuGenV3Grav2PHH126 
+#####################
+# JHUGenV3  spin/cp #
+#####################
+
+#126 GeV samples
+ZZ4lAnalysis_powheg15jhuGenV3-0PH126 
+ZZ4lAnalysis_powheg15jhuGenV3-0MH126 
 ZZ4lAnalysis_powheg15jhuGenV3-0Mf01ph0H126 
 ZZ4lAnalysis_powheg15jhuGenV3-0Mf01ph180H126 
 ZZ4lAnalysis_powheg15jhuGenV3-0Mf01ph270H126 
@@ -175,3 +180,20 @@ ZZ4lAnalysis_powheg15jhuGenV3-0Mf05ph0H126
 ZZ4lAnalysis_powheg15jhuGenV3-0Mf05ph180H126 
 ZZ4lAnalysis_powheg15jhuGenV3-0Mf05ph270H126 
 ZZ4lAnalysis_powheg15jhuGenV3-0Mf05ph90H126
+ZZ4lAnalysis_powheg15jhuGenV3Vec1MH126 
+ZZ4lAnalysis_powheg15jhuGenV3Vec1PH126 
+ZZ4lAnalysis_powheg15jhuGenV3GravH126 
+ZZ4lAnalysis_powheg15jhuGenV3qqGravH126 
+ZZ4lAnalysis_powheg15jhuGenV3Grav2MHH126 
+ZZ4lAnalysis_powheg15jhuGenV3Grav2PBH126 
+ZZ4lAnalysis_powheg15jhuGenV3Grav2PHH126 
+
+
+#125.6 GeV samples
+ZZ4lAnalysis_powheg15jhuGenV3-0MH125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0Mf01ph0H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0Mf01ph90H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PH125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf01ph90H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf05ph0H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf05ph0Mf05ph90H125.6

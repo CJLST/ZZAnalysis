@@ -339,8 +339,8 @@ all            jhuGenV2Grav2PBH126       1   0.0026399900        1
 all            jhuGenV2Grav2PHH126       1   0.0026399900        1
 
 #JHUGENV3 spin-0 samples, x-sec for ggH, BR(H->4l,l=e,mu,tau)
-all            powheg15jhuGenV3ScaHH126         1   0.0058580800  1
-all            powheg15jhuGenV3PseHH126         1   0.0058580800  1
+all            powheg15jhuGenV3-0PH126         1   0.0058580800  1
+all            powheg15jhuGenV3-0MH126         1   0.0058580800  1
 all            powheg15jhuGenV3-0Mf01ph0H126    1   0.0058580800  1
 all            powheg15jhuGenV3-0Mf01ph90H126   1   0.0058580800  1
 all            powheg15jhuGenV3-0Mf01ph180H126  1   0.0058580800  1
@@ -360,10 +360,32 @@ all            powheg15jhuGenV3Grav2PBH126      1   0.0026399900  1
 all            powheg15jhuGenV3Grav2PHH126      1   0.0026399900  1
 
 #JHUGENV3 samples at 125.6, x-sec for ggH, BR(H->4l,l=e,mu)
-all            powheg15jhuGenV3-0PHf05ph90H125.6  1  0.0025626387   1
-all            powheg15jhuGenV3-0Mf01ph90H125.6	  1  0.0025626387   1
-all            powheg15jhuGenV3-0Mf05ph90H125.6	  1  0.0025626387   1
+all powheg15jhuGenV3-0L1H125.6 		       1 0.002562639 1
+all powheg15jhuGenV3-0L1f01ph0H125.6           1 0.002562639 1
+all powheg15jhuGenV3-0L1f05ph0H125.6           1 0.002562639 1
+all powheg15jhuGenV3-0L1f05ph180H125.6         1 0.002562639 1
+all powheg15jhuGenV3-0MH125.6                  1 0.002562639 1
+all powheg15jhuGenV3-0Mf01ph90H125.6	       1 0.002562639 1
+all powheg15jhuGenV3-0Mf05ph180H125.6          1 0.002562639 1
+all powheg15jhuGenV3-0Mf05ph90H125.6	       1 0.002562639 1
+all powheg15jhuGenV3-0PHf01ph0H125.6	       1 0.002562639 1
+all powheg15jhuGenV3-0PHf01ph0Mf01ph0H125.6    1 0.002562639 1
+all powheg15jhuGenV3-0PHf01ph0Mf01ph90H125.6   1 0.002562639 1
+all powheg15jhuGenV3-0PHf01ph90H125.6	       1 0.002562639 1
+all powheg15jhuGenV3-0PHf033ph0Mf033ph0H125.6  1 0.002562639 1
+all powheg15jhuGenV3-0PHf033ph0Mf033ph90H125.6 1 0.002562639 1
+all powheg15jhuGenV3-0PHf05ph0H125.6           1 0.002562639 1
+all powheg15jhuGenV3-0PHf05ph0Mf05ph0H125.6    1 0.002562639 1
+all powheg15jhuGenV3-0PHf05ph0Mf05ph90H125.6   1 0.002562639 1
+all powheg15jhuGenV3-0PHf05ph180H125.6         1 0.002562639 1
+all powheg15jhuGenV3-0PHf05ph180Mf05ph0H125.6  1 0.002562639 1
+all powheg15jhuGenV3-0PHf05ph90H125.6          1 0.002562639 1
+all powheg15jhuGenV3-0PMH125.6 		       1 0.002562639 1
 
+all powheg15jhuGenV3Grav2MH10H125.6 	       1 0.002562639 1
+all powheg15jhuGenV3Grav2PH3H125.6             1 0.002562639 1
+all powheg15jhuGenV3Grav2PH6H125.6  	       1 0.002562639 1
+all powheg15jhuGenV3Grav2PH7H125.6  	       1 0.002562639 1
 
 #MINLO samples, x-sections from: https://twiki.cern.ch/twiki/bin/view/Main/MinloHJJProduction#obtained_cross_sections
 # BRs from HXSWG for H->4l, l=2,mu,tau
@@ -415,14 +437,14 @@ all            ZZTo2e2tau                1   0.1767        1 #
 all            ZZTo2mu2tau               1   0.1767        1 # 
 all            ZZJetsTo4L                1   0.76083       1 # N.B.: so far it is just the sum of the exclusive xsec above, need to check the official xsec for this sample
 
-all            ZZTo4mu_ext               1   0.07691       1 # FIXME: requires filter efficiency! NO, these are just extension of previous samples!
+all            ZZTo4mu_ext               1   0.07691       1 #
 all            ZZTo4e_ext                1   0.07691       1 # 
 all            ZZTo4tau_ext              1   0.07691       1 # 
 all            ZZTo2e2mu_ext             1   0.1767        1 # 
 all            ZZTo2e2tau_ext            1   0.1767        1 # 
 all            ZZTo2mu2tau_ext           1   0.1767        1 # 
 
-all	       ZZ95-160To4mu		 1   0.07691       0.238
+all	       ZZ95-160To4mu		 1   0.07691       0.238 # Filter eff from: http://cms.cern.ch/iCMS/prep/requestmanagement?dsn=*mZZ95-*&campid=Summer12
 all	       ZZ95-160To4e		 1   0.07691       0.238
 all	       ZZ95-160To4tau		 1   0.07691       0.238
 all	       ZZ95-160To2e2mu		 1   0.1767	   0.261
