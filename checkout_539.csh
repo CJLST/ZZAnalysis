@@ -2,7 +2,7 @@
 
 ############## For V5_15_0/CMSSW_5_3_9 POST-LEGACY
 
-setenv CVSROOT ":ext:namapane@lxplus5.cern.ch:/afs/cern.ch/user/c/cvscmssw/public/CMSSW"
+setenv CVSROOT ":ext:${USER}@lxplus5.cern.ch:/afs/cern.ch/user/c/cvscmssw/public/CMSSW"
 
 scram setup /afs/cern.ch/cms/slc5_amd64_gcc462/external/git-toolfile/1.0/etc/scram.d/git.xml
 rehash
@@ -14,11 +14,12 @@ git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
 #  (cd ZZMatrixElement; cvs co -r V00-03-06 -d MELA UserCode/CJLST/ZZMatrixElement/MELA)
 #  (cd ZZMatrixElement; cvs co -r V00-02-00 -d MEKD UserCode/UFL/ZZMatrixElement/MEKD)
 #  (cd ZZMatrixElement; cvs co -r V00-00-15 -d MEMCalculators UserCode/HZZ4l_MEM/ZZMatrixElement/MEMCalculators)
-
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement 
 
+# cvs co -r V02-06-00 HiggsAnalysis/CombinedLimit
+git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit; (cd HiggsAnalysis/CombinedLimit; git pull origin master; git checkout -b from-V02-06-00 HiggsAnalysis-CombinedLimit-V02-06-00)
+
 mkdir MuScleFit; (cd MuScleFit; cvs co -r muscle_v4_2_0 -d Calibration UserCode/scasasso/MuScleFit/Calibration)
-cvs co -r V02-06-00 HiggsAnalysis/CombinedLimit
 mkdir Higgs; (cd Higgs; cvs co -r V00-03-01 -d Higgs_CS_and_Width UserCode/Snowball/Higgs/Higgs_CS_and_Width)
 mkdir  HZZ4L_Combination; (cd HZZ4L_Combination; cvs co -r bonato_supermela_20121107 -d CombinationPy UserCode/HZZ4L_Combination/CombinationPy)
 mkdir -p  Muon/MuonAnalysisTools; (cd  Muon/MuonAnalysisTools; cvs co -r 1.7 -d interface UserCode/sixie/Muon/MuonAnalysisTools/interface/MuonEffectiveArea.h)
