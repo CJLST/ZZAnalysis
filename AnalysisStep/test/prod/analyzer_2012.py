@@ -72,7 +72,7 @@ samples = [
     ('ggTo2l2l_ContinuumInterfH125.6','cmgtools','/GluGluTo2L2Lprime_HContinInterf_M-125p6_8TeV-gg2vv315-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0', 'cmgTuple.*root', 3, "MCAllEvents"),
     
     ('ggTo4l_H125.6',                 'cmgtools','/GluGluTo4L_H_M-125p6_8TeV-gg2vv315-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0',               'cmgTuple.*root', 3, ""),
-    ('ggTo4l_Continuum',              'cmgtools','/GluGluTo4L_Contin_8TeV-gg2vv315-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0',                  'cmgTuple.*root', 3, ""),
+#sample is buggy    ('ggTo4l_Continuum',              'cmgtools','/GluGluTo4L_Contin_8TeV-gg2vv315-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0',                  'cmgTuple.*root', 3, ""),
     ('ggTo4l_ContinuumInterfH125.6',  'cmgtools','/GluGluTo4L_HContinInterf_M-125p6_8TeV-gg2vv315-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/',  'cmgTuple.*root', 3, ""),
 
     ### jhuGenv2 samples
