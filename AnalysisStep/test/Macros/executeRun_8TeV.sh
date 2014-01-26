@@ -1,7 +1,20 @@
 #!/bin/bash
 
+if [ "$1" == "" ]; then
+ echo "Specify set name, e.g. 140125"
+ exit 1;
+fi
+
+if [ "$2" == "" ]; then
+    DESTSET=$1
+else
+    DESTSET=$2
+fi
+
 prodname="rootuples/${1}/PRODFSR_8TeV/"
-dirname="trees/${2}/PRODFSR_8TeV/"
+dirname="trees/${DESTSET}/PRODFSR_8TeV/"
+
+
 
 #echo $prodname
 #echo $dirname
@@ -31,13 +44,7 @@ while read i; do
             #./run_HZZ4l_CR 1 Doublemu  $prodname/ZZ4lAnalysis_DoubleMu_1963.root $dirname/CR/HZZ4lTree_DoubleMu_CRZLLTree.root
             #./run_HZZ4l_CR 1 DoubleEle  $prodname/ZZ4lAnalysis_DoubleEle_1963.root $dirname/CR/HZZ4lTree_DoubleEle_CRZLLTree.root
 	else
-	    export First=`echo $i | awk -F_ '{print $2}'`
-	    export Second=`echo $i | awk -F_ '{print $3}'`
-	    if [[ "$Second" != "" ]]; then 
-		export FullName=$First"_"$Second
-	    else 
-		export FullName=$First
-	    fi
+	    FullName=`echo $i | sed s/"ZZ4lAnalysis_"//`
 	    ./run_HZZ4l 0  1 $i $prodname/${i}.root $dirname/4mu/HZZ4lTree_$FullName.root
 	    ./run_HZZ4l 1  1 $i $prodname/${i}.root $dirname/4e/HZZ4lTree_$FullName.root
 	    ./run_HZZ4l 2  1 $i $prodname/${i}.root $dirname/2mu2e/HZZ4lTree_$FullName.root

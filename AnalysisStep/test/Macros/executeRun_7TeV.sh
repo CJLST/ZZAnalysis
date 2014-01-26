@@ -1,7 +1,17 @@
 #!/bin/bash
 
+if [ "$1" == "" ]; then
+ echo "Specify set name, e.g. 140125"
+ exit 1;
+fi
+
+if [ "$2" == "" ]; then
+    DESTSET=$1
+else
+    DESTSET=$2
+fi
 prodname="rootuples/${1}/PRODFSR/"
-dirname="trees/${2}/PRODFSR/"
+dirname="trees/${DESTSET}/PRODFSR/"
 
 #echo $prodname
 #echo $dirname
@@ -31,10 +41,11 @@ while read i; do
             #./run_HZZ4l_CR 0 DoubleMu  $prodname/ZZ4lAnalysis_DoubleMu.root  $dirname/CR/HZZ4lTree_DoubleMu_CRZLLTree.root
             #./run_HZZ4l_CR 0 DoubleEle  $prodname/ZZ4lAnalysis_DoubleEle.root $dirname/CR/HZZ4lTree_DoubleEle_CRZLLTree.root
 	else
-	    ./run_HZZ4l 0  0 $i $prodname/${i}.root $dirname/4mu/HZZ4lTree_`echo $i | awk -F_ '{print $2}'`.root;
-	    ./run_HZZ4l 1  0 $i $prodname/${i}.root $dirname/4e/HZZ4lTree_`echo $i | awk -F_ '{print $2}'`.root;
-	    ./run_HZZ4l 2  0 $i $prodname/${i}.root $dirname/2mu2e/HZZ4lTree_`echo $i | awk -F_ '{print $2}'`.root;
-	    ./run_HZZ4l_CR 0 $i $prodname/${i}.root $dirname/CR/HZZ4lTree_`echo $i | awk -F_ '{print $2}'`_CRZLLTree.root
+	    FullName=`echo $i | sed s/"ZZ4lAnalysis_"//`
+	    ./run_HZZ4l 0  0 $i $prodname/${i}.root $dirname/4mu/HZZ4lTree_$FullName.root;
+	    ./run_HZZ4l 1  0 $i $prodname/${i}.root $dirname/4e/HZZ4lTree_$FullName.root;
+	    ./run_HZZ4l 2  0 $i $prodname/${i}.root $dirname/2mu2e/HZZ4lTree_$FullName.root;
+#	    ./run_HZZ4l_CR 0 $i $prodname/${i}.root $dirname/CR/HZZ4lTree__CRZLLTree.root
 	fi
     fi
 done < Samples_7TeV.txt

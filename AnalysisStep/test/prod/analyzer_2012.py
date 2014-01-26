@@ -60,7 +60,7 @@ samples = [
     ('ggZZ2l2l','cmgtools','/GluGluToZZTo2L2L_TuneZ2star_8TeV-gg2zz-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_V5_15_0', 'cmgTuple.*root', 8, ""),
 
     ### Additional ZZ samples for templates, in mass window
-    ('ZZ95-160To2e2mu','cmgtools','/ZZTo2e2mu_8TeV_mll8_mZZ95-160-powheg15-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 6, ""),
+    ('ZZ95-160To2e2mu','cmgtools','/ZZTo2e2mu_8TeV_mll8_mZZ95-160-powheg15-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root$', 6, ""),
     ('ZZ95-160To2mu2tau','cmgtools','/ZZTo2mu2tau_8TeV_mll8_mZZ95-160-powheg15-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 20, ""),
     ('ZZ95-160To4e','cmgtools','/ZZTo4e_8TeV_mll8_mZZ95-160-powheg15-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 6, ""),
     ('ZZ95-160To4mu','cmgtools','/ZZTo4mu_8TeV_mll8_mZZ95-160-powheg15-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 4, ""),
