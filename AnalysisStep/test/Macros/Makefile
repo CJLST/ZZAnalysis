@@ -21,9 +21,11 @@ CXXFLAGS      += $(ROOTCFLAGS) -I$(ROOFITSYS)/include/ -I$(CMSSW_BASE)/src
 NGLIBS         = $(ROOTGLIBS) 
 # Hack here, because RooFit is removed from ROOT:
 NGLIBS        += -L $(ROOFITSYS)/lib/ -lMinuit -lRooFitCore -lRooFit -lboost_regex
+NGLIBS  += -L $(CMSSW_BASE)/lib/$(SCRAM_ARCH)/ -lZZMatrixElementMELA
 GLIBS          = $(filter-out -lNew, $(NGLIBS))
 
 INCLUDEDIR       = ./
+INCLUDE_MELADIR       = ../../../../ZZMatrixElement/MELA/src/
 
 OUTLIB           = ./lib/
 

@@ -8,7 +8,53 @@
 
 int main (int argc, char ** argv) 
 {
-  TChain *tree_CRZLLTree = new TChain("CRZLLTree/crTree");
+// Should match ZZAnalysis...root names
+	char* myPrimarySample[kNumFiles]={
+		"jhuGenV3H126",
+		"0PH126",
+		"0MH126",
+		"0Mf05ph0H126",
+		"0Mf05ph90H126",
+		"0Mf05ph180H126",
+		"0Mf05ph270H126",
+		"0Mf01ph0H126", 
+		"0Mf01ph90H126",
+		"0Mf01ph180H126", 
+		"0Mf01ph270H126",
+
+		"0PMH125.6",
+		"0PH125.6",
+		"0MH125.6",
+		"0L1H125.6",
+
+		"0PHf05ph0H125.6",
+		"0Mf05ph0H125.6",
+		"0PHf05ph0Mf05ph0H125.6",
+		"0L1f05ph180H125.6",
+
+		"0PHf033ph0Mf033ph0H125.6",
+		"0PHf01ph0H125.6",
+		"0Mf01ph0H125.6",
+		"0PHf01ph0Mf01ph0H125.6",
+
+		"0L1f05ph0H125.6",
+		"0L1f01ph0H125.6",
+
+		"0PHf05ph90H125.6",
+		"0Mf05ph90H125.6",
+		"0PHf05ph0Mf05ph90H125.6",
+
+		"0PHf033ph0Mf033ph90H125.6",
+		"0PHf01ph90H125.6",
+		"0Mf01ph90H125.6",
+		"0PHf01ph0Mf01ph90H125.6",
+
+		"0PHf05ph180H125.6",
+		"0Mf05ph180H125.6",
+		"0PHf05ph180Mf05ph0H125.6"
+	};
+
+	TChain *tree_CRZLLTree = new TChain("CRZLLTree/crTree");
 
   //Get the TTree with the candidates
   std::string samplename(argv[2]);
@@ -34,7 +80,20 @@ int main (int argc, char ** argv)
   analyzer.setCR(true);
 
   tree_CRZLLTree->Add(inputfilename.c_str());
- 
+
+  bool HZZ4l_flag=false;
+  int HZZ4l_code=0;
+  float HZZ4L_HMass=125.6;
+  for(int f=0;f<kNumFiles;f++){
+	  if( outputfilename.find( myPrimarySample[f] ) != std::string::npos){
+		  HZZ4l_code=f;
+		  HZZ4l_flag=true;
+		  if(f<11) HZZ4L_HMass=126;
+	  };
+  };
+  if(HZZ4l_flag) cout << "HZZ4l spin code is " << HZZ4l_code << endl;
+  analyzer.setHZZ4l(HZZ4l_flag,HZZ4l_code,HZZ4L_HMass);
+
   //Get the normalization. It's the first bin of the histo
   TFile fIn(inputfilename.c_str());
   std::string histoName = "CRZLLTree/Counters";

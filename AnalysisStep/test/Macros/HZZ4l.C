@@ -4,6 +4,7 @@
 
 //Root includes
 #include <TH1F.h>
+#include <TH2F.h>
 #include <TH2D.h>
 #include <TFile.h>
 #include <TLorentzVector.h>
@@ -20,6 +21,7 @@
 #include <fstream>
 #include <iostream>
 #include <iomanip>
+#include <cmath>
 
 #include "../Plotter/root_lib/XSecReader.h"
 #include "../../interface/PUReweight.h"
@@ -45,6 +47,12 @@ namespace {
                                 // 4 means CPS  + Interference-
 
   const Float_t Run2011AFraction = 0.465;
+  const float widthScale_MCFM = 1;
+  const int PDG_electron=11,PDG_muon=13,PDG_tau=15;
+  const float Zmass = 91.1876;
+  const float M_muon = 0.105658389;
+  const float M_electron = 0.00051099907;
+  const float M_tau = 1.777;
 
   XSecReader xsecRead7TeV("../Plotter/Xsection_v1.txt","../Plotter/Luminosity.txt");
   XSecReader xsecRead8TeV("../Plotter/Xsection8TeV_v2.txt","../Plotter/Luminosity.txt");
@@ -60,6 +68,7 @@ HZZ4l::HZZ4l(TChain *tree, TString sampleName) : HZZ4lBase(tree), theSample(samp
   isCR      = false;
   if (theSample.BeginsWith("ZZ4lAnalysis_")) theSample.Remove(0,13);
   for (int i=0; i<4; ++i) ZXWeightTables[i]=0;
+  for(int xb=0;xb<kNumSamples+1;xb++){ for(int yb=0;yb<nFinalStates;yb++) N_generated[yb][xb]=0;};
 }
 
 void HZZ4l::Loop(Int_t channelType, const TString outputName)
@@ -91,6 +100,11 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
   bool isNewHighmass = false; // for POWHEG15
   bool isMinlo       = false;
   Float_t mPOLE      = 0.;    // nominal H mass, for signals
+
+  Mela mela((is8TeV)?7:8,HZZ4L_HMassPole);
+  mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
+  int MassIndex=1;
+  if(HZZ4L_HMassPole==126) MassIndex=0;
 
   // Normalization variables
   Float_t MC_weight_initial        = 1.;
@@ -213,6 +227,13 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
   Float_t myxi            = 0.;
   Float_t myxistar        = 0.;
 
+  float myGencosthetastar  = -99;
+  float myGenhelphi        = -99;
+  float myGenhelcosthetaZ1 = -99;
+  float myGenhelcosthetaZ2 = -99;
+  float myGenphistarZ1     = -99;
+  float myGenphistarZ2     = -99;
+
   //Lepton variables
   Float_t myLep1Pt        = 0.;
   Float_t myLep1Eta       = 0.;
@@ -320,6 +341,15 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
   vector<double> myJetPhi;
   vector<double> myJetMass;
   vector<double> myJetBTag;
+
+// Generic Lorentz Vectors
+  TLorentzVector pZ1;
+  TLorentzVector pl1_m;
+  TLorentzVector pl1_p;
+  TLorentzVector pZ2;
+  TLorentzVector pl2_m;
+  TLorentzVector pl2_p;
+  TLorentzVector pProgenitor;
 
   //Firstly create the File before the tree, because ROOT is designed my fucking monkeys high on crack
   TFile fOut(outputName,"RECREATE");
@@ -442,7 +472,6 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
   SelTree.Branch("pg1g2_VAJHU",&mypg1g2_VAJHU,"pg1g2_VAJHU/F");
   SelTree.Branch("genProcessId",&mygenProcessId,"genProcessId/S");
   SelTree.Branch("genHEPMCweight",&mygenHEPMCweight,"genHEPMCweight/F");
-  SelTree.Branch("GenHPt",&mygenhpt,"GenHPt/F");
   SelTree.Branch("p0plus_m4l_ScaleUp",&myp0plus_m4l_ScaleUp,"p0plus_m4l_ScaleUp/F");
   SelTree.Branch("p0plus_m4l_ScaleDown",&myp0plus_m4l_ScaleDown,"p0plus_m4l_ScaleDown/F");
   SelTree.Branch("p0plus_m4l_ResUp",&myp0plus_m4l_ResUp,"p0plus_m4l_ResUp/F");
@@ -451,6 +480,49 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
   SelTree.Branch("bkg_m4l_ScaleDown",&mybkg_m4l_ScaleDown,"bkg_m4l_ScaleDown/F");
   SelTree.Branch("bkg_m4l_ResUp",&mybkg_m4l_ResUp,"bkg_m4l_ResUp/F");
   SelTree.Branch("bkg_m4l_ResDown",&mybkg_m4l_ResDown,"bkg_m4l_ResDown/F");
+
+  SelTree.Branch("genFinalState", &genFinalState);
+  SelTree.Branch("GenHMass", &GenHMass);
+  SelTree.Branch("GenHPt",&mygenhpt);
+  SelTree.Branch("GenZ1Mass", &GenZ1Mass);
+  SelTree.Branch("GenZ2Mass", &GenZ2Mass);
+/*  SelTree.Branch("GenZ1Pt", &GenZ1Pt);
+  SelTree.Branch("GenZ2Pt", &GenZ2Pt);
+  SelTree.Branch("GenLep1Pt", &GenLep1Pt);
+  SelTree.Branch("GenLep1Eta", &GenLep1Eta);
+  SelTree.Branch("GenLep1Phi", &GenLep1Phi);
+  SelTree.Branch("GenLep1Id", &GenLep1Id);
+  SelTree.Branch("GenLep2Pt", &GenLep2Pt);
+  SelTree.Branch("GenLep2Eta", &GenLep2Eta);
+  SelTree.Branch("GenLep2Phi", &GenLep2Phi);
+  SelTree.Branch("GenLep2Id", &GenLep2Id);
+  SelTree.Branch("GenLep3Pt", &GenLep3Pt);
+  SelTree.Branch("GenLep3Eta", &GenLep3Eta);
+  SelTree.Branch("GenLep3Phi", &GenLep3Phi);
+  SelTree.Branch("GenLep3Id", &GenLep3Id);
+  SelTree.Branch("GenLep4Pt", &GenLep4Pt);
+  SelTree.Branch("GenLep4Eta", &GenLep4Eta);
+  SelTree.Branch("GenLep4Phi", &GenLep4Phi);
+  SelTree.Branch("GenLep4Id", &GenLep4Id);
+  SelTree.Branch("Gencosthetastar",&myGencosthetastar);
+  SelTree.Branch("Genhelphi",&myGenhelphi);
+  SelTree.Branch("GenhelcosthetaZ1",&myGenhelcosthetaZ1);
+  SelTree.Branch("GenhelcosthetaZ2",&myGenhelcosthetaZ2);
+  SelTree.Branch("GenphistarZ1",&myGenphistarZ1);
+  SelTree.Branch("GenphistarZ2",&myGenphistarZ2);
+*/
+
+  // HZZ4l spin-0 re-weights and Q2-dependence
+	float MC_weight_samples_VAJHU[kNumSamples];
+	int numSamples = kNumSamples;
+	for(int s=0;s<kNumSamples;s++){
+		MC_weight_samples_VAJHU[s]=1;
+	};
+	float sample_probPdf_VAJHU = 1.0;
+	float weight_probPdf = 1.0;
+  SelTree.Branch("kNumSamples",&numSamples);
+  SelTree.Branch("MC_weight_spin0",MC_weight_samples_VAJHU,"MC_weight_spin0[kNumSamples]/F");
+  SelTree.Branch("sampleprob_VAJHU",&sample_probPdf_VAJHU);
 
   if(saveJets){
     SelTree.Branch("DiJetMass",&myDiJetMass,"DiJetMass/F");
@@ -483,6 +555,11 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
     SelTree.Branch("ZXfake_weight",&ZXfake_weight,"ZXfake_weight/F");
   }
 
+	double selfDHvvcoupl[20][2];
+	for(int gx=0;gx<20;gx++){
+		selfDHvvcoupl[gx][0]=0;
+		selfDHvvcoupl[gx][1]=0;
+	};
 
 
   //Start looping over the events
@@ -491,6 +568,8 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
     Long64_t ientry = LoadTree(jentry);
     if (ientry < 0) break;
     nb = fChain->GetEntry(jentry);
+
+    if(isData && isHZZ4l) isHZZ4l=false;
 
     //    static const string filestring = fChain->GetCurrentFile()->GetName();
     nTOTEv++;
@@ -527,10 +606,365 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 	hNvtxWeight.Fill(Nvtx,PUWeight);
 	hPUWeight.Fill(PUWeight);
       }
-      mygenProcessId = genProcessId;
-      mygenHEPMCweight = genHEPMCweight;
-      mygenhpt = GenHPt;
+    
+	  if(GenLep1Id<GenLep2Id && GenLep1Id==-GenLep2Id){ // Swap 1 and 2 if 2 is the antiparticle, of 1
+		  GenLep1Id=GenLep1Id+GenLep2Id;
+		  GenLep2Id=GenLep1Id-GenLep2Id;
+		  GenLep1Id=GenLep1Id-GenLep2Id;
+
+		  GenLep1Phi=GenLep1Phi+GenLep2Phi;
+		  GenLep2Phi=GenLep1Phi-GenLep2Phi;
+		  GenLep1Phi=GenLep1Phi-GenLep2Phi;
+
+		  GenLep1Eta=GenLep1Eta+GenLep2Eta;
+		  GenLep2Eta=GenLep1Eta-GenLep2Eta;
+		  GenLep1Eta=GenLep1Eta-GenLep2Eta;
+
+		  GenLep1Pt=GenLep1Pt+GenLep2Pt;
+		  GenLep2Pt=GenLep1Pt-GenLep2Pt;
+		  GenLep1Pt=GenLep1Pt-GenLep2Pt;
+	  };
+	  if(GenLep3Id<GenLep4Id && GenLep3Id==-GenLep4Id){ // Swap 3 and 4 if 4 is the antiparticle, of 3
+		  GenLep3Id=GenLep3Id+GenLep4Id;
+		  GenLep4Id=GenLep3Id-GenLep4Id;
+		  GenLep3Id=GenLep3Id-GenLep4Id;
+
+		  GenLep3Phi=GenLep3Phi+GenLep4Phi;
+		  GenLep4Phi=GenLep3Phi-GenLep4Phi;
+		  GenLep3Phi=GenLep3Phi-GenLep4Phi;
+
+		  GenLep3Eta=GenLep3Eta+GenLep4Eta;
+		  GenLep4Eta=GenLep3Eta-GenLep4Eta;
+		  GenLep3Eta=GenLep3Eta-GenLep4Eta;
+
+		  GenLep3Pt=GenLep3Pt+GenLep4Pt;
+		  GenLep4Pt=GenLep3Pt-GenLep4Pt;
+		  GenLep3Pt=GenLep3Pt-GenLep4Pt;
+	  };
+
+		TVector3 vZ1; TVector3 vl1_m; TVector3 vl1_p;
+		TVector3 vZ2; TVector3 vl2_m; TVector3 vl2_p;
+
+		vl1_m.SetPtEtaPhi(GenLep1Pt,GenLep1Eta,GenLep1Phi);
+		vl1_p.SetPtEtaPhi(GenLep2Pt,GenLep2Eta,GenLep2Phi);
+		vl2_m.SetPtEtaPhi(GenLep3Pt,GenLep3Eta,GenLep3Phi);
+		vl2_p.SetPtEtaPhi(GenLep4Pt,GenLep4Eta,GenLep4Phi);
+
+		float E_l1_m = pow(vl1_m.Mag(),2.0);
+		float E_l1_p = pow(vl1_p.Mag(),2.0);
+		float E_l2_m = pow(vl2_m.Mag(),2.0);
+		float E_l2_p = pow(vl2_p.Mag(),2.0);
+		if(abs(GenLep1Id)==PDG_electron){
+			E_l1_m += pow(M_electron,2.0);
+		}
+		else if(abs(GenLep1Id)==PDG_muon){
+			E_l1_m += pow(M_muon,2.0);
+		}
+		else if(abs(GenLep1Id)==PDG_tau){
+			E_l1_m += pow(M_tau,2.0);
+		};
+		if(abs(GenLep3Id)==PDG_electron){
+			E_l2_m += pow(M_electron,2.0);
+		}
+		else if(abs(GenLep3Id)==PDG_muon){
+			E_l2_m += pow(M_muon,2.0);
+		}
+		else if(abs(GenLep3Id)==PDG_tau){
+			E_l2_m += pow(M_tau,2.0);
+		};
+
+		if(abs(GenLep2Id)==PDG_electron){
+			E_l1_p += pow(M_electron,2.0);
+		}
+		else if(abs(GenLep2Id)==PDG_muon){
+			E_l1_p += pow(M_muon,2.0);
+		}
+		else if(abs(GenLep2Id)==PDG_tau){
+			E_l1_p += pow(M_tau,2.0);
+		};
+		if(abs(GenLep4Id)==PDG_electron){
+			E_l2_p += pow(M_electron,2.0);
+		}
+		else if(abs(GenLep4Id)==PDG_muon){
+			E_l2_p += pow(M_muon,2.0);
+		}
+		else if(abs(GenLep4Id)==PDG_tau){
+			E_l2_p += pow(M_tau,2.0);
+		};
+		E_l1_m = sqrt(E_l1_m);
+		E_l1_p = sqrt(E_l1_p);
+		E_l2_m = sqrt(E_l2_m);
+		E_l2_p = sqrt(E_l2_p);
+
+		vZ1 = vl1_m + vl1_p;
+		vZ2 = vl2_m + vl2_p;
+		float E_Z1 = E_l1_m + E_l1_p;
+		float E_Z2 = E_l2_m + E_l2_p;
+/*
+		protection_nullPt(vZ1);
+		protection_nullPt(vZ2);
+		protection_nullPt(vl1_m);
+		protection_nullPt(vl1_p);
+		protection_nullPt(vl2_m);
+		protection_nullPt(vl2_p);
+*/
+		pZ1.SetXYZT(vZ1.X(),vZ1.Y(),vZ1.Z(),E_Z1);
+		pZ2.SetXYZT(vZ2.X(),vZ2.Y(),vZ2.Z(),E_Z2);
+		pl1_m.SetXYZT(vl1_m.X(),vl1_m.Y(),vl1_m.Z(),E_l1_m);
+		pl1_p.SetXYZT(vl1_p.X(),vl1_p.Y(),vl1_p.Z(),E_l1_p);
+		pl2_m.SetXYZT(vl2_m.X(),vl2_m.Y(),vl2_m.Z(),E_l2_m);
+		pl2_p.SetXYZT(vl2_p.X(),vl2_p.Y(),vl2_p.Z(),E_l2_p);
+
+	  if(genFinalState<=18){
+		  if ( abs(Zmass-pZ1.M()) > fabs(Zmass-pZ2.M()) ){
+			  GenZ1Mass = GenZ1Mass+GenZ2Mass;
+			  GenZ2Mass = GenZ1Mass-GenZ2Mass;
+			  GenZ1Mass = GenZ1Mass-GenZ2Mass;
+
+			  GenZ1Pt = GenZ1Pt+GenZ2Pt;
+			  GenZ2Pt = GenZ1Pt-GenZ2Pt;
+			  GenZ1Pt = GenZ1Pt-GenZ2Pt;
+
+			  pZ1 = pZ1 + pZ2;
+			  pZ2 = pZ1 - pZ2;
+			  pZ1 = pZ1 - pZ2;
+
+			  GenLep1Id=GenLep1Id+GenLep3Id;
+			  GenLep3Id=GenLep1Id-GenLep3Id;
+			  GenLep1Id=GenLep1Id-GenLep3Id;
+
+			  GenLep1Phi=GenLep1Phi+GenLep3Phi;
+			  GenLep3Phi=GenLep1Phi-GenLep3Phi;
+			  GenLep1Phi=GenLep1Phi-GenLep3Phi;
+
+			  GenLep1Eta=GenLep1Eta+GenLep3Eta;
+			  GenLep3Eta=GenLep1Eta-GenLep3Eta;
+			  GenLep1Eta=GenLep1Eta-GenLep3Eta;
+
+			  GenLep1Pt=GenLep1Pt+GenLep3Pt;
+			  GenLep3Pt=GenLep1Pt-GenLep3Pt;
+			  GenLep1Pt=GenLep1Pt-GenLep3Pt;
+
+			  pl1_m = pl1_m + pl2_m;
+			  pl2_m = pl1_m - pl2_m;
+			  pl1_m = pl1_m - pl2_m;
+
+			  GenLep2Id=GenLep2Id+GenLep4Id;
+			  GenLep4Id=GenLep2Id-GenLep4Id;
+			  GenLep2Id=GenLep2Id-GenLep4Id;
+
+			  GenLep2Phi=GenLep2Phi+GenLep4Phi;
+			  GenLep4Phi=GenLep2Phi-GenLep4Phi;
+			  GenLep2Phi=GenLep2Phi-GenLep4Phi;
+
+			  GenLep2Eta=GenLep2Eta+GenLep4Eta;
+			  GenLep4Eta=GenLep2Eta-GenLep4Eta;
+			  GenLep2Eta=GenLep2Eta-GenLep4Eta;
+
+			  GenLep2Pt=GenLep2Pt+GenLep4Pt;
+			  GenLep4Pt=GenLep2Pt-GenLep4Pt;
+			  GenLep2Pt=GenLep2Pt-GenLep4Pt;
+
+			  pl1_p = pl1_p + pl2_p;
+			  pl2_p = pl1_p - pl2_p;
+			  pl1_p = pl1_p - pl2_p;
+		  };
+		  if(
+			  abs(GenLep1Id)==abs(GenLep2Id) &&
+			  abs(GenLep1Id)==abs(GenLep3Id) &&
+			  abs(GenLep1Id)==abs(GenLep4Id)
+			  ){
+				  TLorentzVector pl1_m_alt=pl1_m, pl1_p_alt=pl2_p;
+				  TLorentzVector pl2_m_alt=pl2_m, pl2_p_alt=pl1_p;
+				  TLorentzVector pZ1_alt = pl1_m_alt + pl1_p_alt;
+				  TLorentzVector pZ2_alt = pl2_m_alt + pl2_p_alt;
+
+				  bool z1altbigger=false;
+				  if ( abs(Zmass-pZ1_alt.M()) > fabs(Zmass-pZ2_alt.M()) ){
+					  z1altbigger=true;
+					  pZ1_alt = pZ1_alt + pZ2_alt;
+					  pZ2_alt = pZ1_alt - pZ2_alt;
+					  pZ1_alt = pZ1_alt - pZ2_alt;
+
+					  pl1_m_alt = pl1_m_alt + pl2_m_alt;
+					  pl2_m_alt = pl1_m_alt - pl2_m_alt;
+					  pl1_m_alt = pl1_m_alt - pl2_m_alt;
+
+					  pl1_p_alt = pl1_p_alt + pl2_p_alt;
+					  pl2_p_alt = pl1_p_alt - pl2_p_alt;
+					  pl1_p_alt = pl1_p_alt - pl2_p_alt;
+				  };
+				  if ( abs(Zmass-pZ1.M()) > fabs(Zmass-pZ1_alt.M()) ){
+					  pZ1 = pZ1_alt;
+					  pZ2 = pZ2_alt;
+
+					  pl1_m = pl1_m_alt;
+					  pl2_m = pl2_m_alt;
+
+					  pl1_p = pl1_p_alt;
+					  pl2_p = pl2_p_alt;
+
+					  GenZ1Mass = pZ1.M();
+					  GenZ2Mass = pZ2.M();
+					  GenZ1Pt = pZ1.Pt();
+					  GenZ2Pt = pZ2.Pt();
+					  if(z1altbigger){
+						  GenLep1Id=GenLep3Id;
+						  GenLep2Id=GenLep2Id;
+						  GenLep3Id=GenLep1Id;
+						  GenLep4Id=GenLep4Id;
+					  }
+					  else{
+						  GenLep1Id=GenLep1Id;
+						  GenLep2Id=GenLep4Id;
+						  GenLep3Id=GenLep3Id;
+						  GenLep4Id=GenLep2Id;
+					  };
+					  GenLep1Phi=pl1_m.Phi();
+					  GenLep3Phi=pl2_m.Phi();
+
+					  GenLep1Eta=pl1_m.Eta();
+					  GenLep3Eta=pl2_m.Eta();
+
+					  GenLep1Pt=pl1_m.Pt();
+					  GenLep3Pt=pl2_m.Pt();
+
+					  GenLep2Phi=pl1_p.Phi();
+					  GenLep4Phi=pl2_p.Phi();
+
+					  GenLep2Eta=pl1_p.Eta();
+					  GenLep4Eta=pl2_p.Eta();
+
+					  GenLep2Pt=pl1_p.Pt();
+					  GenLep4Pt=pl2_p.Pt();
+			  };
+		  };
+
+	  };
+
+		pProgenitor = pZ1+pZ2;
+		protection_nullPt(pProgenitor);
+		float angle_phistar12, angle_phi1, angle_phi2;
+		calculateAngles(pProgenitor,
+			pZ1,
+			pl1_m,
+			pl1_p,
+			pZ2,
+			pl2_m,
+			pl2_p,
+			myGenhelcosthetaZ1,
+			myGenhelcosthetaZ2,
+			myGenhelphi, 
+			myGencosthetastar,
+			myGenphistarZ1,
+			myGenphistarZ2,
+			angle_phistar12,
+			angle_phi1,
+			angle_phi2
+			);
+
+		for(int hypo=0;hypo<kNumSamples;hypo++){
+			MC_weight_samples_VAJHU[hypo] = 1.0;
+		};
+		if(GenHMass==GenHMass
+			&& GenZ1Mass==GenZ1Mass
+			&& GenZ2Mass==GenZ2Mass
+			&& myGencosthetastar==myGencosthetastar
+			&& myGenhelcosthetaZ1==myGenhelcosthetaZ1
+			&& myGenhelcosthetaZ1==myGenhelcosthetaZ1
+			&& myGenhelphi==myGenhelphi
+			&& myGenphistarZ1==myGenphistarZ1){
+
+			int lepIdOrdered[4]={ GenLep1Id,GenLep2Id,GenLep3Id,GenLep4Id };
+			float angularOrdered[8]={GenHMass,GenZ1Mass,GenZ2Mass,myGencosthetastar,myGenhelcosthetaZ1,myGenhelcosthetaZ2,myGenhelphi,myGenphistarZ1};
+
+			if(!(GenZ1Mass==GenZ1Mass)) cout << "WARNING! GEN. Z1 MASS IS NAN!" << endl;
+			if(!(GenZ2Mass==GenZ2Mass)) cout << "WARNING! GEN. Z2 MASS IS NAN!" << endl;
+
+			for(int gx=0;gx<20;gx++){
+				selfDHvvcoupl[gx][0]=0;
+				selfDHvvcoupl[gx][1]=0;
+			};
+			selfDHvvcoupl[0][0] = (gi_phi2_phi4_files[HZZ4lSample][0]);
+			selfDHvvcoupl[1][0] = (gi_phi2_phi4_files[HZZ4lSample][1]) * cos( gi_phi2_phi4_files[HZZ4lSample][4] );
+			selfDHvvcoupl[1][1] = (gi_phi2_phi4_files[HZZ4lSample][1]) * sin( gi_phi2_phi4_files[HZZ4lSample][4] );
+			selfDHvvcoupl[3][0] = (gi_phi2_phi4_files[HZZ4lSample][3]) * cos( gi_phi2_phi4_files[HZZ4lSample][5] );
+			selfDHvvcoupl[3][1] = (gi_phi2_phi4_files[HZZ4lSample][3]) * sin( gi_phi2_phi4_files[HZZ4lSample][5] );
+			selfDHvvcoupl[5][0] = (gi_phi2_phi4_files[HZZ4lSample][8]);
+
+			if(isHZZ4l && genFinalState<=4){
+				sample_probPdf_VAJHU = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
+				if(sample_probPdf_VAJHU==0) sample_probPdf_VAJHU=1.0;
+			}
+			else{
+				sample_probPdf_VAJHU = 1.0;
+			};
+
+			for(int hypo=0;hypo<kNumSamples;hypo++){
+				for(int gx=0;gx<20;gx++){
+					selfDHvvcoupl[gx][0]=0;
+					selfDHvvcoupl[gx][1]=0;
+				};
+				selfDHvvcoupl[0][0] = (gi_phi2_phi4[MassIndex][hypo][0]);
+				selfDHvvcoupl[1][0] = (gi_phi2_phi4[MassIndex][hypo][1]) * cos( gi_phi2_phi4[MassIndex][hypo][4] );
+				selfDHvvcoupl[1][1] = (gi_phi2_phi4[MassIndex][hypo][1]) * sin( gi_phi2_phi4[MassIndex][hypo][4] );
+				selfDHvvcoupl[3][0] = (gi_phi2_phi4[MassIndex][hypo][3]) * cos( gi_phi2_phi4[MassIndex][hypo][5] );
+				selfDHvvcoupl[3][1] = (gi_phi2_phi4[MassIndex][hypo][3]) * sin( gi_phi2_phi4[MassIndex][hypo][5] );
+				selfDHvvcoupl[5][0] = (gi_phi2_phi4[MassIndex][hypo][8]);
+
+				weight_probPdf = 1.0;
+				if( !(isHZZ4l && genFinalState<=4 ) ) weight_probPdf = 1.0;
+				else if( (isHZZ4l && genFinalState<=4 ) ) weight_probPdf = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
+
+				MC_weight_samples_VAJHU[hypo] = weight_probPdf/sample_probPdf_VAJHU;
+				if(genFinalState<=4) N_generated[genFinalState][hypo+1] += MC_weight_samples_VAJHU[hypo];
+
+				if(jentry == 0){
+					cout << selfDHvvcoupl[0][0] << '\t';
+					cout << selfDHvvcoupl[1][0] << '\t';
+					cout << selfDHvvcoupl[1][1] << '\t';
+					cout << selfDHvvcoupl[3][0] << '\t';
+					cout << selfDHvvcoupl[3][1] << '\t';
+					cout << selfDHvvcoupl[5][0] << endl;
+				};
+			};
+			if(genFinalState<=4) N_generated[genFinalState][0] += 1.0;
+		}
+		else{
+			for(int hypo=0;hypo<=kNumSamples;hypo++){
+				if(genFinalState<=4) N_generated[genFinalState][hypo] += 1.0;
+			};
+		};
     }
+	else{
+		genProcessId=-99999;
+		genHEPMCweight=-99999;
+		GenHMass=-99999;
+		GenHPt=-99999;
+		GenZ1Mass=-99999;
+		GenZ1Pt=-99999;
+		GenZ2Mass=-99999;
+		GenZ2Pt=-99999;
+//		GenLep1Pt=-99999;
+		GenLep1Eta=-99999;
+		GenLep1Phi=-99999;
+		GenLep1Id=-99999;
+//		GenLep2Pt=-99999;
+		GenLep2Eta=-99999;
+		GenLep2Phi=-99999;
+		GenLep2Id=-99999;
+//		GenLep3Pt=-99999;
+		GenLep3Eta=-99999;
+		GenLep3Phi=-99999;
+		GenLep3Id=-99999;
+//		GenLep4Pt=-99999;
+		GenLep4Eta=-99999;
+		GenLep4Phi=-99999;
+		GenLep4Id=-99999;
+	};
+    mygenProcessId = genProcessId;
+    mygenHEPMCweight = genHEPMCweight;
+    mygenhpt = GenHPt;
 
     //Number of Higgs candidates in the event
     const Int_t NHiggs = ZZMass->size();
@@ -817,6 +1251,13 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 
   //Save the final tree
   fOut.cd();
+  TH2F* hCount_new = new TH2F("hCounters_spin0_RW","Counters with Spin0 Re-weights",nFinalStates,0,nFinalStates,numSamples+1,0,numSamples+1);
+  for(int binx=0;binx<nFinalStates;binx++){
+	  for(int biny=0;biny<kNumSamples+1;biny++) hCount_new->SetBinContent(binx+1,biny+1,N_generated[binx][biny]);
+  };
+  fOut.WriteTObject(hCount_new);
+  delete hCount_new;
+
   SelTree.Write();
   hNvtxNoWeight.Write();
   hNvtxWeight.Write();
@@ -851,6 +1292,214 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 
   return;
 }
+
+
+float HZZ4l::getJHUGenMELAWeight(Mela& myMela, int lepId[4], float angularOrdered[8], double selfDHvvcoupl[20][2]){
+	float myprob=1.0;
+	int myflavor=-1;
+	if(abs(lepId[0])==abs(lepId[1]) &&
+		abs(lepId[0])==abs(lepId[2]) &&
+		abs(lepId[0])==abs(lepId[3])){
+			if(abs(lepId[0])==11) myflavor=1;
+			else myflavor=2;
+	}
+	else myflavor=3;
+
+	if(myflavor>=0) myMela.computeP(angularOrdered[0],angularOrdered[1],angularOrdered[2],angularOrdered[3],
+		angularOrdered[4],angularOrdered[5],angularOrdered[6],angularOrdered[7],
+	    myflavor,
+	    selfDHvvcoupl,
+	    myprob
+		);
+	return myprob;
+};
+
+float HZZ4l::getMCFMMELAWeight(Mela& myMela, int lepId[4], float angularOrdered[8], double ggcoupl[2]){
+	float myprob=1.0;
+	int myflavor=-1;
+	if(abs(lepId[0])==abs(lepId[1]) &&
+		abs(lepId[0])==abs(lepId[2]) &&
+		abs(lepId[0])==abs(lepId[3])){
+			if(abs(lepId[0])==11) myflavor=1;
+			else myflavor=2;
+	}
+	else myflavor=3;
+
+	if(myflavor>=0) myMela.computeP(angularOrdered[0],angularOrdered[1],angularOrdered[2],angularOrdered[3],
+		angularOrdered[4],angularOrdered[5],angularOrdered[6],angularOrdered[7],
+	    myflavor,
+	    ggcoupl,
+	    myprob
+		);
+	return myprob;
+};
+
+
+void HZZ4l::protection_nullPt(TVector3& myV){
+	double xyz[3];
+	myV.GetXYZ(xyz);
+	if(xyz[0]==0 && xyz[1]==0){
+		if(myV.Mag()!=0) xyz[0] += 0.00001*(myV.Mag());
+		else xyz[0] += 0.00001*(0.001);
+	};
+	myV.SetXYZ(xyz[0],xyz[1],xyz[2]);
+};
+void HZZ4l::protection_nullPt(TLorentzVector& myV){
+	double xyzt[4];
+	myV.GetXYZT(xyzt);
+	if(xyzt[0]==0 && xyzt[1]==0){
+		if(myV.P()!=0) xyzt[0] += 0.00001*(myV.P());
+		else  xyzt[2] += 0.00001*(0.001);
+	};
+	myV.SetXYZT(xyzt[0],xyzt[1],xyzt[2],xyzt[3]);
+};
+void HZZ4l::calculateAngles(TLorentzVector thep4H, TLorentzVector thep4Z1, TLorentzVector thep4M11, TLorentzVector thep4M12, TLorentzVector thep4Z2, TLorentzVector thep4M21, TLorentzVector thep4M22, float& costheta1, float& costheta2, float& phi, float& costhetastar, float& phistar1, float& phistar2, float& phistar12, float& phi1, float& phi2){
+	
+  float norm;
+  
+  TVector3 boostX = -(thep4H.BoostVector());
+  TLorentzVector thep4Z1inXFrame( thep4Z1 );
+  TLorentzVector thep4Z2inXFrame( thep4Z2 );	
+  thep4Z1inXFrame.Boost( boostX );
+  thep4Z2inXFrame.Boost( boostX );
+  TVector3 theZ1X_p3 = TVector3( thep4Z1inXFrame.X(), thep4Z1inXFrame.Y(), thep4Z1inXFrame.Z() );
+  TVector3 theZ2X_p3 = TVector3( thep4Z2inXFrame.X(), thep4Z2inXFrame.Y(), thep4Z2inXFrame.Z() );
+  
+  // calculate phi1, phi2, costhetastar
+  phi1 = theZ1X_p3.Phi();
+  phi2 = theZ2X_p3.Phi();
+  
+  ///////////////////////////////////////////////
+  // check for z1/z2 convention, redefine all 4 vectors with convention
+  ///////////////////////////////////////////////	
+  TLorentzVector p4H, p4Z1, p4M11, p4M12, p4Z2, p4M21, p4M22;
+  p4H = thep4H;
+  
+  /* ORDER OF Z1 AND Z2 ALREADY CHOSEN IN MAIN FUNCTION!!!!!! - - - - - - 
+     if ((phi1 < 0)&&(phi1 >= -TMath::Pi())){   // old convention based on phi
+     p4Z1 = thep4Z2; p4M11 = thep4M21; p4M12 = thep4M22;
+     p4Z2 = thep4Z1; p4M21 = thep4M11; p4M22 = thep4M12;		
+     costhetastar = theZ2X_p3.CosTheta();
+     }
+     else{
+     p4Z1 = thep4Z1; p4M11 = thep4M11; p4M12 = thep4M12;
+     p4Z2 = thep4Z2; p4M21 = thep4M21; p4M22 = thep4M22;
+     costhetastar = theZ1X_p3.CosTheta();
+     }
+     - - - - - - - - - - - - - - - - - - - - - - - - -  - - - - - - - - -*/
+  
+  p4Z1 = thep4Z1; p4M11 = thep4M11; p4M12 = thep4M12;
+  p4Z2 = thep4Z2; p4M21 = thep4M21; p4M22 = thep4M22;
+  costhetastar = theZ1X_p3.CosTheta();
+	
+  // now helicity angles................................
+  // ...................................................
+  TVector3 boostZ1 = -(p4Z1.BoostVector());
+  TLorentzVector p4Z2Z1(p4Z2);
+  p4Z2Z1.Boost(boostZ1);
+  // find the decay axis
+  TVector3 unitx_1( -p4Z2Z1.X(), -p4Z2Z1.Y(), -p4Z2Z1.Z() );
+  norm = 1/(unitx_1.Mag());
+  unitx_1*=norm;
+  // boost daughters of z2
+  TLorentzVector p4M21Z1(p4M21);
+  TLorentzVector p4M22Z1(p4M22);
+  p4M21Z1.Boost(boostZ1);
+  p4M22Z1.Boost(boostZ1);
+  // create z and y axes
+  TVector3 p4M21Z1_p3( p4M21Z1.X(), p4M21Z1.Y(), p4M21Z1.Z() );
+  TVector3 p4M22Z1_p3( p4M22Z1.X(), p4M22Z1.Y(), p4M22Z1.Z() );
+  TVector3 unitz_1 = p4M21Z1_p3.Cross( p4M22Z1_p3 );
+  norm = 1/(unitz_1.Mag());
+  unitz_1 *= norm;
+  TVector3 unity_1 = unitz_1.Cross(unitx_1);
+  
+  // calculate theta1
+  TLorentzVector p4M11Z1(p4M11);
+  p4M11Z1.Boost(boostZ1);
+  TVector3 p3M11( p4M11Z1.X(), p4M11Z1.Y(), p4M11Z1.Z() );
+  TVector3 unitM11 = p3M11.Unit();
+  float x_m11 = unitM11.Dot(unitx_1); float y_m11 = unitM11.Dot(unity_1); float z_m11 = unitM11.Dot(unitz_1);
+  TVector3 M11_Z1frame(y_m11, z_m11, x_m11);
+  costheta1 = M11_Z1frame.CosTheta();
+
+  //////-----------------------old way of calculating phi---------------/////////
+  phi = M11_Z1frame.Phi();
+  
+  // set axes for other system
+  TVector3 boostZ2 = -(p4Z2.BoostVector());
+  TLorentzVector p4Z1Z2(p4Z1);
+  p4Z1Z2.Boost(boostZ2);
+  TVector3 unitx_2( -p4Z1Z2.X(), -p4Z1Z2.Y(), -p4Z1Z2.Z() );
+  norm = 1/(unitx_2.Mag());
+  unitx_2*=norm;
+  // boost daughters of z2
+  TLorentzVector p4M11Z2(p4M11);
+  TLorentzVector p4M12Z2(p4M12);
+  p4M11Z2.Boost(boostZ2);
+  p4M12Z2.Boost(boostZ2);
+  TVector3 p4M11Z2_p3( p4M11Z2.X(), p4M11Z2.Y(), p4M11Z2.Z() );
+  TVector3 p4M12Z2_p3( p4M12Z2.X(), p4M12Z2.Y(), p4M12Z2.Z() );
+  TVector3 unitz_2 = p4M11Z2_p3.Cross( p4M12Z2_p3 );
+  norm = 1/(unitz_2.Mag());
+  unitz_2*=norm;
+  TVector3 unity_2 = unitz_2.Cross(unitx_2);
+  // calcuate theta2
+  TLorentzVector p4M21Z2(p4M21);
+  p4M21Z2.Boost(boostZ2);
+  TVector3 p3M21( p4M21Z2.X(), p4M21Z2.Y(), p4M21Z2.Z() );
+  TVector3 unitM21 = p3M21.Unit();
+  float x_m21 = unitM21.Dot(unitx_2); float y_m21 = unitM21.Dot(unity_2); float z_m21 = unitM21.Dot(unitz_2);
+  TVector3 M21_Z2frame(y_m21, z_m21, x_m21);
+  costheta2 = M21_Z2frame.CosTheta();
+  
+  // calculate phi
+  // calculating phi_n
+  TLorentzVector n_p4Z1inXFrame( p4Z1 );
+  TLorentzVector n_p4M11inXFrame( p4M11 );
+  n_p4Z1inXFrame.Boost( boostX );
+  n_p4M11inXFrame.Boost( boostX );        
+  TVector3 n_p4Z1inXFrame_unit = n_p4Z1inXFrame.Vect().Unit();
+  TVector3 n_p4M11inXFrame_unit = n_p4M11inXFrame.Vect().Unit();  
+  TVector3 n_unitz_1( n_p4Z1inXFrame_unit );
+  //// y-axis is defined by neg lepton cross z-axis
+  //// the subtle part is here...
+  TVector3 n_unity_1 = n_unitz_1.Cross( n_p4M11inXFrame_unit );
+  TVector3 n_unitx_1 = n_unity_1.Cross( n_unitz_1 );
+  
+  TLorentzVector n_p4M21inXFrame( p4M21 );
+  n_p4M21inXFrame.Boost( boostX );
+  TVector3 n_p4M21inXFrame_unit = n_p4M21inXFrame.Vect().Unit();
+  //rotate into other plane
+  TVector3 n_p4M21inXFrame_unitprime( n_p4M21inXFrame_unit.Dot(n_unitx_1), n_p4M21inXFrame_unit.Dot(n_unity_1), n_p4M21inXFrame_unit.Dot(n_unitz_1) );
+  
+  ///////-----------------new way of calculating phi-----------------///////
+  // float phi_n =  n_p4M21inXFrame_unitprime.Phi();
+  /// and then calculate phistar1
+  TVector3 n_p4PartoninXFrame_unit( 0.0, 0.0, 1.0 );
+  TVector3 n_p4PartoninXFrame_unitprime( n_p4PartoninXFrame_unit.Dot(n_unitx_1), n_p4PartoninXFrame_unit.Dot(n_unity_1), n_p4PartoninXFrame_unit.Dot(n_unitz_1) );
+  // negative sign is for arrow convention in paper
+  phistar1 = (n_p4PartoninXFrame_unitprime.Phi());
+  
+  // and the calculate phistar2
+  TLorentzVector n_p4Z2inXFrame( p4Z2 );
+  n_p4Z2inXFrame.Boost( boostX );
+  TVector3 n_p4Z2inXFrame_unit = n_p4Z2inXFrame.Vect().Unit();
+  TVector3 n_unitz_2( n_p4Z2inXFrame_unit );
+  //// y-axis is defined by neg lepton cross z-axis
+  //// the subtle part is here...
+  TVector3 n_unity_2 = n_unitz_2.Cross( n_p4M21inXFrame_unit );
+  TVector3 n_unitx_2 = n_unity_2.Cross( n_unitz_2 );
+  TVector3 n_p4PartoninZ2PlaneFrame_unitprime( n_p4PartoninXFrame_unit.Dot(n_unitx_2), n_p4PartoninXFrame_unit.Dot(n_unity_2), n_p4PartoninXFrame_unit.Dot(n_unitz_2) );
+  phistar2 = (n_p4PartoninZ2PlaneFrame_unitprime.Phi());
+  
+  float phistar12_0 = phistar1 + phistar2;
+  if (phistar12_0 > TMath::Pi()) phistar12 = phistar12_0 - 2*TMath::Pi();
+  else if (phistar12_0 < (-1.)*TMath::Pi()) phistar12 = phistar12_0 + 2*TMath::Pi();
+  else phistar12 = phistar12_0;
+	
+}
+
 
 
 Int_t HZZ4l::findBestCRCand(int CR) const
