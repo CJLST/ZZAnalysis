@@ -843,6 +843,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 	  };
 
 		pProgenitor = pZ1+pZ2;
+		GenHMass = pProgenitor.M();
 		protection_nullPt(pProgenitor);
 		float angle_phistar12, angle_phi1, angle_phi2;
 		calculateAngles(pProgenitor,
