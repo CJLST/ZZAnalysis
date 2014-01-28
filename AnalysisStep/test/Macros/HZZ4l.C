@@ -185,6 +185,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
   Short_t  mygenProcessId = 0;
   Float_t  mygenHEPMCweight = 1.;
   Float_t  mygenhpt       = 0;
+  Float_t  mygenhmass     = 0;
   Int_t    myCRflag       = 0;
 
   //ZZ variables
@@ -443,6 +444,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
   SelTree.Branch("genProcessId",&mygenProcessId,"genProcessId/S");
   SelTree.Branch("genHEPMCweight",&mygenHEPMCweight,"genHEPMCweight/F");
   SelTree.Branch("GenHPt",&mygenhpt,"GenHPt/F");
+  SelTree.Branch("GenHMass",&mygenhmass,"GenHMass/F");
   SelTree.Branch("p0plus_m4l_ScaleUp",&myp0plus_m4l_ScaleUp,"p0plus_m4l_ScaleUp/F");
   SelTree.Branch("p0plus_m4l_ScaleDown",&myp0plus_m4l_ScaleDown,"p0plus_m4l_ScaleDown/F");
   SelTree.Branch("p0plus_m4l_ResUp",&myp0plus_m4l_ResUp,"p0plus_m4l_ResUp/F");
@@ -530,6 +532,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
       mygenProcessId = genProcessId;
       mygenHEPMCweight = genHEPMCweight;
       mygenhpt = GenHPt;
+      mygenhmass = GenHMass;
     }
 
     //Number of Higgs candidates in the event

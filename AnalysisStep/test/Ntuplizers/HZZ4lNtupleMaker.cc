@@ -438,6 +438,9 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     if(genH != 0){
       myTree->FillHGenInfo(genH->p4());
     }
+    else if(genZLeps.size()==4){
+      myTree->FillHGenInfo((genZLeps.at(0)->p4()+genZLeps.at(1)->p4()+genZLeps.at(2)->p4()+genZLeps.at(3)->p4()));
+    }
 
     if (genFinalState!=BUGGY && genFinalState!=NONE) {
       if (genZs.size()==2){
