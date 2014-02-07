@@ -43,6 +43,7 @@ private:
 
   bool is8TeV;
   bool isCR;
+  bool isSignal;
   int BSM_flag;
   float kappa;
   

@@ -58,6 +58,7 @@ namespace {
 HZZ4l::HZZ4l(TChain *tree, TString sampleName) : HZZ4lBase(tree), theSample(sampleName)
 {
   isCR      = false;
+  isSignal      = false;
   if (theSample.BeginsWith("ZZ4lAnalysis_")) theSample.Remove(0,13);
   for (int i=0; i<4; ++i) ZXWeightTables[i]=0;
 }
@@ -85,8 +86,6 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 
   // Sample types 
   bool isData        = false;
-  bool isSignal      = false;
-  int channelVH      = -1;
   bool isVBF         = false;
   bool isNewHighmass = false; // for POWHEG15
   bool isMinlo       = false;
@@ -114,20 +113,17 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
   cout << "Number of generated events :           " << int(Nevt_Gen) << std::endl; 
 
 
-  if(theSample.Contains("Double")|| theSample.Contains("MuEG")) isData = true;
+  if(theSample.Contains("DoubleMu") || theSample.Contains("DoubleEle") || theSample.Contains("MuEG")) isData = true;
   if(!isData){
     if(theSample.Contains("H")) isSignal = true;
-    if(theSample.Contains("WH"))channelVH=1;
-    if(theSample.Contains("ZH"))channelVH=2;
-    if(theSample.Contains("ttH"))channelVH=3;
     if(theSample.Contains("VBF")) isVBF = true;
     if(theSample.Contains("powheg15")) isNewHighmass = true;
     if(theSample.Contains("minlo")) isMinlo = true;
 
     //Reweighting for high mass
     if(isSignal && doHighmassCorr){
-      TString massString = theSample(TRegexp("H.*"));
-      massString.Remove(0,1);	  
+      TString massString = theSample(TRegexp("[^H]*$")); // ASSUME THAT SIGNAL SAMPLE NAMES ENDS WITH "H[mass]" eg "H125.6"
+      if (massString(TRegexp("[a-zA-Z]"))!="") cout << "ERROR: malformed signal sample name " << theSample << " " << massString << endl<<endl<<endl;
       mPOLE = massString.Atof();
       if(mPOLE > 399.) getWeightFromFile(massString, isVBF, isNewHighmass);
     }
@@ -1014,11 +1010,11 @@ Float_t HZZ4l::getMCWeight(const int year, const Int_t CandIndex) const
   return eff_weight;
 }
 
-//Get the normalization for the specific final state (4mu, 4e, 2e2mu)
+//Get the normalization for the specific final state (4mu, 4e, 2e2mu), that is used for MC_weight_norm (efficiency weights).
 Float_t HZZ4l::getNormalizedWeight(const Int_t channelType) const
 {
-  // For signals, take directly the values from the Counters histogram
-  if (theSample.Contains("H") || theSample=="ZZJetsTo4L"){
+  // For signals, take directly the values from the Counters histogram.
+  if (isSignal || theSample=="ZZJetsTo4L"){
     Int_t gen_4l_H = nEventComplete->GetBinContent(channelType + 2);
     return 1./gen_4l_H;
   } 

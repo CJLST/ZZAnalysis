@@ -36,7 +36,7 @@ Notes:
 Once all jobs are finished, copy all trees to the standard path on lxcms00:
 ```
 mkdir /data3/2014/HZZ_out/<YYMMDD>
-mv AAAOK /data/2014/HZZ_out/<YYMMDD>/PRODFSR_8TeV
+mv AAAOK /data3/2014/HZZ_out/<YYMMDD>/PRODFSR_8TeV
 ```
 
 hadd all chunks:
