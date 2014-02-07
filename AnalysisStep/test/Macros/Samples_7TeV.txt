@@ -3,6 +3,7 @@
 #################################################################
 data
 
+
 ######
 # MC #
 ######
@@ -25,6 +26,7 @@ ZZ4lAnalysis_powheg15H800
 ZZ4lAnalysis_powheg15H900
 ZZ4lAnalysis_powheg15H1000
 
+
 ZZ4lAnalysis_powheg15jhuGenV3H115
 ZZ4lAnalysis_powheg15jhuGenV3H120
 ZZ4lAnalysis_powheg15jhuGenV3H122
@@ -44,6 +46,7 @@ ZZ4lAnalysis_powheg15jhuGenV3H180
 ZZ4lAnalysis_powheg15jhuGenV3H185
 ZZ4lAnalysis_powheg15jhuGenV3H190
 ZZ4lAnalysis_powheg15jhuGenV3H200
+
 
 ZZ4lAnalysis_VBFH125
 ZZ4lAnalysis_VBFH115
@@ -79,6 +82,7 @@ ZZ4lAnalysis_VBFH900
 ZZ4lAnalysis_VBFH950
 ZZ4lAnalysis_VBFH1000
 
+
 ZZ4lAnalysis_powheg15VBFH200
 ZZ4lAnalysis_powheg15VBFH225
 #ZZ4lAnalysis_powheg15VBFH250
@@ -99,6 +103,7 @@ ZZ4lAnalysis_powheg15VBFH900
 #ZZ4lAnalysis_powheg15VBFH950
 ZZ4lAnalysis_powheg15VBFH1000
 
+
 ZZ4lAnalysis_ttH110
 ZZ4lAnalysis_ttH115
 ZZ4lAnalysis_ttH120
@@ -110,6 +115,7 @@ ZZ4lAnalysis_ttH150
 ZZ4lAnalysis_ttH160
 ZZ4lAnalysis_ttH180
 ZZ4lAnalysis_ttH200
+
 
 ZZ4lAnalysis_ZH110
 ZZ4lAnalysis_ZH115
@@ -123,6 +129,7 @@ ZZ4lAnalysis_ZH160
 ZZ4lAnalysis_ZH180
 ZZ4lAnalysis_ZH200
 
+
 ZZ4lAnalysis_WH110
 ZZ4lAnalysis_WH115
 ZZ4lAnalysis_WH120
@@ -135,8 +142,8 @@ ZZ4lAnalysis_WH160
 ZZ4lAnalysis_WH180
 ZZ4lAnalysis_WH200
 
-# ZZ
 
+# ZZ
 ZZ4lAnalysis_ggZZ4l
 ZZ4lAnalysis_ggZZ2l2l
 ZZ4lAnalysis_ZZTo4mu
@@ -150,14 +157,13 @@ ZZ4lAnalysis_ZZTo4tau
 # Samples with off-shell production, continuum, and interference
 ZZ4lAnalysis_ggTo2l2l_H125.6
 ZZ4lAnalysis_ggTo2l2l_Continuum
-#ZZ4lAnalysis_ggTo2l2l_ContinuumInterfH125.6
+ZZ4lAnalysis_ggTo2l2l_ContinuumInterfH125.6
 ZZ4lAnalysis_ggTo4l_H125.6
-#ZZ4lAnalysis_ggTo4l_Continuum
+ZZ4lAnalysis_ggTo4l_Continuum
 #ZZ4lAnalysis_ggTo4l_ContinuumInterfH125.6
 
 
 # Reducible Backgrounds
-
 ZZ4lAnalysis_TTTo2L2Nu2B
 ZZ4lAnalysis_DYJetsToLLTuneZ2M10-B.root
 ZZ4lAnalysis_DYJetsToLLTuneZ2M10-NoB.root 
@@ -169,7 +175,7 @@ ZZ4lAnalysis_DYJetsToLLTuneZ2M50-NoB.root
 # JHUGenV3  spin/cp #
 #####################
 
-#126 GeV samples
+# 126 GeV samples
 ZZ4lAnalysis_powheg15jhuGenV3-0PH126 
 ZZ4lAnalysis_powheg15jhuGenV3-0MH126 
 ZZ4lAnalysis_powheg15jhuGenV3-0Mf01ph0H126 
@@ -189,11 +195,45 @@ ZZ4lAnalysis_powheg15jhuGenV3Grav2PBH126
 ZZ4lAnalysis_powheg15jhuGenV3Grav2PHH126 
 
 
-#125.6 GeV samples
+# 125.6 GeV samples
+ZZ4lAnalysis_powheg15jhuGenV3-0PMH125.6
 ZZ4lAnalysis_powheg15jhuGenV3-0MH125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PH125.6
+
+ZZ4lAnalysis_powheg15jhuGenV3-0L1f01ph0H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0L1f05ph0H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0L1f05ph180H125.6
+	
 ZZ4lAnalysis_powheg15jhuGenV3-0Mf01ph0H125.6
 ZZ4lAnalysis_powheg15jhuGenV3-0Mf01ph90H125.6
-ZZ4lAnalysis_powheg15jhuGenV3-0PH125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0Mf05ph0H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0Mf05ph90H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0Mf05ph180H125.6
+
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf01ph0H125.6
 ZZ4lAnalysis_powheg15jhuGenV3-0PHf01ph90H125.6
 ZZ4lAnalysis_powheg15jhuGenV3-0PHf05ph0H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf05ph90H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf05ph180H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf01ph0Mf01ph0H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf033ph0Mf033ph0H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf033ph0Mf033ph90H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf05ph0Mf05ph0H125.6
 ZZ4lAnalysis_powheg15jhuGenV3-0PHf05ph0Mf05ph90H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf05ph180Mf05ph0H125.6
+	
+ZZ4lAnalysis_powheg15jhuGenV3-Vec1Mf05ph01Pf05ph0H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-Vec1Mf05ph01Pf05ph90H125.6
+	
+ZZ4lAnalysis_jhuGenV3Vec1MH125.6
+ZZ4lAnalysis_powheg15jhuGenV3Grav2PH2H125.6
+ZZ4lAnalysis_powheg15jhuGenV3Grav2PH3H125.6
+ZZ4lAnalysis_powheg15jhuGenV3Grav2PH6H125.6
+ZZ4lAnalysis_powheg15jhuGenV3Grav2PH7H125.6
+ZZ4lAnalysis_powheg15jhuGenV3Grav2MH9H125.6
+ZZ4lAnalysis_powheg15jhuGenV3Grav2MH10H125.6
+
+
+# MCFM67 samples
+ZZ4lAnalysis_ggTo4mu_SMH-MCFM67_H125.6
+ZZ4lAnalysis_ggTo4e_SMHContinInterf-MCFM67_H125.6
