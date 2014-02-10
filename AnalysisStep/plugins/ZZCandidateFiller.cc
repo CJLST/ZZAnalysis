@@ -455,8 +455,8 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 //    combinedMEM.computeME(MEMNames::kSMHiggs, MEMNames::kMCFM, partP, partId, coupling, ggzz_c5_VAMCFM);
 //    coupling[0]=0.0;coupling[1]=1.0;
 //    combinedMEM.computeME(MEMNames::kSMHiggs, MEMNames::kMCFM, partP, partId, coupling, ggzz_ci_VAMCFM);    
-		vector<complex<double>> *coupling = new vector<complex<double> >;
-		vector<complex<double>> *couplingprod= new vector<complex<double> >;
+		vector<complex<double> > *coupling = new vector<complex<double> >;
+		vector<complex<double> > *couplingprod= new vector<complex<double> >;
     combinedMEM.computeME(MEMNames::kggZZ, MEMNames::kMCFM, partP, partId, ggzz_VAMCFM);
     combinedMEM.computeME(MEMNames::kggZZ_SMHiggs, MEMNames::kMCFM, partP, partId, ggzz_p0plus_VAMCFM);
 		
@@ -468,9 +468,9 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     coupling->push_back(coup);
     combinedMEM.computeME(MEMNames::kggZZ_SMHiggs, MEMNames::kJHUGen, partP, partId, couplingprod,coupling, ggzz_c5_VAMCFM);
 		coupling->clear();
-    coup.real(0.);
-    coup.imag(1.);
-    coupling->push_back(coup);
+    complex<double> coup2(0.,1.);
+    //coup.imag(1.);
+    coupling->push_back(coup2);
     combinedMEM.computeME(MEMNames::kggZZ_SMHiggs, MEMNames::kJHUGen, partP, partId, couplingprod,coupling, ggzz_ci_VAMCFM);  
     // save sapce by not storing KDs that we can recreate 
 

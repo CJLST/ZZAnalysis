@@ -22,7 +22,8 @@ cd HiggsAnalysis/CombinedLimit
 git pull origin master
 git checkout -b from-V01-13-02 HiggsAnalysis-CombinedLimit-V01-13-02
 git checkout a8b620f33381f7bf345210d17ee68a50d8e9acb8 src/HZZ2L2QRooPdfs.cc
-git checkout 9f6fb24b65d8f93eaf9db5f5bee12df3c51783c2 src/HZZ4LRooPdfs.cc
+#git checkout 9f6fb24b65d8f93eaf9db5f5bee12df3c51783c2 src/HZZ4LRooPdfs.cc
+git checkout c842d93c26ecd7040ace3b5b056d00bf169f926c  src/HZZ4LRooPdfs.cc
 git checkout a8b620f33381f7bf345210d17ee68a50d8e9acb8 interface/HZZ2L2QRooPdfs.h
 git checkout aaed00c3a568d333fc77ec164980f93a4a1181ef interface/HZZ4LRooPdfs.h
 cd -
