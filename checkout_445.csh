@@ -1,7 +1,6 @@
 #!/bin/tcsh -fe
 
 ############## For V5_15_0/CMSSW_4_4_5 POST-LEGACY 
-############## -----> NOT WORKING _FIXME_
 
 setenv CVSROOT ":ext:${USER}@lxplus5.cern.ch:/afs/cern.ch/user/c/cvscmssw/public/CMSSW"
 
@@ -15,20 +14,20 @@ git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
 # (cd ZZMatrixElement; cvs co -r V00-03-03 -d MELA UserCode/CJLST/ZZMatrixElement/MELA)
 # (cd ZZMatrixElement; cvs co -r V00-02-00 -d MEKD UserCode/UFL/ZZMatrixElement/MEKD)
 # (cd ZZMatrixElement; cvs co -r V00-00-15 -d MEMCalculators UserCode/HZZ4l_MEM/ZZMatrixElement/MEMCalculators)
-git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement ; (cd ZZMatrixElement; git checkout -b from-V00-00-19 V00-00-19)
+git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement 
+#; (cd ZZMatrixElement; git checkout -b from-V00-00-19 V00-00-19)
 
 git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit; 
 cd HiggsAnalysis/CombinedLimit
 git pull origin master
 git checkout -b from-V01-13-02 HiggsAnalysis-CombinedLimit-V01-13-02
 git checkout a8b620f33381f7bf345210d17ee68a50d8e9acb8 src/HZZ2L2QRooPdfs.cc
-#git checkout 9f6fb24b65d8f93eaf9db5f5bee12df3c51783c2 src/HZZ4LRooPdfs.cc
+#git checkout 9f6fb24b65d8f93eaf9db5f5bee12df3c51783c2 src/HZZ4LRooPdfs.cc 
 git checkout c842d93c26ecd7040ace3b5b056d00bf169f926c  src/HZZ4LRooPdfs.cc
 git checkout a8b620f33381f7bf345210d17ee68a50d8e9acb8 interface/HZZ2L2QRooPdfs.h
 git checkout aaed00c3a568d333fc77ec164980f93a4a1181ef interface/HZZ4LRooPdfs.h
 cd -
 wget www.cern.ch/amapane/H4l/CMSSW/444/HiggsAnalysis/LinkDef.h; mv LinkDef.h HiggsAnalysis/CombinedLimit/src
-
 
 mkdir Higgs; (cd Higgs; cvs co -r V00-03-01 -d Higgs_CS_and_Width UserCode/Snowball/Higgs/Higgs_CS_and_Width)
 mkdir MuScleFit; (cd MuScleFit; cvs co -r muscle_v4_2_0 -d Calibration UserCode/scasasso/MuScleFit/Calibration)
