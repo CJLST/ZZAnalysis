@@ -50,8 +50,7 @@ cvs co -r V00-04-01      CondFormats/EgammaObjects
 cvs co -r V05-08-24      RecoEcal/EgammaCoreTools
 
 mkdir AnalysisDataFormats; (cd AnalysisDataFormats; cvs co -r lucieg_Ap8 -d CMGTools UserCode/CMG/AnalysisDataFormats/CMGTools)
-mkdir CMGTools; (cd CMGTools; cvs co -r V00-02-10 -d External UserCode/CMG/CMGTools/External; cvs co -r cbern_Apr15 -d RootTools UserCode/CMG/CMGTools/RootTools)
-# (cd CMGTools; cvs co -d Production UserCode/CMG/CMGTools/Production) included in the 53X recipe
+mkdir CMGTools; (cd CMGTools; cvs co -r V00-02-10 -d External UserCode/CMG/CMGTools/External; cvs co -r cbern_Apr15 -d RootTools UserCode/CMG/CMGTools/RootTools; cvs co -d Production UserCode/CMG/CMGTools/Production)
 cvs co -r V02-05-11 DataFormats/CaloRecHit
 cvs co -r lhx_12JAN2012_v1 DataFormats/METReco
 cvs co -r V06-04-39 DataFormats/PatCandidates
