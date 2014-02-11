@@ -14,8 +14,7 @@ git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
 # (cd ZZMatrixElement; cvs co -r V00-03-03 -d MELA UserCode/CJLST/ZZMatrixElement/MELA)
 # (cd ZZMatrixElement; cvs co -r V00-02-00 -d MEKD UserCode/UFL/ZZMatrixElement/MEKD)
 # (cd ZZMatrixElement; cvs co -r V00-00-15 -d MEMCalculators UserCode/HZZ4l_MEM/ZZMatrixElement/MEMCalculators)
-git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement 
-#; (cd ZZMatrixElement; git checkout -b from-V00-00-19 V00-00-19)
+git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement ; (cd ZZMatrixElement; git checkout -b from-V00-00-20 V00-00-20)
 
 git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit; 
 cd HiggsAnalysis/CombinedLimit
