@@ -514,15 +514,22 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 
   // HZZ4l spin-0 re-weights and Q2-dependence
 	float MC_weight_samples_VAJHU[kNumSamples];
+	float MC_weight_QQBGG_VAMCFM;
 	int numSamples = kNumSamples;
 	for(int s=0;s<kNumSamples;s++){
 		MC_weight_samples_VAJHU[s]=1;
 	};
 	float sample_probPdf_VAJHU = 1.0;
+	float sample_probPdf_VAMCFM = 1.0;
 	float weight_probPdf = 1.0;
+	float weight_probPdf_VAMCFM = 1.0;
   SelTree.Branch("kNumSamples",&numSamples);
   SelTree.Branch("MC_weight_spin0",MC_weight_samples_VAJHU,"MC_weight_spin0[kNumSamples]/F");
   SelTree.Branch("sampleprob_VAJHU",&sample_probPdf_VAJHU);
+  if(isZZQQB || isZZGG){
+	  SelTree.Branch("MC_weight_QQBGG_VAMCFM",&MC_weight_QQBGG_VAMCFM);
+	  SelTree.Branch("sampleprob_VAMCFM",&sample_probPdf_VAMCFM);
+  };
 
   if(saveJets){
     SelTree.Branch("DiJetMass",&myDiJetMass,"DiJetMass/F");
@@ -650,46 +657,46 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 		vl2_m.SetPtEtaPhi(GenLep3Pt,GenLep3Eta,GenLep3Phi);
 		vl2_p.SetPtEtaPhi(GenLep4Pt,GenLep4Eta,GenLep4Phi);
 
-		float E_l1_m = pow(vl1_m.Mag(),2.0);
-		float E_l1_p = pow(vl1_p.Mag(),2.0);
-		float E_l2_m = pow(vl2_m.Mag(),2.0);
-		float E_l2_p = pow(vl2_p.Mag(),2.0);
+		float E_l1_m = pow(vl1_m.Mag(),2);
+		float E_l1_p = pow(vl1_p.Mag(),2);
+		float E_l2_m = pow(vl2_m.Mag(),2);
+		float E_l2_p = pow(vl2_p.Mag(),2);
 		if(abs(GenLep1Id)==PDG_electron){
-			E_l1_m += pow(M_electron,2.0);
+			E_l1_m += pow(M_electron,2);
 		}
 		else if(abs(GenLep1Id)==PDG_muon){
-			E_l1_m += pow(M_muon,2.0);
+			E_l1_m += pow(M_muon,2);
 		}
 		else if(abs(GenLep1Id)==PDG_tau){
-			E_l1_m += pow(M_tau,2.0);
+			E_l1_m += pow(M_tau,2);
 		};
 		if(abs(GenLep3Id)==PDG_electron){
-			E_l2_m += pow(M_electron,2.0);
+			E_l2_m += pow(M_electron,2);
 		}
 		else if(abs(GenLep3Id)==PDG_muon){
-			E_l2_m += pow(M_muon,2.0);
+			E_l2_m += pow(M_muon,2);
 		}
 		else if(abs(GenLep3Id)==PDG_tau){
-			E_l2_m += pow(M_tau,2.0);
+			E_l2_m += pow(M_tau,2);
 		};
 
 		if(abs(GenLep2Id)==PDG_electron){
-			E_l1_p += pow(M_electron,2.0);
+			E_l1_p += pow(M_electron,2);
 		}
 		else if(abs(GenLep2Id)==PDG_muon){
-			E_l1_p += pow(M_muon,2.0);
+			E_l1_p += pow(M_muon,2);
 		}
 		else if(abs(GenLep2Id)==PDG_tau){
-			E_l1_p += pow(M_tau,2.0);
+			E_l1_p += pow(M_tau,2);
 		};
 		if(abs(GenLep4Id)==PDG_electron){
-			E_l2_p += pow(M_electron,2.0);
+			E_l2_p += pow(M_electron,2);
 		}
 		else if(abs(GenLep4Id)==PDG_muon){
-			E_l2_p += pow(M_muon,2.0);
+			E_l2_p += pow(M_muon,2);
 		}
 		else if(abs(GenLep4Id)==PDG_tau){
-			E_l2_p += pow(M_tau,2.0);
+			E_l2_p += pow(M_tau,2);
 		};
 		E_l1_m = sqrt(E_l1_m);
 		E_l1_p = sqrt(E_l1_p);
@@ -844,6 +851,8 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 
 		pProgenitor = pZ1+pZ2;
 		GenHMass = pProgenitor.M();
+		GenZ1Mass = pZ1.M();
+		GenZ2Mass = pZ2.M();
 		protection_nullPt(pProgenitor);
 		float angle_phistar12, angle_phi1, angle_phi2;
 		calculateAngles(pProgenitor,
@@ -864,9 +873,15 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 			angle_phi2
 			);
 
+// Set MEs to 1 at the beginning of event
+		sample_probPdf_VAMCFM = 1.0;
+		weight_probPdf_VAMCFM = 1.0;
+		MC_weight_QQBGG_VAMCFM = 1.0;
+		sample_probPdf_VAJHU = 1.0;
 		for(int hypo=0;hypo<kNumSamples;hypo++){
 			MC_weight_samples_VAJHU[hypo] = 1.0;
 		};
+// Check if truth is good.
 		if(GenHMass==GenHMass
 			&& GenZ1Mass==GenZ1Mass
 			&& GenZ2Mass==GenZ2Mass
@@ -930,6 +945,23 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 				};
 			};
 			if(genFinalState<=4) N_generated[genFinalState][0] += 1.0;
+
+			if(isZZQQB || isZZGG){
+				mela.setProcess(TVar::bkgZZ, TVar::MCFM, TVar::ZZQQB); // Depart from what it was at the beginning of the loop.
+				float prob_ZZQQB = getMCFMMELAWeight(mela, lepIdOrdered, angularOrdered);
+				mela.setProcess(TVar::bkgZZ, TVar::MCFM, TVar::ZZGG);
+				float prob_ZZGG = getMCFMMELAWeight(mela, lepIdOrdered, angularOrdered);
+				if(isZZQQB){
+					sample_probPdf_VAMCFM = prob_ZZQQB;
+					weight_probPdf_VAMCFM = prob_ZZGG;
+				}
+				else if(isZZGG){
+					weight_probPdf_VAMCFM = prob_ZZQQB;
+					sample_probPdf_VAMCFM = prob_ZZGG;
+				};
+				MC_weight_QQBGG_VAMCFM = weight_probPdf_VAMCFM/sample_probPdf_VAMCFM;
+				mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG); // Revert back to what it was at the beginning of the loop.
+			};
 		}
 		else{
 			for(int hypo=0;hypo<=kNumSamples;hypo++){
@@ -1315,7 +1347,7 @@ float HZZ4l::getJHUGenMELAWeight(Mela& myMela, int lepId[4], float angularOrdere
 	return myprob;
 };
 
-float HZZ4l::getMCFMMELAWeight(Mela& myMela, int lepId[4], float angularOrdered[8], double ggcoupl[2]){
+float HZZ4l::getMCFMMELAWeight(Mela& myMela, int lepId[4], float angularOrdered[8]){
 	float myprob=1.0;
 	int myflavor=-1;
 	if(abs(lepId[0])==abs(lepId[1]) &&
@@ -1329,8 +1361,8 @@ float HZZ4l::getMCFMMELAWeight(Mela& myMela, int lepId[4], float angularOrdered[
 	if(myflavor>=0) myMela.computeP(angularOrdered[0],angularOrdered[1],angularOrdered[2],angularOrdered[3],
 		angularOrdered[4],angularOrdered[5],angularOrdered[6],angularOrdered[7],
 	    myflavor,
-	    ggcoupl,
-	    myprob
+	    myprob,
+		0
 		);
 	return myprob;
 };

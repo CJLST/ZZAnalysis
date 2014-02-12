@@ -145,7 +145,7 @@ const float gi_phi2_phi4_files[kNumFiles][9]={
 	{	1.0,	1.638,	0,	0,		0,	0,	0.5,	0,	0}, // fa2=0.5
 	{	1.0,	0,	0,	2.521,		0,	0,	0,	0.5,	0}, // fa3=0.5
 	{	0,	0.650,	0,	1.0,		0,	0,	0.5,	0.5,	0}, // fa2=fa3=0.5
-	{	1.0,	0,	0,	0,		0,	0,	0,	0,	12003.14}, // fLambda1=-0.5, for T3 templates
+	{	1.0,	0,	0,	0,		0,	0,	0,	0,	12046.01}, // fLambda1=-0.5, for T3 templates
 
 	{	1.0,	1.638,	0,	2.521,		0,	0,	1.0/3.0,	1.0/3.0,	0}, // fa2=fa3=1/3
 	{	1.0,	0.546,	0,	0,		0,	0,	0.1,	0,	0}, // fa2=0.1
@@ -186,6 +186,7 @@ public:
   void setKappa(float mykappa){kappa = mykappa;}
   void setCR(bool myisCR){isCR = myisCR;}
   void setHZZ4l(bool myHZZ4l,int myHZZ4lSample,float myHZZ4L_HMassPole){isHZZ4l = myHZZ4l; HZZ4lSample=myHZZ4lSample; HZZ4L_HMassPole=myHZZ4L_HMassPole;}
+  void setGGQQB(bool myZZQQB,bool myZZGG){isZZQQB = myZZQQB; isZZGG = myZZGG;}
 
   // Some bookkeeping
 	double N_generated[nFinalStates][kNumSamples+1];
@@ -207,7 +208,7 @@ private:
   Float_t getFakeWeight(const Float_t LepPt, const Float_t LepEta, const Int_t year, Int_t LepID, Int_t LepZ1ID);
   Float_t getZXfake_weight(const int year, const Int_t CandIndex);
   float getJHUGenMELAWeight(Mela& myMela, int lepId[4], float angularOrdered[8], double selfDHvvcoupl[20][2]);
-  float getMCFMMELAWeight(Mela& myMela, int lepId[4], float angularOrdered[8], double ggvvcoupl[2]);
+  float getMCFMMELAWeight(Mela& myMela, int lepId[4], float angularOrdered[8]);
   void protection_nullPt(TVector3& myV);
   void protection_nullPt(TLorentzVector& myV);
   void calculateAngles(TLorentzVector thep4H, TLorentzVector thep4Z1, TLorentzVector thep4M11, TLorentzVector thep4M12, TLorentzVector thep4Z2, TLorentzVector thep4M21, TLorentzVector thep4M22, float& costheta1, float& costheta2, float& phi, float& costhetastar, float& phistar1, float& phistar2, float& phistar12, float& phi1, float& phi2);
@@ -220,6 +221,8 @@ private:
   float kappa;
 
   bool isHZZ4l;
+  bool isZZQQB;
+  bool isZZGG;
   int HZZ4lSample;
   float HZZ4L_HMassPole;
 
