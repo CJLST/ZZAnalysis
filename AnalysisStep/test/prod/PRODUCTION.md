@@ -70,5 +70,4 @@ ln -s /data3/2014/HZZ_stat/ trees
 ./executeRun_8TeV.sh <YYMMDD> | tee trees/<YYMMDD>/PRODFSR_8TeV/secondary_log.txt
 ```
 
-Please store the logs as suggested, as they contain useulf information to understand what happens if some file has a problem.Z
-
+Please store the logs as suggested, as they contain useulf information to understand what happens if some file has a problem.
