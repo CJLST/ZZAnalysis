@@ -16,7 +16,11 @@ Download and execute the setup script for the given release:
     ```
     ./checkout_539.csh
     ```
+*   For V5_15_0/CMSSW_4_4_5 POST-LEGACY:
 
+    ```
+    ./checkout_445.csh
+    ```
 
 To update this package from the release
 ------------------------------------------
