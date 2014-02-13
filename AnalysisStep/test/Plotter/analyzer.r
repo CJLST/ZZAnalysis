@@ -9,8 +9,8 @@ void analyzer() {
 
   //HCP TREES
  
-  TString inputDir="/data_CMS/cms/salerno/CJLSTReduceTree/HCPstat/130203/";
-  TString outDir = "HZZ_plots/130203/";
+  TString inputDir="/data_CMS/cms/salerno/CJLSTReduceTree/130702/"; //FIXME folder on polui
+  TString outDir = "HZZ_plots/130702/";
 
   vector<TString> files;
   files.push_back("PRODFSR_8TeV/ZZ4lAnalysis_DoubleEle_1963.root");
@@ -19,6 +19,10 @@ void analyzer() {
   files.push_back("PRODFSR_8TeV/ZZ4lAnalysis_H120.root");
   files.push_back("PRODFSR_8TeV/ZZ4lAnalysis_H125.root");
   files.push_back("PRODFSR_8TeV/ZZ4lAnalysis_H126.root");
+  files.push_back("PRODFSR_8TeV/ZZ4lAnalysis_VBFH126.root");
+  files.push_back("PRODFSR_8TeV/ZZ4lAnalysis_WH126.root");
+  files.push_back("PRODFSR_8TeV/ZZ4lAnalysis_ZH126.root");
+  files.push_back("PRODFSR_8TeV/ZZ4lAnalysis_ttH126.root");
   files.push_back("PRODFSR_8TeV/ZZ4lAnalysis_H350.root");
   files.push_back("PRODFSR_8TeV/ZZ4lAnalysis_ZZTo2e2mu.root");
   files.push_back("PRODFSR_8TeV/ZZ4lAnalysis_ZZTo2e2tau.root");
@@ -33,14 +37,18 @@ void analyzer() {
   files.push_back("PRODFSR_8TeV/ZZ4lAnalysis_DYJetsToLLTuneZ2M50B.root");
   files.push_back("PRODFSR_8TeV/ZZ4lAnalysis_DYJetsToLLTuneZ2M50NoB.root");
   files.push_back("PRODFSR_8TeV/ZZ4lAnalysis_TTTo2L2Nu2B.root");
-  files.push_back("PRODFSR_8TeV/ZZ4lAnalysis_WZ.root");
+  //files.push_back("PRODFSR_8TeV/ZZ4lAnalysis_WZ.root");
 
-  files.push_back("PRODFSR/ZZ4lAnalysis_DoubleEle_NewJSON.root");
-  files.push_back("PRODFSR/ZZ4lAnalysis_DoubleMu_NewJSON.root");
-  files.push_back("PRODFSR/ZZ4lAnalysis_DoubleOr_NewJSON.root");
+  files.push_back("PRODFSR/ZZ4lAnalysis_DoubleEle.root");
+  files.push_back("PRODFSR/ZZ4lAnalysis_DoubleMu.root");
+  files.push_back("PRODFSR/ZZ4lAnalysis_DoubleOr.root");
   files.push_back("PRODFSR/ZZ4lAnalysis_H120.root");
   files.push_back("PRODFSR/ZZ4lAnalysis_H125.root");
   files.push_back("PRODFSR/ZZ4lAnalysis_H126.root");
+  //files.push_back("PRODFSR/ZZ4lAnalysis_VBFH126.root");  //FIXME the 7 TeV does not use in the plot.r use 8TeV samples
+  files.push_back("PRODFSR/ZZ4lAnalysis_WH126.root");
+  files.push_back("PRODFSR/ZZ4lAnalysis_ZH126.root");
+  files.push_back("PRODFSR/ZZ4lAnalysis_ttH126.root");
   files.push_back("PRODFSR/ZZ4lAnalysis_H350.root");
   files.push_back("PRODFSR/ZZ4lAnalysis_ZZTo2e2mu.root");
   files.push_back("PRODFSR/ZZ4lAnalysis_ZZTo2e2tau.root");
@@ -55,7 +63,7 @@ void analyzer() {
   files.push_back("PRODFSR/ZZ4lAnalysis_DYJetsToLLTuneZ2M50B.root");
   files.push_back("PRODFSR/ZZ4lAnalysis_DYJetsToLLTuneZ2M50NoB.root");
   files.push_back("PRODFSR/ZZ4lAnalysis_TTTo2L2Nu2B.root");
-  files.push_back("PRODFSR/ZZ4lAnalysis_WZ.root");
+  //files.push_back("PRODFSR/ZZ4lAnalysis_WZ.root");
 
 
   TString finalStates[] = {"4mu", "4e", "2e2mu"};
