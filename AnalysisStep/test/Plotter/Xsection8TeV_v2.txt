@@ -1,15 +1,15 @@
-# Number of MC events, crossections and BR/corr to be used to weight the MC
-# samples. weight = lumi * xsec * BR / #events
-# (#events is always 1 here since it is taken from the root files)
+# Number of MC events, X-sections and BR/corr to be used to weight the MC samples.
+# weight = lumi * X-sec * BR / #events
+# #events is always 1 here since it is taken from the root files
 #
 #
 # The fields in the table are:
 #
-# finalState   sample             #events    x-section(pb)  BR
-
+# finalState   sample             #events    X-section(pb)  BR
 
 # Signals
-# gluon-gluon fusion x-sections
+# gluon-gluon fusion X-sections
+
 
 all            H110                      1   0.0011919040  1
 all            H115                      1   0.0021352800  1
@@ -63,7 +63,7 @@ all            H950                      1   0.0001321135  1
 all            H1000                     1   0.0001005834  1
 
 
-#POWHEG15 samples
+# POWHEG15 samples
 all            powheg15H125                      1   0.0054404600  1
 all            powheg15H126                      1   0.0058580800  1
 all            powheg15H225                      1   0.0168898516  1
@@ -92,7 +92,7 @@ all            powheg15H950                      1   0.0001321135  1
 all            powheg15H1000                     1   0.0001005834  1
 
 
-#POWHEG15-JhuGenV3 samples
+# POWHEG15-JhuGenV3 samples
 all            powheg15jhuGenV3H110              1   0.0011919040  1
 all            powheg15jhuGenV3H115              1   0.0021352800  1
 all            powheg15jhuGenV3H116              1   0.0023709000  1
@@ -123,7 +123,7 @@ all            powheg15jhuGenV3H190              1   0.0169260800  1
 all            powheg15jhuGenV3H200              1   0.0184589300  1
 
 
-#VBF samples
+# VBF samples
 all            VBFH115                      1   0.0001607970  1
 all            VBFH116                      1   0.0001799700  1
 all            VBFH117                      1   0.0002021810  1
@@ -173,6 +173,7 @@ all            VBFH850                      1   0.0001130383  1
 all            VBFH900                      1   0.0000980840  1
 all            VBFH950                      1   0.0000861361  1
 all            VBFH1000                     1   0.0000762882  1
+
 
 # powheg15 VBF samples
 all            powheg15VBFH115             1   0.0001607970  1
@@ -227,7 +228,6 @@ all            powheg15VBFH950             1   0.0000861361  1
 all            powheg15VBFH1000            1   0.0000762882  1
 
 
-
 # WH+ZH+TTH
 all            VH115                      1   0.0139040400  1
 all            VH116                      1   0.0153859200  1
@@ -262,8 +262,7 @@ all            VH275                      1   0.0211362611  1
 all            VH300                      1   0.0151510640  1
 
 
-
-### Associated prod, new samples. Filter efficiencies extracted by Roberto
+# Associated prod, new samples. Filter efficiencies extracted by Roberto
 all            WH110                      1   0.0046534000  0.010384 # 98897/9523809
 all            WH115                      1   0.0079918800  0.010384 # 98897/9523809
 all            WH120                      1   0.0127456000  0.010384 # 98897/9523809
@@ -302,7 +301,7 @@ all            ttH200                     1   0.0073236000  0.029658 # 49210/166
 
 
 
-#JHU samples (only ggH, only l=e,mu)
+# JHU samples (only ggH, only l=e,mu)
 all            jhuH110                   1  0.0005508800         1
 all            jhuH120                   1  0.0016239200         1
 all            jhuH125                   1  0.0024658200         1
@@ -319,7 +318,7 @@ all            jhuGravH125               1  0.0024658200         1
 all            jhuGravH130               1  0.0034046800         1
 all            jhuGravH140               1  0.0050144000         1
 
-#JHUGEN samples (only ggH, only l=e,mu)
+# JHUGEN samples (only ggH, only l=e,mu)
 all            jhuGenH125                1  0.0024658200         1
 all            jhuGenH126                1  0.0026399900         1
 all            jhuGenPseH125             1  0.0024658200         1
@@ -338,9 +337,9 @@ all            jhuGenV2Grav2MHH126       1   0.0026399900        1
 all            jhuGenV2Grav2PBH126       1   0.0026399900        1
 all            jhuGenV2Grav2PHH126       1   0.0026399900        1
 
-#JHUGENV3 spin-0 samples, x-sec for ggH, BR(H->4l,l=e,mu,tau)
-all            powheg15jhuGenV3-0PH126         1   0.0058580800  1
-all            powheg15jhuGenV3-0MH126         1   0.0058580800  1
+# JHUGENV3 spin-0 samples, x-sec for ggH, BR(H->4l,l=e,mu,tau)
+all            powheg15jhuGenV3-0PHH126         1   0.0058580800  1
+all            powheg15jhuGenV3-0MH126          1   0.0058580800  1
 all            powheg15jhuGenV3-0Mf01ph0H126    1   0.0058580800  1
 all            powheg15jhuGenV3-0Mf01ph90H126   1   0.0058580800  1
 all            powheg15jhuGenV3-0Mf01ph180H126  1   0.0058580800  1
@@ -350,7 +349,7 @@ all            powheg15jhuGenV3-0Mf05ph90H126   1   0.0058580800  1
 all            powheg15jhuGenV3-0Mf05ph180H126  1   0.0058580800  1
 all            powheg15jhuGenV3-0Mf05ph270H126  1   0.0058580800  1
 
-#JHUGENV3 spin-1 and spin-2 samples, x-sec for ggH, BR(H->4l,l=e,mu)
+# JHUGENV3 spin-1 and spin-2 samples, x-sec for ggH, BR(H->4l,l=e,mu)
 all            powheg15jhuGenV3Vec1MH126        1   0.0026399900  1
 all            powheg15jhuGenV3Vec1PH126        1   0.0026399900  1
 all            powheg15jhuGenV3GravH126         1   0.0026399900  1
@@ -359,36 +358,68 @@ all            powheg15jhuGenV3Grav2MHH126      1   0.0026399900  1
 all            powheg15jhuGenV3Grav2PBH126      1   0.0026399900  1
 all            powheg15jhuGenV3Grav2PHH126      1   0.0026399900  1
 
-#JHUGENV3 samples at 125.6, x-sec for ggH, BR(H->4l,l=e,mu)
-all powheg15jhuGenV3-0L1H125.6 		       1 0.002562639 1
-all powheg15jhuGenV3-0L1f01ph0H125.6           1 0.002562639 1
-all powheg15jhuGenV3-0L1f05ph0H125.6           1 0.002562639 1
-all powheg15jhuGenV3-0L1f05ph180H125.6         1 0.002562639 1
-all powheg15jhuGenV3-0MH125.6                  1 0.002562639 1
-all powheg15jhuGenV3-0Mf01ph90H125.6	       1 0.002562639 1
-all powheg15jhuGenV3-0Mf05ph180H125.6          1 0.002562639 1
-all powheg15jhuGenV3-0Mf05ph90H125.6	       1 0.002562639 1
-all powheg15jhuGenV3-0PHf01ph0H125.6	       1 0.002562639 1
+
+##########################################################################
+# powheg15-jhuGenV3-spin/CP-MH125.6, x-section for ggH, BR(H->4l,l=e,mu) #
+##########################################################################
+
+all powheg15jhuGenV3-0PMH125.6 1 0.002562639 1
+all powheg15jhuGenV3-0MH125.6  1 0.002562639 1
+all powheg15jhuGenV3-0PHH125.6 1 0.002562639 1
+
+all powheg15jhuGenV3-0L1H125.6         1 0.002562639 1
+all powheg15jhuGenV3-0L1f01ph0H125.6   1 0.002562639 1
+all powheg15jhuGenV3-0L1f05ph0H125.6   1 0.002562639 1
+all powheg15jhuGenV3-0L1f05ph180H125.6 1 0.002562639 1
+
+all powheg15jhuGenV3-0Mf01ph0H125.6   1 0.002562639 1
+all powheg15jhuGenV3-0Mf01ph90H125.6  1 0.002562639 1
+all powheg15jhuGenV3-0Mf05ph0H125.6   1 0.002562639 1
+all powheg15jhuGenV3-0Mf05ph90H125.6  1 0.002562639 1
+all powheg15jhuGenV3-0Mf05ph180H125.6 1 0.002562639 1
+
+all powheg15jhuGenV3-0PHf01ph0H125.6           1 0.002562639 1
+all powheg15jhuGenV3-0PHf01ph90H125.6          1 0.002562639 1
+all powheg15jhuGenV3-0PHf05ph0H125.6           1 0.002562639 1
+all powheg15jhuGenV3-0PHf05ph90H125.6          1 0.002562639 1
+all powheg15jhuGenV3-0PHf05ph180H125.6         1 0.002562639 1
 all powheg15jhuGenV3-0PHf01ph0Mf01ph0H125.6    1 0.002562639 1
 all powheg15jhuGenV3-0PHf01ph0Mf01ph90H125.6   1 0.002562639 1
-all powheg15jhuGenV3-0PHf01ph90H125.6	       1 0.002562639 1
 all powheg15jhuGenV3-0PHf033ph0Mf033ph0H125.6  1 0.002562639 1
 all powheg15jhuGenV3-0PHf033ph0Mf033ph90H125.6 1 0.002562639 1
-all powheg15jhuGenV3-0PHf05ph0H125.6           1 0.002562639 1
 all powheg15jhuGenV3-0PHf05ph0Mf05ph0H125.6    1 0.002562639 1
 all powheg15jhuGenV3-0PHf05ph0Mf05ph90H125.6   1 0.002562639 1
-all powheg15jhuGenV3-0PHf05ph180H125.6         1 0.002562639 1
 all powheg15jhuGenV3-0PHf05ph180Mf05ph0H125.6  1 0.002562639 1
-all powheg15jhuGenV3-0PHf05ph90H125.6          1 0.002562639 1
-all powheg15jhuGenV3-0PMH125.6 		       1 0.002562639 1
 
-all powheg15jhuGenV3Grav2MH10H125.6 	       1 0.002562639 1
 all powheg15jhuGenV3Grav2PH3H125.6             1 0.002562639 1
 all powheg15jhuGenV3Grav2PH6H125.6  	       1 0.002562639 1
 all powheg15jhuGenV3Grav2PH7H125.6  	       1 0.002562639 1
+all powheg15jhuGenV3Grav2MH10H125.6 	       1 0.002562639 1
 
-#MINLO samples, x-sections from: https://twiki.cern.ch/twiki/bin/view/Main/MinloHJJProduction#obtained_cross_sections
-# BRs from HXSWG for H->4l, l=2,mu,tau
+
+##########
+# MCFM67 #
+##########
+
+all ggTo4e_BSMHContinInterf-MCFM67_H125.6 1 0.001616550 1
+all ggTo4e_SMHContinInterf-MCFM67_H125.6  1 0.001184000 1
+all ggTo4e_Contin-MCFM67                  1 0.000919027 1
+all ggTo4mu_Contin-MCFM67                 1 0.000918975 1
+all ggTo4e_SMH-MCFM67_H125.6              1 0.000326014 1
+
+
+############
+# VBFHiggs #
+#############
+
+all VBF0P_H125.6 1 0.0004615862 1
+
+
+##########################################
+# MINLO samples, x-sections from [minlo] #
+# BRs from HXSWG for H->4l, l=2,mu,tau   #
+##########################################
+
 all   minloH90    1   35.68190962   0.0000049400	 
 all   minloH95    1   31.69879695   0.0000078000	 
 all   minloH100   1   28.54669381   0.0000129000 
@@ -444,12 +475,13 @@ all            ZZTo2e2mu_ext             1   0.1767        1 #
 all            ZZTo2e2tau_ext            1   0.1767        1 # 
 all            ZZTo2mu2tau_ext           1   0.1767        1 # 
 
-all	       ZZ95-160To4mu		 1   0.07691       0.238 # Filter eff from: http://cms.cern.ch/iCMS/prep/requestmanagement?dsn=*mZZ95-*&campid=Summer12
-all	       ZZ95-160To4e		 1   0.07691       0.238
-all	       ZZ95-160To4tau		 1   0.07691       0.238
-all	       ZZ95-160To2e2mu		 1   0.1767	   0.261
-all	       ZZ95-160To2e2tau		 1   0.1767	   0.261
-all	       ZZ95-160To2mu2tau	 1   0.1767	   0.261
+# Filter efficiencies [ZZ95 eff.]
+all	       ZZ95-160To4mu		 1   0.02687       0.238
+all	       ZZ95-160To4e		 1   0.02687       0.238
+all	       ZZ95-160To4tau		 1   0.02687       0.238
+all	       ZZ95-160To2e2mu		 1   0.06278	   0.261
+all	       ZZ95-160To2e2tau		 1   0.06278	   0.261
+all	       ZZ95-160To2mu2tau	 1   0.06278	   0.261
 
 all            ggZZ4l                    1   0.0048        1 # 
 all            ggZZ2l2l                  1   0.01203       1 # 
@@ -459,25 +491,26 @@ all            WJetsToLNu                1   36257.2       1 # /WJetsToLNu_TuneZ
 all            WZ                        1   1.057         1 # /WZJetsTo3LNu_TuneZ2_8TeV-madgraph-tauola/Summer12 
 all            WWTo2L2Nu                 1   5.995         1 # /WWJetsTo2L2Nu_TuneZ2star_8TeV-madgraph-tauola
 
-all            DYJetsToLLTuneZ2M10       1   915          1 # Unsplitted sample
-all            DYJetsToLLTuneZ2M10-B      1   915          1 # splitted
-all            DYJetsToLLTuneZ2M10-NoB    1   915          1 # splitted
-all            DYJetsToLLTuneZ2M50       1   3503.71      1 # Unsplitted sample
-all            DYJetsToLLTuneZ2M50-B      1   3503.71      1 # splitted
-all            DYJetsToLLTuneZ2M50-NoB    1   3503.71      1 # splitted
+all            DYJetsToLLTuneZ2M10       1   915           1 # Unsplitted sample
+all            DYJetsToLLTuneZ2M10-B     1   915           1 # Splitted
+all            DYJetsToLLTuneZ2M10-NoB   1   915           1 # Splitted
+all            DYJetsToLLTuneZ2M50       1   3503.71       1 # Unsplitted sample
+all            DYJetsToLLTuneZ2M50-B     1   3503.71       1 # Splitted
+all            DYJetsToLLTuneZ2M50-NoB   1   3503.71       1 # Splitted
 
 
 # TT
 all            TTTo2L2Nu2B               1   23.64         1 # /TTTo2L2Nu2B_8TeV-powheg-pythia6/Summer12 
 all            TTJets                    1   225.2         1 #
 
+
 # Single Top
 all            Tschannel                 1   3.89          1 # [https://twiki.cern.ch/twiki/bin/viewauth/CMS/SingleTopSigma]
-all            Tbarschannel              1   1.76          1 #  "
-all            Ttchannel                 1   55.531        1 #  /T_t-channel_TuneZ2star_8TeV-powheg-tauola/Summer12 
-all            Tbartchannel              1   30.           1 #  /Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola/Summer12
-all            TbartWchannelDR           1   11.1773       1 #  /Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12
-all            TtWchannelDR              1   11.1773       1 #  /T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12
+all            Tbarschannel              1   1.76          1 # 
+all            Ttchannel                 1   55.531        1 # /T_t-channel_TuneZ2star_8TeV-powheg-tauola/Summer12 
+all            Tbartchannel              1   30.           1 # /Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola/Summer12
+all            TbartWchannelDR           1   11.1773       1 # /Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12
+all            TtWchannelDR              1   11.1773       1 # /T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12
 
 
 # gg2zz with interference (from Misha)
@@ -488,6 +521,9 @@ all           ggTo4l_H125.6                     1       0.00059 1 #
 all           ggTo4l_Continuum                  1       0.00172 1 #
 all           ggTo4l_ContinuumInterfH125.6      1       0.00215 1 #
 
-# References:
+#########
+# Links #
+#########
 # [Wiki] https://twiki.cern.ch/twiki/bin/view/CMS/HZZSamples8TeV
-
+# [minlo] https://twiki.cern.ch/twiki/bin/view/Main/MinloHJJProduction#obtained_cross_sections
+# [ZZ95 eff.] http://cms.cern.ch/iCMS/prep/requestmanagement?dsn=*mZZ95-*&campid=Summer12
