@@ -3,24 +3,17 @@
 #################################################################
 data
 
-
 ######
 # MC #
 ######
 
 # ZZ
-ZZ4lAnalysis_ZZ4mu
-ZZ4lAnalysis_ZZ4e
-ZZ4lAnalysis_ZZ2mu2tau
-ZZ4lAnalysis_ZZ2e2tau
-ZZ4lAnalysis_ZZ2e2mu
-ZZ4lAnalysis_ZZ4tau
-ZZ4lAnalysis_ZZ4mu_ext
-ZZ4lAnalysis_ZZ4e_ext
-ZZ4lAnalysis_ZZ2mu2tau_ext
-ZZ4lAnalysis_ZZ2e2tau_ext
-ZZ4lAnalysis_ZZ2e2mu_ext
-ZZ4lAnalysis_ZZ4tau_ext
+ZZ4lAnalysis_ZZTo4mu
+ZZ4lAnalysis_ZZTo4e
+ZZ4lAnalysis_ZZTo2mu2tau
+ZZ4lAnalysis_ZZTo2e2tau
+ZZ4lAnalysis_ZZTo2e2mu
+ZZ4lAnalysis_ZZTo4tau
 ZZ4lAnalysis_ggZZ4l
 ZZ4lAnalysis_ggZZ2l2l
 
@@ -59,7 +52,7 @@ ZZ4lAnalysis_powheg15jhuGenV3-0Mf05ph90H126
 ZZ4lAnalysis_powheg15jhuGenV3-0Mf05ph180H126
 ZZ4lAnalysis_powheg15jhuGenV3-0Mf05ph270H126
 
-# powheg15-jhuGenV3-spin/CP-MH126.6
+# powheg15-jhuGenV3-spin/CP-MH125.6
 ZZ4lAnalysis_powheg15jhuGenV3-0PMH125.6
 ZZ4lAnalysis_powheg15jhuGenV3-0MH125.6
 ZZ4lAnalysis_powheg15jhuGenV3-0PHH125.6

@@ -27,7 +27,9 @@ INCLUDEDIR       = ./
 
 OUTLIB           = ./lib/
 
+
 $(OUTLIB)HZZ4lBase.o: $(INCLUDEDIR)/HZZ4lBase.C
+	@mkdir -p lib/
 	$(CXX) $(CXXFLAGS) -c -o $(OUTLIB)HZZ4lBase.o $<
 
 $(OUTLIB)HZZ4l.o: $(INCLUDEDIR)/HZZ4l.C $(OUTLIB)HZZ4lBase.o $(OUTLIB)XSecReader.o $(OUTLIB)PUReweight.o

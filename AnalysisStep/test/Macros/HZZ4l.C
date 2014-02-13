@@ -105,7 +105,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
   Float_t powheg_weight            = 1.;
   Float_t dataMCWeight             = 1.;
   Float_t HqTWeight                = 1.;
-  Float_t ZXfake_weight              = 1.;
+  Float_t ZXfake_weight            = 1.;
 
   cout << "Sample name :                          " << theSample << std::endl;
   cout << "Name of the output file :              " << outputName << std::endl;
@@ -113,7 +113,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
   cout << "Number of generated events :           " << int(Nevt_Gen) << std::endl; 
 
 
-  if(theSample.Contains("DoubleMu") || theSample.Contains("DoubleEle") || theSample.Contains("MuEG")) isData = true;
+  if(theSample.Contains("DoubleMu") || theSample.Contains("DoubleEle") || theSample.Contains("DoubleOr") || theSample.Contains("MuEG")) isData = true;
   if(!isData){
     if(theSample.Contains("H")) isSignal = true;
     if(theSample.Contains("VBF")) isVBF = true;
