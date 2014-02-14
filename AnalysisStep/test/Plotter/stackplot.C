@@ -265,15 +265,15 @@ void drawCMSPrel(float lumi=-1) {
 //     long dpart = (long) ((lumi/1000.-ipart)*100. + 0.5);
 //     lumist = lumist + ipart + "." + dpart +" fb^{-1}";
 //   }
-    if (fabs(lumi-19790)<1.) {
-    lumist = "19.8 fb^{-1}";
-  } if (fabs(lumi-12210)<1.) {
+    if (fabs(lumi-19712)<1.) {
+    lumist = "19.7 fb^{-1}";
+  } else if (fabs(lumi-12210)<1.) {
     lumist = "12.21 fb^{-1}";
-  } if (fabs(lumi-5320)<1.) {
+  } else if (fabs(lumi-5320)<1.) {
     lumist = "5.32 fb^{-1}";
-  } if (fabs(lumi-5261)<1.) {
+  } else if (fabs(lumi-5261)<1.) {
     lumist = "5.26 fb^{-1}";
-  }  if (fabs(lumi-3676)<1.) {
+  } else if (fabs(lumi-3676)<1.) {
     lumist = "3.68 fb^{-1}";
   } else if (fabs(lumi-2968)<1.) {
     lumist = "2.97 fb^{-1}";
@@ -439,7 +439,7 @@ THStack* replaceDD(THStack* stack, float lumi, TString finalState, TString epoch
   //first landau	
   float xMinNorm=100;
   float xMaxNorm=1000;
-  TF1 ZjetLandau("ZjetLandau","[0]*TMath::Landau(x,[1],[2]) + [3]*TMath::Landau(x,[4],[5]) + [6]*TMath::Landau(x,[7],[8])",0,1000);
+  TF1 ZjetLandau("ZjetLandau","landau(0) * (1 + exp( pol1(3))) + landau(5) + landau(8)",0,1000);
     
   float  p0 = 1       ;// = normalisation of landau1  (i.e. 2P2F 2mu2e)
   float  p1 = 200     ;//= MPV of Landau1

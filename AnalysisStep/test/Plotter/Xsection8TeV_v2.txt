@@ -2,7 +2,6 @@
 # weight = lumi * X-sec * BR / #events
 # #events is always 1 here since it is taken from the root files
 #
-#
 # The fields in the table are:
 #
 # finalState   sample             #events    X-section(pb)  BR

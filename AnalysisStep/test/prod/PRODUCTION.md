@@ -66,9 +66,8 @@ SECONDARY trees
 cd $CMSSW_BASE/src/ZZAnalysis/AnalysisStep/test/Macros
 ln -s /data3/2014/HZZ_root/ rootuples
 ln -s /data3/2014/HZZ_stat/ trees
-
+mkdir -p /data3/2014/HZZ_stat/<YYMMDD>/PRODFSR_8TeV
 ./executeRun_8TeV.sh <YYMMDD> | tee trees/<YYMMDD>/PRODFSR_8TeV/secondary_log.txt
 ```
 
-Please store the logs as suggested, as they contain useulf information to understand what happens if some file has a problem.Z
-
+Please store the logs as suggested, as they contain useulf information to understand what happens if some file has a problem.

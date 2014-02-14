@@ -64,9 +64,9 @@
 2e2mu           Moriond2013  1   19630
 
 # Paper
-4mu             Legacy2013  1   19790
-4e              Legacy2013  1   19790
-2e2mu           Legacy2013  1   19790
+4mu             Legacy2013  1   19712
+4e              Legacy2013  1   19712
+2e2mu           Legacy2013  1   19712
 
 # 1 fb-1 placeholder
 all             1fb-1          1   1000
