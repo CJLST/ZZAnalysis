@@ -408,7 +408,7 @@ all ggTo4e_BSMHContinInterf-MCFM67_H125.6    1 0.001616550 1
 all ggTo4e_Contin-MCFM67                     1 0.000919027 1
 all ggTo4mu_SMH-MCFM67_H125.6                1 0.000325789 1
 all ggTo4mu_SMHContinInterf-MCFM67_H125.6    1 0.00118468  1
-all ggTo4e_BSMHContinInterf-MCFM67_H125.6    1 0.00161604  1
+all ggTo4mu_BSMHContinInterf-MCFM67_H125.6   1 0.00161604  1
 all ggTo4mu_Contin-MCFM67                    1 0.000918975 1
 all ggTo2e2mu_SMH-MCFM67_H125.6              1 0.000325466 1
 all ggTo2e2mu_SMHContinInterf-MCFM67_H125.6  1 0.00118409  1
