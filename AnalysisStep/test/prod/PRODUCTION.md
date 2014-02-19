@@ -7,12 +7,14 @@ PRIMARY trees
 -------------
 
 ```
+./batch.py -o PRODFSR analyzer_2011.py
 ./batch.py -o PRODFSR_8TeV analyzer_2012.py
 ```
 
 Once jobs are done:
 
 ```
+cd PRODFSR
 cd PRODFSR_8TeV
 ../checkProd.csh
 ```
@@ -68,6 +70,7 @@ cd $CMSSW_BASE/src/ZZAnalysis/AnalysisStep/test/Macros
 ln -s /data3/2014/HZZ_root/ rootuples
 ln -s /data3/2014/HZZ_stat/ trees
 mkdir -p /data3/2014/HZZ_stat/<YYMMDD>/PRODFSR_8TeV
+./executeRun_7TeV.sh <YYMMDD> | tee trees/<YYMMDD>/PRODFSR/secondary_log.txt
 ./executeRun_8TeV.sh <YYMMDD> | tee trees/<YYMMDD>/PRODFSR_8TeV/secondary_log.txt
 ```
 
