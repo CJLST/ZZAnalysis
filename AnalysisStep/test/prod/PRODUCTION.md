@@ -51,12 +51,13 @@ Now create links to the merged files into the HZZ_root folder:
 ```
 mkdir -p /data3/2014/HZZ_root/<YYMMDD>/PRODFSR_8TeV
 cd /data3/2014/HZZ_root/<YYMMDD>/PRODFSR_8TeV
-$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/test/prod/copyMergedFiles.sh /data/2014/HZZ_out/<YYMMDD>/PRODFSR_8TeV
+$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/test/prod/copyMergedFiles.sh /data3/2014/HZZ_out/<YYMMDD>/PRODFSR_8TeV
 ```
 
-Once ready, we still have to merge few datasets (data, ZZ+ZZext)
+Once ready, we still have to merge few datasets: data for 7TeV and data, ZZ+ZZext for 8TeV
 ```
-$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/test/prod/hadd.csh
+$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/test/prod/hadd_7TeV.csh
+$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/test/prod/hadd_8TeV.csh
 ```
 
 
