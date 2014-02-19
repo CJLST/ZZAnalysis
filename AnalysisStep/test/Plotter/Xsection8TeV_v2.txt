@@ -307,22 +307,25 @@ all            jhuH120                   1  0.0016239200         1
 all            jhuH125                   1  0.0024658200         1
 all            jhuH130                   1  0.0034046800         1
 all            jhuH140                   1  0.0050144000         1
+
 all            jhuPseH110                1  0.0005508800         1
 all            jhuPseH120                1  0.0016239200         1
 all            jhuPseH125                1  0.0024658200         1
 all            jhuPseH130                1  0.0034046800         1
 all            jhuPseH140                1  0.0050144000         1
+
 all            jhuGravH110               1  0.0005508800         1
 all            jhuGravH120               1  0.0016239200         1
 all            jhuGravH125               1  0.0024658200         1
 all            jhuGravH130               1  0.0034046800         1
 all            jhuGravH140               1  0.0050144000         1
 
-# JHUGEN samples (only ggH, only l=e,mu)
 all            jhuGenH125                1  0.0024658200         1
 all            jhuGenH126                1  0.0026399900         1
+
 all            jhuGenPseH125             1  0.0024658200         1
 all            jhuGenPseH126             1  0.0026399900         1
+
 all            jhuGenGravH125            1  0.0024658200         1
 all            jhuGenGravH126            1  0.0026399900         1
 
@@ -408,7 +411,7 @@ all ggTo4e_BSMHContinInterf-MCFM67_H125.6    1 0.001616550 1
 all ggTo4e_Contin-MCFM67                     1 0.000919027 1
 all ggTo4mu_SMH-MCFM67_H125.6                1 0.000325789 1
 all ggTo4mu_SMHContinInterf-MCFM67_H125.6    1 0.00118468  1
-all ggTo4e_BSMHContinInterf-MCFM67_H125.6    1 0.00161604  1
+all ggTo4mu_BSMHContinInterf-MCFM67_H125.6   1 0.00161604  1
 all ggTo4mu_Contin-MCFM67                    1 0.000918975 1
 all ggTo2e2mu_SMH-MCFM67_H125.6              1 0.000325466 1
 all ggTo2e2mu_SMHContinInterf-MCFM67_H125.6  1 0.00118409  1
@@ -420,7 +423,7 @@ all ggTo2e2mu_Contin-MCFM67                  1 0.000918826 1
 # VBFHiggs #
 #############
 
-all VBF0P_H125.6 1 0.0004615862 1
+all VBF0P_H125.6 1 0.0002077641 1
 
 
 ##########################################
@@ -495,7 +498,6 @@ all            ggZZ4l                    1   0.0048        1 #
 all            ggZZ2l2l                  1   0.01203       1 # 
 
 all            WJetsToLNu                1   36257.2       1 # /WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12
-
 all            WZ                        1   1.057         1 # /WZJetsTo3LNu_TuneZ2_8TeV-madgraph-tauola/Summer12 
 all            WWTo2L2Nu                 1   5.995         1 # /WWJetsTo2L2Nu_TuneZ2star_8TeV-madgraph-tauola
 
