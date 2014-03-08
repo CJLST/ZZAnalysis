@@ -2,7 +2,6 @@
 # samples. weight = lumi * xsec * BR / #events
 # (#events is always 1 here since it is taken from the root files)
 #
-#
 # The fields in the table are:
 #
 # finalState   sample             #events    x-section(pb)  BR_or_corrFactor
@@ -52,7 +51,7 @@ all            H950                      1   0.0000802074  1
 all            H1000                     1   0.0000604200  1
 
 
-#POWHEG15-jhuGenv3 samples, ggH only
+# POWHEG15-jhuGenv3 samples, ggH only
 all            powheg15jhuGenV3H110      1   0.0009443840  1
 all            powheg15jhuGenV3H115      1   0.0016870200  1
 all            powheg15jhuGenV3H120      1   0.0028138500  1
@@ -75,9 +74,9 @@ all            powheg15jhuGenV3H190      1   0.0127560400  1
 all            powheg15jhuGenV3H200      1   0.0139264300  1
 
 
-#POWHEG15 samples, ggH only
-all            powheg15H125              1   0.0042589600  1           #  "
-all            powheg15H126              1   0.0045843200  1           #  "
+# POWHEG15 samples, ggH only
+all            powheg15H125              1   0.0042589600  1
+all            powheg15H126              1   0.0045843200  1
 all            powheg15H225              1   0.0126411075  1
 all            powheg15H250              1   0.0107005500  1
 all            powheg15H275              1   0.0091578369  1
@@ -95,7 +94,7 @@ all            powheg15H900              1   0.0001078800  1
 all            powheg15H1000             1   0.0000604200  1
 
 
-#VBF samples
+# VBF samples
 all            VBFH115                      1   0.0001249920  1
 all            VBFH120                      1   0.0002161510  1
 all            VBFH125                      1   0.0003397160  1
@@ -296,7 +295,7 @@ all            ttH180                     1   0.0015965040  0.029658
 all            ttH200                     1   0.0047149500  0.029658
 
 
-#JHU samples (only ggH, only l=e,mu)
+# JHU samples (only ggH, only l=e,mu)
 all            jhuH110                   1   0.0004364800        1
 all            jhuH120                   1   0.0012753900        1
 all            jhuH125                   1   0.0019303200        1
@@ -321,10 +320,10 @@ all            jhuGenH126                1   0.0020659600        1
 all            jhuGenPseH125             1   0.0019303200        1
 all            jhuGenPseH126             1   0.0020659600        1
 
-all            jhuGenV2H126              1   0.0020659600        1
 all            jhuGenGravH125            1   0.0019303200        1
 all            jhuGenGravH126            1   0.0020659600        1
 
+all            jhuGenV2H126              1   0.0020659600        1
 all            jhuGenV2PseH126           1   0.0020659600        1
 all            jhuGenV2ScaHH126          1   0.0020659600        1
 all            jhuGenV2GravH126          1   0.0020659600        1
@@ -336,9 +335,9 @@ all            jhuGenV2Grav2PBH126       1   0.0020659600        1
 all            jhuGenV2Grav2PHH126       1   0.0020659600        1
 
 
-#JHUGENV3 spin-0 samples, x-sec for ggH, BR(H->4l,l=e,mu,tau)
+# JHUGENV3 spin-0 samples, x-sec for ggH, BR(H->4l,l=e,mu,tau)
+all            powheg15jhuGenV3-0PHH126          1   0.0045843200  1
 all            powheg15jhuGenV3-0MH126           1   0.0045843200  1
-all            powheg15jhuGenV3-0PH126           1   0.0045843200  1
 all            powheg15jhuGenV3-0Mf01ph0H126     1   0.0045843200  1
 all            powheg15jhuGenV3-0Mf01ph90H126    1   0.0045843200  1
 all            powheg15jhuGenV3-0Mf01ph180H126   1   0.0045843200  1
@@ -348,7 +347,7 @@ all            powheg15jhuGenV3-0Mf05ph90H126    1   0.0045843200  1
 all            powheg15jhuGenV3-0Mf05ph180H126   1   0.0045843200  1
 all            powheg15jhuGenV3-0Mf05ph270H126   1   0.0045843200  1
 
-#JHUGENV3 spin-1 and spin-2 samples, x-sec for ggH, BR(H->4l,l=e,mu)
+# JHUGENV3 spin-1 and spin-2 samples, x-sec for ggH, BR(H->4l,l=e,mu)
 all            jhuGenV3Vec1MH126                 1   0.0020659600  1
 all            jhuGenV3Vec1PH126                 1   0.0020659600  1
 all            jhuGenV3Grav2PMH126               1   0.0020659600  1
@@ -357,15 +356,65 @@ all            jhuGenV3Grav2PHH126               1   0.0020659600  1
 all            jhuGenV3Grav2MHH126               1   0.0020659600  1
 all            jhuGenV3Grav2PBH126               1   0.0020659600  1
 
-#JHUGENV3 samples at 125.6, x-sec for ggH, BR(H->4l,l=e,mu)
 
-all powheg15jhuGenV3-0MH125.6                  1 0.0020659600 1
-all powheg15jhuGenV3-0Mf01ph0H125.6            1 0.0020659600 1
-all powheg15jhuGenV3-0Mf01ph90H125.6           1 0.0020659600 1
-all powheg15jhuGenV3-0PH125.6                  1 0.0020659600 1
-all powheg15jhuGenV3-0PHf01ph90H125.6          1 0.0020659600 1
-all powheg15jhuGenV3-0PHf05ph0H125.6           1 0.0020659600 1
-all powheg15jhuGenV3-0PHf05ph0Mf05ph90H125.6   1 0.0020659600 1
+##########################################################################
+# powheg15-jhuGenV3-spin/CP-MH125.6, x-section for ggH, BR(H->4l,l=e,mu) #
+##########################################################################
+
+all powheg15jhuGenV3-0PMH125.6 1 0.0020055388 1
+all powheg15jhuGenV3-0MH125.6  1 0.0020055388 1
+all powheg15jhuGenV3-0PHH125.6 1 0.0020055388 1
+
+all powheg15jhuGenV3-0L1H125.6         1 0.0020055388 1
+all powheg15jhuGenV3-0L1f01ph0H125.6   1 0.0020055388 1
+all powheg15jhuGenV3-0L1f05ph0H125.6   1 0.0020055388 1
+all powheg15jhuGenV3-0L1f05ph180H125.6 1 0.0020055388 1
+
+all powheg15jhuGenV3-0Mf01ph0H125.6   1 0.0020055388 1
+all powheg15jhuGenV3-0Mf01ph90H125.6  1 0.0020055388 1
+all powheg15jhuGenV3-0Mf05ph0H125.6   1 0.0020055388 1
+all powheg15jhuGenV3-0Mf05ph90H125.6  1 0.0020055388 1
+all powheg15jhuGenV3-0Mf05ph180H125.6 1 0.0020055388 1
+
+all powheg15jhuGenV3-0PHf01ph0H125.6           1 0.0020055388 1
+all powheg15jhuGenV3-0PHf01ph90H125.6          1 0.0020055388 1
+all powheg15jhuGenV3-0PHf05ph0H125.6           1 0.0020055388 1
+all powheg15jhuGenV3-0PHf05ph90H125.6          1 0.0020055388 1
+all powheg15jhuGenV3-0PHf05ph180H125.6         1 0.0020055388 1
+all powheg15jhuGenV3-0PHf01ph0Mf01ph0H125.6    1 0.0020055388 1
+all powheg15jhuGenV3-0PHf01ph0Mf01ph90H125.6   1 0.0020055388 1
+all powheg15jhuGenV3-0PHf033ph0Mf033ph0H125.6  1 0.0020055388 1
+all powheg15jhuGenV3-0PHf033ph0Mf033ph90H125.6 1 0.0020055388 1
+all powheg15jhuGenV3-0PHf05ph0Mf05ph0H125.6    1 0.0020055388 1
+all powheg15jhuGenV3-0PHf05ph0Mf05ph90H125.6   1 0.0020055388 1
+all powheg15jhuGenV3-0PHf05ph180Mf05ph0H125.6  1 0.0020055388 1
+
+all powheg15jhuGenV3-Vec1Mf05ph01Pf05ph0H125.6  1 0.0020055388 1
+all powheg15jhuGenV3-Vec1Mf05ph01Pf05ph90H125.6 1 0.0020055388 1
+
+all powheg15jhuGenV3Vec1PH125.6                 1 0.0020055388 1
+all jhuGenV3Vec1MH125.6                         1 0.0020055388 1
+
+all powheg15jhuGenV3Grav2PH2H125.6             1 0.0020055388 1
+all powheg15jhuGenV3Grav2PH3H125.6             1 0.0020055388 1
+all powheg15jhuGenV3Grav2PH6H125.6  	       1 0.0020055388 1
+all powheg15jhuGenV3Grav2PH7H125.6  	       1 0.0020055388 1
+all powheg15jhuGenV3Grav2MH9H125.6 	       1 0.0020055388 1
+all powheg15jhuGenV3Grav2MH10H125.6 	       1 0.0020055388 1
+
+
+##########
+# MCFM67 #
+##########
+all ggTo4e_SMHContinInterf-MCFM67_H125.6     1 0.000450311 1
+all ggTo4mu_SMH-MCFM67_H125.6                1 0.000127526 1
+
+
+############
+# VBFHiggs #
+#############
+
+all VBF0P_H125.6 1 0.0001609009 1
 
 
 # Values separated by final state including Prophecy4f correction for same-sign enhancement
@@ -397,15 +446,17 @@ all powheg15jhuGenV3-0PHf05ph0Mf05ph90H125.6   1 0.0020659600 1
 #2e2mu          H180                      1   0.004745931   0.997290621   # = m12corr * 1
 
 
-
-
 # Backgrounds
-all            ZZTo4mu                   1   0.06609       1 #
-all            ZZTo4e                    1   0.06609       1 #
-all            ZZTo4tau                  1   0.06609       1 #
-all            ZZTo2e2mu                 1   0.152         1 #
-all            ZZTo2e2tau                1   0.152         1 #
-all            ZZTo2mu2tau               1   0.152         1 #
+all            ZZ4mu                   1   0.06609       1 #
+all            ZZ4e                    1   0.06609       1 #
+all            ZZ4tau                  1   0.06609       1 #
+all            ZZ2e2mu                 1   0.152         1 #
+all            ZZ2e2tau                1   0.152         1 #
+all            ZZ2mu2tau               1   0.152         1 #
+
+# Filter efficiencies [ZZ95 eff.]
+all	       ZZ95-160To4e		 1   0.02309       0.235
+all	       ZZ95-160To2mu2tau	 1   0.05311	   0.258
 
 all            ggZZ4l                    1   0.00174       1 #
 all            ggZZ2l2l                  1   0.00348       1 #
@@ -420,11 +471,11 @@ all            WZ                        1   0.868         1 # WZJetsTo3LNu_Tune
 all            WWTo2L2Nu                 1   4.88188       1 # WWJetsTo2L2Nu_TuneZ2_7TeV_pythia6_tauola 
 
 all            DYJetsToLLTuneZ2M10       1   12782.63      1 # FIXME from NdF; not in wiki
-all            DYJetsToLLTuneZ2M10-B      1   12782.63      1 # "
-all            DYJetsToLLTuneZ2M10-NoB    1   12782.63      1 # "
+all            DYJetsToLLTuneZ2M10-B     1   12782.63      1 # "
+all            DYJetsToLLTuneZ2M10-NoB   1   12782.63      1 # "
 all            DYJetsToLLTuneZ2M50       1   3048          1 # Unsplitted sample
-all            DYJetsToLLTuneZ2M50-B      1   3048          1 # 
-all            DYJetsToLLTuneZ2M50-NoB    1   3048          1 # 
+all            DYJetsToLLTuneZ2M50-B     1   3048          1 # 
+all            DYJetsToLLTuneZ2M50-NoB   1   3048          1 # 
 
 all            QCDMuEnriched15to20       1   1470660       1 # not used
 all            QCDMuEnriched20to30       1   1222480       1 # 
@@ -460,8 +511,9 @@ all           ggTo4l_H125.6                     1       0.00046 1 #
 all           ggTo4l_Continuum                  1       0.00129 1 #
 all           ggTo4l_ContinuumInterfH125.6      1       0.00162 1 #
 
-# References:
+#########
+# Links #
+#########
 # [Wiki] https://twiki.cern.ch/twiki/bin/view/CMS/HZZSamples7TeV
-
 # What was this one?
 #all            H120                      1   0.003213106   1.0024634 # the scale factor is multiplied by Rob's factor 1.1603652

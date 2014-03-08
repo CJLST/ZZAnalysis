@@ -105,6 +105,8 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
   mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
   int MassIndex=1;
   if(HZZ4L_HMassPole==126) MassIndex=0;
+  if(isZZGG) cout << "Seen gg->ZZ bkg!" << endl;
+  if(isZZQQB) cout << "Seen qq->ZZ bkg!" << endl;
 
   // Normalization variables
   Float_t MC_weight_initial        = 1.;
@@ -120,7 +122,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
   Float_t powheg_weight            = 1.;
   Float_t dataMCWeight             = 1.;
   Float_t HqTWeight                = 1.;
-  Float_t ZXfake_weight              = 1.;
+  Float_t ZXfake_weight            = 1.;
 
   cout << "Sample name :                          " << theSample << std::endl;
   cout << "Name of the output file :              " << outputName << std::endl;
@@ -523,12 +525,16 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 	float sample_probPdf_VAMCFM = 1.0;
 	float weight_probPdf = 1.0;
 	float weight_probPdf_VAMCFM = 1.0;
+	float MC_weight_ggZZLepInt=1;
   SelTree.Branch("kNumSamples",&numSamples);
   SelTree.Branch("MC_weight_spin0",MC_weight_samples_VAJHU,"MC_weight_spin0[kNumSamples]/F");
   SelTree.Branch("sampleprob_VAJHU",&sample_probPdf_VAJHU);
   if(isZZQQB || isZZGG){
 	  SelTree.Branch("MC_weight_QQBGG_VAMCFM",&MC_weight_QQBGG_VAMCFM);
 	  SelTree.Branch("sampleprob_VAMCFM",&sample_probPdf_VAMCFM);
+  };
+  if(isHZZ4l_NoLepInt){
+	  SelTree.Branch("MC_weight_ggZZLepInt",&MC_weight_ggZZLepInt);
   };
 
   if(saveJets){
@@ -946,16 +952,35 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 			};
 			if(genFinalState<=4) N_generated[genFinalState][0] += 1.0;
 
+			if(isHZZ4l_NoLepInt){
+				for(int gx=0;gx<20;gx++){
+					selfDHvvcoupl[gx][0]=0;
+					selfDHvvcoupl[gx][1]=0;
+				};
+				selfDHvvcoupl[0][0]=1;
+
+				if(abs(lepIdOrdered[0])==abs(lepIdOrdered[1]) && abs(lepIdOrdered[0])==abs(lepIdOrdered[2]) && abs(lepIdOrdered[0])==abs(lepIdOrdered[3])){
+					int lepLike2l2l[4]={ 11,-11,13,-13 };
+					int lepLike4l[4]={ 13,-13,13,-13 };
+
+					float noInterfProb_VAJHU = getJHUGenMELAWeight(mela, lepLike2l2l, angularOrdered, selfDHvvcoupl);
+					float withInterfProb_VAJHU = getJHUGenMELAWeight(mela, lepLike4l, angularOrdered, selfDHvvcoupl);
+					MC_weight_ggZZLepInt=2.0*withInterfProb_VAJHU/noInterfProb_VAJHU;
+				}
+				else{
+					MC_weight_ggZZLepInt=1;
+				};
+			};
 			if(isZZQQB || isZZGG){
 				mela.setProcess(TVar::bkgZZ, TVar::MCFM, TVar::ZZQQB); // Depart from what it was at the beginning of the loop.
 				float prob_ZZQQB = getMCFMMELAWeight(mela, lepIdOrdered, angularOrdered);
 				mela.setProcess(TVar::bkgZZ, TVar::MCFM, TVar::ZZGG);
 				float prob_ZZGG = getMCFMMELAWeight(mela, lepIdOrdered, angularOrdered);
-				if(isZZQQB){
+				if(isZZQQB && prob_ZZQQB!=0){
 					sample_probPdf_VAMCFM = prob_ZZQQB;
 					weight_probPdf_VAMCFM = prob_ZZGG;
 				}
-				else if(isZZGG){
+				else if(isZZGG && prob_ZZGG!=0){
 					weight_probPdf_VAMCFM = prob_ZZQQB;
 					sample_probPdf_VAMCFM = prob_ZZGG;
 				};

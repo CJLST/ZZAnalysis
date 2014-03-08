@@ -186,6 +186,7 @@ public:
   void setKappa(float mykappa){kappa = mykappa;}
   void setCR(bool myisCR){isCR = myisCR;}
   void setHZZ4l(bool myHZZ4l,int myHZZ4lSample,float myHZZ4L_HMassPole){isHZZ4l = myHZZ4l; HZZ4lSample=myHZZ4lSample; HZZ4L_HMassPole=myHZZ4L_HMassPole;}
+  void setHZZ4l_NoLepInt(bool myHZZ4l_NoLepInt){isHZZ4l_NoLepInt = myHZZ4l_NoLepInt;}
   void setGGQQB(bool myZZQQB,bool myZZGG){isZZQQB = myZZQQB; isZZGG = myZZGG;}
 
   // Some bookkeeping
@@ -221,6 +222,7 @@ private:
   float kappa;
 
   bool isHZZ4l;
+  bool isHZZ4l_NoLepInt;
   bool isZZQQB;
   bool isZZGG;
   int HZZ4lSample;
