@@ -405,14 +405,14 @@ all powheg15jhuGenV3Grav2MH10H125.6 	       1 0.002562639 1
 # MCFM67 #
 ##########
 
-all ggTo4e_SMH-MCFM67_H125.6                 1 0.000326014 1
-all ggTo4e_SMHContinInterf-MCFM67_H125.6     1 0.001184000 1
-all ggTo4e_BSMHContinInterf-MCFM67_H125.6    1 0.001616550 1
-all ggTo4e_Contin-MCFM67                     1 0.000919027 1
-all ggTo4mu_SMH-MCFM67_H125.6                1 0.000325789 1
-all ggTo4mu_SMHContinInterf-MCFM67_H125.6    1 0.00118468  1
-all ggTo4mu_BSMHContinInterf-MCFM67_H125.6   1 0.00161604  1
-all ggTo4mu_Contin-MCFM67                    1 0.000918975 1
+all ggTo4e_SMH-MCFM67_H125.6                 1 0.000163007 1
+all ggTo4e_SMHContinInterf-MCFM67_H125.6     1 0.000592000 1
+all ggTo4e_BSMHContinInterf-MCFM67_H125.6    1 0.000808275 1
+all ggTo4e_Contin-MCFM67                     1 0.000459514 1
+all ggTo4mu_SMH-MCFM67_H125.6                1 0.000162895 1
+all ggTo4mu_SMHContinInterf-MCFM67_H125.6    1 0.000592340 1
+all ggTo4mu_BSMHContinInterf-MCFM67_H125.6   1 0.000808020 1
+all ggTo4mu_Contin-MCFM67                    1 0.000459488 1
 all ggTo2e2mu_SMH-MCFM67_H125.6              1 0.000325466 1
 all ggTo2e2mu_SMHContinInterf-MCFM67_H125.6  1 0.00118409  1
 all ggTo2e2mu_BSMHContinInterf-MCFM67_H125.6 1 0.00161636  1
