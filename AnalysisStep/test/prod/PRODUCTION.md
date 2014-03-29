@@ -38,6 +38,7 @@ Notes:
 Once all jobs are finished, copy all trees to the standard path on lxcms00:
 ```
 mkdir /data3/2014/HZZ_out/<YYMMDD>
+mv AAAOK /data3/2014/HZZ_out/<YYMMDD>/PRODFSR
 mv AAAOK /data3/2014/HZZ_out/<YYMMDD>/PRODFSR_8TeV
 ```
 
@@ -45,6 +46,7 @@ hadd all chunks:
 
 ```
 cd /data3/2014/HZZ_out/<YYMMDD>
+haddChunks.py PRODFSR | tee haddlog_PRODFSR.txt
 haddChunks.py PRODFSR_8TeV | tee haddlog_PRODFSR_8TeV.txt
 ```
 This takes a while. 
