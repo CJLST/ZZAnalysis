@@ -406,9 +406,18 @@ all powheg15jhuGenV3Grav2MH10H125.6 	       1 0.0020055388 1
 ##########
 # MCFM67 #
 ##########
-all ggTo4e_SMHContinInterf-MCFM67_H125.6     1 0.000450311 1
-all ggTo4mu_SMH-MCFM67_H125.6                1 0.000127526 1
-
+all ggTo2e2mu_SMH-MCFM67_H125.6              1 0.0002550020 1
+all ggTo2e2mu_Contin-MCFM67                  1 0.0006885060 1
+all ggTo2e2mu_SMHContinInterf-MCFM67_H125.6  1 0.0009007290 1
+all ggTo2e2mu_BSMHContinInterf-MCFM67_H125.6 1 0.0011959600 1
+all ggTo4e_SMH-MCFM67_H125.6                 1 0.0001274200 1
+all ggTo4e_Contin-MCFM67                     1 0.0003442855 1
+all ggTo4e_SMHContinInterf-MCFM67_H125.6     1 0.0004503110 1
+all ggTo4e_BSMHContinInterf-MCFM67_H125.6    1 0.0005978900 1
+all ggTo4mu_SMH-MCFM67_H125.6                1 0.0001275260 1
+all ggTo4mu_Contin-MCFM67                    1 0.0003444025 1
+all ggTo4mu_SMHContinInterf-MCFM67_H125.6    1 0.0004503265 1
+all ggTo4mu_BSMHContinInterf-MCFM67_H125.6   1 0.0005977500 1
 
 ############
 # VBFHiggs #
