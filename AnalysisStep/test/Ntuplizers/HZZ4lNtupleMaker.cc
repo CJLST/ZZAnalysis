@@ -677,6 +677,14 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   const Float_t p0_g1prime2_VAJHU= cand.userFloat("p0_g1prime2_VAJHU");
   const Float_t pg1g1prime2_VAJHU= cand.userFloat("pg1g1prime2_VAJHU");
   const Float_t Dgg10_VAMCFM= cand.userFloat("Dgg10_VAMCFM");
+  const Float_t pzzzg_VAJHU= cand.userFloat(    "pzzzg_VAJHU");
+  const Float_t pzzgg_VAJHU= cand.userFloat(    "pzzgg_VAJHU");
+  const Float_t pzzzg_PS_VAJHU= cand.userFloat( "pzzzg_PS_VAJHU");
+  const Float_t pzzgg_PS_VAJHU= cand.userFloat( "pzzgg_PS_VAJHU");
+  const Float_t p0Zgs_VAJHU= cand.userFloat(    "p0Zgs_VAJHU");
+  const Float_t p0gsgs_VAJHU= cand.userFloat(   "p0gsgs_VAJHU");
+  const Float_t p0Zgs_PS_VAJHU= cand.userFloat( "p0Zgs_PS_VAJHU");
+  const Float_t p0gsgs_PS_VAJHU= cand.userFloat("p0gsgs_PS_VAJHU");
 
   Int_t isSignal = -1;
   Int_t isRightPair = -1;
@@ -824,7 +832,15 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 			  pg1g4_pi2_VAJHU,
 			  pg1g2_pi2_VAJHU,
 			  pg1g2_mela,
-			  pg1g2_VAJHU
+			  pg1g2_VAJHU,
+			  pzzzg_VAJHU,
+			  pzzgg_VAJHU,
+			  pzzzg_PS_VAJHU,
+			  pzzgg_PS_VAJHU,
+			  p0Zgs_VAJHU,
+			  p0gsgs_VAJHU,
+			  p0Zgs_PS_VAJHU,
+			  p0gsgs_PS_VAJHU
 			  //bkg_VAMCFMNorm,
 			  //p0_pt,
 			  //p0_y,

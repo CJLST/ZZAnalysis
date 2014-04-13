@@ -305,6 +305,14 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
   Float_t mypg1g2_mela= 0.;
   Float_t mypg1g2_VAJHU= 0.; 
 
+  Float_t mypzzzg_VAJHU=0.;
+  Float_t mypzzgg_VAJHU=0.;
+  Float_t mypzzzg_PS_VAJHU=0.;
+  Float_t mypzzgg_PS_VAJHU=0.;
+  Float_t myp0Zgs_VAJHU=0.;
+  Float_t myp0gsgs_VAJHU=0.;
+  Float_t myp0Zgs_PS_VAJHU=0.;
+  Float_t myp0gsgs_PS_VAJHU=0.;
   //Jet variables
   Float_t myDiJetMass      = -99.;
   Float_t myDiJetMassPlus  = -99.;
@@ -437,6 +445,15 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
   SelTree.Branch("pg1g2_pi2_VAJHU",&mypg1g2_pi2_VAJHU,"pg1g2_pi2_VAJHU/F");
   SelTree.Branch("pg1g2_mela",&mypg1g2_mela,"pg1g2_mela/F");
   SelTree.Branch("pg1g2_VAJHU",&mypg1g2_VAJHU,"pg1g2_VAJHU/F");
+
+  SelTree.Branch("pzzzg_VAJHU",    &mypzzzg_VAJHU,    "pzzzg_VAJHU/F");
+  SelTree.Branch("pzzgg_VAJHU",    &mypzzgg_VAJHU,    "pzzgg_VAJHU/F");
+  SelTree.Branch("pzzzg_PS_VAJHU", &mypzzzg_PS_VAJHU, "pzzzg_PS_VAJHU/F");
+  SelTree.Branch("pzzgg_PS_VAJHU", &mypzzgg_PS_VAJHU, "pzzgg_PS_VAJHU/F");
+  SelTree.Branch("p0Zgs_VAJHU",    &myp0Zgs_VAJHU,     "p0Zgs_VAJHU/F");
+  SelTree.Branch("p0gsgs_VAJHU",   &myp0gsgs_VAJHU,   "p0gsgs_VAJHU/F");
+  SelTree.Branch("p0Zgs_PS_VAJHU", &myp0Zgs_PS_VAJHU, "p0Zgs_PS_VAJHU/F");
+  SelTree.Branch("p0gsgs_PS_VAJHU",&myp0gsgs_PS_VAJHU,"p0gsgs_PS_VAJHU/F");
   SelTree.Branch("genProcessId",&mygenProcessId,"genProcessId/S");
   SelTree.Branch("genHEPMCweight",&mygenHEPMCweight,"genHEPMCweight/F");
   SelTree.Branch("GenHPt",&mygenhpt,"GenHPt/F");
@@ -481,18 +498,14 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
     SelTree.Branch("ZXfake_weight",&ZXfake_weight,"ZXfake_weight/F");
   }
 
-
-
   //Start looping over the events
   Long64_t nb = 0;
   for (Long64_t jentry=0;jentry<nentries;jentry++) {
     Long64_t ientry = LoadTree(jentry);
     if (ientry < 0) break;
     nb = fChain->GetEntry(jentry);
-
     //    static const string filestring = fChain->GetCurrentFile()->GetName();
     nTOTEv++;
-
     // MC weighting, including data/MC corrections and PU
     if(!isData){
       MC_weight_interm = MC_weight_initial;
@@ -574,7 +587,6 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
       if(GenLep4Pt > muptmax) muptmax = GenLep4Pt;
       hLepGenPt.Fill(muptmax);
     }
-
       // Jet information: at present the list of jets is relative to the best candidate only
       // It is empty in the CR, where only "ZZFisher" is saved!
       // Note that the list includes jets below 30, for JES syst studies
@@ -747,6 +759,15 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
       mypg1g2_pi2_VAJHU= pg1g2_pi2_VAJHU->at(nH); 
       mypg1g2_mela=      pg1g2_mela->at(nH);      
       mypg1g2_VAJHU=     pg1g2_VAJHU->at(nH);     
+  		mypzzzg_VAJHU=    pzzzg_VAJHU->at(nH);
+  		mypzzgg_VAJHU=    pzzgg_VAJHU->at(nH);
+  		mypzzzg_PS_VAJHU= pzzzg_PS_VAJHU->at(nH);
+  		mypzzgg_PS_VAJHU= pzzgg_PS_VAJHU->at(nH);
+  		myp0Zgs_VAJHU=    p0Zgs_VAJHU->at(nH);
+  		myp0gsgs_VAJHU=   p0gsgs_VAJHU->at(nH);
+  		myp0Zgs_PS_VAJHU= p0Zgs_PS_VAJHU->at(nH);
+  		myp0gsgs_PS_VAJHU=p0gsgs_PS_VAJHU->at(nH);
+
       myp0plus_m4l_ScaleUp = p0plus_m4l_ScaleUp->at(nH);
       myp0plus_m4l_ScaleDown = p0plus_m4l_ScaleDown->at(nH);
       myp0plus_m4l_ResUp = p0plus_m4l_ResUp->at(nH);
@@ -774,7 +795,6 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 	if (myZZFisher>=0) myNJets30=2;
 	else myNJets30=0;
       }
-
       myZ1ids = myLep1ID*myLep2ID;
       myZ2ids = myLep3ID*myLep4ID;
 

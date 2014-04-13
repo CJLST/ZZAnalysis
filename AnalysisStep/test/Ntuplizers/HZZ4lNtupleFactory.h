@@ -119,7 +119,15 @@ class HZZ4lNtupleFactory{
 			 const Float_t pg1g4_pi2_VAJHU,
 			 const Float_t pg1g2_pi2_VAJHU,
 			 const Float_t pg1g2_mela,
-			 const Float_t pg1g2_VAJHU
+			 const Float_t pg1g2_VAJHU,
+			 const Float_t pzzzg_VAJHU,
+			 const Float_t pzzgg_VAJHU,
+			 const Float_t pzzzg_PS_VAJHU,
+			 const Float_t pzzgg_PS_VAJHU,
+			 const Float_t p0Zgs_VAJHU,
+			 const Float_t p0gsgs_VAJHU,
+			 const Float_t p0Zgs_PS_VAJHU,
+			 const Float_t p0gsgs_PS_VAJHU
 			 //const Float_t bkg_VAMCFMNorm,
 			 //const Float_t p0_pt,
 			 //const Float_t p0_y,
@@ -302,6 +310,14 @@ class HZZ4lNtupleFactory{
   std::vector<Float_t> _pg1g1prime2_VAJHU; //VBF, vector algebra, JHUGen, New Jet Selection, JEC -
   std::vector<Float_t> _Dgg10_VAMCFM; //VBF, vector algebra, JHUGen, New Jet Selection, JEC -
 
+  std::vector<Float_t> _pzzzg_VAJHU;
+  std::vector<Float_t> _pzzgg_VAJHU;
+  std::vector<Float_t> _pzzzg_PS_VAJHU;
+  std::vector<Float_t> _pzzgg_PS_VAJHU;
+  std::vector<Float_t> _p0Zgs_VAJHU;
+  std::vector<Float_t> _p0gsgs_VAJHU;
+  std::vector<Float_t> _p0Zgs_PS_VAJHU;
+  std::vector<Float_t> _p0gsgs_PS_VAJHU;
 
   std::vector<Float_t> _ZZmZa;
   std::vector<Float_t> _ZZmZb;

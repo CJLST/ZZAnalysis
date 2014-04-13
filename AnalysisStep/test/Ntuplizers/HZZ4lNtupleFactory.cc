@@ -207,6 +207,14 @@ void HZZ4lNtupleFactory::InitializeVariables()
 	_pg1g1prime2_VAJHU.clear();
 	_Dgg10_VAMCFM.clear();
 
+  _pzzzg_VAJHU.clear();
+  _pzzgg_VAJHU.clear();
+  _pzzzg_PS_VAJHU.clear();
+  _pzzgg_PS_VAJHU.clear();
+  _p0Zgs_VAJHU.clear();
+  _p0gsgs_VAJHU.clear();
+  _p0Zgs_PS_VAJHU.clear();
+  _p0gsgs_PS_VAJHU.clear();
 
   _ZZmZa.clear();
   _ZZmZb.clear();
@@ -466,6 +474,14 @@ void HZZ4lNtupleFactory::InitializeBranches()
   _outTree->Branch("pg1g1prime2_VAJHU",&_pg1g1prime2_VAJHU);
   _outTree->Branch("Dgg10_VAMCFM",&_Dgg10_VAMCFM);
 
+  _outTree->Branch("pzzzg_VAJHU",      &_pzzzg_VAJHU);
+  _outTree->Branch("pzzgg_VAJHU",      &_pzzgg_VAJHU);
+  _outTree->Branch("pzzzg_PS_VAJHU",   &_pzzzg_PS_VAJHU);
+  _outTree->Branch("pzzgg_PS_VAJHU",   &_pzzgg_PS_VAJHU);
+  _outTree->Branch("p0Zgs_VAJHU",      &_p0Zgs_VAJHU);
+  _outTree->Branch("p0gsgs_VAJHU",     &_p0gsgs_VAJHU);
+  _outTree->Branch("p0Zgs_PS_VAJHU",   &_p0Zgs_PS_VAJHU);
+  _outTree->Branch("p0gsgs_PS_VAJHU",  &_p0gsgs_PS_VAJHU);
   //Z1 variables
   _outTree->Branch("Z1Mass",&_Z1Mass);
   _outTree->Branch("Z1Pt",&_Z1Pt);
@@ -792,7 +808,15 @@ void HZZ4lNtupleFactory::FillProbability(  //const Float_t p0plus_melaNorm,
 					   const Float_t pg1g4_pi2_VAJHU,
 					   const Float_t pg1g2_pi2_VAJHU,
 					   const Float_t pg1g2_mela,
-					   const Float_t pg1g2_VAJHU					   
+					   const Float_t pg1g2_VAJHU,
+			       const Float_t pzzzg_VAJHU,
+			       const Float_t pzzgg_VAJHU,
+			       const Float_t pzzzg_PS_VAJHU,
+			       const Float_t pzzgg_PS_VAJHU,
+			       const Float_t p0Zgs_VAJHU,
+			       const Float_t p0gsgs_VAJHU,
+			       const Float_t p0Zgs_PS_VAJHU,
+			       const Float_t p0gsgs_PS_VAJHU
 					   //const Float_t bkg_VAMCFMNorm,
 					   //const Float_t p0_pt,
 					   //const Float_t p0_y,
@@ -880,6 +904,14 @@ void HZZ4lNtupleFactory::FillProbability(  //const Float_t p0plus_melaNorm,
   _pg1g2_pi2_VAJHU.push_back(pg1g2_pi2_VAJHU);
   _pg1g2_mela.push_back(pg1g2_mela);
   _pg1g2_VAJHU.push_back(pg1g2_VAJHU);
+  _pzzzg_VAJHU.push_back(    pzzzg_VAJHU);
+  _pzzgg_VAJHU.push_back(    pzzgg_VAJHU);
+  _pzzzg_PS_VAJHU.push_back( pzzzg_PS_VAJHU);
+  _pzzgg_PS_VAJHU.push_back( pzzgg_PS_VAJHU);
+  _p0Zgs_VAJHU.push_back(    p0Zgs_VAJHU);
+  _p0gsgs_VAJHU.push_back(   p0gsgs_VAJHU);
+  _p0Zgs_PS_VAJHU.push_back( p0Zgs_PS_VAJHU);
+  _p0gsgs_PS_VAJHU.push_back(p0gsgs_PS_VAJHU);
   //_bkg_VAMCFMNorm.push_back(bkg_VAMCFMNorm);
   //_p0_pt.push_back(p0_pt);
   //_p0_y.push_back(p0_y);

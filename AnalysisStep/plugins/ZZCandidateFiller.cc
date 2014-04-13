@@ -367,7 +367,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     double p0plus_m4l,bkg_m4l; //supermela
     double p0plus_m4l_ScaleUp,bkg_m4l_ScaleUp,p0plus_m4l_ScaleDown,bkg_m4l_ScaleDown,p0plus_m4l_ResUp,bkg_m4l_ResUp,p0plus_m4l_ResDown,bkg_m4l_ResDown; // supermela uncertainties
 
-		double p0_g1prime2_VAJHU, Dgg10_VAMCFM;
+		double p0_g1prime2_VAJHU, Dgg10_VAMCFM, pzzzg_VAJHU,pzzgg_VAJHU,p0Zgs_VAJHU,p0gsgs_VAJHU,pzzzg_PS_VAJHU,pzzgg_PS_VAJHU,p0Zgs_PS_VAJHU,p0gsgs_PS_VAJHU;
     // No longer used - AJW
     //int flavor; flavor=0;
     //if(abs(id11)==abs(id21) && abs(id11)==11 )// 4e
@@ -445,6 +445,11 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     combinedMEM.computeME(MEMNames::k0_g1prime2,MEMNames::kJHUGen,partP,partId,p0_g1prime2_VAJHU);     // background, vector algebra, MCFM
     combinedMEM.computeME(MEMNames::kggHZZ_10,MEMNames::kMCFM,partP,partId,Dgg10_VAMCFM);     // background, vector algebra, MCFM
     //combinedMEM.computeME(MEMNames::kggZZ        ,MEMNames::kMCFM      ,partP,partId,ggzz_VAMCFM);    // background, vector algebra, MCFM for ggzz
+
+    combinedMEM.computeME(MEMNames::k0_Zgs			 ,MEMNames::kJHUGen    ,partP,partId,p0Zgs_VAJHU);  // SM Higgs to Zgamma star 
+    combinedMEM.computeME(MEMNames::k0_gsgs      ,MEMNames::kJHUGen    ,partP,partId,p0gsgs_VAJHU);  // SM Higgs to gamma star gamma star 
+    combinedMEM.computeME(MEMNames::k0_Zgs_PS			 ,MEMNames::kJHUGen    ,partP,partId,p0Zgs_PS_VAJHU);  // SM Higgs to Zgamma star 
+    combinedMEM.computeME(MEMNames::k0_gsgs_PS      ,MEMNames::kJHUGen    ,partP,partId,p0gsgs_PS_VAJHU);  // SM Higgs to gamma star gamma star 
 
     //MEs for ggZZ + signal interference
 //    double coupling[2]={0.0,0.0};
@@ -543,6 +548,10 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     combinedMEM.computeME_Interference(MEMNames::kg1g2,     MEMNames::kJHUGen,     partP, partId, pg1g2_VAJHU);     
     combinedMEM.computeME_Interference(MEMNames::k_g1g1prime2,     MEMNames::kJHUGen,     partP, partId, pg1g1prime2_VAJHU);     
 
+    combinedMEM.computeME_Interference(MEMNames::kzzzg,MEMNames::kJHUGen,partP, partId,pzzzg_VAJHU);
+    combinedMEM.computeME_Interference(MEMNames::kzzgg,MEMNames::kJHUGen,partP, partId,pzzgg_VAJHU);
+    combinedMEM.computeME_Interference(MEMNames::kzzzg_PS,MEMNames::kJHUGen,partP, partId,pzzzg_PS_VAJHU);
+    combinedMEM.computeME_Interference(MEMNames::kzzgg_PS,MEMNames::kJHUGen,partP, partId,pzzgg_PS_VAJHU);
     // VBF jets
     vector<const cmg::PFJet*> cleanedJets;
     VBFCandidateJetSelector myVBFCandidateJetSelector;
@@ -1038,6 +1047,16 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     myCand.addUserFloat("p0_g1prime2_VAJHU",p0_g1prime2_VAJHU);
     myCand.addUserFloat("pg1g1prime2_VAJHU",pg1g1prime2_VAJHU);
     myCand.addUserFloat("Dgg10_VAMCFM",Dgg10_VAMCFM);
+
+    myCand.addUserFloat("pzzzg_VAJHU",pzzzg_VAJHU);
+    myCand.addUserFloat("pzzgg_VAJHU",pzzgg_VAJHU);
+    myCand.addUserFloat("p0Zgs_VAJHU",p0Zgs_VAJHU);
+    myCand.addUserFloat("p0gsgs_VAJHU",p0gsgs_VAJHU);
+
+    myCand.addUserFloat("pzzzg_PS_VAJHU",pzzzg_PS_VAJHU);
+    myCand.addUserFloat("pzzgg_PS_VAJHU",pzzgg_PS_VAJHU);
+    myCand.addUserFloat("p0Zgs_PS_VAJHU",p0Zgs_PS_VAJHU);
+    myCand.addUserFloat("p0gsgs_PS_VAJHU",p0gsgs_PS_VAJHU);
     //--- MC matching
     if (isMC) {
       int refID = 25; // FIXME: handle ZZ (sigId = 23)
