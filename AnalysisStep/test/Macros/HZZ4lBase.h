@@ -113,6 +113,14 @@ public :
    std::vector<float>   *p0_g1prime2_VAJHU;
    std::vector<float>   *pg1g1prime2_VAJHU;
    std::vector<float>   *Dgg10_VAMCFM;
+   std::vector<float>   *pzzzg_VAJHU;
+   std::vector<float>   *pzzgg_VAJHU;
+   std::vector<float>   *pzzzg_PS_VAJHU;
+   std::vector<float>   *pzzgg_PS_VAJHU;
+   std::vector<float>   *p0Zgs_VAJHU;
+   std::vector<float>   *p0gsgs_VAJHU;
+   std::vector<float>   *p0Zgs_PS_VAJHU;
+   std::vector<float>   *p0gsgs_PS_VAJHU;
    std::vector<float>   *p0plus_m4l;
    std::vector<float>   *bkg_m4l;
    std::vector<float>   *p0plus_m4l_ScaleUp;
@@ -189,6 +197,9 @@ public :
    std::vector<float>   *JetMass;
    std::vector<float>   *JetBTag;
    std::vector<float>   *JetSigma;
+   std::vector<float>   *JetQG;
+   std::vector<float>   *JetQGsmear;
+   std::vector<float>   *JetQGL;
    Float_t         DiJetMass;
    Float_t         DiJetMassPlus;
    Float_t         DiJetMassMinus;
@@ -307,6 +318,14 @@ public :
    TBranch        *b_p0_g1prime2_VAJHU;   //!
    TBranch        *b_pg1g1prime2_VAJHU;   //!
    TBranch        *b_Dgg10_VAMCFM;   //!
+   TBranch        *b_pzzzg_VAJHU;
+   TBranch        *b_pzzgg_VAJHU;
+   TBranch        *b_pzzzg_PS_VAJHU;
+   TBranch        *b_pzzgg_PS_VAJHU;
+   TBranch        *b_p0Zgs_VAJHU;
+   TBranch        *b_p0gsgs_VAJHU;
+   TBranch        *b_p0Zgs_PS_VAJHU;
+   TBranch        *b_p0gsgs_PS_VAJHU;
    TBranch        *b_p0plus_m4l;   //!
    TBranch        *b_bkg_m4l;   //!
    TBranch        *b_p0plus_m4l_ScaleUp;   //!
@@ -383,6 +402,9 @@ public :
    TBranch        *b_JetMass;   //!
    TBranch        *b_JetBTag;   //!
    TBranch        *b_JetSigma;   //!
+   TBranch        *b_JetQG;   //!
+   TBranch        *b_JetQGsmear;   //!
+   TBranch        *b_JetQGL;   //!
    TBranch        *b_DiJetMass;   //!
    TBranch        *b_DiJetMassPlus;   //!
    TBranch        *b_DiJetMassMinus;   //!
@@ -552,6 +574,14 @@ void HZZ4lBase::Init(TTree *tree)
    p0_g1prime2_VAJHU = 0;
    pg1g1prime2_VAJHU = 0;
    Dgg10_VAMCFM = 0;
+   pzzzg_VAJHU=0;
+   pzzgg_VAJHU=0;
+   pzzzg_PS_VAJHU=0;
+   pzzgg_PS_VAJHU=0;
+   p0Zgs_VAJHU=0;
+   p0gsgs_VAJHU=0;
+   p0Zgs_PS_VAJHU=0;
+   p0gsgs_PS_VAJHU=0;
    p0plus_m4l = 0;
    bkg_m4l = 0;
    p0plus_m4l_ScaleUp = 0;
@@ -628,6 +658,9 @@ void HZZ4lBase::Init(TTree *tree)
    JetMass = 0;
    JetBTag = 0;
    JetSigma = 0;
+   JetQG = 0;
+   JetQGsmear = 0;
+   JetQGL = 0;
    // Set branch addresses and branch pointers
    if (!tree) return;
    fChain = tree;
@@ -724,6 +757,16 @@ void HZZ4lBase::Init(TTree *tree)
    fChain->SetBranchAddress("p0_g1prime2_VAJHU", &p0_g1prime2_VAJHU, &b_p0_g1prime2_VAJHU);
    fChain->SetBranchAddress("pg1g1prime2_VAJHU", &pg1g1prime2_VAJHU, &b_pg1g1prime2_VAJHU);
    fChain->SetBranchAddress("Dgg10_VAMCFM", &Dgg10_VAMCFM, &b_Dgg10_VAMCFM);
+   if (fChain->GetBranchStatus("pzzzg_VAJHU")){
+	   fChain->SetBranchAddress("pzzzg_VAJHU", &pzzzg_VAJHU, &b_pzzzg_VAJHU);
+	   fChain->SetBranchAddress("pzzgg_VAJHU", &pzzgg_VAJHU, &b_pzzgg_VAJHU);
+	   fChain->SetBranchAddress("pzzzg_PS_VAJHU", &pzzzg_PS_VAJHU, &b_pzzzg_PS_VAJHU);
+	   fChain->SetBranchAddress("pzzgg_PS_VAJHU", &pzzgg_PS_VAJHU, &b_pzzgg_PS_VAJHU);
+	   fChain->SetBranchAddress("p0Zgs_VAJHU", &p0Zgs_VAJHU, &b_p0Zgs_VAJHU);
+	   fChain->SetBranchAddress("p0gsgs_VAJHU", &p0gsgs_VAJHU, &b_p0gsgs_VAJHU);
+	   fChain->SetBranchAddress("p0Zgs_PS_VAJHU", &p0Zgs_PS_VAJHU, &b_p0Zgs_PS_VAJHU);
+	   fChain->SetBranchAddress("p0gsgs_PS_VAJHU", &p0gsgs_PS_VAJHU, &b_p0gsgs_PS_VAJHU);
+   };
    fChain->SetBranchAddress("p0plus_m4l", &p0plus_m4l, &b_p0plus_m4l);
    fChain->SetBranchAddress("bkg_m4l", &bkg_m4l, &b_bkg_m4l);
    fChain->SetBranchAddress("p0plus_m4l_ScaleUp", &p0plus_m4l_ScaleUp, &b_p0plus_m4l_ScaleUp);
@@ -800,6 +843,11 @@ void HZZ4lBase::Init(TTree *tree)
    fChain->SetBranchAddress("JetMass", &JetMass, &b_JetMass);
    fChain->SetBranchAddress("JetBTag", &JetBTag, &b_JetBTag);
    fChain->SetBranchAddress("JetSigma", &JetSigma, &b_JetSigma);
+   if (fChain->GetBranchStatus("JetQG")){
+	   fChain->SetBranchAddress("JetQG", &JetQG, &b_JetQG);
+	   fChain->SetBranchAddress("JetQGsmear", &JetQGsmear, &b_JetQGsmear);
+	   fChain->SetBranchAddress("JetQGL", &JetQGL, &b_JetQGL);
+   };
    fChain->SetBranchAddress("DiJetMass", &DiJetMass, &b_DiJetMass);
    fChain->SetBranchAddress("DiJetMassPlus", &DiJetMassPlus, &b_DiJetMassPlus);
    fChain->SetBranchAddress("DiJetMassMinus", &DiJetMassMinus, &b_DiJetMassMinus);
