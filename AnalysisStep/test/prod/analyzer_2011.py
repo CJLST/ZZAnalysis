@@ -161,6 +161,7 @@ samples = [
     ('ggTo4e_SMH-MCFM67_H125.6', 'cmgtools', '/GluGluTo4e_SMH_M-125p6_7TeV-MCFM67-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
     ('ggTo4e_SMHContinInterf-MCFM67_H125.6', 'cmgtools', '/GluGluTo4e_SMHContinInterf_M-125p6_7TeV-MCFM67-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
     ('ggTo4e_BSMHContinInterf-MCFM67_H125.6', 'cmgtools', '/GluGluTo4e_BSMHContinInterf_M-125p6_7TeV-MCFM67-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('ggTo4e_Contin-MCFM67', 'cmgtools', '/GluGluTo4e_Contin_7TeV-MCFM67-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
 
     ('ggTo4mu_SMH-MCFM67_H125.6', 'cmgtools', '/GluGluTo4mu_SMH_M-125p6_7TeV-MCFM67-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
     ('ggTo4mu_SMHContinInterf-MCFM67_H125.6', 'cmgtools', '/GluGluTo4mu_SMHContinInterf_M-125p6_7TeV-MCFM67-pythia6/Fall11-PU_S6_START42_V14B-v2/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
@@ -168,6 +169,7 @@ samples = [
     ('ggTo4mu_Contin-MCFM67', 'cmgtools', '/GluGluTo4mu_Contin_7TeV-MCFM67-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
 
     ('ggTo2e2mu_SMH-MCFM67_H125.6', 'cmgtools', '/GluGluTo2e2mu_SMH_M-125p6_7TeV-MCFM67-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('ggTo2e2mu_SMHContinInterf-MCFM67_H125.6', 'cmgtools', '/GluGluTo2e2mu_SMHContinInterf_M-125p6_7TeV-MCFM67-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
     ('ggTo2e2mu_BSMHContinInterf-MCFM67_H125.6', 'cmgtools', '/GluGluTo2e2mu_BSMHContinInterf_M-125p6_7TeV-MCFM67-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
     ('ggTo2e2mu_Contin-MCFM67', 'cmgtools', '/GluGluTo2e2mu_Contin_7TeV-MCFM67-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
 
