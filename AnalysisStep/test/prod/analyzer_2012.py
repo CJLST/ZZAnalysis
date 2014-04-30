@@ -145,12 +145,28 @@ samples = [
     ('powheg15jhuGenV3-0PHf05ph0Mf05ph90H125.6', 'cmgtools', '/Higgs0PHf05ph0Mf05ph90ToZZTo4L_M-125p6_8TeV-powheg15-JHUgenV3/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
     ('powheg15jhuGenV4-0PHf05ph180Mf05ph0H125.6', 'cmgtools', '/Higgs0PHf05ph180Mf05ph0ToZZTo4L_M-125p6_8TeV-powheg15-JHUgenV4/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
     
+    ('jhuGenV3-Vec1Mf05ph01Pf05ph0H125.6', 'cmgtools', '/Vector1Mf05ph01Pf05ph0ToZZTo4L_M-125p6_8TeV-JHUGenV3-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('jhuGenV3-Vec1Mf05ph01Pf05ph90H125.6', 'cmgtools', '/Vector1Mf05ph01Pf05ph90ToZZTo4L_M-125p6_8TeV-JHUGenV3-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+
+    ('jhuGenV3Vec1PH125.6', 'cmgtools', '/Vector1PToZZTo4L_M-125p6_8TeV-JHUGenV3-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('jhuGenV3Vec1MH125.6', 'cmgtools', '/Vector1MToZZTo4L_M-125p6_8TeV-JHUGenV3-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+
+
+    ('jhuGenV3Grav2PH2H125.6', 'cmgtools', '/Graviton2PH2ToZZTo4L_M-125p6_8TeV-JHUGenV3-pythia6/Summer12_DR53X-PU_S10_START53_V19-v2/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
     ('jhuGenV3Grav2PH3H125.6', 'cmgtools', '/Graviton2PH3ToZZTo4L_M-125p6_8TeV-JHUGenV3-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 2, "MCAllEvents"),
     ('jhuGenV3Grav2PH6H125.6', 'cmgtools', '/Graviton2PH6ToZZTo4L_M-125p6_8TeV-JHUGenV3-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 2, "MCAllEvents"),
     ('jhuGenV3Grav2PH7H125.6', 'cmgtools', '/Graviton2PH7ToZZTo4L_M-125p6_8TeV-JHUGenV3-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 2, "MCAllEvents"),
     ('jhuGenV3Grav2MH9H125.6', 'cmgtools', '/Graviton2MH9ToZZTo4L_M-125p6_8TeV-JHUGenV3-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
     ('jhuGenV3Grav2MH10H125.6', 'cmgtools', '/Graviton2MH10ToZZTo4L_M-125p6_8TeV-JHUGenV3-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 2, "MCAllEvents"),
-
+    ('jhuGenV3Grav2PH2qqbH125.6', 'cmgtools', '/Graviton2PH2qqbarToZZTo4L_M-125p6_8TeV-JHUGenV3-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('jhuGenV3Grav2PH3qqbH125.6', 'cmgtools', '/Graviton2PH3qqbarToZZTo4L_M-125p6_8TeV-JHUGenV3-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('jhuGenV3Grav2PHqqbH125.6', 'cmgtools', '/Graviton2HPqqbarToZZTo4L_M-125p6_8TeV-JHUGenV3-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('jhuGenV3Grav2PH6qqbH125.6', 'cmgtools', '/Graviton2PH6qqbarToZZTo4L_M-125p6_8TeV-JHUGenV3-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('jhuGenV3Grav2PH7qqbH125.6', 'cmgtools', '/Graviton2PH7qqbarToZZTo4L_M-125p6_8TeV-JHUGenV3-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('jhuGenV3Grav2MHqqbH125.6', 'cmgtools', '/Graviton2HMqqbarToZZTo4L_M-125p6_8TeV-JHUGenV3-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('jhuGenV3Grav2MH9qqbH125.6', 'cmgtools', '/Graviton2MH9qqbarToZZTo4L_M-125p6_8TeV-JHUGenV3-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('jhuGenV3Grav2MH10qqbH125.6', 'cmgtools', '/Graviton2MH10qqbarToZZTo4L_M-125p6_8TeV-JHUGenV3-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    
     
     ### MCFM67 samples
     ('ggTo4e_SMH-MCFM67_H125.6', 'cmgtools', '/GluGluTo4e_SMH_M-125p6_8TeV-MCFM67-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
@@ -168,8 +184,28 @@ samples = [
            
            
     ### VBFHiggs
+    ('VBF0M_H125.6', 'cmgtools', '/VBFHiggs0MToZZTo4L_M-125p6_8TeV-JHUGenV4/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
     ('VBF0P_H125.6', 'cmgtools', '/VBFHiggs0PToZZTo4L_M-125p6_8TeV-JHUGenV4/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('VBF0Mf05ph0_H125.6', 'cmgtools', '/VBFHiggs0Mf05ph0ToZZTo4L_M-125p6_8TeV-JHUGenV4/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    
+    
+    ### JJHiggs
+    ('JJHiggs0MH125.6', 'cmgtools', '/JJHiggs0MToZZTo4L_M-125p6_8TeV-JHUGenV4/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('JJHiggs0P_H125.6', 'cmgtools', '/JJHiggs0PToZZTo4L_M-125p6_8TeV-JHUGenV4/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
 
+
+    ### WHiggs
+    ('WHiggs0P_H125.6', 'cmgtools', '/WHiggs0PToZZTo4L_M-125p6_8TeV-JHUGenV4/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('WHiggs0PH_H125.6', 'cmgtools', '/WHiggs0PHToZZTo4L_M-125p6_8TeV-JHUGenV4/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('WHiggs0M_H125.6', 'cmgtools', '/WHiggs0MToZZTo4L_M-125p6_8TeV-JHUGenV4/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('WHiggs0Mf05ph0_H125.6', 'cmgtools', '/WHiggs0Mf05ph0ToZZTo4L_M-125p6_8TeV-JHUGenV4/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+
+
+    ### ZHiggs
+    ('ZHiggs0Mf05ph0_H125.6', 'cmgtools', '/ZHiggs0Mf05ph0ToZZTo4L_M-125p6_8TeV-JHUGenV4/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('ZHiggs0M_H125.6', 'cmgtools', '/ZHiggs0MToZZTo4L_M-125p6_8TeV-JHUGenV4/Summer12_DR53X-PU_S10_START53_V19-v2/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    
+    
     ### VBF samples
     ('VBFH116', 'cmgtools','/VBF_HToZZTo4L_M-116_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_V5_15_0', 'cmgTuple.*root', 15, "MCAllEvents"),
     ('VBFH117', 'cmgtools','/VBF_HToZZTo4L_M-117_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_V5_15_0', 'cmgTuple.*root', 15, "MCAllEvents"),
