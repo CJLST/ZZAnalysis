@@ -778,23 +778,22 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
       mybkg_m4l_ResDown = bkg_m4l_ResDown->at(nH);
 
       if(isCR){
-	myLep1Pt  = Lep1Pt->at(nH);
-	myLep1Eta = Lep1Eta->at(nH);
-	myLep1ID = Lep1LepId->at(nH);
-	myLep2Pt  = Lep2Pt->at(nH);
-	myLep2Eta = Lep2Eta->at(nH);
-	myLep2ID = Lep2LepId->at(nH);
-	myLep3Pt  = Lep3Pt->at(nH);
-	myLep3Eta = Lep3Eta->at(nH);
-	myLep3ID = Lep3LepId->at(nH);
-	myLep4Pt  = Lep4Pt->at(nH);
-	myLep4Eta = Lep4Eta->at(nH);
-	myLep4ID = Lep4LepId->at(nH);
-
 	// for CR, the jet list is empty; we "fake" the NJets30 variable for consistency
 	if (myZZFisher>=0) myNJets30=2;
 	else myNJets30=0;
       }
+      myLep1Pt  = Lep1Pt->at(nH);
+      myLep1Eta = Lep1Eta->at(nH);
+      myLep1ID = Lep1LepId->at(nH);
+      myLep2Pt  = Lep2Pt->at(nH);
+      myLep2Eta = Lep2Eta->at(nH);
+      myLep2ID = Lep2LepId->at(nH);
+      myLep3Pt  = Lep3Pt->at(nH);
+      myLep3Eta = Lep3Eta->at(nH);
+      myLep3ID = Lep3LepId->at(nH);
+      myLep4Pt  = Lep4Pt->at(nH);
+      myLep4Eta = Lep4Eta->at(nH);
+      myLep4ID = Lep4LepId->at(nH);
       myZ1ids = myLep1ID*myLep2ID;
       myZ2ids = myLep3ID*myLep4ID;
 
