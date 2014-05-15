@@ -469,16 +469,16 @@ all VBF0P_H125.6 1 0.0001609009 1
 # Backgrounds
 all            ZZTo4mu                   1   0.06609       1 #
 all            ZZTo4e                    1   0.06609       1 #
-all            ZZ4Totau                  1   0.06609       1 #
+all            ZZ4To4tau                 1   0.06609       1 #
 all            ZZTo2e2mu                 1   0.152         1 #
 all            ZZTo2e2tau                1   0.152         1 #
 all            ZZTo2mu2tau               1   0.152         1 #
 
 # Filter efficiencies [ZZ95 eff.]
-all	       ZZ95-160To4e		 1   0.02309       0.235
-all            ZZ95-160To4mu             1   0.02309       0.235
-all	       ZZ95-160To2mu2tau	 1   0.05311	   0.258
-all            ZZ95-160To2e2mu           1   0.05311       0.258
+all            ZZ95-160To4e		           1   0.02309   0.235
+all            ZZ95-160To4mu             1   0.02309   0.235
+all	           ZZ95-160To2mu2tau	       1   0.05311	 0.258
+all            ZZ95-160To2e2mu           1   0.05311   0.258
 
 all            ggZZ4l                    1   0.00174       1 #
 all            ggZZ2l2l                  1   0.00348       1 #
