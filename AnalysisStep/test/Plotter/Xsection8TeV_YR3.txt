@@ -316,10 +316,8 @@ all jhuGenV3Grav2MH9qqbH125.6		       1 0.0025198800  1
 all jhuGenV3Grav2MH10qqbH125.6		       1 0.0025198800  1
 
 
-#FIXME: does any of the samples below need to be updated for YR3?
-
 ##########
-# MCFM67 #
+# MCFM67 # FIXME:recheck?
 ##########
 
 all ggTo4e_SMH-MCFM67_H125.6                 1 0.000163007 1
@@ -336,40 +334,40 @@ all ggTo2e2mu_BSMHContinInterf-MCFM67_H125.6 1 0.00161636  1
 all ggTo2e2mu_Contin-MCFM67                  1 0.000918826 1
 
 
-############
-# VBFHiggs #
-############
+##########################################################################
+# VBFHiggs, BR(H->4l,l=e,mu)                                             #
+##########################################################################
 
-all VBF0P_H125.6             1 0.0002077641 1
-all VBF0M_H125.6             1 xxx          1
-all VBF0Mf05ph0_H125.6       1 xxx          1
+all VBF0P_H125.6             1 0.0002075040 1
+all VBF0M_H125.6             1 0.0002077641 1
+all VBF0Mf05ph0_H125.6       1 0.0002077641 1
 
-###########
-# JJHiggs #
-###########
+##########################################################################
+# JJHiggs - use x-section for ggH, BR(H->4l,l=e,mu) for the time being   # FIXME: to be rechecked
+##########################################################################
 
-all JJHiggs0MH125.6          1 xxx          1
-all JJHiggs0P_H125.6         1 xxx          1
+all JJHiggs0MH125.6          1 0.0025799200 1
+all JJHiggs0P_H125.6         1 0.0025799200 1
 
-##########
-# ZHiggs #
-##########
+##########################################################################
+# ZHiggs: Z->inclusive, BR(H->4l,l=e,mu)                                 #
+##########################################################################
 
-all ZHiggs0M_H125.6          1 xxx          1
-all ZHiggs0Mf05ph0_H125.6    1 xxx          1
+all ZHiggs0M_H125.6          1 0.0000540012 1
+all ZHiggs0Mf05ph0_H125.6    1 0.0000540012 1
 
-##########
-# WHiggs #
-##########
+##########################################################################
+# WHiggs W->inclusive, BR(H->4l,l=e,mu)                                  #
+##########################################################################
 
-all WHiggs0P_H125.6          1 xxx          1
-all WHiggs0M_H125.6          1 xxx          1
-all WHiggs0PH_H125.6         1 xxx          1
-all WHiggs0Mf05ph0_H125.6    1 xxx          1
+all WHiggs0P_H125.6          1 0.0000914892 1
+all WHiggs0M_H125.6          1 0.0000914892 1
+all WHiggs0PH_H125.6         1 0.0000914892 1
+all WHiggs0Mf05ph0_H125.6    1 0.0000914892 1
 
 
 ###############
-# VBF Phantom #
+# VBF Phantom # FIXME:recheck?
 ###############
 
 all VBF_phantom_2e2mu10SM 1 0.000576855 1
@@ -385,7 +383,7 @@ all VBF_phantom_4mu       1 0.000246597 1
 
 
 ##########################################
-# MINLO samples, x-sections from [minlo] #
+# MINLO samples, x-sections from [minlo] # FIXME:recheck?
 # BRs from HXSWG for H->4l, l=2,mu,tau   #
 ##########################################
 

@@ -33,6 +33,7 @@ def split(comps):
                 numJobs=numJobs+1
                 newComp = copy.deepcopy(comp)
                 newComp.files = chunk
+                newComp.samplename = comp.name
                 newComp.name = '{name}_Chunk{index}'.format(name=newComp.name,
                                                        index=ichunk)
                 splitComps.append( newComp )
@@ -148,7 +149,8 @@ class MyBatchManager( BatchManager ):
        # for MC:   "", "MCAllEvents", "DYJets_B", "DYJets_NoB"
        #
        # setup can be 2011 or 2012 
-       
+
+       SAMPLENAME  = splitComponents[value].samplename
        tune  = splitComponents[value].tune
        setup = splitComponents[value].setup
 
@@ -174,10 +176,10 @@ class MyBatchManager( BatchManager ):
 
            #FIXME: should check tunes for consistency
 
-       print tune, IsMC, PD, MCFILTER, SUPERMELA_MASS
+       print SAMPLENAME, tune, IsMC, PD, MCFILTER, SUPERMELA_MASS
 
        # Read CFG file so that it is customized with the above globals
-       namespace = {'IsMC':IsMC, 'PD':PD, 'MCFILTER':MCFILTER, 'SUPERMELA_MASS':SUPERMELA_MASS}
+       namespace = {'IsMC':IsMC, 'PD':PD, 'MCFILTER':MCFILTER, 'SUPERMELA_MASS':SUPERMELA_MASS, 'SAMPLENAME':SAMPLENAME}
        execfile(cfgFileName,namespace)
 #       handle = open(cfgFileName, 'r')
 #       cfo = imp.load_source("pycfg", cfgFileName, handle)

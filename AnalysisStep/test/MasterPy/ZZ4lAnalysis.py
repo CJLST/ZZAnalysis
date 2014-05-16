@@ -21,6 +21,11 @@ except NameError:
     SAMPLE_TYPE = LEPTON_SETUP # This is the actual sqrts of the sample. LEPTON_SETUP can be different from SAMPLE_TYPE for samples
                                # which are rescaled to a different sqrts. FIXME: at the moment this is not used correctly in
                                # ZZCandidateFiller, it would need to be reviewed.
+
+try:
+    SAMPLENAME
+except NameError:
+    SAMPLENAME = "" # This is the optional name of the sample/dataset being analyzed
     
 
 #Type of electron scale correction/smearing
@@ -573,6 +578,7 @@ process.ZlCand = cms.EDProducer("PATCandViewShallowCloneCombiner",
 
 
 FOURGOODLEPTONS    =  ("userFloat('d0.GoodLeptons') && userFloat('d1.GoodLeptons')") #ZZ made of 4 selected leptons
+#FOURGOODLEPTONS    =  "daughter(0).masterClone.userFloat('GoodLeptons') && daughter(1).masterClone.userFloat('GoodLeptons')" #ZZ made of 4 selected leptons
 
 HASBESTZ          = "daughter('Z1').masterClone.userFloat('isBestZ')"
 Z1MASS            = "daughter('Z1').mass>40 && daughter('Z1').mass<120"
@@ -608,10 +614,18 @@ NOGHOST4l = ("deltaR(daughter(0).daughter(0).eta, daughter(0).daughter(0).phi, d
              "deltaR(daughter(0).daughter(1).eta, daughter(0).daughter(1).phi, daughter(1).daughter(0).eta, daughter(1).daughter(0).phi)>0.02 &&"+
              "deltaR(daughter(0).daughter(1).eta, daughter(0).daughter(1).phi, daughter(1).daughter(1).eta, daughter(1).daughter(1).phi)>0.02") # protect against ghosts
 
+
+# Preselection of 4l candidates
+LLLLPRESEL = NOGHOST4l # Just suppress candidates with overlapping leptons
+
+#LLLLPRESEL = (NOGHOST4l + "&&" +
+#              FOURGOODLEPTONS) # Only retain candidates with 4 tight leptons (ID, iso, SIP)
+
+
 # ZZ Candidates
 process.bareMMMMCand= cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string('MMCand MMCand'),
-    cut = cms.string(NOGHOST4l),
+    cut = cms.string(LLLLPRESEL),
     checkCharge = cms.bool(True)
 )
 process.MMMMCand = cms.EDProducer("ZZCandidateFiller",
@@ -632,7 +646,7 @@ process.MMMMCand = cms.EDProducer("ZZCandidateFiller",
 
 process.bareEEEECand= cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string('EECand EECand'),
-    cut = cms.string(NOGHOST4l),
+    cut = cms.string(LLLLPRESEL),
     checkCharge = cms.bool(True)
 )
 process.EEEECand = cms.EDProducer("ZZCandidateFiller",
@@ -653,7 +667,7 @@ process.EEEECand = cms.EDProducer("ZZCandidateFiller",
 
 process.bareEEMMCand= cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string('EECand MMCand'),
-    cut = cms.string(NOGHOST4l),
+    cut = cms.string(LLLLPRESEL),
     checkCharge = cms.bool(True)
 )
 process.EEMMCand = cms.EDProducer("ZZCandidateFiller",
@@ -707,7 +721,7 @@ CR_BESTCANDBASE = ("userFloat('d0.Z1Presel')") # Z with good leptons, mass cuts
 # Z (OSSF,both e/mu) + LL (any F/C, with no ID/iso); this is the starting point for control regions
 process.bareZLLCand= cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string('ZCand LLCand'),
-    cut = cms.string(NOGHOST4l),
+    cut = cms.string(NOGHOST4l), #Note that LLLLPRESEL cannot be used here
     checkCharge = cms.bool(False)
 )
 process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
