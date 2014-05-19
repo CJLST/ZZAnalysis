@@ -31,7 +31,7 @@ ZZ4lAnalysis_ggTo2l2l_ContinuumInterfH125.6
 ZZ4lAnalysis_ggTo4l_H125.6
 ZZ4lAnalysis_ggTo4l_ContinuumInterfH125.6
 
-# jhuGenV2
+# jhuGenV3
 
 # powheg15-jhuGenV3-spin/CP-MH126
 ZZ4lAnalysis_powheg15jhuGenV3-0MH126
@@ -90,6 +90,7 @@ ZZ4lAnalysis_jhuGenV3Grav2MH10H125.6
 ZZ4lAnalysis_jhuGenV3Grav2PH2qqbH125.6
 ZZ4lAnalysis_jhuGenV3Grav2PH3qqbH125.6
 ZZ4lAnalysis_jhuGenV3Grav2PHqqbH125.6
+ZZ4lAnalysis_jhuGenV3Grav2PBqqbH125.6
 ZZ4lAnalysis_jhuGenV3Grav2PH6qqbH125.6
 ZZ4lAnalysis_jhuGenV3Grav2PH7qqbH125.6
 ZZ4lAnalysis_jhuGenV3Grav2MHqqbH125.6

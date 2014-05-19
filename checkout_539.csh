@@ -8,19 +8,14 @@ scram setup /afs/cern.ch/cms/slc5_amd64_gcc462/external/git-toolfile/1.0/etc/scr
 rehash
 
 git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
-
-# Legacy tags from CVS UserCode
-# mkdir ZZMatrixElement
-#  (cd ZZMatrixElement; cvs co -r V00-03-06 -d MELA UserCode/CJLST/ZZMatrixElement/MELA)
-#  (cd ZZMatrixElement; cvs co -r V00-02-00 -d MEKD UserCode/UFL/ZZMatrixElement/MEKD)
-#  (cd ZZMatrixElement; cvs co -r V00-00-15 -d MEMCalculators UserCode/HZZ4l_MEM/ZZMatrixElement/MEMCalculators)
-git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement ; (cd ZZMatrixElement; git checkout -b from-V00-00-22 V00-00-22)
+git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement ; (cd ZZMatrixElement; git checkout -b from-V00-00-26 V00-00-26)
 
 # cvs co -r V02-06-00 HiggsAnalysis/CombinedLimit
 git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit; (cd HiggsAnalysis/CombinedLimit; git pull origin master; git checkout -b from-V02-06-00 HiggsAnalysis-CombinedLimit-V02-06-00)
 
 mkdir MuScleFit; (cd MuScleFit; cvs co -r muscle_v4_2_0 -d Calibration UserCode/scasasso/MuScleFit/Calibration)
-mkdir Higgs; (cd Higgs; cvs co -r V00-03-01 -d Higgs_CS_and_Width UserCode/Snowball/Higgs/Higgs_CS_and_Width)
+#mkdir Higgs; (cd Higgs; cvs co -r V00-03-01 -d Higgs_CS_and_Width UserCode/Snowball/Higgs/Higgs_CS_and_Width)
+git clone https://github.com/UFLHEP/HCSaW.git HCSaW/Higgs_CS_and_Width; (cd HCSaW/Higgs_CS_and_Width; git checkout -b from-bf8904f224 bf8904f224 )
 mkdir  HZZ4L_Combination; (cd HZZ4L_Combination; cvs co -r bonato_supermela_20121107 -d CombinationPy UserCode/HZZ4L_Combination/CombinationPy)
 mkdir -p  Muon/MuonAnalysisTools; (cd  Muon/MuonAnalysisTools; cvs co -r 1.7 -d interface UserCode/sixie/Muon/MuonAnalysisTools/interface/MuonEffectiveArea.h)
 mkdir -p CMGTools/Common; (cd CMGTools/Common;  cvs co -r lucieg_Ap18 -d plugins UserCode/CMG/CMGTools/Common/plugins/JetEnergyCorrector.h)
