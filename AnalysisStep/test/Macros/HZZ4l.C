@@ -46,8 +46,8 @@ namespace {
 
   const Float_t Run2011AFraction = 0.465;
 
-  XSecReader xsecRead7TeV("../Plotter/Xsection_v1.txt","../Plotter/Luminosity.txt");
-  XSecReader xsecRead8TeV("../Plotter/Xsection8TeV_v2.txt","../Plotter/Luminosity.txt");
+  XSecReader xsecRead7TeV("../Plotter/Xsection7TeV_YR3.txt","../Plotter/Luminosity.txt");
+  XSecReader xsecRead8TeV("../Plotter/Xsection8TeV_YR3.txt","../Plotter/Luminosity.txt");
 
   PUReweight PUWeighter(PUReweight::LEGACY);
 

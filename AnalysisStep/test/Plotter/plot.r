@@ -35,13 +35,13 @@ void plot(TString finalState) {
   TString XSectionFile;
   if (do2012) {
     TString inputDir="HZZ_plots/130702/PRODFSR_8TeV";
-    TString XSectionFile = "Xsection8TeV_v2.txt";
+    TString XSectionFile = "Xsection8TeV_YR3.txt";
     epoch = "Legacy2013"; //19712 -> other epochs defined in the Luminosity file
 
   } else {
     doHiMass = false; // himass is relevant only for 2012
     TString inputDir="HZZ_plots/130702/PRODFSR";
-    TString XSectionFile = "Xsection_v1.txt";
+    TString XSectionFile = "Xsection_7TeV_YR3.txt";
     epoch = "All2011";   //5051
     
   }

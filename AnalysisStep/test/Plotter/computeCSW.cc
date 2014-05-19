@@ -72,7 +72,8 @@ int computeCSW()
   cout.precision(10);
 
  
-  HiggsCSandWidth *myCSW = new HiggsCSandWidth(gSystem->ExpandPathName("$CMSSW_BASE/src/Higgs/Higgs_CS_and_Width/txtFiles/"));
+  HiggsCSandWidth *myCSW = new HiggsCSandWidth("YR3",gSystem->ExpandPathName("$CMSSW_BASE/src/Higgs/Higgs_CS_and_Width/txtFiles/"));
+  //  HiggsCSandWidth *myCSW = new HiggsCSandWidth(gSystem->ExpandPathName("$CMSSW_BASE/src/Higgs/Higgs_CS_and_Width/txtFiles/"));
 
   /*//////////
   8 TeV
@@ -88,12 +89,12 @@ int computeCSW()
   int l_gg8TeV_4l = sizeof(gg8TeV_4l)/8;
 
 
-  double VBF8TeV[] = {115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 135, 140, 145, 150, 160, 170, 180, 190, 200, 220, 225, 250, 275, 300, 325, 350, 375, 400, 425, 450, 475, 500, 525, 550, 575, 600, 650, 700, 750, 800, 850, 900, 950, 1000};
+  double VBF8TeV[] = {115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 125.6, 126, 127, 128, 129, 130, 135, 140, 145, 150, 160, 170, 180, 190, 200, 220, 225, 250, 275, 300, 325, 350, 375, 400, 425, 450, 475, 500, 525, 550, 575, 600, 650, 700, 750, 800, 850, 900, 950, 1000};
   int l_VBF8TeV = sizeof(VBF8TeV)/8;
 
   // WH_ZH_TTH
   double assoc8TeV[] = {110, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 135, 140, 145, 150, 160, 170, 180, 190, 200, 210, 220, 230, 250, 275, 300};
-  double assoc8TeV_split[] = {110, 115, 120, 125, 126, 130, 140, 150, 160, 180, 200};
+  double assoc8TeV_split[] = {110, 115, 120, 125, 125.6, 126, 130, 140, 150, 160, 180, 200};
   int l_assoc8TeV = sizeof(assoc8TeV)/8;
   int l_assoc8TeV_split = sizeof(assoc8TeV_split)/8;
 
@@ -120,7 +121,9 @@ int computeCSW()
       double totalBySum = ggToH + VBF + WH + ZH + ttH;
       
       //Write the output file
-      fileOut8TeV << "all            H"  << (int) mH <<"                      1   "  << std::fixed << setprecision(10) << totalBySum*BR  <<  "  1" << endl; 
+      fileOut8TeV << "all         totH"  << (int) mH <<"                      1   "  << std::fixed << setprecision(10) << totalBySum*BR  <<  "  1" << 
+
+	" " << total << " " << totalBySum << " " << BR << endl; 
   
     }
 
@@ -136,7 +139,7 @@ int computeCSW()
       
       //Write the output file
       if (i==0) fileOut8TeV << "Only ggH" << endl;
-      fileOut8TeV << "all            H"  << (int) mH <<"                      1   "  << std::fixed << setprecision(10) << ggToH*BR  <<  "  1" << endl; 
+      fileOut8TeV << "all          ggH"  << (int) mH <<"                      1   "  << std::fixed << setprecision(10) << ggToH*BR  <<  "  1" << endl; 
   
     }
 
@@ -173,24 +176,22 @@ int computeCSW()
 
   fileOut8TeV << endl << endl << endl;
 
-  //Old samples, not split by production mechanism
-  //VH/ttH 8TeV. These samples have Z inclusive for all Zs, so myCSW->HiggsBR(11,mH) (11=H->ZZ)
-  for( int i = 0; i < l_assoc8TeV; i++)
+
+  //ggH 8 TeV (only l=e,mu)
+  for( int i = 0; i < l_gg8TeV_4l; i++)
     {
-
-      double mH = assoc8TeV[i];      
-      double BR = myCSW->HiggsBR(11,mH);
-      double WH         = myCSW->HiggsCS(3,mH,sqrts);
-      double ZH         = myCSW->HiggsCS(4,mH,sqrts);
-      double ttH        = myCSW->HiggsCS(5,mH,sqrts);
-      double totalBySum = WH + ZH + ttH;
-
+      double mH = gg8TeV_4l[i];      
+      double BR = myCSW->HiggsBR(14,gg8TeV_4l[i]);
+      double VBF      = myCSW->HiggsCS(2,mH,sqrts);
+      
       //Write the output file
-      fileOut8TeV << "all            VH"  << (int) mH <<"                      1   "  << std::fixed << setprecision(10) << totalBySum*BR  <<  "  1" << endl; 
-
+      if (i==0) fileOut8TeV << "Only VBF, only l=e,mu" << endl;
+      fileOut8TeV << "all           VBFH_emu"  << (int) mH <<"                      1   "  << std::fixed << setprecision(10) << VBF*BR  <<  "  1" << endl; 
+  
     }
 
   fileOut8TeV << endl << endl << endl;
+
 
   //These samples have W/Z inclusive decays and ZZ from Higgs inclusive as well, but require 4 leptons in the final state coming from W or Z
   //WH 8TeV
@@ -199,10 +200,12 @@ int computeCSW()
 
       double mH = assoc8TeV_split[i];      
       double BRHZZ = myCSW->HiggsBR(11,mH);
-      double WH         = myCSW->HiggsCS(3,mH,sqrts);
+      double BRH4l_emu = myCSW->HiggsBR(14,mH);
+      double WH    = myCSW->HiggsCS(3,mH,sqrts);
 
       //Write the output file
-      fileOut8TeV << "all            WH"  << (int) mH <<"                      1   "  << std::fixed << setprecision(10) << WH*BRHZZ  <<  "  1" << endl; 
+      if (i==0) fileOut8TeV << "WH, H->ZZ |  H->4l, l=e,mu" << endl;
+      fileOut8TeV << "all            WH"  << (int) mH <<"                      1   "  << std::fixed << setprecision(10) << WH*BRHZZ  <<  "  1 " << WH*BRH4l_emu << endl; 
 
     }
 
@@ -214,10 +217,12 @@ int computeCSW()
       
       double mH = assoc8TeV_split[i];      
       double BRHZZ = myCSW->HiggsBR(11,mH);
+      double BRH4l_emu = myCSW->HiggsBR(14,mH);
       double ZH    = myCSW->HiggsCS(4,mH,sqrts);
       
       //Write the output file
-      fileOut8TeV << "all            ZH"  << (int) mH <<"                      1   "  << std::fixed << setprecision(10) << ZH*BRHZZ  <<  "  1" << endl; 
+      if (i==0) fileOut8TeV << "ZH, H->ZZ |  H->4l, l=e,mu" << endl;
+      fileOut8TeV << "all            ZH"  << (int) mH <<"                      1   "  << std::fixed << setprecision(10) << ZH*BRHZZ  <<  "  1 " << ZH*BRH4l_emu << endl; 
       
     }
 
@@ -229,10 +234,12 @@ int computeCSW()
       
       double mH = assoc8TeV_split[i];      
       double BRHZZ = myCSW->HiggsBR(11,mH);
+      double BRH4l_emu = myCSW->HiggsBR(14,mH);
       double ttH    = myCSW->HiggsCS(5,mH,sqrts);
       
       //Write the output file
-      fileOut8TeV << "all            ttH"  << (int) mH <<"                      1   "  << std::fixed << setprecision(10) << ttH*BRHZZ  <<  "  1" << endl; 
+      if (i==0) fileOut8TeV << "ttH, H->ZZ |  H->4l, l=e,mu" << endl;
+      fileOut8TeV << "all            ttH"  << (int) mH <<"                      1   "  << std::fixed << setprecision(10) << ttH*BRHZZ  <<  "  1 " << ttH*BRH4l_emu << endl; 
       
     }
 
@@ -261,14 +268,14 @@ int computeCSW()
   int l_total7TeV = sizeof(total7TeV)/8;
 
 
-  double gg7TeV[] = {110, 115, 120, 122, 124, 125, 126, 128, 130, 135, 140, 145, 150, 160, 170, 175, 180, 185, 190, 200, 210, 220, 225, 230, 250, 275, 300, 325, 350, 375, 400, 425, 450, 475, 500, 525, 550, 575, 600, 650, 700, 750, 800, 850, 900, 950, 1000};
+  double gg7TeV[] = {110, 115, 120, 122, 124, 125, 125.6, 126, 128, 130, 135, 140, 145, 150, 160, 170, 175, 180, 185, 190, 200, 210, 220, 225, 230, 250, 275, 300, 325, 350, 375, 400, 425, 450, 475, 500, 525, 550, 575, 600, 650, 700, 750, 800, 850, 900, 950, 1000};
   int l_gg7TeV = sizeof(gg7TeV)/8;
 
-  double gg7TeV_4l[] = {110, 120, 125, 126, 130, 140};
+  double gg7TeV_4l[] = {110, 120, 125, 125.6, 126, 130, 140};
   int l_gg7TeV_4l = sizeof(gg7TeV_4l)/8;
 
 
-  double VBF7TeV[] = {115, 120, 125, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 225, 230, 250, 275, 300, 325, 350, 375, 400, 425, 450, 475, 500, 525, 550, 575, 600, 650, 700, 800, 900, 950, 1000};
+  double VBF7TeV[] = {115, 120, 125, 125.6, 126, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 225, 230, 250, 275, 300, 325, 350, 375, 400, 425, 450, 475, 500, 525, 550, 575, 600, 650, 700, 800, 900, 950, 1000};
   int l_VBF7TeV = sizeof(VBF7TeV)/8;
 
   // WH_ZH_TTH
@@ -280,7 +287,7 @@ int computeCSW()
 
   //Create and open the output file
   ofstream fileOut7TeV;
-  fileOut7TeV.open("Xsection_v1_tmp.txt");
+  fileOut7TeV.open("Xsection7TeV_tmp.txt");
 
   //Total 7 TeV
   for( int i = 0; i < l_total7TeV; i++)
@@ -350,24 +357,23 @@ int computeCSW()
   fileOut7TeV << endl << endl << endl;
 
 
-  //Old samples, not split by production mechanism
-  //VH/ttH 7TeV These samples have Z forced to ll also for the associated Z, so the ZH sigma*BR is multiplied by 0.033658*3 (see below)
-  for( int i = 0; i < l_assoc7TeV; i++)
+
+  //VBF 7 TeV (only l=e,mu)
+  for( int i = 0; i < l_gg7TeV_4l; i++)
     {
-
-      double mH = assoc7TeV[i];      
-      double BR = myCSW->HiggsBR(15,mH);
-      double WH         = myCSW->HiggsCS(3,mH,sqrts);
-      double ZH         = myCSW->HiggsCS(4,mH,sqrts);
-      double ttH        = myCSW->HiggsCS(5,mH,sqrts);
-      double totalBySum = WH + ZH*0.033658*3. + ttH;
-
+      double mH = gg7TeV_4l[i];      
+      double BR = myCSW->HiggsBR(14,gg7TeV_4l[i]);
+      double VBF        = myCSW->HiggsCS(2,mH,sqrts);
+      
       //Write the output file
-      fileOut7TeV << "all            VH"  << (int) mH <<"                      1   "  << std::fixed << setprecision(10) << totalBySum*BR  <<  "  1" << endl; 
-
+      if (i==0) fileOut7TeV << "Only VBF, only l=e,mu" << endl;
+      fileOut7TeV << "all           VBFH"  << (int) mH <<"                      1   "  << std::fixed << setprecision(10) << VBF*BR  <<  "  1" << endl; 
+  
     }
 
   fileOut7TeV << endl << endl << endl;
+
+
 
   //These samples have W/Z inclusive decays and ZZ from Higgs inclusive as well, but require 4 leptons in the final state coming from W or Z
   //WH 7TeV
