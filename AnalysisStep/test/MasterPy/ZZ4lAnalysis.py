@@ -1021,26 +1021,20 @@ if (UPDATE_JETS and LEPTON_SETUP==2012) :
     process.Candidates.insert(0, process.cmgPFJetSel)
 
 # Optional sequence to build control regions. To get it, add
-#process.CRPath = cms.Path(process.CR)
+#process.CRPath = cms.Path(process.CRZl) # only trilepton
+#OR
+#process.CRPath = cms.Path(process.CR)   # trilep+4lep CRs
+
+process.CRZl = cms.Sequence(
+       process.bareZCand         + process.ZCand     +  
+       process.ZlCand            
+   )
+
 process.CR = cms.Sequence(
        process.bareZCand         + process.ZCand     +  
        process.bareLLCand        + process.LLCand    +
        process.bareZLLCand       + process.ZLLCand   +
-       process.ZlCand            #+
-#       process.CRZLL             +
-#       process.CRZEE             +
-#       process.CRZMM             +
-#       process.CRZLLHiSIP        +
-#       process.CRZLLHiSIPMM      +
-#       process.CRZLLHiSIPKin     +
-#       process.CRMMMMos          +
-#       process.CRMMMMss          +
-#       process.CREEEEos          +
-#       process.CREEEEss          +
-#       process.CREEMMos          +
-#       process.CREEMMss          +
-#       process.CRMMEEos          +
-#       process.CRMMEEss
+       process.ZlCand            
    )
 
 # For relaxing flavor and charge
