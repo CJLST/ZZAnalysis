@@ -15,7 +15,7 @@ git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsA
 
 mkdir MuScleFit; (cd MuScleFit; cvs co -r muscle_v4_2_0 -d Calibration UserCode/scasasso/MuScleFit/Calibration)
 #mkdir Higgs; (cd Higgs; cvs co -r V00-03-01 -d Higgs_CS_and_Width UserCode/Snowball/Higgs/Higgs_CS_and_Width)
-git clone https://github.com/UFLHEP/HCSaW.git HCSaW/Higgs_CS_and_Width; (cd HCSaW/Higgs_CS_and_Width; git checkout -b from-bf8904f224 bf8904f224 )
+git clone https://github.com/UFLHEP/HCSaW.git Higgs; (cd Higgs/Higgs_CS_and_Width; git checkout -b from-bf8904f224 bf8904f224 )
 mkdir  HZZ4L_Combination; (cd HZZ4L_Combination; cvs co -r bonato_supermela_20121107 -d CombinationPy UserCode/HZZ4L_Combination/CombinationPy)
 mkdir -p  Muon/MuonAnalysisTools; (cd  Muon/MuonAnalysisTools; cvs co -r 1.7 -d interface UserCode/sixie/Muon/MuonAnalysisTools/interface/MuonEffectiveArea.h)
 mkdir -p CMGTools/Common; (cd CMGTools/Common;  cvs co -r lucieg_Ap18 -d plugins UserCode/CMG/CMGTools/Common/plugins/JetEnergyCorrector.h)

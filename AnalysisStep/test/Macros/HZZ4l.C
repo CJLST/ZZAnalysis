@@ -620,7 +620,8 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 
       //Do the final selection and best candidate selection. Depends on signal region or control region
       if(isCR && !CRflag->at(nH)) continue; // Belongs to at least 1 CR
-      if(!isCR && (ZZsel->at(nH) < 100. || nH != iBC) ) continue;
+//      if(!isCR && (ZZsel->at(nH) < 100. || nH != iBC) ) continue; // Only save events passing the FULL selection 
+      if(!isCR && (ZZsel->at(nH) < 90 || nH != iBC) ) continue;  // Only 
 
       Int_t RunFraction = -1;
       Float_t whatPeriod = RooRandom::randomGenerator()->Uniform();
