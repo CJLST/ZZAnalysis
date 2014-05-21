@@ -25,13 +25,13 @@ if [ -e $dirname ]; then
     rm $dirname/4e/*
     rm $dirname/2mu2e/*
     rm $dirname/CR/*
-else
-    mkdir -p $dirname/data
-    mkdir $dirname/4mu
-    mkdir $dirname/4e
-    mkdir $dirname/2mu2e
-    mkdir $dirname/CR
 fi
+
+mkdir -p $dirname/data
+mkdir -p $dirname/4mu
+mkdir -p $dirname/4e
+mkdir -p $dirname/2mu2e
+mkdir -p $dirname/CR
 
 while read i; do 
     if [[ "$i" != *"#"* ]] && [[ "$i" != "" ]];

@@ -205,7 +205,7 @@ all            WH150                      1   0.0307560000  0.010384 # 98897/952
 all            WH160                      1   0.0118482500  0.010384 # 98897/9523809 
 all            WH180                      1   0.0115042200  0.010384 # 98897/9523809 
 all            WH200                      1   0.0332775000  0.010384 # 98897/9523809 
-					                  
+
 all            ZH110                      1   0.0026582500  0.028544 # 58135/2036645 
 all            ZH115                      1   0.0046293120  0.028544 # 58135/2036645 
 all            ZH120                      1   0.0074889000  0.028544 # 58135/2036645 
@@ -217,7 +217,7 @@ all            ZH150                      1   0.0190410000  0.028544 # 58135/203
 all            ZH160                      1   0.0075364000  0.028544 # 58135/2036645 
 all            ZH180                      1   0.0074106200  0.028544 # 58135/2036645 
 all            ZH200                      1   0.0216520500  0.028544 # 58135/2036645 
-					                  
+
 all            ttH110                     1   0.0008120140  0.029658 # 49210/1664865 
 all            ttH115                     1   0.0014264640  0.029658 # 49210/1664865 
 all            ttH120                     1   0.0023198100  0.029658 # 49210/1664865 
@@ -300,24 +300,24 @@ all jhuGenV3Vec1PH125.6                        1 0.0025198800  1
 all jhuGenV3Vec1MH125.6                        1 0.0025198800  1
 
 all jhuGenV3Grav2PH2H125.6                     1 0.0025198800  1
-all jhuGenV3Grav2PH3H125.6		       1 0.0025198800  1
-all jhuGenV3Grav2PH6H125.6		       1 0.0025198800  1
-all jhuGenV3Grav2PH7H125.6		       1 0.0025198800  1
-all jhuGenV3Grav2MH9H125.6		       1 0.0025198800  1
-all jhuGenV3Grav2MH10H125.6		       1 0.0025198800  1
-all jhuGenV3Grav2PH2qqbH125.6		       1 0.0025198800  1
-all jhuGenV3Grav2PH3qqbH125.6		       1 0.0025198800  1
-all jhuGenV3Grav2PHqqbH125.6		       1 0.0025198800  1
-all jhuGenV3Grav2PBqqbH125.6		       1 0.0025198800  1
-all jhuGenV3Grav2PH6qqbH125.6		       1 0.0025198800  1
-all jhuGenV3Grav2PH7qqbH125.6		       1 0.0025198800  1
-all jhuGenV3Grav2MHqqbH125.6		       1 0.0025198800  1
-all jhuGenV3Grav2MH9qqbH125.6		       1 0.0025198800  1
-all jhuGenV3Grav2MH10qqbH125.6		       1 0.0025198800  1
+all jhuGenV3Grav2PH3H125.6                     1 0.0025198800  1
+all jhuGenV3Grav2PH6H125.6                     1 0.0025198800  1
+all jhuGenV3Grav2PH7H125.6                     1 0.0025198800  1
+all jhuGenV3Grav2MH9H125.6                     1 0.0025198800  1
+all jhuGenV3Grav2MH10H125.6                    1 0.0025198800  1
+all jhuGenV3Grav2PH2qqbH125.6                  1 0.0025198800  1
+all jhuGenV3Grav2PH3qqbH125.6                  1 0.0025198800  1
+all jhuGenV3Grav2PHqqbH125.6                   1 0.0025198800  1
+all jhuGenV3Grav2PBqqbH125.6                   1 0.0025198800  1
+all jhuGenV3Grav2PH6qqbH125.6                  1 0.0025198800  1
+all jhuGenV3Grav2PH7qqbH125.6                  1 0.0025198800  1
+all jhuGenV3Grav2MHqqbH125.6                   1 0.0025198800  1
+all jhuGenV3Grav2MH9qqbH125.6                  1 0.0025198800  1
+all jhuGenV3Grav2MH10qqbH125.6                 1 0.0025198800  1
 
 
 ##########
-# MCFM67 # FIXME:recheck?
+# MCFM67 # FIXME: update for YR3?
 ##########
 
 all ggTo4e_SMH-MCFM67_H125.6                 1 0.000163007 1
@@ -444,12 +444,12 @@ all            ZZTo2e2tau_ext            1   0.1767        1 #
 all            ZZTo2mu2tau_ext           1   0.1767        1 # 
 
 # Filter efficiencies [ZZ95 eff.]
-all	       ZZ95-160To4mu		 1   0.02687       0.238
-all	       ZZ95-160To4e		 1   0.02687       0.238
-all	       ZZ95-160To4tau		 1   0.02687       0.238
-all	       ZZ95-160To2e2mu		 1   0.06278	   0.261
-all	       ZZ95-160To2e2tau		 1   0.06278	   0.261
-all	       ZZ95-160To2mu2tau	 1   0.06278	   0.261
+all            ZZ95-160To4mu             1   0.02687       0.238
+all            ZZ95-160To4e              1   0.02687       0.238
+all            ZZ95-160To4tau            1   0.02687       0.238
+all            ZZ95-160To2e2mu           1   0.06278       0.261
+all            ZZ95-160To2e2tau          1   0.06278       0.261
+all            ZZ95-160To2mu2tau         1   0.06278       0.261
 
 all            ggZZ4l                    1   0.0048        1 # 
 all            ggZZ2l2l                  1   0.01203       1 # 

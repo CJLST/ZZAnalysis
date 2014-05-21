@@ -15,8 +15,8 @@ int main (int argc, char ** argv)
   bool is8TeV = false;
 
   XSecReader *xsecRead;
-  if(is8TeV) xsecRead = new XSecReader("../Plotter/Xsection8TeV_v2.txt","../Plotter/Luminosity.txt");
-  else xsecRead = new XSecReader("../Plotter/Xsection_v1.txt","../Plotter/Luminosity.txt");
+  if(is8TeV) xsecRead = new XSecReader("../Plotter/Xsection8TeV_YR3.txt","../Plotter/Luminosity.txt");
+  else xsecRead = new XSecReader("../Plotter/Xsection7TeV_YR3.txt","../Plotter/Luminosity.txt");
 
   ofstream outputFile;
   outputFile.open("saveNormValues.txt");

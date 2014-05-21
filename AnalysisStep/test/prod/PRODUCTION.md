@@ -37,15 +37,16 @@ Notes:
 
 Once all jobs are finished, copy all trees to the standard path on lxcms00:
 ```
-mkdir /data3/2014/HZZ_out/<YYMMDD>
-mv AAAOK /data3/2014/HZZ_out/<YYMMDD>/PRODFSR
-mv AAAOK /data3/2014/HZZ_out/<YYMMDD>/PRODFSR_8TeV
+export TREESET=<YYMMDD>
+mkdir /data3/2014/HZZ_out/${TREESET}
+mv AAAOK /data3/2014/HZZ_out/${TREESET}/PRODFSR
+mv AAAOK /data3/2014/HZZ_out/${TREESET}/PRODFSR_8TeV
 ```
 
 hadd all chunks:
 
 ```
-cd /data3/2014/HZZ_out/<YYMMDD>
+cd /data3/2014/HZZ_out/${TREESET}
 haddChunks.py PRODFSR | tee haddlog_PRODFSR.txt
 haddChunks.py PRODFSR_8TeV | tee haddlog_PRODFSR_8TeV.txt
 ```
@@ -53,9 +54,9 @@ This takes a while.
 
 Now create links to the merged files into the HZZ_root folder:
 ```
-mkdir -p /data3/2014/HZZ_root/<YYMMDD>/PRODFSR_8TeV
-cd /data3/2014/HZZ_root/<YYMMDD>/PRODFSR_8TeV
-$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/test/prod/copyMergedFiles.sh /data3/2014/HZZ_out/<YYMMDD>/PRODFSR_8TeV
+mkdir -p /data3/2014/HZZ_root/${TREESET}/PRODFSR_8TeV
+cd /data3/2014/HZZ_root/${TREESET}/PRODFSR_8TeV
+$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/test/prod/copyMergedFiles.sh /data3/2014/HZZ_out/${TREESET}/PRODFSR_8TeV
 ```
 
 Once ready, we still have to merge few datasets: data for 7TeV and data, ZZ+ZZext for 8TeV
@@ -68,12 +69,13 @@ $CMSSW_BASE/src/ZZAnalysis/AnalysisStep/test/prod/hadd_8TeV.csh
 SECONDARY trees
 ---------------
 ```
+export TREESET=<YYMMDD>
 cd $CMSSW_BASE/src/ZZAnalysis/AnalysisStep/test/Macros
 ln -s /data3/2014/HZZ_root/ rootuples
 ln -s /data3/2014/HZZ_stat/ trees
-mkdir -p /data3/2014/HZZ_stat/<YYMMDD>/PRODFSR_8TeV
-./executeRun_7TeV.sh <YYMMDD> | tee trees/<YYMMDD>/PRODFSR/secondary_log.txt
-./executeRun_8TeV.sh <YYMMDD> | tee trees/<YYMMDD>/PRODFSR_8TeV/secondary_log.txt
+mkdir -p /data3/2014/HZZ_stat/${TREESET}/PRODFSR_8TeV
+./executeRun_7TeV.sh ${TREESET} | tee trees/${TREESET}/PRODFSR/secondary_log.txt
+./executeRun_8TeV.sh ${TREESET} | tee trees/${TREESET}/PRODFSR_8TeV/secondary_log.txt
 ```
 
 Please store the logs as suggested, as they contain useulf information to understand what happens if some file has a problem.
