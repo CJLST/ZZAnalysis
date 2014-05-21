@@ -93,9 +93,7 @@ int computeCSW()
   int l_VBF8TeV = sizeof(VBF8TeV)/8;
 
   // WH_ZH_TTH
-  double assoc8TeV[] = {110, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 135, 140, 145, 150, 160, 170, 180, 190, 200, 210, 220, 230, 250, 275, 300};
   double assoc8TeV_split[] = {110, 115, 120, 125, 125.6, 126, 130, 140, 150, 160, 180, 200};
-  int l_assoc8TeV = sizeof(assoc8TeV)/8;
   int l_assoc8TeV_split = sizeof(assoc8TeV_split)/8;
 
   // minlo samples 
@@ -279,9 +277,7 @@ int computeCSW()
   int l_VBF7TeV = sizeof(VBF7TeV)/8;
 
   // WH_ZH_TTH
-  double assoc7TeV[] = {115,120,130,135,140,150,160,170,180,190,200,210,220,250,275,300,325,350,375,425,450,475,525,550,575,600};
-  double assoc7TeV_split[] = {110, 115, 120, 125, 126, 130, 140, 150, 160, 180, 200};
-  int l_assoc7TeV = sizeof(assoc7TeV)/8;
+  double assoc7TeV_split[] = {110, 115, 120, 125, 125.6, 126, 130, 140, 150, 160, 180, 200};
   int l_assoc7TeV_split = sizeof(assoc7TeV_split)/8;
 
 
@@ -382,10 +378,12 @@ int computeCSW()
 
       double mH = assoc7TeV_split[i];      
       double BRHZZ = myCSW->HiggsBR(11,mH);
+      double BRH4l_emu = myCSW->HiggsBR(14,mH);
       double WH         = myCSW->HiggsCS(3,mH,sqrts);
 
       //Write the output file
-      fileOut7TeV << "all            WH"  << (int) mH <<"                      1   "  << std::fixed << setprecision(10) << WH*BRHZZ  <<  "  1" << endl; 
+      if (i==0) fileOut8TeV << "WH, H->ZZ |  H->4l, l=e,mu" << endl;
+      fileOut7TeV << "all            WH"  << (int) mH <<"                      1   "  << std::fixed << setprecision(10) << WH*BRHZZ  <<  "  1 " << WH*BRH4l_emu << endl; 
 
     }
 
@@ -397,10 +395,11 @@ int computeCSW()
       
       double mH = assoc7TeV_split[i];      
       double BRHZZ = myCSW->HiggsBR(11,mH);
+      double BRH4l_emu = myCSW->HiggsBR(14,mH);
       double ZH    = myCSW->HiggsCS(4,mH,sqrts);
       
       //Write the output file
-      fileOut7TeV << "all            ZH"  << (int) mH <<"                      1   "  << std::fixed << setprecision(10) << ZH*BRHZZ  <<  "  1" << endl; 
+      fileOut7TeV << "all            ZH"  << (int) mH <<"                      1   "  << std::fixed << setprecision(10) << ZH*BRHZZ  <<  "  1 " << ZH*BRH4l_emu << endl; 
       
     }
 
