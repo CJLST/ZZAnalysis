@@ -26,6 +26,7 @@ using namespace std;
 
 XSecReader::XSecReader(const TString& xsecFileName, const TString& lumiFileName) {
   ifstream xsecFile(xsecFileName.Data());
+  if(dbg) cout << "Opened xsec file: " << xsecFileName.Data() << endl;
   string line;
   // Read the xsection file and store numbers in a map (per sample)
 
