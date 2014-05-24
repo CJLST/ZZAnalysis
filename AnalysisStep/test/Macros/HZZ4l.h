@@ -71,6 +71,9 @@ enum sample {
 	kfMZG_05_fMGG_0,
 	kfMZG_0_fMGG_05,
 
+	kfZG_05_fMZG_05,
+	kfGG_05_fMGG_05,
+
 	kfZG_SM_fGG_SM,
 
 	kNumSamples
@@ -126,10 +129,13 @@ const float gi_phi2_phi4[2][kNumSamples][13]={ // g1-4; phia2,3; fa2, 3; g1pp; g
 
 		{	0,	0,	0,	0,		0,	0,	0,	0,	0, 0, 0, 1, 0}, // Pure M-ZG 37
 		{	0,	0,	0,	0,		0,	0,	0,	0,	0, 0, 0, 0, 1}, // Pure M-GG 38
-		{	0,	0,	0,	1.0,		0,	0,	0,	0,	0, 0, 0, 0.0206, 0}, // fM-ZG=0.5 39
-		{	0,	0,	0,	1.0,		0,	0,	0,	0,	0, 0, 0, 0, -0.0214}, // fM-GG=0.5 40
+		{	1.0,	0,	0,	0,		0,	0,	0,	0,	0, 0, 0, 0.050895, 0}, // fM-ZG=0.5 39
+		{	1.0,	0,	0,	0,		0,	0,	0,	0,	0, 0, 0, 0, -0.052872}, // fM-GG=0.5 40
 
-		{	1.0,	0,	0,	0,		0,	0,	0,	0,	0, 0.00175, -0.002, 0, 0} // SM ZZ, ZG. GG 41
+		{	0,	0,	0,	0,		0,	0,	0,	0,	0, 0.0476, 0, 0.050895, 0}, // fZG=fM-ZG=0.5 41
+		{	0,	0,	0,	0,		0,	0,	0,	0,	0, 0, -0.0541, 0, -0.052872}, // fGG=fM-GG=0.5 42
+
+		{	1.0,	0,	0,	0,		0,	0,	0,	0,	0, 0.00175, -0.002, 0, 0} // SM ZZ, ZG. GG 43
 	},
 	{
 		{	1.0,	0,	0,	0,		0,	0,	0,	0,	0, 0, 0, 0, 0}, // Pure SM 0
@@ -181,10 +187,13 @@ const float gi_phi2_phi4[2][kNumSamples][13]={ // g1-4; phia2,3; fa2, 3; g1pp; g
 
 		{	0,	0,	0,	0,		0,	0,	0,	0,	0, 0, 0, 1, 0}, // Pure M-ZG 37
 		{	0,	0,	0,	0,		0,	0,	0,	0,	0, 0, 0, 0, 1}, // Pure M-GG 38
-		{	0,	0,	0,	1.0,		0,	0,	0,	0,	0, 0, 0, 0.0208, 0}, // fM-ZG=0.5 39
-		{	0,	0,	0,	1.0,		0,	0,	0,	0,	0, 0, 0, 0, -0.0214}, // fM-GG=0.5 40
+		{	1.0,	0,	0,	0,		0,	0,	0,	0,	0, 0, 0, 0.052161, 0}, // fM-ZG=0.5 39
+		{	1.0,	0,	0,	0,		0,	0,	0,	0,	0, 0, 0, 0, -0.053666}, // fM-GG=0.5 40
 
-		{	1.0,	0,	0,	0,		0,	0,	0,	0,	0, 0.00175, -0.002, 0, 0} // SM ZZ, ZG. GG 41
+		{	0,	0,	0,	0,		0,	0,	0,	0,	0, 0.0473, 0, 0.052161, 0}, // fZG=fM-ZG=0.5 41
+		{	0,	0,	0,	0,		0,	0,	0,	0,	0, 0, -0.0531, 0, -0.053666}, // fGG=fM-GG=0.5 42
+
+		{	1.0,	0,	0,	0,		0,	0,	0,	0,	0, 0.00175, -0.002, 0, 0} // SM ZZ, ZG. GG 43
 	}
 };
 const float gi_phi2_phi4_files[kNumFiles][13]={
@@ -280,7 +289,7 @@ private:
   void protection_nullPt(TVector3& myV);
   void protection_nullPt(TLorentzVector& myV);
   void calculateAngles(TLorentzVector thep4H, TLorentzVector thep4Z1, TLorentzVector thep4M11, TLorentzVector thep4M12, TLorentzVector thep4Z2, TLorentzVector thep4M21, TLorentzVector thep4M22, float& costheta1, float& costheta2, float& phi, float& costhetastar, float& phistar1, float& phistar2, float& phistar12, float& phi1, float& phi2);
-  void testSpin0MEDivergence(int iSample, int iHypo, float& MEVal);
+//  void testSpin0MEDivergence(int iSample, int iHypo, float& MEVal);
 
   TString theSample;
 

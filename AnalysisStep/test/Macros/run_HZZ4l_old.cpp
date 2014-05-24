@@ -34,9 +34,9 @@ int main (int argc, char ** argv)
     abort();
   }
   // Should match ZZAnalysis...root names
-	char* myPrimarySample_SpinZero[kNumFiles]={
+	char* myPrimarySample[kNumFiles]={
 		"jhuGenV3H126",
-		"0PHH126",
+		"0PH126",
 		"0MH126",
 		"0Mf05ph0H126",
 		"0Mf05ph90H126",
@@ -48,7 +48,7 @@ int main (int argc, char ** argv)
 		"0Mf01ph270H126",
 
 		"0PMH125.6",
-		"0PHH125.6",
+		"0PH125.6",
 		"0MH125.6",
 		"0L1H125.6",
 
@@ -108,11 +108,10 @@ int main (int argc, char ** argv)
   analyzer.setBSM(BSM_flag);
 
   bool HZZ4l_flag=false;
-  bool HZZ4l_NoLepInt=false;
   int HZZ4l_code=0;
   float HZZ4L_HMass=125.6;
   for(int f=0;f<kNumFiles;f++){
-	  if( outputfilename.find( myPrimarySample_SpinZero[f] ) != std::string::npos){
+	  if( outputfilename.find( myPrimarySample[f] ) != std::string::npos){
 		  HZZ4l_code=f;
 		  HZZ4l_flag=true;
 		  if(f<11) HZZ4L_HMass=126;
@@ -120,35 +119,6 @@ int main (int argc, char ** argv)
   };
   if(HZZ4l_flag) cout << "HZZ4l spin code is " << HZZ4l_code << endl;
   analyzer.setHZZ4l(HZZ4l_flag,HZZ4l_code,HZZ4L_HMass);
-  if(outputfilename.find( "MCFM67" ) != std::string::npos) HZZ4l_NoLepInt=true;
-  if(HZZ4l_NoLepInt) cout << "Sample with need for ggZZ lepton interference is found" << endl;
-  analyzer.setHZZ4l_NoLepInt(HZZ4l_NoLepInt);
-
-  bool qqZZ_flag=false;
-  bool ggZZ_flag=false;
-  if( 
-	  (
-		  outputfilename.find( "ggZZ4l" ) != std::string::npos 
-		  || outputfilename.find( "ggZZ2l2l" ) != std::string::npos
-		  || outputfilename.find( "ggTo4l_Continuum" ) != std::string::npos
-		  || outputfilename.find( "ggTo2l2l_Continuum" ) != std::string::npos
-		  || outputfilename.find( "ggTo4e_Contin" ) != std::string::npos
-		  || outputfilename.find( "ggTo4mu_Contin" ) != std::string::npos
-		  || outputfilename.find( "ggTo2e2mu_Contin" ) != std::string::npos
-	  ) && !(
-		  outputfilename.find( "ggTo4l_H125.6" ) != std::string::npos 
-		  || outputfilename.find( "ggTo2l2l_H125.6" ) != std::string::npos
-		  || outputfilename.find( "ggTo4l_ContinuumInterfH125.6" ) != std::string::npos
-		  || outputfilename.find( "ggTo2l2l_ContinuumInterfH125.6" ) != std::string::npos
-	  )
-	) ggZZ_flag=true;
-  if( 
-	  (
-		  outputfilename.find( "_ZZTo" ) != std::string::npos 
-		  || outputfilename.find( "_ZZ95-160To" ) != std::string::npos
-	  )
-	) qqZZ_flag=true;
-  analyzer.setGGQQB(qqZZ_flag,ggZZ_flag);
 
   //Get the normalization. It's the first bin of the histo
   TFile fIn(inputfilename.c_str());

@@ -69,7 +69,7 @@ HZZ4l::HZZ4l(TChain *tree, TString sampleName) : HZZ4lBase(tree), theSample(samp
   if (theSample.BeginsWith("ZZ4lAnalysis_")) theSample.Remove(0,13);
   for (int i=0; i<4; ++i) ZXWeightTables[i]=0;
   for(int xb=0;xb<kNumSamples+1;xb++){ for(int yb=0;yb<nFinalStates;yb++) N_generated[yb][xb]=0;};
-  for(int xb=0;xb<kNumSamples+1;xb++){ for(int yb=0;yb<nFinalStates;yb++) N_generated_4GeVcut[yb][xb]=0;};
+  for(int xb=0;xb<kNumSamples+1;xb++){ for(int yb=0;yb<nFinalStates;yb++) N_generated_with2mu2e[yb][xb]=0;};
 }
 
 void HZZ4l::Loop(Int_t channelType, const TString outputName)
@@ -166,7 +166,6 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
     //Initial values of MC_weight, MC_weight_norm, MC_weight_noxsec
     if(!is8TeV) MC_weight_initial = xsecRead7TeV.getWeight(theSample, "1fb-1","all", true)/Nevt_norm;
     else MC_weight_initial = xsecRead8TeV.getWeight(theSample, "1fb-1","all", true)/Nevt_norm;
-	cout << "Sample cross section is: " << MC_weight_initial * Nevt_norm << endl;
 
     MC_weight_norm_initial = getNormalizedWeight(channelType);
     if (MC_weight_norm_initial<0){
@@ -324,14 +323,6 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
   Float_t myp0_g1prime2_VAJHU = 0;
   Float_t mypg1g1prime2_VAJHU = 0;
   Float_t myDgg10_VAMCFM= 0;
-  Float_t mypzzzg_VAJHU=0.;
-  Float_t mypzzgg_VAJHU=0.;
-  Float_t mypzzzg_PS_VAJHU=0.;
-  Float_t mypzzgg_PS_VAJHU=0.;
-  Float_t myp0Zgs_VAJHU=0.;
-  Float_t myp0gsgs_VAJHU=0.;
-  Float_t myp0Zgs_PS_VAJHU=0.;
-  Float_t myp0gsgs_PS_VAJHU=0.;
   Float_t myp0plus_m4l    = 0.;
   Float_t mybkg_m4l       = 0.;
   Float_t mypg1g4_mela = 0.;
@@ -353,9 +344,6 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
   vector<double> myJetPhi;
   vector<double> myJetMass;
   vector<double> myJetBTag;
-  vector<double> myJetQG;
-  vector<double> myJetQGsmear;
-  vector<double> myJetQGL;
 
 // Generic Lorentz Vectors
   TLorentzVector pZ1;
@@ -394,12 +382,6 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
   SelTree.Branch("ZZEta",&myZZEta,"ZZEta/F");
   SelTree.Branch("ZZPhi",&myZZPhi,"ZZPhi/F");
   SelTree.Branch("ZZFisher",&myZZFisher,"ZZFisher/F");
-  if (fChain->GetBranchStatus("JetQG")){
-	  SelTree.Branch("JetQG", &myJetQG, "JetQG/F");
-	  SelTree.Branch("JetQGL", &myJetQG, "JetQGL/F");
-	  SelTree.Branch("JetQGsmear", &myJetQG, "JetQGsmear/F");
-	  cout << "Set JetQG branches" << endl;
-  };
   SelTree.Branch("p0plus_VAJHU",&myp0plus_VAJHU,"p0plus_VAJHU/F");
   SelTree.Branch("p0hplus_VAJHU",&myp0hplus_VAJHU,"p0hplus_VAJHU/F");
   SelTree.Branch("p0minus_VAJHU",&myp0minus_VAJHU,"p0minus_VAJHU/F");
@@ -461,14 +443,6 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
   SelTree.Branch("p0_g1prime2_VAJHU",&myp0_g1prime2_VAJHU,"p0_g1prime2_VAJHU/F");
   SelTree.Branch("pg1g1prime2_VAJHU",&mypg1g1prime2_VAJHU,"pg1g1prime2_VAJHU/F");
   SelTree.Branch("Dgg10_VAMCFM",&myDgg10_VAMCFM,"Dgg10_VAMCFM/F");
-  SelTree.Branch("pzzzg_VAJHU",    &mypzzzg_VAJHU,    "pzzzg_VAJHU/F");
-  SelTree.Branch("pzzgg_VAJHU",    &mypzzgg_VAJHU,    "pzzgg_VAJHU/F");
-  SelTree.Branch("pzzzg_PS_VAJHU", &mypzzzg_PS_VAJHU, "pzzzg_PS_VAJHU/F");
-  SelTree.Branch("pzzgg_PS_VAJHU", &mypzzgg_PS_VAJHU, "pzzgg_PS_VAJHU/F");
-  SelTree.Branch("p0Zgs_VAJHU",    &myp0Zgs_VAJHU,     "p0Zgs_VAJHU/F");
-  SelTree.Branch("p0gsgs_VAJHU",   &myp0gsgs_VAJHU,   "p0gsgs_VAJHU/F");
-  SelTree.Branch("p0Zgs_PS_VAJHU", &myp0Zgs_PS_VAJHU, "p0Zgs_PS_VAJHU/F");
-  SelTree.Branch("p0gsgs_PS_VAJHU",&myp0gsgs_PS_VAJHU,"p0gsgs_PS_VAJHU/F");
 
   SelTree.Branch("p0plus_m4l",&myp0plus_m4l,"p0plus_m4l/F");
   SelTree.Branch("bkg_m4l",&mybkg_m4l,"bkg_m4l/F");
@@ -554,19 +528,17 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 	float weight_probPdf = 1.0;
 	float weight_probPdf_VAMCFM = 1.0;
 	float MC_weight_ggZZLepInt=1;
-	if (isHZZ4l){
-		SelTree.Branch("kNumSamples", &numSamples);
-		SelTree.Branch("MC_weight_spin0", MC_weight_samples_VAJHU, "MC_weight_spin0[kNumSamples]/F");
-//		SelTree.Branch("MC_ME_as2mu2e_spin0",MC_ME_as2mu2e_spin0,"MC_ME_as2mu2e_spin0[kNumSamples]/F");
-		SelTree.Branch("sampleprob_VAJHU", &sample_probPdf_VAJHU);
-	};
-	if(isZZQQB || isZZGG){
-		SelTree.Branch("MC_weight_QQBGG_VAMCFM",&MC_weight_QQBGG_VAMCFM);
-		SelTree.Branch("sampleprob_VAMCFM",&sample_probPdf_VAMCFM);
-	};
-//  if(isHZZ4l_NoLepInt){
-//	  SelTree.Branch("MC_weight_ggZZLepInt",&MC_weight_ggZZLepInt);
-//  };
+  SelTree.Branch("kNumSamples",&numSamples);
+  SelTree.Branch("MC_weight_spin0",MC_weight_samples_VAJHU,"MC_weight_spin0[kNumSamples]/F");
+  SelTree.Branch("MC_ME_as2mu2e_spin0",MC_ME_as2mu2e_spin0,"MC_ME_as2mu2e_spin0[kNumSamples]/F");
+  SelTree.Branch("sampleprob_VAJHU",&sample_probPdf_VAJHU);
+  if(isZZQQB || isZZGG){
+	  SelTree.Branch("MC_weight_QQBGG_VAMCFM",&MC_weight_QQBGG_VAMCFM);
+	  SelTree.Branch("sampleprob_VAMCFM",&sample_probPdf_VAMCFM);
+  };
+  if(isHZZ4l_NoLepInt){
+	  SelTree.Branch("MC_weight_ggZZLepInt",&MC_weight_ggZZLepInt);
+  };
 
   if(saveJets){
     SelTree.Branch("DiJetMass",&myDiJetMass,"DiJetMass/F");
@@ -599,8 +571,8 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
     SelTree.Branch("ZXfake_weight",&ZXfake_weight,"ZXfake_weight/F");
   }
 
-	double selfDHvvcoupl[30][2];
-	for(int gx=0;gx<30;gx++){
+	double selfDHvvcoupl[20][2];
+	for(int gx=0;gx<20;gx++){
 		selfDHvvcoupl[gx][0]=0;
 		selfDHvvcoupl[gx][1]=0;
 	};
@@ -934,7 +906,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 			if(!(GenZ1Mass==GenZ1Mass)) cout << "WARNING! GEN. Z1 MASS IS NAN!" << endl;
 			if(!(GenZ2Mass==GenZ2Mass)) cout << "WARNING! GEN. Z2 MASS IS NAN!" << endl;
 
-			for(int gx=0;gx<30;gx++){
+			for(int gx=0;gx<20;gx++){
 				selfDHvvcoupl[gx][0]=0;
 				selfDHvvcoupl[gx][1]=0;
 			};
@@ -943,11 +915,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 			selfDHvvcoupl[1][1] = (gi_phi2_phi4_files[HZZ4lSample][1]) * sin( gi_phi2_phi4_files[HZZ4lSample][4] );
 			selfDHvvcoupl[3][0] = (gi_phi2_phi4_files[HZZ4lSample][3]) * cos( gi_phi2_phi4_files[HZZ4lSample][5] );
 			selfDHvvcoupl[3][1] = (gi_phi2_phi4_files[HZZ4lSample][3]) * sin( gi_phi2_phi4_files[HZZ4lSample][5] );
-			selfDHvvcoupl[11][0] = (gi_phi2_phi4_files[HZZ4lSample][8]);
-			selfDHvvcoupl[4][0] = gi_phi2_phi4_files[HZZ4lSample][9];
-			selfDHvvcoupl[7][0] = gi_phi2_phi4_files[HZZ4lSample][10];
-			selfDHvvcoupl[6][0] = gi_phi2_phi4_files[HZZ4lSample][11];
-			selfDHvvcoupl[9][0] = gi_phi2_phi4_files[HZZ4lSample][12];
+			selfDHvvcoupl[5][0] = (gi_phi2_phi4_files[HZZ4lSample][8]);
 
 			if(isHZZ4l && genFinalState<=4){
 				sample_probPdf_VAJHU = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
@@ -958,7 +926,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 			};
 
 			for(int hypo=0;hypo<kNumSamples;hypo++){
-				for(int gx=0;gx<30;gx++){
+				for(int gx=0;gx<20;gx++){
 					selfDHvvcoupl[gx][0]=0;
 					selfDHvvcoupl[gx][1]=0;
 				};
@@ -967,18 +935,13 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 				selfDHvvcoupl[1][1] = (gi_phi2_phi4[MassIndex][hypo][1]) * sin( gi_phi2_phi4[MassIndex][hypo][4] );
 				selfDHvvcoupl[3][0] = (gi_phi2_phi4[MassIndex][hypo][3]) * cos( gi_phi2_phi4[MassIndex][hypo][5] );
 				selfDHvvcoupl[3][1] = (gi_phi2_phi4[MassIndex][hypo][3]) * sin( gi_phi2_phi4[MassIndex][hypo][5] );
-				selfDHvvcoupl[11][0] = (gi_phi2_phi4[MassIndex][hypo][8]);
-				selfDHvvcoupl[4][0] = gi_phi2_phi4[MassIndex][hypo][9];
-				selfDHvvcoupl[7][0] = gi_phi2_phi4[MassIndex][hypo][10];
-				selfDHvvcoupl[6][0] = gi_phi2_phi4[MassIndex][hypo][11];
-				selfDHvvcoupl[9][0] = gi_phi2_phi4[MassIndex][hypo][12];
+				selfDHvvcoupl[5][0] = (gi_phi2_phi4[MassIndex][hypo][8]);
 
 				weight_probPdf = 1.0;
 				if( !(isHZZ4l && genFinalState<=4 ) ) weight_probPdf = 1.0;
 				else if( (isHZZ4l && genFinalState<=4 ) ) weight_probPdf = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
 				MC_weight_samples_VAJHU[hypo] = weight_probPdf/sample_probPdf_VAJHU;
-//				testSpin0MEDivergence(HZZ4lSample, hypo, MC_weight_samples_VAJHU[hypo]);
-/*
+
 				lepIdOrdered[0]=11;
 				lepIdOrdered[1]=-11;
 				lepIdOrdered[2]=13;
@@ -990,33 +953,29 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 				lepIdOrdered[1]=GenLep2Id;
 				lepIdOrdered[2]=GenLep3Id;
 				lepIdOrdered[3]=GenLep4Id;
-*/
+
 				if(jentry == 0){
 					cout << selfDHvvcoupl[0][0] << '\t';
 					cout << selfDHvvcoupl[1][0] << '\t';
 					cout << selfDHvvcoupl[1][1] << '\t';
 					cout << selfDHvvcoupl[3][0] << '\t';
 					cout << selfDHvvcoupl[3][1] << '\t';
-					cout << selfDHvvcoupl[11][0] << '\t';
-					cout << selfDHvvcoupl[4][0] << '\t';
-					cout << selfDHvvcoupl[7][0] << '\t';
-					cout << selfDHvvcoupl[6][0] << '\t';
-					cout << selfDHvvcoupl[9][0] << endl;
+					cout << selfDHvvcoupl[5][0] << endl;
 				};
 			};
 			for(int hypo=0;hypo<kNumSamples;hypo++){
 				if(genFinalState<=4){
 					N_generated[genFinalState][hypo+1] += MC_weight_samples_VAJHU[hypo];
-					if(GenZ1Mass>4 && GenZ2Mass>4) N_generated_4GeVcut[genFinalState][hypo+1] += MC_weight_samples_VAJHU[hypo];
+					N_generated_with2mu2e[genFinalState][hypo+1] += MC_weight_samples_VAJHU[hypo] * (MC_ME_as2mu2e_spin0[0]/MC_ME_as2mu2e_spin0[hypo]);
 				};
 			};
 			if(genFinalState<=4){
 				N_generated[genFinalState][0] += 1.0;
-				if(GenZ1Mass>4 && GenZ2Mass>4) N_generated_4GeVcut[genFinalState][0] += 1.0;
+				N_generated_with2mu2e[genFinalState][0] += 1.0;
 			};
-/*
+
 			if(isHZZ4l_NoLepInt){
-				for(int gx=0;gx<30;gx++){
+				for(int gx=0;gx<20;gx++){
 					selfDHvvcoupl[gx][0]=0;
 					selfDHvvcoupl[gx][1]=0;
 				};
@@ -1034,7 +993,6 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 					MC_weight_ggZZLepInt=1;
 				};
 			};
-*/
 			if(isZZQQB || isZZGG){
 				mela.setProcess(TVar::bkgZZ, TVar::MCFM, TVar::ZZQQB); // Depart from what it was at the beginning of the loop.
 				float prob_ZZQQB = getMCFMMELAWeight(mela, lepIdOrdered, angularOrdered);
@@ -1056,7 +1014,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 			for(int hypo=0;hypo<=kNumSamples;hypo++){
 				if(genFinalState<=4){
 					N_generated[genFinalState][hypo] += 1.0;
-					if(GenZ1Mass>4 && GenZ2Mass>4) N_generated_4GeVcut[genFinalState][hypo] += 1.0;
+					N_generated_with2mu2e[genFinalState][hypo] += 1.0;
 				};
 			};
 		};
@@ -1168,8 +1126,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 
       //Do the final selection and best candidate selection. Depends on signal region or control region
       if(isCR && !CRflag->at(nH)) continue; // Belongs to at least 1 CR
-      if(!isCR && (ZZsel->at(nH) < 70. || nH != iBC) ) continue;
-//      if(!isCR && (ZZsel->at(nH) < 100. || nH != iBC) ) continue;
+      if(!isCR && (ZZsel->at(nH) < 100. || nH != iBC) ) continue;
 
       Int_t RunFraction = -1;
       Float_t whatPeriod = RooRandom::randomGenerator()->Uniform();
@@ -1227,14 +1184,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
       myZZPhi = ZZPhi->at(nH);
       //      myZZRapidity = momH.Rapidity();
       myZZFisher = ZZFisher->at(nH);
-//	  if (fChain->GetBranchStatus("JetQG")){
-//		  cout << "JetQGs are taken" << endl;
-//		  myJetQG = JetQG->at(nH);
-//		  myJetQGL = JetQGL->at(nH);
-//		  myJetQGsmear = JetQGsmear->at(nH);
-//	  };
-
-	  myp0plus_VAJHU = p0plus_VAJHU->at(nH);
+      myp0plus_VAJHU = p0plus_VAJHU->at(nH);
       myp0hplus_VAJHU = p0hplus_VAJHU->at(nH);
       myp0minus_VAJHU = p0minus_VAJHU->at(nH);
       myp1_VAJHU = p1_VAJHU->at(nH);
@@ -1292,11 +1242,10 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
       mypvbf_VAJHU_new_up = pvbf_VAJHU_new_up->at(nH);
       myphjj_VAJHU_new_dn = phjj_VAJHU_new_dn->at(nH);
       mypvbf_VAJHU_new_dn = pvbf_VAJHU_new_dn->at(nH);
-	  myp0_g1prime2_VAJHU = p0_g1prime2_VAJHU->at(nH);
-	  mypg1g1prime2_VAJHU = pg1g1prime2_VAJHU->at(nH);
-	  myDgg10_VAMCFM = Dgg10_VAMCFM->at(nH);
-
-	  myp0plus_m4l = p0plus_m4l->at(nH);
+	    myp0_g1prime2_VAJHU = p0_g1prime2_VAJHU->at(nH);
+	    mypg1g1prime2_VAJHU = pg1g1prime2_VAJHU->at(nH);
+	    myDgg10_VAMCFM = Dgg10_VAMCFM->at(nH);
+      myp0plus_m4l = p0plus_m4l->at(nH);
       mybkg_m4l = bkg_m4l->at(nH);
       myZ1Mass = Z1Mass->at(nH);
       myZ1Pt = Z1Pt->at(nH);
@@ -1325,6 +1274,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
       mybkg_m4l_ResUp = bkg_m4l_ResUp->at(nH);
       mybkg_m4l_ResDown = bkg_m4l_ResDown->at(nH);
 
+      if(isCR){
 	myLep1Pt  = Lep1Pt->at(nH);
 	myLep1Eta = Lep1Eta->at(nH);
 	myLep1ID = Lep1LepId->at(nH);
@@ -1338,117 +1288,6 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 	myLep4Eta = Lep4Eta->at(nH);
 	myLep4ID = Lep4LepId->at(nH);
 
-	int lepIdOrdered[4]={ myLep1ID,myLep2ID,myLep3ID,myLep4ID };
-	float angularOrdered[8]={myZZMass,myZ1Mass,myZ2Mass,mycosthetastar,myhelcosthetaZ1,myhelcosthetaZ2,myhelphi,myphistarZ1};
-
-	  if(fChain->GetBranchStatus("pzzzg_VAJHU")){
-		  mypzzzg_VAJHU = pzzzg_VAJHU->at(nH);
-		  mypzzgg_VAJHU = pzzgg_VAJHU->at(nH);
-		  mypzzzg_PS_VAJHU = pzzzg_PS_VAJHU->at(nH);
-		  mypzzgg_PS_VAJHU = pzzgg_PS_VAJHU->at(nH);
-		  myp0Zgs_VAJHU = p0Zgs_VAJHU->at(nH);
-		  myp0gsgs_VAJHU = p0gsgs_VAJHU->at(nH);
-		  myp0Zgs_PS_VAJHU = p0Zgs_PS_VAJHU->at(nH);
-		  myp0gsgs_PS_VAJHU = p0gsgs_PS_VAJHU->at(nH);
-	  }
-	  else{
-		mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
-		for(int gx=0;gx<30;gx++){
-			selfDHvvcoupl[gx][0]=0;
-			selfDHvvcoupl[gx][1]=0;
-		};
-		selfDHvvcoupl[0][0] = 1.0;
-		selfDHvvcoupl[3][0] = 0;
-		selfDHvvcoupl[4][0] = 0.0688;
-		selfDHvvcoupl[7][0] = 0;
-		selfDHvvcoupl[6][0] = 0;
-		selfDHvvcoupl[9][0] = 0;
-		mypzzzg_VAJHU=getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
-		selfDHvvcoupl[0][0] = 1.0;
-		selfDHvvcoupl[3][0] = 0;
-		selfDHvvcoupl[4][0] = 0;
-		selfDHvvcoupl[7][0] = -0.0898;
-		selfDHvvcoupl[6][0] = 0;
-		selfDHvvcoupl[9][0] = 0;
-		mypzzgg_VAJHU=getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
-		selfDHvvcoupl[0][0] = 1.0;
-		selfDHvvcoupl[3][0] = 0;
-		selfDHvvcoupl[4][0] = 0;
-		selfDHvvcoupl[7][0] = 0;
-		selfDHvvcoupl[6][0] = 0.0855;
-		selfDHvvcoupl[9][0] = 0;
-		mypzzzg_PS_VAJHU=getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
-		selfDHvvcoupl[0][0] = 1.0;
-		selfDHvvcoupl[3][0] = 0;
-		selfDHvvcoupl[4][0] = 0;
-		selfDHvvcoupl[7][0] = 0;
-		selfDHvvcoupl[6][0] = 0;
-		selfDHvvcoupl[9][0] = -0.0907;
-		mypzzgg_PS_VAJHU=getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
-
-		selfDHvvcoupl[0][0] = 0;
-		selfDHvvcoupl[3][0] = 0;
-		selfDHvvcoupl[4][0] = 0.0688;
-		selfDHvvcoupl[7][0] = 0;
-		selfDHvvcoupl[6][0] = 0;
-		selfDHvvcoupl[9][0] = 0;
-		myp0Zgs_VAJHU=getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
-		mypzzzg_VAJHU -= myp0Zgs_VAJHU;
-		selfDHvvcoupl[0][0] = 0;
-		selfDHvvcoupl[3][0] = 0;
-		selfDHvvcoupl[4][0] = 0;
-		selfDHvvcoupl[7][0] = -0.0898;
-		selfDHvvcoupl[6][0] = 0;
-		selfDHvvcoupl[9][0] = 0;
-		myp0gsgs_VAJHU=getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
-		mypzzgg_VAJHU -= myp0gsgs_VAJHU;
-		selfDHvvcoupl[0][0] = 0;
-		selfDHvvcoupl[3][0] = 0;
-		selfDHvvcoupl[4][0] = 0;
-		selfDHvvcoupl[7][0] = 0;
-		selfDHvvcoupl[6][0] = 0.0855;
-		selfDHvvcoupl[9][0] = 0;
-		myp0Zgs_PS_VAJHU=getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
-		mypzzzg_PS_VAJHU -= myp0Zgs_PS_VAJHU;
-		selfDHvvcoupl[0][0] = 0;
-		selfDHvvcoupl[3][0] = 0;
-		selfDHvvcoupl[4][0] = 0;
-		selfDHvvcoupl[7][0] = 0;
-		selfDHvvcoupl[6][0] = 0;
-		selfDHvvcoupl[9][0] = -0.0907;
-		myp0gsgs_PS_VAJHU=getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
-		mypzzgg_PS_VAJHU -= myp0gsgs_PS_VAJHU;
-
-		float tempME=0;
-		selfDHvvcoupl[0][0] = 1.0;
-		selfDHvvcoupl[3][0] = 0;
-		selfDHvvcoupl[4][0] = 0;
-		selfDHvvcoupl[7][0] = 0;
-		selfDHvvcoupl[6][0] = 0;
-		selfDHvvcoupl[9][0] = 0;
-		tempME = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
-		mypzzzg_VAJHU -= tempME;
-		mypzzgg_VAJHU -= tempME;
-/*		selfDHvvcoupl[0][0] = 0;
-		selfDHvvcoupl[3][0] = 1.0;
-		selfDHvvcoupl[4][0] = 0;
-		selfDHvvcoupl[7][0] = 0;
-		selfDHvvcoupl[6][0] = 0;
-		selfDHvvcoupl[9][0] = 0;
-		tempME = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
-*/		mypzzzg_PS_VAJHU -= tempME;
-		mypzzgg_PS_VAJHU -= tempME;
-
-		selfDHvvcoupl[0][0] = 0;
-		selfDHvvcoupl[3][0] = 0;
-		selfDHvvcoupl[4][0] = 0;
-		selfDHvvcoupl[7][0] = 0;
-		selfDHvvcoupl[6][0] = 0;
-		selfDHvvcoupl[9][0] = 0;
-		mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG); // Revert back to what it was at the beginning of the loop.
-	  };
-
-	  if(isCR){
 	// for CR, the jet list is empty; we "fake" the NJets30 variable for consistency
 	if (myZZFisher>=0) myNJets30=2;
 	else myNJets30=0;
@@ -1495,20 +1334,17 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 
   //Save the final tree
   fOut.cd();
-  if (isHZZ4l){
-	  TH2F* hCount_new = new TH2F("hCounters_spin0_RW", "Counters with Spin0 Re-weights", nFinalStates, 0, nFinalStates, numSamples + 1, 0, numSamples + 1);
-	  TH2F* hCount_4GeVcut_new = new TH2F("hCounters_spin0_4GeVcutME_RW", "Counters with Spin0 Re-weights with 4GeV cut", nFinalStates, 0, nFinalStates, numSamples + 1, 0, numSamples + 1);
-	  for (int binx = 0; binx < nFinalStates; binx++){
-		  for (int biny = 0; biny < kNumSamples + 1; biny++){
-			  hCount_new->SetBinContent(binx + 1, biny + 1, N_generated[binx][biny]);
-			  hCount_4GeVcut_new->SetBinContent(binx + 1, biny + 1, N_generated_4GeVcut[binx][biny]);
-		  };
+  TH2F* hCount_new = new TH2F("hCounters_spin0_RW","Counters with Spin0 Re-weights",nFinalStates,0,nFinalStates,numSamples+1,0,numSamples+1);
+  TH2F* hCount_with2mu2e_new = new TH2F("hCounters_spin0_with2mu2eME_RW","Counters with Spin0 Re-weights with 2mu2e BR same",nFinalStates,0,nFinalStates,numSamples+1,0,numSamples+1);
+  for(int binx=0;binx<nFinalStates;binx++){
+	  for(int biny=0;biny<kNumSamples+1;biny++){
+		  hCount_new->SetBinContent(binx+1,biny+1,N_generated[binx][biny]);
+		  hCount_with2mu2e_new->SetBinContent(binx+1,biny+1,N_generated_with2mu2e[binx][biny]);
 	  };
-	  fOut.WriteTObject(hCount_new);
-	  fOut.WriteTObject(hCount_4GeVcut_new);
-	  delete hCount_new;
-	  delete hCount_4GeVcut_new;
   };
+  fOut.WriteTObject(hCount_new);
+  fOut.WriteTObject(hCount_with2mu2e_new);
+  delete hCount_new;
 
   SelTree.Write();
   hNvtxNoWeight.Write();
@@ -1546,7 +1382,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 }
 
 
-float HZZ4l::getJHUGenMELAWeight(Mela& myMela, int lepId[4], float angularOrdered[8], double selfDHvvcoupl[30][2]){
+float HZZ4l::getJHUGenMELAWeight(Mela& myMela, int lepId[4], float angularOrdered[8], double selfDHvvcoupl[20][2]){
 	float myprob=1.0;
 	int myflavor=-1;
 	if(abs(lepId[0])==abs(lepId[1]) &&
@@ -1605,101 +1441,6 @@ void HZZ4l::protection_nullPt(TLorentzVector& myV){
 	};
 	myV.SetXYZT(xyzt[0],xyzt[1],xyzt[2],xyzt[3]);
 };
-/*
-void HZZ4l::testSpin0MEDivergence(int iSample, int iHypo, float& MEVal){
-	if (iSample == kfLambda1_1+11){
-		if(iHypo == kfZG_0_fGG_1 && MEVal>2.0e14) MEVal = pow(2.0e14,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_1 && MEVal>2.0e14) MEVal = pow(2.0e14,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_05 && MEVal>8.0e11) MEVal = pow(8.0e11,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_05 && MEVal>6.5e11) MEVal = pow(6.5e11,2)/MEVal;
-	};
-	if (iSample == kfLambda1_m05+11){
-		if(iHypo == kfZG_0_fGG_1 && MEVal>4.0e5) MEVal = pow(4.0e5,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_1 && MEVal>4.0e5) MEVal = pow(4.0e5,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_05 && MEVal>1000) MEVal = pow(1000.0,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_05 && MEVal>150) MEVal = pow(150.0,2)/MEVal;
-	};
-	if (iSample == kfLambda1_05+11){
-		if(iHypo == kfZG_1_fGG_0 && MEVal>5.0e7) MEVal = pow(5.0e7,2)/MEVal;
-		if(iHypo == kfMZG_1_fMGG_0 && MEVal>5.0e7) MEVal = pow(5.0e7,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_1 && MEVal>2.0e7) MEVal = pow(2.0e7,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_1 && MEVal>2.0e7) MEVal = pow(2.0e7,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_05 && MEVal>6000) MEVal = pow(6000.0,2)/MEVal;
-	};
-	if (iSample == kfg2_0_fg4_1+11){
-		if(iHypo == kfZG_0_fGG_1 && MEVal>2.0e7) MEVal = pow(2.0e7,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_1 && MEVal>2.0e7) MEVal = pow(2.0e7,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_05 && MEVal>30000) MEVal = pow(30000.0,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_05 && MEVal>8000) MEVal = pow(8000.0,2)/MEVal;
-	};
-	if (iSample == kfg2_0_fg4_05+11){
-		if(iHypo == kfZG_0_fGG_1 && MEVal>1.5e6) MEVal = pow(1.5e6,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_1 && MEVal>1.5e6) MEVal = pow(1.5e6,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_05 && MEVal>4000) MEVal = pow(4000.0,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_05 && MEVal>900) MEVal = pow(900.0,2)/MEVal;
-	};
-	if (iSample == kfg2_0_fg4_01+11){
-		if(iHypo == kfZG_0_fGG_1 && MEVal>2.0e6) MEVal = pow(2.0e6,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_1 && MEVal>2.0e6) MEVal = pow(2.0e6,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_05 && MEVal>6000) MEVal = pow(6000.0,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_05 && MEVal>1200) MEVal = pow(1200.0,2)/MEVal;
-	};
-	if (iSample == kfg2_0_fg4_01_p390-1+11){
-		if(iHypo == kfZG_0_fGG_1 && MEVal>1.0e6) MEVal = pow(1.0e6,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_1 && MEVal>1.0e6) MEVal = pow(1.0e6,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_05 && MEVal>3000) MEVal = pow(3000.0,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_05 && MEVal>600) MEVal = pow(600.0,2)/MEVal;
-	};
-	if (iSample == kfg2_0_fg4_05_p3Pi-1+11){
-		if(iHypo == kfZG_0_fGG_1 && MEVal>2.0e6) MEVal = pow(2.0e6,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_1 && MEVal>2.0e6) MEVal = pow(2.0e6,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_05 && MEVal>6000) MEVal = pow(6000.0,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_05 && MEVal>1200) MEVal = pow(1200.0,2)/MEVal;
-	};
-	if (iSample == kfg2_05_fg4_0+11){
-		if(iHypo == kfZG_0_fGG_1 && MEVal>3.0e6) MEVal = pow(3.0e6,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_1 && MEVal>3.0e6) MEVal = pow(3.0e6,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_05 && MEVal>1000) MEVal = pow(1000.0,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_05 && MEVal>150) MEVal = pow(150.0,2)/MEVal;
-	};
-	if (iSample == kfg2_05_fg4_0_p290-1+11){
-		if(iHypo == kfZG_0_fGG_1 && MEVal>1.0e6) MEVal = pow(1.0e6,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_1 && MEVal>1.0e6) MEVal = pow(1.0e6,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_05 && MEVal>3000) MEVal = pow(3000.0,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_05 && MEVal>600) MEVal = pow(600.0,2)/MEVal;
-	};
-	if (iSample == kfg2_05_fg4_0_p2Pi-1+11){
-		if(iHypo == kfZG_0_fGG_1 && MEVal>1.0e6) MEVal = pow(1.0e6,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_1 && MEVal>1.0e6) MEVal = pow(1.0e6,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_05 && MEVal>20000) MEVal = pow(20000.0,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_05 && MEVal>3000) MEVal = pow(3000.0,2)/MEVal;
-	};
-	if (iSample == kfg2_05_fg4_05+11){
-		if(iHypo == kfZG_0_fGG_1 && MEVal>5.0e6) MEVal = pow(5.0e6,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_1 && MEVal>5.0e6) MEVal = pow(5.0e6,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_05 && MEVal>20000) MEVal = pow(20000.0,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_05 && MEVal>6000) MEVal = pow(6000.0,2)/MEVal;
-	};
-	if (iSample == kfg2_05_fg4_05_p2Pi-1+11){
-		if(iHypo == kfZG_0_fGG_1 && MEVal>3.0e6) MEVal = pow(3.0e6,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_1 && MEVal>3.0e6) MEVal = pow(3.0e6,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_05 && MEVal>20000) MEVal = pow(20000.0,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_05 && MEVal>2000) MEVal = pow(2000.0,2)/MEVal;
-	};
-	if (iSample == kfg2_33_fg4_33_p390-1+11){
-		if(iHypo == kfZG_0_fGG_1 && MEVal>3.0e5) MEVal = pow(3.0e5,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_1 && MEVal>3.0e5) MEVal = pow(3.0e5,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_05 && MEVal>800) MEVal = pow(800.0,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_05 && MEVal>150) MEVal = pow(150.0,2)/MEVal;
-	};
-	if (iSample == kfg2_01_fg4_01_p390-1+11){
-		if(iHypo == kfZG_0_fGG_1 && MEVal>1.6e6) MEVal = pow(1.6e6,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_1 && MEVal>1.6e6) MEVal = pow(1.6e6,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_05 && MEVal>5000) MEVal = pow(5000.0,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_05 && MEVal>500) MEVal = pow(500.0,2)/MEVal;
-	};
-};
-*/
 void HZZ4l::calculateAngles(TLorentzVector thep4H, TLorentzVector thep4Z1, TLorentzVector thep4M11, TLorentzVector thep4M12, TLorentzVector thep4Z2, TLorentzVector thep4M21, TLorentzVector thep4M22, float& costheta1, float& costheta2, float& phi, float& costhetastar, float& phistar1, float& phistar2, float& phistar12, float& phi1, float& phi2){
 	
   float norm;
