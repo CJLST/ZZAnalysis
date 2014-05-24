@@ -5,14 +5,10 @@
 # The fields in the table are:
 #
 # finalState   sample             #events    X-section(pb)  BR
-
-
 # Signals
-
 ##########################################################################
 # POWHEG15 ggH samples, x-sec for ggH, BR(H->4l,l=e,mu,tau)              #
 ##########################################################################
-
 all            powheg15H125                      1   0.0053185200  1
 all            powheg15H126                      1   0.0057289400  1
 all            powheg15H225                      1   0.0168059697  1
@@ -39,12 +35,9 @@ all            powheg15H850                      1   0.0002399040  1
 all            powheg15H900                      1   0.0001770100  1
 all            powheg15H950                      1   0.0001334070  1
 all            powheg15H1000                     1   0.0001017600  1
-
-
 ##########################################################################
 # POWHEG15-JhuGenV3 ggH samples, x-sec for ggH, BR(H->4l,l=e,mu,tau)     #
 ##########################################################################
-
 all            powheg15jhuGenV3H110              1   0.0011658400  1
 all            powheg15jhuGenV3H115              1   0.0020892520  1
 all            powheg15jhuGenV3H116              1   0.0023394000  1
@@ -73,13 +66,9 @@ all            powheg15jhuGenV3H180              1   0.0054957600  1
 all            powheg15jhuGenV3H185              1   0.0127421679  1
 all            powheg15jhuGenV3H190              1   0.0166589600  1
 all            powheg15jhuGenV3H200              1   0.0183397900  1
-
-
-
 ##########################################################################
 # old VBF samples, x-sec for ggH, BR(H->4l,l=e,mu,tau)                   #
 ##########################################################################
-
 all            VBFH115                      1   0.0001594138  1
 all            VBFH116                      1   0.0001799700  1
 all            VBFH117                      1   0.0002004820  1
@@ -130,13 +119,9 @@ all            VBFH850                      1   0.0001130383  1
 all            VBFH900                      1   0.0000980840  1
 all            VBFH950                      1   0.0000862732  1
 all            VBFH1000                     1   0.0000762882  1
-
-
-
 ##########################################################################
 # POWHEG15 VBF samples, x-sec for ggH, BR(H->4l,l=e,mu,tau)              #
 ##########################################################################
-
 all            powheg15VBFH115             1   0.0001594138  1
 all            powheg15VBFH116             1   0.0001799700  1
 all            powheg15VBFH117             1   0.0002004820  1
@@ -187,13 +172,10 @@ all            powheg15VBFH850             1   0.0001130383  1
 all            powheg15VBFH900             1   0.0000980840  1
 all            powheg15VBFH950             1   0.0000862732  1
 all            powheg15VBFH1000            1   0.0000762882  1
-
-
 ##########################################################################
 # Associated production. Filter efficiencies extracted by Roberto C.     #
 # BR = BR(H->4l,l=e,mu,tau)                                              #
 ##########################################################################
-
 all            WH110                      1   0.0046481400  0.010384 # 98897/9523809 
 all            WH115                      1   0.0080058240  0.010384 # 98897/9523809 
 all            WH120                      1   0.0128026800  0.010384 # 98897/9523809 
@@ -230,8 +212,6 @@ all            ttH160                     1   0.0024808700  0.029658 # 49210/166
 all            ttH180                     1   0.0024447220  0.029658 # 49210/1664865 
 all            ttH200                     1   0.0072879000  0.029658 # 49210/1664865 
 
-
-
 ##########################################################################
 # JHUGENV3 spin-0 samples, x-sec for ggH, BR(H->4l,l=e,mu,tau)           #
 ##########################################################################
@@ -247,7 +227,6 @@ all            powheg15jhuGenV3-0Mf05ph90H126   1   0.0057289400  1
 all            powheg15jhuGenV3-0Mf05ph180H126  1   0.0057289400  1
 all            powheg15jhuGenV3-0Mf05ph270H126  1   0.0057289400  1
 
-
 ##########################################################################
 # JHUGENV3 spin-1 and spin-2 samples, x-sec for ggH, BR(H->4l,l=e,mu)    #
 ##########################################################################
@@ -259,7 +238,6 @@ all            powheg15jhuGenV3qqGravH126       1   0.0025799200  1
 all            powheg15jhuGenV3Grav2MHH126      1   0.0025799200  1
 all            powheg15jhuGenV3Grav2PBH126      1   0.0025799200  1
 all            powheg15jhuGenV3Grav2PHH126      1   0.0025799200  1
-
 
 ##########################################################################
 # powheg15-jhuGenV3-spin/CP-MH125.6, x-section for ggH, BR(H->4l,l=e,mu) #
@@ -315,7 +293,6 @@ all jhuGenV3Grav2MHqqbH125.6                   1 0.0025198800  1
 all jhuGenV3Grav2MH9qqbH125.6                  1 0.0025198800  1
 all jhuGenV3Grav2MH10qqbH125.6                 1 0.0025198800  1
 
-
 ##########
 # MCFM67 # FIXME: update for YR3?
 ##########
@@ -332,7 +309,6 @@ all ggTo2e2mu_SMH-MCFM67_H125.6              1 0.000325466 1
 all ggTo2e2mu_SMHContinInterf-MCFM67_H125.6  1 0.00118409  1
 all ggTo2e2mu_BSMHContinInterf-MCFM67_H125.6 1 0.00161636  1
 all ggTo2e2mu_Contin-MCFM67                  1 0.000918826 1
-
 
 ##########################################################################
 # VBFHiggs, BR(H->4l,l=e,mu)                                             #
@@ -365,7 +341,6 @@ all WHiggs0M_H125.6          1 0.0000914892 1
 all WHiggs0PH_H125.6         1 0.0000914892 1
 all WHiggs0Mf05ph0_H125.6    1 0.0000914892 1
 
-
 ###############
 # VBF Phantom # FIXME:recheck?
 ###############
@@ -379,8 +354,6 @@ all VBF_phantom_4e        1 0.000246776 1
 all VBF_phantom_4mu10SM   1 0.000265522 1
 all VBF_phantom_4mu25SM   1 0.000307619 1
 all VBF_phantom_4mu       1 0.000246597 1
-
-
 
 ##########################################
 # MINLO samples, x-sections from [minlo] #
@@ -426,7 +399,6 @@ all   minloH950   1   0.04380909     0.003145000
 all   minloH1000  1   0.03722738     0.003180000
 
 
-
 # Backgrounds
 all            ZZTo4mu                   1   0.07691       1 # 
 all            ZZTo4e                    1   0.07691       1 # 
@@ -470,7 +442,6 @@ all            DYJetsToLLTuneZ2M50-NoB   1   3503.71       1 # Splitted
 all            TTTo2L2Nu2B               1   23.64         1 # /TTTo2L2Nu2B_8TeV-powheg-pythia6/Summer12 
 all            TTJets                    1   225.2         1 #
 
-
 # Single Top
 all            Tschannel                 1   3.89          1 # [https://twiki.cern.ch/twiki/bin/viewauth/CMS/SingleTopSigma]
 all            Tbarschannel              1   1.76          1 # 
@@ -478,7 +449,6 @@ all            Ttchannel                 1   55.531        1 # /T_t-channel_Tune
 all            Tbartchannel              1   30.           1 # /Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola/Summer12
 all            TbartWchannelDR           1   11.1773       1 # /Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12
 all            TtWchannelDR              1   11.1773       1 # /T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12
-
 
 # gg2zz with interference (from Misha)
 all           ggTo2l2l_H125.6                   1       0.00107 1 #
