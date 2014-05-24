@@ -96,8 +96,8 @@ void plotCR() {
   //TString phaseSpace = "CRZLLHiSIP";
   //TString phaseSpace = "CRZLLHiSIPKin";
 
-  TString XSectionFile = "Xsection_v1.txt";
-  //TString XSectionFile = "Xsection8TeV_v2.txt";
+  TString XSectionFile = "Xsection7TeV_YR3.txt";
+  //TString XSectionFile = "Xsection8TeV_YR3.txt";
   TString lumiFile = "Luminosity.txt";
   
   //TString epoch = "Complete2011OldCalc"; //4670

@@ -1,0 +1,496 @@
+# Number of MC events, X-sections and BR/corr to be used to weight the MC samples.
+# weight = lumi * X-sec * BR / #events
+# #events is always 1 here since it is taken from the root files
+#
+# The fields in the table are:
+#
+# finalState   sample             #events    X-section(pb)  BR
+
+
+# Signals
+
+##########################################################################
+# POWHEG15 ggH samples, x-sec for ggH, BR(H->4l,l=e,mu,tau)              #
+##########################################################################
+
+all            powheg15H125                      1   0.0053185200  1
+all            powheg15H126                      1   0.0057289400  1
+all            powheg15H225                      1   0.0168059697  1
+all            powheg15H250                      1   0.0143968300  1
+all            powheg15H275                      1   0.0124527119  1
+all            powheg15H300                      1   0.0111773400  1
+all            powheg15H325                      1   0.0105347000  1
+all            powheg15H350                      1   0.0105771100  1
+all            powheg15H375                      1   0.0094277061  1
+all            powheg15H400                      1   0.0079743300  1
+all            powheg15H425                      1   0.0065327362  1
+all            powheg15H450                      1   0.0052739848  1
+all            powheg15H475                      1   0.0042261029  1
+all            powheg15H500                      1   0.0033999500  1
+all            powheg15H525                      1   0.0027322304  1
+all            powheg15H550                      1   0.0021979155  1
+all            powheg15H575                      1   0.0017784645  1
+all            powheg15H600                      1   0.0014487100  1
+all            powheg15H650                      1   0.0009705458  1
+all            powheg15H700                      1   0.0006641000  1
+all            powheg15H750                      1   0.0004633440  1
+all            powheg15H800                      1   0.0003301970  1
+all            powheg15H850                      1   0.0002399040  1
+all            powheg15H900                      1   0.0001770100  1
+all            powheg15H950                      1   0.0001334070  1
+all            powheg15H1000                     1   0.0001017600  1
+
+
+##########################################################################
+# POWHEG15-JhuGenV3 ggH samples, x-sec for ggH, BR(H->4l,l=e,mu,tau)     #
+##########################################################################
+
+all            powheg15jhuGenV3H110              1   0.0011658400  1
+all            powheg15jhuGenV3H115              1   0.0020892520  1
+all            powheg15jhuGenV3H116              1   0.0023394000  1
+all            powheg15jhuGenV3H117              1   0.0025853800  1
+all            powheg15jhuGenV3H118              1   0.0028661500  1
+all            powheg15jhuGenV3H119              1   0.0031800000  1
+all            powheg15jhuGenV3H120              1   0.0034836200  1
+all            powheg15jhuGenV3H121              1   0.0038185800  1
+all            powheg15jhuGenV3H122              1   0.0041814000  1
+all            powheg15jhuGenV3H123              1   0.0045525200  1
+all            powheg15jhuGenV3H124              1   0.0049316400  1
+all            powheg15jhuGenV3H125              1   0.0053185200  1
+all            powheg15jhuGenV3H126              1   0.0057289400  1
+all            powheg15jhuGenV3H127              1   0.0061270400  1
+all            powheg15jhuGenV3H128              1   0.0065504000  1
+all            powheg15jhuGenV3H129              1   0.0069762000  1
+all            powheg15jhuGenV3H130              1   0.0073899000  1
+all            powheg15jhuGenV3H135              1   0.0093951900  1
+all            powheg15jhuGenV3H140              1   0.0109636200  1
+all            powheg15jhuGenV3H145              1   0.0118138200  1
+all            powheg15jhuGenV3H150              1   0.0115175000  1
+all            powheg15jhuGenV3H160              1   0.0050830000  1
+all            powheg15jhuGenV3H170              1   0.0024509700  1
+all            powheg15jhuGenV3H175              1   0.0031355932  1
+all            powheg15jhuGenV3H180              1   0.0054957600  1
+all            powheg15jhuGenV3H185              1   0.0127421679  1
+all            powheg15jhuGenV3H190              1   0.0166589600  1
+all            powheg15jhuGenV3H200              1   0.0183397900  1
+
+
+
+##########################################################################
+# old VBF samples, x-sec for ggH, BR(H->4l,l=e,mu,tau)                   #
+##########################################################################
+
+all            VBFH115                      1   0.0001594138  1
+all            VBFH116                      1   0.0001799700  1
+all            VBFH117                      1   0.0002004820  1
+all            VBFH118                      1   0.0002238390  1
+all            VBFH119                      1   0.0002499000  1
+all            VBFH120                      1   0.0002753830  1
+all            VBFH121                      1   0.0003042960  1
+all            VBFH122                      1   0.0003359610  1
+all            VBFH123                      1   0.0003682320  1
+all            VBFH124                      1   0.0004019400  1
+all            VBFH125                      1   0.0004355280  1
+all            VBFH126                      1   0.0004735360  1
+all            VBFH127                      1   0.0005090560  1
+all            VBFH128                      1   0.0005482400  1
+all            VBFH129                      1   0.0005871250  1
+all            VBFH130                      1   0.0006255540  1
+all            VBFH135                      1   0.0008210160  1
+all            VBFH140                      1   0.0009875790  1
+all            VBFH145                      1   0.0010890610  1
+all            VBFH150                      1   0.0010880000  1
+all            VBFH160                      1   0.0005036250  1
+all            VBFH170                      1   0.0002646180  1
+all            VBFH180                      1   0.0006211800  1
+all            VBFH190                      1   0.0019900440  1
+all            VBFH200                      1   0.0022494150  1
+all            VBFH220                      1   0.0022032990  1
+all            VBFH225                      1   0.0021586329  1
+all            VBFH250                      1   0.0018737250  1
+all            VBFH275                      1   0.0015997001  1
+all            VBFH300                      1   0.0013708880  1
+all            VBFH325                      1   0.0011784420  1
+all            VBFH350                      1   0.0009952000  1
+all            VBFH375                      1   0.0008131134  1
+all            VBFH400                      1   0.0006942390  1
+all            VBFH425                      1   0.0006017679  1
+all            VBFH450                      1   0.0005271352  1
+all            VBFH475                      1   0.0004643789  1
+all            VBFH500                      1   0.0004136650  1
+all            VBFH525                      1   0.0003691040  1
+all            VBFH550                      1   0.0003300829  1
+all            VBFH575                      1   0.0002969737  1
+all            VBFH600                      1   0.0002683576  1
+all            VBFH650                      1   0.0002206364  1
+all            VBFH700                      1   0.0001835700  1
+all            VBFH750                      1   0.0001542750  1
+all            VBFH800                      1   0.0001313865  1
+all            VBFH850                      1   0.0001130383  1
+all            VBFH900                      1   0.0000980840  1
+all            VBFH950                      1   0.0000862732  1
+all            VBFH1000                     1   0.0000762882  1
+
+
+
+##########################################################################
+# POWHEG15 VBF samples, x-sec for ggH, BR(H->4l,l=e,mu,tau)              #
+##########################################################################
+
+all            powheg15VBFH115             1   0.0001594138  1
+all            powheg15VBFH116             1   0.0001799700  1
+all            powheg15VBFH117             1   0.0002004820  1
+all            powheg15VBFH118             1   0.0002238390  1
+all            powheg15VBFH119             1   0.0002499000  1
+all            powheg15VBFH120             1   0.0002753830  1
+all            powheg15VBFH121             1   0.0003042960  1
+all            powheg15VBFH122             1   0.0003359610  1
+all            powheg15VBFH123             1   0.0003682320  1
+all            powheg15VBFH124             1   0.0004019400  1
+all            powheg15VBFH125             1   0.0004355280  1
+all            powheg15VBFH126             1   0.0004735360  1
+all            powheg15VBFH127             1   0.0005090560  1
+all            powheg15VBFH128             1   0.0005482400  1
+all            powheg15VBFH129             1   0.0005871250  1
+all            powheg15VBFH130             1   0.0006255540  1
+all            powheg15VBFH135             1   0.0008210160  1
+all            powheg15VBFH140             1   0.0009875790  1
+all            powheg15VBFH145             1   0.0010890610  1
+all            powheg15VBFH150             1   0.0010880000  1
+all            powheg15VBFH160             1   0.0005036250  1
+all            powheg15VBFH170             1   0.0002646180  1
+all            powheg15VBFH180             1   0.0006211800  1
+all            powheg15VBFH190             1   0.0019900440  1
+all            powheg15VBFH200             1   0.0022494150  1
+all            powheg15VBFH220             1   0.0022032990  1
+all            powheg15VBFH225             1   0.0021586329  1
+all            powheg15VBFH250             1   0.0018737250  1
+all            powheg15VBFH275             1   0.0015997001  1
+all            powheg15VBFH300             1   0.0013708880  1
+all            powheg15VBFH325             1   0.0011784420  1
+all            powheg15VBFH350             1   0.0009952000  1
+all            powheg15VBFH375             1   0.0008131134  1
+all            powheg15VBFH400             1   0.0006942390  1
+all            powheg15VBFH425             1   0.0006017679  1
+all            powheg15VBFH450             1   0.0005271352  1
+all            powheg15VBFH475             1   0.0004643789  1
+all            powheg15VBFH500             1   0.0004136650  1
+all            powheg15VBFH525             1   0.0003691040  1
+all            powheg15VBFH550             1   0.0003300829  1
+all            powheg15VBFH575             1   0.0002969737  1
+all            powheg15VBFH600             1   0.0002683576  1
+all            powheg15VBFH650             1   0.0002206364  1
+all            powheg15VBFH700             1   0.0001835700  1
+all            powheg15VBFH750             1   0.0001542750  1
+all            powheg15VBFH800             1   0.0001313865  1
+all            powheg15VBFH850             1   0.0001130383  1
+all            powheg15VBFH900             1   0.0000980840  1
+all            powheg15VBFH950             1   0.0000862732  1
+all            powheg15VBFH1000            1   0.0000762882  1
+
+
+##########################################################################
+# Associated production. Filter efficiencies extracted by Roberto C.     #
+# BR = BR(H->4l,l=e,mu,tau)                                              #
+##########################################################################
+
+all            WH110                      1   0.0046481400  0.010384 # 98897/9523809 
+all            WH115                      1   0.0080058240  0.010384 # 98897/9523809 
+all            WH120                      1   0.0128026800  0.010384 # 98897/9523809 
+all            WH125                      1   0.0186014400  0.010384 # 98897/9523809 
+all            WH126                      1   0.0198254000  0.010384 # 98897/9523809 
+all            WH130                      1   0.0245526200  0.010384 # 98897/9523809 
+all            WH140                      1   0.0327561600  0.010384 # 98897/9523809 
+all            WH150                      1   0.0307560000  0.010384 # 98897/9523809 
+all            WH160                      1   0.0118482500  0.010384 # 98897/9523809 
+all            WH180                      1   0.0115042200  0.010384 # 98897/9523809 
+all            WH200                      1   0.0332775000  0.010384 # 98897/9523809 
+
+all            ZH110                      1   0.0026582500  0.028544 # 58135/2036645 
+all            ZH115                      1   0.0046293120  0.028544 # 58135/2036645 
+all            ZH120                      1   0.0074889000  0.028544 # 58135/2036645 
+all            ZH125                      1   0.0109639200  0.028544 # 58135/2036645 
+all            ZH126                      1   0.0117045000  0.028544 # 58135/2036645 
+all            ZH130                      1   0.0146105800  0.028544 # 58135/2036645 
+all            ZH140                      1   0.0199092600  0.028544 # 58135/2036645 
+all            ZH150                      1   0.0190410000  0.028544 # 58135/2036645 
+all            ZH160                      1   0.0075364000  0.028544 # 58135/2036645 
+all            ZH180                      1   0.0074106200  0.028544 # 58135/2036645 
+all            ZH200                      1   0.0216520500  0.028544 # 58135/2036645 
+
+all            ttH110                     1   0.0008120140  0.029658 # 49210/1664865 
+all            ttH115                     1   0.0014264640  0.029658 # 49210/1664865 
+all            ttH120                     1   0.0023198100  0.029658 # 49210/1664865 
+all            ttH125                     1   0.0034135200  0.029658 # 49210/1664865 
+all            ttH126                     1   0.0036471800  0.029658 # 49210/1664865 
+all            ttH130                     1   0.0045730200  0.029658 # 49210/1664865 
+all            ttH140                     1   0.0062860500  0.029658 # 49210/1664865 
+all            ttH150                     1   0.0060728250  0.029658 # 49210/1664865 
+all            ttH160                     1   0.0024808700  0.029658 # 49210/1664865 
+all            ttH180                     1   0.0024447220  0.029658 # 49210/1664865 
+all            ttH200                     1   0.0072879000  0.029658 # 49210/1664865 
+
+
+
+##########################################################################
+# JHUGENV3 spin-0 samples, x-sec for ggH, BR(H->4l,l=e,mu,tau)           #
+##########################################################################
+
+all            powheg15jhuGenV3-0PHH126         1   0.0057289400  1
+all            powheg15jhuGenV3-0MH126          1   0.0057289400  1
+all            powheg15jhuGenV3-0Mf01ph0H126    1   0.0057289400  1
+all            powheg15jhuGenV3-0Mf01ph90H126   1   0.0057289400  1
+all            powheg15jhuGenV3-0Mf01ph180H126  1   0.0057289400  1
+all            powheg15jhuGenV3-0Mf01ph270H126  1   0.0057289400  1
+all            powheg15jhuGenV3-0Mf05ph0H126    1   0.0057289400  1
+all            powheg15jhuGenV3-0Mf05ph90H126   1   0.0057289400  1
+all            powheg15jhuGenV3-0Mf05ph180H126  1   0.0057289400  1
+all            powheg15jhuGenV3-0Mf05ph270H126  1   0.0057289400  1
+
+
+##########################################################################
+# JHUGENV3 spin-1 and spin-2 samples, x-sec for ggH, BR(H->4l,l=e,mu)    #
+##########################################################################
+
+all            powheg15jhuGenV3Vec1MH126        1   0.0025799200  1
+all            powheg15jhuGenV3Vec1PH126        1   0.0025799200  1
+all            powheg15jhuGenV3GravH126         1   0.0025799200  1
+all            powheg15jhuGenV3qqGravH126       1   0.0025799200  1
+all            powheg15jhuGenV3Grav2MHH126      1   0.0025799200  1
+all            powheg15jhuGenV3Grav2PBH126      1   0.0025799200  1
+all            powheg15jhuGenV3Grav2PHH126      1   0.0025799200  1
+
+
+##########################################################################
+# powheg15-jhuGenV3-spin/CP-MH125.6, x-section for ggH, BR(H->4l,l=e,mu) #
+##########################################################################
+
+all powheg15jhuGenV3-0PMH125.6 1 0.0025198800  1
+all powheg15jhuGenV3-0MH125.6  1 0.0025198800  1
+all powheg15jhuGenV3-0PHH125.6 1 0.0025198800  1
+
+all powheg15jhuGenV3-0L1H125.6         1 0.0025198800  1
+all powheg15jhuGenV3-0L1f01ph0H125.6   1 0.0025198800  1
+all powheg15jhuGenV3-0L1f05ph0H125.6   1 0.0025198800  1
+all powheg15jhuGenV3-0L1f05ph180H125.6 1 0.0025198800  1
+
+all powheg15jhuGenV3-0Mf01ph0H125.6   1 0.0025198800  1
+all powheg15jhuGenV3-0Mf01ph90H125.6  1 0.0025198800  1
+all powheg15jhuGenV3-0Mf05ph0H125.6   1 0.0025198800  1
+all powheg15jhuGenV3-0Mf05ph90H125.6  1 0.0025198800  1
+all powheg15jhuGenV3-0Mf05ph180H125.6 1 0.0025198800  1
+
+all powheg15jhuGenV3-0PHf01ph0H125.6           1 0.0025198800  1
+all powheg15jhuGenV3-0PHf01ph90H125.6          1 0.0025198800  1
+all powheg15jhuGenV3-0PHf05ph0H125.6           1 0.0025198800  1
+all powheg15jhuGenV3-0PHf05ph90H125.6          1 0.0025198800  1
+all powheg15jhuGenV3-0PHf05ph180H125.6         1 0.0025198800  1
+all powheg15jhuGenV3-0PHf01ph0Mf01ph0H125.6    1 0.0025198800  1
+all powheg15jhuGenV3-0PHf01ph0Mf01ph90H125.6   1 0.0025198800  1
+all powheg15jhuGenV3-0PHf033ph0Mf033ph0H125.6  1 0.0025198800  1
+all powheg15jhuGenV3-0PHf033ph0Mf033ph90H125.6 1 0.0025198800  1
+all powheg15jhuGenV3-0PHf05ph0Mf05ph0H125.6    1 0.0025198800  1
+all powheg15jhuGenV3-0PHf05ph0Mf05ph90H125.6   1 0.0025198800  1
+all powheg15jhuGenV3-0PHf05ph180Mf05ph0H125.6  1 0.0025198800  1
+
+all jhuGenV3-Vec1Mf05ph01Pf05ph0H125.6         1 0.0025198800  1
+all jhuGenV3-Vec1Mf05ph01Pf05ph90H125.6        1 0.0025198800  1
+
+all jhuGenV3Vec1PH125.6                        1 0.0025198800  1
+all jhuGenV3Vec1MH125.6                        1 0.0025198800  1
+
+all jhuGenV3Grav2PH2H125.6                     1 0.0025198800  1
+all jhuGenV3Grav2PH3H125.6                     1 0.0025198800  1
+all jhuGenV3Grav2PH6H125.6                     1 0.0025198800  1
+all jhuGenV3Grav2PH7H125.6                     1 0.0025198800  1
+all jhuGenV3Grav2MH9H125.6                     1 0.0025198800  1
+all jhuGenV3Grav2MH10H125.6                    1 0.0025198800  1
+all jhuGenV3Grav2PH2qqbH125.6                  1 0.0025198800  1
+all jhuGenV3Grav2PH3qqbH125.6                  1 0.0025198800  1
+all jhuGenV3Grav2PHqqbH125.6                   1 0.0025198800  1
+all jhuGenV3Grav2PBqqbH125.6                   1 0.0025198800  1
+all jhuGenV3Grav2PH6qqbH125.6                  1 0.0025198800  1
+all jhuGenV3Grav2PH7qqbH125.6                  1 0.0025198800  1
+all jhuGenV3Grav2MHqqbH125.6                   1 0.0025198800  1
+all jhuGenV3Grav2MH9qqbH125.6                  1 0.0025198800  1
+all jhuGenV3Grav2MH10qqbH125.6                 1 0.0025198800  1
+
+
+##########
+# MCFM67 # FIXME: update for YR3?
+##########
+
+all ggTo4e_SMH-MCFM67_H125.6                 1 0.000163007 1
+all ggTo4e_SMHContinInterf-MCFM67_H125.6     1 0.000592000 1
+all ggTo4e_BSMHContinInterf-MCFM67_H125.6    1 0.000808275 1
+all ggTo4e_Contin-MCFM67                     1 0.000459514 1
+all ggTo4mu_SMH-MCFM67_H125.6                1 0.000162895 1
+all ggTo4mu_SMHContinInterf-MCFM67_H125.6    1 0.000592340 1
+all ggTo4mu_BSMHContinInterf-MCFM67_H125.6   1 0.000808020 1
+all ggTo4mu_Contin-MCFM67                    1 0.000459488 1
+all ggTo2e2mu_SMH-MCFM67_H125.6              1 0.000325466 1
+all ggTo2e2mu_SMHContinInterf-MCFM67_H125.6  1 0.00118409  1
+all ggTo2e2mu_BSMHContinInterf-MCFM67_H125.6 1 0.00161636  1
+all ggTo2e2mu_Contin-MCFM67                  1 0.000918826 1
+
+
+##########################################################################
+# VBFHiggs, BR(H->4l,l=e,mu)                                             #
+##########################################################################
+
+all VBF0P_H125.6             1 0.0002075040 1
+all VBF0M_H125.6             1 0.0002077641 1
+all VBF0Mf05ph0_H125.6       1 0.0002077641 1
+
+##########################################################################
+# JJHiggs - use x-section for ggH, BR(H->4l,l=e,mu) for the time being   # FIXME: to be rechecked
+##########################################################################
+
+all JJHiggs0MH125.6          1  0.0025198800 1
+all JJHiggs0P_H125.6         1  0.0025198800 1
+
+##########################################################################
+# ZHiggs: Z->inclusive, BR(H->4l,l=e,mu)                                 #
+##########################################################################
+
+all ZHiggs0M_H125.6          1 0.0000540012 1
+all ZHiggs0Mf05ph0_H125.6    1 0.0000540012 1
+
+##########################################################################
+# WHiggs W->inclusive, BR(H->4l,l=e,mu)                                  #
+##########################################################################
+
+all WHiggs0P_H125.6          1 0.0000914892 1
+all WHiggs0M_H125.6          1 0.0000914892 1
+all WHiggs0PH_H125.6         1 0.0000914892 1
+all WHiggs0Mf05ph0_H125.6    1 0.0000914892 1
+
+
+###############
+# VBF Phantom # FIXME:recheck?
+###############
+
+all VBF_phantom_2e2mu10SM 1 0.000576855 1
+all VBF_phantom_2e2mu25SM 1 0.000669496 1
+all VBF_phantom_2e2mu     1 0.000538601 1
+all VBF_phantom_4e10SM    1 0.000264941 1
+all VBF_phantom_4e25SM    1 0.000307341 1
+all VBF_phantom_4e        1 0.000246776 1
+all VBF_phantom_4mu10SM   1 0.000265522 1
+all VBF_phantom_4mu25SM   1 0.000307619 1
+all VBF_phantom_4mu       1 0.000246597 1
+
+
+
+##########################################
+# MINLO samples, x-sections from [minlo] #
+# BRs from HXSWG for H->4l, l=e,mu,tau   #
+##########################################
+
+all   minloH90    1   35.68190962    0.000004890
+all   minloH95    1   31.69879695    0.000007730
+all   minloH100   1   28.54669381    0.000012800
+all   minloH105   1   25.75965971    0.000023700
+all   minloH110   1   23.31811049    0.000047200
+all   minloH115   1   21.16779941    0.000092200
+all   minloH120   1   19.27187987    0.000167000
+all   minloH124   1   17.90888099    0.000252000
+all   minloH125   1   17.60364553    0.000276000
+all   minloH126   1   17.3038377     0.000302000
+all   minloH130   1   16.18540806    0.000414000
+all   minloH135   1   14.79842226    0.000567000
+all   minloH140   1   13.61541384    0.000711000
+all   minloH145   1   12.567084      0.000817000
+all   minloH150   1   11.51284492    0.000850000
+all   minloH155   1   10.74738863    0.000754312
+all   minloH160   1   10.03274643    0.000425000
+all   minloH170   1   8.631836296    0.000241000
+all   minloH180   1   7.530171635    0.000612000
+all   minloH190   1   6.562337345    0.002120000
+all   minloH200   1   5.779220261    0.002590000
+all   minloH250   1   3.234510069    0.003010000
+all   minloH300   1   1.951234391    0.003110000
+all   minloH350   1   1.24648658     0.003110000
+all   minloH400   1   0.828158526    0.002730000
+all   minloH450   1   0.567722357    0.002633125
+all   minloH500   1   0.401046611    0.002650000
+all   minloH550   1   0.290660261    0.002699375
+all   minloH600   1   0.215189082    0.002770000
+all   minloH650   1   0.162808403    0.002835625
+all   minloH700   1   0.125363018    0.002900000
+all   minloH750   1   0.098283407    0.002955000
+all   minloH800   1   0.078369361    0.003010000
+all   minloH850   1   0.063603601    0.003060000
+all   minloH900   1   0.052363495    0.003100000
+all   minloH950   1   0.04380909     0.003145000
+all   minloH1000  1   0.03722738     0.003180000
+
+
+
+# Backgrounds
+all            ZZTo4mu                   1   0.07691       1 # 
+all            ZZTo4e                    1   0.07691       1 # 
+all            ZZTo4tau                  1   0.07691       1 # 
+all            ZZTo2e2mu                 1   0.1767        1 # 
+all            ZZTo2e2tau                1   0.1767        1 # 
+all            ZZTo2mu2tau               1   0.1767        1 # 
+all            ZZJetsTo4L                1   0.1296        1 # Madgraph ZZ+0/1 jet, xsec to be checked
+
+all            ZZTo4mu_ext               1   0.07691       1 #
+all            ZZTo4e_ext                1   0.07691       1 # 
+all            ZZTo4tau_ext              1   0.07691       1 # 
+all            ZZTo2e2mu_ext             1   0.1767        1 # 
+all            ZZTo2e2tau_ext            1   0.1767        1 # 
+all            ZZTo2mu2tau_ext           1   0.1767        1 # 
+
+# Filter efficiencies [ZZ95 eff.]
+all            ZZ95-160To4mu             1   0.02687       0.238
+all            ZZ95-160To4e              1   0.02687       0.238
+all            ZZ95-160To4tau            1   0.02687       0.238
+all            ZZ95-160To2e2mu           1   0.06278       0.261
+all            ZZ95-160To2e2tau          1   0.06278       0.261
+all            ZZ95-160To2mu2tau         1   0.06278       0.261
+
+all            ggZZ4l                    1   0.0048        1 # 
+all            ggZZ2l2l                  1   0.01203       1 # 
+
+all            WJetsToLNu                1   36257.2       1 # /WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12
+all            WZ                        1   1.057         1 # /WZJetsTo3LNu_TuneZ2_8TeV-madgraph-tauola/Summer12 
+all            WWTo2L2Nu                 1   5.995         1 # /WWJetsTo2L2Nu_TuneZ2star_8TeV-madgraph-tauola
+
+all            DYJetsToLLTuneZ2M10       1   915           1 # Unsplitted sample
+all            DYJetsToLLTuneZ2M10-B     1   915           1 # Splitted
+all            DYJetsToLLTuneZ2M10-NoB   1   915           1 # Splitted
+all            DYJetsToLLTuneZ2M50       1   3503.71       1 # Unsplitted sample
+all            DYJetsToLLTuneZ2M50-B     1   3503.71       1 # Splitted
+all            DYJetsToLLTuneZ2M50-NoB   1   3503.71       1 # Splitted
+
+
+# TT
+all            TTTo2L2Nu2B               1   23.64         1 # /TTTo2L2Nu2B_8TeV-powheg-pythia6/Summer12 
+all            TTJets                    1   225.2         1 #
+
+
+# Single Top
+all            Tschannel                 1   3.89          1 # [https://twiki.cern.ch/twiki/bin/viewauth/CMS/SingleTopSigma]
+all            Tbarschannel              1   1.76          1 # 
+all            Ttchannel                 1   55.531        1 # /T_t-channel_TuneZ2star_8TeV-powheg-tauola/Summer12 
+all            Tbartchannel              1   30.           1 # /Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola/Summer12
+all            TbartWchannelDR           1   11.1773       1 # /Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12
+all            TtWchannelDR              1   11.1773       1 # /T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12
+
+
+# gg2zz with interference (from Misha)
+all           ggTo2l2l_H125.6                   1       0.00107 1 #
+all           ggTo2l2l_Continuum                1       0.00349 1 #
+all           ggTo2l2l_ContinuumInterfH125.6    1       0.00426 1 #
+all           ggTo4l_H125.6                     1       0.00059 1 #
+all           ggTo4l_Continuum                  1       0.00172 1 #
+all           ggTo4l_ContinuumInterfH125.6      1       0.00215 1 #
+
+#########
+# Links #
+#########
+# [Wiki] https://twiki.cern.ch/twiki/bin/view/CMS/HZZSamples8TeV
+# [minlo] https://twiki.cern.ch/twiki/bin/view/Main/MinloHJJProduction#obtained_cross_sections
+# [ZZ95 eff.] http://cms.cern.ch/iCMS/prep/requestmanagement?dsn=*mZZ95-*&campid=Summer12

@@ -265,10 +265,8 @@ void drawCMSPrel(float lumi=-1) {
 //     long dpart = (long) ((lumi/1000.-ipart)*100. + 0.5);
 //     lumist = lumist + ipart + "." + dpart +" fb^{-1}";
 //   }
-  if (fabs(lumi-19712)<1.) {
+    if (fabs(lumi-19712)<1.) {
     lumist = "19.7 fb^{-1}";
-  } else if (fabs(lumi-19790)<1.) {
-    lumist = "19.8 fb^{-1}";
   } else if (fabs(lumi-12210)<1.) {
     lumist = "12.21 fb^{-1}";
   } else if (fabs(lumi-5320)<1.) {
@@ -437,103 +435,111 @@ THStack* replaceDD(THStack* stack, float lumi, TString finalState, TString epoch
 
 
   THStack* s = (THStack*) stack->Clone();
-
 	
   //first landau	
-  //TF1 ZjetLandau("ZjetLandau","landau",0,1000);
   float xMinNorm=100;
   float xMaxNorm=1000;
-  TF1 ZjetLandau("ZjetLandau","[0]*TMath::Landau(x,[1],[2]) + [3]*TMath::Landau(x,[4],[5]) + [6]*TMath::Landau(x,[7],[8])",0,1000);
-  //first landau	
-  float MPV   = 0;
-  float Sigma = 0;
-  float Norm  = 1;
-  //second landau	
-  float MPV_2   = 1;
-  float Sigma_2 = 1;
-  float Norm_2  = 0;
-  //second landau
-  float MPV_3   = 1;
-  float Sigma_3 = 1;
-  float Norm_3  = 0;
-	
+  TF1 ZjetLandau("ZjetLandau","landau(0) * (1 + exp( pol1(3))) + landau(5) + landau(8)",0,1000);
     
+  float  p0 = 1       ;// = normalisation of landau1  (i.e. 2P2F 2mu2e)
+  float  p1 = 200     ;//= MPV of Landau1
+  float  p2 = 50      ;//= sigma of Landau
+  float  p3 = 0       ;//= a  in pol1 = a + bx
+  float  p4 = 0       ;//= b  in pol1 = a + bx
+  float  p5 = 0       ;//= normalisation of Landau2  (i.e. 3P1F 2mu2e)
+  float  p6 = 1       ;//= MPV of Landau2
+  float  p7 = 1       ;//= sigma of Laudau2
+  float  p8 = 0       ;//= normalisation of Landau3  (i.e. 2e2mu), set to one by convention
+  float  p9 = 1       ;//= MPV of Landau3
+  float  p10 = 1      ;//= sigma of Landau3
   TH1F* Z1Hist = 0;
   
   //Shape paramenters (mzz, mz1, mz2)
 
-  if(var=="ZZ"){ // Set shape/norm 
+  //mZZ
+  if(var=="ZZ"){ // Set shape/norm
     if (sel==2)  { // High mass (taken from 8TeV, 7TeV are almost identical)
       if (fs==0) { // 2e2mu
-	MPV          = 209.2; 
-	Sigma        = 24.3; 
+          p0 = 1           ;// normalisation of landau1  (i.e. 2P2F)
+          p1 = 209.2       ;// MPV of Landau1
+          p2 = 24.3        ;// sigma of Landau
       } else if (fs==1) { // 4e
-	MPV          = 210.8; 
-	Sigma        = 34.9; 
+          p0 = 1           ;// normalisation of landau1  (i.e. 2P2F)
+          p1 = 210.8       ;// MPV of Landau1
+          p2 = 34.9        ;// sigma of Landau
       } else { // 4mu
-	MPV          = 209.2;
-	Sigma        = 24.3;
+          p0 = 1           ;// normalisation of landau1  (i.e. 2P2F)
+          p1 = 209.2       ;// MPV of Landau1
+          p2 = 24.3        ;// sigma of Landau
       }
     } 
-	
-	
-	else { // baseline, relaxed (taken from 8TeV, 7TeV are almost identical)
-      if (fs==0) { // 2e2mu
-	MPV          = 108.9;
-	Sigma        = 8.7;
-	Norm         = 0.08;
-    MPV_2          = 168.6;
-    Sigma_2        = 30.0;
-    Norm_2         = 1.25;
-    MPV_3          = 127.7;
-    Sigma_3        = 14.61;
-    Norm_3         = 1.;
-      } else if (fs==1) { // 4e
-        //Legacy
-	MPV          = 172.1;
-	Sigma        = 30.5;
-	Norm         = 1.75;
-    MPV_2          = 120.3;
-	Sigma_2        = 14.8;
-	Norm_2         = 2.20;
+	else { // baseline (taken from 8TeV, 7TeV are almost identical)
+        if (fs==0) {
+          p0 = 0.00439895  ;// = normalisation of landau1  (i.e. 2P2F 2mu2e)
+          p1 = 195.407     ;//= MPV of Landau1
+          p2 = 38.9472     ;//= sigma of Landau
+          p3 = 3.68476     ;//= a  in pol1 = a + bx
+          p4 = -0.00580439 ;//= b  in pol1 = a + bx
+          p5 = 1.92769     ;//= normalisation of Landau2  (i.e. 3P1F 2mu2e)
+          p6 = 110.862     ;//= MPV of Landau2
+          p7 = 9.59455     ;//= sigma of Laudau2
+          p8 = 1.          ;//= normalisation of Landau3  (i.e. 2e2mu), set to one by convention
+          p9 = 129         ;//= MPV of Landau3
+          p10 = 15         ;//= sigma of Landau3
+        } else if (fs==1) { // 4e
+          p0 = 0.117024    ;// normalisation of landau1  (i.e. 2P2F)
+          p1 = 195.407     ;// MPV of Landau1
+          p2 = 38.9472     ;// sigma of Landau
+          p3 = 3.68476     ;// a  in pol1 = a + bx
+          p4 = -0.00580439 ;// b  in pol1 = a + bx
+          p5 = 2.57278     ;// normalisation of Landau2  (i.e. 3P1F)
+          p6 = 110.862     ;// MPV of Landau2
+          p7 = 9.59455     ;// sigma of Laudau2
       } else { // 4mu
-	MPV          =  129.7;
-	Sigma        =  15.8;
-	Norm         =  1 ;
+          p0 = 1           ;// normalisation of landau1  (i.e. 2P2F)
+          p1 = 129         ;// MPV of Landau1
+          p2 = 15          ;// sigma of Landau
       }
     } 
-  
-  
-  
-  } else if(var=="Z2") { // Set shape/norm
+  }
+  //mZ2
+  else if(var=="Z2") { // Set shape/norm
      if (sel==2) { // High mass
       xMinNorm =60.;
       xMaxNorm =120.;
       if (fs==0) { // 2e2mu
-	MPV          = 58.68.; 
-	Sigma        = 15.40; 
+          p0 = 1           ;// normalisation of landau1  (i.e. 2P2F)
+          p1 = 58.68       ;// MPV of Landau1
+          p2 = 15.40       ;// sigma of Landau
       } else if (fs==1) { // 4e
-	MPV          = 58.68; 
-	Sigma        = 15.40; 
+          p0 = 1           ;// normalisation of landau1  (i.e. 2P2F)
+          p1 = 58.68       ;// MPV of Landau1
+          p2 = 15.40       ;// sigma of Landau
       } else { // 4mu
-	MPV          = 58.68; 
-	Sigma        = 15.40; 
+          p0 = 1           ;// normalisation of landau1  (i.e. 2P2F)
+          p1 = 58.68       ;// MPV of Landau1
+          p2 = 15.40       ;// sigma of Landau
       }
-    } else  { // baseline, relaxed
+    } else  { // baseline
       xMinNorm =12.;
       xMaxNorm =60.;
       if (fs==0) { // 2e2mu
-	MPV          = 22.11;
-	Sigma        = 7.831;
+          p0 = 1           ;// normalisation of landau1  (i.e. 2P2F)
+          p1 = 22.11       ;// MPV of Landau1
+          p2 = 7.831       ;// sigma of Landau
       } else if (fs==1) { // 4e
-	MPV          = 25.75;
-	Sigma        = 7.762;
+          p0 = 1           ;// normalisation of landau1  (i.e. 2P2F)
+          p1 = 25.75       ;// MPV of Landau1
+          p2 = 7.762       ;// sigma of Landau
       } else { // 4mu
-	MPV          =  22.11;
-	Sigma        =  7.762;
+          p0 = 1           ;// normalisation of landau1  (i.e. 2P2F)
+          p1 = 22.11       ;// MPV of Landau1
+          p2 = 7.762       ;// sigma of Landau
       }
     }
-  } else if(var=="Z1"||var.Contains("LD")){ // For Z1, pick shape from ZZ
+  }
+  //mZ1 && LD
+  else if(var=="Z1"||var.Contains("LD")){ // For Z1/LD, pick shape from ZZ
     TListIter hist(s->GetHists());
     while (h = (TH1F*) hist.Next()) {
       TString sample = h->GetTitle();
@@ -541,19 +547,15 @@ THStack* replaceDD(THStack* stack, float lumi, TString finalState, TString epoch
     }
   }
   
-  
   //here set landau parameters
-  ZjetLandau->SetParameters(Norm,MPV,Sigma,Norm_2,MPV_2,Sigma_2,Norm_3,MPV_3,Sigma_3);
+  ZjetLandau->SetParameters(p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,p10);
   
   float refLumi = 0;
   if (epoch.Contains("2011")){
     //7 TeV normalization. Approval
     refLumi = 5051.; //7TeV
-
-
     // values in the 121-131 column  are obtained as:
     // ZjetLandau->Integral(121,131)/ZjetLandau->Integral(100,600)
-
     // 0 = baseline
     // 1 = relazed (M>70)
     // 2 = ZZ hgh-mass for x-section
@@ -561,9 +563,9 @@ THStack* replaceDD(THStack* stack, float lumi, TString finalState, TString epoch
     // 4 = cut on MELA (from California)
     
     //                     0    1    2   3    4
-    double Zjet[3][5] = {{ 2.6, 2.6, 0., 2.6*686./10000., 0.98}, // 2e2mu
-			 { 1.6, 1.6, 0., 1.6*686./10000., 0.78}, // 4e
-			 { 1.0, 1.0, 0., 1.0*686./10000., 0.15}};// 4mu
+    double Zjet[3][5] = {{ 2.29, 2.6, 0.3, 0.3, 2.29*11230./64625.}, // 2e2mu
+			 { 1.37, 1.6, 0.2, 0.2, 1.37*11230./64625.}, // 4e
+			 { 0.58, 1.0, 0.1, 0.1, 0.58*11230./64625.}};// 4mu
     
   } else if (epoch.Contains("2012") || epoch.Contains("2013")) {
     //8 TeV normalization. Approval
@@ -576,27 +578,16 @@ THStack* replaceDD(THStack* stack, float lumi, TString finalState, TString epoch
     // 4 = cut on MELA (average between CJLST and California)
 
     //                     0    1    2     3    4
-
-	//new legacy paper numbers   
-	  double Zjet[3][5] = {{ 9.06, 9.06,9.06*686./10000., 9.06*626./10000., 9999.}, // 2e2mu
-		  { 6.15, 6.15, 6.15*626./10000.,6.15*686./10000., 9999.}, // 4e
-		  { 3.02, 3.02, 3.02*626./10000., 3.02*686./10000., 9999.}};// 4mu
-	  
-/*
-	 //Moriond
-	  double Zjet[3][5] = {{ 2.4, 2.4, 0.51, 2.4, 1.38}, // 2e2mu 
-			 { 1.4, 1.4, 0.41, 1.4, 0.78}, // 4e  
-			 { 1.2, 1.2, 0.44, 1.2, 0.50}};// 4mu
-*/
+	//new legacy paper numbers
+	  double Zjet[3][5] = {{ 9.25, 9.06,1.0, 1.0, 9.25*11230./64625.}, // 2e2mu
+		  { 6.09, 6.15, 0.6,0.7, 6.09*11230./64625.}, // 4e
+		  { 3.09, 3.02, 0.3,0.3, 3.09*11230./64625.}};// 4mu
   } else {
     cout "ERROR: replaceDD: epoch not recognized" << endl;
     return;
   }
   
-
-
-
-  for (int i=0; i<3; ++i){    
+  for (int i=0; i<3; ++i){
     for (int j=0; j<5; ++j){  
       Zjet[i][j] *=lumi/refLumi;
     }    

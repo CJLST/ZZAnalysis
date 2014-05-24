@@ -32,7 +32,9 @@ XSecReader::XSecReader(const TString& xsecFileName, const TString& lumiFileName)
   TRegexp empty1("^ *#");
   TRegexp empty2("^ *$");
 
+  int iline = 0;
   while (getline(xsecFile,line)) {
+    ++iline;
     if( line == "" || line[0] == '#' ) continue; // Skip comments and empty lines
     TString tline(line);
     if (tline.Contains(empty1) || tline.Contains(empty2)) continue;
@@ -64,8 +66,8 @@ XSecReader::XSecReader(const TString& xsecFileName, const TString& lumiFileName)
       set = true;
     }
     if (!set) {
-      cerr << "[XSecReader]*** Error: final state in the map is invalid: \"" << finalState << "\" for sample " << sampleName << endl;
-      cout << "input line: ->" << line << "<-" << endl;
+      cerr << "[XSecReader]*** Error: final state in the map is invalid: \"" << finalState << "\" for sample " << sampleName << " in file " << xsecFileName << endl;
+      cout << "input line " << iline << " : ->" << line << "<-" << endl;
     }
   }
   xsecFile.close();

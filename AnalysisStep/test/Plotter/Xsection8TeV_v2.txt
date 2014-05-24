@@ -394,11 +394,28 @@ all powheg15jhuGenV3-0PHf05ph0Mf05ph0H125.6    1 0.002562639 1
 all powheg15jhuGenV3-0PHf05ph0Mf05ph90H125.6   1 0.002562639 1
 all powheg15jhuGenV3-0PHf05ph180Mf05ph0H125.6  1 0.002562639 1
 
-all powheg15jhuGenV3Grav2PH3H125.6             1 0.002562639 1
-all powheg15jhuGenV3Grav2PH6H125.6  	       1 0.002562639 1
-all powheg15jhuGenV3Grav2PH7H125.6  	       1 0.002562639 1
-all powheg15jhuGenV3Grav2MH9H125.6 	       1 0.002562639 1
-all powheg15jhuGenV3Grav2MH10H125.6 	       1 0.002562639 1
+all jhuGenV3-Vec1Mf05ph01Pf05ph0H125.6         1 0.002562639 1
+all jhuGenV3-Vec1Mf05ph01Pf05ph90H125.6        1 0.002562639 1
+
+all jhuGenV3Vec1PH125.6                        1 0.002562639 1
+all jhuGenV3Vec1MH125.6                        1 0.002562639 1
+
+all jhuGenV3Grav2PH2H125.6      1 0.002562639 1
+all jhuGenV3Grav2PH3H125.6      1 0.002562639 1
+all jhuGenV3Grav2PH6H125.6      1 0.002562639 1
+all jhuGenV3Grav2PH7H125.6      1 0.002562639 1
+all jhuGenV3Grav2MH9H125.6      1 0.002562639 1
+all jhuGenV3Grav2MH10H125.6     1 0.002562639 1
+all jhuGenV3Grav2PH2qqbH125.6   1 0.002562639 1
+all jhuGenV3Grav2PH3qqbH125.6   1 0.002562639 1
+all jhuGenV3Grav2PHqqbH125.6    1 0.002562639 1
+all jhuGenV3Grav2PBqqbH125.6    1 0.002562639 1
+all jhuGenV3Grav2PH6qqbH125.6   1 0.002562639 1
+all jhuGenV3Grav2PH7qqbH125.6   1 0.002562639 1
+all jhuGenV3Grav2MHqqbH125.6    1 0.002562639 1
+all jhuGenV3Grav2MH9qqbH125.6   1 0.002562639 1
+all jhuGenV3Grav2MH10qqbH125.6  1 0.002562639 1
+
 
 
 ##########
@@ -424,6 +441,47 @@ all ggTo2e2mu_Contin-MCFM67                  1 0.000918826 1
 #############
 
 all VBF0P_H125.6 1 0.0002077641 1
+all VBF0M_H125.6 1 xxx          1
+all VBF0Mf05ph0_H125.6 xxx      1
+
+###########
+# JJHiggs #
+###########
+
+all JJHiggs0MH125.6 1 xxx 1
+all JJHiggs0P_H125.6
+
+##########
+# ZHiggs #
+##########
+
+all ZHiggs0M_H125.6
+all ZHiggs0Mf05ph0_H125.6
+
+##########
+# WHiggs #
+##########
+
+all WHiggs0P_H125.6
+all WHiggs0M_H125.6
+all WHiggs0PH_H125.6
+all WHiggs0Mf05ph0_H125.6
+
+
+###############
+# VBF Phantom #
+###############
+
+all VBF_phantom_2e2mu10SM 1 0.000576855 1
+all VBF_phantom_2e2mu25SM 1 0.000669496 1
+all VBF_phantom_2e2mu     1 0.000538601 1
+all VBF_phantom_4e10SM    1 0.000264941 1
+all VBF_phantom_4e25SM    1 0.000307341 1
+all VBF_phantom_4e        1 0.000246776 1
+all VBF_phantom_4mu10SM   1 0.000265522 1
+all VBF_phantom_4mu25SM   1 0.000307619 1
+all VBF_phantom_4mu       1 0.000246597 1
+
 
 
 ##########################################

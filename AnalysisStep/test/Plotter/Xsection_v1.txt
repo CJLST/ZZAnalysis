@@ -389,25 +389,45 @@ all powheg15jhuGenV3-0PHf05ph0Mf05ph0H125.6    1 0.0020055388 1
 all powheg15jhuGenV3-0PHf05ph0Mf05ph90H125.6   1 0.0020055388 1
 all powheg15jhuGenV3-0PHf05ph180Mf05ph0H125.6  1 0.0020055388 1
 
-all powheg15jhuGenV3-Vec1Mf05ph01Pf05ph0H125.6  1 0.0020055388 1
-all powheg15jhuGenV3-Vec1Mf05ph01Pf05ph90H125.6 1 0.0020055388 1
+all jhuGenV3-Vec1Mf05ph01Pf05ph0H125.6         1 0.0020055388 1
+all jhuGenV3-Vec1Mf05ph01Pf05ph90H125.6        1 0.0020055388 1
 
-all powheg15jhuGenV3Vec1PH125.6                 1 0.0020055388 1
-all jhuGenV3Vec1MH125.6                         1 0.0020055388 1
+all jhuGenV3Vec1PH125.6                        1 0.0020055388 1
+all jhuGenV3Vec1MH125.6                        1 0.0020055388 1
 
-all powheg15jhuGenV3Grav2PH2H125.6             1 0.0020055388 1
-all powheg15jhuGenV3Grav2PH3H125.6             1 0.0020055388 1
-all powheg15jhuGenV3Grav2PH6H125.6  	       1 0.0020055388 1
-all powheg15jhuGenV3Grav2PH7H125.6  	       1 0.0020055388 1
-all powheg15jhuGenV3Grav2MH9H125.6 	       1 0.0020055388 1
-all powheg15jhuGenV3Grav2MH10H125.6 	       1 0.0020055388 1
+all jhuGenV3Grav2PH2H125.6      1 0.0020055388 1
+all jhuGenV3Grav2PH3H125.6      1 0.0020055388 1
+all jhuGenV3Grav2PH6H125.6      1 0.0020055388 1
+all jhuGenV3Grav2PH7H125.6      1 0.0020055388 1
+all jhuGenV3Grav2MH9H125.6      1 0.0020055388 1
+all jhuGenV3Grav2MH10H125.6     1 0.0020055388 1
+all jhuGenV3Grav2PH2qqbH125.6   1 0.0020055388 1
+all jhuGenV3Grav2PH3qqbH125.6   1 0.0020055388 1
+all jhuGenV3Grav2PHqqbH125.6    1 0.0020055388 1
+all jhuGenV3Grav2PBqqbH125.6    1 0.0020055388 1
+all jhuGenV3Grav2PH6qqbH125.6   1 0.0020055388 1
+all jhuGenV3Grav2PH7qqbH125.6   1 0.0020055388 1
+all jhuGenV3Grav2MHqqbH125.6    1 0.0020055388 1
+all jhuGenV3Grav2MH9qqbH125.6   1 0.0020055388 1
+all jhuGenV3Grav2MH10qqbH125.6  1 0.0020055388 1
 
 
 ##########
 # MCFM67 #
 ##########
-all ggTo4e_SMHContinInterf-MCFM67_H125.6     1 0.000450311 1
-all ggTo4mu_SMH-MCFM67_H125.6                1 0.000127526 1
+
+all ggTo4e_SMH-MCFM67_H125.6                 1 0.0001274200 1
+all ggTo4e_SMHContinInterf-MCFM67_H125.6     1 0.0004503110 1
+all ggTo4e_BSMHContinInterf-MCFM67_H125.6    1 0.0005978900 1
+all ggTo4e_Contin-MCFM67                     1 0.0003442855 1
+all ggTo4mu_SMH-MCFM67_H125.6                1 0.0001275260 1
+all ggTo4mu_SMHContinInterf-MCFM67_H125.6    1 0.0004503265 1
+all ggTo4mu_BSMHContinInterf-MCFM67_H125.6   1 0.0005977500 1
+all ggTo4mu_Contin-MCFM67                    1 0.0003444025 1
+all ggTo2e2mu_SMH-MCFM67_H125.6              1 0.0002550020 1
+all ggTo2e2mu_SMHContinInterf-MCFM67_H125.6  1 0.0009007290 1
+all ggTo2e2mu_BSMHContinInterf-MCFM67_H125.6 1 0.0011959600 1
+all ggTo2e2mu_Contin-MCFM67                  1 0.0006885060 1
 
 
 ############
@@ -447,16 +467,18 @@ all VBF0P_H125.6 1 0.0001609009 1
 
 
 # Backgrounds
-all            ZZ4mu                   1   0.06609       1 #
-all            ZZ4e                    1   0.06609       1 #
-all            ZZ4tau                  1   0.06609       1 #
-all            ZZ2e2mu                 1   0.152         1 #
-all            ZZ2e2tau                1   0.152         1 #
-all            ZZ2mu2tau               1   0.152         1 #
+all            ZZTo4mu                   1   0.06609       1 #
+all            ZZTo4e                    1   0.06609       1 #
+all            ZZTo4tau                  1   0.06609       1 #
+all            ZZTo2e2mu                 1   0.152         1 #
+all            ZZTo2e2tau                1   0.152         1 #
+all            ZZTo2mu2tau               1   0.152         1 #
 
 # Filter efficiencies [ZZ95 eff.]
-all	       ZZ95-160To4e		 1   0.02309       0.235
-all	       ZZ95-160To2mu2tau	 1   0.05311	   0.258
+all            ZZ95-160To4e		           1   0.02309   0.235
+all            ZZ95-160To4mu             1   0.02309   0.235
+all	           ZZ95-160To2mu2tau	       1   0.05311	 0.258
+all            ZZ95-160To2e2mu           1   0.05311   0.258
 
 all            ggZZ4l                    1   0.00174       1 #
 all            ggZZ2l2l                  1   0.00348       1 #
@@ -516,4 +538,4 @@ all           ggTo4l_ContinuumInterfH125.6      1       0.00162 1 #
 #########
 # [Wiki] https://twiki.cern.ch/twiki/bin/view/CMS/HZZSamples7TeV
 # What was this one?
-#all            H120                      1   0.003213106   1.0024634 # the scale factor is multiplied by Rob's factor 1.1603652
+# all   H120   1   0.003213106   1.0024634 # the scale factor is multiplied by Rob's factor 1.1603652

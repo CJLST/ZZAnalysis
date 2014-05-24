@@ -34,20 +34,14 @@ void plot(TString finalState) {
   TString epoch;
   TString XSectionFile;
   if (do2012) {
-    TString inputDir="HZZ_plots/130613new/PRODFSR_8TeV";
-    TString XSectionFile = "Xsection8TeV_v2.txt";
-    //epoch = "25May2012"; //1616
-    //epoch = "01Jun2012"; //2424
-    //epoch = "08Jun2012"; //2968
-    //epoch = "13Jun2012"; //3676
-    //epoch = "TopUp24Jun2012";
-    //epoch = "Moriond2013"; //12210
-    epoch = Legacy2013; //19712
+    TString inputDir="HZZ_plots/130702/PRODFSR_8TeV";
+    TString XSectionFile = "Xsection8TeV_YR3.txt";
+    epoch = "Legacy2013"; //19712 -> other epochs defined in the Luminosity file
 
   } else {
     doHiMass = false; // himass is relevant only for 2012
-    TString inputDir="HZZ_plots/130613new/PRODFSR";
-    TString XSectionFile = "Xsection_v1.txt";
+    TString inputDir="HZZ_plots/130702/PRODFSR";
+    TString XSectionFile = "Xsection_7TeV_YR3.txt";
     epoch = "All2011";   //5051
     
   }
@@ -124,7 +118,7 @@ void plot(TString finalState) {
     } else {
       samples.push_back("DoubleOr");
     } 
-  }else if (epoch == "Moriond2013"){
+  }else if (epoch == "Legacy2013"){
     if (finalState == "4mu") {
       samples.push_back("DoubleMu_1963");
     } else if (finalState == "4e") {
@@ -133,64 +127,6 @@ void plot(TString finalState) {
       samples.push_back("DoubleOr_1963");
     } 
   }
-  
-//   if (epoch == "TopUp24Jun2012"){
-//     if (finalState == "4mu") {
-//       samples.push_back("DoubleMu_5261");
-//     } else if (finalState == "4e") {
-//       samples.push_back("DoubleEle_5261");
-//     } else {
-//       samples.push_back("DoubleOr_5261");
-//     } 
-//   } else if (epoch == "13Jun2012"){
-//     if (finalState == "4mu") {
-//       samples.push_back("DoubleMu_3676");
-//     } else if (finalState == "4e") {
-//       samples.push_back("DoubleEle_3676");
-//     } else {
-//       samples.push_back("DoubleOr_3676");
-//     } 
-//   } else if (epoch == "08Jun2012"){
-//     if (finalState == "4mu") {
-//       samples.push_back("DoubleMu_2968");
-//     } else if (finalState == "4e") {
-//       samples.push_back("DoubleEle_2968");
-//     } else {
-//       samples.push_back("DoubleOr_2968");
-//     } 
-//   } else if (epoch == "01Jun2012"){
-//     if (finalState == "4mu") {
-//       samples.push_back("DoubleMu_2420");
-//     } else if (finalState == "4e") {
-//       samples.push_back("DoubleEle_2420");
-//     } else {
-//       samples.push_back("DoubleOr_2420");
-//     } 
-//   } else if (epoch == "25May2012"){
-//     if (finalState == "4mu") {
-//       samples.push_back("DoubleMu_1616");
-//     } else if (finalState == "4e") {
-//       samples.push_back("DoubleEle_1616");
-//     } else {
-//       samples.push_back("DoubleOr_1616");
-//     } 
-//   }  else if (epoch == "All2011"){
-//     if (finalState == "4mu") {
-//       samples.push_back("DoubleMu_NewJSON");
-//     } else if (finalState == "4e") {
-//       samples.push_back("DoubleEle_NewJSON");
-//     } else {
-//       samples.push_back("DoubleOr_NewJSON");
-//     } 
-//   }  else if (epoch == "Complete2011"){
-//     if (finalState == "4mu") {
-//       samples.push_back("DoubleMu_4670");
-//     } else if (finalState == "4e") {
-//       samples.push_back("DoubleEle_4670");
-//     } else {
-//       samples.push_back("DoubleOr_4670");
-//     } 
-//   }   
   
   if (!skipSmallBg) {
     if (finalState == "4mu" ) {
