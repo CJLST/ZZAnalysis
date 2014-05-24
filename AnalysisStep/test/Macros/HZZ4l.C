@@ -54,8 +54,10 @@ namespace {
   const float M_electron = 0.00051099907;
   const float M_tau = 1.777;
 
-  XSecReader xsecRead7TeV("../Plotter/Xsection_v1.txt","../Plotter/Luminosity.txt");
-  XSecReader xsecRead8TeV("../Plotter/Xsection8TeV_v2.txt","../Plotter/Luminosity.txt");
+//  XSecReader xsecRead7TeV("../Plotter/Xsection_v1.txt","../Plotter/Luminosity.txt");
+//  XSecReader xsecRead8TeV("../Plotter/Xsection8TeV_v2.txt","../Plotter/Luminosity.txt");
+  XSecReader xsecRead7TeV("../Plotter/Xsection7TeV_YR3.txt","../Plotter/Luminosity.txt");
+  XSecReader xsecRead8TeV("../Plotter/Xsection8TeV_YR3.txt","../Plotter/Luminosity.txt");
 
   PUReweight PUWeighter(PUReweight::LEGACY);
 
@@ -557,7 +559,6 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 	if (isHZZ4l){
 		SelTree.Branch("kNumSamples", &numSamples);
 		SelTree.Branch("MC_weight_spin0", MC_weight_samples_VAJHU, "MC_weight_spin0[kNumSamples]/F");
-//		SelTree.Branch("MC_ME_as2mu2e_spin0",MC_ME_as2mu2e_spin0,"MC_ME_as2mu2e_spin0[kNumSamples]/F");
 		SelTree.Branch("sampleprob_VAJHU", &sample_probPdf_VAJHU);
 	};
 	if(isZZQQB || isZZGG){
@@ -583,21 +584,21 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
   }  
 
   if(isCR){
-    // 	SelTree.Branch("Lep1Pt",&myLep1Pt,"Lep1Pt/F");
-    // 	SelTree.Branch("Lep1Eta",&myLep1Eta,"Lep1Eta/F");
-    // 	SelTree.Branch("Lep1ID",&myLep1ID,"Lep1ID/I");
-    // 	SelTree.Branch("Lep2Pt",&myLep2Pt,"Lep2Pt/F");
-    // 	SelTree.Branch("Lep2Eta",&myLep2Eta,"Lep2Eta/F");
-    // 	SelTree.Branch("Lep2ID",&myLep2ID,"Lep2ID/I");
-    // 	SelTree.Branch("Lep3Pt",&myLep3Pt,"Lep3Pt/F");
-    // 	SelTree.Branch("Lep3Eta",&myLep3Eta,"Lep3Eta/F");
-    // 	SelTree.Branch("Lep3ID",&myLep3ID,"Lep3ID/I");
-    // 	SelTree.Branch("Lep4Pt",&myLep4Pt,"Lep4Pt/F");
-    // 	SelTree.Branch("Lep4Eta",&myLep4Eta,"Lep4Eta/F");
-    // 	SelTree.Branch("Lep4ID",&myLep4ID,"Lep4ID/I");
     SelTree.Branch("CRflag",&myCRflag,"CRflag/I");
     SelTree.Branch("ZXfake_weight",&ZXfake_weight,"ZXfake_weight/F");
   }
+ 	SelTree.Branch("Lep1Pt",&myLep1Pt,"Lep1Pt/F");
+ 	SelTree.Branch("Lep1Eta",&myLep1Eta,"Lep1Eta/F");
+ 	SelTree.Branch("Lep1ID",&myLep1ID,"Lep1ID/I");
+ 	SelTree.Branch("Lep2Pt",&myLep2Pt,"Lep2Pt/F");
+ 	SelTree.Branch("Lep2Eta",&myLep2Eta,"Lep2Eta/F");
+ 	SelTree.Branch("Lep2ID",&myLep2ID,"Lep2ID/I");
+ 	SelTree.Branch("Lep3Pt",&myLep3Pt,"Lep3Pt/F");
+ 	SelTree.Branch("Lep3Eta",&myLep3Eta,"Lep3Eta/F");
+ 	SelTree.Branch("Lep3ID",&myLep3ID,"Lep3ID/I");
+ 	SelTree.Branch("Lep4Pt",&myLep4Pt,"Lep4Pt/F");
+ 	SelTree.Branch("Lep4Eta",&myLep4Eta,"Lep4Eta/F");
+ 	SelTree.Branch("Lep4ID",&myLep4ID,"Lep4ID/I");
 
 	double selfDHvvcoupl[30][2];
 	for(int gx=0;gx<30;gx++){
@@ -950,6 +951,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 			selfDHvvcoupl[9][0] = gi_phi2_phi4_files[HZZ4lSample][12];
 
 			if(isHZZ4l && genFinalState<=4){
+				mela.setMelaHiggsWidth(gi_phi2_phi4_files[HZZ4lSample][7]); // MELA automatically resets width to default after calculation as part of protection for discriminants
 				sample_probPdf_VAJHU = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
 				if(sample_probPdf_VAJHU==0) sample_probPdf_VAJHU=1.0;
 			}
@@ -975,7 +977,10 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 
 				weight_probPdf = 1.0;
 				if( !(isHZZ4l && genFinalState<=4 ) ) weight_probPdf = 1.0;
-				else if( (isHZZ4l && genFinalState<=4 ) ) weight_probPdf = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
+				else if ((isHZZ4l && genFinalState <= 4)){
+					mela.setMelaHiggsWidth(gi_phi2_phi4[MassIndex][hypo][7]); // MELA automatically resets width to default after calculation as part of protection for discriminants
+					weight_probPdf = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
+				};
 				MC_weight_samples_VAJHU[hypo] = weight_probPdf/sample_probPdf_VAJHU;
 //				testSpin0MEDivergence(HZZ4lSample, hypo, MC_weight_samples_VAJHU[hypo]);
 /*
@@ -983,7 +988,10 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 				lepIdOrdered[1]=-11;
 				lepIdOrdered[2]=13;
 				lepIdOrdered[3]=-13;
-				if( (isHZZ4l && genFinalState<=4 ) ) weight_probPdf = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
+				if( (isHZZ4l && genFinalState<=4 ) ){
+					mela.setMelaHiggsWidth(gi_phi2_phi4[MassIndex][hypo][7]);
+					weight_probPdf = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
+				};
 				else weight_probPdf = 0;
 				MC_ME_as2mu2e_spin0[hypo] = weight_probPdf;
 				lepIdOrdered[0]=GenLep1Id;
@@ -1026,7 +1034,11 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 					int lepLike2l2l[4]={ 11,-11,13,-13 };
 					int lepLike4l[4]={ 13,-13,13,-13 };
 
+					float wHiggs=4.15e-3;
+					if(HZZ4L_HMassPole==126.0) wHiggs=0.1;
+					mela.setMelaHiggsWidth(wHiggs);
 					float noInterfProb_VAJHU = getJHUGenMELAWeight(mela, lepLike2l2l, angularOrdered, selfDHvvcoupl);
+					mela.setMelaHiggsWidth(wHiggs);
 					float withInterfProb_VAJHU = getJHUGenMELAWeight(mela, lepLike4l, angularOrdered, selfDHvvcoupl);
 					MC_weight_ggZZLepInt=2.0*withInterfProb_VAJHU/noInterfProb_VAJHU;
 				}
@@ -1168,8 +1180,8 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 
       //Do the final selection and best candidate selection. Depends on signal region or control region
       if(isCR && !CRflag->at(nH)) continue; // Belongs to at least 1 CR
-      if(!isCR && (ZZsel->at(nH) < 70. || nH != iBC) ) continue;
 //      if(!isCR && (ZZsel->at(nH) < 100. || nH != iBC) ) continue;
+	  if(!isCR && (ZZsel->at(nH) < 90 || nH != iBC) ) continue;  // Save events passing fullsel, but with relaxed mass cut
 
       Int_t RunFraction = -1;
       Float_t whatPeriod = RooRandom::randomGenerator()->Uniform();
@@ -1337,6 +1349,8 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 	myLep4Pt  = Lep4Pt->at(nH);
 	myLep4Eta = Lep4Eta->at(nH);
 	myLep4ID = Lep4LepId->at(nH);
+    myZ1ids = myLep1ID*myLep2ID;
+    myZ2ids = myLep3ID*myLep4ID;
 
 	int lepIdOrdered[4]={ myLep1ID,myLep2ID,myLep3ID,myLep4ID };
 	float angularOrdered[8]={myZZMass,myZ1Mass,myZ2Mass,mycosthetastar,myhelcosthetaZ1,myhelcosthetaZ2,myhelphi,myphistarZ1};
@@ -1429,14 +1443,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 		tempME = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
 		mypzzzg_VAJHU -= tempME;
 		mypzzgg_VAJHU -= tempME;
-/*		selfDHvvcoupl[0][0] = 0;
-		selfDHvvcoupl[3][0] = 1.0;
-		selfDHvvcoupl[4][0] = 0;
-		selfDHvvcoupl[7][0] = 0;
-		selfDHvvcoupl[6][0] = 0;
-		selfDHvvcoupl[9][0] = 0;
-		tempME = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
-*/		mypzzzg_PS_VAJHU -= tempME;
+		mypzzzg_PS_VAJHU -= tempME;
 		mypzzgg_PS_VAJHU -= tempME;
 
 		selfDHvvcoupl[0][0] = 0;
@@ -1453,9 +1460,6 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 	if (myZZFisher>=0) myNJets30=2;
 	else myNJets30=0;
       }
-
-      myZ1ids = myLep1ID*myLep2ID;
-      myZ2ids = myLep3ID*myLep4ID;
 
       myEventNumber = EventNumber; 
       myRunNumber = RunNumber;       

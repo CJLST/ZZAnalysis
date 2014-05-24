@@ -14,6 +14,7 @@
 
 // Header file for the classes stored in the TTree if any.
 #include <vector>
+#include <iostream>
 
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
@@ -758,6 +759,8 @@ void HZZ4lBase::Init(TTree *tree)
    fChain->SetBranchAddress("pg1g1prime2_VAJHU", &pg1g1prime2_VAJHU, &b_pg1g1prime2_VAJHU);
    fChain->SetBranchAddress("Dgg10_VAMCFM", &Dgg10_VAMCFM, &b_Dgg10_VAMCFM);
    if (fChain->GetBranchStatus("pzzzg_VAJHU")){
+	   std::cout << "Found ZG and GG MEs!" << std::endl;
+
 	   fChain->SetBranchAddress("pzzzg_VAJHU", &pzzzg_VAJHU, &b_pzzzg_VAJHU);
 	   fChain->SetBranchAddress("pzzgg_VAJHU", &pzzgg_VAJHU, &b_pzzgg_VAJHU);
 	   fChain->SetBranchAddress("pzzzg_PS_VAJHU", &pzzzg_PS_VAJHU, &b_pzzzg_PS_VAJHU);
@@ -844,6 +847,7 @@ void HZZ4lBase::Init(TTree *tree)
    fChain->SetBranchAddress("JetBTag", &JetBTag, &b_JetBTag);
    fChain->SetBranchAddress("JetSigma", &JetSigma, &b_JetSigma);
    if (fChain->GetBranchStatus("JetQG")){
+	   std::cout << "Found JetQG!" << std::endl;
 	   fChain->SetBranchAddress("JetQG", &JetQG, &b_JetQG);
 	   fChain->SetBranchAddress("JetQGsmear", &JetQGsmear, &b_JetQGsmear);
 	   fChain->SetBranchAddress("JetQGL", &JetQGL, &b_JetQGL);
