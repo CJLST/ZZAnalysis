@@ -223,6 +223,7 @@ TreeSetup = cms.EDAnalyzer("HZZ4lNtupleMaker",
                                    skipEmptyEvents = cms.bool(True),
                                    onlyBestCandidate =  cms.bool(False),
                                    sampleName = cms.string(SAMPLENAME),
+                                   superMelaMass = cms.double(SUPERMELA_MASS),
                                    )
 
 process.ZZ4muTree = TreeSetup.clone()

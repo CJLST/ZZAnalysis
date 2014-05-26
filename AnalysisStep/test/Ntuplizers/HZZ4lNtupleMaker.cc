@@ -61,6 +61,9 @@
 #include <ZZAnalysis/AnalysisStep/interface/Fisher.h>
 #include "ZZ4lConfigHelper.h"
 
+#include <ZZMatrixElement/MELA/interface/Mela.h>
+#include <ZZMatrixElement/MELA/src/computeAngles.h>
+
 #include <AnalysisDataFormats/CMGTools/interface/Photon.h>
 #include <AnalysisDataFormats/CMGTools/interface/PFJet.h>
 #include <AnalysisDataFormats/CMGTools/interface/BaseMET.h>
@@ -159,6 +162,8 @@ private:
   Float_t gen_sumWeights;
 
   string sampleName;
+  Mela mela;
+
 };
 
 //
@@ -166,7 +171,8 @@ private:
 //
 HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   myHelper(pset),
-  reweight(PUReweight::LEGACY)
+  reweight(PUReweight::LEGACY),
+  mela((pset.getParameter<int>("setup")==2011)?7:8,pset.getParameter<double>("superMelaMass"))
 {
   theCandLabel = pset.getUntrackedParameter<string>("CandCollection");
   theChannel = myHelper.channel();
@@ -175,6 +181,8 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   writeBestCandOnly = pset.getParameter<bool>("onlyBestCandidate");
   sampleName = pset.getParameter<string>("sampleName");
   
+  mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
+
   if (skipEmptyEvents) {
     applyTrigger=true;
     applySkim=true;
@@ -453,6 +461,23 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       if (genZLeps.size()==4) {
 	myTree->FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), genZLeps.at(2)->pdgId(), genZLeps.at(3)->pdgId(),
 			       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), genZLeps.at(3)->p4());
+
+	//FIXME
+// 	math::XYZTLorentzVector p11 = genZLeps.at(0)->p4();
+// 	math::XYZTLorentzVector p12 = genZLeps.at(1)->p4();
+// 	math::XYZTLorentzVector p21 = genZLeps.at(2)->p4();
+// 	math::XYZTLorentzVector p22 = genZLeps.at(3)->p4();
+//      TLorentzVector pL11(p11.x(),p11.y(),p11.z(),p11.t());
+//      TLorentzVector pL12(p12.x(),p12.y(),p12.z(),p12.t());
+//      TLorentzVector pL21(p21.x(),p21.y(),p21.z(),p21.t());
+//      TLorentzVector pL22(p22.x(),p22.y(),p22.z(),p22.t());
+// 	int id11 = genZLeps.at(0)->pdgId();
+// 	int id12 = genZLeps.at(1)->pdgId();
+// 	int id21 = genZLeps.at(2)->pdgId();
+// 	int id22 = genZLeps.at(3)->pdgId();
+// 	float gencostheta1=0, gencostheta2=0, genphi=0, gencosthetastar=0, genphistar1=0;
+//	mela::computeAngles(pL11,id11,pL12,id12,pL21,id21,pL22,id22,gencosthetastar,gencostheta1,gencostheta2,genphi,genphistar1);
+	
       }
     }
   }

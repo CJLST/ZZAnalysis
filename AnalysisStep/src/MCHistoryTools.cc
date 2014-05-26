@@ -64,9 +64,9 @@ MCHistoryTools::MCHistoryTools(const edm::Event & event, string sampleName) :
 //   26  = WH production
 //   121 = gg to ttH
 //   122 = qq to ttH
-//   9999 = HH
+//   9999 = HH, powheg15jhuGenV3 samples
 
-//   100 = JHU samples AND gg2zz samples with off-shell Higgs (ggTo2l2l_Continuum, ggTo2l2l_H, ggTo2l2l_ContinuumInterfH, same with ggTo4l)
+//   100 = old JHU samples AND gg2zz samples with off-shell Higgs (ggTo2l2l_Continuum, ggTo2l2l_H, ggTo2l2l_ContinuumInterfH, same with ggTo4l)
     // We override the processID in this case, based on sampleName
     if (processID == 100) {
       // FIXME: fix gg2ZZ samples
