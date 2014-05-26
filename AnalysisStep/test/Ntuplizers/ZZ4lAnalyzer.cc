@@ -155,6 +155,7 @@ private:
   TH1F* hNvtxNoWeight;
   TH1F* hNvtxWeight;
 
+  string sampleName;
 };
 
 // Constructor
@@ -195,7 +196,9 @@ ZZ4lAnalyzer::ZZ4lAnalyzer(const ParameterSet& pset) :
   Nevt_With1FSR(0),
   Nevt_With2FSR(0),
   Nevt_WithFSRImprove(0),
-  weight(1.) {
+  weight(1.),
+  sampleName(pset.getParameter<string>("sampleName"))
+{
 
   isMC = myHelper.isMC();
 
@@ -387,7 +390,7 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
 
   int genFinalState = NONE;
   if (isMC) {
-    MCHistoryTools mch(event);
+    MCHistoryTools mch(event,sampleName);
     genFinalState = mch.genFinalState();
 
     if (genFinalState == EEEE) {

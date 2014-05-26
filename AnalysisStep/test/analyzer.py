@@ -86,6 +86,7 @@ PlotSetup = cms.EDAnalyzer("ZZ4lAnalyzer",
                            skimPaths = cms.vstring(SkimPaths),
                            PD = cms.string(PD),
                            MCFilterPath = cms.string(MCFILTER),
+                           sampleName = cms.string(SAMPLENAME),
                            )
 
 process.Plots4mu = PlotSetup.clone()
@@ -221,6 +222,7 @@ TreeSetup = cms.EDAnalyzer("HZZ4lNtupleMaker",
                                    MCFilterPath = cms.string(MCFILTER),
                                    skipEmptyEvents = cms.bool(True),
                                    onlyBestCandidate =  cms.bool(False),
+                                   sampleName = cms.string(SAMPLENAME),
                                    )
 
 process.ZZ4muTree = TreeSetup.clone()

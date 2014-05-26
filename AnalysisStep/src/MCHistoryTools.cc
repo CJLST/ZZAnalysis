@@ -19,6 +19,8 @@
 
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
 
+#include <boost/algorithm/string/predicate.hpp>
+
 using namespace std;
 using namespace reco;
 using namespace edm;
@@ -27,7 +29,7 @@ namespace {
   bool dbg = false;
 }
 
-MCHistoryTools::MCHistoryTools(const edm::Event & event) :
+MCHistoryTools::MCHistoryTools(const edm::Event & event, string sampleName) :
   ismc(false),
   processID(0),
   hepMCweight(1),
@@ -54,16 +56,25 @@ MCHistoryTools::MCHistoryTools(const edm::Event & event) :
 //   11111 = ZZTo4e
 //   11313 = ZZTo4mu
 //   11515 = ZZTo4tau
+//   10131 = ggTo2e2mu_BSMHContinInterf-MCFM67
+//   10132 = ggTo2e2mu_Contin-MCFM67
 //   322200 = TT
 //   23     = WZ (in Summer12)
 //   24  = ZH production
 //   26  = WH production
 //   121 = gg to ttH
 //   122 = qq to ttH
-
-//   100 = JHU samples AND gg2zz samples with off-shell Higgs (a bit more fantasy would help)
 //   9999 = HH
-  
+
+//   100 = JHU samples AND gg2zz samples with off-shell Higgs (ggTo2l2l_Continuum, ggTo2l2l_H, ggTo2l2l_ContinuumInterfH, same with ggTo4l)
+    // We override the processID in this case, based on sampleName
+    if (processID == 100) {
+      // FIXME: fix gg2ZZ samples
+      if (boost::starts_with(sampleName,"ZHiggs")) processID=900024;
+      if (boost::starts_with(sampleName,"WHiggs")) processID=900026; 
+      if (boost::starts_with(sampleName,"ggTo"))   processID=900661; 
+    }
+
 //   take the MC weight
       GenEventInfoProduct  genInfo = *(gen.product());
       hepMCweight = genInfo.weight();
@@ -186,44 +197,117 @@ MCHistoryTools::init() {
 
     //--- Z
     } else if (id==23 && p->mother()!=0 && p->mother()->pdgId()!=23) {// avoid double counting
-      if (processID==24 && p->mother()->pdgId()!=25) { //This is an associated Z
+      if ((processID==24 || processID==900024) && p->mother()->pdgId()!=25) { //This is an associated Z
 	theAssociatedV.push_back(&*p);
       } else { //ZZ or H->ZZ
 	theGenZ.push_back(&*p);
       }
 
-    // --- H in JHU samples      
+    // --- H in some JHU samples has id=39 instead of 25
     } else if (id==39 && processID==100){ 
       theGenH = &*p;  
     }
     
-    // Lepton (as first daughter of a Z, or status = 3 for ggZZ as the Z are not present in the MC History of ggZZ Summer 12 samples; note that 
-    // some special samples (HH) don't use status=3, although that would pick the original leptons in most samples (which could be interesting at some 
-    // point to have the leptons in WZ and TT samples)
-    //gg2zz (100 or 661) doesn't have Z, check for 4 status 3 leptons. 100 is shared with JHU
-    else if ((id== 13 || id==11 || id==15) && ((p->mother()!=0 && p->mother()->pdgId()==23) || ((processID==661||processID==100) && p->status()==3))) { 
-      if (processID==24 && p->mother()!=0 && p->mother()->mother()!=0 && p->mother()->mother()->pdgId()!=25) continue; // ZH: skip leptons from associated Z
+    // Lepton (as first daughter of a Z, or status = 3 for ggZZ as the Zs are not present 
+    // in the MC History of ggZZ Summer 12 samples
+    else if ((id== 13 || id==11 || id==15) && ((p->mother()!=0 && p->mother()->pdgId()==23) || ((processID==661||processID==900661) && p->status()==3))) { 
+
+      // ZH: skip leptons from associated Z
+      if ((processID==24||processID==900024) && p->mother()!=0 && p->mother()->mother()!=0 && p->mother()->mother()->pdgId()!=25) {
+	// Can save these to a separate list of leptons from associated prod
+	continue;
+      }
+      
       theGenLeps.push_back(&*p);
     }
   } // end loop on particles
 
+
+  bool isOK=true;
+  // Check consistency of what we have collected
   if (theGenLeps.size()!=theGenZ.size()*2) {
-    if (processID==661) {// ggZZ samples in Summer12 miss Zs in the MC history.
-      // We could build Zs here, at least for 2e2mu where this is unproblematic
-    } else if (processID==100 && theGenLeps.size()==4)
-      {
-      //gg2zz samples have no Zs, we check for exactly 4 leptons to avoid troubles with JHU
-    }else if (processID==24 || processID==26 || processID==121 || processID==122) { 
-      // For 2012, VH/ttH samples are inclusive in Z decays.
-    } else if  (processID==0 || processID==1 || processID==2){
-      // For ZZJetsTo4L (MadGraph) samples which contain events with 4 leptons and only 1 Z.
+    if (processID==24 || processID==26 || processID==121 || processID==122) {
+      // For 2012, VH/ttH samples are inclusive in Z decays, assume everything is fine
+    } else if (processID==661 || processID==900661 || processID==0 || processID==1 || processID==2) {
+      // Samples which miss Zs in the MC history, assume everything is fine      
     } else {
-      cout << "ERROR: MCHistoryTools::init: unexpected genparticle content for processID= " << processID << " : " << theGenLeps.size() << " " << theGenZ.size() << endl;
-      abort();
+      isOK = false;
     }
   }
-  isInit = true;
 
+  // theGenLeps should include only leptons from ZZ
+  if (theGenLeps.size()>4) {
+    isOK = false;
+  }
+  
+  if (!isOK) {    
+      cout << "ERROR: MCHistoryTools::init: unexpected genparticle content for processID= " << processID << " : " << theGenLeps.size() << " " << theGenZ.size() << endl;
+      abort();    
+  }
+  
+
+  // Sort leptons, as done for the signal, for cases where we have 4.
+  if (theGenLeps.size()==4) {
+    const float ZmassValue = 91.1876;  
+    float minDZMass=9999;
+    float iZ11=-1, iZ12=-1, iZ21=-1, iZ22=-1;
+    
+    // Find Z1 as closest-to-mZ l+l- combination
+    for (int i=0; i<4; ++i) {
+      for (int j=i+1; j<4; ++j) {
+	if (theGenLeps[i]->pdgId()+theGenLeps[j]->pdgId()==0) { // Same flavour, opposite sign
+	  float dZMass = std::abs((theGenLeps[i]->p4()+theGenLeps[j]->p4()).mass()-ZmassValue);
+	  if (dZMass<minDZMass){
+	    minDZMass=dZMass;
+	    iZ11=i;
+	    iZ12=j;
+	  }
+	}
+      }
+    }    
+
+    // Z2 is from remaining 2 leptons
+    if (iZ11!=-1 && iZ12!=-1){
+      for (int i=0; i<4; ++i) {
+	if (i!=iZ11 && i!=iZ12) {
+	  if (iZ21==-1) iZ21=i;
+	  else iZ22=i;
+	}
+      }
+    }
+
+    if (iZ22==-1 || theGenLeps[iZ21]->pdgId()+theGenLeps[iZ22]->pdgId()!=0) { //Test remaining conditions: Z2 is found and SF, OS
+      cout << "MCHistoryTools: Cannot sort leptons" << endl;
+      abort();
+    }
+    
+    // Sort leptons by sign
+    if (theGenLeps[iZ11]->pdgId() < 0 ) {
+      swap(iZ11,iZ12);
+    }
+    if (theGenLeps[iZ21]->pdgId() < 0 ) {
+      swap(iZ21,iZ22);
+    }
+
+    theSortedGenLepts.push_back(theGenLeps[iZ11]);
+    theSortedGenLepts.push_back(theGenLeps[iZ12]);
+    theSortedGenLepts.push_back(theGenLeps[iZ21]);
+    theSortedGenLepts.push_back(theGenLeps[iZ22]);
+
+//     cout << " Gen Lepton sorting: " << sampleName << " " 
+// 	 << (theSortedGenLepts[0]->p4()+theSortedGenLepts[1]->p4()).mass() << " " 
+// 	 << (theSortedGenLepts[2]->p4()+theSortedGenLepts[3]->p4()).mass() << " | "
+// 	 << (theSortedGenLepts[0]->p4()+theSortedGenLepts[3]->p4()).mass() << " "  
+// 	 << (theSortedGenLepts[2]->p4()+theSortedGenLepts[1]->p4()).mass() << " "
+// 	 << theSortedGenLepts[0]->pdgId() << " " 
+// 	 << theSortedGenLepts[1]->pdgId() << " " 
+// 	 << theSortedGenLepts[2]->pdgId() << " " 
+// 	 << theSortedGenLepts[3]->pdgId() << " " 
+// 	 << endl;
+  }  
+
+
+  isInit = true;
 
   if (dbg) {
     cout << "MCHistoryTools: "  << processID << " " << genFinalState() << " " << (theGenH==0) << " " << theGenZ.size() << " " << theGenLeps.size() // << " " << nMu << " " << nEle << " " << nTau 
@@ -329,7 +413,7 @@ MCHistoryTools::genFinalState(){
       cout << "ERROR: MCHistoryTools: processID: " << processID << " Z flavour= " << gen_Z1_flavour << " " << gen_Z2_flavour << endl;
       abort();
     }
-  } else if (theGenZ.size()==0 && theGenLeps.size()==4 && (processID==661 || processID==100)) {
+  } else if (theGenZ.size()==0 && theGenLeps.size()==4 && (processID==661 || processID==900661)) {
     // Handle samples where Zs are not explicit in the MC history
     int nele=0;
     int nmu=0;

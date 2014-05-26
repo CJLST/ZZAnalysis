@@ -69,6 +69,8 @@
 
 #include "TLorentzVector.h"
 
+#include <string>
+
 namespace {
   bool writePhotons = false;  // Write photons in the tree. Note: must be set also in HZZ4lNtupleFactory.cc
   bool writeJets = true;     // Write jets in the tree. FIXME: make this configurable
@@ -156,7 +158,7 @@ private:
   Float_t gen_sumGenMCWeight;
   Float_t gen_sumWeights;
 
-
+  string sampleName;
 };
 
 //
@@ -171,6 +173,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   theFileName = pset.getUntrackedParameter<string>("fileName");
   skipEmptyEvents = pset.getParameter<bool>("skipEmptyEvents");
   writeBestCandOnly = pset.getParameter<bool>("onlyBestCandidate");
+  sampleName = pset.getParameter<string>("sampleName");
   
   if (skipEmptyEvents) {
     applyTrigger=true;
@@ -273,7 +276,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     int target = myHelper.setup();
     weight2 = reweight.weight(source,target,nTrueInt);
 
-    MCHistoryTools mch(event);
+    MCHistoryTools mch(event, sampleName);
     genFinalState = mch.genFinalState();
     genProcessId = mch.getProcessID();
     genHEPMCweight = mch.gethepMCweight();
@@ -337,7 +340,8 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     //Information on generated candidates, will be used later
     genH = mch.genH();
     genZs = mch.genZs();
-    genZLeps = mch.genZLeps();
+    //    genZLeps = mch.genZLeps();
+    genZLeps = mch.sortedGenZZLeps();
   }
   //----------------------------------------------------------------------
 
@@ -435,10 +439,10 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
   if (isMC) {
 
-    if(genH != 0){
+    if(genH != 0){ // H explicit
       myTree->FillHGenInfo(genH->p4());
     }
-    else if(genZLeps.size()==4){
+    else if(genZLeps.size()==4){ // take the ZZ(4l) system 
       myTree->FillHGenInfo((genZLeps.at(0)->p4()+genZLeps.at(1)->p4()+genZLeps.at(2)->p4()+genZLeps.at(3)->p4()));
     }
 

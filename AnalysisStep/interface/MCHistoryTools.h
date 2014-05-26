@@ -17,11 +17,12 @@
 #include <DataFormats/HepMCCandidate/interface/GenParticleFwd.h>
 
 #include <vector>
+#include <string>
 
 class MCHistoryTools {
  public:
   /// Constructor
-  MCHistoryTools(const edm::Event & event);
+  MCHistoryTools(const edm::Event & event, std::string sampleName="");
 
   /// Destructor
   virtual ~MCHistoryTools();
@@ -49,6 +50,8 @@ class MCHistoryTools {
   // The leptons coming from Zs (in no specific order) 
   const std::vector<const reco::Candidate *>& genZLeps() {init(); return theGenLeps;}
     
+  // The leptons coming from ZZ or HZZ, sorted according to the reco-level criteria
+  const std::vector<const reco::Candidate *>& sortedGenZZLeps() {init(); return theSortedGenLepts;}
 
   /// Find the actual lepton parent (first parent in MC history with a different pdgID)
   const reco::GenParticle* getParent(const reco::GenParticle* genLep);
@@ -86,6 +89,7 @@ class MCHistoryTools {
   std::vector<const reco::Candidate *> theGenZ;
   std::vector<const reco::Candidate *> theAssociatedV;
   std::vector<const reco::Candidate *> theGenLeps;
+  std::vector<const reco::Candidate *> theSortedGenLepts;
   
   void init();
 
