@@ -22,7 +22,6 @@
 
 #include <ZZAnalysis/AnalysisStep/interface/CutSet.h>
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
-#include <ZZAnalysis/AnalysisStep/interface/MCHistoryTools.h>
 //#include "BDTId.h"
 
 #include <vector>
@@ -194,12 +193,12 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	l.addUserFloat("missingHit", missingHit);
 
     //--- MC parent code 
-    MCHistoryTools mch(iEvent);
-    if (mch.isMC()) {
-      int MCParentCode = 0;
-      //      int MCParentCode = mch.getParentCode(&l); //FIXME: does not work on cmg
-      l.addUserFloat("MCParentCode",MCParentCode);
-    }
+//     MCHistoryTools mch(iEvent);
+//     if (mch.isMC()) {
+//       int MCParentCode = 0;
+//       //      int MCParentCode = mch.getParentCode(&l); //FIXME: does not work on cmg
+//       l.addUserFloat("MCParentCode",MCParentCode);
+//     }
 
     //--- Check selection cut. Being done here, flags are not available; but this way we 
     //    avoid wasting time on rejected leptons.

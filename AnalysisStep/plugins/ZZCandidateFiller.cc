@@ -1057,18 +1057,19 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     myCand.addUserFloat("pzzgg_PS_VAJHU",pzzgg_PS_VAJHU);
     myCand.addUserFloat("p0Zgs_PS_VAJHU",p0Zgs_PS_VAJHU);
     myCand.addUserFloat("p0gsgs_PS_VAJHU",p0gsgs_PS_VAJHU);
-    //--- MC matching
-    if (isMC) {
-      int refID = 25; // FIXME: handle ZZ (sigId = 23)
-      bool MC_isRight = (myCand.userFloat("d0.d0.MCParentCode")==refID &&
-			 myCand.userFloat("d0.d1.MCParentCode")==refID &&
-			 myCand.userFloat("d1.d0.MCParentCode")==refID &&
-			 myCand.userFloat("d1.d1.MCParentCode")==refID);
-      bool MC_isRightPair = false; //FIXME to be 
 
-      myCand.addUserFloat("MC_isRight",     MC_isRight);
-      myCand.addUserFloat("MC_isRightPair", MC_isRightPair);
-    }
+    //--- MC matching. To be revised, cf. MuFiller, EleFiller
+//     if (isMC) {
+//       int refID = 25; // FIXME: handle ZZ (sigId = 23)
+//       bool MC_isRight = (myCand.userFloat("d0.d0.MCParentCode")==refID &&
+// 			 myCand.userFloat("d0.d1.MCParentCode")==refID &&
+// 			 myCand.userFloat("d1.d0.MCParentCode")==refID &&
+// 			 myCand.userFloat("d1.d1.MCParentCode")==refID);
+//       bool MC_isRightPair = false; //FIXME to be 
+
+//       myCand.addUserFloat("MC_isRight",     MC_isRight);
+//       myCand.addUserFloat("MC_isRightPair", MC_isRightPair);
+//     }
   
 
     

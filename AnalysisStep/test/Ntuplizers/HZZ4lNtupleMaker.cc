@@ -264,7 +264,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
 
   const reco::Candidate * genH = 0;
-  std::vector<const reco::Candidate *> genZs;
+  //  std::vector<const reco::Candidate *> genZs;
   std::vector<const reco::Candidate *> genZLeps;
   if (isMC) {
 
@@ -347,7 +347,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
     //Information on generated candidates, will be used later
     genH = mch.genH();
-    genZs = mch.genZs();
+    //    genZs = mch.genZs(); // These are the pdgID=23 particles in the MC history, if present.
     //    genZLeps = mch.genZLeps();
     genZLeps = mch.sortedGenZZLeps();
   }
@@ -455,10 +455,15 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     }
 
     if (genFinalState!=BUGGY && genFinalState!=NONE) {
-      if (genZs.size()==2){
-	myTree->FillZGenInfo(genZs.at(0)->p4(), genZs.at(1)->p4());
-      }
+
+//       if (genZs.size()==2){
+// 	myTree->FillZGenInfo(genZs.at(0)->p4(), genZs.at(1)->p4());
+//       }
       if (genZLeps.size()==4) {
+	
+	myTree->FillZGenInfo(genZLeps.at(0)->p4()+genZLeps.at(1)->p4(),
+			     genZLeps.at(2)->p4()+genZLeps.at(3)->p4());
+
 	myTree->FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), genZLeps.at(2)->pdgId(), genZLeps.at(3)->pdgId(),
 			       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), genZLeps.at(3)->p4());
 
@@ -939,7 +944,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 			SIP[i],
 			isID[i],
 			userdatahelpers::getUserFloat(leptons[i],"BDT"),
-			userdatahelpers::getUserFloat(leptons[i],"MCParentCode"),
+			userdatahelpers::getUserFloat(leptons[i],"MCParentCode"), // This is dummy as of now.
 			userdatahelpers::getUserFloat(leptons[i],"missingHit"));
 
     //Isolation variables

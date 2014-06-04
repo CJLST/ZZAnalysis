@@ -22,7 +22,6 @@
 
 #include <ZZAnalysis/AnalysisStep/interface/CutSet.h>
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
-#include <ZZAnalysis/AnalysisStep/interface/MCHistoryTools.h>
 #include <ZZAnalysis/AnalysisStep/interface/SIPCalculator.h>
 
 
@@ -187,11 +186,11 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
     
     //--- MC parent code 
-    MCHistoryTools mch(iEvent);
-    if (mch.isMC()) {
-      int MCParentCode = 0;//FIXME: does not work on cmg mch.getParentCode((l.genParticleRef()).get());
-      l.addUserFloat("MCParentCode",MCParentCode);
-    }
+//     MCHistoryTools mch(iEvent);
+//     if (mch.isMC()) {
+//       int MCParentCode = 0;//FIXME: does not work on cmg mch.getParentCode((l.genParticleRef()).get());
+//       l.addUserFloat("MCParentCode",MCParentCode);
+//     }
 
     //--- Check selection cut. Being done here, flags are not available; but this way we 
     //    avoid wasting time on rejected leptons.
