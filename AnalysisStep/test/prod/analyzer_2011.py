@@ -175,11 +175,15 @@ samples = [
 
 
     ### VBFHiggs
-    ('VBF0M_H125.6', 'cmgtools', '/VBFHiggs0MToZZTo4L_M-125p6_7TeV-JHUGenV4/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
     ('VBF0P_H125.6', 'cmgtools', '/VBFHiggs0PToZZTo4L_M-125p6_7TeV-JHUGenV4/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('VBF0PH_H125.6', 'cmgtools', '/VBFHiggs0PHToZZTo4L_M-125p6_7TeV-JHUGenV4/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('VBF0M_H125.6', 'cmgtools', '/VBFHiggs0MToZZTo4L_M-125p6_7TeV-JHUGenV4/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+
 
     ### ZHiggs
+    ('ZHiggs0P_H125.6', 'cmgtools', '/ZHiggs0PToZZTo4L_M-125p6_7TeV-JHUGenV4/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
     ('ZHiggs0M_H125.6', 'cmgtools', '/ZHiggs0MToZZTo4L_M-125p6_7TeV-JHUGenV4/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('ZHiggs0Mf05ph0_H125.6', 'cmgtools', '/ZHiggs0Mf05ph0ToZZTo4L_M-125p6_7TeV-JHUGenV4/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
 
 
     ### JJHiggs
@@ -338,6 +342,8 @@ samples = [
     ('minloH500', 'cmgtools', '/GluGluToHToZZTo4L_M-500_7TeV-minloHJJ-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 2, "MCAllEvents"),
     ('minloH600', 'cmgtools', '/GluGluToHToZZTo4L_M-600_7TeV-minloHJJ-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
     ('minloH750', 'cmgtools', '/GluGluToHToZZTo4L_M-750_7TeV-minloHJJ-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('minloH800', 'cmgtools', '/GluGluToHToZZTo4L_M-800_7TeV-minloHJJ-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('minloH850', 'cmgtools', '/GluGluToHToZZTo4L_M-850_7TeV-minloHJJ-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
     ('minloH900', 'cmgtools', '/GluGluToHToZZTo4L_M-900_7TeV-minloHJJ-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
     ('minloH950', 'cmgtools', '/GluGluToHToZZTo4L_M-950_7TeV-minloHJJ-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
     ('minloH1000', 'cmgtools', '/GluGluToHToZZTo4L_M-1000_7TeV-minloHJJ-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
