@@ -114,9 +114,12 @@ ZZ4lAnalysis_ggTo2e2mu_Contin-MCFM67
 # VBFHiggs
 ZZ4lAnalysis_VBF0M_H125.6
 ZZ4lAnalysis_VBF0P_H125.6
+ZZ4lAnalysis_VBF0PH_H125.6
 
 # ZHiggs
+ZZ4lAnalysis_ZHiggs0P_H125.6
 ZZ4lAnalysis_ZHiggs0M_H125.6
+ZZ4lAnalysis_ZHiggs0Mf05ph0_H125.6
 
 # JJHiggs
 ZZ4lAnalysis_JJHiggs0MH125.6
@@ -266,6 +269,8 @@ ZZ4lAnalysis_minloH450
 ZZ4lAnalysis_minloH500
 ZZ4lAnalysis_minloH600
 ZZ4lAnalysis_minloH750
+ZZ4lAnalysis_minloH800
+ZZ4lAnalysis_minloH850
 ZZ4lAnalysis_minloH900
 ZZ4lAnalysis_minloH950
 ZZ4lAnalysis_minloH1000

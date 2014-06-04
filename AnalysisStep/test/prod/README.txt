@@ -93,3 +93,7 @@ haddChunks.py AAAOK
 
 This creates one directory per sample containing the merged root file.
 
+
+INTEGRITY CHECK
+For samples transferred to EOS at CERN, IC has to be run:
+edmIntegrityCheck.py -u cmgtools --update <sample name>

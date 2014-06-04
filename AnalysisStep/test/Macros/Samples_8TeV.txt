@@ -112,13 +112,14 @@ ZZ4lAnalysis_ggTo2e2mu_BSMHContinInterf-MCFM67_H125.6
 ZZ4lAnalysis_ggTo2e2mu_Contin-MCFM67
 
 # VBFHiggs
-ZZ4lAnalysis_VBF0M_H125.6
 ZZ4lAnalysis_VBF0P_H125.6
+ZZ4lAnalysis_VBF0PH_H125.6
+ZZ4lAnalysis_VBF0M_H125.6
 ZZ4lAnalysis_VBF0Mf05ph0_H125.6
 
 # JJHiggs
-ZZ4lAnalysis_JJHiggs0MH125.6
 ZZ4lAnalysis_JJHiggs0P_H125.6
+ZZ4lAnalysis_JJHiggs0MH125.6
 
 # WHiggs
 ZZ4lAnalysis_WHiggs0P_H125.6
@@ -127,6 +128,8 @@ ZZ4lAnalysis_WHiggs0M_H125.6
 ZZ4lAnalysis_WHiggs0Mf05ph0_H125.6
 
 # ZHiggs
+ZZ4lAnalysis_ZHiggs0P_H125.6
+ZZ4lAnalysis_ZHiggs0PH_H125.6
 ZZ4lAnalysis_ZHiggs0Mf05ph0_H125.6
 ZZ4lAnalysis_ZHiggs0M_H125.6
 

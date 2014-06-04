@@ -293,6 +293,7 @@ all ggTo2e2mu_Contin-MCFM67                  1 0.0006885060 1
 
 all VBF0P_H125.6                             1 0.0001602480 1 
 all VBF0M_H125.6                             1 0.0001602480 1 
+all VBF0PH_H125.6                            1 0.0001602480 1 
 
 ##########################################################################
 # JJHiggs - use x-section for ggH, BR(H->4l,l=e,mu) for the time being   # FIXME: to be rechecked
@@ -305,7 +306,9 @@ all JJHiggs0P_H125.6                         1 0.0019786800 1
 # ZHiggs: Z->inclusive, BR(H->4l,l=e,mu)                                 #
 ##########################################################################
 
+all ZHiggs0P_H125.6                          1 0.0000435468 1
 all ZHiggs0M_H125.6                          1 0.0000435468 1
+all ZHiggs0Mf05ph0_H125.6                    1 0.0000435468 1
 
 
 
