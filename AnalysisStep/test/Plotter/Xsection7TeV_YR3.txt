@@ -288,6 +288,23 @@ all ggTo2e2mu_Contin-MCFM67                  1 0.0006885060 1
 
 
 ##########################################################################
+# Phantom samples                                                        #
+##########################################################################
+
+ZZTo4muJJ_BSM25HContinInterf_H125.6     2.505576749660674E-004          1
+ZZTo2e2muJJ_BSM25HContinInterf_H125.6   5.417040330546889E-004          1
+ZZTo4eJJ_BSM25HContinInterf_H125.6      2.502592444436491E-004          1
+ZZTo4muJJ_BSM10HContinInterf_H125.6     2.187258636589030E-004          1
+ZZTo2e2muJJ_BSM10HContinInterf_H125.6   4.794819871366363E-004          1
+ZZTo4eJJ_BSM10HContinInterf_H125.6      2.178041943144518E-004          1
+ZZTo2e2muJJ_SMHContinInterf_H125.6      4.512172284721055E-004          1
+ZZTo4muJJ_SMHContinInterf_H125.6        2.053859553143833E-004          1
+ZZTo4eJJ_SMHContinInterf_H125.6         2.050597663931831E-004          1
+ZZTo2e2muJJ_Contin                      3.718595894117134E-004          1
+ZZTo4muJJ_Contin                        1.611617374456183E-004          1
+ZZTo4eJJ_Contin                         1.610671663387286E-004          1
+
+##########################################################################
 # VBFHiggs, BR(H->4l,l=e,mu)                                             #
 ##########################################################################
 
