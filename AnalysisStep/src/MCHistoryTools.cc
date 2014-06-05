@@ -48,7 +48,8 @@ MCHistoryTools::MCHistoryTools(const edm::Event & event, string sampleName) :
 //   
 //   0-5,35 = DYjets; also WZJets in Fall11
 //   0,1,2 = ZZJetsTo4L (MadGraph)
-//   661 = GluGluToZZ (gg2zz)
+//   66  =  WZZ_8TeV-aMCatNLO-herwig
+//   661 = GluGluToZZ (gg2zz);  phantom samples
 //   10011 = GluGluToHToZZTo4L_M-*_8TeV-powheg-pythia6; GluGluToHToZZTo4L_M-*_mll1_7TeV-powheg-pythia6; VBF_HToZZTo4L_M-*_8TeV-powheg-pythia6, VBF_ToHToZZTo4L_M-*_7TeV-powheg-pythia6
 //   11113 = ZZ2e2mu
 //   11115 = ZZ2e2tau
@@ -208,8 +209,8 @@ MCHistoryTools::init() {
       theGenH = &*p;  
     }
     
-    // Lepton (as first daughter of a Z, or status = 3 for ggZZ as the Zs are not present 
-    // in the MC History of ggZZ Summer 12 samples
+    // Lepton (as first daughter of a Z, or status = 3 for ggZZ and phantom as the Zs are not present 
+    // in the MC History of ggZZ Summer 12 samples, or leptons may not come from the Z
     else if ((id== 13 || id==11 || id==15) && ((p->mother()!=0 && p->mother()->pdgId()==23) || ((processID==661||processID==900661) && p->status()==3))) { 
 
       // ZH: skip leptons from associated Z
@@ -228,7 +229,7 @@ MCHistoryTools::init() {
   if (theGenLeps.size()!=theGenZ.size()*2) {
     if (processID==24 || processID==26 || processID==121 || processID==122) {
       // For 2012, VH/ttH samples are inclusive in Z decays, assume everything is fine
-    } else if (processID==661 || processID==900661 || processID==0 || processID==1 || processID==2) {
+    } else if (processID==661 || processID==900661 || processID==0 || processID==1 || processID==2 || processID==66) {
       // Samples which miss Zs in the MC history, assume everything is fine      
     } else {
       isOK = false;
@@ -398,6 +399,7 @@ MCHistoryTools::genFinalState(){
     int gen_Z1_flavour = abs(theGenZ[0]->daughter(0)->pdgId());
     int gen_Z2_flavour = abs(theGenZ[1]->daughter(0)->pdgId());
 
+    // FIXME this does not make much sense now that we re-pair Zs in the MC history.
     if (gen_Z1_flavour == 11 && gen_Z2_flavour == 11) {
       gen_finalState = EEEE;
     } else if (gen_Z1_flavour == 13 && gen_Z2_flavour == 13) {
@@ -409,6 +411,8 @@ MCHistoryTools::genFinalState(){
       gen_finalState = LLTT;
     } else if (processID==24 || processID==26 || processID==121 || processID==122) { // ZH 8TeV samples are inclusive in Z decays.
       return NONE;
+    } else if (processID==661) { // in phantom samples, some of the 4 leptons may not be listed as coming from the 2 Z. Proceed to the following logic based on leptons.
+      
     } else {
       cout << "ERROR: MCHistoryTools: processID: " << processID << " Z flavour= " << gen_Z1_flavour << " " << gen_Z2_flavour << endl;
       abort();
