@@ -187,8 +187,8 @@ samples = [
 
 
     ### JJHiggs
-    ('JJHiggs0MH125.6', 'cmgtools', '/JJHiggs0MToZZTo4L_M-125p6_7TeV-JHUGenV4/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
-    ('JJHiggs0PH125.6', 'cmgtools', '/JJHiggs0PToZZTo4L_M-125p6_7TeV-JHUGenV4/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('JJHiggs0M_H125.6', 'cmgtools', '/JJHiggs0MToZZTo4L_M-125p6_7TeV-JHUGenV4/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('JJHiggs0P_H125.6', 'cmgtools', '/JJHiggs0PToZZTo4L_M-125p6_7TeV-JHUGenV4/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
 
 
     ### VBF samples

@@ -52,8 +52,12 @@ haddChunks.py PRODFSR_8TeV | tee haddlog_PRODFSR_8TeV.txt
 ```
 This takes a while. 
 
-Now create links to the merged files into the HZZ_root folder:
+Now create links to the merged files into the HZZ_root folder
 ```
+mkdir -p /data3/2014/HZZ_root/${TREESET}/PRODFSR
+cd /data3/2014/HZZ_root/${TREESET}/PRODFSR
+$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/test/prod/copyMergedFiles.sh /data3/2014/HZZ_out/${TREESET}/PRODFSR
+
 mkdir -p /data3/2014/HZZ_root/${TREESET}/PRODFSR_8TeV
 cd /data3/2014/HZZ_root/${TREESET}/PRODFSR_8TeV
 $CMSSW_BASE/src/ZZAnalysis/AnalysisStep/test/prod/copyMergedFiles.sh /data3/2014/HZZ_out/${TREESET}/PRODFSR_8TeV
@@ -61,7 +65,10 @@ $CMSSW_BASE/src/ZZAnalysis/AnalysisStep/test/prod/copyMergedFiles.sh /data3/2014
 
 Once ready, we still have to merge few datasets: data for 7TeV and data, ZZ+ZZext for 8TeV
 ```
+cd /data3/2014/HZZ_root/${TREESET}/PRODFSR
 $CMSSW_BASE/src/ZZAnalysis/AnalysisStep/test/prod/hadd_7TeV.csh
+
+cd /data3/2014/HZZ_root/${TREESET}/PRODFSR_8TeV
 $CMSSW_BASE/src/ZZAnalysis/AnalysisStep/test/prod/hadd_8TeV.csh
 ```
 
@@ -73,6 +80,7 @@ export TREESET=<YYMMDD>
 cd $CMSSW_BASE/src/ZZAnalysis/AnalysisStep/test/Macros
 ln -s /data3/2014/HZZ_root/ rootuples
 ln -s /data3/2014/HZZ_stat/ trees
+mkdir -p /data3/2014/HZZ_stat/${TREESET}/PRODFSR
 mkdir -p /data3/2014/HZZ_stat/${TREESET}/PRODFSR_8TeV
 ./executeRun_7TeV.sh ${TREESET} | tee trees/${TREESET}/PRODFSR/secondary_log.txt
 ./executeRun_8TeV.sh ${TREESET} | tee trees/${TREESET}/PRODFSR_8TeV/secondary_log.txt

@@ -122,8 +122,8 @@ ZZ4lAnalysis_ZHiggs0M_H125.6
 ZZ4lAnalysis_ZHiggs0Mf05ph0_H125.6
 
 # JJHiggs
-ZZ4lAnalysis_JJHiggs0MH125.6
-ZZ4lAnalysis_JJHiggs0PH125.6
+ZZ4lAnalysis_JJHiggs0M_H125.6
+ZZ4lAnalysis_JJHiggs0P_H125.6
 
 # VBF
 ZZ4lAnalysis_VBFH115
