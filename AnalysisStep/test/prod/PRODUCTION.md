@@ -80,8 +80,8 @@ export TREESET=<YYMMDD>
 cd $CMSSW_BASE/src/ZZAnalysis/AnalysisStep/test/Macros
 ln -s /data3/2014/HZZ_root/ rootuples
 ln -s /data3/2014/HZZ_stat/ trees
-mkdir -p /data3/2014/HZZ_stat/${TREESET}/PRODFSR
-mkdir -p /data3/2014/HZZ_stat/${TREESET}/PRODFSR_8TeV
+mkdir -p trees/${TREESET}/PRODFSR
+mkdir -p trees/${TREESET}/PRODFSR_8TeV
 ./executeRun_7TeV.sh ${TREESET} | tee trees/${TREESET}/PRODFSR/secondary_log.txt
 ./executeRun_8TeV.sh ${TREESET} | tee trees/${TREESET}/PRODFSR_8TeV/secondary_log.txt
 ```

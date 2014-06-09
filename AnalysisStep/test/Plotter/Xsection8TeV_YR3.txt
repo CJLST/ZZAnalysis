@@ -252,18 +252,18 @@ all            powheg15jhuGenV3-0Mf05ph270H126  1   0.0057289400  1
 # JHUGENV3 spin-1 and spin-2 samples, x-sec for ggH, BR(H->4l,l=e,mu)    #
 ##########################################################################
 
-all            powheg15jhuGenV3Vec1MH126        1   0.0025799200  1
-all            powheg15jhuGenV3Vec1PH126        1   0.0025799200  1
-all            powheg15jhuGenV3GravH126         1   0.0025799200  1
-all            powheg15jhuGenV3qqGravH126       1   0.0025799200  1
-all            powheg15jhuGenV3Grav2MHH126      1   0.0025799200  1
-all            powheg15jhuGenV3Grav2PBH126      1   0.0025799200  1
-all            powheg15jhuGenV3Grav2PHH126      1   0.0025799200  1
+all            jhuGenV3Vec1MH126        1   0.0025799200  1
+all            jhuGenV3Vec1PH126        1   0.0025799200  1
+all            jhuGenV3Grav2PMH126      1   0.0025799200  1 # formerly named jhuGenV3GravH126
+all            jhuGenV3Grav2PMqqbH126   1   0.0025799200  1 # formerly named jhuGenV3qqGravH126
+all            jhuGenV3Grav2MHH126      1   0.0025799200  1
+all            jhuGenV3Grav2PBH126      1   0.0025799200  1
+all            jhuGenV3Grav2PHH126      1   0.0025799200  1
 
 
-##########################################################################
-# powheg15-jhuGenV3-spin/CP-MH125.6, x-section for ggH, BR(H->4l,l=e,mu) #
-##########################################################################
+#################################################################################
+# powheg15-jhuGenV3 and v4 spin/CP-MH125.6, x-section for ggH, BR(H->4l,l=e,mu) #
+#################################################################################
 
 all powheg15jhuGenV3-0PMH125.6 1 0.0025198800  1
 all powheg15jhuGenV3-0MH125.6  1 0.0025198800  1
@@ -293,6 +293,15 @@ all powheg15jhuGenV3-0PHf05ph0Mf05ph0H125.6    1 0.0025198800  1
 all powheg15jhuGenV3-0PHf05ph0Mf05ph90H125.6   1 0.0025198800  1
 all powheg15jhuGenV3-0PHf05ph180Mf05ph0H125.6  1 0.0025198800  1
 
+all powheg15jhuGenV4-0L1f01ph0H125.6           1 0.0025198800  1
+all powheg15jhuGenV4-0L1f05ph0H125.6	       1 0.0025198800  1
+all powheg15jhuGenV4-0L1f05ph180H125.6	       1 0.0025198800  1
+all powheg15jhuGenV4-0L1H125.6		       1 0.0025198800  1
+all powheg15jhuGenV4-0Mf05ph180H125.6	       1 0.0025198800  1
+all powheg15jhuGenV4-0PHf05ph180H125.6	       1 0.0025198800  1
+all powheg15jhuGenV4-0PHf05ph180Mf05ph0H125.6  1 0.0025198800  1
+
+
 all jhuGenV3-Vec1Mf05ph01Pf05ph0H125.6         1 0.0025198800  1
 all jhuGenV3-Vec1Mf05ph01Pf05ph90H125.6        1 0.0025198800  1
 
@@ -314,6 +323,7 @@ all jhuGenV3Grav2PH7qqbH125.6                  1 0.0025198800  1
 all jhuGenV3Grav2MHqqbH125.6                   1 0.0025198800  1
 all jhuGenV3Grav2MH9qqbH125.6                  1 0.0025198800  1
 all jhuGenV3Grav2MH10qqbH125.6                 1 0.0025198800  1
+
 
 
 ##########
@@ -338,18 +348,18 @@ all ggTo2e2mu_Contin-MCFM67                  1 0.000918826 1
 # Phantom samples                                                        #
 ##########################################################################
 
-ZZTo4muJJ_BSM25HContinInterf_H125.6     3.117289755556746E-004          1
-ZZTo2e2muJJ_BSM25HContinInterf_H125.6   6.707175001136875E-004          1
-ZZTo4eJJ_BSM25HContinInterf_H125.6      3.117402751925978E-004          1
-ZZTo4muJJ_BSM10HContinInterf_H125.6     2.678337815958082E-004          1
-ZZTo2e2muJJ_BSM10HContinInterf_H125.6   5.814292186114383E-004          1
-ZZTo4eJJ_BSM10HContinInterf_H125.6      2.680082365969152E-004          1
-ZZTo2e2muJJ_SMHContinInterf_H125.6      5.434945696873235E-004          1
-ZZTo4muJJ_SMHContinInterf_H125.6        2.487975936891337E-004          1
-ZZTo4eJJ_SMHContinInterf_H125.6         2.484688144236787E-004          1
-ZZTo2e2muJJ_Contin                      4.447269876857436E-004          1
-ZZTo4muJJ_Contin                        1.951954743601816E-004          1
-ZZTo4eJJ_Contin                         1.952187837277965E-004          1
+all ZZTo4muJJ_BSM25HContinInterf_H125.6     3.117289755556746E-004          1
+all ZZTo2e2muJJ_BSM25HContinInterf_H125.6   6.707175001136875E-004          1
+all ZZTo4eJJ_BSM25HContinInterf_H125.6      3.117402751925978E-004          1
+all ZZTo4muJJ_BSM10HContinInterf_H125.6     2.678337815958082E-004          1
+all ZZTo2e2muJJ_BSM10HContinInterf_H125.6   5.814292186114383E-004          1
+all ZZTo4eJJ_BSM10HContinInterf_H125.6      2.680082365969152E-004          1
+all ZZTo2e2muJJ_SMHContinInterf_H125.6      5.434945696873235E-004          1
+all ZZTo4muJJ_SMHContinInterf_H125.6        2.487975936891337E-004          1
+all ZZTo4eJJ_SMHContinInterf_H125.6         2.484688144236787E-004          1
+all ZZTo2e2muJJ_Contin                      4.447269876857436E-004          1
+all ZZTo4muJJ_Contin                        1.951954743601816E-004          1
+all ZZTo4eJJ_Contin                         1.952187837277965E-004          1
 
 
 ##########################################################################
