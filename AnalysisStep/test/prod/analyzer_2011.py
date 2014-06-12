@@ -191,6 +191,19 @@ samples = [
     ('JJHiggs0P_H125.6', 'cmgtools', '/JJHiggs0PToZZTo4L_M-125p6_7TeV-JHUGenV4/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
 
 
+    ### Phantom
+    ('ZZTo4eJJ_BSM10HContinInterf_H125.6', 'cmgtools', '/ZZTo4eJJ_BSM10HContinInterf_M-125p6_7TeV-phantom-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('ZZTo4eJJ_SMHContinInterf_H125.6', 'cmgtools', '/ZZTo4eJJ_SMHContinInterf_M-125p6_7TeV-phantom-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('ZZTo4eJJ_Contin', 'cmgtools', '/ZZTo4eJJ_Contin_7TeV-phantom-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    
+    ('ZZTo2e2muJJ_BSM25HContinInterf_H125.6', 'cmgtools', '/ZZTo2e2muJJ_BSM25HContinInterf_M-125p6_7TeV-phantom-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('ZZTo2e2muJJ_BSM10HContinInterf_H125.6', 'cmgtools', '/ZZTo2e2muJJ_BSM10HContinInterf_M-125p6_7TeV-phantom-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('ZZTo2e2muJJ_SMHContinInterf_H125.6', 'cmgtools', '/ZZTo2e2muJJ_SMHContinInterf_M-125p6_7TeV-phantom-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+        
+    ('ZZTo4muJJ_BSM10HContinInterf_H125.6', 'cmgtools', '/ZZTo4muJJ_BSM10HContinInterf_M-125p6_7TeV-phantom-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('ZZTo4muJJ_SMHContinInterf_H125.6', 'cmgtools', '/ZZTo4muJJ_SMHContinInterf_M-125p6_7TeV-phantom-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('ZZTo4muJJ_Contin', 'cmgtools', '/ZZTo4muJJ_Contin_7TeV-phantom-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+
     ### VBF samples
     ('VBFH115', 'cmgtools','/VBF_ToHToZZTo4L_M-115_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
     ('VBFH120', 'cmgtools','/VBF_ToHToZZTo4L_M-120_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),

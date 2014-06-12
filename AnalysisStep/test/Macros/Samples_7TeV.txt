@@ -111,6 +111,19 @@ ZZ4lAnalysis_ggTo2e2mu_SMHContinInterf-MCFM67_H125.6
 ZZ4lAnalysis_ggTo2e2mu_BSMHContinInterf-MCFM67_H125.6
 ZZ4lAnalysis_ggTo2e2mu_Contin-MCFM67
 
+# Phantom
+ZZTo4eJJ_BSM10HContinInterf_H125.6
+ZZTo4eJJ_SMHContinInterf_H125.6
+ZZTo4eJJ_Contin_H125.6
+
+ZZTo2e2muJJ_BSM25HContinInterf_H125.6
+ZZTo2e2muJJ_BSM10HContinInterf_H125.6
+ZZTo2e2muJJ_SMHContinInterf_H125.6
+
+ZZTo4muJJ_BSM10HContinInterf_H125.6
+ZZTo4muJJ_SMHContinInterf_H125.6
+ZZTo4muJJ_Contin_H125.6
+
 # VBFHiggs
 ZZ4lAnalysis_VBF0M_H125.6
 ZZ4lAnalysis_VBF0P_H125.6
