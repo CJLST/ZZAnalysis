@@ -47,7 +47,7 @@ MCHistoryTools::MCHistoryTools(const edm::Event & event, string sampleName) :
 //   Generally corresopond to MSUB for Pythia samples, cf. for example: http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/Configuration/GenProduction/python/EightTeV/WH_ZH_TTH_HToZZTo4L_M_115_TuneZ2star_8TeV_pythia6_tauola_cff.py?view=markup
 //   
 //   0-5,35 = DYjets; also WZJets in Fall11
-//   0,1,2 = ZZJetsTo4L (MadGraph)
+//   0,1,2 = ZZJetsTo4L (MadGraph); ZZZ (Madgraph)
 //   66  =  WZZ_8TeV-aMCatNLO-herwig
 //   661 = GluGluToZZ (gg2zz);  phantom samples
 //   10011 = GluGluToHToZZTo4L_M-*_8TeV-powheg-pythia6; GluGluToHToZZTo4L_M-*_mll1_7TeV-powheg-pythia6; VBF_HToZZTo4L_M-*_8TeV-powheg-pythia6, VBF_ToHToZZTo4L_M-*_7TeV-powheg-pythia6
@@ -75,6 +75,11 @@ MCHistoryTools::MCHistoryTools(const edm::Event & event, string sampleName) :
       if (boost::starts_with(sampleName,"WHiggs")) processID=900026; 
       if (boost::starts_with(sampleName,"ggTo"))   processID=900661; 
     }
+
+    if (processID == 0) {
+      if (boost::starts_with(sampleName,"ZZZJets")) processID=900101;      
+    }
+    
 
 //   take the MC weight
       GenEventInfoProduct  genInfo = *(gen.product());
@@ -238,6 +243,8 @@ MCHistoryTools::init() {
 
   // theGenLeps should include only leptons from ZZ
   if (theGenLeps.size()>4) {
+    if (processID == 900101) { // ZZZ events
+    }
     isOK = false;
   }
   
