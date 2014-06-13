@@ -257,7 +257,7 @@ MCHistoryTools::init() {
   // Sort leptons, as done for the signal, for cases where we have 4.
   if (theGenLeps.size()==4) {
     const float ZmassValue = 91.1876;  
-    float minDZMass=9999;
+    float minDZMass=1E36;
     float iZ11=-1, iZ12=-1, iZ21=-1, iZ22=-1;
     
     // Find Z1 as closest-to-mZ l+l- combination
@@ -285,7 +285,9 @@ MCHistoryTools::init() {
     }
 
     if (iZ22==-1 || theGenLeps[iZ21]->pdgId()+theGenLeps[iZ22]->pdgId()!=0) { //Test remaining conditions: Z2 is found and SF, OS
-      cout << "MCHistoryTools: Cannot sort leptons" << endl;
+      cout << "MCHistoryTools: Cannot sort leptons ";
+      for (int i=0; i<4; ++i) cout << theGenLeps[i]->pdgId() << " ";
+      cout << iZ11 << " " << iZ12 << " " << iZ21 << " " << iZ22 << endl;
       abort();
     }
     
