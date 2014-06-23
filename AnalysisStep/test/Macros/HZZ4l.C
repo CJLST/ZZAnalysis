@@ -555,7 +555,15 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 	float sample_probPdf_VAMCFM = 1.0;
 	float weight_probPdf = 1.0;
 	float weight_probPdf_VAMCFM = 1.0;
-	float MC_weight_ggZZLepInt=1;
+	
+	const int size_ggZZLepInt=4;
+	float MC_weight_ggZZLepInt[size_ggZZLepInt] = { 1, 1, 1, 1 };
+	int kggZZLepInt=size_ggZZLepInt;
+
+	const int size_ZZQQBSTU=2;
+	float MC_weight_ZZQQBSTU[size_ZZQQBSTU] = { 0 };
+	int kZZQQBSTU=size_ZZQQBSTU;
+
 	if (isHZZ4l){
 		SelTree.Branch("kNumSamples", &numSamples);
 		SelTree.Branch("MC_weight_spin0", MC_weight_samples_VAJHU, "MC_weight_spin0[kNumSamples]/F");
@@ -564,10 +572,15 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 	if(isZZQQB || isZZGG){
 		SelTree.Branch("MC_weight_QQBGG_VAMCFM",&MC_weight_QQBGG_VAMCFM);
 		SelTree.Branch("sampleprob_VAMCFM",&sample_probPdf_VAMCFM);
+		if(isZZQQB){
+			SelTree.Branch("kZZQQBSTU",&kZZQQBSTU);
+			SelTree.Branch("MC_weight_ZZQQBSTU",MC_weight_ZZQQBSTU,"MC_weight_ZZQQBSTU[kZZQQBSTU]/F");
+		};
 	};
-//  if(isHZZ4l_NoLepInt){
-//	  SelTree.Branch("MC_weight_ggZZLepInt",&MC_weight_ggZZLepInt);
-//  };
+	if(isHZZ4l_NoLepInt){
+		SelTree.Branch("kggZZLepInt",&kggZZLepInt);
+		SelTree.Branch("MC_weight_ggZZLepInt",MC_weight_ggZZLepInt,"MC_weight_ggZZLepInt[kggZZLepInt]/F");
+	};
 
   if(saveJets){
     SelTree.Branch("DiJetMass",&myDiJetMass,"DiJetMass/F");
@@ -1022,36 +1035,57 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 				N_generated[genFinalState][0] += 1.0;
 				if(GenZ1Mass>4 && GenZ2Mass>4) N_generated_4GeVcut[genFinalState][0] += 1.0;
 			};
-/*
+
 			if(isHZZ4l_NoLepInt){
-				for(int gx=0;gx<30;gx++){
-					selfDHvvcoupl[gx][0]=0;
-					selfDHvvcoupl[gx][1]=0;
-				};
-				selfDHvvcoupl[0][0]=1;
+				for(int me=0;me<size_ggZZLepInt;me++) MC_weight_ggZZLepInt[me]=1; // ggZZ, ggHZZ, ggHZZ+ZZ, 25*ggHZZ+ZZ, preparation for possible future use in other BSM cases
 
-				if(abs(lepIdOrdered[0])==abs(lepIdOrdered[1]) && abs(lepIdOrdered[0])==abs(lepIdOrdered[2]) && abs(lepIdOrdered[0])==abs(lepIdOrdered[3])){
-					int lepLike2l2l[4]={ 11,-11,13,-13 };
-					int lepLike4l[4]={ 13,-13,13,-13 };
+				if (genFinalState < 2){
+					float wHiggs = 4.15e-3;
+					if (HZZ4L_HMassPole == 126.0) wHiggs = 0.1;
+					double noInterfProb=1,withInterfProb=1;
 
-					float wHiggs=4.15e-3;
-					if(HZZ4L_HMassPole==126.0) wHiggs=0.1;
+					mela.setProcess(TVar::bkgZZ, TVar::MCFM, TVar::ZZGG); // Depart from what it was at the beginning of the loop.
+					noInterfProb = getMCFMMELAWeight(mela, lepIdOrdered, angularOrdered);
+					mela.setMelaLeptonInterference(TVar::InterfOn); // Turn on per calculation, just like width
+					withInterfProb = getMCFMMELAWeight(mela, lepIdOrdered, angularOrdered);
+					if(noInterfProb>0 && withInterfProb>=0) MC_weight_ggZZLepInt[0] = withInterfProb / noInterfProb;
+
+
+					mela.setProcess(TVar::HSMHiggs, TVar::MCFM, TVar::ZZGG);
 					mela.setMelaHiggsWidth(wHiggs);
-					float noInterfProb_VAJHU = getJHUGenMELAWeight(mela, lepLike2l2l, angularOrdered, selfDHvvcoupl);
+					noInterfProb = getMCFMMELAWeight(mela, lepIdOrdered, angularOrdered);
+					mela.setMelaLeptonInterference(TVar::InterfOn);
 					mela.setMelaHiggsWidth(wHiggs);
-					float withInterfProb_VAJHU = getJHUGenMELAWeight(mela, lepLike4l, angularOrdered, selfDHvvcoupl);
-					MC_weight_ggZZLepInt=2.0*withInterfProb_VAJHU/noInterfProb_VAJHU;
-				}
-				else{
-					MC_weight_ggZZLepInt=1;
+					withInterfProb = getMCFMMELAWeight(mela, lepIdOrdered, angularOrdered);
+					if(noInterfProb>0 && withInterfProb>=0) MC_weight_ggZZLepInt[1] = withInterfProb / noInterfProb;
+
+
+					mela.setProcess(TVar::bkgZZ_SMHiggs, TVar::MCFM, TVar::ZZGG);
+					mela.setMelaHiggsWidth(wHiggs);
+					noInterfProb = getMCFMMELAWeight(mela, lepIdOrdered, angularOrdered);
+					mela.setMelaHiggsWidth(wHiggs);
+					mela.setMelaLeptonInterference(TVar::InterfOn);
+					withInterfProb = getMCFMMELAWeight(mela, lepIdOrdered, angularOrdered);
+					if(noInterfProb>0 && withInterfProb>=0) MC_weight_ggZZLepInt[2] = withInterfProb / noInterfProb;
+
+
+					mela.setProcess(TVar::bkgZZ_SMHiggs, TVar::MCFM, TVar::ZZGG);
+					mela.setMelaHiggsWidth(wHiggs*25.0);
+					noInterfProb = getMCFMMELAWeight(mela, lepIdOrdered, angularOrdered);
+					mela.setMelaHiggsWidth(wHiggs*25.0);
+					mela.setMelaLeptonInterference(TVar::InterfOn);
+					withInterfProb = getMCFMMELAWeight(mela, lepIdOrdered, angularOrdered);
+					if(noInterfProb>0 && withInterfProb>=0) MC_weight_ggZZLepInt[3] = withInterfProb / noInterfProb;
 				};
 			};
-*/
+
 			if(isZZQQB || isZZGG){
 				mela.setProcess(TVar::bkgZZ, TVar::MCFM, TVar::ZZQQB); // Depart from what it was at the beginning of the loop.
-				float prob_ZZQQB = getMCFMMELAWeight(mela, lepIdOrdered, angularOrdered);
+				double prob_ZZQQB = getMCFMMELAWeight(mela, lepIdOrdered, angularOrdered);
 				mela.setProcess(TVar::bkgZZ, TVar::MCFM, TVar::ZZGG);
-				float prob_ZZGG = getMCFMMELAWeight(mela, lepIdOrdered, angularOrdered);
+// Lepton interference in ggZZ bkg, disabled until further investigation on mass reweighting
+//				if(isZZQQB || (!isHZZ4l_NoLepInt && isZZGG) ) mela.setMelaLeptonInterference(TVar::InterfOn);
+				double prob_ZZGG = getMCFMMELAWeight(mela, lepIdOrdered, angularOrdered);
 				if(isZZQQB && prob_ZZQQB!=0){
 					sample_probPdf_VAMCFM = prob_ZZQQB;
 					weight_probPdf_VAMCFM = prob_ZZGG;
@@ -1061,8 +1095,24 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 					sample_probPdf_VAMCFM = prob_ZZGG;
 				};
 				MC_weight_QQBGG_VAMCFM = weight_probPdf_VAMCFM/sample_probPdf_VAMCFM;
-				mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG); // Revert back to what it was at the beginning of the loop.
+
+				if(isZZQQB){
+					for(int me=0;me<size_ZZQQBSTU;me++) MC_weight_ZZQQBSTU[me]=0;
+
+					mela.setProcess(TVar::bkgZZ, TVar::MCFM, TVar::ZZQQB_STU); // Depart from what it was at the beginning of the loop.
+					double bkgZZ_STU = getMCFMMELAWeight(mela, lepIdOrdered, angularOrdered);
+					mela.setProcess(TVar::bkgZZ, TVar::MCFM, TVar::ZZQQB_TU);
+					double bkgZZ_TU = getMCFMMELAWeight(mela, lepIdOrdered, angularOrdered);
+					mela.setProcess(TVar::bkgZZ, TVar::MCFM, TVar::ZZQQB_S);
+					double bkgZZ_S = getMCFMMELAWeight(mela, lepIdOrdered, angularOrdered);
+
+					if (bkgZZ_STU>0){
+						MC_weight_ZZQQBSTU[0] = bkgZZ_S / bkgZZ_STU;
+						MC_weight_ZZQQBSTU[1] = bkgZZ_TU / bkgZZ_STU;
+					};
+				};
 			};
+			mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG); // Revert back to what it was at the beginning of the loop.
 		}
 		else{
 			for(int hypo=0;hypo<=kNumSamples;hypo++){
@@ -1355,6 +1405,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 	int lepIdOrdered[4]={ myLep1ID,myLep2ID,myLep3ID,myLep4ID };
 	float angularOrdered[8]={myZZMass,myZ1Mass,myZ2Mass,mycosthetastar,myhelcosthetaZ1,myhelcosthetaZ2,myhelphi,myphistarZ1};
 
+// The following is an example code if something needs to be re-calculated. The particular example no longer happens.
 	  if(fChain->GetBranchStatus("pzzzg_VAJHU")){
 		  mypzzzg_VAJHU = pzzzg_VAJHU->at(nH);
 		  mypzzgg_VAJHU = pzzgg_VAJHU->at(nH);
@@ -2357,4 +2408,96 @@ Float_t HZZ4l::getZXfake_weight(const int year, const Int_t CandIndex)
   } // for loop on Z2 legs
 
   return zx_weight;
+}
+
+
+void HZZ4l::identifySample(std::string outputfilename){
+	char* myPrimarySample_SpinZero[kNumFiles]={
+		"jhuGenV3H126",
+		"0PHH126",
+		"0MH126",
+		"0Mf05ph0H126",
+		"0Mf05ph90H126",
+		"0Mf05ph180H126",
+		"0Mf05ph270H126",
+		"0Mf01ph0H126", 
+		"0Mf01ph90H126",
+		"0Mf01ph180H126", 
+		"0Mf01ph270H126",
+
+		"0PMH125.6",
+		"0PHH125.6",
+		"0MH125.6",
+		"0L1H125.6",
+
+		"0PHf05ph0H125.6",
+		"0Mf05ph0H125.6",
+		"0PHf05ph0Mf05ph0H125.6",
+		"0L1f05ph180H125.6",
+
+		"0PHf033ph0Mf033ph0H125.6",
+		"0PHf01ph0H125.6",
+		"0Mf01ph0H125.6",
+		"0PHf01ph0Mf01ph0H125.6",
+
+		"0L1f05ph0H125.6",
+		"0L1f01ph0H125.6",
+
+		"0PHf05ph90H125.6",
+		"0Mf05ph90H125.6",
+		"0PHf05ph0Mf05ph90H125.6",
+
+		"0PHf033ph0Mf033ph90H125.6",
+		"0PHf01ph90H125.6",
+		"0Mf01ph90H125.6",
+		"0PHf01ph0Mf01ph90H125.6",
+
+		"0PHf05ph180H125.6",
+		"0Mf05ph180H125.6",
+		"0PHf05ph180Mf05ph0H125.6"
+	};
+
+  bool HZZ4l_flag=false;
+  bool HZZ4l_NoLepInt=false; // Expanded to include all gg->*->ZZ lepton interf.
+  int HZZ4l_code=0;
+  float HZZ4L_HMass=125.6; // Default value to initialize MELA
+  for(int f=0;f<kNumFiles;f++){
+	  if( outputfilename.find( myPrimarySample_SpinZero[f] ) != std::string::npos){
+		  HZZ4l_code=f;
+		  HZZ4l_flag=true;
+		  if(f<11) HZZ4L_HMass=126;
+	  };
+  };
+  if(HZZ4l_flag) cout << "HZZ4l spin code is " << HZZ4l_code << endl;
+  setHZZ4l(HZZ4l_flag,HZZ4l_code,HZZ4L_HMass);
+
+  if(outputfilename.find( "MCFM67" ) != std::string::npos || outputfilename.find( "ggZZ" ) != std::string::npos || outputfilename.find( "ggTo" ) != std::string::npos) HZZ4l_NoLepInt=true;
+  if(HZZ4l_NoLepInt) cout << "Sample with need for gg(H)ZZ lepton interference is found" << endl;
+  setHZZ4l_NoLepInt(HZZ4l_NoLepInt);
+
+  bool qqZZ_flag=false;
+  bool ggZZ_flag=false;
+  if( 
+	  (
+		  outputfilename.find( "ggZZ4l" ) != std::string::npos 
+		  || outputfilename.find( "ggZZ2l2l" ) != std::string::npos
+		  || outputfilename.find( "ggTo4l_Continuum" ) != std::string::npos
+		  || outputfilename.find( "ggTo2l2l_Continuum" ) != std::string::npos
+		  || outputfilename.find( "ggTo4e_Contin" ) != std::string::npos
+		  || outputfilename.find( "ggTo4mu_Contin" ) != std::string::npos
+		  || outputfilename.find( "ggTo2e2mu_Contin" ) != std::string::npos
+	  ) && !(
+		  outputfilename.find( "ggTo4l_H125.6" ) != std::string::npos 
+		  || outputfilename.find( "ggTo2l2l_H125.6" ) != std::string::npos
+		  || outputfilename.find( "ggTo4l_ContinuumInterfH125.6" ) != std::string::npos
+		  || outputfilename.find( "ggTo2l2l_ContinuumInterfH125.6" ) != std::string::npos
+	  )
+	) ggZZ_flag=true;
+  if( 
+	  (
+		  outputfilename.find( "_ZZTo" ) != std::string::npos 
+		  || outputfilename.find( "_ZZ95-160To" ) != std::string::npos
+	  )
+	) qqZZ_flag=true;
+  setGGQQB(qqZZ_flag,ggZZ_flag);
 }

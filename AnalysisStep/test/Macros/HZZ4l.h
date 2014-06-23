@@ -254,6 +254,7 @@ public:
   HZZ4l(TChain *tree, TString sampleName);
   virtual ~HZZ4l() {};
   void Loop(const Int_t channelType, const TString outputName);
+  void identifySample(std::string outputfilename);
 
   //Methods to set the analyzer
   void set8TeV(bool myis8TeV){is8TeV = myis8TeV;}
