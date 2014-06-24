@@ -397,9 +397,9 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
   SelTree.Branch("ZZPhi",&myZZPhi,"ZZPhi/F");
   SelTree.Branch("ZZFisher",&myZZFisher,"ZZFisher/F");
   if (fChain->GetBranchStatus("JetQG")){
-	  SelTree.Branch("JetQG", &myJetQG, "JetQG/F");
-	  SelTree.Branch("JetQGL", &myJetQG, "JetQGL/F");
-	  SelTree.Branch("JetQGsmear", &myJetQG, "JetQGsmear/F");
+	  SelTree.Branch("JetQG", &myJetQG);
+	  SelTree.Branch("JetQGL", &myJetQGL);
+	  SelTree.Branch("JetQGsmear", &myJetQGsmear);
 	  cout << "Set JetQG branches" << endl;
   };
   SelTree.Branch("p0plus_VAJHU",&myp0plus_VAJHU,"p0plus_VAJHU/F");
@@ -1289,12 +1289,16 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
       myZZPhi = ZZPhi->at(nH);
       //      myZZRapidity = momH.Rapidity();
       myZZFisher = ZZFisher->at(nH);
-//	  if (fChain->GetBranchStatus("JetQG")){
-//		  cout << "JetQGs are taken" << endl;
-//		  myJetQG = JetQG->at(nH);
-//		  myJetQGL = JetQGL->at(nH);
-//		  myJetQGsmear = JetQGsmear->at(nH);
-//	  };
+	  if (fChain->GetBranchStatus("JetQG")){
+			myJetQG.clear();
+			myJetQGL.clear();
+			myJetQGsmear.clear();
+			for(int i=0;i<JetQGsmear->size();i++){
+				myJetQGsmear.push_back(JetQGsmear->at(i));
+				myJetQGL.push_back(JetQGL->at(i));
+				myJetQG.push_back(JetQG->at(i));
+			}
+	  };
 
 	  myp0plus_VAJHU = p0plus_VAJHU->at(nH);
       myp0hplus_VAJHU = p0hplus_VAJHU->at(nH);
