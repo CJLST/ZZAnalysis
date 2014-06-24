@@ -265,9 +265,11 @@ all            jhuGenV3Grav2PHH126      1   0.0025799200  1
 # powheg15-jhuGenV3 and v4 spin/CP-MH125.6, x-section for ggH, BR(H->4l,l=e,mu) #
 #################################################################################
 
-all powheg15jhuGenV3-0PMH125.6 1 0.0025198800  1
-all powheg15jhuGenV3-0MH125.6  1 0.0025198800  1
-all powheg15jhuGenV3-0PHH125.6 1 0.0025198800  1
+all powheg15jhuGenV3-0PMH125.6           1 0.0025198800  1
+all powheg15jhuGenV4-0PMfZGfGGfH125.6    1 0.0025198800  1
+all powheg15jhuGenV4-0PMf05GGf05H125.6   1 0.0025198800  1
+all powheg15jhuGenV3-0MH125.6            1 0.0025198800  1
+all powheg15jhuGenV3-0PHH125.6           1 0.0025198800  1
 
 all powheg15jhuGenV3-0L1H125.6         1 0.0025198800  1
 all powheg15jhuGenV3-0L1f01ph0H125.6   1 0.0025198800  1
