@@ -54,7 +54,9 @@ ZZ4lAnalysis_powheg15jhuGenV3-0Mf05ph90H126
 
 # powheg15-jhuGenV3-spin/CP-MH125.6
 ZZ4lAnalysis_powheg15jhuGenV3-0PMH125.6
+ZZ4lAnalysis_powheg15jhuGenV4-0PMf05GGf05H125.6
 ZZ4lAnalysis_powheg15jhuGenV3-0MH125.6
+ZZ4lAnalysis_powheg15jhuGenV4-0MToGGH125.6
 ZZ4lAnalysis_powheg15jhuGenV3-0PHH125.6
 ZZ4lAnalysis_powheg15jhuGenV4-0L1H125.6
 ZZ4lAnalysis_powheg15jhuGenV4-0L1f01ph0H125.6
@@ -112,17 +114,20 @@ ZZ4lAnalysis_ggTo2e2mu_BSMHContinInterf-MCFM67_H125.6
 ZZ4lAnalysis_ggTo2e2mu_Contin-MCFM67
 
 # Phantom
-ZZTo4eJJ_BSM10HContinInterf_H125.6
-ZZTo4eJJ_SMHContinInterf_H125.6
-ZZTo4eJJ_Contin
+ZZ4lAnalysis_ZZTo4eJJ_BSM25HContinInterf_H125.6
+ZZ4lAnalysis_ZZTo4eJJ_BSM10HContinInterf_H125.6
+ZZ4lAnalysis_ZZTo4eJJ_SMHContinInterf_H125.6
+ZZ4lAnalysis_ZZTo4eJJ_Contin
 
-ZZTo2e2muJJ_BSM25HContinInterf_H125.6
-ZZTo2e2muJJ_BSM10HContinInterf_H125.6
-ZZTo2e2muJJ_SMHContinInterf_H125.6
+ZZ4lAnalysis_ZZTo2e2muJJ_BSM25HContinInterf_H125.6
+ZZ4lAnalysis_ZZTo2e2muJJ_BSM10HContinInterf_H125.6
+ZZ4lAnalysis_ZZTo2e2muJJ_SMHContinInterf_H125.6
+ZZ4lAnalysis_ZZTo2e2muJJ_Contin
 
-ZZTo4muJJ_BSM10HContinInterf_H125.6
-ZZTo4muJJ_SMHContinInterf_H125.6
-ZZTo4muJJ_Contin
+ZZ4lAnalysis_ZZTo4muJJ_BSM25HContinInterf_H125.6
+ZZ4lAnalysis_ZZTo4muJJ_BSM10HContinInterf_H125.6
+ZZ4lAnalysis_ZZTo4muJJ_SMHContinInterf_H125.6
+ZZ4lAnalysis_ZZTo4muJJ_Contin
 
 # VBFHiggs
 ZZ4lAnalysis_VBF0M_H125.6
@@ -280,7 +285,9 @@ ZZ4lAnalysis_minloH350
 ZZ4lAnalysis_minloH400
 ZZ4lAnalysis_minloH450
 ZZ4lAnalysis_minloH500
+ZZ4lAnalysis_minloH550
 ZZ4lAnalysis_minloH600
+ZZ4lAnalysis_minloH700	
 ZZ4lAnalysis_minloH750
 ZZ4lAnalysis_minloH800
 ZZ4lAnalysis_minloH850
