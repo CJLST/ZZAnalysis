@@ -54,6 +54,8 @@ ZZ4lAnalysis_powheg15jhuGenV3-0Mf05ph270H126
 
 # powheg15-jhuGenV3-spin/CP-MH125.6
 ZZ4lAnalysis_powheg15jhuGenV3-0PMH125.6
+ZZ4lAnalysis_powheg15jhuGenV4-0PMfZGfGGfH125.6
+ZZ4lAnalysis_powheg15jhuGenV4-0PMf05GGf05H125.6
 ZZ4lAnalysis_powheg15jhuGenV3-0MH125.6
 ZZ4lAnalysis_powheg15jhuGenV3-0PHH125.6
 ZZ4lAnalysis_powheg15jhuGenV4-0L1H125.6
@@ -119,7 +121,7 @@ ZZ4lAnalysis_ZZTo4muJJ_BSM10HContinInterf_H125.6
 ZZ4lAnalysis_ZZTo2e2muJJ_BSM10HContinInterf_H125.6
 ZZ4lAnalysis_ZZTo4eJJ_BSM10HContinInterf_H125.6
 ZZ4lAnalysis_ZZTo2e2muJJ_SMHContinInterf_H125.6
-#ZZ4lAnalysis_ZZTo4muJJ_SMHContinInterf_H125.6
+ZZ4lAnalysis_ZZTo4muJJ_SMHContinInterf_H125.6
 ZZ4lAnalysis_ZZTo4eJJ_SMHContinInterf_H125.6
 ZZ4lAnalysis_ZZTo2e2muJJ_Contin
 ZZ4lAnalysis_ZZTo4muJJ_Contin

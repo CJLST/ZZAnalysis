@@ -219,7 +219,9 @@ all            jhuGenV3Grav2PBH126               1   0.0020250400  1
 ##########################################################################
 
 all powheg15jhuGenV3-0PMH125.6                   1 0.0019786800 1
+all powheg15jhuGenV4-0PMf05GGf05H125.6           1 0.0019786800 1
 all powheg15jhuGenV3-0MH125.6                    1 0.0019786800 1
+all powheg15jhuGenV4-0MToGGH125.6                1 0.0019786800 1	
 all powheg15jhuGenV3-0PHH125.6                   1 0.0019786800 1
 
 all powheg15jhuGenV4-0L1H125.6                   1 0.0019786800 1
