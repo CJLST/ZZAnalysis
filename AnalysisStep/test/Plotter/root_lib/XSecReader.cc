@@ -44,6 +44,14 @@ XSecReader::XSecReader(const TString& xsecFileName, const TString& lumiFileName)
     double nEvents;
     double xsec, br;
     linestr >> finalState >> sampleName >> nEvents >> xsec >> br;
+
+    if ( (linestr.rdstate() & std::ifstream::failbit) !=0 ) {
+      cout << "*** ERROR reading " << xsecFileName << endl;
+      cout << " offending input line " << iline << " : ->" << line << "<-" << endl;
+    }
+    
+
+
     double weight = xsec * br / nEvents;
     if (dbg) {
       cout << "sample: " << sampleName << " final state: " << finalState << " #ev: " << nEvents
@@ -67,7 +75,7 @@ XSecReader::XSecReader(const TString& xsecFileName, const TString& lumiFileName)
     }
     if (!set) {
       cerr << "[XSecReader]*** Error: final state in the map is invalid: \"" << finalState << "\" for sample " << sampleName << " in file " << xsecFileName << endl;
-      cout << "input line " << iline << " : ->" << line << "<-" << endl;
+      cout << " offending input line " << iline << " : ->" << line << "<-" << endl;
     }
   }
   xsecFile.close();

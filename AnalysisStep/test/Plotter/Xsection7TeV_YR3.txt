@@ -291,18 +291,18 @@ all ggTo2e2mu_Contin-MCFM67                  1 0.0006885060 1
 # Phantom samples                                                        #
 ##########################################################################
 
-all ZZTo4muJJ_BSM25HContinInterf_H125.6     2.505576749660674E-004          1
-all ZZTo2e2muJJ_BSM25HContinInterf_H125.6   5.417040330546889E-004          1
-all ZZTo4eJJ_BSM25HContinInterf_H125.6      2.502592444436491E-004          1
-all ZZTo4muJJ_BSM10HContinInterf_H125.6     2.187258636589030E-004          1
-all ZZTo2e2muJJ_BSM10HContinInterf_H125.6   4.794819871366363E-004          1
-all ZZTo4eJJ_BSM10HContinInterf_H125.6      2.178041943144518E-004          1
-all ZZTo2e2muJJ_SMHContinInterf_H125.6      4.512172284721055E-004          1
-all ZZTo4muJJ_SMHContinInterf_H125.6        2.053859553143833E-004          1
-all ZZTo4eJJ_SMHContinInterf_H125.6         2.050597663931831E-004          1
-all ZZTo2e2muJJ_Contin                      3.718595894117134E-004          1
-all ZZTo4muJJ_Contin                        1.611617374456183E-004          1
-all ZZTo4eJJ_Contin                         1.610671663387286E-004          1
+all ZZTo4muJJ_BSM25HContinInterf_H125.6     1  2.505576749660674E-004          1
+all ZZTo2e2muJJ_BSM25HContinInterf_H125.6   1  5.417040330546889E-004          1
+all ZZTo4eJJ_BSM25HContinInterf_H125.6      1  2.502592444436491E-004          1
+all ZZTo4muJJ_BSM10HContinInterf_H125.6     1  2.187258636589030E-004          1
+all ZZTo2e2muJJ_BSM10HContinInterf_H125.6   1  4.794819871366363E-004          1
+all ZZTo4eJJ_BSM10HContinInterf_H125.6      1  2.178041943144518E-004          1
+all ZZTo2e2muJJ_SMHContinInterf_H125.6      1  4.512172284721055E-004          1
+all ZZTo4muJJ_SMHContinInterf_H125.6        1  2.053859553143833E-004          1
+all ZZTo4eJJ_SMHContinInterf_H125.6         1  2.050597663931831E-004          1
+all ZZTo2e2muJJ_Contin                      1  3.718595894117134E-004          1
+all ZZTo4muJJ_Contin                        1  1.611617374456183E-004          1
+all ZZTo4eJJ_Contin                         1  1.610671663387286E-004          1
 
 ##########################################################################
 # VBFHiggs, BR(H->4l,l=e,mu)                                             #
@@ -333,26 +333,26 @@ all ZHiggs0Mf05ph0_H125.6                    1 0.0000435468 1
 # BRs from HXSWG for H->4l, l=e,mu,tau   #
 ##########################################
 
-all   minloH125   13.8546186529599      0.000276000
-all   minloH126   13.5962530483022      0.000302000
-all   minloH190   4.95817506806728      0.002120000
-all   minloH200   4.33774188516096      0.002590000
-all   minloH250   2.36768364713443      0.003010000
-all   minloH300   1.40216836448017      0.003110000
-all   minloH350   0.878950804796039     0.003110000
-all   minloH400   0.574480660999904     0.002730000
-all   minloH450   0.388285772769897     0.002633125
-all   minloH500   0.270191296820351     0.002650000
-all   minloH550   0.193444397016242     0.002699375
-all   minloH600   0.141871434102974     0.002770000
-all   minloH650   0.106319136619157     0.002835625
-all   minloH700   0.08130659441124123   0.002900000
-all   minloH750   0.06326980473043151   0.002955000
-all   minloH800   0.04984935440139861   0.003010000
-all   minloH850   0.04066925181624930   0.003060000
-all   minloH900   0.03339904061422248   0.003100000
-all   minloH950   0.02801420033319375   0.003145000
-all   minloH1000  0.02374104171034995   0.003180000
+all   minloH125   1 13.8546186529599      0.000276000
+all   minloH126   1 13.5962530483022      0.000302000
+all   minloH190   1 4.95817506806728      0.002120000
+all   minloH200   1 4.33774188516096      0.002590000
+all   minloH250   1 2.36768364713443      0.003010000
+all   minloH300   1 1.40216836448017      0.003110000
+all   minloH350   1 0.878950804796039     0.003110000
+all   minloH400   1 0.574480660999904     0.002730000
+all   minloH450   1 0.388285772769897     0.002633125
+all   minloH500   1 0.270191296820351     0.002650000
+all   minloH550   1 0.193444397016242     0.002699375
+all   minloH600   1 0.141871434102974     0.002770000
+all   minloH650   1 0.106319136619157     0.002835625
+all   minloH700   1 0.08130659441124123   0.002900000
+all   minloH750   1 0.06326980473043151   0.002955000
+all   minloH800   1 0.04984935440139861   0.003010000
+all   minloH850   1 0.04066925181624930   0.003060000
+all   minloH900   1 0.03339904061422248   0.003100000
+all   minloH950   1 0.02801420033319375   0.003145000
+all   minloH1000  1 0.02374104171034995   0.003180000
 
 
 # Backgrounds

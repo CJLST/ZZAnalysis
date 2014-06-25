@@ -348,18 +348,18 @@ all ggTo2e2mu_Contin-MCFM67                  1 0.000918826 1
 # Phantom samples                                                        #
 ##########################################################################
 
-all ZZTo4muJJ_BSM25HContinInterf_H125.6     3.117289755556746E-004          1
-all ZZTo2e2muJJ_BSM25HContinInterf_H125.6   6.707175001136875E-004          1
-all ZZTo4eJJ_BSM25HContinInterf_H125.6      3.117402751925978E-004          1
-all ZZTo4muJJ_BSM10HContinInterf_H125.6     2.678337815958082E-004          1
-all ZZTo2e2muJJ_BSM10HContinInterf_H125.6   5.814292186114383E-004          1
-all ZZTo4eJJ_BSM10HContinInterf_H125.6      2.680082365969152E-004          1
-all ZZTo2e2muJJ_SMHContinInterf_H125.6      5.434945696873235E-004          1
-all ZZTo4muJJ_SMHContinInterf_H125.6        2.487975936891337E-004          1
-all ZZTo4eJJ_SMHContinInterf_H125.6         2.484688144236787E-004          1
-all ZZTo2e2muJJ_Contin                      4.447269876857436E-004          1
-all ZZTo4muJJ_Contin                        1.951954743601816E-004          1
-all ZZTo4eJJ_Contin                         1.952187837277965E-004          1
+all ZZTo4muJJ_BSM25HContinInterf_H125.6      1  3.117289755556746E-004          1
+all ZZTo2e2muJJ_BSM25HContinInterf_H125.6    1  6.707175001136875E-004          1
+all ZZTo4eJJ_BSM25HContinInterf_H125.6       1  3.117402751925978E-004          1
+all ZZTo4muJJ_BSM10HContinInterf_H125.6      1  2.678337815958082E-004          1
+all ZZTo2e2muJJ_BSM10HContinInterf_H125.6    1  5.814292186114383E-004          1
+all ZZTo4eJJ_BSM10HContinInterf_H125.6       1  2.680082365969152E-004          1
+all ZZTo2e2muJJ_SMHContinInterf_H125.6       1  5.434945696873235E-004          1
+all ZZTo4muJJ_SMHContinInterf_H125.6         1  2.487975936891337E-004          1
+all ZZTo4eJJ_SMHContinInterf_H125.6          1  2.484688144236787E-004          1
+all ZZTo2e2muJJ_Contin                       1  4.447269876857436E-004          1
+all ZZTo4muJJ_Contin                         1  1.951954743601816E-004          1
+all ZZTo4eJJ_Contin                          1  1.952187837277965E-004          1
 
 
 ##########################################################################
