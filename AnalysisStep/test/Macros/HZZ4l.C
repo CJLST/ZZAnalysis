@@ -106,10 +106,13 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 
   Mela mela((is8TeV)?7:8,HZZ4L_HMassPole);
   mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
-  int MassIndex=1;
+  int MassIndex=1; // Target mass index for reweighting
   if(HZZ4L_HMassPole==126) MassIndex=0;
   if(isZZGG) cout << "Seen gg->ZZ bkg!" << endl;
   if(isZZQQB) cout << "Seen qq->ZZ bkg!" << endl;
+  if(HZZ4lSample_bkgInterfWidth<0) cout << "Sample is either JHUGen signal-only or a background." << endl;
+  if(HZZ4lSample_bkgInterfWidth==0) cout << "Non-JHUGen signal-only sample is seen!" << endl;
+  if(HZZ4lSample_bkgInterfWidth>0) cout << "Non-JHUGen BSI sample width_scale=" << HZZ4lSample_bkgInterfWidth << " is seen!" << endl;
 
   // Normalization variables
   Float_t MC_weight_initial        = 1.;
@@ -548,6 +551,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 	float MC_ME_as2mu2e_spin0[kNumSamples]={0};
 	float MC_weight_QQBGG_VAMCFM;
 	int numSamples = kNumSamples;
+	if(HZZ4lSample_bkgInterfWidth>=0) numSamples = kfZG_1_fGG_0; // Disable recording of ZG and GG MEs in MCFM and gg2VV; MCFM 6.8 does not (yet) support these.
 	for(int s=0;s<kNumSamples;s++){
 		MC_weight_samples_VAJHU[s]=1;
 	};
@@ -556,19 +560,22 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 	float weight_probPdf = 1.0;
 	float weight_probPdf_VAMCFM = 1.0;
 	
-	const int size_ggZZLepInt=4;
-	float MC_weight_ggZZLepInt[size_ggZZLepInt] = { 1, 1, 1, 1 };
-	int kggZZLepInt=size_ggZZLepInt;
+	float MC_weight_LepInt;
 
 	const int size_ZZQQBSTU=2;
 	float MC_weight_ZZQQBSTU[size_ZZQQBSTU] = { 0 };
 	int kZZQQBSTU=size_ZZQQBSTU;
 
-	if (isHZZ4l){
+	if (isHZZ4l && HZZ4lSample_bkgInterfWidth<0){
 		SelTree.Branch("kNumSamples", &numSamples);
 		SelTree.Branch("MC_weight_spin0", MC_weight_samples_VAJHU, "MC_weight_spin0[kNumSamples]/F");
 		SelTree.Branch("sampleprob_VAJHU", &sample_probPdf_VAJHU);
-	};
+	}
+	else if (isHZZ4l){ // Disable MCFM signal hypothesis reweighting for properties paper, ME not quite ready
+//		SelTree.Branch("kNumSamples", &numSamples);
+//		SelTree.Branch("MC_weight_spin0", MC_weight_samples_VAJHU, "MC_weight_spin0[kNumSamples]/F");
+//		SelTree.Branch("sampleprob_VAMCFM", &sample_probPdf_VAJHU);
+	}
 	if(isZZQQB || isZZGG){
 		SelTree.Branch("MC_weight_QQBGG_VAMCFM",&MC_weight_QQBGG_VAMCFM);
 		SelTree.Branch("sampleprob_VAMCFM",&sample_probPdf_VAMCFM);
@@ -576,11 +583,8 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 			SelTree.Branch("kZZQQBSTU",&kZZQQBSTU);
 			SelTree.Branch("MC_weight_ZZQQBSTU",MC_weight_ZZQQBSTU,"MC_weight_ZZQQBSTU[kZZQQBSTU]/F");
 		};
-	};
-	if(isHZZ4l_NoLepInt){
-		SelTree.Branch("kggZZLepInt",&kggZZLepInt);
-		SelTree.Branch("MC_weight_ggZZLepInt",MC_weight_ggZZLepInt,"MC_weight_ggZZLepInt[kggZZLepInt]/F");
-	};
+	}
+	if(needsLepInt) SelTree.Branch("MC_weight_LepInt",&MC_weight_LepInt);
 
   if(saveJets){
     SelTree.Branch("DiJetMass",&myDiJetMass,"DiJetMass/F");
@@ -613,8 +617,9 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
  	SelTree.Branch("Lep4Eta",&myLep4Eta,"Lep4Eta/F");
  	SelTree.Branch("Lep4ID",&myLep4ID,"Lep4ID/I");
 
-	double selfDHvvcoupl[30][2];
-	for(int gx=0;gx<30;gx++){
+	const int size_zzcoupl=31;
+	double selfDHvvcoupl[size_zzcoupl][2];
+	for(int gx=0;gx<size_zzcoupl;gx++){
 		selfDHvvcoupl[gx][0]=0;
 		selfDHvvcoupl[gx][1]=0;
 	};
@@ -948,7 +953,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 			if(!(GenZ1Mass==GenZ1Mass)) cout << "WARNING! GEN. Z1 MASS IS NAN!" << endl;
 			if(!(GenZ2Mass==GenZ2Mass)) cout << "WARNING! GEN. Z2 MASS IS NAN!" << endl;
 
-			for(int gx=0;gx<30;gx++){
+			for(int gx=0;gx<size_zzcoupl;gx++){
 				selfDHvvcoupl[gx][0]=0;
 				selfDHvvcoupl[gx][1]=0;
 			};
@@ -962,10 +967,18 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 			selfDHvvcoupl[7][0] = gi_phi2_phi4_files[HZZ4lSample][10];
 			selfDHvvcoupl[6][0] = gi_phi2_phi4_files[HZZ4lSample][11];
 			selfDHvvcoupl[9][0] = gi_phi2_phi4_files[HZZ4lSample][12];
+			selfDHvvcoupl[30][0] = gi_phi2_phi4_files[HZZ4lSample][13];
 
 			if(isHZZ4l && genFinalState<=4){
-				mela.setMelaHiggsWidth(gi_phi2_phi4_files[HZZ4lSample][7]); // MELA automatically resets width to default after calculation as part of protection for discriminants
-				sample_probPdf_VAJHU = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
+// Determine the width of the sample
+				if(HZZ4lSample_bkgInterfWidth==0) mela.setProcess(TVar::HSMHiggs, TVar::MCFM, TVar::ZZGG);
+				if(HZZ4lSample_bkgInterfWidth>0) mela.setProcess(TVar::bkgZZ_SMHiggs, TVar::MCFM, TVar::ZZGG);
+				double WidthToSet=gi_phi2_phi4_files[HZZ4lSample][7];
+				if(HZZ4lSample_bkgInterfWidth>0) WidthToSet *= HZZ4lSample_bkgInterfWidth;
+				mela.setMelaHiggsWidth( WidthToSet ); // MELA automatically resets width to default after calculation as part of protection for discriminants
+
+//				sample_probPdf_VAJHU = getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
+				if(HZZ4lSample_bkgInterfWidth<0) sample_probPdf_VAJHU = getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl); // Uncomment previous line to turn on MCFM sample reweighting
 				if(sample_probPdf_VAJHU==0) sample_probPdf_VAJHU=1.0;
 			}
 			else{
@@ -973,7 +986,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 			};
 
 			for(int hypo=0;hypo<kNumSamples;hypo++){
-				for(int gx=0;gx<30;gx++){
+				for(int gx=0;gx<size_zzcoupl;gx++){
 					selfDHvvcoupl[gx][0]=0;
 					selfDHvvcoupl[gx][1]=0;
 				};
@@ -987,31 +1000,24 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 				selfDHvvcoupl[7][0] = gi_phi2_phi4[MassIndex][hypo][10];
 				selfDHvvcoupl[6][0] = gi_phi2_phi4[MassIndex][hypo][11];
 				selfDHvvcoupl[9][0] = gi_phi2_phi4[MassIndex][hypo][12];
+				selfDHvvcoupl[30][0] = gi_phi2_phi4[MassIndex][hypo][13];
 
 				weight_probPdf = 1.0;
 				if( !(isHZZ4l && genFinalState<=4 ) ) weight_probPdf = 1.0;
 				else if ((isHZZ4l && genFinalState <= 4)){
-					mela.setMelaHiggsWidth(gi_phi2_phi4[MassIndex][hypo][7]); // MELA automatically resets width to default after calculation as part of protection for discriminants
-					weight_probPdf = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
+// Determine the width of the sample
+					if(HZZ4lSample_bkgInterfWidth==0) mela.setProcess(TVar::HSMHiggs, TVar::MCFM, TVar::ZZGG);
+					if(HZZ4lSample_bkgInterfWidth>0) mela.setProcess(TVar::bkgZZ_SMHiggs, TVar::MCFM, TVar::ZZGG);
+					double WidthToSet=gi_phi2_phi4[MassIndex][hypo][7];
+					if(HZZ4lSample_bkgInterfWidth>0) WidthToSet *= HZZ4lSample_bkgInterfWidth;
+					mela.setMelaHiggsWidth( WidthToSet ); // MELA automatically resets width to default after calculation as part of protection for discriminants
+
+//					weight_probPdf = getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
+					if(HZZ4lSample_bkgInterfWidth<0) weight_probPdf = getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl); // Uncomment previous line to turn on MCFM sample reweighting
 				};
 				MC_weight_samples_VAJHU[hypo] = weight_probPdf/sample_probPdf_VAJHU;
 //				testSpin0MEDivergence(HZZ4lSample, hypo, MC_weight_samples_VAJHU[hypo]);
-/*
-				lepIdOrdered[0]=11;
-				lepIdOrdered[1]=-11;
-				lepIdOrdered[2]=13;
-				lepIdOrdered[3]=-13;
-				if( (isHZZ4l && genFinalState<=4 ) ){
-					mela.setMelaHiggsWidth(gi_phi2_phi4[MassIndex][hypo][7]);
-					weight_probPdf = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
-				};
-				else weight_probPdf = 0;
-				MC_ME_as2mu2e_spin0[hypo] = weight_probPdf;
-				lepIdOrdered[0]=GenLep1Id;
-				lepIdOrdered[1]=GenLep2Id;
-				lepIdOrdered[2]=GenLep3Id;
-				lepIdOrdered[3]=GenLep4Id;
-*/
+
 				if(jentry == 0){
 					cout << selfDHvvcoupl[0][0] << '\t';
 					cout << selfDHvvcoupl[1][0] << '\t';
@@ -1022,9 +1028,10 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 					cout << selfDHvvcoupl[4][0] << '\t';
 					cout << selfDHvvcoupl[7][0] << '\t';
 					cout << selfDHvvcoupl[6][0] << '\t';
-					cout << selfDHvvcoupl[9][0] << endl;
-				};
-			};
+					cout << selfDHvvcoupl[9][0] << '\t';
+					cout << selfDHvvcoupl[30][0] << endl;
+				}
+			}
 			for(int hypo=0;hypo<kNumSamples;hypo++){
 				if(genFinalState<=4){
 					N_generated[genFinalState][hypo+1] += MC_weight_samples_VAJHU[hypo];
@@ -1036,55 +1043,36 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 				if(GenZ1Mass>4 && GenZ2Mass>4) N_generated_4GeVcut[genFinalState][0] += 1.0;
 			};
 
-			if(isHZZ4l_NoLepInt){
-				for(int me=0;me<size_ggZZLepInt;me++) MC_weight_ggZZLepInt[me]=1; // ggZZ, ggHZZ, ggHZZ+ZZ, 25*ggHZZ+ZZ, preparation for possible future use in other BSM cases
+			if(needsLepInt){
+				MC_weight_LepInt=1; // Only gg(*)ZZ for now but qqZZ is also supported via TVar::ZZQQB in the Mela package
 
 				if (genFinalState < 2){
-					float wHiggs = 4.15e-3;
-					if (HZZ4L_HMassPole == 126.0) wHiggs = 0.1;
+					double wHiggs = 4.15e-3;
+					if(HZZ4lSample_bkgInterfWidth>=0 && HZZ4lSample>=0) wHiggs = gi_phi2_phi4_files[HZZ4lSample][7];
+					if(HZZ4lSample_bkgInterfWidth>0) wHiggs *= HZZ4lSample_bkgInterfWidth;
 					double noInterfProb=1,withInterfProb=1;
 
-					mela.setProcess(TVar::bkgZZ, TVar::MCFM, TVar::ZZGG); // Depart from what it was at the beginning of the loop.
+					if(HZZ4lSample_bkgInterfWidth<0) mela.setProcess(TVar::bkgZZ, TVar::MCFM, TVar::ZZGG); // Depart from what it was at the beginning of the loop.
+					else if(HZZ4lSample_bkgInterfWidth==0) mela.setProcess(TVar::HSMHiggs, TVar::MCFM, TVar::ZZGG); // Depart from what it was at the beginning of the loop.
+					else mela.setProcess(TVar::bkgZZ_SMHiggs, TVar::MCFM, TVar::ZZGG); // Depart from what it was at the beginning of the loop.
+					if(HZZ4lSample_bkgInterfWidth>=0) mela.setMelaHiggsWidth(wHiggs);
+
+					mela.setMelaLeptonInterference(TVar::InterfOff); // Turn off per calculation, just like width
 					noInterfProb = getMCFMMELAWeight(mela, lepIdOrdered, angularOrdered);
 					mela.setMelaLeptonInterference(TVar::InterfOn); // Turn on per calculation, just like width
 					withInterfProb = getMCFMMELAWeight(mela, lepIdOrdered, angularOrdered);
-					if(noInterfProb>0 && withInterfProb>=0) MC_weight_ggZZLepInt[0] = withInterfProb / noInterfProb;
+					if(noInterfProb>0 && withInterfProb>=0) MC_weight_LepInt = withInterfProb / noInterfProb;
 
-
-					mela.setProcess(TVar::HSMHiggs, TVar::MCFM, TVar::ZZGG);
-					mela.setMelaHiggsWidth(wHiggs);
-					noInterfProb = getMCFMMELAWeight(mela, lepIdOrdered, angularOrdered);
-					mela.setMelaLeptonInterference(TVar::InterfOn);
-					mela.setMelaHiggsWidth(wHiggs);
-					withInterfProb = getMCFMMELAWeight(mela, lepIdOrdered, angularOrdered);
-					if(noInterfProb>0 && withInterfProb>=0) MC_weight_ggZZLepInt[1] = withInterfProb / noInterfProb;
-
-
-					mela.setProcess(TVar::bkgZZ_SMHiggs, TVar::MCFM, TVar::ZZGG);
-					mela.setMelaHiggsWidth(wHiggs);
-					noInterfProb = getMCFMMELAWeight(mela, lepIdOrdered, angularOrdered);
-					mela.setMelaHiggsWidth(wHiggs);
-					mela.setMelaLeptonInterference(TVar::InterfOn);
-					withInterfProb = getMCFMMELAWeight(mela, lepIdOrdered, angularOrdered);
-					if(noInterfProb>0 && withInterfProb>=0) MC_weight_ggZZLepInt[2] = withInterfProb / noInterfProb;
-
-
-					mela.setProcess(TVar::bkgZZ_SMHiggs, TVar::MCFM, TVar::ZZGG);
-					mela.setMelaHiggsWidth(wHiggs*25.0);
-					noInterfProb = getMCFMMELAWeight(mela, lepIdOrdered, angularOrdered);
-					mela.setMelaHiggsWidth(wHiggs*25.0);
-					mela.setMelaLeptonInterference(TVar::InterfOn);
-					withInterfProb = getMCFMMELAWeight(mela, lepIdOrdered, angularOrdered);
-					if(noInterfProb>0 && withInterfProb>=0) MC_weight_ggZZLepInt[3] = withInterfProb / noInterfProb;
-				};
-			};
+					mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG); // Revert back to what it was at the beginning of HZZ4l::Loop.
+				}
+			}
 
 			if(isZZQQB || isZZGG){
 				mela.setProcess(TVar::bkgZZ, TVar::MCFM, TVar::ZZQQB); // Depart from what it was at the beginning of the loop.
 				double prob_ZZQQB = getMCFMMELAWeight(mela, lepIdOrdered, angularOrdered);
 				mela.setProcess(TVar::bkgZZ, TVar::MCFM, TVar::ZZGG);
-// Lepton interference in ggZZ bkg, disabled until further investigation on mass reweighting
-//				if(isZZQQB || (!isHZZ4l_NoLepInt && isZZGG) ) mela.setMelaLeptonInterference(TVar::InterfOn);
+// Lepton interference in ggZZ bkg is a separate piece, but the line below is disabled for the 2014 spin properties paper processing
+//				if(isZZQQB || isZZGG) mela.setMelaLeptonInterference(TVar::InterfOn);
 				double prob_ZZGG = getMCFMMELAWeight(mela, lepIdOrdered, angularOrdered);
 				if(isZZQQB && prob_ZZQQB!=0){
 					sample_probPdf_VAMCFM = prob_ZZQQB;
@@ -1093,7 +1081,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 				else if(isZZGG && prob_ZZGG!=0){
 					weight_probPdf_VAMCFM = prob_ZZQQB;
 					sample_probPdf_VAMCFM = prob_ZZGG;
-				};
+				}
 				MC_weight_QQBGG_VAMCFM = weight_probPdf_VAMCFM/sample_probPdf_VAMCFM;
 
 				if(isZZQQB){
@@ -1109,19 +1097,19 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 					if (bkgZZ_STU>0){
 						MC_weight_ZZQQBSTU[0] = bkgZZ_S / bkgZZ_STU;
 						MC_weight_ZZQQBSTU[1] = bkgZZ_TU / bkgZZ_STU;
-					};
-				};
-			};
-			mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG); // Revert back to what it was at the beginning of the loop.
+					}
+				}
+			}
+			mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG); // Revert back to what it was at the beginning of HZZ4l::Loop.
 		}
 		else{
 			for(int hypo=0;hypo<=kNumSamples;hypo++){
 				if(genFinalState<=4){
 					N_generated[genFinalState][hypo] += 1.0;
 					if(GenZ1Mass>4 && GenZ2Mass>4) N_generated_4GeVcut[genFinalState][hypo] += 1.0;
-				};
-			};
-		};
+				}
+			}
+		}
     }
 	else{
 		genProcessId=-99999;
@@ -1148,7 +1136,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 		GenLep4Eta=-99999;
 		GenLep4Phi=-99999;
 		GenLep4Id=-99999;
-	};
+	}
     mygenProcessId = genProcessId;
     mygenHEPMCweight = genHEPMCweight;
     mygenhpt = GenHPt;
@@ -1422,7 +1410,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 	  }
 	  else{
 		mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
-		for(int gx=0;gx<30;gx++){
+		for(int gx=0;gx<size_zzcoupl;gx++){
 			selfDHvvcoupl[gx][0]=0;
 			selfDHvvcoupl[gx][1]=0;
 		};
@@ -1432,28 +1420,28 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 		selfDHvvcoupl[7][0] = 0;
 		selfDHvvcoupl[6][0] = 0;
 		selfDHvvcoupl[9][0] = 0;
-		mypzzzg_VAJHU=getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
+		mypzzzg_VAJHU=getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
 		selfDHvvcoupl[0][0] = 1.0;
 		selfDHvvcoupl[3][0] = 0;
 		selfDHvvcoupl[4][0] = 0;
 		selfDHvvcoupl[7][0] = -0.0898;
 		selfDHvvcoupl[6][0] = 0;
 		selfDHvvcoupl[9][0] = 0;
-		mypzzgg_VAJHU=getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
+		mypzzgg_VAJHU=getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
 		selfDHvvcoupl[0][0] = 1.0;
 		selfDHvvcoupl[3][0] = 0;
 		selfDHvvcoupl[4][0] = 0;
 		selfDHvvcoupl[7][0] = 0;
 		selfDHvvcoupl[6][0] = 0.0855;
 		selfDHvvcoupl[9][0] = 0;
-		mypzzzg_PS_VAJHU=getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
+		mypzzzg_PS_VAJHU=getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
 		selfDHvvcoupl[0][0] = 1.0;
 		selfDHvvcoupl[3][0] = 0;
 		selfDHvvcoupl[4][0] = 0;
 		selfDHvvcoupl[7][0] = 0;
 		selfDHvvcoupl[6][0] = 0;
 		selfDHvvcoupl[9][0] = -0.0907;
-		mypzzgg_PS_VAJHU=getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
+		mypzzgg_PS_VAJHU=getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
 
 		selfDHvvcoupl[0][0] = 0;
 		selfDHvvcoupl[3][0] = 0;
@@ -1461,7 +1449,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 		selfDHvvcoupl[7][0] = 0;
 		selfDHvvcoupl[6][0] = 0;
 		selfDHvvcoupl[9][0] = 0;
-		myp0Zgs_VAJHU=getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
+		myp0Zgs_VAJHU=getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
 		mypzzzg_VAJHU -= myp0Zgs_VAJHU;
 		selfDHvvcoupl[0][0] = 0;
 		selfDHvvcoupl[3][0] = 0;
@@ -1469,7 +1457,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 		selfDHvvcoupl[7][0] = -0.0898;
 		selfDHvvcoupl[6][0] = 0;
 		selfDHvvcoupl[9][0] = 0;
-		myp0gsgs_VAJHU=getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
+		myp0gsgs_VAJHU=getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
 		mypzzgg_VAJHU -= myp0gsgs_VAJHU;
 		selfDHvvcoupl[0][0] = 0;
 		selfDHvvcoupl[3][0] = 0;
@@ -1477,7 +1465,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 		selfDHvvcoupl[7][0] = 0;
 		selfDHvvcoupl[6][0] = 0.0855;
 		selfDHvvcoupl[9][0] = 0;
-		myp0Zgs_PS_VAJHU=getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
+		myp0Zgs_PS_VAJHU=getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
 		mypzzzg_PS_VAJHU -= myp0Zgs_PS_VAJHU;
 		selfDHvvcoupl[0][0] = 0;
 		selfDHvvcoupl[3][0] = 0;
@@ -1485,7 +1473,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 		selfDHvvcoupl[7][0] = 0;
 		selfDHvvcoupl[6][0] = 0;
 		selfDHvvcoupl[9][0] = -0.0907;
-		myp0gsgs_PS_VAJHU=getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
+		myp0gsgs_PS_VAJHU=getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
 		mypzzgg_PS_VAJHU -= myp0gsgs_PS_VAJHU;
 
 		float tempME=0;
@@ -1495,7 +1483,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 		selfDHvvcoupl[7][0] = 0;
 		selfDHvvcoupl[6][0] = 0;
 		selfDHvvcoupl[9][0] = 0;
-		tempME = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
+		tempME = getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
 		mypzzzg_VAJHU -= tempME;
 		mypzzgg_VAJHU -= tempME;
 		mypzzzg_PS_VAJHU -= tempME;
@@ -1558,16 +1546,16 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 	  TH2F* hCount_new = new TH2F("hCounters_spin0_RW", "Counters with Spin0 Re-weights", nFinalStates, 0, nFinalStates, numSamples + 1, 0, numSamples + 1);
 	  TH2F* hCount_4GeVcut_new = new TH2F("hCounters_spin0_4GeVcutME_RW", "Counters with Spin0 Re-weights with 4GeV cut", nFinalStates, 0, nFinalStates, numSamples + 1, 0, numSamples + 1);
 	  for (int binx = 0; binx < nFinalStates; binx++){
-		  for (int biny = 0; biny < kNumSamples + 1; biny++){
+		  for (int biny = 0; biny < numSamples + 1; biny++){
 			  hCount_new->SetBinContent(binx + 1, biny + 1, N_generated[binx][biny]);
 			  hCount_4GeVcut_new->SetBinContent(binx + 1, biny + 1, N_generated_4GeVcut[binx][biny]);
-		  };
-	  };
+		  }
+	  }
 	  fOut.WriteTObject(hCount_new);
 	  fOut.WriteTObject(hCount_4GeVcut_new);
 	  delete hCount_new;
 	  delete hCount_4GeVcut_new;
-  };
+  }
 
   SelTree.Write();
   hNvtxNoWeight.Write();
@@ -1605,7 +1593,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 }
 
 
-float HZZ4l::getJHUGenMELAWeight(Mela& myMela, int lepId[4], float angularOrdered[8], double selfDHvvcoupl[30][2]){
+float HZZ4l::getSpinZeroHiggsMELAWeight(Mela& myMela, int lepId[4], float angularOrdered[8], double selfDHvvcoupl[31][2]){
 	float myprob=1.0;
 	int myflavor=-1;
 	if(abs(lepId[0])==abs(lepId[1]) &&
@@ -2461,23 +2449,39 @@ void HZZ4l::identifySample(std::string outputfilename){
 		"0PHf05ph180Mf05ph0H125.6"
 	};
 
+// Determine Higgs sample code. MCFM 6.7 and gg2VV bkg+signal+interference and signal-only are assigned to the same parameters as in JHUGen sample=11 (SM at 125.6 GeV)
   bool HZZ4l_flag=false;
-  bool HZZ4l_NoLepInt=false; // Expanded to include all gg->*->ZZ lepton interf.
+  bool NeedsLepInt=false; // Expanded to include all gg->*->ZZ lepton interf.
   int HZZ4l_code=0;
   float HZZ4L_HMass=125.6; // Default value to initialize MELA
+  double bkgHinterf_WidthFactor=-1; // -1 means JHUGen signal-only or ggZZ bkg, 0 means MCFM or gg2VV signal-only, otherwise serves as width scale in |bkg+signal|**2
   for(int f=0;f<kNumFiles;f++){
 	  if( outputfilename.find( myPrimarySample_SpinZero[f] ) != std::string::npos){
 		  HZZ4l_code=f;
 		  HZZ4l_flag=true;
 		  if(f<11) HZZ4L_HMass=126;
-	  };
-  };
+	  }
+  }
+  if (outputfilename.find("ggTo") != std::string::npos){
+	  if (outputfilename.find("BSMHContinInterf-MCFM67") != std::string::npos){
+		  HZZ4l_flag = true; HZZ4l_code = 11; HZZ4L_HMass = 125.6; bkgHinterf_WidthFactor=25;
+		  cout << "BSI25 Higgs is found." << endl;
+	  }
+	  else if (outputfilename.find("SMHContinInterf-MCFM67") != std::string::npos || outputfilename.find("ContinuumInterfH125.6") != std::string::npos){
+		  HZZ4l_flag = true; HZZ4l_code = 11; HZZ4L_HMass = 125.6; bkgHinterf_WidthFactor=1;
+		  cout << "BSI Higgs is found." << endl;
+	  }
+	  else if (outputfilename.find("SMH-MCFM67") != std::string::npos || outputfilename.find("H125.6") != std::string::npos){
+		  HZZ4l_flag = true; HZZ4l_code = 11; HZZ4L_HMass = 125.6; bkgHinterf_WidthFactor=0;
+		  cout << "Signal-only Higgs is found." << endl;
+	  }
+  }
   if(HZZ4l_flag) cout << "HZZ4l spin code is " << HZZ4l_code << endl;
-  setHZZ4l(HZZ4l_flag,HZZ4l_code,HZZ4L_HMass);
+  setHZZ4l(HZZ4l_flag,HZZ4l_code,HZZ4L_HMass,bkgHinterf_WidthFactor);
 
-  if(outputfilename.find( "MCFM67" ) != std::string::npos || outputfilename.find( "ggZZ" ) != std::string::npos || outputfilename.find( "ggTo" ) != std::string::npos) HZZ4l_NoLepInt=true;
-  if(HZZ4l_NoLepInt) cout << "Sample with need for gg(H)ZZ lepton interference is found" << endl;
-  setHZZ4l_NoLepInt(HZZ4l_NoLepInt);
+  if(outputfilename.find( "MCFM67" ) != std::string::npos || outputfilename.find( "ggZZ" ) != std::string::npos) NeedsLepInt=true;
+  if(NeedsLepInt) cout << "Sample with need for gg(H)ZZ lepton interference is found" << endl;
+  setNeedsLepInt(NeedsLepInt);
 
   bool qqZZ_flag=false;
   bool ggZZ_flag=false;
