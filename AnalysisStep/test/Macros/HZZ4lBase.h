@@ -122,6 +122,9 @@ public :
    std::vector<float>   *p0gsgs_VAJHU;
    std::vector<float>   *p0Zgs_PS_VAJHU;
    std::vector<float>   *p0gsgs_PS_VAJHU;
+   std::vector<float>   *p0Zgs_g1prime2_VAJHU;
+   std::vector<float>   *pzzzgs_g1prime2_VAJHU;
+   std::vector<float>   *pzzzgs_g1prime2_pi2_VAJHU;
    std::vector<float>   *p0plus_m4l;
    std::vector<float>   *bkg_m4l;
    std::vector<float>   *p0plus_m4l_ScaleUp;
@@ -327,6 +330,9 @@ public :
    TBranch        *b_p0gsgs_VAJHU;
    TBranch        *b_p0Zgs_PS_VAJHU;
    TBranch        *b_p0gsgs_PS_VAJHU;
+   TBranch        *b_p0Zgs_g1prime2_VAJHU;
+   TBranch        *b_pzzzgs_g1prime2_VAJHU;
+   TBranch        *b_pzzzgs_g1prime2_pi2_VAJHU;
    TBranch        *b_p0plus_m4l;   //!
    TBranch        *b_bkg_m4l;   //!
    TBranch        *b_p0plus_m4l_ScaleUp;   //!
@@ -583,6 +589,9 @@ void HZZ4lBase::Init(TTree *tree)
    p0gsgs_VAJHU=0;
    p0Zgs_PS_VAJHU=0;
    p0gsgs_PS_VAJHU=0;
+   p0Zgs_g1prime2_VAJHU=0;
+   pzzzgs_g1prime2_VAJHU=0;
+   pzzzgs_g1prime2_pi2_VAJHU=0;
    p0plus_m4l = 0;
    bkg_m4l = 0;
    p0plus_m4l_ScaleUp = 0;
@@ -769,6 +778,13 @@ void HZZ4lBase::Init(TTree *tree)
 	   fChain->SetBranchAddress("p0gsgs_VAJHU", &p0gsgs_VAJHU, &b_p0gsgs_VAJHU);
 	   fChain->SetBranchAddress("p0Zgs_PS_VAJHU", &p0Zgs_PS_VAJHU, &b_p0Zgs_PS_VAJHU);
 	   fChain->SetBranchAddress("p0gsgs_PS_VAJHU", &p0gsgs_PS_VAJHU, &b_p0gsgs_PS_VAJHU);
+   };
+   if (fChain->GetBranchStatus("p0Zgs_g1prime2_VAJHU")){
+	   std::cout << "Found ZG-L1 MEs" << std::endl;
+
+	   fChain->SetBranchAddress("p0Zgs_g1prime2_VAJHU", &p0Zgs_g1prime2_VAJHU, &b_p0Zgs_g1prime2_VAJHU);
+	   fChain->SetBranchAddress("pzzzgs_g1prime2_VAJHU", &pzzzgs_g1prime2_VAJHU, &b_pzzzgs_g1prime2_VAJHU);
+	   fChain->SetBranchAddress("pzzzgs_g1prime2_pi2_VAJHU", &pzzzgs_g1prime2_pi2_VAJHU, &b_pzzzgs_g1prime2_pi2_VAJHU);
    };
    fChain->SetBranchAddress("p0plus_m4l", &p0plus_m4l, &b_p0plus_m4l);
    fChain->SetBranchAddress("bkg_m4l", &bkg_m4l, &b_bkg_m4l);

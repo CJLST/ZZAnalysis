@@ -337,6 +337,9 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
   Float_t myp0gsgs_VAJHU=0.;
   Float_t myp0Zgs_PS_VAJHU=0.;
   Float_t myp0gsgs_PS_VAJHU=0.;
+  Float_t myp0Zgs_g1prime2_VAJHU=0.;
+  Float_t mypzzzgs_g1prime2_VAJHU=0.;
+  Float_t mypzzzgs_g1prime2_pi2_VAJHU=0.;
   Float_t myp0plus_m4l    = 0.;
   Float_t mybkg_m4l       = 0.;
   Float_t mypg1g4_mela = 0.;
@@ -474,6 +477,9 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
   SelTree.Branch("p0gsgs_VAJHU",   &myp0gsgs_VAJHU,   "p0gsgs_VAJHU/F");
   SelTree.Branch("p0Zgs_PS_VAJHU", &myp0Zgs_PS_VAJHU, "p0Zgs_PS_VAJHU/F");
   SelTree.Branch("p0gsgs_PS_VAJHU",&myp0gsgs_PS_VAJHU,"p0gsgs_PS_VAJHU/F");
+  SelTree.Branch("p0Zgs_g1prime2_VAJHU",&myp0Zgs_g1prime2_VAJHU,"p0Zgs_g1prime2_VAJHU/F");
+  SelTree.Branch("pzzzgs_g1prime2_VAJHU",&mypzzzgs_g1prime2_VAJHU,"pzzzgs_g1prime2_VAJHU/F");
+  SelTree.Branch("pzzzgs_g1prime2_pi2_VAJHU",&mypzzzgs_g1prime2_pi2_VAJHU,"pzzzgs_g1prime2_pi2_VAJHU/F");
 
   SelTree.Branch("p0plus_m4l",&myp0plus_m4l,"p0plus_m4l/F");
   SelTree.Branch("bkg_m4l",&mybkg_m4l,"bkg_m4l/F");
@@ -1036,12 +1042,12 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 				if(genFinalState<=4){
 					N_generated[genFinalState][hypo+1] += MC_weight_samples_VAJHU[hypo];
 					if(GenZ1Mass>4 && GenZ2Mass>4) N_generated_4GeVcut[genFinalState][hypo+1] += MC_weight_samples_VAJHU[hypo];
-				};
-			};
+				}
+			}
 			if(genFinalState<=4){
 				N_generated[genFinalState][0] += 1.0;
 				if(GenZ1Mass>4 && GenZ2Mass>4) N_generated_4GeVcut[genFinalState][0] += 1.0;
-			};
+			}
 
 			if(needsLepInt){
 				MC_weight_LepInt=1; // Only gg(*)ZZ for now but qqZZ is also supported via TVar::ZZQQB in the Mela package
@@ -1397,6 +1403,39 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 	int lepIdOrdered[4]={ myLep1ID,myLep2ID,myLep3ID,myLep4ID };
 	float angularOrdered[8]={myZZMass,myZ1Mass,myZ2Mass,mycosthetastar,myhelcosthetaZ1,myhelcosthetaZ2,myhelphi,myphistarZ1};
 
+	  if(fChain->GetBranchStatus("p0Zgs_g1prime2_VAJHU")){
+		  myp0Zgs_g1prime2_VAJHU = p0Zgs_g1prime2_VAJHU->at(nH);
+		  mypzzzgs_g1prime2_VAJHU = pzzzgs_g1prime2_VAJHU->at(nH);
+		  mypzzzgs_g1prime2_pi2_VAJHU = pzzzgs_g1prime2_pi2_VAJHU->at(nH);
+	  }
+	  else{
+		  mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
+
+		  for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
+		  selfDHvvcoupl[30][0]=-7591.914;
+		  myp0Zgs_g1prime2_VAJHU = getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
+
+		  for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
+		  selfDHvvcoupl[0][0]=1;
+		  selfDHvvcoupl[30][0]=-7591.914;
+		  mypzzzgs_g1prime2_VAJHU = getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
+
+		  for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
+		  selfDHvvcoupl[0][0]=1;
+		  selfDHvvcoupl[30][1]=-7591.914;
+		  mypzzzgs_g1prime2_pi2_VAJHU = getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
+
+		  float tempME=0;
+		  for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
+		  selfDHvvcoupl[0][0] = 1.0;
+		  tempME = getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
+
+		  mypzzzgs_g1prime2_VAJHU -= (myp0Zgs_g1prime2_VAJHU + tempME);
+		  mypzzzgs_g1prime2_pi2_VAJHU -= (myp0Zgs_g1prime2_VAJHU + tempME);
+
+		  for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
+	  }
+
 // The following is an example code if something needs to be re-calculated. The particular example no longer happens.
 	  if(fChain->GetBranchStatus("pzzzg_VAJHU")){
 		  mypzzzg_VAJHU = pzzzg_VAJHU->at(nH);
@@ -1410,93 +1449,59 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 	  }
 	  else{
 		mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
-		for(int gx=0;gx<size_zzcoupl;gx++){
-			selfDHvvcoupl[gx][0]=0;
-			selfDHvvcoupl[gx][1]=0;
-		};
+
+		for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
 		selfDHvvcoupl[0][0] = 1.0;
-		selfDHvvcoupl[3][0] = 0;
 		selfDHvvcoupl[4][0] = 0.0688;
-		selfDHvvcoupl[7][0] = 0;
-		selfDHvvcoupl[6][0] = 0;
-		selfDHvvcoupl[9][0] = 0;
 		mypzzzg_VAJHU=getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
+
+		for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
 		selfDHvvcoupl[0][0] = 1.0;
-		selfDHvvcoupl[3][0] = 0;
-		selfDHvvcoupl[4][0] = 0;
 		selfDHvvcoupl[7][0] = -0.0898;
-		selfDHvvcoupl[6][0] = 0;
-		selfDHvvcoupl[9][0] = 0;
 		mypzzgg_VAJHU=getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
+
+		for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
 		selfDHvvcoupl[0][0] = 1.0;
-		selfDHvvcoupl[3][0] = 0;
-		selfDHvvcoupl[4][0] = 0;
-		selfDHvvcoupl[7][0] = 0;
 		selfDHvvcoupl[6][0] = 0.0855;
-		selfDHvvcoupl[9][0] = 0;
 		mypzzzg_PS_VAJHU=getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
+
+		for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
 		selfDHvvcoupl[0][0] = 1.0;
-		selfDHvvcoupl[3][0] = 0;
-		selfDHvvcoupl[4][0] = 0;
-		selfDHvvcoupl[7][0] = 0;
-		selfDHvvcoupl[6][0] = 0;
 		selfDHvvcoupl[9][0] = -0.0907;
 		mypzzgg_PS_VAJHU=getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
 
-		selfDHvvcoupl[0][0] = 0;
-		selfDHvvcoupl[3][0] = 0;
+		for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
 		selfDHvvcoupl[4][0] = 0.0688;
-		selfDHvvcoupl[7][0] = 0;
-		selfDHvvcoupl[6][0] = 0;
-		selfDHvvcoupl[9][0] = 0;
 		myp0Zgs_VAJHU=getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
 		mypzzzg_VAJHU -= myp0Zgs_VAJHU;
-		selfDHvvcoupl[0][0] = 0;
-		selfDHvvcoupl[3][0] = 0;
-		selfDHvvcoupl[4][0] = 0;
+
+		for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
 		selfDHvvcoupl[7][0] = -0.0898;
-		selfDHvvcoupl[6][0] = 0;
-		selfDHvvcoupl[9][0] = 0;
 		myp0gsgs_VAJHU=getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
 		mypzzgg_VAJHU -= myp0gsgs_VAJHU;
-		selfDHvvcoupl[0][0] = 0;
-		selfDHvvcoupl[3][0] = 0;
-		selfDHvvcoupl[4][0] = 0;
-		selfDHvvcoupl[7][0] = 0;
+
+		for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
 		selfDHvvcoupl[6][0] = 0.0855;
-		selfDHvvcoupl[9][0] = 0;
 		myp0Zgs_PS_VAJHU=getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
 		mypzzzg_PS_VAJHU -= myp0Zgs_PS_VAJHU;
-		selfDHvvcoupl[0][0] = 0;
-		selfDHvvcoupl[3][0] = 0;
-		selfDHvvcoupl[4][0] = 0;
-		selfDHvvcoupl[7][0] = 0;
-		selfDHvvcoupl[6][0] = 0;
+
+		for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
 		selfDHvvcoupl[9][0] = -0.0907;
 		myp0gsgs_PS_VAJHU=getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
 		mypzzgg_PS_VAJHU -= myp0gsgs_PS_VAJHU;
 
 		float tempME=0;
+		for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
 		selfDHvvcoupl[0][0] = 1.0;
-		selfDHvvcoupl[3][0] = 0;
-		selfDHvvcoupl[4][0] = 0;
-		selfDHvvcoupl[7][0] = 0;
-		selfDHvvcoupl[6][0] = 0;
-		selfDHvvcoupl[9][0] = 0;
 		tempME = getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
 		mypzzzg_VAJHU -= tempME;
 		mypzzgg_VAJHU -= tempME;
 		mypzzzg_PS_VAJHU -= tempME;
 		mypzzgg_PS_VAJHU -= tempME;
 
-		selfDHvvcoupl[0][0] = 0;
-		selfDHvvcoupl[3][0] = 0;
-		selfDHvvcoupl[4][0] = 0;
-		selfDHvvcoupl[7][0] = 0;
-		selfDHvvcoupl[6][0] = 0;
-		selfDHvvcoupl[9][0] = 0;
+		for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
 		mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG); // Revert back to what it was at the beginning of the loop.
-	  };
+	  }
 
 	  if(isCR){
 	// for CR, the jet list is empty; we "fake" the NJets30 variable for consistency

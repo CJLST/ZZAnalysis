@@ -80,7 +80,7 @@ enum sample {
 	kfZG_Lambda1_05,
 
 	kNumSamples
-}
+};
 const double gi_phi2_phi4[2][kNumSamples][14]={ // g1-4; phia2,3; MASS, WIDTH; g1pp; gZG, gGG; gZG-PS, gGG-PS, gZG-L1
 	{
 		{	1.0,	0,	0,	0,		0,	0,	126.0,	0.1,	0, 0, 0, 0, 0, 0}, // Pure SM
@@ -204,7 +204,7 @@ const double gi_phi2_phi4[2][kNumSamples][14]={ // g1-4; phia2,3; MASS, WIDTH; g
 		{	0,	0,	0,	0,		0,	0,	125.6,	0.00415,	0, 0, 0, 0, 0, 1.0}, // Pure ZG-L1 44
 		{	1.0,	0,	0,	0,		0,	0,	125.6,	0.00415,	0, 0, 0, 0, 0, -7591.914} // fZG-L1=0.5 45
 	}
-}
+};
 const double gi_phi2_phi4_files[kNumFiles][14]={ // g1-4; phia2,3; MASS, WIDTH; g1pp; gZG, gGG; gZG-PS, gGG-PS, gZG-L1
 // 126 GeV Spin 0											
 	{	1.0,	0,	0,	0,		0,	0,	126.0,	0.1,	0, 0, 0, 0, 0, 0},
@@ -252,7 +252,7 @@ const double gi_phi2_phi4_files[kNumFiles][14]={ // g1-4; phia2,3; MASS, WIDTH; 
 	{	1.0,	1.638,	0,	0,		PI_VAL,	0,	125.6,	0.00415,	0, 0, 0, 0, 0, 0}, // fa2=-0.5
 	{	1.0,	0,	0,	2.521,		0,	PI_VAL,	125.6,	0.00415,	0, 0, 0, 0, 0, 0}, // fa3=-0.5
 	{	0,	0.650,	0,	1.0,		PI_VAL,	0,	125.6,	0.00415,	0, 0, 0, 0, 0, 0} // fa2=-0.5, fa3=0.5
-}
+};
 
 
 //class TH1F;
