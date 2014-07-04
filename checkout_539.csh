@@ -4,11 +4,13 @@
 
 setenv CVSROOT ":ext:${USER}@lxplus5.cern.ch:/afs/cern.ch/user/c/cvscmssw/public/CMSSW"
 
-scram setup /afs/cern.ch/cms/slc5_amd64_gcc462/external/git-toolfile/1.0/etc/scram.d/git.xml
-rehash
+if ( `where git` == "" ) then 
+    scram setup /afs/cern.ch/cms/slc5_amd64_gcc462/external/git-toolfile/1.0/etc/scram.d/git.xml 
+    rehash
+endif
 
 git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
-git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement ; (cd ZZMatrixElement; git checkout -b from-V00-00-26 V00-00-26)
+git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement ; (cd ZZMatrixElement; git checkout -b from-V00-00-27 V00-00-27)
 
 # cvs co -r V02-06-00 HiggsAnalysis/CombinedLimit
 git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit; (cd HiggsAnalysis/CombinedLimit; git pull origin master; git checkout -b from-V02-06-00 HiggsAnalysis-CombinedLimit-V02-06-00)
@@ -39,3 +41,14 @@ cvs co -r V00-02-14 DataFormats/StdDictionaries
 cvs co -r V08-09-56 PhysicsTools/PatAlgos
 cvs co -r V03-09-28 PhysicsTools/PatUtils
 cvs co -r V03-03-12-02 RecoMET/METProducers
+
+
+if ( $SCRAM_ARCH == "slc6_amd64_gcc472" ) then
+cat <<EOF >! tmp.txt
+<Flags CXXFLAGS="-Wno-delete-non-virtual-dtor -Wno-error=unused-but-set-variable -Wno-error=unused-variable"/> 
+EOF
+cat tmp.txt >> CMGTools/RootTools/BuildFile.xml
+cat tmp.txt >> RecoEgamma/EgammaTools/BuildFile.xml
+cat tmp.txt >> ZZAnalysis/AnalysisStep/BuildFile.xml
+
+endif
