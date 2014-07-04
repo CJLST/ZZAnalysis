@@ -30,6 +30,7 @@ INCLUDE_MELADIR       = ../../../../ZZMatrixElement/MELA/src/
 OUTLIB           = ./lib/
 
 $(OUTLIB)HZZ4lBase.o: $(INCLUDEDIR)/HZZ4lBase.C
+	@mkdir -p lib
 	$(CXX) $(CXXFLAGS) -c -o $(OUTLIB)HZZ4lBase.o $<
 
 $(OUTLIB)HZZ4l.o: $(INCLUDEDIR)/HZZ4l.C $(OUTLIB)HZZ4lBase.o $(OUTLIB)XSecReader.o $(OUTLIB)PUReweight.o
@@ -54,5 +55,6 @@ clean:
 	rm -f $(OUTLIB)*.o $(OUTLIBCOMMON)*.o
 	rm -f $(OUTLIB)*.so
 	rm -f run_HZZ4l
+	rm -f run_HZZ4l_CR
 
 all: run_HZZ4l run_HZZ4l_CR
