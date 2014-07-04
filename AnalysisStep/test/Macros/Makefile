@@ -20,7 +20,7 @@ CXXFLAGS      += $(ROOTCFLAGS) -I$(ROOFITSYS)/include/ -I$(CMSSW_BASE)/src
 
 NGLIBS         = $(ROOTGLIBS) 
 # Hack here, because RooFit is removed from ROOT:
-NGLIBS        += -L $(ROOFITSYS)/lib/ -lMinuit -lRooFitCore -lRooFit -lboost_regex
+NGLIBS        += -L $(ROOFITSYS)/lib/ -lMinuit -lRooFitCore -lRooFit #-lboost_regex
 GLIBS          = $(filter-out -lNew, $(NGLIBS))
 
 INCLUDEDIR       = ./
