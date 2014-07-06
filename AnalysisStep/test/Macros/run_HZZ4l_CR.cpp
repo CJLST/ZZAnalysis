@@ -8,14 +8,13 @@
 
 int main (int argc, char ** argv) 
 {
-// Should match ZZAnalysis...root names
-
 	TChain *tree_CRZLLTree = new TChain("CRZLLTree/crTree");
 
   //Get the TTree with the candidates
   std::string samplename(argv[2]);
   std::string inputfilename(argv[3]);
   std::string outputfilename(argv[4]);
+  tree_CRZLLTree->Add(inputfilename.c_str());
 
   HZZ4l analyzer(tree_CRZLLTree, samplename);
 
@@ -37,7 +36,7 @@ int main (int argc, char ** argv)
   //Let the analyzer know this is a Control Region
   analyzer.setCR(true);
 
-  tree_CRZLLTree->Add(inputfilename.c_str());
+  cout << "Number of CR entries: " << tree_CRZLLTree->GetEntries() << endl;
 
   //Get the normalization. It's the first bin of the histo
   TFile fIn(inputfilename.c_str());

@@ -1,0 +1,44 @@
+#################################################################
+# DATA: the string "data" will trigger processing of data trees #
+#################################################################
+######
+# MC #
+######
+#####################
+# JHUGenV3  spin/cp #
+#####################
+ZZ4lAnalysis_powheg15jhuGenV3-0L1f01ph0H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0L1f05ph0H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0L1f05ph180H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0L1H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0Mf01ph0H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0Mf01ph0H126
+ZZ4lAnalysis_powheg15jhuGenV3-0Mf01ph180H126
+ZZ4lAnalysis_powheg15jhuGenV3-0Mf01ph270H126
+ZZ4lAnalysis_powheg15jhuGenV3-0Mf01ph90H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0Mf01ph90H126
+ZZ4lAnalysis_powheg15jhuGenV3-0Mf05ph0H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0Mf05ph0H126
+ZZ4lAnalysis_powheg15jhuGenV3-0Mf05ph180H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0Mf05ph180H126
+ZZ4lAnalysis_powheg15jhuGenV3-0Mf05ph270H126
+ZZ4lAnalysis_powheg15jhuGenV3-0Mf05ph90H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0Mf05ph90H126
+ZZ4lAnalysis_powheg15jhuGenV3-0MH125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0MH126
+ZZ4lAnalysis_powheg15jhuGenV3-0PHH125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHH126
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf01ph0H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf01ph0Mf01ph0H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf01ph0Mf01ph90H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf01ph90H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf033ph0Mf033ph0H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf033ph0Mf033ph90H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf05ph0H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf05ph0Mf05ph0H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf05ph0Mf05ph90H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf05ph180H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf05ph180Mf05ph0H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PHf05ph90H125.6
+ZZ4lAnalysis_powheg15jhuGenV3-0PMH125.6
+ZZ4lAnalysis_powheg15jhuGenV3H126
