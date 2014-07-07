@@ -122,7 +122,7 @@ float evaluateAlphaSShift(float mzz, int analytic=1, int systematic=0, float mPO
 void shuffleSignalBkg_125p6(int flavor, int erg_tev){
 	srand( time(0) );
 
-	string cinput_KDFactor="../WidthAnalysisCodes/data/HZZ4l-KDFactorGraph";
+	string cinput_KDFactor="./data/HZZ4l-KDFactorGraph";
 	if(erg_tev==7) cinput_KDFactor = cinput_KDFactor + "_7TeV";
 	cinput_KDFactor = cinput_KDFactor + ".root";
 	TFile* finput_KDFactor = new TFile(cinput_KDFactor.c_str(),"read");
@@ -142,11 +142,11 @@ void shuffleSignalBkg_125p6(int flavor, int erg_tev){
 	sprintf(erg_dir,"LHC_%iTeV",erg_tev);
 	char cerg[1000];
 	sprintf(cerg,"%iTeV",erg_tev);
-//	string cinput_common = user_dir + erg_dir;
-	string cinput_common = user_dir_newProduction + cerg;
+	string cinput_common = user_dir + erg_dir;
+//	string cinput_common = user_dir_newProduction + cerg;
 	string coutput_common = cinput_common;
 
-	const int numSamples=44;
+	const int numSamples=46;
 	int myNumSamples=numSamples;
 	float MC_weight_spin0[numSamples]={0};
 	float MC_weight_4GeVcut_spin0[numSamples]={0};
@@ -228,6 +228,7 @@ void shuffleSignalBkg_125p6(int flavor, int erg_tev){
 	float D_ZG_PS=-99, D_GG_PS=-99;
 	float D_ZGint=-99, D_GGint=-99;
 	float D_ZG_PSint=-99, D_GG_PSint=-99;
+	float D_ZG_L1=-99,D_ZG_L1int=-99,D_ZG_L1int_perp=-99;
 
 	// Spin 1 and 2 discriminants
 	float p1plusProdIndepKD = -99;
@@ -267,7 +268,6 @@ void shuffleSignalBkg_125p6(int flavor, int erg_tev){
 
 	float MC_CV_weight[numSamples];
 	float MC_CV_4GeVcut_weight[numSamples];
-//	float MC_CVwrt2mu2e_weight[numSamples];
 
 	TFile* finput[kSignalSamples+kggZZSamples+kqqZZSamples+kZXSamples+kqqZZSamples_Dedicated];
 	TTree* myTree[kSignalSamples+kggZZSamples+kqqZZSamples+kZXSamples+kqqZZSamples_Dedicated];
@@ -336,7 +336,6 @@ void shuffleSignalBkg_125p6(int flavor, int erg_tev){
 			TFile* ftemp = new TFile(cinputGen.c_str(),"read");
 			TTree* ttemp = (TTree*) ftemp->Get("GenTree");
 			float MC_gen_spin0[numSamples]={0};
-//			float MC_gen_ME_as2mu2e_spin0[numSamples]={0};
 			int genFlavor=0;
 			float genMZ1=0;
 			float genMZ2=0;
@@ -345,11 +344,9 @@ void shuffleSignalBkg_125p6(int flavor, int erg_tev){
 			ttemp->SetBranchAddress("GenZ1Mass",&genMZ1);
 			ttemp->SetBranchAddress("GenZ2Mass",&genMZ2);
 			ttemp->SetBranchAddress("MC_weight_spin0",MC_gen_spin0);
-//			ttemp->SetBranchAddress("MC_ME_as2mu2e_spin0",MC_gen_ME_as2mu2e_spin0);
 			TH2F* htrue = (TH2F*) ftemp->Get("hCounters_spin0_RW");
 			TH2F* htrue_4GeVcut = (TH2F*) ftemp->Get("hCounters_spin0_4GeVcut_RW");
 			cout << htrue->GetName() << '\t' << htrue_4GeVcut->GetName() << endl;
-//			TH2F* htrue = (TH2F*) ftemp->Get("hCounters_spin0_with2mu2eME_RW");
 			TH1F* hreco = (TH1F*) finput[smp]->Get("Counters");
 			double nTrueProcessed = hreco->GetBinContent(1);
 			for(int myf=0;myf<nFinalStates;myf++){
@@ -369,7 +366,6 @@ void shuffleSignalBkg_125p6(int flavor, int erg_tev){
 						NGenTotal_4GeVcut_weighted_perFlavor[smp][p][myf]=0;
 						for(int ev=0;ev<nGenEntries;ev++){
 							ttemp->GetEntry(ev);
-//							if(genFlavor==myf && MC_gen_spin0[p]==MC_gen_spin0[p]) NGenTotal_weighted_perFlavor[smp][p][myf] += MC_gen_spin0[p] * MC_gen_ME_as2mu2e_spin0[0]/MC_gen_ME_as2mu2e_spin0[p];
 							if (genFlavor == myf && MC_gen_spin0[p] == MC_gen_spin0[p]){
 								NGenTotal_weighted_perFlavor[smp][p][myf] += MC_gen_spin0[p];
 								if (genMZ1>4 && genMZ2 > 4) NGenTotal_4GeVcut_weighted_perFlavor[smp][p][myf] += MC_gen_spin0[p];
@@ -443,7 +439,6 @@ void shuffleSignalBkg_125p6(int flavor, int erg_tev){
 		if(smp>=kqqZZSamples+kggZZSamples+kSignalSamples && smp<kZXSamples+kqqZZSamples+kggZZSamples+kSignalSamples) myTree[smp]->SetBranchAddress("ZXfake_weightProper",&ZXfake_weightProper);
 		else{
 			myTree[smp]->SetBranchAddress("MC_weight_spin0",MC_weight_spin0);
-//			if(smp<kSignalSamples) myTree[smp]->SetBranchAddress("MC_ME_as2mu2e_spin0",MC_ME_as2mu2e_spin0);
 			myTree[smp]->SetBranchAddress("genFinalState", &genFinalState);
 			myTree[smp]->SetBranchAddress("GenHMass", &GenHMass);
 			myTree[smp]->SetBranchAddress("GenZ1Mass", &GenZ1Mass);
@@ -497,6 +492,9 @@ void shuffleSignalBkg_125p6(int flavor, int erg_tev){
 		myTree[smp]->SetBranchAddress("D_GGint",&D_GGint);
 		myTree[smp]->SetBranchAddress("D_ZG_PSint",&D_ZG_PSint);
 		myTree[smp]->SetBranchAddress("D_GG_PSint",&D_GG_PSint);
+		myTree[smp]->SetBranchAddress("D_ZG_L1",&D_ZG_L1);
+		myTree[smp]->SetBranchAddress("D_ZG_L1int_phi0",&D_ZG_L1int);
+		myTree[smp]->SetBranchAddress("D_ZG_L1int_phi90",&D_ZG_L1int_perp);
 		myTree[smp]->SetBranchAddress("D_bkg_kin",&D_bkg_kin);
 		myTree[smp]->SetBranchAddress("D_bkg",&D_bkg);
 		myTree[smp]->SetBranchAddress("D_bkg_ScaleUp",&D_bkg_ScaleUp);
@@ -694,6 +692,9 @@ void shuffleSignalBkg_125p6(int flavor, int erg_tev){
 	shuffledTree->Branch("D_GGint",&D_GGint);
 	shuffledTree->Branch("D_ZG_PSint",&D_ZG_PSint);
 	shuffledTree->Branch("D_GG_PSint",&D_GG_PSint);
+	shuffledTree->Branch("D_ZG_L1",&D_ZG_L1);
+	shuffledTree->Branch("D_ZG_L1int_phi0",&D_ZG_L1int);
+	shuffledTree->Branch("D_ZG_L1int_phi90",&D_ZG_L1int_perp);
 	shuffledTree->Branch("D_bkg_kin",&D_bkg_kin);
 	shuffledTree->Branch("D_bkg",&D_bkg);
 	shuffledTree->Branch("D_bkg_ScaleUp",&D_bkg_ScaleUp);
@@ -756,6 +757,9 @@ void shuffleSignalBkg_125p6(int flavor, int erg_tev){
 	shuffledggZZBkg->Branch("D_GGint",&D_GGint);
 	shuffledggZZBkg->Branch("D_ZG_PSint",&D_ZG_PSint);
 	shuffledggZZBkg->Branch("D_GG_PSint",&D_GG_PSint);
+	shuffledggZZBkg->Branch("D_ZG_L1",&D_ZG_L1);
+	shuffledggZZBkg->Branch("D_ZG_L1int_phi0",&D_ZG_L1int);
+	shuffledggZZBkg->Branch("D_ZG_L1int_phi90",&D_ZG_L1int_perp);
 	shuffledggZZBkg->Branch("D_bkg_kin",&D_bkg_kin);
 	shuffledggZZBkg->Branch("D_bkg",&D_bkg);
 	shuffledggZZBkg->Branch("D_bkg_ScaleUp",&D_bkg_ScaleUp);
@@ -858,6 +862,9 @@ void shuffleSignalBkg_125p6(int flavor, int erg_tev){
 	shuffledqqZZBkg->Branch("D_GGint",&D_GGint);
 	shuffledqqZZBkg->Branch("D_ZG_PSint",&D_ZG_PSint);
 	shuffledqqZZBkg->Branch("D_GG_PSint",&D_GG_PSint);
+	shuffledqqZZBkg->Branch("D_ZG_L1",&D_ZG_L1);
+	shuffledqqZZBkg->Branch("D_ZG_L1int_phi0",&D_ZG_L1int);
+	shuffledqqZZBkg->Branch("D_ZG_L1int_phi90",&D_ZG_L1int_perp);
 	shuffledqqZZBkg->Branch("D_bkg_kin",&D_bkg_kin);
 	shuffledqqZZBkg->Branch("D_bkg",&D_bkg);
 	shuffledqqZZBkg->Branch("D_bkg_ScaleUp",&D_bkg_ScaleUp);
@@ -951,6 +958,9 @@ void shuffleSignalBkg_125p6(int flavor, int erg_tev){
 	shuffledZXBkg->Branch("D_GGint",&D_GGint);
 	shuffledZXBkg->Branch("D_ZG_PSint",&D_ZG_PSint);
 	shuffledZXBkg->Branch("D_GG_PSint",&D_GG_PSint);
+	shuffledZXBkg->Branch("D_ZG_L1",&D_ZG_L1);
+	shuffledZXBkg->Branch("D_ZG_L1int_phi0",&D_ZG_L1int);
+	shuffledZXBkg->Branch("D_ZG_L1int_phi90",&D_ZG_L1int_perp);
 	shuffledZXBkg->Branch("D_bkg_kin",&D_bkg_kin);
 	shuffledZXBkg->Branch("D_bkg",&D_bkg);
 	shuffledZXBkg->Branch("D_bkg_ScaleUp",&D_bkg_ScaleUp);
@@ -1054,6 +1064,9 @@ void shuffleSignalBkg_125p6(int flavor, int erg_tev){
 	shuffledqqZZ_DedicatedBkg->Branch("D_GGint",&D_GGint);
 	shuffledqqZZ_DedicatedBkg->Branch("D_ZG_PSint",&D_ZG_PSint);
 	shuffledqqZZ_DedicatedBkg->Branch("D_GG_PSint",&D_GG_PSint);
+	shuffledqqZZ_DedicatedBkg->Branch("D_ZG_L1",&D_ZG_L1);
+	shuffledqqZZ_DedicatedBkg->Branch("D_ZG_L1int_phi0",&D_ZG_L1int);
+	shuffledqqZZ_DedicatedBkg->Branch("D_ZG_L1int_phi90",&D_ZG_L1int_perp);
 	shuffledqqZZ_DedicatedBkg->Branch("D_bkg_kin",&D_bkg_kin);
 	shuffledqqZZ_DedicatedBkg->Branch("D_bkg",&D_bkg);
 	shuffledqqZZ_DedicatedBkg->Branch("D_bkg_ScaleUp",&D_bkg_ScaleUp);
@@ -1125,7 +1138,6 @@ void shuffleSignalBkg_125p6(int flavor, int erg_tev){
 
 	double nSM[kSignalSamples]={0};
 	double nSM_4GeVcut[kSignalSamples]={0};
-	double nSM_2mu2e[kSignalSamples]={0};
 
 	double nHypoPredicted[kSignalSamples]={0};
 	double nHypo[numSamples+2]={0};
@@ -1136,7 +1148,6 @@ void shuffleSignalBkg_125p6(int flavor, int erg_tev){
 	double nHypo_4GeVcut_125p6MassWin[numSamples]={0};
 	double nHypo_4GeVcut_125p6RestrictedMassWin[numSamples]={0};
 
-	double nHypo_AsIf2e2mu[numSamples+2]={0};
 	double nGGZZ=0;
 	double nQQZZ=0;
 	double nQQZZ_Dedicated=0;
@@ -1154,7 +1165,6 @@ void shuffleSignalBkg_125p6(int flavor, int erg_tev){
 	int nUsed[(kSignalSamples+kggZZSamples+kqqZZSamples+kZXSamples+kqqZZSamples_Dedicated)]={0};
 
 	cout << "4 GeV cut xsec scale is " << xsecSMScale_4GeVcut << endl;
-//	cout << "4 GeV cut xsec scale is " << (sum_NGenTotal_4GeVcut_unweighted/sum_NGenTotal_unweighted) << endl;
 
 	int ctr=0;
 	while(ctr<nTotal_Sig){
@@ -1170,19 +1180,14 @@ void shuffleSignalBkg_125p6(int flavor, int erg_tev){
 		EventSample = lucky;
 		MC_weight_xsec = MC_weight/MC_weight_noxsec;
 		MC_weight_xsec_4GeVcut = MC_weight_xsec*xsecSMScale_4GeVcut;
-//		MC_weight_xsec_4GeVcut = MC_weight_xsec*(sum_NGenTotal_4GeVcut_unweighted/sum_NGenTotal_unweighted);
 		MC_weight_4GeVcut = MC_weight_xsec_4GeVcut*MC_weight_noxsec;
 
 		if(lucky<kSignalSamples){
 			for(int p=0;p<myNumSamples;p++){
-//				MC_weight_spin0[p] *= ( NGenTotal_unweighted[lucky]/NGenTotal_weighted[lucky][p] );
-//				MC_weight_spin0[p] *= ( NGenTotal_unweighted[lucky]/NGenTotal_weighted[lucky][p] ) * (MC_ME_as2mu2e_spin0[0]/MC_ME_as2mu2e_spin0[p]);
 				MC_weight_4GeVcut_spin0[p] = MC_weight_spin0[p]*( NGenTotal_4GeVcut_unweighted[lucky]/NGenTotal_4GeVcut_weighted[lucky][p]*fGen_4GeVcut_BRweight[p] );
 				MC_weight_spin0[p] *= ( NGenTotal_unweighted[lucky]/NGenTotal_weighted[lucky][p]*fGen_BRweight[p] );
-//				MC_weight_spin0[p] *= ( NGenTotal_unweighted_perFlavor[lucky][2]/NGenTotal_weighted_perFlavor[lucky][p][2] );
 				double myxsec = MC_weight_xsec * MC_weight_spin0[p]  / sum_NGenTotal_unweighted ;
 				double myxsec_4GeVcut = MC_weight_xsec_4GeVcut * MC_weight_4GeVcut_spin0[p]  / sum_NGenTotal_4GeVcut_unweighted ;
-//				float myxsec = MC_weight_xsec * MC_weight_spin0[p]  / sum_NGenTotal_weighted[p] ;
 				MC_CV_weight[p] = myxsec*MC_weight_PUWeight*MC_weight_powhegWeight*MC_weight_dataMC*MC_weight_HqT;
 				MC_CV_4GeVcut_weight[p] = myxsec_4GeVcut*MC_weight_PUWeight*MC_weight_powhegWeight*MC_weight_dataMC*MC_weight_HqT;
 				if(!(GenZ1Mass>4 && GenZ2Mass>4)) MC_CV_4GeVcut_weight[p]=0;
@@ -1195,10 +1200,8 @@ void shuffleSignalBkg_125p6(int flavor, int erg_tev){
 				ratioAsIf2mu2e *= NGenTotal_weighted_perFlavor[lucky][p][2];
 				ratioAsIf2mu2e = NGenTotal_weighted_perFlavor[lucky][p][flavor] / ratioAsIf2mu2e;
 
-//				MC_CVwrt2mu2e_weight[p] = MC_CV_weight[p] * ratioAsIf2mu2e;
 				nHypo[p] += MC_CV_weight[p];
 				nHypo_4GeVcut[p] += MC_CV_4GeVcut_weight[p];
-//				nHypo_AsIf2e2mu[p] += MC_CVwrt2mu2e_weight[p];
 				if (ZZMass < 140.6 && ZZMass >= 105.6){
 					nHypo_125p6MassWin[p] += MC_CV_weight[p];
 					nHypo_4GeVcut_125p6MassWin[p] += MC_CV_4GeVcut_weight[p];
@@ -1209,10 +1212,8 @@ void shuffleSignalBkg_125p6(int flavor, int erg_tev){
 				};
 			};
 			nHypo[myNumSamples+1] += MC_weight_xsec*MC_weight_PUWeight*MC_weight_powhegWeight*MC_weight_dataMC*MC_weight_HqT/sum_NGenTotal_unweighted;
-//			nHypo_AsIf2e2mu[myNumSamples+1] += MC_weight_xsec*MC_weight_PUWeight*MC_weight_powhegWeight*MC_weight_dataMC*MC_weight_HqT/sum_NGenTotal_unweighted;
 			nHypoPredicted[lucky] += MC_weight;
 			nSM[lucky] += MC_CV_weight[0];
-//			nSM_2mu2e[lucky] += MC_CV_weight[0];
 //			if (GenZ1Mass > 4 && GenZ2Mass > 4){
 //				nHypo_4GeVcut[myNumSamples + 1] += MC_weight_xsec_4GeVcut*MC_weight_PUWeight*MC_weight_powhegWeight*MC_weight_dataMC*MC_weight_HqT / sum_NGenTotal_4GeVcut_unweighted;
 //				nHypoPredicted_4GeVcut[lucky] += MC_weight_4GeVcut;
@@ -1390,8 +1391,6 @@ void shuffleSignalBkg_125p6(int flavor, int erg_tev){
 	for(int f=0;f<kSignalSamples;f++) cout << f << ": " << nSM[f] << endl;
 	cout << "Sample SM 4GeV cut integrals are " << endl;
 	for(int f=0;f<kSignalSamples;f++) cout << f << ": " << nSM_4GeVcut[f] << endl;
-//	cout << "Sample SM 2e2mu integrals are " << endl;
-//	for(int f=0;f<kSignalSamples;f++) cout << f << ": " << nSM_2mu2e[f] << endl;
 	float sumnSM=0;
 	float sumnSM_4GeVcut=0;
 	for(int f=0;f<kSignalSamples;f++){
@@ -1406,12 +1405,14 @@ void shuffleSignalBkg_125p6(int flavor, int erg_tev){
 	cout << "Index\tCombined\tSample Prediction\tRaw Sample\t2e2mu/e,mu of Hypothesis" << endl;
 	for(int p=0;p<13;p++) cout << p << "\t" << nHypo[p] << "\t" <<  (nHypoPredicted[p]*fGen_BRweight[p]) << "\t" << nHypoPredicted[p] << "\t" << fGen_BRweight[p] << endl;
 	for(int p=13;p<14;p++) cout << p << "\t" << nHypo[p] << "\tn/a\tn/a\tn/a" << endl;
-	for(int p=14;p<myNumSamples;p++) cout << p << "\t" << nHypo[p] << "\t" << (nHypoPredicted[p-1]*fGen_BRweight[p-1]) << "\t" << nHypoPredicted[p-1] << "\t" << fGen_BRweight[p-1] << endl;
+	for(int p=14;p<kSignalSamples+1;p++) cout << p << "\t" << nHypo[p] << "\t" << (nHypoPredicted[p-1]*fGen_BRweight[p-1]) << "\t" << nHypoPredicted[p-1] << "\t" << fGen_BRweight[p-1] << endl;
+	for(int p=kSignalSamples+1;p<myNumSamples;p++) cout << p << "\t" << nHypo[p] << "\tn/a\tn/a\t" << fGen_BRweight[p-1] << endl;
 	cout << "Hypothesis integrals with 4 GeV cut: " << endl;
 	cout << "Index\tCombined\tSample Prediction\tRaw Sample\t2e2mu/e,mu of Hypothesis" << endl;
 	for(int p=0;p<13;p++) cout << p << "\t" << nHypo_4GeVcut[p] << "\t" <<  (nHypoPredicted_4GeVcut[p]*fGen_4GeVcut_BRweight[p]) << "\t" << nHypoPredicted_4GeVcut[p] << "\t" << fGen_4GeVcut_BRweight[p] << endl;
 	for(int p=13;p<14;p++) cout << p << "\t" << nHypo_4GeVcut[p] << "\tn/a\tn/a\tn/a" << endl;
-	for(int p=14;p<myNumSamples;p++) cout << p << "\t" << nHypo_4GeVcut[p] << "\t" << (nHypoPredicted_4GeVcut[p-1]*fGen_4GeVcut_BRweight[p-1]) << "\t" << nHypoPredicted_4GeVcut[p-1] << "\t" << fGen_4GeVcut_BRweight[p-1] << endl;
+	for(int p=14;p<kSignalSamples+1;p++) cout << p << "\t" << nHypo_4GeVcut[p] << "\t" << (nHypoPredicted_4GeVcut[p-1]*fGen_4GeVcut_BRweight[p-1]) << "\t" << nHypoPredicted_4GeVcut[p-1] << "\t" << fGen_4GeVcut_BRweight[p-1] << endl;
+	for(int p=kSignalSamples+1;p<myNumSamples;p++) cout << p << "\t" << nHypo_4GeVcut[p] << "\tn/a\tn/a\t" << fGen_4GeVcut_BRweight[p-1] << endl;
 	cout << "Total Un-weighted Bkg: " << nHypo[myNumSamples] << endl;
 
 	cout << "Predicted Mass Window Signal Integrals: " << endl;

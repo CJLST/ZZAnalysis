@@ -63,7 +63,7 @@ void countShuffleSignal_125p6(int flavor, int erg_tev){
 //	string cinput_common = user_dir_newProduction + cerg;
 	string coutput_common = cinput_common;
 
-	const int numSamples=44;
+	const int numSamples=46;
 	int myNumSamples=numSamples;
 	float MC_weight_spin0[numSamples]={0};
 	float MC_weight_4GeVcut_spin0[numSamples]={0};
@@ -145,6 +145,7 @@ void countShuffleSignal_125p6(int flavor, int erg_tev){
 	float D_ZG_PS=-99, D_GG_PS=-99;
 	float D_ZGint=-99, D_GGint=-99;
 	float D_ZG_PSint=-99, D_GG_PSint=-99;
+	float D_ZG_L1=-99,D_ZG_L1int=-99,D_ZG_L1int_perp=-99;
 
 	// Spin 1 and 2 discriminants
 	float p1plusProdIndepKD = -99;
@@ -184,7 +185,6 @@ void countShuffleSignal_125p6(int flavor, int erg_tev){
 
 	float MC_CV_weight[numSamples];
 	float MC_CV_4GeVcut_weight[numSamples];
-//	float MC_CVwrt2mu2e_weight[numSamples];
 
 	int nevents[kSignalSamples+kggZZSamples+kqqZZSamples+kZXSamples+kqqZZSamples_Dedicated]={0};
 	int naccevents[kSignalSamples+kggZZSamples+kqqZZSamples+kZXSamples+kqqZZSamples_Dedicated]={0};
@@ -236,13 +236,10 @@ void countShuffleSignal_125p6(int flavor, int erg_tev){
 		cinput = cinput + "/" + user_folder[flavor] + "/";
 		if (smp < kSignalSamples) cinput = cinput + sampleName_Sig[smp] + "_Reprocessed.root";
 
-//		cout << cinput << '\t' << smp << endl;
-
 		finput[smp] = new TFile(cinput.c_str(), "read");
 
 		if (smp < kSignalSamples){
 			string cinputGen = cinput_common + "/GenSignal/" + sampleName_Sig[smp] + "_GenLevel_ReWeighed.root";
-//			cout << cinputGen << endl;
 			TFile* ftemp = new TFile(cinputGen.c_str(), "read");
 			TTree* ttemp = (TTree*)ftemp->Get("GenTree");
 			float MC_gen_spin0[numSamples] = { 0 };
@@ -256,7 +253,6 @@ void countShuffleSignal_125p6(int flavor, int erg_tev){
 			ttemp->SetBranchAddress("MC_weight_spin0", MC_gen_spin0);
 			TH2F* htrue = (TH2F*)ftemp->Get("hCounters_spin0_RW");
 			TH2F* htrue_4GeVcut = (TH2F*)ftemp->Get("hCounters_spin0_4GeVcut_RW");
-//			cout << htrue->GetName() << '\t' << htrue_4GeVcut->GetName() << endl;
 			TH1F* hreco = (TH1F*)finput[smp]->Get("Counters");
 			double nTrueProcessed = hreco->GetBinContent(1);
 			for (int myf = 0; myf < nFinalStates; myf++){
@@ -360,68 +356,13 @@ void countShuffleSignal_125p6(int flavor, int erg_tev){
 	shuffledTree->SetBranchAddress("EventSample",&EventSample);
 	shuffledTree->SetBranchAddress("kNumSamples",&myNumSamples);
 	shuffledTree->SetBranchAddress("MC_CV_weight",MC_CV_weight);
-/*//	shuffledTree->SetBranchAddress("MC_CVwrt2mu2e_weight",MC_CVwrt2mu2e_weight,"MC_CVwrt2mu2e_weight[kNumSamples]/F");
-	shuffledTree->SetBranchAddress("MC_weight_spin0",MC_weight_spin0,"MC_weight_spin0[kNumSamples]/F");
-*/	shuffledTree->SetBranchAddress("MC_weight",&MC_weight);
-//	shuffledTree->SetBranchAddress("MC_weight_xsec",&MC_weight_xsec);
+	shuffledTree->SetBranchAddress("MC_weight",&MC_weight);
 	shuffledTree->SetBranchAddress("MC_CV_4GeVcut_weight",MC_CV_4GeVcut_weight);
-//	shuffledTree->SetBranchAddress("MC_weight_4GeVcut_spin0",MC_weight_4GeVcut_spin0,"MC_weight_4GeVcut_spin0[kNumSamples]/F");
 	shuffledTree->SetBranchAddress("MC_weight_4GeVcut",&MC_weight_4GeVcut);
-/*	shuffledTree->SetBranchAddress("MC_weight_xsec_4GeVcut",&MC_weight_xsec_4GeVcut);
-	shuffledTree->SetBranchAddress("MC_weight_Kfactor",&MC_weight_Kfactor);
-	shuffledTree->SetBranchAddress("MC_weight_Kfactor_down",&MC_weight_Kfactor_down);
-	shuffledTree->SetBranchAddress("MC_weight_Kfactor_up",&MC_weight_Kfactor_up);
-*///	shuffledTree->SetBranchAddress("GenHMass", &GenHMass);
-//	shuffledTree->SetBranchAddress("GenZ1Mass", &GenZ1Mass);
-//	shuffledTree->SetBranchAddress("GenZ2Mass", &GenZ2Mass);
 	shuffledTree->SetBranchAddress("ZZMass", &ZZMass);
-/*	shuffledTree->SetBranchAddress("Z1Mass", &Z1Mass);
-	shuffledTree->SetBranchAddress("Z2Mass", &Z2Mass);
-	shuffledTree->SetBranchAddress("helcosthetaZ1", &myhelcosthetaZ1);
-	shuffledTree->SetBranchAddress("helcosthetaZ2", &myhelcosthetaZ2);
-	shuffledTree->SetBranchAddress("helphi", &myhelphi);
-	shuffledTree->SetBranchAddress("costhetastar", &mycosthetastar);
-	shuffledTree->SetBranchAddress("phistarZ1", &myphistarZ1);
-*/	shuffledTree->SetBranchAddress("Z1ids", &Z1ids);
+	shuffledTree->SetBranchAddress("Z1ids", &Z1ids);
 	shuffledTree->SetBranchAddress("Z2ids", &Z2ids);
-/*	shuffledTree->SetBranchAddress("D_g1_vs_g2_phi0",&D_g2);
-	shuffledTree->SetBranchAddress("D_g1_vs_g4_phi0",&D_g4);
-	shuffledTree->SetBranchAddress("D_g2int_phi0",&D_g2int);
-	shuffledTree->SetBranchAddress("D_g4int_phi0",&D_g4int);
-	shuffledTree->SetBranchAddress("D_g2int_phi90",&D_g2int_perp);
-	shuffledTree->SetBranchAddress("D_g4int_phi90",&D_g4int_perp);
-	shuffledTree->SetBranchAddress("D_g1Q2_phi0",&D_g1q2);
-	shuffledTree->SetBranchAddress("D_g1Q2int_phi0",&D_g1q2int);
-	shuffledTree->SetBranchAddress("D_ZG",&D_ZG);
-	shuffledTree->SetBranchAddress("D_GG",&D_GG);
-	shuffledTree->SetBranchAddress("D_ZG_PS",&D_ZG_PS);
-	shuffledTree->SetBranchAddress("D_GG_PS",&D_GG_PS);
-	shuffledTree->SetBranchAddress("D_ZGint",&D_ZGint);
-	shuffledTree->SetBranchAddress("D_GGint",&D_GGint);
-	shuffledTree->SetBranchAddress("D_ZG_PSint",&D_ZG_PSint);
-	shuffledTree->SetBranchAddress("D_GG_PSint",&D_GG_PSint);
-	shuffledTree->SetBranchAddress("D_bkg_kin",&D_bkg_kin);
-	shuffledTree->SetBranchAddress("D_bkg",&D_bkg);
-	shuffledTree->SetBranchAddress("D_bkg_ScaleUp",&D_bkg_ScaleUp);
-	shuffledTree->SetBranchAddress("D_bkg_ScaleDown",&D_bkg_ScaleDown);
-	shuffledTree->SetBranchAddress("D_bkg_ResUp",&D_bkg_ResUp);
-	shuffledTree->SetBranchAddress("D_bkg_ResDown",&D_bkg_ResDown);
-	shuffledTree->SetBranchAddress("D_ggZZ",&D_ggZZ);
-	shuffledTree->SetBranchAddress("D_Gamma_r1",&D_Gamma_r1);
-	shuffledTree->SetBranchAddress("D_Gamma_r5",&D_Gamma_r5);
-	shuffledTree->SetBranchAddress("D_Gamma_r10",&D_Gamma_r10);
-	shuffledTree->SetBranchAddress("D_Gamma_r15",&D_Gamma_r15);
-	shuffledTree->SetBranchAddress("D_Gamma_r20",&D_Gamma_r20);
-	shuffledTree->SetBranchAddress("D_Gamma_r25",&D_Gamma_r25);
-	shuffledTree->SetBranchAddress("D_Gamma_gg_r1",&D_Gamma_gg_r1);
-	shuffledTree->SetBranchAddress("D_Gamma_gg_r5",&D_Gamma_gg_r5);
-	shuffledTree->SetBranchAddress("D_Gamma_gg_r10",&D_Gamma_gg_r10);
-	shuffledTree->SetBranchAddress("D_Gamma_gg_r15",&D_Gamma_gg_r15);
-	shuffledTree->SetBranchAddress("D_Gamma_gg_r20",&D_Gamma_gg_r20);
-	shuffledTree->SetBranchAddress("D_Gamma_gg_r25",&D_Gamma_gg_r25);
-	shuffledTree->SetBranchAddress("D_Gamma",&D_Gamma);
-	shuffledTree->SetBranchAddress("D_Gamma_int",&D_Gamma_int);
-*/
+
 	cout << "Starting to count shuffle signal trees... Total N_events is " << sum_NGenTotal_unweighted << "." << endl;
 
 	double nHypoPredicted[kSignalSamples][3] = { { 0 } };
