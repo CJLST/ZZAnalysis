@@ -1,6 +1,5 @@
 #ifndef ZZ4L_125.6_SAMPLES_H
 #define ZZ4L_125.6_SAMPLES_H
-
 #include <iostream>
 #include <string>
 #include "TMath.h"
