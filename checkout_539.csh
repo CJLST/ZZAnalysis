@@ -4,7 +4,7 @@
 
 setenv CVSROOT ":ext:${USER}@lxplus5.cern.ch:/afs/cern.ch/user/c/cvscmssw/public/CMSSW"
 
-if ( `where git` == "" ) then 
+if ( ! -X git ) then 
     scram setup /afs/cern.ch/cms/slc5_amd64_gcc462/external/git-toolfile/1.0/etc/scram.d/git.xml 
     rehash
 endif
