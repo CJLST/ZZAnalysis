@@ -77,29 +77,29 @@ process.TFileService=cms.Service('TFileService',
 ### Analyzers for Plots
 ### ----------------------------------------------------------------------
 
-PlotSetup = cms.EDAnalyzer("ZZ4lAnalyzer",
-                           channel = cms.untracked.string('aChannel'),
-                           candCollection = cms.untracked.string('aCand'),
-                           isMC = cms.untracked.bool(IsMC),
-                           sampleType = cms.int32(SAMPLE_TYPE),
-                           setup = cms.int32(LEPTON_SETUP),
-                           skimPaths = cms.vstring(SkimPaths),
-                           PD = cms.string(PD),
-                           MCFilterPath = cms.string(MCFILTER),
-                           sampleName = cms.string(SAMPLENAME),
-                           )
+# PlotSetup = cms.EDAnalyzer("ZZ4lAnalyzer",
+#                            channel = cms.untracked.string('aChannel'),
+#                            candCollection = cms.untracked.string('aCand'),
+#                            isMC = cms.untracked.bool(IsMC),
+#                            sampleType = cms.int32(SAMPLE_TYPE),
+#                            setup = cms.int32(LEPTON_SETUP),
+#                            skimPaths = cms.vstring(SkimPaths),
+#                            PD = cms.string(PD),
+#                            MCFilterPath = cms.string(MCFILTER),
+#                            sampleName = cms.string(SAMPLENAME),
+#                            )
 
-process.Plots4mu = PlotSetup.clone()
-process.Plots4mu.channel           = 'MMMM'
-process.Plots4mu.candCollection    = 'MMMMCand'
+# process.Plots4mu = PlotSetup.clone()
+# process.Plots4mu.channel           = 'MMMM'
+# process.Plots4mu.candCollection    = 'MMMMCand'
 
-process.Plots4e = PlotSetup.clone()
-process.Plots4e.channel            = 'EEEE'
-process.Plots4e.candCollection     = 'EEEECand'
+# process.Plots4e = PlotSetup.clone()
+# process.Plots4e.channel            = 'EEEE'
+# process.Plots4e.candCollection     = 'EEEECand'
 
-process.Plots2e2mu = PlotSetup.clone()
-process.Plots2e2mu.channel         = 'EEMM'
-process.Plots2e2mu.candCollection  = 'EEMMCand'
+# process.Plots2e2mu = PlotSetup.clone()
+# process.Plots2e2mu.channel         = 'EEMM'
+# process.Plots2e2mu.candCollection  = 'EEMMCand'
 
 # # All events together
 # process.PlotsZZ    = cms.EDAnalyzer("ZZ4lAnalyzer",
@@ -114,72 +114,20 @@ process.Plots2e2mu.candCollection  = 'EEMMCand'
 
 ### Control Region Plots
 
-PlotCRSetup    = cms.EDAnalyzer("ZZ4lAnalyzerCR",
-                                channel = cms.untracked.string('aChannel'),
-                                candCollection = cms.untracked.string('aCand'),
-                                isMC = cms.untracked.bool(IsMC),
-                                sampleType = cms.int32(SAMPLE_TYPE),
-                                setup = cms.int32(LEPTON_SETUP),
-                                skimPaths = cms.vstring(SkimPaths),
-                                PD = cms.string(PD),
-                                MCFilterPath = cms.string(MCFILTER),
-                                )
+# PlotCRSetup    = cms.EDAnalyzer("ZZ4lAnalyzerCR",
+#                                 channel = cms.untracked.string('aChannel'),
+#                                 candCollection = cms.untracked.string('aCand'),
+#                                 isMC = cms.untracked.bool(IsMC),
+#                                 sampleType = cms.int32(SAMPLE_TYPE),
+#                                 setup = cms.int32(LEPTON_SETUP),
+#                                 skimPaths = cms.vstring(SkimPaths),
+#                                 PD = cms.string(PD),
+#                                 MCFilterPath = cms.string(MCFILTER),
+#                                 )
 
-process.PlotsCRZLL = PlotCRSetup.clone()
-process.PlotsCRZLL.channel               = "ZLL"
-process.PlotsCRZLL.candCollection        = 'ZLLCand'
-
-# process.PlotsCRZMM = PlotCRSetup.clone()
-# process.PlotsCRZMM.channel               = "EEMM"
-# process.PlotsCRZMM.candCollection        = 'CRZMM'
-
-# process.PlotsCRZEE = PlotCRSetup.clone()
-# process.PlotsCRZEE.channel               = "EEMM"
-# process.PlotsCRZEE.candCollection        = 'CRZEE'
-
-# process.PlotsCRZLLHiSIP = PlotCRSetup.clone()
-# process.PlotsCRZLLHiSIP.channel          = "EEMM"
-# process.PlotsCRZLLHiSIP.candCollection   = 'CRZLLHiSIP'
-
-# process.PlotsCRZLLHiSIPMM = PlotCRSetup.clone()
-# process.PlotsCRZLLHiSIPMM.channel        = "EEMM"
-# process.PlotsCRZLLHiSIPMM.candCollection = 'CRZLLHiSIPMM'
-
-# process.PlotsCRZLLHiSIPKin = PlotCRSetup.clone()
-# process.PlotsCRZLLHiSIPKin.channel       = "EEMM"
-# process.PlotsCRZLLHiSIPKin.candCollection= 'CRZLLHiSIPKin'
-
-# process.PlotsCRMMEEss = PlotCRSetup.clone()
-# process.PlotsCRMMEEss.channel            = "EEMM"
-# process.PlotsCRMMEEss.candCollection     = 'CRMMEEss'
-
-# process.PlotsCREEMMss = PlotCRSetup.clone()
-# process.PlotsCREEMMss.channel            = "EEMM"
-# process.PlotsCREEMMss.candCollection     = 'CREEMMss'
-
-# process.PlotsCRMMMMss = PlotCRSetup.clone()
-# process.PlotsCRMMMMss.channel            = "MMMM"
-# process.PlotsCRMMMMss.candCollection     = 'CRMMMMss'
-
-# process.PlotsCREEEEss = PlotCRSetup.clone()
-# process.PlotsCREEEEss.channel            = "EEEE"
-# process.PlotsCREEEEss.candCollection     = 'CREEEEss'
-
-# process.PlotsCRMMEEos = PlotCRSetup.clone()
-# process.PlotsCRMMEEos.channel            = "EEMM"
-# process.PlotsCRMMEEos.candCollection     = 'CRMMEEos'
-
-# process.PlotsCREEMMos = PlotCRSetup.clone()
-# process.PlotsCREEMMos.channel            = "EEMM"
-# process.PlotsCREEMMos.candCollection     = 'CREEMMos'
-
-# process.PlotsCRMMMMos = PlotCRSetup.clone()
-# process.PlotsCRMMMMos.channel            = "MMMM"
-# process.PlotsCRMMMMos.candCollection     = 'CRMMMMos'
-
-# process.PlotsCREEEEos = PlotCRSetup.clone()
-# process.PlotsCREEEEos.channel            = "EEEE"
-# process.PlotsCREEEEos.candCollection     = 'CREEEEos'
+# process.PlotsCRZLL = PlotCRSetup.clone()
+# process.PlotsCRZLL.channel               = "ZLL"
+# process.PlotsCRZLL.candCollection        = 'ZLLCand'
 
 
 #Count events with at least 1 Z
@@ -212,7 +160,7 @@ process.PlotsCRZLL.candCollection        = 'ZLLCand'
 
 TreeSetup = cms.EDAnalyzer("HZZ4lNtupleMaker",
                                    channel = cms.untracked.string('aChannel'),
-                                   CandCollection = cms.untracked.string('aCand'),
+                                   CandCollection = cms.untracked.string('ZZCand'),
                                    fileName = cms.untracked.string('candTree'),
                                    isMC = cms.untracked.bool(IsMC),
                                    sampleType = cms.int32(SAMPLE_TYPE),
@@ -228,17 +176,14 @@ TreeSetup = cms.EDAnalyzer("HZZ4lNtupleMaker",
 
 process.ZZ4muTree = TreeSetup.clone()
 process.ZZ4muTree.channel = 'MMMM'
-process.ZZ4muTree.CandCollection = 'MMMMCand'
 process.ZZ4muTree.onlyBestCandidate = True
 
 process.ZZ4eTree = TreeSetup.clone()
 process.ZZ4eTree.channel = 'EEEE'
-process.ZZ4eTree.CandCollection = 'EEEECand'
 process.ZZ4muTree.onlyBestCandidate = True
 
 process.ZZ2e2muTree = TreeSetup.clone()
 process.ZZ2e2muTree.channel = 'EEMM'
-process.ZZ2e2muTree.CandCollection = 'EEMMCand'
 process.ZZ4muTree.onlyBestCandidate = True
 
 ### Trees for control regions only
@@ -286,11 +231,11 @@ process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
 if (not IsMC):
     process.CRPath = cms.Path(process.CR)
     process.dump = cms.Path(process.ZZFiltered + process.ZZSelection + process.dumpUserData)
-    process.p = cms.EndPath( process.Plots4mu + process.Plots4e + process.Plots2e2mu + process.PlotsCRZLL )
+#    process.p = cms.EndPath( process.Plots4mu + process.Plots4e + process.Plots2e2mu + process.PlotsCRZLL )
     process.trees = cms.EndPath( process.ZZ4muTree * process.ZZ4eTree * process.ZZ2e2muTree * process.CRZLLTree + process.CRZLTree)
 else:
-    process.CRPath = cms.Path(process.CRZl) #still needed by the plotter
-    process.p = cms.EndPath( process.Plots4mu + process.Plots4e + process.Plots2e2mu)
+#    process.CRPath = cms.Path(process.CRZl) #still needed by the plotter
+#    process.p = cms.EndPath( process.Plots4mu + process.Plots4e + process.Plots2e2mu)
     process.trees = cms.EndPath( process.ZZ4muTree * process.ZZ4eTree * process.ZZ2e2muTree)
     
 

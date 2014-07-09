@@ -466,49 +466,9 @@ BESTZ_AMONG = ( ZLEPTONSEL ) # "Best Z" chosen among those with 2 leptons with I
 
 Z1PRESEL    = (ZLEPTONSEL + " && mass > 40 && mass < 120") # FIXME
 
-# e+e-
-process.bareEECand = cms.EDProducer("CandViewShallowCloneCombiner",
-#    decay = cms.string('cleanSoftElectrons@+ cleanSoftElectrons@-'),
-    decay = cms.string('appendPhotons:electrons@+ appendPhotons:electrons@-'),
-    cut = cms.string('mass > 0'), # protect against ghosts
-    checkCharge = cms.bool(True)
-)
-process.EECand = cms.EDProducer("ZCandidateFiller",
-    src = cms.InputTag("bareEECand"),
-    sampleType = cms.int32(SAMPLE_TYPE),                     
-    setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
-    bestZAmong = cms.string(BESTZ_AMONG),
-    flags = cms.PSet(
-        GoodLeptons = cms.string(ZLEPTONSEL),
-        Z1Presel = cms.string(Z1PRESEL),
-    )
-)
-
-
-# mu+mu-
-process.bareMMCand = cms.EDProducer("CandViewShallowCloneCombiner",
-#    decay = cms.string('softMuons@+ softMuons@-'),
-    decay = cms.string('appendPhotons:muons@+ appendPhotons:muons@-'),
-    cut = cms.string('mass > 0'), # protect against ghosts
-    checkCharge = cms.bool(True)
-)
-process.MMCand = cms.EDProducer("ZCandidateFiller",
-    src = cms.InputTag("bareMMCand"),
-    sampleType = cms.int32(SAMPLE_TYPE),                     
-    setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
-    bestZAmong = cms.string(BESTZ_AMONG),
-    flags = cms.PSet(
-        GoodLeptons = cms.string(ZLEPTONSEL),
-        Z1Presel = cms.string(Z1PRESEL),
-    )
-)
-
 
 ### ----------------------------------------------------------------------
-### Dileptons for CRs.
-### CAVEAT: one should avoid combining these with those defined above: as
-### they are made from objects coming from different collections, the default 
-### overlap checking won't work. CRs should be made with ZCand and LLCand only.
+### Dileptons (Z->ee, Z->mm)
 ### ----------------------------------------------------------------------
 
 # l+l- (SFOS, both e and mu)
@@ -623,34 +583,14 @@ LLLLPRESEL = NOGHOST4l # Just suppress candidates with overlapping leptons
 
 
 # ZZ Candidates
-process.bareMMMMCand= cms.EDProducer("CandViewShallowCloneCombiner",
-    decay = cms.string('MMCand MMCand'),
-    cut = cms.string(LLLLPRESEL),
-    checkCharge = cms.bool(True)
-)
-process.MMMMCand = cms.EDProducer("ZZCandidateFiller",
-    src = cms.InputTag("bareMMMMCand"),
-    sampleType = cms.int32(SAMPLE_TYPE),
-    superMelaMass = cms.double(SUPERMELA_MASS),
-    isMC = cms.bool(IsMC),
-    bestCandAmong = cms.PSet(isBestCand = cms.string(BESTCAND_AMONG)),
-    ZRolesByMass = cms.bool(True),
-    flags = cms.PSet(
-        GoodLeptons =  cms.string(FOURGOODLEPTONS),
-        Z2Mass  = cms.string(Z2MASS),
-        MAllComb = cms.string(MLLALLCOMB),
-        FullSel70 = cms.string(FULLSEL70),
-        FullSel = cms.string(FULLSEL),
-    )                     
-)
 
-process.bareEEEECand= cms.EDProducer("CandViewShallowCloneCombiner",
-    decay = cms.string('EECand EECand'),
+process.bareZZCand= cms.EDProducer("CandViewShallowCloneCombiner",
+    decay = cms.string('ZCand ZCand'),
     cut = cms.string(LLLLPRESEL),
     checkCharge = cms.bool(True)
 )
-process.EEEECand = cms.EDProducer("ZZCandidateFiller",
-    src = cms.InputTag("bareEEEECand"),
+process.ZZCand = cms.EDProducer("ZZCandidateFiller",
+    src = cms.InputTag("bareZZCand"),
     sampleType = cms.int32(SAMPLE_TYPE),
     superMelaMass = cms.double(SUPERMELA_MASS),
     isMC = cms.bool(IsMC),
@@ -663,33 +603,6 @@ process.EEEECand = cms.EDProducer("ZZCandidateFiller",
         FullSel70 = cms.string(FULLSEL70),
         FullSel = cms.string(FULLSEL),
     )
-)
-
-process.bareEEMMCand= cms.EDProducer("CandViewShallowCloneCombiner",
-    decay = cms.string('EECand MMCand'),
-    cut = cms.string(LLLLPRESEL),
-    checkCharge = cms.bool(True)
-)
-process.EEMMCand = cms.EDProducer("ZZCandidateFiller",
-    src = cms.InputTag("bareEEMMCand"),
-    sampleType = cms.int32(SAMPLE_TYPE),
-    superMelaMass = cms.double(SUPERMELA_MASS),
-    isMC = cms.bool(IsMC),
-    bestCandAmong = cms.PSet(isBestCand = cms.string(BESTCAND_AMONG)),
-    ZRolesByMass = cms.bool(True),
-    flags = cms.PSet(
-        GoodLeptons =  cms.string(FOURGOODLEPTONS),
-        Z2Mass  = cms.string(Z2MASS),
-        MAllComb = cms.string(MLLALLCOMB),
-        FullSel70 = cms.string(FULLSEL70),
-        FullSel = cms.string(FULLSEL),
-    )
-)
-
-
-# Merger of all ZZ final states.
-process.ZZCand = cms.EDProducer("PATCompositeCandidateMerger",
-     src = cms.VInputTag(cms.InputTag("MMMMCand"), cms.InputTag("EEEECand"), cms.InputTag("EEMMCand"))
 )
 
 
@@ -1009,13 +922,9 @@ process.Candidates = cms.Path(
        process.appendPhotons     +
        process.softLeptons       +
 # Build 4-lepton candidates
-       process.bareEECand        + process.EECand   +  
-       process.bareMMCand        + process.MMCand   + 
-       process.bareMMMMCand      + process.MMMMCand  +
-       process.bareEEEECand      + process.EEEECand  +
-       process.bareEEMMCand      + process.EEMMCand  +
-       process.ZZCand
-  )
+       process.bareZCand         + process.ZCand     +  
+       process.bareZZCand        + process.ZZCand
+    )
 
 if (UPDATE_JETS and LEPTON_SETUP==2012) :
     process.Candidates.insert(0, process.cmgPFJetSel)

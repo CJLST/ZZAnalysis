@@ -72,12 +72,11 @@ process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
      muonSrc = cms.InputTag("appendPhotons:muons"), 
      electronSrc = cms.InputTag("appendPhotons:electrons"),
      candidateSrcs = cms.PSet(
-        Zmm   = cms.InputTag("MMCand"),
-        Zee   = cms.InputTag("EECand"),
 #        Z     = cms.InputTag("ZCand"),                                  
-        MMMM  = cms.InputTag("MMMMCand"),
-        EEEE  = cms.InputTag("EEEECand"),
-        EEMM  = cms.InputTag("EEMMCand"),
+        ZZ  = cms.InputTag("ZZCand"),
+#        LL    = cms.InputTag("LLCand"),
+#        ZLL   =cms.InputTag("ZLLCand"),    # Starting point for all CRs
+
      )
 )
 
@@ -88,13 +87,13 @@ process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
 #Dump reconstructed variables
 #process.dump = cms.Path(process.dumpUserData)
 
-process.Plots4mu.dumpMC   = cms.untracked.bool(True)
-process.Plots4e.dumpMC    = cms.untracked.bool(True)
-process.Plots2e2mu.dumpMC = cms.untracked.bool(True)
+#process.Plots4mu.dumpMC   = cms.untracked.bool(True)
+#process.Plots4e.dumpMC    = cms.untracked.bool(True)
+#process.Plots2e2mu.dumpMC = cms.untracked.bool(True)
 
 
 
 # replace the paths in analyzer.py
-process.p = cms.EndPath( process.Plots4mu + process.Plots4e + process.Plots2e2mu )
+#process.p = cms.EndPath( process.Plots4mu + process.Plots4e + process.Plots2e2mu )
 process.trees = cms.EndPath(process.ZZ4muTree * process.ZZ4eTree * process.ZZ2e2muTree )
 

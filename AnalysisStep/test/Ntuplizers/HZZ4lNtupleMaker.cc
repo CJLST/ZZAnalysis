@@ -396,8 +396,13 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   for( edm::View<pat::CompositeCandidate>::const_iterator cand = cands->begin(); cand != cands->end(); ++cand) {
     Int_t CRFLAG=0;
     bool candIsBest = cand->userFloat("isBestCand");
-    //printf("channel %d   candisbest: %f\n",theChannel,candIsBest);
 
+    int candChannel = cand->userFloat("candChannel");
+    // In the signal region, select only candidates of the final state we are looking at.
+    if ((theChannel==MMMM && candChannel != 28561) ||
+	(theChannel==EEEE && candChannel != 14641) ||
+	(theChannel==EEMM && candChannel != 20449)) continue;    
+    
     if (theChannel==ZLL) {
       if(cand->userFloat("isBestCRZLL")&&cand->userFloat("CRZLL"))
 	set_bit(CRFLAG,CRZLL);

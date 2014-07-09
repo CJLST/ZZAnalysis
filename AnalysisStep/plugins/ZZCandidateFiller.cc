@@ -154,21 +154,6 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   CompositeCandMassResolution errorBuilder;       
   errorBuilder.init(iSetup);
 
-  float minDZMass=999;
-  int bestZFlavour=0;
-  // Look for the best Z in the event. In 2e2mu, there one isBestZ in the Zee and one in the Zmm collections!
-  for( View<CompositeCandidate>::const_iterator cand = LLLLCands->begin(); cand != LLLLCands->end(); ++ cand ) {
-    for (int i=0;i<2;++i) {
-      if (userdatahelpers::getUserFloat(cand->daughter(i),"isBestZ")) {
-	float dZMass=fabs(cand->daughter(i)->mass()-ZmassValue);
-	if (dZMass<minDZMass){
-	  minDZMass=dZMass;
-	  bestZFlavour=cand->daughter(i)->daughter(0)->pdgId();
-	}
-      }
-    }
-  }
-
   vector<int> bestCandIdx(preBestCandSelection.size(),-1); 
   vector<float> maxPtSum(preBestCandSelection.size(),-1); 
   for( View<CompositeCandidate>::const_iterator cand = LLLLCands->begin(); cand != LLLLCands->end(); ++ cand ) {
@@ -220,6 +205,8 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     const reco::Candidate* Z1Lm= Z1->daughter(1);
     const reco::Candidate* Z2Lp= Z2->daughter(0);
     const reco::Candidate* Z2Lm= Z2->daughter(1);
+
+    int candChannel = Z1Lp->pdgId()*Z1Lm->pdgId()*Z2Lp->pdgId()*Z2Lm->pdgId();
 
     // Get the 4 four-vectors and add FSR (to be used to compute angles)
     math::XYZTLorentzVector p11 = Z1Lp->p4();
@@ -891,6 +878,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
     }
   
+    myCand.addUserFloat("candChannel",    candChannel);
     myCand.addUserFloat("SIP4",           SIP4);
     myCand.addUserFloat("pt1",            ptS[3]); // leading-pT
     myCand.addUserFloat("pt2",            ptS[2]); // sub-leading pT
@@ -1080,13 +1068,11 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
       int preBestCandResult= int((*(bca->second))(myCand));
 
       if (preBestCandResult){
-	// For the SR, we want the Z1 to be the best among ee and mumu
-	bool hasBestZ = true;
-	if ((bca->first)=="isBestCand" &&  Z1->daughter(0)->pdgId()!=bestZFlavour) hasBestZ = false;
-
+	// Here we assume that preBestCandResult includes the request if having the best Z in the event.
+	// We still need only to choose the candidate with largesr-pT leptons.
 	// Look for the daughter with largesr-pT leptons
 	float ptSum = Z2->daughter(0)->pt()+Z2->daughter(1)->pt();
-	if (hasBestZ && ptSum > maxPtSum[iCRname]){
+	if (ptSum > maxPtSum[iCRname]){
 	  maxPtSum[iCRname] = ptSum;
 	  bestCandIdx[iCRname] = i;
 	}
