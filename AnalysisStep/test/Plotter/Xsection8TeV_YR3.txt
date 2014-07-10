@@ -326,6 +326,14 @@ all jhuGenV3Grav2MHqqbH125.6                   1 0.0025198800  1
 all jhuGenV3Grav2MH9qqbH125.6                  1 0.0025198800  1
 all jhuGenV3Grav2MH10qqbH125.6                 1 0.0025198800  1
 
+all jhuGenV4-0PMToZG-H125.6                    1 0.0025198800  1
+
+
+###################
+# H(91.2) samples #
+###################
+
+all jhuGenV4-H91.2                             1 0.0000917482   1
 
 
 ##########
