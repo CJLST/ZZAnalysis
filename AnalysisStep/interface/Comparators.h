@@ -20,32 +20,34 @@ namespace Comparators {
 
   const float ZmassValue = 91.1876;
 
-  // Needed to sort best candidates after pre-selection
-  struct candWithIdx{
-    int idxCand;
-    double mZ1;
-    double ptSumZ2;
-
-    // candWithIdx(int i, pat::CompositeCandidate* theCand):
-    candWithIdx(int i, double mZ1, double ptSumZ2):
-      idxCand(i),
-      mZ1(mZ1),
-      ptSumZ2(ptSumZ2)
-    {}    
-
-  };
-
   struct bestZ1bestZ2 {
-    bool operator() (Comparators::candWithIdx* candWithIdx1, Comparators::candWithIdx* candWithIdx2){
+    
+    pat::CompositeCandidateCollection candCollection;
+    bestZ1bestZ2(pat::CompositeCandidateCollection candCollection):
+      candCollection(candCollection)
+    {}
+
+    bool operator() (int i, int j){
       
-      double mZ1_1 = candWithIdx1->mZ1;
-      double mZ1_2 = candWithIdx2->mZ1;
+      pat::CompositeCandidate& cand_i = candCollection[i];
+      pat::CompositeCandidate& cand_j = candCollection[j];
+
+      int idxZ1_i = 0; 
+      int idxZ2_i = 1;
+      if(fabs(cand_i.daughter(0)->masterClone().get()->mass()-Comparators::ZmassValue)>=fabs(cand_i.daughter(1)->masterClone().get()->mass()-Comparators::ZmassValue)) swap(idxZ1_i,idxZ2_i);
+      const reco::Candidate* Z1_i = cand_i.daughter(idxZ1_i)->masterClone().get();
       
-      double ptSumZ2_1 = candWithIdx1->ptSumZ2;
-      double ptSumZ2_2 = candWithIdx2->ptSumZ2;
+      int idxZ1_j = 0; 
+      int idxZ2_j = 1;
+      if(fabs(cand_j.daughter(0)->masterClone().get()->mass()-Comparators::ZmassValue)>=fabs(cand_j.daughter(1)->masterClone().get()->mass()-Comparators::ZmassValue)) swap(idxZ1_j,idxZ2_j);
+      const reco::Candidate* Z1_j = cand_j.daughter(idxZ1_j)->masterClone().get();
       
-      if ( fabs(mZ1_1-mZ1_2) < 1e-04 ){
-	if (ptSumZ2_1 > ptSumZ2_2) {
+      if ( fabs(Z1_i->mass()-Z1_j->mass()) < 1e-04 ){
+	const reco::Candidate* Z2_i = cand_i.daughter(idxZ2_i)->masterClone().get();
+	const reco::Candidate* Z2_j = cand_j.daughter(idxZ2_j)->masterClone().get();
+	double ptSumZ2_i = Z2_i->daughter(0)->masterClone().get()->pt() + Z2_i->daughter(1)->masterClone().get()->pt();
+	double ptSumZ2_j = Z2_j->daughter(0)->masterClone().get()->pt() + Z2_j->daughter(1)->masterClone().get()->pt();
+	if (ptSumZ2_i > ptSumZ2_j) {
 	  return true;
 	}
 	else {
@@ -53,7 +55,7 @@ namespace Comparators {
 	}
       }
       else {
-	if ( mZ1_1-mZ1_2 > 0. ) {
+	if ( Z1_i->mass()-Z1_j->mass() > 0. ) {
 	  return true;
 	}
 	else {
@@ -61,7 +63,9 @@ namespace Comparators {
 	}
       }      
 
-   };
+    }; //operator()    
+    
+
   }; //bestZ1bestZ1
 
   

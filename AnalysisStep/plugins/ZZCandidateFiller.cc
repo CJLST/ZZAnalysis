@@ -157,7 +157,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
   vector<int> bestCandIdx(preBestCandSelection.size(),-1); 
   vector<float> maxPtSum(preBestCandSelection.size(),-1); 
-  vector< vector<Comparators::candWithIdx*> > preSelCands(preBestCandSelection.size());  
+  vector< vector<int> > preSelCands(preBestCandSelection.size());  
   for( View<CompositeCandidate>::const_iterator cand = LLLLCands->begin(); cand != LLLLCands->end(); ++ cand ) {
     int i = distance(LLLLCands->begin(),cand);
 
@@ -1070,12 +1070,8 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
       int preBestCandResult= int((*(bca->second))(myCand));     
       
       if (preBestCandResult){
-	// Here we assume that preBestCandResult includes the request if having the best Z in the event.
-	// We still need only to choose the candidate with largesr-pT leptons.
-	// Look for the daughter with largesr-pT leptons
-	float ptSum = Z2->daughter(0)->pt()+Z2->daughter(1)->pt();
 	// Fill preSelCands matrix
-	preSelCands[iCRname].push_back(new Comparators::candWithIdx(i,Z1->mass(),ptSum));
+	preSelCands[iCRname].push_back(i);
       }
       iCRname++;
     }
@@ -1084,14 +1080,23 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
 
   // Loop over preselections to initialize bestCandIdx
+  Comparators::bestZ1bestZ2 myComp(*result);
   for (int iCRname=0; iCRname<(int)preSelCands.size(); ++iCRname) {
     if (preSelCands[iCRname].size() > 0) {
-      bestCandIdx[iCRname] = (*std::min_element( preSelCands[iCRname].begin(), preSelCands[iCRname].end(), Comparators::bestZ1bestZ2() ))->idxCand;
+      bestCandIdx[iCRname] = *std::min_element( preSelCands[iCRname].begin(), preSelCands[iCRname].end(), myComp);
+      
 //       // For debug purposes
-//       for (int i=0; i<(int)preSelCands[iCRname].size(); ++i){
-//       	cout << "  [ZZCandidateFiller] candidate " << i << ": mZ1 = " << preSelCands[iCRname][i]->mZ1 << ", ptSumZ2 = " << preSelCands[iCRname][i]->ptSumZ2 << ", idxCand = " << preSelCands[iCRname][i]->idxCand << endl;
+//       cout << "preSelCands[iCRname].size() = " << preSelCands[iCRname].size() << endl;
+//       // for (int i=0; i<(int)preSelCands[iCRname].size(); ++i){
+//       for (vector<int>::const_iterator iCand = preSelCands[iCRname].begin(); iCand<preSelCands[iCRname].end(); ++iCand) {
+// 	const reco::Candidate* dau0 = (*result)[*iCand].daughter(0)->masterClone().get();
+// 	const reco::Candidate* dau1 = (*result)[*iCand].daughter(1)->masterClone().get();
+//       	cout << "  [ZZCandidateFiller] candidate " << *iCand << ": mass daughter 0 = " << dau0->mass() << ", mass daughter 1 = " << dau1->mass() 
+// 	     << ", ptSum dau0 = "<< dau0->daughter(0)->masterClone().get()->pt() + dau0->daughter(1)->masterClone().get()->pt()
+// 	     << ", ptSum dau1 = "<< dau1->daughter(0)->masterClone().get()->pt() + dau1->daughter(1)->masterClone().get()->pt() << endl;	  
 //       }      
-//       cout << "[ZZCandidateFiller] was chosen candidate with index = " << (*std::min_element( preSelCands[iCRname].begin(), preSelCands[iCRname].end(), Comparators::bestZ1bestZ2() ))->idxCand << endl;
+//       cout << "[ZZCandidateFiller] was chosen candidate with index = " << *std::min_element( preSelCands[iCRname].begin(), preSelCands[iCRname].end(), myComp) << endl;
+
     }
   }
   
