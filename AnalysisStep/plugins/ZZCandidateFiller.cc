@@ -41,6 +41,7 @@
 #include <AnalysisDataFormats/CMGTools/interface/PFJet.h>
 #include "ZZAnalysis/AnalysisStep/interface/VBFCandidateJetSelector.h"
 #include <ZZAnalysis/AnalysisStep/interface/Fisher.h>
+#include <ZZAnalysis/AnalysisStep/interface/Comparators.h>
 
 
 
@@ -156,6 +157,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
   vector<int> bestCandIdx(preBestCandSelection.size(),-1); 
   vector<float> maxPtSum(preBestCandSelection.size(),-1); 
+  vector< vector<Comparators::candWithIdx*> > preSelCands(preBestCandSelection.size());  
   for( View<CompositeCandidate>::const_iterator cand = LLLLCands->begin(); cand != LLLLCands->end(); ++ cand ) {
     int i = distance(LLLLCands->begin(),cand);
 
@@ -1057,31 +1059,42 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
 //       myCand.addUserFloat("MC_isRight",     MC_isRight);
 //       myCand.addUserFloat("MC_isRightPair", MC_isRightPair);
-//     }
-  
+//     }  
 
-    
-    
+   
+
+ 
     //--- Select the "best candidate" among those passing the "bestCandAmong" selection (2011 PRL logic)
     int iCRname=0;
     for(CutSet<pat::CompositeCandidate>::const_iterator bca = preBestCandSelection.begin(); bca != preBestCandSelection.end(); ++bca){
-      int preBestCandResult= int((*(bca->second))(myCand));
-
+      int preBestCandResult= int((*(bca->second))(myCand));     
+      
       if (preBestCandResult){
 	// Here we assume that preBestCandResult includes the request if having the best Z in the event.
 	// We still need only to choose the candidate with largesr-pT leptons.
 	// Look for the daughter with largesr-pT leptons
 	float ptSum = Z2->daughter(0)->pt()+Z2->daughter(1)->pt();
-	if (ptSum > maxPtSum[iCRname]){
-	  maxPtSum[iCRname] = ptSum;
-	  bestCandIdx[iCRname] = i;
-	}
+	// Fill preSelCands matrix
+	preSelCands[iCRname].push_back(new Comparators::candWithIdx(i,Z1->mass(),ptSum));
       }
       iCRname++;
     }
     result->push_back(myCand);
   }
-    
+
+
+  // Loop over preselections to initialize bestCandIdx
+  for (int iCRname=0; iCRname<(int)preSelCands.size(); ++iCRname) {
+    if (preSelCands[iCRname].size() > 0) {
+      bestCandIdx[iCRname] = (*std::min_element( preSelCands[iCRname].begin(), preSelCands[iCRname].end(), Comparators::bestZ1bestZ2() ))->idxCand;
+//       // For debug purposes
+//       for (int i=0; i<(int)preSelCands[iCRname].size(); ++i){
+//       	cout << "  [ZZCandidateFiller] candidate " << i << ": mZ1 = " << preSelCands[iCRname][i]->mZ1 << ", ptSumZ2 = " << preSelCands[iCRname][i]->ptSumZ2 << ", idxCand = " << preSelCands[iCRname][i]->idxCand << endl;
+//       }      
+//       cout << "[ZZCandidateFiller] was chosen candidate with index = " << (*std::min_element( preSelCands[iCRname].begin(), preSelCands[iCRname].end(), Comparators::bestZ1bestZ2() ))->idxCand << endl;
+    }
+  }
+  
   //--- Embed best candidate flag (must be done in a separate loop)
   for (int i = 0; i< (int)result->size(); ++i) {
     pat::CompositeCandidate& myCand = (*result)[i];
@@ -1101,7 +1114,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   }
   
   iEvent.put(result);
-  }
+}
   
 
 #include <FWCore/Framework/interface/MakerMacros.h>
