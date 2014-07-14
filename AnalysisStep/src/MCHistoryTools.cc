@@ -234,20 +234,14 @@ MCHistoryTools::init() {
   if (theGenLeps.size()!=theGenZ.size()*2) {
     if (processID==24 || processID==26 || processID==121 || processID==122) {
       // For 2012, VH/ttH samples are inclusive in Z decays, assume everything is fine
-    } else if (processID==661 || processID==900661 || processID==0 || processID==1 || processID==2 || processID==66) {
+    } else if (processID==661 || processID==900661 || processID==0 || processID==1 || processID==2 || processID==66 || processID==900101) {
       // Samples which miss Zs in the MC history, assume everything is fine      
     } else {
       isOK = false;
     }
   }
 
-  // theGenLeps should include only leptons from ZZ
-  if (theGenLeps.size()>4) {
-    if (processID == 900101) { // ZZZ events
-    }
-    isOK = false;
-  }
-  
+ 
   if (!isOK) {    
       cout << "ERROR: MCHistoryTools::init: unexpected genparticle content for processID= " << processID << " : " << theGenLeps.size() << " " << theGenZ.size() << endl;
       abort();    
