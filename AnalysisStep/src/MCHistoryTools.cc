@@ -340,7 +340,8 @@ MCHistoryTools::genAcceptance(bool& gen_ZZInAcceptance, bool& gen_ZZ4lInEtaAccep
   const float ZmassValue = 91.1876;
 
   // This is done using gen Z. Obsolete, to be removed!
-  if (theGenZ.size()==2) {
+  if (theGenZ.size()==2 && theGenZ[0]->numberOfDaughters()==2 && theGenZ[1]->numberOfDaughters()==2){
+
     gen_mZ1 = theGenZ[0]->p4().mass(); // FIXME should take the 2 gen l with status 1!
     gen_mZ2 = theGenZ[1]->p4().mass();
     gen_Z1_flavour = abs(theGenZ[0]->daughter(0)->pdgId());
@@ -355,7 +356,7 @@ MCHistoryTools::genAcceptance(bool& gen_ZZInAcceptance, bool& gen_ZZ4lInEtaAccep
       gen_ZZInAcceptance = true;
     }
   }
-  
+
 
   int nlInEtaAcceptance = 0;
   int nlInEtaPtAcceptance = 0;
