@@ -22,15 +22,15 @@ namespace Comparators {
 
   struct bestZ1bestZ2 {
     
-    pat::CompositeCandidateCollection candCollection;
-    bestZ1bestZ2(pat::CompositeCandidateCollection candCollection):
+    const pat::CompositeCandidateCollection& candCollection;
+    bestZ1bestZ2(const pat::CompositeCandidateCollection& candCollection):
       candCollection(candCollection)
     {}
 
     bool operator() (int i, int j){
       
-      pat::CompositeCandidate& cand_i = candCollection[i];
-      pat::CompositeCandidate& cand_j = candCollection[j];
+      const pat::CompositeCandidate& cand_i = candCollection[i];
+      const pat::CompositeCandidate& cand_j = candCollection[j];
 
       const reco::Candidate* Z1_i = cand_i.daughter("Z1")->masterClone().get();      
       const reco::Candidate* Z1_j = cand_j.daughter("Z1")->masterClone().get();
@@ -60,6 +60,30 @@ namespace Comparators {
     
 
   }; //bestZ1bestZ1
+
+
+
+  struct bestKD {
+
+    const pat::CompositeCandidateCollection& candCollection;
+    bestKD(const pat::CompositeCandidateCollection& candCollection):
+      candCollection(candCollection)
+    {}
+
+    bool operator() (int i, int j){
+      
+      const pat::CompositeCandidate& cand_i = candCollection[i];
+      const pat::CompositeCandidate& cand_j = candCollection[j];
+
+      double KD_i = cand_i.userFloat("p0plus_VAJHU")/( cand_i.userFloat("p0plus_VAJHU") + cand_i.userFloat("bkg_VAMCFM") );
+      double KD_j = cand_j.userFloat("p0plus_VAJHU")/( cand_j.userFloat("p0plus_VAJHU") + cand_j.userFloat("bkg_VAMCFM") );
+      
+      return (KD_i>KD_j);
+      
+    }// bestKD
+
+    
+  };
 
   
 }// end namespace Comparators
