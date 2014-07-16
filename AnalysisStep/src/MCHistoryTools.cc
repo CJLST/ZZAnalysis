@@ -79,6 +79,15 @@ MCHistoryTools::MCHistoryTools(const edm::Event & event, string sampleName) :
     if (processID == 0) {
       if (boost::starts_with(sampleName,"ZZZJets")) processID=900101;      
     }
+
+    if (processID == 3) {
+      if (boost::starts_with(sampleName,"WWJets")) processID=900102;      
+      if (boost::starts_with(sampleName,"TTZJets")) processID=900103;      
+    }
+    
+    if (processID == 5 || processID == 6) {
+      if (boost::starts_with(sampleName,"TTZJets")) processID=900103;      
+    }
     
 
 //   take the MC weight
@@ -234,7 +243,7 @@ MCHistoryTools::init() {
   if (theGenLeps.size()!=theGenZ.size()*2) {
     if (processID==24 || processID==26 || processID==121 || processID==122) {
       // For 2012, VH/ttH samples are inclusive in Z decays, assume everything is fine
-    } else if (processID==661 || processID==900661 || processID==0 || processID==1 || processID==2 || processID==66 || processID==900101) {
+    } else if (processID==661 || processID==900661 || processID==0 || processID==1 || processID==2 || processID==66 || processID==900101 || processID==900102 || processID==900103) {
       // Samples which miss Zs in the MC history, assume everything is fine      
     } else {
       isOK = false;
