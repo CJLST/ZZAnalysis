@@ -15,6 +15,7 @@ def parseOptions():
     parser = optparse.OptionParser(usage)
 
     parser.add_option('-i', '--input', dest='inFile', type='string', default="ZZ4lAnalysis.root",    help='input file')
+    parser.add_option('-n', '--noOutput', dest='noOutput', action='store_true', default=False, help='do not write sync file in output')
     parser.add_option('-o', '--output', dest='outFile', type='string', default="eventlist.txt",    help='output sync file')
 
     # store options and arguments as global variables
@@ -119,21 +120,22 @@ def loop():
     # Sort candidates on a event number basis
     sortedCands = sorted(cands, key=lambda cand: float(cand.eventInfo.event)) 
 
-    # Print in sync format
-    outFile = open(outFileName,"w")        
-    line = ""
-    for aCand in sortedCands:
-        line += aCand.eventInfo.printOut()
-        line += ":"
-        line += aCand.printOut()
-        line += "\n"
+    if not opt.noOutput:
+        # Print in sync format
+        outFile = open(outFileName,"w")        
+        line = ""
+        for aCand in sortedCands:
+            line += aCand.eventInfo.printOut()
+            line += ":"
+            line += aCand.printOut()
+            line += "\n"
         
-    outFile.write(line)
-    outFile.close()    
+        outFile.write(line)
+        outFile.close()
+        print "Output written in file: ",outFileName
 
     counterStr = str(totCounter) + "/" + str(chanCounter["4e"]) + "/" + str(chanCounter["4mu"]) + "/" + str(chanCounter["2e2mu"])
     print "\n## Selected events all/4e/4mu/2e2mu : "+counterStr
-    print "Output written in file: ",outFileName
     
 
         
