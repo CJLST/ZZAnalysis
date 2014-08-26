@@ -43,7 +43,7 @@ cvs co -r V03-09-28 PhysicsTools/PatUtils
 cvs co -r V03-03-12-02 RecoMET/METProducers
 
 
-if ( $SCRAM_ARCH == "slc6_amd64_gcc472" ) then
+if ( $SCRAM_ARCH == "slc6_amd64_gcc472" || $SCRAM_ARCH == "slc6_amd64_gcc481") then
 cat <<EOF >! tmp.txt
 <Flags CXXFLAGS="-Wno-delete-non-virtual-dtor -Wno-error=unused-but-set-variable -Wno-error=unused-variable"/> 
 EOF

@@ -159,6 +159,13 @@ samples = [
     ('jhuGenV3Grav2MH10qqbH125.6', 'cmgtools', '/Graviton2MH10qqbarToZZTo4L_M-125p6_8TeV-JHUGenV3-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
     
     
+    ### H->Zg
+    ('jhuGenV4-0PMToZG-H125.6', 'cmgtools', '/Higgs0PMToZGTo4L_M-125p6_8TeV-powheg15-JHUgenV4/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+
+    ### H (91.2)
+    ('jhuGenV4-H91.2', 'cmgtools', '/Higgs0PToZZTo4L_M-91p2GammaZ_8TeV-powheg15-JHUgenV4/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+
+
     ### MCFM67 samples
     ('ggTo4e_SMH-MCFM67_H125.6', 'cmgtools', '/GluGluTo4e_SMH_M-125p6_8TeV-MCFM67-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
     ('ggTo4e_SMHContinInterf-MCFM67_H125.6', 'cmgtools', '/GluGluTo4e_SMHContinInterf_M-125p6_8TeV-MCFM67-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),

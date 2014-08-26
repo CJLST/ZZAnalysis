@@ -107,7 +107,9 @@ samples = [
 
     ### powheg15-jhuGenV3-spin/CP-MH125.6 samples
     ('powheg15jhuGenV3-0PMH125.6', 'cmgtools', '/Higgs0PMToZZTo4L_M-125p6_7TeV-powheg15-JHUgenV3/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
-    ('powheg15jhuGenV4-0PMf05GGf05H125.6', 'cmgtools', '/Higgs0PMToZZf05GGf05To4L_M-125p6_7TeV-powheg15-JHUgenV4/Fall11-PU_S6_START42_V14B-v2/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),        
+    ('powheg15jhuGenV4-0PMf05GGf05H125.6', 'cmgtools', '/Higgs0PMToZZf05GGf05To4L_M-125p6_7TeV-powheg15-JHUgenV4/Fall11-PU_S6_START42_V14B-v2/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('powheg15jhuGenV4-0PMf05ZGf05H125.6', 'cmgtools', '/Higgs0PMToZZf05ZGf05To4L_M-125p6_7TeV-powheg15-JHUgenV4/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('powheg15jhuGenV4-0PMfZGfGGfH125.6', 'cmgtools', '/Higgs0PMToZZfZGfGGfTo4L_M-125p6_7TeV-powheg15-JHUgenV4/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),    
     ('powheg15jhuGenV3-0MH125.6',  'cmgtools', '/Higgs0MToZZTo4L_M-125p6_7TeV-powheg15-JHUgenV3/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/',  'cmgTuple.*root', 3, "MCAllEvents"),
     ('powheg15jhuGenV4-0MToGGH125.6',  'cmgtools', '/Higgs0MToGGTo4L_M-125p6_7TeV-powheg15-JHUgenV4/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/',  'cmgTuple.*root', 3, "MCAllEvents"),    
     ('powheg15jhuGenV3-0PHH125.6', 'cmgtools', '/Higgs0PHToZZTo4L_M-125p6_7TeV-powheg15-JHUgenV3/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
@@ -158,6 +160,13 @@ samples = [
     ('jhuGenV3Grav2MH9qqbH125.6', 'cmgtools', '/Graviton2MH9qqbarToZZTo4L_M-125p6_7TeV-JHUGenV3-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
     ('jhuGenV3Grav2MH10qqbH125.6', 'cmgtools', '/Graviton2MH10qqbarToZZTo4L_M-125p6_7TeV-JHUGenV3-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
 
+    ### H->Zg
+    ('jhuGenV4-0MToZG-H125.6', 'cmgtools', '/Higgs0MToZGTo4L_M-125p6_7TeV-powheg15-JHUgenV4/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('jhuGenV4-0PMToZG-H125.6', 'cmgtools', '/Higgs0PMToZGTo4L_M-125p6_7TeV-powheg15-JHUgenV4/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+
+    ### H (91.2)
+    ('jhuGenV4-H91.2', 'cmgtools', '/Higgs0PToZZTo4L_M-91p2GammaZ_7TeV-powheg15-JHUgenV4/Fall11-PU_S6_START44_V9B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),    
+
 
     ### MCFM67 samples
     ('ggTo4e_SMH-MCFM67_H125.6', 'cmgtools', '/GluGluTo4e_SMH_M-125p6_7TeV-MCFM67-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
@@ -192,6 +201,10 @@ samples = [
     ('JJHiggs0M_H125.6', 'cmgtools', '/JJHiggs0MToZZTo4L_M-125p6_7TeV-JHUGenV4/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
     ('JJHiggs0P_H125.6', 'cmgtools', '/JJHiggs0PToZZTo4L_M-125p6_7TeV-JHUGenV4/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
 
+    # WHiggs
+    ('WHiggs0P_H125.6', 'cmgtools', '/WHiggs0PToZZTo4L_M-125p6_7TeV-JHUGenV4/Fall11-PU_S6_START44_V9B-v2/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),        
+    ('WHiggs0PH_H125.6', 'cmgtools', '/WHiggs0PHToZZTo4L_M-125p6_7TeV-JHUGenV4/Fall11-PU_S6_START44_V9B-v2/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),
+    ('WHiggs0Mf05ph0_H125.6', 'cmgtools', '/WHiggs0Mf05ph0ToZZTo4L_M-125p6_7TeV-JHUGenV4/Fall11-PU_S6_START44_V9B-v2/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),    
 
     ### Phantom
     ('ZZTo4eJJ_BSM25HContinInterf_H125.6', 'cmgtools', '/ZZTo4eJJ_BSM25HContinInterf_M-125p6_7TeV-phantom-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_V5_15_0/', 'cmgTuple.*root', 3, "MCAllEvents"),        

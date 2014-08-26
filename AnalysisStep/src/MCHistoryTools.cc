@@ -79,6 +79,15 @@ MCHistoryTools::MCHistoryTools(const edm::Event & event, string sampleName) :
     if (processID == 0) {
       if (boost::starts_with(sampleName,"ZZZJets")) processID=900101;      
     }
+
+    if (processID == 3) {
+      if (boost::starts_with(sampleName,"WWJets")) processID=900102;      
+      if (boost::starts_with(sampleName,"TTZJets")) processID=900103;      
+    }
+    
+    if (processID == 5 || processID == 6) {
+      if (boost::starts_with(sampleName,"TTZJets")) processID=900103;      
+    }
     
 
 //   take the MC weight
@@ -230,24 +239,18 @@ MCHistoryTools::init() {
 
 
   bool isOK=true;
-  // Check consistency of what we have collected
+  // Check consistency of what we have collected (FIXME: remove Z stuff)
   if (theGenLeps.size()!=theGenZ.size()*2) {
     if (processID==24 || processID==26 || processID==121 || processID==122) {
       // For 2012, VH/ttH samples are inclusive in Z decays, assume everything is fine
-    } else if (processID==661 || processID==900661 || processID==0 || processID==1 || processID==2 || processID==66) {
+    } else if (processID==661 || processID==900661 || processID==0 || processID==1 || processID==2 || processID==66 || processID==900101 || processID==900102 || processID==900103) {
       // Samples which miss Zs in the MC history, assume everything is fine      
     } else {
       isOK = false;
     }
   }
 
-  // theGenLeps should include only leptons from ZZ
-  if (theGenLeps.size()>4) {
-    if (processID == 900101) { // ZZZ events
-    }
-    isOK = false;
-  }
-  
+ 
   if (!isOK) {    
       cout << "ERROR: MCHistoryTools::init: unexpected genparticle content for processID= " << processID << " : " << theGenLeps.size() << " " << theGenZ.size() << endl;
       abort();    
@@ -334,7 +337,8 @@ MCHistoryTools::genAcceptance(bool& gen_ZZInAcceptance, bool& gen_ZZ4lInEtaAccep
   float gen_mZ1 = -1.;
   float gen_mZ2 = -1.;
 
-  gen_ZZInAcceptance = false;
+  gen_ZZInAcceptance = false; // obsolete
+
   gen_ZZ4lInEtaAcceptance = false;
   gen_ZZ4lInEtaPtAcceptance = false;
   gen_m4l_180 = false;
@@ -344,7 +348,9 @@ MCHistoryTools::genAcceptance(bool& gen_ZZInAcceptance, bool& gen_ZZ4lInEtaAccep
 
   const float ZmassValue = 91.1876;
 
-  if (theGenZ.size()==2) {
+  // This is done using gen Z. Obsolete, to be removed!
+  if (theGenZ.size()==2 && theGenZ[0]->numberOfDaughters()==2 && theGenZ[1]->numberOfDaughters()==2){
+
     gen_mZ1 = theGenZ[0]->p4().mass(); // FIXME should take the 2 gen l with status 1!
     gen_mZ2 = theGenZ[1]->p4().mass();
     gen_Z1_flavour = abs(theGenZ[0]->daughter(0)->pdgId());
@@ -358,29 +364,29 @@ MCHistoryTools::genAcceptance(bool& gen_ZZInAcceptance, bool& gen_ZZ4lInEtaAccep
     if (gen_mZ1>60. && gen_mZ1<120. && gen_mZ2>60. && gen_mZ2<120.) {
       gen_ZZInAcceptance = true;
     }
+  }
 
 
-    if ( gen_Z1_flavour<15 && gen_Z2_flavour<15) {    
-      gen_ZZ4lInEtaAcceptance = true;
-      gen_ZZ4lInEtaPtAcceptance = true;
+  int nlInEtaAcceptance = 0;
+  int nlInEtaPtAcceptance = 0;
 
-
-      if (theGenLeps.size()>=4) {
-	for (int i=0; i<4; ++i){	  
-	  //FIXME should take the 2 gen l with status 1!
-	  if ((abs(theGenLeps[i]->pdgId()) == 11 && !(theGenLeps[i]->pt() > 7. && fabs(theGenLeps[i]->eta()) < 2.5)) ||
-	      (abs(theGenLeps[i]->pdgId()) == 13 && !(theGenLeps[i]->pt() > 5. && fabs(theGenLeps[i]->eta()) < 2.4))) { 
-	    gen_ZZ4lInEtaPtAcceptance = false;
-	  }
-	  if ((abs(theGenLeps[i]->pdgId()) == 11 && !(fabs(theGenLeps[i]->eta()) < 2.5)) ||
-	      (abs(theGenLeps[i]->pdgId()) == 13 && !(fabs(theGenLeps[i]->eta()) < 2.4))) { 
-	    gen_ZZ4lInEtaAcceptance = false;
-	  }
-	}
-      }
+  for (unsigned int i=0; i<theGenLeps.size(); ++i){	  
+    //FIXME should take the 2 gen l with status 1!
+    if ((abs(theGenLeps[i]->pdgId()) == 11 && !(theGenLeps[i]->pt() > 7. && fabs(theGenLeps[i]->eta()) < 2.5)) ||
+	(abs(theGenLeps[i]->pdgId()) == 13 && !(theGenLeps[i]->pt() > 5. && fabs(theGenLeps[i]->eta()) < 2.4))) { 
+      ++nlInEtaPtAcceptance;
+    }
+    if ((abs(theGenLeps[i]->pdgId()) == 11 && !(fabs(theGenLeps[i]->eta()) < 2.5)) ||
+	(abs(theGenLeps[i]->pdgId()) == 13 && !(fabs(theGenLeps[i]->eta()) < 2.4))) { 
+      ++nlInEtaAcceptance;
     }
   }
 
+  if (nlInEtaPtAcceptance>=4) gen_ZZ4lInEtaPtAcceptance = true;
+  if (nlInEtaAcceptance>=4) gen_ZZ4lInEtaAcceptance = true;
+
+
+  // FIXME: still needed?
   if (theGenLeps.size()==4){
     gen_4leptonsMass = (theGenLeps[0]->p4()+theGenLeps[1]->p4()+theGenLeps[2]->p4()+theGenLeps[3]->p4()).mass();
     if (gen_4leptonsMass >= 180){

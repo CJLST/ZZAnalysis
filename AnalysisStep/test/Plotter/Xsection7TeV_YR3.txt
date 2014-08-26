@@ -220,6 +220,8 @@ all            jhuGenV3Grav2PBH126               1   0.0020250400  1
 
 all powheg15jhuGenV3-0PMH125.6                   1 0.0019786800 1
 all powheg15jhuGenV4-0PMf05GGf05H125.6           1 0.0019786800 1
+all powheg15jhuGenV4-0PMf05ZGf05H125.6           1 0.0019786800 1
+all powheg15jhuGenV4-0PMfZGfGGfH125.6            1 0.0019786800 1
 all powheg15jhuGenV3-0MH125.6                    1 0.0019786800 1
 all powheg15jhuGenV4-0MToGGH125.6                1 0.0019786800 1	
 all powheg15jhuGenV3-0PHH125.6                   1 0.0019786800 1
@@ -269,6 +271,17 @@ all jhuGenV3Grav2PH7qqbH125.6                    1 0.0019786800 1
 all jhuGenV3Grav2MHqqbH125.6                     1 0.0019786800 1
 all jhuGenV3Grav2MH9qqbH125.6                    1 0.0019786800 1
 all jhuGenV3Grav2MH10qqbH125.6                   1 0.0019786800 1
+
+all jhuGenV4-0MToZG-H125.6                   1 0.0019786800 1
+all jhuGenV4-0PMToZG-H125.6                  1 0.0019786800 1
+
+
+###################
+# H(91.2) samples #
+###################
+
+all jhuGenV4-H91.2                             1 0.0000734614   1
+
 
 
 ##########
@@ -328,6 +341,14 @@ all JJHiggs0M_H125.6                         1 0.0019786800 1
 all ZHiggs0P_H125.6                          1 0.0000435468 1
 all ZHiggs0M_H125.6                          1 0.0000435468 1
 all ZHiggs0Mf05ph0_H125.6                    1 0.0000435468 1
+
+##########################################################################
+# WHiggs W->inclusive, BR(H->4l,l=e,mu)                                  #
+##########################################################################
+
+all WHiggs0P_H125.6                1 0.0000750816 1
+all WHiggs0PH_H125.6               1 0.0000750816 1
+all WHiggs0Mf05ph0_H125.6          1 0.0000750816 1
 
 
 ##########################################

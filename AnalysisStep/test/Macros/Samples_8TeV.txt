@@ -99,6 +99,11 @@ ZZ4lAnalysis_jhuGenV3Grav2MHqqbH125.6
 ZZ4lAnalysis_jhuGenV3Grav2MH9qqbH125.6
 ZZ4lAnalysis_jhuGenV3Grav2MH10qqbH125.6
 
+ZZ4lAnalysis_jhuGenV4-0PMToZG-H125.6
+
+# H(91.2)
+ZZ4lAnalysis_jhuGenV4-H91.2
+
 # MCFM67
 ZZ4lAnalysis_ggTo4e_SMH-MCFM67_H125.6
 ZZ4lAnalysis_ggTo4e_SMHContinInterf-MCFM67_H125.6
