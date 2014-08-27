@@ -8,7 +8,7 @@
  *  $Date: 2012/06/06 00:27:43 $
  *  $Revision: 1.3 $
  *  \author S. Casasso - TORINO
- *  \author N. Amapane - CERN
+ *  \author N. Amapane - TORINO
 
  */
 
@@ -27,33 +27,24 @@ namespace Comparators {
       candCollection(candCollection)
     {}
 
-    bool operator() (int i, int j){
-      
+    bool operator() (int i, int j){      
       const pat::CompositeCandidate& cand_i = candCollection[i];
       const pat::CompositeCandidate& cand_j = candCollection[j];
 
-      const reco::Candidate* Z1_i = cand_i.daughter("Z1")->masterClone().get();      
-      const reco::Candidate* Z1_j = cand_j.daughter("Z1")->masterClone().get();
-      
-      if ( fabs(Z1_i->mass()-Z1_j->mass()) < 1e-04 ){
-	const reco::Candidate* Z2_i = cand_i.daughter("Z2")->masterClone().get();
-	const reco::Candidate* Z2_j = cand_j.daughter("Z2")->masterClone().get();
-	double ptSumZ2_i = Z2_i->daughter(0)->masterClone().get()->pt() + Z2_i->daughter(1)->masterClone().get()->pt();
-	double ptSumZ2_j = Z2_j->daughter(0)->masterClone().get()->pt() + Z2_j->daughter(1)->masterClone().get()->pt();
-	if (ptSumZ2_i > ptSumZ2_j) {
-	  return true;
-	}
-	else {
-	  return false;
-	}
+      float mZ1_i = cand_i.daughter("Z1")->mass();
+      float mZ1_j = cand_j.daughter("Z1")->mass();
+      if ( fabs(mZ1_i-mZ1_j) < 1e-04 ){ // same Z1: choose the candidate with highest-pT Z2 leptons
+	const reco::Candidate* Z2_i = cand_i.daughter("Z2");
+	const reco::Candidate* Z2_j = cand_j.daughter("Z2");
+	double ptSumZ2_i = Z2_i->daughter(0)->pt() + Z2_i->daughter(1)->pt();
+	double ptSumZ2_j = Z2_j->daughter(0)->pt() + Z2_j->daughter(1)->pt();
+
+	// cout <<  "Comparator: compare Z2 pTs: " << ptSumZ2_i << " " << ptSumZ2_j << endl;
+	return ( ptSumZ2_i > ptSumZ2_j );
       }
-      else {
-	if ( Z1_i->mass()-Z1_j->mass() > 0. ) {
-	  return true;
-	}
-	else {
-	  return false;
-	}
+      else { // choose the candidate with Z1 closest to nominal mass 
+	// cout << "Comparator: compare Z1 masses: " << mZ1_i << " " << mZ1_j << endl;
+	return ( fabs(mZ1_i-ZmassValue)<fabs(mZ1_j-ZmassValue) );
       }      
 
     }; //operator()    

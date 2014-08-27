@@ -53,6 +53,11 @@ try:
 except NameError:
     SUPERMELA_MASS = 125.6
 
+#Best candidate selection strategy
+try:
+    SELSETUP
+except NameError:
+    SELSETUP = "Legacy"
 
 ### ----------------------------------------------------------------------
 ### Set the GT
@@ -549,23 +554,88 @@ MLLALLCOMB        = "userFloat('mLL4')>4" # mll>4 on 4/4 AF/OS pairs;
 PT20_10           = ("userFloat('pt1')>20 && userFloat('pt2')>10") #20/10 on any of the 4 leptons
 M4l100            = "mass>100"
 
-FULLSEL70           = (FOURGOODLEPTONS + "&&" +
-                     HASBESTZ        + "&&" +
-                     Z1MASS          + "&&" +
-                     Z2MASS          + "&&" +
-                     MLLALLCOMB      + "&&" +
-                     PT20_10         + "&&" +
-                    "mass>70"        + "&&" +
-                    "daughter('Z2').mass>12") # Cut on Z2 is now required at the end!
+
+if SELSETUP=="Legacy": # Default Configuration (Legacy paper): cut on selected best candidate
+
+    BESTCAND_AMONG = (FOURGOODLEPTONS + "&&" +
+                      HASBESTZ        + "&&" +
+                      Z1MASS          
+                      )
+    
+    FULLSEL70           = (FOURGOODLEPTONS + "&&" +
+                           HASBESTZ        + "&&" +
+                           Z1MASS          + "&&" +
+                           Z2MASS          + "&&" +
+                           MLLALLCOMB      + "&&" +
+                           PT20_10         + "&&" +
+                           "mass>70"        + "&&" +
+                           "daughter('Z2').mass>12")
+
+elif SELSETUP=="conf1": # Configuration 1 (select best candidate among those passing all cuts except mZ2, leave only mZ2 cut at the end)
+
+    BESTCAND_AMONG = (FOURGOODLEPTONS + "&&" +
+                      Z1MASS          + "&&" +
+                      Z2MASS          + "&&" +
+                      MLLALLCOMB      + "&&" +
+                      PT20_10         + "&&" +
+                      "mass>70"                        
+                      )
+
+    FULLSEL70           = (BESTCAND_AMONG + "&&" +
+                           "daughter('Z2').mass>12")
+
+
+elif SELSETUP=="conf2": # Configuration 2 (select best candidate among those passing all cuts)
+
+    BESTCAND_AMONG = (FOURGOODLEPTONS + "&&" +
+                      Z1MASS          + "&&" +
+                      Z2MASS          + "&&" +
+                      MLLALLCOMB      + "&&" +
+                      PT20_10         + "&&" +
+                      "mass>70"       + "&&" +                      
+                      "daughter('Z2').mass>12"
+                      )
+
+    FULLSEL70 = BESTCAND_AMONG
+                          
+                                                                                                                                                                                      
+
+elif SELSETUP=="conf3": # Configuration 3 (apply also cut on mZb, -> expected to reduce the background but also efficiency)
+
+    BESTCAND_AMONG = (FOURGOODLEPTONS + "&&" +
+                      Z1MASS          + "&&" +
+                      Z2MASS          + "&&" +
+                      MLLALLCOMB      + "&&" +
+                      PT20_10         + "&&" +
+                      "mass>70"       + "&&" +
+                      "userFloat('mZb')>12" + "&&" +
+                      "daughter('Z2').mass>12"
+                      )
+
+    FULLSEL70 = BESTCAND_AMONG
+
+elif SELSETUP=="conf4": # Configuration 4 (apply smarter mZb cut)
+
+    BESTCAND_AMONG = (FOURGOODLEPTONS + "&&" +
+                      Z1MASS          + "&&" +
+                      Z2MASS          + "&&" +
+                      MLLALLCOMB      + "&&" +
+                      PT20_10         + "&&" +
+                      "mass>70"       + "&&" +
+                      "!(userFloat('mZa')>daughter('Z1').mass && userFloat('mZb')<12)" + "&&" +
+                      "daughter('Z2').mass>12"
+                      )
+
+    FULLSEL70 = BESTCAND_AMONG
+    
+
+else:
+    print "Please choose one of the following string for SELSETUP: 'Legacy', 'conf1', 'conf2', 'conf3', 'conf4'"
+    sys.exit()
+
 
 FULLSEL            = (FULLSEL70      + "&&" +
                       M4l100)
-
-
-BESTCAND_AMONG = (FOURGOODLEPTONS + "&&" +
-                  HASBESTZ        + "&&" +
-                  Z1MASS          
-                  )
 
 
 # Ghost Suppression cut
