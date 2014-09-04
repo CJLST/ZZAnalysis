@@ -1084,8 +1084,9 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 	bool hasBestZ = true;
 	if ((bca->first)=="isBestCand" &&  Z1->daughter(0)->pdgId()!=bestZFlavour) hasBestZ = false;
 
-	// Look for the daughter with largesr-pT leptons
-	float ptSum = Z2->daughter(0)->pt()+Z2->daughter(1)->pt();
+	// Look for the Z2 with largesr-pT leptons. We need to use 'daughter("Z2")' as for the CR the Z2 pointers is not necessarily the LL pair 
+	const reco::Candidate* theZ2 = myCand.daughter("Z2");
+	float ptSum = theZ2->daughter(0)->pt()+theZ2->daughter(1)->pt();
 	if (hasBestZ && ptSum > maxPtSum[iCRname]){
 	  maxPtSum[iCRname] = ptSum;
 	  bestCandIdx[iCRname] = i;

@@ -33,10 +33,9 @@ execfile(PyFilePath + "analyzer.py")
   ### Replace parameters
 ### ----------------------------------------------------------------------
 process.source.fileNames = cms.untracked.vstring(
-#    'root://lxcms00//data3/2012/HZZ_cmgTuple/synchHCP2/H125VBF_53X_V5100.root ' # VBF sync file
-#    'root://lxcms00//data3/2012/HZZ_cmgTuple/synchHCP2/H125_53X_V5100.root' # V5_10_0 version
-    'root://lxcms00//data3/2013/HZZ_cmgTuple/BE539_H1258TeV.root' #533 V5_15_0 version
+    'root://lxcms00//data3/2013/HZZ_cmgTuple/BE539_H1258TeV.root' #533 V5_15_0 ggH
 #    'root://lxcms00//data3/2013/HZZ_cmgTuple/V5150_VBFH1258TeV.root' #533 V5_15_0 VBF file
+#    '/store/cmst3/group/cmgtools/CMG/ZH_HToZZTo4L_M-126_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7C-v1/AODSIM/PAT_CMG_V5_15_0/cmgTuple_10_1_WoK.root' # ZH V5_15_0 VBF file
     )
 
 
@@ -88,9 +87,9 @@ process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
 #Dump reconstructed variables
 #process.dump = cms.Path(process.dumpUserData)
 
-process.Plots4mu.dumpMC   = cms.untracked.bool(True)
-process.Plots4e.dumpMC    = cms.untracked.bool(True)
-process.Plots2e2mu.dumpMC = cms.untracked.bool(True)
+# process.Plots4mu.dumpMC   = cms.untracked.bool(True)
+# process.Plots4e.dumpMC    = cms.untracked.bool(True)
+# process.Plots2e2mu.dumpMC = cms.untracked.bool(True)
 
 
 
@@ -98,3 +97,6 @@ process.Plots2e2mu.dumpMC = cms.untracked.bool(True)
 process.p = cms.EndPath( process.Plots4mu + process.Plots4e + process.Plots2e2mu )
 process.trees = cms.EndPath(process.ZZ4muTree * process.ZZ4eTree * process.ZZ2e2muTree )
 
+#With CRs
+#process.CRPath = cms.Path(process.CR)
+#process.trees = cms.EndPath( process.ZZ4muTree * process.ZZ4eTree * process.ZZ2e2muTree * process.CRZLLTree + process.CRZLTree)
