@@ -9,7 +9,8 @@ enum Channel {MMMM=0,
 	      EEMM=2, 
 	      ZZ=3,
 	      LLTT=4, // tau final states
-	      CRMMMMss=5,
+	      ZLL=18, // Generic label for a CR (used in job configuration)
+	      CRMMMMss=5, // AA CRs (ss loose letptons; os ones are for x-check)
 	      CRMMMMos=6,
 	      CREEEEss=7,
 	      CREEEEos=8,
@@ -17,12 +18,14 @@ enum Channel {MMMM=0,
 	      CREEMMos=10,
 	      CRMMEEss=11,
 	      CRMMEEos=12,
-	      ZL=13,
-	      CRZLLHiSIP=14,
+	      CRZLLss=21,  //merged AA ss CRs
+	      ZL=13, // Fake rate CR (Z+loose lepton)
+	      CRZLLHiSIP=14,   // Old inverted SIP CRs
 	      CRZLLHiSIPMM=15,
 	      CRZLLHiSIPKin=16,
-	      CRZLL=17,
-	      ZLL=18,
+	      CRZLL=17,   // Old CR for Z2 with no SIP
+	      CRZ2mLL=19, // A CR: Z->mumu + l+l- (with at least 1F)
+	      CRZ2eLL=20, // A CR: Z->ee   + l+l- (with at least 1F)
 	      NONE = 99, BUGGY=666};
 
 //Return string corresponding to integer code 
