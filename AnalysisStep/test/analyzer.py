@@ -219,12 +219,10 @@ process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
      muonSrc = cms.InputTag("appendPhotons:muons"), 
      electronSrc = cms.InputTag("appendPhotons:electrons"),
      candidateSrcs = cms.PSet(
-        Zmm   = cms.InputTag("MMCand"),
-        Zee   = cms.InputTag("EECand"),
-#        Z     = cms.InputTag("ZCand"),
-        MMMM  = cms.InputTag("MMMMCand"),
-        EEEE  = cms.InputTag("EEEECand"),
-        EEMM  = cms.InputTag("EEMMCand"),
+        Z     = cms.InputTag("ZCand"),
+        ZZ  = cms.InputTag("ZZCand"),
+#        LL    = cms.InputTag("LLCand"),
+#        ZLL   =cms.InputTag("ZLLCand"),    # Starting point for all CRs
      )
 )
 

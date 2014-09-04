@@ -551,6 +551,7 @@ Z2MASS            = "daughter('Z2').mass>4  && daughter('Z2').mass<120" # (was >
 #MLL3On4_12        = "userFloat('mZa')>12" # mll>12 on 3/4 pairs; 
 #MLLALLCOMB        = "userFloat('mLL6')>4" # mll>4 on 6/6 AF/AS pairs;
 MLLALLCOMB        = "userFloat('mLL4')>4" # mll>4 on 4/4 AF/OS pairs;
+SMARTMALLCOMB     = "!(abs(userFloat('mZa')-91.1876)<(abs(daughter('Z1').mass-91.1876)) && userFloat('mZb')<12)" # Require mZ2' >12 IF mZ1' is closer to 91.1876 than mZ1
 PT20_10           = ("userFloat('pt1')>20 && userFloat('pt2')>10") #20/10 on any of the 4 leptons
 M4l100            = "mass>100"
 
@@ -622,7 +623,7 @@ elif SELSETUP=="conf4": # Configuration 4 (apply smarter mZb cut)
                       MLLALLCOMB      + "&&" +
                       PT20_10         + "&&" +
                       "mass>70"       + "&&" +
-                      "!(userFloat('mZa')>daughter('Z1').mass && userFloat('mZb')<12)" + "&&" +
+                      SMARTMALLCOMB + "&&" +
                       "daughter('Z2').mass>12"
                       )
 
@@ -685,6 +686,7 @@ process.ZZCand = cms.EDProducer("ZZCandidateFiller",
 
 Z2MM = "abs(daughter(1).daughter(0).pdgId()*daughter(1).daughter(1).pdgId())==169" #Z2 = mumu
 Z2EE = "abs(daughter(1).daughter(0).pdgId()*daughter(1).daughter(1).pdgId())==121" #Z2 = ee
+Z2LL_SS = "daughter(1).daughter(0).pdgId()==daughter(1).daughter(1).pdgId()"       #Z2 = same-sign, same-flavour
 Z2MM_OS = "daughter(1).daughter(0).pdgId()*daughter(1).daughter(1).pdgId()==-169" #Z2 = mu+mu-
 Z2MM_SS = "daughter(1).daughter(0).pdgId()*daughter(1).daughter(1).pdgId()== 169" #Z2 = mu-mu-/mu+mu+
 Z2EE_OS = "daughter(1).daughter(0).pdgId()*daughter(1).daughter(1).pdgId()==-121" #Z2 = e+e-
@@ -700,6 +702,7 @@ CR_BASESEL = (CR_Z2MASS + "&&" +              # mass cuts on LL
 
 CR_BESTCANDBASE = ("userFloat('d0.Z1Presel')") # Z with good leptons, mass cuts
 
+CR_BESTCANDBASE_AA   = ("userFloat('d0.Z1Presel') && " + Z2SIP) # base for AA CR
 
 # Z (OSSF,both e/mu) + LL (any F/C, with no ID/iso); this is the starting point for control regions
 process.bareZLLCand= cms.EDProducer("CandViewShallowCloneCombiner",
@@ -714,18 +717,18 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
     isMC = cms.bool(IsMC),
     bestCandAmong = cms.PSet(
       isBestCand    = cms.string("0"), #do not set SR best cand flag
-      isBestCRZLL = cms.string(CR_BESTCANDBASE+ "&&" +
+      isBestCRZLL = cms.string(CR_BESTCANDBASE+ "&&" + # Old CR for Z2 with no SIP
                          "userFloat('d0.isBestZ') &&"+
                          Z2ID
                          ),
-      isBestCRZMM = cms.string(CR_BESTCANDBASE + "&&" +
+      isBestCRZMM = cms.string(CR_BESTCANDBASE + "&&" + # For HiSip CRs
                          "userFloat('d0.isBestZ') &&" +
-                         Z2MM                  + "&&" + # Flavour on LL
+                         Z2MM                  + "&&" +
                          Z2ID      
                          ),
-      isBestCRZEE = cms.string(CR_BESTCANDBASE + "&&" +
+      isBestCRZEE = cms.string(CR_BESTCANDBASE + "&&" + # For HiSip CRs
                          "userFloat('d0.isBestZ') &&" +
-                         Z2EE                  + "&&" + # Flavour on LL
+                         Z2EE                  + "&&" +
                          Z2ID      
                          ),
       #CRZLLHiSIP = cms.string(CR_BESTCANDBASE + "&&" +
@@ -738,63 +741,67 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
       isBestCRZLLHiSIPKin = cms.string("userFloat('d0.isBestZ') &&" +
                                  Z2ID
                                  ), 
-      isBestCRMMMMss = cms.string(CR_BESTCANDBASE + "&&" +
+
+      ## AA method CRs
+      isBestCRMMMMss = cms.string(CR_BESTCANDBASE_AA + "&&" +
                           "userFloat('d0.isBestZmm') &&" +
-                          Z2SIP + "&&" + 
                           Z2MM_SS
                           ),
-      isBestCRMMMMos = cms.string(CR_BESTCANDBASE + "&&" +
+      isBestCRMMMMos = cms.string(CR_BESTCANDBASE_AA + "&&" +
                           "userFloat('d0.isBestZmm') &&" +
-                          Z2SIP + "&&" + 
                           Z2MM_OS
-                          ),
-      isBestCREEEEss = cms.string(CR_BESTCANDBASE + "&&" +
+                          ,
+      isBestCREEEEss = cms.string(CR_BESTCANDBASE_AA + "&&" +
                           "userFloat('d0.isBestZee') &&" +
-                          Z2SIP + "&&" + 
                           Z2EE_SS
                           ),
-      isBestCREEEEos = cms.string(CR_BESTCANDBASE + "&&" +
+      isBestCREEEEos = cms.string(CR_BESTCANDBASE_AA + "&&" +
                           "userFloat('d0.isBestZee') &&" +
-                          Z2SIP + "&&" + 
                           Z2EE_OS
                           ),
-      isBestCREEMMss = cms.string(CR_BESTCANDBASE + "&&" +
+      isBestCREEMMss = cms.string(CR_BESTCANDBASE_AA + "&&" +
                           "userFloat('d0.isBestZee') &&" +
-                          Z2SIP + "&&" + 
                           Z2MM_SS
                           ),
-      isBestCREEMMos = cms.string(CR_BESTCANDBASE + "&&" +
+      isBestCREEMMos = cms.string(CR_BESTCANDBASE_AA + "&&" +
                           "userFloat('d0.isBestZee') &&" +
-                          Z2SIP + "&&" + 
                           Z2MM_OS
                           ),
-      isBestCRMMEEss = cms.string(CR_BESTCANDBASE + "&&" +
+      isBestCRMMEEss = cms.string(CR_BESTCANDBASE_AA + "&&" +
                           "userFloat('d0.isBestZmm') &&" +
-                          Z2SIP + "&&" + 
                           Z2EE_SS
                           ),
-      isBestCRMMEEos = cms.string(CR_BESTCANDBASE + "&&" +
+      isBestCRMMEEos = cms.string(CR_BESTCANDBASE_AA + "&&" +
                           "userFloat('d0.isBestZmm') &&" +
-                          Z2SIP + "&&" + 
                           Z2EE_OS
                           ),
-    ), 
+      isBestCRZLLss = cms.string(CR_BESTCANDBASE_AA + "&&" +
+                          "userFloat('d0.isBestZ') &&"+
+                          Z2LL_SS
+                          ),                                     
+#       isBestCRZLLss = cms.string(CR_BESTCANDBASE_AA + "&&" + # CRZLLss conf4
+#                           "userFloat('d0.isBestZ') &&" +
+#                           Z2LL_SS + "&&" +
+#                           CR_Z2MASS + "&&" +              #->CR_BASESEL                   
+#                           MLLALLCOMB + "&&" +             # mass cut on all lepton pairs
+#                           PT20_10    + "&&" +             # pT> 20/10 over all 4 l
+#                           "mass>70"        + "&&" +
+#                           SMARTMALLCOMB
+#                           ),
+    ),
     ZRolesByMass = cms.bool(False),  # daughter('Z1') = daughter(0)
     flags = cms.PSet(
       SR = cms.string(BESTCAND_AMONG),
-      CRZLL =  cms.string(CR_BASESEL),
-      #CRZMM =  cms.string(CR_BASESEL),                                # combine isCRZLL with CRZMM flag
-      #CRZEE =  cms.string(CR_BASESEL),                                # combine isCRZLL with CRZEE flag
-      CRZLLHiSIP = cms.string(PT20_10 + "&&" +                         # combine  with CRZLL flag
+      CRZLL =  cms.string(CR_BASESEL),                                 # with isBestCRZLL flag = no SIP CR
+      CRZLLHiSIP = cms.string(PT20_10 + "&&" +                         # with isBestCRZLL flag = inverted SIP CR
                               "userFloat('d1.d0.SIP')> 5 && " +
                               "userFloat('d1.d1.SIP')> 5 " 
                               ),
-      #CRZLLHiSIPMM = cms.string(),                                    # combine isCRZLLHiSIP with CRZMM flag
-      CRZLLHiSIPKin = cms.string(CR_BASESEL + "&&" +
+      CRZLLHiSIPKin = cms.string(CR_BASESEL + "&&" +                   # with isBestCRZLLHiSIPKin
                                  "userFloat('d1.d0.SIP')> 5 &&" +
                                  "userFloat('d1.d1.SIP')> 5"
                                  ), 
-      CRLLLL = cms.string(CR_BASESEL               #combine with proper CR*****s for ss/os
+      CRLLLL = cms.string(CR_BASESEL               #combine with proper isBestCR*****s for AA ss/os CRss
                           ),
       )
 )

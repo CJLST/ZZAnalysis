@@ -17,6 +17,8 @@ def parseOptions():
     parser.add_option('-i', '--input', dest='inFile', type='string', default="ZZ4lAnalysis.root",    help='input file')
     parser.add_option('-n', '--noOutput', dest='noOutput', action='store_true', default=False, help='do not write sync file in output')
     parser.add_option('-o', '--output', dest='outFile', type='string', default="eventlist.txt",    help='output sync file')
+    parser.add_option('-f', '--finalState', dest='finalState', type='string', default="all",    help='final states: all, 4e, 4mu, 2e2mu')
+
 
     # store options and arguments as global variables
     global opt, args
@@ -29,6 +31,7 @@ def loop():
 
     inFileName = opt.inFile
     outFileName = opt.outFile
+    finalState = opt.finalState
         
     print "Processing file: ",inFileName,"..."
 
@@ -38,6 +41,8 @@ def loop():
     for aChan in ["4mu","4e","2e2mu"]:
 
         chanCounter[aChan] = 0
+
+        if finalState!="all" and aChan!=finalState: continue
         
         tree = ROOT.TChain("ZZ"+aChan+"Tree/candTree")
         tree.Add(inFileName)

@@ -404,8 +404,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 	(theChannel==EEMM && candChannel != 20449)) continue;    
     
     if (theChannel==ZLL) {
-      if(cand->userFloat("isBestCRZLL")&&cand->userFloat("CRZLL"))
-	set_bit(CRFLAG,CRZLL);
+      // AA CRs
       if(cand->userFloat("isBestCRMMMMss")&&cand->userFloat("CRLLLL"))
 	set_bit(CRFLAG,CRMMMMss);
       if(cand->userFloat("isBestCRMMMMos")&&cand->userFloat("CRLLLL"))
@@ -422,6 +421,12 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 	set_bit(CRFLAG,CRMMEEss);
       if(cand->userFloat("isBestCRMMEEos")&&cand->userFloat("CRLLLL"))
 	set_bit(CRFLAG,CRMMEEos);
+      if(cand->userFloat("isBestCRZLLss")&&cand->userFloat("CRLLLL"))
+	set_bit(CRFLAG,CRZLLss);      
+
+      // Older Z2 ID/noSIP CRs
+      if(cand->userFloat("isBestCRZLL")&&cand->userFloat("CRZLL"))
+	set_bit(CRFLAG,CRZLL);
       if(cand->userFloat("isBestCRZLL")&&cand->userFloat("CRZLLHiSIP"))
 	set_bit(CRFLAG,CRZLLHiSIP);
       if(cand->userFloat("isBestCRZMM")&&cand->userFloat("CRZLLHiSIP"))
