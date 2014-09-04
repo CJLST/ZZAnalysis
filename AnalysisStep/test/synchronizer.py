@@ -23,6 +23,10 @@ def parseOptions():
     # store options and arguments as global variables
     global opt, args
     (opt, args) = parser.parse_args()
+
+    if not "." in opt.outFile:
+        print "Please use an extension for the output file (e.g. \".txt\")"
+        sys.exit()
     
             
 
@@ -117,7 +121,7 @@ def loop():
                         jets30.append(jetpt[i])                    
                     
                 theKDs = KDs(p0plus_VAJHU,p0minus_VAJHU,p0hplus_VAJHU,p1plus_VAJHU,p1_VAJHU,p2_VAJHU,p2qqb_VAJHU,bkg_VAMCFM)
-                theCand = Candidate(theEvent,mass4l,mZ1,mZ2,massErrRaw,massErrCorr,pt4l,jets30,mjj,detajj,theKDs)
+                theCand = Candidate(theEvent,aChan,mass4l,mZ1,mZ2,massErrRaw,massErrCorr,pt4l,jets30,mjj,detajj,theKDs)
                 cands.append(theCand)
 
 
@@ -127,17 +131,54 @@ def loop():
 
     if not opt.noOutput:
         # Print in sync format
-        outFile = open(outFileName,"w")        
+        outFile      = open(outFileName,"w")
         line = ""
+
+        # Split candidates by final state
+        if finalState == "all":
+            outFile4mu   = open(outFileName.replace(".","_4mu."),"w")
+            outFile4e   = open(outFileName.replace(".","_4e."),"w")
+            outFile2e2mu   = open(outFileName.replace(".","_2e2mu."),"w")                
+            line4mu = ""
+            line4e  = ""
+            line2e2mu = ""
+        
         for aCand in sortedCands:
             line += aCand.eventInfo.printOut()
             line += ":"
             line += aCand.printOut()
             line += "\n"
+            if finalState == "all":            
+                if aCand.finalstate == "4mu":
+                    line4mu += aCand.eventInfo.printOut()
+                    line4mu += ":"
+                    line4mu += aCand.printOut()
+                    line4mu += "\n"
+                elif aCand.finalstate == "4e":
+                    line4e += aCand.eventInfo.printOut()
+                    line4e += ":"
+                    line4e += aCand.printOut()
+                    line4e += "\n"
+                else:
+                    line2e2mu += aCand.eventInfo.printOut()
+                    line2e2mu += ":"
+                    line2e2mu += aCand.printOut()
+                    line2e2mu += "\n"                
+                
+
         
         outFile.write(line)
         outFile.close()
-        print "Output written in file: ",outFileName
+
+        if opt.finalState == "all":
+            outFile4mu.write(line4mu)
+            outFile4mu.close()
+            outFile4e.write(line4e)
+            outFile4e.close()
+            outFile2e2mu.write(line2e2mu)
+            outFile2e2mu.close()
+        
+        print "Output written in file: ",outFileName,"\n"
 
     counterStr = str(totCounter) + "/" + str(chanCounter["4e"]) + "/" + str(chanCounter["4mu"]) + "/" + str(chanCounter["2e2mu"])
     print "\n## Selected events all/4e/4mu/2e2mu : "+counterStr
