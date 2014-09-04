@@ -213,6 +213,17 @@ process.ZZSelection= cms.EDFilter("CandViewCountFilter",
                                   minNumber = cms.uint32(1)
                                   )
 
+### Select CR events
+process.CRFiltered = cms.EDFilter("PATCompositeCandidateRefSelector",
+                                  src = cms.InputTag("ZLLCand"),
+                                  cut = cms.string("(userFloat('isBestCRZLLss') || userFloat('isBestCREEEEss')  || userFloat('isBestCREEMMss') || userFloat('isBestCRMMEEss') || userFloat('isBestCRMMMMss')) && userFloat('CRLLLL')")
+                                  )
+### Select only events with one such candidate
+process.CRSelection= cms.EDFilter("CandViewCountFilter",
+                                  src = cms.InputTag("CRFiltered"),
+                                  minNumber = cms.uint32(1)
+                                  )
+
 
 process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
      dumpTrigger = cms.untracked.bool(True),
@@ -222,13 +233,14 @@ process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
         Z     = cms.InputTag("ZCand"),
         ZZ  = cms.InputTag("ZZCand"),
 #        LL    = cms.InputTag("LLCand"),
-#        ZLL   =cms.InputTag("ZLLCand"),    # Starting point for all CRs
+        ZLL   =cms.InputTag("ZLLCand"),    # Starting point for all CRs
      )
 )
 
 if (not IsMC):
     process.CRPath = cms.Path(process.CR)
     process.dump = cms.Path(process.ZZFiltered + process.ZZSelection + process.dumpUserData)
+    process.dumpCR = cms.Path(process.CRFiltered + process.CRSelection + process.dumpUserData)
 #    process.p = cms.EndPath( process.Plots4mu + process.Plots4e + process.Plots2e2mu + process.PlotsCRZLL )
     process.trees = cms.EndPath( process.ZZ4muTree * process.ZZ4eTree * process.ZZ2e2muTree * process.CRZLLTree + process.CRZLTree)
 else:

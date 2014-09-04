@@ -750,7 +750,7 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
       isBestCRMMMMos = cms.string(CR_BESTCANDBASE_AA + "&&" +
                           "userFloat('d0.isBestZmm') &&" +
                           Z2MM_OS
-                          ,
+                          ),
       isBestCREEEEss = cms.string(CR_BESTCANDBASE_AA + "&&" +
                           "userFloat('d0.isBestZee') &&" +
                           Z2EE_SS
@@ -775,19 +775,19 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
                           "userFloat('d0.isBestZmm') &&" +
                           Z2EE_OS
                           ),
-      isBestCRZLLss = cms.string(CR_BESTCANDBASE_AA + "&&" +
+      isBestCRZLLss = cms.string(CR_BESTCANDBASE_AA + "&&" + # CRZLLss (1-path)
                           "userFloat('d0.isBestZ') &&"+
                           Z2LL_SS
                           ),                                     
-#       isBestCRZLLss = cms.string(CR_BESTCANDBASE_AA + "&&" + # CRZLLss conf4
-#                           "userFloat('d0.isBestZ') &&" +
-#                           Z2LL_SS + "&&" +
-#                           CR_Z2MASS + "&&" +              #->CR_BASESEL                   
-#                           MLLALLCOMB + "&&" +             # mass cut on all lepton pairs
-#                           PT20_10    + "&&" +             # pT> 20/10 over all 4 l
-#                           "mass>70"        + "&&" +
-#                           SMARTMALLCOMB
-#                           ),
+      isBestCRZLLss = cms.string(CR_BESTCANDBASE_AA + "&&" + # CRZLLss conf4
+                           "userFloat('d0.isBestZ') &&" +
+                           Z2LL_SS + "&&" +
+                           CR_Z2MASS + "&&" +              #->CR_BASESEL                   
+                           MLLALLCOMB + "&&" +             # mass cut on all lepton pairs
+                           PT20_10    + "&&" +             # pT> 20/10 over all 4 l
+                           "mass>70"        + "&&" +
+                           SMARTMALLCOMB
+                           ),
     ),
     ZRolesByMass = cms.bool(False),  # daughter('Z1') = daughter(0)
     flags = cms.PSet(
