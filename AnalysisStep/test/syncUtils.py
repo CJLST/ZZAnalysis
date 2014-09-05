@@ -53,10 +53,9 @@ class KDs:
 
 class Candidate:
 
-    def __init__(self,event,fs,m,mZ1,mZ2,mErr,mErrCorr,pt,jets,mjj,detajj,kds):
+    def __init__(self,event,m,mZ1,mZ2,mErr,mErrCorr,pt,jets,mjj,detajj,kds):
 
         self.eventInfo   = event
-        self.finalstate  = fs
         self.mass4l      = m
         self.mZ1         = mZ1
         self.mZ2         = mZ2
