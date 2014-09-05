@@ -693,7 +693,7 @@ Z2EE_OS = "daughter(1).daughter(0).pdgId()*daughter(1).daughter(1).pdgId()==-121
 Z2EE_SS = "daughter(1).daughter(0).pdgId()*daughter(1).daughter(1).pdgId()== 121" #Z2 = e-e-/e+e+
 Z2ID    = "userFloat('d1.d0.ID')     && userFloat('d1.d1.ID')"                    #ID on LL leptons
 Z2SIP   = "userFloat('d1.d0.SIP')< 4 && userFloat('d1.d1.SIP')< 4"                #SIP on LL leptons
-CR_Z2MASS = "daughter(1).mass>12  && daughter(1).mass<120"                        #Mass on LL; cut directly at 12
+CR_Z2MASS = "daughter(1).mass>4  && daughter(1).mass<120"                        #Mass on LL; cut at 4
 
 CR_BASESEL = (CR_Z2MASS + "&&" +              # mass cuts on LL
               MLLALLCOMB + "&&" +             # mass cut on all lepton pairs
@@ -703,6 +703,20 @@ CR_BASESEL = (CR_Z2MASS + "&&" +              # mass cuts on LL
 CR_BESTCANDBASE = ("userFloat('d0.Z1Presel')") # Z with good leptons, mass cuts
 
 CR_BESTCANDBASE_AA   = ("userFloat('d0.Z1Presel') && " + Z2SIP) # base for AA CR
+
+CR_BESTZLLss = ""
+if SELSETUP == "Legacy":
+    CR_BESTZLLss = CR_BESTCANDBASE_AA + "&&" + "userFloat('d0.isBestZ') &&"+ Z2LL_SS
+elif SELSETUP == "conf1":
+    CR_BESTZLLss = CR_BESTCANDBASE_AA + "&&" + "userFloat('d0.isBestZ') &&"+ Z2LL_SS + "&&" +CR_Z2MASS + "&&" + MLLALLCOMB + "&&" + PT20_10 + "&& mass>70 &&"
+elif SELSETUP == "conf2":
+    CR_BESTZLLss = CR_BESTCANDBASE_AA + "&&" + "userFloat('d0.isBestZ') &&"+ Z2LL_SS + "&&" +CR_Z2MASS + "&&" + MLLALLCOMB + "&&" + PT20_10 + "&&" + "mass>70" + "&&" + "daughter(1).mass>12"
+elif SELSETUP == "conf3":
+    CR_BESTZLLss = CR_BESTCANDBASE_AA + "&&" + "userFloat('d0.isBestZ') &&"+ Z2LL_SS + "&&" +CR_Z2MASS + "&&" + MLLALLCOMB + "&&" + PT20_10 + "&&" + "mass>70" + "&&" + "daughter(1).mass>12" + "&&" + "userFloat('mZb')>12" 
+elif SELSETUP == "conf4":
+    CR_BESTZLLss = CR_BESTCANDBASE_AA + "&&" + "userFloat('d0.isBestZ') &&" +Z2LL_SS + "&&" +CR_Z2MASS + "&&" + MLLALLCOMB + "&&" + PT20_10 + "&&" + "mass>70" + "&&" + "daughter(1).mass>12" + "&&" + SMARTMALLCOMB
+
+
 
 # Z (OSSF,both e/mu) + LL (any F/C, with no ID/iso); this is the starting point for control regions
 process.bareZLLCand= cms.EDProducer("CandViewShallowCloneCombiner",
@@ -775,19 +789,7 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
                           "userFloat('d0.isBestZmm') &&" +
                           Z2EE_OS
                           ),
-      isBestCRZLLss = cms.string(CR_BESTCANDBASE_AA + "&&" + # CRZLLss (1-path)
-                          "userFloat('d0.isBestZ') &&"+
-                          Z2LL_SS
-                          ),                                     
-      isBestCRZLLss = cms.string(CR_BESTCANDBASE_AA + "&&" + # CRZLLss conf4
-                           "userFloat('d0.isBestZ') &&" +
-                           Z2LL_SS + "&&" +
-                           CR_Z2MASS + "&&" +              #->CR_BASESEL                   
-                           MLLALLCOMB + "&&" +             # mass cut on all lepton pairs
-                           PT20_10    + "&&" +             # pT> 20/10 over all 4 l
-                           "mass>70"        + "&&" +
-                           SMARTMALLCOMB
-                           ),
+      isBestCRZLLss = cms.string(CR_BESTZLLss),
     ),
     ZRolesByMass = cms.bool(False),  # daughter('Z1') = daughter(0)
     flags = cms.PSet(
