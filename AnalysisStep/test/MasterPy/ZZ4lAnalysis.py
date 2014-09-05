@@ -668,7 +668,7 @@ process.ZZCand = cms.EDProducer("ZZCandidateFiller",
     superMelaMass = cms.double(SUPERMELA_MASS),
     isMC = cms.bool(IsMC),
     bestCandAmong = cms.PSet(isBestCand = cms.string(BESTCAND_AMONG)),
-    bestCandComparator = BESTCANDCOMPARATOR,
+    bestCandComparator = cms.string(BESTCANDCOMPARATOR),
     ZRolesByMass = cms.bool(True),
     flags = cms.PSet(
         GoodLeptons =  cms.string(FOURGOODLEPTONS),
@@ -701,7 +701,7 @@ CR_Z2MASS = "daughter(1).mass>4  && daughter(1).mass<120"                       
 CR_BASESEL = (CR_Z2MASS + "&&" +              # mass cuts on LL
               MLLALLCOMB + "&&" +             # mass cut on all lepton pairs
               PT20_10    + "&&" +             # pT> 20/10 over all 4 l
-              "daughter(1).mass>12 &&"        # mZ2 >12
+              "daughter(1).mass>12 &&" +      # mZ2 >12
               M4l100 )                        # m4l>100 
 
 CR_BESTCANDBASE = ("userFloat('d0.Z1Presel')") # Z with good leptons, mass cuts
@@ -733,7 +733,7 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
     sampleType = cms.int32(SAMPLE_TYPE),
     superMelaMass = cms.double(SUPERMELA_MASS),
     isMC = cms.bool(IsMC),
-    bestCandComparator = BESTCANDCOMPARATOR,
+    bestCandComparator = cms.string(BESTCANDCOMPARATOR),
     bestCandAmong = cms.PSet(
       isBestCand    = cms.string("0"), #do not set SR best cand flag
       isBestCRZLL = cms.string(CR_BESTCANDBASE+ "&&" + # Old CR for Z2 with no SIP
