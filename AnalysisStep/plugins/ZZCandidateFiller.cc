@@ -81,6 +81,7 @@ private:
   bool isMC;
   TH2F* corrSigmaMu;
   TH2F* corrSigmaEle;
+  Comparators::ComparatorTypes bestCandType;
 };
 
 
@@ -126,6 +127,11 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
 
   corrSigmaMu=  (TH2F*)fCorrSigma->Get(("mu_"+sigmaCorrType+sigmaCorrYear).data()); 
   corrSigmaEle= (TH2F*)fCorrSigma->Get(("el_"+sigmaCorrType+sigmaCorrYear).data());
+
+  string cmp=iConfig.getParameter<string>("bestCandComparator");
+  if      (cmp=="byBestZ1bestZ2") bestCandType=Comparators::byBestZ1bestZ2;
+  else if (cmp=="byBestKD")           bestCandType=Comparators::byBestKD;
+  else abort();
 }
 
 
@@ -718,7 +724,12 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     // Old-style
     float mZa = (Z1Lp->p4()+Z2Lm->p4()).mass();
     float mZb = (Z1Lm->p4()+Z2Lp->p4()).mass();
-    if (mZa<mZb) swap(mZa,mZb); //sorting
+    int ZaID = Z1Lp->pdgId()*Z2Lm->pdgId();
+    int ZbID = Z1Lm->pdgId()*Z2Lp->pdgId();
+    if (mZa<mZb) { //sorting
+      swap(mZa,mZb); 
+      swap(ZaID,ZbID);
+    }
 
     vector<const reco::Candidate*> lep;
     lep.push_back(Z1Lm);
@@ -1072,6 +1083,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
       if (preBestCandResult){
 	// Fill preSelCands matrix
 	preSelCands[iCRname].push_back(i);
+	//	cout << "Pass best cand presel for " << iCRname << " " << myCand.mass() << " " << Z1->mass() << " " << Z2->mass() << " " << Z2->daughter(0)->pt() << " " << Z2->daughter(1)->pt() << " " <<  endl;
       }
       iCRname++;
     }
@@ -1080,7 +1092,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
 
   // Loop over preselections to initialize bestCandIdx
-  Comparators::bestZ1bestZ2 myComp(*result);
+  Comparators::BestCandComparator myComp(*result, bestCandType);
   for (int iCRname=0; iCRname<(int)preSelCands.size(); ++iCRname) {
     if (preSelCands[iCRname].size() > 0) {
       bestCandIdx[iCRname] = *std::min_element( preSelCands[iCRname].begin(), preSelCands[iCRname].end(), myComp);
@@ -1099,7 +1111,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
     }
   }
-  
+
   //--- Embed best candidate flag (must be done in a separate loop)
   for (int i = 0; i< (int)result->size(); ++i) {
     pat::CompositeCandidate& myCand = (*result)[i];

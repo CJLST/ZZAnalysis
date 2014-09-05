@@ -551,10 +551,12 @@ Z2MASS            = "daughter('Z2').mass>4  && daughter('Z2').mass<120" # (was >
 #MLL3On4_12        = "userFloat('mZa')>12" # mll>12 on 3/4 pairs; 
 #MLLALLCOMB        = "userFloat('mLL6')>4" # mll>4 on 6/6 AF/AS pairs;
 MLLALLCOMB        = "userFloat('mLL4')>4" # mll>4 on 4/4 AF/OS pairs;
-SMARTMALLCOMB     = "!(abs(userFloat('mZa')-91.1876)<(abs(daughter('Z1').mass-91.1876)) && userFloat('mZb')<12)" # Require mZ2' >12 IF mZ1' is closer to 91.1876 than mZ1
+SMARTMALLCOMB     = "(userFloat('ZaID')==-121||userFloat('ZaID')==-169) && !(abs(userFloat('mZa')-91.1876)<(abs(daughter('Z1').mass-91.1876)) && userFloat('mZb')<12)" # Require mZ2' >12 IF mZ1' is closer to 91.1876 than mZ1
 PT20_10           = ("userFloat('pt1')>20 && userFloat('pt2')>10") #20/10 on any of the 4 leptons
 M4l100            = "mass>100"
 
+BESTCANDCOMPARATOR = "byBestZ1bestZ2" #Legacy best candidate logic
+#BESTCANDCOMPARATOR = "byBestKD"       #Best candidate = highest-KD
 
 if SELSETUP=="Legacy": # Default Configuration (Legacy paper): cut on selected best candidate
 
@@ -666,6 +668,7 @@ process.ZZCand = cms.EDProducer("ZZCandidateFiller",
     superMelaMass = cms.double(SUPERMELA_MASS),
     isMC = cms.bool(IsMC),
     bestCandAmong = cms.PSet(isBestCand = cms.string(BESTCAND_AMONG)),
+    bestCandComparator = BESTCANDCOMPARATOR,
     ZRolesByMass = cms.bool(True),
     flags = cms.PSet(
         GoodLeptons =  cms.string(FOURGOODLEPTONS),
@@ -698,7 +701,8 @@ CR_Z2MASS = "daughter(1).mass>4  && daughter(1).mass<120"                       
 CR_BASESEL = (CR_Z2MASS + "&&" +              # mass cuts on LL
               MLLALLCOMB + "&&" +             # mass cut on all lepton pairs
               PT20_10    + "&&" +             # pT> 20/10 over all 4 l
-              M4l100)                         # m4l>100 
+              "daughter(1).mass>12 &&"        # mZ2 >12
+              M4l100 )                        # m4l>100 
 
 CR_BESTCANDBASE = ("userFloat('d0.Z1Presel')") # Z with good leptons, mass cuts
 
@@ -708,7 +712,7 @@ CR_BESTZLLss = ""
 if SELSETUP == "Legacy":
     CR_BESTZLLss = CR_BESTCANDBASE_AA + "&&" + "userFloat('d0.isBestZ') &&"+ Z2LL_SS
 elif SELSETUP == "conf1":
-    CR_BESTZLLss = CR_BESTCANDBASE_AA + "&&" + "userFloat('d0.isBestZ') &&"+ Z2LL_SS + "&&" +CR_Z2MASS + "&&" + MLLALLCOMB + "&&" + PT20_10 + "&& mass>70 &&"
+    CR_BESTZLLss = CR_BESTCANDBASE_AA + "&&" + "userFloat('d0.isBestZ') &&"+ Z2LL_SS + "&&" +CR_Z2MASS + "&&" + MLLALLCOMB + "&&" + PT20_10 + "&& mass>70"
 elif SELSETUP == "conf2":
     CR_BESTZLLss = CR_BESTCANDBASE_AA + "&&" + "userFloat('d0.isBestZ') &&"+ Z2LL_SS + "&&" +CR_Z2MASS + "&&" + MLLALLCOMB + "&&" + PT20_10 + "&&" + "mass>70" + "&&" + "daughter(1).mass>12"
 elif SELSETUP == "conf3":
@@ -729,6 +733,7 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
     sampleType = cms.int32(SAMPLE_TYPE),
     superMelaMass = cms.double(SUPERMELA_MASS),
     isMC = cms.bool(IsMC),
+    bestCandComparator = BESTCANDCOMPARATOR,
     bestCandAmong = cms.PSet(
       isBestCand    = cms.string("0"), #do not set SR best cand flag
       isBestCRZLL = cms.string(CR_BESTCANDBASE+ "&&" + # Old CR for Z2 with no SIP
