@@ -898,6 +898,8 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     myCand.addUserFloat("iso34",          iso34);
     myCand.addUserFloat("mZa",            mZa);
     myCand.addUserFloat("mZb",            mZb);
+    myCand.addUserFloat("ZaID",           ZaID);
+    myCand.addUserFloat("ZbID",           ZbID);
     myCand.addUserFloat("mLL4",           mll4); // smallest mass of any AF/OS pair
     myCand.addUserFloat("mLL6",           mll6);   // smallest mass of any AF/AS pair
     myCand.addUserFloat("costheta1",      costheta1);
