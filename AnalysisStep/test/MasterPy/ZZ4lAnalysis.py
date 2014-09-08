@@ -551,7 +551,7 @@ Z2MASS            = "daughter('Z2').mass>4  && daughter('Z2').mass<120" # (was >
 #MLL3On4_12        = "userFloat('mZa')>12" # mll>12 on 3/4 pairs; 
 #MLLALLCOMB        = "userFloat('mLL6')>4" # mll>4 on 6/6 AF/AS pairs;
 MLLALLCOMB        = "userFloat('mLL4')>4" # mll>4 on 4/4 AF/OS pairs;
-SMARTMALLCOMB     = "(userFloat('ZaID')==-121||userFloat('ZaID')==-169) && !(abs(userFloat('mZa')-91.1876)<(abs(daughter('Z1').mass-91.1876)) && userFloat('mZb')<12)" # Require mZ2' >12 IF mZ1' is closer to 91.1876 than mZ1
+SMARTMALLCOMB     = "userFloat('passSmartMLL')" # Require swapped-lepton Z2' to be >12 IF Z1' is SF/OS and closer to 91.1876 than mZ1
 PT20_10           = ("userFloat('pt1')>20 && userFloat('pt2')>10") #20/10 on any of the 4 leptons
 M4l100            = "mass>100"
 

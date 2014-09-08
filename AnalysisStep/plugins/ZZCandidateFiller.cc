@@ -177,10 +177,10 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     const reco::CompositeCandidate::role_collection* ZRoles = &rolesZ1Z2;
     int iZ1 = 0; // index of the Z closest to mZ. This will be different to rolesZ1Z2
     int iZ2 = 1;
-    if(fabs(myCand.daughter(0)->mass()-ZmassValue)>=fabs(myCand.daughter(1)->mass()-ZmassValue)){
-      swap(iZ1,iZ2);
+    if(std::abs(myCand.daughter(0)->mass()-ZmassValue)>=std::abs(myCand.daughter(1)->mass()-ZmassValue)){
       if (ZRolesByMass) { 
-	ZRoles = &rolesZ2Z1;
+        swap(iZ1,iZ2);
+        ZRoles = &rolesZ2Z1;
       }
     }
 
@@ -721,15 +721,31 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
       }
     }
 
-    // Old-style
+    // Old-style: pick the other SF/OS combination 
+    float mZ1= Z1->mass();
     float mZa = (Z1Lp->p4()+Z2Lm->p4()).mass();
     float mZb = (Z1Lm->p4()+Z2Lp->p4()).mass();
     int ZaID = Z1Lp->pdgId()*Z2Lm->pdgId();
     int ZbID = Z1Lm->pdgId()*Z2Lp->pdgId();
-    if (mZa<mZb) { //sorting
+    // For same-sign CRs, the Z2 leptons are same sign, so we need to check also the other combination. 
+    float mZalpha = (Z1Lp->p4()+Z2Lp->p4()).mass();
+    float mZbeta  = (Z1Lm->p4()+Z2Lm->p4()).mass();
+    int ZalphaID = Z1Lp->pdgId()*Z2Lp->pdgId();
+    int ZbetaID  = Z1Lm->pdgId()*Z2Lm->pdgId();
+    if (std::abs(mZa-ZmassValue)>=std::abs(mZb-ZmassValue)) { //sorting
       swap(mZa,mZb); 
       swap(ZaID,ZbID);
     }
+    if (std::abs(mZalpha-ZmassValue)>=std::abs(mZbeta-ZmassValue)) {
+      swap(mZalpha,mZbeta); 
+      swap(ZalphaID,ZbetaID);
+    }
+
+    // "smart" mll logic: veto the candidate if by swapping leptons we find a better Z1 and the Z2 is below 12 GeV.
+    // To handle same-sign CRs, we have to check both alternate pairings, and consider those that have a SF/OS Z1.
+    bool passSmartMLL = true;
+    if (((ZaID==-121||ZaID==-169) && std::abs(mZa-ZmassValue)<std::abs(mZ1-ZmassValue) && mZb<12) ||
+	((ZalphaID==-121||ZalphaID==-169) && std::abs(mZalpha-ZmassValue)<std::abs(mZ1-ZmassValue) && mZbeta<12)) passSmartMLL = false;
 
     vector<const reco::Candidate*> lep;
     lep.push_back(Z1Lm);
@@ -900,8 +916,13 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     myCand.addUserFloat("mZb",            mZb);
     myCand.addUserFloat("ZaID",           ZaID);
     myCand.addUserFloat("ZbID",           ZbID);
+    myCand.addUserFloat("mZalpha",        mZalpha);
+    myCand.addUserFloat("mZbeta",         mZbeta);
+    myCand.addUserFloat("ZalphaID",       ZalphaID);
+    myCand.addUserFloat("ZbetaID",        ZbetaID);
     myCand.addUserFloat("mLL4",           mll4); // smallest mass of any AF/OS pair
     myCand.addUserFloat("mLL6",           mll6);   // smallest mass of any AF/AS pair
+    myCand.addUserFloat("passSmartMLL",   passSmartMLL);
     myCand.addUserFloat("costheta1",      costheta1);
     myCand.addUserFloat("costheta2",      costheta2);
     myCand.addUserFloat("phi",            phi);
