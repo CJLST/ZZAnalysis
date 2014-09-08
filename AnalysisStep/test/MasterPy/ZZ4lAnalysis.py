@@ -555,8 +555,12 @@ SMARTMALLCOMB     = "userFloat('passSmartMLL')" # Require swapped-lepton Z2' to 
 PT20_10           = ("userFloat('pt1')>20 && userFloat('pt2')>10") #20/10 on any of the 4 leptons
 M4l100            = "mass>100"
 
-BESTCANDCOMPARATOR = "byBestZ1bestZ2" #Legacy best candidate logic
-#BESTCANDCOMPARATOR = "byBestKD"       #Best candidate = highest-KD
+
+if SELSETUP == "conf5":
+    BESTCANDCOMPARATOR = "byBestKD"       #Best candidate = highest-KD
+else:
+    BESTCANDCOMPARATOR = "byBestZ1bestZ2" #Legacy best candidate logic
+    
 
 if SELSETUP=="Legacy": # Default Configuration (Legacy paper): cut on selected best candidate
 
@@ -574,7 +578,7 @@ if SELSETUP=="Legacy": # Default Configuration (Legacy paper): cut on selected b
                            "mass>70"        + "&&" +
                            "daughter('Z2').mass>12")
 
-elif SELSETUP=="conf1": # Configuration 1 (select best candidate among those passing all cuts except mZ2, leave only mZ2 cut at the end)
+elif SELSETUP=="conf1" or SELSETUP=="conf5": # Configuration 1 (select best candidate among those passing all cuts except mZ2, leave only mZ2 cut at the end)
 
     BESTCAND_AMONG = (FOURGOODLEPTONS + "&&" +
                       Z1MASS          + "&&" +
@@ -630,7 +634,7 @@ elif SELSETUP=="conf4": # Configuration 4 (apply smarter mZb cut)
                       )
 
     FULLSEL70 = BESTCAND_AMONG
-    
+
 
 else:
     print "Please choose one of the following string for SELSETUP: 'Legacy', 'conf1', 'conf2', 'conf3', 'conf4'"
