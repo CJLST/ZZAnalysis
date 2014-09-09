@@ -52,6 +52,9 @@ class MCHistoryTools {
     
   // The leptons coming from ZZ or HZZ, sorted according to the reco-level criteria
   const std::vector<const reco::Candidate *>& sortedGenZZLeps() {init(); return theSortedGenLepts;}
+  
+  // The leptons coming from associated W, Z, or ttbar
+  const std::vector<const reco::Candidate *>& genAssociatedLeps() {init(); return theAssociatedLeps;}
 
   /// Find the actual lepton parent (first parent in MC history with a different pdgID)
   const reco::GenParticle* getParent(const reco::GenParticle* genLep);
@@ -90,6 +93,7 @@ class MCHistoryTools {
   std::vector<const reco::Candidate *> theAssociatedV;
   std::vector<const reco::Candidate *> theGenLeps;
   std::vector<const reco::Candidate *> theSortedGenLepts;
+  std::vector<const reco::Candidate *> theAssociatedLeps;
   
   void init();
 

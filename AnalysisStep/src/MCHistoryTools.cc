@@ -227,14 +227,25 @@ MCHistoryTools::init() {
     // in the MC History of ggZZ Summer 12 samples, or leptons may not come from the Z
     else if ((id== 13 || id==11 || id==15) && ((p->mother()!=0 && p->mother()->pdgId()==23) || ((processID==661||processID==900661) && p->status()==3))) { 
 
-      // ZH: skip leptons from associated Z
+      // ZH : leptons from the associated Z are stored in a separate list
       if ((processID==24||processID==900024) && p->mother()!=0 && p->mother()->mother()!=0 && p->mother()->mother()->pdgId()!=25) {
-	// Can save these to a separate list of leptons from associated prod
+	theAssociatedLeps.push_back(&*p);
 	continue;
-      }
+      } 
       
       theGenLeps.push_back(&*p);
     }
+    
+    // --- additional lepton in WH
+    else if ((processID==26||processID==900026) && (id== 13 || id==11 || id==15) && p->mother()!=0 && abs(p->mother()->pdgId())==24) { 
+      theAssociatedLeps.push_back(&*p);
+    }
+    
+    // --- additional leptons in ttH
+    else if ((processID==121 || processID==122) && (id== 13 || id==11 || id==15) && p->mother()!=0 && abs(p->mother()->pdgId())==24 && p->mother()->mother()!=0 && abs(p->mother()->mother()->pdgId())==6) { 
+      theAssociatedLeps.push_back(&*p);
+    }
+
   } // end loop on particles
 
 

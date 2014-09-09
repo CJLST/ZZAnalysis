@@ -266,6 +266,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   const reco::Candidate * genH = 0;
   //  std::vector<const reco::Candidate *> genZs;
   std::vector<const reco::Candidate *> genZLeps;
+  std::vector<const reco::Candidate *> genAssocLeps;
   if (isMC) {
 
     Handle<std::vector< PileupSummaryInfo > >  PupInfo;
@@ -349,7 +350,8 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     genH = mch.genH();
     //    genZs = mch.genZs(); // These are the pdgID=23 particles in the MC history, if present.
     //    genZLeps = mch.genZLeps();
-    genZLeps = mch.sortedGenZZLeps();
+    genZLeps = (mch.genZLeps().size()<4) ? mch.genZLeps() : mch.sortedGenZZLeps();
+    genAssocLeps = mch.genAssociatedLeps();
   }
   //----------------------------------------------------------------------
 
@@ -464,7 +466,8 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       myTree->FillHGenInfo((genZLeps.at(0)->p4()+genZLeps.at(1)->p4()+genZLeps.at(2)->p4()+genZLeps.at(3)->p4()));
     }
 
-    if (genFinalState!=BUGGY && genFinalState!=NONE) {
+    //if (genFinalState!=BUGGY && genFinalState!=NONE) {
+    if (genFinalState!=BUGGY) { // removed genFinalState!=NONE requirement, so as to include events where the ZZ system doesn't decay to 4 leptons, e.g. ZH with Z->ll, H->ZZ->llqq ... 
 
 //       if (genZs.size()==2){
 // 	myTree->FillZGenInfo(genZs.at(0)->p4(), genZs.at(1)->p4());
@@ -494,7 +497,22 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 //	mela::computeAngles(pL11,id11,pL12,id12,pL21,id21,pL22,id22,gencosthetastar,gencostheta1,gencostheta2,genphi,genphistar1);
 	
       }
+
+      if (genZLeps.size()==3) {
+	myTree->FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), genZLeps.at(2)->pdgId(), 0,
+			       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), *(new math::XYZTLorentzVector));
+      }
+      if (genZLeps.size()==2) {
+	myTree->FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), 0, 0,
+			       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), *(new math::XYZTLorentzVector), *(new math::XYZTLorentzVector));
+      }
+
+      if (genAssocLeps.size()==1 || genAssocLeps.size()==2) {
+	myTree->FillAssocLepGenInfo(genAssocLeps);
+      }
+
     }
+
   }
 
 

@@ -8,6 +8,8 @@
 #include <TTree.h>
 
 #include "DataFormats/Math/interface/LorentzVector.h"
+#include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/PatCandidates/interface/Electron.h"
 
 class HZZ4lNtupleFactory{
   
@@ -156,8 +158,9 @@ class HZZ4lNtupleFactory{
 
   void FillHGenInfo(const math::XYZTLorentzVector Hp);
   void FillZGenInfo(const math::XYZTLorentzVector Z1p, const math::XYZTLorentzVector Z2p);
-  void FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t Lep3Id, Short_t Lep4Id, 
+  void FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t Lep3Id, Short_t Lep4Id,
 		      const math::XYZTLorentzVector Lep1, const math::XYZTLorentzVector Lep2, const math::XYZTLorentzVector Lep3, const math::XYZTLorentzVector Lep4);
+  void FillAssocLepGenInfo(std::vector<const reco::Candidate *>& AssocLeps);
 
   void InitializeVariables();
 
@@ -456,6 +459,16 @@ class HZZ4lNtupleFactory{
   Float_t _genLep4Eta;
   Float_t _genLep4Phi;
   Short_t _genLep4Id;
+
+  Float_t _genAssocLep1Pt;
+  Float_t _genAssocLep1Eta;
+  Float_t _genAssocLep1Phi;
+  Short_t _genAssocLep1Id;
+
+  Float_t _genAssocLep2Pt;
+  Float_t _genAssocLep2Eta;
+  Float_t _genAssocLep2Phi;
+  Short_t _genAssocLep2Id;
 
 };
 

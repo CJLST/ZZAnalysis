@@ -88,6 +88,16 @@ void HZZ4lNtupleFactory::InitializeVariables()
   _genLep4Phi = 0.;
   _genLep4Id = 0;
 
+  _genAssocLep1Pt = 0.;
+  _genAssocLep1Eta = 0.;
+  _genAssocLep1Phi = 0.;
+  _genAssocLep1Id = 0;
+
+  _genAssocLep2Pt = 0.;
+  _genAssocLep2Eta = 0.;
+  _genAssocLep2Phi = 0.;
+  _genAssocLep2Id = 0;
+
 
   //H variables
   _ZZMass.clear();
@@ -628,6 +638,16 @@ void HZZ4lNtupleFactory::InitializeBranches()
   _outTree->Branch("GenLep4Phi",&_genLep4Phi,"GenLep4Phi/F");
   _outTree->Branch("GenLep4Id",&_genLep4Id,"GenLep4Id/S");
 
+  _outTree->Branch("GenAssocLep1Pt",&_genAssocLep1Pt,"GenAssocLep1Pt/F");
+  _outTree->Branch("GenAssocLep1Eta",&_genAssocLep1Eta,"GenAssocLep1Eta/F");
+  _outTree->Branch("GenAssocLep1Phi",&_genAssocLep1Phi,"GenAssocLep1Phi/F");
+  _outTree->Branch("GenAssocLep1Id",&_genAssocLep1Id,"GenAssocLep1Id/S");
+
+  _outTree->Branch("GenAssocLep2Pt",&_genAssocLep2Pt,"GenAssocLep2Pt/F");
+  _outTree->Branch("GenAssocLep2Eta",&_genAssocLep2Eta,"GenAssocLep2Eta/F");
+  _outTree->Branch("GenAssocLep2Phi",&_genAssocLep2Phi,"GenAssocLep2Phi/F");
+  _outTree->Branch("GenAssocLep2Id",&_genAssocLep2Id,"GenAssocLep2Id/S");
+
   return;
 }
 
@@ -681,6 +701,24 @@ void HZZ4lNtupleFactory::FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t 
   _genLep4Eta = Lep4.Eta();
   _genLep4Phi = Lep4.Phi();
   _genLep4Id  = Lep4Id;
+
+  return;
+}
+
+void HZZ4lNtupleFactory::FillAssocLepGenInfo(std::vector<const reco::Candidate *>& AssocLeps)
+{
+  if (AssocLeps.size() >= 1) {
+    _genAssocLep1Pt  = AssocLeps.at(0)->p4().Pt();
+    _genAssocLep1Eta = AssocLeps.at(0)->p4().Eta();
+    _genAssocLep1Phi = AssocLeps.at(0)->p4().Phi();
+    _genAssocLep1Id  = AssocLeps.at(0)->pdgId();
+  }
+  if (AssocLeps.size() >= 2) {
+    _genAssocLep2Pt  = AssocLeps.at(1)->p4().Pt();
+    _genAssocLep2Eta = AssocLeps.at(1)->p4().Eta();
+    _genAssocLep2Phi = AssocLeps.at(1)->p4().Phi();
+    _genAssocLep2Id  = AssocLeps.at(1)->pdgId();
+  }
 
   return;
 }
