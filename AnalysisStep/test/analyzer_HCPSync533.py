@@ -13,7 +13,7 @@ MCFILTER = ""
 ELECORRTYPE   = "Paper" # "None", "Moriond", or "Paper"
 ELEREGRESSION = "Paper" # "None", "Moriond", "PaperNoComb", or "Paper" 
 APPLYMUCORR = True
-SELSETUP = "Legacy" # "Legacy", "conf1", "conf2", "conf3", "conf4"
+SELSETUP = "Legacy" # "Legacy", "conf1", "conf2", "conf3", "conf4", "conf5"
 
 #For DATA: 
 #IsMC = False
