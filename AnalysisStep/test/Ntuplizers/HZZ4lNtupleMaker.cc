@@ -350,7 +350,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     genH = mch.genH();
     //    genZs = mch.genZs(); // These are the pdgID=23 particles in the MC history, if present.
     //    genZLeps = mch.genZLeps();
-    genZLeps = (mch.genZLeps().size()<4) ? mch.genZLeps() : mch.sortedGenZZLeps();
+    genZLeps     = mch.sortedGenZZLeps();
     genAssocLeps = mch.genAssociatedLeps();
   }
   //----------------------------------------------------------------------

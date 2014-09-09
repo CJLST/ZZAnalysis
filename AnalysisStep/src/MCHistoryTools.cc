@@ -328,8 +328,10 @@ MCHistoryTools::init() {
 // 	 << theSortedGenLepts[2]->pdgId() << " " 
 // 	 << theSortedGenLepts[3]->pdgId() << " " 
 // 	 << endl;
-  }  
-
+  } else {
+    theSortedGenLepts = theGenLeps;
+  }
+  
 
   isInit = true;
 

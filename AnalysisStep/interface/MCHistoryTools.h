@@ -50,7 +50,7 @@ class MCHistoryTools {
   // The leptons coming from Zs (in no specific order) 
   const std::vector<const reco::Candidate *>& genZLeps() {init(); return theGenLeps;}
     
-  // The leptons coming from ZZ or HZZ, sorted according to the reco-level criteria
+  // The leptons coming from ZZ or HZZ, sorted according to the reco-level criteria. Equals to genZLeps() if there are !=4 leptons from ZZ.
   const std::vector<const reco::Candidate *>& sortedGenZZLeps() {init(); return theSortedGenLepts;}
   
   // The leptons coming from associated W, Z, or ttbar
