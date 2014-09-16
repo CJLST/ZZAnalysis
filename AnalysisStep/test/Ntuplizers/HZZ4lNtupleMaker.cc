@@ -1027,6 +1027,20 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   myTree->FillHInfo(ZZMass, ZZMassErr, ZZMassErrCorr, ZZMassPreFSR, ZZMassRefit, Chi2KinFit, ZZMassCFit, Chi2CFit,  sel, ZZPt, ZZEta, ZZPhi,
 		    isSignal, isRightPair, ZZFisher, CRflag);
 
+  //Fill the info on categorization
+  const Int_t nExtraLep = cand.userInt("nExtraLep");
+  const Int_t nExtraZ = cand.userInt("nExtraZ");
+  myTree->FillCategorizationInfo(nExtraLep, nExtraZ);
+
+  //Fill the info on the extra leptons
+  if(cand.hasUserCand("ExtraLep1"))
+    myTree->FillExtraLepInfo( cand.userCand("ExtraLep1") );
+  if(cand.hasUserCand("ExtraLep2"))
+    myTree->FillExtraLepInfo( cand.userCand("ExtraLep2") );
+  if(cand.hasUserCand("ExtraLep3"))
+    myTree->FillExtraLepInfo( cand.userCand("ExtraLep3") );
+    
+
 }
 
 

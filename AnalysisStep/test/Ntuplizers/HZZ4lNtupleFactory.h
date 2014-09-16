@@ -11,6 +11,8 @@
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
 
+#include <ZZAnalysis/AnalysisStep/interface/DaughterDataHelpers.h>
+
 class HZZ4lNtupleFactory{
   
  protected:
@@ -155,6 +157,8 @@ class HZZ4lNtupleFactory{
   void FillPhotonInfo(const Float_t PhotPt, const Float_t PhotEta, const Float_t PhotPhi);
   void FillJetInfo(const Float_t JetPt, const Float_t JetEta, const Float_t JetPhi, const Float_t JetMass, const Float_t JetBTag, const Float_t JetSigma);
   void FillDiJetInfo(const Float_t DiJetMass, const Float_t DiJetMassPlus, const Float_t DiJetMassMinus, const Float_t DiJetDEta);
+  void FillCategorizationInfo(const Int_t nExtraLep, const Int_t nExtraZ);
+  void FillExtraLepInfo(const reco::CandidatePtr ExtraLep);
 
   void FillHGenInfo(const math::XYZTLorentzVector Hp);
   void FillZGenInfo(const math::XYZTLorentzVector Z1p, const math::XYZTLorentzVector Z2p);
@@ -173,6 +177,7 @@ class HZZ4lNtupleFactory{
   Bool_t _firstZStored;
   Int_t _LeptonIndex;
   Int_t _LeptonIsoIndex;
+  Int_t _ExtraLeptonIndex;
 
   //Event variables
   Int_t _RunNumber;
@@ -429,6 +434,50 @@ class HZZ4lNtupleFactory{
   Float_t _DiJetMassPlus;
   Float_t _DiJetMassMinus;
   Float_t _DiJetDEta;
+
+  //Categorization-related variables
+  std::vector<Int_t> _nExtraLep;
+  std::vector<Int_t> _nExtraZ;
+
+  //Variables of extra leptons
+  std::vector<Float_t> _ExtraLep1Pt;
+  std::vector<Float_t> _ExtraLep1Eta;
+  std::vector<Float_t> _ExtraLep1Phi;
+  std::vector<Int_t>   _ExtraLep1LepId;
+  std::vector<Float_t> _ExtraLep1SIP;
+  std::vector<Bool_t>  _ExtraLep1isID;
+  std::vector<Float_t> _ExtraLep1BDT;
+  std::vector<Char_t>  _ExtraLep1missingHit;
+  std::vector<Float_t> _ExtraLep1chargedHadIso;
+  std::vector<Float_t> _ExtraLep1neutralHadIso;
+  std::vector<Float_t> _ExtraLep1photonIso;
+  std::vector<Float_t> _ExtraLep1combRelIsoPF;
+
+  std::vector<Float_t> _ExtraLep2Pt;
+  std::vector<Float_t> _ExtraLep2Eta;
+  std::vector<Float_t> _ExtraLep2Phi;
+  std::vector<Int_t>   _ExtraLep2LepId;
+  std::vector<Float_t> _ExtraLep2SIP;
+  std::vector<Bool_t>  _ExtraLep2isID;
+  std::vector<Float_t> _ExtraLep2BDT;
+  std::vector<Char_t>  _ExtraLep2missingHit;
+  std::vector<Float_t> _ExtraLep2chargedHadIso;
+  std::vector<Float_t> _ExtraLep2neutralHadIso;
+  std::vector<Float_t> _ExtraLep2photonIso;
+  std::vector<Float_t> _ExtraLep2combRelIsoPF;
+
+  std::vector<Float_t> _ExtraLep3Pt;
+  std::vector<Float_t> _ExtraLep3Eta;
+  std::vector<Float_t> _ExtraLep3Phi;
+  std::vector<Int_t>   _ExtraLep3LepId;
+  std::vector<Float_t> _ExtraLep3SIP;
+  std::vector<Bool_t>  _ExtraLep3isID;
+  std::vector<Float_t> _ExtraLep3BDT;
+  std::vector<Char_t>  _ExtraLep3missingHit;
+  std::vector<Float_t> _ExtraLep3chargedHadIso;
+  std::vector<Float_t> _ExtraLep3neutralHadIso;
+  std::vector<Float_t> _ExtraLep3photonIso;
+  std::vector<Float_t> _ExtraLep3combRelIsoPF;
 
   //Generation variables
   Float_t _genHMass;

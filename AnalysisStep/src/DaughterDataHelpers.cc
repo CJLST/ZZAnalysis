@@ -30,12 +30,12 @@ void userdatahelpers::embedDaughterData(pat::CompositeCandidate& cand) {
 
 
 float userdatahelpers::getUserFloat(const reco::Candidate* c, const char* name){
-  const reco::Candidate* d = c->masterClone().get();
-  if (const pat::Muon* mu = dynamic_cast<const pat::Muon*>(d)) {
+  if(c->hasMasterClone()) c = c->masterClone().get();
+  if (const pat::Muon* mu = dynamic_cast<const pat::Muon*>(c)) {
     return mu->userFloat(name);
-  } else if (const pat::Electron* ele = dynamic_cast<const pat::Electron*>(d)) {
+  } else if (const pat::Electron* ele = dynamic_cast<const pat::Electron*>(c)) {
     return ele->userFloat(name);
-  } else if (const pat::CompositeCandidate* cc = dynamic_cast<const pat::CompositeCandidate*>(d)) {
+  } else if (const pat::CompositeCandidate* cc = dynamic_cast<const pat::CompositeCandidate*>(c)) {
     return cc->userFloat(name);
   }
   return 0;
