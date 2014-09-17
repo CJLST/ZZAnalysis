@@ -723,13 +723,13 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
     // Old-style: pick the other SF/OS combination 
     float mZ1= Z1->mass();
-    float mZa = (Z1Lp->p4()+Z2Lm->p4()).mass();
-    float mZb = (Z1Lm->p4()+Z2Lp->p4()).mass();
+    float mZa = (p11+p22).mass();
+    float mZb = (p12+p21).mass();
     int ZaID = Z1Lp->pdgId()*Z2Lm->pdgId();
     int ZbID = Z1Lm->pdgId()*Z2Lp->pdgId();
     // For same-sign CRs, the Z2 leptons are same sign, so we need to check also the other combination. 
-    float mZalpha = (Z1Lp->p4()+Z2Lp->p4()).mass();
-    float mZbeta  = (Z1Lm->p4()+Z2Lm->p4()).mass();
+    float mZalpha = (p11+p21).mass();
+    float mZbeta  = (p12+p22).mass();
     int ZalphaID = Z1Lp->pdgId()*Z2Lp->pdgId();
     int ZbetaID  = Z1Lm->pdgId()*Z2Lm->pdgId();
     if (std::abs(mZa-ZmassValue)>=std::abs(mZb-ZmassValue)) { //sorting
