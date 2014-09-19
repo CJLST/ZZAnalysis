@@ -14,12 +14,22 @@
 #include "TMath.h"
 #include "TColor.h"
 
+using namespace std;
+
 #define MASSZ 91.1876
-#define DOBKGD 1
+
+#define DEBUG 0
+
+#define doProdComp       1
+#define doProdCompMatch4 0
+#define doMatch4OrNot    0
+#define doMatchHLeps     0
+#define doMatchAllLeps   0
+#define doMatchWHZHttH   1
+#define do2DPlots        1
 
 #define nSamples 6
 #define nHiggsSamples 5
-#define nProcessedSamples (DOBKGD?nSamples:nHiggsSamples)
 #define nCategories 4
 #define nVariables 6
 #define nMatchHLepsStatuses 6
@@ -28,7 +38,15 @@
 #define nMatchZHStatuses 7
 #define nMatchttHStatuses 9
 
-using namespace std;
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+/////////////////////////// MISCELLANEOUS FUNCTIONS ////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 
 Double_t deltaR(Double_t e1, Double_t p1, Double_t e2, Double_t p2) {
   Double_t deltaPhi = acos(cos(p1-p2));
@@ -68,9 +86,9 @@ string percentage(float frac) {
   return string(Form("%.1f",100*frac));
 }
 
-void SaveCanvas(const char* directory, TCanvas* c, const char* tag = "") {
-  c->SaveAs(Form("%s%s_%s.root",directory,c->GetName(),tag));
-  c->SaveAs(Form("%s%s_%s.pdf" ,directory,c->GetName(),tag));  
+void SaveCanvas(string directory, TCanvas* c, const char* tag = "") {
+  c->SaveAs(Form("%s%s_%s.root",directory.c_str(),c->GetName(),tag));
+  c->SaveAs(Form("%s%s_%s.pdf" ,directory.c_str(),c->GetName(),tag));  
 }
 
 void set_plot_style() {
@@ -84,12 +102,17 @@ void set_plot_style() {
     gStyle->SetNumberContours(NCont);
 }
 
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+///////////////////////////// PLOTTING FUNCTIONS ///////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-void DrawByProdmodes(TCanvas* c, TH1F* hSource[nSamples][nCategories], string* prodName, Color_t* colors, Bool_t withBkgdIfAny, Bool_t logY = false) {
 
-  Int_t n = withBkgdIfAny ? nProcessedSamples : nHiggsSamples;
+void DrawByProdmodes(TCanvas* c, TH1F* hSource[nSamples][nCategories], string* prodName, Bool_t* isPresent, Color_t* colors, Bool_t logY = false) {
 
   gStyle->SetOptTitle(0);
 
@@ -101,17 +124,19 @@ void DrawByProdmodes(TCanvas* c, TH1F* hSource[nSamples][nCategories], string* p
   lgd->SetFillStyle(0);
   lgd->SetBorderSize(0);
 
-  TH1F* h[n];
+  TH1F* h[nSamples];
 
   Float_t max = 0.;
-  for(int p=0; p<n; p++){
+  for(int p=0; p<nSamples; p++){
+    if(!isPresent[p]) continue;
     h[p] = (TH1F*)hSource[p][3]->Clone(); // includes the 3 decay channels !!
     h[p]->Scale(1/h[p]->Integral());
     Float_t maxtemp = h[p]->GetMaximum();
     if(maxtemp>max) max = maxtemp;
   }
 
-  for(int p=0; p<n; p++){
+  for(int p=0; p<nSamples; p++){
+    if(!isPresent[p]) continue;
     string pn = prodName[p];
 
     h[p]->SetLineColor(colors[p]);
@@ -308,23 +333,38 @@ void Draw2D(TCanvas* c, TH2F* h, string title) {
   h->Draw("COLZ"); 
 }
 
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////// MAIN MACRO //////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+
 void plotProductionModeComparison(
-				  const char* outDir,
-				  const char* dir_ggH,
-				  const char* dir_VBF,
-				  const char* dir_WH,
-				  const char* dir_ZH,
-				  const char* dir_ttH,
-				  const char* dir_ZZ4mu = "",
-				  const char* dir_ZZ4e = "",
-				  const char* dir_ZZ2e2mu = ""
+
+				  // directory to save the plots
+				  string outDir,
+
+				  // path of the input primary tree (just let "" for trees you don't have)
+				  string file_ggH,
+				  string file_VBF     = "",
+				  string file_WH      = "",
+				  string file_ZH      = "",
+				  string file_ttH     = "",
+				  string file_ZZ4mu   = "",
+				  string file_ZZ4e    = "",
+				  string file_ZZ2e2mu = ""
+
 				  )
 {
 
-  //TH1::SetDefaultSumw2();
+
+  // ------------------------------------------------------------
+  // ---------------------- Definitions -------------------------
+  // ------------------------------------------------------------
 
   string prodName[nSamples] = {
     "ggH",
@@ -334,6 +374,15 @@ void plotProductionModeComparison(
     "ttH",
     "qqtoZZ",
   };
+  Bool_t isPresent[nSamples] = {
+    file_ggH != "",
+    file_VBF != "",
+    file_WH  != "",
+    file_ZH  != "",
+    file_ttH != "",
+    file_ZZ4mu != "" && file_ZZ4e != "" && file_ZZ2e2mu != "",
+  };
+
   Color_t colors[nSamples] = {kBlue, kGreen+2, kRed, kOrange+1, kMagenta+1, kRed-1};
   Color_t allColorsMP[nMatchHLepsStatuses][nHiggsSamples] = {
     { kBlue+2 , kGreen+3, kRed+2 , kOrange+4, kMagenta+2  },
@@ -493,19 +542,20 @@ void plotProductionModeComparison(
     kGray+1,
   };
 
-  TChain* chain[nProcessedSamples][nCategories];
-  for(int p=0; p<nProcessedSamples; p++){
+  TChain* chain[nSamples][nCategories];
+  for(int p=0; p<nSamples; p++){
+    if(!isPresent[p]) continue;
     for(int c=0; c<nCategories-1; c++){
       chain[p][c] = new TChain(Form("%s/candTree",subdir[c].c_str()));
-      if(prodName[p]=="ggH") chain[p][c]->Add(Form("%s*.root",dir_ggH));
-      if(prodName[p]=="VBF") chain[p][c]->Add(Form("%s*.root",dir_VBF));
-      if(prodName[p]=="WH" ) chain[p][c]->Add(Form("%s*.root",dir_WH ));
-      if(prodName[p]=="ZH" ) chain[p][c]->Add(Form("%s*.root",dir_ZH ));
-      if(prodName[p]=="ttH") chain[p][c]->Add(Form("%s*.root",dir_ttH));
+      if(prodName[p]=="ggH") chain[p][c]->Add(file_ggH.c_str());
+      if(prodName[p]=="VBF") chain[p][c]->Add(file_VBF.c_str());
+      if(prodName[p]=="WH" ) chain[p][c]->Add(file_WH .c_str());
+      if(prodName[p]=="ZH" ) chain[p][c]->Add(file_ZH .c_str());
+      if(prodName[p]=="ttH") chain[p][c]->Add(file_ttH.c_str());
       if(prodName[p]=="qqtoZZ"){
-	chain[p][c]->Add(Form("%s*.root",dir_ZZ4mu));
-	chain[p][c]->Add(Form("%s*.root",dir_ZZ4e));
-	chain[p][c]->Add(Form("%s*.root",dir_ZZ2e2mu));
+	chain[p][c]->Add(file_ZZ4mu.c_str());
+	chain[p][c]->Add(file_ZZ4e.c_str());
+	chain[p][c]->Add(file_ZZ2e2mu.c_str());
       }
     }
   }
@@ -614,7 +664,15 @@ void plotProductionModeComparison(
   Int_t nbZ1DaughtersFromHttH[4][4]; for(int i=0; i<4; i++) for(int j=0; j<4; j++) nbZ1DaughtersFromHttH[i][j] = 0;
   Int_t nbZ2DaughtersFromHttH[4][4]; for(int i=0; i<4; i++) for(int j=0; j<4; j++) nbZ2DaughtersFromHttH[i][j] = 0;
 
-  for(int p=0; p<nProcessedSamples; p++){
+
+
+  // ------------------------------------------------------------
+  // ---------------------- Processing --------------------------
+  // ------------------------------------------------------------
+
+  for(int p=0; p<nSamples; p++){
+    if(!isPresent[p]) continue;
+
     cout<<prodName[p]<<endl;
 
     for(int c=0; c<nCategories; c++){
@@ -718,11 +776,13 @@ void plotProductionModeComparison(
 
       Long64_t entries = chain[p][c]->GetEntries();
 
-      for (Long64_t z=0; z<entries; ++z) {
-	//cout<<"debug1"<<endl;
-	chain[p][c]->GetEntry(z);
-	//cout<<"debug2"<<endl;
+      for (Long64_t z=0; z<entries; ++z){
+
+	if(DEBUG && z>1000) break;
+
 	printStatus(z,10000,entries,"entries");
+
+	chain[p][c]->GetEntry(z);
  
 	Int_t nGenHLep = 0;
 	Int_t nGenAssocLep = 0;
@@ -1188,123 +1248,145 @@ void plotProductionModeComparison(
 
   } // end for production modes
 
-  //*
-  TCanvas* cBCFullSel100[nVariables];
-  for(int v=0; v<nVariables; v++){
-    cBCFullSel100[v] = new TCanvas(Form("cBCFullSel100_%s",varName[v].c_str()),Form("cBCFullSel100_%s",varName[v].c_str()),500,500);
-    DrawByProdmodes(cBCFullSel100[v],hBCFullSel100[v],prodName,colors,true,v==0);
-    SaveCanvas(outDir,cBCFullSel100[v]);
-  }
-  //*/
 
-  /*
-  TCanvas* cBCFullSel100Match4[nVariables];
-  for(int v=0; v<nVariables; v++){
-    cBCFullSel100Match4[v] = new TCanvas(Form("cBCFullSel100Match4_%s",varName[v].c_str()),Form("cBCFullSel100Match4_%s",varName[v].c_str()),500,500);
-    DrawByProdmodes(cBCFullSel100Match4[v],hBCFullSel100MatchHLeps[v][0],prodName,colors,false,v==0);
-    SaveCanvas(outDir,cBCFullSel100Match4[v]);
-  }
-  //*/
 
-  /*
-  TCanvas* cBCFullSel100Match4OrNot[nVariables][nHiggsSamples];
-  for(int p=0; p<nHiggsSamples; p++){
-    string pn = prodName[p];
+  // ------------------------------------------------------------
+  // -------------------------- Plots ---------------------------
+  // ------------------------------------------------------------
+
+  if(doProdComp){
+    TCanvas* cBCFullSel100[nVariables];
     for(int v=0; v<nVariables; v++){
-      cBCFullSel100Match4OrNot[v][p] = new TCanvas(Form("cBCFullSel100Match4OrNot_%s_%s",varName[v].c_str(),pn.c_str()),Form("cBCFullSel100Match4OrNot_%s_%s",varName[v].c_str(),pn.c_str()),500,500);
-      DrawMatch4OrNot(cBCFullSel100Match4OrNot[v][p],hBCFullSel100[v][p][3],hBCFullSel100MatchHLeps[v][0][p][3],pn,allColorsMP[1][p],allColorsMP[4][p],v==0);
-      SaveCanvas(outDir,cBCFullSel100Match4OrNot[v][p]);
+      cBCFullSel100[v] = new TCanvas(Form("cBCFullSel100_%s",varName[v].c_str()),Form("cBCFullSel100_%s",varName[v].c_str()),500,500);
+      DrawByProdmodes(cBCFullSel100[v],hBCFullSel100[v],prodName,isPresent,colors,v==0);
+      SaveCanvas(outDir,cBCFullSel100[v]);
     }
   }
-  //*/
 
-  /*
-  TCanvas* cBCFullSel100MatchHLeps[nVariables][nHiggsSamples];
-  for(int p=0; p<nHiggsSamples; p++){
-    string pn = prodName[p];
+  if(doProdCompMatch4){
+    TCanvas* cBCFullSel100Match4[nVariables];
     for(int v=0; v<nVariables; v++){
-      TH1F* h[nMatchHLepsStatuses]; for(int m=0; m<nMatchHLepsStatuses; m++) h[m] = (TH1F*)hBCFullSel100MatchHLeps[v][m][p][3];
-      cBCFullSel100MatchHLeps[v][p] = new TCanvas(Form("cBCFullSel100MatchHLeps_%s_%s",varName[v].c_str(),pn.c_str()),Form("cBCFullSel100MatchHLeps_%s_%s",varName[v].c_str(),pn.c_str()),500,500);
-      DrawMatchHLeps(cBCFullSel100MatchHLeps[v][p],hBCFullSel100[v][p][3],h,pn,allColorsPM1[p],matchHLepsKeys,v==0);
-      SaveCanvas(outDir,cBCFullSel100MatchHLeps[v][p]);
+      cBCFullSel100Match4[v] = new TCanvas(Form("cBCFullSel100Match4_%s",varName[v].c_str()),Form("cBCFullSel100Match4_%s",varName[v].c_str()),500,500);
+      DrawByProdmodes(cBCFullSel100Match4[v],hBCFullSel100MatchHLeps[v][0],prodName,isPresent,colors,v==0);
+      SaveCanvas(outDir,cBCFullSel100Match4[v]);
     }
   }
-  //*/
 
-  /*
-  TCanvas* cBCFullSel100MatchAllLeps[nVariables][nHiggsSamples];
-  for(int p=0; p<nHiggsSamples; p++){
-    if(p==0||p==1) continue;
-    string pn = prodName[p];
-    for(int v=0; v<nVariables; v++){
-      TH1F* h[nMatchAllLepsStatuses]; for(int m=0; m<nMatchAllLepsStatuses; m++) h[m] = (TH1F*)hBCFullSel100MatchAllLeps[v][m][p][3];
-      cBCFullSel100MatchAllLeps[v][p] = new TCanvas(Form("cBCFullSel100MatchAllLeps_%s_%s",varName[v].c_str(),pn.c_str()),Form("cBCFullSel100MatchAllLeps_%s_%s",varName[v].c_str(),pn.c_str()),500,500);
-      DrawMatchAllLeps(cBCFullSel100MatchAllLeps[v][p],hBCFullSel100[v][p][3],h,pn,allColorsPM2[p],matchAllLepsKeys,v==0);
-      SaveCanvas(outDir,cBCFullSel100MatchAllLeps[v][p]);
-    }
-  }
-  //*/
-
-  //*
-  TCanvas* cBCFullSel100MatchWH[nVariables];
-  for(int v=0; v<nVariables; v++){
-    TH1F* hMatchWH[nMatchWHStatuses]; for(int m=0; m<nMatchWHStatuses; m++) hMatchWH[m] = (TH1F*)hBCFullSel100MatchWH[v][m][3];
-    cBCFullSel100MatchWH[v] = new TCanvas(Form("cBCFullSel100MatchWH_%s",varName[v].c_str()),Form("cBCFullSel100MatchWH_%s",varName[v].c_str()),500,500);
-    if(v==1 || v==3)
-      DrawMatchCustom(cBCFullSel100MatchWH[v],hBCFullSel100[v][2][3],hMatchWH,prodName[2],colorsMatchWH,matchWH,nMatchWHStatuses,0.11,0.6,v==0);
-    else
-      DrawMatchCustom(cBCFullSel100MatchWH[v],hBCFullSel100[v][2][3],hMatchWH,prodName[2],colorsMatchWH,matchWH,nMatchWHStatuses,0.34,0.6,v==0);
-    SaveCanvas(outDir,cBCFullSel100MatchWH[v]);
-  }
-
-  TCanvas* cBCFullSel100MatchZH[nVariables];
-  for(int v=0; v<nVariables; v++){
-    TH1F* hMatchZH[nMatchZHStatuses]; for(int m=0; m<nMatchZHStatuses; m++) hMatchZH[m] = (TH1F*)hBCFullSel100MatchZH[v][m][3];
-    cBCFullSel100MatchZH[v] = new TCanvas(Form("cBCFullSel100MatchZH_%s",varName[v].c_str()),Form("cBCFullSel100MatchZH_%s",varName[v].c_str()),500,500);
-    if(v==1 || v==3)
-      DrawMatchCustom(cBCFullSel100MatchZH[v],hBCFullSel100[v][3][3],hMatchZH,prodName[3],colorsMatchZH,matchZH,nMatchZHStatuses,0.11,0.5,v==0);
-    else
-      DrawMatchCustom(cBCFullSel100MatchZH[v],hBCFullSel100[v][3][3],hMatchZH,prodName[3],colorsMatchZH,matchZH,nMatchZHStatuses,0.34,0.5,v==0);
-    SaveCanvas(outDir,cBCFullSel100MatchZH[v]);
-  }
-
-  TCanvas* cBCFullSel100MatchttH[nVariables];
-  for(int v=0; v<nVariables; v++){
-    TH1F* hMatchttH[nMatchttHStatuses]; for(int m=0; m<nMatchttHStatuses; m++) hMatchttH[m] = (TH1F*)hBCFullSel100MatchttH[v][m][3];
-    cBCFullSel100MatchttH[v] = new TCanvas(Form("cBCFullSel100MatchttH_%s",varName[v].c_str()),Form("cBCFullSel100MatchttH_%s",varName[v].c_str()),500,500);
-    if(v==1 || v==3)
-      DrawMatchCustom(cBCFullSel100MatchttH[v],hBCFullSel100[v][4][3],hMatchttH,prodName[4],colorsMatchttH,matchttH,nMatchttHStatuses,0.11,0.4,v==0);
-    else
-      DrawMatchCustom(cBCFullSel100MatchttH[v],hBCFullSel100[v][4][3],hMatchttH,prodName[4],colorsMatchttH,matchttH,nMatchttHStatuses,0.34,0.4,v==0);
-    SaveCanvas(outDir,cBCFullSel100MatchttH[v]);
-  }
-  //*/
-
-  //*
-  TCanvas* c2DBCFullSel100[n2DHist][nProcessedSamples];
-  for(int v2=0; v2<n2DHist; v2++){
-    for(int p=0; p<nProcessedSamples; p++){
-      string name = "c2DBCFullSel100_"+varName[varXindex[v2]]+"_"+varName[varYindex[v2]]+"_"+prodName[p];
-      c2DBCFullSel100[v2][p] = new TCanvas(name.c_str(),name.c_str(),600,400);
-      Draw2D(c2DBCFullSel100[v2][p],h2DBCFullSel100[v2][p][3],prodName[p]);
-      SaveCanvas(outDir,c2DBCFullSel100[v2][p]);
-    }
-  }
-  TCanvas* c2DBCFullSel100Decays[n2DHist][nProcessedSamples][nDecays];
-  for(int v2=0; v2<n2DHist; v2++){
-    for(int p=0; p<nProcessedSamples; p++){
-    if(p!=2&&p!=3&&p!=4) continue;
-      for(int d=0; d<nDecays; d++){
-	if(p==2&&(d==0||d==2)) continue;
-	string name = "c2DBCFullSel100_"+decayInfix[d]+"_"+varName[varXindex[v2]]+"_"+varName[varYindex[v2]]+"_"+prodName[p];
-	c2DBCFullSel100Decays[v2][p][d] = new TCanvas(name.c_str(),name.c_str(),600,400);
-	Draw2D(c2DBCFullSel100Decays[v2][p][d],h2DBCFullSel100Decays[v2][p][d][3],prodName[p]+decayLabel[d]);
-	SaveCanvas(outDir,c2DBCFullSel100Decays[v2][p][d]);
+  if(doMatch4OrNot){
+    TCanvas* cBCFullSel100Match4OrNot[nVariables][nHiggsSamples];
+    for(int p=0; p<nHiggsSamples; p++){
+      if(!isPresent[p]) continue;
+      string pn = prodName[p];
+      for(int v=0; v<nVariables; v++){
+	cBCFullSel100Match4OrNot[v][p] = new TCanvas(Form("cBCFullSel100Match4OrNot_%s_%s",varName[v].c_str(),pn.c_str()),Form("cBCFullSel100Match4OrNot_%s_%s",varName[v].c_str(),pn.c_str()),500,500);
+	DrawMatch4OrNot(cBCFullSel100Match4OrNot[v][p],hBCFullSel100[v][p][3],hBCFullSel100MatchHLeps[v][0][p][3],pn,allColorsMP[1][p],allColorsMP[4][p],v==0);
+	SaveCanvas(outDir,cBCFullSel100Match4OrNot[v][p]);
       }
     }
   }
-  //*/
 
+  if(doMatchHLeps){
+    TCanvas* cBCFullSel100MatchHLeps[nVariables][nHiggsSamples];
+    for(int p=0; p<nHiggsSamples; p++){
+      if(!isPresent[p]) continue;
+      string pn = prodName[p];
+      for(int v=0; v<nVariables; v++){
+	TH1F* h[nMatchHLepsStatuses]; for(int m=0; m<nMatchHLepsStatuses; m++) h[m] = (TH1F*)hBCFullSel100MatchHLeps[v][m][p][3];
+	cBCFullSel100MatchHLeps[v][p] = new TCanvas(Form("cBCFullSel100MatchHLeps_%s_%s",varName[v].c_str(),pn.c_str()),Form("cBCFullSel100MatchHLeps_%s_%s",varName[v].c_str(),pn.c_str()),500,500);
+	DrawMatchHLeps(cBCFullSel100MatchHLeps[v][p],hBCFullSel100[v][p][3],h,pn,allColorsPM1[p],matchHLepsKeys,v==0);
+	SaveCanvas(outDir,cBCFullSel100MatchHLeps[v][p]);
+      }
+    }
+  }
+
+  if(doMatchAllLeps){
+    TCanvas* cBCFullSel100MatchAllLeps[nVariables][nHiggsSamples];
+    for(int p=0; p<nHiggsSamples; p++){
+      if(!isPresent[p]) continue;
+      if(p==0||p==1) continue;
+      string pn = prodName[p];
+      for(int v=0; v<nVariables; v++){
+	TH1F* h[nMatchAllLepsStatuses]; for(int m=0; m<nMatchAllLepsStatuses; m++) h[m] = (TH1F*)hBCFullSel100MatchAllLeps[v][m][p][3];
+	cBCFullSel100MatchAllLeps[v][p] = new TCanvas(Form("cBCFullSel100MatchAllLeps_%s_%s",varName[v].c_str(),pn.c_str()),Form("cBCFullSel100MatchAllLeps_%s_%s",varName[v].c_str(),pn.c_str()),500,500);
+	DrawMatchAllLeps(cBCFullSel100MatchAllLeps[v][p],hBCFullSel100[v][p][3],h,pn,allColorsPM2[p],matchAllLepsKeys,v==0);
+	SaveCanvas(outDir,cBCFullSel100MatchAllLeps[v][p]);
+      }
+    }
+  }
+
+  if(doMatchWHZHttH){
+
+    if(file_WH!=""){
+      TCanvas* cBCFullSel100MatchWH[nVariables];
+      for(int v=0; v<nVariables; v++){
+	TH1F* hMatchWH[nMatchWHStatuses]; for(int m=0; m<nMatchWHStatuses; m++) hMatchWH[m] = (TH1F*)hBCFullSel100MatchWH[v][m][3];
+	cBCFullSel100MatchWH[v] = new TCanvas(Form("cBCFullSel100MatchWH_%s",varName[v].c_str()),Form("cBCFullSel100MatchWH_%s",varName[v].c_str()),500,500);
+	if(v==1 || v==3)
+	  DrawMatchCustom(cBCFullSel100MatchWH[v],hBCFullSel100[v][2][3],hMatchWH,prodName[2],colorsMatchWH,matchWH,nMatchWHStatuses,0.11,0.6,v==0);
+	else
+	  DrawMatchCustom(cBCFullSel100MatchWH[v],hBCFullSel100[v][2][3],hMatchWH,prodName[2],colorsMatchWH,matchWH,nMatchWHStatuses,0.34,0.6,v==0);
+	SaveCanvas(outDir,cBCFullSel100MatchWH[v]);
+      }
+    }
+
+    if(file_ZH!=""){
+      TCanvas* cBCFullSel100MatchZH[nVariables];
+      for(int v=0; v<nVariables; v++){
+	TH1F* hMatchZH[nMatchZHStatuses]; for(int m=0; m<nMatchZHStatuses; m++) hMatchZH[m] = (TH1F*)hBCFullSel100MatchZH[v][m][3];
+	cBCFullSel100MatchZH[v] = new TCanvas(Form("cBCFullSel100MatchZH_%s",varName[v].c_str()),Form("cBCFullSel100MatchZH_%s",varName[v].c_str()),500,500);
+	if(v==1 || v==3)
+	  DrawMatchCustom(cBCFullSel100MatchZH[v],hBCFullSel100[v][3][3],hMatchZH,prodName[3],colorsMatchZH,matchZH,nMatchZHStatuses,0.11,0.5,v==0);
+	else
+	  DrawMatchCustom(cBCFullSel100MatchZH[v],hBCFullSel100[v][3][3],hMatchZH,prodName[3],colorsMatchZH,matchZH,nMatchZHStatuses,0.34,0.5,v==0);
+	SaveCanvas(outDir,cBCFullSel100MatchZH[v]);
+      }
+    }
+
+    if(file_ttH!=""){
+      TCanvas* cBCFullSel100MatchttH[nVariables];
+      for(int v=0; v<nVariables; v++){
+	TH1F* hMatchttH[nMatchttHStatuses]; for(int m=0; m<nMatchttHStatuses; m++) hMatchttH[m] = (TH1F*)hBCFullSel100MatchttH[v][m][3];
+	cBCFullSel100MatchttH[v] = new TCanvas(Form("cBCFullSel100MatchttH_%s",varName[v].c_str()),Form("cBCFullSel100MatchttH_%s",varName[v].c_str()),500,500);
+	if(v==1 || v==3)
+	  DrawMatchCustom(cBCFullSel100MatchttH[v],hBCFullSel100[v][4][3],hMatchttH,prodName[4],colorsMatchttH,matchttH,nMatchttHStatuses,0.11,0.4,v==0);
+	else
+	  DrawMatchCustom(cBCFullSel100MatchttH[v],hBCFullSel100[v][4][3],hMatchttH,prodName[4],colorsMatchttH,matchttH,nMatchttHStatuses,0.34,0.4,v==0);
+	SaveCanvas(outDir,cBCFullSel100MatchttH[v]);
+      }
+    }
+
+  }
+
+  if(do2DPlots){
+
+    TCanvas* c2DBCFullSel100[n2DHist][nSamples];
+    for(int v2=0; v2<n2DHist; v2++){
+      for(int p=0; p<nSamples; p++){
+	if(!isPresent[p]) continue;
+	string name = "c2DBCFullSel100_"+varName[varXindex[v2]]+"_"+varName[varYindex[v2]]+"_"+prodName[p];
+	c2DBCFullSel100[v2][p] = new TCanvas(name.c_str(),name.c_str(),600,400);
+	Draw2D(c2DBCFullSel100[v2][p],h2DBCFullSel100[v2][p][3],prodName[p]);
+	SaveCanvas(outDir,c2DBCFullSel100[v2][p]);
+      }
+    }
+
+    TCanvas* c2DBCFullSel100Decays[n2DHist][nSamples][nDecays];
+    for(int v2=0; v2<n2DHist; v2++){
+      for(int p=0; p<nSamples; p++){
+	if(!isPresent[p]) continue;
+	if(p!=2&&p!=3&&p!=4) continue;
+	for(int d=0; d<nDecays; d++){
+	  if(p==2&&(d==0||d==2)) continue;
+	  string name = "c2DBCFullSel100_"+decayInfix[d]+"_"+varName[varXindex[v2]]+"_"+varName[varYindex[v2]]+"_"+prodName[p];
+	  c2DBCFullSel100Decays[v2][p][d] = new TCanvas(name.c_str(),name.c_str(),600,400);
+	  Draw2D(c2DBCFullSel100Decays[v2][p][d],h2DBCFullSel100Decays[v2][p][d][3],prodName[p]+decayLabel[d]);
+	  SaveCanvas(outDir,c2DBCFullSel100Decays[v2][p][d]);
+	}
+      }
+    }
+
+  }
+  
 }
 
 
