@@ -284,14 +284,32 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
       }
     }
 
+    // Get the 4 four-vectors and add FSR (to be used to compute mZa, mZb, mZalpha, mZbeta)
+    math::XYZTLorentzVector p1p(p11);
+    math::XYZTLorentzVector p1m(p12);
+    math::XYZTLorentzVector p2p(p21);
+    math::XYZTLorentzVector p2m(p22);
+    int id1p = id11;
+    int id1m = id12;
+    int id2p = id21;
+    int id2m = id22;
+
     TLorentzVector pL11(p11.x(),p11.y(),p11.z(),p11.t());
     TLorentzVector pL12(p12.x(),p12.y(),p12.z(),p12.t());
     TLorentzVector pL21(p21.x(),p21.y(),p21.z(),p21.t());
     TLorentzVector pL22(p22.x(),p22.y(),p22.z(),p22.t());
 
     // Now sort pointers according to the p/m name; do nothing for the same-sign collections used for CRs
-    if (Z1Lp->charge() < 0 && Z1Lp->charge()*Z1Lm->charge()<0) swap(Z1Lp,Z1Lm);    
-    if (Z2Lp->charge() < 0 && Z2Lp->charge()*Z2Lm->charge()<0) swap(Z2Lp,Z2Lm);
+    if (Z1Lp->charge() < 0 && Z1Lp->charge()*Z1Lm->charge()<0) {
+      swap(Z1Lp,Z1Lm);    
+      swap(p1p,p1m);    
+      swap(id1p,id1m);    
+    }
+    if (Z2Lp->charge() < 0 && Z2Lp->charge()*Z2Lm->charge()<0) {
+      swap(Z2Lp,Z2Lm);
+      swap(p2p,p2m);    
+      swap(id2p,id2m);    
+    }
 
 
 
@@ -761,15 +779,15 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
     // Old-style: pick the other SF/OS combination 
     float mZ1= Z1->mass();
-    float mZa = (Z1Lp->p4()+Z2Lm->p4()).mass();
-    float mZb = (Z1Lm->p4()+Z2Lp->p4()).mass();
-    int ZaID = Z1Lp->pdgId()*Z2Lm->pdgId();
-    int ZbID = Z1Lm->pdgId()*Z2Lp->pdgId();
+    float mZa = (p1p+p2m).mass();
+    float mZb = (p1m+p2p).mass();
+    int ZaID = id1p*id2m;
+    int ZbID = id1m*id2p;
     // For same-sign CRs, the Z2 leptons are same sign, so we need to check also the other combination. 
-    float mZalpha = (Z1Lp->p4()+Z2Lp->p4()).mass();
-    float mZbeta  = (Z1Lm->p4()+Z2Lm->p4()).mass();
-    int ZalphaID = Z1Lp->pdgId()*Z2Lp->pdgId();
-    int ZbetaID  = Z1Lm->pdgId()*Z2Lm->pdgId();
+    float mZalpha = (p1p+p2p).mass();
+    float mZbeta  = (p1m+p2m).mass();
+    int ZalphaID = id1p*id2p;
+    int ZbetaID  = id1m*id2m;
     if (std::abs(mZa-ZmassValue)>=std::abs(mZb-ZmassValue)) { //sorting
       swap(mZa,mZb); 
       swap(ZaID,ZbID);
