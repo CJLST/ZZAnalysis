@@ -556,7 +556,7 @@ PT20_10           = ("userFloat('pt1')>20 && userFloat('pt2')>10") #20/10 on any
 M4l100            = "mass>100"
 
 
-if SELSETUP == "conf5":
+if SELSETUP == "conf5" or SELSETUP == "conf6":
     BESTCANDCOMPARATOR = "byBestKD"       #Best candidate = highest-KD
 else:
     BESTCANDCOMPARATOR = "byBestZ1bestZ2" #Legacy best candidate logic
@@ -621,7 +621,7 @@ elif SELSETUP=="conf3": # Configuration 3 (apply also cut on mZb, -> expected to
 
     FULLSEL70 = BESTCAND_AMONG
 
-elif SELSETUP=="conf4": # Configuration 4 (apply smarter mZb cut)
+elif SELSETUP=="conf4" or SELSETUP=="conf6": # Configuration 4 (apply smarter mZb cut)
 
     BESTCAND_AMONG = (FOURGOODLEPTONS + "&&" +
                       Z1MASS          + "&&" +
@@ -637,7 +637,7 @@ elif SELSETUP=="conf4": # Configuration 4 (apply smarter mZb cut)
 
 
 else:
-    print "Please choose one of the following string for SELSETUP: 'Legacy', 'conf1', 'conf2', 'conf3', 'conf4'"
+    print "Please choose one of the following string for SELSETUP: 'Legacy', 'conf1', 'conf2', 'conf3', 'conf4', 'conf5', 'conf6'"
     sys.exit()
 
 

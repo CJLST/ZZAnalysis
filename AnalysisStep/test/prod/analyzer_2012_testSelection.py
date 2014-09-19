@@ -4,7 +4,7 @@
 #
 #----------------------------------------------------------------------
 
-SELSETUP = "conf2" # "Legacy", "conf1", "conf2", "conf3", "conf4", "conf5"
+SELSETUP = "conf2" # "Legacy", "conf1", "conf2", "conf3", "conf4", "conf5", "conf6"
 
 LEPTON_SETUP = 2012
 
