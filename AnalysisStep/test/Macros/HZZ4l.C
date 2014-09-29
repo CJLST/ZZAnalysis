@@ -251,15 +251,19 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
   Float_t myLep1Pt        = 0.;
   Float_t myLep1Eta       = 0.;
   Int_t   myLep1ID        = 0.;
+  Int_t   myLep1SIP        = 0.;
   Float_t myLep2Pt        = 0.;
   Float_t myLep2Eta       = 0.;
   Int_t   myLep2ID        = 0.;
+  Int_t   myLep2SIP        = 0.;
   Float_t myLep3Pt        = 0.;
   Float_t myLep3Eta       = 0.;
   Int_t   myLep3ID        = 0.;
+  Int_t   myLep3SIP        = 0.;
   Float_t myLep4Pt        = 0.;
   Float_t myLep4Eta       = 0.;
   Int_t   myLep4ID        = 0.;
+  Int_t   myLep4SIP        = 0.;
 
   // Lepton scale and resolution systematics on probabilities
   Float_t myp0plus_m4l_ScaleUp   = 0.;
