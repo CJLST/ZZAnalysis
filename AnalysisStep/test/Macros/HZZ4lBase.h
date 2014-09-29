@@ -208,8 +208,55 @@ public :
    Float_t         DiJetMassPlus;
    Float_t         DiJetMassMinus;
    Float_t         DiJetDEta;
+
+// Vertex info
+   std::vector<float>   *ConstrainedCandVtx_x;
+   std::vector<float>   *ConstrainedCandVtx_y;
+   std::vector<float>   *ConstrainedCandVtx_z;
+   std::vector<float>   *ConstrainedCandVtx_cov_xx;
+   std::vector<float>   *ConstrainedCandVtx_cov_xy;
+   std::vector<float>   *ConstrainedCandVtx_cov_xz;
+   std::vector<float>   *ConstrainedCandVtx_cov_yy;
+   std::vector<float>   *ConstrainedCandVtx_cov_yz;
+   std::vector<float>   *ConstrainedCandVtx_cov_zz;
+   std::vector<float>   *ConstrainedCandVtx_chi2;
+   std::vector<float>   *ConstrainedCandVtx_prob;
+   std::vector<float>   *ConstrainedCandVtx_ndof;
+   std::vector<float>   *KalmanCandVtx_x;
+   std::vector<float>   *KalmanCandVtx_y;
+   std::vector<float>   *KalmanCandVtx_z;
+   std::vector<float>   *KalmanCandVtx_cov_xx;
+   std::vector<float>   *KalmanCandVtx_cov_xy;
+   std::vector<float>   *KalmanCandVtx_cov_xz;
+   std::vector<float>   *KalmanCandVtx_cov_yy;
+   std::vector<float>   *KalmanCandVtx_cov_yz;
+   std::vector<float>   *KalmanCandVtx_cov_zz;
+   std::vector<float>   *KalmanCandVtx_chi2;
+   std::vector<float>   *KalmanCandVtx_prob;
+   std::vector<float>   *KalmanCandVtx_ndof;
+   Float_t OfflinePrimaryVtx_x;
+   Float_t OfflinePrimaryVtx_y;
+   Float_t OfflinePrimaryVtx_z;
+   Float_t OfflinePrimaryVtx_cov_xx;
+   Float_t OfflinePrimaryVtx_cov_xy;
+   Float_t OfflinePrimaryVtx_cov_xz;
+   Float_t OfflinePrimaryVtx_cov_yy;
+   Float_t OfflinePrimaryVtx_cov_yz;
+   Float_t OfflinePrimaryVtx_cov_zz;
+   Float_t OfflinePrimaryVtx_chi2;
+   Float_t OfflinePrimaryVtx_prob;
+   Float_t OfflinePrimaryVtx_ndof;
+   Float_t GenPrimaryVtx_x;
+   Float_t GenPrimaryVtx_y;
+   Float_t GenPrimaryVtx_z;
+   Float_t GenIntVtx_x;
+   Float_t GenIntVtx_y;
+   Float_t GenIntVtx_z;
+
    Float_t         GenHMass;
    Float_t         GenHPt;
+   Float_t         GenHEta;
+   Float_t         GenHPhi;
    Float_t         GenZ1Mass;
    Float_t         GenZ1Pt;
    Float_t         GenZ2Mass;
@@ -416,6 +463,51 @@ public :
    TBranch        *b_DiJetMassPlus;   //!
    TBranch        *b_DiJetMassMinus;   //!
    TBranch        *b_DiJetDEta;   //!
+
+// Vertex info
+   TBranch* b_ConstrainedCandVtx_x;
+   TBranch* b_ConstrainedCandVtx_y;
+   TBranch* b_ConstrainedCandVtx_z;
+   TBranch* b_ConstrainedCandVtx_cov_xx;
+   TBranch* b_ConstrainedCandVtx_cov_xy;
+   TBranch* b_ConstrainedCandVtx_cov_xz;
+   TBranch* b_ConstrainedCandVtx_cov_yy;
+   TBranch* b_ConstrainedCandVtx_cov_yz;
+   TBranch* b_ConstrainedCandVtx_cov_zz;
+   TBranch* b_ConstrainedCandVtx_chi2;
+   TBranch* b_ConstrainedCandVtx_prob;
+   TBranch* b_ConstrainedCandVtx_ndof;
+   TBranch* b_KalmanCandVtx_x;
+   TBranch* b_KalmanCandVtx_y;
+   TBranch* b_KalmanCandVtx_z;
+   TBranch* b_KalmanCandVtx_cov_xx;
+   TBranch* b_KalmanCandVtx_cov_xy;
+   TBranch* b_KalmanCandVtx_cov_xz;
+   TBranch* b_KalmanCandVtx_cov_yy;
+   TBranch* b_KalmanCandVtx_cov_yz;
+   TBranch* b_KalmanCandVtx_cov_zz;
+   TBranch* b_KalmanCandVtx_chi2;
+   TBranch* b_KalmanCandVtx_prob;
+   TBranch* b_KalmanCandVtx_ndof;
+   TBranch* b_OfflinePrimaryVtx_x;
+   TBranch* b_OfflinePrimaryVtx_y;
+   TBranch* b_OfflinePrimaryVtx_z;
+   TBranch* b_OfflinePrimaryVtx_cov_xx;
+   TBranch* b_OfflinePrimaryVtx_cov_xy;
+   TBranch* b_OfflinePrimaryVtx_cov_xz;
+   TBranch* b_OfflinePrimaryVtx_cov_yy;
+   TBranch* b_OfflinePrimaryVtx_cov_yz;
+   TBranch* b_OfflinePrimaryVtx_cov_zz;
+   TBranch* b_OfflinePrimaryVtx_chi2;
+   TBranch* b_OfflinePrimaryVtx_prob;
+   TBranch* b_OfflinePrimaryVtx_ndof;
+   TBranch* b_GenPrimaryVtx_x;
+   TBranch* b_GenPrimaryVtx_y;
+   TBranch* b_GenPrimaryVtx_z;
+   TBranch* b_GenIntVtx_x;
+   TBranch* b_GenIntVtx_y;
+   TBranch* b_GenIntVtx_z;
+
    TBranch        *b_GenHMass;   //!
    TBranch        *b_GenHPt;   //!
    TBranch        *b_GenZ1Mass;   //!
@@ -671,6 +763,51 @@ void HZZ4lBase::Init(TTree *tree)
    JetQG = 0;
    JetQGsmear = 0;
    JetQGL = 0;
+
+// Vertex info
+   ConstrainedCandVtx_x = 0;
+   ConstrainedCandVtx_y = 0;
+   ConstrainedCandVtx_z = 0;
+   ConstrainedCandVtx_cov_xx = 0;
+   ConstrainedCandVtx_cov_xy = 0;
+   ConstrainedCandVtx_cov_xz = 0;
+   ConstrainedCandVtx_cov_yy = 0;
+   ConstrainedCandVtx_cov_yz = 0;
+   ConstrainedCandVtx_cov_zz = 0;
+   ConstrainedCandVtx_chi2 = 0;
+   ConstrainedCandVtx_prob = 0;
+   ConstrainedCandVtx_ndof = 0;
+   KalmanCandVtx_x = 0;
+   KalmanCandVtx_y = 0;
+   KalmanCandVtx_z = 0;
+   KalmanCandVtx_cov_xx = 0;
+   KalmanCandVtx_cov_xy = 0;
+   KalmanCandVtx_cov_xz = 0;
+   KalmanCandVtx_cov_yy = 0;
+   KalmanCandVtx_cov_yz = 0;
+   KalmanCandVtx_cov_zz = 0;
+   KalmanCandVtx_chi2 = 0;
+   KalmanCandVtx_prob = 0;
+   KalmanCandVtx_ndof = 0;
+   OfflinePrimaryVtx_x = 0;
+   OfflinePrimaryVtx_y = 0;
+   OfflinePrimaryVtx_z = 0;
+   OfflinePrimaryVtx_cov_xx = 0;
+   OfflinePrimaryVtx_cov_xy = 0;
+   OfflinePrimaryVtx_cov_xz = 0;
+   OfflinePrimaryVtx_cov_yy = 0;
+   OfflinePrimaryVtx_cov_yz = 0;
+   OfflinePrimaryVtx_cov_zz = 0;
+   OfflinePrimaryVtx_chi2 = 0;
+   OfflinePrimaryVtx_prob = 0;
+   OfflinePrimaryVtx_ndof = 0;
+   GenPrimaryVtx_x = 0;
+   GenPrimaryVtx_y = 0;
+   GenPrimaryVtx_z = 0;
+   GenIntVtx_x = 0;
+   GenIntVtx_y = 0;
+   GenIntVtx_z = 0;
+
    // Set branch addresses and branch pointers
    if (!tree) return;
    fChain = tree;
@@ -691,111 +828,17 @@ void HZZ4lBase::Init(TTree *tree)
    fChain->SetBranchAddress("genHEPMCweight",&genHEPMCweight,&b_genHEPMCweight);
    fChain->SetBranchAddress("trigWord", &trigWord, &b_trigWord);
    fChain->SetBranchAddress("genExtInfo", &genExtInfo, &b_genExtInfo);
+   fChain->SetBranchAddress("ZZsel", &ZZsel, &b_ZZsel);
+   fChain->SetBranchAddress("CRflag", &CRflag, &b_CRflag);
    fChain->SetBranchAddress("ZZMass", &ZZMass, &b_ZZMass);
    fChain->SetBranchAddress("ZZMassErr", &ZZMassErr, &b_ZZMassErr);
    fChain->SetBranchAddress("ZZMassErrCorr", &ZZMassErrCorr, &b_ZZMassErrCorr);
    fChain->SetBranchAddress("ZZMassPreFSR", &ZZMassPreFSR, &b_ZZMassPreFSR);
-   fChain->SetBranchAddress("ZZsel", &ZZsel, &b_ZZsel);
    fChain->SetBranchAddress("ZZPt", &ZZPt, &b_ZZPt);
    fChain->SetBranchAddress("ZZEta", &ZZEta, &b_ZZEta);
    fChain->SetBranchAddress("ZZPhi", &ZZPhi, &b_ZZPhi);
    fChain->SetBranchAddress("ZZFisher", &ZZFisher, &b_ZZFisher);
-   fChain->SetBranchAddress("pg1g4_mela",&pg1g4_mela,&b_pg1g4_mela); 
-   fChain->SetBranchAddress("pg1g4_VAJHU",&pg1g4_VAJHU,&b_pg1g4_VAJHU);
-   fChain->SetBranchAddress("pg1g4_pi2_VAJHU",&pg1g4_pi2_VAJHU,&b_pg1g4_pi2_VAJHU); 
-   fChain->SetBranchAddress("pg1g2_pi2_VAJHU",&pg1g2_pi2_VAJHU,&b_pg1g2_pi2_VAJHU); 
-   fChain->SetBranchAddress("pg1g2_mela",&pg1g2_mela,&b_pg1g2_mela); 
-   fChain->SetBranchAddress("pg1g2_VAJHU",&pg1g2_VAJHU,&b_pg1g2_VAJHU); 
-   fChain->SetBranchAddress("CRflag", &CRflag, &b_CRflag);
-   fChain->SetBranchAddress("p0plus_VAJHU", &p0plus_VAJHU, &b_p0plus_VAJHU);
-   fChain->SetBranchAddress("p0minus_VAJHU", &p0minus_VAJHU, &b_p0minus_VAJHU);
-   fChain->SetBranchAddress("p0plus_VAMCFM", &p0plus_VAMCFM, &b_p0plus_VAMCFM);
-   fChain->SetBranchAddress("p0hplus_VAJHU", &p0hplus_VAJHU, &b_p0hplus_VAJHU);
-   fChain->SetBranchAddress("p1_VAJHU", &p1_VAJHU, &b_p1_VAJHU);
-   fChain->SetBranchAddress("p1_prodIndep_VAJHU", &p1_prodIndep_VAJHU, &b_p1_prodIndep_VAJHU);
-   fChain->SetBranchAddress("p1plus_VAJHU", &p1plus_VAJHU, &b_p1plus_VAJHU);
-   fChain->SetBranchAddress("p1plus_prodIndep_VAJHU", &p1plus_prodIndep_VAJHU, &b_p1plus_prodIndep_VAJHU);
-   fChain->SetBranchAddress("p2_VAJHU", &p2_VAJHU, &b_p2_VAJHU);
-   fChain->SetBranchAddress("p2_prodIndep_VAJHU", &p2_prodIndep_VAJHU, &b_p2_prodIndep_VAJHU);
-   fChain->SetBranchAddress("p2qqb_VAJHU", &p2qqb_VAJHU, &b_p2qqb_VAJHU);
-   fChain->SetBranchAddress("p2hplus_VAJHU", &p2hplus_VAJHU, &b_p2hplus_VAJHU);
-   fChain->SetBranchAddress("p2hminus_VAJHU", &p2hminus_VAJHU, &b_p2hminus_VAJHU);
-   fChain->SetBranchAddress("p2bplus_VAJHU", &p2bplus_VAJHU, &b_p2bplus_VAJHU);
-   fChain->SetBranchAddress("p2hplus_qqb_VAJHU", &p2hplus_qqb_VAJHU, &b_p2hplus_qqb_VAJHU);
-   fChain->SetBranchAddress("p2hplus_prodIndep_VAJHU", &p2hplus_prodIndep_VAJHU, &b_p2hplus_prodIndep_VAJHU);
-   fChain->SetBranchAddress("p2hminus_qqb_VAJHU", &p2hminus_qqb_VAJHU, &b_p2hminus_qqb_VAJHU);
-   fChain->SetBranchAddress("p2hminus_prodIndep_VAJHU", &p2hminus_prodIndep_VAJHU, &b_p2hminus_prodIndep_VAJHU);
-   fChain->SetBranchAddress("p2bplus_qqb_VAJHU", &p2bplus_qqb_VAJHU, &b_p2bplus_qqb_VAJHU);
-   fChain->SetBranchAddress("p2bplus_prodIndep_VAJHU", &p2bplus_prodIndep_VAJHU, &b_p2bplus_prodIndep_VAJHU);
-   fChain->SetBranchAddress("p2h2plus_gg_VAJHU", &p2h2plus_gg_VAJHU, &b_p2h2plus_gg_VAJHU);
-   fChain->SetBranchAddress("p2h2plus_qqbar_VAJHU", &p2h2plus_qqbar_VAJHU, &b_p2h2plus_qqbar_VAJHU);
-   fChain->SetBranchAddress("p2h2plus_prodIndep_VAJHU", &p2h2plus_prodIndep_VAJHU, &b_p2h2plus_prodIndep_VAJHU);
-   fChain->SetBranchAddress("p2h3plus_gg_VAJHU", &p2h3plus_gg_VAJHU, &b_p2h3plus_gg_VAJHU);
-   fChain->SetBranchAddress("p2h3plus_qqbar_VAJHU", &p2h3plus_qqbar_VAJHU, &b_p2h3plus_qqbar_VAJHU);
-   fChain->SetBranchAddress("p2h3plus_prodIndep_VAJHU", &p2h3plus_prodIndep_VAJHU, &b_p2h3plus_prodIndep_VAJHU);
-   fChain->SetBranchAddress("p2h6plus_gg_VAJHU", &p2h6plus_gg_VAJHU, &b_p2h6plus_gg_VAJHU);
-   fChain->SetBranchAddress("p2h6plus_qqbar_VAJHU", &p2h6plus_qqbar_VAJHU, &b_p2h6plus_qqbar_VAJHU);
-   fChain->SetBranchAddress("p2h6plus_prodIndep_VAJHU", &p2h6plus_prodIndep_VAJHU, &b_p2h6plus_prodIndep_VAJHU);
-   fChain->SetBranchAddress("p2h7plus_gg_VAJHU", &p2h7plus_gg_VAJHU, &b_p2h7plus_gg_VAJHU);
-   fChain->SetBranchAddress("p2h7plus_qqbar_VAJHU", &p2h7plus_qqbar_VAJHU, &b_p2h7plus_qqbar_VAJHU);
-   fChain->SetBranchAddress("p2h7plus_prodIndep_VAJHU", &p2h7plus_prodIndep_VAJHU, &b_p2h7plus_prodIndep_VAJHU);
-   fChain->SetBranchAddress("p2h9minus_gg_VAJHU", &p2h9minus_gg_VAJHU, &b_p2h9minus_gg_VAJHU);
-   fChain->SetBranchAddress("p2h9minus_qqbar_VAJHU", &p2h9minus_qqbar_VAJHU, &b_p2h9minus_qqbar_VAJHU);
-   fChain->SetBranchAddress("p2h9minus_prodIndep_VAJHU", &p2h9minus_prodIndep_VAJHU, &b_p2h9minus_prodIndep_VAJHU);
-   fChain->SetBranchAddress("p2h10minus_gg_VAJHU", &p2h10minus_gg_VAJHU, &b_p2h10minus_gg_VAJHU);
-   fChain->SetBranchAddress("p2h10minus_qqbar_VAJHU", &p2h10minus_qqbar_VAJHU, &b_p2h10minus_qqbar_VAJHU);
-   fChain->SetBranchAddress("p2h10minus_prodIndep_VAJHU", &p2h10minus_prodIndep_VAJHU, &b_p2h10minus_prodIndep_VAJHU);
-   fChain->SetBranchAddress("bkg_VAMCFM", &bkg_VAMCFM, &b_bkg_VAMCFM);
-   fChain->SetBranchAddress("bkg_prodIndep_VAMCFM", &bkg_prodIndep_VAMCFM, &b_bkg_prodIndep_VAMCFM);
-   fChain->SetBranchAddress("ggzz_VAMCFM", &ggzz_VAMCFM, &b_ggzz_VAMCFM);
-   fChain->SetBranchAddress("ggzz_p0plus_VAMCFM", &ggzz_p0plus_VAMCFM, &b_ggzz_p0plus_VAMCFM);
-   fChain->SetBranchAddress("ggzz_c5_VAMCFM", &ggzz_c5_VAMCFM, &b_ggzz_c5_VAMCFM);
-   fChain->SetBranchAddress("ggzz_c1_VAMCFM", &ggzz_c1_VAMCFM, &b_ggzz_c1_VAMCFM);
-   fChain->SetBranchAddress("ggzz_ci_VAMCFM", &ggzz_ci_VAMCFM, &b_ggzz_ci_VAMCFM);
-   fChain->SetBranchAddress("phjj_VAJHU_old", &phjj_VAJHU_old, &b_phjj_VAJHU_old);
-   fChain->SetBranchAddress("pvbf_VAJHU_old", &pvbf_VAJHU_old, &b_pvbf_VAJHU_old);
-   fChain->SetBranchAddress("phjj_VAJHU_old_up", &phjj_VAJHU_old_up, &b_phjj_VAJHU_old_up);
-   fChain->SetBranchAddress("pvbf_VAJHU_old_up", &pvbf_VAJHU_old_up, &b_pvbf_VAJHU_old_up);
-   fChain->SetBranchAddress("phjj_VAJHU_old_dn", &phjj_VAJHU_old_dn, &b_phjj_VAJHU_old_dn);
-   fChain->SetBranchAddress("pvbf_VAJHU_old_dn", &pvbf_VAJHU_old_dn, &b_pvbf_VAJHU_old_dn);
-   fChain->SetBranchAddress("phjj_VAJHU_new", &phjj_VAJHU_new, &b_phjj_VAJHU_new);
-   fChain->SetBranchAddress("pvbf_VAJHU_new", &pvbf_VAJHU_new, &b_pvbf_VAJHU_new);
-   fChain->SetBranchAddress("phjj_VAJHU_new_up", &phjj_VAJHU_new_up, &b_phjj_VAJHU_new_up);
-   fChain->SetBranchAddress("pvbf_VAJHU_new_up", &pvbf_VAJHU_new_up, &b_pvbf_VAJHU_new_up);
-   fChain->SetBranchAddress("phjj_VAJHU_new_dn", &phjj_VAJHU_new_dn, &b_phjj_VAJHU_new_dn);
-   fChain->SetBranchAddress("pvbf_VAJHU_new_dn", &pvbf_VAJHU_new_dn, &b_pvbf_VAJHU_new_dn);
-   fChain->SetBranchAddress("p0_g1prime2_VAJHU", &p0_g1prime2_VAJHU, &b_p0_g1prime2_VAJHU);
-   fChain->SetBranchAddress("pg1g1prime2_VAJHU", &pg1g1prime2_VAJHU, &b_pg1g1prime2_VAJHU);
-   fChain->SetBranchAddress("Dgg10_VAMCFM", &Dgg10_VAMCFM, &b_Dgg10_VAMCFM);
-   if (fChain->GetBranchStatus("pzzzg_VAJHU")){
-	   std::cout << "Found ZG and GG MEs!" << std::endl;
 
-	   fChain->SetBranchAddress("pzzzg_VAJHU", &pzzzg_VAJHU, &b_pzzzg_VAJHU);
-	   fChain->SetBranchAddress("pzzgg_VAJHU", &pzzgg_VAJHU, &b_pzzgg_VAJHU);
-	   fChain->SetBranchAddress("pzzzg_PS_VAJHU", &pzzzg_PS_VAJHU, &b_pzzzg_PS_VAJHU);
-	   fChain->SetBranchAddress("pzzgg_PS_VAJHU", &pzzgg_PS_VAJHU, &b_pzzgg_PS_VAJHU);
-	   fChain->SetBranchAddress("p0Zgs_VAJHU", &p0Zgs_VAJHU, &b_p0Zgs_VAJHU);
-	   fChain->SetBranchAddress("p0gsgs_VAJHU", &p0gsgs_VAJHU, &b_p0gsgs_VAJHU);
-	   fChain->SetBranchAddress("p0Zgs_PS_VAJHU", &p0Zgs_PS_VAJHU, &b_p0Zgs_PS_VAJHU);
-	   fChain->SetBranchAddress("p0gsgs_PS_VAJHU", &p0gsgs_PS_VAJHU, &b_p0gsgs_PS_VAJHU);
-   };
-   if (fChain->GetBranchStatus("p0Zgs_g1prime2_VAJHU")){
-	   std::cout << "Found ZG-L1 MEs" << std::endl;
-
-	   fChain->SetBranchAddress("p0Zgs_g1prime2_VAJHU", &p0Zgs_g1prime2_VAJHU, &b_p0Zgs_g1prime2_VAJHU);
-	   fChain->SetBranchAddress("pzzzgs_g1prime2_VAJHU", &pzzzgs_g1prime2_VAJHU, &b_pzzzgs_g1prime2_VAJHU);
-	   fChain->SetBranchAddress("pzzzgs_g1prime2_pi2_VAJHU", &pzzzgs_g1prime2_pi2_VAJHU, &b_pzzzgs_g1prime2_pi2_VAJHU);
-   };
-   fChain->SetBranchAddress("p0plus_m4l", &p0plus_m4l, &b_p0plus_m4l);
-   fChain->SetBranchAddress("bkg_m4l", &bkg_m4l, &b_bkg_m4l);
-   fChain->SetBranchAddress("p0plus_m4l_ScaleUp", &p0plus_m4l_ScaleUp, &b_p0plus_m4l_ScaleUp);
-   fChain->SetBranchAddress("bkg_m4l_ScaleUp", &bkg_m4l_ScaleUp, &b_bkg_m4l_ScaleUp);
-   fChain->SetBranchAddress("p0plus_m4l_ScaleDown", &p0plus_m4l_ScaleDown, &b_p0plus_m4l_ScaleDown);
-   fChain->SetBranchAddress("bkg_m4l_ScaleDown", &bkg_m4l_ScaleDown, &b_bkg_m4l_ScaleDown);
-   fChain->SetBranchAddress("p0plus_m4l_ResUp", &p0plus_m4l_ResUp, &b_p0plus_m4l_ResUp);
-   fChain->SetBranchAddress("bkg_m4l_ResUp", &bkg_m4l_ResUp, &b_bkg_m4l_ResUp);
-   fChain->SetBranchAddress("p0plus_m4l_ResDown", &p0plus_m4l_ResDown, &b_p0plus_m4l_ResDown);
-   fChain->SetBranchAddress("bkg_m4l_ResDown", &bkg_m4l_ResDown, &b_bkg_m4l_ResDown);
    fChain->SetBranchAddress("Z1Mass", &Z1Mass, &b_Z1Mass);
    fChain->SetBranchAddress("Z1Pt", &Z1Pt, &b_Z1Pt);
    fChain->SetBranchAddress("Z2Mass", &Z2Mass, &b_Z2Mass);
@@ -856,22 +899,171 @@ void HZZ4lBase::Init(TTree *tree)
    fChain->SetBranchAddress("Lep4neutralHadIso", &Lep4neutralHadIso, &b_Lep4neutralHadIso);
    fChain->SetBranchAddress("Lep4photonIso", &Lep4photonIso, &b_Lep4photonIso);
    fChain->SetBranchAddress("Lep4combRelIsoPF", &Lep4combRelIsoPF, &b_Lep4combRelIsoPF);
-   fChain->SetBranchAddress("JetPt", &JetPt, &b_JetPt);
-   fChain->SetBranchAddress("JetEta", &JetEta, &b_JetEta);
-   fChain->SetBranchAddress("JetPhi", &JetPhi, &b_JetPhi);
-   fChain->SetBranchAddress("JetMass", &JetMass, &b_JetMass);
-   fChain->SetBranchAddress("JetBTag", &JetBTag, &b_JetBTag);
-   fChain->SetBranchAddress("JetSigma", &JetSigma, &b_JetSigma);
-   if (fChain->GetBranchStatus("JetQG")){
-	   std::cout << "Found JetQG!" << std::endl;
-	   fChain->SetBranchAddress("JetQG", &JetQG, &b_JetQG);
-	   fChain->SetBranchAddress("JetQGsmear", &JetQGsmear, &b_JetQGsmear);
-	   fChain->SetBranchAddress("JetQGL", &JetQGL, &b_JetQGL);
-   };
-   fChain->SetBranchAddress("DiJetMass", &DiJetMass, &b_DiJetMass);
-   fChain->SetBranchAddress("DiJetMassPlus", &DiJetMassPlus, &b_DiJetMassPlus);
-   fChain->SetBranchAddress("DiJetMassMinus", &DiJetMassMinus, &b_DiJetMassMinus);
-   fChain->SetBranchAddress("DiJetDEta", &DiJetDEta, &b_DiJetDEta);
+
+   if (fChain->GetBranchStatus("JetPt")){
+	   fChain->SetBranchAddress("JetPt", &JetPt, &b_JetPt);
+	   fChain->SetBranchAddress("JetEta", &JetEta, &b_JetEta);
+	   fChain->SetBranchAddress("JetPhi", &JetPhi, &b_JetPhi);
+	   fChain->SetBranchAddress("JetMass", &JetMass, &b_JetMass);
+	   fChain->SetBranchAddress("JetBTag", &JetBTag, &b_JetBTag);
+	   fChain->SetBranchAddress("JetSigma", &JetSigma, &b_JetSigma);
+	   if (fChain->GetBranchStatus("JetQG")){
+		   std::cout << "Found JetQG!" << std::endl;
+		   fChain->SetBranchAddress("JetQG", &JetQG, &b_JetQG);
+		   fChain->SetBranchAddress("JetQGsmear", &JetQGsmear, &b_JetQGsmear);
+		   fChain->SetBranchAddress("JetQGL", &JetQGL, &b_JetQGL);
+	   }
+	   fChain->SetBranchAddress("DiJetMass", &DiJetMass, &b_DiJetMass);
+	   fChain->SetBranchAddress("DiJetMassPlus", &DiJetMassPlus, &b_DiJetMassPlus);
+	   fChain->SetBranchAddress("DiJetMassMinus", &DiJetMassMinus, &b_DiJetMassMinus);
+	   fChain->SetBranchAddress("DiJetDEta", &DiJetDEta, &b_DiJetDEta);
+   }
+
+// MELA block
+   fChain->SetBranchAddress("p0plus_VAJHU", &p0plus_VAJHU, &b_p0plus_VAJHU);
+   fChain->SetBranchAddress("p0plus_VAMCFM", &p0plus_VAMCFM, &b_p0plus_VAMCFM);
+   fChain->SetBranchAddress("p0plus_m4l", &p0plus_m4l, &b_p0plus_m4l);
+   fChain->SetBranchAddress("bkg_m4l", &bkg_m4l, &b_bkg_m4l);
+   fChain->SetBranchAddress("p0plus_m4l_ScaleUp", &p0plus_m4l_ScaleUp, &b_p0plus_m4l_ScaleUp);
+   fChain->SetBranchAddress("bkg_m4l_ScaleUp", &bkg_m4l_ScaleUp, &b_bkg_m4l_ScaleUp);
+   fChain->SetBranchAddress("p0plus_m4l_ScaleDown", &p0plus_m4l_ScaleDown, &b_p0plus_m4l_ScaleDown);
+   fChain->SetBranchAddress("bkg_m4l_ScaleDown", &bkg_m4l_ScaleDown, &b_bkg_m4l_ScaleDown);
+   fChain->SetBranchAddress("p0plus_m4l_ResUp", &p0plus_m4l_ResUp, &b_p0plus_m4l_ResUp);
+   fChain->SetBranchAddress("bkg_m4l_ResUp", &bkg_m4l_ResUp, &b_bkg_m4l_ResUp);
+   fChain->SetBranchAddress("p0plus_m4l_ResDown", &p0plus_m4l_ResDown, &b_p0plus_m4l_ResDown);
+   fChain->SetBranchAddress("bkg_m4l_ResDown", &bkg_m4l_ResDown, &b_bkg_m4l_ResDown);
+   if (fChain->GetBranchStatus("bkg_VAMCFM")){
+	   fChain->SetBranchAddress("bkg_VAMCFM", &bkg_VAMCFM, &b_bkg_VAMCFM);
+	   fChain->SetBranchAddress("bkg_prodIndep_VAMCFM", &bkg_prodIndep_VAMCFM, &b_bkg_prodIndep_VAMCFM);
+	   fChain->SetBranchAddress("ggzz_VAMCFM", &ggzz_VAMCFM, &b_ggzz_VAMCFM);
+	   fChain->SetBranchAddress("ggzz_p0plus_VAMCFM", &ggzz_p0plus_VAMCFM, &b_ggzz_p0plus_VAMCFM);
+	   fChain->SetBranchAddress("Dgg10_VAMCFM", &Dgg10_VAMCFM, &b_Dgg10_VAMCFM);
+	   fChain->SetBranchAddress("ggzz_c5_VAMCFM", &ggzz_c5_VAMCFM, &b_ggzz_c5_VAMCFM);
+	   fChain->SetBranchAddress("ggzz_c1_VAMCFM", &ggzz_c1_VAMCFM, &b_ggzz_c1_VAMCFM);
+	   fChain->SetBranchAddress("ggzz_ci_VAMCFM", &ggzz_ci_VAMCFM, &b_ggzz_ci_VAMCFM);
+   }
+   if (fChain->GetBranchStatus("p0minus_VAJHU")){
+	   fChain->SetBranchAddress("p0minus_VAJHU", &p0minus_VAJHU, &b_p0minus_VAJHU);
+	   fChain->SetBranchAddress("p0hplus_VAJHU", &p0hplus_VAJHU, &b_p0hplus_VAJHU);
+	   fChain->SetBranchAddress("p0_g1prime2_VAJHU", &p0_g1prime2_VAJHU, &b_p0_g1prime2_VAJHU);
+	   fChain->SetBranchAddress("p0Zgs_VAJHU", &p0Zgs_VAJHU, &b_p0Zgs_VAJHU);
+	   fChain->SetBranchAddress("p0gsgs_VAJHU", &p0gsgs_VAJHU, &b_p0gsgs_VAJHU);
+	   fChain->SetBranchAddress("p0Zgs_PS_VAJHU", &p0Zgs_PS_VAJHU, &b_p0Zgs_PS_VAJHU);
+	   fChain->SetBranchAddress("p0gsgs_PS_VAJHU", &p0gsgs_PS_VAJHU, &b_p0gsgs_PS_VAJHU);
+	   if (fChain->GetBranchStatus("p0Zgs_g1prime2_VAJHU")) fChain->SetBranchAddress("p0Zgs_g1prime2_VAJHU", &p0Zgs_g1prime2_VAJHU, &b_p0Zgs_g1prime2_VAJHU);
+	   fChain->SetBranchAddress("pg1g4_mela", &pg1g4_mela, &b_pg1g4_mela);
+	   fChain->SetBranchAddress("pg1g4_VAJHU", &pg1g4_VAJHU, &b_pg1g4_VAJHU);
+	   fChain->SetBranchAddress("pg1g4_pi2_VAJHU", &pg1g4_pi2_VAJHU, &b_pg1g4_pi2_VAJHU);
+	   fChain->SetBranchAddress("pg1g2_mela", &pg1g2_mela, &b_pg1g2_mela);
+	   fChain->SetBranchAddress("pg1g2_VAJHU", &pg1g2_VAJHU, &b_pg1g2_VAJHU);
+	   fChain->SetBranchAddress("pg1g2_pi2_VAJHU", &pg1g2_pi2_VAJHU, &b_pg1g2_pi2_VAJHU);
+	   fChain->SetBranchAddress("pg1g1prime2_VAJHU", &pg1g1prime2_VAJHU, &b_pg1g1prime2_VAJHU);
+	   fChain->SetBranchAddress("pzzzg_VAJHU", &pzzzg_VAJHU, &b_pzzzg_VAJHU);
+	   fChain->SetBranchAddress("pzzgg_VAJHU", &pzzgg_VAJHU, &b_pzzgg_VAJHU);
+	   fChain->SetBranchAddress("pzzzg_PS_VAJHU", &pzzzg_PS_VAJHU, &b_pzzzg_PS_VAJHU);
+	   fChain->SetBranchAddress("pzzgg_PS_VAJHU", &pzzgg_PS_VAJHU, &b_pzzgg_PS_VAJHU);
+	   if (fChain->GetBranchStatus("p0Zgs_g1prime2_VAJHU")){
+		   fChain->SetBranchAddress("pzzzgs_g1prime2_VAJHU", &pzzzgs_g1prime2_VAJHU, &b_pzzzgs_g1prime2_VAJHU);
+		   fChain->SetBranchAddress("pzzzgs_g1prime2_pi2_VAJHU", &pzzzgs_g1prime2_pi2_VAJHU, &b_pzzzgs_g1prime2_pi2_VAJHU);
+	   }
+   }
+   if (fChain->GetBranchStatus("phjj_VAJHU_old")){
+	   fChain->SetBranchAddress("phjj_VAJHU_old", &phjj_VAJHU_old, &b_phjj_VAJHU_old);
+	   fChain->SetBranchAddress("pvbf_VAJHU_old", &pvbf_VAJHU_old, &b_pvbf_VAJHU_old);
+	   fChain->SetBranchAddress("phjj_VAJHU_old_up", &phjj_VAJHU_old_up, &b_phjj_VAJHU_old_up);
+	   fChain->SetBranchAddress("pvbf_VAJHU_old_up", &pvbf_VAJHU_old_up, &b_pvbf_VAJHU_old_up);
+	   fChain->SetBranchAddress("phjj_VAJHU_old_dn", &phjj_VAJHU_old_dn, &b_phjj_VAJHU_old_dn);
+	   fChain->SetBranchAddress("pvbf_VAJHU_old_dn", &pvbf_VAJHU_old_dn, &b_pvbf_VAJHU_old_dn);
+	   fChain->SetBranchAddress("phjj_VAJHU_new", &phjj_VAJHU_new, &b_phjj_VAJHU_new);
+	   fChain->SetBranchAddress("pvbf_VAJHU_new", &pvbf_VAJHU_new, &b_pvbf_VAJHU_new);
+	   fChain->SetBranchAddress("phjj_VAJHU_new_up", &phjj_VAJHU_new_up, &b_phjj_VAJHU_new_up);
+	   fChain->SetBranchAddress("pvbf_VAJHU_new_up", &pvbf_VAJHU_new_up, &b_pvbf_VAJHU_new_up);
+	   fChain->SetBranchAddress("phjj_VAJHU_new_dn", &phjj_VAJHU_new_dn, &b_phjj_VAJHU_new_dn);
+	   fChain->SetBranchAddress("pvbf_VAJHU_new_dn", &pvbf_VAJHU_new_dn, &b_pvbf_VAJHU_new_dn);
+   }
+   if (fChain->GetBranchStatus("p1_VAJHU")){
+	   fChain->SetBranchAddress("p1_VAJHU", &p1_VAJHU, &b_p1_VAJHU);
+	   fChain->SetBranchAddress("p1_prodIndep_VAJHU", &p1_prodIndep_VAJHU, &b_p1_prodIndep_VAJHU);
+	   fChain->SetBranchAddress("p1plus_VAJHU", &p1plus_VAJHU, &b_p1plus_VAJHU);
+	   fChain->SetBranchAddress("p1plus_prodIndep_VAJHU", &p1plus_prodIndep_VAJHU, &b_p1plus_prodIndep_VAJHU);
+   }
+   if (fChain->GetBranchStatus("p2_VAJHU")){
+	   fChain->SetBranchAddress("p2_VAJHU", &p2_VAJHU, &b_p2_VAJHU);
+	   fChain->SetBranchAddress("p2_prodIndep_VAJHU", &p2_prodIndep_VAJHU, &b_p2_prodIndep_VAJHU);
+	   fChain->SetBranchAddress("p2qqb_VAJHU", &p2qqb_VAJHU, &b_p2qqb_VAJHU);
+	   fChain->SetBranchAddress("p2hplus_VAJHU", &p2hplus_VAJHU, &b_p2hplus_VAJHU);
+	   fChain->SetBranchAddress("p2hminus_VAJHU", &p2hminus_VAJHU, &b_p2hminus_VAJHU);
+	   fChain->SetBranchAddress("p2bplus_VAJHU", &p2bplus_VAJHU, &b_p2bplus_VAJHU);
+	   fChain->SetBranchAddress("p2hplus_qqb_VAJHU", &p2hplus_qqb_VAJHU, &b_p2hplus_qqb_VAJHU);
+	   fChain->SetBranchAddress("p2hplus_prodIndep_VAJHU", &p2hplus_prodIndep_VAJHU, &b_p2hplus_prodIndep_VAJHU);
+	   fChain->SetBranchAddress("p2hminus_qqb_VAJHU", &p2hminus_qqb_VAJHU, &b_p2hminus_qqb_VAJHU);
+	   fChain->SetBranchAddress("p2hminus_prodIndep_VAJHU", &p2hminus_prodIndep_VAJHU, &b_p2hminus_prodIndep_VAJHU);
+	   fChain->SetBranchAddress("p2bplus_qqb_VAJHU", &p2bplus_qqb_VAJHU, &b_p2bplus_qqb_VAJHU);
+	   fChain->SetBranchAddress("p2bplus_prodIndep_VAJHU", &p2bplus_prodIndep_VAJHU, &b_p2bplus_prodIndep_VAJHU);
+	   fChain->SetBranchAddress("p2h2plus_gg_VAJHU", &p2h2plus_gg_VAJHU, &b_p2h2plus_gg_VAJHU);
+	   fChain->SetBranchAddress("p2h2plus_qqbar_VAJHU", &p2h2plus_qqbar_VAJHU, &b_p2h2plus_qqbar_VAJHU);
+	   fChain->SetBranchAddress("p2h2plus_prodIndep_VAJHU", &p2h2plus_prodIndep_VAJHU, &b_p2h2plus_prodIndep_VAJHU);
+	   fChain->SetBranchAddress("p2h3plus_gg_VAJHU", &p2h3plus_gg_VAJHU, &b_p2h3plus_gg_VAJHU);
+	   fChain->SetBranchAddress("p2h3plus_qqbar_VAJHU", &p2h3plus_qqbar_VAJHU, &b_p2h3plus_qqbar_VAJHU);
+	   fChain->SetBranchAddress("p2h3plus_prodIndep_VAJHU", &p2h3plus_prodIndep_VAJHU, &b_p2h3plus_prodIndep_VAJHU);
+	   fChain->SetBranchAddress("p2h6plus_gg_VAJHU", &p2h6plus_gg_VAJHU, &b_p2h6plus_gg_VAJHU);
+	   fChain->SetBranchAddress("p2h6plus_qqbar_VAJHU", &p2h6plus_qqbar_VAJHU, &b_p2h6plus_qqbar_VAJHU);
+	   fChain->SetBranchAddress("p2h6plus_prodIndep_VAJHU", &p2h6plus_prodIndep_VAJHU, &b_p2h6plus_prodIndep_VAJHU);
+	   fChain->SetBranchAddress("p2h7plus_gg_VAJHU", &p2h7plus_gg_VAJHU, &b_p2h7plus_gg_VAJHU);
+	   fChain->SetBranchAddress("p2h7plus_qqbar_VAJHU", &p2h7plus_qqbar_VAJHU, &b_p2h7plus_qqbar_VAJHU);
+	   fChain->SetBranchAddress("p2h7plus_prodIndep_VAJHU", &p2h7plus_prodIndep_VAJHU, &b_p2h7plus_prodIndep_VAJHU);
+	   fChain->SetBranchAddress("p2h9minus_gg_VAJHU", &p2h9minus_gg_VAJHU, &b_p2h9minus_gg_VAJHU);
+	   fChain->SetBranchAddress("p2h9minus_qqbar_VAJHU", &p2h9minus_qqbar_VAJHU, &b_p2h9minus_qqbar_VAJHU);
+	   fChain->SetBranchAddress("p2h9minus_prodIndep_VAJHU", &p2h9minus_prodIndep_VAJHU, &b_p2h9minus_prodIndep_VAJHU);
+	   fChain->SetBranchAddress("p2h10minus_gg_VAJHU", &p2h10minus_gg_VAJHU, &b_p2h10minus_gg_VAJHU);
+	   fChain->SetBranchAddress("p2h10minus_qqbar_VAJHU", &p2h10minus_qqbar_VAJHU, &b_p2h10minus_qqbar_VAJHU);
+	   fChain->SetBranchAddress("p2h10minus_prodIndep_VAJHU", &p2h10minus_prodIndep_VAJHU, &b_p2h10minus_prodIndep_VAJHU);
+   }
+   if (fChain->GetBranchStatus("OfflinePrimaryVtx_x")){
+	   fChain->SetBranchAddress("OfflinePrimaryVtx_x", &OfflinePrimaryVtx_x, &b_OfflinePrimaryVtx_x);
+	   fChain->SetBranchAddress("OfflinePrimaryVtx_y", &OfflinePrimaryVtx_y, &b_OfflinePrimaryVtx_y);
+	   fChain->SetBranchAddress("OfflinePrimaryVtx_z", &OfflinePrimaryVtx_z, &b_OfflinePrimaryVtx_z);
+	   fChain->SetBranchAddress("OfflinePrimaryVtx_cov_xx", &OfflinePrimaryVtx_cov_xx, &b_OfflinePrimaryVtx_cov_xx);
+	   fChain->SetBranchAddress("OfflinePrimaryVtx_cov_xy", &OfflinePrimaryVtx_cov_xy, &b_OfflinePrimaryVtx_cov_xy);
+	   fChain->SetBranchAddress("OfflinePrimaryVtx_cov_xz", &OfflinePrimaryVtx_cov_xz, &b_OfflinePrimaryVtx_cov_xz);
+	   fChain->SetBranchAddress("OfflinePrimaryVtx_cov_yy", &OfflinePrimaryVtx_cov_yy, &b_OfflinePrimaryVtx_cov_yy);
+	   fChain->SetBranchAddress("OfflinePrimaryVtx_cov_yz", &OfflinePrimaryVtx_cov_yz, &b_OfflinePrimaryVtx_cov_yz);
+	   fChain->SetBranchAddress("OfflinePrimaryVtx_cov_zz", &OfflinePrimaryVtx_cov_zz, &b_OfflinePrimaryVtx_cov_zz);
+	   fChain->SetBranchAddress("OfflinePrimaryVtx_chi2", &OfflinePrimaryVtx_chi2, &b_OfflinePrimaryVtx_chi2);
+	   fChain->SetBranchAddress("OfflinePrimaryVtx_prob", &OfflinePrimaryVtx_prob, &b_OfflinePrimaryVtx_prob);
+	   fChain->SetBranchAddress("OfflinePrimaryVtx_ndof", &OfflinePrimaryVtx_ndof, &b_OfflinePrimaryVtx_ndof);
+	   //fChain->SetBranchAddress("ConstrainedCandVtx_x", &ConstrainedCandVtx_x, &b_ConstrainedCandVtx_x);
+	   //fChain->SetBranchAddress("ConstrainedCandVtx_y", &ConstrainedCandVtx_y, &b_ConstrainedCandVtx_y);
+	   //fChain->SetBranchAddress("ConstrainedCandVtx_z", &ConstrainedCandVtx_z, &b_ConstrainedCandVtx_z);
+	   //fChain->SetBranchAddress("ConstrainedCandVtx_cov_xx", &ConstrainedCandVtx_cov_xx, &b_ConstrainedCandVtx_cov_xx);
+	   //fChain->SetBranchAddress("ConstrainedCandVtx_cov_xy", &ConstrainedCandVtx_cov_xy, &b_ConstrainedCandVtx_cov_xy);
+	   //fChain->SetBranchAddress("ConstrainedCandVtx_cov_xz", &ConstrainedCandVtx_cov_xz, &b_ConstrainedCandVtx_cov_xz);
+	   //fChain->SetBranchAddress("ConstrainedCandVtx_cov_yy", &ConstrainedCandVtx_cov_yy, &b_ConstrainedCandVtx_cov_yy);
+	   //fChain->SetBranchAddress("ConstrainedCandVtx_cov_yz", &ConstrainedCandVtx_cov_yz, &b_ConstrainedCandVtx_cov_yz);
+	   //fChain->SetBranchAddress("ConstrainedCandVtx_cov_zz", &ConstrainedCandVtx_cov_zz, &b_ConstrainedCandVtx_cov_zz);
+	   //fChain->SetBranchAddress("ConstrainedCandVtx_chi2", &ConstrainedCandVtx_chi2, &b_ConstrainedCandVtx_chi2);
+	   //fChain->SetBranchAddress("ConstrainedCandVtx_prob", &ConstrainedCandVtx_prob, &b_ConstrainedCandVtx_prob);
+	   //fChain->SetBranchAddress("ConstrainedCandVtx_ndof", &ConstrainedCandVtx_ndof, &b_ConstrainedCandVtx_ndof);
+	   fChain->SetBranchAddress("KalmanCandVtx_x", &KalmanCandVtx_x, &b_KalmanCandVtx_x);
+	   fChain->SetBranchAddress("KalmanCandVtx_y", &KalmanCandVtx_y, &b_KalmanCandVtx_y);
+	   fChain->SetBranchAddress("KalmanCandVtx_z", &KalmanCandVtx_z, &b_KalmanCandVtx_z);
+	   fChain->SetBranchAddress("KalmanCandVtx_cov_xx", &KalmanCandVtx_cov_xx, &b_KalmanCandVtx_cov_xx);
+	   fChain->SetBranchAddress("KalmanCandVtx_cov_xy", &KalmanCandVtx_cov_xy, &b_KalmanCandVtx_cov_xy);
+	   fChain->SetBranchAddress("KalmanCandVtx_cov_xz", &KalmanCandVtx_cov_xz, &b_KalmanCandVtx_cov_xz);
+	   fChain->SetBranchAddress("KalmanCandVtx_cov_yy", &KalmanCandVtx_cov_yy, &b_KalmanCandVtx_cov_yy);
+	   fChain->SetBranchAddress("KalmanCandVtx_cov_yz", &KalmanCandVtx_cov_yz, &b_KalmanCandVtx_cov_yz);
+	   fChain->SetBranchAddress("KalmanCandVtx_cov_zz", &KalmanCandVtx_cov_zz, &b_KalmanCandVtx_cov_zz);
+	   fChain->SetBranchAddress("KalmanCandVtx_chi2", &KalmanCandVtx_chi2, &b_KalmanCandVtx_chi2);
+	   fChain->SetBranchAddress("KalmanCandVtx_prob", &KalmanCandVtx_prob, &b_KalmanCandVtx_prob);
+	   fChain->SetBranchAddress("KalmanCandVtx_ndof", &KalmanCandVtx_ndof, &b_KalmanCandVtx_ndof);
+	   fChain->SetBranchAddress("GenPrimaryVtx_x", &GenPrimaryVtx_x, &b_GenPrimaryVtx_x);
+	   fChain->SetBranchAddress("GenPrimaryVtx_y", &GenPrimaryVtx_y, &b_GenPrimaryVtx_y);
+	   fChain->SetBranchAddress("GenPrimaryVtx_z", &GenPrimaryVtx_z, &b_GenPrimaryVtx_z);
+	   fChain->SetBranchAddress("GenIntVtx_x", &GenIntVtx_x, &b_GenIntVtx_x);
+	   fChain->SetBranchAddress("GenIntVtx_y", &GenIntVtx_y, &b_GenIntVtx_y);
+	   fChain->SetBranchAddress("GenIntVtx_z", &GenIntVtx_z, &b_GenIntVtx_z);
+   }
+
    fChain->SetBranchAddress("GenHMass", &GenHMass, &b_GenHMass);
    fChain->SetBranchAddress("GenHPt", &GenHPt, &b_GenHPt);
    fChain->SetBranchAddress("GenZ1Mass", &GenZ1Mass, &b_GenZ1Mass);

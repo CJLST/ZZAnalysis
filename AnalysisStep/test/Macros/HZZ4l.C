@@ -54,8 +54,6 @@ namespace {
   const float M_electron = 0.00051099907;
   const float M_tau = 1.777;
 
-//  XSecReader xsecRead7TeV("../Plotter/Xsection_v1.txt","../Plotter/Luminosity.txt");
-//  XSecReader xsecRead8TeV("../Plotter/Xsection8TeV_v2.txt","../Plotter/Luminosity.txt");
   XSecReader xsecRead7TeV("../Plotter/Xsection7TeV_YR3.txt","../Plotter/Luminosity.txt");
   XSecReader xsecRead8TeV("../Plotter/Xsection8TeV_YR3.txt","../Plotter/Luminosity.txt");
 
@@ -78,7 +76,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 {
   if (fChain == 0) return;
 
-  TCanvas dummy; // Hack o avoid "no dictionary for class TPaletteAxis is available" warning
+  TCanvas dummy; // Hack to avoid "no dictionary for class TPaletteAxis is available" warning
   
   //Set the channel name
   string channelname;
@@ -373,6 +371,32 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
   vector<double> myJetQGsmear;
   vector<double> myJetQGL;
 
+  // Vertex floats
+  Float_t myConstrainedCandVtx_x = -999;
+  Float_t myConstrainedCandVtx_y = -999;
+  Float_t myConstrainedCandVtx_z = -999;
+  Float_t myConstrainedCandVtx_cov_xx = -999;
+  Float_t myConstrainedCandVtx_cov_xy = -999;
+  Float_t myConstrainedCandVtx_cov_xz = -999;
+  Float_t myConstrainedCandVtx_cov_yy = -999;
+  Float_t myConstrainedCandVtx_cov_yz = -999;
+  Float_t myConstrainedCandVtx_cov_zz = -999;
+  Float_t myConstrainedCandVtx_chi2 = -999;
+  Float_t myConstrainedCandVtx_prob = -999;
+  Float_t myConstrainedCandVtx_ndof = -999;
+  Float_t myKalmanCandVtx_x = -999;
+  Float_t myKalmanCandVtx_y = -999;
+  Float_t myKalmanCandVtx_z = -999;
+  Float_t myKalmanCandVtx_cov_xx = -999;
+  Float_t myKalmanCandVtx_cov_xy = -999;
+  Float_t myKalmanCandVtx_cov_xz = -999;
+  Float_t myKalmanCandVtx_cov_yy = -999;
+  Float_t myKalmanCandVtx_cov_yz = -999;
+  Float_t myKalmanCandVtx_cov_zz = -999;
+  Float_t myKalmanCandVtx_chi2 = -999;
+  Float_t myKalmanCandVtx_prob = -999;
+  Float_t myKalmanCandVtx_ndof = -999;
+
 // Generic Lorentz Vectors
   TLorentzVector pZ1;
   TLorentzVector pl1_m;
@@ -410,100 +434,12 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
   SelTree.Branch("ZZEta",&myZZEta,"ZZEta/F");
   SelTree.Branch("ZZPhi",&myZZPhi,"ZZPhi/F");
   SelTree.Branch("ZZFisher",&myZZFisher,"ZZFisher/F");
-  if (fChain->GetBranchStatus("JetQG")){
-	  SelTree.Branch("JetQG", &myJetQG);
-	  SelTree.Branch("JetQGL", &myJetQGL);
-	  SelTree.Branch("JetQGsmear", &myJetQGsmear);
-	  cout << "Set JetQG branches" << endl;
-  };
-  SelTree.Branch("p0plus_VAJHU",&myp0plus_VAJHU,"p0plus_VAJHU/F");
-  SelTree.Branch("p0hplus_VAJHU",&myp0hplus_VAJHU,"p0hplus_VAJHU/F");
-  SelTree.Branch("p0minus_VAJHU",&myp0minus_VAJHU,"p0minus_VAJHU/F");
-  SelTree.Branch("p0plus_VAMCFM",&myp0plus_VAMCFM,"p0plus_VAMCFM/F");
-  SelTree.Branch("p1_VAJHU",&myp1_VAJHU,"p1_VAJHU/F");
-  SelTree.Branch("p1_prodIndep_VAJHU",&myp1_prodIndep_VAJHU,"p1_prodIndep_VAJHU/F");
-  SelTree.Branch("p1plus_VAJHU",&myp1plus_VAJHU,"p1plus_VAJHU/F");
-  SelTree.Branch("p1plus_prodIndep_VAJHU",&myp1plus_prodIndep_VAJHU,"p1plus_prodIndep_VAJHU/F");
-  SelTree.Branch("p2_prodIndep_VAJHU",&myp2_prodIndep_VAJHU,"p2_prodIndep_VAJHU/F");
-  SelTree.Branch("p2hplus_VAJHU",&myp2hplus_VAJHU,"p2hplus_VAJHU/F");
-  SelTree.Branch("p2hminus_VAJHU",&myp2hminus_VAJHU,"p2hminus_VAJHU/F");
-  SelTree.Branch("p2bplus_VAJHU",&myp2bplus_VAJHU,"p2bplus_VAJHU/F");
-  SelTree.Branch("p2_VAJHU",&myp2_VAJHU,"p2_VAJHU/F");
-  SelTree.Branch("p2qqb_VAJHU",&myp2qqb_VAJHU,"p2qqb_VAJHU/F");
-
-  SelTree.Branch("p2hplus_qqb_VAJHU", &myp2hplus_qqb_VAJHU, "p2hplus_qqb_VAJHU/F");
-  SelTree.Branch("p2hplus_prodIndep_VAJHU", &myp2hplus_prodIndep_VAJHU, "p2hplus_prodIndep_VAJHU/F");
-  SelTree.Branch("p2hminus_qqb_VAJHU", &myp2hminus_qqb_VAJHU, "p2hminus_qqb_VAJHU/F");
-  SelTree.Branch("p2hminus_prodIndep_VAJHU", &myp2hminus_prodIndep_VAJHU, "p2hminus_prodIndep_VAJHU/F");
-  SelTree.Branch("p2bplus_qqb_VAJHU", &myp2bplus_qqb_VAJHU, "p2bplus_qqb_VAJHU/F");
-  SelTree.Branch("p2bplus_prodIndep_VAJHU", &myp2bplus_prodIndep_VAJHU, "p2bplus_prodIndep_VAJHU/F");
-  SelTree.Branch("p2h2plus_gg_VAJHU", &myp2h2plus_gg_VAJHU, "p2h2plus_gg_VAJHU/F");
-  SelTree.Branch("p2h2plus_qqbar_VAJHU", &myp2h2plus_qqbar_VAJHU, "p2h2plus_qqbar_VAJHU/F");
-  SelTree.Branch("p2h2plus_prodIndep_VAJHU", &myp2h2plus_prodIndep_VAJHU, "p2h2plus_prodIndep_VAJHU/F");
-  SelTree.Branch("p2h3plus_gg_VAJHU", &myp2h3plus_gg_VAJHU, "p2h3plus_gg_VAJHU/F");
-  SelTree.Branch("p2h3plus_qqbar_VAJHU", &myp2h3plus_qqbar_VAJHU, "p2h3plus_qqbar_VAJHU/F");
-  SelTree.Branch("p2h3plus_prodIndep_VAJHU", &myp2h3plus_prodIndep_VAJHU, "p2h3plus_prodIndep_VAJHU/F");
-  SelTree.Branch("p2h6plus_gg_VAJHU", &myp2h6plus_gg_VAJHU, "p2h6plus_gg_VAJHU/F");
-  SelTree.Branch("p2h6plus_qqbar_VAJHU", &myp2h6plus_qqbar_VAJHU, "p2h6plus_qqbar_VAJHU/F");
-  SelTree.Branch("p2h6plus_prodIndep_VAJHU", &myp2h6plus_prodIndep_VAJHU, "p2h6plus_prodIndep_VAJHU/F");
-  SelTree.Branch("p2h7plus_gg_VAJHU", &myp2h7plus_gg_VAJHU, "p2h7plus_gg_VAJHU/F");
-  SelTree.Branch("p2h7plus_qqbar_VAJHU", &myp2h7plus_qqbar_VAJHU, "p2h7plus_qqbar_VAJHU/F");
-  SelTree.Branch("p2h7plus_prodIndep_VAJHU", &myp2h7plus_prodIndep_VAJHU, "p2h7plus_prodIndep_VAJHU/F");
-  SelTree.Branch("p2h9minus_gg_VAJHU", &myp2h9minus_gg_VAJHU, "p2h9minus_gg_VAJHU/F");
-  SelTree.Branch("p2h9minus_qqbar_VAJHU", &myp2h9minus_qqbar_VAJHU, "p2h9minus_qqbar_VAJHU/F");
-  SelTree.Branch("p2h9minus_prodIndep_VAJHU", &myp2h9minus_prodIndep_VAJHU, "p2h9minus_prodIndep_VAJHU/F");
-  SelTree.Branch("p2h10minus_gg_VAJHU", &myp2h10minus_gg_VAJHU, "p2h10minus_gg_VAJHU/F");
-  SelTree.Branch("p2h10minus_qqbar_VAJHU", &myp2h10minus_qqbar_VAJHU, "p2h10minus_qqbar_VAJHU/F");
-  SelTree.Branch("p2h10minus_prodIndep_VAJHU", &myp2h10minus_prodIndep_VAJHU, "p2h10minus_prodIndep_VAJHU/F");
-  SelTree.Branch("bkg_VAMCFM",&mybkg_VAMCFM,"bkg_VAMCFM/F");
-  SelTree.Branch("bkg_prodIndep_VAMCFM",&mybkg_prodIndep_VAMCFM,"bkg_prodIndep_VAMCFM/F");
-  SelTree.Branch("ggzz_VAMCFM",&myggzz_VAMCFM,"ggzz_VAMCFM/F");
-  SelTree.Branch("ggzz_p0plus_VAMCFM",&myggzz_p0plus_VAMCFM,"ggzz_p0plus_VAMCFM/F");
-  SelTree.Branch("ggzz_c1_VAMCFM",&myggzz_c1_VAMCFM,"ggzz_c1_VAMCFM/F");
-  SelTree.Branch("ggzz_c5_VAMCFM",&myggzz_c5_VAMCFM,"ggzz_c5_VAMCFM/F");
-  SelTree.Branch("ggzz_ci_VAMCFM",&myggzz_ci_VAMCFM,"ggzz_ci_VAMCFM/F");
-  SelTree.Branch("phjj_VAJHU_old",&myphjj_VAJHU_old,"phjj_VAJHU_old/F");
-  SelTree.Branch("pvbf_VAJHU_old",&mypvbf_VAJHU_old,"pvbf_VAJHU_old/F");
-  SelTree.Branch("phjj_VAJHU_old_up",&myphjj_VAJHU_old_up,"phjj_VAJHU_old_up/F");
-  SelTree.Branch("pvbf_VAJHU_old_up",&mypvbf_VAJHU_old_up,"pvbf_VAJHU_old_up/F");
-  SelTree.Branch("phjj_VAJHU_old_dn",&myphjj_VAJHU_old_dn,"phjj_VAJHU_old_dn/F");
-  SelTree.Branch("pvbf_VAJHU_old_dn",&mypvbf_VAJHU_old_dn,"pvbf_VAJHU_old_dn/F");
-  SelTree.Branch("phjj_VAJHU_new",&myphjj_VAJHU_new,"phjj_VAJHU_new/F");
-  SelTree.Branch("pvbf_VAJHU_new",&mypvbf_VAJHU_new,"pvbf_VAJHU_new/F");
-  SelTree.Branch("phjj_VAJHU_new_up",&myphjj_VAJHU_new_up,"phjj_VAJHU_new_up/F");
-  SelTree.Branch("pvbf_VAJHU_new_up",&mypvbf_VAJHU_new_up,"pvbf_VAJHU_new_up/F");
-  SelTree.Branch("phjj_VAJHU_new_dn",&myphjj_VAJHU_new_dn,"phjj_VAJHU_new_dn/F");
-  SelTree.Branch("pvbf_VAJHU_new_dn",&mypvbf_VAJHU_new_dn,"pvbf_VAJHU_new_dn/F");
-  SelTree.Branch("p0_g1prime2_VAJHU",&myp0_g1prime2_VAJHU,"p0_g1prime2_VAJHU/F");
-  SelTree.Branch("pg1g1prime2_VAJHU",&mypg1g1prime2_VAJHU,"pg1g1prime2_VAJHU/F");
-  SelTree.Branch("Dgg10_VAMCFM",&myDgg10_VAMCFM,"Dgg10_VAMCFM/F");
-  SelTree.Branch("pzzzg_VAJHU",    &mypzzzg_VAJHU,    "pzzzg_VAJHU/F");
-  SelTree.Branch("pzzgg_VAJHU",    &mypzzgg_VAJHU,    "pzzgg_VAJHU/F");
-  SelTree.Branch("pzzzg_PS_VAJHU", &mypzzzg_PS_VAJHU, "pzzzg_PS_VAJHU/F");
-  SelTree.Branch("pzzgg_PS_VAJHU", &mypzzgg_PS_VAJHU, "pzzgg_PS_VAJHU/F");
-  SelTree.Branch("p0Zgs_VAJHU",    &myp0Zgs_VAJHU,     "p0Zgs_VAJHU/F");
-  SelTree.Branch("p0gsgs_VAJHU",   &myp0gsgs_VAJHU,   "p0gsgs_VAJHU/F");
-  SelTree.Branch("p0Zgs_PS_VAJHU", &myp0Zgs_PS_VAJHU, "p0Zgs_PS_VAJHU/F");
-  SelTree.Branch("p0gsgs_PS_VAJHU",&myp0gsgs_PS_VAJHU,"p0gsgs_PS_VAJHU/F");
-  SelTree.Branch("p0Zgs_g1prime2_VAJHU",&myp0Zgs_g1prime2_VAJHU,"p0Zgs_g1prime2_VAJHU/F");
-  SelTree.Branch("pzzzgs_g1prime2_VAJHU",&mypzzzgs_g1prime2_VAJHU,"pzzzgs_g1prime2_VAJHU/F");
-  SelTree.Branch("pzzzgs_g1prime2_pi2_VAJHU",&mypzzzgs_g1prime2_pi2_VAJHU,"pzzzgs_g1prime2_pi2_VAJHU/F");
-
-  SelTree.Branch("p0plus_m4l",&myp0plus_m4l,"p0plus_m4l/F");
-  SelTree.Branch("bkg_m4l",&mybkg_m4l,"bkg_m4l/F");
   SelTree.Branch("Z1Mass",&myZ1Mass,"Z1Mass/F");
   SelTree.Branch("Z1Pt",&myZ1Pt,"Z1Pt/F");
   SelTree.Branch("Z1ids",&myZ1ids,"Z1ids/S");
   SelTree.Branch("Z2Mass",&myZ2Mass,"Z2Mass/F");
   SelTree.Branch("Z2Pt",&myZ2Pt,"Z2Pt/F");
   SelTree.Branch("Z2ids",&myZ2ids,"Z2ids/S");
-  SelTree.Branch("MC_weight",&MC_weight,"MC_weight/F");
-  SelTree.Branch("MC_weight_norm",&MC_weight_norm,"MC_weight_norm/F");
-  SelTree.Branch("MC_weight_noxsec",&MC_weight_noxsec,"MC_weight_noxsec/F");
-  SelTree.Branch("MC_weight_PUWeight",&PUWeight,"MC_weight_PUWeight/F");
-  SelTree.Branch("MC_weight_powhegWeight",&powheg_weight,"MC_weight_powhegWeight/F");
-  SelTree.Branch("MC_weight_dataMC",&dataMCWeight,"MC_weight_dataMC/F");
-  SelTree.Branch("MC_weight_HqT",&HqTWeight,"MC_weight_HqT/F");
   SelTree.Branch("costhetastar",&mycosthetastar,"costhetastar/F");
   SelTree.Branch("helphi",&myhelphi,"helphi/F");
   SelTree.Branch("helcosthetaZ1",&myhelcosthetaZ1,"helcosthetaZ1/F");
@@ -512,53 +448,242 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
   SelTree.Branch("phistarZ2",&myphistarZ2,"phistarZ2/F");
   SelTree.Branch("xi",&myxi,"xi/F");
   SelTree.Branch("xistar",&myxistar,"xistar/F");
-  SelTree.Branch("pg1g4_mela",&mypg1g4_mela,"pg1g4_mela/F");
-  SelTree.Branch("pg1g4_VAJHU",&mypg1g4_VAJHU,"pg1g4_VAJHU/F");
-  SelTree.Branch("pg1g4_pi2_VAJHU",&mypg1g4_pi2_VAJHU,"pg1g4_pi2_VAJHU/F");
-  SelTree.Branch("pg1g2_pi2_VAJHU",&mypg1g2_pi2_VAJHU,"pg1g2_pi2_VAJHU/F");
-  SelTree.Branch("pg1g2_mela",&mypg1g2_mela,"pg1g2_mela/F");
-  SelTree.Branch("pg1g2_VAJHU",&mypg1g2_VAJHU,"pg1g2_VAJHU/F");
-  SelTree.Branch("genProcessId",&mygenProcessId,"genProcessId/S");
-  SelTree.Branch("genHEPMCweight",&mygenHEPMCweight,"genHEPMCweight/F");
+
+  SelTree.Branch("Lep1Pt",&myLep1Pt,"Lep1Pt/F");
+  SelTree.Branch("Lep1Eta",&myLep1Eta,"Lep1Eta/F");
+  SelTree.Branch("Lep1ID",&myLep1ID,"Lep1ID/I");
+  SelTree.Branch("Lep1SIP",&myLep1SIP,"Lep1SIP/F");
+  SelTree.Branch("Lep2Pt",&myLep2Pt,"Lep2Pt/F");
+  SelTree.Branch("Lep2Eta",&myLep2Eta,"Lep2Eta/F");
+  SelTree.Branch("Lep2ID",&myLep2ID,"Lep2ID/I");
+  SelTree.Branch("Lep2SIP",&myLep2SIP,"Lep2SIP/F");
+  SelTree.Branch("Lep3Pt",&myLep3Pt,"Lep3Pt/F");
+  SelTree.Branch("Lep3Eta",&myLep3Eta,"Lep3Eta/F");
+  SelTree.Branch("Lep3ID",&myLep3ID,"Lep3ID/I");
+  SelTree.Branch("Lep3SIP",&myLep3SIP,"Lep3SIP/F");
+  SelTree.Branch("Lep4Pt",&myLep4Pt,"Lep4Pt/F");
+  SelTree.Branch("Lep4Eta",&myLep4Eta,"Lep4Eta/F");
+  SelTree.Branch("Lep4ID",&myLep4ID,"Lep4ID/I");
+  SelTree.Branch("Lep4SIP",&myLep4SIP,"Lep4SIP/F");
+
+  if(saveJets && fChain->GetBranchStatus("JetPt")){
+    SelTree.Branch("DiJetMass",&myDiJetMass,"DiJetMass/F");
+    SelTree.Branch("DiJetMassPlus",&myDiJetMassPlus,"DiJetMassPlus/F");
+    SelTree.Branch("DiJetMassMinus",&myDiJetMassMinus,"DiJetMassMinus/F");
+    SelTree.Branch("DiJetDEta",&myDiJetDEta,"DiJetDEta/F");
+    SelTree.Branch("NJets30",&myNJets30,"NJets30/S");
+    SelTree.Branch("JetPt",&myJetPt);
+    SelTree.Branch("JetSigma",&myJetSigma);
+    SelTree.Branch("JetEta",&myJetEta);
+    SelTree.Branch("JetPhi",&myJetPhi);
+    SelTree.Branch("JetMass",&myJetMass);
+    SelTree.Branch("JetBTag",&myJetBTag);
+	if (fChain->GetBranchStatus("JetQG")){
+		SelTree.Branch("JetQG", &myJetQG);
+		SelTree.Branch("JetQGL", &myJetQGL);
+		SelTree.Branch("JetQGsmear", &myJetQGsmear);
+		cout << "Set JetQG branches" << endl;
+	}
+  }  
+
+  SelTree.Branch("p0plus_VAJHU",&myp0plus_VAJHU,"p0plus_VAJHU/F");
+  SelTree.Branch("p0plus_VAMCFM",&myp0plus_VAMCFM,"p0plus_VAMCFM/F");
+  SelTree.Branch("p0plus_m4l",&myp0plus_m4l,"p0plus_m4l/F");
   SelTree.Branch("p0plus_m4l_ScaleUp",&myp0plus_m4l_ScaleUp,"p0plus_m4l_ScaleUp/F");
   SelTree.Branch("p0plus_m4l_ScaleDown",&myp0plus_m4l_ScaleDown,"p0plus_m4l_ScaleDown/F");
   SelTree.Branch("p0plus_m4l_ResUp",&myp0plus_m4l_ResUp,"p0plus_m4l_ResUp/F");
   SelTree.Branch("p0plus_m4l_ResDown",&myp0plus_m4l_ResDown,"p0plus_m4l_ResDown/F");
+  SelTree.Branch("bkg_m4l",&mybkg_m4l,"bkg_m4l/F");
   SelTree.Branch("bkg_m4l_ScaleUp",&mybkg_m4l_ScaleUp,"bkg_m4l_ScaleUp/F");
   SelTree.Branch("bkg_m4l_ScaleDown",&mybkg_m4l_ScaleDown,"bkg_m4l_ScaleDown/F");
   SelTree.Branch("bkg_m4l_ResUp",&mybkg_m4l_ResUp,"bkg_m4l_ResUp/F");
   SelTree.Branch("bkg_m4l_ResDown",&mybkg_m4l_ResDown,"bkg_m4l_ResDown/F");
 
-  SelTree.Branch("genFinalState", &genFinalState);
-  SelTree.Branch("GenHMass", &GenHMass);
-  SelTree.Branch("GenHPt",&mygenhpt);
-  SelTree.Branch("GenZ1Mass", &GenZ1Mass);
-  SelTree.Branch("GenZ2Mass", &GenZ2Mass);
-/*  SelTree.Branch("GenZ1Pt", &GenZ1Pt);
-  SelTree.Branch("GenZ2Pt", &GenZ2Pt);
-  SelTree.Branch("GenLep1Pt", &GenLep1Pt);
-  SelTree.Branch("GenLep1Eta", &GenLep1Eta);
-  SelTree.Branch("GenLep1Phi", &GenLep1Phi);
-  SelTree.Branch("GenLep1Id", &GenLep1Id);
-  SelTree.Branch("GenLep2Pt", &GenLep2Pt);
-  SelTree.Branch("GenLep2Eta", &GenLep2Eta);
-  SelTree.Branch("GenLep2Phi", &GenLep2Phi);
-  SelTree.Branch("GenLep2Id", &GenLep2Id);
-  SelTree.Branch("GenLep3Pt", &GenLep3Pt);
-  SelTree.Branch("GenLep3Eta", &GenLep3Eta);
-  SelTree.Branch("GenLep3Phi", &GenLep3Phi);
-  SelTree.Branch("GenLep3Id", &GenLep3Id);
-  SelTree.Branch("GenLep4Pt", &GenLep4Pt);
-  SelTree.Branch("GenLep4Eta", &GenLep4Eta);
-  SelTree.Branch("GenLep4Phi", &GenLep4Phi);
-  SelTree.Branch("GenLep4Id", &GenLep4Id);
-  SelTree.Branch("Gencosthetastar",&myGencosthetastar);
-  SelTree.Branch("Genhelphi",&myGenhelphi);
-  SelTree.Branch("GenhelcosthetaZ1",&myGenhelcosthetaZ1);
-  SelTree.Branch("GenhelcosthetaZ2",&myGenhelcosthetaZ2);
-  SelTree.Branch("GenphistarZ1",&myGenphistarZ1);
-  SelTree.Branch("GenphistarZ2",&myGenphistarZ2);
-*/
+  if (fChain->GetBranchStatus("bkg_VAMCFM")){
+	  SelTree.Branch("bkg_VAMCFM", &mybkg_VAMCFM, "bkg_VAMCFM/F");
+	  SelTree.Branch("bkg_prodIndep_VAMCFM", &mybkg_prodIndep_VAMCFM, "bkg_prodIndep_VAMCFM/F");
+	  SelTree.Branch("ggzz_VAMCFM", &myggzz_VAMCFM, "ggzz_VAMCFM/F");
+	  SelTree.Branch("ggzz_p0plus_VAMCFM", &myggzz_p0plus_VAMCFM, "ggzz_p0plus_VAMCFM/F");
+	  SelTree.Branch("Dgg10_VAMCFM", &myDgg10_VAMCFM, "Dgg10_VAMCFM/F");
+	  SelTree.Branch("ggzz_c1_VAMCFM", &myggzz_c1_VAMCFM, "ggzz_c1_VAMCFM/F");
+	  SelTree.Branch("ggzz_c5_VAMCFM", &myggzz_c5_VAMCFM, "ggzz_c5_VAMCFM/F");
+	  SelTree.Branch("ggzz_ci_VAMCFM", &myggzz_ci_VAMCFM, "ggzz_ci_VAMCFM/F");
+  }
+  if (fChain->GetBranchStatus("p0minus_VAJHU")){
+	  SelTree.Branch("p0minus_VAJHU", &myp0minus_VAJHU, "p0minus_VAJHU/F");
+	  SelTree.Branch("p0hplus_VAJHU", &myp0hplus_VAJHU, "p0hplus_VAJHU/F");
+	  SelTree.Branch("p0_g1prime2_VAJHU", &myp0_g1prime2_VAJHU, "p0_g1prime2_VAJHU/F");
+	  SelTree.Branch("p0Zgs_VAJHU", &myp0Zgs_VAJHU, "p0Zgs_VAJHU/F");
+	  SelTree.Branch("p0gsgs_VAJHU", &myp0gsgs_VAJHU, "p0gsgs_VAJHU/F");
+	  SelTree.Branch("p0Zgs_PS_VAJHU", &myp0Zgs_PS_VAJHU, "p0Zgs_PS_VAJHU/F");
+	  SelTree.Branch("p0gsgs_PS_VAJHU", &myp0gsgs_PS_VAJHU, "p0gsgs_PS_VAJHU/F");
+	  SelTree.Branch("p0Zgs_g1prime2_VAJHU",&myp0Zgs_g1prime2_VAJHU,"p0Zgs_g1prime2_VAJHU/F");
+
+	  SelTree.Branch("pg1g4_mela", &mypg1g4_mela, "pg1g4_mela/F");
+	  SelTree.Branch("pg1g4_VAJHU", &mypg1g4_VAJHU, "pg1g4_VAJHU/F");
+	  SelTree.Branch("pg1g4_pi2_VAJHU", &mypg1g4_pi2_VAJHU, "pg1g4_pi2_VAJHU/F");
+	  SelTree.Branch("pg1g2_mela", &mypg1g2_mela, "pg1g2_mela/F");
+	  SelTree.Branch("pg1g2_VAJHU", &mypg1g2_VAJHU, "pg1g2_VAJHU/F");
+	  SelTree.Branch("pg1g2_pi2_VAJHU", &mypg1g2_pi2_VAJHU, "pg1g2_pi2_VAJHU/F");
+	  SelTree.Branch("pg1g1prime2_VAJHU", &mypg1g1prime2_VAJHU, "pg1g1prime2_VAJHU/F");
+	  SelTree.Branch("pzzzg_VAJHU", &mypzzzg_VAJHU, "pzzzg_VAJHU/F");
+	  SelTree.Branch("pzzgg_VAJHU", &mypzzgg_VAJHU, "pzzgg_VAJHU/F");
+	  SelTree.Branch("pzzzg_PS_VAJHU", &mypzzzg_PS_VAJHU, "pzzzg_PS_VAJHU/F");
+	  SelTree.Branch("pzzgg_PS_VAJHU", &mypzzgg_PS_VAJHU, "pzzgg_PS_VAJHU/F");
+	  SelTree.Branch("pzzzgs_g1prime2_VAJHU",&mypzzzgs_g1prime2_VAJHU,"pzzzgs_g1prime2_VAJHU/F");
+	  SelTree.Branch("pzzzgs_g1prime2_pi2_VAJHU",&mypzzzgs_g1prime2_pi2_VAJHU,"pzzzgs_g1prime2_pi2_VAJHU/F");
+  }
+  if (fChain->GetBranchStatus("phjj_VAJHU_old")){
+	  SelTree.Branch("phjj_VAJHU_old", &myphjj_VAJHU_old, "phjj_VAJHU_old/F");
+	  SelTree.Branch("pvbf_VAJHU_old", &mypvbf_VAJHU_old, "pvbf_VAJHU_old/F");
+	  SelTree.Branch("phjj_VAJHU_old_up", &myphjj_VAJHU_old_up, "phjj_VAJHU_old_up/F");
+	  SelTree.Branch("pvbf_VAJHU_old_up", &mypvbf_VAJHU_old_up, "pvbf_VAJHU_old_up/F");
+	  SelTree.Branch("phjj_VAJHU_old_dn", &myphjj_VAJHU_old_dn, "phjj_VAJHU_old_dn/F");
+	  SelTree.Branch("pvbf_VAJHU_old_dn", &mypvbf_VAJHU_old_dn, "pvbf_VAJHU_old_dn/F");
+	  SelTree.Branch("phjj_VAJHU_new", &myphjj_VAJHU_new, "phjj_VAJHU_new/F");
+	  SelTree.Branch("pvbf_VAJHU_new", &mypvbf_VAJHU_new, "pvbf_VAJHU_new/F");
+	  SelTree.Branch("phjj_VAJHU_new_up", &myphjj_VAJHU_new_up, "phjj_VAJHU_new_up/F");
+	  SelTree.Branch("pvbf_VAJHU_new_up", &mypvbf_VAJHU_new_up, "pvbf_VAJHU_new_up/F");
+	  SelTree.Branch("phjj_VAJHU_new_dn", &myphjj_VAJHU_new_dn, "phjj_VAJHU_new_dn/F");
+	  SelTree.Branch("pvbf_VAJHU_new_dn", &mypvbf_VAJHU_new_dn, "pvbf_VAJHU_new_dn/F");
+  }
+  if (fChain->GetBranchStatus("p1_VAJHU")){
+	  SelTree.Branch("p1_VAJHU", &myp1_VAJHU, "p1_VAJHU/F");
+	  SelTree.Branch("p1_prodIndep_VAJHU", &myp1_prodIndep_VAJHU, "p1_prodIndep_VAJHU/F");
+	  SelTree.Branch("p1plus_VAJHU", &myp1plus_VAJHU, "p1plus_VAJHU/F");
+	  SelTree.Branch("p1plus_prodIndep_VAJHU", &myp1plus_prodIndep_VAJHU, "p1plus_prodIndep_VAJHU/F");
+  }
+  if (fChain->GetBranchStatus("p2_VAJHU")){
+	  SelTree.Branch("p2_prodIndep_VAJHU", &myp2_prodIndep_VAJHU, "p2_prodIndep_VAJHU/F");
+	  SelTree.Branch("p2hplus_VAJHU", &myp2hplus_VAJHU, "p2hplus_VAJHU/F");
+	  SelTree.Branch("p2hminus_VAJHU", &myp2hminus_VAJHU, "p2hminus_VAJHU/F");
+	  SelTree.Branch("p2bplus_VAJHU", &myp2bplus_VAJHU, "p2bplus_VAJHU/F");
+	  SelTree.Branch("p2_VAJHU", &myp2_VAJHU, "p2_VAJHU/F");
+	  SelTree.Branch("p2qqb_VAJHU", &myp2qqb_VAJHU, "p2qqb_VAJHU/F");
+	  SelTree.Branch("p2hplus_qqb_VAJHU", &myp2hplus_qqb_VAJHU, "p2hplus_qqb_VAJHU/F");
+	  SelTree.Branch("p2hplus_prodIndep_VAJHU", &myp2hplus_prodIndep_VAJHU, "p2hplus_prodIndep_VAJHU/F");
+	  SelTree.Branch("p2hminus_qqb_VAJHU", &myp2hminus_qqb_VAJHU, "p2hminus_qqb_VAJHU/F");
+	  SelTree.Branch("p2hminus_prodIndep_VAJHU", &myp2hminus_prodIndep_VAJHU, "p2hminus_prodIndep_VAJHU/F");
+	  SelTree.Branch("p2bplus_qqb_VAJHU", &myp2bplus_qqb_VAJHU, "p2bplus_qqb_VAJHU/F");
+	  SelTree.Branch("p2bplus_prodIndep_VAJHU", &myp2bplus_prodIndep_VAJHU, "p2bplus_prodIndep_VAJHU/F");
+	  SelTree.Branch("p2h2plus_gg_VAJHU", &myp2h2plus_gg_VAJHU, "p2h2plus_gg_VAJHU/F");
+	  SelTree.Branch("p2h2plus_qqbar_VAJHU", &myp2h2plus_qqbar_VAJHU, "p2h2plus_qqbar_VAJHU/F");
+	  SelTree.Branch("p2h2plus_prodIndep_VAJHU", &myp2h2plus_prodIndep_VAJHU, "p2h2plus_prodIndep_VAJHU/F");
+	  SelTree.Branch("p2h3plus_gg_VAJHU", &myp2h3plus_gg_VAJHU, "p2h3plus_gg_VAJHU/F");
+	  SelTree.Branch("p2h3plus_qqbar_VAJHU", &myp2h3plus_qqbar_VAJHU, "p2h3plus_qqbar_VAJHU/F");
+	  SelTree.Branch("p2h3plus_prodIndep_VAJHU", &myp2h3plus_prodIndep_VAJHU, "p2h3plus_prodIndep_VAJHU/F");
+	  SelTree.Branch("p2h6plus_gg_VAJHU", &myp2h6plus_gg_VAJHU, "p2h6plus_gg_VAJHU/F");
+	  SelTree.Branch("p2h6plus_qqbar_VAJHU", &myp2h6plus_qqbar_VAJHU, "p2h6plus_qqbar_VAJHU/F");
+	  SelTree.Branch("p2h6plus_prodIndep_VAJHU", &myp2h6plus_prodIndep_VAJHU, "p2h6plus_prodIndep_VAJHU/F");
+	  SelTree.Branch("p2h7plus_gg_VAJHU", &myp2h7plus_gg_VAJHU, "p2h7plus_gg_VAJHU/F");
+	  SelTree.Branch("p2h7plus_qqbar_VAJHU", &myp2h7plus_qqbar_VAJHU, "p2h7plus_qqbar_VAJHU/F");
+	  SelTree.Branch("p2h7plus_prodIndep_VAJHU", &myp2h7plus_prodIndep_VAJHU, "p2h7plus_prodIndep_VAJHU/F");
+	  SelTree.Branch("p2h9minus_gg_VAJHU", &myp2h9minus_gg_VAJHU, "p2h9minus_gg_VAJHU/F");
+	  SelTree.Branch("p2h9minus_qqbar_VAJHU", &myp2h9minus_qqbar_VAJHU, "p2h9minus_qqbar_VAJHU/F");
+	  SelTree.Branch("p2h9minus_prodIndep_VAJHU", &myp2h9minus_prodIndep_VAJHU, "p2h9minus_prodIndep_VAJHU/F");
+	  SelTree.Branch("p2h10minus_gg_VAJHU", &myp2h10minus_gg_VAJHU, "p2h10minus_gg_VAJHU/F");
+	  SelTree.Branch("p2h10minus_qqbar_VAJHU", &myp2h10minus_qqbar_VAJHU, "p2h10minus_qqbar_VAJHU/F");
+	  SelTree.Branch("p2h10minus_prodIndep_VAJHU", &myp2h10minus_prodIndep_VAJHU, "p2h10minus_prodIndep_VAJHU/F");
+  }
+
+  SelTree.Branch("MC_weight",&MC_weight,"MC_weight/F");
+  SelTree.Branch("MC_weight_norm",&MC_weight_norm,"MC_weight_norm/F");
+  SelTree.Branch("MC_weight_noxsec",&MC_weight_noxsec,"MC_weight_noxsec/F");
+  SelTree.Branch("MC_weight_PUWeight",&PUWeight,"MC_weight_PUWeight/F");
+  SelTree.Branch("MC_weight_powhegWeight",&powheg_weight,"MC_weight_powhegWeight/F");
+  SelTree.Branch("MC_weight_dataMC",&dataMCWeight,"MC_weight_dataMC/F");
+  SelTree.Branch("MC_weight_HqT",&HqTWeight,"MC_weight_HqT/F");
+  if(isCR){
+    SelTree.Branch("CRflag",&myCRflag,"CRflag/I");
+    SelTree.Branch("ZXfake_weight",&ZXfake_weight,"ZXfake_weight/F");
+  }
+
+  // Vertex info
+  if (fChain->GetBranchStatus("OfflinePrimaryVtx_x")){
+	  SelTree.Branch("OfflinePrimaryVtx_x", &OfflinePrimaryVtx_x);
+	  SelTree.Branch("OfflinePrimaryVtx_y", &OfflinePrimaryVtx_y);
+	  SelTree.Branch("OfflinePrimaryVtx_z", &OfflinePrimaryVtx_z);
+	  SelTree.Branch("OfflinePrimaryVtx_cov_xx", &OfflinePrimaryVtx_cov_xx);
+	  SelTree.Branch("OfflinePrimaryVtx_cov_xy", &OfflinePrimaryVtx_cov_xy);
+	  SelTree.Branch("OfflinePrimaryVtx_cov_xz", &OfflinePrimaryVtx_cov_xz);
+	  SelTree.Branch("OfflinePrimaryVtx_cov_yy", &OfflinePrimaryVtx_cov_yy);
+	  SelTree.Branch("OfflinePrimaryVtx_cov_yz", &OfflinePrimaryVtx_cov_yz);
+	  SelTree.Branch("OfflinePrimaryVtx_cov_zz", &OfflinePrimaryVtx_cov_zz);
+	  SelTree.Branch("OfflinePrimaryVtx_chi2", &OfflinePrimaryVtx_chi2);
+	  SelTree.Branch("OfflinePrimaryVtx_prob", &OfflinePrimaryVtx_prob);
+	  SelTree.Branch("OfflinePrimaryVtx_ndof", &OfflinePrimaryVtx_ndof);
+	  //SelTree.Branch("ConstrainedCandVtx_x", &myConstrainedCandVtx_x);
+	  //SelTree.Branch("ConstrainedCandVtx_y", &myConstrainedCandVtx_y);
+	  //SelTree.Branch("ConstrainedCandVtx_z", &myConstrainedCandVtx_z);
+	  //SelTree.Branch("ConstrainedCandVtx_cov_xx", &myConstrainedCandVtx_cov_xx);
+	  //SelTree.Branch("ConstrainedCandVtx_cov_xy", &myConstrainedCandVtx_cov_xy);
+	  //SelTree.Branch("ConstrainedCandVtx_cov_xz", &myConstrainedCandVtx_cov_xz);
+	  //SelTree.Branch("ConstrainedCandVtx_cov_yy", &myConstrainedCandVtx_cov_yy);
+	  //SelTree.Branch("ConstrainedCandVtx_cov_yz", &myConstrainedCandVtx_cov_yz);
+	  //SelTree.Branch("ConstrainedCandVtx_cov_zz", &myConstrainedCandVtx_cov_zz);
+	  //SelTree.Branch("ConstrainedCandVtx_chi2", &myConstrainedCandVtx_chi2);
+	  //SelTree.Branch("ConstrainedCandVtx_prob", &myConstrainedCandVtx_prob);
+	  //SelTree.Branch("ConstrainedCandVtx_ndof", &myConstrainedCandVtx_ndof);
+	  SelTree.Branch("KalmanCandVtx_x", &myKalmanCandVtx_x);
+	  SelTree.Branch("KalmanCandVtx_y", &myKalmanCandVtx_y);
+	  SelTree.Branch("KalmanCandVtx_z", &myKalmanCandVtx_z);
+	  SelTree.Branch("KalmanCandVtx_cov_xx", &myKalmanCandVtx_cov_xx);
+	  SelTree.Branch("KalmanCandVtx_cov_xy", &myKalmanCandVtx_cov_xy);
+	  SelTree.Branch("KalmanCandVtx_cov_xz", &myKalmanCandVtx_cov_xz);
+	  SelTree.Branch("KalmanCandVtx_cov_yy", &myKalmanCandVtx_cov_yy);
+	  SelTree.Branch("KalmanCandVtx_cov_yz", &myKalmanCandVtx_cov_yz);
+	  SelTree.Branch("KalmanCandVtx_cov_zz", &myKalmanCandVtx_cov_zz);
+	  SelTree.Branch("KalmanCandVtx_chi2", &myKalmanCandVtx_chi2);
+	  SelTree.Branch("KalmanCandVtx_prob", &myKalmanCandVtx_prob);
+	  SelTree.Branch("KalmanCandVtx_ndof", &myKalmanCandVtx_ndof);
+	  if (!isData){
+		  SelTree.Branch("GenPrimaryVtx_x", &GenPrimaryVtx_x);
+		  SelTree.Branch("GenPrimaryVtx_y", &GenPrimaryVtx_y);
+		  SelTree.Branch("GenPrimaryVtx_z", &GenPrimaryVtx_z);
+		  SelTree.Branch("GenIntVtx_x", &GenIntVtx_x);
+		  SelTree.Branch("GenIntVtx_y", &GenIntVtx_y);
+		  SelTree.Branch("GenIntVtx_z", &GenIntVtx_z);
+	  }
+  }
+
+// Variables from generation
+  if (!isData){
+	  SelTree.Branch("genProcessId", &genProcessId, "genProcessId/S");
+	  SelTree.Branch("genHEPMCweight", &genHEPMCweight, "genHEPMCweight/F");
+	  SelTree.Branch("genFinalState", &genFinalState);
+	  SelTree.Branch("GenHPt", &GenHPt, "GenHPt/F");
+	  SelTree.Branch("GenHEta", &GenHEta, "GenHEta/F");
+	  SelTree.Branch("GenHPhi", &GenHPhi, "GenHPhi/F");
+	  SelTree.Branch("GenHMass", &GenHMass, "GenHMass/F");
+	  SelTree.Branch("GenZ1Mass", &GenZ1Mass);
+	  SelTree.Branch("GenZ2Mass", &GenZ2Mass);
+	/*  SelTree.Branch("GenZ1Pt", &GenZ1Pt);
+	  SelTree.Branch("GenZ2Pt", &GenZ2Pt);
+	  SelTree.Branch("GenLep1Pt", &GenLep1Pt);
+	  SelTree.Branch("GenLep1Eta", &GenLep1Eta);
+	  SelTree.Branch("GenLep1Phi", &GenLep1Phi);
+	  SelTree.Branch("GenLep1Id", &GenLep1Id);
+	  SelTree.Branch("GenLep2Pt", &GenLep2Pt);
+	  SelTree.Branch("GenLep2Eta", &GenLep2Eta);
+	  SelTree.Branch("GenLep2Phi", &GenLep2Phi);
+	  SelTree.Branch("GenLep2Id", &GenLep2Id);
+	  SelTree.Branch("GenLep3Pt", &GenLep3Pt);
+	  SelTree.Branch("GenLep3Eta", &GenLep3Eta);
+	  SelTree.Branch("GenLep3Phi", &GenLep3Phi);
+	  SelTree.Branch("GenLep3Id", &GenLep3Id);
+	  SelTree.Branch("GenLep4Pt", &GenLep4Pt);
+	  SelTree.Branch("GenLep4Eta", &GenLep4Eta);
+	  SelTree.Branch("GenLep4Phi", &GenLep4Phi);
+	  SelTree.Branch("GenLep4Id", &GenLep4Id);
+	  SelTree.Branch("Gencosthetastar",&myGencosthetastar);
+	  SelTree.Branch("Genhelphi",&myGenhelphi);
+	  SelTree.Branch("GenhelcosthetaZ1",&myGenhelcosthetaZ1);
+	  SelTree.Branch("GenhelcosthetaZ2",&myGenhelcosthetaZ2);
+	  SelTree.Branch("GenphistarZ1",&myGenphistarZ1);
+	  SelTree.Branch("GenphistarZ2",&myGenphistarZ2);
+	*/
+  }
+
 
   // HZZ4l spin-0 re-weights and Q2-dependence
 	float MC_weight_samples_VAJHU[kNumSamples];
@@ -566,9 +691,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 	float MC_weight_QQBGG_VAMCFM;
 	int numSamples = kNumSamples;
 	if(HZZ4lSample_bkgInterfWidth>=0) numSamples = kfZG_1_fGG_0; // Disable recording of ZG and GG MEs in MCFM and gg2VV; MCFM 6.8 does not (yet) support these.
-	for(int s=0;s<kNumSamples;s++){
-		MC_weight_samples_VAJHU[s]=1;
-	};
+	for(int s=0;s<kNumSamples;s++) MC_weight_samples_VAJHU[s]=1;
 	float sample_probPdf_VAJHU = 1.0;
 	float sample_probPdf_VAMCFM = 1.0;
 	float weight_probPdf = 1.0;
@@ -585,7 +708,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 		SelTree.Branch("MC_weight_spin0", MC_weight_samples_VAJHU, "MC_weight_spin0[kNumSamples]/F");
 		SelTree.Branch("sampleprob_VAJHU", &sample_probPdf_VAJHU);
 	}
-	else if (isHZZ4l){ // Disable MCFM signal hypothesis reweighting for properties paper, ME not quite ready
+	else if (isHZZ4l){ // Disable MCFM signal hypothesis reweighting for properties paper. ME is ready though.
 //		SelTree.Branch("kNumSamples", &numSamples);
 //		SelTree.Branch("MC_weight_spin0", MC_weight_samples_VAJHU, "MC_weight_spin0[kNumSamples]/F");
 //		SelTree.Branch("sampleprob_VAMCFM", &sample_probPdf_VAJHU);
@@ -596,42 +719,12 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 		if(isZZQQB){
 			SelTree.Branch("kZZQQBSTU",&kZZQQBSTU);
 			SelTree.Branch("MC_weight_ZZQQBSTU",MC_weight_ZZQQBSTU,"MC_weight_ZZQQBSTU[kZZQQBSTU]/F");
-		};
+		}
 	}
 	if (needsLepInt){
 		SelTree.Branch("MC_weight_ggZZLepInt", &MC_weight_LepInt);
 	}
 
-  if(saveJets){
-    SelTree.Branch("DiJetMass",&myDiJetMass,"DiJetMass/F");
-    SelTree.Branch("DiJetMassPlus",&myDiJetMassPlus,"DiJetMassPlus/F");
-    SelTree.Branch("DiJetMassMinus",&myDiJetMassMinus,"DiJetMassMinus/F");
-    SelTree.Branch("DiJetDEta",&myDiJetDEta,"DiJetDEta/F");
-    SelTree.Branch("NJets30",&myNJets30,"NJets30/S");
-    SelTree.Branch("JetPt",&myJetPt);
-    SelTree.Branch("JetSigma",&myJetSigma);
-    SelTree.Branch("JetEta",&myJetEta);
-    SelTree.Branch("JetPhi",&myJetPhi);
-    SelTree.Branch("JetMass",&myJetMass);
-    SelTree.Branch("JetBTag",&myJetBTag);
-  }  
-
-  if(isCR){
-    SelTree.Branch("CRflag",&myCRflag,"CRflag/I");
-    SelTree.Branch("ZXfake_weight",&ZXfake_weight,"ZXfake_weight/F");
-  }
- 	SelTree.Branch("Lep1Pt",&myLep1Pt,"Lep1Pt/F");
- 	SelTree.Branch("Lep1Eta",&myLep1Eta,"Lep1Eta/F");
- 	SelTree.Branch("Lep1ID",&myLep1ID,"Lep1ID/I");
- 	SelTree.Branch("Lep2Pt",&myLep2Pt,"Lep2Pt/F");
- 	SelTree.Branch("Lep2Eta",&myLep2Eta,"Lep2Eta/F");
- 	SelTree.Branch("Lep2ID",&myLep2ID,"Lep2ID/I");
- 	SelTree.Branch("Lep3Pt",&myLep3Pt,"Lep3Pt/F");
- 	SelTree.Branch("Lep3Eta",&myLep3Eta,"Lep3Eta/F");
- 	SelTree.Branch("Lep3ID",&myLep3ID,"Lep3ID/I");
- 	SelTree.Branch("Lep4Pt",&myLep4Pt,"Lep4Pt/F");
- 	SelTree.Branch("Lep4Eta",&myLep4Eta,"Lep4Eta/F");
- 	SelTree.Branch("Lep4ID",&myLep4ID,"Lep4ID/I");
 
 //	const int size_zzcoupl=31;
 	const int size_zzcoupl=SIZE_HVV; // Directly from Mela package: TVar.hh
@@ -639,7 +732,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 	for(int gx=0;gx<size_zzcoupl;gx++){
 		selfDHvvcoupl[gx][0]=0;
 		selfDHvvcoupl[gx][1]=0;
-	};
+	}
 
 
   //Start looping over the events
@@ -923,6 +1016,10 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 
 		pProgenitor = pZ1+pZ2;
 		GenHMass = pProgenitor.M();
+		GenHPt = pProgenitor.Pt();
+		GenHEta = pProgenitor.Eta();
+		GenHPhi = pProgenitor.Phi();
+
 		GenZ1Mass = pZ1.M();
 		GenZ2Mass = pZ2.M();
 		protection_nullPt(pProgenitor);
@@ -950,9 +1047,8 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 		weight_probPdf_VAMCFM = 1.0;
 		MC_weight_QQBGG_VAMCFM = 1.0;
 		sample_probPdf_VAJHU = 1.0;
-		for(int hypo=0;hypo<kNumSamples;hypo++){
-			MC_weight_samples_VAJHU[hypo] = 1.0;
-		}
+		for(int hypo=0;hypo<kNumSamples;hypo++) MC_weight_samples_VAJHU[hypo] = 1.0;
+
 // Check if truth is good.
 		if(GenHMass==GenHMass
 			&& GenZ1Mass==GenZ1Mass
@@ -1008,9 +1104,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 				if(HZZ4lSample_bkgInterfWidth<0) sample_probPdf_VAJHU = getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl); // Uncomment previous line to turn on MCFM sample reweighting
 				if(sample_probPdf_VAJHU==0) sample_probPdf_VAJHU=1.0;
 			}
-			else{
-				sample_probPdf_VAJHU = 1.0;
-			};
+			else sample_probPdf_VAJHU = 1.0;
 
 			for(int hypo=0;hypo<kNumSamples;hypo++){
 				for(int gx=0;gx<size_zzcoupl;gx++){
@@ -1053,7 +1147,6 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 					if(HZZ4lSample_bkgInterfWidth<0) weight_probPdf = getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl); // Uncomment previous line to turn on MCFM sample reweighting
 				}
 				MC_weight_samples_VAJHU[hypo] = weight_probPdf/sample_probPdf_VAJHU;
-//				testSpin0MEDivergence(HZZ4lSample, hypo, MC_weight_samples_VAJHU[hypo]);
 
 				if(isHZZ4l && jentry == 0){
 // Human-readable output.
@@ -1171,6 +1264,8 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 		genHEPMCweight=-99999;
 		GenHMass=-99999;
 		GenHPt=-99999;
+		GenHEta=-99999;
+		GenHPhi=-99999;
 		GenZ1Mass=-99999;
 		GenZ1Pt=-99999;
 		GenZ2Mass=-99999;
@@ -1243,34 +1338,43 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
       // Jet information: at present the list of jets is relative to the best candidate only
       // It is empty in the CR, where only "ZZFisher" is saved!
       // Note that the list includes jets below 30, for JES syst studies
-      if(saveJets){
-	//Clear the Jet collection to be saved
-	myJetPt.clear();
-	myJetSigma.clear();
-	myJetEta.clear();
-	myJetPhi.clear();
-	myJetMass.clear();
-	myJetBTag.clear();
-	int countJet = 0;
-	for(int i=0;i<JetPt->size();i++){
-	  myJetPt.push_back(JetPt->at(i));
-	  myJetSigma.push_back(JetSigma->at(i));
-	  myJetEta.push_back(JetEta->at(i));
-	  myJetPhi.push_back(JetPhi->at(i));
-	  myJetMass.push_back(JetMass->at(i));
-	  myJetBTag.push_back(JetBTag->at(i));
-	  if (JetPt->at(i)>30.) countJet++; // We want Fisher only for 2 jets > 30; jets below 30 are kept for JES syst studies
+	if (saveJets && fChain->GetBranchStatus("JetPt")){
+		//Clear the Jet collection to be saved
+		myJetPt.clear();
+		myJetSigma.clear();
+		myJetEta.clear();
+		myJetPhi.clear();
+		myJetMass.clear();
+		myJetBTag.clear();
+		if (fChain->GetBranchStatus("JetQG")){
+			myJetQG.clear();
+			myJetQGL.clear();
+			myJetQGsmear.clear();
+		}
+		int countJet = 0;
+		for (int i = 0; i<JetPt->size(); i++){
+			myJetPt.push_back(JetPt->at(i));
+			myJetSigma.push_back(JetSigma->at(i));
+			myJetEta.push_back(JetEta->at(i));
+			myJetPhi.push_back(JetPhi->at(i));
+			myJetMass.push_back(JetMass->at(i));
+			myJetBTag.push_back(JetBTag->at(i));
+			if (fChain->GetBranchStatus("JetQG")){
+				myJetQGsmear.push_back(JetQGsmear->at(i));
+				myJetQGL.push_back(JetQGL->at(i));
+				myJetQG.push_back(JetQG->at(i));
+			}
+			if (JetPt->at(i)>30.) countJet++; // We want Fisher only for 2 jets > 30; jets below 30 are kept for JES syst studies
+		}
+		myDiJetMass = DiJetMass; //if <2 jets, DiJetMass=DiJetDEta=-99;
+		myDiJetMassPlus = DiJetMassPlus;
+		myDiJetMassMinus = DiJetMassMinus;
+		myDiJetDEta = DiJetDEta;
+		myNJets30 = countJet;
 	}
-	myDiJetMass = DiJetMass; //if <2 jets, DiJetMass=DiJetDEta=-99;
-	myDiJetMassPlus = DiJetMassPlus;
-	myDiJetMassMinus = DiJetMassMinus;
-	myDiJetDEta = DiJetDEta;
-	myNJets30 = countJet;
-      }
 
     //Loop over all the H-> ZZ candidates in the event
     for(int nH=0; nH<NHiggs;nH++){
-
       //Do the final selection and best candidate selection. Depends on signal region or control region
       if(isCR && !CRflag->at(nH)) continue; // Belongs to at least 1 CR
 //      if(!isCR && (ZZsel->at(nH) < 100. || nH != iBC) ) continue;
@@ -1313,14 +1417,6 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 	  nBestSyst[i] += getMCWeight(RunFraction, nH);
 	}
       }
-      
-      TLorentzVector m[4];
-      // FIXME: these are without FSR, do not use to build the ZZ kinematics!!!
-//       m[0].SetPtEtaPhiM(Lep1Pt->at(nH),Lep1Eta->at(nH),Lep1Phi->at(nH),0.1506583);
-//       m[1].SetPtEtaPhiM(Lep2Pt->at(nH),Lep2Eta->at(nH),Lep2Phi->at(nH),0.1506583);
-//       m[2].SetPtEtaPhiM(Lep3Pt->at(nH),Lep3Eta->at(nH),Lep3Phi->at(nH),0.1506583);
-//       m[3].SetPtEtaPhiM(Lep4Pt->at(nH),Lep4Eta->at(nH),Lep4Phi->at(nH),0.1506583);      
-//      TLorentzVector momH = m[0] + m[1] + m[2] + m[3]; // Withouth FSR, do not use
 
       //Fill the variables that go into the final tree
       myZZMass = ZZMass->at(nH);
@@ -1332,81 +1428,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
       myZZPhi = ZZPhi->at(nH);
       //      myZZRapidity = momH.Rapidity();
       myZZFisher = ZZFisher->at(nH);
-	  if (fChain->GetBranchStatus("JetQG")){
-			myJetQG.clear();
-			myJetQGL.clear();
-			myJetQGsmear.clear();
-			for(int i=0;i<JetQGsmear->size();i++){
-				myJetQGsmear.push_back(JetQGsmear->at(i));
-				myJetQGL.push_back(JetQGL->at(i));
-				myJetQG.push_back(JetQG->at(i));
-			}
-	  };
 
-	  myp0plus_VAJHU = p0plus_VAJHU->at(nH);
-      myp0hplus_VAJHU = p0hplus_VAJHU->at(nH);
-      myp0minus_VAJHU = p0minus_VAJHU->at(nH);
-      myp1_VAJHU = p1_VAJHU->at(nH);
-      myp1_prodIndep_VAJHU = p1_prodIndep_VAJHU->at(nH);
-      myp1plus_VAJHU = p1plus_VAJHU->at(nH);
-      myp1plus_prodIndep_VAJHU = p1plus_prodIndep_VAJHU->at(nH);
-      myp2_prodIndep_VAJHU = p2_prodIndep_VAJHU->at(nH);
-      myp2_VAJHU = p2_VAJHU->at(nH);
-      myp2qqb_VAJHU = p2qqb_VAJHU->at(nH);
-      myp2hplus_VAJHU = p2hplus_VAJHU->at(nH);
-      myp2hminus_VAJHU = p2hminus_VAJHU->at(nH);
-      myp2bplus_VAJHU = p2bplus_VAJHU->at(nH);
-
- 			myp2hplus_qqb_VAJHU =          p2hplus_qqb_VAJHU ->at(nH);           
- 			myp2hplus_prodIndep_VAJHU =    p2hplus_prodIndep_VAJHU ->at(nH);     
- 			myp2hminus_qqb_VAJHU =         p2hminus_qqb_VAJHU ->at(nH);          
- 			myp2hminus_prodIndep_VAJHU =   p2hminus_prodIndep_VAJHU ->at(nH);    
- 			myp2bplus_qqb_VAJHU =          p2bplus_qqb_VAJHU ->at(nH);           
- 			myp2bplus_prodIndep_VAJHU =    p2bplus_prodIndep_VAJHU ->at(nH);     
- 			myp2h2plus_gg_VAJHU =          p2h2plus_gg_VAJHU ->at(nH);           
- 			myp2h2plus_qqbar_VAJHU =       p2h2plus_qqbar_VAJHU ->at(nH);        
- 			myp2h2plus_prodIndep_VAJHU =   p2h2plus_prodIndep_VAJHU ->at(nH);    
- 			myp2h3plus_gg_VAJHU =          p2h3plus_gg_VAJHU ->at(nH);           
- 			myp2h3plus_qqbar_VAJHU =       p2h3plus_qqbar_VAJHU ->at(nH);        
- 			myp2h3plus_prodIndep_VAJHU =   p2h3plus_prodIndep_VAJHU ->at(nH);    
- 			myp2h6plus_gg_VAJHU =          p2h6plus_gg_VAJHU ->at(nH);           
- 			myp2h6plus_qqbar_VAJHU =       p2h6plus_qqbar_VAJHU ->at(nH);        
- 			myp2h6plus_prodIndep_VAJHU =   p2h6plus_prodIndep_VAJHU ->at(nH);    
- 			myp2h7plus_gg_VAJHU =          p2h7plus_gg_VAJHU ->at(nH);           
- 			myp2h7plus_qqbar_VAJHU =       p2h7plus_qqbar_VAJHU ->at(nH);        
- 			myp2h7plus_prodIndep_VAJHU =   p2h7plus_prodIndep_VAJHU ->at(nH);    
- 			myp2h9minus_gg_VAJHU =         p2h9minus_gg_VAJHU ->at(nH);          
- 			myp2h9minus_qqbar_VAJHU =      p2h9minus_qqbar_VAJHU ->at(nH);       
- 			myp2h9minus_prodIndep_VAJHU =  p2h9minus_prodIndep_VAJHU ->at(nH);   
- 			myp2h10minus_gg_VAJHU =        p2h10minus_gg_VAJHU ->at(nH);         
- 			myp2h10minus_qqbar_VAJHU =     p2h10minus_qqbar_VAJHU ->at(nH);      
- 			myp2h10minus_prodIndep_VAJHU = p2h10minus_prodIndep_VAJHU ->at(nH);  
-      mybkg_VAMCFM = bkg_VAMCFM->at(nH);
-      mybkg_prodIndep_VAMCFM = bkg_prodIndep_VAMCFM->at(nH);
-      myggzz_VAMCFM = ggzz_VAMCFM->at(nH);
-      myggzz_p0plus_VAMCFM = ggzz_p0plus_VAMCFM->at(nH);
-      myp0plus_VAMCFM = p0plus_VAMCFM->at(nH);
-      myggzz_c1_VAMCFM = ggzz_c1_VAMCFM->at(nH);
-      myggzz_c5_VAMCFM = ggzz_c5_VAMCFM->at(nH);
-      myggzz_ci_VAMCFM = ggzz_ci_VAMCFM->at(nH);
-      myphjj_VAJHU_old = phjj_VAJHU_old->at(nH);
-      mypvbf_VAJHU_old = pvbf_VAJHU_old->at(nH);
-      myphjj_VAJHU_old_up = phjj_VAJHU_old_up->at(nH);
-      mypvbf_VAJHU_old_up = pvbf_VAJHU_old_up->at(nH);
-      myphjj_VAJHU_old_dn = phjj_VAJHU_old_dn->at(nH);
-      mypvbf_VAJHU_old_dn = pvbf_VAJHU_old_dn->at(nH);
-      myphjj_VAJHU_new = phjj_VAJHU_new->at(nH);
-      mypvbf_VAJHU_new = pvbf_VAJHU_new->at(nH);
-      myphjj_VAJHU_new_up = phjj_VAJHU_new_up->at(nH);
-      mypvbf_VAJHU_new_up = pvbf_VAJHU_new_up->at(nH);
-      myphjj_VAJHU_new_dn = phjj_VAJHU_new_dn->at(nH);
-      mypvbf_VAJHU_new_dn = pvbf_VAJHU_new_dn->at(nH);
-	  myp0_g1prime2_VAJHU = p0_g1prime2_VAJHU->at(nH);
-	  mypg1g1prime2_VAJHU = pg1g1prime2_VAJHU->at(nH);
-	  myDgg10_VAMCFM = Dgg10_VAMCFM->at(nH);
-
-	  myp0plus_m4l = p0plus_m4l->at(nH);
-      mybkg_m4l = bkg_m4l->at(nH);
       myZ1Mass = Z1Mass->at(nH);
       myZ1Pt = Z1Pt->at(nH);
       myZ2Mass = Z2Mass->at(nH);
@@ -1419,12 +1441,40 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
       myphistarZ2 = phistarZ2->at(nH);
       myxi = xi->at(nH);
       myxistar = xistar->at(nH);
-      mypg1g4_mela =     pg1g4_mela->at(nH);      
-      mypg1g4_VAJHU=     pg1g4_VAJHU->at(nH);     
-      mypg1g4_pi2_VAJHU= pg1g4_pi2_VAJHU->at(nH); 
-      mypg1g2_pi2_VAJHU= pg1g2_pi2_VAJHU->at(nH); 
-      mypg1g2_mela=      pg1g2_mela->at(nH);      
-      mypg1g2_VAJHU=     pg1g2_VAJHU->at(nH);     
+
+	  if(isCR){
+	// for CR, the jet list is empty; we "fake" the NJets30 variable for consistency
+	if (myZZFisher>=0) myNJets30=2;
+	else myNJets30=0;
+      }
+
+      myLep1Pt  = Lep1Pt->at(nH);
+      myLep1Eta = Lep1Eta->at(nH);
+      myLep1ID = Lep1LepId->at(nH);
+      myLep1SIP = Lep1SIP->at(nH);
+      myLep2Pt  = Lep2Pt->at(nH);
+      myLep2Eta = Lep2Eta->at(nH);
+      myLep2ID = Lep2LepId->at(nH);
+      myLep2SIP = Lep2SIP->at(nH);
+      myLep3Pt  = Lep3Pt->at(nH);
+      myLep3Eta = Lep3Eta->at(nH);
+      myLep3ID = Lep3LepId->at(nH);
+      myLep3SIP = Lep3SIP->at(nH);
+      myLep4Pt  = Lep4Pt->at(nH);
+      myLep4Eta = Lep4Eta->at(nH);
+      myLep4ID = Lep4LepId->at(nH);
+      myLep4SIP = Lep4SIP->at(nH);
+      myZ1ids = myLep1ID*myLep2ID;
+      myZ2ids = myLep3ID*myLep4ID;
+
+      int lepIdOrdered[4]={ myLep1ID,myLep2ID,myLep3ID,myLep4ID };
+      float angularOrdered[8]={myZZMass,myZ1Mass,myZ2Mass,mycosthetastar,myhelcosthetaZ1,myhelcosthetaZ2,myhelphi,myphistarZ1};
+
+// MELA block
+	  myp0plus_VAJHU = p0plus_VAJHU->at(nH);
+      myp0plus_VAMCFM = p0plus_VAMCFM->at(nH);
+	  myp0plus_m4l = p0plus_m4l->at(nH);
+      mybkg_m4l = bkg_m4l->at(nH);
       myp0plus_m4l_ScaleUp = p0plus_m4l_ScaleUp->at(nH);
       myp0plus_m4l_ScaleDown = p0plus_m4l_ScaleDown->at(nH);
       myp0plus_m4l_ResUp = p0plus_m4l_ResUp->at(nH);
@@ -1433,130 +1483,149 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
       mybkg_m4l_ScaleDown = bkg_m4l_ScaleDown->at(nH);
       mybkg_m4l_ResUp = bkg_m4l_ResUp->at(nH);
       mybkg_m4l_ResDown = bkg_m4l_ResDown->at(nH);
-
-	myLep1Pt  = Lep1Pt->at(nH);
-	myLep1Eta = Lep1Eta->at(nH);
-	myLep1ID = Lep1LepId->at(nH);
-	myLep2Pt  = Lep2Pt->at(nH);
-	myLep2Eta = Lep2Eta->at(nH);
-	myLep2ID = Lep2LepId->at(nH);
-	myLep3Pt  = Lep3Pt->at(nH);
-	myLep3Eta = Lep3Eta->at(nH);
-	myLep3ID = Lep3LepId->at(nH);
-	myLep4Pt  = Lep4Pt->at(nH);
-	myLep4Eta = Lep4Eta->at(nH);
-	myLep4ID = Lep4LepId->at(nH);
-    myZ1ids = myLep1ID*myLep2ID;
-    myZ2ids = myLep3ID*myLep4ID;
-
-	int lepIdOrdered[4]={ myLep1ID,myLep2ID,myLep3ID,myLep4ID };
-	float angularOrdered[8]={myZZMass,myZ1Mass,myZ2Mass,mycosthetastar,myhelcosthetaZ1,myhelcosthetaZ2,myhelphi,myphistarZ1};
-
-	  if(fChain->GetBranchStatus("p0Zgs_g1prime2_VAJHU")){
-		  myp0Zgs_g1prime2_VAJHU = p0Zgs_g1prime2_VAJHU->at(nH);
-		  mypzzzgs_g1prime2_VAJHU = pzzzgs_g1prime2_VAJHU->at(nH);
-		  mypzzzgs_g1prime2_pi2_VAJHU = pzzzgs_g1prime2_pi2_VAJHU->at(nH);
+	  if (fChain->GetBranchStatus("bkg_VAMCFM")){
+		  mybkg_VAMCFM = bkg_VAMCFM->at(nH);
+		  mybkg_prodIndep_VAMCFM = bkg_prodIndep_VAMCFM->at(nH);
+		  myggzz_VAMCFM = ggzz_VAMCFM->at(nH);
+		  myggzz_p0plus_VAMCFM = ggzz_p0plus_VAMCFM->at(nH);
+		  myDgg10_VAMCFM = Dgg10_VAMCFM->at(nH);
+		  myggzz_c1_VAMCFM = ggzz_c1_VAMCFM->at(nH);
+		  myggzz_c5_VAMCFM = ggzz_c5_VAMCFM->at(nH);
+		  myggzz_ci_VAMCFM = ggzz_ci_VAMCFM->at(nH);
 	  }
-	  else{
-		  mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
-
-		  for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
-		  selfDHvvcoupl[30][0]=-7591.914;
-		  myp0Zgs_g1prime2_VAJHU = getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
-
-		  for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
-		  selfDHvvcoupl[0][0]=1;
-		  selfDHvvcoupl[30][0]=-7591.914;
-		  mypzzzgs_g1prime2_VAJHU = getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
-
-		  for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
-		  selfDHvvcoupl[0][0]=1;
-		  selfDHvvcoupl[30][1]=-7591.914;
-		  mypzzzgs_g1prime2_pi2_VAJHU = getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
-
-		  float tempME=0;
-		  for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
-		  selfDHvvcoupl[0][0] = 1.0;
-		  tempME = getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
-
-		  mypzzzgs_g1prime2_VAJHU -= (myp0Zgs_g1prime2_VAJHU + tempME);
-		  mypzzzgs_g1prime2_pi2_VAJHU -= (myp0Zgs_g1prime2_VAJHU + tempME);
-
-		  for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
-	  }
-
-// The following is an example code if something needs to be re-calculated. The particular example no longer happens.
-	  if(fChain->GetBranchStatus("pzzzg_VAJHU")){
-		  mypzzzg_VAJHU = pzzzg_VAJHU->at(nH);
-		  mypzzgg_VAJHU = pzzgg_VAJHU->at(nH);
-		  mypzzzg_PS_VAJHU = pzzzg_PS_VAJHU->at(nH);
-		  mypzzgg_PS_VAJHU = pzzgg_PS_VAJHU->at(nH);
+	  if (fChain->GetBranchStatus("p0minus_VAJHU")){
+		  myp0minus_VAJHU = p0minus_VAJHU->at(nH);
+		  myp0hplus_VAJHU = p0hplus_VAJHU->at(nH);
+		  myp0_g1prime2_VAJHU = p0_g1prime2_VAJHU->at(nH);
 		  myp0Zgs_VAJHU = p0Zgs_VAJHU->at(nH);
 		  myp0gsgs_VAJHU = p0gsgs_VAJHU->at(nH);
 		  myp0Zgs_PS_VAJHU = p0Zgs_PS_VAJHU->at(nH);
 		  myp0gsgs_PS_VAJHU = p0gsgs_PS_VAJHU->at(nH);
+
+		  mypg1g4_mela = pg1g4_mela->at(nH);
+		  mypg1g4_VAJHU = pg1g4_VAJHU->at(nH);
+		  mypg1g4_pi2_VAJHU = pg1g4_pi2_VAJHU->at(nH);
+		  mypg1g2_mela = pg1g2_mela->at(nH);
+		  mypg1g2_VAJHU = pg1g2_VAJHU->at(nH);
+		  mypg1g2_pi2_VAJHU = pg1g2_pi2_VAJHU->at(nH);
+		  mypg1g1prime2_VAJHU = pg1g1prime2_VAJHU->at(nH);
+		  mypzzzg_VAJHU = pzzzg_VAJHU->at(nH);
+		  mypzzgg_VAJHU = pzzgg_VAJHU->at(nH);
+		  mypzzzg_PS_VAJHU = pzzzg_PS_VAJHU->at(nH);
+		  mypzzgg_PS_VAJHU = pzzgg_PS_VAJHU->at(nH);
+
+		  if (fChain->GetBranchStatus("p0Zgs_g1prime2_VAJHU")){ // Test if these actually exist...
+			  myp0Zgs_g1prime2_VAJHU = p0Zgs_g1prime2_VAJHU->at(nH);
+			  mypzzzgs_g1prime2_VAJHU = pzzzgs_g1prime2_VAJHU->at(nH);
+			  mypzzzgs_g1prime2_pi2_VAJHU = pzzzgs_g1prime2_pi2_VAJHU->at(nH);
+		  }
+		  else{ // ...and compute if they do not exist.
+			  mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
+
+			  for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
+			  selfDHvvcoupl[30][0] = -7591.914;
+			  myp0Zgs_g1prime2_VAJHU = getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
+
+			  for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
+			  selfDHvvcoupl[0][0] = 1;
+			  selfDHvvcoupl[30][0] = -7591.914;
+			  mypzzzgs_g1prime2_VAJHU = getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
+
+			  for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
+			  selfDHvvcoupl[0][0] = 1;
+			  selfDHvvcoupl[30][1] = -7591.914;
+			  mypzzzgs_g1prime2_pi2_VAJHU = getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
+
+			  float tempME = 0;
+			  for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
+			  selfDHvvcoupl[0][0] = 1.0;
+			  tempME = getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
+
+			  mypzzzgs_g1prime2_VAJHU -= (myp0Zgs_g1prime2_VAJHU + tempME);
+			  mypzzzgs_g1prime2_pi2_VAJHU -= (myp0Zgs_g1prime2_VAJHU + tempME);
+
+			  for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
+		  }
 	  }
-	  else{
-		mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
-
-		for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
-		selfDHvvcoupl[0][0] = 1.0;
-		selfDHvvcoupl[4][0] = 0.0688;
-		mypzzzg_VAJHU=getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
-
-		for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
-		selfDHvvcoupl[0][0] = 1.0;
-		selfDHvvcoupl[7][0] = -0.0898;
-		mypzzgg_VAJHU=getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
-
-		for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
-		selfDHvvcoupl[0][0] = 1.0;
-		selfDHvvcoupl[6][0] = 0.0855;
-		mypzzzg_PS_VAJHU=getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
-
-		for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
-		selfDHvvcoupl[0][0] = 1.0;
-		selfDHvvcoupl[9][0] = -0.0907;
-		mypzzgg_PS_VAJHU=getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
-
-		for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
-		selfDHvvcoupl[4][0] = 0.0688;
-		myp0Zgs_VAJHU=getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
-		mypzzzg_VAJHU -= myp0Zgs_VAJHU;
-
-		for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
-		selfDHvvcoupl[7][0] = -0.0898;
-		myp0gsgs_VAJHU=getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
-		mypzzgg_VAJHU -= myp0gsgs_VAJHU;
-
-		for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
-		selfDHvvcoupl[6][0] = 0.0855;
-		myp0Zgs_PS_VAJHU=getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
-		mypzzzg_PS_VAJHU -= myp0Zgs_PS_VAJHU;
-
-		for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
-		selfDHvvcoupl[9][0] = -0.0907;
-		myp0gsgs_PS_VAJHU=getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
-		mypzzgg_PS_VAJHU -= myp0gsgs_PS_VAJHU;
-
-		float tempME=0;
-		for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
-		selfDHvvcoupl[0][0] = 1.0;
-		tempME = getSpinZeroHiggsMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
-		mypzzzg_VAJHU -= tempME;
-		mypzzgg_VAJHU -= tempME;
-		mypzzzg_PS_VAJHU -= tempME;
-		mypzzgg_PS_VAJHU -= tempME;
-
-		for (int ii = 0; ii < size_zzcoupl; ii++){ for (int jj = 0; jj < 2; jj++) selfDHvvcoupl[ii][jj] = 0; }
-		mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG); // Revert back to what it was at the beginning of the loop.
+	  if (fChain->GetBranchStatus("p1_VAJHU")){
+		  myp1_VAJHU = p1_VAJHU->at(nH);
+		  myp1_prodIndep_VAJHU = p1_prodIndep_VAJHU->at(nH);
+		  myp1plus_VAJHU = p1plus_VAJHU->at(nH);
+		  myp1plus_prodIndep_VAJHU = p1plus_prodIndep_VAJHU->at(nH);
 	  }
-
-	  if(isCR){
-	// for CR, the jet list is empty; we "fake" the NJets30 variable for consistency
-	if (myZZFisher>=0) myNJets30=2;
-	else myNJets30=0;
-      }
+	  if (fChain->GetBranchStatus("p2_VAJHU")){
+		  myp2_VAJHU = p2_VAJHU->at(nH);
+		  myp2_prodIndep_VAJHU = p2_prodIndep_VAJHU->at(nH);
+		  myp2qqb_VAJHU = p2qqb_VAJHU->at(nH);
+		  myp2hplus_VAJHU = p2hplus_VAJHU->at(nH);
+		  myp2hminus_VAJHU = p2hminus_VAJHU->at(nH);
+		  myp2bplus_VAJHU = p2bplus_VAJHU->at(nH);
+		  myp2hplus_qqb_VAJHU = p2hplus_qqb_VAJHU->at(nH);
+		  myp2hplus_prodIndep_VAJHU = p2hplus_prodIndep_VAJHU->at(nH);
+		  myp2hminus_qqb_VAJHU = p2hminus_qqb_VAJHU->at(nH);
+		  myp2hminus_prodIndep_VAJHU = p2hminus_prodIndep_VAJHU->at(nH);
+		  myp2bplus_qqb_VAJHU = p2bplus_qqb_VAJHU->at(nH);
+		  myp2bplus_prodIndep_VAJHU = p2bplus_prodIndep_VAJHU->at(nH);
+		  myp2h2plus_gg_VAJHU = p2h2plus_gg_VAJHU->at(nH);
+		  myp2h2plus_qqbar_VAJHU = p2h2plus_qqbar_VAJHU->at(nH);
+		  myp2h2plus_prodIndep_VAJHU = p2h2plus_prodIndep_VAJHU->at(nH);
+		  myp2h3plus_gg_VAJHU = p2h3plus_gg_VAJHU->at(nH);
+		  myp2h3plus_qqbar_VAJHU = p2h3plus_qqbar_VAJHU->at(nH);
+		  myp2h3plus_prodIndep_VAJHU = p2h3plus_prodIndep_VAJHU->at(nH);
+		  myp2h6plus_gg_VAJHU = p2h6plus_gg_VAJHU->at(nH);
+		  myp2h6plus_qqbar_VAJHU = p2h6plus_qqbar_VAJHU->at(nH);
+		  myp2h6plus_prodIndep_VAJHU = p2h6plus_prodIndep_VAJHU->at(nH);
+		  myp2h7plus_gg_VAJHU = p2h7plus_gg_VAJHU->at(nH);
+		  myp2h7plus_qqbar_VAJHU = p2h7plus_qqbar_VAJHU->at(nH);
+		  myp2h7plus_prodIndep_VAJHU = p2h7plus_prodIndep_VAJHU->at(nH);
+		  myp2h9minus_gg_VAJHU = p2h9minus_gg_VAJHU->at(nH);
+		  myp2h9minus_qqbar_VAJHU = p2h9minus_qqbar_VAJHU->at(nH);
+		  myp2h9minus_prodIndep_VAJHU = p2h9minus_prodIndep_VAJHU->at(nH);
+		  myp2h10minus_gg_VAJHU = p2h10minus_gg_VAJHU->at(nH);
+		  myp2h10minus_qqbar_VAJHU = p2h10minus_qqbar_VAJHU->at(nH);
+		  myp2h10minus_prodIndep_VAJHU = p2h10minus_prodIndep_VAJHU->at(nH);
+	  }
+	  if (fChain->GetBranchStatus("phjj_VAJHU_old")){
+		  myphjj_VAJHU_old = phjj_VAJHU_old->at(nH);
+		  mypvbf_VAJHU_old = pvbf_VAJHU_old->at(nH);
+		  myphjj_VAJHU_old_up = phjj_VAJHU_old_up->at(nH);
+		  mypvbf_VAJHU_old_up = pvbf_VAJHU_old_up->at(nH);
+		  myphjj_VAJHU_old_dn = phjj_VAJHU_old_dn->at(nH);
+		  mypvbf_VAJHU_old_dn = pvbf_VAJHU_old_dn->at(nH);
+		  myphjj_VAJHU_new = phjj_VAJHU_new->at(nH);
+		  mypvbf_VAJHU_new = pvbf_VAJHU_new->at(nH);
+		  myphjj_VAJHU_new_up = phjj_VAJHU_new_up->at(nH);
+		  mypvbf_VAJHU_new_up = pvbf_VAJHU_new_up->at(nH);
+		  myphjj_VAJHU_new_dn = phjj_VAJHU_new_dn->at(nH);
+		  mypvbf_VAJHU_new_dn = pvbf_VAJHU_new_dn->at(nH);
+	  }
+// Vertex block
+	  if (fChain->GetBranchStatus("OfflinePrimaryVtx_x")){
+		  //myConstrainedCandVtx_x = ConstrainedCandVtx_x->at(nH);
+		  //myConstrainedCandVtx_y = ConstrainedCandVtx_y->at(nH);
+		  //myConstrainedCandVtx_z = ConstrainedCandVtx_z->at(nH);
+		  //myConstrainedCandVtx_cov_xx = ConstrainedCandVtx_cov_xx->at(nH);
+		  //myConstrainedCandVtx_cov_xy = ConstrainedCandVtx_cov_xy->at(nH);
+		  //myConstrainedCandVtx_cov_xz = ConstrainedCandVtx_cov_xz->at(nH);
+		  //myConstrainedCandVtx_cov_yy = ConstrainedCandVtx_cov_yy->at(nH);
+		  //myConstrainedCandVtx_cov_yz = ConstrainedCandVtx_cov_yz->at(nH);
+		  //myConstrainedCandVtx_cov_zz = ConstrainedCandVtx_cov_zz->at(nH);
+		  //myConstrainedCandVtx_chi2 = ConstrainedCandVtx_chi2->at(nH);
+		  //myConstrainedCandVtx_prob = ConstrainedCandVtx_prob->at(nH);
+		  //myConstrainedCandVtx_ndof = ConstrainedCandVtx_ndof->at(nH);
+		  myKalmanCandVtx_x = KalmanCandVtx_x->at(nH);
+		  myKalmanCandVtx_y = KalmanCandVtx_y->at(nH);
+		  myKalmanCandVtx_z = KalmanCandVtx_z->at(nH);
+		  myKalmanCandVtx_cov_xx = KalmanCandVtx_cov_xx->at(nH);
+		  myKalmanCandVtx_cov_xy = KalmanCandVtx_cov_xy->at(nH);
+		  myKalmanCandVtx_cov_xz = KalmanCandVtx_cov_xz->at(nH);
+		  myKalmanCandVtx_cov_yy = KalmanCandVtx_cov_yy->at(nH);
+		  myKalmanCandVtx_cov_yz = KalmanCandVtx_cov_yz->at(nH);
+		  myKalmanCandVtx_cov_zz = KalmanCandVtx_cov_zz->at(nH);
+		  myKalmanCandVtx_chi2 = KalmanCandVtx_chi2->at(nH);
+		  myKalmanCandVtx_prob = KalmanCandVtx_prob->at(nH);
+		  myKalmanCandVtx_ndof = KalmanCandVtx_ndof->at(nH);
+	  } // No need to fill offline and gen. vertex info since they are alread filled from the input tree
 
       myEventNumber = EventNumber; 
       myRunNumber = RunNumber;       
@@ -1669,7 +1738,7 @@ float HZZ4l::getSpinZeroHiggsMELAWeight(Mela& myMela, int lepId[4], float angula
 	    myprob
 		);
 	return myprob;
-};
+}
 
 float HZZ4l::getMCFMMELAWeight(Mela& myMela, int lepId[4], float angularOrdered[8]){
 	float myprob=1.0;
@@ -1689,7 +1758,7 @@ float HZZ4l::getMCFMMELAWeight(Mela& myMela, int lepId[4], float angularOrdered[
 		0
 		);
 	return myprob;
-};
+}
 
 
 void HZZ4l::protection_nullPt(TVector3& myV){
@@ -1700,7 +1769,7 @@ void HZZ4l::protection_nullPt(TVector3& myV){
 		else xyz[0] += 0.00001*(0.001);
 	};
 	myV.SetXYZ(xyz[0],xyz[1],xyz[2]);
-};
+}
 void HZZ4l::protection_nullPt(TLorentzVector& myV){
 	double xyzt[4];
 	myV.GetXYZT(xyzt);
@@ -1709,102 +1778,7 @@ void HZZ4l::protection_nullPt(TLorentzVector& myV){
 		else  xyzt[2] += 0.00001*(0.001);
 	};
 	myV.SetXYZT(xyzt[0],xyzt[1],xyzt[2],xyzt[3]);
-};
-/*
-void HZZ4l::testSpin0MEDivergence(int iSample, int iHypo, float& MEVal){
-	if (iSample == kfLambda1_1+11){
-		if(iHypo == kfZG_0_fGG_1 && MEVal>2.0e14) MEVal = pow(2.0e14,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_1 && MEVal>2.0e14) MEVal = pow(2.0e14,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_05 && MEVal>8.0e11) MEVal = pow(8.0e11,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_05 && MEVal>6.5e11) MEVal = pow(6.5e11,2)/MEVal;
-	};
-	if (iSample == kfLambda1_m05+11){
-		if(iHypo == kfZG_0_fGG_1 && MEVal>4.0e5) MEVal = pow(4.0e5,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_1 && MEVal>4.0e5) MEVal = pow(4.0e5,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_05 && MEVal>1000) MEVal = pow(1000.0,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_05 && MEVal>150) MEVal = pow(150.0,2)/MEVal;
-	};
-	if (iSample == kfLambda1_05+11){
-		if(iHypo == kfZG_1_fGG_0 && MEVal>5.0e7) MEVal = pow(5.0e7,2)/MEVal;
-		if(iHypo == kfMZG_1_fMGG_0 && MEVal>5.0e7) MEVal = pow(5.0e7,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_1 && MEVal>2.0e7) MEVal = pow(2.0e7,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_1 && MEVal>2.0e7) MEVal = pow(2.0e7,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_05 && MEVal>6000) MEVal = pow(6000.0,2)/MEVal;
-	};
-	if (iSample == kfg2_0_fg4_1+11){
-		if(iHypo == kfZG_0_fGG_1 && MEVal>2.0e7) MEVal = pow(2.0e7,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_1 && MEVal>2.0e7) MEVal = pow(2.0e7,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_05 && MEVal>30000) MEVal = pow(30000.0,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_05 && MEVal>8000) MEVal = pow(8000.0,2)/MEVal;
-	};
-	if (iSample == kfg2_0_fg4_05+11){
-		if(iHypo == kfZG_0_fGG_1 && MEVal>1.5e6) MEVal = pow(1.5e6,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_1 && MEVal>1.5e6) MEVal = pow(1.5e6,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_05 && MEVal>4000) MEVal = pow(4000.0,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_05 && MEVal>900) MEVal = pow(900.0,2)/MEVal;
-	};
-	if (iSample == kfg2_0_fg4_01+11){
-		if(iHypo == kfZG_0_fGG_1 && MEVal>2.0e6) MEVal = pow(2.0e6,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_1 && MEVal>2.0e6) MEVal = pow(2.0e6,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_05 && MEVal>6000) MEVal = pow(6000.0,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_05 && MEVal>1200) MEVal = pow(1200.0,2)/MEVal;
-	};
-	if (iSample == kfg2_0_fg4_01_p390-1+11){
-		if(iHypo == kfZG_0_fGG_1 && MEVal>1.0e6) MEVal = pow(1.0e6,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_1 && MEVal>1.0e6) MEVal = pow(1.0e6,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_05 && MEVal>3000) MEVal = pow(3000.0,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_05 && MEVal>600) MEVal = pow(600.0,2)/MEVal;
-	};
-	if (iSample == kfg2_0_fg4_05_p3Pi-1+11){
-		if(iHypo == kfZG_0_fGG_1 && MEVal>2.0e6) MEVal = pow(2.0e6,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_1 && MEVal>2.0e6) MEVal = pow(2.0e6,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_05 && MEVal>6000) MEVal = pow(6000.0,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_05 && MEVal>1200) MEVal = pow(1200.0,2)/MEVal;
-	};
-	if (iSample == kfg2_05_fg4_0+11){
-		if(iHypo == kfZG_0_fGG_1 && MEVal>3.0e6) MEVal = pow(3.0e6,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_1 && MEVal>3.0e6) MEVal = pow(3.0e6,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_05 && MEVal>1000) MEVal = pow(1000.0,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_05 && MEVal>150) MEVal = pow(150.0,2)/MEVal;
-	};
-	if (iSample == kfg2_05_fg4_0_p290-1+11){
-		if(iHypo == kfZG_0_fGG_1 && MEVal>1.0e6) MEVal = pow(1.0e6,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_1 && MEVal>1.0e6) MEVal = pow(1.0e6,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_05 && MEVal>3000) MEVal = pow(3000.0,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_05 && MEVal>600) MEVal = pow(600.0,2)/MEVal;
-	};
-	if (iSample == kfg2_05_fg4_0_p2Pi-1+11){
-		if(iHypo == kfZG_0_fGG_1 && MEVal>1.0e6) MEVal = pow(1.0e6,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_1 && MEVal>1.0e6) MEVal = pow(1.0e6,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_05 && MEVal>20000) MEVal = pow(20000.0,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_05 && MEVal>3000) MEVal = pow(3000.0,2)/MEVal;
-	};
-	if (iSample == kfg2_05_fg4_05+11){
-		if(iHypo == kfZG_0_fGG_1 && MEVal>5.0e6) MEVal = pow(5.0e6,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_1 && MEVal>5.0e6) MEVal = pow(5.0e6,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_05 && MEVal>20000) MEVal = pow(20000.0,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_05 && MEVal>6000) MEVal = pow(6000.0,2)/MEVal;
-	};
-	if (iSample == kfg2_05_fg4_05_p2Pi-1+11){
-		if(iHypo == kfZG_0_fGG_1 && MEVal>3.0e6) MEVal = pow(3.0e6,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_1 && MEVal>3.0e6) MEVal = pow(3.0e6,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_05 && MEVal>20000) MEVal = pow(20000.0,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_05 && MEVal>2000) MEVal = pow(2000.0,2)/MEVal;
-	};
-	if (iSample == kfg2_33_fg4_33_p390-1+11){
-		if(iHypo == kfZG_0_fGG_1 && MEVal>3.0e5) MEVal = pow(3.0e5,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_1 && MEVal>3.0e5) MEVal = pow(3.0e5,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_05 && MEVal>800) MEVal = pow(800.0,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_05 && MEVal>150) MEVal = pow(150.0,2)/MEVal;
-	};
-	if (iSample == kfg2_01_fg4_01_p390-1+11){
-		if(iHypo == kfZG_0_fGG_1 && MEVal>1.6e6) MEVal = pow(1.6e6,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_1 && MEVal>1.6e6) MEVal = pow(1.6e6,2)/MEVal;
-		if(iHypo == kfZG_0_fGG_05 && MEVal>5000) MEVal = pow(5000.0,2)/MEVal;
-		if(iHypo == kfMZG_0_fMGG_05 && MEVal>500) MEVal = pow(500.0,2)/MEVal;
-	};
-};
-*/
+}
 void HZZ4l::calculateAngles(TLorentzVector thep4H, TLorentzVector thep4Z1, TLorentzVector thep4M11, TLorentzVector thep4M12, TLorentzVector thep4Z2, TLorentzVector thep4M21, TLorentzVector thep4M22, float& costheta1, float& costheta2, float& phi, float& costhetastar, float& phistar1, float& phistar2, float& phistar12, float& phi1, float& phi2){
 	
   float norm;
@@ -2517,7 +2491,6 @@ void HZZ4l::identifySample(std::string outputfilename){
 	  if( outputfilename.find( myPrimarySample_SpinZero[f].c_str() ) != std::string::npos){
 		  HZZ4l_code=f;
 		  HZZ4l_flag=true;
-//		  if(f<11) HZZ4L_HMass=126;
 		  HZZ4L_HMass=gi_phi2_phi4_files[HZZ4l_code][p_mH];
 	  }
   }
