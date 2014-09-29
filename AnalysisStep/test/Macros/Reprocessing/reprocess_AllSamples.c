@@ -17,7 +17,6 @@
 #include "TH2F.h"
 #include "TH3F.h"
 #include <ZZMatrixElement/MELA/interface/Mela.h>
-//#include <ZZMatrixElement/MELA/src/computeAngles.h>
 #include "./data/HZZ4l_LeptonInterference.h"
 
 string user_dir="/afs/cern.ch/work/u/usarica/HZZ4l-125p6-FullAnalysis/";
@@ -706,8 +705,9 @@ void reprocess_AllSamples(int erg_tev, int folder=2, int sample_min=0, int sampl
 		float MC_weight_dataMC=1;
 		float MC_weight_HqT=1;
 
-		int kNumSamples=46;
-		const int numSamples=46;
+		const int numSamples=52;
+		const int firstNonZZhypo=39;
+		int kNumSamples=numSamples;
 		float MC_weight_spin0[numSamples]={0};
 //		float MC_ME_as2mu2e_spin0[numSamples]={0};
 
@@ -1193,7 +1193,7 @@ void reprocess_AllSamples(int erg_tev, int folder=2, int sample_min=0, int sampl
 			tree->GetEntry(ev);
 			if(Z2Mass<=12) continue;
 			if (smp < kGGHSamples && !isData){
-				int iZGhypo = 33;
+				int iZGhypo = firstNonZZhypo;
 				if (!(GenZ1Mass>4 && GenZ2Mass>4)){
 					for (int p = iZGhypo; p < kNumSamples; p++) MC_weight_spin0[p] = 0;
 				};
@@ -1311,11 +1311,11 @@ void reprocess_AllSamples(int erg_tev, int folder=2, int sample_min=0, int sampl
 //const int kVBF_Phantom=78;
 //			if( smp>=(kGGHSamples+2) && smp<kGGMCFMSamples && ((smp-(kGGHSamples+2))%3)!=2 && erg_tev==8) MC_weight = MC_weight/2.0; // TEMPORARY FIX TO 4e, 4mu MCFM XSEC
 			MC_weight_xsec = MC_weight/MC_weight_noxsec;
-			if (smp >= kQQBZZSamples_Dedicated && smp < kVBF_Phantom){ // Workaround for Phantom
+/*			if (smp >= kQQBZZSamples_Dedicated && smp < kVBF_Phantom){ // Workaround for Phantom
 				MC_weight_xsec = 1.0/MC_weight_xsec*1.0e6;
 				MC_weight = MC_weight_noxsec * MC_weight_xsec;
 			};
-			if((ev%100000)==0) cout << MC_weight_xsec << endl;
+*/			if((ev%100000)==0) cout << MC_weight_xsec << endl;
 			if(MC_weight_noxsec==0 && !isData) continue;
 
 // Jet clearing for filling...

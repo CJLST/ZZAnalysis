@@ -270,14 +270,14 @@ void reweightIdeal_125p6(int erg_tev, int smp_min=0, int smp_max=kNumFiles, floa
 		float N_generated_4GeVcut[nFinalStates][kNumSamples+1];
 		for(int xb=0;xb<kNumSamples+1;xb++){ for(int yb=0;yb<nFinalStates;yb++) N_generated_4GeVcut[yb][xb]=0;};
 
-		const int size_zzcoupl=31;
+		const int size_zzcoupl=SIZE_HVV; // Directly from Mela package: TVar.hh
 		double selfDHvvcoupl[size_zzcoupl][2];
 		for(int gx=0;gx<size_zzcoupl;gx++){
 			selfDHvvcoupl[gx][0]=0;
 			selfDHvvcoupl[gx][1]=0;
 		};
 
-		cout << "MELA Gen. ME width: " << gi_phi2_phi4_files[smp][7] << endl;
+		cout << "MELA Gen. ME width: " << gi_phi2_phi4_files[smp][p_GH] << endl;
 		int nEntries = tree->GetEntries();
 		cout << "Entries " << nEntries << endl;
 		for(int ev=0;ev<nEntries;ev++){
@@ -308,19 +308,29 @@ void reweightIdeal_125p6(int erg_tev, int smp_min=0, int smp_max=kNumFiles, floa
 				selfDHvvcoupl[gx][0]=0;
 				selfDHvvcoupl[gx][1]=0;
 			};
-			selfDHvvcoupl[0][0] = gi_phi2_phi4_files[smp][0];
-			selfDHvvcoupl[1][0] = (gi_phi2_phi4_files[smp][1]) * cos( gi_phi2_phi4_files[smp][4] );
-			selfDHvvcoupl[1][1] = (gi_phi2_phi4_files[smp][1]) * sin( gi_phi2_phi4_files[smp][4] );
-			selfDHvvcoupl[3][0] = (gi_phi2_phi4_files[smp][3]) * cos( gi_phi2_phi4_files[smp][5] );
-			selfDHvvcoupl[3][1] = (gi_phi2_phi4_files[smp][3]) * sin( gi_phi2_phi4_files[smp][5] );
-			selfDHvvcoupl[11][0] = gi_phi2_phi4_files[smp][8];
-			selfDHvvcoupl[4][0] = gi_phi2_phi4_files[smp][9];
-			selfDHvvcoupl[7][0] = gi_phi2_phi4_files[smp][10];
-			selfDHvvcoupl[6][0] = gi_phi2_phi4_files[smp][11];
-			selfDHvvcoupl[9][0] = gi_phi2_phi4_files[smp][12];
-			selfDHvvcoupl[30][0] = gi_phi2_phi4_files[smp][13];
 
-			mela.setMelaHiggsWidth(gi_phi2_phi4_files[smp][7]);
+			selfDHvvcoupl[0][0] = gi_phi2_phi4_files[smp][p_Re_g1]; // Re-g1
+			selfDHvvcoupl[0][1] = gi_phi2_phi4_files[smp][p_Im_g1]; // Im-g1
+			selfDHvvcoupl[1][0] = gi_phi2_phi4_files[smp][p_Re_g2]; // Re-g2
+			selfDHvvcoupl[1][1] = gi_phi2_phi4_files[smp][p_Im_g2]; // Im-g2
+			selfDHvvcoupl[3][0] = gi_phi2_phi4_files[smp][p_Re_g4]; // Re-g4
+			selfDHvvcoupl[3][1] = gi_phi2_phi4_files[smp][p_Im_g4]; // Im-g4
+			selfDHvvcoupl[11][0] = gi_phi2_phi4_files[smp][p_Re_L1];  // Re-g1prime2
+			selfDHvvcoupl[11][1] = gi_phi2_phi4_files[smp][p_Im_L1];  // Im-g1prime2
+			selfDHvvcoupl[4][0] = gi_phi2_phi4_files[smp][p_Re_a2ZG]; // Re-g_zgsg_2
+			selfDHvvcoupl[4][1] = gi_phi2_phi4_files[smp][p_Im_a2ZG]; // Im-g_zgsg_2
+			selfDHvvcoupl[7][0] = gi_phi2_phi4_files[smp][p_Re_a2GG]; // Re-g_gsgs_2
+			selfDHvvcoupl[7][1] = gi_phi2_phi4_files[smp][p_Im_a2GG]; // Im-g_gsgs_2
+			selfDHvvcoupl[6][0] = gi_phi2_phi4_files[smp][p_Re_a3ZG]; // Re-g_zgs_4
+			selfDHvvcoupl[6][1] = gi_phi2_phi4_files[smp][p_Im_a3ZG]; // Im-g_zgs_4
+			selfDHvvcoupl[9][0] = gi_phi2_phi4_files[smp][p_Re_a3GG]; // Re-g_gsgs_4
+			selfDHvvcoupl[9][1] = gi_phi2_phi4_files[smp][p_Im_a3GG]; // Im-g_gsgs_4
+			selfDHvvcoupl[30][0] = gi_phi2_phi4_files[smp][p_Re_ZGL1]; // Re-g_zgs_1prime2
+			selfDHvvcoupl[30][1] = gi_phi2_phi4_files[smp][p_Im_ZGL1]; // Im-g_zgs_1prime2
+			selfDHvvcoupl[13][0] = gi_phi2_phi4_files[smp][p_Re_LQ]; // Re-g1prime4 (g1-LambdaQ)
+			selfDHvvcoupl[13][1] = gi_phi2_phi4_files[smp][p_Im_LQ]; // Im-g1prime4 (g1-LambdaQ)
+
+			mela.setMelaHiggsWidth(gi_phi2_phi4_files[smp][p_GH]);
 			sample_probPdf = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl); // MELA automatically resets width to default after calculation as part of protection for discriminants
 			bool isCountable=true;
 			if(sample_probPdf==0 || sample_probPdf!=sample_probPdf){
@@ -374,46 +384,34 @@ void reweightIdeal_125p6(int erg_tev, int smp_min=0, int smp_max=kNumFiles, floa
 					selfDHvvcoupl[gx][0]=0;
 					selfDHvvcoupl[gx][1]=0;
 				};
-				selfDHvvcoupl[0][0] = gi_phi2_phi4[hypo][0];
-				selfDHvvcoupl[1][0] = (gi_phi2_phi4[hypo][1]) * cos( gi_phi2_phi4[hypo][4] );
-				selfDHvvcoupl[1][1] = (gi_phi2_phi4[hypo][1]) * sin( gi_phi2_phi4[hypo][4] );
-				selfDHvvcoupl[3][0] = (gi_phi2_phi4[hypo][3]) * cos( gi_phi2_phi4[hypo][5] );
-				selfDHvvcoupl[3][1] = (gi_phi2_phi4[hypo][3]) * sin( gi_phi2_phi4[hypo][5] );
-				selfDHvvcoupl[11][0] = gi_phi2_phi4[hypo][8];
-				selfDHvvcoupl[4][0] = gi_phi2_phi4[hypo][9];
-				selfDHvvcoupl[7][0] = gi_phi2_phi4[hypo][10];
-				selfDHvvcoupl[6][0] = gi_phi2_phi4[hypo][11];
-				selfDHvvcoupl[9][0] = gi_phi2_phi4[hypo][12];
-				selfDHvvcoupl[30][0] = gi_phi2_phi4[hypo][13];
+
+				selfDHvvcoupl[0][0] = gi_phi2_phi4[hypo][p_Re_g1]; // Re-g1
+				selfDHvvcoupl[0][1] = gi_phi2_phi4[hypo][p_Im_g1]; // Im-g1
+				selfDHvvcoupl[1][0] = gi_phi2_phi4[hypo][p_Re_g2]; // Re-g2
+				selfDHvvcoupl[1][1] = gi_phi2_phi4[hypo][p_Im_g2]; // Im-g2
+				selfDHvvcoupl[3][0] = gi_phi2_phi4[hypo][p_Re_g4]; // Re-g4
+				selfDHvvcoupl[3][1] = gi_phi2_phi4[hypo][p_Im_g4]; // Im-g4
+				selfDHvvcoupl[11][0] = gi_phi2_phi4[hypo][p_Re_L1];  // Re-g1prime2
+				selfDHvvcoupl[11][1] = gi_phi2_phi4[hypo][p_Im_L1];  // Im-g1prime2
+				selfDHvvcoupl[4][0] = gi_phi2_phi4[hypo][p_Re_a2ZG]; // Re-g_zgsg_2
+				selfDHvvcoupl[4][1] = gi_phi2_phi4[hypo][p_Im_a2ZG]; // Im-g_zgsg_2
+				selfDHvvcoupl[7][0] = gi_phi2_phi4[hypo][p_Re_a2GG]; // Re-g_gsgs_2
+				selfDHvvcoupl[7][1] = gi_phi2_phi4[hypo][p_Im_a2GG]; // Im-g_gsgs_2
+				selfDHvvcoupl[6][0] = gi_phi2_phi4[hypo][p_Re_a3ZG]; // Re-g_zgs_4
+				selfDHvvcoupl[6][1] = gi_phi2_phi4[hypo][p_Im_a3ZG]; // Im-g_zgs_4
+				selfDHvvcoupl[9][0] = gi_phi2_phi4[hypo][p_Re_a3GG]; // Re-g_gsgs_4
+				selfDHvvcoupl[9][1] = gi_phi2_phi4[hypo][p_Im_a3GG]; // Im-g_gsgs_4
+				selfDHvvcoupl[30][0] = gi_phi2_phi4[hypo][p_Re_ZGL1]; // Re-g_zgs_1prime2
+				selfDHvvcoupl[30][1] = gi_phi2_phi4[hypo][p_Im_ZGL1]; // Im-g_zgs_1prime2
+				selfDHvvcoupl[13][0] = gi_phi2_phi4[hypo][p_Re_LQ]; // Re-g1prime4 (g1-LambdaQ)
+				selfDHvvcoupl[13][1] = gi_phi2_phi4[hypo][p_Im_LQ]; // Im-g1prime4 (g1-LambdaQ)
 
 				if( genFinalState<=4 ){
 					if (hypo<firstNonZZHypothesis || (GenZ1Mass>4 && GenZ2Mass > 4)){
-						mela.setMelaHiggsWidth(gi_phi2_phi4[hypo][7]); // MELA automatically resets width to default after calculation as part of protection for discriminants
+						mela.setMelaHiggsWidth(gi_phi2_phi4[hypo][p_GH]); // MELA automatically resets width to default after calculation as part of protection for discriminants
 						weight_probPdf = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDHvvcoupl);
 					}
 					else weight_probPdf=0;
-/*					
-					if(hypo==0) g1probPdf_true = weight_probPdf;
-					if(hypo==1) g2probPdf_true = weight_probPdf;
-					if(hypo==2) g4probPdf_true = weight_probPdf;
-					if(hypo==3) g1q2probPdf_true = weight_probPdf;
-
-					if(hypo==4) g1g2probPdf_true = weight_probPdf;
-					if(hypo==5) g1g4probPdf_true = weight_probPdf;
-					if(hypo==7) g1g1q2probPdf_true = weight_probPdf;
-
-					if(hypo==15) g1g2perpprobPdf_true = weight_probPdf;
-					if(hypo==16) g1g4perpprobPdf_true = weight_probPdf;
-
-					if(hypo==33) gZGprobPdf_true = weight_probPdf;
-					if(hypo==34) gGGprobPdf_true = weight_probPdf;
-					if(hypo==35) g1gZGprobPdf_true = weight_probPdf;
-					if(hypo==36) g1gGGprobPdf_true = weight_probPdf;
-					if(hypo==37) gPSZGprobPdf_true = weight_probPdf;
-					if(hypo==38) gPSGGprobPdf_true = weight_probPdf;
-					if(hypo==39) g4gZGprobPdf_true = weight_probPdf;
-					if(hypo==40) g4gGGprobPdf_true = weight_probPdf;
-*/
 				}
 				else{
 					weight_probPdf = 1.0;
@@ -438,28 +436,6 @@ void reweightIdeal_125p6(int erg_tev, int smp_min=0, int smp_max=kNumFiles, floa
 				if(GenZ1Mass>4 && GenZ2Mass>4) N_generated_4GeVcut[genFinalState][0] += 1.0;
 			};
 
-/*
-			Gen_D_g2 = g1probPdf_true/(g1probPdf_true + g2probPdf_true*g1g2scale_old);
-			Gen_D_g4 = g1probPdf_true/(g1probPdf_true + g4probPdf_true*g1g4scale_old);
-			Gen_D_g1q2 = g1probPdf_true/(g1probPdf_true + g1q2probPdf_true*pow(gi_phi2_phi4[7][8],2) );
-			Gen_D_ZG = g1probPdf_true/(g1probPdf_true + gZGprobPdf_true*pow(g1gZGintscale/gi_phi2_phi4[35][9],2));
-			Gen_D_GG = g1probPdf_true/(g1probPdf_true + gGGprobPdf_true*pow(g1gGGintscale/gi_phi2_phi4[36][10],2));
-			float c_PSZGGG=6;
-			if(genFinalState<2) c_PSZGGG=7;
-			Gen_D_ZG_PS = g4probPdf_true/(g4probPdf_true + gPSZGprobPdf_true*pow(g4gZGscale/gi_phi2_phi4[39][11],2)*c_PSZGGG);
-			Gen_D_GG_PS = g4probPdf_true/(g4probPdf_true + gPSGGprobPdf_true*pow(g4gGGscale/gi_phi2_phi4[40][12],2)*c_PSZGGG);
-
-			Gen_D_g2int = ( g1g2probPdf_true - g1probPdf_true - g2probPdf_true*pow(gi_phi2_phi4[4][1],2.0) ) * ( g1g2intscale/gi_phi2_phi4[4][1] ) / (g1probPdf_true + g2probPdf_true*g1g2scale_old);
-			Gen_D_g4int = ( g1g4probPdf_true - g1probPdf_true - g4probPdf_true*pow(gi_phi2_phi4[5][3],2.0) ) * ( g1g4intscale/gi_phi2_phi4[5][3] ) / (g1probPdf_true + g4probPdf_true*g1g4scale_old);
-			Gen_D_g1q2int = ( g1g1q2probPdf_true - g1probPdf_true - g1q2probPdf_true*pow(gi_phi2_phi4[7][8],2) ) / (g1probPdf_true + g1q2probPdf_true*pow(gi_phi2_phi4[7][8],2));
-			Gen_D_ZGint = ( g1gZGprobPdf_true - g1probPdf_true - gZGprobPdf_true*pow(gi_phi2_phi4[35][9],2.0) ) * ( g1gZGintscale/gi_phi2_phi4[35][9] ) / (g1probPdf_true + gZGprobPdf_true*pow(g1gZGintscale/gi_phi2_phi4[35][9],2));
-			Gen_D_GGint = ( g1gGGprobPdf_true - g1probPdf_true - gGGprobPdf_true*pow(gi_phi2_phi4[36][10],2.0) ) * ( g1gGGintscale/gi_phi2_phi4[36][10] ) / (g1probPdf_true + gGGprobPdf_true*pow(g1gGGintscale/gi_phi2_phi4[36][10],2));
-			Gen_D_ZG_PSint = ( g4gZGprobPdf_true - g4probPdf_true - gPSZGprobPdf_true*pow(gi_phi2_phi4[39][11],2.0) ) * ( g4gZGscale/gi_phi2_phi4[39][11] ) / (g4probPdf_true + gPSZGprobPdf_true*pow(g4gZGscale/gi_phi2_phi4[39][11],2)*c_PSZGGG);
-			Gen_D_GG_PSint = ( g4gGGprobPdf_true - g4probPdf_true - gPSGGprobPdf_true*pow(gi_phi2_phi4[40][12],2.0) ) * ( g4gGGscale/gi_phi2_phi4[40][12] ) / (g4probPdf_true + gPSGGprobPdf_true*pow(g4gGGscale/gi_phi2_phi4[40][12],2)*c_PSZGGG);
-
-			Gen_D_g2int_perp = ( g1g2perpprobPdf_true - g1probPdf_true - g2probPdf_true*pow(gi_phi2_phi4[15][1],2.0) ) * ( g1g2intscale/gi_phi2_phi4[15][1] ) / (g1probPdf_true + g2probPdf_true*g1g2scale_old);
-			Gen_D_g4int_perp = ( g1g4perpprobPdf_true - g1probPdf_true - g4probPdf_true*pow(gi_phi2_phi4[16][3],2.0) ) * ( g1g4intscale/gi_phi2_phi4[16][3] ) / (g1probPdf_true + g4probPdf_true*g1g4scale_old);
-*/
 			mytree->Fill();
 		};
 		for(int binx=0;binx<nFinalStates;binx++){

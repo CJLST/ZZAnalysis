@@ -146,7 +146,7 @@ void shuffleSignalBkg_125p6(int flavor, int erg_tev){
 //	string cinput_common = user_dir_newProduction + cerg;
 	string coutput_common = cinput_common;
 
-	const int numSamples=46;
+	const int numSamples=52;
 	int myNumSamples=numSamples;
 	float MC_weight_spin0[numSamples]={0};
 	float MC_weight_4GeVcut_spin0[numSamples]={0};
