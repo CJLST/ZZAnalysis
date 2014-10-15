@@ -2,7 +2,7 @@
 
 ############## For V5_15_0/CMSSW_5_3_9 POST-LEGACY
 
-setenv CVSROOT ":ext:${USER}@lxplus5.cern.ch:/afs/cern.ch/user/c/cvscmssw/public/CMSSW"
+setenv CVSROOT ":ext:${USER}@lxplus.cern.ch:/afs/cern.ch/user/c/cvscmssw/public/CMSSW"
 
 if ( ! -X git ) then 
     scram setup /afs/cern.ch/cms/slc5_amd64_gcc462/external/git-toolfile/1.0/etc/scram.d/git.xml 
