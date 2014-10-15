@@ -325,6 +325,8 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
   vector<double> myJetPhi;
   vector<double> myJetMass;
   vector<double> myJetBTag;
+  Float_t        myPFMET;
+
 
   //Firstly create the File before the tree, because ROOT is designed my fucking monkeys high on crack
   TFile fOut(outputName,"RECREATE");
@@ -479,6 +481,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
     SelTree.Branch("JetPhi",&myJetPhi);
     SelTree.Branch("JetMass",&myJetMass);
     SelTree.Branch("JetBTag",&myJetBTag);
+    SelTree.Branch("PFMET",&myPFMET);
   }  
 
   if(isCR){
@@ -613,6 +616,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 	myDiJetMassMinus = DiJetMassMinus;
 	myDiJetDEta = DiJetDEta;
 	myNJets30 = countJet;
+	myPFMET = PFMET;
       }
 
     //Loop over all the H-> ZZ candidates in the event
