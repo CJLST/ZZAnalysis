@@ -337,6 +337,9 @@ void HZZ4lNtupleFactory::InitializeVariables()
   //Categorization-related variables
   _nExtraLep.clear();
   _nExtraZ.clear();
+  _nJets.clear();
+  _nCleanedJets.clear();
+  _nCleanedJetsPt30.clear();
 
   //Variables of extra leptons
   _ExtraLep1Pt.clear();
@@ -654,6 +657,9 @@ void HZZ4lNtupleFactory::InitializeBranches()
   //Categorization-related variables
   _outTree->Branch("nExtraLep",&_nExtraLep);
   _outTree->Branch("nExtraZ",&_nExtraZ);
+  _outTree->Branch("nJets",&_nJets);
+  _outTree->Branch("nCleanedJets",&_nCleanedJets);
+  _outTree->Branch("nCleanedJetsPt30",&_nCleanedJetsPt30);
 
   //Variables of extra leptons
   _outTree->Branch("ExtraLep1Pt",&_ExtraLep1Pt);
@@ -743,7 +749,6 @@ void HZZ4lNtupleFactory::createNewCandidate()
   _firstZStored = false;
   _LeptonIndex = 1;
   _LeptonIsoIndex = 1;
-  _ExtraLeptonIndex = 1;
 
   return;
 }
@@ -1257,69 +1262,83 @@ void HZZ4lNtupleFactory::FillDiJetInfo(const Float_t DiJetMass, const Float_t Di
   return;
 }
 
-void HZZ4lNtupleFactory::FillCategorizationInfo(const Int_t nExtraLep, const Int_t nExtraZ)
+void HZZ4lNtupleFactory::FillCategorizationInfo(const Int_t nExtraLep, const Int_t nExtraZ, const Int_t nJets, const Int_t nCleanedJets, const Int_t nCleanedJetsPt30)
 {
   _nExtraLep.push_back(nExtraLep);
   _nExtraZ.push_back(nExtraZ);
+  _nJets.push_back(nJets);
+  _nCleanedJets.push_back(nCleanedJets);
+  _nCleanedJetsPt30.push_back(nCleanedJetsPt30);
 
   return;
 }
 
-void HZZ4lNtupleFactory::FillExtraLepInfo(const reco::CandidatePtr ExtraLep)
+void HZZ4lNtupleFactory::FillExtraLepInfo(int extraLeptonIndex, bool extraLeptonExists, const reco::CandidatePtr ExtraLep)
 {
-  switch(_ExtraLeptonIndex){
+  Float_t Pt         = extraLeptonExists ? ExtraLep->pt()    : -9999. ;
+  Float_t Eta        = extraLeptonExists ? ExtraLep->eta()   : -9999. ;
+  Float_t Phi        = extraLeptonExists ? ExtraLep->phi()   : -9999. ;
+  Int_t   LepId      = extraLeptonExists ? ExtraLep->pdgId() :     0  ;
+  Float_t SIP        = extraLeptonExists ? userdatahelpers::getUserFloat(&*ExtraLep,"SIP")              : -9999. ;
+  Bool_t  isID       = extraLeptonExists ? userdatahelpers::getUserFloat(&*ExtraLep,"isID")             :     0  ;
+  Float_t BDT        = extraLeptonExists ? userdatahelpers::getUserFloat(&*ExtraLep,"BDT")              : -9999. ;
+  Char_t  missingHit = extraLeptonExists ? (char)userdatahelpers::getUserFloat(&*ExtraLep,"missingHit") :     0  ;
+  Float_t chargedHadIso = extraLeptonExists ? userdatahelpers::getUserFloat(&*ExtraLep,"PFChargedHadIso") : -9999. ;
+  Float_t neutralHadIso = extraLeptonExists ? userdatahelpers::getUserFloat(&*ExtraLep,"PFNeutralHadIso") : -9999. ;
+  Float_t photonIso     = extraLeptonExists ? userdatahelpers::getUserFloat(&*ExtraLep,"PFPhotonIso")     : -9999. ;
+  Float_t combRelIsoPF  = extraLeptonExists ? userdatahelpers::getUserFloat(&*ExtraLep,"combRelIsoPF")    : -9999. ;
+
+  switch(extraLeptonIndex){
 
   case 1:
-    _ExtraLep1Pt.push_back(ExtraLep->pt());
-    _ExtraLep1Eta.push_back(ExtraLep->eta());
-    _ExtraLep1Phi.push_back(ExtraLep->phi());
-    _ExtraLep1LepId.push_back(ExtraLep->pdgId());
-    _ExtraLep1SIP.push_back(userdatahelpers::getUserFloat(&*ExtraLep,"SIP"));
-    _ExtraLep1isID.push_back(userdatahelpers::getUserFloat(&*ExtraLep,"isID"));
-    _ExtraLep1BDT.push_back(userdatahelpers::getUserFloat(&*ExtraLep,"BDT"));
-    _ExtraLep1missingHit.push_back((char)userdatahelpers::getUserFloat(&*ExtraLep,"missingHit"));
-    _ExtraLep1chargedHadIso.push_back(userdatahelpers::getUserFloat(&*ExtraLep,"PFChargedHadIso"));
-    _ExtraLep1neutralHadIso.push_back(userdatahelpers::getUserFloat(&*ExtraLep,"PFNeutralHadIso"));
-    _ExtraLep1photonIso.push_back(userdatahelpers::getUserFloat(&*ExtraLep,"PFPhotonIso"));
-    _ExtraLep1combRelIsoPF.push_back(userdatahelpers::getUserFloat(&*ExtraLep,"combRelIsoPF"));
+    _ExtraLep1Pt        .push_back(Pt);
+    _ExtraLep1Eta       .push_back(Eta);
+    _ExtraLep1Phi       .push_back(Phi);
+    _ExtraLep1LepId     .push_back(LepId);
+    _ExtraLep1SIP       .push_back(SIP);
+    _ExtraLep1isID      .push_back(isID);
+    _ExtraLep1BDT       .push_back(BDT);
+    _ExtraLep1missingHit.push_back(missingHit);
+    _ExtraLep1chargedHadIso.push_back(chargedHadIso);
+    _ExtraLep1neutralHadIso.push_back(neutralHadIso);
+    _ExtraLep1photonIso    .push_back(photonIso);
+    _ExtraLep1combRelIsoPF .push_back(combRelIsoPF);
     break;
 
   case 2:
-    _ExtraLep2Pt.push_back(ExtraLep->pt());
-    _ExtraLep2Eta.push_back(ExtraLep->eta());
-    _ExtraLep2Phi.push_back(ExtraLep->phi());
-    _ExtraLep2LepId.push_back(ExtraLep->pdgId());
-    _ExtraLep2SIP.push_back(userdatahelpers::getUserFloat(&*ExtraLep,"SIP"));
-    _ExtraLep2isID.push_back(userdatahelpers::getUserFloat(&*ExtraLep,"isID"));
-    _ExtraLep2BDT.push_back(userdatahelpers::getUserFloat(&*ExtraLep,"BDT"));
-    _ExtraLep2missingHit.push_back((char)userdatahelpers::getUserFloat(&*ExtraLep,"missingHit"));
-    _ExtraLep2chargedHadIso.push_back(userdatahelpers::getUserFloat(&*ExtraLep,"PFChargedHadIso"));
-    _ExtraLep2neutralHadIso.push_back(userdatahelpers::getUserFloat(&*ExtraLep,"PFNeutralHadIso"));
-    _ExtraLep2photonIso.push_back(userdatahelpers::getUserFloat(&*ExtraLep,"PFPhotonIso"));
-    _ExtraLep2combRelIsoPF.push_back(userdatahelpers::getUserFloat(&*ExtraLep,"combRelIsoPF"));
+    _ExtraLep2Pt        .push_back(Pt);
+    _ExtraLep2Eta       .push_back(Eta);
+    _ExtraLep2Phi       .push_back(Phi);
+    _ExtraLep2LepId     .push_back(LepId);
+    _ExtraLep2SIP       .push_back(SIP);
+    _ExtraLep2isID      .push_back(isID);
+    _ExtraLep2BDT       .push_back(BDT);
+    _ExtraLep2missingHit.push_back(missingHit);
+    _ExtraLep2chargedHadIso.push_back(chargedHadIso);
+    _ExtraLep2neutralHadIso.push_back(neutralHadIso);
+    _ExtraLep2photonIso    .push_back(photonIso);
+    _ExtraLep2combRelIsoPF .push_back(combRelIsoPF);
     break;
-  
+
   case 3:
-    _ExtraLep3Pt.push_back(ExtraLep->pt());
-    _ExtraLep3Eta.push_back(ExtraLep->eta());
-    _ExtraLep3Phi.push_back(ExtraLep->phi());
-    _ExtraLep3LepId.push_back(ExtraLep->pdgId());
-    _ExtraLep3SIP.push_back(userdatahelpers::getUserFloat(&*ExtraLep,"SIP"));
-    _ExtraLep3isID.push_back(userdatahelpers::getUserFloat(&*ExtraLep,"isID"));
-    _ExtraLep3BDT.push_back(userdatahelpers::getUserFloat(&*ExtraLep,"BDT"));
-    _ExtraLep3missingHit.push_back((char)userdatahelpers::getUserFloat(&*ExtraLep,"missingHit"));
-    _ExtraLep3chargedHadIso.push_back(userdatahelpers::getUserFloat(&*ExtraLep,"PFChargedHadIso"));
-    _ExtraLep3neutralHadIso.push_back(userdatahelpers::getUserFloat(&*ExtraLep,"PFNeutralHadIso"));
-    _ExtraLep3photonIso.push_back(userdatahelpers::getUserFloat(&*ExtraLep,"PFPhotonIso"));
-    _ExtraLep3combRelIsoPF.push_back(userdatahelpers::getUserFloat(&*ExtraLep,"combRelIsoPF"));
+    _ExtraLep3Pt        .push_back(Pt);
+    _ExtraLep3Eta       .push_back(Eta);
+    _ExtraLep3Phi       .push_back(Phi);
+    _ExtraLep3LepId     .push_back(LepId);
+    _ExtraLep3SIP       .push_back(SIP);
+    _ExtraLep3isID      .push_back(isID);
+    _ExtraLep3BDT       .push_back(BDT);
+    _ExtraLep3missingHit.push_back(missingHit);
+    _ExtraLep3chargedHadIso.push_back(chargedHadIso);
+    _ExtraLep3neutralHadIso.push_back(neutralHadIso);
+    _ExtraLep3photonIso    .push_back(photonIso);
+    _ExtraLep3combRelIsoPF .push_back(combRelIsoPF);
     break;
 
   default:
     std::cout << "Error in indexing the extra leptons ! Will abort..." << std::endl;
     assert(0);
   }
-
-  _ExtraLeptonIndex++;
 
   return;
 }

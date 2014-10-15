@@ -157,8 +157,8 @@ class HZZ4lNtupleFactory{
   void FillPhotonInfo(const Float_t PhotPt, const Float_t PhotEta, const Float_t PhotPhi);
   void FillJetInfo(const Float_t JetPt, const Float_t JetEta, const Float_t JetPhi, const Float_t JetMass, const Float_t JetBTag, const Float_t JetSigma);
   void FillDiJetInfo(const Float_t DiJetMass, const Float_t DiJetMassPlus, const Float_t DiJetMassMinus, const Float_t DiJetDEta);
-  void FillCategorizationInfo(const Int_t nExtraLep, const Int_t nExtraZ);
-  void FillExtraLepInfo(const reco::CandidatePtr ExtraLep);
+  void FillCategorizationInfo(const Int_t nExtraLep, const Int_t nExtraZ, const Int_t nJets, const Int_t nCleanedJets, const Int_t nCleanedJetsPt30);
+  void FillExtraLepInfo(int extraLeptonIndex, bool extraLeptonExists, const reco::CandidatePtr ExtraLep);
 
   void FillHGenInfo(const math::XYZTLorentzVector Hp);
   void FillZGenInfo(const math::XYZTLorentzVector Z1p, const math::XYZTLorentzVector Z2p);
@@ -177,7 +177,6 @@ class HZZ4lNtupleFactory{
   Bool_t _firstZStored;
   Int_t _LeptonIndex;
   Int_t _LeptonIsoIndex;
-  Int_t _ExtraLeptonIndex;
 
   //Event variables
   Int_t _RunNumber;
@@ -438,6 +437,9 @@ class HZZ4lNtupleFactory{
   //Categorization-related variables
   std::vector<Int_t> _nExtraLep;
   std::vector<Int_t> _nExtraZ;
+  std::vector<Int_t> _nJets;
+  std::vector<Int_t> _nCleanedJets;
+  std::vector<Int_t> _nCleanedJetsPt30;
 
   //Variables of extra leptons
   std::vector<Float_t> _ExtraLep1Pt;

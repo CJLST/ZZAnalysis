@@ -603,6 +603,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     combinedMEM.computeME_Interference(MEMNames::kzzgg,MEMNames::kJHUGen,partP, partId,pzzgg_VAJHU);
     combinedMEM.computeME_Interference(MEMNames::kzzzg_PS,MEMNames::kJHUGen,partP, partId,pzzzg_PS_VAJHU);
     combinedMEM.computeME_Interference(MEMNames::kzzgg_PS,MEMNames::kJHUGen,partP, partId,pzzgg_PS_VAJHU);
+
     // VBF jets
     vector<const cmg::PFJet*> cleanedJets;
     VBFCandidateJetSelector myVBFCandidateJetSelector;
@@ -627,6 +628,10 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     double pvbf_VAJHU_new_up = -1.;
     double phjj_VAJHU_new_dn = -1.;
     double pvbf_VAJHU_new_dn = -1.;
+
+    myCand.addUserInt("nJets",pfjetscoll->size());
+    myCand.addUserInt("nCleanedJets",cleanedJets.size());
+    myCand.addUserInt("nCleanedJetsPt30",cleanedJetsPt30.size());
 
     if (cleanedJetsPt30.size()>=2) {
       detajj = cleanedJetsPt30[0]->eta()-cleanedJetsPt30[1]->eta();
