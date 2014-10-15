@@ -9,7 +9,7 @@ rehash
 
 git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
 
-git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement ; (cd ZZMatrixElement; git checkout -b from-V00-00-26 V00-00-26)
+git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement ; (cd ZZMatrixElement; git checkout -b from-V00-00-27 V00-00-27)
 
 git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit; 
 cd HiggsAnalysis/CombinedLimit
