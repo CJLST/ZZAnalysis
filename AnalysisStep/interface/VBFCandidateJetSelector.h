@@ -11,9 +11,9 @@
  */
 
 #include <vector>
-#include <AnalysisDataFormats/CMGTools/interface/PFJet.h>
 #include <DataFormats/PatCandidates/interface/CompositeCandidate.h>
-
+#include <DataFormats/PatCandidates/interface/Jet.h>
+#include "DataFormats/Math/interface/deltaR.h"
 
 class VBFCandidateJetSelector {
  public:
@@ -25,11 +25,10 @@ class VBFCandidateJetSelector {
   /// Destructor
 	virtual ~VBFCandidateJetSelector() {};
 
-	typedef std::vector<const cmg::PFJet*> container ;
+	typedef std::vector<const pat::Jet*> container ;
 	
-	std::vector<const cmg::PFJet*> cleanJets(const pat::CompositeCandidate& cand,
-						 edm::Handle<edm::View<cmg::PFJet> > jets, int year);
-											 //const std::vector<cmg::PFJet>& jets);
+	std::vector<const pat::Jet*> cleanJets(const pat::CompositeCandidate& cand,
+						 edm::Handle<edm::View<pat::Jet> > jets, int year);
 	
 private:       
 	container selected_ ;
