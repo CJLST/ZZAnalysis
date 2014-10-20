@@ -10,7 +10,7 @@ if ( ! -X git ) then
 endif
 
 git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
-git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement ; (cd ZZMatrixElement; git checkout -b from-V00-00-27 V00-00-27)
+git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement ; (cd ZZMatrixElement; git checkout -b from-V00-00-28 V00-00-28)
 
 # cvs co -r V02-06-00 HiggsAnalysis/CombinedLimit
 git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit; (cd HiggsAnalysis/CombinedLimit; git pull origin master; git checkout -b from-V02-06-00 HiggsAnalysis-CombinedLimit-V02-06-00)
