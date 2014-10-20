@@ -236,8 +236,10 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     // store good isolated leptons that are not involved in the current ZZ candidate
     int nExtraLep = 0;
     for( View<reco::Candidate>::const_iterator lep = leptonscoll->begin(); lep != leptonscoll->end(); ++ lep ) {
-      if(lep->pt()!=Z1Lp->pt() && lep->pt()!=Z1Lm->pt() && 
-	 lep->pt()!=Z2Lp->pt() && lep->pt()!=Z2Lm->pt()){  // can this be done in a cleaner way ?
+      if( reco::deltaR( lep->p4(), Z1Lp->p4() ) > 0.02 &&
+	  reco::deltaR( lep->p4(), Z1Lm->p4() ) > 0.02 &&
+	  reco::deltaR( lep->p4(), Z2Lp->p4() ) > 0.02 &&
+	  reco::deltaR( lep->p4(), Z2Lm->p4() ) > 0.02    ){
 	const reco::CandidatePtr myLep(leptonscoll,lep-leptonscoll->begin());
 	if((bool)userdatahelpers::getUserFloat(&*myLep,"isGood") && userdatahelpers::getUserFloat(&*myLep,"combRelIsoPF")<0.4){
 	  nExtraLep++;
@@ -250,10 +252,14 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     // store Z candidates whose leptons are not involved in the current ZZ candidate
     int nExtraZ = 0;
     for( View<CompositeCandidate>::const_iterator zcand = ZCands->begin(); zcand != ZCands->end(); ++ zcand ) {
-      if(zcand->daughter(0)->pt()!=Z1Lp->pt() && zcand->daughter(0)->pt()!=Z1Lm->pt() && 
-	 zcand->daughter(0)->pt()!=Z2Lp->pt() && zcand->daughter(0)->pt()!=Z2Lm->pt() &&
-	 zcand->daughter(1)->pt()!=Z1Lp->pt() && zcand->daughter(1)->pt()!=Z1Lm->pt() && 
-	 zcand->daughter(1)->pt()!=Z2Lp->pt() && zcand->daughter(1)->pt()!=Z2Lm->pt()){ // can this be done in a cleaner way ?
+      if( reco::deltaR( zcand->daughter(0)->p4(), Z1Lp->p4() ) > 0.02 &&
+	  reco::deltaR( zcand->daughter(0)->p4(), Z1Lm->p4() ) > 0.02 &&
+	  reco::deltaR( zcand->daughter(0)->p4(), Z2Lp->p4() ) > 0.02 &&
+	  reco::deltaR( zcand->daughter(0)->p4(), Z2Lm->p4() ) > 0.02 &&
+	  reco::deltaR( zcand->daughter(1)->p4(), Z1Lp->p4() ) > 0.02 &&
+	  reco::deltaR( zcand->daughter(1)->p4(), Z1Lm->p4() ) > 0.02 &&
+	  reco::deltaR( zcand->daughter(1)->p4(), Z2Lp->p4() ) > 0.02 &&
+	  reco::deltaR( zcand->daughter(1)->p4(), Z2Lm->p4() ) > 0.02    ){
 	const reco::CandidatePtr myZCand(ZCands,zcand-ZCands->begin());
 	if((bool)userdatahelpers::getUserFloat(&*myZCand,"GoodLeptons")){
 	  nExtraZ++;
