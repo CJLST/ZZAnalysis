@@ -1028,11 +1028,12 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 		    isSignal, isRightPair, ZZFisher, CRflag);
 
   //Fill the info on categorization
-  const Int_t nExtraLep = cand.userInt("nExtraLep");
-  const Int_t nExtraZ = cand.userInt("nExtraZ");
-  const Int_t nJets = cand.userInt("nJets");
-  const Int_t nCleanedJets = cand.userInt("nCleanedJets");
-  const Int_t nCleanedJetsPt30 = cand.userInt("nCleanedJetsPt30");
+  const Int_t nExtraLep = cand.userFloat("nExtraLep");
+  const Int_t nExtraZ = cand.userFloat("nExtraZ");
+  //FIXME: once cleaning is done per-event and not per-candidate, these will become per-event variables!
+  const Int_t nJets = cand.userFloat("nJets");
+  const Int_t nCleanedJets = cand.userFloat("nCleanedJets");
+  const Int_t nCleanedJetsPt30 = cand.userFloat("nCleanedJetsPt30");
   myTree->FillCategorizationInfo(nExtraLep, nExtraZ, nJets, nCleanedJets, nCleanedJetsPt30);
 
   //Fill the info on the extra leptons

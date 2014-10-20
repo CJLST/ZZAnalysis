@@ -245,7 +245,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 	}
       }
     }
-    myCand.addUserInt("nExtraLep",nExtraLep);
+    myCand.addUserFloat("nExtraLep",nExtraLep);
 
     // store Z candidates whose leptons are not involved in the current ZZ candidate
     int nExtraZ = 0;
@@ -261,7 +261,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 	}
       }
     }
-    myCand.addUserInt("nExtraZ",nExtraZ);
+    myCand.addUserFloat("nExtraZ",nExtraZ);
 
 
     int d0FSR = (static_cast<const pat::CompositeCandidate*>(Z1->masterClone().get()))->userFloat("dauWithFSR");
@@ -629,9 +629,10 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     double phjj_VAJHU_new_dn = -1.;
     double pvbf_VAJHU_new_dn = -1.;
 
-    myCand.addUserInt("nJets",pfjetscoll->size());
-    myCand.addUserInt("nCleanedJets",cleanedJets.size());
-    myCand.addUserInt("nCleanedJetsPt30",cleanedJetsPt30.size());
+    //FIXME: once cleaning is done per-event and not per-candidate, these will become per-event variables!
+    myCand.addUserFloat("nJets",pfjetscoll->size());
+    myCand.addUserFloat("nCleanedJets",cleanedJets.size());
+    myCand.addUserFloat("nCleanedJetsPt30",cleanedJetsPt30.size());
 
     if (cleanedJetsPt30.size()>=2) {
       detajj = cleanedJetsPt30[0]->eta()-cleanedJetsPt30[1]->eta();

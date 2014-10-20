@@ -666,40 +666,45 @@ void HZZ4lNtupleFactory::InitializeBranches()
   _outTree->Branch("ExtraLep1Eta",&_ExtraLep1Eta);
   _outTree->Branch("ExtraLep1Phi",&_ExtraLep1Phi);
   _outTree->Branch("ExtraLep1LepId",&_ExtraLep1LepId);
-  _outTree->Branch("ExtraLep1SIP",&_ExtraLep1SIP);
-  _outTree->Branch("ExtraLep1isID",&_ExtraLep1isID);
-  _outTree->Branch("ExtraLep1BDT",&_ExtraLep1BDT);
-  _outTree->Branch("ExtraLep1missingHit",&_ExtraLep1missingHit);
-  _outTree->Branch("ExtraLep1chargedHadIso",&_ExtraLep1chargedHadIso);
-  _outTree->Branch("ExtraLep1neutralHadIso",&_ExtraLep1neutralHadIso);
-  _outTree->Branch("ExtraLep1photonIso",&_ExtraLep1photonIso);
-  _outTree->Branch("ExtraLep1combRelIsoPF",&_ExtraLep1combRelIsoPF);
 
   _outTree->Branch("ExtraLep2Pt",&_ExtraLep2Pt);
   _outTree->Branch("ExtraLep2Eta",&_ExtraLep2Eta);
   _outTree->Branch("ExtraLep2Phi",&_ExtraLep2Phi);
   _outTree->Branch("ExtraLep2LepId",&_ExtraLep2LepId);
-  _outTree->Branch("ExtraLep2SIP",&_ExtraLep2SIP);
-  _outTree->Branch("ExtraLep2isID",&_ExtraLep2isID);
-  _outTree->Branch("ExtraLep2BDT",&_ExtraLep2BDT);
-  _outTree->Branch("ExtraLep2missingHit",&_ExtraLep2missingHit);
-  _outTree->Branch("ExtraLep2chargedHadIso",&_ExtraLep2chargedHadIso);
-  _outTree->Branch("ExtraLep2neutralHadIso",&_ExtraLep2neutralHadIso);
-  _outTree->Branch("ExtraLep2photonIso",&_ExtraLep2photonIso);
-  _outTree->Branch("ExtraLep2combRelIsoPF",&_ExtraLep2combRelIsoPF);
 
   _outTree->Branch("ExtraLep3Pt",&_ExtraLep3Pt);
   _outTree->Branch("ExtraLep3Eta",&_ExtraLep3Eta);
   _outTree->Branch("ExtraLep3Phi",&_ExtraLep3Phi);
   _outTree->Branch("ExtraLep3LepId",&_ExtraLep3LepId);
-  _outTree->Branch("ExtraLep3SIP",&_ExtraLep3SIP);
-  _outTree->Branch("ExtraLep3isID",&_ExtraLep3isID);
-  _outTree->Branch("ExtraLep3BDT",&_ExtraLep3BDT);
-  _outTree->Branch("ExtraLep3missingHit",&_ExtraLep3missingHit);
-  _outTree->Branch("ExtraLep3chargedHadIso",&_ExtraLep3chargedHadIso);
-  _outTree->Branch("ExtraLep3neutralHadIso",&_ExtraLep3neutralHadIso);
-  _outTree->Branch("ExtraLep3photonIso",&_ExtraLep3photonIso);
-  _outTree->Branch("ExtraLep3combRelIsoPF",&_ExtraLep3combRelIsoPF);
+
+// Extended information on extra leptons.
+// Currently not used, skip them for the time being
+//   _outTree->Branch("ExtraLep1SIP",&_ExtraLep1SIP);
+//   _outTree->Branch("ExtraLep1isID",&_ExtraLep1isID);
+//   _outTree->Branch("ExtraLep1BDT",&_ExtraLep1BDT);
+//   _outTree->Branch("ExtraLep1missingHit",&_ExtraLep1missingHit);
+//   _outTree->Branch("ExtraLep1chargedHadIso",&_ExtraLep1chargedHadIso);
+//   _outTree->Branch("ExtraLep1neutralHadIso",&_ExtraLep1neutralHadIso);
+//   _outTree->Branch("ExtraLep1photonIso",&_ExtraLep1photonIso);
+//   _outTree->Branch("ExtraLep1combRelIsoPF",&_ExtraLep1combRelIsoPF);
+//
+//   _outTree->Branch("ExtraLep2SIP",&_ExtraLep2SIP);
+//   _outTree->Branch("ExtraLep2isID",&_ExtraLep2isID);
+//   _outTree->Branch("ExtraLep2BDT",&_ExtraLep2BDT);
+//   _outTree->Branch("ExtraLep2missingHit",&_ExtraLep2missingHit);
+//   _outTree->Branch("ExtraLep2chargedHadIso",&_ExtraLep2chargedHadIso);
+//   _outTree->Branch("ExtraLep2neutralHadIso",&_ExtraLep2neutralHadIso);
+//   _outTree->Branch("ExtraLep2photonIso",&_ExtraLep2photonIso);
+//   _outTree->Branch("ExtraLep2combRelIsoPF",&_ExtraLep2combRelIsoPF);
+//
+//   _outTree->Branch("ExtraLep3SIP",&_ExtraLep3SIP);
+//   _outTree->Branch("ExtraLep3isID",&_ExtraLep3isID);
+//   _outTree->Branch("ExtraLep3BDT",&_ExtraLep3BDT);
+//   _outTree->Branch("ExtraLep3missingHit",&_ExtraLep3missingHit);
+//   _outTree->Branch("ExtraLep3chargedHadIso",&_ExtraLep3chargedHadIso);
+//   _outTree->Branch("ExtraLep3neutralHadIso",&_ExtraLep3neutralHadIso);
+//   _outTree->Branch("ExtraLep3photonIso",&_ExtraLep3photonIso);
+//   _outTree->Branch("ExtraLep3combRelIsoPF",&_ExtraLep3combRelIsoPF);
 
   //Generated particles
   _outTree->Branch("GenHMass",&_genHMass,"GenHMass/F");
@@ -1279,14 +1284,14 @@ void HZZ4lNtupleFactory::FillExtraLepInfo(int extraLeptonIndex, bool extraLepton
   Float_t Eta        = extraLeptonExists ? ExtraLep->eta()   : -9999. ;
   Float_t Phi        = extraLeptonExists ? ExtraLep->phi()   : -9999. ;
   Int_t   LepId      = extraLeptonExists ? ExtraLep->pdgId() :     0  ;
-  Float_t SIP        = extraLeptonExists ? userdatahelpers::getUserFloat(&*ExtraLep,"SIP")              : -9999. ;
-  Bool_t  isID       = extraLeptonExists ? userdatahelpers::getUserFloat(&*ExtraLep,"isID")             :     0  ;
-  Float_t BDT        = extraLeptonExists ? userdatahelpers::getUserFloat(&*ExtraLep,"BDT")              : -9999. ;
-  Char_t  missingHit = extraLeptonExists ? (char)userdatahelpers::getUserFloat(&*ExtraLep,"missingHit") :     0  ;
-  Float_t chargedHadIso = extraLeptonExists ? userdatahelpers::getUserFloat(&*ExtraLep,"PFChargedHadIso") : -9999. ;
-  Float_t neutralHadIso = extraLeptonExists ? userdatahelpers::getUserFloat(&*ExtraLep,"PFNeutralHadIso") : -9999. ;
-  Float_t photonIso     = extraLeptonExists ? userdatahelpers::getUserFloat(&*ExtraLep,"PFPhotonIso")     : -9999. ;
-  Float_t combRelIsoPF  = extraLeptonExists ? userdatahelpers::getUserFloat(&*ExtraLep,"combRelIsoPF")    : -9999. ;
+//   Float_t SIP        = extraLeptonExists ? userdatahelpers::getUserFloat(&*ExtraLep,"SIP")              : -9999. ;
+//   Bool_t  isID       = extraLeptonExists ? userdatahelpers::getUserFloat(&*ExtraLep,"isID")             :     0  ;
+//   Float_t BDT        = extraLeptonExists ? userdatahelpers::getUserFloat(&*ExtraLep,"BDT")              : -9999. ;
+//   Char_t  missingHit = extraLeptonExists ? (char)userdatahelpers::getUserFloat(&*ExtraLep,"missingHit") :     0  ;
+//   Float_t chargedHadIso = extraLeptonExists ? userdatahelpers::getUserFloat(&*ExtraLep,"PFChargedHadIso") : -9999. ;
+//   Float_t neutralHadIso = extraLeptonExists ? userdatahelpers::getUserFloat(&*ExtraLep,"PFNeutralHadIso") : -9999. ;
+//   Float_t photonIso     = extraLeptonExists ? userdatahelpers::getUserFloat(&*ExtraLep,"PFPhotonIso")     : -9999. ;
+//   Float_t combRelIsoPF  = extraLeptonExists ? userdatahelpers::getUserFloat(&*ExtraLep,"combRelIsoPF")    : -9999. ;
 
   switch(extraLeptonIndex){
 
@@ -1295,14 +1300,14 @@ void HZZ4lNtupleFactory::FillExtraLepInfo(int extraLeptonIndex, bool extraLepton
     _ExtraLep1Eta       .push_back(Eta);
     _ExtraLep1Phi       .push_back(Phi);
     _ExtraLep1LepId     .push_back(LepId);
-    _ExtraLep1SIP       .push_back(SIP);
-    _ExtraLep1isID      .push_back(isID);
-    _ExtraLep1BDT       .push_back(BDT);
-    _ExtraLep1missingHit.push_back(missingHit);
-    _ExtraLep1chargedHadIso.push_back(chargedHadIso);
-    _ExtraLep1neutralHadIso.push_back(neutralHadIso);
-    _ExtraLep1photonIso    .push_back(photonIso);
-    _ExtraLep1combRelIsoPF .push_back(combRelIsoPF);
+//     _ExtraLep1SIP       .push_back(SIP);
+//     _ExtraLep1isID      .push_back(isID);
+//     _ExtraLep1BDT       .push_back(BDT);
+//     _ExtraLep1missingHit.push_back(missingHit);
+//     _ExtraLep1chargedHadIso.push_back(chargedHadIso);
+//     _ExtraLep1neutralHadIso.push_back(neutralHadIso);
+//     _ExtraLep1photonIso    .push_back(photonIso);
+//     _ExtraLep1combRelIsoPF .push_back(combRelIsoPF);
     break;
 
   case 2:
@@ -1310,14 +1315,14 @@ void HZZ4lNtupleFactory::FillExtraLepInfo(int extraLeptonIndex, bool extraLepton
     _ExtraLep2Eta       .push_back(Eta);
     _ExtraLep2Phi       .push_back(Phi);
     _ExtraLep2LepId     .push_back(LepId);
-    _ExtraLep2SIP       .push_back(SIP);
-    _ExtraLep2isID      .push_back(isID);
-    _ExtraLep2BDT       .push_back(BDT);
-    _ExtraLep2missingHit.push_back(missingHit);
-    _ExtraLep2chargedHadIso.push_back(chargedHadIso);
-    _ExtraLep2neutralHadIso.push_back(neutralHadIso);
-    _ExtraLep2photonIso    .push_back(photonIso);
-    _ExtraLep2combRelIsoPF .push_back(combRelIsoPF);
+//     _ExtraLep2SIP       .push_back(SIP);
+//     _ExtraLep2isID      .push_back(isID);
+//     _ExtraLep2BDT       .push_back(BDT);
+//     _ExtraLep2missingHit.push_back(missingHit);
+//     _ExtraLep2chargedHadIso.push_back(chargedHadIso);
+//     _ExtraLep2neutralHadIso.push_back(neutralHadIso);
+//     _ExtraLep2photonIso    .push_back(photonIso);
+//     _ExtraLep2combRelIsoPF .push_back(combRelIsoPF);
     break;
 
   case 3:
@@ -1325,14 +1330,14 @@ void HZZ4lNtupleFactory::FillExtraLepInfo(int extraLeptonIndex, bool extraLepton
     _ExtraLep3Eta       .push_back(Eta);
     _ExtraLep3Phi       .push_back(Phi);
     _ExtraLep3LepId     .push_back(LepId);
-    _ExtraLep3SIP       .push_back(SIP);
-    _ExtraLep3isID      .push_back(isID);
-    _ExtraLep3BDT       .push_back(BDT);
-    _ExtraLep3missingHit.push_back(missingHit);
-    _ExtraLep3chargedHadIso.push_back(chargedHadIso);
-    _ExtraLep3neutralHadIso.push_back(neutralHadIso);
-    _ExtraLep3photonIso    .push_back(photonIso);
-    _ExtraLep3combRelIsoPF .push_back(combRelIsoPF);
+//     _ExtraLep3SIP       .push_back(SIP);
+//     _ExtraLep3isID      .push_back(isID);
+//     _ExtraLep3BDT       .push_back(BDT);
+//     _ExtraLep3missingHit.push_back(missingHit);
+//     _ExtraLep3chargedHadIso.push_back(chargedHadIso);
+//     _ExtraLep3neutralHadIso.push_back(neutralHadIso);
+//     _ExtraLep3photonIso    .push_back(photonIso);
+//     _ExtraLep3combRelIsoPF .push_back(combRelIsoPF);
     break;
 
   default:
