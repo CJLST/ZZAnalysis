@@ -23,21 +23,28 @@ using namespace std;
 
 #define DEBUG 0
 
-#define treatH2l2XAsBkgd 0 // for the purity and S/(S+B) plots 
+#define VARIABLELIST 0 // put 0 for plots shown on September 8th
 
-#define doProdComp       0
+#define requireHLepsAreGood 0 // impose that all 4 gen leptons from the Higgs are matched to good leptons (from the candidate or extra leptons)
+#define excludeH2l2X 0 // completely exclude ZH,H->2l2X and ttH,H->2l2X events from the study
+#define requireHLepsAreInAcc 0 // impose that all 4 gen leptons from the Higgs are in the acceptance
+#define acceptanceIncludesPt 1 // if not, acceptance is just on eta
+
+#define treatH2l2XAsBkgd 0 // treat these events as a background for the purity and S/(S+B) plots 
+
+#define doProdComp       1 // plots shown on September 8th
 #define doProdCompMatch4 0
 #define doMatch4OrNot    0
 #define doMatchHLeps     0
 #define doMatchAllLeps   0
-#define doMatchWHZHttH   0
-#define do2DPlots        0
-#define doBaskets        1
+#define doMatchWHZHttH   1 // plots shown on September 8th
+#define do2DPlots        0 // plots shown on September 8th
+#define doBaskets        0 // plots shown on September 23rd
 
 #define nSamples 8
 #define nHiggsSamples 5
 #define nChannels 4
-#define nVariables 9
+#define nVariables 16
 #define nBaskets 8
 
 #define nMatchHLepsStatuses 6
@@ -344,7 +351,7 @@ void DrawMatchAllLeps(TCanvas* c, TH1F* h, TH1F** hMatch, string title, Color_t*
 
 }
 
-void DrawMatchCustom(TCanvas* c, TH1F* h, TH1F** hMatch, string title, Color_t* color, string* matchWHKeys, Int_t nStatuses, Float_t legLeft, Float_t legBottom, Bool_t logY = false) {
+void DrawMatchCustom(TCanvas* c, TH1F* h, TH1F** hMatch, string title, Color_t* color, string* matchKeys, Int_t nStatuses, Float_t legLeft, Float_t legBottom, Bool_t logY = false) {
 
   gStyle->SetOptTitle(1);
 
@@ -362,6 +369,7 @@ void DrawMatchCustom(TCanvas* c, TH1F* h, TH1F** hMatch, string title, Color_t* 
   Float_t denom = h->Integral();
   string percentages[nStatuses];
   for(int m=0; m<nStatuses; m++){
+    if(excludeH2l2X && matchKeys[m].find("2l2X")!=string::npos) continue;
     percentages[m] = percentage(hMatch[m]->Integral()/denom);
   }
 
@@ -382,7 +390,8 @@ void DrawMatchCustom(TCanvas* c, TH1F* h, TH1F** hMatch, string title, Color_t* 
   lgd->SetFillStyle(0);
   lgd->SetBorderSize(0);
   for(int m=0; m<nStatuses; m++){
-    lgd->AddEntry(hStacks[m],matchWHKeys[m].c_str(),"f");
+    if(excludeH2l2X && matchKeys[m].find("2l2X")!=string::npos) continue;
+    lgd->AddEntry(hStacks[m],matchKeys[m].c_str(),"f");
   }
   lgd->Draw();
   
@@ -391,6 +400,7 @@ void DrawMatchCustom(TCanvas* c, TH1F* h, TH1F** hMatch, string title, Color_t* 
   pav->SetBorderSize(0);
   pav->SetTextColor(0);
   for(int m=0; m<nStatuses; m++){
+    if(excludeH2l2X && matchKeys[m].find("2l2X")!=string::npos) continue;
     pav->AddText((percentages[m]+" %").c_str());
   }
   pav->Draw();
@@ -652,6 +662,25 @@ void plotProductionModeComparison(
     }
   }
 
+  string channels[nChannels] = {
+    "4mu",
+    "4e",
+    "2e2mu",
+    "4mu + 4e + 2e2mu",
+  };
+  string channelsShort[nChannels] = {
+    "4mu",
+    "4e",
+    "2e2mu",
+    "Sumchans",
+  };
+  string subdir[nChannels] = {
+    "ZZ4muTree",
+    "ZZ4eTree",
+    "ZZ2e2muTree",
+    "",
+  };
+
   string assocDecayName[nAssocDecays] = {
     "H#rightarrowZZ#rightarrow4l, W#rightarrowX",
     "H#rightarrowZZ#rightarrow4l, W#rightarrowl#nu",
@@ -697,24 +726,34 @@ void plotProductionModeComparison(
     kMagenta-8,
   };
 
-  string channels[nChannels] = {
-    "4mu",
-    "4e",
-    "2e2mu",
-    "4mu + 4e + 2e2mu",
+  string nbZDaughtersFromH[4] = { "2", "1", "0", "ambig." };
+  string WHdecays[nAssocWDecays] = {
+    "H->ZZ->4l, W->X     ",
+    "H->ZZ->4l, W->lnu   ",
   };
-  string channelsShort[nChannels] = {
-    "4mu",
-    "4e",
-    "2e2mu",
-    "Sumchans",
+  Int_t nbTotalWH[nAssocWDecays] = {0,0};
+  Int_t nbAll4LepRightWH[nAssocWDecays] = {0,0};
+  Int_t nbZ1DaughtersFromHWH[nAssocWDecays][4]; for(int i=0; i<nAssocWDecays; i++) for(int j=0; j<4; j++) nbZ1DaughtersFromHWH[i][j] = 0;
+  Int_t nbZ2DaughtersFromHWH[nAssocWDecays][4]; for(int i=0; i<nAssocWDecays; i++) for(int j=0; j<4; j++) nbZ2DaughtersFromHWH[i][j] = 0;
+  string ZHdecays[nAssocZDecays] = {
+    "H->ZZ->4l, Z->X     ",
+    "H->ZZ->4l, Z->2l    ",
+    "H->ZZ->2l2X, Z->2l  ",
   };
-  string subdir[nChannels] = {
-    "ZZ4muTree",
-    "ZZ4eTree",
-    "ZZ2e2muTree",
-    "",
+  Int_t nbTotalZH[nAssocZDecays] = {0,0,0};
+  Int_t nbAll4LepRightZH[nAssocZDecays] = {0,0,0};
+  Int_t nbZ1DaughtersFromHZH[nAssocZDecays][4]; for(int i=0; i<nAssocZDecays; i++) for(int j=0; j<4; j++) nbZ1DaughtersFromHZH[i][j] = 0;
+  Int_t nbZ2DaughtersFromHZH[nAssocZDecays][4]; for(int i=0; i<nAssocZDecays; i++) for(int j=0; j<4; j++) nbZ2DaughtersFromHZH[i][j] = 0;
+  string ttHdecays[nAssocttDecays] = {
+    "H->ZZ->4l, tt->X    ",
+    "H->ZZ->4l, tt->lX   ",
+    "H->ZZ->4l, tt->2lX  ",
+    "H->ZZ->2l2X, tt->2lX",
   };
+  Int_t nbTotalttH[nAssocttDecays] = {0,0,0,0};
+  Int_t nbAll4LepRightttH[nAssocttDecays] = {0,0,0,0};
+  Int_t nbZ1DaughtersFromHttH[nAssocttDecays][4]; for(int i=0; i<nAssocttDecays; i++) for(int j=0; j<4; j++) nbZ1DaughtersFromHttH[i][j] = 0;
+  Int_t nbZ2DaughtersFromHttH[nAssocttDecays][4]; for(int i=0; i<nAssocttDecays; i++) for(int j=0; j<4; j++) nbZ2DaughtersFromHttH[i][j] = 0;
 
   string varName[nVariables] = {
     "M4l",
@@ -723,9 +762,20 @@ void plotProductionModeComparison(
     "KD",
     "Djet",
     "Pt4l",
+    "NGenLep",
+    "NGenLepInAcc",
+    "NGenLepNotInAcc",
+    "NGenHLepNotInAcc",
+    "NGenAssocLepNotInAcc",
+    "NGenLepMinusNGoodLep",
+    "NGenLepInAccMinusNGoodLep",
     "NExtraLep",
     "NExtraZ",
     "NJets",
+  };
+  Bool_t plotThisVar[2][nVariables] = {
+    {1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,},
+    {0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,},
   };
   string varLabel[nVariables] = {
     "m_{4l} (GeV)",
@@ -734,17 +784,31 @@ void plotProductionModeComparison(
     "D_{bkg}^{kin}",
     "D_{jet}",
     "p_{T}^{4l} (GeV)",
+    "# gen leptons",
+    "# gen leptons in acceptance",
+    "# gen leptons not in acceptance",
+    "# gen leptons from H not in acceptance",
+    "# gen associated leptons not in acceptance",
+    "# gen leptons - # good leptons",
+    "# gen leptons in acceptance - # good leptons",
     "# extra leptons",
     "# extra Z candidates",
     "# jets",
   };
-  Int_t varNbin[nVariables]  = { 
+  Int_t varNbin[nVariables] = { 
     100,  
     75,  
     75,  
     50,  
     50,  
     50,
+    7,
+    7,
+    7,
+    5,
+    3,
+    6,
+    6,
     6,
     6,
     15,
@@ -755,7 +819,14 @@ void plotProductionModeComparison(
     0,   
     0,   
     0,   
+    0,  
+    0,   
+    0, 
     0,
+    0,   
+    0,
+    -3,
+    -3, 
     0,
     0,
     0,
@@ -767,6 +838,13 @@ void plotProductionModeComparison(
     1,   
     2, 
     500,
+    7,
+    7,
+    7,
+    5,
+    3,
+    3,
+    3,
     6,
     6,
     15,
@@ -955,23 +1033,34 @@ void plotProductionModeComparison(
   vector<Float_t> *bkg_VAMCFM = 0;
   vector<Float_t> *Z1Mass = 0;
   vector<Float_t> *Z2Mass = 0;
-  vector<Float_t> *Lep1Pt = 0;
-  vector<Float_t> *Lep1Eta = 0;
-  vector<Float_t> *Lep1Phi = 0;
-  vector<Int_t> *Lep1LepId = 0;
-  vector<Float_t> *Lep2Pt = 0;
-  vector<Float_t> *Lep2Eta = 0;
-  vector<Float_t> *Lep2Phi = 0;
-  vector<Int_t> *Lep2LepId = 0;
-  vector<Float_t> *Lep3Pt = 0;
-  vector<Float_t> *Lep3Eta = 0;
-  vector<Float_t> *Lep3Phi = 0;
-  vector<Int_t> *Lep3LepId = 0;
-  vector<Float_t> *Lep4Pt = 0;
-  vector<Float_t> *Lep4Eta = 0;
-  vector<Float_t> *Lep4Phi = 0;
-  vector<Int_t> *Lep4LepId = 0;
+  vector<Float_t> *CandLep1Pt = 0;
+  vector<Float_t> *CandLep1Eta = 0;
+  vector<Float_t> *CandLep1Phi = 0;
+  vector<Int_t> *CandLep1LepId = 0;
+  vector<Float_t> *CandLep2Pt = 0;
+  vector<Float_t> *CandLep2Eta = 0;
+  vector<Float_t> *CandLep2Phi = 0;
+  vector<Int_t> *CandLep2LepId = 0;
+  vector<Float_t> *CandLep3Pt = 0;
+  vector<Float_t> *CandLep3Eta = 0;
+  vector<Float_t> *CandLep3Phi = 0;
+  vector<Int_t> *CandLep3LepId = 0;
+  vector<Float_t> *CandLep4Pt = 0;
+  vector<Float_t> *CandLep4Eta = 0;
+  vector<Float_t> *CandLep4Phi = 0;
+  vector<Int_t> *CandLep4LepId = 0;
   vector<Float_t> *ExtraLep1Pt = 0;
+  vector<Float_t> *ExtraLep1Eta = 0;
+  vector<Float_t> *ExtraLep1Phi = 0;
+  vector<Int_t> *ExtraLep1LepId = 0;
+  vector<Float_t> *ExtraLep2Pt = 0;
+  vector<Float_t> *ExtraLep2Eta = 0;
+  vector<Float_t> *ExtraLep2Phi = 0;
+  vector<Int_t> *ExtraLep2LepId = 0;
+  vector<Float_t> *ExtraLep3Pt = 0;
+  vector<Float_t> *ExtraLep3Eta = 0;
+  vector<Float_t> *ExtraLep3Phi = 0;
+  vector<Int_t> *ExtraLep3LepId = 0;
   vector<Int_t> *nExtraLep = 0;
   vector<Int_t> *nExtraZ = 0;
   vector<Int_t> *nJets = 0;
@@ -1030,29 +1119,6 @@ void plotProductionModeComparison(
   TH1F* hBCFullSel100MasswindowBaskets[nSamples][nChannels];
   TH1F* hBCFullSel100MasswindowBasketsAssocDecays[nAssocDecays][nChannels];
 
-  string nbZDaughtersFromH[4] = { "2", "1", "0", "ambig." };
-  string WHdecays[2] = {
-    "H->ZZ->4l, W->X     ",
-    "H->ZZ->4l, W->lnu   ",
-  };
-  Int_t nbZ1DaughtersFromHWH[2][4]; for(int i=0; i<2; i++) for(int j=0; j<4; j++) nbZ1DaughtersFromHWH[i][j] = 0;
-  Int_t nbZ2DaughtersFromHWH[2][4]; for(int i=0; i<2; i++) for(int j=0; j<4; j++) nbZ2DaughtersFromHWH[i][j] = 0;
-  string ZHdecays[3] = {
-    "H->ZZ->4l, Z->X     ",
-    "H->ZZ->4l, Z->2l    ",
-    "H->ZZ->2l2X, Z->2l  ",
-  };
-  Int_t nbZ1DaughtersFromHZH[3][4]; for(int i=0; i<3; i++) for(int j=0; j<4; j++) nbZ1DaughtersFromHZH[i][j] = 0;
-  Int_t nbZ2DaughtersFromHZH[3][4]; for(int i=0; i<3; i++) for(int j=0; j<4; j++) nbZ2DaughtersFromHZH[i][j] = 0;
-  string ttHdecays[4] = {
-    "H->ZZ->4l, tt->X    ",
-    "H->ZZ->4l, tt->lX   ",
-    "H->ZZ->4l, tt->2lX  ",
-    "H->ZZ->2l2X, tt->2lX",
-  };
-  Int_t nbZ1DaughtersFromHttH[4][4]; for(int i=0; i<4; i++) for(int j=0; j<4; j++) nbZ1DaughtersFromHttH[i][j] = 0;
-  Int_t nbZ2DaughtersFromHttH[4][4]; for(int i=0; i<4; i++) for(int j=0; j<4; j++) nbZ2DaughtersFromHttH[i][j] = 0;
-
   for(int a=0; a<nAssocDecays; a++){
     for(int c=0; c<nChannels; c++){
       hBCFullSel100BasketsAssocDecays[a][c] = new TH1F(Form("hBCFullSel100_baskets_assocDecays_%i_%s",a,channelsShort[c].c_str()),Form(";;# exp. events in %.0f fb^{-1}",LUMI),nBaskets+1,0,nBaskets+1);
@@ -1093,6 +1159,7 @@ void plotProductionModeComparison(
       if(prodName[p]=="ttH") for(int m=0; m<nMatchttHStatuses; m++) nbWithBCFullSel100MatchttH[m][c] = 0;
 
       for(int v=0; v<nVariables; v++){
+	if(!plotThisVar[VARIABLELIST][v]) continue;
 	hBCFullSel100[v][p][c] = new TH1F(("hBCFullSel100_"+varName[v]+suffix).c_str(),Form("%s;%s;# exp. events in %.0f fb^{-1}",title.c_str(),varLabel[v].c_str(),LUMI),varNbin[v],varMin[v],varMax[v]);
 	for(int m=0; m<nMatchHLepsStatuses; m++)
 	  hBCFullSel100MatchHLeps[v][m][p][c] = new TH1F(("hBCFullSel100MatchHLeps_"+varName[v]+"_"+matchHLepsInfix[m]+suffix).c_str(),Form("%s;%s;# exp. events in %.0f fb^{-1}",title.c_str(),varLabel[v].c_str(),LUMI),varNbin[v],varMin[v],varMax[v]);
@@ -1145,23 +1212,34 @@ void plotProductionModeComparison(
       chain[p][c]->SetBranchAddress("bkg_VAMCFM", &bkg_VAMCFM);
       chain[p][c]->SetBranchAddress("Z1Mass", &Z1Mass);
       chain[p][c]->SetBranchAddress("Z2Mass", &Z2Mass);
-      chain[p][c]->SetBranchAddress("Lep1Pt", &Lep1Pt);
-      chain[p][c]->SetBranchAddress("Lep1Eta", &Lep1Eta);
-      chain[p][c]->SetBranchAddress("Lep1Phi", &Lep1Phi);
-      chain[p][c]->SetBranchAddress("Lep1LepId", &Lep1LepId);
-      chain[p][c]->SetBranchAddress("Lep2Pt", &Lep2Pt);
-      chain[p][c]->SetBranchAddress("Lep2Eta", &Lep2Eta);
-      chain[p][c]->SetBranchAddress("Lep2Phi", &Lep2Phi);
-      chain[p][c]->SetBranchAddress("Lep2LepId", &Lep2LepId);
-      chain[p][c]->SetBranchAddress("Lep3Pt", &Lep3Pt);
-      chain[p][c]->SetBranchAddress("Lep3Eta", &Lep3Eta);
-      chain[p][c]->SetBranchAddress("Lep3Phi", &Lep3Phi);
-      chain[p][c]->SetBranchAddress("Lep3LepId", &Lep3LepId);
-      chain[p][c]->SetBranchAddress("Lep4Pt", &Lep4Pt);
-      chain[p][c]->SetBranchAddress("Lep4Eta", &Lep4Eta);
-      chain[p][c]->SetBranchAddress("Lep4Phi", &Lep4Phi);
-      chain[p][c]->SetBranchAddress("Lep4LepId", &Lep4LepId);
+      chain[p][c]->SetBranchAddress("Lep1Pt", &CandLep1Pt);
+      chain[p][c]->SetBranchAddress("Lep1Eta", &CandLep1Eta);
+      chain[p][c]->SetBranchAddress("Lep1Phi", &CandLep1Phi);
+      chain[p][c]->SetBranchAddress("Lep1LepId", &CandLep1LepId);
+      chain[p][c]->SetBranchAddress("Lep2Pt", &CandLep2Pt);
+      chain[p][c]->SetBranchAddress("Lep2Eta", &CandLep2Eta);
+      chain[p][c]->SetBranchAddress("Lep2Phi", &CandLep2Phi);
+      chain[p][c]->SetBranchAddress("Lep2LepId", &CandLep2LepId);
+      chain[p][c]->SetBranchAddress("Lep3Pt", &CandLep3Pt);
+      chain[p][c]->SetBranchAddress("Lep3Eta", &CandLep3Eta);
+      chain[p][c]->SetBranchAddress("Lep3Phi", &CandLep3Phi);
+      chain[p][c]->SetBranchAddress("Lep3LepId", &CandLep3LepId);
+      chain[p][c]->SetBranchAddress("Lep4Pt", &CandLep4Pt);
+      chain[p][c]->SetBranchAddress("Lep4Eta", &CandLep4Eta);
+      chain[p][c]->SetBranchAddress("Lep4Phi", &CandLep4Phi);
+      chain[p][c]->SetBranchAddress("Lep4LepId", &CandLep4LepId);
       chain[p][c]->SetBranchAddress("ExtraLep1Pt", &ExtraLep1Pt);
+      chain[p][c]->SetBranchAddress("ExtraLep1Eta", &ExtraLep1Eta);
+      chain[p][c]->SetBranchAddress("ExtraLep1Phi", &ExtraLep1Phi);
+      chain[p][c]->SetBranchAddress("ExtraLep1LepId", &ExtraLep1LepId);
+      chain[p][c]->SetBranchAddress("ExtraLep2Pt", &ExtraLep2Pt);
+      chain[p][c]->SetBranchAddress("ExtraLep2Eta", &ExtraLep2Eta);
+      chain[p][c]->SetBranchAddress("ExtraLep2Phi", &ExtraLep2Phi);
+      chain[p][c]->SetBranchAddress("ExtraLep2LepId", &ExtraLep2LepId);
+      chain[p][c]->SetBranchAddress("ExtraLep3Pt", &ExtraLep3Pt);
+      chain[p][c]->SetBranchAddress("ExtraLep3Eta", &ExtraLep3Eta);
+      chain[p][c]->SetBranchAddress("ExtraLep3Phi", &ExtraLep3Phi);
+      chain[p][c]->SetBranchAddress("ExtraLep3LepId", &ExtraLep3LepId);
       chain[p][c]->SetBranchAddress("nExtraLep", &nExtraLep);
       chain[p][c]->SetBranchAddress("nExtraZ", &nExtraZ);
       //chain[p][c]->SetBranchAddress("nJets", &nJets);
@@ -1203,23 +1281,45 @@ void plotProductionModeComparison(
 	chain[p][c]->GetEntry(z);
  
 	Int_t nGenHLep = 0;
+	Int_t nGenHLepInAcc = 0;
 	Int_t nGenAssocLep = 0;
-	Float_t GenHLepId[4] = {GenLep1Id,GenLep2Id,GenLep3Id,GenLep4Id};
-	Float_t GenAssocLepId[2] = {GenAssocLep1Id,GenAssocLep2Id};
-	for(Int_t iGen=0; iGen<4; iGen++){
-	  if(GenHLepId[iGen]!=0){
+	Int_t nGenAssocLepInAcc = 0;
+	Int_t   GenHLepId[4] = {GenLep1Id,GenLep2Id,GenLep3Id,GenLep4Id};
+	Float_t GenHLepPt[4] = {GenLep1Pt,GenLep2Pt,GenLep3Pt,GenLep4Pt};
+	Float_t GenHLepEta[4] = {GenLep1Eta,GenLep2Eta,GenLep3Eta,GenLep4Eta};
+	Float_t GenHLepPhi[4] = {GenLep1Phi,GenLep2Phi,GenLep3Phi,GenLep4Phi};
+	Bool_t  GenHLepIsInAcc[4];
+	Int_t   GenAssocLepId[2] = {GenAssocLep1Id,GenAssocLep2Id};
+	Float_t GenAssocLepPt[2] = {GenAssocLep1Pt,GenAssocLep2Pt};
+	Float_t GenAssocLepEta[2] = {GenAssocLep1Eta,GenAssocLep2Eta};
+	Float_t GenAssocLepPhi[2] = {GenAssocLep1Phi,GenAssocLep2Phi};
+	Bool_t  GenAssocLepIsInAcc[4];
+	for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++){
+	  if(GenHLepId[iGenHLep]!=0){
 	    nGenHLep++;
+	    GenHLepIsInAcc[iGenHLep] = (abs(GenHLepId[iGenHLep])==11 && (acceptanceIncludesPt?GenHLepPt[iGenHLep]>7.:true) && fabs(GenHLepEta[iGenHLep])<2.5) || 
+	                               (abs(GenHLepId[iGenHLep])==13 && (acceptanceIncludesPt?GenHLepPt[iGenHLep]>5.:true) && fabs(GenHLepEta[iGenHLep])<2.4) ;
+	    if(GenHLepIsInAcc[iGenHLep]) nGenHLepInAcc++;
 	  }
 	}
-	for(Int_t iGenAssoc=0; iGenAssoc<2; iGenAssoc++){
-	  if(GenAssocLepId[iGenAssoc]!=0){
+	for(Int_t iGenAssocLep=0; iGenAssocLep<2; iGenAssocLep++){
+	  if(GenAssocLepId[iGenAssocLep]!=0){
 	    nGenAssocLep++;
+	    GenAssocLepIsInAcc[iGenAssocLep] = (abs(GenAssocLepId[iGenAssocLep])==11 && (acceptanceIncludesPt?GenAssocLepPt[iGenAssocLep]>7.:true) && fabs(GenAssocLepEta[iGenAssocLep])<2.5) || 
+	                                       (abs(GenAssocLepId[iGenAssocLep])==13 && (acceptanceIncludesPt?GenAssocLepPt[iGenAssocLep]>5.:true) && fabs(GenAssocLepEta[iGenAssocLep])<2.4) ;
+	    if(GenAssocLepIsInAcc[iGenAssocLep]) nGenAssocLepInAcc++;
 	  }
+	}
+	Int_t nGenLep = nGenHLep + nGenAssocLep;
+	Int_t nGenLepInAcc = nGenHLepInAcc + nGenAssocLepInAcc;
+
+	if(excludeH2l2X){
+	  if(nGenHLep!=4) continue;
 	}
 
-	/*
-	if(nGenHLep!=4) continue;
-	//*/
+	if(requireHLepsAreInAcc){
+	  if(nGenHLepInAcc!=4) continue;
+	}
 
 	Int_t currentAssocDecay = -1;
 	if(prodName[p]=="WH"){
@@ -1251,38 +1351,6 @@ void plotProductionModeComparison(
 
 	  Bool_t FullSel70 = ZZsel->at(iBC)>=90;
 	  Bool_t FullSel100 = ZZsel->at(iBC)>=100;
-
-	  Float_t varVal[nVariables] = {
-	    ZZMass->at(iBC),
-	    Z1Mass->at(iBC),
-	    Z2Mass->at(iBC),
-	    p0plus_VAJHU->at(iBC) / ( p0plus_VAJHU->at(iBC) + bkg_VAMCFM->at(iBC) ),
-	    ZZFisher->at(iBC),
-	    ZZPt->at(iBC),
-	    nExtraLep->at(iBC),
-	    nExtraZ->at(iBC),
-	    nJets->at(iBC),
-	  };
-
-	  Int_t currentBasket = -1;
-	  if(nJets->at(iBC)==0 || nJets->at(iBC)==1){
-	    if(nExtraLep->at(iBC)==0) currentBasket = 1;
-	    else if(nExtraLep->at(iBC)==1){ 
-	      //if(ExtraLep1Pt->at(iBC)>20. && PFMET>45.) currentBasket = 2;
-	      if(PFMET>45.) currentBasket = 2;
-	      else currentBasket = 3;
-	    }else if(nExtraLep->at(iBC)>=2) currentBasket = 4;
-	    else cout<<"WARNING : inconsistent nExtraLep"<<endl;
-	  }else if(nJets->at(iBC)>=2){
-	    if(nExtraLep->at(iBC)==0){
-	      if(ZZFisher->at(iBC)>0.5) currentBasket = 5;
-	      else currentBasket = 6;	      
-	    }else if(nExtraLep->at(iBC)==1) currentBasket = 7;
-	    else if(nExtraLep->at(iBC)>=2) currentBasket = 8;
-	    else cout<<"WARNING : inconsistent nExtraLep"<<endl;
-	  }else{
-	    cout<<"WARNING : inconsistent nJets"<<endl;
-	  }
 	  
 	  if(FullSel70){
 	    overlapMapWithBCFullSel70[p][evtID].push_back(channels[c]);
@@ -1297,9 +1365,112 @@ void plotProductionModeComparison(
 	    nbWithBCFullSel100[p][c]++;
 	    nbWithBCFullSel100[p][3]++;
 
+	    Float_t CandLepEta[4] = {CandLep1Eta->at(iBC),CandLep2Eta->at(iBC),CandLep3Eta->at(iBC),CandLep4Eta->at(iBC)};
+	    Float_t CandLepPhi[4] = {CandLep1Phi->at(iBC),CandLep2Phi->at(iBC),CandLep3Phi->at(iBC),CandLep4Phi->at(iBC)};
+	    Float_t ExtraLepEta[3] = {ExtraLep1Eta->at(iBC),ExtraLep2Eta->at(iBC),ExtraLep3Eta->at(iBC)};
+	    Float_t ExtraLepPhi[3] = {ExtraLep1Phi->at(iBC),ExtraLep2Phi->at(iBC),ExtraLep3Phi->at(iBC)};
+	    Int_t nRecoLepMatchedToGenHLep[4] = {0,0,0,0};
+	    Int_t nCandLepMatchedToGenHLep[4] = {0,0,0,0};
+	    Int_t nRecoLepMatchedToGenAssocLep[2] = {0,0};
+	    Int_t nCandLepMatchedToGenAssocLep[2] = {0,0};
+	    Int_t nGenLepMatchedToCandLep[4] = {0,0,0,0};
+	    Int_t nGenLepMatchedToRecoLep[7] = {0,0,0,0,0,0,0};
+	    Int_t nGenHLepMatchedToZ1Lep[4] = {0,0};
+	    Int_t nGenHLepMatchedToZ2Lep[4] = {0,0};
+	    for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++){
+	      if(GenHLepId[iGenHLep]!=0){
+		for(Int_t iCandLep=0; iCandLep<4; iCandLep++){
+		  if(deltaR(GenHLepEta[iGenHLep],GenHLepPhi[iGenHLep],CandLepEta[iCandLep],CandLepPhi[iCandLep]) < 0.1){
+		    nRecoLepMatchedToGenHLep[iGenHLep]++;
+		    nCandLepMatchedToGenHLep[iGenHLep]++;
+		    nGenLepMatchedToRecoLep[iCandLep]++;
+		    nGenLepMatchedToCandLep[iCandLep]++;
+		    if(iCandLep<2){
+		      nGenHLepMatchedToZ1Lep[iCandLep]++;
+		    }else{
+		      nGenHLepMatchedToZ2Lep[iCandLep-2]++;
+		    }
+		  }
+		}
+		for(Int_t iExtraLep=0; iExtraLep<nExtraLep->at(iBC); iExtraLep++){
+		  if(deltaR(GenHLepEta[iGenHLep],GenHLepPhi[iGenHLep],ExtraLepEta[iExtraLep],ExtraLepPhi[iExtraLep]) < 0.1){
+		    nRecoLepMatchedToGenHLep[iGenHLep]++;
+		    nGenLepMatchedToRecoLep[4+iExtraLep]++;
+		  }
+		}
+	      }
+	    }
+	    for(Int_t iGenAssocLep=0; iGenAssocLep<2; iGenAssocLep++){
+	      if(GenAssocLepId[iGenAssocLep]!=0){
+		for(Int_t iCandLep=0; iCandLep<4; iCandLep++){
+		  if(deltaR(GenAssocLepEta[iGenAssocLep],GenAssocLepPhi[iGenAssocLep],CandLepEta[iCandLep],CandLepPhi[iCandLep]) < 0.1){
+		    nRecoLepMatchedToGenAssocLep[iGenAssocLep]++;
+		    nCandLepMatchedToGenAssocLep[iGenAssocLep]++;
+		    nGenLepMatchedToRecoLep[iCandLep]++;
+		    nGenLepMatchedToCandLep[iCandLep]++;
+		  }
+		}
+		for(Int_t iExtraLep=0; iExtraLep<nExtraLep->at(iBC); iExtraLep++){
+		  if(deltaR(GenAssocLepEta[iGenAssocLep],GenAssocLepPhi[iGenAssocLep],ExtraLepEta[iExtraLep],ExtraLepPhi[iExtraLep]) < 0.1){
+		    nRecoLepMatchedToGenAssocLep[iGenAssocLep]++;
+		    nGenLepMatchedToRecoLep[4+iExtraLep]++;
+		  }
+		}
+	      }
+	    }
+	    if(requireHLepsAreGood){
+	      Bool_t foundAmbiguity = false;
+	      for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++) if(nRecoLepMatchedToGenHLep[iGenHLep]>1){ foundAmbiguity = true; break; }
+	      for(Int_t iGenAssocLep=0; iGenAssocLep<2; iGenAssocLep++) if(nRecoLepMatchedToGenAssocLep[iGenAssocLep]>1){ foundAmbiguity = true; break; }
+	      for(Int_t iRecoLep=0; iRecoLep<4+nExtraLep->at(iBC); iRecoLep++) if(nGenLepMatchedToRecoLep[iRecoLep]>1){ foundAmbiguity = true; break; }
+	      Int_t nOnes = 0;
+	      for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++) if(nRecoLepMatchedToGenHLep[iGenHLep]==1) nOnes++;
+	      if(foundAmbiguity || nOnes!=4) continue;
+	    }
+
+	    Float_t varVal[nVariables] = {
+	      ZZMass->at(iBC),
+	      Z1Mass->at(iBC),
+	      Z2Mass->at(iBC),
+	      p0plus_VAJHU->at(iBC) / ( p0plus_VAJHU->at(iBC) + bkg_VAMCFM->at(iBC) ),
+	      ZZFisher->at(iBC),
+	      ZZPt->at(iBC),
+	      nGenLep,
+	      nGenLepInAcc,
+	      nGenLep-nGenLepInAcc,
+	      nGenHLep-nGenHLepInAcc,
+	      nGenAssocLep-nGenAssocLepInAcc,
+	      nGenLep-(4+nExtraLep->at(iBC)),
+	      nGenLepInAcc-(4+nExtraLep->at(iBC)),
+	      nExtraLep->at(iBC),
+	      nExtraZ->at(iBC),
+	      nJets->at(iBC),
+	    };
+
 	    for(int v=0; v<nVariables; v++){
+	      if(!plotThisVar[VARIABLELIST][v]) continue;
 	      hBCFullSel100[v][p][c]->Fill(varVal[v],weights[p]);
 	      hBCFullSel100[v][p][3]->Fill(varVal[v],weights[p]);
+	    }
+
+	    Int_t currentBasket = -1;
+	    if(nJets->at(iBC)==0 || nJets->at(iBC)==1){
+	      if(nExtraLep->at(iBC)==0) currentBasket = 1;
+	      else if(nExtraLep->at(iBC)==1){ 
+		//if(ExtraLep1Pt->at(iBC)>20. && PFMET>45.) currentBasket = 2;
+		if(PFMET>45.) currentBasket = 2;
+		else currentBasket = 3;
+	      }else if(nExtraLep->at(iBC)>=2) currentBasket = 4;
+	      else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+	    }else if(nJets->at(iBC)>=2){
+	      if(nExtraLep->at(iBC)==0){
+		if(ZZFisher->at(iBC)>0.5) currentBasket = 5;
+		else currentBasket = 6;	      
+	      }else if(nExtraLep->at(iBC)==1) currentBasket = 7;
+	      else if(nExtraLep->at(iBC)>=2) currentBasket = 8;
+	      else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+	    }else{
+	      cout<<"WARNING : inconsistent nJets"<<endl;
 	    }
 
 	    hBCFullSel100Baskets[p][c]->Fill(currentBasket,weights[p]);
@@ -1325,52 +1496,15 @@ void plotProductionModeComparison(
 	      }
 	    }
 
-	    Int_t nMatchedToGenHLep[4] = {0,0,0,0};
-	    Int_t nMatchedToGenAssocLep[2] = {0,0};
-	    Int_t nMatchedToRecoLep[4] = {0,0,0,0};
-	    Int_t nGenHLepMatchedToZ1Lep[4] = {0,0};
-	    Int_t nGenHLepMatchedToZ2Lep[4] = {0,0};
-	    Float_t GenHLepEta[4] = {GenLep1Eta,GenLep2Eta,GenLep3Eta,GenLep4Eta};
-	    Float_t GenHLepPhi[4] = {GenLep1Phi,GenLep2Phi,GenLep3Phi,GenLep4Phi};
-	    Float_t GenAssocLepEta[2] = {GenAssocLep1Eta,GenAssocLep2Eta};
-	    Float_t GenAssocLepPhi[2] = {GenAssocLep1Phi,GenAssocLep2Phi};
-	    Float_t RecoLepEta[4] = {Lep1Eta->at(iBC),Lep2Eta->at(iBC),Lep3Eta->at(iBC),Lep4Eta->at(iBC)};
-	    Float_t RecoLepPhi[4] = {Lep1Phi->at(iBC),Lep2Phi->at(iBC),Lep3Phi->at(iBC),Lep4Phi->at(iBC)};
-	    for(Int_t iGen=0; iGen<4; iGen++){
-	      if(GenHLepId[iGen]!=0){
-		for(Int_t iReco=0; iReco<4; iReco++){
-		  if(deltaR(GenHLepEta[iGen],GenHLepPhi[iGen],RecoLepEta[iReco],RecoLepPhi[iReco]) < 0.1){
-		    nMatchedToGenHLep[iGen]++;
-		    nMatchedToRecoLep[iReco]++;
-		    if(iReco<2){
-		      nGenHLepMatchedToZ1Lep[iReco]++;
-		    }else{
-		      nGenHLepMatchedToZ2Lep[iReco-2]++;
-		    }
-		  }
-		}
-	      }
-	    }
-	    for(Int_t iGenAssoc=0; iGenAssoc<2; iGenAssoc++){
-	      if(GenAssocLepId[iGenAssoc]!=0){
-		for(Int_t iReco=0; iReco<4; iReco++){
-		  if(deltaR(GenAssocLepEta[iGenAssoc],GenAssocLepPhi[iGenAssoc],RecoLepEta[iReco],RecoLepPhi[iReco]) < 0.1){
-		    nMatchedToGenAssocLep[iGenAssoc]++;
-		    nMatchedToRecoLep[iReco]++;
-		  }
-		}
-	      }
-	    }
-
 	    Int_t currentMatchHLepsStatus = -1;
 	    Bool_t foundAmbiguityHLeps = false;
-	    for(Int_t iGen=0; iGen<4; iGen++) if(nMatchedToGenHLep[iGen]>1){ foundAmbiguityHLeps = true; break; }
-	    for(Int_t iReco=0; iReco<4; iReco++) if(nMatchedToRecoLep[iReco]>1){ foundAmbiguityHLeps = true; break; }
+	    for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++) if(nCandLepMatchedToGenHLep[iGenHLep]>1){ foundAmbiguityHLeps = true; break; }
+	    for(Int_t iCandLep=0; iCandLep<4; iCandLep++) if(nGenLepMatchedToCandLep[iCandLep]>1){ foundAmbiguityHLeps = true; break; }
 	    if(foundAmbiguityHLeps){
 	      currentMatchHLepsStatus = 5;
 	    }else{
 	      Int_t nOnesHLeps = 0;
-	      for(Int_t iGen=0; iGen<4; iGen++) if(nMatchedToGenHLep[iGen]==1) nOnesHLeps++;
+	      for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++) if(nCandLepMatchedToGenHLep[iGenHLep]==1) nOnesHLeps++;
 	      if(nOnesHLeps==4) currentMatchHLepsStatus = 0;
 	      if(nOnesHLeps==3) currentMatchHLepsStatus = 1;
 	      if(nOnesHLeps==2) currentMatchHLepsStatus = 2;
@@ -1379,13 +1513,13 @@ void plotProductionModeComparison(
 	    }
 	    Int_t currentMatchAllLepsStatus = -1;
 	    Bool_t foundAmbiguityAllLeps = false;
-	    for(Int_t iGen=0; iGen<4; iGen++) if(nMatchedToGenHLep[iGen]>1){ foundAmbiguityAllLeps = true; break; }
-	    for(Int_t iGenAssoc=0; iGenAssoc<2; iGenAssoc++) if(nMatchedToGenAssocLep[iGenAssoc]>1){ foundAmbiguityAllLeps = true; break; }
-	    for(Int_t iReco=0; iReco<4; iReco++) if(nMatchedToRecoLep[iReco]>1){ foundAmbiguityAllLeps = true; break; }
+	    for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++) if(nCandLepMatchedToGenHLep[iGenHLep]>1){ foundAmbiguityAllLeps = true; break; }
+	    for(Int_t iGenAssocLep=0; iGenAssocLep<2; iGenAssocLep++) if(nCandLepMatchedToGenAssocLep[iGenAssocLep]>1){ foundAmbiguityAllLeps = true; break; }
+	    for(Int_t iCandLep=0; iCandLep<4; iCandLep++) if(nGenLepMatchedToCandLep[iCandLep]>1){ foundAmbiguityAllLeps = true; break; }
 	    Int_t nOnesHLeps = 0;
 	    Int_t nOnesAssocLeps = 0;
-	    for(Int_t iGen=0; iGen<4; iGen++) if(nMatchedToGenHLep[iGen]==1) nOnesHLeps++;
-	    for(Int_t iGenAssoc=0; iGenAssoc<4; iGenAssoc++) if(nMatchedToGenAssocLep[iGenAssoc]==1) nOnesAssocLeps++;
+	    for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++) if(nCandLepMatchedToGenHLep[iGenHLep]==1) nOnesHLeps++;
+	    for(Int_t iGenAssocLep=0; iGenAssocLep<4; iGenAssocLep++) if(nCandLepMatchedToGenAssocLep[iGenAssocLep]==1) nOnesAssocLeps++;
 	    if(foundAmbiguityAllLeps){
 	      currentMatchAllLepsStatus = 4;
 	    }else{
@@ -1477,9 +1611,13 @@ void plotProductionModeComparison(
 	    else currentZ2MatchStatus = 2 - (nGenHLepMatchedToZ2Lep[0] + nGenHLepMatchedToZ2Lep[1]);
 	    if(prodName[p]=="WH"){
 	      if(nGenHLep==4 && nGenAssocLep==0){
+		nbTotalWH[0]++;
+		if(currentMatchAllLepsStatus==0) nbAll4LepRightWH[0]++;
 		nbZ1DaughtersFromHWH[0][currentZ1MatchStatus]++;
 		nbZ2DaughtersFromHWH[0][currentZ2MatchStatus]++;
 	      }else if(nGenHLep==4 && nGenAssocLep==1){
+		nbTotalWH[1]++;
+		if(currentMatchAllLepsStatus==0) nbAll4LepRightWH[1]++;
 		nbZ1DaughtersFromHWH[1][currentZ1MatchStatus]++;
 		nbZ2DaughtersFromHWH[1][currentZ2MatchStatus]++;
 	      }else{
@@ -1488,12 +1626,18 @@ void plotProductionModeComparison(
 	    }
 	    if(prodName[p]=="ZH"){
 	      if(nGenHLep==4 && nGenAssocLep==0){
+		nbTotalZH[0]++;
+		if(currentMatchAllLepsStatus==0) nbAll4LepRightZH[0]++;
 		nbZ1DaughtersFromHZH[0][currentZ1MatchStatus]++;
 		nbZ2DaughtersFromHZH[0][currentZ2MatchStatus]++;
 	      }else if(nGenHLep==4 && nGenAssocLep==2){
+		nbTotalZH[1]++;
+		if(currentMatchAllLepsStatus==0) nbAll4LepRightZH[1]++;
 		nbZ1DaughtersFromHZH[1][currentZ1MatchStatus]++;
 		nbZ2DaughtersFromHZH[1][currentZ2MatchStatus]++;
 	      }else if(nGenHLep==2 && nGenAssocLep==2){
+		nbTotalZH[2]++;
+		if(currentMatchAllLepsStatus==0) nbAll4LepRightZH[2]++;
 		nbZ1DaughtersFromHZH[2][currentZ1MatchStatus]++;
 		nbZ2DaughtersFromHZH[2][currentZ2MatchStatus]++;
 	      }else{
@@ -1502,15 +1646,23 @@ void plotProductionModeComparison(
 	    }
 	    if(prodName[p]=="ttH"){
 	      if(nGenHLep==4 && nGenAssocLep==0){
+		nbTotalttH[0]++;
+		if(currentMatchAllLepsStatus==0) nbAll4LepRightttH[0]++;
 		nbZ1DaughtersFromHttH[0][currentZ1MatchStatus]++;
 		nbZ2DaughtersFromHttH[0][currentZ2MatchStatus]++;
 	      }else if(nGenHLep==4 && nGenAssocLep==1){
+		nbTotalttH[1]++;
+		if(currentMatchAllLepsStatus==0) nbAll4LepRightttH[1]++;
 		nbZ1DaughtersFromHttH[1][currentZ1MatchStatus]++;
 		nbZ2DaughtersFromHttH[1][currentZ2MatchStatus]++;
 	      }else if(nGenHLep==4 && nGenAssocLep==2){
+		nbTotalttH[2]++;
+		if(currentMatchAllLepsStatus==0) nbAll4LepRightttH[2]++;
 		nbZ1DaughtersFromHttH[2][currentZ1MatchStatus]++;
 		nbZ2DaughtersFromHttH[2][currentZ2MatchStatus]++;
 	      }else if(nGenHLep==2 && nGenAssocLep==2){
+		nbTotalttH[3]++;
+		if(currentMatchAllLepsStatus==0) nbAll4LepRightttH[3]++;
 		nbZ1DaughtersFromHttH[3][currentZ1MatchStatus]++;
 		nbZ2DaughtersFromHttH[3][currentZ2MatchStatus]++;
 	      }else{
@@ -1521,11 +1673,11 @@ void plotProductionModeComparison(
 	    // 	cout<<" ";
 	    // 	cout<<nGenAssocLep;
 	    // 	cout<<" ";
-	    // 	for(Int_t iGen =0; iGen <4; iGen ++) cout<<nMatchedToGenHLep [iGen ];
+	    // 	for(Int_t iGenHLep =0; iGenHLep <4; iGenHLep ++) cout<<nCandLepMatchedToGenHLep [iGenHLep ];
 	    // 	cout<<" ";
-	    // 	for(Int_t iGenAssoc =0; iGenAssoc <2; iGenAssoc ++) cout<<nMatchedToGenAssocLep[iGenAssoc];
+	    // 	for(Int_t iGenAssocLep =0; iGenAssocLep <2; iGenAssocLep ++) cout<<nCandLepMatchedToGenAssocLep[iGenAssocLep];
 	    // 	cout<<" ";
-	    // 	for(Int_t iReco=0; iReco<4; iReco++) cout<<nMatchedToRecoLep[iReco];
+	    // 	for(Int_t iCandLep=0; iCandLep<4; iCandLep++) cout<<nGenLepMatchedToCandLep[iCandLep];
 	    // 	cout<<" ";
 	    // 	cout<<currentMatchHLepsStatus;
 	    // 	cout<<" ";
@@ -1557,6 +1709,7 @@ void plotProductionModeComparison(
 	    nbWithBCFullSel100MatchHLeps[currentMatchHLepsStatus][p][c]++;
 	    nbWithBCFullSel100MatchHLeps[currentMatchHLepsStatus][p][3]++;
 	    for(int v=0; v<nVariables; v++){
+	      if(!plotThisVar[VARIABLELIST][v]) continue;
 	      hBCFullSel100MatchHLeps[v][currentMatchHLepsStatus][p][c]->Fill(varVal[v],weights[p]);
 	      hBCFullSel100MatchHLeps[v][currentMatchHLepsStatus][p][3]->Fill(varVal[v],weights[p]);
 	    }
@@ -1564,6 +1717,7 @@ void plotProductionModeComparison(
 	    nbWithBCFullSel100MatchAllLeps[currentMatchAllLepsStatus][p][c]++;
 	    nbWithBCFullSel100MatchAllLeps[currentMatchAllLepsStatus][p][3]++;
 	    for(int v=0; v<nVariables; v++){
+	      if(!plotThisVar[VARIABLELIST][v]) continue;
 	      hBCFullSel100MatchAllLeps[v][currentMatchAllLepsStatus][p][c]->Fill(varVal[v],weights[p]);
 	      hBCFullSel100MatchAllLeps[v][currentMatchAllLepsStatus][p][3]->Fill(varVal[v],weights[p]);
 	    }
@@ -1572,6 +1726,7 @@ void plotProductionModeComparison(
 	      nbWithBCFullSel100MatchWH[currentMatchWHStatus][c]++;
 	      nbWithBCFullSel100MatchWH[currentMatchWHStatus][3]++;
 	      for(int v=0; v<nVariables; v++){
+		if(!plotThisVar[VARIABLELIST][v]) continue;
 		hBCFullSel100MatchWH[v][currentMatchWHStatus][c]->Fill(varVal[v],weights[p]);
 		hBCFullSel100MatchWH[v][currentMatchWHStatus][3]->Fill(varVal[v],weights[p]);
 	      }
@@ -1580,6 +1735,7 @@ void plotProductionModeComparison(
 	      nbWithBCFullSel100MatchZH[currentMatchZHStatus][c]++;
 	      nbWithBCFullSel100MatchZH[currentMatchZHStatus][3]++;
 	      for(int v=0; v<nVariables; v++){
+		if(!plotThisVar[VARIABLELIST][v]) continue;
 		hBCFullSel100MatchZH[v][currentMatchZHStatus][c]->Fill(varVal[v],weights[p]);
 		hBCFullSel100MatchZH[v][currentMatchZHStatus][3]->Fill(varVal[v],weights[p]);
 	      }
@@ -1588,6 +1744,7 @@ void plotProductionModeComparison(
 	      nbWithBCFullSel100MatchttH[currentMatchttHStatus][c]++;
 	      nbWithBCFullSel100MatchttH[currentMatchttHStatus][3]++;
 	      for(int v=0; v<nVariables; v++){
+		if(!plotThisVar[VARIABLELIST][v]) continue;
 		hBCFullSel100MatchttH[v][currentMatchttHStatus][c]->Fill(varVal[v],weights[p]);
 		hBCFullSel100MatchttH[v][currentMatchttHStatus][3]->Fill(varVal[v],weights[p]);
 	      }
@@ -1650,77 +1807,75 @@ void plotProductionModeComparison(
 
     int widthColumn1 = 22;
     int widthOtherColumns = 7;
+    string separator = repeat("-",widthColumn1+4*(2+widthOtherColumns));
     if(prodName[p]=="WH"){
-      cout<<" "<<repeat("-",widthColumn1+4*(2+widthOtherColumns))<<endl;
+      cout<<" "<<separator<<endl;
       cout<<" "<<fixWidth("# of Z1 leptons from H",widthColumn1,true);
       for(int j=0; j<4; j++) cout<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
       cout<<endl;
-      for(int i=0; i<2; i++){
-	cout<<" ";
-	cout<<fixWidth(WHdecays[i],widthColumn1,true);
-	int total = 0; for(int j=0; j<4; j++) total += nbZ1DaughtersFromHWH[i][j];
-	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ1DaughtersFromHWH[i][j]/total)+" %",widthOtherColumns,false);
+      for(int i=0; i<nAssocWDecays; i++){
+	cout<<" "<<fixWidth(WHdecays[i],widthColumn1,true);
+	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ1DaughtersFromHWH[i][j]/nbTotalWH[i])+" %",widthOtherColumns,false);
 	cout<<endl;
       }
-      cout<<" "<<repeat("-",widthColumn1+4*(2+widthOtherColumns))<<endl;
+      cout<<" "<<separator<<endl;
       cout<<" "<<fixWidth("# of Z2 leptons from H",widthColumn1,true);
       for(int j=0; j<4; j++) cout<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
       cout<<endl;
-      for(int i=0; i<2; i++){
-	cout<<" ";
-	cout<<fixWidth(WHdecays[i],widthColumn1,true);
-	int total = 0; for(int j=0; j<4; j++) total += nbZ2DaughtersFromHWH[i][j];
-	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ2DaughtersFromHWH[i][j]/total)+" %",widthOtherColumns,false);
+      for(int i=0; i<nAssocWDecays; i++){
+	cout<<" "<<fixWidth(WHdecays[i],widthColumn1,true);
+	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ2DaughtersFromHWH[i][j]/nbTotalWH[i])+" %",widthOtherColumns,false);
 	cout<<endl;
       }
+      cout<<" "<<separator<<endl;
+      cout<<" "<<"all-4-leptons-right events"<<endl;
+      for(int i=0; i<nAssocWDecays; i++) cout<<" "<<fixWidth(WHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbAll4LepRightWH[i]/nbTotalWH[i])+" %"<<endl;
     }
     if(prodName[p]=="ZH"){
-      cout<<" "<<repeat("-",widthColumn1+4*(2+widthOtherColumns))<<endl;
+      cout<<" "<<separator<<endl;
       cout<<" "<<fixWidth("# of Z1 leptons from H",widthColumn1,true);
       for(int j=0; j<4; j++) cout<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
       cout<<endl;
-      for(int i=0; i<3; i++){
-	cout<<" ";
-	cout<<fixWidth(ZHdecays[i],widthColumn1,true);
-	int total = 0; for(int j=0; j<4; j++) total += nbZ1DaughtersFromHZH[i][j];
-	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ1DaughtersFromHZH[i][j]/total)+" %",widthOtherColumns,false);
+      for(int i=0; i<nAssocZDecays; i++){
+	cout<<" "<<fixWidth(ZHdecays[i],widthColumn1,true);
+	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ1DaughtersFromHZH[i][j]/nbTotalZH[i])+" %",widthOtherColumns,false);
 	cout<<endl;
       }
-      cout<<" "<<repeat("-",widthColumn1+4*(2+widthOtherColumns))<<endl;
+      cout<<" "<<separator<<endl;
       cout<<" "<<fixWidth("# of Z2 leptons from H",widthColumn1,true);
       for(int j=0; j<4; j++) cout<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
       cout<<endl;
-      for(int i=0; i<3; i++){
-	cout<<" ";
-	cout<<fixWidth(ZHdecays[i],widthColumn1,true);
-	int total = 0; for(int j=0; j<4; j++) total += nbZ2DaughtersFromHZH[i][j];
-	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ2DaughtersFromHZH[i][j]/total)+" %",widthOtherColumns,false);
+      for(int i=0; i<nAssocZDecays; i++){
+	cout<<" "<<fixWidth(ZHdecays[i],widthColumn1,true);
+	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ2DaughtersFromHZH[i][j]/nbTotalZH[i])+" %",widthOtherColumns,false);
 	cout<<endl;
       }
+      cout<<" "<<separator<<endl;
+      cout<<" "<<"all-4-leptons-right events"<<endl;
+      for(int i=0; i<nAssocZDecays; i++) cout<<" "<<fixWidth(ZHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbAll4LepRightZH[i]/nbTotalZH[i])+" %"<<endl;
     }
     if(prodName[p]=="ttH"){
-      cout<<" "<<repeat("-",widthColumn1+4*(2+widthOtherColumns))<<endl;
+      cout<<" "<<separator<<endl;
       cout<<" "<<fixWidth("# of Z1 leptons from H",widthColumn1,true);
       for(int j=0; j<4; j++) cout<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
       cout<<endl;
-      for(int i=0; i<4; i++){
-	cout<<" ";
-	cout<<fixWidth(ttHdecays[i],widthColumn1,true);
-	int total = 0; for(int j=0; j<4; j++) total += nbZ1DaughtersFromHttH[i][j];
-	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ1DaughtersFromHttH[i][j]/total)+" %",widthOtherColumns,false);
+      for(int i=0; i<nAssocttDecays; i++){
+	cout<<" "<<fixWidth(ttHdecays[i],widthColumn1,true);
+	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ1DaughtersFromHttH[i][j]/nbTotalttH[i])+" %",widthOtherColumns,false);
 	cout<<endl;
       }
-      cout<<" "<<repeat("-",widthColumn1+4*(2+widthOtherColumns))<<endl;
+      cout<<" "<<separator<<endl;
       cout<<" "<<fixWidth("# of Z2 leptons from H",widthColumn1,true);
       for(int j=0; j<4; j++) cout<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
       cout<<endl;
-      for(int i=0; i<4; i++){
-	cout<<" ";
-	cout<<fixWidth(ttHdecays[i],widthColumn1,true);
-	int total = 0; for(int j=0; j<4; j++) total += nbZ2DaughtersFromHttH[i][j];
-	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ2DaughtersFromHttH[i][j]/total)+" %",widthOtherColumns,false);
+      for(int i=0; i<nAssocttDecays; i++){
+	cout<<" "<<fixWidth(ttHdecays[i],widthColumn1,true);
+	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ2DaughtersFromHttH[i][j]/nbTotalttH[i])+" %",widthOtherColumns,false);
 	cout<<endl;
       }
+      cout<<" "<<separator<<endl;
+      cout<<" "<<"all-4-leptons-right events"<<endl;
+      for(int i=0; i<nAssocttDecays; i++) cout<<" "<<fixWidth(ttHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbAll4LepRightttH[i]/nbTotalttH[i])+" %"<<endl;
     }
     
     cout<<endl;
@@ -1736,6 +1891,7 @@ void plotProductionModeComparison(
   if(doProdComp){
     TCanvas* cBCFullSel100[nVariables];
     for(int v=0; v<nVariables; v++){
+      if(!plotThisVar[VARIABLELIST][v]) continue;
       cBCFullSel100[v] = new TCanvas(Form("cBCFullSel100_%s",varName[v].c_str()),Form("cBCFullSel100_%s",varName[v].c_str()),500,500);
       DrawByProdmodes(cBCFullSel100[v],hBCFullSel100[v],prodName,isPresent,colors,allZZBkgdsArePresent,v==0);
       SaveCanvas(outDir,cBCFullSel100[v]);
@@ -1745,6 +1901,7 @@ void plotProductionModeComparison(
   if(doProdCompMatch4){
     TCanvas* cBCFullSel100Match4[nVariables];
     for(int v=0; v<nVariables; v++){
+      if(!plotThisVar[VARIABLELIST][v]) continue;
       cBCFullSel100Match4[v] = new TCanvas(Form("cBCFullSel100Match4_%s",varName[v].c_str()),Form("cBCFullSel100Match4_%s",varName[v].c_str()),500,500);
       DrawByProdmodes(cBCFullSel100Match4[v],hBCFullSel100MatchHLeps[v][0],prodName,isPresent,colors,allZZBkgdsArePresent,v==0);
       SaveCanvas(outDir,cBCFullSel100Match4[v]);
@@ -1757,6 +1914,7 @@ void plotProductionModeComparison(
       if(!isPresent[p]) continue;
       string pn = prodName[p];
       for(int v=0; v<nVariables; v++){
+	if(!plotThisVar[VARIABLELIST][v]) continue;
 	cBCFullSel100Match4OrNot[v][p] = new TCanvas(Form("cBCFullSel100Match4OrNot_%s_%s",varName[v].c_str(),pn.c_str()),Form("cBCFullSel100Match4OrNot_%s_%s",varName[v].c_str(),pn.c_str()),500,500);
 	DrawMatch4OrNot(cBCFullSel100Match4OrNot[v][p],hBCFullSel100[v][p][3],hBCFullSel100MatchHLeps[v][0][p][3],pn,allColorsMP[1][p],allColorsMP[4][p],v==0);
 	SaveCanvas(outDir,cBCFullSel100Match4OrNot[v][p]);
@@ -1770,6 +1928,7 @@ void plotProductionModeComparison(
       if(!isPresent[p]) continue;
       string pn = prodName[p];
       for(int v=0; v<nVariables; v++){
+	if(!plotThisVar[VARIABLELIST][v]) continue;
 	TH1F* h[nMatchHLepsStatuses]; for(int m=0; m<nMatchHLepsStatuses; m++) h[m] = (TH1F*)hBCFullSel100MatchHLeps[v][m][p][3];
 	cBCFullSel100MatchHLeps[v][p] = new TCanvas(Form("cBCFullSel100MatchHLeps_%s_%s",varName[v].c_str(),pn.c_str()),Form("cBCFullSel100MatchHLeps_%s_%s",varName[v].c_str(),pn.c_str()),500,500);
 	DrawMatchHLeps(cBCFullSel100MatchHLeps[v][p],hBCFullSel100[v][p][3],h,pn,allColorsPM1[p],matchHLepsKeys,v==0);
@@ -1785,6 +1944,7 @@ void plotProductionModeComparison(
       if(p==0||p==1) continue;
       string pn = prodName[p];
       for(int v=0; v<nVariables; v++){
+	if(!plotThisVar[VARIABLELIST][v]) continue;
 	TH1F* h[nMatchAllLepsStatuses]; for(int m=0; m<nMatchAllLepsStatuses; m++) h[m] = (TH1F*)hBCFullSel100MatchAllLeps[v][m][p][3];
 	cBCFullSel100MatchAllLeps[v][p] = new TCanvas(Form("cBCFullSel100MatchAllLeps_%s_%s",varName[v].c_str(),pn.c_str()),Form("cBCFullSel100MatchAllLeps_%s_%s",varName[v].c_str(),pn.c_str()),500,500);
 	DrawMatchAllLeps(cBCFullSel100MatchAllLeps[v][p],hBCFullSel100[v][p][3],h,pn,allColorsPM2[p],matchAllLepsKeys,v==0);
@@ -1798,6 +1958,7 @@ void plotProductionModeComparison(
     if(file_WH!=""){
       TCanvas* cBCFullSel100MatchWH[nVariables];
       for(int v=0; v<nVariables; v++){
+	if(!plotThisVar[VARIABLELIST][v]) continue;
 	TH1F* hMatchWH[nMatchWHStatuses]; for(int m=0; m<nMatchWHStatuses; m++) hMatchWH[m] = (TH1F*)hBCFullSel100MatchWH[v][m][3];
 	cBCFullSel100MatchWH[v] = new TCanvas(Form("cBCFullSel100MatchWH_%s",varName[v].c_str()),Form("cBCFullSel100MatchWH_%s",varName[v].c_str()),500,500);
 	if(v==1 || v==3)
@@ -1811,6 +1972,7 @@ void plotProductionModeComparison(
     if(file_ZH!=""){
       TCanvas* cBCFullSel100MatchZH[nVariables];
       for(int v=0; v<nVariables; v++){
+	if(!plotThisVar[VARIABLELIST][v]) continue;
 	TH1F* hMatchZH[nMatchZHStatuses]; for(int m=0; m<nMatchZHStatuses; m++) hMatchZH[m] = (TH1F*)hBCFullSel100MatchZH[v][m][3];
 	cBCFullSel100MatchZH[v] = new TCanvas(Form("cBCFullSel100MatchZH_%s",varName[v].c_str()),Form("cBCFullSel100MatchZH_%s",varName[v].c_str()),500,500);
 	if(v==1 || v==3)
@@ -1824,6 +1986,7 @@ void plotProductionModeComparison(
     if(file_ttH!=""){
       TCanvas* cBCFullSel100MatchttH[nVariables];
       for(int v=0; v<nVariables; v++){
+	if(!plotThisVar[VARIABLELIST][v]) continue;
 	TH1F* hMatchttH[nMatchttHStatuses]; for(int m=0; m<nMatchttHStatuses; m++) hMatchttH[m] = (TH1F*)hBCFullSel100MatchttH[v][m][3];
 	cBCFullSel100MatchttH[v] = new TCanvas(Form("cBCFullSel100MatchttH_%s",varName[v].c_str()),Form("cBCFullSel100MatchttH_%s",varName[v].c_str()),500,500);
 	if(v==1 || v==3)
