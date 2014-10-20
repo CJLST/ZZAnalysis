@@ -1027,6 +1027,20 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   myTree->FillHInfo(ZZMass, ZZMassErr, ZZMassErrCorr, ZZMassPreFSR, ZZMassRefit, Chi2KinFit, ZZMassCFit, Chi2CFit,  sel, ZZPt, ZZEta, ZZPhi,
 		    isSignal, isRightPair, ZZFisher, CRflag);
 
+  //Fill the info on categorization
+  const Int_t nExtraLep = cand.userFloat("nExtraLep");
+  const Int_t nExtraZ = cand.userFloat("nExtraZ");
+  //FIXME: once cleaning is done per-event and not per-candidate, these will become per-event variables!
+  const Int_t nJets = cand.userFloat("nJets");
+  const Int_t nCleanedJets = cand.userFloat("nCleanedJets");
+  const Int_t nCleanedJetsPt30 = cand.userFloat("nCleanedJetsPt30");
+  myTree->FillCategorizationInfo(nExtraLep, nExtraZ, nJets, nCleanedJets, nCleanedJetsPt30);
+
+  //Fill the info on the extra leptons
+  myTree->FillExtraLepInfo( 1, cand.hasUserCand("ExtraLep1"), (cand.hasUserCand("ExtraLep1") ? cand.userCand("ExtraLep1") : *(new reco::CandidatePtr)) );
+  myTree->FillExtraLepInfo( 2, cand.hasUserCand("ExtraLep2"), (cand.hasUserCand("ExtraLep2") ? cand.userCand("ExtraLep2") : *(new reco::CandidatePtr)) );
+  myTree->FillExtraLepInfo( 3, cand.hasUserCand("ExtraLep3"), (cand.hasUserCand("ExtraLep3") ? cand.userCand("ExtraLep3") : *(new reco::CandidatePtr)) );
+
 }
 
 
