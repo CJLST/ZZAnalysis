@@ -14,7 +14,6 @@
 <use name="MagneticField/Engine"/>
 <use name="MagneticField/Records"/>
 <use name="ZZAnalysis/AnalysisStep"/>
-<use name="AnalysisDataFormats/CMGTools"/>
 <use name="ZZMatrixElement/MELA"/>
 <!--use name="RecoEcal/EgammaCoreTools"/-->
 
