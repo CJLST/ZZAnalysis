@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <utility>
 #include <map>
 #include <vector>
@@ -15,6 +16,7 @@
 #include "TPaveText.h"
 #include "TMath.h"
 #include "TColor.h"
+#include "TSystem.h"
 
 using namespace std;
 
@@ -25,7 +27,7 @@ using namespace std;
 
 #define VARIABLELIST 0 // put 0 for plots shown on September 8th
 
-#define requireHLepsAreGood 0 // impose that all 4 gen leptons from the Higgs are matched to good leptons (from the candidate or extra leptons)
+#define requireHLepsAreGood 1 // impose that all 4 gen leptons from the Higgs are matched to good leptons (from the candidate or extra leptons)
 #define excludeH2l2X 0 // completely exclude ZH,H->2l2X and ttH,H->2l2X events from the study
 #define requireHLepsAreInAcc 0 // impose that all 4 gen leptons from the Higgs are in the acceptance
 #define acceptanceIncludesPt 1 // if not, acceptance is just on eta
@@ -109,6 +111,7 @@ string percentage(float frac) {
 void SaveCanvas(string directory, TCanvas* c, const char* tag = "") {
   c->SaveAs(Form("%s%s_%s.root",directory.c_str(),c->GetName(),tag));
   c->SaveAs(Form("%s%s_%s.pdf" ,directory.c_str(),c->GetName(),tag));  
+  c->SaveAs(Form("%s%s_%s.png" ,directory.c_str(),c->GetName(),tag));
 }
 
 void set_plot_style() {
@@ -608,6 +611,12 @@ void plotProductionModeComparison(
 
 				  )
 {
+
+  gSystem->Exec("mkdir -p "+(TString)outDir.c_str());
+
+  ofstream txtOut;
+  TString txtOutName = (TString)outDir.c_str()+"/matchingInfo.txt";
+  txtOut.open(txtOutName);
 
 
   // ------------------------------------------------------------
@@ -1142,6 +1151,7 @@ void plotProductionModeComparison(
     if(!isPresent[p]) continue;
 
     cout<<prodName[p]<<endl;
+    txtOut<<prodName[p]<<endl;
 
     for(int c=0; c<nChannels; c++){
       
@@ -1761,126 +1771,128 @@ void plotProductionModeComparison(
     Int_t widthColumn2 = 6;
 
     for(int c=0; c<nChannels; c++){
-      cout<<" "<<channels[c]<<endl;
-      cout<<"  stored :            "<<fixWidth(Form("%i",nbStored[p][c]),widthColumn2,false)<<endl;
-      cout<<"  iBC>0 :             "<<fixWidth(Form("%i",nbWithBC[p][c]),widthColumn2,false)<<endl;
-      cout<<"  iBC>0, FullSel70 :  "<<fixWidth(Form("%i",nbWithBCFullSel70[p][c]),widthColumn2,false)<<endl;
-      cout<<"  iBC>0, FullSel100 : "<<fixWidth(Form("%i",nbWithBCFullSel100[p][c]),widthColumn2,false)<<endl;
-      cout<<"  iBC>0, FullSel100, match to 4 gen leptons : "<<fixWidth(Form("%i",nbWithBCFullSel100MatchHLeps[0][p][c]),widthColumn2,false)<<endl;
+      txtOut<<" "<<channels[c]<<endl;
+      txtOut<<"  stored :            "<<fixWidth(Form("%i",nbStored[p][c]),widthColumn2,false)<<endl;
+      txtOut<<"  iBC>0 :             "<<fixWidth(Form("%i",nbWithBC[p][c]),widthColumn2,false)<<endl;
+      txtOut<<"  iBC>0, FullSel70 :  "<<fixWidth(Form("%i",nbWithBCFullSel70[p][c]),widthColumn2,false)<<endl;
+      txtOut<<"  iBC>0, FullSel100 : "<<fixWidth(Form("%i",nbWithBCFullSel100[p][c]),widthColumn2,false)<<endl;
+      txtOut<<"  iBC>0, FullSel100, match to 4 gen leptons : "<<fixWidth(Form("%i",nbWithBCFullSel100MatchHLeps[0][p][c]),widthColumn2,false)<<endl;
     }
 
-    cout<<" "<<"# events :"<<endl;
-    cout<<"  stored :            "<<fixWidth(Form("%i",(int)overlapMapStored[p].size()),widthColumn2,false)<<endl;
-    cout<<"  iBC>0 :             "<<fixWidth(Form("%i",(int)overlapMapWithBC[p].size()),widthColumn2,false)<<endl;
-    cout<<"  iBC>0, FullSel70 :  "<<fixWidth(Form("%i",(int)overlapMapWithBCFullSel70[p].size()),widthColumn2,false)<<endl;
-    cout<<"  iBC>0, FullSel100 : "<<fixWidth(Form("%i",(int)overlapMapWithBCFullSel100[p].size()),widthColumn2,false)<<endl;
+    txtOut<<" "<<"# events :"<<endl;
+    txtOut<<"  stored :            "<<fixWidth(Form("%i",(int)overlapMapStored[p].size()),widthColumn2,false)<<endl;
+    txtOut<<"  iBC>0 :             "<<fixWidth(Form("%i",(int)overlapMapWithBC[p].size()),widthColumn2,false)<<endl;
+    txtOut<<"  iBC>0, FullSel70 :  "<<fixWidth(Form("%i",(int)overlapMapWithBCFullSel70[p].size()),widthColumn2,false)<<endl;
+    txtOut<<"  iBC>0, FullSel100 : "<<fixWidth(Form("%i",(int)overlapMapWithBCFullSel100[p].size()),widthColumn2,false)<<endl;
 
-    cout<<" "<<"# events stored in 2:3 decay channels :"<<endl;
+    txtOut<<" "<<"# events stored in 2:3 decay channels :"<<endl;
     Int_t nbOverlapStored2 = 0;
     Int_t nbOverlapStored3 = 0;
     for(map<string,vector<string> >::iterator it=overlapMapStored[p].begin(); it!=overlapMapStored[p].end(); it++){
       if(it->second.size()==2) nbOverlapStored2++;
       if(it->second.size()==3) nbOverlapStored3++;
     }
-    cout<<"  stored :            "<<nbOverlapStored2<<":"<<nbOverlapStored3<<" ("<<percentage((float)(nbOverlapStored2+nbOverlapStored3)/(int)overlapMapStored[p].size())<<" %)"<<endl;
+    txtOut<<"  stored :            "<<nbOverlapStored2<<":"<<nbOverlapStored3<<" ("<<percentage((float)(nbOverlapStored2+nbOverlapStored3)/(int)overlapMapStored[p].size())<<" %)"<<endl;
     Int_t nbOverlapWithBC2 = 0;
     Int_t nbOverlapWithBC3 = 0;
     for(map<string,vector<string> >::iterator it=overlapMapWithBC[p].begin(); it!=overlapMapWithBC[p].end(); it++){
       if(it->second.size()==2) nbOverlapWithBC2++;
       if(it->second.size()==3) nbOverlapWithBC3++;
     }
-    cout<<"  iBC>0 :             "<<nbOverlapWithBC2<<":"<<nbOverlapWithBC3<<" ("<<percentage((float)(nbOverlapWithBC2+nbOverlapWithBC3)/(int)overlapMapWithBC[p].size())<<" %)"<<endl;
+    txtOut<<"  iBC>0 :             "<<nbOverlapWithBC2<<":"<<nbOverlapWithBC3<<" ("<<percentage((float)(nbOverlapWithBC2+nbOverlapWithBC3)/(int)overlapMapWithBC[p].size())<<" %)"<<endl;
     Int_t nbOverlapWithBCFullSel702 = 0;
     Int_t nbOverlapWithBCFullSel703 = 0;
     for(map<string,vector<string> >::iterator it=overlapMapWithBCFullSel70[p].begin(); it!=overlapMapWithBCFullSel70[p].end(); it++){
       if(it->second.size()==2) nbOverlapWithBCFullSel702++;
       if(it->second.size()==3) nbOverlapWithBCFullSel703++;
     }
-    cout<<"  iBC>0, FullSel70 :  "<<nbOverlapWithBCFullSel702<<":"<<nbOverlapWithBCFullSel703<<" ("<<percentage((float)(nbOverlapWithBCFullSel702+nbOverlapWithBCFullSel703)/(int)overlapMapWithBCFullSel70[p].size())<<" %)"<<endl;
+    txtOut<<"  iBC>0, FullSel70 :  "<<nbOverlapWithBCFullSel702<<":"<<nbOverlapWithBCFullSel703<<" ("<<percentage((float)(nbOverlapWithBCFullSel702+nbOverlapWithBCFullSel703)/(int)overlapMapWithBCFullSel70[p].size())<<" %)"<<endl;
     Int_t nbOverlapWithBCFullSel1002 = 0;
     Int_t nbOverlapWithBCFullSel1003 = 0;
     for(map<string,vector<string> >::iterator it=overlapMapWithBCFullSel100[p].begin(); it!=overlapMapWithBCFullSel100[p].end(); it++){
       if(it->second.size()==2) nbOverlapWithBCFullSel1002++;
       if(it->second.size()==3) nbOverlapWithBCFullSel1003++;
     }
-    cout<<"  iBC>0, FullSel100 : "<<nbOverlapWithBCFullSel1002<<":"<<nbOverlapWithBCFullSel1003<<" ("<<percentage((float)(nbOverlapWithBCFullSel1002+nbOverlapWithBCFullSel1003)/(int)overlapMapWithBCFullSel100[p].size())<<" %)"<<endl;
+    txtOut<<"  iBC>0, FullSel100 : "<<nbOverlapWithBCFullSel1002<<":"<<nbOverlapWithBCFullSel1003<<" ("<<percentage((float)(nbOverlapWithBCFullSel1002+nbOverlapWithBCFullSel1003)/(int)overlapMapWithBCFullSel100[p].size())<<" %)"<<endl;
 
     int widthColumn1 = 22;
     int widthOtherColumns = 7;
     string separator = repeat("-",widthColumn1+4*(2+widthOtherColumns));
     if(prodName[p]=="WH"){
-      cout<<" "<<separator<<endl;
-      cout<<" "<<fixWidth("# of Z1 leptons from H",widthColumn1,true);
-      for(int j=0; j<4; j++) cout<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
-      cout<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<fixWidth("# of Z1 leptons from H",widthColumn1,true);
+      for(int j=0; j<4; j++) txtOut<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
+      txtOut<<endl;
       for(int i=0; i<nAssocWDecays; i++){
-	cout<<" "<<fixWidth(WHdecays[i],widthColumn1,true);
-	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ1DaughtersFromHWH[i][j]/nbTotalWH[i])+" %",widthOtherColumns,false);
-	cout<<endl;
+	txtOut<<" "<<fixWidth(WHdecays[i],widthColumn1,true);
+	for(int j=0; j<4; j++) txtOut<<"  "<<fixWidth(percentage((float)nbZ1DaughtersFromHWH[i][j]/nbTotalWH[i])+" %",widthOtherColumns,false);
+	txtOut<<endl;
       }
-      cout<<" "<<separator<<endl;
-      cout<<" "<<fixWidth("# of Z2 leptons from H",widthColumn1,true);
-      for(int j=0; j<4; j++) cout<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
-      cout<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<fixWidth("# of Z2 leptons from H",widthColumn1,true);
+      for(int j=0; j<4; j++) txtOut<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
+      txtOut<<endl;
       for(int i=0; i<nAssocWDecays; i++){
-	cout<<" "<<fixWidth(WHdecays[i],widthColumn1,true);
-	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ2DaughtersFromHWH[i][j]/nbTotalWH[i])+" %",widthOtherColumns,false);
-	cout<<endl;
+	txtOut<<" "<<fixWidth(WHdecays[i],widthColumn1,true);
+	for(int j=0; j<4; j++) txtOut<<"  "<<fixWidth(percentage((float)nbZ2DaughtersFromHWH[i][j]/nbTotalWH[i])+" %",widthOtherColumns,false);
+	txtOut<<endl;
       }
-      cout<<" "<<separator<<endl;
-      cout<<" "<<"all-4-leptons-right events"<<endl;
-      for(int i=0; i<nAssocWDecays; i++) cout<<" "<<fixWidth(WHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbAll4LepRightWH[i]/nbTotalWH[i])+" %"<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<"all-4-leptons-right events"<<endl;
+      for(int i=0; i<nAssocWDecays; i++) txtOut<<" "<<fixWidth(WHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbAll4LepRightWH[i]/nbTotalWH[i])+" %"<<endl;
     }
     if(prodName[p]=="ZH"){
-      cout<<" "<<separator<<endl;
-      cout<<" "<<fixWidth("# of Z1 leptons from H",widthColumn1,true);
-      for(int j=0; j<4; j++) cout<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
-      cout<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<fixWidth("# of Z1 leptons from H",widthColumn1,true);
+      for(int j=0; j<4; j++) txtOut<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
+      txtOut<<endl;
       for(int i=0; i<nAssocZDecays; i++){
-	cout<<" "<<fixWidth(ZHdecays[i],widthColumn1,true);
-	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ1DaughtersFromHZH[i][j]/nbTotalZH[i])+" %",widthOtherColumns,false);
-	cout<<endl;
+	txtOut<<" "<<fixWidth(ZHdecays[i],widthColumn1,true);
+	for(int j=0; j<4; j++) txtOut<<"  "<<fixWidth(percentage((float)nbZ1DaughtersFromHZH[i][j]/nbTotalZH[i])+" %",widthOtherColumns,false);
+	txtOut<<endl;
       }
-      cout<<" "<<separator<<endl;
-      cout<<" "<<fixWidth("# of Z2 leptons from H",widthColumn1,true);
-      for(int j=0; j<4; j++) cout<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
-      cout<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<fixWidth("# of Z2 leptons from H",widthColumn1,true);
+      for(int j=0; j<4; j++) txtOut<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
+      txtOut<<endl;
       for(int i=0; i<nAssocZDecays; i++){
-	cout<<" "<<fixWidth(ZHdecays[i],widthColumn1,true);
-	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ2DaughtersFromHZH[i][j]/nbTotalZH[i])+" %",widthOtherColumns,false);
-	cout<<endl;
+	txtOut<<" "<<fixWidth(ZHdecays[i],widthColumn1,true);
+	for(int j=0; j<4; j++) txtOut<<"  "<<fixWidth(percentage((float)nbZ2DaughtersFromHZH[i][j]/nbTotalZH[i])+" %",widthOtherColumns,false);
+	txtOut<<endl;
       }
-      cout<<" "<<separator<<endl;
-      cout<<" "<<"all-4-leptons-right events"<<endl;
-      for(int i=0; i<nAssocZDecays; i++) cout<<" "<<fixWidth(ZHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbAll4LepRightZH[i]/nbTotalZH[i])+" %"<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<"all-4-leptons-right events"<<endl;
+      for(int i=0; i<nAssocZDecays; i++) txtOut<<" "<<fixWidth(ZHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbAll4LepRightZH[i]/nbTotalZH[i])+" %"<<endl;
     }
     if(prodName[p]=="ttH"){
-      cout<<" "<<separator<<endl;
-      cout<<" "<<fixWidth("# of Z1 leptons from H",widthColumn1,true);
-      for(int j=0; j<4; j++) cout<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
-      cout<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<fixWidth("# of Z1 leptons from H",widthColumn1,true);
+      for(int j=0; j<4; j++) txtOut<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
+      txtOut<<endl;
       for(int i=0; i<nAssocttDecays; i++){
-	cout<<" "<<fixWidth(ttHdecays[i],widthColumn1,true);
-	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ1DaughtersFromHttH[i][j]/nbTotalttH[i])+" %",widthOtherColumns,false);
-	cout<<endl;
+	txtOut<<" "<<fixWidth(ttHdecays[i],widthColumn1,true);
+	for(int j=0; j<4; j++) txtOut<<"  "<<fixWidth(percentage((float)nbZ1DaughtersFromHttH[i][j]/nbTotalttH[i])+" %",widthOtherColumns,false);
+	txtOut<<endl;
       }
-      cout<<" "<<separator<<endl;
-      cout<<" "<<fixWidth("# of Z2 leptons from H",widthColumn1,true);
-      for(int j=0; j<4; j++) cout<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
-      cout<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<fixWidth("# of Z2 leptons from H",widthColumn1,true);
+      for(int j=0; j<4; j++) txtOut<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
+      txtOut<<endl;
       for(int i=0; i<nAssocttDecays; i++){
-	cout<<" "<<fixWidth(ttHdecays[i],widthColumn1,true);
-	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ2DaughtersFromHttH[i][j]/nbTotalttH[i])+" %",widthOtherColumns,false);
-	cout<<endl;
+	txtOut<<" "<<fixWidth(ttHdecays[i],widthColumn1,true);
+	for(int j=0; j<4; j++) txtOut<<"  "<<fixWidth(percentage((float)nbZ2DaughtersFromHttH[i][j]/nbTotalttH[i])+" %",widthOtherColumns,false);
+	txtOut<<endl;
       }
-      cout<<" "<<separator<<endl;
-      cout<<" "<<"all-4-leptons-right events"<<endl;
-      for(int i=0; i<nAssocttDecays; i++) cout<<" "<<fixWidth(ttHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbAll4LepRightttH[i]/nbTotalttH[i])+" %"<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<"all-4-leptons-right events"<<endl;
+      for(int i=0; i<nAssocttDecays; i++) txtOut<<" "<<fixWidth(ttHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbAll4LepRightttH[i]/nbTotalttH[i])+" %"<<endl;
     }
     
-    cout<<endl;
+    txtOut<<endl;
 
   } // end for production modes
+
+  txtOut.close();
 
 
 
