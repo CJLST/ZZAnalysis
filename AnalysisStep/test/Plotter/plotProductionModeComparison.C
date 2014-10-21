@@ -5,6 +5,8 @@
 #include <cmath>
 
 #include "TStyle.h"
+#include "TDirectory.h"
+#include "TFile.h"
 #include "TChain.h"
 #include "TH1.h"
 #include "TH2.h"
@@ -17,26 +19,44 @@
 using namespace std;
 
 #define MASSZ 91.1876
+#define LUMI 20.
 
 #define DEBUG 0
 
-#define doProdComp       1
+#define VARIABLELIST 0 // put 0 for plots shown on September 8th
+
+#define requireHLepsAreGood 0 // impose that all 4 gen leptons from the Higgs are matched to good leptons (from the candidate or extra leptons)
+#define excludeH2l2X 0 // completely exclude ZH,H->2l2X and ttH,H->2l2X events from the study
+#define requireHLepsAreInAcc 0 // impose that all 4 gen leptons from the Higgs are in the acceptance
+#define acceptanceIncludesPt 1 // if not, acceptance is just on eta
+
+#define treatH2l2XAsBkgd 0 // treat these events as a background for the purity and S/(S+B) plots 
+
+#define doProdComp       1 // plots shown on September 8th
 #define doProdCompMatch4 0
 #define doMatch4OrNot    0
 #define doMatchHLeps     0
 #define doMatchAllLeps   0
-#define doMatchWHZHttH   1
-#define do2DPlots        1
+#define doMatchWHZHttH   1 // plots shown on September 8th
+#define do2DPlots        0 // plots shown on September 8th
+#define doBaskets        0 // plots shown on September 23rd
 
-#define nSamples 6
+#define nSamples 8
 #define nHiggsSamples 5
-#define nCategories 4
-#define nVariables 6
+#define nChannels 4
+#define nVariables 16
+#define nBaskets 8
+
 #define nMatchHLepsStatuses 6
 #define nMatchAllLepsStatuses 5
 #define nMatchWHStatuses 5
 #define nMatchZHStatuses 7
 #define nMatchttHStatuses 9
+
+#define nAssocWDecays 2
+#define nAssocZDecays 3
+#define nAssocttDecays 4
+#define nAssocDecays (nAssocWDecays + nAssocZDecays + nAssocttDecays)
 
 
 
@@ -102,6 +122,54 @@ void set_plot_style() {
     gStyle->SetNumberContours(NCont);
 }
 
+void prepareBasketlabels(TH1F* h, string* basketLabel){
+  for(int i=1; i<=h->GetNbinsX(); i++)  h->GetXaxis()->SetBinLabel(i,basketLabel[i-1].c_str());
+  h->GetXaxis()->SetLabelSize(0.04);
+  h->GetXaxis()->LabelsOption("h");
+  h->GetXaxis()->SetNdivisions(-h->GetNbinsX());
+}
+
+void prepareBasketlabelsHorizontal(TH2F* h2, string* basketLabel){
+  int nbins = h2->GetNbinsY();
+  for(int i=1; i<=nbins; i++)  h2->GetYaxis()->SetBinLabel(nbins+1-i,basketLabel[i-1].c_str());
+  h2->GetYaxis()->SetLabelSize(0.04);
+  h2->GetYaxis()->LabelsOption("h");
+  h2->GetYaxis()->SetNdivisions(-h2->GetNbinsY());
+}
+
+void DrawHorizontal(TH1 *h, string* basketLabel, Bool_t same = false, Int_t nDiv = 0, Bool_t without1stBin = false) {
+  Double_t ymin = 0.; //h->GetMinimum();
+  Double_t ymax = h->GetMaximum(); // 1.1*h->GetMaximum(); 
+  TAxis *axis   = h->GetXaxis();
+  Double_t xmin = axis->GetXmin();
+  Double_t xmax = axis->GetXmax();
+  Int_t nbins   = axis->GetNbins();
+  TH2F *h2 = new TH2F("h2",Form("%s;%s;%s",h->GetTitle(),h->GetYaxis()->GetTitle(),""),10,ymin,ymax,nbins,xmin,xmax);
+  h2->SetBit(kCanDelete);
+  //h2->SetDirectory(0);
+  h2->SetTickLength(0.01);
+  h2->GetXaxis()->SetLabelSize(0.03);
+  if(without1stBin) h2->GetYaxis()->SetRangeUser(0,nBaskets-1);
+  h2->SetStats(0);
+  prepareBasketlabelsHorizontal(h2,basketLabel);
+  h2->Draw(same?"same":"");
+  if(nDiv!=0) h2->GetXaxis()->SetNdivisions(nDiv);
+  TBox box;
+  Int_t color = h->GetFillColor();
+  if (color == 0) color = 1;
+  box.SetFillColor(color);
+  Double_t dy,x1,y1,x2,y2;
+  for (Int_t i=1;i<=nbins;i++) {
+    if(without1stBin && i==1) continue;
+    dy = axis->GetBinWidth(nbins+1-i);
+    x1 = 0.;
+    y1 = axis->GetBinCenter(nbins+1-i)-0.4*dy;
+    x2 = h->GetBinContent(i);
+    y2 = axis->GetBinCenter(nbins+1-i)+0.4*dy;
+    box.DrawBox(x1,y1,x2,y2);
+  }
+}
+
 
 
 
@@ -112,7 +180,7 @@ void set_plot_style() {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-void DrawByProdmodes(TCanvas* c, TH1F* hSource[nSamples][nCategories], string* prodName, Bool_t* isPresent, Color_t* colors, Bool_t logY = false) {
+void DrawByProdmodes(TCanvas* c, TH1F* hSource[nSamples][nChannels], string* prodName, Bool_t* isPresent, Color_t* colors, Bool_t mergeZZBkgd, Bool_t logY = false) {
 
   gStyle->SetOptTitle(0);
 
@@ -125,29 +193,43 @@ void DrawByProdmodes(TCanvas* c, TH1F* hSource[nSamples][nCategories], string* p
   lgd->SetBorderSize(0);
 
   TH1F* h[nSamples];
+  for(int p=0; p<nSamples; p++){
+    if(!isPresent[p]) continue;
+    h[p] = (TH1F*)hSource[p][3]->Clone(); // includes the 3 decay channels !!
+    if(mergeZZBkgd&&(p==6||p==7)) h[5]->Add(h[p]);
+  }
 
   Float_t max = 0.;
   for(int p=0; p<nSamples; p++){
     if(!isPresent[p]) continue;
-    h[p] = (TH1F*)hSource[p][3]->Clone(); // includes the 3 decay channels !!
+    if(mergeZZBkgd&&(p==6||p==7)) continue;
+
     h[p]->Scale(1/h[p]->Integral());
     Float_t maxtemp = h[p]->GetMaximum();
     if(maxtemp>max) max = maxtemp;
+
   }
 
   for(int p=0; p<nSamples; p++){
     if(!isPresent[p]) continue;
+    if(mergeZZBkgd&&(p==6||p==7)) continue;
     string pn = prodName[p];
 
     h[p]->SetLineColor(colors[p]);
     h[p]->SetLineWidth(2);
+    h[p]->SetFillStyle(0);
     h[p]->SetStats(0);
     //if(!logY) h[p]->SetMinimum(0);
-    if(p==0) h[p]->SetMaximum(1.1*max);
 
-    if(p==0) h[p]->Draw(); else h[p]->Draw("sames");
-    
-    lgd->AddEntry(h[p],pn.c_str(),"l");
+    if(p==0){
+      h[p]->SetMaximum(1.1*max);
+      h[p]->GetYaxis()->SetTitle("normalized to 1");
+      h[p]->Draw(); 
+    }else{
+      h[p]->Draw("sames");
+    }
+
+    lgd->AddEntry( h[p], (mergeZZBkgd&&p==5)?"qqtoZZ":pn.c_str(), "l" );
   }
 
   lgd->Draw();
@@ -259,7 +341,7 @@ void DrawMatchAllLeps(TCanvas* c, TH1F* h, TH1F** hMatch, string title, Color_t*
   }
   
   TLegend* lgd = new TLegend(0.73,0.50,0.98,0.82);
-  lgd->SetFillColor(0);
+  lgd->SetFillStyle(0);
   for(int m=0; m<nMatchAllLepsStatuses; m++){
     lgd->AddEntry(hStacks[m],matchAllLepsKeys[m].c_str(),"f");
   }
@@ -269,7 +351,7 @@ void DrawMatchAllLeps(TCanvas* c, TH1F* h, TH1F** hMatch, string title, Color_t*
 
 }
 
-void DrawMatchCustom(TCanvas* c, TH1F* h, TH1F** hMatch, string title, Color_t* color, string* matchWHKeys, Int_t nStatuses, Float_t legLeft, Float_t legBottom, Bool_t logY = false) {
+void DrawMatchCustom(TCanvas* c, TH1F* h, TH1F** hMatch, string title, Color_t* color, string* matchKeys, Int_t nStatuses, Float_t legLeft, Float_t legBottom, Bool_t logY = false) {
 
   gStyle->SetOptTitle(1);
 
@@ -287,6 +369,7 @@ void DrawMatchCustom(TCanvas* c, TH1F* h, TH1F** hMatch, string title, Color_t* 
   Float_t denom = h->Integral();
   string percentages[nStatuses];
   for(int m=0; m<nStatuses; m++){
+    if(excludeH2l2X && matchKeys[m].find("2l2X")!=string::npos) continue;
     percentages[m] = percentage(hMatch[m]->Integral()/denom);
   }
 
@@ -307,7 +390,8 @@ void DrawMatchCustom(TCanvas* c, TH1F* h, TH1F** hMatch, string title, Color_t* 
   lgd->SetFillStyle(0);
   lgd->SetBorderSize(0);
   for(int m=0; m<nStatuses; m++){
-    lgd->AddEntry(hStacks[m],matchWHKeys[m].c_str(),"f");
+    if(excludeH2l2X && matchKeys[m].find("2l2X")!=string::npos) continue;
+    lgd->AddEntry(hStacks[m],matchKeys[m].c_str(),"f");
   }
   lgd->Draw();
   
@@ -316,6 +400,7 @@ void DrawMatchCustom(TCanvas* c, TH1F* h, TH1F** hMatch, string title, Color_t* 
   pav->SetBorderSize(0);
   pav->SetTextColor(0);
   for(int m=0; m<nStatuses; m++){
+    if(excludeH2l2X && matchKeys[m].find("2l2X")!=string::npos) continue;
     pav->AddText((percentages[m]+" %").c_str());
   }
   pav->Draw();
@@ -331,6 +416,169 @@ void Draw2D(TCanvas* c, TH2F* h, string title) {
   h->SetTitle(title.c_str());
   h->SetStats(0);
   h->Draw("COLZ"); 
+}
+
+void DrawBasketEfficiencies(TCanvas* c, TH1F* h1, string pn, TH1F** hAssocDecay, string* assocDecayName, string* basketLabel, Bool_t logY = false) {
+
+  bool without1stBin = true;
+
+  gStyle->SetOptTitle(1);
+  gStyle->SetTitleX(0.25);
+
+  c->cd();
+  if(logY) c->SetLogy();
+  //c->SetTicks(0,0);
+  c->SetLeftMargin(0.25);
+
+  bool doAssoc = (pn=="WH"||pn=="ZH"||pn=="ttH");
+  Int_t nDecays = pn=="WH" ? nAssocWDecays : pn=="ZH" ? nAssocZDecays : pn=="ttH" ? nAssocttDecays : 0;
+  Int_t startAt = pn=="WH" ? 0 : pn=="ZH" ? nAssocWDecays : pn=="ttH" ? nAssocWDecays+nAssocZDecays : 0;
+
+  TH1F* h = (TH1F*)h1->Clone();
+  if(doAssoc) h->SetLineColor(1);
+  if(doAssoc) h->SetFillColor(1);
+  h->SetTitle(pn.c_str()); 
+  h->SetStats(0);
+  //if(!logY) h->SetMinimum(0);
+  //h->GetXaxis()->SetRangeUser(1,nBaskets);
+  //h->Draw(); 
+  DrawHorizontal(h,basketLabel,false,508,without1stBin);
+
+  TH1F* hStacks[nDecays];
+  for(int a=0; a<nDecays; a++){
+    hStacks[a] = (TH1F*)hAssocDecay[startAt+a]->Clone();
+    if(a>0) hStacks[a]->Add(hStacks[a-1]);
+    hStacks[a]->SetStats(0);
+  }
+  for(int a=nDecays-1; a>=0; a--){
+    //hStacks[a]->Draw("same");
+    DrawHorizontal(hStacks[a],basketLabel,true,0,without1stBin);
+  }
+  
+  if(doAssoc){
+    TLegend* lgd = new TLegend(0.6,0.12,0.88,(pn=="WH"? 0.24 : pn=="ZH"? 0.3 : pn=="ttH"? 0.36 : 0.));
+    //lgd->SetFillColor(0);
+    lgd->SetFillStyle(0);
+    lgd->SetBorderSize(0);
+    for(int a=0; a<nDecays; a++){
+      lgd->AddEntry(hStacks[a],assocDecayName[startAt+a].c_str(),"f");
+    }
+    lgd->Draw();
+  }
+
+  gPad->RedrawAxis();
+
+}
+
+vector<TH1F*> StackForPurity(vector<TH1F*> histos) {
+
+  vector<TH1F*> result;
+
+  int n = histos.size();
+  for(int i=0; i<n; i++){
+    TH1F* hTemp = (TH1F*)histos[i]->Clone();
+    if(i>0) hTemp->Add(result[i-1]);
+    result.push_back(hTemp);
+  }
+
+  int nBins = histos[0]->GetNbinsX();
+  for(int b=1; b<=nBins; b++){
+    Float_t norm = result[n-1]->GetBinContent(b);
+    for(int i=0; i<n; i++){
+      result[i]->SetBinContent(b,result[i]->GetBinContent(b)/norm);
+    }
+  }
+
+  return result;
+}
+
+void DrawBasketPurities(TCanvas* c, TH1F** h, string* prodName, TH1F** hAssocDecay, string* assocDecayName, Bool_t withAssocDecays, Bool_t H2l2XAsBkgd, string* basketLabel) {
+
+  gStyle->SetOptTitle(0);
+  //gStyle->SetFrameLineWidth(2);
+
+  c->cd();
+  c->SetLeftMargin(0.15);
+  c->SetRightMargin(0.35);
+
+  vector<TH1F*> histos;
+  
+  TLegend* lgd = new TLegend(0.67,withAssocDecays?(H2l2XAsBkgd?0.45:0.35):0.65,0.95,0.9);
+  lgd->SetFillColor(0);
+  lgd->SetBorderSize(0);
+  
+  TPaveText* pavNExp = new TPaveText(0.15,0.1,0.4,0.9,"brNDC");
+  pavNExp->SetFillStyle(0);
+  pavNExp->SetBorderSize(0);
+  pavNExp->SetTextColor(0);
+  TH1F* hNExpectedEvts = (TH1F*)h[0]->Clone();
+
+  for(int p=0; p<nHiggsSamples; p++){
+    string pn = prodName[p];
+    bool doAssoc = (pn=="WH"||pn=="ZH"||pn=="ttH");
+    Int_t nDecays = pn=="WH" ? nAssocWDecays : pn=="ZH" ? nAssocZDecays : pn=="ttH" ? nAssocttDecays : 0;
+    Int_t startAt = pn=="WH" ? 0 : pn=="ZH" ? nAssocWDecays : pn=="ttH" ? nAssocWDecays+nAssocZDecays : 0;
+
+    TH1F* hTemp = (TH1F*)h[p]->Clone();
+    if(H2l2XAsBkgd){
+      if(pn=="ZH") hTemp->Add(hAssocDecay[nAssocWDecays+nAssocZDecays-1],-1);
+      if(pn=="ttH") hTemp->Add(hAssocDecay[nAssocWDecays+nAssocZDecays+nAssocttDecays-1],-1);
+    }
+
+    if(withAssocDecays && doAssoc){
+      for(int a=0; a<nDecays; a++){
+	bool isH2l2X = ((pn=="ZH"||pn=="ttH") && a==nDecays-1); 
+	if(!(H2l2XAsBkgd && isH2l2X)){
+	  histos.push_back(hAssocDecay[startAt+a]);
+	  lgd->AddEntry(hAssocDecay[startAt+a],assocDecayName[startAt+a].c_str(),"f");
+	}
+      }
+    }else{
+      histos.push_back(hTemp);
+      lgd->AddEntry(hTemp,pn.c_str(),"f");
+    }
+
+    if(p!=0) hNExpectedEvts->Add(hTemp);
+  }
+
+  vector<TH1F*> stackedHistos = StackForPurity(histos); 
+  int n = stackedHistos.size();
+  for(int i=0; i<n; i++){
+    stackedHistos[n-1-i]->SetStats(0);
+    if(i==0){
+      stackedHistos[n-1-i]->GetYaxis()->SetRangeUser(0.,1.);
+      stackedHistos[n-1-i]->GetYaxis()->SetTitle("signal fraction");
+      //stackedHistos[n-1-i]->Draw(); 
+      DrawHorizontal(stackedHistos[n-1-i],basketLabel,false,-210);
+    }else{
+      //stackedHistos[n-1-i]->Draw("same");
+      DrawHorizontal(stackedHistos[n-1-i],basketLabel,true,0);
+    }
+  }
+
+  lgd->Draw();
+
+  for(int b=1; b<=hNExpectedEvts->GetNbinsX(); b++){
+    pavNExp->AddText(Form("%.2f exp. events in %.0f fb^{-1}",hNExpectedEvts->GetBinContent(b),LUMI));
+  }
+  pavNExp->Draw();
+  
+  gPad->RedrawAxis();
+
+}
+
+void DrawBasketSOSPB(TCanvas* c, TH1F* h, string* basketLabel) {
+
+  gStyle->SetOptTitle(0);
+
+  c->cd();
+  c->SetLeftMargin(0.25);
+
+  h->SetFillColor(kBlue+2);
+  h->GetYaxis()->SetRangeUser(0.,1.);
+  h->GetYaxis()->SetTitle("S/(S+B)");
+  DrawHorizontal(h,basketLabel,false,-210);
+
 }
 
 
@@ -372,7 +620,9 @@ void plotProductionModeComparison(
     "WH",
     "ZH",
     "ttH",
-    "qqtoZZ",
+    "ZZ4mu",
+    "ZZ4e",
+    "ZZ2e2mu",
   };
   Bool_t isPresent[nSamples] = {
     file_ggH != "",
@@ -380,10 +630,14 @@ void plotProductionModeComparison(
     file_WH  != "",
     file_ZH  != "",
     file_ttH != "",
-    file_ZZ4mu != "" && file_ZZ4e != "" && file_ZZ2e2mu != "",
+    file_ZZ4mu   != "", 
+    file_ZZ4e    != "",
+    file_ZZ2e2mu != "",
   };
+  Bool_t allSignalsArePresent = (file_ggH!="" && file_VBF!="" && file_WH!="" && file_ZH!="" && file_ttH!="");
+  Bool_t allZZBkgdsArePresent = (file_ZZ4mu!="" && file_ZZ4e!="" && file_ZZ2e2mu!="");
+  Color_t colors[nSamples] = { kBlue, kGreen+2, kRed, kOrange+1, kMagenta, kRed+4, kRed+3, kRed-2 };
 
-  Color_t colors[nSamples] = {kBlue, kGreen+2, kRed, kOrange+1, kMagenta+1, kRed-1};
   Color_t allColorsMP[nMatchHLepsStatuses][nHiggsSamples] = {
     { kBlue+2 , kGreen+3, kRed+2 , kOrange+4, kMagenta+2  },
     { kBlue-4 , kGreen+2, kRed-4 , kOrange+9, kMagenta    },
@@ -408,24 +662,98 @@ void plotProductionModeComparison(
     }
   }
 
-  string categories[nCategories] = {
+  string channels[nChannels] = {
     "4mu",
     "4e",
     "2e2mu",
     "4mu + 4e + 2e2mu",
   };
-  string categoriesShort[nCategories] = {
+  string channelsShort[nChannels] = {
     "4mu",
     "4e",
     "2e2mu",
-    "Sumcat",
+    "Sumchans",
   };
-  string subdir[nCategories] = {
+  string subdir[nChannels] = {
     "ZZ4muTree",
     "ZZ4eTree",
     "ZZ2e2muTree",
     "",
   };
+
+  string assocDecayName[nAssocDecays] = {
+    "H#rightarrowZZ#rightarrow4l, W#rightarrowX",
+    "H#rightarrowZZ#rightarrow4l, W#rightarrowl#nu",
+    "H#rightarrowZZ#rightarrow4l, Z#rightarrowX",
+    "H#rightarrowZZ#rightarrow4l, Z#rightarrow2l",
+    "H#rightarrowZZ#rightarrow2l2X, Z#rightarrow2l",
+    "H#rightarrowZZ#rightarrow4l, t#bar{t}#rightarrow0l+X",
+    "H#rightarrowZZ#rightarrow4l, t#bar{t}#rightarrow1l+X",
+    "H#rightarrowZZ#rightarrow4l, t#bar{t}#rightarrow2l+X",
+    "H#rightarrowZZ#rightarrow2l2X, t#bar{t}#rightarrow2l+X",
+  };
+  string assocDecayName2[nAssocDecays] = {
+    "WH, H#rightarrow4l, W#rightarrowX",
+    "WH, H#rightarrow4l, W#rightarrowl#nu",
+    "ZH, H#rightarrow4l, Z#rightarrowX",
+    "ZH, H#rightarrow4l, Z#rightarrow2l",
+    "ZH, H#rightarrow2l2X, Z#rightarrow2l",
+    "ttH, H#rightarrow4l, t#bar{t}#rightarrow0l+X",
+    "ttH, H#rightarrow4l, t#bar{t}#rightarrow1l+X",
+    "ttH, H#rightarrow4l, t#bar{t}#rightarrow2l+X",
+    "ttH, H#rightarrow2l2X, t#bar{t}#rightarrow2l+X",
+  };
+  string assocDecayName3[nAssocDecays] = {
+    "WH, W#rightarrowX",
+    "WH, W#rightarrowl#nu",
+    "ZH, Z#rightarrowX",
+    "ZH, Z#rightarrow2l",
+    "ERROR",
+    "ttH, t#bar{t}#rightarrow0l+X",
+    "ttH, t#bar{t}#rightarrow1l+X",
+    "ttH, t#bar{t}#rightarrow2l+X",
+    "ERROR",
+  };
+  Color_t assocDecayColor[nAssocDecays] = {
+    kRed,
+    kRed+1,
+    kOrange+1, 
+    kOrange+7,
+    kOrange-8,
+    kMagenta, 
+    kMagenta+1, 
+    kMagenta+2, 
+    kMagenta-8,
+  };
+
+  string nbZDaughtersFromH[4] = { "2", "1", "0", "ambig." };
+  string WHdecays[nAssocWDecays] = {
+    "H->ZZ->4l, W->X     ",
+    "H->ZZ->4l, W->lnu   ",
+  };
+  Int_t nbTotalWH[nAssocWDecays] = {0,0};
+  Int_t nbAll4LepRightWH[nAssocWDecays] = {0,0};
+  Int_t nbZ1DaughtersFromHWH[nAssocWDecays][4]; for(int i=0; i<nAssocWDecays; i++) for(int j=0; j<4; j++) nbZ1DaughtersFromHWH[i][j] = 0;
+  Int_t nbZ2DaughtersFromHWH[nAssocWDecays][4]; for(int i=0; i<nAssocWDecays; i++) for(int j=0; j<4; j++) nbZ2DaughtersFromHWH[i][j] = 0;
+  string ZHdecays[nAssocZDecays] = {
+    "H->ZZ->4l, Z->X     ",
+    "H->ZZ->4l, Z->2l    ",
+    "H->ZZ->2l2X, Z->2l  ",
+  };
+  Int_t nbTotalZH[nAssocZDecays] = {0,0,0};
+  Int_t nbAll4LepRightZH[nAssocZDecays] = {0,0,0};
+  Int_t nbZ1DaughtersFromHZH[nAssocZDecays][4]; for(int i=0; i<nAssocZDecays; i++) for(int j=0; j<4; j++) nbZ1DaughtersFromHZH[i][j] = 0;
+  Int_t nbZ2DaughtersFromHZH[nAssocZDecays][4]; for(int i=0; i<nAssocZDecays; i++) for(int j=0; j<4; j++) nbZ2DaughtersFromHZH[i][j] = 0;
+  string ttHdecays[nAssocttDecays] = {
+    "H->ZZ->4l, tt->X    ",
+    "H->ZZ->4l, tt->lX   ",
+    "H->ZZ->4l, tt->2lX  ",
+    "H->ZZ->2l2X, tt->2lX",
+  };
+  Int_t nbTotalttH[nAssocttDecays] = {0,0,0,0};
+  Int_t nbAll4LepRightttH[nAssocttDecays] = {0,0,0,0};
+  Int_t nbZ1DaughtersFromHttH[nAssocttDecays][4]; for(int i=0; i<nAssocttDecays; i++) for(int j=0; j<4; j++) nbZ1DaughtersFromHttH[i][j] = 0;
+  Int_t nbZ2DaughtersFromHttH[nAssocttDecays][4]; for(int i=0; i<nAssocttDecays; i++) for(int j=0; j<4; j++) nbZ2DaughtersFromHttH[i][j] = 0;
 
   string varName[nVariables] = {
     "M4l",
@@ -434,6 +762,20 @@ void plotProductionModeComparison(
     "KD",
     "Djet",
     "Pt4l",
+    "NGenLep",
+    "NGenLepInAcc",
+    "NGenLepNotInAcc",
+    "NGenHLepNotInAcc",
+    "NGenAssocLepNotInAcc",
+    "NGenLepMinusNGoodLep",
+    "NGenLepInAccMinusNGoodLep",
+    "NExtraLep",
+    "NExtraZ",
+    "NJets",
+  };
+  Bool_t plotThisVar[2][nVariables] = {
+    {1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,},
+    {0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,},
   };
   string varLabel[nVariables] = {
     "m_{4l} (GeV)",
@@ -442,10 +784,94 @@ void plotProductionModeComparison(
     "D_{bkg}^{kin}",
     "D_{jet}",
     "p_{T}^{4l} (GeV)",
+    "# gen leptons",
+    "# gen leptons in acceptance",
+    "# gen leptons not in acceptance",
+    "# gen leptons from H not in acceptance",
+    "# gen associated leptons not in acceptance",
+    "# gen leptons - # good leptons",
+    "# gen leptons in acceptance - # good leptons",
+    "# extra leptons",
+    "# extra Z candidates",
+    "# jets",
   };
-  Int_t varNbin[nVariables]  = { 100,  75,  75,  50,  50,  50 };
-  Float_t varMin[nVariables] = {  50,   0,   0,   0,   0,   0 };
-  Float_t varMax[nVariables] = { 850, 150, 150,   1,   2, 500 };
+  Int_t varNbin[nVariables] = { 
+    100,  
+    75,  
+    75,  
+    50,  
+    50,  
+    50,
+    7,
+    7,
+    7,
+    5,
+    3,
+    6,
+    6,
+    6,
+    6,
+    15,
+  };
+  Float_t varMin[nVariables] = {  
+    50,  
+    0,   
+    0,   
+    0,   
+    0,   
+    0,  
+    0,   
+    0, 
+    0,
+    0,   
+    0,
+    -3,
+    -3, 
+    0,
+    0,
+    0,
+  };
+  Float_t varMax[nVariables] = { 
+    850, 
+    150, 
+    150,   
+    1,   
+    2, 
+    500,
+    7,
+    7,
+    7,
+    5,
+    3,
+    3,
+    3,
+    6,
+    6,
+    15,
+  };
+
+  string basketLabel[nBaskets+1] = {
+    "all",
+    "#splitline{0/1 jet}{4 leptons}",
+    //"#splitline{0/1 jet, 5 leptons}{E_{T}^{miss}>45, p_{T}^{l5}>20}",
+    "#splitline{0/1 jet, 5 leptons}{E_{T}^{miss}>45}",
+    "#splitline{0/1 jet, 5 leptons}{(else)}",
+    "#splitline{0/1 jet}{#geq6 leptons}",
+    "#splitline{#geq2 jets, 4 leptons}{D_{jet}>0.5}",
+    "#splitline{#geq2 jets, 4 leptons}{(else)}",
+    "#splitline{#geq2 jets}{5 leptons}",
+    "#splitline{#geq2 jets}{#geq6 leptons}",
+  };
+
+//   string basketLabel[nBaskets+1] = {
+//     "all",
+//     "0/1 jet, 0 extra lepton",
+//     "0/1 jet, 1 extra lepton",
+//     "0/1 jet, #geq2 extra leptons",
+//     "#geq2 jets, 0 extra lepton",
+//     "#geq2 jets, 1 extra lepton",
+//     "#geq2 jets, #geq2 extra leptons",
+//   };
 
   const Int_t n2DHist = 2;
   Int_t varXindex[n2DHist] = { 0, 2 };
@@ -542,27 +968,59 @@ void plotProductionModeComparison(
     kGray+1,
   };
 
-  TChain* chain[nSamples][nCategories];
+  TChain* chain[nSamples][nChannels];
   for(int p=0; p<nSamples; p++){
     if(!isPresent[p]) continue;
-    for(int c=0; c<nCategories-1; c++){
+    for(int c=0; c<nChannels-1; c++){
       chain[p][c] = new TChain(Form("%s/candTree",subdir[c].c_str()));
       if(prodName[p]=="ggH") chain[p][c]->Add(file_ggH.c_str());
       if(prodName[p]=="VBF") chain[p][c]->Add(file_VBF.c_str());
       if(prodName[p]=="WH" ) chain[p][c]->Add(file_WH .c_str());
       if(prodName[p]=="ZH" ) chain[p][c]->Add(file_ZH .c_str());
       if(prodName[p]=="ttH") chain[p][c]->Add(file_ttH.c_str());
-      if(prodName[p]=="qqtoZZ"){
-	chain[p][c]->Add(file_ZZ4mu.c_str());
-	chain[p][c]->Add(file_ZZ4e.c_str());
-	chain[p][c]->Add(file_ZZ2e2mu.c_str());
-      }
+      if(prodName[p]=="ZZ4mu"  ) chain[p][c]->Add(file_ZZ4mu.c_str());
+      if(prodName[p]=="ZZ4e"   ) chain[p][c]->Add(file_ZZ4e.c_str());
+      if(prodName[p]=="ZZ2e2mu") chain[p][c]->Add(file_ZZ2e2mu.c_str());
     }
+  }
+  Long64_t NGenEvt[nSamples];
+  for(int p=0; p<nSamples; p++){
+    if(!isPresent[p]) continue;
+    TFile* fTemp = 0;
+    if(prodName[p]=="ggH") fTemp = TFile::Open(file_ggH.c_str());
+    if(prodName[p]=="VBF") fTemp = TFile::Open(file_VBF.c_str());
+    if(prodName[p]=="WH" ) fTemp = TFile::Open(file_WH .c_str());
+    if(prodName[p]=="ZH" ) fTemp = TFile::Open(file_ZH .c_str());
+    if(prodName[p]=="ttH") fTemp = TFile::Open(file_ttH.c_str());
+    if(prodName[p]=="ZZ4mu"  ) fTemp = TFile::Open(file_ZZ4mu  .c_str());
+    if(prodName[p]=="ZZ4e"   ) fTemp = TFile::Open(file_ZZ4e   .c_str());
+    if(prodName[p]=="ZZ2e2mu") fTemp = TFile::Open(file_ZZ2e2mu.c_str());
+    TH1F* hCounters = (TH1F*)fTemp->Get("ZZ4muTree/Counters");
+    NGenEvt[p] = (Long64_t)hCounters->GetBinContent(1);
+    cout<<"Number of generated events for "+prodName[p]+" is "<<NGenEvt[p]<<endl;
+  }
+  cout<<endl;
+
+  Float_t xSec[nSamples] = { // X-sec (pb) * BR
+    0.0053185200 ,
+    0.0004355280 ,
+    0.0186014400 * 0.010384 ,
+    0.0109639200 * 0.028544 ,
+    0.0034135200 * 0.029658 ,
+    0.07691 ,
+    0.07691 ,
+    0.1767 ,
+  };
+  Float_t weights[nSamples];
+  for(int p=0; p<nSamples; p++){
+    if(!isPresent[p]) continue;
+    weights[p] = LUMI * 1000 * xSec[p] / NGenEvt[p] ;
   }
 
   Int_t nRun;
   Long64_t nEvent;
   Int_t nLumi;
+  Float_t PFMET;
   Int_t iBC;
   Int_t Nvtx;
   Int_t NObsInt;
@@ -575,22 +1033,37 @@ void plotProductionModeComparison(
   vector<Float_t> *bkg_VAMCFM = 0;
   vector<Float_t> *Z1Mass = 0;
   vector<Float_t> *Z2Mass = 0;
-  vector<Float_t> *Lep1Pt = 0;
-  vector<Float_t> *Lep1Eta = 0;
-  vector<Float_t> *Lep1Phi = 0;
-  vector<Int_t> *Lep1LepId = 0;
-  vector<Float_t> *Lep2Pt = 0;
-  vector<Float_t> *Lep2Eta = 0;
-  vector<Float_t> *Lep2Phi = 0;
-  vector<Int_t> *Lep2LepId = 0;
-  vector<Float_t> *Lep3Pt = 0;
-  vector<Float_t> *Lep3Eta = 0;
-  vector<Float_t> *Lep3Phi = 0;
-  vector<Int_t> *Lep3LepId = 0;
-  vector<Float_t> *Lep4Pt = 0;
-  vector<Float_t> *Lep4Eta = 0;
-  vector<Float_t> *Lep4Phi = 0;
-  vector<Int_t> *Lep4LepId = 0;
+  vector<Float_t> *CandLep1Pt = 0;
+  vector<Float_t> *CandLep1Eta = 0;
+  vector<Float_t> *CandLep1Phi = 0;
+  vector<Int_t> *CandLep1LepId = 0;
+  vector<Float_t> *CandLep2Pt = 0;
+  vector<Float_t> *CandLep2Eta = 0;
+  vector<Float_t> *CandLep2Phi = 0;
+  vector<Int_t> *CandLep2LepId = 0;
+  vector<Float_t> *CandLep3Pt = 0;
+  vector<Float_t> *CandLep3Eta = 0;
+  vector<Float_t> *CandLep3Phi = 0;
+  vector<Int_t> *CandLep3LepId = 0;
+  vector<Float_t> *CandLep4Pt = 0;
+  vector<Float_t> *CandLep4Eta = 0;
+  vector<Float_t> *CandLep4Phi = 0;
+  vector<Int_t> *CandLep4LepId = 0;
+  vector<Float_t> *ExtraLep1Pt = 0;
+  vector<Float_t> *ExtraLep1Eta = 0;
+  vector<Float_t> *ExtraLep1Phi = 0;
+  vector<Int_t> *ExtraLep1LepId = 0;
+  vector<Float_t> *ExtraLep2Pt = 0;
+  vector<Float_t> *ExtraLep2Eta = 0;
+  vector<Float_t> *ExtraLep2Phi = 0;
+  vector<Int_t> *ExtraLep2LepId = 0;
+  vector<Float_t> *ExtraLep3Pt = 0;
+  vector<Float_t> *ExtraLep3Eta = 0;
+  vector<Float_t> *ExtraLep3Phi = 0;
+  vector<Int_t> *ExtraLep3LepId = 0;
+  vector<Int_t> *nExtraLep = 0;
+  vector<Int_t> *nExtraZ = 0;
+  vector<Int_t> *nJets = 0;
   Float_t GenLep1Pt;
   Float_t GenLep1Eta;
   Float_t GenLep1Phi;
@@ -621,48 +1094,43 @@ void plotProductionModeComparison(
   map<string,vector<string> > overlapMapWithBCFullSel70[nSamples];
   map<string,vector<string> > overlapMapWithBCFullSel100[nSamples];
 
-  Int_t nbStored[nSamples][nCategories];
-  Int_t nbWithBC[nSamples][nCategories];
-  Int_t nbWithBCFullSel70[nSamples][nCategories];
-  Int_t nbWithBCFullSel100[nSamples][nCategories];
-  Int_t nbWithBCFullSel100MatchHLeps[nMatchHLepsStatuses][nSamples][nCategories];
-  Int_t nbWithBCFullSel100MatchAllLeps[nMatchAllLepsStatuses][nSamples][nCategories];
-  Int_t nbWithBCFullSel100MatchWH[nMatchWHStatuses][nCategories];
-  Int_t nbWithBCFullSel100MatchZH[nMatchZHStatuses][nCategories];
-  Int_t nbWithBCFullSel100MatchttH[nMatchttHStatuses][nCategories];
+  Int_t nbStored[nSamples][nChannels];
+  Int_t nbWithBC[nSamples][nChannels];
+  Int_t nbWithBCFullSel70[nSamples][nChannels];
+  Int_t nbWithBCFullSel100[nSamples][nChannels];
+  Int_t nbWithBCFullSel100MatchHLeps[nMatchHLepsStatuses][nSamples][nChannels];
+  Int_t nbWithBCFullSel100MatchAllLeps[nMatchAllLepsStatuses][nSamples][nChannels];
+  Int_t nbWithBCFullSel100MatchWH[nMatchWHStatuses][nChannels];
+  Int_t nbWithBCFullSel100MatchZH[nMatchZHStatuses][nChannels];
+  Int_t nbWithBCFullSel100MatchttH[nMatchttHStatuses][nChannels];
 
-  TH1F* hBCFullSel100[nVariables][nSamples][nCategories];
-  TH1F* hBCFullSel100MatchHLeps[nVariables][nMatchHLepsStatuses][nSamples][nCategories];
-  TH1F* hBCFullSel100MatchAllLeps[nVariables][nMatchAllLepsStatuses][nSamples][nCategories];
-  TH1F* hBCFullSel100MatchWH[nVariables][nMatchWHStatuses][nCategories];
-  TH1F* hBCFullSel100MatchZH[nVariables][nMatchZHStatuses][nCategories];
-  TH1F* hBCFullSel100MatchttH[nVariables][nMatchttHStatuses][nCategories];
+  TH1F* hBCFullSel100[nVariables][nSamples][nChannels];
+  TH1F* hBCFullSel100MatchHLeps[nVariables][nMatchHLepsStatuses][nSamples][nChannels];
+  TH1F* hBCFullSel100MatchAllLeps[nVariables][nMatchAllLepsStatuses][nSamples][nChannels];
+  TH1F* hBCFullSel100MatchWH[nVariables][nMatchWHStatuses][nChannels];
+  TH1F* hBCFullSel100MatchZH[nVariables][nMatchZHStatuses][nChannels];
+  TH1F* hBCFullSel100MatchttH[nVariables][nMatchttHStatuses][nChannels];
 
-  TH2F* h2DBCFullSel100[n2DHist][nSamples][nCategories];
-  TH2F* h2DBCFullSel100Decays[n2DHist][nSamples][nDecays][nCategories];
+  TH2F* h2DBCFullSel100[n2DHist][nSamples][nChannels];
+  TH2F* h2DBCFullSel100Decays[n2DHist][nSamples][nDecays][nChannels];
 
-  string nbZDaughtersFromH[4] = { "2", "1", "0", "ambig." };
-  string WHdecays[2] = {
-    "H->ZZ->4l, W->X     ",
-    "H->ZZ->4l, W->lnu   ",
-  };
-  Int_t nbZ1DaughtersFromHWH[2][4]; for(int i=0; i<2; i++) for(int j=0; j<4; j++) nbZ1DaughtersFromHWH[i][j] = 0;
-  Int_t nbZ2DaughtersFromHWH[2][4]; for(int i=0; i<2; i++) for(int j=0; j<4; j++) nbZ2DaughtersFromHWH[i][j] = 0;
-  string ZHdecays[3] = {
-    "H->ZZ->4l, Z->X     ",
-    "H->ZZ->4l, Z->2l    ",
-    "H->ZZ->2l2X, Z->2l  ",
-  };
-  Int_t nbZ1DaughtersFromHZH[3][4]; for(int i=0; i<3; i++) for(int j=0; j<4; j++) nbZ1DaughtersFromHZH[i][j] = 0;
-  Int_t nbZ2DaughtersFromHZH[3][4]; for(int i=0; i<3; i++) for(int j=0; j<4; j++) nbZ2DaughtersFromHZH[i][j] = 0;
-  string ttHdecays[4] = {
-    "H->ZZ->4l, tt->X    ",
-    "H->ZZ->4l, tt->lX   ",
-    "H->ZZ->4l, tt->2lX  ",
-    "H->ZZ->2l2X, tt->2lX",
-  };
-  Int_t nbZ1DaughtersFromHttH[4][4]; for(int i=0; i<4; i++) for(int j=0; j<4; j++) nbZ1DaughtersFromHttH[i][j] = 0;
-  Int_t nbZ2DaughtersFromHttH[4][4]; for(int i=0; i<4; i++) for(int j=0; j<4; j++) nbZ2DaughtersFromHttH[i][j] = 0;
+  TH1F* hBCFullSel100Baskets[nSamples][nChannels];
+  TH1F* hBCFullSel100BasketsAssocDecays[nAssocDecays][nChannels];
+  TH1F* hBCFullSel100MasswindowBaskets[nSamples][nChannels];
+  TH1F* hBCFullSel100MasswindowBasketsAssocDecays[nAssocDecays][nChannels];
+
+  for(int a=0; a<nAssocDecays; a++){
+    for(int c=0; c<nChannels; c++){
+      hBCFullSel100BasketsAssocDecays[a][c] = new TH1F(Form("hBCFullSel100_baskets_assocDecays_%i_%s",a,channelsShort[c].c_str()),Form(";;# exp. events in %.0f fb^{-1}",LUMI),nBaskets+1,0,nBaskets+1);
+      prepareBasketlabels(hBCFullSel100BasketsAssocDecays[a][c], basketLabel);
+      hBCFullSel100BasketsAssocDecays[a][c]->SetLineColor(assocDecayColor[a]);
+      hBCFullSel100BasketsAssocDecays[a][c]->SetFillColor(assocDecayColor[a]);
+      hBCFullSel100MasswindowBasketsAssocDecays[a][c] = new TH1F(Form("hBCFullSel100Masswindow_baskets_assocDecays_%i_%s",a,channelsShort[c].c_str()),Form(";;# exp. events in %.0f fb^{-1}",LUMI),nBaskets+1,0,nBaskets+1);
+      prepareBasketlabels(hBCFullSel100MasswindowBasketsAssocDecays[a][c], basketLabel);
+      hBCFullSel100MasswindowBasketsAssocDecays[a][c]->SetLineColor(assocDecayColor[a]);
+      hBCFullSel100MasswindowBasketsAssocDecays[a][c]->SetFillColor(assocDecayColor[a]);
+    }
+  }
 
 
 
@@ -675,10 +1143,10 @@ void plotProductionModeComparison(
 
     cout<<prodName[p]<<endl;
 
-    for(int c=0; c<nCategories; c++){
+    for(int c=0; c<nChannels; c++){
       
-      string suffix = "_"+prodName[p]+"_"+categoriesShort[c];
-      string title = prodName[p]+", category "+categories[c];
+      string suffix = "_"+prodName[p]+"_"+channelsShort[c];
+      string title = prodName[p]+", channel "+channels[c];
 
       nbStored[p][c] = 0;
       nbWithBC[p][c] = 0;
@@ -691,20 +1159,21 @@ void plotProductionModeComparison(
       if(prodName[p]=="ttH") for(int m=0; m<nMatchttHStatuses; m++) nbWithBCFullSel100MatchttH[m][c] = 0;
 
       for(int v=0; v<nVariables; v++){
-	hBCFullSel100[v][p][c] = new TH1F(("hBCFullSel100_"+varName[v]+suffix).c_str(),(title+";"+varLabel[v]+";entries").c_str(),varNbin[v],varMin[v],varMax[v]);
+	if(!plotThisVar[VARIABLELIST][v]) continue;
+	hBCFullSel100[v][p][c] = new TH1F(("hBCFullSel100_"+varName[v]+suffix).c_str(),Form("%s;%s;# exp. events in %.0f fb^{-1}",title.c_str(),varLabel[v].c_str(),LUMI),varNbin[v],varMin[v],varMax[v]);
 	for(int m=0; m<nMatchHLepsStatuses; m++)
-	  hBCFullSel100MatchHLeps[v][m][p][c] = new TH1F(("hBCFullSel100MatchHLeps_"+varName[v]+"_"+matchHLepsInfix[m]+suffix).c_str(),(title+";"+varLabel[v]+";entries").c_str(),varNbin[v],varMin[v],varMax[v]);
+	  hBCFullSel100MatchHLeps[v][m][p][c] = new TH1F(("hBCFullSel100MatchHLeps_"+varName[v]+"_"+matchHLepsInfix[m]+suffix).c_str(),Form("%s;%s;# exp. events in %.0f fb^{-1}",title.c_str(),varLabel[v].c_str(),LUMI),varNbin[v],varMin[v],varMax[v]);
 	for(int m=0; m<nMatchAllLepsStatuses; m++)
-	  hBCFullSel100MatchAllLeps[v][m][p][c] = new TH1F(("hBCFullSel100MatchAllLeps_"+varName[v]+"_"+matchAllLepsInfix[m]+suffix).c_str(),(title+";"+varLabel[v]+";entries").c_str(),varNbin[v],varMin[v],varMax[v]);
+	  hBCFullSel100MatchAllLeps[v][m][p][c] = new TH1F(("hBCFullSel100MatchAllLeps_"+varName[v]+"_"+matchAllLepsInfix[m]+suffix).c_str(),Form("%s;%s;# exp. events in %.0f fb^{-1}",title.c_str(),varLabel[v].c_str(),LUMI),varNbin[v],varMin[v],varMax[v]);
 	if(prodName[p]=="WH")
 	  for(int m=0; m<nMatchWHStatuses; m++)
-	    hBCFullSel100MatchWH[v][m][c] = new TH1F(Form("hBCFullSel100MatchWH_%s_%i_%s",varName[v].c_str(),m,categoriesShort[c].c_str()),(title+";"+varLabel[v]+";entries").c_str(),varNbin[v],varMin[v],varMax[v]);
+	    hBCFullSel100MatchWH[v][m][c] = new TH1F(Form("hBCFullSel100MatchWH_%s_%i_%s",varName[v].c_str(),m,channelsShort[c].c_str()),Form("%s;%s;# exp. events in %.0f fb^{-1}",title.c_str(),varLabel[v].c_str(),LUMI),varNbin[v],varMin[v],varMax[v]);
 	if(prodName[p]=="ZH")
 	  for(int m=0; m<nMatchZHStatuses; m++)
-	    hBCFullSel100MatchZH[v][m][c] = new TH1F(Form("hBCFullSel100MatchZH_%s_%i_%s",varName[v].c_str(),m,categoriesShort[c].c_str()),(title+";"+varLabel[v]+";entries").c_str(),varNbin[v],varMin[v],varMax[v]);
+	    hBCFullSel100MatchZH[v][m][c] = new TH1F(Form("hBCFullSel100MatchZH_%s_%i_%s",varName[v].c_str(),m,channelsShort[c].c_str()),Form("%s;%s;# exp. events in %.0f fb^{-1}",title.c_str(),varLabel[v].c_str(),LUMI),varNbin[v],varMin[v],varMax[v]);
 	if(prodName[p]=="ttH")
 	  for(int m=0; m<nMatchttHStatuses; m++)
-	    hBCFullSel100MatchttH[v][m][c] = new TH1F(Form("hBCFullSel100MatchttH_%s_%i_%s",varName[v].c_str(),m,categoriesShort[c].c_str()),(title+";"+varLabel[v]+";entries").c_str(),varNbin[v],varMin[v],varMax[v]);
+	    hBCFullSel100MatchttH[v][m][c] = new TH1F(Form("hBCFullSel100MatchttH_%s_%i_%s",varName[v].c_str(),m,channelsShort[c].c_str()),Form("%s;%s;# exp. events in %.0f fb^{-1}",title.c_str(),varLabel[v].c_str(),LUMI),varNbin[v],varMin[v],varMax[v]);
       }
 
       for(int v2=0; v2<n2DHist; v2++){
@@ -713,14 +1182,24 @@ void plotProductionModeComparison(
 	  h2DBCFullSel100Decays[v2][p][d][c] = new TH2F(("h2DBCFullSel100_"+decayInfix[d]+"_"+varName[varXindex[v2]]+"_"+varName[varYindex[v2]]+suffix).c_str(),(title+";"+varLabel[varXindex[v2]]+";"+varLabel[varYindex[v2]]).c_str(),varNbin[varXindex[v2]],varMin[varXindex[v2]],varMax[varXindex[v2]],varNbin[varYindex[v2]],varMin[varYindex[v2]],varMax[varYindex[v2]]);
 	}
       }
-
+      
+      hBCFullSel100Baskets[p][c] = new TH1F(("hBCFullSel100_baskets_"+suffix).c_str(),Form("%s;;# exp. events in %.0f fb^{-1}",title.c_str(),LUMI),nBaskets+1,0,nBaskets+1);
+      prepareBasketlabels(hBCFullSel100Baskets[p][c], basketLabel);
+      hBCFullSel100Baskets[p][c]->SetLineColor(colors[p]);
+      hBCFullSel100Baskets[p][c]->SetFillColor(colors[p]);
+      hBCFullSel100MasswindowBaskets[p][c] = new TH1F(("hBCFullSel100Masswindow_baskets_"+suffix).c_str(),Form("%s;;# exp. events in %.0f fb^{-1}",title.c_str(),LUMI),nBaskets+1,0,nBaskets+1);
+      prepareBasketlabels(hBCFullSel100MasswindowBaskets[p][c], basketLabel);
+      hBCFullSel100MasswindowBaskets[p][c]->SetLineColor(colors[p]);
+      hBCFullSel100MasswindowBaskets[p][c]->SetFillColor(colors[p]);
+      
     }
 
-    for(int c=0; c<nCategories-1; c++){
+    for(int c=0; c<nChannels-1; c++){
 
       chain[p][c]->SetBranchAddress("RunNumber", &nRun);
       chain[p][c]->SetBranchAddress("EventNumber", &nEvent);
       chain[p][c]->SetBranchAddress("LumiNumber", &nLumi);
+      chain[p][c]->SetBranchAddress("PFMET", &PFMET);
       chain[p][c]->SetBranchAddress("iBC", &iBC);
       chain[p][c]->SetBranchAddress("Nvtx", &Nvtx);
       chain[p][c]->SetBranchAddress("NObsInt", &NObsInt);
@@ -733,22 +1212,39 @@ void plotProductionModeComparison(
       chain[p][c]->SetBranchAddress("bkg_VAMCFM", &bkg_VAMCFM);
       chain[p][c]->SetBranchAddress("Z1Mass", &Z1Mass);
       chain[p][c]->SetBranchAddress("Z2Mass", &Z2Mass);
-      chain[p][c]->SetBranchAddress("Lep1Pt", &Lep1Pt);
-      chain[p][c]->SetBranchAddress("Lep1Eta", &Lep1Eta);
-      chain[p][c]->SetBranchAddress("Lep1Phi", &Lep1Phi);
-      chain[p][c]->SetBranchAddress("Lep1LepId", &Lep1LepId);
-      chain[p][c]->SetBranchAddress("Lep2Pt", &Lep2Pt);
-      chain[p][c]->SetBranchAddress("Lep2Eta", &Lep2Eta);
-      chain[p][c]->SetBranchAddress("Lep2Phi", &Lep2Phi);
-      chain[p][c]->SetBranchAddress("Lep2LepId", &Lep2LepId);
-      chain[p][c]->SetBranchAddress("Lep3Pt", &Lep3Pt);
-      chain[p][c]->SetBranchAddress("Lep3Eta", &Lep3Eta);
-      chain[p][c]->SetBranchAddress("Lep3Phi", &Lep3Phi);
-      chain[p][c]->SetBranchAddress("Lep3LepId", &Lep3LepId);
-      chain[p][c]->SetBranchAddress("Lep4Pt", &Lep4Pt);
-      chain[p][c]->SetBranchAddress("Lep4Eta", &Lep4Eta);
-      chain[p][c]->SetBranchAddress("Lep4Phi", &Lep4Phi);
-      chain[p][c]->SetBranchAddress("Lep4LepId", &Lep4LepId);
+      chain[p][c]->SetBranchAddress("Lep1Pt", &CandLep1Pt);
+      chain[p][c]->SetBranchAddress("Lep1Eta", &CandLep1Eta);
+      chain[p][c]->SetBranchAddress("Lep1Phi", &CandLep1Phi);
+      chain[p][c]->SetBranchAddress("Lep1LepId", &CandLep1LepId);
+      chain[p][c]->SetBranchAddress("Lep2Pt", &CandLep2Pt);
+      chain[p][c]->SetBranchAddress("Lep2Eta", &CandLep2Eta);
+      chain[p][c]->SetBranchAddress("Lep2Phi", &CandLep2Phi);
+      chain[p][c]->SetBranchAddress("Lep2LepId", &CandLep2LepId);
+      chain[p][c]->SetBranchAddress("Lep3Pt", &CandLep3Pt);
+      chain[p][c]->SetBranchAddress("Lep3Eta", &CandLep3Eta);
+      chain[p][c]->SetBranchAddress("Lep3Phi", &CandLep3Phi);
+      chain[p][c]->SetBranchAddress("Lep3LepId", &CandLep3LepId);
+      chain[p][c]->SetBranchAddress("Lep4Pt", &CandLep4Pt);
+      chain[p][c]->SetBranchAddress("Lep4Eta", &CandLep4Eta);
+      chain[p][c]->SetBranchAddress("Lep4Phi", &CandLep4Phi);
+      chain[p][c]->SetBranchAddress("Lep4LepId", &CandLep4LepId);
+      chain[p][c]->SetBranchAddress("ExtraLep1Pt", &ExtraLep1Pt);
+      chain[p][c]->SetBranchAddress("ExtraLep1Eta", &ExtraLep1Eta);
+      chain[p][c]->SetBranchAddress("ExtraLep1Phi", &ExtraLep1Phi);
+      chain[p][c]->SetBranchAddress("ExtraLep1LepId", &ExtraLep1LepId);
+      chain[p][c]->SetBranchAddress("ExtraLep2Pt", &ExtraLep2Pt);
+      chain[p][c]->SetBranchAddress("ExtraLep2Eta", &ExtraLep2Eta);
+      chain[p][c]->SetBranchAddress("ExtraLep2Phi", &ExtraLep2Phi);
+      chain[p][c]->SetBranchAddress("ExtraLep2LepId", &ExtraLep2LepId);
+      chain[p][c]->SetBranchAddress("ExtraLep3Pt", &ExtraLep3Pt);
+      chain[p][c]->SetBranchAddress("ExtraLep3Eta", &ExtraLep3Eta);
+      chain[p][c]->SetBranchAddress("ExtraLep3Phi", &ExtraLep3Phi);
+      chain[p][c]->SetBranchAddress("ExtraLep3LepId", &ExtraLep3LepId);
+      chain[p][c]->SetBranchAddress("nExtraLep", &nExtraLep);
+      chain[p][c]->SetBranchAddress("nExtraZ", &nExtraZ);
+      //chain[p][c]->SetBranchAddress("nJets", &nJets);
+      //chain[p][c]->SetBranchAddress("nCleanedJets", &nJets);
+      chain[p][c]->SetBranchAddress("nCleanedJetsPt30", &nJets);
       chain[p][c]->SetBranchAddress("GenLep1Pt", &GenLep1Pt);
       chain[p][c]->SetBranchAddress("GenLep1Eta", &GenLep1Eta);
       chain[p][c]->SetBranchAddress("GenLep1Phi", &GenLep1Phi);
@@ -780,38 +1276,75 @@ void plotProductionModeComparison(
 
 	if(DEBUG && z>1000) break;
 
-	printStatus(z,10000,entries,"entries");
+	printStatus(z,20000,entries,"entries");
 
 	chain[p][c]->GetEntry(z);
  
 	Int_t nGenHLep = 0;
+	Int_t nGenHLepInAcc = 0;
 	Int_t nGenAssocLep = 0;
-	Float_t GenHLepId[4] = {GenLep1Id,GenLep2Id,GenLep3Id,GenLep4Id};
-	Float_t GenAssocLepId[2] = {GenAssocLep1Id,GenAssocLep2Id};
-	for(Int_t iGen=0; iGen<4; iGen++){
-	  if(GenHLepId[iGen]!=0){
+	Int_t nGenAssocLepInAcc = 0;
+	Int_t   GenHLepId[4] = {GenLep1Id,GenLep2Id,GenLep3Id,GenLep4Id};
+	Float_t GenHLepPt[4] = {GenLep1Pt,GenLep2Pt,GenLep3Pt,GenLep4Pt};
+	Float_t GenHLepEta[4] = {GenLep1Eta,GenLep2Eta,GenLep3Eta,GenLep4Eta};
+	Float_t GenHLepPhi[4] = {GenLep1Phi,GenLep2Phi,GenLep3Phi,GenLep4Phi};
+	Bool_t  GenHLepIsInAcc[4];
+	Int_t   GenAssocLepId[2] = {GenAssocLep1Id,GenAssocLep2Id};
+	Float_t GenAssocLepPt[2] = {GenAssocLep1Pt,GenAssocLep2Pt};
+	Float_t GenAssocLepEta[2] = {GenAssocLep1Eta,GenAssocLep2Eta};
+	Float_t GenAssocLepPhi[2] = {GenAssocLep1Phi,GenAssocLep2Phi};
+	Bool_t  GenAssocLepIsInAcc[4];
+	for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++){
+	  if(GenHLepId[iGenHLep]!=0){
 	    nGenHLep++;
+	    GenHLepIsInAcc[iGenHLep] = (abs(GenHLepId[iGenHLep])==11 && (acceptanceIncludesPt?GenHLepPt[iGenHLep]>7.:true) && fabs(GenHLepEta[iGenHLep])<2.5) || 
+	                               (abs(GenHLepId[iGenHLep])==13 && (acceptanceIncludesPt?GenHLepPt[iGenHLep]>5.:true) && fabs(GenHLepEta[iGenHLep])<2.4) ;
+	    if(GenHLepIsInAcc[iGenHLep]) nGenHLepInAcc++;
 	  }
 	}
-	for(Int_t iGenAssoc=0; iGenAssoc<2; iGenAssoc++){
-	  if(GenAssocLepId[iGenAssoc]!=0){
+	for(Int_t iGenAssocLep=0; iGenAssocLep<2; iGenAssocLep++){
+	  if(GenAssocLepId[iGenAssocLep]!=0){
 	    nGenAssocLep++;
+	    GenAssocLepIsInAcc[iGenAssocLep] = (abs(GenAssocLepId[iGenAssocLep])==11 && (acceptanceIncludesPt?GenAssocLepPt[iGenAssocLep]>7.:true) && fabs(GenAssocLepEta[iGenAssocLep])<2.5) || 
+	                                       (abs(GenAssocLepId[iGenAssocLep])==13 && (acceptanceIncludesPt?GenAssocLepPt[iGenAssocLep]>5.:true) && fabs(GenAssocLepEta[iGenAssocLep])<2.4) ;
+	    if(GenAssocLepIsInAcc[iGenAssocLep]) nGenAssocLepInAcc++;
 	  }
+	}
+	Int_t nGenLep = nGenHLep + nGenAssocLep;
+	Int_t nGenLepInAcc = nGenHLepInAcc + nGenAssocLepInAcc;
+
+	if(excludeH2l2X){
+	  if(nGenHLep!=4) continue;
 	}
 
-	/*
-	if(nGenHLep!=4) continue;
-	//*/
+	if(requireHLepsAreInAcc){
+	  if(nGenHLepInAcc!=4) continue;
+	}
+
+	Int_t currentAssocDecay = -1;
+	if(prodName[p]=="WH"){
+	  if(nGenHLep==4 && nGenAssocLep==0) currentAssocDecay = 0;
+	  else if(nGenHLep==4 && nGenAssocLep==1) currentAssocDecay = 1;
+	}else if(prodName[p]=="ZH"){
+	  if(nGenHLep==4 && nGenAssocLep==0) currentAssocDecay = 2;
+	  else if(nGenHLep==4 && nGenAssocLep==2) currentAssocDecay = 3;
+	  else if(nGenHLep==2 && nGenAssocLep==2) currentAssocDecay = 4;
+	}else if(prodName[p]=="ttH"){
+	  if(nGenHLep==4 && nGenAssocLep==0) currentAssocDecay = 5;
+	  else if(nGenHLep==4 && nGenAssocLep==1) currentAssocDecay = 6;
+	  else if(nGenHLep==4 && nGenAssocLep==2) currentAssocDecay = 7;
+	  else if(nGenHLep==2 && nGenAssocLep==2) currentAssocDecay = 8;
+	}
 
 	string evtID = eventID(nRun,nLumi,nEvent);
-	overlapMapStored[p][evtID].push_back(categories[c]);
+	overlapMapStored[p][evtID].push_back(channels[c]);
 
 	nbStored[p][c]++;
 	nbStored[p][3]++;
 
 	if(iBC>=0){
 
-	  overlapMapWithBC[p][evtID].push_back(categories[c]);
+	  overlapMapWithBC[p][evtID].push_back(channels[c]);
 
 	  nbWithBC[p][c]++;
 	  nbWithBC[p][3]++;
@@ -820,17 +1353,80 @@ void plotProductionModeComparison(
 	  Bool_t FullSel100 = ZZsel->at(iBC)>=100;
 	  
 	  if(FullSel70){
-	    overlapMapWithBCFullSel70[p][evtID].push_back(categories[c]);
+	    overlapMapWithBCFullSel70[p][evtID].push_back(channels[c]);
 	    nbWithBCFullSel70[p][c]++;
 	    nbWithBCFullSel70[p][3]++;
 	  }
 	  
 	  if(FullSel100){
 
-	    overlapMapWithBCFullSel100[p][evtID].push_back(categories[c]);
+	    overlapMapWithBCFullSel100[p][evtID].push_back(channels[c]);
 
 	    nbWithBCFullSel100[p][c]++;
 	    nbWithBCFullSel100[p][3]++;
+
+	    Float_t CandLepEta[4] = {CandLep1Eta->at(iBC),CandLep2Eta->at(iBC),CandLep3Eta->at(iBC),CandLep4Eta->at(iBC)};
+	    Float_t CandLepPhi[4] = {CandLep1Phi->at(iBC),CandLep2Phi->at(iBC),CandLep3Phi->at(iBC),CandLep4Phi->at(iBC)};
+	    Float_t ExtraLepEta[3] = {ExtraLep1Eta->at(iBC),ExtraLep2Eta->at(iBC),ExtraLep3Eta->at(iBC)};
+	    Float_t ExtraLepPhi[3] = {ExtraLep1Phi->at(iBC),ExtraLep2Phi->at(iBC),ExtraLep3Phi->at(iBC)};
+	    Int_t nRecoLepMatchedToGenHLep[4] = {0,0,0,0};
+	    Int_t nCandLepMatchedToGenHLep[4] = {0,0,0,0};
+	    Int_t nRecoLepMatchedToGenAssocLep[2] = {0,0};
+	    Int_t nCandLepMatchedToGenAssocLep[2] = {0,0};
+	    Int_t nGenLepMatchedToCandLep[4] = {0,0,0,0};
+	    Int_t nGenLepMatchedToRecoLep[7] = {0,0,0,0,0,0,0};
+	    Int_t nGenHLepMatchedToZ1Lep[4] = {0,0};
+	    Int_t nGenHLepMatchedToZ2Lep[4] = {0,0};
+	    for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++){
+	      if(GenHLepId[iGenHLep]!=0){
+		for(Int_t iCandLep=0; iCandLep<4; iCandLep++){
+		  if(deltaR(GenHLepEta[iGenHLep],GenHLepPhi[iGenHLep],CandLepEta[iCandLep],CandLepPhi[iCandLep]) < 0.1){
+		    nRecoLepMatchedToGenHLep[iGenHLep]++;
+		    nCandLepMatchedToGenHLep[iGenHLep]++;
+		    nGenLepMatchedToRecoLep[iCandLep]++;
+		    nGenLepMatchedToCandLep[iCandLep]++;
+		    if(iCandLep<2){
+		      nGenHLepMatchedToZ1Lep[iCandLep]++;
+		    }else{
+		      nGenHLepMatchedToZ2Lep[iCandLep-2]++;
+		    }
+		  }
+		}
+		for(Int_t iExtraLep=0; iExtraLep<nExtraLep->at(iBC); iExtraLep++){
+		  if(deltaR(GenHLepEta[iGenHLep],GenHLepPhi[iGenHLep],ExtraLepEta[iExtraLep],ExtraLepPhi[iExtraLep]) < 0.1){
+		    nRecoLepMatchedToGenHLep[iGenHLep]++;
+		    nGenLepMatchedToRecoLep[4+iExtraLep]++;
+		  }
+		}
+	      }
+	    }
+	    for(Int_t iGenAssocLep=0; iGenAssocLep<2; iGenAssocLep++){
+	      if(GenAssocLepId[iGenAssocLep]!=0){
+		for(Int_t iCandLep=0; iCandLep<4; iCandLep++){
+		  if(deltaR(GenAssocLepEta[iGenAssocLep],GenAssocLepPhi[iGenAssocLep],CandLepEta[iCandLep],CandLepPhi[iCandLep]) < 0.1){
+		    nRecoLepMatchedToGenAssocLep[iGenAssocLep]++;
+		    nCandLepMatchedToGenAssocLep[iGenAssocLep]++;
+		    nGenLepMatchedToRecoLep[iCandLep]++;
+		    nGenLepMatchedToCandLep[iCandLep]++;
+		  }
+		}
+		for(Int_t iExtraLep=0; iExtraLep<nExtraLep->at(iBC); iExtraLep++){
+		  if(deltaR(GenAssocLepEta[iGenAssocLep],GenAssocLepPhi[iGenAssocLep],ExtraLepEta[iExtraLep],ExtraLepPhi[iExtraLep]) < 0.1){
+		    nRecoLepMatchedToGenAssocLep[iGenAssocLep]++;
+		    nGenLepMatchedToRecoLep[4+iExtraLep]++;
+		  }
+		}
+	      }
+	    }
+	    if(requireHLepsAreGood){
+	      Bool_t foundAmbiguity = false;
+	      for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++) if(nRecoLepMatchedToGenHLep[iGenHLep]>1){ foundAmbiguity = true; break; }
+	      for(Int_t iGenAssocLep=0; iGenAssocLep<2; iGenAssocLep++) if(nRecoLepMatchedToGenAssocLep[iGenAssocLep]>1){ foundAmbiguity = true; break; }
+	      for(Int_t iRecoLep=0; iRecoLep<4+nExtraLep->at(iBC); iRecoLep++) if(nGenLepMatchedToRecoLep[iRecoLep]>1){ foundAmbiguity = true; break; }
+	      Int_t nOnes = 0;
+	      for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++) if(nRecoLepMatchedToGenHLep[iGenHLep]==1) nOnes++;
+	      if(foundAmbiguity || nOnes!=4) continue;
+	    }
 
 	    Float_t varVal[nVariables] = {
 	      ZZMass->at(iBC),
@@ -839,59 +1435,76 @@ void plotProductionModeComparison(
 	      p0plus_VAJHU->at(iBC) / ( p0plus_VAJHU->at(iBC) + bkg_VAMCFM->at(iBC) ),
 	      ZZFisher->at(iBC),
 	      ZZPt->at(iBC),
+	      nGenLep,
+	      nGenLepInAcc,
+	      nGenLep-nGenLepInAcc,
+	      nGenHLep-nGenHLepInAcc,
+	      nGenAssocLep-nGenAssocLepInAcc,
+	      nGenLep-(4+nExtraLep->at(iBC)),
+	      nGenLepInAcc-(4+nExtraLep->at(iBC)),
+	      nExtraLep->at(iBC),
+	      nExtraZ->at(iBC),
+	      nJets->at(iBC),
 	    };
 
 	    for(int v=0; v<nVariables; v++){
-	      hBCFullSel100[v][p][c]->Fill(varVal[v]);
-	      hBCFullSel100[v][p][3]->Fill(varVal[v]);
+	      if(!plotThisVar[VARIABLELIST][v]) continue;
+	      hBCFullSel100[v][p][c]->Fill(varVal[v],weights[p]);
+	      hBCFullSel100[v][p][3]->Fill(varVal[v],weights[p]);
 	    }
 
-	    Int_t nMatchedToGenHLep[4] = {0,0,0,0};
-	    Int_t nMatchedToGenAssocLep[2] = {0,0};
-	    Int_t nMatchedToRecoLep[4] = {0,0,0,0};
-	    Int_t nGenHLepMatchedToZ1Lep[4] = {0,0};
-	    Int_t nGenHLepMatchedToZ2Lep[4] = {0,0};
-	    Float_t GenHLepEta[4] = {GenLep1Eta,GenLep2Eta,GenLep3Eta,GenLep4Eta};
-	    Float_t GenHLepPhi[4] = {GenLep1Phi,GenLep2Phi,GenLep3Phi,GenLep4Phi};
-	    Float_t GenAssocLepEta[2] = {GenAssocLep1Eta,GenAssocLep2Eta};
-	    Float_t GenAssocLepPhi[2] = {GenAssocLep1Phi,GenAssocLep2Phi};
-	    Float_t RecoLepEta[4] = {Lep1Eta->at(iBC),Lep2Eta->at(iBC),Lep3Eta->at(iBC),Lep4Eta->at(iBC)};
-	    Float_t RecoLepPhi[4] = {Lep1Phi->at(iBC),Lep2Phi->at(iBC),Lep3Phi->at(iBC),Lep4Phi->at(iBC)};
-	    for(Int_t iGen=0; iGen<4; iGen++){
-	      if(GenHLepId[iGen]!=0){
-		for(Int_t iReco=0; iReco<4; iReco++){
-		  if(deltaR(GenHLepEta[iGen],GenHLepPhi[iGen],RecoLepEta[iReco],RecoLepPhi[iReco]) < 0.1){
-		    nMatchedToGenHLep[iGen]++;
-		    nMatchedToRecoLep[iReco]++;
-		    if(iReco<2){
-		      nGenHLepMatchedToZ1Lep[iReco]++;
-		    }else{
-		      nGenHLepMatchedToZ2Lep[iReco-2]++;
-		    }
-		  }
-		}
-	      }
+	    Int_t currentBasket = -1;
+	    if(nJets->at(iBC)==0 || nJets->at(iBC)==1){
+	      if(nExtraLep->at(iBC)==0) currentBasket = 1;
+	      else if(nExtraLep->at(iBC)==1){ 
+		//if(ExtraLep1Pt->at(iBC)>20. && PFMET>45.) currentBasket = 2;
+		if(PFMET>45.) currentBasket = 2;
+		else currentBasket = 3;
+	      }else if(nExtraLep->at(iBC)>=2) currentBasket = 4;
+	      else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+	    }else if(nJets->at(iBC)>=2){
+	      if(nExtraLep->at(iBC)==0){
+		if(ZZFisher->at(iBC)>0.5) currentBasket = 5;
+		else currentBasket = 6;	      
+	      }else if(nExtraLep->at(iBC)==1) currentBasket = 7;
+	      else if(nExtraLep->at(iBC)>=2) currentBasket = 8;
+	      else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+	    }else{
+	      cout<<"WARNING : inconsistent nJets"<<endl;
 	    }
-	    for(Int_t iGenAssoc=0; iGenAssoc<2; iGenAssoc++){
-	      if(GenAssocLepId[iGenAssoc]!=0){
-		for(Int_t iReco=0; iReco<4; iReco++){
-		  if(deltaR(GenAssocLepEta[iGenAssoc],GenAssocLepPhi[iGenAssoc],RecoLepEta[iReco],RecoLepPhi[iReco]) < 0.1){
-		    nMatchedToGenAssocLep[iGenAssoc]++;
-		    nMatchedToRecoLep[iReco]++;
-		  }
-		}
+
+	    hBCFullSel100Baskets[p][c]->Fill(currentBasket,weights[p]);
+	    hBCFullSel100Baskets[p][c]->Fill(0.,weights[p]);
+	    hBCFullSel100Baskets[p][3]->Fill(currentBasket,weights[p]);
+	    hBCFullSel100Baskets[p][3]->Fill(0.,weights[p]);
+	    if(currentAssocDecay>=0){
+	      hBCFullSel100BasketsAssocDecays[currentAssocDecay][c]->Fill(currentBasket,weights[p]);
+	      hBCFullSel100BasketsAssocDecays[currentAssocDecay][c]->Fill(0.,weights[p]);
+	      hBCFullSel100BasketsAssocDecays[currentAssocDecay][3]->Fill(currentBasket,weights[p]);
+	      hBCFullSel100BasketsAssocDecays[currentAssocDecay][3]->Fill(0.,weights[p]);	      
+	    }
+	    if(106<ZZMass->at(iBC) && ZZMass->at(iBC)<141){
+	      hBCFullSel100MasswindowBaskets[p][c]->Fill(currentBasket,weights[p]);
+	      hBCFullSel100MasswindowBaskets[p][c]->Fill(0.,weights[p]);
+	      hBCFullSel100MasswindowBaskets[p][3]->Fill(currentBasket,weights[p]);
+	      hBCFullSel100MasswindowBaskets[p][3]->Fill(0.,weights[p]);
+	      if(currentAssocDecay>=0){
+		hBCFullSel100MasswindowBasketsAssocDecays[currentAssocDecay][c]->Fill(currentBasket,weights[p]);
+		hBCFullSel100MasswindowBasketsAssocDecays[currentAssocDecay][c]->Fill(0.,weights[p]);
+		hBCFullSel100MasswindowBasketsAssocDecays[currentAssocDecay][3]->Fill(currentBasket,weights[p]);
+		hBCFullSel100MasswindowBasketsAssocDecays[currentAssocDecay][3]->Fill(0.,weights[p]);	      
 	      }
 	    }
 
 	    Int_t currentMatchHLepsStatus = -1;
 	    Bool_t foundAmbiguityHLeps = false;
-	    for(Int_t iGen=0; iGen<4; iGen++) if(nMatchedToGenHLep[iGen]>1){ foundAmbiguityHLeps = true; break; }
-	    for(Int_t iReco=0; iReco<4; iReco++) if(nMatchedToRecoLep[iReco]>1){ foundAmbiguityHLeps = true; break; }
+	    for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++) if(nCandLepMatchedToGenHLep[iGenHLep]>1){ foundAmbiguityHLeps = true; break; }
+	    for(Int_t iCandLep=0; iCandLep<4; iCandLep++) if(nGenLepMatchedToCandLep[iCandLep]>1){ foundAmbiguityHLeps = true; break; }
 	    if(foundAmbiguityHLeps){
 	      currentMatchHLepsStatus = 5;
 	    }else{
 	      Int_t nOnesHLeps = 0;
-	      for(Int_t iGen=0; iGen<4; iGen++) if(nMatchedToGenHLep[iGen]==1) nOnesHLeps++;
+	      for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++) if(nCandLepMatchedToGenHLep[iGenHLep]==1) nOnesHLeps++;
 	      if(nOnesHLeps==4) currentMatchHLepsStatus = 0;
 	      if(nOnesHLeps==3) currentMatchHLepsStatus = 1;
 	      if(nOnesHLeps==2) currentMatchHLepsStatus = 2;
@@ -900,13 +1513,13 @@ void plotProductionModeComparison(
 	    }
 	    Int_t currentMatchAllLepsStatus = -1;
 	    Bool_t foundAmbiguityAllLeps = false;
-	    for(Int_t iGen=0; iGen<4; iGen++) if(nMatchedToGenHLep[iGen]>1){ foundAmbiguityAllLeps = true; break; }
-	    for(Int_t iGenAssoc=0; iGenAssoc<2; iGenAssoc++) if(nMatchedToGenAssocLep[iGenAssoc]>1){ foundAmbiguityAllLeps = true; break; }
-	    for(Int_t iReco=0; iReco<4; iReco++) if(nMatchedToRecoLep[iReco]>1){ foundAmbiguityAllLeps = true; break; }
+	    for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++) if(nCandLepMatchedToGenHLep[iGenHLep]>1){ foundAmbiguityAllLeps = true; break; }
+	    for(Int_t iGenAssocLep=0; iGenAssocLep<2; iGenAssocLep++) if(nCandLepMatchedToGenAssocLep[iGenAssocLep]>1){ foundAmbiguityAllLeps = true; break; }
+	    for(Int_t iCandLep=0; iCandLep<4; iCandLep++) if(nGenLepMatchedToCandLep[iCandLep]>1){ foundAmbiguityAllLeps = true; break; }
 	    Int_t nOnesHLeps = 0;
 	    Int_t nOnesAssocLeps = 0;
-	    for(Int_t iGen=0; iGen<4; iGen++) if(nMatchedToGenHLep[iGen]==1) nOnesHLeps++;
-	    for(Int_t iGenAssoc=0; iGenAssoc<4; iGenAssoc++) if(nMatchedToGenAssocLep[iGenAssoc]==1) nOnesAssocLeps++;
+	    for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++) if(nCandLepMatchedToGenHLep[iGenHLep]==1) nOnesHLeps++;
+	    for(Int_t iGenAssocLep=0; iGenAssocLep<4; iGenAssocLep++) if(nCandLepMatchedToGenAssocLep[iGenAssocLep]==1) nOnesAssocLeps++;
 	    if(foundAmbiguityAllLeps){
 	      currentMatchAllLepsStatus = 4;
 	    }else{
@@ -998,9 +1611,13 @@ void plotProductionModeComparison(
 	    else currentZ2MatchStatus = 2 - (nGenHLepMatchedToZ2Lep[0] + nGenHLepMatchedToZ2Lep[1]);
 	    if(prodName[p]=="WH"){
 	      if(nGenHLep==4 && nGenAssocLep==0){
+		nbTotalWH[0]++;
+		if(currentMatchAllLepsStatus==0) nbAll4LepRightWH[0]++;
 		nbZ1DaughtersFromHWH[0][currentZ1MatchStatus]++;
 		nbZ2DaughtersFromHWH[0][currentZ2MatchStatus]++;
 	      }else if(nGenHLep==4 && nGenAssocLep==1){
+		nbTotalWH[1]++;
+		if(currentMatchAllLepsStatus==0) nbAll4LepRightWH[1]++;
 		nbZ1DaughtersFromHWH[1][currentZ1MatchStatus]++;
 		nbZ2DaughtersFromHWH[1][currentZ2MatchStatus]++;
 	      }else{
@@ -1009,12 +1626,18 @@ void plotProductionModeComparison(
 	    }
 	    if(prodName[p]=="ZH"){
 	      if(nGenHLep==4 && nGenAssocLep==0){
+		nbTotalZH[0]++;
+		if(currentMatchAllLepsStatus==0) nbAll4LepRightZH[0]++;
 		nbZ1DaughtersFromHZH[0][currentZ1MatchStatus]++;
 		nbZ2DaughtersFromHZH[0][currentZ2MatchStatus]++;
 	      }else if(nGenHLep==4 && nGenAssocLep==2){
+		nbTotalZH[1]++;
+		if(currentMatchAllLepsStatus==0) nbAll4LepRightZH[1]++;
 		nbZ1DaughtersFromHZH[1][currentZ1MatchStatus]++;
 		nbZ2DaughtersFromHZH[1][currentZ2MatchStatus]++;
 	      }else if(nGenHLep==2 && nGenAssocLep==2){
+		nbTotalZH[2]++;
+		if(currentMatchAllLepsStatus==0) nbAll4LepRightZH[2]++;
 		nbZ1DaughtersFromHZH[2][currentZ1MatchStatus]++;
 		nbZ2DaughtersFromHZH[2][currentZ2MatchStatus]++;
 	      }else{
@@ -1023,15 +1646,23 @@ void plotProductionModeComparison(
 	    }
 	    if(prodName[p]=="ttH"){
 	      if(nGenHLep==4 && nGenAssocLep==0){
+		nbTotalttH[0]++;
+		if(currentMatchAllLepsStatus==0) nbAll4LepRightttH[0]++;
 		nbZ1DaughtersFromHttH[0][currentZ1MatchStatus]++;
 		nbZ2DaughtersFromHttH[0][currentZ2MatchStatus]++;
 	      }else if(nGenHLep==4 && nGenAssocLep==1){
+		nbTotalttH[1]++;
+		if(currentMatchAllLepsStatus==0) nbAll4LepRightttH[1]++;
 		nbZ1DaughtersFromHttH[1][currentZ1MatchStatus]++;
 		nbZ2DaughtersFromHttH[1][currentZ2MatchStatus]++;
 	      }else if(nGenHLep==4 && nGenAssocLep==2){
+		nbTotalttH[2]++;
+		if(currentMatchAllLepsStatus==0) nbAll4LepRightttH[2]++;
 		nbZ1DaughtersFromHttH[2][currentZ1MatchStatus]++;
 		nbZ2DaughtersFromHttH[2][currentZ2MatchStatus]++;
 	      }else if(nGenHLep==2 && nGenAssocLep==2){
+		nbTotalttH[3]++;
+		if(currentMatchAllLepsStatus==0) nbAll4LepRightttH[3]++;
 		nbZ1DaughtersFromHttH[3][currentZ1MatchStatus]++;
 		nbZ2DaughtersFromHttH[3][currentZ2MatchStatus]++;
 	      }else{
@@ -1042,11 +1673,11 @@ void plotProductionModeComparison(
 	    // 	cout<<" ";
 	    // 	cout<<nGenAssocLep;
 	    // 	cout<<" ";
-	    // 	for(Int_t iGen =0; iGen <4; iGen ++) cout<<nMatchedToGenHLep [iGen ];
+	    // 	for(Int_t iGenHLep =0; iGenHLep <4; iGenHLep ++) cout<<nCandLepMatchedToGenHLep [iGenHLep ];
 	    // 	cout<<" ";
-	    // 	for(Int_t iGenAssoc =0; iGenAssoc <2; iGenAssoc ++) cout<<nMatchedToGenAssocLep[iGenAssoc];
+	    // 	for(Int_t iGenAssocLep =0; iGenAssocLep <2; iGenAssocLep ++) cout<<nCandLepMatchedToGenAssocLep[iGenAssocLep];
 	    // 	cout<<" ";
-	    // 	for(Int_t iReco=0; iReco<4; iReco++) cout<<nMatchedToRecoLep[iReco];
+	    // 	for(Int_t iCandLep=0; iCandLep<4; iCandLep++) cout<<nGenLepMatchedToCandLep[iCandLep];
 	    // 	cout<<" ";
 	    // 	cout<<currentMatchHLepsStatus;
 	    // 	cout<<" ";
@@ -1055,77 +1686,82 @@ void plotProductionModeComparison(
 
 
 	    for(int v2=0; v2<n2DHist; v2++){
-	      h2DBCFullSel100[v2][p][c]->Fill(varVal[varXindex[v2]],varVal[varYindex[v2]]);
-	      h2DBCFullSel100[v2][p][3]->Fill(varVal[varXindex[v2]],varVal[varYindex[v2]]);
-	      h2DBCFullSel100Decays[v2][p][0][c]->Fill(varVal[varXindex[v2]],varVal[varYindex[v2]]);
-	      h2DBCFullSel100Decays[v2][p][0][3]->Fill(varVal[varXindex[v2]],varVal[varYindex[v2]]);
+	      h2DBCFullSel100[v2][p][c]->Fill(varVal[varXindex[v2]],varVal[varYindex[v2]],weights[p]);
+	      h2DBCFullSel100[v2][p][3]->Fill(varVal[varXindex[v2]],varVal[varYindex[v2]],weights[p]);
+	      h2DBCFullSel100Decays[v2][p][0][c]->Fill(varVal[varXindex[v2]],varVal[varYindex[v2]],weights[p]);
+	      h2DBCFullSel100Decays[v2][p][0][3]->Fill(varVal[varXindex[v2]],varVal[varYindex[v2]],weights[p]);
 	      if(nGenHLep==4){
-		h2DBCFullSel100Decays[v2][p][1][c]->Fill(varVal[varXindex[v2]],varVal[varYindex[v2]]);
-		h2DBCFullSel100Decays[v2][p][1][3]->Fill(varVal[varXindex[v2]],varVal[varYindex[v2]]);
+		h2DBCFullSel100Decays[v2][p][1][c]->Fill(varVal[varXindex[v2]],varVal[varYindex[v2]],weights[p]);
+		h2DBCFullSel100Decays[v2][p][1][3]->Fill(varVal[varXindex[v2]],varVal[varYindex[v2]],weights[p]);
 		if(currentMatchHLepsStatus==0){
-		  h2DBCFullSel100Decays[v2][p][3][c]->Fill(varVal[varXindex[v2]],varVal[varYindex[v2]]);
-		  h2DBCFullSel100Decays[v2][p][3][3]->Fill(varVal[varXindex[v2]],varVal[varYindex[v2]]);
+		  h2DBCFullSel100Decays[v2][p][3][c]->Fill(varVal[varXindex[v2]],varVal[varYindex[v2]],weights[p]);
+		  h2DBCFullSel100Decays[v2][p][3][3]->Fill(varVal[varXindex[v2]],varVal[varYindex[v2]],weights[p]);
 		}else if(currentMatchHLepsStatus<5){
-		  h2DBCFullSel100Decays[v2][p][4][c]->Fill(varVal[varXindex[v2]],varVal[varYindex[v2]]);
-		  h2DBCFullSel100Decays[v2][p][4][3]->Fill(varVal[varXindex[v2]],varVal[varYindex[v2]]);
+		  h2DBCFullSel100Decays[v2][p][4][c]->Fill(varVal[varXindex[v2]],varVal[varYindex[v2]],weights[p]);
+		  h2DBCFullSel100Decays[v2][p][4][3]->Fill(varVal[varXindex[v2]],varVal[varYindex[v2]],weights[p]);
 		}
 	      }else{
-		h2DBCFullSel100Decays[v2][p][2][c]->Fill(varVal[varXindex[v2]],varVal[varYindex[v2]]);
-		h2DBCFullSel100Decays[v2][p][2][3]->Fill(varVal[varXindex[v2]],varVal[varYindex[v2]]);
+		h2DBCFullSel100Decays[v2][p][2][c]->Fill(varVal[varXindex[v2]],varVal[varYindex[v2]],weights[p]);
+		h2DBCFullSel100Decays[v2][p][2][3]->Fill(varVal[varXindex[v2]],varVal[varYindex[v2]],weights[p]);
 	      }
 	    }
 
 	    nbWithBCFullSel100MatchHLeps[currentMatchHLepsStatus][p][c]++;
 	    nbWithBCFullSel100MatchHLeps[currentMatchHLepsStatus][p][3]++;
 	    for(int v=0; v<nVariables; v++){
-	      hBCFullSel100MatchHLeps[v][currentMatchHLepsStatus][p][c]->Fill(varVal[v]);
-	      hBCFullSel100MatchHLeps[v][currentMatchHLepsStatus][p][3]->Fill(varVal[v]);
+	      if(!plotThisVar[VARIABLELIST][v]) continue;
+	      hBCFullSel100MatchHLeps[v][currentMatchHLepsStatus][p][c]->Fill(varVal[v],weights[p]);
+	      hBCFullSel100MatchHLeps[v][currentMatchHLepsStatus][p][3]->Fill(varVal[v],weights[p]);
 	    }
 
 	    nbWithBCFullSel100MatchAllLeps[currentMatchAllLepsStatus][p][c]++;
 	    nbWithBCFullSel100MatchAllLeps[currentMatchAllLepsStatus][p][3]++;
 	    for(int v=0; v<nVariables; v++){
-	      hBCFullSel100MatchAllLeps[v][currentMatchAllLepsStatus][p][c]->Fill(varVal[v]);
-	      hBCFullSel100MatchAllLeps[v][currentMatchAllLepsStatus][p][3]->Fill(varVal[v]);
+	      if(!plotThisVar[VARIABLELIST][v]) continue;
+	      hBCFullSel100MatchAllLeps[v][currentMatchAllLepsStatus][p][c]->Fill(varVal[v],weights[p]);
+	      hBCFullSel100MatchAllLeps[v][currentMatchAllLepsStatus][p][3]->Fill(varVal[v],weights[p]);
 	    }
 	    
 	    if(prodName[p]=="WH"){
 	      nbWithBCFullSel100MatchWH[currentMatchWHStatus][c]++;
 	      nbWithBCFullSel100MatchWH[currentMatchWHStatus][3]++;
 	      for(int v=0; v<nVariables; v++){
-		hBCFullSel100MatchWH[v][currentMatchWHStatus][c]->Fill(varVal[v]);
-		hBCFullSel100MatchWH[v][currentMatchWHStatus][3]->Fill(varVal[v]);
+		if(!plotThisVar[VARIABLELIST][v]) continue;
+		hBCFullSel100MatchWH[v][currentMatchWHStatus][c]->Fill(varVal[v],weights[p]);
+		hBCFullSel100MatchWH[v][currentMatchWHStatus][3]->Fill(varVal[v],weights[p]);
 	      }
 	    }
 	    if(prodName[p]=="ZH"){
 	      nbWithBCFullSel100MatchZH[currentMatchZHStatus][c]++;
 	      nbWithBCFullSel100MatchZH[currentMatchZHStatus][3]++;
 	      for(int v=0; v<nVariables; v++){
-		hBCFullSel100MatchZH[v][currentMatchZHStatus][c]->Fill(varVal[v]);
-		hBCFullSel100MatchZH[v][currentMatchZHStatus][3]->Fill(varVal[v]);
+		if(!plotThisVar[VARIABLELIST][v]) continue;
+		hBCFullSel100MatchZH[v][currentMatchZHStatus][c]->Fill(varVal[v],weights[p]);
+		hBCFullSel100MatchZH[v][currentMatchZHStatus][3]->Fill(varVal[v],weights[p]);
 	      }
 	    }
 	    if(prodName[p]=="ttH"){
 	      nbWithBCFullSel100MatchttH[currentMatchttHStatus][c]++;
 	      nbWithBCFullSel100MatchttH[currentMatchttHStatus][3]++;
 	      for(int v=0; v<nVariables; v++){
-		hBCFullSel100MatchttH[v][currentMatchttHStatus][c]->Fill(varVal[v]);
-		hBCFullSel100MatchttH[v][currentMatchttHStatus][3]->Fill(varVal[v]);
+		if(!plotThisVar[VARIABLELIST][v]) continue;
+		hBCFullSel100MatchttH[v][currentMatchttHStatus][c]->Fill(varVal[v],weights[p]);
+		hBCFullSel100MatchttH[v][currentMatchttHStatus][3]->Fill(varVal[v],weights[p]);
 	      }
 	    }
 	
-	  }
+	  } // end if(FullSel100)
 
-	}
+	} // end if(iBC>=0)
 
       } // end for entries
 
-    } // end for categories
+    } // end for channels
 
     Int_t widthColumn2 = 6;
 
-    for(int c=0; c<nCategories; c++){
-      cout<<" "<<categories[c]<<endl;
+    for(int c=0; c<nChannels; c++){
+      cout<<" "<<channels[c]<<endl;
       cout<<"  stored :            "<<fixWidth(Form("%i",nbStored[p][c]),widthColumn2,false)<<endl;
       cout<<"  iBC>0 :             "<<fixWidth(Form("%i",nbWithBC[p][c]),widthColumn2,false)<<endl;
       cout<<"  iBC>0, FullSel70 :  "<<fixWidth(Form("%i",nbWithBCFullSel70[p][c]),widthColumn2,false)<<endl;
@@ -1171,77 +1807,75 @@ void plotProductionModeComparison(
 
     int widthColumn1 = 22;
     int widthOtherColumns = 7;
+    string separator = repeat("-",widthColumn1+4*(2+widthOtherColumns));
     if(prodName[p]=="WH"){
-      cout<<" "<<repeat("-",widthColumn1+4*(2+widthOtherColumns))<<endl;
+      cout<<" "<<separator<<endl;
       cout<<" "<<fixWidth("# of Z1 leptons from H",widthColumn1,true);
       for(int j=0; j<4; j++) cout<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
       cout<<endl;
-      for(int i=0; i<2; i++){
-	cout<<" ";
-	cout<<fixWidth(WHdecays[i],widthColumn1,true);
-	int total = 0; for(int j=0; j<4; j++) total += nbZ1DaughtersFromHWH[i][j];
-	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ1DaughtersFromHWH[i][j]/total)+" %",widthOtherColumns,false);
+      for(int i=0; i<nAssocWDecays; i++){
+	cout<<" "<<fixWidth(WHdecays[i],widthColumn1,true);
+	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ1DaughtersFromHWH[i][j]/nbTotalWH[i])+" %",widthOtherColumns,false);
 	cout<<endl;
       }
-      cout<<" "<<repeat("-",widthColumn1+4*(2+widthOtherColumns))<<endl;
+      cout<<" "<<separator<<endl;
       cout<<" "<<fixWidth("# of Z2 leptons from H",widthColumn1,true);
       for(int j=0; j<4; j++) cout<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
       cout<<endl;
-      for(int i=0; i<2; i++){
-	cout<<" ";
-	cout<<fixWidth(WHdecays[i],widthColumn1,true);
-	int total = 0; for(int j=0; j<4; j++) total += nbZ2DaughtersFromHWH[i][j];
-	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ2DaughtersFromHWH[i][j]/total)+" %",widthOtherColumns,false);
+      for(int i=0; i<nAssocWDecays; i++){
+	cout<<" "<<fixWidth(WHdecays[i],widthColumn1,true);
+	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ2DaughtersFromHWH[i][j]/nbTotalWH[i])+" %",widthOtherColumns,false);
 	cout<<endl;
       }
+      cout<<" "<<separator<<endl;
+      cout<<" "<<"all-4-leptons-right events"<<endl;
+      for(int i=0; i<nAssocWDecays; i++) cout<<" "<<fixWidth(WHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbAll4LepRightWH[i]/nbTotalWH[i])+" %"<<endl;
     }
     if(prodName[p]=="ZH"){
-      cout<<" "<<repeat("-",widthColumn1+4*(2+widthOtherColumns))<<endl;
+      cout<<" "<<separator<<endl;
       cout<<" "<<fixWidth("# of Z1 leptons from H",widthColumn1,true);
       for(int j=0; j<4; j++) cout<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
       cout<<endl;
-      for(int i=0; i<3; i++){
-	cout<<" ";
-	cout<<fixWidth(ZHdecays[i],widthColumn1,true);
-	int total = 0; for(int j=0; j<4; j++) total += nbZ1DaughtersFromHZH[i][j];
-	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ1DaughtersFromHZH[i][j]/total)+" %",widthOtherColumns,false);
+      for(int i=0; i<nAssocZDecays; i++){
+	cout<<" "<<fixWidth(ZHdecays[i],widthColumn1,true);
+	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ1DaughtersFromHZH[i][j]/nbTotalZH[i])+" %",widthOtherColumns,false);
 	cout<<endl;
       }
-      cout<<" "<<repeat("-",widthColumn1+4*(2+widthOtherColumns))<<endl;
+      cout<<" "<<separator<<endl;
       cout<<" "<<fixWidth("# of Z2 leptons from H",widthColumn1,true);
       for(int j=0; j<4; j++) cout<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
       cout<<endl;
-      for(int i=0; i<3; i++){
-	cout<<" ";
-	cout<<fixWidth(ZHdecays[i],widthColumn1,true);
-	int total = 0; for(int j=0; j<4; j++) total += nbZ2DaughtersFromHZH[i][j];
-	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ2DaughtersFromHZH[i][j]/total)+" %",widthOtherColumns,false);
+      for(int i=0; i<nAssocZDecays; i++){
+	cout<<" "<<fixWidth(ZHdecays[i],widthColumn1,true);
+	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ2DaughtersFromHZH[i][j]/nbTotalZH[i])+" %",widthOtherColumns,false);
 	cout<<endl;
       }
+      cout<<" "<<separator<<endl;
+      cout<<" "<<"all-4-leptons-right events"<<endl;
+      for(int i=0; i<nAssocZDecays; i++) cout<<" "<<fixWidth(ZHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbAll4LepRightZH[i]/nbTotalZH[i])+" %"<<endl;
     }
     if(prodName[p]=="ttH"){
-      cout<<" "<<repeat("-",widthColumn1+4*(2+widthOtherColumns))<<endl;
+      cout<<" "<<separator<<endl;
       cout<<" "<<fixWidth("# of Z1 leptons from H",widthColumn1,true);
       for(int j=0; j<4; j++) cout<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
       cout<<endl;
-      for(int i=0; i<4; i++){
-	cout<<" ";
-	cout<<fixWidth(ttHdecays[i],widthColumn1,true);
-	int total = 0; for(int j=0; j<4; j++) total += nbZ1DaughtersFromHttH[i][j];
-	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ1DaughtersFromHttH[i][j]/total)+" %",widthOtherColumns,false);
+      for(int i=0; i<nAssocttDecays; i++){
+	cout<<" "<<fixWidth(ttHdecays[i],widthColumn1,true);
+	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ1DaughtersFromHttH[i][j]/nbTotalttH[i])+" %",widthOtherColumns,false);
 	cout<<endl;
       }
-      cout<<" "<<repeat("-",widthColumn1+4*(2+widthOtherColumns))<<endl;
+      cout<<" "<<separator<<endl;
       cout<<" "<<fixWidth("# of Z2 leptons from H",widthColumn1,true);
       for(int j=0; j<4; j++) cout<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
       cout<<endl;
-      for(int i=0; i<4; i++){
-	cout<<" ";
-	cout<<fixWidth(ttHdecays[i],widthColumn1,true);
-	int total = 0; for(int j=0; j<4; j++) total += nbZ2DaughtersFromHttH[i][j];
-	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ2DaughtersFromHttH[i][j]/total)+" %",widthOtherColumns,false);
+      for(int i=0; i<nAssocttDecays; i++){
+	cout<<" "<<fixWidth(ttHdecays[i],widthColumn1,true);
+	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ2DaughtersFromHttH[i][j]/nbTotalttH[i])+" %",widthOtherColumns,false);
 	cout<<endl;
       }
+      cout<<" "<<separator<<endl;
+      cout<<" "<<"all-4-leptons-right events"<<endl;
+      for(int i=0; i<nAssocttDecays; i++) cout<<" "<<fixWidth(ttHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbAll4LepRightttH[i]/nbTotalttH[i])+" %"<<endl;
     }
     
     cout<<endl;
@@ -1257,8 +1891,9 @@ void plotProductionModeComparison(
   if(doProdComp){
     TCanvas* cBCFullSel100[nVariables];
     for(int v=0; v<nVariables; v++){
+      if(!plotThisVar[VARIABLELIST][v]) continue;
       cBCFullSel100[v] = new TCanvas(Form("cBCFullSel100_%s",varName[v].c_str()),Form("cBCFullSel100_%s",varName[v].c_str()),500,500);
-      DrawByProdmodes(cBCFullSel100[v],hBCFullSel100[v],prodName,isPresent,colors,v==0);
+      DrawByProdmodes(cBCFullSel100[v],hBCFullSel100[v],prodName,isPresent,colors,allZZBkgdsArePresent,v==0);
       SaveCanvas(outDir,cBCFullSel100[v]);
     }
   }
@@ -1266,8 +1901,9 @@ void plotProductionModeComparison(
   if(doProdCompMatch4){
     TCanvas* cBCFullSel100Match4[nVariables];
     for(int v=0; v<nVariables; v++){
+      if(!plotThisVar[VARIABLELIST][v]) continue;
       cBCFullSel100Match4[v] = new TCanvas(Form("cBCFullSel100Match4_%s",varName[v].c_str()),Form("cBCFullSel100Match4_%s",varName[v].c_str()),500,500);
-      DrawByProdmodes(cBCFullSel100Match4[v],hBCFullSel100MatchHLeps[v][0],prodName,isPresent,colors,v==0);
+      DrawByProdmodes(cBCFullSel100Match4[v],hBCFullSel100MatchHLeps[v][0],prodName,isPresent,colors,allZZBkgdsArePresent,v==0);
       SaveCanvas(outDir,cBCFullSel100Match4[v]);
     }
   }
@@ -1278,6 +1914,7 @@ void plotProductionModeComparison(
       if(!isPresent[p]) continue;
       string pn = prodName[p];
       for(int v=0; v<nVariables; v++){
+	if(!plotThisVar[VARIABLELIST][v]) continue;
 	cBCFullSel100Match4OrNot[v][p] = new TCanvas(Form("cBCFullSel100Match4OrNot_%s_%s",varName[v].c_str(),pn.c_str()),Form("cBCFullSel100Match4OrNot_%s_%s",varName[v].c_str(),pn.c_str()),500,500);
 	DrawMatch4OrNot(cBCFullSel100Match4OrNot[v][p],hBCFullSel100[v][p][3],hBCFullSel100MatchHLeps[v][0][p][3],pn,allColorsMP[1][p],allColorsMP[4][p],v==0);
 	SaveCanvas(outDir,cBCFullSel100Match4OrNot[v][p]);
@@ -1291,6 +1928,7 @@ void plotProductionModeComparison(
       if(!isPresent[p]) continue;
       string pn = prodName[p];
       for(int v=0; v<nVariables; v++){
+	if(!plotThisVar[VARIABLELIST][v]) continue;
 	TH1F* h[nMatchHLepsStatuses]; for(int m=0; m<nMatchHLepsStatuses; m++) h[m] = (TH1F*)hBCFullSel100MatchHLeps[v][m][p][3];
 	cBCFullSel100MatchHLeps[v][p] = new TCanvas(Form("cBCFullSel100MatchHLeps_%s_%s",varName[v].c_str(),pn.c_str()),Form("cBCFullSel100MatchHLeps_%s_%s",varName[v].c_str(),pn.c_str()),500,500);
 	DrawMatchHLeps(cBCFullSel100MatchHLeps[v][p],hBCFullSel100[v][p][3],h,pn,allColorsPM1[p],matchHLepsKeys,v==0);
@@ -1306,6 +1944,7 @@ void plotProductionModeComparison(
       if(p==0||p==1) continue;
       string pn = prodName[p];
       for(int v=0; v<nVariables; v++){
+	if(!plotThisVar[VARIABLELIST][v]) continue;
 	TH1F* h[nMatchAllLepsStatuses]; for(int m=0; m<nMatchAllLepsStatuses; m++) h[m] = (TH1F*)hBCFullSel100MatchAllLeps[v][m][p][3];
 	cBCFullSel100MatchAllLeps[v][p] = new TCanvas(Form("cBCFullSel100MatchAllLeps_%s_%s",varName[v].c_str(),pn.c_str()),Form("cBCFullSel100MatchAllLeps_%s_%s",varName[v].c_str(),pn.c_str()),500,500);
 	DrawMatchAllLeps(cBCFullSel100MatchAllLeps[v][p],hBCFullSel100[v][p][3],h,pn,allColorsPM2[p],matchAllLepsKeys,v==0);
@@ -1319,6 +1958,7 @@ void plotProductionModeComparison(
     if(file_WH!=""){
       TCanvas* cBCFullSel100MatchWH[nVariables];
       for(int v=0; v<nVariables; v++){
+	if(!plotThisVar[VARIABLELIST][v]) continue;
 	TH1F* hMatchWH[nMatchWHStatuses]; for(int m=0; m<nMatchWHStatuses; m++) hMatchWH[m] = (TH1F*)hBCFullSel100MatchWH[v][m][3];
 	cBCFullSel100MatchWH[v] = new TCanvas(Form("cBCFullSel100MatchWH_%s",varName[v].c_str()),Form("cBCFullSel100MatchWH_%s",varName[v].c_str()),500,500);
 	if(v==1 || v==3)
@@ -1332,6 +1972,7 @@ void plotProductionModeComparison(
     if(file_ZH!=""){
       TCanvas* cBCFullSel100MatchZH[nVariables];
       for(int v=0; v<nVariables; v++){
+	if(!plotThisVar[VARIABLELIST][v]) continue;
 	TH1F* hMatchZH[nMatchZHStatuses]; for(int m=0; m<nMatchZHStatuses; m++) hMatchZH[m] = (TH1F*)hBCFullSel100MatchZH[v][m][3];
 	cBCFullSel100MatchZH[v] = new TCanvas(Form("cBCFullSel100MatchZH_%s",varName[v].c_str()),Form("cBCFullSel100MatchZH_%s",varName[v].c_str()),500,500);
 	if(v==1 || v==3)
@@ -1345,6 +1986,7 @@ void plotProductionModeComparison(
     if(file_ttH!=""){
       TCanvas* cBCFullSel100MatchttH[nVariables];
       for(int v=0; v<nVariables; v++){
+	if(!plotThisVar[VARIABLELIST][v]) continue;
 	TH1F* hMatchttH[nMatchttHStatuses]; for(int m=0; m<nMatchttHStatuses; m++) hMatchttH[m] = (TH1F*)hBCFullSel100MatchttH[v][m][3];
 	cBCFullSel100MatchttH[v] = new TCanvas(Form("cBCFullSel100MatchttH_%s",varName[v].c_str()),Form("cBCFullSel100MatchttH_%s",varName[v].c_str()),500,500);
 	if(v==1 || v==3)
@@ -1387,6 +2029,82 @@ void plotProductionModeComparison(
 
   }
   
+  if(doBaskets){
+
+    TCanvas* cBCFullSel100BasketsAll = new TCanvas("cBCFullSel100_baskets","cBCFullSel100_baskets",500,500);
+    DrawByProdmodes(cBCFullSel100BasketsAll,hBCFullSel100Baskets,prodName,isPresent,colors,allZZBkgdsArePresent,false);
+    SaveCanvas(outDir,cBCFullSel100BasketsAll);
+    
+    TCanvas* cBCFullSel100BasketEfficiency[nHiggsSamples+1];
+    TH1F* hProdModes[nHiggsSamples]; for(int p=0; p<nHiggsSamples; p++) hProdModes[p] = (TH1F*)hBCFullSel100Baskets[p][3];
+    TH1F* hAssocDecays[nAssocDecays]; for(int a=0; a<nAssocDecays; a++) hAssocDecays[a] = (TH1F*)hBCFullSel100BasketsAssocDecays[a][3];
+    for(int p=0; p<nHiggsSamples; p++){
+      string pn = prodName[p];
+      cBCFullSel100BasketEfficiency[p] = new TCanvas(Form("cBCFullSel100_basketEfficiency_%s",pn.c_str()),Form("cBCFullSel100_basketEfficiency_%s",pn.c_str()),500,500);
+      DrawBasketEfficiencies(cBCFullSel100BasketEfficiency[p],hBCFullSel100Baskets[p][3],pn,hAssocDecays,assocDecayName,basketLabel,false);
+      SaveCanvas(outDir,cBCFullSel100BasketEfficiency[p]);
+    }
+
+    if(allSignalsArePresent){
+      TCanvas* cBCFullSel100BasketPurity = new TCanvas("cBCFullSel100_basketPurity","cBCFullSel100_basketPurity",800,500);
+      DrawBasketPurities(cBCFullSel100BasketPurity,hProdModes,prodName,hAssocDecays,treatH2l2XAsBkgd?assocDecayName3:assocDecayName2,false,treatH2l2XAsBkgd,basketLabel);
+      SaveCanvas(outDir,cBCFullSel100BasketPurity);
+      TCanvas* cBCFullSel100BasketPuritySplit = new TCanvas("cBCFullSel100_basketPuritySplit","cBCFullSel100_basketPuritySplit",800,500);
+      DrawBasketPurities(cBCFullSel100BasketPuritySplit,hProdModes,prodName,hAssocDecays,treatH2l2XAsBkgd?assocDecayName3:assocDecayName2,true,treatH2l2XAsBkgd,basketLabel);
+      SaveCanvas(outDir,cBCFullSel100BasketPuritySplit);
+    }
+    if(allSignalsArePresent && allZZBkgdsArePresent){
+
+      TH1F* hSumSgnl = (TH1F*)hBCFullSel100Baskets[0][3]->Clone();
+      for(int p=1; p<nHiggsSamples; p++) hSumSgnl->Add(hBCFullSel100Baskets[p][3]);
+      TH1F* hSumBkgd = (TH1F*)hBCFullSel100Baskets[5][3]->Clone();
+      hSumBkgd->Add(hBCFullSel100Baskets[6][3]);
+      hSumBkgd->Add(hBCFullSel100Baskets[7][3]);
+      if(treatH2l2XAsBkgd){
+	hSumSgnl->Add(hBCFullSel100BasketsAssocDecays[nAssocWDecays+nAssocZDecays-1][3],-1);
+	hSumSgnl->Add(hBCFullSel100BasketsAssocDecays[nAssocWDecays+nAssocZDecays+nAssocttDecays-1][3],-1);
+	hSumBkgd->Add(hBCFullSel100BasketsAssocDecays[nAssocWDecays+nAssocZDecays-1][3]);
+	hSumBkgd->Add(hBCFullSel100BasketsAssocDecays[nAssocWDecays+nAssocZDecays+nAssocttDecays-1][3]);
+      }
+
+      TH1F* hDenom = (TH1F*)hSumSgnl->Clone();
+      hDenom->Add(hSumBkgd);
+      TH1F* hSOSPB = (TH1F*)hSumSgnl->Clone();
+      hSOSPB->Divide(hDenom);
+      TCanvas* cBCFullSel100BasketSOSPB = new TCanvas("cBCFullSel100_basketSOSPB","cBCFullSel100_basketSOSPB",500,500);
+      DrawBasketSOSPB(cBCFullSel100BasketSOSPB,hSOSPB,basketLabel);
+      SaveCanvas(outDir,cBCFullSel100BasketSOSPB);
+
+      string pn = "qqtoZZ";
+      cBCFullSel100BasketEfficiency[nHiggsSamples] = new TCanvas(Form("cBCFullSel100_basketEfficiency_%s",pn.c_str()),Form("cBCFullSel100_basketEfficiency_%s",pn.c_str()),500,500);
+      DrawBasketEfficiencies(cBCFullSel100BasketEfficiency[nHiggsSamples],hSumBkgd,pn,hAssocDecays,assocDecayName,basketLabel,false);
+      SaveCanvas(outDir,cBCFullSel100BasketEfficiency[nHiggsSamples]);
+
+
+      TH1F* hSumSgnlMasswindow = (TH1F*)hBCFullSel100MasswindowBaskets[0][3]->Clone();
+      for(int p=1; p<nHiggsSamples; p++) hSumSgnlMasswindow->Add(hBCFullSel100MasswindowBaskets[p][3]);
+      TH1F* hSumBkgdMasswindow = (TH1F*)hBCFullSel100MasswindowBaskets[5][3]->Clone();
+      hSumBkgdMasswindow->Add(hBCFullSel100MasswindowBaskets[6][3]);
+      hSumBkgdMasswindow->Add(hBCFullSel100MasswindowBaskets[7][3]);
+      if(treatH2l2XAsBkgd){
+	hSumSgnlMasswindow->Add(hBCFullSel100MasswindowBasketsAssocDecays[nAssocWDecays+nAssocZDecays-1][3],-1);
+	hSumSgnlMasswindow->Add(hBCFullSel100MasswindowBasketsAssocDecays[nAssocWDecays+nAssocZDecays+nAssocttDecays-1][3],-1);
+	hSumBkgdMasswindow->Add(hBCFullSel100MasswindowBasketsAssocDecays[nAssocWDecays+nAssocZDecays-1][3]);
+	hSumBkgdMasswindow->Add(hBCFullSel100MasswindowBasketsAssocDecays[nAssocWDecays+nAssocZDecays+nAssocttDecays-1][3]);
+      }
+
+      TH1F* hDenomMasswindow = (TH1F*)hSumSgnlMasswindow->Clone();
+      hDenomMasswindow->Add(hSumBkgdMasswindow);
+      TH1F* hSOSPBMasswindow = (TH1F*)hSumSgnlMasswindow->Clone();
+      hSOSPBMasswindow->Divide(hDenomMasswindow);
+      TCanvas* cBCFullSel100MasswindowBasketSOSPB = new TCanvas("cBCFullSel100Masswindow_basketSOSPB","cBCFullSel100Masswindow_basketSOSPB",500,500);
+      DrawBasketSOSPB(cBCFullSel100MasswindowBasketSOSPB,hSOSPBMasswindow,basketLabel);
+      SaveCanvas(outDir,cBCFullSel100MasswindowBasketSOSPB);
+
+    }
+
+  }
+
 }
 
 

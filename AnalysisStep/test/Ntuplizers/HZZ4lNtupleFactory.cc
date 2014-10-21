@@ -334,6 +334,52 @@ void HZZ4lNtupleFactory::InitializeVariables()
   _DiJetMassMinus=-99;
   _DiJetDEta=-99;
   
+  //Categorization-related variables
+  _nExtraLep.clear();
+  _nExtraZ.clear();
+  _nJets.clear();
+  _nCleanedJets.clear();
+  _nCleanedJetsPt30.clear();
+
+  //Variables of extra leptons
+  _ExtraLep1Pt.clear();
+  _ExtraLep1Eta.clear();
+  _ExtraLep1Phi.clear();
+  _ExtraLep1LepId.clear();
+  _ExtraLep1SIP.clear();
+  _ExtraLep1isID.clear();
+  _ExtraLep1BDT.clear();
+  _ExtraLep1missingHit.clear();
+  _ExtraLep1chargedHadIso.clear();
+  _ExtraLep1neutralHadIso.clear();
+  _ExtraLep1photonIso.clear();
+  _ExtraLep1combRelIsoPF.clear();
+
+  _ExtraLep2Pt.clear();
+  _ExtraLep2Eta.clear();
+  _ExtraLep2Phi.clear();
+  _ExtraLep2LepId.clear();
+  _ExtraLep2SIP.clear();
+  _ExtraLep2isID.clear();
+  _ExtraLep2BDT.clear();
+  _ExtraLep2missingHit.clear();
+  _ExtraLep2chargedHadIso.clear();
+  _ExtraLep2neutralHadIso.clear();
+  _ExtraLep2photonIso.clear();
+  _ExtraLep2combRelIsoPF.clear();
+
+  _ExtraLep3Pt.clear();
+  _ExtraLep3Eta.clear();
+  _ExtraLep3Phi.clear();
+  _ExtraLep3LepId.clear();
+  _ExtraLep3SIP.clear();
+  _ExtraLep3isID.clear();
+  _ExtraLep3BDT.clear();
+  _ExtraLep3missingHit.clear();
+  _ExtraLep3chargedHadIso.clear();
+  _ExtraLep3neutralHadIso.clear();
+  _ExtraLep3photonIso.clear();
+  _ExtraLep3combRelIsoPF.clear();
 
 
   return;
@@ -607,6 +653,58 @@ void HZZ4lNtupleFactory::InitializeBranches()
   _outTree->Branch("DiJetMassPlus",&_DiJetMassPlus,"DiJetMassPlus/F");
   _outTree->Branch("DiJetMassMinus",&_DiJetMassMinus,"DiJetMassMinus/F");
   _outTree->Branch("DiJetDEta",&_DiJetDEta,"DiJetDEta/F");
+
+  //Categorization-related variables
+  _outTree->Branch("nExtraLep",&_nExtraLep);
+  _outTree->Branch("nExtraZ",&_nExtraZ);
+  _outTree->Branch("nJets",&_nJets);
+  _outTree->Branch("nCleanedJets",&_nCleanedJets);
+  _outTree->Branch("nCleanedJetsPt30",&_nCleanedJetsPt30);
+
+  //Variables of extra leptons
+  _outTree->Branch("ExtraLep1Pt",&_ExtraLep1Pt);
+  _outTree->Branch("ExtraLep1Eta",&_ExtraLep1Eta);
+  _outTree->Branch("ExtraLep1Phi",&_ExtraLep1Phi);
+  _outTree->Branch("ExtraLep1LepId",&_ExtraLep1LepId);
+
+  _outTree->Branch("ExtraLep2Pt",&_ExtraLep2Pt);
+  _outTree->Branch("ExtraLep2Eta",&_ExtraLep2Eta);
+  _outTree->Branch("ExtraLep2Phi",&_ExtraLep2Phi);
+  _outTree->Branch("ExtraLep2LepId",&_ExtraLep2LepId);
+
+  _outTree->Branch("ExtraLep3Pt",&_ExtraLep3Pt);
+  _outTree->Branch("ExtraLep3Eta",&_ExtraLep3Eta);
+  _outTree->Branch("ExtraLep3Phi",&_ExtraLep3Phi);
+  _outTree->Branch("ExtraLep3LepId",&_ExtraLep3LepId);
+
+// Extended information on extra leptons.
+// Currently not used, skip them for the time being
+//   _outTree->Branch("ExtraLep1SIP",&_ExtraLep1SIP);
+//   _outTree->Branch("ExtraLep1isID",&_ExtraLep1isID);
+//   _outTree->Branch("ExtraLep1BDT",&_ExtraLep1BDT);
+//   _outTree->Branch("ExtraLep1missingHit",&_ExtraLep1missingHit);
+//   _outTree->Branch("ExtraLep1chargedHadIso",&_ExtraLep1chargedHadIso);
+//   _outTree->Branch("ExtraLep1neutralHadIso",&_ExtraLep1neutralHadIso);
+//   _outTree->Branch("ExtraLep1photonIso",&_ExtraLep1photonIso);
+//   _outTree->Branch("ExtraLep1combRelIsoPF",&_ExtraLep1combRelIsoPF);
+//
+//   _outTree->Branch("ExtraLep2SIP",&_ExtraLep2SIP);
+//   _outTree->Branch("ExtraLep2isID",&_ExtraLep2isID);
+//   _outTree->Branch("ExtraLep2BDT",&_ExtraLep2BDT);
+//   _outTree->Branch("ExtraLep2missingHit",&_ExtraLep2missingHit);
+//   _outTree->Branch("ExtraLep2chargedHadIso",&_ExtraLep2chargedHadIso);
+//   _outTree->Branch("ExtraLep2neutralHadIso",&_ExtraLep2neutralHadIso);
+//   _outTree->Branch("ExtraLep2photonIso",&_ExtraLep2photonIso);
+//   _outTree->Branch("ExtraLep2combRelIsoPF",&_ExtraLep2combRelIsoPF);
+//
+//   _outTree->Branch("ExtraLep3SIP",&_ExtraLep3SIP);
+//   _outTree->Branch("ExtraLep3isID",&_ExtraLep3isID);
+//   _outTree->Branch("ExtraLep3BDT",&_ExtraLep3BDT);
+//   _outTree->Branch("ExtraLep3missingHit",&_ExtraLep3missingHit);
+//   _outTree->Branch("ExtraLep3chargedHadIso",&_ExtraLep3chargedHadIso);
+//   _outTree->Branch("ExtraLep3neutralHadIso",&_ExtraLep3neutralHadIso);
+//   _outTree->Branch("ExtraLep3photonIso",&_ExtraLep3photonIso);
+//   _outTree->Branch("ExtraLep3combRelIsoPF",&_ExtraLep3combRelIsoPF);
 
   //Generated particles
   _outTree->Branch("GenHMass",&_genHMass,"GenHMass/F");
@@ -1165,6 +1263,87 @@ void HZZ4lNtupleFactory::FillDiJetInfo(const Float_t DiJetMass, const Float_t Di
   _DiJetMassPlus = DiJetMassPlus;
   _DiJetMassMinus = DiJetMassMinus;
   _DiJetDEta = DiJetDEta;
+
+  return;
+}
+
+void HZZ4lNtupleFactory::FillCategorizationInfo(const Int_t nExtraLep, const Int_t nExtraZ, const Int_t nJets, const Int_t nCleanedJets, const Int_t nCleanedJetsPt30)
+{
+  _nExtraLep.push_back(nExtraLep);
+  _nExtraZ.push_back(nExtraZ);
+  _nJets.push_back(nJets);
+  _nCleanedJets.push_back(nCleanedJets);
+  _nCleanedJetsPt30.push_back(nCleanedJetsPt30);
+
+  return;
+}
+
+void HZZ4lNtupleFactory::FillExtraLepInfo(int extraLeptonIndex, bool extraLeptonExists, const reco::CandidatePtr ExtraLep)
+{
+  Float_t Pt         = extraLeptonExists ? ExtraLep->pt()    : -9999. ;
+  Float_t Eta        = extraLeptonExists ? ExtraLep->eta()   : -9999. ;
+  Float_t Phi        = extraLeptonExists ? ExtraLep->phi()   : -9999. ;
+  Int_t   LepId      = extraLeptonExists ? ExtraLep->pdgId() :     0  ;
+//   Float_t SIP        = extraLeptonExists ? userdatahelpers::getUserFloat(&*ExtraLep,"SIP")              : -9999. ;
+//   Bool_t  isID       = extraLeptonExists ? userdatahelpers::getUserFloat(&*ExtraLep,"isID")             :     0  ;
+//   Float_t BDT        = extraLeptonExists ? userdatahelpers::getUserFloat(&*ExtraLep,"BDT")              : -9999. ;
+//   Char_t  missingHit = extraLeptonExists ? (char)userdatahelpers::getUserFloat(&*ExtraLep,"missingHit") :     0  ;
+//   Float_t chargedHadIso = extraLeptonExists ? userdatahelpers::getUserFloat(&*ExtraLep,"PFChargedHadIso") : -9999. ;
+//   Float_t neutralHadIso = extraLeptonExists ? userdatahelpers::getUserFloat(&*ExtraLep,"PFNeutralHadIso") : -9999. ;
+//   Float_t photonIso     = extraLeptonExists ? userdatahelpers::getUserFloat(&*ExtraLep,"PFPhotonIso")     : -9999. ;
+//   Float_t combRelIsoPF  = extraLeptonExists ? userdatahelpers::getUserFloat(&*ExtraLep,"combRelIsoPF")    : -9999. ;
+
+  switch(extraLeptonIndex){
+
+  case 1:
+    _ExtraLep1Pt        .push_back(Pt);
+    _ExtraLep1Eta       .push_back(Eta);
+    _ExtraLep1Phi       .push_back(Phi);
+    _ExtraLep1LepId     .push_back(LepId);
+//     _ExtraLep1SIP       .push_back(SIP);
+//     _ExtraLep1isID      .push_back(isID);
+//     _ExtraLep1BDT       .push_back(BDT);
+//     _ExtraLep1missingHit.push_back(missingHit);
+//     _ExtraLep1chargedHadIso.push_back(chargedHadIso);
+//     _ExtraLep1neutralHadIso.push_back(neutralHadIso);
+//     _ExtraLep1photonIso    .push_back(photonIso);
+//     _ExtraLep1combRelIsoPF .push_back(combRelIsoPF);
+    break;
+
+  case 2:
+    _ExtraLep2Pt        .push_back(Pt);
+    _ExtraLep2Eta       .push_back(Eta);
+    _ExtraLep2Phi       .push_back(Phi);
+    _ExtraLep2LepId     .push_back(LepId);
+//     _ExtraLep2SIP       .push_back(SIP);
+//     _ExtraLep2isID      .push_back(isID);
+//     _ExtraLep2BDT       .push_back(BDT);
+//     _ExtraLep2missingHit.push_back(missingHit);
+//     _ExtraLep2chargedHadIso.push_back(chargedHadIso);
+//     _ExtraLep2neutralHadIso.push_back(neutralHadIso);
+//     _ExtraLep2photonIso    .push_back(photonIso);
+//     _ExtraLep2combRelIsoPF .push_back(combRelIsoPF);
+    break;
+
+  case 3:
+    _ExtraLep3Pt        .push_back(Pt);
+    _ExtraLep3Eta       .push_back(Eta);
+    _ExtraLep3Phi       .push_back(Phi);
+    _ExtraLep3LepId     .push_back(LepId);
+//     _ExtraLep3SIP       .push_back(SIP);
+//     _ExtraLep3isID      .push_back(isID);
+//     _ExtraLep3BDT       .push_back(BDT);
+//     _ExtraLep3missingHit.push_back(missingHit);
+//     _ExtraLep3chargedHadIso.push_back(chargedHadIso);
+//     _ExtraLep3neutralHadIso.push_back(neutralHadIso);
+//     _ExtraLep3photonIso    .push_back(photonIso);
+//     _ExtraLep3combRelIsoPF .push_back(combRelIsoPF);
+    break;
+
+  default:
+    std::cout << "Error in indexing the extra leptons ! Will abort..." << std::endl;
+    assert(0);
+  }
 
   return;
 }

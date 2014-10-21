@@ -152,6 +152,14 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   Handle<edm::View<cmg::PFJet> > pfjetscoll;
   iEvent.getByLabel("cmgPFJetSel", pfjetscoll);
 
+  // Get softLeptons
+  Handle<View<reco::Candidate> > leptonscoll;
+  iEvent.getByLabel("softLeptons", leptonscoll);
+
+  // Get Z Candidates
+  Handle<View<CompositeCandidate> > ZCands;
+  iEvent.getByLabel("ZCand", ZCands);
+
   // Get processID
 //   edm::Handle<GenEventInfoProduct> gen;
 //   iEvent.getByLabel( "generator", gen );
@@ -172,7 +180,6 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     if (embedDaughterFloats){  
       userdatahelpers::embedDaughterData(myCand);
     }
-    
 
     const reco::CompositeCandidate::role_collection* ZRoles = &rolesZ1Z2;
     int iZ1 = 0; // index of the Z closest to mZ. This will be different to rolesZ1Z2
@@ -225,6 +232,43 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     int id12 = Z1Lm->pdgId();
     int id21 = Z2Lp->pdgId();
     int id22 = Z2Lm->pdgId();
+
+    // store good isolated leptons that are not involved in the current ZZ candidate
+    int nExtraLep = 0;
+    for( View<reco::Candidate>::const_iterator lep = leptonscoll->begin(); lep != leptonscoll->end(); ++ lep ) {
+      if( reco::deltaR( lep->p4(), Z1Lp->p4() ) > 0.02 &&
+	  reco::deltaR( lep->p4(), Z1Lm->p4() ) > 0.02 &&
+	  reco::deltaR( lep->p4(), Z2Lp->p4() ) > 0.02 &&
+	  reco::deltaR( lep->p4(), Z2Lm->p4() ) > 0.02    ){
+	const reco::CandidatePtr myLep(leptonscoll,lep-leptonscoll->begin());
+	if((bool)userdatahelpers::getUserFloat(&*myLep,"isGood") && userdatahelpers::getUserFloat(&*myLep,"combRelIsoPF")<0.4){
+	  nExtraLep++;
+	  myCand.addUserCand("ExtraLep"+to_string(nExtraLep),myLep);
+	}
+      }
+    }
+    myCand.addUserFloat("nExtraLep",nExtraLep);
+
+    // store Z candidates whose leptons are not involved in the current ZZ candidate
+    int nExtraZ = 0;
+    for( View<CompositeCandidate>::const_iterator zcand = ZCands->begin(); zcand != ZCands->end(); ++ zcand ) {
+      if( reco::deltaR( zcand->daughter(0)->p4(), Z1Lp->p4() ) > 0.02 &&
+	  reco::deltaR( zcand->daughter(0)->p4(), Z1Lm->p4() ) > 0.02 &&
+	  reco::deltaR( zcand->daughter(0)->p4(), Z2Lp->p4() ) > 0.02 &&
+	  reco::deltaR( zcand->daughter(0)->p4(), Z2Lm->p4() ) > 0.02 &&
+	  reco::deltaR( zcand->daughter(1)->p4(), Z1Lp->p4() ) > 0.02 &&
+	  reco::deltaR( zcand->daughter(1)->p4(), Z1Lm->p4() ) > 0.02 &&
+	  reco::deltaR( zcand->daughter(1)->p4(), Z2Lp->p4() ) > 0.02 &&
+	  reco::deltaR( zcand->daughter(1)->p4(), Z2Lm->p4() ) > 0.02    ){
+	const reco::CandidatePtr myZCand(ZCands,zcand-ZCands->begin());
+	if((bool)userdatahelpers::getUserFloat(&*myZCand,"GoodLeptons")){
+	  nExtraZ++;
+	  myCand.addUserCand("assocZ"+to_string(nExtraZ),myZCand);
+	}
+      }
+    }
+    myCand.addUserFloat("nExtraZ",nExtraZ);
+
 
     int d0FSR = (static_cast<const pat::CompositeCandidate*>(Z1->masterClone().get()))->userFloat("dauWithFSR");
     if (d0FSR>=0) {
@@ -565,6 +609,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     combinedMEM.computeME_Interference(MEMNames::kzzgg,MEMNames::kJHUGen,partP, partId,pzzgg_VAJHU);
     combinedMEM.computeME_Interference(MEMNames::kzzzg_PS,MEMNames::kJHUGen,partP, partId,pzzzg_PS_VAJHU);
     combinedMEM.computeME_Interference(MEMNames::kzzgg_PS,MEMNames::kJHUGen,partP, partId,pzzgg_PS_VAJHU);
+
     // VBF jets
     vector<const cmg::PFJet*> cleanedJets;
     VBFCandidateJetSelector myVBFCandidateJetSelector;
@@ -589,6 +634,11 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     double pvbf_VAJHU_new_up = -1.;
     double phjj_VAJHU_new_dn = -1.;
     double pvbf_VAJHU_new_dn = -1.;
+
+    //FIXME: once cleaning is done per-event and not per-candidate, these will become per-event variables!
+    myCand.addUserFloat("nJets",pfjetscoll->size());
+    myCand.addUserFloat("nCleanedJets",cleanedJets.size());
+    myCand.addUserFloat("nCleanedJetsPt30",cleanedJetsPt30.size());
 
     if (cleanedJetsPt30.size()>=2) {
       detajj = cleanedJetsPt30[0]->eta()-cleanedJetsPt30[1]->eta();
