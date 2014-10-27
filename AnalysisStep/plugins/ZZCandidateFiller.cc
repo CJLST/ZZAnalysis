@@ -43,13 +43,15 @@
 #include "ZZAnalysis/AnalysisStep/interface/VBFCandidateJetSelector.h"
 #include <ZZAnalysis/AnalysisStep/interface/Fisher.h>
 #include <ZZAnalysis/AnalysisStep/interface/Comparators.h>
-
+#include <ZZAnalysis/AnalysisStep/interface/utils.h>
 
 
 #include "TH2F.h"
 #include "TFile.h"
 
 #include <string>
+
+using namespace zzanalysis;
 
 bool doKinFit = false;
 bool doVtxFit = false;
@@ -168,7 +170,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   //----------------------------------------------------------------------
   //--- Loop over input candidates
   for( View<CompositeCandidate>::const_iterator cand = LLLLCands->begin(); cand != LLLLCands->end(); ++ cand ) {
-    int i = distance(LLLLCands->begin(),cand);
+    int icand = distance(LLLLCands->begin(),cand);
 
     pat::CompositeCandidate myCand(*cand);
 
@@ -700,11 +702,28 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
     //----------------------------------------------------------------------
     //-- VH discriminants
-
-    // Use extraLeps, extraZs, cleanedJetsPt30, and pfmet to compute additional discriminants
     Mela* myMela = combinedMEM.m_MELA;
+      
+    // Use extraLeps, extraZs, cleanedJetsPt30, and pfmet to compute additional discriminants
 
-    myMela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::ZH);
+    float pzh_VAJHU=-1.;
+    // ZH discriminant
+    if (extraZs.size()>=1) {
+      myMela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::ZH);
+      double selfDHvvcoupl[SIZE_HVV_VBF][2] = { { 0 } };
+      for (vector<const CompositeCandidate*>::const_iterator iZ = extraZs.begin(); iZ!=extraZs.end(); ++iZ){
+	//TLorentzVector (math::XYZTLorentzVector)
+	const reco::Candidate* Zal1 = (*iZ)->daughter(0);
+	const reco::Candidate* Zal2 = (*iZ)->daughter(1);
+
+	TLorentzVector aZLeps[2] = {tlv(Zal1->p4()), tlv(Zal2->p4())};
+	int aZLepsId[2] = {Zal1->pdgId(),Zal2->pdgId()};
+	float pzh_VAJHU_tmp;
+	myMela->computeProdP(aZLeps, partP.data(), aZLepsId, partId.data(), 0, selfDHvvcoupl, pzh_VAJHU_tmp); 
+	pzh_VAJHU = std::max(pzh_VAJHU_tmp,pzh_VAJHU);
+      }
+    } 
+    
     // ...
 
 
@@ -1042,6 +1061,9 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     myCand.addUserFloat("p0Zgs_PS_VAJHU",p0Zgs_PS_VAJHU);
     myCand.addUserFloat("p0gsgs_PS_VAJHU",p0gsgs_PS_VAJHU);
 
+    // VH
+    myCand.addUserFloat("pzh_VAJHU",pzh_VAJHU);
+
     //--- MC matching. To be revised, cf. MuFiller, EleFiller
 //     if (isMC) {
 //       int refID = 25; // FIXME: handle ZZ (sigId = 23)
@@ -1065,7 +1087,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
       
       if (preBestCandResult){
         // Fill preSelCands matrix
-        preSelCands[iCRname].push_back(i);
+        preSelCands[iCRname].push_back(icand);
         //      cout << "Pass best cand presel for " << iCRname << " " << myCand.mass() << " " << Z1->mass() << " " << Z2->mass() << " " << Z2->daughter(0)->pt() << " " << Z2->daughter(1)->pt() << " " <<  endl;
       }
       iCRname++;

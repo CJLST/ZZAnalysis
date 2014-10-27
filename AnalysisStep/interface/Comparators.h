@@ -20,7 +20,7 @@ namespace Comparators {
 
   const float ZmassValue = 91.1876;
 
-  enum ComparatorTypes {byBestZ1bestZ2 = 0, byBestKD=1};
+  enum ComparatorTypes {byBestZ1bestZ2 = 0, byBestKD=1, byBestDbkgVH};
 
   // Abstract base class
   struct BestCandComparator {
@@ -64,6 +64,18 @@ namespace Comparators {
 	return (KD_i>KD_j);
       } // end of byBestKD
 
+      else if (theType==byBestDbkgVH) {
+	double ps_i = cand_i.userFloat("pzh_VAJHU");
+	if (ps_i<0) ps_i = cand_i.userFloat("p0plus_VAJHU");
+	double ps_j = cand_j.userFloat("pzh_VAJHU");
+	if (ps_j<0) ps_j = cand_j.userFloat("p0plus_VAJHU");
+	
+	double KD_i = ps_i/( ps_i + cand_i.userFloat("bkg_VAMCFM") );
+	double KD_j = ps_j/( ps_j + cand_j.userFloat("bkg_VAMCFM") );
+      
+	return (KD_i>KD_j);
+      } // end of byBestKD
+      
       else {
 	abort();
       }
