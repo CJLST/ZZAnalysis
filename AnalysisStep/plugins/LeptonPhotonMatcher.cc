@@ -18,6 +18,8 @@
 
 #include <DataFormats/PatCandidates/interface/Muon.h>
 #include <DataFormats/PatCandidates/interface/Electron.h>
+#include <DataFormats/PatCandidates/interface/Photon.h>
+#include <DataFormats/PatCandidates/interface/PFParticle.h>
 #include <ZZAnalysis/AnalysisStep/interface/PhotonFwd.h>
 #include <Muon/MuonAnalysisTools/interface/MuonEffectiveArea.h>
 #include <EGamma/EGammaAnalysisTools/interface/ElectronEffectiveArea.h>
@@ -86,7 +88,7 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByLabel(theElectronTag_, electronHandle);
 
   //--- Get the photons
-  edm::Handle<edm::View<cmg::Photon> > photonHandle;
+  edm::Handle<edm::View<pat::PFParticle> > photonHandle;
   iEvent.getByLabel(thePhotonTag_, photonHandle);
 
 
@@ -109,7 +111,7 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       // Get the photon as edm::Ptr
       PhotonPtr g = photonHandle->ptrAt(i);
 
-      // Photon preselection (is currently already applied on cmg::Photon collection)
+      // Photon preselection (is currently already applied on pat::Photon collection)
       if (!(g->pt()>2. && fabs(g->eta())<2.4)) continue;
 
       //---------------------
@@ -175,7 +177,7 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  if (g->pt()>2.) accept = true;
 	} else if ( dRMin<0.5 ){ // That's implicit, but does not hurt
 	  // double relIso = g->relIso(0.5); // This is buggy, needs to recompute it.
-	  gRelIso = (g->chargedHadronIso() + g->photonIso() + g->neutralHadronIso() + g->puChargedHadronIso())/g->pt();
+	  gRelIso = g->userFloat("fsrPhotonPFIsoChHadPUNoPU03pt02")+ g->userFloat("fsrPhotonPFIsoNHadPhoton03");
 	  if (g->pt()>4 && gRelIso<1.) accept = true;
 	}
 	if(debug) cout << "   " << "   closest lep: " << closestLep->pdgId() << " " << closestLep->pt() << " gRelIso: " << gRelIso << " dRMin: " << dRMin << " accept: " << accept << endl;

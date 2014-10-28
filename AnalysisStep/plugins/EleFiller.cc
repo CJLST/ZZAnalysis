@@ -16,10 +16,6 @@
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 #include <FWCore/Framework/interface/ESHandle.h>
 
-#include <DataFormats/PatCandidates/interface/Electron.h>
-#include <EGamma/EGammaAnalysisTools/interface/ElectronEffectiveArea.h>
-#include "DataFormats/VertexReco/interface/Vertex.h"
-
 #include <ZZAnalysis/AnalysisStep/interface/CutSet.h>
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
 //#include "BDTId.h"
@@ -90,25 +86,9 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   // Output collection
   auto_ptr<pat::ElectronCollection> result( new pat::ElectronCollection() );
 
-  //FIXME: effective areas to be updated!
-  const float AreaEcal[2]    = {0.101, 0.046};   //   barrel/endcap
-  const float AreaHcal[2]    = {0.021, 0.040};   //   barrel/endcap
-
-  for (unsigned int i = 0; i< electronHandle->size(); ++i){
+   for (unsigned int i = 0; i< electronHandle->size(); ++i){
     //---Clone the pat::Electron
     pat::Electron l(*((*electronHandle)[i].get()));
-
-    //--- Rho-corrected isolation and loose iso
-    float tkIso   = l.userIsolation(pat::User1Iso);
-    float ecalIso = l.dr03EcalRecHitSumEt();
-    float hcalIso = l.dr03HcalTowerSumEt();
-
-    Int_t ifid = 1;
-    if (l.isEB()) ifid = 0;
-    ecalIso = ecalIso - AreaEcal[ifid]*rho;
-    hcalIso = hcalIso - AreaHcal[ifid]*rho;
-    
-    float combRelIso = (ecalIso + hcalIso + tkIso)/l.pt();
 
     //--- PF ISO
     float PFChargedHadIso   = l.chargedHadronIso();
@@ -140,7 +120,7 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     //if (recomputeBDT) {
     //  BDT = bdt->compute(l);
     //} else {
-      BDT = l.electronID("mvaNonTrigV0");
+    //  BDT = l.electronID("mvaNonTrigV0");
     //}
     
 
@@ -156,34 +136,17 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 			       (fSCeta >= 1.479               && BDT > 0.6)));
 
 
-// Forget mva ISO for the time being.
-//     float mvaIsoRings = l.userFloat("mvaIsoRings");
-//     bool isMvaIsoRings = false;
-    
-//     //"reference WP" from https://twiki.cern.ch/twiki/bin/view/CMS/EgammaMultivariateIsoElectrons#Reference_Working_Point r10
-//     if ((pt < 10 && fSCeta < 0.8                   && mvaIsoRings >  0.385) ||
-// 	(pt < 10 && fSCeta >= 0.8 && fSCeta < 1.479  && mvaIsoRings > -0.083) ||
-// 	(pt < 10 && fSCeta > 1.479                 && mvaIsoRings > -0.573) ||
-// 	(pt >= 10 && fSCeta < 0.8                  && mvaIsoRings >  0.413) ||
-// 	(pt >= 10 && fSCeta >= 0.8 && fSCeta < 1.479 && mvaIsoRings >  0.271) ||
-// 	(pt >= 10 && fSCeta > 1.479                && mvaIsoRings >  0.135)) {
-//       isMvaIsoRings = true;      
-//      }
-    
 	//-- Missing hit  
 	int missingHit = l.gsfTrack()->trackerExpectedHitsInner().numberOfHits();
     //--- Trigger matching
     int HLTMatch = 0; //FIXME
     
     //--- Embed user variables
-    l.addUserFloat("looseIso",tkIso/l.pt());
-    l.addUserFloat("combRelIso",combRelIso);
     l.addUserFloat("PFChargedHadIso",PFChargedHadIso);
     l.addUserFloat("PFNeutralHadIso",PFNeutralHadIso);
     l.addUserFloat("PFPhotonIso",PFPhotonIso);
     l.addUserFloat("combRelIsoPF",combRelIsoPF);
     l.addUserFloat("rho",rho);
-//    l.addUserFloat("isMvaIsoRings", isMvaIsoRings);
     l.addUserFloat("SIP",SIP);
     l.addUserFloat("dxy",dxy);
     l.addUserFloat("dz",dz);
