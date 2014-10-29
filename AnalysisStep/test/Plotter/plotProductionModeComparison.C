@@ -32,9 +32,9 @@ using namespace std;
 #define requireExactly6GoodLeps 0 
 #define requireHLepsAreGood     0 // impose that all 4 gen leptons from the Higgs are matched to good leptons (from the candidate or extra leptons)
 
-#define excludeH2l2X 1 // completely exclude ZH,H->2l2X and ttH,H->2l2X events from the study
-#define acceptanceIncludesPt 1 // if not, acceptance is just on eta
-#define treatH2l2XAsBkgd 0 // treat these events as a background for the purity and S/(S+B) plots 
+#define excludeH2l2X            1 // completely exclude ZH,H->2l2X and ttH,H->2l2X events from the study
+#define acceptanceIncludesPt    1 // if not, acceptance is just on eta
+#define treatH2l2XAsBkgd        0 // treat these events as a background for the purity and S/(S+B) plots 
 
 #define doProdComp       1 // plots shown on September 8th
 #define doProdCompMatch4 0
@@ -1317,8 +1317,7 @@ void plotProductionModeComparison(
 	Float_t GenAssocLepPhi[2] = {GenAssocLep1Phi,GenAssocLep2Phi};
 	Bool_t  GenAssocLepIsInAcc[4];
 	for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++){
-	  if(GenHLepId[iGenHLep]!=0){
-	    //if(abs(GenHLepId[iGenHLep])==11 || abs(GenHLepId[iGenHLep])==13){
+	  if(abs(GenHLepId[iGenHLep])==11 || abs(GenHLepId[iGenHLep])==13){
 	    nGenHLep++;
 	    GenHLepIsInAcc[iGenHLep] = (abs(GenHLepId[iGenHLep])==11 && (acceptanceIncludesPt?GenHLepPt[iGenHLep]>7.:true) && fabs(GenHLepEta[iGenHLep])<2.5) || 
 	                               (abs(GenHLepId[iGenHLep])==13 && (acceptanceIncludesPt?GenHLepPt[iGenHLep]>5.:true) && fabs(GenHLepEta[iGenHLep])<2.4) ;
@@ -1326,8 +1325,7 @@ void plotProductionModeComparison(
 	  }
 	}
 	for(Int_t iGenAssocLep=0; iGenAssocLep<2; iGenAssocLep++){
-	  if(GenAssocLepId[iGenAssocLep]!=0){
-	    //if(abs(GenAssocLepId[iGenAssocLep])==11 || abs(GenAssocLepId[iGenAssocLep])==13){
+	  if(abs(GenAssocLepId[iGenAssocLep])==11 || abs(GenAssocLepId[iGenAssocLep])==13){
 	    nGenAssocLep++;
 	    GenAssocLepIsInAcc[iGenAssocLep] = (abs(GenAssocLepId[iGenAssocLep])==11 && (acceptanceIncludesPt?GenAssocLepPt[iGenAssocLep]>7.:true) && fabs(GenAssocLepEta[iGenAssocLep])<2.5) || 
 	                                       (abs(GenAssocLepId[iGenAssocLep])==13 && (acceptanceIncludesPt?GenAssocLepPt[iGenAssocLep]>5.:true) && fabs(GenAssocLepEta[iGenAssocLep])<2.4) ;
@@ -1336,6 +1334,10 @@ void plotProductionModeComparison(
 	}
 	Int_t nGenLep = nGenHLep + nGenAssocLep;
 	Int_t nGenLepInAcc = nGenHLepInAcc + nGenAssocLepInAcc;
+
+	// Don't want to consider such events.
+	// (They are sometimes selected because some e/mu from tau decays are reconstructed as good leptons.)
+	if(nGenLep<4) continue;
 
 	///////////////////////////
 	if(excludeH2l2X)
@@ -1405,8 +1407,7 @@ void plotProductionModeComparison(
 	    Int_t nGenHLepMatchedToZ1Lep[4] = {0,0};
 	    Int_t nGenHLepMatchedToZ2Lep[4] = {0,0};
 	    for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++){
-	      if(GenHLepId[iGenHLep]!=0){
-		//if(abs(GenHLepId[iGenHLep])==11 || abs(GenHLepId[iGenHLep])==13){
+	      if(abs(GenHLepId[iGenHLep])==11 || abs(GenHLepId[iGenHLep])==13){
 		for(Int_t iCandLep=0; iCandLep<4; iCandLep++){
 		  if(deltaR(GenHLepEta[iGenHLep],GenHLepPhi[iGenHLep],CandLepEta[iCandLep],CandLepPhi[iCandLep]) < 0.1){
 		    nRecoLepMatchedToGenHLep[iGenHLep]++;
@@ -1429,8 +1430,7 @@ void plotProductionModeComparison(
 	      }
 	    }
 	    for(Int_t iGenAssocLep=0; iGenAssocLep<2; iGenAssocLep++){
-	      if(GenAssocLepId[iGenAssocLep]!=0){
-		//if(abs(GenAssocLepId[iGenAssocLep])==11 || abs(GenAssocLepId[iGenAssocLep])==13){
+	      if(abs(GenAssocLepId[iGenAssocLep])==11 || abs(GenAssocLepId[iGenAssocLep])==13){
 		for(Int_t iCandLep=0; iCandLep<4; iCandLep++){
 		  if(deltaR(GenAssocLepEta[iGenAssocLep],GenAssocLepPhi[iGenAssocLep],CandLepEta[iCandLep],CandLepPhi[iCandLep]) < 0.1){
 		    nRecoLepMatchedToGenAssocLep[iGenAssocLep]++;
