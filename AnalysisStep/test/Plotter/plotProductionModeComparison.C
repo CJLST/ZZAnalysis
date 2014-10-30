@@ -1166,7 +1166,6 @@ void plotProductionModeComparison(
   for(int p=0; p<nSamples; p++){
     if(!isPresent[p]) continue;
 
-    cout<<prodName[p]<<endl;
     txtOut<<prodName[p]<<endl;
 
     for(int c=0; c<nChannels; c++){
@@ -1800,20 +1799,20 @@ void plotProductionModeComparison(
     Int_t widthColumn2 = 6;
 
     for(int c=0; c<nChannels; c++){
-      cout<<" "<<channels[c]<<endl;
-      cout<<"  stored :            "<<fixWidth(Form("%i",nbStored[p][c]),widthColumn2,false)<<endl;
-      cout<<"  iBC>0 :             "<<fixWidth(Form("%i",nbWithBC[p][c]),widthColumn2,false)<<endl;
-      cout<<"  iBC>0, FullSel70 :  "<<fixWidth(Form("%i",nbWithBCFullSel70[p][c]),widthColumn2,false)<<endl;
-      cout<<"  iBC>0, FullSel100 : "<<fixWidth(Form("%i",nbWithBCFullSel100[p][c]),widthColumn2,false)<<endl;
-      if(requireHLepsAreInAcc)    cout<<"  [ From this point, require that the 4 gen-leptons from the H are in the acceptance ]"<<endl;
-      if(requireExactly4GoodLeps) cout<<"  [ From this point, require that there is exactly 4 good leptons ]"<<endl;
-      if(require5GoodLepsOrMore)  cout<<"  [ From this point, require that there is at least 5 good leptons ]"<<endl;
-      if(requireExactly5GoodLeps) cout<<"  [ From this point, require that there is exactly 5 good leptons ]"<<endl;
-      if(requireExactly6GoodLeps) cout<<"  [ From this point, require that there is exactly 6 good leptons ]"<<endl;
-      if(requireHLepsAreGood)     cout<<"  [ From this point, require that the 4 gen-leptons from the H are reconstructed as good leptons ]"<<endl;
-      cout<<"  iBC>0, FullSel100, the 4 gen-leptons from the H are in the acceptance : "<<fixWidth(Form("%i",nbWithBCFullSel100HLepsAreInAcc[p][c]),widthColumn2,false)<<endl;
-      cout<<"  iBC>0, FullSel100, the 4 gen-leptons from the H are reconstructed as good leptons : "<<fixWidth(Form("%i",nbWithBCFullSel100HLepsAreGood[p][c]),widthColumn2,false)<<endl;
-      cout<<"  iBC>0, FullSel100, the 4 gen-leptons from the H are the 4 good leptons of the best candidate : "<<fixWidth(Form("%i",nbWithBCFullSel100All4LepRight[p][c]),widthColumn2,false)<<endl;
+      txtOut<<" "<<channels[c]<<endl;
+      txtOut<<"  stored :            "<<fixWidth(Form("%i",nbStored[p][c]),widthColumn2,false)<<endl;
+      txtOut<<"  iBC>0 :             "<<fixWidth(Form("%i",nbWithBC[p][c]),widthColumn2,false)<<endl;
+      txtOut<<"  iBC>0, FullSel70 :  "<<fixWidth(Form("%i",nbWithBCFullSel70[p][c]),widthColumn2,false)<<endl;
+      txtOut<<"  iBC>0, FullSel100 : "<<fixWidth(Form("%i",nbWithBCFullSel100[p][c]),widthColumn2,false)<<endl;
+      if(requireHLepsAreInAcc)    txtOut<<"  [ From this point, require that the 4 gen-leptons from the H are in the acceptance ]"<<endl;
+      if(requireExactly4GoodLeps) txtOut<<"  [ From this point, require that there is exactly 4 good leptons ]"<<endl;
+      if(require5GoodLepsOrMore)  txtOut<<"  [ From this point, require that there is at least 5 good leptons ]"<<endl;
+      if(requireExactly5GoodLeps) txtOut<<"  [ From this point, require that there is exactly 5 good leptons ]"<<endl;
+      if(requireExactly6GoodLeps) txtOut<<"  [ From this point, require that there is exactly 6 good leptons ]"<<endl;
+      if(requireHLepsAreGood)     txtOut<<"  [ From this point, require that the 4 gen-leptons from the H are reconstructed as good leptons ]"<<endl;
+      txtOut<<"  iBC>0, FullSel100, the 4 gen-leptons from the H are in the acceptance : "<<fixWidth(Form("%i",nbWithBCFullSel100HLepsAreInAcc[p][c]),widthColumn2,false)<<endl;
+      txtOut<<"  iBC>0, FullSel100, the 4 gen-leptons from the H are reconstructed as good leptons : "<<fixWidth(Form("%i",nbWithBCFullSel100HLepsAreGood[p][c]),widthColumn2,false)<<endl;
+      txtOut<<"  iBC>0, FullSel100, the 4 gen-leptons from the H are the 4 good leptons of the best candidate : "<<fixWidth(Form("%i",nbWithBCFullSel100All4LepRight[p][c]),widthColumn2,false)<<endl;
     }
 
     txtOut<<" "<<"# events :"<<endl;
@@ -1874,15 +1873,15 @@ void plotProductionModeComparison(
 	for(int j=0; j<4; j++) txtOut<<"  "<<fixWidth(percentage((float)nbZ2DaughtersFromHWH[i][j]/nbTotalWH[i])+" %",widthOtherColumns,false);
 	txtOut<<endl;
       }
-      cout<<" "<<separator<<endl;
-      cout<<" "<<"the 4 gen-leptons from the H are in the acceptance :"<<endl;
-      for(int i=0; i<nAssocWDecays; i++) cout<<" "<<fixWidth(WHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbHLepsAreInAccWH[i]/nbTotalWH[i])+" %"<<endl;
-      cout<<" "<<separator<<endl;
-      cout<<" "<<"the 4 gen-leptons from the H are reconstructed as good leptons :"<<endl;
-      for(int i=0; i<nAssocWDecays; i++) cout<<" "<<fixWidth(WHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbHLepsAreGoodWH[i]/nbTotalWH[i])+" %"<<endl;
-      cout<<" "<<separator<<endl;
-      cout<<" "<<"the 4 gen-leptons from the H are the 4 good leptons of the best candidate :"<<endl;
-      for(int i=0; i<nAssocWDecays; i++) cout<<" "<<fixWidth(WHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbAll4LepRightWH[i]/nbTotalWH[i])+" %"<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<"the 4 gen-leptons from the H are in the acceptance :"<<endl;
+      for(int i=0; i<nAssocWDecays; i++) txtOut<<" "<<fixWidth(WHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbHLepsAreInAccWH[i]/nbTotalWH[i])+" %"<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<"the 4 gen-leptons from the H are reconstructed as good leptons :"<<endl;
+      for(int i=0; i<nAssocWDecays; i++) txtOut<<" "<<fixWidth(WHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbHLepsAreGoodWH[i]/nbTotalWH[i])+" %"<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<"the 4 gen-leptons from the H are the 4 good leptons of the best candidate :"<<endl;
+      for(int i=0; i<nAssocWDecays; i++) txtOut<<" "<<fixWidth(WHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbAll4LepRightWH[i]/nbTotalWH[i])+" %"<<endl;
     }
     if(prodName[p]=="ZH"){
       txtOut<<" "<<separator<<endl;
@@ -1903,15 +1902,15 @@ void plotProductionModeComparison(
 	for(int j=0; j<4; j++) txtOut<<"  "<<fixWidth(percentage((float)nbZ2DaughtersFromHZH[i][j]/nbTotalZH[i])+" %",widthOtherColumns,false);
 	txtOut<<endl;
       }
-      cout<<" "<<separator<<endl;
-      cout<<" "<<"the 4 gen-leptons from the H are in the acceptance :"<<endl;
-      for(int i=0; i<nAssocZDecays; i++) cout<<" "<<fixWidth(ZHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbHLepsAreInAccZH[i]/nbTotalZH[i])+" %"<<endl;
-      cout<<" "<<separator<<endl;
-      cout<<" "<<"the 4 gen-leptons from the H are reconstructed as good leptons :"<<endl;
-      for(int i=0; i<nAssocZDecays; i++) cout<<" "<<fixWidth(ZHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbHLepsAreGoodZH[i]/nbTotalZH[i])+" %"<<endl;
-      cout<<" "<<separator<<endl;
-      cout<<" "<<"the 4 gen-leptons from the H are the 4 good leptons of the best candidate :"<<endl;
-      for(int i=0; i<nAssocZDecays; i++) cout<<" "<<fixWidth(ZHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbAll4LepRightZH[i]/nbTotalZH[i])+" %"<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<"the 4 gen-leptons from the H are in the acceptance :"<<endl;
+      for(int i=0; i<nAssocZDecays; i++) txtOut<<" "<<fixWidth(ZHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbHLepsAreInAccZH[i]/nbTotalZH[i])+" %"<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<"the 4 gen-leptons from the H are reconstructed as good leptons :"<<endl;
+      for(int i=0; i<nAssocZDecays; i++) txtOut<<" "<<fixWidth(ZHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbHLepsAreGoodZH[i]/nbTotalZH[i])+" %"<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<"the 4 gen-leptons from the H are the 4 good leptons of the best candidate :"<<endl;
+      for(int i=0; i<nAssocZDecays; i++) txtOut<<" "<<fixWidth(ZHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbAll4LepRightZH[i]/nbTotalZH[i])+" %"<<endl;
     }
     if(prodName[p]=="ttH"){
       txtOut<<" "<<separator<<endl;
@@ -1932,15 +1931,15 @@ void plotProductionModeComparison(
 	for(int j=0; j<4; j++) txtOut<<"  "<<fixWidth(percentage((float)nbZ2DaughtersFromHttH[i][j]/nbTotalttH[i])+" %",widthOtherColumns,false);
 	txtOut<<endl;
       }
-      cout<<" "<<separator<<endl;
-      cout<<" "<<"the 4 gen-leptons from the H are in the acceptance :"<<endl;
-      for(int i=0; i<nAssocttDecays; i++) cout<<" "<<fixWidth(ttHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbHLepsAreInAccttH[i]/nbTotalttH[i])+" %"<<endl;
-      cout<<" "<<separator<<endl;
-      cout<<" "<<"the 4 gen-leptons from the H are reconstructed as good leptons :"<<endl;
-      for(int i=0; i<nAssocttDecays; i++) cout<<" "<<fixWidth(ttHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbHLepsAreGoodttH[i]/nbTotalttH[i])+" %"<<endl;
-      cout<<" "<<separator<<endl;
-      cout<<" "<<"the 4 gen-leptons from the H are the 4 good leptons of the best candidate :"<<endl;
-      for(int i=0; i<nAssocttDecays; i++) cout<<" "<<fixWidth(ttHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbAll4LepRightttH[i]/nbTotalttH[i])+" %"<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<"the 4 gen-leptons from the H are in the acceptance :"<<endl;
+      for(int i=0; i<nAssocttDecays; i++) txtOut<<" "<<fixWidth(ttHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbHLepsAreInAccttH[i]/nbTotalttH[i])+" %"<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<"the 4 gen-leptons from the H are reconstructed as good leptons :"<<endl;
+      for(int i=0; i<nAssocttDecays; i++) txtOut<<" "<<fixWidth(ttHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbHLepsAreGoodttH[i]/nbTotalttH[i])+" %"<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<"the 4 gen-leptons from the H are the 4 good leptons of the best candidate :"<<endl;
+      for(int i=0; i<nAssocttDecays; i++) txtOut<<" "<<fixWidth(ttHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbAll4LepRightttH[i]/nbTotalttH[i])+" %"<<endl;
     }
     
     txtOut<<endl;
