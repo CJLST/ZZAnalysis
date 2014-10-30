@@ -27,11 +27,11 @@ using namespace std;
 
 #define VARIABLELIST 0 // put 0 for plots shown on September 8th
 
-#define requireHLepsAreInAcc    0 // impose that all 4 gen leptons from the Higgs are in the acceptance
 #define requireExactly4GoodLeps 0 
-#define require5GoodLepsOrMore  0 
+#define requireAtLeast5GoodLeps 0 
 #define requireExactly5GoodLeps 0 
 #define requireExactly6GoodLeps 0 
+#define requireHLepsAreInAcc    0 // impose that all 4 gen leptons from the Higgs are in the acceptance
 #define requireHLepsAreGood     0 // impose that all 4 gen leptons from the Higgs are matched to good leptons (from the candidate or extra leptons)
 
 #define excludeH2l2X            1 // completely exclude ZH,H->2l2X and ttH,H->2l2X events from the study
@@ -1099,6 +1099,10 @@ void plotProductionModeComparison(
   Int_t nbWithBC[nSamples][nChannels];
   Int_t nbWithBCFullSel70[nSamples][nChannels];
   Int_t nbWithBCFullSel100[nSamples][nChannels];
+  Int_t nbWithBCFullSel100Exactly4GoodLeps[nSamples][nChannels];
+  Int_t nbWithBCFullSel100AtLeast5GoodLeps[nSamples][nChannels];
+  Int_t nbWithBCFullSel100Exactly5GoodLeps[nSamples][nChannels];
+  Int_t nbWithBCFullSel100Exactly6GoodLeps[nSamples][nChannels];
   Int_t nbWithBCFullSel100HLepsAreInAcc[nSamples][nChannels];
   Int_t nbWithBCFullSel100HLepsAreGood[nSamples][nChannels];
   Int_t nbWithBCFullSel100All4LepRight[nSamples][nChannels];
@@ -1166,6 +1170,7 @@ void plotProductionModeComparison(
   for(int p=0; p<nSamples; p++){
     if(!isPresent[p]) continue;
 
+    cout<<prodName[p]<<endl;
     txtOut<<prodName[p]<<endl;
 
     for(int c=0; c<nChannels; c++){
@@ -1177,6 +1182,10 @@ void plotProductionModeComparison(
       nbWithBC[p][c] = 0;
       nbWithBCFullSel70[p][c] = 0;
       nbWithBCFullSel100[p][c] = 0;
+      nbWithBCFullSel100Exactly4GoodLeps[p][c] = 0;
+      nbWithBCFullSel100AtLeast5GoodLeps[p][c] = 0;
+      nbWithBCFullSel100Exactly5GoodLeps[p][c] = 0;
+      nbWithBCFullSel100Exactly6GoodLeps[p][c] = 0;
       nbWithBCFullSel100HLepsAreInAcc[p][c] = 0;
       nbWithBCFullSel100HLepsAreGood[p][c] = 0;
       nbWithBCFullSel100All4LepRight[p][c] = 0;
@@ -1467,7 +1476,6 @@ void plotProductionModeComparison(
 
 	    Int_t nOnes = 0;
 	    for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++) if(nRecoLepMatchedToGenHLep[iGenHLep]==1) nOnes++;
-	    Bool_t HLepsAreGood = !foundMatchingAmbiguity && nOnes==4;
 
 	    Int_t nOnesHLeps = 0;
 	    for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++) if(nCandLepMatchedToGenHLep[iGenHLep]==1) nOnesHLeps++;
@@ -1578,30 +1586,29 @@ void plotProductionModeComparison(
 
 	    // ---------------------- Cuts impacting counters/histograms --------------------------
 
-	    if(requireHLepsAreInAcc)
-	      if(nGenHLepInAcc!=4) continue;
-	    if(requireExactly4GoodLeps)
-	      if(!(nExtraLep->at(iBC)==0)) continue;
-	    if(require5GoodLepsOrMore)
-	      if(!(nExtraLep->at(iBC)>=1)) continue;
-	    if(requireExactly5GoodLeps)
-	      if(!(nExtraLep->at(iBC)==1)) continue;
-	    if(requireExactly6GoodLeps)
-	      if(!(nExtraLep->at(iBC)==2)) continue;
-	    if(requireHLepsAreGood)
-	      if(!HLepsAreGood) continue;
+	    Bool_t Exactly4GoodLeps = nExtraLep->at(iBC)==0 ;
+	    Bool_t AtLeast5GoodLeps = nExtraLep->at(iBC)>=1 ;
+	    Bool_t Exactly5GoodLeps = nExtraLep->at(iBC)==1 ;
+	    Bool_t Exactly6GoodLeps = nExtraLep->at(iBC)==2 ;
+	    Bool_t HLepsAreInAcc    = nGenHLepInAcc==4 ;
+	    Bool_t HLepsAreGood     = !foundMatchingAmbiguity && nOnes==4 ;
+
+	    if(requireExactly4GoodLeps && !Exactly4GoodLeps) continue;
+	    if(requireAtLeast5GoodLeps && !AtLeast5GoodLeps) continue;
+	    if(requireExactly5GoodLeps && !Exactly5GoodLeps) continue;
+	    if(requireExactly6GoodLeps && !Exactly6GoodLeps) continue;
+	    if(requireHLepsAreInAcc    && !HLepsAreInAcc   ) continue;
+	    if(requireHLepsAreGood     && !HLepsAreGood    ) continue;
 
 
 	    // ---------------------- Fill histograms and increment counters --------------------------
 
-	    if(nGenHLepInAcc==4){
-	      nbWithBCFullSel100HLepsAreInAcc[p][c]++;
-	      nbWithBCFullSel100HLepsAreInAcc[p][3]++;
-	    }
-	    if(HLepsAreGood){
-	      nbWithBCFullSel100HLepsAreGood[p][c]++;
-	      nbWithBCFullSel100HLepsAreGood[p][3]++;
-	    }
+	    if(Exactly4GoodLeps){ nbWithBCFullSel100Exactly4GoodLeps[p][c]++; nbWithBCFullSel100Exactly4GoodLeps[p][3]++; }
+	    if(AtLeast5GoodLeps){ nbWithBCFullSel100AtLeast5GoodLeps[p][c]++; nbWithBCFullSel100AtLeast5GoodLeps[p][3]++; }
+	    if(Exactly5GoodLeps){ nbWithBCFullSel100Exactly5GoodLeps[p][c]++; nbWithBCFullSel100Exactly5GoodLeps[p][3]++; }
+	    if(Exactly6GoodLeps){ nbWithBCFullSel100Exactly6GoodLeps[p][c]++; nbWithBCFullSel100Exactly6GoodLeps[p][3]++; }
+	    if(HLepsAreInAcc   ){ nbWithBCFullSel100HLepsAreInAcc   [p][c]++; nbWithBCFullSel100HLepsAreInAcc   [p][3]++; }
+	    if(HLepsAreGood    ){ nbWithBCFullSel100HLepsAreGood    [p][c]++; nbWithBCFullSel100HLepsAreGood    [p][3]++; }
 
 	    Float_t varVal[nVariables] = {
 	      ZZMass->at(iBC),
@@ -1804,15 +1811,16 @@ void plotProductionModeComparison(
       txtOut<<"  iBC>0 :             "<<fixWidth(Form("%i",nbWithBC[p][c]),widthColumn2,false)<<endl;
       txtOut<<"  iBC>0, FullSel70 :  "<<fixWidth(Form("%i",nbWithBCFullSel70[p][c]),widthColumn2,false)<<endl;
       txtOut<<"  iBC>0, FullSel100 : "<<fixWidth(Form("%i",nbWithBCFullSel100[p][c]),widthColumn2,false)<<endl;
-      if(requireHLepsAreInAcc)    txtOut<<"  [ From this point, require that the 4 gen-leptons from the H are in the acceptance ]"<<endl;
       if(requireExactly4GoodLeps) txtOut<<"  [ From this point, require that there is exactly 4 good leptons ]"<<endl;
-      if(require5GoodLepsOrMore)  txtOut<<"  [ From this point, require that there is at least 5 good leptons ]"<<endl;
+      if(requireAtLeast5GoodLeps) txtOut<<"  [ From this point, require that there is at least 5 good leptons ]"<<endl;
       if(requireExactly5GoodLeps) txtOut<<"  [ From this point, require that there is exactly 5 good leptons ]"<<endl;
       if(requireExactly6GoodLeps) txtOut<<"  [ From this point, require that there is exactly 6 good leptons ]"<<endl;
-      if(requireHLepsAreGood)     txtOut<<"  [ From this point, require that the 4 gen-leptons from the H are reconstructed as good leptons ]"<<endl;
-      txtOut<<"  iBC>0, FullSel100, the 4 gen-leptons from the H are in the acceptance : "<<fixWidth(Form("%i",nbWithBCFullSel100HLepsAreInAcc[p][c]),widthColumn2,false)<<endl;
-      txtOut<<"  iBC>0, FullSel100, the 4 gen-leptons from the H are reconstructed as good leptons : "<<fixWidth(Form("%i",nbWithBCFullSel100HLepsAreGood[p][c]),widthColumn2,false)<<endl;
-      txtOut<<"  iBC>0, FullSel100, the 4 gen-leptons from the H are the 4 good leptons of the best candidate : "<<fixWidth(Form("%i",nbWithBCFullSel100All4LepRight[p][c]),widthColumn2,false)<<endl;
+      if(requireHLepsAreInAcc   ) txtOut<<"  [ From this point, require that the 4 gen-leptons from the H are in the acceptance ]"<<endl;
+      if(requireHLepsAreGood    ) txtOut<<"  [ From this point, require that the 4 gen-leptons from the H are reconstructed as good leptons ]"<<endl;
+      txtOut<<"  iBC>0, FullSel100, there is ==4 / >=5 / ==5 / ==6 good leptons : "<<nbWithBCFullSel100Exactly4GoodLeps[p][c]<<" / "<<nbWithBCFullSel100AtLeast5GoodLeps[p][c]<<" / "<<nbWithBCFullSel100Exactly5GoodLeps[p][c]<<" / "<<nbWithBCFullSel100Exactly6GoodLeps[p][c]<<endl;
+      txtOut<<"  iBC>0, FullSel100, the 4 gen-leptons from the H are in the acceptance : "<<nbWithBCFullSel100HLepsAreInAcc[p][c]<<endl;
+      txtOut<<"  iBC>0, FullSel100, the 4 gen-leptons from the H are reconstructed as good leptons : "<<nbWithBCFullSel100HLepsAreGood[p][c]<<endl;
+      txtOut<<"  iBC>0, FullSel100, the 4 gen-leptons from the H are the 4 good leptons of the best candidate : "<<nbWithBCFullSel100All4LepRight[p][c]<<endl;
     }
 
     txtOut<<" "<<"# events :"<<endl;
