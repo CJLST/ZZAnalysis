@@ -15,6 +15,7 @@
 #include <DataFormats/PatCandidates/interface/CompositeCandidate.h>
 
 #include <algorithm>
+#include <limits>
 
 namespace Comparators {
 
@@ -31,6 +32,26 @@ namespace Comparators {
       theType(type)
     {}
 
+    bool bestZ1bestZ2(const pat::CompositeCandidate& cand_i, const pat::CompositeCandidate& cand_j){
+
+      float mZ1_i = cand_i.daughter("Z1")->mass();
+      float mZ1_j = cand_j.daughter("Z1")->mass();
+      if ( fabs(mZ1_i-mZ1_j) < 1e-04 ){ // same Z1: choose the candidate with highest-pT Z2 leptons
+	const reco::Candidate* Z2_i = cand_i.daughter("Z2");
+	const reco::Candidate* Z2_j = cand_j.daughter("Z2");
+	double ptSumZ2_i = Z2_i->daughter(0)->pt() + Z2_i->daughter(1)->pt();
+	double ptSumZ2_j = Z2_j->daughter(0)->pt() + Z2_j->daughter(1)->pt();
+
+	// cout <<  "Comparator: compare Z2 pTs: " << ptSumZ2_i << " " << ptSumZ2_j << endl;
+	return ( ptSumZ2_i > ptSumZ2_j );
+      }
+      else { // choose the candidate with Z1 closest to nominal mass 
+	// cout << "Comparator: compare Z1 masses: " << mZ1_i << " " << mZ1_j << endl;
+	return ( fabs(mZ1_i-ZmassValue)<fabs(mZ1_j-ZmassValue) );
+      }      
+      
+    }
+
 
     virtual bool operator() (int i, int j){
 
@@ -38,30 +59,18 @@ namespace Comparators {
       const pat::CompositeCandidate& cand_j = candCollection[j];
 
       if (theType==byBestZ1bestZ2) { // "Legacy" best cand logic	
-
-	float mZ1_i = cand_i.daughter("Z1")->mass();
-	float mZ1_j = cand_j.daughter("Z1")->mass();
-	if ( fabs(mZ1_i-mZ1_j) < 1e-04 ){ // same Z1: choose the candidate with highest-pT Z2 leptons
-	  const reco::Candidate* Z2_i = cand_i.daughter("Z2");
-	  const reco::Candidate* Z2_j = cand_j.daughter("Z2");
-	  double ptSumZ2_i = Z2_i->daughter(0)->pt() + Z2_i->daughter(1)->pt();
-	  double ptSumZ2_j = Z2_j->daughter(0)->pt() + Z2_j->daughter(1)->pt();
-
-	  // cout <<  "Comparator: compare Z2 pTs: " << ptSumZ2_i << " " << ptSumZ2_j << endl;
-	  return ( ptSumZ2_i > ptSumZ2_j );
-	}
-	else { // choose the candidate with Z1 closest to nominal mass 
-	  // cout << "Comparator: compare Z1 masses: " << mZ1_i << " " << mZ1_j << endl;
-	  return ( fabs(mZ1_i-ZmassValue)<fabs(mZ1_j-ZmassValue) );
-	}      
-
+	return bestZ1bestZ2(cand_i,cand_j);
       } //end of byBestZ1bestZ2
   
       else if (theType==byBestKD) {	
 	double KD_i = cand_i.userFloat("p0plus_VAJHU")/( cand_i.userFloat("p0plus_VAJHU") + cand_i.userFloat("bkg_VAMCFM") );
 	double KD_j = cand_j.userFloat("p0plus_VAJHU")/( cand_j.userFloat("p0plus_VAJHU") + cand_j.userFloat("bkg_VAMCFM") );
-      
-	return (KD_i>KD_j);
+
+	bool kdEqual = KD_i == KD_j;
+
+	if (kdEqual) return bestZ1bestZ2(cand_i,cand_j); //same 4 leptons, different pairing
+	else return (KD_i>KD_j);
+
       } // end of byBestKD
 
       else if (theType==byBestDbkgVH) {
