@@ -65,7 +65,7 @@ try:
 except NameError:
     BESTCANDCOMPARATOR = "byBestZ1bestZ2"
 
-if not (SELSETUP=="Legacy" and BESTCANDCOMPARATOR=="byBestZ1bestZ2"):
+if SELSETUP=="Legacy" and not BESTCANDCOMPARATOR=="byBestZ1bestZ2":
     print "WARNING: In ZZ4lAnalysis.py the SELSETUP=\"Legacy\" flag is meant to reproduce the Legacy results, ignoring the setting of the BESTCANDCOMPARATOR: ",BESTCANDCOMPARATOR
     BESTCANDCOMPARATOR = "byBestZ1bestZ2"
 
