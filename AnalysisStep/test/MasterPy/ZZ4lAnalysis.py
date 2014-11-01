@@ -53,11 +53,21 @@ try:
 except NameError:
     SUPERMELA_MASS = 125.6
 
-#Best candidate selection strategy
+#Selection flow strategy
 try:
     SELSETUP
 except NameError:
     SELSETUP = "Legacy"
+
+#Best candidate comparator (see interface/Comparators.h)
+try:
+    BESTCANDCOMPARATOR
+except NameError:
+    BESTCANDCOMPARATOR = "byBestZ1bestZ2"
+
+if not (SELSETUP=="Legacy" and BESTCANDCOMPARATOR=="byBestZ1bestZ2"):
+    print "WARNING: In ZZ4lAnalysis.py the SELSETUP=\"Legacy\" flag is meant to reproduce the Legacy results, ignoring the setting of the BESTCANDCOMPARATOR: ",BESTCANDCOMPARATOR
+    BESTCANDCOMPARATOR = "byBestZ1bestZ2"
 
 ### ----------------------------------------------------------------------
 ### Set the GT
@@ -556,10 +566,6 @@ PT20_10           = ("userFloat('pt1')>20 && userFloat('pt2')>10") #20/10 on any
 M4l100            = "mass>100"
 
 
-if SELSETUP == "conf5" or SELSETUP == "conf6":
-    BESTCANDCOMPARATOR = "byBestKD"       #Best candidate = highest-KD
-else:
-    BESTCANDCOMPARATOR = "byBestZ1bestZ2" #Legacy best candidate logic
     
 
 if SELSETUP=="Legacy": # Default Configuration (Legacy paper): cut on selected best candidate
@@ -578,21 +584,8 @@ if SELSETUP=="Legacy": # Default Configuration (Legacy paper): cut on selected b
                            "mass>70"        + "&&" +
                            "daughter('Z2').mass>12")
 
-elif SELSETUP=="conf1" or SELSETUP=="conf5": # Configuration 1 (select best candidate among those passing all cuts except mZ2, leave only mZ2 cut at the end)
 
-    BESTCAND_AMONG = (FOURGOODLEPTONS + "&&" +
-                      Z1MASS          + "&&" +
-                      Z2MASS          + "&&" +
-                      MLLALLCOMB      + "&&" +
-                      PT20_10         + "&&" +
-                      "mass>70"                        
-                      )
-
-    FULLSEL70           = (BESTCAND_AMONG + "&&" +
-                           "daughter('Z2').mass>12")
-
-
-elif SELSETUP=="conf2": # Configuration 2 (select best candidate among those passing all cuts)
+elif SELSETUP=="allCutsAtOnce": # Select best candidate among those passing all cuts
 
     BESTCAND_AMONG = (FOURGOODLEPTONS + "&&" +
                       Z1MASS          + "&&" +
@@ -604,10 +597,25 @@ elif SELSETUP=="conf2": # Configuration 2 (select best candidate among those pas
                       )
 
     FULLSEL70 = BESTCAND_AMONG
+
+
+
+elif SELSETUP=="allCutsAtOnceButMZ2": # Select best candidate among those passing all cuts except mZ2, leave only mZ2 cut at the end
+
+    BESTCAND_AMONG = (FOURGOODLEPTONS + "&&" +
+                      Z1MASS          + "&&" +
+                      Z2MASS          + "&&" +
+                      MLLALLCOMB      + "&&" +
+                      PT20_10         + "&&" +
+                      "mass>70"                        
+                      )
+
+    FULLSEL70           = (BESTCAND_AMONG + "&&" +
+                           "daughter('Z2').mass>12")
                           
                                                                                                                                                                                       
 
-elif SELSETUP=="conf3": # Configuration 3 (apply also cut on mZb, -> expected to reduce the background but also efficiency)
+elif SELSETUP=="allCutsAtOncePlusMZb": # Apply also cut on mZb, -> expected to reduce the background but also signal efficiency
 
     BESTCAND_AMONG = (FOURGOODLEPTONS + "&&" +
                       Z1MASS          + "&&" +
@@ -621,7 +629,7 @@ elif SELSETUP=="conf3": # Configuration 3 (apply also cut on mZb, -> expected to
 
     FULLSEL70 = BESTCAND_AMONG
 
-elif SELSETUP=="conf4" or SELSETUP=="conf6": # Configuration 4 (apply smarter mZb cut)
+elif SELSETUP=="allCutsAtOncePlusSmart": # Apply smarter mZb cut
 
     BESTCAND_AMONG = (FOURGOODLEPTONS + "&&" +
                       Z1MASS          + "&&" +
@@ -637,7 +645,7 @@ elif SELSETUP=="conf4" or SELSETUP=="conf6": # Configuration 4 (apply smarter mZ
 
 
 else:
-    print "Please choose one of the following string for SELSETUP: 'Legacy', 'conf1', 'conf2', 'conf3', 'conf4', 'conf5', 'conf6'"
+    print "Please choose one of the following string for SELSETUP: 'Legacy', 'allCutsAtOnceButMZ2', 'allCutsAtOnce', 'allCutsAtOncePlusMZb', 'allCutsAtOncePlusSmart'"
     sys.exit()
 
 
@@ -715,13 +723,13 @@ CR_BESTCANDBASE_AA   = ("userFloat('d0.Z1Presel') && " + Z2SIP) # base for AA CR
 CR_BESTZLLss = ""
 if SELSETUP == "Legacy":
     CR_BESTZLLss = CR_BESTCANDBASE_AA + "&&" + "userFloat('d0.isBestZ') &&"+ Z2LL_SS
-elif SELSETUP == "conf1" or SELSETUP == "conf5":
+elif SELSETUP == "allCutsAtOnceButMZ2":
     CR_BESTZLLss = CR_BESTCANDBASE_AA + "&&" + Z2LL_SS + "&&" +CR_Z2MASS + "&&" + MLLALLCOMB + "&&" + PT20_10 + "&& mass>70"
-elif SELSETUP == "conf2":
+elif SELSETUP == "allCutsAtOnce":
     CR_BESTZLLss = CR_BESTCANDBASE_AA + "&&" + Z2LL_SS + "&&" +CR_Z2MASS + "&&" + MLLALLCOMB + "&&" + PT20_10 + "&&" + "mass>70" + "&&" + "daughter(1).mass>12"
-elif SELSETUP == "conf3":
+elif SELSETUP == "allCutsAtOncePlusMZb":
     CR_BESTZLLss = CR_BESTCANDBASE_AA + "&&" + Z2LL_SS + "&&" +CR_Z2MASS + "&&" + MLLALLCOMB + "&&" + PT20_10 + "&&" + "mass>70" + "&&" + "daughter(1).mass>12" + "&&" + "userFloat('mZb')>12" 
-elif SELSETUP == "conf4" or SELSETUP == "conf6":
+elif SELSETUP == "allCutsAtOncePlusSmart":
     CR_BESTZLLss = CR_BESTCANDBASE_AA + "&&" + Z2LL_SS + "&&" +CR_Z2MASS + "&&" + MLLALLCOMB + "&&" + PT20_10 + "&&" + "mass>70" + "&&" + "daughter(1).mass>12" + "&&" + SMARTMALLCOMB
 
 
