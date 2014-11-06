@@ -1021,6 +1021,12 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 	}
       }
     }  
+
+    if(cleanedJets.size()==1 && theChannel!=ZL){
+      if(candIsBest && candPassFullSel70){ 
+	FillJet(*(cleanedJets.at(0)));
+      }
+    }  
   }
   
   //convention: 0 -> 4mu   1 -> 4e   2 -> 2mu2e
