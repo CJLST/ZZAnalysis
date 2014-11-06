@@ -340,6 +340,7 @@ void HZZ4lNtupleFactory::InitializeVariables()
   _nJets.clear();
   _nCleanedJets.clear();
   _nCleanedJetsPt30.clear();
+  _nCleanedJetsPt30BTagged.clear();
 
   //Variables of extra leptons
   _ExtraLep1Pt.clear();
@@ -660,6 +661,7 @@ void HZZ4lNtupleFactory::InitializeBranches()
   _outTree->Branch("nJets",&_nJets);
   _outTree->Branch("nCleanedJets",&_nCleanedJets);
   _outTree->Branch("nCleanedJetsPt30",&_nCleanedJetsPt30);
+  _outTree->Branch("nCleanedJetsPt30BTagged",&_nCleanedJetsPt30BTagged);
 
   //Variables of extra leptons
   _outTree->Branch("ExtraLep1Pt",&_ExtraLep1Pt);
@@ -1267,13 +1269,14 @@ void HZZ4lNtupleFactory::FillDiJetInfo(const Float_t DiJetMass, const Float_t Di
   return;
 }
 
-void HZZ4lNtupleFactory::FillCategorizationInfo(const Int_t nExtraLep, const Int_t nExtraZ, const Int_t nJets, const Int_t nCleanedJets, const Int_t nCleanedJetsPt30)
+void HZZ4lNtupleFactory::FillCategorizationInfo(const Int_t nExtraLep, const Int_t nExtraZ, const Int_t nJets, const Int_t nCleanedJets, const Int_t nCleanedJetsPt30, const Int_t nCleanedJetsPt30BTagged)
 {
   _nExtraLep.push_back(nExtraLep);
   _nExtraZ.push_back(nExtraZ);
   _nJets.push_back(nJets);
   _nCleanedJets.push_back(nCleanedJets);
   _nCleanedJetsPt30.push_back(nCleanedJetsPt30);
+  _nCleanedJetsPt30BTagged.push_back(nCleanedJetsPt30BTagged);
 
   return;
 }

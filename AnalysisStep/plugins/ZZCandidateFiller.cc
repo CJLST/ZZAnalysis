@@ -523,14 +523,20 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     VBFCandidateJetSelector myVBFCandidateJetSelector;
     cleanedJets = myVBFCandidateJetSelector.cleanJets(myCand,pfjetscoll,sampleType); //   //FIXME: should use LEPTON_SETUP instead of sampleType for mela and combinedMEM. This will be an issue for samples rescaled to different sqrts (none at present)
     vector<const cmg::PFJet*> cleanedJetsPt30;
+    int nCleanedJetsPt30BTagged = 0;
     for (unsigned int i=0; i < cleanedJets.size(); ++i){
       const cmg::PFJet& myjet = *(cleanedJets.at(i));  
-      if (myjet.pt()>30) cleanedJetsPt30.push_back(&myjet);
+      if (myjet.pt()>30) {
+	cleanedJetsPt30.push_back(&myjet);
+	if(myjet.bDiscriminator("combinedSecondaryVertexBJetTags")>0.679) nCleanedJetsPt30BTagged++; // CSV Medium WP
+      }
     }
+
     //FIXME: once cleaning is done per-event and not per-candidate, these will become per-event variables!
     myCand.addUserFloat("nJets",pfjetscoll->size());
     myCand.addUserFloat("nCleanedJets",cleanedJets.size());
     myCand.addUserFloat("nCleanedJetsPt30",cleanedJetsPt30.size());
+    myCand.addUserFloat("nCleanedJetsPt30BTagged",nCleanedJetsPt30BTagged);
 
     float detajj =-99.f;
     float mjj  =-99.f;
