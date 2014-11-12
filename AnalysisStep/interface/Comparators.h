@@ -23,7 +23,6 @@ namespace Comparators {
 
   enum ComparatorTypes {byBestZ1bestZ2 = 0, byBestKD=1, byBestKD_VH=2};
 
-  // Abstract base class
   struct BestCandComparator {
     const pat::CompositeCandidateCollection& candCollection;
     
@@ -32,6 +31,7 @@ namespace Comparators {
       theType(type)
     {}
 
+    // Helper function, implements the "legacy" Z1/Z2 selection logic
     bool bestZ1bestZ2(const pat::CompositeCandidate& cand_i, const pat::CompositeCandidate& cand_j){
 
       float mZ1_i = cand_i.daughter("Z1")->mass();
@@ -52,26 +52,43 @@ namespace Comparators {
       
     }
 
+    // Sorting based on discriminants cannot distinguish between SF candidates with the same leptons and FSR,
+    // but different pairing. We need to check for these cases.
+    // Note that for SS CRs, this function will always return false.
+    bool isEquivalent(const pat::CompositeCandidate& cand_i, const pat::CompositeCandidate& cand_j){
+      if (std::abs(cand_i.mass()-cand_j.mass())<1e-4) { // tolerance: 100 keV
+	// Check same FS, and that candidate is SF, OS. 
+	int c_i = cand_i.userFloat("candChannel");
+	int c_j = cand_i.userFloat("candChannel");
+	if (c_i==c_j && (c_i==28561||c_j==14641)) return true;
+      }
+      return false;      
+    }
+    
 
     virtual bool operator() (int i, int j){
 
       const pat::CompositeCandidate& cand_i = candCollection[i];
       const pat::CompositeCandidate& cand_j = candCollection[j];
 
-      if (theType==byBestZ1bestZ2) { // "Legacy" best cand logic	
+
+      // "Legacy" best cand logic	
+      if (theType==byBestZ1bestZ2) { 
 	return bestZ1bestZ2(cand_i,cand_j);
       } //end of byBestZ1bestZ2
   
+
+      // Choose by best KD; for equivalent candidates (same leptons and FSR) that differ only on pairing,
+      // choose based on legacy logic
       else if (theType==byBestKD) {	
 	double KD_i = cand_i.userFloat("p0plus_VAJHU")/( cand_i.userFloat("p0plus_VAJHU") + cand_i.userFloat("bkg_VAMCFM") );
 	double KD_j = cand_j.userFloat("p0plus_VAJHU")/( cand_j.userFloat("p0plus_VAJHU") + cand_j.userFloat("bkg_VAMCFM") );
 
-	bool kdEqual = KD_i == KD_j;
-
-	if (kdEqual) return bestZ1bestZ2(cand_i,cand_j); //same 4 leptons, different pairing
+	if (isEquivalent(cand_i,cand_j)) return bestZ1bestZ2(cand_i,cand_j); //same 4 leptons, different pairing
 	else return (KD_i>KD_j);
 
       } // end of byBestKD
+
 
       else if (theType==byBestKD_VH) {
 	// FIXME: This is just a temporary implementation for tests!!
@@ -88,7 +105,7 @@ namespace Comparators {
 	double KD_i = ps_i/( ps_i + cand_i.userFloat("bkg_VAMCFM") );
 	double KD_j = ps_j/( ps_j + cand_j.userFloat("bkg_VAMCFM") );
 
-	if (KD_i == KD_j) return bestZ1bestZ2(cand_i,cand_j);
+	if (isEquivalent(cand_i,cand_j)) return bestZ1bestZ2(cand_i,cand_j);
 	else return (KD_i>KD_j);
       } // end of byBestKD_VH
       
