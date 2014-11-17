@@ -1021,6 +1021,12 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 	}
       }
     }  
+
+    if(cleanedJets.size()==1 && theChannel!=ZL){
+      if(candIsBest && candPassFullSel70){ 
+	FillJet(*(cleanedJets.at(0)));
+      }
+    }  
   }
   
   //convention: 0 -> 4mu   1 -> 4e   2 -> 2mu2e
@@ -1034,7 +1040,8 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   const Int_t nJets = cand.userFloat("nJets");
   const Int_t nCleanedJets = cand.userFloat("nCleanedJets");
   const Int_t nCleanedJetsPt30 = cand.userFloat("nCleanedJetsPt30");
-  myTree->FillCategorizationInfo(nExtraLep, nExtraZ, nJets, nCleanedJets, nCleanedJetsPt30);
+  const Int_t nCleanedJetsPt30BTagged = cand.userFloat("nCleanedJetsPt30BTagged");
+  myTree->FillCategorizationInfo(nExtraLep, nExtraZ, nJets, nCleanedJets, nCleanedJetsPt30,nCleanedJetsPt30BTagged);
 
   //Fill the info on the extra leptons
   myTree->FillExtraLepInfo( 1, cand.hasUserCand("ExtraLep1"), (cand.hasUserCand("ExtraLep1") ? cand.userCand("ExtraLep1") : *(new reco::CandidatePtr)) );

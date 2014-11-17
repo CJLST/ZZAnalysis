@@ -157,7 +157,7 @@ class HZZ4lNtupleFactory{
   void FillPhotonInfo(const Float_t PhotPt, const Float_t PhotEta, const Float_t PhotPhi);
   void FillJetInfo(const Float_t JetPt, const Float_t JetEta, const Float_t JetPhi, const Float_t JetMass, const Float_t JetBTag, const Float_t JetSigma);
   void FillDiJetInfo(const Float_t DiJetMass, const Float_t DiJetMassPlus, const Float_t DiJetMassMinus, const Float_t DiJetDEta);
-  void FillCategorizationInfo(const Int_t nExtraLep, const Int_t nExtraZ, const Int_t nJets, const Int_t nCleanedJets, const Int_t nCleanedJetsPt30);
+  void FillCategorizationInfo(const Int_t nExtraLep, const Int_t nExtraZ, const Int_t nJets, const Int_t nCleanedJets, const Int_t nCleanedJetsPt30, const Int_t nCleanedJetsPt30BTagged);
   void FillExtraLepInfo(int extraLeptonIndex, bool extraLeptonExists, const reco::CandidatePtr ExtraLep);
 
   void FillHGenInfo(const math::XYZTLorentzVector Hp);
@@ -440,6 +440,7 @@ class HZZ4lNtupleFactory{
   std::vector<Int_t> _nJets;
   std::vector<Int_t> _nCleanedJets;
   std::vector<Int_t> _nCleanedJetsPt30;
+  std::vector<Int_t> _nCleanedJetsPt30BTagged;
 
   //Variables of extra leptons
   std::vector<Float_t> _ExtraLep1Pt;

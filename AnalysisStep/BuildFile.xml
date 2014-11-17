@@ -20,3 +20,4 @@
 <export>
   <lib   name="1"/>
 </export>
+<Flags CXXFLAGS="-Wno-delete-non-virtual-dtor -Wno-error=unused-but-set-variable -Wno-error=unused-variable"/> 

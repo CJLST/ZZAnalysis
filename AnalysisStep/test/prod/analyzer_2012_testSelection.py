@@ -4,7 +4,8 @@
 #
 #----------------------------------------------------------------------
 
-SELSETUP = "conf2" # "Legacy", "conf1", "conf2", "conf3", "conf4", "conf5", "conf6"
+SELSETUP = "Legacy" # "Legacy", "allCutsAtOnceButMZ2", "allCutsAtOnce", "allCutsAtOncePlusMZb", "allCutsAtOncePlusSmart"
+BESTCANDCOMPARATOR = "byBestZ1bestZ2" # "byBestZ1bestZ2", "byBestKD", "byBestKD_VH"
 
 LEPTON_SETUP = 2012
 

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <utility>
 #include <map>
 #include <vector>
@@ -15,6 +16,7 @@
 #include "TPaveText.h"
 #include "TMath.h"
 #include "TColor.h"
+#include "TSystem.h"
 
 using namespace std;
 
@@ -25,12 +27,16 @@ using namespace std;
 
 #define VARIABLELIST 0 // put 0 for plots shown on September 8th
 
-#define requireHLepsAreGood 0 // impose that all 4 gen leptons from the Higgs are matched to good leptons (from the candidate or extra leptons)
-#define excludeH2l2X 0 // completely exclude ZH,H->2l2X and ttH,H->2l2X events from the study
-#define requireHLepsAreInAcc 0 // impose that all 4 gen leptons from the Higgs are in the acceptance
-#define acceptanceIncludesPt 1 // if not, acceptance is just on eta
+#define requireExactly4GoodLeps 0 
+#define requireAtLeast5GoodLeps 0 
+#define requireExactly5GoodLeps 0 
+#define requireExactly6GoodLeps 0 
+#define requireHLepsAreInAcc    0 // impose that all 4 gen leptons from the Higgs are in the acceptance
+#define requireHLepsAreGood     0 // impose that all 4 gen leptons from the Higgs are matched to good leptons (from the candidate or extra leptons)
 
-#define treatH2l2XAsBkgd 0 // treat these events as a background for the purity and S/(S+B) plots 
+#define excludeH2l2X            1 // completely exclude ZH,H->2l2X and ttH,H->2l2X events from the study
+#define acceptanceIncludesPt    1 // if not, acceptance is just on eta
+#define treatH2l2XAsBkgd        0 // treat these events as a background for the purity and S/(S+B) plots 
 
 #define doProdComp       1 // plots shown on September 8th
 #define doProdCompMatch4 0
@@ -109,6 +115,7 @@ string percentage(float frac) {
 void SaveCanvas(string directory, TCanvas* c, const char* tag = "") {
   c->SaveAs(Form("%s%s_%s.root",directory.c_str(),c->GetName(),tag));
   c->SaveAs(Form("%s%s_%s.pdf" ,directory.c_str(),c->GetName(),tag));  
+  c->SaveAs(Form("%s%s_%s.png" ,directory.c_str(),c->GetName(),tag));
 }
 
 void set_plot_style() {
@@ -609,6 +616,12 @@ void plotProductionModeComparison(
 				  )
 {
 
+  gSystem->Exec("mkdir -p "+(TString)outDir.c_str());
+
+  ofstream txtOut;
+  TString txtOutName = (TString)outDir.c_str()+"/matchingInfo.txt";
+  txtOut.open(txtOutName);
+
 
   // ------------------------------------------------------------
   // ---------------------- Definitions -------------------------
@@ -681,6 +694,23 @@ void plotProductionModeComparison(
     "",
   };
 
+  string nbZDaughtersFromH[4] = { "2", "1", "0", "ambig." };
+
+  string WHdecays[nAssocWDecays] = {
+    "H->ZZ->4l, W->X     ",
+    "H->ZZ->4l, W->lnu   ",
+  };
+  string ZHdecays[nAssocZDecays] = {
+    "H->ZZ->4l, Z->X     ",
+    "H->ZZ->4l, Z->2l    ",
+    "H->ZZ->2l2X, Z->2l  ",
+  };
+  string ttHdecays[nAssocttDecays] = {
+    "H->ZZ->4l, tt->X    ",
+    "H->ZZ->4l, tt->lX   ",
+    "H->ZZ->4l, tt->2lX  ",
+    "H->ZZ->2l2X, tt->2lX",
+  };
   string assocDecayName[nAssocDecays] = {
     "H#rightarrowZZ#rightarrow4l, W#rightarrowX",
     "H#rightarrowZZ#rightarrow4l, W#rightarrowl#nu",
@@ -725,35 +755,6 @@ void plotProductionModeComparison(
     kMagenta+2, 
     kMagenta-8,
   };
-
-  string nbZDaughtersFromH[4] = { "2", "1", "0", "ambig." };
-  string WHdecays[nAssocWDecays] = {
-    "H->ZZ->4l, W->X     ",
-    "H->ZZ->4l, W->lnu   ",
-  };
-  Int_t nbTotalWH[nAssocWDecays] = {0,0};
-  Int_t nbAll4LepRightWH[nAssocWDecays] = {0,0};
-  Int_t nbZ1DaughtersFromHWH[nAssocWDecays][4]; for(int i=0; i<nAssocWDecays; i++) for(int j=0; j<4; j++) nbZ1DaughtersFromHWH[i][j] = 0;
-  Int_t nbZ2DaughtersFromHWH[nAssocWDecays][4]; for(int i=0; i<nAssocWDecays; i++) for(int j=0; j<4; j++) nbZ2DaughtersFromHWH[i][j] = 0;
-  string ZHdecays[nAssocZDecays] = {
-    "H->ZZ->4l, Z->X     ",
-    "H->ZZ->4l, Z->2l    ",
-    "H->ZZ->2l2X, Z->2l  ",
-  };
-  Int_t nbTotalZH[nAssocZDecays] = {0,0,0};
-  Int_t nbAll4LepRightZH[nAssocZDecays] = {0,0,0};
-  Int_t nbZ1DaughtersFromHZH[nAssocZDecays][4]; for(int i=0; i<nAssocZDecays; i++) for(int j=0; j<4; j++) nbZ1DaughtersFromHZH[i][j] = 0;
-  Int_t nbZ2DaughtersFromHZH[nAssocZDecays][4]; for(int i=0; i<nAssocZDecays; i++) for(int j=0; j<4; j++) nbZ2DaughtersFromHZH[i][j] = 0;
-  string ttHdecays[nAssocttDecays] = {
-    "H->ZZ->4l, tt->X    ",
-    "H->ZZ->4l, tt->lX   ",
-    "H->ZZ->4l, tt->2lX  ",
-    "H->ZZ->2l2X, tt->2lX",
-  };
-  Int_t nbTotalttH[nAssocttDecays] = {0,0,0,0};
-  Int_t nbAll4LepRightttH[nAssocttDecays] = {0,0,0,0};
-  Int_t nbZ1DaughtersFromHttH[nAssocttDecays][4]; for(int i=0; i<nAssocttDecays; i++) for(int j=0; j<4; j++) nbZ1DaughtersFromHttH[i][j] = 0;
-  Int_t nbZ2DaughtersFromHttH[nAssocttDecays][4]; for(int i=0; i<nAssocttDecays; i++) for(int j=0; j<4; j++) nbZ2DaughtersFromHttH[i][j] = 0;
 
   string varName[nVariables] = {
     "M4l",
@@ -1098,6 +1099,13 @@ void plotProductionModeComparison(
   Int_t nbWithBC[nSamples][nChannels];
   Int_t nbWithBCFullSel70[nSamples][nChannels];
   Int_t nbWithBCFullSel100[nSamples][nChannels];
+  Int_t nbWithBCFullSel100Exactly4GoodLeps[nSamples][nChannels];
+  Int_t nbWithBCFullSel100AtLeast5GoodLeps[nSamples][nChannels];
+  Int_t nbWithBCFullSel100Exactly5GoodLeps[nSamples][nChannels];
+  Int_t nbWithBCFullSel100Exactly6GoodLeps[nSamples][nChannels];
+  Int_t nbWithBCFullSel100HLepsAreInAcc[nSamples][nChannels];
+  Int_t nbWithBCFullSel100HLepsAreGood[nSamples][nChannels];
+  Int_t nbWithBCFullSel100All4LepRight[nSamples][nChannels];
   Int_t nbWithBCFullSel100MatchHLeps[nMatchHLepsStatuses][nSamples][nChannels];
   Int_t nbWithBCFullSel100MatchAllLeps[nMatchAllLepsStatuses][nSamples][nChannels];
   Int_t nbWithBCFullSel100MatchWH[nMatchWHStatuses][nChannels];
@@ -1132,6 +1140,27 @@ void plotProductionModeComparison(
     }
   }
 
+  Int_t nbTotalWH[nAssocWDecays] = {0,0};
+  Int_t nbHLepsAreInAccWH[nAssocWDecays] = {0,0};
+  Int_t nbHLepsAreGoodWH[nAssocWDecays] = {0,0};
+  Int_t nbAll4LepRightWH[nAssocWDecays] = {0,0};
+  Int_t nbZ1DaughtersFromHWH[nAssocWDecays][4]; for(int i=0; i<nAssocWDecays; i++) for(int j=0; j<4; j++) nbZ1DaughtersFromHWH[i][j] = 0;
+  Int_t nbZ2DaughtersFromHWH[nAssocWDecays][4]; for(int i=0; i<nAssocWDecays; i++) for(int j=0; j<4; j++) nbZ2DaughtersFromHWH[i][j] = 0;
+
+  Int_t nbTotalZH[nAssocZDecays] = {0,0,0};
+  Int_t nbHLepsAreInAccZH[nAssocZDecays] = {0,0,0};
+  Int_t nbHLepsAreGoodZH[nAssocZDecays] = {0,0,0};
+  Int_t nbAll4LepRightZH[nAssocZDecays] = {0,0,0};
+  Int_t nbZ1DaughtersFromHZH[nAssocZDecays][4]; for(int i=0; i<nAssocZDecays; i++) for(int j=0; j<4; j++) nbZ1DaughtersFromHZH[i][j] = 0;
+  Int_t nbZ2DaughtersFromHZH[nAssocZDecays][4]; for(int i=0; i<nAssocZDecays; i++) for(int j=0; j<4; j++) nbZ2DaughtersFromHZH[i][j] = 0;
+
+  Int_t nbTotalttH[nAssocttDecays] = {0,0,0,0};
+  Int_t nbHLepsAreInAccttH[nAssocttDecays] = {0,0,0,0};
+  Int_t nbHLepsAreGoodttH[nAssocttDecays] = {0,0,0,0};
+  Int_t nbAll4LepRightttH[nAssocttDecays] = {0,0,0,0};
+  Int_t nbZ1DaughtersFromHttH[nAssocttDecays][4]; for(int i=0; i<nAssocttDecays; i++) for(int j=0; j<4; j++) nbZ1DaughtersFromHttH[i][j] = 0;
+  Int_t nbZ2DaughtersFromHttH[nAssocttDecays][4]; for(int i=0; i<nAssocttDecays; i++) for(int j=0; j<4; j++) nbZ2DaughtersFromHttH[i][j] = 0;
+
 
 
   // ------------------------------------------------------------
@@ -1142,6 +1171,7 @@ void plotProductionModeComparison(
     if(!isPresent[p]) continue;
 
     cout<<prodName[p]<<endl;
+    txtOut<<prodName[p]<<endl;
 
     for(int c=0; c<nChannels; c++){
       
@@ -1152,6 +1182,13 @@ void plotProductionModeComparison(
       nbWithBC[p][c] = 0;
       nbWithBCFullSel70[p][c] = 0;
       nbWithBCFullSel100[p][c] = 0;
+      nbWithBCFullSel100Exactly4GoodLeps[p][c] = 0;
+      nbWithBCFullSel100AtLeast5GoodLeps[p][c] = 0;
+      nbWithBCFullSel100Exactly5GoodLeps[p][c] = 0;
+      nbWithBCFullSel100Exactly6GoodLeps[p][c] = 0;
+      nbWithBCFullSel100HLepsAreInAcc[p][c] = 0;
+      nbWithBCFullSel100HLepsAreGood[p][c] = 0;
+      nbWithBCFullSel100All4LepRight[p][c] = 0;
       for(int m=0; m<nMatchHLepsStatuses; m++) nbWithBCFullSel100MatchHLeps[m][p][c] = 0;
       for(int m=0; m<nMatchAllLepsStatuses; m++) nbWithBCFullSel100MatchAllLeps[m][p][c] = 0;
       if(prodName[p]=="WH") for(int m=0; m<nMatchWHStatuses; m++) nbWithBCFullSel100MatchWH[m][c] = 0;
@@ -1279,6 +1316,9 @@ void plotProductionModeComparison(
 	printStatus(z,20000,entries,"entries");
 
 	chain[p][c]->GetEntry(z);
+
+
+	// ---------------------- Gen lepton counting --------------------------
  
 	Int_t nGenHLep = 0;
 	Int_t nGenHLepInAcc = 0;
@@ -1295,7 +1335,7 @@ void plotProductionModeComparison(
 	Float_t GenAssocLepPhi[2] = {GenAssocLep1Phi,GenAssocLep2Phi};
 	Bool_t  GenAssocLepIsInAcc[4];
 	for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++){
-	  if(GenHLepId[iGenHLep]!=0){
+	  if(abs(GenHLepId[iGenHLep])==11 || abs(GenHLepId[iGenHLep])==13){
 	    nGenHLep++;
 	    GenHLepIsInAcc[iGenHLep] = (abs(GenHLepId[iGenHLep])==11 && (acceptanceIncludesPt?GenHLepPt[iGenHLep]>7.:true) && fabs(GenHLepEta[iGenHLep])<2.5) || 
 	                               (abs(GenHLepId[iGenHLep])==13 && (acceptanceIncludesPt?GenHLepPt[iGenHLep]>5.:true) && fabs(GenHLepEta[iGenHLep])<2.4) ;
@@ -1303,7 +1343,7 @@ void plotProductionModeComparison(
 	  }
 	}
 	for(Int_t iGenAssocLep=0; iGenAssocLep<2; iGenAssocLep++){
-	  if(GenAssocLepId[iGenAssocLep]!=0){
+	  if(abs(GenAssocLepId[iGenAssocLep])==11 || abs(GenAssocLepId[iGenAssocLep])==13){
 	    nGenAssocLep++;
 	    GenAssocLepIsInAcc[iGenAssocLep] = (abs(GenAssocLepId[iGenAssocLep])==11 && (acceptanceIncludesPt?GenAssocLepPt[iGenAssocLep]>7.:true) && fabs(GenAssocLepEta[iGenAssocLep])<2.5) || 
 	                                       (abs(GenAssocLepId[iGenAssocLep])==13 && (acceptanceIncludesPt?GenAssocLepPt[iGenAssocLep]>5.:true) && fabs(GenAssocLepEta[iGenAssocLep])<2.4) ;
@@ -1313,13 +1353,14 @@ void plotProductionModeComparison(
 	Int_t nGenLep = nGenHLep + nGenAssocLep;
 	Int_t nGenLepInAcc = nGenHLepInAcc + nGenAssocLepInAcc;
 
-	if(excludeH2l2X){
-	  if(nGenHLep!=4) continue;
-	}
+	// Don't want to consider such events.
+	// (They are sometimes selected because some e/mu from tau decays are reconstructed as good leptons.)
+	if(nGenLep<4) continue;
 
-	if(requireHLepsAreInAcc){
-	  if(nGenHLepInAcc!=4) continue;
-	}
+	///////////////////////////
+	if(excludeH2l2X)
+	  if(nGenHLep!=4) continue;
+	///////////////////////////
 
 	Int_t currentAssocDecay = -1;
 	if(prodName[p]=="WH"){
@@ -1335,6 +1376,9 @@ void plotProductionModeComparison(
 	  else if(nGenHLep==4 && nGenAssocLep==2) currentAssocDecay = 7;
 	  else if(nGenHLep==2 && nGenAssocLep==2) currentAssocDecay = 8;
 	}
+
+
+	// ---------------------- Successive selection steps --------------------------
 
 	string evtID = eventID(nRun,nLumi,nEvent);
 	overlapMapStored[p][evtID].push_back(channels[c]);
@@ -1365,6 +1409,9 @@ void plotProductionModeComparison(
 	    nbWithBCFullSel100[p][c]++;
 	    nbWithBCFullSel100[p][3]++;
 
+
+	    // ---------------------- Gen to Good lepton matching --------------------------
+
 	    Float_t CandLepEta[4] = {CandLep1Eta->at(iBC),CandLep2Eta->at(iBC),CandLep3Eta->at(iBC),CandLep4Eta->at(iBC)};
 	    Float_t CandLepPhi[4] = {CandLep1Phi->at(iBC),CandLep2Phi->at(iBC),CandLep3Phi->at(iBC),CandLep4Phi->at(iBC)};
 	    Float_t ExtraLepEta[3] = {ExtraLep1Eta->at(iBC),ExtraLep2Eta->at(iBC),ExtraLep3Eta->at(iBC)};
@@ -1378,7 +1425,7 @@ void plotProductionModeComparison(
 	    Int_t nGenHLepMatchedToZ1Lep[4] = {0,0};
 	    Int_t nGenHLepMatchedToZ2Lep[4] = {0,0};
 	    for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++){
-	      if(GenHLepId[iGenHLep]!=0){
+	      if(abs(GenHLepId[iGenHLep])==11 || abs(GenHLepId[iGenHLep])==13){
 		for(Int_t iCandLep=0; iCandLep<4; iCandLep++){
 		  if(deltaR(GenHLepEta[iGenHLep],GenHLepPhi[iGenHLep],CandLepEta[iCandLep],CandLepPhi[iCandLep]) < 0.1){
 		    nRecoLepMatchedToGenHLep[iGenHLep]++;
@@ -1401,7 +1448,7 @@ void plotProductionModeComparison(
 	      }
 	    }
 	    for(Int_t iGenAssocLep=0; iGenAssocLep<2; iGenAssocLep++){
-	      if(GenAssocLepId[iGenAssocLep]!=0){
+	      if(abs(GenAssocLepId[iGenAssocLep])==11 || abs(GenAssocLepId[iGenAssocLep])==13){
 		for(Int_t iCandLep=0; iCandLep<4; iCandLep++){
 		  if(deltaR(GenAssocLepEta[iGenAssocLep],GenAssocLepPhi[iGenAssocLep],CandLepEta[iCandLep],CandLepPhi[iCandLep]) < 0.1){
 		    nRecoLepMatchedToGenAssocLep[iGenAssocLep]++;
@@ -1418,15 +1465,150 @@ void plotProductionModeComparison(
 		}
 	      }
 	    }
-	    if(requireHLepsAreGood){
-	      Bool_t foundAmbiguity = false;
-	      for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++) if(nRecoLepMatchedToGenHLep[iGenHLep]>1){ foundAmbiguity = true; break; }
-	      for(Int_t iGenAssocLep=0; iGenAssocLep<2; iGenAssocLep++) if(nRecoLepMatchedToGenAssocLep[iGenAssocLep]>1){ foundAmbiguity = true; break; }
-	      for(Int_t iRecoLep=0; iRecoLep<4+nExtraLep->at(iBC); iRecoLep++) if(nGenLepMatchedToRecoLep[iRecoLep]>1){ foundAmbiguity = true; break; }
-	      Int_t nOnes = 0;
-	      for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++) if(nRecoLepMatchedToGenHLep[iGenHLep]==1) nOnes++;
-	      if(foundAmbiguity || nOnes!=4) continue;
+
+
+	    // ---------------------- Exploit matching information --------------------------
+	    
+	    Bool_t foundMatchingAmbiguity = false;
+	    for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++) if(nRecoLepMatchedToGenHLep[iGenHLep]>1){ foundMatchingAmbiguity = true; break; }
+	    for(Int_t iGenAssocLep=0; iGenAssocLep<2; iGenAssocLep++) if(nRecoLepMatchedToGenAssocLep[iGenAssocLep]>1){ foundMatchingAmbiguity = true; break; }
+	    for(Int_t iRecoLep=0; iRecoLep<4+nExtraLep->at(iBC); iRecoLep++) if(nGenLepMatchedToRecoLep[iRecoLep]>1){ foundMatchingAmbiguity = true; break; }
+
+	    Int_t nOnes = 0;
+	    for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++) if(nRecoLepMatchedToGenHLep[iGenHLep]==1) nOnes++;
+
+	    Int_t nOnesHLeps = 0;
+	    for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++) if(nCandLepMatchedToGenHLep[iGenHLep]==1) nOnesHLeps++;
+	    Int_t nOnesAssocLeps = 0;
+	    for(Int_t iGenAssocLep=0; iGenAssocLep<2; iGenAssocLep++) if(nCandLepMatchedToGenAssocLep[iGenAssocLep]==1) nOnesAssocLeps++;
+	    Int_t currentMatchHLepsStatus = -1;
+	    if(foundMatchingAmbiguity){
+	      currentMatchHLepsStatus = 5;
+	    }else{
+	      if(nOnesHLeps==4) currentMatchHLepsStatus = 0;
+	      if(nOnesHLeps==3) currentMatchHLepsStatus = 1;
+	      if(nOnesHLeps==2) currentMatchHLepsStatus = 2;
+	      if(nOnesHLeps==1) currentMatchHLepsStatus = 3;
+	      if(nOnesHLeps==0) currentMatchHLepsStatus = 4;
 	    }
+	    Int_t currentMatchAllLepsStatus = -1;
+	    if(foundMatchingAmbiguity){
+	      currentMatchAllLepsStatus = 4;
+	    }else{
+	      if(nOnesHLeps==4 && nOnesAssocLeps==0) currentMatchAllLepsStatus = 0;
+	      if(nOnesHLeps==3 && nOnesAssocLeps==1) currentMatchAllLepsStatus = 1;
+	      if(nOnesHLeps==2 && nOnesAssocLeps==2) currentMatchAllLepsStatus = 2;
+	      if(nOnesHLeps+nOnesAssocLeps<4) currentMatchAllLepsStatus = 3;
+	    }
+	    Int_t currentMatchWHStatus = -1;
+	    Int_t currentMatchZHStatus = -1;
+	    Int_t currentMatchttHStatus = -1;
+	    if(prodName[p]=="WH"){
+	      if(foundMatchingAmbiguity){
+		currentMatchWHStatus = 4;
+	      }else{
+		if(nOnesHLeps+nOnesAssocLeps<4){
+		  currentMatchWHStatus = 3;
+		}else{
+		  if(nGenHLep==4 && nGenAssocLep==0){
+		    if(nOnesHLeps==4 && nOnesAssocLeps==0) currentMatchWHStatus = 0;
+		    else cout<<"error nOnes"<<endl;
+		  }else if(nGenHLep==4 && nGenAssocLep==1){
+		    if(nOnesHLeps==4 && nOnesAssocLeps==0) currentMatchWHStatus = 1;
+		    else if(nOnesHLeps==3 && nOnesAssocLeps==1) currentMatchWHStatus = 2;
+		    else cout<<"error nOnes"<<endl;
+		  }else{
+		    cout<<"error nGen"<<endl;
+		  }
+		}
+	      } 
+	    }
+	    if(prodName[p]=="ZH"){
+	      if(foundMatchingAmbiguity){
+		currentMatchZHStatus = 6;
+	      }else{
+		if(nOnesHLeps+nOnesAssocLeps<4){
+		  currentMatchZHStatus = 5;
+		}else{
+		  if(nGenHLep==4 && nGenAssocLep==0){
+		    if(nOnesHLeps==4 && nOnesAssocLeps==0) currentMatchZHStatus = 0;
+		    else cout<<"error nOnes"<<endl;
+		  }else if(nGenHLep==4 && nGenAssocLep==2){
+		    if(nOnesHLeps==4 && nOnesAssocLeps==0) currentMatchZHStatus = 1;
+		    else if(nOnesHLeps==3 && nOnesAssocLeps==1) currentMatchZHStatus = 2;
+		    else if(nOnesHLeps==2 && nOnesAssocLeps==2) currentMatchZHStatus = 3;
+		    else cout<<"error nOnes"<<endl;
+		  }else if(nGenHLep==2 && nGenAssocLep==2){
+		    if(nOnesHLeps==2 && nOnesAssocLeps==2) currentMatchZHStatus = 4;
+		    else cout<<"error nOnes"<<endl;
+		  }else{
+		    cout<<"error nGen"<<endl;
+		  }
+		}
+	      } 
+	    }
+	    if(prodName[p]=="ttH"){
+	      if(foundMatchingAmbiguity){
+		currentMatchttHStatus = 8;
+	      }else{
+		if(nOnesHLeps+nOnesAssocLeps<4){
+		  currentMatchttHStatus = 7;
+		}else{
+		  if(nGenHLep==4 && nGenAssocLep==0){
+		    if(nOnesHLeps==4 && nOnesAssocLeps==0) currentMatchttHStatus = 0;
+		    else cout<<"error nOnes"<<endl;
+		  }else if(nGenHLep==4 && nGenAssocLep==1){
+		    if(nOnesHLeps==4 && nOnesAssocLeps==0) currentMatchttHStatus = 1;
+		    else if(nOnesHLeps==3 && nOnesAssocLeps==1) currentMatchttHStatus = 2;
+		    else cout<<"error nOnes"<<endl;
+		  }else if(nGenHLep==4 && nGenAssocLep==2){
+		    if(nOnesHLeps==4 && nOnesAssocLeps==0) currentMatchttHStatus = 3;
+		    else if(nOnesHLeps==3 && nOnesAssocLeps==1) currentMatchttHStatus = 4;
+		    else if(nOnesHLeps==2 && nOnesAssocLeps==2) currentMatchttHStatus = 5;
+		    else cout<<"error nOnes"<<endl;
+		  }else if(nGenHLep==2 && nGenAssocLep==2){
+		    if(nOnesHLeps==2 && nOnesAssocLeps==2) currentMatchttHStatus = 6;
+		    else cout<<"error nOnes"<<endl;
+		  }else{
+		    cout<<"error nGen"<<endl;
+		  }
+		}
+	      } 
+	    } 
+
+	    Int_t currentZ1MatchStatus = -1;
+	    if(nGenHLepMatchedToZ1Lep[0]>1 || nGenHLepMatchedToZ1Lep[1]>1) currentZ1MatchStatus = 3;
+	    else currentZ1MatchStatus = 2 - (nGenHLepMatchedToZ1Lep[0] + nGenHLepMatchedToZ1Lep[1]);
+	    Int_t currentZ2MatchStatus = -1;
+	    if(nGenHLepMatchedToZ2Lep[0]>1 || nGenHLepMatchedToZ2Lep[1]>1) currentZ2MatchStatus = 3;
+	    else currentZ2MatchStatus = 2 - (nGenHLepMatchedToZ2Lep[0] + nGenHLepMatchedToZ2Lep[1]);
+
+
+	    // ---------------------- Cuts impacting counters/histograms --------------------------
+
+	    Bool_t Exactly4GoodLeps = nExtraLep->at(iBC)==0 ;
+	    Bool_t AtLeast5GoodLeps = nExtraLep->at(iBC)>=1 ;
+	    Bool_t Exactly5GoodLeps = nExtraLep->at(iBC)==1 ;
+	    Bool_t Exactly6GoodLeps = nExtraLep->at(iBC)==2 ;
+	    Bool_t HLepsAreInAcc    = nGenHLepInAcc==4 ;
+	    Bool_t HLepsAreGood     = !foundMatchingAmbiguity && nOnes==4 ;
+
+	    if(requireExactly4GoodLeps && !Exactly4GoodLeps) continue;
+	    if(requireAtLeast5GoodLeps && !AtLeast5GoodLeps) continue;
+	    if(requireExactly5GoodLeps && !Exactly5GoodLeps) continue;
+	    if(requireExactly6GoodLeps && !Exactly6GoodLeps) continue;
+	    if(requireHLepsAreInAcc    && !HLepsAreInAcc   ) continue;
+	    if(requireHLepsAreGood     && !HLepsAreGood    ) continue;
+
+
+	    // ---------------------- Fill histograms and increment counters --------------------------
+
+	    if(Exactly4GoodLeps){ nbWithBCFullSel100Exactly4GoodLeps[p][c]++; nbWithBCFullSel100Exactly4GoodLeps[p][3]++; }
+	    if(AtLeast5GoodLeps){ nbWithBCFullSel100AtLeast5GoodLeps[p][c]++; nbWithBCFullSel100AtLeast5GoodLeps[p][3]++; }
+	    if(Exactly5GoodLeps){ nbWithBCFullSel100Exactly5GoodLeps[p][c]++; nbWithBCFullSel100Exactly5GoodLeps[p][3]++; }
+	    if(Exactly6GoodLeps){ nbWithBCFullSel100Exactly6GoodLeps[p][c]++; nbWithBCFullSel100Exactly6GoodLeps[p][3]++; }
+	    if(HLepsAreInAcc   ){ nbWithBCFullSel100HLepsAreInAcc   [p][c]++; nbWithBCFullSel100HLepsAreInAcc   [p][3]++; }
+	    if(HLepsAreGood    ){ nbWithBCFullSel100HLepsAreGood    [p][c]++; nbWithBCFullSel100HLepsAreGood    [p][3]++; }
 
 	    Float_t varVal[nVariables] = {
 	      ZZMass->at(iBC),
@@ -1452,238 +1634,6 @@ void plotProductionModeComparison(
 	      hBCFullSel100[v][p][c]->Fill(varVal[v],weights[p]);
 	      hBCFullSel100[v][p][3]->Fill(varVal[v],weights[p]);
 	    }
-
-	    Int_t currentBasket = -1;
-	    if(nJets->at(iBC)==0 || nJets->at(iBC)==1){
-	      if(nExtraLep->at(iBC)==0) currentBasket = 1;
-	      else if(nExtraLep->at(iBC)==1){ 
-		//if(ExtraLep1Pt->at(iBC)>20. && PFMET>45.) currentBasket = 2;
-		if(PFMET>45.) currentBasket = 2;
-		else currentBasket = 3;
-	      }else if(nExtraLep->at(iBC)>=2) currentBasket = 4;
-	      else cout<<"WARNING : inconsistent nExtraLep"<<endl;
-	    }else if(nJets->at(iBC)>=2){
-	      if(nExtraLep->at(iBC)==0){
-		if(ZZFisher->at(iBC)>0.5) currentBasket = 5;
-		else currentBasket = 6;	      
-	      }else if(nExtraLep->at(iBC)==1) currentBasket = 7;
-	      else if(nExtraLep->at(iBC)>=2) currentBasket = 8;
-	      else cout<<"WARNING : inconsistent nExtraLep"<<endl;
-	    }else{
-	      cout<<"WARNING : inconsistent nJets"<<endl;
-	    }
-
-	    hBCFullSel100Baskets[p][c]->Fill(currentBasket,weights[p]);
-	    hBCFullSel100Baskets[p][c]->Fill(0.,weights[p]);
-	    hBCFullSel100Baskets[p][3]->Fill(currentBasket,weights[p]);
-	    hBCFullSel100Baskets[p][3]->Fill(0.,weights[p]);
-	    if(currentAssocDecay>=0){
-	      hBCFullSel100BasketsAssocDecays[currentAssocDecay][c]->Fill(currentBasket,weights[p]);
-	      hBCFullSel100BasketsAssocDecays[currentAssocDecay][c]->Fill(0.,weights[p]);
-	      hBCFullSel100BasketsAssocDecays[currentAssocDecay][3]->Fill(currentBasket,weights[p]);
-	      hBCFullSel100BasketsAssocDecays[currentAssocDecay][3]->Fill(0.,weights[p]);	      
-	    }
-	    if(106<ZZMass->at(iBC) && ZZMass->at(iBC)<141){
-	      hBCFullSel100MasswindowBaskets[p][c]->Fill(currentBasket,weights[p]);
-	      hBCFullSel100MasswindowBaskets[p][c]->Fill(0.,weights[p]);
-	      hBCFullSel100MasswindowBaskets[p][3]->Fill(currentBasket,weights[p]);
-	      hBCFullSel100MasswindowBaskets[p][3]->Fill(0.,weights[p]);
-	      if(currentAssocDecay>=0){
-		hBCFullSel100MasswindowBasketsAssocDecays[currentAssocDecay][c]->Fill(currentBasket,weights[p]);
-		hBCFullSel100MasswindowBasketsAssocDecays[currentAssocDecay][c]->Fill(0.,weights[p]);
-		hBCFullSel100MasswindowBasketsAssocDecays[currentAssocDecay][3]->Fill(currentBasket,weights[p]);
-		hBCFullSel100MasswindowBasketsAssocDecays[currentAssocDecay][3]->Fill(0.,weights[p]);	      
-	      }
-	    }
-
-	    Int_t currentMatchHLepsStatus = -1;
-	    Bool_t foundAmbiguityHLeps = false;
-	    for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++) if(nCandLepMatchedToGenHLep[iGenHLep]>1){ foundAmbiguityHLeps = true; break; }
-	    for(Int_t iCandLep=0; iCandLep<4; iCandLep++) if(nGenLepMatchedToCandLep[iCandLep]>1){ foundAmbiguityHLeps = true; break; }
-	    if(foundAmbiguityHLeps){
-	      currentMatchHLepsStatus = 5;
-	    }else{
-	      Int_t nOnesHLeps = 0;
-	      for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++) if(nCandLepMatchedToGenHLep[iGenHLep]==1) nOnesHLeps++;
-	      if(nOnesHLeps==4) currentMatchHLepsStatus = 0;
-	      if(nOnesHLeps==3) currentMatchHLepsStatus = 1;
-	      if(nOnesHLeps==2) currentMatchHLepsStatus = 2;
-	      if(nOnesHLeps==1) currentMatchHLepsStatus = 3;
-	      if(nOnesHLeps==0) currentMatchHLepsStatus = 4;
-	    }
-	    Int_t currentMatchAllLepsStatus = -1;
-	    Bool_t foundAmbiguityAllLeps = false;
-	    for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++) if(nCandLepMatchedToGenHLep[iGenHLep]>1){ foundAmbiguityAllLeps = true; break; }
-	    for(Int_t iGenAssocLep=0; iGenAssocLep<2; iGenAssocLep++) if(nCandLepMatchedToGenAssocLep[iGenAssocLep]>1){ foundAmbiguityAllLeps = true; break; }
-	    for(Int_t iCandLep=0; iCandLep<4; iCandLep++) if(nGenLepMatchedToCandLep[iCandLep]>1){ foundAmbiguityAllLeps = true; break; }
-	    Int_t nOnesHLeps = 0;
-	    Int_t nOnesAssocLeps = 0;
-	    for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++) if(nCandLepMatchedToGenHLep[iGenHLep]==1) nOnesHLeps++;
-	    for(Int_t iGenAssocLep=0; iGenAssocLep<4; iGenAssocLep++) if(nCandLepMatchedToGenAssocLep[iGenAssocLep]==1) nOnesAssocLeps++;
-	    if(foundAmbiguityAllLeps){
-	      currentMatchAllLepsStatus = 4;
-	    }else{
-	      if(nOnesHLeps==4 && nOnesAssocLeps==0) currentMatchAllLepsStatus = 0;
-	      if(nOnesHLeps==3 && nOnesAssocLeps==1) currentMatchAllLepsStatus = 1;
-	      if(nOnesHLeps==2 && nOnesAssocLeps==2) currentMatchAllLepsStatus = 2;
-	      if(nOnesHLeps+nOnesAssocLeps<4) currentMatchAllLepsStatus = 3;
-	    }
-	    Int_t currentMatchWHStatus = -1;
-	    Int_t currentMatchZHStatus = -1;
-	    Int_t currentMatchttHStatus = -1;
-	    if(prodName[p]=="WH"){
-	      if(foundAmbiguityAllLeps){
-		currentMatchWHStatus = 4;
-	      }else{
-		if(nOnesHLeps+nOnesAssocLeps<4){
-		  currentMatchWHStatus = 3;
-		}else{
-		  if(nGenHLep==4 && nGenAssocLep==0){
-		    if(nOnesHLeps==4 && nOnesAssocLeps==0) currentMatchWHStatus = 0;
-		    else cout<<"error"<<endl;
-		  }else if(nGenHLep==4 && nGenAssocLep==1){
-		    if(nOnesHLeps==4 && nOnesAssocLeps==0) currentMatchWHStatus = 1;
-		    else if(nOnesHLeps==3 && nOnesAssocLeps==1) currentMatchWHStatus = 2;
-		    else cout<<"error"<<endl;
-		  }else{
-		    cout<<"error"<<endl;
-		  }
-		}
-	      } 
-	    }
-	    if(prodName[p]=="ZH"){
-	      if(foundAmbiguityAllLeps){
-		currentMatchZHStatus = 6;
-	      }else{
-		if(nOnesHLeps+nOnesAssocLeps<4){
-		  currentMatchZHStatus = 5;
-		}else{
-		  if(nGenHLep==4 && nGenAssocLep==0){
-		    if(nOnesHLeps==4 && nOnesAssocLeps==0) currentMatchZHStatus = 0;
-		    else cout<<"error"<<endl;
-		  }else if(nGenHLep==4 && nGenAssocLep==2){
-		    if(nOnesHLeps==4 && nOnesAssocLeps==0) currentMatchZHStatus = 1;
-		    else if(nOnesHLeps==3 && nOnesAssocLeps==1) currentMatchZHStatus = 2;
-		    else if(nOnesHLeps==2 && nOnesAssocLeps==2) currentMatchZHStatus = 3;
-		    else cout<<"error"<<endl;
-		  }else if(nGenHLep==2 && nGenAssocLep==2){
-		    if(nOnesHLeps==2 && nOnesAssocLeps==2) currentMatchZHStatus = 4;
-		    else cout<<"error"<<endl;
-		  }else{
-		    cout<<"error"<<endl;
-		  }
-		}
-	      } 
-	    }
-	    if(prodName[p]=="ttH"){
-	      if(foundAmbiguityAllLeps){
-		currentMatchttHStatus = 8;
-	      }else{
-		if(nOnesHLeps+nOnesAssocLeps<4){
-		  currentMatchttHStatus = 7;
-		}else{
-		  if(nGenHLep==4 && nGenAssocLep==0){
-		    if(nOnesHLeps==4 && nOnesAssocLeps==0) currentMatchttHStatus = 0;
-		    else cout<<"error"<<endl;
-		  }else if(nGenHLep==4 && nGenAssocLep==1){
-		    if(nOnesHLeps==4 && nOnesAssocLeps==0) currentMatchttHStatus = 1;
-		    else if(nOnesHLeps==3 && nOnesAssocLeps==1) currentMatchttHStatus = 2;
-		    else cout<<"error"<<endl;
-		  }else if(nGenHLep==4 && nGenAssocLep==2){
-		    if(nOnesHLeps==4 && nOnesAssocLeps==0) currentMatchttHStatus = 3;
-		    else if(nOnesHLeps==3 && nOnesAssocLeps==1) currentMatchttHStatus = 4;
-		    else if(nOnesHLeps==2 && nOnesAssocLeps==2) currentMatchttHStatus = 5;
-		    else cout<<"error"<<endl;
-		  }else if(nGenHLep==2 && nGenAssocLep==2){
-		    if(nOnesHLeps==2 && nOnesAssocLeps==2) currentMatchttHStatus = 6;
-		    else cout<<"error"<<endl;
-		  }else{
-		    cout<<"error"<<endl;
-		  }
-		}
-	      } 
-	    } 
-	    Int_t currentZ1MatchStatus = -1;
-	    if(nGenHLepMatchedToZ1Lep[0]>1 || nGenHLepMatchedToZ1Lep[1]>1) currentZ1MatchStatus = 3;
-	    else currentZ1MatchStatus = 2 - (nGenHLepMatchedToZ1Lep[0] + nGenHLepMatchedToZ1Lep[1]);
-	    Int_t currentZ2MatchStatus = -1;
-	    if(nGenHLepMatchedToZ2Lep[0]>1 || nGenHLepMatchedToZ2Lep[1]>1) currentZ2MatchStatus = 3;
-	    else currentZ2MatchStatus = 2 - (nGenHLepMatchedToZ2Lep[0] + nGenHLepMatchedToZ2Lep[1]);
-	    if(prodName[p]=="WH"){
-	      if(nGenHLep==4 && nGenAssocLep==0){
-		nbTotalWH[0]++;
-		if(currentMatchAllLepsStatus==0) nbAll4LepRightWH[0]++;
-		nbZ1DaughtersFromHWH[0][currentZ1MatchStatus]++;
-		nbZ2DaughtersFromHWH[0][currentZ2MatchStatus]++;
-	      }else if(nGenHLep==4 && nGenAssocLep==1){
-		nbTotalWH[1]++;
-		if(currentMatchAllLepsStatus==0) nbAll4LepRightWH[1]++;
-		nbZ1DaughtersFromHWH[1][currentZ1MatchStatus]++;
-		nbZ2DaughtersFromHWH[1][currentZ2MatchStatus]++;
-	      }else{
-		cout<<"error"<<endl;
-	      }
-	    }
-	    if(prodName[p]=="ZH"){
-	      if(nGenHLep==4 && nGenAssocLep==0){
-		nbTotalZH[0]++;
-		if(currentMatchAllLepsStatus==0) nbAll4LepRightZH[0]++;
-		nbZ1DaughtersFromHZH[0][currentZ1MatchStatus]++;
-		nbZ2DaughtersFromHZH[0][currentZ2MatchStatus]++;
-	      }else if(nGenHLep==4 && nGenAssocLep==2){
-		nbTotalZH[1]++;
-		if(currentMatchAllLepsStatus==0) nbAll4LepRightZH[1]++;
-		nbZ1DaughtersFromHZH[1][currentZ1MatchStatus]++;
-		nbZ2DaughtersFromHZH[1][currentZ2MatchStatus]++;
-	      }else if(nGenHLep==2 && nGenAssocLep==2){
-		nbTotalZH[2]++;
-		if(currentMatchAllLepsStatus==0) nbAll4LepRightZH[2]++;
-		nbZ1DaughtersFromHZH[2][currentZ1MatchStatus]++;
-		nbZ2DaughtersFromHZH[2][currentZ2MatchStatus]++;
-	      }else{
-		cout<<"error"<<endl;
-	      }
-	    }
-	    if(prodName[p]=="ttH"){
-	      if(nGenHLep==4 && nGenAssocLep==0){
-		nbTotalttH[0]++;
-		if(currentMatchAllLepsStatus==0) nbAll4LepRightttH[0]++;
-		nbZ1DaughtersFromHttH[0][currentZ1MatchStatus]++;
-		nbZ2DaughtersFromHttH[0][currentZ2MatchStatus]++;
-	      }else if(nGenHLep==4 && nGenAssocLep==1){
-		nbTotalttH[1]++;
-		if(currentMatchAllLepsStatus==0) nbAll4LepRightttH[1]++;
-		nbZ1DaughtersFromHttH[1][currentZ1MatchStatus]++;
-		nbZ2DaughtersFromHttH[1][currentZ2MatchStatus]++;
-	      }else if(nGenHLep==4 && nGenAssocLep==2){
-		nbTotalttH[2]++;
-		if(currentMatchAllLepsStatus==0) nbAll4LepRightttH[2]++;
-		nbZ1DaughtersFromHttH[2][currentZ1MatchStatus]++;
-		nbZ2DaughtersFromHttH[2][currentZ2MatchStatus]++;
-	      }else if(nGenHLep==2 && nGenAssocLep==2){
-		nbTotalttH[3]++;
-		if(currentMatchAllLepsStatus==0) nbAll4LepRightttH[3]++;
-		nbZ1DaughtersFromHttH[3][currentZ1MatchStatus]++;
-		nbZ2DaughtersFromHttH[3][currentZ2MatchStatus]++;
-	      }else{
-		cout<<"error"<<endl;
-	      }
-	    }
-	    // 	cout<<nGenHLep;
-	    // 	cout<<" ";
-	    // 	cout<<nGenAssocLep;
-	    // 	cout<<" ";
-	    // 	for(Int_t iGenHLep =0; iGenHLep <4; iGenHLep ++) cout<<nCandLepMatchedToGenHLep [iGenHLep ];
-	    // 	cout<<" ";
-	    // 	for(Int_t iGenAssocLep =0; iGenAssocLep <2; iGenAssocLep ++) cout<<nCandLepMatchedToGenAssocLep[iGenAssocLep];
-	    // 	cout<<" ";
-	    // 	for(Int_t iCandLep=0; iCandLep<4; iCandLep++) cout<<nGenLepMatchedToCandLep[iCandLep];
-	    // 	cout<<" ";
-	    // 	cout<<currentMatchHLepsStatus;
-	    // 	cout<<" ";
-	    // 	cout<<currentMatchAllLepsStatus;
-	    // 	cout<<endl;
-
 
 	    for(int v2=0; v2<n2DHist; v2++){
 	      h2DBCFullSel100[v2][p][c]->Fill(varVal[varXindex[v2]],varVal[varYindex[v2]],weights[p]);
@@ -1749,6 +1699,98 @@ void plotProductionModeComparison(
 		hBCFullSel100MatchttH[v][currentMatchttHStatus][3]->Fill(varVal[v],weights[p]);
 	      }
 	    }
+
+	    if(currentMatchAllLepsStatus==0){
+	      nbWithBCFullSel100All4LepRight[p][c]++;
+	      nbWithBCFullSel100All4LepRight[p][3]++;
+	    }
+
+	    if(prodName[p]=="WH"){
+	      Int_t currentWDecay = -1;
+	      if(nGenHLep==4 && nGenAssocLep==0) currentWDecay = 0;
+	      else if(nGenHLep==4 && nGenAssocLep==1) currentWDecay = 1;
+	      else cout<<"error"<<endl;
+	      nbTotalWH[currentWDecay]++;
+	      if(nGenHLepInAcc==4) nbHLepsAreInAccWH[currentWDecay]++;
+	      if(HLepsAreGood) nbHLepsAreGoodWH[currentWDecay]++;
+	      if(currentMatchAllLepsStatus==0) nbAll4LepRightWH[currentWDecay]++;
+	      nbZ1DaughtersFromHWH[currentWDecay][currentZ1MatchStatus]++;
+	      nbZ2DaughtersFromHWH[currentWDecay][currentZ2MatchStatus]++;
+	    }
+	    if(prodName[p]=="ZH"){
+	      Int_t currentZDecay = -1;
+	      if(nGenHLep==4 && nGenAssocLep==0) currentZDecay = 0;
+	      else if(nGenHLep==4 && nGenAssocLep==2) currentZDecay = 1;
+	      else if(nGenHLep==2 && nGenAssocLep==2) currentZDecay = 2;
+	      else cout<<"error"<<endl;
+	      nbTotalZH[currentZDecay]++;
+	      if(nGenHLepInAcc==4) nbHLepsAreInAccZH[currentZDecay]++;
+	      if(HLepsAreGood) nbHLepsAreGoodZH[currentZDecay]++;
+	      if(currentMatchAllLepsStatus==0) nbAll4LepRightZH[currentZDecay]++;
+	      nbZ1DaughtersFromHZH[currentZDecay][currentZ1MatchStatus]++;
+	      nbZ2DaughtersFromHZH[currentZDecay][currentZ2MatchStatus]++;
+	    }
+	    if(prodName[p]=="ttH"){
+	      Int_t currentttDecay = -1;
+	      if(nGenHLep==4 && nGenAssocLep==0) currentttDecay = 0;
+	      else if(nGenHLep==4 && nGenAssocLep==1) currentttDecay = 1;
+	      else if(nGenHLep==4 && nGenAssocLep==2) currentttDecay = 2;
+	      else if(nGenHLep==2 && nGenAssocLep==2) currentttDecay = 3;
+	      else cout<<"error"<<endl;
+	      nbTotalttH[currentttDecay]++;
+	      if(nGenHLepInAcc==4) nbHLepsAreInAccttH[currentttDecay]++;
+	      if(HLepsAreGood) nbHLepsAreGoodttH[currentttDecay]++;
+	      if(currentMatchAllLepsStatus==0) nbAll4LepRightttH[currentttDecay]++;
+	      nbZ1DaughtersFromHttH[currentttDecay][currentZ1MatchStatus]++;
+	      nbZ2DaughtersFromHttH[currentttDecay][currentZ2MatchStatus]++;
+	    }
+
+
+	    // ---------------------- Categorization stuff --------------------------
+
+	    Int_t currentBasket = -1;
+	    if(nJets->at(iBC)==0 || nJets->at(iBC)==1){
+	      if(nExtraLep->at(iBC)==0) currentBasket = 1;
+	      else if(nExtraLep->at(iBC)==1){ 
+		//if(ExtraLep1Pt->at(iBC)>20. && PFMET>45.) currentBasket = 2;
+		if(PFMET>45.) currentBasket = 2;
+		else currentBasket = 3;
+	      }else if(nExtraLep->at(iBC)>=2) currentBasket = 4;
+	      else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+	    }else if(nJets->at(iBC)>=2){
+	      if(nExtraLep->at(iBC)==0){
+		if(ZZFisher->at(iBC)>0.5) currentBasket = 5;
+		else currentBasket = 6;	      
+	      }else if(nExtraLep->at(iBC)==1) currentBasket = 7;
+	      else if(nExtraLep->at(iBC)>=2) currentBasket = 8;
+	      else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+	    }else{
+	      cout<<"WARNING : inconsistent nJets"<<endl;
+	    }
+
+	    hBCFullSel100Baskets[p][c]->Fill(currentBasket,weights[p]);
+	    hBCFullSel100Baskets[p][c]->Fill(0.,weights[p]);
+	    hBCFullSel100Baskets[p][3]->Fill(currentBasket,weights[p]);
+	    hBCFullSel100Baskets[p][3]->Fill(0.,weights[p]);
+	    if(currentAssocDecay>=0){
+	      hBCFullSel100BasketsAssocDecays[currentAssocDecay][c]->Fill(currentBasket,weights[p]);
+	      hBCFullSel100BasketsAssocDecays[currentAssocDecay][c]->Fill(0.,weights[p]);
+	      hBCFullSel100BasketsAssocDecays[currentAssocDecay][3]->Fill(currentBasket,weights[p]);
+	      hBCFullSel100BasketsAssocDecays[currentAssocDecay][3]->Fill(0.,weights[p]);	      
+	    }
+	    if(106<ZZMass->at(iBC) && ZZMass->at(iBC)<141){
+	      hBCFullSel100MasswindowBaskets[p][c]->Fill(currentBasket,weights[p]);
+	      hBCFullSel100MasswindowBaskets[p][c]->Fill(0.,weights[p]);
+	      hBCFullSel100MasswindowBaskets[p][3]->Fill(currentBasket,weights[p]);
+	      hBCFullSel100MasswindowBaskets[p][3]->Fill(0.,weights[p]);
+	      if(currentAssocDecay>=0){
+		hBCFullSel100MasswindowBasketsAssocDecays[currentAssocDecay][c]->Fill(currentBasket,weights[p]);
+		hBCFullSel100MasswindowBasketsAssocDecays[currentAssocDecay][c]->Fill(0.,weights[p]);
+		hBCFullSel100MasswindowBasketsAssocDecays[currentAssocDecay][3]->Fill(currentBasket,weights[p]);
+		hBCFullSel100MasswindowBasketsAssocDecays[currentAssocDecay][3]->Fill(0.,weights[p]);	      
+	      }
+	    }
+
 	
 	  } // end if(FullSel100)
 
@@ -1758,129 +1800,161 @@ void plotProductionModeComparison(
 
     } // end for channels
 
+
+    // ---------------------- Printing --------------------------
+
     Int_t widthColumn2 = 6;
 
     for(int c=0; c<nChannels; c++){
-      cout<<" "<<channels[c]<<endl;
-      cout<<"  stored :            "<<fixWidth(Form("%i",nbStored[p][c]),widthColumn2,false)<<endl;
-      cout<<"  iBC>0 :             "<<fixWidth(Form("%i",nbWithBC[p][c]),widthColumn2,false)<<endl;
-      cout<<"  iBC>0, FullSel70 :  "<<fixWidth(Form("%i",nbWithBCFullSel70[p][c]),widthColumn2,false)<<endl;
-      cout<<"  iBC>0, FullSel100 : "<<fixWidth(Form("%i",nbWithBCFullSel100[p][c]),widthColumn2,false)<<endl;
-      cout<<"  iBC>0, FullSel100, match to 4 gen leptons : "<<fixWidth(Form("%i",nbWithBCFullSel100MatchHLeps[0][p][c]),widthColumn2,false)<<endl;
+      txtOut<<" "<<channels[c]<<endl;
+      txtOut<<"  stored :            "<<fixWidth(Form("%i",nbStored[p][c]),widthColumn2,false)<<endl;
+      txtOut<<"  iBC>0 :             "<<fixWidth(Form("%i",nbWithBC[p][c]),widthColumn2,false)<<endl;
+      txtOut<<"  iBC>0, FullSel70 :  "<<fixWidth(Form("%i",nbWithBCFullSel70[p][c]),widthColumn2,false)<<endl;
+      txtOut<<"  iBC>0, FullSel100 : "<<fixWidth(Form("%i",nbWithBCFullSel100[p][c]),widthColumn2,false)<<endl;
+      if(requireExactly4GoodLeps) txtOut<<"  [ From this point, require that there is exactly 4 good leptons ]"<<endl;
+      if(requireAtLeast5GoodLeps) txtOut<<"  [ From this point, require that there is at least 5 good leptons ]"<<endl;
+      if(requireExactly5GoodLeps) txtOut<<"  [ From this point, require that there is exactly 5 good leptons ]"<<endl;
+      if(requireExactly6GoodLeps) txtOut<<"  [ From this point, require that there is exactly 6 good leptons ]"<<endl;
+      if(requireHLepsAreInAcc   ) txtOut<<"  [ From this point, require that the 4 gen-leptons from the H are in the acceptance ]"<<endl;
+      if(requireHLepsAreGood    ) txtOut<<"  [ From this point, require that the 4 gen-leptons from the H are reconstructed as good leptons ]"<<endl;
+      txtOut<<"  iBC>0, FullSel100, there is ==4 / >=5 / ==5 / ==6 good leptons : "<<nbWithBCFullSel100Exactly4GoodLeps[p][c]<<" / "<<nbWithBCFullSel100AtLeast5GoodLeps[p][c]<<" / "<<nbWithBCFullSel100Exactly5GoodLeps[p][c]<<" / "<<nbWithBCFullSel100Exactly6GoodLeps[p][c]<<endl;
+      txtOut<<"  iBC>0, FullSel100, the 4 gen-leptons from the H are in the acceptance : "<<nbWithBCFullSel100HLepsAreInAcc[p][c]<<endl;
+      txtOut<<"  iBC>0, FullSel100, the 4 gen-leptons from the H are reconstructed as good leptons : "<<nbWithBCFullSel100HLepsAreGood[p][c]<<endl;
+      txtOut<<"  iBC>0, FullSel100, the 4 gen-leptons from the H are the 4 good leptons of the best candidate : "<<nbWithBCFullSel100All4LepRight[p][c]<<endl;
     }
 
-    cout<<" "<<"# events :"<<endl;
-    cout<<"  stored :            "<<fixWidth(Form("%i",(int)overlapMapStored[p].size()),widthColumn2,false)<<endl;
-    cout<<"  iBC>0 :             "<<fixWidth(Form("%i",(int)overlapMapWithBC[p].size()),widthColumn2,false)<<endl;
-    cout<<"  iBC>0, FullSel70 :  "<<fixWidth(Form("%i",(int)overlapMapWithBCFullSel70[p].size()),widthColumn2,false)<<endl;
-    cout<<"  iBC>0, FullSel100 : "<<fixWidth(Form("%i",(int)overlapMapWithBCFullSel100[p].size()),widthColumn2,false)<<endl;
+    txtOut<<" "<<"# events :"<<endl;
+    txtOut<<"  stored :            "<<fixWidth(Form("%i",(int)overlapMapStored[p].size()),widthColumn2,false)<<endl;
+    txtOut<<"  iBC>0 :             "<<fixWidth(Form("%i",(int)overlapMapWithBC[p].size()),widthColumn2,false)<<endl;
+    txtOut<<"  iBC>0, FullSel70 :  "<<fixWidth(Form("%i",(int)overlapMapWithBCFullSel70[p].size()),widthColumn2,false)<<endl;
+    txtOut<<"  iBC>0, FullSel100 : "<<fixWidth(Form("%i",(int)overlapMapWithBCFullSel100[p].size()),widthColumn2,false)<<endl;
 
-    cout<<" "<<"# events stored in 2:3 decay channels :"<<endl;
+    txtOut<<" "<<"# events stored in 2:3 decay channels :"<<endl;
     Int_t nbOverlapStored2 = 0;
     Int_t nbOverlapStored3 = 0;
     for(map<string,vector<string> >::iterator it=overlapMapStored[p].begin(); it!=overlapMapStored[p].end(); it++){
       if(it->second.size()==2) nbOverlapStored2++;
       if(it->second.size()==3) nbOverlapStored3++;
     }
-    cout<<"  stored :            "<<nbOverlapStored2<<":"<<nbOverlapStored3<<" ("<<percentage((float)(nbOverlapStored2+nbOverlapStored3)/(int)overlapMapStored[p].size())<<" %)"<<endl;
+    txtOut<<"  stored :            "<<nbOverlapStored2<<":"<<nbOverlapStored3<<" ("<<percentage((float)(nbOverlapStored2+nbOverlapStored3)/(int)overlapMapStored[p].size())<<" %)"<<endl;
     Int_t nbOverlapWithBC2 = 0;
     Int_t nbOverlapWithBC3 = 0;
     for(map<string,vector<string> >::iterator it=overlapMapWithBC[p].begin(); it!=overlapMapWithBC[p].end(); it++){
       if(it->second.size()==2) nbOverlapWithBC2++;
       if(it->second.size()==3) nbOverlapWithBC3++;
     }
-    cout<<"  iBC>0 :             "<<nbOverlapWithBC2<<":"<<nbOverlapWithBC3<<" ("<<percentage((float)(nbOverlapWithBC2+nbOverlapWithBC3)/(int)overlapMapWithBC[p].size())<<" %)"<<endl;
+    txtOut<<"  iBC>0 :             "<<nbOverlapWithBC2<<":"<<nbOverlapWithBC3<<" ("<<percentage((float)(nbOverlapWithBC2+nbOverlapWithBC3)/(int)overlapMapWithBC[p].size())<<" %)"<<endl;
     Int_t nbOverlapWithBCFullSel702 = 0;
     Int_t nbOverlapWithBCFullSel703 = 0;
     for(map<string,vector<string> >::iterator it=overlapMapWithBCFullSel70[p].begin(); it!=overlapMapWithBCFullSel70[p].end(); it++){
       if(it->second.size()==2) nbOverlapWithBCFullSel702++;
       if(it->second.size()==3) nbOverlapWithBCFullSel703++;
     }
-    cout<<"  iBC>0, FullSel70 :  "<<nbOverlapWithBCFullSel702<<":"<<nbOverlapWithBCFullSel703<<" ("<<percentage((float)(nbOverlapWithBCFullSel702+nbOverlapWithBCFullSel703)/(int)overlapMapWithBCFullSel70[p].size())<<" %)"<<endl;
+    txtOut<<"  iBC>0, FullSel70 :  "<<nbOverlapWithBCFullSel702<<":"<<nbOverlapWithBCFullSel703<<" ("<<percentage((float)(nbOverlapWithBCFullSel702+nbOverlapWithBCFullSel703)/(int)overlapMapWithBCFullSel70[p].size())<<" %)"<<endl;
     Int_t nbOverlapWithBCFullSel1002 = 0;
     Int_t nbOverlapWithBCFullSel1003 = 0;
     for(map<string,vector<string> >::iterator it=overlapMapWithBCFullSel100[p].begin(); it!=overlapMapWithBCFullSel100[p].end(); it++){
       if(it->second.size()==2) nbOverlapWithBCFullSel1002++;
       if(it->second.size()==3) nbOverlapWithBCFullSel1003++;
     }
-    cout<<"  iBC>0, FullSel100 : "<<nbOverlapWithBCFullSel1002<<":"<<nbOverlapWithBCFullSel1003<<" ("<<percentage((float)(nbOverlapWithBCFullSel1002+nbOverlapWithBCFullSel1003)/(int)overlapMapWithBCFullSel100[p].size())<<" %)"<<endl;
+    txtOut<<"  iBC>0, FullSel100 : "<<nbOverlapWithBCFullSel1002<<":"<<nbOverlapWithBCFullSel1003<<" ("<<percentage((float)(nbOverlapWithBCFullSel1002+nbOverlapWithBCFullSel1003)/(int)overlapMapWithBCFullSel100[p].size())<<" %)"<<endl;
 
     int widthColumn1 = 22;
     int widthOtherColumns = 7;
     string separator = repeat("-",widthColumn1+4*(2+widthOtherColumns));
     if(prodName[p]=="WH"){
-      cout<<" "<<separator<<endl;
-      cout<<" "<<fixWidth("# of Z1 leptons from H",widthColumn1,true);
-      for(int j=0; j<4; j++) cout<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
-      cout<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<fixWidth("# of Z1 leptons from H",widthColumn1,true);
+      for(int j=0; j<4; j++) txtOut<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
+      txtOut<<endl;
       for(int i=0; i<nAssocWDecays; i++){
-	cout<<" "<<fixWidth(WHdecays[i],widthColumn1,true);
-	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ1DaughtersFromHWH[i][j]/nbTotalWH[i])+" %",widthOtherColumns,false);
-	cout<<endl;
+	txtOut<<" "<<fixWidth(WHdecays[i],widthColumn1,true);
+	for(int j=0; j<4; j++) txtOut<<"  "<<fixWidth(percentage((float)nbZ1DaughtersFromHWH[i][j]/nbTotalWH[i])+" %",widthOtherColumns,false);
+	txtOut<<endl;
       }
-      cout<<" "<<separator<<endl;
-      cout<<" "<<fixWidth("# of Z2 leptons from H",widthColumn1,true);
-      for(int j=0; j<4; j++) cout<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
-      cout<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<fixWidth("# of Z2 leptons from H",widthColumn1,true);
+      for(int j=0; j<4; j++) txtOut<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
+      txtOut<<endl;
       for(int i=0; i<nAssocWDecays; i++){
-	cout<<" "<<fixWidth(WHdecays[i],widthColumn1,true);
-	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ2DaughtersFromHWH[i][j]/nbTotalWH[i])+" %",widthOtherColumns,false);
-	cout<<endl;
+	txtOut<<" "<<fixWidth(WHdecays[i],widthColumn1,true);
+	for(int j=0; j<4; j++) txtOut<<"  "<<fixWidth(percentage((float)nbZ2DaughtersFromHWH[i][j]/nbTotalWH[i])+" %",widthOtherColumns,false);
+	txtOut<<endl;
       }
-      cout<<" "<<separator<<endl;
-      cout<<" "<<"all-4-leptons-right events"<<endl;
-      for(int i=0; i<nAssocWDecays; i++) cout<<" "<<fixWidth(WHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbAll4LepRightWH[i]/nbTotalWH[i])+" %"<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<"the 4 gen-leptons from the H are in the acceptance :"<<endl;
+      for(int i=0; i<nAssocWDecays; i++) txtOut<<" "<<fixWidth(WHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbHLepsAreInAccWH[i]/nbTotalWH[i])+" %"<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<"the 4 gen-leptons from the H are reconstructed as good leptons :"<<endl;
+      for(int i=0; i<nAssocWDecays; i++) txtOut<<" "<<fixWidth(WHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbHLepsAreGoodWH[i]/nbTotalWH[i])+" %"<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<"the 4 gen-leptons from the H are the 4 good leptons of the best candidate :"<<endl;
+      for(int i=0; i<nAssocWDecays; i++) txtOut<<" "<<fixWidth(WHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbAll4LepRightWH[i]/nbTotalWH[i])+" %"<<endl;
     }
     if(prodName[p]=="ZH"){
-      cout<<" "<<separator<<endl;
-      cout<<" "<<fixWidth("# of Z1 leptons from H",widthColumn1,true);
-      for(int j=0; j<4; j++) cout<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
-      cout<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<fixWidth("# of Z1 leptons from H",widthColumn1,true);
+      for(int j=0; j<4; j++) txtOut<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
+      txtOut<<endl;
       for(int i=0; i<nAssocZDecays; i++){
-	cout<<" "<<fixWidth(ZHdecays[i],widthColumn1,true);
-	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ1DaughtersFromHZH[i][j]/nbTotalZH[i])+" %",widthOtherColumns,false);
-	cout<<endl;
+	txtOut<<" "<<fixWidth(ZHdecays[i],widthColumn1,true);
+	for(int j=0; j<4; j++) txtOut<<"  "<<fixWidth(percentage((float)nbZ1DaughtersFromHZH[i][j]/nbTotalZH[i])+" %",widthOtherColumns,false);
+	txtOut<<endl;
       }
-      cout<<" "<<separator<<endl;
-      cout<<" "<<fixWidth("# of Z2 leptons from H",widthColumn1,true);
-      for(int j=0; j<4; j++) cout<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
-      cout<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<fixWidth("# of Z2 leptons from H",widthColumn1,true);
+      for(int j=0; j<4; j++) txtOut<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
+      txtOut<<endl;
       for(int i=0; i<nAssocZDecays; i++){
-	cout<<" "<<fixWidth(ZHdecays[i],widthColumn1,true);
-	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ2DaughtersFromHZH[i][j]/nbTotalZH[i])+" %",widthOtherColumns,false);
-	cout<<endl;
+	txtOut<<" "<<fixWidth(ZHdecays[i],widthColumn1,true);
+	for(int j=0; j<4; j++) txtOut<<"  "<<fixWidth(percentage((float)nbZ2DaughtersFromHZH[i][j]/nbTotalZH[i])+" %",widthOtherColumns,false);
+	txtOut<<endl;
       }
-      cout<<" "<<separator<<endl;
-      cout<<" "<<"all-4-leptons-right events"<<endl;
-      for(int i=0; i<nAssocZDecays; i++) cout<<" "<<fixWidth(ZHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbAll4LepRightZH[i]/nbTotalZH[i])+" %"<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<"the 4 gen-leptons from the H are in the acceptance :"<<endl;
+      for(int i=0; i<nAssocZDecays; i++) txtOut<<" "<<fixWidth(ZHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbHLepsAreInAccZH[i]/nbTotalZH[i])+" %"<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<"the 4 gen-leptons from the H are reconstructed as good leptons :"<<endl;
+      for(int i=0; i<nAssocZDecays; i++) txtOut<<" "<<fixWidth(ZHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbHLepsAreGoodZH[i]/nbTotalZH[i])+" %"<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<"the 4 gen-leptons from the H are the 4 good leptons of the best candidate :"<<endl;
+      for(int i=0; i<nAssocZDecays; i++) txtOut<<" "<<fixWidth(ZHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbAll4LepRightZH[i]/nbTotalZH[i])+" %"<<endl;
     }
     if(prodName[p]=="ttH"){
-      cout<<" "<<separator<<endl;
-      cout<<" "<<fixWidth("# of Z1 leptons from H",widthColumn1,true);
-      for(int j=0; j<4; j++) cout<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
-      cout<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<fixWidth("# of Z1 leptons from H",widthColumn1,true);
+      for(int j=0; j<4; j++) txtOut<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
+      txtOut<<endl;
       for(int i=0; i<nAssocttDecays; i++){
-	cout<<" "<<fixWidth(ttHdecays[i],widthColumn1,true);
-	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ1DaughtersFromHttH[i][j]/nbTotalttH[i])+" %",widthOtherColumns,false);
-	cout<<endl;
+	txtOut<<" "<<fixWidth(ttHdecays[i],widthColumn1,true);
+	for(int j=0; j<4; j++) txtOut<<"  "<<fixWidth(percentage((float)nbZ1DaughtersFromHttH[i][j]/nbTotalttH[i])+" %",widthOtherColumns,false);
+	txtOut<<endl;
       }
-      cout<<" "<<separator<<endl;
-      cout<<" "<<fixWidth("# of Z2 leptons from H",widthColumn1,true);
-      for(int j=0; j<4; j++) cout<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
-      cout<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<fixWidth("# of Z2 leptons from H",widthColumn1,true);
+      for(int j=0; j<4; j++) txtOut<<"  "<<fixWidth(nbZDaughtersFromH[j],widthOtherColumns,false);
+      txtOut<<endl;
       for(int i=0; i<nAssocttDecays; i++){
-	cout<<" "<<fixWidth(ttHdecays[i],widthColumn1,true);
-	for(int j=0; j<4; j++) cout<<"  "<<fixWidth(percentage((float)nbZ2DaughtersFromHttH[i][j]/nbTotalttH[i])+" %",widthOtherColumns,false);
-	cout<<endl;
+	txtOut<<" "<<fixWidth(ttHdecays[i],widthColumn1,true);
+	for(int j=0; j<4; j++) txtOut<<"  "<<fixWidth(percentage((float)nbZ2DaughtersFromHttH[i][j]/nbTotalttH[i])+" %",widthOtherColumns,false);
+	txtOut<<endl;
       }
-      cout<<" "<<separator<<endl;
-      cout<<" "<<"all-4-leptons-right events"<<endl;
-      for(int i=0; i<nAssocttDecays; i++) cout<<" "<<fixWidth(ttHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbAll4LepRightttH[i]/nbTotalttH[i])+" %"<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<"the 4 gen-leptons from the H are in the acceptance :"<<endl;
+      for(int i=0; i<nAssocttDecays; i++) txtOut<<" "<<fixWidth(ttHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbHLepsAreInAccttH[i]/nbTotalttH[i])+" %"<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<"the 4 gen-leptons from the H are reconstructed as good leptons :"<<endl;
+      for(int i=0; i<nAssocttDecays; i++) txtOut<<" "<<fixWidth(ttHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbHLepsAreGoodttH[i]/nbTotalttH[i])+" %"<<endl;
+      txtOut<<" "<<separator<<endl;
+      txtOut<<" "<<"the 4 gen-leptons from the H are the 4 good leptons of the best candidate :"<<endl;
+      for(int i=0; i<nAssocttDecays; i++) txtOut<<" "<<fixWidth(ttHdecays[i],widthColumn1,true)<<"   "<<percentage((float)nbAll4LepRightttH[i]/nbTotalttH[i])+" %"<<endl;
     }
     
-    cout<<endl;
+    txtOut<<endl;
 
   } // end for production modes
+
+  txtOut.close();
 
 
 
