@@ -7,7 +7,8 @@
 
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
 #include <Muon/MuonAnalysisTools/interface/MuonEffectiveArea.h>
-#include <EGamma/EGammaAnalysisTools/interface/ElectronEffectiveArea.h>
+//#include <EGamma/EGammaAnalysisTools/interface/ElectronEffectiveArea.h>
+#include <ZZAnalysis/AnalysisStep/interface/CustomElectronEffectiveArea.h>
 
 #include <iostream>
 
@@ -22,9 +23,9 @@ int correctionType = 2; //1 = rho; 2 = dbeta;
 InputTag LeptonIsoHelper::getMuRhoTag(int sampleType, int setup) {
   InputTag rhoTag;
   if (sampleType ==2011) {
-    rhoTag = InputTag("kt6PFJetsForIso","rho");
+    rhoTag = InputTag("fixedGridRhoFastjetAll","rho");
   } else if (sampleType ==2012) { 
-    rhoTag = InputTag("kt6PFJetsCentralNeutral","rho");
+    rhoTag = InputTag("fixedGridRhoFastjetAll","rho");
   } else {
     cout << "LeptonIsoHelper: Incorrect setup: " << sampleType << " " << setup << endl;
     abort();
@@ -35,9 +36,9 @@ InputTag LeptonIsoHelper::getMuRhoTag(int sampleType, int setup) {
 InputTag LeptonIsoHelper::getEleRhoTag(int sampleType, int setup) {
   InputTag rhoTag;
   if (sampleType ==2011) {
-    rhoTag = InputTag("kt6PFJetsForIso","rho");
+    rhoTag = InputTag("fixedGridRhoFastjetAll","rho");
   } else if (sampleType ==2012) {
-    rhoTag = InputTag("kt6PFJets","rho","RECO");
+    rhoTag = InputTag("fixedGridRhoFastjetAll","rho","RECO");
   } else {
     cout << "LeptonIsoHelper: Incorect setup: " << sampleType << endl;
     abort();

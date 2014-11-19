@@ -10,6 +10,7 @@
  *  $Date: 2013/10/25 15:26:57 $
  *  $Revision: 1.19 $
  *  \author N. Amapane - CERN
+ *  \author G. Ortona - LLR
  */
 
 #include <ZZAnalysis/AnalysisStep/interface/MCHistoryTools.h>
@@ -36,7 +37,7 @@ MCHistoryTools::MCHistoryTools(const edm::Event & event, string sampleName) :
   isInit(false),
   theGenH(0) {
   //  if(event.getByLabel("genParticles", particles)){  // genParticles are not available in cmgTuple, only in PAT
-  if(event.getByLabel("genParticlesPruned", particles)){
+  if(event.getByLabel("prunedGenParticles", particles)){
     ismc=true;
     
     edm::Handle<GenEventInfoProduct> gen;
@@ -199,6 +200,7 @@ MCHistoryTools::init() {
 	cout << "Genpart: id " << id << " pt " << p->pt() << " eta " << p->eta() << " phi " << p->phi()
 	     << " status " << p->status()
 	     << " parent id " << (p->mother()!=0?p->mother()->pdgId():0)
+	     << "thegenh " << theGenH
 	  // << " vertex " << p->vertex()
 	     << endl;
       }
@@ -206,10 +208,11 @@ MCHistoryTools::init() {
 
     //--- H
     if (id==25) {
-      if (theGenH==0 || (p->daughter(0)->pdgId()==25)) { // Handle HH samples - genH will be the H decaying to ZZ in this case
-	theGenH = &*p;
+      if (theGenH==0 )theGenH = &*p;
+      if(p->daughter(0)){// Handle HH samples - genH will be the H decaying to ZZ in this case
+	if(p->daughter(0)->pdgId()==25)theGenH = &*p;
       }
-
+      
     //--- Z
     } else if (id==23 && p->mother()!=0 && p->mother()->pdgId()!=23) {// avoid double counting
       if ((processID==24 || processID==900024) && p->mother()->pdgId()!=25) { //This is an associated Z

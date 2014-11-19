@@ -3,12 +3,12 @@
 
 bool debug = false;
 
-std::vector<const cmg::PFJet*> VBFCandidateJetSelector::cleanJets(const pat::CompositeCandidate& cand, 
-								  edm::Handle<edm::View<cmg::PFJet> > jets, int year)
-                                                                  //const std::vector<cmg::PFJet>& jets);
+std::vector<const pat::PFJet*> VBFCandidateJetSelector::cleanJets(const pat::CompositeCandidate& cand, 
+								  edm::Handle<edm::View<pat::PFJet> > jets, int year)
+                                                                  //const std::vector<pat::PFJet>& jets);
 {
-	for(edm::View<cmg::PFJet>::const_iterator j = jets->begin(); j != jets->end(); ++j) {
-	//for(std::vector<cmg::PFJet>::const_iterator j = jets->begin(); j != jets->end(); ++j) {
+	for(edm::View<pat::PFJet>::const_iterator j = jets->begin(); j != jets->end(); ++j) {
+	//for(std::vector<pat::PFJet>::const_iterator j = jets->begin(); j != jets->end(); ++j) {
 
 	  float jeta=fabs(j->eta());
 		
@@ -30,8 +30,9 @@ std::vector<const cmg::PFJet*> VBFCandidateJetSelector::cleanJets(const pat::Com
 		//Pt3050_Loose   = cms.vdouble(-0.63,-0.60,-0.55,-0.45), 
 		float jpt=j->pt();
 		float jpumva=0.;
-		if(year==2012)jpumva=j->puMva("full53x");
-		else jpumva=j->puMva("full");
+		//if(year==2012)jpumva=j->puMva("full53x");
+		//else jpumva=j->puMva("full");
+		jpumva=j->userFloat("pileupJetId:fullDiscriminant");
 		if(jpt>20){
 		  if(jeta>3.){
 		    if(jpumva<=-0.45)passPU=false;
