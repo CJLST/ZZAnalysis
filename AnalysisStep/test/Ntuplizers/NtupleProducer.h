@@ -112,9 +112,9 @@ private:
 	bool isMC_;	
 	int lepton_setup;
 	
-	edm::InputTag MuRhoCorrection_;
-	edm::InputTag EleRhoCorrection_;
-	edm::InputTag SigmaRhoCorrection_;
+	//edm::InputTag MuRhoCorrection_;
+	//edm::InputTag EleRhoCorrection_;
+	//edm::InputTag SigmaRhoCorrection_;
 	edm::InputTag PileupSrc_;	
 		
 	std::vector<edm::InputTag > HLT_Filters_;

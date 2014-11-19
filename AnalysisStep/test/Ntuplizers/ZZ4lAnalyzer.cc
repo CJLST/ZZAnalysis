@@ -19,6 +19,7 @@
 #include <DataFormats/PatCandidates/interface/CompositeCandidate.h>
 #include <DataFormats/PatCandidates/interface/Muon.h>
 #include <DataFormats/PatCandidates/interface/Electron.h>
+#include <DataFormats/PatCandidates/interface/Jet.h>
 #include <DataFormats/Math/interface/LorentzVector.h>
 #include <DataFormats/VertexReco/interface/Vertex.h>
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
@@ -26,8 +27,6 @@
 #include <DataFormats/JetReco/interface/PFJet.h>
 #include <DataFormats/METReco/interface/PFMETCollection.h>
 #include <DataFormats/JetReco/interface/PFJetCollection.h>
-#include <AnalysisDataFormats/CMGTools/interface/BaseMET.h>
-#include <AnalysisDataFormats/CMGTools/interface/PFJet.h>
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include <FWCore/ParameterSet/interface/FileInPath.h>
 
@@ -489,15 +488,15 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
 //   }
   
   //MET
-  Handle<vector<cmg::BaseMET> > pfmetcoll;
-  event.getByLabel("cmgPFMET", pfmetcoll);
+  Handle<vector<reco::MET> > pfmetcoll;
+  event.getByLabel("slimmedMETs", pfmetcoll);
   if(pfmetcoll.isValid()){
     pfmet = pfmetcoll->front().pt();
   }
 
   // Jet collection (preselected with pT>10)
-  Handle<edm::View<cmg::PFJet> > pfjetscoll;
-  event.getByLabel("cmgPFJetSel", pfjetscoll);
+  Handle<edm::View<pat::Jet> > pfjetscoll;
+  event.getByLabel("slimmedJets", pfjetscoll);
 
   // Apply MC filter (skip event)
   if (isMC && !(myHelper.passMCFilter(event))) return;
@@ -714,14 +713,14 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
     VBFCandidateJetSelector myVBFCandidateJetSelector;
 
     // Pick jets, since they are not associated to the candidate yet
-    std::vector<const cmg::PFJet*> cleanedJets;
-    std::vector<const cmg::PFJet*> cleanedJetsPt30;
+    std::vector<const pat::Jet*> cleanedJets;
+    std::vector<const pat::Jet*> cleanedJetsPt30;
     if ( candIsBest && candPass70 ) {
       cleanedJets = myVBFCandidateJetSelector.cleanJets(*cand,pfjetscoll,myHelper.setup()); 
     
       // Create a collection implementing the official jet selection (pt>30)
       for (unsigned int i=0; i < cleanedJets.size(); ++i){
-	const cmg::PFJet& myjet = *(cleanedJets.at(i));  
+	const pat::Jet& myjet = *(cleanedJets.at(i));  
 	if (myjet.pt()>30) cleanedJetsPt30.push_back(&myjet);
       }
 
@@ -796,8 +795,8 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
 				  if (cleanedJetsPt30.size() == 2)
 				  {
 					  evtPass2Jets = true;
-// 					  cmg::PFJet myjet1 = *(cleanedJetsPt30.at(0));
-// 					  cmg::PFJet myjet2 = *(cleanedJetsPt30.at(1));
+// 					  pat::Jet myjet1 = *(cleanedJetsPt30.at(0));
+// 					  pat::Jet myjet2 = *(cleanedJetsPt30.at(1));
 // 					  math::XYZTLorentzVector jet1 = myjet1.p4();
 // 					  math::XYZTLorentzVector jet2 = myjet2.p4();
 //					  double VD  = 0.18*fabs(jet1.Eta()-jet2.Eta()) + 1.92E-4*(jet1+jet2).M();

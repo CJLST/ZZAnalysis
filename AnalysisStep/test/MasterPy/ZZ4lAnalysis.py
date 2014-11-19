@@ -90,7 +90,7 @@ else :
 #        process.GlobalTag.globaltag = 'FT_53_V21_AN3::All' # For 22Jan2013
         process.GlobalTag.globaltag = 'FT_53_V21_AN4::All' # For 22Jan2013, updated JEC on top of pattuples produced with FT_53_V21_AN3
 
-
+process.GlobalTag.globaltag = 'GR_70_V2_AN1::All'
 print process.GlobalTag.globaltag
 
 ### ----------------------------------------------------------------------
@@ -214,7 +214,7 @@ process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService
 # FIXME Add total kinematics filter for MC
 
 process.goodPrimaryVertices = cms.EDFilter("VertexSelector",
-  src = cms.InputTag("offlinePrimaryVertices"),
+  src = cms.InputTag("offlineSlimmedPrimaryVertices"),
   cut = cms.string("!isFake && ndof > 4 && abs(z) <= 24 && position.Rho <= 2"),
   filter = cms.bool(True),
 )
@@ -241,7 +241,7 @@ GOODLEPTON = "userFloat('ID') && userFloat('SIP')<4" # Lepton passing ID, SIP [I
 
 # Mu e-scale corrections (MuScleFit)
 process.calibratedMuons = cms.EDProducer("MuScleFitPATMuonCorrector", 
-                         src = cms.InputTag("patMuonsWithTrigger"), 
+                         src = cms.InputTag("slimmedMuons"), 
                          debug = cms.bool(False), 
                          identifier = cms.string("Summer12_DR53X_smearReReco"), 
                          applySmearing = cms.bool(IsMC), 
@@ -269,7 +269,7 @@ process.cleanedMu = cms.EDProducer("PATMuonCleanerBySegments",
                                    fractionOfSharedSegments = cms.double(0.499))
 
 if APPLYMUCORR == False :
-    process.cleanedMu.src = cms.InputTag("patMuonsWithTrigger")
+    process.cleanedMu.src = cms.InputTag("slimmedMuons")
 
 
 
@@ -312,7 +312,7 @@ process.softMuons = cms.EDProducer("MuFiller",
 if APPLYMUCORR :
     process.muons =  cms.Sequence(process.calibratedMuons + process.cleanedMu + process.bareSoftMuons + process.softMuons)
 else:
-    process.cleanedMu.src = src = cms.InputTag("patMuonsWithTrigger")
+    process.cleanedMu.src = src = cms.InputTag("slimmedMuons")
     process.muons =  cms.Sequence(process.cleanedMu + process.bareSoftMuons + process.softMuons)
     
 
@@ -323,7 +323,7 @@ else:
 # NOTE patElectronsWithRegression->eleRegressionEnergy;  calibratedElectrons-> calibratedPatElectrons
 # Default: NEW ECAL regression + NEW calibration + NEW combination
 process.load('EgammaAnalysis.ElectronTools.electronRegressionEnergyProducer_cfi')
-process.eleRegressionEnergy.inputElectronsTag = cms.InputTag('patElectronsWithTrigger')
+process.eleRegressionEnergy.inputElectronsTag = cms.InputTag('slimmedElectrons')
 process.eleRegressionEnergy.energyRegressionType = 2 ## 1: ECAL regression w/o subclusters 2 (default): ECAL regression w/ subclusters)
 #process.eleRegressionEnergy.vertexCollection = cms.InputTag('goodPrimaryVertices')
 process.load("EgammaAnalysis.ElectronTools.calibratedPatElectrons_cfi")
@@ -438,10 +438,11 @@ process.cleanSoftElectrons = cms.EDProducer("PATElectronCleaner",
 ### Search for FSR candidates
 ### ----------------------------------------------------------------------
 
+process.load("UFHZZAnalysisRun2.FSRPhotons.fsrPhotons_cff")
 process.appendPhotons = cms.EDProducer("LeptonPhotonMatcher",
     muonSrc = cms.InputTag("softMuons"),
     electronSrc = cms.InputTag("cleanSoftElectrons"),
-    photonSrc = cms.InputTag("cmgPhotonSel"),
+    photonSrc = cms.InputTag("boostedFsrPhotons"),
     matchFSR = cms.bool(True)
     )
 
@@ -991,8 +992,8 @@ if (UPDATE_JETS and LEPTON_SETUP==2012) :
 #    from CMGTools.Common.miscProducers.cmgPFJetCorrector_cfi import cmgPFJetCorrector
     process.cmgPFJetSel = cms.EDProducer( "PFJetCorrector",
                                         # make sure your jet and rho collections are compatible
-                                        src = cms.InputTag( 'cmgPFJetSel' ),
-                                        rho = cms.InputTag( 'kt6PFJets:rho:RECO' ),
+                                        src = cms.InputTag( 'slimmedJets' ),
+                                        rho = cms.InputTag( 'fixedGridRhoFastjetAll:rho:RECO' ),
                                         vertices = cms.InputTag('offlinePrimaryVertices'),
                                         payload = cms.string('AK5PF'),
                                         levels = cms.vstring('L1FastJet','L2Relative','L3Absolute'),

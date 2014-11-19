@@ -41,6 +41,7 @@
 #include <DataFormats/PatCandidates/interface/CompositeCandidate.h>
 #include <DataFormats/PatCandidates/interface/Muon.h>
 #include <DataFormats/PatCandidates/interface/Electron.h>
+#include <DataFormats/PatCandidates/interface/Jet.h>
 #include <DataFormats/METReco/interface/PFMET.h>
 #include <DataFormats/METReco/interface/PFMETCollection.h>
 #include <DataFormats/JetReco/interface/PFJet.h>
@@ -63,10 +64,6 @@
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
 #include <ZZMatrixElement/MELA/src/computeAngles.h>
-
-#include <AnalysisDataFormats/CMGTools/interface/Photon.h>
-#include <AnalysisDataFormats/CMGTools/interface/PFJet.h>
-#include <AnalysisDataFormats/CMGTools/interface/BaseMET.h>
 
 #include "HZZ4lNtupleFactory.h"
 
@@ -96,8 +93,8 @@ private:
   virtual void beginJob() ;
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void FillCandidate(const pat::CompositeCandidate& higgs, bool evtPass, const edm::Event&, const Int_t CRflag);
-  virtual void FillPhoton(const cmg::Photon& photon);
-  virtual void FillJet(const cmg::PFJet& jet);
+  virtual void FillPhoton(const pat::Photon& photon);
+  virtual void FillJet(const pat::Jet& jet);
   virtual void endJob() ;
   
   virtual void beginRun(edm::Run const&, edm::EventSetup const&);
@@ -520,10 +517,10 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
   // cmgPhotons (store them only for events with at least 1 candidate)
   if (writePhotons && cands->size()!=0) {
-    edm::Handle<vector<cmg::Photon> > photons;
+    edm::Handle<vector<pat::Photon> > photons;
     if (event.getByLabel("cmgPhotonSel",photons)) {
       //cout << "Photons: " << photons->size() <<endl;
-      for( vector<cmg::Photon>::const_iterator ph = photons->begin(); ph != photons->end(); ++ph) {
+      for( vector<pat::Photon>::const_iterator ph = photons->begin(); ph != photons->end(); ++ph) {
 	//cout << "photon: pt= " << ph->pt() << endl;
 	if(ph->pt() > 2. && fabs(ph->eta()) < 2.8) FillPhoton(*ph);
       }
@@ -533,10 +530,10 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
   // cmgJets (store them only for events with at least 1 candidate)
 //   if (writeJets && cands->size()!=0) {
-//     edm::Handle<vector<cmg::PFJet> > jets;
+//     edm::Handle<vector<pat::Jet> > jets;
 //     if (event.getByLabel("cmgPFJetSel",jets)) {
 //       //cout << "Jets: " << jets->size() <<endl;
-//       for( vector<cmg::PFJet>::const_iterator j = jets->begin(); j != jets->end(); ++j) {
+//       for( vector<pat::Jet>::const_iterator j = jets->begin(); j != jets->end(); ++j) {
 // 	//cout << "jet: pt= " << j->pt() << endl;
 // 	bool looseJetID =(j->getSelection("cuts_looseJetId")>0);
 // 	if(looseJetID && j->passPuJetId("full", PileupJetIdentifier::kLoose )) FillJet(*j);
@@ -557,8 +554,8 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   //     //cout << pfmet << endl;
   //   }
 
-  Handle<vector<cmg::BaseMET> > pfmetcoll;
-  event.getByLabel("cmgPFMET", pfmetcoll);
+  Handle<vector<reco::MET> > pfmetcoll;
+  event.getByLabel("slimmedMETs", pfmetcoll);
   float pfmet = -1;
   if(pfmetcoll.isValid()){
     pfmet = pfmetcoll->front().pt();
@@ -573,7 +570,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   return;
 }
 
-void HZZ4lNtupleMaker::FillPhoton(const cmg::Photon& photon)
+void HZZ4lNtupleMaker::FillPhoton(const pat::Photon& photon)
 {
   const Float_t photPt  = photon.pt();
   const Float_t photEta = photon.eta();
@@ -585,14 +582,14 @@ void HZZ4lNtupleMaker::FillPhoton(const cmg::Photon& photon)
 }
 
 
-void HZZ4lNtupleMaker::FillJet(const cmg::PFJet& jet)
+void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
 {
   const Float_t jetPt  = jet.pt();
   const Float_t jetEta = jet.eta();
   const Float_t jetPhi = jet.phi();
   const Float_t jetMass = jet.p4().M();
   const Float_t jetBTag = jet.bDiscriminator("combinedSecondaryVertexBJetTags");
-  const Float_t jesUnc = jet.uncOnFourVectorScale();
+  const Float_t jesUnc = 0.;//jet.uncOnFourVectorScale();
 
   myTree->FillJetInfo(jetPt, jetEta, jetPhi, jetMass, jetBTag, jesUnc );
 
@@ -984,17 +981,17 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 
   if (writeJets){
     // Jet collection (preselected with pT>10)
-    Handle<edm::View<cmg::PFJet> > pfjetscoll;
-    event.getByLabel("cmgPFJetSel", pfjetscoll);
+    Handle<edm::View<pat::Jet> > pfjetscoll;
+    event.getByLabel("slimmedJets", pfjetscoll);
 
     VBFCandidateJetSelector myVBFCandidateJetSelector; 
-    std::vector<const cmg::PFJet*> cleanedJets; 
+    std::vector<const pat::Jet*> cleanedJets; 
     cleanedJets = myVBFCandidateJetSelector.cleanJets(cand,pfjetscoll,myHelper.setup()); 
     // Note that jets variables are filled for jets above 20 GeV, to allow JES studies.
     // ZZFisher is now filled only for true dijet events (jets above 30 GeV)    
     if(cleanedJets.size()>1 && theChannel!=ZL){ 
-      const cmg::PFJet& myjet1 = *(cleanedJets.at(0)); 
-      const cmg::PFJet& myjet2 = *(cleanedJets.at(1));
+      const pat::Jet& myjet1 = *(cleanedJets.at(0)); 
+      const pat::Jet& myjet2 = *(cleanedJets.at(1));
       math::XYZTLorentzVector jet1 = myjet1.p4();
       math::XYZTLorentzVector jet2 = myjet2.p4();
       //-FIXME check to be removed, Mjj and deta now come from candidate
@@ -1007,8 +1004,8 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
       }
       //-FIXME
       if ( candIsBest && candPassFullSel70){ // Fill additional jet info per-event, only for the selected candidate
-	Float_t jesUnc1 = myjet1.uncOnFourVectorScale();
-	Float_t jesUnc2 = myjet2.uncOnFourVectorScale();
+	Float_t jesUnc1 = 0,;//myjet1.uncOnFourVectorScale();
+	Float_t jesUnc2 = 0.;//myjet2.uncOnFourVectorScale();
 	math::XYZTLorentzVector jetScalePlus1 = jet1*(1+jesUnc1);
 	math::XYZTLorentzVector jetScaleMinus1 = jet1*(1-jesUnc1);
 	math::XYZTLorentzVector jetScalePlus2 = jet2*(1+jesUnc2);

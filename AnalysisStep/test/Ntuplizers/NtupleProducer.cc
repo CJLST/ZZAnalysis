@@ -74,9 +74,6 @@
 
 
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
-#include "AnalysisDataFormats/CMGTools/interface/Photon.h"
-#include "AnalysisDataFormats/CMGTools/interface/PFJet.h"
-#include "AnalysisDataFormats/CMGTools/interface/BaseMET.h"
 #include "TrackingTools/TrajectoryParametrization/interface/GlobalTrajectoryParameters.h"
 #include "TrackingTools/TrajectoryParametrization/interface/CartesianTrajectoryError.h"
 #include "TrackingTools/AnalyticalJacobians/interface/JacobianCurvilinearToCartesian.h"
@@ -94,7 +91,6 @@
 using namespace std;
 using namespace edm;
 using namespace reco;
-using namespace cmg;
 
 #include <algorithm>
 
@@ -112,8 +108,8 @@ isMC_ (iConfig.getParameter<bool>("isMC")),
 lepton_setup(iConfig.getParameter<int>("lepton_setup")),
 
 //RhoCorrection_("kt6PFJetsForIso:rho"),//2011
-MuRhoCorrection_("kt6PFJetsCentralNeutral:rho"),//2012
-EleRhoCorrection_("kt6PFJets:rho"),//2012
+//MuRhoCorrection_("kt6PFJetsCentralNeutral:rho"),//2012
+//EleRhoCorrection_("kt6PFJets:rho"),//2012
 //SigmaRhoCorrection_("kt6PFJetsForIso:sigma"),
 PileupSrc_ ("addPileupInfo")
 { 
@@ -1321,7 +1317,7 @@ void NtupleProducer::FillPhotons(const edm::Event& iEvent, const edm::EventSetup
   // iEvent.getByLabel(PhotonTag_, photonsCol);
 	//Get the Photon collection
   // edm::Handle<reco::PFCandidateCollection> photonsCol;
-  edm::Handle<vector<cmg::Photon> > photonsCol;
+  edm::Handle<vector<pat::Photon> > photonsCol;
   iEvent.getByLabel(PhotonTag_, photonsCol);
 
 
@@ -1329,7 +1325,7 @@ void NtupleProducer::FillPhotons(const edm::Event& iEvent, const edm::EventSetup
 	int counter = 0;
 	photon_N = photonsCol->size() ;
 	
-	for( vector<cmg::Photon>::const_iterator ipho = photonsCol->begin(); ipho != photonsCol->end(); ++ipho) {
+	for( vector<pat::Photon>::const_iterator ipho = photonsCol->begin(); ipho != photonsCol->end(); ++ipho) {
 	//	for (pat::PhotonCollection::const_iterator ipho = photonsCol->begin();  
 	//	for (reco::PFCandidateCollection::const_iterator ipho = photonsCol->begin();  
 	  //ipho != photonsCol->end(); 
@@ -1436,8 +1432,8 @@ void NtupleProducer::FillMET (const edm::Event& iEvent, const edm::EventSetup& i
 // 	edm::Handle< edm::View<pat::MET> > pfMEThandle;
 // 	iEvent.getByLabel("patMETs", pfMEThandle);
 	
-	edm::Handle< edm::View<cmg::BaseMET> > pfMEThandle;
-	iEvent.getByLabel("cmgPFMET", pfMEThandle);
+	edm::Handle< edm::View<reco::MET> > pfMEThandle;
+	iEvent.getByLabel("slimmedMETs", pfMEThandle);
 	
 	
 	// CALO MET
@@ -1487,7 +1483,7 @@ void NtupleProducer::FillJets(const edm::Event& iEvent, const edm::EventSetup& i
 	//  iEvent.getByLabel("cleanPatJets", pfjets);
 // 	edm::Handle<edm::View<pat::Jet> >  pfjets;
 // 	edm::Handle<std::vector<cmg::PFJet> >  pfjets;
-	edm::Handle<edm::View<cmg::PFJet> >  pfjets;
+	edm::Handle<edm::View<pat::Jet> >  pfjets;
 	iEvent.getByLabel(JetTag_, pfjets);
 	
 	_jets_pf_N = pfjets->size();
@@ -1498,7 +1494,7 @@ void NtupleProducer::FillJets(const edm::Event& iEvent, const edm::EventSetup& i
 	// Loop on Pf Jets
 	//for ( pat::JetCollection::const_iterator ijets=pfjets->begin(); ijets!=pfjets->end(); ijets++) {  
 // 	for(edm::View<pat::Jet>::const_iterator ijets=pfjets->begin(); ijets!=pfjets->end(); ijets++) {  
-	for(edm::View<cmg::PFJet>::const_iterator ijets=pfjets->begin(); ijets!=pfjets->end(); ijets++) {  
+	for(edm::View<pat::Jet>::const_iterator ijets=pfjets->begin(); ijets!=pfjets->end(); ijets++) {  
 
 // 	for(unsigned int ijets=0; ijets < pfjets->size(); ijets++) {  
 		if (index_pf_jets>49) continue;
