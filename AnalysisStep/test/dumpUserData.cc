@@ -131,7 +131,7 @@ void dumpUserData::analyze(const Event & event, const EventSetup& eventSetup){
       if (fsrEle->size()) {
 	cout << " Photons: "; // fsrEle->size() << endl;
 	for (PhotonPtrVector::const_iterator g = fsrEle->begin(); g!=fsrEle->end(); ++g) {
-	  cout << " (pt=" << (*g)->pt() << " isFromMu=" << (*g)->isFromMuon() << ")";
+	  cout << " (pt=" << (*g)->pt() ;//<< " isFromMu=" << (*g)->isFromMuon() << ")";
 	}
       }
     }
@@ -148,7 +148,7 @@ void dumpUserData::analyze(const Event & event, const EventSetup& eventSetup){
       if (fsrEle->size()) {
 	cout << " Photon pTs:"; // fsrEle->size() << endl;
 	for (PhotonPtrVector::const_iterator g = fsrEle->begin(); g!=fsrEle->end(); ++g) {
-	  cout << " (pt=" << (*g)->pt() << " isFromMu=" << (*g)->isFromMuon() << ")";
+	  cout << " (pt=" << (*g)->pt() ;//<< " isFromMu=" << (*g)->isFromMuon() << ")";
 	}
       }
     }

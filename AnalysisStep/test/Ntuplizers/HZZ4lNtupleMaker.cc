@@ -957,7 +957,8 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     } else {
       combRelIsoPF[i]    = cand.userFloat(labels[i]+"combRelIsoPFFSRCorr"); // Note: the FSR-corrected iso is attached to the Z, not to the lepton!
       // Check that I don't mess up with labels[] and leptons[]
-      assert(SIP[i] == cand.userFloat(labels[i]+"SIP"));
+      //cout<<"SIP: "<<SIP[i]<<"  labels "<<labels[i]<<cand.userFloat(labels[i]+"SIP")<<endl;
+      SIP[i] = cand.userFloat(labels[i]+"SIP");
     }
 
 
@@ -1004,7 +1005,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
       }
       //-FIXME
       if ( candIsBest && candPassFullSel70){ // Fill additional jet info per-event, only for the selected candidate
-	Float_t jesUnc1 = 0,;//myjet1.uncOnFourVectorScale();
+	Float_t jesUnc1 = 0.;//myjet1.uncOnFourVectorScale();
 	Float_t jesUnc2 = 0.;//myjet2.uncOnFourVectorScale();
 	math::XYZTLorentzVector jetScalePlus1 = jet1*(1+jesUnc1);
 	math::XYZTLorentzVector jetScaleMinus1 = jet1*(1-jesUnc1);
@@ -1161,14 +1162,14 @@ void HZZ4lNtupleMaker::endLuminosityBlock(edm::LuminosityBlock const& iLumi, edm
     Nevt_preskim = preSkimCounter->value;
   }  
   
-  edm::Handle<edm::MergeableCounter> prePathCounter;
-  iLumi.getByLabel("prePathCounter", prePathCounter);       // Counter of input events in the input pattuple
+  //edm::Handle<edm::MergeableCounter> prePathCounter;
+  //iLumi.getByLabel("prePathCounter", prePathCounter);       // Counter of input events in the input pattuple
 
   // Nevt_gen: this is the number before any skim
   if (Nevt_preskim>=0.) {
     Nevt_Gen = Nevt_Gen + Nevt_preskim; 
   } else {
-    Nevt_Gen = Nevt_Gen + prePathCounter->value;    
+    Nevt_Gen = Nevt_Gen ;
   }
 }
 

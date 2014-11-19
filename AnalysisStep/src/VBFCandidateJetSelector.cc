@@ -3,23 +3,25 @@
 
 bool debug = false;
 
-std::vector<const pat::PFJet*> VBFCandidateJetSelector::cleanJets(const pat::CompositeCandidate& cand, 
-								  edm::Handle<edm::View<pat::PFJet> > jets, int year)
-                                                                  //const std::vector<pat::PFJet>& jets);
+std::vector<const pat::Jet*> VBFCandidateJetSelector::cleanJets(const pat::CompositeCandidate& cand, 
+								  edm::Handle<edm::View<pat::Jet> > jets, int year)
+                                                                  //const std::vector<pat::Jet>& jets);
 {
-	for(edm::View<pat::PFJet>::const_iterator j = jets->begin(); j != jets->end(); ++j) {
-	//for(std::vector<pat::PFJet>::const_iterator j = jets->begin(); j != jets->end(); ++j) {
+	for(edm::View<pat::Jet>::const_iterator j = jets->begin(); j != jets->end(); ++j) {
+	//for(std::vector<pat::Jet>::const_iterator j = jets->begin(); j != jets->end(); ++j) {
 
 	  float jeta=fabs(j->eta());
 		
 	  //		bool looseJetID = (j->getSelection("cuts_looseJetId") > 0) ;
+	  /*
 	  bool looseJetID = (j->component(5).fraction() < 0.99 && 
 			     j->component(4).fraction() < 0.99 && 
 			     j->nConstituents() > 1 && 
 			     ( j->component(1).fraction() > 0 || jeta > 2.4 )  &&
 			     ( ( j->component(1).number() + j->component(2).number() + j->component(3).number() ) > 0 || jeta > 2.4 ) &&
 			     ( j->component(2).fraction() < 0.99 || jeta > 2.4 ) );
-			     
+	  */	
+	  bool looseJetID = true;	     
 	  bool passPU = true; //j->passPuJetId("full", PileupJetIdentifier::kLoose);
 	  
 		//HARD CODED implementation of JetMET V00-03-04 WPs - for synch only

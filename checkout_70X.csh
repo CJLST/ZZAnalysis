@@ -29,6 +29,9 @@ git clone https://github.com/usarica/HiggsAnalysis-CombinedLimit HiggsAnalysis/C
 git clone -n https://github.com/VBF-HZZ/UFHZZAnalysisRun2
 (cd UFHZZAnalysisRun2 ; git checkout master FSRPhotons)
 
+#Jet energy corrections (CMGTools)
+#(mkdir -p CMGTools/Common; cd CMGTools/Common ; wget https://raw.githubusercontent.com/CERN-PH-CMG/cmg-cmssw/a875832047532c5469aa9795751f0363cd5d9244/CMGTools/Common/plugins/JetEnergyCorrector.h)
+
 #Not needed anymore (dependency removed)
 #git clone https://github.com/HZZ4l/CombinationPy.git HZZ4L_Combination/CombinationPy
 

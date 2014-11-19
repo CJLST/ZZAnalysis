@@ -139,11 +139,11 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
   // Get jets
   Handle<edm::View<pat::Jet> > pfjetscoll;
-  iEvent.getByLabel("cmgPFJetSel", pfjetscoll);
+  iEvent.getByLabel("slimmedJets", pfjetscoll); //Careful Here: it should be the cmgPFJetSel, but I don't have the pfjetcorrector
 
   // Get MET
-  Handle<vector<cmg::BaseMET> > pfmetcoll;
-  iEvent.getByLabel("cmgPFMET", pfmetcoll);
+  Handle<vector<reco::MET> > pfmetcoll;
+  iEvent.getByLabel("slimmedMETs", pfmetcoll);
   math::XYZTLorentzVector pfmet;
   if(pfmetcoll.isValid()) pfmet = pfmetcoll->front().p4(); // standard MET is pfmet.pt();
 
@@ -660,6 +660,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
               if(secondjet<=firstjet) continue;
               ratio1=1;
               ratio2=1;
+	      /*
               if(jecnum==1){
                 ratio1=1 + cleanedJetsPt30[firstjet]->uncOnFourVectorScale();
                 ratio2=1 + cleanedJetsPt30[secondjet]->uncOnFourVectorScale();
@@ -668,6 +669,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
                 ratio1=1 - cleanedJetsPt30[firstjet]->uncOnFourVectorScale();
                 ratio2=1 - cleanedJetsPt30[secondjet]->uncOnFourVectorScale();
               }
+	      */
               jet1.SetXYZT(cleanedJetsPt30[firstjet]->p4().x(),cleanedJetsPt30[firstjet]->p4().y(),cleanedJetsPt30[firstjet]->p4().z(),cleanedJetsPt30[firstjet]->p4().t());
               jet2.SetXYZT(cleanedJetsPt30[secondjet]->p4().x(),cleanedJetsPt30[secondjet]->p4().y(),cleanedJetsPt30[secondjet]->p4().z(),cleanedJetsPt30[secondjet]->p4().t());
               jet1.SetPtEtaPhiM(jet1.Pt()*ratio1,jet1.Eta(),jet1.Phi(),jet1.M()*ratio1);

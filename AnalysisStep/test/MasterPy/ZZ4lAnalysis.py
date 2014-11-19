@@ -85,12 +85,13 @@ if (SAMPLE_TYPE == 2011) :
 else : 
     if IsMC:
 #        process.GlobalTag.globaltag = 'START53_V7G::All'   #for 53X MC
-        process.GlobalTag.globaltag = 'START53_V23::All'   #for 53X MC, updated JEC on top of pattuples produced with START53_V7G
+#        process.GlobalTag.globaltag = 'START53_V23::All'   #for 53X MC, updated JEC on top of pattuples produced with START53_V7G
+        process.GlobalTag.globaltag = 'PLS170_V6AN1::All'
     else:
 #        process.GlobalTag.globaltag = 'FT_53_V21_AN3::All' # For 22Jan2013
-        process.GlobalTag.globaltag = 'FT_53_V21_AN4::All' # For 22Jan2013, updated JEC on top of pattuples produced with FT_53_V21_AN3
+#        process.GlobalTag.globaltag = 'FT_53_V21_AN4::All' # For 22Jan2013, updated JEC on top of pattuples produced with FT_53_V21_AN3
+        process.GlobalTag.globaltag = 'GR_70_V2_AN1::All'
 
-process.GlobalTag.globaltag = 'GR_70_V2_AN1::All'
 print process.GlobalTag.globaltag
 
 ### ----------------------------------------------------------------------
@@ -371,7 +372,7 @@ process.electrons = cms.Sequence(process.eleRegressionEnergy + process.calibrate
 
 # Handle special cases
 if ELEREGRESSION == "None" and ELECORRTYPE == "None" :   # No correction at all. Skip correction modules.
-    process.bareSoftElectrons.src = cms.InputTag('patElectronsWithTrigger')
+    process.bareSoftElectrons.src = cms.InputTag('slimmedElectrons')
     process.electrons = cms.Sequence(process.bareSoftElectrons + process.softElectrons)
 
 elif ELEREGRESSION == "Moriond" and ELECORRTYPE == "Moriond" : # Moriond corrections: OLD ECAL regression + OLD calibration + OLD combination 
@@ -986,14 +987,14 @@ process.LLLLCand = cms.EDProducer("ZZCandidateFiller",
 ### Recorrect jets
 ### ----------------------------------------------------------------------
 
-UPDATE_JETS = True 
+UPDATE_JETS = False 
 
 if (UPDATE_JETS and LEPTON_SETUP==2012) :
 #    from CMGTools.Common.miscProducers.cmgPFJetCorrector_cfi import cmgPFJetCorrector
     process.cmgPFJetSel = cms.EDProducer( "PFJetCorrector",
                                         # make sure your jet and rho collections are compatible
                                         src = cms.InputTag( 'slimmedJets' ),
-                                        rho = cms.InputTag( 'fixedGridRhoFastjetAll:rho:RECO' ),
+                                        rho = cms.InputTag( 'kt6PFJets:rho:RECO' ),
                                         vertices = cms.InputTag('offlinePrimaryVertices'),
                                         payload = cms.string('AK5PF'),
                                         levels = cms.vstring('L1FastJet','L2Relative','L3Absolute'),
@@ -1016,7 +1017,7 @@ process.PVfilter =  cms.Path(process.goodPrimaryVertices)
 process.Candidates = cms.Path(
        process.muons             +
        process.electrons         + process.cleanSoftElectrons +
-       process.appendPhotons     +
+       process.fsrPhotonSequence + process.appendPhotons     +
        process.softLeptons       +
 # Build 4-lepton candidates
        process.bareZCand         + process.ZCand     +  

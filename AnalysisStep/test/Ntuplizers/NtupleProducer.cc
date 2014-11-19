@@ -1343,9 +1343,9 @@ void NtupleProducer::FillPhotons(const edm::Event& iEvent, const edm::EventSetup
 		setMomentum (myvector, ipho->p4());
 		new (photons[counter]) TLorentzVector (myvector);
 		
-		if (ipho->isFromMuon()){_pho_isFromMuon[counter]= 1;}//cout<<"isfrommuon =1 "<<endl;}
-		else {_pho_isFromMuon[counter]= 0;}//cout<<"isfrommuon =0 "<<endl;}
-		
+		//if (ipho->isFromMuon()){_pho_isFromMuon[counter]= 1;}//cout<<"isfrommuon =1 "<<endl;}
+		//else {_pho_isFromMuon[counter]= 0;}//cout<<"isfrommuon =0 "<<endl;}
+		_pho_isFromMuon[counter]= 0;
 		
 	// 	_pho_isEB[counter] =  ipho->isEB();
 // 		_pho_isEE[counter] =  ipho->isEE();
@@ -1502,23 +1502,23 @@ void NtupleProducer::FillJets(const edm::Event& iEvent, const edm::EventSetup& i
 		setMomentum (myvector, ijets->p4());
 		new (jets_pf[index_pf_jets]) TLorentzVector(myvector);
 		
-		jets_pf_chargedHadEFrac[index_pf_jets] = ijets->component(reco::PFCandidate::h).fraction();
-		jets_pf_chargedEmEFrac[index_pf_jets]  = ijets->component(reco::PFCandidate::e).fraction();
-		jets_pf_chargedMuEFrac[index_pf_jets]  = ijets->component(reco::PFCandidate::mu).fraction();
+		jets_pf_chargedHadEFrac[index_pf_jets] = 0.;//ijets->component(reco::PFCandidate::h).fraction();
+		jets_pf_chargedEmEFrac[index_pf_jets]  = 0.;//ijets->component(reco::PFCandidate::e).fraction();
+		jets_pf_chargedMuEFrac[index_pf_jets]  = 0.;//ijets->component(reco::PFCandidate::mu).fraction();
 		
-		jets_pf_neutralHadEFrac[index_pf_jets] = ijets->component(reco::PFCandidate::h0).fraction();
+		jets_pf_neutralHadEFrac[index_pf_jets] = 0.;//ijets->component(reco::PFCandidate::h0).fraction();
 // 		jets_pf_neutralEmEFrac[index_pf_jets]  = ijets->neutralEmEnergyFraction ();
-		jets_pf_PhotonEFrac[index_pf_jets]     = ijets->component(reco::PFCandidate::gamma).fraction();
+		jets_pf_PhotonEFrac[index_pf_jets]     = 0.;//ijets->component(reco::PFCandidate::gamma).fraction();
 		
-		jets_pf_chargedHadMultiplicity[index_pf_jets] = ijets->component(reco::PFCandidate::h).number();
-		jets_pf_neutralHadMultiplicity[index_pf_jets] = ijets->component(reco::PFCandidate::h0).number();
+		jets_pf_chargedHadMultiplicity[index_pf_jets] = 0.;//ijets->component(reco::PFCandidate::h).number();
+		jets_pf_neutralHadMultiplicity[index_pf_jets] = 0.;//ijets->component(reco::PFCandidate::h0).number();
 		
-		jets_pf_chargedMultiplicity[index_pf_jets] = ijets->component(reco::PFCandidate::h).number()
-						    +ijets->component(reco::PFCandidate::e).number()
-						    +ijets->component(reco::PFCandidate::mu).number();
+		jets_pf_chargedMultiplicity[index_pf_jets] = 0.;//ijets->component(reco::PFCandidate::h).number()
+		//+ijets->component(reco::PFCandidate::e).number()
+		//+ijets->component(reco::PFCandidate::mu).number();
 						    
-		jets_pf_neutralMultiplicity[index_pf_jets] =  ijets->component(reco::PFCandidate::h0).number()
-						    +ijets->component(reco::PFCandidate::gamma).number();
+		jets_pf_neutralMultiplicity[index_pf_jets] =  0.;//ijets->component(reco::PFCandidate::h0).number()
+		//+ijets->component(reco::PFCandidate::gamma).number();
 		
 // 		jets_pf_chargedHadEFrac[index_pf_jets] = ijets->chargedHadronEnergyFraction ();
 // 		jets_pf_chargedEmEFrac[index_pf_jets]  = ijets->chargedEmEnergyFraction ();
