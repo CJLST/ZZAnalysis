@@ -5,6 +5,7 @@
  *  $Revision: 1.72 $
  *  \author N. Amapane - Torino
  *  \author C. Botta - Torino
+ *  \author G. Ortona - LLR
  */
 
 #include <FWCore/Framework/interface/Frameworkfwd.h>
@@ -13,6 +14,7 @@
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 #include <FWCore/Framework/interface/ESHandle.h>
 #include <DataFormats/PatCandidates/interface/CompositeCandidate.h>
+#include <DataFormats/PatCandidates/interface/Jet.h>
 
 #include <ZZAnalysis/AnalysisStep/interface/CutSet.h>
 #include <ZZAnalysis/AnalysisStep/interface/DaughterDataHelpers.h>
@@ -37,9 +39,7 @@
 #include <RecoVertex/KinematicFitPrimitives/interface/KinematicParticleFactoryFromTransientTrack.h>
 
 #include <SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h>
-#include <AnalysisDataFormats/CMGTools/interface/PFJet.h>
 #include <DataFormats/METReco/interface/PFMET.h>
-#include <AnalysisDataFormats/CMGTools/interface/BaseMET.h>
 #include "ZZAnalysis/AnalysisStep/interface/VBFCandidateJetSelector.h"
 #include <ZZAnalysis/AnalysisStep/interface/Fisher.h>
 #include <ZZAnalysis/AnalysisStep/interface/Comparators.h>
@@ -106,7 +106,7 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
   rolesZ2Z1 = {"Z2", "Z1"};
   
   edm::FileInPath fip("ZZAnalysis/AnalysisStep/data/ebeOverallCorrections.Legacy2013.v0.root");
-  string ebePath=fip.fullPath();
+  std::string ebePath=fip.fullPath();
   
   TFile* fCorrSigma = new TFile(ebePath.data()); // FIXME: is leaked
   
@@ -138,7 +138,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   iEvent.getByLabel(theCandidateTag, LLLLCands);
 
   // Get jets
-  Handle<edm::View<cmg::PFJet> > pfjetscoll;
+  Handle<edm::View<pat::Jet> > pfjetscoll;
   iEvent.getByLabel("cmgPFJetSel", pfjetscoll);
 
   // Get MET
@@ -519,13 +519,13 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
     //--- Collect VBF jets
     //--- FIXME: once we move to per-event jet cleaning, we can move this outside the candidate loop.
-    vector<const cmg::PFJet*> cleanedJets;
+    vector<const pat::Jet*> cleanedJets;
     VBFCandidateJetSelector myVBFCandidateJetSelector;
     cleanedJets = myVBFCandidateJetSelector.cleanJets(myCand,pfjetscoll,sampleType); //   //FIXME: should use LEPTON_SETUP instead of sampleType for mela and combinedMEM. This will be an issue for samples rescaled to different sqrts (none at present)
-    vector<const cmg::PFJet*> cleanedJetsPt30;
+    vector<const pat::Jet*> cleanedJetsPt30;
     int nCleanedJetsPt30BTagged = 0;
     for (unsigned int i=0; i < cleanedJets.size(); ++i){
-      const cmg::PFJet& myjet = *(cleanedJets.at(i));  
+      const pat::Jet& myjet = *(cleanedJets.at(i));  
       if (myjet.pt()>30) {
 	cleanedJetsPt30.push_back(&myjet);
 	if(myjet.bDiscriminator("combinedSecondaryVertexBJetTags")>0.679) nCleanedJetsPt30BTagged++; // CSV Medium WP
@@ -582,6 +582,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
         for(int jecnum=0;jecnum<3;jecnum++){
           Float_t ratio1=1.;
           Float_t ratio2=1.;
+	  /*
           if(jecnum==1){
             ratio1=1 + cleanedJetsPt30[0]->uncOnFourVectorScale();
             ratio2=1 + cleanedJetsPt30[1]->uncOnFourVectorScale();
@@ -590,6 +591,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
             ratio1=1 - cleanedJetsPt30[0]->uncOnFourVectorScale();
             ratio2=1 - cleanedJetsPt30[1]->uncOnFourVectorScale();
           }
+	  */
           TLorentzVector jet1(cleanedJetsPt30[0]->p4().x(),cleanedJetsPt30[0]->p4().y(),cleanedJetsPt30[0]->p4().z(),cleanedJetsPt30[0]->p4().t());
           TLorentzVector jet2(cleanedJetsPt30[1]->p4().x(),cleanedJetsPt30[1]->p4().y(),cleanedJetsPt30[1]->p4().z(),cleanedJetsPt30[1]->p4().t());
           jet1.SetPtEtaPhiM(jet1.Pt()*ratio1,jet1.Eta(),jet1.Phi(),jet1.M()*ratio1);
@@ -633,6 +635,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
         for(int jecnum=0;jecnum<3;jecnum++){
           Float_t ratio1=1.;
           Float_t ratio2=1.;
+	  /*
           if(jecnum==1){
             ratio1=1 + cleanedJetsPt30[0]->uncOnFourVectorScale();
             ratio2=1 + cleanedJetsPt30[1]->uncOnFourVectorScale();
@@ -641,6 +644,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
             ratio1=1 - cleanedJetsPt30[0]->uncOnFourVectorScale();
             ratio2=1 - cleanedJetsPt30[1]->uncOnFourVectorScale();
           }
+	  */
           jet1.SetXYZT(cleanedJetsPt30[0]->p4().x(),cleanedJetsPt30[0]->p4().y(),cleanedJetsPt30[0]->p4().z(),cleanedJetsPt30[0]->p4().t());
           jet2.SetXYZT(cleanedJetsPt30[1]->p4().x(),cleanedJetsPt30[1]->p4().y(),cleanedJetsPt30[1]->p4().z(),cleanedJetsPt30[1]->p4().t());
           jet1.SetPtEtaPhiM(jet1.Pt()*ratio1,jet1.Eta(),jet1.Phi(),jet1.M()*ratio1);
