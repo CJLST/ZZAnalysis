@@ -7,6 +7,7 @@
 ###
 ###----------------------------------------------------------------------
 
+TRIGGER_SETUP = 2014
 LEPTON_SETUP = 2012
 PD = ""
 MCFILTER = ""
@@ -35,8 +36,11 @@ execfile(PyFilePath + "analyzer.py")
 process.source.fileNames = cms.untracked.vstring(
     #'/store/cmst3/user/gpetrucc/miniAOD/v1/GluGluToHToZZTo4L_M-125_13TeV-powheg-pythia6_PU_S14_PAT.root'
     #'/store/cmst3/user/gpetrucc/miniAOD/v1/GluGluToHToZZTo4L_M-125_13TeV-powheg-pythia6_PU_S14_PAT_big.root' #S14 = 50ns scenario, GT: PLS170_V6AN1
-    '/store/mc/Phys14DR/GluGluToHToZZTo4L_M-125_13TeV-powheg-pythia6/MINIAODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/00000/148E558C-946F-E411-AFA7-7845C4FC3A52.root'
     #"/store/mc/Spring14miniaod/GluGluToHToZZTo4L_M-125_13TeV-powheg-pythia6/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/0881ABEB-2709-E411-9E42-00145EDD7581.root" # 1st file from the central 20bx25 sample, GT: PLS170_V7AN1
+
+    'root://cms-xrd-global.cern.ch//store/mc/Phys14DR/GluGluToHToZZTo4L_M-125_13TeV-powheg-pythia6/MINIAODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/00000/148E558C-946F-E411-AFA7-7845C4FC3A52.root',
+    #'root://cms-xrd-global.cern.ch//store/mc/Phys14DR/ZZTo4L_Tune4C_13TeV-powheg-pythia8/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/04CD96C9-E269-E411-9D64-00266CF9ADA0.root',
+
     )
 
 

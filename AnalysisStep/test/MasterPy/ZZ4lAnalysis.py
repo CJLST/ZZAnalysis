@@ -15,6 +15,12 @@ try:
 except NameError:
     LEPTON_SETUP = 2012 # define the set of effective areas, rho corrections, etc.
 
+#Trigger menu. FIXME : once we have a LEPTON_SETUP for Run II, we probably won't need this separate TRIGGER_SETUP anymore. 
+try:
+    TRIGGER_SETUP
+except NameError:
+    TRIGGER_SETUP = LEPTON_SETUP
+
 try:
     SAMPLE_TYPE
 except NameError:
@@ -144,7 +150,7 @@ process.hltFilterTriEle.throw = cms.bool(False) #FIXME: beware of this!
 
 # MuEG
 
-if (LEPTON_SETUP == 2011):
+if (TRIGGER_SETUP == 2011):
     # DoubleEle
     process.hltFilterDiEle.HLTPaths = ["HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v*","HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*","HLT_TripleEle10_CaloIdL_TrkIdVL_v*"] # to run on DATA/MC 2011
     if (IsMC):
@@ -160,12 +166,20 @@ if (LEPTON_SETUP == 2011):
         process.triggerMuEle2  = cms.Path(process.hltFilterMuEle2)
         process.triggerMuEle3  = cms.Path(process.hltFilterMuEle3)
 
-elif (LEPTON_SETUP == 2012):
+elif (TRIGGER_SETUP == 2012):
     # DoubleEle
     process.hltFilterDiEle.HLTPaths = ["HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v*","HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*"] # to run on DATA/MC 2012
     process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_Mu8_v*", "HLT_Mu17_TkMu8_v*"] # to run on DATA/MC 2012
     process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*","HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*"] # to run on DATA/MC 2012
     process.hltFilterTriEle.HLTPaths = ["HLT_Ele15_Ele8_Ele5_CaloIdL_TrkIdVL_v*"]
+    process.triggerTriEle  = cms.Path(process.hltFilterTriEle)
+
+elif (TRIGGER_SETUP == 2014):
+    # This is the menu used in the PHYS14 samples, i.e. these paths are temporary and will NOT be used in Run II.
+    process.hltFilterDiEle.HLTPaths = ["HLT_Ele23_Ele12_CaloId_TrackId_Iso_v*"]
+    process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*"]
+    process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele23_Gsf_CaloId_TrackId_Iso_MediumWP_v*","HLT_Mu23_TrkIsoVVL_Ele12_Gsf_CaloId_TrackId_Iso_MediumWP_v*"]
+    process.hltFilterTriEle.HLTPaths = ["HLT_Ele17_Ele12_Ele10_CaloId_TrackId_v*"]
     process.triggerTriEle  = cms.Path(process.hltFilterTriEle)
 
 process.triggerDiMu   = cms.Path(process.hltFilterDiMu)
