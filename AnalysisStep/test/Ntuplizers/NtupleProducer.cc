@@ -1153,7 +1153,7 @@ void NtupleProducer::FillElectrons(const edm::Event& iEvent, const edm::EventSet
 		
 // 		cout << "REGRESSION " << ele_ecalRegressionEnergy[counter]<< " " << ele_ecalRegressionError[counter] << endl;
 		//
-		ele_mva[counter]   = ielectrons->mva() ;
+		ele_mva[counter]   = ielectrons->mva_Isolated() ;
 		//
 		if (ielectrons->isEB()) ele_isbarrel[counter] = 1 ; 
 		else  ele_isbarrel[counter] = 0 ;
@@ -1210,8 +1210,8 @@ void NtupleProducer::FillElectrons(const edm::Event& iEvent, const edm::EventSet
 		
 		// FIXME: Always returns 0 :(
 		//cout << " dcot = " << ielectrons->userFloat("dcot") << " dist = " << ielectrons->userFloat("dist") << endl;
-		
-		ele_expected_inner_hits[counter] = ielectrons->gsfTrack()->trackerExpectedHitsInner().numberOfHits();
+		//reco::GsfTrackRef gsftr= ielectrons->gsfTrack();
+		ele_expected_inner_hits[counter] = ielectrons->gsfTrack()->numberOfValidHits();
 		//
 		ele_eidVeryLoose[counter] = ielectrons->electronID("eidLoose"); //CiCVeryLoose"); 
 		ele_eidLoose[counter] = ielectrons->electronID("eidLoose"); //CiCLoose");
@@ -1284,7 +1284,7 @@ void NtupleProducer::FillElectrons(const edm::Event& iEvent, const edm::EventSet
 		bool validKF= (ielectrons->track().isNonnull());
 		ele_mvakfchi2[counter] = validKF ? ielectrons->track()->normalizedChi2() : 0 ;
 		ele_mvakfhits[counter] = validKF ? ielectrons->track()->hitPattern().trackerLayersWithMeasurement() : 0 ;
-		ele_mvamishits[counter] = ielectrons->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits();
+		ele_mvamishits[counter] = ielectrons->gsfTrack()->numberOfLostHits();
 		ele_mvadist[counter] = ielectrons->convDist();
 		ele_mvadcot[counter] = ielectrons->convDcot();
 		ele_mvaeta[counter] = ielectrons->eta();

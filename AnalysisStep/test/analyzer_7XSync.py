@@ -34,8 +34,8 @@ execfile(PyFilePath + "analyzer.py")
 ### ----------------------------------------------------------------------
 process.source.fileNames = cms.untracked.vstring(
     #'/store/cmst3/user/gpetrucc/miniAOD/v1/GluGluToHToZZTo4L_M-125_13TeV-powheg-pythia6_PU_S14_PAT.root'
-    '/store/cmst3/user/gpetrucc/miniAOD/v1/GluGluToHToZZTo4L_M-125_13TeV-powheg-pythia6_PU_S14_PAT_big.root' #S14 = 50ns scenario, GT: PLS170_V6AN1
-    
+    #'/store/cmst3/user/gpetrucc/miniAOD/v1/GluGluToHToZZTo4L_M-125_13TeV-powheg-pythia6_PU_S14_PAT_big.root' #S14 = 50ns scenario, GT: PLS170_V6AN1
+    '/store/mc/Phys14DR/GluGluToHToZZTo4L_M-125_13TeV-powheg-pythia6/MINIAODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/00000/148E558C-946F-E411-AFA7-7845C4FC3A52.root'
     #"/store/mc/Spring14miniaod/GluGluToHToZZTo4L_M-125_13TeV-powheg-pythia6/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/0881ABEB-2709-E411-9E42-00145EDD7581.root" # 1st file from the central 20bx25 sample, GT: PLS170_V7AN1
     )
 
@@ -46,7 +46,7 @@ process.source.fileNames = cms.untracked.vstring(
 
 #process.appendPhotons.debug = cms.untracked.bool(True)
 
-process.maxEvents.input = -1
+process.maxEvents.input = 5000
 
 # Silence output
 process.load("FWCore.MessageService.MessageLogger_cfi")
@@ -93,6 +93,6 @@ process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
 
 
 # replace the paths in analyzer.py
-process.p = cms.EndPath( process.Plots4mu + process.Plots4e + process.Plots2e2mu )
+#process.p = cms.EndPath( process.Plots4mu + process.Plots4e + process.Plots2e2mu )
 process.trees = cms.EndPath(process.ZZ4muTree * process.ZZ4eTree * process.ZZ2e2muTree )
 
