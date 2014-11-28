@@ -365,7 +365,7 @@ else :
 process.bareSoftElectrons = cms.EDFilter("PATElectronRefSelector",
    src = cms.InputTag("calibratedPatElectrons"),
    cut = cms.string("pt>7 && abs(eta)<2.5 &&" +
-                    "gsfTrack.numberOfValidHits<=1"
+                    "gsfTrack.hitPattern().numberOfHits(HitPattern::MISSING_INNER_HITS)<=1"
                     )
    )
 

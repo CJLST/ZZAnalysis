@@ -137,7 +137,7 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 
     //-- Missing hit  
-    int missingHit = l.gsfTrack()->numberOfLostHits();
+    int missingHit = l.gsfTrack()->hitPattern().numberOfHits(HitPattern::MISSING_INNER_HITS);
     //--- Trigger matching
     int HLTMatch = 0; //FIXME
     

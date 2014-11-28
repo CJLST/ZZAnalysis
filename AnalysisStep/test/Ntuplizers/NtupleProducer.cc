@@ -1211,7 +1211,7 @@ void NtupleProducer::FillElectrons(const edm::Event& iEvent, const edm::EventSet
 		// FIXME: Always returns 0 :(
 		//cout << " dcot = " << ielectrons->userFloat("dcot") << " dist = " << ielectrons->userFloat("dist") << endl;
 		//reco::GsfTrackRef gsftr= ielectrons->gsfTrack();
-		ele_expected_inner_hits[counter] = ielectrons->gsfTrack()->numberOfValidHits();
+		ele_expected_inner_hits[counter] = ielectrons->gsfTrack()->hitPattern().numberOfHits(HitPattern::MISSING_INNER_HITS);
 		//
 		ele_eidVeryLoose[counter] = ielectrons->electronID("eidLoose"); //CiCVeryLoose"); 
 		ele_eidLoose[counter] = ielectrons->electronID("eidLoose"); //CiCLoose");
@@ -1284,7 +1284,7 @@ void NtupleProducer::FillElectrons(const edm::Event& iEvent, const edm::EventSet
 		bool validKF= (ielectrons->track().isNonnull());
 		ele_mvakfchi2[counter] = validKF ? ielectrons->track()->normalizedChi2() : 0 ;
 		ele_mvakfhits[counter] = validKF ? ielectrons->track()->hitPattern().trackerLayersWithMeasurement() : 0 ;
-		ele_mvamishits[counter] = ielectrons->gsfTrack()->numberOfLostHits();
+		ele_mvamishits[counter] = ielectrons->gsfTrack()->hitPattern().numberOfLostHits(HitPattern::MISSING_INNER_HITS);
 		ele_mvadist[counter] = ielectrons->convDist();
 		ele_mvadcot[counter] = ielectrons->convDcot();
 		ele_mvaeta[counter] = ielectrons->eta();
