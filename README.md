@@ -11,6 +11,13 @@ To install a complete CMSSW area
 ------------------------------
 Download and execute the setup script for the given release:
 
+*   For CMSSW_7_2_4:
+
+    ```
+    wget -P /tmp https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD/checkout_70X.csh
+    cd $CMSSW_BASE/src
+    . /tmp/checkout_70X.csh
+
 *   For V5_15_0/CMSSW_5_3_9 POST-LEGACY:
 
     ```

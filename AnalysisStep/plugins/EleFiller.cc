@@ -18,7 +18,8 @@
 
 #include <ZZAnalysis/AnalysisStep/interface/CutSet.h>
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
-//#include "BDTId.h"
+
+#include "EgammaAnalysis/ElectronTools/interface/EGammaMvaEleEstimatorCSA14.h"
 
 #include <vector>
 #include <string>
@@ -28,7 +29,7 @@ using namespace std;
 using namespace reco;
 
 
-//bool recomputeBDT = false;
+bool recomputeBDT = true;
 
 class EleFiller : public edm::EDProducer {
  public:
@@ -37,7 +38,7 @@ class EleFiller : public edm::EDProducer {
     
   /// Destructor
   ~EleFiller(){
-    //delete bdt;
+    delete myMVATrig;
   };  
 
  private:
@@ -50,7 +51,7 @@ class EleFiller : public edm::EDProducer {
   int setup;
   const StringCutObjectSelector<pat::Electron, true> cut;
   const CutSet<pat::Electron> flags;
-  //BDTId* bdt;
+  EGammaMvaEleEstimatorCSA14* myMVATrig;
 };
 
 
@@ -59,11 +60,34 @@ EleFiller::EleFiller(const edm::ParameterSet& iConfig) :
   sampleType(iConfig.getParameter<int>("sampleType")),
   setup(iConfig.getParameter<int>("setup")),
   cut(iConfig.getParameter<std::string>("cut")),
-  flags(iConfig.getParameter<ParameterSet>("flags"))//, 
-  //bdt(0)
+  flags(iConfig.getParameter<ParameterSet>("flags")),
+  myMVATrig(0)
 {
-  //if (recomputeBDT) bdt = new BDTId;
   produces<pat::ElectronCollection>();
+
+  if (recomputeBDT) {
+    std::vector<std::string> myManualCatWeigths;
+
+    myManualCatWeigths.push_back("EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EB1_5_oldscenario2phys14_BDT.weights.xml");
+    myManualCatWeigths.push_back("EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EB2_5_oldscenario2phys14_BDT.weights.xml");
+    myManualCatWeigths.push_back("EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EE_5_oldscenario2phys14_BDT.weights.xml");
+    myManualCatWeigths.push_back("EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EB1_10_oldscenario2phys14_BDT.weights.xml");
+    myManualCatWeigths.push_back("EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EB2_10_oldscenario2phys14_BDT.weights.xml");
+    myManualCatWeigths.push_back("EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EE_10_oldscenario2phys14_BDT.weights.xml");
+
+    vector<string> myManualCatWeigthsTrig;
+    string the_path;
+    for (unsigned i = 0 ; i < myManualCatWeigths.size() ; i++){
+      the_path = edm::FileInPath ( myManualCatWeigths[i] ).fullPath();
+      myManualCatWeigthsTrig.push_back(the_path);
+    }
+    myMVATrig = new EGammaMvaEleEstimatorCSA14();
+    myMVATrig->initialize("BDT",
+			  EGammaMvaEleEstimatorCSA14::kNonTrigPhys14,
+			  true,
+			  myManualCatWeigthsTrig);
+  }
+
 }
 
 
@@ -86,7 +110,8 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   // Output collection
   auto_ptr<pat::ElectronCollection> result( new pat::ElectronCollection() );
 
-   for (unsigned int i = 0; i< electronHandle->size(); ++i){
+  for (unsigned int i = 0; i< electronHandle->size(); ++i){
+
     //---Clone the pat::Electron
     pat::Electron l(*((*electronHandle)[i].get()));
 
@@ -115,25 +140,34 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     } 
 
     
-    // BDT value from PAT prodiuction
+    // new RunII BDT ID (for the moment, it is added on top of the miniAOD)
     float BDT = 0;
-    //if (recomputeBDT) {
-    //  BDT = bdt->compute(l);
-    //} else {
-    //  BDT = l.electronID("mvaNonTrigV0");
-    //}
+    if (recomputeBDT) {
+      BDT = myMVATrig->mvaValue(l,false);
+    } else {
+      //BDT = l. ... ;
+    }
     
-
     float pt = l.pt();
-    bool isBDT = (pt <= 10 && (( fSCeta < 0.8 && BDT > 0.47)  ||
-			       (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > 0.004) ||
-			       (fSCeta >= 1.479               && BDT > 0.295))) || 
-                 //Moriond13 eID cuts updated for the paper
-		 //(pt >  10 && ((fSCeta < 0.8 && BDT > 0.5)  ||
-		 //	       (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > 0.12) || 
-                 (pt >  10 && ((fSCeta < 0.8 && BDT > -0.34)  ||
-			       (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.65) || 
-			       (fSCeta >= 1.479               && BDT > 0.6)));
+
+//     //Legacy cuts
+//     bool isBDT = (pt <= 10 && (( fSCeta < 0.8 && BDT > 0.47)  ||
+// 			       (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > 0.004) ||
+// 			       (fSCeta >= 1.479               && BDT > 0.295))) ||
+//                  //Moriond13 eID cuts updated for the paper
+// 		 //(pt >  10 && ((fSCeta < 0.8 && BDT > 0.5)  ||
+// 		 //	       (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > 0.12) ||
+//                  (pt >  10 && ((fSCeta < 0.8 && BDT > -0.34)  ||
+// 			       (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.65) ||
+// 			       (fSCeta >= 1.479               && BDT > 0.6)));
+
+    //tentative cuts for first 2015 sync
+    bool isBDT = (pt <= 10 && ((fSCeta < 0.8                    && BDT > -0.202) ||
+			       (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.444) ||
+			       (fSCeta >= 1.479                 && BDT >  0.264)   )) ||
+                 (pt >  10 && ((fSCeta < 0.8                    && BDT > -0.110) ||
+		               (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.284) ||
+		               (fSCeta >= 1.479                 && BDT > -0.212)   ));
 
 
     //-- Missing hit  

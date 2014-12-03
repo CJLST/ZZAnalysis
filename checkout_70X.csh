@@ -2,6 +2,9 @@
 
 ############## For miniAOD/CMSSW_7_2_4
 
+#electron MVA ID
+git cms-merge-topic HuguesBrun:trigElecIdInCommonIsoSelection720 
+
 #ZZAnalysis
 git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
 (cd ZZAnalysis; git checkout miniAOD)
