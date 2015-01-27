@@ -21,11 +21,19 @@
 using namespace std;
 
 #define MASSZ 91.1876
-#define LUMI 20.
+#define LUMI 20. //15.
 
 #define DEBUG 0
 
 #define VARIABLELIST 0 // put 0 for plots shown on September 8th
+
+#define BASKETLIST   5 // choice of category definitions:
+                       //  - categories shown on Sep 23rd 2014 : nb. 1
+                       //  - categories shown on Nov 7th 2014  : nb. 0 and 3 (subcat: 2)
+                       //  - categories shown on Dec 19th 2014 : nb. 3 (subcat: 2) and 5 (subcat: 4)
+
+
+#define rescaleXSecs 0 // rescale cross sections of Higgs production modes from 8 to 13 TeV
 
 #define requireExactly4GoodLeps 0 
 #define requireAtLeast5GoodLeps 0 
@@ -35,23 +43,24 @@ using namespace std;
 #define requireHLepsAreGood     0 // impose that all 4 gen leptons from the Higgs are matched to good leptons (from the candidate or extra leptons)
 
 #define excludeH2l2X            1 // completely exclude ZH,H->2l2X and ttH,H->2l2X events from the study
+#define treatH2l2XAsBkgd        1 // treat these events as a background in categorization-related plots 
 #define acceptanceIncludesPt    1 // if not, acceptance is just on eta
-#define treatH2l2XAsBkgd        0 // treat these events as a background for the purity and S/(S+B) plots 
+#define printYields             0 // print yield numbers on basket efficiency plots
 
-#define doProdComp       1 // plots shown on September 8th
+#define doProdComp       0 // plots shown on September 8th
 #define doProdCompMatch4 0
 #define doMatch4OrNot    0
 #define doMatchHLeps     0
 #define doMatchAllLeps   0
-#define doMatchWHZHttH   1 // plots shown on September 8th
+#define doMatchWHZHttH   0 // plots shown on September 8th
 #define do2DPlots        0 // plots shown on September 8th
-#define doBaskets        0 // plots shown on September 23rd
+#define doBaskets        1 // categorization plots
 
 #define nSamples 8
 #define nHiggsSamples 5
 #define nChannels 4
 #define nVariables 16
-#define nBaskets 8
+#define nBaskets (BASKETLIST==0?7:BASKETLIST==1?9:BASKETLIST==2?24:BASKETLIST==3?6:BASKETLIST==4?38:BASKETLIST==5?7:BASKETLIST==6?10:1)
 
 #define nMatchHLepsStatuses 6
 #define nMatchAllLepsStatuses 5
@@ -129,52 +138,19 @@ void set_plot_style() {
     gStyle->SetNumberContours(NCont);
 }
 
-void prepareBasketlabels(TH1F* h, string* basketLabel){
+void prepareBasketlabels(TH1F* h, vector<string> basketLabel){
   for(int i=1; i<=h->GetNbinsX(); i++)  h->GetXaxis()->SetBinLabel(i,basketLabel[i-1].c_str());
   h->GetXaxis()->SetLabelSize(0.04);
   h->GetXaxis()->LabelsOption("h");
   h->GetXaxis()->SetNdivisions(-h->GetNbinsX());
 }
 
-void prepareBasketlabelsHorizontal(TH2F* h2, string* basketLabel){
+void prepareBasketlabelsHorizontal(TH2F* h2, vector<string> basketLabel){
   int nbins = h2->GetNbinsY();
   for(int i=1; i<=nbins; i++)  h2->GetYaxis()->SetBinLabel(nbins+1-i,basketLabel[i-1].c_str());
-  h2->GetYaxis()->SetLabelSize(0.04);
+  h2->GetYaxis()->SetLabelSize(0.05);
   h2->GetYaxis()->LabelsOption("h");
   h2->GetYaxis()->SetNdivisions(-h2->GetNbinsY());
-}
-
-void DrawHorizontal(TH1 *h, string* basketLabel, Bool_t same = false, Int_t nDiv = 0, Bool_t without1stBin = false) {
-  Double_t ymin = 0.; //h->GetMinimum();
-  Double_t ymax = h->GetMaximum(); // 1.1*h->GetMaximum(); 
-  TAxis *axis   = h->GetXaxis();
-  Double_t xmin = axis->GetXmin();
-  Double_t xmax = axis->GetXmax();
-  Int_t nbins   = axis->GetNbins();
-  TH2F *h2 = new TH2F("h2",Form("%s;%s;%s",h->GetTitle(),h->GetYaxis()->GetTitle(),""),10,ymin,ymax,nbins,xmin,xmax);
-  h2->SetBit(kCanDelete);
-  //h2->SetDirectory(0);
-  h2->SetTickLength(0.01);
-  h2->GetXaxis()->SetLabelSize(0.03);
-  if(without1stBin) h2->GetYaxis()->SetRangeUser(0,nBaskets-1);
-  h2->SetStats(0);
-  prepareBasketlabelsHorizontal(h2,basketLabel);
-  h2->Draw(same?"same":"");
-  if(nDiv!=0) h2->GetXaxis()->SetNdivisions(nDiv);
-  TBox box;
-  Int_t color = h->GetFillColor();
-  if (color == 0) color = 1;
-  box.SetFillColor(color);
-  Double_t dy,x1,y1,x2,y2;
-  for (Int_t i=1;i<=nbins;i++) {
-    if(without1stBin && i==1) continue;
-    dy = axis->GetBinWidth(nbins+1-i);
-    x1 = 0.;
-    y1 = axis->GetBinCenter(nbins+1-i)-0.4*dy;
-    x2 = h->GetBinContent(i);
-    y2 = axis->GetBinCenter(nbins+1-i)+0.4*dy;
-    box.DrawBox(x1,y1,x2,y2);
-  }
 }
 
 
@@ -425,7 +401,40 @@ void Draw2D(TCanvas* c, TH2F* h, string title) {
   h->Draw("COLZ"); 
 }
 
-void DrawBasketEfficiencies(TCanvas* c, TH1F* h1, string pn, TH1F** hAssocDecay, string* assocDecayName, string* basketLabel, Bool_t logY = false) {
+void DrawHorizontal(TH1 *h, vector<string> basketLabel, Bool_t same = false, Int_t nDiv = 0, Bool_t without1stBin = false) {
+  Double_t ymin = 0.; //h->GetMinimum();
+  Double_t ymax = h->GetMaximum(); // 1.1*h->GetMaximum(); 
+  TAxis *axis   = h->GetXaxis();
+  Double_t xmin = axis->GetXmin();
+  Double_t xmax = axis->GetXmax();
+  Int_t nbins   = axis->GetNbins();
+  TH2F *h2 = new TH2F("h2",Form("%s;%s;%s",h->GetTitle(),h->GetYaxis()->GetTitle(),""),10,ymin,ymax,nbins,xmin,xmax);
+  h2->SetBit(kCanDelete);
+  //h2->SetDirectory(0);
+  h2->SetTickLength(0.01);
+  h2->GetXaxis()->SetLabelSize(0.03);
+  if(without1stBin) h2->GetYaxis()->SetRangeUser(0,nBaskets-2);
+  h2->SetStats(0);
+  prepareBasketlabelsHorizontal(h2,basketLabel);
+  h2->Draw(same?"same":"");
+  if(nDiv!=0) h2->GetXaxis()->SetNdivisions(nDiv);
+  TBox box;
+  Int_t color = h->GetFillColor();
+  if (color == 0) color = 1;
+  box.SetFillColor(color);
+  Double_t dy,x1,y1,x2,y2;
+  for (Int_t i=1;i<=nbins;i++) {
+    if(without1stBin && i==1) continue;
+    dy = axis->GetBinWidth(nbins+1-i);
+    x1 = 0.;
+    y1 = axis->GetBinCenter(nbins+1-i)-0.4*dy;
+    x2 = h->GetBinContent(i);
+    y2 = axis->GetBinCenter(nbins+1-i)+0.4*dy;
+    box.DrawBox(x1,y1,x2,y2);
+  }
+}
+
+void DrawBasketEfficiencies(TCanvas* c, TH1F* h1, string pn, TH1F** hAssocDecay, string* assocDecayName, Bool_t H2l2XAsBkgd, vector<string> basketLabel, Bool_t logY = false) {
 
   bool without1stBin = true;
 
@@ -442,35 +451,52 @@ void DrawBasketEfficiencies(TCanvas* c, TH1F* h1, string pn, TH1F** hAssocDecay,
   Int_t startAt = pn=="WH" ? 0 : pn=="ZH" ? nAssocWDecays : pn=="ttH" ? nAssocWDecays+nAssocZDecays : 0;
 
   TH1F* h = (TH1F*)h1->Clone();
+  if(H2l2XAsBkgd){
+    if(pn=="ZH") h->Add(hAssocDecay[nAssocWDecays+nAssocZDecays-1],-1);
+    if(pn=="ttH") h->Add(hAssocDecay[nAssocWDecays+nAssocZDecays+nAssocttDecays-1],-1);
+  }
   if(doAssoc) h->SetLineColor(1);
   if(doAssoc) h->SetFillColor(1);
   h->SetTitle(pn.c_str()); 
   h->SetStats(0);
   //if(!logY) h->SetMinimum(0);
-  //h->GetXaxis()->SetRangeUser(1,nBaskets);
+  //h->GetXaxis()->SetRangeUser(1,nBaskets-1);
   //h->Draw(); 
   DrawHorizontal(h,basketLabel,false,508,without1stBin);
 
   TH1F* hStacks[nDecays];
   for(int a=0; a<nDecays; a++){
+    if(H2l2XAsBkgd && (pn=="ZH"||pn=="ttH") && a==nDecays-1) continue;
     hStacks[a] = (TH1F*)hAssocDecay[startAt+a]->Clone();
     if(a>0) hStacks[a]->Add(hStacks[a-1]);
     hStacks[a]->SetStats(0);
   }
   for(int a=nDecays-1; a>=0; a--){
+    if(H2l2XAsBkgd && (pn=="ZH"||pn=="ttH") && a==nDecays-1) continue;
     //hStacks[a]->Draw("same");
     DrawHorizontal(hStacks[a],basketLabel,true,0,without1stBin);
   }
   
   if(doAssoc){
-    TLegend* lgd = new TLegend(0.6,0.12,0.88,(pn=="WH"? 0.24 : pn=="ZH"? 0.3 : pn=="ttH"? 0.36 : 0.));
+    TLegend* lgd = new TLegend((H2l2XAsBkgd?0.7:0.55),0.13,0.86,((pn=="WH"||(pn=="ZH"&&H2l2XAsBkgd))? 0.24 : (pn=="ZH"||(pn=="ttH"&&H2l2XAsBkgd))? 0.3 : pn=="ttH"? 0.36 : 0.));
     //lgd->SetFillColor(0);
     lgd->SetFillStyle(0);
     lgd->SetBorderSize(0);
     for(int a=0; a<nDecays; a++){
+      if(H2l2XAsBkgd && (pn=="ZH"||pn=="ttH") && a==nDecays-1) continue;
       lgd->AddEntry(hStacks[a],assocDecayName[startAt+a].c_str(),"f");
     }
     lgd->Draw();
+  }
+
+  if(printYields){
+    TPaveText* pavNExp = new TPaveText(0.905,0.1,0.995,0.9,"brNDC");
+    pavNExp->SetFillStyle(0);
+    pavNExp->SetBorderSize(0);
+    for(int b=2; b<=h->GetNbinsX(); b++){
+      pavNExp->AddText(Form("%.4f",h->GetBinContent(b)));
+    }
+    pavNExp->Draw();
   }
 
   gPad->RedrawAxis();
@@ -499,22 +525,24 @@ vector<TH1F*> StackForPurity(vector<TH1F*> histos) {
   return result;
 }
 
-void DrawBasketPurities(TCanvas* c, TH1F** h, string* prodName, TH1F** hAssocDecay, string* assocDecayName, Bool_t withAssocDecays, Bool_t H2l2XAsBkgd, string* basketLabel) {
+void DrawBasketPurities(TCanvas* c, TH1F** h, string* prodName, TH1F** hAssocDecay, string* assocDecayName, Bool_t withAssocDecays, Bool_t H2l2XAsBkgd, vector<string> basketLabel) {
+
+  float offset = 0.1;
 
   gStyle->SetOptTitle(0);
   //gStyle->SetFrameLineWidth(2);
 
   c->cd();
-  c->SetLeftMargin(0.15);
-  c->SetRightMargin(0.35);
+  c->SetLeftMargin(0.15+offset);
+  c->SetRightMargin(0.35-offset);
 
   vector<TH1F*> histos;
   
-  TLegend* lgd = new TLegend(0.67,withAssocDecays?(H2l2XAsBkgd?0.45:0.35):0.65,0.95,0.9);
+  TLegend* lgd = new TLegend(0.67+offset,withAssocDecays?(H2l2XAsBkgd?0.45:0.35):0.65,((0.95+offset<1.)?0.95+offset:1.),0.9);
   lgd->SetFillColor(0);
   lgd->SetBorderSize(0);
   
-  TPaveText* pavNExp = new TPaveText(0.15,0.1,0.4,0.9,"brNDC");
+  TPaveText* pavNExp = new TPaveText(0.15+offset,0.1,0.4+offset,0.9,"brNDC");
   pavNExp->SetFillStyle(0);
   pavNExp->SetBorderSize(0);
   pavNExp->SetTextColor(0);
@@ -566,7 +594,7 @@ void DrawBasketPurities(TCanvas* c, TH1F** h, string* prodName, TH1F** hAssocDec
   lgd->Draw();
 
   for(int b=1; b<=hNExpectedEvts->GetNbinsX(); b++){
-    pavNExp->AddText(Form("%.2f exp. events in %.0f fb^{-1}",hNExpectedEvts->GetBinContent(b),LUMI));
+    pavNExp->AddText(Form("%.3f exp. events in %.0f fb^{-1}",hNExpectedEvts->GetBinContent(b),LUMI));
   }
   pavNExp->Draw();
   
@@ -574,7 +602,7 @@ void DrawBasketPurities(TCanvas* c, TH1F** h, string* prodName, TH1F** hAssocDec
 
 }
 
-void DrawBasketSOSPB(TCanvas* c, TH1F* h, string* basketLabel) {
+void DrawBasketSOSPB(TCanvas* c, TH1F* h, vector<string> basketLabel) {
 
   gStyle->SetOptTitle(0);
 
@@ -649,7 +677,7 @@ void plotProductionModeComparison(
   };
   Bool_t allSignalsArePresent = (file_ggH!="" && file_VBF!="" && file_WH!="" && file_ZH!="" && file_ttH!="");
   Bool_t allZZBkgdsArePresent = (file_ZZ4mu!="" && file_ZZ4e!="" && file_ZZ2e2mu!="");
-  Color_t colors[nSamples] = { kBlue, kGreen+2, kRed, kOrange+1, kMagenta, kRed+4, kRed+3, kRed-2 };
+  Color_t colors[nSamples] = { kBlue, kGreen+2, kRed, kOrange+1, kMagenta-7, kRed+4, kRed+3, kRed-2 };
 
   Color_t allColorsMP[nMatchHLepsStatuses][nHiggsSamples] = {
     { kBlue+2 , kGreen+3, kRed+2 , kOrange+4, kMagenta+2  },
@@ -711,7 +739,7 @@ void plotProductionModeComparison(
     "H->ZZ->4l, tt->2lX  ",
     "H->ZZ->2l2X, tt->2lX",
   };
-  string assocDecayName[nAssocDecays] = {
+  string assocDecayName1[nAssocDecays] = {
     "H#rightarrowZZ#rightarrow4l, W#rightarrowX",
     "H#rightarrowZZ#rightarrow4l, W#rightarrowl#nu",
     "H#rightarrowZZ#rightarrow4l, Z#rightarrowX",
@@ -723,6 +751,17 @@ void plotProductionModeComparison(
     "H#rightarrowZZ#rightarrow2l2X, t#bar{t}#rightarrow2l+X",
   };
   string assocDecayName2[nAssocDecays] = {
+    " W#rightarrowX",
+    " W#rightarrowl#nu",
+    " Z#rightarrowX",
+    " Z#rightarrow2l",
+    " ERROR",
+    " t#bar{t}#rightarrow0l+X",
+    " t#bar{t}#rightarrow1l+X",
+    " t#bar{t}#rightarrow2l+X",
+    " ERROR",
+  };
+  string assocDecayName3[nAssocDecays] = {
     "WH, H#rightarrow4l, W#rightarrowX",
     "WH, H#rightarrow4l, W#rightarrowl#nu",
     "ZH, H#rightarrow4l, Z#rightarrowX",
@@ -733,7 +772,7 @@ void plotProductionModeComparison(
     "ttH, H#rightarrow4l, t#bar{t}#rightarrow2l+X",
     "ttH, H#rightarrow2l2X, t#bar{t}#rightarrow2l+X",
   };
-  string assocDecayName3[nAssocDecays] = {
+  string assocDecayName4[nAssocDecays] = {
     "WH, W#rightarrowX",
     "WH, W#rightarrowl#nu",
     "ZH, Z#rightarrowX",
@@ -750,8 +789,12 @@ void plotProductionModeComparison(
     kOrange+1, 
     kOrange+7,
     kOrange-8,
-    kMagenta, 
-    kMagenta+1, 
+//     kViolet-4,
+//     kViolet-5,
+//     kViolet-6,
+//     kViolet-8, 
+    kMagenta-7, 
+    kMagenta-3, 
     kMagenta+2, 
     kMagenta-8,
   };
@@ -851,29 +894,6 @@ void plotProductionModeComparison(
     15,
   };
 
-  string basketLabel[nBaskets+1] = {
-    "all",
-    "#splitline{0/1 jet}{4 leptons}",
-    //"#splitline{0/1 jet, 5 leptons}{E_{T}^{miss}>45, p_{T}^{l5}>20}",
-    "#splitline{0/1 jet, 5 leptons}{E_{T}^{miss}>45}",
-    "#splitline{0/1 jet, 5 leptons}{(else)}",
-    "#splitline{0/1 jet}{#geq6 leptons}",
-    "#splitline{#geq2 jets, 4 leptons}{D_{jet}>0.5}",
-    "#splitline{#geq2 jets, 4 leptons}{(else)}",
-    "#splitline{#geq2 jets}{5 leptons}",
-    "#splitline{#geq2 jets}{#geq6 leptons}",
-  };
-
-//   string basketLabel[nBaskets+1] = {
-//     "all",
-//     "0/1 jet, 0 extra lepton",
-//     "0/1 jet, 1 extra lepton",
-//     "0/1 jet, #geq2 extra leptons",
-//     "#geq2 jets, 0 extra lepton",
-//     "#geq2 jets, 1 extra lepton",
-//     "#geq2 jets, #geq2 extra leptons",
-//   };
-
   const Int_t n2DHist = 2;
   Int_t varXindex[n2DHist] = { 0, 2 };
   Int_t varYindex[n2DHist] = { 3, 3 };
@@ -969,6 +989,110 @@ void plotProductionModeComparison(
     kGray+1,
   };
 
+  vector<string> basketLabel[7];
+  basketLabel[0].push_back("all");
+  basketLabel[0].push_back("#splitline{   0/1 jet}{4 leptons}");
+  basketLabel[0].push_back("#splitline{   0/1 jet}{5 leptons}");
+  basketLabel[0].push_back("#splitline{    0/1 jet}{#geq6 leptons}");
+  basketLabel[0].push_back("#splitline{  #geq2 jets}{4 leptons}");
+  basketLabel[0].push_back("#splitline{  #geq2 jets}{5 leptons}");
+  basketLabel[0].push_back("#splitline{   #geq2 jets}{#geq6 leptons}");
+  basketLabel[1].push_back("all");
+  basketLabel[1].push_back("#splitline{0/1 jet}{4 leptons}");
+  //basketLabel[1].push_back("#splitline{0/1 jet, 5 leptons}{E_{T}^{miss}>45, p_{T}^{l5}>20}");
+  basketLabel[1].push_back("#splitline{0/1 jet, 5 leptons}{E_{T}^{miss}>45}");
+  basketLabel[1].push_back("#splitline{0/1 jet, 5 leptons}{(else)}");
+  basketLabel[1].push_back("#splitline{0/1 jet}{#geq6 leptons}");
+  basketLabel[1].push_back("#splitline{#geq2 jets, 4 leptons}{D_{jet}>0.5}");
+  basketLabel[1].push_back("#splitline{#geq2 jets, 4 leptons}{(else)}");
+  basketLabel[1].push_back("#splitline{#geq2 jets}{5 leptons}");
+  basketLabel[1].push_back("#splitline{#geq2 jets}{#geq6 leptons}");
+  basketLabel[2].push_back("all");
+  basketLabel[2].push_back("0j 4l");
+  basketLabel[2].push_back("0j 5l");
+  basketLabel[2].push_back("0j #geq6l");
+  basketLabel[2].push_back("1j 0b 4l");
+  basketLabel[2].push_back("1j 0b 5l");
+  basketLabel[2].push_back("1j 0b #geq6l");
+  basketLabel[2].push_back("1j 1b 4l");
+  basketLabel[2].push_back("1j 1b 5l");
+  basketLabel[2].push_back("1j 1b #geq6l");
+  basketLabel[2].push_back("#geq2j 0b 4l D_{jet}");
+  basketLabel[2].push_back("#geq2j 0b 4l VH-h");
+  basketLabel[2].push_back("#geq2j 0b 4l else");
+  basketLabel[2].push_back("#geq2j 0b 5l");
+  basketLabel[2].push_back("#geq2j 0b #geq6l");
+  basketLabel[2].push_back("#geq2j 1b 4l D_{jet}");
+  basketLabel[2].push_back("#geq2j 1b 4l VH-h");
+  basketLabel[2].push_back("#geq2j 1b 4l else");
+  basketLabel[2].push_back("#geq2j 1b 5l");
+  basketLabel[2].push_back("#geq2j 1b #geq6l");
+  basketLabel[2].push_back("#geq2j #geq2b 4l VH-h");
+  basketLabel[2].push_back("#geq2j #geq2b 4l else");
+  basketLabel[2].push_back("#geq2j #geq2b 5l");
+  basketLabel[2].push_back("#geq2j #geq2b #geq6l");
+  basketLabel[3].push_back("all");
+  basketLabel[3].push_back("Untagged");
+  basketLabel[3].push_back("VBF tagged");
+  basketLabel[3].push_back("#splitline{VH-leptonic}{    tagged}");
+  basketLabel[3].push_back("#splitline{VH-hadronic}{     tagged}");
+  basketLabel[3].push_back("ttH tagged");
+  basketLabel[4].push_back("all");
+  basketLabel[4].push_back("0j 4l");
+  basketLabel[4].push_back("0j 5l");
+  basketLabel[4].push_back("0j #geq6l");
+  basketLabel[4].push_back("1j 0b 4l");
+  basketLabel[4].push_back("1j 0b 5l");
+  basketLabel[4].push_back("1j 0b #geq6l");
+  basketLabel[4].push_back("1j 1b 4l");
+  basketLabel[4].push_back("1j 1b 5l");
+  basketLabel[4].push_back("1j 1b #geq6l");
+  basketLabel[4].push_back("2j 0b 4l D_{jet}");
+  basketLabel[4].push_back("2j 0b 4l VH-h");
+  basketLabel[4].push_back("2j 0b 4l else");
+  basketLabel[4].push_back("2j 0b 5l");
+  basketLabel[4].push_back("2j 0b #geq6l");
+  basketLabel[4].push_back("2j 1b 4l D_{jet}");
+  basketLabel[4].push_back("2j 1b 4l VH-h");
+  basketLabel[4].push_back("2j 1b 4l else");
+  basketLabel[4].push_back("2j 1b 5l");
+  basketLabel[4].push_back("2j 1b #geq6l");
+  basketLabel[4].push_back("2j 2b 4l VH-h");
+  basketLabel[4].push_back("2j 2b 4l else");
+  basketLabel[4].push_back("2j 2b 5l");
+  basketLabel[4].push_back("2j 2b #geq6l");
+  basketLabel[4].push_back("#geq3j 0b 4l D_{jet}");
+  basketLabel[4].push_back("#geq3j 0b 4l VH-h");
+  basketLabel[4].push_back("#geq3j 0b 4l else");
+  basketLabel[4].push_back("#geq3j 0b 5l");
+  basketLabel[4].push_back("#geq3j 0b #geq6l");
+  basketLabel[4].push_back("#geq3j 1b 4l D_{jet}");
+  basketLabel[4].push_back("#geq3j 1b 4l VH-h");
+  basketLabel[4].push_back("#geq3j 1b 4l else");
+  basketLabel[4].push_back("#geq3j 1b 5l");
+  basketLabel[4].push_back("#geq3j 1b #geq6l");
+  basketLabel[4].push_back("#geq3j #geq2b 4l VH-h");
+  basketLabel[4].push_back("#geq3j #geq2b 4l else");
+  basketLabel[4].push_back("#geq3j #geq2b 5l");
+  basketLabel[4].push_back("#geq3j #geq2b #geq6l");
+  basketLabel[5].push_back("all");
+  basketLabel[5].push_back("Untagged");
+  basketLabel[5].push_back("1-jet tagged");
+  basketLabel[5].push_back("VBF tagged");
+  basketLabel[5].push_back("#splitline{VH-leptonic}{    tagged}");
+  basketLabel[5].push_back("#splitline{VH-hadronic}{     tagged}");
+  basketLabel[5].push_back("ttH tagged");
+  basketLabel[6].push_back("all");
+  basketLabel[6].push_back("4l 0j");
+  basketLabel[6].push_back("4l 1j");
+  basketLabel[6].push_back("4l #geq2j");
+  basketLabel[6].push_back("5l 0j");
+  basketLabel[6].push_back("5l 1j");
+  basketLabel[6].push_back("5l #geq2j");
+  basketLabel[6].push_back("#geq6l 0j");
+  basketLabel[6].push_back("#geq6l 1j");
+  basketLabel[6].push_back("#geq6l #geq2j");
+
   TChain* chain[nSamples][nChannels];
   for(int p=0; p<nSamples; p++){
     if(!isPresent[p]) continue;
@@ -1012,10 +1136,21 @@ void plotProductionModeComparison(
     0.07691 ,
     0.1767 ,
   };
+  Float_t xs13overxs8[nSamples] = { // X-sec(13 TeV) / X-sec(8 TeV) at 125 GeV, numbers taken from https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CrossSections
+    43.92 / 19.27 ,
+    3.748 / 1.578 ,
+    1.380 / 0.7046  ,
+    0.8696 / 0.4153  ,
+    0.5085 / 0.1293  ,
+    1. ,
+    1. ,
+    1. ,
+  };
   Float_t weights[nSamples];
   for(int p=0; p<nSamples; p++){
     if(!isPresent[p]) continue;
     weights[p] = LUMI * 1000 * xSec[p] / NGenEvt[p] ;
+    if(rescaleXSecs) weights[p] *= xs13overxs8[p];
   }
 
   Int_t nRun;
@@ -1064,7 +1199,14 @@ void plotProductionModeComparison(
   vector<Int_t> *ExtraLep3LepId = 0;
   vector<Int_t> *nExtraLep = 0;
   vector<Int_t> *nExtraZ = 0;
+  vector<Int_t> *nCleanedJets = 0;
   vector<Int_t> *nJets = 0;
+  vector<Int_t> *nJetsBTagged = 0;
+  vector<Float_t> *JetPt = 0;
+  vector<Float_t> *JetEta = 0;
+  vector<Float_t> *JetPhi = 0;
+  vector<Float_t> *JetBTag = 0;
+  Float_t DiJetMass;
   Float_t GenLep1Pt;
   Float_t GenLep1Eta;
   Float_t GenLep1Phi;
@@ -1129,12 +1271,12 @@ void plotProductionModeComparison(
 
   for(int a=0; a<nAssocDecays; a++){
     for(int c=0; c<nChannels; c++){
-      hBCFullSel100BasketsAssocDecays[a][c] = new TH1F(Form("hBCFullSel100_baskets_assocDecays_%i_%s",a,channelsShort[c].c_str()),Form(";;# exp. events in %.0f fb^{-1}",LUMI),nBaskets+1,0,nBaskets+1);
-      prepareBasketlabels(hBCFullSel100BasketsAssocDecays[a][c], basketLabel);
+      hBCFullSel100BasketsAssocDecays[a][c] = new TH1F(Form("hBCFullSel100_baskets_assocDecays_%i_%s",a,channelsShort[c].c_str()),Form(";;# exp. events in %.0f fb^{-1}",LUMI),nBaskets,0,nBaskets);
+      prepareBasketlabels(hBCFullSel100BasketsAssocDecays[a][c], basketLabel[BASKETLIST]);
       hBCFullSel100BasketsAssocDecays[a][c]->SetLineColor(assocDecayColor[a]);
       hBCFullSel100BasketsAssocDecays[a][c]->SetFillColor(assocDecayColor[a]);
-      hBCFullSel100MasswindowBasketsAssocDecays[a][c] = new TH1F(Form("hBCFullSel100Masswindow_baskets_assocDecays_%i_%s",a,channelsShort[c].c_str()),Form(";;# exp. events in %.0f fb^{-1}",LUMI),nBaskets+1,0,nBaskets+1);
-      prepareBasketlabels(hBCFullSel100MasswindowBasketsAssocDecays[a][c], basketLabel);
+      hBCFullSel100MasswindowBasketsAssocDecays[a][c] = new TH1F(Form("hBCFullSel100Masswindow_baskets_assocDecays_%i_%s",a,channelsShort[c].c_str()),Form(";;# exp. events in %.0f fb^{-1}",LUMI),nBaskets,0,nBaskets);
+      prepareBasketlabels(hBCFullSel100MasswindowBasketsAssocDecays[a][c], basketLabel[BASKETLIST]);
       hBCFullSel100MasswindowBasketsAssocDecays[a][c]->SetLineColor(assocDecayColor[a]);
       hBCFullSel100MasswindowBasketsAssocDecays[a][c]->SetFillColor(assocDecayColor[a]);
     }
@@ -1220,12 +1362,12 @@ void plotProductionModeComparison(
 	}
       }
       
-      hBCFullSel100Baskets[p][c] = new TH1F(("hBCFullSel100_baskets_"+suffix).c_str(),Form("%s;;# exp. events in %.0f fb^{-1}",title.c_str(),LUMI),nBaskets+1,0,nBaskets+1);
-      prepareBasketlabels(hBCFullSel100Baskets[p][c], basketLabel);
+      hBCFullSel100Baskets[p][c] = new TH1F(("hBCFullSel100_baskets_"+suffix).c_str(),Form("%s;;# exp. events in %.0f fb^{-1}",title.c_str(),LUMI),nBaskets,0,nBaskets);
+      prepareBasketlabels(hBCFullSel100Baskets[p][c], basketLabel[BASKETLIST]);
       hBCFullSel100Baskets[p][c]->SetLineColor(colors[p]);
       hBCFullSel100Baskets[p][c]->SetFillColor(colors[p]);
-      hBCFullSel100MasswindowBaskets[p][c] = new TH1F(("hBCFullSel100Masswindow_baskets_"+suffix).c_str(),Form("%s;;# exp. events in %.0f fb^{-1}",title.c_str(),LUMI),nBaskets+1,0,nBaskets+1);
-      prepareBasketlabels(hBCFullSel100MasswindowBaskets[p][c], basketLabel);
+      hBCFullSel100MasswindowBaskets[p][c] = new TH1F(("hBCFullSel100Masswindow_baskets_"+suffix).c_str(),Form("%s;;# exp. events in %.0f fb^{-1}",title.c_str(),LUMI),nBaskets,0,nBaskets);
+      prepareBasketlabels(hBCFullSel100MasswindowBaskets[p][c], basketLabel[BASKETLIST]);
       hBCFullSel100MasswindowBaskets[p][c]->SetLineColor(colors[p]);
       hBCFullSel100MasswindowBaskets[p][c]->SetFillColor(colors[p]);
       
@@ -1280,8 +1422,14 @@ void plotProductionModeComparison(
       chain[p][c]->SetBranchAddress("nExtraLep", &nExtraLep);
       chain[p][c]->SetBranchAddress("nExtraZ", &nExtraZ);
       //chain[p][c]->SetBranchAddress("nJets", &nJets);
-      //chain[p][c]->SetBranchAddress("nCleanedJets", &nJets);
+      chain[p][c]->SetBranchAddress("nCleanedJets", &nCleanedJets);
       chain[p][c]->SetBranchAddress("nCleanedJetsPt30", &nJets);
+      chain[p][c]->SetBranchAddress("nCleanedJetsPt30BTagged", &nJetsBTagged);
+      chain[p][c]->SetBranchAddress("JetPt", &JetPt);
+      chain[p][c]->SetBranchAddress("JetEta", &JetEta);
+      chain[p][c]->SetBranchAddress("JetPhi", &JetPhi);
+      chain[p][c]->SetBranchAddress("JetBTag", &JetBTag);
+      chain[p][c]->SetBranchAddress("DiJetMass", &DiJetMass);
       chain[p][c]->SetBranchAddress("GenLep1Pt", &GenLep1Pt);
       chain[p][c]->SetBranchAddress("GenLep1Eta", &GenLep1Eta);
       chain[p][c]->SetBranchAddress("GenLep1Phi", &GenLep1Phi);
@@ -1748,24 +1896,319 @@ void plotProductionModeComparison(
 
 	    // ---------------------- Categorization stuff --------------------------
 
+	    Bool_t HadVHTag = 0;
+	    if(nJets->at(iBC)>=2){
+	      if( 60.<DiJetMass && DiJetMass<120. && ZZPt->at(iBC)>ZZMass->at(iBC) ){
+		for(int j1=0; j1<nCleanedJets->at(iBC); j1++){
+		  for(int j2=j1; j2<nCleanedJets->at(iBC); j2++){
+		    if( abs(JetEta->at(j1))<2.4 && abs(JetEta->at(j2))<2.4 
+			&& JetPt->at(j1)>40. && JetPt->at(j2)>40. ){
+		      HadVHTag = true;
+		      break;
+		    }
+		  }
+		  if(HadVHTag) break;
+		}
+	      }
+	    }
+
 	    Int_t currentBasket = -1;
-	    if(nJets->at(iBC)==0 || nJets->at(iBC)==1){
-	      if(nExtraLep->at(iBC)==0) currentBasket = 1;
-	      else if(nExtraLep->at(iBC)==1){ 
-		//if(ExtraLep1Pt->at(iBC)>20. && PFMET>45.) currentBasket = 2;
-		if(PFMET>45.) currentBasket = 2;
-		else currentBasket = 3;
-	      }else if(nExtraLep->at(iBC)>=2) currentBasket = 4;
-	      else cout<<"WARNING : inconsistent nExtraLep"<<endl;
-	    }else if(nJets->at(iBC)>=2){
-	      if(nExtraLep->at(iBC)==0){
-		if(ZZFisher->at(iBC)>0.5) currentBasket = 5;
-		else currentBasket = 6;	      
-	      }else if(nExtraLep->at(iBC)==1) currentBasket = 7;
-	      else if(nExtraLep->at(iBC)>=2) currentBasket = 8;
-	      else cout<<"WARNING : inconsistent nExtraLep"<<endl;
-	    }else{
-	      cout<<"WARNING : inconsistent nJets"<<endl;
+
+	    if(BASKETLIST==0){
+
+	      if(nJets->at(iBC)==0 || nJets->at(iBC)==1){
+		if(nExtraLep->at(iBC)==0) currentBasket = 1;
+		else if(nExtraLep->at(iBC)==1) currentBasket = 2;
+		else if(nExtraLep->at(iBC)>=2) currentBasket = 3;
+		else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+	      }else if(nJets->at(iBC)>=2){
+		if(nExtraLep->at(iBC)==0) currentBasket = 4;
+		else if(nExtraLep->at(iBC)==1) currentBasket = 5;
+		else if(nExtraLep->at(iBC)>=2) currentBasket = 6;
+		else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+	      }else{
+		cout<<"WARNING : inconsistent nJets"<<endl;
+	      }
+
+	    }else if(BASKETLIST==1){
+
+	      if(nJets->at(iBC)==0 || nJets->at(iBC)==1){
+		if(nExtraLep->at(iBC)==0) currentBasket = 1;
+		else if(nExtraLep->at(iBC)==1){ 
+		  //if(ExtraLep1Pt->at(iBC)>20. && PFMET>45.) currentBasket = 2;
+		  if(PFMET>45.) currentBasket = 2;
+		  else currentBasket = 3;
+		}else if(nExtraLep->at(iBC)>=2) currentBasket = 4;
+		else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+	      }else if(nJets->at(iBC)>=2){
+		if(nExtraLep->at(iBC)==0){
+		  if(ZZFisher->at(iBC)>0.5) currentBasket = 5;
+		  else currentBasket = 6;	      
+		}else if(nExtraLep->at(iBC)==1) currentBasket = 7;
+		else if(nExtraLep->at(iBC)>=2) currentBasket = 8;
+		else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+	      }else{
+		cout<<"WARNING : inconsistent nJets"<<endl;
+	      }
+
+	    }else if(BASKETLIST==2){
+
+	      if(nJets->at(iBC)==0){
+		if(nExtraLep->at(iBC)==0) currentBasket = 1;
+		else if(nExtraLep->at(iBC)==1) currentBasket = 2;
+		else if(nExtraLep->at(iBC)>=2) currentBasket = 3;
+		else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+	      }else if(nJets->at(iBC)==1){
+		if(nJetsBTagged->at(iBC)==0){
+		  //if(nExtraLep->at(iBC)==0 && abs(JetEta->at(0))>2.4 && ZZPt->at(iBC)>50.) currentBasket = 24; else
+		  if(nExtraLep->at(iBC)==0) currentBasket = 4;
+		  else if(nExtraLep->at(iBC)==1) currentBasket = 5;
+		  else if(nExtraLep->at(iBC)>=2) currentBasket = 6;
+		  else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+		}else if(nJetsBTagged->at(iBC)==1){
+		  if(nExtraLep->at(iBC)==0) currentBasket = 7;
+		  else if(nExtraLep->at(iBC)==1) currentBasket = 8;
+		  else if(nExtraLep->at(iBC)>=2) currentBasket = 9;
+		  else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+		}else cout<<"WARNING : inconsistent nJetsBTagged"<<endl;
+	      }else if(nJets->at(iBC)>=2){
+		if(nJetsBTagged->at(iBC)==0){
+		  if(nExtraLep->at(iBC)==0 && ZZFisher->at(iBC)>0.5) currentBasket = 10;
+		  else if(nExtraLep->at(iBC)==0 && HadVHTag) currentBasket = 11;
+		  else if(nExtraLep->at(iBC)==0) currentBasket = 12;
+		  else if(nExtraLep->at(iBC)==1) currentBasket = 13;
+		  else if(nExtraLep->at(iBC)>=2) currentBasket = 14;
+		  else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+		}else if(nJetsBTagged->at(iBC)==1){
+		  if(nExtraLep->at(iBC)==0 && ZZFisher->at(iBC)>0.5) currentBasket = 15;
+		  else if(nExtraLep->at(iBC)==0 && HadVHTag) currentBasket = 16;
+		  else if(nExtraLep->at(iBC)==0) currentBasket = 17;
+		  else if(nExtraLep->at(iBC)==1) currentBasket = 18;
+		  else if(nExtraLep->at(iBC)>=2) currentBasket = 19;
+		  else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+		}else if(nJetsBTagged->at(iBC)>=2){
+		  if(nExtraLep->at(iBC)==0 && HadVHTag) currentBasket = 20;
+		  else if(nExtraLep->at(iBC)==0) currentBasket = 21;
+		  else if(nExtraLep->at(iBC)==1) currentBasket = 22;
+		  else if(nExtraLep->at(iBC)>=2) currentBasket = 23;
+		  else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+		}else cout<<"WARNING : inconsistent nJetsBTagged"<<endl;
+	      }else{
+		cout<<"WARNING : inconsistent nJets"<<endl;
+	      }
+
+	    }else if(BASKETLIST==3){
+
+	      int un  = 1;
+	      int vbf = 2;
+	      int vhl = 3;
+	      int vhh = 4;
+	      int tth = 5;
+	      if(nJets->at(iBC)==0){
+		if(nExtraLep->at(iBC)==0) currentBasket = un;
+		else if(nExtraLep->at(iBC)==1) currentBasket = vhl;
+		else if(nExtraLep->at(iBC)>=2) currentBasket = vhl;
+		else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+	      }else if(nJets->at(iBC)==1){
+		if(nJetsBTagged->at(iBC)==0){
+		  if(nExtraLep->at(iBC)==0) currentBasket = un;
+		  else if(nExtraLep->at(iBC)==1) currentBasket = vhl;
+		  else if(nExtraLep->at(iBC)>=2) currentBasket = vhl;
+		  else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+		}else if(nJetsBTagged->at(iBC)==1){
+		  if(nExtraLep->at(iBC)==0) currentBasket = un;
+		  else if(nExtraLep->at(iBC)==1) currentBasket = tth; // can do better here
+		  else if(nExtraLep->at(iBC)>=2) currentBasket = tth; // can do better here
+		  else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+		}else cout<<"WARNING : inconsistent nJetsBTagged"<<endl;
+	      }else if(nJets->at(iBC)>=2){
+		if(nJetsBTagged->at(iBC)==0){
+		  if(nExtraLep->at(iBC)==0 && ZZFisher->at(iBC)>0.5) currentBasket = vbf; // can do better here
+		  else if(nExtraLep->at(iBC)==0 && HadVHTag) currentBasket = vhh; // can do better here
+		  else if(nExtraLep->at(iBC)==0) currentBasket = un; // can do better here
+		  else if(nExtraLep->at(iBC)==1) currentBasket = vhl; // can also choose vhl ?
+		  else if(nExtraLep->at(iBC)>=2) currentBasket = vhl; // can also choose vhl ?
+		  else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+		}else if(nJetsBTagged->at(iBC)==1){
+		  if(nExtraLep->at(iBC)==0 && ZZFisher->at(iBC)>0.5) currentBasket = vbf; // can do better here
+		  else if(nExtraLep->at(iBC)==0 && HadVHTag) currentBasket = vhh; // can do better here
+		  else if(nExtraLep->at(iBC)==0) currentBasket = un; // can do better here
+		  else if(nExtraLep->at(iBC)==1) currentBasket = tth;
+		  else if(nExtraLep->at(iBC)>=2) currentBasket = tth;
+		  else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+		}else if(nJetsBTagged->at(iBC)>=2){
+		  if(nExtraLep->at(iBC)==0 && HadVHTag) currentBasket = vhh; // can do better here
+		  else if(nExtraLep->at(iBC)==0) currentBasket = tth; // can also choose un ?
+		  else if(nExtraLep->at(iBC)==1) currentBasket = tth;
+		  else if(nExtraLep->at(iBC)>=2) currentBasket = tth;
+		  else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+		}else cout<<"WARNING : inconsistent nJetsBTagged"<<endl;
+	      }else{
+		cout<<"WARNING : inconsistent nJets"<<endl;
+	      }
+
+	    }else if(BASKETLIST==4){
+
+	      if(nJets->at(iBC)==0){
+		if(nExtraLep->at(iBC)==0) currentBasket = 1;
+		else if(nExtraLep->at(iBC)==1) currentBasket = 2;
+		else if(nExtraLep->at(iBC)>=2) currentBasket = 3;
+		else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+	      }else if(nJets->at(iBC)==1){
+		if(nJetsBTagged->at(iBC)==0){
+		  //if(nExtraLep->at(iBC)==0 && abs(JetEta->at(0))>2.4 && ZZPt->at(iBC)>50.) currentBasket = 24; else
+		  if(nExtraLep->at(iBC)==0) currentBasket = 4;
+		  else if(nExtraLep->at(iBC)==1) currentBasket = 5;
+		  else if(nExtraLep->at(iBC)>=2) currentBasket = 6;
+		  else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+		}else if(nJetsBTagged->at(iBC)==1){
+		  if(nExtraLep->at(iBC)==0) currentBasket = 7;
+		  else if(nExtraLep->at(iBC)==1) currentBasket = 8;
+		  else if(nExtraLep->at(iBC)>=2) currentBasket = 9;
+		  else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+		}else cout<<"WARNING : inconsistent nJetsBTagged"<<endl;
+	      }else if(nJets->at(iBC)==2){
+		if(nJetsBTagged->at(iBC)==0){
+		  if(nExtraLep->at(iBC)==0 && ZZFisher->at(iBC)>0.5) currentBasket = 10;
+		  else if(nExtraLep->at(iBC)==0 && HadVHTag) currentBasket = 11;
+		  else if(nExtraLep->at(iBC)==0) currentBasket = 12;
+		  else if(nExtraLep->at(iBC)==1) currentBasket = 13;
+		  else if(nExtraLep->at(iBC)>=2) currentBasket = 14;
+		  else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+		}else if(nJetsBTagged->at(iBC)==1){
+		  if(nExtraLep->at(iBC)==0 && ZZFisher->at(iBC)>0.5) currentBasket = 15;
+		  else if(nExtraLep->at(iBC)==0 && HadVHTag) currentBasket = 16;
+		  else if(nExtraLep->at(iBC)==0) currentBasket = 17;
+		  else if(nExtraLep->at(iBC)==1) currentBasket = 18;
+		  else if(nExtraLep->at(iBC)>=2) currentBasket = 19;
+		  else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+		}else if(nJetsBTagged->at(iBC)==2){
+		  if(nExtraLep->at(iBC)==0 && HadVHTag) currentBasket = 20;
+		  else if(nExtraLep->at(iBC)==0) currentBasket = 21;
+		  else if(nExtraLep->at(iBC)==1) currentBasket = 22;
+		  else if(nExtraLep->at(iBC)>=2) currentBasket = 23;
+		  else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+		}else cout<<"WARNING : inconsistent nJetsBTagged"<<endl;
+	      }else if(nJets->at(iBC)>=3){
+		if(nJetsBTagged->at(iBC)==0){
+		  if(nExtraLep->at(iBC)==0 && ZZFisher->at(iBC)>0.5) currentBasket = 24;
+		  else if(nExtraLep->at(iBC)==0 && HadVHTag) currentBasket = 25;
+		  else if(nExtraLep->at(iBC)==0) currentBasket = 26;
+		  else if(nExtraLep->at(iBC)==1) currentBasket = 27;
+		  else if(nExtraLep->at(iBC)>=2) currentBasket = 28;
+		  else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+		}else if(nJetsBTagged->at(iBC)==1){
+		  if(nExtraLep->at(iBC)==0 && ZZFisher->at(iBC)>0.5) currentBasket = 29;
+		  else if(nExtraLep->at(iBC)==0 && HadVHTag) currentBasket = 30;
+		  else if(nExtraLep->at(iBC)==0) currentBasket = 31;
+		  else if(nExtraLep->at(iBC)==1) currentBasket = 32;
+		  else if(nExtraLep->at(iBC)>=2) currentBasket = 33;
+		  else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+		}else if(nJetsBTagged->at(iBC)>=2){
+		  if(nExtraLep->at(iBC)==0 && HadVHTag) currentBasket = 34;
+		  else if(nExtraLep->at(iBC)==0) currentBasket = 35;
+		  else if(nExtraLep->at(iBC)==1) currentBasket = 36;
+		  else if(nExtraLep->at(iBC)>=2) currentBasket = 37;
+		  else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+		}else cout<<"WARNING : inconsistent nJetsBTagged"<<endl;
+	      }else{
+		cout<<"WARNING : inconsistent nJets"<<endl;
+	      }
+
+	    }else if(BASKETLIST==5){
+
+	      int un = 1;
+	      int vbf1j = 2;
+	      int vbf2j = 3;
+	      int vhl = 4;
+	      int vhh = 5;
+	      int tth = 6;
+	      if(nJets->at(iBC)==0){
+		if(nExtraLep->at(iBC)==0) currentBasket = un;
+		else if(nExtraLep->at(iBC)==1) currentBasket = vhl;
+		else if(nExtraLep->at(iBC)>=2) currentBasket = vhl;
+		else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+	      }else if(nJets->at(iBC)==1){
+		if(nJetsBTagged->at(iBC)==0){
+		  if(nExtraLep->at(iBC)==0) currentBasket = vbf1j;
+		  else if(nExtraLep->at(iBC)==1) currentBasket = vhl;
+		  else if(nExtraLep->at(iBC)>=2) currentBasket = vhl;
+		  else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+		}else if(nJetsBTagged->at(iBC)==1){
+		  if(nExtraLep->at(iBC)==0) currentBasket = vbf1j;
+		  else if(nExtraLep->at(iBC)==1) currentBasket = tth; // can do better here
+		  else if(nExtraLep->at(iBC)>=2) currentBasket = tth; // can do better here
+		  else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+		}else cout<<"WARNING : inconsistent nJetsBTagged"<<endl;
+	      }else if(nJets->at(iBC)==2){
+		if(nJetsBTagged->at(iBC)==0){
+		  if(nExtraLep->at(iBC)==0 && ZZFisher->at(iBC)>0.5) currentBasket = vbf2j;
+		  else if(nExtraLep->at(iBC)==0 && HadVHTag) currentBasket = vhh;
+		  else if(nExtraLep->at(iBC)==0) currentBasket = vbf1j;
+		  else if(nExtraLep->at(iBC)==1) currentBasket = vhl;
+		  else if(nExtraLep->at(iBC)>=2) currentBasket = vhl;
+		  else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+		}else if(nJetsBTagged->at(iBC)==1){
+		  if(nExtraLep->at(iBC)==0 && ZZFisher->at(iBC)>0.5) currentBasket = vbf2j;
+		  else if(nExtraLep->at(iBC)==0 && HadVHTag) currentBasket = vhh;
+		  else if(nExtraLep->at(iBC)==0) currentBasket = vbf1j;
+		  else if(nExtraLep->at(iBC)==1) currentBasket = tth;
+		  else if(nExtraLep->at(iBC)>=2) currentBasket = tth;
+		  else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+		}else if(nJetsBTagged->at(iBC)==2){
+		  if(nExtraLep->at(iBC)==0 && HadVHTag) currentBasket = vhh;
+		  else if(nExtraLep->at(iBC)==0) currentBasket = vhh;
+		  else if(nExtraLep->at(iBC)==1) currentBasket = tth;
+		  else if(nExtraLep->at(iBC)>=2) currentBasket = tth;
+		  else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+		}else cout<<"WARNING : inconsistent nJetsBTagged"<<endl;
+	      }else if(nJets->at(iBC)>=3){
+		if(nJetsBTagged->at(iBC)==0){
+		  if(nExtraLep->at(iBC)==0 && ZZFisher->at(iBC)>0.5) currentBasket = vbf2j;
+		  else if(nExtraLep->at(iBC)==0 && HadVHTag) currentBasket = vhh;
+		  else if(nExtraLep->at(iBC)==0) currentBasket = vbf1j;
+		  else if(nExtraLep->at(iBC)==1) currentBasket = tth;
+		  else if(nExtraLep->at(iBC)>=2) currentBasket = tth;
+		  else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+		}else if(nJetsBTagged->at(iBC)==1){
+		  if(nExtraLep->at(iBC)==0 && ZZFisher->at(iBC)>0.5) currentBasket = vbf2j;
+		  else if(nExtraLep->at(iBC)==0 && HadVHTag) currentBasket = vhh;
+		  else if(nExtraLep->at(iBC)==0) currentBasket = tth;
+		  else if(nExtraLep->at(iBC)==1) currentBasket = tth;
+		  else if(nExtraLep->at(iBC)>=2) currentBasket = tth;
+		  else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+		}else if(nJetsBTagged->at(iBC)>=2){
+		  if(nExtraLep->at(iBC)==0 && HadVHTag) currentBasket = vhh;
+		  else if(nExtraLep->at(iBC)==0) currentBasket = tth;
+		  else if(nExtraLep->at(iBC)==1) currentBasket = tth;
+		  else if(nExtraLep->at(iBC)>=2) currentBasket = tth;
+		  else cout<<"WARNING : inconsistent nExtraLep"<<endl;
+		}else cout<<"WARNING : inconsistent nJetsBTagged"<<endl;
+	      }else{
+		cout<<"WARNING : inconsistent nJets"<<endl;
+	      }
+
+	    }else if(BASKETLIST==6){
+
+	      if(nExtraLep->at(iBC)==0){ 
+		if(nJets->at(iBC)==0) currentBasket = 1;
+		else if(nJets->at(iBC)==1) currentBasket = 2;
+		else if(nJets->at(iBC)>=2) currentBasket = 3;
+		else cout<<"WARNING : inconsistent nJets"<<endl;
+	      }else if(nExtraLep->at(iBC)==1){
+		if(nJets->at(iBC)==0) currentBasket = 4;
+		else if(nJets->at(iBC)==1) currentBasket = 5;
+		else if(nJets->at(iBC)>=2) currentBasket = 6;
+		else cout<<"WARNING : inconsistent nJets"<<endl;
+	      }else if(nExtraLep->at(iBC)>=2){
+		if(nJets->at(iBC)==0) currentBasket = 7;
+		else if(nJets->at(iBC)==1) currentBasket = 8;
+		else if(nJets->at(iBC)>=2) currentBasket = 9;
+		else cout<<"WARNING : inconsistent nJets"<<endl;
+	      }else{
+		cout<<"WARNING : inconsistent nExtraLep"<<endl;
+	      }
+
 	    }
 
 	    hBCFullSel100Baskets[p][c]->Fill(currentBasket,weights[p]);
@@ -2114,17 +2557,17 @@ void plotProductionModeComparison(
     TH1F* hAssocDecays[nAssocDecays]; for(int a=0; a<nAssocDecays; a++) hAssocDecays[a] = (TH1F*)hBCFullSel100BasketsAssocDecays[a][3];
     for(int p=0; p<nHiggsSamples; p++){
       string pn = prodName[p];
-      cBCFullSel100BasketEfficiency[p] = new TCanvas(Form("cBCFullSel100_basketEfficiency_%s",pn.c_str()),Form("cBCFullSel100_basketEfficiency_%s",pn.c_str()),500,500);
-      DrawBasketEfficiencies(cBCFullSel100BasketEfficiency[p],hBCFullSel100Baskets[p][3],pn,hAssocDecays,assocDecayName,basketLabel,false);
+      cBCFullSel100BasketEfficiency[p] = new TCanvas(Form("cBCFullSel100_basketEfficiency_%s",pn.c_str()),Form("cBCFullSel100_basketEfficiency_%s",pn.c_str()),500,((BASKETLIST==2||BASKETLIST==4)?1000:500));
+      DrawBasketEfficiencies(cBCFullSel100BasketEfficiency[p],hBCFullSel100Baskets[p][3],pn,hAssocDecays,treatH2l2XAsBkgd?assocDecayName2:assocDecayName1,treatH2l2XAsBkgd,basketLabel[BASKETLIST],false);
       SaveCanvas(outDir,cBCFullSel100BasketEfficiency[p]);
     }
 
     if(allSignalsArePresent){
-      TCanvas* cBCFullSel100BasketPurity = new TCanvas("cBCFullSel100_basketPurity","cBCFullSel100_basketPurity",800,500);
-      DrawBasketPurities(cBCFullSel100BasketPurity,hProdModes,prodName,hAssocDecays,treatH2l2XAsBkgd?assocDecayName3:assocDecayName2,false,treatH2l2XAsBkgd,basketLabel);
+      TCanvas* cBCFullSel100BasketPurity = new TCanvas("cBCFullSel100_basketPurity","cBCFullSel100_basketPurity",800,((BASKETLIST==2||BASKETLIST==4)?1000:500));
+      DrawBasketPurities(cBCFullSel100BasketPurity,hProdModes,prodName,hAssocDecays,treatH2l2XAsBkgd?assocDecayName4:assocDecayName3,false,treatH2l2XAsBkgd,basketLabel[BASKETLIST]);
       SaveCanvas(outDir,cBCFullSel100BasketPurity);
-      TCanvas* cBCFullSel100BasketPuritySplit = new TCanvas("cBCFullSel100_basketPuritySplit","cBCFullSel100_basketPuritySplit",800,500);
-      DrawBasketPurities(cBCFullSel100BasketPuritySplit,hProdModes,prodName,hAssocDecays,treatH2l2XAsBkgd?assocDecayName3:assocDecayName2,true,treatH2l2XAsBkgd,basketLabel);
+      TCanvas* cBCFullSel100BasketPuritySplit = new TCanvas("cBCFullSel100_basketPuritySplit","cBCFullSel100_basketPuritySplit",800,((BASKETLIST==2||BASKETLIST==4)?1000:500));
+      DrawBasketPurities(cBCFullSel100BasketPuritySplit,hProdModes,prodName,hAssocDecays,treatH2l2XAsBkgd?assocDecayName4:assocDecayName3,true,treatH2l2XAsBkgd,basketLabel[BASKETLIST]);
       SaveCanvas(outDir,cBCFullSel100BasketPuritySplit);
     }
     if(allSignalsArePresent && allZZBkgdsArePresent){
@@ -2145,13 +2588,13 @@ void plotProductionModeComparison(
       hDenom->Add(hSumBkgd);
       TH1F* hSOSPB = (TH1F*)hSumSgnl->Clone();
       hSOSPB->Divide(hDenom);
-      TCanvas* cBCFullSel100BasketSOSPB = new TCanvas("cBCFullSel100_basketSOSPB","cBCFullSel100_basketSOSPB",500,500);
-      DrawBasketSOSPB(cBCFullSel100BasketSOSPB,hSOSPB,basketLabel);
+      TCanvas* cBCFullSel100BasketSOSPB = new TCanvas("cBCFullSel100_basketSOSPB","cBCFullSel100_basketSOSPB",500,((BASKETLIST==2||BASKETLIST==4)?1000:500));
+      DrawBasketSOSPB(cBCFullSel100BasketSOSPB,hSOSPB,basketLabel[BASKETLIST]);
       SaveCanvas(outDir,cBCFullSel100BasketSOSPB);
 
       string pn = "qqtoZZ";
-      cBCFullSel100BasketEfficiency[nHiggsSamples] = new TCanvas(Form("cBCFullSel100_basketEfficiency_%s",pn.c_str()),Form("cBCFullSel100_basketEfficiency_%s",pn.c_str()),500,500);
-      DrawBasketEfficiencies(cBCFullSel100BasketEfficiency[nHiggsSamples],hSumBkgd,pn,hAssocDecays,assocDecayName,basketLabel,false);
+      cBCFullSel100BasketEfficiency[nHiggsSamples] = new TCanvas(Form("cBCFullSel100_basketEfficiency_%s",pn.c_str()),Form("cBCFullSel100_basketEfficiency_%s",pn.c_str()),500,((BASKETLIST==2||BASKETLIST==4)?1000:500));
+      DrawBasketEfficiencies(cBCFullSel100BasketEfficiency[nHiggsSamples],hSumBkgd,pn,hAssocDecays,assocDecayName1,treatH2l2XAsBkgd,basketLabel[BASKETLIST],false);
       SaveCanvas(outDir,cBCFullSel100BasketEfficiency[nHiggsSamples]);
 
 
@@ -2171,8 +2614,8 @@ void plotProductionModeComparison(
       hDenomMasswindow->Add(hSumBkgdMasswindow);
       TH1F* hSOSPBMasswindow = (TH1F*)hSumSgnlMasswindow->Clone();
       hSOSPBMasswindow->Divide(hDenomMasswindow);
-      TCanvas* cBCFullSel100MasswindowBasketSOSPB = new TCanvas("cBCFullSel100Masswindow_basketSOSPB","cBCFullSel100Masswindow_basketSOSPB",500,500);
-      DrawBasketSOSPB(cBCFullSel100MasswindowBasketSOSPB,hSOSPBMasswindow,basketLabel);
+      TCanvas* cBCFullSel100MasswindowBasketSOSPB = new TCanvas("cBCFullSel100Masswindow_basketSOSPB","cBCFullSel100Masswindow_basketSOSPB",500,((BASKETLIST==2||BASKETLIST==4)?1000:500));
+      DrawBasketSOSPB(cBCFullSel100MasswindowBasketSOSPB,hSOSPBMasswindow,basketLabel[BASKETLIST]);
       SaveCanvas(outDir,cBCFullSel100MasswindowBasketSOSPB);
 
     }
