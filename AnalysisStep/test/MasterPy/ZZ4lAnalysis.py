@@ -364,9 +364,7 @@ else :
 
 process.bareSoftElectrons = cms.EDFilter("PATElectronRefSelector",
    src = cms.InputTag("calibratedPatElectrons"),
-   cut = cms.string("pt>7 && abs(eta)<2.5 &&" +
-                    "gsfTrack.hitPattern().numberOfHits(HitPattern::MISSING_INNER_HITS)<=1"
-                    )
+   cut = cms.string("pt>7 && abs(eta)<2.5")
    )
 
 process.softElectrons = cms.EDProducer("EleFiller",
@@ -374,7 +372,7 @@ process.softElectrons = cms.EDProducer("EleFiller",
    sampleType = cms.int32(SAMPLE_TYPE),          
    setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
 #    cut = cms.string("userFloat('SIP')<100"),
-   cut = cms.string("userFloat('dxy')<0.5 && userFloat('dz')<1"),
+   cut = cms.string("userFloat('dxy')<0.5 && userFloat('dz')<1 && userFloat('missingHit')<=1"),
    flags = cms.PSet(
         ID = cms.string("userFloat('isBDT')"), # BDT MVA ID
         isGood = cms.string(GOODLEPTON)
