@@ -20,21 +20,22 @@ class VBFCandidateJetSelector {
 	
   
   /// Constructor
-	VBFCandidateJetSelector() {};
+  VBFCandidateJetSelector() {};
 
   /// Destructor
-	virtual ~VBFCandidateJetSelector() {};
+  virtual ~VBFCandidateJetSelector() {};
 
-	typedef std::vector<const cmg::PFJet*> container ;
+  typedef std::vector<const cmg::PFJet*> container ;
 	
-	std::vector<const cmg::PFJet*> cleanJets(const pat::CompositeCandidate& cand,
-						 edm::Handle<edm::View<cmg::PFJet> > jets, int year);
-											 //const std::vector<cmg::PFJet>& jets);
-	
-private:       
-	container selected_ ;
+  std::vector<const cmg::PFJet*> cleanJets(std::vector<const reco::Candidate*> leptons,
+					   edm::Handle<edm::View<cmg::PFJet> > jets, 
+					   int year);
+
+ private:       
+  container selected_ ;
 
 };
+
 #endif
 
 

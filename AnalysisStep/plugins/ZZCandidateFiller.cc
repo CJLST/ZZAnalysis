@@ -147,9 +147,15 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   math::XYZTLorentzVector pfmet;
   if(pfmetcoll.isValid()) pfmet = pfmetcoll->front().p4(); // standard MET is pfmet.pt();
 
-  // Get softLeptons
-  Handle<View<reco::Candidate> > leptonscoll;
-  iEvent.getByLabel("softLeptons", leptonscoll);
+  // Get leptons
+  Handle<View<reco::Candidate> > softleptoncoll;
+  iEvent.getByLabel("softLeptons", softleptoncoll);
+  vector<const reco::Candidate*> goodisoleptons;
+  for( View<reco::Candidate>::const_iterator lep = softleptoncoll->begin(); lep != softleptoncoll->end(); ++ lep ){ 
+    if((bool)userdatahelpers::getUserFloat(&*lep,"isGood") && userdatahelpers::getUserFloat(&*lep,"combRelIsoPF")<0.4){
+      goodisoleptons.push_back(&*lep);
+    }
+  }
 
   // Get Z Candidates
   Handle<View<CompositeCandidate> > ZCands;
@@ -207,12 +213,12 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     //--- store good isolated leptons that are not involved in the current ZZ candidate
     int nExtraLep = 0;
     vector<const reco::Candidate*> extraLeps;
-    for( View<reco::Candidate>::const_iterator lep = leptonscoll->begin(); lep != leptonscoll->end(); ++ lep ) {
+    for( View<reco::Candidate>::const_iterator lep = softleptoncoll->begin(); lep != softleptoncoll->end(); ++ lep ) {
       if( reco::deltaR( lep->p4(), Z1Lp->p4() ) > 0.02 &&
 	  reco::deltaR( lep->p4(), Z1Lm->p4() ) > 0.02 &&
 	  reco::deltaR( lep->p4(), Z2Lp->p4() ) > 0.02 &&
-	  reco::deltaR( lep->p4(), Z2Lm->p4() ) > 0.02    ){
-	const reco::CandidatePtr myLep(leptonscoll,lep-leptonscoll->begin());
+	  reco::deltaR( lep->p4(), Z2Lm->p4() ) > 0.02 ){
+	const reco::CandidatePtr myLep(softleptoncoll,lep-softleptoncoll->begin());
 	if((bool)userdatahelpers::getUserFloat(&*myLep,"isGood") && userdatahelpers::getUserFloat(&*myLep,"combRelIsoPF")<0.4){
 	  nExtraLep++;
 	  extraLeps.push_back(&*lep);
@@ -521,7 +527,8 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     //--- FIXME: once we move to per-event jet cleaning, we can move this outside the candidate loop.
     vector<const cmg::PFJet*> cleanedJets;
     VBFCandidateJetSelector myVBFCandidateJetSelector;
-    cleanedJets = myVBFCandidateJetSelector.cleanJets(myCand,pfjetscoll,sampleType); //   //FIXME: should use LEPTON_SETUP instead of sampleType for mela and combinedMEM. This will be an issue for samples rescaled to different sqrts (none at present)
+    cleanedJets = myVBFCandidateJetSelector.cleanJets(goodisoleptons,pfjetscoll,sampleType);   //FIXME: should use LEPTON_SETUP instead of sampleType for mela and combinedMEM. This will be an issue for samples rescaled to different sqrts (none at present)
+
     vector<const cmg::PFJet*> cleanedJetsPt30;
     int nCleanedJetsPt30BTagged = 0;
     for (unsigned int i=0; i < cleanedJets.size(); ++i){
