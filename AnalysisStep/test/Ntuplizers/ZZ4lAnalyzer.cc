@@ -723,7 +723,7 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
       event.getByLabel("softLeptons", softleptoncoll);
       vector<const reco::Candidate*> goodisoleptons;
       for( View<reco::Candidate>::const_iterator lep = softleptoncoll->begin(); lep != softleptoncoll->end(); ++ lep ){ 
-	if((bool)userdatahelpers::getUserFloat(&*lep,"isGood") && userdatahelpers::getUserFloat(&*lep,"combRelIsoPF")<0.4){
+	if((bool)userdatahelpers::getUserFloat(&*lep,"isGood") && userdatahelpers::getUserFloat(&*lep,"combRelIsoPF")<0.4){ //FIXME hardcoded cut - must find a better solution!
 	  goodisoleptons.push_back(&*lep);
 	}
       }
