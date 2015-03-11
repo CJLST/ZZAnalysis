@@ -25,8 +25,7 @@ try:
     SAMPLE_TYPE
 except NameError:
     SAMPLE_TYPE = LEPTON_SETUP # This is the actual sqrts of the sample. LEPTON_SETUP can be different from SAMPLE_TYPE for samples
-                               # which are rescaled to a different sqrts. FIXME: at the moment this is not used correctly in
-                               # ZZCandidateFiller, it would need to be reviewed.
+                               # which are rescaled to a different sqrts.
 
 try:
     SAMPLENAME
@@ -690,7 +689,8 @@ process.bareZZCand= cms.EDProducer("CandViewShallowCloneCombiner",
 )
 process.ZZCand = cms.EDProducer("ZZCandidateFiller",
     src = cms.InputTag("bareZZCand"),
-    sampleType = cms.int32(SAMPLE_TYPE),
+    sampleType = cms.int32(SAMPLE_TYPE),                    
+    setup = cms.int32(LEPTON_SETUP),
     superMelaMass = cms.double(SUPERMELA_MASS),
     isMC = cms.bool(IsMC),
     bestCandAmong = cms.PSet(isBestCand = cms.string(BESTCAND_AMONG)),
@@ -756,7 +756,8 @@ process.bareZLLCand= cms.EDProducer("CandViewShallowCloneCombiner",
 )
 process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
     src = cms.InputTag("bareZLLCand"),
-    sampleType = cms.int32(SAMPLE_TYPE),
+    sampleType = cms.int32(SAMPLE_TYPE),                    
+    setup = cms.int32(LEPTON_SETUP),
     superMelaMass = cms.double(SUPERMELA_MASS),
     isMC = cms.bool(IsMC),
     bestCandComparator = cms.string(BESTCANDCOMPARATOR),
@@ -981,7 +982,8 @@ process.bareLLLLCand= cms.EDProducer("CandViewShallowCloneCombiner",
 )
 process.LLLLCand = cms.EDProducer("ZZCandidateFiller",
     src = cms.InputTag("bareLLLLCand"),
-    sampleType = cms.int32(SAMPLE_TYPE),
+    sampleType = cms.int32(SAMPLE_TYPE),                    
+    setup = cms.int32(LEPTON_SETUP),
     superMelaMass = cms.double(SUPERMELA_MASS),
     isMC = cms.bool(IsMC),
     bestCandAmong = cms.PSet(isBestCand = cms.string(BESTCAND_AMONG)), #FIXME should ask d0.isBestInColl

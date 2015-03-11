@@ -74,6 +74,7 @@ private:
   const CutSet<pat::CompositeCandidate> preBestCandSelection;
   const CutSet<pat::CompositeCandidate> cuts;
   int sampleType;
+  int setup;
   float superMelaMass;
   MEMs combinedMEM;
   bool embedDaughterFloats;
@@ -94,8 +95,9 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
   preBestCandSelection(iConfig.getParameter<edm::ParameterSet>("bestCandAmong")),
   cuts(iConfig.getParameter<edm::ParameterSet>("flags")),
   sampleType(iConfig.getParameter<int>("sampleType")),
+  setup(iConfig.getParameter<int>("setup")),
   superMelaMass(iConfig.getParameter<double>("superMelaMass")),
-  combinedMEM((sampleType==2011)?7.:8,superMelaMass,"CTEQ6L"), //FIXME: should use LEPTON_SETUP instead of sampleType for mela and combinedMEM. This will be an issue for samples rescaled to different sqrts (none at present)
+  combinedMEM((setup==2011)?7.:8,superMelaMass,"CTEQ6L"),
   embedDaughterFloats(iConfig.getUntrackedParameter<bool>("embedDaughterFloats",true)),
   ZRolesByMass(iConfig.getParameter<bool>("ZRolesByMass")),
   isMC(iConfig.getParameter<bool>("isMC"))
@@ -111,7 +113,7 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
   TFile* fCorrSigma = new TFile(ebePath.data()); // FIXME: is leaked
   
   std::string sigmaCorrType = (isMC?"mc":"reco");
-  std::string sigmaCorrYear = ((sampleType==2011)?"42x":"53x"); //FIXME: should use LEPTON_SETUP instead. This will be an issue for samples rescaled to different sqrts (none at present)
+  std::string sigmaCorrYear = ((setup==2011)?"42x":"53x");
 
   corrSigmaMu=  (TH2F*)fCorrSigma->Get(("mu_"+sigmaCorrType+sigmaCorrYear).data()); 
   corrSigmaEle= (TH2F*)fCorrSigma->Get(("el_"+sigmaCorrType+sigmaCorrYear).data());
@@ -521,7 +523,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     //--- FIXME: once we move to per-event jet cleaning, we can move this outside the candidate loop.
     vector<const pat::Jet*> cleanedJets;
     VBFCandidateJetSelector myVBFCandidateJetSelector;
-    cleanedJets = myVBFCandidateJetSelector.cleanJets(myCand,pfjetscoll,sampleType); //   //FIXME: should use LEPTON_SETUP instead of sampleType for mela and combinedMEM. This will be an issue for samples rescaled to different sqrts (none at present)
+    cleanedJets = myVBFCandidateJetSelector.cleanJets(myCand,pfjetscoll,setup);
     vector<const pat::Jet*> cleanedJetsPt30;
     int nCleanedJetsPt30BTagged = 0;
     for (unsigned int i=0; i < cleanedJets.size(); ++i){

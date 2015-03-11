@@ -22,12 +22,12 @@ int correctionType = 2; //1 = rho; 2 = dbeta;
 
 InputTag LeptonIsoHelper::getMuRhoTag(int sampleType, int setup) {
   InputTag rhoTag;
-  if (sampleType ==2011) {
+  if (setup==2011) {
     rhoTag = InputTag("fixedGridRhoFastjetAll","");
-  } else if (sampleType ==2012) { 
+  } else if (setup==2012) { 
     rhoTag = InputTag("fixedGridRhoFastjetAll","");
   } else {
-    cout << "LeptonIsoHelper: Incorrect setup: " << sampleType << " " << setup << endl;
+    cout << "LeptonIsoHelper: Incorrect setup: " << setup << endl;
     abort();
   }
   return rhoTag;
@@ -35,12 +35,12 @@ InputTag LeptonIsoHelper::getMuRhoTag(int sampleType, int setup) {
 
 InputTag LeptonIsoHelper::getEleRhoTag(int sampleType, int setup) {
   InputTag rhoTag;
-  if (sampleType ==2011) {
+  if (setup==2011) {
     rhoTag = InputTag("fixedGridRhoFastjetAll","");
-  } else if (sampleType ==2012) {
+  } else if (setup==2012) {
     rhoTag = InputTag("fixedGridRhoFastjetAll","");
   } else {
-    cout << "LeptonIsoHelper: Incorect setup: " << sampleType << endl;
+    cout << "LeptonIsoHelper: Incorrect setup: " << setup << endl;
     abort();
   }
   return rhoTag;
@@ -54,11 +54,14 @@ float LeptonIsoHelper::combRelIsoPF(int sampleType, int setup, double rho, const
   float PFPUChargedHadIso = l.puChargedHadronIso();
     
   MuonEffectiveArea::MuonEffectiveAreaTarget EAsetup;
-  if (sampleType==2011) {
+  if (setup==2011) {
     EAsetup = MuonEffectiveArea::kMuEAData2011;
-  } else if (sampleType ==2012) { 
+  } else if (setup==2012) { 
     EAsetup = MuonEffectiveArea::kMuEAData2012;
-  } else abort();
+  } else {
+    cout << "LeptonIsoHelper: Incorrect setup: " << setup << endl;
+    abort();
+  }
 
   if (correctionType==1) {
     float EA = MuonEffectiveArea::GetMuonEffectiveArea(MuonEffectiveArea::kMuGammaAndNeutralHadronIso04, 
@@ -78,11 +81,12 @@ float LeptonIsoHelper::combRelIsoPF(int sampleType, int setup, double rho, const
   float PFPhotonIso       = l.photonIso();
 
   ElectronEffectiveArea::ElectronEffectiveAreaTarget EAsetup;
-  if (sampleType ==2011) {
+  if (setup==2011) {
     EAsetup = ElectronEffectiveArea::kEleEAData2011;
-  } else if (sampleType ==2012) { 
+  } else if (setup==2012) { 
     EAsetup = ElectronEffectiveArea::kEleEAData2012;
   } else {
+    cout << "LeptonIsoHelper: Incorrect setup: " << setup << endl;
     abort();
   }
 
