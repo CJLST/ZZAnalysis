@@ -993,7 +993,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     event.getByLabel("softLeptons", softleptoncoll);
     vector<const reco::Candidate*> goodisoleptons;
     for( View<reco::Candidate>::const_iterator lep = softleptoncoll->begin(); lep != softleptoncoll->end(); ++ lep ){ 
-      if((bool)userdatahelpers::getUserFloat(&*lep,"isGood") && userdatahelpers::getUserFloat(&*lep,"combRelIsoPF")<0.4){ //FIXME hardcoded cut! Need a better solution.
+      if((bool)userdatahelpers::getUserFloat(&*lep,"isGood") && (bool)userdatahelpers::getUserFloat(&*lep,"isIsoFSRUncorr")){ //FIXME hardcoded cut! Need a better solution.
 	goodisoleptons.push_back(&*lep);
       }
     }
