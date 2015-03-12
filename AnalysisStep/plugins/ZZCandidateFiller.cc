@@ -88,6 +88,12 @@ private:
 };
 
 
+static int SetupToSqrts(int setup) {
+  if (setup==2011) return 7;
+  else if (setup==2012) return 8;
+  else if (setup==2014) return 8; // FIXME: MELA/MEM do not accept 13 yet!!
+  else return 0;
+}
 
 
 ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
@@ -97,10 +103,12 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
   sampleType(iConfig.getParameter<int>("sampleType")),
   setup(iConfig.getParameter<int>("setup")),
   superMelaMass(iConfig.getParameter<double>("superMelaMass")),
-  combinedMEM((setup==2011)?7.:8,superMelaMass,"CTEQ6L"), //FIXME: need to handle cases where setup>2012
+  combinedMEM(SetupToSqrts(setup),superMelaMass,"CTEQ6L"),
   embedDaughterFloats(iConfig.getUntrackedParameter<bool>("embedDaughterFloats",true)),
   ZRolesByMass(iConfig.getParameter<bool>("ZRolesByMass")),
-  isMC(iConfig.getParameter<bool>("isMC"))
+  isMC(iConfig.getParameter<bool>("isMC")),
+  corrSigmaMu(0),
+  corrSigmaEle(0)
 {
   produces<pat::CompositeCandidateCollection>();
   
@@ -109,15 +117,20 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
   
   edm::FileInPath fip("ZZAnalysis/AnalysisStep/data/ebeOverallCorrections.Legacy2013.v0.root");
   std::string ebePath=fip.fullPath();
-  
-  TFile* fCorrSigma = new TFile(ebePath.data()); // FIXME: is leaked
-  
-  std::string sigmaCorrType = (isMC?"mc":"reco");
-  std::string sigmaCorrYear = ((setup==2011)?"42x":"53x"); //FIXME: need to handle cases where setup>2012
 
-  corrSigmaMu=  (TH2F*)fCorrSigma->Get(("mu_"+sigmaCorrType+sigmaCorrYear).data()); 
-  corrSigmaEle= (TH2F*)fCorrSigma->Get(("el_"+sigmaCorrType+sigmaCorrYear).data());
 
+  if (setup != 2015) {// FIXME:  EbE corrections to be updated for Run II
+    // EbE corrections
+    TFile* fCorrSigma = new TFile(ebePath.data()); // FIXME: is leaked
+    std::string sigmaCorrType = (isMC?"mc":"reco");
+    std::string sigmaCorrYear = ""; 
+    if (setup==2011) sigmaCorrYear = "42x";
+    else if (setup==2012) sigmaCorrYear = "53x";
+
+    corrSigmaMu=  (TH2F*)fCorrSigma->Get(("mu_"+sigmaCorrType+sigmaCorrYear).data()); 
+    corrSigmaEle= (TH2F*)fCorrSigma->Get(("el_"+sigmaCorrType+sigmaCorrYear).data());
+  }
+  
   string cmp=iConfig.getParameter<string>("bestCandComparator");
   if      (cmp=="byBestZ1bestZ2") bestCandType=Comparators::byBestZ1bestZ2;
   else if (cmp=="byBestKD")           bestCandType=Comparators::byBestKD;
@@ -837,9 +850,12 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
         const TH2F* h;
         if (l->isMuon()) h = corrSigmaMu;
         else             h = corrSigmaEle;
-        int ptBin  = min(max(1,h->GetXaxis()->FindBin(l->pt())), h->GetNbinsX());
-        int etaBin = min(max(1,h->GetYaxis()->FindBin(fabs(l->eta()))), h->GetNbinsY());
-        float ebecorr = h->GetBinContent(ptBin, etaBin);
+	float ebecorr=1.;
+	if (h!=0) {
+	  int ptBin  = min(max(1,h->GetXaxis()->FindBin(l->pt())), h->GetNbinsX());
+	  int etaBin = min(max(1,h->GetYaxis()->FindBin(fabs(l->eta()))), h->GetNbinsY());
+	  ebecorr = h->GetBinContent(ptBin, etaBin);
+	}
         massErrorCorr+= (sigma[i][j]*ebecorr)*(sigma[i][j]*ebecorr);
       }
     }

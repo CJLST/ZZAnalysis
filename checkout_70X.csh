@@ -1,6 +1,6 @@
 #!/bin/tcsh -fe
 
-############## For miniAOD/CMSSW_7_0_7 patch1
+############## For miniAOD/CMSSW_7_2_4
 
 #ZZAnalysis
 git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
@@ -19,7 +19,7 @@ git clone -n https://github.com/cms-analysis/EgammaAnalysis-ElectronTools EGamma
 
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
-(cd ZZMatrixElement ; git checkout -b from-V00-00-28 V00-00-28)
+(cd ZZMatrixElement ; git checkout -b from-0d57a9f 0d57a9f)
 
 #MELA dependencies
 git clone https://github.com/usarica/HiggsAnalysis-CombinedLimit HiggsAnalysis/CombinedLimit

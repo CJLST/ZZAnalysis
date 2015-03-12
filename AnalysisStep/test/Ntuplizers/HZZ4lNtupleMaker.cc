@@ -62,8 +62,8 @@
 #include <ZZAnalysis/AnalysisStep/interface/Fisher.h>
 #include "ZZ4lConfigHelper.h"
 
-#include <ZZMatrixElement/MELA/interface/Mela.h>
-#include <ZZMatrixElement/MELA/src/computeAngles.h>
+// #include <ZZMatrixElement/MELA/interface/Mela.h>
+// #include <ZZMatrixElement/MELA/src/computeAngles.h>
 
 #include "HZZ4lNtupleFactory.h"
 
@@ -159,7 +159,7 @@ private:
   Float_t gen_sumWeights;
 
   string sampleName;
-  Mela mela;
+  //  Mela mela;
 
 };
 
@@ -168,8 +168,8 @@ private:
 //
 HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   myHelper(pset),
-  reweight(),
-  mela((pset.getParameter<int>("setup")==2011)?7:8,pset.getParameter<double>("superMelaMass")) //FIXME: need to handle cases where setup>2012
+  reweight()
+  //  mela((pset.getParameter<int>("setup")==2011)?7:8,pset.getParameter<double>("superMelaMass")) //FIXME: need to handle cases where setup>2012
 {
   theCandLabel = pset.getUntrackedParameter<string>("CandCollection");
   theChannel = myHelper.channel();
@@ -178,7 +178,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   writeBestCandOnly = pset.getParameter<bool>("onlyBestCandidate");
   sampleName = pset.getParameter<string>("sampleName");
   
-  mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
+  //  mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
 
   if (skipEmptyEvents) {
     applyTrigger=true;
