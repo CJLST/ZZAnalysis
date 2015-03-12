@@ -22,7 +22,7 @@ public:
   ///      HCP     =         "                    HCP   
   ///      MORIOND =         "                    MORIOND " 
   ///      LEGACY  =         "                    LEGACY  " 
-  PUReweight(Type type=OLDICHEP); 
+  PUReweight(Type type=RUN2ANALYSIS); 
 
   ~PUReweight();
 

@@ -168,7 +168,7 @@ private:
 //
 HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   myHelper(pset),
-  reweight(PUReweight::RUN2ANALYSIS),
+  reweight(),
   mela((pset.getParameter<int>("setup")==2011)?7:8,pset.getParameter<double>("superMelaMass")) //FIXME: need to handle cases where setup>2012
 {
   theCandLabel = pset.getUntrackedParameter<string>("CandCollection");

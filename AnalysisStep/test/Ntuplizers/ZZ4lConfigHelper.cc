@@ -20,7 +20,9 @@ ZZ4lConfigHelper::ZZ4lConfigHelper(const ParameterSet& pset) :
   // Check for inconsistent configurations
   if ( ( theSampleType!=2011 && theSampleType!=2012 && theSampleType!=2015 ) ||
        ( theSetup!=2011 && theSetup!=2012 && theSetup!=2015 ) ||
-       ( theSampleType!=theSetup && !(isMC_ && theSampleType==2011 && theSetup==2012) ) ) {
+       ( theSampleType!=theSetup ) // No sample rescaling supported as of now.
+       // We may add exception for MC only when needed.
+       ) {
     cout << "ERROR: ZZ4lConfigHelper: inconsistent setup: sampleType=" << theSampleType << ", setup=" << theSetup << ", isMC=" <<isMC_ << endl;
     abort();
   }

@@ -49,7 +49,7 @@ namespace {
   XSecReader xsecRead7TeV("../Plotter/Xsection7TeV_YR3.txt","../Plotter/Luminosity.txt");
   XSecReader xsecRead8TeV("../Plotter/Xsection8TeV_YR3.txt","../Plotter/Luminosity.txt");
 
-  PUReweight PUWeighter(PUReweight::LEGACY);
+  PUReweight PUWeighter();
 
   //This is used to always give the same shifts when doing systematics
   int Seeder = 0;
