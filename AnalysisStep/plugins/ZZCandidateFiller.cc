@@ -152,7 +152,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   iEvent.getByLabel("softLeptons", softleptoncoll);
   vector<const reco::Candidate*> goodisoleptons;
   for( View<reco::Candidate>::const_iterator lep = softleptoncoll->begin(); lep != softleptoncoll->end(); ++ lep ){ 
-    if((bool)userdatahelpers::getUserFloat(&*lep,"isGood") && userdatahelpers::getUserFloat(&*lep,"combRelIsoPF")<0.4){
+    if((bool)userdatahelpers::getUserFloat(&*lep,"isGood") && (bool)userdatahelpers::getUserFloat(&*lep,"isIsoFSRUncorr")){
       goodisoleptons.push_back(&*lep);
     }
   }
