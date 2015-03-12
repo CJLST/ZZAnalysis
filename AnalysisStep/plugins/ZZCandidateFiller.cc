@@ -91,7 +91,7 @@ private:
 static int SetupToSqrts(int setup) {
   if (setup==2011) return 7;
   else if (setup==2012) return 8;
-  else if (setup==2014) return 8; // FIXME: MELA/MEM do not accept 13 yet!!
+  else if (setup==2015) return 8; // FIXME: MELA/MEM do not accept 13 yet!!
   else return 0;
 }
 
