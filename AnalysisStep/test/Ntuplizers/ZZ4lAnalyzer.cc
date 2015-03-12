@@ -716,7 +716,18 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
     std::vector<const pat::Jet*> cleanedJets;
     std::vector<const pat::Jet*> cleanedJetsPt30;
     if ( candIsBest && candPass70 ) {
-      cleanedJets = myVBFCandidateJetSelector.cleanJets(*cand,pfjetscoll,myHelper.setup()); 
+
+      // lepton collection
+      Handle<View<reco::Candidate> > softleptoncoll;
+      event.getByLabel("softLeptons", softleptoncoll);
+      vector<const reco::Candidate*> goodisoleptons;
+      for( View<reco::Candidate>::const_iterator lep = softleptoncoll->begin(); lep != softleptoncoll->end(); ++ lep ){ 
+	if((bool)userdatahelpers::getUserFloat(&*lep,"isGood") && (bool)userdatahelpers::getUserFloat(&*lep,"isIsoFSRUncorr")){
+	  goodisoleptons.push_back(&*lep);
+	}
+      }
+     
+      cleanedJets = myVBFCandidateJetSelector.cleanJets(goodisoleptons,pfjetscoll,myHelper.setup()); 
     
       // Create a collection implementing the official jet selection (pt>30)
       for (unsigned int i=0; i < cleanedJets.size(); ++i){

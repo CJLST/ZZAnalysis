@@ -323,7 +323,8 @@ process.softMuons = cms.EDProducer("MuFiller",
     cut = cms.string("userFloat('dxy')<0.5 && userFloat('dz')<1."),
     flags = cms.PSet(
         ID = cms.string("userFloat('isPFMuon')" ), # PF ID
-        isGood = cms.string(GOODLEPTON)
+        isGood = cms.string(GOODLEPTON),
+        isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<0.4")
     )
 )
 
@@ -384,7 +385,8 @@ process.softElectrons = cms.EDProducer("EleFiller",
    cut = cms.string("userFloat('dxy')<0.5 && userFloat('dz')<1 && userFloat('missingHit')<=1"),
    flags = cms.PSet(
         ID = cms.string("userFloat('isBDT')"), # BDT MVA ID
-        isGood = cms.string(GOODLEPTON)
+        isGood = cms.string(GOODLEPTON),
+        isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<0.4")
         )
    )
 

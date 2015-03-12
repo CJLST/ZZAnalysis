@@ -981,15 +981,26 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   }
 
   if (writeJets){
+
     // Jet collection (preselected with pT>10)
     Handle<edm::View<pat::Jet> > pfjetscoll;
     event.getByLabel("slimmedJets", pfjetscoll);
 
+    // lepton collection
+    Handle<View<reco::Candidate> > softleptoncoll;
+    event.getByLabel("softLeptons", softleptoncoll);
+    vector<const reco::Candidate*> goodisoleptons;
+    for( View<reco::Candidate>::const_iterator lep = softleptoncoll->begin(); lep != softleptoncoll->end(); ++ lep ){ 
+      if((bool)userdatahelpers::getUserFloat(&*lep,"isGood") && (bool)userdatahelpers::getUserFloat(&*lep,"isIsoFSRUncorr")){ //FIXME hardcoded cut! Need a better solution.
+	goodisoleptons.push_back(&*lep);
+      }
+    }
+
     VBFCandidateJetSelector myVBFCandidateJetSelector; 
     std::vector<const pat::Jet*> cleanedJets; 
-    cleanedJets = myVBFCandidateJetSelector.cleanJets(cand,pfjetscoll,myHelper.setup()); 
+    cleanedJets = myVBFCandidateJetSelector.cleanJets(goodisoleptons,pfjetscoll,myHelper.setup());
     // Note that jets variables are filled for jets above 20 GeV, to allow JES studies.
-    // ZZFisher is now filled only for true dijet events (jets above 30 GeV)    
+    // ZZFisher is now filled only for true dijet events (jets above 30 GeV)
     if(cleanedJets.size()>1 && theChannel!=ZL){ 
       const pat::Jet& myjet1 = *(cleanedJets.at(0)); 
       const pat::Jet& myjet2 = *(cleanedJets.at(1));

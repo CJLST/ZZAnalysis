@@ -16,24 +16,24 @@
 #include "DataFormats/Math/interface/deltaR.h"
 
 class VBFCandidateJetSelector {
- public:
-	
+public:
   
   /// Constructor
-	VBFCandidateJetSelector() {};
+  VBFCandidateJetSelector() {};
 
   /// Destructor
-	virtual ~VBFCandidateJetSelector() {};
+  virtual ~VBFCandidateJetSelector() {};
 
-	typedef std::vector<const pat::Jet*> container ;
-	
-	std::vector<const pat::Jet*> cleanJets(const pat::CompositeCandidate& cand,
-						 edm::Handle<edm::View<pat::Jet> > jets, int year);
-	
+  typedef std::vector<const pat::Jet*> container ;
+        
+  std::vector<const pat::Jet*> cleanJets(std::vector<const reco::Candidate*> leptons,
+					 edm::Handle<edm::View<pat::Jet> > jets, int year);
+        
 private:       
-	container selected_ ;
+  container selected_ ;
 
 };
+
 #endif
 
 
