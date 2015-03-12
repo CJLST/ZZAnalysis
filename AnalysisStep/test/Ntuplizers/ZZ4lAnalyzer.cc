@@ -162,7 +162,7 @@ ZZ4lAnalyzer::ZZ4lAnalyzer(const ParameterSet& pset) :
   myHelper(pset),
   theCandLabel(pset.getUntrackedParameter<string>("candCollection")),
   dumpMC(pset.getUntrackedParameter<bool>("dumpMC",false)),
-  reweight(PUReweight::LEGACY),
+  reweight(PUReweight::RUN2ANALYSIS),
   Nevt_Gen(0),
   gen_ZZ4e(0),
   gen_ZZ4mu(0),

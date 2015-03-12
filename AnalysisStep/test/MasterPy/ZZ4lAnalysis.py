@@ -10,28 +10,23 @@ try:
 except NameError:
     IsMC = True
 
+#Set of effective areas, rho corrections, etc. (can be 2011, 2012 or 2015)
 try:
     LEPTON_SETUP
 except NameError:
-    LEPTON_SETUP = 2012 # define the set of effective areas, rho corrections, etc.
+    LEPTON_SETUP = 2015
 
-#Trigger menu. FIXME : once we have a LEPTON_SETUP for Run II, we probably won't need this separate TRIGGER_SETUP anymore. 
-try:
-    TRIGGER_SETUP
-except NameError:
-    TRIGGER_SETUP = LEPTON_SETUP
-
+#Flag that reflects the actual sqrts of the sample (can be 2011, 2012 or 2015)
 try:
     SAMPLE_TYPE
 except NameError:
-    SAMPLE_TYPE = LEPTON_SETUP # This is the actual sqrts of the sample. LEPTON_SETUP can be different from SAMPLE_TYPE for samples
-                               # which are rescaled to a different sqrts.
+    SAMPLE_TYPE = LEPTON_SETUP # LEPTON_SETUP can differ from SAMPLE_TYPE for samples that are rescaled to a different sqrts.
 
+#Optional name of the sample/dataset being analyzed
 try:
     SAMPLENAME
 except NameError:
-    SAMPLENAME = "" # This is the optional name of the sample/dataset being analyzed
-    
+    SAMPLENAME = ""
 
 #Type of electron scale correction/smearing
 try:
@@ -50,7 +45,6 @@ try:
     APPLYMUCORR
 except NameError:
     APPLYMUCORR = True
-
 
 #Mass used for SuperMELA
 try:
@@ -87,7 +81,7 @@ if (SAMPLE_TYPE == 2011) :
         process.GlobalTag.globaltag = 'GR_R_44_V15C::All'
 #        process.GlobalTag.connect = "sqlite_file:/afs/cern.ch/user/a/alcaprod/public/Alca/GlobalTag/GR_R_44_V15C.db"
 
-else : 
+elif (SAMPLE_TYPE == 2012) : 
     if IsMC:
 #        process.GlobalTag.globaltag = 'START53_V7G::All'   #for 53X MC
 #        process.GlobalTag.globaltag = 'START53_V23::All'   #for 53X MC, updated JEC on top of pattuples produced with START53_V7G
@@ -96,6 +90,12 @@ else :
 #        process.GlobalTag.globaltag = 'FT_53_V21_AN3::All' # For 22Jan2013
 #        process.GlobalTag.globaltag = 'FT_53_V21_AN4::All' # For 22Jan2013, updated JEC on top of pattuples produced with FT_53_V21_AN3
         process.GlobalTag.globaltag = 'GR_70_V2_AN1::All'
+        
+else: 
+    if IsMC:
+        process.GlobalTag.globaltag = 'PHYS14_25_V1' #FIXME: for Phys14-25ns only
+    else:
+        process.GlobalTag.globaltag = '' #FIXME: not yet available for RunII
 
 print process.GlobalTag.globaltag
 
@@ -149,7 +149,7 @@ process.hltFilterTriEle.throw = cms.bool(False) #FIXME: beware of this!
 
 # MuEG
 
-if (TRIGGER_SETUP == 2011):
+if (LEPTON_SETUP == 2011):
     # DoubleEle
     process.hltFilterDiEle.HLTPaths = ["HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v*","HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*","HLT_TripleEle10_CaloIdL_TrkIdVL_v*"] # to run on DATA/MC 2011
     if (IsMC):
@@ -165,7 +165,7 @@ if (TRIGGER_SETUP == 2011):
         process.triggerMuEle2  = cms.Path(process.hltFilterMuEle2)
         process.triggerMuEle3  = cms.Path(process.hltFilterMuEle3)
 
-elif (TRIGGER_SETUP == 2012):
+elif (LEPTON_SETUP == 2012):
     # DoubleEle
     process.hltFilterDiEle.HLTPaths = ["HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v*","HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*"] # to run on DATA/MC 2012
     process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_Mu8_v*", "HLT_Mu17_TkMu8_v*"] # to run on DATA/MC 2012
@@ -173,8 +173,8 @@ elif (TRIGGER_SETUP == 2012):
     process.hltFilterTriEle.HLTPaths = ["HLT_Ele15_Ele8_Ele5_CaloIdL_TrkIdVL_v*"]
     process.triggerTriEle  = cms.Path(process.hltFilterTriEle)
 
-elif (TRIGGER_SETUP == 2014):
-    # This is the menu used in the PHYS14 samples, i.e. these paths are temporary and will NOT be used in Run II.
+elif (LEPTON_SETUP == 2015):
+    #FIXME: This is the menu used in the PHYS14 samples, i.e. these paths are temporary and will NOT be used in Run II.
     process.hltFilterDiEle.HLTPaths = ["HLT_Ele23_Ele12_CaloId_TrackId_Iso_v*"]
     process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*"]
     process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele23_Gsf_CaloId_TrackId_Iso_MediumWP_v*","HLT_Mu23_TrkIsoVVL_Ele12_Gsf_CaloId_TrackId_Iso_MediumWP_v*"]
@@ -268,11 +268,16 @@ if LEPTON_SETUP == 2011:
         process.calibratedMuons.identifier = cms.string("Fall11_START42")
     else:
         process.calibratedMuons.identifier = cms.string("Data2011_42X")
-else:
+elif LEPTON_SETUP == 2012:
     if IsMC:
         process.calibratedMuons.identifier = cms.string("Summer12_DR53X_smearReReco")
     else:
         process.calibratedMuons.identifier = cms.string("Data2012_53X_ReReco")
+else:
+    if IsMC:
+        process.calibratedMuons.identifier = cms.string("") #FIXME: not yet available for RunII
+    else:
+        process.calibratedMuons.identifier = cms.string("") #FIXME: not yet available for RunII
         
 
 ### Mu Ghost cleaning
@@ -353,11 +358,16 @@ if (LEPTON_SETUP == 2011):
        process.calibratedPatElectrons.inputDataset = "Fall11"
    else :
        process.calibratedPatElectrons.inputDataset = "Jan16ReReco"
-else :
+elif (LEPTON_SETUP == 2012) :
    if (IsMC):
        process.calibratedPatElectrons.inputDataset = "Summer12_LegacyPaper"
    else :
        process.calibratedPatElectrons.inputDataset = "22Jan2013ReReco"
+else :
+   if (IsMC):
+       process.calibratedPatElectrons.inputDataset = "" #FIXME: not yet available for RunII
+   else :
+       process.calibratedPatElectrons.inputDataset = "" #FIXME: not yet available for RunII
 
     
 
@@ -1001,7 +1011,7 @@ process.LLLLCand = cms.EDProducer("ZZCandidateFiller",
 ### Recorrect jets
 ### ----------------------------------------------------------------------
 
-UPDATE_JETS = False 
+UPDATE_JETS = False #FIXME: deactivated for now; what should be done for RunII ?
 
 if (UPDATE_JETS and LEPTON_SETUP==2012) :
 #    from CMGTools.Common.miscProducers.cmgPFJetCorrector_cfi import cmgPFJetCorrector

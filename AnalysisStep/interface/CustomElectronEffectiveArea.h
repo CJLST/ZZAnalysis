@@ -60,7 +60,8 @@ class ElectronEffectiveArea{
       kEleEASummer11MC,
       kEleEAFall11MC,
       kEleEAData2012,
-      kEleEASpring14MC_PU20bx25
+      kEleEASpring14MC_PU20bx25,
+      kEleEAPhys14MC,
     };
 
     static Double_t GetElectronEffectiveArea(ElectronEffectiveAreaType type, Double_t SCEta, 
@@ -71,6 +72,24 @@ class ElectronEffectiveArea{
 
       if (EffectiveAreaTarget == kEleEANoCorr) {
         return 0.0;
+      }
+
+      // Phys14 MC Effective Areas (from Giovanni : https://indico.cern.ch/event/367861/contribution/2/material/slides/0.pdf)
+      else if (EffectiveAreaTarget == kEleEAPhys14MC) {
+	if (type == kEleGammaAndNeutralHadronIso03) {
+	  if (fabs(SCEta) >= 0.0 && fabs(SCEta) < 0.8 ) EffectiveArea = 0.1013;
+	  if (fabs(SCEta) >= 0.8 && fabs(SCEta) < 1.3 ) EffectiveArea = 0.0988;
+	  if (fabs(SCEta) >= 1.3 && fabs(SCEta) < 2.0 ) EffectiveArea = 0.0572;
+	  if (fabs(SCEta) >= 2.0 && fabs(SCEta) < 2.2 ) EffectiveArea = 0.0842;
+	  if (fabs(SCEta) >= 2.2) EffectiveArea = 0.1530;
+	}
+	if (type == kEleGammaAndNeutralHadronIso04) {
+	  if (fabs(SCEta) >= 0.0 && fabs(SCEta) < 0.8 ) EffectiveArea = 0.1830;
+	  if (fabs(SCEta) >= 0.8 && fabs(SCEta) < 1.3 ) EffectiveArea = 0.1734;
+	  if (fabs(SCEta) >= 1.3 && fabs(SCEta) < 2.0 ) EffectiveArea = 0.1077;
+	  if (fabs(SCEta) >= 2.0 && fabs(SCEta) < 2.2 ) EffectiveArea = 0.1565;
+	  if (fabs(SCEta) >= 2.2) EffectiveArea = 0.2680;
+	}
       }
 
       //CSA14  MC Effective Areas (experimental, from Simon)

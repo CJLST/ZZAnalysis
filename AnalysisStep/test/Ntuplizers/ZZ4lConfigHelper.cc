@@ -18,9 +18,10 @@ ZZ4lConfigHelper::ZZ4lConfigHelper(const ParameterSet& pset) :
   theChannel = finalState(channel);
   
   // Check for inconsistent configurations
-  if ((theSampleType != 2011 && theSampleType != 2012) ||
-      ((theSampleType != theSetup) && (!isMC_ || theSampleType!=2011))) {
-    cout << "ERROR: ZZ4lConfigHelper: inconsistent setup" << theSampleType << " " << theSetup << " " <<isMC_ << endl;
+  if ( ( theSampleType!=2011 && theSampleType!=2012 && theSampleType!=2015 ) ||
+       ( theSetup!=2011 && theSetup!=2012 && theSetup!=2015 ) ||
+       ( theSampleType!=theSetup && !(isMC_ && theSampleType==2011 && theSetup==2012) ) ) {
+    cout << "ERROR: ZZ4lConfigHelper: inconsistent setup: sampleType=" << theSampleType << ", setup=" << theSetup << ", isMC=" <<isMC_ << endl;
     abort();
   }
   
@@ -82,6 +83,9 @@ ZZ4lConfigHelper::passSkim(const edm::Event & event, short& trigworld){
 
 bool 
 ZZ4lConfigHelper::passTrigger(const edm::Event & event, short& trigworld){
+
+  //FIXME: the following should be able to handle Phys14 datasets, but it needs to be revisited for later menus
+
   bool passDiMu  = passFilter(event, "triggerDiMu");
   bool passDiEle = passFilter(event, "triggerDiEle");
   bool passMuEle  = passFilter(event, "triggerMuEle"); 
@@ -94,10 +98,9 @@ ZZ4lConfigHelper::passTrigger(const edm::Event & event, short& trigworld){
     }
   }
   bool passTriEle = false;
-  if (theSetup == 2012) {
+  if (theSetup >= 2012) {
     passTriEle = passFilter(event, "triggerTriEle");
   }
-
 
 
   bool evtPassTrigger = false;

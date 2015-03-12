@@ -1,14 +1,5 @@
-### ----------------------------------------------------------------------
-###
-### HCP Synchronization file for 533.
-###
-### FIXME: the path includes the rochester correction (which is a passtrough for 53X right now);
-### the syncronization is supposed to be done with no escale applied
-###
-###----------------------------------------------------------------------
 
-TRIGGER_SETUP = 2014
-LEPTON_SETUP = 2012
+LEPTON_SETUP = 2015
 PD = ""
 MCFILTER = ""
 ELECORRTYPE   = "None" # "None", "Moriond", or "Paper"
@@ -31,7 +22,7 @@ execfile(PyFilePath + "analyzer.py")
 
 
 ### ----------------------------------------------------------------------
-  ### Replace parameters
+### Replace parameters
 ### ----------------------------------------------------------------------
 process.source.fileNames = cms.untracked.vstring(
     #'/store/cmst3/user/gpetrucc/miniAOD/v1/GluGluToHToZZTo4L_M-125_13TeV-powheg-pythia6_PU_S14_PAT.root'

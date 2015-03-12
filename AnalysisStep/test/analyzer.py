@@ -1,6 +1,6 @@
 ### ----------------------------------------------------------------------
 ###
-### Example analayzer
+### Example analyzer
 ###
 ###----------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ except NameError:
 try:
     LEPTON_SETUP
 except NameError:
-    LEPTON_SETUP = 2012 # define the set of effective areas, rho corrections, etc.
+    LEPTON_SETUP = 2015
 
 try:
     PD

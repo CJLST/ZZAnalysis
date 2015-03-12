@@ -85,7 +85,7 @@ private:
 ZZ4lAnalyzerCR::ZZ4lAnalyzerCR(const ParameterSet& pset) :
   myHelper(pset),
   theCandLabel(pset.getUntrackedParameter<string>("candCollection")),
-  reweight(PUReweight::LEGACY),
+  reweight(PUReweight::RUN2ANALYSIS),
   weight(1.) {
   isMC = myHelper.isMC();
   theChannel = myHelper.channel();

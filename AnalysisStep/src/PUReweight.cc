@@ -16,7 +16,19 @@ float PUReweight::weight(int MC, int target, float input) {
 
   TH1F* h;
   
-  if (theType == LEGACY) {
+  if (theType == RUN2ANALYSIS) {
+    if        (MC==2011&&target==2011) {
+      h = hT2011;
+    } else if (MC==2012&&target==2012) {
+      h = hTPuToLegacy13;
+    } else if (MC==2015&&target==2015) {
+      h = hTPuToLegacy13; //FIXME: to be updated with 2015 weights when available
+    } else{
+      std::cout << "ERROR: PUReweight: " << MC << " " << target << std::endl;
+      abort();
+    }
+        
+  } else if (theType == LEGACY) {
     if        (MC==2011&&target==2011) {
       h = hT2011;
     } else if (MC==2012&&target==2012) {

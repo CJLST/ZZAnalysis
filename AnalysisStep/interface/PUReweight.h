@@ -14,7 +14,7 @@
 
 class PUReweight {
 public:
-  enum Type {OLDICHEP=0, ICHEP=1, HCP=2, MORIOND=3, LEGACY=4};
+  enum Type {OLDICHEP=0, ICHEP=1, HCP=2, MORIOND=3, LEGACY=4, RUN2ANALYSIS=5};
 
   /// Constructor. 
   /// type=OLDICHEP are the weights to be used for the original ICHEP samples

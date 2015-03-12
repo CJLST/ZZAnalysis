@@ -26,6 +26,8 @@ InputTag LeptonIsoHelper::getMuRhoTag(int sampleType, int setup) {
     rhoTag = InputTag("fixedGridRhoFastjetAll","");
   } else if (setup==2012) { 
     rhoTag = InputTag("fixedGridRhoFastjetAll","");
+  } else if (setup==2015) { 
+    rhoTag = InputTag("fixedGridRhoFastjetAll","");
   } else {
     cout << "LeptonIsoHelper: Incorrect setup: " << setup << endl;
     abort();
@@ -38,6 +40,8 @@ InputTag LeptonIsoHelper::getEleRhoTag(int sampleType, int setup) {
   if (setup==2011) {
     rhoTag = InputTag("fixedGridRhoFastjetAll","");
   } else if (setup==2012) {
+    rhoTag = InputTag("fixedGridRhoFastjetAll","");
+  } else if (setup==2015) {
     rhoTag = InputTag("fixedGridRhoFastjetAll","");
   } else {
     cout << "LeptonIsoHelper: Incorrect setup: " << setup << endl;
@@ -58,6 +62,9 @@ float LeptonIsoHelper::combRelIsoPF(int sampleType, int setup, double rho, const
     EAsetup = MuonEffectiveArea::kMuEAData2011;
   } else if (setup==2012) { 
     EAsetup = MuonEffectiveArea::kMuEAData2012;
+  } else if (setup==2015) { 
+    EAsetup = MuonEffectiveArea::kMuEAData2012;
+    //FIXME: no Run II muon effective areas in the Muon package yet
   } else {
     cout << "LeptonIsoHelper: Incorrect setup: " << setup << endl;
     abort();
@@ -85,6 +92,8 @@ float LeptonIsoHelper::combRelIsoPF(int sampleType, int setup, double rho, const
     EAsetup = ElectronEffectiveArea::kEleEAData2011;
   } else if (setup==2012) { 
     EAsetup = ElectronEffectiveArea::kEleEAData2012;
+  } else if (setup==2015) { 
+    EAsetup = ElectronEffectiveArea::kEleEAPhys14MC; //FIXME: replace with EAs from data when available
   } else {
     cout << "LeptonIsoHelper: Incorrect setup: " << setup << endl;
     abort();

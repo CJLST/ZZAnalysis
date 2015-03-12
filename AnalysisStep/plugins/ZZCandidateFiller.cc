@@ -97,7 +97,7 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
   sampleType(iConfig.getParameter<int>("sampleType")),
   setup(iConfig.getParameter<int>("setup")),
   superMelaMass(iConfig.getParameter<double>("superMelaMass")),
-  combinedMEM((setup==2011)?7.:8,superMelaMass,"CTEQ6L"),
+  combinedMEM((setup==2011)?7.:8,superMelaMass,"CTEQ6L"), //FIXME: need to handle cases where setup>2012
   embedDaughterFloats(iConfig.getUntrackedParameter<bool>("embedDaughterFloats",true)),
   ZRolesByMass(iConfig.getParameter<bool>("ZRolesByMass")),
   isMC(iConfig.getParameter<bool>("isMC"))
@@ -113,7 +113,7 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
   TFile* fCorrSigma = new TFile(ebePath.data()); // FIXME: is leaked
   
   std::string sigmaCorrType = (isMC?"mc":"reco");
-  std::string sigmaCorrYear = ((setup==2011)?"42x":"53x");
+  std::string sigmaCorrYear = ((setup==2011)?"42x":"53x"); //FIXME: need to handle cases where setup>2012
 
   corrSigmaMu=  (TH2F*)fCorrSigma->Get(("mu_"+sigmaCorrType+sigmaCorrYear).data()); 
   corrSigmaEle= (TH2F*)fCorrSigma->Get(("el_"+sigmaCorrType+sigmaCorrYear).data());
