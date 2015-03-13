@@ -234,7 +234,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 	  reco::deltaR( lep->p4(), Z2Lp->p4() ) > 0.02 &&
 	  reco::deltaR( lep->p4(), Z2Lm->p4() ) > 0.02 ){
 	const reco::CandidatePtr myLep(softleptoncoll,lep-softleptoncoll->begin());
-	if((bool)userdatahelpers::getUserFloat(&*myLep,"isGood") && userdatahelpers::getUserFloat(&*myLep,"combRelIsoPF")<0.4){
+	if((bool)userdatahelpers::getUserFloat(&*myLep,"isGood") && (bool)userdatahelpers::getUserFloat(&*myLep,"isIsoFSRUncorr")){
 	  nExtraLep++;
 	  extraLeps.push_back(&*lep);
 	  myCand.addUserCand("ExtraLep"+to_string(nExtraLep),myLep);
