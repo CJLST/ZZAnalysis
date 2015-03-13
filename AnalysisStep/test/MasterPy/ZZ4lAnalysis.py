@@ -56,7 +56,7 @@ except NameError:
 try:
     SELSETUP
 except NameError:
-    SELSETUP = "Legacy"
+    SELSETUP = "allCutsAtOncePlusSmart"
 
 #Best candidate comparator (see interface/Comparators.h)
 try:
