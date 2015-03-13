@@ -386,7 +386,7 @@ process.softElectrons = cms.EDProducer("EleFiller",
    flags = cms.PSet(
         ID = cms.string("userFloat('isBDT')"), # BDT MVA ID
         isGood = cms.string(GOODLEPTON),
-        isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<0.4")
+        isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<0.5")
         )
    )
 
@@ -497,7 +497,7 @@ process.softLeptons = cms.EDProducer("CandViewMerger",
 ### ----------------------------------------------------------------------
 
 TWOGOODLEPTONS = ("userFloat('d0.isGood') && userFloat('d1.isGood')") # Z made of 2 isGood leptons
-ZISO           = ("userFloat('d0.combRelIsoPFFSRCorr')<0.4 && userFloat('d1.combRelIsoPFFSRCorr')<0.4") #ISO after FSR
+ZISO           = ("userFloat('d0.combRelIsoPFFSRCorr')<(?abs(daughter(0).pdgId)==13?0.4:0.5) && userFloat('d1.combRelIsoPFFSRCorr')<(?abs(daughter(1).pdgId)==13?0.4:0.5)") #ISO after FSR
 
 ZLEPTONSEL     = TWOGOODLEPTONS + "&&" + ZISO
 
