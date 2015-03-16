@@ -1,4 +1,10 @@
 #!/bin/tcsh -fe
+#
+# Instructions:
+# wget -P /tmp https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD/checkout_70X.csh
+# cd $CMSSW_BASE/src
+# . /tmp/checkout_70X.csh
+
 
 ############## For miniAOD/CMSSW_7_2_4
 
@@ -22,7 +28,7 @@ git clone -n https://github.com/cms-analysis/EgammaAnalysis-ElectronTools EGamma
 
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
-(cd ZZMatrixElement ; git checkout -b from-0d57a9f 0d57a9f)
+(cd ZZMatrixElement ; git checkout -b from-bbe44da bbe44da)
 
 #MELA dependencies
 git clone https://github.com/usarica/HiggsAnalysis-CombinedLimit HiggsAnalysis/CombinedLimit
