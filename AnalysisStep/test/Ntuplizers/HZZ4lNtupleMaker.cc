@@ -540,7 +540,69 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 //       }
 //     }
 //   }
-  
+
+  // Jet collection (preselected with pT>10)
+  Handle<edm::View<pat::Jet> > pfjetscoll;
+  event.getByLabel("slimmedJets", pfjetscoll);
+
+  // lepton collection
+  Handle<View<reco::Candidate> > softleptoncoll;
+  event.getByLabel("softLeptons", softleptoncoll);
+  vector<const reco::Candidate*> goodisoleptons;
+  for( View<reco::Candidate>::const_iterator lep = softleptoncoll->begin(); lep != softleptoncoll->end(); ++ lep ){ 
+    if((bool)userdatahelpers::getUserFloat(&*lep,"isGood") && (bool)userdatahelpers::getUserFloat(&*lep,"isIsoFSRUncorr")){
+      goodisoleptons.push_back(&*lep);
+    }
+  }
+
+  std::vector<const pat::Jet*> cleanedJets;
+  VBFCandidateJetSelector myVBFCandidateJetSelector;
+  cleanedJets = myVBFCandidateJetSelector.cleanJets(goodisoleptons,pfjetscoll,myHelper.setup());
+  vector<const pat::Jet*> cleanedJetsPt30;
+  int nCleanedJetsPt30BTagged = 0;
+  for (unsigned int i=0; i<cleanedJets.size(); ++i){
+    const pat::Jet& myjet = *(cleanedJets.at(i));  
+    if (myjet.pt()>30) {
+      cleanedJetsPt30.push_back(&myjet);
+      if(myjet.bDiscriminator("combinedSecondaryVertexBJetTags")>0.679) nCleanedJetsPt30BTagged++; // CSV Medium WP
+    }
+  }
+  float detajj = -99.f;
+  float Mjj    = -99.f;
+  float Fisher = -99.f;
+  if (cleanedJetsPt30.size()>=2) {
+    detajj = cleanedJetsPt30[0]->eta()-cleanedJetsPt30[1]->eta();
+    Mjj = (cleanedJetsPt30[0]->p4()+cleanedJetsPt30[1]->p4()).M();
+    Fisher = fisher(Mjj,detajj);      
+  }
+
+  if (writeJets){
+
+    if(theChannel!=ZL){
+      for (unsigned int i=0; i<cleanedJets.size(); i++) {
+	FillJet(*(cleanedJets.at(i)));
+      }
+    }
+
+    // Note that jets variables are filled for jets above 20 GeV, to allow JES studies.
+    // detajj, Mjj and ZZFisher are filled only for true dijet events (jets above 30 GeV)
+    if(cleanedJets.size()>1 && theChannel!=ZL){ 
+      const pat::Jet& myjet1 = *(cleanedJets.at(0)); 
+      const pat::Jet& myjet2 = *(cleanedJets.at(1));
+      math::XYZTLorentzVector jet1 = myjet1.p4();
+      math::XYZTLorentzVector jet2 = myjet2.p4();
+      Float_t jesUnc1 = 0.;//myjet1.uncOnFourVectorScale();
+      Float_t jesUnc2 = 0.;//myjet2.uncOnFourVectorScale();
+      math::XYZTLorentzVector jetScalePlus1 = jet1*(1+jesUnc1);
+      math::XYZTLorentzVector jetScaleMinus1 = jet1*(1-jesUnc1);
+      math::XYZTLorentzVector jetScalePlus2 = jet2*(1+jesUnc2);
+      math::XYZTLorentzVector jetScaleMinus2 = jet2*(1-jesUnc2);
+      Float_t MjjPlus = (jetScalePlus1+jetScalePlus2).M();
+      Float_t MjjMinus = (jetScaleMinus1+jetScaleMinus2).M();
+      myTree->FillDiJetInfo(Mjj,MjjPlus,MjjMinus,detajj,Fisher);
+    }
+
+  }
   
 
   //MET info
@@ -563,7 +625,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
 
   //Save general event info in the tree. This must be done after the loop on the candidates so that we know the best candidate position in the list
-  myTree->FillEventInfo(event.id().run(), event.id().event(), event.luminosityBlock(), NbestCand, vertexs->size(), nObsInt, nTrueInt, weight2, pfmet, genFinalState, genProcessId, genHEPMCweight, trigWord, genExtInfo);
+  myTree->FillEventInfo(event.id().run(), event.id().event(), event.luminosityBlock(), NbestCand, vertexs->size(), nObsInt, nTrueInt, weight2, pfmet, pfjetscoll->size(), cleanedJets.size(), cleanedJetsPt30.size(), nCleanedJetsPt30BTagged, genFinalState, genProcessId, genHEPMCweight, trigWord, genExtInfo);
 
   myTree->FillEvent();
 
@@ -633,10 +695,6 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   //const Float_t ZZMEKDLD = cand.userFloat("MEKD_LD");
   //const Float_t ZZMEKDpseudoLD = cand.userFloat("MEKD_PseudoLD");
   //const Float_t ZZMEKDgravLD = cand.userFloat("MEKD_GravLD");
-
-  Float_t ZZFisher = cand.userFloat("VD");
-  Float_t Mjj  = cand.userFloat("mjj");
-  Float_t detajj   = cand.userFloat("detajj");
 
   //const Float_t p0plus_melaNorm = cand.userFloat("p0plus_melaNorm");
   //const Float_t p0plus_mela = cand.userFloat("p0plus_mela");
@@ -979,78 +1037,15 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 			    PFPhotonIso[i], 
 			    combRelIsoPF[i]);
   }
-
-  if (writeJets){
-
-    // Jet collection (preselected with pT>10)
-    Handle<edm::View<pat::Jet> > pfjetscoll;
-    event.getByLabel("slimmedJets", pfjetscoll);
-
-    // lepton collection
-    Handle<View<reco::Candidate> > softleptoncoll;
-    event.getByLabel("softLeptons", softleptoncoll);
-    vector<const reco::Candidate*> goodisoleptons;
-    for( View<reco::Candidate>::const_iterator lep = softleptoncoll->begin(); lep != softleptoncoll->end(); ++ lep ){ 
-      if((bool)userdatahelpers::getUserFloat(&*lep,"isGood") && (bool)userdatahelpers::getUserFloat(&*lep,"isIsoFSRUncorr")){
-	goodisoleptons.push_back(&*lep);
-      }
-    }
-
-    VBFCandidateJetSelector myVBFCandidateJetSelector; 
-    std::vector<const pat::Jet*> cleanedJets; 
-    cleanedJets = myVBFCandidateJetSelector.cleanJets(goodisoleptons,pfjetscoll,myHelper.setup());
-    // Note that jets variables are filled for jets above 20 GeV, to allow JES studies.
-    // ZZFisher is now filled only for true dijet events (jets above 30 GeV)
-    if(cleanedJets.size()>1 && theChannel!=ZL){ 
-      const pat::Jet& myjet1 = *(cleanedJets.at(0)); 
-      const pat::Jet& myjet2 = *(cleanedJets.at(1));
-      math::XYZTLorentzVector jet1 = myjet1.p4();
-      math::XYZTLorentzVector jet2 = myjet2.p4();
-      //-FIXME check to be removed, Mjj and deta now come from candidate
-      if (myjet1.pt()>30&&myjet2.pt()>30) {
-	if (fabs(Mjj-(jet1+jet2).M())>0.001) {
-	  cout << "MJJ " << Mjj << " " << (jet1+jet2).M() << " " << theChannel << " " << ZZFisher <<  endl;
-	  abort();
-	}	    
-	assert(fabs(detajj-(jet1.Eta()-jet2.Eta()))<0.001);
-      }
-      //-FIXME
-      if ( candIsBest && candPassFullSel70){ // Fill additional jet info per-event, only for the selected candidate
-	Float_t jesUnc1 = 0.;//myjet1.uncOnFourVectorScale();
-	Float_t jesUnc2 = 0.;//myjet2.uncOnFourVectorScale();
-	math::XYZTLorentzVector jetScalePlus1 = jet1*(1+jesUnc1);
-	math::XYZTLorentzVector jetScaleMinus1 = jet1*(1-jesUnc1);
-	math::XYZTLorentzVector jetScalePlus2 = jet2*(1+jesUnc2);
-	math::XYZTLorentzVector jetScaleMinus2 = jet2*(1-jesUnc2);
-	Float_t MjjPlus = (jetScalePlus1+jetScalePlus2).M();
-	Float_t MjjMinus = (jetScaleMinus1+jetScaleMinus2).M();
-	myTree->FillDiJetInfo(Mjj,MjjPlus,MjjMinus,detajj);
-	for (unsigned int i=0; i<cleanedJets.size(); i++) {
-	  FillJet(*(cleanedJets.at(i)));
-	}
-      }
-    }  
-
-    if(cleanedJets.size()==1 && theChannel!=ZL){
-      if(candIsBest && candPassFullSel70){ 
-	FillJet(*(cleanedJets.at(0)));
-      }
-    }  
-  }
   
   //convention: 0 -> 4mu   1 -> 4e   2 -> 2mu2e
   myTree->FillHInfo(ZZMass, ZZMassErr, ZZMassErrCorr, ZZMassPreFSR, ZZMassRefit, Chi2KinFit, ZZMassCFit, Chi2CFit,  sel, ZZPt, ZZEta, ZZPhi,
-		    isSignal, isRightPair, ZZFisher, CRflag);
+		    isSignal, isRightPair, CRflag);
 
   //Fill the info on categorization
   const Int_t nExtraLep = cand.userFloat("nExtraLep");
   const Int_t nExtraZ = cand.userFloat("nExtraZ");
-  //FIXME: once cleaning is done per-event and not per-candidate, these will become per-event variables!
-  const Int_t nJets = cand.userFloat("nJets");
-  const Int_t nCleanedJets = cand.userFloat("nCleanedJets");
-  const Int_t nCleanedJetsPt30 = cand.userFloat("nCleanedJetsPt30");
-  const Int_t nCleanedJetsPt30BTagged = cand.userFloat("nCleanedJetsPt30BTagged");
-  myTree->FillCategorizationInfo(nExtraLep, nExtraZ, nJets, nCleanedJets, nCleanedJetsPt30,nCleanedJetsPt30BTagged);
+  myTree->FillCategorizationInfo(nExtraLep, nExtraZ);
 
   //Fill the info on the extra leptons
   myTree->FillExtraLepInfo( 1, cand.hasUserCand("ExtraLep1"), (cand.hasUserCand("ExtraLep1") ? cand.userCand("ExtraLep1") : *(new reco::CandidatePtr)) );

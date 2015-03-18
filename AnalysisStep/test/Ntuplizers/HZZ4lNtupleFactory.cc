@@ -52,6 +52,11 @@ void HZZ4lNtupleFactory::InitializeVariables()
   _NObsInt =0;
   _NTrueInt =0;
   _PUWeight =0;
+  _PFMET = -99;
+  _nJets = 0;
+  _nCleanedJets = 0;
+  _nCleanedJetsPt30 = 0;
+  _nCleanedJetsPt30BTagged = 0;
   _genFinalState = 0;
   _genProcessId = 0;
   _genHEPMCweight = 0;
@@ -114,7 +119,6 @@ void HZZ4lNtupleFactory::InitializeVariables()
   _ZZPhi.clear();
   _ZZgenIsSignal.clear();
   _ZZgenIsRightPair.clear();
-  _ZZFisher.clear();
   _CRflag.clear();
 
   //_p0plus_melaNorm.clear();
@@ -333,14 +337,11 @@ void HZZ4lNtupleFactory::InitializeVariables()
   _DiJetMassPlus=-99;
   _DiJetMassMinus=-99;
   _DiJetDEta=-99;
+  _DiJetFisher=-99;
   
   //Categorization-related variables
   _nExtraLep.clear();
   _nExtraZ.clear();
-  _nJets.clear();
-  _nCleanedJets.clear();
-  _nCleanedJetsPt30.clear();
-  _nCleanedJetsPt30BTagged.clear();
 
   //Variables of extra leptons
   _ExtraLep1Pt.clear();
@@ -400,6 +401,10 @@ void HZZ4lNtupleFactory::InitializeBranches()
   _outTree->Branch("NTrueInt",&_NTrueInt,"NTrueInt/F");
   _outTree->Branch("PUWeight12",&_PUWeight,"PUWeight12/F");
   _outTree->Branch("PFMET",&_PFMET,"PFMET/F");
+  _outTree->Branch("nJets",&_nJets,"nJets/I");
+  _outTree->Branch("nCleanedJets",&_nCleanedJets,"nCleanedJets/I");
+  _outTree->Branch("nCleanedJetsPt30",&_nCleanedJetsPt30,"nCleanedJetsPt30/I");
+  _outTree->Branch("nCleanedJetsPt30BTagged",&_nCleanedJetsPt30BTagged,"nCleanedJetsPt30BTagged/I");
   _outTree->Branch("genFinalState",&_genFinalState,"genFinalState/I");
   _outTree->Branch("genProcessId",&_genProcessId,"genProcessId/I");
   _outTree->Branch("genHEPMCweight",&_genHEPMCweight,"genHEPMCweight/F");
@@ -418,7 +423,6 @@ void HZZ4lNtupleFactory::InitializeBranches()
   //--> Commented as these variables are not computed at the moment
   //  _outTree->Branch("ZZgenIsSignal",&_ZZgenIsSignal);
   //  _outTree->Branch("ZZgenIsRightPair",&_ZZgenIsRightPair);
-  _outTree->Branch("ZZFisher",&_ZZFisher);
   _outTree->Branch("CRflag",&_CRflag);
 
   //_outTree->Branch("p0plus_melaNorm",&_p0plus_melaNorm);
@@ -654,14 +658,11 @@ void HZZ4lNtupleFactory::InitializeBranches()
   _outTree->Branch("DiJetMassPlus",&_DiJetMassPlus,"DiJetMassPlus/F");
   _outTree->Branch("DiJetMassMinus",&_DiJetMassMinus,"DiJetMassMinus/F");
   _outTree->Branch("DiJetDEta",&_DiJetDEta,"DiJetDEta/F");
+  _outTree->Branch("DiJetFisher",&_DiJetFisher,"DiJetFisher/F");
 
   //Categorization-related variables
   _outTree->Branch("nExtraLep",&_nExtraLep);
   _outTree->Branch("nExtraZ",&_nExtraZ);
-  _outTree->Branch("nJets",&_nJets);
-  _outTree->Branch("nCleanedJets",&_nCleanedJets);
-  _outTree->Branch("nCleanedJetsPt30",&_nCleanedJetsPt30);
-  _outTree->Branch("nCleanedJetsPt30BTagged",&_nCleanedJetsPt30BTagged);
 
   //Variables of extra leptons
   _outTree->Branch("ExtraLep1Pt",&_ExtraLep1Pt);
@@ -824,7 +825,7 @@ void HZZ4lNtupleFactory::FillAssocLepGenInfo(std::vector<const reco::Candidate *
 }
 
 void HZZ4lNtupleFactory::FillEventInfo(const Int_t RunNumber, const Long64_t EventNumber, const Int_t LumiNumber, const Int_t IndexBestCand, Int_t Nvtx, 
-				       Int_t NObsInt, Float_t NTrueInt, Float_t PUweight, const Float_t PFMET, Int_t genFinalState, Int_t genProcessId, Float_t genHEPMCweight, Short_t trigWord,  Short_t genExtInfo)
+				       Int_t NObsInt, Float_t NTrueInt, Float_t PUweight, const Float_t PFMET, const Int_t nJets, const Int_t nCleanedJets, const Int_t nCleanedJetsPt30, const Int_t nCleanedJetsPt30BTagged, Int_t genFinalState, Int_t genProcessId, Float_t genHEPMCweight, Short_t trigWord,  Short_t genExtInfo)
 {
   _RunNumber = RunNumber;
   _EventNumber = EventNumber;
@@ -836,6 +837,10 @@ void HZZ4lNtupleFactory::FillEventInfo(const Int_t RunNumber, const Long64_t Eve
   _PUWeight =PUweight;
 
   _PFMET = PFMET;
+  _nJets = nJets;
+  _nCleanedJets = nCleanedJets;
+  _nCleanedJetsPt30 = nCleanedJetsPt30;
+  _nCleanedJetsPt30BTagged = nCleanedJetsPt30BTagged;
   _genFinalState = genFinalState;
   _genProcessId = genProcessId;
   _genHEPMCweight = genHEPMCweight;
@@ -844,7 +849,7 @@ void HZZ4lNtupleFactory::FillEventInfo(const Int_t RunNumber, const Long64_t Eve
   return;
 }
 
-void HZZ4lNtupleFactory::FillHInfo(const Float_t ZZMass, const Float_t ZZMassErr, const Float_t ZZMassErrCorr, const Float_t ZZMassPreFSR, const Float_t ZZMassRefit, const Float_t Chi2KinFit, const Float_t ZZMassCFit, const Float_t Chi2CFit, const Int_t ZZsel, const Float_t ZZPt, const Float_t ZZEta, const Float_t ZZPhi, const Int_t isSignal, const Int_t isRightPair, const Float_t ZZFisher, const Int_t CRflag)
+void HZZ4lNtupleFactory::FillHInfo(const Float_t ZZMass, const Float_t ZZMassErr, const Float_t ZZMassErrCorr, const Float_t ZZMassPreFSR, const Float_t ZZMassRefit, const Float_t Chi2KinFit, const Float_t ZZMassCFit, const Float_t Chi2CFit, const Int_t ZZsel, const Float_t ZZPt, const Float_t ZZEta, const Float_t ZZPhi, const Int_t isSignal, const Int_t isRightPair, const Int_t CRflag)
 {
   _ZZMass.push_back(ZZMass);
   _ZZMassErr.push_back(ZZMassErr);
@@ -860,7 +865,6 @@ void HZZ4lNtupleFactory::FillHInfo(const Float_t ZZMass, const Float_t ZZMassErr
   _ZZPhi.push_back(ZZPhi);
   _ZZgenIsSignal.push_back(isSignal);
   _ZZgenIsRightPair.push_back(isRightPair);
-  _ZZFisher.push_back(ZZFisher);
   _CRflag.push_back(CRflag);
 
   return;
@@ -1259,24 +1263,21 @@ void HZZ4lNtupleFactory::FillJetInfo(const Float_t JetPt, const Float_t JetEta, 
   return;
 }
 
-void HZZ4lNtupleFactory::FillDiJetInfo(const Float_t DiJetMass, const Float_t DiJetMassPlus, const Float_t DiJetMassMinus, const Float_t DiJetDEta)
+void HZZ4lNtupleFactory::FillDiJetInfo(const Float_t DiJetMass, const Float_t DiJetMassPlus, const Float_t DiJetMassMinus, const Float_t DiJetDEta, const Float_t DiJetFisher)
 {
   _DiJetMass = DiJetMass;
   _DiJetMassPlus = DiJetMassPlus;
   _DiJetMassMinus = DiJetMassMinus;
   _DiJetDEta = DiJetDEta;
+  _DiJetFisher = DiJetFisher;
 
   return;
 }
 
-void HZZ4lNtupleFactory::FillCategorizationInfo(const Int_t nExtraLep, const Int_t nExtraZ, const Int_t nJets, const Int_t nCleanedJets, const Int_t nCleanedJetsPt30, const Int_t nCleanedJetsPt30BTagged)
+void HZZ4lNtupleFactory::FillCategorizationInfo(const Int_t nExtraLep, const Int_t nExtraZ)
 {
   _nExtraLep.push_back(nExtraLep);
   _nExtraZ.push_back(nExtraZ);
-  _nJets.push_back(nJets);
-  _nCleanedJets.push_back(nCleanedJets);
-  _nCleanedJetsPt30.push_back(nCleanedJetsPt30);
-  _nCleanedJetsPt30BTagged.push_back(nCleanedJetsPt30BTagged);
 
   return;
 }

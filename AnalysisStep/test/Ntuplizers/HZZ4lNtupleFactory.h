@@ -25,7 +25,25 @@ class HZZ4lNtupleFactory{
   void DumpBranches(TString filename) const;
 
   void createNewCandidate();
-  void FillEventInfo(const Int_t RunNumber, const Long64_t EventNumber, const Int_t LumiNumber, const Int_t IndexBestCand, Int_t Nvtx, Int_t NObsInt, Float_t NTrueInt, Float_t PUweight, Float_t PFMET, Int_t genFinalState, Int_t genProcessId, Float_t genHEPMCweight, Short_t trigWord, Short_t genExtInfo);
+  void FillEventInfo(const Int_t RunNumber, 
+		     const Long64_t EventNumber, 
+		     const Int_t LumiNumber, 
+		     const Int_t IndexBestCand, 
+		     Int_t Nvtx, 
+		     Int_t NObsInt, 
+		     Float_t NTrueInt, 
+		     Float_t PUweight, 
+		     Float_t PFMET, 
+		     Int_t nJets, 
+		     Int_t nCleanedJets, 
+		     Int_t nCleanedJetsPt30,
+		     Int_t nCleanedJetsPt30BTagged,
+		     Int_t genFinalState, 
+		     Int_t genProcessId, 
+		     Float_t genHEPMCweight, 
+		     Short_t trigWord, 
+		     Short_t genExtInfo
+		     );
   void FillHInfo(const Float_t ZZMass, 
 		 const Float_t ZZMassErr, 
 		 const Float_t ZZMassErrCorr, 
@@ -40,7 +58,6 @@ class HZZ4lNtupleFactory{
 		 const Float_t ZZPhi, 
 		 const Int_t isSignal, 
 		 const Int_t isRightPair, 
-		 const Float_t ZZFisher,
 		 const Int_t CRflag=0
 		 );
   void FillProbability(  //const Float_t p0plus_melaNorm,
@@ -156,8 +173,8 @@ class HZZ4lNtupleFactory{
   void FillLepIsolInfo(const Float_t LepchargedHadIso, const Float_t LepneutralHadIso, const Float_t LepphotonIso, const Float_t LepcombRelIsoPF);
   void FillPhotonInfo(const Float_t PhotPt, const Float_t PhotEta, const Float_t PhotPhi);
   void FillJetInfo(const Float_t JetPt, const Float_t JetEta, const Float_t JetPhi, const Float_t JetMass, const Float_t JetBTag, const Float_t JetSigma);
-  void FillDiJetInfo(const Float_t DiJetMass, const Float_t DiJetMassPlus, const Float_t DiJetMassMinus, const Float_t DiJetDEta);
-  void FillCategorizationInfo(const Int_t nExtraLep, const Int_t nExtraZ, const Int_t nJets, const Int_t nCleanedJets, const Int_t nCleanedJetsPt30, const Int_t nCleanedJetsPt30BTagged);
+  void FillDiJetInfo(const Float_t DiJetMass, const Float_t DiJetMassPlus, const Float_t DiJetMassMinus, const Float_t DiJetDEta, const Float_t DiJetFisher);
+  void FillCategorizationInfo(const Int_t nExtraLep, const Int_t nExtraZ);
   void FillExtraLepInfo(int extraLeptonIndex, bool extraLeptonExists, const reco::CandidatePtr ExtraLep);
 
   void FillHGenInfo(const math::XYZTLorentzVector Hp);
@@ -192,6 +209,10 @@ class HZZ4lNtupleFactory{
   Float_t _NTrueInt;
   Float_t _PUWeight;
   Float_t _PFMET;
+  Int_t _nJets;
+  Int_t _nCleanedJets;
+  Int_t _nCleanedJetsPt30;
+  Int_t _nCleanedJetsPt30BTagged;
   Int_t _genFinalState;
   Int_t _genProcessId;
   Float_t _genHEPMCweight;
@@ -212,7 +233,6 @@ class HZZ4lNtupleFactory{
   std::vector<Float_t> _ZZPhi;
   std::vector<Int_t> _ZZgenIsSignal;
   std::vector<Int_t> _ZZgenIsRightPair;
-  std::vector<Float_t> _ZZFisher;
   std::vector<Int_t> _CRflag;
 
   //probabilities
@@ -433,14 +453,11 @@ class HZZ4lNtupleFactory{
   Float_t _DiJetMassPlus;
   Float_t _DiJetMassMinus;
   Float_t _DiJetDEta;
+  Float_t _DiJetFisher;
 
   //Categorization-related variables
   std::vector<Int_t> _nExtraLep;
   std::vector<Int_t> _nExtraZ;
-  std::vector<Int_t> _nJets;
-  std::vector<Int_t> _nCleanedJets;
-  std::vector<Int_t> _nCleanedJetsPt30;
-  std::vector<Int_t> _nCleanedJetsPt30BTagged;
 
   //Variables of extra leptons
   std::vector<Float_t> _ExtraLep1Pt;

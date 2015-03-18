@@ -179,6 +179,18 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   Handle<View<CompositeCandidate> > ZCands;
   iEvent.getByLabel("ZCand", ZCands);
 
+  // Collect VBF jets
+  vector<const pat::Jet*> cleanedJets;
+  VBFCandidateJetSelector myVBFCandidateJetSelector;
+  cleanedJets = myVBFCandidateJetSelector.cleanJets(goodisoleptons,pfjetscoll,setup);
+  vector<const pat::Jet*> cleanedJetsPt30;
+  for (unsigned int i=0; i<cleanedJets.size(); ++i){
+    const pat::Jet& myjet = *(cleanedJets.at(i));  
+    if (myjet.pt()>30) {
+      cleanedJetsPt30.push_back(&myjet);
+    }
+  }
+
   // Get processID
 //   edm::Handle<GenEventInfoProduct> gen;
 //   iEvent.getByLabel( "generator", gen );
@@ -537,37 +549,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     combinedMEM.computeME_Interference(MEMNames::kzzgg_PS,MEMNames::kJHUGen,partP, partId,pzzgg_PS_VAJHU);
 
 
-    //--- Collect VBF jets
-    //--- FIXME: once we move to per-event jet cleaning, we can move this outside the candidate loop.
-    vector<const pat::Jet*> cleanedJets;
-    VBFCandidateJetSelector myVBFCandidateJetSelector;
-    cleanedJets = myVBFCandidateJetSelector.cleanJets(goodisoleptons,pfjetscoll,setup);
-    vector<const pat::Jet*> cleanedJetsPt30;
-    int nCleanedJetsPt30BTagged = 0;
-    for (unsigned int i=0; i < cleanedJets.size(); ++i){
-      const pat::Jet& myjet = *(cleanedJets.at(i));  
-      if (myjet.pt()>30) {
-	cleanedJetsPt30.push_back(&myjet);
-	if(myjet.bDiscriminator("combinedSecondaryVertexBJetTags")>0.679) nCleanedJetsPt30BTagged++; // CSV Medium WP
-      }
-    }
-
-    //FIXME: once cleaning is done per-event and not per-candidate, these will become per-event variables!
-    myCand.addUserFloat("nJets",pfjetscoll->size());
-    myCand.addUserFloat("nCleanedJets",cleanedJets.size());
-    myCand.addUserFloat("nCleanedJetsPt30",cleanedJetsPt30.size());
-    myCand.addUserFloat("nCleanedJetsPt30BTagged",nCleanedJetsPt30BTagged);
-
-    float detajj =-99.f;
-    float mjj  =-99.f;
-    float VD   =-99.f;
-    if (cleanedJetsPt30.size()>=2) {
-      detajj = cleanedJetsPt30[0]->eta()-cleanedJetsPt30[1]->eta();
-      mjj = (cleanedJetsPt30[0]->p4()+cleanedJetsPt30[1]->p4()).M();
-      VD = fisher(mjj,detajj);      
-    }
     
-
 
     //----------------------------------------------------------------------
     //--- Add VVF probabilities
@@ -1067,9 +1049,6 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     myCand.addUserFloat("pg1g2_VAJHU",     pg1g2_VAJHU);
 
     // VBF
-    myCand.addUserFloat("detajj",  detajj);
-    myCand.addUserFloat("mjj",     mjj);
-    myCand.addUserFloat("VD",      VD);
     myCand.addUserFloat("phjj_VAJHU_old",phjj_VAJHU_old);
     myCand.addUserFloat("pvbf_VAJHU_old",pvbf_VAJHU_old);
     myCand.addUserFloat("phjj_VAJHU_old_up",phjj_VAJHU_old_up);
