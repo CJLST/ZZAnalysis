@@ -18,16 +18,6 @@ Download and execute the setup script for the given release:
     cd $CMSSW_BASE/src
     . /tmp/checkout_70X.csh
     ```
-*   For V5_15_0/CMSSW_5_3_9 POST-LEGACY:
-
-    ```
-    ./checkout_539.csh
-    ```
-*   For V5_15_0/CMSSW_4_4_5 POST-LEGACY:
-
-    ```
-    ./checkout_445.csh
-    ```
 
 To update this package from the release
 ------------------------------------------
