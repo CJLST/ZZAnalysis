@@ -166,9 +166,12 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   Handle<View<reco::Candidate> > softleptoncoll;
   iEvent.getByLabel("softLeptons", softleptoncoll);
   vector<const reco::Candidate*> goodisoleptons;
+  vector<reco::CandidatePtr> goodisoleptonPtrs;
   for( View<reco::Candidate>::const_iterator lep = softleptoncoll->begin(); lep != softleptoncoll->end(); ++ lep ){ 
     if((bool)userdatahelpers::getUserFloat(&*lep,"isGood") && (bool)userdatahelpers::getUserFloat(&*lep,"isIsoFSRUncorr")){
       goodisoleptons.push_back(&*lep);
+      const reco::CandidatePtr lepPtr(softleptoncoll,lep-softleptoncoll->begin());
+      goodisoleptonPtrs.push_back(lepPtr);
     }
   }
 
@@ -227,18 +230,14 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
     //--- store good isolated leptons that are not involved in the current ZZ candidate
     int nExtraLep = 0;
-    vector<const reco::Candidate*> extraLeps;
-    for( View<reco::Candidate>::const_iterator lep = softleptoncoll->begin(); lep != softleptoncoll->end(); ++ lep ) {
+    for( vector<reco::CandidatePtr>::const_iterator lepPtr = goodisoleptonPtrs.begin(); lepPtr != goodisoleptonPtrs.end(); ++ lepPtr ) {
+      const reco::Candidate* lep = lepPtr->get();
       if( reco::deltaR( lep->p4(), Z1Lp->p4() ) > 0.02 &&
 	  reco::deltaR( lep->p4(), Z1Lm->p4() ) > 0.02 &&
 	  reco::deltaR( lep->p4(), Z2Lp->p4() ) > 0.02 &&
 	  reco::deltaR( lep->p4(), Z2Lm->p4() ) > 0.02 ){
-	const reco::CandidatePtr myLep(softleptoncoll,lep-softleptoncoll->begin());
-	if((bool)userdatahelpers::getUserFloat(&*myLep,"isGood") && (bool)userdatahelpers::getUserFloat(&*myLep,"isIsoFSRUncorr")){
-	  nExtraLep++;
-	  extraLeps.push_back(&*lep);
-	  myCand.addUserCand("ExtraLep"+to_string(nExtraLep),myLep);
-	}
+	nExtraLep++;
+	myCand.addUserCand("ExtraLep"+to_string(nExtraLep),*lepPtr);
       }
     }
     myCand.addUserFloat("nExtraLep",nExtraLep);
