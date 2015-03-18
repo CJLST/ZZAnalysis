@@ -43,11 +43,11 @@ process.source.fileNames = cms.untracked.vstring(
 
 #process.appendPhotons.debug = cms.untracked.bool(True)
 
-process.maxEvents.input = 5000
+process.maxEvents.input = -1
 
 # Silence output
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 5000
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 
 ### ----------------------------------------------------------------------

@@ -42,6 +42,10 @@ def loop():
     cands = []
     totCounter = 0
     chanCounter = {}
+
+    hfile = ROOT.TFile(inFileName)
+    hCounters = hfile.Get("ZZ2e2muTree/Counters")
+
     for aChan in ["4mu","4e","2e2mu"]:
 
         chanCounter[aChan] = 0
@@ -145,6 +149,8 @@ def loop():
         outFile.close()
         
         print "Output written in file: ",outFileName,"\n"
+
+        print "## Total/4e/4mu/2e2mu/2l2tau : ", int(hCounters.GetBinContent(1)),  "/",  int(hCounters.GetBinContent(3)),  "/",  int(hCounters.GetBinContent(2)),  "/",  int(hCounters.GetBinContent(4)), "/", int (hCounters.GetBinContent(5))
 
     counterStr = str(totCounter) + "/" + str(chanCounter["4e"]) + "/" + str(chanCounter["4mu"]) + "/" + str(chanCounter["2e2mu"])
     print "\n## Selected events all/4e/4mu/2e2mu : "+counterStr
