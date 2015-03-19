@@ -135,7 +135,8 @@ def loop():
 
     if not opt.noOutput:
         # Print in sync format
-        outFile      = open(outFileName.replace(".","_"+opt.finalState+"."),"w")
+        outFileName = outFileName.replace(".","_"+opt.finalState+".")
+        outFile = open(outFileName,"w")
         line = ""
         
         for aCand in sortedCands:

@@ -122,6 +122,7 @@ private:
 
   //counters
   Float_t Nevt_Gen;
+  Float_t Nevt_Gen_lumiBlock;
 
   Float_t gen_ZZ4mu;
   Float_t gen_ZZ4e;
@@ -191,6 +192,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   isMC = myHelper.isMC();
 
   Nevt_Gen = 0;
+  Nevt_Gen_lumiBlock = 0;
 
   //For Efficiency studies
   gen_ZZ4mu = 0;
@@ -297,6 +299,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
     mch.genAcceptance(gen_ZZInAcceptance, gen_ZZ4lInEtaAcceptance, gen_ZZ4lInEtaPtAcceptance, gen_m4l_180);
 
+    ++Nevt_Gen_lumiBlock;
     if (genFinalState == EEEE) {
       ++gen_ZZ4e;
       if (gen_ZZ4lInEtaAcceptance) ++gen_ZZ4e_EtaAcceptance;
@@ -1157,6 +1160,9 @@ void HZZ4lNtupleMaker::endRun(edm::Run const&, edm::EventSetup const&)
 // ------------ method called when starting to processes a luminosity block  ------------
 void HZZ4lNtupleMaker::beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
 {
+
+  Nevt_Gen_lumiBlock = 0;
+
 }
 
 // ------------ method called when ending the processing of a luminosity block  ------------
@@ -1167,15 +1173,12 @@ void HZZ4lNtupleMaker::endLuminosityBlock(edm::LuminosityBlock const& iLumi, edm
   if (iLumi.getByLabel("preSkimCounter", preSkimCounter)) { // Counter before skim. Does not exist for non-skimmed samples.
     Nevt_preskim = preSkimCounter->value;
   }  
-  
-  //edm::Handle<edm::MergeableCounter> prePathCounter;
-  //iLumi.getByLabel("prePathCounter", prePathCounter);       // Counter of input events in the input pattuple
 
   // Nevt_gen: this is the number before any skim
   if (Nevt_preskim>=0.) {
-    Nevt_Gen = Nevt_Gen + Nevt_preskim; 
+    Nevt_Gen += Nevt_preskim; 
   } else {
-    Nevt_Gen = Nevt_Gen ;
+    Nevt_Gen += Nevt_Gen_lumiBlock ;
   }
 }
 
