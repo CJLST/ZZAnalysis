@@ -463,6 +463,16 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
   Handle<pat::ElectronCollection> electrons;
   event.getByLabel("cleanSoftElectrons", electrons);
 
+  // Good iso leptons
+  Handle<View<reco::Candidate> > softleptoncoll;
+  event.getByLabel("softLeptons", softleptoncoll);
+  vector<const reco::Candidate*> goodisoleptons;
+  for( View<reco::Candidate>::const_iterator lep = softleptoncoll->begin(); lep != softleptoncoll->end(); ++ lep ){ 
+    if((bool)userdatahelpers::getUserFloat(&*lep,"isGood") && (bool)userdatahelpers::getUserFloat(&*lep,"isIsoFSRUncorr")){
+      goodisoleptons.push_back(&*lep);
+    }
+  }
+
   // Zs (for step plots)
   Handle<View<pat::CompositeCandidate> > Z;
   event.getByLabel("ZCand", Z);
@@ -570,6 +580,31 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
       evtPassTriGoodLep=true;
     }
   }  
+
+  //Jet information
+  std::vector<const pat::Jet*> cleanedJets;
+  VBFCandidateJetSelector myVBFCandidateJetSelector;
+  cleanedJets = myVBFCandidateJetSelector.cleanJets(goodisoleptons,pfjetscoll,myHelper.setup());
+  std::vector<const pat::Jet*> cleanedJetsPt30; // Create a collection implementing the official jet selection (pt>30)
+  for (unsigned int i=0; i < cleanedJets.size(); ++i){
+    const pat::Jet& myjet = *(cleanedJets.at(i));  
+    if (myjet.pt()>30) cleanedJetsPt30.push_back(&myjet);
+  } 
+  float j1pT = -1.;
+  float j2pT = -1.;
+  int nJet30 = -1;
+  float deta = -99.;
+  float mjj  = -99.;
+  float VD   = -99.;
+  nJet30 =cleanedJetsPt30.size();
+  if (nJet30>0) j1pT=cleanedJetsPt30[0]->pt();
+  if (nJet30>1) {
+    j2pT=cleanedJetsPt30[1]->pt();      
+    deta = cleanedJetsPt30[0]->eta()-cleanedJetsPt30[1]->eta();
+    mjj = (cleanedJetsPt30[0]->p4()+cleanedJetsPt30[1]->p4()).M();
+    VD = fisher(mjj,deta);
+  }
+
 
   //----------------------------------------------------------------------
   // Loop on ZZ candidates
@@ -704,53 +739,6 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
     bool candPass70 = cand->userFloat("FullSel70");
     bool candIsBest = cand->userFloat("isBestCand");
 
-    float VD   = cand->userFloat("VD");
-    float deta = cand->userFloat("detajj");
-    float mjj  = cand->userFloat("mjj");
-    float j1pT =-1.;
-    float j2pT =-1.;
-    int nJet30 = -1;
-    VBFCandidateJetSelector myVBFCandidateJetSelector;
-
-    // Pick jets, since they are not associated to the candidate yet
-    std::vector<const pat::Jet*> cleanedJets;
-    std::vector<const pat::Jet*> cleanedJetsPt30;
-    if ( candIsBest && candPass70 ) {
-
-      // lepton collection
-      Handle<View<reco::Candidate> > softleptoncoll;
-      event.getByLabel("softLeptons", softleptoncoll);
-      vector<const reco::Candidate*> goodisoleptons;
-      for( View<reco::Candidate>::const_iterator lep = softleptoncoll->begin(); lep != softleptoncoll->end(); ++ lep ){ 
-	if((bool)userdatahelpers::getUserFloat(&*lep,"isGood") && (bool)userdatahelpers::getUserFloat(&*lep,"isIsoFSRUncorr")){
-	  goodisoleptons.push_back(&*lep);
-	}
-      }
-     
-      cleanedJets = myVBFCandidateJetSelector.cleanJets(goodisoleptons,pfjetscoll,myHelper.setup()); 
-    
-      // Create a collection implementing the official jet selection (pt>30)
-      for (unsigned int i=0; i < cleanedJets.size(); ++i){
-	const pat::Jet& myjet = *(cleanedJets.at(i));  
-	if (myjet.pt()>30) cleanedJetsPt30.push_back(&myjet);
-      }
-
-      // Also x-check VBF variables. FIXME: remove this once it's checked
-      float VD_chk   =-99.;
-      float deta_chk =-99.;
-      float mjj_chk  =-99.;
-      nJet30 =cleanedJetsPt30.size();
-      if (nJet30>0) j1pT=cleanedJetsPt30[0]->pt();
-      if (nJet30>1) {
-	j2pT=cleanedJetsPt30[1]->pt();      
-	deta_chk = cleanedJetsPt30[0]->eta()-cleanedJetsPt30[1]->eta();
-	mjj_chk = (cleanedJetsPt30[0]->p4()+cleanedJetsPt30[1]->p4()).M();
-	VD_chk = fisher(mjj,deta);
-      }
-      if (VD_chk!=VD || deta_chk != deta || mjj_chk != mjj) {
-	cout << "ERROR: ZZ4lAnalyzer: " << VD_chk << " " << VD << " " <<  deta_chk << " " <<  deta << " " << mjj_chk << " " << mjj << endl;
-      }
-    }
 	  
     //----------------------------------------------------------------------
     // count events at different steps (step plots)

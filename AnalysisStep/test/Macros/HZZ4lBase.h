@@ -45,7 +45,6 @@ public :
    std::vector<float>   *ZZPt;
    std::vector<float>   *ZZEta;
    std::vector<float>   *ZZPhi;
-   std::vector<float>   *ZZFisher;
    std::vector<float>   *pg1g4_mela;
    std::vector<float>   *pg1g4_VAJHU;
    std::vector<float>   *pg1g4_pi2_VAJHU;
@@ -201,6 +200,7 @@ public :
    Float_t         DiJetMassPlus;
    Float_t         DiJetMassMinus;
    Float_t         DiJetDEta;
+   Float_t         DiJetFisher;
    Float_t         GenHMass;
    Float_t         GenHPt;
    Float_t         GenZ1Mass;
@@ -247,7 +247,6 @@ public :
    TBranch        *b_ZZPt;   //!
    TBranch        *b_ZZEta;   //!
    TBranch        *b_ZZPhi;   //!
-   TBranch        *b_ZZFisher;   //!
    TBranch        *b_pg1g4_mela; //!
    TBranch        *b_pg1g4_VAJHU; //!
    TBranch        *b_pg1g4_pi2_VAJHU; //!
@@ -403,6 +402,7 @@ public :
    TBranch        *b_DiJetMassPlus;   //!
    TBranch        *b_DiJetMassMinus;   //!
    TBranch        *b_DiJetDEta;   //!
+   TBranch        *b_DiJetFisher;   //!
    TBranch        *b_GenHMass;   //!
    TBranch        *b_GenHPt;   //!
    TBranch        *b_GenZ1Mass;   //!
@@ -500,7 +500,6 @@ void HZZ4lBase::Init(TTree *tree)
    ZZPt = 0;
    ZZEta = 0;
    ZZPhi = 0;
-   ZZFisher = 0;
    pg1g4_mela=0; 
    pg1g4_VAJHU=0; 
    pg1g4_pi2_VAJHU=0; 
@@ -680,7 +679,6 @@ void HZZ4lBase::Init(TTree *tree)
    fChain->SetBranchAddress("ZZPt", &ZZPt, &b_ZZPt);
    fChain->SetBranchAddress("ZZEta", &ZZEta, &b_ZZEta);
    fChain->SetBranchAddress("ZZPhi", &ZZPhi, &b_ZZPhi);
-   fChain->SetBranchAddress("ZZFisher", &ZZFisher, &b_ZZFisher);
    fChain->SetBranchAddress("pg1g4_mela",&pg1g4_mela,&b_pg1g4_mela); 
    fChain->SetBranchAddress("pg1g4_VAJHU",&pg1g4_VAJHU,&b_pg1g4_VAJHU);
    fChain->SetBranchAddress("pg1g4_pi2_VAJHU",&pg1g4_pi2_VAJHU,&b_pg1g4_pi2_VAJHU); 
@@ -836,6 +834,7 @@ void HZZ4lBase::Init(TTree *tree)
    fChain->SetBranchAddress("DiJetMassPlus", &DiJetMassPlus, &b_DiJetMassPlus);
    fChain->SetBranchAddress("DiJetMassMinus", &DiJetMassMinus, &b_DiJetMassMinus);
    fChain->SetBranchAddress("DiJetDEta", &DiJetDEta, &b_DiJetDEta);
+   fChain->SetBranchAddress("DiJetFisher", &DiJetFisher, &b_DiJetFisher);
    fChain->SetBranchAddress("GenHMass", &GenHMass, &b_GenHMass);
    fChain->SetBranchAddress("GenHPt", &GenHPt, &b_GenHPt);
    fChain->SetBranchAddress("GenZ1Mass", &GenZ1Mass, &b_GenZ1Mass);

@@ -192,7 +192,6 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
   //  Float_t myZZRapidity    = 0.;
   Float_t myZZMassErr     = 0.;
   Float_t myZZMassErrCorr = 0.;
-  Float_t myZZFisher      = 0.;
 
   //Z variables
   Float_t myZ1Mass        = 0.;
@@ -318,6 +317,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
   Float_t myDiJetMassPlus  = -99.;
   Float_t myDiJetMassMinus = -99.;
   Float_t myDiJetDEta      = -99.;
+  Float_t myDiJetFisher    = -99.;
   Short_t myNJets30        = -99.; 
   vector<double> myJetPt;
   vector<double> myJetSigma;
@@ -355,7 +355,6 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
   SelTree.Branch("ZZPt",&myZZPt,"ZZPt/F");
   SelTree.Branch("ZZEta",&myZZEta,"ZZEta/F");
   SelTree.Branch("ZZPhi",&myZZPhi,"ZZPhi/F");
-  SelTree.Branch("ZZFisher",&myZZFisher,"ZZFisher/F");
   SelTree.Branch("p0plus_VAJHU",&myp0plus_VAJHU,"p0plus_VAJHU/F");
   SelTree.Branch("p0hplus_VAJHU",&myp0hplus_VAJHU,"p0hplus_VAJHU/F");
   SelTree.Branch("p0minus_VAJHU",&myp0minus_VAJHU,"p0minus_VAJHU/F");
@@ -474,6 +473,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
     SelTree.Branch("DiJetMassPlus",&myDiJetMassPlus,"DiJetMassPlus/F");
     SelTree.Branch("DiJetMassMinus",&myDiJetMassMinus,"DiJetMassMinus/F");
     SelTree.Branch("DiJetDEta",&myDiJetDEta,"DiJetDEta/F");
+    SelTree.Branch("DiJetFisher",&myDiJetFisher,"DiJetFisher/F");
     SelTree.Branch("NJets30",&myNJets30,"NJets30/S");
     SelTree.Branch("JetPt",&myJetPt);
     SelTree.Branch("JetSigma",&myJetSigma);
@@ -590,34 +590,35 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
       if(GenLep4Pt > muptmax) muptmax = GenLep4Pt;
       hLepGenPt.Fill(muptmax);
     }
-      // Jet information: at present the list of jets is relative to the best candidate only
-      // It is empty in the CR, where only "ZZFisher" is saved!
-      // Note that the list includes jets below 30, for JES syst studies
-      if(saveJets){
-	//Clear the Jet collection to be saved
-	myJetPt.clear();
-	myJetSigma.clear();
-	myJetEta.clear();
-	myJetPhi.clear();
-	myJetMass.clear();
-	myJetBTag.clear();
-	int countJet = 0;
-	for(int i=0;i<JetPt->size();i++){
-	  myJetPt.push_back(JetPt->at(i));
-	  myJetSigma.push_back(JetSigma->at(i));
-	  myJetEta.push_back(JetEta->at(i));
-	  myJetPhi.push_back(JetPhi->at(i));
-	  myJetMass.push_back(JetMass->at(i));
-	  myJetBTag.push_back(JetBTag->at(i));
-	  if (JetPt->at(i)>30.) countJet++; // We want Fisher only for 2 jets > 30; jets below 30 are kept for JES syst studies
-	}
-	myDiJetMass = DiJetMass; //if <2 jets, DiJetMass=DiJetDEta=-99;
-	myDiJetMassPlus = DiJetMassPlus;
-	myDiJetMassMinus = DiJetMassMinus;
-	myDiJetDEta = DiJetDEta;
-	myNJets30 = countJet;
-	myPFMET = PFMET;
+
+    // Jet information:
+    // Note that the list includes jets below 30, for JES syst studies. The list is empty in the CR.
+    if(saveJets){
+      //Clear the Jet collection to be saved
+      myJetPt.clear();
+      myJetSigma.clear();
+      myJetEta.clear();
+      myJetPhi.clear();
+      myJetMass.clear();
+      myJetBTag.clear();
+      int countJet = 0;
+      for(int i=0;i<JetPt->size();i++){
+	myJetPt.push_back(JetPt->at(i));
+	myJetSigma.push_back(JetSigma->at(i));
+	myJetEta.push_back(JetEta->at(i));
+	myJetPhi.push_back(JetPhi->at(i));
+	myJetMass.push_back(JetMass->at(i));
+	myJetBTag.push_back(JetBTag->at(i));
+	if (JetPt->at(i)>30.) countJet++; // We want Fisher only for 2 jets > 30; jets below 30 are kept for JES syst studies
       }
+      myDiJetMass = DiJetMass; //if <2 jets, DiJetMass=DiJetDEta=-99;
+      myDiJetMassPlus = DiJetMassPlus;
+      myDiJetMassMinus = DiJetMassMinus;
+      myDiJetDEta = DiJetDEta;
+      myDiJetFisher = DiJetFisher;
+      myNJets30 = countJet;
+      myPFMET = PFMET;
+    }
 
     //Loop over all the H-> ZZ candidates in the event
     for(int nH=0; nH<NHiggs;nH++){
@@ -682,7 +683,6 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
       myZZEta = ZZEta->at(nH);
       myZZPhi = ZZPhi->at(nH);
       //      myZZRapidity = momH.Rapidity();
-      myZZFisher = ZZFisher->at(nH);
       myp0plus_VAJHU = p0plus_VAJHU->at(nH);
       myp0hplus_VAJHU = p0hplus_VAJHU->at(nH);
       myp0minus_VAJHU = p0minus_VAJHU->at(nH);
@@ -784,7 +784,7 @@ void HZZ4l::Loop(Int_t channelType, const TString outputName)
 
       if(isCR){
 	// for CR, the jet list is empty; we "fake" the NJets30 variable for consistency
-	if (myZZFisher>=0) myNJets30=2;
+	if (myDiJetFisher>=0) myNJets30=2;
 	else myNJets30=0;
       }
       myLep1Pt  = Lep1Pt->at(nH);
