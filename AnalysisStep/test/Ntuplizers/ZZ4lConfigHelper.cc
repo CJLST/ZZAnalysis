@@ -121,8 +121,8 @@ ZZ4lConfigHelper::passTrigger(const edm::Event & event, short& trigworld){
     }
   }
 
-  // Use all triggers together for the CR
-  if (theChannel==ZLL || theChannel==ZL) {
+  // Check all triggers together for the CR, or if "ZZ" is specified
+  if (theChannel==ZLL || theChannel==ZL || theChannel==ZZ) {
     if ((PD=="" && (passDiEle || passDiMu || passMuEle || passTriEle)) ||
 	(PD=="DoubleEle" && (passDiEle || passTriEle)) ||
 	(PD=="DoubleMu" && passDiMu && !passDiEle && !passTriEle) ||
@@ -137,6 +137,7 @@ ZZ4lConfigHelper::passTrigger(const edm::Event & event, short& trigworld){
   if (passMuEle) set_bit_16(trigworld,3);
   if (passTriEle) set_bit_16(trigworld,4);
   
+
   return evtPassTrigger;
 }
 

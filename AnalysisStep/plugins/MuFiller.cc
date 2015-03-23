@@ -91,6 +91,7 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     float PFChargedHadIso   = l.chargedHadronIso();
     float PFNeutralHadIso   = l.neutralHadronIso();
     float PFPhotonIso       = l.photonIso();
+    float PFPUChargedHadIso = l.puChargedHadronIso();
     
     float combRelIsoPF = LeptonIsoHelper::combRelIsoPF(sampleType, setup, rho, l);
 
@@ -122,6 +123,7 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     l.addUserFloat("PFChargedHadIso",PFChargedHadIso);
     l.addUserFloat("PFNeutralHadIso",PFNeutralHadIso);
     l.addUserFloat("PFPhotonIso",PFPhotonIso);
+    l.addUserFloat("PFPUChargedHadIso",PFPUChargedHadIso);
     l.addUserFloat("combRelIsoPF",combRelIsoPF);
     l.addUserFloat("rho",rho);
 

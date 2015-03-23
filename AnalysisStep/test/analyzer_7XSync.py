@@ -83,13 +83,17 @@ process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
 #Dump reconstructed variables
 #process.dump = cms.Path(process.dumpUserData)
 
+
 #process.Plots4mu.dumpMC   = cms.untracked.bool(True)
 #process.Plots4e.dumpMC    = cms.untracked.bool(True)
 #process.Plots2e2mu.dumpMC = cms.untracked.bool(True)
 
 
+process.PlotsZZ.dumpForSync = True;
+
 
 # replace the paths in analyzer.py
 #process.p = cms.EndPath( process.Plots4mu + process.Plots4e + process.Plots2e2mu )
+process.p = cms.EndPath( process.PlotsZZ)
 process.trees = cms.EndPath(process.ZZ4muTree * process.ZZ4eTree * process.ZZ2e2muTree )
 

@@ -1036,7 +1036,8 @@ if (UPDATE_JETS and LEPTON_SETUP==2012) :
 ### Paths
 ### ----------------------------------------------------------------------
 
-process.PVfilter =  cms.Path(process.goodPrimaryVertices)
+process.preSkimCounter = cms.EDProducer("EventCountProducer")
+process.PVfilter =  cms.Path(process.preSkimCounter+process.goodPrimaryVertices)
 
 
 # Prepare lepton collections

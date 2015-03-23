@@ -46,6 +46,7 @@
 #include "knownCandidates.h"
 
 #include <iostream>
+#include <fstream>
 #include <iterator>
 #include <string>
 
@@ -57,14 +58,13 @@
 
 #define HCMSSW
 #include "ZZAnalysis/AnalysisStep/interface/Histograms.h"
+#include <ZZAnalysis/AnalysisStep/interface/bitops.h>
 #include <algorithm>
 
 using namespace std;
 using namespace edm;
 using namespace reco;
-
-
-
+using namespace userdatahelpers;
 
 float sqr(float x) {return x*x;}
 
@@ -102,6 +102,11 @@ private:
   double Nevt_PAT;
   double Nevt_Skim;
   double Nevt_TriggerBit;
+  double Nevt_passDiMu;
+  double Nevt_passDiEle;
+  double Nevt_passMuEle;
+  double Nevt_passTriEle;
+
   double Nevt_4l;         // Step 3 (4l, AFAS)
   double Nevt_Z1;
   double Nevt_Z1Mass;
@@ -155,6 +160,9 @@ private:
   TH1F* hNvtxWeight;
 
   string sampleName;
+  bool dumpForSync;
+  ofstream leptonSyncFile;
+
 };
 
 // Constructor
@@ -172,6 +180,10 @@ ZZ4lAnalyzer::ZZ4lAnalyzer(const ParameterSet& pset) :
   Nevt_PAT(0),
   Nevt_Skim(0),
   Nevt_TriggerBit(0),
+  Nevt_passDiMu(0),
+  Nevt_passDiEle(0),
+  Nevt_passMuEle(0),
+  Nevt_passTriEle(0),
   Nevt_4l(0),
   Nevt_Z1(0),
   Nevt_Z1Mass(0),
@@ -196,7 +208,8 @@ ZZ4lAnalyzer::ZZ4lAnalyzer(const ParameterSet& pset) :
   Nevt_With2FSR(0),
   Nevt_WithFSRImprove(0),
   weight(1.),
-  sampleName(pset.getParameter<string>("sampleName"))
+  sampleName(pset.getParameter<string>("sampleName")),
+  dumpForSync(pset.getUntrackedParameter<bool>("dumpForSync",false))
 {
 
   isMC = myHelper.isMC();
@@ -249,6 +262,12 @@ void ZZ4lAnalyzer::beginJob(){
 //   hCandZZCandM70_w = new HCand("hCandZZCandM70_w");
 //   hCandZZCandM100_w = new HCand("hCandZZCandM100_w");
 //   hCandZZCand_w = new HCand("hCandZZCand_w");
+
+
+  if (dumpForSync) {
+    leptonSyncFile.open("leptons.txt");
+    leptonSyncFile.setf(ios::fixed);
+  }
    
 }
 
@@ -260,20 +279,17 @@ void ZZ4lAnalyzer::endLuminosityBlock(const edm::LuminosityBlock & iLumi, const 
   edm::Handle<edm::MergeableCounter> preSkimCounter;
   if (iLumi.getByLabel("preSkimCounter", preSkimCounter)) { // Counter before skim. Does not exist for non-skimmed samples.
     Nevt_preskim = preSkimCounter->value;
-  }  
-  
-  edm::Handle<edm::MergeableCounter> prePathCounter;
-  iLumi.getByLabel("prePathCounter", prePathCounter);       // Counter of input events in the input pattuple
+  }
 
   // Nevt_gen: this is the number before any skim
   if (Nevt_preskim>=0.) {
-    Nevt_Gen = Nevt_Gen + Nevt_preskim; 
+    Nevt_Gen += Nevt_preskim; 
   } else {
-    Nevt_Gen = Nevt_Gen + prePathCounter->value;    
+    //    Nevt_Gen = Nevt_Gen + prePathCounter->value;    
   }
 
   // Nevt_PAT: number of events in the pattuple
-  Nevt_PAT = Nevt_PAT + prePathCounter->value;
+  //  Nevt_PAT = Nevt_PAT + prePathCounter->value;
 
 
   // cout << "Nevt_Gen_lumi: " << Nevt_Gen << endl;
@@ -301,10 +317,11 @@ void ZZ4lAnalyzer::endJob(){
   }
   cout << sFS+ "Nevt_PAT:         " << Nevt_PAT << endl;
   cout << sFS+ "Nevt_Skim:        " << Nevt_Skim << endl;
-  cout << sFS+ "Nevt_TriggerBit:  " << Nevt_TriggerBit << endl;
+  cout << sFS+ "Nevt_TriggerBit:  " << Nevt_TriggerBit 
+       << " ( " << Nevt_passDiEle << ":" << Nevt_passDiMu  << ":" << Nevt_passMuEle << ":" << Nevt_passTriEle << " )" << endl;
 
 
-  { // 2012 selection
+  if (false) { // 2012 selection
     cout << sFS+ "Nevt_Z1:               " << Nevt_Z1 << endl;  
     cout << sFS+ "Nevt_Z1Mass:           " << Nevt_Z1Mass << endl;  
     cout << sFS+ "Nevt_Z1Plus1Lep:       " << Nevt_Z1Plus1Lep << endl;  
@@ -313,10 +330,10 @@ void ZZ4lAnalyzer::endJob(){
     cout << sFS+ "Nevt_ZZCandpT:         " << Nevt_ZZCandpT << endl;
     cout << sFS+ "Nevt_ZZCandMAllComb:   " << Nevt_ZZCandMAllComb << endl;
     cout << sFS+ "Nevt_ZZCandM70:        " << Nevt_ZZCandM70 << endl;
-	cout << sFS+ "Nevt_ZZCandM100:       " << Nevt_ZZCandM100 << endl;
-	cout << sFS+ "Nevt_ZZCandM100_1Jet:  " << Nevt_ZZCandM100_1Jet << endl;
-	cout << sFS+ "Nevt_ZZCandM100_2Jets: " << Nevt_ZZCandM100_2Jets << endl;
-	cout << sFS+ "Nevt_ZZCandM100_VBF:   " << Nevt_ZZCandM100_VBF << endl;
+    cout << sFS+ "Nevt_ZZCandM100:       " << Nevt_ZZCandM100 << endl;
+    cout << sFS+ "Nevt_ZZCandM100_1Jet:  " << Nevt_ZZCandM100_1Jet << endl;
+    cout << sFS+ "Nevt_ZZCandM100_2Jets: " << Nevt_ZZCandM100_2Jets << endl;
+    cout << sFS+ "Nevt_ZZCandM100_VBF:   " << Nevt_ZZCandM100_VBF << endl;
     cout << sFS+ "Nevt_MELA:             " << Nevt_MELA    << endl;
     cout << sFS+ "Nevt_pseudoMELA:       " << Nevt_psMELA    << endl;
     cout << sFS+ "Nevt_graviMELA:        " << Nevt_grMELA    << endl;
@@ -366,6 +383,11 @@ void ZZ4lAnalyzer::endJob(){
     nEventComplete->SetBinContent(0,1.);
   }
 
+
+  if (dumpForSync) {  
+    leptonSyncFile.close();
+  }
+
 }
 
 
@@ -394,28 +416,10 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
 
     if (genFinalState == EEEE) {
       ++gen_ZZ4e;
-//       if (gen_ZZ4lInEtaAcceptance) ++gen_ZZ4e_EtaAcceptance;
-//       if (gen_ZZ4lInEtaPtAcceptance) ++gen_ZZ4e_LeptonAcceptance;
-//       if (gen_ZZInAcceptance) {
-// 	++gen_ZZ4e_MassAcceptance;
-// 	if (gen_ZZ4lInEtaPtAcceptance) ++gen_ZZ4e_MassPtAcceptance;
-//      }
     } else if (genFinalState == MMMM) {
       ++gen_ZZ4mu;
-//       if (gen_ZZ4lInEtaAcceptance) ++gen_ZZ4mu_EtaAcceptance;
-//       if (gen_ZZ4lInEtaPtAcceptance) ++gen_ZZ4mu_LeptonAcceptance;
-//       if (gen_ZZInAcceptance) {
-// 	++gen_ZZ4mu_MassAcceptance;
-// 	if (gen_ZZ4lInEtaPtAcceptance) ++gen_ZZ4mu_MassPtAcceptance;
-//       }
     } else if (genFinalState == EEMM) {
       ++gen_ZZ2mu2e;
-//       if (gen_ZZ4lInEtaAcceptance) ++gen_ZZ2mu2e_EtaAcceptance;
-//       if (gen_ZZ4lInEtaPtAcceptance) ++gen_ZZ2mu2e_LeptonAcceptance;
-//       if (gen_ZZInAcceptance) {
-// 	++gen_ZZ2mu2e_MassAcceptance;
-// 	if (gen_ZZ4lInEtaPtAcceptance) ++gen_ZZ2mu2e_MassPtAcceptance;
-//       }
     } else if (genFinalState == LLTT){
       ++gen_ZZtau;
     } else if (genFinalState == BUGGY){ // handle H->ddbar gen bug!!!
@@ -479,9 +483,9 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
  
 
   // Z+l (for step plots)
-  Handle<View<reco::CompositeCandidate> > Zl;
-  event.getByLabel("ZlCand", Zl);
-  const View<reco::CompositeCandidate>* trileps = Zl.product();
+//   Handle<View<reco::CompositeCandidate> > Zl;
+//   event.getByLabel("ZlCand", Zl);
+//   const View<reco::CompositeCandidrate>* trileps = Zl.product();
   
   Handle<double> rhoHandle;
   event.getByLabel(InputTag("kt6PFJetsForIso","rho"), rhoHandle);
@@ -515,8 +519,13 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
   bool evtPassSkim = myHelper.passSkim(event);
   
   // Trigger requests
-  bool evtPassTrigger = myHelper.passTrigger(event);
-  
+  short trigworld = 0;
+  bool evtPassTrigger = myHelper.passTrigger(event, trigworld);  
+  if(test_bit_16(trigworld,1)) ++Nevt_passDiMu;
+  if(test_bit_16(trigworld,2)) ++Nevt_passDiEle;
+  if(test_bit_16(trigworld,3)) ++Nevt_passMuEle;
+  if(test_bit_16(trigworld,4)) ++Nevt_passTriEle;
+
 
   // "Z1" and "Z1+mass" steps
   bool evtPassZ1 = false;
@@ -526,11 +535,37 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
   // print a status 
   if (!isMC&&theChannel==EEMM) cout << irun << ":" << ils << ":" << ievt << " " << evtPassSkim << " " << evtPassTrigger << endl;
 
+
+  if (dumpForSync && evtPassTrigger) {
+    Handle<View<reco::Candidate> > softleptoncoll;
+    event.getByLabel("softLeptons", softleptoncoll);
+
+    // {run}:{lumi}:{event}:{pdgId:d}:{pT:.2f}:{eta:.2f}:{phi:.2f}{SIP:.2f}:{PFChargedHadIso:.2f}:{PFNeutralHadIso:.2f}:{PFPhotonIso:.2f}:{rho:.2f}:{combRelIsoPF:.3f}:{eleBDT:.3f} 
+
+    for (View<reco::Candidate>::const_iterator lep = softleptoncoll->begin(); lep != softleptoncoll->end(); ++ lep) {	
+      if((bool)getUserFloat(&*lep,"ID")){ // Tight leptons (no SIP or ISO)
+	  leptonSyncFile << irun << ":" << ils << ":" << ievt << ":" << lep->pdgId() << ":" 
+			 << setprecision(2) << lep->pt() << ":" << lep->eta() << ":" << lep->phi() << ":" << getUserFloat(&*lep,"SIP") << ":" 
+			 << getUserFloat(&*lep,"PFChargedHadIso") << ":" << getUserFloat(&*lep,"PFNeutralHadIso") << ":" 
+			 << getUserFloat(&*lep,"PFPhotonIso") // << ":" << getUserFloat(&*lep,"PFPUChargedHadIso") << ":"
+			 << ":" << getUserFloat(&*lep,"rho") << ":" 
+			 << setprecision(3) << getUserFloat(&*lep,"combRelIsoPF") << ":" << getUserFloat(&*lep,"BDT") 
+			 << endl;
+      }
+    }
+  }
+
+
   if(!evtPassSkim) return;
   Nevt_Skim+= weight;
   if(!evtPassTrigger) return;
   Nevt_TriggerBit+= weight;
-  
+
+
+  return;
+  // Code beyond this point is to be revieved.
+  // ----------------------------------------------------------------------
+
   for( View<pat::CompositeCandidate>::const_iterator cand = Z->begin(); cand != Z->end(); ++cand) {
     
     
@@ -573,13 +608,13 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
   }
   
   // Trilepton step. We just ask a third good lepton on top of evtPassZ1
-  bool evtPassTriGoodLep = false;
-  for(View<reco::CompositeCandidate>::const_iterator trilep = trileps->begin(); trilep != trileps->end(); ++trilep) {
-    if (userdatahelpers::getUserFloat(trilep->daughter(0),"GoodLeptons") && 
-	userdatahelpers::getUserFloat(trilep->daughter(1),"isGood") && userdatahelpers::getUserFloat(trilep->daughter(1),"combRelIsoPF")<0.4) { //FIXME this is ISO without FSR!!!!
-      evtPassTriGoodLep=true;
-    }
-  }  
+   bool evtPassTriGoodLep = false;
+//   for(View<reco::CompositeCandidate>::const_iterator trilep = trileps->begin(); trilep != trileps->end(); ++trilep) {
+//     if (userdatahelpers::getUserFloat(trilep->daughter(0),"GoodLeptons") && 
+// 	userdatahelpers::getUserFloat(trilep->daughter(1),"isGood") && userdatahelpers::getUserFloat(trilep->daughter(1),"combRelIsoPF")<0.4) { //FIXME this is ISO without FSR!!!!
+//       evtPassTriGoodLep=true;
+//     }
+//   }  
 
   //Jet information
   std::vector<const pat::Jet*> cleanedJets;
@@ -836,23 +871,6 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
       //      if (candPass&&candIsBest) sel = 100;
       if (candPass&&candIsBest&&passMz_zz) sel=120;
     }
-
-//     if(evtPassM70 && candIsBest) {
-//       // Plot at step 7 (for single resonant)
-//       hCandZZCandM70->Fill(ZZMass, Z1Mass, Z2Mass, Z1OtherCombMass, Z2OtherCombMass, ptS, isoPFS, SIPS, 1.);      
-//       hCandZZCandM70_w->Fill(ZZMass, Z1Mass, Z2Mass, Z1OtherCombMass, Z2OtherCombMass, ptS, isoPFS, SIPS, PUweight);
-//       if (Z2Mass>12) { 
-// 	//Final sel plot, but with mass>70 instead of 100
-// 	hCandZZCandM100->Fill(ZZMass, Z1Mass, Z2Mass, Z1OtherCombMass, Z2OtherCombMass, ptS, isoPFS, SIPS, 1.);
-// 	hCandZZCandM100_w->Fill(ZZMass, Z1Mass, Z2Mass, Z1OtherCombMass, Z2OtherCombMass, ptS, isoPFS, SIPS, PUweight);
-//       }
-//     }
-//     if (candPass&&candIsBest) { //Full selection
-//       hCandZZCand->Fill(ZZMass, Z1Mass, Z2Mass, Z1OtherCombMass, Z2OtherCombMass, ptS, isoPFS, SIPS, 1.);
-//       hCandZZCand_w->Fill(ZZMass, Z1Mass, Z2Mass, Z1OtherCombMass, Z2OtherCombMass, ptS, isoPFS, SIPS, PUweight); 
-//    }
-    
-
 
     float ZZMassPreFsr = (Z1Ln->p4()+Z1Lp->p4()+Z2Ln->p4()+Z2Lp->p4()).mass();
     if(sel>=100 && evtPassMELA)  { // Add Mela cut to compare with sync wiki

@@ -87,6 +87,7 @@ process.TFileService=cms.Service('TFileService',
 #                            PD = cms.string(PD),
 #                            MCFilterPath = cms.string(MCFILTER),
 #                            sampleName = cms.string(SAMPLENAME),
+#                            dumpForSync = cms.untracked.bool(False),
 #                            )
 
 # process.Plots4mu = PlotSetup.clone()
@@ -101,16 +102,20 @@ process.TFileService=cms.Service('TFileService',
 # process.Plots2e2mu.channel         = 'EEMM'
 # process.Plots2e2mu.candCollection  = 'EEMMCand'
 
-# # All events together
-# process.PlotsZZ    = cms.EDAnalyzer("ZZ4lAnalyzer",
-#                                     channel = cms.untracked.string('ZZ'),
-#                                     candCollection = cms.untracked.string('ZZCand'),
-#                                     isMC = cms.untracked.bool(IsMC),
-#                                     setup = cms.int32(LEPTON_SETUP),
-#                                     skimPaths = cms.vstring(SkimPaths),
-#                                     PD = cms.string(""),
-#                                     MCFilterPath = cms.string(""),
-#                                     )
+
+# All events together
+process.PlotsZZ    = cms.EDAnalyzer("ZZ4lAnalyzer",
+                                    channel = cms.untracked.string('ZZ'),
+                                    candCollection = cms.untracked.string('ZZCand'),
+                                    isMC = cms.untracked.bool(IsMC),
+                                    sampleType = cms.int32(SAMPLE_TYPE),                                    
+                                    setup = cms.int32(LEPTON_SETUP),
+                                    skimPaths = cms.vstring(SkimPaths),
+                                    PD = cms.string(""),
+                                    MCFilterPath = cms.string(""),
+                                    sampleName = cms.string(SAMPLENAME),                                    
+                                    dumpForSync = cms.untracked.bool(False),
+                                    )
 
 ### Control Region Plots
 
