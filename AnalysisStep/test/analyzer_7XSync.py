@@ -62,17 +62,13 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 # Debug
 process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
      dumpTrigger = cms.untracked.bool(True),
-     muonSrc = cms.InputTag("slimmedMuons"),
-     electronSrc = cms.InputTag("slimmedElectrons"),
-#     muonSrc = cms.InputTag("appendPhotons:muons"), 
-#     electronSrc = cms.InputTag("appendPhotons:electrons"),
+#     muonSrc = cms.InputTag("slimmedMuons"),
+#     electronSrc = cms.InputTag("slimmedElectrons"),
+     muonSrc = cms.InputTag("appendPhotons:muons"), 
+     electronSrc = cms.InputTag("appendPhotons:electrons"),
      candidateSrcs = cms.PSet(
-        Zmm   = cms.InputTag("MMCand"),
-        Zee   = cms.InputTag("EECand"),
-#        Z     = cms.InputTag("ZCand"),                                  
-        MMMM  = cms.InputTag("MMMMCand"),
-        EEEE  = cms.InputTag("EEEECand"),
-        EEMM  = cms.InputTag("EEMMCand"),
+        Z     = cms.InputTag("ZCand"),                                  
+        ZZ  = cms.InputTag("ZZCand"),
      )
 )
 

@@ -44,14 +44,14 @@ float userdatahelpers::getUserFloat(const reco::Candidate* c, const char* name){
 
 const PhotonPtrVector*  
 userdatahelpers::getUserPhotons(const reco::Candidate* c){
-  const reco::Candidate* d = c->masterClone().get();
+  if(c->hasMasterClone())  c = c->masterClone().get();
   if (abs(c->pdgId())==13) {
-    const pat::Muon* mu = static_cast<const pat::Muon*>(d);
+    const pat::Muon* mu = static_cast<const pat::Muon*>(c);
     if (mu->hasUserData("FSRCandidates")){
       return mu->userData<PhotonPtrVector>("FSRCandidates");
     } else return 0;
   } else if (abs(c->pdgId())==11) {
-    const pat::Electron* ele = static_cast<const pat::Electron*>(d);
+    const pat::Electron* ele = static_cast<const pat::Electron*>(c);
     if (ele->hasUserData("FSRCandidates")){
       return ele->userData<PhotonPtrVector>("FSRCandidates");
     } else return 0;

@@ -66,7 +66,14 @@ using namespace edm;
 using namespace reco;
 using namespace userdatahelpers;
 
-float sqr(float x) {return x*x;}
+namespace {  
+//float sqr(float x) {return x*x;}
+
+  bool lesspT(PhotonPtr a, PhotonPtr b) {
+    return (a->pt()<b->pt());
+  }
+}
+
 
 class ZZ4lAnalyzer: public edm::EDAnalyzer {
 public:
@@ -544,13 +551,24 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
 
     for (View<reco::Candidate>::const_iterator lep = softleptoncoll->begin(); lep != softleptoncoll->end(); ++ lep) {	
       if((bool)getUserFloat(&*lep,"ID")){ // Tight leptons (no SIP or ISO)
-	  leptonSyncFile << irun << ":" << ils << ":" << ievt << ":" << lep->pdgId() << ":" 
-			 << setprecision(2) << lep->pt() << ":" << lep->eta() << ":" << lep->phi() << ":" << getUserFloat(&*lep,"SIP") << ":" 
-			 << getUserFloat(&*lep,"PFChargedHadIso") << ":" << getUserFloat(&*lep,"PFNeutralHadIso") << ":" 
-			 << getUserFloat(&*lep,"PFPhotonIso") // << ":" << getUserFloat(&*lep,"PFPUChargedHadIso") << ":"
-			 << ":" << getUserFloat(&*lep,"rho") << ":" 
-			 << setprecision(3) << getUserFloat(&*lep,"combRelIsoPF") << ":" << getUserFloat(&*lep,"BDT") 
-			 << endl;
+	bool id = lep->pdgId();
+	leptonSyncFile << irun << ":" << ils << ":" << ievt << ":" << id << ":" 
+		       << setprecision(2) << lep->pt() << ":" << lep->eta() << ":" << lep->phi() << ":" << getUserFloat(&*lep,"SIP") << ":" 
+		       << getUserFloat(&*lep,"PFChargedHadIso") << ":" << getUserFloat(&*lep,"PFNeutralHadIso") << ":" 
+		       << getUserFloat(&*lep,"PFPhotonIso") << ":"
+		       << (abs(id)==11?getUserFloat(&*lep,"rho"):getUserFloat(&*lep,"PFPUChargedHadIso")) << ":" 
+		       << setprecision(3) << getUserFloat(&*lep,"combRelIsoPF") << ":" << getUserFloat(&*lep,"BDT");
+	
+	const PhotonPtrVector* gammas = getUserPhotons(&*lep);
+	if (gammas) {
+	  const pat::PFParticle* gamma = (std::max_element(gammas->begin(), gammas->end(), lesspT))->get();
+	  double dR = ROOT::Math::VectorUtil::DeltaR(gamma->momentum(),lep->momentum());
+	  float gRelIso = gamma->userFloat("fsrPhotonPFIsoChHadPUNoPU03pt02")+ gamma->userFloat("fsrPhotonPFIsoNHadPhoton03");
+	  leptonSyncFile << ":" << setprecision(2) << gamma->pt() << ":" << dR << ":" << gRelIso; 
+// 	} else {
+// 	  leptonSyncFile << "0.00:0.00:0.00";
+	}
+	leptonSyncFile << endl;
       }
     }
   }
