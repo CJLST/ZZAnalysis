@@ -542,8 +542,13 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
   // print a status 
   if (!isMC&&theChannel==EEMM) cout << irun << ":" << ils << ":" << ievt << " " << evtPassSkim << " " << evtPassTrigger << endl;
 
+  if(!evtPassSkim) return;
+  Nevt_Skim+= weight;
+  if(!evtPassTrigger) return;
+  Nevt_TriggerBit+= weight;
 
-  if (dumpForSync && evtPassTrigger) {
+  // Fill Lepton sync dump
+  if (dumpForSync) {
     Handle<View<reco::Candidate> > softleptoncoll;
     event.getByLabel("softLeptons", softleptoncoll);
 
@@ -572,13 +577,6 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
       }
     }
   }
-
-
-  if(!evtPassSkim) return;
-  Nevt_Skim+= weight;
-  if(!evtPassTrigger) return;
-  Nevt_TriggerBit+= weight;
-
 
   return;
   // Code beyond this point is to be revieved.
