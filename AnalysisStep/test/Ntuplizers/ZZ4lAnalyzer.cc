@@ -551,7 +551,7 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
 
     for (View<reco::Candidate>::const_iterator lep = softleptoncoll->begin(); lep != softleptoncoll->end(); ++ lep) {	
       if((bool)getUserFloat(&*lep,"ID")){ // Tight leptons (no SIP or ISO)
-	bool id = lep->pdgId();
+	int id = lep->pdgId();
 	leptonSyncFile << irun << ":" << ils << ":" << ievt << ":" << id << ":" 
 		       << setprecision(2) << lep->pt() << ":" << lep->eta() << ":" << lep->phi() << ":" << getUserFloat(&*lep,"SIP") << ":" 
 		       << getUserFloat(&*lep,"PFChargedHadIso") << ":" << getUserFloat(&*lep,"PFNeutralHadIso") << ":" 
