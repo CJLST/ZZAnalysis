@@ -192,7 +192,7 @@ process.triggerMuEle  = cms.Path(process.hltFilterMuEle)
 
 process.heavyflavorfilter = cms.EDFilter('HeavyFlavorFilter2',
 #                                 src= cms.InputTag("genParticles"), # genParticles available only in PAT
-                                 src= cms.InputTag("genParticlesPruned"),
+                                 src= cms.InputTag("prunedGenParticles"),
                                  status2 = cms.bool(True),
                                  status3 = cms.bool(False),
                                  hDaughterVeto = cms.bool(False),
@@ -203,7 +203,7 @@ process.heavyflavorfilter = cms.EDFilter('HeavyFlavorFilter2',
 
 process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 process.drawTree = cms.EDAnalyzer("ParticleTreeDrawer",
-                                   src = cms.InputTag("genParticlesPruned"),
+                                   src = cms.InputTag("prunedGenParticles"),
                                    printP4 = cms.untracked.bool(False),
                                    printPtEtaPhi = cms.untracked.bool(False),
                                    printVertex = cms.untracked.bool(False),
@@ -214,7 +214,7 @@ process.drawTree = cms.EDAnalyzer("ParticleTreeDrawer",
 process.printTree = cms.EDAnalyzer("ParticleListDrawer",
                                    maxEventsToPrint = cms.untracked.int32(-1),
                                    printVertex = cms.untracked.bool(False),
-                                   src = cms.InputTag("genParticlesPruned")
+                                   src = cms.InputTag("prunedGenParticles")
                                    )
 
 
@@ -305,7 +305,7 @@ process.bareSoftMuons = cms.EDFilter("PATMuonRefSelector",
 # MC matching. As the genParticles are no more available in cmg, we re-match with genParticlesPruned.
 process.muonMatch = cms.EDProducer("MCMatcher", # cut on deltaR, deltaPt/Pt; pick best by deltaR
                                    src     = cms.InputTag("softMuons"), # RECO objects to match  
-                                   matched = cms.InputTag("genParticlesPruned"),   # mc-truth particle collection
+                                   matched = cms.InputTag("prunedGenParticles"),   # mc-truth particle collection
                                    mcPdgId     = cms.vint32(13), # one or more PDG ID (13 = muon); absolute values (see below)
                                    checkCharge = cms.bool(True), # True = require RECO and MC objects to have the same charge
                                    mcStatus = cms.vint32(1),     # PYTHIA status code (1 = stable, 2 = shower, 3 = hard scattering)
@@ -420,7 +420,7 @@ elif ELEREGRESSION == "Paper" and ELECORRTYPE == "PaperNoComb" : # NEW ECAL regr
 
 process.electronMatch = cms.EDProducer("MCMatcher",       # cut on deltaR, deltaPt/Pt; pick best by deltaR
                                        src         = cms.InputTag("bareSoftElectrons"), # RECO objects to match
-                                       matched     = cms.InputTag("genParticlesPruned"), # mc-truth particle collection
+                                       matched     = cms.InputTag("prunedGenParticles"), # mc-truth particle collection
                                        mcPdgId     = cms.vint32(11),               # one or more PDG ID (11 = electron); absolute values (see below)
                                        checkCharge = cms.bool(True),               # True = require RECO and MC objects to have the same charge
                                        mcStatus    = cms.vint32(1),                # PYTHIA status code (1 = stable, 2 = shower, 3 = hard scattering)
