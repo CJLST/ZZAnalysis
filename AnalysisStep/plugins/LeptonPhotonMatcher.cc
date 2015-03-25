@@ -177,7 +177,7 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  if (g->pt()>2.) accept = true;
 	} else if ( dRMin<0.5 ){ // That's implicit, but does not hurt
 	  // double relIso = g->relIso(0.5); // This is buggy, needs to recompute it.
-	  gRelIso = g->userFloat("fsrPhotonPFIsoChHadPUNoPU03pt02")+ g->userFloat("fsrPhotonPFIsoNHadPhoton03");
+	  gRelIso = (g->userFloat("fsrPhotonPFIsoChHadPUNoPU03pt02") + g->userFloat("fsrPhotonPFIsoNHadPhoton03")) / g->pt();
 	  if (g->pt()>4 && gRelIso<1.) accept = true;
 	}
 	if(debug) cout << "   " << "   closest lep: " << closestLep->pdgId() << " " << closestLep->pt() << " gRelIso: " << gRelIso << " dRMin: " << dRMin << " accept: " << accept << endl;

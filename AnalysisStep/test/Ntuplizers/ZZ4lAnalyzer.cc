@@ -568,7 +568,7 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
 	if (gammas) {
 	  const pat::PFParticle* gamma = (std::max_element(gammas->begin(), gammas->end(), lesspT))->get();
 	  double dR = ROOT::Math::VectorUtil::DeltaR(gamma->momentum(),lep->momentum());
-	  float gRelIso = gamma->userFloat("fsrPhotonPFIsoChHadPUNoPU03pt02")+ gamma->userFloat("fsrPhotonPFIsoNHadPhoton03");
+	  float gRelIso = (gamma->userFloat("fsrPhotonPFIsoChHadPUNoPU03pt02") + gamma->userFloat("fsrPhotonPFIsoNHadPhoton03")) / gamma->pt();
 	  leptonSyncFile << ":" << setprecision(2) << gamma->pt() << ":" << dR << ":" << gRelIso; 
 // 	} else {
 // 	  leptonSyncFile << "0.00:0.00:0.00";
