@@ -329,7 +329,9 @@ void HZZ4lNtupleFactory::InitializeVariables()
   _JetEta.clear();
   _JetPhi.clear(); 
   _JetMass.clear(); 
-  _JetBTag.clear();
+  _JetBTagger.clear();
+  _JetIsBtagged.clear();
+  _JetQGLikelihood.clear();
   _JetSigma.clear();
 
   _DiJetMass=-99;
@@ -617,7 +619,9 @@ void HZZ4lNtupleFactory::InitializeBranches()
   _outTree->Branch("JetEta",&_JetEta);
   _outTree->Branch("JetPhi",&_JetPhi);
   _outTree->Branch("JetMass",&_JetMass);
-  _outTree->Branch("JetBTag",&_JetBTag);
+  _outTree->Branch("JetBTagger",&_JetBTagger);
+  _outTree->Branch("JetIsBtagged",&_JetIsBtagged);
+  _outTree->Branch("JetQGLikelihood",&_JetQGLikelihood);
   _outTree->Branch("JetSigma",&_JetSigma);
   _outTree->Branch("DiJetMass",&_DiJetMass,"DiJetMass/F");
   _outTree->Branch("DiJetMassPlus",&_DiJetMassPlus,"DiJetMassPlus/F");
@@ -1178,14 +1182,16 @@ void HZZ4lNtupleFactory::FillPhotonInfo(Float_t PhotPt, Float_t PhotEta, Float_t
   return;
 }
 
-void HZZ4lNtupleFactory::FillJetInfo(Float_t JetPt, Float_t JetEta, Float_t JetPhi, Float_t JetMass, Float_t JetBTag, Float_t JetSigma )
+void HZZ4lNtupleFactory::FillJetInfo(Float_t JetPt, Float_t JetEta, Float_t JetPhi, Float_t JetMass, Float_t JetBTagger, Float_t JetIsBtagged, Float_t JetQGLikelihood, Float_t JetSigma )
 {
 
   _JetPt.push_back(JetPt);
   _JetEta.push_back(JetEta);
   _JetPhi.push_back(JetPhi);
   _JetMass.push_back(JetMass);
-  _JetBTag.push_back(JetBTag);
+  _JetBTagger.push_back(JetBTagger);
+  _JetIsBtagged.push_back(JetIsBtagged);
+  _JetQGLikelihood.push_back(JetQGLikelihood);
   _JetSigma.push_back(JetSigma);
 
   return;

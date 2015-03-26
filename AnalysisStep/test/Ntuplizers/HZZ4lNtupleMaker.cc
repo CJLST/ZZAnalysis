@@ -388,7 +388,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     cleanedJets.push_back(&*jet);
     if(jet->pt()>30){
       cleanedJetsPt30.push_back(&*jet);
-      if(jet->bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags")>0.814) nCleanedJetsPt30BTagged++; // CSV Medium WP
+      if(jet->userFloat("isBtagged")) nCleanedJetsPt30BTagged++;
     }
   }
 
@@ -465,10 +465,12 @@ void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
   const Float_t jetEta = jet.eta();
   const Float_t jetPhi = jet.phi();
   const Float_t jetMass = jet.p4().M();
-  const Float_t jetBTag = jet.bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags");
+  const Float_t jetBTagger = jet.bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags");
+  const Float_t jetIsBtagged = jet.userFloat("isBtagged");
+  const Float_t jetQGLikelihood = jet.userFloat("qgLikelihood");
   const Float_t jesUnc = 0.;//jet.uncOnFourVectorScale();
 
-  myTree->FillJetInfo(jetPt, jetEta, jetPhi, jetMass, jetBTag, jesUnc );
+  myTree->FillJetInfo(jetPt, jetEta, jetPhi, jetMass, jetBTagger, jetIsBtagged, jetQGLikelihood, jesUnc );
 
   return;
 }

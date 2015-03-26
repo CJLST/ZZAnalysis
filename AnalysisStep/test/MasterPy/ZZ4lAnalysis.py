@@ -894,13 +894,27 @@ if (UPDATE_JETS and LEPTON_SETUP==2012) :
 #        print 'Correction levels', process.cmgPFJetSel.levels
 
 
+# embed q/g likelihood
+process.load('RecoJets.JetProducers.QGTagger_cfi')
+process.QGTagger.srcJets = cms.InputTag( 'slimmedJets' )
+process.QGTagger.jetsLabel = cms.string('QGL_AK4PFchs')
+
+process.dressedJets = cms.EDProducer("JetFiller",
+    src = cms.InputTag("slimmedJets"),
+    cut = cms.string("pt>20 && abs(eta)<4.7"),
+    flags = cms.PSet(
+        isBtagged = cms.string("bDiscriminator('combinedInclusiveSecondaryVertexV2BJetTags')>0.814"),
+    )
+)
+
+
 # Clean jets wrt. good (preFSR-)isolated leptons
 process.cleanJets = cms.EDProducer("JetsWithLeptonsRemover",
-                                   Jets      = cms.InputTag("slimmedJets"),
+                                   Jets      = cms.InputTag("dressedJets"),
                                    Muons     = cms.InputTag("softMuons"),
                                    Electrons = cms.InputTag("cleanSoftElectrons"),
                                    Diboson   = cms.InputTag(""),
-                                   JetPreselection      = cms.string("pt>20 && abs(eta)<4.7"),
+                                   JetPreselection      = cms.string(""),
                                    MuonPreselection     = cms.string("userFloat('isGood') && userFloat('isIsoFSRUncorr')"),
                                    ElectronPreselection = cms.string("userFloat('isGood') && userFloat('isIsoFSRUncorr')"),
                                    DiBosonPreselection  = cms.string(""),
@@ -916,6 +930,7 @@ process.cleanJets = cms.EDProducer("JetsWithLeptonsRemover",
 process.preSkimCounter = cms.EDProducer("EventCountProducer")
 process.PVfilter =  cms.Path(process.preSkimCounter+process.goodPrimaryVertices)
 
+process.Jets = cms.Path( process.QGTagger + process.dressedJets )
 
 # Prepare lepton collections
 process.Candidates = cms.Path(
