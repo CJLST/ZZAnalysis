@@ -68,6 +68,7 @@ class ZZ4lConfigHelper {
   edm::Handle<edm::TriggerResults> triggerResultsHLT;
   const edm::TriggerNames* triggerNames;
   const edm::TriggerNames* triggerNamesHLT;
+  bool anyTrigger;
 
   void eventInit(const edm::Event & event);
 

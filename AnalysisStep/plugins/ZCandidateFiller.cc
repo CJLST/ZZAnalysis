@@ -30,6 +30,11 @@
 #include <string>
 #include <Math/VectorUtil.h>
 
+namespace {
+  bool recomputeIsoForFSR=false; // add "combRelIsoPFFSRCorr" for Z leptons (a' la Legacy)
+}
+
+
 class ZCandidateFiller : public edm::EDProducer {
  public:
   /// Constructor
@@ -191,39 +196,41 @@ ZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       myFsr.setPdgId(22); // Fix: photons that are isFromMu have abs(pdgId)=13!!!
       myCand.addDaughter(myFsr,"FSR");
     }
-
-    // Recompute iso for leptons with FSR    
-    for (int dauIdx=0; dauIdx<2; ++dauIdx) { 
-      const Candidate* d = myCand.daughter(dauIdx);
-      float fsrCorr = 0; // The correction to PFPhotonIso
-      if (fsr!=0) {
-	//	if (!fsr->isFromMuon()) { // Type 1 photons should be subtracted from muon iso cones
-	double dR = ROOT::Math::VectorUtil::DeltaR(fsr->momentum(),d->momentum());
-	if (dR<0.4 && ((d->isMuon() && dR > 0.01) ||
-		       (d->isElectron() && (fabs((static_cast<const pat::Electron*>(d->masterClone().get()))->superCluster()->eta()) < 1.479 || dR > 0.08)))) {
-	  fsrCorr = fsr->pt();
+    
+    if (recomputeIsoForFSR) {
+      // Recompute iso for leptons with FSR
+      for (int dauIdx=0; dauIdx<2; ++dauIdx) { 
+	const Candidate* d = myCand.daughter(dauIdx);
+	float fsrCorr = 0; // The correction to PFPhotonIso
+	if (fsr!=0) {
+	  //	if (!fsr->isFromMuon()) { // Type 1 photons should be subtracted from muon iso cones
+	  double dR = ROOT::Math::VectorUtil::DeltaR(fsr->momentum(),d->momentum());
+	  if (dR<0.4 && ((d->isMuon() && dR > 0.01) ||
+			 (d->isElectron() && (fabs((static_cast<const pat::Electron*>(d->masterClone().get()))->superCluster()->eta()) < 1.479 || dR > 0.08)))) {
+	    fsrCorr = fsr->pt();
+	  }
 	}
-	//}
-      }
 
-      float rho = ((d->isMuon())?rhoForMu:rhoForEle);
-      float combRelIsoPFCorr =  LeptonIsoHelper::combRelIsoPF(sampleType, setup, rho, d, fsrCorr);
+	float rho = ((d->isMuon())?rhoForMu:rhoForEle);
+	float combRelIsoPFCorr =  LeptonIsoHelper::combRelIsoPF(sampleType, setup, rho, d, fsrCorr);
       
-      string base;
-      stringstream str;
-      str << "d" << dauIdx << ".";
-      str >> base;	  
-      myCand.addUserFloat(base+"combRelIsoPFFSRCorr",combRelIsoPFCorr);
+	string base;
+	stringstream str;
+	str << "d" << dauIdx << ".";
+	str >> base;	  
+	myCand.addUserFloat(base+"combRelIsoPFFSRCorr",combRelIsoPFCorr);
+      }
     } // end loop on daughters
-#else 
+#else    
     // if FSR is not activated
-    myCand.addUserFloat("dauWithFSR",-1);
-    myCand.addUserFloat("d0.combRelIsoPFFSRCorr",myCand.userFloat("d0.combRelIsoPF"));
-    myCand.addUserFloat("d1.combRelIsoPFFSRCorr",myCand.userFloat("d1.combRelIsoPF"));
-
+    if (recomputeIsoForFSR) {
+      myCand.addUserFloat("dauWithFSR",-1);
+      myCand.addUserFloat("d0.combRelIsoPFFSRCorr",myCand.userFloat("d0.combRelIsoPF"));
+      myCand.addUserFloat("d1.combRelIsoPFFSRCorr",myCand.userFloat("d1.combRelIsoPF"));
+    }
 #endif
 
-    //--- Find "best Z" (closest to mZ) among those passing the "bestZAmong" selection (2011 PRL logic)
+    //--- Find "best Z" (closest to mZ) among those passing the "bestZAmong" selection (2011 PRL logic), now deprecated!!!
     if (preBestZSelection(myCand)) {
       float diffZmass = fabs(ZmassValue - myCand.mass());
       if (diffZmass < closestLLMassDiff) { // Best among any ll in the collection

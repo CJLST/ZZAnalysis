@@ -100,7 +100,8 @@ float LeptonIsoHelper::combRelIsoPF(int sampleType, int setup, double rho, const
   }
 
   float EA = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04,
-							     l.superCluster()->eta(), EAsetup);
+							     l.eta(), // l.superCluster()->eta(), 
+							     EAsetup);
   return  (PFChargedHadIso + max(0., PFNeutralHadIso + PFPhotonIso - fsr - rho * EA))/l.pt();
 }
 
@@ -114,7 +115,7 @@ float LeptonIsoHelper::combRelIsoPF(int sampleType, int setup, double rho, const
     const pat::Electron* ele = dynamic_cast<const pat::Electron*>(lep->masterClone().get());
     return combRelIsoPF(sampleType, setup, rho, *ele, fsr);    
   } else {
-    cout << "ERROR: LeptonIsoHelper: unknown type" << endl;
+    cout << "ERROR: LeptonIsoHelper: unknown type; pdgId=" << lep->pdgId() << endl;
     abort();
   }
   return 0;

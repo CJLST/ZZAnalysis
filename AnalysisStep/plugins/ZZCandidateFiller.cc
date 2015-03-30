@@ -44,6 +44,7 @@
 #include <ZZAnalysis/AnalysisStep/interface/Fisher.h>
 #include <ZZAnalysis/AnalysisStep/interface/Comparators.h>
 #include <ZZAnalysis/AnalysisStep/interface/utils.h>
+#include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
 
 
 #include "TH2F.h"
@@ -147,6 +148,15 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   std::auto_ptr<pat::CompositeCandidateCollection> result(new pat::CompositeCandidateCollection);
 
   const float ZmassValue = 91.1876;
+
+  double rhoForMu, rhoForEle;
+  {
+    edm::Handle<double> rhoHandle;
+    iEvent.getByLabel(LeptonIsoHelper::getMuRhoTag(sampleType, setup), rhoHandle);
+    rhoForMu = *rhoHandle;
+    iEvent.getByLabel(LeptonIsoHelper::getEleRhoTag(sampleType, setup), rhoHandle);
+    rhoForEle = *rhoHandle;
+  }
 
   // Get LLLL candidates
   Handle<View<CompositeCandidate> > LLLLCands;
@@ -287,23 +297,59 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     int id21 = Z2Lp->pdgId();
     int id22 = Z2Lm->pdgId();
 
+    vector<math::XYZTLorentzVector> photons;
+
     int d0FSR = (static_cast<const pat::CompositeCandidate*>(Z1->masterClone().get()))->userFloat("dauWithFSR");
     if (d0FSR>=0) {
       if (Z1->numberOfDaughters()!=3) cout << "ERROR: ZZCandidateFiller: problem in FSR" << endl;
+      const math::XYZTLorentzVector& fsr = Z1->daughter(2)->p4();
+      photons.push_back(fsr);
       if (d0FSR==0) {
-        p11 = p11 + Z1->daughter(2)->p4();
+        p11 = p11 + fsr;
       } else if (d0FSR==1){
-        p12 = p12 + Z1->daughter(2)->p4();
+        p12 = p12 + fsr;
       }
     }
     int d1FSR = (static_cast<const pat::CompositeCandidate*>(Z2->masterClone().get()))->userFloat("dauWithFSR");
     if (d1FSR>=0) {
       if (Z2->numberOfDaughters()!=3) cout << "ERROR: ZZCandidateFiller: problem in FSR" << endl;
+      const math::XYZTLorentzVector& fsr = Z2->daughter(2)->p4();
+      photons.push_back(fsr);      
       if (d1FSR==0) {
-        p21 = p21 + Z2->daughter(2)->p4();
+        p21 = p21 + fsr;
       } else if (d1FSR==1){
-        p22 = p22 + Z2->daughter(2)->p4();
+        p22 = p22 + fsr;
       }
+    }
+
+    // Recompute isolation for all four leptons if FSR is present
+    for (int zIdx=0; zIdx<2; ++zIdx) {
+      float worstMuIso=0;
+      float worstEleIso=0;
+      for (int dauIdx=0; dauIdx<2; ++dauIdx) { 
+	const reco::Candidate* z = myCand.daughter(zIdx);
+	const reco::Candidate* d = z->daughter(dauIdx);
+	float fsrCorr = 0; // The correction to PFPhotonIso
+	for (vector<math::XYZTLorentzVector>::const_iterator ifsr=photons.begin(); ifsr!=photons.end(); ++ifsr) {
+	  double dR = ROOT::Math::VectorUtil::DeltaR(*ifsr,d->momentum());
+	  if (dR<0.4 && ((d->isMuon() && dR > 0.01) ||
+			 (d->isElectron() && (fabs((static_cast<const pat::Electron*>(d->masterClone().get()))->superCluster()->eta()) < 1.479 || dR > 0.08)))) {
+	    fsrCorr += ifsr->pt();
+	  }
+	}
+	float rho = ((d->isMuon())?rhoForMu:rhoForEle);
+	float combRelIsoPFCorr =  LeptonIsoHelper::combRelIsoPF(sampleType, setup, rho, d, fsrCorr);
+	if (d->isMuon()) worstMuIso  = max(worstMuIso,  combRelIsoPFCorr);
+	else             worstEleIso = max(worstEleIso, combRelIsoPFCorr);
+	string base;
+	stringstream str;
+	str << "d" << zIdx << "." << "d" << dauIdx << ".";
+	str >> base;
+	myCand.addUserFloat(base+"combRelIsoPFFSRCorr",combRelIsoPFCorr);
+      }
+      string base = (zIdx==0?"d0.":"d1.");
+      myCand.addUserFloat(base+"worstMuIso",worstMuIso);
+      myCand.addUserFloat(base+"worstEleIso",worstEleIso);
     }
 
     // Lepton TLorentzVectors, including FSR

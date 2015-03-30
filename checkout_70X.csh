@@ -35,7 +35,7 @@ git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsA
 
 #photon ISO information for FSR 
 git clone -n https://github.com/VBF-HZZ/UFHZZAnalysisRun2
-(cd UFHZZAnalysisRun2 ; git checkout master FSRPhotons)
+(cd UFHZZAnalysisRun2 ; git checkout origin/csa14 FSRPhotons) #This does not set the correct branch, but picks the right one anyway
 
 #Jet energy corrections (CMGTools)
 #(mkdir -p CMGTools/Common; cd CMGTools/Common ; wget https://raw.githubusercontent.com/CERN-PH-CMG/cmg-cmssw/a875832047532c5469aa9795751f0363cd5d9244/CMGTools/Common/plugins/JetEnergyCorrector.h)

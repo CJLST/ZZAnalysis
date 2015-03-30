@@ -11,7 +11,8 @@ ZZ4lConfigHelper::ZZ4lConfigHelper(const ParameterSet& pset) :
   theSetup(pset.getParameter<int>("setup")),
   theSampleType(pset.getParameter<int>("sampleType")),
   skimPaths(pset.getParameter<std::vector<std::string> >("skimPaths")),
-  MCFilter(pset.getParameter<std::string>("MCFilterPath"))
+  MCFilter(pset.getParameter<std::string>("MCFilterPath")),
+  anyTrigger(true) // take the OR of all trigger paths
   
 {
   string channel = pset.getUntrackedParameter<string>("channel");
@@ -106,13 +107,24 @@ ZZ4lConfigHelper::passTrigger(const edm::Event & event, short& trigworld){
 
 
   bool evtPassTrigger = false;
-  //FIXME: this is assuming that we do not pick EEEE or MMMM from "DoubleOr" files as there is no protection for accidental triggers
-  if ((theChannel==EEEE && (passDiEle || passTriEle)) ||
+
+
+  // Check all triggers together if anyTrigger is specified (or for CRs)
+  if (anyTrigger || theChannel==ZLL || theChannel==ZL || theChannel==ZZ) {
+    if ((PD=="" && (passDiEle || passDiMu || passMuEle || passTriEle)) ||
+	(PD=="DoubleEle" && (passDiEle || passTriEle)) ||
+	(PD=="DoubleMu" && passDiMu && !passDiEle && !passTriEle) ||
+	(PD=="MuEG" && passMuEle && !passDiMu && !passDiEle && !passTriEle)) {
+      evtPassTrigger = true;
+    } 
+  }
+  
+  // final-state specific triggers. FIXME: this is assuming that we do not pick EEEE or MMMM from "DoubleOr" files as there is no protection for accidental triggers
+  else if ((theChannel==EEEE && (passDiEle || passTriEle)) ||
       (theChannel==MMMM && passDiMu)) {
     evtPassTrigger = true;
   }
-
-  if (theChannel==EEMM) {
+  else if (theChannel==EEMM) {
     if ((PD=="" && (passDiEle || passDiMu || passMuEle)) ||
 	(PD=="DoubleEle" && passDiEle) ||
 	(PD=="DoubleMu" && passDiMu && !passDiEle) ||
@@ -121,15 +133,6 @@ ZZ4lConfigHelper::passTrigger(const edm::Event & event, short& trigworld){
     }
   }
 
-  // Check all triggers together for the CR, or if "ZZ" is specified
-  if (theChannel==ZLL || theChannel==ZL || theChannel==ZZ) {
-    if ((PD=="" && (passDiEle || passDiMu || passMuEle || passTriEle)) ||
-	(PD=="DoubleEle" && (passDiEle || passTriEle)) ||
-	(PD=="DoubleMu" && passDiMu && !passDiEle && !passTriEle) ||
-	(PD=="MuEG" && passMuEle && !passDiMu && !passDiEle && !passTriEle)) {
-      evtPassTrigger = true;
-    } 
-  }
   
   if (evtPassTrigger) set_bit_16(trigworld,0);
   if (passDiMu) set_bit_16(trigworld,1);

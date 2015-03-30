@@ -180,7 +180,7 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  gRelIso = (g->userFloat("fsrPhotonPFIsoChHadPUNoPU03pt02") + g->userFloat("fsrPhotonPFIsoNHadPhoton03")) / g->pt();
 	  if (g->pt()>4 && gRelIso<1.) accept = true;
 	}
-	if(debug) cout << "   " << "   closest lep: " << closestLep->pdgId() << " " << closestLep->pt() << " gRelIso: " << gRelIso << " dRMin: " << dRMin << " accept: " << accept << endl;
+	if(debug) cout << "   " << "   closest lep: " << closestLep->pdgId() << " " << closestLep->pt() <<  " gRelIso: " << gRelIso << " (ch: " << g->userFloat("fsrPhotonPFIsoChHadPUNoPU03pt02") << " n+p: " <<  g->userFloat("fsrPhotonPFIsoNHadPhoton03") << " ) " << " dRMin: " << dRMin << " accept: " << accept << endl;
 	if (accept) theMap[closestLep].push_back(g);
       }
     }// loop over photon collection

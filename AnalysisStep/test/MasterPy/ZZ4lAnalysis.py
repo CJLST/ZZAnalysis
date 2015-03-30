@@ -1,5 +1,5 @@
 import FWCore.ParameterSet.Config as cms
-process = cms.Process("TEST")
+process = cms.Process("ZZ")
 
 ### ----------------------------------------------------------------------
 ### Flags that need to be setted
@@ -67,6 +67,13 @@ except NameError:
 if SELSETUP=="Legacy" and not BESTCANDCOMPARATOR=="byBestZ1bestZ2":
     print "WARNING: In ZZ4lAnalysis.py the SELSETUP=\"Legacy\" flag is meant to reproduce the Legacy results, ignoring the setting of the BESTCANDCOMPARATOR: ",BESTCANDCOMPARATOR
     BESTCANDCOMPARATOR = "byBestZ1bestZ2"
+
+
+# The isolation cuts for electrons and muons
+ELEISOCUT = "0.5"
+MUISOCUT = "0.4"
+
+
 
 ### ----------------------------------------------------------------------
 ### Set the GT
@@ -241,10 +248,7 @@ process.goodPrimaryVertices = cms.EDFilter("VertexSelector",
 ### ----------------------------------------------------------------------
 ### ----------------------------------------------------------------------
 
-#GOODLEPTON = "userFloat('ID') && userFloat('SIP')<4 && userFloat('combRelIsoPF')<0.4" # Lepton passing ID, SIP, ISO
 GOODLEPTON = "userFloat('ID') && userFloat('SIP')<4" # Lepton passing ID, SIP [ISO is asked AFTER FSR!!!]
-
-#&& userFloat('combRelIsoPF')<0.4
 
 
 # # Mu e-scale corrections (Rochester)
@@ -324,7 +328,7 @@ process.softMuons = cms.EDProducer("MuFiller",
     flags = cms.PSet(
         ID = cms.string("userFloat('isPFMuon')" ), # PF ID
         isGood = cms.string(GOODLEPTON),
-        isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<0.4")
+        isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<" + MUISOCUT)
     )
 )
 
@@ -386,7 +390,7 @@ process.softElectrons = cms.EDProducer("EleFiller",
    flags = cms.PSet(
         ID = cms.string("userFloat('isBDT')"), # BDT MVA ID
         isGood = cms.string(GOODLEPTON),
-        isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<0.5")
+        isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<"+ELEISOCUT)
         )
    )
 
@@ -495,16 +499,18 @@ process.softLeptons = cms.EDProducer("CandViewMerger",
 ### Dileptons: combine/merge leptons into intermediate (bare) collections;
 ###            Embed additional user variables into final collections
 ### ----------------------------------------------------------------------
+TWOGOODLEPTONS = ("userFloat('d0.isGood') && userFloat('d1.isGood')") # Z made of 2 good leptons (ISO not yet applied) 
 
-TWOGOODLEPTONS = ("userFloat('d0.isGood') && userFloat('d1.isGood')") # Z made of 2 isGood leptons
-ZISO           = ("( (abs(daughter(0).pdgId)==11 && userFloat('d0.combRelIsoPFFSRCorr')<0.5) || (abs(daughter(0).pdgId)==13 && userFloat('d0.combRelIsoPFFSRCorr')<0.4) ) && ( (abs(daughter(1).pdgId)==11 && userFloat('d1.combRelIsoPFFSRCorr')<0.5) || (abs(daughter(1).pdgId)==13 && userFloat('d1.combRelIsoPFFSRCorr')<0.4) )") #ISO after FSR
+### NOTE: Isolation cut has been moved to ZZ candidates as we now correct for FSR of all four photons.
+### Because if this, isBestZ flags are no longer correct; BESTZ_AMONG is set to "" for safety
+# ZISO           = ("( (abs(daughter(0).pdgId)==11 && userFloat('d0.combRelIsoPFFSRCorr')<0.5) || (abs(daughter(0).pdgId)==13 && userFloat('d0.combRelIsoPFFSRCorr')<0.4) ) && ( (abs(daughter(1).pdgId)==11 && userFloat('d1.combRelIsoPFFSRCorr')<0.5) || (abs(daughter(1).pdgId)==13 && userFloat('d1.combRelIsoPFFSRCorr')<0.4) )") #ISO after FSR
+# ZLEPTONSEL     = TWOGOODLEPTONS + "&&" + ZISO
+# BESTZ_AMONG = ( ZLEPTONSEL ) # "Best Z" chosen among those with 2 leptons with ID, SIP, ISO
+BESTZ_AMONG = ("")
 
-ZLEPTONSEL     = TWOGOODLEPTONS + "&&" + ZISO
+ZLEPTONSEL     = TWOGOODLEPTONS # Note: this is without ISO
 
-
-BESTZ_AMONG = ( ZLEPTONSEL ) # "Best Z" chosen among those with 2 leptons with ID, SIP, ISO
-
-Z1PRESEL    = (ZLEPTONSEL + " && mass > 40 && mass < 120") # FIXME
+Z1PRESEL    = (ZLEPTONSEL + " && mass > 40 && mass < 120") # Note: this is without ISO
 
 
 ### ----------------------------------------------------------------------
@@ -550,6 +556,7 @@ process.LLCand = cms.EDProducer("ZCandidateFiller",
 ### ----------------------------------------------------------------------
 ### TriLeptons (for fake rate)
 ### ----------------------------------------------------------------------
+#FIXME: to be reviseed since ISOLATION is no longer included in isBestZ and Z1Presel!
 Z_PLUS_LEP_MIJ=("sqrt(pow(daughter(0).daughter({0}).energy+daughter(1).energy, 2) - " +
                 "     pow(daughter(0).daughter({0}).px    +daughter(1).px, 2) -" +  
                 "     pow(daughter(0).daughter({0}).py    +daughter(1).py, 2) -" +  
@@ -573,14 +580,14 @@ process.ZlCand = cms.EDProducer("PATCandViewShallowCloneCombiner",
 ###                Embed additional user variables into final collections
 ### ----------------------------------------------------------------------
 
-# The "best candidate" flag is assigned choosing among candidates satisfying this cut
+FOURGOODLEPTONS    =  ("userFloat('d0.GoodLeptons') && userFloat('d1.GoodLeptons')" +
+                       "&& userFloat('d0.worstEleIso') <" + ELEISOCUT +
+                       "&& userFloat('d1.worstEleIso') <" + ELEISOCUT +
+                       "&& userFloat('d0.worstMuIso') <" + MUISOCUT +
+                       "&& userFloat('d1.worstMuIso') <" + MUISOCUT
+                       ) #ZZ made of 4 tight leptons passing SIP and ISO
 
 
-
-FOURGOODLEPTONS    =  ("userFloat('d0.GoodLeptons') && userFloat('d1.GoodLeptons')") #ZZ made of 4 selected leptons
-#FOURGOODLEPTONS    =  "daughter(0).masterClone.userFloat('GoodLeptons') && daughter(1).masterClone.userFloat('GoodLeptons')" #ZZ made of 4 selected leptons
-
-HASBESTZ          = "daughter('Z1').masterClone.userFloat('isBestZ')"
 Z1MASS            = "daughter('Z1').mass>40 && daughter('Z1').mass<120"
 Z2MASS            = "daughter('Z2').mass>4  && daughter('Z2').mass<120" # (was > 4 in Synch) to deal with m12 cut at gen level #FIXME
 #MLL3On4_12        = "userFloat('mZa')>12" # mll>12 on 3/4 pairs; 
@@ -594,7 +601,9 @@ M4l100            = "mass>100"
     
 
 if SELSETUP=="Legacy": # Default Configuration (Legacy paper): cut on selected best candidate
-
+    print "SELSETUP=Legacy no longer supported after 8fb591a because we now set combRelIsoPFFSRCorr at the level of ZZ; will need to re-introduce it at  the Z level so that ZZCand.bestZAmong (ie isBestZ flag) works again as before"
+    sys.exit()
+    HASBESTZ          = "daughter('Z1').masterClone.userFloat('isBestZ')"
     BESTCAND_AMONG = (FOURGOODLEPTONS + "&&" +
                       HASBESTZ        + "&&" +
                       Z1MASS          
@@ -736,18 +745,19 @@ Z2ID    = "userFloat('d1.d0.ID')     && userFloat('d1.d1.ID')"                  
 Z2SIP   = "userFloat('d1.d0.SIP')< 4 && userFloat('d1.d1.SIP')< 4"                #SIP on LL leptons
 CR_Z2MASS = "daughter(1).mass>4  && daughter(1).mass<120"                        #Mass on LL; cut at 4
 
-CR_BASESEL = (CR_Z2MASS + "&&" +              # mass cuts on LL
-              MLLALLCOMB + "&&" +             # mass cut on all lepton pairs
-              PT20_10    + "&&" +             # pT> 20/10 over all 4 l
-              "daughter(1).mass>12 &&" +      # mZ2 >12
-              M4l100 )                        # m4l>100 
 
-CR_BESTCANDBASE = ("userFloat('d0.Z1Presel')") # Z with good leptons, mass cuts
+# Define cuts for selection of the candidates among which the best one is chosen.
+CR_BESTCANDBASE = ("userFloat('d0.Z1Presel') && userFloat('d0.worstEleIso') <" + ELEISOCUT +
+                   "&& userFloat('d0.worstMuIso') <" + MUISOCUT ) # To be revised
 
-CR_BESTCANDBASE_AA   = ("userFloat('d0.Z1Presel') && " + Z2SIP) # base for AA CR
+CR_BESTCANDBASE_AA   = ("userFloat('d0.Z1Presel') && userFloat('d0.worstEleIso') <" + ELEISOCUT +
+                        "&& userFloat('d0.worstMuIso') <" + MUISOCUT + "&&" +
+                        Z2SIP) # base for AA CR: # Z1 with tight leptons passing SIP and ISO, mass cuts; SIP on Z2
+
 
 CR_BESTZLLss = ""
 if SELSETUP == "Legacy":
+    # No longer supported; cf comment for "Legacy" in the SR.
     CR_BESTZLLss = CR_BESTCANDBASE_AA + "&&" + "userFloat('d0.isBestZ') &&"+ Z2LL_SS
 elif SELSETUP == "allCutsAtOnceButMZ2":
     CR_BESTZLLss = CR_BESTCANDBASE_AA + "&&" + Z2LL_SS + "&&" +CR_Z2MASS + "&&" + MLLALLCOMB + "&&" + PT20_10 + "&& mass>70"
@@ -757,6 +767,14 @@ elif SELSETUP == "allCutsAtOncePlusMZb":
     CR_BESTZLLss = CR_BESTCANDBASE_AA + "&&" + Z2LL_SS + "&&" +CR_Z2MASS + "&&" + MLLALLCOMB + "&&" + PT20_10 + "&&" + "mass>70" + "&&" + "daughter(1).mass>12" + "&&" + "userFloat('mZb')>12" 
 elif SELSETUP == "allCutsAtOncePlusSmart":
     CR_BESTZLLss = CR_BESTCANDBASE_AA + "&&" + Z2LL_SS + "&&" +CR_Z2MASS + "&&" + MLLALLCOMB + "&&" + PT20_10 + "&&" + "mass>70" + "&&" + "daughter(1).mass>12" + "&&" + SMARTMALLCOMB
+
+
+# Base for the selection cut applied on the best candidate. This almost fully (except for M4l100) overlaps with the cuts defined above, except for startegies where the best candidate is chosen at the beginning (Legacy, allCutsAtOnceButMZ2).
+CR_BASESEL = (CR_Z2MASS + "&&" +              # mass cuts on LL
+              MLLALLCOMB + "&&" +             # mass cut on all lepton pairs
+              PT20_10    + "&&" +             # pT> 20/10 over all 4 l
+              "daughter(1).mass>12 &&" +      # mZ2 >12
+              M4l100 )                        # m4l>100 
 
 
 
@@ -775,238 +793,20 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
     bestCandComparator = cms.string(BESTCANDCOMPARATOR),
     bestCandAmong = cms.PSet(
       isBestCand    = cms.string("0"), #do not set SR best cand flag
-      isBestCRZLL = cms.string(CR_BESTCANDBASE+ "&&" + # Old CR for Z2 with no SIP
+      isBestCRZLL = cms.string(CR_BESTCANDBASE+ "&&" + # FIXME: To be revised!!!
                          "userFloat('d0.isBestZ') &&"+
                          Z2ID
                          ),
-      isBestCRZMM = cms.string(CR_BESTCANDBASE + "&&" + # For HiSip CRs
-                         "userFloat('d0.isBestZ') &&" +
-                         Z2MM                  + "&&" +
-                         Z2ID      
-                         ),
-      isBestCRZEE = cms.string(CR_BESTCANDBASE + "&&" + # For HiSip CRs
-                         "userFloat('d0.isBestZ') &&" +
-                         Z2EE                  + "&&" +
-                         Z2ID      
-                         ),
-      #CRZLLHiSIP = cms.string(CR_BESTCANDBASE + "&&" +
-      #                        "userFloat('d0.isBestZ')"
-      #                        ),
-      #CRZLLHiSIPMM = cms.string(CR_BESTCANDBASE +
-      #                          "userFloat('d0.isBestZ') &&" +
-      #                          Z2MM
-      #                          ),
-      isBestCRZLLHiSIPKin = cms.string("userFloat('d0.isBestZ') &&" +
-                                 Z2ID
-                                 ), 
-
-      ## AA method CRs
-      isBestCRMMMMss = cms.string(CR_BESTCANDBASE_AA + "&&" +
-                          "userFloat('d0.isBestZmm') &&" +
-                          Z2MM_SS
-                          ),
-      isBestCRMMMMos = cms.string(CR_BESTCANDBASE_AA + "&&" +
-                          "userFloat('d0.isBestZmm') &&" +
-                          Z2MM_OS
-                          ),
-      isBestCREEEEss = cms.string(CR_BESTCANDBASE_AA + "&&" +
-                          "userFloat('d0.isBestZee') &&" +
-                          Z2EE_SS
-                          ),
-      isBestCREEEEos = cms.string(CR_BESTCANDBASE_AA + "&&" +
-                          "userFloat('d0.isBestZee') &&" +
-                          Z2EE_OS
-                          ),
-      isBestCREEMMss = cms.string(CR_BESTCANDBASE_AA + "&&" +
-                          "userFloat('d0.isBestZee') &&" +
-                          Z2MM_SS
-                          ),
-      isBestCREEMMos = cms.string(CR_BESTCANDBASE_AA + "&&" +
-                          "userFloat('d0.isBestZee') &&" +
-                          Z2MM_OS
-                          ),
-      isBestCRMMEEss = cms.string(CR_BESTCANDBASE_AA + "&&" +
-                          "userFloat('d0.isBestZmm') &&" +
-                          Z2EE_SS
-                          ),
-      isBestCRMMEEos = cms.string(CR_BESTCANDBASE_AA + "&&" +
-                          "userFloat('d0.isBestZmm') &&" +
-                          Z2EE_OS
-                          ),
       isBestCRZLLss = cms.string(CR_BESTZLLss),
     ),
     ZRolesByMass = cms.bool(False),  # daughter('Z1') = daughter(0)
     flags = cms.PSet(
       SR = cms.string(BESTCAND_AMONG),
-      CRZLL =  cms.string(CR_BASESEL),                                 # with isBestCRZLL flag = no SIP CR
-      CRZLLHiSIP = cms.string(PT20_10 + "&&" +                         # with isBestCRZLL flag = inverted SIP CR
-                              "userFloat('d1.d0.SIP')> 5 && " +
-                              "userFloat('d1.d1.SIP')> 5 " 
-                              ),
-      CRZLLHiSIPKin = cms.string(CR_BASESEL + "&&" +                   # with isBestCRZLLHiSIPKin
-                                 "userFloat('d1.d0.SIP')> 5 &&" +
-                                 "userFloat('d1.d1.SIP')> 5"
-                                 ), 
-      CRLLLL = cms.string(CR_BASESEL               #combine with proper isBestCR*****s for AA ss/os CRss
-                          ),
-      )
-)
-
-
-
-# Extended Phase space: Z1 + LL (L=any F/C; ID, no ISO/SIP requirements)
-#process.CRZEE = cms.EDFilter("PATCompositeCandidateRefSelector",
-#	src = cms.InputTag("ZLLCand"),
-#        cut = cms.string("userFloat('isCRZLL')>0 && userFloat('CRZEE')>0"),
-#)
-#process.CRZMM = cms.EDFilter("PATCompositeCandidateRefSelector",
-#	src = cms.InputTag("ZLLCand"),
-#        cut = cms.string("userFloat('isCRZLL')>0 && userFloat('CRZMM')>0"),
-#)
-#process.CRZLL = cms.EDFilter("PATCompositeCandidateRefSelector",
-#	src = cms.InputTag("ZLLCand"),
-#        cut = cms.string("userFloat('isCRZLL')>0 && userFloat('CRZLL')>0"),
-#)
-
-
-# Inverted-SIP CR, for Zbb/tt control
-#process.CRZLLHiSIP = cms.EDFilter("PATCompositeCandidateRefSelector",
-#	src = cms.InputTag("ZLLCand"),
-#        cut = cms.string( #"userFloat('d0.isBestZ') && " +
-                          #"userFloat('d0.Z1Presel') && " +
-                          #PT20_10    + "&&"   +
-                          #Z2ID       + "&&" + # ID on LL
-#                          "userFloat('d1.d0.SIP')> 5 && " +
-#                          "userFloat('d1.d1.SIP')> 5 " 
-#                          )
-#)
-
-
-#process.CRZLLHiSIPMM = cms.EDFilter("PATCompositeCandidateRefSelector",
-#	src = cms.InputTag("ZLLCand"),
-#        cut = cms.string( #"userFloat('d0.isBestZ') && " +
-                          #"userFloat('d0.Z1Presel') && " +
-                          #PT20_10    + "&&"   +
-                          #Z2MM       + "&&" + # Flavour on LL
-                          #Z2ID       + "&&" + # ID on LL
-#                          "userFloat('d1.d0.SIP')> 5 && " +
-#                          "userFloat('d1.d1.SIP')> 5 " 
-#                          )
-#)
-
-# Inverted-SIP CR, for Zbb/tt control; with kin cuts
-#process.CRZLLHiSIPKin = cms.EDFilter("PATCompositeCandidateRefSelector",
-#	src = cms.InputTag("ZLLCand"),
-#        cut = cms.string( #"userFloat('d0.isBestZ') && " +
-                          #CR_BASESEL + "&&" +
-                          #Z2ID       + "&&" + # ID on LL
-#                          "userFloat('d1.d0.SIP')> 5 &&" +
-#                          "userFloat('d1.d1.SIP')> 5"
-#                         )
-#)
-
-# Z1->MM + MM (SS fakeable (no ID, no ISO)); for Z+X
-#process.CRMMMMss = cms.EDFilter("PATCompositeCandidateRefSelector",
-#	src = cms.InputTag("ZLLCand"),
-#        cut = cms.string("userFloat('isCRLLLL')>0 && userFloat('CRMMMMss')>0"),
-#)
-
-# Z1->MM + MM (OS fakeable (no ID, no ISO)); crosscheck
-#process.CRMMMMos = cms.EDFilter("PATCompositeCandidateRefSelector",
-#	src = cms.InputTag("ZLLCand"),
-#        cut = cms.string("userFloat('d0.isBestZmm') && " +
-#                         CR_BASESEL + "&&" +
-#                         Z2MM_OS    + "&&" +
-#                         Z2SIP
-#                         )
-#)
-
-# Z1->EE + EE (SS fakeable (no ID, no ISO)); for Z+X
-#process.CREEEEss = cms.EDFilter("PATCompositeCandidateRefSelector",
-#	src = cms.InputTag("ZLLCand"),
-#        cut = cms.string("userFloat('d0.isBestZee') && " +
-#                         CR_BASESEL + "&&" +
-#                         Z2EE_SS    + "&&" +
-#                         Z2SIP
-#                         )
-#)
-
-# Z1->EE + EE (OS fakeable (no ID, no ISO)); crosscheck
-#process.CREEEEos = cms.EDFilter("PATCompositeCandidateRefSelector",
-#	src = cms.InputTag("ZLLCand"),
-#        cut = cms.string("userFloat('d0.isBestZee') && " +
-#                         CR_BASESEL + "&&" +
-#                         Z2EE_OS    + "&&" +
-#                         Z2SIP
-#                         )
-#)
-
-# Z1->EE + MM (SS fakeable (no ID, no ISO)); for Z+X
-#process.CREEMMss = cms.EDFilter("PATCompositeCandidateRefSelector",
-#	src = cms.InputTag("ZLLCand"),
-#        cut = cms.string("userFloat('d0.isBestZee') && " +
-#                         CR_BASESEL + "&&" +
-#                         Z2MM_SS    + "&&" +
-#                         Z2SIP
-#                         )
-#)
-
-# Z1->EE + MM (OS fakeable (no ID, no ISO)); crosscheck
-#process.CREEMMos = cms.EDFilter("PATCompositeCandidateRefSelector",
-#	src = cms.InputTag("ZLLCand"),
-#        cut = cms.string("userFloat('d0.isBestZee') && " +
-#                         CR_BASESEL + "&&" +
-#                         Z2MM_OS    + "&&" +
-#                         Z2SIP
-#                         )
-#)
-
-# Z1->MM + EE (SS fakeable (no ID, no ISO)); for Z+X
-#process.CRMMEEss = cms.EDFilter("PATCompositeCandidateRefSelector",
-#	src = cms.InputTag("ZLLCand"),
-#        cut = cms.string("userFloat('d0.isBestZmm') && " +
-#                         CR_BASESEL + "&&" +
-#                         Z2EE_SS    + "&&" +
-#                         Z2SIP
-#                         )
-#)
-
-# Z1->MM + EE (OS fakeable (no ID, no ISO)); crosscheck
-#process.CRMMEEos = cms.EDFilter("PATCompositeCandidateRefSelector",
-#	src = cms.InputTag("ZLLCand"),
-#        cut = cms.string("userFloat('d0.isBestZmm') && " +
-#                         CR_BASESEL + "&&" +
-#                         Z2EE_OS    + "&&" +
-#                         Z2SIP
-#                         )
-#)
-
-
-
-# LLLL, any F/C, to be used for the Relaxing-Flavour&Charge (RFC) test only.
-# Note that while this is a superset of all quadrilepton collections, the
-# assigment of the flag isBestCand card is different gere, as the "best Z" is chosen
-# within the LL candidates (any F/C), and not within the MM or EE collections!
-process.bareLLLLCand= cms.EDProducer("CandViewShallowCloneCombiner",
-    decay = cms.string('LLCand LLCand'),
-    cut = cms.string(NOGHOST4l),
-    checkCharge = cms.bool(False)
-)
-process.LLLLCand = cms.EDProducer("ZZCandidateFiller",
-    src = cms.InputTag("bareLLLLCand"),
-    sampleType = cms.int32(SAMPLE_TYPE),                    
-    setup = cms.int32(LEPTON_SETUP),
-    superMelaMass = cms.double(SUPERMELA_MASS),
-    isMC = cms.bool(IsMC),
-    bestCandAmong = cms.PSet(isBestCand = cms.string(BESTCAND_AMONG)), #FIXME should ask d0.isBestInColl
-    flags = cms.PSet(
-        GoodLeptons =  cms.string(FOURGOODLEPTONS),
-        Z2Mass  = cms.string(Z2MASS),
-        MAllComb = cms.string(MLLALLCOMB),
-        FullSel70 = cms.string(FULLSEL70),
-        FullSel = cms.string(FULLSEL),
+      CRZLL =  cms.string(CR_BASESEL),             # with isBestCRZLL flag = no SIP CR
+      CRZLLss = cms.string(CR_BASESEL),             #combine with proper isBestCRZLLss for AA ss/os CRss    
     )
 )
+
 
 
 ### ----------------------------------------------------------------------
@@ -1070,11 +870,6 @@ process.CR = cms.Sequence(
        process.bareZLLCand       + process.ZLLCand   +
        process.ZlCand            
    )
-
-# For relaxing flavor and charge
-process.RFC = cms.Sequence(
-       process.bareLLLLCand      + process.LLLLCand
-    )
 
 ### Skim, triggers and MC filters (Only store filter result, no filter is applied)
 
