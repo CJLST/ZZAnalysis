@@ -120,12 +120,12 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       bool SCVeto=false;
       for (unsigned int j = 0; j< electronHandle->size(); ++j){
 	const pat::Electron* e = &((*electronHandle)[j]);
-	if (e->userFloat("isGood")){
+	if (e->userFloat("isSIP")){
 	  double dR = ROOT::Math::VectorUtil::DeltaR(e->momentum(),g->momentum());
-	  if ((fabs(g->eta() - e->eta())<0.05 && fabs(reco::deltaPhi(g->phi(), e->phi()))<2.) || dR<0.15) {	    
+	  if ((fabs(g->eta() - e->superCluster()->eta())<0.05 && fabs(reco::deltaPhi(g->phi(), e->superCluster()->phi()))<2.) || dR<0.15) {	    
 	    SCVeto=true;
   	    if (debug) cout << "SC veto: "<< g->pt() << " " << e->pt() << " " << dR << " "
-			    << fabs(g->eta() - e->superCluster()->eta()) << " " << reco::deltaPhi(g->phi(), e->phi()) <<endl;
+			    << fabs(g->eta() - e->superCluster()->eta()) << " " << reco::deltaPhi(g->phi(), e->superCluster()->phi()) <<endl;
 	    break;
 	  } 
 	}
@@ -135,7 +135,7 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 
       //------------------------------------------------------
-      // Get the closest lepton among those satisfying ID, SIP
+      // Get the closest lepton among those satisfying loose ID + SIP
       //------------------------------------------------------
       double dRMin(10e9);
       const reco::Candidate* closestLep = 0;
@@ -144,7 +144,7 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       for (unsigned int j = 0; j< muonHandle->size(); ++j){
 	//      const pat::Muon* m = ((*muonHandle)[j]).get();
 	const pat::Muon* m = &((*muonHandle)[j]);
-	if (! m->userFloat("isGood")) continue; 
+	if (! m->userFloat("isSIP")) continue; 
 	double dR = ROOT::Math::VectorUtil::DeltaR(m->momentum(),g->momentum());
 	if (dR>0.5) continue;
 	if (dR<dRMin) {
@@ -159,7 +159,7 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       for (unsigned int j = 0; j< electronHandle->size(); ++j){
 	//      const pat::Electron* e = ((*electronHandle)[j]).get();
 	const pat::Electron* e = &((*electronHandle)[j]);
-	if ( ! e->userFloat("isGood")) continue;
+	if ( ! e->userFloat("isSIP")) continue;
 	double dR = ROOT::Math::VectorUtil::DeltaR(e->momentum(),g->momentum());
 	if (dR>0.5) continue;
 	if (dR<dRMin) {

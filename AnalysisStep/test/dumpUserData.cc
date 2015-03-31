@@ -72,7 +72,7 @@ void dumpUserData::analyze(const Event & event, const EventSetup& eventSetup){
   int irun=event.id().run();
   long long int ievt=event.id().event(); 
   int ils =event.luminosityBlock();
-  cout << "Dump for event " << irun << ":" << ievt << " ls= " << ils << endl; 
+  cout << "Dump for event " << irun << ":" << ils << ":" << ievt << endl; 
 
   Handle<pat::MuonCollection> muons;
   event.getByLabel(muonSrc, muons);

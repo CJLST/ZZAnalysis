@@ -248,8 +248,8 @@ process.goodPrimaryVertices = cms.EDFilter("VertexSelector",
 ### ----------------------------------------------------------------------
 ### ----------------------------------------------------------------------
 
-GOODLEPTON = "userFloat('ID') && userFloat('SIP')<4" # Lepton passing ID, SIP [ISO is asked AFTER FSR!!!]
-
+SIP =  "userFloat('SIP')<4"
+GOODLEPTON = "userFloat('ID') && " + SIP  # Lepton passing tight ID + SIP [ISO is asked AFTER FSR!!!]
 
 # # Mu e-scale corrections (Rochester)
 # process.calibratedMuons =  cms.EDProducer("RochesterPATMuonCorrector",
@@ -323,12 +323,15 @@ process.softMuons = cms.EDProducer("MuFiller",
     src = cms.InputTag("bareSoftMuons"),
     sampleType = cms.int32(SAMPLE_TYPE),                     
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
-#    cut = cms.string("userFloat('SIP')<100"),
     cut = cms.string("userFloat('dxy')<0.5 && userFloat('dz')<1."),
     flags = cms.PSet(
         ID = cms.string("userFloat('isPFMuon')" ), # PF ID
+        isSIP = cms.string(SIP),
         isGood = cms.string(GOODLEPTON),
-        isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<" + MUISOCUT)
+        isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<" + MUISOCUT),
+#        isGLB = cms.string("isGlobalMuon"),
+#        isTk = cms.string("isTrackerMuon"),
+#        matches = cms.string("numberOfMatches"),
     )
 )
 
@@ -385,10 +388,10 @@ process.softElectrons = cms.EDProducer("EleFiller",
    src    = cms.InputTag("bareSoftElectrons"),
    sampleType = cms.int32(SAMPLE_TYPE),          
    setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
-#    cut = cms.string("userFloat('SIP')<100"),
    cut = cms.string("userFloat('dxy')<0.5 && userFloat('dz')<1 && userFloat('missingHit')<=1"),
    flags = cms.PSet(
         ID = cms.string("userFloat('isBDT')"), # BDT MVA ID
+        isSIP = cms.string(SIP),
         isGood = cms.string(GOODLEPTON),
         isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<"+ELEISOCUT)
         )
