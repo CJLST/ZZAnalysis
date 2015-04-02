@@ -346,6 +346,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 	str << "d" << zIdx << "." << "d" << dauIdx << ".";
 	str >> base;
 	myCand.addUserFloat(base+"combRelIsoPFFSRCorr",combRelIsoPFCorr);
+	myCand.addUserFloat(base+"passCombRelIsoPFFSRCorr",combRelIsoPFCorr < (d->isMuon()?0.4:0.5)); // FIXME: not the most elegant solution; hard coded right now to see how things evolve about lepton isolation requirements. 
       }
       string base = (zIdx==0?"d0.":"d1.");
       myCand.addUserFloat(base+"worstMuIso",worstMuIso);
