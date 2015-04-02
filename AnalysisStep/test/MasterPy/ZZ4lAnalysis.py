@@ -740,6 +740,7 @@ process.ZZCand = cms.EDProducer("ZZCandidateFiller",
 Z2MM = "abs(daughter(1).daughter(0).pdgId()*daughter(1).daughter(1).pdgId())==169" #Z2 = mumu
 Z2EE = "abs(daughter(1).daughter(0).pdgId()*daughter(1).daughter(1).pdgId())==121" #Z2 = ee
 Z2LL_SS = "daughter(1).daughter(0).pdgId()==daughter(1).daughter(1).pdgId()"       #Z2 = same-sign, same-flavour
+Z2LL_OS = "(daughter(1).daughter(0).pdgId + daughter(1).daughter(1).pdgId) == 0"   #Z2 = l+l-
 Z2MM_OS = "daughter(1).daughter(0).pdgId()*daughter(1).daughter(1).pdgId()==-169" #Z2 = mu+mu-
 Z2MM_SS = "daughter(1).daughter(0).pdgId()*daughter(1).daughter(1).pdgId()== 169" #Z2 = mu-mu-/mu+mu+
 Z2EE_OS = "daughter(1).daughter(0).pdgId()*daughter(1).daughter(1).pdgId()==-121" #Z2 = e+e-
@@ -779,6 +780,39 @@ CR_BASESEL = (CR_Z2MASS + "&&" +              # mass cuts on LL
               "daughter(1).mass>12 &&" +      # mZ2 >12
               M4l100 )                        # m4l>100 
 
+##### CR based on Z+2 opposite sign leptons that pass the loose selection #####
+
+# check weather the 2 leptons from Z2 pass the tight selection
+PASSD0 = "(userFloat('d1.d0.isGood') && userFloat('d1.d0.passCombRelIsoPFFSRCorr'))" # FIXME, passCombRelIsoPFFSRCorr result is hard coded
+PASSD1 = "(userFloat('d1.d1.isGood') && userFloat('d1.d1.passCombRelIsoPFFSRCorr'))" # FIXME, passCombRelIsoPFFSRCorr result is hard coded
+# ... and fill some useful variable needed for the CR logic
+FAILD0 = "!" + PASSD0
+FAILD1 = "!" + PASSD1
+BOTHFAIL = FAILD0 + "&&" + FAILD1
+PASSD0_XOR_PASSD1 = "((" + PASSD0 + "&&" + FAILD1 + ") || (" + PASSD1 + "&&" + FAILD0 + "))"
+PASSD0_OR_PASSD1  = "(" + PASSD0 + "||" + PASSD1 + ")"
+
+CR_BESTZLLos = (CR_BESTCANDBASE_AA    + "&&" +  
+                Z2LL_OS               + "&&" +  
+                CR_Z2MASS             + "&&" +
+                MLLALLCOMB            + "&&" +
+                PT20_10               + "&&" + 
+                "mass > 70 &&"               +
+                "daughter(1).mass>12" + "&&" +
+                SMARTMALLCOMB         )
+
+# CR 3P1F
+CR_BESTZLLos_3P1F = (CR_BESTZLLos + "&&" + PASSD0_OR_PASSD1)                 
+CR_ZLLosSEL_3P1F  = (CR_BASESEL    + "&&" + PASSD0_XOR_PASSD1)
+
+
+# CR 2P2F
+CR_BESTZLLos_2P2F   = (CR_BESTZLLos)
+CR_ZLLosSEL_2P2F    = (CR_BASESEL + "&&" + BOTHFAIL)
+
+################################################################################
+
+
 
 
 # Z (OSSF,both e/mu) + LL (any F/C, with no ID/iso); this is the starting point for control regions
@@ -801,12 +835,17 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
                          Z2ID
                          ),
       isBestCRZLLss = cms.string(CR_BESTZLLss),
+      isBestCRZLLos_2P2F = cms.string(CR_BESTZLLos_2P2F),
+      isBestCRZLLos_3P1F = cms.string(CR_BESTZLLos_3P1F)
+
     ),
     ZRolesByMass = cms.bool(False),  # daughter('Z1') = daughter(0)
     flags = cms.PSet(
       SR = cms.string(BESTCAND_AMONG),
       CRZLL =  cms.string(CR_BASESEL),             # with isBestCRZLL flag = no SIP CR
       CRZLLss = cms.string(CR_BASESEL),             #combine with proper isBestCRZLLss for AA ss/os CRss    
+      CRZLLos_2P2F = cms.string(CR_ZLLosSEL_2P2F),        
+      CRZLLos_3P1F = cms.string(CR_ZLLosSEL_3P1F),        
     )
 )
 
