@@ -410,6 +410,13 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       if(cand->userFloat("isBestCRZLLss")&&cand->userFloat("CRZLLss"))
 	set_bit(CRFLAG,CRZLLss);      
 
+      // A CRs
+      if(cand->userFloat("isBestCRZLLos_2P2F")&&cand->userFloat("CRZLLos_2P2F"))
+	set_bit(CRFLAG,CRZLLos_2P2F);      
+      if(cand->userFloat("isBestCRZLLos_3P1F")&&cand->userFloat("CRZLLos_3P1F"))
+	set_bit(CRFLAG,CRZLLos_3P1F);      
+
+
       // Older Z2 ID/noSIP CRs
       if(cand->userFloat("isBestCRZLL")&&cand->userFloat("CRZLL"))
 	set_bit(CRFLAG,CRZLL);
