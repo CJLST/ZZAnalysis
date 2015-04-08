@@ -298,8 +298,7 @@ if APPLYMUCORR == False :
 
 process.bareSoftMuons = cms.EDFilter("PATMuonRefSelector",
     src = cms.InputTag("cleanedMu"),
-    cut = cms.string("(isGlobalMuon || (isTrackerMuon && numberOfMatches>0)) &&" +
-                     "pt>5 && abs(eta)<2.4")
+    cut = cms.string("pt>5 && abs(eta)<2.4 && (isGlobalMuon || (isTrackerMuon && numberOfMatches>0)) && muonBestTrackType!=2")
 #    Lowering pT cuts
 #    cut = cms.string("(isGlobalMuon || (isTrackerMuon && numberOfMatches>0)) &&" +
 #                     "pt>3 && p>3.5 && abs(eta)<2.4")
@@ -331,7 +330,6 @@ process.softMuons = cms.EDProducer("MuFiller",
         isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<" + MUISOCUT),
 #        isGLB = cms.string("isGlobalMuon"),
 #        isTk = cms.string("isTrackerMuon"),
-#        matches = cms.string("numberOfMatches"),
     )
 )
 

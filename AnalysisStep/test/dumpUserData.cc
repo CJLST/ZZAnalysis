@@ -124,14 +124,15 @@ void dumpUserData::analyze(const Event & event, const EventSetup& eventSetup){
   cout << "Muons:" << endl;  
   for( pat::MuonCollection::const_iterator lep =muons->begin(); lep != muons->end(); ++lep ) {
     int i = distance(muons->begin(),lep);
-    cout << " " << i << " mu"  << ((lep->charge()>0)?"+ ":"- ") << " pt= " << lep->pt() << " eta= " << lep->eta() << " phi= " << lep->phi();
+    cout << " " << i << " mu"  << ((lep->charge()>0)?"+ ":"- ") << " pt= " << lep->pt() << " eta= " << lep->eta() << " phi= " << lep->phi() << " BTT= " << lep->muonBestTrackType();
+//	 << " BTPT: " <<  lep->muonBestTrack()->pt() << " " << lep->innerTrack()->pt() << " " <<  lep->innerTrack()->eta() << " " << lep->innerTrack()->phi();
     dumpUserVal(*lep);
     if (lep->hasUserData("FSRCandidates")){
       const PhotonPtrVector* fsrEle = lep->userData<PhotonPtrVector>("FSRCandidates");
       if (fsrEle->size()) {
-	cout << " Photons: "; // fsrEle->size() << endl;
+	cout << " Photons: pT=";	
 	for (PhotonPtrVector::const_iterator g = fsrEle->begin(); g!=fsrEle->end(); ++g) {
-	  cout << " (pt=" << (*g)->pt() ;//<< " isFromMu=" << (*g)->isFromMuon() << ")";
+	  cout << " " << (*g)->pt();
 	}
       }
     }

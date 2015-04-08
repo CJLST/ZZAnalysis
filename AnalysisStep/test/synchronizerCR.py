@@ -7,8 +7,7 @@ import os, sys
 from syncUtils import *
 
 # See interface/FinalStates.h for the convention
-CRdict = {"CRMMMMss":5, "CREEEEss":7, "CREEMMss":9, "CRMMEEss":11, "CRZLLss":21}
-# CRdict = {"CREEMMss":9}
+CRdict = {"CRZLLss":21, "CRZLLos_2P2F":22, "CRZLLos_3P1F":24}
 
 # define function for parsing options
 def parseOptions():

@@ -105,8 +105,8 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     const Vertex* vertex = 0;
     if (vertexs->size()>0) {
       vertex = &(vertexs->front());
-      dxy = fabs(l.innerTrack()->dxy(vertex->position()));
-      dz  = fabs(l.innerTrack()->dz(vertex->position()));
+      dxy = fabs(l.muonBestTrack()->dxy(vertex->position()));
+      dz  = fabs(l.muonBestTrack()->dz(vertex->position()));
     }
 
     //--- Trigger matching
