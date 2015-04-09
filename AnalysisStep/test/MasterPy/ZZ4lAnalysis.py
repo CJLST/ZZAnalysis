@@ -69,6 +69,9 @@ if SELSETUP=="Legacy" and not BESTCANDCOMPARATOR=="byBestZ1bestZ2":
     BESTCANDCOMPARATOR = "byBestZ1bestZ2"
 
 
+# Set to True to make candidates with the full combinatorial of loose leptons (for debug; much slower)
+KEEPLOOSELEP = False
+
 # The isolation cuts for electrons and muons
 ELEISOCUT = "0.5"
 MUISOCUT = "0.4"
@@ -450,7 +453,7 @@ process.cleanSoftElectrons = cms.EDProducer("PATElectronCleaner",
         muons = cms.PSet(
            src       = cms.InputTag("softMuons"), # Start from loose lepton def
            algorithm = cms.string("byDeltaR"),
-           preselection        = cms.string("(isGlobalMuon || userFloat('isPFMuon'))"), #
+           preselection        = cms.string("(isGlobalMuon || userFloat('isPFMuon'))&&userFloat('SIP')<4"), #
            deltaR              = cms.double(0.05),  
            checkRecoComponents = cms.bool(False), # don't check if they share some AOD object ref
            pairCut             = cms.string(""),
@@ -467,7 +470,18 @@ process.cleanSoftElectrons = cms.EDProducer("PATElectronCleaner",
 ### Search for FSR candidates
 ### ----------------------------------------------------------------------
 
-process.load("UFHZZAnalysisRun2.FSRPhotons.fsrPhotons_cff")
+# Create a photon collection; cfg extracted from "UFHZZAnalysisRun2.FSRPhotons.fsrPhotons_cff"
+process.fsrPhotons = cms.EDProducer("FSRPhotonProducer",
+    srcCands = cms.InputTag("packedPFCandidates"),
+    muons = cms.InputTag("slimmedMuons"), 
+    ptThresh = cms.double(2.0),
+    extractMuonFSR = cms.bool(False),
+)
+import PhysicsTools.PatAlgos.producersLayer1.pfParticleProducer_cfi 
+process.boostedFsrPhotons = PhysicsTools.PatAlgos.producersLayer1.pfParticleProducer_cfi.patPFParticles.clone(
+    pfCandidateSource = 'fsrPhotons'
+)
+
 process.appendPhotons = cms.EDProducer("LeptonPhotonMatcher",
     muonSrc = cms.InputTag("softMuons"),
     electronSrc = cms.InputTag("cleanSoftElectrons"),
@@ -524,6 +538,12 @@ process.bareZCand = cms.EDProducer("CandViewShallowCloneCombiner",
     cut = cms.string('mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId())'),
     checkCharge = cms.bool(True)
 )
+
+#if KEEPLOOSELEP:
+#    process.bareZCand.cut = cms.string('mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId())')
+#else:
+#    process.bareZCand.cut = cms.string('mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId()) &&' + TWOGOODLEPTONS)
+    
 process.ZCand = cms.EDProducer("ZCandidateFiller",
     src = cms.InputTag("bareZCand"),
     sampleType = cms.int32(SAMPLE_TYPE),                     
@@ -884,7 +904,8 @@ process.PVfilter =  cms.Path(process.preSkimCounter+process.goodPrimaryVertices)
 process.Candidates = cms.Path(
        process.muons             +
        process.electrons         + process.cleanSoftElectrons +
-       process.fsrPhotonSequence + process.appendPhotons     +
+       process.fsrPhotons        + process.boostedFsrPhotons +
+       process.appendPhotons     +
        process.softLeptons       +
 # Build 4-lepton candidates
        process.bareZCand         + process.ZCand     +  

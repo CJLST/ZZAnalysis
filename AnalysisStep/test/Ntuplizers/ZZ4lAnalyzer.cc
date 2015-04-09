@@ -563,13 +563,19 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
 		       << getUserFloat(&*lep,"PFPhotonIso") << ":"
 		       << (abs(id)==11?getUserFloat(&*lep,"rho"):getUserFloat(&*lep,"PFPUChargedHadIso")) << ":" 
 		       << setprecision(3) << getUserFloat(&*lep,"combRelIsoPF") << ":" << getUserFloat(&*lep,"BDT");
+
+// 	const pat::Electron* ele = dynamic_cast<const pat::Electron*>(&*lep);
+// 	if (ele) {
+// 	  const reco::GenParticle * gp =ele->genLepton();
+// 	  if (gp) leptonSyncFile << ":" << gp->pdgId();
+// 	}
 	
 	const PhotonPtrVector* gammas = getUserPhotons(&*lep);
 	if (gammas) {
 	  const pat::PFParticle* gamma = (std::max_element(gammas->begin(), gammas->end(), lesspT))->get();
 	  double dR = ROOT::Math::VectorUtil::DeltaR(gamma->momentum(),lep->momentum());
-	  float gRelIso = (gamma->userFloat("fsrPhotonPFIsoChHadPUNoPU03pt02") + gamma->userFloat("fsrPhotonPFIsoNHadPhoton03")) / gamma->pt();
-	  leptonSyncFile << ":" << setprecision(2) << gamma->pt() << ":" << dR << ":" << gRelIso; 
+	  //	  float gRelIso = (gamma->userFloat("fsrPhotonPFIsoChHadPUNoPU03pt02") + gamma->userFloat("fsrPhotonPFIsoNHadPhoton03")) / gamma->pt();
+	  leptonSyncFile << ":" << setprecision(2) << gamma->pt() << ":" << dR; // << ":" << gRelIso; Must be recomputed
 // 	} else {
 // 	  leptonSyncFile << "0.00:0.00:0.00";
 	}

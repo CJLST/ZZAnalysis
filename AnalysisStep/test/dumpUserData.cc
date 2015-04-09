@@ -124,7 +124,17 @@ void dumpUserData::analyze(const Event & event, const EventSetup& eventSetup){
   cout << "Muons:" << endl;  
   for( pat::MuonCollection::const_iterator lep =muons->begin(); lep != muons->end(); ++lep ) {
     int i = distance(muons->begin(),lep);
-    cout << " " << i << " mu"  << ((lep->charge()>0)?"+ ":"- ") << " pt= " << lep->pt() << " eta= " << lep->eta() << " phi= " << lep->phi() << " BTT= " << lep->muonBestTrackType();
+
+    int genID=0;
+    float genPT=0.;
+    const reco::GenParticle * gp =lep->genLepton();
+    if (gp) {
+      genID=gp->pdgId();
+      genPT=gp->pt();
+    }
+
+    cout << " " << i << " mu"  << ((lep->charge()>0)?"+ ":"- ") << " pt= " << lep->pt() << " eta= " << lep->eta() << " phi= " << lep->phi() << " BTT= " << lep->muonBestTrackType() << " genID= " << genID <<  " genPT= " << genPT;
+
 //	 << " BTPT: " <<  lep->muonBestTrack()->pt() << " " << lep->innerTrack()->pt() << " " <<  lep->innerTrack()->eta() << " " << lep->innerTrack()->phi();
     dumpUserVal(*lep);
     if (lep->hasUserData("FSRCandidates")){
@@ -142,7 +152,17 @@ void dumpUserData::analyze(const Event & event, const EventSetup& eventSetup){
   cout << "Electrons:" << endl;
   for( pat::ElectronCollection::const_iterator lep = electrons->begin(); lep != electrons->end(); ++lep ) {
     int i = distance(electrons->begin(),lep);
-    cout << " " << i << " e"  << ((lep->charge()>0)?"+  ":"-  ") << " pt= " << lep->pt() << " eta= " << lep->eta() << " phi= " << lep->phi();
+
+    int genID=0;
+    float genPT=0.;
+    const reco::GenParticle * gp =lep->genLepton();
+    if (gp) {
+      genID=gp->pdgId();
+      genPT=gp->pt();
+    }
+
+    cout << " " << i << " e"  << ((lep->charge()>0)?"+  ":"-  ") << " pt= " << lep->pt() << " eta= " << lep->eta() << " phi= " << lep->phi() << " genID= " << genID <<  " genPT= " << genPT;
+
     dumpUserVal(*lep);
     if (lep->hasUserData("FSRCandidates")){
       const PhotonPtrVector* fsrEle = lep->userData<PhotonPtrVector>("FSRCandidates");
