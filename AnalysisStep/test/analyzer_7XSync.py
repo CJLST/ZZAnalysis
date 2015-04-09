@@ -33,7 +33,7 @@ process.source.fileNames = cms.untracked.vstring(
 
     '/store/mc/Phys14DR/GluGluToHToZZTo4L_M-125_13TeV-powheg-pythia6/MINIAODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/00000/3295EF7C-2070-E411-89C4-7845C4FC35DB.root' # Official sync file for signal
 
-#    'file:/afs/cern.ch/work/g/gortona/public/miniAODPhys14/DYJetsToLL_M-50_13TeV_skimmed.root' # Official sync file for CR
+#    'file:/afs/cern.ch/user/g/gortona/work/public/miniAODPhys14/DYJetsToLL_M-50_13TeV_3leptons.root' # Official sync file for CR
 
     )
 
@@ -68,28 +68,24 @@ process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
      candidateSrcs = cms.PSet(
         Z     = cms.InputTag("ZCand"),                                  
         ZZ  = cms.InputTag("ZZCand"),
+#        ZLL  = cms.InputTag("ZLLCand"),
      )
 )
 
-
-#Print MC history
-#process.mch = cms.EndPath(process.printTree)
-
-#Dump reconstructed variables
-#process.appendPhotons.debug = cms.untracked.bool(True)
-#process.dump = cms.Path(process.dumpUserData)
-
 # Create lepton sync file
 process.PlotsZZ.dumpForSync = True;
-
-
-# replace the paths in analyzer.py
-#process.p = cms.EndPath( process.Plots4mu + process.Plots4e + process.Plots2e2mu )
-process.p = cms.EndPath( process.PlotsZZ)
-process.trees = cms.EndPath(process.ZZ4muTree * process.ZZ4eTree * process.ZZ2e2muTree )
-
 
 # Also process CRs
 #process.CRPath = cms.Path(process.CR)
 #process.CRtrees = cms.EndPath(process.CRZLLTree + process.CRZLTree)
 
+# replace the paths in analyzer.py
+process.p = cms.EndPath( process.PlotsZZ)
+process.trees = cms.EndPath(process.ZZ4muTree * process.ZZ4eTree * process.ZZ2e2muTree )
+
+#Dump reconstructed variables
+#process.appendPhotons.debug = cms.untracked.bool(True)
+#process.dump = cms.Path(process.dumpUserData)
+
+#Print MC history
+#process.mch = cms.EndPath(process.printTree)

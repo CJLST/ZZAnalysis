@@ -70,7 +70,7 @@ if SELSETUP=="Legacy" and not BESTCANDCOMPARATOR=="byBestZ1bestZ2":
 
 
 # Set to True to make candidates with the full combinatorial of loose leptons (for debug; much slower)
-KEEPLOOSELEP = False
+KEEPLOOSECOMB = False
 
 # The isolation cuts for electrons and muons
 ELEISOCUT = "0.5"
@@ -533,16 +533,16 @@ Z1PRESEL    = (ZLEPTONSEL + " && mass > 40 && mass < 120") # Note: this is witho
 ### ----------------------------------------------------------------------
 
 # l+l- (SFOS, both e and mu)
-process.bareZCand = cms.EDProducer("CandViewShallowCloneCombiner",
+process.bareZCand = cms.EDProducer("PATCandViewShallowCloneCombiner",
     decay = cms.string('softLeptons@+ softLeptons@-'),
-    cut = cms.string('mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId())'),
+    cut = cms.string('0'), # see below
     checkCharge = cms.bool(True)
 )
 
-#if KEEPLOOSELEP:
-#    process.bareZCand.cut = cms.string('mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId())')
-#else:
-#    process.bareZCand.cut = cms.string('mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId()) &&' + TWOGOODLEPTONS)
+if KEEPLOOSECOMB:
+    process.bareZCand.cut = cms.string('mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId())') # Propagate combinations of loose leptons
+else:
+    process.bareZCand.cut = cms.string("mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId()) && daughter(0).masterClone.userFloat('isGood') && daughter(1).masterClone.userFloat('isGood')") # Just keep good leptons
     
 process.ZCand = cms.EDProducer("ZCandidateFiller",
     src = cms.InputTag("bareZCand"),
