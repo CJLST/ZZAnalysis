@@ -157,7 +157,7 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       for (unsigned int j = 0; j< electronHandle->size(); ++j){
 	const pat::Electron* e = &((*electronHandle)[j]);
 	if (e->userFloat("isSIP")){
-	  double dR = ROOT::Math::VectorUtil::DeltaR(e->momentum(),g->momentum());
+	  double dR = reco::deltaR(*(e->superCluster()), *g);
 	  if ((fabs(g->eta() - e->superCluster()->eta())<0.05 && fabs(reco::deltaPhi(g->phi(), e->superCluster()->phi()))<2.) || dR<0.15) {	    
 	    SCVeto=true;
   	    if (debug) cout << "SC veto: "<< g->pt() << " " << e->pt() << " " << dR << " "
