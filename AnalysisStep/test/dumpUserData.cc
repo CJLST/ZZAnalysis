@@ -133,7 +133,7 @@ void dumpUserData::analyze(const Event & event, const EventSetup& eventSetup){
       genPT=gp->pt();
     }
 
-    cout << " " << i << " mu"  << ((lep->charge()>0)?"+ ":"- ") << " pt= " << lep->pt() << " eta= " << lep->eta() << " phi= " << lep->phi() << " BTT= " << lep->muonBestTrackType() << " genID= " << genID <<  " genPT= " << genPT;
+    cout << "#" << i << " mu"  << ((lep->charge()>0)?"+ ":"- ") << " pt= " << lep->pt() << " eta= " << lep->eta() << " phi= " << lep->phi() << " BTT= " << lep->muonBestTrackType() << " genID= " << genID <<  " genPT= " << genPT;
 
 //	 << " BTPT: " <<  lep->muonBestTrack()->pt() << " " << lep->innerTrack()->pt() << " " <<  lep->innerTrack()->eta() << " " << lep->innerTrack()->phi();
     dumpUserVal(*lep);
@@ -161,7 +161,7 @@ void dumpUserData::analyze(const Event & event, const EventSetup& eventSetup){
       genPT=gp->pt();
     }
 
-    cout << " " << i << " e"  << ((lep->charge()>0)?"+  ":"-  ") << " pt= " << lep->pt() << " eta= " << lep->eta() << " phi= " << lep->phi() << " genID= " << genID <<  " genPT= " << genPT;
+    cout << "#" << i << " e"  << ((lep->charge()>0)?"+  ":"-  ") << " pt= " << lep->pt() << " eta= " << lep->eta() << " phi= " << lep->phi() << " genID= " << genID <<  " genPT= " << genPT;
 
     dumpUserVal(*lep);
     if (lep->hasUserData("FSRCandidates")){
@@ -208,7 +208,7 @@ void dumpUserData::analyze(const Event & event, const EventSetup& eventSetup){
 void dumpUserData::dumpCandidates(const View<pat::CompositeCandidate>& cands) {
   for( View<pat::CompositeCandidate>::const_iterator cand = cands.begin(); cand != cands.end(); ++ cand ) {
     int i = distance(cands.begin(),cand);
-    cout << " " << i << " mass: " << cand->mass() << " m0=" << cand->daughter(0)->mass() << " m1=" << cand->daughter(1)->mass()
+    cout << "#" << i << " mass: " << cand->mass() << " m0=" << cand->daughter(0)->mass() << " m1=" << cand->daughter(1)->mass()
 	 << " pt0: " <<  cand->daughter(0)->pt() << " pt1: " <<  cand->daughter(1)->pt()
 	 << " id1: " << cand->daughter(0)->pdgId() << " id2: " << cand->daughter(1)->pdgId();
     dumpUserVal(*cand);
