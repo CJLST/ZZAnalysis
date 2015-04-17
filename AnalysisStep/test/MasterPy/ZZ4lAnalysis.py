@@ -69,6 +69,9 @@ if SELSETUP=="Legacy" and not BESTCANDCOMPARATOR=="byBestZ1bestZ2":
     BESTCANDCOMPARATOR = "byBestZ1bestZ2"
 
 
+# Set to True to make candidates with the full combinatorial of loose leptons (for debug; much slower)
+KEEPLOOSECOMB = False
+
 # The isolation cuts for electrons and muons
 ELEISOCUT = "0.5"
 MUISOCUT = "0.4"
@@ -298,8 +301,7 @@ if APPLYMUCORR == False :
 
 process.bareSoftMuons = cms.EDFilter("PATMuonRefSelector",
     src = cms.InputTag("cleanedMu"),
-    cut = cms.string("(isGlobalMuon || (isTrackerMuon && numberOfMatches>0)) &&" +
-                     "pt>5 && abs(eta)<2.4")
+    cut = cms.string("pt>5 && abs(eta)<2.4 && (isGlobalMuon || (isTrackerMuon && numberOfMatches>0)) && muonBestTrackType!=2")
 #    Lowering pT cuts
 #    cut = cms.string("(isGlobalMuon || (isTrackerMuon && numberOfMatches>0)) &&" +
 #                     "pt>3 && p>3.5 && abs(eta)<2.4")
@@ -331,7 +333,6 @@ process.softMuons = cms.EDProducer("MuFiller",
         isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<" + MUISOCUT),
 #        isGLB = cms.string("isGlobalMuon"),
 #        isTk = cms.string("isTrackerMuon"),
-#        matches = cms.string("numberOfMatches"),
     )
 )
 
@@ -452,7 +453,7 @@ process.cleanSoftElectrons = cms.EDProducer("PATElectronCleaner",
         muons = cms.PSet(
            src       = cms.InputTag("softMuons"), # Start from loose lepton def
            algorithm = cms.string("byDeltaR"),
-           preselection        = cms.string("(isGlobalMuon || userFloat('isPFMuon'))"), #
+           preselection        = cms.string("userFloat('isGood')"),
            deltaR              = cms.double(0.05),  
            checkRecoComponents = cms.bool(False), # don't check if they share some AOD object ref
            pairCut             = cms.string(""),
@@ -469,7 +470,18 @@ process.cleanSoftElectrons = cms.EDProducer("PATElectronCleaner",
 ### Search for FSR candidates
 ### ----------------------------------------------------------------------
 
-process.load("UFHZZAnalysisRun2.FSRPhotons.fsrPhotons_cff")
+# Create a photon collection; cfg extracted from "UFHZZAnalysisRun2.FSRPhotons.fsrPhotons_cff"
+process.fsrPhotons = cms.EDProducer("FSRPhotonProducer",
+    srcCands = cms.InputTag("packedPFCandidates"),
+    muons = cms.InputTag("slimmedMuons"), 
+    ptThresh = cms.double(2.0),
+    extractMuonFSR = cms.bool(False),
+)
+import PhysicsTools.PatAlgos.producersLayer1.pfParticleProducer_cfi 
+process.boostedFsrPhotons = PhysicsTools.PatAlgos.producersLayer1.pfParticleProducer_cfi.patPFParticles.clone(
+    pfCandidateSource = 'fsrPhotons'
+)
+
 process.appendPhotons = cms.EDProducer("LeptonPhotonMatcher",
     muonSrc = cms.InputTag("softMuons"),
     electronSrc = cms.InputTag("cleanSoftElectrons"),
@@ -521,11 +533,17 @@ Z1PRESEL    = (ZLEPTONSEL + " && mass > 40 && mass < 120") # Note: this is witho
 ### ----------------------------------------------------------------------
 
 # l+l- (SFOS, both e and mu)
-process.bareZCand = cms.EDProducer("CandViewShallowCloneCombiner",
+process.bareZCand = cms.EDProducer("PATCandViewShallowCloneCombiner",
     decay = cms.string('softLeptons@+ softLeptons@-'),
-    cut = cms.string('mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId())'),
+    cut = cms.string('0'), # see below
     checkCharge = cms.bool(True)
 )
+
+if KEEPLOOSECOMB:
+    process.bareZCand.cut = cms.string('mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId())') # Propagate combinations of loose leptons
+else:
+    process.bareZCand.cut = cms.string("mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId()) && daughter(0).masterClone.userFloat('isGood') && daughter(1).masterClone.userFloat('isGood')") # Just keep good leptons
+    
 process.ZCand = cms.EDProducer("ZCandidateFiller",
     src = cms.InputTag("bareZCand"),
     sampleType = cms.int32(SAMPLE_TYPE),                     
@@ -888,7 +906,8 @@ process.PVfilter =  cms.Path(process.preSkimCounter+process.goodPrimaryVertices)
 process.Candidates = cms.Path(
        process.muons             +
        process.electrons         + process.cleanSoftElectrons +
-       process.fsrPhotonSequence + process.appendPhotons     +
+       process.fsrPhotons        + process.boostedFsrPhotons +
+       process.appendPhotons     +
        process.softLeptons       +
 # Build 4-lepton candidates
        process.bareZCand         + process.ZCand     +  

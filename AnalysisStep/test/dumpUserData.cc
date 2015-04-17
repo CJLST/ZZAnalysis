@@ -124,14 +124,25 @@ void dumpUserData::analyze(const Event & event, const EventSetup& eventSetup){
   cout << "Muons:" << endl;  
   for( pat::MuonCollection::const_iterator lep =muons->begin(); lep != muons->end(); ++lep ) {
     int i = distance(muons->begin(),lep);
-    cout << " " << i << " mu"  << ((lep->charge()>0)?"+ ":"- ") << " pt= " << lep->pt() << " eta= " << lep->eta() << " phi= " << lep->phi();
+
+    int genID=0;
+    float genPT=0.;
+    const reco::GenParticle * gp =lep->genLepton();
+    if (gp) {
+      genID=gp->pdgId();
+      genPT=gp->pt();
+    }
+
+    cout << "#" << i << " mu"  << ((lep->charge()>0)?"+ ":"- ") << " pt= " << lep->pt() << " eta= " << lep->eta() << " phi= " << lep->phi() << " BTT= " << lep->muonBestTrackType() << " genID= " << genID <<  " genPT= " << genPT;
+
+//	 << " BTPT: " <<  lep->muonBestTrack()->pt() << " " << lep->innerTrack()->pt() << " " <<  lep->innerTrack()->eta() << " " << lep->innerTrack()->phi();
     dumpUserVal(*lep);
     if (lep->hasUserData("FSRCandidates")){
       const PhotonPtrVector* fsrEle = lep->userData<PhotonPtrVector>("FSRCandidates");
       if (fsrEle->size()) {
-	cout << " Photons: "; // fsrEle->size() << endl;
+	cout << " Photons: pT=";	
 	for (PhotonPtrVector::const_iterator g = fsrEle->begin(); g!=fsrEle->end(); ++g) {
-	  cout << " (pt=" << (*g)->pt() ;//<< " isFromMu=" << (*g)->isFromMuon() << ")";
+	  cout << " " << (*g)->pt();
 	}
       }
     }
@@ -141,7 +152,17 @@ void dumpUserData::analyze(const Event & event, const EventSetup& eventSetup){
   cout << "Electrons:" << endl;
   for( pat::ElectronCollection::const_iterator lep = electrons->begin(); lep != electrons->end(); ++lep ) {
     int i = distance(electrons->begin(),lep);
-    cout << " " << i << " e"  << ((lep->charge()>0)?"+  ":"-  ") << " pt= " << lep->pt() << " eta= " << lep->eta() << " phi= " << lep->phi();
+
+    int genID=0;
+    float genPT=0.;
+    const reco::GenParticle * gp =lep->genLepton();
+    if (gp) {
+      genID=gp->pdgId();
+      genPT=gp->pt();
+    }
+
+    cout << "#" << i << " e"  << ((lep->charge()>0)?"+  ":"-  ") << " pt= " << lep->pt() << " eta= " << lep->eta() << " phi= " << lep->phi() << " genID= " << genID <<  " genPT= " << genPT;
+
     dumpUserVal(*lep);
     if (lep->hasUserData("FSRCandidates")){
       const PhotonPtrVector* fsrEle = lep->userData<PhotonPtrVector>("FSRCandidates");
@@ -187,7 +208,7 @@ void dumpUserData::analyze(const Event & event, const EventSetup& eventSetup){
 void dumpUserData::dumpCandidates(const View<pat::CompositeCandidate>& cands) {
   for( View<pat::CompositeCandidate>::const_iterator cand = cands.begin(); cand != cands.end(); ++ cand ) {
     int i = distance(cands.begin(),cand);
-    cout << " " << i << " mass: " << cand->mass() << " m0=" << cand->daughter(0)->mass() << " m1=" << cand->daughter(1)->mass()
+    cout << "#" << i << " mass: " << cand->mass() << " m0=" << cand->daughter(0)->mass() << " m1=" << cand->daughter(1)->mass()
 	 << " pt0: " <<  cand->daughter(0)->pt() << " pt1: " <<  cand->daughter(1)->pt()
 	 << " id1: " << cand->daughter(0)->pdgId() << " id2: " << cand->daughter(1)->pdgId();
     dumpUserVal(*cand);
