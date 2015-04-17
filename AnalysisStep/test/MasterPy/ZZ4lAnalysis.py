@@ -789,8 +789,10 @@ PASSD1 = "(userFloat('d1.d1.isGood') && userFloat('d1.d1.passCombRelIsoPFFSRCorr
 FAILD0 = "!" + PASSD0
 FAILD1 = "!" + PASSD1
 BOTHFAIL = FAILD0 + "&&" + FAILD1
+BOTHPASS = PASSD0 + "&&" + PASSD1
 PASSD0_XOR_PASSD1 = "((" + PASSD0 + "&&" + FAILD1 + ") || (" + PASSD1 + "&&" + FAILD0 + "))"
 PASSD0_OR_PASSD1  = "(" + PASSD0 + "||" + PASSD1 + ")"
+
 
 CR_BESTZLLos = (CR_BESTCANDBASE_AA    + "&&" +  
                 Z2LL_OS               + "&&" +  
