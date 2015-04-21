@@ -133,7 +133,7 @@ void dumpUserData::analyze(const Event & event, const EventSetup& eventSetup){
       genPT=gp->pt();
     }
 
-    cout << "#" << i << " mu"  << ((lep->charge()>0)?"+ ":"- ") << " pt= " << lep->pt() << " eta= " << lep->eta() << " phi= " << lep->phi() << " BTT= " << lep->muonBestTrackType() << " genID= " << genID <<  " genPT= " << genPT;
+    cout << "#" << i << " mu"  << ((lep->charge()>0)?"+ ":"- ") << " pt= " << lep->pt() << " eta= " << lep->eta() << " phi= " << lep->phi() << " GLB= " << lep->isGlobalMuon() << " TK= " << lep->isTrackerMuon() << " matches= " << lep->numberOfMatches() << " BTT= " << lep->muonBestTrackType() << " genID= " << genID <<  " genPT= " << genPT;
 
 //	 << " BTPT: " <<  lep->muonBestTrack()->pt() << " " << lep->innerTrack()->pt() << " " <<  lep->innerTrack()->eta() << " " << lep->innerTrack()->phi();
     dumpUserVal(*lep);

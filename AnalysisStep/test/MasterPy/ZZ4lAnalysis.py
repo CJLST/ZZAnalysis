@@ -70,7 +70,10 @@ if SELSETUP=="Legacy" and not BESTCANDCOMPARATOR=="byBestZ1bestZ2":
 
 
 # Set to True to make candidates with the full combinatorial of loose leptons (for debug; much slower)
-KEEPLOOSECOMB = False
+try:
+    KEEPLOOSECOMB
+except NameError:
+    KEEPLOOSECOMB = False
 
 # The isolation cuts for electrons and muons
 ELEISOCUT = "0.5"
@@ -796,7 +799,7 @@ CR_BASESEL = (CR_Z2MASS + "&&" +              # mass cuts on LL
               MLLALLCOMB + "&&" +             # mass cut on all lepton pairs
               PT20_10    + "&&" +             # pT> 20/10 over all 4 l
               "daughter(1).mass>12 &&" +      # mZ2 >12
-              M4l100 )                        # m4l>100 
+              "mass>70" )                     # m4l cut
 
 ##### CR based on Z+2 opposite sign leptons that pass the loose selection #####
 
