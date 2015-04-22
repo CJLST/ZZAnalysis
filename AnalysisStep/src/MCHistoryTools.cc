@@ -206,6 +206,15 @@ MCHistoryTools::init() {
       }
     }
 
+
+    if (id==23 || id==24) {
+      if (p->mother()!=0 && p->mother()->pdgId()!=id) {
+	int pcode = getParentCode((const GenParticle*)&*p);
+	if (pcode!=25) theAssociatedV.push_back(&*p);
+      }
+    }
+
+
     //--- H
     if (id==25) {
       if (theGenH==0 )theGenH = &*p;
@@ -215,10 +224,11 @@ MCHistoryTools::init() {
       
     //--- Z
     } else if (id==23 && p->mother()!=0 && p->mother()->pdgId()!=23) {// avoid double counting
-      if ((processID==24 || processID==900024) && p->mother()->pdgId()!=25) { //This is an associated Z
-	theAssociatedV.push_back(&*p);
+      if ((processID==24 || processID==900024 || processID==9999) && p->mother()->pdgId()!=25) { //This is an associated Z
+	//FIXME	this is now handled separately!
+	// theAssociatedV.push_back(&*p);
       } else { //ZZ or H->ZZ
-	theGenZ.push_back(&*p);
+	theGenZ.push_back(&*p); //FIXME this should be dropped!
       }
 
     // --- H in some JHU samples has id=39 instead of 25
@@ -231,7 +241,7 @@ MCHistoryTools::init() {
     else if ((id== 13 || id==11 || id==15) && ((p->mother()!=0 && p->mother()->pdgId()==23) || ((processID==661||processID==900661) && p->status()==3))) { 
 
       // ZH : leptons from the associated Z are stored in a separate list
-      if ((processID==24||processID==900024) && p->mother()!=0 && p->mother()->mother()!=0 && p->mother()->mother()->pdgId()!=25) {
+      if ((processID==24||processID==900024||processID==9999) && p->mother()!=0 && p->mother()->mother()!=0 && p->mother()->mother()->pdgId()!=25) {
 	theAssociatedLeps.push_back(&*p);
 	continue;
       } 
@@ -255,7 +265,7 @@ MCHistoryTools::init() {
   bool isOK=true;
   // Check consistency of what we have collected (FIXME: remove Z stuff)
   if (theGenLeps.size()!=theGenZ.size()*2) {
-    if (processID==24 || processID==26 || processID==121 || processID==122) {
+    if (processID==24 || processID==26 || processID==121 || processID==122 || processID==9999) {
       // For 2012, VH/ttH samples are inclusive in Z decays, assume everything is fine
     } else if (processID==661 || processID==900661 || processID==0 || processID==1 || processID==2 || processID==66 || processID==900101 || processID==900102 || processID==900103) {
       // Samples which miss Zs in the MC history, assume everything is fine      
@@ -440,7 +450,7 @@ MCHistoryTools::genFinalState(){
       gen_finalState = EEMM;
     } else if (gen_Z1_flavour == 15 || gen_Z2_flavour == 15) {
       gen_finalState = LLTT;
-    } else if (processID==24 || processID==26 || processID==121 || processID==122) { // ZH 8TeV samples are inclusive in Z decays.
+    } else if (processID==24 || processID==26 || processID==121 || processID==122 || processID==9999) { // ZH 8TeV samples are inclusive in Z decays.
       return NONE;
     } else if (processID==661) { // in phantom samples, some of the 4 leptons may not be listed as coming from the 2 Z. Proceed to the following logic based on leptons.
       
@@ -476,13 +486,22 @@ MCHistoryTools::genAssociatedFS(){
   if (!ismc) return -1;  
   init();
 
-  int id=0;
-  if (processID==24){
-    if (theAssociatedV.size()!=1) {
-      cout << "ERROR: ZH with " << theAssociatedV.size() << " associated V" << endl;  
-    } else {
-      id = abs(theAssociatedV.front()->daughter(0)->pdgId());
+  if (theGenH==0) return -1;
+
+
+  int id=-1;
+  if (theAssociatedV.size()>0) {
+    // FIXME should check that nothing is wrong
+    //    if (theAssociatedV.size()>1) cout << "ERROR: associatedV = " << theAssociatedV.size() << endl;
+
+    const reco::Candidate* genV = theAssociatedV.front();
+    const reco::Candidate* dau = genV->daughter(0);
+    while (dau!=0 && dau->pdgId() == genV->pdgId()) { // Find the boson's flavour
+      genV=dau;
+      dau=genV->daughter(0);
     }
+    id = abs(dau->pdgId());
+  
   }
   
   return id;
