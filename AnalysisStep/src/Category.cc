@@ -1,7 +1,8 @@
 #include <ZZAnalysis/AnalysisStep/interface/Category.h>
 #include <cmath>
 
-int category(
+//int category(
+extern "C" int category(
 	     int nExtraLeptons,
 	     float ZZPt,
 	     float ZZMass,

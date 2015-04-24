@@ -1,7 +1,8 @@
 #ifndef CATEGORY_H
 #define CATEGORY_H
 
-int category(
+//int category(
+extern "C" int category(
 	     int nExtraLeptons,
 	     float ZZPt,
 	     float ZZMass,
