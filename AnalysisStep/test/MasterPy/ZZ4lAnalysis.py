@@ -853,10 +853,6 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
     bestCandComparator = cms.string(BESTCANDCOMPARATOR),
     bestCandAmong = cms.PSet(
       isBestCand    = cms.string("0"), #do not set SR best cand flag
-      isBestCRZLL = cms.string(CR_BESTCANDBASE+ "&&" + # FIXME: To be revised!!!
-                         "userFloat('d0.isBestZ') &&"+
-                         Z2ID
-                         ),
       isBestCRZLLss = cms.string(CR_BESTZLLss),
       isBestCRZLLos_2P2F = cms.string(CR_BESTZLLos_2P2F),
       isBestCRZLLos_3P1F = cms.string(CR_BESTZLLos_3P1F)
@@ -865,7 +861,6 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
     ZRolesByMass = cms.bool(False),  # daughter('Z1') = daughter(0)
     flags = cms.PSet(
       SR = cms.string(BESTCAND_AMONG),
-      CRZLL =  cms.string(CR_BASESEL),             # with isBestCRZLL flag = no SIP CR
       CRZLLss = cms.string(CR_BASESEL),             #combine with proper isBestCRZLLss for AA ss/os CRss    
       CRZLLos_2P2F = cms.string(CR_ZLLosSEL_2P2F),        
       CRZLLos_3P1F = cms.string(CR_ZLLosSEL_3P1F),        

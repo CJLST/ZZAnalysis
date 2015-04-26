@@ -37,7 +37,7 @@ class MCHistoryTools {
   /// ZZInAcceptance = 60, 120 on MZ21, MZ2 (mass from the MC Z)
   /// ZZ4lInEtaAcceptance = eta cut on the 4 leptons (from the direct Z daughter)
   /// ZZ4lInEtaPtAcceptance = eta, pt cuts on the 4 leptons (from the direct Z daughter)
-  void genAcceptance(bool& gen_ZZInAcceptance, bool& gen_ZZ4lInEtaAcceptance, bool& gen_ZZ4lInEtaPtAcceptance, bool& gen_m4l_180);
+  void genAcceptance(bool& gen_ZZ4lInEtaAcceptance, bool& gen_ZZ4lInEtaPtAcceptance);
 
   const reco::Candidate * genH() {init(); return theGenH;}
 

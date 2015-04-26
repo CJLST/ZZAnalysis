@@ -44,7 +44,7 @@ def loop():
     chanCounter = {}
 
     hfile = ROOT.TFile(inFileName)
-    hCounters = hfile.Get("ZZ2e2muTree/Counters")
+    hCounters = hfile.Get("ZZTree/Counters")
 
     for aChan in ["4mu","4e","2e2mu"]:
 
@@ -52,7 +52,8 @@ def loop():
 
         if finalState!="all" and aChan!=finalState: continue
         
-        tree = ROOT.TChain("ZZ"+aChan+"Tree/candTree")
+#        tree = ROOT.TChain("ZZ"+aChan+"Tree/candTree")
+        tree = ROOT.TChain("ZZTree/candTree")
         tree.Add(inFileName)
         tree.SetBranchStatus("*",0)
 
@@ -65,6 +66,8 @@ def loop():
         tree.SetBranchStatus("ZZMass",1)
         tree.SetBranchStatus("Z1Mass",1)
         tree.SetBranchStatus("Z2Mass",1)
+        tree.SetBranchStatus("Z1Flav",1)
+        tree.SetBranchStatus("Z2Flav",1)
         tree.SetBranchStatus("ZZMassErr",1)
         tree.SetBranchStatus("ZZMassErrCorr",1)
         tree.SetBranchStatus("p0plus_VAJHU",1)
@@ -81,7 +84,7 @@ def loop():
         tree.SetBranchStatus("JetPt",1)
         tree.SetBranchStatus("JetEta",1)
         tree.SetBranchStatus("DiJetMass",1)
-        tree.SetBranchStatus("DiJetDEta",1)            
+        tree.SetBranchStatus("DiJetDEta",1)
 
         iEntry=0
         while tree.GetEntry(iEntry):
@@ -96,7 +99,10 @@ def loop():
 
             theEvent = Event(iBC,run,lumi,event)
 
-            if iBC>=0 and ZZsel[iBC]>=90:
+            if iBC>=0 and ZZsel[iBC]>=90 :
+                ZZflav      = tree.Z1Flav[iBC]*tree.Z2Flav[iBC];
+                if  (aChan=="4e" and ZZflav!=14641) or (aChan=="4mu" and ZZflav!=28561) or (aChan=="2e2mu" and ZZflav!=20449) : continue
+
                 totCounter += 1
                 chanCounter[aChan] += 1
                 mass4l        = tree.ZZMass[iBC]
@@ -126,7 +132,7 @@ def loop():
                 for i in range(len(jetpt)):                    
                     if jetpt[i]>30.:
                         jets30pt.append(jetpt[i])
-                        jets30eta.append(jeteta[i])                    
+                        jets30eta.append(jeteta[i])
                     
                 theKDs = KDs(p0plus_VAJHU,p0minus_VAJHU,p0hplus_VAJHU,p1plus_VAJHU,p1_VAJHU,p2_VAJHU,p2qqb_VAJHU,bkg_VAMCFM)
                 theCand = Candidate(theEvent,mass4l,mZ1,mZ2,massErrRaw,massErrCorr,pt4l,nExtraLep,jets30pt,jets30eta,njets30Btag,mjj,detajj,theKDs)

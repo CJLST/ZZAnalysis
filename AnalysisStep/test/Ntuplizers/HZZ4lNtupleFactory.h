@@ -25,162 +25,142 @@ class HZZ4lNtupleFactory{
   void DumpBranches(TString filename) const;
 
   void createNewCandidate();
-  void FillEventInfo(const Int_t RunNumber, 
-		     const Long64_t EventNumber, 
-		     const Int_t LumiNumber, 
-		     const Int_t IndexBestCand, 
-		     Int_t Nvtx, 
-		     Int_t NObsInt, 
-		     Float_t NTrueInt, 
-		     Float_t PUweight, 
-		     Float_t PFMET, 
-		     Int_t nJets, 
-		     Int_t nCleanedJets, 
-		     Int_t nCleanedJetsPt30,
-		     Int_t nCleanedJetsPt30BTagged,
-		     Int_t genFinalState, 
-		     Int_t genProcessId, 
-		     Float_t genHEPMCweight, 
-		     Short_t trigWord, 
-		     Short_t genExtInfo
-		     );
-  void FillHInfo(const Float_t ZZMass, 
-		 const Float_t ZZMassErr, 
-		 const Float_t ZZMassErrCorr, 
-		 const Float_t ZZMassPreFSR, 
-		 const Float_t ZZMassRefit, 
-		 const Float_t Chi2KinFit, 
-		 const Float_t ZZMassCFit, 
-		 const Float_t Chi2CFit, 
-		 const Int_t ZZsel, 
-		 const Float_t ZZPt, 
-		 const Float_t ZZEta,
-		 const Float_t ZZPhi, 
-		 const Int_t isSignal, 
-		 const Int_t isRightPair, 
-		 const Int_t CRflag=0
-		 );
-  void FillProbability(  //const Float_t p0plus_melaNorm,
-			 //const Float_t p0plus_mela,
-			 //const Float_t p0minus_mela,
-			 //const Float_t p0hplus_mela,
-			 const Float_t p0plus_VAJHU,
-			 const Float_t p0minus_VAJHU,
-			 const Float_t p0plus_VAMCFM,
-			 const Float_t p0hplus_VAJHU,
-			 //const Float_t p1_mela,
-			 //const Float_t p1_prodIndep_mela,
-			 //const Float_t p1plus_mela,
-			 //const Float_t p1plus_prodIndep_mela,
-			 const Float_t p1_VAJHU,
-			 const Float_t p1_prodIndep_VAJHU,
-			 const Float_t p1plus_VAJHU,
-			 const Float_t p1plus_prodIndep_VAJHU,
-			 //const Float_t p2_mela ,
-			 //const Float_t p2_prodIndep_mela ,
-			 //const Float_t p2qqb_mela ,
-			 //const Float_t p2hplus_mela ,
-			 //const Float_t p2hminus_mela ,
-			 //const Float_t p2bplus_mela ,
-			 const Float_t p2_VAJHU,
-			 const Float_t p2_prodIndep_VAJHU,
-			 const Float_t p2qqb_VAJHU,
-			 const Float_t p2hplus_VAJHU,
-			 const Float_t p2hminus_VAJHU,
-			 const Float_t p2bplus_VAJHU,
-		 	 const Float_t p2hplus_qqb_VAJHU,									  
-		   const Float_t p2hplus_prodIndep_VAJHU,		
-		   const Float_t p2hminus_qqb_VAJHU,				
-		   const Float_t p2hminus_prodIndep_VAJHU,	
-		   const Float_t p2bplus_qqb_VAJHU,					
-		   const Float_t p2bplus_prodIndep_VAJHU,		
-		   const Float_t p2h2plus_gg_VAJHU,      		
-		   const Float_t p2h2plus_qqbar_VAJHU,   		
-		   const Float_t p2h2plus_prodIndep_VAJHU,	
-		   const Float_t p2h3plus_gg_VAJHU,       	
-		   const Float_t p2h3plus_qqbar_VAJHU,    	
-		   const Float_t p2h3plus_prodIndep_VAJHU,	
-		   const Float_t p2h6plus_gg_VAJHU,       	
-		   const Float_t p2h6plus_qqbar_VAJHU,    	
-		   const Float_t p2h6plus_prodIndep_VAJHU,	
-		   const Float_t p2h7plus_gg_VAJHU,       	
-		   const Float_t p2h7plus_qqbar_VAJHU,    	
-		   const Float_t p2h7plus_prodIndep_VAJHU,	
-		   const Float_t p2h9minus_gg_VAJHU,       	
-		   const Float_t p2h9minus_qqbar_VAJHU,    	
-		   const Float_t p2h9minus_prodIndep_VAJHU,	
-		   const Float_t p2h10minus_gg_VAJHU,       
-		   const Float_t p2h10minus_qqbar_VAJHU,    
-		   const Float_t p2h10minus_prodIndep_VAJHU,
-			 //const Float_t bkg_mela,
-			 const Float_t bkg_VAMCFM,
-			 const Float_t bkg_prodIndep_VAMCFM,
-			 const Float_t ggzz_VAMCFM,
-			 const Float_t ggzz_p0plus_VAMCFM,
-			 const Float_t ggzz_c1_VAMCFM,
-			 const Float_t ggzz_c5_VAMCFM,
-			 const Float_t ggzz_ci_VAMCFM,
-			 const Float_t phjj_VAJHU_old,
-			 const Float_t pvbf_VAJHU_old,
-			 const Float_t phjj_VAJHU_old_up,
-			 const Float_t pvbf_VAJHU_old_up,
-			 const Float_t phjj_VAJHU_old_dn,
-			 const Float_t pvbf_VAJHU_old_dn,
-			 const Float_t phjj_VAJHU_new,
-			 const Float_t pvbf_VAJHU_new,
-			 const Float_t phjj_VAJHU_new_up,
-			 const Float_t pvbf_VAJHU_new_up,
-			 const Float_t phjj_VAJHU_new_dn,
-			 const Float_t pvbf_VAJHU_new_dn,
-       const Float_t p0_g1prime2_VAJHU,
-       const Float_t pg1g1prime2_VAJHU,
-       const Float_t Dgg10_VAMCFM,
-			 const Float_t pg1g4_mela,
-			 const Float_t pg1g4_VAJHU,
-			 const Float_t pg1g4_pi2_VAJHU,
-			 const Float_t pg1g2_pi2_VAJHU,
-			 const Float_t pg1g2_mela,
-			 const Float_t pg1g2_VAJHU,
-			 const Float_t pzzzg_VAJHU,
-			 const Float_t pzzgg_VAJHU,
-			 const Float_t pzzzg_PS_VAJHU,
-			 const Float_t pzzgg_PS_VAJHU,
-			 const Float_t p0Zgs_VAJHU,
-			 const Float_t p0gsgs_VAJHU,
-			 const Float_t p0Zgs_PS_VAJHU,
-			 const Float_t p0gsgs_PS_VAJHU
-			 //const Float_t bkg_VAMCFMNorm,
-			 //const Float_t p0_pt,
-			 //const Float_t p0_y,
-			 //const Float_t bkg_pt,
-			 //const Float_t bkg_y
-			 );
-  void FillSuperMela(const Float_t p0plus_m4l,
-		     const Float_t bkg_m4l,
-		     const Float_t p0plus_m4l_ScaleUp,
-		     const Float_t bkg_m4l_ScaleUp,
-		     const Float_t p0plus_m4l_ScaleDown,
-		     const Float_t bkg_m4l_ScaleDown,
-		     const Float_t p0plus_m4l_ResUp,
-		     const Float_t bkg_m4l_ResUp,
-		     const Float_t p0plus_m4l_ResDown,
-		     const Float_t bkg_m4l_ResDown
-		     );
-  void FillHAdditionalInfo(const Float_t mZa, const Float_t mZb, Float_t mLL4, const Float_t mLL6, const Float_t SIP4, const Float_t iso34);
-  void FillZInfo(const Float_t ZMass, const Float_t ZPt, const Float_t Z1MassRefit);
-  void FillAngularInfo(const Float_t costhetastar, const Float_t phi, const Float_t costheta1, const Float_t costheta2, const Float_t phistar1, const Float_t phistar2,const Float_t xi, const Float_t xistar);
-  void FillLepInfo(const Float_t LepPt, const Float_t LepEta, const Float_t LepPhi, const Int_t LepId, const Float_t SIP, bool isID, float BDT, short parentId, int missingHit);
-  void FillLepIsolInfo(const Float_t LepchargedHadIso, const Float_t LepneutralHadIso, const Float_t LepphotonIso, const Float_t LepcombRelIsoPF);
-  void FillPhotonInfo(const Float_t PhotPt, const Float_t PhotEta, const Float_t PhotPhi);
-  void FillJetInfo(const Float_t JetPt, const Float_t JetEta, const Float_t JetPhi, const Float_t JetMass, const Float_t JetBTag, const Float_t JetSigma);
-  void FillDiJetInfo(const Float_t DiJetMass, const Float_t DiJetMassPlus, const Float_t DiJetMassMinus, const Float_t DiJetDEta, const Float_t DiJetFisher);
-  void FillCategorizationInfo(const Int_t nExtraLep, const Int_t nExtraZ);
-  void FillExtraLepInfo(int extraLeptonIndex, bool extraLeptonExists, const reco::CandidatePtr ExtraLep);
+  void FillEventInfo(Int_t RunNumber, 
+                     Long64_t EventNumber, 
+                     Int_t LumiNumber, 
+                     Int_t IndexBestCand, 
+                     Int_t Nvtx, 
+                     Int_t NObsInt, 
+                     Float_t NTrueInt, 
+                     Float_t PUweight, 
+                     Float_t PFMET, 
+                     Int_t nJets, 
+                     Int_t nCleanedJets, 
+                     Int_t nCleanedJetsPt30,
+                     Int_t nCleanedJetsPt30BTagged,
+                     Int_t genFinalState, 
+                     Int_t genProcessId, 
+                     Float_t genHEPMCweight, 
+                     Short_t trigWord, 
+                     Short_t genExtInfo
+                     );
+  void FillHInfo(Float_t ZZMass, 
+                 Float_t ZZMassErr, 
+                 Float_t ZZMassErrCorr, 
+                 Float_t ZZMassPreFSR, 
+                 Float_t ZZMassRefit, 
+                 Float_t Chi2KinFit, 
+                 Float_t ZZMassCFit, 
+                 Float_t Chi2CFit, 
+                 Int_t ZZsel, 
+                 Float_t ZZPt, 
+                 Float_t ZZEta,
+                 Float_t ZZPhi, 
+                 Int_t isSignal, 
+                 Int_t isRightPair, 
+                 Int_t CRflag=0
+                 );
+  void FillProbability(Float_t p0plus_VAJHU,
+                       Float_t p0minus_VAJHU,
+                       Float_t p0plus_VAMCFM,
+                       Float_t p0hplus_VAJHU,
+                       Float_t p1_VAJHU,
+                       Float_t p1_prodIndep_VAJHU,
+                       Float_t p1plus_VAJHU,
+                       Float_t p1plus_prodIndep_VAJHU,
+                       Float_t p2_VAJHU,
+                       Float_t p2_prodIndep_VAJHU,
+                       Float_t p2qqb_VAJHU,
+                       Float_t p2hplus_VAJHU,
+                       Float_t p2hminus_VAJHU,
+                       Float_t p2bplus_VAJHU,
+                       Float_t p2hplus_qqb_VAJHU,                                                                         
+                       Float_t p2hplus_prodIndep_VAJHU,         
+                       Float_t p2hminus_qqb_VAJHU,                              
+                       Float_t p2hminus_prodIndep_VAJHU,        
+                       Float_t p2bplus_qqb_VAJHU,                                       
+                       Float_t p2bplus_prodIndep_VAJHU,         
+                       Float_t p2h2plus_gg_VAJHU,               
+                       Float_t p2h2plus_qqbar_VAJHU,            
+                       Float_t p2h2plus_prodIndep_VAJHU,        
+                       Float_t p2h3plus_gg_VAJHU,               
+                       Float_t p2h3plus_qqbar_VAJHU,            
+                       Float_t p2h3plus_prodIndep_VAJHU,        
+                       Float_t p2h6plus_gg_VAJHU,               
+                       Float_t p2h6plus_qqbar_VAJHU,            
+                       Float_t p2h6plus_prodIndep_VAJHU,        
+                       Float_t p2h7plus_gg_VAJHU,               
+                       Float_t p2h7plus_qqbar_VAJHU,            
+                       Float_t p2h7plus_prodIndep_VAJHU,        
+                       Float_t p2h9minus_gg_VAJHU,              
+                       Float_t p2h9minus_qqbar_VAJHU,           
+                       Float_t p2h9minus_prodIndep_VAJHU,       
+                       Float_t p2h10minus_gg_VAJHU,       
+                       Float_t p2h10minus_qqbar_VAJHU,    
+                       Float_t p2h10minus_prodIndep_VAJHU,
+                       Float_t bkg_VAMCFM,
+                       Float_t bkg_prodIndep_VAMCFM,
+                       Float_t ggzz_VAMCFM,
+                       Float_t ggzz_p0plus_VAMCFM,
+                       Float_t ggzz_c1_VAMCFM,
+                       Float_t ggzz_c5_VAMCFM,
+                       Float_t ggzz_ci_VAMCFM,
+                       Float_t phjj_VAJHU_old,
+                       Float_t pvbf_VAJHU_old,
+                       Float_t phjj_VAJHU_old_up,
+                       Float_t pvbf_VAJHU_old_up,
+                       Float_t phjj_VAJHU_old_dn,
+                       Float_t pvbf_VAJHU_old_dn,
+                       Float_t phjj_VAJHU_new,
+                       Float_t pvbf_VAJHU_new,
+                       Float_t phjj_VAJHU_new_up,
+                       Float_t pvbf_VAJHU_new_up,
+                       Float_t phjj_VAJHU_new_dn,
+                       Float_t pvbf_VAJHU_new_dn,
+                       Float_t p0_g1prime2_VAJHU,
+                       Float_t pg1g1prime2_VAJHU,
+                       Float_t Dgg10_VAMCFM,
+                       Float_t pg1g4_mela,
+                       Float_t pg1g4_VAJHU,
+                       Float_t pg1g4_pi2_VAJHU,
+                       Float_t pg1g2_pi2_VAJHU,
+                       Float_t pg1g2_mela,
+                       Float_t pg1g2_VAJHU,
+                       Float_t pzzzg_VAJHU,
+                       Float_t pzzgg_VAJHU,
+                       Float_t pzzzg_PS_VAJHU,
+                       Float_t pzzgg_PS_VAJHU,
+                       Float_t p0Zgs_VAJHU,
+                       Float_t p0gsgs_VAJHU,
+                       Float_t p0Zgs_PS_VAJHU,
+                       Float_t p0gsgs_PS_VAJHU
+                       );
+  void FillSuperMela(Float_t p0plus_m4l,
+                     Float_t bkg_m4l,
+                     Float_t p0plus_m4l_ScaleUp,
+                     Float_t bkg_m4l_ScaleUp,
+                     Float_t p0plus_m4l_ScaleDown,
+                     Float_t bkg_m4l_ScaleDown,
+                     Float_t p0plus_m4l_ResUp,
+                     Float_t bkg_m4l_ResUp,
+                     Float_t p0plus_m4l_ResDown,
+                     Float_t bkg_m4l_ResDown
+                     );
+  void FillHAdditionalInfo(Float_t mZa, Float_t mZb, Float_t mLL4, Float_t mLL6, Float_t SIP4, Float_t iso34);
+  void FillZInfo(Float_t ZMass, Float_t ZPt, short ZFlav, Float_t Z1MassRefit);
+  void FillAngularInfo(Float_t costhetastar, Float_t phi, Float_t costheta1, Float_t costheta2, Float_t phistar1, Float_t phistar2,Float_t xi, Float_t xistar);
+  void FillLepInfo(Float_t LepPt, Float_t LepEta, Float_t LepPhi, Int_t LepId, Float_t SIP, bool isID, float BDT, short parentId, int missingHit);
+  void FillLepIsolInfo(Float_t LepchargedHadIso, Float_t LepneutralHadIso, Float_t LepphotonIso, Float_t LepcombRelIsoPF);
+  void FillPhotonInfo(Float_t PhotPt, Float_t PhotEta, Float_t PhotPhi);
+  void FillJetInfo(Float_t JetPt, Float_t JetEta, Float_t JetPhi, Float_t JetMass, Float_t JetBTag, Float_t JetSigma);
+  void FillDiJetInfo(Float_t DiJetMass, Float_t DiJetMassPlus, Float_t DiJetMassMinus, Float_t DiJetDEta, Float_t DiJetFisher);
+  void FillCategorizationInfo(Int_t nExtraLep, Int_t nExtraZ);
+  void FillExtraLepInfo(int extraLeptonIndex, bool extraLeptonExists, reco::CandidatePtr ExtraLep);
 
-  void FillHGenInfo(const math::XYZTLorentzVector Hp);
-  void FillZGenInfo(const math::XYZTLorentzVector Z1p, const math::XYZTLorentzVector Z2p);
+  void FillHGenInfo(math::XYZTLorentzVector Hp);
+  void FillZGenInfo(math::XYZTLorentzVector Z1p, math::XYZTLorentzVector Z2p);
   void FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t Lep3Id, Short_t Lep4Id,
-		      const math::XYZTLorentzVector Lep1, const math::XYZTLorentzVector Lep2, const math::XYZTLorentzVector Lep3, const math::XYZTLorentzVector Lep4);
+                      math::XYZTLorentzVector Lep1, math::XYZTLorentzVector Lep2, math::XYZTLorentzVector Lep3, math::XYZTLorentzVector Lep4);
   void FillAssocLepGenInfo(std::vector<const reco::Candidate *>& AssocLeps);
 
   void InitializeVariables();
@@ -236,60 +216,45 @@ class HZZ4lNtupleFactory{
   std::vector<Int_t> _CRflag;
 
   //probabilities
-  //std::vector<Float_t> _p0plus_melaNorm;// higgs, analytic distribution, normalized
-  //std::vector<Float_t> _p0plus_mela;  // higgs, analytic distribution
-  //std::vector<Float_t> _p0minus_mela; // pseudoscalar, analytic distribution
-  //std::vector<Float_t> _p0hplus_mela;// 0h+, analytic distribution
   std::vector<Float_t> _p0plus_VAJHU; // higgs, vector algebra, JHUgen
   std::vector<Float_t> _p0minus_VAJHU;// pseudoscalar, vector algebra, JHUgen
   std::vector<Float_t> _p0plus_VAMCFM;// higgs, vector algebra, MCFM
   std::vector<Float_t> _p0hplus_VAJHU;// 0h+ (high dimensional operator), vector algebra, JHUgen
-  //std::vector<Float_t> _p1_mela;    // zprime, analytic distribution
-  //std::vector<Float_t> _p1_prodIndep_mela;    // zprime, analytic distribution
-  //std::vector<Float_t> _p1plus_mela;// 1+, analytic distribution 
-  //std::vector<Float_t> _p1plus_prodIndep_mela;// 1+, analytic distribution 
   std::vector<Float_t> _p1_VAJHU;   // zprime, vector algebra, JHUgen,
   std::vector<Float_t> _p1_prodIndep_VAJHU;   // zprime, vector algebra, JHUgen,
   std::vector<Float_t> _p1plus_VAJHU;// 1+ (axial vector), vector algebra, JHUgen,
   std::vector<Float_t> _p1plus_prodIndep_VAJHU;// 1+ (axial vector), vector algebra, JHUgen,
-  //std::vector<Float_t> _p2_mela ;   // graviton, analytic distribution
-  //std::vector<Float_t> _p2_prodIndep_mela ;   // graviton, analytic distribution
-  //std::vector<Float_t> _p2qqb_mela;// graviton produced by qqbar vector algebra, analytical,
-  //std::vector<Float_t> _p2hplus_mela;// graviton produced by qqbar vector algebra, analytical,
-  //std::vector<Float_t> _p2hminus_mela;// graviton produced by qqbar vector algebra, analytical,
-  //std::vector<Float_t> _p2bplus_mela;// graviton produced by qqbar vector algebra, analytical,
   std::vector<Float_t> _p2_VAJHU;   // graviton, vector algebra, JHUgen,
   std::vector<Float_t> _p2_prodIndep_VAJHU;   // graviton, vector algebra, JHUgen,
   std::vector<Float_t> _p2qqb_VAJHU;   // graviton, vector algebra, JHUgen,
   std::vector<Float_t> _p2hplus_VAJHU;   // graviton, vector algebra, JHUgen,
   std::vector<Float_t> _p2hminus_VAJHU;   // graviton, vector algebra, JHUgen,
   std::vector<Float_t> _p2bplus_VAJHU;   // graviton, vector algebra, JHUgen,
-  std::vector<Float_t> _p2hplus_qqb_VAJHU;									  
-  std::vector<Float_t> _p2hplus_prodIndep_VAJHU;		
-  std::vector<Float_t> _p2hminus_qqb_VAJHU;				
-  std::vector<Float_t> _p2hminus_prodIndep_VAJHU;	
-  std::vector<Float_t> _p2bplus_qqb_VAJHU;					
-  std::vector<Float_t> _p2bplus_prodIndep_VAJHU;		
-  std::vector<Float_t> _p2h2plus_gg_VAJHU;      		
-  std::vector<Float_t> _p2h2plus_qqbar_VAJHU;   		
-  std::vector<Float_t> _p2h2plus_prodIndep_VAJHU;	
-  std::vector<Float_t> _p2h3plus_gg_VAJHU;       	
-  std::vector<Float_t> _p2h3plus_qqbar_VAJHU;    	
-  std::vector<Float_t> _p2h3plus_prodIndep_VAJHU;	
-  std::vector<Float_t> _p2h6plus_gg_VAJHU;       	
-  std::vector<Float_t> _p2h6plus_qqbar_VAJHU;    	
-  std::vector<Float_t> _p2h6plus_prodIndep_VAJHU;	
-  std::vector<Float_t> _p2h7plus_gg_VAJHU;       	
-  std::vector<Float_t> _p2h7plus_qqbar_VAJHU;    	
-  std::vector<Float_t> _p2h7plus_prodIndep_VAJHU;	
-  std::vector<Float_t> _p2h9minus_gg_VAJHU;       	
-  std::vector<Float_t> _p2h9minus_qqbar_VAJHU;    	
-  std::vector<Float_t> _p2h9minus_prodIndep_VAJHU;	
+  std::vector<Float_t> _p2hplus_qqb_VAJHU;        
+  std::vector<Float_t> _p2hplus_prodIndep_VAJHU;  
+  std::vector<Float_t> _p2hminus_qqb_VAJHU;       
+  std::vector<Float_t> _p2hminus_prodIndep_VAJHU; 
+  std::vector<Float_t> _p2bplus_qqb_VAJHU;        
+  std::vector<Float_t> _p2bplus_prodIndep_VAJHU;  
+  std::vector<Float_t> _p2h2plus_gg_VAJHU;        
+  std::vector<Float_t> _p2h2plus_qqbar_VAJHU;     
+  std::vector<Float_t> _p2h2plus_prodIndep_VAJHU; 
+  std::vector<Float_t> _p2h3plus_gg_VAJHU;        
+  std::vector<Float_t> _p2h3plus_qqbar_VAJHU;     
+  std::vector<Float_t> _p2h3plus_prodIndep_VAJHU; 
+  std::vector<Float_t> _p2h6plus_gg_VAJHU;        
+  std::vector<Float_t> _p2h6plus_qqbar_VAJHU;     
+  std::vector<Float_t> _p2h6plus_prodIndep_VAJHU; 
+  std::vector<Float_t> _p2h7plus_gg_VAJHU;        
+  std::vector<Float_t> _p2h7plus_qqbar_VAJHU;     
+  std::vector<Float_t> _p2h7plus_prodIndep_VAJHU; 
+  std::vector<Float_t> _p2h9minus_gg_VAJHU;       
+  std::vector<Float_t> _p2h9minus_qqbar_VAJHU;    
+  std::vector<Float_t> _p2h9minus_prodIndep_VAJHU;
   std::vector<Float_t> _p2h10minus_gg_VAJHU;       
   std::vector<Float_t> _p2h10minus_qqbar_VAJHU;    
   std::vector<Float_t> _p2h10minus_prodIndep_VAJHU;
   //backgrounds
-  //std::vector<Float_t> _bkg_mela;   // background,  analytic distribution
   std::vector<Float_t> _bkg_VAMCFM; // background, vector algebra, MCFM
   std::vector<Float_t> _bkg_prodIndep_VAMCFM; // background, vector algebra, MCFM
   std::vector<Float_t> _ggzz_VAMCFM; // background, vector algebra, MCFM for ggzz
@@ -297,12 +262,6 @@ class HZZ4lNtupleFactory{
   std::vector<Float_t> _ggzz_c1_VAMCFM; // signal + background + interference w/ SM couplings, vector algebra, MCFM
   std::vector<Float_t> _ggzz_c5_VAMCFM; // signal + background + interference w/ 5xSM couplings, vector algebra, MCFM for ggzz
   std::vector<Float_t> _ggzz_ci_VAMCFM; // signal + background + interference w/ imaginary SM couplings, vector algebra, MCFM for ggzz  
-  //std::vector<Float_t> _bkg_VAMCFMNorm; // background, vector algebra, MCFM
-  //pt/rapidity
-  //std::vector<Float_t> _p0_pt;  // multiplicative probability for signal pt
-  //std::vector<Float_t> _p0_y;   // multiplicative probability for signal y
-  //std::vector<Float_t> _bkg_pt; // multiplicative probability for bkg pt
-  //std::vector<Float_t> _bkg_y;  // multiplicative probability for bkg y
   // supermela
   std::vector<Float_t> _p0plus_m4l;  // signal m4l probability as in datacards
   std::vector<Float_t> _bkg_m4l;     // backgroun m4l probability as in datacards
@@ -351,22 +310,21 @@ class HZZ4lNtupleFactory{
   std::vector<Float_t> _ZZmLL4;
   std::vector<Float_t> _ZZmLL6;
   std::vector<Float_t> _ZZSIP4;
-  //  std::vector<Float_t> _ZZiso34;
 
   //Z1 variables
   std::vector<Float_t> _Z1Mass;
   std::vector<Float_t> _Z1MassRefit;
   std::vector<Float_t> _Z1Pt;
+  std::vector<Short_t> _Z1Flav;
 
   //Z2 variables
   std::vector<Float_t> _Z2Mass;
   std::vector<Float_t> _Z2Pt;
+  std::vector<Short_t> _Z2Flav;
 
   //Angular variables
   std::vector<Float_t> _costhetastar;
   std::vector<Float_t> _phi;
-//   std::vector<Float_t> _helphiZ1;
-//   std::vector<Float_t> _helphiZ2;
   std::vector<Float_t> _costheta1;
   std::vector<Float_t> _costheta2;
   std::vector<Float_t> _phistar1;

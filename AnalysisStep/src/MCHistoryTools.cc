@@ -356,21 +356,18 @@ MCHistoryTools::init() {
 }
 
 void
-MCHistoryTools::genAcceptance(bool& gen_ZZInAcceptance, bool& gen_ZZ4lInEtaAcceptance, bool& gen_ZZ4lInEtaPtAcceptance, bool& gen_m4l_180){
+MCHistoryTools::genAcceptance(bool& gen_ZZ4lInEtaAcceptance, bool& gen_ZZ4lInEtaPtAcceptance){
   if (!ismc) return;  
   init();
 
   float gen_mZ1 = -1.;
   float gen_mZ2 = -1.;
 
-  gen_ZZInAcceptance = false; // obsolete
 
   gen_ZZ4lInEtaAcceptance = false;
   gen_ZZ4lInEtaPtAcceptance = false;
-  gen_m4l_180 = false;
   int gen_Z1_flavour =0;
   int gen_Z2_flavour =0;
-  float gen_4leptonsMass =-1.;
 
   const float ZmassValue = 91.1876;
 
@@ -385,10 +382,6 @@ MCHistoryTools::genAcceptance(bool& gen_ZZInAcceptance, bool& gen_ZZ4lInEtaAccep
     if ( fabs(ZmassValue - gen_mZ2) < fabs(ZmassValue - gen_mZ1)) {
       swap(gen_mZ1,gen_mZ2);
       swap(gen_Z1_flavour, gen_Z2_flavour);
-    }
-
-    if (gen_mZ1>60. && gen_mZ1<120. && gen_mZ2>60. && gen_mZ2<120.) {
-      gen_ZZInAcceptance = true;
     }
   }
 
@@ -410,15 +403,6 @@ MCHistoryTools::genAcceptance(bool& gen_ZZInAcceptance, bool& gen_ZZ4lInEtaAccep
 
   if (nlInEtaPtAcceptance>=4) gen_ZZ4lInEtaPtAcceptance = true;
   if (nlInEtaAcceptance>=4) gen_ZZ4lInEtaAcceptance = true;
-
-
-  // FIXME: still needed?
-  if (theGenLeps.size()==4){
-    gen_4leptonsMass = (theGenLeps[0]->p4()+theGenLeps[1]->p4()+theGenLeps[2]->p4()+theGenLeps[3]->p4()).mass();
-    if (gen_4leptonsMass >= 180){
-      gen_m4l_180 = true;
-    }
-  }
 }
 
 int
@@ -506,120 +490,3 @@ MCHistoryTools::genAssociatedFS(){
   
   return id;
 }
-
-
-/*
-  vector<double> genPt(4);
-
-  float gen_m4l = -1.; // defined for ZZ for the time being
-  float gen_mZ1 = -1.;
-  float gen_mZ2 = -1.;
-  float gen_Z1_flavour =0;
-  float gen_Z2_flavour =0;
-  bool gen_ZZInAcceptance = false;
-  bool gen_ZZ4lInEtaPtAcceptance = false;
-  bool gen_ZZ4lInEtaAcceptance = false;
-  int gen_finalState = -1;
-  float genWeight = 1.;
-
-    
-    if (isZZ && genZ.size()!=2) {
-      cout << "ERROR:# Z= " << genZ.size() <<endl;
-      abort();
-    }
-		
-    // ZZ or H->ZZ
-    if (genZ.size()==2) {
-      
-      gen_m4l = (genZ[0]->p4()+ // FIXME should take the 4 gen l with status 1!
-		 genZ[1]->p4()).mass(); // checked to be the same of theGenH->p4().mass().
-      gen_mZ1 = genZ[0]->p4().mass(); // FIXME should take the 2 gen l with status 1!
-      gen_mZ2 = genZ[1]->p4().mass();
-      gen_Z1_flavour = abs(genZ[0]->daughter(0)->pdgId());
-      gen_Z2_flavour = abs(genZ[1]->daughter(0)->pdgId());
-      
-      // Sort Z1/Z2 according to standard definition
-      if ( fabs(ZmassValue - gen_mZ2) < fabs(ZmassValue - gen_mZ1)) {
-	swap(gen_mZ1,gen_mZ2);
-	swap(gen_Z1_flavour, gen_Z2_flavour);
-      }
-      hmZ1vsmZ2->Fill(gen_mZ1,gen_mZ2);
-
-
-      // GEN acceptance
-      if (gen_mZ1>60. && gen_mZ1<120. && gen_mZ2>60. && gen_mZ2<120.) {
-	gen_ZZInAcceptance = true;
-      }
-      
-      if ( gen_Z1_flavour<15 && gen_Z2_flavour<15) {
-	if (gen4lep.size()!=4) {
-	  cout << "ERROR:# gen4l = " << gen4lep.size() <<endl;
-	  abort();
-	}
-	
-	
-	gen_ZZ4lInEtaPtAcceptance = true;
-	gen_ZZ4lInEtaAcceptance = true;
-	for (int i=0; i<4; ++i){
-	  
-	  genPt[i] = gen4lep[i]->pt();
-	  
-	  //FIXME should take the 2 gen l with status 1!
-	  if ((abs(gen4lep[i]->pdgId()) == 11 && !(gen4lep[i]->pt() > 7. && fabs(gen4lep[i]->eta()) < 2.5)) ||
-	      (abs(gen4lep[i]->pdgId()) == 13 && !(gen4lep[i]->pt() > 5. && fabs(gen4lep[i]->eta()) < 2.4))) { 
-	    gen_ZZ4lInEtaPtAcceptance = false;
-	  }
-	  if ((abs(gen4lep[i]->pdgId()) == 11 && !(fabs(gen4lep[i]->eta()) < 2.5)) ||
-	      (abs(gen4lep[i]->pdgId()) == 13 && !(fabs(gen4lep[i]->eta()) < 2.4))) { 
-	    gen_ZZ4lInEtaAcceptance = false;
-	  }
-	}   
-	
-	sort(genPt.begin(),genPt.end());	
-	hgenPt1->Fill(genPt[0]);
-	hgenPt2->Fill(genPt[1]);
-	hgenPt3->Fill(genPt[2]);
-	hgenPt4->Fill(genPt[3]);
-	
-      }
-      
-       if (gen_Z1_flavour == 11 && gen_Z2_flavour == 11) {
-	gen_finalState = EEEE;
-	++gen_ZZ4e;
-	if (gen_ZZ4lInEtaAcceptance) ++gen_ZZ4e_EtaAcceptance;
-	if (gen_ZZ4lInEtaPtAcceptance) ++gen_ZZ4e_LeptonAcceptance;
-	if (gen_ZZInAcceptance) {
-	  ++gen_ZZ4e_MassAcceptance;
-	  if (gen_ZZ4lInEtaPtAcceptance) ++gen_ZZ4e_MassPtAcceptance;
-	}
-      } else if (gen_Z1_flavour == 13 && gen_Z2_flavour == 13) {
-	gen_finalState = MMMM;
-	++gen_ZZ4mu;
-	if (gen_ZZ4lInEtaAcceptance) ++gen_ZZ4mu_EtaAcceptance;
-	if (gen_ZZ4lInEtaPtAcceptance) ++gen_ZZ4mu_LeptonAcceptance;
-	if (gen_ZZInAcceptance) {
-	  ++gen_ZZ4mu_MassAcceptance;
-	  if (gen_ZZ4lInEtaPtAcceptance) ++gen_ZZ4mu_MassPtAcceptance;
-	}
-      } else if ((gen_Z1_flavour == 11 && gen_Z2_flavour == 13) || 
-		 (gen_Z1_flavour == 13 && gen_Z2_flavour == 11)) {
-	gen_finalState = EEMM;
-	++gen_ZZ2mu2e;
-	if (gen_ZZ4lInEtaAcceptance) ++gen_ZZ2mu2e_EtaAcceptance;
-	if (gen_ZZ4lInEtaPtAcceptance) ++gen_ZZ2mu2e_LeptonAcceptance;
-	if (gen_ZZInAcceptance) {
-	  ++gen_ZZ2mu2e_MassAcceptance;
-	  if (gen_ZZ4lInEtaPtAcceptance) ++gen_ZZ2mu2e_MassPtAcceptance;
-	}
-      } else if (gen_Z1_flavour == 15 || gen_Z2_flavour == 15) {
-	gen_finalState = 10;
-	++gen_ZZ2l2tau;
-      } else {
-	// something wrong?
-	cout << "ERROR: Z flavour= " << gen_Z1_flavour << " " << gen_Z2_flavour << endl;
-	abort();
-      }
-    }
-  }
-}
-*/
