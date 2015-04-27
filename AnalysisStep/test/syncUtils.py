@@ -132,6 +132,6 @@ class Candidate:
 #        line  += ":" + "{0:.3f}".format(self.kds.KD_psvec)
 #        line  += ":" + "{0:.3f}".format(self.kds.KD_gggrav)
 #        line  += ":" + "{0:.3f}".format(self.kds.KD_qqgrav) 
-#        line  += ":" + "{0:d}".format(self.category)       
+        line  += ":" + "{0:d}".format(self.category)
 
         return line

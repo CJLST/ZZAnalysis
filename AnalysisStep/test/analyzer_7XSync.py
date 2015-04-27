@@ -6,6 +6,8 @@ ELECORRTYPE   = "None" # "None", "Moriond", or "Paper"
 ELEREGRESSION = "None" # "None", "Moriond", "PaperNoComb", or "Paper" 
 APPLYMUCORR = False
 
+#KEEPLOOSECOMB = True
+
 #For DATA: 
 #IsMC = False
 #PD = "DoubleEle"
@@ -35,6 +37,11 @@ process.source.fileNames = cms.untracked.vstring(
 
 #    'file:/afs/cern.ch/user/g/gortona/work/public/miniAODPhys14/DYJetsToLL_M-50_13TeV_3leptons.root' # Official sync file for CR
 
+#     '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/ggH_JHU_125/ggH_JHU_125.MINIAODSIM00.root',
+#     '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/VBF_JHU_125/VBF_JHU_125.MINIAODSIM00.root',
+#     '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/WminusH_JHU_125/WminusH_JHU_125.MINIAODSIM00.root',
+#     '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/ZH_JHU_125/ZH_JHU_125.MINIAODSIM00.root',
+#     '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/ttH_JHU_125/ttH_JHU_125.MINIAODSIM00.root',
     )
 
 
@@ -81,7 +88,7 @@ process.PlotsZZ.dumpForSync = True;
 
 # replace the paths in analyzer.py
 process.p = cms.EndPath( process.PlotsZZ)
-process.trees = cms.EndPath(process.ZZ4muTree * process.ZZ4eTree * process.ZZ2e2muTree )
+process.trees = cms.EndPath(process.ZZTree)
 
 #Dump reconstructed variables
 #process.appendPhotons.debug = cms.untracked.bool(True)
