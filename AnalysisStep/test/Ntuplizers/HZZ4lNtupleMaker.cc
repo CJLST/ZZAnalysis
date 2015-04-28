@@ -401,7 +401,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     const pat::Jet& myjet = *(cleanedJets.at(i));  
     if (myjet.pt()>30) {
       cleanedJetsPt30.push_back(&myjet);
-      if(myjet.bDiscriminator("combinedSecondaryVertexBJetTags")>0.679) nCleanedJetsPt30BTagged++; // CSV Medium WP
+      if(myjet.bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags")>0.814) nCleanedJetsPt30BTagged++; // CSV Medium WP
     }
   }
   float detajj = -99.f;
@@ -477,7 +477,7 @@ void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
   const Float_t jetEta = jet.eta();
   const Float_t jetPhi = jet.phi();
   const Float_t jetMass = jet.p4().M();
-  const Float_t jetBTag = jet.bDiscriminator("combinedSecondaryVertexBJetTags");
+  const Float_t jetBTag = jet.bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags");
   const Float_t jesUnc = 0.;//jet.uncOnFourVectorScale();
 
   myTree->FillJetInfo(jetPt, jetEta, jetPhi, jetMass, jetBTag, jesUnc );
