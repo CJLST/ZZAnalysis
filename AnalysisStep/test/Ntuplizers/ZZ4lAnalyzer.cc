@@ -43,8 +43,6 @@
 #include "ZZ4lConfigHelper.h"
 #include <boost/lexical_cast.hpp>
 
-#include "knownCandidates.h"
-
 #include <iostream>
 #include <fstream>
 #include <iterator>
@@ -957,7 +955,6 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
       string sblabel ="b";
       if (unblinded) sblabel = "";
 
-      string label = findLabel(irun, ils, ievt);
       string grp;
       string srun = boost::lexical_cast<string>( irun );
 
@@ -970,7 +967,6 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
       }
       
       cout << grp << "Candidate in: " << finalStateNiceName(theChannel) << " sel= " << sel;
-      if (label!="???") cout << " (" << label <<")";
       cout << endl;
 
       string withFSR = "";
