@@ -16,7 +16,8 @@ Download and execute the setup script for the given release:
     ```
     wget -P /tmp https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD/checkout_70X.csh
     cd $CMSSW_BASE/src
-    . /tmp/checkout_70X.csh
+    cmsenv
+    source /tmp/checkout_70X.csh
     ```
 
 To update this package from the release
