@@ -1,13 +1,7 @@
 ZZAnalysis
 ==========
 
-This package can be checked out with:
-
-```
-git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
-```
-
-To install a complete CMSSW area
+To install a complete CMSSW area (including this package)
 ------------------------------
 Download and execute the setup script for the given release:
 
