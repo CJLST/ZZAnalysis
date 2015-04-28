@@ -8,11 +8,10 @@ extern "C" int category(
 	     float ZZMass,
 	     int nJets, 
 	     int nBTaggedJets,
-	     float ptj1,
-	     float ptj2,
-	     float etaj1,
-	     float etaj2,
-	     float mjj,
+	     float* jetpt,
+	     float* jeteta,
+	     float* jetphi,
+	     float* jetmass,
 	     float Fisher
 	     );
 

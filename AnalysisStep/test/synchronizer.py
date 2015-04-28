@@ -83,6 +83,8 @@ def loop():
         tree.SetBranchStatus("nCleanedJetsPt30BTagged",1)
         tree.SetBranchStatus("JetPt",1)
         tree.SetBranchStatus("JetEta",1)
+        tree.SetBranchStatus("JetPhi",1)
+        tree.SetBranchStatus("JetMass",1)
         tree.SetBranchStatus("DiJetMass",1)
         tree.SetBranchStatus("DiJetDEta",1)
 
@@ -122,20 +124,26 @@ def loop():
                 nExtraLep     = tree.nExtraLep[iBC]
                 jetpt         = tree.JetPt
                 jeteta        = tree.JetEta
+                jetphi        = tree.JetPhi
+                jetmass       = tree.JetMass
                 njets30Btag   = tree.nCleanedJetsPt30BTagged
                 mjj           = tree.DiJetMass
                 detajj        = tree.DiJetDEta
 
                 jets30pt = []
                 jets30eta = []
+                jets30phi = []
+                jets30mass = []
                 
                 for i in range(len(jetpt)):                    
                     if jetpt[i]>30.:
                         jets30pt.append(jetpt[i])
                         jets30eta.append(jeteta[i])
+                        jets30phi.append(jetphi[i])
+                        jets30mass.append(jetmass[i])
                     
                 theKDs = KDs(p0plus_VAJHU,p0minus_VAJHU,p0hplus_VAJHU,p1plus_VAJHU,p1_VAJHU,p2_VAJHU,p2qqb_VAJHU,bkg_VAMCFM)
-                theCand = Candidate(theEvent,mass4l,mZ1,mZ2,massErrRaw,massErrCorr,pt4l,nExtraLep,jets30pt,jets30eta,njets30Btag,mjj,detajj,theKDs)
+                theCand = Candidate(theEvent,mass4l,mZ1,mZ2,massErrRaw,massErrCorr,pt4l,nExtraLep,jets30pt,jets30eta,jets30phi,jets30mass,njets30Btag,mjj,detajj,theKDs)
                 cands.append(theCand)
 
 

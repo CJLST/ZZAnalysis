@@ -1,5 +1,54 @@
 #include <ZZAnalysis/AnalysisStep/interface/Category.h>
+
 #include <cmath>
+
+#include "Math/GenVector/LorentzVector.h"
+#include "Math/GenVector/PtEtaPhiM4D.h"
+
+typedef ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> >  LV;
+
+
+int flagDijetVH(
+		int nJets, 
+		float* jetpt,
+		float* jeteta,
+		float* jetphi,
+		float* jetmass
+		)
+{
+
+  bool found = false;
+
+  if(nJets>=2){
+
+    for(int j1=0; j1<nJets; j1++){
+      if( abs(jeteta[j1])<2.4 && jetpt[j1]>40. ){
+
+	for(int j2=j1+1; j2<nJets; j2++){
+	  if( abs(jeteta[j2])<2.4 && jetpt[j2]>40. ){
+
+	    LV jet1 (jetpt[j1],jeteta[j1],jetphi[j1],jetmass[j1]);
+	    LV jet2 (jetpt[j2],jeteta[j2],jetphi[j2],jetmass[j2]);
+	    float mjj = (jet1+jet2).mass();
+
+	    if( 60.<mjj && mjj<120. ){
+	      found = true;
+	      break;
+	    }
+
+	  }
+	}
+
+	if(found) break;
+      }
+    }
+
+  }
+  
+  return found;
+
+}
+
 
 //int category(
 extern "C" int category(
@@ -8,11 +57,10 @@ extern "C" int category(
 	     float ZZMass,
 	     int nJets, 
 	     int nBTaggedJets,
-	     float ptj1,
-	     float ptj2,
-	     float etaj1,
-	     float etaj2,
-	     float mjj,
+	     float* jetpt,
+	     float* jeteta,
+	     float* jetphi,
+	     float* jetmass,
 	     float Fisher
 	     )
 {
@@ -29,9 +77,7 @@ extern "C" int category(
 
     category = 2; // VBF tagged
 
-  }else if( ( nExtraLeptons==0 && nJets>=2 && 
-	         ptj1>40 && ptj2>40 && fabs(etaj1)<2.4 && fabs(etaj2)<2.4 && 
-              60<mjj && mjj<120 && ZZPt>ZZMass )
+  }else if( ( nExtraLeptons==0 && nJets>=2 && ZZPt>ZZMass && flagDijetVH(nJets,jetpt,jeteta,jetphi,jetmass) )
             || ( nExtraLeptons==0 && nJets==2 && nBTaggedJets==2 ) ){
 
     category = 4; // VH-hadronic tagged

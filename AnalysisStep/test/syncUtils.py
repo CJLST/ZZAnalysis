@@ -54,7 +54,7 @@ class KDs:
 
 class Candidate:
 
-    def __init__(self,event,m,mZ1,mZ2,mErr,mErrCorr,pt,nExtraLep,jets30pt,jets30eta,njets30Btag,mjj,detajj,kds):
+    def __init__(self,event,m,mZ1,mZ2,mErr,mErrCorr,pt,nExtraLep,jets30pt,jets30eta,jets30phi,jets30mass,njets30Btag,mjj,detajj,kds):
 
         self.eventInfo   = event
         self.mass4l      = m
@@ -67,6 +67,8 @@ class Candidate:
         self.nExtraLep   = nExtraLep
         self.jets30pt    = jets30pt
         self.jets30eta   = jets30eta
+        self.jets30phi   = jets30phi
+        self.jets30mass  = jets30mass
         self.njets30     = len(jets30pt)
         self.njets30Btag = njets30Btag
         self.mjj         = mjj
@@ -75,8 +77,6 @@ class Candidate:
         self.isDiJet     = False
         self.jet1pt      = -1.
         self.jet2pt      = -1.
-        self.jet1eta     = -99.
-        self.jet2eta     = -99.
         self.fillJetInfo()
         self.category    = ctypes.CDLL('libZZAnalysisAnalysisStep.so').category(
             c_int(nExtraLep),
@@ -84,11 +84,10 @@ class Candidate:
             c_float(self.mass4l),
             c_int(self.njets30),
             c_int(self.njets30Btag),
-            c_float(self.jet1pt),
-            c_float(self.jet2pt),
-            c_float(self.jet1eta),
-            c_float(self.jet2eta),
-            c_float(self.mjj),
+            (ctypes.c_float * len(self.jets30pt  ))(*self.jets30pt  ),
+            (ctypes.c_float * len(self.jets30eta ))(*self.jets30eta ),
+            (ctypes.c_float * len(self.jets30phi ))(*self.jets30phi ),
+            (ctypes.c_float * len(self.jets30mass))(*self.jets30mass),
             c_float(self.fishjj),
             )
 
@@ -96,14 +95,11 @@ class Candidate:
         
         if self.njets30==1:
             self.jet1pt = self.jets30pt[0]
-            self.jet1eta = self.jets30eta[0]
             self.mjj = -1.
             self.detajj = -1.
         elif self.njets30>=2:
             self.jet1pt = self.jets30pt[0]            
-            self.jet2pt = self.jets30pt[1]
-            self.jet1eta = self.jets30eta[0]            
-            self.jet2eta = self.jets30eta[1]                    
+            self.jet2pt = self.jets30pt[1]                   
             self.fishjj = 0.18*abs(self.detajj) + 1.92e-04*self.mjj
         else:
             self.mjj = -1.
