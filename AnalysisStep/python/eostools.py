@@ -6,6 +6,7 @@ and from CMGTools.Production.datasetToSource
 
 import sys
 import os
+import re
 import FWCore.ParameterSet.Config as cms
 
 def setCAFPath():
@@ -108,13 +109,16 @@ def listFiles(path, rec = False, full_info = False):
     return result
 
 
-def datasetToSource( user, dataset, pattern='.*root', readCache=False):
+def datasetToSource( prefix, dataset, pattern='', readCache=False):
 
 #    print user, dataset, pattern
-#    data = createDataset(user, dataset, pattern, readCache)
-    data=listFiles(dataset)
+    recursive=True #FIXME: this is needed for central production, but care is needed if other stuff is present in the EOS path
+    data=listFiles(prefix+dataset, recursive)
 
-#    print data
+    rootre = re.compile('.*root')
+    files = [f for f in data if rootre.match(f)]
+    
+    print files
     
     source = cms.Source(
 	"PoolSource",
@@ -124,6 +128,6 @@ def datasetToSource( user, dataset, pattern='.*root', readCache=False):
         secondaryFileNames = cms.untracked.vstring(),
         )
     
-    source.fileNames.extend( data )
+    source.fileNames.extend( files )
 
     return source

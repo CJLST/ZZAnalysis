@@ -8,6 +8,7 @@ import shutil
 import pickle
 import math
 import pprint
+from datetime import date
 from optparse import OptionParser
 from ZZAnalysis.AnalysisStep.eostools import *
 from ZZAnalysis.AnalysisStep.readSampleInfo import *
@@ -146,7 +147,7 @@ class MyBatchManager:
         # Handle output directory
         outputDir = self.options_.outputDir
         if outputDir==None:
-            today = datetime.today()
+            today = date.today()
             outputDir = 'OutCmsBatch_%s' % today.strftime("%d%h%y_%H%M")
             print 'output directory not specified, using %s' % outputDir
         self.outputDir_ = os.path.abspath(outputDir)
