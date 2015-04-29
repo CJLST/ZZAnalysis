@@ -10,7 +10,7 @@ def checkBool(val):
     return val
   
 
-#FIXME: strip trailing spaces in field
+
 def readSamplesInfo(infoFilePath = 'samples_8TeV.csv', indexBy = 'identifier'):
   """
   Loads the sample information database from the given comma-separated-values
@@ -42,7 +42,7 @@ def readSamplesInfo(infoFilePath = 'samples_8TeV.csv', indexBy = 'identifier'):
             value           = []
           else:
             value           = map(string.strip, value.split(";"))
-        info[key]           = value
+        info[key]           = value.strip()
 
       index                 = info[indexBy]
       if index in database:
