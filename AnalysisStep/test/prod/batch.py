@@ -222,15 +222,11 @@ class MyBatchManager:
        scriptFile.write( batchScriptCERN( value ) )
        scriptFile.close()
        os.system('chmod +x %s' % scriptFileName)
-
-       # Tune can be:
-       # for DATA: "DoubleEle", "DoubleMu","MuEG"
-       # for MC:   "", "MCAllEvents", "DYJets_B", "DYJets_NoB"
-       #
-       # setup can be 2011, 2012, 2015 
        
        SAMPLENAME  = splitComponents[value].samplename
-       tune  = splitComponents[value].tune
+       tune  = "" #FIXME
+       variables = splitComponents[value].variables
+       pyFragments = splitComponents[value].pyFragments
        setup = splitComponents[value].setup
        XSEC  = splitComponents[value].xsec
        
@@ -293,7 +289,7 @@ class MyBatchManager:
            cfgSnippetPDFStep2.close()
            
 
-       # Tune process
+       # FIXME add fragments
        # JSON for data
        if IsMC==False :
            if setup==2011 :
@@ -331,20 +327,21 @@ class MyBatchManager:
 
 class Component(object):
 
-    def __init__(self, name, user, dataset, pattern, splitFactor, tune, xsec, setup, pdfstep, doskim ):
+    def __init__(self, name, prefix, dataset, pattern, splitFactor, variables, pyFragments, xsec, BR, setup, pdfstep):
         self.name = name
         print "checking "+self.name
-        self.source = datasetToSource( user, dataset, pattern)
+        self.source = datasetToSource( prefix, dataset, pattern)
         self.files = self.source.fileNames
         self.splitFactor = int(splitFactor)
-        self.tune = tune
-        self.xsec = float(xsec)
+        self.variables = variables
+        self.pyFragments = pyFragments
+        self.xsec = float(xsec)*float(BR)
         self.setup = setup
         self.pdfstep = int(pdfstep)
         if self.pdfstep <0 or self.pdfstep>2:
             print "Unknown PDF step", pdfstep
             sys.exit(1)
-        self.doskim = bool(doskim)
+        self.doskim = False #FIXME RB bool(doskim)
         
       
 if __name__ == '__main__':
@@ -363,7 +360,7 @@ if __name__ == '__main__':
         if settings['execute']:
             pdfstep = batchManager.options_.PDFstep
             if pdfstep == 0 or ((not pdfstep == 0) and settings['pdf']):
-                components.append(Component(sample, settings['user'], settings['dataset'], settings['pattern'], settings['splitLevel'], settings['tune'],settings['crossSection'], setup, pdfstep, not bool(settings['pdf']))) #settings['pdf'] used here as full sel, without cuts.
+                components.append(Component(sample, settings['prefix'], settings['dataset'], settings['pattern'], settings['splitLevel'], settings['variables'],settings['pyFragments'],settings['crossSection'], settings['BR'], setup, pdfstep)) #FIXME-RB not bool(settings['pdf']))) #settings['pdf'] used here as full sel, without cuts.
     
     handle.close()
 

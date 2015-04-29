@@ -1,9 +1,11 @@
-identifier,process,crossSection = -1,totalEvents = -1,luminosity = -1,execute=True,dataset,user,pattern,splitLevel,tune,pdf=False
+identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,variables,pyFragments
 
-#ggH125,,0.01,,,,/store/mc/Phys14DR/GluGluToHToZZTo4L_M-125_13TeV-powheg-pythia6/MINIAODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/,,.*root,2,,False
-priv_ggH125,,0.01,,,,/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/ggH_JHU_125/,,.*root,2,,False
-priv_WplusH125,,0.01,,,,/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/WplusH_JHU_125/,,.*root,2,,False
-priv_WminusH125,,0.01,,,,/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/WminusH_JHU_125/,,.*root,2,,False
-priv_ZH125,,0.01,,,,/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/ZH_JHU_125/,,.*root,2,,False
-priv_ttH125,,0.01,,,,/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/ZH_JHU_125/,,.*root,2,,False
+### PHYS14 samples
+#ggH125,,0.01,,,/GluGluToHToZZTo4L_M-125_13TeV-powheg-pythia6/MINIAODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/,/store/mc/Phys14DR,.*root,2,,
 
+### H signal private production
+priv_ggH125,,0.01,,,/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/ggH_JHU_125/,,.*root,2,,
+priv_WplusH125,,0.01,,,/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/WplusH_JHU_125/,,.*root,2,,
+priv_WminusH125,,0.01,,,/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/WminusH_JHU_125/,,.*root,2,,
+priv_ZH125,,0.01,,,/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/ZH_JHU_125/,,.*root,2,,
+priv_ttH125,,0.01,,,/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/ZH_JHU_125/,,.*root,2,,

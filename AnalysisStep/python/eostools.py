@@ -101,12 +101,10 @@ def listFiles(path, rec = False, full_info = False):
         tokens = [t for t in line.split() if t]
         if tokens:
             #convert to an LFN
-            # result.append(tuple(tokens))
-            #COLIN need same interface for eos and local fs
             if full_info:
                 result.append( tokens)
             else:
-                result.append( tokens[4] )
+                result.append( eosToLFN(tokens[4]) )
     return result
 
 

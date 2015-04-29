@@ -1,3 +1,6 @@
+# Imported from:
+# https://raw.githubusercontent.com/bellan/VVXAnalysis/master/Producers/python/readSampleInfo.py
+#
 import sys, os, commands, math
 
 
