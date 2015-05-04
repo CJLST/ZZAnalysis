@@ -13,6 +13,13 @@ def checkBool(val):
     return val
   
 
+def isFloat(value):
+  try:
+    float(value)
+    return True
+  except ValueError:
+    return False
+
 
 def readSamplesInfo(infoFilePath = 'samples_8TeV.csv', indexBy = 'identifier'):
   """
@@ -41,11 +48,20 @@ def readSamplesInfo(infoFilePath = 'samples_8TeV.csv', indexBy = 'identifier'):
       info                  = {}
       for (key, value) in zip(header, data):
         if key.startswith("::"):
+          dictionary = {}
           if len(value.strip()) == 0:
             value           = []
           else:
             value           = map(string.strip, value.split(";"))
-        info[key]           = value.strip()
+            for v in value:
+              bareelement = map(string.strip, v.split("="))
+              if isFloat(bareelement[1]):
+                dictionary[bareelement[0]] = float(bareelement[1])
+              else:
+                dictionary[bareelement[0]] = checkBool(bareelement[1])
+          info[key]           = dictionary
+        else:
+          info[key]           = value.strip()
 
       index                 = info[indexBy]
       if index in database:
