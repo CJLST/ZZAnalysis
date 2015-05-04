@@ -26,7 +26,6 @@
 
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/Math/interface/Vector3D.h"
-#include "VVXAnalysis/Commons/interface/Utilities.h"
 #include "VVXAnalysis/Commons/interface/Colours.h"
 
 #include <boost/foreach.hpp>
