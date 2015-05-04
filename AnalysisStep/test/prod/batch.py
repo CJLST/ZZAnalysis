@@ -224,41 +224,23 @@ class MyBatchManager:
        scriptFile.close()
        os.system('chmod +x %s' % scriptFileName)
        
-       SAMPLENAME  = splitComponents[value].samplename
-       tune  = "" #FIXME
        variables = splitComponents[value].variables
        pyFragments = splitComponents[value].pyFragments
        setup = splitComponents[value].setup
-       XSEC  = splitComponents[value].xsec
        
-       # Set global parameters
-       IsMC = True
-       PD = ""
-       MCFILTER = ""
-       SUPERMELA_MASS = 125.6
-       if tune != "" :
-           tunes = tune.split(",")
-           if ("DoubleMu" in tunes) or ("DoubleEle" in tunes) or ("MuEG" in tunes):
-               if len(tunes)!=1 : # Do not allow other options for data
-                   raise ValueError, "invalid tune", tune
-               IsMC = False
-               PD = tune
-               
-           if ("DYJets_B" in tunes) or  ("DYJets_NoB" in tunes) :
-               MCFILTER = "HF" # Note: further customization of the filter module is done below
-           if ("MH126" in tunes) :
-               SUPERMELA_MASS = 126
-           # customization for "MCAllEvents" is done below
+       variables['IsMC'] = True
+       if 'PD' in variables and not variables['PD'] == '': variables['IsMC'] = False
+       #else: variables['PD'] = ""
+           
+       variables['SAMPLENAME'] = splitComponents[value].samplename
+       variables['XSEC'] = splitComponents[value].xsec 
+       #variables = {'IsMC':IsMC, 'PD':PD, 'MCFILTER':MCFILTER, 'SUPERMELA_MASS':SUPERMELA_MASS, 'SAMPLENAME':SAMPLENAME, 'XSEC':XSEC, 'SKIM_REQUIRED':SKIM_REQUIRED}
 
-       SKIM_REQUIRED = splitComponents[value].doskim #FIXME: ???
-       
-       print SAMPLENAME, "parameters:", tune, IsMC, PD, MCFILTER, SUPERMELA_MASS, XSEC
+       print "Parameters: ", variables
 
-       # Read CFG file so that it is customized with the above globals
-       namespace = {'IsMC':IsMC, 'PD':PD, 'MCFILTER':MCFILTER, 'SUPERMELA_MASS':SUPERMELA_MASS, 'SAMPLENAME':SAMPLENAME, 'XSEC':XSEC, 'SKIM_REQUIRED':SKIM_REQUIRED}
-       execfile(cfgFileName,namespace)
+       execfile(cfgFileName,variables)
 
-       process = namespace.get('process') 
+       process = variables.get('process') 
        process.source = splitComponents[value].source
        process.source.fileNames = splitComponents[value].files
 
@@ -274,14 +256,13 @@ class MyBatchManager:
                cfgSnippetPDFStep2.write( '\n' )
                cfgSnippetPDFStep2.close()
 
-       if "MCAllEvents" in tune:
-           process.ZZTree.skipEmptyEvents = False
+#       if "MCAllEvents" in tune:
+#           process.ZZTree.skipEmptyEvents = False
 
        cfgFile = open(jobDir+'/run_cfg.py','w')
        cfgFile.write( process.dumpPython() )
        cfgFile.write( '\n' )
 
-       del namespace
        del process
 
        if splitComponents[value].pdfstep == 2:
@@ -292,18 +273,20 @@ class MyBatchManager:
 
        # FIXME add fragments
        # JSON for data
-       if IsMC==False :
+       if not variables['IsMC']:          
            if setup==2011 :
                cfgFile.write( open('json_2011.py').read() ) 
            elif setup==2012 :
                cfgFile.write( open('json_2012.py').read() )
+           elif setup==2015:
+               print "Temporary, 2015 is an invalid setup."
            else :
                 raise ValueError, "invalid setup", setup
         
-       if "DYJets_B" in tune :
-           cfgFile.write( 'process.HF = cms.Path(process.heavyflavorfilter)\n\n' )
-       elif "DYJets_NoB" in tune :
-           cfgFile.write( 'process.HF = cms.Path(~process.heavyflavorfilter)\n\n' )
+#       if "DYJets_B" in tune :
+#           cfgFile.write( 'process.HF = cms.Path(process.heavyflavorfilter)\n\n' )
+#       elif "DYJets_NoB" in tune :
+#           cfgFile.write( 'process.HF = cms.Path(~process.heavyflavorfilter)\n\n' )
 # FIXME!!!
 #        if "Signal" in tune and not "NoSignal" in tune:
 #            cfgFile.write( '\nprocess.genCategory0 = process.genCategory =  cms.EDFilter("ZZGenFilterCategory", Topology = cms.int32(SIGNALDEFINITION), ParticleStatus = cms.int32(1), GenJets = cms.InputTag("genJetSel"), src = cms.InputTag("genParticlesPruned"))\n')
@@ -342,7 +325,7 @@ class Component(object):
         if self.pdfstep <0 or self.pdfstep>2:
             print "Unknown PDF step", pdfstep
             sys.exit(1)
-        self.doskim = False #FIXME RB bool(doskim)
+        
         
       
 if __name__ == '__main__':
@@ -361,7 +344,7 @@ if __name__ == '__main__':
         if settings['execute']:
             pdfstep = batchManager.options_.PDFstep
             if pdfstep == 0 or ((not pdfstep == 0) and settings['pdf']):
-                components.append(Component(sample, settings['prefix'], settings['dataset'], settings['pattern'], settings['splitLevel'], settings['variables'],settings['pyFragments'],settings['crossSection'], settings['BR'], setup, pdfstep)) #FIXME-RB not bool(settings['pdf']))) #settings['pdf'] used here as full sel, without cuts.
+                components.append(Component(sample, settings['prefix'], settings['dataset'], settings['pattern'], settings['splitLevel'], settings['::variables'],settings['pyFragments'],settings['crossSection'], settings['BR'], setup, pdfstep)) #FIXME-RB not bool(settings['pdf']))) #settings['pdf'] used here as full sel, without cuts.
     
     handle.close()
 
