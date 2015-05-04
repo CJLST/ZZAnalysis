@@ -1,5 +1,5 @@
 /** \class to remove jets overlapping with leptons
- *  No description available.
+ *  Producers to purge jets made with isolated leptons.
  *
  *  $Date:  $
  *  $Revision: $
