@@ -76,7 +76,8 @@ process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
         Z     = cms.InputTag("ZCand"),                                  
         ZZ  = cms.InputTag("ZZCand"),
 #        ZLL  = cms.InputTag("ZLLCand"),
-     )
+     ),
+     jetSrc = cms.InputTag("cleanJets"),
 )
 
 # Create lepton sync file
