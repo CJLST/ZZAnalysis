@@ -26,12 +26,9 @@
 
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/Math/interface/Vector3D.h"
-#include "VVXAnalysis/Commons/interface/Colours.h"
 
 #include <boost/foreach.hpp>
 #define foreach BOOST_FOREACH
-
-using namespace colour;
 
 class  JetsWithLeptonsRemover: public edm::EDProducer {
 public:
@@ -226,7 +223,7 @@ bool JetsWithLeptonsRemover::isMatchingWithZZLeptons(const edm::Event & event, c
 	    
 	  
 	  if(checkingVariable){
-	    if(activateDebugPrintOuts_) std::cout << Green("\t\t !!! Found a matching lepton-jet !!!")<<std::endl;
+	    if(activateDebugPrintOuts_) std::cout << "\t\t !!! Found a matching lepton-jet !!!"<<std::endl;
 	    if(doDebugPlots_){
 	      hDeltaPt_jet_lepton     ->Fill(v->daughter(j)->pt()  - jet.pt());
 	      hDeltaPhi_jet_lepton    ->Fill(v->daughter(j)->phi() - jet.phi());
@@ -248,7 +245,7 @@ bool JetsWithLeptonsRemover::isMatchingWithZZLeptons(const edm::Event & event, c
 
 	  // If the FSR photon matches, reject the jet
 	  if(jet.photonMultiplicity() > 0 && photon_en_frac > 0.5 && reco::deltaR(*v->daughter(2), jet) < 0.05){
-	    if(activateDebugPrintOuts_) std::cout << Blue("\t\t !!! Found a matching FSR lepton-jet !!!")<<std::endl;	  
+	    if(activateDebugPrintOuts_) std::cout << "\t\t !!! Found a matching FSR lepton-jet !!!"<<std::endl;	  
 	    if(doDebugPlots_){
 	      hDeltaPt_jet_fsr     ->Fill(v->daughter(2)->pt()  - jet.pt());
 	      hDeltaPhi_jet_fsr    ->Fill(v->daughter(2)->phi() - jet.phi());
@@ -280,7 +277,7 @@ bool JetsWithLeptonsRemover::isMatchingWith(const edm::InputTag& src, const edm:
       std::cout << "Not making any matching, the matching you choose is not foreseen" << std::endl;
     
     if(checkingVariable){
-      if(activateDebugPrintOuts_) std::cout << Green("\t\t !!! Found a matching lepton-jet (muon not coming from ZZ decay) !!!")<<std::endl;
+      if(activateDebugPrintOuts_) std::cout << "\t\t !!! Found a matching lepton-jet (muon not coming from ZZ decay) !!!"<<std::endl;
       return true;
     }
   }
