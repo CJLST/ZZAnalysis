@@ -6,7 +6,8 @@
  */
 
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
-#include <Muon/MuonAnalysisTools/interface/MuonEffectiveArea.h>
+//#include <Muon/MuonAnalysisTools/interface/MuonEffectiveArea.h>
+#include <ZZAnalysis/AnalysisStep/interface/CustomMuonEffectiveArea.h>
 //#include <EGamma/EGammaAnalysisTools/interface/ElectronEffectiveArea.h>
 #include <ZZAnalysis/AnalysisStep/interface/CustomElectronEffectiveArea.h>
 
@@ -18,7 +19,12 @@ using namespace pat;
 using namespace reco;
 
 
-int correctionType = 2; //1 = rho; 2 = dbeta;
+// 0 : no correction 
+// 1 : rho 
+// 2 : Deltabeta;
+int LeptonIsoHelper::defaultCorrTypeMu  = 2;
+int LeptonIsoHelper::defaultCorrTypeEle = 1;
+
 
 InputTag LeptonIsoHelper::getMuRhoTag(int sampleType, int setup) {
   InputTag rhoTag;
@@ -51,7 +57,7 @@ InputTag LeptonIsoHelper::getEleRhoTag(int sampleType, int setup) {
 }
 
 
-float LeptonIsoHelper::combRelIsoPF(int sampleType, int setup, double rho, const pat::Muon& l, float fsr) {
+float LeptonIsoHelper::combRelIsoPF(int sampleType, int setup, double rho, const pat::Muon& l, float fsr, int correctionType) {
   float PFChargedHadIso   = l.chargedHadronIso();
   float PFNeutralHadIso   = l.neutralHadronIso();
   float PFPhotonIso       = l.photonIso();
@@ -63,18 +69,18 @@ float LeptonIsoHelper::combRelIsoPF(int sampleType, int setup, double rho, const
   } else if (setup==2012) { 
     EAsetup = MuonEffectiveArea::kMuEAData2012;
   } else if (setup==2015) { 
-    EAsetup = MuonEffectiveArea::kMuEAData2012;
-    //FIXME: no Run II muon effective areas in the Muon package yet
+    EAsetup = MuonEffectiveArea::kMuEAPhys14MC; //FIXME: replace with EAs from data when available
   } else {
     cout << "LeptonIsoHelper: Incorrect setup: " << setup << endl;
     abort();
   }
 
-  if (correctionType==1) {
+  if (correctionType==0) {
+    return  (PFChargedHadIso + PFNeutralHadIso + PFPhotonIso - fsr)/l.pt();
+  } else if (correctionType==1) {
     float EA = MuonEffectiveArea::GetMuonEffectiveArea(MuonEffectiveArea::kMuGammaAndNeutralHadronIso04, 
 						       l.eta(), EAsetup);
     return  (PFChargedHadIso + max(0., PFNeutralHadIso + PFPhotonIso - fsr - rho * EA))/l.pt();
-
   } else if (correctionType==2) {
     return  (PFChargedHadIso + max(0., PFNeutralHadIso + PFPhotonIso - fsr - 0.5*PFPUChargedHadIso))/l.pt();
   }
@@ -82,10 +88,11 @@ float LeptonIsoHelper::combRelIsoPF(int sampleType, int setup, double rho, const
 }
 
 
-float LeptonIsoHelper::combRelIsoPF(int sampleType, int setup, double rho, const pat::Electron& l, float fsr) {
+float LeptonIsoHelper::combRelIsoPF(int sampleType, int setup, double rho, const pat::Electron& l, float fsr, int correctionType) {
   float PFChargedHadIso   = l.chargedHadronIso();
   float PFNeutralHadIso   = l.neutralHadronIso();
   float PFPhotonIso       = l.photonIso();
+  float PFPUChargedHadIso = l.puChargedHadronIso();
 
   ElectronEffectiveArea::ElectronEffectiveAreaTarget EAsetup;
   if (setup==2011) {
@@ -99,21 +106,28 @@ float LeptonIsoHelper::combRelIsoPF(int sampleType, int setup, double rho, const
     abort();
   }
 
-  float EA = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04,
-							     l.eta(), // l.superCluster()->eta(), 
-							     EAsetup);
-  return  (PFChargedHadIso + max(0., PFNeutralHadIso + PFPhotonIso - fsr - rho * EA))/l.pt();
+  if (correctionType==0) {
+    return  (PFChargedHadIso + PFNeutralHadIso + PFPhotonIso - fsr)/l.pt();
+  } else if (correctionType==1) {
+    float EA = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04,
+							       l.eta(), // l.superCluster()->eta(), 
+							       EAsetup);
+    return  (PFChargedHadIso + max(0., PFNeutralHadIso + PFPhotonIso - fsr - rho * EA))/l.pt();
+  } else if (correctionType==2) {
+    return  (PFChargedHadIso + max(0., PFNeutralHadIso + PFPhotonIso - fsr - 0.5*PFPUChargedHadIso))/l.pt();
+  }
+  return 0;
 }
 
 
-float LeptonIsoHelper::combRelIsoPF(int sampleType, int setup, double rho, const Candidate* lep, float fsr) {
+float LeptonIsoHelper::combRelIsoPF(int sampleType, int setup, double rho, const Candidate* lep, float fsr, int correctionType) {
   // should check if lep->hasMasterClone()?  
   if (lep->isMuon()) {
     const pat::Muon* mu = dynamic_cast<const pat::Muon*>(lep->masterClone().get());
-    return combRelIsoPF(sampleType, setup, rho, *mu, fsr);
+    return combRelIsoPF(sampleType, setup, rho, *mu, fsr, correctionType<0?defaultCorrTypeMu:correctionType);
   } else if (lep->isElectron()) {
     const pat::Electron* ele = dynamic_cast<const pat::Electron*>(lep->masterClone().get());
-    return combRelIsoPF(sampleType, setup, rho, *ele, fsr);    
+    return combRelIsoPF(sampleType, setup, rho, *ele, fsr, correctionType<0?defaultCorrTypeEle:correctionType);    
   } else {
     cout << "ERROR: LeptonIsoHelper: unknown type; pdgId=" << lep->pdgId() << endl;
     abort();
