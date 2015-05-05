@@ -71,6 +71,8 @@ private:
   virtual void produce(edm::Event&, const edm::EventSetup&);
   virtual void endJob(){};
 
+  void getPairMass(const reco::Candidate* lp, const reco::Candidate* lm, map<const reco::Candidate*, math::XYZTLorentzVector>& photons, float& mass, int& ID);
+
   edm::InputTag theCandidateTag;
   const CutSet<pat::CompositeCandidate> preBestCandSelection;
   const CutSet<pat::CompositeCandidate> cuts;
@@ -239,72 +241,35 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     myCand.setRoles(*ZRoles);
     myCand.applyRoles();
 
-    //--- Z and lepton pointers
+    //--- Z pointers
     const reco::Candidate* Z1= myCand.daughter(iZ1);
     const reco::Candidate* Z2= myCand.daughter(iZ2);
-    const reco::Candidate* Z1Lp= Z1->daughter(0);
-    const reco::Candidate* Z1Lm= Z1->daughter(1);
-    const reco::Candidate* Z2Lp= Z2->daughter(0);
-    const reco::Candidate* Z2Lm= Z2->daughter(1);
+    //--- Lepton pointers in the original order
+    const reco::Candidate* Z1L1= Z1->daughter(0);
+    const reco::Candidate* Z1L2= Z1->daughter(1);
+    const reco::Candidate* Z2L1= Z2->daughter(0);
+    const reco::Candidate* Z2L2= Z2->daughter(1);
 
-    int candChannel = Z1Lp->pdgId()*Z1Lm->pdgId()*Z2Lp->pdgId()*Z2Lm->pdgId();
-
-
-    //--- store good isolated leptons that are not involved in the current ZZ candidate
-    int nExtraLep = 0;
-    for( vector<reco::CandidatePtr>::const_iterator lepPtr = goodisoleptonPtrs.begin(); lepPtr != goodisoleptonPtrs.end(); ++ lepPtr ) {
-      const reco::Candidate* lep = lepPtr->get();
-      if( reco::deltaR( lep->p4(), Z1Lp->p4() ) > 0.02 &&
-	  reco::deltaR( lep->p4(), Z1Lm->p4() ) > 0.02 &&
-	  reco::deltaR( lep->p4(), Z2Lp->p4() ) > 0.02 &&
-	  reco::deltaR( lep->p4(), Z2Lm->p4() ) > 0.02 ){
-	nExtraLep++;
-	myCand.addUserCand("ExtraLep"+to_string(nExtraLep),*lepPtr);
-      }
-    }
-    myCand.addUserFloat("nExtraLep",nExtraLep);
-
-    //--- store Z candidates whose leptons are not involved in the current ZZ candidate
-    int nExtraZ = 0;
-    vector<const CompositeCandidate*> extraZs;
-    for( View<CompositeCandidate>::const_iterator zcand = ZCands->begin(); zcand != ZCands->end(); ++ zcand ) {
-      if( reco::deltaR( zcand->daughter(0)->p4(), Z1Lp->p4() ) > 0.02 &&
-	  reco::deltaR( zcand->daughter(0)->p4(), Z1Lm->p4() ) > 0.02 &&
-	  reco::deltaR( zcand->daughter(0)->p4(), Z2Lp->p4() ) > 0.02 &&
-	  reco::deltaR( zcand->daughter(0)->p4(), Z2Lm->p4() ) > 0.02 &&
-	  reco::deltaR( zcand->daughter(1)->p4(), Z1Lp->p4() ) > 0.02 &&
-	  reco::deltaR( zcand->daughter(1)->p4(), Z1Lm->p4() ) > 0.02 &&
-	  reco::deltaR( zcand->daughter(1)->p4(), Z2Lp->p4() ) > 0.02 &&
-	  reco::deltaR( zcand->daughter(1)->p4(), Z2Lm->p4() ) > 0.02    ){
-	const reco::CandidatePtr myZCand(ZCands,zcand-ZCands->begin());
-	if((bool)userdatahelpers::getUserFloat(&*myZCand,"GoodLeptons")){
-	  nExtraZ++;
-	  extraZs.push_back(&*zcand);
-	  myCand.addUserCand("assocZ"+to_string(nExtraZ),myZCand);
-	}
-      }
-    }
-    myCand.addUserFloat("nExtraZ",nExtraZ);
+    //--- Lepton four-vectors in the original order; with FSR added (below)
+    math::XYZTLorentzVector p11 = Z1L1->p4();
+    math::XYZTLorentzVector p12 = Z1L2->p4();
+    math::XYZTLorentzVector p21 = Z2L1->p4();
+    math::XYZTLorentzVector p22 = Z2L2->p4();
+    int id11 = Z1L1->pdgId();
+    int id12 = Z1L2->pdgId();
+    int id21 = Z2L1->pdgId();
+    int id22 = Z2L2->pdgId();
+    int candChannel = id11*id12*id21*id22;
 
 
-    //--- Lepton four-vectors with FSR added when present(to be used to compute angles and probabilities)
-    math::XYZTLorentzVector p11 = Z1Lp->p4();
-    math::XYZTLorentzVector p12 = Z1Lm->p4();
-    math::XYZTLorentzVector p21 = Z2Lp->p4();
-    math::XYZTLorentzVector p22 = Z2Lm->p4();
-    int id11 = Z1Lp->pdgId();
-    int id12 = Z1Lm->pdgId();
-    int id21 = Z2Lp->pdgId();
-    int id22 = Z2Lm->pdgId();
-
+    //--- Pick FSR photons; add their fourmomentum to p11...p22
     vector<math::XYZTLorentzVector> photons;
-
     int d0FSR = (static_cast<const pat::CompositeCandidate*>(Z1->masterClone().get()))->userFloat("dauWithFSR");
     if (d0FSR>=0) {
       if (Z1->numberOfDaughters()!=3) cout << "ERROR: ZZCandidateFiller: problem in FSR" << endl;
       const math::XYZTLorentzVector& fsr = Z1->daughter(2)->p4();
       photons.push_back(fsr);
-      if (d0FSR==0) {
+      if (d0FSR==0) {	
         p11 = p11 + fsr;
       } else if (d0FSR==1){
         p12 = p12 + fsr;
@@ -314,7 +279,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     if (d1FSR>=0) {
       if (Z2->numberOfDaughters()!=3) cout << "ERROR: ZZCandidateFiller: problem in FSR" << endl;
       const math::XYZTLorentzVector& fsr = Z2->daughter(2)->p4();
-      photons.push_back(fsr);      
+      photons.push_back(fsr);
       if (d1FSR==0) {
         p21 = p21 + fsr;
       } else if (d1FSR==1){
@@ -332,6 +297,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 	float fsrCorr = 0; // The correction to PFPhotonIso
 	for (vector<math::XYZTLorentzVector>::const_iterator ifsr=photons.begin(); ifsr!=photons.end(); ++ifsr) {
 	  double dR = ROOT::Math::VectorUtil::DeltaR(*ifsr,d->momentum());
+	  // Check if the photon is in the lepton's iso cone and not vetoed
 	  if (dR<0.4 && ((d->isMuon() && dR > 0.01) ||
 			 (d->isElectron() && (fabs((static_cast<const pat::Electron*>(d->masterClone().get()))->superCluster()->eta()) < 1.479 || dR > 0.08)))) {
 	    fsrCorr += ifsr->pt();
@@ -353,61 +319,189 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
       myCand.addUserFloat(base+"worstEleIso",worstEleIso);
     }
 
+
+    //----------------------------------------------------------------------
+    //--- Alternative lepton pairings: "smart cut" and QCD suppression and 
+
+    //--- Sign-ordered leptons and leptopn four-vectors (without FSR), to be used to compute mZa, mZb, mZalpha, mZbeta
+    const reco::Candidate* Z1Lp(Z1L1);
+    const reco::Candidate* Z1Lm(Z1L2);
+    const reco::Candidate* Z2Lp(Z2L1);
+    const reco::Candidate* Z2Lm(Z2L2);
+    vector<const reco::Candidate*> ZLeps = {Z1L1,Z1L2,Z2L1,Z2L2};
+    map<const reco::Candidate*, math::XYZTLorentzVector> FSR;
+    if (d0FSR>=0) FSR[ZLeps[d0FSR]]   = Z1->daughter(2)->p4();
+    if (d1FSR>=0) FSR[ZLeps[d1FSR+2]] = Z2->daughter(2)->p4();
+
+    // Sort leptons for OS Z candidates; no sorting for the same-sign collections used for CRs
+    if (Z1Lp->charge() < 0 && Z1Lp->charge()*Z1Lm->charge()<0) {
+      swap(Z1Lp,Z1Lm);    
+    }
+    if (Z2Lp->charge() < 0 && Z2Lp->charge()*Z2Lm->charge()<0) {
+      swap(Z2Lp,Z2Lm);
+    }    
+    
+    math::XYZTLorentzVector p1p(Z1Lp->p4());
+    math::XYZTLorentzVector p1m(Z1Lm->p4());
+    math::XYZTLorentzVector p2p(Z2Lp->p4());
+    math::XYZTLorentzVector p2m(Z2Lm->p4());
+
+    // Build the other SF/OS combination 
+    float mZ1= Z1->mass();
+    float mZa, mZb;
+    int ZaID, ZbID;
+    getPairMass(Z1Lp,Z2Lm,FSR,mZa,ZaID);
+    getPairMass(Z1Lm,Z2Lp,FSR,mZb,ZbID);
+
+    // For same-sign CRs, the Z2 leptons are same sign, so we need to check also the other combination. 
+    float mZalpha, mZbeta;
+    int ZalphaID, ZbetaID;
+    getPairMass(Z1Lp,Z2Lp,FSR,mZalpha,ZalphaID);
+    getPairMass(Z1Lm,Z2Lm,FSR,mZbeta,ZbetaID);
+
+    // Sort (mZa,mZb and) (mZalpha,mZbeta) so that a and alpha are the ones closest to mZ
+    if (std::abs(mZa-ZmassValue)>=std::abs(mZb-ZmassValue)) {
+      swap(mZa,mZb); 
+      swap(ZaID,ZbID);
+    }
+    if (std::abs(mZalpha-ZmassValue)>=std::abs(mZbeta-ZmassValue)) {
+      swap(mZalpha,mZbeta); 
+      swap(ZalphaID,ZbetaID);
+    }
+
+    // "smart cut" mll logic: veto the candidate if by swapping leptons we find a better Z1 and the Z2 is below 12 GeV.
+    // To handle same-sign CRs, we have to check both alternate pairings, and consider those that have a SF/OS Z1.
+    bool passSmartMLL = true;
+    if (((ZaID==-121||ZaID==-169) && std::abs(mZa-ZmassValue)<std::abs(mZ1-ZmassValue) && mZb<12) ||
+        ((ZalphaID==-121||ZalphaID==-169) && std::abs(mZalpha-ZmassValue)<std::abs(mZ1-ZmassValue) && mZbeta<12)) passSmartMLL = false;
+
+
+    //--- QCD suppression cut
+    vector<const reco::Candidate*> lep;
+    lep.push_back(Z1Lm);
+    lep.push_back(Z1Lp);
+    lep.push_back(Z2Lm);
+    lep.push_back(Z2Lp);
+    
+    float mll6 = 9999;
+    float mll4 = 9999;
+    for (int i=0;i<4;++i) {
+      for (int j=i+1;j<4;++j) {
+        float mll = (lep[i]->p4()+lep[j]->p4()).mass();
+        mll6 = min(mll, mll6);
+        if (lep[i]->charge()*lep[j]->charge()<0) { //OS
+          mll4 = min (mll,mll4);
+        }
+      }
+    }
+    
+  
+    //--- worst SIP value
+    vector<double> SIPS = {myCand.userFloat("d0.d0.SIP"), myCand.userFloat("d0.d1.SIP"), myCand.userFloat("d1.d0.SIP"), myCand.userFloat("d1.d1.SIP")};
+    sort(SIPS.begin(),SIPS.end());
+    float SIP4 = SIPS[3];
+
+    //--- Sorted pTs
+    vector<double> ptS;
+    ptS.push_back(Z1Lm->pt());
+    ptS.push_back(Z1Lp->pt());
+    ptS.push_back(Z2Lm->pt());
+    ptS.push_back(Z2Lp->pt());
+    sort(ptS.begin(),ptS.end());
+
+    //--- Mass and Lepton uncertainties
+    std::vector<double> errs;
+    float massError = errorBuilder.getMassResolutionWithComponents(myCand, errs);
+    int offset =0;
+    float sigma[2][3] = {{0,0,0}, {0,0,0}};
+
+    myCand.addUserFloat("massError",      massError);
+    myCand.addUserFloat("massError11",    errs[0]);
+    sigma[0][0] = errs[0];
+    myCand.addUserFloat("massError12",    errs[1]);
+    sigma[0][1] = errs[1];
+    if (myCand.daughter(0)->numberOfDaughters()==3){
+      myCand.addUserFloat("massError13",    errs[2]);
+      sigma[0][2] = errs[2];
+      offset = 1;
+    }
+    myCand.addUserFloat("massError21",    errs[2+offset]);
+    sigma[1][0] = errs[2+offset];
+    myCand.addUserFloat("massError22",    errs[3+offset]);
+    sigma[1][1] = errs[3+offset];
+    if (myCand.daughter(1)->numberOfDaughters()==3){
+      myCand.addUserFloat("massError23",    errs[4+offset]);
+      sigma[1][2]=errs[4+offset];
+    }
+  
+    float massErrorCorr=0;
+    for (int i=0; i<2; ++i) {
+      for (int j=0; j<2; ++j) {
+        const reco::Candidate* l=cand->daughter(i)->daughter(j);
+        const TH2F* h;
+        if (l->isMuon()) h = corrSigmaMu;
+        else             h = corrSigmaEle;
+	float ebecorr=1.;
+	if (h!=0) {
+	  int ptBin  = min(max(1,h->GetXaxis()->FindBin(l->pt())), h->GetNbinsX());
+	  int etaBin = min(max(1,h->GetYaxis()->FindBin(fabs(l->eta()))), h->GetNbinsY());
+	  ebecorr = h->GetBinContent(ptBin, etaBin);
+	}
+        massErrorCorr+= (sigma[i][j]*ebecorr)*(sigma[i][j]*ebecorr);
+      }
+    }
+    massErrorCorr += (sigma[0][2])*(sigma[0][2]);
+    massErrorCorr += (sigma[1][2])*(sigma[1][2]);
+    massErrorCorr = sqrt(massErrorCorr);
+    myCand.addUserFloat("massErrorCorr",      massErrorCorr);
+
+
+    //--- store good isolated leptons that are not involved in the current ZZ candidate
+    int nExtraLep = 0;
+    for( vector<reco::CandidatePtr>::const_iterator lepPtr = goodisoleptonPtrs.begin(); lepPtr != goodisoleptonPtrs.end(); ++ lepPtr ) {
+      const reco::Candidate* lep = lepPtr->get();
+      if( reco::deltaR( lep->p4(), Z1L1->p4() ) > 0.02 &&
+	  reco::deltaR( lep->p4(), Z1L2->p4() ) > 0.02 &&
+	  reco::deltaR( lep->p4(), Z2L1->p4() ) > 0.02 &&
+	  reco::deltaR( lep->p4(), Z2L2->p4() ) > 0.02 ){
+	nExtraLep++;
+	myCand.addUserCand("ExtraLep"+to_string(nExtraLep),*lepPtr);
+      }
+    }
+    myCand.addUserFloat("nExtraLep",nExtraLep);
+
+    //--- store Z candidates whose leptons are not involved in the current ZZ candidate
+    int nExtraZ = 0;
+    vector<const CompositeCandidate*> extraZs;
+    for( View<CompositeCandidate>::const_iterator zcand = ZCands->begin(); zcand != ZCands->end(); ++ zcand ) {
+      if( reco::deltaR( zcand->daughter(0)->p4(), Z1L1->p4() ) > 0.02 &&
+	  reco::deltaR( zcand->daughter(0)->p4(), Z1L2->p4() ) > 0.02 &&
+	  reco::deltaR( zcand->daughter(0)->p4(), Z2L1->p4() ) > 0.02 &&
+	  reco::deltaR( zcand->daughter(0)->p4(), Z2L2->p4() ) > 0.02 &&
+	  reco::deltaR( zcand->daughter(1)->p4(), Z1L1->p4() ) > 0.02 &&
+	  reco::deltaR( zcand->daughter(1)->p4(), Z1L2->p4() ) > 0.02 &&
+	  reco::deltaR( zcand->daughter(1)->p4(), Z2L1->p4() ) > 0.02 &&
+	  reco::deltaR( zcand->daughter(1)->p4(), Z2L2->p4() ) > 0.02    ){
+	const reco::CandidatePtr myZCand(ZCands,zcand-ZCands->begin());
+	if((bool)userdatahelpers::getUserFloat(&*myZCand,"GoodLeptons")){
+	  nExtraZ++;
+	  extraZs.push_back(&*zcand);
+	  myCand.addUserCand("assocZ"+to_string(nExtraZ),myZCand);
+	}
+      }
+    }
+    myCand.addUserFloat("nExtraZ",nExtraZ);
+
+
+
+    //----------------------------------------------------------------------
+    //--- Embed angular information and probabilities to build discriminants
+
     // Lepton TLorentzVectors, including FSR
     TLorentzVector pL11(p11.x(),p11.y(),p11.z(),p11.t());
     TLorentzVector pL12(p12.x(),p12.y(),p12.z(),p12.t());
     TLorentzVector pL21(p21.x(),p21.y(),p21.z(),p21.t());
     TLorentzVector pL22(p22.x(),p22.y(),p22.z(),p22.t());
-
-
-    //--- Sign-ordered lepton four-vectors, to be used to compute mZa, mZb, mZalpha, mZbeta
-    math::XYZTLorentzVector p1p(p11);
-    math::XYZTLorentzVector p1m(p12);
-    math::XYZTLorentzVector p2p(p21);
-    math::XYZTLorentzVector p2m(p22);
-    int id1p = id11;
-    int id1m = id12;
-    int id2p = id21;
-    int id2m = id22;
-    // no sorting for the same-sign collections used for CRs
-    if (Z1Lp->charge() < 0 && Z1Lp->charge()*Z1Lm->charge()<0) {
-      swap(Z1Lp,Z1Lm);    
-      swap(p1p,p1m);    
-      swap(id1p,id1m);    
-    }
-    if (Z2Lp->charge() < 0 && Z2Lp->charge()*Z2Lm->charge()<0) {
-      swap(Z2Lp,Z2Lm);
-      swap(p2p,p2m);    
-      swap(id2p,id2m);    
-    }
-
-
-    //----------------------------------------------------------------------
-    //--- Z1 kinematic refit (experimental)
-    float m4lRef=0;
-    float chi2LepZ1Ref=0;
-    //float chi2ProbLepZ1Ref=0;
-    float mZ1Ref=0;
-    if (doKinFit && abs(id11)==13 && abs(id12)==13 && abs(id21)==13 && abs(id22)==13 ) {
-      
-      // Get the Z1 leptons 4 four-vectors refitted with the mass constraint (the fsr photon is already taken into account)
-      DiLeptonKinFitter* fitter_dilep = new DiLeptonKinFitter( "fitter_dilep", "fitter_dilep", 91.1876);
-      std::pair<TLorentzVector,TLorentzVector> lepZ1Ref = fitter_dilep->fit(Z1);
-
-      chi2LepZ1Ref = fitter_dilep->getS();
-      //chi2ProbLepZ1Ref = TMath::Prob(fitter_dilep->getS(), fitter_dilep->getNDF());
-    
-      math::XYZTLorentzVector pRef11(lepZ1Ref.first.Px(),lepZ1Ref.first.Py(),lepZ1Ref.first.Pz(),lepZ1Ref.first.E());
-      math::XYZTLorentzVector pRef12(lepZ1Ref.second.Px(),lepZ1Ref.second.Py(),lepZ1Ref.second.Pz(),lepZ1Ref.second.E());
-      
-      m4lRef  = (pRef11+pRef12+p21+p22).mass();
-      mZ1Ref  = (pRef11+pRef12).mass();
-
-    }
-    
-
-    //----------------------------------------------------------------------
-    //--- Embed angular information and KD
 
     std::vector<TLorentzVector> partP;
     partP.push_back(pL11);
@@ -536,39 +630,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     coupling->clear();
     complex<double> coup2(0.,1.);
     coupling->push_back(coup2);
-    combinedMEM.computeME(MEMNames::kggZZ_SMHiggs, MEMNames::kJHUGen, partP, partId, couplingprod, coupling, ggzz_ci_VAMCFM);  
-
-    //--- save sapce by not storing KDs that we can recreate
-    //double MorindKD_mela,MorindKD_pseudo,MorindKD_highdim,MorindKD_vec,MorindKD_psvec,MorindKD_gggrav,MorindKD_qqgrav;
-    //double ME_A,ME_B;
-    // Moriond KDs 
-    //combinedMEM.computeKD(MEMNames::kSMHiggs, MEMNames::kJHUGen, MEMNames::kqqZZ, MEMNames::kMCFM, &MEMs::probRatio, MorindKD_mela ,ME_A,ME_B);// => recreate as p0plus_VAJHU/(p0plus_VAJHU + bkg_VAMCFMNorm) 
-    //combinedMEM.computeKD(MEMNames::kSMHiggs, MEMNames::kJHUGen, MEMNames::k0minus, MEMNames::kJHUGen, &MEMs::probRatio, MorindKD_pseudo ,ME_A,ME_B);// => recreate as  p0plus_VAJHU/(p0plus_VAJHU + p0minus_VAJHU) 
-    //combinedMEM.computeKD(MEMNames::kSMHiggs, MEMNames::kJHUGen, MEMNames::k0hplus, MEMNames::kJHUGen, &MEMs::probRatio, MorindKD_highdim ,ME_A,ME_B);// => recreate as p0plus_VAJHU/(p0plus_VAJHU + p0hplus_VAJHU) 
-    //combinedMEM.computeKD(MEMNames::kSMHiggs, MEMNames::kJHUGen, MEMNames::k1minus, MEMNames::kJHUGen, &MEMs::probRatio, MorindKD_psvec ,ME_A,ME_B);// => recreate as p0plus_VAJHU/(p0plus_VAJHU + p1_VAJHU)
-    //combinedMEM.computeKD(MEMNames::kSMHiggs, MEMNames::kJHUGen, MEMNames::k1plus,MEMNames::kJHUGen, &MEMs::probRatio,  MorindKD_vec ,ME_A,ME_B);// => recreate as p0plus_VAJHU/(p0plus_VAJHU + p1plus_VAJHU)
-    //combinedMEM.computeKD(MEMNames::kSMHiggs, MEMNames::kJHUGen, MEMNames::k2mplus_gg, MEMNames::kJHUGen, &MEMs::probRatio,  MorindKD_gggrav ,ME_A,ME_B);// => recreate as  p0plus_VAJHU/(p0plus_VAJHU + p2_VAJHU)
-    //combinedMEM.computeKD(MEMNames::kSMHiggs, MEMNames::kJHUGen, MEMNames::k2mplus_qqbar, MEMNames::kJHUGen, &MEMs::probRatio, MorindKD_qqgrav ,ME_A,ME_B);// => recreate as  p0plus_VAJHU/(p0plus_VAJHU + p2qqb_VAJHU)
-
-    //double HCPKD_mela,HCPKD_grav ,HCPKD_pseudo;
-    //HCP KDs 
-    //combinedMEM.computeKD(kSMHiggs,kMELA_HCP,kqqZZ,kMELA_HCP,&MEMs::probRatio,HCPKD_mela  ,ME_A,ME_B);  // => recreate as p0plus_melaNorm/(p0plus_melaNorm + bkg_mela)
-    //combinedMEM.computeKD(kSMHiggs,kAnalytical,k0minus,kAnalytical,&MEMs::probRatio,HCPKD_pseudo, ME_A,ME_B);// => recreate as p0plus_mela/(p0plus_mela + p0minus_mela)
-    //combinedMEM.computeKD(kSMHiggs,kAnalytical,k2mplus_gg,kAnalytical,&MEMs::probRatio,HCPKD_grav  ,ME_A,ME_B);// => recreate as p0plus_mela/(p0plus_mela + p2_mela)
-    
-    //check syncronization
-    //     std::cout << "melaHCP"  << HCPKD_mela << " : " << p0plus_melaNorm/(p0plus_melaNorm + bkg_mela) << " : " <<  ld  << std::endl;
-    //     std::cout << "pseudoHCP"<< HCPKD_pseudo << " : " << p0plus_mela/(p0plus_mela + p0minus_mela)  <<  " : " <<  psld  <<std::endl;
-    //     std::cout << "pseudoHCP"<< HCPKD_grav << " : " << p0plus_mela/(p0plus_mela + p2_mela)  <<  " : " <<  gravld  <<std::endl;
-    //     std::cout << "MorindKD_mela " <<  MorindKD_mela<< " : " <<  p0plus_VAJHU/(p0plus_VAJHU + bkg_VAMCFMNorm)   << std::endl;
-    //     std::cout << "MorindKD_pseudo " << MorindKD_pseudo << " : " <<  p0plus_VAJHU/(p0plus_VAJHU + p0minus_VAJHU) << std::endl;
-    //     std::cout << "MorindKD_highdim " << MorindKD_highdim << " : " << p0plus_VAJHU/(p0plus_VAJHU + p0hplus_VAJHU)  << std::endl;
-    //     std::cout << "MorindKD_vec " << MorindKD_vec << " : " << p0plus_VAJHU/(p0plus_VAJHU + p1plus_VAJHU)<< std::endl;
-    //     std::cout << "MorindKD_psvec " << MorindKD_psvec << " : " << p0plus_VAJHU/(p0plus_VAJHU + p1_VAJHU)<< std::endl;
-    //     std::cout << "MorindKD_gggrav " <<  MorindKD_gggrav << " : " << p0plus_VAJHU/(p0plus_VAJHU + p2_VAJHU)<< std::endl;
-    //     std::cout << "MorindKD_qqgrav " << MorindKD_qqgrav << " : " << p0plus_VAJHU/(p0plus_VAJHU + p2qqb_VAJHU)<< std::endl;
-    //     std::cout << std::endl;
-
+    combinedMEM.computeME(MEMNames::kggZZ_SMHiggs, MEMNames::kJHUGen, partP, partId, couplingprod, coupling, ggzz_ci_VAMCFM);
 
     // Supermela signal
     // m4l probability as in datacards
@@ -787,118 +849,31 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     } 
     
     // ...
-
-
-
+  
+    
     //----------------------------------------------------------------------
-    //--- Alternative lepton pairing
+    //--- Z1 kinematic refit (experimental)
+    float m4lRef=0;
+    float chi2LepZ1Ref=0;
+    //float chi2ProbLepZ1Ref=0;
+    float mZ1Ref=0;
+    if (doKinFit && abs(id11)==13 && abs(id12)==13 && abs(id21)==13 && abs(id22)==13 ) {
+      
+      // Get the Z1 leptons 4 four-vectors refitted with the mass constraint (the fsr photon is already taken into account)
+      DiLeptonKinFitter* fitter_dilep = new DiLeptonKinFitter( "fitter_dilep", "fitter_dilep", 91.1876);
+      std::pair<TLorentzVector,TLorentzVector> lepZ1Ref = fitter_dilep->fit(Z1);
+
+      chi2LepZ1Ref = fitter_dilep->getS();
+      //chi2ProbLepZ1Ref = TMath::Prob(fitter_dilep->getS(), fitter_dilep->getNDF());
     
-    // Build the other SF/OS combination 
-    float mZ1= Z1->mass();
-    float mZa = (p1p+p2m).mass();
-    float mZb = (p1m+p2p).mass();
-    int ZaID = id1p*id2m;
-    int ZbID = id1m*id2p;
-    // For same-sign CRs, the Z2 leptons are same sign, so we need to check also the other combination. 
-    float mZalpha = (p1p+p2p).mass();
-    float mZbeta  = (p1m+p2m).mass();
-    int ZalphaID = id1p*id2p;
-    int ZbetaID  = id1m*id2m;
-    // Sort (mZa,mZb and) (mZalpha,mZbeta) so that a and alpha are the ones closest to mZ
-    if (std::abs(mZa-ZmassValue)>=std::abs(mZb-ZmassValue)) {
-      swap(mZa,mZb); 
-      swap(ZaID,ZbID);
-    }
-    if (std::abs(mZalpha-ZmassValue)>=std::abs(mZbeta-ZmassValue)) {
-      swap(mZalpha,mZbeta); 
-      swap(ZalphaID,ZbetaID);
+      math::XYZTLorentzVector pRef11(lepZ1Ref.first.Px(),lepZ1Ref.first.Py(),lepZ1Ref.first.Pz(),lepZ1Ref.first.E());
+      math::XYZTLorentzVector pRef12(lepZ1Ref.second.Px(),lepZ1Ref.second.Py(),lepZ1Ref.second.Pz(),lepZ1Ref.second.E());
+      
+      m4lRef  = (pRef11+pRef12+p21+p22).mass();
+      mZ1Ref  = (pRef11+pRef12).mass();
+
     }
 
-    // "smart" mll logic: veto the candidate if by swapping leptons we find a better Z1 and the Z2 is below 12 GeV.
-    // To handle same-sign CRs, we have to check both alternate pairings, and consider those that have a SF/OS Z1.
-    bool passSmartMLL = true;
-    if (((ZaID==-121||ZaID==-169) && std::abs(mZa-ZmassValue)<std::abs(mZ1-ZmassValue) && mZb<12) ||
-        ((ZalphaID==-121||ZalphaID==-169) && std::abs(mZalpha-ZmassValue)<std::abs(mZ1-ZmassValue) && mZbeta<12)) passSmartMLL = false;
-
-    vector<const reco::Candidate*> lep;
-    lep.push_back(Z1Lm);
-    lep.push_back(Z1Lp);
-    lep.push_back(Z2Lm);
-    lep.push_back(Z2Lp);
-    
-    float mll6 = 9999;
-    float mll4 = 9999;
-    for (int i=0;i<4;++i) {
-      for (int j=i+1;j<4;++j) {
-        float mll = (lep[i]->p4()+lep[j]->p4()).mass();
-        mll6 = min(mll, mll6);
-        if (lep[i]->charge()*lep[j]->charge()<0) { //OS
-          mll4 = min (mll,mll4);
-        }
-      }
-    }
-    
-  
-    //--- worst SIP value
-    vector<double> SIPS = {myCand.userFloat("d0.d0.SIP"), myCand.userFloat("d0.d1.SIP"), myCand.userFloat("d1.d0.SIP"), myCand.userFloat("d1.d1.SIP")};
-    sort(SIPS.begin(),SIPS.end());
-    float SIP4 = SIPS[3];
-
-    //--- Sorted pTs
-    vector<double> ptS;
-    ptS.push_back(Z1Lm->pt());
-    ptS.push_back(Z1Lp->pt());
-    ptS.push_back(Z2Lm->pt());
-    ptS.push_back(Z2Lp->pt());
-    sort(ptS.begin(),ptS.end());
-
-    //--- Mass and Lepton uncertainties
-    std::vector<double> errs;
-    float massError = errorBuilder.getMassResolutionWithComponents(myCand, errs);
-    int offset =0;
-    float sigma[2][3] = {{0,0,0}, {0,0,0}};
-
-    myCand.addUserFloat("massError",      massError);
-    myCand.addUserFloat("massError11",    errs[0]);
-    sigma[0][0] = errs[0];
-    myCand.addUserFloat("massError12",    errs[1]);
-    sigma[0][1] = errs[1];
-    if (myCand.daughter(0)->numberOfDaughters()==3){
-      myCand.addUserFloat("massError13",    errs[2]);
-      sigma[0][2] = errs[2];
-      offset = 1;
-    }
-    myCand.addUserFloat("massError21",    errs[2+offset]);
-    sigma[1][0] = errs[2+offset];
-    myCand.addUserFloat("massError22",    errs[3+offset]);
-    sigma[1][1] = errs[3+offset];
-    if (myCand.daughter(1)->numberOfDaughters()==3){
-      myCand.addUserFloat("massError23",    errs[4+offset]);
-      sigma[1][2]=errs[4+offset];
-    }
-  
-    float massErrorCorr=0;
-    for (int i=0; i<2; ++i) {
-      for (int j=0; j<2; ++j) {
-        const reco::Candidate* l=cand->daughter(i)->daughter(j);
-        const TH2F* h;
-        if (l->isMuon()) h = corrSigmaMu;
-        else             h = corrSigmaEle;
-	float ebecorr=1.;
-	if (h!=0) {
-	  int ptBin  = min(max(1,h->GetXaxis()->FindBin(l->pt())), h->GetNbinsX());
-	  int etaBin = min(max(1,h->GetYaxis()->FindBin(fabs(l->eta()))), h->GetNbinsY());
-	  ebecorr = h->GetBinContent(ptBin, etaBin);
-	}
-        massErrorCorr+= (sigma[i][j]*ebecorr)*(sigma[i][j]*ebecorr);
-      }
-    }
-    massErrorCorr += (sigma[0][2])*(sigma[0][2]);
-    massErrorCorr += (sigma[1][2])*(sigma[1][2]);
-    massErrorCorr = sqrt(massErrorCorr);
-    myCand.addUserFloat("massErrorCorr",      massErrorCorr);
-  
-    
     //----------------------------------------------------------------------
     //--- 4l vertex fits (experimental)
 
@@ -1200,7 +1175,29 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   
   iEvent.put(result);
 }
+
+
   
+void 
+ZZCandidateFiller::getPairMass(const reco::Candidate* lp, const reco::Candidate* lm, map<const reco::Candidate*, math::XYZTLorentzVector>& photons, float& mass, int& ID) {
+
+//   cout << "GPM " << (long) lp << " " << (long) lm << photons.size();
+//   for  (map<const reco::Candidate*, math::XYZTLorentzVector>::iterator i = photons.begin(); i!=photons.end(); ++i) {
+//     cout << " (" << (long) i->first << " " << i->second << ") ";
+//   }
+  
+
+  math::XYZTLorentzVector llp4 = lp->p4()+lm->p4();
+//   cout << llp4.mass();
+  auto lpp = photons.find(lp);
+  auto lmp = photons.find(lm);
+  if (lpp!=photons.end()) llp4+=lpp->second;
+  if (lmp!=photons.end()) llp4+=lmp->second;
+//   cout << " " << mass <<  endl;
+  mass=llp4.mass();
+  ID=lp->pdgId()*lm->pdgId();
+}
+
 
 #include <FWCore/Framework/interface/MakerMacros.h>
 DEFINE_FWK_MODULE(ZZCandidateFiller);
