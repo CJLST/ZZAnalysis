@@ -43,7 +43,6 @@
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
 #include <ZZAnalysis/AnalysisStep/interface/MCHistoryTools.h>
 #include <ZZAnalysis/AnalysisStep/interface/PUReweight.h>
-#include <ZZAnalysis/AnalysisStep/interface/VBFCandidateJetSelector.h>
 #include <ZZAnalysis/AnalysisStep/interface/bitops.h>
 #include <ZZAnalysis/AnalysisStep/interface/Fisher.h>
 #include "ZZ4lConfigHelper.h"
@@ -378,32 +377,21 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     }
   }
 
-  // Jet collection (preselected with pT>10)
-  Handle<edm::View<pat::Jet> > pfjetscoll;
-  event.getByLabel("slimmedJets", pfjetscoll);
 
-  // lepton collection, for cleaning
-  Handle<View<reco::Candidate> > softleptoncoll;
-  event.getByLabel("softLeptons", softleptoncoll);
-  vector<const reco::Candidate*> goodisoleptons;
-  for( View<reco::Candidate>::const_iterator lep = softleptoncoll->begin(); lep != softleptoncoll->end(); ++ lep ){ 
-    if((bool)userdatahelpers::getUserFloat(&*lep,"isGood") && (bool)userdatahelpers::getUserFloat(&*lep,"isIsoFSRUncorr")){
-      goodisoleptons.push_back(&*lep);
-    }
-  }
-
-  std::vector<const pat::Jet*> cleanedJets;
-  VBFCandidateJetSelector myVBFCandidateJetSelector;
-  cleanedJets = myVBFCandidateJetSelector.cleanJets(goodisoleptons,pfjetscoll,myHelper.setup());
+  // Jets
+  Handle<edm::View<pat::Jet> > CleanedJets;
+  event.getByLabel("cleanJets", CleanedJets);
+  vector<const pat::Jet*> cleanedJets;
   vector<const pat::Jet*> cleanedJetsPt30;
   int nCleanedJetsPt30BTagged = 0;
-  for (unsigned int i=0; i<cleanedJets.size(); ++i){
-    const pat::Jet& myjet = *(cleanedJets.at(i));  
-    if (myjet.pt()>30) {
-      cleanedJetsPt30.push_back(&myjet);
-      if(myjet.bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags")>0.814) nCleanedJetsPt30BTagged++; // CSV Medium WP
+  for(edm::View<pat::Jet>::const_iterator jet = CleanedJets->begin(); jet != CleanedJets->end(); ++jet){
+    cleanedJets.push_back(&*jet);
+    if(jet->pt()>30){
+      cleanedJetsPt30.push_back(&*jet);
+      if(jet->bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags")>0.814) nCleanedJetsPt30BTagged++; // CSV Medium WP
     }
   }
+
   float detajj = -99.f;
   float Mjj    = -99.f;
   float Fisher = -99.f;
@@ -452,7 +440,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   Int_t NbestCand = -1; //FIXME now store only 1 candidate in the SR, but we still have to save iBC correctly in the SR
   if (theChannel==ZZ && nFilled>0) NbestCand=0;
 
-  myTree->FillEventInfo(event.id().run(), event.id().event(), event.luminosityBlock(), NbestCand, vertexs->size(), nObsInt, nTrueInt, weight2, pfmet, pfjetscoll->size(), cleanedJets.size(), cleanedJetsPt30.size(), nCleanedJetsPt30BTagged, genFinalState, genProcessId, genHEPMCweight, trigWord, genExtInfo);
+  myTree->FillEventInfo(event.id().run(), event.id().event(), event.luminosityBlock(), NbestCand, vertexs->size(), nObsInt, nTrueInt, weight2, pfmet, cleanedJets.size(), cleanedJetsPt30.size(), nCleanedJetsPt30BTagged, genFinalState, genProcessId, genHEPMCweight, trigWord, genExtInfo);
 
   // Final call to save the tree entry, and reset tree variables
   myTree->FillEvent();

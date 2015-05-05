@@ -53,7 +53,6 @@ void HZZ4lNtupleFactory::InitializeVariables()
   _NTrueInt =0;
   _PUWeight =0;
   _PFMET = -99;
-  _nJets = 0;
   _nCleanedJets = 0;
   _nCleanedJetsPt30 = 0;
   _nCleanedJetsPt30BTagged = 0;
@@ -399,7 +398,6 @@ void HZZ4lNtupleFactory::InitializeBranches()
   _outTree->Branch("NTrueInt",&_NTrueInt,"NTrueInt/F");
   _outTree->Branch("PUWeight12",&_PUWeight,"PUWeight12/F");
   _outTree->Branch("PFMET",&_PFMET,"PFMET/F");
-  _outTree->Branch("nJets",&_nJets,"nJets/I");
   _outTree->Branch("nCleanedJets",&_nCleanedJets,"nCleanedJets/I");
   _outTree->Branch("nCleanedJetsPt30",&_nCleanedJetsPt30,"nCleanedJetsPt30/I");
   _outTree->Branch("nCleanedJetsPt30BTagged",&_nCleanedJetsPt30BTagged,"nCleanedJetsPt30BTagged/I");
@@ -798,7 +796,7 @@ void HZZ4lNtupleFactory::FillAssocLepGenInfo(std::vector<const reco::Candidate *
 }
 
 void HZZ4lNtupleFactory::FillEventInfo(Int_t RunNumber, const Long64_t EventNumber, Int_t LumiNumber, Int_t IndexBestCand, Int_t Nvtx, 
-                                       Int_t NObsInt, Float_t NTrueInt, Float_t PUweight, Float_t PFMET, Int_t nJets, Int_t nCleanedJets, Int_t nCleanedJetsPt30, Int_t nCleanedJetsPt30BTagged, Int_t genFinalState, Int_t genProcessId, Float_t genHEPMCweight, Short_t trigWord,  Short_t genExtInfo)
+                                       Int_t NObsInt, Float_t NTrueInt, Float_t PUweight, Float_t PFMET, Int_t nCleanedJets, Int_t nCleanedJetsPt30, Int_t nCleanedJetsPt30BTagged, Int_t genFinalState, Int_t genProcessId, Float_t genHEPMCweight, Short_t trigWord,  Short_t genExtInfo)
 {
   _RunNumber = RunNumber;
   _EventNumber = EventNumber;
@@ -810,7 +808,6 @@ void HZZ4lNtupleFactory::FillEventInfo(Int_t RunNumber, const Long64_t EventNumb
   _PUWeight =PUweight;
 
   _PFMET = PFMET;
-  _nJets = nJets;
   _nCleanedJets = nCleanedJets;
   _nCleanedJetsPt30 = nCleanedJetsPt30;
   _nCleanedJetsPt30BTagged = nCleanedJetsPt30BTagged;

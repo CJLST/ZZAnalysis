@@ -38,7 +38,6 @@
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
 #include <ZZAnalysis/AnalysisStep/interface/MCHistoryTools.h>
 #include <ZZAnalysis/AnalysisStep/interface/PUReweight.h>
-#include <ZZAnalysis/AnalysisStep/interface/VBFCandidateJetSelector.h>
 #include <ZZAnalysis/AnalysisStep/interface/Fisher.h>
 #include "ZZ4lConfigHelper.h"
 #include <boost/lexical_cast.hpp>
@@ -472,16 +471,6 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
   Handle<pat::ElectronCollection> electrons;
   event.getByLabel("cleanSoftElectrons", electrons);
 
-  // Good iso leptons
-  Handle<View<reco::Candidate> > softleptoncoll;
-  event.getByLabel("softLeptons", softleptoncoll);
-  vector<const reco::Candidate*> goodisoleptons;
-  for( View<reco::Candidate>::const_iterator lep = softleptoncoll->begin(); lep != softleptoncoll->end(); ++ lep ){ 
-    if((bool)userdatahelpers::getUserFloat(&*lep,"isGood") && (bool)userdatahelpers::getUserFloat(&*lep,"isIsoFSRUncorr")){
-      goodisoleptons.push_back(&*lep);
-    }
-  }
-
   // Zs (for step plots)
   Handle<View<pat::CompositeCandidate> > Z;
   event.getByLabel("ZCand", Z);
@@ -513,9 +502,13 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
     pfmet = pfmetcoll->front().pt();
   }
 
-  // Jet collection (preselected with pT>10)
-  Handle<edm::View<pat::Jet> > pfjetscoll;
-  event.getByLabel("slimmedJets", pfjetscoll);
+  // Jet collection
+  Handle<edm::View<pat::Jet> > CleanJets;
+  event.getByLabel("cleanJets", CleanJets);
+  vector<const pat::Jet*> cleanedJetsPt30;
+  for(edm::View<pat::Jet>::const_iterator jet = CleanJets->begin(); jet != CleanJets->end(); ++jet){
+    if(jet->pt()>30) cleanedJetsPt30.push_back(&*jet);
+  }
 
   // Apply MC filter (skip event)
   if (isMC && !(myHelper.passMCFilter(event))) return;
@@ -637,14 +630,6 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
 //   }  
 
   //Jet information
-  std::vector<const pat::Jet*> cleanedJets;
-  VBFCandidateJetSelector myVBFCandidateJetSelector;
-  cleanedJets = myVBFCandidateJetSelector.cleanJets(goodisoleptons,pfjetscoll,myHelper.setup());
-  std::vector<const pat::Jet*> cleanedJetsPt30; // Create a collection implementing the official jet selection (pt>30)
-  for (unsigned int i=0; i < cleanedJets.size(); ++i){
-    const pat::Jet& myjet = *(cleanedJets.at(i));  
-    if (myjet.pt()>30) cleanedJetsPt30.push_back(&myjet);
-  } 
   float j1pT = -1.;
   float j2pT = -1.;
   int nJet30 = -1;

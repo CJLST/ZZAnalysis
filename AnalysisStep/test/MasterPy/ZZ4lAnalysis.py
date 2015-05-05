@@ -870,8 +870,10 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
 
 
 ### ----------------------------------------------------------------------
-### Recorrect jets
+### Jets
 ### ----------------------------------------------------------------------
+
+# Recorrect jets
 
 UPDATE_JETS = False #FIXME: deactivated for now; what should be done for RunII ?
 
@@ -892,6 +894,21 @@ if (UPDATE_JETS and LEPTON_SETUP==2012) :
 #        print 'Correction levels', process.cmgPFJetSel.levels
 
 
+# Clean jets wrt. good (preFSR-)isolated leptons
+process.cleanJets = cms.EDProducer("JetsWithLeptonsRemover",
+                                   Jets      = cms.InputTag("slimmedJets"),
+                                   Muons     = cms.InputTag("softMuons"),
+                                   Electrons = cms.InputTag("cleanSoftElectrons"),
+                                   Diboson   = cms.InputTag(""),
+                                   JetPreselection      = cms.string("pt>20 && abs(eta)<4.7"),
+                                   MuonPreselection     = cms.string("userFloat('isGood') && userFloat('isIsoFSRUncorr')"),
+                                   ElectronPreselection = cms.string("userFloat('isGood') && userFloat('isIsoFSRUncorr')"),
+                                   DiBosonPreselection  = cms.string(""),
+                                   MatchingType = cms.string("byDeltaR"), 
+                                   DebugPlots = cms.untracked.bool(False)
+                                   )
+
+
 ### ----------------------------------------------------------------------
 ### Paths
 ### ----------------------------------------------------------------------
@@ -907,6 +924,7 @@ process.Candidates = cms.Path(
        process.fsrPhotons        + process.boostedFsrPhotons +
        process.appendPhotons     +
        process.softLeptons       +
+       process.cleanJets         +
 # Build 4-lepton candidates
        process.bareZCand         + process.ZCand     +  
        process.bareZZCand        + process.ZZCand

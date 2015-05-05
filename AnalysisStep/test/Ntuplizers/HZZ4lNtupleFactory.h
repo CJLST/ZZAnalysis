@@ -34,7 +34,6 @@ class HZZ4lNtupleFactory{
                      Float_t NTrueInt, 
                      Float_t PUweight, 
                      Float_t PFMET, 
-                     Int_t nJets, 
                      Int_t nCleanedJets, 
                      Int_t nCleanedJetsPt30,
                      Int_t nCleanedJetsPt30BTagged,
@@ -189,7 +188,6 @@ class HZZ4lNtupleFactory{
   Float_t _NTrueInt;
   Float_t _PUWeight;
   Float_t _PFMET;
-  Int_t _nJets;
   Int_t _nCleanedJets;
   Int_t _nCleanedJetsPt30;
   Int_t _nCleanedJetsPt30BTagged;

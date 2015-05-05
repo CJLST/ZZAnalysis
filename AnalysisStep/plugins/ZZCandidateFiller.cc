@@ -40,7 +40,6 @@
 
 #include <SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h>
 #include <DataFormats/METReco/interface/PFMET.h>
-#include "ZZAnalysis/AnalysisStep/interface/VBFCandidateJetSelector.h"
 #include <ZZAnalysis/AnalysisStep/interface/Fisher.h>
 #include <ZZAnalysis/AnalysisStep/interface/Comparators.h>
 #include <ZZAnalysis/AnalysisStep/interface/utils.h>
@@ -165,8 +164,12 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   iEvent.getByLabel(theCandidateTag, LLLLCands);
 
   // Get jets
-  Handle<edm::View<pat::Jet> > pfjetscoll;
-  iEvent.getByLabel("slimmedJets", pfjetscoll); //Careful Here: it should be the cmgPFJetSel, but I don't have the pfjetcorrector
+  Handle<edm::View<pat::Jet> > CleanJets;
+  iEvent.getByLabel("cleanJets", CleanJets);
+  vector<const pat::Jet*> cleanedJetsPt30;
+  for(edm::View<pat::Jet>::const_iterator jet = CleanJets->begin(); jet != CleanJets->end(); ++jet){
+    if(jet->pt()>30) cleanedJetsPt30.push_back(&*jet);
+  }
 
   // Get MET
   Handle<vector<reco::MET> > pfmetcoll;
@@ -174,14 +177,12 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   math::XYZTLorentzVector pfmet;
   if(pfmetcoll.isValid()) pfmet = pfmetcoll->front().p4(); // standard MET is pfmet.pt();
 
-  // Get leptons
+  // Get leptons (in order to store extra leptons)
   Handle<View<reco::Candidate> > softleptoncoll;
   iEvent.getByLabel("softLeptons", softleptoncoll);
-  vector<const reco::Candidate*> goodisoleptons;
   vector<reco::CandidatePtr> goodisoleptonPtrs;
   for( View<reco::Candidate>::const_iterator lep = softleptoncoll->begin(); lep != softleptoncoll->end(); ++ lep ){ 
     if((bool)userdatahelpers::getUserFloat(&*lep,"isGood") && (bool)userdatahelpers::getUserFloat(&*lep,"isIsoFSRUncorr")){
-      goodisoleptons.push_back(&*lep);
       const reco::CandidatePtr lepPtr(softleptoncoll,lep-softleptoncoll->begin());
       goodisoleptonPtrs.push_back(lepPtr);
     }
@@ -190,18 +191,6 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   // Get Z Candidates
   Handle<View<CompositeCandidate> > ZCands;
   iEvent.getByLabel("ZCand", ZCands);
-
-  // Collect VBF jets
-  vector<const pat::Jet*> cleanedJets;
-  VBFCandidateJetSelector myVBFCandidateJetSelector;
-  cleanedJets = myVBFCandidateJetSelector.cleanJets(goodisoleptons,pfjetscoll,setup);
-  vector<const pat::Jet*> cleanedJetsPt30;
-  for (unsigned int i=0; i<cleanedJets.size(); ++i){
-    const pat::Jet& myjet = *(cleanedJets.at(i));  
-    if (myjet.pt()>30) {
-      cleanedJetsPt30.push_back(&myjet);
-    }
-  }
 
   // Get processID
 //   edm::Handle<GenEventInfoProduct> gen;
