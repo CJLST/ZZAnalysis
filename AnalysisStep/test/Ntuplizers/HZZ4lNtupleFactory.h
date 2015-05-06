@@ -156,7 +156,7 @@ class HZZ4lNtupleFactory{
   void FillLepInfo(Float_t LepPt, Float_t LepEta, Float_t LepPhi, Int_t LepId, Float_t SIP, bool isID, float BDT, short parentId, int missingHit);
   void FillLepIsolInfo(Float_t LepchargedHadIso, Float_t LepneutralHadIso, Float_t LepphotonIso, Float_t LepcombRelIsoPF);
   void FillPhotonInfo(Float_t PhotPt, Float_t PhotEta, Float_t PhotPhi);
-  void FillJetInfo(Float_t JetPt, Float_t JetEta, Float_t JetPhi, Float_t JetMass, Float_t JetBTag, Float_t JetSigma);
+  void FillJetInfo(Float_t JetPt, Float_t JetEta, Float_t JetPhi, Float_t JetMass, Float_t JetBTagger, Float_t JetIsBtagged, Float_t JetQGLikelihood, Float_t JetSigma );
   void FillDiJetInfo(Float_t DiJetMass, Float_t DiJetMassPlus, Float_t DiJetMassMinus, Float_t DiJetDEta, Float_t DiJetFisher);
   void FillCategorizationInfo(Int_t nExtraLep, Int_t nExtraZ);
   void FillExtraLepInfo(int extraLeptonIndex, bool extraLeptonExists, reco::CandidatePtr ExtraLep);
@@ -405,12 +405,14 @@ class HZZ4lNtupleFactory{
   Float_t _PhotPhi;
 
   //Jet variables
-  Float_t _JetPt;
-  Float_t _JetEta;
-  Float_t _JetPhi;
-  Float_t _JetMass;
-  Float_t _JetBTag;
-  Float_t _JetSigma;
+  std::vector<Float_t> _JetPt;
+  std::vector<Float_t> _JetEta;
+  std::vector<Float_t> _JetPhi;
+  std::vector<Float_t> _JetMass;
+  std::vector<Float_t> _JetBTagger;
+  std::vector<Float_t> _JetIsBtagged;
+  std::vector<Float_t> _JetQGLikelihood;
+  std::vector<Float_t> _JetSigma;
   Float_t _DiJetMass;
   Float_t _DiJetMassPlus;
   Float_t _DiJetMassMinus;
