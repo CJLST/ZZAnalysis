@@ -105,233 +105,233 @@ void HZZ4lNtupleFactory::InitializeVariables()
 
 
   //H variables
-  _ZZMass.clear();
-  _ZZMassErr.clear();
-  _ZZMassErrCorr.clear();
-  _ZZMassPreFSR.clear();
-  _ZZMassRefit.clear();
-  _Chi2KinFit.clear();
-  _ZZMassCFit.clear();
-  _Chi2CFit.clear();
-  _ZZsel.clear();
-  _ZZPt.clear();
-  _ZZEta.clear();
-  _ZZPhi.clear();
-  _ZZgenIsSignal.clear();
-  _ZZgenIsRightPair.clear();
-  _CRflag.clear();
+  _ZZMass=0;
+  _ZZMassErr=0;
+  _ZZMassErrCorr=0;
+  _ZZMassPreFSR=0;
+  _ZZMassRefit=0;
+  _Chi2KinFit=0;
+  _ZZMassCFit=0;
+  _Chi2CFit=0;
+  _ZZsel=0;
+  _ZZPt=0;
+  _ZZEta=0;
+  _ZZPhi=0;
+  _ZZgenIsSignal=0;
+  _ZZgenIsRightPair=0;
+  _CRflag=0;
 
-  //_p0plus_melaNorm.clear();
-  //_p0plus_mela.clear();
-  //_p0minus_mela.clear();
-  //_p0hplus_mela.clear(); // 0h+, analytic distribution
-  _p0plus_VAJHU.clear();
-  _p0minus_VAJHU.clear();
-  _p0plus_VAMCFM.clear();
-  _p0hplus_VAJHU.clear(); // 0h+ (high dimensional operator), vector algebra, JHUgen
-  //_p1_mela.clear();
-  //_p1_prodIndep_mela.clear();
-  //_p1plus_mela.clear(); // 1+, analytic distribution 
-  //_p1plus_prodIndep_mela.clear(); // 1+, analytic distribution 
-  _p1_VAJHU.clear();
-  _p1_prodIndep_VAJHU.clear();
-  _p1plus_VAJHU.clear(); // 1+ (axial vector), vector algebra, JHUgen,
-  _p1plus_prodIndep_VAJHU.clear(); // 1+ (axial vector), vector algebra, JHUgen,
-  //_p2_mela.clear();
-  //_p2_prodIndep_mela.clear();
-  //_p2qqb_mela.clear(); // graviton produced by qqbar vector algebra, analytical,
-  //_p2hplus_mela.clear(); // graviton produced by qqbar vector algebra, analytical,
-  //_p2hminus_mela.clear(); // graviton produced by qqbar vector algebra, analytical,
-  //_p2bplus_mela.clear(); // graviton produced by qqbar vector algebra, analytical,
-  _p2_VAJHU.clear();
-  _p2_prodIndep_VAJHU.clear();
-  _p2qqb_VAJHU.clear();
-  _p2hplus_VAJHU.clear();
-  _p2hminus_VAJHU.clear();
-  _p2bplus_VAJHU.clear();
-        _p2hplus_qqb_VAJHU.clear();
-        _p2hplus_prodIndep_VAJHU.clear();
-        _p2hminus_qqb_VAJHU.clear();
-        _p2hminus_prodIndep_VAJHU.clear();
-        _p2bplus_qqb_VAJHU.clear();
-        _p2bplus_prodIndep_VAJHU.clear();
-        _p2h2plus_gg_VAJHU.clear();
-        _p2h2plus_qqbar_VAJHU.clear();
-        _p2h2plus_prodIndep_VAJHU.clear();
-        _p2h3plus_gg_VAJHU.clear();
-        _p2h3plus_qqbar_VAJHU.clear();
-        _p2h3plus_prodIndep_VAJHU.clear();
-        _p2h6plus_gg_VAJHU.clear();
-        _p2h6plus_qqbar_VAJHU.clear();
-        _p2h6plus_prodIndep_VAJHU.clear();
-        _p2h7plus_gg_VAJHU.clear();
-        _p2h7plus_qqbar_VAJHU.clear();
-        _p2h7plus_prodIndep_VAJHU.clear();
-        _p2h9minus_gg_VAJHU.clear();
-        _p2h9minus_qqbar_VAJHU.clear();
-        _p2h9minus_prodIndep_VAJHU.clear();
-        _p2h10minus_gg_VAJHU.clear();
-        _p2h10minus_qqbar_VAJHU.clear();
-        _p2h10minus_prodIndep_VAJHU.clear();
-  //_bkg_mela.push_back(bkg_mela);
-  //_bkg_mela.clear();
-  _bkg_VAMCFM.clear();
-  _bkg_prodIndep_VAMCFM.clear();
-  _ggzz_VAMCFM.clear();
-  _ggzz_p0plus_VAMCFM.clear();
-  _ggzz_c1_VAMCFM.clear();
-  _ggzz_c5_VAMCFM.clear();
-  _ggzz_ci_VAMCFM.clear();
-  //_bkg_VAMCFMNorm.clear();
-  //_p0_pt.clear();
-  //_p0_y.clear();
-  //_bkg_pt.clear();
-  //_bkg_y.clear();  
-  _p0plus_m4l.clear(); 
-  _bkg_m4l.clear(); 
-  _pg1g4_mela.clear();
-  _pg1g4_VAJHU.clear();
-  _pg1g4_pi2_VAJHU.clear();
-  _pg1g2_pi2_VAJHU.clear();
-  _pg1g2_mela.clear();
-  _pg1g2_VAJHU.clear();
-  _p0plus_m4l.clear();// signal m4l probability as in datacards
-  _bkg_m4l.clear();// backgroun m4l probability as in datacards
-  _p0plus_m4l_ScaleUp.clear();// signal m4l probability for systematics
-  _bkg_m4l_ScaleUp.clear();// backgroun m4l probability for systematics
-  _p0plus_m4l_ScaleDown.clear();// signal m4l probability for systematics
-  _bkg_m4l_ScaleDown.clear();// backgroun m4l probability for systematics
-  _p0plus_m4l_ResUp.clear();// signal m4l probability for systematics
-  _bkg_m4l_ResUp.clear();// backgroun m4l probability for systematics
-  _p0plus_m4l_ResDown.clear();// signal m4l probability for systematics
-  _bkg_m4l_ResDown.clear();     // backgroun m4l probability for systematics
-  _phjj_VAJHU_old.clear();
-  _pvbf_VAJHU_old.clear();
-  _phjj_VAJHU_old_up.clear();
-  _pvbf_VAJHU_old_up.clear();
-  _phjj_VAJHU_old_dn.clear();
-  _pvbf_VAJHU_old_dn.clear();
-  _phjj_VAJHU_new.clear();
-  _pvbf_VAJHU_new.clear();
-  _phjj_VAJHU_new_up.clear();
-  _pvbf_VAJHU_new_up.clear();
-  _phjj_VAJHU_new_dn.clear();
-  _pvbf_VAJHU_new_dn.clear();
-  _p0_g1prime2_VAJHU.clear();
-  _pg1g1prime2_VAJHU.clear();
-  _Dgg10_VAMCFM.clear();
+  //_p0plus_melaNorm=0;
+  //_p0plus_mela=0;
+  //_p0minus_mela=0;
+  //_p0hplus_mela=0; // 0h+, analytic distribution
+  _p0plus_VAJHU=0;
+  _p0minus_VAJHU=0;
+  _p0plus_VAMCFM=0;
+  _p0hplus_VAJHU=0; // 0h+ (high dimensional operator), vector algebra, JHUgen
+  //_p1_mela=0;
+  //_p1_prodIndep_mela=0;
+  //_p1plus_mela=0; // 1+, analytic distribution 
+  //_p1plus_prodIndep_mela=0; // 1+, analytic distribution 
+  _p1_VAJHU=0;
+  _p1_prodIndep_VAJHU=0;
+  _p1plus_VAJHU=0; // 1+ (axial vector), vector algebra, JHUgen,
+  _p1plus_prodIndep_VAJHU=0; // 1+ (axial vector), vector algebra, JHUgen,
+  //_p2_mela=0;
+  //_p2_prodIndep_mela=0;
+  //_p2qqb_mela=0; // graviton produced by qqbar vector algebra, analytical,
+  //_p2hplus_mela=0; // graviton produced by qqbar vector algebra, analytical,
+  //_p2hminus_mela=0; // graviton produced by qqbar vector algebra, analytical,
+  //_p2bplus_mela=0; // graviton produced by qqbar vector algebra, analytical,
+  _p2_VAJHU=0;
+  _p2_prodIndep_VAJHU=0;
+  _p2qqb_VAJHU=0;
+  _p2hplus_VAJHU=0;
+  _p2hminus_VAJHU=0;
+  _p2bplus_VAJHU=0;
+  _p2hplus_qqb_VAJHU=0;
+  _p2hplus_prodIndep_VAJHU=0;
+  _p2hminus_qqb_VAJHU=0;
+  _p2hminus_prodIndep_VAJHU=0;
+  _p2bplus_qqb_VAJHU=0;
+  _p2bplus_prodIndep_VAJHU=0;
+  _p2h2plus_gg_VAJHU=0;
+  _p2h2plus_qqbar_VAJHU=0;
+  _p2h2plus_prodIndep_VAJHU=0;
+  _p2h3plus_gg_VAJHU=0;
+  _p2h3plus_qqbar_VAJHU=0;
+  _p2h3plus_prodIndep_VAJHU=0;
+  _p2h6plus_gg_VAJHU=0;
+  _p2h6plus_qqbar_VAJHU=0;
+  _p2h6plus_prodIndep_VAJHU=0;
+  _p2h7plus_gg_VAJHU=0;
+  _p2h7plus_qqbar_VAJHU=0;
+  _p2h7plus_prodIndep_VAJHU=0;
+  _p2h9minus_gg_VAJHU=0;
+  _p2h9minus_qqbar_VAJHU=0;
+  _p2h9minus_prodIndep_VAJHU=0;
+  _p2h10minus_gg_VAJHU=0;
+  _p2h10minus_qqbar_VAJHU=0;
+  _p2h10minus_prodIndep_VAJHU=0;
+  //_bkg_mela=bkg_mela;
+  //_bkg_mela=0;
+  _bkg_VAMCFM=0;
+  _bkg_prodIndep_VAMCFM=0;
+  _ggzz_VAMCFM=0;
+  _ggzz_p0plus_VAMCFM=0;
+  _ggzz_c1_VAMCFM=0;
+  _ggzz_c5_VAMCFM=0;
+  _ggzz_ci_VAMCFM=0;
+  //_bkg_VAMCFMNorm=0;
+  //_p0_pt=0;
+  //_p0_y=0;
+  //_bkg_pt=0;
+  //_bkg_y=0;  
+  _p0plus_m4l=0; 
+  _bkg_m4l=0; 
+  _pg1g4_mela=0;
+  _pg1g4_VAJHU=0;
+  _pg1g4_pi2_VAJHU=0;
+  _pg1g2_pi2_VAJHU=0;
+  _pg1g2_mela=0;
+  _pg1g2_VAJHU=0;
+  _p0plus_m4l=0;// signal m4l probability as in datacards
+  _bkg_m4l=0;// backgroun m4l probability as in datacards
+  _p0plus_m4l_ScaleUp=0;// signal m4l probability for systematics
+  _bkg_m4l_ScaleUp=0;// backgroun m4l probability for systematics
+  _p0plus_m4l_ScaleDown=0;// signal m4l probability for systematics
+  _bkg_m4l_ScaleDown=0;// backgroun m4l probability for systematics
+  _p0plus_m4l_ResUp=0;// signal m4l probability for systematics
+  _bkg_m4l_ResUp=0;// backgroun m4l probability for systematics
+  _p0plus_m4l_ResDown=0;// signal m4l probability for systematics
+  _bkg_m4l_ResDown=0;     // backgroun m4l probability for systematics
+  _phjj_VAJHU_old=0;
+  _pvbf_VAJHU_old=0;
+  _phjj_VAJHU_old_up=0;
+  _pvbf_VAJHU_old_up=0;
+  _phjj_VAJHU_old_dn=0;
+  _pvbf_VAJHU_old_dn=0;
+  _phjj_VAJHU_new=0;
+  _pvbf_VAJHU_new=0;
+  _phjj_VAJHU_new_up=0;
+  _pvbf_VAJHU_new_up=0;
+  _phjj_VAJHU_new_dn=0;
+  _pvbf_VAJHU_new_dn=0;
+  _p0_g1prime2_VAJHU=0;
+  _pg1g1prime2_VAJHU=0;
+  _Dgg10_VAMCFM=0;
 
-  _pzzzg_VAJHU.clear();
-  _pzzgg_VAJHU.clear();
-  _pzzzg_PS_VAJHU.clear();
-  _pzzgg_PS_VAJHU.clear();
-  _p0Zgs_VAJHU.clear();
-  _p0gsgs_VAJHU.clear();
-  _p0Zgs_PS_VAJHU.clear();
-  _p0gsgs_PS_VAJHU.clear();
+  _pzzzg_VAJHU=0;
+  _pzzgg_VAJHU=0;
+  _pzzzg_PS_VAJHU=0;
+  _pzzgg_PS_VAJHU=0;
+  _p0Zgs_VAJHU=0;
+  _p0gsgs_VAJHU=0;
+  _p0Zgs_PS_VAJHU=0;
+  _p0gsgs_PS_VAJHU=0;
 
-  _ZZmZa.clear();
-  _ZZmZb.clear();
-  _ZZmLL4.clear();
-  _ZZmLL6.clear();
-  _ZZSIP4.clear();
-  //  _ZZiso34.clear();
+  _ZZmZa=0;
+  _ZZmZb=0;
+  _ZZmLL4=0;
+  _ZZmLL6=0;
+  _ZZSIP4=0;
+  //  _ZZiso34=0;
 
   //Z1 variables
-  _Z1Mass.clear();
-  _Z1Pt.clear();
-  _Z1MassRefit.clear();
-  _Z1Flav.clear();
+  _Z1Mass=0;
+  _Z1Pt=0;
+  _Z1MassRefit=0;
+  _Z1Flav=0;
 
   //Z2 variables
-  _Z2Mass.clear();
-  _Z2Pt.clear();
-  _Z2Flav.clear();
+  _Z2Mass=0;
+  _Z2Pt=0;
+  _Z2Flav=0;
 
   //Angular variables
-  _costhetastar.clear();
-  _phi.clear();
-  _costheta1.clear();
-  _costheta2.clear();
-  _phistar1.clear();
-  _phistar2.clear();
-  _xi.clear();
-  _xistar.clear();
+  _costhetastar=0;
+  _phi=0;
+  _costheta1=0;
+  _costheta2=0;
+  _phistar1=0;
+  _phistar2=0;
+  _xi=0;
+  _xistar=0;
 
   //Lepton variables
-  _Lep1Pt.clear();
-  _Lep1Eta.clear();
-  _Lep1Phi.clear();
-  _Lep1LepId.clear();
-  _Lep1SIP.clear();
-  _Lep1isID.clear();
-  _Lep1BDT.clear();
-  _Lep1missingHit.clear();
-  _Lep1ParentId.clear();
+  _Lep1Pt=0;
+  _Lep1Eta=0;
+  _Lep1Phi=0;
+  _Lep1LepId=0;
+  _Lep1SIP=0;
+  _Lep1isID=0;
+  _Lep1BDT=0;
+  _Lep1missingHit=0;
+  _Lep1ParentId=0;
 
-  _Lep2Pt.clear();
-  _Lep2Eta.clear();
-  _Lep2Phi.clear();
-  _Lep2LepId.clear();
-  _Lep2SIP.clear();
-  _Lep2isID.clear();
-  _Lep2BDT.clear();
-  _Lep2missingHit.clear();
-  _Lep2ParentId.clear();
+  _Lep2Pt=0;
+  _Lep2Eta=0;
+  _Lep2Phi=0;
+  _Lep2LepId=0;
+  _Lep2SIP=0;
+  _Lep2isID=0;
+  _Lep2BDT=0;
+  _Lep2missingHit=0;
+  _Lep2ParentId=0;
 
-  _Lep3Pt.clear();
-  _Lep3Eta.clear();
-  _Lep3Phi.clear();
-  _Lep3LepId.clear();
-  _Lep3SIP.clear();
-  _Lep3isID.clear();
-  _Lep3BDT.clear();
-  _Lep3missingHit.clear();
-  _Lep3ParentId.clear();
+  _Lep3Pt=0;
+  _Lep3Eta=0;
+  _Lep3Phi=0;
+  _Lep3LepId=0;
+  _Lep3SIP=0;
+  _Lep3isID=0;
+  _Lep3BDT=0;
+  _Lep3missingHit=0;
+  _Lep3ParentId=0;
 
-  _Lep4Pt.clear();
-  _Lep4Eta.clear();
-  _Lep4Phi.clear();
-  _Lep4LepId.clear();
-  _Lep4SIP.clear();
-  _Lep4isID.clear();
-  _Lep4BDT.clear();
-  _Lep4missingHit.clear();
-  _Lep4ParentId.clear();
+  _Lep4Pt=0;
+  _Lep4Eta=0;
+  _Lep4Phi=0;
+  _Lep4LepId=0;
+  _Lep4SIP=0;
+  _Lep4isID=0;
+  _Lep4BDT=0;
+  _Lep4missingHit=0;
+  _Lep4ParentId=0;
 
   //Lepton isolation variables
-  _Lep1chargedHadIso.clear();
-  _Lep1neutralHadIso.clear();
-  _Lep1photonIso.clear();
-  _Lep1combRelIsoPF.clear();
+  _Lep1chargedHadIso=0;
+  _Lep1neutralHadIso=0;
+  _Lep1photonIso=0;
+  _Lep1combRelIsoPF=0;
 
-  _Lep2chargedHadIso.clear();
-  _Lep2neutralHadIso.clear();
-  _Lep2photonIso.clear();
-  _Lep2combRelIsoPF.clear();
+  _Lep2chargedHadIso=0;
+  _Lep2neutralHadIso=0;
+  _Lep2photonIso=0;
+  _Lep2combRelIsoPF=0;
 
-  _Lep3chargedHadIso.clear();
-  _Lep3neutralHadIso.clear();
-  _Lep3photonIso.clear();
-  _Lep3combRelIsoPF.clear();
+  _Lep3chargedHadIso=0;
+  _Lep3neutralHadIso=0;
+  _Lep3photonIso=0;
+  _Lep3combRelIsoPF=0;
 
-  _Lep4chargedHadIso.clear();
-  _Lep4neutralHadIso.clear();
-  _Lep4photonIso.clear();
-  _Lep4combRelIsoPF.clear();
+  _Lep4chargedHadIso=0;
+  _Lep4neutralHadIso=0;
+  _Lep4photonIso=0;
+  _Lep4combRelIsoPF=0;
 
   //Photon variables
-  _PhotPt.clear();
-  _PhotEta.clear();
-  _PhotPhi.clear(); 
+  _PhotPt=0;
+  _PhotEta=0;
+  _PhotPhi=0; 
 
   //Jet variables
-  _JetPt.clear();
-  _JetEta.clear();
-  _JetPhi.clear(); 
-  _JetMass.clear(); 
-  _JetBTag.clear();
-  _JetSigma.clear();
+  _JetPt=0;
+  _JetEta=0;
+  _JetPhi=0; 
+  _JetMass=0; 
+  _JetBTag=0;
+  _JetSigma=0;
 
   _DiJetMass=-99;
   _DiJetMassPlus=-99;
@@ -340,48 +340,48 @@ void HZZ4lNtupleFactory::InitializeVariables()
   _DiJetFisher=-99;
   
   //Categorization-related variables
-  _nExtraLep.clear();
-  _nExtraZ.clear();
+  _nExtraLep=0;
+  _nExtraZ=0;
 
   //Variables of extra leptons
-  _ExtraLep1Pt.clear();
-  _ExtraLep1Eta.clear();
-  _ExtraLep1Phi.clear();
-  _ExtraLep1LepId.clear();
-  _ExtraLep1SIP.clear();
-  _ExtraLep1isID.clear();
-  _ExtraLep1BDT.clear();
-  _ExtraLep1missingHit.clear();
-  _ExtraLep1chargedHadIso.clear();
-  _ExtraLep1neutralHadIso.clear();
-  _ExtraLep1photonIso.clear();
-  _ExtraLep1combRelIsoPF.clear();
+  _ExtraLep1Pt=0;
+  _ExtraLep1Eta=0;
+  _ExtraLep1Phi=0;
+  _ExtraLep1LepId=0;
+  _ExtraLep1SIP=0;
+  _ExtraLep1isID=0;
+  _ExtraLep1BDT=0;
+  _ExtraLep1missingHit=0;
+  _ExtraLep1chargedHadIso=0;
+  _ExtraLep1neutralHadIso=0;
+  _ExtraLep1photonIso=0;
+  _ExtraLep1combRelIsoPF=0;
 
-  _ExtraLep2Pt.clear();
-  _ExtraLep2Eta.clear();
-  _ExtraLep2Phi.clear();
-  _ExtraLep2LepId.clear();
-  _ExtraLep2SIP.clear();
-  _ExtraLep2isID.clear();
-  _ExtraLep2BDT.clear();
-  _ExtraLep2missingHit.clear();
-  _ExtraLep2chargedHadIso.clear();
-  _ExtraLep2neutralHadIso.clear();
-  _ExtraLep2photonIso.clear();
-  _ExtraLep2combRelIsoPF.clear();
+  _ExtraLep2Pt=0;
+  _ExtraLep2Eta=0;
+  _ExtraLep2Phi=0;
+  _ExtraLep2LepId=0;
+  _ExtraLep2SIP=0;
+  _ExtraLep2isID=0;
+  _ExtraLep2BDT=0;
+  _ExtraLep2missingHit=0;
+  _ExtraLep2chargedHadIso=0;
+  _ExtraLep2neutralHadIso=0;
+  _ExtraLep2photonIso=0;
+  _ExtraLep2combRelIsoPF=0;
 
-  _ExtraLep3Pt.clear();
-  _ExtraLep3Eta.clear();
-  _ExtraLep3Phi.clear();
-  _ExtraLep3LepId.clear();
-  _ExtraLep3SIP.clear();
-  _ExtraLep3isID.clear();
-  _ExtraLep3BDT.clear();
-  _ExtraLep3missingHit.clear();
-  _ExtraLep3chargedHadIso.clear();
-  _ExtraLep3neutralHadIso.clear();
-  _ExtraLep3photonIso.clear();
-  _ExtraLep3combRelIsoPF.clear();
+  _ExtraLep3Pt=0;
+  _ExtraLep3Eta=0;
+  _ExtraLep3Phi=0;
+  _ExtraLep3LepId=0;
+  _ExtraLep3SIP=0;
+  _ExtraLep3isID=0;
+  _ExtraLep3BDT=0;
+  _ExtraLep3missingHit=0;
+  _ExtraLep3chargedHadIso=0;
+  _ExtraLep3neutralHadIso=0;
+  _ExtraLep3photonIso=0;
+  _ExtraLep3combRelIsoPF=0;
 
 
   return;
@@ -824,21 +824,21 @@ void HZZ4lNtupleFactory::FillEventInfo(Int_t RunNumber, const Long64_t EventNumb
 
 void HZZ4lNtupleFactory::FillHInfo(Float_t ZZMass, Float_t ZZMassErr, Float_t ZZMassErrCorr, Float_t ZZMassPreFSR, Float_t ZZMassRefit, Float_t Chi2KinFit, Float_t ZZMassCFit, Float_t Chi2CFit, Int_t ZZsel, Float_t ZZPt, Float_t ZZEta, Float_t ZZPhi, Int_t isSignal, Int_t isRightPair, Int_t CRflag)
 {
-  _ZZMass.push_back(ZZMass);
-  _ZZMassErr.push_back(ZZMassErr);
-  _ZZMassErrCorr.push_back(ZZMassErrCorr);
-  _ZZMassPreFSR.push_back(ZZMassPreFSR);
-  _ZZMassRefit.push_back(ZZMassRefit);
-  _Chi2KinFit.push_back(Chi2KinFit);
-  _ZZMassCFit.push_back(ZZMassCFit);
-  _Chi2CFit.push_back(Chi2CFit);
-  _ZZsel.push_back(ZZsel);
-  _ZZPt.push_back(ZZPt);
-  _ZZEta.push_back(ZZEta);
-  _ZZPhi.push_back(ZZPhi);
-  _ZZgenIsSignal.push_back(isSignal);
-  _ZZgenIsRightPair.push_back(isRightPair);
-  _CRflag.push_back(CRflag);
+  _ZZMass=ZZMass;
+  _ZZMassErr=ZZMassErr;
+  _ZZMassErrCorr=ZZMassErrCorr;
+  _ZZMassPreFSR=ZZMassPreFSR;
+  _ZZMassRefit=ZZMassRefit;
+  _Chi2KinFit=Chi2KinFit;
+  _ZZMassCFit=ZZMassCFit;
+  _Chi2CFit=Chi2CFit;
+  _ZZsel=ZZsel;
+  _ZZPt=ZZPt;
+  _ZZEta=ZZEta;
+  _ZZPhi=ZZPhi;
+  _ZZgenIsSignal=isSignal;
+  _ZZgenIsRightPair=isRightPair;
+  _CRflag=CRflag;
 
   return;
 }
@@ -918,81 +918,81 @@ void HZZ4lNtupleFactory::FillProbability(Float_t p0plus_VAJHU,
                                          Float_t p0Zgs_PS_VAJHU,
                                          Float_t p0gsgs_PS_VAJHU
                                          ){
-  _p0plus_VAJHU.push_back(p0plus_VAJHU);
-  _p0minus_VAJHU.push_back(p0minus_VAJHU);
-  _p0plus_VAMCFM.push_back(p0plus_VAMCFM);
-  _p0hplus_VAJHU.push_back(p0hplus_VAJHU);// 0h+ (high dimensional operator), vector algebra, JHUgen
-  _p1_VAJHU.push_back(p1_VAJHU);
-  _p1_prodIndep_VAJHU.push_back(p1_prodIndep_VAJHU);
-  _p1plus_VAJHU.push_back(p1plus_VAJHU);// 1+ (axial vector), vector algebra, JHUgen,
-  _p1plus_prodIndep_VAJHU.push_back(p1plus_prodIndep_VAJHU);// 1+ (axial vector), vector algebra, JHUgen,
-  _p2_VAJHU.push_back(p2_VAJHU);
-  _p2_prodIndep_VAJHU.push_back(p2_prodIndep_VAJHU);
-  _p2qqb_VAJHU.push_back(p2qqb_VAJHU);
-  _p2hplus_VAJHU.push_back(p2hplus_VAJHU);
-  _p2hminus_VAJHU.push_back(p2hminus_VAJHU);
-  _p2bplus_VAJHU.push_back(p2bplus_VAJHU);
-        _p2hplus_qqb_VAJHU.push_back(                                   p2hplus_qqb_VAJHU);                                     
-        _p2hplus_prodIndep_VAJHU.push_back(             p2hplus_prodIndep_VAJHU);               
-        _p2hminus_qqb_VAJHU.push_back(                          p2hminus_qqb_VAJHU);                            
-        _p2hminus_prodIndep_VAJHU.push_back(    p2hminus_prodIndep_VAJHU);      
-        _p2bplus_qqb_VAJHU.push_back(                                   p2bplus_qqb_VAJHU);                                     
-        _p2bplus_prodIndep_VAJHU.push_back(             p2bplus_prodIndep_VAJHU);               
-        _p2h2plus_gg_VAJHU.push_back(                   p2h2plus_gg_VAJHU);                                               
-        _p2h2plus_qqbar_VAJHU.push_back(                p2h2plus_qqbar_VAJHU);                  
-        _p2h2plus_prodIndep_VAJHU.push_back(    p2h2plus_prodIndep_VAJHU);      
-        _p2h3plus_gg_VAJHU.push_back(           p2h3plus_gg_VAJHU);             
-        _p2h3plus_qqbar_VAJHU.push_back(        p2h3plus_qqbar_VAJHU);          
-        _p2h3plus_prodIndep_VAJHU.push_back(    p2h3plus_prodIndep_VAJHU);      
-        _p2h6plus_gg_VAJHU.push_back(           p2h6plus_gg_VAJHU);             
-        _p2h6plus_qqbar_VAJHU.push_back(        p2h6plus_qqbar_VAJHU);          
-        _p2h6plus_prodIndep_VAJHU.push_back(    p2h6plus_prodIndep_VAJHU);      
-        _p2h7plus_gg_VAJHU.push_back(           p2h7plus_gg_VAJHU);     
-        _p2h7plus_qqbar_VAJHU.push_back(        p2h7plus_qqbar_VAJHU);          
-        _p2h7plus_prodIndep_VAJHU.push_back(    p2h7plus_prodIndep_VAJHU);      
-        _p2h9minus_gg_VAJHU.push_back(          p2h9minus_gg_VAJHU);            
-        _p2h9minus_qqbar_VAJHU.push_back(       p2h9minus_qqbar_VAJHU);         
-        _p2h9minus_prodIndep_VAJHU.push_back(   p2h9minus_prodIndep_VAJHU);     
-        _p2h10minus_gg_VAJHU.push_back(       p2h10minus_gg_VAJHU);       
-        _p2h10minus_qqbar_VAJHU.push_back(    p2h10minus_qqbar_VAJHU);  
-        _p2h10minus_prodIndep_VAJHU.push_back(p2h10minus_prodIndep_VAJHU);
-  _bkg_VAMCFM.push_back(bkg_VAMCFM);
-  _bkg_prodIndep_VAMCFM.push_back(bkg_prodIndep_VAMCFM);
-  _ggzz_VAMCFM.push_back(ggzz_VAMCFM);
-  _ggzz_p0plus_VAMCFM.push_back(ggzz_p0plus_VAMCFM);
-  _ggzz_c1_VAMCFM.push_back(ggzz_c1_VAMCFM);
-  _ggzz_c5_VAMCFM.push_back(ggzz_c5_VAMCFM);
-  _ggzz_ci_VAMCFM.push_back(ggzz_ci_VAMCFM);
-  _phjj_VAJHU_old.push_back(phjj_VAJHU_old);
-  _pvbf_VAJHU_old.push_back(pvbf_VAJHU_old);
-  _phjj_VAJHU_old_up.push_back(phjj_VAJHU_old_up);
-  _pvbf_VAJHU_old_up.push_back(pvbf_VAJHU_old_up);
-  _phjj_VAJHU_old_dn.push_back(phjj_VAJHU_old_dn);
-  _pvbf_VAJHU_old_dn.push_back(pvbf_VAJHU_old_dn);
-  _phjj_VAJHU_new.push_back(phjj_VAJHU_new);
-  _pvbf_VAJHU_new.push_back(pvbf_VAJHU_new);
-  _phjj_VAJHU_new_up.push_back(phjj_VAJHU_new_up);
-  _pvbf_VAJHU_new_up.push_back(pvbf_VAJHU_new_up);
-  _phjj_VAJHU_new_dn.push_back(phjj_VAJHU_new_dn);
-  _pvbf_VAJHU_new_dn.push_back(pvbf_VAJHU_new_dn);
-  _p0_g1prime2_VAJHU.push_back(p0_g1prime2_VAJHU);
-  _pg1g1prime2_VAJHU.push_back(pg1g1prime2_VAJHU);
-  _Dgg10_VAMCFM.push_back(Dgg10_VAMCFM);
-  _pg1g4_mela.push_back(pg1g4_mela);
-  _pg1g4_VAJHU.push_back(pg1g4_VAJHU);
-  _pg1g4_pi2_VAJHU.push_back(pg1g4_pi2_VAJHU);
-  _pg1g2_pi2_VAJHU.push_back(pg1g2_pi2_VAJHU);
-  _pg1g2_mela.push_back(pg1g2_mela);
-  _pg1g2_VAJHU.push_back(pg1g2_VAJHU);
-  _pzzzg_VAJHU.push_back(    pzzzg_VAJHU);
-  _pzzgg_VAJHU.push_back(    pzzgg_VAJHU);
-  _pzzzg_PS_VAJHU.push_back( pzzzg_PS_VAJHU);
-  _pzzgg_PS_VAJHU.push_back( pzzgg_PS_VAJHU);
-  _p0Zgs_VAJHU.push_back(    p0Zgs_VAJHU);
-  _p0gsgs_VAJHU.push_back(   p0gsgs_VAJHU);
-  _p0Zgs_PS_VAJHU.push_back( p0Zgs_PS_VAJHU);
-  _p0gsgs_PS_VAJHU.push_back(p0gsgs_PS_VAJHU);
-  //_bkg_VAMCFMNorm.push_back(bkg_VAMCFMNorm);
+  _p0plus_VAJHU=p0plus_VAJHU;
+  _p0minus_VAJHU=p0minus_VAJHU;
+  _p0plus_VAMCFM=p0plus_VAMCFM;
+  _p0hplus_VAJHU=p0hplus_VAJHU;// 0h+ (high dimensional operator, vector algebra, JHUgen
+  _p1_VAJHU=p1_VAJHU;
+  _p1_prodIndep_VAJHU=p1_prodIndep_VAJHU;
+  _p1plus_VAJHU=p1plus_VAJHU;// 1+ (axial vector, vector algebra, JHUgen,
+  _p1plus_prodIndep_VAJHU=p1plus_prodIndep_VAJHU;// 1+ (axial vector, vector algebra, JHUgen,
+  _p2_VAJHU=p2_VAJHU;
+  _p2_prodIndep_VAJHU=p2_prodIndep_VAJHU;
+  _p2qqb_VAJHU=p2qqb_VAJHU;
+  _p2hplus_VAJHU=p2hplus_VAJHU;
+  _p2hminus_VAJHU=p2hminus_VAJHU;
+  _p2bplus_VAJHU=p2bplus_VAJHU;
+  _p2hplus_qqb_VAJHU=                                   p2hplus_qqb_VAJHU;                                     
+  _p2hplus_prodIndep_VAJHU=             p2hplus_prodIndep_VAJHU;               
+  _p2hminus_qqb_VAJHU=                          p2hminus_qqb_VAJHU;                            
+  _p2hminus_prodIndep_VAJHU=    p2hminus_prodIndep_VAJHU;      
+  _p2bplus_qqb_VAJHU=                                   p2bplus_qqb_VAJHU;                                     
+  _p2bplus_prodIndep_VAJHU=             p2bplus_prodIndep_VAJHU;               
+  _p2h2plus_gg_VAJHU=                   p2h2plus_gg_VAJHU;                                               
+  _p2h2plus_qqbar_VAJHU=                p2h2plus_qqbar_VAJHU;                  
+  _p2h2plus_prodIndep_VAJHU=    p2h2plus_prodIndep_VAJHU;      
+  _p2h3plus_gg_VAJHU=           p2h3plus_gg_VAJHU;             
+  _p2h3plus_qqbar_VAJHU=        p2h3plus_qqbar_VAJHU;          
+  _p2h3plus_prodIndep_VAJHU=    p2h3plus_prodIndep_VAJHU;      
+  _p2h6plus_gg_VAJHU=           p2h6plus_gg_VAJHU;             
+  _p2h6plus_qqbar_VAJHU=        p2h6plus_qqbar_VAJHU;          
+  _p2h6plus_prodIndep_VAJHU=    p2h6plus_prodIndep_VAJHU;      
+  _p2h7plus_gg_VAJHU=           p2h7plus_gg_VAJHU;     
+  _p2h7plus_qqbar_VAJHU=        p2h7plus_qqbar_VAJHU;          
+  _p2h7plus_prodIndep_VAJHU=    p2h7plus_prodIndep_VAJHU;      
+  _p2h9minus_gg_VAJHU=          p2h9minus_gg_VAJHU;            
+  _p2h9minus_qqbar_VAJHU=       p2h9minus_qqbar_VAJHU;         
+  _p2h9minus_prodIndep_VAJHU=   p2h9minus_prodIndep_VAJHU;     
+  _p2h10minus_gg_VAJHU=       p2h10minus_gg_VAJHU;       
+  _p2h10minus_qqbar_VAJHU=    p2h10minus_qqbar_VAJHU;  
+  _p2h10minus_prodIndep_VAJHU=p2h10minus_prodIndep_VAJHU;
+  _bkg_VAMCFM=bkg_VAMCFM;
+  _bkg_prodIndep_VAMCFM=bkg_prodIndep_VAMCFM;
+  _ggzz_VAMCFM=ggzz_VAMCFM;
+  _ggzz_p0plus_VAMCFM=ggzz_p0plus_VAMCFM;
+  _ggzz_c1_VAMCFM=ggzz_c1_VAMCFM;
+  _ggzz_c5_VAMCFM=ggzz_c5_VAMCFM;
+  _ggzz_ci_VAMCFM=ggzz_ci_VAMCFM;
+  _phjj_VAJHU_old=phjj_VAJHU_old;
+  _pvbf_VAJHU_old=pvbf_VAJHU_old;
+  _phjj_VAJHU_old_up=phjj_VAJHU_old_up;
+  _pvbf_VAJHU_old_up=pvbf_VAJHU_old_up;
+  _phjj_VAJHU_old_dn=phjj_VAJHU_old_dn;
+  _pvbf_VAJHU_old_dn=pvbf_VAJHU_old_dn;
+  _phjj_VAJHU_new=phjj_VAJHU_new;
+  _pvbf_VAJHU_new=pvbf_VAJHU_new;
+  _phjj_VAJHU_new_up=phjj_VAJHU_new_up;
+  _pvbf_VAJHU_new_up=pvbf_VAJHU_new_up;
+  _phjj_VAJHU_new_dn=phjj_VAJHU_new_dn;
+  _pvbf_VAJHU_new_dn=pvbf_VAJHU_new_dn;
+  _p0_g1prime2_VAJHU=p0_g1prime2_VAJHU;
+  _pg1g1prime2_VAJHU=pg1g1prime2_VAJHU;
+  _Dgg10_VAMCFM=Dgg10_VAMCFM;
+  _pg1g4_mela=pg1g4_mela;
+  _pg1g4_VAJHU=pg1g4_VAJHU;
+  _pg1g4_pi2_VAJHU=pg1g4_pi2_VAJHU;
+  _pg1g2_pi2_VAJHU=pg1g2_pi2_VAJHU;
+  _pg1g2_mela=pg1g2_mela;
+  _pg1g2_VAJHU=pg1g2_VAJHU;
+  _pzzzg_VAJHU=    pzzzg_VAJHU;
+  _pzzgg_VAJHU=    pzzgg_VAJHU;
+  _pzzzg_PS_VAJHU= pzzzg_PS_VAJHU;
+  _pzzgg_PS_VAJHU= pzzgg_PS_VAJHU;
+  _p0Zgs_VAJHU=    p0Zgs_VAJHU;
+  _p0gsgs_VAJHU=   p0gsgs_VAJHU;
+  _p0Zgs_PS_VAJHU= p0Zgs_PS_VAJHU;
+  _p0gsgs_PS_VAJHU=p0gsgs_PS_VAJHU;
+  //_bkg_VAMCFMNorm=bkg_VAMCFMNorm;
 }
 
 void HZZ4lNtupleFactory::FillSuperMela(Float_t p0plus_m4l,  // signal m4l probability as in datacards
@@ -1006,27 +1006,27 @@ void HZZ4lNtupleFactory::FillSuperMela(Float_t p0plus_m4l,  // signal m4l probab
                                        Float_t p0plus_m4l_ResDown, // signal m4l probability for systematics
                                        Float_t bkg_m4l_ResDown){ // backgroun m4l probability for systematics
 
-  _p0plus_m4l.push_back(p0plus_m4l);
-  _bkg_m4l.push_back(bkg_m4l);
-  _p0plus_m4l_ScaleUp.push_back(p0plus_m4l_ScaleUp);// signal m4l probability for systematics
-  _bkg_m4l_ScaleUp.push_back(bkg_m4l_ScaleUp);// backgroun m4l probability for systematics
-  _p0plus_m4l_ScaleDown.push_back(p0plus_m4l_ScaleDown);// signal m4l probability for systematics
-  _bkg_m4l_ScaleDown.push_back(bkg_m4l_ScaleDown);// backgroun m4l probability for systematics
-  _p0plus_m4l_ResUp.push_back(p0plus_m4l_ResUp);// signal m4l probability for systematics
-  _bkg_m4l_ResUp.push_back(bkg_m4l_ResUp);// backgroun m4l probability for systematics
-  _p0plus_m4l_ResDown.push_back(p0plus_m4l_ResDown);// signal m4l probability for systematics
-  _bkg_m4l_ResDown.push_back(bkg_m4l_ResDown);// backgroun m4l probability for systematics
+  _p0plus_m4l=p0plus_m4l;
+  _bkg_m4l=bkg_m4l;
+  _p0plus_m4l_ScaleUp=p0plus_m4l_ScaleUp;// signal m4l probability for systematics
+  _bkg_m4l_ScaleUp=bkg_m4l_ScaleUp;// backgroun m4l probability for systematics
+  _p0plus_m4l_ScaleDown=p0plus_m4l_ScaleDown;// signal m4l probability for systematics
+  _bkg_m4l_ScaleDown=bkg_m4l_ScaleDown;// backgroun m4l probability for systematics
+  _p0plus_m4l_ResUp=p0plus_m4l_ResUp;// signal m4l probability for systematics
+  _bkg_m4l_ResUp=bkg_m4l_ResUp;// backgroun m4l probability for systematics
+  _p0plus_m4l_ResDown=p0plus_m4l_ResDown;// signal m4l probability for systematics
+  _bkg_m4l_ResDown=bkg_m4l_ResDown;// backgroun m4l probability for systematics
 } 
 
 
 void HZZ4lNtupleFactory::FillHAdditionalInfo(Float_t mZa, Float_t mZb, Float_t mLL4, Float_t mLL6, Float_t SIP4, Float_t iso34)
 {
-  _ZZmZa.push_back(mZa);
-  _ZZmZb.push_back(mZb);
-  _ZZmLL4.push_back(mLL4);
-  _ZZmLL6.push_back(mLL6);
-  _ZZSIP4.push_back(SIP4);
-  //  _ZZiso34.push_back(iso34);
+  _ZZmZa=mZa;
+  _ZZmZb=mZb;
+  _ZZmLL4=mLL4;
+  _ZZmLL6=mLL6;
+  _ZZSIP4=SIP4;
+  //  _ZZiso34=iso34;
 
   return;
 }
@@ -1036,16 +1036,16 @@ void HZZ4lNtupleFactory::FillHAdditionalInfo(Float_t mZa, Float_t mZb, Float_t m
 void HZZ4lNtupleFactory::FillZInfo(Float_t ZMass, Float_t ZPt, short ZFlav, Float_t Z1MassRefit)
 {
   if(!_firstZStored){
-    _Z1Mass.push_back(ZMass);
-    _Z1Pt.push_back(ZPt);
-    _Z1MassRefit.push_back(Z1MassRefit);
-    _Z1Flav.push_back(ZFlav);
+    _Z1Mass=ZMass;
+    _Z1Pt=ZPt;
+    _Z1MassRefit=Z1MassRefit;
+    _Z1Flav=ZFlav;
     _firstZStored = true;
   }
   else{
-    _Z2Mass.push_back(ZMass);
-    _Z2Pt.push_back(ZPt);
-    _Z2Flav.push_back(ZFlav);
+    _Z2Mass=ZMass;
+    _Z2Pt=ZPt;
+    _Z2Flav=ZFlav;
   }
 
   return;
@@ -1053,14 +1053,14 @@ void HZZ4lNtupleFactory::FillZInfo(Float_t ZMass, Float_t ZPt, short ZFlav, Floa
 
 void HZZ4lNtupleFactory::FillAngularInfo(Float_t costhetastar, Float_t phi, Float_t costheta1, Float_t costheta2, Float_t phistar1, Float_t phistar2,Float_t xi, Float_t xistar)
 {
-  _costhetastar.push_back(costhetastar);
-  _phi.push_back(phi);
-  _costheta1.push_back(costheta1);
-  _costheta2.push_back(costheta2);
-  _phistar1.push_back(phistar1);
-  _phistar2.push_back(phistar2);
-  _xi.push_back(xi);
-  _xistar.push_back(xistar);
+  _costhetastar=costhetastar;
+  _phi=phi;
+  _costheta1=costheta1;
+  _costheta2=costheta2;
+  _phistar1=phistar1;
+  _phistar2=phistar2;
+  _xi=xi;
+  _xistar=xistar;
 
   return;
 }
@@ -1070,51 +1070,51 @@ void HZZ4lNtupleFactory::FillLepInfo(Float_t LepPt, Float_t LepEta, Float_t LepP
   switch(_LeptonIndex){
 
   case 1:
-    _Lep1Pt.push_back(LepPt);
-    _Lep1Eta.push_back(LepEta);
-    _Lep1Phi.push_back(LepPhi);
-    _Lep1LepId.push_back(LepId);
-    _Lep1SIP.push_back(LepSIP);
-    _Lep1isID.push_back(isID);
-    _Lep1BDT.push_back(BDT);
-    _Lep1missingHit.push_back((char)missingHit);
-    _Lep1ParentId.push_back(parentId);
+    _Lep1Pt=LepPt;
+    _Lep1Eta=LepEta;
+    _Lep1Phi=LepPhi;
+    _Lep1LepId=LepId;
+    _Lep1SIP=LepSIP;
+    _Lep1isID=isID;
+    _Lep1BDT=BDT;
+    _Lep1missingHit=(char)missingHit;
+    _Lep1ParentId=parentId;
     break;
 
   case 2:
-    _Lep2Pt.push_back(LepPt);
-    _Lep2Eta.push_back(LepEta);
-    _Lep2Phi.push_back(LepPhi);
-    _Lep2LepId.push_back(LepId);
-    _Lep2SIP.push_back(LepSIP);
-    _Lep2isID.push_back(isID);
-    _Lep2BDT.push_back(BDT);
-    _Lep2missingHit.push_back((char)missingHit);
-    _Lep2ParentId.push_back(parentId);
+    _Lep2Pt=LepPt;
+    _Lep2Eta=LepEta;
+    _Lep2Phi=LepPhi;
+    _Lep2LepId=LepId;
+    _Lep2SIP=LepSIP;
+    _Lep2isID=isID;
+    _Lep2BDT=BDT;
+    _Lep2missingHit=(char)missingHit;
+    _Lep2ParentId=parentId;
     break;
   
   case 3:
-    _Lep3Pt.push_back(LepPt);
-    _Lep3Eta.push_back(LepEta);
-    _Lep3Phi.push_back(LepPhi);
-    _Lep3LepId.push_back(LepId);
-    _Lep3SIP.push_back(LepSIP);
-    _Lep3isID.push_back(isID);
-    _Lep3BDT.push_back(BDT);
-    _Lep3missingHit.push_back((char)missingHit);
-    _Lep3ParentId.push_back(parentId);
+    _Lep3Pt=LepPt;
+    _Lep3Eta=LepEta;
+    _Lep3Phi=LepPhi;
+    _Lep3LepId=LepId;
+    _Lep3SIP=LepSIP;
+    _Lep3isID=isID;
+    _Lep3BDT=BDT;
+    _Lep3missingHit=(char)missingHit;
+    _Lep3ParentId=parentId;
     break;
 
   case 4:
-    _Lep4Pt.push_back(LepPt);
-    _Lep4Eta.push_back(LepEta);
-    _Lep4Phi.push_back(LepPhi);
-    _Lep4LepId.push_back(LepId);
-    _Lep4SIP.push_back(LepSIP);
-    _Lep4isID.push_back(isID);
-    _Lep4BDT.push_back(BDT);
-    _Lep4missingHit.push_back((char)missingHit);
-    _Lep4ParentId.push_back(parentId);
+    _Lep4Pt=LepPt;
+    _Lep4Eta=LepEta;
+    _Lep4Phi=LepPhi;
+    _Lep4LepId=LepId;
+    _Lep4SIP=LepSIP;
+    _Lep4isID=isID;
+    _Lep4BDT=BDT;
+    _Lep4missingHit=(char)missingHit;
+    _Lep4ParentId=parentId;
     break;
 
   default:
@@ -1133,31 +1133,31 @@ void HZZ4lNtupleFactory::FillLepIsolInfo(Float_t LepchargedHadIso, Float_t Lepne
   switch(_LeptonIsoIndex){
 
   case 1:
-    _Lep1chargedHadIso.push_back(LepchargedHadIso);
-    _Lep1neutralHadIso.push_back(LepneutralHadIso);
-    _Lep1photonIso.push_back(LepphotonIso);
-    _Lep1combRelIsoPF.push_back(LepcombRelIsoPF);
+    _Lep1chargedHadIso=LepchargedHadIso;
+    _Lep1neutralHadIso=LepneutralHadIso;
+    _Lep1photonIso=LepphotonIso;
+    _Lep1combRelIsoPF=LepcombRelIsoPF;
     break;
 
   case 2:
-    _Lep2chargedHadIso.push_back(LepchargedHadIso);
-    _Lep2neutralHadIso.push_back(LepneutralHadIso);
-    _Lep2photonIso.push_back(LepphotonIso);
-    _Lep2combRelIsoPF.push_back(LepcombRelIsoPF);
+    _Lep2chargedHadIso=LepchargedHadIso;
+    _Lep2neutralHadIso=LepneutralHadIso;
+    _Lep2photonIso=LepphotonIso;
+    _Lep2combRelIsoPF=LepcombRelIsoPF;
     break;
 
   case 3:
-    _Lep3chargedHadIso.push_back(LepchargedHadIso);
-    _Lep3neutralHadIso.push_back(LepneutralHadIso);
-    _Lep3photonIso.push_back(LepphotonIso);
-    _Lep3combRelIsoPF.push_back(LepcombRelIsoPF);
+    _Lep3chargedHadIso=LepchargedHadIso;
+    _Lep3neutralHadIso=LepneutralHadIso;
+    _Lep3photonIso=LepphotonIso;
+    _Lep3combRelIsoPF=LepcombRelIsoPF;
     break;
 
   case 4:
-    _Lep4chargedHadIso.push_back(LepchargedHadIso);
-    _Lep4neutralHadIso.push_back(LepneutralHadIso);
-    _Lep4photonIso.push_back(LepphotonIso);
-    _Lep4combRelIsoPF.push_back(LepcombRelIsoPF);
+    _Lep4chargedHadIso=LepchargedHadIso;
+    _Lep4neutralHadIso=LepneutralHadIso;
+    _Lep4photonIso=LepphotonIso;
+    _Lep4combRelIsoPF=LepcombRelIsoPF;
     break;
 
 
@@ -1174,9 +1174,9 @@ void HZZ4lNtupleFactory::FillLepIsolInfo(Float_t LepchargedHadIso, Float_t Lepne
 void HZZ4lNtupleFactory::FillPhotonInfo(Float_t PhotPt, Float_t PhotEta, Float_t PhotPhi)
 {
 
-  _PhotPt.push_back(PhotPt);
-  _PhotEta.push_back(PhotEta);
-  _PhotPhi.push_back(PhotPhi);
+  _PhotPt=PhotPt;
+  _PhotEta=PhotEta;
+  _PhotPhi=PhotPhi;
 
   return;
 }
@@ -1184,12 +1184,12 @@ void HZZ4lNtupleFactory::FillPhotonInfo(Float_t PhotPt, Float_t PhotEta, Float_t
 void HZZ4lNtupleFactory::FillJetInfo(Float_t JetPt, Float_t JetEta, Float_t JetPhi, Float_t JetMass, Float_t JetBTag, Float_t JetSigma )
 {
 
-  _JetPt.push_back(JetPt);
-  _JetEta.push_back(JetEta);
-  _JetPhi.push_back(JetPhi);
-  _JetMass.push_back(JetMass);
-  _JetBTag.push_back(JetBTag);
-  _JetSigma.push_back(JetSigma);
+  _JetPt=JetPt;
+  _JetEta=JetEta;
+  _JetPhi=JetPhi;
+  _JetMass=JetMass;
+  _JetBTag=JetBTag;
+  _JetSigma=JetSigma;
 
   return;
 }
@@ -1207,8 +1207,8 @@ void HZZ4lNtupleFactory::FillDiJetInfo(Float_t DiJetMass, Float_t DiJetMassPlus,
 
 void HZZ4lNtupleFactory::FillCategorizationInfo(Int_t nExtraLep, Int_t nExtraZ)
 {
-  _nExtraLep.push_back(nExtraLep);
-  _nExtraZ.push_back(nExtraZ);
+  _nExtraLep=nExtraLep;
+  _nExtraZ=nExtraZ;
 
   return;
 }
@@ -1231,48 +1231,48 @@ void HZZ4lNtupleFactory::FillExtraLepInfo(int extraLeptonIndex, bool extraLepton
   switch(extraLeptonIndex){
 
   case 1:
-    _ExtraLep1Pt        .push_back(Pt);
-    _ExtraLep1Eta       .push_back(Eta);
-    _ExtraLep1Phi       .push_back(Phi);
-    _ExtraLep1LepId     .push_back(LepId);
-//     _ExtraLep1SIP       .push_back(SIP);
-//     _ExtraLep1isID      .push_back(isID);
-//     _ExtraLep1BDT       .push_back(BDT);
-//     _ExtraLep1missingHit.push_back(missingHit);
-//     _ExtraLep1chargedHadIso.push_back(chargedHadIso);
-//     _ExtraLep1neutralHadIso.push_back(neutralHadIso);
-//     _ExtraLep1photonIso    .push_back(photonIso);
-//     _ExtraLep1combRelIsoPF .push_back(combRelIsoPF);
+    _ExtraLep1Pt        =Pt;
+    _ExtraLep1Eta       =Eta;
+    _ExtraLep1Phi       =Phi;
+    _ExtraLep1LepId     =LepId;
+//     _ExtraLep1SIP       =SIP;
+//     _ExtraLep1isID      =isID;
+//     _ExtraLep1BDT       =BDT;
+//     _ExtraLep1missingHit=missingHit;
+//     _ExtraLep1chargedHadIso=chargedHadIso;
+//     _ExtraLep1neutralHadIso=neutralHadIso;
+//     _ExtraLep1photonIso    =photonIso;
+//     _ExtraLep1combRelIsoPF =combRelIsoPF;
     break;
 
   case 2:
-    _ExtraLep2Pt        .push_back(Pt);
-    _ExtraLep2Eta       .push_back(Eta);
-    _ExtraLep2Phi       .push_back(Phi);
-    _ExtraLep2LepId     .push_back(LepId);
-//     _ExtraLep2SIP       .push_back(SIP);
-//     _ExtraLep2isID      .push_back(isID);
-//     _ExtraLep2BDT       .push_back(BDT);
-//     _ExtraLep2missingHit.push_back(missingHit);
-//     _ExtraLep2chargedHadIso.push_back(chargedHadIso);
-//     _ExtraLep2neutralHadIso.push_back(neutralHadIso);
-//     _ExtraLep2photonIso    .push_back(photonIso);
-//     _ExtraLep2combRelIsoPF .push_back(combRelIsoPF);
+    _ExtraLep2Pt        =Pt;
+    _ExtraLep2Eta       =Eta;
+    _ExtraLep2Phi       =Phi;
+    _ExtraLep2LepId     =LepId;
+//     _ExtraLep2SIP       =SIP;
+//     _ExtraLep2isID      =isID;
+//     _ExtraLep2BDT       =BDT;
+//     _ExtraLep2missingHit=missingHit;
+//     _ExtraLep2chargedHadIso=chargedHadIso;
+//     _ExtraLep2neutralHadIso=neutralHadIso;
+//     _ExtraLep2photonIso    =photonIso;
+//     _ExtraLep2combRelIsoPF =combRelIsoPF;
     break;
 
   case 3:
-    _ExtraLep3Pt        .push_back(Pt);
-    _ExtraLep3Eta       .push_back(Eta);
-    _ExtraLep3Phi       .push_back(Phi);
-    _ExtraLep3LepId     .push_back(LepId);
-//     _ExtraLep3SIP       .push_back(SIP);
-//     _ExtraLep3isID      .push_back(isID);
-//     _ExtraLep3BDT       .push_back(BDT);
-//     _ExtraLep3missingHit.push_back(missingHit);
-//     _ExtraLep3chargedHadIso.push_back(chargedHadIso);
-//     _ExtraLep3neutralHadIso.push_back(neutralHadIso);
-//     _ExtraLep3photonIso    .push_back(photonIso);
-//     _ExtraLep3combRelIsoPF .push_back(combRelIsoPF);
+    _ExtraLep3Pt        =Pt;
+    _ExtraLep3Eta       =Eta;
+    _ExtraLep3Phi       =Phi;
+    _ExtraLep3LepId     =LepId;
+//     _ExtraLep3SIP       =SIP;
+//     _ExtraLep3isID      =isID;
+//     _ExtraLep3BDT       =BDT;
+//     _ExtraLep3missingHit=missingHit;
+//     _ExtraLep3chargedHadIso=chargedHadIso;
+//     _ExtraLep3neutralHadIso=neutralHadIso;
+//     _ExtraLep3photonIso    =photonIso;
+//     _ExtraLep3combRelIsoPF =combRelIsoPF;
     break;
 
   default:

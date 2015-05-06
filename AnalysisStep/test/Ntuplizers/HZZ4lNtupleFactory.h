@@ -199,214 +199,214 @@ class HZZ4lNtupleFactory{
   Short_t _trigWord;
   Short_t _genExtInfo;
   //H variables
-  std::vector<Float_t> _ZZMass;
-  std::vector<Float_t> _ZZMassPreFSR;
-  std::vector<Float_t> _ZZMassRefit;
-  std::vector<Float_t> _ZZMassErr;
-  std::vector<Float_t> _ZZMassErrCorr;
-  std::vector<Float_t> _Chi2KinFit;
-  std::vector<Float_t> _ZZMassCFit;
-  std::vector<Float_t> _Chi2CFit;
-  std::vector<Int_t> _ZZsel;
-  std::vector<Float_t> _ZZPt;
-  std::vector<Float_t> _ZZEta;
-  std::vector<Float_t> _ZZPhi;
-  std::vector<Int_t> _ZZgenIsSignal;
-  std::vector<Int_t> _ZZgenIsRightPair;
-  std::vector<Int_t> _CRflag;
+  Float_t _ZZMass;
+  Float_t _ZZMassPreFSR;
+  Float_t _ZZMassRefit;
+  Float_t _ZZMassErr;
+  Float_t _ZZMassErrCorr;
+  Float_t _Chi2KinFit;
+  Float_t _ZZMassCFit;
+  Float_t _Chi2CFit;
+  Int_t _ZZsel;
+  Float_t _ZZPt;
+  Float_t _ZZEta;
+  Float_t _ZZPhi;
+  Int_t _ZZgenIsSignal;
+  Int_t _ZZgenIsRightPair;
+  Int_t _CRflag;
 
   //probabilities
-  std::vector<Float_t> _p0plus_VAJHU; // higgs, vector algebra, JHUgen
-  std::vector<Float_t> _p0minus_VAJHU;// pseudoscalar, vector algebra, JHUgen
-  std::vector<Float_t> _p0plus_VAMCFM;// higgs, vector algebra, MCFM
-  std::vector<Float_t> _p0hplus_VAJHU;// 0h+ (high dimensional operator), vector algebra, JHUgen
-  std::vector<Float_t> _p1_VAJHU;   // zprime, vector algebra, JHUgen,
-  std::vector<Float_t> _p1_prodIndep_VAJHU;   // zprime, vector algebra, JHUgen,
-  std::vector<Float_t> _p1plus_VAJHU;// 1+ (axial vector), vector algebra, JHUgen,
-  std::vector<Float_t> _p1plus_prodIndep_VAJHU;// 1+ (axial vector), vector algebra, JHUgen,
-  std::vector<Float_t> _p2_VAJHU;   // graviton, vector algebra, JHUgen,
-  std::vector<Float_t> _p2_prodIndep_VAJHU;   // graviton, vector algebra, JHUgen,
-  std::vector<Float_t> _p2qqb_VAJHU;   // graviton, vector algebra, JHUgen,
-  std::vector<Float_t> _p2hplus_VAJHU;   // graviton, vector algebra, JHUgen,
-  std::vector<Float_t> _p2hminus_VAJHU;   // graviton, vector algebra, JHUgen,
-  std::vector<Float_t> _p2bplus_VAJHU;   // graviton, vector algebra, JHUgen,
-  std::vector<Float_t> _p2hplus_qqb_VAJHU;        
-  std::vector<Float_t> _p2hplus_prodIndep_VAJHU;  
-  std::vector<Float_t> _p2hminus_qqb_VAJHU;       
-  std::vector<Float_t> _p2hminus_prodIndep_VAJHU; 
-  std::vector<Float_t> _p2bplus_qqb_VAJHU;        
-  std::vector<Float_t> _p2bplus_prodIndep_VAJHU;  
-  std::vector<Float_t> _p2h2plus_gg_VAJHU;        
-  std::vector<Float_t> _p2h2plus_qqbar_VAJHU;     
-  std::vector<Float_t> _p2h2plus_prodIndep_VAJHU; 
-  std::vector<Float_t> _p2h3plus_gg_VAJHU;        
-  std::vector<Float_t> _p2h3plus_qqbar_VAJHU;     
-  std::vector<Float_t> _p2h3plus_prodIndep_VAJHU; 
-  std::vector<Float_t> _p2h6plus_gg_VAJHU;        
-  std::vector<Float_t> _p2h6plus_qqbar_VAJHU;     
-  std::vector<Float_t> _p2h6plus_prodIndep_VAJHU; 
-  std::vector<Float_t> _p2h7plus_gg_VAJHU;        
-  std::vector<Float_t> _p2h7plus_qqbar_VAJHU;     
-  std::vector<Float_t> _p2h7plus_prodIndep_VAJHU; 
-  std::vector<Float_t> _p2h9minus_gg_VAJHU;       
-  std::vector<Float_t> _p2h9minus_qqbar_VAJHU;    
-  std::vector<Float_t> _p2h9minus_prodIndep_VAJHU;
-  std::vector<Float_t> _p2h10minus_gg_VAJHU;       
-  std::vector<Float_t> _p2h10minus_qqbar_VAJHU;    
-  std::vector<Float_t> _p2h10minus_prodIndep_VAJHU;
+  Float_t _p0plus_VAJHU; // higgs, vector algebra, JHUgen
+  Float_t _p0minus_VAJHU;// pseudoscalar, vector algebra, JHUgen
+  Float_t _p0plus_VAMCFM;// higgs, vector algebra, MCFM
+  Float_t _p0hplus_VAJHU;// 0h+ (high dimensional operator), vector algebra, JHUgen
+  Float_t _p1_VAJHU;   // zprime, vector algebra, JHUgen,
+  Float_t _p1_prodIndep_VAJHU;   // zprime, vector algebra, JHUgen,
+  Float_t _p1plus_VAJHU;// 1+ (axial vector), vector algebra, JHUgen,
+  Float_t _p1plus_prodIndep_VAJHU;// 1+ (axial vector), vector algebra, JHUgen,
+  Float_t _p2_VAJHU;   // graviton, vector algebra, JHUgen,
+  Float_t _p2_prodIndep_VAJHU;   // graviton, vector algebra, JHUgen,
+  Float_t _p2qqb_VAJHU;   // graviton, vector algebra, JHUgen,
+  Float_t _p2hplus_VAJHU;   // graviton, vector algebra, JHUgen,
+  Float_t _p2hminus_VAJHU;   // graviton, vector algebra, JHUgen,
+  Float_t _p2bplus_VAJHU;   // graviton, vector algebra, JHUgen,
+  Float_t _p2hplus_qqb_VAJHU;        
+  Float_t _p2hplus_prodIndep_VAJHU;  
+  Float_t _p2hminus_qqb_VAJHU;       
+  Float_t _p2hminus_prodIndep_VAJHU; 
+  Float_t _p2bplus_qqb_VAJHU;        
+  Float_t _p2bplus_prodIndep_VAJHU;  
+  Float_t _p2h2plus_gg_VAJHU;        
+  Float_t _p2h2plus_qqbar_VAJHU;     
+  Float_t _p2h2plus_prodIndep_VAJHU; 
+  Float_t _p2h3plus_gg_VAJHU;        
+  Float_t _p2h3plus_qqbar_VAJHU;     
+  Float_t _p2h3plus_prodIndep_VAJHU; 
+  Float_t _p2h6plus_gg_VAJHU;        
+  Float_t _p2h6plus_qqbar_VAJHU;     
+  Float_t _p2h6plus_prodIndep_VAJHU; 
+  Float_t _p2h7plus_gg_VAJHU;        
+  Float_t _p2h7plus_qqbar_VAJHU;     
+  Float_t _p2h7plus_prodIndep_VAJHU; 
+  Float_t _p2h9minus_gg_VAJHU;       
+  Float_t _p2h9minus_qqbar_VAJHU;    
+  Float_t _p2h9minus_prodIndep_VAJHU;
+  Float_t _p2h10minus_gg_VAJHU;       
+  Float_t _p2h10minus_qqbar_VAJHU;    
+  Float_t _p2h10minus_prodIndep_VAJHU;
   //backgrounds
-  std::vector<Float_t> _bkg_VAMCFM; // background, vector algebra, MCFM
-  std::vector<Float_t> _bkg_prodIndep_VAMCFM; // background, vector algebra, MCFM
-  std::vector<Float_t> _ggzz_VAMCFM; // background, vector algebra, MCFM for ggzz
-  std::vector<Float_t> _ggzz_p0plus_VAMCFM; // background, vector algebra, MCFM for ggzz
-  std::vector<Float_t> _ggzz_c1_VAMCFM; // signal + background + interference w/ SM couplings, vector algebra, MCFM
-  std::vector<Float_t> _ggzz_c5_VAMCFM; // signal + background + interference w/ 5xSM couplings, vector algebra, MCFM for ggzz
-  std::vector<Float_t> _ggzz_ci_VAMCFM; // signal + background + interference w/ imaginary SM couplings, vector algebra, MCFM for ggzz  
+  Float_t _bkg_VAMCFM; // background, vector algebra, MCFM
+  Float_t _bkg_prodIndep_VAMCFM; // background, vector algebra, MCFM
+  Float_t _ggzz_VAMCFM; // background, vector algebra, MCFM for ggzz
+  Float_t _ggzz_p0plus_VAMCFM; // background, vector algebra, MCFM for ggzz
+  Float_t _ggzz_c1_VAMCFM; // signal + background + interference w/ SM couplings, vector algebra, MCFM
+  Float_t _ggzz_c5_VAMCFM; // signal + background + interference w/ 5xSM couplings, vector algebra, MCFM for ggzz
+  Float_t _ggzz_ci_VAMCFM; // signal + background + interference w/ imaginary SM couplings, vector algebra, MCFM for ggzz  
   // supermela
-  std::vector<Float_t> _p0plus_m4l;  // signal m4l probability as in datacards
-  std::vector<Float_t> _bkg_m4l;     // backgroun m4l probability as in datacards
-  std::vector<Float_t> _pg1g4_mela;
-  std::vector<Float_t> _pg1g4_VAJHU;
-  std::vector<Float_t> _pg1g4_pi2_VAJHU;
-  std::vector<Float_t> _pg1g2_pi2_VAJHU;
-  std::vector<Float_t> _pg1g2_mela;
-  std::vector<Float_t> _pg1g2_VAJHU;
-  std::vector<Float_t> _p0plus_m4l_ScaleUp;// signal m4l probability for systematics
-  std::vector<Float_t> _bkg_m4l_ScaleUp;// backgroun m4l probability for systematics
-  std::vector<Float_t> _p0plus_m4l_ScaleDown;// signal m4l probability for systematics
-  std::vector<Float_t> _bkg_m4l_ScaleDown;// backgroun m4l probability for systematics
-  std::vector<Float_t> _p0plus_m4l_ResUp;// signal m4l probability for systematics
-  std::vector<Float_t> _bkg_m4l_ResUp;// backgroun m4l probability for systematics
-  std::vector<Float_t> _p0plus_m4l_ResDown;// signal m4l probability for systematics
-  std::vector<Float_t> _bkg_m4l_ResDown;// backgroun m4l probability for systematics
+  Float_t _p0plus_m4l;  // signal m4l probability as in datacards
+  Float_t _bkg_m4l;     // backgroun m4l probability as in datacards
+  Float_t _pg1g4_mela;
+  Float_t _pg1g4_VAJHU;
+  Float_t _pg1g4_pi2_VAJHU;
+  Float_t _pg1g2_pi2_VAJHU;
+  Float_t _pg1g2_mela;
+  Float_t _pg1g2_VAJHU;
+  Float_t _p0plus_m4l_ScaleUp;// signal m4l probability for systematics
+  Float_t _bkg_m4l_ScaleUp;// backgroun m4l probability for systematics
+  Float_t _p0plus_m4l_ScaleDown;// signal m4l probability for systematics
+  Float_t _bkg_m4l_ScaleDown;// backgroun m4l probability for systematics
+  Float_t _p0plus_m4l_ResUp;// signal m4l probability for systematics
+  Float_t _bkg_m4l_ResUp;// backgroun m4l probability for systematics
+  Float_t _p0plus_m4l_ResDown;// signal m4l probability for systematics
+  Float_t _bkg_m4l_ResDown;// backgroun m4l probability for systematics
   // Production MELA
-  std::vector<Float_t> _phjj_VAJHU_old; //H+jj, vector algebra, JHUGen, Legacy Jet Selection
-  std::vector<Float_t> _pvbf_VAJHU_old; //VBF, vector algebra, JHUGen, Legacy Jet Selection
-  std::vector<Float_t> _phjj_VAJHU_old_up; //H+jj, vector algebra, JHUGen, Legacy Jet Selection, JEC +
-  std::vector<Float_t> _pvbf_VAJHU_old_up; //VBF, vector algebra, JHUGen, Legacy Jet Selection, JEC +
-  std::vector<Float_t> _phjj_VAJHU_old_dn; //H+jj, vector algebra, JHUGen, Legacy Jet Selection, JEC -
-  std::vector<Float_t> _pvbf_VAJHU_old_dn; //VBF, vector algebra, JHUGen, Legacy Jet Selection, JEC -
-  std::vector<Float_t> _phjj_VAJHU_new; //H+jj, vector algebra, JHUGen, New Jet Selection
-  std::vector<Float_t> _pvbf_VAJHU_new; //VBF, vector algebra, JHUGen, New Jet Selection
-  std::vector<Float_t> _phjj_VAJHU_new_up; //H+jj, vector algebra, JHUGen, New Jet Selection, JEC +
-  std::vector<Float_t> _pvbf_VAJHU_new_up; //VBF, vector algebra, JHUGen, New Jet Selection, JEC +
-  std::vector<Float_t> _phjj_VAJHU_new_dn; //H+jj, vector algebra, JHUGen, New Jet Selection, JEC -
-  std::vector<Float_t> _pvbf_VAJHU_new_dn; //VBF, vector algebra, JHUGen, New Jet Selection, JEC -
-  std::vector<Float_t> _p0_g1prime2_VAJHU; //VBF, vector algebra, JHUGen, New Jet Selection, JEC -
-  std::vector<Float_t> _pg1g1prime2_VAJHU; //VBF, vector algebra, JHUGen, New Jet Selection, JEC -
-  std::vector<Float_t> _Dgg10_VAMCFM; //VBF, vector algebra, JHUGen, New Jet Selection, JEC -
+  Float_t _phjj_VAJHU_old; //H+jj, vector algebra, JHUGen, Legacy Jet Selection
+  Float_t _pvbf_VAJHU_old; //VBF, vector algebra, JHUGen, Legacy Jet Selection
+  Float_t _phjj_VAJHU_old_up; //H+jj, vector algebra, JHUGen, Legacy Jet Selection, JEC +
+  Float_t _pvbf_VAJHU_old_up; //VBF, vector algebra, JHUGen, Legacy Jet Selection, JEC +
+  Float_t _phjj_VAJHU_old_dn; //H+jj, vector algebra, JHUGen, Legacy Jet Selection, JEC -
+  Float_t _pvbf_VAJHU_old_dn; //VBF, vector algebra, JHUGen, Legacy Jet Selection, JEC -
+  Float_t _phjj_VAJHU_new; //H+jj, vector algebra, JHUGen, New Jet Selection
+  Float_t _pvbf_VAJHU_new; //VBF, vector algebra, JHUGen, New Jet Selection
+  Float_t _phjj_VAJHU_new_up; //H+jj, vector algebra, JHUGen, New Jet Selection, JEC +
+  Float_t _pvbf_VAJHU_new_up; //VBF, vector algebra, JHUGen, New Jet Selection, JEC +
+  Float_t _phjj_VAJHU_new_dn; //H+jj, vector algebra, JHUGen, New Jet Selection, JEC -
+  Float_t _pvbf_VAJHU_new_dn; //VBF, vector algebra, JHUGen, New Jet Selection, JEC -
+  Float_t _p0_g1prime2_VAJHU; //VBF, vector algebra, JHUGen, New Jet Selection, JEC -
+  Float_t _pg1g1prime2_VAJHU; //VBF, vector algebra, JHUGen, New Jet Selection, JEC -
+  Float_t _Dgg10_VAMCFM; //VBF, vector algebra, JHUGen, New Jet Selection, JEC -
 
-  std::vector<Float_t> _pzzzg_VAJHU;
-  std::vector<Float_t> _pzzgg_VAJHU;
-  std::vector<Float_t> _pzzzg_PS_VAJHU;
-  std::vector<Float_t> _pzzgg_PS_VAJHU;
-  std::vector<Float_t> _p0Zgs_VAJHU;
-  std::vector<Float_t> _p0gsgs_VAJHU;
-  std::vector<Float_t> _p0Zgs_PS_VAJHU;
-  std::vector<Float_t> _p0gsgs_PS_VAJHU;
+  Float_t _pzzzg_VAJHU;
+  Float_t _pzzgg_VAJHU;
+  Float_t _pzzzg_PS_VAJHU;
+  Float_t _pzzgg_PS_VAJHU;
+  Float_t _p0Zgs_VAJHU;
+  Float_t _p0gsgs_VAJHU;
+  Float_t _p0Zgs_PS_VAJHU;
+  Float_t _p0gsgs_PS_VAJHU;
 
-  std::vector<Float_t> _ZZmZa;
-  std::vector<Float_t> _ZZmZb;
-  std::vector<Float_t> _ZZmLL4;
-  std::vector<Float_t> _ZZmLL6;
-  std::vector<Float_t> _ZZSIP4;
+  Float_t _ZZmZa;
+  Float_t _ZZmZb;
+  Float_t _ZZmLL4;
+  Float_t _ZZmLL6;
+  Float_t _ZZSIP4;
 
   //Z1 variables
-  std::vector<Float_t> _Z1Mass;
-  std::vector<Float_t> _Z1MassRefit;
-  std::vector<Float_t> _Z1Pt;
-  std::vector<Short_t> _Z1Flav;
+  Float_t _Z1Mass;
+  Float_t _Z1MassRefit;
+  Float_t _Z1Pt;
+  Short_t _Z1Flav;
 
   //Z2 variables
-  std::vector<Float_t> _Z2Mass;
-  std::vector<Float_t> _Z2Pt;
-  std::vector<Short_t> _Z2Flav;
+  Float_t _Z2Mass;
+  Float_t _Z2Pt;
+  Short_t _Z2Flav;
 
   //Angular variables
-  std::vector<Float_t> _costhetastar;
-  std::vector<Float_t> _phi;
-  std::vector<Float_t> _costheta1;
-  std::vector<Float_t> _costheta2;
-  std::vector<Float_t> _phistar1;
-  std::vector<Float_t> _phistar2;
-  std::vector<Float_t> _xi;
-  std::vector<Float_t> _xistar;
+  Float_t _costhetastar;
+  Float_t _phi;
+  Float_t _costheta1;
+  Float_t _costheta2;
+  Float_t _phistar1;
+  Float_t _phistar2;
+  Float_t _xi;
+  Float_t _xistar;
 
   //Lepton variables
-  std::vector<Float_t> _Lep1Pt;
-  std::vector<Float_t> _Lep1Eta;
-  std::vector<Float_t> _Lep1Phi;
-  std::vector<Int_t>   _Lep1LepId;
-  std::vector<Float_t> _Lep1SIP;
-  std::vector<Bool_t>  _Lep1isID;
-  std::vector<Float_t> _Lep1BDT;
-  std::vector<Char_t>  _Lep1missingHit;
-  std::vector<Short_t> _Lep1ParentId;
+  Float_t _Lep1Pt;
+  Float_t _Lep1Eta;
+  Float_t _Lep1Phi;
+  Int_t   _Lep1LepId;
+  Float_t _Lep1SIP;
+  Bool_t  _Lep1isID;
+  Float_t _Lep1BDT;
+  Char_t  _Lep1missingHit;
+  Short_t _Lep1ParentId;
 
-  std::vector<Float_t> _Lep2Pt;
-  std::vector<Float_t> _Lep2Eta;
-  std::vector<Float_t> _Lep2Phi;
-  std::vector<Int_t>   _Lep2LepId;
-  std::vector<Float_t> _Lep2SIP;
-  std::vector<Bool_t>  _Lep2isID;
-  std::vector<Float_t> _Lep2BDT;
-  std::vector<Char_t>  _Lep2missingHit;
-  std::vector<Short_t> _Lep2ParentId;
+  Float_t _Lep2Pt;
+  Float_t _Lep2Eta;
+  Float_t _Lep2Phi;
+  Int_t   _Lep2LepId;
+  Float_t _Lep2SIP;
+  Bool_t  _Lep2isID;
+  Float_t _Lep2BDT;
+  Char_t  _Lep2missingHit;
+  Short_t _Lep2ParentId;
 
-  std::vector<Float_t> _Lep3Pt;
-  std::vector<Float_t> _Lep3Eta;
-  std::vector<Float_t> _Lep3Phi;
-  std::vector<Int_t>   _Lep3LepId;
-  std::vector<Float_t> _Lep3SIP;
-  std::vector<Bool_t>  _Lep3isID;
-  std::vector<Float_t> _Lep3BDT;
-  std::vector<Char_t>  _Lep3missingHit;
-  std::vector<Short_t> _Lep3ParentId;
+  Float_t _Lep3Pt;
+  Float_t _Lep3Eta;
+  Float_t _Lep3Phi;
+  Int_t   _Lep3LepId;
+  Float_t _Lep3SIP;
+  Bool_t  _Lep3isID;
+  Float_t _Lep3BDT;
+  Char_t  _Lep3missingHit;
+  Short_t _Lep3ParentId;
 
-  std::vector<Float_t> _Lep4Pt;
-  std::vector<Float_t> _Lep4Eta;
-  std::vector<Float_t> _Lep4Phi;
-  std::vector<Int_t>   _Lep4LepId;
-  std::vector<Float_t> _Lep4SIP;
-  std::vector<Bool_t>  _Lep4isID;
-  std::vector<Float_t> _Lep4BDT;
-  std::vector<Char_t>  _Lep4missingHit;
-  std::vector<Short_t> _Lep4ParentId;
+  Float_t _Lep4Pt;
+  Float_t _Lep4Eta;
+  Float_t _Lep4Phi;
+  Int_t   _Lep4LepId;
+  Float_t _Lep4SIP;
+  Bool_t  _Lep4isID;
+  Float_t _Lep4BDT;
+  Char_t  _Lep4missingHit;
+  Short_t _Lep4ParentId;
 
 
   //Lepton isolation variables
-  std::vector<Float_t> _Lep1chargedHadIso;
-  std::vector<Float_t> _Lep1neutralHadIso;
-  std::vector<Float_t> _Lep1photonIso;
-  std::vector<Float_t> _Lep1combRelIsoPF;
+  Float_t _Lep1chargedHadIso;
+  Float_t _Lep1neutralHadIso;
+  Float_t _Lep1photonIso;
+  Float_t _Lep1combRelIsoPF;
 
-  std::vector<Float_t> _Lep2chargedHadIso;
-  std::vector<Float_t> _Lep2neutralHadIso;
-  std::vector<Float_t> _Lep2photonIso;
-  std::vector<Float_t> _Lep2combRelIsoPF;
+  Float_t _Lep2chargedHadIso;
+  Float_t _Lep2neutralHadIso;
+  Float_t _Lep2photonIso;
+  Float_t _Lep2combRelIsoPF;
 
-  std::vector<Float_t> _Lep3chargedHadIso;
-  std::vector<Float_t> _Lep3neutralHadIso;
-  std::vector<Float_t> _Lep3photonIso;
-  std::vector<Float_t> _Lep3combRelIsoPF;
+  Float_t _Lep3chargedHadIso;
+  Float_t _Lep3neutralHadIso;
+  Float_t _Lep3photonIso;
+  Float_t _Lep3combRelIsoPF;
 
-  std::vector<Float_t> _Lep4chargedHadIso;
-  std::vector<Float_t> _Lep4neutralHadIso;
-  std::vector<Float_t> _Lep4photonIso;
-  std::vector<Float_t> _Lep4combRelIsoPF;
+  Float_t _Lep4chargedHadIso;
+  Float_t _Lep4neutralHadIso;
+  Float_t _Lep4photonIso;
+  Float_t _Lep4combRelIsoPF;
 
   //Photon variables
-  std::vector<Float_t> _PhotPt;
-  std::vector<Float_t> _PhotEta;
-  std::vector<Float_t> _PhotPhi;
+  Float_t _PhotPt;
+  Float_t _PhotEta;
+  Float_t _PhotPhi;
 
   //Jet variables
-  std::vector<Float_t> _JetPt;
-  std::vector<Float_t> _JetEta;
-  std::vector<Float_t> _JetPhi;
-  std::vector<Float_t> _JetMass;
-  std::vector<Float_t> _JetBTag;
-  std::vector<Float_t> _JetSigma;
+  Float_t _JetPt;
+  Float_t _JetEta;
+  Float_t _JetPhi;
+  Float_t _JetMass;
+  Float_t _JetBTag;
+  Float_t _JetSigma;
   Float_t _DiJetMass;
   Float_t _DiJetMassPlus;
   Float_t _DiJetMassMinus;
@@ -414,48 +414,48 @@ class HZZ4lNtupleFactory{
   Float_t _DiJetFisher;
 
   //Categorization-related variables
-  std::vector<Int_t> _nExtraLep;
-  std::vector<Int_t> _nExtraZ;
+  Int_t _nExtraLep;
+  Int_t _nExtraZ;
 
   //Variables of extra leptons
-  std::vector<Float_t> _ExtraLep1Pt;
-  std::vector<Float_t> _ExtraLep1Eta;
-  std::vector<Float_t> _ExtraLep1Phi;
-  std::vector<Int_t>   _ExtraLep1LepId;
-  std::vector<Float_t> _ExtraLep1SIP;
-  std::vector<Bool_t>  _ExtraLep1isID;
-  std::vector<Float_t> _ExtraLep1BDT;
-  std::vector<Char_t>  _ExtraLep1missingHit;
-  std::vector<Float_t> _ExtraLep1chargedHadIso;
-  std::vector<Float_t> _ExtraLep1neutralHadIso;
-  std::vector<Float_t> _ExtraLep1photonIso;
-  std::vector<Float_t> _ExtraLep1combRelIsoPF;
+  Float_t _ExtraLep1Pt;
+  Float_t _ExtraLep1Eta;
+  Float_t _ExtraLep1Phi;
+  Int_t   _ExtraLep1LepId;
+  Float_t _ExtraLep1SIP;
+  Bool_t  _ExtraLep1isID;
+  Float_t _ExtraLep1BDT;
+  Char_t  _ExtraLep1missingHit;
+  Float_t _ExtraLep1chargedHadIso;
+  Float_t _ExtraLep1neutralHadIso;
+  Float_t _ExtraLep1photonIso;
+  Float_t _ExtraLep1combRelIsoPF;
 
-  std::vector<Float_t> _ExtraLep2Pt;
-  std::vector<Float_t> _ExtraLep2Eta;
-  std::vector<Float_t> _ExtraLep2Phi;
-  std::vector<Int_t>   _ExtraLep2LepId;
-  std::vector<Float_t> _ExtraLep2SIP;
-  std::vector<Bool_t>  _ExtraLep2isID;
-  std::vector<Float_t> _ExtraLep2BDT;
-  std::vector<Char_t>  _ExtraLep2missingHit;
-  std::vector<Float_t> _ExtraLep2chargedHadIso;
-  std::vector<Float_t> _ExtraLep2neutralHadIso;
-  std::vector<Float_t> _ExtraLep2photonIso;
-  std::vector<Float_t> _ExtraLep2combRelIsoPF;
+  Float_t _ExtraLep2Pt;
+  Float_t _ExtraLep2Eta;
+  Float_t _ExtraLep2Phi;
+  Int_t   _ExtraLep2LepId;
+  Float_t _ExtraLep2SIP;
+  Bool_t  _ExtraLep2isID;
+  Float_t _ExtraLep2BDT;
+  Char_t  _ExtraLep2missingHit;
+  Float_t _ExtraLep2chargedHadIso;
+  Float_t _ExtraLep2neutralHadIso;
+  Float_t _ExtraLep2photonIso;
+  Float_t _ExtraLep2combRelIsoPF;
 
-  std::vector<Float_t> _ExtraLep3Pt;
-  std::vector<Float_t> _ExtraLep3Eta;
-  std::vector<Float_t> _ExtraLep3Phi;
-  std::vector<Int_t>   _ExtraLep3LepId;
-  std::vector<Float_t> _ExtraLep3SIP;
-  std::vector<Bool_t>  _ExtraLep3isID;
-  std::vector<Float_t> _ExtraLep3BDT;
-  std::vector<Char_t>  _ExtraLep3missingHit;
-  std::vector<Float_t> _ExtraLep3chargedHadIso;
-  std::vector<Float_t> _ExtraLep3neutralHadIso;
-  std::vector<Float_t> _ExtraLep3photonIso;
-  std::vector<Float_t> _ExtraLep3combRelIsoPF;
+  Float_t _ExtraLep3Pt;
+  Float_t _ExtraLep3Eta;
+  Float_t _ExtraLep3Phi;
+  Int_t   _ExtraLep3LepId;
+  Float_t _ExtraLep3SIP;
+  Bool_t  _ExtraLep3isID;
+  Float_t _ExtraLep3BDT;
+  Char_t  _ExtraLep3missingHit;
+  Float_t _ExtraLep3chargedHadIso;
+  Float_t _ExtraLep3neutralHadIso;
+  Float_t _ExtraLep3photonIso;
+  Float_t _ExtraLep3combRelIsoPF;
 
   //Generation variables
   Float_t _genHMass;
