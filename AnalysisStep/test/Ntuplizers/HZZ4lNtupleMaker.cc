@@ -289,43 +289,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   bool evtPassTrigger = myHelper.passTrigger(event, trigWord);
   if (applyTrigger && !evtPassTrigger) return;
 
-  int nFilled=0;
-  for( edm::View<pat::CompositeCandidate>::const_iterator cand = cands->begin(); cand != cands->end(); ++cand) {
-    Int_t CRFLAG=0;
-    bool candIsBest = cand->userFloat("isBestCand");
-
-    //    int candChannel = cand->userFloat("candChannel"); // This is currently the product of pdgId of leptons (eg 14641, 28561, 20449)
-    
-    if (theChannel==ZLL) {
-      // AA CRs
-      if(cand->userFloat("isBestCRZLLss")&&cand->userFloat("CRZLLss"))
-	set_bit(CRFLAG,CRZLLss);      
-
-      // A CRs
-      if(cand->userFloat("isBestCRZLLos_2P2F")&&cand->userFloat("CRZLLos_2P2F"))
-	set_bit(CRFLAG,CRZLLos_2P2F);      
-      if(cand->userFloat("isBestCRZLLos_3P1F")&&cand->userFloat("CRZLLos_3P1F"))
-	set_bit(CRFLAG,CRZLLos_3P1F);
-    }
-    
-    //    if(theChannel==ZL){} Nothing special in this case
- 
-    if (!(candIsBest||CRFLAG)) continue; // Skip events other than the best cand (or CR candidates in the CR)
-    
-    //For the SR, also fold information about acceptance in CRflag 
-    if (isMC && (theChannel==EEEE||theChannel==MMMM||theChannel==EEMM)) {
-      if (gen_ZZ4lInEtaAcceptance)   set_bit(CRFLAG,28);
-      if (gen_ZZ4lInEtaPtAcceptance) set_bit(CRFLAG,29);
-    }
-
-    FillCandidate(*cand, evtPassTrigger&&evtPassSkim, event, CRFLAG);
-    ++nFilled;
-  }
-
-  // Events with no ZZ candidate have already been skipped at the beginning, but in case of CRs there could be no cands with CRflag!=0, so none was filled. 
-  if (skipEmptyEvents && nFilled==0 && theChannel==ZLL) return;
-
-
   //Fill MC truth information
   if (isMC) {
 
@@ -364,8 +327,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     }
   }
 
-
-  
 
   // Photons (store them only for events with at least 1 candidate)
   // FIXME: should rather write used FSR photons, with info on matching lepton.
@@ -417,25 +378,25 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
     if(theChannel!=ZL){
       for (unsigned int i=0; i<cleanedJets.size(); i++) {
-	FillJet(*(cleanedJets.at(i)));
+	      FillJet(*(cleanedJets.at(i)));
       }
 
       // Note that jets variables are filled for jets above 20 GeV, to allow JES studies.
       // detajj, Mjj and ZZFisher are filled only for true dijet events (jets above 30 GeV)
       if(cleanedJets.size()>1){ 
-	const pat::Jet& myjet1 = *(cleanedJets.at(0)); 
-	const pat::Jet& myjet2 = *(cleanedJets.at(1));
-	math::XYZTLorentzVector jet1 = myjet1.p4();
-	math::XYZTLorentzVector jet2 = myjet2.p4();
-	Float_t jesUnc1 = 0.;//myjet1.uncOnFourVectorScale();
-	Float_t jesUnc2 = 0.;//myjet2.uncOnFourVectorScale();
-	math::XYZTLorentzVector jetScalePlus1 = jet1*(1+jesUnc1);
-	math::XYZTLorentzVector jetScaleMinus1 = jet1*(1-jesUnc1);
-	math::XYZTLorentzVector jetScalePlus2 = jet2*(1+jesUnc2);
-	math::XYZTLorentzVector jetScaleMinus2 = jet2*(1-jesUnc2);
-	Float_t MjjPlus = (jetScalePlus1+jetScalePlus2).M();
-	Float_t MjjMinus = (jetScaleMinus1+jetScaleMinus2).M();
-	myTree->FillDiJetInfo(Mjj,MjjPlus,MjjMinus,detajj,Fisher);
+	      const pat::Jet& myjet1 = *(cleanedJets.at(0)); 
+	      const pat::Jet& myjet2 = *(cleanedJets.at(1));
+	      math::XYZTLorentzVector jet1 = myjet1.p4();
+	      math::XYZTLorentzVector jet2 = myjet2.p4();
+	      Float_t jesUnc1 = 0.;//myjet1.uncOnFourVectorScale();
+	      Float_t jesUnc2 = 0.;//myjet2.uncOnFourVectorScale();
+	      math::XYZTLorentzVector jetScalePlus1 = jet1*(1+jesUnc1);
+	      math::XYZTLorentzVector jetScaleMinus1 = jet1*(1-jesUnc1);
+	      math::XYZTLorentzVector jetScalePlus2 = jet2*(1+jesUnc2);
+	      math::XYZTLorentzVector jetScaleMinus2 = jet2*(1-jesUnc2);
+	      Float_t MjjPlus = (jetScalePlus1+jetScalePlus2).M();
+	      Float_t MjjMinus = (jetScaleMinus1+jetScaleMinus2).M();
+	      myTree->FillDiJetInfo(Mjj,MjjPlus,MjjMinus,detajj,Fisher);
       }
     }
   }
@@ -446,16 +407,57 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   if(pfmetcoll.isValid()){
     pfmet = pfmetcoll->front().pt();
   }
-
-
-  //Save general event info in the tree
+  
+    //Save general event info in the tree
   Int_t NbestCand = -1; //FIXME now store only 1 candidate in the SR, but we still have to save iBC correctly in the SR
-  if (theChannel==ZZ && nFilled>0) NbestCand=0;
-
+  if (theChannel==ZZ) NbestCand=0;
   myTree->FillEventInfo(event.id().run(), event.id().event(), event.luminosityBlock(), NbestCand, vertexs->size(), nObsInt, nTrueInt, weight2, pfmet, pfjetscoll->size(), cleanedJets.size(), cleanedJetsPt30.size(), nCleanedJetsPt30BTagged, genFinalState, genProcessId, genHEPMCweight, trigWord, genExtInfo);
 
+  //Loop on the candidates
+  int nFilled=0;
+  bool isAlreadyFilled=false;
+  for( edm::View<pat::CompositeCandidate>::const_iterator cand = cands->begin(); cand != cands->end(); ++cand) {
+    Int_t CRFLAG=0;
+    bool candIsBest = cand->userFloat("isBestCand");
+
+    //    int candChannel = cand->userFloat("candChannel"); // This is currently the product of pdgId of leptons (eg 14641, 28561, 20449)
+    
+    if (theChannel==ZLL) {
+      // AA CRs
+      if(cand->userFloat("isBestCRZLLss")&&cand->userFloat("CRZLLss"))set_bit(CRFLAG,CRZLLss);      
+
+      // A CRs
+      if(cand->userFloat("isBestCRZLLos_2P2F")&&cand->userFloat("CRZLLos_2P2F"))set_bit(CRFLAG,CRZLLos_2P2F);      
+      if(cand->userFloat("isBestCRZLLos_3P1F")&&cand->userFloat("CRZLLos_3P1F"))set_bit(CRFLAG,CRZLLos_3P1F);
+    }
+    
+    //    if(theChannel==ZL){} Nothing special in this case
+ 
+    if (!(candIsBest||CRFLAG)) continue; // Skip events other than the best cand (or CR candidates in the CR)
+    
+    //For the SR, also fold information about acceptance in CRflag 
+    if (isMC && (theChannel==EEEE||theChannel==MMMM||theChannel==EEMM)) {
+      if (gen_ZZ4lInEtaAcceptance)   set_bit(CRFLAG,28);
+      if (gen_ZZ4lInEtaPtAcceptance) set_bit(CRFLAG,29);
+    }
+    if(nFilled==0){
+      FillCandidate(*cand, evtPassTrigger&&evtPassSkim, event, CRFLAG);
+    }else {
+      myTree->FillCurrentTree();
+      isAlreadyFilled=true;
+    }
+    ++nFilled;
+  }
+
+  // Events with no ZZ candidate have already been skipped at the beginning, but in case of CRs there could be no cands with CRflag!=0, so none was filled. 
+  if (skipEmptyEvents && nFilled==0 && theChannel==ZLL) return;
+
   // Final call to save the tree entry, and reset tree variables
-  myTree->FillEvent();
+  if(!isAlreadyFilled){
+    myTree->FillEvent();
+  }else{
+    myTree->InitializeVariables();
+  }
   return;
 }
 

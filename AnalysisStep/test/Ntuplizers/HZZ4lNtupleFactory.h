@@ -20,8 +20,12 @@ class HZZ4lNtupleFactory{
  public:
   HZZ4lNtupleFactory(TTree* outTree_input);
   ~HZZ4lNtupleFactory();
-
+  
+  //Fill the tree and initialize the variables
   void FillEvent();
+  
+  //Fill the tree without resetting the variables
+  void FillCurrentTree(){_outTree->Fill();}
   void DumpBranches(TString filename) const;
 
   void createNewCandidate();

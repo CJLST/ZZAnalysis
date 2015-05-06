@@ -1279,6 +1279,7 @@ void HZZ4lNtupleFactory::FillExtraLepInfo(int extraLeptonIndex, bool extraLepton
     std::cout << "Error in indexing the extra leptons ! Will abort..." << std::endl;
     assert(0);
   }
-
+  //Fill the tree once for each extra lepton (no vectors anymore)
+  //_outTree->Fill();
   return;
 }
