@@ -408,12 +408,12 @@ void HZZ4lNtupleFactory::InitializeBranches()
   _outTree->Branch("trigWord",&_trigWord,"trigWord/S");
 
   //H variables
-  _outTree->Branch("ZZMass",&_ZZMass);
+  _outTree->Branch("ZZMass",&_ZZMass,"ZZMass/F");
   _outTree->Branch("ZZMassErr",&_ZZMassErr);
   _outTree->Branch("ZZMassErrCorr",&_ZZMassErrCorr);
   _outTree->Branch("ZZMassPreFSR",&_ZZMassPreFSR);
-  _outTree->Branch("ZZsel",&_ZZsel);
-  _outTree->Branch("ZZPt",&_ZZPt);
+  _outTree->Branch("ZZsel",&_ZZsel,"ZZsel/I");
+  _outTree->Branch("ZZPt",&_ZZPt,"ZZPt/F");
   _outTree->Branch("ZZEta",&_ZZEta);
   _outTree->Branch("ZZPhi",&_ZZPhi);
   _outTree->Branch("CRflag",&_CRflag);
@@ -440,10 +440,10 @@ void HZZ4lNtupleFactory::InitializeBranches()
   //Z2 variables
   _outTree->Branch("Z2Mass",&_Z2Mass);
   _outTree->Branch("Z2Pt",&_Z2Pt);
-  _outTree->Branch("Z2Flav",&_Z2Flav);  
+  _outTree->Branch("Z2Flav",&_Z2Flav,"ZZFlav/S");  
 
   //Angular variables
-  _outTree->Branch("costhetastar",&_costhetastar);
+  _outTree->Branch("costhetastar",&_costhetastar,"costhetastar/F");
   _outTree->Branch("helphi",&_phi);
 //   _outTree->Branch("helphiZ1",&_helphiZ1);
 //   _outTree->Branch("helphiZ2",&_helphiZ2);
@@ -540,13 +540,13 @@ void HZZ4lNtupleFactory::InitializeBranches()
   _outTree->Branch("p2hminus_VAJHU",&_p2hminus_VAJHU);
   _outTree->Branch("p2bplus_VAJHU",&_p2bplus_VAJHU);
 
-  _outTree->Branch("p2hplus_qqb_VAJHU"                                  ,               &_p2hplus_qqb_VAJHU);                                   
-  _outTree->Branch("p2hplus_prodIndep_VAJHU"            ,               &_p2hplus_prodIndep_VAJHU);             
-  _outTree->Branch("p2hminus_qqb_VAJHU"                         ,               &_p2hminus_qqb_VAJHU);                          
-  _outTree->Branch("p2hminus_prodIndep_VAJHU"   ,               &_p2hminus_prodIndep_VAJHU);    
-  _outTree->Branch("p2bplus_qqb_VAJHU"                                  ,               &_p2bplus_qqb_VAJHU);                                   
-  _outTree->Branch("p2bplus_prodIndep_VAJHU"            ,               &_p2bplus_prodIndep_VAJHU);             
-  _outTree->Branch("p2h2plus_gg_VAJHU"                  ,               &_p2h2plus_gg_VAJHU);                                             
+  _outTree->Branch("p2hplus_qqb_VAJHU",&_p2hplus_qqb_VAJHU);                                   
+  _outTree->Branch("p2hplus_prodIndep_VAJHU",&_p2hplus_prodIndep_VAJHU);             
+  _outTree->Branch("p2hminus_qqb_VAJHU",&_p2hminus_qqb_VAJHU);                          
+  _outTree->Branch("p2hminus_prodIndep_VAJHU",&_p2hminus_prodIndep_VAJHU);    
+  _outTree->Branch("p2bplus_qqb_VAJHU",&_p2bplus_qqb_VAJHU);                                   
+  _outTree->Branch("p2bplus_prodIndep_VAJHU",&_p2bplus_prodIndep_VAJHU);             
+  _outTree->Branch("p2h2plus_gg_VAJHU",&_p2h2plus_gg_VAJHU);                                             
   _outTree->Branch("p2h2plus_qqbar_VAJHU"               ,               &_p2h2plus_qqbar_VAJHU);                
   _outTree->Branch("p2h2plus_prodIndep_VAJHU"   ,       &_p2h2plus_prodIndep_VAJHU);    
   _outTree->Branch("p2h3plus_gg_VAJHU"          ,       &_p2h3plus_gg_VAJHU);           
