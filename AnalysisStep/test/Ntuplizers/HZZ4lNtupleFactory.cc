@@ -62,6 +62,8 @@ void HZZ4lNtupleFactory::InitializeVariables()
   _genHEPMCweight = 0;
   _trigWord =0;
   _genExtInfo =0;
+  _xsec =0.;
+  _gen_weight=0.;
 
   //Info on generated particles
   _genHMass = 0.;
@@ -406,7 +408,8 @@ void HZZ4lNtupleFactory::InitializeBranches()
   _outTree->Branch("nCleanedJetsPt30",&_nCleanedJetsPt30,"nCleanedJetsPt30/I");
   _outTree->Branch("nCleanedJetsPt30BTagged",&_nCleanedJetsPt30BTagged,"nCleanedJetsPt30BTagged/I");
   _outTree->Branch("trigWord",&_trigWord,"trigWord/S");
-
+  _outTree->Branch("xsec",&_xsec,"xsec/F");
+  
   //H variables
   _outTree->Branch("ZZMass",&_ZZMass,"ZZMass/F");
   _outTree->Branch("ZZMassErr",&_ZZMassErr);
@@ -686,7 +689,9 @@ void HZZ4lNtupleFactory::InitializeBranches()
   _outTree->Branch("genProcessId",&_genProcessId,"genProcessId/I");
   _outTree->Branch("genHEPMCweight",&_genHEPMCweight,"genHEPMCweight/F");
   _outTree->Branch("genExtInfo",&_genExtInfo,"genExtInfo/S");
-
+  _outTree->Branch("genWeight",&_gen_weight,"genWeight/F");
+  _outTree->Branch("xsec",&_xsec,"xsec/F");
+  
   _outTree->Branch("GenHMass",&_genHMass,"GenHMass/F");
   _outTree->Branch("GenHPt",&_genHPt,"GenHPt/F");
 
@@ -802,7 +807,9 @@ void HZZ4lNtupleFactory::FillAssocLepGenInfo(std::vector<const reco::Candidate *
 }
 
 void HZZ4lNtupleFactory::FillEventInfo(Int_t RunNumber, const Long64_t EventNumber, Int_t LumiNumber, Int_t IndexBestCand, Int_t Nvtx, 
-                                       Int_t NObsInt, Float_t NTrueInt, Float_t PUweight, Float_t PFMET, Int_t nJets, Int_t nCleanedJets, Int_t nCleanedJetsPt30, Int_t nCleanedJetsPt30BTagged, Int_t genFinalState, Int_t genProcessId, Float_t genHEPMCweight, Short_t trigWord,  Short_t genExtInfo)
+                                       Int_t NObsInt, Float_t NTrueInt, Float_t PUweight, Float_t PFMET, Int_t nJets, Int_t nCleanedJets, 
+                                       Int_t nCleanedJetsPt30, Int_t nCleanedJetsPt30BTagged, Int_t genFinalState, Int_t genProcessId, 
+                                       Float_t genHEPMCweight, Short_t trigWord,  Short_t genExtInfo, Float_t xsec, Float_t weight)
 {
   _RunNumber = RunNumber;
   _EventNumber = EventNumber;
@@ -812,7 +819,9 @@ void HZZ4lNtupleFactory::FillEventInfo(Int_t RunNumber, const Long64_t EventNumb
   _NObsInt =NObsInt;
   _NTrueInt =NTrueInt;
   _PUWeight =PUweight;
-
+  _xsec=xsec;
+  _gen_weight=weight;
+  
   _PFMET = PFMET;
   _nJets = nJets;
   _nCleanedJets = nCleanedJets;

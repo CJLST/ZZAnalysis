@@ -46,7 +46,9 @@ class HZZ4lNtupleFactory{
                      Int_t genProcessId, 
                      Float_t genHEPMCweight, 
                      Short_t trigWord, 
-                     Short_t genExtInfo
+                     Short_t genExtInfo,
+                     Float_t xsec, 
+                     Float_t weight
                      );
   void FillHInfo(Float_t ZZMass, 
                  Float_t ZZMassErr, 
@@ -202,6 +204,9 @@ class HZZ4lNtupleFactory{
   Float_t _genHEPMCweight;
   Short_t _trigWord;
   Short_t _genExtInfo;
+  Float_t _xsec;
+  Float_t _gen_weight;
+  
   //H variables
   Float_t _ZZMass;
   Float_t _ZZMassPreFSR;

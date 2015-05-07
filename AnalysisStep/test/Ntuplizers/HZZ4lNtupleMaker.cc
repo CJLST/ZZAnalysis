@@ -51,13 +51,15 @@
 
 #include "TLorentzVector.h"
 
+#include "ZZAnalysis/AnalysisStep/interface/PUReweight.h"
+
 #include <string>
 
 namespace {
   bool writePhotons = false;  // Write photons in the tree. Note: must be set also in HZZ4lNtupleFactory.cc
   bool writeJets = true;     // Write jets in the tree. FIXME: make this configurable
+  
 }
-
 
 using namespace std;
 using namespace edm;
@@ -98,6 +100,7 @@ private:
   bool applyTrigger;    // Keep only events passing trigger
   bool applySkim;       //   "     "      "     skim
   bool skipEmptyEvents; // Skip events whith no selected candidate (otherwise, gen info is preserved for all events)
+  Float_t xsec;
 
   PUReweight reweight;
 
@@ -138,7 +141,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   theFileName = pset.getUntrackedParameter<string>("fileName"); 
   skipEmptyEvents = pset.getParameter<bool>("skipEmptyEvents"); // Do not store 
   sampleName = pset.getParameter<string>("sampleName");
-  
+  xsec = pset.getParameter<double>("xsec");
 
   if (skipEmptyEvents) {
     applyTrigger=true;
@@ -189,7 +192,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   // including those that do not pass skim, trigger etc!)
   int nObsInt  = -1;
   float nTrueInt = -1.;
-  Float_t weight2 = 1.;
+  Float_t weight2 = 1.,weight=1.;
   Int_t genFinalState = -1;
   Int_t genProcessId = -1;
   Float_t genHEPMCweight = 1.;
@@ -229,7 +232,8 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     // keep track of sum of weights
     gen_sumPUWeight    += weight2;
     gen_sumGenMCWeight += genHEPMCweight;
-    gen_sumWeights     += weight2*genHEPMCweight;
+    weight = weight2*genHEPMCweight;
+    gen_sumWeights     += weight;
 
     mch.genAcceptance(gen_ZZ4lInEtaAcceptance, gen_ZZ4lInEtaPtAcceptance);
 
@@ -411,7 +415,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     //Save general event info in the tree
   Int_t NbestCand = -1; //FIXME now store only 1 candidate in the SR, but we still have to save iBC correctly in the SR
   if (theChannel==ZZ) NbestCand=0;
-  myTree->FillEventInfo(event.id().run(), event.id().event(), event.luminosityBlock(), NbestCand, vertexs->size(), nObsInt, nTrueInt, weight2, pfmet, pfjetscoll->size(), cleanedJets.size(), cleanedJetsPt30.size(), nCleanedJetsPt30BTagged, genFinalState, genProcessId, genHEPMCweight, trigWord, genExtInfo);
+  myTree->FillEventInfo(event.id().run(), event.id().event(), event.luminosityBlock(), NbestCand, vertexs->size(), nObsInt, nTrueInt, weight2, pfmet, pfjetscoll->size(), cleanedJets.size(), cleanedJetsPt30.size(), nCleanedJetsPt30BTagged, genFinalState, genProcessId, genHEPMCweight, trigWord, genExtInfo,xsec,weight);
 
   //Loop on the candidates
   int nFilled=0;

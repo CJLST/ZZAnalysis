@@ -25,7 +25,11 @@ try:
 except NameError:
     MCFILTER = ""
 
-
+try: 
+    XSEC
+except NameError:
+    XSEC=1
+    
 # Get absolute path
 import os
 PyFilePath = os.environ['CMSSW_BASE'] + "/src/ZZAnalysis/AnalysisStep/test/"
@@ -128,6 +132,7 @@ TreeSetup = cms.EDAnalyzer("HZZ4lNtupleMaker",
                            skipEmptyEvents = cms.bool(True),
                            sampleName = cms.string(SAMPLENAME),
                            superMelaMass = cms.double(SUPERMELA_MASS),
+                           xsec = cms.double(XSEC)
                            )
 
 ### Signal region
