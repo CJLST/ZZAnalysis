@@ -224,6 +224,8 @@ class MyBatchManager:
        scriptFile.close()
        os.system('chmod +x %s' % scriptFileName)
        
+       print splitComponents[value].pyFragments
+
        variables = splitComponents[value].variables
        pyFragments = splitComponents[value].pyFragments
        setup = splitComponents[value].setup
@@ -256,8 +258,6 @@ class MyBatchManager:
                cfgSnippetPDFStep2.write( '\n' )
                cfgSnippetPDFStep2.close()
 
-#       if "MCAllEvents" in tune:
-#           process.ZZTree.skipEmptyEvents = False
 
        cfgFile = open(jobDir+'/run_cfg.py','w')
        cfgFile.write( process.dumpPython() )
@@ -271,41 +271,12 @@ class MyBatchManager:
            cfgSnippetPDFStep2.close()
            
 
-       # FIXME add fragments
-       # JSON for data
-       if not variables['IsMC']:          
-           if setup==2011 :
-               cfgFile.write( open('json_2011.py').read() ) 
-           elif setup==2012 :
-               cfgFile.write( open('json_2012.py').read() )
-           elif setup==2015:
-               print "Temporary, 2015 is an invalid setup."
-           else :
-                raise ValueError, "invalid setup", setup
-        
-#       if "DYJets_B" in tune :
-#           cfgFile.write( 'process.HF = cms.Path(process.heavyflavorfilter)\n\n' )
-#       elif "DYJets_NoB" in tune :
-#           cfgFile.write( 'process.HF = cms.Path(~process.heavyflavorfilter)\n\n' )
-# FIXME!!!
-#        if "Signal" in tune and not "NoSignal" in tune:
-#            cfgFile.write( '\nprocess.genCategory0 = process.genCategory =  cms.EDFilter("ZZGenFilterCategory", Topology = cms.int32(SIGNALDEFINITION), ParticleStatus = cms.int32(1), GenJets = cms.InputTag("genJetSel"), src = cms.InputTag("genParticlesPruned"))\n')
-#            cfgFile.write( 'process.signalFilters += process.genCategory0\n' )
-#            cfgFile.write( 'process.postSkimSignalCounter = cms.EDProducer("EventCountProducer")\n' )
-#            cfgFile.write( 'process.signalFilters += process.postSkimSignalCounter\n\n' )
-#        if "NoSignal" in tune:
-#            cfgFile.write( '\nprocess.genCategory0 = process.genCategory =  cms.EDFilter("ZZGenFilterCategory", Topology = cms.int32(SIGNALDEFINITION), ParticleStatus = cms.int32(1), GenJets = cms.InputTag("genJetSel"), src = cms.InputTag("genParticlesPruned"))\n')
-#            cfgFile.write( 'process.signalFilters += ~process.genCategory0\n' )
-#            cfgFile.write( 'process.postSkimSignalCounter = cms.EDProducer("EventCountProducer")\n' )
-#            cfgFile.write( 'process.signalFilters += process.postSkimSignalCounter\n\n' )
-#        if "NoTaus" in tune:
-#            cfgFile.write( '\nprocess.genTaus = cms.EDFilter("PdgIdAndStatusCandViewSelector", src = cms.InputTag("genParticlesPruned"), pdgId = cms.vint32( 15 ), status = cms.vint32( 3 ))\n')
-#            cfgFile.write( 'process.genTauCounterFilter =  cms.EDFilter("CandViewCountFilter", src = cms.InputTag("genTaus"), minNumber = cms.uint32(1))\n')
-#            cfgFile.write( 'process.preSkimCounter  = cms.EDProducer("EventCountProducer")\n')
-#            cfgFile.write( 'process.signalFilters += process.genTaus\n')
-#            cfgFile.write( 'process.signalFilters += ~process.genTauCounterFilter\n')
-#            cfgFile.write( 'process.signalFilters += process.preSkimCounter\n\n')
+       for fragment in pyFragments:
+           print fragment
+           cfgFile.write( open(fragment).read() ) 
+           cfgFile.write( '\n' )
 
+        
        cfgFile.close()
 
 
@@ -344,7 +315,7 @@ if __name__ == '__main__':
         if settings['execute']:
             pdfstep = batchManager.options_.PDFstep
             if pdfstep == 0 or ((not pdfstep == 0) and settings['pdf']):
-                components.append(Component(sample, settings['prefix'], settings['dataset'], settings['pattern'], settings['splitLevel'], settings['::variables'],settings['pyFragments'],settings['crossSection'], settings['BR'], setup, pdfstep)) #FIXME-RB not bool(settings['pdf']))) #settings['pdf'] used here as full sel, without cuts.
+                components.append(Component(sample, settings['prefix'], settings['dataset'], settings['pattern'], settings['splitLevel'], settings['::variables'],settings['::pyFragments'],settings['crossSection'], settings['BR'], setup, pdfstep)) #FIXME-RB not bool(settings['pdf']))) #settings['pdf'] used here as full sel, without cuts.
     
     handle.close()
 
