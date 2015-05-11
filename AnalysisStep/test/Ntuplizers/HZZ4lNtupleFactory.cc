@@ -63,7 +63,8 @@ void HZZ4lNtupleFactory::InitializeVariables()
   _trigWord =0;
   _genExtInfo =0;
   _xsec =0.;
-  _gen_weight=0.;
+  _dataMCweight=0;
+  _HqTMCweight=0;
 
   //Info on generated particles
   _genHMass = 0.;
@@ -408,7 +409,6 @@ void HZZ4lNtupleFactory::InitializeBranches()
   _outTree->Branch("nCleanedJetsPt30",&_nCleanedJetsPt30,"nCleanedJetsPt30/I");
   _outTree->Branch("nCleanedJetsPt30BTagged",&_nCleanedJetsPt30BTagged,"nCleanedJetsPt30BTagged/I");
   _outTree->Branch("trigWord",&_trigWord,"trigWord/S");
-  _outTree->Branch("xsec",&_xsec,"xsec/F");
   
   //H variables
   _outTree->Branch("ZZMass",&_ZZMass,"ZZMass/F");
@@ -689,8 +689,9 @@ void HZZ4lNtupleFactory::InitializeBranches()
   _outTree->Branch("genProcessId",&_genProcessId,"genProcessId/I");
   _outTree->Branch("genHEPMCweight",&_genHEPMCweight,"genHEPMCweight/F");
   _outTree->Branch("genExtInfo",&_genExtInfo,"genExtInfo/S");
-  _outTree->Branch("genWeight",&_gen_weight,"genWeight/F");
   _outTree->Branch("xsec",&_xsec,"xsec/F");
+  _outTree->Branch("dataMCWeight",&_dataMCweight,"dataMCweight/F");
+  _outTree->Branch("HqTMCweight",&_HqTMCweight,"HqTMCweight/F");
   
   _outTree->Branch("GenHMass",&_genHMass,"GenHMass/F");
   _outTree->Branch("GenHPt",&_genHPt,"GenHPt/F");
@@ -743,11 +744,12 @@ void HZZ4lNtupleFactory::createNewCandidate()
   return;
 }
 
-void HZZ4lNtupleFactory::FillHGenInfo(math::XYZTLorentzVector pH)
+void HZZ4lNtupleFactory::FillHGenInfo(math::XYZTLorentzVector pH,float w)
 {
   _genHMass = pH.M();
   _genHPt = pH.Pt();
-
+  
+  _HqTMCweight=w;
   return;
 }
 
@@ -763,7 +765,7 @@ void HZZ4lNtupleFactory::FillZGenInfo(math::XYZTLorentzVector pZ1, math::XYZTLor
 }
 
 void HZZ4lNtupleFactory::FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t Lep3Id, Short_t Lep4Id, 
-                                        math::XYZTLorentzVector Lep1, math::XYZTLorentzVector Lep2, math::XYZTLorentzVector Lep3, math::XYZTLorentzVector Lep4)
+                                        math::XYZTLorentzVector Lep1, math::XYZTLorentzVector Lep2, math::XYZTLorentzVector Lep3, math::XYZTLorentzVector Lep4, float weight)
 {
   _genLep1Pt = Lep1.Pt();
   _genLep1Eta = Lep1.Eta();
@@ -785,6 +787,8 @@ void HZZ4lNtupleFactory::FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t 
   _genLep4Phi = Lep4.Phi();
   _genLep4Id  = Lep4Id;
 
+  _dataMCweight=weight;
+  
   return;
 }
 
@@ -809,7 +813,7 @@ void HZZ4lNtupleFactory::FillAssocLepGenInfo(std::vector<const reco::Candidate *
 void HZZ4lNtupleFactory::FillEventInfo(Int_t RunNumber, const Long64_t EventNumber, Int_t LumiNumber, Int_t IndexBestCand, Int_t Nvtx, 
                                        Int_t NObsInt, Float_t NTrueInt, Float_t PUweight, Float_t PFMET, Int_t nJets, Int_t nCleanedJets, 
                                        Int_t nCleanedJetsPt30, Int_t nCleanedJetsPt30BTagged, Int_t genFinalState, Int_t genProcessId, 
-                                       Float_t genHEPMCweight, Short_t trigWord,  Short_t genExtInfo, Float_t xsec, Float_t weight)
+                                       Float_t genHEPMCweight, Short_t trigWord,  Short_t genExtInfo, Float_t xsec)
 {
   _RunNumber = RunNumber;
   _EventNumber = EventNumber;
@@ -820,7 +824,6 @@ void HZZ4lNtupleFactory::FillEventInfo(Int_t RunNumber, const Long64_t EventNumb
   _NTrueInt =NTrueInt;
   _PUWeight =PUweight;
   _xsec=xsec;
-  _gen_weight=weight;
   
   _PFMET = PFMET;
   _nJets = nJets;

@@ -49,6 +49,8 @@
 #include "ZZ4lConfigHelper.h"
 #include "HZZ4lNtupleFactory.h"
 
+#include <TRandom3.h>
+#include <TH2D.h>
 #include "TLorentzVector.h"
 
 #include "ZZAnalysis/AnalysisStep/interface/PUReweight.h"
@@ -85,6 +87,8 @@ private:
   virtual void endRun(edm::Run const&, edm::EventSetup const&);
   virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
   virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
+  Float_t getAllWeight(const Float_t LepPt, const Float_t LepEta, Int_t LepID) const;
+  Float_t getHqTWeight(double mH, double genPt) const;
 
   // ----------member data ---------------------------
   ZZ4lConfigHelper myHelper;
@@ -101,7 +105,8 @@ private:
   bool applySkim;       //   "     "      "     skim
   bool skipEmptyEvents; // Skip events whith no selected candidate (otherwise, gen info is preserved for all events)
   Float_t xsec;
-
+  int year;
+  
   PUReweight reweight;
 
   //counters
@@ -126,6 +131,10 @@ private:
   Float_t gen_sumWeights;
 
   string sampleName;
+   
+  TH2D *hTH2D_Mu_All;// = (TH2D*)fMuWeight.Get("TH2D_ALL_2011A"); 
+  TH2D *hTH2D_El_All;//  = (TH2D*)fElWeight12.Get(eleSFname.Data());
+  TH2D* h_weight; //HqT weights
 
 };
 
@@ -134,7 +143,10 @@ private:
 //
 HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   myHelper(pset),
-  reweight()
+  reweight(),
+  hTH2D_Mu_All(0),
+  hTH2D_El_All(0),
+  h_weight(0)
 {
   theCandLabel = pset.getUntrackedParameter<string>("CandCollection"); // Name of input ZZ collection
   theChannel = myHelper.channel(); // Valid options: ZZ, ZLL, ZL 
@@ -142,6 +154,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   skipEmptyEvents = pset.getParameter<bool>("skipEmptyEvents"); // Do not store 
   sampleName = pset.getParameter<string>("sampleName");
   xsec = pset.getParameter<double>("xsec");
+  year = pset.getParameter<int>("setup");
 
   if (skipEmptyEvents) {
     applyTrigger=true;
@@ -173,6 +186,40 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   gen_sumPUWeight = 0.f;
   gen_sumGenMCWeight = 0.f;
   gen_sumWeights =0.f;
+  
+  //Scale factors for data/MC efficiency
+  //FIXME: to adjust for 13 TeV
+  float Run2011AFraction=0.465;
+  TString yearString;yearString.Form("TH2D_ALL_%d",year);
+  if(year==2011){
+    TRandom3 randomGenerator(0);
+    Float_t whatPeriod = randomGenerator.Uniform();
+    if(whatPeriod < Run2011AFraction) yearString.Append("A");
+    else yearString.Append("B");
+  }
+  TString filename;filename.Form("ZZAnalysis/AnalysisStep/test/Macros/scale_factors_muons%d.root",year); 
+  if(year==2015)filename.Form("ZZAnalysis/AnalysisStep/test/Macros/scale_factors_muons%d.root",2012); //FIXME
+  edm::FileInPath fip(filename.Data());
+  std::string fipPath=fip.fullPath();
+  TFile *fMuWeight = TFile::Open(fipPath.data(),"READ");
+  hTH2D_Mu_All = (TH2D*)fMuWeight->Get(yearString.Data())->Clone(); 
+   
+  filename.Form("ZZAnalysis/AnalysisStep/test/Macros/scale_factors_ele%d.root",year); 
+  if(year==2015)filename.Form("ZZAnalysis/AnalysisStep/test/Macros/scale_factors_ele%d.root",2012);//FIXME   
+  edm::FileInPath fipEle(filename.Data());
+  fipPath=fipEle.fullPath();
+  TFile *fEleWeight = TFile::Open(fipPath.data(),"READ");
+  hTH2D_El_All = (TH2D*)fEleWeight->Get("h_electronScaleFactor_RecoIdIsoSip")->Clone();
+        
+  //HqT weights
+  edm::FileInPath HqTfip("ZZAnalysis/AnalysisStep/test/Macros/HqTWeights.root");
+  fipPath=HqTfip.fullPath();
+  TFile *fHqt = TFile::Open(fipPath.data(),"READ");
+  h_weight = (TH2D*)fHqt->Get("wH")->Clone();//FIXME: Ask simon to provide the 2D histo
+
+  fMuWeight->Close();
+  fEleWeight->Close();
+  fHqt->Close();
 }
 
 HZZ4lNtupleMaker::~HZZ4lNtupleMaker()
@@ -192,7 +239,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   // including those that do not pass skim, trigger etc!)
   int nObsInt  = -1;
   float nTrueInt = -1.;
-  Float_t weight2 = 1.,weight=1.;
+  Float_t weight2 = 1.;
   Int_t genFinalState = -1;
   Int_t genProcessId = -1;
   Float_t genHEPMCweight = 1.;
@@ -213,9 +260,9 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     std::vector<PileupSummaryInfo>::const_iterator PVI;
     for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
       if(PVI->getBunchCrossing() == 0) { 
-	nObsInt  = PVI->getPU_NumInteractions();
-	nTrueInt = PVI->getTrueNumInteractions();
-	break;
+	      nObsInt  = PVI->getPU_NumInteractions();
+	      nTrueInt = PVI->getTrueNumInteractions();
+	      break;
       } 
     }
 
@@ -232,8 +279,8 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     // keep track of sum of weights
     gen_sumPUWeight    += weight2;
     gen_sumGenMCWeight += genHEPMCweight;
-    weight = weight2*genHEPMCweight;
-    gen_sumWeights     += weight;
+    //weight = weight2*genHEPMCweight;
+    gen_sumWeights     += weight2*genHEPMCweight;
 
     mch.genAcceptance(gen_ZZ4lInEtaAcceptance, gen_ZZ4lInEtaPtAcceptance);
 
@@ -297,13 +344,18 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   if (isMC) {
 
     if(genH != 0){
-      myTree->FillHGenInfo(genH->p4());
+      myTree->FillHGenInfo(genH->p4(),getHqTWeight(genH->mass(),genH->pt()));
     }
     else if(genZLeps.size()==4){ // for 4l events take the mass of the ZZ(4l) system
-      myTree->FillHGenInfo((genZLeps.at(0)->p4()+genZLeps.at(1)->p4()+genZLeps.at(2)->p4()+genZLeps.at(3)->p4()));
+      myTree->FillHGenInfo((genZLeps.at(0)->p4()+genZLeps.at(1)->p4()+genZLeps.at(2)->p4()+genZLeps.at(3)->p4()),0);
     }
 
     if (genFinalState!=BUGGY) {
+    
+      float eff_weight =1.;
+      for(int nLep=0;nLep<(int)genZLeps.size();nLep++)
+        eff_weight *= getAllWeight(genZLeps.at(nLep)->pt(), genZLeps.at(nLep)->eta(),genZLeps.at(nLep)->pdgId());
+
       if (genZLeps.size()==4) {
 	
 	// "generated Zs" defined with standard pairing applied on gen leptons (genZLeps is sorted by MCHistoryTools)
@@ -312,16 +364,16 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
 	// Gen leptons
 	myTree->FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), genZLeps.at(2)->pdgId(), genZLeps.at(3)->pdgId(),
-			       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), genZLeps.at(3)->p4());	
+			       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), genZLeps.at(3)->p4(),eff_weight);	
       }
 
       if (genZLeps.size()==3) {
 	myTree->FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), genZLeps.at(2)->pdgId(), 0,
-			       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), *(new math::XYZTLorentzVector));
+			       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), *(new math::XYZTLorentzVector),eff_weight);
       }
       if (genZLeps.size()==2) {
 	myTree->FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), 0, 0,
-			       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), *(new math::XYZTLorentzVector), *(new math::XYZTLorentzVector));
+			       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), *(new math::XYZTLorentzVector), *(new math::XYZTLorentzVector),eff_weight);
       }
 
       if (genAssocLeps.size()==1 || genAssocLeps.size()==2) {
@@ -415,7 +467,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     //Save general event info in the tree
   Int_t NbestCand = -1; //FIXME now store only 1 candidate in the SR, but we still have to save iBC correctly in the SR
   if (theChannel==ZZ) NbestCand=0;
-  myTree->FillEventInfo(event.id().run(), event.id().event(), event.luminosityBlock(), NbestCand, vertexs->size(), nObsInt, nTrueInt, weight2, pfmet, pfjetscoll->size(), cleanedJets.size(), cleanedJetsPt30.size(), nCleanedJetsPt30BTagged, genFinalState, genProcessId, genHEPMCweight, trigWord, genExtInfo,xsec,weight);
+  myTree->FillEventInfo(event.id().run(), event.id().event(), event.luminosityBlock(), NbestCand, vertexs->size(), nObsInt, nTrueInt, weight2, pfmet, pfjetscoll->size(), cleanedJets.size(), cleanedJetsPt30.size(), nCleanedJetsPt30BTagged, genFinalState, genProcessId, genHEPMCweight, trigWord, genExtInfo,xsec);
 
   //Loop on the candidates
   int nFilled=0;
@@ -965,5 +1017,185 @@ void HZZ4lNtupleMaker::fillDescriptions(edm::ConfigurationDescriptions& descript
   descriptions.addDefault(desc);
 }
 
+
+Float_t HZZ4lNtupleMaker::getAllWeight(const Float_t LepPt, const Float_t LepEta, Int_t LepID) const
+{
+  Float_t weight  = 1.; 
+  //Float_t errCorr = 0.;
+  //Float_t errCorrSyst = 0.;
+
+  Float_t myLepPt = LepPt;
+  Float_t myLepEta = LepEta;
+  Int_t   myLepID = abs(LepID);
+  
+  //avoid to go out of the TH boundary
+  if(myLepID == 13 && myLepPt > 99.) myLepPt = 99.;
+  if(myLepID == 11 && myLepPt > 199.) myLepPt = 199.;
+  if(myLepID == 11) myLepEta = fabs(myLepEta);
+
+  if(myLepID == 13){                                               
+      weight  = hTH2D_Mu_All->GetBinContent(hTH2D_Mu_All->GetXaxis()->FindBin(myLepPt),hTH2D_Mu_All->GetYaxis()->FindBin(LepEta));
+    //  errCorr = hTH2D_Mu_All_2011A->GetBinError(hTH2D_Mu_All_2011A->GetXaxis()->FindBin(myLepPt),hTH2D_Mu_All_2011A->GetYaxis()->FindBin(LepEta));
+      
+  }
+  else if(myLepID == 11){   
+
+    weight  = hTH2D_El_All->GetBinContent(hTH2D_El_All->GetXaxis()->FindBin(myLepPt),hTH2D_El_All->GetYaxis()->FindBin(myLepEta));
+      //errCorr = hTH2D_El_All_2011A->GetBinError(hTH2D_El_All_2011A->GetXaxis()->FindBin(myLepPt),hTH2D_El_All_2011A->GetYaxis()->FindBin(myLepEta));   
+  }else {
+    abort();
+  }   
+
+  
+  //add the systematics on T&P corrections (for muons only, electrons have them already included)
+  //if(myLepID == 13){
+  //  if(myLepPt >= 15.) errCorrSyst = 0.005;
+  //  else errCorrSyst = 0.015;
+  //}
+
+  //FIXME
+  if(myLepPt < 5. && myLepID == 13) weight = 1.;
+
+  if(weight < 0.001 || weight > 10.){
+    cout << "myLepPt = " << myLepPt << " myLepEta = " << myLepEta << " weight = " << weight << endl;
+    abort();  //no correction should be zero, if you find one, stop
+  }
+/*
+//FIXME: in HZZ4l was working because seeder was the event number (1=first event, 10=10th event)
+//Here I don't have this info. Random seed?
+  static TRandom3 randomToss;
+  if( ( myLepID == 13) || (myLepID == 11) ){
+
+    //apply correlation matrix by assigning the proper seed
+    Int_t CorrSeeder = Seeder;
+    if(myLepID == 13){
+      if(myLepPt < 20. && fabs(myLepEta) < 1.2) CorrSeeder += 100001;
+      else if(myLepPt < 20. && fabs(myLepEta) >= 1.2) CorrSeeder += 100002;
+    }
+
+    randomToss.SetSeed(CorrSeeder);
+    weight = randomToss.Gaus(weight,errCorr);
+
+    //apply systematic (totally correlated in eta) for muons
+    if(myLepID == 13){
+      randomToss.SetSeed(Seeder);
+      weight = randomToss.Gaus(weight,errCorrSyst);
+    }
+  }
+*/
+  return weight;
+}
+
+Float_t HZZ4lNtupleMaker::getHqTWeight(double mH, double genPt) const
+{
+  //cout<<"mH = "<<mH<<", genPt = "<<genPt<<endl;
+  if (mH<400 || genPt>250) return 1.;
+  
+  double weight = 1.;
+  
+  const int masses[4] = {400,600,800,1000};
+  double massDiff = 1000;
+  int iMass = -1;
+  for (int i=0; i<4; ++i){
+    double massDiffTmp = std::fabs(mH-masses[i]);
+    if (massDiffTmp<massDiff){
+      massDiff = massDiffTmp;
+      iMass = i;
+    }
+  }
+  
+  if (iMass>=0) {
+    weight = h_weight->GetBinContent(h_weight->FindBin(genPt));
+  }
+  return weight;
+}
+
+/*
+// Added by CO
+Float_t HZZ4l::getFakeWeight(const Float_t LepPt, const Float_t LepEta, const Int_t year, Int_t LepID, Int_t LepZ1ID)
+{
+  // year 0 = 2011
+  // year 1 = 2012
+
+  Float_t weight  = 1.; 
+  
+  Float_t myLepPt   = LepPt;
+  Float_t myLepEta  = fabs(LepEta);
+  Int_t   myLepID   = abs(LepID);
+  Int_t   myZ1LepID = abs(LepZ1ID);
+
+  //cout << " pt = " << myLepPt << " eta = " << myLepEta << " ZID = " << myZ1LepID << " LepID = " << myLepID << endl;
+
+  //avoid to go out of the TH boundary
+  if(myLepPt > 79.) myLepPt = 79.;
+
+  int n_file = myLepID-11 + year;
+
+  TFile*  FileZXWeight = ZXWeightTables[n_file];
+  if (FileZXWeight ==0) { // init
+    // Fake Rate File 
+    TString file_name[4] = {
+      "FR2_2011_AA_electron.root",       // 2011 e
+      "FR2_AA_ControlSample_ABCD.root",  // 2012 e
+      "FR2_2011_AA_muon.root",           // 2011 mu
+      "FR2_AA_muon.root"                 // 2012 mu
+    };
+
+    for (int i=0; i<4; ++i) {
+      ZXWeightTables[i] = new TFile(file_name[i]);
+      if (ZXWeightTables[i]==0) ;  
+    }
+    FileZXWeight = ZXWeightTables[n_file];
+  }
+  
+  //cout << " File ? " << file_name[n_file] << " n_file = " << n_file << endl; 
+
+  // Fake Rate Histo
+  // TString histo_name [4] = {
+  //     "eff_Z1ee_plus_electron",
+  //     "eff_Z1ee_plus_muon",
+  //     "eff_Z1mumu_plus_electron",
+  //     "eff_Z1mumu_plus_muon"
+  //   };
+  
+  TString Z1flavor = "Z1ee";     if(myZ1LepID==13) Z1flavor = "Z1mumu";
+  TString Z2flavor = "electron"; if(myLepID==13)   Z2flavor = "muon";
+  TString histo_name = "eff_"+Z1flavor+"_plus_"+Z2flavor;
+  
+  //cout << " histo = " << histo_name << endl;
+  TH2D *h2_fake = (TH2D*)FileZXWeight->Get(histo_name);
+
+  weight = h2_fake->GetBinContent(h2_fake->GetXaxis()->FindBin(myLepPt), h2_fake->GetYaxis()->FindBin(myLepEta));
+  // cout << " binx     = " << h2_fake->GetXaxis()->FindBin(myLepPt) << " biny = " << h2_fake->GetYaxis()->FindBin(myLepEta) << endl;
+  //   cout << " binXedge = " << h2_fake->GetXaxis()->GetBinLowEdge(h2_fake->GetXaxis()->FindBin(myLepPt))
+  //        << " binYedge = " << h2_fake->GetYaxis()->GetBinLowEdge(h2_fake->GetYaxis()->FindBin(myLepEta)) << endl;
+  //cout << " weight = " << weight << endl;
+
+  return weight;
+
+} // end of getFakeWeight
+
+
+// Added by CO
+Float_t HZZ4l::getZXfake_weight(const int year, const Int_t CandIndex)
+{
+  Float_t zx_weight = 1.;
+
+  TLorentzVector m[2]; // only the Z2 legs
+  m[0].SetPtEtaPhiM(Lep3Pt->at(CandIndex),Lep3Eta->at(CandIndex),Lep3Phi->at(CandIndex),0.1506583);
+  m[1].SetPtEtaPhiM(Lep4Pt->at(CandIndex),Lep4Eta->at(CandIndex),Lep4Phi->at(CandIndex),0.1506583);
+
+  int Z1_id = Lep1LepId->at(CandIndex); // assuming the Z1 pair is made from SF leptons...
+  Int_t LepId[2];
+  LepId[0] = Lep3LepId->at(CandIndex);
+  LepId[1] = Lep4LepId->at(CandIndex);
+
+  for(int ilep=0;ilep<2;ilep++) {
+    zx_weight *= getFakeWeight(m[ilep].Pt(), m[ilep].Eta(), year, LepId[ilep], Z1_id);
+  } // for loop on Z2 legs
+
+  return zx_weight;
+}
+*/
 //define this as a plug-in
 DEFINE_FWK_MODULE(HZZ4lNtupleMaker);

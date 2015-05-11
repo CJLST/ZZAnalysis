@@ -15,6 +15,8 @@
 
 class HZZ4lNtupleFactory{
   
+ //enum varTypes={kBool,kShort,kInt,kFloat,kVectorFloat}; 
+ 
  protected:
   
  public:
@@ -27,7 +29,10 @@ class HZZ4lNtupleFactory{
   //Fill the tree without resetting the variables
   void FillCurrentTree(){_outTree->Fill();}
   void DumpBranches(TString filename) const;
-
+  
+  //void Book(TString branchName, float defaultValue, int varType);
+  //void FillVariable(TString varName, float value);
+  
   void createNewCandidate();
   void FillEventInfo(Int_t RunNumber, 
                      Long64_t EventNumber, 
@@ -47,8 +52,7 @@ class HZZ4lNtupleFactory{
                      Float_t genHEPMCweight, 
                      Short_t trigWord, 
                      Short_t genExtInfo,
-                     Float_t xsec, 
-                     Float_t weight
+                     Float_t xsec
                      );
   void FillHInfo(Float_t ZZMass, 
                  Float_t ZZMassErr, 
@@ -163,10 +167,10 @@ class HZZ4lNtupleFactory{
   void FillCategorizationInfo(Int_t nExtraLep, Int_t nExtraZ);
   void FillExtraLepInfo(int extraLeptonIndex, bool extraLeptonExists, reco::CandidatePtr ExtraLep);
 
-  void FillHGenInfo(math::XYZTLorentzVector Hp);
+  void FillHGenInfo(math::XYZTLorentzVector Hp,float w);
   void FillZGenInfo(math::XYZTLorentzVector Z1p, math::XYZTLorentzVector Z2p);
   void FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t Lep3Id, Short_t Lep4Id,
-                      math::XYZTLorentzVector Lep1, math::XYZTLorentzVector Lep2, math::XYZTLorentzVector Lep3, math::XYZTLorentzVector Lep4);
+                      math::XYZTLorentzVector Lep1, math::XYZTLorentzVector Lep2, math::XYZTLorentzVector Lep3, math::XYZTLorentzVector Lep4,float weight);
   void FillAssocLepGenInfo(std::vector<const reco::Candidate *>& AssocLeps);
 
   void InitializeVariables();
@@ -205,7 +209,8 @@ class HZZ4lNtupleFactory{
   Short_t _trigWord;
   Short_t _genExtInfo;
   Float_t _xsec;
-  Float_t _gen_weight;
+  Float_t _dataMCweight;
+  Float_t _HqTMCweight;
   
   //H variables
   Float_t _ZZMass;
