@@ -14,6 +14,12 @@ Download and execute the setup script for the given release:
     source /tmp/checkout_70X.csh
     ```
 
+   If you use bash, change the first line to be:
+
+   ```
+     wget -P /tmp https://raw.githubusercontent.com/hengne/ZZAnalysis/miniAOD/checkout_70X.sh 
+   ```
+
 To update this package from the release
 ------------------------------------------
 In the package directory, simply issue
