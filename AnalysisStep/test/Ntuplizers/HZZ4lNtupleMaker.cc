@@ -89,6 +89,7 @@ private:
   virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
   Float_t getAllWeight(const Float_t LepPt, const Float_t LepEta, Int_t LepID) const;
   Float_t getHqTWeight(double mH, double genPt) const;
+  Float_t getFakeWeight(const Float_t LepPt, const Float_t LepEta, Int_t LepID, Int_t LepZ1ID);
 
   // ----------member data ---------------------------
   ZZ4lConfigHelper myHelper;
@@ -135,6 +136,9 @@ private:
   TH2D *hTH2D_Mu_All;// = (TH2D*)fMuWeight.Get("TH2D_ALL_2011A"); 
   TH2D *hTH2D_El_All;//  = (TH2D*)fElWeight12.Get(eleSFname.Data());
   TH2D* h_weight; //HqT weights
+  //TH2F *h_ZXWeightMuo;
+  //TH2F *h_ZXWeightEle;
+  TH2D* h_ZXWeight[4];
 
 };
 
@@ -147,6 +151,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   hTH2D_Mu_All(0),
   hTH2D_El_All(0),
   h_weight(0)
+  //h_ZXWeight(0)
 {
   theCandLabel = pset.getUntrackedParameter<string>("CandCollection"); // Name of input ZZ collection
   theChannel = myHelper.channel(); // Valid options: ZZ, ZLL, ZL 
@@ -217,9 +222,29 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   TFile *fHqt = TFile::Open(fipPath.data(),"READ");
   h_weight = (TH2D*)fHqt->Get("wH")->Clone();//FIXME: Ask simon to provide the 2D histo
 
+  //CR fake rate weight
+  filename.Form("ZZAnalysis/AnalysisStep/test/Macros/FR2_2011_AA_electron.root");
+  if(year==2012)filename.Form("ZZAnalysis/AnalysisStep/test/Macros/FR2_AA_ControlSample_ABCD.root");
+  edm::FileInPath fipEleZX(filename.Data());
+  fipPath=fipEleZX.fullPath();
+  TFile *FileZXWeightEle = TFile::Open(fipPath.data(),"READ");
+  
+  filename.Form("ZZAnalysis/AnalysisStep/test/Macros/FR2_2011_AA_muon.root");
+  if(year==2012)filename.Form("ZZAnalysis/AnalysisStep/test/Macros/FR2_AA_muon.root");
+  edm::FileInPath fipMuZX(filename.Data());
+  fipPath=fipMuZX.fullPath();  
+  TFile *FileZXWeightMuo = TFile::Open(fipPath.data(),"READ");
+  
+  h_ZXWeight[0]=(TH2D*)FileZXWeightEle->Get("eff_Z1ee_plus_electron")->Clone();
+  h_ZXWeight[1]=(TH2D*)FileZXWeightEle->Get("eff_Z1mumu_plus_electron")->Clone();
+  h_ZXWeight[2]=(TH2D*)FileZXWeightMuo->Get("eff_Z1ee_plus_muon")->Clone();
+  h_ZXWeight[3]=(TH2D*)FileZXWeightMuo->Get("eff_Z1mumu_plus_muon")->Clone();
+
   fMuWeight->Close();
   fEleWeight->Close();
   fHqt->Close();
+  FileZXWeightEle->Close();
+  FileZXWeightMuo->Close();
 }
 
 HZZ4lNtupleMaker::~HZZ4lNtupleMaker()
@@ -344,10 +369,10 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   if (isMC) {
 
     if(genH != 0){
-      myTree->FillHGenInfo(genH->p4(),getHqTWeight(genH->mass(),genH->pt()));
+      myTree->FillHGenInfo(genH->p4());
     }
     else if(genZLeps.size()==4){ // for 4l events take the mass of the ZZ(4l) system
-      myTree->FillHGenInfo((genZLeps.at(0)->p4()+genZLeps.at(1)->p4()+genZLeps.at(2)->p4()+genZLeps.at(3)->p4()),0);
+      myTree->FillHGenInfo((genZLeps.at(0)->p4()+genZLeps.at(1)->p4()+genZLeps.at(2)->p4()+genZLeps.at(3)->p4()));
     }
 
     if (genFinalState!=BUGGY) {
@@ -906,8 +931,15 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   }
   
   //convention: 0 -> 4mu   1 -> 4e   2 -> 2mu2e
+  float hqtw = getHqTWeight(ZZMass,ZZPt);
+  float zxw = 1.0;
+  if(CRflag){
+    for(int izx=0;izx<2;izx++)
+      zxw *= getFakeWeight(Z2->daughter(izx)->pt(),Z2->daughter(izx)->eta(),Z2->daughter(izx)->pdgId(),Z1->daughter(0)->pdgId());
+  }
+  
   myTree->FillHInfo(ZZMass, ZZMassErr, ZZMassErrCorr, ZZMassPreFSR, ZZMassRefit, Chi2KinFit, ZZMassCFit, Chi2CFit,  sel, ZZPt, ZZEta, ZZPhi,
-		    isSignal, isRightPair, CRflag);
+		    isSignal, isRightPair, hqtw, zxw, CRflag);
 
   //Fill the info on categorization
   const Int_t nExtraLep = cand.userFloat("nExtraLep");
@@ -1110,14 +1142,16 @@ Float_t HZZ4lNtupleMaker::getHqTWeight(double mH, double genPt) const
   return weight;
 }
 
-/*
+
 // Added by CO
-Float_t HZZ4l::getFakeWeight(const Float_t LepPt, const Float_t LepEta, const Int_t year, Int_t LepID, Int_t LepZ1ID)
+Float_t HZZ4lNtupleMaker::getFakeWeight(const Float_t LepPt, const Float_t LepEta, Int_t LepID, Int_t LepZ1ID)
 {
   // year 0 = 2011
   // year 1 = 2012
 
   Float_t weight  = 1.; 
+  
+  Int_t nHisto=0;
   
   Float_t myLepPt   = LepPt;
   Float_t myLepEta  = fabs(LepEta);
@@ -1128,74 +1162,28 @@ Float_t HZZ4l::getFakeWeight(const Float_t LepPt, const Float_t LepEta, const In
 
   //avoid to go out of the TH boundary
   if(myLepPt > 79.) myLepPt = 79.;
-
-  int n_file = myLepID-11 + year;
-
-  TFile*  FileZXWeight = ZXWeightTables[n_file];
-  if (FileZXWeight ==0) { // init
-    // Fake Rate File 
-    TString file_name[4] = {
-      "FR2_2011_AA_electron.root",       // 2011 e
-      "FR2_AA_ControlSample_ABCD.root",  // 2012 e
-      "FR2_2011_AA_muon.root",           // 2011 mu
-      "FR2_AA_muon.root"                 // 2012 mu
-    };
-
-    for (int i=0; i<4; ++i) {
-      ZXWeightTables[i] = new TFile(file_name[i]);
-      if (ZXWeightTables[i]==0) ;  
-    }
-    FileZXWeight = ZXWeightTables[n_file];
-  }
-  
-  //cout << " File ? " << file_name[n_file] << " n_file = " << n_file << endl; 
-
-  // Fake Rate Histo
-  // TString histo_name [4] = {
-  //     "eff_Z1ee_plus_electron",
-  //     "eff_Z1ee_plus_muon",
-  //     "eff_Z1mumu_plus_electron",
-  //     "eff_Z1mumu_plus_muon"
-  //   };
-  
+  if(myLepID==13)nHisto+=2;
+  if(myZ1LepID==13)nHisto+=1;
+ 
+ 
   TString Z1flavor = "Z1ee";     if(myZ1LepID==13) Z1flavor = "Z1mumu";
   TString Z2flavor = "electron"; if(myLepID==13)   Z2flavor = "muon";
   TString histo_name = "eff_"+Z1flavor+"_plus_"+Z2flavor;
   
   //cout << " histo = " << histo_name << endl;
-  TH2D *h2_fake = (TH2D*)FileZXWeight->Get(histo_name);
 
-  weight = h2_fake->GetBinContent(h2_fake->GetXaxis()->FindBin(myLepPt), h2_fake->GetYaxis()->FindBin(myLepEta));
-  // cout << " binx     = " << h2_fake->GetXaxis()->FindBin(myLepPt) << " biny = " << h2_fake->GetYaxis()->FindBin(myLepEta) << endl;
-  //   cout << " binXedge = " << h2_fake->GetXaxis()->GetBinLowEdge(h2_fake->GetXaxis()->FindBin(myLepPt))
-  //        << " binYedge = " << h2_fake->GetYaxis()->GetBinLowEdge(h2_fake->GetYaxis()->FindBin(myLepEta)) << endl;
-  //cout << " weight = " << weight << endl;
-
+  weight = h_ZXWeight[nHisto]->GetBinContent(h_ZXWeight[nHisto]->GetXaxis()->FindBin(myLepPt), h_ZXWeight[nHisto]->GetYaxis()->FindBin(myLepEta));
+  /*
+  h_ZXWeight[0]=FileZXWeightEle->Get("eff_Z1ee_plus_electron")->Clone();
+  h_ZXWeight[2]=FileZXWeightEle->Get("eff_Z1mumu_plus_electron")->Clone();
+  
+  h_ZXWeight[5]=FileZXWeightMuo->Get("eff_Z1ee_plus_muon")->Clone();
+  h_ZXWeight[7]=FileZXWeightMuo->Get("eff_Z1mumu_plus_muon")->Clone();
+*/
   return weight;
 
 } // end of getFakeWeight
 
 
-// Added by CO
-Float_t HZZ4l::getZXfake_weight(const int year, const Int_t CandIndex)
-{
-  Float_t zx_weight = 1.;
-
-  TLorentzVector m[2]; // only the Z2 legs
-  m[0].SetPtEtaPhiM(Lep3Pt->at(CandIndex),Lep3Eta->at(CandIndex),Lep3Phi->at(CandIndex),0.1506583);
-  m[1].SetPtEtaPhiM(Lep4Pt->at(CandIndex),Lep4Eta->at(CandIndex),Lep4Phi->at(CandIndex),0.1506583);
-
-  int Z1_id = Lep1LepId->at(CandIndex); // assuming the Z1 pair is made from SF leptons...
-  Int_t LepId[2];
-  LepId[0] = Lep3LepId->at(CandIndex);
-  LepId[1] = Lep4LepId->at(CandIndex);
-
-  for(int ilep=0;ilep<2;ilep++) {
-    zx_weight *= getFakeWeight(m[ilep].Pt(), m[ilep].Eta(), year, LepId[ilep], Z1_id);
-  } // for loop on Z2 legs
-
-  return zx_weight;
-}
-*/
 //define this as a plug-in
 DEFINE_FWK_MODULE(HZZ4lNtupleMaker);

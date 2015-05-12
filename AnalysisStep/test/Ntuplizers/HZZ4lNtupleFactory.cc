@@ -65,6 +65,7 @@ void HZZ4lNtupleFactory::InitializeVariables()
   _xsec =0.;
   _dataMCweight=0;
   _HqTMCweight=0;
+  _ZXFakeweight=0; 
 
   //Info on generated particles
   _genHMass = 0.;
@@ -692,7 +693,8 @@ void HZZ4lNtupleFactory::InitializeBranches()
   _outTree->Branch("xsec",&_xsec,"xsec/F");
   _outTree->Branch("dataMCWeight",&_dataMCweight,"dataMCweight/F");
   _outTree->Branch("HqTMCweight",&_HqTMCweight,"HqTMCweight/F");
-  
+  _outTree->Branch("_ZXFakeweight",&_ZXFakeweight,"ZXFakeweight/F"); 
+
   _outTree->Branch("GenHMass",&_genHMass,"GenHMass/F");
   _outTree->Branch("GenHPt",&_genHPt,"GenHPt/F");
 
@@ -744,12 +746,11 @@ void HZZ4lNtupleFactory::createNewCandidate()
   return;
 }
 
-void HZZ4lNtupleFactory::FillHGenInfo(math::XYZTLorentzVector pH,float w)
+void HZZ4lNtupleFactory::FillHGenInfo(math::XYZTLorentzVector pH)
 {
   _genHMass = pH.M();
   _genHPt = pH.Pt();
   
-  _HqTMCweight=w;
   return;
 }
 
@@ -838,7 +839,10 @@ void HZZ4lNtupleFactory::FillEventInfo(Int_t RunNumber, const Long64_t EventNumb
   return;
 }
 
-void HZZ4lNtupleFactory::FillHInfo(Float_t ZZMass, Float_t ZZMassErr, Float_t ZZMassErrCorr, Float_t ZZMassPreFSR, Float_t ZZMassRefit, Float_t Chi2KinFit, Float_t ZZMassCFit, Float_t Chi2CFit, Int_t ZZsel, Float_t ZZPt, Float_t ZZEta, Float_t ZZPhi, Int_t isSignal, Int_t isRightPair, Int_t CRflag)
+void HZZ4lNtupleFactory::FillHInfo(Float_t ZZMass, Float_t ZZMassErr, Float_t ZZMassErrCorr, 
+                        Float_t ZZMassPreFSR, Float_t ZZMassRefit, Float_t Chi2KinFit, Float_t ZZMassCFit, 
+                        Float_t Chi2CFit, Int_t ZZsel, Float_t ZZPt, Float_t ZZEta, Float_t ZZPhi, Int_t isSignal, 
+                        Int_t isRightPair, Float_t hqtw, Float_t zxw,Int_t CRflag)
 {
   _ZZMass=ZZMass;
   _ZZMassErr=ZZMassErr;
@@ -855,6 +859,8 @@ void HZZ4lNtupleFactory::FillHInfo(Float_t ZZMass, Float_t ZZMassErr, Float_t ZZ
   _ZZgenIsSignal=isSignal;
   _ZZgenIsRightPair=isRightPair;
   _CRflag=CRflag;
+  _HqTMCweight=hqtw;
+  _ZXFakeweight=zxw; 
 
   return;
 }

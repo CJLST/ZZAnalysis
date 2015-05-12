@@ -68,6 +68,8 @@ class HZZ4lNtupleFactory{
                  Float_t ZZPhi, 
                  Int_t isSignal, 
                  Int_t isRightPair, 
+                 Float_t hqtw, 
+                 Float_t zxw,
                  Int_t CRflag=0
                  );
   void FillProbability(Float_t p0plus_VAJHU,
@@ -167,7 +169,7 @@ class HZZ4lNtupleFactory{
   void FillCategorizationInfo(Int_t nExtraLep, Int_t nExtraZ);
   void FillExtraLepInfo(int extraLeptonIndex, bool extraLeptonExists, reco::CandidatePtr ExtraLep);
 
-  void FillHGenInfo(math::XYZTLorentzVector Hp,float w);
+  void FillHGenInfo(math::XYZTLorentzVector Hp);
   void FillZGenInfo(math::XYZTLorentzVector Z1p, math::XYZTLorentzVector Z2p);
   void FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t Lep3Id, Short_t Lep4Id,
                       math::XYZTLorentzVector Lep1, math::XYZTLorentzVector Lep2, math::XYZTLorentzVector Lep3, math::XYZTLorentzVector Lep4,float weight);
@@ -211,6 +213,7 @@ class HZZ4lNtupleFactory{
   Float_t _xsec;
   Float_t _dataMCweight;
   Float_t _HqTMCweight;
+  Float_t _ZXFakeweight;
   
   //H variables
   Float_t _ZZMass;
