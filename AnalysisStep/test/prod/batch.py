@@ -241,6 +241,9 @@ class MyBatchManager:
        print "Parameters: ", variables
 
        execfile(cfgFileName,variables)
+       
+       for fragment in pyFragments:
+           execfile('pyFragments/{0:s}'.format(fragment),variables)  
 
        process = variables.get('process') 
        process.source = splitComponents[value].source
@@ -271,10 +274,7 @@ class MyBatchManager:
            cfgSnippetPDFStep2.close()
            
 
-       for fragment in pyFragments:
-           print fragment
-           cfgFile.write( open(fragment).read() ) 
-           cfgFile.write( '\n' )
+       
 
         
        cfgFile.close()
