@@ -17,7 +17,7 @@ Download and execute the setup script for the given release:
    If you use bash, change the first line to be:
 
    ```
-     wget -P /tmp https://raw.githubusercontent.com/hengne/ZZAnalysis/miniAOD/checkout_70X.sh 
+     wget -P /tmp https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD/checkout_70X.sh 
    ```
 
 To update this package from the release
