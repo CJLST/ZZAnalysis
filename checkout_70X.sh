@@ -9,13 +9,22 @@
 
 ############## test version for CMSSW_7_3_3
 
+#init a new release
+release=CMSSW_7_3_3
+export SCRAM_ARCH=slc6_amd64_gcc481
+alias cmsenv='eval `scramv1 runtime -sh`'
+alias cmsrel='scramv1 project CMSSW'
+
+scram project $release
+cd $release/src
+cmsenv
+
 
 #electron MVA ID
 #git cms-merge-topic HuguesBrun:trigElecIdInCommonIsoSelection720 
 
 #ZZAnalysis
 git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
-#git clone https://github.com/hengne/ZZAnalysis.git ZZAnalysis
 
 cd ZZAnalysis
 git checkout from-miniAOD_hengne_dev_733
