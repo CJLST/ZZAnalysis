@@ -5,20 +5,14 @@ To install a complete CMSSW area (including this package)
 ------------------------------
 Download and execute the setup script for the given release:
 
-*   For CMSSW_7_2_4:
+*   For CMSSW_7_3_3:
 
     ```
-    wget -P /tmp https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD/checkout_70X.csh
+    wget -P /tmp https://raw.githubusercontent.com/CJLST/ZZAnalysis/from-miniAOD_hengne_dev_733/checkout_70X.sh 
     cd $CMSSW_BASE/src
     cmsenv
-    source /tmp/checkout_70X.csh
+    source /tmp/checkout_70X.sh
     ```
-
-   If you use bash, change the first line to be:
-
-   ```
-     wget -P /tmp https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD/checkout_70X.sh 
-   ```
 
 To update this package from the release
 ------------------------------------------

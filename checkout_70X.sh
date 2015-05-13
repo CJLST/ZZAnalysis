@@ -7,17 +7,19 @@
 # source /tmp/checkout_70X.sh
 
 
-############## For miniAOD/CMSSW_7_2_4
+############## test version for CMSSW_7_3_3
+
 
 #electron MVA ID
-git cms-merge-topic HuguesBrun:trigElecIdInCommonIsoSelection720 
+#git cms-merge-topic HuguesBrun:trigElecIdInCommonIsoSelection720 
 
 #ZZAnalysis
-#git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
-git clone https://github.com/hengne/ZZAnalysis.git ZZAnalysis
+git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
+#git clone https://github.com/hengne/ZZAnalysis.git ZZAnalysis
 
 cd ZZAnalysis
-git checkout miniAOD
+git checkout from-miniAOD_hengne_dev_733
+git checkout 7c06aa1 -- AnalysisStep/plugins/EleFiller.cc
 cd -
 
 #effective areas (to be updated)
