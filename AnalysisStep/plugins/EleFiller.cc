@@ -135,6 +135,8 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 			       (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.65) || 
 			       (fSCeta >= 1.479               && BDT > 0.6)));
 
+    // FIXME: temporarily escape the BDT for testing 733
+    isBDT=true;
 
     //-- Missing hit  
     int missingHit = l.gsfTrack()->hitPattern().numberOfHits(HitPattern::MISSING_INNER_HITS);
