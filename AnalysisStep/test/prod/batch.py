@@ -137,9 +137,14 @@ class MyBatchManager:
                                 help="Step of PDF systematic uncertainty evaluation. It could be 1 or 2.",
                                 default=0)
        
-        self.parser_.add_option("-i", "--secondary-input-dir", dest="secondaryInputDir",
+        self.parser_.add_option("-s", "--secondary-input-dir", dest="secondaryInputDir",
                                 help="Name of the local input directory for your PDF jobs",
                                 default=None)
+
+        self.parser_.add_option("-i", "--input", dest="cfgFileName",
+                                help="input cfg",
+                                default="analyzer_2015.py")
+
 
 
         (self.options_,self.args_) = self.parser_.parse_args()
@@ -249,17 +254,15 @@ class MyBatchManager:
        process.source = splitComponents[value].source
        process.source.fileNames = splitComponents[value].files
 
-       if splitComponents[value].pdfstep < 2:
-
-           # PDF step 1 case: create also a snippet to be used later in step 2 phase
-           if splitComponents[value].pdfstep == 1:
-               cfgSnippetPDFStep2 = open(jobDir+'/inputForPDFstep2.py','w')
-               cfgSnippetPDFStep2.write('process.source.fileNames = ["file:{0:s}/{1:s}"]\n'.format(self.outputDir_+'/AAAOK'+jobDir.replace(self.outputDir_,''), process.weightout.fileName.value()))
-               cfgSnippetPDFStep2.write('process.source.secondaryFileNames = [')
-               for item in splitComponents[value].files: cfgSnippetPDFStep2.write("'%s',\n" % item)
-               cfgSnippetPDFStep2.write(']')
-               cfgSnippetPDFStep2.write( '\n' )
-               cfgSnippetPDFStep2.close()
+       # PDF step 1 case: create also a snippet to be used later in step 2 phase
+       if splitComponents[value].pdfstep == 1:
+           cfgSnippetPDFStep2 = open(jobDir+'/inputForPDFstep2.py','w')
+           cfgSnippetPDFStep2.write('process.source.fileNames = ["file:{0:s}/{1:s}"]\n'.format(self.outputDir_+'/AAAOK'+jobDir.replace(self.outputDir_,''), process.weightout.fileName.value()))
+           cfgSnippetPDFStep2.write('process.source.secondaryFileNames = [')
+           for item in splitComponents[value].files: cfgSnippetPDFStep2.write("'%s',\n" % item)
+           cfgSnippetPDFStep2.write(']')
+           cfgSnippetPDFStep2.write( '\n' )
+           cfgSnippetPDFStep2.close()
 
 
        cfgFile = open(jobDir+'/run_cfg.py','w')
@@ -302,7 +305,7 @@ class Component(object):
 if __name__ == '__main__':
     batchManager = MyBatchManager()
     
-    cfgFileName = "analyzer_2015.py" # This is the python job config. FIXME make it configurable.
+    cfgFileName = batchManager.options_.cfgFileName #"analyzer_2015.py" # This is the python job config. FIXME make it configurable.
     sampleCSV  = batchManager.args_[0]            # This is the csv file with samples to be analyzed./
 
     handle = open(cfgFileName, 'r')
@@ -314,8 +317,7 @@ if __name__ == '__main__':
     for sample, settings in sampleDB.iteritems():
         if settings['execute']:
             pdfstep = batchManager.options_.PDFstep
-            if pdfstep == 0 or ((not pdfstep == 0) and settings['pdf']):
-                components.append(Component(sample, settings['prefix'], settings['dataset'], settings['pattern'], settings['splitLevel'], settings['::variables'],settings['::pyFragments'],settings['crossSection'], settings['BR'], setup, pdfstep)) #FIXME-RB not bool(settings['pdf']))) #settings['pdf'] used here as full sel, without cuts.
+            components.append(Component(sample, settings['prefix'], settings['dataset'], settings['pattern'], settings['splitLevel'], settings['::variables'],settings['::pyFragments'],settings['crossSection'], settings['BR'], setup, pdfstep)) #FIXME-RB not bool(settings['pdf']))) #settings['pdf'] used here as full sel, without cuts.
     
     handle.close()
 
