@@ -50,7 +50,7 @@ except NameError:
 try:
     SUPERMELA_MASS
 except NameError:
-    SUPERMELA_MASS = 125.6
+    SUPERMELA_MASS = 125
 
 #Selection flow strategy
 try:
