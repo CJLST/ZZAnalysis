@@ -38,7 +38,7 @@ git clone -n https://github.com/cms-analysis/EgammaAnalysis-ElectronTools EGamma
 
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
-(cd ZZMatrixElement ; git checkout -b from-d375a59 d375a59)
+(cd ZZMatrixElement ; git checkout -b from-824197 824197c)
 
 #MELA dependencies
 git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit

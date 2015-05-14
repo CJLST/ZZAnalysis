@@ -161,17 +161,16 @@ bool JetsWithLeptonsRemover::isGood(const pat::Jet& jet) const {
   
   float jeta=fabs(jet.eta());
 
-  bool looseJetID = true;
-  /* //FIXME: to be reinstated when Run2 jet ID is fully established
+  // cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID#Recommendations_for_13_TeV_data
   bool looseJetID = (jet.neutralHadronEnergyFraction() < 0.99 && 
-		     jet.neutralEmEnergyFraction() < 0.99 && 
-		     jet.numberOfDaughters() > 1 &&  // was  cmg::PFJet::nConstituents()
+		     jet.neutralEmEnergyFraction() < 0.99 &&
+		     jet.numberOfDaughters() > 1 &&
+		     jet.chargedMultiplicity()+jet.neutralMultiplicity() >0 &&
 		     jet.muonEnergyFraction() < 0.8 &&
 		     jet.chargedEmEnergyFraction() < 0.9 &&
 		     ( jet.chargedHadronEnergyFraction() > 0 || jeta > 2.4 )  &&
 		     ( jet.chargedMultiplicity() > 0 || jeta > 2.4 ) &&
 		     ( jet.chargedEmEnergyFraction() < 0.99 || jeta > 2.4 ) );
-  //*/
   if(!looseJetID) return false;
 
   bool passPU = true;

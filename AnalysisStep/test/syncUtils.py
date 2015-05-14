@@ -21,7 +21,7 @@ class Event:
 
 class KDs:
 
-    def __init__(self,p0plus_VAJHU,p0minus_VAJHU,p0hplus_VAJHU,p1plus_VAJHU,p1_VAJHU,p2_VAJHU,p2qqb_VAJHU,bkg_VAMCFM):
+    def __init__(self,p0plus_VAJHU,p0minus_VAJHU,p0hplus_VAJHU,p1plus_VAJHU,p1_VAJHU,p2_VAJHU,p2qqb_VAJHU,bkg_VAMCFM,p0plus_m4l,bkg_m4l,Dgg10_VAMCFM,pvbf_VAJHU,phjj_VAJHU):
 
         self.p0plus_VAJHU  = p0plus_VAJHU
         self.p0minus_VAJHU = p0minus_VAJHU
@@ -31,7 +31,15 @@ class KDs:
         self.p2_VAJHU      = p2_VAJHU     
         self.p2qqb_VAJHU   = p2qqb_VAJHU              
         self.bkg_VAMCFM    = bkg_VAMCFM
-        self.KD            = -1.
+        self.p0plus_m4l    = p0plus_m4l        
+        self.bkg_m4l       = bkg_m4l        
+        self.Dgg10_VAMCFM  = Dgg10_VAMCFM
+        self.pvbf_VAJHU    = pvbf_VAJHU
+        self.phjj_VAJHU    = phjj_VAJHU
+        self.D_bkg_kin     = -1.
+        self.D_g4          = -1.
+        self.Dbkg          = -1.
+        self.Djet_VAJHU    = -1.
         self.KD_pseudo     = -1.
         self.KD_highdim    = -1.
         self.KD_vec        = -1.
@@ -43,8 +51,10 @@ class KDs:
 
     def computeKDs(self):
 
-        self.KD         = self.p0plus_VAJHU/(self.p0plus_VAJHU + self.bkg_VAMCFM) 	 
-        self.KD_pseudo  = self.p0plus_VAJHU/(self.p0plus_VAJHU + self.p0minus_VAJHU)
+        self.D_bkg_kin  = self.p0plus_VAJHU/(self.p0plus_VAJHU + self.bkg_VAMCFM)    
+        self.D_bkg      = self.p0plus_VAJHU*self.p0plus_m4l/(self.p0plus_VAJHU*self.p0plus_m4l+self.bkg_VAMCFM*self.bkg_m4l)
+        self.D_g4       = self.p0plus_VAJHU/(self.p0plus_VAJHU + self.p0minus_VAJHU) # D_0-
+        self.Djet_VAJHU = self.pvbf_VAJHU/(self.pvbf_VAJHU+self.phjj_VAJHU )         # D^VBF_HJJ
         self.KD_highdim = self.p0plus_VAJHU/(self.p0plus_VAJHU + self.p0hplus_VAJHU)
         self.KD_vec     = self.p0plus_VAJHU/(self.p0plus_VAJHU + self.p1plus_VAJHU) 	 
         self.KD_psvec   = self.p0plus_VAJHU/(self.p0plus_VAJHU + self.p1_VAJHU) 	 
@@ -114,7 +124,11 @@ class Candidate:
         line  += ":" + "{0:.2f}".format(self.mZ2)
 #        line  += ":" + "{0:.2f}".format(self.massErrRaw)
 #        line  += ":" + "{0:.2f}".format(self.massErrCorr)
-        line  += ":" + "{0:.3f}".format(self.kds.KD)
+        line  += ":" + "{0:.3f}".format(self.kds.D_bkg_kin)
+#        line  += ":" + "{0:.3f}".format(self.kds.D_bkg)
+#        line  += ":" + "{0:.3f}".format(self.kds.Dgg10_VAMCFM)
+#        line  += ":" + "{0:.3f}".format(self.kds.D_g4)
+#        line  += ":" + "{0:.3f}".format(self.kds.Djet_VAJHU)
 #        line  += ":" + "{0:.2f}".format(self.pt4l)
         line  += ":" + "{0:d}".format(self.njets30)
         line  += ":" + "{0:.2f}".format(self.jet1pt)
@@ -122,7 +136,6 @@ class Candidate:
 #        line  += ":" + "{0:.2f}".format(self.mjj)
 #        line  += ":" + "{0:.3f}".format(self.detajj)
 #        line  += ":" + "{0:.3f}".format(self.fishjj)
-#        line  += ":" + "{0:.3f}".format(self.kds.KD_pseudo)
 #        line  += ":" + "{0:.3f}".format(self.kds.KD_highdim)
 #        line  += ":" + "{0:.3f}".format(self.kds.KD_vec)
 #        line  += ":" + "{0:.3f}".format(self.kds.KD_psvec)
