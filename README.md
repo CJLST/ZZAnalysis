@@ -8,8 +8,10 @@ Download and execute the setup script for the given release:
 *   For CMSSW_7_3_3:
 
     ```
-    curl -O https://raw.githubusercontent.com/CJLST/ZZAnalysis/from-miniAOD_hengne_dev_733/checkout_70X.sh 
-    source checkout_70X.sh
+    wget -P /tmp https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_733/checkout_70X.csh
+    cd $CMSSW_BASE/src
+    cmsenv
+    source /tmp/checkout_70X.csh
     ```
 
 To update this package from the release
