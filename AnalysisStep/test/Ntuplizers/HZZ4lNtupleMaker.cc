@@ -60,7 +60,8 @@
 namespace {
   bool writePhotons = false;  // Write photons in the tree. Note: must be set also in HZZ4lNtupleFactory.cc
   bool writeJets = true;     // Write jets in the tree. FIXME: make this configurable
-  
+  bool addKinRefit = false;
+  bool addVtxFit = false;
 }
 
 using namespace std;
@@ -77,16 +78,18 @@ public:
   
 private:
   virtual void beginJob() ;
-  virtual void analyze(const edm::Event&, const edm::EventSetup&);
-  virtual void FillCandidate(const pat::CompositeCandidate& higgs, bool evtPass, const edm::Event&, const Int_t CRflag);
-  virtual void FillPhoton(const pat::Photon& photon);
-  virtual void FillJet(const pat::Jet& jet);
-  virtual void endJob() ;
-  
   virtual void beginRun(edm::Run const&, edm::EventSetup const&);
   virtual void endRun(edm::Run const&, edm::EventSetup const&);
   virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
   virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
+  virtual void analyze(const edm::Event&, const edm::EventSetup&);
+
+  void BookAllBranches();  
+  virtual void FillCandidate(const pat::CompositeCandidate& higgs, bool evtPass, const edm::Event&, const Int_t CRflag);
+  virtual void FillPhoton(const pat::Photon& photon);
+  virtual void FillJet(const pat::Jet& jet);
+  virtual void endJob() ;
+
   Float_t getAllWeight(const Float_t LepPt, const Float_t LepEta, Int_t LepID) const;
   Float_t getHqTWeight(double mH, double genPt) const;
   Float_t getFakeWeight(const Float_t LepPt, const Float_t LepEta, Int_t LepID, Int_t LepZ1ID);
@@ -245,6 +248,8 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   fHqt->Close();
   FileZXWeightEle->Close();
   FileZXWeightMuo->Close();
+  
+  BookAllBranches();
 }
 
 HZZ4lNtupleMaker::~HZZ4lNtupleMaker()
@@ -369,10 +374,10 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   if (isMC) {
 
     if(genH != 0){
-      myTree->FillHGenInfo(genH->p4());
+      myTree->FillHGenInfo(genH->p4(),getHqTWeight(genH->p4().M(),genH->p4().Pt()));
     }
     else if(genZLeps.size()==4){ // for 4l events take the mass of the ZZ(4l) system
-      myTree->FillHGenInfo((genZLeps.at(0)->p4()+genZLeps.at(1)->p4()+genZLeps.at(2)->p4()+genZLeps.at(3)->p4()));
+      myTree->FillHGenInfo((genZLeps.at(0)->p4()+genZLeps.at(1)->p4()+genZLeps.at(2)->p4()+genZLeps.at(3)->p4()),0);
     }
 
     if (genFinalState!=BUGGY) {
@@ -402,7 +407,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       }
 
       if (genAssocLeps.size()==1 || genAssocLeps.size()==2) {
-	myTree->FillAssocLepGenInfo(genAssocLeps);
+	      myTree->FillAssocLepGenInfo(genAssocLeps);
       }
 
     }
@@ -477,7 +482,10 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 	      math::XYZTLorentzVector jetScaleMinus2 = jet2*(1-jesUnc2);
 	      Float_t MjjPlus = (jetScalePlus1+jetScalePlus2).M();
 	      Float_t MjjMinus = (jetScaleMinus1+jetScaleMinus2).M();
-	      myTree->FillDiJetInfo(Mjj,MjjPlus,MjjMinus,detajj,Fisher);
+	      //myTree->FillDiJetInfo(Mjj,MjjPlus,MjjMinus,detajj,Fisher);
+	      TString names[]={"DiJetMass","DiJetMassPlus","DiJetMassMinus","DiJetDEta","DiJetFisher"};
+	      double dijetinfo[]={Mjj,MjjPlus,MjjMinus,detajj,Fisher};
+	      myTree->SetVariables((TString *)names,(double *)dijetinfo,5);
       }
     }
   }
@@ -492,11 +500,34 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     //Save general event info in the tree
   Int_t NbestCand = -1; //FIXME now store only 1 candidate in the SR, but we still have to save iBC correctly in the SR
   if (theChannel==ZZ) NbestCand=0;
-  myTree->FillEventInfo(event.id().run(), event.id().event(), event.luminosityBlock(), NbestCand, vertexs->size(), nObsInt, nTrueInt, weight2, pfmet, pfjetscoll->size(), cleanedJets.size(), cleanedJetsPt30.size(), nCleanedJetsPt30BTagged, genFinalState, genProcessId, genHEPMCweight, trigWord, genExtInfo,xsec);
-
+  //myTree->FillEventInfo(event.id().run(), event.id().event(), event.luminosityBlock(), NbestCand, vertexs->size(), nObsInt, nTrueInt, weight2, pfmet, pfjetscoll->size(), cleanedJets.size(), cleanedJetsPt30.size(), nCleanedJetsPt30BTagged, genFinalState, genProcessId, genHEPMCweight, trigWord, genExtInfo,xsec);
+  double eventinfo[18]={(double)event.id().run(),(double)event.luminosityBlock(),(double)NbestCand, (double)vertexs->size(), (double)nObsInt, (double)nTrueInt, (double)weight2, (double)pfmet, (double)pfjetscoll->size(), (double)cleanedJets.size(), 
+    (double)cleanedJetsPt30.size(), (double)nCleanedJetsPt30BTagged, (double)genFinalState, (double)genProcessId, 
+    (double)genHEPMCweight, (double)trigWord, (double)genExtInfo,(double)xsec};
+  TString eventnames[18]={
+    "RunNumber",
+    "LumiNumber",
+    "iBC",
+    "Nvtx",
+    "NObsInt",
+    "NTrueInt",
+    "PUWeight12",
+    "PFMET",
+    "nJets",
+    "nCleanedJets",
+    "nCleanedJetsPt30",
+    "nCleanedJetsPt30BTagged",
+    "genFinalState",
+    "genProcessId",
+    "genHEPMCweight",
+    "trigWord",
+    "genExtInfo",
+    "xsec",
+  };
+  myTree->SetVariables((TString *)eventnames,(double *)eventinfo,18);
+  myTree->SetVariableLong("EventNumber",event.id().event());
   //Loop on the candidates
   int nFilled=0;
-  bool isAlreadyFilled=false;
   for( edm::View<pat::CompositeCandidate>::const_iterator cand = cands->begin(); cand != cands->end(); ++cand) {
     Int_t CRFLAG=0;
     bool candIsBest = cand->userFloat("isBestCand");
@@ -521,6 +552,11 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       if (gen_ZZ4lInEtaAcceptance)   set_bit(CRFLAG,28);
       if (gen_ZZ4lInEtaPtAcceptance) set_bit(CRFLAG,29);
     }
+    FillCandidate(*cand, evtPassTrigger&&evtPassSkim, event, CRFLAG);
+    myTree->FillCurrentTree();//Do not reinitialize the event variables
+    ++nFilled;
+    /*
+    //Assume only one isBestCand, and that for SR CRflag=0
     if(nFilled==0){
       FillCandidate(*cand, evtPassTrigger&&evtPassSkim, event, CRFLAG);
     }else {
@@ -528,17 +564,22 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       isAlreadyFilled=true;
     }
     ++nFilled;
-  }
+    */
+  }//end loop over candidates
 
   // Events with no ZZ candidate have already been skipped at the beginning, but in case of CRs there could be no cands with CRflag!=0, so none was filled. 
-  if (skipEmptyEvents && nFilled==0 && theChannel==ZLL) return;
+  //if (skipEmptyEvents && nFilled==0 && theChannel==ZLL) return;
 
+  if (skipEmptyEvents==false && nFilled==0)myTree->FillCurrentTree();
+ 
   // Final call to save the tree entry, and reset tree variables
+  /*
   if(!isAlreadyFilled){
     myTree->FillEvent();
   }else{
     myTree->InitializeVariables();
   }
+  */
   return;
 }
 
@@ -548,8 +589,9 @@ void HZZ4lNtupleMaker::FillPhoton(const pat::Photon& photon)
   const Float_t photEta = photon.eta();
   const Float_t photPhi = photon.phi();
 
-  myTree->FillPhotonInfo(photPt, photEta, photPhi);
-
+  TString names[3]={"PhotPt","PhotEta","PhotPhi"};
+  float vars[3]={photPt, photEta, photPhi};
+  myTree->SetVariables((TString *)names,(double *)vars,3);
   return;
 }
 
@@ -565,13 +607,13 @@ void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
   const Float_t jetQGLikelihood = jet.userFloat("qgLikelihood");
   const Float_t jesUnc = 0.;//jet.uncOnFourVectorScale();
 
-  myTree->FillJetInfo(jetPt, jetEta, jetPhi, jetMass, jetBTagger, jetIsBtagged, jetQGLikelihood, jesUnc );
-
+  //myTree->FillJetInfo( );
+  TString names[8]={"JetPt","JetEta","JetPhi","JetMass","JetBTagger","JetIsBtagged","JetQGLikelihood","JetSigma"};
+  float vars[8]={jetPt, jetEta, jetPhi, jetMass, jetBTagger, jetIsBtagged, jetQGLikelihood, jesUnc};
+  myTree->SetVariables((TString *)names,(double *)vars,8);
+   
   return;
 }
-
-
-
 
 
 void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool evtPass, const edm::Event& event, Int_t CRflag)
@@ -715,19 +757,19 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   const Float_t p0Zgs_PS_VAJHU= cand.userFloat( "p0Zgs_PS_VAJHU");
   const Float_t p0gsgs_PS_VAJHU= cand.userFloat("p0gsgs_PS_VAJHU");
 
-  Int_t isSignal = -1;
-  Int_t isRightPair = -1;
-  if(isMC){
-    isSignal = cand.userFloat("MC_isRight");
-    isRightPair = cand.userFloat("MC_isRightPair");
-  }
+  //Int_t isSignal = -1;
+  //Int_t isRightPair = -1;
+  //if(isMC){
+  //  isSignal = cand.userFloat("MC_isRight");
+  //  isRightPair = cand.userFloat("MC_isRightPair");
+  //}
 
-  const Float_t mZa = cand.userFloat("mZa");
-  const Float_t mZb = cand.userFloat("mZb");
-  const Float_t mLL4 = cand.userFloat("mLL4");
-  const Float_t mLL6 = cand.userFloat("mLL6");
-  const Float_t SIP4 = cand.userFloat("SIP4");
-  const Float_t iso34 = cand.userFloat("iso34");
+  //const Float_t mZa = cand.userFloat("mZa");
+  //const Float_t mZb = cand.userFloat("mZb");
+  //const Float_t mLL4 = cand.userFloat("mLL4");
+  //const Float_t mLL6 = cand.userFloat("mLL6");
+  //const Float_t SIP4 = cand.userFloat("SIP4");
+  //const Float_t iso34 = cand.userFloat("iso34");
 
   //Z1 and Z2 variables
   const reco::Candidate* Z1;
@@ -783,7 +825,8 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   }
   if (!(evtPass)) {sel = -sel;} // avoid confusion when we write events which do not pass trigger/skim
 
-  myTree->FillProbability(p0plus_VAJHU,
+  //myTree->FillProbability(
+  float probabilities[84]={ p0plus_VAJHU,
                           p0minus_VAJHU,
                           p0plus_VAMCFM,
                           p0hplus_VAJHU, // 0h+ (high dimensional operator), vector algebra, JHUgen
@@ -856,11 +899,8 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
                           p0Zgs_VAJHU,
                           p0gsgs_VAJHU,
                           p0Zgs_PS_VAJHU,
-                          p0gsgs_PS_VAJHU
-                          );
-			  
-  myTree->FillSuperMela( p0plus_m4l,  // signal m4l probability as in datacards
-			 bkg_m4l,   // backgroun m4l probability as in datacards
+                          p0gsgs_PS_VAJHU,
+                          			 bkg_m4l,   // backgroun m4l probability as in datacards
 			 p0plus_m4l_ScaleUp,  // signal m4l probability for systematics
 			 bkg_m4l_ScaleUp,     // backgroun m4l probability for systematics
 			 p0plus_m4l_ScaleDown,  // signal m4l probability for systematics
@@ -868,10 +908,102 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 			 p0plus_m4l_ResUp,  // signal m4l probability for systematics
 			 bkg_m4l_ResUp,     // backgroun m4l probability for systematics
 			 p0plus_m4l_ResDown,  // signal m4l probability for systematics
-			 bkg_m4l_ResDown);     // backgroun m4l probability for systematics
-  
-  myTree->FillHAdditionalInfo(mZa, mZb, mLL4, mLL6, SIP4, iso34);
-
+			 bkg_m4l_ResDown,     // backgroun m4l probability for systematics
+			 p0plus_m4l
+                          };
+    TString probNames[84]={ "p0plus_VAJHU",
+                          "p0minus_VAJHU",
+                          "p0plus_VAMCFM",
+                          "p0hplus_VAJHU", // 0h+ (high dimensional operator)", vector algebra", JHUgen
+                          "p1_VAJHU",
+                          "p1_prodIndep_VAJHU",
+                          "p1plus_VAJHU", // 1+ (axial vector)", vector algebra", JHUgen",
+                          "p1plus_prodIndep_VAJHU", // 1+ (axial vector)", vector algebra", JHUgen",
+                          "p2_VAJHU ",
+                          "p2_prodIndep_VAJHU ",
+                          "p2qqb_VAJHU",
+                          "p2hplus_VAJHU",
+                          "p2hminus_VAJHU",
+                          "p2bplus_VAJHU",
+                          "p2hplus_qqb_VAJHU",
+                          "p2hplus_prodIndep_VAJHU",
+                          "p2hminus_qqb_VAJHU",
+                          "p2hminus_prodIndep_VAJHU",
+                          "p2bplus_qqb_VAJHU",
+                          "p2bplus_prodIndep_VAJHU",
+                          "p2h2plus_gg_VAJHU",
+                          "p2h2plus_qqbar_VAJHU",
+                          "p2h2plus_prodIndep_VAJHU",
+                          "p2h3plus_gg_VAJHU",
+                          "p2h3plus_qqbar_VAJHU",
+                          "p2h3plus_prodIndep_VAJHU",
+                          "p2h6plus_gg_VAJHU",
+                          "p2h6plus_qqbar_VAJHU",
+                          "p2h6plus_prodIndep_VAJHU",
+                          "p2h7plus_gg_VAJHU",
+                          "p2h7plus_qqbar_VAJHU",
+                          "p2h7plus_prodIndep_VAJHU",
+                          "p2h9minus_gg_VAJHU",
+                          "p2h9minus_qqbar_VAJHU",
+                          "p2h9minus_prodIndep_VAJHU",
+                          "p2h10minus_gg_VAJHU",
+                          "p2h10minus_qqbar_VAJHU",
+                          "p2h10minus_prodIndep_VAJHU",
+                          "bkg_VAMCFM",
+                          "bkg_prodIndep_VAMCFM",
+                          "ggzz_VAMCFM",
+                          "ggzz_p0plus_VAMCFM",
+                          "ggzz_c1_VAMCFM",
+                          "ggzz_c5_VAMCFM",
+                          "ggzz_ci_VAMCFM",
+                          "phjj_VAJHU_old",
+                          "pvbf_VAJHU_old",
+                          "phjj_VAJHU_old_up",
+                          "pvbf_VAJHU_old_up",
+                          "phjj_VAJHU_old_dn",
+                          "pvbf_VAJHU_old_dn",
+                          "phjj_VAJHU_new",
+                          "pvbf_VAJHU_new",
+                          "phjj_VAJHU_new_up",
+                          "pvbf_VAJHU_new_up",
+                          "phjj_VAJHU_new_dn",
+                          "pvbf_VAJHU_new_dn",
+                          "p0_g1prime2_VAJHU",
+                          "pg1g1prime2_VAJHU",
+                          "Dgg10_VAMCFM",
+                          "pg1g4_mela",
+                          "pg1g4_VAJHU",
+                          "pg1g4_pi2_VAJHU",
+                          "pg1g2_pi2_VAJHU",
+                          "pg1g2_mela",
+                          "pg1g2_VAJHU",
+                          "pzzzg_VAJHU",
+                          "pzzgg_VAJHU",
+                          "pzzzg_PS_VAJHU",
+                          "pzzgg_PS_VAJHU",
+                          "p0Zgs_VAJHU",
+                          "p0gsgs_VAJHU",
+                          "p0Zgs_PS_VAJHU",
+                          "p0gsgs_PS_VAJHU",
+                          "bkg_m4l",   // backgroun m4l probability as in datacards
+			                    "p0plus_m4l_ScaleUp",  // signal m4l probability for systematics
+			                    "bkg_m4l_ScaleUp",     // backgroun m4l probability for systematics
+			                    "p0plus_m4l_ScaleDown",  // signal m4l probability for systematics
+			                    "bkg_m4l_ScaleDown",     // backgroun m4l probability for systematics
+			                    "p0plus_m4l_ResUp",  // signal m4l probability for systematics
+			                    "bkg_m4l_ResUp",     // backgroun m4l probability for systematics
+			                    "p0plus_m4l_ResDown",  // signal m4l probability for systematics
+			                    "bkg_m4l_ResDown",     // backgroun m4l probability for systematics
+			                    "p0plus_m4l" // signal m4l probability as in datacards
+                          };
+  myTree->SetVariables((TString *)probNames,(double *)probabilities,84);
+	
+	//FIXME? Not filled in the miniAOD branch, is it right?
+	/*
+	float Hadditional[6]={mZa, mZb, mLL4, mLL6, SIP4, iso34};		    
+  TString addName[6]={};
+  myTree->SetVariables(addName,Hadditional,6);
+  */
   myTree->FillZInfo(Z1Mass, Z1Pt, Z1Flav, Z1MassRefit);
   myTree->FillZInfo(Z2Mass, Z2Pt, Z2Flav, Z2Mass);
 
@@ -884,7 +1016,17 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   Float_t phistar2      = cand.userFloat("phistar2");
   Float_t xi            = cand.userFloat("xi");
   Float_t xistar        = cand.userFloat("xistar");
-  myTree->FillAngularInfo(costhetastar, phi, costheta1, costheta2, phistar1, phistar2,xi,xistar);
+  float angularinfo[8]={costhetastar, phi, costheta1, costheta2, phistar1, phistar2,xi,xistar};
+  TString angleName[8]={
+    "costhetastar",
+    "helphi",
+    "helcosthetaZ1",
+    "helcosthetaZ2",
+    "phistarZ1",
+    "phistarZ2",
+    "xi",
+    "xistar"};
+  myTree->SetVariables((TString *)angleName,(double *)angularinfo,8);
 
   // Retrieve the userFloat of the leptons in vectors ordered in the same way.
   vector<float> SIP(4);
@@ -893,7 +1035,8 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   vector<float> PFPhotonIso(4);
   vector<float> combRelIsoPF(4);
   vector<bool>  isID(4);
-
+  
+  
   for (unsigned int i=0; i<leptons.size(); ++i){
     SIP[i]             = userdatahelpers::getUserFloat(leptons[i],"SIP");
     PFChargedHadIso[i] = userdatahelpers::getUserFloat(leptons[i],"PFChargedHadIso");
@@ -911,45 +1054,71 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
       SIP[i] = cand.userFloat(labels[i]+"SIP");
     }
 
-
     //Fill the info on the lepton candidates  
-    myTree->FillLepInfo(leptons[i]->pt(),
-			leptons[i]->eta(),
-			leptons[i]->phi(),
-			leptons[i]->pdgId(),
-			SIP[i],
-			isID[i],
-			userdatahelpers::getUserFloat(leptons[i],"BDT"),
-			userdatahelpers::getUserFloat(leptons[i],"MCParentCode"), // This is dummy as of now.
-			userdatahelpers::getUserFloat(leptons[i],"missingHit"));
-
-    //Isolation variables
-    myTree->FillLepIsolInfo(PFChargedHadIso[i],
-			    PFNeutralHadIso[i],
-			    PFPhotonIso[i], 
-			    combRelIsoPF[i]);
+    TString lepnames[]={"Pt",  "Eta","Phi", "LepId", "SIP", "isID", "BDT","missingHit","chargedHadIso","neutralHadIso","photonIso","combRelIsoPF"};
+    for(int ilep=0;ilep<12;ilep++)lepnames[i].Prepend("Lep%d",i);
+    double lepVariables[]={(double)leptons[i]->pt(),
+			(double)leptons[i]->eta(),
+			(double)leptons[i]->phi(),
+			(double)leptons[i]->pdgId(),
+			(double)SIP[i],
+			(double)isID[i],
+			(double)userdatahelpers::getUserFloat(leptons[i],"BDT"),
+			//userdatahelpers::getUserFloat(leptons[i],"MCParentCode"), // This is dummy as of now.
+			(double)userdatahelpers::getUserFloat(leptons[i],"missingHit"),
+			(double)PFChargedHadIso[i],
+			(double)PFNeutralHadIso[i],
+			(double)PFPhotonIso[i], 
+			(double)combRelIsoPF[i]
+			};
+    myTree->SetVariables((TString *)lepnames,(double *)lepVariables,8);
   }
   
   //convention: 0 -> 4mu   1 -> 4e   2 -> 2mu2e
-  float hqtw = getHqTWeight(ZZMass,ZZPt);
   float zxw = 1.0;
   if(CRflag){
     for(int izx=0;izx<2;izx++)
       zxw *= getFakeWeight(Z2->daughter(izx)->pt(),Z2->daughter(izx)->eta(),Z2->daughter(izx)->pdgId(),Z1->daughter(0)->pdgId());
   }
   
-  myTree->FillHInfo(ZZMass, ZZMassErr, ZZMassErrCorr, ZZMassPreFSR, ZZMassRefit, Chi2KinFit, ZZMassCFit, Chi2CFit,  sel, ZZPt, ZZEta, ZZPhi,
-		    isSignal, isRightPair, hqtw, zxw, CRflag);
+  double hinfo[14]={ZZMass, ZZMassErr, ZZMassErrCorr, ZZMassPreFSR, ZZMassRefit, (double)sel, ZZPt, ZZEta, ZZPhi, (double)CRflag,
+    Chi2KinFit, ZZMassCFit, Chi2CFit, zxw};
+	TString hinfonames[14]={
+	"ZZMass",
+"ZZMassErr",
+"ZZMassErrCorr",
+"ZZMassPreFSR",
+"ZZMassRefit",
+"ZZsel",
+"ZZPt",
+"ZZEta",
+"ZZPhi",
+"CRflag",
+"ZZChi2KinFit",
+"ZZMassCFit",
+"ZZChi2CFit",
+"ZXFakeweight"
+	};
+  myTree->SetVariables((TString *)hinfonames,(double *)hinfo,14);
 
   //Fill the info on categorization
-  const Int_t nExtraLep = cand.userFloat("nExtraLep");
-  const Int_t nExtraZ = cand.userFloat("nExtraZ");
-  myTree->FillCategorizationInfo(nExtraLep, nExtraZ);
+  myTree->SetVariable("nExtraLep",cand.userFloat("nExtraLep"));
+  myTree->SetVariable("nExtraZ",cand.userFloat("nExtraZ"));
 
   //Fill the info on the extra leptons
-  myTree->FillExtraLepInfo( 1, cand.hasUserCand("ExtraLep1"), (cand.hasUserCand("ExtraLep1") ? cand.userCand("ExtraLep1") : *(new reco::CandidatePtr)) );
-  myTree->FillExtraLepInfo( 2, cand.hasUserCand("ExtraLep2"), (cand.hasUserCand("ExtraLep2") ? cand.userCand("ExtraLep2") : *(new reco::CandidatePtr)) );
-  myTree->FillExtraLepInfo( 3, cand.hasUserCand("ExtraLep3"), (cand.hasUserCand("ExtraLep3") ? cand.userCand("ExtraLep3") : *(new reco::CandidatePtr)) );
+  for(int iExtraLep=1;iExtraLep<4;iExtraLep++){
+    TString extraString;extraString.Form("ExtraLep%d",iExtraLep);
+    if(cand.hasUserCand(extraString.Data())){
+      TString varExtra[4]={"Pt","Eta","Phi","LepId"};
+      for(int iextra=0;iextra<4;iextra++)varExtra[iextra].Prepend(extraString.Data());
+      reco::CandidatePtr candPtr=cand.userCand(extraString.Data());
+      double valuesExtra[4]={candPtr->pt(),candPtr->eta(),candPtr->phi(),(double)candPtr->pdgId()};
+      myTree->SetVariables((TString *)varExtra,(double *)valuesExtra,4);
+    }
+  }
+  //myTree->FillExtraLepInfo( 1, cand.hasUserCand("ExtraLep1"), (cand.hasUserCand("ExtraLep1") ? cand.userCand("ExtraLep1") : *(new reco::CandidatePtr)) );
+  //myTree->FillExtraLepInfo( 2, cand.hasUserCand("ExtraLep2"), (cand.hasUserCand("ExtraLep2") ? cand.userCand("ExtraLep2") : *(new reco::CandidatePtr)) );
+  //myTree->FillExtraLepInfo( 3, cand.hasUserCand("ExtraLep3"), (cand.hasUserCand("ExtraLep3") ? cand.userCand("ExtraLep3") : *(new reco::CandidatePtr)) );
 
 }
 
@@ -1184,6 +1353,339 @@ Float_t HZZ4lNtupleMaker::getFakeWeight(const Float_t LepPt, const Float_t LepEt
 
 } // end of getFakeWeight
 
+void HZZ4lNtupleMaker::BookAllBranches(){
+   //Event variables
+  myTree->Book("RunNumber",0,HZZ4lNtupleFactory::kInt);
+  myTree->Book("EventNumber",0,HZZ4lNtupleFactory::kLong);
+  myTree->Book("LumiNumber",0,HZZ4lNtupleFactory::kInt);
+  myTree->Book("iBC",0,HZZ4lNtupleFactory::kInt);
+  myTree->Book("Nvtx",0,HZZ4lNtupleFactory::kInt);
+  myTree->Book("NObsInt",0,HZZ4lNtupleFactory::kInt);
+  myTree->Book("NTrueInt",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("PUWeight12",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("PFMET",-99,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("nJets",0,HZZ4lNtupleFactory::kInt);
+  myTree->Book("nCleanedJets",0,HZZ4lNtupleFactory::kInt);
+  myTree->Book("nCleanedJetsPt30",0,HZZ4lNtupleFactory::kInt);
+  myTree->Book("nCleanedJetsPt30BTagged",0,HZZ4lNtupleFactory::kInt);
+  myTree->Book("trigWord",0,HZZ4lNtupleFactory::kFloat);
+  
+  //H variables
+  myTree->Book("ZZMass",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("ZZMassErr",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("ZZMassErrCorr",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("ZZMassPreFSR",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("ZZsel",0,HZZ4lNtupleFactory::kInt);
+  myTree->Book("ZZPt",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("ZZEta",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("ZZPhi",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("CRflag",0,HZZ4lNtupleFactory::kInt);
+
+
+  //Z1 variables
+  myTree->Book("Z1Mass",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Z1Pt",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Z1Flav",0,HZZ4lNtupleFactory::kFloat);
+
+  //Kin refitted info
+  if (addKinRefit) {
+    myTree->Book("ZZMassRefit",0,HZZ4lNtupleFactory::kFloat);
+    myTree->Book("ZZChi2KinFit",0,HZZ4lNtupleFactory::kFloat);
+    myTree->Book("Z1MassRefit",0,HZZ4lNtupleFactory::kFloat);
+  }
+
+  if (addVtxFit){
+    myTree->Book("ZZMassCFit",0,HZZ4lNtupleFactory::kFloat);
+    myTree->Book("ZZChi2CFit",0,HZZ4lNtupleFactory::kFloat);
+
+  }
+
+  //Z2 variables
+  myTree->Book("Z2Mass",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Z2Pt",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Z2Flav",0,HZZ4lNtupleFactory::kFloat);
+
+  //Angular variables
+  myTree->Book("costhetastar",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("helphi",0,HZZ4lNtupleFactory::kFloat);
+//   myTree->Book("helphiZ1",0,HZZ4lNtupleFactory::kFloat);
+//   myTree->Book("helphiZ2",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("helcosthetaZ1",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("helcosthetaZ2",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("phistarZ1",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("phistarZ2",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("xi",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("xistar",0,HZZ4lNtupleFactory::kFloat);
+
+  //Lepton variables
+  myTree->Book("Lep1Pt",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep1Eta",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep1Phi",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep1LepId",0,HZZ4lNtupleFactory::kInt);
+  myTree->Book("Lep1SIP",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep1isID",0,HZZ4lNtupleFactory::kBool);
+  myTree->Book("Lep1BDT",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep1missingHit",0,HZZ4lNtupleFactory::kChar);
+  //--> Commented as these parentIDs are not computed at the moment
+  //  myTree->Book("Lep1ParentId",0,HZZ4lNtupleFactory::kFloat);
+
+  myTree->Book("Lep2Pt",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep2Eta",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep2Phi",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep2LepId",0,HZZ4lNtupleFactory::kInt);
+  myTree->Book("Lep2SIP",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep2isID",0,HZZ4lNtupleFactory::kBool);
+  myTree->Book("Lep2BDT",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep2missingHit",0,HZZ4lNtupleFactory::kChar);
+  //  myTree->Book("Lep2ParentId",0,HZZ4lNtupleFactory::kFloat);
+
+  myTree->Book("Lep3Pt",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep3Eta",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep3Phi",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep3LepId",0,HZZ4lNtupleFactory::kInt);
+  myTree->Book("Lep3SIP",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep3isID",0,HZZ4lNtupleFactory::kBool);
+  myTree->Book("Lep3BDT",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep3missingHit",0,HZZ4lNtupleFactory::kChar);
+  //  myTree->Book("Lep3ParentId",0,HZZ4lNtupleFactory::kFloat);
+
+  myTree->Book("Lep4Pt",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep4Eta",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep4Phi",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep4LepId",0,HZZ4lNtupleFactory::kInt);
+  myTree->Book("Lep4SIP",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep4isID",0,HZZ4lNtupleFactory::kBool);
+  myTree->Book("Lep4BDT",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep4missingHit",0,HZZ4lNtupleFactory::kChar);
+  //  myTree->Book("Lep4ParentId",0,HZZ4lNtupleFactory::kFloat);
+
+  //Lepton isolation variables
+  myTree->Book("Lep1chargedHadIso",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep1neutralHadIso",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep1photonIso",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep1combRelIsoPF",0,HZZ4lNtupleFactory::kFloat);
+
+  myTree->Book("Lep2chargedHadIso",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep2neutralHadIso",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep2photonIso",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep2combRelIsoPF",0,HZZ4lNtupleFactory::kFloat);
+
+  myTree->Book("Lep3chargedHadIso",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep3neutralHadIso",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep3photonIso",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep3combRelIsoPF",0,HZZ4lNtupleFactory::kFloat);
+
+  myTree->Book("Lep4chargedHadIso",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep4neutralHadIso",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep4photonIso",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Lep4combRelIsoPF",0,HZZ4lNtupleFactory::kFloat);
+
+  //Photon variables
+  if (writePhotons) {
+    myTree->Book("PhotPt",0,HZZ4lNtupleFactory::kFloat);
+    myTree->Book("PhotEta",0,HZZ4lNtupleFactory::kFloat);
+    myTree->Book("PhotPhi",0,HZZ4lNtupleFactory::kFloat);
+  }
+
+  //Discriminants
+  myTree->Book("p0plus_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p0minus_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p0plus_VAMCFM",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p0hplus_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p1_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p1_prodIndep_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p1plus_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p1plus_prodIndep_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p2_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p2_prodIndep_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p2qqb_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p2hplus_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p2hminus_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p2bplus_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+
+  myTree->Book("p2hplus_qqb_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p2hplus_prodIndep_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p2hminus_qqb_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p2hminus_prodIndep_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p2bplus_qqb_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p2bplus_prodIndep_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p2h2plus_gg_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p2h2plus_qqbar_VAJHU"               ,               0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p2h2plus_prodIndep_VAJHU"   ,       0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p2h3plus_gg_VAJHU"          ,       0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p2h3plus_qqbar_VAJHU"       ,       0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p2h3plus_prodIndep_VAJHU"   ,       0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p2h6plus_gg_VAJHU"          ,       0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p2h6plus_qqbar_VAJHU"       ,       0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p2h6plus_prodIndep_VAJHU"   ,       0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p2h7plus_gg_VAJHU"          ,       0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p2h7plus_qqbar_VAJHU"       ,       0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p2h7plus_prodIndep_VAJHU"   ,       0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p2h9minus_gg_VAJHU"         ,               0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p2h9minus_qqbar_VAJHU"      ,               0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p2h9minus_prodIndep_VAJHU"  ,               0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p2h10minus_gg_VAJHU"       ,                0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p2h10minus_qqbar_VAJHU"    ,                0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p2h10minus_prodIndep_VAJHU",                0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("bkg_VAMCFM",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("bkg_prodIndep_VAMCFM",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("ggzz_VAMCFM",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("ggzz_p0plus_VAMCFM",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("ggzz_c1_VAMCFM",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("ggzz_c5_VAMCFM",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("ggzz_ci_VAMCFM",0,HZZ4lNtupleFactory::kFloat);
+  
+  myTree->Book("p0plus_m4l",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("bkg_m4l",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pg1g4_mela",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pg1g4_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pg1g4_pi2_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pg1g2_pi2_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pg1g2_mela",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pg1g2_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+
+  myTree->Book("p0plus_m4l_ScaleUp",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("bkg_m4l_ScaleUp",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p0plus_m4l_ScaleDown",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("bkg_m4l_ScaleDown",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p0plus_m4l_ResUp",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("bkg_m4l_ResUp",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p0plus_m4l_ResDown",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("bkg_m4l_ResDown",0,HZZ4lNtupleFactory::kFloat);
+
+  //Production MELA
+  myTree->Book("phjj_VAJHU_old",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pvbf_VAJHU_old",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("phjj_VAJHU_old_up",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pvbf_VAJHU_old_up",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("phjj_VAJHU_old_dn",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pvbf_VAJHU_old_dn",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("phjj_VAJHU_new",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pvbf_VAJHU_new",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("phjj_VAJHU_new_up",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pvbf_VAJHU_new_up",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("phjj_VAJHU_new_dn",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pvbf_VAJHU_new_dn",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p0_g1prime2_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pg1g1prime2_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Dgg10_VAMCFM",0,HZZ4lNtupleFactory::kFloat);
+
+  myTree->Book("pzzzg_VAJHU",      0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pzzgg_VAJHU",      0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pzzzg_PS_VAJHU",   0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pzzgg_PS_VAJHU",   0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p0Zgs_VAJHU",      0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p0gsgs_VAJHU",     0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p0Zgs_PS_VAJHU",   0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p0gsgs_PS_VAJHU",  0,HZZ4lNtupleFactory::kFloat);
+  
+  //Jet variables
+  myTree->Book("JetPt",0,HZZ4lNtupleFactory::kVectorFloat);
+  myTree->Book("JetEta",0,HZZ4lNtupleFactory::kVectorFloat);
+  myTree->Book("JetPhi",0,HZZ4lNtupleFactory::kVectorFloat);
+  myTree->Book("JetMass",0,HZZ4lNtupleFactory::kVectorFloat);
+  myTree->Book("JetBTagger",0,HZZ4lNtupleFactory::kVectorFloat);
+  myTree->Book("JetIsBtagged",0,HZZ4lNtupleFactory::kVectorFloat);
+  myTree->Book("JetQGLikelihood",0,HZZ4lNtupleFactory::kVectorFloat);
+  myTree->Book("JetSigma",0,HZZ4lNtupleFactory::kVectorFloat);
+  myTree->Book("DiJetMass",-99,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("DiJetMassPlus",-99,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("DiJetMassMinus",-99,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("DiJetDEta",-99,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("DiJetFisher",-99,HZZ4lNtupleFactory::kFloat);
+
+  //Categorization-related variables
+  myTree->Book("nExtraLep",0,HZZ4lNtupleFactory::kInt);
+  myTree->Book("nExtraZ",0,HZZ4lNtupleFactory::kInt);
+
+  //Variables of extra leptons
+  myTree->Book("ExtraLepPt",0,HZZ4lNtupleFactory::kVectorFloat);
+  myTree->Book("ExtraLepEta",0,HZZ4lNtupleFactory::kVectorFloat);
+  myTree->Book("ExtraLepPhi",0,HZZ4lNtupleFactory::kVectorFloat);
+  myTree->Book("ExtraLepLepId",0,HZZ4lNtupleFactory::kVectorFloat);
+
+
+// Extended information on extra leptons.
+// Currently not used, skip them for the time being
+//   myTree->Book("ExtraLep1SIP",0,HZZ4lNtupleFactory::kFloat);
+//   myTree->Book("ExtraLep1isID",0,HZZ4lNtupleFactory::kFloat);
+//   myTree->Book("ExtraLep1BDT",0,HZZ4lNtupleFactory::kFloat);
+//   myTree->Book("ExtraLep1missingHit",0,HZZ4lNtupleFactory::kFloat);
+//   myTree->Book("ExtraLep1chargedHadIso",0,HZZ4lNtupleFactory::kFloat);
+//   myTree->Book("ExtraLep1neutralHadIso",0,HZZ4lNtupleFactory::kFloat);
+//   myTree->Book("ExtraLep1photonIso",0,HZZ4lNtupleFactory::kFloat);
+//   myTree->Book("ExtraLep1combRelIsoPF",0,HZZ4lNtupleFactory::kFloat);
+//
+//   myTree->Book("ExtraLep2SIP",0,HZZ4lNtupleFactory::kFloat);
+//   myTree->Book("ExtraLep2isID",0,HZZ4lNtupleFactory::kFloat);
+//   myTree->Book("ExtraLep2BDT",0,HZZ4lNtupleFactory::kFloat);
+//   myTree->Book("ExtraLep2missingHit",0,HZZ4lNtupleFactory::kFloat);
+//   myTree->Book("ExtraLep2chargedHadIso",0,HZZ4lNtupleFactory::kFloat);
+//   myTree->Book("ExtraLep2neutralHadIso",0,HZZ4lNtupleFactory::kFloat);
+//   myTree->Book("ExtraLep2photonIso",0,HZZ4lNtupleFactory::kFloat);
+//   myTree->Book("ExtraLep2combRelIsoPF",0,HZZ4lNtupleFactory::kFloat);
+//
+//   myTree->Book("ExtraLep3SIP",0,HZZ4lNtupleFactory::kFloat);
+//   myTree->Book("ExtraLep3isID",0,HZZ4lNtupleFactory::kFloat);
+//   myTree->Book("ExtraLep3BDT",0,HZZ4lNtupleFactory::kFloat);
+//   myTree->Book("ExtraLep3missingHit",0,HZZ4lNtupleFactory::kFloat);
+//   myTree->Book("ExtraLep3chargedHadIso",0,HZZ4lNtupleFactory::kFloat);
+//   myTree->Book("ExtraLep3neutralHadIso",0,HZZ4lNtupleFactory::kFloat);
+//   myTree->Book("ExtraLep3photonIso",0,HZZ4lNtupleFactory::kFloat);
+//   myTree->Book("ExtraLep3combRelIsoPF",0,HZZ4lNtupleFactory::kFloat);
+
+  // Gen variables
+  // FIXME: don't book these fo data so we save some disk space...
+  myTree->Book("genFinalState",0,HZZ4lNtupleFactory::kInt);
+  myTree->Book("genProcessId",0,HZZ4lNtupleFactory::kInt);
+  myTree->Book("genHEPMCweight",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("genExtInfo",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("xsec",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("dataMCWeight",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("HqTMCweight",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("ZXFakeweight",0,HZZ4lNtupleFactory::kFloat);
+
+  myTree->Book("GenHMass",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("GenHPt",0,HZZ4lNtupleFactory::kFloat);
+
+  myTree->Book("GenZ1Mass",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("GenZ1Pt",0,HZZ4lNtupleFactory::kFloat);
+
+  myTree->Book("GenZ2Mass",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("GenZ2Pt",0,HZZ4lNtupleFactory::kFloat);
+
+  myTree->Book("GenLep1Pt",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("GenLep1Eta",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("GenLep1Phi",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("GenLep1Id",0,HZZ4lNtupleFactory::kFloat);
+
+  myTree->Book("GenLep2Pt",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("GenLep2Eta",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("GenLep2Phi",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("GenLep2Id",0,HZZ4lNtupleFactory::kFloat);
+
+  myTree->Book("GenLep3Pt",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("GenLep3Eta",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("GenLep3Phi",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("GenLep3Id",0,HZZ4lNtupleFactory::kFloat);
+
+  myTree->Book("GenLep4Pt",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("GenLep4Eta",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("GenLep4Phi",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("GenLep4Id",0,HZZ4lNtupleFactory::kFloat);
+
+  myTree->Book("GenAssocLep1Pt",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("GenAssocLep1Eta",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("GenAssocLep1Phi",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("GenAssocLep1Id",0,HZZ4lNtupleFactory::kFloat);
+
+  myTree->Book("GenAssocLep2Pt",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("GenAssocLep2Eta",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("GenAssocLep2Phi",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("GenAssocLep2Id",0,HZZ4lNtupleFactory::kFloat);
+
+
+}
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(HZZ4lNtupleMaker);
