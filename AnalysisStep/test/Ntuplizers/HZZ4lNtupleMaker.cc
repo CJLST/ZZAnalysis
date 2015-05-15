@@ -61,6 +61,9 @@ namespace {
   bool writeJets = true;     // Write jets in the tree. FIXME: make this configurable
   bool addKinRefit = false;
   bool addVtxFit = false;
+  bool skipDataMCWeight = true; // skip computation of data/MC weight 
+  bool skipFakeWeight = true;   // skip computation of fake rate weight for CRs
+  bool skipHqTWeight = true;    // skip computation of hQT weight 
 }
 
 using namespace std;
@@ -89,9 +92,9 @@ private:
   virtual void FillJet(const pat::Jet& jet);
   virtual void endJob() ;
 
-  Float_t getAllWeight(const Float_t LepPt, const Float_t LepEta, Int_t LepID) const;
+  Float_t getAllWeight(Float_t LepPt, Float_t LepEta, Int_t LepID) const;
   Float_t getHqTWeight(double mH, double genPt) const;
-  Float_t getFakeWeight(const Float_t LepPt, const Float_t LepEta, Int_t LepID, Int_t LepZ1ID);
+  Float_t getFakeWeight(Float_t LepPt, Float_t LepEta, Int_t LepID, Int_t LepZ1ID);
 
   // ----------member data ---------------------------
   ZZ4lConfigHelper myHelper;
@@ -195,65 +198,68 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   gen_sumGenMCWeight = 0.f;
   gen_sumWeights =0.f;
   
-  //Scale factors for data/MC efficiency
-  //FIXME: to adjust for 13 TeV
-  float Run2011AFraction=0.465;
-  TString yearString;yearString.Form("TH2D_ALL_%d",year);
-  if(year==2011){
-    TRandom3 randomGenerator(0);
-    Float_t whatPeriod = randomGenerator.Uniform();
-    if(whatPeriod < Run2011AFraction) yearString.Append("A");
-    else yearString.Append("B");
+  if (!skipDataMCWeight) {
+    //Scale factors for data/MC efficiency
+    //FIXME: to adjust for 13 TeV
+    float Run2011AFraction=0.465;
+    TString yearString;yearString.Form("TH2D_ALL_%d",year);
+    if(year==2011){
+      TRandom3 randomGenerator(0);
+      Float_t whatPeriod = randomGenerator.Uniform();
+      if(whatPeriod < Run2011AFraction) yearString.Append("A");
+      else yearString.Append("B");
+    }
+    TString filename;filename.Form("ZZAnalysis/AnalysisStep/test/Macros/scale_factors_muons%d.root",year); 
+    if(year==2015){
+      filename.Form("ZZAnalysis/AnalysisStep/test/Macros/scale_factors_muons%d.root",2012); //FIXME
+      yearString.Form("TH2D_ALL_%d",2012);
+    }
+    edm::FileInPath fip(filename.Data());
+    std::string fipPath=fip.fullPath();
+    TFile *fMuWeight = TFile::Open(fipPath.data(),"READ");
+    hTH2D_Mu_All = (TH2D*)fMuWeight->Get(yearString.Data())->Clone(); 
+
+    filename.Form("ZZAnalysis/AnalysisStep/test/Macros/scale_factors_ele%d.root",year); 
+    if(year==2015)filename.Form("ZZAnalysis/AnalysisStep/test/Macros/scale_factors_ele%d.root",2012);//FIXME  
+    edm::FileInPath fipEle(filename.Data());
+    fipPath=fipEle.fullPath();
+    TFile *fEleWeight = TFile::Open(fipPath.data(),"READ");
+    hTH2D_El_All = (TH2D*)fEleWeight->Get("h_electronScaleFactor_RecoIdIsoSip")->Clone();
+    fMuWeight->Close();
+    fEleWeight->Close();
   }
-  TString filename;filename.Form("ZZAnalysis/AnalysisStep/test/Macros/scale_factors_muons%d.root",year); 
-  if(year==2015){
-    filename.Form("ZZAnalysis/AnalysisStep/test/Macros/scale_factors_muons%d.root",2012); //FIXME
-    yearString.Form("TH2D_ALL_%d",2012);
+  
+  if (!skipHqTWeight) {
+    //HqT weights
+    edm::FileInPath HqTfip("ZZAnalysis/AnalysisStep/test/Macros/HqTWeights.root");
+    std::string fipPath=HqTfip.fullPath();
+    TFile *fHqt = TFile::Open(fipPath.data(),"READ");
+    h_weight = (TH2D*)fHqt->Get("wH_400")->Clone();//FIXME: Ask simon to provide the 2D histo
+    fHqt->Close();
   }
-  edm::FileInPath fip(filename.Data());
-  std::string fipPath=fip.fullPath();
-  TFile *fMuWeight = TFile::Open(fipPath.data(),"READ");
-  hTH2D_Mu_All = (TH2D*)fMuWeight->Get(yearString.Data())->Clone(); 
-
-  filename.Form("ZZAnalysis/AnalysisStep/test/Macros/scale_factors_ele%d.root",year); 
-  if(year==2015)filename.Form("ZZAnalysis/AnalysisStep/test/Macros/scale_factors_ele%d.root",2012);//FIXME  
-  edm::FileInPath fipEle(filename.Data());
-  fipPath=fipEle.fullPath();
-  TFile *fEleWeight = TFile::Open(fipPath.data(),"READ");
-  hTH2D_El_All = (TH2D*)fEleWeight->Get("h_electronScaleFactor_RecoIdIsoSip")->Clone();
-     
-  //HqT weights
-  edm::FileInPath HqTfip("ZZAnalysis/AnalysisStep/test/Macros/HqTWeights.root");
-  fipPath=HqTfip.fullPath();
-  TFile *fHqt = TFile::Open(fipPath.data(),"READ");
-  h_weight = (TH2D*)fHqt->Get("wH_400")->Clone();//FIXME: Ask simon to provide the 2D histo
-
-  //CR fake rate weight
-  filename.Form("ZZAnalysis/AnalysisStep/test/Macros/FR2_2011_AA_electron.root");
-  if(year==2015)filename.Form("ZZAnalysis/AnalysisStep/test/Macros/FR2_AA_ControlSample_ABCD.root");
-  edm::FileInPath fipEleZX(filename.Data());
-  fipPath=fipEleZX.fullPath();
-  TFile *FileZXWeightEle = TFile::Open(fipPath.data(),"READ");
   
-  filename.Form("ZZAnalysis/AnalysisStep/test/Macros/FR2_2011_AA_muon.root");
-  if(year==2015)filename.Form("ZZAnalysis/AnalysisStep/test/Macros/FR2_AA_muon.root");
-  edm::FileInPath fipMuZX(filename.Data());
-  fipPath=fipMuZX.fullPath();  
-  TFile *FileZXWeightMuo = TFile::Open(fipPath.data(),"READ");
+  if (!skipFakeWeight) {
+    //CR fake rate weight
+    TString filename;filename.Form("ZZAnalysis/AnalysisStep/test/Macros/FR2_2011_AA_electron.root");
+    if(year==2015)filename.Form("ZZAnalysis/AnalysisStep/test/Macros/FR2_AA_ControlSample_ABCD.root");
+    edm::FileInPath fipEleZX(filename.Data());
+    std::string fipPath=fipEleZX.fullPath();
+    TFile *FileZXWeightEle = TFile::Open(fipPath.data(),"READ");
   
-  h_ZXWeight[0]=(TH2D*)FileZXWeightEle->Get("eff_Z1ee_plus_electron")->Clone();
-  h_ZXWeight[1]=(TH2D*)FileZXWeightEle->Get("eff_Z1mumu_plus_electron")->Clone();
-  h_ZXWeight[2]=(TH2D*)FileZXWeightMuo->Get("eff_Z1ee_plus_muon")->Clone();
-  h_ZXWeight[3]=(TH2D*)FileZXWeightMuo->Get("eff_Z1mumu_plus_muon")->Clone();
+    filename.Form("ZZAnalysis/AnalysisStep/test/Macros/FR2_2011_AA_muon.root");
+    if(year==2015)filename.Form("ZZAnalysis/AnalysisStep/test/Macros/FR2_AA_muon.root");
+    edm::FileInPath fipMuZX(filename.Data());
+    fipPath=fipMuZX.fullPath();  
+    TFile *FileZXWeightMuo = TFile::Open(fipPath.data(),"READ");
+  
+    h_ZXWeight[0]=(TH2D*)FileZXWeightEle->Get("eff_Z1ee_plus_electron")->Clone();
+    h_ZXWeight[1]=(TH2D*)FileZXWeightEle->Get("eff_Z1mumu_plus_electron")->Clone();
+    h_ZXWeight[2]=(TH2D*)FileZXWeightMuo->Get("eff_Z1ee_plus_muon")->Clone();
+    h_ZXWeight[3]=(TH2D*)FileZXWeightMuo->Get("eff_Z1mumu_plus_muon")->Clone();
 
-  fMuWeight->Close();
-  fEleWeight->Close();
-  fHqt->Close();
-  FileZXWeightEle->Close();
-  FileZXWeightMuo->Close();
-    
-  //cout<<"Booking branches\n\n\n"<<endl;
-
+    FileZXWeightEle->Close();
+    FileZXWeightMuo->Close();
+  }
 }
 
 HZZ4lNtupleMaker::~HZZ4lNtupleMaker()
@@ -488,23 +494,31 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   }
   
     //Save general event info in the tree
-  Int_t NbestCand = -1; //FIXME now store only 1 candidate in the SR, but we still have to save iBC correctly in the SR
-  if (theChannel==ZZ) NbestCand=0;
   //myTree->FillEventInfo(event.id().run(), event.id().event(), event.luminosityBlock(), NbestCand, vertexs->size(), nObsInt, nTrueInt, weight2, pfmet, pfjetscoll->size(), cleanedJets.size(), cleanedJetsPt30.size(), nCleanedJetsPt30BTagged, genFinalState, genProcessId, genHEPMCweight, trigWord, genExtInfo,xsec);
-  double eventinfo[17]={(double)event.id().run(),(double)event.luminosityBlock(),(double)NbestCand, (double)vertexs->size(), 
-    (double)nObsInt, (double)nTrueInt, (double)weight2, (double)pfmet, (double)cleanedJets.size(), 
-    (double)cleanedJetsPt30.size(), (double)nCleanedJetsPt30BTagged, (double)genFinalState, (double)genProcessId, 
-    (double)genHEPMCweight, (double)trigWord, (double)genExtInfo,(double)xsec};
-  TString eventnames[17]={
+  double eventinfo[16]={(double)event.id().run(),
+			(double)event.luminosityBlock(), 
+			(double)vertexs->size(), 
+			(double)nObsInt, 
+			(double)nTrueInt, 
+			(double)weight2, 
+			(double)pfmet, 
+			(double)cleanedJets.size(), 
+			(double)cleanedJetsPt30.size(), 
+			(double)nCleanedJetsPt30BTagged, 
+			(double)genFinalState, 
+			(double)genProcessId,
+			(double)genHEPMCweight, 
+			(double)trigWord, 
+			(double)genExtInfo,
+			(double)xsec};
+  TString eventnames[16]={
     "RunNumber",
     "LumiNumber",
-    "iBC",
     "Nvtx",
     "NObsInt",
     "NTrueInt",
-    "PUWeight12",
+    "PUWeight",
     "PFMET",
-    //"nJets",
     "nCleanedJets",
     "nCleanedJetsPt30",
     "nCleanedJetsPt30BTagged",
@@ -513,9 +527,9 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     "genHEPMCweight",
     "trigWord",
     "genExtInfo",
-    "xsec",
+    "xsec"
   };
-  myTree->SetVariables((TString *)eventnames,(double *)eventinfo,17);
+  myTree->SetVariables((TString *)eventnames,(double *)eventinfo,16);
   myTree->SetVariableLong("EventNumber",event.id().event());
   
   //Loop on the candidates
@@ -581,9 +595,9 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
 void HZZ4lNtupleMaker::FillPhoton(const pat::Photon& photon)
 {
-  const Float_t photPt  = photon.pt();
-  const Float_t photEta = photon.eta();
-  const Float_t photPhi = photon.phi();
+  Float_t photPt  = photon.pt();
+  Float_t photEta = photon.eta();
+  Float_t photPhi = photon.phi();
 
   TString names[3]={"PhotPt","PhotEta","PhotPhi"};
   double vars[3]={photPt, photEta, photPhi};
@@ -594,14 +608,14 @@ void HZZ4lNtupleMaker::FillPhoton(const pat::Photon& photon)
 
 void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
 {
-  const Float_t jetPt  = jet.pt();
-  const Float_t jetEta = jet.eta();
-  const Float_t jetPhi = jet.phi();
-  const Float_t jetMass = jet.p4().M();
-  const Float_t jetBTagger = jet.bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags");
-  const Float_t jetIsBtagged = jet.userFloat("isBtagged");
-  const Float_t jetQGLikelihood = jet.userFloat("qgLikelihood");
-  const Float_t jesUnc = 0.;//jet.uncOnFourVectorScale();
+  Float_t jetPt  = jet.pt();
+  Float_t jetEta = jet.eta();
+  Float_t jetPhi = jet.phi();
+  Float_t jetMass = jet.p4().M();
+  Float_t jetBTagger = jet.bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags");
+  Float_t jetIsBtagged = jet.userFloat("isBtagged");
+  Float_t jetQGLikelihood = jet.userFloat("qgLikelihood");
+  Float_t jesUnc = 0.;//jet.uncOnFourVectorScale();
 
   //myTree->FillJetInfo( );
   TString names[8]={"JetPt","JetEta","JetPhi","JetMass","JetBTagger","JetIsBtagged","JetQGLikelihood","JetSigma"};
@@ -625,133 +639,135 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   //Chi2 e chi2constr
 
   //Fill the info on the Higgs candidate
-  const Float_t ZZMass = cand.p4().mass();
-  const Float_t ZZMassErr = cand.userFloat("massError");
-  const Float_t ZZMassErrCorr = cand.userFloat("massErrorCorr");
-  const Float_t ZZMassPreFSR = cand.userFloat("m4l");
-  const Float_t ZZMassRefit = cand.userFloat("m4lRef");
-  const Float_t Chi2KinFit = cand.userFloat("chi2Fit");
-  const Float_t ZZMassCFit = cand.userFloat("CFitM");
-  const Float_t Chi2CFit = cand.userFloat("CFitChi2");
+  Float_t ZZMass = cand.p4().mass();
+  Float_t ZZMassErr = cand.userFloat("massError");
+  Float_t ZZMassErrCorr = cand.userFloat("massErrorCorr");
+  Float_t ZZMassPreFSR = cand.userFloat("m4l");  
+  // FIXME: Other variables to be added if addKinRefit or addVtxFit == true:
+//   Float_t Z1MassRefit = cand.userFloat("mZ1Ref");
+//   Float_t ZZMassRefit = cand.userFloat("m4lRef");
+//   Float_t Chi2KinFit = cand.userFloat("chi2Fit");
+//   Float_t ZZMassCFit = cand.userFloat("CFitM");
+//   Float_t Chi2CFit = cand.userFloat("CFitChi2");
   
-  const Float_t ZZPt  = cand.p4().pt();
-  const Float_t ZZEta = cand.p4().eta();
-  const Float_t ZZPhi = cand.p4().phi();
-  //const Float_t ZZLD = cand.userFloat("LD");
-  //const Float_t ZZLDPSig = cand.userFloat("PSig");
-  //const Float_t ZZLDPBkg = cand.userFloat("PBkg");
-  //const Float_t ZZpseudoLD = cand.userFloat("pseudoLD");
-  //const Float_t ZZgravLD = cand.userFloat("spin2PMLD");
-  //const Float_t ZZMEKDLD = cand.userFloat("MEKD_LD");
-  //const Float_t ZZMEKDpseudoLD = cand.userFloat("MEKD_PseudoLD");
-  //const Float_t ZZMEKDgravLD = cand.userFloat("MEKD_GravLD");
+  Float_t ZZPt  = cand.p4().pt();
+  Float_t ZZEta = cand.p4().eta();
+  Float_t ZZPhi = cand.p4().phi();
+  //Float_t ZZLD = cand.userFloat("LD");
+  //Float_t ZZLDPSig = cand.userFloat("PSig");
+  //Float_t ZZLDPBkg = cand.userFloat("PBkg");
+  //Float_t ZZpseudoLD = cand.userFloat("pseudoLD");
+  //Float_t ZZgravLD = cand.userFloat("spin2PMLD");
+  //Float_t ZZMEKDLD = cand.userFloat("MEKD_LD");
+  //Float_t ZZMEKDpseudoLD = cand.userFloat("MEKD_PseudoLD");
+  //Float_t ZZMEKDgravLD = cand.userFloat("MEKD_GravLD");
 
-  //const Float_t p0plus_melaNorm = cand.userFloat("p0plus_melaNorm");
-  //const Float_t p0plus_mela = cand.userFloat("p0plus_mela");
-  //const Float_t p0minus_mela = cand.userFloat("p0minus_mela");
-  //const Float_t p0hplus_mela = cand.userFloat("p0hplus_mela"); // 0h+, analytic distribution
-  const Float_t p0plus_VAJHU = cand.userFloat("p0plus_VAJHU");
-  const Float_t p0minus_VAJHU = cand.userFloat("p0minus_VAJHU");
-  const Float_t p0plus_VAMCFM = cand.userFloat("p0plus_VAMCFM");
-  const Float_t p0hplus_VAJHU = cand.userFloat("p0hplus_VAJHU"); // 0h+ (high dimensional operator), vector algebra, JHUgen
-  //const Float_t p1_mela = cand.userFloat("p1_mela");
-  //const Float_t p1_prodIndep_mela = cand.userFloat("p1_prodIndep_mela");
-  //const Float_t p1plus_mela = cand.userFloat("p1plus_mela"); // 1+, analytic distribution 
-  //const Float_t p1plus_prodIndep_mela = cand.userFloat("p1plus_prodIndep_mela"); // 1+, analytic distribution 
-  const Float_t p1_VAJHU = cand.userFloat("p1_VAJHU");
-  const Float_t p1_prodIndep_VAJHU = cand.userFloat("p1_prodIndep_VAJHU");
-  const Float_t p1plus_VAJHU = cand.userFloat("p1plus_VAJHU"); // 1+ (axial vector), vector algebra, JHUgen,
-  const Float_t p1plus_prodIndep_VAJHU = cand.userFloat("p1plus_prodIndep_VAJHU"); // 1+ (axial vector), vector algebra, JHUgen,
-  //const Float_t p2_mela  = cand.userFloat("p2_mela");
-  //const Float_t p2_prodIndep_mela  = cand.userFloat("p2_prodIndep_mela");
-  //const Float_t p2qqb_mela = cand.userFloat("p2qqb_mela"); // graviton produced by qqbar vector algebra, analytical,
-  //const Float_t p2hplus_mela = cand.userFloat("p2hplus_mela"); // graviton produced by qqbar vector algebra, analytical,
-  //const Float_t p2hminus_mela = cand.userFloat("p2hminus_mela"); // graviton produced by qqbar vector algebra, analytical,
-  //const Float_t p2bplus_mela = cand.userFloat("p2bplus_mela"); // graviton produced by qqbar vector algebra, analytical,
-  const Float_t p2_VAJHU = cand.userFloat("p2_VAJHU");
-  const Float_t p2_prodIndep_VAJHU = cand.userFloat("p2_prodIndep_VAJHU");
-  const Float_t p2qqb_VAJHU = cand.userFloat("p2qqb_VAJHU");
-  const Float_t p2hplus_VAJHU = cand.userFloat("p2hplus_VAJHU");
-  const Float_t p2hminus_VAJHU = cand.userFloat("p2hminus_VAJHU");
-  const Float_t p2bplus_VAJHU = cand.userFloat("p2bplus_VAJHU");
-  const Float_t p2hplus_qqb_VAJHU= cand.userFloat(					"p2hplus_qqb_VAJHU");					
-  const Float_t p2hplus_prodIndep_VAJHU= cand.userFloat(		"p2hplus_prodIndep_VAJHU");	
-  const Float_t p2hminus_qqb_VAJHU= cand.userFloat(				"p2hminus_qqb_VAJHU");				
-  const Float_t p2hminus_prodIndep_VAJHU= cand.userFloat(	"p2hminus_prodIndep_VAJHU");	
-  const Float_t p2bplus_qqb_VAJHU= cand.userFloat(					"p2bplus_qqb_VAJHU"				);	
-  const Float_t p2bplus_prodIndep_VAJHU= cand.userFloat(		"p2bplus_prodIndep_VAJHU"		);
-  const Float_t p2h2plus_gg_VAJHU= cand.userFloat(      		"p2h2plus_gg_VAJHU"      		);
-  const Float_t p2h2plus_qqbar_VAJHU= cand.userFloat(   		"p2h2plus_qqbar_VAJHU"   		);
-  const Float_t p2h2plus_prodIndep_VAJHU= cand.userFloat(	"p2h2plus_prodIndep_VAJHU");	
-  const Float_t p2h3plus_gg_VAJHU= cand.userFloat(       	"p2h3plus_gg_VAJHU"       );	
-  const Float_t p2h3plus_qqbar_VAJHU= cand.userFloat(    	"p2h3plus_qqbar_VAJHU"    );	
-  const Float_t p2h3plus_prodIndep_VAJHU= cand.userFloat(	"p2h3plus_prodIndep_VAJHU");	
-  const Float_t p2h6plus_gg_VAJHU= cand.userFloat(       	"p2h6plus_gg_VAJHU"       );	
-  const Float_t p2h6plus_qqbar_VAJHU= cand.userFloat(    	"p2h6plus_qqbar_VAJHU"    );	
-  const Float_t p2h6plus_prodIndep_VAJHU= cand.userFloat(	"p2h6plus_prodIndep_VAJHU");	
-  const Float_t p2h7plus_gg_VAJHU= cand.userFloat(       	"p2h7plus_gg_VAJHU"       );	
-  const Float_t p2h7plus_qqbar_VAJHU= cand.userFloat(    	"p2h7plus_qqbar_VAJHU"    );	
-  const Float_t p2h7plus_prodIndep_VAJHU= cand.userFloat(	"p2h7plus_prodIndep_VAJHU");	
-  const Float_t p2h9minus_gg_VAJHU= cand.userFloat(       	"p2h9minus_gg_VAJHU"       	);
-  const Float_t p2h9minus_qqbar_VAJHU= cand.userFloat(    	"p2h9minus_qqbar_VAJHU"    	);
-  const Float_t p2h9minus_prodIndep_VAJHU= cand.userFloat(	"p2h9minus_prodIndep_VAJHU"	);
-  const Float_t p2h10minus_gg_VAJHU= cand.userFloat(       "p2h10minus_gg_VAJHU"      ); 
-  const Float_t p2h10minus_qqbar_VAJHU= cand.userFloat(    "p2h10minus_qqbar_VAJHU"     ); 
-  const Float_t p2h10minus_prodIndep_VAJHU= cand.userFloat("p2h10minus_prodIndep_VAJHU" ); 
-//const Float_t bkg_mela = cand.userFloat("bkg_mela");
-	const Float_t bkg_VAMCFM = cand.userFloat("bkg_VAMCFM");
-  const Float_t bkg_prodIndep_VAMCFM = cand.userFloat("bkg_prodIndep_VAMCFM");
-  const Float_t ggzz_VAMCFM = cand.userFloat("ggzz_VAMCFM");
-  const Float_t ggzz_p0plus_VAMCFM = cand.userFloat("ggzz_p0plus_VAMCFM");
-  const Float_t ggzz_c1_VAMCFM = cand.userFloat("ggzz_c1_VAMCFM");
-  const Float_t ggzz_c5_VAMCFM = cand.userFloat("ggzz_c5_VAMCFM");
-  const Float_t ggzz_ci_VAMCFM = cand.userFloat("ggzz_ci_VAMCFM");
-  //const Float_t bkg_VAMCFMNorm = cand.userFloat("bkg_VAMCFMNorm");
-  //const Float_t p0_pt = cand.userFloat("p0_pt");
-  //const Float_t p0_y = cand.userFloat("p0_y");
-  //const Float_t bkg_pt = cand.userFloat("bkg_pt");
-  //const Float_t bkg_y = cand.userFloat("bkg_y");
+  //Float_t p0plus_melaNorm = cand.userFloat("p0plus_melaNorm");
+  //Float_t p0plus_mela = cand.userFloat("p0plus_mela");
+  //Float_t p0minus_mela = cand.userFloat("p0minus_mela");
+  //Float_t p0hplus_mela = cand.userFloat("p0hplus_mela"); // 0h+, analytic distribution
+  Float_t p0plus_VAJHU = cand.userFloat("p0plus_VAJHU");
+  Float_t p0minus_VAJHU = cand.userFloat("p0minus_VAJHU");
+  Float_t p0plus_VAMCFM = cand.userFloat("p0plus_VAMCFM");
+  Float_t p0hplus_VAJHU = cand.userFloat("p0hplus_VAJHU"); // 0h+ (high dimensional operator), vector algebra, JHUgen
+  //Float_t p1_mela = cand.userFloat("p1_mela");
+  //Float_t p1_prodIndep_mela = cand.userFloat("p1_prodIndep_mela");
+  //Float_t p1plus_mela = cand.userFloat("p1plus_mela"); // 1+, analytic distribution 
+  //Float_t p1plus_prodIndep_mela = cand.userFloat("p1plus_prodIndep_mela"); // 1+, analytic distribution 
+  Float_t p1_VAJHU = cand.userFloat("p1_VAJHU");
+  Float_t p1_prodIndep_VAJHU = cand.userFloat("p1_prodIndep_VAJHU");
+  Float_t p1plus_VAJHU = cand.userFloat("p1plus_VAJHU"); // 1+ (axial vector), vector algebra, JHUgen,
+  Float_t p1plus_prodIndep_VAJHU = cand.userFloat("p1plus_prodIndep_VAJHU"); // 1+ (axial vector), vector algebra, JHUgen,
+  //Float_t p2_mela  = cand.userFloat("p2_mela");
+  //Float_t p2_prodIndep_mela  = cand.userFloat("p2_prodIndep_mela");
+  //Float_t p2qqb_mela = cand.userFloat("p2qqb_mela"); // graviton produced by qqbar vector algebra, analytical,
+  //Float_t p2hplus_mela = cand.userFloat("p2hplus_mela"); // graviton produced by qqbar vector algebra, analytical,
+  //Float_t p2hminus_mela = cand.userFloat("p2hminus_mela"); // graviton produced by qqbar vector algebra, analytical,
+  //Float_t p2bplus_mela = cand.userFloat("p2bplus_mela"); // graviton produced by qqbar vector algebra, analytical,
+  Float_t p2_VAJHU = cand.userFloat("p2_VAJHU");
+  Float_t p2_prodIndep_VAJHU = cand.userFloat("p2_prodIndep_VAJHU");
+  Float_t p2qqb_VAJHU = cand.userFloat("p2qqb_VAJHU");
+  Float_t p2hplus_VAJHU = cand.userFloat("p2hplus_VAJHU");
+  Float_t p2hminus_VAJHU = cand.userFloat("p2hminus_VAJHU");
+  Float_t p2bplus_VAJHU = cand.userFloat("p2bplus_VAJHU");
+  Float_t p2hplus_qqb_VAJHU= cand.userFloat(					"p2hplus_qqb_VAJHU");					
+  Float_t p2hplus_prodIndep_VAJHU= cand.userFloat(		"p2hplus_prodIndep_VAJHU");	
+  Float_t p2hminus_qqb_VAJHU= cand.userFloat(				"p2hminus_qqb_VAJHU");				
+  Float_t p2hminus_prodIndep_VAJHU= cand.userFloat(	"p2hminus_prodIndep_VAJHU");	
+  Float_t p2bplus_qqb_VAJHU= cand.userFloat(					"p2bplus_qqb_VAJHU"				);	
+  Float_t p2bplus_prodIndep_VAJHU= cand.userFloat(		"p2bplus_prodIndep_VAJHU"		);
+  Float_t p2h2plus_gg_VAJHU= cand.userFloat(      		"p2h2plus_gg_VAJHU"      		);
+  Float_t p2h2plus_qqbar_VAJHU= cand.userFloat(   		"p2h2plus_qqbar_VAJHU"   		);
+  Float_t p2h2plus_prodIndep_VAJHU= cand.userFloat(	"p2h2plus_prodIndep_VAJHU");	
+  Float_t p2h3plus_gg_VAJHU= cand.userFloat(       	"p2h3plus_gg_VAJHU"       );	
+  Float_t p2h3plus_qqbar_VAJHU= cand.userFloat(    	"p2h3plus_qqbar_VAJHU"    );	
+  Float_t p2h3plus_prodIndep_VAJHU= cand.userFloat(	"p2h3plus_prodIndep_VAJHU");	
+  Float_t p2h6plus_gg_VAJHU= cand.userFloat(       	"p2h6plus_gg_VAJHU"       );	
+  Float_t p2h6plus_qqbar_VAJHU= cand.userFloat(    	"p2h6plus_qqbar_VAJHU"    );	
+  Float_t p2h6plus_prodIndep_VAJHU= cand.userFloat(	"p2h6plus_prodIndep_VAJHU");	
+  Float_t p2h7plus_gg_VAJHU= cand.userFloat(       	"p2h7plus_gg_VAJHU"       );	
+  Float_t p2h7plus_qqbar_VAJHU= cand.userFloat(    	"p2h7plus_qqbar_VAJHU"    );	
+  Float_t p2h7plus_prodIndep_VAJHU= cand.userFloat(	"p2h7plus_prodIndep_VAJHU");	
+  Float_t p2h9minus_gg_VAJHU= cand.userFloat(       	"p2h9minus_gg_VAJHU"       	);
+  Float_t p2h9minus_qqbar_VAJHU= cand.userFloat(    	"p2h9minus_qqbar_VAJHU"    	);
+  Float_t p2h9minus_prodIndep_VAJHU= cand.userFloat(	"p2h9minus_prodIndep_VAJHU"	);
+  Float_t p2h10minus_gg_VAJHU= cand.userFloat(       "p2h10minus_gg_VAJHU"      ); 
+  Float_t p2h10minus_qqbar_VAJHU= cand.userFloat(    "p2h10minus_qqbar_VAJHU"     ); 
+  Float_t p2h10minus_prodIndep_VAJHU= cand.userFloat("p2h10minus_prodIndep_VAJHU" ); 
+//Float_t bkg_mela = cand.userFloat("bkg_mela");
+	Float_t bkg_VAMCFM = cand.userFloat("bkg_VAMCFM");
+  Float_t bkg_prodIndep_VAMCFM = cand.userFloat("bkg_prodIndep_VAMCFM");
+  Float_t ggzz_VAMCFM = cand.userFloat("ggzz_VAMCFM");
+  Float_t ggzz_p0plus_VAMCFM = cand.userFloat("ggzz_p0plus_VAMCFM");
+  Float_t ggzz_c1_VAMCFM = cand.userFloat("ggzz_c1_VAMCFM");
+  Float_t ggzz_c5_VAMCFM = cand.userFloat("ggzz_c5_VAMCFM");
+  Float_t ggzz_ci_VAMCFM = cand.userFloat("ggzz_ci_VAMCFM");
+  //Float_t bkg_VAMCFMNorm = cand.userFloat("bkg_VAMCFMNorm");
+  //Float_t p0_pt = cand.userFloat("p0_pt");
+  //Float_t p0_y = cand.userFloat("p0_y");
+  //Float_t bkg_pt = cand.userFloat("bkg_pt");
+  //Float_t bkg_y = cand.userFloat("bkg_y");
 
-  const Float_t p0plus_m4l = cand.userFloat("p0plus_m4l");
-  const Float_t bkg_m4l = cand.userFloat("bkg_m4l");
-  const Float_t pg1g4_mela = cand.userFloat("pg1g4_mela");
-  const Float_t pg1g4_VAJHU = cand.userFloat("pg1g4_VAJHU");
-  const Float_t pg1g4_pi2_VAJHU = cand.userFloat("pg1g4_pi2_VAJHU");
-  const Float_t pg1g2_pi2_VAJHU = cand.userFloat("pg1g2_pi2_VAJHU");
-  const Float_t pg1g2_mela = cand.userFloat("pg1g2_mela");
-  const Float_t pg1g2_VAJHU = cand.userFloat("pg1g2_VAJHU");
-  const Float_t p0plus_m4l_ScaleUp = cand.userFloat("p0plus_m4l_ScaleUp");// signal m4l probability for systematics
-  const Float_t bkg_m4l_ScaleUp = cand.userFloat("bkg_m4l_ScaleUp");// backgroun m4l probability for systematics
-  const Float_t p0plus_m4l_ScaleDown = cand.userFloat("p0plus_m4l_ScaleDown");// signal m4l probability for systematics
-  const Float_t bkg_m4l_ScaleDown = cand.userFloat("bkg_m4l_ScaleDown");// backgroun m4l probability for systematics
-  const Float_t p0plus_m4l_ResUp = cand.userFloat("p0plus_m4l_ResUp");// signal m4l probability for systematics
-  const Float_t bkg_m4l_ResUp = cand.userFloat("bkg_m4l_ResUp");// backgroun m4l probability for systematics
-  const Float_t p0plus_m4l_ResDown = cand.userFloat("p0plus_m4l_ResDown");// signal m4l probability for systematics
-  const Float_t bkg_m4l_ResDown = cand.userFloat("bkg_m4l_ResDown");// backgroun m4l probability for systematics
+  Float_t p0plus_m4l = cand.userFloat("p0plus_m4l");
+  Float_t bkg_m4l = cand.userFloat("bkg_m4l");
+  Float_t pg1g4_mela = cand.userFloat("pg1g4_mela");
+  Float_t pg1g4_VAJHU = cand.userFloat("pg1g4_VAJHU");
+  Float_t pg1g4_pi2_VAJHU = cand.userFloat("pg1g4_pi2_VAJHU");
+  Float_t pg1g2_pi2_VAJHU = cand.userFloat("pg1g2_pi2_VAJHU");
+  Float_t pg1g2_mela = cand.userFloat("pg1g2_mela");
+  Float_t pg1g2_VAJHU = cand.userFloat("pg1g2_VAJHU");
+  Float_t p0plus_m4l_ScaleUp = cand.userFloat("p0plus_m4l_ScaleUp");// signal m4l probability for systematics
+  Float_t bkg_m4l_ScaleUp = cand.userFloat("bkg_m4l_ScaleUp");// backgroun m4l probability for systematics
+  Float_t p0plus_m4l_ScaleDown = cand.userFloat("p0plus_m4l_ScaleDown");// signal m4l probability for systematics
+  Float_t bkg_m4l_ScaleDown = cand.userFloat("bkg_m4l_ScaleDown");// backgroun m4l probability for systematics
+  Float_t p0plus_m4l_ResUp = cand.userFloat("p0plus_m4l_ResUp");// signal m4l probability for systematics
+  Float_t bkg_m4l_ResUp = cand.userFloat("bkg_m4l_ResUp");// backgroun m4l probability for systematics
+  Float_t p0plus_m4l_ResDown = cand.userFloat("p0plus_m4l_ResDown");// signal m4l probability for systematics
+  Float_t bkg_m4l_ResDown = cand.userFloat("bkg_m4l_ResDown");// backgroun m4l probability for systematics
 
-  const Float_t phjj_VAJHU_old = cand.userFloat("phjj_VAJHU_old");
-  const Float_t pvbf_VAJHU_old = cand.userFloat("pvbf_VAJHU_old");
-  const Float_t phjj_VAJHU_old_up = cand.userFloat("phjj_VAJHU_old_up");
-  const Float_t pvbf_VAJHU_old_up = cand.userFloat("pvbf_VAJHU_old_up");
-  const Float_t phjj_VAJHU_old_dn = cand.userFloat("phjj_VAJHU_old_dn");
-  const Float_t pvbf_VAJHU_old_dn = cand.userFloat("pvbf_VAJHU_old_dn");
-  const Float_t phjj_VAJHU_new = cand.userFloat("phjj_VAJHU_new");
-  const Float_t pvbf_VAJHU_new = cand.userFloat("pvbf_VAJHU_new");
-  const Float_t phjj_VAJHU_new_up = cand.userFloat("phjj_VAJHU_new_up");
-  const Float_t pvbf_VAJHU_new_up = cand.userFloat("pvbf_VAJHU_new_up");
-  const Float_t phjj_VAJHU_new_dn = cand.userFloat("phjj_VAJHU_new_dn");
-  const Float_t pvbf_VAJHU_new_dn = cand.userFloat("pvbf_VAJHU_new_dn");
-  const Float_t p0_g1prime2_VAJHU= cand.userFloat("p0_g1prime2_VAJHU");
-  const Float_t pg1g1prime2_VAJHU= cand.userFloat("pg1g1prime2_VAJHU");
-  const Float_t Dgg10_VAMCFM= cand.userFloat("Dgg10_VAMCFM");
-  const Float_t pzzzg_VAJHU= cand.userFloat(    "pzzzg_VAJHU");
-  const Float_t pzzgg_VAJHU= cand.userFloat(    "pzzgg_VAJHU");
-  const Float_t pzzzg_PS_VAJHU= cand.userFloat( "pzzzg_PS_VAJHU");
-  const Float_t pzzgg_PS_VAJHU= cand.userFloat( "pzzgg_PS_VAJHU");
-  const Float_t p0Zgs_VAJHU= cand.userFloat(    "p0Zgs_VAJHU");
-  const Float_t p0gsgs_VAJHU= cand.userFloat(   "p0gsgs_VAJHU");
-  const Float_t p0Zgs_PS_VAJHU= cand.userFloat( "p0Zgs_PS_VAJHU");
-  const Float_t p0gsgs_PS_VAJHU= cand.userFloat("p0gsgs_PS_VAJHU");
+  Float_t phjj_VAJHU_old = cand.userFloat("phjj_VAJHU_old");
+  Float_t pvbf_VAJHU_old = cand.userFloat("pvbf_VAJHU_old");
+  Float_t phjj_VAJHU_old_up = cand.userFloat("phjj_VAJHU_old_up");
+  Float_t pvbf_VAJHU_old_up = cand.userFloat("pvbf_VAJHU_old_up");
+  Float_t phjj_VAJHU_old_dn = cand.userFloat("phjj_VAJHU_old_dn");
+  Float_t pvbf_VAJHU_old_dn = cand.userFloat("pvbf_VAJHU_old_dn");
+  Float_t phjj_VAJHU_new = cand.userFloat("phjj_VAJHU_new");
+  Float_t pvbf_VAJHU_new = cand.userFloat("pvbf_VAJHU_new");
+  Float_t phjj_VAJHU_new_up = cand.userFloat("phjj_VAJHU_new_up");
+  Float_t pvbf_VAJHU_new_up = cand.userFloat("pvbf_VAJHU_new_up");
+  Float_t phjj_VAJHU_new_dn = cand.userFloat("phjj_VAJHU_new_dn");
+  Float_t pvbf_VAJHU_new_dn = cand.userFloat("pvbf_VAJHU_new_dn");
+  Float_t p0_g1prime2_VAJHU= cand.userFloat("p0_g1prime2_VAJHU");
+  Float_t pg1g1prime2_VAJHU= cand.userFloat("pg1g1prime2_VAJHU");
+  Float_t Dgg10_VAMCFM= cand.userFloat("Dgg10_VAMCFM");
+  Float_t pzzzg_VAJHU= cand.userFloat(    "pzzzg_VAJHU");
+  Float_t pzzgg_VAJHU= cand.userFloat(    "pzzgg_VAJHU");
+  Float_t pzzzg_PS_VAJHU= cand.userFloat( "pzzzg_PS_VAJHU");
+  Float_t pzzgg_PS_VAJHU= cand.userFloat( "pzzgg_PS_VAJHU");
+  Float_t p0Zgs_VAJHU= cand.userFloat(    "p0Zgs_VAJHU");
+  Float_t p0gsgs_VAJHU= cand.userFloat(   "p0gsgs_VAJHU");
+  Float_t p0Zgs_PS_VAJHU= cand.userFloat( "p0Zgs_PS_VAJHU");
+  Float_t p0gsgs_PS_VAJHU= cand.userFloat("p0gsgs_PS_VAJHU");
 
   //Int_t isSignal = -1;
   //Int_t isRightPair = -1;
@@ -760,12 +776,12 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   //  isRightPair = cand.userFloat("MC_isRightPair");
   //}
 
-  //const Float_t mZa = cand.userFloat("mZa");
-  //const Float_t mZb = cand.userFloat("mZb");
-  //const Float_t mLL4 = cand.userFloat("mLL4");
-  //const Float_t mLL6 = cand.userFloat("mLL6");
-  //const Float_t SIP4 = cand.userFloat("SIP4");
-  //const Float_t iso34 = cand.userFloat("iso34");
+  //Float_t mZa = cand.userFloat("mZa");
+  //Float_t mZb = cand.userFloat("mZb");
+  //Float_t mLL4 = cand.userFloat("mLL4");
+  //Float_t mLL6 = cand.userFloat("mLL6");
+  //Float_t SIP4 = cand.userFloat("SIP4");
+  //Float_t iso34 = cand.userFloat("iso34");
 
   //Z1 and Z2 variables
   const reco::Candidate* Z1;
@@ -785,7 +801,6 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 
   Float_t Z1Mass = Z1->mass();
   Float_t Z1Pt =   Z1->pt();
-  Float_t Z1MassRefit = cand.userFloat("mZ1Ref");
   short Z1Flav = Z1->daughter(0)->pdgId()*Z1->daughter(1)->pdgId();
   
   Float_t Z2Mass = Z2->mass();
@@ -1001,8 +1016,8 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   TString addName[6]={};
   myTree->SetVariables(addName,Hadditional,6);
   */
-  myTree->FillZInfo(Z1Mass, Z1Pt, Z1Flav, Z1MassRefit);
-  myTree->FillZInfo(Z2Mass, Z2Pt, Z2Flav, Z2Mass);
+  myTree->FillZInfo(Z1Mass, Z1Pt, Z1Flav);
+  myTree->FillZInfo(Z2Mass, Z2Pt, Z2Flav);
 
   //Fill the angular variables
   Float_t costheta1 = cand.userFloat("costheta1");
@@ -1078,25 +1093,24 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
       zxw *= getFakeWeight(Z2->daughter(izx)->pt(),Z2->daughter(izx)->eta(),Z2->daughter(izx)->pdgId(),Z1->daughter(0)->pdgId());
   }
   
-  double hinfo[14]={ZZMass, ZZMassErr, ZZMassErrCorr, ZZMassPreFSR, ZZMassRefit, (double)sel, ZZPt, ZZEta, ZZPhi, (double)CRflag,
-    Chi2KinFit, ZZMassCFit, Chi2CFit, zxw};
-	TString hinfonames[14]={
-	"ZZMass",
-"ZZMassErr",
-"ZZMassErrCorr",
-"ZZMassPreFSR",
-"ZZMassRefit",
-"ZZsel",
-"ZZPt",
-"ZZEta",
-"ZZPhi",
-"CRflag",
-"ZZChi2KinFit",
-"ZZMassCFit",
-"ZZChi2CFit",
-"ZXFakeweight"
-	};
-  myTree->SetVariables((TString *)hinfonames,(double *)hinfo,14);
+  double hinfo[10]={ZZMass, ZZMassErr, ZZMassErrCorr, ZZMassPreFSR, (double)sel, ZZPt, ZZEta, ZZPhi, (double)CRflag, zxw};
+  TString hinfonames[10]={
+    "ZZMass",
+    "ZZMassErr",
+    "ZZMassErrCorr",
+    "ZZMassPreFSR",
+    "ZZsel",
+    "ZZPt",
+    "ZZEta",
+    "ZZPhi",
+    "CRflag",
+    "ZXFakeweight"
+  };
+
+  // FIXME: Other variables to be added if addKinRefit or addVtxFit == true:
+  // Z1MassRefit, ZZMassRefit, ZZChi2KinFit, ZZMassCFit, ZZChi2CFit
+
+  myTree->SetVariables((TString *)hinfonames,(double *)hinfo,10);
 
   //Fill the info on categorization
   myTree->SetVariable("nExtraLep",cand.userFloat("nExtraLep"));
@@ -1217,8 +1231,10 @@ void HZZ4lNtupleMaker::fillDescriptions(edm::ConfigurationDescriptions& descript
 }
 
 
-Float_t HZZ4lNtupleMaker::getAllWeight(const Float_t LepPt, const Float_t LepEta, Int_t LepID) const
+Float_t HZZ4lNtupleMaker::getAllWeight(Float_t LepPt, Float_t LepEta, Int_t LepID) const
 {
+  if (skipDataMCWeight) return 1.;
+
   Float_t weight  = 1.; 
   //Float_t errCorr = 0.;
   //Float_t errCorrSyst = 0.;
@@ -1289,6 +1305,8 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const Float_t LepPt, const Float_t LepEta
 
 Float_t HZZ4lNtupleMaker::getHqTWeight(double mH, double genPt) const
 {
+  if (skipHqTWeight) return 1.;
+
   //cout<<"mH = "<<mH<<", genPt = "<<genPt<<endl;
   if (mH<400 || genPt>250) return 1.;
   
@@ -1313,13 +1331,15 @@ Float_t HZZ4lNtupleMaker::getHqTWeight(double mH, double genPt) const
 
 
 // Added by CO
-Float_t HZZ4lNtupleMaker::getFakeWeight(const Float_t LepPt, const Float_t LepEta, Int_t LepID, Int_t LepZ1ID)
+Float_t HZZ4lNtupleMaker::getFakeWeight(Float_t LepPt, Float_t LepEta, Int_t LepID, Int_t LepZ1ID)
 {
+  if (skipFakeWeight) return 1.;
+  
   // year 0 = 2011
   // year 1 = 2012
 
-  Float_t weight  = 1.; 
-  
+  Float_t weight  = 1.;
+
   Int_t nHisto=0;
   
   Float_t myLepPt   = LepPt;
@@ -1358,13 +1378,11 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("RunNumber",0,HZZ4lNtupleFactory::kInt);
   myTree->Book("EventNumber",0,HZZ4lNtupleFactory::kLong);
   myTree->Book("LumiNumber",0,HZZ4lNtupleFactory::kInt);
-  myTree->Book("iBC",0,HZZ4lNtupleFactory::kInt);
   myTree->Book("Nvtx",0,HZZ4lNtupleFactory::kInt);
   myTree->Book("NObsInt",0,HZZ4lNtupleFactory::kInt);
   myTree->Book("NTrueInt",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("PUWeight12",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("PUWeight",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("PFMET",-99,HZZ4lNtupleFactory::kFloat);
-  //myTree->Book("nJets",0,HZZ4lNtupleFactory::kInt);
   myTree->Book("nCleanedJets",0,HZZ4lNtupleFactory::kInt);
   myTree->Book("nCleanedJetsPt30",0,HZZ4lNtupleFactory::kInt);
   myTree->Book("nCleanedJetsPt30BTagged",0,HZZ4lNtupleFactory::kInt);
@@ -1641,7 +1659,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("genHEPMCweight",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("genExtInfo",0,HZZ4lNtupleFactory::kShort);
   myTree->Book("xsec",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("dataMCWeight",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("dataMCWeight",0,HZZ4lNtupleFactory::kFloat); // FIXME these should probably be set to 1. once validated
   myTree->Book("HqTMCweight",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("ZXFakeweight",0,HZZ4lNtupleFactory::kFloat);
 

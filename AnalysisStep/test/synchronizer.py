@@ -58,7 +58,6 @@ def loop():
         tree.SetBranchStatus("*",0)
 
         # Variables we are interested in for the sync
-        tree.SetBranchStatus("iBC",1)
         tree.SetBranchStatus("ZZsel",1)        
         tree.SetBranchStatus("RunNumber",1)
         tree.SetBranchStatus("LumiNumber",1)
@@ -81,8 +80,8 @@ def loop():
         tree.SetBranchStatus("p0plus_m4l",1)
         tree.SetBranchStatus("bkg_m4l",1)
         tree.SetBranchStatus("Dgg10_VAMCFM",1)
-        tree.SetBranchStatus("pvbf_VAJHU_new",1)
-        tree.SetBranchStatus("phjj_VAJHU_new",1)        
+        tree.SetBranchStatus("pvbf_VAJHU_old",1)
+        tree.SetBranchStatus("phjj_VAJHU_old",1)        
         tree.SetBranchStatus("ZZPt",1)
         tree.SetBranchStatus("nExtraLep",1)
         tree.SetBranchStatus("nCleanedJetsPt30BTagged",1)
@@ -99,14 +98,13 @@ def loop():
             # print "   Inspecting entry n. ",iEntry,"..."
             iEntry+=1
             ZZsel       = tree.ZZsel
-            iBC         = tree.iBC
             run         = tree.RunNumber
             lumi        = tree.LumiNumber
             event       = tree.EventNumber
 
-            theEvent = Event(iBC,run,lumi,event)
+            theEvent = Event(run,lumi,event)
 
-            if iBC>=0 and ZZsel>=90 :
+            if ZZsel>=90 :
                 ZZflav      = tree.Z1Flav*tree.Z2Flav;
                 if  (aChan=="4e" and ZZflav!=14641) or (aChan=="4mu" and ZZflav!=28561) or (aChan=="2e2mu" and ZZflav!=20449) : continue
 
@@ -128,8 +126,8 @@ def loop():
                 p0plus_m4l    = tree.p0plus_m4l
                 bkg_m4l       = tree.bkg_m4l
                 Dgg10_VAMCFM  = tree.Dgg10_VAMCFM
-                pvbf_VAJHU    = tree.pvbf_VAJHU_new
-                phjj_VAJHU    = tree.phjj_VAJHU_new
+                pvbf_VAJHU    = tree.pvbf_VAJHU_old
+                phjj_VAJHU    = tree.phjj_VAJHU_old
                 pt4l          = tree.ZZPt
                 nExtraLep     = tree.nExtraLep
                 jetpt         = tree.JetPt

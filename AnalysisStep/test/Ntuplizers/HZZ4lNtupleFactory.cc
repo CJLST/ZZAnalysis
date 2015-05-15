@@ -197,12 +197,11 @@ void HZZ4lNtupleFactory::createNewCandidate()
   return;
 }
 
-void HZZ4lNtupleFactory::FillZInfo(Float_t ZMass, Float_t ZPt, short ZFlav, Float_t Z1MassRefit)
+void HZZ4lNtupleFactory::FillZInfo(Float_t ZMass, Float_t ZPt, short ZFlav)
 {
   if(!_firstZStored){
     SetVariable("Z1Mass",ZMass);
     SetVariable("Z1Pt",ZPt);
-    SetVariable("Z1MassRefit",Z1MassRefit);
     SetVariable("Z1Flav",ZFlav);
     _firstZStored = true;
   }

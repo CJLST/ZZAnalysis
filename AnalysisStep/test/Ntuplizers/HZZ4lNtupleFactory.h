@@ -49,7 +49,7 @@ class HZZ4lNtupleFactory{
     const math::XYZTLorentzVector Lep1, const math::XYZTLorentzVector Lep2, const math::XYZTLorentzVector Lep3, 
     const math::XYZTLorentzVector Lep4, float weight);
   void FillAssocLepGenInfo(std::vector<const reco::Candidate *>& AssocLeps);
-  void FillZInfo(Float_t ZMass, Float_t ZPt, short ZFlav, Float_t Z1MassRefit);
+  void FillZInfo(Float_t ZMass, Float_t ZPt, short ZFlav);
   void FillExtraLepInfo(int extraLeptonIndex, bool extraLeptonExists, const reco::CandidatePtr ExtraLep);
 
  private:
