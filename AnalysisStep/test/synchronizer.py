@@ -112,7 +112,6 @@ def loop():
 
                 totCounter += 1
                 chanCounter[aChan] += 1
-<<<<<<< HEAD
                 mass4l        = tree.ZZMass
                 mZ1           = tree.Z1Mass
                 mZ2           = tree.Z2Mass
@@ -125,31 +124,14 @@ def loop():
                 p1_VAJHU      = tree.p1_VAJHU     
                 p2_VAJHU      = tree.p2_VAJHU     
                 p2qqb_VAJHU   = tree.p2qqb_VAJHU              
-                bkg_VAMCFM    = tree.bkg_VAMCFM                    
+                bkg_VAMCFM    = tree.bkg_VAMCFM
+                p0plus_m4l    = tree.p0plus_m4l
+                bkg_m4l       = tree.bkg_m4l
+                Dgg10_VAMCFM  = tree.Dgg10_VAMCFM
+                pvbf_VAJHU    = tree.pvbf_VAJHU_new
+                phjj_VAJHU    = tree.phjj_VAJHU_new
                 pt4l          = tree.ZZPt
                 nExtraLep     = tree.nExtraLep
-=======
-                mass4l        = tree.ZZMass[iBC]
-                mZ1           = tree.Z1Mass[iBC]
-                mZ2           = tree.Z2Mass[iBC]
-                massErrRaw    = tree.ZZMassErr[iBC]
-                massErrCorr   = tree.ZZMassErrCorr[iBC]
-                p0plus_VAJHU  = tree.p0plus_VAJHU[iBC]
-                p0minus_VAJHU = tree.p0minus_VAJHU[iBC]
-                p0hplus_VAJHU = tree.p0hplus_VAJHU[iBC]
-                p1plus_VAJHU  = tree.p1plus_VAJHU[iBC] 
-                p1_VAJHU      = tree.p1_VAJHU[iBC]     
-                p2_VAJHU      = tree.p2_VAJHU[iBC]     
-                p2qqb_VAJHU   = tree.p2qqb_VAJHU[iBC]              
-                bkg_VAMCFM    = tree.bkg_VAMCFM[iBC]
-                p0plus_m4l    = tree.p0plus_m4l[iBC]
-                bkg_m4l       = tree.bkg_m4l[iBC]
-                Dgg10_VAMCFM  = tree.Dgg10_VAMCFM[iBC]
-                pvbf_VAJHU    = tree.pvbf_VAJHU_new[iBC]
-                phjj_VAJHU    = tree.phjj_VAJHU_new[iBC]
-                pt4l          = tree.ZZPt[iBC]
-                nExtraLep     = tree.nExtraLep[iBC]
->>>>>>> upstream/miniAOD
                 jetpt         = tree.JetPt
                 jeteta        = tree.JetEta
                 jetphi        = tree.JetPhi

@@ -384,9 +384,10 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     if (genFinalState!=BUGGY) {
     
       float eff_weight =1.;
-      for(int nLep=0;nLep<(int)genZLeps.size();nLep++)
-        eff_weight *= getAllWeight(genZLeps.at(nLep)->pt(), genZLeps.at(nLep)->eta(),genZLeps.at(nLep)->pdgId());
-
+      for(int nLep=0;nLep<(int)genZLeps.size();nLep++){
+        int lepid = genZLeps.at(nLep)->pdgId();
+        if(fabs(lepid) ==13 || fabs(lepid) ==11)eff_weight *= getAllWeight(genZLeps.at(nLep)->pt(), genZLeps.at(nLep)->eta(),genZLeps.at(nLep)->pdgId());
+      }
       if (genZLeps.size()==4) {
 	
 	// "generated Zs" defined with standard pairing applied on gen leptons (genZLeps is sorted by MCHistoryTools)
@@ -544,6 +545,10 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       if (gen_ZZ4lInEtaPtAcceptance) set_bit(CRFLAG,29);
     }
     FillCandidate(*cand, evtPassTrigger&&evtPassSkim, event, CRFLAG);
+    if(CRFLAG && !candIsBest && cleanedJets.size()==0 && Fisher>=0){
+      // for CR, the jet list is empty; we "fake" the NJets30 variable for consistency
+      myTree->SetVariable("nCleanedJets",2);
+    }
     myTree->FillCurrentTree();//Do not reinitialize the event variables
     ++nFilled;
     /*
