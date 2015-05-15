@@ -98,33 +98,34 @@ def loop():
 
         theEvent = Event(iBC,run,lumi,event)
 
-        for iCand in range(len(CRflag)):
-
+        #for iCand in range(len(CRflag)):
+        #if event != storedEvent:
+        if (True) : #I don't want to reindent everything
             for aCR in CRdict.keys():
             
-                if test_bit(CRflag[iCand],CRdict[aCR]):
+                if test_bit(CRflag,CRdict[aCR]):
                     
                     crCounter[aCR] += 1                    
-                    mass4l        = tree.ZZMass[iCand]
-                    mZ1           = tree.Z1Mass[iCand]
-                    mZ2           = tree.Z2Mass[iCand]
-                    massErrRaw    = tree.ZZMassErr[iCand]
-                    massErrCorr   = tree.ZZMassErrCorr[iCand]
-                    p0plus_VAJHU  = tree.p0plus_VAJHU[iCand]
-                    p0minus_VAJHU = tree.p0minus_VAJHU[iCand]
-                    p0hplus_VAJHU = tree.p0hplus_VAJHU[iCand]
-                    p1plus_VAJHU  = tree.p1plus_VAJHU[iCand] 
-                    p1_VAJHU      = tree.p1_VAJHU[iCand]     
-                    p2_VAJHU      = tree.p2_VAJHU[iCand]     
-                    p2qqb_VAJHU   = tree.p2qqb_VAJHU[iCand]              
-                    bkg_VAMCFM    = tree.bkg_VAMCFM[iCand]
-                    p0plus_m4l    = tree.p0plus_m4l[iCand]
-                    bkg_m4l       = tree.bkg_m4l[iCand]
-                    Dgg10_VAMCFM  = tree.Dgg10_VAMCFM[iCand]
-                    pvbf_VAJHU    = tree.pvbf_VAJHU_new[iCand]
-                    phjj_VAJHU    = tree.phjj_VAJHU_new[iCand]
-                    pt4l          = tree.ZZPt[iCand]
-                    nExtraLep     = tree.nExtraLep[iCand]
+                    mass4l        = tree.ZZMass
+                    mZ1           = tree.Z1Mass
+                    mZ2           = tree.Z2Mass
+                    massErrRaw    = tree.ZZMassErr
+                    massErrCorr   = tree.ZZMassErrCorr
+                    p0plus_VAJHU  = tree.p0plus_VAJHU
+                    p0minus_VAJHU = tree.p0minus_VAJHU
+                    p0hplus_VAJHU = tree.p0hplus_VAJHU
+                    p1plus_VAJHU  = tree.p1plus_VAJHU 
+                    p1_VAJHU      = tree.p1_VAJHU     
+                    p2_VAJHU      = tree.p2_VAJHU     
+                    p2qqb_VAJHU   = tree.p2qqb_VAJHU              
+                    bkg_VAMCFM    = tree.bkg_VAMCFM
+                    p0plus_m4l    = tree.p0plus_m4l
+                    bkg_m4l       = tree.bkg_m4l
+                    Dgg10_VAMCFM  = tree.Dgg10_VAMCFM
+                    pvbf_VAJHU    = tree.pvbf_VAJHU_new
+                    phjj_VAJHU    = tree.phjj_VAJHU_new
+                    pt4l          = tree.ZZPt
+                    nExtraLep     = tree.nExtraLep
                     jetpt         = tree.JetPt
                     jeteta        = tree.JetEta
                     jetphi        = tree.JetPhi

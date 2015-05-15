@@ -106,32 +106,32 @@ def loop():
 
             theEvent = Event(iBC,run,lumi,event)
 
-            if iBC>=0 and ZZsel[iBC]>=90 :
-                ZZflav      = tree.Z1Flav[iBC]*tree.Z2Flav[iBC];
+            if iBC>=0 and ZZsel>=90 :
+                ZZflav      = tree.Z1Flav*tree.Z2Flav;
                 if  (aChan=="4e" and ZZflav!=14641) or (aChan=="4mu" and ZZflav!=28561) or (aChan=="2e2mu" and ZZflav!=20449) : continue
 
                 totCounter += 1
                 chanCounter[aChan] += 1
-                mass4l        = tree.ZZMass[iBC]
-                mZ1           = tree.Z1Mass[iBC]
-                mZ2           = tree.Z2Mass[iBC]
-                massErrRaw    = tree.ZZMassErr[iBC]
-                massErrCorr   = tree.ZZMassErrCorr[iBC]
-                p0plus_VAJHU  = tree.p0plus_VAJHU[iBC]
-                p0minus_VAJHU = tree.p0minus_VAJHU[iBC]
-                p0hplus_VAJHU = tree.p0hplus_VAJHU[iBC]
-                p1plus_VAJHU  = tree.p1plus_VAJHU[iBC] 
-                p1_VAJHU      = tree.p1_VAJHU[iBC]     
-                p2_VAJHU      = tree.p2_VAJHU[iBC]     
-                p2qqb_VAJHU   = tree.p2qqb_VAJHU[iBC]              
-                bkg_VAMCFM    = tree.bkg_VAMCFM[iBC]
-                p0plus_m4l    = tree.p0plus_m4l[iBC]
-                bkg_m4l       = tree.bkg_m4l[iBC]
-                Dgg10_VAMCFM  = tree.Dgg10_VAMCFM[iBC]
-                pvbf_VAJHU    = tree.pvbf_VAJHU_new[iBC]
-                phjj_VAJHU    = tree.phjj_VAJHU_new[iBC]
-                pt4l          = tree.ZZPt[iBC]
-                nExtraLep     = tree.nExtraLep[iBC]
+                mass4l        = tree.ZZMass
+                mZ1           = tree.Z1Mass
+                mZ2           = tree.Z2Mass
+                massErrRaw    = tree.ZZMassErr
+                massErrCorr   = tree.ZZMassErrCorr
+                p0plus_VAJHU  = tree.p0plus_VAJHU
+                p0minus_VAJHU = tree.p0minus_VAJHU
+                p0hplus_VAJHU = tree.p0hplus_VAJHU
+                p1plus_VAJHU  = tree.p1plus_VAJHU 
+                p1_VAJHU      = tree.p1_VAJHU     
+                p2_VAJHU      = tree.p2_VAJHU     
+                p2qqb_VAJHU   = tree.p2qqb_VAJHU              
+                bkg_VAMCFM    = tree.bkg_VAMCFM
+                p0plus_m4l    = tree.p0plus_m4l
+                bkg_m4l       = tree.bkg_m4l
+                Dgg10_VAMCFM  = tree.Dgg10_VAMCFM
+                pvbf_VAJHU    = tree.pvbf_VAJHU_new
+                phjj_VAJHU    = tree.phjj_VAJHU_new
+                pt4l          = tree.ZZPt
+                nExtraLep     = tree.nExtraLep
                 jetpt         = tree.JetPt
                 jeteta        = tree.JetEta
                 jetphi        = tree.JetPhi
@@ -144,8 +144,8 @@ def loop():
                 jets30eta = []
                 jets30phi = []
                 jets30mass = []
-                
-                for i in range(len(jetpt)):                    
+
+                for i in range(len(jetpt)): 
                     if jetpt[i]>30.:
                         jets30pt.append(jetpt[i])
                         jets30eta.append(jeteta[i])
