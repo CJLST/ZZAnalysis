@@ -67,6 +67,7 @@ class HZZ4lNtupleFactory{
   std::vector<float> defaultVector[6];
   std::vector<TString> nameVector[7];
   Int_t nBranches[7];
+  std::vector<TString> NotBookedBranches;
   //std::vector<int> typeVector;
   
   bool _firstZStored;

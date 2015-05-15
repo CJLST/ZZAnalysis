@@ -490,12 +490,11 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   Int_t NbestCand = -1; //FIXME now store only 1 candidate in the SR, but we still have to save iBC correctly in the SR
   if (theChannel==ZZ) NbestCand=0;
   //myTree->FillEventInfo(event.id().run(), event.id().event(), event.luminosityBlock(), NbestCand, vertexs->size(), nObsInt, nTrueInt, weight2, pfmet, pfjetscoll->size(), cleanedJets.size(), cleanedJetsPt30.size(), nCleanedJetsPt30BTagged, genFinalState, genProcessId, genHEPMCweight, trigWord, genExtInfo,xsec);
-  //cout<<"event Number "<<event.id().event()<<" jet coll "<<pfjetscoll->size()<<" jets cleaned "<<cleanedJets.size()<<" njets30 "<<cleanedJetsPt30.size()<<endl;
-  //cout<<"event Number "<<(double)event.id().run()<<" jet coll "<<(double)pfjetscoll->size()<<" jets cleaned "<<(double)cleanedJets.size()<<" njets30 "<<(double)cleanedJetsPt30.size()<<endl;
-  double eventinfo[18]={(double)event.id().run(),(double)event.luminosityBlock(),(double)NbestCand, (double)vertexs->size(), (double)nObsInt, (double)nTrueInt, (double)weight2, (double)pfmet, (double)pfjetscoll->size(), (double)cleanedJets.size(), 
+  double eventinfo[17]={(double)event.id().run(),(double)event.luminosityBlock(),(double)NbestCand, (double)vertexs->size(), 
+    (double)nObsInt, (double)nTrueInt, (double)weight2, (double)pfmet, (double)cleanedJets.size(), 
     (double)cleanedJetsPt30.size(), (double)nCleanedJetsPt30BTagged, (double)genFinalState, (double)genProcessId, 
     (double)genHEPMCweight, (double)trigWord, (double)genExtInfo,(double)xsec};
-  TString eventnames[18]={
+  TString eventnames[17]={
     "RunNumber",
     "LumiNumber",
     "iBC",
@@ -504,7 +503,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     "NTrueInt",
     "PUWeight12",
     "PFMET",
-    "nJets",
+    //"nJets",
     "nCleanedJets",
     "nCleanedJetsPt30",
     "nCleanedJetsPt30BTagged",
@@ -515,8 +514,9 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     "genExtInfo",
     "xsec",
   };
-  myTree->SetVariables((TString *)eventnames,(double *)eventinfo,18);
+  myTree->SetVariables((TString *)eventnames,(double *)eventinfo,17);
   myTree->SetVariableLong("EventNumber",event.id().event());
+  
   //Loop on the candidates
   int nFilled=0;
   for( edm::View<pat::CompositeCandidate>::const_iterator cand = cands->begin(); cand != cands->end(); ++cand) {
@@ -1359,7 +1359,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("NTrueInt",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("PUWeight12",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("PFMET",-99,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("nJets",0,HZZ4lNtupleFactory::kInt);
+  //myTree->Book("nJets",0,HZZ4lNtupleFactory::kInt);
   myTree->Book("nCleanedJets",0,HZZ4lNtupleFactory::kInt);
   myTree->Book("nCleanedJetsPt30",0,HZZ4lNtupleFactory::kInt);
   myTree->Book("nCleanedJetsPt30BTagged",0,HZZ4lNtupleFactory::kInt);

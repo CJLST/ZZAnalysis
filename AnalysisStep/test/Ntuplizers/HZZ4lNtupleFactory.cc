@@ -136,6 +136,7 @@ int iname=999;
 }
 
 int HZZ4lNtupleFactory::SetVariable(TString branchName, double value){
+  //cout<<"Setting "<<branchName.Data()<<endl;
   bool found=false;
   int iname=0,itype=0;
   for(int it=0;it<=kVectorFloat && !found;it++){
@@ -149,7 +150,17 @@ int HZZ4lNtupleFactory::SetVariable(TString branchName, double value){
     }
   }
   if(!found){
-    cout<<"Warning!!! Variable "<<branchName.Data()<<" is not booked in NtupleFactory"<<endl;
+    bool notBooked=true;
+    for(int i=0;i<(int)NotBookedBranches.size();i++){
+      if(branchName.CompareTo(NotBookedBranches.at(i).Data())==0){
+        notBooked=false;
+        break;
+      }
+    }
+    if(notBooked){
+      cout<<"Warning!!! Variable "<<branchName.Data()<<" is not booked in NtupleFactory"<<endl;
+      NotBookedBranches.push_back(branchName.Data());
+    }
     return 0;
   }
   if(itype==kBool) boolVector[iname]=(bool)value;
