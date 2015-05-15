@@ -3,9 +3,8 @@ from ctypes import *
 
 class Event:
 
-    def __init__(self,iBC,run,lumi,event):
+    def __init__(self,run,lumi,event):
 
-        self.iBC   = iBC
         self.run   = run
         self.lumi  = lumi
         self.event = event
@@ -125,10 +124,10 @@ class Candidate:
 #        line  += ":" + "{0:.2f}".format(self.massErrRaw)
 #        line  += ":" + "{0:.2f}".format(self.massErrCorr)
         line  += ":" + "{0:.3f}".format(self.kds.D_bkg_kin)
-#        line  += ":" + "{0:.3f}".format(self.kds.D_bkg)
-#        line  += ":" + "{0:.3f}".format(self.kds.Dgg10_VAMCFM)
-#        line  += ":" + "{0:.3f}".format(self.kds.D_g4)
-#        line  += ":" + "{0:.3f}".format(self.kds.Djet_VAJHU)
+        line  += ":" + "{0:.3f}".format(self.kds.D_bkg)
+        line  += ":" + "{0:.3f}".format(self.kds.Dgg10_VAMCFM)
+        line  += ":" + "{0:.3f}".format(self.kds.Djet_VAJHU)
+        line  += ":" + "{0:.3f}".format(self.kds.D_g4)
 #        line  += ":" + "{0:.2f}".format(self.pt4l)
         line  += ":" + "{0:d}".format(self.njets30)
         line  += ":" + "{0:.2f}".format(self.jet1pt)
