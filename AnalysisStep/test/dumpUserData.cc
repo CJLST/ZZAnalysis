@@ -17,6 +17,7 @@
 #include <DataFormats/PatCandidates/interface/CompositeCandidate.h>
 #include <DataFormats/PatCandidates/interface/Muon.h>
 #include <DataFormats/PatCandidates/interface/Electron.h>
+#include <DataFormats/PatCandidates/interface/Jet.h>
 #include <ZZAnalysis/AnalysisStep/interface/PhotonFwd.h>
 #include <DataFormats/Common/interface/TriggerResults.h>
 #include <FWCore/Common/interface/TriggerNames.h>
@@ -35,6 +36,8 @@ public:
   dumpUserData(const ParameterSet& pset):
     muonSrc(pset.getParameter<InputTag>("muonSrc")),
     electronSrc(pset.getParameter<InputTag>("electronSrc")),
+    dumpJets(pset.existsAs<InputTag>("jetSrc")),
+    jetSrc(dumpJets?pset.getParameter<InputTag>("jetSrc"):InputTag("")),
     listTriggers(pset.getUntrackedParameter<bool>("dumpTrigger",false))
   {
     ParameterSet collps = pset.getParameter<ParameterSet>("candidateSrcs");
@@ -55,6 +58,8 @@ public:
 
   InputTag muonSrc;
   InputTag electronSrc;
+  bool dumpJets;
+  InputTag jetSrc;
   bool listTriggers;
   vector<string> collNames;
   vector<InputTag> candidateSrcs;
@@ -184,6 +189,22 @@ void dumpUserData::analyze(const Event & event, const EventSetup& eventSetup){
     event.getByLabel(candidateSrcs[j],coll);
     cout << collNames[j] << ": " << coll->size() << endl;
     dumpCandidates(*coll);
+  }
+
+
+  if (dumpJets) {  
+    Handle<pat::JetCollection> jets;
+    event.getByLabel(jetSrc, jets);
+
+    cout << "Jets (only for pT>30):" << endl;
+    for( pat::JetCollection::const_iterator jet = jets->begin(); jet != jets->end(); ++jet ) {
+      if(jet->pt()>30){
+	int i = distance(jets->begin(),jet);
+	cout << "#" << i << " pt=" << jet->pt() << " eta=" << jet->eta() << " phi=" << jet->phi() << " combinedInclusiveSecondaryVertexV2BJetTags=" << jet->bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags");
+	dumpUserVal(*jet);
+	cout << endl;
+      }
+    }
   }
 
 

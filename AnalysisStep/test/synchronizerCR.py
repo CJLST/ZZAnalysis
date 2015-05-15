@@ -68,6 +68,11 @@ def loop():
     tree.SetBranchStatus("p2_VAJHU",1)
     tree.SetBranchStatus("p2qqb_VAJHU",1)            
     tree.SetBranchStatus("bkg_VAMCFM",1)
+    tree.SetBranchStatus("p0plus_m4l",1)
+    tree.SetBranchStatus("bkg_m4l",1)
+    tree.SetBranchStatus("Dgg10_VAMCFM",1)
+    tree.SetBranchStatus("pvbf_VAJHU_new",1)
+    tree.SetBranchStatus("phjj_VAJHU_new",1)
     tree.SetBranchStatus("ZZPt",1)
     tree.SetBranchStatus("nExtraLep",1)
     tree.SetBranchStatus("nCleanedJetsPt30BTagged",1)
@@ -112,7 +117,12 @@ def loop():
                     p1_VAJHU      = tree.p1_VAJHU[iCand]     
                     p2_VAJHU      = tree.p2_VAJHU[iCand]     
                     p2qqb_VAJHU   = tree.p2qqb_VAJHU[iCand]              
-                    bkg_VAMCFM    = tree.bkg_VAMCFM[iCand]                    
+                    bkg_VAMCFM    = tree.bkg_VAMCFM[iCand]
+                    p0plus_m4l    = tree.p0plus_m4l[iCand]
+                    bkg_m4l       = tree.bkg_m4l[iCand]
+                    Dgg10_VAMCFM  = tree.Dgg10_VAMCFM[iCand]
+                    pvbf_VAJHU    = tree.pvbf_VAJHU_new[iCand]
+                    phjj_VAJHU    = tree.phjj_VAJHU_new[iCand]
                     pt4l          = tree.ZZPt[iCand]
                     nExtraLep     = tree.nExtraLep[iCand]
                     jetpt         = tree.JetPt
@@ -135,7 +145,7 @@ def loop():
                             jets30phi.append(jetphi[i])
                             jets30mass.append(jetmass[i])
                             
-                    theKDs = KDs(p0plus_VAJHU,p0minus_VAJHU,p0hplus_VAJHU,p1plus_VAJHU,p1_VAJHU,p2_VAJHU,p2qqb_VAJHU,bkg_VAMCFM)
+                    theKDs = KDs(p0plus_VAJHU,p0minus_VAJHU,p0hplus_VAJHU,p1plus_VAJHU,p1_VAJHU,p2_VAJHU,p2qqb_VAJHU,bkg_VAMCFM,p0plus_m4l,bkg_m4l,Dgg10_VAMCFM,pvbf_VAJHU,phjj_VAJHU)
                     theCand = Candidate(theEvent,mass4l,mZ1,mZ2,massErrRaw,massErrCorr,pt4l,nExtraLep,jets30pt,jets30eta,jets30phi,jets30mass,njets30Btag,mjj,detajj,theKDs)
                     crCands[aCR].append(theCand)
 

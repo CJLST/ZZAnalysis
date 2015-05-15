@@ -1,4 +1,4 @@
-identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,variables,pyFragments
+identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments
 
 ### PHYS14 samples
 #ggH125,,0.01,,,/GluGluToHToZZTo4L_M-125_13TeV-powheg-pythia6/MINIAODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/,/store/mc/Phys14DR,,2,,
@@ -9,3 +9,5 @@ priv_WplusH125,,0.01,,,/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSI
 priv_WminusH125,,0.01,,,/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/WminusH_JHU_125/,,,2,,
 priv_ZH125,,0.01,,,/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/ZH_JHU_125/,,,2,,
 priv_ttH125,,0.01,,,/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/ZH_JHU_125/,,,2,,
+priv_madhraph_bbH125,,0.01,,,/store/cmst3/group/hzz/gpetrucc/13TeV/Phys14DR/MINIAODSIM/bbarHToZZTo4L_M125_13TeV_madgraph_pythia8/,,,1,,
+priv_mcatnlo_bbH125,,0.01,,,/store/cmst3/group/hzz/gpetrucc/13TeV/Phys14DR/MINIAODSIM/bbarHToZZTo4L_M125_13TeV_mcatnlo_pythia8,,,1,,

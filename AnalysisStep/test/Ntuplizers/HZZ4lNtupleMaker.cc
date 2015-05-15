@@ -43,7 +43,6 @@
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
 #include <ZZAnalysis/AnalysisStep/interface/MCHistoryTools.h>
 #include <ZZAnalysis/AnalysisStep/interface/PUReweight.h>
-#include <ZZAnalysis/AnalysisStep/interface/VBFCandidateJetSelector.h>
 #include <ZZAnalysis/AnalysisStep/interface/bitops.h>
 #include <ZZAnalysis/AnalysisStep/interface/Fisher.h>
 #include "ZZ4lConfigHelper.h"
@@ -294,9 +293,9 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     std::vector<PileupSummaryInfo>::const_iterator PVI;
     for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
       if(PVI->getBunchCrossing() == 0) { 
-	      nObsInt  = PVI->getPU_NumInteractions();
-	      nTrueInt = PVI->getTrueNumInteractions();
-	      break;
+	nObsInt  = PVI->getPU_NumInteractions();
+	nTrueInt = PVI->getTrueNumInteractions();
+	break;
       } 
     }
 
@@ -409,7 +408,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       }
 
       if (genAssocLeps.size()==1 || genAssocLeps.size()==2) {
-	      myTree->FillAssocLepGenInfo(genAssocLeps);
+	myTree->FillAssocLepGenInfo(genAssocLeps);
       }
 
     }
@@ -426,32 +425,21 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     }
   }
 
-  // Jet collection (preselected with pT>10)
-  Handle<edm::View<pat::Jet> > pfjetscoll;
-  event.getByLabel("slimmedJets", pfjetscoll);
 
-  // lepton collection, for cleaning
-  Handle<View<reco::Candidate> > softleptoncoll;
-  event.getByLabel("softLeptons", softleptoncoll);
-  vector<const reco::Candidate*> goodisoleptons;
-  for( View<reco::Candidate>::const_iterator lep = softleptoncoll->begin(); lep != softleptoncoll->end(); ++ lep ){ 
-    if((bool)userdatahelpers::getUserFloat(&*lep,"isGood") && (bool)userdatahelpers::getUserFloat(&*lep,"isIsoFSRUncorr")){
-      goodisoleptons.push_back(&*lep);
-    }
-  }
-
-  std::vector<const pat::Jet*> cleanedJets;
-  VBFCandidateJetSelector myVBFCandidateJetSelector;
-  cleanedJets = myVBFCandidateJetSelector.cleanJets(goodisoleptons,pfjetscoll,myHelper.setup());
+  // Jets
+  Handle<edm::View<pat::Jet> > CleanedJets;
+  event.getByLabel("cleanJets", CleanedJets);
+  vector<const pat::Jet*> cleanedJets;
   vector<const pat::Jet*> cleanedJetsPt30;
   int nCleanedJetsPt30BTagged = 0;
-  for (unsigned int i=0; i<cleanedJets.size(); ++i){
-    const pat::Jet& myjet = *(cleanedJets.at(i));  
-    if (myjet.pt()>30) {
-      cleanedJetsPt30.push_back(&myjet);
-      if(myjet.bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags")>0.814) nCleanedJetsPt30BTagged++; // CSV Medium WP
+  for(edm::View<pat::Jet>::const_iterator jet = CleanedJets->begin(); jet != CleanedJets->end(); ++jet){
+    cleanedJets.push_back(&*jet);
+    if(jet->pt()>30){
+      cleanedJetsPt30.push_back(&*jet);
+      if(jet->userFloat("isBtagged")) nCleanedJetsPt30BTagged++;
     }
   }
+
   float detajj = -99.f;
   float Mjj    = -99.f;
   float Fisher = -99.f;
@@ -465,28 +453,28 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
     if(theChannel!=ZL){
       for (unsigned int i=0; i<cleanedJets.size(); i++) {
-	      FillJet(*(cleanedJets.at(i)));
+	FillJet(*(cleanedJets.at(i)));
       }
 
       // Note that jets variables are filled for jets above 20 GeV, to allow JES studies.
       // detajj, Mjj and ZZFisher are filled only for true dijet events (jets above 30 GeV)
       if(cleanedJets.size()>1){ 
-	      const pat::Jet& myjet1 = *(cleanedJets.at(0)); 
-	      const pat::Jet& myjet2 = *(cleanedJets.at(1));
-	      math::XYZTLorentzVector jet1 = myjet1.p4();
-	      math::XYZTLorentzVector jet2 = myjet2.p4();
-	      Float_t jesUnc1 = 0.;//myjet1.uncOnFourVectorScale();
-	      Float_t jesUnc2 = 0.;//myjet2.uncOnFourVectorScale();
-	      math::XYZTLorentzVector jetScalePlus1 = jet1*(1+jesUnc1);
-	      math::XYZTLorentzVector jetScaleMinus1 = jet1*(1-jesUnc1);
-	      math::XYZTLorentzVector jetScalePlus2 = jet2*(1+jesUnc2);
-	      math::XYZTLorentzVector jetScaleMinus2 = jet2*(1-jesUnc2);
-	      Float_t MjjPlus = (jetScalePlus1+jetScalePlus2).M();
-	      Float_t MjjMinus = (jetScaleMinus1+jetScaleMinus2).M();
-	      //myTree->FillDiJetInfo(Mjj,MjjPlus,MjjMinus,detajj,Fisher);
-	      TString names[]={"DiJetMass","DiJetMassPlus","DiJetMassMinus","DiJetDEta","DiJetFisher"};
-	      double dijetinfo[]={Mjj,MjjPlus,MjjMinus,detajj,Fisher};
-	      myTree->SetVariables((TString *)names,(double *)dijetinfo,5);
+	const pat::Jet& myjet1 = *(cleanedJets.at(0)); 
+	const pat::Jet& myjet2 = *(cleanedJets.at(1));
+	math::XYZTLorentzVector jet1 = myjet1.p4();
+	math::XYZTLorentzVector jet2 = myjet2.p4();
+	Float_t jesUnc1 = 0.;//myjet1.uncOnFourVectorScale();
+	Float_t jesUnc2 = 0.;//myjet2.uncOnFourVectorScale();
+	math::XYZTLorentzVector jetScalePlus1 = jet1*(1+jesUnc1);
+	math::XYZTLorentzVector jetScaleMinus1 = jet1*(1-jesUnc1);
+	math::XYZTLorentzVector jetScalePlus2 = jet2*(1+jesUnc2);
+	math::XYZTLorentzVector jetScaleMinus2 = jet2*(1-jesUnc2);
+	Float_t MjjPlus = (jetScalePlus1+jetScalePlus2).M();
+	Float_t MjjMinus = (jetScaleMinus1+jetScaleMinus2).M();
+	//myTree->FillDiJetInfo(Mjj,MjjPlus,MjjMinus,detajj,Fisher);
+	TString names[]={"DiJetMass","DiJetMassPlus","DiJetMassMinus","DiJetDEta","DiJetFisher"};
+	double dijetinfo[]={Mjj,MjjPlus,MjjMinus,detajj,Fisher};
+	myTree->SetVariables((TString *)names,(double *)dijetinfo,5);
       }
     }
   }
@@ -613,7 +601,6 @@ void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
   //myTree->FillJetInfo( );
   TString names[8]={"JetPt","JetEta","JetPhi","JetMass","JetBTagger","JetIsBtagged","JetQGLikelihood","JetSigma"};
   double vars[8]={jetPt, jetEta, jetPhi, jetMass, jetBTagger, jetIsBtagged, jetQGLikelihood, jesUnc};
-  //cout<<"jetpt "<<jet.pt()<<" passing "<<vars[0]<<endl;
   myTree->SetVariables((TString *)names,(double *)vars,8);
    
   return;
@@ -1040,7 +1027,6 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   vector<float> PFPhotonIso(4);
   vector<float> combRelIsoPF(4);
   vector<bool>  isID(4);
-  
   
   for (unsigned int i=0; i<leptons.size(); ++i){
     SIP[i]             = userdatahelpers::getUserFloat(leptons[i],"SIP");

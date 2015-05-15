@@ -17,7 +17,6 @@
 #include <FWCore/Framework/interface/ESHandle.h>
 
 #include <DataFormats/PatCandidates/interface/Muon.h>
-#include <Muon/MuonAnalysisTools/interface/MuonEffectiveArea.h>
 #include "DataFormats/VertexReco/interface/Vertex.h"
 
 #include <ZZAnalysis/AnalysisStep/interface/CutSet.h>

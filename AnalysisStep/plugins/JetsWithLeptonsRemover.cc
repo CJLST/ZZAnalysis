@@ -43,7 +43,7 @@ public:
   bool checkLeptonJet(const edm::Event & event, const pat::Jet& jet);
   bool isMatchingWithZZLeptons(const edm::Event & event, const pat::Jet& jet);
   template <typename LEP>
-  bool isMatchingWith(const edm::InputTag& src, const edm::Event & event, const pat::Jet& jet);
+  bool isMatchingWith(const edm::InputTag& src, const StringCutObjectSelector<LEP>& presel, const edm::Event & event, const pat::Jet& jet);
 
 private:
   /// Labels for input collections
@@ -56,6 +56,8 @@ private:
  
   /// Preselection cut
   StringCutObjectSelector<pat::Jet> preselectionJ_;
+  StringCutObjectSelector<pat::Muon> preselectionMu_;
+  StringCutObjectSelector<pat::Electron> preselectionEle_;
   StringCutObjectSelector<pat::CompositeCandidate> preselectionVV_;
 
   // Some istograms for monitoring
@@ -81,6 +83,8 @@ JetsWithLeptonsRemover::JetsWithLeptonsRemover(const edm::ParameterSet & iConfig
   , electronSrc_      (iConfig.getParameter<edm::InputTag>("Electrons"))
   , diBosonSrc_       (iConfig.getParameter<edm::InputTag>("Diboson"))  
   , preselectionJ_    (iConfig.getParameter<std::string>("JetPreselection"))
+  , preselectionMu_   (iConfig.getParameter<std::string>("MuonPreselection"))
+  , preselectionEle_  (iConfig.getParameter<std::string>("ElectronPreselection"))
   , preselectionVV_   (iConfig.getParameter<std::string>("DiBosonPreselection"))
 
   , activateDebugPrintOuts_ (iConfig.getUntrackedParameter<bool>("DebugPrintOuts",false))   
@@ -156,18 +160,17 @@ void JetsWithLeptonsRemover::produce(edm::Event & event, const edm::EventSetup &
 bool JetsWithLeptonsRemover::isGood(const pat::Jet& jet) const {
   
   float jeta=fabs(jet.eta());
+
+  // cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID#Recommendations_for_13_TeV_data
   bool looseJetID = (jet.neutralHadronEnergyFraction() < 0.99 && 
-		     jet.neutralEmEnergyFraction() < 0.99 && 
-		     jet.numberOfDaughters() > 1 &&  // was  cmg::PFJet::nConstituents()
+		     jet.neutralEmEnergyFraction() < 0.99 &&
+		     jet.numberOfDaughters() > 1 &&
+		     jet.chargedMultiplicity()+jet.neutralMultiplicity() >0 &&
 		     jet.muonEnergyFraction() < 0.8 &&
 		     jet.chargedEmEnergyFraction() < 0.9 &&
 		     ( jet.chargedHadronEnergyFraction() > 0 || jeta > 2.4 )  &&
 		     ( jet.chargedMultiplicity() > 0 || jeta > 2.4 ) &&
 		     ( jet.chargedEmEnergyFraction() < 0.99 || jeta > 2.4 ) );
-  
-  
-  
-  
   if(!looseJetID) return false;
 
   bool passPU = true;
@@ -261,12 +264,14 @@ bool JetsWithLeptonsRemover::isMatchingWithZZLeptons(const edm::Event & event, c
 
 
 template <typename LEP>
-bool JetsWithLeptonsRemover::isMatchingWith(const edm::InputTag& src, const edm::Event & event, const pat::Jet& jet){
+bool JetsWithLeptonsRemover::isMatchingWith(const edm::InputTag& src, const StringCutObjectSelector<LEP>& presel, const edm::Event & event, const pat::Jet& jet){
 
   // Check for muon-originated jets   
   edm::Handle<std::vector<LEP> >  leptons; event.getByLabel(src, leptons);
   
   foreach(const LEP& lepton, *leptons){
+
+    if(!presel(lepton)) continue;
     
     if(activateDebugPrintOuts_) std::cout<<"Lepton pt: " << lepton.pt()   << " eta: " << lepton.eta()    << " phi: " << lepton.phi() << " p: " << lepton.p() << std::endl;  
       
@@ -289,8 +294,8 @@ bool JetsWithLeptonsRemover::checkLeptonJet(const edm::Event & event, const pat:
 
   if(cleaningFromDiboson_ && isMatchingWithZZLeptons(event,jet)) return true;
   
-  if(isMatchingWith<pat::Muon>    (muonSrc_,     event, jet) || 
-     isMatchingWith<pat::Electron>(electronSrc_, event, jet)) return true;
+  if(isMatchingWith<pat::Muon>    (muonSrc_,     preselectionMu_,  event, jet) || 
+     isMatchingWith<pat::Electron>(electronSrc_, preselectionEle_, event, jet)) return true;
   
   return false;
 }
