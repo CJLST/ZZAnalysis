@@ -156,6 +156,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   h_weight(0)
   //h_ZXWeight(0)
 {
+  //cout<< "Beginning Constructor\n\n\n" <<endl;
   theCandLabel = pset.getUntrackedParameter<string>("CandCollection"); // Name of input ZZ collection
   theChannel = myHelper.channel(); // Valid options: ZZ, ZLL, ZL 
   theFileName = pset.getUntrackedParameter<string>("fileName"); 
@@ -206,34 +207,37 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
     else yearString.Append("B");
   }
   TString filename;filename.Form("ZZAnalysis/AnalysisStep/test/Macros/scale_factors_muons%d.root",year); 
-  if(year==2015)filename.Form("ZZAnalysis/AnalysisStep/test/Macros/scale_factors_muons%d.root",2012); //FIXME
+  if(year==2015){
+    filename.Form("ZZAnalysis/AnalysisStep/test/Macros/scale_factors_muons%d.root",2012); //FIXME
+    yearString.Form("TH2D_ALL_%d",2012);
+  }
   edm::FileInPath fip(filename.Data());
   std::string fipPath=fip.fullPath();
   TFile *fMuWeight = TFile::Open(fipPath.data(),"READ");
   hTH2D_Mu_All = (TH2D*)fMuWeight->Get(yearString.Data())->Clone(); 
-   
+
   filename.Form("ZZAnalysis/AnalysisStep/test/Macros/scale_factors_ele%d.root",year); 
-  if(year==2015)filename.Form("ZZAnalysis/AnalysisStep/test/Macros/scale_factors_ele%d.root",2012);//FIXME   
+  if(year==2015)filename.Form("ZZAnalysis/AnalysisStep/test/Macros/scale_factors_ele%d.root",2012);//FIXME  
   edm::FileInPath fipEle(filename.Data());
   fipPath=fipEle.fullPath();
   TFile *fEleWeight = TFile::Open(fipPath.data(),"READ");
   hTH2D_El_All = (TH2D*)fEleWeight->Get("h_electronScaleFactor_RecoIdIsoSip")->Clone();
-        
+     
   //HqT weights
   edm::FileInPath HqTfip("ZZAnalysis/AnalysisStep/test/Macros/HqTWeights.root");
   fipPath=HqTfip.fullPath();
   TFile *fHqt = TFile::Open(fipPath.data(),"READ");
-  h_weight = (TH2D*)fHqt->Get("wH")->Clone();//FIXME: Ask simon to provide the 2D histo
+  h_weight = (TH2D*)fHqt->Get("wH_400")->Clone();//FIXME: Ask simon to provide the 2D histo
 
   //CR fake rate weight
   filename.Form("ZZAnalysis/AnalysisStep/test/Macros/FR2_2011_AA_electron.root");
-  if(year==2012)filename.Form("ZZAnalysis/AnalysisStep/test/Macros/FR2_AA_ControlSample_ABCD.root");
+  if(year==2015)filename.Form("ZZAnalysis/AnalysisStep/test/Macros/FR2_AA_ControlSample_ABCD.root");
   edm::FileInPath fipEleZX(filename.Data());
   fipPath=fipEleZX.fullPath();
   TFile *FileZXWeightEle = TFile::Open(fipPath.data(),"READ");
   
   filename.Form("ZZAnalysis/AnalysisStep/test/Macros/FR2_2011_AA_muon.root");
-  if(year==2012)filename.Form("ZZAnalysis/AnalysisStep/test/Macros/FR2_AA_muon.root");
+  if(year==2015)filename.Form("ZZAnalysis/AnalysisStep/test/Macros/FR2_AA_muon.root");
   edm::FileInPath fipMuZX(filename.Data());
   fipPath=fipMuZX.fullPath();  
   TFile *FileZXWeightMuo = TFile::Open(fipPath.data(),"READ");
@@ -248,8 +252,9 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   fHqt->Close();
   FileZXWeightEle->Close();
   FileZXWeightMuo->Close();
-  
-  BookAllBranches();
+    
+  //cout<<"Booking branches\n\n\n"<<endl;
+
 }
 
 HZZ4lNtupleMaker::~HZZ4lNtupleMaker()
@@ -277,7 +282,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
   bool gen_ZZ4lInEtaAcceptance = false;   // All 4 gen leptons in eta acceptance
   bool gen_ZZ4lInEtaPtAcceptance = false; // All 4 gen leptons in eta,pT acceptance
-
 
   const reco::Candidate * genH = 0;
   std::vector<const reco::Candidate *> genZLeps;
@@ -349,7 +353,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   edm::Handle<edm::View<pat::CompositeCandidate> > candHandle;
   event.getByLabel(theCandLabel, candHandle);
   const edm::View<pat::CompositeCandidate>* cands = candHandle.product();
-
   myTree->InitializeVariables();
 
   if (skipEmptyEvents && cands->size() == 0) return; // Skip events with no candidate, unless skipEmptyEvents = false
@@ -372,7 +375,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
   //Fill MC truth information
   if (isMC) {
-
     if(genH != 0){
       myTree->FillHGenInfo(genH->p4(),getHqTWeight(genH->p4().M(),genH->p4().Pt()));
     }
@@ -412,7 +414,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
     }
   }
-
 
   // Photons (store them only for events with at least 1 candidate)
   // FIXME: should rather write used FSR photons, with info on matching lepton.
@@ -501,6 +502,8 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   Int_t NbestCand = -1; //FIXME now store only 1 candidate in the SR, but we still have to save iBC correctly in the SR
   if (theChannel==ZZ) NbestCand=0;
   //myTree->FillEventInfo(event.id().run(), event.id().event(), event.luminosityBlock(), NbestCand, vertexs->size(), nObsInt, nTrueInt, weight2, pfmet, pfjetscoll->size(), cleanedJets.size(), cleanedJetsPt30.size(), nCleanedJetsPt30BTagged, genFinalState, genProcessId, genHEPMCweight, trigWord, genExtInfo,xsec);
+  //cout<<"event Number "<<event.id().event()<<" jet coll "<<pfjetscoll->size()<<" jets cleaned "<<cleanedJets.size()<<" njets30 "<<cleanedJetsPt30.size()<<endl;
+  //cout<<"event Number "<<(double)event.id().run()<<" jet coll "<<(double)pfjetscoll->size()<<" jets cleaned "<<(double)cleanedJets.size()<<" njets30 "<<(double)cleanedJetsPt30.size()<<endl;
   double eventinfo[18]={(double)event.id().run(),(double)event.luminosityBlock(),(double)NbestCand, (double)vertexs->size(), (double)nObsInt, (double)nTrueInt, (double)weight2, (double)pfmet, (double)pfjetscoll->size(), (double)cleanedJets.size(), 
     (double)cleanedJetsPt30.size(), (double)nCleanedJetsPt30BTagged, (double)genFinalState, (double)genProcessId, 
     (double)genHEPMCweight, (double)trigWord, (double)genExtInfo,(double)xsec};
@@ -566,7 +569,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     ++nFilled;
     */
   }//end loop over candidates
-
+  //cout<<"nFilled "<<nFilled<<endl;
   // Events with no ZZ candidate have already been skipped at the beginning, but in case of CRs there could be no cands with CRflag!=0, so none was filled. 
   //if (skipEmptyEvents && nFilled==0 && theChannel==ZLL) return;
 
@@ -590,7 +593,7 @@ void HZZ4lNtupleMaker::FillPhoton(const pat::Photon& photon)
   const Float_t photPhi = photon.phi();
 
   TString names[3]={"PhotPt","PhotEta","PhotPhi"};
-  float vars[3]={photPt, photEta, photPhi};
+  double vars[3]={photPt, photEta, photPhi};
   myTree->SetVariables((TString *)names,(double *)vars,3);
   return;
 }
@@ -609,7 +612,8 @@ void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
 
   //myTree->FillJetInfo( );
   TString names[8]={"JetPt","JetEta","JetPhi","JetMass","JetBTagger","JetIsBtagged","JetQGLikelihood","JetSigma"};
-  float vars[8]={jetPt, jetEta, jetPhi, jetMass, jetBTagger, jetIsBtagged, jetQGLikelihood, jesUnc};
+  double vars[8]={jetPt, jetEta, jetPhi, jetMass, jetBTagger, jetIsBtagged, jetQGLikelihood, jesUnc};
+  //cout<<"jetpt "<<jet.pt()<<" passing "<<vars[0]<<endl;
   myTree->SetVariables((TString *)names,(double *)vars,8);
    
   return;
@@ -825,8 +829,9 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   }
   if (!(evtPass)) {sel = -sel;} // avoid confusion when we write events which do not pass trigger/skim
 
+//cout<<"KD= "<<p0plus_VAJHU+p0minus_VAJHU<<endl;
   //myTree->FillProbability(
-  float probabilities[84]={ p0plus_VAJHU,
+  double probabilities[84]={ p0plus_VAJHU,
                           p0minus_VAJHU,
                           p0plus_VAMCFM,
                           p0hplus_VAJHU, // 0h+ (high dimensional operator), vector algebra, JHUgen
@@ -919,8 +924,8 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
                           "p1_prodIndep_VAJHU",
                           "p1plus_VAJHU", // 1+ (axial vector)", vector algebra", JHUgen",
                           "p1plus_prodIndep_VAJHU", // 1+ (axial vector)", vector algebra", JHUgen",
-                          "p2_VAJHU ",
-                          "p2_prodIndep_VAJHU ",
+                          "p2_VAJHU",
+                          "p2_prodIndep_VAJHU",
                           "p2qqb_VAJHU",
                           "p2hplus_VAJHU",
                           "p2hminus_VAJHU",
@@ -1016,7 +1021,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   Float_t phistar2      = cand.userFloat("phistar2");
   Float_t xi            = cand.userFloat("xi");
   Float_t xistar        = cand.userFloat("xistar");
-  float angularinfo[8]={costhetastar, phi, costheta1, costheta2, phistar1, phistar2,xi,xistar};
+  double angularinfo[8]={costhetastar, phi, costheta1, costheta2, phistar1, phistar2,xi,xistar};
   TString angleName[8]={
     "costhetastar",
     "helphi",
@@ -1055,8 +1060,9 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     }
 
     //Fill the info on the lepton candidates  
-    TString lepnames[]={"Pt",  "Eta","Phi", "LepId", "SIP", "isID", "BDT","missingHit","chargedHadIso","neutralHadIso","photonIso","combRelIsoPF"};
-    for(int ilep=0;ilep<12;ilep++)lepnames[i].Prepend("Lep%d",i);
+    TString lepnames[12];
+    TString outlepnames[12]={"Pt","Eta","Phi", "LepId", "SIP", "isID", "BDT","missingHit","chargedHadIso","neutralHadIso","photonIso","combRelIsoPF"};
+    for(int ilep=0;ilep<12;ilep++)lepnames[ilep].Form("Lep%d%s",i+1,outlepnames[ilep].Data());
     double lepVariables[]={(double)leptons[i]->pt(),
 			(double)leptons[i]->eta(),
 			(double)leptons[i]->phi(),
@@ -1130,6 +1136,7 @@ void HZZ4lNtupleMaker::beginJob()
   edm::Service<TFileService> fs;
   myTree = new HZZ4lNtupleFactory( fs->make<TTree>(theFileName,"Event Summary"));
   hCounter = fs->make<TH1F>("Counters", "Counters", 45, 0., 45.);
+  BookAllBranches();
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
@@ -1244,7 +1251,9 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const Float_t LepPt, const Float_t LepEta
     weight  = hTH2D_El_All->GetBinContent(hTH2D_El_All->GetXaxis()->FindBin(myLepPt),hTH2D_El_All->GetYaxis()->FindBin(myLepEta));
       //errCorr = hTH2D_El_All_2011A->GetBinError(hTH2D_El_All_2011A->GetXaxis()->FindBin(myLepPt),hTH2D_El_All_2011A->GetYaxis()->FindBin(myLepEta));   
   }else {
-    abort();
+    cout<<"ERROR! wrong lepton ID "<<myLepID<<endl;
+    //abort();
+    weight=0;
   }   
 
   
@@ -1258,8 +1267,8 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const Float_t LepPt, const Float_t LepEta
   if(myLepPt < 5. && myLepID == 13) weight = 1.;
 
   if(weight < 0.001 || weight > 10.){
-    cout << "myLepPt = " << myLepPt << " myLepEta = " << myLepEta << " weight = " << weight << endl;
-    abort();  //no correction should be zero, if you find one, stop
+    cout << "ERROR! LEP out of range! myLepPt = " << myLepPt << " myLepEta = " << myLepEta <<" myLepID "<<myLepID<< " weight = " << weight << endl;
+    //abort();  //no correction should be zero, if you find one, stop
   }
 /*
 //FIXME: in HZZ4l was working because seeder was the event number (1=first event, 10=10th event)
@@ -1368,14 +1377,14 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("nCleanedJets",0,HZZ4lNtupleFactory::kInt);
   myTree->Book("nCleanedJetsPt30",0,HZZ4lNtupleFactory::kInt);
   myTree->Book("nCleanedJetsPt30BTagged",0,HZZ4lNtupleFactory::kInt);
-  myTree->Book("trigWord",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("trigWord",0,HZZ4lNtupleFactory::kShort);
   
   //H variables
   myTree->Book("ZZMass",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("ZZMassErr",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("ZZMassErrCorr",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("ZZMassPreFSR",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("ZZsel",0,HZZ4lNtupleFactory::kInt);
+  myTree->Book("ZZsel",0,HZZ4lNtupleFactory::kShort);
   myTree->Book("ZZPt",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("ZZEta",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("ZZPhi",0,HZZ4lNtupleFactory::kFloat);
@@ -1385,7 +1394,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   //Z1 variables
   myTree->Book("Z1Mass",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("Z1Pt",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Z1Flav",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Z1Flav",0,HZZ4lNtupleFactory::kShort);
 
   //Kin refitted info
   if (addKinRefit) {
@@ -1403,7 +1412,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   //Z2 variables
   myTree->Book("Z2Mass",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("Z2Pt",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Z2Flav",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Z2Flav",0,HZZ4lNtupleFactory::kShort);
 
   //Angular variables
   myTree->Book("costhetastar",0,HZZ4lNtupleFactory::kFloat);
@@ -1639,7 +1648,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("genFinalState",0,HZZ4lNtupleFactory::kInt);
   myTree->Book("genProcessId",0,HZZ4lNtupleFactory::kInt);
   myTree->Book("genHEPMCweight",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("genExtInfo",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("genExtInfo",0,HZZ4lNtupleFactory::kShort);
   myTree->Book("xsec",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("dataMCWeight",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("HqTMCweight",0,HZZ4lNtupleFactory::kFloat);
@@ -1657,32 +1666,32 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("GenLep1Pt",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("GenLep1Eta",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("GenLep1Phi",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("GenLep1Id",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("GenLep1Id",0,HZZ4lNtupleFactory::kShort);
 
   myTree->Book("GenLep2Pt",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("GenLep2Eta",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("GenLep2Phi",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("GenLep2Id",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("GenLep2Id",0,HZZ4lNtupleFactory::kShort);
 
   myTree->Book("GenLep3Pt",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("GenLep3Eta",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("GenLep3Phi",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("GenLep3Id",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("GenLep3Id",0,HZZ4lNtupleFactory::kShort);
 
   myTree->Book("GenLep4Pt",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("GenLep4Eta",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("GenLep4Phi",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("GenLep4Id",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("GenLep4Id",0,HZZ4lNtupleFactory::kShort);
 
   myTree->Book("GenAssocLep1Pt",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("GenAssocLep1Eta",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("GenAssocLep1Phi",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("GenAssocLep1Id",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("GenAssocLep1Id",0,HZZ4lNtupleFactory::kShort);
 
   myTree->Book("GenAssocLep2Pt",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("GenAssocLep2Eta",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("GenAssocLep2Phi",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("GenAssocLep2Id",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("GenAssocLep2Id",0,HZZ4lNtupleFactory::kShort);
 
 
 }

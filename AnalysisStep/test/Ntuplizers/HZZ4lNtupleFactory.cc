@@ -14,6 +14,24 @@ HZZ4lNtupleFactory::HZZ4lNtupleFactory(TTree* outTree_input)
 {
   //---- create output tree ----
   _outTree = outTree_input;
+  /*
+  cout<<"Factory!"<<endl;
+  for(int i=0;i<99;i++){
+     intVector[i]=0;
+  shortVector[i]=0;
+   boolVector[i]=0;
+   longVector[i]=0;
+   charVector[i]=0;
+   floatVector[i]=0;
+  //vectorVector[i]=0;
+  }
+  //std::vector<float> defaultVector[6];
+  //std::vector<TString> nameVector[7];
+
+  cout<<"end factory"<<endl;
+  */
+  for(int i=0;i<7;i++)nBranches[i]=0;
+
   //InitializeVariables();
   
   _firstZStored = false;
@@ -43,14 +61,15 @@ void HZZ4lNtupleFactory::DumpBranches(TString filename) const
 }
 
 void HZZ4lNtupleFactory::Book(TString *names, int type, int nBranchessToFill, float *defaultValues){
-  for(int i=0;i<nBranchessToFill;i++)Book(names[i],type,defaultValues[i]);
+  for(int i=0;i<nBranchessToFill;i++)Book(names[i],defaultValues[i],type);
 }
 
-void HZZ4lNtupleFactory::Book(TString branchName, int varType, float defaultValue){
+void HZZ4lNtupleFactory::Book(TString branchName, float defaultValue, int varType){
   //should add a protection for existing branches
   //kBool,kShort,kInt,kFloat,kVectorFloat
   TString leafName=branchName.Data();
   nameVector[varType].push_back(branchName);
+
   if(varType!=kVectorFloat)defaultVector[varType].push_back(defaultValue);
   if(varType==kBool){
     leafName.Append("/O");
@@ -65,7 +84,7 @@ void HZZ4lNtupleFactory::Book(TString branchName, int varType, float defaultValu
   else if(varType==kInt){
     leafName.Append("/I");
     intVector[nBranches[kInt]]=(Int_t)defaultValue;
-    _outTree->Branch(branchName.Data(),&intVector[nBranches[varType]],leafName.Data());
+    _outTree->Branch(branchName.Data(),&(intVector[nBranches[varType]]),leafName.Data());
   }
   else if(varType==kChar){
     leafName.Append("/B");
@@ -130,7 +149,7 @@ int HZZ4lNtupleFactory::SetVariable(TString branchName, double value){
     }
   }
   if(!found){
-    cout<<"ERROR!!! Variable "<<branchName.Data()<<" is not booked in NtupleFactory"<<endl;
+    cout<<"Warning!!! Variable "<<branchName.Data()<<" is not booked in NtupleFactory"<<endl;
     return 0;
   }
   if(itype==kBool) boolVector[iname]=(bool)value;
@@ -140,7 +159,7 @@ int HZZ4lNtupleFactory::SetVariable(TString branchName, double value){
   else if(itype==kLong) longVector[iname]=(Long64_t)value;
   else if(itype==kFloat) floatVector[iname]=value;
   else if(itype==kVectorFloat){
-    vectorVector[iname].push_back(value);
+    vectorVector[iname].push_back((float)value);
   }else return -1; //should be impossible to get here...
   return 1;
 }
@@ -148,13 +167,13 @@ int HZZ4lNtupleFactory::SetVariable(TString branchName, double value){
 void HZZ4lNtupleFactory::InitializeVariables()
 {
 
-  for(int i=0;i<nBranches[kBool];i++)boolVector[i]=defaultVector[kBool].at(i);
-  for(int i=0;i<nBranches[kShort];i++)shortVector[i]=defaultVector[kShort].at(i);
-  for(int i=0;i<nBranches[kInt];i++)intVector[i]=defaultVector[kInt].at(i);
-  for(int i=0;i<nBranches[kChar];i++)charVector[i]=defaultVector[kChar].at(i);
-  for(int i=0;i<nBranches[kLong];i++)longVector[i]=defaultVector[kLong].at(i);
-  for(int i=0;i<nBranches[kFloat];i++)floatVector[i]=defaultVector[kFloat].at(i);
-  for(int i=0;i<nBranches[kVectorFloat];i++)vectorVector[i].clear();
+  for(int i=0;i<nBranches[kBool];i++){boolVector[i]=defaultVector[kBool].at(i);}
+  for(int i=0;i<nBranches[kShort];i++){shortVector[i]=defaultVector[kShort].at(i);}
+  for(int i=0;i<nBranches[kInt];i++){intVector[i]=defaultVector[kInt].at(i);}
+  for(int i=0;i<nBranches[kChar];i++){charVector[i]=defaultVector[kChar].at(i);}
+  for(int i=0;i<nBranches[kLong];i++){longVector[i]=defaultVector[kLong].at(i);}
+  for(int i=0;i<nBranches[kFloat];i++){floatVector[i]=defaultVector[kFloat].at(i);}
+  for(int i=0;i<nBranches[kVectorFloat];i++){vectorVector[i].clear();}
 }
 
 
@@ -188,8 +207,8 @@ void HZZ4lNtupleFactory::FillZInfo(Float_t ZMass, Float_t ZPt, short ZFlav, Floa
 
 void HZZ4lNtupleFactory::FillHGenInfo(const math::XYZTLorentzVector pH, float w)
 {
-  SetVariable("genHMass",pH.M());
-  SetVariable("genHPt",pH.Pt());
+  SetVariable("GenHMass",pH.M());
+  SetVariable("GenHPt",pH.Pt());
 
   SetVariable("HqTMCweight",w);
 
@@ -198,11 +217,11 @@ void HZZ4lNtupleFactory::FillHGenInfo(const math::XYZTLorentzVector pH, float w)
 
 void HZZ4lNtupleFactory::FillZGenInfo(const math::XYZTLorentzVector pZ1, const math::XYZTLorentzVector pZ2)
 {
-  SetVariable("genZ1Mass", pZ1.M());
-  SetVariable("genZ1Pt", pZ1.Pt());
+  SetVariable("GenZ1Mass", pZ1.M());
+  SetVariable("GenZ1Pt", pZ1.Pt());
 
-  SetVariable("genZ2Mass", pZ2.M());
-  SetVariable("genZ2Pt", pZ2.Pt());
+  SetVariable("GenZ2Mass", pZ2.M());
+  SetVariable("GenZ2Pt", pZ2.Pt());
 
   return;
 }
@@ -211,27 +230,27 @@ void HZZ4lNtupleFactory::FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t 
 					const math::XYZTLorentzVector Lep1, const math::XYZTLorentzVector Lep2, 
 					const math::XYZTLorentzVector Lep3, const math::XYZTLorentzVector Lep4,float weight)
 {
-  SetVariable("genLep1Pt",Lep1.Pt());
-  SetVariable("genLep1Eta",Lep1.Eta());
-  SetVariable("genLep1Phi",Lep1.Phi());
-  SetVariable("genLep1Id ",Lep1Id);
+  SetVariable("GenLep1Pt",Lep1.Pt());
+  SetVariable("GenLep1Eta",Lep1.Eta());
+  SetVariable("GenLep1Phi",Lep1.Phi());
+  SetVariable("GenLep1Id",Lep1Id);
 
-  SetVariable("genLep2Pt",Lep2.Pt());
-  SetVariable("genLep2Eta",Lep2.Eta());
-  SetVariable("genLep2Phi",Lep2.Phi());
-  SetVariable("genLep2Id ",Lep2Id);
+  SetVariable("GenLep2Pt",Lep2.Pt());
+  SetVariable("GenLep2Eta",Lep2.Eta());
+  SetVariable("GenLep2Phi",Lep2.Phi());
+  SetVariable("GenLep2Id",Lep2Id);
 
-  SetVariable("genLep3Pt",Lep3.Pt());
-  SetVariable("genLep3Eta",Lep3.Eta());
-  SetVariable("genLep3Phi",Lep3.Phi());
-  SetVariable("genLep3Id ",Lep3Id);
+  SetVariable("GenLep3Pt",Lep3.Pt());
+  SetVariable("GenLep3Eta",Lep3.Eta());
+  SetVariable("GenLep3Phi",Lep3.Phi());
+  SetVariable("GenLep3Id",Lep3Id);
 
-  SetVariable("genLep4Pt",Lep4.Pt());
-  SetVariable("genLep4Eta",Lep4.Eta());
-  SetVariable("genLep4Phi",Lep4.Phi());
-  SetVariable("genLep4Id ",Lep4Id);
+  SetVariable("GenLep4Pt",Lep4.Pt());
+  SetVariable("GenLep4Eta",Lep4.Eta());
+  SetVariable("GenLep4Phi",Lep4.Phi());
+  SetVariable("GenLep4Id",Lep4Id);
 
-  SetVariable("dataMCweight",weight);
+  SetVariable("dataMCWeight",weight);
   
   return;
 }

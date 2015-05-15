@@ -101,8 +101,8 @@ def loop():
 
             theEvent = Event(iBC,run,lumi,event)
 
-            if iBC>=0 and ZZsel[iBC]>=90 :
-                ZZflav      = tree.Z1Flav[iBC]*tree.Z2Flav[iBC];
+            if iBC>=0 and ZZsel>=90 :
+                ZZflav      = tree.Z1Flav*tree.Z2Flav;
                 if  (aChan=="4e" and ZZflav!=14641) or (aChan=="4mu" and ZZflav!=28561) or (aChan=="2e2mu" and ZZflav!=20449) : continue
 
                 totCounter += 1
@@ -134,8 +134,7 @@ def loop():
                 jets30eta = []
                 jets30phi = []
                 jets30mass = []
-                
-                for i in range(len(jetpt)):                    
+                for i in range(len(jetpt)): 
                     if jetpt[i]>30.:
                         jets30pt.append(jetpt[i])
                         jets30eta.append(jeteta[i])

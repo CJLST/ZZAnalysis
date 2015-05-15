@@ -31,7 +31,7 @@ class HZZ4lNtupleFactory{
   void FillCurrentTree(){_outTree->Fill();}
   void DumpBranches(TString filename) const;
   
-  void Book(TString branchName, int varType,float defaultValue=0);
+  void Book(TString branchName, float defaultValue=0,int varType=kFloat);
   void Book(TString *names, int type, int nVarsToFill, float *defaultValues);
   int SetVariable(TString varName, double value);
   int SetVariableLong(TString varName, Long64_t value);
