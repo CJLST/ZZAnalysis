@@ -1117,11 +1117,11 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   myTree->SetVariable("nExtraZ",cand.userFloat("nExtraZ"));
 
   //Fill the info on the extra leptons
+  TString varExtra[4]={"ExtraLepPt","ExtraLepEta","ExtraLepPhi","ExtraLepLepId"};
   for(int iExtraLep=1;iExtraLep<4;iExtraLep++){
     TString extraString;extraString.Form("ExtraLep%d",iExtraLep);
     if(cand.hasUserCand(extraString.Data())){
-      TString varExtra[4]={"Pt","Eta","Phi","LepId"};
-      for(int iextra=0;iextra<4;iextra++)varExtra[iextra].Prepend(extraString.Data());
+      //for(int iextra=0;iextra<4;iextra++)varExtra[iextra].Prepend(extraString.Data());
       reco::CandidatePtr candPtr=cand.userCand(extraString.Data());
       double valuesExtra[4]={candPtr->pt(),candPtr->eta(),candPtr->phi(),(double)candPtr->pdgId()};
       myTree->SetVariables((TString *)varExtra,(double *)valuesExtra,4);
