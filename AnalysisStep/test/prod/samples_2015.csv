@@ -6,8 +6,10 @@ identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,spli
 ### H signal private production
 priv_ggH125,,          0.01212,           ,,/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/ggH_JHU_125/,,,2,,
 priv_VBFH125,,         0.001034,          ,,/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/VBF_JHU_125/,,,2,,
-priv_WplusH125,,       0.0001905,         ,,/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/WplusH_JHU_125/,,,2,,
-priv_WminusH125,,      0.0001905,         ,,/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/WminusH_JHU_125/,,,2,,
+
+#Total (W+H)+(W-H)=0.000381, ratio sigma(W+H)/sigma(W-H) = 1.59
+priv_WplusH125,,       0.0002339,         ,,/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/WplusH_JHU_125/,,,2,,
+priv_WminusH125,,      0.0001471,         ,,/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/WminusH_JHU_125/,,,2,,
 
 # for ZH and ttH, the field BR represents the filter efficiency
 priv_ZH125,,           0.000652,  0.15038, ,/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/ZH_JHU_125/,,,2,,
