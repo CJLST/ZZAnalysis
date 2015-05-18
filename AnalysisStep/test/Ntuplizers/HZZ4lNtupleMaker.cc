@@ -489,29 +489,33 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   Handle<vector<reco::MET> > pfmetcoll;
   event.getByLabel("slimmedMETs", pfmetcoll);
   float pfmet = -1;
-  if(pfmetcoll.isValid()){
+  float pfmet_phi = 0;
+  if (pfmetcoll.isValid()){
     pfmet = pfmetcoll->front().pt();
+    pfmet_phi = pfmetcoll->front().phi();
   }
-  
-    //Save general event info in the tree
+  //Save general event info in the tree
   //myTree->FillEventInfo(event.id().run(), event.id().event(), event.luminosityBlock(), NbestCand, vertexs->size(), nObsInt, nTrueInt, weight2, pfmet, pfjetscoll->size(), cleanedJets.size(), cleanedJetsPt30.size(), nCleanedJetsPt30BTagged, genFinalState, genProcessId, genHEPMCweight, trigWord, genExtInfo,xsec);
-  double eventinfo[16]={(double)event.id().run(),
-			(double)event.luminosityBlock(), 
-			(double)vertexs->size(), 
-			(double)nObsInt, 
-			(double)nTrueInt, 
-			(double)weight2, 
-			(double)pfmet, 
-			(double)cleanedJets.size(), 
-			(double)cleanedJetsPt30.size(), 
-			(double)nCleanedJetsPt30BTagged, 
-			(double)genFinalState, 
-			(double)genProcessId,
-			(double)genHEPMCweight, 
-			(double)trigWord, 
-			(double)genExtInfo,
-			(double)xsec};
-  TString eventnames[16]={
+  double eventinfo[17]={
+    (double)event.id().run(),
+    (double)event.luminosityBlock(),
+    (double)vertexs->size(),
+    (double)nObsInt,
+    (double)nTrueInt,
+    (double)weight2,
+    (double)pfmet,
+    (double)pfmet_phi,
+    (double)cleanedJets.size(),
+    (double)cleanedJetsPt30.size(),
+    (double)nCleanedJetsPt30BTagged,
+    (double)genFinalState,
+    (double)genProcessId,
+    (double)genHEPMCweight,
+    (double)trigWord,
+    (double)genExtInfo,
+    (double)xsec
+  };
+  TString eventnames[17]={
     "RunNumber",
     "LumiNumber",
     "Nvtx",
@@ -519,6 +523,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     "NTrueInt",
     "PUWeight",
     "PFMET",
+    "PFMETPhi",
     "nCleanedJets",
     "nCleanedJetsPt30",
     "nCleanedJetsPt30BTagged",
@@ -529,7 +534,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     "genExtInfo",
     "xsec"
   };
-  myTree->SetVariables((TString *)eventnames,(double *)eventinfo,16);
+  myTree->SetVariables((TString *)eventnames, (double *)eventinfo, 16);
   myTree->SetVariableLong("EventNumber",event.id().event());
   
   //Loop on the candidates
@@ -1382,8 +1387,9 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("NObsInt",0,HZZ4lNtupleFactory::kInt);
   myTree->Book("NTrueInt",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("PUWeight",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("PFMET",-99,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("nCleanedJets",0,HZZ4lNtupleFactory::kInt);
+  myTree->Book("PFMET", -99, HZZ4lNtupleFactory::kFloat);
+  myTree->Book("PFMETPhi", -99, HZZ4lNtupleFactory::kFloat);
+  myTree->Book("nCleanedJets", 0, HZZ4lNtupleFactory::kInt);
   myTree->Book("nCleanedJetsPt30",0,HZZ4lNtupleFactory::kInt);
   myTree->Book("nCleanedJetsPt30BTagged",0,HZZ4lNtupleFactory::kInt);
   myTree->Book("trigWord",0,HZZ4lNtupleFactory::kShort);
@@ -1445,7 +1451,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("Lep1BDT",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("Lep1missingHit",0,HZZ4lNtupleFactory::kChar);
   //--> Commented as these parentIDs are not computed at the moment
-  //  myTree->Book("Lep1ParentId",0,HZZ4lNtupleFactory::kFloat);
+  // myTree->Book("Lep1ParentId",0,HZZ4lNtupleFactory::kFloat);
 
   myTree->Book("Lep2Pt",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("Lep2Eta",0,HZZ4lNtupleFactory::kFloat);
