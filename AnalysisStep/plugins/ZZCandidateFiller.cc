@@ -79,6 +79,7 @@ private:
   int setup;
   float superMelaMass;
   MEMs combinedMEM;
+  Mela* myMela;
   bool embedDaughterFloats;
   bool ZRolesByMass;
   reco::CompositeCandidate::role_collection rolesZ1Z2;  
@@ -138,6 +139,9 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
   else if (cmp=="byBestKD")           bestCandType=Comparators::byBestKD;
   else if (cmp=="byBestKD_VH")           bestCandType=Comparators::byBestKD_VH;
   else abort();
+
+  //-- Non-MEM discriminants
+  myMela = combinedMEM.m_MELA;
 }
 
 
@@ -663,159 +667,131 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     double pvbf_VAJHU_new_up = -1.;
     double phjj_VAJHU_new_dn = -1.;
     double pvbf_VAJHU_new_dn = -1.;
-    if (cleanedJetsPt30.size()>=2) {
+
+    double pAux_vbf_VAJHU = 1;
+    double pAux_vbf_VAJHU_up = 1;
+    double pAux_vbf_VAJHU_dn = 1;
+
+    bool hasAtLeastOneJet = (cleanedJetsPt30.size() > 0);
+    bool hasAtLeastTwoJets = (cleanedJetsPt30.size() > 1);
+    if (hasAtLeastOneJet) {
       std::vector<TLorentzVector> partPprod;
       partPprod.push_back(pL11);
       partPprod.push_back(pL12);
       partPprod.push_back(pL21);
       partPprod.push_back(pL22);
 
-      std::vector<int> partIdprod; 
+      std::vector<int> partIdprod;
       partIdprod.push_back(id11);
       partIdprod.push_back(id12);
       partIdprod.push_back(id21);
       partIdprod.push_back(id22);
-      partIdprod.push_back(1);
-      partIdprod.push_back(1);
+      partIdprod.push_back(0); // If you know the jet flavors, even better, put the pdg ids for vhMELA
+      partIdprod.push_back(0); // If you know the jet flavors, even better, put the pdg ids for vhMELA
 
-      if(cleanedJetsPt30.size()==2){       // FIXME: rewrite to avoid duplicating the code for njets=2 and njets>2.
-        for(int jecnum=0;jecnum<3;jecnum++){
-          Float_t ratio1=1.;
-          Float_t ratio2=1.;
-	  /*
-          if(jecnum==1){
-            ratio1=1 + cleanedJetsPt30[0]->uncOnFourVectorScale();
-            ratio2=1 + cleanedJetsPt30[1]->uncOnFourVectorScale();
-          }
-          if(jecnum==2){
-            ratio1=1 - cleanedJetsPt30[0]->uncOnFourVectorScale();
-            ratio2=1 - cleanedJetsPt30[1]->uncOnFourVectorScale();
-          }
-	  */
-          TLorentzVector jet1(cleanedJetsPt30[0]->p4().x(),cleanedJetsPt30[0]->p4().y(),cleanedJetsPt30[0]->p4().z(),cleanedJetsPt30[0]->p4().t());
-          TLorentzVector jet2(cleanedJetsPt30[1]->p4().x(),cleanedJetsPt30[1]->p4().y(),cleanedJetsPt30[1]->p4().z(),cleanedJetsPt30[1]->p4().t());
-          jet1.SetPtEtaPhiM(jet1.Pt()*ratio1,jet1.Eta(),jet1.Phi(),jet1.M()*ratio1);
-          jet2.SetPtEtaPhiM(jet2.Pt()*ratio2,jet2.Eta(),jet2.Phi(),jet2.M()*ratio2);
+      for (int jecnum = 0; jecnum < 3; jecnum++){
+        TLorentzVector jet1, jet2;
+        double djet_max = -1;
+        double phjj_VAJHU_old_temp = -1;
+        double pvbf_VAJHU_old_temp = -1;
+        double pAux_vbf_VAJHU_temp = 1;
+        double phjj_VAJHU_new_temp = -1;
+        double pvbf_VAJHU_new_temp = -1;
+
+
+        double jecnum_multiplier = 0;
+        if (jecnum==1) jecnum_multiplier = 1.;
+        else if (jecnum==2) jecnum_multiplier = -1.;
+
+        for (unsigned int firstjet = 0; firstjet < cleanedJetsPt30.size(); firstjet++){
+          Float_t ratio1 = 1. /*+ jecnum_multiplier * cleanedJetsPt30[firstjet]->uncOnFourVectorScale()*/;
+          jet1.SetXYZT(cleanedJetsPt30[firstjet]->p4().x(), cleanedJetsPt30[firstjet]->p4().y(), cleanedJetsPt30[firstjet]->p4().z(), cleanedJetsPt30[firstjet]->p4().t());
+          jet1 *= ratio1;
           partPprod.push_back(jet1);
-          partPprod.push_back(jet2);
-          double phjj_temp,pvbf_temp;
-          combinedMEM.computeME(MEMNames::kJJ_SMHiggs_GG,MEMNames::kJHUGen,partPprod,partIdprod,phjj_temp);
-          combinedMEM.computeME(MEMNames::kJJ_SMHiggs_VBF,MEMNames::kJHUGen,partPprod,partIdprod,pvbf_temp);
-          if(jecnum==0){
-            phjj_VAJHU_old=phjj_temp;
-            pvbf_VAJHU_old=pvbf_temp;
-            phjj_VAJHU_new=phjj_VAJHU_old;
-            pvbf_VAJHU_new=pvbf_VAJHU_old;
-          }
-          if(jecnum==1){
-            phjj_VAJHU_old_up=phjj_temp;
-            pvbf_VAJHU_old_up=pvbf_temp;
-            phjj_VAJHU_new_up=phjj_VAJHU_old_up;
-            pvbf_VAJHU_new_up=pvbf_VAJHU_old_up;
-          }
-          if(jecnum==2){
-            phjj_VAJHU_old_dn=phjj_temp;
-            pvbf_VAJHU_old_dn=pvbf_temp;
-            phjj_VAJHU_new_dn=phjj_VAJHU_old_dn;
-            pvbf_VAJHU_new_dn=pvbf_VAJHU_old_dn;
-          }
-          partPprod.pop_back();
-          partPprod.pop_back();
-        }
-      }
-      if(cleanedJetsPt30.size()>2){ 
-        TLorentzVector jet1,jet2;
-        double djet_max=-1.;
-        double phjj_temp=-1.;
-        double pvbf_temp=-1.;
-        double phjj_VAJHU_old_temp =-1.;
-        double pvbf_VAJHU_old_temp =-1.;
-        double phjj_VAJHU_new_temp =-1.;
-        double pvbf_VAJHU_new_temp =-1.;
-        for(int jecnum=0;jecnum<3;jecnum++){
-          Float_t ratio1=1.;
-          Float_t ratio2=1.;
-	  /*
-          if(jecnum==1){
-            ratio1=1 + cleanedJetsPt30[0]->uncOnFourVectorScale();
-            ratio2=1 + cleanedJetsPt30[1]->uncOnFourVectorScale();
-          }
-          if(jecnum==2){
-            ratio1=1 - cleanedJetsPt30[0]->uncOnFourVectorScale();
-            ratio2=1 - cleanedJetsPt30[1]->uncOnFourVectorScale();
-          }
-	  */
-          jet1.SetXYZT(cleanedJetsPt30[0]->p4().x(),cleanedJetsPt30[0]->p4().y(),cleanedJetsPt30[0]->p4().z(),cleanedJetsPt30[0]->p4().t());
-          jet2.SetXYZT(cleanedJetsPt30[1]->p4().x(),cleanedJetsPt30[1]->p4().y(),cleanedJetsPt30[1]->p4().z(),cleanedJetsPt30[1]->p4().t());
-          jet1.SetPtEtaPhiM(jet1.Pt()*ratio1,jet1.Eta(),jet1.Phi(),jet1.M()*ratio1);
-          jet2.SetPtEtaPhiM(jet2.Pt()*ratio2,jet2.Eta(),jet2.Phi(),jet2.M()*ratio2);
-          partPprod.push_back(jet1);
-          partPprod.push_back(jet2);
-          combinedMEM.computeME(MEMNames::kJJ_SMHiggs_GG,MEMNames::kJHUGen,partPprod,partIdprod,phjj_VAJHU_old_temp);
-          combinedMEM.computeME(MEMNames::kJJ_SMHiggs_VBF,MEMNames::kJHUGen,partPprod,partIdprod,pvbf_VAJHU_old_temp);
-          partPprod.pop_back();
-          partPprod.pop_back();
-          for(unsigned int firstjet=0;firstjet<cleanedJetsPt30.size();firstjet++){
-            for(unsigned int secondjet=0;secondjet<cleanedJetsPt30.size();secondjet++){
-              if(secondjet<=firstjet) continue;
-              ratio1=1;
-              ratio2=1;
-	      /*
-              if(jecnum==1){
-                ratio1=1 + cleanedJetsPt30[firstjet]->uncOnFourVectorScale();
-                ratio2=1 + cleanedJetsPt30[secondjet]->uncOnFourVectorScale();
-              }
-              if(jecnum==2){
-                ratio1=1 - cleanedJetsPt30[firstjet]->uncOnFourVectorScale();
-                ratio2=1 - cleanedJetsPt30[secondjet]->uncOnFourVectorScale();
-              }
-	      */
-              jet1.SetXYZT(cleanedJetsPt30[firstjet]->p4().x(),cleanedJetsPt30[firstjet]->p4().y(),cleanedJetsPt30[firstjet]->p4().z(),cleanedJetsPt30[firstjet]->p4().t());
-              jet2.SetXYZT(cleanedJetsPt30[secondjet]->p4().x(),cleanedJetsPt30[secondjet]->p4().y(),cleanedJetsPt30[secondjet]->p4().z(),cleanedJetsPt30[secondjet]->p4().t());
-              jet1.SetPtEtaPhiM(jet1.Pt()*ratio1,jet1.Eta(),jet1.Phi(),jet1.M()*ratio1);
-              jet2.SetPtEtaPhiM(jet2.Pt()*ratio2,jet2.Eta(),jet2.Phi(),jet2.M()*ratio2);
-              partPprod.push_back(jet1);
-              partPprod.push_back(jet2);
-              phjj_temp=-1.;
-              pvbf_temp=-1.;
-              combinedMEM.computeME(MEMNames::kJJ_SMHiggs_GG,MEMNames::kJHUGen,partPprod,partIdprod,phjj_temp);
-              combinedMEM.computeME(MEMNames::kJJ_SMHiggs_VBF,MEMNames::kJHUGen,partPprod,partIdprod,pvbf_temp);
-              double djet_temp= pvbf_temp/(pvbf_temp+phjj_temp);
-              if(djet_temp > djet_max){
-                phjj_VAJHU_new_temp=phjj_temp;
-                pvbf_VAJHU_new_temp=pvbf_temp;
-                djet_max=djet_temp;
-              }
-              partPprod.pop_back();
-              partPprod.pop_back();
+
+          for (unsigned int secondjet = 1; secondjet < cleanedJetsPt30.size(); secondjet++){
+            if (secondjet <= firstjet) continue;
+            Float_t ratio2 = 1. /*+ jecnum_multiplier * cleanedJetsPt30[secondjet]->uncOnFourVectorScale()*/;
+
+
+            jet2.SetXYZT(cleanedJetsPt30[secondjet]->p4().x(), cleanedJetsPt30[secondjet]->p4().y(), cleanedJetsPt30[secondjet]->p4().z(), cleanedJetsPt30[secondjet]->p4().t());
+            jet2 *= ratio2;
+            partPprod.push_back(jet2);
+
+            double phjj_temp = -1;
+            double pvbf_temp = -1;
+
+            combinedMEM.computeME(MEMNames::kJJ_SMHiggs_GG, MEMNames::kJHUGen, partPprod, partIdprod, phjj_temp);
+            combinedMEM.computeME(MEMNames::kJJ_SMHiggs_VBF, MEMNames::kJHUGen, partPprod, partIdprod, pvbf_temp);
+
+            double djet_temp = pvbf_temp / (pvbf_temp + phjj_temp);
+            if (djet_temp > djet_max){
+              phjj_VAJHU_new_temp = phjj_temp;
+              pvbf_VAJHU_new_temp = pvbf_temp;
+              djet_max = djet_temp;
             }
+
+            if (firstjet == 0 && secondjet == 1){
+              phjj_VAJHU_old_temp = phjj_temp;
+              pvbf_VAJHU_old_temp = pvbf_temp;
+            }
+
+            partPprod.pop_back();
           }
-          //HERE
-          if(jecnum==0){
-            phjj_VAJHU_old=phjj_VAJHU_old_temp;
-            pvbf_VAJHU_old=pvbf_VAJHU_old_temp;
-            phjj_VAJHU_new=phjj_VAJHU_new_temp;
-            pvbf_VAJHU_new=pvbf_VAJHU_new_temp;
+          if (!hasAtLeastTwoJets){ // Compute H + 1 jet directly through Mela
+            jet2.SetXYZT(0, 0, 0, 0);
+
+            float phj_temp = -1;
+            float pjvbf_temp = -1;
+            float pAux_vbf_temp = -1;
+
+            TLorentzVector higgs_undec = pL11+pL12+pL21+pL22;
+
+            mela.setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::JH);
+            mela.computeProdP(jet1, 0, jet2, 0, higgs_undec, 25, nullFourVector, 0, phj_temp);
+
+            mela.setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::JJVBF);
+            mela.computeProdP(jet1, 0, jet2, 0, higgs_undec, 25, nullFourVector, 0, pjvbf_temp);
+            mela.get_PAux(pAux_vbf_temp); // = Integrated / un-integrated
+
+            djet_max = (double)(pjvbf_temp / (pjvbf_temp + phj_temp));
+
+            phjj_VAJHU_new_temp = (double)phj_temp;
+            pvbf_VAJHU_new_temp = (double)pjvbf_temp;
+            phjj_VAJHU_old_temp = (double)phj_temp;
+            pvbf_VAJHU_old_temp = (double)pjvbf_temp;
+            pAux_vbf_VAJHU_temp = (double)pAux_vbf_temp;
           }
-          if(jecnum==1){
-            phjj_VAJHU_old_up=phjj_VAJHU_old_temp;
-            pvbf_VAJHU_old_up=pvbf_VAJHU_old_temp;
-            phjj_VAJHU_new_up=phjj_VAJHU_new_temp;
-            pvbf_VAJHU_new_up=pvbf_VAJHU_new_temp;
-          }
-          if(jecnum==2){
-            phjj_VAJHU_old_dn=phjj_VAJHU_old_temp;
-            pvbf_VAJHU_old_dn=pvbf_VAJHU_old_temp;
-            phjj_VAJHU_new_dn=phjj_VAJHU_new_temp;
-            pvbf_VAJHU_new_dn=pvbf_VAJHU_new_temp;
-          }
+
+          partPprod.pop_back();
+        }
+        if (jecnum == 0){
+          phjj_VAJHU_old = phjj_VAJHU_old_temp;
+          pvbf_VAJHU_old = pvbf_VAJHU_old_temp;
+          phjj_VAJHU_new = phjj_VAJHU_new_temp;
+          pvbf_VAJHU_new = pvbf_VAJHU_new_temp;
+          pAux_vbf_VAJHU = pAux_vbf_VAJHU_temp;
+        }
+        if (jecnum == 1){
+          phjj_VAJHU_old_up = phjj_VAJHU_old_temp;
+          pvbf_VAJHU_old_up = pvbf_VAJHU_old_temp;
+          phjj_VAJHU_new_up = phjj_VAJHU_new_temp;
+          pvbf_VAJHU_new_up = pvbf_VAJHU_new_temp;
+          pAux_vbf_VAJHU_up = pAux_vbf_VAJHU_temp;
+        }
+        if (jecnum == 2){
+          phjj_VAJHU_old_dn = phjj_VAJHU_old_temp;
+          pvbf_VAJHU_old_dn = pvbf_VAJHU_old_temp;
+          phjj_VAJHU_new_dn = phjj_VAJHU_new_temp;
+          pvbf_VAJHU_new_dn = pvbf_VAJHU_new_temp;
+          pAux_vbf_VAJHU_dn = pAux_vbf_VAJHU_temp;
         }
       }
+
+
     }
 
     //----------------------------------------------------------------------
-    //-- VH discriminants
-    Mela* myMela = combinedMEM.m_MELA;
       
     // Use extraLeps, extraZs, cleanedJetsPt30, and pfmet to compute additional discriminants
 
@@ -832,7 +808,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 	TLorentzVector aZLeps[2] = {tlv(Zal1->p4()), tlv(Zal2->p4())};
 	int aZLepsId[2] = {Zal1->pdgId(),Zal2->pdgId()};
 	float pzh_VAJHU_tmp;
-	myMela->computeProdP(aZLeps, partP.data(), aZLepsId, partId.data(), 0, selfDHvvcoupl, pzh_VAJHU_tmp); 
+	myMela->computeProdP(aZLeps, partP.data(), aZLepsId, partId.data(), false, selfDHvvcoupl, pzh_VAJHU_tmp); 
 	pzh_VAJHU = std::max(pzh_VAJHU_tmp,pzh_VAJHU);
       }
     } 
