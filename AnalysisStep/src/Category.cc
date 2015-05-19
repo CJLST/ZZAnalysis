@@ -22,10 +22,10 @@ int flagDijetVH(
   if(nJets>=2){
 
     for(int j1=0; j1<nJets; j1++){
-      if( abs(jeteta[j1])<2.4 && jetpt[j1]>40. ){
+      if( std::abs(jeteta[j1])<2.4 && jetpt[j1]>40. ){
 
 	for(int j2=j1+1; j2<nJets; j2++){
-	  if( abs(jeteta[j2])<2.4 && jetpt[j2]>40. ){
+	  if( std::abs(jeteta[j2])<2.4 && jetpt[j2]>40. ){
 
 	    LV jet1 (jetpt[j1],jeteta[j1],jetphi[j1],jetmass[j1]);
 	    LV jet2 (jetpt[j2],jeteta[j2],jetphi[j2],jetmass[j2]);
