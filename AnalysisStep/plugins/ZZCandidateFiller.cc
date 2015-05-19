@@ -654,7 +654,9 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     
 
     //----------------------------------------------------------------------
-    //--- Add VVF probabilities
+    //--- Add production probabilities
+//    TLorentzVector nullFourVector(0, 0, 0, 0);
+
     double phjj_VAJHU_old = -1.;
     double pvbf_VAJHU_old = -1.;
     double phjj_VAJHU_old_up = -1.;
@@ -668,9 +670,28 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     double phjj_VAJHU_new_dn = -1.;
     double pvbf_VAJHU_new_dn = -1.;
 
+    double phj_VAJHU = -1.;
+    double phj_VAJHU_up = -1.;
+    double phj_VAJHU_dn = -1.;
     double pAux_vbf_VAJHU = 1;
     double pAux_vbf_VAJHU_up = 1;
     double pAux_vbf_VAJHU_dn = 1;
+
+    double pwh_hadronic_VAJHU = -1.;
+    double pwh_hadronic_VAJHU_up = -1.;
+    double pwh_hadronic_VAJHU_dn = -1.;
+
+    double pzh_hadronic_VAJHU = -1.;
+    double pzh_hadronic_VAJHU_up = -1.;
+    double pzh_hadronic_VAJHU_dn = -1.;
+
+    double ptth_VAJHU = -1.;
+    double ptth_VAJHU_up = -1.;
+    double ptth_VAJHU_dn = -1.;
+
+    double pbbh_VAJHU = -1.;
+    double pbbh_VAJHU_up = -1.;
+    double pbbh_VAJHU_dn = -1.;
 
     bool hasAtLeastOneJet = (cleanedJetsPt30.size() > 0);
     bool hasAtLeastTwoJets = (cleanedJetsPt30.size() > 1);
@@ -690,19 +711,27 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
       partIdprod.push_back(0); // If you know the jet flavors, even better, put the pdg ids for vhMELA
 
       for (int jecnum = 0; jecnum < 3; jecnum++){
+        TLorentzVector higgs_undec = pL11+pL12+pL21+pL22;
+
         TLorentzVector jet1, jet2;
         double djet_max = -1;
         double phjj_VAJHU_old_temp = -1;
         double pvbf_VAJHU_old_temp = -1;
-        double pAux_vbf_VAJHU_temp = 1;
         double phjj_VAJHU_new_temp = -1;
         double pvbf_VAJHU_new_temp = -1;
+        double pAux_vbf_VAJHU_temp = 1;
 
+        double phj_VAJHU_temp = -1;
+        double pwh_hadronic_VAJHU_temp = -1;
+        double pzh_hadronic_VAJHU_temp = -1;
+        double ptth_VAJHU_temp = -1;
+        double pbbh_VAJHU_temp = -1;
 
+/*
         double jecnum_multiplier = 0;
         if (jecnum==1) jecnum_multiplier = 1.;
         else if (jecnum==2) jecnum_multiplier = -1.;
-
+*/
         for (unsigned int firstjet = 0; firstjet < cleanedJetsPt30.size(); firstjet++){
           Float_t ratio1 = 1. /*+ jecnum_multiplier * cleanedJetsPt30[firstjet]->uncOnFourVectorScale()*/;
           jet1.SetXYZT(cleanedJetsPt30[firstjet]->p4().x(), cleanedJetsPt30[firstjet]->p4().y(), cleanedJetsPt30[firstjet]->p4().z(), cleanedJetsPt30[firstjet]->p4().t());
@@ -720,10 +749,8 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
             double phjj_temp = -1;
             double pvbf_temp = -1;
-
             combinedMEM.computeME(MEMNames::kJJ_SMHiggs_GG, MEMNames::kJHUGen, partPprod, partIdprod, phjj_temp);
             combinedMEM.computeME(MEMNames::kJJ_SMHiggs_VBF, MEMNames::kJHUGen, partPprod, partIdprod, pvbf_temp);
-
             double djet_temp = pvbf_temp / (pvbf_temp + phjj_temp);
             if (djet_temp > djet_max){
               phjj_VAJHU_new_temp = phjj_temp;
@@ -734,6 +761,23 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
             if (firstjet == 0 && secondjet == 1){
               phjj_VAJHU_old_temp = phjj_temp;
               pvbf_VAJHU_old_temp = pvbf_temp;
+
+              float pwh_temp = -1;
+              float pzh_temp = -1;
+              float ptth_temp = -1;
+              float pbbh_temp = -1;
+              myMela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::WH);
+              myMela->computeProdP(jet1, 0, jet2, 0, higgs_undec, pwh_temp);
+              myMela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::ZH);
+              myMela->computeProdP(jet1, 0, jet2, 0, higgs_undec, pzh_temp);
+              myMela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::ttH);
+              myMela->computeProdP(jet1, 0, jet2, 0, higgs_undec, ptth_temp);
+              myMela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::bbH);
+              myMela->computeProdP(jet1, 0, jet2, 0, higgs_undec, pbbh_temp);
+              pwh_hadronic_VAJHU_temp = (double)pwh_temp;
+              pzh_hadronic_VAJHU_temp = (double)pzh_temp;
+              ptth_VAJHU_temp = (double)ptth_temp;
+              pbbh_VAJHU_temp = (double)pbbh_temp;
             }
 
             partPprod.pop_back();
@@ -745,22 +789,18 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
             float pjvbf_temp = -1;
             float pAux_vbf_temp = -1;
 
-            TLorentzVector higgs_undec = pL11+pL12+pL21+pL22;
+            myMela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::JH);
+            myMela->computeProdP(jet1, 0, jet2, 0, higgs_undec, phj_temp);
 
-            mela.setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::JH);
-            mela.computeProdP(jet1, 0, jet2, 0, higgs_undec, 25, nullFourVector, 0, phj_temp);
+            myMela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::JJVBF);
+            myMela->computeProdP(jet1, 0, jet2, 0, higgs_undec, pjvbf_temp); // Un-integrated ME
+            myMela->get_PAux(pAux_vbf_temp); // = Integrated / un-integrated
 
-            mela.setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::JJVBF);
-            mela.computeProdP(jet1, 0, jet2, 0, higgs_undec, 25, nullFourVector, 0, pjvbf_temp);
-            mela.get_PAux(pAux_vbf_temp); // = Integrated / un-integrated
-
-            djet_max = (double)(pjvbf_temp / (pjvbf_temp + phj_temp));
-
-            phjj_VAJHU_new_temp = (double)phj_temp;
-            pvbf_VAJHU_new_temp = (double)pjvbf_temp;
-            phjj_VAJHU_old_temp = (double)phj_temp;
+            djet_max = (double)(pjvbf_temp*pAux_vbf_temp / (pjvbf_temp*pAux_vbf_temp + phj_temp));
+            phj_VAJHU_temp = (double)phj_temp;
             pvbf_VAJHU_old_temp = (double)pjvbf_temp;
             pAux_vbf_VAJHU_temp = (double)pAux_vbf_temp;
+            pvbf_VAJHU_new_temp = pvbf_VAJHU_old_temp;
           }
 
           partPprod.pop_back();
@@ -770,21 +810,42 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
           pvbf_VAJHU_old = pvbf_VAJHU_old_temp;
           phjj_VAJHU_new = phjj_VAJHU_new_temp;
           pvbf_VAJHU_new = pvbf_VAJHU_new_temp;
+
           pAux_vbf_VAJHU = pAux_vbf_VAJHU_temp;
+
+          phj_VAJHU = phj_VAJHU_temp;
+          pwh_hadronic_VAJHU = pwh_hadronic_VAJHU_temp;
+          pzh_hadronic_VAJHU = pzh_hadronic_VAJHU_temp;
+          ptth_VAJHU = ptth_VAJHU_temp;
+          pbbh_VAJHU = pbbh_VAJHU_temp;
         }
         if (jecnum == 1){
           phjj_VAJHU_old_up = phjj_VAJHU_old_temp;
           pvbf_VAJHU_old_up = pvbf_VAJHU_old_temp;
           phjj_VAJHU_new_up = phjj_VAJHU_new_temp;
           pvbf_VAJHU_new_up = pvbf_VAJHU_new_temp;
+
           pAux_vbf_VAJHU_up = pAux_vbf_VAJHU_temp;
+
+          phj_VAJHU_up = phj_VAJHU_temp;
+          pwh_hadronic_VAJHU_up = pwh_hadronic_VAJHU_temp;
+          pzh_hadronic_VAJHU_up = pzh_hadronic_VAJHU_temp;
+          ptth_VAJHU_up = ptth_VAJHU_temp;
+          pbbh_VAJHU_up = pbbh_VAJHU_temp;
         }
         if (jecnum == 2){
           phjj_VAJHU_old_dn = phjj_VAJHU_old_temp;
           pvbf_VAJHU_old_dn = pvbf_VAJHU_old_temp;
           phjj_VAJHU_new_dn = phjj_VAJHU_new_temp;
           pvbf_VAJHU_new_dn = pvbf_VAJHU_new_temp;
+
           pAux_vbf_VAJHU_dn = pAux_vbf_VAJHU_temp;
+
+          phj_VAJHU_dn = phj_VAJHU_temp;
+          pwh_hadronic_VAJHU_dn = pwh_hadronic_VAJHU_temp;
+          pzh_hadronic_VAJHU_dn = pzh_hadronic_VAJHU_temp;
+          ptth_VAJHU_dn = ptth_VAJHU_temp;
+          pbbh_VAJHU_dn = pbbh_VAJHU_temp;
         }
       }
 
@@ -1035,20 +1096,6 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     myCand.addUserFloat("pg1g2_mela",      pg1g2_mela);
     myCand.addUserFloat("pg1g2_VAJHU",     pg1g2_VAJHU);
 
-    // VBF
-    myCand.addUserFloat("phjj_VAJHU_old",phjj_VAJHU_old);
-    myCand.addUserFloat("pvbf_VAJHU_old",pvbf_VAJHU_old);
-    myCand.addUserFloat("phjj_VAJHU_old_up",phjj_VAJHU_old_up);
-    myCand.addUserFloat("pvbf_VAJHU_old_up",pvbf_VAJHU_old_up);
-    myCand.addUserFloat("phjj_VAJHU_old_dn",phjj_VAJHU_old_dn);
-    myCand.addUserFloat("pvbf_VAJHU_old_dn",pvbf_VAJHU_old_dn);
-    myCand.addUserFloat("phjj_VAJHU_new",phjj_VAJHU_new);
-    myCand.addUserFloat("pvbf_VAJHU_new",pvbf_VAJHU_new);
-    myCand.addUserFloat("phjj_VAJHU_new_up",phjj_VAJHU_new_up);
-    myCand.addUserFloat("pvbf_VAJHU_new_up",pvbf_VAJHU_new_up);
-    myCand.addUserFloat("phjj_VAJHU_new_dn",phjj_VAJHU_new_dn);
-    myCand.addUserFloat("pvbf_VAJHU_new_dn",pvbf_VAJHU_new_dn);
-
     myCand.addUserFloat("p0_g1prime2_VAJHU",p0_g1prime2_VAJHU);
     myCand.addUserFloat("pg1g1prime2_VAJHU",pg1g1prime2_VAJHU);
     myCand.addUserFloat("Dgg10_VAMCFM",Dgg10_VAMCFM);
@@ -1062,6 +1109,45 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     myCand.addUserFloat("pzzgg_PS_VAJHU",pzzgg_PS_VAJHU);
     myCand.addUserFloat("p0Zgs_PS_VAJHU",p0Zgs_PS_VAJHU);
     myCand.addUserFloat("p0gsgs_PS_VAJHU",p0gsgs_PS_VAJHU);
+
+    // Production MELA
+    myCand.addUserFloat("phjj_VAJHU_old", phjj_VAJHU_old);
+    myCand.addUserFloat("pvbf_VAJHU_old", pvbf_VAJHU_old);
+    myCand.addUserFloat("phjj_VAJHU_old_up", phjj_VAJHU_old_up);
+    myCand.addUserFloat("pvbf_VAJHU_old_up", pvbf_VAJHU_old_up);
+    myCand.addUserFloat("phjj_VAJHU_old_dn", phjj_VAJHU_old_dn);
+    myCand.addUserFloat("pvbf_VAJHU_old_dn", pvbf_VAJHU_old_dn);
+    myCand.addUserFloat("phjj_VAJHU_new", phjj_VAJHU_new);
+    myCand.addUserFloat("pvbf_VAJHU_new", pvbf_VAJHU_new);
+    myCand.addUserFloat("phjj_VAJHU_new_up", phjj_VAJHU_new_up);
+    myCand.addUserFloat("pvbf_VAJHU_new_up", pvbf_VAJHU_new_up);
+    myCand.addUserFloat("phjj_VAJHU_new_dn", phjj_VAJHU_new_dn);
+    myCand.addUserFloat("pvbf_VAJHU_new_dn", pvbf_VAJHU_new_dn);
+
+    myCand.addUserFloat("pAux_vbf_VAJHU", pAux_vbf_VAJHU);
+    myCand.addUserFloat("pAux_vbf_VAJHU_up", pAux_vbf_VAJHU_up);
+    myCand.addUserFloat("pAux_vbf_VAJHU_dn", pAux_vbf_VAJHU_dn);
+
+    myCand.addUserFloat("phj_VAJHU", phj_VAJHU);
+    myCand.addUserFloat("phj_VAJHU_up", phj_VAJHU_up);
+    myCand.addUserFloat("phj_VAJHU_dn", phj_VAJHU_dn);
+
+    myCand.addUserFloat("pwh_hadronic_VAJHU", pwh_hadronic_VAJHU);
+    myCand.addUserFloat("pwh_hadronic_VAJHU_up", pwh_hadronic_VAJHU_up);
+    myCand.addUserFloat("pwh_hadronic_VAJHU_dn", pwh_hadronic_VAJHU_dn);
+
+    myCand.addUserFloat("pzh_hadronic_VAJHU", pzh_hadronic_VAJHU);
+    myCand.addUserFloat("pzh_hadronic_VAJHU_up", pzh_hadronic_VAJHU_up);
+    myCand.addUserFloat("pzh_hadronic_VAJHU_dn", pzh_hadronic_VAJHU_dn);
+
+    myCand.addUserFloat("ptth_VAJHU", ptth_VAJHU);
+    myCand.addUserFloat("ptth_VAJHU_up", ptth_VAJHU_up);
+    myCand.addUserFloat("ptth_VAJHU_dn", ptth_VAJHU_dn);
+
+    myCand.addUserFloat("pbbh_VAJHU", pbbh_VAJHU);
+    myCand.addUserFloat("pbbh_VAJHU_up", pbbh_VAJHU_up);
+    myCand.addUserFloat("pbbh_VAJHU_dn", pbbh_VAJHU_dn);
+
 
     // VH
     myCand.addUserFloat("pzh_VAJHU",pzh_VAJHU);
