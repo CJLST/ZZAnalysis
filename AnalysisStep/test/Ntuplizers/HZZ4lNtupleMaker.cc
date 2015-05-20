@@ -534,7 +534,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     "genExtInfo",
     "xsec"
   };
-  myTree->SetVariables((TString *)eventnames, (double *)eventinfo, 16);
+  myTree->SetVariables((TString *)eventnames, (double *)eventinfo, 17);
   myTree->SetVariableLong("EventNumber",event.id().event());
   
   //Loop on the candidates
