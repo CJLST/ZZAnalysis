@@ -670,12 +670,13 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     double phjj_VAJHU_new_dn = -1.;
     double pvbf_VAJHU_new_dn = -1.;
 
-    double phj_VAJHU = -1.;
-    double phj_VAJHU_up = -1.;
-    double phj_VAJHU_dn = -1.;
     double pAux_vbf_VAJHU = 1;
     double pAux_vbf_VAJHU_up = 1;
     double pAux_vbf_VAJHU_dn = 1;
+
+    double phj_VAJHU = -1.;
+    double phj_VAJHU_up = -1.;
+    double phj_VAJHU_dn = -1.;
 
     double pwh_hadronic_VAJHU = -1.;
     double pwh_hadronic_VAJHU_up = -1.;

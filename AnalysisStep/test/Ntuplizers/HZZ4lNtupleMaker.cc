@@ -775,6 +775,31 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   Float_t phjj_VAJHU_new_dn = cand.userFloat("phjj_VAJHU_new_dn");
   Float_t pvbf_VAJHU_new_dn = cand.userFloat("pvbf_VAJHU_new_dn");
 
+  Float_t pAux_vbf_VAJHU = cand.userFloat("pAux_vbf_VAJHU");
+  Float_t pAux_vbf_VAJHU_up = cand.userFloat("pAux_vbf_VAJHU_up");
+  Float_t pAux_vbf_VAJHU_dn = cand.userFloat("pAux_vbf_VAJHU_dn");
+
+  Float_t phj_VAJHU = cand.userFloat("phj_VAJHU");
+  Float_t phj_VAJHU_up = cand.userFloat("phj_VAJHU_up");
+  Float_t phj_VAJHU_dn = cand.userFloat("phj_VAJHU_dn");
+
+  Float_t pwh_hadronic_VAJHU = cand.userFloat("pwh_hadronic_VAJHU");
+  Float_t pwh_hadronic_VAJHU_up = cand.userFloat("pwh_hadronic_VAJHU_up");
+  Float_t pwh_hadronic_VAJHU_dn = cand.userFloat("pwh_hadronic_VAJHU_dn");
+
+  Float_t pzh_hadronic_VAJHU = cand.userFloat("pzh_hadronic_VAJHU");
+  Float_t pzh_hadronic_VAJHU_up = cand.userFloat("pzh_hadronic_VAJHU_up");
+  Float_t pzh_hadronic_VAJHU_dn = cand.userFloat("pzh_hadronic_VAJHU_dn");
+
+  Float_t ptth_VAJHU = cand.userFloat("ptth_VAJHU");
+  Float_t ptth_VAJHU_up = cand.userFloat("ptth_VAJHU_up");
+  Float_t ptth_VAJHU_dn = cand.userFloat("ptth_VAJHU_dn");
+
+  Float_t pbbh_VAJHU = cand.userFloat("pbbh_VAJHU");
+  Float_t pbbh_VAJHU_up = cand.userFloat("pbbh_VAJHU_up");
+  Float_t pbbh_VAJHU_dn = cand.userFloat("pbbh_VAJHU_dn");
+
+
   //Int_t isSignal = -1;
   //Int_t isRightPair = -1;
   //if(isMC){
@@ -842,9 +867,11 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   }
   if (!(evtPass)) {sel = -sel;} // avoid confusion when we write events which do not pass trigger/skim
 
+  const int nMEs = 102;
 //cout<<"KD= "<<p0plus_VAJHU+p0minus_VAJHU<<endl;
   //myTree->FillProbability(
-  double probabilities[84]={ p0plus_VAJHU,
+  double probabilities[nMEs]={ 
+    p0plus_VAJHU,
     p0minus_VAJHU,
     p0plus_VAMCFM,
     p0hplus_VAJHU, // 0h+ (high dimensional operator), vector algebra, JHUgen
@@ -889,6 +916,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     ggzz_c1_VAMCFM,
     ggzz_c5_VAMCFM,
     ggzz_ci_VAMCFM,
+
     p0_g1prime2_VAJHU,
     pg1g1prime2_VAJHU,
     Dgg10_VAMCFM,
@@ -906,6 +934,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     p0gsgs_VAJHU,
     p0Zgs_PS_VAJHU,
     p0gsgs_PS_VAJHU,
+
     phjj_VAJHU_old,
     pvbf_VAJHU_old,
     phjj_VAJHU_old_up,
@@ -918,6 +947,26 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     pvbf_VAJHU_new_up,
     phjj_VAJHU_new_dn,
     pvbf_VAJHU_new_dn,
+
+    pAux_vbf_VAJHU,
+    pAux_vbf_VAJHU_up,
+    pAux_vbf_VAJHU_dn,
+    phj_VAJHU,
+    phj_VAJHU_up,
+    phj_VAJHU_dn,
+    pwh_hadronic_VAJHU,
+    pwh_hadronic_VAJHU_up,
+    pwh_hadronic_VAJHU_dn,
+    pzh_hadronic_VAJHU,
+    pzh_hadronic_VAJHU_up,
+    pzh_hadronic_VAJHU_dn,
+    ptth_VAJHU,
+    ptth_VAJHU_up,
+    ptth_VAJHU_dn,
+    pbbh_VAJHU,
+    pbbh_VAJHU_up,
+    pbbh_VAJHU_dn,
+
     p0plus_m4l,
     bkg_m4l,   // backgroun m4l probability as in datacards
     p0plus_m4l_ScaleUp,  // signal m4l probability for systematics
@@ -929,7 +978,8 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     p0plus_m4l_ResDown,  // signal m4l probability for systematics
     bkg_m4l_ResDown     // backgroun m4l probability for systematics
   };
-  TString probNames[84]={ "p0plus_VAJHU",
+  TString probNames[nMEs]={ // Could start from here and then just fill arrays, passing probNames as the argument to userFloat first, with nMES -> [vector].size(), no need to list everything three times at different locations of the code.
+    "p0plus_VAJHU",
     "p0minus_VAJHU",
     "p0plus_VAMCFM",
     "p0hplus_VAJHU", // 0h+ (high dimensional operator)", vector algebra", JHUgen
@@ -974,6 +1024,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     "ggzz_c1_VAMCFM",
     "ggzz_c5_VAMCFM",
     "ggzz_ci_VAMCFM",
+
     "p0_g1prime2_VAJHU",
     "pg1g1prime2_VAJHU",
     "Dgg10_VAMCFM",
@@ -991,6 +1042,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     "p0gsgs_VAJHU",
     "p0Zgs_PS_VAJHU",
     "p0gsgs_PS_VAJHU",
+
     "phjj_VAJHU_old",
     "pvbf_VAJHU_old",
     "phjj_VAJHU_old_up",
@@ -1003,6 +1055,26 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     "pvbf_VAJHU_new_up",
     "phjj_VAJHU_new_dn",
     "pvbf_VAJHU_new_dn",
+
+    "pAux_vbf_VAJHU",
+    "pAux_vbf_VAJHU_up",
+    "pAux_vbf_VAJHU_dn",
+    "phj_VAJHU",
+    "phj_VAJHU_up",
+    "phj_VAJHU_dn",
+    "pwh_hadronic_VAJHU",
+    "pwh_hadronic_VAJHU_up",
+    "pwh_hadronic_VAJHU_dn",
+    "pzh_hadronic_VAJHU",
+    "pzh_hadronic_VAJHU_up",
+    "pzh_hadronic_VAJHU_dn",
+    "ptth_VAJHU",
+    "ptth_VAJHU_up",
+    "ptth_VAJHU_dn",
+    "pbbh_VAJHU",
+    "pbbh_VAJHU_up",
+    "pbbh_VAJHU_dn",
+
     "p0plus_m4l", // signal m4l probability as in datacards
     "bkg_m4l",   // background m4l probability as in datacards
     "p0plus_m4l_ScaleUp",  // signal m4l probability for systematics
@@ -1014,7 +1086,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     "p0plus_m4l_ResDown",  // signal m4l probability for systematics
     "bkg_m4l_ResDown"     // background m4l probability for systematics
   };
-  myTree->SetVariables((TString *)probNames,(double *)probabilities,84);
+  myTree->SetVariables((TString *)probNames,(double *)probabilities,nMEs);
 	
 	//FIXME? Not filled in the miniAOD branch, is it right?
 	/*
@@ -1073,9 +1145,10 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 
     //Fill the info on the lepton candidates  
     TString lepnames[12];
-    TString outlepnames[12]={"Pt","Eta","Phi", "LepId", "SIP", "isID", "BDT","missingHit","chargedHadIso","neutralHadIso","photonIso","combRelIsoPF"};
+    TString outlepnames[12]={ "Pt", "Eta", "Phi", "LepId", "SIP", "isID", "BDT"/*, "MCParentCode"*/, "missingHit", "combRelIsoPF", "chargedHadIso", "neutralHadIso", "photonIso" };
     for(int ilep=0;ilep<12;ilep++)lepnames[ilep].Form("Lep%d%s",i+1,outlepnames[ilep].Data());
-    double lepVariables[]={(double)leptons[i]->pt(),
+    double lepVariables[]={
+      (double)leptons[i]->pt(),
 			(double)leptons[i]->eta(),
 			(double)leptons[i]->phi(),
 			(double)leptons[i]->pdgId(),
@@ -1084,12 +1157,12 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 			(double)userdatahelpers::getUserFloat(leptons[i],"BDT"),
 			//userdatahelpers::getUserFloat(leptons[i],"MCParentCode"), // This is dummy as of now.
 			(double)userdatahelpers::getUserFloat(leptons[i],"missingHit"),
-			(double)PFChargedHadIso[i],
+      (double)combRelIsoPF[i],
+      (double)PFChargedHadIso[i],
 			(double)PFNeutralHadIso[i],
-			(double)PFPhotonIso[i], 
-			(double)combRelIsoPF[i]
+			(double)PFPhotonIso[i]
 			};
-    myTree->SetVariables((TString *)lepnames,(double *)lepVariables,8);
+    myTree->SetVariables((TString *)lepnames,(double *)lepVariables,12);
   }
   
   //convention: 0 -> 4mu   1 -> 4e   2 -> 2mu2e
@@ -1119,12 +1192,13 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   myTree->SetVariables((TString *)hinfonames,(double *)hinfo,10);
 
   //Fill the info on categorization
-  myTree->SetVariable("nExtraLep",cand.userFloat("nExtraLep"));
+  Float_t nExtraLep = cand.userFloat("nExtraLep"); // Why is this still a float at this point?
+  myTree->SetVariable("nExtraLep", nExtraLep);
   myTree->SetVariable("nExtraZ",cand.userFloat("nExtraZ"));
 
   //Fill the info on the extra leptons
   TString varExtra[4]={"ExtraLepPt","ExtraLepEta","ExtraLepPhi","ExtraLepLepId"};
-  for(int iExtraLep=1;iExtraLep<4;iExtraLep++){
+  for (int iExtraLep=1; iExtraLep<=(int)nExtraLep; iExtraLep++){
     TString extraString;extraString.Form("ExtraLep%d",iExtraLep);
     if(cand.hasUserCand(extraString.Data())){
       //for(int iextra=0;iextra<4;iextra++)varExtra[iextra].Prepend(extraString.Data());
@@ -1602,6 +1676,31 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("pvbf_VAJHU_new_up",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("phjj_VAJHU_new_dn",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("pvbf_VAJHU_new_dn",0,HZZ4lNtupleFactory::kFloat);
+
+  myTree->Book("pAux_vbf_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pAux_vbf_VAJHU_up",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pAux_vbf_VAJHU_dn",0,HZZ4lNtupleFactory::kFloat);
+
+  myTree->Book("phj_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("phj_VAJHU_up",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("phj_VAJHU_dn",0,HZZ4lNtupleFactory::kFloat);
+
+  myTree->Book("pwh_hadronic_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pwh_hadronic_VAJHU_up",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pwh_hadronic_VAJHU_dn",0,HZZ4lNtupleFactory::kFloat);
+
+  myTree->Book("pzh_hadronic_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pzh_hadronic_VAJHU_up",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pzh_hadronic_VAJHU_dn",0,HZZ4lNtupleFactory::kFloat);
+
+  myTree->Book("ptth_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("ptth_VAJHU_up",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("ptth_VAJHU_dn",0,HZZ4lNtupleFactory::kFloat);
+
+  myTree->Book("pbbh_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pbbh_VAJHU_up",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pbbh_VAJHU_dn",0,HZZ4lNtupleFactory::kFloat);
+
   
   //Jet variables
   myTree->Book("JetPt",0,HZZ4lNtupleFactory::kVectorFloat);
