@@ -2,6 +2,7 @@
 #define HZZ4lNtupleFactory_h
 
 #include <vector>
+#include <unordered_map>
 
 #include <TFile.h>
 #include <TString.h>
@@ -31,31 +32,39 @@ class HZZ4lNtupleFactory{
   void FillCurrentTree(){_outTree->Fill();}
   void DumpBranches(TString filename) const;
   
-  void Book(TString branchName, float defaultValue=0,int varType=kFloat);
-  void Book(TString *names, int type, int nVarsToFill, float *defaultValues);
-  int SetVariable(TString varName, double value);
-  int SetVariableLong(TString varName, Long64_t value);
-  int SetVariables(TString *varName, double *value, int nVars);
+  void Book(TString branchName, Float_t &value);
+  void Book(TString branchName, Char_t &value);
+  void Book(TString branchName, Int_t &value);
+  void Book(TString branchName, Bool_t &value);
+  void Book(TString branchName, Long64_t &value);
+  void Book(TString branchName, std::vector<float> &value);
+  void Book(TString branchName, Short_t &value);
+  //void Book(TString branchName, float defaultValue=0,int varType=kFloat);
+
+  //void Book(TString *names, int type, int nVarsToFill, float *defaultValues);
+  //int SetVariable(TString varName, double value){return 0;}
+  //int SetVariableLong(TString varName, Long64_t value);
+  //int SetVariables(TString *varName, double *value, int nVars){return 0;}
   //int SetVariable(TString varName, float value){return SetVariable(varName, (double)value);}
-  //int SetVariables(TString *varName, float *value, int nVars);
+  //int SetVariables(TString *varName, float *value, int nVars){return 0;}
   
   void createNewCandidate();
   void InitializeVariables();
 
   //default fillers (old way of filling, only valid if branch names are not changed)
-  void FillHGenInfo(const math::XYZTLorentzVector Hp, float w);
-  void FillZGenInfo(const math::XYZTLorentzVector pZ1, const math::XYZTLorentzVector pZ2);
-  void FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t Lep3Id, Short_t Lep4Id, 
-    const math::XYZTLorentzVector Lep1, const math::XYZTLorentzVector Lep2, const math::XYZTLorentzVector Lep3, 
-    const math::XYZTLorentzVector Lep4, float weight);
-  void FillAssocLepGenInfo(std::vector<const reco::Candidate *>& AssocLeps);
+  //void FillHGenInfo(const math::XYZTLorentzVector Hp, float w);
+  //void FillZGenInfo(const math::XYZTLorentzVector pZ1, const math::XYZTLorentzVector pZ2);
+  //void FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t Lep3Id, Short_t Lep4Id, 
+  //  const math::XYZTLorentzVector Lep1, const math::XYZTLorentzVector Lep2, const math::XYZTLorentzVector Lep3, 
+  //  const math::XYZTLorentzVector Lep4, float weight);
+  //void FillAssocLepGenInfo(std::vector<const reco::Candidate *>& AssocLeps);
   void FillZInfo(Float_t ZMass, Float_t ZPt, short ZFlav);
   void FillExtraLepInfo(int extraLeptonIndex, bool extraLeptonExists, const reco::CandidatePtr ExtraLep);
 
  private:
 
   TTree* _outTree;
-  
+  /*
   int intVector[99];
   Short_t shortVector[99];
   Bool_t boolVector[99];
@@ -63,12 +72,22 @@ class HZZ4lNtupleFactory{
   char charVector[99];
   Float_t floatVector[299];
   std::vector<float> vectorVector[99];
-  
+  */
+  /*
   std::vector<float> defaultVector[6];
   std::vector<TString> nameVector[7];
-  Int_t nBranches[7];
+    Int_t nBranches[7];
   std::vector<TString> NotBookedBranches;
   //std::vector<int> typeVector;
+  */
+  
+  std::unordered_map<Float_t*, Float_t> defaultsFloat;
+  std::unordered_map<Int_t*, Int_t> defaultsInt;
+  std::unordered_map<Short_t*, Short_t> defaultsShort;
+  std::unordered_map<Long64_t*, Long64_t> defaultsLong;
+  std::unordered_map<Bool_t*, Bool_t> defaultsBool;
+  std::unordered_map<Char_t*, Char_t> defaultsChar;
+  std::unordered_map<std::vector<float>*, std::vector<float>> defaultsVector;
   
   bool _firstZStored;
   int _LeptonIndex;
