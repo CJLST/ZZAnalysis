@@ -13,6 +13,6 @@ priv_WminusH125,,      0.0001471,         ,,/store/cmst3/group/susy/gpetrucc/13T
 
 # for ZH and ttH, the field BR represents the filter efficiency
 priv_ZH125,,           0.000652,  0.15038, ,/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/ZH_JHU_125/,,,2,,
-priv_ttH125,,          0.000337,  0.13225, ,/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/ZH_JHU_125/,,,2,,
+priv_ttH125,,          0.000337,  0.13225, ,/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/ttH_JHU_125/,,,2,,
 priv_madhraph_bbH125,, 0.000141,          ,,/store/cmst3/group/hzz/gpetrucc/13TeV/Phys14DR/MINIAODSIM/bbarHToZZTo4L_M125_13TeV_madgraph_pythia8/,,,1,,
 priv_mcatnlo_bbH125,,  0.000141,          ,,/store/cmst3/group/hzz/gpetrucc/13TeV/Phys14DR/MINIAODSIM/bbarHToZZTo4L_M125_13TeV_mcatnlo_pythia8,,,1,,
