@@ -64,6 +64,262 @@ namespace {
   bool skipDataMCWeight = true; // skip computation of data/MC weight 
   bool skipFakeWeight = true;   // skip computation of fake rate weight for CRs
   bool skipHqTWeight = true;    // skip computation of hQT weight 
+  
+  //List of variables with default values
+  Int_t RunNumber  = 0;
+  Long64_t EventNumber  = 0;
+  Int_t LumiNumber  = 0;
+  Int_t Nvtx  = 0;
+  Int_t NObsInt  = 0;
+  Float_t NTrueInt  = 0;
+  Float_t PUWeight  = 0;
+  Float_t PFMET  =  -99;
+  Float_t PFMETPhi  =  -99;
+  Int_t nCleanedJets  =  0;
+  Int_t nCleanedJetsPt30  = 0;
+  Int_t nCleanedJetsPt30BTagged  = 0;
+  Short_t trigWord  = 0;
+  Float_t ZZMass  = 0;
+  Float_t ZZMassErr  = 0;
+  Float_t ZZMassErrCorr  = 0;
+  Float_t ZZMassPreFSR  = 0;
+  Short_t ZZsel  = 0;
+  Float_t ZZPt  = 0;
+  Float_t ZZEta  = 0;
+  Float_t ZZPhi  = 0;
+  Int_t CRflag  = 0;
+  Float_t Z1Mass  = 0;
+  Float_t Z1Pt  = 0;
+  Short_t Z1Flav  = 0;
+  Float_t ZZMassRefit  = 0;
+  Float_t ZZChi2KinFit  = 0;
+  Float_t Z1MassRefit  = 0;
+  Float_t ZZMassCFit  = 0;
+  Float_t ZZChi2CFit  = 0;
+  Float_t Z2Mass  = 0;
+  Float_t Z2Pt  = 0;
+  Short_t Z2Flav  = 0;
+  Float_t costhetastar  = 0;
+  Float_t helphi  = 0;
+  Float_t helcosthetaZ1  = 0;
+  Float_t helcosthetaZ2  = 0;
+  Float_t phistarZ1  = 0;
+  Float_t phistarZ2  = 0;
+  Float_t xi  = 0;
+  Float_t xistar  = 0;
+  Float_t Lep1Pt  = 0;
+  Float_t Lep1Eta  = 0;
+  Float_t Lep1Phi  = 0;
+  Int_t Lep1LepId  = 0;
+  Float_t Lep1SIP  = 0;
+  Bool_t Lep1isID  = 0;
+  Float_t Lep1BDT  = 0;
+  char Lep1missingHit  = 0;
+  Float_t Lep1combRelIsoPF  = 0;
+  Float_t Lep2Pt  = 0;
+  Float_t Lep2Eta  = 0;
+  Float_t Lep2Phi  = 0;
+  Int_t Lep2LepId  = 0;
+  Float_t Lep2SIP  = 0;
+  Bool_t Lep2isID  = 0;
+  Float_t Lep2BDT  = 0;
+  char Lep2missingHit  = 0;
+  Float_t Lep2combRelIsoPF  = 0;
+  Float_t Lep3Pt  = 0;
+  Float_t Lep3Eta  = 0;
+  Float_t Lep3Phi  = 0;
+  Int_t Lep3LepId  = 0;
+  Float_t Lep3SIP  = 0;
+  Bool_t Lep3isID  = 0;
+  Float_t Lep3BDT  = 0;
+  char Lep3missingHit  = 0;
+  Float_t Lep3combRelIsoPF  = 0;
+  Float_t Lep4Pt  = 0;
+  Float_t Lep4Eta  = 0;
+  Float_t Lep4Phi  = 0;
+  Int_t Lep4LepId  = 0;
+  Float_t Lep4SIP  = 0;
+  Bool_t Lep4isID  = 0;
+  Float_t Lep4BDT  = 0;
+  char Lep4missingHit  = 0;
+  Float_t Lep4combRelIsoPF  = 0;
+/*Float_t Lep1chargedHadIso  = 0;
+  Float_t Lep1neutralHadIso  = 0;
+  Float_t Lep1photonIso  = 0;
+  Float_t Lep2chargedHadIso  = 0;
+  Float_t Lep2neutralHadIso  = 0;
+  Float_t Lep2photonIso  = 0;
+  Float_t Lep3chargedHadIso  = 0;
+  Float_t Lep3neutralHadIso  = 0;
+  Float_t Lep3photonIso  = 0;
+  Float_t Lep4chargedHadIso  = 0;
+  Float_t Lep4neutralHadIso  = 0;
+  Float_t Lep4photonIso  = 0;*/
+  Float_t PhotPt  = 0;
+  Float_t PhotEta  = 0;
+  Float_t PhotPhi  = 0;
+  Float_t p0plus_VAJHU  = 0;
+  Float_t p0minus_VAJHU  = 0;
+  Float_t p0plus_VAMCFM  = 0;
+  Float_t p0hplus_VAJHU  = 0;
+  Float_t p1_VAJHU  = 0;
+  Float_t p1_prodIndep_VAJHU  = 0;
+  Float_t p1plus_VAJHU  = 0;
+  Float_t p1plus_prodIndep_VAJHU  = 0;
+  Float_t p2_VAJHU  = 0;
+  Float_t p2_prodIndep_VAJHU  = 0;
+  Float_t p2qqb_VAJHU  = 0;
+  Float_t p2hplus_VAJHU  = 0;
+  Float_t p2hminus_VAJHU  = 0;
+  Float_t p2bplus_VAJHU  = 0;
+  Float_t p2hplus_qqb_VAJHU  = 0;
+  Float_t p2hplus_prodIndep_VAJHU  = 0;
+  Float_t p2hminus_qqb_VAJHU  = 0;
+  Float_t p2hminus_prodIndep_VAJHU  = 0;
+  Float_t p2bplus_qqb_VAJHU  = 0;
+  Float_t p2bplus_prodIndep_VAJHU  = 0;
+  Float_t p2h2plus_gg_VAJHU  = 0;
+  Float_t p2h2plus_qqbar_VAJHU                 =                0;
+  Float_t p2h2plus_prodIndep_VAJHU     =        0;
+  Float_t p2h3plus_gg_VAJHU            =        0;
+  Float_t p2h3plus_qqbar_VAJHU         =        0;
+  Float_t p2h3plus_prodIndep_VAJHU     =        0;
+  Float_t p2h6plus_gg_VAJHU            =        0;
+  Float_t p2h6plus_qqbar_VAJHU         =        0;
+  Float_t p2h6plus_prodIndep_VAJHU     =        0;
+  Float_t p2h7plus_gg_VAJHU            =        0;
+  Float_t p2h7plus_qqbar_VAJHU         =        0;
+  Float_t p2h7plus_prodIndep_VAJHU     =        0;
+  Float_t p2h9minus_gg_VAJHU           =                0;
+  Float_t p2h9minus_qqbar_VAJHU        =                0;
+  Float_t p2h9minus_prodIndep_VAJHU    =                0;
+  Float_t p2h10minus_gg_VAJHU         =                 0;
+  Float_t p2h10minus_qqbar_VAJHU      =                 0;
+  Float_t p2h10minus_prodIndep_VAJHU  =                 0;
+  Float_t bkg_VAMCFM  = 0;
+  Float_t bkg_prodIndep_VAMCFM  = 0;
+  Float_t ggzz_VAMCFM  = 0;
+  Float_t ggzz_p0plus_VAMCFM  = 0;
+  Float_t ggzz_c1_VAMCFM  = 0;
+  Float_t ggzz_c5_VAMCFM  = 0;
+  Float_t ggzz_ci_VAMCFM  = 0;
+  Float_t pg1g4_mela  = 0;
+  Float_t pg1g4_VAJHU  = 0;
+  Float_t pg1g4_pi2_VAJHU  = 0;
+  Float_t pg1g2_pi2_VAJHU  = 0;
+  Float_t pg1g2_mela  = 0;
+  Float_t pg1g2_VAJHU  = 0;
+  Float_t p0_g1prime2_VAJHU  =  0;
+  Float_t pg1g1prime2_VAJHU  =  0;
+  Float_t Dgg10_VAMCFM  =  0;
+  Float_t pzzzg_VAJHU  =  0;
+  Float_t pzzgg_VAJHU  =  0;
+  Float_t pzzzg_PS_VAJHU  =  0;
+  Float_t pzzgg_PS_VAJHU  =  0;
+  Float_t p0Zgs_VAJHU  =  0;
+  Float_t p0gsgs_VAJHU  =  0;
+  Float_t p0Zgs_PS_VAJHU  =  0;
+  Float_t p0gsgs_PS_VAJHU  =  0;
+  Float_t p0Zgs_g1prime2_VAJHU  =  0;
+  Float_t pzzzg_g1prime2_VAJHU  =  0;
+  Float_t pzzzg_g1prime2_pi2_VAJHU  =  0;
+  Float_t p0plus_m4l  =  0;
+  Float_t bkg_m4l  =  0;
+  Float_t p0plus_m4l_ScaleUp  =  0;
+  Float_t bkg_m4l_ScaleUp  = 0;
+  Float_t p0plus_m4l_ScaleDown  = 0;
+  Float_t bkg_m4l_ScaleDown  = 0;
+  Float_t p0plus_m4l_ResUp  = 0;
+  Float_t bkg_m4l_ResUp  = 0;
+  Float_t p0plus_m4l_ResDown  = 0;
+  Float_t bkg_m4l_ResDown  = 0;
+  Float_t phjj_VAJHU_old  = 0;
+  Float_t pvbf_VAJHU_old  = 0;
+  Float_t phjj_VAJHU_old_up  = 0;
+  Float_t pvbf_VAJHU_old_up  = 0;
+  Float_t phjj_VAJHU_old_dn  = 0;
+  Float_t pvbf_VAJHU_old_dn  = 0;
+  Float_t phjj_VAJHU_new  = 0;
+  Float_t pvbf_VAJHU_new  = 0;
+  Float_t phjj_VAJHU_new_up  = 0;
+  Float_t pvbf_VAJHU_new_up  = 0;
+  Float_t phjj_VAJHU_new_dn  = 0;
+  Float_t pvbf_VAJHU_new_dn  = 0;
+  Float_t pAux_vbf_VAJHU  = 0;
+  Float_t pAux_vbf_VAJHU_up  = 0;
+  Float_t pAux_vbf_VAJHU_dn  = 0;
+  Float_t phj_VAJHU  = 0;
+  Float_t phj_VAJHU_up  = 0;
+  Float_t phj_VAJHU_dn  = 0;
+  Float_t pwh_hadronic_VAJHU  = 0;
+  Float_t pwh_hadronic_VAJHU_up  = 0;
+  Float_t pwh_hadronic_VAJHU_dn  = 0;
+  Float_t pzh_hadronic_VAJHU  = 0;
+  Float_t pzh_hadronic_VAJHU_up  = 0;
+  Float_t pzh_hadronic_VAJHU_dn  = 0;
+  Float_t ptth_VAJHU  = 0;
+  Float_t ptth_VAJHU_up  = 0;
+  Float_t ptth_VAJHU_dn  = 0;
+  Float_t pbbh_VAJHU  = 0;
+  Float_t pbbh_VAJHU_up  = 0;
+  Float_t pbbh_VAJHU_dn  = 0;
+  std::vector<float> JetPt ;
+  std::vector<float> JetEta ;
+  std::vector<float> JetPhi ;
+  std::vector<float> JetMass ;
+  std::vector<float> JetBTagger ;
+  std::vector<float> JetIsBtagged; 
+  std::vector<float> JetQGLikelihood; 
+  std::vector<float> JetSigma ;
+  Float_t DiJetMass  = -99;
+  Float_t DiJetMassPlus  = -99;
+  Float_t DiJetMassMinus  = -99;
+  Float_t DiJetDEta  = -99;
+  Float_t DiJetFisher  = -99;
+  Int_t nExtraLep  = 0;
+  Int_t nExtraZ  = 0;
+  std::vector<float> ExtraLepPt; 
+  std::vector<float> ExtraLepEta; 
+  std::vector<float> ExtraLepPhi ;
+  std::vector<float> ExtraLepLepId; 
+  Int_t genFinalState  = 0;
+  Int_t genProcessId  = 0;
+  Float_t genHEPMCweight  = 0;
+  Short_t genExtInfo  = 0;
+  Float_t xsection  = 0;
+  Float_t dataMCWeight  = 0;
+  Float_t HqTMCweight  = 0;
+  Float_t ZXFakeweight  = 0;
+  Float_t GenHMass  = 0;
+  Float_t GenHPt  = 0;
+  Float_t GenZ1Mass  = 0;
+  Float_t GenZ1Pt  = 0;
+  Float_t GenZ2Mass  = 0;
+  Float_t GenZ2Pt  = 0;
+  Float_t GenLep1Pt  = 0;
+  Float_t GenLep1Eta  = 0;
+  Float_t GenLep1Phi  = 0;
+  Short_t GenLep1Id  = 0;
+  Float_t GenLep2Pt  = 0;
+  Float_t GenLep2Eta  = 0;
+  Float_t GenLep2Phi  = 0;
+  Short_t GenLep2Id  = 0;
+  Float_t GenLep3Pt  = 0;
+  Float_t GenLep3Eta  = 0;
+  Float_t GenLep3Phi  = 0;
+  Short_t GenLep3Id  = 0;
+  Float_t GenLep4Pt  = 0;
+  Float_t GenLep4Eta  = 0;
+  Float_t GenLep4Phi  = 0;
+  Short_t GenLep4Id  = 0;
+  Float_t GenAssocLep1Pt  = 0;
+  Float_t GenAssocLep1Eta  = 0;
+  Float_t GenAssocLep1Phi  = 0;
+  Short_t GenAssocLep1Id  = 0;
+  Float_t GenAssocLep2Pt  = 0;
+  Float_t GenAssocLep2Eta  = 0;
+  Float_t GenAssocLep2Phi  = 0;
+  Short_t GenAssocLep2Id  = 0;
 }
 
 using namespace std;
@@ -91,6 +347,13 @@ private:
   virtual void FillPhoton(const pat::Photon& photon);
   virtual void FillJet(const pat::Jet& jet);
   virtual void endJob() ;
+
+  void FillHGenInfo(const math::XYZTLorentzVector Hp, float w);
+  void FillZGenInfo(const math::XYZTLorentzVector pZ1, const math::XYZTLorentzVector pZ2);
+  void FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t Lep3Id, Short_t Lep4Id, 
+    const math::XYZTLorentzVector Lep1, const math::XYZTLorentzVector Lep2, const math::XYZTLorentzVector Lep3, 
+    const math::XYZTLorentzVector Lep4, float weight);
+  void FillAssocLepGenInfo(std::vector<const reco::Candidate *>& AssocLeps);
 
   Float_t getAllWeight(Float_t LepPt, Float_t LepEta, Int_t LepID) const;
   Float_t getHqTWeight(double mH, double genPt) const;
@@ -273,17 +536,11 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   // Primary vertices
   Handle<vector<reco::Vertex> >  vertexs;
   event.getByLabel("goodPrimaryVertices",vertexs);
-  
+  myTree->InitializeVariables();
+
   //----------------------------------------------------------------------
   // Analyze MC truth; collect MC weights and update counters (this is done for all generated events, 
   // including those that do not pass skim, trigger etc!)
-  int nObsInt  = -1;
-  float nTrueInt = -1.;
-  Float_t weight2 = 1.;
-  Int_t genFinalState = -1;
-  Int_t genProcessId = -1;
-  Float_t genHEPMCweight = 1.;
-  Short_t genExtInfo = -1;
 
   bool gen_ZZ4lInEtaAcceptance = false;   // All 4 gen leptons in eta acceptance
   bool gen_ZZ4lInEtaPtAcceptance = false; // All 4 gen leptons in eta,pT acceptance
@@ -299,16 +556,16 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     std::vector<PileupSummaryInfo>::const_iterator PVI;
     for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
       if(PVI->getBunchCrossing() == 0) { 
-	nObsInt  = PVI->getPU_NumInteractions();
-	nTrueInt = PVI->getTrueNumInteractions();
+	NObsInt  = PVI->getPU_NumInteractions();
+	NTrueInt = PVI->getTrueNumInteractions();
 	break;
       } 
     }
 
     int source = myHelper.sampleType();
     int target = myHelper.setup();
-    weight2 = reweight.weight(source,target,nTrueInt);
-
+    float weight2 = reweight.weight(source,target,NTrueInt);
+    PUWeight=weight2;
     MCHistoryTools mch(event, sampleName);
     genFinalState = mch.genFinalState();
     genProcessId = mch.getProcessID();
@@ -358,7 +615,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   edm::Handle<edm::View<pat::CompositeCandidate> > candHandle;
   event.getByLabel(theCandLabel, candHandle);
   const edm::View<pat::CompositeCandidate>* cands = candHandle.product();
-  myTree->InitializeVariables();
 
   if (skipEmptyEvents && cands->size() == 0) return; // Skip events with no candidate, unless skipEmptyEvents = false
 
@@ -381,10 +637,10 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   //Fill MC truth information
   if (isMC) {
     if(genH != 0){
-      myTree->FillHGenInfo(genH->p4(),getHqTWeight(genH->p4().M(),genH->p4().Pt()));
+      FillHGenInfo(genH->p4(),getHqTWeight(genH->p4().M(),genH->p4().Pt()));
     }
     else if(genZLeps.size()==4){ // for 4l events take the mass of the ZZ(4l) system
-      myTree->FillHGenInfo((genZLeps.at(0)->p4()+genZLeps.at(1)->p4()+genZLeps.at(2)->p4()+genZLeps.at(3)->p4()),0);
+      FillHGenInfo((genZLeps.at(0)->p4()+genZLeps.at(1)->p4()+genZLeps.at(2)->p4()+genZLeps.at(3)->p4()),0);
     }
 
     if (genFinalState!=BUGGY) {
@@ -397,25 +653,25 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       if (genZLeps.size()==4) {
 	
 	// "generated Zs" defined with standard pairing applied on gen leptons (genZLeps is sorted by MCHistoryTools)
-	myTree->FillZGenInfo(genZLeps.at(0)->p4()+genZLeps.at(1)->p4(),
+	FillZGenInfo(genZLeps.at(0)->p4()+genZLeps.at(1)->p4(),
 			     genZLeps.at(2)->p4()+genZLeps.at(3)->p4());
 
 	// Gen leptons
-	myTree->FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), genZLeps.at(2)->pdgId(), genZLeps.at(3)->pdgId(),
+	FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), genZLeps.at(2)->pdgId(), genZLeps.at(3)->pdgId(),
 			       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), genZLeps.at(3)->p4(),eff_weight);	
       }
 
       if (genZLeps.size()==3) {
-	myTree->FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), genZLeps.at(2)->pdgId(), 0,
+	FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), genZLeps.at(2)->pdgId(), 0,
 			       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), *(new math::XYZTLorentzVector),eff_weight);
       }
       if (genZLeps.size()==2) {
-	myTree->FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), 0, 0,
+	FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), 0, 0,
 			       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), *(new math::XYZTLorentzVector), *(new math::XYZTLorentzVector),eff_weight);
       }
 
       if (genAssocLeps.size()==1 || genAssocLeps.size()==2) {
-	myTree->FillAssocLepGenInfo(genAssocLeps);
+	FillAssocLepGenInfo(genAssocLeps);
       }
 
     }
@@ -447,95 +703,55 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     }
   }
 
-  float detajj = -99.f;
-  float Mjj    = -99.f;
-  float Fisher = -99.f;
   if (cleanedJetsPt30.size()>=2) {
-    detajj = cleanedJetsPt30[0]->eta()-cleanedJetsPt30[1]->eta();
-    Mjj = (cleanedJetsPt30[0]->p4()+cleanedJetsPt30[1]->p4()).M();
-    Fisher = fisher(Mjj,detajj);      
+    DiJetDEta = cleanedJetsPt30[0]->eta()-cleanedJetsPt30[1]->eta();
+    DiJetMass = (cleanedJetsPt30[0]->p4()+cleanedJetsPt30[1]->p4()).M();
+    DiJetFisher = fisher(DiJetMass,DiJetDEta);      
   }
 
   if (writeJets){
 
     if(theChannel!=ZL){
       for (unsigned int i=0; i<cleanedJets.size(); i++) {
-	FillJet(*(cleanedJets.at(i)));
+	      FillJet(*(cleanedJets.at(i)));
       }
 
       // Note that jets variables are filled for jets above 20 GeV, to allow JES studies.
       // detajj, Mjj and ZZFisher are filled only for true dijet events (jets above 30 GeV)
       if(cleanedJets.size()>1){ 
-	const pat::Jet& myjet1 = *(cleanedJets.at(0)); 
-	const pat::Jet& myjet2 = *(cleanedJets.at(1));
-	math::XYZTLorentzVector jet1 = myjet1.p4();
-	math::XYZTLorentzVector jet2 = myjet2.p4();
-	Float_t jesUnc1 = 0.;//myjet1.uncOnFourVectorScale();
-	Float_t jesUnc2 = 0.;//myjet2.uncOnFourVectorScale();
-	math::XYZTLorentzVector jetScalePlus1 = jet1*(1+jesUnc1);
-	math::XYZTLorentzVector jetScaleMinus1 = jet1*(1-jesUnc1);
-	math::XYZTLorentzVector jetScalePlus2 = jet2*(1+jesUnc2);
-	math::XYZTLorentzVector jetScaleMinus2 = jet2*(1-jesUnc2);
-	Float_t MjjPlus = (jetScalePlus1+jetScalePlus2).M();
-	Float_t MjjMinus = (jetScaleMinus1+jetScaleMinus2).M();
-	//myTree->FillDiJetInfo(Mjj,MjjPlus,MjjMinus,detajj,Fisher);
-	TString names[]={"DiJetMass","DiJetMassPlus","DiJetMassMinus","DiJetDEta","DiJetFisher"};
-	double dijetinfo[]={Mjj,MjjPlus,MjjMinus,detajj,Fisher};
-	myTree->SetVariables((TString *)names,(double *)dijetinfo,5);
+	      const pat::Jet& myjet1 = *(cleanedJets.at(0)); 
+	      const pat::Jet& myjet2 = *(cleanedJets.at(1));
+        math::XYZTLorentzVector jet1 = myjet1.p4();
+        math::XYZTLorentzVector jet2 = myjet2.p4();
+        Float_t jesUnc1 = 0.;//myjet1.uncOnFourVectorScale();
+        Float_t jesUnc2 = 0.;//myjet2.uncOnFourVectorScale();
+        math::XYZTLorentzVector jetScalePlus1 = jet1*(1+jesUnc1);
+        math::XYZTLorentzVector jetScaleMinus1 = jet1*(1-jesUnc1);
+        math::XYZTLorentzVector jetScalePlus2 = jet2*(1+jesUnc2);
+        math::XYZTLorentzVector jetScaleMinus2 = jet2*(1-jesUnc2);
+        DiJetMassPlus = (jetScalePlus1+jetScalePlus2).M();
+        DiJetMassMinus = (jetScaleMinus1+jetScaleMinus2).M();
+        //myTree->FillDiJetInfo(Mjj,MjjPlus,MjjMinus,detajj,Fisher);
       }
     }
   }
   
   Handle<vector<reco::MET> > pfmetcoll;
   event.getByLabel("slimmedMETs", pfmetcoll);
-  float pfmet = -1;
-  float pfmet_phi = 0;
   if (pfmetcoll.isValid()){
-    pfmet = pfmetcoll->front().pt();
-    pfmet_phi = pfmetcoll->front().phi();
+    PFMET = pfmetcoll->front().pt();
+    PFMETPhi = pfmetcoll->front().phi();
   }
+  xsection=xsec;
   //Save general event info in the tree
   //myTree->FillEventInfo(event.id().run(), event.id().event(), event.luminosityBlock(), NbestCand, vertexs->size(), nObsInt, nTrueInt, weight2, pfmet, pfjetscoll->size(), cleanedJets.size(), cleanedJetsPt30.size(), nCleanedJetsPt30BTagged, genFinalState, genProcessId, genHEPMCweight, trigWord, genExtInfo,xsec);
-  double eventinfo[17]={
-    (double)event.id().run(),
-    (double)event.luminosityBlock(),
-    (double)vertexs->size(),
-    (double)nObsInt,
-    (double)nTrueInt,
-    (double)weight2,
-    (double)pfmet,
-    (double)pfmet_phi,
-    (double)cleanedJets.size(),
-    (double)cleanedJetsPt30.size(),
-    (double)nCleanedJetsPt30BTagged,
-    (double)genFinalState,
-    (double)genProcessId,
-    (double)genHEPMCweight,
-    (double)trigWord,
-    (double)genExtInfo,
-    (double)xsec
-  };
-  TString eventnames[17]={
-    "RunNumber",
-    "LumiNumber",
-    "Nvtx",
-    "NObsInt",
-    "NTrueInt",
-    "PUWeight",
-    "PFMET",
-    "PFMETPhi",
-    "nCleanedJets",
-    "nCleanedJetsPt30",
-    "nCleanedJetsPt30BTagged",
-    "genFinalState",
-    "genProcessId",
-    "genHEPMCweight",
-    "trigWord",
-    "genExtInfo",
-    "xsec"
-  };
-  myTree->SetVariables((TString *)eventnames, (double *)eventinfo, 17);
-  myTree->SetVariableLong("EventNumber",event.id().event());
+  RunNumber=event.id().run();
+  LumiNumber=event.luminosityBlock();
+  Nvtx=vertexs->size();
+  nCleanedJets=cleanedJets.size();
+  nCleanedJetsPt30=cleanedJetsPt30.size();
+  xsection=xsec;
+  EventNumber=event.id().event();
   
   //Loop on the candidates
   int nFilled=0;
@@ -564,9 +780,9 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       if (gen_ZZ4lInEtaPtAcceptance) set_bit(CRFLAG,29);
     }
     FillCandidate(*cand, evtPassTrigger&&evtPassSkim, event, CRFLAG);
-    if(CRFLAG && !candIsBest && cleanedJets.size()==0 && Fisher>=0){
+    if(CRFLAG && !candIsBest && cleanedJets.size()==0 && DiJetFisher>=0){
       // for CR, the jet list is empty; we "fake" the NJets30 variable for consistency
-      myTree->SetVariable("nCleanedJets",2);
+      nCleanedJets=2;
     }
     myTree->FillCurrentTree();//Do not reinitialize the event variables
     ++nFilled;
@@ -600,33 +816,26 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
 void HZZ4lNtupleMaker::FillPhoton(const pat::Photon& photon)
 {
-  Float_t photPt  = photon.pt();
-  Float_t photEta = photon.eta();
-  Float_t photPhi = photon.phi();
+   PhotPt  = photon.pt();
+   PhotEta = photon.eta();
+   PhotPhi = photon.phi();
 
-  TString names[3]={"PhotPt","PhotEta","PhotPhi"};
-  double vars[3]={photPt, photEta, photPhi};
-  myTree->SetVariables((TString *)names,(double *)vars,3);
   return;
 }
 
 
 void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
 {
-  Float_t jetPt  = jet.pt();
-  Float_t jetEta = jet.eta();
-  Float_t jetPhi = jet.phi();
-  Float_t jetMass = jet.p4().M();
-  Float_t jetBTagger = jet.bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags");
-  Float_t jetIsBtagged = jet.userFloat("isBtagged");
-  Float_t jetQGLikelihood = jet.userFloat("qgLikelihood");
-  Float_t jesUnc = 0.;//jet.uncOnFourVectorScale();
+   JetPt  .push_back( jet.pt());
+   JetEta .push_back( jet.eta());
+   JetPhi .push_back( jet.phi());
+   JetMass .push_back( jet.p4().M());
+   JetBTagger .push_back( jet.bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags"));
+   JetIsBtagged .push_back( jet.userFloat("isBtagged"));
+   JetQGLikelihood .push_back( jet.userFloat("qgLikelihood"));
+   JetSigma .push_back( 0.);//jet.uncOnFourVectorScale());
 
-  //myTree->FillJetInfo( );
-  TString names[8]={"JetPt","JetEta","JetPhi","JetMass","JetBTagger","JetIsBtagged","JetQGLikelihood","JetSigma"};
-  double vars[8]={jetPt, jetEta, jetPhi, jetMass, jetBTagger, jetIsBtagged, jetQGLikelihood, jesUnc};
-  myTree->SetVariables((TString *)names,(double *)vars,8);
-   
+  //myTree->FillJetInfo( );   
   return;
 }
 
@@ -644,10 +853,10 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   //Chi2 e chi2constr
 
   //Fill the info on the Higgs candidate
-  Float_t ZZMass = cand.p4().mass();
-  Float_t ZZMassErr = cand.userFloat("massError");
-  Float_t ZZMassErrCorr = cand.userFloat("massErrorCorr");
-  Float_t ZZMassPreFSR = cand.userFloat("m4l");  
+   ZZMass = cand.p4().mass();
+   ZZMassErr = cand.userFloat("massError");
+   ZZMassErrCorr = cand.userFloat("massErrorCorr");
+   ZZMassPreFSR = cand.userFloat("m4l");  
   // FIXME: Other variables to be added if addKinRefit or addVtxFit == true:
 //   Float_t Z1MassRefit = cand.userFloat("mZ1Ref");
 //   Float_t ZZMassRefit = cand.userFloat("m4lRef");
@@ -655,9 +864,9 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 //   Float_t ZZMassCFit = cand.userFloat("CFitM");
 //   Float_t Chi2CFit = cand.userFloat("CFitChi2");
   
-  Float_t ZZPt  = cand.p4().pt();
-  Float_t ZZEta = cand.p4().eta();
-  Float_t ZZPhi = cand.p4().phi();
+   ZZPt  = cand.p4().pt();
+   ZZEta = cand.p4().eta();
+   ZZPhi = cand.p4().phi();
   //Float_t ZZLD = cand.userFloat("LD");
   //Float_t ZZLDPSig = cand.userFloat("PSig");
   //Float_t ZZLDPBkg = cand.userFloat("PBkg");
@@ -671,136 +880,136 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   //Float_t p0plus_mela = cand.userFloat("p0plus_mela");
   //Float_t p0minus_mela = cand.userFloat("p0minus_mela");
   //Float_t p0hplus_mela = cand.userFloat("p0hplus_mela"); // 0h+, analytic distribution
-  Float_t p0plus_VAJHU = cand.userFloat("p0plus_VAJHU");
-  Float_t p0minus_VAJHU = cand.userFloat("p0minus_VAJHU");
-  Float_t p0plus_VAMCFM = cand.userFloat("p0plus_VAMCFM");
-  Float_t p0hplus_VAJHU = cand.userFloat("p0hplus_VAJHU"); // 0h+ (high dimensional operator), vector algebra, JHUgen
+   p0plus_VAJHU = cand.userFloat("p0plus_VAJHU");
+   p0minus_VAJHU = cand.userFloat("p0minus_VAJHU");
+   p0plus_VAMCFM = cand.userFloat("p0plus_VAMCFM");
+   p0hplus_VAJHU = cand.userFloat("p0hplus_VAJHU"); // 0h+ (high dimensional operator), vector algebra, JHUgen
   //Float_t p1_mela = cand.userFloat("p1_mela");
   //Float_t p1_prodIndep_mela = cand.userFloat("p1_prodIndep_mela");
   //Float_t p1plus_mela = cand.userFloat("p1plus_mela"); // 1+, analytic distribution 
   //Float_t p1plus_prodIndep_mela = cand.userFloat("p1plus_prodIndep_mela"); // 1+, analytic distribution 
-  Float_t p1_VAJHU = cand.userFloat("p1_VAJHU");
-  Float_t p1_prodIndep_VAJHU = cand.userFloat("p1_prodIndep_VAJHU");
-  Float_t p1plus_VAJHU = cand.userFloat("p1plus_VAJHU"); // 1+ (axial vector), vector algebra, JHUgen,
-  Float_t p1plus_prodIndep_VAJHU = cand.userFloat("p1plus_prodIndep_VAJHU"); // 1+ (axial vector), vector algebra, JHUgen,
+   p1_VAJHU = cand.userFloat("p1_VAJHU");
+   p1_prodIndep_VAJHU = cand.userFloat("p1_prodIndep_VAJHU");
+   p1plus_VAJHU = cand.userFloat("p1plus_VAJHU"); // 1+ (axial vector), vector algebra, JHUgen,
+   p1plus_prodIndep_VAJHU = cand.userFloat("p1plus_prodIndep_VAJHU"); // 1+ (axial vector), vector algebra, JHUgen,
   //Float_t p2_mela  = cand.userFloat("p2_mela");
   //Float_t p2_prodIndep_mela  = cand.userFloat("p2_prodIndep_mela");
   //Float_t p2qqb_mela = cand.userFloat("p2qqb_mela"); // graviton produced by qqbar vector algebra, analytical,
   //Float_t p2hplus_mela = cand.userFloat("p2hplus_mela"); // graviton produced by qqbar vector algebra, analytical,
   //Float_t p2hminus_mela = cand.userFloat("p2hminus_mela"); // graviton produced by qqbar vector algebra, analytical,
   //Float_t p2bplus_mela = cand.userFloat("p2bplus_mela"); // graviton produced by qqbar vector algebra, analytical,
-  Float_t p2_VAJHU = cand.userFloat("p2_VAJHU");
-  Float_t p2_prodIndep_VAJHU = cand.userFloat("p2_prodIndep_VAJHU");
-  Float_t p2qqb_VAJHU = cand.userFloat("p2qqb_VAJHU");
-  Float_t p2hplus_VAJHU = cand.userFloat("p2hplus_VAJHU");
-  Float_t p2hminus_VAJHU = cand.userFloat("p2hminus_VAJHU");
-  Float_t p2bplus_VAJHU = cand.userFloat("p2bplus_VAJHU");
-  Float_t p2hplus_qqb_VAJHU= cand.userFloat(					"p2hplus_qqb_VAJHU");					
-  Float_t p2hplus_prodIndep_VAJHU= cand.userFloat(		"p2hplus_prodIndep_VAJHU");	
-  Float_t p2hminus_qqb_VAJHU= cand.userFloat(				"p2hminus_qqb_VAJHU");				
-  Float_t p2hminus_prodIndep_VAJHU= cand.userFloat(	"p2hminus_prodIndep_VAJHU");	
-  Float_t p2bplus_qqb_VAJHU= cand.userFloat(					"p2bplus_qqb_VAJHU"				);	
-  Float_t p2bplus_prodIndep_VAJHU= cand.userFloat(		"p2bplus_prodIndep_VAJHU"		);
-  Float_t p2h2plus_gg_VAJHU= cand.userFloat(      		"p2h2plus_gg_VAJHU"      		);
-  Float_t p2h2plus_qqbar_VAJHU= cand.userFloat(   		"p2h2plus_qqbar_VAJHU"   		);
-  Float_t p2h2plus_prodIndep_VAJHU= cand.userFloat(	"p2h2plus_prodIndep_VAJHU");	
-  Float_t p2h3plus_gg_VAJHU= cand.userFloat(       	"p2h3plus_gg_VAJHU"       );	
-  Float_t p2h3plus_qqbar_VAJHU= cand.userFloat(    	"p2h3plus_qqbar_VAJHU"    );	
-  Float_t p2h3plus_prodIndep_VAJHU= cand.userFloat(	"p2h3plus_prodIndep_VAJHU");	
-  Float_t p2h6plus_gg_VAJHU= cand.userFloat(       	"p2h6plus_gg_VAJHU"       );	
-  Float_t p2h6plus_qqbar_VAJHU= cand.userFloat(    	"p2h6plus_qqbar_VAJHU"    );	
-  Float_t p2h6plus_prodIndep_VAJHU= cand.userFloat(	"p2h6plus_prodIndep_VAJHU");	
-  Float_t p2h7plus_gg_VAJHU= cand.userFloat(       	"p2h7plus_gg_VAJHU"       );	
-  Float_t p2h7plus_qqbar_VAJHU= cand.userFloat(    	"p2h7plus_qqbar_VAJHU"    );	
-  Float_t p2h7plus_prodIndep_VAJHU= cand.userFloat(	"p2h7plus_prodIndep_VAJHU");	
-  Float_t p2h9minus_gg_VAJHU= cand.userFloat(       	"p2h9minus_gg_VAJHU"       	);
-  Float_t p2h9minus_qqbar_VAJHU= cand.userFloat(    	"p2h9minus_qqbar_VAJHU"    	);
-  Float_t p2h9minus_prodIndep_VAJHU= cand.userFloat(	"p2h9minus_prodIndep_VAJHU"	);
-  Float_t p2h10minus_gg_VAJHU= cand.userFloat(       "p2h10minus_gg_VAJHU"      ); 
-  Float_t p2h10minus_qqbar_VAJHU= cand.userFloat(    "p2h10minus_qqbar_VAJHU"     ); 
-  Float_t p2h10minus_prodIndep_VAJHU= cand.userFloat("p2h10minus_prodIndep_VAJHU" ); 
-//Float_t bkg_mela = cand.userFloat("bkg_mela");
-	Float_t bkg_VAMCFM = cand.userFloat("bkg_VAMCFM");
-  Float_t bkg_prodIndep_VAMCFM = cand.userFloat("bkg_prodIndep_VAMCFM");
-  Float_t ggzz_VAMCFM = cand.userFloat("ggzz_VAMCFM");
-  Float_t ggzz_p0plus_VAMCFM = cand.userFloat("ggzz_p0plus_VAMCFM");
-  Float_t ggzz_c1_VAMCFM = cand.userFloat("ggzz_c1_VAMCFM");
-  Float_t ggzz_c5_VAMCFM = cand.userFloat("ggzz_c5_VAMCFM");
-  Float_t ggzz_ci_VAMCFM = cand.userFloat("ggzz_ci_VAMCFM");
-  //Float_t bkg_VAMCFMNorm = cand.userFloat("bkg_VAMCFMNorm");
-  //Float_t p0_pt = cand.userFloat("p0_pt");
-  //Float_t p0_y = cand.userFloat("p0_y");
-  //Float_t bkg_pt = cand.userFloat("bkg_pt");
-  //Float_t bkg_y = cand.userFloat("bkg_y");
+   p2_VAJHU = cand.userFloat("p2_VAJHU");
+   p2_prodIndep_VAJHU = cand.userFloat("p2_prodIndep_VAJHU");
+   p2qqb_VAJHU = cand.userFloat("p2qqb_VAJHU");
+   p2hplus_VAJHU = cand.userFloat("p2hplus_VAJHU");
+   p2hminus_VAJHU = cand.userFloat("p2hminus_VAJHU");
+   p2bplus_VAJHU = cand.userFloat("p2bplus_VAJHU");
+   p2hplus_qqb_VAJHU= cand.userFloat(					"p2hplus_qqb_VAJHU");					
+   p2hplus_prodIndep_VAJHU= cand.userFloat(		"p2hplus_prodIndep_VAJHU");	
+   p2hminus_qqb_VAJHU= cand.userFloat(				"p2hminus_qqb_VAJHU");				
+   p2hminus_prodIndep_VAJHU= cand.userFloat(	"p2hminus_prodIndep_VAJHU");	
+   p2bplus_qqb_VAJHU= cand.userFloat(					"p2bplus_qqb_VAJHU"				);	
+   p2bplus_prodIndep_VAJHU= cand.userFloat(		"p2bplus_prodIndep_VAJHU"		);
+   p2h2plus_gg_VAJHU= cand.userFloat(      		"p2h2plus_gg_VAJHU"      		);
+   p2h2plus_qqbar_VAJHU= cand.userFloat(   		"p2h2plus_qqbar_VAJHU"   		);
+   p2h2plus_prodIndep_VAJHU= cand.userFloat(	"p2h2plus_prodIndep_VAJHU");	
+   p2h3plus_gg_VAJHU= cand.userFloat(       	"p2h3plus_gg_VAJHU"       );	
+   p2h3plus_qqbar_VAJHU= cand.userFloat(    	"p2h3plus_qqbar_VAJHU"    );	
+   p2h3plus_prodIndep_VAJHU= cand.userFloat(	"p2h3plus_prodIndep_VAJHU");	
+   p2h6plus_gg_VAJHU= cand.userFloat(       	"p2h6plus_gg_VAJHU"       );	
+   p2h6plus_qqbar_VAJHU= cand.userFloat(    	"p2h6plus_qqbar_VAJHU"    );	
+   p2h6plus_prodIndep_VAJHU= cand.userFloat(	"p2h6plus_prodIndep_VAJHU");	
+   p2h7plus_gg_VAJHU= cand.userFloat(       	"p2h7plus_gg_VAJHU"       );	
+   p2h7plus_qqbar_VAJHU= cand.userFloat(    	"p2h7plus_qqbar_VAJHU"    );	
+   p2h7plus_prodIndep_VAJHU= cand.userFloat(	"p2h7plus_prodIndep_VAJHU");	
+   p2h9minus_gg_VAJHU= cand.userFloat(       	"p2h9minus_gg_VAJHU"       	);
+   p2h9minus_qqbar_VAJHU= cand.userFloat(    	"p2h9minus_qqbar_VAJHU"    	);
+   p2h9minus_prodIndep_VAJHU= cand.userFloat(	"p2h9minus_prodIndep_VAJHU"	);
+   p2h10minus_gg_VAJHU= cand.userFloat(       "p2h10minus_gg_VAJHU"      ); 
+   p2h10minus_qqbar_VAJHU= cand.userFloat(    "p2h10minus_qqbar_VAJHU"     ); 
+   p2h10minus_prodIndep_VAJHU= cand.userFloat("p2h10minus_prodIndep_VAJHU" ); 
+// bkg_mela = cand.userFloat("bkg_mela");
+	 bkg_VAMCFM = cand.userFloat("bkg_VAMCFM");
+   bkg_prodIndep_VAMCFM = cand.userFloat("bkg_prodIndep_VAMCFM");
+   ggzz_VAMCFM = cand.userFloat("ggzz_VAMCFM");
+   ggzz_p0plus_VAMCFM = cand.userFloat("ggzz_p0plus_VAMCFM");
+   ggzz_c1_VAMCFM = cand.userFloat("ggzz_c1_VAMCFM");
+   ggzz_c5_VAMCFM = cand.userFloat("ggzz_c5_VAMCFM");
+   ggzz_ci_VAMCFM = cand.userFloat("ggzz_ci_VAMCFM");
+  // bkg_VAMCFMNorm = cand.userFloat("bkg_VAMCFMNorm");
+  // p0_pt = cand.userFloat("p0_pt");
+  // p0_y = cand.userFloat("p0_y");
+  // bkg_pt = cand.userFloat("bkg_pt");
+  // bkg_y = cand.userFloat("bkg_y");
 
-  Float_t pg1g4_mela = cand.userFloat("pg1g4_mela");
-  Float_t pg1g4_VAJHU = cand.userFloat("pg1g4_VAJHU");
-  Float_t pg1g4_pi2_VAJHU = cand.userFloat("pg1g4_pi2_VAJHU");
-  Float_t pg1g2_pi2_VAJHU = cand.userFloat("pg1g2_pi2_VAJHU");
-  Float_t pg1g2_mela = cand.userFloat("pg1g2_mela");
-  Float_t pg1g2_VAJHU = cand.userFloat("pg1g2_VAJHU");
-  Float_t p0_g1prime2_VAJHU = cand.userFloat("p0_g1prime2_VAJHU");
-  Float_t pg1g1prime2_VAJHU = cand.userFloat("pg1g1prime2_VAJHU");
-  Float_t Dgg10_VAMCFM = cand.userFloat("Dgg10_VAMCFM");
-  Float_t pzzzg_VAJHU = cand.userFloat("pzzzg_VAJHU");
-  Float_t pzzgg_VAJHU = cand.userFloat("pzzgg_VAJHU");
-  Float_t pzzzg_PS_VAJHU = cand.userFloat("pzzzg_PS_VAJHU");
-  Float_t pzzgg_PS_VAJHU = cand.userFloat("pzzgg_PS_VAJHU");
-  Float_t p0Zgs_VAJHU = cand.userFloat("p0Zgs_VAJHU");
-  Float_t p0gsgs_VAJHU = cand.userFloat("p0gsgs_VAJHU");
-  Float_t p0Zgs_PS_VAJHU = cand.userFloat("p0Zgs_PS_VAJHU");
-  Float_t p0gsgs_PS_VAJHU = cand.userFloat("p0gsgs_PS_VAJHU");
-  Float_t p0Zgs_g1prime2_VAJHU = cand.userFloat("p0Zgs_g1prime2_VAJHU");
-  Float_t pzzzg_g1prime2_VAJHU = cand.userFloat("pzzzg_g1prime2_VAJHU");
-  Float_t pzzzg_g1prime2_pi2_VAJHU = cand.userFloat("pzzzg_g1prime2_pi2_VAJHU");
+   pg1g4_mela = cand.userFloat("pg1g4_mela");
+   pg1g4_VAJHU = cand.userFloat("pg1g4_VAJHU");
+   pg1g4_pi2_VAJHU = cand.userFloat("pg1g4_pi2_VAJHU");
+   pg1g2_pi2_VAJHU = cand.userFloat("pg1g2_pi2_VAJHU");
+   pg1g2_mela = cand.userFloat("pg1g2_mela");
+   pg1g2_VAJHU = cand.userFloat("pg1g2_VAJHU");
+   p0_g1prime2_VAJHU = cand.userFloat("p0_g1prime2_VAJHU");
+   pg1g1prime2_VAJHU = cand.userFloat("pg1g1prime2_VAJHU");
+   Dgg10_VAMCFM = cand.userFloat("Dgg10_VAMCFM");
+   pzzzg_VAJHU = cand.userFloat("pzzzg_VAJHU");
+   pzzgg_VAJHU = cand.userFloat("pzzgg_VAJHU");
+   pzzzg_PS_VAJHU = cand.userFloat("pzzzg_PS_VAJHU");
+   pzzgg_PS_VAJHU = cand.userFloat("pzzgg_PS_VAJHU");
+   p0Zgs_VAJHU = cand.userFloat("p0Zgs_VAJHU");
+   p0gsgs_VAJHU = cand.userFloat("p0gsgs_VAJHU");
+   p0Zgs_PS_VAJHU = cand.userFloat("p0Zgs_PS_VAJHU");
+   p0gsgs_PS_VAJHU = cand.userFloat("p0gsgs_PS_VAJHU");
+   p0Zgs_g1prime2_VAJHU = cand.userFloat("p0Zgs_g1prime2_VAJHU");
+   pzzzg_g1prime2_VAJHU = cand.userFloat("pzzzg_g1prime2_VAJHU");
+   pzzzg_g1prime2_pi2_VAJHU = cand.userFloat("pzzzg_g1prime2_pi2_VAJHU");
 
-  Float_t p0plus_m4l = cand.userFloat("p0plus_m4l");
-  Float_t bkg_m4l = cand.userFloat("bkg_m4l");
-  Float_t p0plus_m4l_ScaleUp = cand.userFloat("p0plus_m4l_ScaleUp");// signal m4l probability for systematics
-  Float_t bkg_m4l_ScaleUp = cand.userFloat("bkg_m4l_ScaleUp");// backgroun m4l probability for systematics
-  Float_t p0plus_m4l_ScaleDown = cand.userFloat("p0plus_m4l_ScaleDown");// signal m4l probability for systematics
-  Float_t bkg_m4l_ScaleDown = cand.userFloat("bkg_m4l_ScaleDown");// backgroun m4l probability for systematics
-  Float_t p0plus_m4l_ResUp = cand.userFloat("p0plus_m4l_ResUp");// signal m4l probability for systematics
-  Float_t bkg_m4l_ResUp = cand.userFloat("bkg_m4l_ResUp");// backgroun m4l probability for systematics
-  Float_t p0plus_m4l_ResDown = cand.userFloat("p0plus_m4l_ResDown");// signal m4l probability for systematics
-  Float_t bkg_m4l_ResDown = cand.userFloat("bkg_m4l_ResDown");// backgroun m4l probability for systematics
+   p0plus_m4l = cand.userFloat("p0plus_m4l");
+   bkg_m4l = cand.userFloat("bkg_m4l");
+   p0plus_m4l_ScaleUp = cand.userFloat("p0plus_m4l_ScaleUp");// signal m4l probability for systematics
+   bkg_m4l_ScaleUp = cand.userFloat("bkg_m4l_ScaleUp");// backgroun m4l probability for systematics
+   p0plus_m4l_ScaleDown = cand.userFloat("p0plus_m4l_ScaleDown");// signal m4l probability for systematics
+   bkg_m4l_ScaleDown = cand.userFloat("bkg_m4l_ScaleDown");// backgroun m4l probability for systematics
+   p0plus_m4l_ResUp = cand.userFloat("p0plus_m4l_ResUp");// signal m4l probability for systematics
+   bkg_m4l_ResUp = cand.userFloat("bkg_m4l_ResUp");// backgroun m4l probability for systematics
+   p0plus_m4l_ResDown = cand.userFloat("p0plus_m4l_ResDown");// signal m4l probability for systematics
+   bkg_m4l_ResDown = cand.userFloat("bkg_m4l_ResDown");// backgroun m4l probability for systematics
 
-  Float_t phjj_VAJHU_old = cand.userFloat("phjj_VAJHU_old");
-  Float_t pvbf_VAJHU_old = cand.userFloat("pvbf_VAJHU_old");
-  Float_t phjj_VAJHU_old_up = cand.userFloat("phjj_VAJHU_old_up");
-  Float_t pvbf_VAJHU_old_up = cand.userFloat("pvbf_VAJHU_old_up");
-  Float_t phjj_VAJHU_old_dn = cand.userFloat("phjj_VAJHU_old_dn");
-  Float_t pvbf_VAJHU_old_dn = cand.userFloat("pvbf_VAJHU_old_dn");
-  Float_t phjj_VAJHU_new = cand.userFloat("phjj_VAJHU_new");
-  Float_t pvbf_VAJHU_new = cand.userFloat("pvbf_VAJHU_new");
-  Float_t phjj_VAJHU_new_up = cand.userFloat("phjj_VAJHU_new_up");
-  Float_t pvbf_VAJHU_new_up = cand.userFloat("pvbf_VAJHU_new_up");
-  Float_t phjj_VAJHU_new_dn = cand.userFloat("phjj_VAJHU_new_dn");
-  Float_t pvbf_VAJHU_new_dn = cand.userFloat("pvbf_VAJHU_new_dn");
+   phjj_VAJHU_old = cand.userFloat("phjj_VAJHU_old");
+   pvbf_VAJHU_old = cand.userFloat("pvbf_VAJHU_old");
+   phjj_VAJHU_old_up = cand.userFloat("phjj_VAJHU_old_up");
+   pvbf_VAJHU_old_up = cand.userFloat("pvbf_VAJHU_old_up");
+   phjj_VAJHU_old_dn = cand.userFloat("phjj_VAJHU_old_dn");
+   pvbf_VAJHU_old_dn = cand.userFloat("pvbf_VAJHU_old_dn");
+   phjj_VAJHU_new = cand.userFloat("phjj_VAJHU_new");
+   pvbf_VAJHU_new = cand.userFloat("pvbf_VAJHU_new");
+   phjj_VAJHU_new_up = cand.userFloat("phjj_VAJHU_new_up");
+   pvbf_VAJHU_new_up = cand.userFloat("pvbf_VAJHU_new_up");
+   phjj_VAJHU_new_dn = cand.userFloat("phjj_VAJHU_new_dn");
+   pvbf_VAJHU_new_dn = cand.userFloat("pvbf_VAJHU_new_dn");
 
-  Float_t pAux_vbf_VAJHU = cand.userFloat("pAux_vbf_VAJHU");
-  Float_t pAux_vbf_VAJHU_up = cand.userFloat("pAux_vbf_VAJHU_up");
-  Float_t pAux_vbf_VAJHU_dn = cand.userFloat("pAux_vbf_VAJHU_dn");
+   pAux_vbf_VAJHU = cand.userFloat("pAux_vbf_VAJHU");
+   pAux_vbf_VAJHU_up = cand.userFloat("pAux_vbf_VAJHU_up");
+   pAux_vbf_VAJHU_dn = cand.userFloat("pAux_vbf_VAJHU_dn");
 
-  Float_t phj_VAJHU = cand.userFloat("phj_VAJHU");
-  Float_t phj_VAJHU_up = cand.userFloat("phj_VAJHU_up");
-  Float_t phj_VAJHU_dn = cand.userFloat("phj_VAJHU_dn");
+   phj_VAJHU = cand.userFloat("phj_VAJHU");
+   phj_VAJHU_up = cand.userFloat("phj_VAJHU_up");
+   phj_VAJHU_dn = cand.userFloat("phj_VAJHU_dn");
 
-  Float_t pwh_hadronic_VAJHU = cand.userFloat("pwh_hadronic_VAJHU");
-  Float_t pwh_hadronic_VAJHU_up = cand.userFloat("pwh_hadronic_VAJHU_up");
-  Float_t pwh_hadronic_VAJHU_dn = cand.userFloat("pwh_hadronic_VAJHU_dn");
+   pwh_hadronic_VAJHU = cand.userFloat("pwh_hadronic_VAJHU");
+   pwh_hadronic_VAJHU_up = cand.userFloat("pwh_hadronic_VAJHU_up");
+   pwh_hadronic_VAJHU_dn = cand.userFloat("pwh_hadronic_VAJHU_dn");
 
-  Float_t pzh_hadronic_VAJHU = cand.userFloat("pzh_hadronic_VAJHU");
-  Float_t pzh_hadronic_VAJHU_up = cand.userFloat("pzh_hadronic_VAJHU_up");
-  Float_t pzh_hadronic_VAJHU_dn = cand.userFloat("pzh_hadronic_VAJHU_dn");
+   pzh_hadronic_VAJHU = cand.userFloat("pzh_hadronic_VAJHU");
+   pzh_hadronic_VAJHU_up = cand.userFloat("pzh_hadronic_VAJHU_up");
+   pzh_hadronic_VAJHU_dn = cand.userFloat("pzh_hadronic_VAJHU_dn");
 
-  Float_t ptth_VAJHU = cand.userFloat("ptth_VAJHU");
-  Float_t ptth_VAJHU_up = cand.userFloat("ptth_VAJHU_up");
-  Float_t ptth_VAJHU_dn = cand.userFloat("ptth_VAJHU_dn");
+   ptth_VAJHU = cand.userFloat("ptth_VAJHU");
+   ptth_VAJHU_up = cand.userFloat("ptth_VAJHU_up");
+   ptth_VAJHU_dn = cand.userFloat("ptth_VAJHU_dn");
 
-  Float_t pbbh_VAJHU = cand.userFloat("pbbh_VAJHU");
-  Float_t pbbh_VAJHU_up = cand.userFloat("pbbh_VAJHU_up");
-  Float_t pbbh_VAJHU_dn = cand.userFloat("pbbh_VAJHU_dn");
+   pbbh_VAJHU = cand.userFloat("pbbh_VAJHU");
+   pbbh_VAJHU_up = cand.userFloat("pbbh_VAJHU_up");
+   pbbh_VAJHU_dn = cand.userFloat("pbbh_VAJHU_dn");
 
 
   //Int_t isSignal = -1;
@@ -833,13 +1042,13 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     userdatahelpers::getSortedLeptons(cand, leptons, labels, false); // note: we get just 3 leptons in this case.
   }
 
-  Float_t Z1Mass = Z1->mass();
-  Float_t Z1Pt =   Z1->pt();
-  short Z1Flav = Z1->daughter(0)->pdgId()*Z1->daughter(1)->pdgId();
+   Z1Mass = Z1->mass();
+   Z1Pt =   Z1->pt();
+   Z1Flav = Z1->daughter(0)->pdgId()*Z1->daughter(1)->pdgId();
   
-  Float_t Z2Mass = Z2->mass();
-  Float_t Z2Pt =   Z2->pt();
-  short Z2Flav = Z2->daughter(0)->pdgId()*Z2->daughter(1)->pdgId();
+   Z2Mass = Z2->mass();
+   Z2Pt =   Z2->pt();
+   Z2Flav = Z2->daughter(0)->pdgId()*Z2->daughter(1)->pdgId();
 
   // Precomputed selections
   bool candPass70Z2Loose   = cand.userFloat("Z2Mass") && 
@@ -870,232 +1079,6 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   }
   if (!(evtPass)) {sel = -sel;} // avoid confusion when we write events which do not pass trigger/skim
 
-  const int nMEs = 105;
-//cout<<"KD= "<<p0plus_VAJHU+p0minus_VAJHU<<endl;
-  //myTree->FillProbability(
-  double probabilities[nMEs]={ 
-    p0plus_VAJHU,
-    p0minus_VAJHU,
-    p0plus_VAMCFM,
-    p0hplus_VAJHU, // 0h+ (high dimensional operator), vector algebra, JHUgen
-    p1_VAJHU,
-    p1_prodIndep_VAJHU,
-    p1plus_VAJHU, // 1+ (axial vector), vector algebra, JHUgen,
-    p1plus_prodIndep_VAJHU, // 1+ (axial vector), vector algebra, JHUgen,
-    p2_VAJHU,
-    p2_prodIndep_VAJHU,
-    p2qqb_VAJHU,
-    p2hplus_VAJHU,
-    p2hminus_VAJHU,
-    p2bplus_VAJHU,
-    p2hplus_qqb_VAJHU,
-    p2hplus_prodIndep_VAJHU,
-    p2hminus_qqb_VAJHU,
-    p2hminus_prodIndep_VAJHU,
-    p2bplus_qqb_VAJHU,
-    p2bplus_prodIndep_VAJHU,
-    p2h2plus_gg_VAJHU,
-    p2h2plus_qqbar_VAJHU,
-    p2h2plus_prodIndep_VAJHU,
-    p2h3plus_gg_VAJHU,
-    p2h3plus_qqbar_VAJHU,
-    p2h3plus_prodIndep_VAJHU,
-    p2h6plus_gg_VAJHU,
-    p2h6plus_qqbar_VAJHU,
-    p2h6plus_prodIndep_VAJHU,
-    p2h7plus_gg_VAJHU,
-    p2h7plus_qqbar_VAJHU,
-    p2h7plus_prodIndep_VAJHU,
-    p2h9minus_gg_VAJHU,
-    p2h9minus_qqbar_VAJHU,
-    p2h9minus_prodIndep_VAJHU,
-    p2h10minus_gg_VAJHU,
-    p2h10minus_qqbar_VAJHU,
-    p2h10minus_prodIndep_VAJHU,
-    bkg_VAMCFM,
-    bkg_prodIndep_VAMCFM,
-    ggzz_VAMCFM,
-    ggzz_p0plus_VAMCFM,
-    ggzz_c1_VAMCFM,
-    ggzz_c5_VAMCFM,
-    ggzz_ci_VAMCFM,
-
-    p0_g1prime2_VAJHU,
-    pg1g1prime2_VAJHU,
-    Dgg10_VAMCFM,
-    pg1g4_mela,
-    pg1g4_VAJHU,
-    pg1g4_pi2_VAJHU,
-    pg1g2_pi2_VAJHU,
-    pg1g2_mela,
-    pg1g2_VAJHU,
-    pzzzg_VAJHU,
-    pzzgg_VAJHU,
-    pzzzg_PS_VAJHU,
-    pzzgg_PS_VAJHU,
-    p0Zgs_VAJHU,
-    p0gsgs_VAJHU,
-    p0Zgs_PS_VAJHU,
-    p0gsgs_PS_VAJHU,
-    p0Zgs_g1prime2_VAJHU,
-    pzzzg_g1prime2_VAJHU,
-    pzzzg_g1prime2_pi2_VAJHU,
-
-    phjj_VAJHU_old,
-    pvbf_VAJHU_old,
-    phjj_VAJHU_old_up,
-    pvbf_VAJHU_old_up,
-    phjj_VAJHU_old_dn,
-    pvbf_VAJHU_old_dn,
-    phjj_VAJHU_new,
-    pvbf_VAJHU_new,
-    phjj_VAJHU_new_up,
-    pvbf_VAJHU_new_up,
-    phjj_VAJHU_new_dn,
-    pvbf_VAJHU_new_dn,
-
-    pAux_vbf_VAJHU,
-    pAux_vbf_VAJHU_up,
-    pAux_vbf_VAJHU_dn,
-    phj_VAJHU,
-    phj_VAJHU_up,
-    phj_VAJHU_dn,
-    pwh_hadronic_VAJHU,
-    pwh_hadronic_VAJHU_up,
-    pwh_hadronic_VAJHU_dn,
-    pzh_hadronic_VAJHU,
-    pzh_hadronic_VAJHU_up,
-    pzh_hadronic_VAJHU_dn,
-    ptth_VAJHU,
-    ptth_VAJHU_up,
-    ptth_VAJHU_dn,
-    pbbh_VAJHU,
-    pbbh_VAJHU_up,
-    pbbh_VAJHU_dn,
-
-    p0plus_m4l,
-    bkg_m4l,   // backgroun m4l probability as in datacards
-    p0plus_m4l_ScaleUp,  // signal m4l probability for systematics
-    bkg_m4l_ScaleUp,     // backgroun m4l probability for systematics
-    p0plus_m4l_ScaleDown,  // signal m4l probability for systematics
-    bkg_m4l_ScaleDown,     // backgroun m4l probability for systematics
-    p0plus_m4l_ResUp,  // signal m4l probability for systematics
-    bkg_m4l_ResUp,     // backgroun m4l probability for systematics
-    p0plus_m4l_ResDown,  // signal m4l probability for systematics
-    bkg_m4l_ResDown     // backgroun m4l probability for systematics
-  };
-  TString probNames[nMEs]={ // Could start from here and then just fill arrays, passing probNames as the argument to userFloat first, with nMES -> [vector].size(), no need to list everything three times at different locations of the code.
-    "p0plus_VAJHU",
-    "p0minus_VAJHU",
-    "p0plus_VAMCFM",
-    "p0hplus_VAJHU", // 0h+ (high dimensional operator)", vector algebra", JHUgen
-    "p1_VAJHU",
-    "p1_prodIndep_VAJHU",
-    "p1plus_VAJHU", // 1+ (axial vector)", vector algebra", JHUgen",
-    "p1plus_prodIndep_VAJHU", // 1+ (axial vector)", vector algebra", JHUgen",
-    "p2_VAJHU",
-    "p2_prodIndep_VAJHU",
-    "p2qqb_VAJHU",
-    "p2hplus_VAJHU",
-    "p2hminus_VAJHU",
-    "p2bplus_VAJHU",
-    "p2hplus_qqb_VAJHU",
-    "p2hplus_prodIndep_VAJHU",
-    "p2hminus_qqb_VAJHU",
-    "p2hminus_prodIndep_VAJHU",
-    "p2bplus_qqb_VAJHU",
-    "p2bplus_prodIndep_VAJHU",
-    "p2h2plus_gg_VAJHU",
-    "p2h2plus_qqbar_VAJHU",
-    "p2h2plus_prodIndep_VAJHU",
-    "p2h3plus_gg_VAJHU",
-    "p2h3plus_qqbar_VAJHU",
-    "p2h3plus_prodIndep_VAJHU",
-    "p2h6plus_gg_VAJHU",
-    "p2h6plus_qqbar_VAJHU",
-    "p2h6plus_prodIndep_VAJHU",
-    "p2h7plus_gg_VAJHU",
-    "p2h7plus_qqbar_VAJHU",
-    "p2h7plus_prodIndep_VAJHU",
-    "p2h9minus_gg_VAJHU",
-    "p2h9minus_qqbar_VAJHU",
-    "p2h9minus_prodIndep_VAJHU",
-    "p2h10minus_gg_VAJHU",
-    "p2h10minus_qqbar_VAJHU",
-    "p2h10minus_prodIndep_VAJHU",
-    "bkg_VAMCFM",
-    "bkg_prodIndep_VAMCFM",
-    "ggzz_VAMCFM",
-    "ggzz_p0plus_VAMCFM",
-    "ggzz_c1_VAMCFM",
-    "ggzz_c5_VAMCFM",
-    "ggzz_ci_VAMCFM",
-
-    "p0_g1prime2_VAJHU",
-    "pg1g1prime2_VAJHU",
-    "Dgg10_VAMCFM",
-    "pg1g4_mela",
-    "pg1g4_VAJHU",
-    "pg1g4_pi2_VAJHU",
-    "pg1g2_pi2_VAJHU",
-    "pg1g2_mela",
-    "pg1g2_VAJHU",
-    "pzzzg_VAJHU",
-    "pzzgg_VAJHU",
-    "pzzzg_PS_VAJHU",
-    "pzzgg_PS_VAJHU",
-    "p0Zgs_VAJHU",
-    "p0gsgs_VAJHU",
-    "p0Zgs_PS_VAJHU",
-    "p0gsgs_PS_VAJHU",
-    "p0Zgs_g1prime2_VAJHU",
-    "pzzzg_g1prime2_VAJHU",
-    "pzzzg_g1prime2_pi2_VAJHU",
-
-    "phjj_VAJHU_old",
-    "pvbf_VAJHU_old",
-    "phjj_VAJHU_old_up",
-    "pvbf_VAJHU_old_up",
-    "phjj_VAJHU_old_dn",
-    "pvbf_VAJHU_old_dn",
-    "phjj_VAJHU_new",
-    "pvbf_VAJHU_new",
-    "phjj_VAJHU_new_up",
-    "pvbf_VAJHU_new_up",
-    "phjj_VAJHU_new_dn",
-    "pvbf_VAJHU_new_dn",
-
-    "pAux_vbf_VAJHU",
-    "pAux_vbf_VAJHU_up",
-    "pAux_vbf_VAJHU_dn",
-    "phj_VAJHU",
-    "phj_VAJHU_up",
-    "phj_VAJHU_dn",
-    "pwh_hadronic_VAJHU",
-    "pwh_hadronic_VAJHU_up",
-    "pwh_hadronic_VAJHU_dn",
-    "pzh_hadronic_VAJHU",
-    "pzh_hadronic_VAJHU_up",
-    "pzh_hadronic_VAJHU_dn",
-    "ptth_VAJHU",
-    "ptth_VAJHU_up",
-    "ptth_VAJHU_dn",
-    "pbbh_VAJHU",
-    "pbbh_VAJHU_up",
-    "pbbh_VAJHU_dn",
-
-    "p0plus_m4l", // signal m4l probability as in datacards
-    "bkg_m4l",   // background m4l probability as in datacards
-    "p0plus_m4l_ScaleUp",  // signal m4l probability for systematics
-    "bkg_m4l_ScaleUp",     // background m4l probability for systematics
-    "p0plus_m4l_ScaleDown",  // signal m4l probability for systematics
-    "bkg_m4l_ScaleDown",     // backgroun m4l probability for systematics
-    "p0plus_m4l_ResUp",  // signal m4l probability for systematics
-    "bkg_m4l_ResUp",     // backgroudn m4l probability for systematics
-    "p0plus_m4l_ResDown",  // signal m4l probability for systematics
-    "bkg_m4l_ResDown"     // background m4l probability for systematics
-  };
-  myTree->SetVariables((TString *)probNames,(double *)probabilities,nMEs);
 	
 	//FIXME? Not filled in the miniAOD branch, is it right?
 	/*
@@ -1103,29 +1086,16 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   TString addName[6]={};
   myTree->SetVariables(addName,Hadditional,6);
   */
-  myTree->FillZInfo(Z1Mass, Z1Pt, Z1Flav);
-  myTree->FillZInfo(Z2Mass, Z2Pt, Z2Flav);
 
   //Fill the angular variables
-  Float_t costheta1 = cand.userFloat("costheta1");
-  Float_t costheta2 = cand.userFloat("costheta2");
-  Float_t phi       = cand.userFloat("phi");
-  Float_t costhetastar = cand.userFloat("costhetastar");
-  Float_t phistar1      = cand.userFloat("phistar1");
-  Float_t phistar2      = cand.userFloat("phistar2");
-  Float_t xi            = cand.userFloat("xi");
-  Float_t xistar        = cand.userFloat("xistar");
-  double angularinfo[8]={costhetastar, phi, costheta1, costheta2, phistar1, phistar2,xi,xistar};
-  TString angleName[8]={
-    "costhetastar",
-    "helphi",
-    "helcosthetaZ1",
-    "helcosthetaZ2",
-    "phistarZ1",
-    "phistarZ2",
-    "xi",
-    "xistar"};
-  myTree->SetVariables((TString *)angleName,(double *)angularinfo,8);
+   helcosthetaZ1 = cand.userFloat("costheta1");
+   helcosthetaZ2 = cand.userFloat("costheta2");
+   helphi       = cand.userFloat("phi");
+   costhetastar = cand.userFloat("costhetastar");
+   phistarZ1      = cand.userFloat("phistar1");
+   phistarZ2      = cand.userFloat("phistar2");
+   xi            = cand.userFloat("xi");
+   xistar        = cand.userFloat("xistar");
 
   // Retrieve the userFloat of the leptons in vectors ordered in the same way.
   vector<float> SIP(4);
@@ -1153,67 +1123,73 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     }
 
     //Fill the info on the lepton candidates  
-    TString lepnames[12];
-    TString outlepnames[12]={ "Pt", "Eta", "Phi", "LepId", "SIP", "isID", "BDT"/*, "MCParentCode"*/, "missingHit", "combRelIsoPF", "chargedHadIso", "neutralHadIso", "photonIso" };
-    for(int ilep=0;ilep<12;ilep++)lepnames[ilep].Form("Lep%d%s",i+1,outlepnames[ilep].Data());
-    double lepVariables[]={
-      (double)leptons[i]->pt(),
-			(double)leptons[i]->eta(),
-			(double)leptons[i]->phi(),
-			(double)leptons[i]->pdgId(),
-			(double)SIP[i],
-			(double)isID[i],
-			(double)userdatahelpers::getUserFloat(leptons[i],"BDT"),
-			//userdatahelpers::getUserFloat(leptons[i],"MCParentCode"), // This is dummy as of now.
-			(double)userdatahelpers::getUserFloat(leptons[i],"missingHit"),
-      (double)combRelIsoPF[i],
-      (double)PFChargedHadIso[i],
-			(double)PFNeutralHadIso[i],
-			(double)PFPhotonIso[i]
-			};
-    myTree->SetVariables((TString *)lepnames,(double *)lepVariables,12);
+    if(i==0){
+       Lep1Pt  = leptons[i]->pt();
+       Lep1Eta  = leptons[i]->eta();
+       Lep1Phi  = leptons[i]->phi();
+       Lep1LepId  = leptons[i]->pdgId();
+       Lep1SIP  = SIP[i];
+       Lep1isID  = isID[i];
+       Lep1BDT  = userdatahelpers::getUserFloat(leptons[i],"BDT");
+       Lep1missingHit  = userdatahelpers::getUserFloat(leptons[i],"missingHit");
+       Lep1combRelIsoPF=combRelIsoPF[i];
+    }else if(i==1){
+       Lep2Pt  = leptons[i]->pt();
+       Lep2Eta  = leptons[i]->eta();
+       Lep2Phi  = leptons[i]->phi();
+       Lep2LepId  = leptons[i]->pdgId();
+       Lep2SIP  = SIP[i];
+       Lep2isID  = isID[i];
+       Lep2BDT  = userdatahelpers::getUserFloat(leptons[i],"BDT");
+       Lep2missingHit  = userdatahelpers::getUserFloat(leptons[i],"missingHit");
+       Lep2combRelIsoPF=combRelIsoPF[i];
+    }else if(i==2){
+       Lep3Pt  = leptons[i]->pt();
+       Lep3Eta  = leptons[i]->eta();
+       Lep3Phi  = leptons[i]->phi();
+       Lep3LepId  = leptons[i]->pdgId();
+       Lep3SIP  = SIP[i];
+       Lep3isID  = isID[i];
+       Lep3BDT  = userdatahelpers::getUserFloat(leptons[i],"BDT");
+       Lep3missingHit  = userdatahelpers::getUserFloat(leptons[i],"missingHit");
+       Lep3combRelIsoPF=combRelIsoPF[i];
+    }else if(i==3){
+       Lep4Pt  = leptons[i]->pt();
+       Lep4Eta  = leptons[i]->eta();
+       Lep4Phi  = leptons[i]->phi();
+       Lep4LepId  = leptons[i]->pdgId();
+       Lep4SIP  = SIP[i];
+       Lep4isID  = isID[i];
+       Lep4BDT  = userdatahelpers::getUserFloat(leptons[i],"BDT");
+       Lep4missingHit  = userdatahelpers::getUserFloat(leptons[i],"missingHit");
+       Lep4combRelIsoPF=combRelIsoPF[i] ;   
+    }
   }
   
   //convention: 0 -> 4mu   1 -> 4e   2 -> 2mu2e
-  float zxw = 1.0;
   if(CRflag){
     for(int izx=0;izx<2;izx++)
-      zxw *= getFakeWeight(Z2->daughter(izx)->pt(),Z2->daughter(izx)->eta(),Z2->daughter(izx)->pdgId(),Z1->daughter(0)->pdgId());
+      ZXFakeweight *= getFakeWeight(Z2->daughter(izx)->pt(),Z2->daughter(izx)->eta(),Z2->daughter(izx)->pdgId(),Z1->daughter(0)->pdgId());
   }
-  
-  double hinfo[10]={ZZMass, ZZMassErr, ZZMassErrCorr, ZZMassPreFSR, (double)sel, ZZPt, ZZEta, ZZPhi, (double)CRflag, zxw};
-  TString hinfonames[10]={
-    "ZZMass",
-    "ZZMassErr",
-    "ZZMassErrCorr",
-    "ZZMassPreFSR",
-    "ZZsel",
-    "ZZPt",
-    "ZZEta",
-    "ZZPhi",
-    "CRflag",
-    "ZXFakeweight"
-  };
+  ZZsel = sel;
 
   // FIXME: Other variables to be added if addKinRefit or addVtxFit == true:
   // Z1MassRefit, ZZMassRefit, ZZChi2KinFit, ZZMassCFit, ZZChi2CFit
 
-  myTree->SetVariables((TString *)hinfonames,(double *)hinfo,10);
-
   //Fill the info on categorization
-  Float_t nExtraLep = cand.userFloat("nExtraLep"); // Why is this still a float at this point?
-  myTree->SetVariable("nExtraLep", nExtraLep);
-  myTree->SetVariable("nExtraZ",cand.userFloat("nExtraZ"));
+  nExtraLep = cand.userFloat("nExtraLep"); // Why is this still a float at this point?
+  nExtraZ=cand.userFloat("nExtraZ");
 
   //Fill the info on the extra leptons
-  TString varExtra[4]={"ExtraLepPt","ExtraLepEta","ExtraLepPhi","ExtraLepLepId"};
   for (int iExtraLep=1; iExtraLep<=(int)nExtraLep; iExtraLep++){
     TString extraString;extraString.Form("ExtraLep%d",iExtraLep);
     if(cand.hasUserCand(extraString.Data())){
       //for(int iextra=0;iextra<4;iextra++)varExtra[iextra].Prepend(extraString.Data());
       reco::CandidatePtr candPtr=cand.userCand(extraString.Data());
-      double valuesExtra[4]={candPtr->pt(),candPtr->eta(),candPtr->phi(),(double)candPtr->pdgId()};
-      myTree->SetVariables((TString *)varExtra,(double *)valuesExtra,4);
+      ExtraLepPt.push_back(candPtr->pt());
+      ExtraLepEta.push_back(candPtr->eta());
+      ExtraLepPhi.push_back(candPtr->phi());
+      ExtraLepLepId.push_back(candPtr->pdgId());  
     }
   }
   //myTree->FillExtraLepInfo( 1, cand.hasUserCand("ExtraLep1"), (cand.hasUserCand("ExtraLep1") ? cand.userCand("ExtraLep1") : *(new reco::CandidatePtr)) );
@@ -1461,364 +1437,351 @@ Float_t HZZ4lNtupleMaker::getFakeWeight(Float_t LepPt, Float_t LepEta, Int_t Lep
   return weight;
 
 } // end of getFakeWeight
+void HZZ4lNtupleMaker::FillZGenInfo(const math::XYZTLorentzVector pZ1, const math::XYZTLorentzVector pZ2)
+{
+  GenZ1Mass= pZ1.M();
+  GenZ1Pt= pZ1.Pt();
+
+  GenZ2Mass= pZ2.M();
+  GenZ2Pt= pZ2.Pt();
+
+  return;
+}
+
+void HZZ4lNtupleMaker::FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t Lep3Id, Short_t Lep4Id, 
+					const math::XYZTLorentzVector Lep1, const math::XYZTLorentzVector Lep2, 
+					const math::XYZTLorentzVector Lep3, const math::XYZTLorentzVector Lep4,float weight)
+{
+  GenLep1Pt=Lep1.Pt();
+  GenLep1Eta=Lep1.Eta();
+  GenLep1Phi=Lep1.Phi();
+  GenLep1Id=Lep1Id;
+
+  GenLep2Pt=Lep2.Pt();
+  GenLep2Eta=Lep2.Eta();
+  GenLep2Phi=Lep2.Phi();
+  GenLep2Id=Lep2Id;
+
+  GenLep3Pt=Lep3.Pt();
+  GenLep3Eta=Lep3.Eta();
+  GenLep3Phi=Lep3.Phi();
+  GenLep3Id=Lep3Id;
+
+  GenLep4Pt=Lep4.Pt();
+  GenLep4Eta=Lep4.Eta();
+  GenLep4Phi=Lep4.Phi();
+  GenLep4Id=Lep4Id;
+
+  dataMCWeight=weight;
+  
+  return;
+}
+
+void HZZ4lNtupleMaker::FillAssocLepGenInfo(std::vector<const reco::Candidate *>& AssocLeps)
+{
+  if (AssocLeps.size() >= 1) {
+    GenAssocLep1Pt =AssocLeps.at(0)->p4().Pt();
+    GenAssocLep1Eta=AssocLeps.at(0)->p4().Eta();
+    GenAssocLep1Phi=AssocLeps.at(0)->p4().Phi();
+    GenAssocLep1Id =AssocLeps.at(0)->pdgId();
+  }
+  if (AssocLeps.size() >= 2) {
+    GenAssocLep2Pt =AssocLeps.at(1)->p4().Pt();
+    GenAssocLep2Eta=AssocLeps.at(1)->p4().Eta();
+    GenAssocLep2Phi=AssocLeps.at(1)->p4().Phi();
+    GenAssocLep2Id =AssocLeps.at(1)->pdgId();
+  }
+
+  return;
+}
+
+
+void HZZ4lNtupleMaker::FillHGenInfo(const math::XYZTLorentzVector pH, float w)
+{
+  GenHMass=pH.M();
+  GenHPt=pH.Pt();
+
+  HqTMCweight=w;
+
+  return;
+}
+
 
 void HZZ4lNtupleMaker::BookAllBranches(){
    //Event variables
-  myTree->Book("RunNumber",0,HZZ4lNtupleFactory::kInt);
-  myTree->Book("EventNumber",0,HZZ4lNtupleFactory::kLong);
-  myTree->Book("LumiNumber",0,HZZ4lNtupleFactory::kInt);
-  myTree->Book("Nvtx",0,HZZ4lNtupleFactory::kInt);
-  myTree->Book("NObsInt",0,HZZ4lNtupleFactory::kInt);
-  myTree->Book("NTrueInt",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("PUWeight",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("PFMET", -99, HZZ4lNtupleFactory::kFloat);
-  myTree->Book("PFMETPhi", -99, HZZ4lNtupleFactory::kFloat);
-  myTree->Book("nCleanedJets", 0, HZZ4lNtupleFactory::kInt);
-  myTree->Book("nCleanedJetsPt30",0,HZZ4lNtupleFactory::kInt);
-  myTree->Book("nCleanedJetsPt30BTagged",0,HZZ4lNtupleFactory::kInt);
-  myTree->Book("trigWord",0,HZZ4lNtupleFactory::kShort);
-  
-  //H variables
-  myTree->Book("ZZMass",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("ZZMassErr",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("ZZMassErrCorr",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("ZZMassPreFSR",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("ZZsel",0,HZZ4lNtupleFactory::kShort);
-  myTree->Book("ZZPt",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("ZZEta",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("ZZPhi",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("CRflag",0,HZZ4lNtupleFactory::kInt);
-
-
-  //Z1 variables
-  myTree->Book("Z1Mass",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Z1Pt",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Z1Flav",0,HZZ4lNtupleFactory::kShort);
+  myTree->Book("RunNumber",RunNumber);
+  myTree->Book("EventNumber",EventNumber);
+  myTree->Book("LumiNumber",LumiNumber);
+  myTree->Book("Nvtx",Nvtx);
+  myTree->Book("NObsInt",NObsInt);
+  myTree->Book("NTrueInt",NTrueInt);
+  myTree->Book("PUWeight",PUWeight);
+  myTree->Book("PFMET",PFMET);
+  myTree->Book("PFMETPhi",PFMETPhi);
+  myTree->Book("nCleanedJets",nCleanedJets);
+  myTree->Book("nCleanedJetsPt30",nCleanedJetsPt30);
+  myTree->Book("nCleanedJetsPt30BTagged",nCleanedJetsPt30BTagged);
+  myTree->Book("trigWord",trigWord);
+  myTree->Book("ZZMass",ZZMass);
+  myTree->Book("ZZMassErr",ZZMassErr);
+  myTree->Book("ZZMassErrCorr",ZZMassErrCorr);
+  myTree->Book("ZZMassPreFSR",ZZMassPreFSR);
+  myTree->Book("ZZsel",ZZsel);
+  myTree->Book("ZZPt",ZZPt);
+  myTree->Book("ZZEta",ZZEta);
+  myTree->Book("ZZPhi",ZZPhi);
+  myTree->Book("CRflag",CRflag);
+  myTree->Book("Z1Mass",Z1Mass);
+  myTree->Book("Z1Pt",Z1Pt);
+  myTree->Book("Z1Flav",Z1Flav);
 
   //Kin refitted info
   if (addKinRefit) {
-    myTree->Book("ZZMassRefit",0,HZZ4lNtupleFactory::kFloat);
-    myTree->Book("ZZChi2KinFit",0,HZZ4lNtupleFactory::kFloat);
-    myTree->Book("Z1MassRefit",0,HZZ4lNtupleFactory::kFloat);
+    myTree->Book("ZZMassRefit",ZZMassRefit);
+    myTree->Book("ZZChi2KinFit",ZZChi2KinFit);
+    myTree->Book("Z1MassRefit",Z1MassRefit);
   }
 
   if (addVtxFit){
-    myTree->Book("ZZMassCFit",0,HZZ4lNtupleFactory::kFloat);
-    myTree->Book("ZZChi2CFit",0,HZZ4lNtupleFactory::kFloat);
-
+    myTree->Book("ZZMassCFit",ZZMassCFit);
+    myTree->Book("ZZChi2CFit",ZZChi2CFit);
   }
 
   //Z2 variables
-  myTree->Book("Z2Mass",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Z2Pt",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Z2Flav",0,HZZ4lNtupleFactory::kShort);
-
-  //Angular variables
-  myTree->Book("costhetastar",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("helphi",0,HZZ4lNtupleFactory::kFloat);
-//   myTree->Book("helphiZ1",0,HZZ4lNtupleFactory::kFloat);
-//   myTree->Book("helphiZ2",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("helcosthetaZ1",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("helcosthetaZ2",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("phistarZ1",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("phistarZ2",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("xi",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("xistar",0,HZZ4lNtupleFactory::kFloat);
-
-  //Lepton variables
-  myTree->Book("Lep1Pt",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep1Eta",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep1Phi",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep1LepId",0,HZZ4lNtupleFactory::kInt);
-  myTree->Book("Lep1SIP",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep1isID",0,HZZ4lNtupleFactory::kBool);
-  myTree->Book("Lep1BDT",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep1missingHit",0,HZZ4lNtupleFactory::kChar);
-  //--> Commented as these parentIDs are not computed at the moment
-  // myTree->Book("Lep1ParentId",0,HZZ4lNtupleFactory::kFloat);
-
-  myTree->Book("Lep2Pt",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep2Eta",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep2Phi",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep2LepId",0,HZZ4lNtupleFactory::kInt);
-  myTree->Book("Lep2SIP",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep2isID",0,HZZ4lNtupleFactory::kBool);
-  myTree->Book("Lep2BDT",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep2missingHit",0,HZZ4lNtupleFactory::kChar);
-  //  myTree->Book("Lep2ParentId",0,HZZ4lNtupleFactory::kFloat);
-
-  myTree->Book("Lep3Pt",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep3Eta",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep3Phi",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep3LepId",0,HZZ4lNtupleFactory::kInt);
-  myTree->Book("Lep3SIP",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep3isID",0,HZZ4lNtupleFactory::kBool);
-  myTree->Book("Lep3BDT",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep3missingHit",0,HZZ4lNtupleFactory::kChar);
-  //  myTree->Book("Lep3ParentId",0,HZZ4lNtupleFactory::kFloat);
-
-  myTree->Book("Lep4Pt",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep4Eta",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep4Phi",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep4LepId",0,HZZ4lNtupleFactory::kInt);
-  myTree->Book("Lep4SIP",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep4isID",0,HZZ4lNtupleFactory::kBool);
-  myTree->Book("Lep4BDT",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep4missingHit",0,HZZ4lNtupleFactory::kChar);
-  //  myTree->Book("Lep4ParentId",0,HZZ4lNtupleFactory::kFloat);
-
-  //Lepton isolation variables
-  myTree->Book("Lep1chargedHadIso",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep1neutralHadIso",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep1photonIso",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep1combRelIsoPF",0,HZZ4lNtupleFactory::kFloat);
-
-  myTree->Book("Lep2chargedHadIso",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep2neutralHadIso",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep2photonIso",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep2combRelIsoPF",0,HZZ4lNtupleFactory::kFloat);
-
-  myTree->Book("Lep3chargedHadIso",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep3neutralHadIso",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep3photonIso",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep3combRelIsoPF",0,HZZ4lNtupleFactory::kFloat);
-
-  myTree->Book("Lep4chargedHadIso",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep4neutralHadIso",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep4photonIso",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Lep4combRelIsoPF",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Z2Mass",Z2Mass);
+  myTree->Book("Z2Pt",Z2Pt);
+  myTree->Book("Z2Flav",Z2Flav);
+  myTree->Book("costhetastar",costhetastar);
+  myTree->Book("helphi",helphi);
+  myTree->Book("helcosthetaZ1",helcosthetaZ1);
+  myTree->Book("helcosthetaZ2",helcosthetaZ2);
+  myTree->Book("phistarZ1",phistarZ1);
+  myTree->Book("phistarZ2",phistarZ2);
+  myTree->Book("xi",xi);
+  myTree->Book("xistar",xistar);
+  myTree->Book("Lep1Pt",Lep1Pt);
+  myTree->Book("Lep1Eta",Lep1Eta);
+  myTree->Book("Lep1Phi",Lep1Phi);
+  myTree->Book("Lep1LepId",Lep1LepId);
+  myTree->Book("Lep1SIP",Lep1SIP);
+  myTree->Book("Lep1isID",Lep1isID);
+  myTree->Book("Lep1BDT",Lep1BDT);
+  myTree->Book("Lep1missingHit",Lep1missingHit);
+  myTree->Book("Lep2Pt",Lep2Pt);
+  myTree->Book("Lep2Eta",Lep2Eta);
+  myTree->Book("Lep2Phi",Lep2Phi);
+  myTree->Book("Lep2LepId",Lep2LepId);
+  myTree->Book("Lep2SIP",Lep2SIP);
+  myTree->Book("Lep2isID",Lep2isID);
+  myTree->Book("Lep2BDT",Lep2BDT);
+  myTree->Book("Lep2missingHit",Lep2missingHit);
+  myTree->Book("Lep3Pt",Lep3Pt);
+  myTree->Book("Lep3Eta",Lep3Eta);
+  myTree->Book("Lep3Phi",Lep3Phi);
+  myTree->Book("Lep3LepId",Lep3LepId);
+  myTree->Book("Lep3SIP",Lep3SIP);
+  myTree->Book("Lep3isID",Lep3isID);
+  myTree->Book("Lep3BDT",Lep3BDT);
+  myTree->Book("Lep3missingHit",Lep3missingHit);
+  myTree->Book("Lep4Pt",Lep4Pt);
+  myTree->Book("Lep4Eta",Lep4Eta);
+  myTree->Book("Lep4Phi",Lep4Phi);
+  myTree->Book("Lep4LepId",Lep4LepId);
+  myTree->Book("Lep4SIP",Lep4SIP);
+  myTree->Book("Lep4isID",Lep4isID);
+  myTree->Book("Lep4BDT",Lep4BDT);
+  myTree->Book("Lep4missingHit",Lep4missingHit);
+  //myTree->Book("Lep1chargedHadIso",Lep1chargedHadIso);
+  //myTree->Book("Lep1neutralHadIso",Lep1neutralHadIso);
+  //myTree->Book("Lep1photonIso",Lep1photonIso);
+  myTree->Book("Lep1combRelIsoPF",Lep1combRelIsoPF);
+  //myTree->Book("Lep2chargedHadIso",Lep2chargedHadIso);
+  //myTree->Book("Lep2neutralHadIso",Lep2neutralHadIso);
+  //myTree->Book("Lep2photonIso",Lep2photonIso);
+  myTree->Book("Lep2combRelIsoPF",Lep2combRelIsoPF);
+  //myTree->Book("Lep3chargedHadIso",Lep3chargedHadIso);
+  //myTree->Book("Lep3neutralHadIso",Lep3neutralHadIso);
+  //myTree->Book("Lep3photonIso",Lep3photonIso);
+  myTree->Book("Lep3combRelIsoPF",Lep3combRelIsoPF);
+  //myTree->Book("Lep4chargedHadIso",Lep4chargedHadIso);
+  //myTree->Book("Lep4neutralHadIso",Lep4neutralHadIso);
+  //myTree->Book("Lep4photonIso",Lep4photonIso);
+  myTree->Book("Lep4combRelIsoPF",Lep4combRelIsoPF);
 
   //Photon variables
   if (writePhotons) {
-    myTree->Book("PhotPt",0,HZZ4lNtupleFactory::kFloat);
-    myTree->Book("PhotEta",0,HZZ4lNtupleFactory::kFloat);
-    myTree->Book("PhotPhi",0,HZZ4lNtupleFactory::kFloat);
+    myTree->Book("PhotPt",PhotPt);
+    myTree->Book("PhotEta",PhotEta);
+    myTree->Book("PhotPhi",PhotPhi);
   }
 
   //Discriminants
-  myTree->Book("p0plus_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p0minus_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p0plus_VAMCFM",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p0hplus_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p1_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p1_prodIndep_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p1plus_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p1plus_prodIndep_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p2_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p2_prodIndep_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p2qqb_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p2hplus_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p2hminus_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p2bplus_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-
-  myTree->Book("p2hplus_qqb_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p2hplus_prodIndep_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p2hminus_qqb_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p2hminus_prodIndep_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p2bplus_qqb_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p2bplus_prodIndep_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p2h2plus_gg_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p2h2plus_qqbar_VAJHU"               ,               0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p2h2plus_prodIndep_VAJHU"   ,       0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p2h3plus_gg_VAJHU"          ,       0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p2h3plus_qqbar_VAJHU"       ,       0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p2h3plus_prodIndep_VAJHU"   ,       0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p2h6plus_gg_VAJHU"          ,       0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p2h6plus_qqbar_VAJHU"       ,       0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p2h6plus_prodIndep_VAJHU"   ,       0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p2h7plus_gg_VAJHU"          ,       0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p2h7plus_qqbar_VAJHU"       ,       0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p2h7plus_prodIndep_VAJHU"   ,       0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p2h9minus_gg_VAJHU"         ,               0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p2h9minus_qqbar_VAJHU"      ,               0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p2h9minus_prodIndep_VAJHU"  ,               0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p2h10minus_gg_VAJHU"       ,                0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p2h10minus_qqbar_VAJHU"    ,                0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p2h10minus_prodIndep_VAJHU",                0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("bkg_VAMCFM",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("bkg_prodIndep_VAMCFM",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("ggzz_VAMCFM",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("ggzz_p0plus_VAMCFM",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("ggzz_c1_VAMCFM",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("ggzz_c5_VAMCFM",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("ggzz_ci_VAMCFM",0,HZZ4lNtupleFactory::kFloat);
-  
-  myTree->Book("pg1g4_mela",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("pg1g4_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("pg1g4_pi2_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("pg1g2_pi2_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("pg1g2_mela",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("pg1g2_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p0_g1prime2_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
-  myTree->Book("pg1g1prime2_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Dgg10_VAMCFM", 0, HZZ4lNtupleFactory::kFloat);
-  myTree->Book("pzzzg_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
-  myTree->Book("pzzgg_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
-  myTree->Book("pzzzg_PS_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
-  myTree->Book("pzzgg_PS_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p0Zgs_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p0gsgs_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p0Zgs_PS_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p0gsgs_PS_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p0Zgs_g1prime2_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
-  myTree->Book("pzzzg_g1prime2_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
-  myTree->Book("pzzzg_g1prime2_pi2_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
-
-  myTree->Book("p0plus_m4l", 0, HZZ4lNtupleFactory::kFloat);
-  myTree->Book("bkg_m4l", 0, HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p0plus_m4l_ScaleUp", 0, HZZ4lNtupleFactory::kFloat);
-  myTree->Book("bkg_m4l_ScaleUp",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p0plus_m4l_ScaleDown",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("bkg_m4l_ScaleDown",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p0plus_m4l_ResUp",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("bkg_m4l_ResUp",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p0plus_m4l_ResDown",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("bkg_m4l_ResDown",0,HZZ4lNtupleFactory::kFloat);
+    myTree->Book("p0plus_VAJHU",p0plus_VAJHU);
+    myTree->Book("p0minus_VAJHU",p0minus_VAJHU);
+    myTree->Book("p0plus_VAMCFM",p0plus_VAMCFM);
+    myTree->Book("p0hplus_VAJHU",p0hplus_VAJHU);
+    myTree->Book("p1_VAJHU",p1_VAJHU);
+    myTree->Book("p1_prodIndep_VAJHU",p1_prodIndep_VAJHU);
+    myTree->Book("p1plus_VAJHU",p1plus_VAJHU);
+    myTree->Book("p1plus_prodIndep_VAJHU",p1plus_prodIndep_VAJHU);
+    myTree->Book("p2_VAJHU",p2_VAJHU);
+    myTree->Book("p2_prodIndep_VAJHU",p2_prodIndep_VAJHU);
+    myTree->Book("p2qqb_VAJHU",p2qqb_VAJHU);
+    myTree->Book("p2hplus_VAJHU",p2hplus_VAJHU);
+    myTree->Book("p2hminus_VAJHU",p2hminus_VAJHU);
+    myTree->Book("p2bplus_VAJHU",p2bplus_VAJHU);
+    myTree->Book("p2hplus_qqb_VAJHU",p2hplus_qqb_VAJHU);
+    myTree->Book("p2hplus_prodIndep_VAJHU",p2hplus_prodIndep_VAJHU);
+    myTree->Book("p2hminus_qqb_VAJHU",p2hminus_qqb_VAJHU);
+    myTree->Book("p2hminus_prodIndep_VAJHU",p2hminus_prodIndep_VAJHU);
+    myTree->Book("p2bplus_qqb_VAJHU",p2bplus_qqb_VAJHU);
+    myTree->Book("p2bplus_prodIndep_VAJHU",p2bplus_prodIndep_VAJHU);
+    myTree->Book("p2h2plus_gg_VAJHU",p2h2plus_gg_VAJHU);
+    myTree->Book("p2h2plus_qqbar_VAJHU"               ,p2h2plus_qqbar_VAJHU               );
+    myTree->Book("p2h2plus_prodIndep_VAJHU"   ,p2h2plus_prodIndep_VAJHU   );
+    myTree->Book("p2h3plus_gg_VAJHU"          ,p2h3plus_gg_VAJHU          );
+    myTree->Book("p2h3plus_qqbar_VAJHU"       ,p2h3plus_qqbar_VAJHU       );
+    myTree->Book("p2h3plus_prodIndep_VAJHU"   ,p2h3plus_prodIndep_VAJHU   );
+    myTree->Book("p2h6plus_gg_VAJHU"          ,p2h6plus_gg_VAJHU          );
+    myTree->Book("p2h6plus_qqbar_VAJHU"       ,p2h6plus_qqbar_VAJHU       );
+    myTree->Book("p2h6plus_prodIndep_VAJHU"   ,p2h6plus_prodIndep_VAJHU   );
+    myTree->Book("p2h7plus_gg_VAJHU"          ,p2h7plus_gg_VAJHU          );
+    myTree->Book("p2h7plus_qqbar_VAJHU"       ,p2h7plus_qqbar_VAJHU       );
+    myTree->Book("p2h7plus_prodIndep_VAJHU"   ,p2h7plus_prodIndep_VAJHU   );
+    myTree->Book("p2h9minus_gg_VAJHU"         ,p2h9minus_gg_VAJHU         );
+    myTree->Book("p2h9minus_qqbar_VAJHU"      ,p2h9minus_qqbar_VAJHU      );
+    myTree->Book("p2h9minus_prodIndep_VAJHU"  ,p2h9minus_prodIndep_VAJHU  );
+    myTree->Book("p2h10minus_gg_VAJHU"       ,p2h10minus_gg_VAJHU       );
+    myTree->Book("p2h10minus_qqbar_VAJHU"    ,p2h10minus_qqbar_VAJHU    );
+    myTree->Book("p2h10minus_prodIndep_VAJHU",p2h10minus_prodIndep_VAJHU);
+    myTree->Book("bkg_VAMCFM",bkg_VAMCFM);
+    myTree->Book("bkg_prodIndep_VAMCFM",bkg_prodIndep_VAMCFM);
+    myTree->Book("ggzz_VAMCFM",ggzz_VAMCFM);
+    myTree->Book("ggzz_p0plus_VAMCFM",ggzz_p0plus_VAMCFM);
+    myTree->Book("ggzz_c1_VAMCFM",ggzz_c1_VAMCFM);
+    myTree->Book("ggzz_c5_VAMCFM",ggzz_c5_VAMCFM);
+    myTree->Book("ggzz_ci_VAMCFM",ggzz_ci_VAMCFM);
+    myTree->Book("pg1g4_mela",pg1g4_mela);
+    myTree->Book("pg1g4_VAJHU",pg1g4_VAJHU);
+    myTree->Book("pg1g4_pi2_VAJHU",pg1g4_pi2_VAJHU);
+    myTree->Book("pg1g2_pi2_VAJHU",pg1g2_pi2_VAJHU);
+    myTree->Book("pg1g2_mela",pg1g2_mela);
+    myTree->Book("pg1g2_VAJHU",pg1g2_VAJHU);
+    myTree->Book("p0_g1prime2_VAJHU",p0_g1prime2_VAJHU);
+    myTree->Book("pg1g1prime2_VAJHU",pg1g1prime2_VAJHU);
+    myTree->Book("Dgg10_VAMCFM",Dgg10_VAMCFM);
+    myTree->Book("pzzzg_VAJHU",pzzzg_VAJHU);
+    myTree->Book("pzzgg_VAJHU",pzzgg_VAJHU);
+    myTree->Book("pzzzg_PS_VAJHU",pzzzg_PS_VAJHU);
+    myTree->Book("pzzgg_PS_VAJHU",pzzgg_PS_VAJHU);
+    myTree->Book("p0Zgs_VAJHU",p0Zgs_VAJHU);
+    myTree->Book("p0gsgs_VAJHU",p0gsgs_VAJHU);
+    myTree->Book("p0Zgs_PS_VAJHU",p0Zgs_PS_VAJHU);
+    myTree->Book("p0gsgs_PS_VAJHU",p0gsgs_PS_VAJHU);
+    myTree->Book("p0Zgs_g1prime2_VAJHU",p0Zgs_g1prime2_VAJHU);
+    myTree->Book("pzzzg_g1prime2_VAJHU",pzzzg_g1prime2_VAJHU);
+    myTree->Book("pzzzg_g1prime2_pi2_VAJHU",pzzzg_g1prime2_pi2_VAJHU);
+    myTree->Book("p0plus_m4l",p0plus_m4l);
+    myTree->Book("bkg_m4l",bkg_m4l);
+    myTree->Book("p0plus_m4l_ScaleUp",p0plus_m4l_ScaleUp);
+    myTree->Book("bkg_m4l_ScaleUp",bkg_m4l_ScaleUp);
+    myTree->Book("p0plus_m4l_ScaleDown",p0plus_m4l_ScaleDown);
+    myTree->Book("bkg_m4l_ScaleDown",bkg_m4l_ScaleDown);
+    myTree->Book("p0plus_m4l_ResUp",p0plus_m4l_ResUp);
+    myTree->Book("bkg_m4l_ResUp",bkg_m4l_ResUp);
+    myTree->Book("p0plus_m4l_ResDown",p0plus_m4l_ResDown);
+    myTree->Book("bkg_m4l_ResDown",bkg_m4l_ResDown);
 
   //Production MELA
-  myTree->Book("phjj_VAJHU_old",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("pvbf_VAJHU_old",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("phjj_VAJHU_old_up",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("pvbf_VAJHU_old_up",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("phjj_VAJHU_old_dn",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("pvbf_VAJHU_old_dn",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("phjj_VAJHU_new",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("pvbf_VAJHU_new",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("phjj_VAJHU_new_up",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("pvbf_VAJHU_new_up",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("phjj_VAJHU_new_dn",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("pvbf_VAJHU_new_dn",0,HZZ4lNtupleFactory::kFloat);
-
-  myTree->Book("pAux_vbf_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("pAux_vbf_VAJHU_up",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("pAux_vbf_VAJHU_dn",0,HZZ4lNtupleFactory::kFloat);
-
-  myTree->Book("phj_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("phj_VAJHU_up",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("phj_VAJHU_dn",0,HZZ4lNtupleFactory::kFloat);
-
-  myTree->Book("pwh_hadronic_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("pwh_hadronic_VAJHU_up",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("pwh_hadronic_VAJHU_dn",0,HZZ4lNtupleFactory::kFloat);
-
-  myTree->Book("pzh_hadronic_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("pzh_hadronic_VAJHU_up",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("pzh_hadronic_VAJHU_dn",0,HZZ4lNtupleFactory::kFloat);
-
-  myTree->Book("ptth_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("ptth_VAJHU_up",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("ptth_VAJHU_dn",0,HZZ4lNtupleFactory::kFloat);
-
-  myTree->Book("pbbh_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("pbbh_VAJHU_up",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("pbbh_VAJHU_dn",0,HZZ4lNtupleFactory::kFloat);
-
+  myTree->Book("phjj_VAJHU_old",phjj_VAJHU_old);
+  myTree->Book("pvbf_VAJHU_old",pvbf_VAJHU_old);
+  myTree->Book("phjj_VAJHU_old_up",phjj_VAJHU_old_up);
+  myTree->Book("pvbf_VAJHU_old_up",pvbf_VAJHU_old_up);
+  myTree->Book("phjj_VAJHU_old_dn",phjj_VAJHU_old_dn);
+  myTree->Book("pvbf_VAJHU_old_dn",pvbf_VAJHU_old_dn);
+  myTree->Book("phjj_VAJHU_new",phjj_VAJHU_new);
+  myTree->Book("pvbf_VAJHU_new",pvbf_VAJHU_new);
+  myTree->Book("phjj_VAJHU_new_up",phjj_VAJHU_new_up);
+  myTree->Book("pvbf_VAJHU_new_up",pvbf_VAJHU_new_up);
+  myTree->Book("phjj_VAJHU_new_dn",phjj_VAJHU_new_dn);
+  myTree->Book("pvbf_VAJHU_new_dn",pvbf_VAJHU_new_dn);
+  myTree->Book("pAux_vbf_VAJHU",pAux_vbf_VAJHU);
+  myTree->Book("pAux_vbf_VAJHU_up",pAux_vbf_VAJHU_up);
+  myTree->Book("pAux_vbf_VAJHU_dn",pAux_vbf_VAJHU_dn);
+  myTree->Book("phj_VAJHU",phj_VAJHU);
+  myTree->Book("phj_VAJHU_up",phj_VAJHU_up);
+  myTree->Book("phj_VAJHU_dn",phj_VAJHU_dn);
+  myTree->Book("pwh_hadronic_VAJHU",pwh_hadronic_VAJHU);
+  myTree->Book("pwh_hadronic_VAJHU_up",pwh_hadronic_VAJHU_up);
+  myTree->Book("pwh_hadronic_VAJHU_dn",pwh_hadronic_VAJHU_dn);
+  myTree->Book("pzh_hadronic_VAJHU",pzh_hadronic_VAJHU);
+  myTree->Book("pzh_hadronic_VAJHU_up",pzh_hadronic_VAJHU_up);
+  myTree->Book("pzh_hadronic_VAJHU_dn",pzh_hadronic_VAJHU_dn);
+  myTree->Book("ptth_VAJHU",ptth_VAJHU);
+  myTree->Book("ptth_VAJHU_up",ptth_VAJHU_up);
+  myTree->Book("ptth_VAJHU_dn",ptth_VAJHU_dn);
+  myTree->Book("pbbh_VAJHU",pbbh_VAJHU);
+  myTree->Book("pbbh_VAJHU_up",pbbh_VAJHU_up);
+  myTree->Book("pbbh_VAJHU_dn",pbbh_VAJHU_dn);
   
   //Jet variables
-  myTree->Book("JetPt",0,HZZ4lNtupleFactory::kVectorFloat);
-  myTree->Book("JetEta",0,HZZ4lNtupleFactory::kVectorFloat);
-  myTree->Book("JetPhi",0,HZZ4lNtupleFactory::kVectorFloat);
-  myTree->Book("JetMass",0,HZZ4lNtupleFactory::kVectorFloat);
-  myTree->Book("JetBTagger",0,HZZ4lNtupleFactory::kVectorFloat);
-  myTree->Book("JetIsBtagged",0,HZZ4lNtupleFactory::kVectorFloat);
-  myTree->Book("JetQGLikelihood",0,HZZ4lNtupleFactory::kVectorFloat);
-  myTree->Book("JetSigma",0,HZZ4lNtupleFactory::kVectorFloat);
-  myTree->Book("DiJetMass",-99,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("DiJetMassPlus",-99,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("DiJetMassMinus",-99,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("DiJetDEta",-99,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("DiJetFisher",-99,HZZ4lNtupleFactory::kFloat);
-
-  //Categorization-related variables
-  myTree->Book("nExtraLep",0,HZZ4lNtupleFactory::kInt);
-  myTree->Book("nExtraZ",0,HZZ4lNtupleFactory::kInt);
-
-  //Variables of extra leptons
-  myTree->Book("ExtraLepPt",0,HZZ4lNtupleFactory::kVectorFloat);
-  myTree->Book("ExtraLepEta",0,HZZ4lNtupleFactory::kVectorFloat);
-  myTree->Book("ExtraLepPhi",0,HZZ4lNtupleFactory::kVectorFloat);
-  myTree->Book("ExtraLepLepId",0,HZZ4lNtupleFactory::kVectorFloat);
-
-
-// Extended information on extra leptons.
-// Currently not used, skip them for the time being
-//   myTree->Book("ExtraLep1SIP",0,HZZ4lNtupleFactory::kFloat);
-//   myTree->Book("ExtraLep1isID",0,HZZ4lNtupleFactory::kFloat);
-//   myTree->Book("ExtraLep1BDT",0,HZZ4lNtupleFactory::kFloat);
-//   myTree->Book("ExtraLep1missingHit",0,HZZ4lNtupleFactory::kFloat);
-//   myTree->Book("ExtraLep1chargedHadIso",0,HZZ4lNtupleFactory::kFloat);
-//   myTree->Book("ExtraLep1neutralHadIso",0,HZZ4lNtupleFactory::kFloat);
-//   myTree->Book("ExtraLep1photonIso",0,HZZ4lNtupleFactory::kFloat);
-//   myTree->Book("ExtraLep1combRelIsoPF",0,HZZ4lNtupleFactory::kFloat);
-//
-//   myTree->Book("ExtraLep2SIP",0,HZZ4lNtupleFactory::kFloat);
-//   myTree->Book("ExtraLep2isID",0,HZZ4lNtupleFactory::kFloat);
-//   myTree->Book("ExtraLep2BDT",0,HZZ4lNtupleFactory::kFloat);
-//   myTree->Book("ExtraLep2missingHit",0,HZZ4lNtupleFactory::kFloat);
-//   myTree->Book("ExtraLep2chargedHadIso",0,HZZ4lNtupleFactory::kFloat);
-//   myTree->Book("ExtraLep2neutralHadIso",0,HZZ4lNtupleFactory::kFloat);
-//   myTree->Book("ExtraLep2photonIso",0,HZZ4lNtupleFactory::kFloat);
-//   myTree->Book("ExtraLep2combRelIsoPF",0,HZZ4lNtupleFactory::kFloat);
-//
-//   myTree->Book("ExtraLep3SIP",0,HZZ4lNtupleFactory::kFloat);
-//   myTree->Book("ExtraLep3isID",0,HZZ4lNtupleFactory::kFloat);
-//   myTree->Book("ExtraLep3BDT",0,HZZ4lNtupleFactory::kFloat);
-//   myTree->Book("ExtraLep3missingHit",0,HZZ4lNtupleFactory::kFloat);
-//   myTree->Book("ExtraLep3chargedHadIso",0,HZZ4lNtupleFactory::kFloat);
-//   myTree->Book("ExtraLep3neutralHadIso",0,HZZ4lNtupleFactory::kFloat);
-//   myTree->Book("ExtraLep3photonIso",0,HZZ4lNtupleFactory::kFloat);
-//   myTree->Book("ExtraLep3combRelIsoPF",0,HZZ4lNtupleFactory::kFloat);
-
-  // Gen variables
-  // FIXME: don't book these fo data so we save some disk space...
-  myTree->Book("genFinalState",0,HZZ4lNtupleFactory::kInt);
-  myTree->Book("genProcessId",0,HZZ4lNtupleFactory::kInt);
-  myTree->Book("genHEPMCweight",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("genExtInfo",0,HZZ4lNtupleFactory::kShort);
-  myTree->Book("xsec",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("dataMCWeight",0,HZZ4lNtupleFactory::kFloat); // FIXME these should probably be set to 1. once validated
-  myTree->Book("HqTMCweight",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("ZXFakeweight",0,HZZ4lNtupleFactory::kFloat);
-
-  myTree->Book("GenHMass",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("GenHPt",0,HZZ4lNtupleFactory::kFloat);
-
-  myTree->Book("GenZ1Mass",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("GenZ1Pt",0,HZZ4lNtupleFactory::kFloat);
-
-  myTree->Book("GenZ2Mass",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("GenZ2Pt",0,HZZ4lNtupleFactory::kFloat);
-
-  myTree->Book("GenLep1Pt",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("GenLep1Eta",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("GenLep1Phi",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("GenLep1Id",0,HZZ4lNtupleFactory::kShort);
-
-  myTree->Book("GenLep2Pt",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("GenLep2Eta",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("GenLep2Phi",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("GenLep2Id",0,HZZ4lNtupleFactory::kShort);
-
-  myTree->Book("GenLep3Pt",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("GenLep3Eta",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("GenLep3Phi",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("GenLep3Id",0,HZZ4lNtupleFactory::kShort);
-
-  myTree->Book("GenLep4Pt",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("GenLep4Eta",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("GenLep4Phi",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("GenLep4Id",0,HZZ4lNtupleFactory::kShort);
-
-  myTree->Book("GenAssocLep1Pt",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("GenAssocLep1Eta",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("GenAssocLep1Phi",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("GenAssocLep1Id",0,HZZ4lNtupleFactory::kShort);
-
-  myTree->Book("GenAssocLep2Pt",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("GenAssocLep2Eta",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("GenAssocLep2Phi",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("GenAssocLep2Id",0,HZZ4lNtupleFactory::kShort);
-
+  myTree->Book("JetPt",JetPt);
+  myTree->Book("JetEta",JetEta);
+  myTree->Book("JetPhi",JetPhi);
+  myTree->Book("JetMass",JetMass);
+  myTree->Book("JetBTagger",JetBTagger);
+  myTree->Book("JetIsBtagged",JetIsBtagged);
+  myTree->Book("JetQGLikelihood",JetQGLikelihood);
+  myTree->Book("JetSigma",JetSigma);
+  myTree->Book("DiJetMass",DiJetMass);
+  myTree->Book("DiJetMassPlus",DiJetMassPlus);
+  myTree->Book("DiJetMassMinus",DiJetMassMinus);
+  myTree->Book("DiJetDEta",DiJetDEta);
+  myTree->Book("DiJetFisher",DiJetFisher);
+  myTree->Book("nExtraLep",nExtraLep);
+  myTree->Book("nExtraZ",nExtraZ);
+  myTree->Book("ExtraLepPt",ExtraLepPt);
+  myTree->Book("ExtraLepEta",ExtraLepEta);
+  myTree->Book("ExtraLepPhi",ExtraLepPhi);
+  myTree->Book("ExtraLepLepId",ExtraLepLepId);
+  myTree->Book("genFinalState",genFinalState);
+  myTree->Book("genProcessId",genProcessId);
+  myTree->Book("genHEPMCweight",genHEPMCweight);
+  myTree->Book("genExtInfo",genExtInfo);
+  myTree->Book("xsec",xsection);
+  myTree->Book("dataMCWeight",dataMCWeight);
+  myTree->Book("HqTMCweight",HqTMCweight);
+  myTree->Book("ZXFakeweight",ZXFakeweight);
+  myTree->Book("GenHMass",GenHMass);
+  myTree->Book("GenHPt",GenHPt);
+  myTree->Book("GenZ1Mass",GenZ1Mass);
+  myTree->Book("GenZ1Pt",GenZ1Pt);
+  myTree->Book("GenZ2Mass",GenZ2Mass);
+  myTree->Book("GenZ2Pt",GenZ2Pt);
+  myTree->Book("GenLep1Pt",GenLep1Pt);
+  myTree->Book("GenLep1Eta",GenLep1Eta);
+  myTree->Book("GenLep1Phi",GenLep1Phi);
+  myTree->Book("GenLep1Id",GenLep1Id);
+  myTree->Book("GenLep2Pt",GenLep2Pt);
+  myTree->Book("GenLep2Eta",GenLep2Eta);
+  myTree->Book("GenLep2Phi",GenLep2Phi);
+  myTree->Book("GenLep2Id",GenLep2Id);
+  myTree->Book("GenLep3Pt",GenLep3Pt);
+  myTree->Book("GenLep3Eta",GenLep3Eta);
+  myTree->Book("GenLep3Phi",GenLep3Phi);
+  myTree->Book("GenLep3Id",GenLep3Id);
+  myTree->Book("GenLep4Pt",GenLep4Pt);
+  myTree->Book("GenLep4Eta",GenLep4Eta);
+  myTree->Book("GenLep4Phi",GenLep4Phi);
+  myTree->Book("GenLep4Id",GenLep4Id);
+  myTree->Book("GenAssocLep1Pt",GenAssocLep1Pt);
+  myTree->Book("GenAssocLep1Eta",GenAssocLep1Eta);
+  myTree->Book("GenAssocLep1Phi",GenAssocLep1Phi);
+  myTree->Book("GenAssocLep1Id",GenAssocLep1Id);
+  myTree->Book("GenAssocLep2Pt",GenAssocLep2Pt);
+  myTree->Book("GenAssocLep2Eta",GenAssocLep2Eta);
+  myTree->Book("GenAssocLep2Phi",GenAssocLep2Phi);
+  myTree->Book("GenAssocLep2Id",GenAssocLep2Id);
 
 }
 
