@@ -553,7 +553,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     double p0plus_m4l,bkg_m4l; //supermela
     double p0plus_m4l_ScaleUp,bkg_m4l_ScaleUp,p0plus_m4l_ScaleDown,bkg_m4l_ScaleDown,p0plus_m4l_ResUp,bkg_m4l_ResUp,p0plus_m4l_ResDown,bkg_m4l_ResDown; // supermela uncertainties
 
-    double p0_g1prime2_VAJHU,Dgg10_VAMCFM,pzzzg_VAJHU,pzzgg_VAJHU,p0Zgs_VAJHU,p0gsgs_VAJHU,pzzzg_PS_VAJHU,pzzgg_PS_VAJHU,p0Zgs_PS_VAJHU,p0gsgs_PS_VAJHU;
+    double p0_g1prime2_VAJHU, Dgg10_VAMCFM, pzzzg_VAJHU, pzzgg_VAJHU, p0Zgs_VAJHU, p0gsgs_VAJHU, pzzzg_PS_VAJHU, pzzgg_PS_VAJHU, p0Zgs_PS_VAJHU, p0gsgs_PS_VAJHU, p0Zgs_g1prime2_VAJHU;
 
     combinedMEM.computeME(MEMNames::kSMHiggs     ,MEMNames::kJHUGen    ,partP,partId,p0plus_VAJHU);   // higgs, vector algebra, JHUgen
     combinedMEM.computeME(MEMNames::k0minus      ,MEMNames::kJHUGen    ,partP,partId,p0minus_VAJHU);  // pseudoscalar, vector algebra, JHUgen
@@ -607,6 +607,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     combinedMEM.computeME(MEMNames::k0_gsgs      ,MEMNames::kJHUGen    ,partP,partId,p0gsgs_VAJHU);  // SM Higgs to gamma star gamma star 
     combinedMEM.computeME(MEMNames::k0_Zgs_PS                    ,MEMNames::kJHUGen    ,partP,partId,p0Zgs_PS_VAJHU);  // SM Higgs to Zgamma star 
     combinedMEM.computeME(MEMNames::k0_gsgs_PS      ,MEMNames::kJHUGen    ,partP,partId,p0gsgs_PS_VAJHU);  // SM Higgs to gamma star gamma star
+    combinedMEM.computeME(MEMNames::k0_Zgs_g1prime2, MEMNames::kJHUGen, partP, partId, p0Zgs_g1prime2_VAJHU);  // SM Higgs to Zgamma star Lambda1 
 
     vector<complex<double> > *coupling = new vector<complex<double> >;
     vector<complex<double> > *couplingprod= new vector<complex<double> >;
@@ -636,7 +637,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
 
     // spinMELA
-    double pg1g4_mela, pg1g4_VAJHU, pg1g2_mela, pg1g2_VAJHU, pg1g4_pi2_VAJHU, pg1g2_pi2_VAJHU, pg1g1prime2_VAJHU;
+    double pg1g4_mela, pg1g4_VAJHU, pg1g2_mela, pg1g2_VAJHU, pg1g4_pi2_VAJHU, pg1g2_pi2_VAJHU, pg1g1prime2_VAJHU, pzzzg_g1prime2_VAJHU, pzzzg_g1prime2_pi2_VAJHU;
     combinedMEM.computeME_Interference(MEMNames::kg1g4,     MEMNames::kAnalytical, partP, partId, pg1g4_mela);
     combinedMEM.computeME_Interference(MEMNames::kg1g4,     MEMNames::kJHUGen,     partP, partId, pg1g4_VAJHU);
     combinedMEM.computeME_Interference(MEMNames::kg1g4_pi_2,MEMNames::kJHUGen,     partP, partId, pg1g4_pi2_VAJHU);
@@ -649,6 +650,8 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     combinedMEM.computeME_Interference(MEMNames::kzzgg,MEMNames::kJHUGen,partP, partId,pzzgg_VAJHU);
     combinedMEM.computeME_Interference(MEMNames::kzzzg_PS,MEMNames::kJHUGen,partP, partId,pzzzg_PS_VAJHU);
     combinedMEM.computeME_Interference(MEMNames::kzzgg_PS,MEMNames::kJHUGen,partP, partId,pzzgg_PS_VAJHU);
+    combinedMEM.computeME_Interference(MEMNames::kzzzg_g1prime2, MEMNames::kJHUGen, partP, partId, pzzzg_g1prime2_VAJHU);
+    combinedMEM.computeME_Interference(MEMNames::kzzzg_g1prime2_pi_2, MEMNames::kJHUGen, partP, partId, pzzzg_g1prime2_pi2_VAJHU);
 
 
     
@@ -1110,6 +1113,10 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     myCand.addUserFloat("pzzgg_PS_VAJHU",pzzgg_PS_VAJHU);
     myCand.addUserFloat("p0Zgs_PS_VAJHU",p0Zgs_PS_VAJHU);
     myCand.addUserFloat("p0gsgs_PS_VAJHU",p0gsgs_PS_VAJHU);
+
+    myCand.addUserFloat("p0Zgs_g1prime2_VAJHU", p0Zgs_g1prime2_VAJHU);
+    myCand.addUserFloat("pzzzg_g1prime2_VAJHU", pzzzg_g1prime2_VAJHU);
+    myCand.addUserFloat("pzzzg_g1prime2_pi2_VAJHU", pzzzg_g1prime2_pi2_VAJHU);
 
     // Production MELA
     myCand.addUserFloat("phjj_VAJHU_old", phjj_VAJHU_old);

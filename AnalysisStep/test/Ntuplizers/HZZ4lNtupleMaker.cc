@@ -739,17 +739,20 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   Float_t pg1g2_pi2_VAJHU = cand.userFloat("pg1g2_pi2_VAJHU");
   Float_t pg1g2_mela = cand.userFloat("pg1g2_mela");
   Float_t pg1g2_VAJHU = cand.userFloat("pg1g2_VAJHU");
-  Float_t p0_g1prime2_VAJHU= cand.userFloat("p0_g1prime2_VAJHU");
-  Float_t pg1g1prime2_VAJHU= cand.userFloat("pg1g1prime2_VAJHU");
-  Float_t Dgg10_VAMCFM= cand.userFloat("Dgg10_VAMCFM");
-  Float_t pzzzg_VAJHU= cand.userFloat("pzzzg_VAJHU");
-  Float_t pzzgg_VAJHU= cand.userFloat("pzzgg_VAJHU");
-  Float_t pzzzg_PS_VAJHU= cand.userFloat("pzzzg_PS_VAJHU");
-  Float_t pzzgg_PS_VAJHU= cand.userFloat("pzzgg_PS_VAJHU");
-  Float_t p0Zgs_VAJHU= cand.userFloat("p0Zgs_VAJHU");
-  Float_t p0gsgs_VAJHU= cand.userFloat("p0gsgs_VAJHU");
-  Float_t p0Zgs_PS_VAJHU= cand.userFloat("p0Zgs_PS_VAJHU");
-  Float_t p0gsgs_PS_VAJHU= cand.userFloat("p0gsgs_PS_VAJHU");
+  Float_t p0_g1prime2_VAJHU = cand.userFloat("p0_g1prime2_VAJHU");
+  Float_t pg1g1prime2_VAJHU = cand.userFloat("pg1g1prime2_VAJHU");
+  Float_t Dgg10_VAMCFM = cand.userFloat("Dgg10_VAMCFM");
+  Float_t pzzzg_VAJHU = cand.userFloat("pzzzg_VAJHU");
+  Float_t pzzgg_VAJHU = cand.userFloat("pzzgg_VAJHU");
+  Float_t pzzzg_PS_VAJHU = cand.userFloat("pzzzg_PS_VAJHU");
+  Float_t pzzgg_PS_VAJHU = cand.userFloat("pzzgg_PS_VAJHU");
+  Float_t p0Zgs_VAJHU = cand.userFloat("p0Zgs_VAJHU");
+  Float_t p0gsgs_VAJHU = cand.userFloat("p0gsgs_VAJHU");
+  Float_t p0Zgs_PS_VAJHU = cand.userFloat("p0Zgs_PS_VAJHU");
+  Float_t p0gsgs_PS_VAJHU = cand.userFloat("p0gsgs_PS_VAJHU");
+  Float_t p0Zgs_g1prime2_VAJHU = cand.userFloat("p0Zgs_g1prime2_VAJHU");
+  Float_t pzzzg_g1prime2_VAJHU = cand.userFloat("pzzzg_g1prime2_VAJHU");
+  Float_t pzzzg_g1prime2_pi2_VAJHU = cand.userFloat("pzzzg_g1prime2_pi2_VAJHU");
 
   Float_t p0plus_m4l = cand.userFloat("p0plus_m4l");
   Float_t bkg_m4l = cand.userFloat("bkg_m4l");
@@ -867,7 +870,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   }
   if (!(evtPass)) {sel = -sel;} // avoid confusion when we write events which do not pass trigger/skim
 
-  const int nMEs = 102;
+  const int nMEs = 105;
 //cout<<"KD= "<<p0plus_VAJHU+p0minus_VAJHU<<endl;
   //myTree->FillProbability(
   double probabilities[nMEs]={ 
@@ -934,6 +937,9 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     p0gsgs_VAJHU,
     p0Zgs_PS_VAJHU,
     p0gsgs_PS_VAJHU,
+    p0Zgs_g1prime2_VAJHU,
+    pzzzg_g1prime2_VAJHU,
+    pzzzg_g1prime2_pi2_VAJHU,
 
     phjj_VAJHU_old,
     pvbf_VAJHU_old,
@@ -1042,6 +1048,9 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     "p0gsgs_VAJHU",
     "p0Zgs_PS_VAJHU",
     "p0gsgs_PS_VAJHU",
+    "p0Zgs_g1prime2_VAJHU",
+    "pzzzg_g1prime2_VAJHU",
+    "pzzzg_g1prime2_pi2_VAJHU",
 
     "phjj_VAJHU_old",
     "pvbf_VAJHU_old",
@@ -1651,6 +1660,9 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("p0gsgs_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
   myTree->Book("p0Zgs_PS_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
   myTree->Book("p0gsgs_PS_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p0Zgs_g1prime2_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pzzzg_g1prime2_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pzzzg_g1prime2_pi2_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
 
   myTree->Book("p0plus_m4l", 0, HZZ4lNtupleFactory::kFloat);
   myTree->Book("bkg_m4l", 0, HZZ4lNtupleFactory::kFloat);
