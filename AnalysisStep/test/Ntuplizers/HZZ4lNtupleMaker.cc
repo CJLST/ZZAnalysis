@@ -489,29 +489,33 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   Handle<vector<reco::MET> > pfmetcoll;
   event.getByLabel("slimmedMETs", pfmetcoll);
   float pfmet = -1;
-  if(pfmetcoll.isValid()){
+  float pfmet_phi = 0;
+  if (pfmetcoll.isValid()){
     pfmet = pfmetcoll->front().pt();
+    pfmet_phi = pfmetcoll->front().phi();
   }
-  
-    //Save general event info in the tree
+  //Save general event info in the tree
   //myTree->FillEventInfo(event.id().run(), event.id().event(), event.luminosityBlock(), NbestCand, vertexs->size(), nObsInt, nTrueInt, weight2, pfmet, pfjetscoll->size(), cleanedJets.size(), cleanedJetsPt30.size(), nCleanedJetsPt30BTagged, genFinalState, genProcessId, genHEPMCweight, trigWord, genExtInfo,xsec);
-  double eventinfo[16]={(double)event.id().run(),
-			(double)event.luminosityBlock(), 
-			(double)vertexs->size(), 
-			(double)nObsInt, 
-			(double)nTrueInt, 
-			(double)weight2, 
-			(double)pfmet, 
-			(double)cleanedJets.size(), 
-			(double)cleanedJetsPt30.size(), 
-			(double)nCleanedJetsPt30BTagged, 
-			(double)genFinalState, 
-			(double)genProcessId,
-			(double)genHEPMCweight, 
-			(double)trigWord, 
-			(double)genExtInfo,
-			(double)xsec};
-  TString eventnames[16]={
+  double eventinfo[17]={
+    (double)event.id().run(),
+    (double)event.luminosityBlock(),
+    (double)vertexs->size(),
+    (double)nObsInt,
+    (double)nTrueInt,
+    (double)weight2,
+    (double)pfmet,
+    (double)pfmet_phi,
+    (double)cleanedJets.size(),
+    (double)cleanedJetsPt30.size(),
+    (double)nCleanedJetsPt30BTagged,
+    (double)genFinalState,
+    (double)genProcessId,
+    (double)genHEPMCweight,
+    (double)trigWord,
+    (double)genExtInfo,
+    (double)xsec
+  };
+  TString eventnames[17]={
     "RunNumber",
     "LumiNumber",
     "Nvtx",
@@ -519,6 +523,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     "NTrueInt",
     "PUWeight",
     "PFMET",
+    "PFMETPhi",
     "nCleanedJets",
     "nCleanedJetsPt30",
     "nCleanedJetsPt30BTagged",
@@ -529,7 +534,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     "genExtInfo",
     "xsec"
   };
-  myTree->SetVariables((TString *)eventnames,(double *)eventinfo,16);
+  myTree->SetVariables((TString *)eventnames, (double *)eventinfo, 17);
   myTree->SetVariableLong("EventNumber",event.id().event());
   
   //Loop on the candidates
@@ -728,14 +733,29 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   //Float_t bkg_pt = cand.userFloat("bkg_pt");
   //Float_t bkg_y = cand.userFloat("bkg_y");
 
-  Float_t p0plus_m4l = cand.userFloat("p0plus_m4l");
-  Float_t bkg_m4l = cand.userFloat("bkg_m4l");
   Float_t pg1g4_mela = cand.userFloat("pg1g4_mela");
   Float_t pg1g4_VAJHU = cand.userFloat("pg1g4_VAJHU");
   Float_t pg1g4_pi2_VAJHU = cand.userFloat("pg1g4_pi2_VAJHU");
   Float_t pg1g2_pi2_VAJHU = cand.userFloat("pg1g2_pi2_VAJHU");
   Float_t pg1g2_mela = cand.userFloat("pg1g2_mela");
   Float_t pg1g2_VAJHU = cand.userFloat("pg1g2_VAJHU");
+  Float_t p0_g1prime2_VAJHU = cand.userFloat("p0_g1prime2_VAJHU");
+  Float_t pg1g1prime2_VAJHU = cand.userFloat("pg1g1prime2_VAJHU");
+  Float_t Dgg10_VAMCFM = cand.userFloat("Dgg10_VAMCFM");
+  Float_t pzzzg_VAJHU = cand.userFloat("pzzzg_VAJHU");
+  Float_t pzzgg_VAJHU = cand.userFloat("pzzgg_VAJHU");
+  Float_t pzzzg_PS_VAJHU = cand.userFloat("pzzzg_PS_VAJHU");
+  Float_t pzzgg_PS_VAJHU = cand.userFloat("pzzgg_PS_VAJHU");
+  Float_t p0Zgs_VAJHU = cand.userFloat("p0Zgs_VAJHU");
+  Float_t p0gsgs_VAJHU = cand.userFloat("p0gsgs_VAJHU");
+  Float_t p0Zgs_PS_VAJHU = cand.userFloat("p0Zgs_PS_VAJHU");
+  Float_t p0gsgs_PS_VAJHU = cand.userFloat("p0gsgs_PS_VAJHU");
+  Float_t p0Zgs_g1prime2_VAJHU = cand.userFloat("p0Zgs_g1prime2_VAJHU");
+  Float_t pzzzg_g1prime2_VAJHU = cand.userFloat("pzzzg_g1prime2_VAJHU");
+  Float_t pzzzg_g1prime2_pi2_VAJHU = cand.userFloat("pzzzg_g1prime2_pi2_VAJHU");
+
+  Float_t p0plus_m4l = cand.userFloat("p0plus_m4l");
+  Float_t bkg_m4l = cand.userFloat("bkg_m4l");
   Float_t p0plus_m4l_ScaleUp = cand.userFloat("p0plus_m4l_ScaleUp");// signal m4l probability for systematics
   Float_t bkg_m4l_ScaleUp = cand.userFloat("bkg_m4l_ScaleUp");// backgroun m4l probability for systematics
   Float_t p0plus_m4l_ScaleDown = cand.userFloat("p0plus_m4l_ScaleDown");// signal m4l probability for systematics
@@ -757,17 +777,31 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   Float_t pvbf_VAJHU_new_up = cand.userFloat("pvbf_VAJHU_new_up");
   Float_t phjj_VAJHU_new_dn = cand.userFloat("phjj_VAJHU_new_dn");
   Float_t pvbf_VAJHU_new_dn = cand.userFloat("pvbf_VAJHU_new_dn");
-  Float_t p0_g1prime2_VAJHU= cand.userFloat("p0_g1prime2_VAJHU");
-  Float_t pg1g1prime2_VAJHU= cand.userFloat("pg1g1prime2_VAJHU");
-  Float_t Dgg10_VAMCFM= cand.userFloat("Dgg10_VAMCFM");
-  Float_t pzzzg_VAJHU= cand.userFloat(    "pzzzg_VAJHU");
-  Float_t pzzgg_VAJHU= cand.userFloat(    "pzzgg_VAJHU");
-  Float_t pzzzg_PS_VAJHU= cand.userFloat( "pzzzg_PS_VAJHU");
-  Float_t pzzgg_PS_VAJHU= cand.userFloat( "pzzgg_PS_VAJHU");
-  Float_t p0Zgs_VAJHU= cand.userFloat(    "p0Zgs_VAJHU");
-  Float_t p0gsgs_VAJHU= cand.userFloat(   "p0gsgs_VAJHU");
-  Float_t p0Zgs_PS_VAJHU= cand.userFloat( "p0Zgs_PS_VAJHU");
-  Float_t p0gsgs_PS_VAJHU= cand.userFloat("p0gsgs_PS_VAJHU");
+
+  Float_t pAux_vbf_VAJHU = cand.userFloat("pAux_vbf_VAJHU");
+  Float_t pAux_vbf_VAJHU_up = cand.userFloat("pAux_vbf_VAJHU_up");
+  Float_t pAux_vbf_VAJHU_dn = cand.userFloat("pAux_vbf_VAJHU_dn");
+
+  Float_t phj_VAJHU = cand.userFloat("phj_VAJHU");
+  Float_t phj_VAJHU_up = cand.userFloat("phj_VAJHU_up");
+  Float_t phj_VAJHU_dn = cand.userFloat("phj_VAJHU_dn");
+
+  Float_t pwh_hadronic_VAJHU = cand.userFloat("pwh_hadronic_VAJHU");
+  Float_t pwh_hadronic_VAJHU_up = cand.userFloat("pwh_hadronic_VAJHU_up");
+  Float_t pwh_hadronic_VAJHU_dn = cand.userFloat("pwh_hadronic_VAJHU_dn");
+
+  Float_t pzh_hadronic_VAJHU = cand.userFloat("pzh_hadronic_VAJHU");
+  Float_t pzh_hadronic_VAJHU_up = cand.userFloat("pzh_hadronic_VAJHU_up");
+  Float_t pzh_hadronic_VAJHU_dn = cand.userFloat("pzh_hadronic_VAJHU_dn");
+
+  Float_t ptth_VAJHU = cand.userFloat("ptth_VAJHU");
+  Float_t ptth_VAJHU_up = cand.userFloat("ptth_VAJHU_up");
+  Float_t ptth_VAJHU_dn = cand.userFloat("ptth_VAJHU_dn");
+
+  Float_t pbbh_VAJHU = cand.userFloat("pbbh_VAJHU");
+  Float_t pbbh_VAJHU_up = cand.userFloat("pbbh_VAJHU_up");
+  Float_t pbbh_VAJHU_dn = cand.userFloat("pbbh_VAJHU_dn");
+
 
   //Int_t isSignal = -1;
   //Int_t isRightPair = -1;
@@ -836,179 +870,232 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   }
   if (!(evtPass)) {sel = -sel;} // avoid confusion when we write events which do not pass trigger/skim
 
+  const int nMEs = 105;
 //cout<<"KD= "<<p0plus_VAJHU+p0minus_VAJHU<<endl;
   //myTree->FillProbability(
-  double probabilities[84]={ p0plus_VAJHU,
-                          p0minus_VAJHU,
-                          p0plus_VAMCFM,
-                          p0hplus_VAJHU, // 0h+ (high dimensional operator), vector algebra, JHUgen
-                          p1_VAJHU,
-                          p1_prodIndep_VAJHU,
-                          p1plus_VAJHU, // 1+ (axial vector), vector algebra, JHUgen,
-                          p1plus_prodIndep_VAJHU, // 1+ (axial vector), vector algebra, JHUgen,
-                          p2_VAJHU ,
-                          p2_prodIndep_VAJHU ,
-                          p2qqb_VAJHU,
-                          p2hplus_VAJHU,
-                          p2hminus_VAJHU,
-                          p2bplus_VAJHU,
-                          p2hplus_qqb_VAJHU,
-                          p2hplus_prodIndep_VAJHU,
-                          p2hminus_qqb_VAJHU,
-                          p2hminus_prodIndep_VAJHU,
-                          p2bplus_qqb_VAJHU,
-                          p2bplus_prodIndep_VAJHU,
-                          p2h2plus_gg_VAJHU,
-                          p2h2plus_qqbar_VAJHU,
-                          p2h2plus_prodIndep_VAJHU,
-                          p2h3plus_gg_VAJHU,
-                          p2h3plus_qqbar_VAJHU,
-                          p2h3plus_prodIndep_VAJHU,
-                          p2h6plus_gg_VAJHU,
-                          p2h6plus_qqbar_VAJHU,
-                          p2h6plus_prodIndep_VAJHU,
-                          p2h7plus_gg_VAJHU,
-                          p2h7plus_qqbar_VAJHU,
-                          p2h7plus_prodIndep_VAJHU,
-                          p2h9minus_gg_VAJHU,
-                          p2h9minus_qqbar_VAJHU,
-                          p2h9minus_prodIndep_VAJHU,
-                          p2h10minus_gg_VAJHU,
-                          p2h10minus_qqbar_VAJHU,
-                          p2h10minus_prodIndep_VAJHU,
-                          bkg_VAMCFM,
-                          bkg_prodIndep_VAMCFM,
-                          ggzz_VAMCFM,
-                          ggzz_p0plus_VAMCFM,
-                          ggzz_c1_VAMCFM,
-                          ggzz_c5_VAMCFM,
-                          ggzz_ci_VAMCFM,
-                          phjj_VAJHU_old,
-                          pvbf_VAJHU_old,
-                          phjj_VAJHU_old_up,
-                          pvbf_VAJHU_old_up,
-                          phjj_VAJHU_old_dn,
-                          pvbf_VAJHU_old_dn,
-                          phjj_VAJHU_new,
-                          pvbf_VAJHU_new,
-                          phjj_VAJHU_new_up,
-                          pvbf_VAJHU_new_up,
-                          phjj_VAJHU_new_dn,
-                          pvbf_VAJHU_new_dn,
-                          p0_g1prime2_VAJHU,
-                          pg1g1prime2_VAJHU,
-                          Dgg10_VAMCFM,
-                          pg1g4_mela,
-                          pg1g4_VAJHU,
-                          pg1g4_pi2_VAJHU,
-                          pg1g2_pi2_VAJHU,
-                          pg1g2_mela,
-                          pg1g2_VAJHU,
-                          pzzzg_VAJHU,
-                          pzzgg_VAJHU,
-                          pzzzg_PS_VAJHU,
-                          pzzgg_PS_VAJHU,
-                          p0Zgs_VAJHU,
-                          p0gsgs_VAJHU,
-                          p0Zgs_PS_VAJHU,
-                          p0gsgs_PS_VAJHU,
-                          			 bkg_m4l,   // backgroun m4l probability as in datacards
-			 p0plus_m4l_ScaleUp,  // signal m4l probability for systematics
-			 bkg_m4l_ScaleUp,     // backgroun m4l probability for systematics
-			 p0plus_m4l_ScaleDown,  // signal m4l probability for systematics
-			 bkg_m4l_ScaleDown,     // backgroun m4l probability for systematics
-			 p0plus_m4l_ResUp,  // signal m4l probability for systematics
-			 bkg_m4l_ResUp,     // backgroun m4l probability for systematics
-			 p0plus_m4l_ResDown,  // signal m4l probability for systematics
-			 bkg_m4l_ResDown,     // backgroun m4l probability for systematics
-			 p0plus_m4l
-                          };
-    TString probNames[84]={ "p0plus_VAJHU",
-                          "p0minus_VAJHU",
-                          "p0plus_VAMCFM",
-                          "p0hplus_VAJHU", // 0h+ (high dimensional operator)", vector algebra", JHUgen
-                          "p1_VAJHU",
-                          "p1_prodIndep_VAJHU",
-                          "p1plus_VAJHU", // 1+ (axial vector)", vector algebra", JHUgen",
-                          "p1plus_prodIndep_VAJHU", // 1+ (axial vector)", vector algebra", JHUgen",
-                          "p2_VAJHU",
-                          "p2_prodIndep_VAJHU",
-                          "p2qqb_VAJHU",
-                          "p2hplus_VAJHU",
-                          "p2hminus_VAJHU",
-                          "p2bplus_VAJHU",
-                          "p2hplus_qqb_VAJHU",
-                          "p2hplus_prodIndep_VAJHU",
-                          "p2hminus_qqb_VAJHU",
-                          "p2hminus_prodIndep_VAJHU",
-                          "p2bplus_qqb_VAJHU",
-                          "p2bplus_prodIndep_VAJHU",
-                          "p2h2plus_gg_VAJHU",
-                          "p2h2plus_qqbar_VAJHU",
-                          "p2h2plus_prodIndep_VAJHU",
-                          "p2h3plus_gg_VAJHU",
-                          "p2h3plus_qqbar_VAJHU",
-                          "p2h3plus_prodIndep_VAJHU",
-                          "p2h6plus_gg_VAJHU",
-                          "p2h6plus_qqbar_VAJHU",
-                          "p2h6plus_prodIndep_VAJHU",
-                          "p2h7plus_gg_VAJHU",
-                          "p2h7plus_qqbar_VAJHU",
-                          "p2h7plus_prodIndep_VAJHU",
-                          "p2h9minus_gg_VAJHU",
-                          "p2h9minus_qqbar_VAJHU",
-                          "p2h9minus_prodIndep_VAJHU",
-                          "p2h10minus_gg_VAJHU",
-                          "p2h10minus_qqbar_VAJHU",
-                          "p2h10minus_prodIndep_VAJHU",
-                          "bkg_VAMCFM",
-                          "bkg_prodIndep_VAMCFM",
-                          "ggzz_VAMCFM",
-                          "ggzz_p0plus_VAMCFM",
-                          "ggzz_c1_VAMCFM",
-                          "ggzz_c5_VAMCFM",
-                          "ggzz_ci_VAMCFM",
-                          "phjj_VAJHU_old",
-                          "pvbf_VAJHU_old",
-                          "phjj_VAJHU_old_up",
-                          "pvbf_VAJHU_old_up",
-                          "phjj_VAJHU_old_dn",
-                          "pvbf_VAJHU_old_dn",
-                          "phjj_VAJHU_new",
-                          "pvbf_VAJHU_new",
-                          "phjj_VAJHU_new_up",
-                          "pvbf_VAJHU_new_up",
-                          "phjj_VAJHU_new_dn",
-                          "pvbf_VAJHU_new_dn",
-                          "p0_g1prime2_VAJHU",
-                          "pg1g1prime2_VAJHU",
-                          "Dgg10_VAMCFM",
-                          "pg1g4_mela",
-                          "pg1g4_VAJHU",
-                          "pg1g4_pi2_VAJHU",
-                          "pg1g2_pi2_VAJHU",
-                          "pg1g2_mela",
-                          "pg1g2_VAJHU",
-                          "pzzzg_VAJHU",
-                          "pzzgg_VAJHU",
-                          "pzzzg_PS_VAJHU",
-                          "pzzgg_PS_VAJHU",
-                          "p0Zgs_VAJHU",
-                          "p0gsgs_VAJHU",
-                          "p0Zgs_PS_VAJHU",
-                          "p0gsgs_PS_VAJHU",
-                          "bkg_m4l",   // backgroun m4l probability as in datacards
-			                    "p0plus_m4l_ScaleUp",  // signal m4l probability for systematics
-			                    "bkg_m4l_ScaleUp",     // backgroun m4l probability for systematics
-			                    "p0plus_m4l_ScaleDown",  // signal m4l probability for systematics
-			                    "bkg_m4l_ScaleDown",     // backgroun m4l probability for systematics
-			                    "p0plus_m4l_ResUp",  // signal m4l probability for systematics
-			                    "bkg_m4l_ResUp",     // backgroun m4l probability for systematics
-			                    "p0plus_m4l_ResDown",  // signal m4l probability for systematics
-			                    "bkg_m4l_ResDown",     // backgroun m4l probability for systematics
-			                    "p0plus_m4l" // signal m4l probability as in datacards
-                          };
-  myTree->SetVariables((TString *)probNames,(double *)probabilities,84);
+  double probabilities[nMEs]={ 
+    p0plus_VAJHU,
+    p0minus_VAJHU,
+    p0plus_VAMCFM,
+    p0hplus_VAJHU, // 0h+ (high dimensional operator), vector algebra, JHUgen
+    p1_VAJHU,
+    p1_prodIndep_VAJHU,
+    p1plus_VAJHU, // 1+ (axial vector), vector algebra, JHUgen,
+    p1plus_prodIndep_VAJHU, // 1+ (axial vector), vector algebra, JHUgen,
+    p2_VAJHU,
+    p2_prodIndep_VAJHU,
+    p2qqb_VAJHU,
+    p2hplus_VAJHU,
+    p2hminus_VAJHU,
+    p2bplus_VAJHU,
+    p2hplus_qqb_VAJHU,
+    p2hplus_prodIndep_VAJHU,
+    p2hminus_qqb_VAJHU,
+    p2hminus_prodIndep_VAJHU,
+    p2bplus_qqb_VAJHU,
+    p2bplus_prodIndep_VAJHU,
+    p2h2plus_gg_VAJHU,
+    p2h2plus_qqbar_VAJHU,
+    p2h2plus_prodIndep_VAJHU,
+    p2h3plus_gg_VAJHU,
+    p2h3plus_qqbar_VAJHU,
+    p2h3plus_prodIndep_VAJHU,
+    p2h6plus_gg_VAJHU,
+    p2h6plus_qqbar_VAJHU,
+    p2h6plus_prodIndep_VAJHU,
+    p2h7plus_gg_VAJHU,
+    p2h7plus_qqbar_VAJHU,
+    p2h7plus_prodIndep_VAJHU,
+    p2h9minus_gg_VAJHU,
+    p2h9minus_qqbar_VAJHU,
+    p2h9minus_prodIndep_VAJHU,
+    p2h10minus_gg_VAJHU,
+    p2h10minus_qqbar_VAJHU,
+    p2h10minus_prodIndep_VAJHU,
+    bkg_VAMCFM,
+    bkg_prodIndep_VAMCFM,
+    ggzz_VAMCFM,
+    ggzz_p0plus_VAMCFM,
+    ggzz_c1_VAMCFM,
+    ggzz_c5_VAMCFM,
+    ggzz_ci_VAMCFM,
+
+    p0_g1prime2_VAJHU,
+    pg1g1prime2_VAJHU,
+    Dgg10_VAMCFM,
+    pg1g4_mela,
+    pg1g4_VAJHU,
+    pg1g4_pi2_VAJHU,
+    pg1g2_pi2_VAJHU,
+    pg1g2_mela,
+    pg1g2_VAJHU,
+    pzzzg_VAJHU,
+    pzzgg_VAJHU,
+    pzzzg_PS_VAJHU,
+    pzzgg_PS_VAJHU,
+    p0Zgs_VAJHU,
+    p0gsgs_VAJHU,
+    p0Zgs_PS_VAJHU,
+    p0gsgs_PS_VAJHU,
+    p0Zgs_g1prime2_VAJHU,
+    pzzzg_g1prime2_VAJHU,
+    pzzzg_g1prime2_pi2_VAJHU,
+
+    phjj_VAJHU_old,
+    pvbf_VAJHU_old,
+    phjj_VAJHU_old_up,
+    pvbf_VAJHU_old_up,
+    phjj_VAJHU_old_dn,
+    pvbf_VAJHU_old_dn,
+    phjj_VAJHU_new,
+    pvbf_VAJHU_new,
+    phjj_VAJHU_new_up,
+    pvbf_VAJHU_new_up,
+    phjj_VAJHU_new_dn,
+    pvbf_VAJHU_new_dn,
+
+    pAux_vbf_VAJHU,
+    pAux_vbf_VAJHU_up,
+    pAux_vbf_VAJHU_dn,
+    phj_VAJHU,
+    phj_VAJHU_up,
+    phj_VAJHU_dn,
+    pwh_hadronic_VAJHU,
+    pwh_hadronic_VAJHU_up,
+    pwh_hadronic_VAJHU_dn,
+    pzh_hadronic_VAJHU,
+    pzh_hadronic_VAJHU_up,
+    pzh_hadronic_VAJHU_dn,
+    ptth_VAJHU,
+    ptth_VAJHU_up,
+    ptth_VAJHU_dn,
+    pbbh_VAJHU,
+    pbbh_VAJHU_up,
+    pbbh_VAJHU_dn,
+
+    p0plus_m4l,
+    bkg_m4l,   // backgroun m4l probability as in datacards
+    p0plus_m4l_ScaleUp,  // signal m4l probability for systematics
+    bkg_m4l_ScaleUp,     // backgroun m4l probability for systematics
+    p0plus_m4l_ScaleDown,  // signal m4l probability for systematics
+    bkg_m4l_ScaleDown,     // backgroun m4l probability for systematics
+    p0plus_m4l_ResUp,  // signal m4l probability for systematics
+    bkg_m4l_ResUp,     // backgroun m4l probability for systematics
+    p0plus_m4l_ResDown,  // signal m4l probability for systematics
+    bkg_m4l_ResDown     // backgroun m4l probability for systematics
+  };
+  TString probNames[nMEs]={ // Could start from here and then just fill arrays, passing probNames as the argument to userFloat first, with nMES -> [vector].size(), no need to list everything three times at different locations of the code.
+    "p0plus_VAJHU",
+    "p0minus_VAJHU",
+    "p0plus_VAMCFM",
+    "p0hplus_VAJHU", // 0h+ (high dimensional operator)", vector algebra", JHUgen
+    "p1_VAJHU",
+    "p1_prodIndep_VAJHU",
+    "p1plus_VAJHU", // 1+ (axial vector)", vector algebra", JHUgen",
+    "p1plus_prodIndep_VAJHU", // 1+ (axial vector)", vector algebra", JHUgen",
+    "p2_VAJHU",
+    "p2_prodIndep_VAJHU",
+    "p2qqb_VAJHU",
+    "p2hplus_VAJHU",
+    "p2hminus_VAJHU",
+    "p2bplus_VAJHU",
+    "p2hplus_qqb_VAJHU",
+    "p2hplus_prodIndep_VAJHU",
+    "p2hminus_qqb_VAJHU",
+    "p2hminus_prodIndep_VAJHU",
+    "p2bplus_qqb_VAJHU",
+    "p2bplus_prodIndep_VAJHU",
+    "p2h2plus_gg_VAJHU",
+    "p2h2plus_qqbar_VAJHU",
+    "p2h2plus_prodIndep_VAJHU",
+    "p2h3plus_gg_VAJHU",
+    "p2h3plus_qqbar_VAJHU",
+    "p2h3plus_prodIndep_VAJHU",
+    "p2h6plus_gg_VAJHU",
+    "p2h6plus_qqbar_VAJHU",
+    "p2h6plus_prodIndep_VAJHU",
+    "p2h7plus_gg_VAJHU",
+    "p2h7plus_qqbar_VAJHU",
+    "p2h7plus_prodIndep_VAJHU",
+    "p2h9minus_gg_VAJHU",
+    "p2h9minus_qqbar_VAJHU",
+    "p2h9minus_prodIndep_VAJHU",
+    "p2h10minus_gg_VAJHU",
+    "p2h10minus_qqbar_VAJHU",
+    "p2h10minus_prodIndep_VAJHU",
+    "bkg_VAMCFM",
+    "bkg_prodIndep_VAMCFM",
+    "ggzz_VAMCFM",
+    "ggzz_p0plus_VAMCFM",
+    "ggzz_c1_VAMCFM",
+    "ggzz_c5_VAMCFM",
+    "ggzz_ci_VAMCFM",
+
+    "p0_g1prime2_VAJHU",
+    "pg1g1prime2_VAJHU",
+    "Dgg10_VAMCFM",
+    "pg1g4_mela",
+    "pg1g4_VAJHU",
+    "pg1g4_pi2_VAJHU",
+    "pg1g2_pi2_VAJHU",
+    "pg1g2_mela",
+    "pg1g2_VAJHU",
+    "pzzzg_VAJHU",
+    "pzzgg_VAJHU",
+    "pzzzg_PS_VAJHU",
+    "pzzgg_PS_VAJHU",
+    "p0Zgs_VAJHU",
+    "p0gsgs_VAJHU",
+    "p0Zgs_PS_VAJHU",
+    "p0gsgs_PS_VAJHU",
+    "p0Zgs_g1prime2_VAJHU",
+    "pzzzg_g1prime2_VAJHU",
+    "pzzzg_g1prime2_pi2_VAJHU",
+
+    "phjj_VAJHU_old",
+    "pvbf_VAJHU_old",
+    "phjj_VAJHU_old_up",
+    "pvbf_VAJHU_old_up",
+    "phjj_VAJHU_old_dn",
+    "pvbf_VAJHU_old_dn",
+    "phjj_VAJHU_new",
+    "pvbf_VAJHU_new",
+    "phjj_VAJHU_new_up",
+    "pvbf_VAJHU_new_up",
+    "phjj_VAJHU_new_dn",
+    "pvbf_VAJHU_new_dn",
+
+    "pAux_vbf_VAJHU",
+    "pAux_vbf_VAJHU_up",
+    "pAux_vbf_VAJHU_dn",
+    "phj_VAJHU",
+    "phj_VAJHU_up",
+    "phj_VAJHU_dn",
+    "pwh_hadronic_VAJHU",
+    "pwh_hadronic_VAJHU_up",
+    "pwh_hadronic_VAJHU_dn",
+    "pzh_hadronic_VAJHU",
+    "pzh_hadronic_VAJHU_up",
+    "pzh_hadronic_VAJHU_dn",
+    "ptth_VAJHU",
+    "ptth_VAJHU_up",
+    "ptth_VAJHU_dn",
+    "pbbh_VAJHU",
+    "pbbh_VAJHU_up",
+    "pbbh_VAJHU_dn",
+
+    "p0plus_m4l", // signal m4l probability as in datacards
+    "bkg_m4l",   // background m4l probability as in datacards
+    "p0plus_m4l_ScaleUp",  // signal m4l probability for systematics
+    "bkg_m4l_ScaleUp",     // background m4l probability for systematics
+    "p0plus_m4l_ScaleDown",  // signal m4l probability for systematics
+    "bkg_m4l_ScaleDown",     // backgroun m4l probability for systematics
+    "p0plus_m4l_ResUp",  // signal m4l probability for systematics
+    "bkg_m4l_ResUp",     // backgroudn m4l probability for systematics
+    "p0plus_m4l_ResDown",  // signal m4l probability for systematics
+    "bkg_m4l_ResDown"     // background m4l probability for systematics
+  };
+  myTree->SetVariables((TString *)probNames,(double *)probabilities,nMEs);
 	
 	//FIXME? Not filled in the miniAOD branch, is it right?
 	/*
@@ -1067,9 +1154,10 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 
     //Fill the info on the lepton candidates  
     TString lepnames[12];
-    TString outlepnames[12]={"Pt","Eta","Phi", "LepId", "SIP", "isID", "BDT","missingHit","chargedHadIso","neutralHadIso","photonIso","combRelIsoPF"};
+    TString outlepnames[12]={ "Pt", "Eta", "Phi", "LepId", "SIP", "isID", "BDT"/*, "MCParentCode"*/, "missingHit", "combRelIsoPF", "chargedHadIso", "neutralHadIso", "photonIso" };
     for(int ilep=0;ilep<12;ilep++)lepnames[ilep].Form("Lep%d%s",i+1,outlepnames[ilep].Data());
-    double lepVariables[]={(double)leptons[i]->pt(),
+    double lepVariables[]={
+      (double)leptons[i]->pt(),
 			(double)leptons[i]->eta(),
 			(double)leptons[i]->phi(),
 			(double)leptons[i]->pdgId(),
@@ -1078,12 +1166,12 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 			(double)userdatahelpers::getUserFloat(leptons[i],"BDT"),
 			//userdatahelpers::getUserFloat(leptons[i],"MCParentCode"), // This is dummy as of now.
 			(double)userdatahelpers::getUserFloat(leptons[i],"missingHit"),
-			(double)PFChargedHadIso[i],
+      (double)combRelIsoPF[i],
+      (double)PFChargedHadIso[i],
 			(double)PFNeutralHadIso[i],
-			(double)PFPhotonIso[i], 
-			(double)combRelIsoPF[i]
+			(double)PFPhotonIso[i]
 			};
-    myTree->SetVariables((TString *)lepnames,(double *)lepVariables,8);
+    myTree->SetVariables((TString *)lepnames,(double *)lepVariables,12);
   }
   
   //convention: 0 -> 4mu   1 -> 4e   2 -> 2mu2e
@@ -1113,12 +1201,13 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   myTree->SetVariables((TString *)hinfonames,(double *)hinfo,10);
 
   //Fill the info on categorization
-  myTree->SetVariable("nExtraLep",cand.userFloat("nExtraLep"));
+  Float_t nExtraLep = cand.userFloat("nExtraLep"); // Why is this still a float at this point?
+  myTree->SetVariable("nExtraLep", nExtraLep);
   myTree->SetVariable("nExtraZ",cand.userFloat("nExtraZ"));
 
   //Fill the info on the extra leptons
   TString varExtra[4]={"ExtraLepPt","ExtraLepEta","ExtraLepPhi","ExtraLepLepId"};
-  for(int iExtraLep=1;iExtraLep<4;iExtraLep++){
+  for (int iExtraLep=1; iExtraLep<=(int)nExtraLep; iExtraLep++){
     TString extraString;extraString.Form("ExtraLep%d",iExtraLep);
     if(cand.hasUserCand(extraString.Data())){
       //for(int iextra=0;iextra<4;iextra++)varExtra[iextra].Prepend(extraString.Data());
@@ -1382,8 +1471,9 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("NObsInt",0,HZZ4lNtupleFactory::kInt);
   myTree->Book("NTrueInt",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("PUWeight",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("PFMET",-99,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("nCleanedJets",0,HZZ4lNtupleFactory::kInt);
+  myTree->Book("PFMET", -99, HZZ4lNtupleFactory::kFloat);
+  myTree->Book("PFMETPhi", -99, HZZ4lNtupleFactory::kFloat);
+  myTree->Book("nCleanedJets", 0, HZZ4lNtupleFactory::kInt);
   myTree->Book("nCleanedJetsPt30",0,HZZ4lNtupleFactory::kInt);
   myTree->Book("nCleanedJetsPt30BTagged",0,HZZ4lNtupleFactory::kInt);
   myTree->Book("trigWord",0,HZZ4lNtupleFactory::kShort);
@@ -1445,7 +1535,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("Lep1BDT",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("Lep1missingHit",0,HZZ4lNtupleFactory::kChar);
   //--> Commented as these parentIDs are not computed at the moment
-  //  myTree->Book("Lep1ParentId",0,HZZ4lNtupleFactory::kFloat);
+  // myTree->Book("Lep1ParentId",0,HZZ4lNtupleFactory::kFloat);
 
   myTree->Book("Lep2Pt",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("Lep2Eta",0,HZZ4lNtupleFactory::kFloat);
@@ -1553,16 +1643,30 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("ggzz_c5_VAMCFM",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("ggzz_ci_VAMCFM",0,HZZ4lNtupleFactory::kFloat);
   
-  myTree->Book("p0plus_m4l",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("bkg_m4l",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("pg1g4_mela",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("pg1g4_VAJHU",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("pg1g4_pi2_VAJHU",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("pg1g2_pi2_VAJHU",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("pg1g2_mela",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("pg1g2_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p0_g1prime2_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pg1g1prime2_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
+  myTree->Book("Dgg10_VAMCFM", 0, HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pzzzg_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pzzgg_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pzzzg_PS_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pzzgg_PS_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p0Zgs_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p0gsgs_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p0Zgs_PS_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p0gsgs_PS_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p0Zgs_g1prime2_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pzzzg_g1prime2_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pzzzg_g1prime2_pi2_VAJHU", 0, HZZ4lNtupleFactory::kFloat);
 
-  myTree->Book("p0plus_m4l_ScaleUp",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p0plus_m4l", 0, HZZ4lNtupleFactory::kFloat);
+  myTree->Book("bkg_m4l", 0, HZZ4lNtupleFactory::kFloat);
+  myTree->Book("p0plus_m4l_ScaleUp", 0, HZZ4lNtupleFactory::kFloat);
   myTree->Book("bkg_m4l_ScaleUp",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("p0plus_m4l_ScaleDown",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("bkg_m4l_ScaleDown",0,HZZ4lNtupleFactory::kFloat);
@@ -1584,18 +1688,31 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("pvbf_VAJHU_new_up",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("phjj_VAJHU_new_dn",0,HZZ4lNtupleFactory::kFloat);
   myTree->Book("pvbf_VAJHU_new_dn",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p0_g1prime2_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("pg1g1prime2_VAJHU",0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("Dgg10_VAMCFM",0,HZZ4lNtupleFactory::kFloat);
 
-  myTree->Book("pzzzg_VAJHU",      0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("pzzgg_VAJHU",      0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("pzzzg_PS_VAJHU",   0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("pzzgg_PS_VAJHU",   0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p0Zgs_VAJHU",      0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p0gsgs_VAJHU",     0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p0Zgs_PS_VAJHU",   0,HZZ4lNtupleFactory::kFloat);
-  myTree->Book("p0gsgs_PS_VAJHU",  0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pAux_vbf_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pAux_vbf_VAJHU_up",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pAux_vbf_VAJHU_dn",0,HZZ4lNtupleFactory::kFloat);
+
+  myTree->Book("phj_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("phj_VAJHU_up",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("phj_VAJHU_dn",0,HZZ4lNtupleFactory::kFloat);
+
+  myTree->Book("pwh_hadronic_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pwh_hadronic_VAJHU_up",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pwh_hadronic_VAJHU_dn",0,HZZ4lNtupleFactory::kFloat);
+
+  myTree->Book("pzh_hadronic_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pzh_hadronic_VAJHU_up",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pzh_hadronic_VAJHU_dn",0,HZZ4lNtupleFactory::kFloat);
+
+  myTree->Book("ptth_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("ptth_VAJHU_up",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("ptth_VAJHU_dn",0,HZZ4lNtupleFactory::kFloat);
+
+  myTree->Book("pbbh_VAJHU",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pbbh_VAJHU_up",0,HZZ4lNtupleFactory::kFloat);
+  myTree->Book("pbbh_VAJHU_dn",0,HZZ4lNtupleFactory::kFloat);
+
   
   //Jet variables
   myTree->Book("JetPt",0,HZZ4lNtupleFactory::kVectorFloat);
