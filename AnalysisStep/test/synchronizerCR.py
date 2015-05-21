@@ -49,7 +49,6 @@ def loop():
     tree.SetBranchStatus("*",0)
 
     # Variables we are interested in for the sync
-    tree.SetBranchStatus("ZZsel",1)
     tree.SetBranchStatus("CRflag",1)    
     tree.SetBranchStatus("RunNumber",1)
     tree.SetBranchStatus("LumiNumber",1)
@@ -87,7 +86,6 @@ def loop():
 
         # print "   Inspecting entry n. ",iEntry,"..."
         iEntry+=1
-        ZZsel       = tree.ZZsel
         run         = tree.RunNumber
         lumi        = tree.LumiNumber
         event       = tree.EventNumber

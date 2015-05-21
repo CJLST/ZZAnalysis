@@ -556,9 +556,9 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     std::vector<PileupSummaryInfo>::const_iterator PVI;
     for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
       if(PVI->getBunchCrossing() == 0) { 
-	NObsInt  = PVI->getPU_NumInteractions();
-	NTrueInt = PVI->getTrueNumInteractions();
-	break;
+        NObsInt  = PVI->getPU_NumInteractions();
+        NTrueInt = PVI->getTrueNumInteractions();
+        break;
       } 
     }
 
@@ -651,27 +651,27 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
         if(fabs(lepid) ==13 || fabs(lepid) ==11)eff_weight *= getAllWeight(genZLeps.at(nLep)->pt(), genZLeps.at(nLep)->eta(),genZLeps.at(nLep)->pdgId());
       }
       if (genZLeps.size()==4) {
-	
-	// "generated Zs" defined with standard pairing applied on gen leptons (genZLeps is sorted by MCHistoryTools)
-	FillZGenInfo(genZLeps.at(0)->p4()+genZLeps.at(1)->p4(),
-			     genZLeps.at(2)->p4()+genZLeps.at(3)->p4());
+        
+        // "generated Zs" defined with standard pairing applied on gen leptons (genZLeps is sorted by MCHistoryTools)
+        FillZGenInfo(genZLeps.at(0)->p4()+genZLeps.at(1)->p4(),
+                             genZLeps.at(2)->p4()+genZLeps.at(3)->p4());
 
-	// Gen leptons
-	FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), genZLeps.at(2)->pdgId(), genZLeps.at(3)->pdgId(),
-			       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), genZLeps.at(3)->p4(),eff_weight);	
+        // Gen leptons
+        FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), genZLeps.at(2)->pdgId(), genZLeps.at(3)->pdgId(),
+                               genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), genZLeps.at(3)->p4(),eff_weight);      
       }
 
       if (genZLeps.size()==3) {
-	FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), genZLeps.at(2)->pdgId(), 0,
-			       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), *(new math::XYZTLorentzVector),eff_weight);
+        FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), genZLeps.at(2)->pdgId(), 0,
+		       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), *(new math::XYZTLorentzVector),eff_weight);
       }
       if (genZLeps.size()==2) {
-	FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), 0, 0,
-			       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), *(new math::XYZTLorentzVector), *(new math::XYZTLorentzVector),eff_weight);
+        FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), 0, 0,
+		       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), *(new math::XYZTLorentzVector), *(new math::XYZTLorentzVector),eff_weight);
       }
 
       if (genAssocLeps.size()==1 || genAssocLeps.size()==2) {
-	FillAssocLepGenInfo(genAssocLeps);
+        FillAssocLepGenInfo(genAssocLeps);
       }
 
     }
@@ -683,7 +683,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     edm::Handle<vector<pat::Photon> > photons;
     if (event.getByLabel("cmgPhotonSel",photons)) {
       for( vector<pat::Photon>::const_iterator ph = photons->begin(); ph != photons->end(); ++ph) {
-	if(ph->pt() > 2. && fabs(ph->eta()) < 2.8) FillPhoton(*ph);
+        if(ph->pt() > 2. && fabs(ph->eta()) < 2.8) FillPhoton(*ph);
       }
     }
   }
@@ -713,14 +713,14 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
     if(theChannel!=ZL){
       for (unsigned int i=0; i<cleanedJets.size(); i++) {
-	      FillJet(*(cleanedJets.at(i)));
+	FillJet(*(cleanedJets.at(i)));
       }
 
       // Note that jets variables are filled for jets above 20 GeV, to allow JES studies.
       // detajj, Mjj and ZZFisher are filled only for true dijet events (jets above 30 GeV)
       if(cleanedJets.size()>1){ 
-	      const pat::Jet& myjet1 = *(cleanedJets.at(0)); 
-	      const pat::Jet& myjet2 = *(cleanedJets.at(1));
+	const pat::Jet& myjet1 = *(cleanedJets.at(0));
+	const pat::Jet& myjet2 = *(cleanedJets.at(1));
         math::XYZTLorentzVector jet1 = myjet1.p4();
         math::XYZTLorentzVector jet2 = myjet2.p4();
         Float_t jesUnc1 = 0.;//myjet1.uncOnFourVectorScale();
@@ -744,7 +744,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   }
   xsection=xsec;
   //Save general event info in the tree
-  //myTree->FillEventInfo(event.id().run(), event.id().event(), event.luminosityBlock(), NbestCand, vertexs->size(), nObsInt, nTrueInt, weight2, pfmet, pfjetscoll->size(), cleanedJets.size(), cleanedJetsPt30.size(), nCleanedJetsPt30BTagged, genFinalState, genProcessId, genHEPMCweight, trigWord, genExtInfo,xsec);
   RunNumber=event.id().run();
   LumiNumber=event.luminosityBlock();
   Nvtx=vertexs->size();
@@ -780,38 +779,16 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       if (gen_ZZ4lInEtaPtAcceptance) set_bit(CRFLAG,29);
     }
     FillCandidate(*cand, evtPassTrigger&&evtPassSkim, event, CRFLAG);
-    if(CRFLAG && !candIsBest && cleanedJets.size()==0 && DiJetFisher>=0){
-      // for CR, the jet list is empty; we "fake" the NJets30 variable for consistency
-      nCleanedJets=2;
-    }
-    myTree->FillCurrentTree();//Do not reinitialize the event variables
-    ++nFilled;
-    /*
-    //Assume only one isBestCand, and that for SR CRflag=0
-    if(nFilled==0){
-      FillCandidate(*cand, evtPassTrigger&&evtPassSkim, event, CRFLAG);
-    }else {
-      myTree->FillCurrentTree();
-      isAlreadyFilled=true;
-    }
-    ++nFilled;
-    */
-  }//end loop over candidates
-  //cout<<"nFilled "<<nFilled<<endl;
-  // Events with no ZZ candidate have already been skipped at the beginning, but in case of CRs there could be no cands with CRflag!=0, so none was filled. 
-  //if (skipEmptyEvents && nFilled==0 && theChannel==ZLL) return;
 
-  if (skipEmptyEvents==false && nFilled==0)myTree->FillCurrentTree();
- 
-  // Final call to save the tree entry, and reset tree variables
-  /*
-  if(!isAlreadyFilled){
-    myTree->FillEvent();
-  }else{
-    myTree->InitializeVariables();
+
+    // Fill the candidate as one entry in the tre. Do not reinitialize the event variables, as in CRs
+    // there could be several candidates per event.
+    myTree->FillCurrentTree();
+    ++nFilled;
   }
-  */
-  return;
+  
+  // If no candidate was filled but we still want to keep gen-level and weights, we need to fill one entry anyhow.
+  if (skipEmptyEvents==false && nFilled==0)myTree->FillCurrentTree(); 
 }
 
 void HZZ4lNtupleMaker::FillPhoton(const pat::Photon& photon)
@@ -819,8 +796,6 @@ void HZZ4lNtupleMaker::FillPhoton(const pat::Photon& photon)
    PhotPt  = photon.pt();
    PhotEta = photon.eta();
    PhotPhi = photon.phi();
-
-  return;
 }
 
 
@@ -834,20 +809,15 @@ void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
    JetIsBtagged .push_back( jet.userFloat("isBtagged"));
    JetQGLikelihood .push_back( jet.userFloat("qgLikelihood"));
    JetSigma .push_back( 0.);//jet.uncOnFourVectorScale());
-
-  //myTree->FillJetInfo( );   
-  return;
 }
 
 
-void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool evtPass, const edm::Event& event, Int_t CRflag)
+void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool evtPass, const edm::Event& event, Int_t CRFLAG)
 {
   //Initialize a new candidate into the tree
   myTree->createNewCandidate();
 
-  //Find out if this is a proper 4l candidate or a Z+l candidate
-
-  //  cout << "AAA " << cand.daughter(1)->numberOfDaughters() <<endl;  
+  CRflag = CRFLAG;
 
   //FIXME: Dobbiamo salvare info su qualita' del fit a H?
   //Chi2 e chi2constr
@@ -904,32 +874,32 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
    p2hplus_VAJHU = cand.userFloat("p2hplus_VAJHU");
    p2hminus_VAJHU = cand.userFloat("p2hminus_VAJHU");
    p2bplus_VAJHU = cand.userFloat("p2bplus_VAJHU");
-   p2hplus_qqb_VAJHU= cand.userFloat(					"p2hplus_qqb_VAJHU");					
-   p2hplus_prodIndep_VAJHU= cand.userFloat(		"p2hplus_prodIndep_VAJHU");	
-   p2hminus_qqb_VAJHU= cand.userFloat(				"p2hminus_qqb_VAJHU");				
-   p2hminus_prodIndep_VAJHU= cand.userFloat(	"p2hminus_prodIndep_VAJHU");	
-   p2bplus_qqb_VAJHU= cand.userFloat(					"p2bplus_qqb_VAJHU"				);	
-   p2bplus_prodIndep_VAJHU= cand.userFloat(		"p2bplus_prodIndep_VAJHU"		);
-   p2h2plus_gg_VAJHU= cand.userFloat(      		"p2h2plus_gg_VAJHU"      		);
-   p2h2plus_qqbar_VAJHU= cand.userFloat(   		"p2h2plus_qqbar_VAJHU"   		);
-   p2h2plus_prodIndep_VAJHU= cand.userFloat(	"p2h2plus_prodIndep_VAJHU");	
-   p2h3plus_gg_VAJHU= cand.userFloat(       	"p2h3plus_gg_VAJHU"       );	
-   p2h3plus_qqbar_VAJHU= cand.userFloat(    	"p2h3plus_qqbar_VAJHU"    );	
-   p2h3plus_prodIndep_VAJHU= cand.userFloat(	"p2h3plus_prodIndep_VAJHU");	
-   p2h6plus_gg_VAJHU= cand.userFloat(       	"p2h6plus_gg_VAJHU"       );	
-   p2h6plus_qqbar_VAJHU= cand.userFloat(    	"p2h6plus_qqbar_VAJHU"    );	
-   p2h6plus_prodIndep_VAJHU= cand.userFloat(	"p2h6plus_prodIndep_VAJHU");	
-   p2h7plus_gg_VAJHU= cand.userFloat(       	"p2h7plus_gg_VAJHU"       );	
-   p2h7plus_qqbar_VAJHU= cand.userFloat(    	"p2h7plus_qqbar_VAJHU"    );	
-   p2h7plus_prodIndep_VAJHU= cand.userFloat(	"p2h7plus_prodIndep_VAJHU");	
-   p2h9minus_gg_VAJHU= cand.userFloat(       	"p2h9minus_gg_VAJHU"       	);
-   p2h9minus_qqbar_VAJHU= cand.userFloat(    	"p2h9minus_qqbar_VAJHU"    	);
-   p2h9minus_prodIndep_VAJHU= cand.userFloat(	"p2h9minus_prodIndep_VAJHU"	);
-   p2h10minus_gg_VAJHU= cand.userFloat(       "p2h10minus_gg_VAJHU"      ); 
-   p2h10minus_qqbar_VAJHU= cand.userFloat(    "p2h10minus_qqbar_VAJHU"     ); 
-   p2h10minus_prodIndep_VAJHU= cand.userFloat("p2h10minus_prodIndep_VAJHU" ); 
+   p2hplus_qqb_VAJHU= cand.userFloat(           "p2hplus_qqb_VAJHU");
+   p2hplus_prodIndep_VAJHU= cand.userFloat(     "p2hplus_prodIndep_VAJHU");
+   p2hminus_qqb_VAJHU= cand.userFloat(          "p2hminus_qqb_VAJHU");
+   p2hminus_prodIndep_VAJHU= cand.userFloat(    "p2hminus_prodIndep_VAJHU");
+   p2bplus_qqb_VAJHU= cand.userFloat(           "p2bplus_qqb_VAJHU");
+   p2bplus_prodIndep_VAJHU= cand.userFloat(     "p2bplus_prodIndep_VAJHU");
+   p2h2plus_gg_VAJHU= cand.userFloat(           "p2h2plus_gg_VAJHU");
+   p2h2plus_qqbar_VAJHU= cand.userFloat(        "p2h2plus_qqbar_VAJHU");
+   p2h2plus_prodIndep_VAJHU= cand.userFloat(    "p2h2plus_prodIndep_VAJHU");
+   p2h3plus_gg_VAJHU= cand.userFloat(           "p2h3plus_gg_VAJHU"       );
+   p2h3plus_qqbar_VAJHU= cand.userFloat(        "p2h3plus_qqbar_VAJHU"    );
+   p2h3plus_prodIndep_VAJHU= cand.userFloat(    "p2h3plus_prodIndep_VAJHU");
+   p2h6plus_gg_VAJHU= cand.userFloat(           "p2h6plus_gg_VAJHU"       );
+   p2h6plus_qqbar_VAJHU= cand.userFloat(        "p2h6plus_qqbar_VAJHU"    );
+   p2h6plus_prodIndep_VAJHU= cand.userFloat(    "p2h6plus_prodIndep_VAJHU");
+   p2h7plus_gg_VAJHU= cand.userFloat(           "p2h7plus_gg_VAJHU"       );
+   p2h7plus_qqbar_VAJHU= cand.userFloat(        "p2h7plus_qqbar_VAJHU"    );
+   p2h7plus_prodIndep_VAJHU= cand.userFloat(    "p2h7plus_prodIndep_VAJHU");
+   p2h9minus_gg_VAJHU= cand.userFloat(          "p2h9minus_gg_VAJHU"       );
+   p2h9minus_qqbar_VAJHU= cand.userFloat(       "p2h9minus_qqbar_VAJHU"    );
+   p2h9minus_prodIndep_VAJHU= cand.userFloat(   "p2h9minus_prodIndep_VAJHU");
+   p2h10minus_gg_VAJHU= cand.userFloat(         "p2h10minus_gg_VAJHU"      ); 
+   p2h10minus_qqbar_VAJHU= cand.userFloat(      "p2h10minus_qqbar_VAJHU"   ); 
+   p2h10minus_prodIndep_VAJHU= cand.userFloat(  "p2h10minus_prodIndep_VAJHU"); 
 // bkg_mela = cand.userFloat("bkg_mela");
-	 bkg_VAMCFM = cand.userFloat("bkg_VAMCFM");
+   bkg_VAMCFM = cand.userFloat("bkg_VAMCFM");
    bkg_prodIndep_VAMCFM = cand.userFloat("bkg_prodIndep_VAMCFM");
    ggzz_VAMCFM = cand.userFloat("ggzz_VAMCFM");
    ggzz_p0plus_VAMCFM = cand.userFloat("ggzz_p0plus_VAMCFM");
@@ -1072,19 +1042,19 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     if (candPassFullSel70){ // includes MZ2 > 12
       sel = 90;
       if (candPassFullSel){
-	sel=100;
-	if (passMz_zz) sel = 120;
+        sel=100;
+        if (passMz_zz) sel = 120;
       }
     }
   }
   if (!(evtPass)) {sel = -sel;} // avoid confusion when we write events which do not pass trigger/skim
 
-	
-	//FIXME? Not filled in the miniAOD branch, is it right?
-	/*
-	float Hadditional[6]={mZa, mZb, mLL4, mLL6, SIP4, iso34};		    
-  TString addName[6]={};
-  myTree->SetVariables(addName,Hadditional,6);
+        
+  //FIXME? Not filled in the miniAOD branch, is it right?
+  /*
+    float Hadditional[6]={mZa, mZb, mLL4, mLL6, SIP4, iso34};                   
+    TString addName[6]={};
+    myTree->SetVariables(addName,Hadditional,6);
   */
 
   //Fill the angular variables
@@ -1167,7 +1137,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   }
   
   //convention: 0 -> 4mu   1 -> 4e   2 -> 2mu2e
-  if(CRflag){
+  if(CRFLAG){
     for(int izx=0;izx<2;izx++)
       ZXFakeweight *= getFakeWeight(Z2->daughter(izx)->pt(),Z2->daughter(izx)->eta(),Z2->daughter(izx)->pdgId(),Z1->daughter(0)->pdgId());
   }
@@ -1192,10 +1162,6 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
       ExtraLepLepId.push_back(candPtr->pdgId());  
     }
   }
-  //myTree->FillExtraLepInfo( 1, cand.hasUserCand("ExtraLep1"), (cand.hasUserCand("ExtraLep1") ? cand.userCand("ExtraLep1") : *(new reco::CandidatePtr)) );
-  //myTree->FillExtraLepInfo( 2, cand.hasUserCand("ExtraLep2"), (cand.hasUserCand("ExtraLep2") ? cand.userCand("ExtraLep2") : *(new reco::CandidatePtr)) );
-  //myTree->FillExtraLepInfo( 3, cand.hasUserCand("ExtraLep3"), (cand.hasUserCand("ExtraLep3") ? cand.userCand("ExtraLep3") : *(new reco::CandidatePtr)) );
-
 }
 
 
@@ -1449,8 +1415,8 @@ void HZZ4lNtupleMaker::FillZGenInfo(const math::XYZTLorentzVector pZ1, const mat
 }
 
 void HZZ4lNtupleMaker::FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t Lep3Id, Short_t Lep4Id, 
-					const math::XYZTLorentzVector Lep1, const math::XYZTLorentzVector Lep2, 
-					const math::XYZTLorentzVector Lep3, const math::XYZTLorentzVector Lep4,float weight)
+				      const math::XYZTLorentzVector Lep1, const math::XYZTLorentzVector Lep2, 
+				      const math::XYZTLorentzVector Lep3, const math::XYZTLorentzVector Lep4,float weight)
 {
   GenLep1Pt=Lep1.Pt();
   GenLep1Eta=Lep1.Eta();

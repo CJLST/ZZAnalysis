@@ -126,7 +126,10 @@ class Candidate:
         line  += ":" + "{0:.3f}".format(self.kds.D_bkg_kin)
         line  += ":" + "{0:.3f}".format(self.kds.D_bkg)
         line  += ":" + "{0:.3f}".format(self.kds.Dgg10_VAMCFM)
-        line  += ":" + "{0:.3f}".format(self.kds.Djet_VAJHU)
+        if self.njets30 >= 2 :
+            line  += ":" + "{0:.3f}".format(self.kds.Djet_VAJHU)
+        else :
+            line  += ":-1.000"
         line  += ":" + "{0:.3f}".format(self.kds.D_g4)
 #        line  += ":" + "{0:.2f}".format(self.pt4l)
         line  += ":" + "{0:d}".format(self.njets30)
