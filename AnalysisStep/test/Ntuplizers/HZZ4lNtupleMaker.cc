@@ -694,7 +694,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   event.getByLabel("cleanJets", CleanedJets);
   vector<const pat::Jet*> cleanedJets;
   vector<const pat::Jet*> cleanedJetsPt30;
-  int nCleanedJetsPt30BTagged = 0;
   for(edm::View<pat::Jet>::const_iterator jet = CleanedJets->begin(); jet != CleanedJets->end(); ++jet){
     cleanedJets.push_back(&*jet);
     if(jet->pt()>30){
