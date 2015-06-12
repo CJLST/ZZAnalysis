@@ -1,25 +1,16 @@
 #!/bin/tcsh -fe
 #
 # Instructions:
-# wget -P /tmp https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD/checkout_70X.csh
+# wget -P /tmp https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_74X/checkout_70X.csh
 # cd $CMSSW_BASE/src
 # cmsenv
 # source /tmp/checkout_70X.csh
 
 
-############## For miniAOD/CMSSW_7_2_4
+############## For miniAOD/CMSSW_7_4_5
 
-#electron MVA ID
-git cms-merge-topic HuguesBrun:trigElecIdInCommonIsoSelection720 
-
-#q/g tagging (here dirtily backported from 74X, to be simplified in the future)
-git cms-addpkg RecoJets/JetProducers
-git cms-addpkg RecoJets/JetAlgorithms
-wget https://raw.githubusercontent.com/cms-sw/cmssw/CMSSW_7_4_X/RecoJets/JetProducers/interface/QGTagger.h -O RecoJets/JetProducers/interface/QGTagger.h
-wget https://raw.githubusercontent.com/cms-sw/cmssw/CMSSW_7_4_X/RecoJets/JetProducers/plugins/QGTagger.cc -O RecoJets/JetProducers/plugins/QGTagger.cc
-wget https://raw.githubusercontent.com/cms-sw/cmssw/CMSSW_7_4_X/RecoJets/JetProducers/plugins/BuildFile.xml -O RecoJets/JetProducers/plugins/BuildFile.xml
-wget https://raw.githubusercontent.com/cms-sw/cmssw/CMSSW_7_4_X/RecoJets/JetProducers/python/QGTagger_cfi.py -O RecoJets/JetProducers/python/QGTagger_cfi.py
-wget https://raw.githubusercontent.com/cms-sw/cmssw/CMSSW_7_4_X/RecoJets/JetAlgorithms/src/QGLikelihoodCalculator.cc -O RecoJets/JetAlgorithms/src/QGLikelihoodCalculator.cc
+#electron MVA ID (still with Phys14 training)
+git cms-merge-topic sregnard:Phys14ElectronMvaIdFor745
 
 #ZZAnalysis
 git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
@@ -39,9 +30,11 @@ git clone -n https://github.com/cms-analysis/EgammaAnalysis-ElectronTools EGamma
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
 (cd ZZMatrixElement ; git checkout -b from-V00-02-00 V00-02-00)
+(cd ZZMatrixElement/MELA/data; mkdir slc6_amd64_gcc491; cp slc6_amd64_gcc481/* slc6_amd64_gcc491/)
 
 #MELA dependencies
 git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
+(cd HiggsAnalysis/CombinedLimit; git checkout 74x-root6)
 
 #photon ISO information for FSR 
 git clone -n https://github.com/VBF-HZZ/UFHZZAnalysisRun2

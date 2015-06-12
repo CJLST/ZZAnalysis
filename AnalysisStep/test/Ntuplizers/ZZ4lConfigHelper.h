@@ -17,6 +17,8 @@
 #include <FWCore/Common/interface/TriggerNames.h>
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
 
+#include <iostream>
+
 class ZZ4lConfigHelper {
  public:
   /// Constructor
