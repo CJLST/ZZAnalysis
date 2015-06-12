@@ -106,7 +106,7 @@ elif (SAMPLE_TYPE == 2012) :
         
 else: 
     if IsMC:
-        process.GlobalTag.globaltag = 'PHYS14_25_V1' #FIXME: for Phys14-25ns only
+        process.GlobalTag.globaltag = 'MCRUN2_74_V9::All'
     else:
         process.GlobalTag.globaltag = '' #FIXME: not yet available for RunII
 

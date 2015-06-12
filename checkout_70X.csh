@@ -14,7 +14,7 @@ git cms-merge-topic sregnard:Phys14ElectronMvaIdFor745
 
 #ZZAnalysis
 git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
-(cd ZZAnalysis; git checkout miniAOD)
+(cd ZZAnalysis; git checkout miniAOD_74X)
 
 #effective areas (to be updated)
 git clone -n https://github.com/latinos/UserCode-sixie-Muon-MuonAnalysisTools Muon/MuonAnalysisTools
