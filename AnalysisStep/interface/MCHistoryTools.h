@@ -5,8 +5,6 @@
  *
  *  Some handy tools to examine genMatches of PAT::Object and correct some flaws in the default matching.
  *
- *  $Date: 2013/10/25 15:26:04 $
- *  $Revision: 1.9 $
  *  \author N. Amapane - Torino
  *  \author C. Botta   - CERN
  */
@@ -47,14 +45,17 @@ class MCHistoryTools {
 //   const reco::Candidate * genZ1() {init(); return theGenZ1;}
 //   const reco::Candidate * genZ2() {init(); return theGenZ2;}
   
-  // The leptons coming from Zs (in no specific order) 
+  /// The leptons coming from Zs (in no specific order) 
   const std::vector<const reco::Candidate *>& genZLeps() {init(); return theGenLeps;}
     
-  // The leptons coming from ZZ or HZZ, sorted according to the reco-level criteria. Equals to genZLeps() if there are !=4 leptons from ZZ.
+  /// The leptons coming from ZZ or HZZ, sorted according to the reco-level criteria. Equals to genZLeps() if there are !=4 leptons from ZZ.
   const std::vector<const reco::Candidate *>& sortedGenZZLeps() {init(); return theSortedGenLepts;}
   
-  // The leptons coming from associated W, Z, or ttbar
+  /// The leptons coming from associated W, Z, or ttbar
   const std::vector<const reco::Candidate *>& genAssociatedLeps() {init(); return theAssociatedLeps;}
+
+  /// The FSR photons
+  const std::vector<const reco::Candidate *>& genFSR() {init(); return theGenFSR;}
 
   /// Find the actual lepton parent (first parent in MC history with a different pdgID)
   const reco::GenParticle* getParent(const reco::GenParticle* genLep);
@@ -94,6 +95,7 @@ class MCHistoryTools {
   std::vector<const reco::Candidate *> theGenLeps;
   std::vector<const reco::Candidate *> theSortedGenLepts;
   std::vector<const reco::Candidate *> theAssociatedLeps;
+  std::vector<const reco::Candidate *> theGenFSR;
   
   void init();
 

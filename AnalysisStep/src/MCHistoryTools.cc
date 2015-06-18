@@ -7,8 +7,6 @@
  * is not explicit in the MC history) status = 3. beware of how FSR is described in the MC history...
  *
  *
- *  $Date: 2013/10/25 15:26:57 $
- *  $Revision: 1.19 $
  *  \author N. Amapane - CERN
  *  \author G. Ortona - LLR
  */
@@ -185,99 +183,92 @@ int MCHistoryTools::getParentCode(const pat::Electron* lep, const vector<const C
 void
 MCHistoryTools::init() {
   if (isInit) return;
-  if (!ismc) return;  
+  if (!ismc) return;
 
-//   int nMu=0;
-//   int nEle=0;
-//   int nTau=0;
+
+  std::vector<const reco::Candidate *> theGenFSRParents;
 
   for( View<Candidate>::const_iterator p = particles->begin(); p != particles->end(); ++ p ) {
     int id = abs(p->pdgId());
 
+     //--- H
+    if (id==25) {
+      if (theGenH==0) theGenH = &*p; // Consider only the first one in the chain
+    }
 
+    // W/Z from associated production (ie not from H)
+    else if (id==24 || id==23 ) {
+      if (p->mother()!=0 && p->mother()->pdgId()!=id) {
+	int pid = getParentCode((const GenParticle*)&*p);
+	if (pid!=25) theAssociatedV.push_back(&*p);
+      }
+    }
+    
+    // Prompt leptons
+    else if ((id== 13 || id==11 || id==15) && (p->mother()!=0)) {
+      int mid = abs(p->mother()->pdgId());
+      int pid = getParentCode((const GenParticle*)&*p);
+      // Lepton from H->(Z->)ll; note that this is the first daughter in the H or Z line; ie pre-FSR
+      if (mid == 25 || (mid == 23 && pid==25)) {
+	theGenLeps.push_back(&*p);
+      } else if ((mid==23&&pid==23)  // Leptons from Z, not from H->Z; note that this is the first daughter in the Z line; ie pre-FSR.
+                                     // qqZZ and ggZZ will fall here so they have to be handled later.
+		 || (mid==24)) {     // from W->lnu (for WH, ttH)
+	theAssociatedLeps.push_back(&*p);
+      }
+    }
+
+    //FSR
+    if (id==22) {
+      const reco::GenParticle* fp = getParent((const GenParticle*)&*p);
+      int pcode = fp->pdgId();
+      if (pcode == 11 || pcode == 13) {
+	//Search for the first ancestor of same ID of the photon's parent
+	while (fp->mother()!=0 && fp->mother()->pdgId() == pcode) {
+	  fp = (const GenParticle*) fp->mother();
+	}
+	
+	theGenFSR.push_back(&*p);
+	theGenFSRParents.push_back(&*fp);
+      } 
+      assert(pcode!=23); // just an xcheck that we don't get FSR listed with Z as a parent...
+    }
+    
+      
     if (dbg){
-      if (id==13 || id==11 || id ==23 || id==25) {
+      if (id==13 || id==11 || id ==23 || id==23) {
 	cout << "Genpart: id " << id << " pt " << p->pt() << " eta " << p->eta() << " phi " << p->phi()
 	     << " status " << p->status()
 	     << " parent id " << (p->mother()!=0?p->mother()->pdgId():0)
-	     << "thegenh " << theGenH
 	  // << " vertex " << p->vertex()
 	     << endl;
       }
     }
-
-
-    if (id==23 || id==24) {
-      if (p->mother()!=0 && p->mother()->pdgId()!=id) {
-	int pcode = getParentCode((const GenParticle*)&*p);
-	if (pcode!=25) theAssociatedV.push_back(&*p);
-      }
-    }
-
-
-    //--- H
-    if (id==25) {
-      if (theGenH==0 )theGenH = &*p;
-      if(p->daughter(0)){// Handle HH samples - genH will be the H decaying to ZZ in this case
-	if(p->daughter(0)->pdgId()==25)theGenH = &*p;
-      }
-      
-    //--- Z
-    } else if (id==23 && p->mother()!=0 && p->mother()->pdgId()!=23) {// avoid double counting
-      if ((processID==24 || processID==900024 || processID==9999) && p->mother()->pdgId()!=25) { //This is an associated Z
-	//FIXME	this is now handled separately!
-	// theAssociatedV.push_back(&*p);
-      } else { //ZZ or H->ZZ
-	theGenZ.push_back(&*p); //FIXME this should be dropped!
-      }
-
-    // --- H in some JHU samples has id=39 instead of 25
-    } else if (id==39 && processID==100){ 
-      theGenH = &*p;  
-    }
-    
-    // Lepton (as first daughter of a Z, or status = 3 for ggZZ and phantom as the Zs are not present 
-    // in the MC History of ggZZ Summer 12 samples, or leptons may not come from the Z
-    else if ((id== 13 || id==11 || id==15) && ((p->mother()!=0 && p->mother()->pdgId()==23) || ((processID==661||processID==900661) && p->status()==3))) { 
-
-      // ZH : leptons from the associated Z are stored in a separate list
-      if ((processID==24||processID==900024||processID==9999) && p->mother()!=0 && p->mother()->mother()!=0 && p->mother()->mother()->pdgId()!=25) {
-	theAssociatedLeps.push_back(&*p);
-	continue;
-      } 
-      
-      theGenLeps.push_back(&*p);
-    }
-    
-    // --- additional lepton in WH
-    else if ((processID==26||processID==900026) && (id== 13 || id==11 || id==15) && p->mother()!=0 && abs(p->mother()->pdgId())==24) { 
-      theAssociatedLeps.push_back(&*p);
-    }
-    
-    // --- additional leptons in ttH
-    else if ((processID==121 || processID==122) && (id== 13 || id==11 || id==15) && p->mother()!=0 && abs(p->mother()->pdgId())==24 && p->mother()->mother()!=0 && abs(p->mother()->mother()->pdgId())==6) { 
-      theAssociatedLeps.push_back(&*p);
-    }
-
   } // end loop on particles
 
-
-  bool isOK=true;
-  // Check consistency of what we have collected (FIXME: remove Z stuff)
-  if (theGenLeps.size()!=theGenZ.size()*2) {
-    if (processID==24 || processID==26 || processID==121 || processID==122 || processID==9999) {
-      // For 2012, VH/ttH samples are inclusive in Z decays, assume everything is fine
-    } else if (processID==661 || processID==900661 || processID==0 || processID==1 || processID==2 || processID==66 || processID==900101 || processID==900102 || processID==900103) {
-      // Samples which miss Zs in the MC history, assume everything is fine      
-    } else {
-      isOK = false;
-    }
+  // handle ZZ samples. Note that tribosons samples will not be handled here.
+  if (theAssociatedLeps.size()==4 && theGenLeps.size()==0) {
+    swap(theAssociatedLeps,theGenLeps);
   }
 
- 
-  if (!isOK) {    
-      cout << "ERROR: MCHistoryTools::init: unexpected genparticle content for processID= " << processID << " : " << theGenLeps.size() << " " << theGenZ.size() << endl;
-      abort();    
+  //FIXME just check consistency of FSR
+  for (unsigned j=0; j<theGenFSRParents.size(); ++j) {
+    bool found=false;
+    for (unsigned i=0; i<theGenLeps.size(); ++i) {
+      if (theGenLeps[i]==theGenFSRParents[j]) {
+	found=true;
+	break;
+      }
+    }
+    if (!found) {
+      for (unsigned i=0; i<theAssociatedLeps.size(); ++i) {
+	if (theAssociatedLeps[i]==theGenFSRParents[j]) {
+	  found=true;
+	  break;
+	}
+      }
+    }
+    if (!found) cout << "ERROR: mismatch in FSR photon " << theGenFSR[j]->pt() << theGenFSRParents[j]->pt() << " " << theGenFSRParents[j] << endl;
   }
   
 
@@ -349,7 +340,7 @@ MCHistoryTools::init() {
   isInit = true;
 
   if (dbg) {
-    cout << "MCHistoryTools: "  << processID << " " << genFinalState() << " " << (theGenH==0) << " " << theGenZ.size() << " " << theGenLeps.size() // << " " << nMu << " " << nEle << " " << nTau 
+    cout << "MCHistoryTools: "  << processID << " " << genFinalState() << " " << (theGenH==0) << " " << theGenLeps.size() // << " " << nMu << " " << nEle << " " << nTau 
 	 << endl;
   }
 
@@ -360,108 +351,65 @@ MCHistoryTools::genAcceptance(bool& gen_ZZ4lInEtaAcceptance, bool& gen_ZZ4lInEta
   if (!ismc) return;  
   init();
 
-  float gen_mZ1 = -1.;
-  float gen_mZ2 = -1.;
-
+//   float gen_mZ1 = -1.;
+//   float gen_mZ2 = -1.;
+//   int gen_Z1_flavour =0;
+//   int gen_Z2_flavour =0;
 
   gen_ZZ4lInEtaAcceptance = false;
   gen_ZZ4lInEtaPtAcceptance = false;
-  int gen_Z1_flavour =0;
-  int gen_Z2_flavour =0;
 
-  const float ZmassValue = 91.1876;
+  if (theGenLeps.size()==4) {
+//     gen_mZ1 = (theSortedGenLepts[0]->p4()+theSortedGenLepts[1]->p4()).mass();
+//     gen_mZ2 = (theSortedGenLepts[2]->p4()+theSortedGenLepts[3]->p4()).mass();
+//     gen_Z1_flavour = abs(theSortedGenLepts[0]->pdgId());
+//     gen_Z2_flavour = abs(theSortedGenLepts[1]->pdgId());
 
-  // This is done using gen Z. Obsolete, to be removed!
-  if (theGenZ.size()==2 && theGenZ[0]->numberOfDaughters()==2 && theGenZ[1]->numberOfDaughters()==2){
+    int nlInEtaAcceptance = 0;
+    int nlInEtaPtAcceptance = 0;
 
-    gen_mZ1 = theGenZ[0]->p4().mass(); // FIXME should take the 2 gen l with status 1!
-    gen_mZ2 = theGenZ[1]->p4().mass();
-    gen_Z1_flavour = abs(theGenZ[0]->daughter(0)->pdgId());
-    gen_Z2_flavour = abs(theGenZ[1]->daughter(0)->pdgId());
-
-    if ( fabs(ZmassValue - gen_mZ2) < fabs(ZmassValue - gen_mZ1)) {
-      swap(gen_mZ1,gen_mZ2);
-      swap(gen_Z1_flavour, gen_Z2_flavour);
+    for (unsigned int i=0; i<theGenLeps.size(); ++i){	  
+      //FIXME should take the 2 gen l with status 1!
+      if ((abs(theGenLeps[i]->pdgId()) == 11 && !(theGenLeps[i]->pt() > 7. && fabs(theGenLeps[i]->eta()) < 2.5)) ||
+	  (abs(theGenLeps[i]->pdgId()) == 13 && !(theGenLeps[i]->pt() > 5. && fabs(theGenLeps[i]->eta()) < 2.4))) { 
+	++nlInEtaPtAcceptance;
+      }
+      if ((abs(theGenLeps[i]->pdgId()) == 11 && !(fabs(theGenLeps[i]->eta()) < 2.5)) ||
+	  (abs(theGenLeps[i]->pdgId()) == 13 && !(fabs(theGenLeps[i]->eta()) < 2.4))) { 
+	++nlInEtaAcceptance;
+      }
     }
-  }
-
-
-  int nlInEtaAcceptance = 0;
-  int nlInEtaPtAcceptance = 0;
-
-  for (unsigned int i=0; i<theGenLeps.size(); ++i){	  
-    //FIXME should take the 2 gen l with status 1!
-    if ((abs(theGenLeps[i]->pdgId()) == 11 && !(theGenLeps[i]->pt() > 7. && fabs(theGenLeps[i]->eta()) < 2.5)) ||
-	(abs(theGenLeps[i]->pdgId()) == 13 && !(theGenLeps[i]->pt() > 5. && fabs(theGenLeps[i]->eta()) < 2.4))) { 
-      ++nlInEtaPtAcceptance;
-    }
-    if ((abs(theGenLeps[i]->pdgId()) == 11 && !(fabs(theGenLeps[i]->eta()) < 2.5)) ||
-	(abs(theGenLeps[i]->pdgId()) == 13 && !(fabs(theGenLeps[i]->eta()) < 2.4))) { 
-      ++nlInEtaAcceptance;
-    }
-  }
-
   if (nlInEtaPtAcceptance>=4) gen_ZZ4lInEtaPtAcceptance = true;
   if (nlInEtaAcceptance>=4) gen_ZZ4lInEtaAcceptance = true;
+  }
 }
+
 
 int
 MCHistoryTools::genFinalState(){
   if (!ismc) return -1;  
   init();
-  
-  if (theGenH!=0 && theGenZ.size()!=2) {
-    // cout << "ERROR: MCHistoryTools: genH!=0 but genZ.size()==" << theGenZ.size() << endl;
-    if (abs(theGenH->daughter(0)->pdgId())<10) {
-      // This can happen due to a known problem. cf https://hypernews.cern.ch/HyperNews/CMS/get/generators/1405.html
-      // abort();
-      return BUGGY;
-    }
-  }
 
   int gen_finalState = NONE;  
-  if (theGenZ.size()==2){
-    int gen_Z1_flavour = abs(theGenZ[0]->daughter(0)->pdgId());
-    int gen_Z2_flavour = abs(theGenZ[1]->daughter(0)->pdgId());
+  int ifs=1;
+  if (theGenLeps.size()==4){
+    for (int i=0; i<4; ++i) {
+      ifs*=theGenLeps[i]->pdgId();
+    }
 
     // FIXME this does not make much sense now that we re-pair Zs in the MC history.
-    if (gen_Z1_flavour == 11 && gen_Z2_flavour == 11) {
+    if (ifs==14641) {
       gen_finalState = EEEE;
-    } else if (gen_Z1_flavour == 13 && gen_Z2_flavour == 13) {
+    } else if (ifs==28561) {
       gen_finalState = MMMM;
-    } else if ((gen_Z1_flavour == 11 && gen_Z2_flavour == 13) || 
-	       (gen_Z1_flavour == 13 && gen_Z2_flavour == 11)) {
+    } else if (ifs==20449) {
       gen_finalState = EEMM;
-    } else if (gen_Z1_flavour == 15 || gen_Z2_flavour == 15) {
+    } else if (ifs==38025||ifs==27225||ifs==50625) {
       gen_finalState = LLTT;
-    } else if (processID==24 || processID==26 || processID==121 || processID==122 || processID==9999) { // ZH 8TeV samples are inclusive in Z decays.
-      return NONE;
-    } else if (processID==661) { // in phantom samples, some of the 4 leptons may not be listed as coming from the 2 Z. Proceed to the following logic based on leptons.
-      
     } else {
-      cout << "ERROR: MCHistoryTools: processID: " << processID << " Z flavour= " << gen_Z1_flavour << " " << gen_Z2_flavour << endl;
-      abort();
+      return NONE;
     }
-  } else if (theGenZ.size()==0 && theGenLeps.size()==4 && (processID==661 || processID==900661)) {
-    // Handle samples where Zs are not explicit in the MC history
-    int nele=0;
-    int nmu=0;
-    int ntau=0;
-    for (int i=0; i<4; ++i){    
-      int id = abs(theGenLeps[i]->pdgId());
-      if (id==11) nele++;
-      if (id==13) nmu++;
-      if (id==15) ntau++;
-    }
-    if (nele==4)  gen_finalState = EEEE;
-    else if (nmu==4)  gen_finalState = MMMM;
-    else if (nmu==2 && nele==2) gen_finalState = EEMM;
-    else if (ntau==2 || ntau==4) gen_finalState = LLTT;
-    else {
-      cout << "ERROR: MCHistoryTools: leptons: " << nele << " " << nmu << " " << ntau << endl;
-      abort();
-    }
-  } 
+  }
   return gen_finalState;
 }
 
