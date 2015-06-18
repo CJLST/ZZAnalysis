@@ -147,18 +147,24 @@ process.hltFilterMuEle = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clon
 process.hltFilterMuEle2 = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 process.hltFilterMuEle3 = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 process.hltFilterTriEle = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+process.hltFilterTriMu  = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+process.hltFilterSingleEle = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 process.hltFilterDiMu.TriggerResultsTag  = cms.InputTag("TriggerResults","","HLT")
 process.hltFilterDiEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
 process.hltFilterMuEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
 process.hltFilterMuEle2.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
 process.hltFilterMuEle3.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
 process.hltFilterTriEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
+process.hltFilterTriMu.TriggerResultsTag  = cms.InputTag("TriggerResults","","HLT")
+process.hltFilterSingleEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
 process.hltFilterDiMu.throw  = cms.bool(False) #FIXME: beware of this!
 process.hltFilterDiEle.throw = cms.bool(False) #FIXME: beware of this!
 process.hltFilterMuEle.throw = cms.bool(False) #FIXME: beware of this!
 process.hltFilterMuEle2.throw = cms.bool(False) #FIXME: beware of this!
 process.hltFilterMuEle3.throw = cms.bool(False) #FIXME: beware of this!
 process.hltFilterTriEle.throw = cms.bool(False) #FIXME: beware of this!
+process.hltFilterTriMu.throw  = cms.bool(False) #FIXME: beware of this!
+process.hltFilterSingleEle.throw = cms.bool(False) #FIXME: beware of this!
 
 # MuEG
 
@@ -187,12 +193,16 @@ elif (LEPTON_SETUP == 2012):
     process.triggerTriEle  = cms.Path(process.hltFilterTriEle)
 
 elif (LEPTON_SETUP == 2015):
-    #FIXME: This is the menu used in the PHYS14 samples, i.e. these paths are temporary and will NOT be used in Run II.
-    process.hltFilterDiEle.HLTPaths = ["HLT_Ele23_Ele12_CaloId_TrackId_Iso_v*"]
-    process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*"]
-    process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele23_Gsf_CaloId_TrackId_Iso_MediumWP_v*","HLT_Mu23_TrkIsoVVL_Ele12_Gsf_CaloId_TrackId_Iso_MediumWP_v*"]
-    process.hltFilterTriEle.HLTPaths = ["HLT_Ele17_Ele12_Ele10_CaloId_TrackId_v*"]
-    process.triggerTriEle  = cms.Path(process.hltFilterTriEle)
+    #FIXME: This is the menu used in the RunIISpring15DR74 MC samples for 25ns,1.4e34 conditions, but the paths used in datataking will be slightly different + some other paths exist for lower luminosities.
+    process.hltFilterDiEle.HLTPaths = ["HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*"]
+    process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*"]
+    process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"]
+    process.hltFilterTriEle.HLTPaths = ["HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v*"]
+    process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_12_10_5_v*"]
+    process.hltFilterSingleEle.HLTPaths = ["HLT_Ele32_eta2p1_WP75_Gsf_v*"] #FIXME: the name of this path will change in datataking. #FIXME: we still need to discuss whether we actually want to use a single electron path and run on the SingleElectron PD.
+    process.triggerTriEle = cms.Path(process.hltFilterTriEle)
+    process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
+    process.triggerSingleEle = cms.Path(process.hltFilterSingleEle)
 
 process.triggerDiMu   = cms.Path(process.hltFilterDiMu)
 process.triggerDiEle  = cms.Path(process.hltFilterDiEle)

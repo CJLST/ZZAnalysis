@@ -80,14 +80,12 @@ ZZ4lConfigHelper::passSkim(const edm::Event & event, short& trigworld){
       }
     }
   }
-  if (evtPassSkim) set_bit_16(trigworld,7);
+  if (evtPassSkim) set_bit_16(trigworld,15);
   return evtPassSkim;
 }
 
 bool 
 ZZ4lConfigHelper::passTrigger(const edm::Event & event, short& trigworld){
-
-  //FIXME: the following should be able to handle Phys14 datasets, but it needs to be revisited for later menus
 
   bool passDiMu  = passFilter(event, "triggerDiMu");
   bool passDiEle = passFilter(event, "triggerDiEle");
@@ -104,31 +102,38 @@ ZZ4lConfigHelper::passTrigger(const edm::Event & event, short& trigworld){
   if (theSetup >= 2012) {
     passTriEle = passFilter(event, "triggerTriEle");
   }
+  bool passTriMu = false;
+  bool passSingleEle = false;
+  if (theSetup >= 2015) {
+    passTriMu = passFilter(event, "triggerTriMu");
+    passSingleEle = passFilter(event, "triggerSingleEle");
+  }
 
 
   bool evtPassTrigger = false;
 
-
   // Check all triggers together if anyTrigger is specified (or for CRs)
   if (anyTrigger || theChannel==ZLL || theChannel==ZL || theChannel==ZZ) {
-    if ((PD=="" && (passDiEle || passDiMu || passMuEle || passTriEle)) ||
-	(PD=="DoubleEle" && (passDiEle || passTriEle)) ||
-	(PD=="DoubleMu" && passDiMu && !passDiEle && !passTriEle) ||
-	(PD=="MuEG" && passMuEle && !passDiMu && !passDiEle && !passTriEle)) {
-      evtPassTrigger = true;
-    } 
+      if ((PD=="" && (passDiEle || passDiMu || passMuEle || passTriEle || passTriMu || passSingleEle)) || //FIXME: do we want to use the single-ele path and run on the SingleElectron PD ?
+	  ((PD=="DoubleEle"||PD=="DoubleEG"  ) && (passDiEle || passTriEle)) ||
+	  ((PD=="DoubleMu" ||PD=="DoubleMuon") && (passDiMu || passTriMu) && !passDiEle && !passTriEle) ||
+	  ((PD=="MuEG"     ||PD=="MuonEG"    ) && passMuEle && !passDiMu && !passTriMu && !passDiEle && !passTriEle) ||
+	  (PD=="SingleElectron" && passSingleEle && !passMuEle && !passDiMu && !passTriMu && !passDiEle && !passTriEle) //FIXME: do we want to use the single-ele path and run on the SingleElectron PD ?
+	  ) {
+	evtPassTrigger = true;
+      } 
   }
   
   // final-state specific triggers. FIXME: this is assuming that we do not pick EEEE or MMMM from "DoubleOr" files as there is no protection for accidental triggers
-  else if ((theChannel==EEEE && (passDiEle || passTriEle)) ||
-      (theChannel==MMMM && passDiMu)) {
+  else if ((theChannel==EEEE && (passDiEle || passTriEle || passSingleEle)) || //FIXME: do we want to use the single-ele path and run on the SingleElectron PD ?
+	   (theChannel==MMMM && (passDiMu || passTriMu))) {
     evtPassTrigger = true;
   }
   else if (theChannel==EEMM) {
     if ((PD=="" && (passDiEle || passDiMu || passMuEle)) ||
-	(PD=="DoubleEle" && passDiEle) ||
-	(PD=="DoubleMu" && passDiMu && !passDiEle) ||
-	(PD=="MuEG" && passMuEle && !passDiMu && !passDiEle )) {
+	((PD=="DoubleEle"||PD=="DoubleEG"  ) && passDiEle) ||
+	((PD=="DoubleMu" ||PD=="DoubleMuon") && passDiMu && !passDiEle) ||
+	((PD=="MuEG"     ||PD=="MuonEG"    ) && passMuEle && !passDiMu && !passDiEle) ) {
       evtPassTrigger = true;
     }
   }
@@ -139,6 +144,8 @@ ZZ4lConfigHelper::passTrigger(const edm::Event & event, short& trigworld){
   if (passDiEle) set_bit_16(trigworld,2);
   if (passMuEle) set_bit_16(trigworld,3);
   if (passTriEle) set_bit_16(trigworld,4);
+  if (passTriMu) set_bit_16(trigworld,5);
+  if (passSingleEle) set_bit_16(trigworld,6);
   
 
   return evtPassTrigger;
