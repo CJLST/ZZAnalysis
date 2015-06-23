@@ -68,12 +68,12 @@ EleFiller::EleFiller(const edm::ParameterSet& iConfig) :
   if (recomputeBDT) {
     std::vector<std::string> myManualCatWeigths;
 
-    myManualCatWeigths.push_back("EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EB1_5_oldscenario2phys14_BDT.weights.xml");
-    myManualCatWeigths.push_back("EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EB2_5_oldscenario2phys14_BDT.weights.xml");
-    myManualCatWeigths.push_back("EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EE_5_oldscenario2phys14_BDT.weights.xml");
-    myManualCatWeigths.push_back("EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EB1_10_oldscenario2phys14_BDT.weights.xml");
-    myManualCatWeigths.push_back("EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EB2_10_oldscenario2phys14_BDT.weights.xml");
-    myManualCatWeigths.push_back("EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EE_10_oldscenario2phys14_BDT.weights.xml");
+    myManualCatWeigths.push_back("EgammaAnalysis/ElectronTools/data/PHYS14FIX/EIDmva_EB1_5_oldscenario2phys14FIX_BDT.weights.xml");
+    myManualCatWeigths.push_back("EgammaAnalysis/ElectronTools/data/PHYS14FIX/EIDmva_EB2_5_oldscenario2phys14FIX_BDT.weights.xml");
+    myManualCatWeigths.push_back("EgammaAnalysis/ElectronTools/data/PHYS14FIX/EIDmva_EE_5_oldscenario2phys14FIX_BDT.weights.xml");
+    myManualCatWeigths.push_back("EgammaAnalysis/ElectronTools/data/PHYS14FIX/EIDmva_EB1_10_oldscenario2phys14FIX_BDT.weights.xml");
+    myManualCatWeigths.push_back("EgammaAnalysis/ElectronTools/data/PHYS14FIX/EIDmva_EB2_10_oldscenario2phys14FIX_BDT.weights.xml");
+    myManualCatWeigths.push_back("EgammaAnalysis/ElectronTools/data/PHYS14FIX/EIDmva_EE_10_oldscenario2phys14FIX_BDT.weights.xml");
 
     vector<string> myManualCatWeigthsTrig;
     string the_path;
@@ -161,13 +161,13 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 // 			       (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.65) ||
 // 			       (fSCeta >= 1.479               && BDT > 0.6)));
 
-    //tentative cuts for first 2015 sync
-    bool isBDT = (pt <= 10 && ((fSCeta < 0.8                    && BDT > -0.202) ||
-			       (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.444) ||
-			       (fSCeta >= 1.479                 && BDT >  0.264)   )) ||
-                 (pt >  10 && ((fSCeta < 0.8                    && BDT > -0.110) ||
-		               (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.284) ||
-		               (fSCeta >= 1.479                 && BDT > -0.212)   ));
+    // WP for fixed Phys14-based BDT
+    bool isBDT = (pt <= 10 && ((fSCeta < 0.8                    && BDT > -0.586) ||
+			       (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.712) ||
+			       (fSCeta >= 1.479                 && BDT > -0.662)   )) ||
+                 (pt >  10 && ((fSCeta < 0.8                    && BDT > -0.652) ||
+		               (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.701) ||
+		               (fSCeta >= 1.479                 && BDT > -0.350)   ));
 
 
     //-- Missing hit  
