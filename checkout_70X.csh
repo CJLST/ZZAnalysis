@@ -10,11 +10,14 @@
 ############## For miniAOD/CMSSW_7_4_5
 
 #electron MVA ID (still with Phys14 training)
-git cms-merge-topic sregnard:Phys14ElectronMvaIdFor745
+#git cms-merge-topic sregnard:Phys14ElectronMvaIdFor745
+
+# put EID and PUPPI together
+git cms-merge-topic VirginiaCMS:merge-puppi-Phys14ElectronMvaIdFor745
 
 #ZZAnalysis
 git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
-(cd ZZAnalysis; git checkout miniAOD_74X)
+(cd ZZAnalysis; git checkout miniAOD_74X_puppi)
 
 #effective areas (to be updated)
 git clone -n https://github.com/latinos/UserCode-sixie-Muon-MuonAnalysisTools Muon/MuonAnalysisTools
