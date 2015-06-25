@@ -1,6 +1,9 @@
 ZZAnalysis
 ==========
+Branch miniAOD_74X_puppi: 
+  temporary branch for developement using PUPPI, to be merged once getting mature.
 
+===========
 To install a complete CMSSW area (including this package)
 ------------------------------
 Download and execute the setup script for the given release:
@@ -8,7 +11,7 @@ Download and execute the setup script for the given release:
 *   For CMSSW_7_4_5:
 
     ```
-    wget -P /tmp https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_74X/checkout_70X.csh
+    wget -P /tmp https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_74X_puppi/checkout_70X.csh
     cd $CMSSW_BASE/src
     cmsenv
     source /tmp/checkout_70X.csh
