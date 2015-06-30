@@ -29,7 +29,7 @@ git clone -n https://github.com/cms-analysis/EgammaAnalysis-ElectronTools EGamma
 
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
-(cd ZZMatrixElement ; git checkout -b from-V00-02-00 V00-02-00)
+(cd ZZMatrixElement ; git checkout -b from-V00-02-01 V00-02-01)
 (cd ZZMatrixElement/MELA/data; mkdir slc6_amd64_gcc491; cp slc6_amd64_gcc481/* slc6_amd64_gcc491/)
 
 #MELA dependencies
