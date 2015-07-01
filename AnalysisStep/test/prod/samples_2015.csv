@@ -1,14 +1,19 @@
 identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments,comment
 
-#ggH125,,0.01212,,,/GluGluToHToZZTo4L_M-125_13TeV-powheg-pythia6/MINIAODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/,/store/mc/Phys14DR,,2,,,### PHYS14 samples
+#ggH125,,          0.01212,         ,,/GluGluHToZZTo4L_M125_13TeV_powheg_JHUgen_pythia8/Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM,/store/mc/RunIISpring15DR74,,2,,,### Official Spring15 samples
+VBFH125,,         0.001034,        ,,/VBF_HToZZTo4L_M125_13TeV_powheg_JHUgen_pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/,/store/mc/RunIISpring15DR74,,2,,,
+WplusH125,,       0.0002339,       ,,/WplusH_HToZZTo4L_M125_13TeV_powheg-minlo-HWJ_JHUgen_pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/,/store/mc/RunIISpring15DR74,,2,,,# Total (W+H)+(W-H)=0.000381; sigma(W+H)/sigma(W-H) = 1.59
+WminusH125,,      0.0001471,       ,,/WminusH_HToZZTo4L_M125_13TeV_powheg-minlo-HWJ_JHUgen_pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v2/,/store/mc/RunIISpring15DR74,,2,,,# (ditto)
+ZH125,,           0.000652,        ,,/ZH_HToZZ_4LFilter_M125_13TeV_powheg-minlo-HZJ_JHUgen_pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/,/store/mc/RunIISpring15DR74,,2,,,# crossSection includes filter eff=0.15038
 
-priv_ggH125,,          0.01212,           ,,/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/ggH_JHU_125/,,,2,,,### H signal private production
-priv_VBFH125,,         0.001034,          ,,/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/VBF_JHU_125/,,,2,,,
+#priv_ttH125,,          0.000337,  ,,/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/ttH_JHU_125/,,,2,,,# crossSection includes filter eff=0.13225
+#priv_madhraph_bbH125,, 0.000141,  ,,/store/cmst3/group/hzz/gpetrucc/13TeV/Phys14DR/MINIAODSIM/bbarHToZZTo4L_M125_13TeV_madgraph_pythia8/,,,1,,,
+#priv_mcatnlo_bbH125,,  0.000141,  ,,/store/cmst3/group/hzz/gpetrucc/13TeV/Phys14DR/MINIAODSIM/bbarHToZZTo4L_M125_13TeV_mcatnlo_pythia8,,,1,,,
 
-priv_WplusH125,,       0.0002339,         ,,/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/WplusH_JHU_125/,,,2,,,# Total (W+H)+(W-H)=0.000381; sigma(W+H)/sigma(W-H) = 1.59
-priv_WminusH125,,      0.0001471,         ,,/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/WminusH_JHU_125/,,,2,,,# (ditto)
+ZZ4e,,            1,          ,,/GluGluToZZTo4e_BackgroundOnly_13TeV_MCFM/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/,/store/mc/RunIISpring15DR74,,2,,,
+ZZ4mu,,           1,          ,,/GluGluToZZTo4mu_BackgroundOnly_13TeV_MCFM/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/,/store/mc/RunIISpring15DR74,,2,,,
+#ZZ4tau,,          1,          ,,/GluGluToZZTo4tau_BackgroundOnly_13TeV_MCFM/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/,/store/mc/RunIISpring15DR74,,2,,,
+ZZ2e2mu,,         1,          ,,/GluGluToZZTo2e2mu_BackgroundOnly_13TeV_MCFM/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/,/store/mc/RunIISpring15DR74,,2,,,
+ZZ2e2tau,,        1,          ,,/GluGluToZZTo2e2tau_BackgroundOnly_13TeV_MCFM/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/,/store/mc/RunIISpring15DR74,,2,,,
+#ZZ2mu2tau,,       1,          ,,/GluGluToZZTo2mu2tau_BackgroundOnly_13TeV_MCFM/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/,/store/mc/RunIISpring15DR74,,2,,,
 
-priv_ZH125,,           0.000652,          ,,/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/ZH_JHU_125/,,,2,,,# crossSection includes filter eff=0.15038
-priv_ttH125,,          0.000337,          ,,/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/ttH_JHU_125/,,,2,,,# crossSection includes filter eff=0.13225
-priv_madhraph_bbH125,, 0.000141,          ,,/store/cmst3/group/hzz/gpetrucc/13TeV/Phys14DR/MINIAODSIM/bbarHToZZTo4L_M125_13TeV_madgraph_pythia8/,,,1,,,
-priv_mcatnlo_bbH125,,  0.000141,          ,,/store/cmst3/group/hzz/gpetrucc/13TeV/Phys14DR/MINIAODSIM/bbarHToZZTo4L_M125_13TeV_mcatnlo_pythia8,,,1,,,
