@@ -626,7 +626,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   if (isMC && !(myHelper.passMCFilter(event))) return;
 
   // Apply skim
-  Short_t trigWord=0;
   bool evtPassSkim = myHelper.passSkim(event, trigWord);
   if (applySkim && !evtPassSkim) return;
 
