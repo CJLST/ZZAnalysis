@@ -565,8 +565,27 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   }
 
 
+  // number of reconstructed leptons
+  Int_t NRecoMu = 0;
+  Int_t NRecoEle = 0;
+  edm::Handle<pat::MuonCollection> muonHandle;
+  event.getByLabel("patMuonsWithTrigger", muonHandle);
+  for(unsigned int i = 0; i< muonHandle->size(); ++i){
+    const pat::Muon* m = &((*muonHandle)[i]);
+    if(m->pt()>5 && m->isPFMuon()) // apply this to get a fair comparison with slimmedMuons from miniAOD samples
+      NRecoMu++;
+  }
+  edm::Handle<pat::ElectronCollection> electronHandle;
+  event.getByLabel("patElectronsWithTrigger", electronHandle);
+  for(unsigned int i = 0; i< electronHandle->size(); ++i){
+    const pat::Electron* e = &((*electronHandle)[i]);
+    if(e->pt()>5) // apply this to get a fair comparison with slimmedElectrons from miniAOD samples
+      NRecoEle++;
+  }
+
+
   //Save general event info in the tree. This must be done after the loop on the candidates so that we know the best candidate position in the list
-  myTree->FillEventInfo(event.id().run(), event.id().event(), event.luminosityBlock(), NbestCand, vertexs->size(), nObsInt, nTrueInt, weight2, pfmet, genFinalState, genProcessId, genHEPMCweight, trigWord, genExtInfo);
+  myTree->FillEventInfo(event.id().run(), event.id().event(), event.luminosityBlock(), NbestCand, vertexs->size(), nObsInt, nTrueInt, weight2, pfmet, genFinalState, genProcessId, genHEPMCweight, trigWord, genExtInfo, NRecoMu, NRecoEle);
 
   myTree->FillEvent();
 

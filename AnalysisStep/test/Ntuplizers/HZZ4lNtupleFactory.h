@@ -25,7 +25,7 @@ class HZZ4lNtupleFactory{
   void DumpBranches(TString filename) const;
 
   void createNewCandidate();
-  void FillEventInfo(const Int_t RunNumber, const Long64_t EventNumber, const Int_t LumiNumber, const Int_t IndexBestCand, Int_t Nvtx, Int_t NObsInt, Float_t NTrueInt, Float_t PUweight, Float_t PFMET, Int_t genFinalState, Int_t genProcessId, Float_t genHEPMCweight, Short_t trigWord, Short_t genExtInfo);
+  void FillEventInfo(const Int_t RunNumber, const Long64_t EventNumber, const Int_t LumiNumber, const Int_t IndexBestCand, Int_t Nvtx, Int_t NObsInt, Float_t NTrueInt, Float_t PUweight, Float_t PFMET, Int_t genFinalState, Int_t genProcessId, Float_t genHEPMCweight, Short_t trigWord, Short_t genExtInfo, Int_t NRecoMu, Int_t NRecoEle);
   void FillHInfo(const Float_t ZZMass, 
 		 const Float_t ZZMassErr, 
 		 const Float_t ZZMassErrCorr, 
@@ -184,8 +184,8 @@ class HZZ4lNtupleFactory{
   Int_t _LumiNumber;
   Int_t _IndexBestCand;
 
-  //  Int_t _Nmu;
-  //  Int_t _Nele;
+  Int_t _NRecoMu;
+  Int_t _NRecoEle;
 
   Int_t _Nvtx;
   Int_t _NObsInt;
@@ -485,6 +485,7 @@ class HZZ4lNtupleFactory{
   //Generation variables
   Float_t _genHMass;
   Float_t _genHPt;
+  Float_t _genHRapidity;
 
   Float_t _genZ1Mass;
   Float_t _genZ1Pt;

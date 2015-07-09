@@ -45,8 +45,8 @@ void HZZ4lNtupleFactory::InitializeVariables()
   _LumiNumber = 0;
   _IndexBestCand = 0;
 
-  //  _Nmu = 0;
-  //  _Nele = 0;
+  _NRecoMu = 0;
+  _NRecoEle = 0;
 
   _Nvtx = 0;
   _NObsInt =0;
@@ -61,6 +61,7 @@ void HZZ4lNtupleFactory::InitializeVariables()
   //Info on generated particles
   _genHMass = 0.;
   _genHPt = 0.;
+  _genHRapidity = 0.;
 
   _genZ1Mass = 0.;
   _genZ1Pt = 0.;
@@ -393,8 +394,8 @@ void HZZ4lNtupleFactory::InitializeBranches()
   _outTree->Branch("EventNumber",&_EventNumber,"EventNumber/L");
   _outTree->Branch("LumiNumber",&_LumiNumber,"LumiNumber/I");
   _outTree->Branch("iBC",&_IndexBestCand,"iBC/I");
-  //  _outTree->Branch("Nmu",&_Nmu,"Nmu/I");
-  //  _outTree->Branch("Nele",&_Nele,"Nele/I");
+  _outTree->Branch("NRecoMu",&_NRecoMu,"NRecoMu/I");
+  _outTree->Branch("NRecoEle",&_NRecoEle,"NRecoEle/I");
   _outTree->Branch("Nvtx",&_Nvtx,"Nvtx/I");
   _outTree->Branch("NObsInt",&_NObsInt,"NObsInt/I");
   _outTree->Branch("NTrueInt",&_NTrueInt,"NTrueInt/F");
@@ -711,6 +712,7 @@ void HZZ4lNtupleFactory::InitializeBranches()
   //Generated particles
   _outTree->Branch("GenHMass",&_genHMass,"GenHMass/F");
   _outTree->Branch("GenHPt",&_genHPt,"GenHPt/F");
+  _outTree->Branch("GenHRapidity",&_genHRapidity,"GenHRapidity/F");
 
   _outTree->Branch("GenZ1Mass",&_genZ1Mass,"GenZ1Mass/F");
   _outTree->Branch("GenZ1Pt",&_genZ1Pt,"GenZ1Pt/F");
@@ -764,6 +766,7 @@ void HZZ4lNtupleFactory::FillHGenInfo(const math::XYZTLorentzVector pH)
 {
   _genHMass = pH.M();
   _genHPt = pH.Pt();
+  _genHRapidity = pH.Rapidity();
 
   return;
 }
@@ -824,12 +827,14 @@ void HZZ4lNtupleFactory::FillAssocLepGenInfo(std::vector<const reco::Candidate *
 }
 
 void HZZ4lNtupleFactory::FillEventInfo(const Int_t RunNumber, const Long64_t EventNumber, const Int_t LumiNumber, const Int_t IndexBestCand, Int_t Nvtx, 
-				       Int_t NObsInt, Float_t NTrueInt, Float_t PUweight, const Float_t PFMET, Int_t genFinalState, Int_t genProcessId, Float_t genHEPMCweight, Short_t trigWord,  Short_t genExtInfo)
+				       Int_t NObsInt, Float_t NTrueInt, Float_t PUweight, const Float_t PFMET, Int_t genFinalState, Int_t genProcessId, Float_t genHEPMCweight, Short_t trigWord,  Short_t genExtInfo, Int_t NRecoMu, Int_t NRecoEle)
 {
   _RunNumber = RunNumber;
   _EventNumber = EventNumber;
   _LumiNumber = LumiNumber;
   _IndexBestCand = IndexBestCand;
+  _NRecoMu = NRecoMu;
+  _NRecoEle = NRecoEle;
   _Nvtx = Nvtx;
   _NObsInt =NObsInt;
   _NTrueInt =NTrueInt;
