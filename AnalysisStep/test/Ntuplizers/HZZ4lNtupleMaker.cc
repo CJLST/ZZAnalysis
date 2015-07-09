@@ -69,6 +69,8 @@ namespace {
   Int_t RunNumber  = 0;
   Long64_t EventNumber  = 0;
   Int_t LumiNumber  = 0;
+  Int_t NRecoMu  = 0;
+  Int_t NRecoEle  = 0;
   Int_t Nvtx  = 0;
   Int_t NObsInt  = 0;
   Float_t NTrueInt  = 0;
@@ -292,6 +294,7 @@ namespace {
   Float_t ZXFakeweight  = 0;
   Float_t GenHMass  = 0;
   Float_t GenHPt  = 0;
+  Float_t GenHRapidity  = 0;
   Float_t GenZ1Mass  = 0;
   Float_t GenZ1Pt  = 0;
   Float_t GenZ2Mass  = 0;
@@ -749,7 +752,25 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   nCleanedJetsPt30=cleanedJetsPt30.size();
   xsection=xsec;
   EventNumber=event.id().event();
+
+
+  // number of reconstructed leptons
+  edm::Handle<pat::MuonCollection> muonHandle;
+  event.getByLabel("slimmedMuons", muonHandle);
+  for(unsigned int i = 0; i< muonHandle->size(); ++i){
+    const pat::Muon* m = &((*muonHandle)[i]);
+    if(m->pt()>5 && m->isPFMuon()) // these cuts are implicit in miniAOD
+      NRecoMu++;
+  }
+  edm::Handle<pat::ElectronCollection> electronHandle;
+  event.getByLabel("slimmedElectrons", electronHandle);
+  for(unsigned int i = 0; i< electronHandle->size(); ++i){
+    const pat::Electron* e = &((*electronHandle)[i]);
+    if(e->pt()>5) // this cut is implicit in miniAOD
+      NRecoEle++;
+  }
   
+
   //Loop on the candidates
   int nFilled=0;
   for( edm::View<pat::CompositeCandidate>::const_iterator cand = cands->begin(); cand != cands->end(); ++cand) {
@@ -1464,6 +1485,7 @@ void HZZ4lNtupleMaker::FillHGenInfo(const math::XYZTLorentzVector pH, float w)
 {
   GenHMass=pH.M();
   GenHPt=pH.Pt();
+  GenHRapidity=pH.Rapidity();
 
   HqTMCweight=w;
 
@@ -1476,6 +1498,8 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("RunNumber",RunNumber);
   myTree->Book("EventNumber",EventNumber);
   myTree->Book("LumiNumber",LumiNumber);
+  myTree->Book("NRecoMu",NRecoMu);
+  myTree->Book("NRecoEle",NRecoEle);
   myTree->Book("Nvtx",Nvtx);
   myTree->Book("NObsInt",NObsInt);
   myTree->Book("NTrueInt",NTrueInt);
@@ -1718,6 +1742,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("ZXFakeweight",ZXFakeweight);
   myTree->Book("GenHMass",GenHMass);
   myTree->Book("GenHPt",GenHPt);
+  myTree->Book("GenHRapidity",GenHRapidity);
   myTree->Book("GenZ1Mass",GenZ1Mass);
   myTree->Book("GenZ1Pt",GenZ1Pt);
   myTree->Book("GenZ2Mass",GenZ2Mass);
