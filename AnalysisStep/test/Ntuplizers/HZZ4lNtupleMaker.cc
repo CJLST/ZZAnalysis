@@ -143,6 +143,10 @@ namespace {
   Float_t Lep4SIP  = 0;
   Bool_t Lep4isID  = 0;
   Float_t Lep4BDT  = 0;
+  std::vector<float> fsrPt; 
+  std::vector<float> fsrEta; 
+  std::vector<float> fsrPhi ;
+  std::vector<short> fsrLept;
   char Lep4missingHit  = 0;
   Float_t Lep4combRelIsoPF  = 0;
 /*Float_t Lep1chargedHadIso  = 0;
@@ -1154,6 +1158,18 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
        Lep4combRelIsoPF=combRelIsoPF[i] ;   
     }
   }
+
+  // FSR 
+  for (int i=0; i<2; ++i) { 
+    const reco::Candidate* aZ = cand.daughter(i);
+    if (aZ->numberOfDaughters()==3) {
+      math::XYZTLorentzVector fsr = aZ->daughter(2)->p4();
+      fsrPt.push_back(fsr.pt());
+      fsrEta.push_back(fsr.eta());
+      fsrPhi.push_back(fsr.phi());
+      fsrLept.push_back(i*10+ userdatahelpers::getUserFloat(aZ,"dauWithFSR"));
+    }
+  }
   
   //convention: 0 -> 4mu   1 -> 4e   2 -> 2mu2e
   if(CRFLAG){
@@ -1595,6 +1611,10 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   //myTree->Book("Lep4neutralHadIso",Lep4neutralHadIso);
   //myTree->Book("Lep4photonIso",Lep4photonIso);
   myTree->Book("Lep4combRelIsoPF",Lep4combRelIsoPF);
+  myTree->Book("fsrPt",fsrPt);
+  myTree->Book("fsrEta",fsrEta);
+  myTree->Book("fsrPhi",fsrPhi);
+  myTree->Book("fsrLept",fsrLept);
 
   //Photon variables
   if (writePhotons) {

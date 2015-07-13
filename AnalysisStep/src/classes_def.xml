@@ -1,5 +1,4 @@
 <lcgdict>
-  <class name="pat::PFParticle"/>
   <class name="edm::Ptr<pat::PFParticle>"/>
   <class name="std::vector<edm::Ptr<pat::PFParticle> >"/>
   <class name="pat::UserHolder<std::vector<edm::Ptr<pat::PFParticle> > >" />
