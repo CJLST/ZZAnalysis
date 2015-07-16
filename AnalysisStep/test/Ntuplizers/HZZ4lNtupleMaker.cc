@@ -69,17 +69,17 @@ namespace {
   Int_t RunNumber  = 0;
   Long64_t EventNumber  = 0;
   Int_t LumiNumber  = 0;
-  Int_t NRecoMu  = 0;
-  Int_t NRecoEle  = 0;
-  Int_t Nvtx  = 0;
-  Int_t NObsInt  = 0;
+  Short_t NRecoMu  = 0;
+  Short_t NRecoEle  = 0;
+  Short_t Nvtx  = 0;
+  Short_t NObsInt  = 0;
   Float_t NTrueInt  = 0;
   Float_t PUWeight  = 0;
   Float_t PFMET  =  -99;
   Float_t PFMETPhi  =  -99;
-  Int_t nCleanedJets  =  0;
-  Int_t nCleanedJetsPt30  = 0;
-  Int_t nCleanedJetsPt30BTagged  = 0;
+  Short_t nCleanedJets  =  0;
+  Short_t nCleanedJetsPt30  = 0;
+  Short_t nCleanedJetsPt30BTagged  = 0;
   Short_t trigWord  = 0;
   Float_t ZZMass  = 0;
   Float_t ZZMassErr  = 0;
@@ -112,7 +112,7 @@ namespace {
   Float_t Lep1Pt  = 0;
   Float_t Lep1Eta  = 0;
   Float_t Lep1Phi  = 0;
-  Int_t Lep1LepId  = 0;
+  Short_t Lep1LepId  = 0;
   Float_t Lep1SIP  = 0;
   Bool_t Lep1isID  = 0;
   Float_t Lep1BDT  = 0;
@@ -121,7 +121,7 @@ namespace {
   Float_t Lep2Pt  = 0;
   Float_t Lep2Eta  = 0;
   Float_t Lep2Phi  = 0;
-  Int_t Lep2LepId  = 0;
+  Short_t Lep2LepId  = 0;
   Float_t Lep2SIP  = 0;
   Bool_t Lep2isID  = 0;
   Float_t Lep2BDT  = 0;
@@ -130,7 +130,7 @@ namespace {
   Float_t Lep3Pt  = 0;
   Float_t Lep3Eta  = 0;
   Float_t Lep3Phi  = 0;
-  Int_t Lep3LepId  = 0;
+  Short_t Lep3LepId  = 0;
   Float_t Lep3SIP  = 0;
   Bool_t Lep3isID  = 0;
   Float_t Lep3BDT  = 0;
@@ -139,7 +139,7 @@ namespace {
   Float_t Lep4Pt  = 0;
   Float_t Lep4Eta  = 0;
   Float_t Lep4Phi  = 0;
-  Int_t Lep4LepId  = 0;
+  Short_t Lep4LepId  = 0;
   Float_t Lep4SIP  = 0;
   Bool_t Lep4isID  = 0;
   Float_t Lep4BDT  = 0;
@@ -282,13 +282,13 @@ namespace {
   Float_t DiJetMassMinus  = -99;
   Float_t DiJetDEta  = -99;
   Float_t DiJetFisher  = -99;
-  Int_t nExtraLep  = 0;
-  Int_t nExtraZ  = 0;
+  Short_t nExtraLep  = 0;
+  Short_t nExtraZ  = 0;
   std::vector<float> ExtraLepPt; 
   std::vector<float> ExtraLepEta; 
   std::vector<float> ExtraLepPhi ;
-  std::vector<float> ExtraLepLepId; 
-  Int_t genFinalState  = 0;
+  std::vector<short> ExtraLepLepId; 
+  Short_t genFinalState  = 0;
   Int_t genProcessId  = 0;
   Float_t genHEPMCweight  = 0;
   Short_t genExtInfo  = 0;
@@ -426,7 +426,6 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   hTH2D_Mu_All(0),
   hTH2D_El_All(0),
   h_weight(0)
-  //h_ZXWeight(0)
 {
   //cout<< "Beginning Constructor\n\n\n" <<endl;
   theCandLabel = pset.getUntrackedParameter<string>("CandCollection"); // Name of input ZZ collection
@@ -1023,16 +1022,18 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   const reco::Candidate* Z1;
   const reco::Candidate* Z2;
   vector<const reco::Candidate*> leptons;
+  vector<const reco::Candidate*> fsrPhot;
+  vector<short> fsrIndex;
   vector<string> labels;
 
   if (theChannel!=ZL) { // Regular 4l candidates
     Z1   = cand.daughter("Z1");
     Z2   = cand.daughter("Z2");
-    userdatahelpers::getSortedLeptons(cand, leptons, labels);
+    userdatahelpers::getSortedLeptons(cand, leptons, labels, fsrPhot, fsrIndex);
   } else {              // Special handling of Z+l candidates 
     Z1   = cand.daughter(0); // the Z
     Z2   = cand.daughter(1); // This is actually the additional lepton!
-    userdatahelpers::getSortedLeptons(cand, leptons, labels, false); // note: we get just 3 leptons in this case.
+    userdatahelpers::getSortedLeptons(cand, leptons, labels, fsrPhot, fsrIndex, false); // note: we get just 3 leptons in this case.
   }
 
    Z1Mass = Z1->mass();
@@ -1160,15 +1161,12 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   }
 
   // FSR 
-  for (int i=0; i<2; ++i) { 
-    const reco::Candidate* aZ = cand.daughter(i);
-    if (aZ->numberOfDaughters()==3) {
-      math::XYZTLorentzVector fsr = aZ->daughter(2)->p4();
-      fsrPt.push_back(fsr.pt());
-      fsrEta.push_back(fsr.eta());
-      fsrPhi.push_back(fsr.phi());
-      fsrLept.push_back(i*10+ userdatahelpers::getUserFloat(aZ,"dauWithFSR"));
-    }
+  for (unsigned i=0; i<fsrPhot.size(); ++i) { 
+    math::XYZTLorentzVector fsr = fsrPhot[i]->p4();
+    fsrPt.push_back(fsr.pt());
+    fsrEta.push_back(fsr.eta());
+    fsrPhi.push_back(fsr.phi());
+    fsrLept.push_back(fsrIndex[i]);
   }
   
   //convention: 0 -> 4mu   1 -> 4e   2 -> 2mu2e

@@ -675,8 +675,10 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
     const Candidate* Z1   = cand->daughter("Z1");
     const Candidate* Z2   = cand->daughter("Z2");
     vector<const Candidate*> leptons(4);
+    vector<const Candidate*> fsr;
+    vector<short> fsrIndex;
     vector<string> labels(4);
-    userdatahelpers::getSortedLeptons(*cand, leptons, labels);
+    userdatahelpers::getSortedLeptons(*cand, leptons, labels, fsr, fsrIndex);
     const Candidate* Z1Lp = leptons[0];
     const Candidate* Z1Ln = leptons[1];
     const Candidate* Z2Lp = leptons[2];

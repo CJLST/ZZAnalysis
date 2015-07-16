@@ -181,8 +181,10 @@ void ZZ4lAnalyzerCR::analyze(const Event & event, const EventSetup& eventSetup){
   const Candidate* Z1   = bestCand->daughter(0);
   const Candidate* Z2   = bestCand->daughter(1);
   vector<const Candidate*> leptons(4);
+  vector<const Candidate*> fsr;
+  vector<short> fsrIndex;
   vector<string> labels(4);
-  userdatahelpers::getSortedLeptons(*bestCand, leptons, labels);
+  userdatahelpers::getSortedLeptons(*bestCand, leptons, labels, fsr, fsrIndex);
     
   // Retrieve the userFloat of the leptons in vectors ordered in the same way.
   vector<float> SIP(4);
