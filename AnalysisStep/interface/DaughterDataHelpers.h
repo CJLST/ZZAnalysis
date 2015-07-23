@@ -48,7 +48,11 @@ namespace userdatahelpers {
 
 
   void getSortedLeptons(const pat::CompositeCandidate& cand, 
-			std::vector<const reco::Candidate*>& leptons, std::vector<std::string>& labels, bool is4l=true);
+			std::vector<const reco::Candidate*>& leptons, 
+			std::vector<std::string>& labels, 
+			std::vector<const reco::Candidate*>& fsr,
+			std::vector<short>& fsrIndex,
+			bool is4l=true);
 
 
 }

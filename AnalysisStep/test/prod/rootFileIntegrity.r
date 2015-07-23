@@ -1,4 +1,4 @@
-rootFileIntegrity(TString filename) {
+void rootFileIntegrity(TString filename) {
   bool isZombie=false;
   bool isRecovered=false;
   {
@@ -19,12 +19,12 @@ rootFileIntegrity(TString filename) {
     cout << "File " << filename << " corrupted; renaming" << endl;
     TString command = "mv " + filename + " " + filename + ".corrupted";
     gSystem->Exec(command);
-    exit -1;
+    exit(EXIT_FAILURE);
   } else if (isRecovered ){
     cout << "File " << filename << " was not closed correctly ; renaming" << endl;
     TString command = "mv " + filename + " " + filename + ".recovered";
     gSystem->Exec(command);
-    exit -1;
+    exit(EXIT_FAILURE);
   } else {
     cout << "Integrity check succeeded on " << filename << endl;
   }

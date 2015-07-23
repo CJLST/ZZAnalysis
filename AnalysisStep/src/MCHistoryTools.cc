@@ -368,19 +368,21 @@ MCHistoryTools::genAcceptance(bool& gen_ZZ4lInEtaAcceptance, bool& gen_ZZ4lInEta
     int nlInEtaAcceptance = 0;
     int nlInEtaPtAcceptance = 0;
 
-    for (unsigned int i=0; i<theGenLeps.size(); ++i){	  
-      //FIXME should take the 2 gen l with status 1!
-      if ((abs(theGenLeps[i]->pdgId()) == 11 && !(theGenLeps[i]->pt() > 7. && fabs(theGenLeps[i]->eta()) < 2.5)) ||
-	  (abs(theGenLeps[i]->pdgId()) == 13 && !(theGenLeps[i]->pt() > 5. && fabs(theGenLeps[i]->eta()) < 2.4))) { 
+    for (unsigned int i=0; i<theGenLeps.size(); ++i){
+      float abseta =  fabs(theGenLeps[i]->eta());
+      int id = abs(theGenLeps[i]->pdgId());
+      //FIXME should take the 2 gen l with status 1
+      if ((id == 11 && theGenLeps[i]->pt() > 7. && abseta < 2.5) ||
+	  (id == 13 && theGenLeps[i]->pt() > 5. && abseta < 2.4)) { 
 	++nlInEtaPtAcceptance;
       }
-      if ((abs(theGenLeps[i]->pdgId()) == 11 && !(fabs(theGenLeps[i]->eta()) < 2.5)) ||
-	  (abs(theGenLeps[i]->pdgId()) == 13 && !(fabs(theGenLeps[i]->eta()) < 2.4))) { 
+      if ((id == 11 && abseta < 2.5) ||
+	  (id == 13 && abseta < 2.4)) { 
 	++nlInEtaAcceptance;
       }
     }
-  if (nlInEtaPtAcceptance>=4) gen_ZZ4lInEtaPtAcceptance = true;
-  if (nlInEtaAcceptance>=4) gen_ZZ4lInEtaAcceptance = true;
+    if (nlInEtaPtAcceptance>=4) gen_ZZ4lInEtaPtAcceptance = true;
+    if (nlInEtaAcceptance>=4) gen_ZZ4lInEtaAcceptance = true;
   }
 }
 

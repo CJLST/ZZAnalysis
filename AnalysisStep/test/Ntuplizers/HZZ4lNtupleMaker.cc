@@ -69,15 +69,17 @@ namespace {
   Int_t RunNumber  = 0;
   Long64_t EventNumber  = 0;
   Int_t LumiNumber  = 0;
-  Int_t Nvtx  = 0;
-  Int_t NObsInt  = 0;
+  Short_t NRecoMu  = 0;
+  Short_t NRecoEle  = 0;
+  Short_t Nvtx  = 0;
+  Short_t NObsInt  = 0;
   Float_t NTrueInt  = 0;
   Float_t PUWeight  = 0;
   Float_t PFMET  =  -99;
   Float_t PFMETPhi  =  -99;
-  Int_t nCleanedJets  =  0;
-  Int_t nCleanedJetsPt30  = 0;
-  Int_t nCleanedJetsPt30BTagged  = 0;
+  Short_t nCleanedJets  =  0;
+  Short_t nCleanedJetsPt30  = 0;
+  Short_t nCleanedJetsPt30BTagged  = 0;
   Short_t trigWord  = 0;
   Float_t ZZMass  = 0;
   Float_t ZZMassErr  = 0;
@@ -110,7 +112,7 @@ namespace {
   Float_t Lep1Pt  = 0;
   Float_t Lep1Eta  = 0;
   Float_t Lep1Phi  = 0;
-  Int_t Lep1LepId  = 0;
+  Short_t Lep1LepId  = 0;
   Float_t Lep1SIP  = 0;
   Bool_t Lep1isID  = 0;
   Float_t Lep1BDT  = 0;
@@ -119,7 +121,7 @@ namespace {
   Float_t Lep2Pt  = 0;
   Float_t Lep2Eta  = 0;
   Float_t Lep2Phi  = 0;
-  Int_t Lep2LepId  = 0;
+  Short_t Lep2LepId  = 0;
   Float_t Lep2SIP  = 0;
   Bool_t Lep2isID  = 0;
   Float_t Lep2BDT  = 0;
@@ -128,7 +130,7 @@ namespace {
   Float_t Lep3Pt  = 0;
   Float_t Lep3Eta  = 0;
   Float_t Lep3Phi  = 0;
-  Int_t Lep3LepId  = 0;
+  Short_t Lep3LepId  = 0;
   Float_t Lep3SIP  = 0;
   Bool_t Lep3isID  = 0;
   Float_t Lep3BDT  = 0;
@@ -137,10 +139,14 @@ namespace {
   Float_t Lep4Pt  = 0;
   Float_t Lep4Eta  = 0;
   Float_t Lep4Phi  = 0;
-  Int_t Lep4LepId  = 0;
+  Short_t Lep4LepId  = 0;
   Float_t Lep4SIP  = 0;
   Bool_t Lep4isID  = 0;
   Float_t Lep4BDT  = 0;
+  std::vector<float> fsrPt; 
+  std::vector<float> fsrEta; 
+  std::vector<float> fsrPhi ;
+  std::vector<short> fsrLept;
   char Lep4missingHit  = 0;
   Float_t Lep4combRelIsoPF  = 0;
 /*Float_t Lep1chargedHadIso  = 0;
@@ -276,13 +282,13 @@ namespace {
   Float_t DiJetMassMinus  = -99;
   Float_t DiJetDEta  = -99;
   Float_t DiJetFisher  = -99;
-  Int_t nExtraLep  = 0;
-  Int_t nExtraZ  = 0;
+  Short_t nExtraLep  = 0;
+  Short_t nExtraZ  = 0;
   std::vector<float> ExtraLepPt; 
   std::vector<float> ExtraLepEta; 
   std::vector<float> ExtraLepPhi ;
-  std::vector<float> ExtraLepLepId; 
-  Int_t genFinalState  = 0;
+  std::vector<short> ExtraLepLepId; 
+  Short_t genFinalState  = 0;
   Int_t genProcessId  = 0;
   Float_t genHEPMCweight  = 0;
   Short_t genExtInfo  = 0;
@@ -292,6 +298,7 @@ namespace {
   Float_t ZXFakeweight  = 0;
   Float_t GenHMass  = 0;
   Float_t GenHPt  = 0;
+  Float_t GenHRapidity  = 0;
   Float_t GenZ1Mass  = 0;
   Float_t GenZ1Pt  = 0;
   Float_t GenZ2Mass  = 0;
@@ -419,7 +426,6 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   hTH2D_Mu_All(0),
   hTH2D_El_All(0),
   h_weight(0)
-  //h_ZXWeight(0)
 {
   //cout<< "Beginning Constructor\n\n\n" <<endl;
   theCandLabel = pset.getUntrackedParameter<string>("CandCollection"); // Name of input ZZ collection
@@ -626,7 +632,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   if (isMC && !(myHelper.passMCFilter(event))) return;
 
   // Apply skim
-  Short_t trigWord=0;
   bool evtPassSkim = myHelper.passSkim(event, trigWord);
   if (applySkim && !evtPassSkim) return;
 
@@ -750,7 +755,25 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   nCleanedJetsPt30=cleanedJetsPt30.size();
   xsection=xsec;
   EventNumber=event.id().event();
+
+
+  // number of reconstructed leptons
+  edm::Handle<pat::MuonCollection> muonHandle;
+  event.getByLabel("slimmedMuons", muonHandle);
+  for(unsigned int i = 0; i< muonHandle->size(); ++i){
+    const pat::Muon* m = &((*muonHandle)[i]);
+    if(m->pt()>5 && m->isPFMuon()) // these cuts are implicit in miniAOD
+      NRecoMu++;
+  }
+  edm::Handle<pat::ElectronCollection> electronHandle;
+  event.getByLabel("slimmedElectrons", electronHandle);
+  for(unsigned int i = 0; i< electronHandle->size(); ++i){
+    const pat::Electron* e = &((*electronHandle)[i]);
+    if(e->pt()>5) // this cut is implicit in miniAOD
+      NRecoEle++;
+  }
   
+
   //Loop on the candidates
   int nFilled=0;
   for( edm::View<pat::CompositeCandidate>::const_iterator cand = cands->begin(); cand != cands->end(); ++cand) {
@@ -999,16 +1022,18 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   const reco::Candidate* Z1;
   const reco::Candidate* Z2;
   vector<const reco::Candidate*> leptons;
+  vector<const reco::Candidate*> fsrPhot;
+  vector<short> fsrIndex;
   vector<string> labels;
 
   if (theChannel!=ZL) { // Regular 4l candidates
     Z1   = cand.daughter("Z1");
     Z2   = cand.daughter("Z2");
-    userdatahelpers::getSortedLeptons(cand, leptons, labels);
+    userdatahelpers::getSortedLeptons(cand, leptons, labels, fsrPhot, fsrIndex);
   } else {              // Special handling of Z+l candidates 
     Z1   = cand.daughter(0); // the Z
     Z2   = cand.daughter(1); // This is actually the additional lepton!
-    userdatahelpers::getSortedLeptons(cand, leptons, labels, false); // note: we get just 3 leptons in this case.
+    userdatahelpers::getSortedLeptons(cand, leptons, labels, fsrPhot, fsrIndex, false); // note: we get just 3 leptons in this case.
   }
 
    Z1Mass = Z1->mass();
@@ -1133,6 +1158,15 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
        Lep4missingHit  = userdatahelpers::getUserFloat(leptons[i],"missingHit");
        Lep4combRelIsoPF=combRelIsoPF[i] ;   
     }
+  }
+
+  // FSR 
+  for (unsigned i=0; i<fsrPhot.size(); ++i) { 
+    math::XYZTLorentzVector fsr = fsrPhot[i]->p4();
+    fsrPt.push_back(fsr.pt());
+    fsrEta.push_back(fsr.eta());
+    fsrPhi.push_back(fsr.phi());
+    fsrLept.push_back(fsrIndex[i]);
   }
   
   //convention: 0 -> 4mu   1 -> 4e   2 -> 2mu2e
@@ -1465,6 +1499,7 @@ void HZZ4lNtupleMaker::FillHGenInfo(const math::XYZTLorentzVector pH, float w)
 {
   GenHMass=pH.M();
   GenHPt=pH.Pt();
+  GenHRapidity=pH.Rapidity();
 
   HqTMCweight=w;
 
@@ -1477,6 +1512,8 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("RunNumber",RunNumber);
   myTree->Book("EventNumber",EventNumber);
   myTree->Book("LumiNumber",LumiNumber);
+  myTree->Book("NRecoMu",NRecoMu);
+  myTree->Book("NRecoEle",NRecoEle);
   myTree->Book("Nvtx",Nvtx);
   myTree->Book("NObsInt",NObsInt);
   myTree->Book("NTrueInt",NTrueInt);
@@ -1572,6 +1609,10 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   //myTree->Book("Lep4neutralHadIso",Lep4neutralHadIso);
   //myTree->Book("Lep4photonIso",Lep4photonIso);
   myTree->Book("Lep4combRelIsoPF",Lep4combRelIsoPF);
+  myTree->Book("fsrPt",fsrPt);
+  myTree->Book("fsrEta",fsrEta);
+  myTree->Book("fsrPhi",fsrPhi);
+  myTree->Book("fsrLept",fsrLept);
 
   //Photon variables
   if (writePhotons) {
@@ -1719,6 +1760,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("ZXFakeweight",ZXFakeweight);
   myTree->Book("GenHMass",GenHMass);
   myTree->Book("GenHPt",GenHPt);
+  myTree->Book("GenHRapidity",GenHRapidity);
   myTree->Book("GenZ1Mass",GenZ1Mass);
   myTree->Book("GenZ1Pt",GenZ1Pt);
   myTree->Book("GenZ2Mass",GenZ2Mass);

@@ -10,7 +10,7 @@ foreach x ( `ls -1 ./*Chunk*/log*.gz | sed s/"_Chunk.*"// | sort -u` )
  set count=0
  set min=99999999999
  set max=0
- foreach CPU ( `grep "NCU hours" ${x}*/*.txt | awk '{print $9}' | sed s/"("// | sort -g` )
+ foreach CPU ( `grep "KSI2K hours" ${x}*/*.txt | awk '{print $11}' | sed s/"("// | sort -g` )
 #   echo $CPU
    @ sum = $sum + $CPU
    @ count++
