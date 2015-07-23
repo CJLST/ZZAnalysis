@@ -63,7 +63,7 @@ userdatahelpers::getUserPhotons(const reco::Candidate* c){
 
 
 void 
-userdatahelpers::getSortedLeptons(const pat::CompositeCandidate& cand, vector<const Candidate*>& leptons, vector<string>& labels, bool is4l) {
+userdatahelpers::getSortedLeptons(const pat::CompositeCandidate& cand, vector<const Candidate*>& leptons, vector<string>& labels, vector<const Candidate*>& fsr, std::vector<short>& fsrIndex, bool is4l) {
 
   if (is4l) { // Regular 4 lepton SR/CR
     // Pointers to Z and leptons
@@ -73,6 +73,21 @@ userdatahelpers::getSortedLeptons(const pat::CompositeCandidate& cand, vector<co
     const Candidate* Z1Ln = Z1->daughter(1);
     const Candidate* Z2Lp = Z2->daughter(0);
     const Candidate* Z2Ln = Z2->daughter(1);
+    const Candidate* Z1FSR = 0;
+    const Candidate* Z2FSR = 0;
+    int Z1FSRLep = -1;
+    int Z2FSRLep = -1;
+
+    if (Z1->numberOfDaughters()==3) {
+      Z1FSR = Z1->daughter(2);
+      Z1FSRLep = getUserFloat(Z1, "dauWithFSR");  
+    }
+
+    if (Z2->numberOfDaughters()==3) {
+      Z2FSR = Z2->daughter(2);
+      Z2FSRLep = getUserFloat(Z2, "dauWithFSR");  
+    }
+
     // corresponding prefixes for UserFloats
     string Z1Label = "d0.";
     string Z2Label = "d1.";
@@ -86,10 +101,12 @@ userdatahelpers::getSortedLeptons(const pat::CompositeCandidate& cand, vector<co
     if (Z1Lp->charge() < 0 && Z1Lp->charge()*Z1Ln->charge()<0) {
       swap(Z1Lp,Z1Ln);
       swap(Z1LpLabel,Z1LnLabel);
+      if (Z1FSRLep>=0) Z1FSRLep=(Z1FSRLep+1)%2;
     }
     if (Z2Lp->charge() < 0 && Z2Lp->charge()*Z2Ln->charge()<0) {
       swap(Z2Lp,Z2Ln);
       swap(Z2LpLabel,Z2LnLabel);
+      if (Z2FSRLep>=0) Z2FSRLep=(Z2FSRLep+1)%2;
     }
       
     // Put the four daughter leptons in a vector, ordered in a standard way
@@ -103,16 +120,37 @@ userdatahelpers::getSortedLeptons(const pat::CompositeCandidate& cand, vector<co
     labels[1] = Z1LnLabel;
     labels[2] = Z2LpLabel;
     labels[3] = Z2LnLabel;
+    if (Z1FSRLep>=0){
+      fsr.push_back(Z1FSR);
+      fsrIndex.push_back(Z1FSRLep+1);
+    }
+    if (Z2FSRLep>=0){
+      fsr.push_back(Z2FSR);
+      fsrIndex.push_back(Z2FSRLep+3);
+    }
+    
 
   } else { // Z+l
     const Candidate* Z1 = cand.daughter(0); // the Z
     const reco::Candidate* Z1Lp = Z1->daughter(0);
     const reco::Candidate* Z1Ln = Z1->daughter(1);
+    const Candidate* Z1FSR = 0;
+    int Z1FSRLep = -1;
+
     string Z1LpLabel = "d0.d0.";
     string Z1LnLabel = "d0.d1.";
+
+    if (Z1->numberOfDaughters()==3) {
+      Z1FSR = Z1->daughter(2);
+      Z1FSRLep = getUserFloat(Z1, "dauWithFSR");  
+    }
+
+
     if (Z1Lp->charge() < 0 && Z1Lp->charge()*Z1Ln->charge()<0) {
       swap(Z1Lp,Z1Ln);
       swap(Z1LpLabel,Z1LnLabel);
+      if (Z1FSRLep>=0) Z1FSRLep=(Z1FSRLep+1)%2;
+
     }
     
     leptons.resize(3);
@@ -123,5 +161,9 @@ userdatahelpers::getSortedLeptons(const pat::CompositeCandidate& cand, vector<co
     labels[0]= Z1LpLabel;
     labels[1]=Z1LnLabel;
     labels[2]="d1.";
+    if (Z1FSRLep>=0){
+      fsr.push_back(Z1FSR);
+      fsrIndex.push_back(Z1FSRLep+1);
+    }
   }
 }

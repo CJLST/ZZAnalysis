@@ -85,17 +85,6 @@ void dumpUserData::analyze(const Event & event, const EventSetup& eventSetup){
   Handle<pat::ElectronCollection> electrons;
   event.getByLabel(electronSrc, electrons);
 
-//   edm::Handle<double> rhoHandle1;
-//   event.getByLabel(InputTag("kt6PFJetsForIso","rho"), rhoHandle1);
-//   double rho1 = *rhoHandle1;
-
-//   edm::Handle<double> rhoHandle2;
-//   event.getByLabel(InputTag("kt6PFJets","rho"), rhoHandle2);
-//   double rho2 = *rhoHandle2;
-
-//   cout << "Rho " << rho1 << " " << rho2 << endl;
-
-
   bool dumpVertices=false;
   if (dumpVertices) {  
     edm::Handle<vector<reco::Vertex> > vtxs;
@@ -116,15 +105,6 @@ void dumpUserData::analyze(const Event & event, const EventSetup& eventSetup){
 
   cout << " mu Candidates:    " << muons->size() << endl;
   cout << " e  Candidates:    " << electrons->size() << endl;
-
-//   cout << " Zmumu Candidates: " << MMCand->size() << endl;
-//   cout << " Zee Candidates:   " << EECand->size() << endl;
-
-//   cout << " 4mu Candidates:   " << Cands4mu->size() << endl;
-//   cout << " 4e Candidates:    " << Cands4e->size() << endl;
-//   cout << " 2e2mu Candidates: " << Cands2e2mu->size() << endl;
-//   cout << " 4l Candidates:    " << Cands4l->size() << endl;
-
 
   cout << "Muons:" << endl;  
   for( pat::MuonCollection::const_iterator lep =muons->begin(); lep != muons->end(); ++lep ) {

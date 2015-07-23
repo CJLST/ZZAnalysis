@@ -34,7 +34,6 @@ def split(comps):
                 numJobs=numJobs+1
                 newComp = copy.deepcopy(comp)
                 newComp.files = chunk
-                newComp.samplename = comp.name
                 newComp.name = '{name}_Chunk{index}'.format(name=newComp.name,
                                                        index=ichunk)
                 splitComps.append( newComp )
@@ -238,7 +237,10 @@ class MyBatchManager:
        variables['IsMC'] = True
        if 'PD' in variables and not variables['PD'] == '': variables['IsMC'] = False
        #else: variables['PD'] = ""
-           
+
+       print 'value ',value
+       print 'scv ',splitComponents[value].name
+       
        variables['SAMPLENAME'] = splitComponents[value].samplename
        variables['XSEC'] = splitComponents[value].xsec 
        #variables = {'IsMC':IsMC, 'PD':PD, 'MCFILTER':MCFILTER, 'SUPERMELA_MASS':SUPERMELA_MASS, 'SAMPLENAME':SAMPLENAME, 'XSEC':XSEC, 'SKIM_REQUIRED':SKIM_REQUIRED}
@@ -287,6 +289,7 @@ class Component(object):
 
     def __init__(self, name, prefix, dataset, pattern, splitFactor, variables, pyFragments, xsec, BR, setup, pdfstep):
         self.name = name
+        self.samplename = name
         print "checking "+self.name
         self.source = datasetToSource( prefix, dataset, pattern)
         self.files = self.source.fileNames

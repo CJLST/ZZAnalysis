@@ -97,7 +97,11 @@ void HZZ4lNtupleFactory::Book(TString name, Char_t &value){
   _outTree->Branch(name.Data(), &value, leafname.Data());
 }
 void HZZ4lNtupleFactory::Book(TString name, std::vector<float> &value){
-  defaultsVector[&value] = value; // defaultT is a map<T*, value>
+  defaultsVectorFloat[&value] = value; // defaultT is a map<T*, value>
+  _outTree->Branch(name.Data(), &value);
+}
+void HZZ4lNtupleFactory::Book(TString name, std::vector<short> &value){
+  defaultsVectorShort[&value] = value;
   _outTree->Branch(name.Data(), &value);
 }
 
@@ -110,7 +114,8 @@ void HZZ4lNtupleFactory::InitializeVariables()
  for (auto it = defaultsShort.begin(); it != defaultsShort.end(); ++it ) *(it->first) = it->second;
  for (auto it = defaultsLong.begin(); it != defaultsLong.end(); ++it ) *(it->first) = it->second;
  for (auto it = defaultsChar.begin(); it != defaultsChar.end(); ++it ) *(it->first) = it->second;
- for (auto it = defaultsVector.begin(); it != defaultsVector.end(); ++it ) it->first->clear();//*(it->first)->clear();// = it->second;
+ for (auto it = defaultsVectorFloat.begin(); it != defaultsVectorFloat.end(); ++it ) it->first->clear();
+ for (auto it = defaultsVectorShort.begin(); it != defaultsVectorShort.end(); ++it ) it->first->clear();
 
 /*
   for(int i=0;i<nBranches[kBool];i++){boolVector[i]=defaultVector[kBool].at(i);}
