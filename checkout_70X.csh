@@ -9,6 +9,9 @@
 
 ############## For miniAOD/CMSSW_7_4_5
 
+# init git env.
+git cms-init
+
 #electron MVA ID (still with Phys14 training)
 #git cms-merge-topic sregnard:Phys14ElectronMvaIdFor745
 
