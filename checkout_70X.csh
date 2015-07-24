@@ -19,7 +19,7 @@ git cms-init
 git cms-merge-topic VirginiaCMS:merge-puppi-Phys14ElectronMvaIdFor745
 
 #ZZAnalysis
-git clone https://github.com/VirginiaCMS/ZZAnalysis.git ZZAnalysis
+git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
 (cd ZZAnalysis; git checkout miniAOD_74X_puppi)
 
 #effective areas (to be updated)
