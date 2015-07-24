@@ -108,7 +108,7 @@ else:
     if IsMC:
         process.GlobalTag.globaltag = 'MCRUN2_74_V9::All'
     else:
-        process.GlobalTag.globaltag = '' #FIXME: not yet available for RunII
+        process.GlobalTag.globaltag = 'GR_P_V56' #FIXME: not yet available for RunII
 
 print process.GlobalTag.globaltag
 
@@ -826,22 +826,18 @@ PASSD0_OR_PASSD1  = "(" + PASSD0 + "||" + PASSD1 + ")"
 
 
 CR_BESTZLLos = (CR_BESTCANDBASE_AA    + "&&" +  
+                CR_BASESEL            + "&&" +
                 Z2LL_OS               + "&&" +  
-                CR_Z2MASS             + "&&" +
-                MLLALLCOMB            + "&&" +
-                PT20_10               + "&&" + 
-                "mass > 70 &&"               +
-                "daughter(1).mass>12" + "&&" +
                 SMARTMALLCOMB         )
 
 # CR 3P1F
 CR_BESTZLLos_3P1F = (CR_BESTZLLos + "&&" + PASSD0_OR_PASSD1)                 
-CR_ZLLosSEL_3P1F  = (CR_BASESEL    + "&&" + PASSD0_XOR_PASSD1)
+CR_ZLLosSEL_3P1F  = (CR_BESTZLLos + "&&" + PASSD0_XOR_PASSD1) # Is the CR_BESTZLLos request redundant? 
 
 
 # CR 2P2F
 CR_BESTZLLos_2P2F   = (CR_BESTZLLos)
-CR_ZLLosSEL_2P2F    = (CR_BASESEL + "&&" + BOTHFAIL)
+CR_ZLLosSEL_2P2F    = (CR_BESTZLLos + "&&" + BOTHFAIL)  # Is the CR_BESTZLLos request redundant? 
 
 ################################################################################
 
