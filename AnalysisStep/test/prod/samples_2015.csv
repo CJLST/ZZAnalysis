@@ -1,9 +1,9 @@
 identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments,comment
 
 ###,,,,,,,,,,,Data
-DoubleMu2015B,, -1, ,, /DoubleMuon/MINIAOD/PromptReco-v1/,/store/data/Run2015B,,2,PD=DoubleMu,,
-DoubleEG2015B,, -1, ,, /DoubleEG/MINIAOD/PromptReco-v1/,/store/data/Run2015B,,2,PD=DoubleEle,,
-MuonEG2015B,,   -1, ,, /MuonEG/MINIAOD/PromptReco-v1/,/store/data/Run2015B,,2,PD=MuEG,,
+DoubleMu2015B,, -1, ,, /DoubleMuon/MINIAOD/PromptReco-v1/,/store/data/Run2015B,,2,PD=DoubleMu,json_2015.py,
+DoubleEG2015B,, -1, ,, /DoubleEG/MINIAOD/PromptReco-v1/,/store/data/Run2015B,,2,PD=DoubleEle,json_2015.py,
+MuonEG2015B,,   -1, ,, /MuonEG/MINIAOD/PromptReco-v1/,/store/data/Run2015B,,2,PD=MuEG,json_2015.py,
 
 ###,,,,,,,,,,,Official Spring15 samples
 ggH124,,          44.5 ,2.52E-04 ,,/GluGluHToZZTo4L_M124_13TeV_powheg_JHUgen_pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/,/store/mc/RunIISpring15DR74,,2,,, #FIXME xsection approxymate as still not available
