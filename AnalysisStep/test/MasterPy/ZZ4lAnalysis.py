@@ -111,7 +111,7 @@ else:
         process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
         process.GlobalTag.globaltag = '74X_dataRun2_Prompt_v1' #FIXME: not yet available for RunII
 
-print process.GlobalTag.globaltag
+print '\t',process.GlobalTag.globaltag
 
 ### ----------------------------------------------------------------------
 ### Standard stuff

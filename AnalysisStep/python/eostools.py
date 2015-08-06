@@ -118,7 +118,7 @@ def datasetToSource( prefix, dataset, pattern='', readCache=False):
     rootre = re.compile('.*root')
     files = [f for f in data if rootre.match(f)]
     
-    print files
+#    print files
     
     source = cms.Source(
 	"PoolSource",

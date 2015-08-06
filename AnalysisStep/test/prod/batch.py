@@ -144,6 +144,9 @@ class MyBatchManager:
                                 help="input cfg",
                                 default="analyzer_2015.py")
 
+        self.parser_.add_option("-d", "--debug", action="store_true",
+                                dest="verbose",default =False,
+                                help="Activate verbose output",)
 
 
         (self.options_,self.args_) = self.parser_.parse_args()
@@ -192,9 +195,10 @@ class MyBatchManager:
         else:
             for value, name in zip( listOfValues, listOfDirNames):
                 self.PrepareJob( value, name )
-        print "list of jobs:"
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint( self.listOfJobs_)
+        if batchManager.options_.verbose:
+            print "list of jobs:"
+            pp = pprint.PrettyPrinter(indent=4)
+            pp.pprint( self.listOfJobs_)
 
 
 
@@ -228,7 +232,7 @@ class MyBatchManager:
        scriptFile.close()
        os.system('chmod +x %s' % scriptFileName)
        
-       print splitComponents[value].pyFragments
+       print '\t',splitComponents[value].pyFragments
 
        variables = splitComponents[value].variables
        pyFragments = splitComponents[value].pyFragments
@@ -238,23 +242,24 @@ class MyBatchManager:
        if 'PD' in variables and not variables['PD'] == '': variables['IsMC'] = False
        #else: variables['PD'] = ""
 
-       print 'value ',value
-       print 'scv ',splitComponents[value].name
+       if batchManager.options_.verbose:
+           print 'value ',value
+           print 'scv ',splitComponents[value].name
        
        variables['SAMPLENAME'] = splitComponents[value].samplename
        variables['XSEC'] = splitComponents[value].xsec 
        #variables = {'IsMC':IsMC, 'PD':PD, 'MCFILTER':MCFILTER, 'SUPERMELA_MASS':SUPERMELA_MASS, 'SAMPLENAME':SAMPLENAME, 'XSEC':XSEC, 'SKIM_REQUIRED':SKIM_REQUIRED}
 
-       print "Parameters: ", variables
+       print "\tParameters: ", variables
 
        execfile(cfgFileName,variables)
        
-       for fragment in pyFragments:
-           execfile('pyFragments/{0:s}'.format(fragment),variables)  
-
        process = variables.get('process') 
        process.source = splitComponents[value].source
        process.source.fileNames = splitComponents[value].files
+
+       for fragment in pyFragments:
+           execfile('pyFragments/{0:s}'.format(fragment),variables)  
 
        # PDF step 1 case: create also a snippet to be used later in step 2 phase
        if splitComponents[value].pdfstep == 1:
@@ -309,7 +314,7 @@ if __name__ == '__main__':
     batchManager = MyBatchManager()
     
     cfgFileName = batchManager.options_.cfgFileName #"analyzer_2015.py" # This is the python job config. FIXME make it configurable.
-    sampleCSV  = batchManager.args_[0]            # This is the csv file with samples to be analyzed./
+    sampleCSV  = batchManager.args_[0]            # This is the csv file with samples to be analyzed./    
 
     handle = open(cfgFileName, 'r')
     cfo = imp.load_source("pycfg", cfgFileName, handle)

@@ -5,7 +5,7 @@ To install a complete CMSSW area (including this package)
 ------------------------------
 Download and execute the setup script for the given release:
 
-*   For CMSSW_7_4_5:
+*   For CMSSW_7_4_7:
 
     ```
     wget -P /tmp https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_74X/checkout_70X.csh

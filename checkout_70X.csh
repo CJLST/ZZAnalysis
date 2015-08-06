@@ -7,7 +7,7 @@
 # source /tmp/checkout_70X.csh
 
 
-############## For miniAOD/CMSSW_7_4_5
+############## For miniAOD/CMSSW_7_4_7
 
 #electron MVA ID (still with Phys14 training)
 git cms-merge-topic sregnard:Phys14ElectronMvaIdFor745
