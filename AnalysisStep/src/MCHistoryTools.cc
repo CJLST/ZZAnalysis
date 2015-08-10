@@ -207,7 +207,7 @@ MCHistoryTools::init() {
     // Prompt leptons
     else if ((id== 13 || id==11 || id==15) && (p->mother()!=0)) {
       int mid = abs(p->mother()->pdgId());
-      int pid = getParentCode((const GenParticle*)&*p);
+      int pid = abs(getParentCode((const GenParticle*)&*p));
       // Lepton from H->(Z->)ll; note that this is the first daughter in the H or Z line; ie pre-FSR
       if (mid == 25 || (mid == 23 && pid==25)) {
 	theGenLeps.push_back(&*p);
@@ -222,21 +222,27 @@ MCHistoryTools::init() {
     if (id==22) {
       const reco::GenParticle* fp = getParent((const GenParticle*)&*p);
       int pcode = fp->pdgId();
-      if (pcode == 11 || pcode == 13) {
+      if (abs(pcode) == 11 || abs(pcode) == 13) {
 	//Search for the first ancestor of same ID of the photon's parent
 	while (fp->mother()!=0 && fp->mother()->pdgId() == pcode) {
 	  fp = (const GenParticle*) fp->mother();
 	}
-	
-	theGenFSR.push_back(&*p);
-	theGenFSRParents.push_back(&*fp);
+	//Check that the lepton mother is a Z, W or H (for samples where intermediate bosons are not listed in the history). May not work correctly in some samples!
+	int origin = abs(fp->mother()->pdgId());
+	if (origin==23 || origin == 24 || origin == 25) {		
+	  theGenFSR.push_back(&*p);
+	  theGenFSRParents.push_back(&*fp);
+	} else {
+	  // the lepton that makes FSR is coming from elsewhere
+	  cout << "WARNING: FSR with parent ID: " << pcode << " origin ID: " << origin << endl;
+	}
       } 
       assert(pcode!=23); // just an xcheck that we don't get FSR listed with Z as a parent...
     }
     
       
     if (dbg){
-      if (id==13 || id==11 || id ==23 || id==23) {
+      if (id==13 || id==11 || id ==23 || id==24) {
 	cout << "Genpart: id " << id << " pt " << p->pt() << " eta " << p->eta() << " phi " << p->phi()
 	     << " status " << p->status()
 	     << " parent id " << (p->mother()!=0?p->mother()->pdgId():0)
@@ -268,7 +274,7 @@ MCHistoryTools::init() {
 	}
       }
     }
-    if (!found) cout << "ERROR: mismatch in FSR photon " << theGenFSR[j]->pt() << theGenFSRParents[j]->pt() << " " << theGenFSRParents[j] << endl;
+    if (!found) cout << "ERROR: mismatch in FSR photon " << theGenFSR[j]->pt() << " " << theGenFSRParents[j]->pt() << " " << theGenFSRParents[j] << endl;
   }
   
 
