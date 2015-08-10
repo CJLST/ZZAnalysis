@@ -136,8 +136,10 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
   
   string cmp=iConfig.getParameter<string>("bestCandComparator");
   if      (cmp=="byBestZ1bestZ2") bestCandType=Comparators::byBestZ1bestZ2;
-  else if (cmp=="byBestKD")           bestCandType=Comparators::byBestKD;
-  else if (cmp=="byBestKD_VH")           bestCandType=Comparators::byBestKD_VH;
+  else if (cmp=="byBestKD")       bestCandType=Comparators::byBestKD;
+  else if (cmp=="byBestKD_VH")    bestCandType=Comparators::byBestKD_VH;
+  else if (cmp=="byBestPsig")    bestCandType=Comparators::byBestPsig;
+  else if (cmp=="byMHWindow")    bestCandType=Comparators::byMHWindow;
   else abort();
 
   //-- Non-MEM discriminants

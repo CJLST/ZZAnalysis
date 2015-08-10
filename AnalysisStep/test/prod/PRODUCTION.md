@@ -57,6 +57,12 @@ haddChunks.py PT13TeV | tee haddlog_PRODFSR.txt
 ```
 This takes a while. 
 
+Now move the job directories aside:
+```
+mkdir Chunks
+mv *Chunk* Chunks/
+```
+
 <!---
 Now create links to the merged files into the HZZ_root folder
 ```

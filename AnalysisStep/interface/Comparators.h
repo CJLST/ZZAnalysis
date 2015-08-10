@@ -21,7 +21,7 @@ namespace Comparators {
 
   const float ZmassValue = 91.1876;
 
-  enum ComparatorTypes {byBestZ1bestZ2 = 0, byBestKD=1, byBestKD_VH=2};
+  enum ComparatorTypes {byBestZ1bestZ2 = 0, byBestKD=1, byBestKD_VH=2, byBestPsig=3, byMHWindow=4};
 
   struct BestCandComparator {
     const pat::CompositeCandidateCollection& candCollection;
@@ -66,6 +66,13 @@ namespace Comparators {
     }
     
 
+    bool inMHWindow(const pat::CompositeCandidate& cand){
+      const double m_min=120.;
+      const double m_max=130.;
+      double m =cand.mass();
+      return (m>m_min&&m<m_max);
+    }
+
     virtual bool operator() (int i, int j){
 
       const pat::CompositeCandidate& cand_i = candCollection[i];
@@ -81,12 +88,10 @@ namespace Comparators {
       // Choose by best KD; for equivalent candidates (same leptons and FSR) that differ only on pairing,
       // choose based on legacy logic
       else if (theType==byBestKD) {	
+	if (isEquivalent(cand_i,cand_j)) return bestZ1bestZ2(cand_i,cand_j); //same 4 leptons, different pairing
 	double KD_i = cand_i.userFloat("p0plus_VAJHU")/( cand_i.userFloat("p0plus_VAJHU") + cand_i.userFloat("bkg_VAMCFM") );
 	double KD_j = cand_j.userFloat("p0plus_VAJHU")/( cand_j.userFloat("p0plus_VAJHU") + cand_j.userFloat("bkg_VAMCFM") );
-
-	if (isEquivalent(cand_i,cand_j)) return bestZ1bestZ2(cand_i,cand_j); //same 4 leptons, different pairing
-	else return (KD_i>KD_j);
-
+	return (KD_i>KD_j);
       } // end of byBestKD
 
 
@@ -109,6 +114,22 @@ namespace Comparators {
 	else return (KD_i>KD_j);
       } // end of byBestKD_VH
       
+
+      else if (theType==byBestPsig) {
+	if (isEquivalent(cand_i,cand_j)) return bestZ1bestZ2(cand_i,cand_j); //same 4 leptons, different pairing
+	return (cand_i.userFloat("p0plus_VAJHU")>cand_j.userFloat("p0plus_VAJHU"));
+      }
+
+      else if (theType==byMHWindow) {
+	// Precedence for a candidate in the H mass window
+	bool i_inMHWin=inMHWindow(cand_i);
+	bool j_inMHWin=inMHWindow(cand_j);
+	if (i_inMHWin&&!j_inMHWin) return true;
+	if (j_inMHWin&&!i_inMHWin) return false;
+	// If neither, or both candidate are in the mass window, use the old logic. Could choose by best psig as well.
+	return bestZ1bestZ2(cand_i,cand_j); //same 4 leptons, different pairing
+      }
+
       else {
 	abort();
       }
