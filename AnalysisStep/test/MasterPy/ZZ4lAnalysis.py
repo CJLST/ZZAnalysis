@@ -756,7 +756,8 @@ process.ZZCand = cms.EDProducer("ZZCandidateFiller",
         GoodLeptons =  cms.string(FOURGOODLEPTONS),
         Z2Mass  = cms.string(Z2MASS),
         MAllComb = cms.string(MLLALLCOMB),
-        FullSel70 = cms.string(FULLSEL70),
+        SR = cms.string(FULLSEL70),
+        FullSel70 = cms.string(FULLSEL70), #Obsolete, use "SR"
         FullSel = cms.string(FULLSEL),
     )
 )
@@ -867,7 +868,7 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
     ),
     ZRolesByMass = cms.bool(False),  # daughter('Z1') = daughter(0)
     flags = cms.PSet(
-      SR = cms.string(BESTCAND_AMONG),
+      SR = cms.string(FULLSEL70),
       CRZLLss = cms.string(CR_BASESEL),             #combine with proper isBestCRZLLss for AA ss/os CRss    
       CRZLLos_2P2F = cms.string(CR_ZLLosSEL_2P2F),        
       CRZLLos_3P1F = cms.string(CR_ZLLosSEL_3P1F),        
