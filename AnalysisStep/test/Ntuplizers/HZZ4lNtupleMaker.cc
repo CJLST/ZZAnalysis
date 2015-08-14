@@ -1049,7 +1049,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
                              cand.userFloat("MAllComb") &&
                              cand.userFloat("pt1")>20 && cand.userFloat("pt2")>10. &&
                              ZZMass>70.;
-  bool candPassFullSel70   = cand.userFloat("FullSel70");
+  bool candPassFullSel70   = cand.userFloat("SR");
   bool candPassFullSel   = cand.userFloat("FullSel");
   bool candIsBest = cand.userFloat("isBestCand");
   bool passMz_zz = (Z1Mass>60. && Z1Mass<120. && Z2Mass>60. && Z2Mass<120.);   //FIXME hardcoded cut

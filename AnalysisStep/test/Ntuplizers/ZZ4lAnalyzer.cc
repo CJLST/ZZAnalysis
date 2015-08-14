@@ -778,7 +778,7 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
     // Final selection as specified in the .py file. The selected candidate is
     // the one with (pass && isBest).
     bool candPass = cand->userFloat("FullSel");
-    bool candPass70 = cand->userFloat("FullSel70");
+    bool candPass70 = cand->userFloat("SR");
     bool candIsBest = cand->userFloat("isBestCand");
 
 	  
