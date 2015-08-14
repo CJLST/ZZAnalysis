@@ -644,7 +644,7 @@ if SELSETUP=="Legacy": # Default Configuration (Legacy paper): cut on selected b
                       Z1MASS          
                       )
     
-    FULLSEL70           = (FOURGOODLEPTONS + "&&" +
+    SR           = (FOURGOODLEPTONS + "&&" +
                            HASBESTZ        + "&&" +
                            Z1MASS          + "&&" +
                            Z2MASS          + "&&" +
@@ -665,7 +665,7 @@ elif SELSETUP=="allCutsAtOnce": # Select best candidate among those passing all 
                       "daughter('Z2').mass>12"
                       )
 
-    FULLSEL70 = BESTCAND_AMONG
+    SR = BESTCAND_AMONG
 
 
 
@@ -679,7 +679,7 @@ elif SELSETUP=="allCutsAtOnceButMZ2": # Select best candidate among those passin
                       "mass>70"                        
                       )
 
-    FULLSEL70           = (BESTCAND_AMONG + "&&" +
+    SR           = (BESTCAND_AMONG + "&&" +
                            "daughter('Z2').mass>12")
                           
                                                                                                                                                                                       
@@ -696,7 +696,7 @@ elif SELSETUP=="allCutsAtOncePlusMZb": # Apply also cut on mZb, -> expected to r
                       "daughter('Z2').mass>12"
                       )
 
-    FULLSEL70 = BESTCAND_AMONG
+    SR = BESTCAND_AMONG
 
 elif SELSETUP=="allCutsAtOncePlusSmart": # Apply smarter mZb cut
 
@@ -710,7 +710,7 @@ elif SELSETUP=="allCutsAtOncePlusSmart": # Apply smarter mZb cut
                       "daughter('Z2').mass>12"
                       )
 
-    FULLSEL70 = BESTCAND_AMONG
+    SR = BESTCAND_AMONG
 
 
 else:
@@ -718,7 +718,7 @@ else:
     sys.exit()
 
 
-FULLSEL            = (FULLSEL70      + "&&" +
+FULLSEL            = (SR      + "&&" +
                       M4l100)
 
 
@@ -756,8 +756,8 @@ process.ZZCand = cms.EDProducer("ZZCandidateFiller",
         GoodLeptons =  cms.string(FOURGOODLEPTONS),
         Z2Mass  = cms.string(Z2MASS),
         MAllComb = cms.string(MLLALLCOMB),
-        SR = cms.string(FULLSEL70),
-        FullSel70 = cms.string(FULLSEL70), #Obsolete, use "SR"
+        SR = cms.string(SR),
+        FullSel70 = cms.string(SR), #Obsolete, use "SR"
         FullSel = cms.string(FULLSEL),
     )
 )
@@ -868,7 +868,7 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
     ),
     ZRolesByMass = cms.bool(False),  # daughter('Z1') = daughter(0)
     flags = cms.PSet(
-      SR = cms.string(FULLSEL70),
+      SR = cms.string(SR),
       CRZLLss = cms.string(CR_BASESEL),             #combine with proper isBestCRZLLss for AA ss/os CRss    
       CRZLLos_2P2F = cms.string(CR_ZLLosSEL_2P2F),        
       CRZLLos_3P1F = cms.string(CR_ZLLosSEL_3P1F),        
