@@ -135,3 +135,34 @@ float LeptonIsoHelper::combRelIsoPF(int sampleType, int setup, double rho, const
   return 0;
 }
 
+
+// Adapted from Hengne's implementation at: https://github.com/VBF-HZZ/UFHZZAnalysisRun2/blob/csa14/UFHZZ4LAna/interface/HZZ4LHelper.h#L3525
+void LeptonIsoHelper::fsrIso(const reco::PFCandidate* photon, edm::Handle<edm::View<pat::PackedCandidate> > pfcands, double& ptSumNe, double& ptSumCh) {
+
+  // hardcoded cut values
+  const double cut_deltaR = 0.3; 
+  const double cut_deltaRself_ch = 0.0001;
+  const double cut_deltaRself_ne = 0.01;
+
+  ptSumNe=0.;
+  ptSumCh=0.;
+  for( edm::View<pat::PackedCandidate>::const_iterator pf = pfcands->begin(); pf!=pfcands->end(); ++pf ) {
+    double dr = deltaR(photon->p4(), pf->p4()) ;
+    if (dr>=cut_deltaR) continue;
+
+    int pdgId= abs(pf->pdgId());
+
+    //neutral hadrons + photons
+    if (pf->charge()==0) {
+      if (dr>cut_deltaRself_ne && pf->pt()>0.5 && (pdgId==22|| pdgId==130)) {
+	ptSumNe += pf->pt();
+      }
+      // charged hadrons 
+    } else {
+      if (dr>cut_deltaRself_ch && pf->pt()> 0.2 && pdgId==211) {
+	ptSumCh += pf->pt();
+      }
+    }
+  }
+}
+

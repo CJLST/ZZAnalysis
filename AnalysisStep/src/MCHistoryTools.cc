@@ -234,7 +234,7 @@ MCHistoryTools::init() {
 	  theGenFSRParents.push_back(&*fp);
 	} else {
 	  // the lepton that makes FSR is coming from elsewhere
-	  cout << "WARNING: FSR with parent ID: " << pcode << " origin ID: " << origin << endl;
+	  if (dbg) cout << "WARNING: FSR with parent ID: " << pcode << " origin ID: " << origin << endl;
 	}
       } 
       assert(pcode!=23); // just an xcheck that we don't get FSR listed with Z as a parent...

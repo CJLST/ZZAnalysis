@@ -26,6 +26,7 @@
 #include <DataFormats/GeometryVector/interface/VectorUtil.h> 
 #include <DataFormats/VertexReco/interface/Vertex.h>
 #include <DataFormats/ParticleFlowCandidate/interface/PFCandidate.h>
+#include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
 
 #include <ZZAnalysis/AnalysisStep/interface/CutSet.h>
 
@@ -55,12 +56,11 @@ class LeptonPhotonMatcher : public edm::EDProducer {
   virtual void produce(edm::Event&, const edm::EventSetup&);
   virtual void endJob(){};
 
-  static void fsrIso(PhotonPtr photon, edm::Handle<edm::View<pat::PackedCandidate> > pfcands, double& ptSumNe, double& ptSumCh);
-
   const edm::InputTag theMuonTag_;
   const edm::InputTag theElectronTag_;
   const edm::InputTag thePhotonTag_;
   bool matchFSR;
+  bool photonPassthrough;
   bool debug;
 };
 
@@ -70,41 +70,11 @@ LeptonPhotonMatcher::LeptonPhotonMatcher(const edm::ParameterSet& iConfig) :
   theElectronTag_(iConfig.getParameter<InputTag>("electronSrc")),
   thePhotonTag_(iConfig.getParameter<InputTag>("photonSrc")),
   matchFSR(iConfig.getParameter<bool>("matchFSR")),
+  photonPassthrough(iConfig.getUntrackedParameter<bool>("photonPassthrough",false)),
   debug(iConfig.getUntrackedParameter<bool>("debug",false))
 {
   produces<pat::MuonCollection>("muons");
   produces<pat::ElectronCollection>("electrons");
-}
-
-
-// Adapted from Hengne's implementation at: https://github.com/VBF-HZZ/UFHZZAnalysisRun2/blob/csa14/UFHZZ4LAna/interface/HZZ4LHelper.h#L3525
-void LeptonPhotonMatcher::fsrIso(PhotonPtr photon, edm::Handle<edm::View<pat::PackedCandidate> > pfcands, double& ptSumNe, double& ptSumCh) {
-
-  // hardcoded cut values
-  const double cut_deltaR = 0.3; 
-  const double cut_deltaRself_ch = 0.0001;
-  const double cut_deltaRself_ne = 0.01;
-
-  ptSumNe=0.;
-  ptSumCh=0.;
-  for( edm::View<pat::PackedCandidate>::const_iterator pf = pfcands->begin(); pf!=pfcands->end(); ++pf ) {
-    double dr = deltaR(photon->p4(), pf->p4()) ;
-    if (dr>=cut_deltaR) continue;
-
-    int pdgId= abs(pf->pdgId());
-
-    //neutral hadrons + photons
-    if (pf->charge()==0) {
-      if (dr>cut_deltaRself_ne && pf->pt()>0.5 && (pdgId==22|| pdgId==130)) {
-	ptSumNe += pf->pt();
-      }
-      // charged hadrons 
-    } else {
-      if (dr>cut_deltaRself_ch && pf->pt()> 0.2 && pdgId==211) {
-	ptSumCh += pf->pt();
-      }
-    }
-  }
 }
 
 
@@ -209,16 +179,22 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	// Now that we know the closest lepton, apply Photon Selection
 	bool accept = false;
 	double gRelIso = 999., neu(999.), chg(999.);
-	if( dRMin<0.07 ){
-	  if (g->pt()>2.) accept = true;
-	} else if ( dRMin<0.5 ){ // That's implicit, but does not hurt
-	  // double relIso = g->relIso(0.5); // This is buggy, needs to recompute it.
-	  fsrIso(g, pfCands, neu, chg);
-	  gRelIso = (neu + chg)/g->pt();
-	  // For collections where this is precomputed
-	  // double gRelIso2 = (g->userFloat("fsrPhotonPFIsoChHadPUNoPU03pt02") + g->userFloat("fsrPhotonPFIsoNHadPhoton03")) / g->pt();
-	  if (g->pt()>4 && gRelIso<1.) accept = true;
+
+	if (photonPassthrough) { // Passthrough: no photon selection, for FSR studies
+	  accept = (dRMin<0.5 && g->pt()>2.);
+	} else {
+	  if( dRMin<0.07 ){
+	    if (g->pt()>2.) accept = true;
+	  } else if (g->pt()>4 && dRMin<0.5 ){ // DR<0.5 is implicit, but does not hurt
+	    // double relIso = g->relIso(0.5); // This is buggy, needs to recompute it.
+	    LeptonIsoHelper::fsrIso(&(*g), pfCands, neu, chg);
+	    gRelIso = (neu + chg)/g->pt();
+	    // For collections where this is precomputed
+	    // double gRelIso2 = (g->userFloat("fsrPhotonPFIsoChHadPUNoPU03pt02") + g->userFloat("fsrPhotonPFIsoNHadPhoton03")) / g->pt();
+	    if (gRelIso<1.) accept = true;
+	  }
 	}
+
 	if(debug) cout << "   " << "   closest lep: " << closestLep->pdgId() << " " << closestLep->pt() <<  " gRelIso: " << gRelIso << " (ch: " << chg << " n+p: " <<  neu << " ) " << " dRMin: " << dRMin << " accept: " << accept << endl;
 	if (accept) theMap[closestLep].push_back(g);
       }
