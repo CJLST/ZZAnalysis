@@ -145,8 +145,10 @@ namespace {
   Float_t Lep4BDT  = 0;
   std::vector<float> fsrPt; 
   std::vector<float> fsrEta; 
-  std::vector<float> fsrPhi ;
+  std::vector<float> fsrPhi;
   std::vector<short> fsrLept;
+  std::vector<short> fsrLeptID;
+  std::vector<float> fsrGenPt;
   char Lep4missingHit  = 0;
   Float_t Lep4combRelIsoPF  = 0;
 /*Float_t Lep1chargedHadIso  = 0;
@@ -407,7 +409,9 @@ private:
   Float_t gen_sumWeights;
 
   string sampleName;
-   
+
+  std::vector<const reco::Candidate *> genFSR;
+
   TH2D *hTH2D_Mu_All;// = (TH2D*)fMuWeight.Get("TH2D_ALL_2011A"); 
   TH2D *hTH2D_El_All;//  = (TH2D*)fElWeight12.Get(eleSFname.Data());
   TH2D* h_weight; //HqT weights
@@ -613,6 +617,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     genH = mch.genH();
     genZLeps     = mch.sortedGenZZLeps();
     genAssocLeps = mch.genAssociatedLeps();
+    genFSR       = mch.genFSR();
   }
   // End of MC history analysis ------------------------------------------
 
@@ -1167,6 +1172,23 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     fsrEta.push_back(fsr.eta());
     fsrPhi.push_back(fsr.phi());
     fsrLept.push_back(fsrIndex[i]);
+    //    fsrDR.push_back();
+    fsrLeptID.push_back(leptons[fsrIndex[i]-1]->pt());
+    int igen = MCHistoryTools::fsrMatch(fsrPhot[i], genFSR);
+    double dRGenVsReco = -1.;
+    double genpT = -1.;
+    if (igen>=0) {
+      dRGenVsReco = ROOT::Math::VectorUtil::DeltaR(genFSR[igen]->momentum(), fsrPhot[i]->momentum());
+//       pTGen = genFSR[igen]->pt();
+//       etaGen = genFSR[igen]->eta();
+//       phiGen = genFSR[igen]->phi();
+      if (dRGenVsReco<0.3) {// matching cut - FIXME
+	genpT=genFSR[igen]->pt();
+      }
+    }
+    fsrGenPt.push_back(genpT);
+    
+
   }
   
   //convention: 0 -> 4mu   1 -> 4e   2 -> 2mu2e
@@ -1613,6 +1635,8 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("fsrEta",fsrEta);
   myTree->Book("fsrPhi",fsrPhi);
   myTree->Book("fsrLept",fsrLept);
+  myTree->Book("fsrLeptId",fsrLeptID); // FIXME next ones can be skipped for mass production
+  myTree->Book("fsrGenPt",fsrGenPt);
 
   //Photon variables
   if (writePhotons) {

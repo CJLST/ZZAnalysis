@@ -446,3 +446,28 @@ MCHistoryTools::genAssociatedFS(){
   
   return id;
 }
+
+// Find gen FSR matching (closest) to recoFSR.
+int MCHistoryTools::fsrMatch(const reco::Candidate* recoFSR, 
+		       const vector<const reco::Candidate*>& genFSRs) {
+
+  //FIXME: cuts should be tuned; is pT matching also necessary?
+  const double dRMatchingCut = 0.3; // FIXME!!! 
+  const double ptMinCut = 2.;
+
+  double minDR = 99999;
+  int matchIdx=-1;
+
+  for (unsigned j=0; j<genFSRs.size(); ++j) {
+    const reco::Candidate* gg = genFSRs[j];
+    if (gg->pt()>ptMinCut) {
+      double dR = reco::deltaR2(*gg,*recoFSR);
+      if (dR<dRMatchingCut && dR<minDR) {
+	minDR=dR;
+	matchIdx=j;
+      }
+    }
+  }
+
+  return matchIdx;
+}

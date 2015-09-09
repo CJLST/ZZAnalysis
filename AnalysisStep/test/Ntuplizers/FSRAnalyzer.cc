@@ -38,8 +38,6 @@ class FSRAnalyzer : public edm::EDAnalyzer {
   // Operations
   void analyze(const edm::Event & event, const edm::EventSetup& eventSetup);  
 
- private:
-  int match(const reco::Candidate* recoFSR, const std::vector<const reco::Candidate*>& genFSRs);
 };
 
 FSRAnalyzer::FSRAnalyzer(const edm::ParameterSet& pset){}
@@ -144,19 +142,21 @@ FSRAnalyzer::analyze(const edm::Event & event, const edm::EventSetup& eventSetup
 	  double pTGen = -1.;
 	  double etaGen = 0;
 	  double phiGen = 0.;
-	  int igen = match(g->get(),genFSR);
+	  int igen = MCHistoryTools::fsrMatch(g->get(),genFSR);
 
 	  double neu, chg;
 	  LeptonIsoHelper::fsrIso(gamma, pfCands, neu, chg);
 	  double gRelIso = (neu + chg)/gamma->pt();	  
 	  
 	  if (igen>=0) {
-	    isFake=false;
-	    nRecoFSRMatchedToGen[igen]++;
 	    dRGenVsReco = ROOT::Math::VectorUtil::DeltaR(genFSR[igen]->momentum(),gamma->momentum());
-	    pTGen = genFSR[igen]->pt();
-	    etaGen = genFSR[igen]->eta();
-	    phiGen = genFSR[igen]->phi();
+	    if (dRGenVsReco<0.3) { //Matching cut -- FIXME
+	      isFake=false;
+	      nRecoFSRMatchedToGen[igen]++;
+	      pTGen = genFSR[igen]->pt();
+	      etaGen = genFSR[igen]->eta();
+	      phiGen = genFSR[igen]->phi();
+	    }
 	  }
 
 	  cout << "FSR:" 
@@ -210,30 +210,6 @@ FSRAnalyzer::analyze(const edm::Event & event, const edm::EventSetup& eventSetup
 }
 
 
-// Find gen FSR matching (closest) to recoFSR.
-int FSRAnalyzer::match(const reco::Candidate* recoFSR, 
-		       const vector<const reco::Candidate*>& genFSRs) {
-
-  //FIXME: cuts should be tuned; is pT matching also necessary?
-  const double dRMatchingCut = 0.3; // FIXME!!! 
-  const double ptMinCut = 2.;
-
-  double minDR = 99999;
-  int matchIdx=-1;
-
-  for (unsigned j=0; j<genFSRs.size(); ++j) {
-    const reco::Candidate* gg = genFSRs[j];
-    if (gg->pt()>ptMinCut) {
-      double dR = reco::deltaR2(*gg,*recoFSR);
-      if (dR<dRMatchingCut && dR<minDR) {
-	minDR=dR;
-	matchIdx=j;
-      }
-    }
-  }
-
-  return matchIdx;
-}
 
 
 

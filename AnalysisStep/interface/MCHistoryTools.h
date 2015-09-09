@@ -82,6 +82,9 @@ class MCHistoryTools {
   unsigned int getProcessID() {return processID;}
   float gethepMCweight() {return hepMCweight;}
     
+
+  static int fsrMatch(const reco::Candidate* recoFSR, const std::vector<const reco::Candidate*>& genFSRs);
+
  private:
   edm::Handle<edm::View<reco::Candidate> > particles;
   bool ismc;
