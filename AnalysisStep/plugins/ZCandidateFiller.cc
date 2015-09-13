@@ -30,6 +30,8 @@
 #include <string>
 #include <Math/VectorUtil.h>
 
+using namespace std;
+
 namespace {
   bool recomputeIsoForFSR=false; // add "combRelIsoPFFSRCorr" for Z leptons (a' la Legacy)
 }
@@ -53,6 +55,7 @@ class ZCandidateFiller : public edm::EDProducer {
   int sampleType;
   int setup;
   const CutSet<pat::CompositeCandidate> cuts;
+  int FSRMode;
   bool embedDaughterFloats;
 };
 
@@ -65,6 +68,17 @@ ZCandidateFiller::ZCandidateFiller(const edm::ParameterSet& iConfig) :
   cuts(iConfig.getParameter<edm::ParameterSet>("flags")),
   embedDaughterFloats(iConfig.getUntrackedParameter<bool>("embedDaughterFloats",true))
 {
+  
+  string mode = iConfig.getParameter<string>("FSRMode");
+  if      (mode == "skip")   FSRMode = 0;
+  else if (mode == "Legacy") FSRMode = 1;
+  else if (mode == "RunII")  FSRMode = 2;
+  else {
+    cout << "ZCandidateFiller: FSRMode " << FSRMode << " not supported" << endl;
+    abort();
+  }
+  
+
   produces<pat::CompositeCandidateCollection>();
 }
 
@@ -85,8 +99,8 @@ ZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 #define USE_FSR
 #ifdef USE_FSR
   // Get rho, to recompute isolation for leptons with FSR
-  double rhoForMu, rhoForEle;
-  {
+  double rhoForMu=0., rhoForEle=0.;
+  if (recomputeIsoForFSR) {
     edm::Handle<double> rhoHandle;
     iEvent.getByLabel(LeptonIsoHelper::getMuRhoTag(sampleType, setup), rhoHandle);
     rhoForMu = *rhoHandle;
@@ -123,113 +137,129 @@ ZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     bool OS = (id0*id1)<0;
     bool SF = abs(id0)==abs(id1);
 
-#define USE_FSR
-#ifdef USE_FSR
     // ------------------------------
     // FSR recovery
     // ------------------------------
 
-    //loop on the 2 daughters; apply mass cuts on (llg) and store 
-    // the highest-pT and the lowest-DR assocated gamma.
-    double    maxPT = -1.;
-    double    minDR = 9999.;
-    const pat::PFParticle* maxPTg=0;
-    const pat::PFParticle* minDRg=0;
-    int maxPTgLep=-1; // Index of daughter to which the above photons
-    int minDRgLep=-1; // are associated
+    if (FSRMode==1) { // Legacy
+      //loop on the 2 daughters; apply mass cuts on (llg) and store 
+      // the highest-pT and the lowest-DR assocated gamma.
+      double    maxPT = -1.;
+      double    minDR = 9999.;
+      const pat::PFParticle* maxPTg=0;
+      const pat::PFParticle* minDRg=0;
+      int maxPTgLep=-1; // Index of daughter to which the above photons
+      int minDRgLep=-1; // are associated
 
-    for (int dauIdx=0; dauIdx<2; ++dauIdx) { 
-      const Candidate* d = myCand.daughter(dauIdx);
-      const PhotonPtrVector* gammas = userdatahelpers::getUserPhotons(d);
-      if (gammas==0) continue;
-      for (PhotonPtrVector::const_iterator g = gammas->begin();
-	   g!= gammas->end(); ++g) {
-	const pat::PFParticle* gamma = g->get();
-	reco::Candidate::LorentzVector p4G = gamma->p4();
-	reco::Candidate::LorentzVector p4LL = myCand.p4();
-	double mLLG = (p4LL + p4G).M();
-	bool movesToZPeak = (fabs(mLLG-ZmassValue) < fabs(myCand.mass()-ZmassValue));
-// // Debug
-// 	myCand.addUserFloat("mass",myCand.mass());
-// 	myCand.addUserFloat("mLLG",mLLG);
-// 	myCand.addUserFloat("movesToZPeak",movesToZPeak);
-	if (movesToZPeak && mLLG<100. && mLLG>4) { // Mass cuts (4 is implicit)
-
-	  double pt = gamma->pt();
-	  if (pt>maxPT) {
-	    maxPT  = pt;
-	    maxPTg = gamma;
-	    maxPTgLep = dauIdx;
-	  }
-	  
-	  double dR = ROOT::Math::VectorUtil::DeltaR(gamma->momentum(),d->momentum());
-	  if (dR<minDR) {
-	    minDR  = dR;
-	    minDRg = gamma;
-	    minDRgLep = dauIdx;
-	  }
-	}
-      } // end loop on photons
-    } // end loop on daughters (leptons)
-    
-    // Define the selected FSR photon.
-    const pat::PFParticle* fsr=0;    
-    int lepWithFsr=-1; 
-    if (maxPTg!=0) { // at least 1 photon selected
-      if (maxPT>4) { // First case: take highest-pT
-	fsr=maxPTg;
-	lepWithFsr=maxPTgLep;
-      } else {
-	fsr=minDRg;
-	lepWithFsr=minDRgLep;
-      }
-    }
-
-    myCand.addUserFloat("dauWithFSR",lepWithFsr); // Index of the cand daughter with associated FSR photon
-
-    if (fsr!=0) {
-      // Add daughter and set p4.
-      myCand.addUserFloat("mll",myCand.mass()); // for debug purposes
-      myCand.setP4(myCand.p4()+fsr->p4());
-//      myCand.addDaughter(reco::ShallowCloneCandidate(fsr->masterClone()),"FSR"); //FIXME: fsr does not have a masterClone
-      pat::PFParticle myFsr(*fsr);
-      myFsr.setPdgId(22); // Fix: photons that are isFromMu have abs(pdgId)=13!!!
-      myCand.addDaughter(myFsr,"FSR");
-    }
-    
-    if (recomputeIsoForFSR) {
-      // Recompute iso for leptons with FSR
       for (int dauIdx=0; dauIdx<2; ++dauIdx) { 
 	const Candidate* d = myCand.daughter(dauIdx);
-	float fsrCorr = 0; // The correction to PFPhotonIso
-	if (fsr!=0) {
-	  //	if (!fsr->isFromMuon()) { // Type 1 photons should be subtracted from muon iso cones
-	  double dR = ROOT::Math::VectorUtil::DeltaR(fsr->momentum(),d->momentum());
-	  if (dR<0.4 && ((d->isMuon() && dR > 0.01) ||
-			 (d->isElectron() && (fabs((static_cast<const pat::Electron*>(d->masterClone().get()))->superCluster()->eta()) < 1.479 || dR > 0.08)))) {
-	    fsrCorr = fsr->pt();
-	  }
-	}
+	const PhotonPtrVector* gammas = userdatahelpers::getUserPhotons(d);
+	if (gammas==0) continue;
+	for (PhotonPtrVector::const_iterator g = gammas->begin();
+	     g!= gammas->end(); ++g) {
+	  const pat::PFParticle* gamma = g->get();
+	  reco::Candidate::LorentzVector p4G = gamma->p4();
+	  reco::Candidate::LorentzVector p4LL = myCand.p4();
+	  double mLLG = (p4LL + p4G).M();
+	  bool movesToZPeak = (fabs(mLLG-ZmassValue) < fabs(myCand.mass()-ZmassValue));
+	  if (movesToZPeak && mLLG<100. && mLLG>4) { // Mass cuts (4 is implicit)
 
-	float rho = ((d->isMuon())?rhoForMu:rhoForEle);
-	float combRelIsoPFCorr =  LeptonIsoHelper::combRelIsoPF(sampleType, setup, rho, d, fsrCorr);
-      
-	string base;
-	stringstream str;
-	str << "d" << dauIdx << ".";
-	str >> base;	  
-	myCand.addUserFloat(base+"combRelIsoPFFSRCorr",combRelIsoPFCorr);
+	    double pt = gamma->pt();
+	    if (pt>maxPT) {
+	      maxPT  = pt;
+	      maxPTg = gamma;
+	      maxPTgLep = dauIdx;
+	    }
+	  
+	    double dR = ROOT::Math::VectorUtil::DeltaR(gamma->momentum(),d->momentum());
+	    if (dR<minDR) {
+	      minDR  = dR;
+	      minDRg = gamma;
+	      minDRgLep = dauIdx;
+	    }
+	  }
+	} // end loop on photons
+      } // end loop on daughters (leptons)
+    
+      // Define the selected FSR photon.
+      const pat::PFParticle* fsr=0;    
+      int lepWithFsr=-1; 
+      if (maxPTg!=0) { // at least 1 photon selected
+	if (maxPT>4) { // First case: take highest-pT
+	  fsr=maxPTg;
+	  lepWithFsr=maxPTgLep;
+	} else {
+	  fsr=minDRg;
+	  lepWithFsr=minDRgLep;
+	}
       }
-    } // end loop on daughters
-#else    
-    // if FSR is not activated
-    if (recomputeIsoForFSR) {
+
+      myCand.addUserFloat("dauWithFSR",lepWithFsr); // Index of the cand daughter with associated FSR photon //FIXME must be removed
+
+      if (fsr!=0) {
+	// Add daughter and set p4.
+	myCand.addUserFloat("mll",myCand.mass()); // for debug purposes
+	myCand.setP4(myCand.p4()+fsr->p4());
+	//      myCand.addDaughter(reco::ShallowCloneCandidate(fsr->masterClone()),"FSR"); //FIXME: fsr does not have a masterClone
+	pat::PFParticle myFsr(*fsr);
+	myFsr.setPdgId(22); // Fix: photons that are isFromMu have abs(pdgId)=13!!!
+	myFsr.addUserFloat("leptIdx",lepWithFsr);
+	myCand.addDaughter(myFsr,"FSR");
+      }
+    
+      if (recomputeIsoForFSR) {
+	// Recompute iso for leptons with FSR
+	for (int dauIdx=0; dauIdx<2; ++dauIdx) { 
+	  const Candidate* d = myCand.daughter(dauIdx);
+	  float fsrCorr = 0; // The correction to PFPhotonIso
+	  if (fsr!=0) {
+	    //	if (!fsr->isFromMuon()) { // Type 1 photons should be subtracted from muon iso cones
+	    double dR = ROOT::Math::VectorUtil::DeltaR(fsr->momentum(),d->momentum());
+	    if (dR<0.4 && ((d->isMuon() && dR > 0.01) ||
+			   (d->isElectron() && (fabs((static_cast<const pat::Electron*>(d->masterClone().get()))->superCluster()->eta()) < 1.479 || dR > 0.08)))) {
+	      fsrCorr = fsr->pt();
+	    }
+	  }
+
+	  float rho = ((d->isMuon())?rhoForMu:rhoForEle);
+	  float combRelIsoPFCorr =  LeptonIsoHelper::combRelIsoPF(sampleType, setup, rho, d, fsrCorr);
+      
+	  string base;
+	  stringstream str;
+	  str << "d" << dauIdx << ".";
+	  str >> base;	  
+	  myCand.addUserFloat(base+"combRelIsoPFFSRCorr",combRelIsoPFCorr);
+	}
+      } // end loop on daughters
+
+    } else if (FSRMode==2) { // Run II
+      float mll = myCand.mass(); // pre-FSR mass
+      for (int dauIdx=0; dauIdx<2; ++dauIdx) { 
+	const Candidate* d = myCand.daughter(dauIdx);
+	const PhotonPtrVector* gammas = userdatahelpers::getUserPhotons(d);
+	assert(gammas->size()<=1); // Must have already been preselected.
+	if (gammas->size()==1){
+	  const pat::PFParticle* fsr = gammas->begin()->get();
+	  pat::PFParticle myFsr(*fsr);
+	  myCand.setP4(myCand.p4()+fsr->p4());
+	  myFsr.setPdgId(22);
+	  //	myFsr.addUserFloat("gRelIso",0.);
+	  myCand.addDaughter(myFsr,"FSR");
+	  //FIXME: recompute isolation is not done here?
+	}
+      }
+      
+      if (myCand.numberOfDaughters()>4) {
+	myCand.addUserFloat("mll",mll);
+      }
+
+    } else if (FSRMode==0) { // no FSR
       myCand.addUserFloat("dauWithFSR",-1);
       myCand.addUserFloat("d0.combRelIsoPFFSRCorr",myCand.userFloat("d0.combRelIsoPF"));
-      myCand.addUserFloat("d1.combRelIsoPFFSRCorr",myCand.userFloat("d1.combRelIsoPF"));
+      myCand.addUserFloat("d1.combRelIsoPFFSRCorr",myCand.userFloat("d1.combRelIsoPF"));	
     }
-#endif
 
+    
     //--- Find "best Z" (closest to mZ) among those passing the "bestZAmong" selection (2011 PRL logic), now deprecated!!!
     if (preBestZSelection(myCand)) {
       float diffZmass = fabs(ZmassValue - myCand.mass());

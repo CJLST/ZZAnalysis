@@ -1008,21 +1008,6 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
    pbbh_VAJHU_up = cand.userFloat("pbbh_VAJHU_up");
    pbbh_VAJHU_dn = cand.userFloat("pbbh_VAJHU_dn");
 
-
-  //Int_t isSignal = -1;
-  //Int_t isRightPair = -1;
-  //if(isMC){
-  //  isSignal = cand.userFloat("MC_isRight");
-  //  isRightPair = cand.userFloat("MC_isRightPair");
-  //}
-
-  //Float_t mZa = cand.userFloat("mZa");
-  //Float_t mZb = cand.userFloat("mZb");
-  //Float_t mLL4 = cand.userFloat("mLL4");
-  //Float_t mLL6 = cand.userFloat("mLL6");
-  //Float_t SIP4 = cand.userFloat("SIP4");
-  //Float_t iso34 = cand.userFloat("iso34");
-
   //Z1 and Z2 variables
   const reco::Candidate* Z1;
   const reco::Candidate* Z2;
@@ -1060,10 +1045,6 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   bool passMz_zz = (Z1Mass>60. && Z1Mass<120. && Z2Mass>60. && Z2Mass<120.);   //FIXME hardcoded cut
 
   Int_t sel = 0;
-
-//   if(candPassFullSel){ // FIXME: this step (fullSel, without candIsBest) is not part of the normal selection flow.
-//     sel = 50;
-//   }
   
   if (candIsBest) {
     //    sel = 10; //FIXME see above
@@ -1078,14 +1059,6 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   }
   if (!(evtPass)) {sel = -sel;} // avoid confusion when we write events which do not pass trigger/skim
 
-        
-  //FIXME? Not filled in the miniAOD branch, is it right?
-  /*
-    float Hadditional[6]={mZa, mZb, mLL4, mLL6, SIP4, iso34};                   
-    TString addName[6]={};
-    myTree->SetVariables(addName,Hadditional,6);
-  */
-
   //Fill the angular variables
    helcosthetaZ1 = cand.userFloat("costheta1");
    helcosthetaZ2 = cand.userFloat("costheta2");
@@ -1098,27 +1071,26 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 
   // Retrieve the userFloat of the leptons in vectors ordered in the same way.
   vector<float> SIP(4);
-  vector<float> PFChargedHadIso(4);
-  vector<float> PFNeutralHadIso(4);
-  vector<float> PFPhotonIso(4);
+//   vector<float> PFChargedHadIso(4);
+//   vector<float> PFNeutralHadIso(4);
+//   vector<float> PFPhotonIso(4);
   vector<float> combRelIsoPF(4);
   vector<bool>  isID(4);
   
   for (unsigned int i=0; i<leptons.size(); ++i){
     SIP[i]             = userdatahelpers::getUserFloat(leptons[i],"SIP");
-    PFChargedHadIso[i] = userdatahelpers::getUserFloat(leptons[i],"PFChargedHadIso");
-    PFNeutralHadIso[i] = userdatahelpers::getUserFloat(leptons[i],"PFNeutralHadIso");
-    PFPhotonIso[i]     = userdatahelpers::getUserFloat(leptons[i],"PFPhotonIso");
+//     PFChargedHadIso[i] = userdatahelpers::getUserFloat(leptons[i],"PFChargedHadIso");
+//     PFNeutralHadIso[i] = userdatahelpers::getUserFloat(leptons[i],"PFNeutralHadIso");
+//     PFPhotonIso[i]     = userdatahelpers::getUserFloat(leptons[i],"PFPhotonIso");
     isID[i]            = userdatahelpers::getUserFloat(leptons[i],"ID");
 
-    if (theChannel==ZL) {
-      combRelIsoPF[i]    = userdatahelpers::getUserFloat(leptons[i],"combRelIsoPF");
-      //FIXME cannot take labels[i]+"SIP", that info only attached to the Z!!
+    //in the Legacy approach,  FSR-corrected iso is attached to the Z, not to the lepton!
+    if (theChannel!=ZL) {
+      combRelIsoPF[i]    = cand.userFloat(labels[i]+"combRelIsoPFFSRCorr"); // Note: the
+      assert(SIP[i] == cand.userFloat(labels[i]+"SIP")); // Check that I don't mess up with labels[] and leptons[]
     } else {
-      combRelIsoPF[i]    = cand.userFloat(labels[i]+"combRelIsoPFFSRCorr"); // Note: the FSR-corrected iso is attached to the Z, not to the lepton!
-      // Check that I don't mess up with labels[] and leptons[]
-      //cout<<"SIP: "<<SIP[i]<<"  labels "<<labels[i]<<cand.userFloat(labels[i]+"SIP")<<endl;
-      SIP[i] = cand.userFloat(labels[i]+"SIP");
+      //FIXME: at the moment,  FSR-corrected iso is not computed for Z+L CRs
+      combRelIsoPF[i]    = userdatahelpers::getUserFloat(leptons[i],"combRelIsoPF");
     }
 
     //Fill the info on the lepton candidates  
@@ -1171,9 +1143,8 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     fsrPt.push_back(fsr.pt());
     fsrEta.push_back(fsr.eta());
     fsrPhi.push_back(fsr.phi());
-    fsrLept.push_back(fsrIndex[i]);
-    //    fsrDR.push_back();
-    fsrLeptID.push_back(leptons[fsrIndex[i]-1]->pt());
+    fsrLept.push_back(fsrIndex[i]+1);
+    fsrLeptID.push_back(leptons[fsrIndex[i]]->pdgId());
     int igen = MCHistoryTools::fsrMatch(fsrPhot[i], genFSR);
     double dRGenVsReco = -1.;
     double genpT = -1.;
@@ -1588,33 +1559,33 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("Lep1Phi",Lep1Phi);
   myTree->Book("Lep1LepId",Lep1LepId);
   myTree->Book("Lep1SIP",Lep1SIP);
-  myTree->Book("Lep1isID",Lep1isID);
-  myTree->Book("Lep1BDT",Lep1BDT);
-  myTree->Book("Lep1missingHit",Lep1missingHit);
+  //  myTree->Book("Lep1isID",Lep1isID);
+  //  myTree->Book("Lep1BDT",Lep1BDT);
+  //  myTree->Book("Lep1missingHit",Lep1missingHit);
   myTree->Book("Lep2Pt",Lep2Pt);
   myTree->Book("Lep2Eta",Lep2Eta);
   myTree->Book("Lep2Phi",Lep2Phi);
   myTree->Book("Lep2LepId",Lep2LepId);
   myTree->Book("Lep2SIP",Lep2SIP);
-  myTree->Book("Lep2isID",Lep2isID);
-  myTree->Book("Lep2BDT",Lep2BDT);
-  myTree->Book("Lep2missingHit",Lep2missingHit);
+  //  myTree->Book("Lep2isID",Lep2isID);
+  //  myTree->Book("Lep2BDT",Lep2BDT);
+  //  myTree->Book("Lep2missingHit",Lep2missingHit);
   myTree->Book("Lep3Pt",Lep3Pt);
   myTree->Book("Lep3Eta",Lep3Eta);
   myTree->Book("Lep3Phi",Lep3Phi);
   myTree->Book("Lep3LepId",Lep3LepId);
   myTree->Book("Lep3SIP",Lep3SIP);
-  myTree->Book("Lep3isID",Lep3isID);
-  myTree->Book("Lep3BDT",Lep3BDT);
-  myTree->Book("Lep3missingHit",Lep3missingHit);
+  //  myTree->Book("Lep3isID",Lep3isID);
+  //  myTree->Book("Lep3BDT",Lep3BDT);
+  //  myTree->Book("Lep3missingHit",Lep3missingHit);
   myTree->Book("Lep4Pt",Lep4Pt);
   myTree->Book("Lep4Eta",Lep4Eta);
   myTree->Book("Lep4Phi",Lep4Phi);
   myTree->Book("Lep4LepId",Lep4LepId);
   myTree->Book("Lep4SIP",Lep4SIP);
-  myTree->Book("Lep4isID",Lep4isID);
-  myTree->Book("Lep4BDT",Lep4BDT);
-  myTree->Book("Lep4missingHit",Lep4missingHit);
+  //  myTree->Book("Lep4isID",Lep4isID);
+  //  myTree->Book("Lep4BDT",Lep4BDT);
+  //  myTree->Book("Lep4missingHit",Lep4missingHit);
   //myTree->Book("Lep1chargedHadIso",Lep1chargedHadIso);
   //myTree->Book("Lep1neutralHadIso",Lep1neutralHadIso);
   //myTree->Book("Lep1photonIso",Lep1photonIso);

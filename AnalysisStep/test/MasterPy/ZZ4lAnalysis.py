@@ -500,7 +500,7 @@ process.appendPhotons = cms.EDProducer("LeptonPhotonMatcher",
     muonSrc = cms.InputTag("softMuons"),
     electronSrc = cms.InputTag("cleanSoftElectrons"),
     photonSrc = cms.InputTag("boostedFsrPhotons"),
-    matchFSR = cms.bool(True)
+    photonSel = cms.string("Legacy") # "skip", "passThrough", "Legacy", "RunII"
     )
 
 
@@ -563,6 +563,7 @@ process.ZCand = cms.EDProducer("ZCandidateFiller",
     sampleType = cms.int32(SAMPLE_TYPE),                     
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
     bestZAmong = cms.string(BESTZ_AMONG),
+    FSRMode = cms.string("Legacy"), # "skip", "Legacy", "RunII"
     flags = cms.PSet(
         GoodLeptons = cms.string(ZLEPTONSEL),
         Z1Presel = cms.string(Z1PRESEL),
@@ -581,6 +582,7 @@ process.LLCand = cms.EDProducer("ZCandidateFiller",
     sampleType = cms.int32(SAMPLE_TYPE),                     
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
     bestZAmong = cms.string(BESTZ_AMONG),
+    FSRMode = cms.string("Legacy"), # "skip", "Legacy", "RunII"
     flags = cms.PSet(
         GoodLeptons = cms.string(ZLEPTONSEL),
         Z1Presel = cms.string(Z1PRESEL),

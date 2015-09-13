@@ -59,8 +59,7 @@ class LeptonPhotonMatcher : public edm::EDProducer {
   const edm::InputTag theMuonTag_;
   const edm::InputTag theElectronTag_;
   const edm::InputTag thePhotonTag_;
-  bool matchFSR;
-  bool photonPassthrough;
+  int selectionMode;
   bool debug;
 };
 
@@ -69,10 +68,21 @@ LeptonPhotonMatcher::LeptonPhotonMatcher(const edm::ParameterSet& iConfig) :
   theMuonTag_(iConfig.getParameter<InputTag>("muonSrc")),
   theElectronTag_(iConfig.getParameter<InputTag>("electronSrc")),
   thePhotonTag_(iConfig.getParameter<InputTag>("photonSrc")),
-  matchFSR(iConfig.getParameter<bool>("matchFSR")),
-  photonPassthrough(iConfig.getUntrackedParameter<bool>("photonPassthrough",false)),
   debug(iConfig.getUntrackedParameter<bool>("debug",false))
 {
+
+  string mode = iConfig.getParameter<string>("photonSel");
+  
+  if      (mode == "skip")        selectionMode = 0; // no FSR
+  else if (mode == "passThrough") selectionMode = 1; // for debug
+  else if (mode == "Legacy")      selectionMode = 2;
+  else if (mode == "RunII")       selectionMode = 3;
+  else {
+    cout << "LeptonPhotonMatcher: mode " << mode << " not supported" << endl;
+    abort();
+  }
+  
+
   produces<pat::MuonCollection>("muons");
   produces<pat::ElectronCollection>("electrons");
 }
@@ -108,7 +118,7 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   PhotonLepMap theMap;
 
 
-  if (matchFSR && muonHandle->size()+electronHandle->size()>0) {
+  if (selectionMode!=0 && muonHandle->size()+electronHandle->size()>0) {
     //----------------------
     // Loop on photons
     //----------------------
@@ -179,10 +189,19 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	// Now that we know the closest lepton, apply Photon Selection
 	bool accept = false;
 	double gRelIso = 999., neu(999.), chg(999.);
+	double pT = g->pt();
 
-	if (photonPassthrough) { // Passthrough: no photon selection, for FSR studies
-	  accept = (dRMin<0.5 && g->pt()>2.);
-	} else {
+	if (selectionMode==1) { // passThrough: no photon selection, for FSR studies
+	  accept = (dRMin<0.5 && pT>2.); 
+
+	} else if (selectionMode==3) { // RunII
+	  if (dRMin<0.5 && g->pt()>2. && dRMin/pT/pT<0.01) {
+	    LeptonIsoHelper::fsrIso(&(*g), pfCands, neu, chg);
+	    gRelIso = (neu + chg)/pT;
+	    if (gRelIso<1.) accept = true;
+	  }
+	  // FIXME: must also select the best one
+	} else if (selectionMode==2) { // Legacy
 	  if( dRMin<0.07 ){
 	    if (g->pt()>2.) accept = true;
 	  } else if (g->pt()>4 && dRMin<0.5 ){ // DR<0.5 is implicit, but does not hurt
@@ -198,7 +217,7 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	if(debug) cout << "   " << "   closest lep: " << closestLep->pdgId() << " " << closestLep->pt() <<  " gRelIso: " << gRelIso << " (ch: " << chg << " n+p: " <<  neu << " ) " << " dRMin: " << dRMin << " accept: " << accept << endl;
 	if (accept) theMap[closestLep].push_back(g);
       }
-    }// loop over photon collection
+    } // end of loop over photon collection
   }
   
   // Loop over muons again to write the result as userData
@@ -207,7 +226,7 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     const pat::Muon* m = &((*muonHandle)[j]);
     //---Clone the pat::Muon
     pat::Muon newM(*m);
-    if (matchFSR) {
+    if (selectionMode!=0) {
       PhotonLepMap::const_iterator fsr = theMap.find(m);
       if (fsr!=theMap.end()) {
 	newM.addUserData("FSRCandidates",fsr->second);
@@ -222,7 +241,7 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     const pat::Electron* e = &((*electronHandle)[j]);
     //---Clone the pat::Electron
     pat::Electron newE(*e);
-    if (matchFSR) {
+    if (selectionMode!=0) {
       PhotonLepMap::const_iterator fsr = theMap.find(e);
       if (fsr!=theMap.end()) {
 	newE.addUserData("FSRCandidates",fsr->second);
