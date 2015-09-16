@@ -11,6 +11,7 @@
 #include <DataFormats/Common/interface/View.h>
 #include <DataFormats/Candidate/interface/Candidate.h>
 #include <DataFormats/PatCandidates/interface/CompositeCandidate.h>
+#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 #include <ZZAnalysis/AnalysisStep/interface/DaughterDataHelpers.h>
 #include <ZZAnalysis/AnalysisStep/interface/MCHistoryTools.h>
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
@@ -66,6 +67,19 @@ FSRAnalyzer::analyze(const edm::Event & event, const edm::EventSetup& eventSetup
 
   edm::Handle<edm::View<pat::PackedCandidate> > pfCands; 
   event.getByLabel("packedPFCandidates",pfCands);
+
+  Handle<std::vector<PileupSummaryInfo> >  PupInfo;
+  event.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
+  //  Short_t NObsInt  = 0;
+  Float_t NTrueInt  = 0;
+  std::vector<PileupSummaryInfo>::const_iterator PVI;
+  for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
+    if(PVI->getBunchCrossing() == 0) { 
+      //      NObsInt  = PVI->getPU_NumInteractions();
+      NTrueInt = PVI->getTrueNumInteractions();
+      break;
+    } 
+  }
 
   MCHistoryTools mch(event);
   // These are all gen FSR photons coming from leptons from the H
@@ -144,9 +158,10 @@ FSRAnalyzer::analyze(const edm::Event & event, const edm::EventSetup& eventSetup
 	  double phiGen = 0.;
 	  int igen = MCHistoryTools::fsrMatch(g->get(),genFSR);
 
-	  double neu, chg;
-	  LeptonIsoHelper::fsrIso(gamma, pfCands, neu, chg);
+	  double neu, chg, chgByWorstPV;
+	  LeptonIsoHelper::fsrIso(gamma, pfCands, neu, chg, chgByWorstPV);
 	  double gRelIso = (neu + chg)/gamma->pt();	  
+	  double gRelIsoByPV = (neu + chgByWorstPV)/gamma->pt();	  
 	  
 	  if (igen>=0) {
 	    dRGenVsReco = ROOT::Math::VectorUtil::DeltaR(genFSR[igen]->momentum(),gamma->momentum());
@@ -179,6 +194,8 @@ FSRAnalyzer::analyze(const edm::Event & event, const edm::EventSetup& eventSetup
 	       << pTGen << " "       // pT of gen FSR, if not fake
 	       << etaGen << " "
 	       << phiGen << " "
+	       << gRelIsoByPV << " "
+	       << NTrueInt << " "
 	       << endl; 
 
 	  if (isFake && dR<0.07 && pT>20 && gRelIso<1) cout << "DEBUG: "

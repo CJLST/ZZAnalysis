@@ -188,7 +188,7 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       if(closestLep!=0) {
 	// Now that we know the closest lepton, apply Photon Selection
 	bool accept = false;
-	double gRelIso = 999., neu(999.), chg(999.);
+	double gRelIso = 999., neu(999.), chg(999.), chgByWorstPV(999.);
 	double pT = g->pt();
 
 	if (selectionMode==1) { // passThrough: no photon selection, for FSR studies
@@ -196,7 +196,7 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 	} else if (selectionMode==3) { // RunII
 	  if (dRMin<0.5 && g->pt()>2. && dRMin/pT/pT<0.01) {
-	    LeptonIsoHelper::fsrIso(&(*g), pfCands, neu, chg);
+	    LeptonIsoHelper::fsrIso(&(*g), pfCands, neu, chg, chgByWorstPV);
 	    gRelIso = (neu + chg)/pT;
 	    if (gRelIso<1.) accept = true;
 	  }
@@ -206,7 +206,7 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	    if (g->pt()>2.) accept = true;
 	  } else if (g->pt()>4 && dRMin<0.5 ){ // DR<0.5 is implicit, but does not hurt
 	    // double relIso = g->relIso(0.5); // This is buggy, needs to recompute it.
-	    LeptonIsoHelper::fsrIso(&(*g), pfCands, neu, chg);
+	    LeptonIsoHelper::fsrIso(&(*g), pfCands, neu, chg, chgByWorstPV);
 	    gRelIso = (neu + chg)/g->pt();
 	    // For collections where this is precomputed
 	    // double gRelIso2 = (g->userFloat("fsrPhotonPFIsoChHadPUNoPU03pt02") + g->userFloat("fsrPhotonPFIsoNHadPhoton03")) / g->pt();

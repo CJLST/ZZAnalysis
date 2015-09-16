@@ -12,6 +12,7 @@
 #include <ZZAnalysis/AnalysisStep/interface/CustomElectronEffectiveArea.h>
 
 #include <iostream>
+#include <map>
 
 using namespace std;
 using namespace edm;
@@ -137,7 +138,7 @@ float LeptonIsoHelper::combRelIsoPF(int sampleType, int setup, double rho, const
 
 
 // Adapted from Hengne's implementation at: https://github.com/VBF-HZZ/UFHZZAnalysisRun2/blob/csa14/UFHZZ4LAna/interface/HZZ4LHelper.h#L3525
-void LeptonIsoHelper::fsrIso(const reco::PFCandidate* photon, edm::Handle<edm::View<pat::PackedCandidate> > pfcands, double& ptSumNe, double& ptSumCh) {
+void LeptonIsoHelper::fsrIso(const reco::PFCandidate* photon, edm::Handle<edm::View<pat::PackedCandidate> > pfcands, double& ptSumNe, double& ptSumCh, double & ptSumChByWorstPV) {
 
   // hardcoded cut values
   const double cut_deltaR = 0.3; 
@@ -146,6 +147,9 @@ void LeptonIsoHelper::fsrIso(const reco::PFCandidate* photon, edm::Handle<edm::V
 
   ptSumNe=0.;
   ptSumCh=0.;
+  ptSumChByWorstPV=0.;
+  
+  map<const reco::Vertex*, double> ptSumByPV;
   for( edm::View<pat::PackedCandidate>::const_iterator pf = pfcands->begin(); pf!=pfcands->end(); ++pf ) {
     double dr = deltaR(photon->p4(), pf->p4()) ;
     if (dr>=cut_deltaR) continue;
@@ -161,8 +165,11 @@ void LeptonIsoHelper::fsrIso(const reco::PFCandidate* photon, edm::Handle<edm::V
     } else {
       if (dr>cut_deltaRself_ch && pf->pt()> 0.2 && pdgId==211) {
 	ptSumCh += pf->pt();
+	ptSumByPV[pf->vertexRef().get()] += pf->pt();
       }
     }
-  }
+  }	   
+
+  ptSumChByWorstPV = (std::max_element(ptSumByPV.begin(), ptSumByPV.end(), [](const pair<const reco::Vertex*, double>& p1, const pair<const reco::Vertex*, double>& p2){return (p1.second<p2.second);}))->second; // pick the largest one
 }
 

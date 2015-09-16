@@ -35,7 +35,7 @@ namespace LeptonIsoHelper {
   float combRelIsoPF(int sampleType, int setup, double rho, const reco::Candidate* lep, float fsr=0, int correctionType=-1);
 
   // Compute FSR isolation
-  void fsrIso(const reco::PFCandidate* photon, edm::Handle<edm::View<pat::PackedCandidate> > pfcands, double& ptSumNe, double& ptSumCh);
+  void fsrIso(const reco::PFCandidate* photon, edm::Handle<edm::View<pat::PackedCandidate> > pfcands, double& ptSumNe, double& ptSumCh, double& ptSumChByWorstPV);
 
 }
 #endif
