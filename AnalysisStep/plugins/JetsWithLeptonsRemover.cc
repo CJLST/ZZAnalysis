@@ -23,6 +23,7 @@
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/CompositeCandidate.h"
 #include "CommonTools/Utils/interface/StringCutObjectSelector.h"
+#include <ZZAnalysis/AnalysisStep/interface/PhotonFwd.h>
 
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/Math/interface/Vector3D.h"
@@ -239,22 +240,24 @@ bool JetsWithLeptonsRemover::isMatchingWithZZLeptons(const edm::Event & event, c
 	}
 	  
 	// Check if the jet matches FSR photons
-	if(v->hasUserFloat("dauWithFSR") && v->userFloat("dauWithFSR") >= 0){
-	    
-	  double photon_en_frac = v->daughter(2)->energy()/jet.energy();
-	  if(activateDebugPrintOuts_)
-	    std::cout << "Sister of " << v->userFloat("dauWithFSR") << " (" <<  v->daughter(v->userFloat("dauWithFSR"))->pdgId() << "), pt: "
-		      << v->daughter(2)->pt()   << " eta: " << v->daughter(2)->eta() << " phi: " << v->daughter(2)->phi() << " p: " << v->daughter(2)->p()
+	for (unsigned jfsr=2; jfsr<v->numberOfDaughters(); ++jfsr) {
+	  const pat::PFParticle* fsr = static_cast<const pat::PFParticle*>(v->daughter(jfsr));
+	  double photon_en_frac = v->daughter(jfsr)->energy()/jet.energy();
+	  if(activateDebugPrintOuts_) {
+	    int ilep = fsr->userFloat("leptIdx");
+	    std::cout << "Sister of " << ilep << " (" <<  fsr->pdgId() << "), pt: "
+		      << v->daughter(jfsr)->pt()   << " eta: " << v->daughter(jfsr)->eta() << " phi: " << fsr->phi() << " p: " << fsr->p()
 		      << " Photon energy fraction in the jet: " <<  photon_en_frac 
 		      << std::endl;
+	  }
 
 	  // If the FSR photon matches, reject the jet
-	  if(jet.photonMultiplicity() > 0 && photon_en_frac > 0.5 && reco::deltaR(*v->daughter(2), jet) < 0.05){
+	  if(jet.photonMultiplicity() > 0 && photon_en_frac > 0.5 && reco::deltaR(*fsr, jet) < 0.05){
 	    if(activateDebugPrintOuts_) std::cout << "\t\t !!! Found a matching FSR lepton-jet !!!"<<std::endl;	  
 	    if(doDebugPlots_){
-	      hDeltaPt_jet_fsr     ->Fill(v->daughter(2)->pt()  - jet.pt());
-	      hDeltaPhi_jet_fsr    ->Fill(v->daughter(2)->phi() - jet.phi());
-	      hDeltaEta_jet_fsr    ->Fill(v->daughter(2)->eta() - jet.eta());  
+	      hDeltaPt_jet_fsr     ->Fill(fsr->pt()  - jet.pt());
+	      hDeltaPhi_jet_fsr    ->Fill(fsr->phi() - jet.phi());
+	      hDeltaEta_jet_fsr    ->Fill(fsr->eta() - jet.eta());  
 	    }
 	    return true;
 	  }

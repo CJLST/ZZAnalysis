@@ -35,7 +35,7 @@ std::pair<TLorentzVector,TLorentzVector> DiLeptonKinFitter::fit(const reco::Cand
 
   
   //If there are fsr photons attached to the Z1 leptons I sum them to the p4 to use in the refit (first approssimation)
-  int d0FSR = (static_cast<const pat::CompositeCandidate*>(Z1->masterClone().get()))->userFloat("dauWithFSR");
+  int d0FSR = (static_cast<const pat::CompositeCandidate*>(Z1->masterClone().get()))->userFloat("dauWithFSR"); // FIXME: obsolete, need to move to bew FSR coding scheme
   if (d0FSR>=0) {
     if (Z1->numberOfDaughters()!=3) cout << "ERROR: ZZCandidateFiller: problem in FSR" << endl;
     if (d0FSR==0) {
