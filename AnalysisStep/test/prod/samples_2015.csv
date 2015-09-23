@@ -23,6 +23,7 @@ ttH125,,          0.000337,        ,,/ttH_HToZZ_4LFilter_M125_13TeV_powheg_JHUge
 
 ZZTo4l,,            1.256,      ,,/ZZTo4L_13TeV_powheg_pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/,/store/mc/RunIISpring15DR74,,2,,,
 #ZZTo4lamcatnlo,,    1,          ,,/ZZTo4L_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/,/store/mc/RunIISpring15DR74,,2,,,#BUGGY!!
+ZZTo4lamcatnlo,,    1,          ,,/ZZTo4L_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/Asympt50ns_MCRUN2_74_V9A-v2/,/store/mc/RunIISpring15DR74,,2,,,
 
 ggZZ4e,,            0.001586,   ,,/GluGluToZZTo4e_BackgroundOnly_13TeV_MCFM/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/,/store/mc/RunIISpring15DR74,,1,,,
 ggZZ4mu,,           0.001586,   ,,/GluGluToZZTo4mu_BackgroundOnly_13TeV_MCFM/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/,/store/mc/RunIISpring15DR74,,1,,,
