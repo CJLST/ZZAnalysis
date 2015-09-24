@@ -31,6 +31,7 @@ class JetFiller : public edm::EDProducer {
 
   const edm::InputTag theJetTag;
   const StringCutObjectSelector<pat::Jet, true> cut;
+  const std::string bTaggerName;
   const CutSet<pat::Jet> flags;
   edm::EDGetTokenT<edm::ValueMap<float> > qgToken;
 
@@ -40,6 +41,7 @@ class JetFiller : public edm::EDProducer {
 JetFiller::JetFiller(const edm::ParameterSet& iConfig) :
   theJetTag(iConfig.getParameter<InputTag>("src")),
   cut(iConfig.getParameter<std::string>("cut")),
+  bTaggerName(iConfig.getParameter<std::string>("bTaggerName")),
   flags(iConfig.getParameter<edm::ParameterSet>("flags"))
 {
   qgToken = consumes<edm::ValueMap<float> >(edm::InputTag("QGTagger", "qgLikelihood"));
@@ -68,11 +70,15 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     //--- Apply selection cut.
     if (!cut(j)) continue;
 
+    //--- will re-embed b-tagger (so that it is chosen in one place only)
+    float bTagger = j.bDiscriminator(bTaggerName);
+
     //--- Retrieve the q/g likelihood
     edm::RefToBase<pat::Jet> jetRef(edm::Ref<edm::View<pat::Jet> >(jetHandle, jet - jetHandle->begin()));
     float qgLikelihood = (*qgHandle)[jetRef];
 
     //--- Embed user variables
+    j.addUserFloat("bTagger",bTagger);
     j.addUserFloat("qgLikelihood",qgLikelihood);
 
     //--- Embed flags (ie flags specified in the "flags" pset)

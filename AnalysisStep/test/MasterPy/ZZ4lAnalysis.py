@@ -912,8 +912,9 @@ process.QGTagger.jetsLabel = cms.string('QGL_AK4PFchs')
 process.dressedJets = cms.EDProducer("JetFiller",
     src = cms.InputTag("slimmedJets"),
     cut = cms.string("pt>20 && abs(eta)<4.7"),
+    bTaggerName = cms.string("pfCombinedInclusiveSecondaryVertexV2BJetTags"),
     flags = cms.PSet(
-        isBtagged = cms.string("bDiscriminator('combinedInclusiveSecondaryVertexV2BJetTags')>0.814"),
+        isBtagged = cms.string("userFloat('bTagger')>0.89"),
     )
 )
 
