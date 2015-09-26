@@ -52,6 +52,9 @@ class EleFiller : public edm::EDProducer {
   const StringCutObjectSelector<pat::Electron, true> cut;
   const CutSet<pat::Electron> flags;
   EGammaMvaEleEstimatorCSA14* myMVATrig;
+
+  EDGetTokenT<ValueMap<float> > BDTValueMapToken;
+
 };
 
 
@@ -61,7 +64,8 @@ EleFiller::EleFiller(const edm::ParameterSet& iConfig) :
   setup(iConfig.getParameter<int>("setup")),
   cut(iConfig.getParameter<std::string>("cut")),
   flags(iConfig.getParameter<ParameterSet>("flags")),
-  myMVATrig(0)
+  myMVATrig(0),
+  BDTValueMapToken(consumes<ValueMap<float> >(iConfig.getParameter<InputTag>("mvaValuesMap")))
 {
   produces<pat::ElectronCollection>();
 
@@ -106,6 +110,11 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   edm::Handle<vector<Vertex> >  vertexs;
   iEvent.getByLabel("goodPrimaryVertices",vertexs);
+
+
+  Handle<ValueMap<float> > BDTValues;
+  iEvent.getByToken(BDTValueMapToken, BDTValues);
+
 
   // Output collection
   auto_ptr<pat::ElectronCollection> result( new pat::ElectronCollection() );
@@ -174,6 +183,29 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     int missingHit = l.gsfTrack()->hitPattern().numberOfHits(HitPattern::MISSING_INNER_HITS);
     //--- Trigger matching
     int HLTMatch = 0; //FIXME
+
+
+    float BDTvalue = 999.;
+    BDTvalue = (*BDTValues)[(*electronHandle)[i]];
+
+    // WP for Spring15-based BDT as proposed by S. Regnard
+    // see https://indico.cern.ch/event/439325/session/1/contribution/21/attachments/1156760/1663207/slides_20150918.pdf
+
+    bool passBDT =  
+        (pt <= 10 && (
+            (fSCeta < 0.8                    && BDTvalue > -0.265) ||
+			(fSCeta >= 0.8 && fSCeta < 1.479 && BDTvalue > -0.556) ||
+			(fSCeta >= 1.479                 && BDTvalue > -0.551)   
+                     )
+        ) ||
+        (pt >  10 && (
+            (fSCeta < 0.8                    && BDTvalue > -0.072) ||
+		    (fSCeta >= 0.8 && fSCeta < 1.479 && BDTvalue > -0.286) ||
+		    (fSCeta >= 1.479                 && BDTvalue > -0.267)   
+                     )
+        );
+
+
     
     //--- Embed user variables
     l.addUserFloat("PFChargedHadIso",PFChargedHadIso);
@@ -188,6 +220,9 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     l.addUserFloat("isBDT",isBDT);
     l.addUserFloat("HLTMatch", HLTMatch);
     l.addUserFloat("missingHit", missingHit);
+
+    l.addUserFloat("passSpring15BDT", passBDT);
+   
 
     //--- MC parent code 
 //     MCHistoryTools mch(iEvent);

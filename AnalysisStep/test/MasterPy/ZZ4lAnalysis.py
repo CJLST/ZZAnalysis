@@ -392,7 +392,28 @@ else :
    else :
        process.calibratedPatElectrons.inputDataset = "" #FIXME: not yet available for RunII
 
-    
+
+
+# Load the VID producer and specify the IDs are to be added
+#
+# Set up electron ID (VID framework)
+#
+
+from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
+# turn on VID producer, indicate data format  to be
+# DataFormat.AOD or DataFormat.MiniAOD, as appropriate
+
+dataFormat = DataFormat.MiniAOD
+
+switchOnVIDElectronIdProducer(process, dataFormat)
+
+# define which IDs we want to produce
+my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring15_25ns_nonTrig_V1_cff',
+                ]
+#add them to the VID producer
+for idmod in my_id_modules:
+    setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
+# and don't forget to add the producer 'process.egmGsfElectronIDSequence' to the path, i.e. process.electrons
 
 process.bareSoftElectrons = cms.EDFilter("PATElectronRefSelector",
    src = cms.InputTag("calibratedPatElectrons"),
@@ -403,13 +424,15 @@ process.softElectrons = cms.EDProducer("EleFiller",
    src    = cms.InputTag("bareSoftElectrons"),
    sampleType = cms.int32(SAMPLE_TYPE),          
    setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
-   cut = cms.string("userFloat('dxy')<0.5 && userFloat('dz')<1 && userFloat('missingHit')<=1"),
+   cut = cms.string("userFloat('dxy')<0.5 && userFloat('dz')<1"),# removed cut because variable is in Spring15 ID  && userFloat('missingHit')<=1"),
    flags = cms.PSet(
-        ID = cms.string("userFloat('isBDT')"), # BDT MVA ID
+        ID = cms.string("userFloat('passSpring15BDT')"), # for Phys14 ID use userFloat('isBDT')
         isSIP = cms.string(SIP),
         isGood = cms.string(GOODLEPTON),
         isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<"+ELEISOCUT)
-        )
+        ),
+   # input tag to the ValueMap that will be added to the PAT electron
+   mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring15NonTrig25nsV1Values"),
    )
 
 
@@ -418,7 +441,7 @@ process.electrons = cms.Sequence(process.eleRegressionEnergy + process.calibrate
 # Handle special cases
 if ELEREGRESSION == "None" and ELECORRTYPE == "None" :   # No correction at all. Skip correction modules.
     process.bareSoftElectrons.src = cms.InputTag('slimmedElectrons')
-    process.electrons = cms.Sequence(process.bareSoftElectrons + process.softElectrons)
+    process.electrons = cms.Sequence(process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
 
 elif ELEREGRESSION == "Moriond" and ELECORRTYPE == "Moriond" : # Moriond corrections: OLD ECAL regression + OLD calibration + OLD combination 
     if (LEPTON_SETUP == 2011):
