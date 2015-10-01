@@ -55,6 +55,7 @@ class LeptonPhotonMatcher : public edm::EDProducer {
   virtual void beginJob(){};  
   virtual void produce(edm::Event&, const edm::EventSetup&);
   virtual void endJob(){};
+  PhotonPtr selectFSR(const PhotonPtrVector& photons, const reco::LeafCandidate::Vector& lepMomentum);
 
   const edm::InputTag theMuonTag_;
   const edm::InputTag theElectronTag_;
@@ -200,7 +201,6 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	    gRelIso = (neu + chg)/pT;
 	    if (gRelIso<1.) accept = true;
 	  }
-	  // FIXME: must also select the best one
 	} else if (selectionMode==2) { // Legacy
 	  if( dRMin<0.07 ){
 	    if (g->pt()>2.) accept = true;
@@ -221,6 +221,7 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   }
   
   // Loop over muons again to write the result as userData
+  PhotonPtrVector allSelFSR;
   for (unsigned int j = 0; j< muonHandle->size(); ++j){
     //    const pat::Muon* m = ((*muonHandle)[j]).get(); // Pointer to original mu
     const pat::Muon* m = &((*muonHandle)[j]);
@@ -229,7 +230,14 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     if (selectionMode!=0) {
       PhotonLepMap::const_iterator fsr = theMap.find(m);
       if (fsr!=theMap.end()) {
-	newM.addUserData("FSRCandidates",fsr->second);
+	if (selectionMode==3) { // Run II: select one per lepton; highest-pT if >4GeV, lowest-DR otherwise
+	  PhotonPtr g = selectFSR(fsr->second,m->momentum());
+	  PhotonPtrVector gv = {g};	  
+	  newM.addUserData("FSRCandidates",gv);
+	  allSelFSR.push_back(g);
+	} else { //Legacy, etc.: keep all
+	  newM.addUserData("FSRCandidates",fsr->second);
+	}
       }
     }
     resultMu->push_back(newM);
@@ -237,22 +245,64 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   //Loop over electrons again to write the result as userData
   for (unsigned int j = 0; j< electronHandle->size(); ++j){
-    //const pat::Electron* e = ((*electronHandle)[j]).get();
     const pat::Electron* e = &((*electronHandle)[j]);
     //---Clone the pat::Electron
     pat::Electron newE(*e);
     if (selectionMode!=0) {
       PhotonLepMap::const_iterator fsr = theMap.find(e);
       if (fsr!=theMap.end()) {
-	newE.addUserData("FSRCandidates",fsr->second);
+	if (selectionMode==3) { // Run II: select one per lepton; highest-pT if >4GeV, lowest-DR otherwise
+	  PhotonPtr g = selectFSR(fsr->second,e->momentum());
+	  PhotonPtrVector gv = {g};	  
+	  newE.addUserData("FSRCandidates",gv);
+	} else { //Legacy, etc.: keep all
+	  newE.addUserData("FSRCandidates",fsr->second);
+	}
       }
+      resultEle->push_back(newE);      
     }
-    resultEle->push_back(newE);      
+  }
+
+  //Recompute isolation of all leptons subtracting FSR from the cone (only for Run II strategy)
+  if (selectionMode==3){
+    for (pat::MuonCollection::iterator m= resultMu->begin(); m!=resultMu->end(); ++m){
+      float fsrCorr = 0; // The correction to PFPhotonIso
+      for (PhotonPtrVector::const_iterator g = allSelFSR.begin();g!= allSelFSR.end(); ++g) {
+	const pat::PFParticle* gamma = g->get();
+	double dR = ROOT::Math::VectorUtil::DeltaR(gamma->momentum(),m->momentum());
+	// Check if the photon is in the lepton's iso cone and not vetoed
+	if (dR<0.4 && dR > 0.01) {
+	  fsrCorr += gamma->pt();
+	}
+      } 
+      m->addUserFloat("fsrCorr", fsrCorr); // FIXME recompute isolation instead
+    }
+
+    for (pat::ElectronCollection::iterator e= resultEle->begin(); e!=resultEle->end(); ++e){
+      float fsrCorr = 0; // The correction to PFPhotonIso
+      for (PhotonPtrVector::const_iterator g = allSelFSR.begin();g!= allSelFSR.end(); ++g) {
+	const pat::PFParticle* gamma = g->get();
+	double dR = ROOT::Math::VectorUtil::DeltaR(gamma->momentum(),e->momentum());
+	// Check if the photon is in the lepton's iso cone and not vetoed
+	if (dR<0.4 && (fabs(e->superCluster()->eta()) < 1.479 || dR > 0.08)) {
+	  fsrCorr += gamma->pt();
+ 	}
+      }
+      e->addUserFloat("fsrCorr", fsrCorr); // FIXME recompute isolation instead
+    }
   }
   
   //Put the result in the event
   iEvent.put(resultMu,"muons");
   iEvent.put(resultEle,"electrons");
+}
+
+PhotonPtr LeptonPhotonMatcher::selectFSR(const PhotonPtrVector& photons, const reco::LeafCandidate::Vector& lepMomentum){ // select one photon per lepton; highest-pT if >4GeV, lowest-DR otherwise
+  PhotonPtr g = *(std::max_element(photons.begin(),photons.end(), [](const PhotonPtr& g1, const PhotonPtr& g2){return g1->pt()<g2->pt();}));
+  if (g->pt()<=4) {
+    g = *(std::min_element(photons.begin(),photons.end(), [lepMomentum](const PhotonPtr& g1, const PhotonPtr& g2){return ROOT::Math::VectorUtil::DeltaR(g1->momentum(),lepMomentum)<ROOT::Math::VectorUtil::DeltaR(g2->momentum(),lepMomentum);}));
+  }
+  return g;
 }
 
 

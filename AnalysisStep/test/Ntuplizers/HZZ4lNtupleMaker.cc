@@ -33,7 +33,6 @@
 #include <DataFormats/JetReco/interface/PFJet.h>
 #include <DataFormats/JetReco/interface/PFJetCollection.h>
 #include <DataFormats/Math/interface/LorentzVector.h>
-#include <DataFormats/VertexReco/interface/Vertex.h>
 #include <CommonTools/UtilAlgos/interface/TFileService.h>
 #include <DataFormats/Common/interface/MergeableCounter.h>
 #include <DataFormats/VertexReco/interface/Vertex.h>

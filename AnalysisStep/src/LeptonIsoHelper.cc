@@ -168,8 +168,10 @@ void LeptonIsoHelper::fsrIso(const reco::PFCandidate* photon, edm::Handle<edm::V
 	ptSumByPV[pf->vertexRef().get()] += pf->pt();
       }
     }
-  }	   
+  }
 
-  ptSumChByWorstPV = (std::max_element(ptSumByPV.begin(), ptSumByPV.end(), [](const pair<const reco::Vertex*, double>& p1, const pair<const reco::Vertex*, double>& p2){return (p1.second<p2.second);}))->second; // pick the largest one
+  //  std::for_each(ptSumByPV.begin(), ptSumByPV.end(), [](const pair<const reco::Vertex*, double>& p1){cout << p1.first << " " <<p1.second << endl;});
+  
+  if (ptSumByPV.size()>0) ptSumChByWorstPV = (std::max_element(ptSumByPV.begin(), ptSumByPV.end(), [](const pair<const reco::Vertex*, double>& p1, const pair<const reco::Vertex*, double>& p2){return (p1.second<p2.second);}))->second; // pick the largest one
 }
 

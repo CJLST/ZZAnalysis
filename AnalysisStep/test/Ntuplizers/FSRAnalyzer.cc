@@ -11,6 +11,7 @@
 #include <DataFormats/Common/interface/View.h>
 #include <DataFormats/Candidate/interface/Candidate.h>
 #include <DataFormats/PatCandidates/interface/CompositeCandidate.h>
+#include <DataFormats/VertexReco/interface/Vertex.h>
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 #include <ZZAnalysis/AnalysisStep/interface/DaughterDataHelpers.h>
 #include <ZZAnalysis/AnalysisStep/interface/MCHistoryTools.h>
@@ -70,17 +71,21 @@ FSRAnalyzer::analyze(const edm::Event & event, const edm::EventSetup& eventSetup
 
   Handle<std::vector<PileupSummaryInfo> >  PupInfo;
   event.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
-  //  Short_t NObsInt  = 0;
-  Float_t NTrueInt  = 0;
+  int NObsInt  = 0;
+  float NTrueInt  = 0;
   std::vector<PileupSummaryInfo>::const_iterator PVI;
   for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
     if(PVI->getBunchCrossing() == 0) { 
-      //      NObsInt  = PVI->getPU_NumInteractions();
+      NObsInt  = PVI->getPU_NumInteractions();
       NTrueInt = PVI->getTrueNumInteractions();
       break;
     } 
   }
 
+  Handle<vector<reco::Vertex> >  vertexs;
+  event.getByLabel("goodPrimaryVertices",vertexs);
+  int Nvtx=vertexs->size();
+  
   MCHistoryTools mch(event);
   // These are all gen FSR photons coming from leptons from the H
   vector<const reco::Candidate *> genFSR = mch.genFSR();
@@ -162,7 +167,7 @@ FSRAnalyzer::analyze(const edm::Event & event, const edm::EventSetup& eventSetup
 	  LeptonIsoHelper::fsrIso(gamma, pfCands, neu, chg, chgByWorstPV);
 	  double gRelIso = (neu + chg)/gamma->pt();	  
 	  double gRelIsoByPV = (neu + chgByWorstPV)/gamma->pt();	  
-	  
+
 	  if (igen>=0) {
 	    dRGenVsReco = ROOT::Math::VectorUtil::DeltaR(genFSR[igen]->momentum(),gamma->momentum());
 	    if (dRGenVsReco<0.3) { //Matching cut -- FIXME
@@ -195,6 +200,8 @@ FSRAnalyzer::analyze(const edm::Event & event, const edm::EventSetup& eventSetup
 	       << etaGen << " "
 	       << phiGen << " "
 	       << gRelIsoByPV << " "
+	       << Nvtx << " "
+	       << NObsInt << " "
 	       << NTrueInt << " "
 	       << endl; 
 
