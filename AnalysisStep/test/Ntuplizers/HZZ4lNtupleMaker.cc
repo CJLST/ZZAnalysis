@@ -57,7 +57,6 @@
 #include <string>
 
 namespace {
-  bool writePhotons = false;  // Write photons in the tree. Note: must be set also in HZZ4lNtupleFactory.cc
   bool writeJets = true;     // Write jets in the tree. FIXME: make this configurable
   bool addKinRefit = false;
   bool addVtxFit = false;
@@ -163,9 +162,6 @@ namespace {
   Float_t Lep4chargedHadIso  = 0;
   Float_t Lep4neutralHadIso  = 0;
   Float_t Lep4photonIso  = 0;*/
-  Float_t PhotPt  = 0;
-  Float_t PhotEta  = 0;
-  Float_t PhotPhi  = 0;
   Float_t p0plus_VAJHU  = 0;
   Float_t p0minus_VAJHU  = 0;
   Float_t p0plus_VAMCFM  = 0;
@@ -353,7 +349,6 @@ private:
 
   void BookAllBranches();  
   virtual void FillCandidate(const pat::CompositeCandidate& higgs, bool evtPass, const edm::Event&, const Int_t CRflag);
-  virtual void FillPhoton(const pat::Photon& photon);
   virtual void FillJet(const pat::Jet& jet);
   virtual void endJob() ;
 
@@ -687,17 +682,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     }
   }
 
-  // Photons (store them only for events with at least 1 candidate)
-  // FIXME: should rather write used FSR photons, with info on matching lepton.
-  if (writePhotons && cands->size()!=0) {
-    edm::Handle<vector<pat::Photon> > photons;
-    if (event.getByLabel("cmgPhotonSel",photons)) {
-      for( vector<pat::Photon>::const_iterator ph = photons->begin(); ph != photons->end(); ++ph) {
-        if(ph->pt() > 2. && fabs(ph->eta()) < 2.8) FillPhoton(*ph);
-      }
-    }
-  }
-
 
   // Jets
   Handle<edm::View<pat::Jet> > CleanedJets;
@@ -816,13 +800,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   
   // If no candidate was filled but we still want to keep gen-level and weights, we need to fill one entry anyhow.
   if (skipEmptyEvents==false && nFilled==0)myTree->FillCurrentTree(); 
-}
-
-void HZZ4lNtupleMaker::FillPhoton(const pat::Photon& photon)
-{
-   PhotPt  = photon.pt();
-   PhotEta = photon.eta();
-   PhotPhi = photon.phi();
 }
 
 
@@ -1608,13 +1585,6 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("fsrLept",fsrLept);
   myTree->Book("fsrLeptId",fsrLeptID); // FIXME next ones can be skipped for mass production
   myTree->Book("fsrGenPt",fsrGenPt);
-
-  //Photon variables
-  if (writePhotons) {
-    myTree->Book("PhotPt",PhotPt);
-    myTree->Book("PhotEta",PhotEta);
-    myTree->Book("PhotPhi",PhotPhi);
-  }
 
   //Discriminants
     myTree->Book("p0plus_VAJHU",p0plus_VAJHU);

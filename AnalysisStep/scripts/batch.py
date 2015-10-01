@@ -298,6 +298,9 @@ class Component(object):
         print "checking "+self.name
         self.source = datasetToSource( prefix, dataset, pattern)
         self.files = self.source.fileNames
+        print len(self.files)
+        if len(self.files)==0 :
+            sys.exit("ERROR: no input files found")
         self.splitFactor = int(splitFactor)
         self.variables = variables
         self.pyFragments = pyFragments

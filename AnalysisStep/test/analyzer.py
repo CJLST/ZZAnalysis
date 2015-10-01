@@ -165,7 +165,7 @@ process.ZZSelection= cms.EDFilter("CandViewCountFilter",
 ### Select CR events
 process.CRFiltered = cms.EDFilter("PATCompositeCandidateRefSelector",
                                   src = cms.InputTag("ZLLCand"),
-                                  cut = cms.string("(userFloat('isBestCRZLLss') || userFloat('isBestCREEEEss')  || userFloat('isBestCREEMMss') || userFloat('isBestCRMMEEss') || userFloat('isBestCRMMMMss')) && userFloat('CRLLLL')")
+                                  cut = cms.string("((userFloat('isBestCRZLLss')&&userFloat('CRZLLss')))||(userFloat('isBestCRZLLos_2P2F')&&userFloat('CRZLLos_2P2F'))||(userFloat('isBestCRZLLos_3P1F')&&userFloat('CRZLLos_3P1F'))")
                                   )
 ### Select only events with one such candidate
 process.CRSelection= cms.EDFilter("CandViewCountFilter",
