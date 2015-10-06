@@ -194,13 +194,18 @@ elif (LEPTON_SETUP == 2012):
     process.triggerTriEle  = cms.Path(process.hltFilterTriEle)
 
 elif (LEPTON_SETUP == 2015):
-    #FIXME: This is the menu used in the RunIISpring15DR74 MC samples for 25ns,1.4e34 conditions, but the paths used in datataking will be slightly different + some other paths exist for lower luminosities.
-    process.hltFilterDiEle.HLTPaths = ["HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*"]
+    #FIXME: For now, the MC paths are the ones used in the RunIISpring15DR74 MC samples for 25ns,7e33 conditions.
+    process.hltFilterDiEle.HLTPaths = ["HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*"]
+    #process.hltFilterDiEle.HLTPaths = ["HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*"] #for 25ns,14e33 (not necessary in 2015 data)
     process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*"]
-    process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"]
+    process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"]
+    #process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"] #for 25ns,14e33 (not necessary in 2015 data)
     process.hltFilterTriEle.HLTPaths = ["HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v*"]
     process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_12_10_5_v*"]
-    process.hltFilterSingleEle.HLTPaths = ["HLT_Ele32_eta2p1_WP75_Gsf_v*"] #FIXME: the name of this path will change in datataking. #FIXME: we still need to discuss whether we actually want to use a single electron path and run on the SingleElectron PD.
+    if (IsMC):
+        process.hltFilterSingleEle.HLTPaths = ["HLT_Ele27_eta2p1_WP75_Gsf_v*"]
+    else :
+        process.hltFilterSingleEle.HLTPaths = ["HLT_Ele27_eta2p1_WPLoose_Gsf_v*"]
     process.triggerTriEle = cms.Path(process.hltFilterTriEle)
     process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
     process.triggerSingleEle = cms.Path(process.hltFilterSingleEle)

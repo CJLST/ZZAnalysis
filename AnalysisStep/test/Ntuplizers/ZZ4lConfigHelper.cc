@@ -29,7 +29,7 @@ ZZ4lConfigHelper::ZZ4lConfigHelper(const ParameterSet& pset) :
   }
   
   
-  if ((isMC_&&PD!="") || (!isMC_ && (PD!="DoubleEle" && PD!="DoubleMu" && PD!="MuEG"))) {
+  if ((isMC_&&PD!="") || (!isMC_ && (PD!="DoubleEle" && PD!="DoubleMu" && PD!="MuEG" && PD!="DoubleEG" && PD!="DoubleMuon" && PD!="MuonEG" && PD!="SingleElectron"))) {
     cout << "ERROR: ZZ4lConfigHelper: isMC: " << isMC_ << " PD: " << PD << endl;
     abort();
   }    
