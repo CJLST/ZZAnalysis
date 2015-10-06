@@ -426,7 +426,7 @@ process.softElectrons = cms.EDProducer("EleFiller",
    setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
    cut = cms.string("userFloat('dxy')<0.5 && userFloat('dz')<1"),# removed cut because variable is in Spring15 ID  && userFloat('missingHit')<=1"),
    flags = cms.PSet(
-        ID = cms.string("userFloat('passSpring15BDT')"), # for Phys14 ID use userFloat('isBDT')
+        ID = cms.string("userFloat('isBDT')"),
         isSIP = cms.string(SIP),
         isGood = cms.string(GOODLEPTON),
         isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<"+ELEISOCUT)
@@ -436,7 +436,7 @@ process.softElectrons = cms.EDProducer("EleFiller",
    )
 
 
-process.electrons = cms.Sequence(process.eleRegressionEnergy + process.calibratedPatElectrons + process.bareSoftElectrons + process.softElectrons)
+process.electrons = cms.Sequence(process.eleRegressionEnergy + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
 
 # Handle special cases
 if ELEREGRESSION == "None" and ELECORRTYPE == "None" :   # No correction at all. Skip correction modules.

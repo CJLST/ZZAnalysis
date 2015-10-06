@@ -7,10 +7,10 @@
 # source /tmp/checkout_70X.csh
 
 
-############## For miniAOD/CMSSW_7_4_7
+############## For miniAOD/CMSSW_7_4_12_patch2
 
-#electron MVA ID (still with Phys14 training)
-git cms-merge-topic sregnard:Phys14ElectronMvaIdFor745
+#fixed Phys14-trained electron MVA ID (deprecated)
+#git cms-merge-topic sregnard:Phys14ElectronMvaIdFor745
 
 #ZZAnalysis
 git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis

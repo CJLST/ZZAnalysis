@@ -5,7 +5,8 @@ To install a complete CMSSW area (including this package)
 ------------------------------
 Download and execute the setup script for the given release:
 
-*   For CMSSW_7_4_7:
+Note that the the Spring15 electron ID needs CMSSW version >= 7_4_12_patch2.
+*   For CMSSW_7_4_12_patch2:
 
     ```
     wget -P /tmp https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_74X/checkout_70X.csh
