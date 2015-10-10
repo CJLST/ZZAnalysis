@@ -57,6 +57,7 @@ cat /proc/cpuinfo
 cat /proc/meminfo
 cd $CMSSW_BASE/src
 cmsenv
+setenv X509_USER_PROXY ~/x509up_u${uid}
 cd -
 echo 'Environment:'
 echo

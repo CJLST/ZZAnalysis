@@ -1,8 +1,6 @@
 /** \class ZZCandidateFiller
  *
  *
- *  $Date: 2013/12/12 16:19:40 $
- *  $Revision: 1.72 $
  *  \author N. Amapane - Torino
  *  \author C. Botta - Torino
  *  \author G. Ortona - LLR
@@ -86,6 +84,7 @@ private:
   reco::CompositeCandidate::role_collection rolesZ1Z2;  
   reco::CompositeCandidate::role_collection rolesZ2Z1;
   bool isMC;
+  bool recomputeIsoForFSR;
   TH2F* corrSigmaMu;
   TH2F* corrSigmaEle;
   Comparators::ComparatorTypes bestCandType;
@@ -111,6 +110,7 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
   embedDaughterFloats(iConfig.getUntrackedParameter<bool>("embedDaughterFloats",true)),
   ZRolesByMass(iConfig.getParameter<bool>("ZRolesByMass")),
   isMC(iConfig.getParameter<bool>("isMC")),
+  recomputeIsoForFSR(iConfig.getParameter<bool>("recomputeIsoForFSR")),
   corrSigmaMu(0),
   corrSigmaEle(0)
 {
@@ -276,32 +276,36 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     int candChannel = id11*id12*id21*id22;
 
     // Recompute isolation for all four leptons if FSR is present
-    //    if (RecomputeIsoForFSR) ... //FIXME: will recompute iso for individual leptons in the new scheme
     for (int zIdx=0; zIdx<2; ++zIdx) {
       float worstMuIso=0;
       float worstEleIso=0;
       for (int dauIdx=0; dauIdx<2; ++dauIdx) { 
 	const reco::Candidate* z = myCand.daughter(zIdx);
 	const reco::Candidate* d = z->daughter(dauIdx);
-	float fsrCorr = 0; // The correction to PFPhotonIso
-	for (FSRToLepMap::const_iterator ifsr=FSRMap.begin(); ifsr!=FSRMap.end(); ++ifsr) {
-	  double dR = ROOT::Math::VectorUtil::DeltaR(ifsr->second->p4(),d->momentum());
-	  // Check if the photon is in the lepton's iso cone and not vetoed
-	  if (dR<0.4 && ((d->isMuon() && dR > 0.01) ||
-			 (d->isElectron() && (fabs((static_cast<const pat::Electron*>(d->masterClone().get()))->superCluster()->eta()) < 1.479 || dR > 0.08)))) {
-	    fsrCorr += ifsr->second->pt();
+	float combRelIsoPFCorr = 0;
+	if (recomputeIsoForFSR) {  //FIXME: will recompute iso for individual leptons in the new scheme
+	  float fsrCorr = 0; // The correction to PFPhotonIso
+	  for (FSRToLepMap::const_iterator ifsr=FSRMap.begin(); ifsr!=FSRMap.end(); ++ifsr) {
+	    double dR = ROOT::Math::VectorUtil::DeltaR(ifsr->second->p4(),d->momentum());
+	    // Check if the photon is in the lepton's iso cone and not vetoed
+	    if (dR<0.4 && ((d->isMuon() && dR > 0.01) ||
+			   (d->isElectron() && (fabs((static_cast<const pat::Electron*>(d->masterClone().get()))->superCluster()->eta()) < 1.479 || dR > 0.08)))) {
+	      fsrCorr += ifsr->second->pt();
+	    }
 	  }
-	}
-	float rho = ((d->isMuon())?rhoForMu:rhoForEle);
-	float combRelIsoPFCorr =  LeptonIsoHelper::combRelIsoPF(sampleType, setup, rho, d, fsrCorr);
+	  float rho = ((d->isMuon())?rhoForMu:rhoForEle);
+	  combRelIsoPFCorr =  LeptonIsoHelper::combRelIsoPF(sampleType, setup, rho, d, fsrCorr);
+	  string base;
+	  stringstream str;
+	  str << "d" << zIdx << "." << "d" << dauIdx << ".";
+	  str >> base;
+	  myCand.addUserFloat(base+"combRelIsoPFFSRCorr",combRelIsoPFCorr);
+	  myCand.addUserFloat(base+"passCombRelIsoPFFSRCorr",combRelIsoPFCorr < LeptonIsoHelper::isoCut(d)); // FIXME: not the most elegant solution; hard coded right now to see how things evolve about lepton isolation requirements. 
+	} else {
+	  combRelIsoPFCorr = userdatahelpers::getUserFloat(d,"combRelIsoPFFSRCorr");
+	}	
 	if (d->isMuon()) worstMuIso  = max(worstMuIso,  combRelIsoPFCorr);
 	else             worstEleIso = max(worstEleIso, combRelIsoPFCorr);
-	string base;
-	stringstream str;
-	str << "d" << zIdx << "." << "d" << dauIdx << ".";
-	str >> base;
-	myCand.addUserFloat(base+"combRelIsoPFFSRCorr",combRelIsoPFCorr);
-	myCand.addUserFloat(base+"passCombRelIsoPFFSRCorr",combRelIsoPFCorr < (d->isMuon()?0.4:0.5)); // FIXME: not the most elegant solution; hard coded right now to see how things evolve about lepton isolation requirements. 
       }
       string base = (zIdx==0?"d0.":"d1.");
       myCand.addUserFloat(base+"worstMuIso",worstMuIso);

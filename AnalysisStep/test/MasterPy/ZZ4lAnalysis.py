@@ -75,10 +75,16 @@ try:
 except NameError:
     KEEPLOOSECOMB = False
 
-# The isolation cuts for electrons and muons
+# The isolation cuts for electrons and muons. FIXME: there is an hardcoded instance of these values in src/LeptonIsoHelper.cc !!
 ELEISOCUT = "0.5"
 MUISOCUT = "0.4"
 
+
+# Which FSR mode to use: "Legacy" or "RunII"
+try:
+    FSRMODE
+except NameError:
+    FSRMODE = "Legacy"
 
 
 ### ----------------------------------------------------------------------
@@ -109,7 +115,7 @@ else:
         process.GlobalTag.globaltag = 'MCRUN2_74_V9::All'
     else:
         process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
-        process.GlobalTag.globaltag = '74X_dataRun2_Prompt_v1' #FIXME: not yet available for RunII
+        process.GlobalTag.globaltag = '74X_dataRun2_reMiniAOD_v0'
 
 print '\t',process.GlobalTag.globaltag
 
@@ -528,7 +534,9 @@ process.appendPhotons = cms.EDProducer("LeptonPhotonMatcher",
     muonSrc = cms.InputTag("softMuons"),
     electronSrc = cms.InputTag("cleanSoftElectrons"),
     photonSrc = cms.InputTag("boostedFsrPhotons"),
-    photonSel = cms.string("Legacy") # "skip", "passThrough", "Legacy", "RunII"
+    sampleType = cms.int32(SAMPLE_TYPE),                     
+    setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
+    photonSel = cms.string(FSRMODE)  # "skip", "passThrough", "Legacy", "RunII"
     )
 
 
@@ -591,7 +599,7 @@ process.ZCand = cms.EDProducer("ZCandidateFiller",
     sampleType = cms.int32(SAMPLE_TYPE),                     
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
     bestZAmong = cms.string(BESTZ_AMONG),
-    FSRMode = cms.string("Legacy"), # "skip", "Legacy", "RunII"
+    FSRMode = cms.string(FSRMODE), # "skip", "Legacy", "RunII"
     flags = cms.PSet(
         GoodLeptons = cms.string(ZLEPTONSEL),
         Z1Presel = cms.string(Z1PRESEL),
@@ -610,7 +618,7 @@ process.LLCand = cms.EDProducer("ZCandidateFiller",
     sampleType = cms.int32(SAMPLE_TYPE),                     
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
     bestZAmong = cms.string(BESTZ_AMONG),
-    FSRMode = cms.string("Legacy"), # "skip", "Legacy", "RunII"
+    FSRMode = cms.string(FSRMODE), # "skip", "Legacy", "RunII"
     flags = cms.PSet(
         GoodLeptons = cms.string(ZLEPTONSEL),
         Z1Presel = cms.string(Z1PRESEL),
@@ -768,6 +776,13 @@ LLLLPRESEL = NOGHOST4l # Just suppress candidates with overlapping leptons
 
 # ZZ Candidates
 
+if FSRMODE == "Legacy":
+    RECOMPUTEISOFORFSR = True
+elif FSRMODE == "RunII":
+    RECOMPUTEISOFORFSR = False
+
+
+
 process.bareZZCand= cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string('ZCand ZCand'),
     cut = cms.string(LLLLPRESEL),
@@ -782,6 +797,7 @@ process.ZZCand = cms.EDProducer("ZZCandidateFiller",
     bestCandAmong = cms.PSet(isBestCand = cms.string(BESTCAND_AMONG)),
     bestCandComparator = cms.string(BESTCANDCOMPARATOR),
     ZRolesByMass = cms.bool(True),
+    recomputeIsoForFSR = cms.bool(RECOMPUTEISOFORFSR),
     flags = cms.PSet(
         GoodLeptons =  cms.string(FOURGOODLEPTONS),
         Z2Mass  = cms.string(Z2MASS),
@@ -897,6 +913,7 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
 
     ),
     ZRolesByMass = cms.bool(False),  # daughter('Z1') = daughter(0)
+    recomputeIsoForFSR = cms.bool(RECOMPUTEISOFORFSR),
     flags = cms.PSet(
       SR = cms.string(SR),
       CRZLLss = cms.string(CR_BASESEL),             #combine with proper isBestCRZLLss for AA ss/os CRss    

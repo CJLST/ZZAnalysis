@@ -1,9 +1,24 @@
 identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments,comment
 
-###,,,,,,,,,,,Data
-DoubleMu2015B,, -1, ,, /DoubleMuon/MINIAOD/PromptReco-v1/,/store/data/Run2015B,,2,PD=DoubleMu,json_2015.py,
-DoubleEG2015B,, -1, ,, /DoubleEG/MINIAOD/PromptReco-v1/,/store/data/Run2015B,,2,PD=DoubleEle,json_2015.py,
-MuonEG2015B,,   -1, ,, /MuonEG/MINIAOD/PromptReco-v1/,/store/data/Run2015B,,10,PD=MuEG,json_2015.py,
+###,,,,,,,,,,,Data, 50ns
+DoubleMu2015B,, -1, ,, /DoubleMuon/MINIAOD/PromptReco-v1/,/store/data/Run2015B,,2,PD=DoubleMu,json_2015_50ns.py,
+DoubleEG2015B,, -1, ,, /DoubleEG/MINIAOD/PromptReco-v1/,/store/data/Run2015B,,2,PD=DoubleEle,json_2015_50ns.py,
+MuonEG2015B,,   -1, ,, /MuonEG/MINIAOD/PromptReco-v1/,/store/data/Run2015B,,10,PD=MuEG,json_2015_50ns.py,
+
+DoubleMu2015C_50ns,, -1, ,, /DoubleMuon/MINIAOD/PromptReco-v1/,/store/data/Run2015C,,2,PD=DoubleMu,json_2015_50ns.py,
+DoubleEG2015C_50ns,, -1, ,, /DoubleEG/MINIAOD/PromptReco-v1/,/store/data/Run2015C,,2,PD=DoubleEle,json_2015_50ns.py,
+MuonEG2015C_50ns,,   -1, ,, /MuonEG/MINIAOD/PromptReco-v1/,/store/data/Run2015C,,2,PD=MuEG,json_2015_50ns.py,
+
+###,,,,,,,,,,,Data, 25ns
+DoubleMu2015C,, -1, ,, /DoubleMuon/MINIAOD/PromptReco-v1/,/store/data/Run2015C,,2,PD=DoubleMu,json_2015_25ns.py,
+DoubleEG2015C,, -1, ,, /DoubleEG/MINIAOD/PromptReco-v1/,/store/data/Run2015C,,2,PD=DoubleEle,json_2015_25ns.py,
+MuonEG2015C,,   -1, ,, /MuonEG/MINIAOD/PromptReco-v1/,/store/data/Run2015C,,2,PD=MuEG,json_2015_25ns.py,
+
+DoubleMu2015D,, -1, ,, /DoubleMuon/MINIAOD/PromptReco-v3/,/store/data/Run2015D,,2,PD=DoubleMu,json_2015_25ns.py,
+DoubleEG2015D,, -1, ,, /DoubleEG/MINIAOD/PromptReco-v3/,/store/data/Run2015D,,2,PD=DoubleEle,json_2015_25ns.py,
+MuonEG2015D,,   -1, ,, /MuonEG/MINIAOD/PromptReco-v3/,/store/data/Run2015D,,2,PD=MuEG,json_2015_25ns.py,
+
+
 
 ###,,,,,,,,,,,Official Spring15 samples
 ggH124,,          44.5 ,2.52E-04 ,,/GluGluHToZZTo4L_M124_13TeV_powheg_JHUgen_pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/,/store/mc/RunIISpring15DR74,,2,,, #FIXME xsection approxymate as still not available
@@ -22,7 +37,6 @@ ttH125,,          0.000337,        ,,/ttH_HToZZ_4LFilter_M125_13TeV_powheg_JHUge
 
 
 ZZTo4l,,            1.256,      ,,/ZZTo4L_13TeV_powheg_pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/,/store/mc/RunIISpring15DR74,,2,,,
-#ZZTo4lamcatnlo,,    1,          ,,/ZZTo4L_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/,/store/mc/RunIISpring15DR74,,2,,,#BUGGY!!
 ZZTo4lamcatnlo,,    1,          ,,/ZZTo4L_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/Asympt50ns_MCRUN2_74_V9A-v2/,/store/mc/RunIISpring15DR74,,2,,,
 
 ggZZ4e,,            0.001586,   ,,/GluGluToZZTo4e_BackgroundOnly_13TeV_MCFM/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/,/store/mc/RunIISpring15DR74,,1,,,
@@ -32,3 +46,7 @@ ggZZ2e2mu,,         0.003194,   ,,/GluGluToZZTo2e2mu_BackgroundOnly_13TeV_MCFM/M
 ggZZ2e2tau,,        0.003194,   ,,/GluGluToZZTo2e2tau_BackgroundOnly_13TeV_MCFM/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/,/store/mc/RunIISpring15DR74,,3,,,
 ggZZ2mu2tau,,       0.003194,   ,,/GluGluToZZTo2mu2tau_BackgroundOnly_13TeV_MCFM/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/,/store/mc/RunIISpring15DR74,,3,,,
 
+
+###,,,,,,,,,,,Flat PU samples
+
+#flatPU_ggH125,,          43.92,2.76E-04 ,,/GluGluHToZZTo4L_M125_13TeV_powheg_JHUgen_pythia8/RunIISpring15DR74-StartupFlat10to50bx50Raw_MCRUN2_74_V8-v1/MINIAODSIM,dbs,,2,,,

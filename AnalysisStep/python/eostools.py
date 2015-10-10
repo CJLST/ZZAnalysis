@@ -73,47 +73,67 @@ def lfnToPFN( path, tfcProt = 'rfio'):
     return pfn
 
 
+def runDBS(dataset):
+    cmd = 'file dataset='+dataset
+    command = ['das_client.py', '--limit=0', '--query', cmd]
+    runner = cmsIO.cmsFileManip()
+    # print ' '.join(command)
+    return runner.runCommand(command)
 
-def listFiles(path, rec = False, full_info = False):
+def listFiles(sample, path, rec = False, full_info = False):
     """Provides a list of the specified directory
     """
     # -- listing on the local filesystem --
-    if os.path.isdir( path ):
+
+    result = []
+
+    # listing from dbs
+    if path=="dbs" :
+        files, _, _ =runDBS(sample)
+        for line in files.split('\n'):
+#            result.append("root://cms-xrd-global.cern.ch//"+line)
+            result.append(line)
+        return result
+
+    # listing from local dir
+    elif os.path.isdir( path ):
         if not rec:
             # not recursive
             return [ '/'.join([path,file]) for file in os.listdir( path )]
         else:
             # recursive, directories are put in the list first,
             # followed by the list of all files in the directory tree
-            result = []
             allFiles = []
             for root,dirs,files in os.walk(path):
                 result.extend( [ '/'.join([root,dir]) for dir in dirs] )
                 allFiles.extend( [ '/'.join([root,file]) for file in files] )
             result.extend(allFiles)
             return result
+
     # -- listing on EOS --
-    cmd = 'dirlist'
-    if rec:
-        cmd = 'dirlistrec'
-    files, _, _ = runXRDCommand(path, cmd)
-    result = []
-    for line in files.split('\n'):
-        tokens = [t for t in line.split() if t]
-        if tokens:
-            #convert to an LFN
-            if full_info:
-                result.append( tokens)
-            else:
-                result.append( eosToLFN(tokens[4]) )
-    return result
+    else  :
+        cmd = 'dirlist'
+        if rec:
+            cmd = 'dirlistrec'
+        files, _, _ = runXRDCommand(path+sample, cmd)
+
+        for line in files.split('\n'):
+            tokens = [t for t in line.split() if t]
+            if tokens:
+               #convert to an LFN
+               if full_info:
+                   result.append( tokens)
+               else:
+                   result.append( eosToLFN(tokens[4]) )
+        return result
 
 
 def datasetToSource( prefix, dataset, pattern='', readCache=False):
 
 #    print user, dataset, pattern
     recursive=True #FIXME: this is needed for central production, but care is needed if other stuff is present in the EOS path
-    data=listFiles(prefix+dataset, recursive)
+
+    data=listFiles(dataset, prefix, recursive)
 
     rootre = re.compile('.*root')
     files = [f for f in data if rootre.match(f)]

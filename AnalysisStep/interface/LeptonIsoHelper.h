@@ -5,8 +5,6 @@
  *
  *  Helper for computing lepton isolation
  *
- *  $Date: 2012/06/10 17:40:50 $
- *  $Revision: 1.3 $
  *  \author N. Amapane
  */
 
@@ -36,6 +34,9 @@ namespace LeptonIsoHelper {
 
   // Compute FSR isolation
   void fsrIso(const reco::PFCandidate* photon, edm::Handle<edm::View<pat::PackedCandidate> > pfcands, double& ptSumNe, double& ptSumCh, double& ptSumChByWorstPV);
+
+  // Value of the iso cut 
+  float isoCut(const reco::Candidate* d);
 
 }
 #endif

@@ -2,8 +2,6 @@
  *
  *  No description available.
  *
- *  $Date: 2012/10/10 22:28:52 $
- *  $Revision: 1.14 $
  *  \author N. Amapane (Torino)
  *  \author S. Bolognesi (JHU)
  *  \author C. Botta (CERN)
@@ -237,15 +235,16 @@ ZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       for (int dauIdx=0; dauIdx<2; ++dauIdx) { 
 	const Candidate* d = myCand.daughter(dauIdx);
 	const PhotonPtrVector* gammas = userdatahelpers::getUserPhotons(d);
+	if (gammas==0) continue;
 	assert(gammas->size()<=1); // Must have already been preselected.
 	if (gammas->size()==1){
 	  const pat::PFParticle* fsr = gammas->begin()->get();
 	  pat::PFParticle myFsr(*fsr);
 	  myCand.setP4(myCand.p4()+fsr->p4());
 	  myFsr.setPdgId(22);
+	  myFsr.addUserFloat("leptIdx",dauIdx);
 	  //	myFsr.addUserFloat("gRelIso",0.);
-	  myCand.addDaughter(myFsr,"FSR");
-	  //FIXME: recompute isolation is not done here?
+	  myCand.addDaughter(myFsr);
 	}
       }
       
@@ -256,7 +255,7 @@ ZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     } else if (FSRMode==0) { // no FSR
       myCand.addUserFloat("dauWithFSR",-1);
       myCand.addUserFloat("d0.combRelIsoPFFSRCorr",myCand.userFloat("d0.combRelIsoPF"));
-      myCand.addUserFloat("d1.combRelIsoPFFSRCorr",myCand.userFloat("d1.combRelIsoPF"));	
+      myCand.addUserFloat("d1.combRelIsoPFFSRCorr",myCand.userFloat("d1.combRelIsoPF"));
     }
 
     

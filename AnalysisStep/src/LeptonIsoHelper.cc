@@ -1,7 +1,5 @@
 /** \file
  *
- *  $Date: 2013/05/13 17:10:20 $
- *  $Revision: 1.6 $
  *  \author N. Amapane
  */
 
@@ -175,3 +173,9 @@ void LeptonIsoHelper::fsrIso(const reco::PFCandidate* photon, edm::Handle<edm::V
   if (ptSumByPV.size()>0) ptSumChByWorstPV = (std::max_element(ptSumByPV.begin(), ptSumByPV.end(), [](const pair<const reco::Vertex*, double>& p1, const pair<const reco::Vertex*, double>& p2){return (p1.second<p2.second);}))->second; // pick the largest one
 }
 
+
+
+float LeptonIsoHelper::isoCut(const reco::Candidate* d) { 
+  // FIXME: cut is hardcoded here, need to see how things evolve about lepton isolation requirements
+  return (d->isMuon()?0.4:0.5);
+}

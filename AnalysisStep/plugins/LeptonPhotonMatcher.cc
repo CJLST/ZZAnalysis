@@ -61,6 +61,8 @@ class LeptonPhotonMatcher : public edm::EDProducer {
   const edm::InputTag theElectronTag_;
   const edm::InputTag thePhotonTag_;
   int selectionMode;
+  int sampleType;
+  int setup;
   bool debug;
 };
 
@@ -69,6 +71,8 @@ LeptonPhotonMatcher::LeptonPhotonMatcher(const edm::ParameterSet& iConfig) :
   theMuonTag_(iConfig.getParameter<InputTag>("muonSrc")),
   theElectronTag_(iConfig.getParameter<InputTag>("electronSrc")),
   thePhotonTag_(iConfig.getParameter<InputTag>("photonSrc")),
+  sampleType(iConfig.getParameter<int>("sampleType")),
+  setup(iConfig.getParameter<int>("setup")),
   debug(iConfig.getUntrackedParameter<bool>("debug",false))
 {
 
@@ -196,10 +200,10 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  accept = (dRMin<0.5 && pT>2.); 
 
 	} else if (selectionMode==3) { // RunII
-	  if (dRMin<0.5 && g->pt()>2. && dRMin/pT/pT<0.01) {
+	  if (dRMin<0.5 && g->pt()>2. && dRMin/pT/pT<0.011) {
 	    LeptonIsoHelper::fsrIso(&(*g), pfCands, neu, chg, chgByWorstPV);
 	    gRelIso = (neu + chg)/pT;
-	    if (gRelIso<1.) accept = true;
+	    if (gRelIso<1.5) accept = true;
 	  }
 	} else if (selectionMode==2) { // Legacy
 	  if( dRMin<0.07 ){
@@ -259,12 +263,21 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  newE.addUserData("FSRCandidates",fsr->second);
 	}
       }
-      resultEle->push_back(newE);      
+      resultEle->push_back(newE);
     }
   }
 
   //Recompute isolation of all leptons subtracting FSR from the cone (only for Run II strategy)
   if (selectionMode==3){
+    double rhoForMu, rhoForEle;
+    {
+      edm::Handle<double> rhoHandle;
+      iEvent.getByLabel(LeptonIsoHelper::getMuRhoTag(sampleType, setup), rhoHandle);
+      rhoForMu = *rhoHandle;
+      iEvent.getByLabel(LeptonIsoHelper::getEleRhoTag(sampleType, setup), rhoHandle);
+      rhoForEle = *rhoHandle;
+    }
+
     for (pat::MuonCollection::iterator m= resultMu->begin(); m!=resultMu->end(); ++m){
       float fsrCorr = 0; // The correction to PFPhotonIso
       for (PhotonPtrVector::const_iterator g = allSelFSR.begin();g!= allSelFSR.end(); ++g) {
@@ -275,7 +288,9 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  fsrCorr += gamma->pt();
 	}
       } 
-      m->addUserFloat("fsrCorr", fsrCorr); // FIXME recompute isolation instead
+      float combRelIsoPFCorr =  LeptonIsoHelper::combRelIsoPF(sampleType, setup, rhoForMu, *m, fsrCorr);
+      m->addUserFloat("combRelIsoPFFSRCorr", combRelIsoPFCorr);
+      m->addUserFloat("passCombRelIsoPFFSRCorr",combRelIsoPFCorr < LeptonIsoHelper::isoCut(&*m));
     }
 
     for (pat::ElectronCollection::iterator e= resultEle->begin(); e!=resultEle->end(); ++e){
@@ -288,7 +303,9 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  fsrCorr += gamma->pt();
  	}
       }
-      e->addUserFloat("fsrCorr", fsrCorr); // FIXME recompute isolation instead
+      float combRelIsoPFCorr =  LeptonIsoHelper::combRelIsoPF(sampleType, setup, rhoForEle, *e, fsrCorr);
+      e->addUserFloat("combRelIsoPFFSRCorr", combRelIsoPFCorr);
+      e->addUserFloat("passCombRelIsoPFFSRCorr",combRelIsoPFCorr < LeptonIsoHelper::isoCut(&*e));
     }
   }
   

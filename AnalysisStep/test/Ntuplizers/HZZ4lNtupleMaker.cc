@@ -144,9 +144,11 @@ namespace {
   std::vector<float> fsrPt; 
   std::vector<float> fsrEta; 
   std::vector<float> fsrPhi;
+  std::vector<float> fsrDR;
   std::vector<short> fsrLept;
   std::vector<short> fsrLeptID;
   std::vector<float> fsrGenPt;
+  Bool_t passIsoPreFSR = 0;
   char Lep4missingHit  = 0;
   Float_t Lep4combRelIsoPF  = 0;
 /*Float_t Lep1chargedHadIso  = 0;
@@ -1051,6 +1053,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 //   vector<float> PFNeutralHadIso(4);
 //   vector<float> PFPhotonIso(4);
   vector<float> combRelIsoPF(4);
+  passIsoPreFSR = true;
   vector<bool>  isID(4);
   
   for (unsigned int i=0; i<leptons.size(); ++i){
@@ -1059,6 +1062,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 //     PFNeutralHadIso[i] = userdatahelpers::getUserFloat(leptons[i],"PFNeutralHadIso");
 //     PFPhotonIso[i]     = userdatahelpers::getUserFloat(leptons[i],"PFPhotonIso");
     isID[i]            = userdatahelpers::getUserFloat(leptons[i],"ID");
+    passIsoPreFSR      = passIsoPreFSR&&userdatahelpers::getUserFloat(leptons[i],"combRelIsoPF");
 
     //in the Legacy approach,  FSR-corrected iso is attached to the Z, not to the lepton!
     if (theChannel!=ZL) {
@@ -1121,9 +1125,11 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     fsrPhi.push_back(fsr.phi());
     fsrLept.push_back(fsrIndex[i]+1);
     fsrLeptID.push_back(leptons[fsrIndex[i]]->pdgId());
+    fsrDR.push_back(ROOT::Math::VectorUtil::DeltaR(leptons[fsrIndex[i]]->momentum(), fsrPhot[i]->momentum()));
     int igen = MCHistoryTools::fsrMatch(fsrPhot[i], genFSR);
     double dRGenVsReco = -1.;
     double genpT = -1.;
+
     if (igen>=0) {
       dRGenVsReco = ROOT::Math::VectorUtil::DeltaR(genFSR[igen]->momentum(), fsrPhot[i]->momentum());
 //       pTGen = genFSR[igen]->pt();
@@ -1581,9 +1587,11 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("fsrPt",fsrPt);
   myTree->Book("fsrEta",fsrEta);
   myTree->Book("fsrPhi",fsrPhi);
+  myTree->Book("fsrDR",fsrDR);
   myTree->Book("fsrLept",fsrLept);
   myTree->Book("fsrLeptId",fsrLeptID); // FIXME next ones can be skipped for mass production
   myTree->Book("fsrGenPt",fsrGenPt);
+  myTree->Book("passIsoPreFSR",passIsoPreFSR);
 
   //Discriminants
     myTree->Book("p0plus_VAJHU",p0plus_VAJHU);
