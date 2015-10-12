@@ -209,9 +209,9 @@ elif (LEPTON_SETUP == 2015):
     process.hltFilterTriEle.HLTPaths = ["HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v*"]
     process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_12_10_5_v*"]
     if (IsMC):
-        process.hltFilterSingleEle.HLTPaths = ["HLT_Ele27_eta2p1_WP75_Gsf_v*"]
+        process.hltFilterSingleEle.HLTPaths = ["HLT_Ele27_WP85_Gsf_v*"]
     else :
-        process.hltFilterSingleEle.HLTPaths = ["HLT_Ele27_eta2p1_WPLoose_Gsf_v*"]
+        process.hltFilterSingleEle.HLTPaths = ["HLT_Ele27_WPLoose_Gsf_v*"]
     process.triggerTriEle = cms.Path(process.hltFilterTriEle)
     process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
     process.triggerSingleEle = cms.Path(process.hltFilterSingleEle)
