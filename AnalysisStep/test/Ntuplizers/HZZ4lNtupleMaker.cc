@@ -44,6 +44,7 @@
 #include <ZZAnalysis/AnalysisStep/interface/PUReweight.h>
 #include <ZZAnalysis/AnalysisStep/interface/bitops.h>
 #include <ZZAnalysis/AnalysisStep/interface/Fisher.h>
+#include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
 #include "ZZ4lConfigHelper.h"
 #include "HZZ4lNtupleFactory.h"
 
@@ -1062,7 +1063,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 //     PFNeutralHadIso[i] = userdatahelpers::getUserFloat(leptons[i],"PFNeutralHadIso");
 //     PFPhotonIso[i]     = userdatahelpers::getUserFloat(leptons[i],"PFPhotonIso");
     isID[i]            = userdatahelpers::getUserFloat(leptons[i],"ID");
-    passIsoPreFSR      = passIsoPreFSR&&userdatahelpers::getUserFloat(leptons[i],"combRelIsoPF");
+    passIsoPreFSR      = passIsoPreFSR&&(userdatahelpers::getUserFloat(leptons[i],"combRelIsoPF")<LeptonIsoHelper::isoCut(leptons[i]));
 
     //in the Legacy approach,  FSR-corrected iso is attached to the Z, not to the lepton!
     if (theChannel!=ZL) {

@@ -200,10 +200,10 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  accept = (dRMin<0.5 && pT>2.); 
 
 	} else if (selectionMode==3) { // RunII
-	  if (dRMin<0.5 && g->pt()>2. && dRMin/pT/pT<0.011) {
+	  if (dRMin<0.5 && g->pt()>2. && dRMin/pT/pT<0.012) {
 	    LeptonIsoHelper::fsrIso(&(*g), pfCands, neu, chg, chgByWorstPV);
 	    gRelIso = (neu + chg)/pT;
-	    if (gRelIso<1.5) accept = true;
+	    if (gRelIso<1.8) accept = true;
 	  }
 	} else if (selectionMode==2) { // Legacy
 	  if( dRMin<0.07 ){
@@ -259,12 +259,13 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  PhotonPtr g = selectFSR(fsr->second,e->momentum());
 	  PhotonPtrVector gv = {g};	  
 	  newE.addUserData("FSRCandidates",gv);
+	  allSelFSR.push_back(g);
 	} else { //Legacy, etc.: keep all
 	  newE.addUserData("FSRCandidates",fsr->second);
 	}
       }
-      resultEle->push_back(newE);
     }
+    resultEle->push_back(newE);
   }
 
   //Recompute isolation of all leptons subtracting FSR from the cone (only for Run II strategy)
