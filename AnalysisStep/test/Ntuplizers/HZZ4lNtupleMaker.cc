@@ -108,40 +108,18 @@ namespace {
   Float_t phistarZ2  = 0;
   Float_t xi  = 0;
   Float_t xistar  = 0;
-  Float_t Lep1Pt  = 0;
-  Float_t Lep1Eta  = 0;
-  Float_t Lep1Phi  = 0;
-  Short_t Lep1LepId  = 0;
-  Float_t Lep1SIP  = 0;
-  Bool_t Lep1isID  = 0;
-  Float_t Lep1BDT  = 0;
-  char Lep1missingHit  = 0;
-  Float_t Lep1combRelIsoPF  = 0;
-  Float_t Lep2Pt  = 0;
-  Float_t Lep2Eta  = 0;
-  Float_t Lep2Phi  = 0;
-  Short_t Lep2LepId  = 0;
-  Float_t Lep2SIP  = 0;
-  Bool_t Lep2isID  = 0;
-  Float_t Lep2BDT  = 0;
-  char Lep2missingHit  = 0;
-  Float_t Lep2combRelIsoPF  = 0;
-  Float_t Lep3Pt  = 0;
-  Float_t Lep3Eta  = 0;
-  Float_t Lep3Phi  = 0;
-  Short_t Lep3LepId  = 0;
-  Float_t Lep3SIP  = 0;
-  Bool_t Lep3isID  = 0;
-  Float_t Lep3BDT  = 0;
-  char Lep3missingHit  = 0;
-  Float_t Lep3combRelIsoPF  = 0;
-  Float_t Lep4Pt  = 0;
-  Float_t Lep4Eta  = 0;
-  Float_t Lep4Phi  = 0;
-  Short_t Lep4LepId  = 0;
-  Float_t Lep4SIP  = 0;
-  Bool_t Lep4isID  = 0;
-  Float_t Lep4BDT  = 0;
+  std::vector<float> LepPt;
+  std::vector<float> LepEta;
+  std::vector<float> LepPhi;
+  std::vector<short> LepLepId;
+  std::vector<float> LepSIP;
+  std::vector<bool> LepisID;
+  std::vector<float> LepBDT;
+  std::vector<char> LepMissingHit;
+  //std::vector<float> LepChargedHadIso;
+  //std::vector<float> LepNeutralHadIso;
+  //std::vector<float> LepPhotonIso;
+  std::vector<float> LepCombRelIsoPF;
   std::vector<float> fsrPt; 
   std::vector<float> fsrEta; 
   std::vector<float> fsrPhi;
@@ -150,20 +128,6 @@ namespace {
   std::vector<short> fsrLeptID;
   std::vector<float> fsrGenPt;
   Bool_t passIsoPreFSR = 0;
-  char Lep4missingHit  = 0;
-  Float_t Lep4combRelIsoPF  = 0;
-/*Float_t Lep1chargedHadIso  = 0;
-  Float_t Lep1neutralHadIso  = 0;
-  Float_t Lep1photonIso  = 0;
-  Float_t Lep2chargedHadIso  = 0;
-  Float_t Lep2neutralHadIso  = 0;
-  Float_t Lep2photonIso  = 0;
-  Float_t Lep3chargedHadIso  = 0;
-  Float_t Lep3neutralHadIso  = 0;
-  Float_t Lep3photonIso  = 0;
-  Float_t Lep4chargedHadIso  = 0;
-  Float_t Lep4neutralHadIso  = 0;
-  Float_t Lep4photonIso  = 0;*/
   Float_t p0plus_VAJHU  = 0;
   Float_t p0minus_VAJHU  = 0;
   Float_t p0plus_VAMCFM  = 0;
@@ -1043,19 +1007,11 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 
   // Retrieve the userFloat of the leptons in vectors ordered in the same way.
   vector<float> SIP(4);
-//   vector<float> PFChargedHadIso(4);
-//   vector<float> PFNeutralHadIso(4);
-//   vector<float> PFPhotonIso(4);
   vector<float> combRelIsoPF(4);
   passIsoPreFSR = true;
-  vector<bool>  isID(4);
   
   for (unsigned int i=0; i<leptons.size(); ++i){
     SIP[i]             = userdatahelpers::getUserFloat(leptons[i],"SIP");
-//     PFChargedHadIso[i] = userdatahelpers::getUserFloat(leptons[i],"PFChargedHadIso");
-//     PFNeutralHadIso[i] = userdatahelpers::getUserFloat(leptons[i],"PFNeutralHadIso");
-//     PFPhotonIso[i]     = userdatahelpers::getUserFloat(leptons[i],"PFPhotonIso");
-    isID[i]            = userdatahelpers::getUserFloat(leptons[i],"ID");
     passIsoPreFSR      = passIsoPreFSR&&(userdatahelpers::getUserFloat(leptons[i],"combRelIsoPF")<LeptonIsoHelper::isoCut(leptons[i]));
 
     //in the Legacy approach,  FSR-corrected iso is attached to the Z, not to the lepton!
@@ -1068,47 +1024,18 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     }
 
     //Fill the info on the lepton candidates  
-    if(i==0){
-       Lep1Pt  = leptons[i]->pt();
-       Lep1Eta  = leptons[i]->eta();
-       Lep1Phi  = leptons[i]->phi();
-       Lep1LepId  = leptons[i]->pdgId();
-       Lep1SIP  = SIP[i];
-       Lep1isID  = isID[i];
-       Lep1BDT  = userdatahelpers::getUserFloat(leptons[i],"BDT");
-       Lep1missingHit  = userdatahelpers::getUserFloat(leptons[i],"missingHit");
-       Lep1combRelIsoPF=combRelIsoPF[i];
-    }else if(i==1){
-       Lep2Pt  = leptons[i]->pt();
-       Lep2Eta  = leptons[i]->eta();
-       Lep2Phi  = leptons[i]->phi();
-       Lep2LepId  = leptons[i]->pdgId();
-       Lep2SIP  = SIP[i];
-       Lep2isID  = isID[i];
-       Lep2BDT  = userdatahelpers::getUserFloat(leptons[i],"BDT");
-       Lep2missingHit  = userdatahelpers::getUserFloat(leptons[i],"missingHit");
-       Lep2combRelIsoPF=combRelIsoPF[i];
-    }else if(i==2){
-       Lep3Pt  = leptons[i]->pt();
-       Lep3Eta  = leptons[i]->eta();
-       Lep3Phi  = leptons[i]->phi();
-       Lep3LepId  = leptons[i]->pdgId();
-       Lep3SIP  = SIP[i];
-       Lep3isID  = isID[i];
-       Lep3BDT  = userdatahelpers::getUserFloat(leptons[i],"BDT");
-       Lep3missingHit  = userdatahelpers::getUserFloat(leptons[i],"missingHit");
-       Lep3combRelIsoPF=combRelIsoPF[i];
-    }else if(i==3){
-       Lep4Pt  = leptons[i]->pt();
-       Lep4Eta  = leptons[i]->eta();
-       Lep4Phi  = leptons[i]->phi();
-       Lep4LepId  = leptons[i]->pdgId();
-       Lep4SIP  = SIP[i];
-       Lep4isID  = isID[i];
-       Lep4BDT  = userdatahelpers::getUserFloat(leptons[i],"BDT");
-       Lep4missingHit  = userdatahelpers::getUserFloat(leptons[i],"missingHit");
-       Lep4combRelIsoPF=combRelIsoPF[i] ;   
-    }
+    LepPt .push_back( leptons[i]->pt() );
+    LepEta.push_back( leptons[i]->eta() );
+    LepPhi.push_back( leptons[i]->phi() );
+    LepLepId.push_back( leptons[i]->pdgId() );
+    LepSIP  .push_back( SIP[i] );
+    LepisID .push_back( userdatahelpers::getUserFloat(leptons[i],"ID") );
+    LepBDT  .push_back( userdatahelpers::getUserFloat(leptons[i],"BDT") );
+    LepMissingHit.push_back( userdatahelpers::getUserFloat(leptons[i],"missingHit") );
+    //LepChargedHadIso[i].push_back( userdatahelpers::getUserFloat(leptons[i],"PFChargedHadIso") );
+    //LepNeutralHadIso[i].push_back( userdatahelpers::getUserFloat(leptons[i],"PFNeutralHadIso") );
+    //LepPhotonIso[i].push_back( userdatahelpers::getUserFloat(leptons[i],"PFPhotonIso") );
+    LepCombRelIsoPF.push_back( combRelIsoPF[i] );
   }
 
   // FSR 
@@ -1538,54 +1465,18 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("phistarZ2",phistarZ2);
   myTree->Book("xi",xi);
   myTree->Book("xistar",xistar);
-  myTree->Book("Lep1Pt",Lep1Pt);
-  myTree->Book("Lep1Eta",Lep1Eta);
-  myTree->Book("Lep1Phi",Lep1Phi);
-  myTree->Book("Lep1LepId",Lep1LepId);
-  myTree->Book("Lep1SIP",Lep1SIP);
-  //  myTree->Book("Lep1isID",Lep1isID);
-  //  myTree->Book("Lep1BDT",Lep1BDT);
-  //  myTree->Book("Lep1missingHit",Lep1missingHit);
-  myTree->Book("Lep2Pt",Lep2Pt);
-  myTree->Book("Lep2Eta",Lep2Eta);
-  myTree->Book("Lep2Phi",Lep2Phi);
-  myTree->Book("Lep2LepId",Lep2LepId);
-  myTree->Book("Lep2SIP",Lep2SIP);
-  //  myTree->Book("Lep2isID",Lep2isID);
-  //  myTree->Book("Lep2BDT",Lep2BDT);
-  //  myTree->Book("Lep2missingHit",Lep2missingHit);
-  myTree->Book("Lep3Pt",Lep3Pt);
-  myTree->Book("Lep3Eta",Lep3Eta);
-  myTree->Book("Lep3Phi",Lep3Phi);
-  myTree->Book("Lep3LepId",Lep3LepId);
-  myTree->Book("Lep3SIP",Lep3SIP);
-  //  myTree->Book("Lep3isID",Lep3isID);
-  //  myTree->Book("Lep3BDT",Lep3BDT);
-  //  myTree->Book("Lep3missingHit",Lep3missingHit);
-  myTree->Book("Lep4Pt",Lep4Pt);
-  myTree->Book("Lep4Eta",Lep4Eta);
-  myTree->Book("Lep4Phi",Lep4Phi);
-  myTree->Book("Lep4LepId",Lep4LepId);
-  myTree->Book("Lep4SIP",Lep4SIP);
-  //  myTree->Book("Lep4isID",Lep4isID);
-  //  myTree->Book("Lep4BDT",Lep4BDT);
-  //  myTree->Book("Lep4missingHit",Lep4missingHit);
-  //myTree->Book("Lep1chargedHadIso",Lep1chargedHadIso);
-  //myTree->Book("Lep1neutralHadIso",Lep1neutralHadIso);
-  //myTree->Book("Lep1photonIso",Lep1photonIso);
-  myTree->Book("Lep1combRelIsoPF",Lep1combRelIsoPF);
-  //myTree->Book("Lep2chargedHadIso",Lep2chargedHadIso);
-  //myTree->Book("Lep2neutralHadIso",Lep2neutralHadIso);
-  //myTree->Book("Lep2photonIso",Lep2photonIso);
-  myTree->Book("Lep2combRelIsoPF",Lep2combRelIsoPF);
-  //myTree->Book("Lep3chargedHadIso",Lep3chargedHadIso);
-  //myTree->Book("Lep3neutralHadIso",Lep3neutralHadIso);
-  //myTree->Book("Lep3photonIso",Lep3photonIso);
-  myTree->Book("Lep3combRelIsoPF",Lep3combRelIsoPF);
-  //myTree->Book("Lep4chargedHadIso",Lep4chargedHadIso);
-  //myTree->Book("Lep4neutralHadIso",Lep4neutralHadIso);
-  //myTree->Book("Lep4photonIso",Lep4photonIso);
-  myTree->Book("Lep4combRelIsoPF",Lep4combRelIsoPF);
+  myTree->Book("LepPt",LepPt);
+  myTree->Book("LepEta",LepEta);
+  myTree->Book("LepPhi",LepPhi);
+  myTree->Book("LepLepId",LepLepId);
+  myTree->Book("LepSIP",LepSIP);
+  //myTree->Book("LepisID",LepisID);
+  //myTree->Book("LepBDT",LepBDT);
+  //myTree->Book("LepMissingHit",LepMissingHit);
+  //myTree->Book("LepChargedHadIso",LepChargedHadIso);
+  //myTree->Book("LepNeutralHadIso",LepNeutralHadIso);
+  //myTree->Book("LepPhotonIso",LepPhotonIso);
+  myTree->Book("LepCombRelIsoPF",LepCombRelIsoPF);
   myTree->Book("fsrPt",fsrPt);
   myTree->Book("fsrEta",fsrEta);
   myTree->Book("fsrPhi",fsrPhi);

@@ -40,6 +40,8 @@ class HZZ4lNtupleFactory{
   void Book(TString branchName, std::vector<float> &value);
   void Book(TString branchName, Short_t &value);
   void Book(TString branchName, std::vector<short> &value);
+  void Book(TString branchName, std::vector<char> &value);
+  void Book(TString branchName, std::vector<bool> &value);
   //void Book(TString branchName, float defaultValue=0,int varType=kFloat);
 
   //void Book(TString *names, int type, int nVarsToFill, float *defaultValues);
@@ -90,6 +92,8 @@ class HZZ4lNtupleFactory{
   std::unordered_map<Char_t*, Char_t> defaultsChar;
   std::unordered_map<std::vector<float>*, std::vector<float>> defaultsVectorFloat;
   std::unordered_map<std::vector<short>*, std::vector<short>> defaultsVectorShort;
+  std::unordered_map<std::vector<char>*, std::vector<char>> defaultsVectorChar;
+  std::unordered_map<std::vector<bool>*, std::vector<bool>> defaultsVectorBool;
   
   bool _firstZStored;
   int _LeptonIndex;
