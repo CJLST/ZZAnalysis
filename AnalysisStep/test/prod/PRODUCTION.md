@@ -7,7 +7,7 @@ PRIMARY trees
 
 1. create the jobs:
 ```
-./batch.py -o PT13TeV samples_2015.csv 
+batch.py -o PT13TeV samples_2015.csv 
 
 ```
 
