@@ -66,37 +66,31 @@ extern "C" int category(
 {
 
   int category = -1;
-  // 0 = Untagged  
-  // 1 = 1-jet tagged  
-  // 2 = VBF tagged  
-  // 3 = VH-leptonic tagged  
-  // 4 = VH-hadronic tagged  
-  // 5 = ttH tagged  
 
   if( nExtraLeptons==0 && nJets>=2 && nBTaggedJets<=1 && Fisher>0.5 ){
 
-    category = 2; // VBF tagged
+    category = VBFTagged; 
 
   }else if( ( nExtraLeptons==0 && nJets>=2 && ZZPt>ZZMass && flagDijetVH(nJets,jetpt,jeteta,jetphi,jetmass) )
             || ( nExtraLeptons==0 && nJets==2 && nBTaggedJets==2 ) ){
 
-    category = 4; // VH-hadronic tagged
+    category = VHHadrTagged;
 
   }else if( nExtraLeptons>=1 && nJets<=2 && nBTaggedJets==0 ){
 
-    category = 3; // VH-leptonic tagged
+    category = VHLeptTagged;
 
   }else if( nExtraLeptons>=1 || (nJets>=3 && nBTaggedJets>=1) ){
 
-    category = 5; // ttH tagged
+    category = ttHTagged;
 
   }else if(nJets>=1){
 
-    category = 1; // 1-jet tagged
+    category = OneJetTagged;
 
   }else{
 
-    category = 0; // Untagged
+    category = Untagged;
 
   }
 
