@@ -296,6 +296,7 @@ namespace {
   Float_t dataMCWeight  = 0;
   Float_t HqTMCweight  = 0;
   Float_t ZXFakeweight  = 0;
+  Float_t overallEventWeight  = 0;
   Float_t GenHMass  = 0;
   Float_t GenHPt  = 0;
   Float_t GenHRapidity  = 0;
@@ -357,8 +358,7 @@ private:
   void FillHGenInfo(const math::XYZTLorentzVector Hp, float w);
   void FillZGenInfo(const math::XYZTLorentzVector pZ1, const math::XYZTLorentzVector pZ2);
   void FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t Lep3Id, Short_t Lep4Id, 
-    const math::XYZTLorentzVector Lep1, const math::XYZTLorentzVector Lep2, const math::XYZTLorentzVector Lep3, 
-    const math::XYZTLorentzVector Lep4, float weight);
+    const math::XYZTLorentzVector Lep1, const math::XYZTLorentzVector Lep2, const math::XYZTLorentzVector Lep3, const math::XYZTLorentzVector Lep4);
   void FillAssocLepGenInfo(std::vector<const reco::Candidate *>& AssocLeps);
 
   Float_t getAllWeight(Float_t LepPt, Float_t LepEta, Int_t LepID) const;
@@ -569,10 +569,9 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       } 
     }
 
-    int source = myHelper.sampleType();
-    int target = myHelper.setup();
-    float weight2 = reweight.weight(source,target,NTrueInt);
-    PUWeight=weight2;
+    //PUWeight = reweight.weight(myHelper.sampleType(), myHelper.setup(), NTrueInt);
+    PUWeight = 1.; // FIXME: waiting for PU weights for RunII, need to update PUReweight.cc
+
     MCHistoryTools mch(event, sampleName);
     genFinalState = mch.genFinalState();
     genProcessId = mch.getProcessID();
@@ -580,10 +579,9 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     genExtInfo = mch.genAssociatedFS();
 
     // keep track of sum of weights
-    gen_sumPUWeight    += weight2;
+    gen_sumPUWeight    += PUWeight;
     gen_sumGenMCWeight += genHEPMCweight;
-    //weight = weight2*genHEPMCweight;
-    gen_sumWeights     += weight2*genHEPMCweight;
+    gen_sumWeights     += PUWeight*genHEPMCweight;
 
     mch.genAcceptance(gen_ZZ4lInEtaAcceptance, gen_ZZ4lInEtaPtAcceptance);
 
@@ -652,11 +650,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
     if (genFinalState!=BUGGY) {
     
-      float eff_weight =1.;
-      for(int nLep=0;nLep<(int)genZLeps.size();nLep++){
-        int lepid = genZLeps.at(nLep)->pdgId();
-        if(fabs(lepid) ==13 || fabs(lepid) ==11)eff_weight *= getAllWeight(genZLeps.at(nLep)->pt(), genZLeps.at(nLep)->eta(),genZLeps.at(nLep)->pdgId());
-      }
       if (genZLeps.size()==4) {
         
         // "generated Zs" defined with standard pairing applied on gen leptons (genZLeps is sorted by MCHistoryTools)
@@ -665,16 +658,16 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
         // Gen leptons
         FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), genZLeps.at(2)->pdgId(), genZLeps.at(3)->pdgId(),
-                               genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), genZLeps.at(3)->p4(),eff_weight);      
+                               genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), genZLeps.at(3)->p4());      
       }
 
       if (genZLeps.size()==3) {
         FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), genZLeps.at(2)->pdgId(), 0,
-		       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), *(new math::XYZTLorentzVector),eff_weight);
+		       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), *(new math::XYZTLorentzVector));
       }
       if (genZLeps.size()==2) {
         FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), 0, 0,
-		       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), *(new math::XYZTLorentzVector), *(new math::XYZTLorentzVector),eff_weight);
+		       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), *(new math::XYZTLorentzVector), *(new math::XYZTLorentzVector));
       }
 
       if (genAssocLeps.size()==1 || genAssocLeps.size()==2) {
@@ -1147,6 +1140,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   
   //convention: 0 -> 4mu   1 -> 4e   2 -> 2mu2e
   if(CRFLAG){
+    ZXFakeweight = 1.;
     for(int izx=0;izx<2;izx++)
       ZXFakeweight *= getFakeWeight(Z2->daughter(izx)->pt(),Z2->daughter(izx)->eta(),Z2->daughter(izx)->pdgId(),Z1->daughter(0)->pdgId());
   }
@@ -1171,6 +1165,15 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
       ExtraLepLepId.push_back(candPtr->pdgId());  
     }
   }
+
+
+  //Compute the data/MC weight and overall event weight
+  dataMCWeight = 1.;
+  for(unsigned int i=0; i<leptons.size(); ++i){
+    dataMCWeight *= getAllWeight(leptons[i]->pt(), leptons[i]->eta(), leptons[i]->pdgId());
+  }
+  overallEventWeight = PUWeight * genHEPMCweight * dataMCWeight;
+
 }
 
 
@@ -1425,7 +1428,7 @@ void HZZ4lNtupleMaker::FillZGenInfo(const math::XYZTLorentzVector pZ1, const mat
 
 void HZZ4lNtupleMaker::FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t Lep3Id, Short_t Lep4Id, 
 				      const math::XYZTLorentzVector Lep1, const math::XYZTLorentzVector Lep2, 
-				      const math::XYZTLorentzVector Lep3, const math::XYZTLorentzVector Lep4,float weight)
+				      const math::XYZTLorentzVector Lep3, const math::XYZTLorentzVector Lep4)
 {
   GenLep1Pt=Lep1.Pt();
   GenLep1Eta=Lep1.Eta();
@@ -1446,8 +1449,6 @@ void HZZ4lNtupleMaker::FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t Le
   GenLep4Eta=Lep4.Eta();
   GenLep4Phi=Lep4.Phi();
   GenLep4Id=Lep4Id;
-
-  dataMCWeight=weight;
   
   return;
 }
@@ -1731,6 +1732,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("dataMCWeight",dataMCWeight);
   myTree->Book("HqTMCweight",HqTMCweight);
   myTree->Book("ZXFakeweight",ZXFakeweight);
+  myTree->Book("overallEventWeight",overallEventWeight);
   myTree->Book("GenHMass",GenHMass);
   myTree->Book("GenHPt",GenHPt);
   myTree->Book("GenHRapidity",GenHRapidity);

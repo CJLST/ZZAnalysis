@@ -65,7 +65,7 @@ void computeIrrBkgdYields(string outputDirectory, double lumi, double sqrts, dou
   TTree* inputTree[nDatasets];
   TH1F* hCounters[nDatasets];
   Long64_t NGenEvt[nDatasets];
-  Double_t gen_sumGenMCWeight[nDatasets];
+  Double_t gen_sumWeights[nDatasets];
   Float_t partialSampleWeight[nDatasets];
 
   Int_t nRun;
@@ -74,7 +74,7 @@ void computeIrrBkgdYields(string outputDirectory, double lumi, double sqrts, dou
   Short_t Nvtx;
   Short_t NObsInt;
   Float_t NTrueInt;
-  Float_t genHEPMCweight;
+  Float_t overallEventWeight;
   Float_t xsec;
   Short_t ZZsel;
   Float_t ZZMass;
@@ -116,8 +116,8 @@ void computeIrrBkgdYields(string outputDirectory, double lumi, double sqrts, dou
 
     hCounters[d] = (TH1F*)inputFile[d]->Get("ZZTree/Counters");
     NGenEvt[d] = (Long64_t)hCounters[d]->GetBinContent(1);
-    gen_sumGenMCWeight[d] = (Long64_t)hCounters[d]->GetBinContent(41);
-    partialSampleWeight[d] = lumi * 1000 / gen_sumGenMCWeight[d] ;
+    gen_sumWeights[d] = (Long64_t)hCounters[d]->GetBinContent(40);
+    partialSampleWeight[d] = lumi * 1000 / gen_sumWeights[d] ;
 
     inputTree[d] = (TTree*)inputFile[d]->Get("ZZTree/candTree");
     inputTree[d]->SetBranchAddress("RunNumber", &nRun);
@@ -126,7 +126,7 @@ void computeIrrBkgdYields(string outputDirectory, double lumi, double sqrts, dou
     inputTree[d]->SetBranchAddress("Nvtx", &Nvtx);
     inputTree[d]->SetBranchAddress("NObsInt", &NObsInt);
     inputTree[d]->SetBranchAddress("NTrueInt", &NTrueInt);
-    inputTree[d]->SetBranchAddress("genHEPMCweight", &genHEPMCweight);
+    inputTree[d]->SetBranchAddress("overallEventWeight", &overallEventWeight);
     inputTree[d]->SetBranchAddress("xsec", &xsec);
     inputTree[d]->SetBranchAddress("ZZsel", &ZZsel);
     inputTree[d]->SetBranchAddress("ZZMass", &ZZMass);
@@ -167,7 +167,7 @@ void computeIrrBkgdYields(string outputDirectory, double lumi, double sqrts, dou
       if( !(ZZsel>=90) ) continue;
       if(ZZMass<m4lMin || ZZMass>m4lMax) continue;
 
-      Double_t eventWeight = partialSampleWeight[d] * xsec * genHEPMCweight ;
+      Double_t eventWeight = partialSampleWeight[d] * xsec * overallEventWeight ;
 
 
       //----- find final state
