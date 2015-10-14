@@ -1,3 +1,7 @@
+NOTE - EVERYTHING IN THIS FOLDER IS OBSOLETE. It is kept only as a
+reference and will eventually be removed. 
+
+
 ###################################
 
 ###If you just need to produce the final ntuples!

@@ -86,7 +86,7 @@ process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
 #process.p = cms.EndPath( process.PlotsZZ)
 
 # Keep all events in the tree, even if no candidate is selected
-process.ZZTree.skipEmptyEvents = False
+#process.ZZTree.skipEmptyEvents = False
 
 
 # Also process CRs
