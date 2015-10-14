@@ -79,9 +79,9 @@ void computeIrrBkgdYields(string outputDirectory, double lumi, double sqrts, dou
   Short_t ZZsel;
   Float_t ZZMass;
   Float_t ZZPt;
+  Short_t Z1Flav;
+  Short_t Z2Flav;
   Float_t DiJetFisher;
-  Short_t CandLep1Id;
-  Short_t CandLep3Id;
   Short_t nExtraLep;
   Short_t nJets;
   Short_t nJetsBTagged;
@@ -131,8 +131,8 @@ void computeIrrBkgdYields(string outputDirectory, double lumi, double sqrts, dou
     inputTree[d]->SetBranchAddress("ZZsel", &ZZsel);
     inputTree[d]->SetBranchAddress("ZZMass", &ZZMass);
     inputTree[d]->SetBranchAddress("ZZPt", &ZZPt);
-    inputTree[d]->SetBranchAddress("Lep1LepId", &CandLep1Id);
-    inputTree[d]->SetBranchAddress("Lep3LepId", &CandLep3Id);
+    inputTree[d]->SetBranchAddress("Z1Flav", &Z1Flav);
+    inputTree[d]->SetBranchAddress("Z2Flav", &Z2Flav);
     inputTree[d]->SetBranchAddress("nExtraLep", &nExtraLep);
     inputTree[d]->SetBranchAddress("nCleanedJetsPt30", &nJets);
     inputTree[d]->SetBranchAddress("nCleanedJetsPt30BTagged", &nJetsBTagged);
@@ -173,22 +173,22 @@ void computeIrrBkgdYields(string outputDirectory, double lumi, double sqrts, dou
       //----- find final state
 
       currentFinalState = -1;
-      if(abs(CandLep1Id)==11){
-	if(abs(CandLep3Id)==11)
+      if(Z1Flav==-121){
+	if(Z2Flav==-121)
 	  currentFinalState = fs4e;
-	else if(abs(CandLep3Id)==13)
+	else if(Z2Flav==-169)
 	  currentFinalState = fs2e2mu;
-	else 
-	  cerr<<"error with lepID of candidate leptons"<<endl;
-      }else if(abs(CandLep1Id)==13){
-	if(abs(CandLep3Id)==11)
+	else
+	  cerr<<"error in event "<<nRun<<":"<<nLumi<<":"<<nEvent<<", Z2Flav="<<Z2Flav<<endl;
+      }else if(Z1Flav==-169){
+	if(Z2Flav==-121)
 	  currentFinalState = fs2mu2e;
-	else if(abs(CandLep3Id)==13)
+	else if(Z2Flav==-169)
 	  currentFinalState = fs4mu;
-	else 
-	  cerr<<"error with lepID of candidate leptons"<<endl;
+	else
+	  cerr<<"error in event "<<nRun<<":"<<nLumi<<":"<<nEvent<<", Z2Flav="<<Z2Flav<<endl;
       }else{
-	cerr<<"error with lepID of candidate leptons"<<endl;
+	cerr<<"error in event "<<nRun<<":"<<nLumi<<":"<<nEvent<<", Z1Flav="<<Z1Flav<<endl;
       }
 
 

@@ -1007,11 +1007,11 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 
    Z1Mass = Z1->mass();
    Z1Pt =   Z1->pt();
-   Z1Flav = Z1->daughter(0)->pdgId()*Z1->daughter(1)->pdgId();
+   Z1Flav = abs(Z1->daughter(0)->pdgId()) * Z1->daughter(0)->charge() * abs(Z1->daughter(1)->pdgId()) * Z1->daughter(1)->charge(); // FIXME: temporarily changed, waiting for a fix to the mismatch of charge() and pdgId() for muons with BTT=4
   
    Z2Mass = Z2->mass();
    Z2Pt =   Z2->pt();
-   Z2Flav = Z2->daughter(0)->pdgId()*Z2->daughter(1)->pdgId();
+   Z2Flav = abs(Z2->daughter(0)->pdgId()) * Z2->daughter(0)->charge() * abs(Z2->daughter(1)->pdgId()) * Z2->daughter(1)->charge(); // FIXME: temporarily changed, waiting for a fix to the mismatch of charge() and pdgId() for muons with BTT=4
 
   // Precomputed selections
   bool candPass70Z2Loose   = cand.userFloat("Z2Mass") && 

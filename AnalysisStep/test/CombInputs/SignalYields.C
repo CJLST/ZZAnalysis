@@ -87,19 +87,17 @@ void computeSignalYields(string outputDirectory, double lumi, double sqrts, doub
   Short_t ZZsel;
   Float_t ZZMass;
   Float_t ZZPt;
+  Short_t Z1Flav;
+  Short_t Z2Flav;
   Float_t DiJetFisher;
   Float_t CandLep1Eta;
   Float_t CandLep1Phi;
-  Short_t CandLep1Id;
   Float_t CandLep2Eta;
   Float_t CandLep2Phi;
-  Short_t CandLep2Id;
   Float_t CandLep3Eta;
   Float_t CandLep3Phi;
-  Short_t CandLep3Id;
   Float_t CandLep4Eta;
   Float_t CandLep4Phi;
-  Short_t CandLep4Id;
   Short_t nExtraLep;
   vector<Float_t> *ExtraLepEta = 0;
   vector<Float_t> *ExtraLepPhi = 0;
@@ -167,18 +165,16 @@ void computeSignalYields(string outputDirectory, double lumi, double sqrts, doub
     inputTree[d]->SetBranchAddress("ZZsel", &ZZsel);
     inputTree[d]->SetBranchAddress("ZZMass", &ZZMass);
     inputTree[d]->SetBranchAddress("ZZPt", &ZZPt);
+    inputTree[d]->SetBranchAddress("Z1Flav", &Z1Flav);
+    inputTree[d]->SetBranchAddress("Z2Flav", &Z2Flav);
     inputTree[d]->SetBranchAddress("Lep1Eta", &CandLep1Eta);
     inputTree[d]->SetBranchAddress("Lep1Phi", &CandLep1Phi);
-    inputTree[d]->SetBranchAddress("Lep1LepId", &CandLep1Id);
     inputTree[d]->SetBranchAddress("Lep2Eta", &CandLep2Eta);
     inputTree[d]->SetBranchAddress("Lep2Phi", &CandLep2Phi);
-    inputTree[d]->SetBranchAddress("Lep2LepId", &CandLep2Id);
     inputTree[d]->SetBranchAddress("Lep3Eta", &CandLep3Eta);
     inputTree[d]->SetBranchAddress("Lep3Phi", &CandLep3Phi);
-    inputTree[d]->SetBranchAddress("Lep3LepId", &CandLep3Id);
     inputTree[d]->SetBranchAddress("Lep4Eta", &CandLep4Eta);
     inputTree[d]->SetBranchAddress("Lep4Phi", &CandLep4Phi);
-    inputTree[d]->SetBranchAddress("Lep4LepId", &CandLep4Id);
     inputTree[d]->SetBranchAddress("nExtraLep", &nExtraLep);
     inputTree[d]->SetBranchAddress("ExtraLepEta", &ExtraLepEta);
     inputTree[d]->SetBranchAddress("ExtraLepPhi", &ExtraLepPhi);
@@ -231,22 +227,22 @@ void computeSignalYields(string outputDirectory, double lumi, double sqrts, doub
       //----- find final state
 
       currentFinalState = -1;
-      if(abs(CandLep1Id)==11){
-	if(abs(CandLep3Id)==11)
+      if(Z1Flav==-121){
+	if(Z2Flav==-121)
 	  currentFinalState = fs4e;
-	else if(abs(CandLep3Id)==13)
+	else if(Z2Flav==-169)
 	  currentFinalState = fs2e2mu;
-	else 
-	  cerr<<"error with lepID of candidate leptons"<<endl;
-      }else if(abs(CandLep1Id)==13){
-	if(abs(CandLep3Id)==11)
+	else
+	  cerr<<"error in event "<<nRun<<":"<<nLumi<<":"<<nEvent<<", Z2Flav="<<Z2Flav<<endl;
+      }else if(Z1Flav==-169){
+	if(Z2Flav==-121)
 	  currentFinalState = fs2mu2e;
-	else if(abs(CandLep3Id)==13)
+	else if(Z2Flav==-169)
 	  currentFinalState = fs4mu;
-	else 
-	  cerr<<"error with lepID of candidate leptons"<<endl;
+	else
+	  cerr<<"error in event "<<nRun<<":"<<nLumi<<":"<<nEvent<<", Z2Flav="<<Z2Flav<<endl;
       }else{
-	cerr<<"error with lepID of candidate leptons"<<endl;
+	cerr<<"error in event "<<nRun<<":"<<nLumi<<":"<<nEvent<<", Z1Flav="<<Z1Flav<<endl;
       }
 
 
