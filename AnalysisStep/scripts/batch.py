@@ -28,7 +28,7 @@ def split(comps):
 #             if len(comp.files) % comp.splitFactor:
 #                 chunkSize += 1
 ### Interpret splitFactor = #files/job
-        if hasattr( comp, 'splitFactor') and comp.splitFactor<len(comp.files):
+        if hasattr( comp, 'splitFactor') : #and comp.splitFactor<len(comp.files)
             chunkSize = comp.splitFactor
             for ichunk, chunk in enumerate( chunks( comp.files, chunkSize)):
                 numJobs=numJobs+1
