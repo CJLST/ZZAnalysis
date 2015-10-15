@@ -408,10 +408,21 @@ void fitSignalShapeW(int massBin,int id, int channels,int categ, int sample,
   x.setBins(10000,"fft");
   RooFFTConvPdf model("model","model",x,bw,DCBall);
   RooAddPdf totPDF("totPDF","Total PDF ",RooArgList(model,BkgPDF),RooArgList(frac));
-  RooFitResult *fitres = (RooFitResult*)totPDF.fitTo(dataset,SumW2Error(1),Range(xMin,xMax),Strategy(2),NumCPU(8),Save(true));
+  
   RooArgSet* params = totPDF.getParameters(x);
   
+  if(sample!=1 && categ!=0 && id!=125){
+  if(channels==0 ){params->readFromFile("Ch0_Cat0_paraT.txt");}// Read the Parameter for the Resonance + Bkg(ChebyChev) 
+
+  if(channels==1 ){params->readFromFile("Ch1_Cat0_paraT.txt");}// Read the Parameter for the Resonance + Bkg(ChebyChev)
+
+  if(channels==2 ){params->readFromFile("Ch2_Cat0_paraT.txt");}//  Read the Parameter for the Resonance + Bkg(ChebyChev)
+  }
+  
+  RooFitResult *fitres = (RooFitResult*)totPDF.fitTo(dataset,SumW2Error(1),Range(xMin,xMax),Strategy(2),NumCPU(8),Save(true));
+
   if (sample==1 && categ==0 && id==125){
+ 
   mean.setConstant(kTRUE);
   sigma.setConstant(kTRUE);
   a1.setConstant(kTRUE);
@@ -425,27 +436,19 @@ void fitSignalShapeW(int massBin,int id, int channels,int categ, int sample,
   A2.setConstant(kTRUE);
   frac.setConstant(kTRUE);
 
-  if(channels==0 && categ == 0 ){
+  if(channels==0 ){
   params->readFromFile("Ch0_Cat0_para.txt");  // Read the Parameter for the Resonance as ggH sample
   params->writeToFile("Ch0_Cat0_paraT.txt");} // Writing the Parameter for Full PDF including the Chebyshev-Polynomial
 
-  if(channels==1 && categ == 0 )
+  if(channels==1 )
   {params->readFromFile("Ch1_Cat0_para.txt"); // Read the Parameter for the Resonance as in ggH sample
    params->writeToFile("Ch1_Cat0_paraT.txt");}// Writing the Parameter for Full PDF including the Chebyshev-Polynomial
 
-  if(channels==2 && categ == 0 ){
+  if(channels==2 ){
   params->readFromFile("Ch2_Cat0_para.txt"); // Read the Parameter for the Resonance as ggH sample
   params->writeToFile("Ch2_Cat0_paraT.txt");}// Writing the Parameter for Full PDF including the Chebyshev-Polynomial
   }
-  else{
-  if(channels==0 && categ >= 0){params->readFromFile("Ch0_Cat0_paraT.txt");}// Read the Parameter for the Resonance + Bkg(ChebyChev) 
-
-  if(channels==1 && categ >= 0){params->readFromFile("Ch1_Cat0_paraT.txt");}// Read the Parameter for the Resonance + Bkg(ChebyChev)
-
-  if(channels==2 && categ >= 0){params->readFromFile("Ch2_Cat0_paraT.txt");}//  Read the Parameter for the Resonance + Bkg(ChebyChev)
-  }
   
-
   stringstream frameTitle;
   if(channels==0){frameTitle << "4#mu, m_{H} = "; }
   if(channels==1){frameTitle << "4e, m_{H} = ";}
