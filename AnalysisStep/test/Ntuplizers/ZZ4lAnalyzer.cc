@@ -358,9 +358,16 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
       return;
     }
 
-
-    Handle<std::vector< PileupSummaryInfo > >  PupInfo;
-    event.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
+    vector<Handle<std::vector< PileupSummaryInfo > > >  PupInfos; //FIXME support for miniAOD v1/v2 where name changed; catch does not work...
+    event.getManyByType(PupInfos);
+    Handle<std::vector< PileupSummaryInfo > > PupInfo = PupInfos.front(); 
+//     try {
+//       cout << "TRY HZZ4lNtupleMaker" <<endl;
+//       event.getByLabel(edm::InputTag("addPileupInfo"), PupInfo); 
+//     } catch (const cms::Exception& e){
+//       cout << "FAIL HZZ4lNtupleMaker" <<endl;
+//       event.getByLabel(edm::InputTag("slimmedAddPileupInfo"), PupInfo); 
+//     }
 
     std::vector<PileupSummaryInfo>::const_iterator PVI;
     for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {

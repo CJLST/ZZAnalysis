@@ -1,10 +1,10 @@
 #!/bin/tcsh
 # Search for missing root files
-# parameter to be specified: production path
+# parameter to be specified: mf = move failed jobs
 
 #set echo 
 
-set basename=$1
+set opt=$1
 
 foreach chunk ( *Chunk* )
  set fail="false"
@@ -45,6 +45,10 @@ foreach chunk ( *Chunk* )
    if ( $exitStatus == 134 ) set description="(Crashed)"
    if ( $exitStatus == 152 ) set description="(Exceeded CPU time)"
    echo $chunk ": failed, exit status = " $exitStatus $description
+   if ( $opt == "mf" && $exitStatus != 0 ) then
+     mkdir -p AAAFAIL
+     mv $chunk AAAFAIL/ 
+   endif
  endif
 end
 # cd -

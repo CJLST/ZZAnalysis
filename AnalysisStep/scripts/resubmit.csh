@@ -15,6 +15,6 @@ endif
 
 foreach x (*Chunk*) 
  cd $x
- bsub -q 8nh < ./batchScript.sh
+ bsub -q 8nh < ./batchScript.sh |& tee jobid
  cd -
 end
