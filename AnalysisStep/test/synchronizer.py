@@ -5,6 +5,7 @@ import math
 import optparse
 import os, sys
 from syncUtils import *
+from operator import attrgetter
 
 
 # define function for parsing options
@@ -156,8 +157,8 @@ def loop():
 
 
 
-    # Sort candidates on a event number basis
-    sortedCands = sorted(cands, key=lambda cand: float(cand.eventInfo.event)) 
+    # Sort candidates on a run / lumisection / event number basis
+    sortedCands = sorted(cands, key=attrgetter('eventInfo.run', 'eventInfo.lumi', 'eventInfo.event')) 
 
     if not opt.noOutput:
         # Print in sync format

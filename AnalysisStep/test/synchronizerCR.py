@@ -5,6 +5,7 @@ import math
 import optparse
 import os, sys
 from syncUtils import *
+from operator import attrgetter
 
 # See interface/FinalStates.h for the convention
 CRdict = {"CRZLLss":21, "CRZLLos_2P2F":22, "CRZLLos_3P1F":23}
@@ -149,8 +150,8 @@ def loop():
 
     crSortedCands = crCands
     for aCR in CRdict.keys():
-        # Sort candidates on a event number basis
-        crSortedCands[aCR] = sorted(crCands[aCR], key=lambda cand: float(cand.eventInfo.event))
+        # Sort candidates on a run / lumisection / event number basis
+        crSortedCands[aCR] = sorted(crCands[aCR], key=attrgetter('eventInfo.run', 'eventInfo.lumi', 'eventInfo.event')) 
 
         # Print in sync format
         outFileName = outFileNameStr.replace(".txt","_"+aCR+".txt")
