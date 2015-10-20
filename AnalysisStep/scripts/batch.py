@@ -67,8 +67,8 @@ echo 'Copying' ${LS_SUBCWD} to ${PWD}
 cp -rf $LS_SUBCWD .
 echo '...done'
 echo
-echo Workdir content:
-ls -l
+#echo Workdir content:
+#ls -l
 echo
 cd `find . -type d | grep /`
 pwd
@@ -79,10 +79,10 @@ echo 'cmsRun done at: ' `date` with exit status: $cmsRunStatus
 if ( $cmsRunStatus != 0 ) echo $cmsRunStatus > exitStatus.txt
 gzip log.txt
 echo
-echo 'ls: '
-pwd
-ls -l
-echo
+#echo 'ls: '
+#pwd
+#ls -l
+#echo
 echo 'Sending the job directory back...'
 cp *.root *.txt *.gz $LS_SUBCWD
 if ( -z ZZ4lAnalysis.root ) then
