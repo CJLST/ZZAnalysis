@@ -6,7 +6,8 @@ ELECORRTYPE   = "None" # "None", "Moriond", or "Paper"
 ELEREGRESSION = "None" # "None", "Moriond", "PaperNoComb", or "Paper" 
 APPLYMUCORR = False
 #FSRMODE = "Legacy" # Legacy or Run II
-#CRSync = False #Use CR sync file and add CR paths
+
+CRSync = False #Use CR sync file and add CR paths
 
 #KEEPLOOSECOMB = True # Do not skip loose lepton ZZ combinations (for debugging
 

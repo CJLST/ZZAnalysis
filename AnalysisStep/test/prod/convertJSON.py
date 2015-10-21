@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
-filename = 'Cert_246908-251883_13TeV_PromptReco_Collisions15_JSON_v2.txt'
+filename = 'Cert_246908-258714_13TeV_PromptReco_Collisions15_25ns_JSON.txt'
 
-json = eval( open(filename).read() ) #for Run2015B-PromptReco-v1
+json = eval( open(filename).read() )
 
 print "# from", filename
 print 'process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange( *('

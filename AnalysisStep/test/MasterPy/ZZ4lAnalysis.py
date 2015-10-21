@@ -84,7 +84,7 @@ MUISOCUT = "0.4"
 try:
     FSRMODE
 except NameError:
-    FSRMODE = "Legacy"
+    FSRMODE = "RunII"
 
 
 ### ----------------------------------------------------------------------
