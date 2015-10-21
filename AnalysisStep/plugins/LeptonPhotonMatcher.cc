@@ -291,7 +291,7 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       } 
       float combRelIsoPFCorr =  LeptonIsoHelper::combRelIsoPF(sampleType, setup, rhoForMu, *m, fsrCorr);
       m->addUserFloat("combRelIsoPFFSRCorr", combRelIsoPFCorr);
-      m->addUserFloat("passCombRelIsoPFFSRCorr",combRelIsoPFCorr < LeptonIsoHelper::isoCut(&*m));
+      m->addUserFloat("passCombRelIsoPFFSRCorr",combRelIsoPFCorr < LeptonIsoHelper::isoCut(&*m)); // FIXME should move this to the .py, once we drop support for the old FSR strategy
     }
 
     for (pat::ElectronCollection::iterator e= resultEle->begin(); e!=resultEle->end(); ++e){
@@ -306,7 +306,7 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
       float combRelIsoPFCorr =  LeptonIsoHelper::combRelIsoPF(sampleType, setup, rhoForEle, *e, fsrCorr);
       e->addUserFloat("combRelIsoPFFSRCorr", combRelIsoPFCorr);
-      e->addUserFloat("passCombRelIsoPFFSRCorr",combRelIsoPFCorr < LeptonIsoHelper::isoCut(&*e));
+      e->addUserFloat("passCombRelIsoPFFSRCorr",combRelIsoPFCorr < LeptonIsoHelper::isoCut(&*e)); // FIXME should move this to the .py, once we drop support for the old FSR strategy
     }
   }
   
@@ -315,11 +315,18 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put(resultEle,"electrons");
 }
 
-PhotonPtr LeptonPhotonMatcher::selectFSR(const PhotonPtrVector& photons, const reco::LeafCandidate::Vector& lepMomentum){ // select one photon per lepton; highest-pT if >4GeV, lowest-DR otherwise
-  PhotonPtr g = *(std::max_element(photons.begin(),photons.end(), [](const PhotonPtr& g1, const PhotonPtr& g2){return g1->pt()<g2->pt();}));
-  if (g->pt()<=4) {
-    g = *(std::min_element(photons.begin(),photons.end(), [lepMomentum](const PhotonPtr& g1, const PhotonPtr& g2){return ROOT::Math::VectorUtil::DeltaR(g1->momentum(),lepMomentum)<ROOT::Math::VectorUtil::DeltaR(g2->momentum(),lepMomentum);}));
-  }
+PhotonPtr LeptonPhotonMatcher::selectFSR(const PhotonPtrVector& photons, const reco::LeafCandidate::Vector& lepMomentum){ 
+  // select one photon per lepton; highest-pT if >4GeV, lowest-DR otherwise
+//   PhotonPtr g = *(std::max_element(photons.begin(),photons.end(), [](const PhotonPtr& g1, const PhotonPtr& g2){return g1->pt()<g2->pt();}));
+//   if (g->pt()<=4) {
+//     g = *(std::min_element(photons.begin(),photons.end(), [lepMomentum](const PhotonPtr& g1, const PhotonPtr& g2){return ROOT::Math::VectorUtil::DeltaR(g1->momentum(),lepMomentum)<ROOT::Math::VectorUtil::DeltaR(g2->momentum(),lepMomentum);}));
+//   }
+
+  //Select lowest-DR/ET2
+  PhotonPtr g = *(std::min_element(photons.begin(),photons.end(), [lepMomentum](const PhotonPtr& g1, const PhotonPtr& g2){return  (ROOT::Math::VectorUtil::DeltaR(g1->momentum(),lepMomentum)/g1->pt()/g1->pt())<(ROOT::Math::VectorUtil::DeltaR(g2->momentum(),lepMomentum)/g2->pt()*g2->pt());}));
+
+  // Select highest-ET
+//   PhotonPtr g = *(std::max_element(photons.begin(),photons.end(), [](const PhotonPtr& g1, const PhotonPtr& g2){return g1->pt()<g2->pt();}));
   return g;
 }
 

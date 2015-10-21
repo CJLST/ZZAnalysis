@@ -356,8 +356,7 @@ process.softMuons = cms.EDProducer("MuFiller",
         isSIP = cms.string(SIP),
         isGood = cms.string(GOODLEPTON),
         isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<" + MUISOCUT),
-#        isGLB = cms.string("isGlobalMuon"),
-#        isTk = cms.string("isTrackerMuon"),
+#       Note: passCombRelIsoPFFSRCorr is currently set in LeptonPhotonMatcher for new FSR strategy; in ZZCandidateFiller for the old one
     )
 )
 
@@ -441,6 +440,7 @@ process.softElectrons = cms.EDProducer("EleFiller",
         isSIP = cms.string(SIP),
         isGood = cms.string(GOODLEPTON),
         isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<"+ELEISOCUT)
+#       Note: passCombRelIsoPFFSRCorr is currently set in LeptonPhotonMatcher for new FSR strategy; in ZZCandidateFiller for the old one
         ),
    # input tag to the ValueMap that will be added to the PAT electron
    mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring15NonTrig25nsV1Values"),
@@ -967,8 +967,8 @@ process.dressedJets = cms.EDProducer("JetFiller",
 # Clean jets wrt. good (preFSR-)isolated leptons
 process.cleanJets = cms.EDProducer("JetsWithLeptonsRemover",
                                    Jets      = cms.InputTag("dressedJets"),
-                                   Muons     = cms.InputTag("softMuons"),
-                                   Electrons = cms.InputTag("cleanSoftElectrons"),
+                                   Muons     = cms.InputTag("appendPhotons:muons"),
+                                   Electrons = cms.InputTag("appendPhotons:electrons"),
                                    Diboson   = cms.InputTag(""),
                                    JetPreselection      = cms.string(""),
                                    MuonPreselection     = cms.string("userFloat('isGood') && userFloat('isIsoFSRUncorr')"),
