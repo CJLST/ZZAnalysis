@@ -90,14 +90,8 @@ void computeSignalYields(string outputDirectory, double lumi, double sqrts, doub
   Short_t Z1Flav;
   Short_t Z2Flav;
   Float_t DiJetFisher;
-  Float_t CandLep1Eta;
-  Float_t CandLep1Phi;
-  Float_t CandLep2Eta;
-  Float_t CandLep2Phi;
-  Float_t CandLep3Eta;
-  Float_t CandLep3Phi;
-  Float_t CandLep4Eta;
-  Float_t CandLep4Phi;
+  vector<Float_t> *CandLepEta = 0;
+  vector<Float_t> *CandLepPhi = 0;
   Short_t nExtraLep;
   vector<Float_t> *ExtraLepEta = 0;
   vector<Float_t> *ExtraLepPhi = 0;
@@ -167,14 +161,8 @@ void computeSignalYields(string outputDirectory, double lumi, double sqrts, doub
     inputTree[d]->SetBranchAddress("ZZPt", &ZZPt);
     inputTree[d]->SetBranchAddress("Z1Flav", &Z1Flav);
     inputTree[d]->SetBranchAddress("Z2Flav", &Z2Flav);
-    inputTree[d]->SetBranchAddress("Lep1Eta", &CandLep1Eta);
-    inputTree[d]->SetBranchAddress("Lep1Phi", &CandLep1Phi);
-    inputTree[d]->SetBranchAddress("Lep2Eta", &CandLep2Eta);
-    inputTree[d]->SetBranchAddress("Lep2Phi", &CandLep2Phi);
-    inputTree[d]->SetBranchAddress("Lep3Eta", &CandLep3Eta);
-    inputTree[d]->SetBranchAddress("Lep3Phi", &CandLep3Phi);
-    inputTree[d]->SetBranchAddress("Lep4Eta", &CandLep4Eta);
-    inputTree[d]->SetBranchAddress("Lep4Phi", &CandLep4Phi);
+    inputTree[d]->SetBranchAddress("LepEta", &CandLepEta);
+    inputTree[d]->SetBranchAddress("LepPhi", &CandLepPhi);
     inputTree[d]->SetBranchAddress("nExtraLep", &nExtraLep);
     inputTree[d]->SetBranchAddress("ExtraLepEta", &ExtraLepEta);
     inputTree[d]->SetBranchAddress("ExtraLepPhi", &ExtraLepPhi);
@@ -273,8 +261,6 @@ void computeSignalYields(string outputDirectory, double lumi, double sqrts, doub
       Short_t GenHLepId[4] = {GenLep1Id,GenLep2Id,GenLep3Id,GenLep4Id};
       Float_t GenHLepEta[4] = {GenLep1Eta,GenLep2Eta,GenLep3Eta,GenLep4Eta};
       Float_t GenHLepPhi[4] = {GenLep1Phi,GenLep2Phi,GenLep3Phi,GenLep4Phi};
-      Float_t CandLepEta[4] = {CandLep1Eta,CandLep2Eta,CandLep3Eta,CandLep4Eta};
-      Float_t CandLepPhi[4] = {CandLep1Phi,CandLep2Phi,CandLep3Phi,CandLep4Phi};
 
       Int_t nGenHLep = 0;
       Int_t nRecoLepMatchedToGenHLep[4] = {0,0,0,0};
@@ -283,7 +269,7 @@ void computeSignalYields(string outputDirectory, double lumi, double sqrts, doub
 	if(abs(GenHLepId[iGenHLep])==11 || abs(GenHLepId[iGenHLep])==13){
 	  nGenHLep++;
 	  for(Int_t iCandLep=0; iCandLep<4; iCandLep++){
-	    if(deltaR(GenHLepEta[iGenHLep],GenHLepPhi[iGenHLep],CandLepEta[iCandLep],CandLepPhi[iCandLep]) < 0.1){
+	    if(deltaR(GenHLepEta[iGenHLep],GenHLepPhi[iGenHLep],CandLepEta->at(iCandLep),CandLepPhi->at(iCandLep)) < 0.1){
 	      nRecoLepMatchedToGenHLep[iGenHLep]++;
 	      nGenHLepMatchedToCandLep[iCandLep]++;
 	    }

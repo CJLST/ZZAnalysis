@@ -1,3 +1,10 @@
+/* 
+ * usage: 
+ * -specify 'inputPath' at the end of this file
+ * -run with:
+ *   root -l plotProcesses.C++
+ */
+
 #include <iostream>
 #include <fstream>
 #include <utility>
@@ -9,7 +16,7 @@
 #include "TString.h"
 #include "TDirectory.h"
 #include "TFile.h"
-#include "TChain.h"
+#include "TTree.h"
 #include "TH1.h"
 #include "TH2.h"
 #include "TCanvas.h"
@@ -28,11 +35,9 @@ typedef ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> >  LV;
 using namespace std;
 
 #define MASSZ 91.1876
-#define LUMI 15.
 
 #define DEBUG 0
 #define FINALSTATE 3 // 0:4mu, 1:4e, 2:2e2mu, 3:4mu+4e+2e2mu, 4: none('emptyEvents')
-#define USECT10 0 // change PDFs : use CT10 instead of NNPDF3.0
 
 #define PRINTPLOTINFO 1
 string INFO = "13TeV samples";
@@ -63,7 +68,7 @@ string INFO2 = "#sqrt{s} = 13 TeV";
 #define doMatchAllLeps   0
 #define doMatchWHZHttH   0 // plots shown on September 8th
 #define do2DPlots        0 // plots shown on September 8th
-#define doBaskets        0 // categorization plots
+#define doBaskets        1 // categorization plots
 #define doYieldStudy     0
 #define doTTHCheck       0
 #define doPlotsByGenChan 0
@@ -86,6 +91,7 @@ string INFO2 = "#sqrt{s} = 13 TeV";
 #define nAssocZDecays 3
 #define nAssocttDecays 4
 #define nAssocDecays (nAssocWDecays + nAssocZDecays + nAssocttDecays)
+
 
 
 
@@ -253,9 +259,9 @@ void DrawByProdmodes(TCanvas* c, TH1F* hSource[nSamples][nRecoChannels], string*
     if(p==0){
       h[p]->SetMaximum(1.1*max);
       h[p]->GetYaxis()->SetTitle("normalized to 1");
-      h[p]->Draw(); 
+      h[p]->Draw("hist"); 
     }else{
-      h[p]->Draw("sames");
+      h[p]->Draw("histsame");
     }
 
     lgd->AddEntry( h[p], pn.c_str(), "l" );
@@ -396,13 +402,13 @@ void DrawMatchCustom(TCanvas* c, TH1F* h, TH1F** hMatch, string title, Color_t* 
   h->Draw(); 
 
   Float_t denom = h->Integral();
-  string percentages[nStatuses];
+  string percentages[20];
   for(int m=0; m<nStatuses; m++){
     if(excludeH2l2X && matchKeys[m].find("2l2X")!=string::npos) continue;
     percentages[m] = percentage(hMatch[m]->Integral()/denom);
   }
 
-  TH1F* hStacks[nStatuses];
+  TH1F* hStacks[20];
   for(int m=0; m<nStatuses; m++){
     hStacks[m] = (TH1F*)hMatch[m]->Clone();
     if(m>0) hStacks[m]->Add(hStacks[m-1]);
@@ -578,7 +584,7 @@ vector<TH1F*> StackForPurity(vector<TH1F*> histos) {
   return result;
 }
 
-void DrawBasketPurities(TCanvas* c, TH1F** h, string* prodName, Bool_t* isPresent, TH1F** hAssocDecay, string* assocDecayName, Bool_t withAssocDecays, Bool_t H2l2XAsBkgd, vector<string> basketLabel) {
+void DrawBasketPurities(TCanvas* c, TH1F** h, string* prodName, Bool_t* isPresent, TH1F** hAssocDecay, string* assocDecayName, Bool_t withAssocDecays, Bool_t H2l2XAsBkgd, vector<string> basketLabel, float lumi) {
 
   float offset = 0.1;
 
@@ -652,7 +658,7 @@ void DrawBasketPurities(TCanvas* c, TH1F** h, string* prodName, Bool_t* isPresen
   lgd->Draw();
 
   for(int b=1; b<=hNExpectedEvts->GetNbinsX(); b++){
-    pavNExp->AddText(Form("%.3f exp. events in %.0f fb^{-1}",hNExpectedEvts->GetBinContent(b),LUMI));
+    pavNExp->AddText(Form("%.3f exp. events in %.0f fb^{-1}",hNExpectedEvts->GetBinContent(b),lumi));
   }
   pavNExp->Draw();
 
@@ -773,6 +779,7 @@ void Draw1D(TCanvas* c, TH1F* h) {
 
 
 
+
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////// MAIN MACRO //////////////////////////////////
@@ -780,30 +787,28 @@ void Draw1D(TCanvas* c, TH1F* h) {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-void plotProcesses(
-		   
-		   // directory to save the plots
-		   string outDir,
-		   
-		   // path of the input primary tree (just let "" for trees you don't have)
-		   string pathBeginning = "/data_CMS/cms/regnard/HZZ4lStudies/CategorizationStudies/7_2_X/PrimaryTrees_13TeVPhys14_",
-		   string file_ggH     = "",
-		   string file_VBF     = "",
-		   string file_WplusH  = "",
-		   string file_WminusH = "",
-		   string file_ZH      = "",
-		   string file_ttH     = "",
-		   string file_bbH     = "",
-		   string file_ZZ4l    = "",
-
-		   string tagIn = "",
-		   string tagOut = ""
-
-		   )
+void run(	
+	 string inDir,	   
+	 string outDir,
+	 float lumi,
+	 
+	 // path of the input primary tree (just let "" for trees you don't have)
+	 string file_ggH     = "",
+	 string file_VBF     = "",
+	 string file_WplusH  = "",
+	 string file_WminusH = "",
+	 string file_ZH      = "",
+	 string file_ttH     = "",
+	 string file_bbH     = "",
+	 string file_ZZ4l    = "",
+	 
+	 string tagIn = "",
+	 string tagOut = ""
+	 
+	 )
 {
 
   srand(time(0));
-  gSystem->Exec("mkdir -p "+(TString)outDir.c_str());
 
   ofstream txtOut;
   TString txtOutName = (TString)outDir.c_str()+"/matchingInfo.txt";
@@ -822,18 +827,19 @@ void plotProcesses(
     "ZH",
     "ttH",
     "bbH",
-    "ZZ4l",
+    "ZZTo4l",
   };
-  Bool_t isPresent[nSamples] = {
-    file_ggH     != "",
-    file_VBF     != "",
-    file_WplusH  != "",
-    file_WminusH != "",
-    file_ZH      != "",
-    file_ttH     != "",
-    file_bbH     != "",
-    file_ZZ4l    != "", 
+  string fileName[nSamples] = {
+    file_ggH    ,
+    file_VBF    ,
+    file_WplusH ,
+    file_WminusH,
+    file_ZH     ,
+    file_ttH    ,
+    file_bbH    ,
+    file_ZZ4l   , 
   };
+  Bool_t isPresent[nSamples]; for(int p=0; p<nSamples; p++) isPresent[p] = (fileName[p]!="");
   //Bool_t allSignalsArePresent = (file_ggH!="" && file_VBF!="" && file_WplusH!="" && file_WminusH!="" && file_ZH!="" && file_ttH!="" && file_bbH!="");
   Bool_t allSignalsArePresent = (file_ggH!="" && file_VBF!="" && file_WplusH!="" && file_WminusH!="" && file_ZH!="" && file_ttH!="");
   Bool_t ZZBkgdIsPresent = file_ZZ4l!= "";
@@ -1256,73 +1262,27 @@ void plotProcesses(
   basketLabel[6].push_back("#geq6l 1j");
   basketLabel[6].push_back("#geq6l #geq2j");
 
-  TChain* chain[nSamples];
-  for(int p=0; p<nSamples; p++){
-    if(!isPresent[p]) continue;
-    chain[p] = new TChain("ZZTree/candTree");
-    if(prodName[p]=="ggH"    ) chain[p]->Add((pathBeginning+tagIn+"/"+file_ggH    ).c_str());
-    if(prodName[p]=="VBF"    ) chain[p]->Add((pathBeginning+tagIn+"/"+file_VBF    ).c_str());
-    if(prodName[p]=="WplusH" ) chain[p]->Add((pathBeginning+tagIn+"/"+file_WplusH ).c_str());
-    if(prodName[p]=="WminusH") chain[p]->Add((pathBeginning+tagIn+"/"+file_WminusH).c_str());
-    if(prodName[p]=="ZH"     ) chain[p]->Add((pathBeginning+tagIn+"/"+file_ZH     ).c_str());
-    if(prodName[p]=="ttH"    ) chain[p]->Add((pathBeginning+tagIn+"/"+file_ttH    ).c_str());
-    if(prodName[p]=="bbH"    ) chain[p]->Add((pathBeginning+tagIn+"/"+file_bbH    ).c_str());
-    if(prodName[p]=="ZZ4l"   ) chain[p]->Add((pathBeginning+tagIn+"/"+file_ZZ4l   ).c_str());
-  }
+  TFile* inputFile[nSamples];
+  TTree* inputTree[nSamples];
+  TH1F* hCounters[nSamples];
   Long64_t NGenEvt[nSamples];
-  Double_t gen_sumGenMCWeight[nSamples];
-  Double_t gen_sumGenMCWeightCT10[nSamples];
-  for(int p=0; p<nSamples; p++){
-    if(!isPresent[p]) continue;
-    TFile* fTemp = 0;
-    if(prodName[p]=="ggH"    ) fTemp = TFile::Open((pathBeginning+tagIn+"/"+file_ggH    ).c_str());
-    if(prodName[p]=="VBF"    ) fTemp = TFile::Open((pathBeginning+tagIn+"/"+file_VBF    ).c_str());
-    if(prodName[p]=="WplusH" ) fTemp = TFile::Open((pathBeginning+tagIn+"/"+file_WplusH ).c_str());
-    if(prodName[p]=="WminusH") fTemp = TFile::Open((pathBeginning+tagIn+"/"+file_WminusH).c_str());
-    if(prodName[p]=="ZH"     ) fTemp = TFile::Open((pathBeginning+tagIn+"/"+file_ZH     ).c_str());
-    if(prodName[p]=="ttH"    ) fTemp = TFile::Open((pathBeginning+tagIn+"/"+file_ttH    ).c_str());
-    if(prodName[p]=="bbH"    ) fTemp = TFile::Open((pathBeginning+tagIn+"/"+file_bbH    ).c_str());
-    if(prodName[p]=="ZZ4l"   ) fTemp = TFile::Open((pathBeginning+tagIn+"/"+file_ZZ4l   ).c_str());
-    TH1F* hCounters = (TH1F*)fTemp->Get("ZZTree/Counters");
-    NGenEvt[p] = (Long64_t)hCounters->GetBinContent(1);
-    gen_sumGenMCWeight[p] = (Long64_t)hCounters->GetBinContent(41);
-    gen_sumGenMCWeightCT10[p] = (Long64_t)hCounters->GetBinContent(43);
-    cout<<"Number of generated events for "+prodName[p]+" is "<<NGenEvt[p]<<endl;
-  }
-  cout<<endl;
-
-  Float_t xSec[nSamples] = { // X-sec (pb) * filter eff., taken from https://github.com/CJLST/ZZAnalysis/blob/miniAOD_74X/AnalysisStep/test/prod/samples_2015.csv
-    0.01212 ,
-    0.001034 ,
-    0.0002324 , //0.0002339 ,
-    0.0001488 , //0.0001471 ,
-    0.000652 ,
-    0.000337 ,
-    0.000141 ,
-    1.256 , // from same page  ////1.218, // not sure, from https://cms-pdmv.cern.ch/mcm/requests?dataset_name=ZZTo4L_Tune4C_13TeV-powheg-pythia8&page=0&shown=786559
-  };
   Float_t preselExp[nSamples];
+  Double_t gen_sumWeights[nSamples];
   Float_t partialSampleWeight[nSamples];
-  for(int p=0; p<nSamples; p++){
-    if(!isPresent[p]) continue;
-    preselExp[p] = LUMI * 1000 * xSec[p] ;
-    //weights[p] = preselExp[p] / NGenEvt[p] ;
-    partialSampleWeight[p] = preselExp[p] / ( USECT10 ? gen_sumGenMCWeightCT10[p] : gen_sumGenMCWeight[p] ) ;
-  }
 
   Int_t nRun;
   Long64_t nEvent;
   Int_t nLumi;
   Float_t PFMET;
-  Int_t NRecoMu;
-  Int_t NRecoEle;
-  Int_t Nvtx;
-  Int_t NObsInt;
+  Short_t NRecoMu;
+  Short_t NRecoEle;
+  Short_t Nvtx;
+  Short_t NObsInt;
   Float_t NTrueInt;
   Short_t trigWord;
-  Float_t genHEPMCweight;
-  Float_t genCT10PDFweight;
-  Int_t ZZsel;
+  Float_t overallEventWeight;
+  Float_t xsec;
+  Short_t ZZsel;
   Float_t ZZMass;
   Float_t ZZPt;
   Float_t DiJetFisher;
@@ -1330,30 +1290,18 @@ void plotProcesses(
   Float_t bkg_VAMCFM;
   Float_t Z1Mass;
   Float_t Z2Mass;
-  Float_t CandLep1Pt;
-  Float_t CandLep1Eta;
-  Float_t CandLep1Phi;
-  Short_t CandLep1Id;
-  Float_t CandLep2Pt;
-  Float_t CandLep2Eta;
-  Float_t CandLep2Phi;
-  Short_t CandLep2Id;
-  Float_t CandLep3Pt;
-  Float_t CandLep3Eta;
-  Float_t CandLep3Phi;
-  Short_t CandLep3Id;
-  Float_t CandLep4Pt;
-  Float_t CandLep4Eta;
-  Float_t CandLep4Phi;
-  Short_t CandLep4Id;
-  Int_t nExtraLep;
+  vector<Float_t> *CandLepPt = 0;
+  vector<Float_t> *CandLepEta = 0;
+  vector<Float_t> *CandLepPhi = 0;
+  vector<Short_t> *CandLepId = 0;
+  Short_t nExtraLep;
   vector<Float_t> *ExtraLepPt = 0;
   vector<Float_t> *ExtraLepEta = 0;
   vector<Float_t> *ExtraLepPhi = 0;
   vector<Float_t> *ExtraLepId = 0;
-  Int_t nExtraZ;
-  Int_t nJets;
-  Int_t nJetsBTagged;
+  Short_t nExtraZ;
+  Short_t nJets;
+  Short_t nJetsBTagged;
   vector<Float_t> *JetPt = 0;
   vector<Float_t> *JetEta = 0;
   vector<Float_t> *JetPhi = 0;
@@ -1541,11 +1489,11 @@ void plotProcesses(
 
   for(int a=0; a<nAssocDecays; a++){
     for(int rc=0; rc<nRecoChannels; rc++){
-      hBCFullSel100BasketsAssocDecays[a][rc] = new TH1F(Form("hBCFullSel100_baskets_assocDecays_%i_%s",a,recoChannels[rc].c_str()),Form(";;# exp. events in %.0f fb^{-1}",LUMI),nBaskets,0,nBaskets);
+      hBCFullSel100BasketsAssocDecays[a][rc] = new TH1F(Form("hBCFullSel100_baskets_assocDecays_%i_%s",a,recoChannels[rc].c_str()),Form(";;# exp. events in %.0f fb^{-1}",lumi),nBaskets,0,nBaskets);
       prepareBasketlabels(hBCFullSel100BasketsAssocDecays[a][rc], basketLabel[BASKETLIST]);
       hBCFullSel100BasketsAssocDecays[a][rc]->SetLineColor(assocDecayColor[a]);
       hBCFullSel100BasketsAssocDecays[a][rc]->SetFillColor(assocDecayColor[a]);
-      hBCFullSel100MasswindowBasketsAssocDecays[a][rc] = new TH1F(Form("hBCFullSel100Masswindow_baskets_assocDecays_%i_%s",a,recoChannels[rc].c_str()),Form(";;# exp. events in %.0f fb^{-1}",LUMI),nBaskets,0,nBaskets);
+      hBCFullSel100MasswindowBasketsAssocDecays[a][rc] = new TH1F(Form("hBCFullSel100Masswindow_baskets_assocDecays_%i_%s",a,recoChannels[rc].c_str()),Form(";;# exp. events in %.0f fb^{-1}",lumi),nBaskets,0,nBaskets);
       prepareBasketlabels(hBCFullSel100MasswindowBasketsAssocDecays[a][rc], basketLabel[BASKETLIST]);
       hBCFullSel100MasswindowBasketsAssocDecays[a][rc]->SetLineColor(assocDecayColor[a]);
       hBCFullSel100MasswindowBasketsAssocDecays[a][rc]->SetFillColor(assocDecayColor[a]);
@@ -1667,20 +1615,20 @@ void plotProcesses(
 
       for(int v=0; v<nVariables; v++){
 	if(!plotThisVar[VARIABLELIST][v]) continue;
-	hBCFullSel100[v][p][rc] = new TH1F(("hBCFullSel100_"+varName[v]+suffix).c_str(),Form("%s;%s;# exp. events in %.0f fb^{-1}",title.c_str(),varLabel[v].c_str(),LUMI),varNbin[v],varMin[v],varMax[v]);
+	hBCFullSel100[v][p][rc] = new TH1F(("hBCFullSel100_"+varName[v]+suffix).c_str(),Form("%s;%s;# exp. events in %.0f fb^{-1}",title.c_str(),varLabel[v].c_str(),lumi),varNbin[v],varMin[v],varMax[v]);
 	for(int m=0; m<nMatchHLepsStatuses; m++)
-	  hBCFullSel100MatchHLeps[v][m][p][rc] = new TH1F(("hBCFullSel100MatchHLeps_"+varName[v]+"_"+matchHLepsInfix[m]+suffix).c_str(),Form("%s;%s;# exp. events in %.0f fb^{-1}",title.c_str(),varLabel[v].c_str(),LUMI),varNbin[v],varMin[v],varMax[v]);
+	  hBCFullSel100MatchHLeps[v][m][p][rc] = new TH1F(("hBCFullSel100MatchHLeps_"+varName[v]+"_"+matchHLepsInfix[m]+suffix).c_str(),Form("%s;%s;# exp. events in %.0f fb^{-1}",title.c_str(),varLabel[v].c_str(),lumi),varNbin[v],varMin[v],varMax[v]);
 	for(int m=0; m<nMatchAllLepsStatuses; m++)
-	  hBCFullSel100MatchAllLeps[v][m][p][rc] = new TH1F(("hBCFullSel100MatchAllLeps_"+varName[v]+"_"+matchAllLepsInfix[m]+suffix).c_str(),Form("%s;%s;# exp. events in %.0f fb^{-1}",title.c_str(),varLabel[v].c_str(),LUMI),varNbin[v],varMin[v],varMax[v]);
+	  hBCFullSel100MatchAllLeps[v][m][p][rc] = new TH1F(("hBCFullSel100MatchAllLeps_"+varName[v]+"_"+matchAllLepsInfix[m]+suffix).c_str(),Form("%s;%s;# exp. events in %.0f fb^{-1}",title.c_str(),varLabel[v].c_str(),lumi),varNbin[v],varMin[v],varMax[v]);
 	if(prodName[p]=="WplusH")
 	  for(int m=0; m<nMatchWHStatuses; m++)
-	    hBCFullSel100MatchWH[v][m][rc] = new TH1F(Form("hBCFullSel100MatchWH_%s_%i_%s",varName[v].c_str(),m,recoChannels[rc].c_str()),Form("%s;%s;# exp. events in %.0f fb^{-1}",title.c_str(),varLabel[v].c_str(),LUMI),varNbin[v],varMin[v],varMax[v]);
+	    hBCFullSel100MatchWH[v][m][rc] = new TH1F(Form("hBCFullSel100MatchWH_%s_%i_%s",varName[v].c_str(),m,recoChannels[rc].c_str()),Form("%s;%s;# exp. events in %.0f fb^{-1}",title.c_str(),varLabel[v].c_str(),lumi),varNbin[v],varMin[v],varMax[v]);
 	if(prodName[p]=="ZH")
 	  for(int m=0; m<nMatchZHStatuses; m++)
-	    hBCFullSel100MatchZH[v][m][rc] = new TH1F(Form("hBCFullSel100MatchZH_%s_%i_%s",varName[v].c_str(),m,recoChannels[rc].c_str()),Form("%s;%s;# exp. events in %.0f fb^{-1}",title.c_str(),varLabel[v].c_str(),LUMI),varNbin[v],varMin[v],varMax[v]);
+	    hBCFullSel100MatchZH[v][m][rc] = new TH1F(Form("hBCFullSel100MatchZH_%s_%i_%s",varName[v].c_str(),m,recoChannels[rc].c_str()),Form("%s;%s;# exp. events in %.0f fb^{-1}",title.c_str(),varLabel[v].c_str(),lumi),varNbin[v],varMin[v],varMax[v]);
 	if(prodName[p]=="ttH")
 	  for(int m=0; m<nMatchttHStatuses; m++)
-	    hBCFullSel100MatchttH[v][m][rc] = new TH1F(Form("hBCFullSel100MatchttH_%s_%i_%s",varName[v].c_str(),m,recoChannels[rc].c_str()),Form("%s;%s;# exp. events in %.0f fb^{-1}",title.c_str(),varLabel[v].c_str(),LUMI),varNbin[v],varMin[v],varMax[v]);
+	    hBCFullSel100MatchttH[v][m][rc] = new TH1F(Form("hBCFullSel100MatchttH_%s_%i_%s",varName[v].c_str(),m,recoChannels[rc].c_str()),Form("%s;%s;# exp. events in %.0f fb^{-1}",title.c_str(),varLabel[v].c_str(),lumi),varNbin[v],varMin[v],varMax[v]);
       }
 
       for(int v2=0; v2<n2DHist; v2++){
@@ -1690,96 +1638,94 @@ void plotProcesses(
 	}
       }
       
-      hBCFullSel100Baskets[p][rc] = new TH1F(("hBCFullSel100_baskets_"+suffix).c_str(),Form("%s;;# exp. events in %.0f fb^{-1}",title.c_str(),LUMI),nBaskets,0,nBaskets);
+      hBCFullSel100Baskets[p][rc] = new TH1F(("hBCFullSel100_baskets_"+suffix).c_str(),Form("%s;;# exp. events in %.0f fb^{-1}",title.c_str(),lumi),nBaskets,0,nBaskets);
       prepareBasketlabels(hBCFullSel100Baskets[p][rc], basketLabel[BASKETLIST]);
       hBCFullSel100Baskets[p][rc]->SetLineColor(colors[p]);
       hBCFullSel100Baskets[p][rc]->SetFillColor(colors[p]);
-      hBCFullSel100MasswindowBaskets[p][rc] = new TH1F(("hBCFullSel100Masswindow_baskets_"+suffix).c_str(),Form("%s;;# exp. events in %.0f fb^{-1}",title.c_str(),LUMI),nBaskets,0,nBaskets);
+      hBCFullSel100MasswindowBaskets[p][rc] = new TH1F(("hBCFullSel100Masswindow_baskets_"+suffix).c_str(),Form("%s;;# exp. events in %.0f fb^{-1}",title.c_str(),lumi),nBaskets,0,nBaskets);
       prepareBasketlabels(hBCFullSel100MasswindowBaskets[p][rc], basketLabel[BASKETLIST]);
       hBCFullSel100MasswindowBaskets[p][rc]->SetLineColor(colors[p]);
       hBCFullSel100MasswindowBaskets[p][rc]->SetFillColor(colors[p]);
       
     }
 
-    chain[p]->SetBranchAddress("RunNumber", &nRun);
-    chain[p]->SetBranchAddress("EventNumber", &nEvent);
-    chain[p]->SetBranchAddress("LumiNumber", &nLumi);
-    chain[p]->SetBranchAddress("PFMET", &PFMET);
-    chain[p]->SetBranchAddress("NRecoMu", &NRecoMu);
-    chain[p]->SetBranchAddress("NRecoEle", &NRecoEle);
-    chain[p]->SetBranchAddress("Nvtx", &Nvtx);
-    chain[p]->SetBranchAddress("NObsInt", &NObsInt);
-    chain[p]->SetBranchAddress("NTrueInt", &NTrueInt);
-    chain[p]->SetBranchAddress("trigWord", &trigWord);
-    chain[p]->SetBranchAddress("genHEPMCweight", &genHEPMCweight);
-    chain[p]->SetBranchAddress("genCT10PDFweight", &genCT10PDFweight);
-    chain[p]->SetBranchAddress("ZZsel", &ZZsel);
-    chain[p]->SetBranchAddress("ZZMass", &ZZMass);
-    chain[p]->SetBranchAddress("ZZPt", &ZZPt);
-    chain[p]->SetBranchAddress("p0plus_VAJHU", &p0plus_VAJHU);
-    chain[p]->SetBranchAddress("bkg_VAMCFM", &bkg_VAMCFM);
-    chain[p]->SetBranchAddress("Z1Mass", &Z1Mass);
-    chain[p]->SetBranchAddress("Z2Mass", &Z2Mass);
-    chain[p]->SetBranchAddress("Lep1Pt", &CandLep1Pt);
-    chain[p]->SetBranchAddress("Lep1Eta", &CandLep1Eta);
-    chain[p]->SetBranchAddress("Lep1Phi", &CandLep1Phi);
-    chain[p]->SetBranchAddress("Lep1LepId", &CandLep1Id);
-    chain[p]->SetBranchAddress("Lep2Pt", &CandLep2Pt);
-    chain[p]->SetBranchAddress("Lep2Eta", &CandLep2Eta);
-    chain[p]->SetBranchAddress("Lep2Phi", &CandLep2Phi);
-    chain[p]->SetBranchAddress("Lep2LepId", &CandLep2Id);
-    chain[p]->SetBranchAddress("Lep3Pt", &CandLep3Pt);
-    chain[p]->SetBranchAddress("Lep3Eta", &CandLep3Eta);
-    chain[p]->SetBranchAddress("Lep3Phi", &CandLep3Phi);
-    chain[p]->SetBranchAddress("Lep3LepId", &CandLep3Id);
-    chain[p]->SetBranchAddress("Lep4Pt", &CandLep4Pt);
-    chain[p]->SetBranchAddress("Lep4Eta", &CandLep4Eta);
-    chain[p]->SetBranchAddress("Lep4Phi", &CandLep4Phi);
-    chain[p]->SetBranchAddress("Lep4LepId", &CandLep4Id);
-    chain[p]->SetBranchAddress("nExtraLep", &nExtraLep);
-    chain[p]->SetBranchAddress("ExtraLepPt", &ExtraLepPt);
-    chain[p]->SetBranchAddress("ExtraLepEta", &ExtraLepEta);
-    chain[p]->SetBranchAddress("ExtraLepPhi", &ExtraLepPhi);
-    chain[p]->SetBranchAddress("ExtraLepLepId", &ExtraLepId);
-    chain[p]->SetBranchAddress("nExtraZ", &nExtraZ);
-    chain[p]->SetBranchAddress("nCleanedJetsPt30", &nJets);
-    chain[p]->SetBranchAddress("nCleanedJetsPt30BTagged", &nJetsBTagged);
-    chain[p]->SetBranchAddress("JetPt", &JetPt);
-    chain[p]->SetBranchAddress("JetEta", &JetEta);
-    chain[p]->SetBranchAddress("JetPhi", &JetPhi);
-    chain[p]->SetBranchAddress("JetMass", &JetMass);
-    chain[p]->SetBranchAddress("JetIsBtagged", &JetIsBtagged);
-    chain[p]->SetBranchAddress("JetQGLikelihood", &JetQGLikelihood);
-    chain[p]->SetBranchAddress("DiJetMass", &DiJetMass);
-    chain[p]->SetBranchAddress("DiJetFisher", &DiJetFisher);
-    chain[p]->SetBranchAddress("GenHPt", &GenHPt);
-    chain[p]->SetBranchAddress("GenHRapidity", &GenHRapidity);
-    chain[p]->SetBranchAddress("GenLep1Pt", &GenLep1Pt);
-    chain[p]->SetBranchAddress("GenLep1Eta", &GenLep1Eta);
-    chain[p]->SetBranchAddress("GenLep1Phi", &GenLep1Phi);
-    chain[p]->SetBranchAddress("GenLep1Id", &GenLep1Id);
-    chain[p]->SetBranchAddress("GenLep2Pt", &GenLep2Pt);
-    chain[p]->SetBranchAddress("GenLep2Eta", &GenLep2Eta);
-    chain[p]->SetBranchAddress("GenLep2Phi", &GenLep2Phi);
-    chain[p]->SetBranchAddress("GenLep2Id", &GenLep2Id);
-    chain[p]->SetBranchAddress("GenLep3Pt", &GenLep3Pt);
-    chain[p]->SetBranchAddress("GenLep3Eta", &GenLep3Eta);
-    chain[p]->SetBranchAddress("GenLep3Phi", &GenLep3Phi);
-    chain[p]->SetBranchAddress("GenLep3Id", &GenLep3Id);
-    chain[p]->SetBranchAddress("GenLep4Pt", &GenLep4Pt);
-    chain[p]->SetBranchAddress("GenLep4Eta", &GenLep4Eta);
-    chain[p]->SetBranchAddress("GenLep4Phi", &GenLep4Phi);
-    chain[p]->SetBranchAddress("GenLep4Id", &GenLep4Id);
-    chain[p]->SetBranchAddress("GenAssocLep1Pt", &GenAssocLep1Pt);
-    chain[p]->SetBranchAddress("GenAssocLep1Eta", &GenAssocLep1Eta);
-    chain[p]->SetBranchAddress("GenAssocLep1Phi", &GenAssocLep1Phi);
-    chain[p]->SetBranchAddress("GenAssocLep1Id", &GenAssocLep1Id);
-    chain[p]->SetBranchAddress("GenAssocLep2Pt", &GenAssocLep2Pt);
-    chain[p]->SetBranchAddress("GenAssocLep2Eta", &GenAssocLep2Eta);
-    chain[p]->SetBranchAddress("GenAssocLep2Phi", &GenAssocLep2Phi);
-    chain[p]->SetBranchAddress("GenAssocLep2Id", &GenAssocLep2Id);
+    inputFile[p] = TFile::Open((inDir+tagIn+"/"+fileName[p]).c_str());
+    hCounters[p] = (TH1F*)inputFile[p]->Get("ZZTree/Counters");
+    NGenEvt[p] = (Long64_t)hCounters[p]->GetBinContent(1);
+    cout<<"  number of generated events: "<<NGenEvt[p]<<endl;
+    gen_sumWeights[p] = (Long64_t)hCounters[p]->GetBinContent(40);
+    partialSampleWeight[p] = lumi * 1000 / gen_sumWeights[p] ;
 
-    Long64_t entries = chain[p]->GetEntries();
+    inputTree[p] = (TTree*)inputFile[p]->Get("ZZTree/candTree");
+    inputTree[p]->SetBranchAddress("RunNumber", &nRun);
+    inputTree[p]->SetBranchAddress("EventNumber", &nEvent);
+    inputTree[p]->SetBranchAddress("LumiNumber", &nLumi);
+    inputTree[p]->SetBranchAddress("PFMET", &PFMET);
+    inputTree[p]->SetBranchAddress("NRecoMu", &NRecoMu);
+    inputTree[p]->SetBranchAddress("NRecoEle", &NRecoEle);
+    inputTree[p]->SetBranchAddress("Nvtx", &Nvtx);
+    inputTree[p]->SetBranchAddress("NObsInt", &NObsInt);
+    inputTree[p]->SetBranchAddress("NTrueInt", &NTrueInt);
+    inputTree[p]->SetBranchAddress("trigWord", &trigWord);
+    inputTree[p]->SetBranchAddress("overallEventWeight", &overallEventWeight);
+    inputTree[p]->SetBranchAddress("xsec", &xsec);
+    inputTree[p]->SetBranchAddress("ZZsel", &ZZsel);
+    inputTree[p]->SetBranchAddress("ZZMass", &ZZMass);
+    inputTree[p]->SetBranchAddress("ZZPt", &ZZPt);
+    inputTree[p]->SetBranchAddress("p0plus_VAJHU", &p0plus_VAJHU);
+    inputTree[p]->SetBranchAddress("bkg_VAMCFM", &bkg_VAMCFM);
+    inputTree[p]->SetBranchAddress("Z1Mass", &Z1Mass);
+    inputTree[p]->SetBranchAddress("Z2Mass", &Z2Mass);
+    inputTree[p]->SetBranchAddress("LepPt", &CandLepPt);
+    inputTree[p]->SetBranchAddress("LepEta", &CandLepEta);
+    inputTree[p]->SetBranchAddress("LepPhi", &CandLepPhi);
+    inputTree[p]->SetBranchAddress("LepLepId", &CandLepId);
+    inputTree[p]->SetBranchAddress("nExtraLep", &nExtraLep);
+    inputTree[p]->SetBranchAddress("ExtraLepPt", &ExtraLepPt);
+    inputTree[p]->SetBranchAddress("ExtraLepEta", &ExtraLepEta);
+    inputTree[p]->SetBranchAddress("ExtraLepPhi", &ExtraLepPhi);
+    inputTree[p]->SetBranchAddress("ExtraLepLepId", &ExtraLepId);
+    inputTree[p]->SetBranchAddress("nExtraZ", &nExtraZ);
+    inputTree[p]->SetBranchAddress("nCleanedJetsPt30", &nJets);
+    inputTree[p]->SetBranchAddress("nCleanedJetsPt30BTagged", &nJetsBTagged);
+    inputTree[p]->SetBranchAddress("JetPt", &JetPt);
+    inputTree[p]->SetBranchAddress("JetEta", &JetEta);
+    inputTree[p]->SetBranchAddress("JetPhi", &JetPhi);
+    inputTree[p]->SetBranchAddress("JetMass", &JetMass);
+    inputTree[p]->SetBranchAddress("JetIsBtagged", &JetIsBtagged);
+    inputTree[p]->SetBranchAddress("JetQGLikelihood", &JetQGLikelihood);
+    inputTree[p]->SetBranchAddress("DiJetMass", &DiJetMass);
+    inputTree[p]->SetBranchAddress("DiJetFisher", &DiJetFisher);
+    inputTree[p]->SetBranchAddress("GenHPt", &GenHPt);
+    inputTree[p]->SetBranchAddress("GenHRapidity", &GenHRapidity);
+    inputTree[p]->SetBranchAddress("GenLep1Pt", &GenLep1Pt);
+    inputTree[p]->SetBranchAddress("GenLep1Eta", &GenLep1Eta);
+    inputTree[p]->SetBranchAddress("GenLep1Phi", &GenLep1Phi);
+    inputTree[p]->SetBranchAddress("GenLep1Id", &GenLep1Id);
+    inputTree[p]->SetBranchAddress("GenLep2Pt", &GenLep2Pt);
+    inputTree[p]->SetBranchAddress("GenLep2Eta", &GenLep2Eta);
+    inputTree[p]->SetBranchAddress("GenLep2Phi", &GenLep2Phi);
+    inputTree[p]->SetBranchAddress("GenLep2Id", &GenLep2Id);
+    inputTree[p]->SetBranchAddress("GenLep3Pt", &GenLep3Pt);
+    inputTree[p]->SetBranchAddress("GenLep3Eta", &GenLep3Eta);
+    inputTree[p]->SetBranchAddress("GenLep3Phi", &GenLep3Phi);
+    inputTree[p]->SetBranchAddress("GenLep3Id", &GenLep3Id);
+    inputTree[p]->SetBranchAddress("GenLep4Pt", &GenLep4Pt);
+    inputTree[p]->SetBranchAddress("GenLep4Eta", &GenLep4Eta);
+    inputTree[p]->SetBranchAddress("GenLep4Phi", &GenLep4Phi);
+    inputTree[p]->SetBranchAddress("GenLep4Id", &GenLep4Id);
+    inputTree[p]->SetBranchAddress("GenAssocLep1Pt", &GenAssocLep1Pt);
+    inputTree[p]->SetBranchAddress("GenAssocLep1Eta", &GenAssocLep1Eta);
+    inputTree[p]->SetBranchAddress("GenAssocLep1Phi", &GenAssocLep1Phi);
+    inputTree[p]->SetBranchAddress("GenAssocLep1Id", &GenAssocLep1Id);
+    inputTree[p]->SetBranchAddress("GenAssocLep2Pt", &GenAssocLep2Pt);
+    inputTree[p]->SetBranchAddress("GenAssocLep2Eta", &GenAssocLep2Eta);
+    inputTree[p]->SetBranchAddress("GenAssocLep2Phi", &GenAssocLep2Phi);
+    inputTree[p]->SetBranchAddress("GenAssocLep2Id", &GenAssocLep2Id);
+
+    preselExp[p] = lumi * 1000 * xsec ;
+
+    Long64_t entries = inputTree[p]->GetEntries();
 
     for (Long64_t z=0; z<entries; ++z){
 
@@ -1787,9 +1733,9 @@ void plotProcesses(
 
       printStatus(z,20000,entries,"entries");
 
-      chain[p]->GetEntry(z);
+      inputTree[p]->GetEntry(z);
 
-      Double_t eventWeight = partialSampleWeight[p] * ( USECT10 ? genCT10PDFweight : genHEPMCweight ) ;
+      Double_t eventWeight = partialSampleWeight[p] * xsec * overallEventWeight ;
 
       Bool_t FullSel70 = ZZsel>=90;
       Bool_t FullSel100 = ZZsel>=100;
@@ -1804,10 +1750,6 @@ void plotProcesses(
       Float_t GenAssocLepPt[2] = {GenAssocLep1Pt,GenAssocLep2Pt};
       Float_t GenAssocLepEta[2] = {GenAssocLep1Eta,GenAssocLep2Eta};
       Float_t GenAssocLepPhi[2] = {GenAssocLep1Phi,GenAssocLep2Phi};
-      Short_t CandLepId[4] = {CandLep1Id,CandLep2Id,CandLep3Id,CandLep4Id};
-      Float_t CandLepPt[4] = {CandLep1Pt,CandLep2Pt,CandLep3Pt,CandLep4Pt};
-      Float_t CandLepEta[4] = {CandLep1Eta,CandLep2Eta,CandLep3Eta,CandLep4Eta};
-      Float_t CandLepPhi[4] = {CandLep1Phi,CandLep2Phi,CandLep3Phi,CandLep4Phi};
 
 
       // ---------------------- reco decay channel --------------------------
@@ -1815,8 +1757,8 @@ void plotProcesses(
       Int_t nCandEle = 0;
       Int_t nCandMu = 0;
       for(Int_t iCandLep=0; iCandLep<4; iCandLep++){
-	if(abs(CandLepId[iCandLep])==11) nCandEle++;
-	if(abs(CandLepId[iCandLep])==13) nCandMu++;
+	if(abs(CandLepId->at(iCandLep))==11) nCandEle++;
+	if(abs(CandLepId->at(iCandLep))==13) nCandMu++;
       }
       Int_t rc = 4;
       if     (nCandEle==0 && nCandMu==4) rc = 0;
@@ -2025,7 +1967,7 @@ void plotProcesses(
 	yieldPassTriggerGWithBCFullSel100G[p][gc2] += eventWeight;
 	yieldPassTriggerGWithBCFullSel100G[p][gc3] += eventWeight;
 	Float_t SortedCandLepPt[4];
-	for(int sl=0; sl<4; sl++) SortedCandLepPt[sl] = CandLepPt[sl];
+	for(int sl=0; sl<4; sl++) SortedCandLepPt[sl] = CandLepPt->at(sl);
 	TriBulle(SortedCandLepPt,4,false);
 	for(int sl=0; sl<4; sl++){
 	  h1RecoptWithBCFullSel100GPassTriggerG[p][gc1][sl]->Fill(SortedCandLepPt[sl],eventWeight);
@@ -2033,7 +1975,7 @@ void plotProcesses(
 	  h1RecoptWithBCFullSel100GPassTriggerG[p][gc3][sl]->Fill(SortedCandLepPt[sl],eventWeight);
 	}
 	Float_t SortedCandLepAbseta[4];
-	for(int sl=0; sl<4; sl++) SortedCandLepAbseta[sl] = fabs(CandLepEta[sl]);
+	for(int sl=0; sl<4; sl++) SortedCandLepAbseta[sl] = fabs(CandLepEta->at(sl));
 	TriBulle(SortedCandLepAbseta,4,false);
 	for(int sl=0; sl<4; sl++){
 	  h1RecoetaWithBCFullSel100GPassTriggerG[p][gc1][sl]->Fill(SortedCandLepAbseta[sl],eventWeight);
@@ -2254,7 +2196,7 @@ void plotProcesses(
 	 (p==7 && !(nGenHLep==4&&nGenAssocLep==0)) ||
 	 (p<nHiggsSamples && !( nGenHLep==4 || (nGenHLep==2&&nGenAssocLep==2&&(prodName[p]=="ZH"||prodName[p]=="ttH")) ) )
 	 ){
-	cout<<"ERROR with nb. of gen leptons (sample "<<prodName[p]<<", event "<<z<<")"<<endl;
+	cout<<"ERROR with nb. of gen leptons (sample "<<prodName[p]<<", event "<<z<<", nGenHLep="<<nGenHLep<<", nGenAssocLep="<<nGenAssocLep<<")"<<endl;
 	continue;
       }
 
@@ -2319,7 +2261,7 @@ void plotProcesses(
 	for(Int_t iGenHLep=0; iGenHLep<4; iGenHLep++){
 	  if(abs(GenHLepId[iGenHLep])==11 || abs(GenHLepId[iGenHLep])==13){
 	    for(Int_t iCandLep=0; iCandLep<4; iCandLep++){
-	      if(deltaR(GenHLepEta[iGenHLep],GenHLepPhi[iGenHLep],CandLepEta[iCandLep],CandLepPhi[iCandLep]) < 0.1){
+	      if(deltaR(GenHLepEta[iGenHLep],GenHLepPhi[iGenHLep],CandLepEta->at(iCandLep),CandLepPhi->at(iCandLep)) < 0.1){
 		nRecoLepMatchedToGenHLep[iGenHLep]++;
 		nCandLepMatchedToGenHLep[iGenHLep]++;
 		nGenLepMatchedToRecoLep[iCandLep]++;
@@ -2342,7 +2284,7 @@ void plotProcesses(
 	for(Int_t iGenAssocLep=0; iGenAssocLep<2; iGenAssocLep++){
 	  if(abs(GenAssocLepId[iGenAssocLep])==11 || abs(GenAssocLepId[iGenAssocLep])==13){
 	    for(Int_t iCandLep=0; iCandLep<4; iCandLep++){
-	      if(deltaR(GenAssocLepEta[iGenAssocLep],GenAssocLepPhi[iGenAssocLep],CandLepEta[iCandLep],CandLepPhi[iCandLep]) < 0.1){
+	      if(deltaR(GenAssocLepEta[iGenAssocLep],GenAssocLepPhi[iGenAssocLep],CandLepEta->at(iCandLep),CandLepPhi->at(iCandLep)) < 0.1){
 		nRecoLepMatchedToGenAssocLep[iGenAssocLep]++;
 		nCandLepMatchedToGenAssocLep[iGenAssocLep]++;
 		nGenLepMatchedToRecoLep[iCandLep]++;
@@ -3303,7 +3245,7 @@ void plotProcesses(
       }
     }
   }
-
+  
   if(doMatchWHZHttH){
 
     if(file_WplusH!="" && file_WminusH!=""){
@@ -3349,7 +3291,7 @@ void plotProcesses(
     }
 
   }
-
+  
   if(do2DPlots){
 
     TCanvas* c2DBCFullSel100[n2DHist][nSamples];
@@ -3408,12 +3350,12 @@ void plotProcesses(
 
     if(allSignalsArePresent){
       TCanvas* cBCFullSel100BasketPurity = new TCanvas("cBCFullSel100_basketPurity","cBCFullSel100_basketPurity",800,((BASKETLIST==2||BASKETLIST==4)?1000:500));
-      DrawBasketPurities(cBCFullSel100BasketPurity,hProdModes,prodName,isPresent,hAssocDecays,treatH2l2XAsBkgd?assocDecayName4:assocDecayName3,false,treatH2l2XAsBkgd,basketLabel[BASKETLIST]);
-      //DrawBasketPurities(cBCFullSel100BasketPurity,hProdModesMasswindow,prodName,isPresent,hAssocDecaysMasswindow,treatH2l2XAsBkgd?assocDecayName4:assocDecayName3,false,treatH2l2XAsBkgd,basketLabel[BASKETLIST]);
+      DrawBasketPurities(cBCFullSel100BasketPurity,hProdModes,prodName,isPresent,hAssocDecays,treatH2l2XAsBkgd?assocDecayName4:assocDecayName3,false,treatH2l2XAsBkgd,basketLabel[BASKETLIST],lumi);
+      //DrawBasketPurities(cBCFullSel100BasketPurity,hProdModesMasswindow,prodName,isPresent,hAssocDecaysMasswindow,treatH2l2XAsBkgd?assocDecayName4:assocDecayName3,false,treatH2l2XAsBkgd,basketLabel[BASKETLIST],lumi);
       SaveCanvas(outDir,cBCFullSel100BasketPurity);
       TCanvas* cBCFullSel100BasketPuritySplit = new TCanvas("cBCFullSel100_basketPuritySplit","cBCFullSel100_basketPuritySplit",800,((BASKETLIST==2||BASKETLIST==4)?1000:500));
-      DrawBasketPurities(cBCFullSel100BasketPuritySplit,hProdModes,prodName,isPresent,hAssocDecays,treatH2l2XAsBkgd?assocDecayName4:assocDecayName3,true,treatH2l2XAsBkgd,basketLabel[BASKETLIST]);
-      //DrawBasketPurities(cBCFullSel100BasketPuritySplit,hProdModesMasswindow,prodName,isPresent,hAssocDecaysMasswindow,treatH2l2XAsBkgd?assocDecayName4:assocDecayName3,true,treatH2l2XAsBkgd,basketLabel[BASKETLIST]);
+      DrawBasketPurities(cBCFullSel100BasketPuritySplit,hProdModes,prodName,isPresent,hAssocDecays,treatH2l2XAsBkgd?assocDecayName4:assocDecayName3,true,treatH2l2XAsBkgd,basketLabel[BASKETLIST],lumi);
+      //DrawBasketPurities(cBCFullSel100BasketPuritySplit,hProdModesMasswindow,prodName,isPresent,hAssocDecaysMasswindow,treatH2l2XAsBkgd?assocDecayName4:assocDecayName3,true,treatH2l2XAsBkgd,basketLabel[BASKETLIST],lumi);
       SaveCanvas(outDir,cBCFullSel100BasketPuritySplit);
     }
 
@@ -3529,3 +3471,40 @@ void plotProcesses(
 }
 
 
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////// MAIN MACRO //////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
+void plotProcesses() {
+
+  string inputPath = ""; // without "/" at the end
+  string outputPath = "PlotsProcesses/";
+  gSystem->Exec(("mkdir -p "+outputPath).c_str());
+
+  float lumi = 15.;
+		  
+  run( 
+      inputPath,
+      outputPath,
+      lumi,
+
+      "ggH125/ZZ4lAnalysis.root",
+      "VBFH125/ZZ4lAnalysis.root",
+      "WplusH125/ZZ4lAnalysis.root",
+      "WminusH125/ZZ4lAnalysis.root",
+      "ZH125/ZZ4lAnalysis.root",
+      "ttH125/ZZ4lAnalysis.root",
+      "",
+      "",//"ZZTo4l/ZZ4lAnalysis.root",
+
+      "",
+      ""
+       );
+  
+}
