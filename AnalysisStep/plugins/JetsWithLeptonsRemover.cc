@@ -24,6 +24,7 @@
 #include "DataFormats/PatCandidates/interface/CompositeCandidate.h"
 #include "CommonTools/Utils/interface/StringCutObjectSelector.h"
 #include <ZZAnalysis/AnalysisStep/interface/PhotonFwd.h>
+#include <ZZAnalysis/AnalysisStep/interface/DaughterDataHelpers.h>
 
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/Math/interface/Vector3D.h"
@@ -61,6 +62,8 @@ private:
   StringCutObjectSelector<pat::Electron> preselectionEle_;
   StringCutObjectSelector<pat::CompositeCandidate> preselectionVV_;
 
+  bool cleanFSRFromLeptons_;
+
   // Some istograms for monitoring
   bool  activateDebugPrintOuts_;
   bool  doDebugPlots_;
@@ -87,7 +90,7 @@ JetsWithLeptonsRemover::JetsWithLeptonsRemover(const edm::ParameterSet & iConfig
   , preselectionMu_   (iConfig.getParameter<std::string>("MuonPreselection"))
   , preselectionEle_  (iConfig.getParameter<std::string>("ElectronPreselection"))
   , preselectionVV_   (iConfig.getParameter<std::string>("DiBosonPreselection"))
-
+  , cleanFSRFromLeptons_   (iConfig.getParameter<bool>("cleanFSRFromLeptons"))
   , activateDebugPrintOuts_ (iConfig.getUntrackedParameter<bool>("DebugPrintOuts",false))   
   , doDebugPlots_           (iConfig.getUntrackedParameter<bool>("DebugPlots",false)) 
 {
@@ -101,6 +104,8 @@ JetsWithLeptonsRemover::JetsWithLeptonsRemover(const edm::ParameterSet & iConfig
 
   if(diBosonSrc_.label() != "") cleaningFromDiboson_ = true;
   else cleaningFromDiboson_ = false;
+
+  assert(!(cleaningFromDiboson_&&cleanFSRFromLeptons_)); //Either one makes sense
 
   if(doDebugPlots_){
     edm::Service<TFileService> fs;
@@ -229,7 +234,7 @@ bool JetsWithLeptonsRemover::isMatchingWithZZLeptons(const edm::Event & event, c
 	    
 	  
 	  if(checkingVariable){
-	    if(activateDebugPrintOuts_) std::cout << "\t\t !!! Found a matching lepton-jet !!!"<<std::endl;
+	    if(activateDebugPrintOuts_) std::cout << "\t\t !!! Found a matching lepton-jet (from VV candidate) !!!"<<std::endl;
 	    if(doDebugPlots_){
 	      hDeltaPt_jet_lepton     ->Fill(v->daughter(j)->pt()  - jet.pt());
 	      hDeltaPhi_jet_lepton    ->Fill(v->daughter(j)->phi() - jet.phi());
@@ -253,7 +258,7 @@ bool JetsWithLeptonsRemover::isMatchingWithZZLeptons(const edm::Event & event, c
 
 	  // If the FSR photon matches, reject the jet
 	  if(jet.photonMultiplicity() > 0 && photon_en_frac > 0.5 && reco::deltaR(*fsr, jet) < 0.05){
-	    if(activateDebugPrintOuts_) std::cout << "\t\t !!! Found a matching FSR lepton-jet !!!"<<std::endl;	  
+	    if(activateDebugPrintOuts_) std::cout << "\t\t !!! Found a matching FSR lepton-jet (from VV candidate) !!!"<<std::endl;	  
 	    if(doDebugPlots_){
 	      hDeltaPt_jet_fsr     ->Fill(fsr->pt()  - jet.pt());
 	      hDeltaPhi_jet_fsr    ->Fill(fsr->phi() - jet.phi());
@@ -287,9 +292,30 @@ bool JetsWithLeptonsRemover::isMatchingWith(const edm::InputTag& src, const Stri
       std::cout << "Not making any matching, the matching you choose is not foreseen" << std::endl;
     
     if(checkingVariable){
-      if(activateDebugPrintOuts_) std::cout << "\t\t !!! Found a matching lepton-jet (muon not coming from ZZ decay) !!!"<<std::endl;
+      if(activateDebugPrintOuts_) std::cout << "\t\t !!! Found a matching lepton-jet !!!"<<std::endl;
       return true;
     }
+
+    if (cleanFSRFromLeptons_) {
+      const PhotonPtrVector* gammas = userdatahelpers::getUserPhotons(&lepton);
+      if (gammas==0) continue;
+      assert(gammas->size()<=1); // Must have already been preselected, so there should be at most 1 per l
+      if (gammas->size()==1){
+	const pat::PFParticle* fsr = gammas->begin()->get();
+	if (matchingType_ == JetsWithLeptonsRemover::byDeltaR) {
+	  checkingVariable = (reco::deltaR(*fsr, jet) < 0.4);
+	}
+	if(checkingVariable){
+	  if(activateDebugPrintOuts_) {
+	    double photon_en_frac = fsr->energy()/jet.energy();
+	    std::cout << "\t\t !!! Found a matching FSR-jet !!! " <<  fsr->energy() << " " << jet.energy() << " " << photon_en_frac<<  std::endl;
+	  }
+	  return true;
+	}
+      }
+    }
+
+
   }
   return false;
 }

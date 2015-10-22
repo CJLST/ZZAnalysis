@@ -971,13 +971,18 @@ process.cleanJets = cms.EDProducer("JetsWithLeptonsRemover",
                                    Electrons = cms.InputTag("appendPhotons:electrons"),
                                    Diboson   = cms.InputTag(""),
                                    JetPreselection      = cms.string(""),
-                                   MuonPreselection     = cms.string("userFloat('isGood') && userFloat('isIsoFSRUncorr')"),
-                                   ElectronPreselection = cms.string("userFloat('isGood') && userFloat('isIsoFSRUncorr')"),
+                                   MuonPreselection     = cms.string("userFloat('isGood') && userFloat('passCombRelIsoPFFSRCorr')"),
+                                   ElectronPreselection = cms.string("userFloat('isGood') && userFloat('passCombRelIsoPFFSRCorr')"),
                                    DiBosonPreselection  = cms.string(""),
-                                   MatchingType = cms.string("byDeltaR"), 
+                                   MatchingType = cms.string("byDeltaR"),
+                                   cleanFSRFromLeptons = cms.bool(True),
                                    DebugPlots = cms.untracked.bool(False)
                                    )
 
+if FSRMODE=="Legacy" :
+    process.cleanJets.MuonPreselection     = "userFloat('isGood') && userFloat('isIsoFSRUncorr')"
+    process.cleanJets.ElectronPreselection = "userFloat('isGood') && userFloat('isIsoFSRUncorr')"
+    process.cleanJets.cleanFSRFromLeptons = False
 
 ### ----------------------------------------------------------------------
 ### Paths
