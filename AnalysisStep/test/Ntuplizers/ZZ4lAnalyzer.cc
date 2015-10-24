@@ -109,6 +109,8 @@ private:
   double Nevt_passDiEle;
   double Nevt_passMuEle;
   double Nevt_passTriEle;
+  double Nevt_passTriMu;
+  double Nevt_passSingleEle;
 
   double Nevt_4l;         // Step 3 (4l, AFAS)
   double Nevt_Z1;
@@ -133,7 +135,6 @@ private:
   double Nevt_With1FSR;
   double Nevt_With2FSR;
   double Nevt_WithFSRImprove;
-  double weight;
 
   //histograms
   //  TH1F* nEventComplete;
@@ -183,6 +184,8 @@ ZZ4lAnalyzer::ZZ4lAnalyzer(const ParameterSet& pset) :
   Nevt_passDiEle(0),
   Nevt_passMuEle(0),
   Nevt_passTriEle(0),
+  Nevt_passTriMu(0),
+  Nevt_passSingleEle(0),
   Nevt_4l(0),
   sampleName(pset.getParameter<string>("sampleName")),
   dumpForSync(pset.getUntrackedParameter<bool>("dumpForSync",false))
@@ -278,7 +281,8 @@ void ZZ4lAnalyzer::endJob(){
   cout <<  "Nevt_PAT:         " << Nevt_PAT << endl;
   cout <<  "Nevt_Skim:        " << Nevt_Skim << endl;
   cout <<  "Nevt_TriggerBit:  " << Nevt_TriggerBit 
-       << " ( " << Nevt_passDiEle << ":" << Nevt_passDiMu  << ":" << Nevt_passMuEle << ":" << Nevt_passTriEle << " )" << endl;
+       << " ( " << Nevt_passDiEle << ":" << Nevt_passDiMu  << ":" << Nevt_passMuEle << ":" << Nevt_passTriEle << ":" 
+       << Nevt_passTriMu<< ":" << Nevt_passSingleEle << " )" << endl;
 
 
   if (false) { // 2012 selection
@@ -451,14 +455,16 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
   if(test_bit_16(trigworld,2)) ++Nevt_passDiEle;
   if(test_bit_16(trigworld,3)) ++Nevt_passMuEle;
   if(test_bit_16(trigworld,4)) ++Nevt_passTriEle;
+  if(test_bit_16(trigworld,5)) ++Nevt_passTriMu;
+  if(test_bit_16(trigworld,6)) ++Nevt_passSingleEle;
 
   // print a status 
   if (!isMC) cout << irun << ":" << ils << ":" << ievt << " " << evtPassSkim << " " << evtPassTrigger << endl;
 
   if(!evtPassSkim) return;
-  Nevt_Skim+= weight;
+  ++Nevt_Skim;
   if(!evtPassTrigger) return;
-  Nevt_TriggerBit+= weight;
+  ++Nevt_TriggerBit;
 
   // Fill Lepton sync dump
   if (dumpForSync) {

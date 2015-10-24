@@ -34,7 +34,7 @@ Once you are ready to commit
 git pull
 git add [files to be added]
 git commit -m ["commit message"] [files to be added]
-git push origin miniAOD_74X
+git push
 ```
 
 Otherwise you can make a fork of the repository, develop therein, and make a pull request in the same way as for CMSSW.
