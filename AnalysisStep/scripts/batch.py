@@ -95,8 +95,8 @@ if ( -z ZZ4lAnalysis.root ) then
 endif
 echo 'destination dir: ls: '
 cd $LS_SUBCWD
-pwd
-ls -l
+#pwd
+#ls -l
 setenv ROOT_HIST 0
 if ( -s ZZ4lAnalysis.root ) then
  root -q -b '${CMSSW_BASE}/src/ZZAnalysis/AnalysisStep/test/prod/rootFileIntegrity.r(\"ZZ4lAnalysis.root\")'
