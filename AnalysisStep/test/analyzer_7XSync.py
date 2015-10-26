@@ -25,6 +25,7 @@ PyFilePath = os.environ['CMSSW_BASE'] + "/src/ZZAnalysis/AnalysisStep/test/"
 
 execfile(PyFilePath + "analyzer.py")
 
+process.source.inputCommands = cms.untracked.vstring("keep *", "drop LHERunInfoProduct_*_*_*", "drop LHEEventProduct_*_*_*")
 
 ### ----------------------------------------------------------------------
 ### Replace parameters
