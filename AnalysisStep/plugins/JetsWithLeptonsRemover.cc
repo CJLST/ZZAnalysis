@@ -172,12 +172,13 @@ bool JetsWithLeptonsRemover::isGood(const pat::Jet& jet) const {
   float NHF = jet.neutralHadronEnergyFraction();
   float NEMF = jet.neutralEmEnergyFraction();
   float CHF = jet.chargedHadronEnergyFraction();
-  float MUF = jet.muonEnergyFraction();
   float CEMF = jet.chargedEmEnergyFraction();
   int NumConst = jet.chargedMultiplicity()+jet.neutralMultiplicity();
+  int NumNeutralParticles = jet.neutralMultiplicity();
   float CHM = jet.chargedMultiplicity();
 
-  bool looseJetID = (NHF<0.99 && NEMF<0.99 && NumConst>1 && MUF<0.8) && (jeta>2.4 || (CHF>0 && CHM>0 && CEMF<0.99));
+  bool looseJetID = (jeta<=3. && (NHF<0.99 && NEMF<0.99 && NumConst>1) && (jeta>2.4 || (CHF>0 && CHM>0 && CEMF<0.99)) )
+    || (jeta>3. && NEMF<0.90 && NumNeutralParticles>10);
    
   if(!looseJetID) return false;
 
