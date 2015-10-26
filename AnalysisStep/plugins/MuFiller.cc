@@ -119,7 +119,7 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     
     //--- Muon Timing
     float muontime = 0;
-    if (l.time().ndof>4) muontime= l.time().timeAtIpInOut;
+    if (l.time().nDof>4) muontime= l.time().timeAtIpInOut;
     
     //FIXME
     
