@@ -116,6 +116,11 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		      (l.triggerObjectMatchesByFilter("hltDiMuonL3PreFiltered5").at(0).pt()>17)) || 
 		     ((!l.triggerObjectMatchesByFilter("hltDiMuonL3PreFiltered7").empty()) && 
 		      (l.triggerObjectMatchesByFilter("hltDiMuonL3PreFiltered7").at(0).pt()>17)));
+    
+    //--- Muon Timing
+    float muontime = 0;
+    if (l.time().ndof>4) muontime= l.time().timeAtIpInOut;
+    
     //FIXME
     
     //--- Embed user variables
@@ -132,6 +137,7 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     l.addUserFloat("dz",dz);
     l.addUserFloat("HLTMatch", HLTMatch);
     // l.addUserCand("MCMatch",genMatch); // FIXME
+    l.addUserFloat("time",muontime);
 
     //--- isPFMuon flag - in old samples, l.isPFMuon() is not functional, so this has to be filled
     //    beforehand with the module PATPFMuonEmbedder.

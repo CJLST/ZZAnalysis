@@ -113,6 +113,7 @@ namespace {
   std::vector<float> LepPhi;
   std::vector<short> LepLepId;
   std::vector<float> LepSIP;
+  std::vector<float> LepTime;
   std::vector<bool> LepisID;
   std::vector<float> LepBDT;
   std::vector<char> LepMissingHit;
@@ -1038,6 +1039,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     LepPhi.push_back( leptons[i]->phi() );
     LepLepId.push_back( leptons[i]->pdgId() );
     LepSIP  .push_back( SIP[i] );
+    LepTime .push_back( userdatahelpers::getUserFloat(leptons[i],"time") );
     LepisID .push_back( userdatahelpers::getUserFloat(leptons[i],"ID") );
     LepBDT  .push_back( userdatahelpers::getUserFloat(leptons[i],"BDT") );
     LepMissingHit.push_back( userdatahelpers::getUserFloat(leptons[i],"missingHit") );
@@ -1479,6 +1481,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("LepPhi",LepPhi);
   myTree->Book("LepLepId",LepLepId);
   myTree->Book("LepSIP",LepSIP);
+  myTree->Book("LepTime",LepTime);
   //myTree->Book("LepisID",LepisID);
   //myTree->Book("LepBDT",LepBDT);
   //myTree->Book("LepMissingHit",LepMissingHit);
