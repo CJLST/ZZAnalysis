@@ -34,6 +34,7 @@ using namespace std;
 #define DRAWLINES 1
 #define DRAWLABELBYHAND 1
 #define APPLYKFACTORS 1
+#define DRAWDATAMCRATIO 1
 #define REBINDYTTBAR 0
 
 
@@ -60,17 +61,20 @@ string blindingLabel[nBlindings] = {"", "m_{4#font[12]{l}} < 110 GeV", "m_{4#fon
 Float_t xHistoBlindLow[nBlindings] = {  0.,  110.,   0., 110.,  0. };
 Float_t xHistoBlindUp [nBlindings] = { -1., 1000., 150., 150., -1. };
 
-const int nVariables = 12;
+const int nVariables = 15;
 string varName[nVariables] = {
   "M4l",
-  "M4l2",
+  "M4lCoarse",
   "M4lLow",
   "M4lHigh",
   "MZ1",
+  "MZ1Coarse",
   "MZ2",
+  "MZ2Coarse",
   "KD",
   "Djet",
   "Pt4l",
+  "Eta4l",
   "NExtraLep",
   "NJets",
   "NJetsBTagged",
@@ -81,57 +85,56 @@ string varXLabel[nVariables] = {
   "m_{4#font[12]{l}} (GeV)",
   "m_{4#font[12]{l}} (GeV)",
   "m_{Z_{1}} (GeV)",
+  "m_{Z_{1}} (GeV)",
+  "m_{Z_{2}} (GeV)",
   "m_{Z_{2}} (GeV)",
   "D_{bkg}^{kin}",
   "D_{jet}",
   "p_{T}^{4l} (GeV)",
+  "#eta^{4l} (GeV)",
   "number of additional leptons",
   "number of jets",
   "number of b-tagged jets",
 };
 string varYLabel[nVariables] = {
   "Events / 3 GeV",
-  "Events / 6 GeV",//"Events / 12 GeV",//
+  "Events / 12 GeV",
   "Events / 4 GeV",
   "Events / 20 GeV",
-  "Events / 2 GeV",//"Events / 5 GeV",//
-  "Events / 2 GeV",//"Events / 5 GeV",//
+  "Events / 2 GeV",
+  "Events / 5 GeV",
+  "Events / 2 GeV",
+  "Events / 5 GeV",
   "Events / 0.05",
   "Events / 0.1",
   "Events / 10 GeV",
+  "Events / 0.5",
   "Events",
   "Events",
   "Events",
 };
 Bool_t plotThisVar[3][nVariables] = {
-  {1,0,0,0,1,1,1,0,0,0,1,0,},
-  {1,1,1,1,1,1,1,0,0,0,1,0,},
-  {1,1,1,1,1,1,1,1,1,1,1,1,},
+  {1,0,0,0,1,0,1,0,1,0,0,0,0,1,0,},
+  {1,1,1,1,1,1,1,1,1,0,1,1,0,1,0,},
+  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,},
 };
-//*
-Int_t  varNbin[nVariables] = { 272, 136,  10,  30,  75,  75, 20, 20,  40, 6, 17, 8, };
-Float_t varMin[nVariables] = {  70,  70,  70, 150,   0,   0,  0,  0,   0, 0,  0, 0, };
-Float_t varMax[nVariables] = { 886, 886, 110, 750, 150, 150,  1,  2, 400, 6, 17, 8, };
-//*/
-/*
-Int_t  varNbin[nVariables] = { 272,  72,  10,  30,  30,  30, 20, 20,  40, 6, 17, 8, };
-Float_t varMin[nVariables] = {  70,  70,  70, 150,   0,   0,  0,  0,   0, 0,  0, 0, };
-Float_t varMax[nVariables] = { 886, 886, 110, 750, 150, 150,  1,  2, 400, 6, 17, 8, };
-//*/
-Bool_t varLogx[nVariables] = {1,1,0,0,0,0,0,0,0,0,0,0,};
-Bool_t varLogy[nVariables] = {0,0,0,0,0,0,0,0,0,1,1,1,};
-Int_t restrictCountVar[nVariables] = {0,0,0,0,0,0,0,0,0,2,4,2,};
-Float_t varMinFactor[nVariables] = {0.,0.,0.,0.,0.,0.,0.,0.,0.,1000000.,5000.,100000.,};
-Int_t varCMSPos[nVariables] = {33,33,11,33,11,11,11,33,33,33,33,33};
-Int_t varLegPos[nVariables] = {3,3,1,3,1,1,3,3,3,3,3,3,};
-Int_t rebinning[nVariables] = {16,8,2,3,2,2,4,4,2,1,1,1,};
+Int_t  varNbin[nVariables] = { 272,  72,  10,  30,  75,  30,  75,  30, 20, 20,  40,  20, 6, 17, 8, };
+Float_t varMin[nVariables] = {  70,  70,  70, 150,   0,   0,   0,   0,  0,  0,   0, -10, 0,  0, 0, };
+Float_t varMax[nVariables] = { 886, 886, 110, 750, 150, 150, 150, 150,  1,  2, 400,  10, 6, 17, 8, };
+Bool_t varLogx[nVariables] = {1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,};
+Bool_t varLogy[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,};
+Int_t restrictCountVar[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,2,4,2,};
+Float_t varMinFactor[nVariables] = {0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,1000000.,5000.,100000.,};
+Int_t varCMSPos[nVariables] = {33,33,11,33,11,11,11,11,11,33,33,11,11,11,11,};
+Int_t varLegPos[nVariables] = {33,33,33,33,11,11,11,11,33,33,33,33,33,33,33,};
+Int_t rebinning[nVariables] = {16,8,2,3,5,2,5,2,4,4,2,2,1,1,1,};
 
 Float_t varMaxCorrector[nBlindings][nVariables] = {
-  { 1. , 1., 1., 1., 1., 1. , 1.3, 1., 1., 1.,  1., 1., },
-  { 1. , 1., 1., 1., 1., 1.1, 1.1, 1., 1., 1.,  1., 1., },
-  { 1.2, 1., 1., 1., 1., 1. , 1.1, 1., 1., 1., 10., 1., },
-  { 1. , 1., 1., 1., 1., 1. , 1.1, 1., 1., 1., 10., 1., },
-  { 1. , 1., 1., 1., 1., 1. , 1.1, 1., 1., 1.,  5., 1., },
+  { 1. , 1., 1.3, 1., 1., 1. , 1., 1. , 1.3, 1., 1., 1.4, 1.,  1., 1., },
+  { 1. , 1., 1. , 1., 1., 1. , 1., 1. , 1.1, 1., 1., 1. , 1.,  1., 1., },
+  { 1.2, 1., 1. , 1., 1., 1. , 1., 1. , 1.1, 1., 1., 1. , 1., 10., 1., },
+  { 1. , 1., 1. , 1., 1., 1. , 1., 1. , 1.1, 1., 1., 1.3, 1., 10., 1., },
+  { 1. , 1., 1. , 1., 1., 1. , 1., 1. , 1.1, 1., 1., 1. , 1.,  5., 1., },
 };
 
 
@@ -231,6 +234,7 @@ void doHistograms(string inputFilePath, double lumi)
   Short_t ZZsel;
   Float_t ZZMass;
   Float_t ZZPt;
+  Float_t ZZEta;
   Float_t p0plus_VAJHU;
   Float_t bkg_VAMCFM;
   Float_t Z1Mass;
@@ -316,6 +320,7 @@ void doHistograms(string inputFilePath, double lumi)
     inputTree[d]->SetBranchAddress("ZZsel", &ZZsel);
     inputTree[d]->SetBranchAddress("ZZMass", &ZZMass);
     inputTree[d]->SetBranchAddress("ZZPt", &ZZPt);
+    inputTree[d]->SetBranchAddress("ZZEta", &ZZEta);
     inputTree[d]->SetBranchAddress("p0plus_VAJHU", &p0plus_VAJHU);
     inputTree[d]->SetBranchAddress("bkg_VAMCFM", &bkg_VAMCFM);
     inputTree[d]->SetBranchAddress("Z1Mass", &Z1Mass);
@@ -465,10 +470,13 @@ void doHistograms(string inputFilePath, double lumi)
 	ZZMass,
 	ZZMass,
 	Z1Mass,
+	Z1Mass,
+	Z2Mass,
 	Z2Mass,
 	p0plus_VAJHU / ( p0plus_VAJHU + bkg_VAMCFM ),
 	DiJetFisher,
 	ZZPt,
+	ZZEta,
 	(Float_t)nExtraLep,
 	(Float_t)nJets,
 	(Float_t)nJetsBTagged,
@@ -577,6 +585,7 @@ void printInfo(string info, Double_t x1, Double_t y1, Double_t x2, Double_t y2){
 
 void SaveCanvas(string directory, TCanvas* c, string tag = "") {
   c->SaveAs(Form("%s%s_%s.root",directory.c_str(),c->GetName(),tag.c_str()));
+  //c->SaveAs(Form("%s%s_%s.C"   ,directory.c_str(),c->GetName(),tag.c_str())); // triggers a segfault !?
   c->SaveAs(Form("%s%s_%s.pdf" ,directory.c_str(),c->GetName(),tag.c_str()));  
   c->SaveAs(Form("%s%s_%s.png" ,directory.c_str(),c->GetName(),tag.c_str()));
 }
@@ -591,7 +600,6 @@ TGraphAsymmErrors* getDataGraph(TH1F* h, bool drawZeroBins=false) {
   float fEYhigh[1000];  
 
   TAxis *xaxis = ((TH1*)h)->GetXaxis();
-
   double q=(1-0.6827)/2.;
 
   int ibin=0;
@@ -601,15 +609,11 @@ TGraphAsymmErrors* getDataGraph(TH1F* h, bool drawZeroBins=false) {
       float xx = xaxis->GetBinCenter(i+1);
       fX[ibin] = xx;
       fY[ibin] = yy;
-      fEXlow[ibin]  = 0.;
+      fEXlow [ibin] = 0.;
       fEXhigh[ibin] = 0.;
       double N = yy;
-      fEYlow[ibin]  = (N==0)?0:(N-ROOT::Math::chisquared_quantile_c(1-q,2*N)/2.);
+      fEYlow [ibin] = (N==0)?0:(N-ROOT::Math::chisquared_quantile_c(1-q,2*N)/2.);
       fEYhigh[ibin] = ROOT::Math::chisquared_quantile_c(q,2*(N+1))/2.-N;
-      //      cout << fEYlow[ibin] << " " << N << " " << fEYhigh[ibin] << endl;
-// Old formula from http://www-cdf.fnal.gov/physics/statistics/notes/pois_eb.txt 
-//       fEYlow[ibin]  = -0.5+sqrt(yy+0.25); 
-//       fEYhigh[ibin] =  0.5+sqrt(yy+0.25);
       ++ibin;
     }
   }
@@ -620,11 +624,42 @@ TGraphAsymmErrors* getDataGraph(TH1F* h, bool drawZeroBins=false) {
   h->TAttMarker::Copy(*g);
   g->SetMarkerStyle(20);
   g->SetMarkerSize(0.9);
-
 //   g->SetName(h->GetName());
 //   g->SetTitle(h->GetTitle());
 
   return g;
+}
+
+TGraphAsymmErrors* getDataOverMCGraph(TGraphAsymmErrors* gData, TH1F* hMC) {
+ 
+  int nPoints = gData->GetN();
+  float fX[nPoints];
+  float fY[nPoints];
+  float fEXlow[nPoints];
+  float fEXhigh[nPoints];
+  float fEYlow[nPoints];
+  float fEYhigh[nPoints];  
+
+  int ipt=0;
+  for(Int_t i=0; i<nPoints; ++i) {
+    Float_t denom = hMC->GetBinContent(hMC->FindBin(gData->GetX()[i]));
+    if(denom!=0.){
+      fX[ipt] = gData->GetX()[i];
+      fY[ipt] = gData->GetY()[i]/denom;
+      fEXlow [ipt] = gData->GetEXlow ()[i];
+      fEXhigh[ipt] = gData->GetEXhigh()[i];
+      fEYlow [ipt] = gData->GetEYlow ()[i]/denom;
+      fEYhigh[ipt] = gData->GetEYhigh()[i]/denom;
+      ++ipt;
+    }
+  }
+
+  TGraphAsymmErrors* gRatio = new TGraphAsymmErrors(ipt, fX, fY, fEXlow, fEXhigh, fEYlow, fEYhigh);
+  gData->TAttLine::Copy(*gRatio);
+  gData->TAttFill::Copy(*gRatio);
+  gData->TAttMarker::Copy(*gRatio);
+
+  return gRatio;
 }
 
 void restrictXAxis(TH1F* h, Int_t countmax){
@@ -649,16 +684,18 @@ TH1F* Smooth(TH1F* hIn, Int_t factor){
 
 void DrawDataMC(TCanvas* c, TH1F** h, int v, int bl, string lumiText, Bool_t logX = false, Bool_t logY = false) {
 
+  bool withRatioPlot = DRAWDATAMCRATIO && !(bl==fullyblind);
+  bool doBlindingHisto = xHistoBlindLow[bl]<xHistoBlindUp[bl] && varName[v].find("M4l")!=string::npos;
+
   //----- prepare canvas
   c->cd();
   if(logX) c->SetLogx();
   if(logY) c->SetLogy();
-  bool first;
 
   //----- prepare MC histograms
   TH1F* hStacks[nProcesses];
-  first = true;
-  int previous = -1;;
+  bool first = true;
+  int previous = -1;
   for(int pr=nProcesses-1; pr>=1; pr--){
     if(useProcess[pr]){
       if(REBINDYTTBAR && (pr==DY || pr==ttbar)) h[pr] = Smooth(h[pr],rebinning[v]);
@@ -678,70 +715,138 @@ void DrawDataMC(TCanvas* c, TH1F** h, int v, int bl, string lumiText, Bool_t log
       previous = pr;
     }
   }
+  int idxSumMC = previous;
 
   //----- prepare data graph
   h[0]->SetMarkerStyle(20);
   h[0]->SetMarkerColor(kBlack);
   h[0]->SetMarkerSize(1.);
-  //h[0]->Draw("P0 E1 SAME"); //replaced by:
   TGraphAsymmErrors* gData = getDataGraph(h[0]);
 
-  //----- adjust Y axis and draw MC and data
+  //----- adjust Y axis
   const int npoints = gData->GetN();
   Float_t gDataErrorBarUp[npoints];
   for(int i=0; i<npoints; i++) gDataErrorBarUp[i] = gData->GetY()[i] + gData->GetEYhigh()[i] ;
-  Float_t cmax = TMath::Max( (Float_t)hStacks[1]->GetMaximum(), (Float_t)TMath::MaxElement(npoints,gDataErrorBarUp) );
+  Float_t cmax = TMath::Max( (Float_t)hStacks[idxSumMC]->GetMaximum(), (Float_t)TMath::MaxElement(npoints,gDataErrorBarUp) );
   cmax *= logY ? 30. : 1.1 ;
   cmax *= varMaxCorrector[bl][v];
-  Float_t cminlog = hStacks[1]->GetMaximum() / varMinFactor[v];
+  Float_t cminlog = hStacks[idxSumMC]->GetMaximum() / varMinFactor[v];
   first = true;
-  for(int pr=1; pr<nProcesses; pr++){
-    if(useProcess[pr]){
-      if(first){
-	hStacks[pr]->SetMaximum(cmax);
-	if(logY) hStacks[pr]->SetMinimum(cminlog);
-	hStacks[pr]->Draw("HIST");
-	first = false;
-      }else{
-	hStacks[pr]->Draw("HIST SAME");
-      }
-    }
-  }
-  if( !(bl==fullyblind) ) gData->Draw("P");
+  hStacks[idxSumMC]->SetMaximum(cmax);
+  if(logY) hStacks[idxSumMC]->SetMinimum(cminlog);
   
-  //----- draw grey area or grid over blind region
-  bool doBlindingHisto = xHistoBlindLow[bl]<xHistoBlindUp[bl] && varName[v].find("M4l")!=string::npos;
+  //----- prepare grey area/grid for blind region
+  TH1F* hBlind = new TH1F("hBlind",";;",1,xHistoBlindLow[bl],xHistoBlindUp[bl]);
   if(doBlindingHisto){
-    TH1F* hBlind = new TH1F("hBlind",";;",1,xHistoBlindLow[bl],xHistoBlindUp[bl]);
     hBlind->SetBinContent(1,cmax);
     //hBlind->SetFillColorAlpha(kBlack,0.2);
     //hBlind->SetLineColorAlpha(kBlack,0.2);
     hBlind->SetFillColor(kGray+3);
     hBlind->SetFillStyle(3013); //also tried 3001 and a few others, but they look bad in pdf format
     hBlind->SetLineColorAlpha(kWhite,0.);
-    hBlind->Draw("HIST SAME");
   }
 
-  //----- draw legend
+  //----- prepare legend
   bool doBlindingLabel = blindingLabel[bl]!="" && varName[v].find("M4l")==string::npos;
-  float legLeft  = (varLegPos[v]==1 && !(bl==blindabove110 && (varName[v]=="MZ1" || varName[v]=="MZ2")) ) ? 0.2 : 0.65 ;
-  float legRight = (varLegPos[v]==1 && !(bl==blindabove110 && (varName[v]=="MZ1" || varName[v]=="MZ2")) ) ? 0.5 : 0.95 ;
-  if(doBlindingLabel && bl==blind110150) legRight += 0.05;
-  float legUp   = 0.8;
-  float legDown = doBlindingLabel ? 0.55 : (bl==fullyblind) ? 0.65 : 0.6;
-  TLegend* lgd = new TLegend(legLeft,legDown,legRight,legUp);
+  int legPos = varLegPos[v];
+  if(bl==blindabove110 && varName[v].find("MZ")!=string::npos) legPos = 3;
+  float legLeft = (legPos==11) ? 0.2 : 0.65 ;
+  float legWidth = 0.3;
+  if(doBlindingLabel && bl==blind110150) legWidth += 0.05;
+  float legUp = 0.92;
+  if(!withRatioPlot && legPos==varCMSPos[v]) legUp -= 0.12;
+  float legHeight = doBlindingLabel ? 0.25 : (bl==fullyblind) ? 0.15 : 0.2;
+  if(withRatioPlot) legHeight /= 0.72;
+  TLegend* lgd = new TLegend(legLeft,legUp-legHeight,legLeft+legWidth,legUp);
   if(doBlindingLabel) lgd->SetHeader(blindingLabel[bl].c_str());
   lgd->SetFillStyle(0);
   lgd->SetBorderSize(0);
-  if( !(bl==fullyblind) )
+  if(!(bl==fullyblind))
     lgd->AddEntry(h[0],processLabel[0].c_str(),"p");
   for(int pr=1; pr<nProcesses; pr++)
     if(useProcess[pr])
       lgd->AddEntry(hStacks[pr],processLabel[pr].c_str(),"f");
-  lgd->Draw();
+
+  //----- draw everything
+  if(!withRatioPlot){
+
+    //--- no Data/MC graph -> draw on main pad
+    for(int pr=1; pr<nProcesses; pr++)
+      if(useProcess[pr])
+	hStacks[pr]->Draw( pr==idxSumMC ? "HIST" : "HIST SAME" );
+    if(!(bl==fullyblind)) gData->Draw("P");
+    if(doBlindingHisto) hBlind->Draw("HIST SAME");
+    lgd->Draw();
+    gPad->RedrawAxis();
+
+  }else{
+
+    //--- with Data/MC graph -> need 2 pads
+    TPad* pad1 = new TPad("pad1", "pad1", 0., 0.28, 1., 0.95);
+    TPad* pad2 = new TPad("pad2", "pad2", 0., 0.13, 1., 0.28);
+    if(logX){pad1->SetLogx(); pad2->SetLogx();}
+    if(logY) pad1->SetLogy();
+    pad1->SetMargin(0.16,0.02,0.03,0.);
+    pad2->SetMargin(0.16,0.02,0.,0.);
+
+    //--- dummy histogram to get the X axis right
+    TH1F* hBlank = (TH1F*)hStacks[idxSumMC]->Clone();
+    hBlank->Reset();
+    hBlank->Draw();
+    hBlank->GetYaxis()->SetLabelSize(0.);
+
+    pad1->Draw();
+    pad2->Draw();
+
+    //--- main pad
+    pad1->cd();
+    for(int pr=1; pr<nProcesses; pr++){
+      if(useProcess[pr]){
+	hStacks[pr]->GetYaxis()->SetTitleOffset(1.);
+	hStacks[pr]->GetYaxis()->SetTitleSize(0.06);
+	hStacks[pr]->GetYaxis()->SetLabelSize(0.06);
+	hStacks[pr]->Draw( pr==idxSumMC ? "HIST" : "HIST SAME" );
+      }
+    }
+    if(!(bl==fullyblind)) gData->Draw("P");
+    hStacks[idxSumMC]->GetXaxis()->SetLabelSize(0.);
+    if(doBlindingHisto) hBlind->Draw("HIST SAME");
+    lgd->Draw();
+    pad1->RedrawAxis();
+    
+    //--- Data/MC pad
+    pad2->cd();
+    pad2->SetGridy();
+    TH1F* hOne = (TH1F*)h[0]->Clone();
+    hOne->Reset();
+    for(int i=1; i<=hOne->GetNbinsX(); i++) hOne->SetBinContent(i,1.);
+    hOne->SetLineColor(kGray);
+    hOne->Draw();
+    hOne->GetYaxis()->SetRangeUser(0.45,1.55);
+    hOne->GetYaxis()->SetNdivisions(206);
+    hOne->GetYaxis()->SetTitle("Data/MC");
+    hOne->GetYaxis()->SetTitleOffset(0.3);
+    hOne->GetYaxis()->SetTitleSize(0.2);
+    hOne->GetYaxis()->SetLabelSize(0.17);
+    hOne->GetYaxis()->SetTitleFont(42);
+    hOne->GetYaxis()->SetLabelFont(42);
+    hOne->GetYaxis()->CenterTitle();
+    hOne->GetXaxis()->SetTickSize(0.1);
+    hOne->GetYaxis()->SetTickSize(0.02);
+    TGraphAsymmErrors* gRatio = getDataOverMCGraph(gData,hStacks[idxSumMC]);
+    gRatio->Draw("P");
+    if(doBlindingHisto){
+      TH1F* hBlind2 = (TH1F*)hBlind->Clone();
+      hBlind2->SetBinContent(1,2.);
+      hBlind2->Draw("HIST SAME");
+    }
+    pad2->RedrawAxis();
+
+  }
 
   //----- customize m4l axis labels
-  if(DRAWLABELBYHAND && logX && (varName[v]=="M4l"||varName[v]=="M4l2")){
+  if(DRAWLABELBYHAND && logX && (varName[v]=="M4l"||varName[v]=="M4lCoarse")){
+    c->cd();
     TText t;
     t.SetNDC();
     t.SetTextSize(0.04);
@@ -754,14 +859,12 @@ void DrawDataMC(TCanvas* c, TH1F** h, int v, int bl, string lumiText, Bool_t log
   writeExtraText = true;
   extraText  = "Preliminary";
   lumi_sqrtS = lumiText + " (13 TeV)";
-  CMS_lumi( c, 0, varCMSPos[v] );
-
-  gPad->RedrawAxis();
+  CMS_lumi( c, 0, withRatioPlot ? 0 : varCMSPos[v] );
 
   //----- print yields
   if(varName[v]=="MZ1"){
     cout<<"Yields for blinding "<<bl<<":"<<endl;
-    cout<<"  expected: "<<hStacks[1]->Integral()<<endl;
+    cout<<"  expected: "<<hStacks[idxSumMC]->Integral()<<endl;
     cout<<"  observed: "<<h[0]->Integral()<<endl;
   }
 
@@ -771,6 +874,7 @@ void doPlots(string outputDirectory, int variableList, int blindingList, string 
 {
 
   setTDRStyle();
+  gStyle->SetGridColor(kGray);
 
   //---------- retrieve histograms from the ROOT file
   TH1F* h1[nVariables][nBlindings][nProcesses];
@@ -789,12 +893,14 @@ void doPlots(string outputDirectory, int variableList, int blindingList, string 
 	      }
 
   //---------- do the plots (1 canvas per variable and per blinding policy)
+  string canvasName;
   TCanvas* c1[nVariables];
   for(int v=0; v<nVariables; v++){
     if(!plotThisVar[variableList][v]) continue;
     for(int bl=0; bl<nBlindings; bl++){
       if(!plotThisBlinding[blindingList][bl]) continue;
-      c1[v] = new TCanvas(Form("c1_%s_%s",varName[v].c_str(),sBlinding[bl].c_str()),Form("c1_%s_%s",varName[v].c_str(),sBlinding[bl].c_str()),500,500);
+      canvasName = string(Form("%s_%s",sBlinding[bl].c_str(),varName[v].c_str()));
+      c1[v] = new TCanvas(canvasName.c_str(),canvasName.c_str(),500,500);
       DrawDataMC(c1[v],h1[v][bl],v,bl,lumiText,varLogx[v],varLogy[v]);
       SaveCanvas(outputDirectory,c1[v]);
     }
@@ -829,10 +935,10 @@ void plotDataVsMC() {
   string lumiText = "903.8 pb^{-1}"; //"0.904 fb^{-1}"
 
   // Choose the list of variables that you want to plot
-  int variableList = 0;
+  int variableList = 1;
 
   // Choose a list of ways of blinding some m4l regions
-  int blindingList = 1; 
+  int blindingList = 4;
 
 
   // --------------- processing ---------------
