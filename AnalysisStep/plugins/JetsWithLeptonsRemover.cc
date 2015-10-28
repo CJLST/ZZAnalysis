@@ -105,8 +105,6 @@ JetsWithLeptonsRemover::JetsWithLeptonsRemover(const edm::ParameterSet & iConfig
   if(diBosonSrc_.label() != "") cleaningFromDiboson_ = true;
   else cleaningFromDiboson_ = false;
 
-  assert(!(cleaningFromDiboson_&&cleanFSRFromLeptons_)); //Either one makes sense
-
   if(doDebugPlots_){
     edm::Service<TFileService> fs;
     hNLeptonJets              = fs->make<TH1F>("hNLeptonJets"            , "Number of lepton-jets found",  10,   0, 10);
