@@ -28,6 +28,7 @@
 #include <DataFormats/PatCandidates/interface/Muon.h>
 #include <DataFormats/PatCandidates/interface/Electron.h>
 #include <DataFormats/PatCandidates/interface/Jet.h>
+#include <DataFormats/PatCandidates/interface/MET.h>
 #include <DataFormats/METReco/interface/PFMET.h>
 #include <DataFormats/METReco/interface/PFMETCollection.h>
 #include <DataFormats/JetReco/interface/PFJet.h>
@@ -76,6 +77,8 @@ namespace {
   Float_t PUWeight  = 0;
   Float_t PFMET  =  -99;
   Float_t PFMETPhi  =  -99;
+  Float_t PFMETNoHF  =  -99;
+  Float_t PFMETNoHFPhi  =  -99;
   Short_t nCleanedJets  =  0;
   Short_t nCleanedJetsPt30  = 0;
   Short_t nCleanedJetsPt30BTagged  = 0;
@@ -505,9 +508,6 @@ HZZ4lNtupleMaker::~HZZ4lNtupleMaker()
 // ------------ method called for each event  ------------
 void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& eSetup)
 {
-  // Primary vertices
-  Handle<vector<reco::Vertex> >  vertexs;
-  event.getByLabel("goodPrimaryVertices",vertexs);
   myTree->InitializeVariables();
 
   //----------------------------------------------------------------------
@@ -532,7 +532,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 //       cout << "FAIL HZZ4lNtupleMaker" <<endl;
 //       event.getByLabel(edm::InputTag("slimmedAddPileupInfo"), PupInfo); 
 //     }
-    
     
     std::vector<PileupSummaryInfo>::const_iterator PVI;
     for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
@@ -601,7 +600,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   // For Z+L CRs, we want only events with exactly 1 Z+l candidate. FIXME: this has to be reviewed.
   if (theChannel==ZL && cands->size() != 1) return;
 
-
   // Apply MC filter (skip event)
   if (isMC && !(myHelper.passMCFilter(event))) return;
 
@@ -612,6 +610,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   // Apply trigger request (skip event)
   bool evtPassTrigger = myHelper.passTrigger(event, trigWord);
   if (applyTrigger && !evtPassTrigger) return;
+
 
   //Fill MC truth information
   if (isMC) {
@@ -652,6 +651,19 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   }
 
 
+  // General event information
+  RunNumber=event.id().run();
+  LumiNumber=event.luminosityBlock();
+  EventNumber=event.id().event();
+  xsection=xsec;
+
+
+  // Primary vertices
+  Handle<vector<reco::Vertex> > vertices;
+  event.getByLabel("goodPrimaryVertices",vertices);
+  Nvtx=vertices->size();
+
+
   // Jets
   Handle<edm::View<pat::Jet> > CleanedJets;
   event.getByLabel("cleanJets", CleanedJets);
@@ -664,8 +676,10 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       if(jet->userFloat("isBtagged")) nCleanedJetsPt30BTagged++;
     }
   }
+  nCleanedJets=cleanedJets.size();
+  nCleanedJetsPt30=cleanedJetsPt30.size();
 
-  if (cleanedJetsPt30.size()>=2) {
+  if (nCleanedJetsPt30>=2) {
     DiJetDEta = cleanedJetsPt30[0]->eta()-cleanedJetsPt30[1]->eta();
     DiJetMass = (cleanedJetsPt30[0]->p4()+cleanedJetsPt30[1]->p4()).M();
     DiJetFisher = fisher(DiJetMass,DiJetDEta);      
@@ -698,21 +712,20 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     }
   }
   
-  Handle<vector<reco::MET> > pfmetcoll;
-  event.getByLabel("slimmedMETs", pfmetcoll);
-  if (pfmetcoll.isValid()){
-    PFMET = pfmetcoll->front().pt();
-    PFMETPhi = pfmetcoll->front().phi();
+
+  // MET
+  Handle<pat::METCollection> metHandle;
+  Handle<pat::METCollection> metNoHFHandle;
+  event.getByLabel("slimmedMETs", metHandle);
+  event.getByLabel("slimmedMETsNoHF", metNoHFHandle);
+  if(metHandle.isValid()){
+    PFMET = metHandle->front().pt();
+    PFMETPhi = metHandle->front().phi();
   }
-  xsection=xsec;
-  //Save general event info in the tree
-  RunNumber=event.id().run();
-  LumiNumber=event.luminosityBlock();
-  Nvtx=vertexs->size();
-  nCleanedJets=cleanedJets.size();
-  nCleanedJetsPt30=cleanedJetsPt30.size();
-  xsection=xsec;
-  EventNumber=event.id().event();
+  if(metNoHFHandle.isValid()){
+    PFMETNoHF = metNoHFHandle->front().pt();
+    PFMETNoHFPhi = metNoHFHandle->front().phi();
+  }
 
 
   // number of reconstructed leptons
@@ -761,7 +774,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     FillCandidate(*cand, evtPassTrigger&&evtPassSkim, event, CRFLAG);
 
 
-    // Fill the candidate as one entry in the tre. Do not reinitialize the event variables, as in CRs
+    // Fill the candidate as one entry in the tree. Do not reinitialize the event variables, as in CRs
     // there could be several candidates per event.
     myTree->FillCurrentTree();
     ++nFilled;
@@ -1435,6 +1448,8 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("PUWeight",PUWeight);
   myTree->Book("PFMET",PFMET);
   myTree->Book("PFMETPhi",PFMETPhi);
+  myTree->Book("PFMETNoHF",PFMETNoHF);
+  myTree->Book("PFMETNoHFPhi",PFMETNoHFPhi);
   myTree->Book("nCleanedJets",nCleanedJets);
   myTree->Book("nCleanedJetsPt30",nCleanedJetsPt30);
   myTree->Book("nCleanedJetsPt30BTagged",nCleanedJetsPt30BTagged);
