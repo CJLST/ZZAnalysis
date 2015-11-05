@@ -40,8 +40,8 @@ WplusH125,,       0.0002324,       ,,/WplusH_HToZZTo4L_M125_13TeV_powheg-minlo-H
 WminusH125,,      0.0001488,       ,,/WminusH_HToZZTo4L_M125_13TeV_powheg-minlo-HWJ_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,1,,,# (Total (W+H)+(W-H)=0.000381; sigma(W+H)/sigma(W-H) = 1.59)
 ZH125,,           0.000652,        ,,/ZH_HToZZ_4LFilter_M125_13TeV_powheg-minlo-HZJ_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,2,,,# crossSection includes filter eff=0.15038
 
-ttH125,,          0.000337,     ,,/GluGluHToZZTo4L_M125_13TeV_powheg_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,2,,,# crossSection includes filter eff=0.13225 
-#ttH125ext1,,      0.000337,    ,,/GluGluHToZZTo4L_M125_13TeV_powheg_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2_ext1-v1/MINIAODSIM,dbs,,2,,,# extension of the above (TBC)
+ttH125,,          0.000337,     ,,/ttH_HToZZ_4LFilter_M125_13TeV_powheg_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,2,,,# crossSection includes filter eff=0.13225 
+#ttH125ext1,,     0.000337,     ,,/ttH_HToZZ_4LFilter_M125_13TeV_powheg_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2_ext1-v1/MINIAODSIM,dbs,,2,,,# extension of the above (TBC)
 
 
 ZZTo4l,,            1.256,      ,,/ZZTo4L_13TeV_powheg_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v2/MINIAODSIM,dbs,,4,,,
