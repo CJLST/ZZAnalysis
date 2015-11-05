@@ -189,7 +189,10 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   iEvent.getByLabel("softLeptons", softleptoncoll);
   vector<reco::CandidatePtr> goodisoleptonPtrs;
   for( View<reco::Candidate>::const_iterator lep = softleptoncoll->begin(); lep != softleptoncoll->end(); ++ lep ){ 
-    if((bool)userdatahelpers::getUserFloat(&*lep,"isGood") && (bool)userdatahelpers::getUserFloat(&*lep,"isIsoFSRUncorr")){
+    if((bool)userdatahelpers::getUserFloat(&*lep,"isGood") 
+       //       && (bool)userdatahelpers::getUserFloat(&*lep,"isIsoFSRUncorr") // with old FSR strategy
+       && (bool)userdatahelpers::getUserFloat(&*lep,"passCombRelIsoPFFSRCorr") // with new FSR strategy
+       ){
       const reco::CandidatePtr lepPtr(softleptoncoll,lep-softleptoncoll->begin());
       goodisoleptonPtrs.push_back(lepPtr);
     }
