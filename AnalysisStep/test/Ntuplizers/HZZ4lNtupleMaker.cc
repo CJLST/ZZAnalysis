@@ -38,6 +38,8 @@
 #include <DataFormats/Common/interface/MergeableCounter.h>
 #include <DataFormats/VertexReco/interface/Vertex.h>
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
+#include "SimDataFormats/GeneratorProducts/interface/LHERunInfoProduct.h"
+#include <SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h>
 
 #include <ZZAnalysis/AnalysisStep/interface/DaughterDataHelpers.h>
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
@@ -259,6 +261,15 @@ namespace {
   Short_t genFinalState  = 0;
   Int_t genProcessId  = 0;
   Float_t genHEPMCweight  = 0;
+  Float_t LHEweight_QCDscale_muR1_muF1  = 0;
+  Float_t LHEweight_QCDscale_muR1_muF2  = 0;
+  Float_t LHEweight_QCDscale_muR1_muF0p5  = 0;
+  Float_t LHEweight_QCDscale_muR2_muF1  = 0;
+  Float_t LHEweight_QCDscale_muR2_muF2  = 0;
+  Float_t LHEweight_QCDscale_muR2_muF0p5  = 0;
+  Float_t LHEweight_QCDscale_muR0p5_muF1  = 0;
+  Float_t LHEweight_QCDscale_muR0p5_muF2  = 0;
+  Float_t LHEweight_QCDscale_muR0p5_muF0p5  = 0;
   Short_t genExtInfo  = 0;
   Float_t xsection  = 0;
   Float_t dataMCWeight  = 0;
@@ -555,6 +566,24 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     gen_sumPUWeight    += PUWeight;
     gen_sumGenMCWeight += genHEPMCweight;
     gen_sumWeights     += PUWeight*genHEPMCweight;
+
+    // LHE weights
+    vector<edm::Handle<LHEEventProduct> > EvtHandles;
+    event.getManyByType(EvtHandles); // using this method because the label is not always the same (e.g. "source" in the ttH sample)
+    if(EvtHandles.size()>0){
+      edm::Handle<LHEEventProduct> EvtHandle = EvtHandles.front();
+      if(EvtHandle.isValid()){
+	LHEweight_QCDscale_muR1_muF1     = genHEPMCweight * EvtHandle->weights()[0].wgt / EvtHandle->originalXWGTUP(); // just for verification (should be 1)
+	LHEweight_QCDscale_muR1_muF2     = genHEPMCweight * EvtHandle->weights()[1].wgt / EvtHandle->originalXWGTUP();
+	LHEweight_QCDscale_muR1_muF0p5   = genHEPMCweight * EvtHandle->weights()[2].wgt / EvtHandle->originalXWGTUP();
+	LHEweight_QCDscale_muR2_muF1     = genHEPMCweight * EvtHandle->weights()[3].wgt / EvtHandle->originalXWGTUP();
+	LHEweight_QCDscale_muR2_muF2     = genHEPMCweight * EvtHandle->weights()[4].wgt / EvtHandle->originalXWGTUP();
+	LHEweight_QCDscale_muR2_muF0p5   = genHEPMCweight * EvtHandle->weights()[5].wgt / EvtHandle->originalXWGTUP();
+	LHEweight_QCDscale_muR0p5_muF1   = genHEPMCweight * EvtHandle->weights()[6].wgt / EvtHandle->originalXWGTUP();
+	LHEweight_QCDscale_muR0p5_muF2   = genHEPMCweight * EvtHandle->weights()[7].wgt / EvtHandle->originalXWGTUP();
+	LHEweight_QCDscale_muR0p5_muF0p5 = genHEPMCweight * EvtHandle->weights()[8].wgt / EvtHandle->originalXWGTUP();
+      }
+    }
 
     mch.genAcceptance(gen_ZZ4lInEtaAcceptance, gen_ZZ4lInEtaPtAcceptance);
 
@@ -1183,8 +1212,21 @@ void HZZ4lNtupleMaker::endJob()
 }
 
 // ------------ method called when starting to processes a run  ------------
-void HZZ4lNtupleMaker::beginRun(edm::Run const&, edm::EventSetup const&)
+void HZZ4lNtupleMaker::beginRun(edm::Run const& iRun, edm::EventSetup const&)
 {
+  // // code that helps find the indices of LHE weights
+  // edm::Handle<LHERunInfoProduct> run; 
+  // typedef std::vector<LHERunInfoProduct::Header>::const_iterator headers_const_iterator;
+  // iRun.getByLabel( "externalLHEProducer", run );
+  // LHERunInfoProduct myLHERunInfoProduct = *(run.product());
+  // for (headers_const_iterator iter=myLHERunInfoProduct.headers_begin(); iter!=myLHERunInfoProduct.headers_end(); iter++){
+  //   std::cout << iter->tag() << std::endl;
+  //   std::vector<std::string> lines = iter->lines();
+  //   for (unsigned int iLine = 0; iLine<lines.size(); iLine++) {
+  //     std::cout << lines.at(iLine);
+  //   } 
+  // }
+  
 }
 
 // ------------ method called when ending the processing of a run  ------------
@@ -1645,6 +1687,15 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("genFinalState",genFinalState);
   myTree->Book("genProcessId",genProcessId);
   myTree->Book("genHEPMCweight",genHEPMCweight);
+  myTree->Book("LHEweight_QCDscale_muR1_muF1",LHEweight_QCDscale_muR1_muF1);
+  myTree->Book("LHEweight_QCDscale_muR1_muF2",LHEweight_QCDscale_muR1_muF2);
+  myTree->Book("LHEweight_QCDscale_muR1_muF0p5",LHEweight_QCDscale_muR1_muF0p5);
+  myTree->Book("LHEweight_QCDscale_muR2_muF1",LHEweight_QCDscale_muR2_muF1);
+  myTree->Book("LHEweight_QCDscale_muR2_muF2",LHEweight_QCDscale_muR2_muF2);
+  myTree->Book("LHEweight_QCDscale_muR2_muF0p5",LHEweight_QCDscale_muR2_muF0p5);
+  myTree->Book("LHEweight_QCDscale_muR0p5_muF1",LHEweight_QCDscale_muR0p5_muF1);
+  myTree->Book("LHEweight_QCDscale_muR0p5_muF2",LHEweight_QCDscale_muR0p5_muF2);
+  myTree->Book("LHEweight_QCDscale_muR0p5_muF0p5",LHEweight_QCDscale_muR0p5_muF0p5);
   myTree->Book("genExtInfo",genExtInfo);
   myTree->Book("xsec",xsection);
   myTree->Book("dataMCWeight",dataMCWeight);
