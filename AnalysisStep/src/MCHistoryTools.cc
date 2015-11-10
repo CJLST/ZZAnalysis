@@ -215,6 +215,8 @@ MCHistoryTools::init() {
                                      // qqZZ and ggZZ will fall here so they have to be handled later.
 		 || (mid==24)) {     // from W->lnu (for WH, ttH)
 	theAssociatedLeps.push_back(&*p);
+      } else if (p->mother()->status()==21) { // ZZTo4lamcatnlo: catch some lepton pairs that don't have a Z parent. In this case the parents are the incoming partons.
+	theAssociatedLeps.push_back(&*p);
       }
     }
 
