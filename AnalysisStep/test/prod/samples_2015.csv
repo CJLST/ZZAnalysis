@@ -12,20 +12,20 @@ MuonEG2015C_50ns,,   -1, ,, /MuonEG/Run2015C_50ns-05Oct2015-v1/MINIAOD,dbs,,5,PD
 SingleEle2015C_50ns,,-1, ,, /SingleElectron/Run2015C_50ns-05Oct2015-v1/MINIAOD,dbs,,5,PD=SingleElectron,json_2015_50ns.py,
 
 ###,,,,,,,,,,,Data, 25ns
-DoubleMu2015C,, -1, ,, /DoubleMuon/Run2015C_25ns-05Oct2015-v1/MINIAOD,dbs,,2,PD=DoubleMu,json_2015_25ns.py,
-DoubleEG2015C,, -1, ,, /DoubleEG/Run2015C_25ns-05Oct2015-v1/MINIAOD,dbs,,2,PD=DoubleEle,json_2015_25ns.py,
-MuonEG2015C,,   -1, ,, /MuonEG/Run2015C_25ns-05Oct2015-v1/MINIAOD,dbs,,2,PD=MuEG,json_2015_25ns.py,
-SingleEle2015C,,-1, ,, /SingleElectron/Run2015C_25ns-05Oct2015-v1/MINIAOD,dbs,,5,PD=SingleElectron,json_2015_25ns.py,
+DoubleMu2015C,, -1, ,, /DoubleMuon/Run2015C_25ns-05Oct2015-v1/MINIAOD,dbs,,2,PD=DoubleMu,json_2015_25ns_Silver.py,
+DoubleEG2015C,, -1, ,, /DoubleEG/Run2015C_25ns-05Oct2015-v1/MINIAOD,dbs,,2,PD=DoubleEle,json_2015_25ns_Silver.py,
+MuonEG2015C,,   -1, ,, /MuonEG/Run2015C_25ns-05Oct2015-v1/MINIAOD,dbs,,2,PD=MuEG,json_2015_25ns_Silver.py,
+SingleEle2015C,,-1, ,, /SingleElectron/Run2015C_25ns-05Oct2015-v1/MINIAOD,dbs,,5,PD=SingleElectron,json_2015_25ns_Silver.py,
 
-DoubleMu2015D,, -1, ,, /DoubleMuon/Run2015D-05Oct2015-v1/MINIAOD,dbs,,3,PD=DoubleMu,json_2015_25ns.py,
-DoubleEG2015D,, -1, ,, /DoubleEG/Run2015D-05Oct2015-v1/MINIAOD,dbs,,4,PD=DoubleEle,json_2015_25ns.py,
-MuonEG2015D,,   -1, ,, /MuonEG/Run2015D-05Oct2015-v2/MINIAOD,dbs,,5,PD=MuEG,json_2015_25ns.py,
-SingleEle2015D,,-1, ,, /SingleElectron/Run2015D-05Oct2015-v1/MINIAOD,dbs,,10,PD=SingleElectron,json_2015_25ns.py,
+DoubleMu2015D,, -1, ,, /DoubleMuon/Run2015D-05Oct2015-v1/MINIAOD,dbs,,3,PD=DoubleMu,json_2015_25ns_Silver.py,
+DoubleEG2015D,, -1, ,, /DoubleEG/Run2015D-05Oct2015-v1/MINIAOD,dbs,,4,PD=DoubleEle,json_2015_25ns_Silver.py,
+MuonEG2015D,,   -1, ,, /MuonEG/Run2015D-05Oct2015-v2/MINIAOD,dbs,,5,PD=MuEG,json_2015_25ns_Silver.py,
+SingleEle2015D,,-1, ,, /SingleElectron/Run2015D-05Oct2015-v1/MINIAOD,dbs,,10,PD=SingleElectron,json_2015_25ns_Silver.py,
 
-DoubleMu2015Dv4,, -1, ,, /DoubleMuon/Run2015D-PromptReco-v4/MINIAOD,dbs,,3,PD=DoubleMu,json_2015_25ns.py,
-DoubleEG2015Dv4,, -1, ,, /DoubleEG/Run2015D-PromptReco-v4/MINIAOD,dbs,,3,PD=DoubleEle,json_2015_25ns.py,
-MuonEG2015Dv4,,   -1, ,, /MuonEG/Run2015D-PromptReco-v4/MINIAOD,dbs,,6,PD=MuEG,json_2015_25ns.py,
-SingleEle2015Dv4,,-1, ,, /SingleElectron/Run2015D-PromptReco-v4/MINIAOD,dbs,,8,PD=SingleElectron,json_2015_25ns.py,
+DoubleMu2015Dv4,, -1, ,, /DoubleMuon/Run2015D-PromptReco-v4/MINIAOD,dbs,,3,PD=DoubleMu,json_2015_25ns_Silver.py,
+DoubleEG2015Dv4,, -1, ,, /DoubleEG/Run2015D-PromptReco-v4/MINIAOD,dbs,,3,PD=DoubleEle,json_2015_25ns_Silver.py,
+MuonEG2015Dv4,,   -1, ,, /MuonEG/Run2015D-PromptReco-v4/MINIAOD,dbs,,6,PD=MuEG,json_2015_25ns_Silver.py,
+SingleEle2015Dv4,,-1, ,, /SingleElectron/Run2015D-PromptReco-v4/MINIAOD,dbs,,8,PD=SingleElectron,json_2015_25ns_Silver.py,
 
 
 
