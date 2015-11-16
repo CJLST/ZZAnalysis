@@ -42,7 +42,7 @@
 #include <ZZAnalysis/AnalysisStep/interface/Comparators.h>
 #include <ZZAnalysis/AnalysisStep/interface/utils.h>
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
-
+#include <ZZAnalysis/AnalysisStep/interface/JetCleaner.h>
 
 #include "TH2F.h"
 #include "TFile.h"
@@ -173,9 +173,9 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   // Get jets
   Handle<edm::View<pat::Jet> > CleanJets;
   iEvent.getByLabel("cleanJets", CleanJets);
-  vector<const pat::Jet*> cleanedJetsPt30;
+  vector<const pat::Jet*> cleanedJetsPt30InEv;
   for(edm::View<pat::Jet>::const_iterator jet = CleanJets->begin(); jet != CleanJets->end(); ++jet){
-    if(jet->pt()>30) cleanedJetsPt30.push_back(&*jet);
+    if(jet->pt()>30) cleanedJetsPt30InEv.push_back(&*jet);
   }
 
   // Get MET
@@ -484,6 +484,14 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     }
     myCand.addUserFloat("nExtraZ",nExtraZ);
 
+
+    // Collect jets with additional cleaning for loose leptons belonging to this candidate (for CRs only; does nothing for the SR as jets are already cleaned with all tight isolated leptons )
+    vector<const pat::Jet*> cleanedJetsPt30;
+    for (unsigned i =0; i< cleanedJetsPt30InEv.size(); ++i) {
+      if (jetCleaner::isGood(myCand, *(cleanedJetsPt30InEv[i]))) {
+	cleanedJetsPt30.push_back(cleanedJetsPt30InEv[i]);
+      }
+    }
 
 
     //----------------------------------------------------------------------
@@ -866,7 +874,35 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
       }
     } 
     
-    // ...
+    // detaJJ, Mjj and Fisher. These are per-event variables in the SR, but not necessarily in the CR as we clean jets also 
+    // for loose-but-not-tight leptons.    
+
+    float DiJetMass  = -99;
+//     Float_t DiJetMassPlus  = -99;
+//     Float_t DiJetMassMinus  = -99;
+    float DiJetDEta  = -99;
+    float DiJetFisher  = -99;
+    
+    if(cleanedJetsPt30.size()>1){ 
+      const pat::Jet& jet1 = *(cleanedJetsPt30.at(0));
+      const pat::Jet& jet2 = *(cleanedJetsPt30.at(1));
+      
+      DiJetDEta = jet1.eta()-jet2.eta();
+      DiJetMass = (jet1.p4()+jet2.p4()).M();
+      DiJetFisher = fisher(DiJetMass,DiJetDEta);      
+
+//         math::XYZTLorentzVector p4jet1 = jet1.p4();
+//         math::XYZTLorentzVector p4jet2 = jet2.p4();
+//         Float_t jesUnc1 = 0.;//jet1.uncOnFourVectorScale();
+//         Float_t jesUnc2 = 0.;//jet2.uncOnFourVectorScale();
+//         math::XYZTLorentzVector jetScalePlus1 = p4jet1*(1+jesUnc1);
+//         math::XYZTLorentzVector jetScaleMinus1 = p4jet1*(1-jesUnc1);
+//         math::XYZTLorentzVector jetScalePlus2 = p4jet2*(1+jesUnc2);
+//         math::XYZTLorentzVector jetScaleMinus2 = p4jet2*(1-jesUnc2);
+//         DiJetMassPlus = (jetScalePlus1+jetScalePlus2).M();
+//         DiJetMassMinus = (jetScaleMinus1+jetScaleMinus2).M();
+    }
+    
   
     
     //----------------------------------------------------------------------
@@ -1006,6 +1042,12 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
       myCand.addUserFloat("chi2_Z1Fit", chi2LepZ1Ref);
       myCand.addUserFloat("mZ1Fit",  mZ1Ref);
     }
+
+    // Jet quantities
+    myCand.addUserFloat("DiJetMass", DiJetMass);
+    myCand.addUserFloat("DiJetDEta", DiJetDEta);
+    myCand.addUserFloat("DiJetFisher", DiJetFisher);
+
     // add probabilities
     myCand.addUserFloat("p0plus_VAJHU",   p0plus_VAJHU);   // higgs, vector algebra, JHUgen
     myCand.addUserFloat("p0minus_VAJHU",  p0minus_VAJHU);  // pseudoscalar, vector algebra, JHUgen

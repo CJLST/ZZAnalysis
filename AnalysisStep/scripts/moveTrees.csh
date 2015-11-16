@@ -23,5 +23,6 @@ mkdir Chunks
 mv PT13TeV/*Chunk* Chunks/
 mv PT13TeV/* .
 rm -r PT13TeV/
+chmod -R g+w .
 cd - > /dev/null
 echo "Done. All trees are now in ${TREEPATH}/"

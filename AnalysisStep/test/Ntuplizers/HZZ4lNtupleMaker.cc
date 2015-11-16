@@ -63,10 +63,11 @@ namespace {
   bool writeJets = true;     // Write jets in the tree. FIXME: make this configurable
   bool addKinRefit = false;
   bool addVtxFit = false;
+  bool addFSRDetails = false;
   bool skipDataMCWeight = true; // skip computation of data/MC weight 
   bool skipFakeWeight = true;   // skip computation of fake rate weight for CRs
   bool skipHqTWeight = true;    // skip computation of hQT weight 
-  
+
   //List of variables with default values
   Int_t RunNumber  = 0;
   Long64_t EventNumber  = 0;
@@ -126,7 +127,7 @@ namespace {
   //std::vector<float> LepNeutralHadIso;
   //std::vector<float> LepPhotonIso;
   std::vector<float> LepCombRelIsoPF;
-  std::vector<float> fsrPt; 
+  std::vector<float> fsrPt;
   std::vector<float> fsrEta; 
   std::vector<float> fsrPhi;
   std::vector<float> fsrDR;
@@ -248,8 +249,8 @@ namespace {
   std::vector<float> JetQGLikelihood; 
   std::vector<float> JetSigma ;
   Float_t DiJetMass  = -99;
-  Float_t DiJetMassPlus  = -99;
-  Float_t DiJetMassMinus  = -99;
+//   Float_t DiJetMassPlus  = -99;
+//   Float_t DiJetMassMinus  = -99;
   Float_t DiJetDEta  = -99;
   Float_t DiJetFisher  = -99;
   Short_t nExtraLep  = 0;
@@ -701,6 +702,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   for(edm::View<pat::Jet>::const_iterator jet = CleanedJets->begin(); jet != CleanedJets->end(); ++jet){
     cleanedJets.push_back(&*jet);
     if(jet->pt()>30){
+      // FIXME: add cleaning for loose leptons in CRs!
       cleanedJetsPt30.push_back(&*jet);
       if(jet->userFloat("isBtagged")) nCleanedJetsPt30BTagged++;
     }
@@ -708,35 +710,11 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   nCleanedJets=cleanedJets.size();
   nCleanedJetsPt30=cleanedJetsPt30.size();
 
-  if (nCleanedJetsPt30>=2) {
-    DiJetDEta = cleanedJetsPt30[0]->eta()-cleanedJetsPt30[1]->eta();
-    DiJetMass = (cleanedJetsPt30[0]->p4()+cleanedJetsPt30[1]->p4()).M();
-    DiJetFisher = fisher(DiJetMass,DiJetDEta);      
-  }
 
   if (writeJets){
-
     if(theChannel!=ZL){
       for (unsigned int i=0; i<cleanedJets.size(); i++) {
 	FillJet(*(cleanedJets.at(i)));
-      }
-
-      // Note that jets variables are filled for jets above 20 GeV, to allow JES studies.
-      // detajj, Mjj and ZZFisher are filled only for true dijet events (jets above 30 GeV)
-      if(cleanedJets.size()>1){ 
-	const pat::Jet& myjet1 = *(cleanedJets.at(0));
-	const pat::Jet& myjet2 = *(cleanedJets.at(1));
-        math::XYZTLorentzVector jet1 = myjet1.p4();
-        math::XYZTLorentzVector jet2 = myjet2.p4();
-        Float_t jesUnc1 = 0.;//myjet1.uncOnFourVectorScale();
-        Float_t jesUnc2 = 0.;//myjet2.uncOnFourVectorScale();
-        math::XYZTLorentzVector jetScalePlus1 = jet1*(1+jesUnc1);
-        math::XYZTLorentzVector jetScaleMinus1 = jet1*(1-jesUnc1);
-        math::XYZTLorentzVector jetScalePlus2 = jet2*(1+jesUnc2);
-        math::XYZTLorentzVector jetScaleMinus2 = jet2*(1-jesUnc2);
-        DiJetMassPlus = (jetScalePlus1+jetScalePlus2).M();
-        DiJetMassMinus = (jetScaleMinus1+jetScaleMinus2).M();
-        //myTree->FillDiJetInfo(Mjj,MjjPlus,MjjMinus,detajj,Fisher);
       }
     }
   }
@@ -852,6 +830,14 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
    ZZPt  = cand.p4().pt();
    ZZEta = cand.p4().eta();
    ZZPhi = cand.p4().phi();
+
+   DiJetMass  = cand.userFloat("DiJetMass");
+   DiJetDEta  = cand.userFloat("DiJetDEta");
+   DiJetFisher  = cand.userFloat("DiJetFisher");
+//    DiJetMassPlus  = cand.userFloat("DiJetMassPlus");
+//    DiJetMassMinus  = cand.userFloat("DiJetMassMinus");
+   
+
   //Float_t ZZLD = cand.userFloat("LD");
   //Float_t ZZLDPSig = cand.userFloat("PSig");
   //Float_t ZZLDPBkg = cand.userFloat("PBkg");
@@ -1549,12 +1535,14 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("fsrPt",fsrPt);
   myTree->Book("fsrEta",fsrEta);
   myTree->Book("fsrPhi",fsrPhi);
-  myTree->Book("fsrDR",fsrDR);
   myTree->Book("fsrLept",fsrLept);
-  myTree->Book("fsrLeptId",fsrLeptID); // FIXME next ones can be skipped for mass production
-  myTree->Book("fsrGenPt",fsrGenPt);
   myTree->Book("passIsoPreFSR",passIsoPreFSR);
-
+  if (addFSRDetails) {
+    myTree->Book("fsrDR",fsrDR);
+    myTree->Book("fsrLeptId",fsrLeptID);
+    myTree->Book("fsrGenPt",fsrGenPt);
+  }
+  
   //Discriminants
     myTree->Book("p0plus_VAJHU",p0plus_VAJHU);
     myTree->Book("p0minus_VAJHU",p0minus_VAJHU);
@@ -1674,8 +1662,8 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("JetQGLikelihood",JetQGLikelihood);
   myTree->Book("JetSigma",JetSigma);
   myTree->Book("DiJetMass",DiJetMass);
-  myTree->Book("DiJetMassPlus",DiJetMassPlus);
-  myTree->Book("DiJetMassMinus",DiJetMassMinus);
+//   myTree->Book("DiJetMassPlus",DiJetMassPlus); // FIXME: add back once filled again
+//   myTree->Book("DiJetMassMinus",DiJetMassMinus);
   myTree->Book("DiJetDEta",DiJetDEta);
   myTree->Book("DiJetFisher",DiJetFisher);
   myTree->Book("nExtraLep",nExtraLep);
