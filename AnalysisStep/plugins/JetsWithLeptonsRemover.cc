@@ -182,21 +182,21 @@ bool JetsWithLeptonsRemover::isGood(const pat::Jet& jet) const {
 
   bool passPU = true;
   
-  float jpt=jet.pt();
-  float jpumva=jet.userFloat("pileupJetId:fullDiscriminant");
+//   float jpt=jet.pt();
+//   float jpumva=jet.userFloat("pileupJetId:fullDiscriminant");
 
-  if(jpt>20){
-    if(jeta > 3.)       { if(jpumva <= -0.45) passPU=false;}
-    else if(jeta > 2.75){ if(jpumva <= -0.55) passPU=false;}
-    else if(jeta > 2.50){ if(jpumva <= -0.60) passPU=false;}
-    else                { if(jpumva <= -0.63) passPU=false;}
-  }
-  else{
-    if(jeta > 3.)       { if(jpumva <= -0.95) passPU=false;}
-    else if(jeta > 2.75){ if(jpumva <= -0.94) passPU=false;}
-    else if(jeta > 2.50){ if(jpumva <= -0.96) passPU=false;}
-    else                { if(jpumva <= -0.95) passPU=false;}
-  }
+//   if(jpt>20){
+//     if(jeta > 3.)       { if(jpumva <= -0.45) passPU=false;}
+//     else if(jeta > 2.75){ if(jpumva <= -0.55) passPU=false;}
+//     else if(jeta > 2.50){ if(jpumva <= -0.60) passPU=false;}
+//     else                { if(jpumva <= -0.63) passPU=false;}
+//   }
+//   else{
+//     if(jeta > 3.)       { if(jpumva <= -0.95) passPU=false;}
+//     else if(jeta > 2.75){ if(jpumva <= -0.94) passPU=false;}
+//     else if(jeta > 2.50){ if(jpumva <= -0.96) passPU=false;}
+//     else                { if(jpumva <= -0.95) passPU=false;}
+//   }
   
 
   return looseJetID && passPU;
