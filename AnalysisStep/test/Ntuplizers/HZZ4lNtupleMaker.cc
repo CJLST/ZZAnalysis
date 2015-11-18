@@ -48,6 +48,8 @@
 #include <ZZAnalysis/AnalysisStep/interface/bitops.h>
 #include <ZZAnalysis/AnalysisStep/interface/Fisher.h>
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
+#include <ZZAnalysis/AnalysisStep/interface/JetCleaner.h>
+
 #include "ZZ4lConfigHelper.h"
 #include "HZZ4lNtupleFactory.h"
 
@@ -694,31 +696,13 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   Nvtx=vertices->size();
 
 
-  // Jets
+  // Jets (cleaned wrt all tight isolated leptons)
   Handle<edm::View<pat::Jet> > CleanedJets;
   event.getByLabel("cleanJets", CleanedJets);
   vector<const pat::Jet*> cleanedJets;
-  vector<const pat::Jet*> cleanedJetsPt30;
   for(edm::View<pat::Jet>::const_iterator jet = CleanedJets->begin(); jet != CleanedJets->end(); ++jet){
     cleanedJets.push_back(&*jet);
-    if(jet->pt()>30){
-      // FIXME: add cleaning for loose leptons in CRs!
-      cleanedJetsPt30.push_back(&*jet);
-      if(jet->userFloat("isBtagged")) nCleanedJetsPt30BTagged++;
-    }
   }
-  nCleanedJets=cleanedJets.size();
-  nCleanedJetsPt30=cleanedJetsPt30.size();
-
-
-  if (writeJets){
-    if(theChannel!=ZL){
-      for (unsigned int i=0; i<cleanedJets.size(); i++) {
-	FillJet(*(cleanedJets.at(i)));
-      }
-    }
-  }
-  
 
   // MET
   Handle<pat::METCollection> metHandle;
@@ -754,31 +738,59 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
   //Loop on the candidates
   int nFilled=0;
+  vector<Int_t> CRFLAG(cands->size());
   for( edm::View<pat::CompositeCandidate>::const_iterator cand = cands->begin(); cand != cands->end(); ++cand) {
-    Int_t CRFLAG=0;
-    bool candIsBest = cand->userFloat("isBestCand");
+    size_t icand= cand-cands->begin();
 
     //    int candChannel = cand->userFloat("candChannel"); // This is currently the product of pdgId of leptons (eg 14641, 28561, 20449)
     
     if (theChannel==ZLL) {
       // AA CRs
-      if(cand->userFloat("isBestCRZLLss")&&cand->userFloat("CRZLLss"))set_bit(CRFLAG,CRZLLss);      
+      if (cand->userFloat("isBestCRZLLss")&&cand->userFloat("CRZLLss")) set_bit(CRFLAG[icand],CRZLLss);      
 
       // A CRs
-      if(cand->userFloat("isBestCRZLLos_2P2F")&&cand->userFloat("CRZLLos_2P2F"))set_bit(CRFLAG,CRZLLos_2P2F);      
-      if(cand->userFloat("isBestCRZLLos_3P1F")&&cand->userFloat("CRZLLos_3P1F"))set_bit(CRFLAG,CRZLLos_3P1F);
+      if (cand->userFloat("isBestCRZLLos_2P2F")&&cand->userFloat("CRZLLos_2P2F")) set_bit(CRFLAG[icand],CRZLLos_2P2F);      
+      if (cand->userFloat("isBestCRZLLos_3P1F")&&cand->userFloat("CRZLLos_3P1F")) set_bit(CRFLAG[icand],CRZLLos_3P1F);
+
+      if (CRFLAG[icand]) { // This candidate belongs to one of the CRs: perform additional jet cleaning. 
+	// Note that this is (somewhat incorrectly) done per-event, so there could be some over-cleaning in events with >1 CR candidate.
+	for (unsigned i=0; i<cleanedJets.size(); ++i) {	  
+	  if (cleanedJets[i]!=0  && (!jetCleaner::isGood(*cand, *(cleanedJets[i])))) {
+	    cleanedJets[i]=0;
+	  }
+	}
+      }
+    }
+  }
+  
+  // Count and store jets, after additional cleaning for CRs...
+  for (unsigned i=0; i<cleanedJets.size(); ++i) {
+    if (cleanedJets[i]==0) {
+      continue; // Jet has been suppressed by additional cleaning
     }
     
-    //    if(theChannel==ZL){} Nothing special in this case
- 
-    if (!(candIsBest||CRFLAG)) continue; // Skip events other than the best cand (or CR candidates in the CR)
-    
-    //For the SR, also fold information about acceptance in CRflag 
-    if (isMC && (theChannel==EEEE||theChannel==MMMM||theChannel==EEMM)) {
-      if (gen_ZZ4lInEtaAcceptance)   set_bit(CRFLAG,28);
-      if (gen_ZZ4lInEtaPtAcceptance) set_bit(CRFLAG,29);
+    ++nCleanedJets;
+    if(cleanedJets[i]->pt()>30){
+      ++nCleanedJetsPt30;
+      if(cleanedJets[i]->userFloat("isBtagged")) ++nCleanedJetsPt30BTagged;
     }
-    FillCandidate(*cand, evtPassTrigger&&evtPassSkim, event, CRFLAG);
+    if (writeJets && theChannel!=ZL) FillJet(*(cleanedJets.at(i))); // No additional pT cut (for JEC studies)
+  }
+
+
+  // Now we can write the variables for candidates
+  for( edm::View<pat::CompositeCandidate>::const_iterator cand = cands->begin(); cand != cands->end(); ++cand) {
+    size_t icand= cand-cands->begin();
+
+    bool candIsBest = cand->userFloat("isBestCand");
+    if (!(candIsBest||CRFLAG[icand])) continue; // Skip events other than the best cand (or CR candidates in the CR)
+    
+    //For the SR, also fold information about acceptance in CRflag. 
+    if (isMC && (theChannel==ZZ)) {
+      if (gen_ZZ4lInEtaAcceptance)   set_bit(CRFLAG[icand],28);
+      if (gen_ZZ4lInEtaPtAcceptance) set_bit(CRFLAG[icand],29);
+    }
+    FillCandidate(*cand, evtPassTrigger&&evtPassSkim, event, CRFLAG[icand]);
 
 
     // Fill the candidate as one entry in the tree. Do not reinitialize the event variables, as in CRs
