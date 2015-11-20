@@ -62,6 +62,7 @@ class ElectronEffectiveArea{
       kEleEAData2012,
       kEleEASpring14MC_PU20bx25,
       kEleEAPhys14MC,
+      kEleEA25nsSpring15MC
     };
 
     static Double_t GetElectronEffectiveArea(ElectronEffectiveAreaType type, Double_t SCEta, 
@@ -72,6 +73,28 @@ class ElectronEffectiveArea{
 
       if (EffectiveAreaTarget == kEleEANoCorr) {
         return 0.0;
+      }
+     // 25 ns spring15 MC Effective Areas ( //https://indico.cern.ch/event/369239/contribution/4/attachments/1134761/1623262/talk_effective_areas_25ns.pdf)
+      else if (EffectiveAreaTarget == kEleEA25nsSpring15MC) {
+	if (type == kEleGammaAndNeutralHadronIso03) {
+	  if (fabs(SCEta) >= 0.0    && fabs(SCEta) < 1.     ) EffectiveArea = 0.1752;
+	  if (fabs(SCEta) >= 1.     && fabs(SCEta) < 1.479  ) EffectiveArea = 0.1862;
+	  if (fabs(SCEta) >= 1.479  && fabs(SCEta) < 2.0    ) EffectiveArea = 0.1411;
+	  if (fabs(SCEta) >= 2.0    && fabs(SCEta) < 2.2    ) EffectiveArea = 0.1534;
+	  if (fabs(SCEta) >= 2.2    && fabs(SCEta) < 2.3    ) EffectiveArea = 0.1903;
+	  if (fabs(SCEta) >= 2.3    && fabs(SCEta) < 2.4    ) EffectiveArea = 0.2243;
+	  if (fabs(SCEta) >= 2.4 )                            EffectiveArea = 0.2687;
+	}
+	//for 0.4 the EA are the 0.3 values multiplied for the scale factor (4/3)^2 as suggested by the POG 
+	if (type == kEleGammaAndNeutralHadronIso04) {
+	  if (fabs(SCEta) >= 0.0    && fabs(SCEta) < 1.     ) EffectiveArea = 0.3115;
+	  if (fabs(SCEta) >= 1.     && fabs(SCEta) < 1.479  ) EffectiveArea = 0.3310;
+	  if (fabs(SCEta) >= 1.479  && fabs(SCEta) < 2.0    ) EffectiveArea = 0.2508;
+	  if (fabs(SCEta) >= 2.0    && fabs(SCEta) < 2.2    ) EffectiveArea = 0.2727;
+	  if (fabs(SCEta) >= 2.2    && fabs(SCEta) < 2.3    ) EffectiveArea = 0.3383;
+	  if (fabs(SCEta) >= 2.3    && fabs(SCEta) < 2.4    ) EffectiveArea = 0.3988;
+	  if (fabs(SCEta) >= 2.4 )                            EffectiveArea = 0.4777;
+	}
       }
 
       // Phys14 MC Effective Areas (from Giovanni : https://indico.cern.ch/event/367861/contribution/2/material/slides/0.pdf)
