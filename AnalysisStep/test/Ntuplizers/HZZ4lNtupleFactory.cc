@@ -34,9 +34,9 @@ HZZ4lNtupleFactory::HZZ4lNtupleFactory(TTree* outTree_input)
 */
   //InitializeVariables();
   
-  _firstZStored = false;
-  _LeptonIndex = 1;
-  _LeptonIsoIndex = 1;
+  //_firstZStored = false;
+  //_LeptonIndex = 1;
+  //_LeptonIsoIndex = 1;
 
 }
 
@@ -138,7 +138,7 @@ void HZZ4lNtupleFactory::InitializeVariables()
 */
 }
 
-
+/*
 void HZZ4lNtupleFactory::createNewCandidate()
 {
   _firstZStored = false;
@@ -147,6 +147,6 @@ void HZZ4lNtupleFactory::createNewCandidate()
 
   return;
 }
-
+*/
 
 

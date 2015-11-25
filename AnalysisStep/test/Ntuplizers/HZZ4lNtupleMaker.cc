@@ -737,7 +737,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   
 
   //Loop on the candidates
-  int nFilled=0;
   vector<Int_t> CRFLAG(cands->size());
   for( edm::View<pat::CompositeCandidate>::const_iterator cand = cands->begin(); cand != cands->end(); ++cand) {
     size_t icand= cand-cands->begin();
@@ -779,6 +778,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
 
   // Now we can write the variables for candidates
+  int nFilled=0;
   for( edm::View<pat::CompositeCandidate>::const_iterator cand = cands->begin(); cand != cands->end(); ++cand) {
     size_t icand= cand-cands->begin();
 
@@ -820,7 +820,33 @@ void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
 void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool evtPass, const edm::Event& event, Int_t CRFLAG)
 {
   //Initialize a new candidate into the tree
-  myTree->createNewCandidate();
+  //myTree->createNewCandidate(); // this doesn't do anything anymore
+
+  //Reinitialize the per-candidate vectors (necessary because in CRs we can store more than 1 candidate per event)
+  LepPt.clear();
+  LepEta.clear();
+  LepPhi.clear();
+  LepLepId.clear();
+  LepSIP.clear();
+  LepTime.clear();
+  LepisID.clear();
+  LepBDT.clear();
+  LepMissingHit.clear();
+  //LepChargedHadIso.clear();
+  //LepNeutralHadIso.clear();
+  //LepPhotonIso.clear();
+  LepCombRelIsoPF.clear();
+  fsrPt.clear();
+  fsrEta.clear();
+  fsrPhi.clear();
+  fsrLept.clear();
+  fsrLeptID.clear();
+  fsrDR.clear();
+  fsrGenPt.clear();
+  ExtraLepPt.clear(); 
+  ExtraLepEta.clear(); 
+  ExtraLepPhi.clear();
+  ExtraLepLepId.clear();
 
   CRflag = CRFLAG;
 

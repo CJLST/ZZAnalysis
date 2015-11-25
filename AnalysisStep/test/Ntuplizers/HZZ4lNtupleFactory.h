@@ -51,7 +51,7 @@ class HZZ4lNtupleFactory{
   //int SetVariable(TString varName, float value){return SetVariable(varName, (double)value);}
   //int SetVariables(TString *varName, float *value, int nVars){return 0;}
   
-  void createNewCandidate();
+  //void createNewCandidate();
   void InitializeVariables();
 
   //default fillers (old way of filling, only valid if branch names are not changed)
@@ -61,8 +61,8 @@ class HZZ4lNtupleFactory{
   //  const math::XYZTLorentzVector Lep1, const math::XYZTLorentzVector Lep2, const math::XYZTLorentzVector Lep3, 
   //  const math::XYZTLorentzVector Lep4, float weight);
   //void FillAssocLepGenInfo(std::vector<const reco::Candidate *>& AssocLeps);
-  void FillZInfo(Float_t ZMass, Float_t ZPt, short ZFlav);
-  void FillExtraLepInfo(int extraLeptonIndex, bool extraLeptonExists, const reco::CandidatePtr ExtraLep);
+  //void FillZInfo(Float_t ZMass, Float_t ZPt, short ZFlav);
+  //void FillExtraLepInfo(int extraLeptonIndex, bool extraLeptonExists, const reco::CandidatePtr ExtraLep);
 
  private:
 
@@ -95,11 +95,11 @@ class HZZ4lNtupleFactory{
   std::unordered_map<std::vector<char>*, std::vector<char>> defaultsVectorChar;
   std::unordered_map<std::vector<bool>*, std::vector<bool>> defaultsVectorBool;
   
-  bool _firstZStored;
-  int _LeptonIndex;
-  int _LeptonIsoIndex;
+  //bool _firstZStored;
+  //int _LeptonIndex;
+  //int _LeptonIsoIndex;
 
-  void InitializeBranches();
+  //void InitializeBranches();
 
 };
 
