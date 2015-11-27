@@ -48,5 +48,8 @@ public:
   TH1F* hTPuToMoriond13;
   TH1F* hTPuToLegacy13;
   
+  // 2015
+  TH1F* hTPuTo2015;
+  
 };
 #endif

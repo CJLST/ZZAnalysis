@@ -336,8 +336,8 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
   long long int ievt=event.id().event(); 
   int ils =event.luminosityBlock();
 
-  //  int nObsInt  = -1;
-  //  float nTrueInt = -1.;
+  // int nObsInt  = -1;
+  float nTrueInt = -1.;
   float PUweight = 1.;
 
   Handle<vector<Vertex> >  vertexs;
@@ -377,18 +377,19 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
     for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
       if(PVI->getBunchCrossing() == 0) { 
 	//	nObsInt  = PVI->getPU_NumInteractions();
-	//	nTrueInt = PVI->getTrueNumInteractions();
+		nTrueInt = PVI->getTrueNumInteractions();
 	break;
       } 
     }
 
-//     int source = myHelper.sampleType();
-//     int target = myHelper.setup();
-//     PUweight = reweight.weight(source,target,nTrueInt); // FIXME: To be updated
-    hNvtxNoWeight->Fill(Nvtx);    
+    int source = myHelper.sampleType();
+    int target = myHelper.setup();
+    PUweight = reweight.weight(source,target,nTrueInt); // FIXME: To be updated
     hNvtxWeight->Fill(Nvtx,PUweight);
 
   }
+
+  hNvtxNoWeight->Fill(Nvtx);    
 
   // theChannel Candidates
 //   Handle<View<pat::CompositeCandidate> > candHandle;
