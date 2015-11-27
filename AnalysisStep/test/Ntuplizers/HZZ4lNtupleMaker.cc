@@ -556,8 +556,8 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       } 
     }
 
-    //PUWeight = reweight.weight(myHelper.sampleType(), myHelper.setup(), NTrueInt);
-    PUWeight = 1.; // FIXME: waiting for PU weights for RunII, need to update PUReweight.cc
+    PUWeight = reweight.weight(myHelper.sampleType(), myHelper.setup(), NTrueInt);
+//    PUWeight = 1.; // FIXME: waiting for PU weights for RunII, need to update PUReweight.cc
 
     MCHistoryTools mch(event, sampleName);
     genFinalState = mch.genFinalState();
