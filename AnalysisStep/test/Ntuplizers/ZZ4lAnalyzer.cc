@@ -158,6 +158,8 @@ private:
 
   TH1F* hNvtxNoWeight;
   TH1F* hNvtxWeight;
+  TH1F* hRhoNoWeight;
+  TH1F* hRhoWeight;
 
   string sampleName;
   bool dumpForSync;
@@ -201,6 +203,8 @@ void ZZ4lAnalyzer::beginJob(){
 
   hNvtxNoWeight = fileService->make<TH1F>("hNvtxNoWeight","hNvtxNoWeight",100,0,100);
   hNvtxWeight = fileService->make<TH1F>("hNvtxWeight","hNvtxWeight",100,0,100);
+  hRhoNoWeight = fileService->make<TH1F>("hRhoNoWeight","hRhoNoWeight",100,0,50);
+  hRhoWeight = fileService->make<TH1F>("hRhoWeight","hRhoWeight",100,0,50);
 
   // Counting Histograms. We do not want sumw2 on these!
   TH1F::SetDefaultSumw2(kFALSE);
@@ -344,6 +348,10 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
   event.getByLabel("goodPrimaryVertices",vertexs);
   int Nvtx = vertexs->size();
 
+  Handle<double> rhoHandle;
+//  event.getByLabel(InputTag("kt6PFJetsForIso","rho"), rhoHandle);
+  event.getByLabel(InputTag("fixedGridRhoFastjetAll",""), rhoHandle);
+
   int genFinalState = NONE;
   if (isMC) {
     MCHistoryTools mch(event,sampleName);
@@ -386,10 +394,12 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
     int target = myHelper.setup();
     PUweight = reweight.weight(source,target,nTrueInt); // FIXME: To be updated
     hNvtxWeight->Fill(Nvtx,PUweight);
+    hRhoWeight->Fill(*rhoHandle,PUweight);
 
   }
 
   hNvtxNoWeight->Fill(Nvtx);    
+  hRhoNoWeight->Fill(*rhoHandle);
 
   // theChannel Candidates
 //   Handle<View<pat::CompositeCandidate> > candHandle;
@@ -414,9 +424,6 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
 //   event.getByLabel("ZlCand", Zl);
 //   const View<reco::CompositeCandidrate>* trileps = Zl.product();
   
-  Handle<double> rhoHandle;
-  event.getByLabel(InputTag("kt6PFJetsForIso","rho"), rhoHandle);
-
   //  float pfmet = -1;  
 //   Handle<reco::PFMETCollection> pfmetcoll;
 //   event.getByLabel("patMETs", pfmetcoll);      // This the type 1 corrected MET
