@@ -40,11 +40,14 @@ foreach chunk ( *Chunk* )
   mv $chunk AAAOK/
  else 
   set description=""
-   if ( $exitStatus == 0 )  set description="(unknown)"
-   if ( $exitStatus == 84 ) set description="(missing input file)"
-   if ( $exitStatus == 134 ) set description="(Crashed)"
-   if ( $exitStatus == 152 ) set description="(Exceeded CPU time)"
-   echo $chunk ": failed, exit status = " $exitStatus $description
+   if ( $exitStatus == 0 ) then 
+     echo $chunk ": still running (or unknown failure)"
+   else 
+     if ( $exitStatus == 84 ) set description="(missing input file)"
+     if ( $exitStatus == 134 ) set description="(Crashed)"
+     if ( $exitStatus == 152 ) set description="(Exceeded CPU time)"
+    echo $chunk ": failed, exit status = " $exitStatus $description
+   endif
    if ( $opt == "mf" && $exitStatus != 0 ) then
      mkdir -p AAAFAIL
      mv $chunk AAAFAIL/ 

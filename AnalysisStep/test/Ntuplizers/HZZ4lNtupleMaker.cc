@@ -575,7 +575,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     event.getManyByType(EvtHandles); // using this method because the label is not always the same (e.g. "source" in the ttH sample)
     if(EvtHandles.size()>0){
       edm::Handle<LHEEventProduct> EvtHandle = EvtHandles.front();
-      if(EvtHandle.isValid()){
+      if(EvtHandle.isValid() && EvtHandle->weights().size()>=9){
 	LHEweight_QCDscale_muR1_muF1     = genHEPMCweight * EvtHandle->weights()[0].wgt / EvtHandle->originalXWGTUP(); // just for verification (should be 1)
 	LHEweight_QCDscale_muR1_muF2     = genHEPMCweight * EvtHandle->weights()[1].wgt / EvtHandle->originalXWGTUP();
 	LHEweight_QCDscale_muR1_muF0p5   = genHEPMCweight * EvtHandle->weights()[2].wgt / EvtHandle->originalXWGTUP();
