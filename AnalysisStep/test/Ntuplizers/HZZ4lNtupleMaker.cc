@@ -285,9 +285,11 @@ namespace {
   Float_t GenZ1Mass  = 0;
   Float_t GenZ1Pt  = 0;
   Float_t GenZ1Phi  = 0;
+  Float_t GenZ1Flav  = 0;
   Float_t GenZ2Mass  = 0;
   Float_t GenZ2Pt  = 0;
   Float_t GenZ2Phi  = 0;
+  Float_t GenZ2Flav  = 0;
   Float_t GenLep1Pt  = 0;
   Float_t GenLep1Eta  = 0;
   Float_t GenLep1Phi  = 0;
@@ -340,7 +342,8 @@ private:
   virtual void endJob() ;
 
   void FillHGenInfo(const math::XYZTLorentzVector Hp, float w);
-  void FillZGenInfo(const math::XYZTLorentzVector pZ1, const math::XYZTLorentzVector pZ2);
+  void FillZGenInfo(Short_t Z1Id, Short_t Z2Id, 
+		    const math::XYZTLorentzVector pZ1, const math::XYZTLorentzVector pZ2);
   void FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t Lep3Id, Short_t Lep4Id, 
     const math::XYZTLorentzVector Lep1, const math::XYZTLorentzVector Lep2, const math::XYZTLorentzVector Lep3, const math::XYZTLorentzVector Lep4);
   void FillAssocLepGenInfo(std::vector<const reco::Candidate *>& AssocLeps);
@@ -659,8 +662,10 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       if (genZLeps.size()==4) {
         
         // "generated Zs" defined with standard pairing applied on gen leptons (genZLeps is sorted by MCHistoryTools)
-        FillZGenInfo(genZLeps.at(0)->p4()+genZLeps.at(1)->p4(),
-                             genZLeps.at(2)->p4()+genZLeps.at(3)->p4());
+        FillZGenInfo(genZLeps.at(0)->pdgId()*genZLeps.at(1)->pdgId(),
+		     genZLeps.at(2)->pdgId()*genZLeps.at(3)->pdgId(),
+		     genZLeps.at(0)->p4()+genZLeps.at(1)->p4(),
+                     genZLeps.at(2)->p4()+genZLeps.at(3)->p4());
 
         // Gen leptons
         FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), genZLeps.at(2)->pdgId(), genZLeps.at(3)->pdgId(),
@@ -1433,15 +1438,18 @@ Float_t HZZ4lNtupleMaker::getFakeWeight(Float_t LepPt, Float_t LepEta, Int_t Lep
   return weight;
 
 } // end of getFakeWeight
-void HZZ4lNtupleMaker::FillZGenInfo(const math::XYZTLorentzVector pZ1, const math::XYZTLorentzVector pZ2)
+void HZZ4lNtupleMaker::FillZGenInfo(Short_t Z1Id, Short_t Z2Id, 
+				    const math::XYZTLorentzVector pZ1, const math::XYZTLorentzVector pZ2)
 {
   GenZ1Mass= pZ1.M();
   GenZ1Pt= pZ1.Pt();
   GenZ1Phi= pZ1.Phi();
+  GenZ1Flav= Z1Id;
 
   GenZ2Mass= pZ2.M();
   GenZ2Pt= pZ2.Pt();
   GenZ2Phi= pZ2.Phi();
+  GenZ2Flav= Z2Id;
 
   return;
 }
@@ -1737,9 +1745,11 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("GenZ1Mass",GenZ1Mass);
   myTree->Book("GenZ1Pt",GenZ1Pt);
   myTree->Book("GenZ1Phi",GenZ1Phi);
+  myTree->Book("GenZ1Flav",GenZ1Flav);
   myTree->Book("GenZ2Mass",GenZ2Mass);
   myTree->Book("GenZ2Pt",GenZ2Pt);
   myTree->Book("GenZ2Phi",GenZ2Phi);
+  myTree->Book("GenZ2Flav",GenZ2Flav);
   myTree->Book("GenLep1Pt",GenLep1Pt);
   myTree->Book("GenLep1Eta",GenLep1Eta);
   myTree->Book("GenLep1Phi",GenLep1Phi);
