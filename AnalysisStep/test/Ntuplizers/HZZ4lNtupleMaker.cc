@@ -284,8 +284,10 @@ namespace {
   Float_t GenHRapidity  = 0;
   Float_t GenZ1Mass  = 0;
   Float_t GenZ1Pt  = 0;
+  Float_t GenZ1Phi  = 0;
   Float_t GenZ2Mass  = 0;
   Float_t GenZ2Pt  = 0;
+  Float_t GenZ2Phi  = 0;
   Float_t GenLep1Pt  = 0;
   Float_t GenLep1Eta  = 0;
   Float_t GenLep1Phi  = 0;
@@ -557,7 +559,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     }
 
     PUWeight = reweight.weight(myHelper.sampleType(), myHelper.setup(), NTrueInt);
-//    PUWeight = 1.; // FIXME: waiting for PU weights for RunII, need to update PUReweight.cc
 
     MCHistoryTools mch(event, sampleName);
     genFinalState = mch.genFinalState();
@@ -1436,9 +1437,11 @@ void HZZ4lNtupleMaker::FillZGenInfo(const math::XYZTLorentzVector pZ1, const mat
 {
   GenZ1Mass= pZ1.M();
   GenZ1Pt= pZ1.Pt();
+  GenZ1Phi= pZ1.Phi();
 
   GenZ2Mass= pZ2.M();
   GenZ2Pt= pZ2.Pt();
+  GenZ2Phi= pZ2.Phi();
 
   return;
 }
@@ -1733,8 +1736,10 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("GenHRapidity",GenHRapidity);
   myTree->Book("GenZ1Mass",GenZ1Mass);
   myTree->Book("GenZ1Pt",GenZ1Pt);
+  myTree->Book("GenZ1Phi",GenZ1Phi);
   myTree->Book("GenZ2Mass",GenZ2Mass);
   myTree->Book("GenZ2Pt",GenZ2Pt);
+  myTree->Book("GenZ2Phi",GenZ2Phi);
   myTree->Book("GenLep1Pt",GenLep1Pt);
   myTree->Book("GenLep1Eta",GenLep1Eta);
   myTree->Book("GenLep1Phi",GenLep1Phi);
