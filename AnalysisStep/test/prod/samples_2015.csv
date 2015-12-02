@@ -1,64 +1,64 @@
-identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments,bunchSpacing,comment
+identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments,comment
 
-###,,,,,,,,,,,,Data - 50ns
-DoubleMu2015B,,      -1, ,, /DoubleMuon/Run2015B-05Oct2015-v1/MINIAOD,dbs,,3,PD=DoubleMu,json_2015_50ns.py,50,
-DoubleEG2015B,,      -1, ,, /DoubleEG/Run2015B-05Oct2015-v1/MINIAOD,dbs,,3,PD=DoubleEle,json_2015_50ns.py,50,
-MuonEG2015B,,        -1, ,, /MuonEG/Run2015B-05Oct2015-v1/MINIAOD,dbs,,10,PD=MuEG,json_2015_50ns.py,50,
-SingleEle2015B,,     -1, ,, /SingleElectron/Run2015B-05Oct2015-v1/MINIAOD,dbs,,5,PD=SingleElectron,json_2015_50ns.py,50,
+###,,,,,,,,,,,Data 50ns
+DoubleMu2015B,,      -1, ,, /DoubleMuon/Run2015B-05Oct2015-v1/MINIAOD,dbs,,3,PD=DoubleMu;BUNCH_SPACING=50,json_2015_50ns.py,
+DoubleEG2015B,,      -1, ,, /DoubleEG/Run2015B-05Oct2015-v1/MINIAOD,dbs,,3,PD=DoubleEle;BUNCH_SPACING=50,json_2015_50ns.py,
+MuonEG2015B,,        -1, ,, /MuonEG/Run2015B-05Oct2015-v1/MINIAOD,dbs,,10,PD=MuEG;BUNCH_SPACING=50,json_2015_50ns.py,
+SingleEle2015B,,     -1, ,, /SingleElectron/Run2015B-05Oct2015-v1/MINIAOD,dbs,,5,PD=SingleElectron;BUNCH_SPACING=50,json_2015_50ns.py,
 
-DoubleMu2015C_50ns,, -1, ,, /DoubleMuon/Run2015C_50ns-05Oct2015-v1/MINIAOD,dbs,,4,PD=DoubleMu,json_2015_50ns.py,50,
-DoubleEG2015C_50ns,, -1, ,, /DoubleEG/Run2015C_50ns-05Oct2015-v1/MINIAOD,dbs,,3,PD=DoubleEle,json_2015_50ns.py,50,
-MuonEG2015C_50ns,,   -1, ,, /MuonEG/Run2015C_50ns-05Oct2015-v1/MINIAOD,dbs,,5,PD=MuEG,json_2015_50ns.py,50,
-SingleEle2015C_50ns,,-1, ,, /SingleElectron/Run2015C_50ns-05Oct2015-v1/MINIAOD,dbs,,5,PD=SingleElectron,json_2015_50ns.py,50,
+DoubleMu2015C_50ns,, -1, ,, /DoubleMuon/Run2015C_50ns-05Oct2015-v1/MINIAOD,dbs,,4,PD=DoubleMu;BUNCH_SPACING=50,json_2015_50ns.py,
+DoubleEG2015C_50ns,, -1, ,, /DoubleEG/Run2015C_50ns-05Oct2015-v1/MINIAOD,dbs,,3,PD=DoubleEle;BUNCH_SPACING=50,json_2015_50ns.py,
+MuonEG2015C_50ns,,   -1, ,, /MuonEG/Run2015C_50ns-05Oct2015-v1/MINIAOD,dbs,,5,PD=MuEG;BUNCH_SPACING=50,json_2015_50ns.py,
+SingleEle2015C_50ns,,-1, ,, /SingleElectron/Run2015C_50ns-05Oct2015-v1/MINIAOD,dbs,,5,PD=SingleElectron;BUNCH_SPACING=50,json_2015_50ns.py,
 
-###,,,,,,,,,,,,Data - 25ns
-DoubleMu2015C,, -1, ,, /DoubleMuon/Run2015C_25ns-05Oct2015-v1/MINIAOD,dbs,,2,PD=DoubleMu,json_2015_25ns_Silver.py,25,
-DoubleEG2015C,, -1, ,, /DoubleEG/Run2015C_25ns-05Oct2015-v1/MINIAOD,dbs,,2,PD=DoubleEle,json_2015_25ns_Silver.py,25,
-MuonEG2015C,,   -1, ,, /MuonEG/Run2015C_25ns-05Oct2015-v1/MINIAOD,dbs,,2,PD=MuEG,json_2015_25ns_Silver.py,25,
-SingleEle2015C,,-1, ,, /SingleElectron/Run2015C_25ns-05Oct2015-v1/MINIAOD,dbs,,5,PD=SingleElectron,json_2015_25ns_Silver.py,25,
+###,,,,,,,,,,,Data 25ns
+DoubleMu2015C,, -1, ,, /DoubleMuon/Run2015C_25ns-05Oct2015-v1/MINIAOD,dbs,,2,PD=DoubleMu,json_2015_25ns_Silver.py,
+DoubleEG2015C,, -1, ,, /DoubleEG/Run2015C_25ns-05Oct2015-v1/MINIAOD,dbs,,2,PD=DoubleEle,json_2015_25ns_Silver.py,
+MuonEG2015C,,   -1, ,, /MuonEG/Run2015C_25ns-05Oct2015-v1/MINIAOD,dbs,,2,PD=MuEG,json_2015_25ns_Silver.py,
+SingleEle2015C,,-1, ,, /SingleElectron/Run2015C_25ns-05Oct2015-v1/MINIAOD,dbs,,5,PD=SingleElectron,json_2015_25ns_Silver.py,
 
-DoubleMu2015D,, -1, ,, /DoubleMuon/Run2015D-05Oct2015-v1/MINIAOD,dbs,,3,PD=DoubleMu,json_2015_25ns_Silver.py,25,
-DoubleEG2015D,, -1, ,, /DoubleEG/Run2015D-05Oct2015-v1/MINIAOD,dbs,,4,PD=DoubleEle,json_2015_25ns_Silver.py,25,
-MuonEG2015D,,   -1, ,, /MuonEG/Run2015D-05Oct2015-v2/MINIAOD,dbs,,5,PD=MuEG,json_2015_25ns_Silver.py,25,
-SingleEle2015D,,-1, ,, /SingleElectron/Run2015D-05Oct2015-v1/MINIAOD,dbs,,10,PD=SingleElectron,json_2015_25ns_Silver.py,25,
+DoubleMu2015D,, -1, ,, /DoubleMuon/Run2015D-05Oct2015-v1/MINIAOD,dbs,,3,PD=DoubleMu,json_2015_25ns_Silver.py,
+DoubleEG2015D,, -1, ,, /DoubleEG/Run2015D-05Oct2015-v1/MINIAOD,dbs,,4,PD=DoubleEle,json_2015_25ns_Silver.py,
+MuonEG2015D,,   -1, ,, /MuonEG/Run2015D-05Oct2015-v2/MINIAOD,dbs,,5,PD=MuEG,json_2015_25ns_Silver.py,
+SingleEle2015D,,-1, ,, /SingleElectron/Run2015D-05Oct2015-v1/MINIAOD,dbs,,10,PD=SingleElectron,json_2015_25ns_Silver.py,
 
-DoubleMu2015Dv4,, -1, ,, /DoubleMuon/Run2015D-PromptReco-v4/MINIAOD,dbs,,3,PD=DoubleMu,json_2015_25ns_Silver.py,25,
-DoubleEG2015Dv4,, -1, ,, /DoubleEG/Run2015D-PromptReco-v4/MINIAOD,dbs,,3,PD=DoubleEle,json_2015_25ns_Silver.py,25,
-MuonEG2015Dv4,,   -1, ,, /MuonEG/Run2015D-PromptReco-v4/MINIAOD,dbs,,6,PD=MuEG,json_2015_25ns_Silver.py,25,
-SingleEle2015Dv4,,-1, ,, /SingleElectron/Run2015D-PromptReco-v4/MINIAOD,dbs,,8,PD=SingleElectron,json_2015_25ns_Silver.py,25,
-
-
-
-###,,,,,,,,,,,,Official Spring15 samples
-ggH124,,          44.5 ,2.52E-04 ,,/GluGluHToZZTo4L_M124_13TeV_powheg_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,2,,,25, #FIXME xsection approxymate as still not available
-ggH125,,          43.92,2.76E-04 ,,/GluGluHToZZTo4L_M125_13TeV_powheg_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,1,,,25,
-ggH126,,          43.31,3.02E-04 ,,/GluGluHToZZTo4L_M126_13TeV_powheg_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,2,,,25,
+DoubleMu2015Dv4,, -1, ,, /DoubleMuon/Run2015D-PromptReco-v4/MINIAOD,dbs,,3,PD=DoubleMu,json_2015_25ns_Silver.py,
+DoubleEG2015Dv4,, -1, ,, /DoubleEG/Run2015D-PromptReco-v4/MINIAOD,dbs,,3,PD=DoubleEle,json_2015_25ns_Silver.py,
+MuonEG2015Dv4,,   -1, ,, /MuonEG/Run2015D-PromptReco-v4/MINIAOD,dbs,,6,PD=MuEG,json_2015_25ns_Silver.py,
+SingleEle2015Dv4,,-1, ,, /SingleElectron/Run2015D-PromptReco-v4/MINIAOD,dbs,,8,PD=SingleElectron,json_2015_25ns_Silver.py,
 
 
-VBFH125,,         0.001034,        ,,/VBF_HToZZTo4L_M125_13TeV_powheg_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,1,,,25,
-WplusH125,,       0.0002324,       ,,/WplusH_HToZZTo4L_M125_13TeV_powheg-minlo-HWJ_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,1,,,25,# https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsWW13TeVWHxsecs 
-WminusH125,,      0.0001488,       ,,/WminusH_HToZZTo4L_M125_13TeV_powheg-minlo-HWJ_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,1,,,25,# (Total (W+H)+(W-H)=0.000381; sigma(W+H)/sigma(W-H) = 1.59)
-ZH125,,           0.000652,        ,,/ZH_HToZZ_4LFilter_M125_13TeV_powheg-minlo-HZJ_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,2,,,25,# crossSection includes filter eff=0.15038
 
-ttH125,,          0.000337,     ,,/ttH_HToZZ_4LFilter_M125_13TeV_powheg_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,2,,,25,# crossSection includes filter eff=0.13225 
-#ttH125ext1,,     0.000337,     ,,/ttH_HToZZ_4LFilter_M125_13TeV_powheg_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2_ext1-v1/MINIAODSIM,dbs,,2,,,25,# extension of the above (TBC)
+###,,,,,,,,,,,Official Spring15 samples
+ggH124,,          44.5 ,2.52E-04 ,,/GluGluHToZZTo4L_M124_13TeV_powheg_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,2,,, #FIXME xsection approxymate as still not available
+ggH125,,          43.92,2.76E-04 ,,/GluGluHToZZTo4L_M125_13TeV_powheg_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,1,,,
+ggH126,,          43.31,3.02E-04 ,,/GluGluHToZZTo4L_M126_13TeV_powheg_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,2,,,
 
 
-ZZTo4l,,            1.256,      ,,/ZZTo4L_13TeV_powheg_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v2/MINIAODSIM,dbs,,4,,,25,
-ZZTo4lamcatnlo,,    1.256,      ,,/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,3,,,25, # Xsection from the gen: 1.218
+VBFH125,,         0.001034,        ,,/VBF_HToZZTo4L_M125_13TeV_powheg_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,1,,,
+WplusH125,,       0.0002324,       ,,/WplusH_HToZZTo4L_M125_13TeV_powheg-minlo-HWJ_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,1,,,# https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsWW13TeVWHxsecs 
+WminusH125,,      0.0001488,       ,,/WminusH_HToZZTo4L_M125_13TeV_powheg-minlo-HWJ_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,1,,,# (Total (W+H)+(W-H)=0.000381; sigma(W+H)/sigma(W-H) = 1.59)
+ZH125,,           0.000652,        ,,/ZH_HToZZ_4LFilter_M125_13TeV_powheg-minlo-HZJ_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,2,,,# crossSection includes filter eff=0.15038
 
-ggZZ4e,,            0.001586,   ,,/GluGluToZZTo4e_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,1,,,25,
-ggZZ4mu,,           0.001586,   ,,/GluGluToZZTo4mu_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,1,,,25,
-ggZZ4tau,,          0.001586,   ,,/GluGluToZZTo4tau_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,4,,,25,
-ggZZ2e2mu,,         0.003194,   ,,/GluGluToZZTo2e2mu_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,1,,,25,
-ggZZ2e2tau,,        0.003194,   ,,/GluGluToZZTo2e2tau_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,2,,,25,
-ggZZ2mu2tau,,       0.003194,   ,,/GluGluToZZTo2mu2tau_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,3,,,25,
+ttH125,,          0.000337,     ,,/ttH_HToZZ_4LFilter_M125_13TeV_powheg_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,2,,,# crossSection includes filter eff=0.13225 
+#ttH125ext1,,     0.000337,     ,,/ttH_HToZZ_4LFilter_M125_13TeV_powheg_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2_ext1-v1/MINIAODSIM,dbs,,2,,,# extension of the above (TBC)
 
 
-DYJetsToLL_M50,,     6025.2,    ,,/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,4,,,25, #FIXME check xsection 
-TTJets,,             831.76,    ,,/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM,dbs,,4,,,25, #FIXME check xsection 
+ZZTo4l,,            1.256,      ,,/ZZTo4L_13TeV_powheg_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v2/MINIAODSIM,dbs,,4,,,
+ZZTo4lamcatnlo,,    1.256,      ,,/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,3,,, # Xsection from the gen: 1.218
 
-TTTo2L2Nu,,          87.31,     ,,/TTTo2L2Nu_13TeV-powheg/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,4,,,25, # xs: 831.76*((3*0.108)**2) 
+ggZZ4e,,            0.001586,   ,,/GluGluToZZTo4e_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,1,,,
+ggZZ4mu,,           0.001586,   ,,/GluGluToZZTo4mu_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,1,,,
+ggZZ4tau,,          0.001586,   ,,/GluGluToZZTo4tau_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,4,,,
+ggZZ2e2mu,,         0.003194,   ,,/GluGluToZZTo2e2mu_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,1,,,
+ggZZ2e2tau,,        0.003194,   ,,/GluGluToZZTo2e2tau_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,2,,,
+ggZZ2mu2tau,,       0.003194,   ,,/GluGluToZZTo2mu2tau_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,3,,,
 
-###,,,,,,,,,,,,Flat PU samples
-#flatPU_ggH125,,          43.92,2.76E-04 ,,/GluGluHToZZTo4L_M125_13TeV_powheg_JHUgen_pythia8/RunIISpring15DR74-StartupFlat10to50bx50Raw_MCRUN2_74_V8-v1/MINIAODSIM,dbs,,2,,,25, #FIXME v2 not yet available!
+
+DYJetsToLL_M50,,     6025.2,    ,,/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,4,,, #FIXME check xsection 
+TTJets,,             831.76,    ,,/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM,dbs,,4,,, #FIXME check xsection 
+
+TTTo2L2nu,,          87.31,     ,,/TTTo2L2Nu_13TeV-powheg/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,4,,, # xs: 831.76*((3*0.108)**2) 
+
+###,,,,,,,,,,,Flat PU samples
+#flatPU_ggH125,,          43.92,2.76E-04 ,,/GluGluHToZZTo4L_M125_13TeV_powheg_JHUgen_pythia8/RunIISpring15DR74-StartupFlat10to50bx50Raw_MCRUN2_74_V8-v1/MINIAODSIM,dbs,,2,,, #FIXME v2 not yet available!

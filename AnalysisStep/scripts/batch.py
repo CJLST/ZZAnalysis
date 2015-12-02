@@ -249,7 +249,6 @@ class MyBatchManager:
        
        variables['SAMPLENAME'] = splitComponents[value].samplename
        variables['XSEC'] = splitComponents[value].xsec 
-       variables['BUNCH_SPACING'] = splitComponents[value].bunchSpacing 
        #variables = {'IsMC':IsMC, 'PD':PD, 'MCFILTER':MCFILTER, 'SUPERMELA_MASS':SUPERMELA_MASS, 'SAMPLENAME':SAMPLENAME, 'XSEC':XSEC, 'SKIM_REQUIRED':SKIM_REQUIRED}
 
        print "\tParameters: ", variables
@@ -294,7 +293,7 @@ class MyBatchManager:
 
 class Component(object):
 
-    def __init__(self, name, prefix, dataset, pattern, splitFactor, variables, pyFragments, xsec, BR, setup, pdfstep, bunchSpacing):
+    def __init__(self, name, prefix, dataset, pattern, splitFactor, variables, pyFragments, xsec, BR, setup, pdfstep):
         self.name = name
         self.samplename = name
         print "checking "+self.name
@@ -312,8 +311,7 @@ class Component(object):
         if self.pdfstep <0 or self.pdfstep>2:
             print "Unknown PDF step", pdfstep
             sys.exit(1)
-        self.bunchSpacing = int(bunchSpacing)
-
+        
         
       
 if __name__ == '__main__':
@@ -331,7 +329,7 @@ if __name__ == '__main__':
     for sample, settings in sampleDB.iteritems():
         if settings['execute']:
             pdfstep = batchManager.options_.PDFstep
-            components.append(Component(sample, settings['prefix'], settings['dataset'], settings['pattern'], settings['splitLevel'], settings['::variables'], settings['::pyFragments'], settings['crossSection'], settings['BR'], setup, pdfstep, settings['bunchSpacing'])) #FIXME-RB not bool(settings['pdf']))) #settings['pdf'] used here as full sel, without cuts.
+            components.append(Component(sample, settings['prefix'], settings['dataset'], settings['pattern'], settings['splitLevel'], settings['::variables'],settings['::pyFragments'],settings['crossSection'], settings['BR'], setup, pdfstep)) #FIXME-RB not bool(settings['pdf']))) #settings['pdf'] used here as full sel, without cuts.
     
     handle.close()
 
