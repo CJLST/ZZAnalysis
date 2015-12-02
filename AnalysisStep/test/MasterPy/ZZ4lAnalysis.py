@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("ZZ")
 
 ### ----------------------------------------------------------------------
-### Flags that need to be setted
+### Flags that need to be set
 ### ----------------------------------------------------------------------
 
 try:
@@ -32,7 +32,7 @@ except NameError:
 try:
     ELECORRTYPE
 except NameError:
-    ELECORRTYPE = "Paper"
+    ELECORRTYPE = "RunII"
 
 #Apply electron escale regression
 try:
@@ -45,6 +45,12 @@ try:
     APPLYMUCORR
 except NameError:
     APPLYMUCORR = True
+
+#Bunch spacing (can be 25 or 50)
+try:
+    BUNCH_SPACING
+except NameError:
+    BUNCH_SPACING = 25
 
 #Mass used for SuperMELA
 try:
@@ -111,11 +117,11 @@ elif (SAMPLE_TYPE == 2012) :
         process.GlobalTag.globaltag = 'GR_70_V2_AN1::All'
         
 else: 
+    process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
     if IsMC:
-        process.GlobalTag.globaltag = 'MCRUN2_74_V9::All'
+        process.GlobalTag.globaltag = '74X_mcRun2_asymptotic_v4'
     else:
-        process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
-        process.GlobalTag.globaltag = '74X_dataRun2_reMiniAOD_v0'
+        process.GlobalTag.globaltag = '74X_dataRun2_reMiniAOD_v1'
 
 print '\t',process.GlobalTag.globaltag
 
@@ -255,6 +261,10 @@ process.printTree = cms.EDAnalyzer("ParticleListDrawer",
 
 process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
                                                    calibratedPatElectrons = cms.PSet(
+                                                       initialSeed = cms.untracked.uint32(1),
+                                                       engineName = cms.untracked.string('TRandom3')
+                                                       ),
+                                                   calibratedElectrons = cms.PSet(
                                                        initialSeed = cms.untracked.uint32(1),
                                                        engineName = cms.untracked.string('TRandom3')
                                                        ),
@@ -402,28 +412,30 @@ else :
    else :
        process.calibratedPatElectrons.inputDataset = "" #FIXME: not yet available for RunII
 
+process.calibratedElectrons = cms.EDProducer("CalibratedPatElectronProducerRun2",
+    electrons = cms.InputTag("slimmedElectrons"),
+    grbForestName = cms.string("gedelectron_p4combination_25ns"),
+    isMC = cms.bool(IsMC),
+    isSynchronization = cms.bool(False)
+)
+
+if (BUNCH_SPACING == 50):
+    process.calibratedElectrons.grbForestName = cms.string("gedelectron_p4combination_50ns")
 
 
-# Load the VID producer and specify the IDs are to be added
-#
-# Set up electron ID (VID framework)
-#
+#--- Set up electron ID (VID framework)
 
 from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
-# turn on VID producer, indicate data format  to be
-# DataFormat.AOD or DataFormat.MiniAOD, as appropriate
-
+# turn on VID producer, indicate data format to be DataFormat.MiniAOD, as appropriate
 dataFormat = DataFormat.MiniAOD
-
 switchOnVIDElectronIdProducer(process, dataFormat)
-
 # define which IDs we want to produce
-my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring15_25ns_nonTrig_V1_cff',
-                ]
-#add them to the VID producer
+my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring15_25ns_nonTrig_V1_cff']
+# add them to the VID producer
 for idmod in my_id_modules:
     setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
 # and don't forget to add the producer 'process.egmGsfElectronIDSequence' to the path, i.e. process.electrons
+
 
 process.bareSoftElectrons = cms.EDFilter("PATElectronRefSelector",
    src = cms.InputTag("calibratedPatElectrons"),
@@ -453,6 +465,12 @@ process.electrons = cms.Sequence(process.eleRegressionEnergy + process.calibrate
 if ELEREGRESSION == "None" and ELECORRTYPE == "None" :   # No correction at all. Skip correction modules.
     process.bareSoftElectrons.src = cms.InputTag('slimmedElectrons')
     process.electrons = cms.Sequence(process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
+
+elif ELEREGRESSION == "None" and ELECORRTYPE == "RunII" :
+    process.bareSoftElectrons.src = cms.InputTag('calibratedElectrons')
+    process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('calibratedElectrons')
+    process.electronMVAValueMapProducer.srcMiniAOD = cms.InputTag('calibratedElectrons')
+    process.electrons = cms.Sequence(process.calibratedElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
 
 elif ELEREGRESSION == "Moriond" and ELECORRTYPE == "Moriond" : # Moriond corrections: OLD ECAL regression + OLD calibration + OLD combination 
     if (LEPTON_SETUP == 2011):

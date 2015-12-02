@@ -2,9 +2,10 @@
 LEPTON_SETUP = 2015
 PD = ""
 MCFILTER = ""
-ELECORRTYPE   = "None" # "None", "Moriond", or "Paper"
+ELECORRTYPE = "RunII" # "None", "Moriond", "Paper", or "RunII"
 ELEREGRESSION = "None" # "None", "Moriond", "PaperNoComb", or "Paper" 
 APPLYMUCORR = False
+BUNCH_SPACING = 25
 #FSRMODE = "Legacy" # Legacy or Run II
 
 CRSync = False #add CR paths
@@ -26,6 +27,8 @@ PyFilePath = os.environ['CMSSW_BASE'] + "/src/ZZAnalysis/AnalysisStep/test/"
 execfile(PyFilePath + "analyzer.py")
 
 process.source.inputCommands = cms.untracked.vstring("keep *", "drop LHERunInfoProduct_*_*_*", "drop LHEEventProduct_*_*_*")
+
+process.calibratedElectrons.isSynchronization = cms.bool(True) #This replaces the smearing with a shift of 1 sigma
 
 ### ----------------------------------------------------------------------
 ### Replace parameters

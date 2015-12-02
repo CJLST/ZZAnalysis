@@ -7,7 +7,10 @@
 # source /tmp/checkout_70X.csh
 
 
-############## For miniAOD/CMSSW_7_4_12_patch2
+############## For miniAOD/CMSSW_7_4_14
+
+#electron Ecal scale corrections
+git cms-merge-topic gpetruc:ElectronRun2PromptCalib-74X
 
 #fixed Phys14-trained electron MVA ID (deprecated)
 #git cms-merge-topic sregnard:Phys14ElectronMvaIdFor745
