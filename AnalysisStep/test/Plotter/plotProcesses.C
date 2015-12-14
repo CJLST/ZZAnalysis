@@ -12,20 +12,22 @@
 #include <vector>
 #include <cmath>
 
-#include "TStyle.h"
-#include "TString.h"
+#include "TCanvas.h"
+#include "TColor.h"
 #include "TDirectory.h"
 #include "TFile.h"
-#include "TTree.h"
 #include "TH1.h"
 #include "TH2.h"
-#include "TCanvas.h"
 #include "TLegend.h"
 #include "TLegendEntry.h"
-#include "TPaveText.h"
 #include "TMath.h"
-#include "TColor.h"
+#include "TPaveText.h"
+#include "TString.h"
+#include "TStyle.h"
 #include "TSystem.h"
+#include "TTree.h"
+
+#include "plotUtils.C"
 
 #include "Math/GenVector/LorentzVector.h"
 #include "Math/GenVector/PtEtaPhiM4D.h"
@@ -148,32 +150,6 @@ string rounding3(float x) {
 
 string percentage(float frac) {
   return string(Form("%.1f",100*frac));
-}
-
-void printInfo(string info, Double_t x1, Double_t y1, Double_t x2, Double_t y2){
-  TPaveText* pav = new TPaveText(x1,y1,x2,y2,"brNDC");
-  pav->SetFillStyle(0);
-  pav->SetBorderSize(0);
-  pav->SetTextAlign(12);
-  pav->AddText(info.c_str());
-  pav->Draw();
-}
-
-void SaveCanvas(string directory, TCanvas* c, string tag = "") {
-  c->SaveAs(Form("%s%s_%s.root",directory.c_str(),c->GetName(),tag.c_str()));
-  c->SaveAs(Form("%s%s_%s.pdf" ,directory.c_str(),c->GetName(),tag.c_str()));  
-  c->SaveAs(Form("%s%s_%s.png" ,directory.c_str(),c->GetName(),tag.c_str()));
-}
-
-void set_plot_style() {
-    const Int_t NRGBs = 5;
-    const Int_t NCont = 255;
-    Double_t stops[NRGBs] = { 0.00, 0.34, 0.61, 0.84, 1.00 };
-    Double_t red[NRGBs]   = { 0.00, 0.00, 0.87, 1.00, 0.51 };
-    Double_t green[NRGBs] = { 0.00, 0.81, 1.00, 0.20, 0.00 };
-    Double_t blue[NRGBs]  = { 0.51, 1.00, 0.12, 0.00, 0.00 };
-    TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
-    gStyle->SetNumberContours(NCont);
 }
 
 void prepareBasketlabels(TH1F* h, vector<string> basketLabel){
@@ -446,7 +422,7 @@ void DrawMatchCustom(TCanvas* c, TH1F* h, TH1F** hMatch, string title, Color_t* 
 
 void Draw2D(TCanvas* c, TH2F* h, string title) {
   gStyle->SetOptTitle(1);
-  set_plot_style();
+  setColZGradient_1();
   c->cd();
   h->SetTitle(title.c_str());
   h->SetStats(0);

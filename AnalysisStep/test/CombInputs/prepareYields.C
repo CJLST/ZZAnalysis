@@ -23,12 +23,14 @@
 #include "TMath.h"
 
 #include "../Plotter/tdrstyle.C"
+#include "../Plotter/plotUtils.C"
 #include <ZZAnalysis/AnalysisStep/src/Category.cc>
 
 using namespace std;
 
 #define DEBUG 0
 #define MERGE2E2MU 1
+#define APPLYKFACTORS 1
 
 
 
@@ -60,7 +62,7 @@ bool hasMHPoint[nProcesses][nMHPoints] = {
 enum FinalState {fs4mu=0, fs4e=1, fs2e2mu=2, fs2mu2e=3};
 const int nFinalStates = 4;
 string sFinalState[nFinalStates+1] = {"4mu", "4e", "2e2mu", "2mu2e", "4l"};
-Int_t fsMarkerStyle[nFinalStates+1] = {22,23,34,29,21};
+Int_t fsMarkerStyle[nFinalStates+1] = {20,22,21,33,29};
 
 const int nCategories = 6;
 string sCategory[nCategories+1] = {
@@ -160,11 +162,11 @@ void computeYields(string inputFilePath, double lumi, double sqrts, double m4lMi
   Float_t GenLep4Phi;
   Short_t GenLep4Id;
 
-  Float_t yield[nProcesses][nMHPoints][nFinalStates][nCategories+1][nResStatuses+1];
+  Float_t yield[nProcesses][nMHPoints][nFinalStates+1][nCategories+1][nResStatuses+1];
   for(int pr=0; pr<nProcesses; pr++)
     for(int mp=0; mp<nMHPoints; mp++)
       if(hasMHPoint[pr][mp])
-	for(int fs=0; fs<nFinalStates; fs++)
+	for(int fs=0; fs<nFinalStates+1; fs++)
 	  for(int cat=0; cat<nCategories+1; cat++)
 	    for(int rs=0; rs<nResStatuses+1; rs++)
 	      yield[pr][mp][fs][cat][rs] = 0.;
@@ -187,7 +189,9 @@ void computeYields(string inputFilePath, double lumi, double sqrts, double m4lMi
     if(datasets[d]=="WminusH") currentProcess = WH;
     if(datasets[d]=="ZH") currentProcess = ZH;
     if(datasets[d]=="ttH") currentProcess = ttH;
-    if(datasets[d]=="ZZTo4l") currentProcess = qqZZ;
+    if(datasets[d]=="ZZTo4l"||
+       datasets[d]=="ZZTo4lamcatnlo") 
+      currentProcess = qqZZ;
     if(datasets[d]=="ggZZ4e"||
        datasets[d]=="ggZZ4mu"||
        datasets[d]=="ggZZ4tau"||
@@ -262,7 +266,28 @@ void computeYields(string inputFilePath, double lumi, double sqrts, double m4lMi
 	if( !(ZZsel>=90) ) continue;
 	if(ZZMass<m4lMin || ZZMass>m4lMax) continue;
 
-	Double_t eventWeight = partialSampleWeight[d] * xsec * overallEventWeight ;
+	Float_t kfactor = 1.;
+	if(APPLYKFACTORS){
+	  
+	  if(currentProcess==qqZZ){
+	    
+	    //kfactor = 1.065;
+	    
+	    // if(GenZ1Flav==GenZ2Flav)
+	    //   kfactor = 1.09;
+	    // else
+	    //   kfactor = 1.11;
+	    
+	    kfactor = 1.1;	  
+	    
+	  }else if(currentProcess==ggZZ){
+	    //kfactor = 2.;
+	    kfactor = 1.7;
+	  }
+	  
+	}
+
+	Double_t eventWeight = partialSampleWeight[d] * xsec * kfactor * overallEventWeight ;
 
 
 	//----- find final state
@@ -365,11 +390,18 @@ void computeYields(string inputFilePath, double lumi, double sqrts, double m4lMi
 	for(int fs=0; fs<nFinalStates; fs++)
 	  for(int cat=0; cat<nCategories; cat++)
 	    for(int rs=0; rs<nResStatuses; rs++)
+	      yield[pr][mp][nFinalStates][cat][rs] += yield[pr][mp][fs][cat][rs];
+  for(int pr=0; pr<nProcesses; pr++)
+    for(int mp=0; mp<nMHPoints; mp++)
+      if(hasMHPoint[pr][mp])
+	for(int fs=0; fs<nFinalStates+1; fs++)
+	  for(int cat=0; cat<nCategories; cat++)
+	    for(int rs=0; rs<nResStatuses; rs++)
 	      yield[pr][mp][fs][nCategories][rs] += yield[pr][mp][fs][cat][rs];
   for(int pr=0; pr<nProcesses; pr++)
     for(int mp=0; mp<nMHPoints; mp++)
       if(hasMHPoint[pr][mp])
-	for(int fs=0; fs<nFinalStates; fs++)
+	for(int fs=0; fs<nFinalStates+1; fs++)
 	  for(int cat=0; cat<nCategories+1; cat++)
 	    for(int rs=0; rs<nResStatuses; rs++)
 	      yield[pr][mp][fs][cat][nResStatuses] += yield[pr][mp][fs][cat][rs];
@@ -382,7 +414,7 @@ void computeYields(string inputFilePath, double lumi, double sqrts, double m4lMi
   for(int pr=0; pr<nProcesses; pr++)
     for(int mp=0; mp<nMHPoints; mp++)
       if(hasMHPoint[pr][mp])
-	for(int fs=0; fs<nFinalStates; fs++)
+	for(int fs=0; fs<nFinalStates+1; fs++)
 	  for(int cat=0; cat<nCategories+1; cat++)
 	    for(int rs=0; rs<nResStatuses+1; rs++){
 	      TH1F* hTemp = new TH1F(Form("h1_%s%s_%s_%s_%s",sProcess[pr].c_str(),sMHPoint[mp].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[rs].c_str()),"",1,0,1);
@@ -402,13 +434,6 @@ void computeYields(string inputFilePath, double lumi, double sqrts, double m4lMi
 /////////////////////////// fit signal yields vs. mH ///////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-
-void SaveCanvas(string directory, TCanvas* c, string tag = "") {
-  c->SaveAs(Form("%s%s_%s.root",directory.c_str(),c->GetName(),tag.c_str()));
-  //c->SaveAs(Form("%s%s_%s.C"   ,directory.c_str(),c->GetName(),tag.c_str())); // triggers a segfault !?
-  c->SaveAs(Form("%s%s_%s.pdf" ,directory.c_str(),c->GetName(),tag.c_str()));  
-  c->SaveAs(Form("%s%s_%s.png" ,directory.c_str(),c->GetName(),tag.c_str()));
-}
 
 void DrawYieldFits(string outputDirectory, TGraph* g[nProcesses][nFinalStates][nCategories+1], TF1* f[nProcesses][nFinalStates][nCategories+1]){
 
@@ -556,10 +581,10 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
 
   //---------- Retrieve yields and functions from the ROOT file
 
-  Float_t yield[nProcesses][nFinalStates][nCategories+1];
+  Float_t yield[nProcesses][nFinalStates+1][nCategories+1];
   TFile* fInYields = TFile::Open(Form("yields_%iTeV_m4l%.1f-%.1f_%.3ffb-1.root",(int)sqrts,m4lMin,m4lMax,lumi));
   for(int pr=0; pr<nProcesses; pr++)
-    for(int fs=0; fs<nFinalStates; fs++)
+    for(int fs=0; fs<nFinalStates+1; fs++)
       for(int cat=0; cat<nCategories+1; cat++)
 	yield[pr][fs][cat] = ((TH1F*)fInYields->Get(Form("h1_%s%s_%s_%s_%s",sProcess[pr].c_str(),(isSignal[pr]?(mHoption!="param"?mHoption.c_str():"125"):""),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[nResStatuses].c_str())))->GetBinContent(1);
 
@@ -626,6 +651,8 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
   }
 
   cout<<"total signal yield in mass window ["<<m4lMin<<","<<m4lMax<<"] : "<<totalYield<<endl;
+  for(int pr=0; pr<nProcesses; pr++)
+    cout<<" "<<sProcess[pr]<<": "<<yield[pr][nFinalStates][nCategories]<<endl;
 
 }
 
@@ -650,10 +677,14 @@ void prepareYields(bool recomputeYields = true) {
   float sqrts = 13.;
 
   // Define the luminosity
-  // 2015D (not v4) : 578.3/pb
-  // 50ns (2015B + 2015C_50ns) : 71.52/pb
-  // 2015D + 2015Dv4 : 832.31/pb
-  float lumi = 0.90383;
+
+  // all 50ns (2015B + 2015C_50ns) : 71.52/pb
+  // 25ns 2015D (no v4) : 578.3/pb
+  // 25ns 2015D + 2015Dv4 (Oct. 17th JSON) : 832.31/pb
+  // all 25ns (2015C + 2015D + 2015Dv4) (Nov. 13th Silver JSON) : 2.46/fb
+
+  //float lumi = 0.90383;
+  float lumi = 2.6;
 
   // m4l window
   float m4l_min = 105.;
