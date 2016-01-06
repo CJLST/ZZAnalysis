@@ -44,21 +44,21 @@ ttH125,,          0.000337,     ,,/ttH_HToZZ_4LFilter_M125_13TeV_powheg_JHUgen_p
 #ttH125ext1,,     0.000337,     ,,/ttH_HToZZ_4LFilter_M125_13TeV_powheg_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2_ext1-v1/MINIAODSIM,dbs,,2,,,# extension of the above (TBC)
 
 
-ZZTo4l,,            1.256,      ,,/ZZTo4L_13TeV_powheg_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v2/MINIAODSIM,dbs,,4,,,
-ZZTo4lamcatnlo,,    1.256,      ,,/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,3,,, # Xsection from the gen: 1.218
+ZZTo4l,,            1.256,      ,,/ZZTo4L_13TeV_powheg_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v2/MINIAODSIM,dbs,,4,PROCESS_CR=True,,
+ZZTo4lamcatnlo,,    1.256,      ,,/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,3,PROCESS_CR=True,, # Xsection from the gen: 1.218
 
-ggZZ4e,,            0.001586,   ,,/GluGluToZZTo4e_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,1,,,
-ggZZ4mu,,           0.001586,   ,,/GluGluToZZTo4mu_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,1,,,
-ggZZ4tau,,          0.001586,   ,,/GluGluToZZTo4tau_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,4,,,
-ggZZ2e2mu,,         0.003194,   ,,/GluGluToZZTo2e2mu_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,1,,,
-ggZZ2e2tau,,        0.003194,   ,,/GluGluToZZTo2e2tau_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,2,,,
-ggZZ2mu2tau,,       0.003194,   ,,/GluGluToZZTo2mu2tau_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,3,,,
+ggZZ4e,,            0.001586,   ,,/GluGluToZZTo4e_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,1,PROCESS_CR=True,,
+ggZZ4mu,,           0.001586,   ,,/GluGluToZZTo4mu_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,1,PROCESS_CR=True,,
+ggZZ4tau,,          0.001586,   ,,/GluGluToZZTo4tau_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,4,PROCESS_CR=True,,
+ggZZ2e2mu,,         0.003194,   ,,/GluGluToZZTo2e2mu_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,1,PROCESS_CR=True,,
+ggZZ2e2tau,,        0.003194,   ,,/GluGluToZZTo2e2tau_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,2,PROCESS_CR=True,,
+ggZZ2mu2tau,,       0.003194,   ,,/GluGluToZZTo2mu2tau_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,3,PROCESS_CR=True,,
 
 
-DYJetsToLL_M50,,     6025.2,    ,,/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,4,,, #FIXME check xsection 
-TTJets,,             831.76,    ,,/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM,dbs,,4,,, #FIXME check xsection 
+DYJetsToLL_M50,,     6025.2,    ,,/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,4,PROCESS_CR=True,, #FIXME check xsection 
+TTJets,,             831.76,    ,,/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM,dbs,,4,PROCESS_CR=True,, #FIXME check xsection 
 
-TTTo2L2nu,,          87.31,     ,,/TTTo2L2Nu_13TeV-powheg/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,4,,, # xs: 831.76*((3*0.108)**2) 
+TTTo2L2nu,,          87.31,     ,,/TTTo2L2Nu_13TeV-powheg/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,4,PROCESS_CR=True,, # xs: 831.76*((3*0.108)**2) 
 
 ###,,,,,,,,,,,Flat PU samples
 #flatPU_ggH125,,          43.92,2.76E-04 ,,/GluGluHToZZTo4L_M125_13TeV_powheg_JHUgen_pythia8/RunIISpring15DR74-StartupFlat10to50bx50Raw_MCRUN2_74_V8-v1/MINIAODSIM,dbs,,2,,, #FIXME v2 not yet available!

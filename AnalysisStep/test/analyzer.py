@@ -29,6 +29,11 @@ try:
     XSEC
 except NameError:
     XSEC=1
+
+try: 
+    PROCESS_CR
+except NameError:
+    PROCESS_CR = False
     
 # Get absolute path
 import os
@@ -185,7 +190,7 @@ process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
      )
 )
 
-if (not IsMC):
+if (PROCESS_CR or not IsMC):
     process.CRPath = cms.Path(process.CR)
     process.dump = cms.Path(process.ZZFiltered + process.ZZSelection + process.dumpUserData)
     process.dumpCR = cms.Path(process.CRFiltered + process.CRSelection + process.dumpUserData)
