@@ -66,7 +66,7 @@ namespace {
   bool addKinRefit = false;
   bool addVtxFit = false;
   bool addFSRDetails = false;
-  bool skipDataMCWeight = true; // skip computation of data/MC weight 
+  bool skipDataMCWeight = false; // skip computation of data/MC weight 
   bool skipFakeWeight = true;   // skip computation of fake rate weight for CRs
   bool skipHqTWeight = true;    // skip computation of hQT weight 
 
@@ -396,8 +396,9 @@ private:
 
   std::vector<const reco::Candidate *> genFSR;
 
-  TH2D *hTH2D_Mu_All;// = (TH2D*)fMuWeight.Get("TH2D_ALL_2011A"); 
-  TH2D *hTH2D_El_All;//  = (TH2D*)fElWeight12.Get(eleSFname.Data());
+  TH2D *hTH2D_Mu_All;
+  TH2D *hTH2D_El_ID;
+  TH2D *hTH2D_El_ISOSIP;
   TH2D* h_weight; //HqT weights
   //TH2F *h_ZXWeightMuo;
   //TH2F *h_ZXWeightEle;
@@ -412,7 +413,8 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   myHelper(pset),
   reweight(),
   hTH2D_Mu_All(0),
-  hTH2D_El_All(0),
+  hTH2D_El_ID(0),
+  hTH2D_El_ISOSIP(0),
   h_weight(0)
 {
   //cout<< "Beginning Constructor\n\n\n" <<endl;
@@ -457,33 +459,39 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   
   if (!skipDataMCWeight) {
     //Scale factors for data/MC efficiency
-    //FIXME: to adjust for 13 TeV
-    float Run2011AFraction=0.465;
-    TString yearString;yearString.Form("TH2D_ALL_%d",year);
-    if(year==2011){
-      TRandom3 randomGenerator(0);
-      Float_t whatPeriod = randomGenerator.Uniform();
-      if(whatPeriod < Run2011AFraction) yearString.Append("A");
-      else yearString.Append("B");
-    }
-    TString filename;filename.Form("ZZAnalysis/AnalysisStep/test/Macros/scale_factors_muons%d.root",year); 
-    if(year==2015){
-      filename.Form("ZZAnalysis/AnalysisStep/test/Macros/scale_factors_muons%d.root",2012); //FIXME
-      yearString.Form("TH2D_ALL_%d",2012);
-    }
-    edm::FileInPath fip(filename.Data());
-    std::string fipPath=fip.fullPath();
-    TFile *fMuWeight = TFile::Open(fipPath.data(),"READ");
-    hTH2D_Mu_All = (TH2D*)fMuWeight->Get(yearString.Data())->Clone(); 
 
-    filename.Form("ZZAnalysis/AnalysisStep/test/Macros/scale_factors_ele%d.root",year); 
-    if(year==2015)filename.Form("ZZAnalysis/AnalysisStep/test/Macros/scale_factors_ele%d.root",2012);//FIXME  
-    edm::FileInPath fipEle(filename.Data());
-    fipPath=fipEle.fullPath();
-    TFile *fEleWeight = TFile::Open(fipPath.data(),"READ");
-    hTH2D_El_All = (TH2D*)fEleWeight->Get("h_electronScaleFactor_RecoIdIsoSip")->Clone();
-    fMuWeight->Close();
-    fEleWeight->Close();
+    // only LEPTON_SETUP=2015 is supported
+    if(year!=2015){
+      cout<<"Error: data/MC weights are not supported for this LEPTON_SETUP; see HZZ4lNtupleMaker.cc"<<endl;
+      abort();
+    }
+
+    TString filename;
+    std::string fipPath;
+
+    /* // FIXME: add scale factors for muons
+    filename.Form("ZZAnalysis/AnalysisStep/test/Macros/scale_factors_muons%d.root",year);
+    edm::FileInPath fipMu(filename.Data());
+    fipPath = fipMu.fullPath();
+    TFile *fMuWeight = TFile::Open(fipPath.data(),"READ");
+    hTH2D_Mu_All = (TH2D*)fMuWeight->Get("")->Clone();
+    fMuWeight->Close(); 
+    //*/
+
+    filename.Form("ZZAnalysis/AnalysisStep/test/Macros/ScaleFactors_ele_ID_%d.root",year); 
+    edm::FileInPath fipEleID(filename.Data());
+    fipPath = fipEleID.fullPath();
+    TFile *fEleWeightID = TFile::Open(fipPath.data(),"READ");
+    hTH2D_El_ID = (TH2D*)fEleWeightID->Get("hScaleFactors_ID")->Clone();
+    fEleWeightID->Close();
+
+    filename.Form("ZZAnalysis/AnalysisStep/test/Macros/ScaleFactors_ele_ISOSIP_%d.root",year); 
+    edm::FileInPath fipEleISOSIP(filename.Data());
+    fipPath = fipEleISOSIP.fullPath();
+    TFile *fEleWeightISOSIP = TFile::Open(fipPath.data(),"READ");
+    hTH2D_El_ISOSIP = (TH2D*)fEleWeightISOSIP->Get("hScaleFactors_ISOSIP")->Clone();
+    fEleWeightISOSIP->Close();
+
   }
   
   if (!skipHqTWeight) {
@@ -1314,27 +1322,23 @@ Float_t HZZ4lNtupleMaker::getAllWeight(Float_t LepPt, Float_t LepEta, Int_t LepI
   if(myLepID == 11 && myLepPt > 199.) myLepPt = 199.;
   if(myLepID == 11) myLepEta = fabs(myLepEta);
 
-  if(myLepID == 13){                                               
-      weight  = hTH2D_Mu_All->GetBinContent(hTH2D_Mu_All->GetXaxis()->FindBin(myLepPt),hTH2D_Mu_All->GetYaxis()->FindBin(LepEta));
-    //  errCorr = hTH2D_Mu_All_2011A->GetBinError(hTH2D_Mu_All_2011A->GetXaxis()->FindBin(myLepPt),hTH2D_Mu_All_2011A->GetYaxis()->FindBin(LepEta));
-      
-  }
-  else if(myLepID == 11){   
+  if(myLepID == 13){  
+   
+    weight = 1.;// FIXME: add scale factors for muons                                          
+    //weight = hTH2D_Mu_All->GetBinContent(hTH2D_Mu_All->GetXaxis()->FindBin(myLepPt),hTH2D_Mu_All->GetYaxis()->FindBin(LepEta));
 
-    weight  = hTH2D_El_All->GetBinContent(hTH2D_El_All->GetXaxis()->FindBin(myLepPt),hTH2D_El_All->GetYaxis()->FindBin(myLepEta));
-      //errCorr = hTH2D_El_All_2011A->GetBinError(hTH2D_El_All_2011A->GetXaxis()->FindBin(myLepPt),hTH2D_El_All_2011A->GetYaxis()->FindBin(myLepEta));   
-  }else {
+  }else if(myLepID == 11){   
+
+    weight = hTH2D_El_ID    ->GetBinContent(hTH2D_El_ID    ->GetXaxis()->FindBin(myLepPt),hTH2D_El_ID    ->GetYaxis()->FindBin(myLepEta))
+           * hTH2D_El_ISOSIP->GetBinContent(hTH2D_El_ISOSIP->GetXaxis()->FindBin(myLepPt),hTH2D_El_ISOSIP->GetYaxis()->FindBin(myLepEta));   
+
+  }else{
+
     cout<<"ERROR! wrong lepton ID "<<myLepID<<endl;
     //abort();
-    weight=0;
-  }   
+    weight = 0.;
 
-  
-  //add the systematics on T&P corrections (for muons only, electrons have them already included)
-  //if(myLepID == 13){
-  //  if(myLepPt >= 15.) errCorrSyst = 0.005;
-  //  else errCorrSyst = 0.015;
-  //}
+  }   
 
   //FIXME
   if(myLepPt < 5. && myLepID == 13) weight = 1.;
@@ -1343,31 +1347,10 @@ Float_t HZZ4lNtupleMaker::getAllWeight(Float_t LepPt, Float_t LepEta, Int_t LepI
     cout << "ERROR! LEP out of range! myLepPt = " << myLepPt << " myLepEta = " << myLepEta <<" myLepID "<<myLepID<< " weight = " << weight << endl;
     //abort();  //no correction should be zero, if you find one, stop
   }
-/*
-//FIXME: in HZZ4l was working because seeder was the event number (1=first event, 10=10th event)
-//Here I don't have this info. Random seed?
-  static TRandom3 randomToss;
-  if( ( myLepID == 13) || (myLepID == 11) ){
 
-    //apply correlation matrix by assigning the proper seed
-    Int_t CorrSeeder = Seeder;
-    if(myLepID == 13){
-      if(myLepPt < 20. && fabs(myLepEta) < 1.2) CorrSeeder += 100001;
-      else if(myLepPt < 20. && fabs(myLepEta) >= 1.2) CorrSeeder += 100002;
-    }
-
-    randomToss.SetSeed(CorrSeeder);
-    weight = randomToss.Gaus(weight,errCorr);
-
-    //apply systematic (totally correlated in eta) for muons
-    if(myLepID == 13){
-      randomToss.SetSeed(Seeder);
-      weight = randomToss.Gaus(weight,errCorrSyst);
-    }
-  }
-*/
   return weight;
 }
+
 
 Float_t HZZ4lNtupleMaker::getHqTWeight(double mH, double genPt) const
 {
