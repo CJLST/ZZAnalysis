@@ -36,8 +36,8 @@ ggH126,,          43.31,3.02E-04 ,,/GluGluHToZZTo4L_M126_13TeV_powheg_JHUgen_pyt
 
 
 VBFH125,,         0.001034,        ,,/VBF_HToZZTo4L_M125_13TeV_powheg_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,1,,,
-WplusH125,,       0.0002324,       ,,/WplusH_HToZZTo4L_M125_13TeV_powheg-minlo-HWJ_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,1,,,# https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsWW13TeVWHxsecs 
-WminusH125,,      0.0001488,       ,,/WminusH_HToZZTo4L_M125_13TeV_powheg-minlo-HWJ_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,1,,,# (Total (W+H)+(W-H)=0.000381; sigma(W+H)/sigma(W-H) = 1.59)
+WplusH125,,       0.0002339,       ,,/WplusH_HToZZTo4L_M125_13TeV_powheg-minlo-HWJ_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,1,,,# now from https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#HZZ
+WminusH125,,      0.0001471,       ,,/WminusH_HToZZTo4L_M125_13TeV_powheg-minlo-HWJ_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,1,,,# now from https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#HZZ (for the record, Total (W+H)+(W-H)=0.000381; sigma(W+H)/sigma(W-H) = 1.59)
 ZH125,,           0.000652,        ,,/ZH_HToZZ_4LFilter_M125_13TeV_powheg-minlo-HZJ_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,2,,,# crossSection includes filter eff=0.15038
 
 ttH125,,          0.000337,     ,,/ttH_HToZZ_4LFilter_M125_13TeV_powheg_JHUgen_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,2,,,# crossSection includes filter eff=0.13225 
@@ -56,9 +56,11 @@ ggZZ2mu2tau,,       0.003194,   ,,/GluGluToZZTo2mu2tau_BackgroundOnly_13TeV_MCFM
 
 
 DYJetsToLL_M50,,     6025.2,    ,,/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,4,PROCESS_CR=True,, #FIXME check xsection 
-TTJets,,             831.76,    ,,/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM,dbs,,4,PROCESS_CR=True,, #FIXME check xsection 
+TTJets,,             831.76,    ,,/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v3/MINIAODSIM,dbs,,4,PROCESS_CR=True,, #FIXME check xsection 
 
 TTTo2L2nu,,          87.31,     ,,/TTTo2L2Nu_13TeV-powheg/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,4,PROCESS_CR=True,, # xs: 831.76*((3*0.108)**2) 
+
+WZTo3LNu,,           4.42965,   ,,/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM,dbs,,4,PROCESS_CR=True,,
 
 ###,,,,,,,,,,,Flat PU samples
 #flatPU_ggH125,,          43.92,2.76E-04 ,,/GluGluHToZZTo4L_M125_13TeV_powheg_JHUgen_pythia8/RunIISpring15DR74-StartupFlat10to50bx50Raw_MCRUN2_74_V8-v1/MINIAODSIM,dbs,,2,,, #FIXME v2 not yet available!
