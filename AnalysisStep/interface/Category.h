@@ -1,6 +1,10 @@
 #ifndef CATEGORY_H
 #define CATEGORY_H
 
+
+
+//---------- full RunII categorization 
+
 enum Category {
   Untagged     = 0,
   OneJetTagged = 1,
@@ -23,5 +27,18 @@ extern "C" int category(
 	     float* jetmass,
 	     float Fisher
 	     );
+
+
+
+//---------- RunI-like categorization 
+
+enum CategoryLegacy {
+  ZeroOneJet = 0,
+  Dijet      = 1
+};
+
+extern "C" int categoryLegacy( int nJets );
+
+
 
 #endif

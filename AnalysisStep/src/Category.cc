@@ -97,3 +97,12 @@ extern "C" int category(
   return category;
 
 }
+
+
+extern "C" int categoryLegacy( int nJets )
+{
+  if(nJets>=2)
+    return Dijet;
+  else
+    return ZeroOneJet;
+}
