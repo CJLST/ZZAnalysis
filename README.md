@@ -3,11 +3,11 @@ ZZAnalysis
 
 To install a complete CMSSW area (including this package)
 ------------------------------
-Please use a CMSSW_7_4_X version >= 7_4_14.
+Please use a CMSSW_7_6_X version >= 7_6_3.
 
 Download and execute the setup script:
 ```
-wget -P /tmp https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_74X/checkout_70X.csh
+wget -P /tmp https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_76X/checkout_70X.csh
 cd $CMSSW_BASE/src
 cmsenv
 source /tmp/checkout_70X.csh
@@ -32,7 +32,7 @@ Once you are ready to commit
 git pull
 git add [files to be added]
 git commit -m ["commit message"] [files to be added]
-git push
+git push origin miniAOD_76X
 ```
 
 Otherwise you can make a fork of the repository, develop therein, and make a pull request in the same way as for CMSSW.

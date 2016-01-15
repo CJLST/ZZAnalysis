@@ -119,9 +119,9 @@ elif (SAMPLE_TYPE == 2012) :
 else: 
     process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
     if IsMC:
-        process.GlobalTag.globaltag = '74X_mcRun2_asymptotic_v4'
+        process.GlobalTag.globaltag = '76X_mcRun2_asymptotic_v12'
     else:
-        process.GlobalTag.globaltag = '74X_dataRun2_reMiniAOD_v1'
+        process.GlobalTag.globaltag = '76X_dataRun2_v15'
 
 print '\t',process.GlobalTag.globaltag
 
@@ -214,10 +214,7 @@ elif (LEPTON_SETUP == 2015):
     #process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"] #for 25ns,14e33 (not necessary in 2015 data)
     process.hltFilterTriEle.HLTPaths = ["HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v*"]
     process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_12_10_5_v*"]
-    if (IsMC):
-        process.hltFilterSingleEle.HLTPaths = ["HLT_Ele27_WP85_Gsf_v*"]
-    else :
-        process.hltFilterSingleEle.HLTPaths = ["HLT_Ele27_WPLoose_Gsf_v*"]
+    process.hltFilterSingleEle.HLTPaths = ["HLT_Ele23_WPLoose_Gsf_v*"]
     process.triggerTriEle = cms.Path(process.hltFilterTriEle)
     process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
     process.triggerSingleEle = cms.Path(process.hltFilterSingleEle)
@@ -467,10 +464,13 @@ if ELEREGRESSION == "None" and ELECORRTYPE == "None" :   # No correction at all.
     process.electrons = cms.Sequence(process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
 
 elif ELEREGRESSION == "None" and ELECORRTYPE == "RunII" :
-    process.bareSoftElectrons.src = cms.InputTag('calibratedElectrons')
-    process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('calibratedElectrons')
-    process.electronMVAValueMapProducer.srcMiniAOD = cms.InputTag('calibratedElectrons')
-    process.electrons = cms.Sequence(process.calibratedElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
+    process.bareSoftElectrons.src = cms.InputTag('slimmedElectrons')
+    process.electrons = cms.Sequence(process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
+    ## FIXME: the following was for 74X, let's deactivate it in 76X for the moment, waiting for new corrections
+    #process.bareSoftElectrons.src = cms.InputTag('calibratedElectrons')
+    #process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('calibratedElectrons')
+    #process.electronMVAValueMapProducer.srcMiniAOD = cms.InputTag('calibratedElectrons')
+    #process.electrons = cms.Sequence(process.calibratedElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
 
 elif ELEREGRESSION == "Moriond" and ELECORRTYPE == "Moriond" : # Moriond corrections: OLD ECAL regression + OLD calibration + OLD combination 
     if (LEPTON_SETUP == 2011):

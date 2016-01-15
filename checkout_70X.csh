@@ -1,23 +1,20 @@
 #!/bin/tcsh -fe
 #
 # Instructions:
-# wget -P /tmp https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_74X/checkout_70X.csh
+# wget -P /tmp https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_76X/checkout_70X.csh
 # cd $CMSSW_BASE/src
 # cmsenv
 # source /tmp/checkout_70X.csh
 
 
-############## For miniAOD/CMSSW_7_4_14
+############## For CMSSW_7_6_3
 
-#electron Ecal scale corrections
-git cms-merge-topic gpetruc:ElectronRun2PromptCalib-74X
-
-#fixed Phys14-trained electron MVA ID (deprecated)
-#git cms-merge-topic sregnard:Phys14ElectronMvaIdFor745
+#electron Ecal scale corrections (74X). FIXME: deactivated in 76X for the moment, waiting for new corrections
+#git cms-merge-topic gpetruc:ElectronRun2PromptCalib-74X
 
 #ZZAnalysis
 git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
-(cd ZZAnalysis; git checkout miniAOD_74X)
+(cd ZZAnalysis; git checkout miniAOD_76X)
 
 #effective areas (to be updated)
 git clone -n https://github.com/latinos/UserCode-sixie-Muon-MuonAnalysisTools Muon/MuonAnalysisTools
@@ -32,7 +29,7 @@ git clone -n https://github.com/cms-analysis/EgammaAnalysis-ElectronTools EGamma
 
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
-(cd ZZMatrixElement ; git checkout -b from-V00-02-01 V00-02-01)
+(cd ZZMatrixElement ; git checkout -b from-V00-02-01-patch1 V00-02-01-patch1)
 
 #MELA dependencies
 git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
