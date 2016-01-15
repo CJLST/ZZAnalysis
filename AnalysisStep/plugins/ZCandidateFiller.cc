@@ -286,9 +286,6 @@ ZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
 
     //--- Embed shortcut variables
-    // Pairwise isolation
-    float isoSum2 = myCand.userFloat("d0.combRelIso") + myCand.userFloat("d1.combRelIso");
-    myCand.addUserFloat("isoSum2",isoSum2);
 //     myCand.addUserFloat("OS",OS);
 //     myCand.addUserFloat("SF",SF);
 
