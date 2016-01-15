@@ -74,6 +74,8 @@ private:
 
   double weight;
 
+  edm::EDGetTokenT<edm::TriggerResults> triggerResultToken;
+
   //histograms
   TH1F* nEventComplete;
   HCand* hCandCR;
@@ -86,13 +88,16 @@ ZZ4lAnalyzerCR::ZZ4lAnalyzerCR(const ParameterSet& pset) :
   myHelper(pset),
   theCandLabel(pset.getUntrackedParameter<string>("candCollection")),
   reweight(),
-  weight(1.) {
+  weight(1.)
+{
   isMC = myHelper.isMC();
   theChannel = myHelper.channel();
 //   if (theChannel!=18) {
 //     cout << "ERROR: ZZ4lAnalyzerCR: channel "<< theChannel << " is not valid" <<endl;
 //     abort();
 //   }
+
+  triggerResultToken = consumes<edm::TriggerResults>(edm::InputTag("TriggerResults"));
 }
 
 
@@ -114,17 +119,21 @@ void ZZ4lAnalyzerCR::endJob(){
 
 void ZZ4lAnalyzerCR::analyze(const Event & event, const EventSetup& eventSetup){
     
-  // Apply MC filter (skip event)
-  if (isMC && !(myHelper.passMCFilter(event))) return;
 
+  // Trigger results
+  Handle<edm::TriggerResults> triggerResults;
+  event.getByToken(triggerResultToken, triggerResults);
+
+  // Apply MC filter (skip event)
+  if (isMC && !(myHelper.passMCFilter(event,triggerResults))) return;
  
   // Skim
-  bool evtPassSkim = myHelper.passSkim(event);
+  bool evtPassSkim = myHelper.passSkim(event,triggerResults);
 
-   
   // Trigger requests
-  bool evtPassTrigger = myHelper.passTrigger(event); 
+  bool evtPassTrigger = myHelper.passTrigger(event,triggerResults); 
   if (!(evtPassTrigger && evtPassSkim))return;
+
  
   // PU reweight
   float PUweight = 1.;

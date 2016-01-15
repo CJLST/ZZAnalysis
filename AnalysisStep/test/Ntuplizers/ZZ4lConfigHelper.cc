@@ -42,39 +42,20 @@ ZZ4lConfigHelper::ZZ4lConfigHelper(const ParameterSet& pset) :
   
 }
 
-void
-ZZ4lConfigHelper::eventInit(const edm::Event & event) {
-  // Initialize trigger results table
-  if (event.id()==cachedEvtId) return;
-  if (event.getByLabel(InputTag("TriggerResults"), triggerResults)) {
-    triggerNames = &(event.triggerNames(*triggerResults));
-  } else {
-    cout << "ERROR: failed to get TriggerResults" << endl;
-  }
-
-//   if (event.getByLabel(InputTag("TriggerResults","","HLT"), triggerResultsHLT)) {
-//     triggerNamesHLT = &(event.triggerNames(*triggerResultsHLT));
-//   } else {
-//     cout << "ERROR: failed to get TriggerResults:HLT" << endl;
-//   }
-
-  cachedEvtId = event.id();
-}
-
 bool 
-ZZ4lConfigHelper::passMCFilter(const edm::Event & event){
+ZZ4lConfigHelper::passMCFilter(const edm::Event & event, edm::Handle<edm::TriggerResults> & trigRes){
   if (MCFilter=="") return true;
-  return passFilter(event, MCFilter);
+  return passFilter(event, trigRes, MCFilter);
 }
 
 bool 
-ZZ4lConfigHelper::passSkim(const edm::Event & event, short& trigworld){
+ZZ4lConfigHelper::passSkim(const edm::Event & event, edm::Handle<edm::TriggerResults> & trigRes, short& trigworld){
   bool evtPassSkim = false;
   if (skimPaths.size()==0) {
     evtPassSkim=true;
   } else {
     for (vector<string>::const_iterator name = skimPaths.begin(); name!= skimPaths.end(); ++name) {
-      if (passFilter(event, *name)) {
+      if (passFilter(event, trigRes, *name)) {
 	evtPassSkim = true; 
 	break;
       }
@@ -85,28 +66,28 @@ ZZ4lConfigHelper::passSkim(const edm::Event & event, short& trigworld){
 }
 
 bool 
-ZZ4lConfigHelper::passTrigger(const edm::Event & event, short& trigworld){
+ZZ4lConfigHelper::passTrigger(const edm::Event & event, edm::Handle<edm::TriggerResults> & trigRes, short& trigworld){
 
-  bool passDiMu  = passFilter(event, "triggerDiMu");
-  bool passDiEle = passFilter(event, "triggerDiEle");
-  bool passMuEle  = passFilter(event, "triggerMuEle"); 
+  bool passDiMu  = passFilter(event, trigRes, "triggerDiMu");
+  bool passDiEle = passFilter(event, trigRes, "triggerDiEle");
+  bool passMuEle  = passFilter(event, trigRes, "triggerMuEle"); 
   if ((!isMC_) && theSetup == 2011 ) { // follow changes in trigger menu in data 2011 (see wiki)
     int irun=event.id().run(); 
     if (irun>=175973) {
-      passMuEle  = passFilter(event, "triggerMuEle3");
+      passMuEle  = passFilter(event, trigRes, "triggerMuEle3");
     } else if (irun>=167914) {
-      passMuEle  = passFilter(event, "triggerMuEle2");
+      passMuEle  = passFilter(event, trigRes, "triggerMuEle2");
     }
   }
   bool passTriEle = false;
   if (theSetup >= 2012) {
-    passTriEle = passFilter(event, "triggerTriEle");
+    passTriEle = passFilter(event, trigRes, "triggerTriEle");
   }
   bool passTriMu = false;
   bool passSingleEle = false;
   if (theSetup >= 2015) {
-    passTriMu = passFilter(event, "triggerTriMu");
-    passSingleEle = passFilter(event, "triggerSingleEle");
+    passTriMu = passFilter(event, trigRes, "triggerTriMu");
+    passSingleEle = passFilter(event, trigRes, "triggerSingleEle");
   }
 
 
@@ -152,26 +133,25 @@ ZZ4lConfigHelper::passTrigger(const edm::Event & event, short& trigworld){
 }
 
 bool
-ZZ4lConfigHelper::passFilter(const edm::Event & event, const string& filterPath, bool fromHLT) {
-  eventInit(event);
+ZZ4lConfigHelper::passFilter(const edm::Event & event, edm::Handle<edm::TriggerResults> & trigRes, const string& filterPath) {
 
-  edm::Handle<edm::TriggerResults> myTriggerResults;
-  const edm::TriggerNames* myTriggerNames = 0;
+  //if (event.id()==cachedEvtId) return;
+  //cachedEvtId = event.id();
 
-  if (fromHLT) {
-//     myTriggerNames = triggerNamesHLT;
-//     myTriggerResults = triggerResultsHLT;
+  // Initialize trigger results table
+  if (trigRes.isValid()) {
+    triggerResults = trigRes;
+    triggerNames = &(event.triggerNames(*triggerResults));
   } else {
-    myTriggerNames = triggerNames;
-    myTriggerResults = triggerResults;    
+    cout << "ERROR: failed to get TriggerResults" << endl;
   }
 
-  unsigned i =  myTriggerNames->triggerIndex(filterPath);
-  if (i== myTriggerNames->size()){
+  unsigned i =  triggerNames->triggerIndex(filterPath);
+  if (i== triggerNames->size()){
     cout << "ERROR: ZZ4lConfigHelper::isTriggerBit: path does not exist! " << filterPath << endl;
     abort();
   }
-  return myTriggerResults->accept(i);
+  return triggerResults->accept(i);
 
 }
 

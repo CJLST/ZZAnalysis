@@ -57,24 +57,30 @@ class LeptonPhotonMatcher : public edm::EDProducer {
   virtual void endJob(){};
   PhotonPtr selectFSR(const PhotonPtrVector& photons, const reco::LeafCandidate::Vector& lepMomentum);
 
-  const edm::InputTag theMuonTag_;
-  const edm::InputTag theElectronTag_;
-  const edm::InputTag thePhotonTag_;
+  edm::EDGetTokenT<pat::MuonCollection> muonToken;
+  edm::EDGetTokenT<pat::ElectronCollection> electronToken;
+  edm::EDGetTokenT<edm::View<pat::PFParticle> > photonToken;
+  edm::EDGetTokenT<edm::View<pat::PackedCandidate> > pfCandToken;
   int selectionMode;
   int sampleType;
   int setup;
   bool debug;
+  edm::EDGetTokenT<double> rhoForMuToken;
+  edm::EDGetTokenT<double> rhoForEleToken;
 };
 
 
 LeptonPhotonMatcher::LeptonPhotonMatcher(const edm::ParameterSet& iConfig) :
-  theMuonTag_(iConfig.getParameter<InputTag>("muonSrc")),
-  theElectronTag_(iConfig.getParameter<InputTag>("electronSrc")),
-  thePhotonTag_(iConfig.getParameter<InputTag>("photonSrc")),
+  muonToken(consumes<pat::MuonCollection>(iConfig.getParameter<edm::InputTag>("muonSrc"))),
+  electronToken(consumes<pat::ElectronCollection>(iConfig.getParameter<edm::InputTag>("electronSrc"))),
+  photonToken(consumes<edm::View<pat::PFParticle> >(iConfig.getParameter<edm::InputTag>("photonSrc"))),
   sampleType(iConfig.getParameter<int>("sampleType")),
   setup(iConfig.getParameter<int>("setup")),
   debug(iConfig.getUntrackedParameter<bool>("debug",false))
 {
+  pfCandToken = consumes<edm::View<pat::PackedCandidate> >(edm::InputTag("packedPFCandidates"));
+  rhoForMuToken = consumes<double>(LeptonIsoHelper::getMuRhoTag(sampleType, setup));
+  rhoForEleToken = consumes<double>(LeptonIsoHelper::getEleRhoTag(sampleType, setup));
 
   string mode = iConfig.getParameter<string>("photonSel");
   
@@ -100,19 +106,19 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   //--- Get leptons and rho
   //  edm::Handle<pat::MuonRefVector> muonHandle;
   edm::Handle<pat::MuonCollection> muonHandle;
-  iEvent.getByLabel(theMuonTag_, muonHandle);
+  iEvent.getByToken(muonToken, muonHandle);
 
   //  edm::Handle<pat::ElectronRefVector> electronHandle;
   edm::Handle<pat::ElectronCollection> electronHandle;
-  iEvent.getByLabel(theElectronTag_, electronHandle);
+  iEvent.getByToken(electronToken, electronHandle);
 
   //--- Get the photons
   edm::Handle<edm::View<pat::PFParticle> > photonHandle;
-  iEvent.getByLabel(thePhotonTag_, photonHandle);
+  iEvent.getByToken(photonToken, photonHandle);
 
   //--- Get the PF cands
   edm::Handle<edm::View<pat::PackedCandidate> > pfCands; 
-  iEvent.getByLabel("packedPFCandidates",pfCands);
+  iEvent.getByToken(pfCandToken, pfCands);
 
   // Output collections
   auto_ptr<pat::MuonCollection> resultMu( new pat::MuonCollection() );
@@ -273,9 +279,9 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     double rhoForMu, rhoForEle;
     {
       edm::Handle<double> rhoHandle;
-      iEvent.getByLabel(LeptonIsoHelper::getMuRhoTag(sampleType, setup), rhoHandle);
+      iEvent.getByToken(rhoForMuToken, rhoHandle);
       rhoForMu = *rhoHandle;
-      iEvent.getByLabel(LeptonIsoHelper::getEleRhoTag(sampleType, setup), rhoHandle);
+      iEvent.getByToken(rhoForEleToken, rhoHandle);
       rhoForEle = *rhoHandle;
     }
 

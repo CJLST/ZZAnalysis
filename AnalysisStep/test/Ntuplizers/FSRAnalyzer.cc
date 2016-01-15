@@ -40,9 +40,16 @@ class FSRAnalyzer : public edm::EDAnalyzer {
   // Operations
   void analyze(const edm::Event & event, const edm::EventSetup& eventSetup);  
 
+  edm::EDGetTokenT<edm::View<reco::Candidate> > genParticleToken;
+  edm::EDGetTokenT<GenEventInfoProduct> genInfoToken;
+
 };
 
-FSRAnalyzer::FSRAnalyzer(const edm::ParameterSet& pset){}
+FSRAnalyzer::FSRAnalyzer(const edm::ParameterSet& pset)
+{
+  genParticleToken = consumes<edm::View<reco::Candidate> >( edm::InputTag("prunedGenParticles"));
+  genInfoToken = consumes<GenEventInfoProduct>( edm::InputTag("generator"));
+}
 
 FSRAnalyzer::~FSRAnalyzer(){}
 
@@ -85,8 +92,13 @@ FSRAnalyzer::analyze(const edm::Event & event, const edm::EventSetup& eventSetup
   Handle<vector<reco::Vertex> >  vertexs;
   event.getByLabel("goodPrimaryVertices",vertexs);
   int Nvtx=vertexs->size();
+
+  edm::Handle<edm::View<reco::Candidate> > genParticles;
+  event.getByToken(genParticleToken, genParticles);
+  edm::Handle<GenEventInfoProduct> genInfo;
+  event.getByToken(genInfoToken, genInfo);
   
-  MCHistoryTools mch(event);
+  MCHistoryTools mch(event, "", genParticles, genInfo);
   // These are all gen FSR photons coming from leptons from the H
   vector<const reco::Candidate *> genFSR = mch.genFSR();
   //  vector<const reco::Candidate *> genLep = mch.genZLeps();

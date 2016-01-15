@@ -45,15 +45,15 @@ public:
   bool checkLeptonJet(const edm::Event & event, const pat::Jet& jet);
   bool isMatchingWithZZLeptons(const edm::Event & event, const pat::Jet& jet);
   template <typename LEP>
-  bool isMatchingWith(const edm::InputTag& src, const StringCutObjectSelector<LEP>& presel, const edm::Event & event, const pat::Jet& jet);
+  bool isMatchingWith(const edm::EDGetTokenT<edm::View<LEP> >& token, const StringCutObjectSelector<LEP>& presel, const edm::Event & event, const pat::Jet& jet);
 
 private:
   /// Labels for input collections
   MatchingType matchingType_;
-  edm::InputTag jetSrc_;
-  edm::InputTag muonSrc_;
-  edm::InputTag electronSrc_;
-  edm::InputTag diBosonSrc_;
+  edm::EDGetTokenT<edm::View<pat::Jet> > jetToken_;
+  edm::EDGetTokenT<edm::View<pat::Muon> > muonToken_;
+  edm::EDGetTokenT<edm::View<pat::Electron> > electronToken_;
+  edm::EDGetTokenT<edm::View<pat::CompositeCandidate> > diBosonToken_;
   bool cleaningFromDiboson_;
  
   /// Preselection cut
@@ -82,10 +82,10 @@ private:
 
 
 JetsWithLeptonsRemover::JetsWithLeptonsRemover(const edm::ParameterSet & iConfig)
-  : jetSrc_           (iConfig.getParameter<edm::InputTag>("Jets"))
-  , muonSrc_          (iConfig.getParameter<edm::InputTag>("Muons"))
-  , electronSrc_      (iConfig.getParameter<edm::InputTag>("Electrons"))
-  , diBosonSrc_       (iConfig.getParameter<edm::InputTag>("Diboson"))  
+  : jetToken_     (consumes<edm::View<pat::Jet> >(iConfig.getParameter<edm::InputTag>("Jets")))
+  , muonToken_    (consumes<edm::View<pat::Muon> >(iConfig.getParameter<edm::InputTag>("Muons")))
+  , electronToken_(consumes<edm::View<pat::Electron> >(iConfig.getParameter<edm::InputTag>("Electrons")))
+  , diBosonToken_ (consumes<edm::View<pat::CompositeCandidate> >(iConfig.getParameter<edm::InputTag>("Diboson")))
   , preselectionJ_    (iConfig.getParameter<std::string>("JetPreselection"))
   , preselectionMu_   (iConfig.getParameter<std::string>("MuonPreselection"))
   , preselectionEle_  (iConfig.getParameter<std::string>("ElectronPreselection"))
@@ -102,7 +102,8 @@ JetsWithLeptonsRemover::JetsWithLeptonsRemover(const edm::ParameterSet & iConfig
   
   produces<std::vector<pat::Jet> >(); 
 
-  if(diBosonSrc_.label() != "") cleaningFromDiboson_ = true;
+  edm::InputTag diBosonSrc = iConfig.getParameter<edm::InputTag>("Diboson");
+  if(diBosonSrc.label() != "") cleaningFromDiboson_ = true;
   else cleaningFromDiboson_ = false;
 
   if(doDebugPlots_){
@@ -126,7 +127,7 @@ void JetsWithLeptonsRemover::produce(edm::Event & event, const edm::EventSetup &
   using namespace std;
   
   Handle<edm::View<pat::Jet> > jets;
-  event.getByLabel(jetSrc_, jets);
+  event.getByToken(jetToken_, jets);
 
 
   //std::cout<<"----------- Muon -----------"<<std::endl;
@@ -205,7 +206,7 @@ bool JetsWithLeptonsRemover::isGood(const pat::Jet& jet) const {
 
 bool JetsWithLeptonsRemover::isMatchingWithZZLeptons(const edm::Event & event, const pat::Jet& jet) {
 
-  edm::Handle<edm::View<pat::CompositeCandidate> > VV   ; event.getByLabel(diBosonSrc_, VV);
+  edm::Handle<edm::View<pat::CompositeCandidate> > VV; event.getByToken(diBosonToken_, VV);
     pat::CompositeCandidate bestVV; bool found = false;
 
     // Search for the best ZZ pair that satisfy the preselection requirements
@@ -273,10 +274,10 @@ bool JetsWithLeptonsRemover::isMatchingWithZZLeptons(const edm::Event & event, c
 
 
 template <typename LEP>
-bool JetsWithLeptonsRemover::isMatchingWith(const edm::InputTag& src, const StringCutObjectSelector<LEP>& presel, const edm::Event & event, const pat::Jet& jet){
+bool JetsWithLeptonsRemover::isMatchingWith(const edm::EDGetTokenT<edm::View<LEP> >& token, const StringCutObjectSelector<LEP>& presel, const edm::Event & event, const pat::Jet& jet){
 
   // Check for muon-originated jets   
-  edm::Handle<std::vector<LEP> >  leptons; event.getByLabel(src, leptons);
+  edm::Handle<edm::View<LEP> > leptons; event.getByToken(token, leptons);
   
   foreach(const LEP& lepton, *leptons){
 
@@ -324,8 +325,8 @@ bool JetsWithLeptonsRemover::checkLeptonJet(const edm::Event & event, const pat:
 
   if(cleaningFromDiboson_ && isMatchingWithZZLeptons(event,jet)) return true;
   
-  if(isMatchingWith<pat::Muon>    (muonSrc_,     preselectionMu_,  event, jet) || 
-     isMatchingWith<pat::Electron>(electronSrc_, preselectionEle_, event, jet)) return true;
+  if(isMatchingWith<pat::Muon>    (muonToken_,     preselectionMu_,  event, jet) || 
+     isMatchingWith<pat::Electron>(electronToken_, preselectionEle_, event, jet)) return true;
   
   return false;
 }

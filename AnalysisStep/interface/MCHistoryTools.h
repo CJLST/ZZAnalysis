@@ -13,6 +13,7 @@
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include <DataFormats/HepMCCandidate/interface/GenParticleFwd.h>
+#include <SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h>
 
 #include <vector>
 #include <string>
@@ -21,6 +22,7 @@ class MCHistoryTools {
  public:
   /// Constructor
   MCHistoryTools(const edm::Event & event, std::string sampleName="");
+  MCHistoryTools(const edm::Event & event, std::string sampleName, edm::Handle<edm::View<reco::Candidate> > & genParticles, edm::Handle<GenEventInfoProduct> & genInfo);
 
   /// Destructor
   virtual ~MCHistoryTools();

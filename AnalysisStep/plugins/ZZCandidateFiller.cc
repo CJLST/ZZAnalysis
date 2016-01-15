@@ -71,7 +71,7 @@ private:
 
   void getPairMass(const reco::Candidate* lp, const reco::Candidate* lm, FSRToLepMap& photons, float& mass, int& ID);
 
-  edm::InputTag theCandidateTag;
+  edm::EDGetTokenT<edm::View<reco::CompositeCandidate> > candidateToken;
   const CutSet<pat::CompositeCandidate> preBestCandSelection;
   const CutSet<pat::CompositeCandidate> cuts;
   int sampleType;
@@ -88,6 +88,12 @@ private:
   TH2F* corrSigmaMu;
   TH2F* corrSigmaEle;
   Comparators::ComparatorTypes bestCandType;
+  edm::EDGetTokenT<double> rhoForMuToken;
+  edm::EDGetTokenT<double> rhoForEleToken;
+  edm::EDGetTokenT<edm::View<pat::Jet> > jetToken;
+  edm::EDGetTokenT<vector<reco::MET> > METToken;
+  edm::EDGetTokenT<edm::View<reco::Candidate> > softLeptonToken;
+  edm::EDGetTokenT<edm::View<reco::CompositeCandidate> > ZCandToken;
 };
 
 
@@ -100,7 +106,7 @@ static int SetupToSqrts(int setup) {
 
 
 ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
-  theCandidateTag(iConfig.getParameter<edm::InputTag>("src")),
+  candidateToken(consumes<edm::View<reco::CompositeCandidate> >(iConfig.getParameter<edm::InputTag>("src"))),
   preBestCandSelection(iConfig.getParameter<edm::ParameterSet>("bestCandAmong")),
   cuts(iConfig.getParameter<edm::ParameterSet>("flags")),
   sampleType(iConfig.getParameter<int>("sampleType")),
@@ -115,6 +121,13 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
   corrSigmaEle(0)
 {
   produces<pat::CompositeCandidateCollection>();
+
+  rhoForMuToken = consumes<double>(LeptonIsoHelper::getMuRhoTag(sampleType, setup));
+  rhoForEleToken = consumes<double>(LeptonIsoHelper::getEleRhoTag(sampleType, setup));
+  jetToken = consumes<edm::View<pat::Jet> >(edm::InputTag("cleanJets"));
+  METToken = consumes<vector<reco::MET> >(edm::InputTag("slimmedMETs"));
+  softLeptonToken = consumes<edm::View<reco::Candidate> >(edm::InputTag("softLeptons"));
+  ZCandToken = consumes<edm::View<reco::CompositeCandidate> >(edm::InputTag("ZCand"));
   
   rolesZ1Z2 = {"Z1", "Z2"};
   rolesZ2Z1 = {"Z2", "Z1"};
@@ -160,19 +173,19 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   double rhoForMu, rhoForEle;
   {
     edm::Handle<double> rhoHandle;
-    iEvent.getByLabel(LeptonIsoHelper::getMuRhoTag(sampleType, setup), rhoHandle);
+    iEvent.getByToken(rhoForMuToken, rhoHandle);
     rhoForMu = *rhoHandle;
-    iEvent.getByLabel(LeptonIsoHelper::getEleRhoTag(sampleType, setup), rhoHandle);
+    iEvent.getByToken(rhoForEleToken, rhoHandle);
     rhoForEle = *rhoHandle;
   }
 
   // Get LLLL candidates
-  Handle<View<CompositeCandidate> > LLLLCands;
-  iEvent.getByLabel(theCandidateTag, LLLLCands);
+  Handle<edm::View<CompositeCandidate> > LLLLCands;
+  iEvent.getByToken(candidateToken, LLLLCands);
 
   // Get jets
   Handle<edm::View<pat::Jet> > CleanJets;
-  iEvent.getByLabel("cleanJets", CleanJets);
+  iEvent.getByToken(jetToken, CleanJets);
   vector<const pat::Jet*> cleanedJetsPt30InEv;
   for(edm::View<pat::Jet>::const_iterator jet = CleanJets->begin(); jet != CleanJets->end(); ++jet){
     if(jet->pt()>30) cleanedJetsPt30InEv.push_back(&*jet);
@@ -180,13 +193,13 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
   // Get MET
   Handle<vector<reco::MET> > pfmetcoll;
-  iEvent.getByLabel("slimmedMETs", pfmetcoll);
+  iEvent.getByToken(METToken, pfmetcoll);
   math::XYZTLorentzVector pfmet;
   if(pfmetcoll.isValid()) pfmet = pfmetcoll->front().p4(); // standard MET is pfmet.pt();
 
   // Get leptons (in order to store extra leptons)
   Handle<View<reco::Candidate> > softleptoncoll;
-  iEvent.getByLabel("softLeptons", softleptoncoll);
+  iEvent.getByToken(softLeptonToken, softleptoncoll);
   vector<reco::CandidatePtr> goodisoleptonPtrs;
   for( View<reco::Candidate>::const_iterator lep = softleptoncoll->begin(); lep != softleptoncoll->end(); ++ lep ){ 
     if((bool)userdatahelpers::getUserFloat(&*lep,"isGood") 
@@ -200,7 +213,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
   // Get Z Candidates
   Handle<View<CompositeCandidate> > ZCands;
-  iEvent.getByLabel("ZCand", ZCands);
+  iEvent.getByToken(ZCandToken, ZCands);
 
   // Get processID
 //   edm::Handle<GenEventInfoProduct> gen;

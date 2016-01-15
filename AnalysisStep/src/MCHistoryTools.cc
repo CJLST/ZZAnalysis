@@ -28,18 +28,20 @@ namespace {
   bool dbg = false;
 }
 
-MCHistoryTools::MCHistoryTools(const edm::Event & event, string sampleName) :
+
+MCHistoryTools::MCHistoryTools(const edm::Event & event, std::string sampleName, edm::Handle<edm::View<reco::Candidate> > & genParticles, edm::Handle<GenEventInfoProduct> & gen) :
   ismc(false),
   processID(0),
   hepMCweight(1),
   isInit(false),
-  theGenH(0) {
-  //  if(event.getByLabel("genParticles", particles)){  // genParticles are not available in cmgTuple, only in PAT
-  if(event.getByLabel("prunedGenParticles", particles)){
+  theGenH(0) 
+{
+
+  particles = genParticles;
+  if(particles.isValid()){
+
     ismc=true;
     
-    edm::Handle<GenEventInfoProduct> gen;
-    event.getByLabel( "generator", gen );
     processID = gen->signalProcessID();
 
 //   Process IDs for current samples (Fall11/Summer12) 
@@ -89,9 +91,9 @@ MCHistoryTools::MCHistoryTools(const edm::Event & event, string sampleName) :
     }
     
 
-//   take the MC weight
-      GenEventInfoProduct  genInfo = *(gen.product());
-      hepMCweight = genInfo.weight();
+    // take the MC weight
+    GenEventInfoProduct  genInfo = *(gen.product());
+    hepMCweight = genInfo.weight();
       
   }
 }

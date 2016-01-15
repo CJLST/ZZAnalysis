@@ -29,7 +29,7 @@ class JetFiller : public edm::EDProducer {
   virtual void produce(edm::Event&, const edm::EventSetup&);
   virtual void endJob(){};
 
-  const edm::InputTag theJetTag;
+  edm::EDGetTokenT<edm::View<pat::Jet> > jetToken;
   const StringCutObjectSelector<pat::Jet, true> cut;
   const std::string bTaggerName;
   const CutSet<pat::Jet> flags;
@@ -39,7 +39,7 @@ class JetFiller : public edm::EDProducer {
 
 
 JetFiller::JetFiller(const edm::ParameterSet& iConfig) :
-  theJetTag(iConfig.getParameter<InputTag>("src")),
+  jetToken(consumes<edm::View<pat::Jet> >(iConfig.getParameter<edm::InputTag>("src"))),
   cut(iConfig.getParameter<std::string>("cut")),
   bTaggerName(iConfig.getParameter<std::string>("bTaggerName")),
   flags(iConfig.getParameter<edm::ParameterSet>("flags"))
@@ -55,7 +55,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   //--- Get jets
   Handle<edm::View<pat::Jet> > jetHandle;
-  iEvent.getByLabel(theJetTag, jetHandle);
+  iEvent.getByToken(jetToken, jetHandle);
 
   //--- q/g tagger
   Handle<edm::ValueMap<float> > qgHandle; 

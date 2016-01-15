@@ -161,6 +161,16 @@ private:
   TH1F* hRhoNoWeight;
   TH1F* hRhoWeight;
 
+  edm::EDGetTokenT<vector<Vertex> > vtxToken;
+  edm::EDGetTokenT<double> rhoToken;
+  edm::EDGetTokenT<edm::View<reco::Candidate> > genParticleToken;
+  edm::EDGetTokenT<GenEventInfoProduct> genInfoToken;
+  edm::EDGetTokenT<edm::View<pat::Jet> > jetToken;
+  edm::EDGetTokenT<edm::TriggerResults> triggerResultToken;
+  edm::EDGetTokenT<edm::View<reco::Candidate> > softLeptonToken;
+
+  edm::EDGetTokenT<edm::MergeableCounter> preSkimToken;
+
   string sampleName;
   bool dumpForSync;
   ofstream leptonSyncFile;
@@ -192,6 +202,17 @@ ZZ4lAnalyzer::ZZ4lAnalyzer(const ParameterSet& pset) :
   sampleName(pset.getParameter<string>("sampleName")),
   dumpForSync(pset.getUntrackedParameter<bool>("dumpForSync",false))
 {
+
+  vtxToken = consumes<vector<Vertex> >(edm::InputTag("goodPrimaryVertices"));
+  rhoToken = consumes<double>(edm::InputTag("fixedGridRhoFastjetAll",""));
+  genParticleToken = consumes<edm::View<reco::Candidate> >( edm::InputTag("prunedGenParticles"));
+  genInfoToken = consumes<GenEventInfoProduct>( edm::InputTag("generator"));
+  consumesMany<std::vector< PileupSummaryInfo > >();
+  jetToken = consumes<edm::View<pat::Jet> >(edm::InputTag("cleanJets"));
+  triggerResultToken = consumes<edm::TriggerResults>(edm::InputTag("TriggerResults"));
+  softLeptonToken = consumes<edm::View<reco::Candidate> >(edm::InputTag("softLeptons"));
+
+  preSkimToken = consumes<edm::MergeableCounter,edm::InLumi>(edm::InputTag("preSkimCounter"));
 
   isMC = myHelper.isMC();
 }
@@ -248,7 +269,7 @@ void ZZ4lAnalyzer::endLuminosityBlock(const edm::LuminosityBlock & iLumi, const 
 
   double Nevt_preskim = -1.;
   edm::Handle<edm::MergeableCounter> preSkimCounter;
-  if (iLumi.getByLabel("preSkimCounter", preSkimCounter)) { // Counter before skim. Does not exist for non-skimmed samples.
+  if (iLumi.getByToken(preSkimToken, preSkimCounter)) { // Counter before skim. Does not exist for non-skimmed samples.
     Nevt_preskim = preSkimCounter->value;
   }
 
@@ -344,17 +365,22 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
   float nTrueInt = -1.;
   float PUweight = 1.;
 
-  Handle<vector<Vertex> >  vertexs;
-  event.getByLabel("goodPrimaryVertices",vertexs);
-  int Nvtx = vertexs->size();
+  Handle<vector<Vertex> > vertices;
+  event.getByToken(vtxToken,vertices);
+  int Nvtx = vertices->size();
 
   Handle<double> rhoHandle;
-//  event.getByLabel(InputTag("kt6PFJetsForIso","rho"), rhoHandle);
-  event.getByLabel(InputTag("fixedGridRhoFastjetAll",""), rhoHandle);
+  event.getByToken(rhoToken, rhoHandle);
 
   int genFinalState = NONE;
   if (isMC) {
-    MCHistoryTools mch(event,sampleName);
+
+    edm::Handle<edm::View<reco::Candidate> > genParticles;
+    event.getByToken(genParticleToken, genParticles);
+    edm::Handle<GenEventInfoProduct> genInfo;
+    event.getByToken(genInfoToken, genInfo);
+
+    MCHistoryTools mch(event, sampleName, genParticles, genInfo);
     genFinalState = mch.genFinalState();
 
     if (genFinalState == EEEE) {
@@ -407,18 +433,17 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
 //   const View<pat::CompositeCandidate>* cands = candHandle.product();
 
   // Muons 
-  Handle<pat::MuonCollection> muons;
-  event.getByLabel("softMuons", muons);
+  // Handle<pat::MuonCollection> muons;
+  // event.getByLabel("softMuons", muons);
 
   // Electrons
-  Handle<pat::ElectronCollection> electrons;
-  event.getByLabel("cleanSoftElectrons", electrons);
+  // Handle<pat::ElectronCollection> electrons;
+  // event.getByLabel("cleanSoftElectrons", electrons);
 
   // Zs (for step plots)
-  Handle<View<pat::CompositeCandidate> > Z;
-  event.getByLabel("ZCand", Z);
+  // Handle<View<pat::CompositeCandidate> > Z;
+  // event.getByLabel("ZCand", Z);
  
-
   // Z+l (for step plots)
 //   Handle<View<reco::CompositeCandidate> > Zl;
 //   event.getByLabel("ZlCand", Zl);
@@ -444,21 +469,25 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
 
   // Jet collection
   Handle<edm::View<pat::Jet> > CleanJets;
-  event.getByLabel("cleanJets", CleanJets);
+  event.getByToken(jetToken, CleanJets);
   vector<const pat::Jet*> cleanedJetsPt30;
   for(edm::View<pat::Jet>::const_iterator jet = CleanJets->begin(); jet != CleanJets->end(); ++jet){
     if(jet->pt()>30) cleanedJetsPt30.push_back(&*jet);
   }
 
+  // Trigger results
+  Handle<edm::TriggerResults> triggerResults;
+  event.getByToken(triggerResultToken, triggerResults);
+  
   // Apply MC filter (skip event)
-  if (isMC && !(myHelper.passMCFilter(event))) return;
+  if (isMC && !(myHelper.passMCFilter(event,triggerResults))) return;
 
   // Skim
-  bool evtPassSkim = myHelper.passSkim(event);
+  bool evtPassSkim = myHelper.passSkim(event,triggerResults);
   
   // Trigger requests
   short trigworld = 0;
-  bool evtPassTrigger = myHelper.passTrigger(event, trigworld);  
+  bool evtPassTrigger = myHelper.passTrigger(event,triggerResults,trigworld);  
   if(test_bit_16(trigworld,1)) ++Nevt_passDiMu;
   if(test_bit_16(trigworld,2)) ++Nevt_passDiEle;
   if(test_bit_16(trigworld,3)) ++Nevt_passMuEle;
@@ -477,7 +506,7 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
   // Fill Lepton sync dump
   if (dumpForSync) {
     Handle<View<reco::Candidate> > softleptoncoll;
-    event.getByLabel("softLeptons", softleptoncoll);
+    event.getByToken(softLeptonToken, softleptoncoll);
 
     // {run}:{lumi}:{event}:{pdgId:d}:{pT:.2f}:{eta:.2f}:{phi:.2f}{SIP:.2f}:{PFChargedHadIso:.2f}:{PFNeutralHadIso:.2f}:{PFPhotonIso:.2f}:{rho:.2f}:{combRelIsoPF:.3f}:{eleBDT:.3f} 
 
@@ -568,7 +597,7 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
 		
 //       cout << grp << "Other pairs: mZ'1= " << Z1OtherCombMass << " mZ'2= " << Z2OtherCombMass << endl;
 //       //      cout << grp << "pt_4l= " << cand->pt() << " eta_4l= " << cand->eta() << " y_4l " << cand->p4().Rapidity()
-//       //	   << " phi_4l= " << cand->phi() << " N_vtx " << vertexs->size() <<endl;
+//       //	   << " phi_4l= " << cand->phi() << " N_vtx " << vertices->size() <<endl;
 //       cout << grp << "costheta1= " << costheta1 << " costheta2= " << costheta2 << " Phi= " << Phi << " costhetastar= " << costhetastar
 // 	   << " Phi1= " << Phi1
 // 	   << endl;

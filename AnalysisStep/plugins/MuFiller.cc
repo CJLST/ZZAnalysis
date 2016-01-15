@@ -43,22 +43,26 @@ class MuFiller : public edm::EDProducer {
   virtual void produce(edm::Event&, const edm::EventSetup&);
   virtual void endJob(){};
 
-  const edm::InputTag theCandidateTag;
+  edm::EDGetTokenT<pat::MuonRefVector> muonToken;
   int sampleType;
   int setup;
   const StringCutObjectSelector<pat::Muon, true> cut;
   const CutSet<pat::Muon> flags;
+  edm::EDGetTokenT<double> rhoToken;
+  edm::EDGetTokenT<vector<Vertex> > vtxToken;
 
 };
 
 
 MuFiller::MuFiller(const edm::ParameterSet& iConfig) :
-  theCandidateTag(iConfig.getParameter<InputTag>("src")),
+  muonToken(consumes<pat::MuonRefVector>(iConfig.getParameter<edm::InputTag>("src"))),
   sampleType(iConfig.getParameter<int>("sampleType")),
   setup(iConfig.getParameter<int>("setup")),
   cut(iConfig.getParameter<std::string>("cut")),
   flags(iConfig.getParameter<edm::ParameterSet>("flags"))
 {
+  rhoToken = consumes<double>(LeptonIsoHelper::getMuRhoTag(sampleType, setup));
+  vtxToken = consumes<vector<Vertex> >(edm::InputTag("goodPrimaryVertices"));
   produces<pat::MuonCollection>();
 }
 
@@ -69,15 +73,14 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   //--- Get leptons and rho
   edm::Handle<pat::MuonRefVector> muonHandle;
-  iEvent.getByLabel(theCandidateTag, muonHandle);
+  iEvent.getByToken(muonToken, muonHandle);
 
-  InputTag theRhoTag = LeptonIsoHelper::getMuRhoTag(sampleType, setup);
   edm::Handle<double> rhoHandle;
-  iEvent.getByLabel(theRhoTag, rhoHandle);
+  iEvent.getByToken(rhoToken, rhoHandle);
   double rho = *rhoHandle;
 
-  edm::Handle<vector<Vertex> >  vertexs;
-  iEvent.getByLabel("goodPrimaryVertices",vertexs);
+  edm::Handle<vector<Vertex> > vertices;
+  iEvent.getByToken(vtxToken,vertices);
 
   // Output collection
   auto_ptr<pat::MuonCollection> result( new pat::MuonCollection() );
@@ -102,8 +105,8 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     float dxy = 999.;
     float dz  = 999.;
     const Vertex* vertex = 0;
-    if (vertexs->size()>0) {
-      vertex = &(vertexs->front());
+    if (vertices->size()>0) {
+      vertex = &(vertices->front());
       dxy = fabs(l.muonBestTrack()->dxy(vertex->position()));
       dz  = fabs(l.muonBestTrack()->dz(vertex->position()));
     }

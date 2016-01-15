@@ -28,23 +28,23 @@ class ZZ4lConfigHelper {
   virtual ~ZZ4lConfigHelper(){}
 
   /// Pass skim
-  bool passSkim(const edm::Event & event)  { short bw=0; return passSkim(event,bw); }
+  bool passSkim(const edm::Event & event, edm::Handle<edm::TriggerResults> & trigRes)  { short bw=0; return passSkim(event,trigRes,bw); }
   
   /// Pass skim (set bit in trigworld)
-  bool passSkim(const edm::Event & event, short& trigworld);
+  bool passSkim(const edm::Event & event, edm::Handle<edm::TriggerResults> & trigRes, short& trigworld);
   
   /// Pass trigger requests
-  bool passTrigger(const edm::Event & event) { short bw=0; return passTrigger(event,bw); }
+  bool passTrigger(const edm::Event & event, edm::Handle<edm::TriggerResults> & trigRes) { short bw=0; return passTrigger(event,trigRes,bw); }
 
   /// Pass trigger requests (and set bits in trigworld)
-  bool passTrigger(const edm::Event & event, short& trigworld);
+  bool passTrigger(const edm::Event & event, edm::Handle<edm::TriggerResults> & trigRes, short& trigworld);
 
 
   /// Pass MC filters specified in the card "MCFilterPath"
-  bool passMCFilter(const edm::Event & event);
+  bool passMCFilter(const edm::Event & event, edm::Handle<edm::TriggerResults> & trigRes);
   
   /// Pass the specified filter
-  bool passFilter(const edm::Event & event, const std::string& filterPath, bool fromHLT=false);
+  bool passFilter(const edm::Event & event, edm::Handle<edm::TriggerResults> & trigRes, const std::string& filterPath);
 
   bool isMC() {return isMC_;};
 
@@ -67,12 +67,8 @@ class ZZ4lConfigHelper {
   std::string MCFilter;
   edm::EventID cachedEvtId;  
   edm::Handle<edm::TriggerResults> triggerResults;
-  edm::Handle<edm::TriggerResults> triggerResultsHLT;
   const edm::TriggerNames* triggerNames;
-  const edm::TriggerNames* triggerNamesHLT;
   bool anyTrigger;
-
-  void eventInit(const edm::Event & event);
 
 };
 #endif

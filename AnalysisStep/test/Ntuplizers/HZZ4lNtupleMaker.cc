@@ -40,6 +40,7 @@
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 #include "SimDataFormats/GeneratorProducts/interface/LHERunInfoProduct.h"
 #include <SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h>
+#include <SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h>
 
 #include <ZZAnalysis/AnalysisStep/interface/DaughterDataHelpers.h>
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
@@ -368,6 +369,19 @@ private:
   bool skipEmptyEvents; // Skip events whith no selected candidate (otherwise, gen info is preserved for all events)
   Float_t xsec;
   int year;
+
+  edm::EDGetTokenT<edm::View<reco::Candidate> > genParticleToken;
+  edm::EDGetTokenT<GenEventInfoProduct> genInfoToken;
+  edm::EDGetTokenT<edm::View<pat::CompositeCandidate> > candToken;
+  edm::EDGetTokenT<edm::TriggerResults> triggerResultToken;
+  edm::EDGetTokenT<vector<reco::Vertex> > vtxToken;
+  edm::EDGetTokenT<edm::View<pat::Jet> > jetToken;
+  edm::EDGetTokenT<pat::METCollection> metToken;
+  edm::EDGetTokenT<pat::METCollection> metNoHFToken;
+  edm::EDGetTokenT<pat::MuonCollection> muonToken;
+  edm::EDGetTokenT<pat::ElectronCollection> electronToken;
+
+  edm::EDGetTokenT<edm::MergeableCounter> preSkimToken;
   
   PUReweight reweight;
 
@@ -425,6 +439,21 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   sampleName = pset.getParameter<string>("sampleName");
   xsec = pset.getParameter<double>("xsec");
   year = pset.getParameter<int>("setup");
+
+  consumesMany<std::vector< PileupSummaryInfo > >();
+  genParticleToken = consumes<edm::View<reco::Candidate> >(edm::InputTag("prunedGenParticles"));
+  genInfoToken = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
+  consumesMany<LHEEventProduct>();
+  candToken = consumes<edm::View<pat::CompositeCandidate> >(edm::InputTag(theCandLabel));
+  triggerResultToken = consumes<edm::TriggerResults>(edm::InputTag("TriggerResults"));
+  vtxToken = consumes<vector<reco::Vertex> >(edm::InputTag("goodPrimaryVertices"));
+  jetToken = consumes<edm::View<pat::Jet> >(edm::InputTag("cleanJets"));
+  metToken     = consumes<pat::METCollection>(edm::InputTag("slimmedMETs"));
+  metNoHFToken = consumes<pat::METCollection>(edm::InputTag("slimmedMETsNoHF"));
+  muonToken = consumes<pat::MuonCollection>(edm::InputTag("slimmedMuons"));
+  electronToken = consumes<pat::ElectronCollection>(edm::InputTag("slimmedElectrons"));
+
+  preSkimToken = consumes<edm::MergeableCounter,edm::InLumi>(edm::InputTag("preSkimCounter"));
 
   if (skipEmptyEvents) {
     applyTrigger=true;
@@ -571,7 +600,12 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
     PUWeight = reweight.weight(myHelper.sampleType(), myHelper.setup(), NTrueInt);
 
-    MCHistoryTools mch(event, sampleName);
+    edm::Handle<edm::View<reco::Candidate> > genParticles;
+    event.getByToken(genParticleToken, genParticles);
+    edm::Handle<GenEventInfoProduct> genInfo;
+    event.getByToken(genInfoToken, genInfo);
+
+    MCHistoryTools mch(event, sampleName, genParticles, genInfo);
     genFinalState = mch.genFinalState();
     genProcessId = mch.getProcessID();
     genHEPMCweight = mch.gethepMCweight();
@@ -636,7 +670,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
   // Get candidate collection
   edm::Handle<edm::View<pat::CompositeCandidate> > candHandle;
-  event.getByLabel(theCandLabel, candHandle);
+  event.getByToken(candToken, candHandle);
   const edm::View<pat::CompositeCandidate>* cands = candHandle.product();
 
   if (skipEmptyEvents && cands->size() == 0) return; // Skip events with no candidate, unless skipEmptyEvents = false
@@ -644,15 +678,20 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   // For Z+L CRs, we want only events with exactly 1 Z+l candidate. FIXME: this has to be reviewed.
   if (theChannel==ZL && cands->size() != 1) return;
 
+
+  // Retrieve trigger results
+  Handle<edm::TriggerResults> triggerResults;
+  event.getByToken(triggerResultToken, triggerResults);
+
   // Apply MC filter (skip event)
-  if (isMC && !(myHelper.passMCFilter(event))) return;
+  if (isMC && !(myHelper.passMCFilter(event,triggerResults))) return;
 
   // Apply skim
-  bool evtPassSkim = myHelper.passSkim(event, trigWord);
+  bool evtPassSkim = myHelper.passSkim(event,triggerResults,trigWord);
   if (applySkim && !evtPassSkim) return;
 
   // Apply trigger request (skip event)
-  bool evtPassTrigger = myHelper.passTrigger(event, trigWord);
+  bool evtPassTrigger = myHelper.passTrigger(event,triggerResults,trigWord);
   if (applyTrigger && !evtPassTrigger) return;
 
 
@@ -706,13 +745,13 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
   // Primary vertices
   Handle<vector<reco::Vertex> > vertices;
-  event.getByLabel("goodPrimaryVertices",vertices);
+  event.getByToken(vtxToken,vertices);
   Nvtx=vertices->size();
 
 
   // Jets (cleaned wrt all tight isolated leptons)
   Handle<edm::View<pat::Jet> > CleanedJets;
-  event.getByLabel("cleanJets", CleanedJets);
+  event.getByToken(jetToken, CleanedJets);
   vector<const pat::Jet*> cleanedJets;
   for(edm::View<pat::Jet>::const_iterator jet = CleanedJets->begin(); jet != CleanedJets->end(); ++jet){
     cleanedJets.push_back(&*jet);
@@ -721,8 +760,8 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   // MET
   Handle<pat::METCollection> metHandle;
   Handle<pat::METCollection> metNoHFHandle;
-  event.getByLabel("slimmedMETs", metHandle);
-  event.getByLabel("slimmedMETsNoHF", metNoHFHandle);
+  event.getByToken(metToken, metHandle);
+  event.getByToken(metNoHFToken, metNoHFHandle);
   if(metHandle.isValid()){
     PFMET = metHandle->front().pt();
     PFMETPhi = metHandle->front().phi();
@@ -735,14 +774,14 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
   // number of reconstructed leptons
   edm::Handle<pat::MuonCollection> muonHandle;
-  event.getByLabel("slimmedMuons", muonHandle);
+  event.getByToken(muonToken, muonHandle);
   for(unsigned int i = 0; i< muonHandle->size(); ++i){
     const pat::Muon* m = &((*muonHandle)[i]);
     if(m->pt()>5 && m->isPFMuon()) // these cuts are implicit in miniAOD
       NRecoMu++;
   }
   edm::Handle<pat::ElectronCollection> electronHandle;
-  event.getByLabel("slimmedElectrons", electronHandle);
+  event.getByToken(electronToken, electronHandle);
   for(unsigned int i = 0; i< electronHandle->size(); ++i){
     const pat::Electron* e = &((*electronHandle)[i]);
     if(e->pt()>5) // this cut is implicit in miniAOD
@@ -1283,7 +1322,7 @@ void HZZ4lNtupleMaker::endLuminosityBlock(edm::LuminosityBlock const& iLumi, edm
 {
   Float_t Nevt_preskim = -1.;
   edm::Handle<edm::MergeableCounter> preSkimCounter;
-  if (iLumi.getByLabel("preSkimCounter", preSkimCounter)) { // Counter before skim. Does not exist for non-skimmed samples.
+  if (iLumi.getByToken(preSkimToken, preSkimCounter)) { // Counter before skim. Does not exist for non-skimmed samples.
     Nevt_preskim = preSkimCounter->value;
   }  
 

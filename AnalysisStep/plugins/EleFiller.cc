@@ -46,18 +46,20 @@ class EleFiller : public edm::EDProducer {
   virtual void produce(edm::Event&, const edm::EventSetup&);
   virtual void endJob(){};
 
-  const edm::InputTag theCandidateTag;
+  edm::EDGetTokenT<pat::ElectronRefVector> electronToken;
   int sampleType;
   int setup;
   const StringCutObjectSelector<pat::Electron, true> cut;
   const CutSet<pat::Electron> flags;
+  edm::EDGetTokenT<double> rhoToken;
+  edm::EDGetTokenT<vector<Vertex> > vtxToken;
   //EGammaMvaEleEstimatorCSA14* myMVATrig;
   EDGetTokenT<ValueMap<float> > BDTValueMapToken;
 };
 
 
 EleFiller::EleFiller(const edm::ParameterSet& iConfig) :
-  theCandidateTag(iConfig.getParameter<InputTag>("src")),
+  electronToken(consumes<pat::ElectronRefVector>(iConfig.getParameter<edm::InputTag>("src"))),
   sampleType(iConfig.getParameter<int>("sampleType")),
   setup(iConfig.getParameter<int>("setup")),
   cut(iConfig.getParameter<std::string>("cut")),
@@ -65,6 +67,8 @@ EleFiller::EleFiller(const edm::ParameterSet& iConfig) :
   //myMVATrig(0),
   BDTValueMapToken(consumes<ValueMap<float> >(iConfig.getParameter<InputTag>("mvaValuesMap")))
 {
+  rhoToken = consumes<double>(LeptonIsoHelper::getEleRhoTag(sampleType, setup));
+  vtxToken = consumes<vector<Vertex> >(edm::InputTag("goodPrimaryVertices"));
   produces<pat::ElectronCollection>();
 
   if (recomputeBDT) {
@@ -101,15 +105,14 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   // Get leptons and rho
   edm::Handle<pat::ElectronRefVector> electronHandle;
-  iEvent.getByLabel(theCandidateTag, electronHandle);
+  iEvent.getByToken(electronToken, electronHandle);
 
-  InputTag theRhoTag = LeptonIsoHelper::getEleRhoTag(sampleType,setup);
   edm::Handle<double> rhoHandle;
-  iEvent.getByLabel(theRhoTag, rhoHandle);
+  iEvent.getByToken(rhoToken, rhoHandle);
   double rho = *rhoHandle;
 
-  edm::Handle<vector<Vertex> >  vertexs;
-  iEvent.getByLabel("goodPrimaryVertices",vertexs);
+  edm::Handle<vector<Vertex> > vertices;
+  iEvent.getByToken(vtxToken,vertices);
 
   Handle<ValueMap<float> > BDTValues;
   iEvent.getByToken(BDTValueMapToken, BDTValues);
@@ -140,8 +143,8 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     float dxy = 999.;
     float dz  = 999.;
     const Vertex* vertex = 0;
-    if (vertexs->size()>0) {
-      vertex = &(vertexs->front());
+    if (vertices->size()>0) {
+      vertex = &(vertices->front());
       dxy = fabs(l.gsfTrack()->dxy(vertex->position()));
       dz  = fabs(l.gsfTrack()->dz(vertex->position()));
     } 

@@ -48,7 +48,7 @@ class ZCandidateFiller : public edm::EDProducer {
   virtual void produce(edm::Event&, const edm::EventSetup&);
   virtual void endJob(){};
   
-  edm::InputTag theCandidateTag;
+  edm::EDGetTokenT<edm::View<reco::CompositeCandidate> > candidateToken;
   const StringCutObjectSelector<pat::CompositeCandidate, true> preBestZSelection;
   int sampleType;
   int setup;
@@ -59,7 +59,7 @@ class ZCandidateFiller : public edm::EDProducer {
 
 
 ZCandidateFiller::ZCandidateFiller(const edm::ParameterSet& iConfig) :
-  theCandidateTag(iConfig.getParameter<edm::InputTag>("src")),
+  candidateToken(consumes<edm::View<reco::CompositeCandidate> >(iConfig.getParameter<edm::InputTag>("src"))),
   preBestZSelection(iConfig.getParameter<std::string>("bestZAmong")),
   sampleType(iConfig.getParameter<int>("sampleType")),
   setup(iConfig.getParameter<int>("setup")),
@@ -92,7 +92,7 @@ ZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   //-- Get LL candidates
   Handle<View<reco::CompositeCandidate> > LLCands;
-  iEvent.getByLabel(theCandidateTag, LLCands);
+  iEvent.getByToken(candidateToken, LLCands);
 
 #define USE_FSR
 #ifdef USE_FSR
