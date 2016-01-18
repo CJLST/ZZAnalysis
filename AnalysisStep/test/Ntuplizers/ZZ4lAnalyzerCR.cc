@@ -67,14 +67,15 @@ public:
   
 private:
   ZZ4lConfigHelper myHelper;
-  std::string theCandLabel;
   Channel theChannel;
   bool isMC;
   PUReweight reweight;
 
   double weight;
 
+  edm::EDGetTokenT<edm::View<pat::CompositeCandidate> > candToken;
   edm::EDGetTokenT<edm::TriggerResults> triggerResultToken;
+  edm::EDGetTokenT<std::vector<PileupSummaryInfo> > PupInfoToken;
 
   //histograms
   TH1F* nEventComplete;
@@ -86,9 +87,9 @@ private:
 // Constructor
 ZZ4lAnalyzerCR::ZZ4lAnalyzerCR(const ParameterSet& pset) :
   myHelper(pset),
-  theCandLabel(pset.getUntrackedParameter<string>("candCollection")),
   reweight(),
-  weight(1.)
+  weight(1.),
+  candToken(consumes<edm::View<pat::CompositeCandidate> >(pset.getUntrackedParameter<edm::InputTag>("candCollection")))
 {
   isMC = myHelper.isMC();
   theChannel = myHelper.channel();
@@ -98,6 +99,7 @@ ZZ4lAnalyzerCR::ZZ4lAnalyzerCR(const ParameterSet& pset) :
 //   }
 
   triggerResultToken = consumes<edm::TriggerResults>(edm::InputTag("TriggerResults"));
+  PupInfoToken = consumes<std::vector<PileupSummaryInfo> >(edm::InputTag("addPileupInfo"));
 }
 
 
@@ -139,8 +141,8 @@ void ZZ4lAnalyzerCR::analyze(const Event & event, const EventSetup& eventSetup){
   float PUweight = 1.;
   if (isMC) {
     float nTrueInt = -1.;
-    Handle<std::vector< PileupSummaryInfo > >  PupInfo;
-    event.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
+    Handle<std::vector<PileupSummaryInfo> > PupInfo;
+    event.getByToken(PupInfoToken, PupInfo);
     std::vector<PileupSummaryInfo>::const_iterator PVI;
     for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
       if(PVI->getBunchCrossing() == 0) { 
@@ -157,7 +159,7 @@ void ZZ4lAnalyzerCR::analyze(const Event & event, const EventSetup& eventSetup){
 
    // CR Candidates
   Handle<View<pat::CompositeCandidate> > candHandle;
-  event.getByLabel(theCandLabel, candHandle);
+  event.getByToken(candToken, candHandle);
   const View<pat::CompositeCandidate>* cands = candHandle.product();
 
  

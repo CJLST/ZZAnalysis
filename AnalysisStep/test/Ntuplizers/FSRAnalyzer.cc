@@ -40,6 +40,10 @@ class FSRAnalyzer : public edm::EDAnalyzer {
   // Operations
   void analyze(const edm::Event & event, const edm::EventSetup& eventSetup);  
 
+  edm::EDGetTokenT<edm::View<pat::CompositeCandidate> > ZCollToken;
+  edm::EDGetTokenT<edm::View<pat::PackedCandidate> > pfCandToken;
+  edm::EDGetTokenT<std::vector<PileupSummaryInfo> > PupInfoToken;
+  edm::EDGetTokenT<std::vector<reco::Vertex> > vtxToken;
   edm::EDGetTokenT<edm::View<reco::Candidate> > genParticleToken;
   edm::EDGetTokenT<GenEventInfoProduct> genInfoToken;
 
@@ -47,6 +51,10 @@ class FSRAnalyzer : public edm::EDAnalyzer {
 
 FSRAnalyzer::FSRAnalyzer(const edm::ParameterSet& pset)
 {
+  ZCollToken = consumes<edm::View<pat::CompositeCandidate> >(edm::InputTag("ZCand"));
+  pfCandToken = consumes<edm::View<pat::PackedCandidate> >(edm::InputTag("packedPFCandidates"));
+  PupInfoToken = consumes<std::vector<PileupSummaryInfo> >(edm::InputTag("addPileupInfo"));
+  vtxToken = consumes<std::vector<reco::Vertex> >(edm::InputTag("goodPrimaryVertices"));
   genParticleToken = consumes<edm::View<reco::Candidate> >( edm::InputTag("prunedGenParticles"));
   genInfoToken = consumes<GenEventInfoProduct>( edm::InputTag("generator"));
 }
@@ -71,13 +79,13 @@ FSRAnalyzer::analyze(const edm::Event & event, const edm::EventSetup& eventSetup
   const float ZmassValue = 91.1876;
 
   Handle<View<pat::CompositeCandidate> > ZColl;
-  event.getByLabel("ZCand", ZColl);
+  event.getByToken(ZCollToken, ZColl);
 
   edm::Handle<edm::View<pat::PackedCandidate> > pfCands; 
-  event.getByLabel("packedPFCandidates",pfCands);
+  event.getByToken(pfCandToken,pfCands);
 
-  Handle<std::vector<PileupSummaryInfo> >  PupInfo;
-  event.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
+  Handle<std::vector<PileupSummaryInfo> > PupInfo;
+  event.getByToken(PupInfoToken, PupInfo);
   int NObsInt  = 0;
   float NTrueInt  = 0;
   std::vector<PileupSummaryInfo>::const_iterator PVI;
@@ -89,9 +97,9 @@ FSRAnalyzer::analyze(const edm::Event & event, const edm::EventSetup& eventSetup
     } 
   }
 
-  Handle<vector<reco::Vertex> >  vertexs;
-  event.getByLabel("goodPrimaryVertices",vertexs);
-  int Nvtx=vertexs->size();
+  Handle<vector<reco::Vertex> > vertices;
+  event.getByToken(vtxToken,vertices);
+  int Nvtx=vertices->size();
 
   edm::Handle<edm::View<reco::Candidate> > genParticles;
   event.getByToken(genParticleToken, genParticles);

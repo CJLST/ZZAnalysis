@@ -33,19 +33,7 @@ using namespace reco;
 
 class dumpUserData: public edm::EDAnalyzer {
 public:
-  dumpUserData(const ParameterSet& pset):
-    muonSrc(pset.getParameter<InputTag>("muonSrc")),
-    electronSrc(pset.getParameter<InputTag>("electronSrc")),
-    dumpJets(pset.existsAs<InputTag>("jetSrc")),
-    jetSrc(dumpJets?pset.getParameter<InputTag>("jetSrc"):InputTag("")),
-    listTriggers(pset.getUntrackedParameter<bool>("dumpTrigger",false))
-  {
-    ParameterSet collps = pset.getParameter<ParameterSet>("candidateSrcs");
-    collNames = collps.getParameterNamesForType<InputTag>();
-    for( unsigned i=0; i<collNames.size(); ++i) {
-      candidateSrcs.push_back(collps.getParameter<InputTag>(collNames[i]));
-    }
-  }
+  dumpUserData(const ParameterSet& pset);
 
   void analyze(const edm::Event & event, const edm::EventSetup& eventSetup);
  
@@ -55,15 +43,37 @@ public:
   void dumpCandidates(const View<pat::CompositeCandidate>& cands);
   template<typename T> void dumpUserVal(const T& cand);
 
-
-  InputTag muonSrc;
-  InputTag electronSrc;
+  edm::EDGetTokenT<pat::MuonCollection> muonToken;
+  edm::EDGetTokenT<pat::ElectronCollection> electronToken;
   bool dumpJets;
-  InputTag jetSrc;
-  bool listTriggers;
+  edm::EDGetTokenT<pat::JetCollection> jetToken;
+  edm::EDGetTokenT<vector<reco::Vertex> > vtxToken;
   vector<string> collNames;
-  vector<InputTag> candidateSrcs;
+  vector<edm::EDGetTokenT<edm::View<pat::CompositeCandidate> > > candidateSrcTokens;
+  bool listTriggers;
+  edm::EDGetTokenT<edm::TriggerResults> triggerResultToken;
+
 };
+
+
+dumpUserData::dumpUserData(const ParameterSet& pset):
+  muonToken(consumes<pat::MuonCollection>(pset.getParameter<InputTag>("muonSrc"))),
+  electronToken(consumes<pat::ElectronCollection>(pset.getParameter<InputTag>("electronSrc"))),
+  dumpJets(pset.existsAs<InputTag>("jetSrc")),
+  jetToken( dumpJets ? consumes<pat::JetCollection>(pset.getParameter<InputTag>("jetSrc")) : edm::EDGetTokenT<pat::JetCollection>() ),
+  listTriggers(pset.getUntrackedParameter<bool>("dumpTrigger",false))
+{
+
+  vtxToken = consumes<vector<reco::Vertex> >(edm::InputTag("offlinePrimaryVertices"));
+
+  ParameterSet collps = pset.getParameter<ParameterSet>("candidateSrcs");
+  collNames = collps.getParameterNamesForType<InputTag>();
+  for( unsigned i=0; i<collNames.size(); ++i) {
+    candidateSrcTokens.push_back(consumes<edm::View<pat::CompositeCandidate> >(collps.getParameter<InputTag>(collNames[i])));
+  }
+
+  triggerResultToken = consumes<edm::TriggerResults>(edm::InputTag("TriggerResults","","HLT"));
+}
 
 
 //Explicit instantiation of template function
@@ -80,15 +90,15 @@ void dumpUserData::analyze(const Event & event, const EventSetup& eventSetup){
   cout << "Dump for event " << irun << ":" << ils << ":" << ievt << endl; 
 
   Handle<pat::MuonCollection> muons;
-  event.getByLabel(muonSrc, muons);
+  event.getByToken(muonToken, muons);
 
   Handle<pat::ElectronCollection> electrons;
-  event.getByLabel(electronSrc, electrons);
+  event.getByToken(electronToken, electrons);
 
   bool dumpVertices=false;
   if (dumpVertices) {  
     edm::Handle<vector<reco::Vertex> > vtxs;
-    event.getByLabel(InputTag("offlinePrimaryVertices"), vtxs);
+    event.getByToken(vtxToken, vtxs);
 
     for( vector<reco::Vertex>::const_iterator vtx =vtxs->begin(); vtx != vtxs->end(); ++vtx ) {
       float rho = vtx->position().rho();
@@ -166,7 +176,7 @@ void dumpUserData::analyze(const Event & event, const EventSetup& eventSetup){
   for(unsigned i=0; i<collNames.size(); ++i) {
     Handle<View<pat::CompositeCandidate> > coll;
     int j = nColls-i-1;
-    event.getByLabel(candidateSrcs[j],coll);
+    event.getByToken(candidateSrcTokens[j],coll);
     cout << collNames[j] << ": " << coll->size() << endl;
     dumpCandidates(*coll);
   }
@@ -174,7 +184,7 @@ void dumpUserData::analyze(const Event & event, const EventSetup& eventSetup){
 
   if (dumpJets) {  
     Handle<pat::JetCollection> jets;
-    event.getByLabel(jetSrc, jets);
+    event.getByToken(jetToken, jets);
 
     cout << "Jets (only for pT>30):" << endl;
     for( pat::JetCollection::const_iterator jet = jets->begin(); jet != jets->end(); ++jet ) {
@@ -191,8 +201,7 @@ void dumpUserData::analyze(const Event & event, const EventSetup& eventSetup){
   // Print passing triggers
   if (listTriggers) {
     Handle<TriggerResults> triggerResults;
-    edm::InputTag it("TriggerResults","","HLT");
-    if (event.getByLabel(it, triggerResults)) {
+    if (event.getByToken(triggerResultToken, triggerResults)) {
       edm::TriggerNames const* trigNames_;  
       trigNames_ = &event.triggerNames(*triggerResults);
       cout << "Trigger bits:" << endl;
