@@ -67,7 +67,7 @@ namespace {
   bool addKinRefit = false;
   bool addVtxFit = false;
   bool addFSRDetails = false;
-  bool skipDataMCWeight = false; // skip computation of data/MC weight 
+  bool skipDataMCWeight = true; // skip computation of data/MC weight // FIXME: to be flipped when new SFs are available for 76X samples 
   bool skipFakeWeight = true;   // skip computation of fake rate weight for CRs
   bool skipHqTWeight = true;    // skip computation of hQT weight 
 
@@ -598,7 +598,9 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       } 
     }
 
-    PUWeight = reweight.weight(myHelper.sampleType(), myHelper.setup(), NTrueInt);
+    // FIXME: deactivating PU weights for 76X samples for now
+    //PUWeight = reweight.weight(myHelper.sampleType(), myHelper.setup(), NTrueInt);
+    PUweight = 1.; 
 
     edm::Handle<edm::View<reco::Candidate> > genParticles;
     event.getByToken(genParticleToken, genParticles);

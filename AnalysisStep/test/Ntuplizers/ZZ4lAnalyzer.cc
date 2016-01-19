@@ -418,7 +418,10 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
 
     int source = myHelper.sampleType();
     int target = myHelper.setup();
-    PUweight = reweight.weight(source,target,nTrueInt); // FIXME: To be updated
+    // FIXME: deactivating PU weights for 76X samples for now
+    //PUweight = reweight.weight(source,target,nTrueInt);
+    PUweight = 1.; 
+
     hNvtxWeight->Fill(Nvtx,PUweight);
     hRhoWeight->Fill(*rhoHandle,PUweight);
 
