@@ -126,9 +126,14 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     pat::Electron l(*((*electronHandle)[i].get()));
 
     //--- PF ISO
-    float PFChargedHadIso   = l.chargedHadronIso();
-    float PFNeutralHadIso   = l.neutralHadronIso();
-    float PFPhotonIso       = l.photonIso();
+    // for cone size R=0.4 :
+    //float PFChargedHadIso   = l.chargedHadronIso();
+    //float PFNeutralHadIso   = l.neutralHadronIso();
+    //float PFPhotonIso       = l.photonIso();
+    // for cone size R=0.3 :
+    float PFChargedHadIso   = l.pfIsolationVariables().sumChargedHadronPt;
+    float PFNeutralHadIso   = l.pfIsolationVariables().sumNeutralHadronEt;
+    float PFPhotonIso       = l.pfIsolationVariables().sumPhotonEt;
 
     //float fSCeta = fabs(l.eta()); 
     float fSCeta = fabs(l.superCluster()->eta());
