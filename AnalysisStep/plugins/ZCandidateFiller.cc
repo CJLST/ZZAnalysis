@@ -213,8 +213,8 @@ ZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  if (fsr!=0) {
 	    //	if (!fsr->isFromMuon()) { // Type 1 photons should be subtracted from muon iso cones
 	    double dR = ROOT::Math::VectorUtil::DeltaR(fsr->momentum(),d->momentum());
-	    if (dR<0.4 && ((d->isMuon() && dR > 0.01) ||
-			   (d->isElectron() && (fabs((static_cast<const pat::Electron*>(d->masterClone().get()))->superCluster()->eta()) < 1.479 || dR > 0.08)))) {
+	    if ((dR<0.4 && d->isMuon() && dR > 0.01) ||
+		(dR<0.3 && d->isElectron() && (fabs((static_cast<const pat::Electron*>(d->masterClone().get()))->superCluster()->eta()) < 1.479 || dR > 0.08))) {
 	      fsrCorr = fsr->pt();
 	    }
 	  }

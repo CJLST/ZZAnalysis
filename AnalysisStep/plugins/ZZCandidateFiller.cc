@@ -304,8 +304,8 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 	  for (FSRToLepMap::const_iterator ifsr=FSRMap.begin(); ifsr!=FSRMap.end(); ++ifsr) {
 	    double dR = ROOT::Math::VectorUtil::DeltaR(ifsr->second->p4(),d->momentum());
 	    // Check if the photon is in the lepton's iso cone and not vetoed
-	    if (dR<0.4 && ((d->isMuon() && dR > 0.01) ||
-			   (d->isElectron() && (fabs((static_cast<const pat::Electron*>(d->masterClone().get()))->superCluster()->eta()) < 1.479 || dR > 0.08)))) {
+	    if ((dR<0.4 && d->isMuon() && dR > 0.01) ||
+		(dR<0.3 && d->isElectron() && (fabs((static_cast<const pat::Electron*>(d->masterClone().get()))->superCluster()->eta()) < 1.479 || dR > 0.08))) {
 	      fsrCorr += ifsr->second->pt();
 	    }
 	  }
