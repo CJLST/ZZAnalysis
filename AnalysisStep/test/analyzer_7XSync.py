@@ -74,6 +74,7 @@ process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
         Z     = cms.InputTag("ZCand"),                                  
         ZZ  = cms.InputTag("ZZCand"),
 #        ZLL  = cms.InputTag("ZLLCand"),
+#        ZL  = cms.InputTag("ZlCand"),
      ),
      jetSrc = cms.InputTag("cleanJets"),
 )
