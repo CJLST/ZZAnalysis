@@ -58,21 +58,21 @@ ggH550, ,0.3008E+01,2.70E-03,,/GluGluHToZZTo4L_M550_13TeV_powheg2_JHUgenV6_pythi
 ggH600, ,0.2006E+01,2.77E-03,,/GluGluHToZZTo4L_M600_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,#official cross-section given by Giovanni: NNLO+NNLL (NO EW)
 ggH700, ,0.9235E+00,2.90E-03,,/GluGluHToZZTo4L_M700_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,#official cross-section given by Giovanni: NNLO+NNLL (NO EW)
 #ggH750, ,0.6398E+00,2.95E-03,,/GluGluHToZZTo4L_M750_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,#official cross-section given by Giovanni: NNLO+NNLL (NO EW) #FIXME: not ready yet
-ggH800, ,0.4491E+00,3.01E-03,,/GluGluHToZZTo4L_M800_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,#official cross-section given by Giovanni: NNLO+NNLL (NO EW) #FIXME: to be updated to MiniAODv2
-ggH900, ,0.2301E+00,3.10E-03,,/GluGluHToZZTo4L_M900_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,#official cross-section given by Giovanni: NNLO+NNLL (NO EW) #FIXME: to be updated to MiniAODv2
+ggH800, ,0.4491E+00,3.01E-03,,/GluGluHToZZTo4L_M800_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v2/MINIAODSIM,dbs,,2,,,#official cross-section given by Giovanni: NNLO+NNLL (NO EW)
+ggH900, ,0.2301E+00,3.10E-03,,/GluGluHToZZTo4L_M900_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v2/MINIAODSIM,dbs,,2,,,#official cross-section given by Giovanni: NNLO+NNLL (NO EW)
 ggH1000,,0.1233E+00,3.18E-03,,/GluGluHToZZTo4L_M1000_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,#official cross-section given by Giovanni: NNLO+NNLL (NO EW)
 
 ###,,,,,,,,,,,FIXME: for want of official YR values of VBF/VH/ttH x-sections I put the Powheg NLO x-sections for now. For ZH and ttH I am still missing the correct BRs.
 
 VBF115, ,4.0859424004377223,9.22E-05,,/VBF_HToZZTo4L_M115_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
-VBF120, ,3.9228429507250446,1.67E-04,,/VBF_HToZZTo4L_M120_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,#FIXME: to be updated to MiniAODv2
+VBF120, ,3.9228429507250446,1.67E-04,,/VBF_HToZZTo4L_M120_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 VBF124, ,3.7993021296366050,2.52E-04,,/VBF_HToZZTo4L_M124_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 VBF125, ,3.7694731484585411,2.76E-04,,/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,#NB: we used to use 0.001034 pb from https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#HZZ
 VBF126, ,3.7400118173603563,3.02E-04,,/VBF_HToZZTo4L_M126_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 VBF130, ,3.6258393515513880,4.14E-04,,/VBF_HToZZTo4L_M130_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 VBF135, ,3.4909162931919733,5.67E-04,,/VBF_HToZZTo4L_M135_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 VBF140, ,3.3663000912684158,7.11E-04,,/VBF_HToZZTo4L_M140_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
-#VBF145, ,3.2513913810000976,8.17E-04,,/VBF_HToZZTo4L_M145_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,#FIXME: not ready yet
+VBF145, ,3.2513913810000976,8.17E-04,,/VBF_HToZZTo4L_M145_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v2/MINIAODSIM,dbs,,1,,,#FIXME: to be updated to MiniAODv2
 VBF150, ,3.1465594210143193,8.50E-04,,/VBF_HToZZTo4L_M150_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,#FIXME: to be updated to MiniAODv2
 VBF155, ,3.0559344316441197,7.59E-04,,/VBF_HToZZTo4L_M155_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,#FIXME: to be updated to MiniAODv2
 VBF160, ,3.0029447159374096,4.25E-04,,/VBF_HToZZTo4L_M160_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
@@ -86,7 +86,7 @@ VBF210, ,2.1794935211025415,2.78E-03,,/VBF_HToZZTo4L_M210_13TeV_powheg2_JHUgenV6
 VBF230, ,1.9709814198829176,2.93E-03,,/VBF_HToZZTo4L_M230_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 VBF250, ,1.7510550977205481,3.01E-03,,/VBF_HToZZTo4L_M250_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 VBF270, ,1.5585117677516389,3.05E-03,,/VBF_HToZZTo4L_M270_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
-VBF300, ,1.3218993969264621,3.11E-03,,/VBF_HToZZTo4L_M300_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,#FIXME: to be updated to MiniAODv2
+VBF300, ,1.3218993969264621,3.11E-03,,/VBF_HToZZTo4L_M300_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 VBF350, ,1.0347124975828248,3.11E-03,,/VBF_HToZZTo4L_M350_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 VBF400, ,0.84132634366529591,2.73E-03,,/VBF_HToZZTo4L_M400_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 VBF450, ,0.68580150124770489,2.63E-03,,/VBF_HToZZTo4L_M450_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
@@ -104,7 +104,7 @@ WplusH120, ,0.96483085677071678,1.67E-04,,/WplusH_HToZZTo4L_M120_13TeV_powheg2-m
 #WplusH124, ,0.87161516564090746,2.52E-04,,/WplusH_HToZZTo4L_M124_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,#FIXME: not ready yet
 WplusH125, ,0.84995466415823551,2.76E-04,,/WplusH_HToZZTo4L_M125_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,#NB: we used to use 0.0002339 pb from https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#HZZ
 #WplusH126, ,0.82950237906780433,3.02E-04,,/WplusH_HToZZTo4L_M126_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,#FIXME: not ready yet
-WplusH130, ,0.75180212473092245,4.14E-04,,/WplusH_HToZZTo4L_M130_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v2/MINIAODSIM,dbs,,1,,,#FIXME: to be updated to MiniAODv2
+WplusH130, ,0.75180212473092245,4.14E-04,,/WplusH_HToZZTo4L_M130_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 WplusH135, ,0.66779544356292431,5.67E-04,,/WplusH_HToZZTo4L_M135_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 WplusH140, ,0.59456067422369274,7.11E-04,,/WplusH_HToZZTo4L_M140_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 WplusH145, ,0.53182382558595664,8.17E-04,,/WplusH_HToZZTo4L_M145_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
@@ -112,11 +112,11 @@ WplusH150, ,0.47685076020592848,8.50E-04,,/WplusH_HToZZTo4L_M150_13TeV_powheg2-m
 WplusH155, ,0.42980012745445040,7.59E-04,,/WplusH_HToZZTo4L_M155_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 WplusH160, ,0.38916789584407191,4.25E-04,,/WplusH_HToZZTo4L_M160_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 WplusH165, ,0.34782520260576433,2.27E-04,,/WplusH_HToZZTo4L_M165_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
-WplusH170, ,0.31488222667867999,2.41E-04,,/WplusH_HToZZTo4L_M170_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v2/MINIAODSIM,dbs,,1,,,#FIXME: to be updated to MiniAODv2
-WplusH175, ,0.28602173660653757,3.30E-04,,/WplusH_HToZZTo4L_M175_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v2/MINIAODSIM,dbs,,1,,,#FIXME: to be updated to MiniAODv2
+WplusH170, ,0.31488222667867999,2.41E-04,,/WplusH_HToZZTo4L_M170_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
+WplusH175, ,0.28602173660653757,3.30E-04,,/WplusH_HToZZTo4L_M175_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 WplusH180, ,0.26085763016335201,6.12E-04,,/WplusH_HToZZTo4L_M180_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 WplusH190, ,0.21511191227339371,2.12E-03,,/WplusH_HToZZTo4L_M190_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
-#WplusH200, ,0.18037211370402573,2.59E-03,,/WplusH_HToZZTo4L_M200_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,#FIXME: not ready yet
+WplusH200, ,0.18037211370402573,2.59E-03,,/WplusH_HToZZTo4L_M200_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,#FIXME: to be updated to MiniAODv2
 WplusH210, ,0.15459144367665209,2.78E-03,,/WplusH_HToZZTo4L_M210_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 WplusH230, ,0.11449531867258435,2.93E-03,,/WplusH_HToZZTo4L_M230_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 WplusH250, ,8.4625212639703074E-002,3.01E-03,,/WplusH_HToZZTo4L_M250_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
@@ -137,15 +137,15 @@ WminusH145, ,0.32817830212009819,8.17E-04,,/WminusH_HToZZTo4L_M145_13TeV_powheg2
 WminusH150, ,0.29299678473125662,8.50E-04,,/WminusH_HToZZTo4L_M150_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 WminusH155, ,0.26277829538735764,7.59E-04,,/WminusH_HToZZTo4L_M155_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 WminusH160, ,0.23704236226862388,4.25E-04,,/WminusH_HToZZTo4L_M160_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
-WminusH165, ,0.21059358660405236,2.27E-04,,/WminusH_HToZZTo4L_M165_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v2/MINIAODSIM,dbs,,1,,,#FIXME: to be updated to MiniAODv2
-WminusH170, ,0.18976737445037012,2.41E-04,,/WminusH_HToZZTo4L_M170_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v2/MINIAODSIM,dbs,,1,,,#FIXME: to be updated to MiniAODv2
+WminusH165, ,0.21059358660405236,2.27E-04,,/WminusH_HToZZTo4L_M165_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
+WminusH170, ,0.18976737445037012,2.41E-04,,/WminusH_HToZZTo4L_M170_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 WminusH175, ,0.17172725012754600,3.30E-04,,/WminusH_HToZZTo4L_M175_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,#FIXME: to be updated to MiniAODv2
 WminusH180, ,0.15589761824251172,6.12E-04,,/WminusH_HToZZTo4L_M180_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 WminusH190, ,0.12753636207015245,2.12E-03,,/WminusH_HToZZTo4L_M190_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 #WminusH200, ,0.10596634997047685,2.59E-03,,/WminusH_HToZZTo4L_M200_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,#FIXME: not ready yet
 WminusH210, ,8.9960265391490241E-002,2.78E-03,,/WminusH_HToZZTo4L_M210_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 WminusH230, ,6.5573611217086533E-002,2.93E-03,,/WminusH_HToZZTo4L_M230_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
-WminusH250, ,4.7679031557184080E-002,3.01E-03,,/WminusH_HToZZTo4L_M250_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v2/MINIAODSIM,dbs,,1,,,#FIXME: to be updated to MiniAODv2
+WminusH250, ,4.7679031557184080E-002,3.01E-03,,/WminusH_HToZZTo4L_M250_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 WminusH270, ,3.5599150812897176E-002,3.05E-03,,/WminusH_HToZZTo4L_M270_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 WminusH300, ,2.3171532928664539E-002,3.11E-03,,/WminusH_HToZZTo4L_M300_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 WminusH350, ,1.2450008864666847E-002,3.11E-03,,/WminusH_HToZZTo4L_M350_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
@@ -155,7 +155,7 @@ WminusH400, ,7.3369705319421361E-003,2.73E-03,,/WminusH_HToZZTo4L_M400_13TeV_pow
 ZH120, ,,,,/ZH_HToZZ_4LFilter_M120_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,
 ZH124, ,,,,/ZH_HToZZ_4LFilter_M124_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,
 ZH125, ,,,,/ZH_HToZZ_4LFilter_M125_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,#NB: we used to use 0.000652 pb from https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#HZZ which included filter eff=0.15038
-#ZH126, ,,,,/ZH_HToZZ_4LFilter_M126_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,#FIXME: not ready yet
+ZH126, ,,,,/ZH_HToZZ_4LFilter_M126_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,
 #ZH130, ,,,,/ZH_HToZZ_4LFilter_M130_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,#FIXME: not ready yet
 #ZH135, ,,,,/ZH_HToZZ_4LFilter_M135_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,#FIXME: not ready yet
 #ZH140, ,,,,/ZH_HToZZ_4LFilter_M140_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,#FIXME: not ready yet
@@ -164,17 +164,17 @@ ZH150, ,,,,/ZH_HToZZ_4LFilter_M150_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunI
 #ZH155, ,,,,/ZH_HToZZ_4LFilter_M155_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,#FIXME: not ready yet
 #ZH160, ,,,,/ZH_HToZZ_4LFilter_M160_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,#FIXME: not ready yet
 ZH165, ,,,,/ZH_HToZZ_4LFilter_M165_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,
-#ZH170, ,,,,/ZH_HToZZ_4LFilter_M170_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,#FIXME: not ready yet
+ZH170, ,,,,/ZH_HToZZ_4LFilter_M170_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,
 #ZH175, ,,,,/ZH_HToZZ_4LFilter_M175_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,#FIXME: not ready yet
 ZH180, ,,,,/ZH_HToZZ_4LFilter_M180_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,
-#ZH190, ,,,,/ZH_HToZZ_4LFilter_M190_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,#FIXME: not ready yet
+ZH190, ,,,,/ZH_HToZZ_4LFilter_M190_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,
 ZH200, ,,,,/ZH_HToZZ_4LFilter_M200_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,
 #ZH210, ,,,,/ZH_HToZZ_4LFilter_M210_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,#FIXME: not ready yet
 #ZH230, ,,,,/ZH_HToZZ_4LFilter_M230_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,#FIXME: not ready yet
-#ZH250, ,,,,/ZH_HToZZ_4LFilter_M250_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,#FIXME: not ready yet
-#ZH270, ,,,,/ZH_HToZZ_4LFilter_M270_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,#FIXME: not ready yet
+ZH250, ,,,,/ZH_HToZZ_4LFilter_M250_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v2/MINIAODSIM,dbs,,2,,,
+ZH270, ,,,,/ZH_HToZZ_4LFilter_M270_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,
 ZH300, ,,,,/ZH_HToZZ_4LFilter_M300_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,
-#ZH350, ,,,,/ZH_HToZZ_4LFilter_M350_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,#FIXME: not ready yet
+ZH350, ,,,,/ZH_HToZZ_4LFilter_M350_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,
 ZH400, ,,,,/ZH_HToZZ_4LFilter_M400_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,
 
 #ttH115, ,,,,/ttH_HToZZ_4LFilter_M115_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,,,#FIXME: not ready yet
