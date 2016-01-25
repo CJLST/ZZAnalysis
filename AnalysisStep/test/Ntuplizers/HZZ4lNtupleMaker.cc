@@ -64,7 +64,7 @@
 
 namespace {
   bool writeJets = true;     // Write jets in the tree. FIXME: make this configurable
-  bool addKinRefit = false;
+  bool addKinRefit = true;
   bool addVtxFit = false;
   bool addFSRDetails = false;
   bool skipDataMCWeight = true; // skip computation of data/MC weight // FIXME: to be flipped when new SFs are available for 76X samples 
@@ -102,8 +102,7 @@ namespace {
   Float_t Z1Pt  = 0;
   Short_t Z1Flav  = 0;
   Float_t ZZMassRefit  = 0;
-  Float_t ZZChi2KinFit  = 0;
-  Float_t Z1MassRefit  = 0;
+  Float_t ZZMassRefitErr  = 0;
   Float_t ZZMassCFit  = 0;
   Float_t ZZChi2CFit  = 0;
   Float_t Z2Mass  = 0;
@@ -913,17 +912,20 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     ZZMass = cand.p4().mass();
     ZZMassErr = cand.userFloat("massError");
     ZZMassErrCorr = cand.userFloat("massErrorCorr");
-    ZZMassPreFSR = cand.userFloat("m4l");  
-    // FIXME: Other variables to be added if addKinRefit or addVtxFit == true:
-    //   Float_t Z1MassRefit = cand.userFloat("mZ1Ref");
-    //   Float_t ZZMassRefit = cand.userFloat("m4lRef");
-    //   Float_t Chi2KinFit = cand.userFloat("chi2Fit");
-    //   Float_t ZZMassCFit = cand.userFloat("CFitM");
-    //   Float_t Chi2CFit = cand.userFloat("CFitChi2");
-  
+    ZZMassPreFSR = cand.userFloat("m4l");
+
     ZZPt  = cand.p4().pt();
     ZZEta = cand.p4().eta();
     ZZPhi = cand.p4().phi();
+
+    if(addKinRefit){
+      ZZMassRefit = cand.userFloat("ZZMassRefit");
+      ZZMassRefitErr = cand.userFloat("ZZMassRefitErr");
+    }
+    if(addVtxFit){
+      ZZMassCFit = cand.userFloat("CFitM");
+      ZZChi2CFit = cand.userFloat("CFitChi2");
+    }
 
     DiJetMass  = cand.userFloat("DiJetMass");
     DiJetDEta  = cand.userFloat("DiJetDEta");
@@ -1212,9 +1214,6 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
       ZXFakeweight *= getFakeWeight(Z2->daughter(izx)->pt(),Z2->daughter(izx)->eta(),Z2->daughter(izx)->pdgId(),Z1->daughter(0)->pdgId());
   }
   ZZsel = sel;
-
-  // FIXME: Other variables to be added if addKinRefit or addVtxFit == true:
-  // Z1MassRefit, ZZMassRefit, ZZChi2KinFit, ZZMassCFit, ZZChi2CFit
 
   if (theChannel!=ZL) {
     
@@ -1582,10 +1581,8 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   //Kin refitted info
   if (addKinRefit) {
     myTree->Book("ZZMassRefit",ZZMassRefit);
-    myTree->Book("ZZChi2KinFit",ZZChi2KinFit);
-    myTree->Book("Z1MassRefit",Z1MassRefit);
+    myTree->Book("ZZMassRefitErr",ZZMassRefitErr);
   }
-
   if (addVtxFit){
     myTree->Book("ZZMassCFit",ZZMassCFit);
     myTree->Book("ZZChi2CFit",ZZChi2CFit);

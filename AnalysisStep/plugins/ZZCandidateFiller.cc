@@ -23,7 +23,6 @@
 //#include <ZZAnalysis/AnalysisStep/interface/MCHistoryTools.h>
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
 #include <ZZAnalysis/AnalysisStep/interface/CompositeCandMassResolution.h>
-#include <ZZAnalysis/AnalysisStep/interface/DiLeptonKinFitter.h>
 #include <FWCore/ParameterSet/interface/FileInPath.h>
 
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
@@ -43,15 +42,17 @@
 #include <ZZAnalysis/AnalysisStep/interface/utils.h>
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
 #include <ZZAnalysis/AnalysisStep/interface/JetCleaner.h>
+#include <KinZfitter/KinZfitter/interface/KinZfitter.h>
 
 #include "TH2F.h"
 #include "TFile.h"
+#include "TLorentzVector.h"
 
 #include <string>
 
 using namespace zzanalysis;
 
-bool doKinFit = false;
+bool doKinFit = true;
 bool doVtxFit = false;
 
 class ZZCandidateFiller : public edm::EDProducer {
@@ -88,6 +89,7 @@ private:
   TH2F* corrSigmaMu;
   TH2F* corrSigmaEle;
   Comparators::ComparatorTypes bestCandType;
+  KinZfitter *kinZfitter;
   edm::EDGetTokenT<double> rhoForMuToken;
   edm::EDGetTokenT<double> rhoForEleToken;
   edm::EDGetTokenT<edm::View<pat::Jet> > jetToken;
@@ -158,6 +160,9 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
 
   //-- Non-MEM discriminants
   myMela = combinedMEM.m_MELA;
+
+  //-- kinematic refitter
+  kinZfitter = new KinZfitter(!isMC);
 }
 
 
@@ -919,27 +924,40 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   
     
     //----------------------------------------------------------------------
-    //--- Z1 kinematic refit (experimental)
-    float m4lRef=0;
-    float chi2LepZ1Ref=0;
-    //float chi2ProbLepZ1Ref=0;
-    float mZ1Ref=0;
-    if (doKinFit && abs(id11)==13 && abs(id12)==13 && abs(id21)==13 && abs(id22)==13 ) {
-      
-      // Get the Z1 leptons 4 four-vectors refitted with the mass constraint (the fsr photon is already taken into account)
-      DiLeptonKinFitter* fitter_dilep = new DiLeptonKinFitter( "fitter_dilep", "fitter_dilep", 91.1876);
-      std::pair<TLorentzVector,TLorentzVector> lepZ1Ref = fitter_dilep->fit(Z1);
+    //--- kinematic refitting using Z mass constraint
 
-      chi2LepZ1Ref = fitter_dilep->getS();
-      //chi2ProbLepZ1Ref = TMath::Prob(fitter_dilep->getS(), fitter_dilep->getNDF());
-    
-      math::XYZTLorentzVector pRef11(lepZ1Ref.first.Px(),lepZ1Ref.first.Py(),lepZ1Ref.first.Pz(),lepZ1Ref.first.E());
-      math::XYZTLorentzVector pRef12(lepZ1Ref.second.Px(),lepZ1Ref.second.Py(),lepZ1Ref.second.Pz(),lepZ1Ref.second.E());
+    float ZZMassRefit = 0.;
+    float ZZMassRefitErr = 0.;
+
+    if(doKinFit){
+
+      vector<reco::Candidate *> selectedLeptons;
+      std::map<unsigned int, TLorentzVector> selectedFsrMap;
+
+      for(unsigned ilep=0; ilep<4; ilep++){
+
+	selectedLeptons.push_back((reco::Candidate*)(ZZLeps[ilep]->masterClone().get()));
+
+	if(FSRMap.find(ZZLeps[ilep])!=FSRMap.end()){
+	  pat::PFParticle fsr = *(FSRMap[ZZLeps[ilep]]);
+	  TLorentzVector p4;
+	  p4.SetPxPyPzE(fsr.px(),fsr.py(),fsr.pz(),fsr.energy());
+	  selectedFsrMap[ilep] = p4;
+	}
+
+      }
+
+      kinZfitter->Setup(selectedLeptons, selectedFsrMap);
+      kinZfitter->KinRefitZ1();
       
-      m4lRef  = (pRef11+pRef12+p21+p22).mass();
-      mZ1Ref  = (pRef11+pRef12).mass();
+      ZZMassRefit = kinZfitter->GetRefitM4l();
+      ZZMassRefitErr = kinZfitter->GetRefitM4lErr();
+
+      // four 4-vectors after refitting order by Z1_1,Z1_2,Z2_1,Z2_2
+      //vector<TLorentzVector> p4 = kinZfitter->GetRefitP4s(); 
 
     }
+
 
     //----------------------------------------------------------------------
     //--- 4l vertex fits (experimental)
@@ -1050,10 +1068,9 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     myCand.addUserFloat("xi",             xi);      //azimuthal angle of higgs in lab frame
 
     myCand.addUserFloat("m4l",            (Z1Lm->p4()+Z1Lp->p4()+Z2Lm->p4()+Z2Lp->p4()).mass()); // mass without FSR
-    if (doKinFit && abs(id11)==13 && abs(id12)==13 && abs(id21)==13 && abs(id22)==13 ) {
-      myCand.addUserFloat("m4l_Z1Fit",  m4lRef ); // mass from Z1 refitted (FSR not considered in the refit procedure)
-      myCand.addUserFloat("chi2_Z1Fit", chi2LepZ1Ref);
-      myCand.addUserFloat("mZ1Fit",  mZ1Ref);
+    if(doKinFit) {
+      myCand.addUserFloat("ZZMassRefit"   , ZZMassRefit);
+      myCand.addUserFloat("ZZMassRefitErr", ZZMassRefitErr);
     }
 
     // Jet quantities

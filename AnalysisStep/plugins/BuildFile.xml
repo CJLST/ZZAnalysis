@@ -12,6 +12,7 @@
 <use name="EgammaAnalysis/ElectronTools"/>
 <use name="PhysicsTools/KinFitter"/>
 <use name="JetMETCorrections/Modules"/>
+<use name="KinZfitter/KinZfitter"/>
 
 <library   file="*.cc" name="ZZAnalysisAnalysisStepPlugins">
   <Flags CPPDEFINES="CMSSW_VERSION=$(shell echo ${CMSSW_VERSION}|sed -e s/CMSSW_// -e s/_//g -e s/patch\.//)"/>
