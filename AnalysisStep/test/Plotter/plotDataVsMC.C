@@ -43,7 +43,8 @@ using namespace std;
 #define DO1DPLOTS 1
 #define DO2DPLOTS 1
 
-#define MERGE2E2MU 1
+#define FINALSTATE 4 // 0:4mu, 1:4e, 2:2e2mu, 3:2mu2e, 4:inclusive
+#define MERGE2E2MU 1 // if activated, 2e2mu means "2e2mu and 2mu2e"
 
 #define APPLYKFACTORS 1
 #define RESCALETOSMPSIGNALSTRENGTH 1
@@ -99,7 +100,7 @@ string varName[nVariables] = {
   "M4l_70110B4",
   "M4l_70110B5",
   "M4l_70109",
-  "M4l_70181",
+  "M4l_70182",
   "M4l_above150",
   "MZ1V1",
   "MZ1V1Log",
@@ -153,7 +154,7 @@ string varYLabel[nVariables] = {
   "Events / 4 GeV",
   "Events / 5 GeV",
   "Events / 3 GeV",
-  "Events / 3 GeV",
+  "Events / 4 GeV",
   "Events / 20 GeV",
   "Events / 2 GeV",
   "Events / 2 GeV",
@@ -175,15 +176,17 @@ string varCutLabel[nVariables] = {
   "","","","","","","","","","","","","","","","","","","","","","","","",
   "D_{bkg}^{kin} > 0.5",
 };
-Bool_t plotThisVar[4][nVariables] = {
+Bool_t plotThisVar[6][nVariables] = {
   {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,},
   {0,1,0,0,0,1,0,0,0,1,1,1,0,1,0,0,1,0,0,0,0,0,0,0,0,},
+  {0,1,0,1,1,0,0,0,0,0,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,},
+  {0,1,0,0,0,0,0,0,1,0,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,},//for AN
   {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,0,1,},
   {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,},
 };
-Int_t  varNbin[nVariables] = { 272, 204, 163,  82,  82,  10,   8,  13,  37,  30,  40,  40,/*  75,*/  30,  54,  54,/*  75,*/  30, 20, 20, 20,  40,  20, 6, 17, 8,  27, };
+Int_t  varNbin[nVariables] = { 272, 204, 163,  82,  82,  10,   8,  13,  28,  30,  40,  40,/*  75,*/  30,  54,  54,/*  75,*/  30, 20, 20, 20,  40,  20, 6, 17, 8,  27, };
 Float_t varMin[nVariables] = {  70,  70,  70,  70,  70,  70,  70,  70,  70, 150,  40,  40,/*   0,*/   0,  12,  12,/*   0,*/   0,  0,  0,  0,   0, -10, 0,  0, 0, 100, };
-Float_t varMax[nVariables] = { 886, 886, 885, 890, 890, 110, 110, 109, 181, 750, 120, 120,/* 150,*/ 150, 120, 120,/* 150,*/ 150,  1,  2,  1, 400,  10, 6, 17, 8, 181, };
+Float_t varMax[nVariables] = { 886, 886, 885, 890, 890, 110, 110, 109, 182, 750, 120, 120,/* 150,*/ 150, 120, 120,/* 150,*/ 150,  1,  2,  1, 400,  10, 6, 17, 8, 181, };
 Bool_t varLogx[nVariables] = {1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,};
 Bool_t varLogy[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,1,1,1,0,};
 Int_t restrictCountVar[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,4,2,0,};
@@ -215,9 +218,10 @@ Bool_t varPairLogy[nVarPairs] = {0,0,0,0,0,0,0,0,};
 Int_t varPairLegPos[nVarPairs] = {33,33,33,33,33,11,11,11,};
 Bool_t varPairLegIsWhite[nVarPairs] = {1,1,1,1,1,0,0,0,};
 Bool_t varPairUseGrayStyle[nVarPairs] = {0,0,0,0,0,1,1,1,};
-Bool_t plotThisVarPair[3][nVarPairs] = {
+Bool_t plotThisVarPair[4][nVarPairs] = {
   {0,0,0,0,0,0,0,0}, 
-  {0,1,0,0,1,0,1,1}, 
+  {0,1,0,0,1,0,1,0}, 
+  {0,0,1,1,0,0,1,0}, //for AN
   {1,1,1,1,1,1,1,1}, 
 };
 
@@ -555,6 +559,7 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
       }else{
 	cerr<<"error in event "<<nRun<<":"<<nLumi<<":"<<nEvent<<", Z1Flav="<<Z1Flav<<endl;
       }
+      if(MERGE2E2MU && currentFinalState==fs2mu2e) currentFinalState = fs2e2mu;
 
 
       //----- find category
@@ -741,7 +746,7 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
       for(int cat=0; cat<nCategories+1; cat++){
 	for(int rs=0; rs<nResStatuses+1; rs++){
 	  for(int pr=0; pr<nProcesses; pr++){
-	    if( (fs==nFinalStates || pr==DY) &&
+	    if( //(fs==nFinalStates || pr==DY) &&
 		cat==nCategories &&
 		rs==nResStatuses ){
 	      for(int v=0; v<nVariables; v++){
@@ -757,13 +762,7 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 	  if( cat==nCategories &&
 	      rs==nResStatuses ){
 	    for(int v2=0; v2<nVarPairs; v2++){
-	      if(MERGE2E2MU){
-		if(fs==fs2mu2e) continue;
-		if(fs==fs2e2mu){
-		  g2DataX[v2][bl][fs][cat][rs].insert(g2DataX[v2][bl][fs][cat][rs].end(), g2DataX[v2][bl][fs2mu2e][cat][rs].begin(), g2DataX[v2][bl][fs2mu2e][cat][rs].end());
-		  g2DataY[v2][bl][fs][cat][rs].insert(g2DataY[v2][bl][fs][cat][rs].end(), g2DataY[v2][bl][fs2mu2e][cat][rs].begin(), g2DataY[v2][bl][fs2mu2e][cat][rs].end());
-		}
-	      }
+	      if(MERGE2E2MU && fs==fs2mu2e) continue;
 	      g2Data[v2][bl][fs][cat][rs] = new TGraph( g2DataX[v2][bl][fs][cat][rs].size(),
 						        &(g2DataX[v2][bl][fs][cat][rs][0]),
 						        &(g2DataY[v2][bl][fs][cat][rs][0]) );
@@ -1054,7 +1053,10 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
       for(int v=0; v<nVariables; v++){
 	if( varName[v].find("M4l")==0 || (varName[v].find("M4l")!=0 && varPassBlindingCut[bl]) ){
 	  if(varPassCut[v]){
-	    h1[v][bl][currentFinalState]->Fill(varVal[v], fsROSSS[currentFinalState] * fakeRate13TeV(LepPt->at(2),LepEta->at(2),LepLepId->at(2)) * fakeRate13TeV(LepPt->at(3),LepEta->at(3),LepLepId->at(3)));
+	    if(MERGE2E2MU && currentFinalState==fs2mu2e)
+	      h1[v][bl][fs2e2mu]->Fill(varVal[v], fsROSSS[currentFinalState] * fakeRate13TeV(LepPt->at(2),LepEta->at(2),LepLepId->at(2)) * fakeRate13TeV(LepPt->at(3),LepEta->at(3),LepLepId->at(3)));
+	    else
+	      h1[v][bl][currentFinalState]->Fill(varVal[v], fsROSSS[currentFinalState] * fakeRate13TeV(LepPt->at(2),LepEta->at(2),LepLepId->at(2)) * fakeRate13TeV(LepPt->at(3),LepEta->at(3),LepLepId->at(3)));
 	  }
 	}
       }
@@ -1089,12 +1091,12 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
   fOutHistos->cd();
   for(int bl=0; bl<nBlindings; bl++){
     for(int fs=0; fs<nFinalStates+1; fs++){
-      if(fs==nFinalStates){
+      //if(fs==nFinalStates){
 	for(int v=0; v<nVariables; v++){
 	  h1[v][bl][fs]->Write(h1[v][bl][fs]->GetName());
 	  delete h1[v][bl][fs];
 	}
-      }
+	//}
     }
   }
   fOutHistos->Close();
@@ -1160,13 +1162,15 @@ void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, st
 
   //----- prepare reducible background
   TH1F* hZPlusX = 0;
+  Float_t ZplusXYield = 0.;
   Bool_t useZPlusX = USEZPLUSXFULLRUN2SS ||
-    (USEZPLUSXRUN2NORMRUN1SHAPE && (varName[v].find("M4lV")==0 || varName[v].find("M4l_70110")==0 || varName[v].find("M4l_70109")==0 || varName[v].find("M4l_70181")==0 || varName[v].find("M4l_above150")==0) );
+    (USEZPLUSXRUN2NORMRUN1SHAPE && (varName[v].find("M4lV")==0 || varName[v].find("M4l_70110")==0 || varName[v].find("M4l_70109")==0 || varName[v].find("M4l_70182")==0 || varName[v].find("M4l_above150")==0) );
   if(useZPlusX){
     if(USEZPLUSXRUN2NORMRUN1SHAPE)
       hZPlusX = getM4lZPlusXHistogram_Run2Norm_Run1Shape(hStacks[idxSumMC]->GetNbinsX(),hStacks[idxSumMC]->GetBinLowEdge(1),hStacks[idxSumMC]->GetBinLowEdge(1+hStacks[idxSumMC]->GetNbinsX()),lumi);
     if(USEZPLUSXFULLRUN2SS){
       hZPlusX = hZPX;
+      ZplusXYield = hZPlusX->Integral();
       if(SMOOTHZPLUSXFULLRUN2SS) hZPlusX->Smooth(1);
     }
     hZPlusX->SetFillColor(processFillColor[DY]);
@@ -1345,11 +1349,16 @@ void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, st
   CMS_lumi( c, 0, withRatioPlot ? 0 : varCMSPos[v] );
 
   //----- print yields
-  if(varName[v]=="MZ1"){
-    cout<<"Yields for blinding "<<bl<<":"<<endl;
-    cout<<"  expected: "<<hStacks[idxSumMC]->Integral()<<endl;
-    cout<<"  observed: "<<h[0]->Integral()<<endl;
-  }
+  //if(varName[v]=="MZ1"){
+  cout<<"Yields for blinding "<<bl<<" and variable "<<varName[v]<<endl;
+  cout<<"  qqZZ             "<<h[qqZZ]->Integral()<<endl;
+  cout<<"  ggZZ             "<<h[ggZZ]->Integral()<<endl;
+  cout<<"  Z+X              "<<ZplusXYield<<" "<<hZPlusX->Integral()<<endl;
+  cout<<"  all backgrounds  "<<hStacks[idxSumMC]->Integral() - h[H125]->Integral()<<endl;
+  cout<<"  signal           "<<h[H125]->Integral()<<endl;
+  cout<<"  total expected   "<<hStacks[idxSumMC]->Integral()<<endl;
+  cout<<"  observed         "<<h[0]->Integral()<<endl;
+    //}
 
 }
 
@@ -1526,17 +1535,20 @@ void doPlots(string outputDirectory, int variableList, int varPairList, int blin
     for(int fs=0; fs<nFinalStates+1; fs++){
       for(int cat=0; cat<nCategories+1; cat++){
 	for(int rs=0; rs<nResStatuses+1; rs++){
-	  if( fs==nFinalStates &&
+	  if( fs==FINALSTATE &&
 	      cat==nCategories &&
 	      rs==nResStatuses ){
 	    for(int pr=0; pr<nProcesses; pr++){
 	      for(int v=0; v<nVariables; v++){
 		h1[v][bl][pr] = (TH1F*)fInHistos->Get( Form("h1_%s_%s_%s_%s_%s_%s",varName[v].c_str(),sBlinding[bl].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[rs].c_str(),sProcess[pr].c_str()) );
+		h1[v][bl][pr]->GetXaxis()->SetTitle(ReplaceString(h1[v][bl][pr]->GetXaxis()->GetTitle(),"4#font[12]{l}",fsLabel[fs]).c_str());
 		if(RESCALETOSMPSIGNALSTRENGTH && (pr==qqZZ||pr==ggZZ)) h1[v][bl][pr]->Scale(SMPSIGNALSTRENGTH); //FIXME: to be removed at some point ?
 		if(restrictCountVar[v]) restrictXAxis(h1[v][bl][pr],restrictCountVar[v]);
 	      }
 	      for(int v2=0; v2<nVarPairs; v2++){
 		h2[v2][bl][pr] = (TH2F*)fInHistos->Get( Form("h2_%s_%s_%s_%s_%s_%s",varPairName[v2].c_str(),sBlinding[bl].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[rs].c_str(),sProcess[pr].c_str()) );
+		h2[v2][bl][pr]->GetXaxis()->SetTitle(ReplaceString(h2[v2][bl][pr]->GetXaxis()->GetTitle(),"4#font[12]{l}",fsLabel[fs]).c_str());
+		h2[v2][bl][pr]->GetYaxis()->SetTitle(ReplaceString(h2[v2][bl][pr]->GetYaxis()->GetTitle(),"4#font[12]{l}",fsLabel[fs]).c_str());
 		if(RESCALETOSMPSIGNALSTRENGTH && (pr==qqZZ||pr==ggZZ)) h2[v2][bl][pr]->Scale(SMPSIGNALSTRENGTH);  //FIXME: to be removed at some point ?
 	      }
 	    }
@@ -1559,7 +1571,7 @@ void doPlots(string outputDirectory, int variableList, int varPairList, int blin
     TFile* fInHistos_ZPlusXSS = TFile::Open(Form("histos_plotDataVsMC_ZPlusXSS_%.3ffb-1.root",lumi));
     for(int bl=0; bl<nBlindings; bl++){
       for(int fs=0; fs<nFinalStates+1; fs++){
-	if(fs==nFinalStates){
+	if(fs==FINALSTATE){
 	  for(int v=0; v<nVariables; v++){
 	    h1_ZPlusXSS[v][bl] = (TH1F*)fInHistos_ZPlusXSS->Get( Form("h1_ZPlusXSS_%s_%s_%s",varName[v].c_str(),sBlinding[bl].c_str(),sFinalState[fs].c_str()) );
 	    if(restrictCountVar[v]) restrictXAxis(h1_ZPlusXSS[v][bl],restrictCountVar[v]);
@@ -1580,7 +1592,7 @@ void doPlots(string outputDirectory, int variableList, int varPairList, int blin
       if(!plotThisBlinding[blindingList][bl]) continue;
       for(int v=0; v<nVariables; v++){
 	if(!plotThisVar[variableList][v]) continue;
-	canvasName = string(Form("c_%s_%s",sBlinding[bl].c_str(),varName[v].c_str()));
+	canvasName = string(Form("c_%s_%s_%s",sBlinding[bl].c_str(),varName[v].c_str(),sFinalState[FINALSTATE].c_str()));
 	c1[v] = new TCanvas(canvasName.c_str(),canvasName.c_str(),500,500);
 	DrawDataMC(c1[v],h1[v][bl],h1_ZPlusXSS[v][bl],v,bl,lumi,lumiText,varLogx[v],varLogy[v]);
 	SaveCanvas(outputDirectory,c1[v]);
@@ -1593,7 +1605,7 @@ void doPlots(string outputDirectory, int variableList, int varPairList, int blin
       if(!plotThisBlinding[blindingList][bl]) continue;
       for(int v2=0; v2<nVarPairs; v2++){
 	if(!plotThisVarPair[varPairList][v2]) continue;
-	canvasName = string(Form("c_%s_2D_%s",sBlinding[bl].c_str(),varPairName[v2].c_str()));
+	canvasName = string(Form("c_%s_2D_%s_%s",sBlinding[bl].c_str(),varPairName[v2].c_str(),sFinalState[FINALSTATE].c_str()));
 	c2[v2] = new TCanvas(canvasName.c_str(),canvasName.c_str(),500,500);
 	DrawDataMC2D(c2[v2],h2[v2][bl],g2Data[v2][bl],v2,bl,lumiText,varPairLogx[v2],varPairLogy[v2]);
 	SaveCanvas(outputDirectory,c2[v2]);
@@ -1614,7 +1626,7 @@ void doPlots(string outputDirectory, int variableList, int varPairList, int blin
 ////////////////////////////////////////////////////////////////////////////////
 
 
-void plotDataVsMC(bool redoHistograms = true) {
+void plotDataVsMC(bool redoHistograms = true, string outputPath = "PlotsDataVsMC/") {
 
   // --------------- inputs ---------------
 
@@ -1623,7 +1635,7 @@ void plotDataVsMC(bool redoHistograms = true) {
   string inputPathData = "";
   string inputFileDataForCR = "../DataTrees_151202/ZZ4lAnalysis_allData.root";
   string inputFileFakeRates = "../Macros/fakeRates_20151202.root";
-  string outputPath = "PlotsDataVsMC/";
+  //string outputPath = "PlotsDataVsMC/";
 
   // Define the luminosity
 

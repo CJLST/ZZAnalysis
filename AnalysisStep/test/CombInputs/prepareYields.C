@@ -30,7 +30,10 @@ using namespace std;
 
 #define DEBUG 0
 #define MERGE2E2MU 1
+
 #define APPLYKFACTORS 1
+#define RESCALETOSMPSIGNALSTRENGTH 0
+#define SMPSIGNALSTRENGTH 0.99
 
 
 
@@ -585,8 +588,10 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
   TFile* fInYields = TFile::Open(Form("yields_%iTeV_m4l%.1f-%.1f_%.3ffb-1.root",(int)sqrts,m4lMin,m4lMax,lumi));
   for(int pr=0; pr<nProcesses; pr++)
     for(int fs=0; fs<nFinalStates+1; fs++)
-      for(int cat=0; cat<nCategories+1; cat++)
+      for(int cat=0; cat<nCategories+1; cat++){
 	yield[pr][fs][cat] = ((TH1F*)fInYields->Get(Form("h1_%s%s_%s_%s_%s",sProcess[pr].c_str(),(isSignal[pr]?(mHoption!="param"?mHoption.c_str():"125"):""),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[nResStatuses].c_str())))->GetBinContent(1);
+	if(RESCALETOSMPSIGNALSTRENGTH && (pr==qqZZ||pr==ggZZ)) yield[pr][fs][cat] *= SMPSIGNALSTRENGTH; //FIXME: to be removed at some point ?
+      }
 
   TF1* fYield[nProcesses][nFinalStates][nCategories+1];
   if(mHoption=="param"){

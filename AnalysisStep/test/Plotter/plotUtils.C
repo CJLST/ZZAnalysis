@@ -172,3 +172,16 @@ TH1F* Smooth(TH1F* hIn, Int_t factor){
     hOut->SetBinContent(ibin, hInRebinned->GetBinContent(1+(ibin-1)/factor));
   return hOut;
 }
+
+
+string ReplaceString(string subject, 
+		     const string& search,
+		     const string& replace) {
+  if(search.empty()) return subject;
+  size_t pos = 0;
+  while((pos = subject.find(search, pos)) != std::string::npos) {
+    subject.replace(pos, search.length(), replace);
+    pos += replace.length();
+  }
+  return subject;
+}
