@@ -291,7 +291,7 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	const pat::PFParticle* gamma = g->get();
 	double dR = ROOT::Math::VectorUtil::DeltaR(gamma->momentum(),m->momentum());
 	// Check if the photon is in the lepton's iso cone and not vetoed
-	if (dR<0.4 && dR > 0.01) {
+	if (dR<0.3 && dR > 0.01) {
 	  fsrCorr += gamma->pt();
 	}
       } 

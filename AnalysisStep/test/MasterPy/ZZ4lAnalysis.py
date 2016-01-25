@@ -82,8 +82,8 @@ except NameError:
     KEEPLOOSECOMB = False
 
 # The isolation cuts for electrons and muons. FIXME: there is an hardcoded instance of these values in src/LeptonIsoHelper.cc !!
-ELEISOCUT = "0.4"
-MUISOCUT = "0.4"
+ELEISOCUT = "0.35"
+MUISOCUT = "0.35"
 
 
 # Which FSR mode to use: "Legacy" or "RunII"
