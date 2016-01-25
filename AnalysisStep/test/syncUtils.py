@@ -63,14 +63,17 @@ class KDs:
 
 class Candidate:
 
-    def __init__(self,event,m,mZ1,mZ2,mErr,mErrCorr,pt,nExtraLep,jets30pt,jets30eta,jets30phi,jets30mass,njets30Btag,mjj,detajj,kds):
+    def __init__(self,event,m,mZ1,mZ2,mErr,mErrCorr,m4lRefit,m4lRefitErr,pt,nExtraLep,jets30pt,jets30eta,jets30phi,jets30mass,njets30Btag,mjj,detajj,kds,weight):
 
         self.eventInfo   = event
+        self.weight      = weight
         self.mass4l      = m
         self.mZ1         = mZ1
         self.mZ2         = mZ2
         self.massErrRaw  = mErr
         self.massErrCorr = mErrCorr
+        self.m4lRefit    = m4lRefit
+        self.m4lRefitErr = m4lRefitErr
         self.kds         = kds
         self.pt4l        = pt
         self.nExtraLep   = nExtraLep
@@ -144,5 +147,8 @@ class Candidate:
 #        line  += ":" + "{0:.3f}".format(self.kds.KD_gggrav)
 #        line  += ":" + "{0:.3f}".format(self.kds.KD_qqgrav) 
         line  += ":" + "{0:d}".format(self.category)
+        line  += ":" + "{0:.2f}".format(self.m4lRefit)
+        line  += ":" + "{0:.2f}".format(self.m4lRefitErr)
+        line  += ":" + "{0:.3f}".format(self.weight)
 
         return line
