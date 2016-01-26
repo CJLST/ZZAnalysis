@@ -30,7 +30,22 @@ extern "C" int category(
 
 
 
-//---------- RunI-like categorization 
+//---------- Moriond 2016 categorization 
+
+enum CategoryMor16 {
+  UntaggedMor16  = 0,
+  VBFTaggedMor16 = 1
+};
+
+extern "C" int categoryMor16(
+			     int nJets,
+			     float pvbf_VAJHU_old,
+			     float phjj_VAJHU_old
+			     );
+
+
+
+//---------- RunI categorization 
 
 enum CategoryLegacy {
   ZeroOneJet = 0,

@@ -99,6 +99,21 @@ extern "C" int category(
 }
 
 
+extern "C" int categoryMor16(
+			     int nJets,
+			     float pvbf_VAJHU_old,
+			     float phjj_VAJHU_old
+			     )
+{
+  float vbfMela = pvbf_VAJHU_old / ( phjj_VAJHU_old + pvbf_VAJHU_old );
+
+  if(nJets>=2 && vbfMela>0.5)
+    return VBFTaggedMor16;
+  else
+    return UntaggedMor16;
+}
+
+
 extern "C" int categoryLegacy( int nJets )
 {
   if(nJets>=2)
