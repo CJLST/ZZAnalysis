@@ -866,7 +866,7 @@ void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
    JetBTagger .push_back( jet.userFloat("bTagger"));
    JetIsBtagged .push_back( jet.userFloat("isBtagged"));
    JetQGLikelihood .push_back( jet.userFloat("qgLikelihood"));
-   JetSigma .push_back( 0.);//jet.uncOnFourVectorScale());
+   JetSigma .push_back(jet.userFloat("jec_unc"));
 }
 
 
