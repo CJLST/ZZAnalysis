@@ -87,6 +87,8 @@ namespace {
   Float_t PFMETNoHFPhi  =  -99;
   Short_t nCleanedJets  =  0;
   Short_t nCleanedJetsPt30  = 0;
+  Short_t nCleanedJetsPt30_jecUp  = 0;
+  Short_t nCleanedJetsPt30_jecDn  = 0;
   Short_t nCleanedJetsPt30BTagged  = 0;
   Short_t trigWord  = 0;
   Float_t ZZMass  = 0;
@@ -827,6 +829,17 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       ++nCleanedJetsPt30;
       if(cleanedJets[i]->userFloat("isBtagged")) ++nCleanedJetsPt30BTagged;
     }
+
+    // count jec up/down njets pt30
+    float jec_unc = cleanedJets[i]->userFloat("jec_unc");
+
+    float pt_up = cleanedJets[i]->pt() * (1.0 + jec_unc); 
+    float pt_dn = cleanedJets[i]->pt() * (1.0 - jec_unc);
+ 
+    if (pt_up>30) ++nCleanedJetsPt30_jecUp;
+    if (pt_dn>30) ++nCleanedJetsPt30_jecDn;
+
+    
     if (writeJets && theChannel!=ZL) FillJet(*(cleanedJets.at(i))); // No additional pT cut (for JEC studies)
   }
 
@@ -1563,6 +1576,8 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("PFMETNoHFPhi",PFMETNoHFPhi);
   myTree->Book("nCleanedJets",nCleanedJets);
   myTree->Book("nCleanedJetsPt30",nCleanedJetsPt30);
+  myTree->Book("nCleanedJetsPt30_jecUp",nCleanedJetsPt30_jecUp);
+  myTree->Book("nCleanedJetsPt30_jecDn",nCleanedJetsPt30_jecDn);
   myTree->Book("nCleanedJetsPt30BTagged",nCleanedJetsPt30BTagged);
   myTree->Book("trigWord",trigWord);
   myTree->Book("ZZMass",ZZMass);
