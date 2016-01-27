@@ -20,7 +20,7 @@ SingleEle2015C,,-1, ,, /SingleElectron/Run2015C_25ns-16Dec2015-v1/MINIAOD,dbs,,5
 
 DoubleMu2015D,, -1, ,, /DoubleMuon/Run2015D-16Dec2015-v1/MINIAOD,dbs,,3,PD=DoubleMu,json_2015_25ns_Silver.py,
 DoubleEG2015D,, -1, ,, /DoubleEG/Run2015D-16Dec2015-v1/MINIAOD,dbs,,4,PD=DoubleEle,json_2015_25ns_Silver.py,
-MuonEG2015D,,   -1, ,, /MuonEG/Run2015D-16Dec2015-v2/MINIAOD,dbs,,5,PD=MuEG,json_2015_25ns_Silver.py,
+MuonEG2015D,,   -1, ,, /MuonEG/Run2015D-16Dec2015-v1/MINIAOD,dbs,,5,PD=MuEG,json_2015_25ns_Silver.py,
 SingleEle2015D,,-1, ,, /SingleElectron/Run2015D-16Dec2015-v1/MINIAOD,dbs,,10,PD=SingleElectron,json_2015_25ns_Silver.py,
 
 
@@ -128,7 +128,7 @@ WplusH400, ,1.4504660865071271E-002,2.73E-03,,/WplusH_HToZZTo4L_M400_13TeV_powhe
 WminusH115, ,0.69756242781087030,9.22E-05,,/WminusH_HToZZTo4L_M115_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 WminusH120, ,0.60969151251728915,1.67E-04,,/WminusH_HToZZTo4L_M120_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 WminusH124, ,0.54876993182580469,2.52E-04,,/WminusH_HToZZTo4L_M124_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
-WminusH125, ,0.53433891312199711,2.76E-04,,/WminusH_HToZZTo4L_M125_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,"#NB: we used to use 0.0001471 pb from https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#HZZ (for the record: Total (W+H)+(W-H)=0.000381, sigma(W+H)/sigma(W-H) = 1.59)"
+WminusH125, ,0.53433891312199711,2.76E-04,,/WminusH_HToZZTo4L_M125_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,"#NB: we used to use 0.0001471 pb from https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#HZZ (for the record: Total (W+H)+(W-H)=0.000381; sigma(W+H)/sigma(W-H) = 1.59)"
 WminusH126, ,0.52157277147072489,3.02E-04,,/WminusH_HToZZTo4L_M126_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 WminusH130, ,0.47105512934885391,4.14E-04,,/WminusH_HToZZTo4L_M130_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 WminusH135, ,0.41583947393773996,5.67E-04,,/WminusH_HToZZTo4L_M135_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
