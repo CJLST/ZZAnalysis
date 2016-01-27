@@ -163,6 +163,7 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
 
   //-- kinematic refitter
   kinZfitter = new KinZfitter(!isMC);
+
 }
 
 
@@ -191,10 +192,6 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   // Get jets
   Handle<edm::View<pat::Jet> > CleanJets;
   iEvent.getByToken(jetToken, CleanJets);
-  vector<const pat::Jet*> cleanedJetsPt30InEv;
-  for(edm::View<pat::Jet>::const_iterator jet = CleanJets->begin(); jet != CleanJets->end(); ++jet){
-    if(jet->pt()>30) cleanedJetsPt30InEv.push_back(&*jet);
-  }
 
   // Get MET
   Handle<vector<reco::MET> > pfmetcoll;
@@ -502,16 +499,6 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     }
     myCand.addUserFloat("nExtraZ",nExtraZ);
 
-
-    // Collect jets with additional cleaning for loose leptons belonging to this candidate (for CRs only; does nothing for the SR as jets are already cleaned with all tight isolated leptons )
-    vector<const pat::Jet*> cleanedJetsPt30;
-    for (unsigned i =0; i< cleanedJetsPt30InEv.size(); ++i) {
-      if (jetCleaner::isGood(myCand, *(cleanedJetsPt30InEv[i]))) {
-	cleanedJetsPt30.push_back(cleanedJetsPt30InEv[i]);
-      }
-    }
-
-
     //----------------------------------------------------------------------
     //--- Embed angular information and probabilities to build discriminants
 
@@ -711,26 +698,48 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     double pbbh_VAJHU_up = -1.;
     double pbbh_VAJHU_dn = -1.;
 
-    bool hasAtLeastOneJet = (cleanedJetsPt30.size() > 0);
-    bool hasAtLeastTwoJets = (cleanedJetsPt30.size() > 1);
-    if (hasAtLeastOneJet) {
-      std::vector<TLorentzVector> partPprod;
-      partPprod.push_back(pL11);
-      partPprod.push_back(pL12);
-      partPprod.push_back(pL21);
-      partPprod.push_back(pL22);
+    for (int jecnum = 0; jecnum < 3; jecnum++){
 
-      std::vector<int> partIdprod;
-      partIdprod.push_back(id11);
-      partIdprod.push_back(id12);
-      partIdprod.push_back(id21);
-      partIdprod.push_back(id22);
-      partIdprod.push_back(0); // If you know the jet flavors, even better, put the pdg ids for vhMELA
-      partIdprod.push_back(0); // If you know the jet flavors, even better, put the pdg ids for vhMELA
+      // multiplier: +1 means JEC up, -1 means JEC down 
+      double jecnum_multiplier = 0;
+      if (jecnum==1) jecnum_multiplier = 1.;
+      else if (jecnum==2) jecnum_multiplier = -1.;
+      
+      vector<const pat::Jet*> cleanedJetsPt30Jec;
+      vector<float> jec_ratio;
+      for(edm::View<pat::Jet>::const_iterator jet = CleanJets->begin(); jet != CleanJets->end(); ++jet){
+        // calculate JEC uncertainty up/down
+        float jec_unc = jet->userFloat("jec_unc");
+        float ratio = 1. + jecnum_multiplier * jec_unc;
+        float newPt = jet->pt() * ratio;
+        // apply pt>30GeV cut
+        if (newPt<=30.0) continue;
+        // additional jets cleaning for loose leptons belonging to this candidate (for CRs only; 
+        //  does nothing for the SR as jets are already cleaned with all tight isolated leptons ) 
+        if ( !jetCleaner::isGood(myCand, *jet) ) continue;
+        // store jets and up/down ratio
+        cleanedJetsPt30Jec.push_back(&*jet);
+        jec_ratio.push_back(ratio);
+      }
 
-      for (int jecnum = 0; jecnum < 3; jecnum++){
+      bool hasAtLeastOneJet = (cleanedJetsPt30Jec.size() > 0);
+      bool hasAtLeastTwoJets = (cleanedJetsPt30Jec.size() > 1);
+      if (hasAtLeastOneJet) {
+        std::vector<TLorentzVector> partPprod;
+        partPprod.push_back(pL11);
+        partPprod.push_back(pL12);
+        partPprod.push_back(pL21);
+        partPprod.push_back(pL22);
+
+        std::vector<int> partIdprod;
+        partIdprod.push_back(id11);
+        partIdprod.push_back(id12);
+        partIdprod.push_back(id21);
+        partIdprod.push_back(id22);
+        partIdprod.push_back(0); // If you know the jet flavors, even better, put the pdg ids for vhMELA
+        partIdprod.push_back(0); // If you know the jet flavors, even better, put the pdg ids for vhMELA
+
         TLorentzVector higgs_undec = pL11+pL12+pL21+pL22;
-
         TLorentzVector jet1, jet2;
         double djet_max = -1;
         double phjj_VAJHU_old_temp = -1;
@@ -745,24 +754,15 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
         double ptth_VAJHU_temp = -1;
         double pbbh_VAJHU_temp = -1;
 
-/*
-        double jecnum_multiplier = 0;
-        if (jecnum==1) jecnum_multiplier = 1.;
-        else if (jecnum==2) jecnum_multiplier = -1.;
-*/
-        for (unsigned int firstjet = 0; firstjet < cleanedJetsPt30.size(); firstjet++){
-          Float_t ratio1 = 1. /*+ jecnum_multiplier * cleanedJetsPt30[firstjet]->uncOnFourVectorScale()*/;
-          jet1.SetXYZT(cleanedJetsPt30[firstjet]->p4().x(), cleanedJetsPt30[firstjet]->p4().y(), cleanedJetsPt30[firstjet]->p4().z(), cleanedJetsPt30[firstjet]->p4().t());
-          jet1 *= ratio1;
+        for (unsigned int firstjet = 0; firstjet < cleanedJetsPt30Jec.size(); firstjet++){
+          jet1.SetXYZT(cleanedJetsPt30Jec[firstjet]->p4().x(), cleanedJetsPt30Jec[firstjet]->p4().y(), cleanedJetsPt30Jec[firstjet]->p4().z(), cleanedJetsPt30Jec[firstjet]->p4().t());
+          jet1 *= jec_ratio[firstjet];
           partPprod.push_back(jet1);
 
-          for (unsigned int secondjet = 1; secondjet < cleanedJetsPt30.size(); secondjet++){
+          for (unsigned int secondjet = 1; secondjet < cleanedJetsPt30Jec.size(); secondjet++){
             if (secondjet <= firstjet) continue;
-            Float_t ratio2 = 1. /*+ jecnum_multiplier * cleanedJetsPt30[secondjet]->uncOnFourVectorScale()*/;
-
-
-            jet2.SetXYZT(cleanedJetsPt30[secondjet]->p4().x(), cleanedJetsPt30[secondjet]->p4().y(), cleanedJetsPt30[secondjet]->p4().z(), cleanedJetsPt30[secondjet]->p4().t());
-            jet2 *= ratio2;
+            jet2.SetXYZT(cleanedJetsPt30Jec[secondjet]->p4().x(), cleanedJetsPt30Jec[secondjet]->p4().y(), cleanedJetsPt30Jec[secondjet]->p4().z(), cleanedJetsPt30Jec[secondjet]->p4().t());
+            jet2 *= jec_ratio[secondjet];;
             partPprod.push_back(jet2);
 
             double phjj_temp = -1;
@@ -802,7 +802,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
           }
           if (!hasAtLeastTwoJets){ // Compute H + 1 jet directly through Mela
             jet2.SetXYZT(0, 0, 0, 0);
-
+  
             float phj_temp = -1;
             float pjvbf_temp = -1;
             float pAux_vbf_temp = -1;
@@ -828,9 +828,9 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
           pvbf_VAJHU_old = pvbf_VAJHU_old_temp;
           phjj_VAJHU_new = phjj_VAJHU_new_temp;
           pvbf_VAJHU_new = pvbf_VAJHU_new_temp;
-
+  
           pAux_vbf_VAJHU = pAux_vbf_VAJHU_temp;
-
+  
           phj_VAJHU = phj_VAJHU_temp;
           pwh_hadronic_VAJHU = pwh_hadronic_VAJHU_temp;
           pzh_hadronic_VAJHU = pzh_hadronic_VAJHU_temp;
@@ -842,7 +842,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
           pvbf_VAJHU_old_up = pvbf_VAJHU_old_temp;
           phjj_VAJHU_new_up = phjj_VAJHU_new_temp;
           pvbf_VAJHU_new_up = pvbf_VAJHU_new_temp;
-
+ 
           pAux_vbf_VAJHU_up = pAux_vbf_VAJHU_temp;
 
           phj_VAJHU_up = phj_VAJHU_temp;
@@ -856,23 +856,37 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
           pvbf_VAJHU_old_dn = pvbf_VAJHU_old_temp;
           phjj_VAJHU_new_dn = phjj_VAJHU_new_temp;
           pvbf_VAJHU_new_dn = pvbf_VAJHU_new_temp;
-
+  
           pAux_vbf_VAJHU_dn = pAux_vbf_VAJHU_temp;
-
+  
           phj_VAJHU_dn = phj_VAJHU_temp;
           pwh_hadronic_VAJHU_dn = pwh_hadronic_VAJHU_temp;
           pzh_hadronic_VAJHU_dn = pzh_hadronic_VAJHU_temp;
           ptth_VAJHU_dn = ptth_VAJHU_temp;
           pbbh_VAJHU_dn = pbbh_VAJHU_temp;
         }
-      }
+
+      } // if hasAtLeastOneJet
 
 
-    }
+    } // for jecnum = 0 to 2
+
 
     //----------------------------------------------------------------------
       
     // Use extraLeps, extraZs, cleanedJetsPt30, and pfmet to compute additional discriminants
+
+    // create cleanedJetsPt30 w/o JEC up/down scale for following use
+    vector<const pat::Jet*> cleanedJetsPt30;
+    for(edm::View<pat::Jet>::const_iterator jet = CleanJets->begin(); jet != CleanJets->end(); ++jet){
+      // apply pt>30GeV cut
+      if (jet->pt()<=30.0) continue;
+      // additional jets cleaning for loose leptons belonging to this candidate (for CRs only; 
+      //  does nothing for the SR as jets are already cleaned with all tight isolated leptons ) 
+      if ( !jetCleaner::isGood(myCand, *jet) ) continue;
+      // store jets 
+      cleanedJetsPt30.push_back(&*jet);
+    }
 
     float pzh_VAJHU=-1.;
     // ZH discriminant
@@ -1274,6 +1288,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   }
   
   iEvent.put(result);
+
 }
 
 
