@@ -43,6 +43,9 @@
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
 #include <ZZAnalysis/AnalysisStep/interface/JetCleaner.h>
 #include <KinZfitter/KinZfitter/interface/KinZfitter.h>
+#include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
+#include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
+#include "JetMETCorrections/Objects/interface/JetCorrectionsRecord.h"
 
 #include "TH2F.h"
 #include "TFile.h"
@@ -163,6 +166,7 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
 
   //-- kinematic refitter
   kinZfitter = new KinZfitter(!isMC);
+
 }
 
 
@@ -228,6 +232,13 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   // to calculate mass resolution
   CompositeCandMassResolution errorBuilder;       
   errorBuilder.init(iSetup);
+
+
+  //-- JEC uncertanties 
+  edm::ESHandle<JetCorrectorParametersCollection> JetCorParColl;
+  iSetup.get<JetCorrectionsRecord>().get("AK4PFchs",JetCorParColl);
+  JetCorrectorParameters const & JetCorPar = (*JetCorParColl)["Uncertainty"];
+  JetCorrectionUncertainty jecUnc(JetCorPar);
 
   vector<int> bestCandIdx(preBestCandSelection.size(),-1); 
   vector<float> maxPtSum(preBestCandSelection.size(),-1); 
@@ -745,21 +756,24 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
         double ptth_VAJHU_temp = -1;
         double pbbh_VAJHU_temp = -1;
 
-/*
+
         double jecnum_multiplier = 0;
         if (jecnum==1) jecnum_multiplier = 1.;
         else if (jecnum==2) jecnum_multiplier = -1.;
-*/
+
         for (unsigned int firstjet = 0; firstjet < cleanedJetsPt30.size(); firstjet++){
-          Float_t ratio1 = 1. /*+ jecnum_multiplier * cleanedJetsPt30[firstjet]->uncOnFourVectorScale()*/;
+          jecUnc.setJetEta(float(cleanedJetsPt30[firstjet]->eta()));
+          jecUnc.setJetPt(float(cleanedJetsPt30[firstjet]->pt()));
+          Float_t ratio1 = 1. + jecnum_multiplier * (jecUnc.getUncertainty(true));
           jet1.SetXYZT(cleanedJetsPt30[firstjet]->p4().x(), cleanedJetsPt30[firstjet]->p4().y(), cleanedJetsPt30[firstjet]->p4().z(), cleanedJetsPt30[firstjet]->p4().t());
           jet1 *= ratio1;
           partPprod.push_back(jet1);
 
           for (unsigned int secondjet = 1; secondjet < cleanedJetsPt30.size(); secondjet++){
             if (secondjet <= firstjet) continue;
-            Float_t ratio2 = 1. /*+ jecnum_multiplier * cleanedJetsPt30[secondjet]->uncOnFourVectorScale()*/;
-
+            jecUnc.setJetEta(cleanedJetsPt30[secondjet]->eta());
+            jecUnc.setJetPt(cleanedJetsPt30[secondjet]->pt());
+            Float_t ratio2 = 1. + jecnum_multiplier * (jecUnc.getUncertainty(true));
 
             jet2.SetXYZT(cleanedJetsPt30[secondjet]->p4().x(), cleanedJetsPt30[secondjet]->p4().y(), cleanedJetsPt30[secondjet]->p4().z(), cleanedJetsPt30[secondjet]->p4().t());
             jet2 *= ratio2;
@@ -1274,6 +1288,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   }
   
   iEvent.put(result);
+
 }
 
 
