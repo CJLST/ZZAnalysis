@@ -70,8 +70,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   //-- JEC uncertanties 
   ESHandle<JetCorrectorParametersCollection> JetCorParColl;
-  //iSetup.get<JetCorrectionsRecord>().get(jecType,JetCorParColl);
-  iSetup.get<JetCorrectionsRecord>().get("AK4PFchs", JetCorParColl);
+  iSetup.get<JetCorrectionsRecord>().get(jecType,JetCorParColl);
   JetCorrectorParameters const & JetCorPar = (*JetCorParColl)["Uncertainty"];
   JetCorrectionUncertainty jecUnc(JetCorPar);
 
