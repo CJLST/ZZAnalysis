@@ -1,0 +1,35 @@
+identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments,comment
+
+
+###,,,,,,,,,,,Data 50ns
+DoubleMu2015B,,      -1, ,, /DoubleMuon/Run2015B-16Dec2015-v1/MINIAOD,dbs,,3,PD=DoubleMu;BUNCH_SPACING=50,json_2015_50ns.py,
+DoubleEG2015B,,      -1, ,, /DoubleEG/Run2015B-16Dec2015-v1/MINIAOD,dbs,,3,PD=DoubleEle;BUNCH_SPACING=50,json_2015_50ns.py,
+MuonEG2015B,,        -1, ,, /MuonEG/Run2015B-16Dec2015-v1/MINIAOD,dbs,,10,PD=MuEG;BUNCH_SPACING=50,json_2015_50ns.py,
+SingleEle2015B,,     -1, ,, /SingleElectron/Run2015B-16Dec2015-v1/MINIAOD,dbs,,5,PD=SingleElectron;BUNCH_SPACING=50,json_2015_50ns.py,
+
+DoubleMu2015C_50ns,, -1, ,, /DoubleMuon/Run2015C_50ns-16Dec2015-v1/MINIAOD,dbs,,4,PD=DoubleMu;BUNCH_SPACING=50,json_2015_50ns.py,
+DoubleEG2015C_50ns,, -1, ,, /DoubleEG/Run2015C_50ns-16Dec2015-v1/MINIAOD,dbs,,3,PD=DoubleEle;BUNCH_SPACING=50,json_2015_50ns.py,
+MuonEG2015C_50ns,,   -1, ,, /MuonEG/Run2015C_50ns-16Dec2015-v1/MINIAOD,dbs,,5,PD=MuEG;BUNCH_SPACING=50,json_2015_50ns.py,
+SingleEle2015C_50ns,,-1, ,, /SingleElectron/Run2015C_50ns-16Dec2015-v1/MINIAOD,dbs,,5,PD=SingleElectron;BUNCH_SPACING=50,json_2015_50ns.py,
+
+###,,,,,,,,,,,Data 25ns
+DoubleMu2015C,, -1, ,, /DoubleMuon/Run2015C_25ns-16Dec2015-v1/MINIAOD,dbs,,2,PD=DoubleMu,json_2015_25ns_Silver.py,
+DoubleEG2015C,, -1, ,, /DoubleEG/Run2015C_25ns-16Dec2015-v1/MINIAOD,dbs,,2,PD=DoubleEle,json_2015_25ns_Silver.py,
+MuonEG2015C,,   -1, ,, /MuonEG/Run2015C_25ns-16Dec2015-v1/MINIAOD,dbs,,2,PD=MuEG,json_2015_25ns_Silver.py,
+SingleEle2015C,,-1, ,, /SingleElectron/Run2015C_25ns-16Dec2015-v1/MINIAOD,dbs,,5,PD=SingleElectron,json_2015_25ns_Silver.py,
+
+DoubleMu2015D,, -1, ,, /DoubleMuon/Run2015D-16Dec2015-v1/MINIAOD,dbs,,3,PD=DoubleMu,json_2015_25ns_Silver.py,
+DoubleEG2015D,, -1, ,, /DoubleEG/Run2015D-16Dec2015-v1/MINIAOD,dbs,,4,PD=DoubleEle,json_2015_25ns_Silver.py,
+MuonEG2015D,,   -1, ,, /MuonEG/Run2015D-16Dec2015-v2/MINIAOD,dbs,,5,PD=MuEG,json_2015_25ns_Silver.py,
+SingleEle2015D,,-1, ,, /SingleElectron/Run2015D-16Dec2015-v1/MINIAOD,dbs,,10,PD=SingleElectron,json_2015_25ns_Silver.py,
+
+
+
+###,,,,,,,,,,,Official Fall15 samples
+ZZTo4l,,                 1.256,    ,,/ZZTo4L_13TeV_powheg_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,4,PROCESS_CR=True,,
+DYJetsToLL_M50,,      6025.2  ,    ,,/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_HCALDebug_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,4,PROCESS_CR=True,,#NB: HCALDebug in the name probably just means that some additional information is stored
+DYJetsToLL_M10to50,, 18610.0  ,    ,,/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,4,,,
+TTTo2L2nu,,             87.31 ,    ,,/TTTo2L2Nu_13TeV-powheg/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,4,PROCESS_CR=True,, # xs: 831.76*((3*0.108)**2) 
+WWTo2L2Nu,,              0.481,    ,,/WWTo2L2Nu_13TeV-powheg/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,4,,,
+WZJets,,                 5.29 ,    ,,/WZJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,4,,,
+WZTo3LNu,,             4.42965,    ,,/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,4,PROCESS_CR=True,,

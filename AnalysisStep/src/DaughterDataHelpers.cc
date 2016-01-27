@@ -124,3 +124,29 @@ userdatahelpers::getSortedLeptons(const pat::CompositeCandidate& cand, vector<co
   }
 }
 
+
+void 
+userdatahelpers::getSortedZLeptons(const pat::CompositeCandidate& cand, vector<const Candidate*>& leptons, vector<string>& labels, vector<const Candidate*>& fsrPhotons, std::vector<short>& fsrIndex) {
+
+  // Pointer to leptons, to be sorted by charge, in order Lp, Ln
+  leptons = {cand.daughter(0), cand.daughter(1)};
+
+  labels = {"d0.","d1."};
+  vector<unsigned> lOrder = {0,1};
+
+  if (leptons[0]->charge() < 0 && leptons[0]->charge()*leptons[1]->charge()<0) {
+    swap(leptons[0],leptons[1]);
+    swap(labels[0],labels[1]);
+    swap(lOrder[0],lOrder[1]);
+  }
+     
+  // Collect FSR
+  for (unsigned ifsr=2; ifsr<cand.numberOfDaughters(); ++ifsr) {
+    const pat::PFParticle* fsr = static_cast<const pat::PFParticle*>(cand.daughter(ifsr));
+    int ilep = fsr->userFloat("leptIdx");
+    fsrPhotons.push_back(fsr);
+    fsrIndex.push_back(lOrder[ilep]);
+  }
+
+}
+
