@@ -3,10 +3,15 @@
 #include <FWCore/Framework/interface/Event.h>
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 #include <FWCore/Framework/interface/ESHandle.h>
+#include <FWCore/Framework/interface/EventSetup.h>
 
 #include <DataFormats/PatCandidates/interface/Jet.h>
 
 #include <ZZAnalysis/AnalysisStep/interface/CutSet.h>
+
+#include <CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h>
+#include <CondFormats/JetMETObjects/interface/JetCorrectorParameters.h>
+#include <JetMETCorrections/Objects/interface/JetCorrectionsRecord.h>
 
 #include <vector>
 #include <string>
@@ -32,6 +37,7 @@ class JetFiller : public edm::EDProducer {
   edm::EDGetTokenT<edm::View<pat::Jet> > jetToken;
   const StringCutObjectSelector<pat::Jet, true> cut;
   const std::string bTaggerName;
+  const std::string jecType;
   const CutSet<pat::Jet> flags;
   edm::EDGetTokenT<edm::ValueMap<float> > qgToken;
 
@@ -42,6 +48,7 @@ JetFiller::JetFiller(const edm::ParameterSet& iConfig) :
   jetToken(consumes<edm::View<pat::Jet> >(iConfig.getParameter<edm::InputTag>("src"))),
   cut(iConfig.getParameter<std::string>("cut")),
   bTaggerName(iConfig.getParameter<std::string>("bTaggerName")),
+  jecType(iConfig.getParameter<std::string>("jecType")),
   flags(iConfig.getParameter<edm::ParameterSet>("flags"))
 {
   qgToken = consumes<edm::ValueMap<float> >(edm::InputTag("QGTagger", "qgLikelihood"));
@@ -61,6 +68,13 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   Handle<edm::ValueMap<float> > qgHandle; 
   iEvent.getByToken(qgToken, qgHandle);
 
+  //-- JEC uncertanties 
+  ESHandle<JetCorrectorParametersCollection> JetCorParColl;
+  //iSetup.get<JetCorrectionsRecord>().get(jecType,JetCorParColl);
+  iSetup.get<JetCorrectionsRecord>().get("AK4PFchs", JetCorParColl);
+  JetCorrectorParameters const & JetCorPar = (*JetCorParColl)["Uncertainty"];
+  JetCorrectionUncertainty jecUnc(JetCorPar);
+
   //--- Output collection
   auto_ptr<pat::JetCollection> result( new pat::JetCollection() );
 
@@ -77,9 +91,15 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     edm::RefToBase<pat::Jet> jetRef(edm::Ref<edm::View<pat::Jet> >(jetHandle, jet - jetHandle->begin()));
     float qgLikelihood = (*qgHandle)[jetRef];
 
+    //--- Get JEC uncertainties 
+    jecUnc.setJetEta(j.eta());
+    jecUnc.setJetPt(j.pt());
+    float jec_unc = jecUnc.getUncertainty(true);
+
     //--- Embed user variables
     j.addUserFloat("bTagger",bTagger);
     j.addUserFloat("qgLikelihood",qgLikelihood);
+    j.addUserFloat("jec_unc", jec_unc);
 
     //--- Embed flags (ie flags specified in the "flags" pset)
     for(CutSet<pat::Jet>::const_iterator flag = flags.begin(); flag != flags.end(); ++flag) {

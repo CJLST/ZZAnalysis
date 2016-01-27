@@ -980,6 +980,7 @@ process.dressedJets = cms.EDProducer("JetFiller",
     src = cms.InputTag("slimmedJets"),
     cut = cms.string("pt>20 && abs(eta)<4.7"),
     bTaggerName = cms.string("pfCombinedInclusiveSecondaryVertexV2BJetTags"),
+    jecType = cms.string("AK4PFchs"),
     flags = cms.PSet(
         isBtagged = cms.string("userFloat('bTagger')>0.89"),
     )

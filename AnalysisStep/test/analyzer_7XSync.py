@@ -56,7 +56,7 @@ process.maxEvents.input = 100
 
 # Silence output
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 10
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
 
 ### ----------------------------------------------------------------------
