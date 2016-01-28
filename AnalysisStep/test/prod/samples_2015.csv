@@ -19,7 +19,7 @@ MuonEG2015C,,   -1, ,, /MuonEG/Run2015C_25ns-16Dec2015-v1/MINIAOD,dbs,,2,PD=MuEG
 SingleEle2015C,,-1, ,, /SingleElectron/Run2015C_25ns-16Dec2015-v1/MINIAOD,dbs,,5,PD=SingleElectron,json_2015_25ns_Silver.py,
 
 DoubleMu2015D,, -1, ,, /DoubleMuon/Run2015D-16Dec2015-v1/MINIAOD,dbs,,3,PD=DoubleMu,json_2015_25ns_Silver.py,
-DoubleEG2015D,, -1, ,, /DoubleEG/Run2015D-16Dec2015-v1/MINIAOD,dbs,,4,PD=DoubleEle,json_2015_25ns_Silver.py,
+DoubleEG2015D,, -1, ,, /DoubleEG/Run2015D-16Dec2015-v2/MINIAOD,dbs,,4,PD=DoubleEle,json_2015_25ns_Silver.py,
 MuonEG2015D,,   -1, ,, /MuonEG/Run2015D-16Dec2015-v1/MINIAOD,dbs,,5,PD=MuEG,json_2015_25ns_Silver.py,
 SingleEle2015D,,-1, ,, /SingleElectron/Run2015D-16Dec2015-v1/MINIAOD,dbs,,10,PD=SingleElectron,json_2015_25ns_Silver.py,
 
