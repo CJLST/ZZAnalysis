@@ -965,7 +965,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
       kinZfitter->KinRefitZ1();
       
       ZZMassRefit = kinZfitter->GetRefitM4l();
-      ZZMassRefitErr = kinZfitter->GetRefitM4lErr();
+      ZZMassRefitErr = kinZfitter->GetRefitM4lErrFullCov();
 
       // four 4-vectors after refitting order by Z1_1,Z1_2,Z2_1,Z2_2
       //vector<TLorentzVector> p4 = kinZfitter->GetRefitP4s(); 

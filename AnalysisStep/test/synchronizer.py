@@ -62,8 +62,10 @@ def loop():
         tree.SetBranchStatus("ZZsel",1)        
         tree.SetBranchStatus("RunNumber",1)
         tree.SetBranchStatus("LumiNumber",1)
-        tree.SetBranchStatus("EventNumber",1)            
-        tree.SetBranchStatus("overallEventWeight",1)
+        tree.SetBranchStatus("EventNumber",1)
+        tree.SetBranchStatus("genHEPMCweight",1)
+        tree.SetBranchStatus("PUWeight",1)
+        tree.SetBranchStatus("dataMCWeight",1)
         tree.SetBranchStatus("ZZMass",1)
         tree.SetBranchStatus("Z1Mass",1)
         tree.SetBranchStatus("Z2Mass",1)
@@ -143,7 +145,7 @@ def loop():
                 njets30Btag   = tree.nCleanedJetsPt30BTagged
                 mjj           = tree.DiJetMass
                 detajj        = tree.DiJetDEta
-                weight        = tree.overallEventWeight
+                weight        = sign(tree.genHEPMCweight) * tree.PUWeight * tree.dataMCWeight
 
                 jets30pt = []
                 jets30eta = []

@@ -53,12 +53,17 @@ def loop():
     tree.SetBranchStatus("CRflag",1)    
     tree.SetBranchStatus("RunNumber",1)
     tree.SetBranchStatus("LumiNumber",1)
-    tree.SetBranchStatus("EventNumber",1)            
+    tree.SetBranchStatus("EventNumber",1)
+    tree.SetBranchStatus("genHEPMCweight",1)
+    tree.SetBranchStatus("PUWeight",1)
+    tree.SetBranchStatus("dataMCWeight",1)
     tree.SetBranchStatus("ZZMass",1)
     tree.SetBranchStatus("Z1Mass",1)
     tree.SetBranchStatus("Z2Mass",1)
     tree.SetBranchStatus("ZZMassErr",1)
     tree.SetBranchStatus("ZZMassErrCorr",1)
+    tree.SetBranchStatus("ZZMassRefit",1)
+    tree.SetBranchStatus("ZZMassRefitErr",1)
     tree.SetBranchStatus("p0plus_VAJHU",1)
     tree.SetBranchStatus("p0minus_VAJHU",1)
     tree.SetBranchStatus("p0hplus_VAJHU",1)
@@ -108,6 +113,8 @@ def loop():
                     mZ2           = tree.Z2Mass
                     massErrRaw    = tree.ZZMassErr
                     massErrCorr   = tree.ZZMassErrCorr
+                    m4lRefit      = tree.ZZMassRefit
+                    m4lRefitErr   = tree.ZZMassRefitErr
                     p0plus_VAJHU  = tree.p0plus_VAJHU
                     p0minus_VAJHU = tree.p0minus_VAJHU
                     p0hplus_VAJHU = tree.p0hplus_VAJHU
@@ -130,6 +137,7 @@ def loop():
                     njets30Btag   = tree.nCleanedJetsPt30BTagged
                     mjj           = tree.DiJetMass
                     detajj        = tree.DiJetDEta
+                    weight        = sign(tree.genHEPMCweight) * tree.PUWeight * tree.dataMCWeight
 
                     jets30pt = []
                     jets30eta = []
@@ -144,7 +152,7 @@ def loop():
                             jets30mass.append(jetmass[i])
                             
                     theKDs = KDs(p0plus_VAJHU,p0minus_VAJHU,p0hplus_VAJHU,p1plus_VAJHU,p1_VAJHU,p2_VAJHU,p2qqb_VAJHU,bkg_VAMCFM,p0plus_m4l,bkg_m4l,Dgg10_VAMCFM,pvbf_VAJHU,phjj_VAJHU)
-                    theCand = Candidate(theEvent,mass4l,mZ1,mZ2,massErrRaw,massErrCorr,pt4l,nExtraLep,jets30pt,jets30eta,jets30phi,jets30mass,njets30Btag,mjj,detajj,theKDs)
+                    theCand = Candidate(theEvent,mass4l,mZ1,mZ2,massErrRaw,massErrCorr,m4lRefit,m4lRefitErr,pt4l,nExtraLep,jets30pt,jets30eta,jets30phi,jets30mass,njets30Btag,mjj,detajj,theKDs,weight)
                     crCands[aCR].append(theCand)
 
 
