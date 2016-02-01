@@ -192,8 +192,9 @@ process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
 
 if (PROCESS_CR or not IsMC):
     process.CRPath = cms.Path(process.CR)
-    process.dump = cms.Path(process.ZZFiltered + process.ZZSelection + process.dumpUserData)
-    process.dumpCR = cms.Path(process.CRFiltered + process.CRSelection + process.dumpUserData)
+    if (not IsMC):
+        process.dump = cms.Path(process.ZZFiltered + process.ZZSelection + process.dumpUserData)
+        process.dumpCR = cms.Path(process.CRFiltered + process.CRSelection + process.dumpUserData)
     process.trees = cms.EndPath( process.ZZTree + process.CRZLLTree + process.CRZLTree)
 else:
 #    process.CRPath = cms.Path(process.CRZl) #still needed by the plotter
