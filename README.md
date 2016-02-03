@@ -7,7 +7,7 @@ Please use a CMSSW_7_6_X version >= 7_6_3.
 
 Download and execute the setup script:
 ```
-wget -P /tmp https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_76X/checkout_70X.csh
+wget -pP /tmp https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_76X/checkout_70X.csh
 cd $CMSSW_BASE/src
 cmsenv
 source /tmp/checkout_70X.csh

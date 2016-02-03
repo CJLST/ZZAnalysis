@@ -1,7 +1,7 @@
 #!/bin/tcsh -fe
 #
 # Instructions:
-# wget -P /tmp https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_76X/checkout_70X.csh
+# wget -pP /tmp https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_76X/checkout_70X.csh
 # cd $CMSSW_BASE/src
 # cmsenv
 # source /tmp/checkout_70X.csh
