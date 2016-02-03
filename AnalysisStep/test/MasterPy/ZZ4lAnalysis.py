@@ -911,13 +911,15 @@ CR_ZLLosSEL_2P2F    = (CR_BESTZLLos + "&&" + BOTHFAIL)  # Is the CR_BESTZLLos re
 
 ################################################################################
 
-
-
+#Prefix for Z2 daughters, to be used in the "cut" string
+#D1D0 = "daughter(1).daughter(0).masterClone"
+#D1D1 = "daughter(1).daughter(1).masterClone"
 
 # Z (OSSF,both e/mu) + LL (any F/C, with no ID/iso); this is the starting point for control regions
 process.bareZLLCand= cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string('ZCand LLCand'),
-    cut = cms.string(NOGHOST4l), #Note that LLLLPRESEL cannot be used here
+    cut = cms.string(NOGHOST4l),
+#                     "&& !(" + Z2LL_OS + "&&" + D1D0+".userFloat('isGood')&&"+D1D1+".userFloat('isGood')&&"+D1D0+".userFloat('passCombRelIsoPFFSRCorr')&&"+D1D1+".userFloat('passCombRelIsoPFFSRCorr'))"), # Reject OS tight combinations. Note that BOTHFAIL cannot be used here ("d0.d1.xxx" is available only in and after ZZCandidateFiller. 
     checkCharge = cms.bool(False)
 )
 process.ZLLCand = cms.EDProducer("ZZCandidateFiller",

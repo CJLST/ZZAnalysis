@@ -201,12 +201,12 @@ ZH400, ,1.2153369426789653E-002,0.00774695924279117,,/ZH_HToZZ_4LFilter_M400_13T
 ZZTo4l,,            1.256,      ,,/ZZTo4L_13TeV_powheg_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,4,PROCESS_CR=True,,
 ZZTo4lamcatnlo,,    1.256,      ,,/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,3,PROCESS_CR=True,, # Xsection from the gen: 1.218
 
-ggZZ4e,,            0.001586,   ,,/GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,PROCESS_CR=True,,#FIXME: to be updated to MiniAODv2
-ggZZ4mu,,           0.001586,   ,,/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,PROCESS_CR=True,,#FIXME: to be updated to MiniAODv2
-ggZZ4tau,,          0.001586,   ,,/GluGluToContinToZZTo4tau_13TeV_MCFM701_pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,4,PROCESS_CR=True,,#FIXME: to be updated to MiniAODv2
-ggZZ2e2mu,,         0.003194,   ,,/GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,PROCESS_CR=True,,
-ggZZ2e2tau,,        0.003194,   ,,/GluGluToContinToZZTo2e2tau_13TeV_MCFM701_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,PROCESS_CR=True,,
-ggZZ2mu2tau,,       0.003194,   ,,/GluGluToContinToZZTo2mu2tau_13TeV_MCFM701_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,3,PROCESS_CR=True,,
+ggZZ4e,,            0.001586,   ,,/GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,PROCESS_CR=False,,#FIXME: to be updated to MiniAODv2
+ggZZ4mu,,           0.001586,   ,,/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,PROCESS_CR=False,,#FIXME: to be updated to MiniAODv2
+ggZZ4tau,,          0.001586,   ,,/GluGluToContinToZZTo4tau_13TeV_MCFM701_pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,4,PROCESS_CR=False,,#FIXME: to be updated to MiniAODv2
+ggZZ2e2mu,,         0.003194,   ,,/GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,PROCESS_CR=False,,
+ggZZ2e2tau,,        0.003194,   ,,/GluGluToContinToZZTo2e2tau_13TeV_MCFM701_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,2,PROCESS_CR=False,,
+ggZZ2mu2tau,,       0.003194,   ,,/GluGluToContinToZZTo2mu2tau_13TeV_MCFM701_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,3,PROCESS_CR=False,,
 
 DYJetsToLL_M50,,     6025.2,    ,,/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_HCALDebug_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,4,PROCESS_CR=True,,#NB: HCALDebug in the name probably just means that some additional information is stored
 TTJets,,             831.76,    ,,/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,4,PROCESS_CR=True,,#FIXME: to be updated to MiniAODv2

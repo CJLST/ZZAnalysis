@@ -61,7 +61,9 @@ public:
   explicit ZZCandidateFiller(const edm::ParameterSet&);
     
   /// Destructor
-  ~ZZCandidateFiller(){};  
+  ~ZZCandidateFiller(){
+    delete kinZfitter;
+  };  
 
 private:
   typedef map<const reco::Candidate*, const pat::PFParticle*> FSRToLepMap;
@@ -120,7 +122,8 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
   isMC(iConfig.getParameter<bool>("isMC")),
   recomputeIsoForFSR(iConfig.getParameter<bool>("recomputeIsoForFSR")),
   corrSigmaMu(0),
-  corrSigmaEle(0)
+  corrSigmaEle(0),
+  kinZfitter(0)
 {
   produces<pat::CompositeCandidateCollection>();
 
