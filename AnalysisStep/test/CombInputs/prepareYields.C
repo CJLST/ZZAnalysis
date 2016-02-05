@@ -10,20 +10,22 @@
 #include <string>
 #include <vector>
 
-#include "TSystem.h"
+#include "TCanvas.h"
 #include "TFile.h"
-#include "TTree.h"
-#include "TH1.h"
+#include "TFitResult.h"
 #include "TF1.h"
 #include "TGraph.h"
-#include "TCanvas.h"
+#include "TH1.h"
 #include "TLegend.h"
-#include "TFitResult.h"
-#include "TPaveStats.h"
 #include "TMath.h"
+#include "TPaveStats.h"
+#include "TSpline.h"
+#include "TSystem.h"
+#include "TTree.h"
 
 #include "../Plotter/tdrstyle.C"
 #include "../Plotter/plotUtils.C"
+#include "../Plotter/kFactors.C"
 #include <ZZAnalysis/AnalysisStep/src/Category.cc>
 
 using namespace std;
@@ -32,6 +34,10 @@ using namespace std;
 #define MERGE2E2MU 1
 
 #define APPLYKFACTORS 1
+
+#define JUST125 0
+#define SKIPTTH 1 //FIXME
+
 #define RESCALETOSMPSIGNALSTRENGTH 0
 #define SMPSIGNALSTRENGTH 0.99
 
@@ -46,27 +52,36 @@ using namespace std;
 enum Process {ggH=0, qqH=1, WH=2, ZH=3, ttH=4, qqZZ=5, ggZZ=6};
 const int nProcesses = 7;
 string sProcess[nProcesses] = {"ggH", "qqH", "WH", "ZH", "ttH", "qqZZ", "ggZZ"};
-
-const int nMHPoints = 4;
-string sMHPoint[nMHPoints] = {"", "124", "125", "126"};
-Float_t fMHPoint[nMHPoints] = {0., 124., 125., 126.};
 bool isSignal[nProcesses] = {1,1,1,1,1,0,0,};
-Int_t nMHPointsProcess[nProcesses] = {3,1,1,1,1,0,0};
+
+//*
+const int nMHPoints = 6;
+string  sMHPoint[nMHPoints] = {"","120","124","125","126","130",};
+Float_t fMHPoint[nMHPoints] = {0., 120., 124., 125., 126., 130.,};
+//Int_t nMHPointsProcess[nProcesses] = {5,5,5,5,5,0,0};
+Int_t nMHPointsProcess[nProcesses] = {5,5,4,4,0,0,0}; //FIXME: some mass points are still missing
 bool hasMHPoint[nProcesses][nMHPoints] = {
-  {0,1,1,1},
-  {0,0,1,0},
-  {0,0,1,0},
-  {0,0,1,0},
-  {0,0,1,0},
-  {1,0,0,0},
-  {1,0,0,0},
+  {0,1,1,1,1,1,},//ggH
+  {0,1,1,1,1,1,},//qqH
+  //{0,1,1,1,1,1,},//WH
+  {0,1,0,1,0,1,},//WH
+  //{0,1,1,1,1,1,},//ZH
+  {0,1,1,1,1,0,},//ZH
+  //{0,1,1,1,1,1,},//ttH
+  {0,0,0,0,0,0,},//ttH
+  {1,0,0,0,0,0,},//qqZZ
+  {1,0,0,0,0,0,},//ggZZ
 };
+const int orderOfPolynomial[nProcesses] = {3,3,3,1,1,0,0};
+//*/
 
 enum FinalState {fs4mu=0, fs4e=1, fs2e2mu=2, fs2mu2e=3};
 const int nFinalStates = 4;
 string sFinalState[nFinalStates+1] = {"4mu", "4e", "2e2mu", "2mu2e", "4l"};
 Int_t fsMarkerStyle[nFinalStates+1] = {20,22,21,33,29};
 
+
+/* ---------- full RunII categorization 
 const int nCategories = 6;
 string sCategory[nCategories+1] = {
   "UnTagged",
@@ -78,6 +93,17 @@ string sCategory[nCategories+1] = {
   "inclusive",
 };
 Color_t catColor[nCategories+1] = {kBlue-9, kCyan-6, kGreen-6, kRed-7, kOrange+6, kMagenta-6, kBlack, };
+//*/
+
+//* ---------- Moriond 2016 categorization 
+const int nCategories = 2;
+string sCategory[nCategories+1] = {
+  "UnTagged",
+  "VBFTagged", 
+  "inclusive", 
+};
+Color_t catColor[nCategories+1] = {kBlue-9, kGreen-6, kBlack, };
+//*/
 
 enum ResonantStatus {resonant=0, nonresonant=1};
 const int nResStatuses = 2;
@@ -96,8 +122,11 @@ Double_t deltaR(Double_t e1, Double_t p1, Double_t e2, Double_t p2) {
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-void computeYields(string inputFilePath, double lumi, double sqrts, double m4lMin, double m4lMax)
+void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string inputFilePathggZZ, double lumi, double sqrts, double m4lMin, double m4lMax)
 {
+
+  TFile* ggZZKFactorFile = TFile::Open("../Plotter/ggZZKFactors/Kfactor_ggHZZ_2l2l_NNLO_NNPDF_NarrowWidth_13TeV.root");
+  TSpline3* sp = (TSpline3*)ggZZKFactorFile->Get("sp_Kfactor");
 
   const int nDatasets = 13;
   string datasets[nDatasets] = {
@@ -137,6 +166,8 @@ void computeYields(string inputFilePath, double lumi, double sqrts, double m4lMi
   Short_t Z1Flav;
   Short_t Z2Flav;
   Float_t DiJetFisher;
+  Float_t pvbf_VAJHU_old;
+  Float_t phjj_VAJHU_old;
   vector<Float_t> *CandLepEta = 0;
   vector<Float_t> *CandLepPhi = 0;
   Short_t nExtraLep;
@@ -152,6 +183,11 @@ void computeYields(string inputFilePath, double lumi, double sqrts, double m4lMi
   Float_t jetEta[99];
   Float_t jetPhi[99];
   Float_t jetMass[99];
+  Float_t GenHMass;
+  Float_t GenZ1Phi;
+  Float_t GenZ2Phi;
+  Float_t GenZ1Flav;
+  Float_t GenZ2Flav;
   Float_t GenLep1Eta;
   Float_t GenLep1Phi;
   Short_t GenLep1Id;
@@ -202,12 +238,14 @@ void computeYields(string inputFilePath, double lumi, double sqrts, double m4lMi
        datasets[d]=="ggZZ2e2tau"||
        datasets[d]=="ggZZ2mu2tau") 
       currentProcess = ggZZ;
+
+    if(SKIPTTH && currentProcess==ttH) continue;
     
     for(int mp=0; mp<nMHPoints; mp++){
 
-      if(!hasMHPoint[currentProcess][mp]) continue;
+      if(!hasMHPoint[currentProcess][mp] || (JUST125&&sMHPoint[mp]!="125"&&sMHPoint[mp]!="")) continue;
       
-      string inputFileName = string(Form("%s%s%s/ZZ4lAnalysis.root",inputFilePath.c_str(),datasets[d].c_str(),sMHPoint[mp].c_str()));
+      string inputFileName = string(Form("%s%s%s/ZZ4lAnalysis.root",(currentProcess==ggZZ)?inputFilePathggZZ.c_str():(currentProcess==qqZZ)?inputFilePathqqZZ.c_str():inputFilePathSignal.c_str(),datasets[d].c_str(),sMHPoint[mp].c_str()));
       inputFile[d] = TFile::Open(inputFileName.c_str());
       
       hCounters[d] = (TH1F*)inputFile[d]->Get("ZZTree/Counters");
@@ -241,6 +279,13 @@ void computeYields(string inputFilePath, double lumi, double sqrts, double m4lMi
       inputTree[d]->SetBranchAddress("JetPhi", &JetPhi);
       inputTree[d]->SetBranchAddress("JetMass", &JetMass);
       inputTree[d]->SetBranchAddress("DiJetFisher", &DiJetFisher);
+      inputTree[d]->SetBranchAddress("pvbf_VAJHU_old", &pvbf_VAJHU_old);
+      inputTree[d]->SetBranchAddress("phjj_VAJHU_old", &phjj_VAJHU_old);
+      inputTree[d]->SetBranchAddress("GenHMass", &GenHMass);
+      inputTree[d]->SetBranchAddress("GenZ1Phi", &GenZ1Phi);
+      inputTree[d]->SetBranchAddress("GenZ2Phi", &GenZ2Phi);
+      inputTree[d]->SetBranchAddress("GenZ1Flav", &GenZ1Flav);
+      inputTree[d]->SetBranchAddress("GenZ2Flav", &GenZ2Flav);
       inputTree[d]->SetBranchAddress("GenLep1Eta", &GenLep1Eta);
       inputTree[d]->SetBranchAddress("GenLep1Phi", &GenLep1Phi);
       inputTree[d]->SetBranchAddress("GenLep1Id", &GenLep1Id);
@@ -276,16 +321,22 @@ void computeYields(string inputFilePath, double lumi, double sqrts, double m4lMi
 	    
 	    //kfactor = 1.065;
 	    
-	    // if(GenZ1Flav==GenZ2Flav)
-	    //   kfactor = 1.09;
-	    // else
-	    //   kfactor = 1.11;
+	    //kfactor = (GenZ1Flav==GenZ2Flav) ? 1.09 : 1.11 ;
 	    
-	    kfactor = 1.1;	  
+	    //kfactor = 1.1; // Jamboree
 	    
+	    kfactor = kfactor_qqZZ_qcd_dPhi( fabs(GenZ1Phi-GenZ2Phi), (GenZ1Flav==GenZ2Flav)?1:2 ); // Moriond2016 
+
+	    //FIXME: still missing NLO EW k-factor
+ 
 	  }else if(currentProcess==ggZZ){
+
 	    //kfactor = 2.;
-	    kfactor = 1.7;
+
+	    //kfactor = 1.7; // Jamboree
+
+	    kfactor = (float)sp->Eval(GenHMass); // Moriond2016
+
 	  }
 	  
 	}
@@ -313,6 +364,7 @@ void computeYields(string inputFilePath, double lumi, double sqrts, double m4lMi
 	}else{
 	  cerr<<"error in event "<<nRun<<":"<<nLumi<<":"<<nEvent<<", Z1Flav="<<Z1Flav<<endl;
 	}
+	if(MERGE2E2MU && currentFinalState==fs2mu2e) currentFinalState = fs2e2mu;
 
 
 	//----- find category
@@ -323,18 +375,28 @@ void computeYields(string inputFilePath, double lumi, double sqrts, double m4lMi
 	  jetPhi[j] = JetPhi->at(j);
 	  jetMass[j] = JetMass->at(j);
 	}
+
+	/* ---------- full RunII categorization 
 	currentCategory = category(
-				   nExtraLep,
-				   ZZPt,
-				   ZZMass,
-				   nJets, 
-				   nJetsBTagged,
-				   jetPt,
-				   jetEta,
-				   jetPhi,
-				   jetMass,
-				   DiJetFisher
-				   );
+	   nExtraLep,
+	   ZZPt,
+	   ZZMass,
+	   nJets, 
+	   nJetsBTagged,
+	   jetPt,
+	   jetEta,
+	   jetPhi,
+	   jetMass,
+	   DiJetFisher
+	   );
+	//*/
+	//* ---------- Moriond 2016 categorization 
+	currentCategory = categoryMor16(
+	   nJets,
+           pvbf_VAJHU_old,
+           phjj_VAJHU_old
+           );
+	//*/
 
 
 	//----- check if this is resonant signal (ie. H->4l with correct lepton choice)
@@ -412,19 +474,25 @@ void computeYields(string inputFilePath, double lumi, double sqrts, double m4lMi
 
   //---------- Write yield arrays to a ROOT file
 
-  TFile* fOutYields = new TFile(Form("yields_%iTeV_m4l%.1f-%.1f_%.3ffb-1.root",(int)sqrts,m4lMin,m4lMax,lumi),"recreate");
+  TFile* fOutYields = new TFile(Form("yields_%iTeV_m4l%.1f-%.1f_%.3ffb-1%s.root",(int)sqrts,m4lMin,m4lMax,lumi,(MERGE2E2MU?"_m":"")),"recreate");
   fOutYields->cd();
-  for(int pr=0; pr<nProcesses; pr++)
-    for(int mp=0; mp<nMHPoints; mp++)
-      if(hasMHPoint[pr][mp])
-	for(int fs=0; fs<nFinalStates+1; fs++)
-	  for(int cat=0; cat<nCategories+1; cat++)
-	    for(int rs=0; rs<nResStatuses+1; rs++){
-	      TH1F* hTemp = new TH1F(Form("h1_%s%s_%s_%s_%s",sProcess[pr].c_str(),sMHPoint[mp].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[rs].c_str()),"",1,0,1);
-	      hTemp->SetBinContent(1,yield[pr][mp][fs][cat][rs]);
-	      hTemp->Write(hTemp->GetName());
-	      delete hTemp;
-	    }
+  for(int pr=0; pr<nProcesses; pr++){
+    if(SKIPTTH && pr==ttH) continue;
+    for(int mp=0; mp<nMHPoints; mp++){
+      if(!hasMHPoint[pr][mp] || (JUST125&&sMHPoint[mp]!="125"&&sMHPoint[mp]!="")) continue;
+      for(int fs=0; fs<nFinalStates+1; fs++){
+	if(MERGE2E2MU && fs==fs2mu2e) continue;
+	for(int cat=0; cat<nCategories+1; cat++){
+	  for(int rs=0; rs<nResStatuses+1; rs++){
+	    TH1F* hTemp = new TH1F(Form("h1_%s%s_%s_%s_%s",sProcess[pr].c_str(),sMHPoint[mp].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[rs].c_str()),"",1,0,1);
+	    hTemp->SetBinContent(1,yield[pr][mp][fs][cat][rs]);
+	    hTemp->Write(hTemp->GetName());
+	    delete hTemp;
+	  }
+	}
+      }
+    }
+  }
   fOutYields->Close();
   delete fOutYields; 
 
@@ -444,25 +512,25 @@ void DrawYieldFits(string outputDirectory, TGraph* g[nProcesses][nFinalStates][n
 
   string outputPath = string(Form("%s/CanvasesSignalFits/",outputDirectory.c_str()));
   gSystem->Exec(("mkdir -p "+outputPath).c_str());
-  TCanvas* cYield[nProcesses];
-
-  TLegend* lgd = new TLegend(0.65,0.4,0.93,0.8);
-  lgd->SetFillStyle(0);
-  lgd->SetBorderSize(0);
-
-  bool first = true;   
+  TCanvas* cYield[nProcesses][nCategories];
+  TLegend* lgd[nProcesses][nCategories];
+  bool first;
 
   for(int pr=0; pr<nProcesses; pr++){
-    if(!isSignal[pr]) continue;    
-
-    if(pr!=ggH) continue; //FIXME: for the moment, only ggH has more than one mass point
-
-    string canvasName = string(Form("cFits_%s",sProcess[pr].c_str()));
-    cYield[pr] = new TCanvas(canvasName.c_str(),canvasName.c_str(),500,500);
-
-    for(int fs=0; fs<nFinalStates; fs++){
-      if(MERGE2E2MU && fs==fs2mu2e) continue;
-      for(int cat=0; cat<nCategories+1; cat++){
+    if(!isSignal[pr]) continue;
+    if(SKIPTTH && pr==ttH) continue;
+    
+    for(int cat=0; cat<nCategories; cat++){
+      
+      string canvasName = string(Form("cFits_%s_%s",sProcess[pr].c_str(),sCategory[cat].c_str()));
+      cYield[pr][cat] = new TCanvas(canvasName.c_str(),canvasName.c_str(),500,500);
+      lgd[pr][cat] = new TLegend(0.2,0.73,0.4,0.88);
+      lgd[pr][cat]->SetFillStyle(0);
+      //lgd[pr][cat]->SetBorderSize(0);
+      first = true;
+      
+      for(int fs=0; fs<nFinalStates; fs++){
+	if(MERGE2E2MU && fs==fs2mu2e) continue;
 
 	g[pr][fs][cat]->GetXaxis()->SetTitle("generated m_{H}");
 	g[pr][fs][cat]->GetYaxis()->SetTitle("expected yield");
@@ -479,27 +547,26 @@ void DrawYieldFits(string outputDirectory, TGraph* g[nProcesses][nFinalStates][n
 	g[pr][fs][cat]->SetMarkerStyle(fsMarkerStyle[fs]);
 	g[pr][fs][cat]->SetMarkerColor(catColor[cat]);
 	g[pr][fs][cat]->SetMinimum(0);
-	g[pr][fs][cat]->GetXaxis()->SetLimits(123.,129.2);
-
-	if(cat==nCategories) continue;
-
-	g[pr][fs][cat]->Draw(first?"AP":"P");
+	g[pr][fs][cat]->GetXaxis()->SetLimits(fMHPoint[1]-5.,fMHPoint[nMHPoints-1]+5.);
 
 	f[pr][fs][cat]->SetLineColor(catColor[cat]);
 	f[pr][fs][cat]->SetLineWidth(1);
-	f[pr][fs][cat]->Draw("SAME");
-	if(fs==0) lgd->AddEntry(f[pr][fs][cat],sCategory[cat].c_str(),"l");
 
+	lgd[pr][cat]->AddEntry(g[pr][fs][cat],sFinalState[fs].c_str(),"p");
+      }
+
+      for(int fs=nFinalStates-1; fs>=0; fs--){
+	if(MERGE2E2MU && fs==fs2mu2e) continue;
+	g[pr][fs][cat]->Draw(first?"AP":"P");
+	f[pr][fs][cat]->Draw("SAME");
 	first = false;
       }
+
+      //lgd[pr][cat]->AddEntry(f[pr][0][cat],sCategory[cat].c_str(),"l");
+      lgd[pr][cat]->Draw();
+      SaveCanvas(outputPath,cYield[pr][cat]);
+
     }
-
-    for(int fs=0; fs<nFinalStates; fs++)
-      if(!(MERGE2E2MU && fs==fs2mu2e))
-	lgd->AddEntry(g[pr][fs][nCategories],sFinalState[fs].c_str(),"p");
-
-    lgd->Draw();
-    SaveCanvas(outputPath,cYield[pr]);
   }
 
 }
@@ -509,31 +576,32 @@ void fitSignalYields(string outputDirectory, double lumi, double sqrts, double m
 
   //---------- Retrieve yields from the ROOT file
 
-  TFile* fInYields = TFile::Open(Form("yields_%iTeV_m4l%.1f-%.1f_%.3ffb-1.root",(int)sqrts,m4lMin,m4lMax,lumi));
+  TFile* fInYields = TFile::Open(Form("yields_%iTeV_m4l%.1f-%.1f_%.3ffb-1%s.root",(int)sqrts,m4lMin,m4lMax,lumi,(MERGE2E2MU?"_m":"")));
   Float_t yield[nProcesses][nMHPoints][nFinalStates][nCategories+1];
-  for(int pr=0; pr<nProcesses; pr++)
-    for(int mp=0; mp<nMHPoints; mp++)
-      if(hasMHPoint[pr][mp] && isSignal[pr])
-	for(int fs=0; fs<nFinalStates; fs++)
+  for(int pr=0; pr<nProcesses; pr++){
+    if(!isSignal[pr]) continue;
+    if(SKIPTTH && pr==ttH) continue;
+    for(int mp=0; mp<nMHPoints; mp++){
+      if(hasMHPoint[pr][mp] && isSignal[pr]){
+	for(int fs=0; fs<nFinalStates; fs++){
+	  if(MERGE2E2MU && fs==fs2mu2e) continue;
 	  for(int cat=0; cat<nCategories+1; cat++){
 	    yield[pr][mp][fs][cat] = ((TH1F*)fInYields->Get(Form("h1_%s%s_%s_%s_%s",sProcess[pr].c_str(),sMHPoint[mp].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[nResStatuses].c_str())))->GetBinContent(1);
-	    if(MERGE2E2MU && fs==fs2e2mu) 
-	      yield[pr][mp][fs][cat] += yield[pr][mp][fs2mu2e][cat];
 	  }
+	}
+      }
+    }
+  }
 
   //---------- Fit yield vs. mH
 
-  TFile* fOutYieldFunctions = new TFile(Form("yieldFunctions_%iTeV_m4l%.1f-%.1f_%.3ffb-1.root",(int)sqrts,m4lMin,m4lMax,lumi),"recreate");
+  TFile* fOutYieldFunctions = new TFile(Form("yieldFunctions_%iTeV_m4l%.1f-%.1f_%.3ffb-1%s.root",(int)sqrts,m4lMin,m4lMax,lumi,(MERGE2E2MU?"_m":"")),"recreate");
   TGraph* gYield[nProcesses][nFinalStates][nCategories+1];
   TF1* fYield[nProcesses][nFinalStates][nCategories+1];
 
-  const int nParameters = 3; // Let's take a 2nd order polynomial for now.
-  Float_t fitParameters[nParameters][nProcesses][nFinalStates][nCategories+1];
-
   for(int pr=0; pr<nProcesses; pr++){
     if(!isSignal[pr]) continue;
-
-    if(pr!=ggH) continue; //FIXME: for the moment, only ggH has more than one mass point
+    if(SKIPTTH && pr==ttH) continue;
 
     for(int fs=0; fs<nFinalStates; fs++){
       if(MERGE2E2MU && fs==fs2mu2e) continue;
@@ -551,8 +619,8 @@ void fitSignalYields(string outputDirectory, double lumi, double sqrts, double m
 	}
 
 	string fName = (string)Form("f_%s_%s_%s",sProcess[pr].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str());
-	fYield[pr][fs][cat] = new TF1(fName.c_str(),"pol2",124,126); 
-	//fYield[pr][fs][cat] = new TF1(fName.c_str(),"[0]+[1]*x+[2]*x*x",124,126); // the fit doesn't work with this
+	fYield[pr][fs][cat] = new TF1(fName.c_str(),Form("pol%i",orderOfPolynomial[pr]),fMHPoint[1],fMHPoint[nMHPoints-1]); 
+	//fYield[pr][fs][cat] = new TF1(fName.c_str(),"[0]+[1]*x+[2]*x*x",fMHPoint[1],fMHPoint[nMHPoints-1]); // the fit doesn't work with this
 	
 	cout<<endl<<sProcess[pr]<<", "<<sFinalState[fs]<<", "<<sCategory[cat]<<endl;
 	gYield[pr][fs][cat]->Fit(fYield[pr][fs][cat],"N S");
@@ -585,20 +653,24 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
   //---------- Retrieve yields and functions from the ROOT file
 
   Float_t yield[nProcesses][nFinalStates+1][nCategories+1];
-  TFile* fInYields = TFile::Open(Form("yields_%iTeV_m4l%.1f-%.1f_%.3ffb-1.root",(int)sqrts,m4lMin,m4lMax,lumi));
-  for(int pr=0; pr<nProcesses; pr++)
-    for(int fs=0; fs<nFinalStates+1; fs++)
+  TFile* fInYields = TFile::Open(Form("yields_%iTeV_m4l%.1f-%.1f_%.3ffb-1%s.root",(int)sqrts,m4lMin,m4lMax,lumi,(MERGE2E2MU?"_m":"")));
+  for(int pr=0; pr<nProcesses; pr++){
+    if(SKIPTTH && pr==ttH) continue;
+    for(int fs=0; fs<nFinalStates+1; fs++){
+      if(MERGE2E2MU && fs==fs2mu2e) continue;
       for(int cat=0; cat<nCategories+1; cat++){
 	yield[pr][fs][cat] = ((TH1F*)fInYields->Get(Form("h1_%s%s_%s_%s_%s",sProcess[pr].c_str(),(isSignal[pr]?(mHoption!="param"?mHoption.c_str():"125"):""),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[nResStatuses].c_str())))->GetBinContent(1);
 	if(RESCALETOSMPSIGNALSTRENGTH && (pr==qqZZ||pr==ggZZ)) yield[pr][fs][cat] *= SMPSIGNALSTRENGTH; //FIXME: to be removed at some point ?
       }
+    }
+  }
 
   TF1* fYield[nProcesses][nFinalStates][nCategories+1];
   if(mHoption=="param"){
-    TFile* fInYieldFunctions = TFile::Open(Form("yieldFunctions_%iTeV_m4l%.1f-%.1f_%.3ffb-1.root",(int)sqrts,m4lMin,m4lMax,lumi));
+    TFile* fInYieldFunctions = TFile::Open(Form("yieldFunctions_%iTeV_m4l%.1f-%.1f_%.3ffb-1%s.root",(int)sqrts,m4lMin,m4lMax,lumi,(MERGE2E2MU?"_m":"")));
     for(int pr=0; pr<nProcesses; pr++){
       if(!isSignal[pr]) continue;
-      if(pr!=ggH) continue; //FIXME: for the moment, only ggH has more than one mass point
+      if(SKIPTTH && pr==ttH) continue;
       for(int fs=0; fs<nFinalStates; fs++){
 	if(MERGE2E2MU && fs==fs2mu2e) continue;
 	for(int cat=0; cat<nCategories+1; cat++)
@@ -635,19 +707,22 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
       outFile[fs]<<sCategory[cat]<<": "<<endl;
 
       for(int pr=0; pr<nProcesses; pr++){
-	float y = yield[pr][fs][cat];
-	if(MERGE2E2MU && fs==fs2e2mu) y += yield[pr][fs2mu2e][cat];
+	if(SKIPTTH && pr==ttH) continue;
 
-	if(pr==ggH && mHoption=="param"){ //FIXME: for the moment, only ggH has more than one mass point
-	  outFile[fs]<<"    "<<sProcess[pr]<<": "
-		     <<"'("<<fYield[pr][fs][cat]->GetParameter(0)<<")+("
-		     <<fYield[pr][fs][cat]->GetParameter(1)<<"*MH)+("
-		     <<fYield[pr][fs][cat]->GetParameter(2)<<"*MH*MH)'"<<endl; //FIXME: expression is hardcoded here
+	if(isSignal[pr] && mHoption=="param"){
+	  outFile[fs]<<"    "<<sProcess[pr]<<": '";
+	  for(int ord=0; ord<=orderOfPolynomial[pr]; ord++){
+	    outFile[fs]<<"("<<fYield[pr][fs][cat]->GetParameter(ord);
+	    for(int ord2=0; ord2<=ord-1; ord2++) outFile[fs]<<"*@0";
+	    outFile[fs]<<")";
+	    if(ord<orderOfPolynomial[pr]) outFile[fs]<<"+";
+	  }
+	  outFile[fs]<<endl;
 	}else{
-	  outFile[fs]<<"    "<<sProcess[pr]<<": "<<y<<endl;
+	  outFile[fs]<<"    "<<sProcess[pr]<<": "<<yield[pr][fs][cat]<<endl;
 	}
 
-	totalYield += y;
+	totalYield += yield[pr][fs][cat];
       }
       outFile[fs]<<endl;
     }
@@ -656,8 +731,15 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
   }
 
   cout<<"total signal yield in mass window ["<<m4lMin<<","<<m4lMax<<"] : "<<totalYield<<endl;
-  for(int pr=0; pr<nProcesses; pr++)
+  for(int pr=0; pr<nProcesses; pr++){
+    if(SKIPTTH && pr==ttH) continue;
     cout<<" "<<sProcess[pr]<<": "<<yield[pr][nFinalStates][nCategories]<<endl;
+    cout<<" "<<sProcess[pr]<<", 4mu  "<<": "<<yield[pr][fs4mu  ][nCategories]<<endl;
+    cout<<" "<<sProcess[pr]<<", 4e   "<<": "<<yield[pr][fs4e   ][nCategories]<<endl;
+    cout<<" "<<sProcess[pr]<<", 2e2mu"<<": "<<yield[pr][fs2e2mu][nCategories]<<endl;
+    if(!MERGE2E2MU)
+      cout<<" "<<sProcess[pr]<<", 2mu2e"<<": "<<yield[pr][fs2mu2e][nCategories]<<endl;
+  }
 
 }
 
@@ -675,21 +757,18 @@ void prepareYields(bool recomputeYields = true) {
   // --------------- definitions ---------------
 
   // Define input/output location
-  string inputPath = "";
+  string inputPathSignal = "";
+  string inputPathqqZZ = "";
+  string inputPathggZZ = "";
   string outputPath = "YieldFiles";
 
   // Define c.o.m. energy (13TeV only for the moment)
   float sqrts = 13.;
 
   // Define the luminosity
-
-  // all 50ns (2015B + 2015C_50ns) : 71.52/pb
-  // 25ns 2015D (no v4) : 578.3/pb
-  // 25ns 2015D + 2015Dv4 (Oct. 17th JSON) : 832.31/pb
-  // all 25ns (2015C + 2015D + 2015Dv4) (Nov. 13th Silver JSON) : 2.46/fb
-
-  //float lumi = 0.90383;
-  float lumi = 2.6;
+  // all 50ns (2015B + 2015C_50ns) : 70.8/pb as announced on Feb. 1st
+  // all 25ns (2015C + 2015D + 2015Dv4) (Dec. 18th Silver JSON) : 2.63/fb
+  float lumi = 2.7;
 
   // m4l window
   float m4l_min = 105.;
@@ -703,14 +782,17 @@ void prepareYields(bool recomputeYields = true) {
   // Compute the yields for all available processes and mH values, and store them in a ROOT file 
   // (to be done only once, it can take a few minutes)
   if(recomputeYields)
-    computeYields(inputPath, lumi, sqrts, m4l_min, m4l_max);
+    computeYields(inputPathSignal, inputPathqqZZ, inputPathggZZ, lumi, sqrts, m4l_min, m4l_max);
 
   // Parameterize signal yields as a function of mH
-  fitSignalYields(outputPath, lumi, sqrts, m4l_min, m4l_max);
+  if(!JUST125) 
+    fitSignalYields(outputPath, lumi, sqrts, m4l_min, m4l_max);
 
   // Prepare the yaml files
-  //generateFragments(outputPath, lumi, sqrts, m4l_min, m4l_max, "125"); // This takes mH=125 for the signal yield.
-  generateFragments(outputPath, lumi, sqrts, m4l_min, m4l_max, "param"); // This puts the yield(mH) expression when possible.
+  if(JUST125)
+    generateFragments(outputPath, lumi, sqrts, m4l_min, m4l_max, "125"); // This takes mH=125 for the signal yield.
+  else
+    generateFragments(outputPath, lumi, sqrts, m4l_min, m4l_max, "param"); // This puts the yield(mH) expression when possible.
 
 
 }

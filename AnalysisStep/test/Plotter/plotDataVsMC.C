@@ -25,6 +25,7 @@
 #include "TMath.h"
 #include "TPaletteAxis.h"
 #include "TROOT.h"
+#include "TSpline.h"
 #include "TStyle.h"
 #include "TSystem.h"
 #include "TTree.h"
@@ -32,6 +33,7 @@
 #include "tdrstyle.C"
 #include "CMS_lumi.C"
 #include "plotUtils.C"
+#include "kFactors.C"
 
 #include <ZZAnalysis/AnalysisStep/src/Category.cc>
 #include <ZZAnalysis/AnalysisStep/src/bitops.cc>
@@ -40,6 +42,8 @@
 using namespace std;
 
 #define DEBUG 0
+#define SKIPTTH 1 //FIXME
+
 #define DO1DPLOTS 1
 #define DO2DPLOTS 1
 
@@ -47,7 +51,7 @@ using namespace std;
 #define MERGE2E2MU 1 // if activated, 2e2mu means "2e2mu and 2mu2e"
 
 #define APPLYKFACTORS 1
-#define RESCALETOSMPSIGNALSTRENGTH 1
+#define RESCALETOSMPSIGNALSTRENGTH 0
 #define SMPSIGNALSTRENGTH 0.99
 
 #define USEDYANDTTBAR 0
@@ -90,7 +94,7 @@ string blindingLabel[nBlindings] = {"", "70 < m_{4#font[12]{l}} < 110 GeV", "m_{
 Float_t xHistoBlindLow[nBlindings] = {  0.,  110.,   0., 110.,  0. };
 Float_t xHistoBlindUp [nBlindings] = { -1., 1000., 150., 150., -1. };
 
-const int nVariables = 25;
+const int nVariables = 29;
 string varName[nVariables] = {
   "M4lV1",
   "M4lV2",
@@ -104,13 +108,17 @@ string varName[nVariables] = {
   "M4l_above150",
   "MZ1V1",
   "MZ1V1Log",
+  "MZ1V1_M4L118130",
   "MZ1V2",
   "MZ2V1",
   "MZ2V1Log",
+  "MZ2V1_M4L118130",
   "MZ2V2",
   "KD",
+  "KD_M4L118130",
   "Fisher",
   "VbfMela",
+  "VbfMela_M4L118130",
   "Pt4l",
   "Eta4l",
   "NExtraLep",
@@ -132,10 +140,14 @@ string varXLabel[nVariables] = {
   "m_{Z_{1}} (GeV)",
   "m_{Z_{1}} (GeV)",
   "m_{Z_{1}} (GeV)",
+  "m_{Z_{1}} (GeV)",
+  "m_{Z_{2}} (GeV)",
   "m_{Z_{2}} (GeV)",
   "m_{Z_{2}} (GeV)",
   "m_{Z_{2}} (GeV)",
   "D_{bkg}^{kin}",
+  "D_{bkg}^{kin}",
+  "D_{jet}",
   "D_{jet}",
   "D_{jet}",
   "p_{T}^{4#font[12]{l}} (GeV)",
@@ -158,12 +170,16 @@ string varYLabel[nVariables] = {
   "Events / 20 GeV",
   "Events / 2 GeV",
   "Events / 2 GeV",
+  "Events / 2 GeV",
   "Events / 5 GeV",
+  "Events / 2 GeV",
   "Events / 2 GeV",
   "Events / 2 GeV",
   "Events / 5 GeV",
   "Events / 0.05",
+  "Events / 0.05",
   "Events / 0.1",
+  "Events / 0.05",
   "Events / 0.05",
   "Events / 10 GeV",
   "Events / 0.5",
@@ -173,56 +189,93 @@ string varYLabel[nVariables] = {
   "Events / 3 GeV",
 };
 string varCutLabel[nVariables] = {
-  "","","","","","","","","","","","","","","","","","","","","","","","",
-  "D_{bkg}^{kin} > 0.5",
+  "","","","","","","","","","","","","118 < m_{4#font[12]{l}} < 130 GeV","","","","118 < m_{4#font[12]{l}} < 130 GeV","","","118 < m_{4#font[12]{l}} < 130 GeV","","","118 < m_{4#font[12]{l}} < 130 GeV","","","","","","D_{bkg}^{kin} > 0.5",
 };
-Bool_t plotThisVar[6][nVariables] = {
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,},
-  {0,1,0,0,0,1,0,0,0,1,1,1,0,1,0,0,1,0,0,0,0,0,0,0,0,},
-  {0,1,0,1,1,0,0,0,0,0,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,},
-  {0,1,0,0,0,0,0,0,1,0,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,},//for AN
-  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,0,1,},
-  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,},
+Bool_t plotThisVar[7][nVariables] = {
+  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,},
+  {0,1,0,0,0,1,0,0,0,1,1,1,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,},
+  {0,1,0,1,1,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,},
+  {0,1,0,0,0,0,0,0,1,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,},//for AN
+  {0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,1,0,0,1,0,0,0,0,0,0,},//for PAS
+  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,0,1,},
+  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,},
 };
-Int_t  varNbin[nVariables] = { 272, 204, 163,  82,  82,  10,   8,  13,  28,  30,  40,  40,/*  75,*/  30,  54,  54,/*  75,*/  30, 20, 20, 20,  40,  20, 6, 17, 8,  27, };
-Float_t varMin[nVariables] = {  70,  70,  70,  70,  70,  70,  70,  70,  70, 150,  40,  40,/*   0,*/   0,  12,  12,/*   0,*/   0,  0,  0,  0,   0, -10, 0,  0, 0, 100, };
-Float_t varMax[nVariables] = { 886, 886, 885, 890, 890, 110, 110, 109, 182, 750, 120, 120,/* 150,*/ 150, 120, 120,/* 150,*/ 150,  1,  2,  1, 400,  10, 6, 17, 8, 181, };
-Bool_t varLogx[nVariables] = {1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,};
-Bool_t varLogy[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,1,1,1,0,};
-Int_t restrictCountVar[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,4,2,0,};
-Float_t varMinFactor[nVariables] = {0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,2000.,0.,0.,2000.,0.,0.,0.,0.,0.,0.,1000000.,2000.,100000.,0.,};
-Int_t varCMSPos[nVariables] = {33,33,33,33,33,11,11,11,33,33,33,33,33,33,33,33,11,33,33,33,11,11,11,11,11,};
-Int_t varLegPos[nVariables] = {33,33,33,33,33,33,33,33,33,33,11,11,11,11,11,11,33,33,33,33,33,33,33,33,33,};
-Int_t rebinning[nVariables] = {16,1,1,8,1,2,2,1,1,3,5,5,2,5,5,2,4,4,4,2,2,1,1,1,1,};
+Int_t  varNbin[nVariables] = { 272, 204, 163,  82,  82,  10,   8,  13,  28,  30,  40,  40,  40,/*  75,*/  30,  54,  54,  54,/*  75,*/  30, 20, 20, 20, 20, 20,  40,  20, 6, 17, 8,  27, };
+Float_t varMin[nVariables] = {  70,  70,  70,  70,  70,  70,  70,  70,  70, 150,  40,  40,  40,/*   0,*/   0,  12,  12,  12,/*   0,*/   0,  0,  0,  0,  0,  0,   0, -10, 0,  0, 0, 100, };
+Float_t varMax[nVariables] = { 886, 886, 885, 890, 890, 110, 110, 109, 182, 750, 120, 120, 120,/* 150,*/ 150, 120, 120, 120,/* 150,*/ 150,  1,  1,  2,  1,  1, 400,  10, 6, 17, 8, 181, };
+Bool_t varLogx[nVariables] = {1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,};
+Bool_t varLogy[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,1,1,1,0,};
+Int_t restrictCountVar[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,4,2,0,};
+Float_t varMinFactor[nVariables] = {0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,2000.,0.,0.,0.,2000.,0.,0.,0.,0.,0.,0.,0.,0.,0.,1000000.,2000.,100000.,0.,};
+Int_t varCMSPos[nVariables] = {33,33,33,33,33,11,11,11,33,33,33,33,11,33,33,33,11,33,11,11,33,33,33,33,11,11,11,11,11,};
+Int_t varLegPos[nVariables] = {33,33,33,33,33,33,33,33,33,33,11,11,11,11,11,11,33,11,33,33,33,33,33,33,33,33,33,33,33,};
+Int_t rebinning[nVariables] = {16,1,1,8,1,2,2,1,1,3,5,5,5,2,5,5,5,2,4,4,4,4,4,2,2,1,1,1,1,};
 
 Float_t varMaxCorrector[nBlindings][nVariables] = {
-  { 1. , 1., 1., 1., 1., 1.3, 1., 1., 1., 1., 1., 1., 1., 1. , 1., 1. , 1.3, 1., 1., 1., 1.4, 1.,  1., 1., 1. , },
-  { 1. , 1., 1., 1., 1., 1. , 1., 1., 1., 1., 1., 1., 1., 1. , 1., 1. , 1.1, 1., 1., 1., 1. , 1.,  1., 1., 1. , },
-  { 1.2, 1., 1., 1., 1., 1. , 1., 1., 1., 1., 1., 1., 1., 1. , 1., 1. , 1.1, 1., 1., 1., 1. , 1., 10., 1., 1. , },
-  { 1. , 1., 1., 1., 1., 1. , 1., 1., 1., 1., 1., 1., 1., 1. , 1., 1. , 1.1, 1., 1., 1., 1.5, 1., 10., 1., 1.6, },
-  { 1. , 1., 1., 1., 1., 1. , 1., 1., 1., 1., 1., 1., 1., 1. , 1., 1. , 1.1, 1., 1., 1., 1. , 1.,  5., 1., 1. , },
+  { 1. , 1.1, 1., 1., 1., 1.3, 1., 1., 1., 1., 1., 1., 1.1, 1., 1., 1. , 1.9, 1. , 1.3, 3. , 1., 1., 1., 1., 1.4, 1.,  1., 1., 1. , },
+  { 1. , 1. , 1., 1., 1., 1. , 1., 1., 1., 1., 1., 1., 1. , 1., 1., 1. , 1. , 1. , 1.1, 1. , 1., 1., 1., 1., 1. , 1.,  1., 1., 1. , },
+  { 1.2, 1. , 1., 1., 1., 1. , 1., 1., 1., 1., 1., 1., 1. , 1., 1., 1. , 1. , 1. , 1.1, 1. , 1., 1., 1., 1., 1. , 1., 10., 1., 1. , },
+  { 1. , 1. , 1., 1., 1., 1. , 1., 1., 1., 1., 1., 1., 1. , 1., 1., 1. , 1. , 1. , 1.1, 1. , 1., 1., 1., 1., 1.5, 1., 10., 1., 1.6, },
+  { 1. , 1. , 1., 1., 1., 1. , 1., 1., 1., 1., 1., 1., 1. , 1., 1., 1. , 1. , 1. , 1.1, 1. , 1., 1., 1., 1., 1. , 1.,  5., 1., 1. , },
 };
 
-const int nVarPairs = 8;
-string varPairName[nVarPairs] = { "M4lVsKD", "M4lVsKD_M4L70110", "M4lVsKD_M4L114180", "M4lVsKD_M4L180780", "M4lVsKD_M4L150700", "MZ1VsMZ2V1", "MZ1VsMZ2V2", "MZ1VsMZ2V3", };
-string varPairXLabel[nVarPairs] = { "m_{4#font[12]{l}} (GeV)", "m_{4#font[12]{l}} (GeV)", "m_{4#font[12]{l}} (GeV)", "m_{4#font[12]{l}} (GeV)", "m_{4#font[12]{l}} (GeV)", "m_{Z_{1}} (GeV)", "m_{Z_{1}} (GeV)", "m_{Z_{1}} (GeV)", };
-string varPairYLabel[nVarPairs] = { "D_{bkg}^{kin}", "D_{bkg}^{kin}", "D_{bkg}^{kin}", "D_{bkg}^{kin}", "D_{bkg}^{kin}", "m_{Z_{2}} (GeV)", "m_{Z_{2}} (GeV)", "m_{Z_{2}} (GeV)", };
-Int_t  varPairXNbin[nVarPairs] = { 262,  40,  33, 120, 110,  40,  80,  60, };
-Float_t varPairXMin[nVarPairs] = { 100,  70, 114, 180, 150,  40,  40,  75, };
-Float_t varPairXMax[nVarPairs] = { 886, 110, 180, 780, 700, 120, 120, 105, };
-Int_t  varPairYNbin[nVarPairs] = { 30, 30, 30, 30, 30,  54, 108,  60, };
-Float_t varPairYMin[nVarPairs] = {  0,  0,  0,  0,  0,  12,  12,  75, };
-Float_t varPairYMax[nVarPairs] = {  1,  1,  1,  1,  1, 120, 120, 105, };
-Bool_t varPairLogx[nVarPairs] = {1,0,0,0,0,0,0,0,};
-Bool_t varPairLogy[nVarPairs] = {0,0,0,0,0,0,0,0,};
-Int_t varPairLegPos[nVarPairs] = {33,33,33,33,33,11,11,11,};
-Bool_t varPairLegIsWhite[nVarPairs] = {1,1,1,1,1,0,0,0,};
-Bool_t varPairUseGrayStyle[nVarPairs] = {0,0,0,0,0,1,1,1,};
-Bool_t plotThisVarPair[4][nVarPairs] = {
-  {0,0,0,0,0,0,0,0}, 
-  {0,1,0,0,1,0,1,0}, 
-  {0,0,1,1,0,0,1,0}, //for AN
-  {1,1,1,1,1,1,1,1}, 
+const int nVarPairs = 10;
+string varPairName[nVarPairs] = {
+  "M4lVsKD",
+  "M4lVsKD_M4L70110",
+  "M4lVsKD_M4L114180",
+  "M4lVsKD_M4L180780",
+  "M4lVsKD_M4L150700",
+  "M4lVsDjet_M4L114180",
+  "MZ1VsMZ2V1",
+  "MZ1VsMZ2V2",
+  "MZ1VsMZ2V3",
+  "MZ1VsMZ2V2_M4L118130",
+};
+string varPairXLabel[nVarPairs] = {
+  "m_{4#font[12]{l}} (GeV)",
+  "m_{4#font[12]{l}} (GeV)",
+  "m_{4#font[12]{l}} (GeV)",
+  "m_{4#font[12]{l}} (GeV)",
+  "m_{4#font[12]{l}} (GeV)",
+  "m_{4#font[12]{l}} (GeV)",
+  "m_{Z_{1}} (GeV)",
+  "m_{Z_{1}} (GeV)",
+  "m_{Z_{1}} (GeV)",
+  "m_{Z_{1}} (GeV)",
+};
+string varPairYLabel[nVarPairs] = {
+  "D_{bkg}^{kin}",
+  "D_{bkg}^{kin}",
+  "D_{bkg}^{kin}",
+  "D_{bkg}^{kin}",
+  "D_{bkg}^{kin}",
+  "D_{jet}",
+  "m_{Z_{2}} (GeV)",
+  "m_{Z_{2}} (GeV)",
+  "m_{Z_{2}} (GeV)",
+  "m_{Z_{2}} (GeV)",
+};
+string varPairCutLabel[nVariables] = {
+  "","","","","","","","","","118 < m_{4#font[12]{l}} < 130 GeV",
+};
+Int_t  varPairXNbin[nVarPairs] = { 262,  40,  33, 120, 110,  33,  40,  80,  60,  80, };
+Float_t varPairXMin[nVarPairs] = { 100,  70, 114, 180, 150, 114,  40,  40,  75,  40, };
+Float_t varPairXMax[nVarPairs] = { 886, 110, 180, 780, 700, 180, 120, 120, 105, 120, };
+Int_t  varPairYNbin[nVarPairs] = { 30, 30, 30, 30, 30, 30,  54, 108,  60, 108, };
+Float_t varPairYMin[nVarPairs] = {  0,  0,  0,  0,  0,  0,  12,  12,  75,  12, };
+Float_t varPairYMax[nVarPairs] = {  1,  1,  1,  1,  1,  1, 120, 120, 105, 120, };
+Bool_t varPairLogx[nVarPairs] = {1,0,0,0,0,0,0,0,0,0,};
+Bool_t varPairLogy[nVarPairs] = {0,0,0,0,0,0,0,0,0,0,};
+Int_t varPairLegPos[nVarPairs] = {33,33,33,33,33,33,11,11,11,11,};
+Bool_t varPairLegIsWhite[nVarPairs] = {1,1,1,1,1,1,0,0,0,0,};
+Bool_t varPairUseGrayStyle[nVarPairs] = {0,0,0,0,0,0,1,1,1,1,};
+Bool_t plotThisVarPair[5][nVarPairs] = {
+  {0,0,0,0,0,0,0,0,0,0}, 
+  {0,1,0,0,1,0,0,1,0,0}, 
+  {0,0,1,1,0,0,0,1,0,0}, //for AN
+  {0,0,1,0,0,1,0,0,0,1}, //for PAS
+  {1,1,1,1,1,1,1,1,1,1}, 
 };
 
 
@@ -249,9 +302,11 @@ string fsLabelForSS[nFinalStates] = {
   "Z1->mu+mu- + ee(SS)",
 };
 
+
+/* ---------- full RunII categorization 
 const int nCategories = 6;
 string sCategory[nCategories+1] = {
-  "Untagged",
+  "UnTagged",
   "OneJetTagged",
   "VBFTagged", 
   "VHLeptTagged",
@@ -259,6 +314,16 @@ string sCategory[nCategories+1] = {
   "ttHTagged",
   "inclusive",
 };
+//*/
+
+//* ---------- Moriond 2016 categorization 
+const int nCategories = 2;
+string sCategory[nCategories+1] = {
+  "UnTagged",
+  "VBFTagged", 
+  "inclusive", 
+};
+//*/
 
 enum ResonantStatus {resonant=0, nonresonant=1};
 const int nResStatuses = 2;
@@ -278,28 +343,28 @@ string sResonantStatus[nResStatuses+1] = {"resonant", "nonresonant", "allres"};
 void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lumi)
 {
 
-  const int nDatasets = 35;
+  TFile* ggZZKFactorFile = TFile::Open("../Plotter/ggZZKFactors/Kfactor_ggHZZ_2l2l_NNLO_NNPDF_NarrowWidth_13TeV.root");
+  TSpline3* sp = (TSpline3*)ggZZKFactorFile->Get("sp_Kfactor");
+
+  const int nDatasets = 16;
   string datasets[nDatasets] = {
-    "DoubleMu2015B",
-    "DoubleEG2015B",
-    "MuonEG2015B",
-    "SingleEle2015B",
-    "DoubleMu2015C",
-    "DoubleEG2015C",
-    "MuonEG2015C",
-    "SingleEle2015C",
-    "DoubleMu2015C_50ns",
-    "DoubleEG2015C_50ns",
-    "MuonEG2015C_50ns",
-    "SingleEle2015C_50ns",
-    "DoubleMu2015D",
-    "DoubleEG2015D",
-    "MuonEG2015D",
-    "SingleEle2015D",
-    "DoubleMu2015Dv4",
-    "DoubleEG2015Dv4",
-    "MuonEG2015Dv4",
-    "SingleEle2015Dv4",
+    // "DoubleMu2015B",
+    // "DoubleEG2015B",
+    // "MuonEG2015B",
+    // "SingleEle2015B",
+    // "DoubleMu2015C",
+    // "DoubleEG2015C",
+    // "MuonEG2015C",
+    // "SingleEle2015C",
+    // "DoubleMu2015C_50ns",
+    // "DoubleEG2015C_50ns",
+    // "MuonEG2015C_50ns",
+    // "SingleEle2015C_50ns",
+    // "DoubleMu2015D",
+    // "DoubleEG2015D",
+    // "MuonEG2015D",
+    // "SingleEle2015D",
+    "AllData",
     "ggH125",
     "VBFH125",
     "WplusH125",
@@ -314,7 +379,7 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
     "ggZZ2e2tau",
     "ggZZ2mu2tau",
     "DYJetsToLL_M50",
-    "TTTo2L2nu",//"TTJets",
+    "TTTo2L2Nu",//"TTJets",
   };
 
   TFile* inputFile[nDatasets];
@@ -360,6 +425,9 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
   Float_t jetEta[99];
   Float_t jetPhi[99];
   Float_t jetMass[99];
+  Float_t GenHMass;
+  Float_t GenZ1Phi;
+  Float_t GenZ2Phi;
   Float_t GenZ1Flav;
   Float_t GenZ2Flav;
   Float_t GenLep1Eta;
@@ -415,9 +483,12 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 
   for(int d=0; d<nDatasets; d++){
 
+    if(SKIPTTH && datasets[d]=="ttH125") continue;
+
     //----- assign dataset to correct process
     currentProcess = -1;
-    if(datasets[d].find("2015")!=string::npos)
+    if(datasets[d].find("2015")!=string::npos||
+       datasets[d]=="AllData")
       currentProcess = Data;
     if(datasets[d]=="ggH125") currentProcess = H125;
     if(datasets[d]=="VBFH125") currentProcess = H125;
@@ -437,7 +508,7 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
       currentProcess = ggZZ;
     if(datasets[d]=="DYJetsToLL_M50") currentProcess = DY;
     if(datasets[d]=="TTJets"||
-       datasets[d]=="TTTo2L2nu")
+       datasets[d]=="TTTo2L2Nu")
       currentProcess = ttbar;
 
     string inputFileName = string(Form("%s%s/ZZ4lAnalysis.root",(currentProcess==Data?inputFilePath_Data:inputFilePath_MC).c_str(),datasets[d].c_str()));
@@ -481,6 +552,9 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
     inputTree[d]->SetBranchAddress("JetPhi", &JetPhi);
     inputTree[d]->SetBranchAddress("JetMass", &JetMass);
     inputTree[d]->SetBranchAddress("DiJetFisher", &DiJetFisher);
+    inputTree[d]->SetBranchAddress("GenHMass", &GenHMass);
+    inputTree[d]->SetBranchAddress("GenZ1Phi", &GenZ1Phi);
+    inputTree[d]->SetBranchAddress("GenZ2Phi", &GenZ2Phi);
     inputTree[d]->SetBranchAddress("GenZ1Flav", &GenZ1Flav);
     inputTree[d]->SetBranchAddress("GenZ2Flav", &GenZ2Flav);
     inputTree[d]->SetBranchAddress("GenLep1Eta", &GenLep1Eta);
@@ -517,23 +591,29 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 
       Float_t kfactor = 1.;
       if(APPLYKFACTORS){
-
+	
 	if(currentProcess==qqZZ){
-
+	  
 	  //kfactor = 1.065;
 	  
-	  // if(GenZ1Flav==GenZ2Flav)
-	  //   kfactor = 1.09;
-	  // else
-	  //   kfactor = 1.11;
+	  //kfactor = (GenZ1Flav==GenZ2Flav) ? 1.09 : 1.11 ;
+	  
+	  //kfactor = 1.1; // Jamboree
+	  
+	  kfactor = kfactor_qqZZ_qcd_dPhi( fabs(GenZ1Phi-GenZ2Phi), (GenZ1Flav==GenZ2Flav)?1:2 ); // Moriond2016 
 
-	  kfactor = 1.1;	  
-
+	  //FIXME: still missing NLO EW k-factor
+	  
 	}else if(currentProcess==ggZZ){
+	  
 	  //kfactor = 2.;
-	  kfactor = 1.7;
+	  
+	  //kfactor = 1.7; // Jamboree
+	  
+	  kfactor = (float)sp->Eval(GenHMass); // Moriond2016
+	  
 	}
-
+	
       }
 
       Double_t eventWeight = partialSampleWeight[d] * xsec * kfactor * overallEventWeight ;
@@ -570,18 +650,27 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 	jetPhi[j] = JetPhi->at(j);
 	jetMass[j] = JetMass->at(j);
       }
+      /* ---------- full RunII categorization 
       currentCategory = category(
-	     nExtraLep,
-	     ZZPt,
-	     ZZMass,
-	     nJets, 
-	     nJetsBTagged,
-	     jetPt,
-	     jetEta,
-	     jetPhi,
-	     jetMass,
-	     DiJetFisher
-	     );
+	 nExtraLep,
+	 ZZPt,
+	 ZZMass,
+	 nJets, 
+	 nJetsBTagged,
+	 jetPt,
+	 jetEta,
+	 jetPhi,
+	 jetMass,
+	 DiJetFisher
+	 );
+      //*/
+      //* ---------- Moriond 2016 categorization 
+      currentCategory = categoryMor16(
+	 nJets,
+         pvbf_VAJHU_old,
+         phjj_VAJHU_old
+         );
+      //*/
 
 
       //----- here, define resonant signal as H->4l where l=e,mu (excluding decays to taus and 'wrong signal' from associated production)
@@ -616,11 +705,15 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 	Z1Mass,
 	Z1Mass,
 	Z1Mass,
+	Z1Mass,
+	Z2Mass,
 	Z2Mass,
 	Z2Mass,
 	Z2Mass,
 	KD,
+	KD,
 	DiJetFisher,
+	vbfMela,
 	vbfMela,
 	ZZPt,
 	ZZEta,
@@ -630,8 +723,7 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 	ZZMass,
       };
       Bool_t varPassCut[nVariables] = {
-	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,nJets>=2,nJets>=2,1,1,1,1,1,
-	KD>0.5,
+	1,1,1,1,1,1,1,1,1,1,1,1,118<=ZZMass&&ZZMass<=130,1,1,1,118<=ZZMass&&ZZMass<=130,1,1,118<=ZZMass&&ZZMass<=130,nJets>=2,nJets>=2,nJets>=2&&118<=ZZMass&&ZZMass<=130,1,1,1,1,1,KD>0.5,
       };
       Float_t varPairVal[nVarPairs][2] = {
 	{ ZZMass, KD },
@@ -639,9 +731,14 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 	{ ZZMass, KD },
 	{ ZZMass, KD },
 	{ ZZMass, KD },
+	{ ZZMass, vbfMela },
 	{ Z1Mass, Z2Mass },
 	{ Z1Mass, Z2Mass },
 	{ Z1Mass, Z2Mass },
+	{ Z1Mass, Z2Mass },
+      };
+      Bool_t varPairPassCut[nVarPairs] = {
+	1,1,1,1,1,nJets>=2,1,1,1,118<=ZZMass&&ZZMass<=130,
       };
 
       bool fillM4l[nBlindings] = {
@@ -671,10 +768,12 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 	for(int v2=0; v2<nVarPairs; v2++){
 	  if( (varPairName[v2].find("M4l")==0 && fillM4l         [bl]) ||
 	      (varPairName[v2].find("M4l")!=0 && fillOtherThanM4l[bl])    ){
-	    h2[v2][bl][currentFinalState][currentCategory][currentResStatus][currentProcess]->Fill(varPairVal[v2][0],varPairVal[v2][1],(currentProcess==Data)?1.:eventWeight);
-	    if(currentProcess==Data){
-	      g2DataX[v2][bl][currentFinalState][currentCategory][currentResStatus].push_back(varPairVal[v2][0]);
-	      g2DataY[v2][bl][currentFinalState][currentCategory][currentResStatus].push_back(varPairVal[v2][1]);
+	    if(varPairPassCut[v2]){
+	      h2[v2][bl][currentFinalState][currentCategory][currentResStatus][currentProcess]->Fill(varPairVal[v2][0],varPairVal[v2][1],(currentProcess==Data)?1.:eventWeight);
+	      if(currentProcess==Data){
+		g2DataX[v2][bl][currentFinalState][currentCategory][currentResStatus].push_back(varPairVal[v2][0]);
+		g2DataY[v2][bl][currentFinalState][currentCategory][currentResStatus].push_back(varPairVal[v2][1]);
+	      }	      
 	    }
 	  }
 	}
@@ -1023,11 +1122,15 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
       Z1Mass,
       Z1Mass,
       Z1Mass,
+      Z1Mass,
+      Z2Mass,
       Z2Mass,
       Z2Mass,
       Z2Mass,
       KD,
+      KD,
       DiJetFisher,
+      vbfMela,
       vbfMela,
       ZZPt,
       ZZEta,
@@ -1037,8 +1140,7 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
       ZZMass,
     };
     Bool_t varPassCut[nVariables] = {
-      1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,nJets>=2,nJets>=2,1,1,1,1,1,
-      KD>0.5,
+      1,1,1,1,1,1,1,1,1,1,1,1,118<=ZZMass&&ZZMass<=130,1,1,1,118<=ZZMass&&ZZMass<=130,1,1,118<=ZZMass&&ZZMass<=130,nJets>=2,nJets>=2,nJets>=2&&118<=ZZMass&&ZZMass<=130,1,1,1,1,1,KD>0.5,
     };
     
     bool varPassBlindingCut[nBlindings] = {
@@ -1087,7 +1189,7 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
   }
 
   //---------- Write histograms to a ROOT file
-  TFile* fOutHistos = new TFile(Form("histos_plotDataVsMC_ZPlusXSS_%.3ffb-1.root",lumi),"recreate");
+  TFile* fOutHistos = new TFile(Form("histos_plotDataVsMC_ZPlusXSS_%.3ffb-1%s.root",lumi,(MERGE2E2MU?"_m":"")),"recreate");
   fOutHistos->cd();
   for(int bl=0; bl<nBlindings; bl++){
     for(int fs=0; fs<nFinalStates+1; fs++){
@@ -1194,12 +1296,14 @@ void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, st
   const int npoints = gData->GetN();
   Float_t gDataErrorBarUp[npoints];
   for(int i=0; i<npoints; i++) gDataErrorBarUp[i] = gData->GetY()[i] + gData->GetEYhigh()[i] ;
-  Float_t cmax = TMath::Max( (Float_t)hStacks[idxSumMC]->GetMaximum(), (Float_t)TMath::MaxElement(npoints,gDataErrorBarUp) );
+  Float_t cmax;
+  if(drawData) cmax = TMath::Max( (Float_t)hStacks[idxSumMC]->GetMaximum(), (Float_t)TMath::MaxElement(npoints,gDataErrorBarUp) );
+  else cmax = (Float_t)hStacks[idxSumMC]->GetMaximum();
   cmax *= logY ? 30. : 1.1 ;
   cmax *= varMaxCorrector[bl][v];
   Float_t cminlog = hStacks[idxSumMC]->GetMaximum() / varMinFactor[v];
   hStacks[idxSumMC]->SetMaximum(cmax);
-  if(logY) hStacks[idxSumMC]->SetMinimum(cminlog);
+  hStacks[idxSumMC]->SetMinimum(logY?cminlog:0.);
   
   //----- prepare grey area/grid for blind region
   TH1F* hBlind = new TH1F(Form("hBlind_%s_%s",varName[v].c_str(),sBlinding[bl].c_str()),";;",1,xHistoBlindLow[bl],xHistoBlindUp[bl]);
@@ -1465,17 +1569,18 @@ void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraph** g2, int v2, int bl, string lum
   lgd->AddEntry(gLeg[fs2e2mu],fsLabel[fs2e2mu].c_str(),"p");
   if(!MERGE2E2MU) lgd->AddEntry(gLeg[fs2mu2e],fsLabel[fs2mu2e].c_str(),"p");
 
-  //----- prepare label for blinding
-  bool useBlindingLabel = blindingLabel[bl]!="" && varPairName[v2].find("M4l")==string::npos;
+  //----- prepare label for cut/blinding
+  bool useLabel = (blindingLabel[bl]!="" && varPairName[v2].find("M4l")==string::npos) || varPairCutLabel[v2]!="";
   TPaveText* pav = 0;
-  if(useBlindingLabel){
-    pav = new TPaveText(legLeft,legUp-legHeight-0.1,legLeft+legWidth,legUp-legHeight+0.02,"brNDC");
+  if(useLabel){
+    //pav = new TPaveText(legLeft,legUp-legHeight-0.1,legLeft+legWidth,legUp-legHeight+0.02,"brNDC");
+    pav = new TPaveText(legLeft+0.35,legUp-legHeight-0.1,legLeft+0.35+legWidth,legUp-legHeight+0.02,"brNDC");
     pav->SetFillStyle(0);
     pav->SetBorderSize(0);
     pav->SetTextAlign(13);
     pav->SetTextSize(0.034);
     if(varPairLegIsWhite[v2]) pav->SetTextColor(kWhite);
-    pav->AddText(blindingLabel[bl].c_str());
+    pav->AddText((varPairCutLabel[v2]!="")?varPairCutLabel[v2].c_str():blindingLabel[bl].c_str());
   }
 
   //----- draw everything
@@ -1488,7 +1593,7 @@ void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraph** g2, int v2, int bl, string lum
   }
   if(doBlindingArea) box->Draw();
   if(bl!=fullyblind) lgd->Draw();
-  if(useBlindingLabel) pav->Draw();
+  if(useLabel) pav->Draw();
   gPad->RedrawAxis();
 
   //----- adjust color axis
@@ -1568,7 +1673,7 @@ void doPlots(string outputDirectory, int variableList, int varPairList, int blin
   //---------- retrieve Z+X histograms from the other ROOT file
   TH1F* h1_ZPlusXSS[nVariables][nBlindings];
   if(USEZPLUSXFULLRUN2SS){
-    TFile* fInHistos_ZPlusXSS = TFile::Open(Form("histos_plotDataVsMC_ZPlusXSS_%.3ffb-1.root",lumi));
+    TFile* fInHistos_ZPlusXSS = TFile::Open(Form("histos_plotDataVsMC_ZPlusXSS_%.3ffb-1%s.root",lumi,(MERGE2E2MU?"_m":"")));
     for(int bl=0; bl<nBlindings; bl++){
       for(int fs=0; fs<nFinalStates+1; fs++){
 	if(fs==FINALSTATE){
@@ -1633,28 +1738,25 @@ void plotDataVsMC(bool redoHistograms = true, string outputPath = "PlotsDataVsMC
   // Define input/output location
   string inputPathMC   = "";
   string inputPathData = "";
-  string inputFileDataForCR = "../DataTrees_151202/ZZ4lAnalysis_allData.root";
+  string inputFileDataForCR = "../DataTrees_160203/ZZ4lAnalysis_allData.root";
   string inputFileFakeRates = "../Macros/fakeRates_20151202.root";
   //string outputPath = "PlotsDataVsMC/";
 
   // Define the luminosity
+  // all 50ns (2015B + 2015C_50ns) : 70.8/pb as announced on Feb. 1st
+  // all 25ns (2015C + 2015D + 2015Dv4) (Dec. 18th Silver JSON) : 2.63/fb
+  float lumi = 2.7;
+  string lumiText = "2.7 fb^{-1}";
 
-  // all 50ns (2015B + 2015C_50ns) : 71.52/pb
-  // 25ns 2015D (no v4) : 578.3/pb
-  // 25ns 2015D + 2015Dv4 (Oct. 17th JSON) : 832.31/pb
-  // all 25ns (2015C + 2015D + 2015Dv4) (Nov. 13th Silver JSON) : 2.46/fb
-
-  float lumi = 2.6;
-  string lumiText = "2.6 fb^{-1}";
 
   // Choose a list of 1D plots
-  int variableList = 1;
+  int variableList = 4;
 
   // Choose a list of 2D plots
-  int varPairList = 1;
+  int varPairList = 3;
 
   // Choose a list of ways of blinding some m4l regions
-  int blindingList = 4;
+  int blindingList = 1;
 
 
   // --------------- processing ---------------
