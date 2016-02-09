@@ -2,8 +2,8 @@
 /// Use the interpreter and not the compiler 
 /// root -l
 /// .L FakeRate.C
-/// FakeRate() if in lxcms03 or
-/// FakeRate(inputFilePath_Data,inputFilePath_MC)
+/// FakeRate(lumivalue) if in lxcms03 or
+/// FakeRate(lumivalue,inputFilePath_Data,inputFilePath_MC)
 ///
 
 #include <iostream>
