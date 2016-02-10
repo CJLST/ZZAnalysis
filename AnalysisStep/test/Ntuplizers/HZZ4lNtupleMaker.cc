@@ -67,7 +67,7 @@ namespace {
   bool addKinRefit = true;
   bool addVtxFit = false;
   bool addFSRDetails = false;
-  bool skipDataMCWeight = true; // skip computation of data/MC weight // FIXME: to be flipped when new SFs are available for 76X samples 
+  bool skipDataMCWeight = false; // skip computation of data/MC weight
   bool skipFakeWeight = true;   // skip computation of fake rate weight for CRs
   bool skipHqTWeight = true;    // skip computation of hQT weight 
 
@@ -350,7 +350,7 @@ private:
     const math::XYZTLorentzVector Lep1, const math::XYZTLorentzVector Lep2, const math::XYZTLorentzVector Lep3, const math::XYZTLorentzVector Lep4);
   void FillAssocLepGenInfo(std::vector<const reco::Candidate *>& AssocLeps);
 
-  Float_t getAllWeight(Float_t LepPt, Float_t LepEta, Int_t LepID) const;
+  Float_t getAllWeight(const reco::Candidate* Lep) const;
   Float_t getHqTWeight(double mH, double genPt) const;
   Float_t getFakeWeight(Float_t LepPt, Float_t LepEta, Int_t LepID, Int_t LepZ1ID);
 
@@ -412,8 +412,8 @@ private:
   std::vector<const reco::Candidate *> genFSR;
 
   TH2D *hTH2D_Mu_All;
-  TH2D *hTH2D_El_ID;
-  TH2D *hTH2D_El_ISOSIP;
+  TH2D *hTH2D_El_IdIsoSip_notCracks;
+  TH2D *hTH2D_El_IdIsoSip_Cracks;
   TH2D* h_weight; //HqT weights
   //TH2F *h_ZXWeightMuo;
   //TH2F *h_ZXWeightEle;
@@ -428,8 +428,8 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   myHelper(pset),
   reweight(),
   hTH2D_Mu_All(0),
-  hTH2D_El_ID(0),
-  hTH2D_El_ISOSIP(0),
+  hTH2D_El_IdIsoSip_notCracks(0),
+  hTH2D_El_IdIsoSip_Cracks(0),
   h_weight(0)
 {
   //cout<< "Beginning Constructor\n\n\n" <<endl;
@@ -508,19 +508,19 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
     fMuWeight->Close(); 
     //*/
 
-    filename.Form("ZZAnalysis/AnalysisStep/test/Macros/ScaleFactors_ele_ID_%d.root",year); 
-    edm::FileInPath fipEleID(filename.Data());
-    fipPath = fipEleID.fullPath();
-    TFile *fEleWeightID = TFile::Open(fipPath.data(),"READ");
-    hTH2D_El_ID = (TH2D*)fEleWeightID->Get("hScaleFactors_ID")->Clone();
-    fEleWeightID->Close();
+    filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_%d_IdIsoSip.root",year); 
+    edm::FileInPath fipEleNotCracks(filename.Data());
+    fipPath = fipEleNotCracks.fullPath();
+    TFile *fEleWeightNotCracks = TFile::Open(fipPath.data(),"READ");
+    hTH2D_El_IdIsoSip_notCracks = (TH2D*)fEleWeightNotCracks->Get("hScaleFactors_IdIsoSip")->Clone();
+    fEleWeightNotCracks->Close();
 
-    filename.Form("ZZAnalysis/AnalysisStep/test/Macros/ScaleFactors_ele_ISOSIP_%d.root",year); 
-    edm::FileInPath fipEleISOSIP(filename.Data());
-    fipPath = fipEleISOSIP.fullPath();
-    TFile *fEleWeightISOSIP = TFile::Open(fipPath.data(),"READ");
-    hTH2D_El_ISOSIP = (TH2D*)fEleWeightISOSIP->Get("hScaleFactors_ISOSIP")->Clone();
-    fEleWeightISOSIP->Close();
+    filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_%d_IdIsoSip_Cracks.root",year); 
+    edm::FileInPath fipEleCracks(filename.Data());
+    fipPath = fipEleCracks.fullPath();
+    TFile *fEleWeightCracks = TFile::Open(fipPath.data(),"READ");
+    hTH2D_El_IdIsoSip_Cracks = (TH2D*)fEleWeightCracks->Get("hScaleFactors_IdIsoSip_Cracks")->Clone();
+    fEleWeightCracks->Close();
 
   }
   
@@ -1252,7 +1252,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   //Compute the data/MC weight and overall event weight
   dataMCWeight = 1.;
   for(unsigned int i=0; i<leptons.size(); ++i){
-    dataMCWeight *= getAllWeight(leptons[i]->pt(), leptons[i]->eta(), leptons[i]->pdgId());
+    dataMCWeight *= getAllWeight(leptons[i]);
   }
   overallEventWeight = PUWeight * genHEPMCweight * dataMCWeight;
 
@@ -1369,7 +1369,7 @@ void HZZ4lNtupleMaker::fillDescriptions(edm::ConfigurationDescriptions& descript
 }
 
 
-Float_t HZZ4lNtupleMaker::getAllWeight(Float_t LepPt, Float_t LepEta, Int_t LepID) const
+Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
 {
   if (skipDataMCWeight) return 1.;
 
@@ -1377,9 +1377,9 @@ Float_t HZZ4lNtupleMaker::getAllWeight(Float_t LepPt, Float_t LepEta, Int_t LepI
   //Float_t errCorr = 0.;
   //Float_t errCorrSyst = 0.;
 
-  Float_t myLepPt = LepPt;
-  Float_t myLepEta = LepEta;
-  Int_t   myLepID = abs(LepID);
+  Float_t myLepPt = Lep->pt();
+  Float_t myLepEta = Lep->eta();
+  Int_t   myLepID = abs(Lep->pdgId());
   
   //avoid to go out of the TH boundary
   if(myLepID == 13 && myLepPt > 99.) myLepPt = 99.;
@@ -1391,10 +1391,12 @@ Float_t HZZ4lNtupleMaker::getAllWeight(Float_t LepPt, Float_t LepEta, Int_t LepI
     weight = 1.;// FIXME: add scale factors for muons                                          
     //weight = hTH2D_Mu_All->GetBinContent(hTH2D_Mu_All->GetXaxis()->FindBin(myLepPt),hTH2D_Mu_All->GetYaxis()->FindBin(LepEta));
 
-  }else if(myLepID == 11){   
+  }else if(myLepID == 11){
 
-    weight = hTH2D_El_ID    ->GetBinContent(hTH2D_El_ID    ->GetXaxis()->FindBin(myLepPt),hTH2D_El_ID    ->GetYaxis()->FindBin(myLepEta))
-           * hTH2D_El_ISOSIP->GetBinContent(hTH2D_El_ISOSIP->GetXaxis()->FindBin(myLepPt),hTH2D_El_ISOSIP->GetYaxis()->FindBin(myLepEta));   
+    if((bool)userdatahelpers::getUserFloat(Lep,"isCrack"))
+      weight = hTH2D_El_IdIsoSip_Cracks   ->GetBinContent(hTH2D_El_IdIsoSip_Cracks   ->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_Cracks   ->GetYaxis()->FindBin(myLepEta));
+    else
+      weight = hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_notCracks->GetYaxis()->FindBin(myLepEta));   
 
   }else{
 

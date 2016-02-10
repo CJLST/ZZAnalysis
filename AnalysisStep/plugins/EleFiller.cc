@@ -201,6 +201,8 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     //-- Missing hit  
     int missingHit = l.gsfTrack()->hitPattern().numberOfHits(HitPattern::MISSING_INNER_HITS);
+    //-- Flag for crack electrons (which use different efficiency SFs)
+    bool isCrack = l.isGap(); 
     //--- Trigger matching
     int HLTMatch = 0; //FIXME
     
@@ -215,6 +217,7 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     l.addUserFloat("dz",dz);
     l.addUserFloat("BDT",BDT);    
     l.addUserFloat("isBDT",isBDT);
+    l.addUserFloat("isCrack",isCrack);
     l.addUserFloat("HLTMatch", HLTMatch);
     l.addUserFloat("missingHit", missingHit);
 
