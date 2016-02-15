@@ -46,6 +46,7 @@
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
 #include <ZZAnalysis/AnalysisStep/interface/MCHistoryTools.h>
 #include <ZZAnalysis/AnalysisStep/interface/PUReweight.h>
+#include "ZZAnalysis/AnalysisStep/interface/EwkCorrections.h"
 #include <ZZAnalysis/AnalysisStep/interface/bitops.h>
 #include <ZZAnalysis/AnalysisStep/interface/Fisher.h>
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
@@ -81,6 +82,8 @@ namespace {
   Short_t NObsInt  = 0;
   Float_t NTrueInt  = 0;
   Float_t PUWeight  = 0;
+  Float_t ewkKFactor = 0;
+  std::vector<std::vector<float>> ewkTable;
   Float_t PFMET  =  -99;
   Float_t PFMETPhi  =  -99;
   Float_t PFMETNoHF  =  -99;
@@ -486,6 +489,9 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   gen_sumPUWeight = 0.f;
   gen_sumGenMCWeight = 0.f;
   gen_sumWeights =0.f;
+
+  //Read EWK K-factor table from file
+  ewkTable = EwkCorrections::readFile_and_loadEwkTable("ZZ_EwkCorrections.dat");
   
   if (!skipDataMCWeight) {
     //Scale factors for data/MC efficiency
@@ -605,14 +611,19 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
     edm::Handle<edm::View<reco::Candidate> > genParticles;
     event.getByToken(genParticleToken, genParticles);
+
     edm::Handle<GenEventInfoProduct> genInfo;
     event.getByToken(genInfoToken, genInfo);
+    GenEventInfoProduct  genInfoP = *(genInfo.product());
 
     MCHistoryTools mch(event, sampleName, genParticles, genInfo);
     genFinalState = mch.genFinalState();
     genProcessId = mch.getProcessID();
     genHEPMCweight = mch.gethepMCweight();
     genExtInfo = mch.genAssociatedFS();
+
+    ewkKFactor = EwkCorrections::getEwkCorrections(genParticles, ewkTable, genInfoP);
+    //std::cout << " K factor: " << ewkKFactor << std::endl;
 
     // keep track of sum of weights
     gen_sumPUWeight    += PUWeight;
@@ -1570,6 +1581,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("NObsInt",NObsInt);
   myTree->Book("NTrueInt",NTrueInt);
   myTree->Book("PUWeight",PUWeight);
+  myTree->Book("KFactorEWKqqZZ",ewkKFactor);
   myTree->Book("PFMET",PFMET);
   myTree->Book("PFMETPhi",PFMETPhi);
   myTree->Book("PFMETNoHF",PFMETNoHF);
