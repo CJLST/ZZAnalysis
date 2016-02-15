@@ -133,7 +133,7 @@ namespace EwkCorrections
 		if(genIncomingQuarks.size() > 0) quark_type = fabs(genIncomingQuarks[0]->pdgId()); //Works unless if gg->ZZ process : it shouldn't be the case as we're using POWHEG
 
 		std::vector<float> Correction_vec = findCorrection( Table, sqrt(s_hat), t_hat ); //Extract the corrections for the values of s and t computed
-		std::cout << Correction_vec[0] << " " << Correction_vec[1] << sqrt(s_hat) << 2*m_z << std::endl;
+		//std::cout << Correction_vec[0] << " " << Correction_vec[1] << sqrt(s_hat) << 2*m_z << std::endl;
 		
 		if(quark_type==1) kFactor = 1. + Correction_vec[1]; //d
 		if(quark_type==2) kFactor = 1. + Correction_vec[0]; //u
