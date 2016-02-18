@@ -10,14 +10,14 @@ namespace EwkCorrections
 		std::ifstream myReadFile;
 		std::vector<float> Table_line;
 		std::vector<std::vector<float>> Table_EWK;
-		TString name;
-		TString cmssw_path;
-		cmssw_path = getenv("CMSSW_BASE");
-		TString path = cmssw_path+"/src/ZZAnalysis/AnalysisStep/src/";
-		
-		if(dtag.Contains("ZZ")) name = path+"ZZ_EwkCorrections.dat";
-		myReadFile.open(name);
-		if(!myReadFile.is_open()) std::cout << "WARNING: "+name+" NOT FOUND" << std::endl;
+//		TString name;
+//		TString cmssw_path;
+//		cmssw_path = getenv("CMSSW_BASE");
+//		TString path = cmssw_path+"/src/ZZAnalysis/AnalysisStep/src/";
+//		
+//		if(dtag.Contains("ZZ")) name = path+"ZZ_EwkCorrections.dat";
+		myReadFile.open(dtag);
+		if(!myReadFile.is_open()) std::cout << "WARNING: "+dtag+" NOT FOUND" << std::endl;
 		int Start=0;
 		while (!myReadFile.eof()){
 			Start++;

@@ -33,7 +33,7 @@
 #include "tdrstyle.C"
 #include "CMS_lumi.C"
 #include "plotUtils.C"
-#include "kFactors.C"
+#include "ZZAnalysis/AnalysisStep/src/kFactors.C"
 
 #include <ZZAnalysis/AnalysisStep/src/Category.cc>
 #include <ZZAnalysis/AnalysisStep/src/bitops.cc>
@@ -343,7 +343,7 @@ string sResonantStatus[nResStatuses+1] = {"resonant", "nonresonant", "allres"};
 void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lumi)
 {
 
-  TFile* ggZZKFactorFile = TFile::Open("../Plotter/ggZZKFactors/Kfactor_ggHZZ_2l2l_NNLO_NNPDF_NarrowWidth_13TeV.root");
+  TFile* ggZZKFactorFile = TFile::Open("../../src/kfactors/Kfactor_ggHZZ_2l2l_NNLO_NNPDF_NarrowWidth_13TeV.root");
   TSpline3* sp = (TSpline3*)ggZZKFactorFile->Get("sp_Kfactor");
 
   const int nDatasets = 16;
@@ -396,6 +396,9 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
   Short_t NObsInt;
   Float_t NTrueInt;
   Float_t overallEventWeight;
+  Float_t ewkKFactor;
+  Float_t qqzzKFactor;
+  Float_t ggzzKFactor;
   Float_t xsec;
   Short_t ZZsel;
   Float_t ZZMass;
@@ -481,7 +484,8 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 
   //---------- Will loop over all datasets
 
-  for(int d=0; d<nDatasets; d++){
+  //for(int d=0; d<nDatasets; d++){
+  for(int d=7; d<8; d++){
 
     if(SKIPTTH && datasets[d]=="ttH125") continue;
 
@@ -527,6 +531,9 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
     inputTree[d]->SetBranchAddress("NObsInt", &NObsInt);
     inputTree[d]->SetBranchAddress("NTrueInt", &NTrueInt);
     inputTree[d]->SetBranchAddress("overallEventWeight", &overallEventWeight);
+    inputTree[d]->SetBranchAddress("KFactorEWKqqZZ",&ewkKFactor);
+    inputTree[d]->SetBranchAddress("KFactorQCDqqZZ",&qqzzKFactor);
+    inputTree[d]->SetBranchAddress("KFactorggZZ",&ggzzKFactor);
     inputTree[d]->SetBranchAddress("xsec", &xsec);
     inputTree[d]->SetBranchAddress("ZZsel", &ZZsel);
     inputTree[d]->SetBranchAddress("ZZMass", &ZZMass);
@@ -600,18 +607,19 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 	  
 	  //kfactor = 1.1; // Jamboree
 	  
-	  kfactor = kfactor_qqZZ_qcd_dPhi( fabs(GenZ1Phi-GenZ2Phi), (GenZ1Flav==GenZ2Flav)?1:2 ); // Moriond2016 
+	  //kfactor = kfactor_qqZZ_qcd_dPhi( fabs(GenZ1Phi-GenZ2Phi), (GenZ1Flav==GenZ2Flav)?1:2 ); // Moriond2016 
 
-	  //FIXME: still missing NLO EW k-factor
-	  
+	  kfactor=qqzzKFactor * ewkKFactor;
+
 	}else if(currentProcess==ggZZ){
 	  
 	  //kfactor = 2.;
 	  
 	  //kfactor = 1.7; // Jamboree
 	  
-	  kfactor = (float)sp->Eval(GenHMass); // Moriond2016
+	  //kfactor = (float)sp->Eval(GenHMass); // Moriond2016
 	  
+	  kfactor = ggzzKFactor;
 	}
 	
       }
@@ -1736,7 +1744,7 @@ void plotDataVsMC(bool redoHistograms = true, string outputPath = "PlotsDataVsMC
   // --------------- inputs ---------------
 
   // Define input/output location
-  string inputPathMC   = "";
+  string inputPathMC   = "../prod/test/";
   string inputPathData = "";
   string inputFileDataForCR = "../DataTrees_160203/ZZ4lAnalysis_allData.root";
   string inputFileFakeRates = "../Macros/fakeRates_20151202.root";

@@ -47,6 +47,7 @@
 #include <ZZAnalysis/AnalysisStep/interface/MCHistoryTools.h>
 #include <ZZAnalysis/AnalysisStep/interface/PUReweight.h>
 #include "ZZAnalysis/AnalysisStep/interface/EwkCorrections.h"
+#include "ZZAnalysis/AnalysisStep/src/kFactors.C"
 #include <ZZAnalysis/AnalysisStep/interface/bitops.h>
 #include <ZZAnalysis/AnalysisStep/interface/Fisher.h>
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
@@ -58,8 +59,7 @@
 #include <TRandom3.h>
 #include <TH2D.h>
 #include "TLorentzVector.h"
-
-#include "ZZAnalysis/AnalysisStep/interface/PUReweight.h"
+#include "TSpline.h"
 
 #include <string>
 
@@ -83,7 +83,10 @@ namespace {
   Float_t NTrueInt  = 0;
   Float_t PUWeight  = 0;
   Float_t ewkKFactor = 0;
+  Float_t qqzzKFactor = 0;
+  Float_t ggzzKFactor = 0;
   std::vector<std::vector<float>> ewkTable;
+  TSpline3* spkfactor;
   Float_t PFMET  =  -99;
   Float_t PFMETPhi  =  -99;
   Float_t PFMETNoHF  =  -99;
@@ -490,8 +493,19 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   gen_sumGenMCWeight = 0.f;
   gen_sumWeights =0.f;
 
-  //Read EWK K-factor table from file
-  ewkTable = EwkCorrections::readFile_and_loadEwkTable("ZZ_EwkCorrections.dat");
+  std::string fipPath;
+
+  // Read EWK K-factor table from file
+  edm::FileInPath ewkFIP("ZZAnalysis/AnalysisStep/src/kfactors/ZZ_EwkCorrections.dat");
+  fipPath=ewkFIP.fullPath();
+  ewkTable = EwkCorrections::readFile_and_loadEwkTable(fipPath.data());
+
+  // Read the ggZZ k-factor shape from file
+  edm::FileInPath ggzzFIP("ZZAnalysis/AnalysisStep/src/kfactors/Kfactor_ggHZZ_2l2l_NNLO_NNPDF_NarrowWidth_13TeV.root");
+  fipPath=ggzzFIP.fullPath();
+  TFile* ggZZKFactorFile = TFile::Open(fipPath.data());
+  spkfactor = (TSpline3*)ggZZKFactorFile->Get("sp_Kfactor")->Clone();
+  ggZZKFactorFile->Close();
   
   if (!skipDataMCWeight) {
     //Scale factors for data/MC efficiency
@@ -503,7 +517,6 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
     }
 
     TString filename;
-    std::string fipPath;
 
     /* // FIXME: add scale factors for muons
     filename.Form("ZZAnalysis/AnalysisStep/test/Macros/scale_factors_muons%d.root",year);
@@ -583,6 +596,10 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   const reco::Candidate * genH = 0;
   std::vector<const reco::Candidate *> genZLeps;
   std::vector<const reco::Candidate *> genAssocLeps;
+
+  edm::Handle<edm::View<reco::Candidate> > genParticles;
+  edm::Handle<GenEventInfoProduct> genInfo;
+
   if (isMC) {
     // get PU weights
     vector<Handle<std::vector< PileupSummaryInfo > > >  PupInfos; //FIXME support for miniAOD v1/v2 where name changed; catch does not work...
@@ -609,21 +626,14 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     //PUWeight = reweight.weight(myHelper.sampleType(), myHelper.setup(), NTrueInt);
     PUWeight = 1.; 
 
-    edm::Handle<edm::View<reco::Candidate> > genParticles;
     event.getByToken(genParticleToken, genParticles);
-
-    edm::Handle<GenEventInfoProduct> genInfo;
     event.getByToken(genInfoToken, genInfo);
-    GenEventInfoProduct  genInfoP = *(genInfo.product());
 
     MCHistoryTools mch(event, sampleName, genParticles, genInfo);
     genFinalState = mch.genFinalState();
     genProcessId = mch.getProcessID();
     genHEPMCweight = mch.gethepMCweight();
     genExtInfo = mch.genAssociatedFS();
-
-    ewkKFactor = EwkCorrections::getEwkCorrections(genParticles, ewkTable, genInfoP);
-    //std::cout << " K factor: " << ewkKFactor << std::endl;
 
     // keep track of sum of weights
     gen_sumPUWeight    += PUWeight;
@@ -647,6 +657,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 	LHEweight_QCDscale_muR0p5_muF0p5 = genHEPMCweight * EvtHandle->weights()[8].wgt / EvtHandle->originalXWGTUP();
       }
     }
+    
 
     mch.genAcceptance(gen_ZZ4lInEtaAcceptance, gen_ZZ4lInEtaPtAcceptance);
 
@@ -718,6 +729,13 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       FillHGenInfo((genZLeps.at(0)->p4()+genZLeps.at(1)->p4()+genZLeps.at(2)->p4()+genZLeps.at(3)->p4()),0);
     }
 
+    GenEventInfoProduct  genInfoP = *(genInfo.product());
+    // Calculate NNLO QCD and NLO EWK K factors for ggZZ
+    //ggzzKFactor = 2.;
+    //ggzzKFactor = 1.7; // Jamboree
+    ggzzKFactor = (float)spkfactor->Eval(GenHMass); // Moriond2016
+    ewkKFactor = EwkCorrections::getEwkCorrections(genParticles, ewkTable, genInfoP);
+
     if (genFinalState!=BUGGY) {
     
       if (genZLeps.size()==4) {
@@ -731,6 +749,13 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
         // Gen leptons
         FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), genZLeps.at(2)->pdgId(), genZLeps.at(3)->pdgId(),
                                genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), genZLeps.at(3)->p4());      
+
+        // Calculate K factors for qqZZ
+        //qqzzKFactor = 1.065;
+        //qqzzKFactor = (GenZ1Flav==GenZ2Flav) ? 1.09 : 1.11 ;
+        //qqzzKFactor = 1.1; // Jamboree
+        bool sameflavor=(genZLeps.at(0)->pdgId()*genZLeps.at(1)->pdgId() == genZLeps.at(2)->pdgId()*genZLeps.at(3)->pdgId());
+        qqzzKFactor = kfactor_qqZZ_qcd_dPhi( fabs(GenZ1Phi-GenZ2Phi), (sameflavor)?1:2 ); // Moriond2016 
       }
 
       if (genZLeps.size()==3) {
@@ -1584,6 +1609,8 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("NTrueInt",NTrueInt);
   myTree->Book("PUWeight",PUWeight);
   myTree->Book("KFactorEWKqqZZ",ewkKFactor);
+  myTree->Book("KFactorQCDqqZZ",qqzzKFactor);
+  myTree->Book("KFactorggZZ",ggzzKFactor);
   myTree->Book("PFMET",PFMET);
   myTree->Book("PFMETPhi",PFMETPhi);
   myTree->Book("PFMETNoHF",PFMETNoHF);
