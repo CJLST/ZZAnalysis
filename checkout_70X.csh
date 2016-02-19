@@ -41,6 +41,7 @@ git clone -n https://github.com/VBF-HZZ/UFHZZAnalysisRun2
 
 #kinematic refitting
 git clone https://github.com/tocheng/KinZfitter.git
+(cd KinZfitter ; git checkout -b from-v1.0 v1.0)
 
 
 #Jet energy corrections (CMGTools)
