@@ -7,10 +7,10 @@
 # source /tmp/checkout_70X.csh
 
 
-############## For CMSSW_7_6_3
+############## For CMSSW_7_6_3_patch2
 
-#electron Ecal scale corrections (74X). FIXME: deactivated in 76X for the moment, waiting for new corrections
-#git cms-merge-topic gpetruc:ElectronRun2PromptCalib-74X
+#electron momentum scale corrections (76X).
+git cms-merge-topic -u matteosan1:smearer_76X
 
 #ZZAnalysis
 git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis

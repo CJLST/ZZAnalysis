@@ -28,7 +28,7 @@ execfile(PyFilePath + "analyzer.py")
 
 process.source.inputCommands = cms.untracked.vstring("keep *", "drop LHERunInfoProduct_*_*_*", "drop LHEEventProduct_*_*_*")
 
-process.calibratedElectrons.isSynchronization = cms.bool(True) #This replaces the smearing with a shift of 1 sigma
+process.calibratedPatElectrons.isSynchronization = cms.bool(True)
 
 ### ----------------------------------------------------------------------
 ### Replace parameters
