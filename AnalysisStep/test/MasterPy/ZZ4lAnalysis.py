@@ -282,49 +282,56 @@ process.goodPrimaryVertices = cms.EDFilter("VertexSelector",
 SIP =  "userFloat('SIP')<4"
 GOODLEPTON = "userFloat('ID') && " + SIP  # Lepton passing tight ID + SIP [ISO is asked AFTER FSR!!!]
 
-# # Mu e-scale corrections (Rochester)
+
+
+#------- MUONS -------
+
+#--- Mu e-scale corrections (Rochester)
 # process.calibratedMuons =  cms.EDProducer("RochesterPATMuonCorrector",
 #                                                src = cms.InputTag("patMuonsWithTrigger")
 #                                               )
 
+#--- Mu e-scale corrections (MuScleFit)
+#process.calibratedMuons = cms.EDProducer("MuScleFitPATMuonCorrector", 
+#                         src = cms.InputTag("slimmedMuons"), 
+#                         debug = cms.bool(False), 
+#                         identifier = cms.string("Summer12_DR53X_smearReReco"), 
+#                         applySmearing = cms.bool(IsMC), 
+#                         fakeSmearing = cms.bool(False)
+#                         )
 
-# Mu e-scale corrections (MuScleFit)
-process.calibratedMuons = cms.EDProducer("MuScleFitPATMuonCorrector", 
-                         src = cms.InputTag("slimmedMuons"), 
-                         debug = cms.bool(False), 
-                         identifier = cms.string("Summer12_DR53X_smearReReco"), 
-                         applySmearing = cms.bool(IsMC), 
-                         fakeSmearing = cms.bool(False)
-                         )
+#--- Mu e-scale corrections (KalmanMuonCalibrator, 2015)
+process.calibratedMuons = cms.EDProducer("KalmanPATMuonCorrector", 
+                                         src = cms.InputTag("slimmedMuons"),
+                                         identifier = cms.string("MC_76X_13TeV"),
+                                         isMC = cms.bool(IsMC),
+                                         isSynchronization = cms.bool(False),
+                                         )
 
-# Set correct identifier for MuScleFit muon corrections
-if LEPTON_SETUP == 2011:
+#--- Set correct identifier for muon corrections
+if LEPTON_SETUP == 2011: # (MuScleFit)
     if IsMC:
         process.calibratedMuons.identifier = cms.string("Fall11_START42")
     else:
         process.calibratedMuons.identifier = cms.string("Data2011_42X")
-elif LEPTON_SETUP == 2012:
+elif LEPTON_SETUP == 2012: # (MuScleFit)
     if IsMC:
         process.calibratedMuons.identifier = cms.string("Summer12_DR53X_smearReReco")
     else:
         process.calibratedMuons.identifier = cms.string("Data2012_53X_ReReco")
-else:
+else: # (KalmanMuonCalibrator, 2015)
     if IsMC:
-        process.calibratedMuons.identifier = cms.string("") #FIXME: not yet available for RunII
+        process.calibratedMuons.identifier = cms.string("MC_76X_13TeV")
     else:
-        process.calibratedMuons.identifier = cms.string("") #FIXME: not yet available for RunII
-        
+        process.calibratedMuons.identifier = cms.string("DATA_76X_13TeV")
 
-### Mu Ghost cleaning
+
+#--- Mu Ghost cleaning
 process.cleanedMu = cms.EDProducer("PATMuonCleanerBySegments",
                                    src = cms.InputTag("calibratedMuons"),
                                    preselection = cms.string("track.isNonnull"),
                                    passthrough = cms.string("isGlobalMuon && numberOfMatches >= 2"),
                                    fractionOfSharedSegments = cms.double(0.499))
-
-if APPLYMUCORR == False :
-    process.cleanedMu.src = cms.InputTag("slimmedMuons")
-
 
 
 process.bareSoftMuons = cms.EDFilter("PATMuonRefSelector",
@@ -367,7 +374,7 @@ process.softMuons = cms.EDProducer("MuFiller",
 if APPLYMUCORR :
     process.muons =  cms.Sequence(process.calibratedMuons + process.cleanedMu + process.bareSoftMuons + process.softMuons)
 else:
-    process.cleanedMu.src = src = cms.InputTag("slimmedMuons")
+    process.cleanedMu.src = cms.InputTag("slimmedMuons")
     process.muons =  cms.Sequence(process.cleanedMu + process.bareSoftMuons + process.softMuons)
     
 
@@ -403,9 +410,9 @@ else:
 #       process.calibratedPatElectrons.inputDataset = "22Jan2013ReReco"
 #else :
 #   if (IsMC):
-#       process.calibratedPatElectrons.inputDataset = "" #FIXME: not yet available for RunII
+#       process.calibratedPatElectrons.inputDataset = ""
 #   else :
-#       process.calibratedPatElectrons.inputDataset = "" #FIXME: not yet available for RunII
+#       process.calibratedPatElectrons.inputDataset = ""
 
 
 #--- Run2 electron momentum scale and resolution corrections
