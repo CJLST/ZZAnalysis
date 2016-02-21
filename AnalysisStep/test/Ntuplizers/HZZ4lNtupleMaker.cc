@@ -518,14 +518,12 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
 
     TString filename;
 
-    /* // FIXME: add scale factors for muons
-    filename.Form("ZZAnalysis/AnalysisStep/test/Macros/scale_factors_muons%d.root",year);
+    filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_%d.root",year);
     edm::FileInPath fipMu(filename.Data());
     fipPath = fipMu.fullPath();
     TFile *fMuWeight = TFile::Open(fipPath.data(),"READ");
-    hTH2D_Mu_All = (TH2D*)fMuWeight->Get("")->Clone();
-    fMuWeight->Close(); 
-    //*/
+    hTH2D_Mu_All = (TH2D*)fMuWeight->Get("FINAL")->Clone();
+    fMuWeight->Close();
 
     filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_%d_IdIsoSip.root",year); 
     edm::FileInPath fipEleNotCracks(filename.Data());
@@ -1418,14 +1416,13 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
   Int_t   myLepID = abs(Lep->pdgId());
   
   //avoid to go out of the TH boundary
-  if(myLepID == 13 && myLepPt > 99.) myLepPt = 99.;
+  if(myLepID == 13 && myLepPt > 79.) myLepPt = 79.;
   if(myLepID == 11 && myLepPt > 199.) myLepPt = 199.;
   if(myLepID == 11) myLepEta = fabs(myLepEta);
 
   if(myLepID == 13){  
    
-    weight = 1.;// FIXME: add scale factors for muons                                          
-    //weight = hTH2D_Mu_All->GetBinContent(hTH2D_Mu_All->GetXaxis()->FindBin(myLepPt),hTH2D_Mu_All->GetYaxis()->FindBin(LepEta));
+    weight = hTH2D_Mu_All->GetBinContent(hTH2D_Mu_All->GetXaxis()->FindBin(myLepEta),hTH2D_Mu_All->GetYaxis()->FindBin(myLepPt));
 
   }else if(myLepID == 11){
 
