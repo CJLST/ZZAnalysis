@@ -82,11 +82,11 @@ namespace {
   Short_t NObsInt  = 0;
   Float_t NTrueInt  = 0;
   Float_t PUWeight  = 0;
-  Float_t ewkKFactor = 0;
-  Float_t qqzzKFactor = 0;
-  Float_t ggzzKFactor = 0;
-  std::vector<std::vector<float>> ewkTable;
-  TSpline3* spkfactor;
+  Float_t KFactorggZZ = 0;
+  Float_t KFactorEWKqqZZ = 0;
+  Float_t KFactorQCDqqZZ_dPhi = 0;
+  Float_t KFactorQCDqqZZ_M = 0;
+  Float_t KFactorQCDqqZZ_Pt = 0;
   Float_t PFMET  =  -99;
   Float_t PFMETPhi  =  -99;
   Float_t PFMETNoHF  =  -99;
@@ -417,6 +417,9 @@ private:
 
   std::vector<const reco::Candidate *> genFSR;
 
+  std::vector<std::vector<float>> ewkTable;
+  TSpline3* spkfactor;
+
   TH2D *hTH2D_Mu_All;
   TH2D *hTH2D_El_IdIsoSip_notCracks;
   TH2D *hTH2D_El_IdIsoSip_Cracks;
@@ -496,12 +499,12 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   std::string fipPath;
 
   // Read EWK K-factor table from file
-  edm::FileInPath ewkFIP("ZZAnalysis/AnalysisStep/src/kfactors/ZZ_EwkCorrections.dat");
+  edm::FileInPath ewkFIP("ZZAnalysis/AnalysisStep/data/kfactors/ZZ_EwkCorrections.dat");
   fipPath=ewkFIP.fullPath();
   ewkTable = EwkCorrections::readFile_and_loadEwkTable(fipPath.data());
 
   // Read the ggZZ k-factor shape from file
-  edm::FileInPath ggzzFIP("ZZAnalysis/AnalysisStep/src/kfactors/Kfactor_ggHZZ_2l2l_NNLO_NNPDF_NarrowWidth_13TeV.root");
+  edm::FileInPath ggzzFIP("ZZAnalysis/AnalysisStep/data/kfactors/Kfactor_ggHZZ_2l2l_NNLO_NNPDF_NarrowWidth_13TeV.root");
   fipPath=ggzzFIP.fullPath();
   TFile* ggZZKFactorFile = TFile::Open(fipPath.data());
   spkfactor = (TSpline3*)ggZZKFactorFile->Get("sp_Kfactor")->Clone();
@@ -729,10 +732,10 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
     GenEventInfoProduct  genInfoP = *(genInfo.product());
     // Calculate NNLO QCD and NLO EWK K factors for ggZZ
-    //ggzzKFactor = 2.;
-    //ggzzKFactor = 1.7; // Jamboree
-    ggzzKFactor = (float)spkfactor->Eval(GenHMass); // Moriond2016
-    ewkKFactor = EwkCorrections::getEwkCorrections(genParticles, ewkTable, genInfoP);
+    //KFactorggZZ = 2.;
+    //KFactorggZZ = 1.7; // Jamboree
+    KFactorggZZ = (float)spkfactor->Eval(GenHMass); // Moriond2016
+    KFactorEWKqqZZ = EwkCorrections::getEwkCorrections(genParticles, ewkTable, genInfoP);
 
     if (genFinalState!=BUGGY) {
     
@@ -748,12 +751,11 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
         FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), genZLeps.at(2)->pdgId(), genZLeps.at(3)->pdgId(),
                                genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), genZLeps.at(3)->p4());      
 
-        // Calculate K factors for qqZZ
-        //qqzzKFactor = 1.065;
-        //qqzzKFactor = (GenZ1Flav==GenZ2Flav) ? 1.09 : 1.11 ;
-        //qqzzKFactor = 1.1; // Jamboree
+        // Calculate NNLO/NLO QCD K factors for qqZZ
         bool sameflavor=(genZLeps.at(0)->pdgId()*genZLeps.at(1)->pdgId() == genZLeps.at(2)->pdgId()*genZLeps.at(3)->pdgId());
-        qqzzKFactor = kfactor_qqZZ_qcd_dPhi( fabs(GenZ1Phi-GenZ2Phi), (sameflavor)?1:2 ); // Moriond2016 
+        KFactorQCDqqZZ_dPhi = kfactor_qqZZ_qcd_dPhi( fabs(GenZ1Phi-GenZ2Phi), (sameflavor)?1:2 );
+        KFactorQCDqqZZ_M    = kfactor_qqZZ_qcd_M   ( GenHMass, (sameflavor)?1:2 );
+        KFactorQCDqqZZ_Pt   = kfactor_qqZZ_qcd_Pt  ( GenHPt, (sameflavor)?1:2 );
       }
 
       if (genZLeps.size()==3) {
@@ -1605,9 +1607,11 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("NObsInt",NObsInt);
   myTree->Book("NTrueInt",NTrueInt);
   myTree->Book("PUWeight",PUWeight);
-  myTree->Book("KFactorEWKqqZZ",ewkKFactor);
-  myTree->Book("KFactorQCDqqZZ",qqzzKFactor);
-  myTree->Book("KFactorggZZ",ggzzKFactor);
+  myTree->Book("KFactorggZZ",KFactorggZZ);
+  myTree->Book("KFactorEWKqqZZ",KFactorEWKqqZZ);
+  myTree->Book("KFactorQCDqqZZ_dPhi",KFactorQCDqqZZ_dPhi);
+  myTree->Book("KFactorQCDqqZZ_M",KFactorQCDqqZZ_M);
+  myTree->Book("KFactorQCDqqZZ_Pt",KFactorQCDqqZZ_Pt);
   myTree->Book("PFMET",PFMET);
   myTree->Book("PFMETPhi",PFMETPhi);
   myTree->Book("PFMETNoHF",PFMETNoHF);

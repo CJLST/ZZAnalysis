@@ -76,3 +76,124 @@ float kfactor_qqZZ_qcd_dPhi(float GENabsdPhiZZ, int finalState)
 
 }
 
+
+float kfactor_qqZZ_qcd_M(float GENmassZZ, int finalState)
+{
+
+    // finalState=1 : 4e/4mu/4tau
+    // finalState=2 : 2e2mu/2mutau/2e2tau
+
+    float k=0.0;
+
+    if (finalState==1) {
+        k+=1.23613311013*(GENmassZZ>0.0&&GENmassZZ<=25.0);
+        k+=1.17550314639*(GENmassZZ>25.0&&GENmassZZ<=50.0);
+        k+=1.17044565911*(GENmassZZ>50.0&&GENmassZZ<=75.0);
+        k+=1.03141209689*(GENmassZZ>75.0&&GENmassZZ<=100.0);
+        k+=1.05285574912*(GENmassZZ>100.0&&GENmassZZ<=125.0);
+        k+=1.11287217794*(GENmassZZ>125.0&&GENmassZZ<=150.0);
+        k+=1.13361441158*(GENmassZZ>150.0&&GENmassZZ<=175.0);
+        k+=1.10355603327*(GENmassZZ>175.0&&GENmassZZ<=200.0);
+        k+=1.10053981637*(GENmassZZ>200.0&&GENmassZZ<=225.0);
+        k+=1.10972676811*(GENmassZZ>225.0&&GENmassZZ<=250.0);
+        k+=1.12069120525*(GENmassZZ>250.0&&GENmassZZ<=275.0);
+        k+=1.11589101635*(GENmassZZ>275.0&&GENmassZZ<=300.0);
+        k+=1.13906170314*(GENmassZZ>300.0&&GENmassZZ<=325.0);
+        k+=1.14854594271*(GENmassZZ>325.0&&GENmassZZ<=350.0);
+        k+=1.14616229031*(GENmassZZ>350.0&&GENmassZZ<=375.0);
+        k+=1.14573157789*(GENmassZZ>375.0&&GENmassZZ<=400.0);
+        k+=1.13829430515*(GENmassZZ>400.0&&GENmassZZ<=425.0);
+        k+=1.15521193686*(GENmassZZ>425.0&&GENmassZZ<=450.0);
+        k+=1.13679822698*(GENmassZZ>450.0&&GENmassZZ<=475.0);
+        k+=1.13223956942*(GENmassZZ>475.0);
+    }
+
+    if (finalState==2) {
+        k+=1.25094466582*(GENmassZZ>0.0&&GENmassZZ<=25.0);
+        k+=1.22459455362*(GENmassZZ>25.0&&GENmassZZ<=50.0);
+        k+=1.19287368979*(GENmassZZ>50.0&&GENmassZZ<=75.0);
+        k+=1.04597506451*(GENmassZZ>75.0&&GENmassZZ<=100.0);
+        k+=1.08323413771*(GENmassZZ>100.0&&GENmassZZ<=125.0);
+        k+=1.09994968030*(GENmassZZ>125.0&&GENmassZZ<=150.0);
+        k+=1.16698455800*(GENmassZZ>150.0&&GENmassZZ<=175.0);
+        k+=1.10399053155*(GENmassZZ>175.0&&GENmassZZ<=200.0);
+        k+=1.10592664340*(GENmassZZ>200.0&&GENmassZZ<=225.0);
+        k+=1.10690381480*(GENmassZZ>225.0&&GENmassZZ<=250.0);
+        k+=1.11194928918*(GENmassZZ>250.0&&GENmassZZ<=275.0);
+        k+=1.13522586553*(GENmassZZ>275.0&&GENmassZZ<=300.0);
+        k+=1.11895090244*(GENmassZZ>300.0&&GENmassZZ<=325.0);
+        k+=1.13898508615*(GENmassZZ>325.0&&GENmassZZ<=350.0);
+        k+=1.15463977506*(GENmassZZ>350.0&&GENmassZZ<=375.0);
+        k+=1.17341664594*(GENmassZZ>375.0&&GENmassZZ<=400.0);
+        k+=1.20093349763*(GENmassZZ>400.0&&GENmassZZ<=425.0);
+        k+=1.18915554919*(GENmassZZ>425.0&&GENmassZZ<=450.0);
+        k+=1.18546007375*(GENmassZZ>450.0&&GENmassZZ<=475.0);
+        k+=1.12864505708*(GENmassZZ>475.0);
+    }
+
+    if (k==0.0) return 1.1;
+    else return k; // if something goes wrong return inclusive k-factor
+
+}
+
+
+float kfactor_qqZZ_qcd_Pt(float GENpTZZ, int finalState)
+{
+
+    // finalState=1 : 4e/4mu/4tau
+    // finalState=2 : 2e2mu/2mutau/2e2tau
+
+    float k=0.0;
+
+    if (finalState==1) {
+        k+=0.64155491983*(GENpTZZ>0.0&&GENpTZZ<=5.0);
+        k+=1.09985240531*(GENpTZZ>5.0&&GENpTZZ<=10.0);
+        k+=1.29390628654*(GENpTZZ>10.0&&GENpTZZ<=15.0);
+        k+=1.37859998571*(GENpTZZ>15.0&&GENpTZZ<=20.0);
+        k+=1.42430263312*(GENpTZZ>20.0&&GENpTZZ<=25.0);
+        k+=1.45038493266*(GENpTZZ>25.0&&GENpTZZ<=30.0);
+        k+=1.47015377651*(GENpTZZ>30.0&&GENpTZZ<=35.0);
+        k+=1.48828685748*(GENpTZZ>35.0&&GENpTZZ<=40.0);
+        k+=1.50573440448*(GENpTZZ>40.0&&GENpTZZ<=45.0);
+        k+=1.50211655928*(GENpTZZ>45.0&&GENpTZZ<=50.0);
+        k+=1.50918720827*(GENpTZZ>50.0&&GENpTZZ<=55.0);
+        k+=1.52463089491*(GENpTZZ>55.0&&GENpTZZ<=60.0);
+        k+=1.52400838378*(GENpTZZ>60.0&&GENpTZZ<=65.0);
+        k+=1.52418067701*(GENpTZZ>65.0&&GENpTZZ<=70.0);
+        k+=1.55424382578*(GENpTZZ>70.0&&GENpTZZ<=75.0);
+        k+=1.52544284222*(GENpTZZ>75.0&&GENpTZZ<=80.0);
+        k+=1.57896384602*(GENpTZZ>80.0&&GENpTZZ<=85.0);
+        k+=1.53034682567*(GENpTZZ>85.0&&GENpTZZ<=90.0);
+        k+=1.56147329708*(GENpTZZ>90.0&&GENpTZZ<=95.0);
+        k+=1.54468169268*(GENpTZZ>95.0&&GENpTZZ<=100.0);
+        k+=1.57222952415*(GENpTZZ>100.0);
+    }
+
+    if (finalState==2) {
+        k+=0.743602533303*(GENpTZZ>0.0&&GENpTZZ<=5.0);
+        k+=1.14789453219*(GENpTZZ>5.0&&GENpTZZ<=10.0);
+        k+=1.33815867892*(GENpTZZ>10.0&&GENpTZZ<=15.0);
+        k+=1.41420044104*(GENpTZZ>15.0&&GENpTZZ<=20.0);
+        k+=1.45511318916*(GENpTZZ>20.0&&GENpTZZ<=25.0);
+        k+=1.47569225244*(GENpTZZ>25.0&&GENpTZZ<=30.0);
+        k+=1.49053003693*(GENpTZZ>30.0&&GENpTZZ<=35.0);
+        k+=1.50622827695*(GENpTZZ>35.0&&GENpTZZ<=40.0);
+        k+=1.50328889799*(GENpTZZ>40.0&&GENpTZZ<=45.0);
+        k+=1.52186945281*(GENpTZZ>45.0&&GENpTZZ<=50.0);
+        k+=1.52043468754*(GENpTZZ>50.0&&GENpTZZ<=55.0);
+        k+=1.53977869986*(GENpTZZ>55.0&&GENpTZZ<=60.0);
+        k+=1.53491994434*(GENpTZZ>60.0&&GENpTZZ<=65.0);
+        k+=1.51772882172*(GENpTZZ>65.0&&GENpTZZ<=70.0);
+        k+=1.54494489131*(GENpTZZ>70.0&&GENpTZZ<=75.0);
+        k+=1.57762411697*(GENpTZZ>75.0&&GENpTZZ<=80.0);
+        k+=1.55078339014*(GENpTZZ>80.0&&GENpTZZ<=85.0);
+        k+=1.57078191891*(GENpTZZ>85.0&&GENpTZZ<=90.0);
+        k+=1.56162666568*(GENpTZZ>90.0&&GENpTZZ<=95.0);
+        k+=1.54183774627*(GENpTZZ>95.0&&GENpTZZ<=100.0);
+        k+=1.58485762205*(GENpTZZ>100.0);
+    }
+
+    if (k==0.0) return 1.1;
+    else return k; // if something goes wrong return inclusive k-factor
+
+}
