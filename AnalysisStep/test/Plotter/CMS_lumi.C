@@ -81,7 +81,7 @@ CMS_lumi( TPad* pad, int iPeriod, int iPosX )
       lumiText += lumi_sqrtS;
     }
    
-  std::cout << lumiText << std::endl;
+  std::cout << lumiText << endl;
 
   TLatex latex;
   latex.SetNDC();
@@ -156,7 +156,8 @@ CMS_lumi( TPad* pad, int iPeriod, int iPosX )
     {
       if( iPosX==0) 
 	{
-	  posX_ =   l +  0.11*(1-l-r);
+	  //posX_ =   l +  0.11*(1-l-r);
+	  posX_ =   l +  0.11*(1-l-r) *H/W ; //hacked
 	  posY_ =   1-t+lumiTextOffset*t;
 	}
       latex.SetTextFont(extraTextFont);
