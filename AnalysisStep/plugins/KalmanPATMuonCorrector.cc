@@ -90,9 +90,13 @@ KalmanPATMuonCorrector::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
     }else{
       /// ====== ON DATA (correction only) =====
-
-      newPt = calibrator->getCorrectedPt(mu.pt(), mu.eta(), mu.phi(), mu.charge());
-      newPtError = newPt * calibrator->getCorrectedError(newPt, mu.eta(), mu.bestTrack()->ptError()/newPt );
+      if(mu.pt()>2.0 && fabs(mu.eta())<2.4){
+	newPt = calibrator->getCorrectedPt(mu.pt(), mu.eta(), mu.phi(), mu.charge());
+	newPtError = newPt * calibrator->getCorrectedError(newPt, mu.eta(), mu.bestTrack()->ptError()/newPt );
+      }else{
+	newPt = mu.pt();
+	newPtError = mu.muonBestTrack()->ptError();
+      }
 
     }
 

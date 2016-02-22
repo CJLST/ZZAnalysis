@@ -474,7 +474,7 @@ process.softElectrons = cms.EDProducer("EleFiller",
 process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.bareSoftElectrons + process.softElectrons)
 
 # Handle special cases
-if ELEREGRESSION == "None" and ELECORRTYPE == "None" :   # No correction at all. Skip correction modules.
+if ELEREGRESSION == "None" and (ELECORRTYPE == "None" or BUNCH_SPACING == 50) :   # No correction at all. Skip correction modules.
     process.bareSoftElectrons.src = cms.InputTag('slimmedElectrons')
     process.electrons = cms.Sequence(process.bareSoftElectrons + process.softElectrons)
 
