@@ -111,6 +111,7 @@ namespace {
   Short_t Z1Flav  = 0;
   Float_t ZZMassRefit  = 0;
   Float_t ZZMassRefitErr  = 0;
+  Float_t ZZMassUnrefitErr  = 0;
   Float_t ZZMassCFit  = 0;
   Float_t ZZChi2CFit  = 0;
   Float_t Z2Mass  = 0;
@@ -970,6 +971,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     if(addKinRefit){
       ZZMassRefit = cand.userFloat("ZZMassRefit");
       ZZMassRefitErr = cand.userFloat("ZZMassRefitErr");
+      ZZMassUnrefitErr = cand.userFloat("ZZMassUnrefitErr");
     }
     if(addVtxFit){
       ZZMassCFit = cand.userFloat("CFitM");
@@ -1639,6 +1641,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   if (addKinRefit) {
     myTree->Book("ZZMassRefit",ZZMassRefit);
     myTree->Book("ZZMassRefitErr",ZZMassRefitErr);
+    myTree->Book("ZZMassUnrefitErr",ZZMassUnrefitErr);
   }
   if (addVtxFit){
     myTree->Book("ZZMassCFit",ZZMassCFit);

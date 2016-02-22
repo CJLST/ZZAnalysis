@@ -945,6 +945,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
     float ZZMassRefit = 0.;
     float ZZMassRefitErr = 0.;
+    float ZZMassUnrefitErr = 0.;
 
     if(doKinFit){
 
@@ -969,6 +970,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
       
       ZZMassRefit = kinZfitter->GetRefitM4l();
       ZZMassRefitErr = kinZfitter->GetRefitM4lErrFullCov();
+      ZZMassUnrefitErr = kinZfitter->GetM4lErr();
 
       // four 4-vectors after refitting order by Z1_1,Z1_2,Z2_1,Z2_2
       //vector<TLorentzVector> p4 = kinZfitter->GetRefitP4s(); 
@@ -1088,6 +1090,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     if(doKinFit) {
       myCand.addUserFloat("ZZMassRefit"   , ZZMassRefit);
       myCand.addUserFloat("ZZMassRefitErr", ZZMassRefitErr);
+      myCand.addUserFloat("ZZMassUnrefitErr", ZZMassUnrefitErr);
     }
 
     // Jet quantities
