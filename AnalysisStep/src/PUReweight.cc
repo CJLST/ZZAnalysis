@@ -1036,5 +1036,8 @@ PUReweight::~PUReweight() {
   delete hTPuV10ToHcp53X;
   delete hTPuToMoriond13;
   delete hTPuToLegacy13;
+
+  delete hTPuTo2015;
+  delete hTPuTo201576X;
 }
 
