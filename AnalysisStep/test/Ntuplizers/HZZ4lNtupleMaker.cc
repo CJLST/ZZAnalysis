@@ -599,9 +599,8 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       } 
     }
 
-    // FIXME: deactivating PU weights for 76X samples for now
-    //PUWeight = reweight.weight(myHelper.sampleType(), myHelper.setup(), NTrueInt);
-    PUWeight = 1.; 
+    // get PU weight
+    PUWeight = reweight.weight(myHelper.sampleType(), myHelper.setup(), NTrueInt);
 
     edm::Handle<edm::View<reco::Candidate> > genParticles;
     event.getByToken(genParticleToken, genParticles);
