@@ -221,9 +221,7 @@ void ZNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& eSetu
       } 
     }
 
-    // FIXME: deactivating PU weights for 76X samples for now
-    //PUWeight = reweight.weight(myHelper.sampleType(), myHelper.setup(), NTrueInt);
-    PUWeight = 1.; 
+    PUWeight = reweight.weight(myHelper.sampleType(), myHelper.setup(), NTrueInt);
 
     edm::Handle<GenEventInfoProduct> gen;
     event.getByToken(genInfoToken, gen);

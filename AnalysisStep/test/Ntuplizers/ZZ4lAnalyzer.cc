@@ -378,7 +378,7 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
   int ils =event.luminosityBlock();
 
   // int nObsInt  = -1;
-  //float nTrueInt = -1.;
+  float nTrueInt = -1.;
   float PUweight = 1.;
 
   Handle<vector<Vertex> > vertices;
@@ -441,16 +441,14 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
     for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
       if(PVI->getBunchCrossing() == 0) { 
 	//	nObsInt  = PVI->getPU_NumInteractions();
-	//	nTrueInt = PVI->getTrueNumInteractions();
+	nTrueInt = PVI->getTrueNumInteractions();
 	break;
       } 
     }
 
-    //int source = myHelper.sampleType();
-    //int target = myHelper.setup();
-    // FIXME: deactivating PU weights for 76X samples for now
-    //PUweight = reweight.weight(source,target,nTrueInt);
-    PUweight = 1.; 
+    int source = myHelper.sampleType();
+    int target = myHelper.setup();
+    PUweight = reweight.weight(source,target,nTrueInt);
 
     hNvtxWeight->Fill(Nvtx,PUweight);
     hRhoWeight->Fill(*rhoHandle,PUweight);
