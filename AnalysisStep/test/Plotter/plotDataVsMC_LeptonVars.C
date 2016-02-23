@@ -159,28 +159,25 @@ string fsLabel[nFinalStates+1] = {"2#mu", "2e", "2#font[12]{l}"};
 void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lumi)
 {
 
-  const int nDatasets = 25;
+  const int nDatasets = 6;
   string datasets[nDatasets] = {
-    "DoubleMu2015B",
-    "DoubleEG2015B",
-    "MuonEG2015B",
-    "SingleEle2015B",
-    "DoubleMu2015C",
-    "DoubleEG2015C",
-    "MuonEG2015C",
-    "SingleEle2015C",
-    "DoubleMu2015C_50ns",
-    "DoubleEG2015C_50ns",
-    "MuonEG2015C_50ns",
-    "SingleEle2015C_50ns",
-    "DoubleMu2015D",
-    "DoubleEG2015D",
-    "MuonEG2015D",
-    "SingleEle2015D",
-    "DoubleMu2015Dv4",
-    "DoubleEG2015Dv4",
-    "MuonEG2015Dv4",
-    "SingleEle2015Dv4",
+    // "DoubleMu2015B",
+    // "DoubleEG2015B",
+    // "MuonEG2015B",
+    // "SingleEle2015B",
+    // "DoubleMu2015C",
+    // "DoubleEG2015C",
+    // "MuonEG2015C",
+    // "SingleEle2015C",
+    // "DoubleMu2015C_50ns",
+    // "DoubleEG2015C_50ns",
+    // "MuonEG2015C_50ns",
+    // "SingleEle2015C_50ns",
+    // "DoubleMu2015D",
+    // "DoubleEG2015D",
+    // "MuonEG2015D",
+    // "SingleEle2015D",
+    "AllData",
     "DYJetsToLL_M50",
     "DYJetsToLL_M10to50",
     "TTTo2L2Nu",
@@ -258,7 +255,8 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 
     //----- assign dataset to correct process
     currentProcess = -1;
-    if(datasets[d].find("2015")!=string::npos)
+    if(datasets[d].find("2015")!=string::npos||
+       datasets[d]=="AllData")
       currentProcess = Data;
     if(datasets[d].find("DY")!=string::npos) 
       currentProcess = DY;
@@ -428,8 +426,11 @@ void DrawDataMC(TCanvas* c, TH1F** h, int v, string lumiText, Bool_t logX = fals
 
   //----- prepare canvas
   TStyle* style = (TStyle*)gROOT->GetStyle("tdrStyle")->Clone();
+  style->SetPadLeftMargin(0.14);
+  style->SetPadRightMargin(0.04);
   style->cd();
   c->cd();
+  c->UseCurrentStyle();
   if(logX) c->SetLogx();
   if(logY) c->SetLogy();
 
@@ -477,7 +478,7 @@ void DrawDataMC(TCanvas* c, TH1F** h, int v, string lumiText, Bool_t logX = fals
 
   //----- prepare legend
   int legPos = varLegPos[v];
-  float legLeft = (legPos==11) ? 0.2 : 0.75 ;
+  float legLeft = (legPos==11) ? 0.18 : 0.73 ;
   float legWidth = 0.2;
   float legUp = 0.94;
   if(!DRAWDATAMCRATIO) legUp -= 0.05;
@@ -513,8 +514,8 @@ void DrawDataMC(TCanvas* c, TH1F** h, int v, string lumiText, Bool_t logX = fals
     TPad* pad2 = new TPad("pad2", "pad2", 0., 0.13, 1., 0.28);
     if(logX){pad1->SetLogx(); pad2->SetLogx();}
     if(logY) pad1->SetLogy();
-    pad1->SetMargin(0.16,0.02,0.03,0.);
-    pad2->SetMargin(0.16,0.02,0.,0.);
+    pad1->SetMargin(0.14,0.04,0.03,0.);
+    pad2->SetMargin(0.14,0.04,0.,0.);
 
     //--- dummy histogram to get the X axis right
     TH1F* hBlank = (TH1F*)hStacks[idxSumMC]->Clone();
@@ -708,14 +709,10 @@ void plotDataVsMC_LeptonVars(bool redoHistograms = true) {
   string outputPath = "PlotsDataVsMC_LeptonVars/";
 
   // Define the luminosity
-
-  // all 50ns (2015B + 2015C_50ns) : 71.52/pb
-  // 25ns 2015D (no v4) : 578.3/pb
-  // 25ns 2015D + 2015Dv4 (Oct. 17th JSON) : 832.31/pb
-  // all 25ns (2015C + 2015D + 2015Dv4) (Nov. 13th Silver JSON) : 2.46/fb
-
-  float lumi = 2.6;
-  string lumiText = "2.6 fb^{-1}";
+  // all 50ns (2015B + 2015C_50ns) : 70.8/pb as announced on Feb. 1st
+  // all 25ns (2015C + 2015D + 2015Dv4) (Dec. 18th Silver JSON) : 2.63/fb
+  float lumi = 2.7;
+  string lumiText = "2.7 fb^{-1}";
 
   // Choose a list of 1D plots
   int variableList = 1;

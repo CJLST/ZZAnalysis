@@ -4,7 +4,7 @@ PD = ""
 MCFILTER = ""
 ELECORRTYPE = "RunII" # "None", "Moriond", "Paper", or "RunII"
 ELEREGRESSION = "None" # "None", "Moriond", "PaperNoComb", or "Paper" 
-APPLYMUCORR = False
+APPLYMUCORR = True
 BUNCH_SPACING = 25
 #FSRMODE = "Legacy" # Legacy or Run II
 
@@ -28,8 +28,6 @@ execfile(PyFilePath + "analyzer.py")
 
 process.source.inputCommands = cms.untracked.vstring("keep *", "drop LHERunInfoProduct_*_*_*", "drop LHEEventProduct_*_*_*")
 
-process.calibratedElectrons.isSynchronization = cms.bool(True) #This replaces the smearing with a shift of 1 sigma
-
 ### ----------------------------------------------------------------------
 ### Replace parameters
 ### ----------------------------------------------------------------------
@@ -43,10 +41,8 @@ process.source.fileNames = cms.untracked.vstring(
 
     )
 
-
-### FIXME: DEBUGGING ONLY, turns off smearing if used with special tag
-#process.calibratedPatElectrons.synchronization = True
-#process.calibratedMuons.fakeSmearing = cms.bool(True)
+process.calibratedPatElectrons.isSynchronization = cms.bool(True)
+process.calibratedMuons.isSynchronization = cms.bool(True)
 
 process.maxEvents.input = -1
 #process.source.skipEvents = cms.untracked.uint32(5750)

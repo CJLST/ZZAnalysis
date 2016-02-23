@@ -90,6 +90,8 @@ private:
   std::string theCandLabel;
   bool isMC;
   bool dumpMC;
+  Float_t GenZZMass;
+  Float_t genHEPMCweight;
   PUReweight reweight;
 
   TH2F* corrSigmaMu;
@@ -161,11 +163,17 @@ private:
   TH1F* hRhoNoWeight;
   TH1F* hRhoWeight;
 
+  TH1F* hGenZZMass;
+  TH1F* hGenZZMass_4e;
+  TH1F* hGenZZMass_4mu;
+  TH1F* hGenZZMass_2e2mu;
+  TH1F* hGenZZMass_2l2tau;
+
   edm::EDGetTokenT<vector<Vertex> > vtxToken;
   edm::EDGetTokenT<double> rhoToken;
   edm::EDGetTokenT<edm::View<reco::Candidate> > genParticleToken;
   edm::EDGetTokenT<GenEventInfoProduct> genInfoToken;
-  edm::EDGetTokenT<edm::View<pat::Jet> > jetToken;
+  //edm::EDGetTokenT<edm::View<pat::Jet> > jetToken;
   edm::EDGetTokenT<edm::TriggerResults> triggerResultToken;
   edm::EDGetTokenT<edm::View<reco::Candidate> > softLeptonToken;
 
@@ -182,6 +190,8 @@ ZZ4lAnalyzer::ZZ4lAnalyzer(const ParameterSet& pset) :
   myHelper(pset),
   theCandLabel(pset.getUntrackedParameter<string>("candCollection")),
   dumpMC(pset.getUntrackedParameter<bool>("dumpMC",false)),
+  GenZZMass(0.),
+  genHEPMCweight(0.),
   reweight(),
   Nevt_Gen(0),
   gen_ZZ4e(0),
@@ -208,7 +218,7 @@ ZZ4lAnalyzer::ZZ4lAnalyzer(const ParameterSet& pset) :
   genParticleToken = consumes<edm::View<reco::Candidate> >( edm::InputTag("prunedGenParticles"));
   genInfoToken = consumes<GenEventInfoProduct>( edm::InputTag("generator"));
   consumesMany<std::vector< PileupSummaryInfo > >();
-  jetToken = consumes<edm::View<pat::Jet> >(edm::InputTag("cleanJets"));
+  //jetToken = consumes<edm::View<pat::Jet> >(edm::InputTag("cleanJets"));
   triggerResultToken = consumes<edm::TriggerResults>(edm::InputTag("TriggerResults"));
   softLeptonToken = consumes<edm::View<reco::Candidate> >(edm::InputTag("softLeptons"));
 
@@ -226,6 +236,12 @@ void ZZ4lAnalyzer::beginJob(){
   hNvtxWeight = fileService->make<TH1F>("hNvtxWeight","hNvtxWeight",100,0,100);
   hRhoNoWeight = fileService->make<TH1F>("hRhoNoWeight","hRhoNoWeight",100,0,50);
   hRhoWeight = fileService->make<TH1F>("hRhoWeight","hRhoWeight",100,0,50);
+
+  hGenZZMass = fileService->make<TH1F>("hGenZZMass","hGenZZMass",13000,0,13000);
+  hGenZZMass_4e     = fileService->make<TH1F>("hGenZZMass_4e"    ,"hGenZZMass_4e"    ,13000,0,13000);
+  hGenZZMass_4mu    = fileService->make<TH1F>("hGenZZMass_4mu"   ,"hGenZZMass_4mu"   ,13000,0,13000);
+  hGenZZMass_2e2mu  = fileService->make<TH1F>("hGenZZMass_2e2mu" ,"hGenZZMass_2e2mu" ,13000,0,13000);
+  hGenZZMass_2l2tau = fileService->make<TH1F>("hGenZZMass_2l2tau","hGenZZMass_2l2tau",13000,0,13000);
 
   // Counting Histograms. We do not want sumw2 on these!
   TH1F::SetDefaultSumw2(kFALSE);
@@ -383,14 +399,28 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
     MCHistoryTools mch(event, sampleName, genParticles, genInfo);
     genFinalState = mch.genFinalState();
 
+    const reco::Candidate* genH = mch.genH();
+    std::vector<const reco::Candidate *> genZLeps = mch.sortedGenZZLeps();
+    if(genH!=0){
+      GenZZMass = genH->mass();
+    }else if(genZLeps.size()==4){ // for bkgd 4l events, take the mass of the ZZ(4l) system
+      GenZZMass = (genZLeps.at(0)->p4()+genZLeps.at(1)->p4()+genZLeps.at(2)->p4()+genZLeps.at(3)->p4()).M();
+    }
+    genHEPMCweight = mch.gethepMCweight();
+
+    hGenZZMass->Fill( GenZZMass, genHEPMCweight*PUweight );
     if (genFinalState == EEEE) {
       ++gen_ZZ4e;
+      hGenZZMass_4e->Fill( GenZZMass, genHEPMCweight*PUweight );
     } else if (genFinalState == MMMM) {
       ++gen_ZZ4mu;
+      hGenZZMass_4mu->Fill( GenZZMass, genHEPMCweight*PUweight );
     } else if (genFinalState == EEMM) {
       ++gen_ZZ2mu2e;
+      hGenZZMass_2e2mu->Fill( GenZZMass, genHEPMCweight*PUweight );
     } else if (genFinalState == LLTT){
       ++gen_ZZtau;
+      hGenZZMass_2l2tau->Fill( GenZZMass, genHEPMCweight*PUweight );
     } else if (genFinalState == BUGGY){
       ++gen_BUGGY;
       return;
@@ -471,12 +501,12 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
 //   }
 
   // Jet collection
-  Handle<edm::View<pat::Jet> > CleanJets;
-  event.getByToken(jetToken, CleanJets);
-  vector<const pat::Jet*> cleanedJetsPt30;
-  for(edm::View<pat::Jet>::const_iterator jet = CleanJets->begin(); jet != CleanJets->end(); ++jet){
-    if(jet->pt()>30) cleanedJetsPt30.push_back(&*jet);
-  }
+  // Handle<edm::View<pat::Jet> > CleanJets;
+  // event.getByToken(jetToken, CleanJets);
+  // vector<const pat::Jet*> cleanedJetsPt30;
+  // for(edm::View<pat::Jet>::const_iterator jet = CleanJets->begin(); jet != CleanJets->end(); ++jet){
+  //   if(jet->pt()>30) cleanedJetsPt30.push_back(&*jet);
+  // }
 
   // Trigger results
   Handle<edm::TriggerResults> triggerResults;

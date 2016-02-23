@@ -1,4 +1,4 @@
-# from Cert_246908-260627_13TeV_PromptReco_Collisions15_25ns_JSON_Silver_v2.txt
+# from Cert_13TeV_16Dec2015ReReco_Collisions15_25ns_JSON_Silver.txt
 process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange( *(
     '254231:1-254231:24',
     '254232:1-254232:81',

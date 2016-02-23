@@ -261,10 +261,6 @@ process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService
                                                        initialSeed = cms.untracked.uint32(1),
                                                        engineName = cms.untracked.string('TRandom3')
                                                        ),
-                                                   calibratedElectrons = cms.PSet(
-                                                       initialSeed = cms.untracked.uint32(1),
-                                                       engineName = cms.untracked.string('TRandom3')
-                                                       ),
                                                    )
 
 # FIXME Add total kinematics filter for MC
@@ -286,49 +282,56 @@ process.goodPrimaryVertices = cms.EDFilter("VertexSelector",
 SIP =  "userFloat('SIP')<4"
 GOODLEPTON = "userFloat('ID') && " + SIP  # Lepton passing tight ID + SIP [ISO is asked AFTER FSR!!!]
 
-# # Mu e-scale corrections (Rochester)
+
+
+#------- MUONS -------
+
+#--- Mu e-scale corrections (Rochester)
 # process.calibratedMuons =  cms.EDProducer("RochesterPATMuonCorrector",
 #                                                src = cms.InputTag("patMuonsWithTrigger")
 #                                               )
 
+#--- Mu e-scale corrections (MuScleFit)
+#process.calibratedMuons = cms.EDProducer("MuScleFitPATMuonCorrector", 
+#                         src = cms.InputTag("slimmedMuons"), 
+#                         debug = cms.bool(False), 
+#                         identifier = cms.string("Summer12_DR53X_smearReReco"), 
+#                         applySmearing = cms.bool(IsMC), 
+#                         fakeSmearing = cms.bool(False)
+#                         )
 
-# Mu e-scale corrections (MuScleFit)
-process.calibratedMuons = cms.EDProducer("MuScleFitPATMuonCorrector", 
-                         src = cms.InputTag("slimmedMuons"), 
-                         debug = cms.bool(False), 
-                         identifier = cms.string("Summer12_DR53X_smearReReco"), 
-                         applySmearing = cms.bool(IsMC), 
-                         fakeSmearing = cms.bool(False)
-                         )
+#--- Mu e-scale corrections (KalmanMuonCalibrator, 2015)
+process.calibratedMuons = cms.EDProducer("KalmanPATMuonCorrector", 
+                                         src = cms.InputTag("slimmedMuons"),
+                                         identifier = cms.string("MC_76X_13TeV"),
+                                         isMC = cms.bool(IsMC),
+                                         isSynchronization = cms.bool(False),
+                                         )
 
-# Set correct identifier for MuScleFit muon corrections
-if LEPTON_SETUP == 2011:
+#--- Set correct identifier for muon corrections
+if LEPTON_SETUP == 2011: # (MuScleFit)
     if IsMC:
         process.calibratedMuons.identifier = cms.string("Fall11_START42")
     else:
         process.calibratedMuons.identifier = cms.string("Data2011_42X")
-elif LEPTON_SETUP == 2012:
+elif LEPTON_SETUP == 2012: # (MuScleFit)
     if IsMC:
         process.calibratedMuons.identifier = cms.string("Summer12_DR53X_smearReReco")
     else:
         process.calibratedMuons.identifier = cms.string("Data2012_53X_ReReco")
-else:
+else: # (KalmanMuonCalibrator, 2015)
     if IsMC:
-        process.calibratedMuons.identifier = cms.string("") #FIXME: not yet available for RunII
+        process.calibratedMuons.identifier = cms.string("MC_76X_13TeV")
     else:
-        process.calibratedMuons.identifier = cms.string("") #FIXME: not yet available for RunII
-        
+        process.calibratedMuons.identifier = cms.string("DATA_76X_13TeV")
 
-### Mu Ghost cleaning
+
+#--- Mu Ghost cleaning
 process.cleanedMu = cms.EDProducer("PATMuonCleanerBySegments",
                                    src = cms.InputTag("calibratedMuons"),
                                    preselection = cms.string("track.isNonnull"),
                                    passthrough = cms.string("isGlobalMuon && numberOfMatches >= 2"),
                                    fractionOfSharedSegments = cms.double(0.499))
-
-if APPLYMUCORR == False :
-    process.cleanedMu.src = cms.InputTag("slimmedMuons")
-
 
 
 process.bareSoftMuons = cms.EDFilter("PATMuonRefSelector",
@@ -371,67 +374,79 @@ process.softMuons = cms.EDProducer("MuFiller",
 if APPLYMUCORR :
     process.muons =  cms.Sequence(process.calibratedMuons + process.cleanedMu + process.bareSoftMuons + process.softMuons)
 else:
-    process.cleanedMu.src = src = cms.InputTag("slimmedMuons")
+    process.cleanedMu.src = cms.InputTag("slimmedMuons")
     process.muons =  cms.Sequence(process.cleanedMu + process.bareSoftMuons + process.softMuons)
     
 
 
 
 #------- ELECTRONS -------
-#--- Electron regression+calibrarion must be applied after BDT is recomputed
-# NOTE patElectronsWithRegression->eleRegressionEnergy;  calibratedElectrons-> calibratedPatElectrons
-# Default: NEW ECAL regression + NEW calibration + NEW combination
-process.load('EgammaAnalysis.ElectronTools.electronRegressionEnergyProducer_cfi')
-process.eleRegressionEnergy.inputElectronsTag = cms.InputTag('slimmedElectrons')
-process.eleRegressionEnergy.energyRegressionType = 2 ## 1: ECAL regression w/o subclusters 2 (default): ECAL regression w/ subclusters)
-#process.eleRegressionEnergy.vertexCollection = cms.InputTag('goodPrimaryVertices')
-process.load("EgammaAnalysis.ElectronTools.calibratedPatElectrons_cfi")
-process.calibratedPatElectrons.correctionsType = 2 # 1 = old regression, 2 = new regression, 3 = no regression, 0 = nothing
-process.calibratedPatElectrons.combinationType = 3
-process.calibratedPatElectrons.lumiRatio = cms.double(1.0)
-process.calibratedPatElectrons.isMC    = IsMC
-process.calibratedPatElectrons.synchronization = cms.bool(False)
 
-if (LEPTON_SETUP == 2011):
-   process.eleRegressionEnergy.rhoCollection = cms.InputTag('kt6PFJetsForIso:rho')
-   if (IsMC):
-       process.calibratedPatElectrons.inputDataset = "Fall11"
-   else :
-       process.calibratedPatElectrons.inputDataset = "Jan16ReReco"
-elif (LEPTON_SETUP == 2012) :
-   if (IsMC):
-       process.calibratedPatElectrons.inputDataset = "Summer12_LegacyPaper"
-   else :
-       process.calibratedPatElectrons.inputDataset = "22Jan2013ReReco"
-else :
-   if (IsMC):
-       process.calibratedPatElectrons.inputDataset = "" #FIXME: not yet available for RunII
-   else :
-       process.calibratedPatElectrons.inputDataset = "" #FIXME: not yet available for RunII
+##--- Electron regression+calibrarion must be applied after BDT is recomputed
+## NOTE patElectronsWithRegression->eleRegressionEnergy;  calibratedElectrons-> calibratedPatElectrons
+## Default: NEW ECAL regression + NEW calibration + NEW combination
+#process.load('EgammaAnalysis.ElectronTools.electronRegressionEnergyProducer_cfi')
+#process.eleRegressionEnergy.inputElectronsTag = cms.InputTag('slimmedElectrons')
+#process.eleRegressionEnergy.energyRegressionType = 2 ## 1: ECAL regression w/o subclusters 2 (default): ECAL regression w/ subclusters)
+##process.eleRegressionEnergy.vertexCollection = cms.InputTag('goodPrimaryVertices')
 
-process.calibratedElectrons = cms.EDProducer("CalibratedPatElectronProducerRun2",
-    electrons = cms.InputTag("slimmedElectrons"),
-    grbForestName = cms.string("gedelectron_p4combination_25ns"),
+#process.load("EgammaAnalysis.ElectronTools.calibratedPatElectrons_cfi")
+#process.calibratedPatElectrons.correctionsType = 2 # 1 = old regression, 2 = new regression, 3 = no regression, 0 = nothing
+#process.calibratedPatElectrons.combinationType = 3
+#process.calibratedPatElectrons.lumiRatio = cms.double(1.0)
+#process.calibratedPatElectrons.isMC    = IsMC
+#process.calibratedPatElectrons.synchronization = cms.bool(False)
+
+#if (LEPTON_SETUP == 2011):
+#   process.eleRegressionEnergy.rhoCollection = cms.InputTag('kt6PFJetsForIso:rho')
+#   if (IsMC):
+#       process.calibratedPatElectrons.inputDataset = "Fall11"
+#   else :
+#       process.calibratedPatElectrons.inputDataset = "Jan16ReReco"
+#elif (LEPTON_SETUP == 2012) :
+#   if (IsMC):
+#       process.calibratedPatElectrons.inputDataset = "Summer12_LegacyPaper"
+#   else :
+#       process.calibratedPatElectrons.inputDataset = "22Jan2013ReReco"
+#else :
+#   if (IsMC):
+#       process.calibratedPatElectrons.inputDataset = ""
+#   else :
+#       process.calibratedPatElectrons.inputDataset = ""
+
+
+#--- Run2 electron momentum scale and resolution corrections
+
+process.selectedSlimmedElectrons = cms.EDFilter("PATElectronSelector", 
+    ## this protects against a crash in electron calibration
+    ## due to electrons with eta > 2.5
+    src = cms.InputTag("slimmedElectrons"),
+    cut = cms.string("pt>5 && abs(eta)<2.5")
+)
+
+process.calibratedPatElectrons = cms.EDProducer("CalibratedPatElectronProducerRun2",
+    electrons = cms.InputTag('selectedSlimmedElectrons'),
+    gbrForestName = cms.string("gedelectron_p4combination_25ns"),
     isMC = cms.bool(IsMC),
-    isSynchronization = cms.bool(False)
+    isSynchronization = cms.bool(False),
+    correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/76X_16DecRereco_2015")
 )
 
 if (BUNCH_SPACING == 50):
-    process.calibratedElectrons.grbForestName = cms.string("gedelectron_p4combination_50ns")
+    process.calibratedPatElectrons.grbForestName = cms.string("gedelectron_p4combination_50ns")
 
 
-#--- Set up electron ID (VID framework)
-
-from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
-# turn on VID producer, indicate data format to be DataFormat.MiniAOD, as appropriate
-dataFormat = DataFormat.MiniAOD
-switchOnVIDElectronIdProducer(process, dataFormat)
-# define which IDs we want to produce
-my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring15_25ns_nonTrig_V1_cff']
-# add them to the VID producer
-for idmod in my_id_modules:
-    setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
-# and don't forget to add the producer 'process.egmGsfElectronIDSequence' to the path, i.e. process.electrons
+##--- Set up electron ID (VID framework)
+#from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
+## turn on VID producer, indicate data format to be DataFormat.MiniAOD, as appropriate
+#dataFormat = DataFormat.MiniAOD
+#switchOnVIDElectronIdProducer(process, dataFormat)
+## define which IDs we want to produce
+#my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring15_25ns_nonTrig_V1_cff']
+## add them to the VID producer
+#for idmod in my_id_modules:
+#    setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
+## and don't forget to add the producer 'process.egmGsfElectronIDSequence' to the path, i.e. process.electrons
 
 
 process.bareSoftElectrons = cms.EDFilter("PATElectronRefSelector",
@@ -451,45 +466,43 @@ process.softElectrons = cms.EDProducer("EleFiller",
         isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<"+ELEISOCUT)
 #       Note: passCombRelIsoPFFSRCorr is currently set in LeptonPhotonMatcher for new FSR strategy; in ZZCandidateFiller for the old one
         ),
-   # input tag to the ValueMap that will be added to the PAT electron
-   mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring15NonTrig25nsV1Values"),
+   #mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring15NonTrig25nsV1Values"), # (when running VID)
    )
 
 
-process.electrons = cms.Sequence(process.eleRegressionEnergy + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
+#process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons) # (use this version when running VID)
+process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.bareSoftElectrons + process.softElectrons)
 
 # Handle special cases
-if ELEREGRESSION == "None" and ELECORRTYPE == "None" :   # No correction at all. Skip correction modules.
+if ELEREGRESSION == "None" and (ELECORRTYPE == "None" or BUNCH_SPACING == 50) :   # No correction at all. Skip correction modules.
     process.bareSoftElectrons.src = cms.InputTag('slimmedElectrons')
-    process.electrons = cms.Sequence(process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
+    process.electrons = cms.Sequence(process.bareSoftElectrons + process.softElectrons)
 
-elif ELEREGRESSION == "None" and ELECORRTYPE == "RunII" :
-    process.bareSoftElectrons.src = cms.InputTag('slimmedElectrons')
-    process.electrons = cms.Sequence(process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
-    ## FIXME: the following was for 74X, let's deactivate it in 76X for the moment, waiting for new corrections
-    #process.bareSoftElectrons.src = cms.InputTag('calibratedElectrons')
-    #process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('calibratedElectrons')
-    #process.electronMVAValueMapProducer.srcMiniAOD = cms.InputTag('calibratedElectrons')
-    #process.electrons = cms.Sequence(process.calibratedElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
+#elif ELEREGRESSION == "None" and ELECORRTYPE == "RunII" :
+#    process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('calibratedPatElectrons') # (when running VID)
+#    process.electronMVAValueMapProducer.srcMiniAOD = cms.InputTag('calibratedPatElectrons') # (when running VID)
 
-elif ELEREGRESSION == "Moriond" and ELECORRTYPE == "Moriond" : # Moriond corrections: OLD ECAL regression + OLD calibration + OLD combination 
-    if (LEPTON_SETUP == 2011):
-        process.eleRegressionEnergy.regressionInputFile = cms.string("EgammaAnalysis/ElectronTools/data/eleEnergyReg2011Weights_V1.root")
-    else :
-        process.eleRegressionEnergy.regressionInputFile = cms.string("EgammaAnalysis/ElectronTools/data/eleEnergyReg2012Weights_V1.root")
-    process.eleRegressionEnergy.energyRegressionType = 1
-    process.calibratedPatElectrons.correctionsType   = 1
-    process.calibratedPatElectrons.combinationType   = 1
-
-elif ELEREGRESSION == "Paper" and ELECORRTYPE == "None" : # NEW ECAL regression + NO calibration + NO combination
-    process.eleRegressionEnergy.energyRegressionType = 2
-    process.calibratedPatElectrons.correctionsType   = 0
-    process.calibratedPatElectrons.combinationType   = 0
-
-elif ELEREGRESSION == "Paper" and ELECORRTYPE == "PaperNoComb" : # NEW ECAL regression + NEW calibration + NO combination
-    process.eleRegressionEnergy.energyRegressionType = 2
-    process.calibratedPatElectrons.correctionsType   = 1
-    process.calibratedPatElectrons.combinationType   = 0
+#elif ELEREGRESSION == "Moriond" and ELECORRTYPE == "Moriond" : # Moriond corrections: OLD ECAL regression + OLD calibration + OLD combination 
+#    process.electrons = cms.Sequence(process.eleRegressionEnergy + process.calibratedPatElectrons + process.bareSoftElectrons + process.softElectrons)
+#    if (LEPTON_SETUP == 2011):
+#        process.eleRegressionEnergy.regressionInputFile = cms.string("EgammaAnalysis/ElectronTools/data/eleEnergyReg2011Weights_V1.root")
+#    else :
+#        process.eleRegressionEnergy.regressionInputFile = cms.string("EgammaAnalysis/ElectronTools/data/eleEnergyReg2012Weights_V1.root")
+#    process.eleRegressionEnergy.energyRegressionType = 1
+#    process.calibratedPatElectrons.correctionsType   = 1
+#    process.calibratedPatElectrons.combinationType   = 1
+#
+#elif ELEREGRESSION == "Paper" and ELECORRTYPE == "None" : # NEW ECAL regression + NO calibration + NO combination
+#    process.electrons = cms.Sequence(process.eleRegressionEnergy + process.calibratedPatElectrons + process.bareSoftElectrons + process.softElectrons)
+#    process.eleRegressionEnergy.energyRegressionType = 2
+#    process.calibratedPatElectrons.correctionsType   = 0
+#    process.calibratedPatElectrons.combinationType   = 0
+#
+#elif ELEREGRESSION == "Paper" and ELECORRTYPE == "PaperNoComb" : # NEW ECAL regression + NEW calibration + NO combination
+#    process.electrons = cms.Sequence(process.eleRegressionEnergy + process.calibratedPatElectrons + process.bareSoftElectrons + process.softElectrons)
+#    process.eleRegressionEnergy.energyRegressionType = 2
+#    process.calibratedPatElectrons.correctionsType   = 1
+#    process.calibratedPatElectrons.combinationType   = 0
     
 
 process.electronMatch = cms.EDProducer("MCMatcher",       # cut on deltaR, deltaPt/Pt; pick best by deltaR
@@ -911,13 +924,15 @@ CR_ZLLosSEL_2P2F    = (CR_BESTZLLos + "&&" + BOTHFAIL)  # Is the CR_BESTZLLos re
 
 ################################################################################
 
-
-
+#Prefix for Z2 daughters, to be used in the "cut" string
+#D1D0 = "daughter(1).daughter(0).masterClone"
+#D1D1 = "daughter(1).daughter(1).masterClone"
 
 # Z (OSSF,both e/mu) + LL (any F/C, with no ID/iso); this is the starting point for control regions
 process.bareZLLCand= cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string('ZCand LLCand'),
-    cut = cms.string(NOGHOST4l), #Note that LLLLPRESEL cannot be used here
+    cut = cms.string(NOGHOST4l),
+#                     "&& !(" + Z2LL_OS + "&&" + D1D0+".userFloat('isGood')&&"+D1D1+".userFloat('isGood')&&"+D1D0+".userFloat('passCombRelIsoPFFSRCorr')&&"+D1D1+".userFloat('passCombRelIsoPFFSRCorr'))"), # Reject OS tight combinations. Note that BOTHFAIL cannot be used here ("d0.d1.xxx" is available only in and after ZZCandidateFiller. 
     checkCharge = cms.bool(False)
 )
 process.ZLLCand = cms.EDProducer("ZZCandidateFiller",

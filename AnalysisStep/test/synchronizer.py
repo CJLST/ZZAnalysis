@@ -62,8 +62,10 @@ def loop():
         tree.SetBranchStatus("ZZsel",1)        
         tree.SetBranchStatus("RunNumber",1)
         tree.SetBranchStatus("LumiNumber",1)
-        tree.SetBranchStatus("EventNumber",1)            
-        tree.SetBranchStatus("overallEventWeight",1)
+        tree.SetBranchStatus("EventNumber",1)
+        tree.SetBranchStatus("genHEPMCweight",1)
+        tree.SetBranchStatus("PUWeight",1)
+        tree.SetBranchStatus("dataMCWeight",1)
         tree.SetBranchStatus("ZZMass",1)
         tree.SetBranchStatus("Z1Mass",1)
         tree.SetBranchStatus("Z2Mass",1)
@@ -109,12 +111,18 @@ def loop():
             theEvent = Event(run,lumi,event)
 
             if ZZsel>=90 :
-                ZZflav      = tree.Z1Flav*tree.Z2Flav;
-                if  (aChan=="4e" and ZZflav!=14641) or (aChan=="4mu" and ZZflav!=28561) or (aChan=="2e2mu" and ZZflav!=20449) : continue
+
+                ZZflav        = tree.Z1Flav*tree.Z2Flav
+                if (aChan=="4e" and ZZflav!=14641) or (aChan=="4mu" and ZZflav!=28561) or (aChan=="2e2mu" and ZZflav!=20449) : continue
+
+                mass4l        = tree.ZZMass
+                ## blind Higgs peak
+                #if mass4l>110 : continue
+                #if mass4l<150 : continue
 
                 totCounter += 1
                 chanCounter[aChan] += 1
-                mass4l        = tree.ZZMass
+
                 mZ1           = tree.Z1Mass
                 mZ2           = tree.Z2Mass
                 massErrRaw    = tree.ZZMassErr
@@ -143,7 +151,7 @@ def loop():
                 njets30Btag   = tree.nCleanedJetsPt30BTagged
                 mjj           = tree.DiJetMass
                 detajj        = tree.DiJetDEta
-                weight        = tree.overallEventWeight
+                weight        = sign(tree.genHEPMCweight) * tree.PUWeight * tree.dataMCWeight
 
                 jets30pt = []
                 jets30eta = []

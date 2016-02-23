@@ -46,6 +46,8 @@
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
 #include <ZZAnalysis/AnalysisStep/interface/MCHistoryTools.h>
 #include <ZZAnalysis/AnalysisStep/interface/PUReweight.h>
+#include "ZZAnalysis/AnalysisStep/interface/EwkCorrections.h"
+#include "ZZAnalysis/AnalysisStep/src/kFactors.C"
 #include <ZZAnalysis/AnalysisStep/interface/bitops.h>
 #include <ZZAnalysis/AnalysisStep/interface/Fisher.h>
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
@@ -57,8 +59,7 @@
 #include <TRandom3.h>
 #include <TH2D.h>
 #include "TLorentzVector.h"
-
-#include "ZZAnalysis/AnalysisStep/interface/PUReweight.h"
+#include "TSpline.h"
 
 #include <string>
 
@@ -67,7 +68,7 @@ namespace {
   bool addKinRefit = true;
   bool addVtxFit = false;
   bool addFSRDetails = false;
-  bool skipDataMCWeight = true; // skip computation of data/MC weight // FIXME: to be flipped when new SFs are available for 76X samples 
+  bool skipDataMCWeight = false; // skip computation of data/MC weight
   bool skipFakeWeight = true;   // skip computation of fake rate weight for CRs
   bool skipHqTWeight = true;    // skip computation of hQT weight 
 
@@ -81,6 +82,11 @@ namespace {
   Short_t NObsInt  = 0;
   Float_t NTrueInt  = 0;
   Float_t PUWeight  = 0;
+  Float_t KFactorggZZ = 0;
+  Float_t KFactorEWKqqZZ = 0;
+  Float_t KFactorQCDqqZZ_dPhi = 0;
+  Float_t KFactorQCDqqZZ_M = 0;
+  Float_t KFactorQCDqqZZ_Pt = 0;
   Float_t PFMET  =  -99;
   Float_t PFMETPhi  =  -99;
   Float_t PFMETNoHF  =  -99;
@@ -105,6 +111,7 @@ namespace {
   Short_t Z1Flav  = 0;
   Float_t ZZMassRefit  = 0;
   Float_t ZZMassRefitErr  = 0;
+  Float_t ZZMassUnrefitErr  = 0;
   Float_t ZZMassCFit  = 0;
   Float_t ZZChi2CFit  = 0;
   Float_t Z2Mass  = 0;
@@ -350,7 +357,7 @@ private:
     const math::XYZTLorentzVector Lep1, const math::XYZTLorentzVector Lep2, const math::XYZTLorentzVector Lep3, const math::XYZTLorentzVector Lep4);
   void FillAssocLepGenInfo(std::vector<const reco::Candidate *>& AssocLeps);
 
-  Float_t getAllWeight(Float_t LepPt, Float_t LepEta, Int_t LepID) const;
+  Float_t getAllWeight(const reco::Candidate* Lep) const;
   Float_t getHqTWeight(double mH, double genPt) const;
   Float_t getFakeWeight(Float_t LepPt, Float_t LepEta, Int_t LepID, Int_t LepZ1ID);
 
@@ -411,9 +418,12 @@ private:
 
   std::vector<const reco::Candidate *> genFSR;
 
+  std::vector<std::vector<float>> ewkTable;
+  TSpline3* spkfactor;
+
   TH2D *hTH2D_Mu_All;
-  TH2D *hTH2D_El_ID;
-  TH2D *hTH2D_El_ISOSIP;
+  TH2D *hTH2D_El_IdIsoSip_notCracks;
+  TH2D *hTH2D_El_IdIsoSip_Cracks;
   TH2D* h_weight; //HqT weights
   //TH2F *h_ZXWeightMuo;
   //TH2F *h_ZXWeightEle;
@@ -428,8 +438,8 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   myHelper(pset),
   reweight(),
   hTH2D_Mu_All(0),
-  hTH2D_El_ID(0),
-  hTH2D_El_ISOSIP(0),
+  hTH2D_El_IdIsoSip_notCracks(0),
+  hTH2D_El_IdIsoSip_Cracks(0),
   h_weight(0)
 {
   //cout<< "Beginning Constructor\n\n\n" <<endl;
@@ -486,6 +496,20 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   gen_sumPUWeight = 0.f;
   gen_sumGenMCWeight = 0.f;
   gen_sumWeights =0.f;
+
+  std::string fipPath;
+
+  // Read EWK K-factor table from file
+  edm::FileInPath ewkFIP("ZZAnalysis/AnalysisStep/data/kfactors/ZZ_EwkCorrections.dat");
+  fipPath=ewkFIP.fullPath();
+  ewkTable = EwkCorrections::readFile_and_loadEwkTable(fipPath.data());
+
+  // Read the ggZZ k-factor shape from file
+  edm::FileInPath ggzzFIP("ZZAnalysis/AnalysisStep/data/kfactors/Kfactor_ggHZZ_2l2l_NNLO_NNPDF_NarrowWidth_13TeV.root");
+  fipPath=ggzzFIP.fullPath();
+  TFile* ggZZKFactorFile = TFile::Open(fipPath.data());
+  spkfactor = (TSpline3*)ggZZKFactorFile->Get("sp_Kfactor")->Clone();
+  ggZZKFactorFile->Close();
   
   if (!skipDataMCWeight) {
     //Scale factors for data/MC efficiency
@@ -497,30 +521,27 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
     }
 
     TString filename;
-    std::string fipPath;
 
-    /* // FIXME: add scale factors for muons
-    filename.Form("ZZAnalysis/AnalysisStep/test/Macros/scale_factors_muons%d.root",year);
+    filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_%d.root",year);
     edm::FileInPath fipMu(filename.Data());
     fipPath = fipMu.fullPath();
     TFile *fMuWeight = TFile::Open(fipPath.data(),"READ");
-    hTH2D_Mu_All = (TH2D*)fMuWeight->Get("")->Clone();
-    fMuWeight->Close(); 
-    //*/
+    hTH2D_Mu_All = (TH2D*)fMuWeight->Get("FINAL")->Clone();
+    fMuWeight->Close();
 
-    filename.Form("ZZAnalysis/AnalysisStep/test/Macros/ScaleFactors_ele_ID_%d.root",year); 
-    edm::FileInPath fipEleID(filename.Data());
-    fipPath = fipEleID.fullPath();
-    TFile *fEleWeightID = TFile::Open(fipPath.data(),"READ");
-    hTH2D_El_ID = (TH2D*)fEleWeightID->Get("hScaleFactors_ID")->Clone();
-    fEleWeightID->Close();
+    filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_%d_IdIsoSip.root",year); 
+    edm::FileInPath fipEleNotCracks(filename.Data());
+    fipPath = fipEleNotCracks.fullPath();
+    TFile *fEleWeightNotCracks = TFile::Open(fipPath.data(),"READ");
+    hTH2D_El_IdIsoSip_notCracks = (TH2D*)fEleWeightNotCracks->Get("hScaleFactors_IdIsoSip")->Clone();
+    fEleWeightNotCracks->Close();
 
-    filename.Form("ZZAnalysis/AnalysisStep/test/Macros/ScaleFactors_ele_ISOSIP_%d.root",year); 
-    edm::FileInPath fipEleISOSIP(filename.Data());
-    fipPath = fipEleISOSIP.fullPath();
-    TFile *fEleWeightISOSIP = TFile::Open(fipPath.data(),"READ");
-    hTH2D_El_ISOSIP = (TH2D*)fEleWeightISOSIP->Get("hScaleFactors_ISOSIP")->Clone();
-    fEleWeightISOSIP->Close();
+    filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_%d_IdIsoSip_Cracks.root",year); 
+    edm::FileInPath fipEleCracks(filename.Data());
+    fipPath = fipEleCracks.fullPath();
+    TFile *fEleWeightCracks = TFile::Open(fipPath.data(),"READ");
+    hTH2D_El_IdIsoSip_Cracks = (TH2D*)fEleWeightCracks->Get("hScaleFactors_IdIsoSip_Cracks")->Clone();
+    fEleWeightCracks->Close();
 
   }
   
@@ -577,6 +598,10 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   const reco::Candidate * genH = 0;
   std::vector<const reco::Candidate *> genZLeps;
   std::vector<const reco::Candidate *> genAssocLeps;
+
+  edm::Handle<edm::View<reco::Candidate> > genParticles;
+  edm::Handle<GenEventInfoProduct> genInfo;
+
   if (isMC) {
     // get PU weights
     vector<Handle<std::vector< PileupSummaryInfo > > >  PupInfos; //FIXME support for miniAOD v1/v2 where name changed; catch does not work...
@@ -602,9 +627,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     // get PU weight
     PUWeight = reweight.weight(myHelper.sampleType(), myHelper.setup(), NTrueInt);
 
-    edm::Handle<edm::View<reco::Candidate> > genParticles;
     event.getByToken(genParticleToken, genParticles);
-    edm::Handle<GenEventInfoProduct> genInfo;
     event.getByToken(genInfoToken, genInfo);
 
     MCHistoryTools mch(event, sampleName, genParticles, genInfo);
@@ -635,6 +658,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 	LHEweight_QCDscale_muR0p5_muF0p5 = genHEPMCweight * EvtHandle->weights()[8].wgt / EvtHandle->originalXWGTUP();
       }
     }
+    
 
     mch.genAcceptance(gen_ZZ4lInEtaAcceptance, gen_ZZ4lInEtaPtAcceptance);
 
@@ -706,6 +730,13 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       FillHGenInfo((genZLeps.at(0)->p4()+genZLeps.at(1)->p4()+genZLeps.at(2)->p4()+genZLeps.at(3)->p4()),0);
     }
 
+    GenEventInfoProduct  genInfoP = *(genInfo.product());
+    // Calculate NNLO QCD and NLO EWK K factors for ggZZ
+    //KFactorggZZ = 2.;
+    //KFactorggZZ = 1.7; // Jamboree
+    KFactorggZZ = (float)spkfactor->Eval(GenHMass); // Moriond2016
+    KFactorEWKqqZZ = EwkCorrections::getEwkCorrections(genParticles, ewkTable, genInfoP);
+
     if (genFinalState!=BUGGY) {
     
       if (genZLeps.size()==4) {
@@ -719,6 +750,12 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
         // Gen leptons
         FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), genZLeps.at(2)->pdgId(), genZLeps.at(3)->pdgId(),
                                genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), genZLeps.at(3)->p4());      
+
+        // Calculate NNLO/NLO QCD K factors for qqZZ
+        bool sameflavor=(genZLeps.at(0)->pdgId()*genZLeps.at(1)->pdgId() == genZLeps.at(2)->pdgId()*genZLeps.at(3)->pdgId());
+        KFactorQCDqqZZ_dPhi = kfactor_qqZZ_qcd_dPhi( fabs(GenZ1Phi-GenZ2Phi), (sameflavor)?1:2 );
+        KFactorQCDqqZZ_M    = kfactor_qqZZ_qcd_M   ( GenHMass, (sameflavor)?1:2 );
+        KFactorQCDqqZZ_Pt   = kfactor_qqZZ_qcd_Pt  ( GenHPt, (sameflavor)?1:2 );
       }
 
       if (genZLeps.size()==3) {
@@ -933,6 +970,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     if(addKinRefit){
       ZZMassRefit = cand.userFloat("ZZMassRefit");
       ZZMassRefitErr = cand.userFloat("ZZMassRefitErr");
+      ZZMassUnrefitErr = cand.userFloat("ZZMassUnrefitErr");
     }
     if(addVtxFit){
       ZZMassCFit = cand.userFloat("CFitM");
@@ -1251,7 +1289,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   //Compute the data/MC weight and overall event weight
   dataMCWeight = 1.;
   for(unsigned int i=0; i<leptons.size(); ++i){
-    dataMCWeight *= getAllWeight(leptons[i]->pt(), leptons[i]->eta(), leptons[i]->pdgId());
+    dataMCWeight *= getAllWeight(leptons[i]);
   }
   overallEventWeight = PUWeight * genHEPMCweight * dataMCWeight;
 
@@ -1368,7 +1406,7 @@ void HZZ4lNtupleMaker::fillDescriptions(edm::ConfigurationDescriptions& descript
 }
 
 
-Float_t HZZ4lNtupleMaker::getAllWeight(Float_t LepPt, Float_t LepEta, Int_t LepID) const
+Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
 {
   if (skipDataMCWeight) return 1.;
 
@@ -1376,24 +1414,25 @@ Float_t HZZ4lNtupleMaker::getAllWeight(Float_t LepPt, Float_t LepEta, Int_t LepI
   //Float_t errCorr = 0.;
   //Float_t errCorrSyst = 0.;
 
-  Float_t myLepPt = LepPt;
-  Float_t myLepEta = LepEta;
-  Int_t   myLepID = abs(LepID);
+  Float_t myLepPt = Lep->pt();
+  Float_t myLepEta = Lep->eta();
+  Int_t   myLepID = abs(Lep->pdgId());
   
   //avoid to go out of the TH boundary
-  if(myLepID == 13 && myLepPt > 99.) myLepPt = 99.;
+  if(myLepID == 13 && myLepPt > 79.) myLepPt = 79.;
   if(myLepID == 11 && myLepPt > 199.) myLepPt = 199.;
   if(myLepID == 11) myLepEta = fabs(myLepEta);
 
   if(myLepID == 13){  
    
-    weight = 1.;// FIXME: add scale factors for muons                                          
-    //weight = hTH2D_Mu_All->GetBinContent(hTH2D_Mu_All->GetXaxis()->FindBin(myLepPt),hTH2D_Mu_All->GetYaxis()->FindBin(LepEta));
+    weight = hTH2D_Mu_All->GetBinContent(hTH2D_Mu_All->GetXaxis()->FindBin(myLepEta),hTH2D_Mu_All->GetYaxis()->FindBin(myLepPt));
 
-  }else if(myLepID == 11){   
+  }else if(myLepID == 11){
 
-    weight = hTH2D_El_ID    ->GetBinContent(hTH2D_El_ID    ->GetXaxis()->FindBin(myLepPt),hTH2D_El_ID    ->GetYaxis()->FindBin(myLepEta))
-           * hTH2D_El_ISOSIP->GetBinContent(hTH2D_El_ISOSIP->GetXaxis()->FindBin(myLepPt),hTH2D_El_ISOSIP->GetYaxis()->FindBin(myLepEta));   
+    if((bool)userdatahelpers::getUserFloat(Lep,"isCrack"))
+      weight = hTH2D_El_IdIsoSip_Cracks   ->GetBinContent(hTH2D_El_IdIsoSip_Cracks   ->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_Cracks   ->GetYaxis()->FindBin(myLepEta));
+    else
+      weight = hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_notCracks->GetYaxis()->FindBin(myLepEta));   
 
   }else{
 
@@ -1569,6 +1608,11 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("NObsInt",NObsInt);
   myTree->Book("NTrueInt",NTrueInt);
   myTree->Book("PUWeight",PUWeight);
+  myTree->Book("KFactorggZZ",KFactorggZZ);
+  myTree->Book("KFactorEWKqqZZ",KFactorEWKqqZZ);
+  myTree->Book("KFactorQCDqqZZ_dPhi",KFactorQCDqqZZ_dPhi);
+  myTree->Book("KFactorQCDqqZZ_M",KFactorQCDqqZZ_M);
+  myTree->Book("KFactorQCDqqZZ_Pt",KFactorQCDqqZZ_Pt);
   myTree->Book("PFMET",PFMET);
   myTree->Book("PFMETPhi",PFMETPhi);
   myTree->Book("PFMETNoHF",PFMETNoHF);
@@ -1596,6 +1640,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   if (addKinRefit) {
     myTree->Book("ZZMassRefit",ZZMassRefit);
     myTree->Book("ZZMassRefitErr",ZZMassRefitErr);
+    myTree->Book("ZZMassUnrefitErr",ZZMassUnrefitErr);
   }
   if (addVtxFit){
     myTree->Book("ZZMassCFit",ZZMassCFit);
@@ -1620,9 +1665,9 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("LepLepId",LepLepId);
   myTree->Book("LepSIP",LepSIP);
   myTree->Book("LepTime",LepTime);
-  //myTree->Book("LepisID",LepisID);
-  //myTree->Book("LepBDT",LepBDT);
-  //myTree->Book("LepMissingHit",LepMissingHit);
+  myTree->Book("LepisID",LepisID);
+  myTree->Book("LepBDT",LepBDT);
+  myTree->Book("LepMissingHit",LepMissingHit);
   //myTree->Book("LepChargedHadIso",LepChargedHadIso);
   //myTree->Book("LepNeutralHadIso",LepNeutralHadIso);
   //myTree->Book("LepPhotonIso",LepPhotonIso);

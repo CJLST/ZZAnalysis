@@ -24,5 +24,11 @@ mv PT13TeV/*Chunk* Chunks/
 mv PT13TeV/* .
 rm -r PT13TeV/
 chmod -R g+w .
+
+## Prepare a merged file of all data
+mkdir AllData
+echo "Merging data trees ..."
+hadd AllData/ZZ4lAnalysis.root *2015*/ZZ4lAnalysis.root > haddlog_mergingData.txt 2>&1
+
 cd - > /dev/null
 echo "Done. All trees are now in ${TREEPATH}/"

@@ -1,16 +1,16 @@
 #!/bin/tcsh -fe
 #
 # Instructions:
-# wget -P /tmp https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_76X/checkout_70X.csh
+# wget -pP /tmp https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_76X/checkout_70X.csh
 # cd $CMSSW_BASE/src
 # cmsenv
 # source /tmp/checkout_70X.csh
 
 
-############## For CMSSW_7_6_3
+############## For CMSSW_7_6_3_patch2
 
-#electron Ecal scale corrections (74X). FIXME: deactivated in 76X for the moment, waiting for new corrections
-#git cms-merge-topic gpetruc:ElectronRun2PromptCalib-74X
+#electron momentum scale corrections (76X).
+git cms-merge-topic -u matteosan1:smearer_76X
 
 #ZZAnalysis
 git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
@@ -41,6 +41,15 @@ git clone -n https://github.com/VBF-HZZ/UFHZZAnalysisRun2
 
 #kinematic refitting
 git clone https://github.com/tocheng/KinZfitter.git
+(cd KinZfitter ; git checkout -b from-v1.0 v1.0)
+
+#muon momentum scale corrections (76X)
+git clone https://github.com/bachtis/Analysis.git -b KaMuCa_V2 KaMuCa 
+
+#hack the KinZfitter to use the corrected muon pT error
+sed -i 's/reco::Muon/pat::Muon/g' KinZfitter/HelperFunction/interface/HelperFunction.h
+sed -i 's/reco::Muon/pat::Muon/g' KinZfitter/HelperFunction/src/HelperFunction.cc
+sed -i 's/double pterr = mu->muonBestTrack()->ptError();/double pterr = mu->userFloat("correctedPtError");/g' KinZfitter/HelperFunction/src/HelperFunction.cc
 
 
 #Jet energy corrections (CMGTools)
