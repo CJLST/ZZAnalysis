@@ -1,4 +1,4 @@
-identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel=5,::variables,::pyFragments,comment
+identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments,comment
 
 
 ###,,,,,,,,,,,Data 50ns
