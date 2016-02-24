@@ -995,8 +995,8 @@ process.jec = cms.ESSource("PoolDBESSource",
       ## here you add as many jet types as you need
       ## note that the tag name is specific for the particular sqlite file 
       ), 
-      #connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall15_25nsV2_MC.db'),
-      connect = cms.string('sqlite_file:/afs/cern.ch/user/h/heli/work/private/cms/hzz_cjlst/framework/CMSSW_7_6_3_patch2_v2/src/ZZAnalysis/AnalysisStep/data/JEC/Fall15_25nsV2_MC.db'),
+      connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall15_25nsV2_MC.db'),
+      #connect = cms.string('sqlite_file:/afs/cern.ch/user/h/heli/work/private/cms/hzz_cjlst/framework/CMSSW_7_6_3_patch2_v2/src/ZZAnalysis/AnalysisStep/data/JEC/Fall15_25nsV2_MC.db'),
      # uncomment above tag lines and this comment to use MC JEC
      # connect = cms.string('sqlite:Summer12_V7_MC.db')
 )
