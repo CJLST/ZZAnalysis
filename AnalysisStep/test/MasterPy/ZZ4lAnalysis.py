@@ -1044,7 +1044,8 @@ if (UPDATE_JETS and LEPTON_SETUP==2012) :
 
 # embed q/g likelihood
 process.load('RecoJets.JetProducers.QGTagger_cfi')
-process.QGTagger.srcJets = cms.InputTag( 'slimmedJets' )
+#process.QGTagger.srcJets = cms.InputTag( 'slimmedJets' )
+process.QGTagger.srcJets = cms.InputTag( 'patJetsReapplyJEC' )
 process.QGTagger.jetsLabel = cms.string('QGL_AK4PFchs')
 
 process.dressedJets = cms.EDProducer("JetFiller",
