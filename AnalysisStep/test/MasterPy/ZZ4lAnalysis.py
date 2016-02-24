@@ -969,11 +969,71 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
 
 UPDATE_JETS = False #FIXME: deactivated for now; what should be done for RunII ?
 
+#### JEC reapply
+
+### Load JEC
+process.load("CondCore.DBCommon.CondDBCommon_cfi")
+from CondCore.DBCommon.CondDBSetup_cfi import *
+
+if IsMC: 
+    process.jec = cms.ESSource("PoolDBESSource",
+        DBParameters = cms.PSet(
+            messageLevel = cms.untracked.int32(1)
+        ),
+        timetype = cms.string('runnumber'),
+        toGet = cms.VPSet(
+        cms.PSet(
+            record = cms.string('JetCorrectionsRecord'),
+            tag    = cms.string('JetCorrectorParametersCollection_Fall15_25nsV2_MC_AK4PFchs'),
+            label  = cms.untracked.string('AK4PFchs')
+            ),
+        ), 
+        connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall15_25nsV2_MC.db'),
+    )
+else: 
+    process.jec = cms.ESSource("PoolDBESSource",
+        DBParameters = cms.PSet(
+            messageLevel = cms.untracked.int32(1)
+        ),
+        timetype = cms.string('runnumber'),
+        toGet = cms.VPSet(
+        cms.PSet(
+            record = cms.string('JetCorrectionsRecord'),
+            tag    = cms.string('JetCorrectorParametersCollection_Fall15_25nsV2_DATA_AK4PFchs'),
+            label  = cms.untracked.string('AK4PFchs')
+            ),
+        ), 
+        connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall15_25nsV2_DATA.db'),
+    )
+## add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
+process.es_prefer_jec = cms.ESPrefer('PoolDBESSource','jec')
+
+### JEC re-apply
+from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated
+process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
+  src = cms.InputTag("slimmedJets"),
+  levels = ['L1FastJet', 
+        'L2Relative', 
+        'L3Absolute'],
+  payload = 'AK4PFchs' ) # Make sure to choose the appropriate levels and payload here!
+
+from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetsUpdated
+process.patJetsReapplyJEC = patJetsUpdated.clone(
+  jetSource = cms.InputTag("slimmedJets"),
+  jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
+  )
+
+
+
+###
+
+
 if (UPDATE_JETS and LEPTON_SETUP==2012) :
 #    from CMGTools.Common.miscProducers.cmgPFJetCorrector_cfi import cmgPFJetCorrector
     process.cmgPFJetSel = cms.EDProducer( "PFJetCorrector",
                                         # make sure your jet and rho collections are compatible
-                                        src = cms.InputTag( 'slimmedJets' ),
+                                        #src = cms.InputTag( 'slimmedJets' ),
+                                        src = cms.InputTag( 'patJetsReapplyJEC' ),
                                         rho = cms.InputTag( 'kt6PFJets:rho:RECO' ),
                                         vertices = cms.InputTag('offlinePrimaryVertices'),
                                         payload = cms.string('AK5PF'),
@@ -988,11 +1048,13 @@ if (UPDATE_JETS and LEPTON_SETUP==2012) :
 
 # embed q/g likelihood
 process.load('RecoJets.JetProducers.QGTagger_cfi')
-process.QGTagger.srcJets = cms.InputTag( 'slimmedJets' )
+#process.QGTagger.srcJets = cms.InputTag( 'slimmedJets' )
+process.QGTagger.srcJets = cms.InputTag( 'patJetsReapplyJEC' )
 process.QGTagger.jetsLabel = cms.string('QGL_AK4PFchs')
 
 process.dressedJets = cms.EDProducer("JetFiller",
-    src = cms.InputTag("slimmedJets"),
+    #src = cms.InputTag("slimmedJets"),
+    src = cms.InputTag("patJetsReapplyJEC"),
     cut = cms.string("pt>20 && abs(eta)<4.7"),
     bTaggerName = cms.string("pfCombinedInclusiveSecondaryVertexV2BJetTags"),
     jecType = cms.string("AK4PFchs"),
@@ -1029,7 +1091,9 @@ if FSRMODE=="Legacy" :
 process.preSkimCounter = cms.EDProducer("EventCountProducer")
 process.PVfilter =  cms.Path(process.preSkimCounter+process.goodPrimaryVertices)
 
-process.Jets = cms.Path( process.QGTagger + process.dressedJets )
+#process.Jets = cms.Path( process.QGTagger + process.dressedJets )
+# reapply JEC
+process.Jets = cms.Path( process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.QGTagger + process.dressedJets )
 
 # Prepare lepton collections
 process.Candidates = cms.Path(
