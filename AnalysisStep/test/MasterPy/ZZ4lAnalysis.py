@@ -965,11 +965,6 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
 ### Jets
 ### ----------------------------------------------------------------------
 
-# Recorrect jets
-
-UPDATE_JETS = False #FIXME: deactivated for now; what should be done for RunII ?
-
-#### JEC reapply
 
 ### Load JEC
 process.load("CondCore.DBCommon.CondDBCommon_cfi")
@@ -1008,42 +1003,20 @@ else:
 ## add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
 process.es_prefer_jec = cms.ESPrefer('PoolDBESSource','jec')
 
-### JEC re-apply
+### reapply JEC
 from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated
 process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
   src = cms.InputTag("slimmedJets"),
-  levels = ['L1FastJet', 
-        'L2Relative', 
-        'L3Absolute'],
-  payload = 'AK4PFchs' ) # Make sure to choose the appropriate levels and payload here!
+  levels = ['L1FastJet','L2Relative','L3Absolute'],
+  payload = 'AK4PFchs' )
+if not IsMC:
+    process.patJetCorrFactorsReapplyJEC.levels = ['L1FastJet','L2Relative','L3Absolute','L2L3Residual']
 
 from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetsUpdated
 process.patJetsReapplyJEC = patJetsUpdated.clone(
   jetSource = cms.InputTag("slimmedJets"),
   jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
   )
-
-
-
-###
-
-
-if (UPDATE_JETS and LEPTON_SETUP==2012) :
-#    from CMGTools.Common.miscProducers.cmgPFJetCorrector_cfi import cmgPFJetCorrector
-    process.cmgPFJetSel = cms.EDProducer( "PFJetCorrector",
-                                        # make sure your jet and rho collections are compatible
-                                        #src = cms.InputTag( 'slimmedJets' ),
-                                        src = cms.InputTag( 'patJetsReapplyJEC' ),
-                                        rho = cms.InputTag( 'kt6PFJets:rho:RECO' ),
-                                        vertices = cms.InputTag('offlinePrimaryVertices'),
-                                        payload = cms.string('AK5PF'),
-                                        levels = cms.vstring('L1FastJet','L2Relative','L3Absolute'),
-                                        sort = cms.bool(True),
-                                        verbose = cms.untracked.bool( False ))    
-    if not IsMC:
-        process.cmgPFJetSel.levels = ['L1FastJet','L2Relative','L3Absolute','L2L3Residual']
-
-#        print 'Correction levels', process.cmgPFJetSel.levels
 
 
 # embed q/g likelihood
@@ -1107,9 +1080,6 @@ process.Candidates = cms.Path(
        process.bareZCand         + process.ZCand     +  
        process.bareZZCand        + process.ZZCand
     )
-
-if (UPDATE_JETS and LEPTON_SETUP==2012) :
-    process.Candidates.insert(0, process.cmgPFJetSel)
 
 # Optional sequence to build control regions. To get it, add
 #process.CRPath = cms.Path(process.CRZl) # only trilepton
