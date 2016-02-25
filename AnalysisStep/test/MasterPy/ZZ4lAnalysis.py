@@ -1059,7 +1059,7 @@ process.dressedJets = cms.EDProducer("JetFiller",
     bTaggerName = cms.string("pfCombinedInclusiveSecondaryVertexV2BJetTags"),
     jecType = cms.string("AK4PFchs"),
     flags = cms.PSet(
-        isBtagged = cms.string("userFloat('bTagger')>0.89"),
+        isBtagged = cms.string("userFloat('bTagger')>0.800"),
     )
 )
 
