@@ -292,10 +292,12 @@ namespace {
   Float_t GenHPt  = 0;
   Float_t GenHRapidity  = 0;
   Float_t GenZ1Mass  = 0;
+  Float_t GenZ1Eta  = 0;
   Float_t GenZ1Pt  = 0;
   Float_t GenZ1Phi  = 0;
   Float_t GenZ1Flav  = 0;
   Float_t GenZ2Mass  = 0;
+  Float_t GenZ2Eta  = 0;
   Float_t GenZ2Pt  = 0;
   Float_t GenZ2Phi  = 0;
   Float_t GenZ2Flav  = 0;
@@ -731,11 +733,10 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     }
 
     GenEventInfoProduct  genInfoP = *(genInfo.product());
-    // Calculate NNLO QCD and NLO EWK K factors for ggZZ
+    // Calculate NNLO QCD K factors for ggZZ
     //KFactorggZZ = 2.;
     //KFactorggZZ = 1.7; // Jamboree
     KFactorggZZ = (float)spkfactor->Eval(GenHMass); // Moriond2016
-    KFactorEWKqqZZ = EwkCorrections::getEwkCorrections(genParticles, ewkTable, genInfoP);
 
     if (genFinalState!=BUGGY) {
     
@@ -756,6 +757,12 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
         KFactorQCDqqZZ_dPhi = kfactor_qqZZ_qcd_dPhi( fabs(GenZ1Phi-GenZ2Phi), (sameflavor)?1:2 );
         KFactorQCDqqZZ_M    = kfactor_qqZZ_qcd_M   ( GenHMass, (sameflavor)?1:2 );
         KFactorQCDqqZZ_Pt   = kfactor_qqZZ_qcd_Pt  ( GenHPt, (sameflavor)?1:2 );
+
+        // Calculate NLO EWK K factors for qqZZ
+        TLorentzVector GENZ1Vec,GENZ2Vec;
+        GENZ1Vec.SetPtEtaPhiM(GenZ1Pt, GenZ1Eta, GenZ1Phi, GenZ1Mass);
+        GENZ2Vec.SetPtEtaPhiM(GenZ2Pt, GenZ2Eta, GenZ2Phi, GenZ2Mass);
+        KFactorEWKqqZZ = EwkCorrections::getEwkCorrections(genParticles, ewkTable, genInfoP, GENZ1Vec,GENZ2Vec);
       }
 
       if (genZLeps.size()==3) {
@@ -1528,11 +1535,13 @@ void HZZ4lNtupleMaker::FillZGenInfo(Short_t Z1Id, Short_t Z2Id,
 {
   GenZ1Mass= pZ1.M();
   GenZ1Pt= pZ1.Pt();
+  GenZ1Eta= pZ1.Eta();
   GenZ1Phi= pZ1.Phi();
   GenZ1Flav= Z1Id;
 
   GenZ2Mass= pZ2.M();
   GenZ2Pt= pZ2.Pt();
+  GenZ2Eta= pZ2.Eta();
   GenZ2Phi= pZ2.Phi();
   GenZ2Flav= Z2Id;
 

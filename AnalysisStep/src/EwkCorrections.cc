@@ -71,7 +71,10 @@ namespace EwkCorrections
 
 
 	//The main function, will return the kfactor
-	double getEwkCorrections(const edm::Handle<edm::View<reco::Candidate> > & particles, const std::vector<std::vector<float>> & Table, const GenEventInfoProduct & eventInfo) {
+	double getEwkCorrections(const edm::Handle<edm::View<reco::Candidate> > & particles, 
+	                         const std::vector<std::vector<float>> & Table, 
+	                         const GenEventInfoProduct & eventInfo,
+	                         TLorentzVector Z1, TLorentzVector Z2) {
 	// , double & ewkCorrections_error){
 		double kFactor = 1.;
 
@@ -93,13 +96,13 @@ namespace EwkCorrections
 		std::sort(genNeutrinos.begin(), genNeutrinos.end(), sort_CandidatesByPt);
 
 		if(!eventInfo.pdf()) return 1; //no corrections can be applied because we need x1 and x2 
-		if( genLeptons.size() < 2 || genNeutrinos.size() < 2) return 1; //no corrections can be applied if we don't find our two Z's
+//		if( genLeptons.size() < 2 || genNeutrinos.size() < 2) return 1; //no corrections can be applied if we don't find our two Z's
 		double x1 = eventInfo.pdf()->x.first; 
 		double x2 = eventInfo.pdf()->x.second; 
 
-		LorentzVector Z1 = genLeptons[0]->p4() + genLeptons[1]->p4(); //First Z : charged leptons
-		LorentzVector Z2 = genNeutrinos[0]->p4() + genNeutrinos[1]->p4(); //Second Z : neutrinos
-		LorentzVector ZZ = Z1+Z2;
+//		LorentzVector Z1 = genLeptons[0]->p4() + genLeptons[1]->p4(); //First Z : charged leptons
+//		LorentzVector Z2 = genNeutrinos[0]->p4() + genNeutrinos[1]->p4(); //Second Z : neutrinos
+		TLorentzVector ZZ = Z1+Z2;
 		TLorentzVector ZZ_t(ZZ.X(),ZZ.Y(),ZZ.Z(),ZZ.T()); //Need TLorentzVectors for several methods (boosts)
 		TLorentzVector Z1_t(Z1.X(),Z1.Y(),Z1.Z(),Z1.T());
 		TLorentzVector Z2_t(Z2.X(),Z2.Y(),Z2.Z(),Z2.T());
@@ -151,12 +154,6 @@ namespace EwkCorrections
 		//Here is an implementation that is using a mix of the two. It may change in the future (but the change won't be critical)
 //		double kFactor_QCD = 15.99/9.89; //From arXiv1105.0020
 		
-		//Definition of rho
-		double rho = (genLeptons[0]->p4() + genLeptons[1]->p4() + genNeutrinos[0]->p4() + genNeutrinos[1]->p4()).pt();
-		rho = rho/(genLeptons[0]->pt() + genLeptons[1]->pt() + genNeutrinos[0]->pt() + genNeutrinos[1]->pt());
-
-//		if(rho<0.3) ewkCorrections_error = fabs((kFactor-1)*(kFactor_QCD -1));
-//		else ewkCorrections_error = 1;
 
 		//At this point, we have the relative error on the delta_ewk ( = k_ewk -1 )
 		//Let's - instead - return the absolute error on k: we do delta_ewk* the_relative_errir_on_it. This gives absolute error on delta, and so on k
@@ -167,3 +164,4 @@ namespace EwkCorrections
 	}
 
 }
+

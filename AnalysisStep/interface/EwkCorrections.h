@@ -40,6 +40,7 @@
 
 #include <vector>
 #include "TVector3.h"
+#include "TLorentzVector.h"
 #include "TMath.h"
 #include "TGraph.h"
 #include <Math/VectorUtil.h>
@@ -53,8 +54,10 @@ namespace EwkCorrections
 {
   std::vector<std::vector<float>> readFile_and_loadEwkTable(TString dtag);
   std::vector<float> findCorrection(const std::vector<std::vector<float>> & Table_EWK, float sqrt_s_hat, float t_hat);
-  double getEwkCorrections(const edm::Handle<edm::View<reco::Candidate> > & particles, const std::vector<std::vector<float>> & Table, const GenEventInfoProduct & eventInfo);
-  //, double & ewkCorrections_error);
+  double getEwkCorrections(const edm::Handle<edm::View<reco::Candidate> > & particles, 
+                           const std::vector<std::vector<float>> & Table, 
+                           const GenEventInfoProduct & eventInfo,
+                           TLorentzVector Z1, TLorentzVector Z2);
 }
 
 #endif
