@@ -4,7 +4,7 @@ PD = ""
 MCFILTER = ""
 ELECORRTYPE = "RunII" # "None", "Moriond", "Paper", or "RunII"
 ELEREGRESSION = "None" # "None", "Moriond", "PaperNoComb", or "Paper" 
-APPLYMUCORR = False
+APPLYMUCORR = True
 BUNCH_SPACING = 25
 #FSRMODE = "Legacy" # Legacy or Run II
 
@@ -26,8 +26,6 @@ process.TFileService.fileName = cms.string('ZCandNtuple.root')
 
 process.source.inputCommands = cms.untracked.vstring("keep *", "drop LHERunInfoProduct_*_*_*", "drop LHEEventProduct_*_*_*")
 
-process.calibratedElectrons.isSynchronization = cms.bool(True)
-
 ### ----------------------------------------------------------------------
 ### Replace parameters
 ### ----------------------------------------------------------------------
@@ -42,6 +40,9 @@ process.source.fileNames = cms.untracked.vstring(
     '/store/mc/RunIIFall15MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PU25nsData2015v1_HCALDebug_76X_mcRun2_asymptotic_v12-v1/00000/006C9F73-3FB9-E511-9AFE-001E67E95C52.root',
 
     )
+
+process.calibratedPatElectrons.isSynchronization = cms.bool(True)
+process.calibratedMuons.isSynchronization = cms.bool(True)
 
 process.maxEvents.input = -1
 #process.source.skipEvents = cms.untracked.uint32(5750)
