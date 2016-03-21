@@ -13,8 +13,8 @@
 git cms-merge-topic -u matteosan1:smearer_76X
 
 #ZZAnalysis
-git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
-(cd ZZAnalysis; git checkout miniAOD_76X)
+git clone -b 2l2q https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
+(cd ZZAnalysis; git checkout 2l2q)
 
 #effective areas (to be updated)
 git clone -n https://github.com/latinos/UserCode-sixie-Muon-MuonAnalysisTools Muon/MuonAnalysisTools
@@ -31,6 +31,10 @@ git clone -n https://github.com/cms-analysis/EgammaAnalysis-ElectronTools EGamma
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
 (cd ZZMatrixElement ; git checkout -b from-V00-02-01-patch1 V00-02-01-patch1)
 
+#temporary patch for MELA
+cp /afs/cern.ch/user/c/covarell/public/forUlash/MEMCalculators.h ZZMatrixElement/MEMCalculators/interface/
+cp /afs/cern.ch/user/c/covarell/public/forUlash/MEMCalculators.cc ZZMatrixElement/MEMCalculators/src/
+
 #MELA dependencies
 git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
 (cd HiggsAnalysis/CombinedLimit; git checkout 74x-root6)
@@ -40,7 +44,7 @@ git clone -n https://github.com/VBF-HZZ/UFHZZAnalysisRun2
 (cd UFHZZAnalysisRun2 ; git checkout origin/csa14 FSRPhotons) #This does not set the correct branch, but picks the right one anyway
 
 #kinematic refitting
-git clone https://github.com/tocheng/KinZfitter.git
+git clone https://github.com/covarell/KinZfitter.git
 (cd KinZfitter ; git checkout -b from-v1.0 v1.0)
 
 #muon momentum scale corrections (76X)
