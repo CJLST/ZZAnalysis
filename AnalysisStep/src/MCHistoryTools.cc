@@ -240,8 +240,8 @@ MCHistoryTools::init() {
 	  // the lepton that makes FSR is coming from elsewhere
 	  if (dbg) cout << "WARNING: FSR with parent ID: " << pcode << " origin ID: " << origin << endl;
 	}
-      } 
-      assert(pcode!=23); // just an xcheck that we don't get FSR listed with Z as a parent...
+      }
+      //assert(pcode!=23); // just an xcheck that we don't get FSR listed with Z as a parent... // commented out to make Zgamma samples work
     }
     
       
