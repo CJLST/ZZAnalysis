@@ -507,10 +507,10 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   ewkTable = EwkCorrections::readFile_and_loadEwkTable(fipPath.data());
 
   // Read the ggZZ k-factor shape from file
-  edm::FileInPath ggzzFIP("ZZAnalysis/AnalysisStep/data/kfactors/Kfactor_ggHZZ_2l2l_NNLO_NNPDF_NarrowWidth_13TeV.root");
+  edm::FileInPath ggzzFIP("ZZAnalysis/AnalysisStep/data/kfactors/Kfactor_Collected_ggHZZ_2l2l_NNLO_NNPDF_NarrowWidth_13TeV.root");
   fipPath=ggzzFIP.fullPath();
   TFile* ggZZKFactorFile = TFile::Open(fipPath.data());
-  spkfactor = (TSpline3*)ggZZKFactorFile->Get("sp_Kfactor")->Clone();
+  spkfactor = (TSpline3*)ggZZKFactorFile->Get("sp_kfactor_Nominal")->Clone();
   ggZZKFactorFile->Close();
   
   if (!skipDataMCWeight) {
