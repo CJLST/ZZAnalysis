@@ -37,6 +37,8 @@ using namespace std;
 #define DEBUG 0
 #define DRAWLINES 0
 
+#define USEPUWEIGHT 1
+
 #define DRAWDATAMCRATIO 1
 
 
@@ -68,7 +70,7 @@ string varName[nVariables] = {
   "Iso2",
 };
 string varXLabel[nVariables] = {
-  "number of primary vertices",
+  "number of vertices",
   "m_{#font[12]{l+l-}} [GeV]",
   "p_{T} (leading lepton) [GeV]",//"p_{T}^{lead.} (GeV)",
   "p_{T} (trailing lepton) [GeV]",//"p_{T}^{trail.} (GeV)",
@@ -199,6 +201,9 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
   Short_t NObsInt;
   Float_t NTrueInt;
   Float_t xsec;
+  Float_t genHEPMCweight;
+  Float_t PUWeight;
+  Float_t dataMCWeight;
   Float_t overallEventWeight;
   Short_t Zsel;
   Float_t ZMass;
@@ -269,7 +274,7 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
     inputFile[d] = TFile::Open(inputFileName.c_str());
 
     hCounters[d] = (TH1F*)inputFile[d]->Get("ZTree/Counters");
-    gen_sumWeights[d] = (Long64_t)hCounters[d]->GetBinContent(1);
+    gen_sumWeights[d] = (Long64_t)hCounters[d]->GetBinContent(USEPUWEIGHT?1:2);
     partialSampleWeight[d] = lumi * 1000 / gen_sumWeights[d] ;
 
     inputTree[d] = (TTree*)inputFile[d]->Get("ZTree/candTree");
@@ -281,6 +286,9 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
     inputTree[d]->SetBranchAddress("NObsInt",&NObsInt);
     inputTree[d]->SetBranchAddress("NTrueInt",&NTrueInt);
     inputTree[d]->SetBranchAddress("xsec",&xsec);
+    inputTree[d]->SetBranchAddress("genHEPMCweight",&genHEPMCweight);
+    inputTree[d]->SetBranchAddress("PUWeight",&PUWeight);
+    inputTree[d]->SetBranchAddress("dataMCWeight",&dataMCWeight);
     inputTree[d]->SetBranchAddress("overallEventWeight",&overallEventWeight);
     inputTree[d]->SetBranchAddress("Zsel",&Zsel);
     inputTree[d]->SetBranchAddress("ZMass",&ZMass);
@@ -334,7 +342,7 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
       if(LepPt->at(l1)<20.) continue;
       if(LepPt->at(l2)<10.) continue;
 
-      Double_t eventWeight = partialSampleWeight[d] * xsec * overallEventWeight ;
+      Double_t eventWeight = partialSampleWeight[d] * xsec * (USEPUWEIGHT ? overallEventWeight : genHEPMCweight*dataMCWeight) ;
 
       //----- find final state
 
@@ -586,7 +594,7 @@ void DrawMC2D(TCanvas* c, TH2F** h2, int v2, string lumiText, Bool_t logX = fals
   style->SetPadLeftMargin(0.12);
   style->SetPadRightMargin(0.12);
   style->cd();
-  setColZGradient_2();
+  setColZGradient_Rainbow2();
   c->cd();
   c->UseCurrentStyle();
   if(logX) c->SetLogx();
@@ -709,10 +717,8 @@ void plotDataVsMC_LeptonVars(bool redoHistograms = true) {
   string outputPath = "PlotsDataVsMC_LeptonVars/";
 
   // Define the luminosity
-  // all 50ns (2015B + 2015C_50ns) : 70.8/pb as announced on Feb. 1st
-  // all 25ns (2015C + 2015D + 2015Dv4) (Dec. 18th Silver JSON) : 2.63/fb
-  float lumi = 2.7;
-  string lumiText = "2.7 fb^{-1}";
+  float lumi = 2.762;
+  string lumiText = "2.8 fb^{-1}";
 
   // Choose a list of 1D plots
   int variableList = 1;

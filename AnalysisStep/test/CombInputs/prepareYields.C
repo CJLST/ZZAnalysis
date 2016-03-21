@@ -14,7 +14,7 @@
 #include "TFile.h"
 #include "TFitResult.h"
 #include "TF1.h"
-#include "TGraph.h"
+#include "TGraphErrors.h"
 #include "TH1.h"
 #include "TLegend.h"
 #include "TMath.h"
@@ -23,6 +23,7 @@
 #include "TSystem.h"
 #include "TTree.h"
 
+//#include "Djetefficiency.C"
 #include "../Plotter/tdrstyle.C"
 #include "../Plotter/plotUtils.C"
 #include "ZZAnalysis/AnalysisStep/src/kFactors.C"
@@ -34,12 +35,15 @@ using namespace std;
 #define MERGE2E2MU 1
 
 #define APPLYKFACTORS 1
+#define USEPUWEIGHT 1
+
+#define USEDJETEFFICIENCYFORGGZZ 1
+#define GGZZDJETEFFICIENCY 0.02572353
+
+#define DOZPLUSXFROMRUN2COMBINEDSHAPE 1
+#define ZPLUSXDJETEFFICIENCY 0.02803343
 
 #define JUST125 0
-#define SKIPTTH 0 //FIXME
-
-#define RESCALETOSMPSIGNALSTRENGTH 0
-#define SMPSIGNALSTRENGTH 0.99
 
 
 
@@ -53,16 +57,6 @@ enum Process {ggH=0, qqH=1, WH=2, ZH=3, ttH=4, qqZZ=5, ggZZ=6};
 const int nProcesses = 7;
 string sProcess[nProcesses] = {"ggH", "qqH", "WH", "ZH", "ttH", "qqZZ", "ggZZ"};
 bool isSignal[nProcesses] = {1,1,1,1,1,0,0,};
-Double_t systProcess[nProcesses] = {
-  TMath::Sqrt( 0.041*0.041 + 0.004*0.004 + 0.004*0.004 + 0.03*0.03 + 0.046*0.046 + 0.026*0.026 + 0.041*0.041 + 0.026*0.026 ),
-  TMath::Sqrt( 0.041*0.041 + 0.001*0.001 + 0.002*0.002 +             0.046*0.046 + 0.05 *0.05  + 0.041*0.041 + 0.026*0.026 + 0.09*0.09),
-  TMath::Sqrt( 0.041*0.041 + 0.001*0.001 + 0.003*0.003 +             0.046*0.046 + 0.026*0.026 + 0.041*0.041 + 0.026*0.026 ),
-  TMath::Sqrt( 0.041*0.041 + 0.001*0.001 + 0.003*0.003 +             0.046*0.046 + 0.026*0.026 + 0.041*0.041 + 0.026*0.026 ),
-  TMath::Sqrt( 0.041*0.041 + 0.001*0.001 + 0.003*0.003 +             0.046*0.046 + 0.026*0.026 + 0.041*0.041 + 0.026*0.026 ),
-  TMath::Sqrt( 0.041*0.041 + 0.006*0.006 + 0.005*0.005 +             0.046*0.046 + 0.026*0.026 + 0.041*0.041 + 0.026*0.026 ),
-  TMath::Sqrt( 0.041*0.041 + 0.004*0.004 + 0.004*0.004 +             0.046*0.046 + 0.026*0.026 + 0.041*0.041 + 0.026*0.026 ),
-};
-Float_t systSignal = TMath::Sqrt( 0.041*0.041 + 0.004*0.004 + 0.004*0.004 + 0.03*0.03 + 0.046*0.046 + 0.026*0.026 + 0.041*0.041 + 0.026*0.026 );
 
 /*
 const int nMHPoints = 35;
@@ -87,26 +81,45 @@ bool hasMHPoint[nProcesses][nMHPoints] = {
 const int orderOfPolynomial[nProcesses] = {8,8,8,8,8,0,0};
 //*/
 
-//*
+/*
 const int nMHPoints = 6;
 string  sMHPoint[nMHPoints] = {"","120","124","125","126","130",};
 Float_t fMHPoint[nMHPoints] = {0., 120., 124., 125., 126., 130.,};
 int indexOf125 = 3;
 //Int_t nMHPointsProcess[nProcesses] = {5,5,5,5,5,0,0};
-Int_t nMHPointsProcess[nProcesses] = {5,5,4,4,1,0,0}; //FIXME: some mass points are still missing
+Int_t nMHPointsProcess[nProcesses] = {5,5,4,5,5,0,0}; //FIXME: some mass points are still missing
 bool hasMHPoint[nProcesses][nMHPoints] = {
   {0,1,1,1,1,1,},//ggH
   {0,1,1,1,1,1,},//qqH
   //{0,1,1,1,1,1,},//WH
   {0,1,1,1,0,1,},//WH
-  //{0,1,1,1,1,1,},//ZH
-  {0,1,1,1,1,0,},//ZH
-  //{0,1,1,1,1,1,},//ttH
-  {0,0,0,1,0,0,},//ttH
+  {0,1,1,1,1,1,},//ZH
+  {0,1,1,1,1,1,},//ttH
   {1,0,0,0,0,0,},//qqZZ
   {1,0,0,0,0,0,},//ggZZ
 };
-const int orderOfPolynomial[nProcesses] = {3,3,3,1,1,0,0};
+const int orderOfPolynomial[nProcesses] = {2,2,2,2,2,0,0};
+//*/
+
+//*
+const int nMHPoints = 7;
+string  sMHPoint[nMHPoints] = {"","115","120","124","125","126","130",};
+Float_t fMHPoint[nMHPoints] = {0., 115., 120., 124., 125., 126., 130.,};
+int indexOf125 = 4;
+//Int_t nMHPointsProcess[nProcesses] = {6,6,6,6,6,0,0};
+Int_t nMHPointsProcess[nProcesses] = {6,6,5,5,6,0,0}; //FIXME: some mass points are still missing
+bool hasMHPoint[nProcesses][nMHPoints] = {
+  {0,1,1,1,1,1,1,},//ggH
+  {0,1,1,1,1,1,1,},//qqH
+  //{0,1,1,1,1,1,1,},//WH
+  {0,1,1,1,1,0,1,},//WH
+  //{0,1,1,1,1,1,1,},//ZH
+  {0,0,1,1,1,1,1,},//ZH
+  {0,1,1,1,1,1,1,},//ttH
+  {1,0,0,0,0,0,0,},//qqZZ
+  {1,0,0,0,0,0,0,},//ggZZ
+};
+const int orderOfPolynomial[nProcesses] = {2,2,2,2,2,0,0};
 //*/
 
 enum FinalState {fs4mu=0, fs4e=1, fs2e2mu=2, fs2mu2e=3};
@@ -161,8 +174,8 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
 
   TH1::SetDefaultSumw2(true);
 
-  //TFile* ggZZKFactorFile = TFile::Open("../../data/kfactors/Kfactor_ggHZZ_2l2l_NNLO_NNPDF_NarrowWidth_13TeV.root");
-  //TSpline3* sp = (TSpline3*)ggZZKFactorFile->Get("sp_Kfactor");
+  TFile* ggZZKFactorFile = TFile::Open("../../data/kfactors/Kfactor_Collected_ggHZZ_2l2l_NNLO_NNPDF_NarrowWidth_13TeV.root");
+  TSpline3* sp = (TSpline3*)ggZZKFactorFile->Get("sp_kfactor_Nominal");
 
   const int nDatasets = 13;
   string datasets[nDatasets] = {
@@ -194,6 +207,9 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
   Short_t Nvtx;
   Short_t NObsInt;
   Float_t NTrueInt;
+  Float_t genHEPMCweight;
+  Float_t PUWeight;
+  Float_t dataMCWeight;
   Float_t overallEventWeight;
   Float_t KFactorggZZ;
   Float_t KFactorEWKqqZZ;
@@ -281,8 +297,6 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
        datasets[d]=="ggZZ2e2tau"||
        datasets[d]=="ggZZ2mu2tau") 
       currentProcess = ggZZ;
-
-    if(SKIPTTH && currentProcess==ttH) continue;
     
     for(int mp=0; mp<nMHPoints; mp++){
 
@@ -293,7 +307,7 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
       
       hCounters[d] = (TH1F*)inputFile[d]->Get("ZZTree/Counters");
       NGenEvt[d] = (Long64_t)hCounters[d]->GetBinContent(1);
-      gen_sumWeights[d] = (Long64_t)hCounters[d]->GetBinContent(40);
+      gen_sumWeights[d] = (Long64_t)hCounters[d]->GetBinContent(USEPUWEIGHT?40:41);
       partialSampleWeight[d] = lumi * 1000 / gen_sumWeights[d] ;
       
       inputTree[d] = (TTree*)inputFile[d]->Get("ZZTree/candTree");
@@ -303,6 +317,9 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
       inputTree[d]->SetBranchAddress("Nvtx", &Nvtx);
       inputTree[d]->SetBranchAddress("NObsInt", &NObsInt);
       inputTree[d]->SetBranchAddress("NTrueInt", &NTrueInt);
+      inputTree[d]->SetBranchAddress("genHEPMCweight",&genHEPMCweight);
+      inputTree[d]->SetBranchAddress("PUWeight",&PUWeight);
+      inputTree[d]->SetBranchAddress("dataMCWeight",&dataMCWeight);
       inputTree[d]->SetBranchAddress("overallEventWeight", &overallEventWeight);
       inputTree[d]->SetBranchAddress("KFactorggZZ", &KFactorggZZ);
       inputTree[d]->SetBranchAddress("KFactorEWKqqZZ", &KFactorEWKqqZZ);
@@ -381,14 +398,14 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
 	  
 	    //kfactor = 1.7; // Jamboree
 	  
-	    //kfactor = (float)sp->Eval(GenHMass); // Moriond2016
-	    kfactor = KFactorggZZ; // Moriond2016
+	    kfactor = (float)sp->Eval(GenHMass); // Moriond2016
+	    //kfactor = KFactorggZZ; // Moriond2016
 
 	  }
 
 	}
 
-	Double_t eventWeight = partialSampleWeight[d] * xsec * kfactor * overallEventWeight ;
+	Double_t eventWeight = partialSampleWeight[d] * xsec * kfactor * (USEPUWEIGHT ? overallEventWeight : genHEPMCweight*dataMCWeight) ;
 
 
 	//----- find final state
@@ -533,7 +550,6 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
   TFile* fOutYields = new TFile(Form("yields_%iTeV_m4l%.1f-%.1f_%.3ffb-1%s.root",(int)sqrts,m4lMin,m4lMax,lumi,(MERGE2E2MU?"_m":"")),"recreate");
   fOutYields->cd();
   for(int pr=0; pr<nProcesses; pr++){
-    if(SKIPTTH && pr==ttH) continue;
     for(int mp=0; mp<nMHPoints; mp++){
       if(!hasMHPoint[pr][mp] || (JUST125&&sMHPoint[mp]!="125"&&sMHPoint[mp]!="")) continue;
       for(int fs=0; fs<nFinalStates+1; fs++){
@@ -562,6 +578,34 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
 }
 
 
+void getZPlusXYields_Run2CombinedShape(Float_t* yieldZPX, Int_t m4lMin, Int_t m4lMax) {
+
+  //----- take the Z+X shapes sent by Pedja on March 1st
+
+  TF1 *f4eComb = new TF1("f4eComb", "landau(0)*(1 + exp( pol1(3))) + [5]*(TMath::Landau(x, [6], [7]))", 70, 1000);
+  TF1 *f4muComb = new TF1("f4muComb","landau(0)",70,1000);
+  TF1 *f2e2muComb = new TF1("f2e2muComb","landau(0)",70,1000);
+
+  f4eComb->SetParameters(4.404e-05,151.2,36.6,7.06,-0.00497,0.01446,157.3,26.00);
+  f4muComb->SetParameters(0.04276,134.6,24.4);
+  f2e2muComb->SetParameters(0.04130,144.5,25.3);
+
+  //----- take the normalization sent by Pedja on March 1st
+
+  Float_t normFullRange4e    = 2.2;
+  Float_t normFullRange4mu   = 2.1;
+  Float_t normFullRange2e2mu = 3.2;
+
+  //----- compute normalization of the subrange of interest
+
+  yieldZPX[fs4mu  ] = normFullRange4mu   * f4muComb  ->Integral(m4lMin,m4lMax) / f4muComb  ->Integral(70,1000);
+  yieldZPX[fs4e   ] = normFullRange4e    * f4eComb   ->Integral(m4lMin,m4lMax) / f4eComb   ->Integral(70,1000);
+  yieldZPX[fs2e2mu] = normFullRange2e2mu * f2e2muComb->Integral(m4lMin,m4lMax) / f2e2muComb->Integral(70,1000);
+  yieldZPX[nFinalStates] = yieldZPX[fs4mu] + yieldZPX[fs4e] + yieldZPX[fs2e2mu];
+
+}
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -569,7 +613,7 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-void DrawYieldFits(string outputDirectory, TGraph* g[nProcesses][nFinalStates][nCategories+1], TF1* f[nProcesses][nFinalStates][nCategories+1]){
+void DrawYieldFits(string outputDirectory, TGraphErrors* g[nProcesses][nFinalStates][nCategories+1], TF1* f[nProcesses][nFinalStates][nCategories+1]){
 
   setTDRStyle();
 
@@ -581,7 +625,6 @@ void DrawYieldFits(string outputDirectory, TGraph* g[nProcesses][nFinalStates][n
 
   for(int pr=0; pr<nProcesses; pr++){
     if(!isSignal[pr]) continue;
-    if(SKIPTTH && pr==ttH) continue;
     
     for(int cat=0; cat<nCategories; cat++){
       
@@ -627,6 +670,15 @@ void DrawYieldFits(string outputDirectory, TGraph* g[nProcesses][nFinalStates][n
 
       //lgd[pr][cat]->AddEntry(f[pr][0][cat],sCategory[cat].c_str(),"l");
       lgd[pr][cat]->Draw();
+
+      TPaveText* pav = new TPaveText(0.13,0.93,0.8,1.,"brNDC");
+      pav->SetFillStyle(0);
+      pav->SetBorderSize(0);
+      pav->SetTextAlign(11);
+      pav->SetTextSize(0.04);
+      pav->AddText((sProcess[pr]+", "+sCategory[cat]).c_str());
+      pav->Draw();
+
       SaveCanvas(outputPath,cYield[pr][cat]);
 
     }
@@ -640,16 +692,19 @@ void fitSignalYields(string outputDirectory, double lumi, double sqrts, double m
   //---------- Retrieve yields from the ROOT file
 
   TFile* fInYields = TFile::Open(Form("yields_%iTeV_m4l%.1f-%.1f_%.3ffb-1%s.root",(int)sqrts,m4lMin,m4lMax,lumi,(MERGE2E2MU?"_m":"")));
+  TH1F* hTemp;
   Float_t yield[nProcesses][nMHPoints][nFinalStates][nCategories+1];
+  Float_t yieldStatError[nProcesses][nMHPoints][nFinalStates][nCategories+1];
   for(int pr=0; pr<nProcesses; pr++){
     if(!isSignal[pr]) continue;
-    if(SKIPTTH && pr==ttH) continue;
     for(int mp=0; mp<nMHPoints; mp++){
       if(hasMHPoint[pr][mp] && isSignal[pr]){
 	for(int fs=0; fs<nFinalStates; fs++){
 	  if(MERGE2E2MU && fs==fs2mu2e) continue;
 	  for(int cat=0; cat<nCategories+1; cat++){
-	    yield[pr][mp][fs][cat] = ((TH1F*)fInYields->Get(Form("hYield_%s%s_%s_%s_%s",sProcess[pr].c_str(),sMHPoint[mp].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[nResStatuses].c_str())))->GetBinContent(1);
+	    hTemp = (TH1F*)fInYields->Get(Form("hYield_%s%s_%s_%s_%s",sProcess[pr].c_str(),sMHPoint[mp].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[nResStatuses].c_str()));
+	    yield[pr][mp][fs][cat] = hTemp->GetBinContent(1);
+	    yieldStatError[pr][mp][fs][cat] = hTemp->GetBinError(1);//0.;//
 	  }
 	}
       }
@@ -659,30 +714,32 @@ void fitSignalYields(string outputDirectory, double lumi, double sqrts, double m
   //---------- Fit yield vs. mH
 
   TFile* fOutYieldFunctions = new TFile(Form("yieldFunctions_%iTeV_m4l%.1f-%.1f_%.3ffb-1%s.root",(int)sqrts,m4lMin,m4lMax,lumi,(MERGE2E2MU?"_m":"")),"recreate");
-  TGraph* gYield[nProcesses][nFinalStates][nCategories+1];
+  TGraphErrors* gYield[nProcesses][nFinalStates][nCategories+1];
   TF1* fYield[nProcesses][nFinalStates][nCategories+1];
 
   for(int pr=0; pr<nProcesses; pr++){
     if(!isSignal[pr]) continue;
-    if(SKIPTTH && pr==ttH) continue;
 
     for(int fs=0; fs<nFinalStates; fs++){
       if(MERGE2E2MU && fs==fs2mu2e) continue;
 
       for(int cat=0; cat<nCategories+1; cat++){
 
-	gYield[pr][fs][cat] = new TGraph(nMHPointsProcess[pr]);
+	gYield[pr][fs][cat] = new TGraphErrors(nMHPointsProcess[pr]);
 
 	int iPoint = 0;
 	for(int mp=0; mp<nMHPoints; mp++){
 	  if(hasMHPoint[pr][mp]){
 	    gYield[pr][fs][cat]->SetPoint(iPoint,fMHPoint[mp],yield[pr][mp][fs][cat]);
+	    gYield[pr][fs][cat]->SetPointError(iPoint,0.,yieldStatError[pr][mp][fs][cat]);
 	    iPoint++;
 	  }
 	}
 
 	string fName = (string)Form("f_%s_%s_%s",sProcess[pr].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str());
-	fYield[pr][fs][cat] = new TF1(fName.c_str(),Form("pol%i",orderOfPolynomial[pr]),fMHPoint[1],fMHPoint[nMHPoints-1]); 
+	//int order = ((pr==WH || pr==ZH) && cat==VBFTaggedMor16) ? 1 : orderOfPolynomial[pr] ;
+	int order = (pr==ZH && cat==VBFTaggedMor16) ? 1 : orderOfPolynomial[pr] ;
+	fYield[pr][fs][cat] = new TF1(fName.c_str(),Form("pol%i",order),fMHPoint[1],fMHPoint[nMHPoints-1]); 
 	//fYield[pr][fs][cat] = new TF1(fName.c_str(),"[0]+[1]*x+[2]*x*x",fMHPoint[1],fMHPoint[nMHPoints-1]); // the fit doesn't work with this
 	
 	cout<<endl<<sProcess[pr]<<", "<<sFinalState[fs]<<", "<<sCategory[cat]<<endl;
@@ -720,20 +777,27 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
   Float_t yield[nProcesses][nFinalStates+1][nCategories+1];
   Float_t yieldStatError[nProcesses][nFinalStates+1][nCategories+1];
   for(int pr=0; pr<nProcesses; pr++){
-    if(SKIPTTH && pr==ttH) continue;
     for(int fs=0; fs<nFinalStates+1; fs++){
       if(MERGE2E2MU && fs==fs2mu2e) continue;
       for(int cat=0; cat<nCategories+1; cat++){
 	hTemp = (TH1F*)fInYields->Get(Form("hYield_%s%s_%s_%s_%s",sProcess[pr].c_str(),(isSignal[pr]?(mHoption!="param"?mHoption.c_str():"125"):""),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[nResStatuses].c_str()));
 	yield[pr][fs][cat] = hTemp->GetBinContent(1);
 	yieldStatError[pr][fs][cat] = hTemp->GetBinError(1);
-	if(RESCALETOSMPSIGNALSTRENGTH && (pr==qqZZ||pr==ggZZ)){ //FIXME: to be removed at some point ?
-	  yield[pr][fs][cat] *= SMPSIGNALSTRENGTH;
-	  yieldStatError[pr][fs][cat] *= SMPSIGNALSTRENGTH;
-	}
       }
     }
   }
+
+  // for Moriond16 categorization, use Heshy's parameterization of Djet efficiency:
+  if(USEDJETEFFICIENCYFORGGZZ){
+    for(int fs=0; fs<nFinalStates+1; fs++){
+      if(MERGE2E2MU && fs==fs2mu2e) continue;
+      yield[ggZZ][fs][UntaggedMor16] = (1.-GGZZDJETEFFICIENCY) * yield[ggZZ][fs][nCategories];
+      yieldStatError[ggZZ][fs][UntaggedMor16] = (1.-GGZZDJETEFFICIENCY) * yieldStatError[ggZZ][fs][nCategories];
+      yield[ggZZ][fs][VBFTaggedMor16] = GGZZDJETEFFICIENCY * yield[ggZZ][fs][nCategories];
+      yieldStatError[ggZZ][fs][VBFTaggedMor16] = GGZZDJETEFFICIENCY * yieldStatError[ggZZ][fs][nCategories];
+    }
+  }
+
   Float_t yieldSignal125[nFinalStates+1][nCategories+1];
   Float_t yieldSignal125StatError[nFinalStates+1][nCategories+1];
   for(int fs=0; fs<nFinalStates+1; fs++){
@@ -750,7 +814,6 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
     TFile* fInYieldFunctions = TFile::Open(Form("yieldFunctions_%iTeV_m4l%.1f-%.1f_%.3ffb-1%s.root",(int)sqrts,m4lMin,m4lMax,lumi,(MERGE2E2MU?"_m":"")));
     for(int pr=0; pr<nProcesses; pr++){
       if(!isSignal[pr]) continue;
-      if(SKIPTTH && pr==ttH) continue;
       for(int fs=0; fs<nFinalStates; fs++){
 	if(MERGE2E2MU && fs==fs2mu2e) continue;
 	for(int cat=0; cat<nCategories+1; cat++)
@@ -759,22 +822,42 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
     }
   }
 
+  //Z+X yield for Moriond16
+  Float_t yieldZPlusX[nFinalStates+1][nCategories+1];
+  if(DOZPLUSXFROMRUN2COMBINEDSHAPE && MERGE2E2MU){
+    Float_t yieldZPX[nFinalStates+1];
+    getZPlusXYields_Run2CombinedShape(yieldZPX,m4lMin,m4lMax);
+    for(int fs=0; fs<nFinalStates+1; fs++){
+      if(MERGE2E2MU && fs==fs2mu2e) continue;
+      yieldZPlusX[fs][nCategories] = yieldZPX[fs];
+      yieldZPlusX[fs][UntaggedMor16] = (1.-ZPLUSXDJETEFFICIENCY) * yieldZPX[fs];
+      yieldZPlusX[fs][VBFTaggedMor16] = ZPLUSXDJETEFFICIENCY * yieldZPX[fs];
+    }
+  }
+
 
   //---------- Prepare the yaml fragments
+  float totalYieldSgnl[nFinalStates+1];
+  float totalYieldBkgd[nFinalStates+1];
+  float totalYield[nFinalStates+1];
+  totalYieldSgnl[nFinalStates] = 0.;
+  totalYieldBkgd[nFinalStates] = 0.;
+  totalYield[nFinalStates] = 0.;
 
-  float totalYield = 0.;
   string outputFileName[nFinalStates];
   ofstream outFile[nFinalStates];
   for(int fs=0; fs<nFinalStates; fs++){
     if(MERGE2E2MU && fs==fs2mu2e) continue;
     
-    outputFileName[fs] = string(Form("%s/yields_%iTeV_%s.yaml",outputDirectory.c_str(),(int)sqrts,sFinalState[fs].c_str())); // (not specifying MH and mass window in the name here)
+    outputFileName[fs] = string(Form("%s/yields_per_tag_category_%iTeV_%s.yaml",outputDirectory.c_str(),(int)sqrts,sFinalState[fs].c_str())); // (not specifying MH and mass window in the name here)
     outFile[fs].open(outputFileName[fs]);
     
     outFile[fs]<<"---"<<endl;
-    outFile[fs]<<"# mass window: "<<m4lMin<<" <= m4l <= "<<m4lMax<<endl;
     outFile[fs]<<"# sqrt(s) = "<<sqrts<<" TeV"<<endl;
     outFile[fs]<<"# integrated luminosity = "<<lumi<<" fb-1"<<endl;
+    outFile[fs]<<endl;
+    outFile[fs]<<"mass_range: '"<<m4lMin<<", "<<m4lMax<<"'"<<endl;
+    outFile[fs]<<"kd_range: '0, 1'"<<endl;
     outFile[fs]<<endl;
 
     // outFile[fs]<<"# Category numbering convention:"<<endl;
@@ -782,15 +865,18 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
     //   outFile[fs]<<"# "<<cat<<" "<<sCategory[cat]<<endl;
     // }
     // outFile[fs]<<endl;
-    
+
+    totalYieldBkgd[fs] = 0.;
+    totalYieldSgnl[fs] = 0.;
+    totalYield[fs] = 0.;
+
     for(int cat=0; cat<nCategories; cat++){
       outFile[fs]<<sCategory[cat]<<": "<<endl;
 
       for(int pr=0; pr<nProcesses; pr++){
-	if(SKIPTTH && pr==ttH) continue;
 
 	if(isSignal[pr] && mHoption=="param"){
-	  outFile[fs]<<"    "<<sProcess[pr]<<": '";
+	  outFile[fs]<<"    "<<sProcess[pr]<<": ";
 	  for(int ord=0; ord<=orderOfPolynomial[pr]; ord++){
 	    outFile[fs]<<"("<<fYield[pr][fs][cat]->GetParameter(ord);
 	    for(int ord2=0; ord2<=ord-1; ord2++) outFile[fs]<<"*@0";
@@ -799,32 +885,70 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
 	  }
 	  outFile[fs]<<endl;
 	}else{
-	  outFile[fs]<<"    "<<sProcess[pr]<<": "<<yield[pr][fs][cat]<<endl;
+	  outFile[fs]<<"    "<<sProcess[pr]<<": '"<<yield[pr][fs][cat]<<"'"<<endl;
 	}
 
-	totalYield += yield[pr][fs][cat];
+	if(isSignal[pr]) totalYieldSgnl[fs] += yield[pr][fs][cat];
+	else totalYieldBkgd[fs] += yield[pr][fs][cat];
+	totalYield[fs] += yield[pr][fs][cat];
       }
+
+      if(DOZPLUSXFROMRUN2COMBINEDSHAPE && MERGE2E2MU){
+	outFile[fs]<<"    zjets: '"<<yieldZPlusX[fs][cat]<<"'"<<endl;
+	totalYieldBkgd[fs] += yieldZPlusX[fs][cat];
+	totalYield[fs] += yieldZPlusX[fs][cat];
+      }
+
       outFile[fs]<<endl;
     }
 
+    totalYieldBkgd[nFinalStates] += totalYieldBkgd[fs];
+    totalYieldSgnl[nFinalStates] += totalYieldSgnl[fs];
+    totalYield[nFinalStates] += totalYield[fs];
+
     outFile[fs].close();
+
   }
 
-  cout<<"total yield in mass window ["<<m4lMin<<","<<m4lMax<<"] : "<<totalYield<<endl;
-  cout<<" "<<"Total signal @ 125 GeV"<<": "       <<yieldSignal125[nFinalStates][nCategories]<<" +/- "<<yieldSignal125[nFinalStates][nCategories]*(systSignal)<<" (syst.)"<<endl;//<<" +/- "<<yieldSignal125StatError[nFinalStates][nCategories]<<" (stat.)"<<endl;
-  cout<<" "<<"Total signal @ 125 GeV"<<", 4mu  : "<<yieldSignal125[fs4mu       ][nCategories]<<" +/- "<<yieldSignal125[fs4mu       ][nCategories]*(systSignal)<<" (syst.)"<<endl;//<<" +/- "<<yieldSignal125StatError[fs4mu       ][nCategories]<<" (stat.)"<<endl;
-  cout<<" "<<"Total signal @ 125 GeV"<<", 4e   : "<<yieldSignal125[fs4e        ][nCategories]<<" +/- "<<yieldSignal125[fs4e        ][nCategories]*(systSignal)<<" (syst.)"<<endl;//<<" +/- "<<yieldSignal125StatError[fs4e        ][nCategories]<<" (stat.)"<<endl;
-  cout<<" "<<"Total signal @ 125 GeV"<<", 2e2mu: "<<yieldSignal125[fs2e2mu     ][nCategories]<<" +/- "<<yieldSignal125[fs2e2mu     ][nCategories]*(systSignal)<<" (syst.)"<<endl;//<<" +/- "<<yieldSignal125StatError[fs2e2mu     ][nCategories]<<" (stat.)"<<endl;
+
+  //---------- Print the yields
+
+  cout<<"In mass window ["<<m4lMin<<","<<m4lMax<<"] : "<<endl;
+
+  cout<<" "<<"Total signal @ 125 GeV"<<":        "<<totalYieldSgnl[nFinalStates]<<endl;
+  cout<<" "<<"Total signal @ 125 GeV"<<", 4e   : "<<totalYieldSgnl[fs4e        ]<<endl;
+  cout<<" "<<"Total signal @ 125 GeV"<<", 4mu  : "<<totalYieldSgnl[fs4mu       ]<<endl;
+  cout<<" "<<"Total signal @ 125 GeV"<<", 2e2mu: "<<totalYieldSgnl[fs2e2mu     ]<<endl;
   if(!MERGE2E2MU)
-    cout<<" "<<"Total signal @ 125 GeV"<<", 2mu2e: "<<yieldSignal125[fs2mu2e     ][nCategories]<<" +/- "<<yieldSignal125[fs2mu2e     ][nCategories]*(systSignal)<<" (syst.)"<<endl;//<<" +/- "<<yieldSignal125StatError[fs2mu2e     ][nCategories]<<" (stat.)"<<endl;
+    cout<<" "<<"Total signal @ 125 GeV"<<", 2mu2e: "<<totalYieldSgnl[fs2mu2e     ]<<endl;
+
+  cout<<" "<<"Total background"<<":        "<<totalYieldBkgd[nFinalStates]<<endl;
+  cout<<" "<<"Total background"<<", 4e   : "<<totalYieldBkgd[fs4e        ]<<endl;
+  cout<<" "<<"Total background"<<", 4mu  : "<<totalYieldBkgd[fs4mu       ]<<endl;
+  cout<<" "<<"Total background"<<", 2e2mu: "<<totalYieldBkgd[fs2e2mu     ]<<endl;
+  if(!MERGE2E2MU)
+    cout<<" "<<"Total background"<<", 2mu2e: "<<totalYieldBkgd[fs2mu2e     ]<<endl;
+
+  cout<<" "<<"Total signal+background"<<":        "<<totalYield[nFinalStates]<<endl;
+  cout<<" "<<"Total signal+background"<<", 4e   : "<<totalYield[fs4e        ]<<endl;
+  cout<<" "<<"Total signal+background"<<", 4mu  : "<<totalYield[fs4mu       ]<<endl;
+  cout<<" "<<"Total signal+background"<<", 2e2mu: "<<totalYield[fs2e2mu     ]<<endl;
+  if(!MERGE2E2MU)
+    cout<<" "<<"Total signal+background"<<", 2mu2e: "<<totalYield[fs2mu2e     ]<<endl;
+
   for(int pr=0; pr<nProcesses; pr++){
-    if(SKIPTTH && pr==ttH) continue;
-    cout<<" "<<sProcess[pr]<<": "       <<yield[pr][nFinalStates][nCategories]<<" +/- "<<yield[pr][nFinalStates][nCategories]*(systProcess[pr])<<" (syst.)"<<endl;//<<" +/- "<<yieldStatError[pr][nFinalStates][nCategories]<<" (stat.)"<<endl;
-    cout<<" "<<sProcess[pr]<<", 4mu  : "<<yield[pr][fs4mu       ][nCategories]<<" +/- "<<yield[pr][fs4mu       ][nCategories]*(systProcess[pr])<<" (syst.)"<<endl;//<<" +/- "<<yieldStatError[pr][fs4mu       ][nCategories]<<" (stat.)"<<endl;
-    cout<<" "<<sProcess[pr]<<", 4e   : "<<yield[pr][fs4e        ][nCategories]<<" +/- "<<yield[pr][fs4e        ][nCategories]*(systProcess[pr])<<" (syst.)"<<endl;//<<" +/- "<<yieldStatError[pr][fs4e        ][nCategories]<<" (stat.)"<<endl;
-    cout<<" "<<sProcess[pr]<<", 2e2mu: "<<yield[pr][fs2e2mu     ][nCategories]<<" +/- "<<yield[pr][fs2e2mu     ][nCategories]*(systProcess[pr])<<" (syst.)"<<endl;//<<" +/- "<<yieldStatError[pr][fs2e2mu     ][nCategories]<<" (stat.)"<<endl;
+    cout<<"  "<<sProcess[pr]<<":        "<<yield[pr][nFinalStates][nCategories]<<endl;
+    cout<<"  "<<sProcess[pr]<<", 4e   : "<<yield[pr][fs4e        ][nCategories]<<endl;
+    cout<<"  "<<sProcess[pr]<<", 4mu  : "<<yield[pr][fs4mu       ][nCategories]<<endl;
+    cout<<"  "<<sProcess[pr]<<", 2e2mu: "<<yield[pr][fs2e2mu     ][nCategories]<<endl;
     if(!MERGE2E2MU)
-      cout<<" "<<sProcess[pr]<<", 2mu2e: "<<yield[pr][fs2mu2e     ][nCategories]<<" +/- "<<yield[pr][fs2mu2e     ][nCategories]*(systProcess[pr])<<" (syst.)"<<endl;//<<" +/- "<<yieldStatError[pr][fs2mu2e     ][nCategories]<<" (stat.)"<<endl;
+      cout<<"  "<<sProcess[pr]<<", 2mu2e: "<<yield[pr][fs2mu2e     ][nCategories]<<endl;
+  }
+  if(DOZPLUSXFROMRUN2COMBINEDSHAPE && MERGE2E2MU){
+    cout<<"  Z+X:        "<<yieldZPlusX[nFinalStates][nCategories]<<endl;
+    cout<<"  Z+X, 4e   : "<<yieldZPlusX[fs4e        ][nCategories]<<endl;
+    cout<<"  Z+X, 4mu  : "<<yieldZPlusX[fs4mu       ][nCategories]<<endl;
+    cout<<"  Z+X, 2e2mu: "<<yieldZPlusX[fs2e2mu     ][nCategories]<<endl;
   }
 
 }
@@ -852,13 +976,29 @@ void prepareYields(bool recomputeYields = true) {
   float sqrts = 13.;
 
   // Define the luminosity
-  // all 50ns (2015B + 2015C_50ns) : 70.8/pb as announced on Feb. 1st
-  // all 25ns (2015C + 2015D + 2015Dv4) (Dec. 18th Silver JSON) : 2.63/fb
-  float lumi = 2.7;
+  float lumi = 2.762;
 
   // m4l window
+  /*
   float m4l_min = 105.;
   float m4l_max = 140.;
+  //*/
+  /*
+  float m4l_min = 70.;
+  float m4l_max = 886.;
+  //*/
+  //*
+  float m4l_min = 70.;
+  float m4l_max = 3000.;
+  //*/
+  /*
+  float m4l_min = 118.;
+  float m4l_max = 130.;
+  //*/
+  /*
+  float m4l_min = 110.;
+  float m4l_max = 150.;
+  //*/
 
 
   // --------------- processing ---------------

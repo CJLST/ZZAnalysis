@@ -8,7 +8,7 @@
 #include "TStyle.h"
 
 
-void setColZGradient_1() {
+void setColZGradient_Rainbow1() {
     const Int_t NRGBs = 5;
     const Int_t NCont = 255;
     Double_t stops[NRGBs] = { 0.00, 0.34, 0.61, 0.84, 1.00 };
@@ -18,7 +18,7 @@ void setColZGradient_1() {
     TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
     gStyle->SetNumberContours(NCont);
 }
-void setColZGradient_2() {
+void setColZGradient_Rainbow2() {
     const Int_t NRGBs = 5;
     const Int_t NCont = 255;
     Double_t stops[NRGBs] = { 0.00, 0.20, 0.55, 0.88, 1.00 };
@@ -28,7 +28,7 @@ void setColZGradient_2() {
     TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
     gStyle->SetNumberContours(NCont);
 }
-void setColZGradient_2_Compact() {
+void setColZGradient_Rainbow2_Compact() {
     const Int_t NRGBs = 5;
     const Int_t NCont = 255;
     Double_t stops[NRGBs] = { 0.00, 0.03, 0.12, 0.50, 1.00 };
@@ -58,13 +58,30 @@ void setColZGradient_Gray_Compact() {
     TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
     gStyle->SetNumberContours(NCont);
 }
-void setColZGradient_OneColor(int col) {
+void setColZGradient_OneColor(int col, bool shift = false) {
     const Int_t NRGBs = 2;
     const Int_t NCont = 255;
     Double_t stops[NRGBs] = { 0.00, 1.00 };
     Double_t red[NRGBs]   = { 1., col==1?0.50:col==2?223./256.:col==3?255./256.:col==4?200./256.:col==5? 25./256.:col==6? 52./256.:col==7?116./256.:0.40 };
     Double_t green[NRGBs] = { 1., col==1?0.50:col==2? 48./256.:col==3?128./256.:col==4?167./256.:col==5?121./256.:col==6?182./256.:col==7?186./256.:0.40 };
     Double_t blue[NRGBs]  = { 1., col==1?0.50:col==2?164./256.:col==3?  0./256.:col==4?  0./256.:col==5?218./256.:col==6?152./256.:col==7?255./256.:0.40 };
+    if(shift){
+      for(int i=0; i<NRGBs; i++){
+	red  [i] -= 0.10;
+	green[i] -= 0.10;
+	blue [i] -= 0.10;
+      }
+    }
+    TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
+    gStyle->SetNumberContours(NCont);
+}
+void setColZGradient_TwoColors() {
+    const Int_t NRGBs = 2;
+    const Int_t NCont = 255;
+    Double_t stops[NRGBs] = { 0.00, 1.00 };
+    Double_t red[NRGBs]   = { 60./256., 1.00 };
+    Double_t green[NRGBs] = { 140./256., 1.00 };
+    Double_t blue[NRGBs]  = { 1.00, 0.50 };
     TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
     gStyle->SetNumberContours(NCont);
 }
@@ -82,9 +99,10 @@ void printInfo(string info, Double_t x1, Double_t y1, Double_t x2, Double_t y2){
 
 void SaveCanvas(string directory, TCanvas* c, string tag = "") {
   c->SaveAs(Form("%s%s_%s.root",directory.c_str(),c->GetName(),tag.c_str()));
-  //c->SaveAs(Form("%s%s_%s.C"   ,directory.c_str(),c->GetName(),tag.c_str())); // triggers a segfault !?
+  c->SaveAs(Form("%s%s_%s.C"   ,directory.c_str(),c->GetName(),tag.c_str())); //sometimes causes a segfault, but why ?
   c->SaveAs(Form("%s%s_%s.pdf" ,directory.c_str(),c->GetName(),tag.c_str()));  
-  c->SaveAs(Form("%s%s_%s.png" ,directory.c_str(),c->GetName(),tag.c_str()));
+  //c->SaveAs(Form("%s%s_%s.png" ,directory.c_str(),c->GetName(),tag.c_str())); //gives bad quality, it's much better to produce a .png from the .eps by doing: convert -density 150 -quality 100 FILE.eps FILE.png
+  c->SaveAs(Form("%s%s_%s.eps" ,directory.c_str(),c->GetName(),tag.c_str()));
 }
 
 
