@@ -26,6 +26,9 @@
 #include <iterator>
 #include <string>
 
+#include "TFile.h"
+#include "TH1.h"
+
 using namespace std;
 using namespace edm;
 using namespace reco;
@@ -37,12 +40,14 @@ public:
 
   void analyze(const edm::Event & event, const edm::EventSetup& eventSetup);
  
+  virtual ~dumpUserData();
   virtual void beginJob() {};
   virtual void endJob() {};  
 
   void dumpCandidates(const View<pat::CompositeCandidate>& cands);
   template<typename T> void dumpUserVal(const T& cand);
 
+  bool dumpAll;
   edm::EDGetTokenT<pat::MuonCollection> muonToken;
   edm::EDGetTokenT<pat::ElectronCollection> electronToken;
   bool dumpJets;
@@ -52,11 +57,14 @@ public:
   vector<edm::EDGetTokenT<edm::View<pat::CompositeCandidate> > > candidateSrcTokens;
   bool listTriggers;
   edm::EDGetTokenT<edm::TriggerResults> triggerResultToken;
+  TFile *fout;
+  vector<TH1D> nCand;
 
 };
 
 
 dumpUserData::dumpUserData(const ParameterSet& pset):
+  dumpAll(pset.getUntrackedParameter<bool>("dump",true)),
   muonToken(consumes<pat::MuonCollection>(pset.getParameter<InputTag>("muonSrc"))),
   electronToken(consumes<pat::ElectronCollection>(pset.getParameter<InputTag>("electronSrc"))),
   dumpJets(pset.existsAs<InputTag>("jetSrc")),
@@ -73,9 +81,26 @@ dumpUserData::dumpUserData(const ParameterSet& pset):
   }
 
   triggerResultToken = consumes<edm::TriggerResults>(edm::InputTag("TriggerResults","","HLT"));
+  
+
+  fout = new TFile("checkCandidates.root","RECREATE");
+  for(unsigned i=0; i<collNames.size(); ++i) {
+    TH1D nCandTmp(collNames[i].c_str(),collNames[i].c_str(),6,-0.5,5.5);
+    nCand.push_back(nCandTmp);
+  }
+
+
 }
 
+dumpUserData::~dumpUserData()
+{
+  fout->cd();
+  for(unsigned i=0; i<collNames.size(); ++i) {
+    nCand[i].Write();
+  }
+  fout->Close();
 
+}
 //Explicit instantiation of template function
 // template void dumpUserData::dumpUserVal<const pat::Muon>(const pat::Muon& cand);
 // template void dumpUserData::dumpUserVal<const pat::Electron>(const pat::Electron& cand);
@@ -95,82 +120,83 @@ void dumpUserData::analyze(const Event & event, const EventSetup& eventSetup){
   Handle<pat::ElectronCollection> electrons;
   event.getByToken(electronToken, electrons);
 
-  bool dumpVertices=false;
-  if (dumpVertices) {  
-    edm::Handle<vector<reco::Vertex> > vtxs;
-    event.getByToken(vtxToken, vtxs);
-
-    for( vector<reco::Vertex>::const_iterator vtx =vtxs->begin(); vtx != vtxs->end(); ++vtx ) {
-      float rho = vtx->position().rho();
-      float z = vtx->z();
-      float isFake =vtx->isFake();
-      float ndof = vtx->ndof();
+  if (dumpAll) {
+    bool dumpVertices=false;
+    if (dumpVertices) {  
+      edm::Handle<vector<reco::Vertex> > vtxs;
+      event.getByToken(vtxToken, vtxs);
+      
+      for( vector<reco::Vertex>::const_iterator vtx =vtxs->begin(); vtx != vtxs->end(); ++vtx ) {
+	float rho = vtx->position().rho();
+	float z = vtx->z();
+	float isFake =vtx->isFake();
+	float ndof = vtx->ndof();
+	
+	cout << "VTX: " << rho << " " << z << " " << isFake << " " << ndof<< " " 
+	     << (!isFake && ndof > 4 && abs(z) <= 24 && rho <= 2) << endl;
+      }
+    }
     
-      cout << "VTX: " << rho << " " << z << " " << isFake << " " << ndof<< " " 
-	   << (!isFake && ndof > 4 && abs(z) <= 24 && rho <= 2) << endl;
-    }
-  }
-  
-  
-
-  cout << " mu Candidates:    " << muons->size() << endl;
-  cout << " e  Candidates:    " << electrons->size() << endl;
-
-  cout << "Muons:" << endl;  
-  for( pat::MuonCollection::const_iterator lep =muons->begin(); lep != muons->end(); ++lep ) {
-    int i = distance(muons->begin(),lep);
-
-    int genID=0;
-    float genPT=0.;
-    const reco::GenParticle * gp =lep->genLepton();
-    if (gp) {
-      genID=gp->pdgId();
-      genPT=gp->pt();
-    }
-
-    cout << "#" << i << " mu"  << ((lep->charge()>0)?"+ ":"- ") << " pt= " << lep->pt() << " eta= " << lep->eta() << " phi= " << lep->phi() << " GLB= " << lep->isGlobalMuon() << " TK= " << lep->isTrackerMuon() << " matches= " << lep->numberOfMatches() << " BTT= " << lep->muonBestTrackType() << " t0_nDof: " << lep->time().nDof << " t0(ns): " << lep->time().timeAtIpInOut << " genID= " << genID <<  " genPT= " << genPT;
-
-//	 << " BTPT: " <<  lep->muonBestTrack()->pt() << " " << lep->innerTrack()->pt() << " " <<  lep->innerTrack()->eta() << " " << lep->innerTrack()->phi();
-    dumpUserVal(*lep);
-    if (lep->hasUserData("FSRCandidates")){
-      const PhotonPtrVector* fsrEle = lep->userData<PhotonPtrVector>("FSRCandidates");
-      if (fsrEle->size()) {
-	cout << " Photons: pT=";	
-	for (PhotonPtrVector::const_iterator g = fsrEle->begin(); g!=fsrEle->end(); ++g) {
-	  cout << " " << (*g)->pt();
+    
+    
+    cout << " mu Candidates:    " << muons->size() << endl;
+    cout << " e  Candidates:    " << electrons->size() << endl;
+    
+    cout << "Muons:" << endl;  
+    for( pat::MuonCollection::const_iterator lep =muons->begin(); lep != muons->end(); ++lep ) {
+      int i = distance(muons->begin(),lep);
+      
+      int genID=0;
+      float genPT=0.;
+      const reco::GenParticle * gp =lep->genLepton();
+      if (gp) {
+	genID=gp->pdgId();
+	genPT=gp->pt();
+      }
+      
+      cout << "#" << i << " mu"  << ((lep->charge()>0)?"+ ":"- ") << " pt= " << lep->pt() << " eta= " << lep->eta() << " phi= " << lep->phi() << " GLB= " << lep->isGlobalMuon() << " TK= " << lep->isTrackerMuon() << " matches= " << lep->numberOfMatches() << " BTT= " << lep->muonBestTrackType() << " t0_nDof: " << lep->time().nDof << " t0(ns): " << lep->time().timeAtIpInOut << " genID= " << genID <<  " genPT= " << genPT;
+      
+      //	 << " BTPT: " <<  lep->muonBestTrack()->pt() << " " << lep->innerTrack()->pt() << " " <<  lep->innerTrack()->eta() << " " << lep->innerTrack()->phi();
+      dumpUserVal(*lep);
+      if (lep->hasUserData("FSRCandidates")){
+	const PhotonPtrVector* fsrEle = lep->userData<PhotonPtrVector>("FSRCandidates");
+	if (fsrEle->size()) {
+	  cout << " Photons: pT=";	
+	  for (PhotonPtrVector::const_iterator g = fsrEle->begin(); g!=fsrEle->end(); ++g) {
+	    cout << " " << (*g)->pt();
+	  }
 	}
       }
+      cout << endl;
     }
-    cout << endl;
-  }
-
-  cout << "Electrons:" << endl;
-  for( pat::ElectronCollection::const_iterator lep = electrons->begin(); lep != electrons->end(); ++lep ) {
-    int i = distance(electrons->begin(),lep);
-
-    int genID=0;
-    float genPT=0.;
-    const reco::GenParticle * gp =lep->genLepton();
-    if (gp) {
-      genID=gp->pdgId();
-      genPT=gp->pt();
-    }
-
-    cout << "#" << i << " e"  << ((lep->charge()>0)?"+  ":"-  ") << " pt= " << lep->pt() << " eta= " << lep->eta() << " phi= " << lep->phi() << " genID= " << genID <<  " genPT= " << genPT;
-
-    dumpUserVal(*lep);
-    if (lep->hasUserData("FSRCandidates")){
-      const PhotonPtrVector* fsrEle = lep->userData<PhotonPtrVector>("FSRCandidates");
-      if (fsrEle->size()) {
-	cout << " Photon pTs:"; // fsrEle->size() << endl;
-	for (PhotonPtrVector::const_iterator g = fsrEle->begin(); g!=fsrEle->end(); ++g) {
-	  cout << " (pt=" << (*g)->pt() ;//<< " isFromMu=" << (*g)->isFromMuon() << ")";
-	}
+    
+    cout << "Electrons:" << endl;
+    for( pat::ElectronCollection::const_iterator lep = electrons->begin(); lep != electrons->end(); ++lep ) {
+      int i = distance(electrons->begin(),lep);
+      
+      int genID=0;
+      float genPT=0.;
+      const reco::GenParticle * gp =lep->genLepton();
+      if (gp) {
+	genID=gp->pdgId();
+	genPT=gp->pt();
       }
+      
+      cout << "#" << i << " e"  << ((lep->charge()>0)?"+  ":"-  ") << " pt= " << lep->pt() << " eta= " << lep->eta() << " phi= " << lep->phi() << " genID= " << genID <<  " genPT= " << genPT;
+      
+      dumpUserVal(*lep);
+      if (lep->hasUserData("FSRCandidates")){
+	const PhotonPtrVector* fsrEle = lep->userData<PhotonPtrVector>("FSRCandidates");
+	if (fsrEle->size()) {
+	  cout << " Photon pTs:"; // fsrEle->size() << endl;
+	  for (PhotonPtrVector::const_iterator g = fsrEle->begin(); g!=fsrEle->end(); ++g) {
+	    cout << " (pt=" << (*g)->pt() ;//<< " isFromMu=" << (*g)->isFromMuon() << ")";
+	  }
+	}
     }
-    cout << endl;
+      cout << endl;
+    }
   }
-
   
   unsigned int nColls = collNames.size();
   for(unsigned i=0; i<collNames.size(); ++i) {
@@ -178,11 +204,11 @@ void dumpUserData::analyze(const Event & event, const EventSetup& eventSetup){
     int j = nColls-i-1;
     event.getByToken(candidateSrcTokens[j],coll);
     cout << collNames[j] << ": " << coll->size() << endl;
-    dumpCandidates(*coll);
+    nCand[j].Fill(coll->size());
+    if (dumpAll) dumpCandidates(*coll);
   }
 
-
-  if (dumpJets) {  
+  if (dumpAll && dumpJets) {  
     Handle<pat::JetCollection> jets;
     event.getByToken(jetToken, jets);
 
@@ -199,7 +225,7 @@ void dumpUserData::analyze(const Event & event, const EventSetup& eventSetup){
 
 
   // Print passing triggers
-  if (listTriggers) {
+  if (listTriggers && dumpAll) {
     Handle<TriggerResults> triggerResults;
     if (event.getByToken(triggerResultToken, triggerResults)) {
       edm::TriggerNames const* trigNames_;  

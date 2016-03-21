@@ -1,0 +1,15 @@
+identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments,comment
+
+## Assume cross-section observed by ATLAS at 750 GeV and BR(gg) = BR(ZZ)
+## S (from bkgd-subtracted histogram) is ~ 14
+## sigma = S/(L*eff) ~ 14/(3.2*40%) = 10.9 fb
+## BR(ZZ -> 2l2q) = 2 x 6.6% x 70% = 9.24%
+
+BulkGrav800, ,0.0109,0.0924,,/BulkGravToZZToZlepZhad_narrow_M-800_13TeV-madgraph/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
+Higgs750, ,0.0109,0.0924,,/GluGluHToZZTo2L2Q_M750_NWA_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,15,,,
+# RSGrav800, ,0.0109,0.0924,,/RSGravToZZToZlepZhad_narrow_M-800_13TeV-madgraph/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
+
+## DYjets
+DY2JetsToLL,,     331.4,    ,,/DY2JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,10,,,
+DY3JetsToLL,,     96.4,    ,,/DY3JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,10,,,
+DY4JetsToLL,,     51.4,    ,,/DY4JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,10,,,

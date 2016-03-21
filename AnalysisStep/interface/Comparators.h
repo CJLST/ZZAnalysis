@@ -21,7 +21,7 @@ namespace Comparators {
 
   const float ZmassValue = 91.1876;
 
-  enum ComparatorTypes {byBestZ1bestZ2 = 0, byBestKD=1, byBestKD_VH=2, byBestPsig=3, byMHWindow=4};
+  enum ComparatorTypes {byBestZ1bestZ2 = 0, byBestKD=1, byBestKD_VH=2, byBestPsig=3, byMHWindow=4, byBestZqq = 5};
 
   struct BestCandComparator {
     const pat::CompositeCandidateCollection& candCollection;
@@ -128,6 +128,15 @@ namespace Comparators {
 	if (j_inMHWin&&!i_inMHWin) return false;
 	// If neither, or both candidate are in the mass window, use the old logic. Could choose by best psig as well.
 	return bestZ1bestZ2(cand_i,cand_j); //same 4 leptons, different pairing
+      }
+
+      else if (theType==byBestZqq) {
+
+        // highest pT of Zqq 
+	float ptZ1_i = cand_i.daughter("Z1")->pt();
+        float ptZ1_j = cand_j.daughter("Z1")->pt();
+
+	return ( ptZ1_i>ptZ1_j );
       }
 
       else {

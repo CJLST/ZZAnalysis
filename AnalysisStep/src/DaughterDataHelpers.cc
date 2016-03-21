@@ -3,6 +3,7 @@
 #include <DataFormats/PatCandidates/interface/CompositeCandidate.h>
 #include <DataFormats/PatCandidates/interface/Muon.h>
 #include <DataFormats/PatCandidates/interface/Electron.h>
+#include <DataFormats/PatCandidates/interface/Jet.h>
 
 
 using namespace std;
@@ -22,6 +23,8 @@ void userdatahelpers::embedDaughterData(pat::CompositeCandidate& cand) {
       embedDaughterData(cand, i, mu);
     } else if (const pat::Electron* ele = dynamic_cast<const pat::Electron*>(d)) {
       embedDaughterData(cand, i, ele);
+    } else if (const pat::Jet* jet = dynamic_cast<const pat::Jet*>(d)) {
+      embedDaughterData(cand, i, jet);
     } else {
       cout << "DaughterDataEmbedder: Unsupported daughter type" << endl;
     }
@@ -35,6 +38,8 @@ float userdatahelpers::getUserFloat(const reco::Candidate* c, const char* name){
     return mu->userFloat(name);
   } else if (const pat::Electron* ele = dynamic_cast<const pat::Electron*>(c)) {
     return ele->userFloat(name);
+  } else if (const pat::Jet* jet = dynamic_cast<const pat::Jet*>(c)) {
+    return jet->userFloat(name);
   } else if (const pat::CompositeCandidate* cc = dynamic_cast<const pat::CompositeCandidate*>(c)) {
     return cc->userFloat(name);
   }
