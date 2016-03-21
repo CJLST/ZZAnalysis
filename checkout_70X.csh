@@ -33,7 +33,7 @@ git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMa
 
 #temporary patch for MELA
 cp /afs/cern.ch/user/c/covarell/public/forUlash/MEMCalculators.h ZZMatrixElement/MEMCalculators/interface/
-cp /afs/cern.ch/user/c/covarell/public/forUlash/MEMCalculators.cc ZZMatrixElement/MEMCalculators/src/
+cp /afs/cern.ch/user/c/covarell/public/forUlash/MEMCalculators.cpp ZZMatrixElement/MEMCalculators/src/
 
 #MELA dependencies
 git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
