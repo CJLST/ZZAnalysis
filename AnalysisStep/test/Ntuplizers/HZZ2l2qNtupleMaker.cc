@@ -96,39 +96,39 @@ namespace {
   Short_t nCleanedJetsPt30_jecDn  = 0;
   Short_t nCleanedJetsPt30BTagged  = 0;
   Short_t trigWord  = 0;
-  Float_t ZZMass  = 0;
-  Float_t ZZMassErr  = 0;
-  Float_t ZZMassErrCorr  = 0;
-  Float_t ZZMassPreFSR  = 0;
-  Short_t ZZsel  = 0;
-  Float_t ZZPt  = 0;
-  Float_t ZZEta  = 0;
-  Float_t ZZPhi  = 0;
-  Int_t CRflag  = 0;
-  Int_t ZZCandType  = 0;         // 1 = Merged, SR
+  std::vector<float> ZZMass  ;		   
+  std::vector<float> ZZMassErr  ;	   
+  std::vector<float> ZZMassErrCorr  ;	   
+  std::vector<float> ZZMassPreFSR  ;	   
+  std::vector<short> ZZsel  ;		   
+  std::vector<float> ZZPt  ;		   
+  std::vector<float> ZZEta  ;		   
+  std::vector<float> ZZPhi  ;		   
+  std::vector<short> CRflag  ;		   
+  std::vector<short> ZZCandType  ;         // 1 = Merged, SR
                                  // -1 = Merged, SBR
                                  // 2 = Resloved, SR
                                  // -2 = Resloved, SBR
-  Float_t Z1Mass  = 0;
-  Float_t Z1Pt  = 0;
-  Short_t Z1Flav  = 0;
-  Float_t Z1tau21  = 0;
-  Float_t ZZMassRefit  = 0;
-  Float_t ZZMassRefitErr  = 0;
-  Float_t ZZMassUnrefitErr  = 0;
-  Float_t ZZMassCFit  = 0;
-  Float_t ZZChi2CFit  = 0;
-  Float_t Z2Mass  = 0;
-  Float_t Z2Pt  = 0;
-  Short_t Z2Flav  = 0;
-  Float_t costhetastar  = 0;
-  Float_t helphi  = 0;
-  Float_t helcosthetaZ1  = 0;
-  Float_t helcosthetaZ2  = 0;
-  Float_t phistarZ1  = 0;
-  Float_t phistarZ2  = 0;
-  Float_t xi  = 0;
-  Float_t xistar  = 0;
+  std::vector<float> Z1Mass  ;		   
+  std::vector<float> Z1Pt  ;		   
+  std::vector<short> Z1Flav  ;		   
+  std::vector<float> Z1tau21  ;		   
+  std::vector<float> ZZMassRefit  ;	   
+  std::vector<float> ZZMassRefitErr  ;	   
+  std::vector<float> ZZMassUnrefitErr  ;   
+  std::vector<float> ZZMassCFit  ;	   
+  std::vector<float> ZZChi2CFit  ;	   
+  std::vector<float> Z2Mass  ;		   
+  std::vector<float> Z2Pt  ;		   
+  std::vector<short> Z2Flav  ;		   
+  std::vector<float> costhetastar  ;	   
+  std::vector<float> helphi  ;		   
+  std::vector<float> helcosthetaZ1  ;	   
+  std::vector<float> helcosthetaZ2  ;	   
+  std::vector<float> phistarZ1  ;	   
+  std::vector<float> phistarZ2  ;	   
+  std::vector<float> xi  ;		   
+  std::vector<float> xistar  ;             
   std::vector<float> LepPt;
   std::vector<float> LepEta;
   std::vector<float> LepPhi;
@@ -149,112 +149,112 @@ namespace {
   std::vector<short> fsrLept;
   std::vector<short> fsrLeptID;
   std::vector<float> fsrGenPt;
-  Bool_t passIsoPreFSR = 0;
-  Float_t p0plus_VAJHU  = 0;
-  Float_t p0minus_VAJHU  = 0;
-  Float_t p0plus_VAMCFM  = 0;
-  Float_t p0hplus_VAJHU  = 0;
-  Float_t p1_VAJHU  = 0;
-  Float_t p1_prodIndep_VAJHU  = 0;
-  Float_t p1plus_VAJHU  = 0;
-  Float_t p1plus_prodIndep_VAJHU  = 0;
-  Float_t p2_VAJHU  = 0;
-  Float_t p2_prodIndep_VAJHU  = 0;
-  Float_t p2qqb_VAJHU  = 0;
-  Float_t p2hplus_VAJHU  = 0;
-  Float_t p2hminus_VAJHU  = 0;
-  Float_t p2bplus_VAJHU  = 0;
-  Float_t p2hplus_qqb_VAJHU  = 0;
-  Float_t p2hplus_prodIndep_VAJHU  = 0;
-  Float_t p2hminus_qqb_VAJHU  = 0;
-  Float_t p2hminus_prodIndep_VAJHU  = 0;
-  Float_t p2bplus_qqb_VAJHU  = 0;
-  Float_t p2bplus_prodIndep_VAJHU  = 0;
-  Float_t p2h2plus_gg_VAJHU  = 0;
-  Float_t p2h2plus_qqbar_VAJHU                 =                0;
-  Float_t p2h2plus_prodIndep_VAJHU     =        0;
-  Float_t p2h3plus_gg_VAJHU            =        0;
-  Float_t p2h3plus_qqbar_VAJHU         =        0;
-  Float_t p2h3plus_prodIndep_VAJHU     =        0;
-  Float_t p2h6plus_gg_VAJHU            =        0;
-  Float_t p2h6plus_qqbar_VAJHU         =        0;
-  Float_t p2h6plus_prodIndep_VAJHU     =        0;
-  Float_t p2h7plus_gg_VAJHU            =        0;
-  Float_t p2h7plus_qqbar_VAJHU         =        0;
-  Float_t p2h7plus_prodIndep_VAJHU     =        0;
-  Float_t p2h9minus_gg_VAJHU           =                0;
-  Float_t p2h9minus_qqbar_VAJHU        =                0;
-  Float_t p2h9minus_prodIndep_VAJHU    =                0;
-  Float_t p2h10minus_gg_VAJHU         =                 0;
-  Float_t p2h10minus_qqbar_VAJHU      =                 0;
-  Float_t p2h10minus_prodIndep_VAJHU  =                 0;
-  Float_t bkg_VAMCFM  = 0;
-  Float_t bkg_prodIndep_VAMCFM  = 0;
-  Float_t ggzz_VAMCFM  = 0;
-  Float_t ggzz_p0plus_VAMCFM  = 0;
-  Float_t ggzz_c1_VAMCFM  = 0;
-  Float_t ggzz_c5_VAMCFM  = 0;
-  Float_t ggzz_ci_VAMCFM  = 0;
-  Float_t pg1g4_mela  = 0;
-  Float_t pg1g4_VAJHU  = 0;
-  Float_t pg1g4_pi2_VAJHU  = 0;
-  Float_t pg1g2_pi2_VAJHU  = 0;
-  Float_t pg1g2_mela  = 0;
-  Float_t pg1g2_VAJHU  = 0;
-  Float_t p0_g1prime2_VAJHU  =  0;
-  Float_t pg1g1prime2_VAJHU  =  0;
-  Float_t Dgg10_VAMCFM  =  0;
-  Float_t pzzzg_VAJHU  =  0;
-  Float_t pzzgg_VAJHU  =  0;
-  Float_t pzzzg_PS_VAJHU  =  0;
-  Float_t pzzgg_PS_VAJHU  =  0;
-  Float_t p0Zgs_VAJHU  =  0;
-  Float_t p0gsgs_VAJHU  =  0;
-  Float_t p0Zgs_PS_VAJHU  =  0;
-  Float_t p0gsgs_PS_VAJHU  =  0;
-  Float_t p0Zgs_g1prime2_VAJHU  =  0;
-  Float_t pzzzg_g1prime2_VAJHU  =  0;
-  Float_t pzzzg_g1prime2_pi2_VAJHU  =  0;
-  Float_t p0plus_m2l2q  =  0;
-  Float_t bkg_m2l2q  =  0;
-  Float_t p0plus_m2l2q_ScaleUp  =  0;
-  Float_t bkg_m2l2q_ScaleUp  = 0;
-  Float_t p0plus_m2l2q_ScaleDown  = 0;
-  Float_t bkg_m2l2q_ScaleDown  = 0;
-  Float_t p0plus_m2l2q_ResUp  = 0;
-  Float_t bkg_m2l2q_ResUp  = 0;
-  Float_t p0plus_m2l2q_ResDown  = 0;
-  Float_t bkg_m2l2q_ResDown  = 0;
-  Float_t phjj_VAJHU_old  = 0;
-  Float_t pvbf_VAJHU_old  = 0;
-  Float_t phjj_VAJHU_old_up  = 0;
-  Float_t pvbf_VAJHU_old_up  = 0;
-  Float_t phjj_VAJHU_old_dn  = 0;
-  Float_t pvbf_VAJHU_old_dn  = 0;
-  Float_t phjj_VAJHU_new  = 0;
-  Float_t pvbf_VAJHU_new  = 0;
-  Float_t phjj_VAJHU_new_up  = 0;
-  Float_t pvbf_VAJHU_new_up  = 0;
-  Float_t phjj_VAJHU_new_dn  = 0;
-  Float_t pvbf_VAJHU_new_dn  = 0;
-  Float_t pAux_vbf_VAJHU  = 0;
-  Float_t pAux_vbf_VAJHU_up  = 0;
-  Float_t pAux_vbf_VAJHU_dn  = 0;
-  Float_t phj_VAJHU  = 0;
-  Float_t phj_VAJHU_up  = 0;
-  Float_t phj_VAJHU_dn  = 0;
-  Float_t pwh_hadronic_VAJHU  = 0;
-  Float_t pwh_hadronic_VAJHU_up  = 0;
-  Float_t pwh_hadronic_VAJHU_dn  = 0;
-  Float_t pzh_hadronic_VAJHU  = 0;
-  Float_t pzh_hadronic_VAJHU_up  = 0;
-  Float_t pzh_hadronic_VAJHU_dn  = 0;
-  Float_t ptth_VAJHU  = 0;
-  Float_t ptth_VAJHU_up  = 0;
-  Float_t ptth_VAJHU_dn  = 0;
-  Float_t pbbh_VAJHU  = 0;
-  Float_t pbbh_VAJHU_up  = 0;
-  Float_t pbbh_VAJHU_dn  = 0;
+  Bool_t  passIsoPreFSR ;
+  std::vector<float> p0plus_VAJHU  ;		   
+  std::vector<float> p0minus_VAJHU  ;		   
+  std::vector<float> p0plus_VAMCFM  ;		   
+  std::vector<float> p0hplus_VAJHU  ;		   
+  std::vector<float> p1_VAJHU  ;		   
+  std::vector<float> p1_prodIndep_VAJHU  ;	   
+  std::vector<float> p1plus_VAJHU  ;		   
+  std::vector<float> p1plus_prodIndep_VAJHU  ;	   
+  std::vector<float> p2_VAJHU  ;		   
+  std::vector<float> p2_prodIndep_VAJHU  ;	   
+  std::vector<float> p2qqb_VAJHU  ;		   
+  std::vector<float> p2hplus_VAJHU  ;		   
+  std::vector<float> p2hminus_VAJHU  ;		   
+  std::vector<float> p2bplus_VAJHU  ;		   
+  std::vector<float> p2hplus_qqb_VAJHU  ;	   
+  std::vector<float> p2hplus_prodIndep_VAJHU  ;	   
+  std::vector<float> p2hminus_qqb_VAJHU  ;	   
+  std::vector<float> p2hminus_prodIndep_VAJHU  ;   
+  std::vector<float> p2bplus_qqb_VAJHU  ;	   
+  std::vector<float> p2bplus_prodIndep_VAJHU  ;	   
+  std::vector<float> p2h2plus_gg_VAJHU  ;	   
+  std::vector<float> p2h2plus_qqbar_VAJHU       ;
+  std::vector<float> p2h2plus_prodIndep_VAJHU   ;
+  std::vector<float> p2h3plus_gg_VAJHU          ;
+  std::vector<float> p2h3plus_qqbar_VAJHU       ;
+  std::vector<float> p2h3plus_prodIndep_VAJHU   ;
+  std::vector<float> p2h6plus_gg_VAJHU          ;
+  std::vector<float> p2h6plus_qqbar_VAJHU       ;
+  std::vector<float> p2h6plus_prodIndep_VAJHU   ;
+  std::vector<float> p2h7plus_gg_VAJHU          ;
+  std::vector<float> p2h7plus_qqbar_VAJHU       ;
+  std::vector<float> p2h7plus_prodIndep_VAJHU   ;
+  std::vector<float> p2h9minus_gg_VAJHU          ;
+  std::vector<float> p2h9minus_qqbar_VAJHU       ;
+  std::vector<float> p2h9minus_prodIndep_VAJHU   ;
+  std::vector<float> p2h10minus_gg_VAJHU         ;
+  std::vector<float> p2h10minus_qqbar_VAJHU      ;
+  std::vector<float> p2h10minus_prodIndep_VAJHU  ;
+  std::vector<float> bkg_VAMCFM  ;		   
+  std::vector<float> bkg_prodIndep_VAMCFM  ;	   
+  std::vector<float> ggzz_VAMCFM  ;		   
+  std::vector<float> ggzz_p0plus_VAMCFM  ;	   
+  std::vector<float> ggzz_c1_VAMCFM  ;		   
+  std::vector<float> ggzz_c5_VAMCFM  ;		   
+  std::vector<float> ggzz_ci_VAMCFM  ;		   
+  std::vector<float> pg1g4_mela  ;		   
+  std::vector<float> pg1g4_VAJHU  ;		   
+  std::vector<float> pg1g4_pi2_VAJHU  ;		   
+  std::vector<float> pg1g2_pi2_VAJHU  ;		   
+  std::vector<float> pg1g2_mela  ;		   
+  std::vector<float> pg1g2_VAJHU  ;		   
+  std::vector<float> p0_g1prime2_VAJHU;	   
+  std::vector<float> pg1g1prime2_VAJHU;	   
+  std::vector<float> Dgg10_VAMCFM;	   
+  std::vector<float> pzzzg_VAJHU;		   
+  std::vector<float> pzzgg_VAJHU;		   
+  std::vector<float> pzzzg_PS_VAJHU;	   
+  std::vector<float> pzzgg_PS_VAJHU;	   
+  std::vector<float> p0Zgs_VAJHU;		   
+  std::vector<float> p0gsgs_VAJHU;	   
+  std::vector<float> p0Zgs_PS_VAJHU;	   
+  std::vector<float> p0gsgs_PS_VAJHU;	   
+  std::vector<float> p0Zgs_g1prime2_VAJHU;   
+  std::vector<float> pzzzg_g1prime2_VAJHU;   
+  std::vector<float> pzzzg_g1prime2_pi2_VAJHU;
+  std::vector<float> p0plus_m2l2q;	   
+  std::vector<float> bkg_m2l2q;		   
+  std::vector<float> p0plus_m2l2q_ScaleUp;   
+  std::vector<float> bkg_m2l2q_ScaleUp  ;	   
+  std::vector<float> p0plus_m2l2q_ScaleDown  ;	   
+  std::vector<float> bkg_m2l2q_ScaleDown  ;	   
+  std::vector<float> p0plus_m2l2q_ResUp  ;	   
+  std::vector<float> bkg_m2l2q_ResUp  ;		   
+  std::vector<float> p0plus_m2l2q_ResDown  ;	   
+  std::vector<float> bkg_m2l2q_ResDown  ;	   
+  std::vector<float> phjj_VAJHU_old  ;		   
+  std::vector<float> pvbf_VAJHU_old  ;		   
+  std::vector<float> phjj_VAJHU_old_up  ;	   
+  std::vector<float> pvbf_VAJHU_old_up  ;	   
+  std::vector<float> phjj_VAJHU_old_dn  ;	   
+  std::vector<float> pvbf_VAJHU_old_dn  ;	   
+  std::vector<float> phjj_VAJHU_new  ;		   
+  std::vector<float> pvbf_VAJHU_new  ;		   
+  std::vector<float> phjj_VAJHU_new_up  ;	   
+  std::vector<float> pvbf_VAJHU_new_up  ;	   
+  std::vector<float> phjj_VAJHU_new_dn  ;	   
+  std::vector<float> pvbf_VAJHU_new_dn  ;	   
+  std::vector<float> pAux_vbf_VAJHU  ;		   
+  std::vector<float> pAux_vbf_VAJHU_up  ;	   
+  std::vector<float> pAux_vbf_VAJHU_dn  ;	   
+  std::vector<float> phj_VAJHU  ;		   
+  std::vector<float> phj_VAJHU_up  ;		   
+  std::vector<float> phj_VAJHU_dn  ;		   
+  std::vector<float> pwh_hadronic_VAJHU  ;	   
+  std::vector<float> pwh_hadronic_VAJHU_up  ;	   
+  std::vector<float> pwh_hadronic_VAJHU_dn  ;	   
+  std::vector<float> pzh_hadronic_VAJHU  ;	   
+  std::vector<float> pzh_hadronic_VAJHU_up  ;	   
+  std::vector<float> pzh_hadronic_VAJHU_dn  ;	   
+  std::vector<float> ptth_VAJHU  ;		   
+  std::vector<float> ptth_VAJHU_up  ;		   
+  std::vector<float> ptth_VAJHU_dn  ;		   
+  std::vector<float> pbbh_VAJHU  ;		   
+  std::vector<float> pbbh_VAJHU_up  ;		   
+  std::vector<float> pbbh_VAJHU_dn  ;              
   std::vector<float> JetPt ;
   std::vector<float> JetEta ;
   std::vector<float> JetPhi ;
@@ -909,40 +909,37 @@ void HZZ2l2qNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup&
 
   // Now we can write the variables for candidates (fat first)
   int nFilled=0;
-  if (candsFat->size() > 0) { 
-    for( edm::View<pat::CompositeCandidate>::const_iterator cand = candsFat->begin(); cand != candsFat->end(); ++cand) {
-
-      if (!( theChannel==ZL || (bool)(cand->userFloat("isBestCand")) )) continue; // Skip events other than the best cand (or CR candidates in the CR)
-      
-      FillCandidate(*cand, evtPassTrigger&&evtPassSkim, event, -1, true);
-      
-      // Fill the candidate as one entry in the tree. Do not reinitialize the event variables, as in CRs
-      // there could be several candidates per event.
-      myTree->FillCurrentTree();
-      ++nFilled;
+  for( edm::View<pat::CompositeCandidate>::const_iterator cand = candsFat->begin(); cand != candsFat->end(); ++cand) {
+    
+    if (!( theChannel==ZL || (bool)(cand->userFloat("isBestCand")) )) continue; // Skip events other than the best cand (or CR candidates in the CR)
+    
+    FillCandidate(*cand, evtPassTrigger&&evtPassSkim, event, -1, true);
+    
+    // Fill the candidate as one entry in the tree. Do not reinitialize the event variables, as in CRs
+    // there could be several candidates per event.
+    // myTree->FillCurrentTree();
+    ++nFilled;
+  } 
+  for( edm::View<pat::CompositeCandidate>::const_iterator cand = cands->begin(); cand != cands->end(); ++cand) {
+    size_t icand= cand-cands->begin();
+    
+    if (!( theChannel==ZL || CRFLAG[icand] || (bool)(cand->userFloat("isBestCand")) )) continue; // Skip events other than the best cand (or CR candidates in the CR)
+    
+    //For the SR, also fold information about acceptance in CRflag. 
+    if (isMC && (theChannel==ZZ)) {
+      if (gen_ZZ2l2qInEtaAcceptance)   set_bit(CRFLAG[icand],28);
+      if (gen_ZZ2l2qInEtaPtAcceptance) set_bit(CRFLAG[icand],29);
     }
-  } else {
-     for( edm::View<pat::CompositeCandidate>::const_iterator cand = cands->begin(); cand != cands->end(); ++cand) {
-      size_t icand= cand-cands->begin();
-
-      if (!( theChannel==ZL || CRFLAG[icand] || (bool)(cand->userFloat("isBestCand")) )) continue; // Skip events other than the best cand (or CR candidates in the CR)
-      
-      //For the SR, also fold information about acceptance in CRflag. 
-      if (isMC && (theChannel==ZZ)) {
-	if (gen_ZZ2l2qInEtaAcceptance)   set_bit(CRFLAG[icand],28);
-	if (gen_ZZ2l2qInEtaPtAcceptance) set_bit(CRFLAG[icand],29);
-      }
-      FillCandidate(*cand, evtPassTrigger&&evtPassSkim, event, CRFLAG[icand], false);
-      
-      // Fill the candidate as one entry in the tree. Do not reinitialize the event variables, as in CRs
-      // there could be several candidates per event.
-      myTree->FillCurrentTree();
-      ++nFilled;
-    }
+    FillCandidate(*cand, evtPassTrigger&&evtPassSkim, event, CRFLAG[icand], false);
+    
+    // Fill the candidate as one entry in the tree. Do not reinitialize the event variables, as in CRs
+    // there could be several candidates per event.
+    // myTree->FillCurrentTree();
+    ++nFilled;
   }
-  
+
   // If no candidate was filled but we still want to keep gen-level and weights, we need to fill one entry anyhow.
-  if (skipEmptyEvents==false && nFilled==0)myTree->FillCurrentTree(); 
+  if (skipEmptyEvents==false || nFilled>0)myTree->FillCurrentTree(); 
 }
 
 
@@ -990,49 +987,46 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
   ExtraLepEta.clear(); 
   ExtraLepPhi.clear();
   ExtraLepLepId.clear();
-
-  CRflag = CRFLAG;
+       
+  CRflag.push_back((short)CRFLAG);
 
   if(theChannel!=ZL){
 
-    //FIXME: Dobbiamo salvare info su qualita' del fit a H?
-    //Chi2 e chi2constr
-
     //Fill the info on the Higgs candidate
-    ZZMass = cand.p4().mass();
-    // ZZMassErr = cand.userFloat("massError");
-    // ZZMassErrCorr = cand.userFloat("massErrorCorr");
-    ZZMassPreFSR = cand.userFloat("m4l");
+    ZZMass.push_back(cand.p4().mass());
+    // ZZMassErr.push_back(cand.userFloat("massError"));
+    // ZZMassErrCorr.push_back(cand.userFloat("massErrorCorr"));
+    ZZMassPreFSR.push_back(cand.userFloat("m4l"));
 
-    ZZPt  = cand.p4().pt();
-    ZZEta = cand.p4().eta();
-    ZZPhi = cand.p4().phi();
+    ZZPt.push_back(cand.p4().pt());
+    ZZEta.push_back(cand.p4().eta());
+    ZZPhi.push_back(cand.p4().phi());
 
     if(addKinRefit && !isMerged){
-      ZZMassRefit = cand.userFloat("ZZMassRefit");
-      ZZMassRefitErr = cand.userFloat("ZZMassRefitErr");
-      ZZMassUnrefitErr = cand.userFloat("ZZMassUnrefitErr");
+      ZZMassRefit.push_back(cand.userFloat("ZZMassRefit"));
+      ZZMassRefitErr.push_back(cand.userFloat("ZZMassRefitErr"));
+      ZZMassUnrefitErr.push_back(cand.userFloat("ZZMassUnrefitErr"));
     }
     if(addVtxFit && !isMerged){
-      ZZMassCFit = cand.userFloat("CFitM");
-      ZZChi2CFit = cand.userFloat("CFitChi2");
+      ZZMassCFit.push_back(cand.userFloat("CFitM"));
+      ZZChi2CFit.push_back(cand.userFloat("CFitChi2"));
     }
 
-    DiJetMass  = cand.userFloat("DiJetMass");
-    DiJetDEta  = cand.userFloat("DiJetDEta");
+    DiJetMass = cand.userFloat("DiJetMass");
+    DiJetDEta = cand.userFloat("DiJetDEta");
     DiJetFisher  = cand.userFloat("DiJetFisher");
     //    DiJetMassPlus  = cand.userFloat("DiJetMassPlus");
     //    DiJetMassMinus  = cand.userFloat("DiJetMassMinus");
 
     //Fill the angular variables
-    helcosthetaZ1 = cand.userFloat("costheta1");
-    helcosthetaZ2 = cand.userFloat("costheta2");
-    helphi       = cand.userFloat("phi");
-    costhetastar = cand.userFloat("costhetastar");
-    phistarZ1      = cand.userFloat("phistar1");
-    //phistarZ2      = cand.userFloat("phistar2");
-    xi            = cand.userFloat("xi");
-    xistar        = cand.userFloat("xistar");
+    helcosthetaZ1.push_back(cand.userFloat("costheta1"));
+    helcosthetaZ2.push_back(cand.userFloat("costheta2"));
+    helphi      .push_back(cand.userFloat("phi"));
+    costhetastar.push_back(cand.userFloat("costhetastar"));
+    phistarZ1     .push_back(cand.userFloat("phistar1"));
+    //phistarZ2     .push_back(cand.userFloat("phistar2"));
+    xi           .push_back(cand.userFloat("xi"));
+    xistar       .push_back(cand.userFloat("xistar"));
    
 
     //Float_t ZZLD = cand.userFloat("LD");
@@ -1048,136 +1042,136 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
     //Float_t p0plus_mela = cand.userFloat("p0plus_mela");
     //Float_t p0minus_mela = cand.userFloat("p0minus_mela");
     //Float_t p0hplus_mela = cand.userFloat("p0hplus_mela"); // 0h+, analytic distribution
-    p0plus_VAJHU = cand.userFloat("p0plus_VAJHU");
-    p0minus_VAJHU = cand.userFloat("p0minus_VAJHU");
-    p0plus_VAMCFM = cand.userFloat("p0plus_VAMCFM");
-    p0hplus_VAJHU = cand.userFloat("p0hplus_VAJHU"); // 0h+ (high dimensional operator), vector algebra, JHUgen
+    p0plus_VAJHU.push_back(cand.userFloat("p0plus_VAJHU"));
+    p0minus_VAJHU.push_back(cand.userFloat("p0minus_VAJHU"));
+    p0plus_VAMCFM.push_back(cand.userFloat("p0plus_VAMCFM"));
+    p0hplus_VAJHU.push_back(cand.userFloat("p0hplus_VAJHU")); // 0h+ (high dimensional operator), vector algebra, JHUgen
     //Float_t p1_mela = cand.userFloat("p1_mela");
     //Float_t p1_prodIndep_mela = cand.userFloat("p1_prodIndep_mela");
     //Float_t p1plus_mela = cand.userFloat("p1plus_mela"); // 1+, analytic distribution 
     //Float_t p1plus_prodIndep_mela = cand.userFloat("p1plus_prodIndep_mela"); // 1+, analytic distribution 
-    p1_VAJHU = cand.userFloat("p1_VAJHU");
-    p1_prodIndep_VAJHU = cand.userFloat("p1_prodIndep_VAJHU");
-    p1plus_VAJHU = cand.userFloat("p1plus_VAJHU"); // 1+ (axial vector), vector algebra, JHUgen,
-    p1plus_prodIndep_VAJHU = cand.userFloat("p1plus_prodIndep_VAJHU"); // 1+ (axial vector), vector algebra, JHUgen,
+    p1_VAJHU.push_back(cand.userFloat("p1_VAJHU"));
+    p1_prodIndep_VAJHU.push_back(cand.userFloat("p1_prodIndep_VAJHU"));
+    p1plus_VAJHU.push_back(cand.userFloat("p1plus_VAJHU")); // 1+ (axial vector), vector algebra, JHUgen,
+    p1plus_prodIndep_VAJHU.push_back(cand.userFloat("p1plus_prodIndep_VAJHU")); // 1+ (axial vector), vector algebra, JHUgen,
     //Float_t p2_mela  = cand.userFloat("p2_mela");
     //Float_t p2_prodIndep_mela  = cand.userFloat("p2_prodIndep_mela");
     //Float_t p2qqb_mela = cand.userFloat("p2qqb_mela"); // graviton produced by qqbar vector algebra, analytical,
     //Float_t p2hplus_mela = cand.userFloat("p2hplus_mela"); // graviton produced by qqbar vector algebra, analytical,
     //Float_t p2hminus_mela = cand.userFloat("p2hminus_mela"); // graviton produced by qqbar vector algebra, analytical,
     //Float_t p2bplus_mela = cand.userFloat("p2bplus_mela"); // graviton produced by qqbar vector algebra, analytical,
-    p2_VAJHU = cand.userFloat("p2_VAJHU");
-    p2_prodIndep_VAJHU = cand.userFloat("p2_prodIndep_VAJHU");
-    p2qqb_VAJHU = cand.userFloat("p2qqb_VAJHU");
-    p2hplus_VAJHU = cand.userFloat("p2hplus_VAJHU");
-    p2hminus_VAJHU = cand.userFloat("p2hminus_VAJHU");
-    p2bplus_VAJHU = cand.userFloat("p2bplus_VAJHU");
-    p2hplus_qqb_VAJHU= cand.userFloat(           "p2hplus_qqb_VAJHU");
-    p2hplus_prodIndep_VAJHU= cand.userFloat(     "p2hplus_prodIndep_VAJHU");
-    p2hminus_qqb_VAJHU= cand.userFloat(          "p2hminus_qqb_VAJHU");
-    p2hminus_prodIndep_VAJHU= cand.userFloat(    "p2hminus_prodIndep_VAJHU");
-    p2bplus_qqb_VAJHU= cand.userFloat(           "p2bplus_qqb_VAJHU");
-    p2bplus_prodIndep_VAJHU= cand.userFloat(     "p2bplus_prodIndep_VAJHU");
-    p2h2plus_gg_VAJHU= cand.userFloat(           "p2h2plus_gg_VAJHU");
-    p2h2plus_qqbar_VAJHU= cand.userFloat(        "p2h2plus_qqbar_VAJHU");
-    p2h2plus_prodIndep_VAJHU= cand.userFloat(    "p2h2plus_prodIndep_VAJHU");
-    p2h3plus_gg_VAJHU= cand.userFloat(           "p2h3plus_gg_VAJHU"       );
-    p2h3plus_qqbar_VAJHU= cand.userFloat(        "p2h3plus_qqbar_VAJHU"    );
-    p2h3plus_prodIndep_VAJHU= cand.userFloat(    "p2h3plus_prodIndep_VAJHU");
-    p2h6plus_gg_VAJHU= cand.userFloat(           "p2h6plus_gg_VAJHU"       );
-    p2h6plus_qqbar_VAJHU= cand.userFloat(        "p2h6plus_qqbar_VAJHU"    );
-    p2h6plus_prodIndep_VAJHU= cand.userFloat(    "p2h6plus_prodIndep_VAJHU");
-    p2h7plus_gg_VAJHU= cand.userFloat(           "p2h7plus_gg_VAJHU"       );
-    p2h7plus_qqbar_VAJHU= cand.userFloat(        "p2h7plus_qqbar_VAJHU"    );
-    p2h7plus_prodIndep_VAJHU= cand.userFloat(    "p2h7plus_prodIndep_VAJHU");
-    p2h9minus_gg_VAJHU= cand.userFloat(          "p2h9minus_gg_VAJHU"       );
-    p2h9minus_qqbar_VAJHU= cand.userFloat(       "p2h9minus_qqbar_VAJHU"    );
-    p2h9minus_prodIndep_VAJHU= cand.userFloat(   "p2h9minus_prodIndep_VAJHU");
-    p2h10minus_gg_VAJHU= cand.userFloat(         "p2h10minus_gg_VAJHU"      ); 
-    p2h10minus_qqbar_VAJHU= cand.userFloat(      "p2h10minus_qqbar_VAJHU"   ); 
-    p2h10minus_prodIndep_VAJHU= cand.userFloat(  "p2h10minus_prodIndep_VAJHU"); 
-    // bkg_mela = cand.userFloat("bkg_mela");
-    bkg_VAMCFM = cand.userFloat("bkg_VAMCFM");
-    bkg_prodIndep_VAMCFM = cand.userFloat("bkg_prodIndep_VAMCFM");
-    ggzz_VAMCFM = cand.userFloat("ggzz_VAMCFM");
-    ggzz_p0plus_VAMCFM = cand.userFloat("ggzz_p0plus_VAMCFM");
-    ggzz_c1_VAMCFM = cand.userFloat("ggzz_c1_VAMCFM");
-    ggzz_c5_VAMCFM = cand.userFloat("ggzz_c5_VAMCFM");
-    ggzz_ci_VAMCFM = cand.userFloat("ggzz_ci_VAMCFM");
-    // bkg_VAMCFMNorm = cand.userFloat("bkg_VAMCFMNorm");
-    // p0_pt = cand.userFloat("p0_pt");
-    // p0_y = cand.userFloat("p0_y");
-    // bkg_pt = cand.userFloat("bkg_pt");
-    // bkg_y = cand.userFloat("bkg_y");
+    p2_VAJHU.push_back(cand.userFloat("p2_VAJHU"));
+    p2_prodIndep_VAJHU.push_back(cand.userFloat("p2_prodIndep_VAJHU"));
+    p2qqb_VAJHU.push_back(cand.userFloat("p2qqb_VAJHU"));
+    p2hplus_VAJHU.push_back(cand.userFloat("p2hplus_VAJHU"));
+    p2hminus_VAJHU.push_back(cand.userFloat("p2hminus_VAJHU"));
+    p2bplus_VAJHU.push_back(cand.userFloat("p2bplus_VAJHU"));
+    p2hplus_qqb_VAJHU.push_back(cand.userFloat(           "p2hplus_qqb_VAJHU"));
+    p2hplus_prodIndep_VAJHU.push_back(cand.userFloat(     "p2hplus_prodIndep_VAJHU"));
+    p2hminus_qqb_VAJHU.push_back(cand.userFloat(          "p2hminus_qqb_VAJHU"));
+    p2hminus_prodIndep_VAJHU.push_back(cand.userFloat(    "p2hminus_prodIndep_VAJHU"));
+    p2bplus_qqb_VAJHU.push_back(cand.userFloat(           "p2bplus_qqb_VAJHU"));
+    p2bplus_prodIndep_VAJHU.push_back(cand.userFloat(     "p2bplus_prodIndep_VAJHU"));
+    p2h2plus_gg_VAJHU.push_back(cand.userFloat(           "p2h2plus_gg_VAJHU"));
+    p2h2plus_qqbar_VAJHU.push_back(cand.userFloat(        "p2h2plus_qqbar_VAJHU"));
+    p2h2plus_prodIndep_VAJHU.push_back(cand.userFloat(    "p2h2plus_prodIndep_VAJHU"));
+    p2h3plus_gg_VAJHU.push_back(cand.userFloat(           "p2h3plus_gg_VAJHU"       ));
+    p2h3plus_qqbar_VAJHU.push_back(cand.userFloat(        "p2h3plus_qqbar_VAJHU"    ));
+    p2h3plus_prodIndep_VAJHU.push_back(cand.userFloat(    "p2h3plus_prodIndep_VAJHU"));
+    p2h6plus_gg_VAJHU.push_back(cand.userFloat(           "p2h6plus_gg_VAJHU"       ));
+    p2h6plus_qqbar_VAJHU.push_back(cand.userFloat(        "p2h6plus_qqbar_VAJHU"    ));
+    p2h6plus_prodIndep_VAJHU.push_back(cand.userFloat(    "p2h6plus_prodIndep_VAJHU"));
+    p2h7plus_gg_VAJHU.push_back(cand.userFloat(           "p2h7plus_gg_VAJHU"       ));
+    p2h7plus_qqbar_VAJHU.push_back(cand.userFloat(        "p2h7plus_qqbar_VAJHU"    ));
+    p2h7plus_prodIndep_VAJHU.push_back(cand.userFloat(    "p2h7plus_prodIndep_VAJHU"));
+    p2h9minus_gg_VAJHU.push_back(cand.userFloat(          "p2h9minus_gg_VAJHU"       ));
+    p2h9minus_qqbar_VAJHU.push_back(cand.userFloat(       "p2h9minus_qqbar_VAJHU"    ));
+    p2h9minus_prodIndep_VAJHU.push_back(cand.userFloat(   "p2h9minus_prodIndep_VAJHU"));
+    p2h10minus_gg_VAJHU.push_back(cand.userFloat(         "p2h10minus_gg_VAJHU"      )); 
+    p2h10minus_qqbar_VAJHU.push_back(cand.userFloat(      "p2h10minus_qqbar_VAJHU"   )); 
+    p2h10minus_prodIndep_VAJHU.push_back(cand.userFloat(  "p2h10minus_prodIndep_VAJHU")); 
+    // bkg_mela.push_back(cand.userFloat("bkg_mela"));
+    bkg_VAMCFM.push_back(cand.userFloat("bkg_VAMCFM"));
+    bkg_prodIndep_VAMCFM.push_back(cand.userFloat("bkg_prodIndep_VAMCFM"));
+    ggzz_VAMCFM.push_back(cand.userFloat("ggzz_VAMCFM"));
+    ggzz_p0plus_VAMCFM.push_back(cand.userFloat("ggzz_p0plus_VAMCFM"));
+    ggzz_c1_VAMCFM.push_back(cand.userFloat("ggzz_c1_VAMCFM"));
+    ggzz_c5_VAMCFM.push_back(cand.userFloat("ggzz_c5_VAMCFM"));
+    ggzz_ci_VAMCFM.push_back(cand.userFloat("ggzz_ci_VAMCFM"));
+    // bkg_VAMCFMNorm = cand.userFloat("bkg_VAMCFMNorm"));
+    // p0_pt = cand.userFloat("p0_pt"));
+    // p0_y = cand.userFloat("p0_y"));
+    // bkg_pt = cand.userFloat("bkg_pt"));
+    // bkg_y = cand.userFloat("bkg_y"));
 
-    pg1g4_mela = cand.userFloat("pg1g4_mela");
-    pg1g4_VAJHU = cand.userFloat("pg1g4_VAJHU");
-    pg1g4_pi2_VAJHU = cand.userFloat("pg1g4_pi2_VAJHU");
-    pg1g2_pi2_VAJHU = cand.userFloat("pg1g2_pi2_VAJHU");
-    pg1g2_mela = cand.userFloat("pg1g2_mela");
-    pg1g2_VAJHU = cand.userFloat("pg1g2_VAJHU");
-    p0_g1prime2_VAJHU = cand.userFloat("p0_g1prime2_VAJHU");
-    pg1g1prime2_VAJHU = cand.userFloat("pg1g1prime2_VAJHU");
-    Dgg10_VAMCFM = cand.userFloat("Dgg10_VAMCFM");
-    pzzzg_VAJHU = cand.userFloat("pzzzg_VAJHU");
-    pzzgg_VAJHU = cand.userFloat("pzzgg_VAJHU");
-    pzzzg_PS_VAJHU = cand.userFloat("pzzzg_PS_VAJHU");
-    pzzgg_PS_VAJHU = cand.userFloat("pzzgg_PS_VAJHU");
-    p0Zgs_VAJHU = cand.userFloat("p0Zgs_VAJHU");
-    p0gsgs_VAJHU = cand.userFloat("p0gsgs_VAJHU");
-    p0Zgs_PS_VAJHU = cand.userFloat("p0Zgs_PS_VAJHU");
-    p0gsgs_PS_VAJHU = cand.userFloat("p0gsgs_PS_VAJHU");
-    p0Zgs_g1prime2_VAJHU = cand.userFloat("p0Zgs_g1prime2_VAJHU");
-    pzzzg_g1prime2_VAJHU = cand.userFloat("pzzzg_g1prime2_VAJHU");
-    pzzzg_g1prime2_pi2_VAJHU = cand.userFloat("pzzzg_g1prime2_pi2_VAJHU");
+    pg1g4_mela.push_back(cand.userFloat("pg1g4_mela"));
+    pg1g4_VAJHU.push_back(cand.userFloat("pg1g4_VAJHU"));
+    pg1g4_pi2_VAJHU.push_back(cand.userFloat("pg1g4_pi2_VAJHU"));
+    pg1g2_pi2_VAJHU.push_back(cand.userFloat("pg1g2_pi2_VAJHU"));
+    pg1g2_mela.push_back(cand.userFloat("pg1g2_mela"));
+    pg1g2_VAJHU.push_back(cand.userFloat("pg1g2_VAJHU"));
+    p0_g1prime2_VAJHU.push_back(cand.userFloat("p0_g1prime2_VAJHU"));
+    pg1g1prime2_VAJHU.push_back(cand.userFloat("pg1g1prime2_VAJHU"));
+    Dgg10_VAMCFM.push_back(cand.userFloat("Dgg10_VAMCFM"));
+    pzzzg_VAJHU.push_back(cand.userFloat("pzzzg_VAJHU"));
+    pzzgg_VAJHU.push_back(cand.userFloat("pzzgg_VAJHU"));
+    pzzzg_PS_VAJHU.push_back(cand.userFloat("pzzzg_PS_VAJHU"));
+    pzzgg_PS_VAJHU.push_back(cand.userFloat("pzzgg_PS_VAJHU"));
+    p0Zgs_VAJHU.push_back(cand.userFloat("p0Zgs_VAJHU"));
+    p0gsgs_VAJHU.push_back(cand.userFloat("p0gsgs_VAJHU"));
+    p0Zgs_PS_VAJHU.push_back(cand.userFloat("p0Zgs_PS_VAJHU"));
+    p0gsgs_PS_VAJHU.push_back(cand.userFloat("p0gsgs_PS_VAJHU"));
+    p0Zgs_g1prime2_VAJHU.push_back(cand.userFloat("p0Zgs_g1prime2_VAJHU"));
+    pzzzg_g1prime2_VAJHU.push_back(cand.userFloat("pzzzg_g1prime2_VAJHU"));
+    pzzzg_g1prime2_pi2_VAJHU.push_back(cand.userFloat("pzzzg_g1prime2_pi2_VAJHU"));
 
-    p0plus_m2l2q = cand.userFloat("p0plus_m4l");
-    bkg_m2l2q = cand.userFloat("bkg_m4l");
-    p0plus_m2l2q_ScaleUp = cand.userFloat("p0plus_m4l_ScaleUp");// signal m2l2q probability for systematics
-    bkg_m2l2q_ScaleUp = cand.userFloat("bkg_m4l_ScaleUp");// backgroun m2l2q probability for systematics
-    p0plus_m2l2q_ScaleDown = cand.userFloat("p0plus_m4l_ScaleDown");// signal m2l2q probability for systematics
-    bkg_m2l2q_ScaleDown = cand.userFloat("bkg_m4l_ScaleDown");// backgroun m2l2q probability for systematics
-    p0plus_m2l2q_ResUp = cand.userFloat("p0plus_m4l_ResUp");// signal m2l2q probability for systematics
-    bkg_m2l2q_ResUp = cand.userFloat("bkg_m4l_ResUp");// backgroun m2l2q probability for systematics
-    p0plus_m2l2q_ResDown = cand.userFloat("p0plus_m4l_ResDown");// signal m2l2q probability for systematics
-    bkg_m2l2q_ResDown = cand.userFloat("bkg_m4l_ResDown");// backgroun m2l2q probability for systematics
+    p0plus_m2l2q.push_back(cand.userFloat("p0plus_m4l"));
+    bkg_m2l2q.push_back(cand.userFloat("bkg_m4l"));
+    p0plus_m2l2q_ScaleUp.push_back(cand.userFloat("p0plus_m4l_ScaleUp"));// signal m2l2q probability for systematics
+    bkg_m2l2q_ScaleUp.push_back(cand.userFloat("bkg_m4l_ScaleUp"));// backgroun m2l2q probability for systematics
+    p0plus_m2l2q_ScaleDown.push_back(cand.userFloat("p0plus_m4l_ScaleDown"));// signal m2l2q probability for systematics
+    bkg_m2l2q_ScaleDown.push_back(cand.userFloat("bkg_m4l_ScaleDown"));// backgroun m2l2q probability for systematics
+    p0plus_m2l2q_ResUp.push_back(cand.userFloat("p0plus_m4l_ResUp"));// signal m2l2q probability for systematics
+    bkg_m2l2q_ResUp.push_back(cand.userFloat("bkg_m4l_ResUp"));// backgroun m2l2q probability for systematics
+    p0plus_m2l2q_ResDown.push_back(cand.userFloat("p0plus_m4l_ResDown"));// signal m2l2q probability for systematics
+    bkg_m2l2q_ResDown.push_back(cand.userFloat("bkg_m4l_ResDown"));// backgroun m2l2q probability for systematics
 
-    phjj_VAJHU_old = cand.userFloat("phjj_VAJHU_old");
-    pvbf_VAJHU_old = cand.userFloat("pvbf_VAJHU_old");
-    phjj_VAJHU_old_up = cand.userFloat("phjj_VAJHU_old_up");
-    pvbf_VAJHU_old_up = cand.userFloat("pvbf_VAJHU_old_up");
-    phjj_VAJHU_old_dn = cand.userFloat("phjj_VAJHU_old_dn");
-    pvbf_VAJHU_old_dn = cand.userFloat("pvbf_VAJHU_old_dn");
-    phjj_VAJHU_new = cand.userFloat("phjj_VAJHU_new");
-    pvbf_VAJHU_new = cand.userFloat("pvbf_VAJHU_new");
-    phjj_VAJHU_new_up = cand.userFloat("phjj_VAJHU_new_up");
-    pvbf_VAJHU_new_up = cand.userFloat("pvbf_VAJHU_new_up");
-    phjj_VAJHU_new_dn = cand.userFloat("phjj_VAJHU_new_dn");
-    pvbf_VAJHU_new_dn = cand.userFloat("pvbf_VAJHU_new_dn");
+    phjj_VAJHU_old.push_back(cand.userFloat("phjj_VAJHU_old"));
+    pvbf_VAJHU_old.push_back(cand.userFloat("pvbf_VAJHU_old"));
+    phjj_VAJHU_old_up.push_back(cand.userFloat("phjj_VAJHU_old_up"));
+    pvbf_VAJHU_old_up.push_back(cand.userFloat("pvbf_VAJHU_old_up"));
+    phjj_VAJHU_old_dn.push_back(cand.userFloat("phjj_VAJHU_old_dn"));
+    pvbf_VAJHU_old_dn.push_back(cand.userFloat("pvbf_VAJHU_old_dn"));
+    phjj_VAJHU_new.push_back(cand.userFloat("phjj_VAJHU_new"));
+    pvbf_VAJHU_new.push_back(cand.userFloat("pvbf_VAJHU_new"));
+    phjj_VAJHU_new_up.push_back(cand.userFloat("phjj_VAJHU_new_up"));
+    pvbf_VAJHU_new_up.push_back(cand.userFloat("pvbf_VAJHU_new_up"));
+    phjj_VAJHU_new_dn.push_back(cand.userFloat("phjj_VAJHU_new_dn"));
+    pvbf_VAJHU_new_dn.push_back(cand.userFloat("pvbf_VAJHU_new_dn"));
 
-    pAux_vbf_VAJHU = cand.userFloat("pAux_vbf_VAJHU");
-    pAux_vbf_VAJHU_up = cand.userFloat("pAux_vbf_VAJHU_up");
-    pAux_vbf_VAJHU_dn = cand.userFloat("pAux_vbf_VAJHU_dn");
+    pAux_vbf_VAJHU.push_back(cand.userFloat("pAux_vbf_VAJHU"));
+    pAux_vbf_VAJHU_up.push_back(cand.userFloat("pAux_vbf_VAJHU_up"));
+    pAux_vbf_VAJHU_dn.push_back(cand.userFloat("pAux_vbf_VAJHU_dn"));
 
-    phj_VAJHU = cand.userFloat("phj_VAJHU");
-    phj_VAJHU_up = cand.userFloat("phj_VAJHU_up");
-    phj_VAJHU_dn = cand.userFloat("phj_VAJHU_dn");
+    phj_VAJHU.push_back(cand.userFloat("phj_VAJHU"));
+    phj_VAJHU_up.push_back(cand.userFloat("phj_VAJHU_up"));
+    phj_VAJHU_dn.push_back(cand.userFloat("phj_VAJHU_dn"));
+    
+    pwh_hadronic_VAJHU.push_back(cand.userFloat("pwh_hadronic_VAJHU"));
+    pwh_hadronic_VAJHU_up.push_back(cand.userFloat("pwh_hadronic_VAJHU_up"));
+    pwh_hadronic_VAJHU_dn.push_back(cand.userFloat("pwh_hadronic_VAJHU_dn"));
 
-    pwh_hadronic_VAJHU = cand.userFloat("pwh_hadronic_VAJHU");
-    pwh_hadronic_VAJHU_up = cand.userFloat("pwh_hadronic_VAJHU_up");
-    pwh_hadronic_VAJHU_dn = cand.userFloat("pwh_hadronic_VAJHU_dn");
+    pzh_hadronic_VAJHU.push_back(cand.userFloat("pzh_hadronic_VAJHU"));
+    pzh_hadronic_VAJHU_up.push_back(cand.userFloat("pzh_hadronic_VAJHU_up"));
+    pzh_hadronic_VAJHU_dn.push_back(cand.userFloat("pzh_hadronic_VAJHU_dn"));
 
-    pzh_hadronic_VAJHU = cand.userFloat("pzh_hadronic_VAJHU");
-    pzh_hadronic_VAJHU_up = cand.userFloat("pzh_hadronic_VAJHU_up");
-    pzh_hadronic_VAJHU_dn = cand.userFloat("pzh_hadronic_VAJHU_dn");
+    ptth_VAJHU.push_back(cand.userFloat("ptth_VAJHU"));
+    ptth_VAJHU_up.push_back(cand.userFloat("ptth_VAJHU_up"));
+    ptth_VAJHU_dn.push_back(cand.userFloat("ptth_VAJHU_dn"));
 
-    ptth_VAJHU = cand.userFloat("ptth_VAJHU");
-    ptth_VAJHU_up = cand.userFloat("ptth_VAJHU_up");
-    ptth_VAJHU_dn = cand.userFloat("ptth_VAJHU_dn");
-
-    pbbh_VAJHU = cand.userFloat("pbbh_VAJHU");
-    pbbh_VAJHU_up = cand.userFloat("pbbh_VAJHU_up");
-    pbbh_VAJHU_dn = cand.userFloat("pbbh_VAJHU_dn");
+    pbbh_VAJHU.push_back(cand.userFloat("pbbh_VAJHU"));
+    pbbh_VAJHU_up.push_back(cand.userFloat("pbbh_VAJHU_up"));
+    pbbh_VAJHU_dn.push_back(cand.userFloat("pbbh_VAJHU_dn"));
 
   }
 
@@ -1190,8 +1184,8 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
   vector<string> labels;
 
   if (theChannel!=ZL) { // Regular 2l2q candidates
-    Z1   = cand.daughter("Z1");
-    Z2   = cand.daughter("Z2");
+    Z1  = cand.daughter("Z1");
+    Z2  = cand.daughter("Z2");
     userdatahelpers::getSortedJetsAndLeptons(cand, leptons, labels, fsrPhot, fsrIndex);
   } else {              // Special handling of Z+l candidates 
     Z1   = cand.daughter(0); // the Z
@@ -1199,33 +1193,38 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
     userdatahelpers::getSortedJetsAndLeptons(cand, leptons, labels, fsrPhot, fsrIndex); // note: we get just 3 leptons in this case.
   }
 
-  if (isMerged) Z1Mass = cand.userFloat("d0.ak8PFJetsCHSCorrPrunedMass");
-  else Z1Mass = Z1->mass();
-  Z1tau21 = 0.;
-  if (isMerged) Z1tau21 = cand.userFloat("d0.NjettinessAK8:tau2")/cand.userFloat("d0.NjettinessAK8:tau1");
-  if ((isMerged && Z1Mass > 65. && Z1Mass < 105.) || (!isMerged && Z1Mass > 75. && Z1Mass < 115.)) ZZCandType = 1;
-  else ZZCandType = -1;
-  if (!isMerged) ZZCandType *= 2;
+  if (isMerged) Z1Mass.push_back(cand.userFloat("d0.ak8PFJetsCHSCorrPrunedMass"));
+  else Z1Mass.push_back(Z1->mass());
 
-  Z1Pt =   Z1->pt();
-  Z1Flav = abs(Z1->daughter(0)->pdgId()) * Z1->daughter(0)->charge() * abs(Z1->daughter(1)->pdgId()) * Z1->daughter(1)->charge(); // FIXME: temporarily changed, waiting for a fix to the mismatch of charge() and pdgId() for muons with BTT=4
+  float thisZ1tau21 = 0.;
+  if (isMerged) thisZ1tau21 = cand.userFloat("d0.NjettinessAK8:tau2")/cand.userFloat("d0.NjettinessAK8:tau1");
+  Z1tau21.push_back(thisZ1tau21);
+
+  short int thisZZCandType = 0;
+  if ((isMerged && Z1Mass.back() > 65. && Z1Mass.back() < 105.) || (!isMerged && Z1Mass.back() > 75. && Z1Mass.back() < 115.)) thisZZCandType = 1;
+  else thisZZCandType = -1;
+  if (!isMerged) thisZZCandType *= 2;
+  ZZCandType.push_back(thisZZCandType);
+
+  Z1Pt.push_back(  Z1->pt());
+  Z1Flav.push_back(abs(Z1->daughter(0)->pdgId()) * Z1->daughter(0)->charge() * abs(Z1->daughter(1)->pdgId()) * Z1->daughter(1)->charge()); // FIXME: temporarily changed, waiting for a fix to the mismatch of charge() and pdgId() for muons with BTT=4
   
-  Z2Mass = Z2->mass();
-  Z2Pt =   Z2->pt();
-  Z2Flav = theChannel==ZL ? 0 : abs(Z2->daughter(0)->pdgId()) * Z2->daughter(0)->charge() * abs(Z2->daughter(1)->pdgId()) * Z2->daughter(1)->charge(); // FIXME: temporarily changed, waiting for a fix to the mismatch of charge() and pdgId() for muons with BTT=4
+  Z2Mass.push_back(Z2->mass());
+  Z2Pt.push_back(  Z2->pt());
+  Z2Flav.push_back(theChannel==ZL ? 0 : abs(Z2->daughter(0)->pdgId()) * Z2->daughter(0)->charge() * abs(Z2->daughter(1)->pdgId()) * Z2->daughter(1)->charge()); // FIXME: temporarily changed, waiting for a fix to the mismatch of charge() and pdgId() for muons with BTT=4
 
   Int_t sel = 0;
   if(theChannel==ZZ){
 
     // Precomputed selections
     bool candPass70Z2Loose = cand.userFloat("Z2Mass") && 
-                             cand.userFloat("MAllComb") &&
-                             cand.userFloat("pt1")>20 && cand.userFloat("pt2")>10. &&
-                             ZZMass>70.;
+      cand.userFloat("MAllComb") &&
+      cand.userFloat("pt1")>20 && cand.userFloat("pt2")>10. &&
+      ZZMass.back()>70.;
     bool candPassFullSel70 = cand.userFloat("SR");
     bool candPassFullSel   = cand.userFloat("FullSel");
     bool candIsBest = cand.userFloat("isBestCand");
-    bool passMz_zz = (Z1Mass>60. && Z1Mass<120. && Z2Mass>60. && Z2Mass<120.);   //FIXME hardcoded cut
+    bool passMz_zz = (Z1Mass.back()>60. && Z1Mass.back()<120. && Z2Mass.back()>60. && Z2Mass.back()<120.);   //FIXME hardcoded cut
   
     if (candIsBest) {
       //    sel = 10; //FIXME see above
@@ -1345,7 +1344,7 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
     for(int izx=0;izx<2;izx++)
       ZXFakeweight *= getFakeWeight(Z2->daughter(izx)->pt(),Z2->daughter(izx)->eta(),Z2->daughter(izx)->pdgId(),Z1->daughter(0)->pdgId());
   }
-  ZZsel = sel;
+ZZsel.push_back(sel);
 
   /* if (theChannel!=ZL) {
     
