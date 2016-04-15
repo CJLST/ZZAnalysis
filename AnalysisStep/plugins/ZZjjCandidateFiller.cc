@@ -50,7 +50,7 @@
 
 using namespace zzanalysis;
 
-bool doKinFitJJ = true;
+// bool doKinFitJJ = true;
 
 class ZZjjCandidateFiller : public edm::EDProducer {
 public:
@@ -80,6 +80,7 @@ private:
   MEMs combinedMEM;
   Mela* myMela;
   bool embedDaughterFloats;
+  bool isMerged;
   // bool ZRolesByMass;
   reco::CompositeCandidate::role_collection rolesZ1Z2;  
   reco::CompositeCandidate::role_collection rolesZ2Z1;
@@ -95,6 +96,7 @@ private:
   edm::EDGetTokenT<vector<reco::MET> > METToken;
   edm::EDGetTokenT<edm::View<reco::Candidate> > softLeptonToken;
   edm::EDGetTokenT<edm::View<reco::CompositeCandidate> > ZCandToken;
+  std::string candidateLabel;
 };
 
 
@@ -116,6 +118,7 @@ ZZjjCandidateFiller::ZZjjCandidateFiller(const edm::ParameterSet& iConfig) :
   combinedMEM(SetupToSqrts(setup),superMelaMass,"CTEQ6L"),
   embedDaughterFloats(iConfig.getUntrackedParameter<bool>("embedDaughterFloats",true)),
   // ZRolesByMass(iConfig.getParameter<bool>("ZRolesByMass")),
+  isMerged(iConfig.getParameter<bool>("isMerged")),
   isMC(iConfig.getParameter<bool>("isMC")),
   recomputeIsoForFSR(iConfig.getParameter<bool>("recomputeIsoForFSR")),
   corrSigmaMu(0),
@@ -151,7 +154,7 @@ ZZjjCandidateFiller::ZZjjCandidateFiller(const edm::ParameterSet& iConfig) :
   
   string cmp=iConfig.getParameter<string>("bestCandComparator");
   if      (cmp=="byBestZ1bestZ2") bestCandType=Comparators::byBestZ1bestZ2;
-  else if (cmp=="byBestZqq")       bestCandType=Comparators::byBestZqq;
+  else if (cmp=="byBestZqq")      bestCandType=Comparators::byBestZqq;
   else if (cmp=="byBestKD")       bestCandType=Comparators::byBestKD;
   else if (cmp=="byBestKD_VH")    bestCandType=Comparators::byBestKD_VH;
   else if (cmp=="byBestPsig")    bestCandType=Comparators::byBestPsig;
@@ -185,7 +188,7 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     rhoForEle = *rhoHandle;
   }
 
-  // Get LLLL candidates
+  // Get LLLL candidates (both resolved and merged jets
   Handle<edm::View<CompositeCandidate> > LLLLCands;
   iEvent.getByToken(candidateToken, LLLLCands);
 
@@ -233,6 +236,7 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
   //----------------------------------------------------------------------
   //--- Loop over input candidates
   for( View<CompositeCandidate>::const_iterator cand = LLLLCands->begin(); cand != LLLLCands->end(); ++ cand ) {
+ 
     int icand = distance(LLLLCands->begin(),cand);
 
     pat::CompositeCandidate myCand(*cand);
@@ -261,12 +265,22 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     const reco::Candidate* Z1= myCand.daughter(0);
     const reco::Candidate* Z2= myCand.daughter(1);
     vector<const reco::Candidate*> Zs = {Z1, Z2}; // in the original order
-
+       
     //--- Lepton pointers in the original order
-    const reco::Candidate* Z1J1= Z1->daughter(0);
-    const reco::Candidate* Z1J2= Z1->daughter(1);
-    const reco::Candidate* Z2L1= Z2->daughter(0);
-    const reco::Candidate* Z2L2= Z2->daughter(1);
+    if (Z1->numberOfDaughters() < 2) continue;
+    const reco::Candidate* Z1J1 = Z1->daughter(0);
+    const reco::Candidate* Z1J2 = Z1->daughter(1);
+    // In miniAOD,daughters 1 and 2 are the soft-drop subjets if these exist, otherwise they are two random constituents. Check here that subjets are really there.
+    if (isMerged) {
+      const pat::Jet* testjet = dynamic_cast <const pat::Jet*> (Z1->masterClone().get());
+      if (testjet->hasSubjets("SoftDrop") ) {
+	const pat::JetPtrCollection subJets = testjet->subjets("SoftDrop");
+        if (subJets.size() != 2) continue;
+        if (fabs(Z1J1->pt() - subJets.at(0)->pt()) > 0.002) continue; 
+      }
+    }  
+    const reco::Candidate* Z2L1 = Z2->daughter(0);
+    const reco::Candidate* Z2L2 = Z2->daughter(1);
     vector<const reco::Candidate*> ZZLeps = {Z1J1,Z1J2,Z2L1,Z2L2}; // array, in the original order
 
     // Create corresponding array of fourmomenta; will add FSR (below)
@@ -961,15 +975,17 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     float ZZMassRefit = 0.;
     float ZZMassRefitErr = 0.;
     float ZZMassUnrefitErr = 0.;
-
-    if(doKinFitJJ){
+ 
+    if(!isMerged){
 
       vector<reco::Candidate *> selectedLeptons;
       std::map<unsigned int, TLorentzVector> selectedFsrMap;
 
       for(unsigned ilep=0; ilep<4; ilep++){
 
-	selectedLeptons.push_back((reco::Candidate*)(ZZLeps[ilep]->masterClone().get()));
+        reco::Candidate* oneLep = (reco::Candidate*)ZZLeps[ilep];
+        if (oneLep->hasMasterClone()) oneLep = (reco::Candidate*)oneLep->masterClone().get();
+	selectedLeptons.push_back(oneLep);
 
 	if(FSRMap.find(ZZLeps[ilep])!=FSRMap.end()){
 	  pat::PFParticle fsr = *(FSRMap[ZZLeps[ilep]]);
@@ -980,6 +996,7 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 
       }
 
+      
       kinZfitter->Setup(selectedLeptons, selectedFsrMap);
       kinZfitter->KinRefitZ1();
       
@@ -1102,7 +1119,7 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     myCand.addUserFloat("xi",             xi);      //azimuthal angle of higgs in lab frame
 
     myCand.addUserFloat("m4l",            (Z1Lm->p4()+Z1Lp->p4()+Z2Lm->p4()+Z2Lp->p4()).mass()); // mass without FSR
-    if(doKinFitJJ) {
+    if(!isMerged) {
       myCand.addUserFloat("ZZMassRefit"   , ZZMassRefit);
       myCand.addUserFloat("ZZMassRefitErr", ZZMassRefitErr);
       myCand.addUserFloat("ZZMassUnrefitErr", ZZMassUnrefitErr);
@@ -1245,7 +1262,6 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     myCand.addUserFloat("pbbh_VAJHU", pbbh_VAJHU);
     myCand.addUserFloat("pbbh_VAJHU_up", pbbh_VAJHU_up);
     myCand.addUserFloat("pbbh_VAJHU_dn", pbbh_VAJHU_dn);
-
 
     // VH
     // myCand.addUserFloat("pzh_VAJHU",pzh_VAJHU);

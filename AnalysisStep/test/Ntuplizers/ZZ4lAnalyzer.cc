@@ -396,7 +396,7 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
     edm::Handle<GenEventInfoProduct> genInfo;
     event.getByToken(genInfoToken, genInfo);
 
-    MCHistoryTools mch(event, sampleName, genParticles, genInfo);
+    MCHistoryTools mch(event, sampleName, genParticles, genInfo, true);
     genFinalState = mch.genFinalState();
 
     const reco::Candidate* genH = mch.genH();

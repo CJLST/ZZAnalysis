@@ -66,6 +66,11 @@ namespace userdatahelpers {
 			std::vector<const reco::Candidate*>& fsr,
 			std::vector<short>& fsrIndex);
 
+  void getSortedJetsAndLeptons(const pat::CompositeCandidate& cand, 
+			       std::vector<const reco::Candidate*>& leptons, 
+			       std::vector<std::string>& labels, 
+			       std::vector<const reco::Candidate*>& fsr,
+			       std::vector<short>& fsrIndex);
 
 }
 #endif

@@ -164,7 +164,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV")
   Short_t nJets;
   Short_t nJetsBTagged;
   vector<Float_t> *JetPt = 0;
-  vector<Short_t> *JetIsInZZCand = 0;
+  vector<bool> *JetIsInZZCand = 0;
   vector<Float_t> *JetBTagger = 0;
   vector<Float_t> *JetQGLikelihood = 0;
   Float_t helcosthetaZ1;  
@@ -252,7 +252,8 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV")
     //---------- Process tree
 
     Long64_t entries = inputTree[d]->GetEntries();
-    cout<<"Processing dataset "<<d<<" ("<<entries<<" entries of "<< NGenEvt[d] << ") ..."<<endl;
+    float eff = float(entries)/float(NGenEvt[d]);
+    cout<<"Processing dataset "<<d<<" ("<<entries<<" entries of "<< NGenEvt[d] << " = " << eff*100. << "%) ..."<<endl;
 
     for (Long64_t z=0; z<entries; ++z){
 
@@ -264,8 +265,46 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV")
       if (d==0) process=1;
       else if (d==1) process=2;
       else process=3;
-      
+
       Double_t eventWeight = ( lumin * 1000 * scaleF[process] / NGenEvt[d] ) * xsec ;// * overallEventWeight ;
+      if (z == 1) cout << "cross-section = " << xsec << " pb; eventweight = " << eventWeight << endl;       
+
+      // find leading lepton and leading jet
+      float pt1stJet = 0.0001;
+      float pt2ndJet = 0.0001;
+      int nInJets = 0;
+      int nExtraJets = 0;
+      for (unsigned int nJet=0; nJet<JetPt->size(); nJet++) {
+	if (JetIsInZZCand->at(nJet)) {
+	  if (pt1stJet < JetPt->at(nJet)) {
+            pt2ndJet = pt1stJet;
+	    pt1stJet = JetPt->at(nJet);
+	  } else if (pt2ndJet < JetPt->at(nJet)) {
+	    pt2ndJet = JetPt->at(nJet);
+	  }
+	  nInJets++;
+	} else
+	nExtraJets++;  
+      } 
+      /* if (nInJets!=2) cout << "nInJets " << nInJets << endl;
+	 cout << "nExtraJets " << nExtraJets << endl;  */
+
+      float pt1stLep = 0.0001;
+      float pt2ndLep = 0.0001;
+      for (unsigned int nLep=0; nLep<LepPt->size(); nLep++) {
+	if (pt1stLep < LepPt->at(nLep)) {
+	  pt2ndLep = pt1stLep;
+	  pt1stLep = LepPt->at(nLep);
+	} else if (pt2ndLep < LepPt->at(nLep)) {
+	  pt2ndLep = LepPt->at(nLep);
+	}
+      }  
+
+      // --cuts (change here)
+      if (pt1stJet < 150.) continue;
+      if (pt1stLep < 150.) continue;
+      if (ZZPt < 20.) continue;
+      if (Z1Mass < 70.) continue; 
 
       //----- fill histograms
 
@@ -278,21 +317,6 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV")
 	fsend=3;
       }
 
-      // --cuts (change here)
-      float pt1stJet = 0.;
-      for (unsigned int nJet=0; nJet<JetPt->size(); nJet++) {
-	if (JetIsInZZCand->at(nJet)) {
-	  if (pt1stJet < JetPt->at(nJet)) pt1stJet = JetPt->at(nJet);
-	}
-      }
-      if (pt1stJet < 150.) continue;
-      
-      float pt1stLep = 0.;
-      for (unsigned int nLep=0; nLep<LepPt->size(); nLep++) {
-	if (pt1stLep < LepPt->at(nLep)) pt1stLep = LepPt->at(nLep);
-      }
-      if (pt1stLep < 150.) continue;
-
       for(int rs=fsstart; rs<fsend; rs++){
 
 	h1[0][process][rs]->Fill(ZZMass,eventWeight);
@@ -303,48 +327,28 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV")
         h1[4][process][rs]->Fill(Z2Mass,eventWeight);
         h1[5][process][rs]->Fill(Z2Flav,eventWeight);
         
-        int nExtraJet = 0;
-        float pt1stJet = 0.;
+	h1[6][process][rs]->Fill(pt1stJet,eventWeight);
+        h1[7][process][rs]->Fill(pt2ndJet,eventWeight);
+
         for (unsigned int nJet=0; nJet<JetPt->size(); nJet++) {
-	  if (JetIsInZZCand->at(nJet)) {
-            h1[9][process][rs]->Fill(JetBTagger->at(nJet),eventWeight);
-            h1[8][process][rs]->Fill(JetQGLikelihood->at(nJet),eventWeight);
-	    if (pt1stJet < 0.0005) pt1stJet = JetPt->at(nJet);
-	    else {
-	      if (JetPt->at(nJet) > pt1stJet) {
-		h1[6][process][rs]->Fill(JetPt->at(nJet),eventWeight);
-                h1[7][process][rs]->Fill(pt1stJet,eventWeight);
-	      } else {
-		h1[7][process][rs]->Fill(JetPt->at(nJet),eventWeight);
-                h1[6][process][rs]->Fill(pt1stJet,eventWeight);
-	      }
-	    }
-	  } else nExtraJet++; 
+          if (JetIsInZZCand->at(nJet)) {
+	    h1[9][process][rs]->Fill(JetBTagger->at(nJet),eventWeight);
+	    h1[8][process][rs]->Fill(JetQGLikelihood->at(nJet),eventWeight);
+	  } 
 	}
 	
-        float pt1stLep = 0.;
-        for (unsigned int nLep=0; nLep<LepPt->size(); nLep++) {
-	  if (pt1stLep < 0.0005) pt1stLep = LepPt->at(nLep);
-	  else {
-	    if (LepPt->at(nLep) > pt1stLep) {
-	      h1[10][process][rs]->Fill(LepPt->at(nLep),eventWeight);
-	      h1[11][process][rs]->Fill(pt1stLep,eventWeight);
-	    } else {
-	      h1[11][process][rs]->Fill(LepPt->at(nLep),eventWeight);
-	      h1[10][process][rs]->Fill(pt1stLep,eventWeight);
-	    }
-	  }
-	}
-  
-	h1[12][process][rs]->Fill(abs(helcosthetaZ1),eventWeight);
+	h1[10][process][rs]->Fill(pt1stJet,eventWeight);
+        h1[11][process][rs]->Fill(pt2ndJet,eventWeight);
+
+ 	h1[12][process][rs]->Fill(abs(helcosthetaZ1),eventWeight);
 	h1[13][process][rs]->Fill(helcosthetaZ2,eventWeight);
         h1[14][process][rs]->Fill(costhetastar,eventWeight);
         h1[15][process][rs]->Fill(helphi,eventWeight);
         h1[16][process][rs]->Fill(phistarZ1,eventWeight);
-	h1[17][process][rs]->Fill(nExtraJet,eventWeight);
+	h1[17][process][rs]->Fill(nExtraJets,eventWeight);
+
       }
-    }
-		 
+    }		 
   }
   
   TCanvas c1;

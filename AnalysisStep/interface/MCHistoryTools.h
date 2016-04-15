@@ -22,7 +22,7 @@ class MCHistoryTools {
  public:
   /// Constructor
   MCHistoryTools(const edm::Event & event, std::string sampleName="");
-  MCHistoryTools(const edm::Event & event, std::string sampleName, edm::Handle<edm::View<reco::Candidate> > & genParticles, edm::Handle<GenEventInfoProduct> & genInfo);
+  MCHistoryTools(const edm::Event & event, std::string sampleName, edm::Handle<edm::View<reco::Candidate> > & genParticles, edm::Handle<GenEventInfoProduct> & genInfo, bool fourLep);
 
   /// Destructor
   virtual ~MCHistoryTools();
@@ -90,6 +90,7 @@ class MCHistoryTools {
  private:
   edm::Handle<edm::View<reco::Candidate> > particles;
   bool ismc;
+  bool is4L;
   unsigned int processID;
   float hepMCweight;
   

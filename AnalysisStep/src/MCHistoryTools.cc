@@ -29,7 +29,7 @@ namespace {
 }
 
 
-MCHistoryTools::MCHistoryTools(const edm::Event & event, std::string sampleName, edm::Handle<edm::View<reco::Candidate> > & genParticles, edm::Handle<GenEventInfoProduct> & gen) :
+MCHistoryTools::MCHistoryTools(const edm::Event & event, std::string sampleName, edm::Handle<edm::View<reco::Candidate> > & genParticles, edm::Handle<GenEventInfoProduct> & gen, bool fourLep) :
   ismc(false),
   processID(0),
   hepMCweight(1),
@@ -37,6 +37,7 @@ MCHistoryTools::MCHistoryTools(const edm::Event & event, std::string sampleName,
   theGenH(0) 
 {
 
+  is4L = fourLep;
   particles = genParticles;
   if(particles.isValid()){
 
@@ -207,7 +208,7 @@ MCHistoryTools::init() {
     }
     
     // Prompt leptons
-    else if ((id== 13 || id==11 || id==15) && (p->mother()!=0)) {
+    else if ((id== 13 || id==11 || id==15 || (id<6 && !is4L)) && (p->mother()!=0)) {
       int mid = abs(p->mother()->pdgId());
       int pid = abs(getParentCode((const GenParticle*)&*p));
       // Lepton from H->(Z->)ll; note that this is the first daughter in the H or Z line; ie pre-FSR
@@ -284,41 +285,56 @@ MCHistoryTools::init() {
 
   // Sort leptons, as done for the signal, for cases where we have 4.
   if (theGenLeps.size()==4) {
-    const float ZmassValue = 91.1876;  
-    float minDZMass=1E36;
-    float iZ11=-1, iZ12=-1, iZ21=-1, iZ22=-1;
-    
-    // Find Z1 as closest-to-mZ l+l- combination
-    for (int i=0; i<4; ++i) {
-      for (int j=i+1; j<4; ++j) {
-	if (theGenLeps[i]->pdgId()+theGenLeps[j]->pdgId()==0) { // Same flavour, opposite sign
-	  float dZMass = std::abs((theGenLeps[i]->p4()+theGenLeps[j]->p4()).mass()-ZmassValue);
-	  if (dZMass<minDZMass){
-	    minDZMass=dZMass;
-	    iZ11=i;
-	    iZ12=j;
+
+    int iZ11=-1, iZ12=-1, iZ21=-1, iZ22=-1;
+
+    if (is4L) {
+      const float ZmassValue = 91.1876;  
+      float minDZMass=1E36;
+      
+      
+      // Find Z1 as closest-to-mZ l+l- combination
+      for (int i=0; i<4; ++i) {
+	for (int j=i+1; j<4; ++j) {
+	  if (theGenLeps[i]->pdgId()+theGenLeps[j]->pdgId()==0) { // Same flavour, opposite sign
+	    float dZMass = std::abs((theGenLeps[i]->p4()+theGenLeps[j]->p4()).mass()-ZmassValue);
+	    if (dZMass<minDZMass){
+	      minDZMass=dZMass;
+	      iZ11=i;
+	      iZ12=j;
+	    }
+	  }
+	}
+      }    
+      
+      // Z2 is from remaining 2 leptons
+      if (iZ11!=-1 && iZ12!=-1){
+	for (int i=0; i<4; ++i) {
+	  if (i!=iZ11 && i!=iZ12) {
+	    if (iZ21==-1) iZ21=i;
+	    else iZ22=i;
 	  }
 	}
       }
-    }    
-
-    // Z2 is from remaining 2 leptons
-    if (iZ11!=-1 && iZ12!=-1){
+      
+      if (iZ22==-1 || theGenLeps[iZ21]->pdgId()+theGenLeps[iZ22]->pdgId()!=0) { //Test remaining conditions: Z2 is found and SF, OS
+	cout << "MCHistoryTools: Cannot sort leptons ";
+	for (int i=0; i<4; ++i) cout << theGenLeps[i]->pdgId() << " ";
+	cout << iZ11 << " " << iZ12 << " " << iZ21 << " " << iZ22 << endl;
+	abort();
+      }
+    } else {
       for (int i=0; i<4; ++i) {
-	if (i!=iZ11 && i!=iZ12) {
+	if (abs(theGenLeps[i]->pdgId())<6) { 
+	  if (iZ11==-1) iZ11=i;
+	  else iZ12=i;
+	} else {
 	  if (iZ21==-1) iZ21=i;
 	  else iZ22=i;
 	}
       }
     }
 
-    if (iZ22==-1 || theGenLeps[iZ21]->pdgId()+theGenLeps[iZ22]->pdgId()!=0) { //Test remaining conditions: Z2 is found and SF, OS
-      cout << "MCHistoryTools: Cannot sort leptons ";
-      for (int i=0; i<4; ++i) cout << theGenLeps[i]->pdgId() << " ";
-      cout << iZ11 << " " << iZ12 << " " << iZ21 << " " << iZ22 << endl;
-      abort();
-    }
-    
     // Sort leptons by sign
     if (theGenLeps[iZ11]->pdgId() < 0 ) {
       swap(iZ11,iZ12);

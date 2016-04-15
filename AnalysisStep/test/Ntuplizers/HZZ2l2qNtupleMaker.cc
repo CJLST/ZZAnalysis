@@ -105,9 +105,14 @@ namespace {
   Float_t ZZEta  = 0;
   Float_t ZZPhi  = 0;
   Int_t CRflag  = 0;
+  Int_t ZZCandType  = 0;         // 1 = Merged, SR
+                                 // -1 = Merged, SBR
+                                 // 2 = Resloved, SR
+                                 // -2 = Resloved, SBR
   Float_t Z1Mass  = 0;
   Float_t Z1Pt  = 0;
   Short_t Z1Flav  = 0;
+  Float_t Z1tau21  = 0;
   Float_t ZZMassRefit  = 0;
   Float_t ZZMassRefitErr  = 0;
   Float_t ZZMassUnrefitErr  = 0;
@@ -348,7 +353,7 @@ private:
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
 
   void BookAllBranches();  
-  virtual void FillCandidate(const pat::CompositeCandidate& higgs, bool evtPass, const edm::Event&, const Int_t CRflag);
+  virtual void FillCandidate(const pat::CompositeCandidate& higgs, bool evtPass, const edm::Event&, const Int_t CRflag, bool isMerged);
   virtual void FillJet(const pat::Jet& jet);
   virtual void endJob() ;
 
@@ -367,6 +372,7 @@ private:
   ZZ2l2qConfigHelper myHelper;
   int theChannel;
   std::string theCandLabel;
+  std::string theCandLabelFat;
   TString theFileName;
 
   HZZ4lNtupleFactory *myTree;
@@ -383,6 +389,7 @@ private:
   edm::EDGetTokenT<edm::View<reco::Candidate> > genParticleToken;
   edm::EDGetTokenT<GenEventInfoProduct> genInfoToken;
   edm::EDGetTokenT<edm::View<pat::CompositeCandidate> > candToken;
+  edm::EDGetTokenT<edm::View<pat::CompositeCandidate> > candTokenFat;
   edm::EDGetTokenT<edm::TriggerResults> triggerResultToken;
   edm::EDGetTokenT<vector<reco::Vertex> > vtxToken;
   edm::EDGetTokenT<edm::View<pat::Jet> > jetToken;
@@ -446,6 +453,7 @@ HZZ2l2qNtupleMaker::HZZ2l2qNtupleMaker(const edm::ParameterSet& pset) :
 {
   //cout<< "Beginning Constructor\n\n\n" <<endl;
   theCandLabel = pset.getUntrackedParameter<string>("CandCollection"); // Name of input ZZ collection
+  theCandLabelFat = pset.getUntrackedParameter<string>("CandCollectionMerged"); // Name of input ZZ collection
   theChannel = myHelper.channel(); // Valid options: ZZ, ZLL, ZL 
   theFileName = pset.getUntrackedParameter<string>("fileName"); 
   skipEmptyEvents = pset.getParameter<bool>("skipEmptyEvents"); // Do not store 
@@ -458,6 +466,7 @@ HZZ2l2qNtupleMaker::HZZ2l2qNtupleMaker(const edm::ParameterSet& pset) :
   genInfoToken = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
   consumesMany<LHEEventProduct>();
   candToken = consumes<edm::View<pat::CompositeCandidate> >(edm::InputTag(theCandLabel));
+  candTokenFat = consumes<edm::View<pat::CompositeCandidate> >(edm::InputTag(theCandLabelFat));
   triggerResultToken = consumes<edm::TriggerResults>(edm::InputTag("TriggerResults"));
   vtxToken = consumes<vector<reco::Vertex> >(edm::InputTag("goodPrimaryVertices"));
   jetToken = consumes<edm::View<pat::Jet> >(edm::InputTag("cleanJets"));
@@ -632,7 +641,7 @@ void HZZ2l2qNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup&
     event.getByToken(genParticleToken, genParticles);
     event.getByToken(genInfoToken, genInfo);
 
-    MCHistoryTools mch(event, sampleName, genParticles, genInfo);
+    MCHistoryTools mch(event, sampleName, genParticles, genInfo, false);
     genFinalState = mch.genFinalState();
     genProcessId = mch.getProcessID();
     genHEPMCweight = mch.gethepMCweight();
@@ -661,7 +670,6 @@ void HZZ2l2qNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup&
       }
     }
     
-
     mch.genAcceptance(gen_ZZ2l2qInEtaAcceptance, gen_ZZ2l2qInEtaPtAcceptance);
 
     ++Nevt_Gen_lumiBlock;
@@ -701,7 +709,11 @@ void HZZ2l2qNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup&
   event.getByToken(candToken, candHandle);
   const edm::View<pat::CompositeCandidate>* cands = candHandle.product();
 
-  if (skipEmptyEvents && cands->size() == 0) return; // Skip events with no candidate, unless skipEmptyEvents = false
+  edm::Handle<edm::View<pat::CompositeCandidate> > candHandleFat;
+  event.getByToken(candTokenFat, candHandleFat);
+  const edm::View<pat::CompositeCandidate>* candsFat = candHandleFat.product();
+
+  if (skipEmptyEvents && cands->size() == 0 && candsFat->size() == 0) return; // Skip events with no candidate, unless skipEmptyEvents = false
 
   // For Z+L CRs, we want only events with exactly 1 Z+l candidate. FIXME: this has to be reviewed.
   if (theChannel==ZL && cands->size() != 1) return;
@@ -728,7 +740,7 @@ void HZZ2l2qNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup&
     if(genH != 0){
       FillHGenInfo(genH->p4(),getHqTWeight(genH->p4().M(),genH->p4().Pt()));
     }
-    else if(genZLeps.size()==4){ // for 2l2q events take the mass of the ZZ(2l2q) system
+    else if(genZLeps.size()==4){ // for 4l events take the mass of the ZZ(4l) system
       FillHGenInfo((genZLeps.at(0)->p4()+genZLeps.at(1)->p4()+genZLeps.at(2)->p4()+genZLeps.at(3)->p4()),0);
     }
 
@@ -860,6 +872,12 @@ void HZZ2l2qNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup&
 	    cleanedJets[i]=0;
 	  }
 	}
+      } 
+    } else {
+      for (unsigned i=0; i<cleanedJets.size(); ++i) {	  
+	if (cleanedJets[i]!=0  &&  (!jetCleaner::isGood(*cand, *(cleanedJets[i])))) {
+	  cleanedJets[i]=0;
+	}
       }
     }
   }
@@ -889,26 +907,38 @@ void HZZ2l2qNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup&
     if (writeJets && theChannel!=ZL) FillJet(*(cleanedJets.at(i))); // No additional pT cut (for JEC studies)
   }
 
-
-  // Now we can write the variables for candidates
+  // Now we can write the variables for candidates (fat first)
   int nFilled=0;
-  for( edm::View<pat::CompositeCandidate>::const_iterator cand = cands->begin(); cand != cands->end(); ++cand) {
-    size_t icand= cand-cands->begin();
+  if (candsFat->size() > 0) { 
+    for( edm::View<pat::CompositeCandidate>::const_iterator cand = candsFat->begin(); cand != candsFat->end(); ++cand) {
 
-    if (!( theChannel==ZL || CRFLAG[icand] || (bool)(cand->userFloat("isBestCand")) )) continue; // Skip events other than the best cand (or CR candidates in the CR)
-    
-    //For the SR, also fold information about acceptance in CRflag. 
-    if (isMC && (theChannel==ZZ)) {
-      if (gen_ZZ2l2qInEtaAcceptance)   set_bit(CRFLAG[icand],28);
-      if (gen_ZZ2l2qInEtaPtAcceptance) set_bit(CRFLAG[icand],29);
+      if (!( theChannel==ZL || (bool)(cand->userFloat("isBestCand")) )) continue; // Skip events other than the best cand (or CR candidates in the CR)
+      
+      FillCandidate(*cand, evtPassTrigger&&evtPassSkim, event, -1, true);
+      
+      // Fill the candidate as one entry in the tree. Do not reinitialize the event variables, as in CRs
+      // there could be several candidates per event.
+      myTree->FillCurrentTree();
+      ++nFilled;
     }
-    FillCandidate(*cand, evtPassTrigger&&evtPassSkim, event, CRFLAG[icand]);
+  } else {
+     for( edm::View<pat::CompositeCandidate>::const_iterator cand = cands->begin(); cand != cands->end(); ++cand) {
+      size_t icand= cand-cands->begin();
 
-
-    // Fill the candidate as one entry in the tree. Do not reinitialize the event variables, as in CRs
-    // there could be several candidates per event.
-    myTree->FillCurrentTree();
-    ++nFilled;
+      if (!( theChannel==ZL || CRFLAG[icand] || (bool)(cand->userFloat("isBestCand")) )) continue; // Skip events other than the best cand (or CR candidates in the CR)
+      
+      //For the SR, also fold information about acceptance in CRflag. 
+      if (isMC && (theChannel==ZZ)) {
+	if (gen_ZZ2l2qInEtaAcceptance)   set_bit(CRFLAG[icand],28);
+	if (gen_ZZ2l2qInEtaPtAcceptance) set_bit(CRFLAG[icand],29);
+      }
+      FillCandidate(*cand, evtPassTrigger&&evtPassSkim, event, CRFLAG[icand], false);
+      
+      // Fill the candidate as one entry in the tree. Do not reinitialize the event variables, as in CRs
+      // there could be several candidates per event.
+      myTree->FillCurrentTree();
+      ++nFilled;
+    }
   }
   
   // If no candidate was filled but we still want to keep gen-level and weights, we need to fill one entry anyhow.
@@ -930,7 +960,7 @@ void HZZ2l2qNtupleMaker::FillJet(const pat::Jet& jet)
 }
 
 
-void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool evtPass, const edm::Event& event, Int_t CRFLAG)
+void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool evtPass, const edm::Event& event, Int_t CRFLAG, bool isMerged)
 {
   //Initialize a new candidate into the tree
   //myTree->createNewCandidate(); // this doesn't do anything anymore
@@ -978,12 +1008,12 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
     ZZEta = cand.p4().eta();
     ZZPhi = cand.p4().phi();
 
-    if(addKinRefit){
+    if(addKinRefit && !isMerged){
       ZZMassRefit = cand.userFloat("ZZMassRefit");
       ZZMassRefitErr = cand.userFloat("ZZMassRefitErr");
       ZZMassUnrefitErr = cand.userFloat("ZZMassUnrefitErr");
     }
-    if(addVtxFit){
+    if(addVtxFit && !isMerged){
       ZZMassCFit = cand.userFloat("CFitM");
       ZZChi2CFit = cand.userFloat("CFitChi2");
     }
@@ -1162,14 +1192,21 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
   if (theChannel!=ZL) { // Regular 2l2q candidates
     Z1   = cand.daughter("Z1");
     Z2   = cand.daughter("Z2");
-    userdatahelpers::getSortedLeptons(cand, leptons, labels, fsrPhot, fsrIndex);
+    userdatahelpers::getSortedJetsAndLeptons(cand, leptons, labels, fsrPhot, fsrIndex);
   } else {              // Special handling of Z+l candidates 
     Z1   = cand.daughter(0); // the Z
     Z2   = cand.daughter(1); // This is actually the additional lepton!
-    userdatahelpers::getSortedLeptons(cand, leptons, labels, fsrPhot, fsrIndex, false); // note: we get just 3 leptons in this case.
+    userdatahelpers::getSortedJetsAndLeptons(cand, leptons, labels, fsrPhot, fsrIndex); // note: we get just 3 leptons in this case.
   }
 
-  Z1Mass = Z1->mass();
+  if (isMerged) Z1Mass = cand.userFloat("d0.ak8PFJetsCHSCorrPrunedMass");
+  else Z1Mass = Z1->mass();
+  Z1tau21 = 0.;
+  if (isMerged) Z1tau21 = cand.userFloat("d0.NjettinessAK8:tau2")/cand.userFloat("d0.NjettinessAK8:tau1");
+  if ((isMerged && Z1Mass > 65. && Z1Mass < 105.) || (!isMerged && Z1Mass > 75. && Z1Mass < 115.)) ZZCandType = 1;
+  else ZZCandType = -1;
+  if (!isMerged) ZZCandType *= 2;
+
   Z1Pt =   Z1->pt();
   Z1Flav = abs(Z1->daughter(0)->pdgId()) * Z1->daughter(0)->charge() * abs(Z1->daughter(1)->pdgId()) * Z1->daughter(1)->charge(); // FIXME: temporarily changed, waiting for a fix to the mismatch of charge() and pdgId() for muons with BTT=4
   
@@ -1215,23 +1252,32 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
   passIsoPreFSR = true;
   
   for (unsigned int i=0; i<2; ++i){
-    // std::cout << "PDGId " << i << " : " << leptons[i]->pdgId() << endl; 
-
-    bTagger[i]           = userdatahelpers::getUserFloat(leptons[i],"bTagger");
-    isBTagged[i]           = userdatahelpers::getUserFloat(leptons[i],"isBtagged");
-    qgLik[i]           = userdatahelpers::getUserFloat(leptons[i],"qgLikelihood");
-    JecUnc[i]           = userdatahelpers::getUserFloat(leptons[i],"jec_unc");
-
-    //Fill the info on the jet candidates  
+    
     JetPt .push_back( leptons[i]->pt() );
     JetEta.push_back( leptons[i]->eta() );
     JetPhi.push_back( leptons[i]->phi() );
     JetMass .push_back( leptons[i]->p4().M());
-    JetBTagger .push_back( bTagger[i] );
-    JetIsBtagged .push_back( isBTagged[i] );
-    JetQGLikelihood .push_back( qgLik[i] );
-    JetSigma .push_back( JecUnc[i] );
     JetIsInZZCand.push_back(true);
+    
+    // std::cout << "PDGId " << i << " : " << leptons[i]->pdgId() << endl; 
+    bTagger[i] = -1.;
+    isBTagged[i] = -1.;
+    qgLik[i] = -1.;
+    JecUnc[i] = -1.; 
+
+    if (!isMerged) {
+      bTagger[i]           = userdatahelpers::getUserFloat(leptons[i],"bTagger");
+      isBTagged[i]           = userdatahelpers::getUserFloat(leptons[i],"isBtagged");
+      qgLik[i]           = userdatahelpers::getUserFloat(leptons[i],"qgLikelihood");
+      JecUnc[i]           = userdatahelpers::getUserFloat(leptons[i],"jec_unc");
+      
+      //Fill the info on the jet candidates  
+      
+      JetBTagger .push_back( bTagger[i] );
+      JetIsBtagged .push_back( isBTagged[i] );
+      JetQGLikelihood .push_back( qgLik[i] );
+      JetSigma .push_back( JecUnc[i] );
+    }
 
   }
   for (unsigned int i=2; i<leptons.size(); ++i){
@@ -1666,6 +1712,7 @@ void HZZ2l2qNtupleMaker::BookAllBranches(){
   myTree->Book("ZZMassErrCorr",ZZMassErrCorr);
   myTree->Book("ZZMassPreFSR",ZZMassPreFSR);
   myTree->Book("ZZsel",ZZsel);
+  myTree->Book("ZZCandType",ZZCandType);
   myTree->Book("ZZPt",ZZPt);
   myTree->Book("ZZEta",ZZEta);
   myTree->Book("ZZPhi",ZZPhi);
@@ -1673,6 +1720,7 @@ void HZZ2l2qNtupleMaker::BookAllBranches(){
   myTree->Book("Z1Mass",Z1Mass);
   myTree->Book("Z1Pt",Z1Pt);
   myTree->Book("Z1Flav",Z1Flav);
+  myTree->Book("Z1tau21",Z1tau21);
 
   //Kin refitted info
   if (addKinRefit) {

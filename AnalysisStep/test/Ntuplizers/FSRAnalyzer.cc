@@ -106,7 +106,7 @@ FSRAnalyzer::analyze(const edm::Event & event, const edm::EventSetup& eventSetup
   edm::Handle<GenEventInfoProduct> genInfo;
   event.getByToken(genInfoToken, genInfo);
   
-  MCHistoryTools mch(event, "", genParticles, genInfo);
+  MCHistoryTools mch(event, "", genParticles, genInfo, true);
   // These are all gen FSR photons coming from leptons from the H
   vector<const reco::Candidate *> genFSR = mch.genFSR();
   //  vector<const reco::Candidate *> genLep = mch.genZLeps();

@@ -632,7 +632,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     event.getByToken(genParticleToken, genParticles);
     event.getByToken(genInfoToken, genInfo);
 
-    MCHistoryTools mch(event, sampleName, genParticles, genInfo);
+    MCHistoryTools mch(event, sampleName, genParticles, genInfo, true);
     genFinalState = mch.genFinalState();
     genProcessId = mch.getProcessID();
     genHEPMCweight = mch.gethepMCweight();

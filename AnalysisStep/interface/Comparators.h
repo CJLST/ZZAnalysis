@@ -132,7 +132,7 @@ namespace Comparators {
 
       else if (theType==byBestZqq) {
 
-        // highest pT of Zqq 
+        // best mass of Zqq 
 	float ptZ1_i = cand_i.daughter("Z1")->pt();
         float ptZ1_j = cand_j.daughter("Z1")->pt();
 
