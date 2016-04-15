@@ -1,39 +1,17 @@
+from ZZAnalysis.AnalysisStep.defaults import *
+
 ### ----------------------------------------------------------------------
 ###
 ### Example analyzer
 ###
 ###----------------------------------------------------------------------
 
+# Set defaults for variables used in this file (in case they are not defined by a caller script)
+declareDefault("PD", "", globals()) # "" for MC, "DoubleEle", "DoubleMu", or "MuEG" for data 
+declareDefault("MCFILTER", "", globals())
+declareDefault("XSEC", 1, globals())
+declareDefault("PROCESS_CR", False, globals())
 
-try:
-    IsMC
-except NameError:
-    IsMC = True
-
-try:
-    LEPTON_SETUP
-except NameError:
-    LEPTON_SETUP = 2015
-
-try:
-    PD
-except NameError:
-    PD = ""             # "" for MC, "DoubleEle", "DoubleMu", or "MuEG" for data 
-
-try:
-    MCFILTER
-except NameError:
-    MCFILTER = ""
-
-try: 
-    XSEC
-except NameError:
-    XSEC=1
-
-try: 
-    PROCESS_CR
-except NameError:
-    PROCESS_CR = False
     
 # Get absolute path
 import os

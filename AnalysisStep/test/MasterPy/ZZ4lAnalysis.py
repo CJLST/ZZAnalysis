@@ -1,85 +1,55 @@
 import FWCore.ParameterSet.Config as cms
+from ZZAnalysis.AnalysisStep.defaults import *
+
 process = cms.Process("ZZ")
 
 ### ----------------------------------------------------------------------
 ### Flags that need to be set
 ### ----------------------------------------------------------------------
 
-try:
-    IsMC
-except NameError:
-    IsMC = True
+# Set defaults for variables used in this file (in case they are not defined by a caller script)
 
-#Set of effective areas, rho corrections, etc. (can be 2011, 2012 or 2015)
-try:
-    LEPTON_SETUP
-except NameError:
-    LEPTON_SETUP = 2015
+declareDefault("IsMC", True, globals())
 
-#Flag that reflects the actual sqrts of the sample (can be 2011, 2012 or 2015)
-try:
-    SAMPLE_TYPE
-except NameError:
-    SAMPLE_TYPE = LEPTON_SETUP # LEPTON_SETUP can differ from SAMPLE_TYPE for samples that are rescaled to a different sqrts.
+# Set of effective areas, rho corrections, etc. (can be 2011, 2012 or 2015)
+declareDefault("LEPTON_SETUP", 2015, globals())
+
+# Flag that reflects the actual sqrts of the sample (can be 2011, 2012 or 2015)
+# Can differ from SAMPLE_TYPE for samples that are rescaled to a different sqrts.
+declareDefault("SAMPLE_TYPE", LEPTON_SETUP, globals())
 
 #Optional name of the sample/dataset being analyzed
-try:
-    SAMPLENAME
-except NameError:
-    SAMPLENAME = ""
+declareDefault("SAMPLENAME", "", globals())
 
 #Type of electron scale correction/smearing
-try:
-    ELECORRTYPE
-except NameError:
-    ELECORRTYPE = "RunII"
+declareDefault("ELECORRTYPE", "RunII", globals())
 
 #Apply electron escale regression
-try:
-    ELEREGRESSION
-except NameError:
-    ELEREGRESSION = "Paper"
-    
+declareDefault("ELEREGRESSION", "Paper", globals())
+
 #Apply muon scale correction
-try:
-    APPLYMUCORR
-except NameError:
-    APPLYMUCORR = True
+declareDefault("APPLYMUCORR", True, globals())
 
 #Bunch spacing (can be 25 or 50)
-try:
-    BUNCH_SPACING
-except NameError:
-    BUNCH_SPACING = 25
+declareDefault("BUNCH_SPACING", 25, globals())
 
 #Mass used for SuperMELA
-try:
-    SUPERMELA_MASS
-except NameError:
-    SUPERMELA_MASS = 125
+declareDefault("SUPERMELA_MASS", 125, globals())
 
 #Selection flow strategy
-try:
-    SELSETUP
-except NameError:
-    SELSETUP = "allCutsAtOncePlusSmart"
+declareDefault("SELSETUP", "allCutsAtOncePlusSmart", globals())
 
 #Best candidate comparator (see interface/Comparators.h)
-try:
-    BESTCANDCOMPARATOR
-except NameError:
-    BESTCANDCOMPARATOR = "byBestZ1bestZ2"
+declareDefault("BESTCANDCOMPARATOR", "byBestZ1bestZ2", globals())
+
+# Set to True to make candidates with the full combinatorial of loose leptons (for debug; much slower)
+declareDefault("KEEPLOOSECOMB", False, globals())
+
 
 if SELSETUP=="Legacy" and not BESTCANDCOMPARATOR=="byBestZ1bestZ2":
     print "WARNING: In ZZ4lAnalysis.py the SELSETUP=\"Legacy\" flag is meant to reproduce the Legacy results, ignoring the setting of the BESTCANDCOMPARATOR: ",BESTCANDCOMPARATOR
     BESTCANDCOMPARATOR = "byBestZ1bestZ2"
 
-
-# Set to True to make candidates with the full combinatorial of loose leptons (for debug; much slower)
-try:
-    KEEPLOOSECOMB
-except NameError:
-    KEEPLOOSECOMB = False
 
 # The isolation cuts for electrons and muons. FIXME: there is an hardcoded instance of these values in src/LeptonIsoHelper.cc !!
 ELEISOCUT = "0.35"
