@@ -4,13 +4,6 @@
 #
 #----------------------------------------------------------------------
 
-LEPTON_SETUP = 2015
-
-ELECORRTYPE = "RunII"
-ELEREGRESSION = "None"
-APPLYMUCORR = True
-
-FSRMODE = "RunII"
 
 # Load deafult job config
 import os
