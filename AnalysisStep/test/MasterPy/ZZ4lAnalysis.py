@@ -25,10 +25,13 @@ declareDefault("SAMPLENAME", "", globals())
 declareDefault("ELECORRTYPE", "RunII", globals())
 
 #Apply electron escale regression
-declareDefault("ELEREGRESSION", "Paper", globals())
+declareDefault("ELEREGRESSION", "None", globals())
 
 #Apply muon scale correction
 declareDefault("APPLYMUCORR", True, globals())
+
+#FSR mode
+declareDefault("FSRMODE", "RunII", globals())
 
 #Bunch spacing (can be 25 or 50)
 declareDefault("BUNCH_SPACING", 25, globals())
@@ -54,14 +57,6 @@ if SELSETUP=="Legacy" and not BESTCANDCOMPARATOR=="byBestZ1bestZ2":
 # The isolation cuts for electrons and muons. FIXME: there is an hardcoded instance of these values in src/LeptonIsoHelper.cc !!
 ELEISOCUT = "0.35"
 MUISOCUT = "0.35"
-
-
-# Which FSR mode to use: "Legacy" or "RunII"
-try:
-    FSRMODE
-except NameError:
-    FSRMODE = "RunII"
-
 
 ### ----------------------------------------------------------------------
 ### Set the GT
