@@ -99,6 +99,7 @@ class MCHistoryTools {
   std::vector<const reco::Candidate *> theGenZ;
   std::vector<const reco::Candidate *> theAssociatedV;
   std::vector<const reco::Candidate *> theGenLeps;
+  std::vector<const reco::Candidate *> theGenJets;
   std::vector<const reco::Candidate *> theSortedGenLepts;
   std::vector<const reco::Candidate *> theAssociatedLeps;
   std::vector<const reco::Candidate *> theGenFSR;

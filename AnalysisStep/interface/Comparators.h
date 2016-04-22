@@ -32,16 +32,32 @@ namespace Comparators {
     {}
 
     // Helper function, implements the "legacy" Z1/Z2 selection logic
-    bool bestZ1bestZ2(const pat::CompositeCandidate& cand_i, const pat::CompositeCandidate& cand_j){
+    bool bestZ1bestZ2(const reco::Candidate* Z1_i, const reco::Candidate* Z1_j, const reco::Candidate* Z2_i, const reco::Candidate* Z2_j ){
 
-      float mZ1_i = cand_i.daughter("Z1")->mass();
-      float mZ1_j = cand_j.daughter("Z1")->mass();
+      float mZ1_i = Z1_i->mass();
+      float mZ1_j = Z1_j->mass();
       if ( fabs(mZ1_i-mZ1_j) < 1e-04 ){ // same Z1: choose the candidate with highest-pT Z2 leptons
-	const reco::Candidate* Z2_i = cand_i.daughter("Z2");
-	const reco::Candidate* Z2_j = cand_j.daughter("Z2");
 	double ptSumZ2_i = Z2_i->daughter(0)->pt() + Z2_i->daughter(1)->pt();
 	double ptSumZ2_j = Z2_j->daughter(0)->pt() + Z2_j->daughter(1)->pt();
 
+	// cout <<  "Comparator: compare Z2 pTs: " << ptSumZ2_i << " " << ptSumZ2_j << endl;
+	return ( ptSumZ2_i > ptSumZ2_j );
+      }
+      else { // choose the candidate with Z1 closest to nominal mass 
+	// cout << "Comparator: compare Z1 masses: " << mZ1_i << " " << mZ1_j << endl;
+	return ( fabs(mZ1_i-ZmassValue)<fabs(mZ1_j-ZmassValue) );
+      }      
+      
+    }
+
+    bool bestZ2bestZ1(const reco::Candidate* Z1_i, const reco::Candidate* Z1_j, const reco::Candidate* Z2_i, const reco::Candidate* Z2_j ){
+
+      float mZ1_i = Z2_i->mass();
+      float mZ1_j = Z2_j->mass();
+
+      if ( fabs(mZ1_i-mZ1_j) < 1e-04 ){ // same Z1: choose the candidate with highest-pT 
+	double ptSumZ2_i = Z1_i->pt();
+	double ptSumZ2_j = Z1_j->pt();
 	// cout <<  "Comparator: compare Z2 pTs: " << ptSumZ2_i << " " << ptSumZ2_j << endl;
 	return ( ptSumZ2_i > ptSumZ2_j );
       }
@@ -78,17 +94,29 @@ namespace Comparators {
       const pat::CompositeCandidate& cand_i = candCollection[i];
       const pat::CompositeCandidate& cand_j = candCollection[j];
 
+      // cout << "Comparator: cands " << &cand_i << " " << &cand_j << endl;
+      // cout << "Comparator: cand daughters i " << cand_i.numberOfDaughters() << endl;
+      // cout << "Comparator: cand daughters j " << cand_j.numberOfDaughters() << endl;
+
+      const reco::Candidate* Z1_i = cand_i.daughter("Z1");
+      // cout << "Comparator: cand_i Z1 " << Z1_i << endl; 
+      if (Z1_i->hasMasterClone()) Z1_i = Z1_i->masterClone().get();   // may need to grab real jet
+      // cout << "Comparator: cand_i Z1 " << Z1_i << endl; 
+      const reco::Candidate* Z1_j = cand_j.daughter("Z1");
+      if (Z1_j->hasMasterClone()) Z1_j = Z1_j->masterClone().get();   // may need to grab real jet  
+      const reco::Candidate* Z2_i = cand_i.daughter("Z2");
+      const reco::Candidate* Z2_j = cand_j.daughter("Z2");
 
       // "Legacy" best cand logic	
       if (theType==byBestZ1bestZ2) { 
-	return bestZ1bestZ2(cand_i,cand_j);
+	return bestZ1bestZ2(Z1_i,Z1_j,Z2_i,Z2_j);
       } //end of byBestZ1bestZ2
   
 
       // Choose by best KD; for equivalent candidates (same leptons and FSR) that differ only on pairing,
       // choose based on legacy logic
       else if (theType==byBestKD) {	
-	if (isEquivalent(cand_i,cand_j)) return bestZ1bestZ2(cand_i,cand_j); //same 4 leptons, different pairing
+	if (isEquivalent(cand_i,cand_j)) return bestZ1bestZ2(Z1_i,Z1_j,Z2_i,Z2_j); //same 4 leptons, different pairing
 	double KD_i = cand_i.userFloat("p0plus_VAJHU")/( cand_i.userFloat("p0plus_VAJHU") + cand_i.userFloat("bkg_VAMCFM") );
 	double KD_j = cand_j.userFloat("p0plus_VAJHU")/( cand_j.userFloat("p0plus_VAJHU") + cand_j.userFloat("bkg_VAMCFM") );
 	return (KD_i>KD_j);
@@ -110,14 +138,15 @@ namespace Comparators {
 	double KD_i = ps_i/( ps_i + cand_i.userFloat("bkg_VAMCFM") );
 	double KD_j = ps_j/( ps_j + cand_j.userFloat("bkg_VAMCFM") );
 
-	if (isEquivalent(cand_i,cand_j)) return bestZ1bestZ2(cand_i,cand_j);
+	if (isEquivalent(cand_i,cand_j)) return bestZ1bestZ2(Z1_i,Z1_j,Z2_i,Z2_j);
 	else return (KD_i>KD_j);
       } // end of byBestKD_VH
       
 
       else if (theType==byBestPsig) {
-	if (isEquivalent(cand_i,cand_j)) return bestZ1bestZ2(cand_i,cand_j); //same 4 leptons, different pairing
+	if (isEquivalent(cand_i,cand_j)) return bestZ1bestZ2(Z1_i,Z1_j,Z2_i,Z2_j);
 	return (cand_i.userFloat("p0plus_VAJHU")>cand_j.userFloat("p0plus_VAJHU"));
+
       }
 
       else if (theType==byMHWindow) {
@@ -127,16 +156,13 @@ namespace Comparators {
 	if (i_inMHWin&&!j_inMHWin) return true;
 	if (j_inMHWin&&!i_inMHWin) return false;
 	// If neither, or both candidate are in the mass window, use the old logic. Could choose by best psig as well.
-	return bestZ1bestZ2(cand_i,cand_j); //same 4 leptons, different pairing
+	return bestZ1bestZ2(Z1_i,Z1_j,Z2_i,Z2_j);
+
       }
 
       else if (theType==byBestZqq) {
-
         // best mass of Zqq 
-	float ptZ1_i = cand_i.daughter("Z1")->pt();
-        float ptZ1_j = cand_j.daughter("Z1")->pt();
-
-	return ( ptZ1_i>ptZ1_j );
+	return bestZ2bestZ1(Z1_i,Z1_j,Z2_i,Z2_j);
       }
 
       else {

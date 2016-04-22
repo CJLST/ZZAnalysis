@@ -167,6 +167,7 @@ ZZjjCandidateFiller::ZZjjCandidateFiller(const edm::ParameterSet& iConfig) :
   //-- kinematic refitter
   kinZfitter = new KinZfitter(!isMC);
 
+  candidateLabel = iConfig.getParameter<edm::InputTag>("src").label();
 }
 
 
@@ -235,6 +236,7 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 
   //----------------------------------------------------------------------
   //--- Loop over input candidates
+  // if (LLLLCands->size()>1) cout << "Size before " << candidateLabel << " = " << LLLLCands->size() << endl;
   for( View<CompositeCandidate>::const_iterator cand = LLLLCands->begin(); cand != LLLLCands->end(); ++ cand ) {
  
     int icand = distance(LLLLCands->begin(),cand);
@@ -267,18 +269,8 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     vector<const reco::Candidate*> Zs = {Z1, Z2}; // in the original order
        
     //--- Lepton pointers in the original order
-    if (Z1->numberOfDaughters() < 2) continue;
     const reco::Candidate* Z1J1 = Z1->daughter(0);
     const reco::Candidate* Z1J2 = Z1->daughter(1);
-    // In miniAOD,daughters 1 and 2 are the soft-drop subjets if these exist, otherwise they are two random constituents. Check here that subjets are really there.
-    if (isMerged) {
-      const pat::Jet* testjet = dynamic_cast <const pat::Jet*> (Z1->masterClone().get());
-      if (testjet->hasSubjets("SoftDrop") ) {
-	const pat::JetPtrCollection subJets = testjet->subjets("SoftDrop");
-        if (subJets.size() != 2) continue;
-        if (fabs(Z1J1->pt() - subJets.at(0)->pt()) > 0.002) continue; 
-      }
-    }  
     const reco::Candidate* Z2L1 = Z2->daughter(0);
     const reco::Candidate* Z2L2 = Z2->daughter(1);
     vector<const reco::Candidate*> ZZLeps = {Z1J1,Z1J2,Z2L1,Z2L2}; // array, in the original order
@@ -1287,17 +1279,30 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     for(CutSet<pat::CompositeCandidate>::const_iterator bca = preBestCandSelection.begin(); bca != preBestCandSelection.end(); ++bca){
       int preBestCandResult= int((*(bca->second))(myCand));     
       
-      if (preBestCandResult){
+      bool okSubjets = true;
+      if (Z1->numberOfDaughters() < 2) okSubjets = false;
+    // In miniAOD,daughters 1 and 2 are the soft-drop subjets if these exist, otherwise they are two random constituents. Check here that subjets are really there.
+      if (isMerged && okSubjets) {
+	const pat::Jet* testjet = dynamic_cast <const pat::Jet*> (Z1->masterClone().get());
+	if (testjet->hasSubjets("SoftDrop") ) {
+	  const pat::JetPtrCollection subJets = testjet->subjets("SoftDrop");
+	  if (subJets.size() != 2) okSubjets = false;
+	  if (okSubjets && fabs(Z1J1->pt() - subJets.at(0)->pt()) > 0.002) okSubjets = false; 
+	}
+      }  
+      
+      if (preBestCandResult && okSubjets){
         // Fill preSelCands matrix
         preSelCands[iCRname].push_back(icand);
       }
       iCRname++;
     }
+    
     result->push_back(myCand);
 
   } // End of loop over input candidates
 
-
+  // if (LLLLCands->size()>1) cout << "Size of candidates " << candidateLabel << " = " << (int)result->size() << endl; 
   //--- For each of the bestCandAmong preselections, find the best candidate and store its index (bestCandIdx)
   Comparators::BestCandComparator myComp(*result, bestCandType);
   for (int iCRname=0; iCRname<(int)preSelCands.size(); ++iCRname) {
