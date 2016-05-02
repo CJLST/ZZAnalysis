@@ -3,14 +3,14 @@ ZZAnalysis
 
 To install a complete CMSSW area (including this package)
 ------------------------------
-Please use a CMSSW_7_6_X version >= 7_6_3_patch2.
+Please use a CMSSW_8_0_0 version >= 8_0_0.
 
 Download and execute the setup script:
 ```
-wget -O /tmp/checkout_70X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_76X/checkout_70X.csh
+wget -O /tmp/checkout_80X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_80X/checkout_80X.csh
 cd $CMSSW_BASE/src
 cmsenv
-source /tmp/checkout_70X.csh
+source /tmp/checkout_80X.csh
 ```
 
 To update this package from the release
