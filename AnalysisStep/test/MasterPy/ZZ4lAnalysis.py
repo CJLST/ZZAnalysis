@@ -87,9 +87,9 @@ elif (SAMPLE_TYPE == 2012) :
         process.GlobalTag.globaltag = 'GR_70_V2_AN1::All'
         
 else: 
-    process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
+    from Configuration.AlCa.GlobalTag import GlobalTag
     if IsMC:
-        process.GlobalTag.globaltag = '76X_mcRun2_asymptotic_v12'
+        process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
     else:
         process.GlobalTag.globaltag = '76X_dataRun2_v15'
 
@@ -974,16 +974,16 @@ else:
 process.es_prefer_jec = cms.ESPrefer('PoolDBESSource','jec')
 
 ### reapply JEC
-from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated
-process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
+from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import updatedPatJetCorrFactors
+process.patJetCorrFactorsReapplyJEC = updatedPatJetCorrFactors.clone(
   src = cms.InputTag("slimmedJets"),
   levels = ['L1FastJet','L2Relative','L3Absolute'],
   payload = 'AK4PFchs' )
 if not IsMC:
     process.patJetCorrFactorsReapplyJEC.levels = ['L1FastJet','L2Relative','L3Absolute','L2L3Residual']
 
-from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetsUpdated
-process.patJetsReapplyJEC = patJetsUpdated.clone(
+from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import updatedPatJets
+process.patJetsReapplyJEC = updatedPatJets.clone(
   jetSource = cms.InputTag("slimmedJets"),
   jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
   )
