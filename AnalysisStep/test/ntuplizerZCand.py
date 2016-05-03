@@ -1,34 +1,16 @@
+from ZZAnalysis.AnalysisStep.defaults import *
+
 ### ----------------------------------------------------------------------
 ###
-### Example analyzer for Z->ll ntuples
+### Example ntuplizer for lepton variables at Z candidate level
 ###
 ###----------------------------------------------------------------------
 
+# Set defaults for variables used in this file (in case they are not defined by a caller script)
+declareDefault("PD", "", globals()) # "" for MC, "DoubleEle", "DoubleMu", or "MuEG" for data 
+declareDefault("MCFILTER", "", globals())
+declareDefault("XSEC", 1, globals())
 
-try:
-    IsMC
-except NameError:
-    IsMC = True
-
-try:
-    LEPTON_SETUP
-except NameError:
-    LEPTON_SETUP = 2015
-
-try:
-    PD
-except NameError:
-    PD = ""             # "" for MC, "DoubleEle", "DoubleMu", or "MuEG" for data 
-
-try:
-    MCFILTER
-except NameError:
-    MCFILTER = ""
-
-try: 
-    XSEC
-except NameError:
-    XSEC=1
     
 # Get absolute path
 import os
@@ -37,8 +19,7 @@ PyFilePath = os.environ['CMSSW_BASE'] + "/src/ZZAnalysis/AnalysisStep/test/"
 ### ----------------------------------------------------------------------
 ### Standard sequence
 ### ----------------------------------------------------------------------
-
-execfile(PyFilePath + "MasterPy/ZZ4lAnalysis.py")         # 2012 reference analysis
+execfile(PyFilePath + "MasterPy/ZZ4lAnalysis.py")
 
 
 ### ----------------------------------------------------------------------
@@ -55,8 +36,9 @@ process.TFileService=cms.Service('TFileService',
                                 fileName=cms.string('ZZ4lAnalysis.root')
                                 )
 
+
 ### ----------------------------------------------------------------------
-### Analyzer for Trees
+### Ntuplizer
 ### ----------------------------------------------------------------------
 process.ZTree = cms.EDAnalyzer("ZNtupleMaker",
                                channel = cms.untracked.string('ZZ'),

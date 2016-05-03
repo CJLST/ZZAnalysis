@@ -21,7 +21,7 @@ PyFilePath = os.environ['CMSSW_BASE'] + "/src/ZZAnalysis/AnalysisStep/test/"
 ### Standard sequence
 ### ----------------------------------------------------------------------
 
-execfile(PyFilePath + "MasterPy/ZZ4lAnalysis.py")         # 2012 reference analysis
+execfile(PyFilePath + "MasterPy/ZZ4lAnalysis.py")
 
 
 ### ----------------------------------------------------------------------
