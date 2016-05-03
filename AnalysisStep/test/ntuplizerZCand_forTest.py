@@ -6,7 +6,6 @@ ELECORRTYPE = "RunII" # "None", "Moriond", "Paper", or "RunII"
 ELEREGRESSION = "None" # "None", "Moriond", "PaperNoComb", or "Paper" 
 APPLYMUCORR = True
 BUNCH_SPACING = 25
-#FSRMODE = "Legacy" # Legacy or Run II
 
 #For DATA: 
 #IsMC = False
@@ -65,11 +64,11 @@ process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
 )
 
 # Keep all events in the tree, even if no candidate is selected
-#process.ZZTree.skipEmptyEvents = False
+#process.ZTree.skipEmptyEvents = False
 
 
-# replace the paths in analyzer.py
-process.trees = cms.EndPath(process.ZTree)
+# replace the paths in ntuplizerZCand.py
+#process.trees = cms.EndPath(process.ZTree)
 
 #Dump reconstructed variables
 #process.appendPhotons.debug = cms.untracked.bool(True)
