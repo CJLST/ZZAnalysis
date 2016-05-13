@@ -51,6 +51,10 @@ sed -i 's/reco::Muon/pat::Muon/g' KinZfitter/HelperFunction/interface/HelperFunc
 sed -i 's/reco::Muon/pat::Muon/g' KinZfitter/HelperFunction/src/HelperFunction.cc
 sed -i 's/double pterr = mu->muonBestTrack()->ptError();/double pterr = mu->userFloat("correctedPtError");/g' KinZfitter/HelperFunction/src/HelperFunction.cc
 
+#temporary hack to ensure compilation
+sed -i '160d' HiggsAnalysis/CombinedLimit/src/VectorizedHistFactoryPdfs.cc 
+sed -i '133d' HiggsAnalysis/CombinedLimit/src/VectorizedHistFactoryPdfs.cc
+
 
 #Jet energy corrections (CMGTools)
 #(mkdir -p CMGTools/Common; cd CMGTools/Common ; wget https://raw.githubusercontent.com/CERN-PH-CMG/cmg-cmssw/a875832047532c5469aa9795751f0363cd5d9244/CMGTools/Common/plugins/JetEnergyCorrector.h)
@@ -63,3 +67,4 @@ sed -i 's/double pterr = mu->muonBestTrack()->ptError();/double pterr = mu->user
 #cd Higgs/Higgs_CS_and_Width
 #git filter-branch --subdirectory-filter Higgs_CS_and_Width
 #cd -
+
