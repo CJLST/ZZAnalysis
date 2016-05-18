@@ -102,10 +102,12 @@ namespace {
   Float_t ZZMassErrCorr  = 0;
   Float_t ZZMassPreFSR  = 0;
   Short_t ZZsel  = 0;
+  Short_t ZZ_n_tle = 0;
   Float_t ZZPt  = 0;
   Float_t ZZEta  = 0;
   Float_t ZZPhi  = 0;
   Int_t CRflag  = 0;
+  std::vector<int> CR_int_flag;
   Float_t Z1Mass  = 0;
   Float_t Z1Pt  = 0;
   Short_t Z1Flav  = 0;
@@ -383,6 +385,7 @@ private:
   edm::EDGetTokenT<edm::View<reco::Candidate> > genParticleToken;
   edm::EDGetTokenT<GenEventInfoProduct> genInfoToken;
   edm::EDGetTokenT<edm::View<pat::CompositeCandidate> > candToken;
+  edm::EDGetTokenT<edm::View<pat::CompositeCandidate> > candToken_tle;
   edm::EDGetTokenT<edm::TriggerResults> triggerResultToken;
   edm::EDGetTokenT<vector<reco::Vertex> > vtxToken;
   edm::EDGetTokenT<edm::View<pat::Jet> > jetToken;
@@ -458,6 +461,8 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   genInfoToken = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
   consumesMany<LHEEventProduct>();
   candToken = consumes<edm::View<pat::CompositeCandidate> >(edm::InputTag(theCandLabel));
+  candToken_tle = consumes<edm::View<pat::CompositeCandidate> >(edm::InputTag(pset.getUntrackedParameter<string>("CandCollection_tle")));
+
   triggerResultToken = consumes<edm::TriggerResults>(edm::InputTag("TriggerResults"));
   vtxToken = consumes<vector<reco::Vertex> >(edm::InputTag("goodPrimaryVertices"));
   jetToken = consumes<edm::View<pat::Jet> >(edm::InputTag("cleanJets"));
@@ -701,7 +706,16 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   event.getByToken(candToken, candHandle);
   const edm::View<pat::CompositeCandidate>* cands = candHandle.product();
 
-  if (skipEmptyEvents && cands->size() == 0) return; // Skip events with no candidate, unless skipEmptyEvents = false
+  // Get candidate collection including trackless electrons
+  edm::Handle<edm::View<pat::CompositeCandidate> > candHandle_tle;
+  event.getByToken(candToken_tle, candHandle_tle);
+  const edm::View<pat::CompositeCandidate>* cands_tle = candHandle_tle.product();
+
+  CR_int_flag.clear();
+
+  if(cands->size() == 0) cands = cands_tle;
+
+  if ((skipEmptyEvents && cands->size() == 0) ) return; // Skip events with no candidate, unless skipEmptyEvents = false
 
   // For Z+L CRs, we want only events with exactly 1 Z+l candidate. FIXME: this has to be reviewed.
   if (theChannel==ZL && cands->size() != 1) return;
@@ -844,19 +858,26 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     
     if (theChannel==ZLL) {
       // AA CRs
-      if (cand->userFloat("isBestCRZLLss")&&cand->userFloat("CRZLLss")) set_bit(CRFLAG[icand],CRZLLss);      
-
+      if (cand->userFloat("isBestCRZLLss")&&cand->userFloat("CRZLLss")) {
+        set_bit(CRFLAG[icand],CRZLLss);      
+        CR_int_flag.push_back(CRZLLss);
+      }
       // A CRs
-      if (cand->userFloat("isBestCRZLLos_2P2F")&&cand->userFloat("CRZLLos_2P2F")) set_bit(CRFLAG[icand],CRZLLos_2P2F);      
-      if (cand->userFloat("isBestCRZLLos_3P1F")&&cand->userFloat("CRZLLos_3P1F")) set_bit(CRFLAG[icand],CRZLLos_3P1F);
-
+      if (cand->userFloat("isBestCRZLLos_2P2F")&&cand->userFloat("CRZLLos_2P2F")) {
+        set_bit(CRFLAG[icand],CRZLLos_2P2F);      
+        CR_int_flag.push_back(CRZLLos_2P2F);
+      }
+      if (cand->userFloat("isBestCRZLLos_3P1F")&&cand->userFloat("CRZLLos_3P1F")) { 
+        set_bit(CRFLAG[icand],CRZLLos_3P1F);
+        CR_int_flag.push_back(CRZLLos_3P1F);
+      }
       if (CRFLAG[icand]) { // This candidate belongs to one of the CRs: perform additional jet cleaning. 
-	// Note that this is (somewhat incorrectly) done per-event, so there could be some over-cleaning in events with >1 CR candidate.
-	for (unsigned i=0; i<cleanedJets.size(); ++i) {	  
-	  if (cleanedJets[i]!=0  && (!jetCleaner::isGood(*cand, *(cleanedJets[i])))) {
-	    cleanedJets[i]=0;
-	  }
-	}
+	    // Note that this is (somewhat incorrectly) done per-event, so there could be some over-cleaning in events with >1 CR candidate.
+	    for (unsigned i=0; i<cleanedJets.size(); ++i) {	  
+	      if (cleanedJets[i]!=0  && (!jetCleaner::isGood(*cand, *(cleanedJets[i])))) {
+	        cleanedJets[i]=0;
+	      }
+	    }
       }
     }
   }
@@ -896,8 +917,14 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     
     //For the SR, also fold information about acceptance in CRflag. 
     if (isMC && (theChannel==ZZ)) {
-      if (gen_ZZ4lInEtaAcceptance)   set_bit(CRFLAG[icand],28);
-      if (gen_ZZ4lInEtaPtAcceptance) set_bit(CRFLAG[icand],29);
+      if (gen_ZZ4lInEtaAcceptance) { 
+        set_bit(CRFLAG[icand],28);
+        CR_int_flag.push_back(28);
+      } 
+      if (gen_ZZ4lInEtaPtAcceptance) {
+        set_bit(CRFLAG[icand],29);
+        CR_int_flag.push_back(29);  
+      }
     }
     FillCandidate(*cand, evtPassTrigger&&evtPassSkim, event, CRFLAG[icand]);
 
@@ -959,10 +986,15 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 
   CRflag = CRFLAG;
 
-  if(theChannel!=ZL){
+  //LogPrint("") << "A";
+  if(theChannel!=ZL) {
+     //LogPrint("") << "B";
 
-    //FIXME: Dobbiamo salvare info su qualita' del fit a H?
-    //Chi2 e chi2constr
+    // Fill how many trackless electrons are used in selected Z pair
+    // Currently its always 1 for tle selection path
+    if(cand.hasUserFloat("number_trackless_electrons"))
+      ZZ_n_tle = (int) cand.userFloat("number_trackless_electrons");
+
 
     //Fill the info on the Higgs candidate
     ZZMass = cand.p4().mass();
@@ -1146,6 +1178,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     pbbh_VAJHU_dn = cand.userFloat("pbbh_VAJHU_dn");
 
   }
+  //LogPrint("") << "C";
 
   //Z1 and Z2 variables
   const reco::Candidate* Z1;
@@ -1162,16 +1195,24 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   } else {              // Special handling of Z+l candidates 
     Z1   = cand.daughter(0); // the Z
     Z2   = cand.daughter(1); // This is actually the additional lepton!
+  //LogPrint("") << "D";
+
     userdatahelpers::getSortedLeptons(cand, leptons, labels, fsrPhot, fsrIndex, false); // note: we get just 3 leptons in this case.
+  //LogPrint("") << "D2";
+
   }
 
   Z1Mass = Z1->mass();
   Z1Pt =   Z1->pt();
   Z1Flav = abs(Z1->daughter(0)->pdgId()) * Z1->daughter(0)->charge() * abs(Z1->daughter(1)->pdgId()) * Z1->daughter(1)->charge(); // FIXME: temporarily changed, waiting for a fix to the mismatch of charge() and pdgId() for muons with BTT=4
-  
+  if (Z1Flav == 0) Z1Flav = Z1->daughter(0)->pdgId() * Z1->daughter(1)->pdgId();
+ 
   Z2Mass = Z2->mass();
   Z2Pt =   Z2->pt();
   Z2Flav = theChannel==ZL ? 0 : abs(Z2->daughter(0)->pdgId()) * Z2->daughter(0)->charge() * abs(Z2->daughter(1)->pdgId()) * Z2->daughter(1)->charge(); // FIXME: temporarily changed, waiting for a fix to the mismatch of charge() and pdgId() for muons with BTT=4
+  if (Z2Flav == 0 && theChannel != ZL) Z2Flav = Z2->daughter(0)->pdgId() * Z2->daughter(1)->pdgId()  ;
+  //LogPrint("") << "E";
+  if (Z2Flav == 0 && theChannel == ZL) Z2Flav = Z2->pdgId();
 
   Int_t sel = 0;
   if(theChannel==ZZ){
@@ -1205,7 +1246,8 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   vector<float> SIP(4);
   vector<float> combRelIsoPF(4);
   passIsoPreFSR = true;
-  
+   //LogPrint("") << "F";
+ 
   for (unsigned int i=0; i<leptons.size(); ++i){
     short lepFlav = std::abs(leptons[i]->pdgId());
 
@@ -1434,14 +1476,14 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
    
     weight = hTH2D_Mu_All->GetBinContent(hTH2D_Mu_All->GetXaxis()->FindBin(myLepEta),hTH2D_Mu_All->GetYaxis()->FindBin(myLepPt));
 
-  }else if(myLepID == 11){
+  }else if(myLepID == 11 || myLepID == 22){
 
     if((bool)userdatahelpers::getUserFloat(Lep,"isCrack"))
       weight = hTH2D_El_IdIsoSip_Cracks   ->GetBinContent(hTH2D_El_IdIsoSip_Cracks   ->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_Cracks   ->GetYaxis()->FindBin(myLepEta));
     else
       weight = hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_notCracks->GetYaxis()->FindBin(myLepEta));   
 
-  }else{
+  } else {
 
     cout<<"ERROR! wrong lepton ID "<<myLepID<<endl;
     //abort();
@@ -1637,10 +1679,12 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("ZZMassErrCorr",ZZMassErrCorr);
   myTree->Book("ZZMassPreFSR",ZZMassPreFSR);
   myTree->Book("ZZsel",ZZsel);
+  myTree->Book("ZZ_n_tle",ZZ_n_tle);
   myTree->Book("ZZPt",ZZPt);
   myTree->Book("ZZEta",ZZEta);
   myTree->Book("ZZPhi",ZZPhi);
   myTree->Book("CRflag",CRflag);
+  mytree->Book("CR_int_flag",CR_int_flag);
   myTree->Book("Z1Mass",Z1Mass);
   myTree->Book("Z1Pt",Z1Pt);
   myTree->Book("Z1Flav",Z1Flav);
