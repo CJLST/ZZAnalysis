@@ -939,7 +939,7 @@ void HZZ2l2qNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup&
   }
 
   // If no candidate was filled but we still want to keep gen-level and weights, we need to fill one entry anyhow.
-  if (skipEmptyEvents==false || nFilled>0)myTree->FillCurrentTree(); 
+  if (skipEmptyEvents==false || nFilled>0) myTree->FillCurrentTree(); 
 }
 
 
@@ -1002,10 +1002,16 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
     ZZEta.push_back(cand.p4().eta());
     ZZPhi.push_back(cand.p4().phi());
 
-    if(addKinRefit && !isMerged){
-      ZZMassRefit.push_back(cand.userFloat("ZZMassRefit"));
-      ZZMassRefitErr.push_back(cand.userFloat("ZZMassRefitErr"));
-      ZZMassUnrefitErr.push_back(cand.userFloat("ZZMassUnrefitErr"));
+    if(addKinRefit){
+      if (isMerged) {
+	ZZMassRefit.push_back(-1.);
+	ZZMassRefitErr.push_back(-1.);
+	ZZMassUnrefitErr.push_back(-1.);
+      } else {
+	ZZMassRefit.push_back(cand.userFloat("ZZMassRefit"));
+	ZZMassRefitErr.push_back(cand.userFloat("ZZMassRefitErr"));
+	ZZMassUnrefitErr.push_back(cand.userFloat("ZZMassUnrefitErr"));
+      }
     }
     if(addVtxFit && !isMerged){
       ZZMassCFit.push_back(cand.userFloat("CFitM"));
@@ -1270,13 +1276,13 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
       qgLik[i]           = userdatahelpers::getUserFloat(leptons[i],"qgLikelihood");
       JecUnc[i]           = userdatahelpers::getUserFloat(leptons[i],"jec_unc");
       
-      //Fill the info on the jet candidates  
-      
-      JetBTagger .push_back( bTagger[i] );
-      JetIsBtagged .push_back( isBTagged[i] );
-      JetQGLikelihood .push_back( qgLik[i] );
-      JetSigma .push_back( JecUnc[i] );
+      //Fill the info on the jet candidates       
     }
+
+    JetBTagger .push_back( bTagger[i] );
+    JetIsBtagged .push_back( isBTagged[i] );
+    JetQGLikelihood .push_back( qgLik[i] );
+    JetSigma .push_back( JecUnc[i] );
 
   }
   for (unsigned int i=2; i<leptons.size(); ++i){
