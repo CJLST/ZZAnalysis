@@ -22,8 +22,10 @@ void userdatahelpers::embedDaughterData(pat::CompositeCandidate& cand) {
       embedDaughterData(cand, i, mu);
     } else if (const pat::Electron* ele = dynamic_cast<const pat::Electron*>(d)) {
       embedDaughterData(cand, i, ele);
+    } else if (const pat::Photon* ele = dynamic_cast<const pat::Photon*>(d)) {
+      embedDaughterData(cand, i, ele);
     } else {
-      cout << "DaughterDataEmbedder: Unsupported daughter type" << endl;
+      edm::LogError("") << "DaughterDataEmbedder: Unsupported daughter type";
     }
   }
 }
@@ -35,9 +37,13 @@ float userdatahelpers::getUserFloat(const reco::Candidate* c, const char* name){
     return mu->userFloat(name);
   } else if (const pat::Electron* ele = dynamic_cast<const pat::Electron*>(c)) {
     return ele->userFloat(name);
+  } else if (const pat::Photon* ele = dynamic_cast<const pat::Photon*>(c)) {
+    return ele->userFloat(name);
   } else if (const pat::CompositeCandidate* cc = dynamic_cast<const pat::CompositeCandidate*>(c)) {
     return cc->userFloat(name);
   }
+  edm::LogError("") << "userdatahelpers::getUserFloat: Unsupported daughter type";
+
   return 0;
 }
 
@@ -52,6 +58,11 @@ userdatahelpers::getUserPhotons(const reco::Candidate* c){
     } else return 0;
   } else if (abs(c->pdgId())==11) {
     const pat::Electron* ele = static_cast<const pat::Electron*>(c);
+    if (ele->hasUserData("FSRCandidates")){
+      return ele->userData<PhotonPtrVector>("FSRCandidates");
+    } else return 0;
+  } else if (abs(c->pdgId())==22) {
+    const pat::Photon* ele = static_cast<const pat::Photon*>(c);
     if (ele->hasUserData("FSRCandidates")){
       return ele->userData<PhotonPtrVector>("FSRCandidates");
     } else return 0;
