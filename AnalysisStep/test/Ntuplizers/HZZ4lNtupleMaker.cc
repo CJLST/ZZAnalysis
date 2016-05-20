@@ -53,6 +53,8 @@
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
 #include <ZZAnalysis/AnalysisStep/interface/JetCleaner.h>
 
+#include <ZZMatrixElement/MELA/interface/TVar.hh>
+
 #include "ZZ4lConfigHelper.h"
 #include "HZZ4lNtupleFactory.h"
 
@@ -380,6 +382,11 @@ private:
   Float_t xsec;
   int year;
 
+  double HZZcouplings[SIZE_HVV][2];
+  double HWWcouplings[SIZE_HVV][2];
+  bool doreweighting;
+  TVar::Production reweightingtype;
+
   edm::EDGetTokenT<edm::View<reco::Candidate> > genParticleToken;
   edm::EDGetTokenT<GenEventInfoProduct> genInfoToken;
   edm::EDGetTokenT<edm::View<pat::CompositeCandidate> > candToken;
@@ -452,6 +459,27 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   sampleName = pset.getParameter<string>("sampleName");
   xsec = pset.getParameter<double>("xsec");
   year = pset.getParameter<int>("setup");
+
+  std::vector<double> HZZcouplings_real = pset.getParameter<std::vector<double>>("HZZcouplings_real");
+  std::vector<double> HZZcouplings_imag = pset.getParameter<std::vector<double>>("HZZcouplings_imag");
+  std::vector<double> HWWcouplings_real = pset.getParameter<std::vector<double>>("HWWcouplings_real");
+  std::vector<double> HWWcouplings_imag = pset.getParameter<std::vector<double>>("HWWcouplings_imag");
+  std::string reweightingtype_string = pset.getParameter<std::string>("reweightingtype");
+  if (reweightingtype_string == "none") {
+    doreweighting = false;
+    reweightingtype = TVar::ZZINDEPENDENT; //doesn't matter, just to initialize it to something
+  }
+  else {
+    doreweighting = true;
+    if (reweightingtype_string == "HVV") reweightingtype = TVar::ZZGG;
+    else assert(false);
+  }
+  for (unsigned int i = 0; i < SIZE_HVV; i++) {
+    HZZcouplings[i][0] = HZZcouplings_real[i];
+    HZZcouplings[i][1] = HZZcouplings_imag[i];
+    HWWcouplings[i][0] = HWWcouplings_real[i];
+    HWWcouplings[i][1] = HWWcouplings_imag[i];
+  }
 
   consumesMany<std::vector< PileupSummaryInfo > >();
   genParticleToken = consumes<edm::View<reco::Candidate> >(edm::InputTag("prunedGenParticles"));
