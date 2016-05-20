@@ -47,6 +47,7 @@
 #include <ZZAnalysis/AnalysisStep/interface/MCHistoryTools.h>
 #include <ZZAnalysis/AnalysisStep/interface/PUReweight.h>
 #include "ZZAnalysis/AnalysisStep/interface/EwkCorrections.h"
+#include "ZZAnalysis/AnalysisStep/src/reweighting.cc"
 #include "ZZAnalysis/AnalysisStep/src/kFactors.C"
 #include <ZZAnalysis/AnalysisStep/interface/bitops.h>
 #include <ZZAnalysis/AnalysisStep/interface/Fisher.h>
@@ -290,6 +291,7 @@ namespace {
   Float_t HqTMCweight  = 0;
   Float_t ZXFakeweight  = 0;
   Float_t overallEventWeight  = 0;
+  std::vector<float> overallEventWeight_reweighted(nReweightingSamples);
   Float_t GenHMass  = 0;
   Float_t GenHPt  = 0;
   Float_t GenHRapidity  = 0;
@@ -373,6 +375,7 @@ private:
 
   HZZ4lNtupleFactory *myTree;
   TH1F *hCounter;
+  TTree *couplingstree;
 
   Bool_t isMC;
 
@@ -381,6 +384,8 @@ private:
   bool skipEmptyEvents; // Skip events whith no selected candidate (otherwise, gen info is preserved for all events)
   Float_t xsec;
   int year;
+  double sqrts;
+  double Hmass;
 
   double HZZcouplings[SIZE_HVV][2];
   double HWWcouplings[SIZE_HVV][2];
@@ -445,20 +450,21 @@ private:
 //
 HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   myHelper(pset),
+  theChannel(myHelper.channel()), // Valid options: ZZ, ZLL, ZL 
+  theCandLabel(pset.getUntrackedParameter<string>("CandCollection")), // Name of input ZZ collection
+  theFileName(pset.getUntrackedParameter<string>("fileName")), 
+  skipEmptyEvents(pset.getParameter<bool>("skipEmptyEvents")), // Do not store 
+  xsec(pset.getParameter<double>("xsec")),
+  year(pset.getParameter<int>("setup")),
+  Hmass(pset.getParameter<double>("superMelaMass")),
   reweight(),
+  sampleName(pset.getParameter<string>("sampleName")),
   hTH2D_Mu_All(0),
   hTH2D_El_IdIsoSip_notCracks(0),
   hTH2D_El_IdIsoSip_Cracks(0),
   h_weight(0)
 {
   //cout<< "Beginning Constructor\n\n\n" <<endl;
-  theCandLabel = pset.getUntrackedParameter<string>("CandCollection"); // Name of input ZZ collection
-  theChannel = myHelper.channel(); // Valid options: ZZ, ZLL, ZL 
-  theFileName = pset.getUntrackedParameter<string>("fileName"); 
-  skipEmptyEvents = pset.getParameter<bool>("skipEmptyEvents"); // Do not store 
-  sampleName = pset.getParameter<string>("sampleName");
-  xsec = pset.getParameter<double>("xsec");
-  year = pset.getParameter<int>("setup");
 
   std::vector<double> HZZcouplings_real = pset.getParameter<std::vector<double>>("HZZcouplings_real");
   std::vector<double> HZZcouplings_imag = pset.getParameter<std::vector<double>>("HZZcouplings_imag");
@@ -1338,6 +1344,8 @@ void HZZ4lNtupleMaker::beginJob()
   edm::Service<TFileService> fs;
   myTree = new HZZ4lNtupleFactory( fs->make<TTree>(theFileName,"Event Summary"));
   hCounter = fs->make<TH1F>("Counters", "Counters", 45, 0., 45.);
+  couplingstree = fs->make<TTree>("couplings", "reweighting couplings");
+  fillcouplingstree(couplingstree);
   BookAllBranches();
 }
 
@@ -1867,6 +1875,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("HqTMCweight",HqTMCweight);
   myTree->Book("ZXFakeweight",ZXFakeweight);
   myTree->Book("overallEventWeight",overallEventWeight);
+  myTree->Book("overallEventWeight_reweighted",overallEventWeight_reweighted);
   myTree->Book("GenHMass",GenHMass);
   myTree->Book("GenHPt",GenHPt);
   myTree->Book("GenHRapidity",GenHRapidity);
