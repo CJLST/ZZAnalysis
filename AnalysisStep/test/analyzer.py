@@ -1,4 +1,5 @@
 from ZZAnalysis.AnalysisStep.defaults import *
+from ZZAnalysis.AnalysisStep.couplings import *
 
 ### ----------------------------------------------------------------------
 ###
@@ -11,8 +12,14 @@ declareDefault("PD", "", globals()) # "" for MC, "DoubleEle", "DoubleMu", or "Mu
 declareDefault("MCFILTER", "", globals())
 declareDefault("XSEC", 1, globals())
 declareDefault("PROCESS_CR", False, globals())
+declareDefault("REWEIGHTING_TYPE", "none", globals())
 
-    
+#spin 0 HVV couplings
+couplings = Couplings()
+for coupling in couplings.couplingsorder_Z + couplings.couplingsorder_W:
+    declareDefault(coupling, 0, globals())
+    couplings[coupling] = globals()[coupling]
+
 # Get absolute path
 import os
 PyFilePath = os.environ['CMSSW_BASE'] + "/src/ZZAnalysis/AnalysisStep/test/"
@@ -115,7 +122,12 @@ TreeSetup = cms.EDAnalyzer("HZZ4lNtupleMaker",
                            skipEmptyEvents = cms.bool(True),
                            sampleName = cms.string(SAMPLENAME),
                            superMelaMass = cms.double(SUPERMELA_MASS),
-                           xsec = cms.double(XSEC)
+                           xsec = cms.double(XSEC),
+                           HZZcouplings_real = cms.vdouble(*couplings.getcouplings(WW=False, imag=False)),
+                           HZZcouplings_imag = cms.vdouble(*couplings.getcouplings(WW=False, imag=True)),
+                           HWWcouplings_real = cms.vdouble(*couplings.getcouplings(WW=True, imag=False)),
+                           HWWcouplings_imag = cms.vdouble(*couplings.getcouplings(WW=True, imag=True)),
+                           reweightingtype = cms.string(REWEIGHTING_TYPE),
                            )
 
 ### Signal region
