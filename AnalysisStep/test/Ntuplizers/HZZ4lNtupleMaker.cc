@@ -1,5 +1,5 @@
 // -*- C++ -*-
-// 
+//
 // Fill a tree for selected candidates.
 //
 
@@ -53,8 +53,11 @@
 #include <ZZAnalysis/AnalysisStep/interface/Fisher.h>
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
 #include <ZZAnalysis/AnalysisStep/interface/JetCleaner.h>
+#include <ZZAnalysis/AnalysisStep/interface/utils.h>
 
+#include <ZZMatrixElement/MELA/interface/Mela.h>
 #include <ZZMatrixElement/MELA/interface/TVar.hh>
+#include <ZZMatrixElement/MELA/src/computeAngles.h>
 
 #include "ZZ4lConfigHelper.h"
 #include "HZZ4lNtupleFactory.h"
@@ -73,7 +76,7 @@ namespace {
   bool addFSRDetails = false;
   bool skipDataMCWeight = false; // skip computation of data/MC weight
   bool skipFakeWeight = true;   // skip computation of fake rate weight for CRs
-  bool skipHqTWeight = true;    // skip computation of hQT weight 
+  bool skipHqTWeight = true;    // skip computation of hQT weight
 
   //List of variables with default values
   Int_t RunNumber  = 0;
@@ -142,7 +145,7 @@ namespace {
   //std::vector<float> LepPhotonIso;
   std::vector<float> LepCombRelIsoPF;
   std::vector<float> fsrPt;
-  std::vector<float> fsrEta; 
+  std::vector<float> fsrEta;
   std::vector<float> fsrPhi;
   std::vector<float> fsrDR;
   std::vector<short> fsrLept;
@@ -259,8 +262,8 @@ namespace {
   std::vector<float> JetPhi ;
   std::vector<float> JetMass ;
   std::vector<float> JetBTagger ;
-  std::vector<float> JetIsBtagged; 
-  std::vector<float> JetQGLikelihood; 
+  std::vector<float> JetIsBtagged;
+  std::vector<float> JetQGLikelihood;
   std::vector<float> JetSigma ;
   Float_t DiJetMass  = -99;
 //   Float_t DiJetMassPlus  = -99;
@@ -269,13 +272,14 @@ namespace {
   Float_t DiJetFisher  = -99;
   Short_t nExtraLep  = 0;
   Short_t nExtraZ  = 0;
-  std::vector<float> ExtraLepPt; 
-  std::vector<float> ExtraLepEta; 
+  std::vector<float> ExtraLepPt;
+  std::vector<float> ExtraLepEta;
   std::vector<float> ExtraLepPhi ;
-  std::vector<short> ExtraLepLepId; 
+  std::vector<short> ExtraLepLepId;
   Short_t genFinalState  = 0;
   Int_t genProcessId  = 0;
   Float_t genHEPMCweight  = 0;
+  std::vector<float> genHEPMCweight_reweighted;
   Float_t LHEweight_QCDscale_muR1_muF1  = 0;
   Float_t LHEweight_QCDscale_muR1_muF2  = 0;
   Float_t LHEweight_QCDscale_muR1_muF0p5  = 0;
@@ -291,7 +295,6 @@ namespace {
   Float_t HqTMCweight  = 0;
   Float_t ZXFakeweight  = 0;
   Float_t overallEventWeight  = 0;
-  std::vector<float> overallEventWeight_reweighted(nReweightingSamples);
   Float_t GenHMass  = 0;
   Float_t GenHPt  = 0;
   Float_t GenHRapidity  = 0;
@@ -329,6 +332,11 @@ namespace {
   Float_t GenAssocLep2Eta  = 0;
   Float_t GenAssocLep2Phi  = 0;
   Short_t GenAssocLep2Id  = 0;
+  Float_t Gencosthetastar  = 0;
+  Float_t Genhelphi  = 0;
+  Float_t GenhelcosthetaZ1  = 0;
+  Float_t GenhelcosthetaZ2  = 0;
+  Float_t GenphistarZ1  = 0;
 }
 
 using namespace std;
@@ -340,9 +348,9 @@ class HZZ4lNtupleMaker : public edm::EDAnalyzer {
 public:
   explicit HZZ4lNtupleMaker(const edm::ParameterSet&);
   ~HZZ4lNtupleMaker();
-  
+
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
-  
+
 private:
   virtual void beginJob() ;
   virtual void beginRun(edm::Run const&, edm::EventSetup const&);
@@ -351,15 +359,15 @@ private:
   virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
 
-  void BookAllBranches();  
+  void BookAllBranches();
   virtual void FillCandidate(const pat::CompositeCandidate& higgs, bool evtPass, const edm::Event&, const Int_t CRflag);
   virtual void FillJet(const pat::Jet& jet);
   virtual void endJob() ;
 
   void FillHGenInfo(const math::XYZTLorentzVector Hp, float w);
-  void FillZGenInfo(Short_t Z1Id, Short_t Z2Id, 
+  void FillZGenInfo(Short_t Z1Id, Short_t Z2Id,
 		    const math::XYZTLorentzVector pZ1, const math::XYZTLorentzVector pZ2);
-  void FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t Lep3Id, Short_t Lep4Id, 
+  void FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t Lep3Id, Short_t Lep4Id,
     const math::XYZTLorentzVector Lep1, const math::XYZTLorentzVector Lep2, const math::XYZTLorentzVector Lep3, const math::XYZTLorentzVector Lep4);
   void FillAssocLepGenInfo(std::vector<const reco::Candidate *>& AssocLeps);
 
@@ -391,6 +399,7 @@ private:
   double HWWcouplings[SIZE_HVV][2];
   bool doreweighting;
   TVar::Production reweightingtype;
+  Mela myMela;
 
   edm::EDGetTokenT<edm::View<reco::Candidate> > genParticleToken;
   edm::EDGetTokenT<GenEventInfoProduct> genInfoToken;
@@ -404,7 +413,7 @@ private:
   edm::EDGetTokenT<pat::ElectronCollection> electronToken;
 
   edm::EDGetTokenT<edm::MergeableCounter> preSkimToken;
-  
+
   PUReweight reweight;
 
   //counters
@@ -419,11 +428,11 @@ private:
   Float_t gen_ZZ4mu_LeptonAcceptance;
   Float_t gen_ZZ4e_EtaAcceptance;
   Float_t gen_ZZ4e_LeptonAcceptance;
-  Float_t gen_ZZ2mu2e_EtaAcceptance; 
-  Float_t gen_ZZ2mu2e_LeptonAcceptance; 
+  Float_t gen_ZZ2mu2e_EtaAcceptance;
+  Float_t gen_ZZ2mu2e_LeptonAcceptance;
   Float_t gen_BUGGY;
   Float_t gen_Unknown;
-  
+
   Float_t gen_sumPUWeight;
   Float_t gen_sumGenMCWeight;
   Float_t gen_sumWeights;
@@ -450,13 +459,15 @@ private:
 //
 HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   myHelper(pset),
-  theChannel(myHelper.channel()), // Valid options: ZZ, ZLL, ZL 
+  theChannel(myHelper.channel()), // Valid options: ZZ, ZLL, ZL
   theCandLabel(pset.getUntrackedParameter<string>("CandCollection")), // Name of input ZZ collection
-  theFileName(pset.getUntrackedParameter<string>("fileName")), 
-  skipEmptyEvents(pset.getParameter<bool>("skipEmptyEvents")), // Do not store 
+  theFileName(pset.getUntrackedParameter<string>("fileName")),
+  skipEmptyEvents(pset.getParameter<bool>("skipEmptyEvents")), // Do not store
   xsec(pset.getParameter<double>("xsec")),
   year(pset.getParameter<int>("setup")),
+  sqrts(SetupToSqrts(year)),
   Hmass(pset.getParameter<double>("superMelaMass")),
+  myMela(sqrts, Hmass),
   reweight(),
   sampleName(pset.getParameter<string>("sampleName")),
   hTH2D_Mu_All(0),
@@ -479,6 +490,8 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
     doreweighting = true;
     if (reweightingtype_string == "HVV") reweightingtype = TVar::ZZGG;
     else assert(false);
+
+    myMela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, reweightingtype);
   }
   for (unsigned int i = 0; i < SIZE_HVV; i++) {
     HZZcouplings[i][0] = HZZcouplings_real[i];
@@ -507,7 +520,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
     applySkim=true;
   } else {
     applyTrigger=false;
-    applySkim=false;    
+    applySkim=false;
   }
 
   isMC = myHelper.isMC();
@@ -546,7 +559,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   TFile* ggZZKFactorFile = TFile::Open(fipPath.data());
   spkfactor = (TSpline3*)ggZZKFactorFile->Get("sp_kfactor_Nominal")->Clone();
   ggZZKFactorFile->Close();
-  
+
   if (!skipDataMCWeight) {
     //Scale factors for data/MC efficiency
 
@@ -565,14 +578,14 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
     hTH2D_Mu_All = (TH2D*)fMuWeight->Get("FINAL")->Clone();
     fMuWeight->Close();
 
-    filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_%d_IdIsoSip.root",year); 
+    filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_%d_IdIsoSip.root",year);
     edm::FileInPath fipEleNotCracks(filename.Data());
     fipPath = fipEleNotCracks.fullPath();
     TFile *fEleWeightNotCracks = TFile::Open(fipPath.data(),"READ");
     hTH2D_El_IdIsoSip_notCracks = (TH2D*)fEleWeightNotCracks->Get("hScaleFactors_IdIsoSip")->Clone();
     fEleWeightNotCracks->Close();
 
-    filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_%d_IdIsoSip_Cracks.root",year); 
+    filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_%d_IdIsoSip_Cracks.root",year);
     edm::FileInPath fipEleCracks(filename.Data());
     fipPath = fipEleCracks.fullPath();
     TFile *fEleWeightCracks = TFile::Open(fipPath.data(),"READ");
@@ -580,7 +593,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
     fEleWeightCracks->Close();
 
   }
-  
+
   if (!skipHqTWeight) {
     //HqT weights
     edm::FileInPath HqTfip("ZZAnalysis/AnalysisStep/test/Macros/HqTWeights.root");
@@ -589,7 +602,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
     h_weight = (TH2D*)fHqt->Get("wH_400")->Clone();//FIXME: Ask simon to provide the 2D histo
     fHqt->Close();
   }
-  
+
   if (!skipFakeWeight) {
     //CR fake rate weight
     TString filename;filename.Form("ZZAnalysis/AnalysisStep/test/Macros/FR2_2011_AA_electron.root");
@@ -597,13 +610,13 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
     edm::FileInPath fipEleZX(filename.Data());
     std::string fipPath=fipEleZX.fullPath();
     TFile *FileZXWeightEle = TFile::Open(fipPath.data(),"READ");
-  
+
     filename.Form("ZZAnalysis/AnalysisStep/test/Macros/FR2_2011_AA_muon.root");
     if(year==2015)filename.Form("ZZAnalysis/AnalysisStep/test/Macros/FR2_AA_muon.root");
     edm::FileInPath fipMuZX(filename.Data());
-    fipPath=fipMuZX.fullPath();  
+    fipPath=fipMuZX.fullPath();
     TFile *FileZXWeightMuo = TFile::Open(fipPath.data(),"READ");
-  
+
     h_ZXWeight[0]=(TH2D*)FileZXWeightEle->Get("eff_Z1ee_plus_electron")->Clone();
     h_ZXWeight[1]=(TH2D*)FileZXWeightEle->Get("eff_Z1mumu_plus_electron")->Clone();
     h_ZXWeight[2]=(TH2D*)FileZXWeightMuo->Get("eff_Z1ee_plus_muon")->Clone();
@@ -625,7 +638,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   myTree->InitializeVariables();
 
   //----------------------------------------------------------------------
-  // Analyze MC truth; collect MC weights and update counters (this is done for all generated events, 
+  // Analyze MC truth; collect MC weights and update counters (this is done for all generated events,
   // including those that do not pass skim, trigger etc!)
 
   bool gen_ZZ4lInEtaAcceptance = false;   // All 4 gen leptons in eta acceptance
@@ -642,22 +655,22 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     // get PU weights
     vector<Handle<std::vector< PileupSummaryInfo > > >  PupInfos; //FIXME support for miniAOD v1/v2 where name changed; catch does not work...
     event.getManyByType(PupInfos);
-    Handle<std::vector< PileupSummaryInfo > > PupInfo = PupInfos.front(); 
+    Handle<std::vector< PileupSummaryInfo > > PupInfo = PupInfos.front();
 //     try {
 //       cout << "TRY HZZ4lNtupleMaker" <<endl;
-//       event.getByLabel(edm::InputTag("addPileupInfo"), PupInfo); 
+//       event.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
 //     } catch (const cms::Exception& e){
 //       cout << "FAIL HZZ4lNtupleMaker" <<endl;
-//       event.getByLabel(edm::InputTag("slimmedAddPileupInfo"), PupInfo); 
+//       event.getByLabel(edm::InputTag("slimmedAddPileupInfo"), PupInfo);
 //     }
-    
+
     std::vector<PileupSummaryInfo>::const_iterator PVI;
     for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
-      if(PVI->getBunchCrossing() == 0) { 
+      if(PVI->getBunchCrossing() == 0) {
         NObsInt  = PVI->getPU_NumInteractions();
         NTrueInt = PVI->getTrueNumInteractions();
         break;
-      } 
+      }
     }
 
     // get PU weight
@@ -694,7 +707,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 	LHEweight_QCDscale_muR0p5_muF0p5 = genHEPMCweight * EvtHandle->weights()[8].wgt / EvtHandle->originalXWGTUP();
       }
     }
-    
+
 
     mch.genAcceptance(gen_ZZ4lInEtaAcceptance, gen_ZZ4lInEtaPtAcceptance);
 
@@ -719,13 +732,66 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     } else {
       ++gen_Unknown;
     }
-    
+
 
     //Information on generated candidates, will be used later
     genH = mch.genH();
     genZLeps     = mch.sortedGenZZLeps();
     genAssocLeps = mch.genAssociatedLeps();
     genFSR       = mch.genFSR();
+
+    if(genH != 0){
+      FillHGenInfo(genH->p4(),getHqTWeight(genH->p4().M(),genH->p4().Pt()));
+    }
+    else if(genZLeps.size()==4){ // for 4l events take the mass of the ZZ(4l) system
+      FillHGenInfo((genZLeps.at(0)->p4()+genZLeps.at(1)->p4()+genZLeps.at(2)->p4()+genZLeps.at(3)->p4()),0);
+    }
+
+    if (genFinalState!=BUGGY) {
+
+      if (genZLeps.size()==4) {
+
+        // "generated Zs" defined with standard pairing applied on gen leptons (genZLeps is sorted by MCHistoryTools)
+        FillZGenInfo(genZLeps.at(0)->pdgId()*genZLeps.at(1)->pdgId(),
+		     genZLeps.at(2)->pdgId()*genZLeps.at(3)->pdgId(),
+		     genZLeps.at(0)->p4()+genZLeps.at(1)->p4(),
+                     genZLeps.at(2)->p4()+genZLeps.at(3)->p4());
+
+        // Gen leptons
+        FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), genZLeps.at(2)->pdgId(), genZLeps.at(3)->pdgId(),
+                               genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), genZLeps.at(3)->p4());
+
+      }
+
+      if (genZLeps.size()==3) {
+        FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), genZLeps.at(2)->pdgId(), 0,
+		       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), *(new math::XYZTLorentzVector));
+      }
+      if (genZLeps.size()==2) {
+        FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), 0, 0,
+		       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), *(new math::XYZTLorentzVector), *(new math::XYZTLorentzVector));
+      }
+
+      if (genAssocLeps.size()==1 || genAssocLeps.size()==2) {
+        FillAssocLepGenInfo(genAssocLeps);
+      }
+
+    }
+
+    if (reweightingtype == TVar::ZZGG) {
+      assert(genZLeps.size()==4 && genFinalState!=BUGGY); //otherwise this reweighting doesn't make sense
+      int flavor = 3 - 2*(genFinalState == EEEE) - 1*(genFinalState==MMMM || GenZ1Flav*GenZ2Flav==/*15^4=*/50625);
+      float myprobability;
+      vector<float> probabilities(nReweightingSamples);
+      setcouplings(HZZcouplings);
+      myMela.computeP(GenHMass, GenZ1Mass, GenZ2Mass, Gencosthetastar, GenhelcosthetaZ1, GenhelcosthetaZ2, Genhelphi, GenphistarZ1, flavor, selfDHvvcoupl, myprobability);
+      for (int i = 0; i < nReweightingSamples; i++) {
+        setcouplings(i);
+        myMela.computeP(GenHMass, GenZ1Mass, GenZ2Mass, Gencosthetastar, GenhelcosthetaZ1, GenhelcosthetaZ2, Genhelphi, GenphistarZ1, flavor, selfDHvvcoupl, probabilities[i]);
+        genHEPMCweight_reweighted.push_back(genHEPMCweight * probabilities[i] / myprobability);
+      }
+    }
+
   }
   // End of MC history analysis ------------------------------------------
 
@@ -759,13 +825,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
   //Fill MC truth information
   if (isMC) {
-    if(genH != 0){
-      FillHGenInfo(genH->p4(),getHqTWeight(genH->p4().M(),genH->p4().Pt()));
-    }
-    else if(genZLeps.size()==4){ // for 4l events take the mass of the ZZ(4l) system
-      FillHGenInfo((genZLeps.at(0)->p4()+genZLeps.at(1)->p4()+genZLeps.at(2)->p4()+genZLeps.at(3)->p4()),0);
-    }
-
     GenEventInfoProduct  genInfoP = *(genInfo.product());
     // Calculate NNLO QCD K factors for ggZZ
     //KFactorggZZ = 2.;
@@ -773,19 +832,8 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     KFactorggZZ = (float)spkfactor->Eval(GenHMass); // Moriond2016
 
     if (genFinalState!=BUGGY) {
-    
+
       if (genZLeps.size()==4) {
-        
-        // "generated Zs" defined with standard pairing applied on gen leptons (genZLeps is sorted by MCHistoryTools)
-        FillZGenInfo(genZLeps.at(0)->pdgId()*genZLeps.at(1)->pdgId(),
-		     genZLeps.at(2)->pdgId()*genZLeps.at(3)->pdgId(),
-		     genZLeps.at(0)->p4()+genZLeps.at(1)->p4(),
-                     genZLeps.at(2)->p4()+genZLeps.at(3)->p4());
-
-        // Gen leptons
-        FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), genZLeps.at(2)->pdgId(), genZLeps.at(3)->pdgId(),
-                               genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), genZLeps.at(3)->p4());      
-
         // Calculate NNLO/NLO QCD K factors for qqZZ
         bool sameflavor=(genZLeps.at(0)->pdgId()*genZLeps.at(1)->pdgId() == genZLeps.at(2)->pdgId()*genZLeps.at(3)->pdgId());
         KFactorQCDqqZZ_dPhi = kfactor_qqZZ_qcd_dPhi( fabs(GenZ1Phi-GenZ2Phi), (sameflavor)?1:2 );
@@ -798,20 +846,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
         GENZ2Vec.SetPtEtaPhiM(GenZ2Pt, GenZ2Eta, GenZ2Phi, GenZ2Mass);
         KFactorEWKqqZZ = EwkCorrections::getEwkCorrections(genParticles, ewkTable, genInfoP, GENZ1Vec,GENZ2Vec);
       }
-
-      if (genZLeps.size()==3) {
-        FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), genZLeps.at(2)->pdgId(), 0,
-		       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), *(new math::XYZTLorentzVector));
-      }
-      if (genZLeps.size()==2) {
-        FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), 0, 0,
-		       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), *(new math::XYZTLorentzVector), *(new math::XYZTLorentzVector));
-      }
-
-      if (genAssocLeps.size()==1 || genAssocLeps.size()==2) {
-        FillAssocLepGenInfo(genAssocLeps);
-      }
-
     }
   }
 
@@ -867,7 +901,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     if(e->pt()>5) // this cut is implicit in miniAOD
       NRecoEle++;
   }
-  
+
 
   //Loop on the candidates
   vector<Int_t> CRFLAG(cands->size());
@@ -875,18 +909,18 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     size_t icand= cand-cands->begin();
 
     //    int candChannel = cand->userFloat("candChannel"); // This is currently the product of pdgId of leptons (eg 14641, 28561, 20449)
-    
+
     if (theChannel==ZLL) {
       // AA CRs
-      if (cand->userFloat("isBestCRZLLss")&&cand->userFloat("CRZLLss")) set_bit(CRFLAG[icand],CRZLLss);      
+      if (cand->userFloat("isBestCRZLLss")&&cand->userFloat("CRZLLss")) set_bit(CRFLAG[icand],CRZLLss);
 
       // A CRs
-      if (cand->userFloat("isBestCRZLLos_2P2F")&&cand->userFloat("CRZLLos_2P2F")) set_bit(CRFLAG[icand],CRZLLos_2P2F);      
+      if (cand->userFloat("isBestCRZLLos_2P2F")&&cand->userFloat("CRZLLos_2P2F")) set_bit(CRFLAG[icand],CRZLLos_2P2F);
       if (cand->userFloat("isBestCRZLLos_3P1F")&&cand->userFloat("CRZLLos_3P1F")) set_bit(CRFLAG[icand],CRZLLos_3P1F);
 
-      if (CRFLAG[icand]) { // This candidate belongs to one of the CRs: perform additional jet cleaning. 
+      if (CRFLAG[icand]) { // This candidate belongs to one of the CRs: perform additional jet cleaning.
 	// Note that this is (somewhat incorrectly) done per-event, so there could be some over-cleaning in events with >1 CR candidate.
-	for (unsigned i=0; i<cleanedJets.size(); ++i) {	  
+	for (unsigned i=0; i<cleanedJets.size(); ++i) {
 	  if (cleanedJets[i]!=0  && (!jetCleaner::isGood(*cand, *(cleanedJets[i])))) {
 	    cleanedJets[i]=0;
 	  }
@@ -894,13 +928,13 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       }
     }
   }
-  
+
   // Count and store jets, after additional cleaning for CRs...
   for (unsigned i=0; i<cleanedJets.size(); ++i) {
     if (cleanedJets[i]==0) {
       continue; // Jet has been suppressed by additional cleaning
     }
-    
+
     ++nCleanedJets;
     if(cleanedJets[i]->pt()>30){
       ++nCleanedJetsPt30;
@@ -910,13 +944,13 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     // count jec up/down njets pt30
     float jec_unc = cleanedJets[i]->userFloat("jec_unc");
 
-    float pt_up = cleanedJets[i]->pt() * (1.0 + jec_unc); 
+    float pt_up = cleanedJets[i]->pt() * (1.0 + jec_unc);
     float pt_dn = cleanedJets[i]->pt() * (1.0 - jec_unc);
- 
+
     if (pt_up>30) ++nCleanedJetsPt30_jecUp;
     if (pt_dn>30) ++nCleanedJetsPt30_jecDn;
 
-    
+
     if (writeJets && theChannel!=ZL) FillJet(*(cleanedJets.at(i))); // No additional pT cut (for JEC studies)
   }
 
@@ -927,8 +961,8 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     size_t icand= cand-cands->begin();
 
     if (!( theChannel==ZL || CRFLAG[icand] || (bool)(cand->userFloat("isBestCand")) )) continue; // Skip events other than the best cand (or CR candidates in the CR)
-    
-    //For the SR, also fold information about acceptance in CRflag. 
+
+    //For the SR, also fold information about acceptance in CRflag.
     if (isMC && (theChannel==ZZ)) {
       if (gen_ZZ4lInEtaAcceptance)   set_bit(CRFLAG[icand],28);
       if (gen_ZZ4lInEtaPtAcceptance) set_bit(CRFLAG[icand],29);
@@ -941,9 +975,9 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     myTree->FillCurrentTree();
     ++nFilled;
   }
-  
+
   // If no candidate was filled but we still want to keep gen-level and weights, we need to fill one entry anyhow.
-  if (skipEmptyEvents==false && nFilled==0)myTree->FillCurrentTree(); 
+  if (skipEmptyEvents==false && nFilled==0)myTree->FillCurrentTree();
 }
 
 
@@ -986,8 +1020,8 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   fsrLeptID.clear();
   fsrDR.clear();
   fsrGenPt.clear();
-  ExtraLepPt.clear(); 
-  ExtraLepEta.clear(); 
+  ExtraLepPt.clear();
+  ExtraLepEta.clear();
   ExtraLepPhi.clear();
   ExtraLepLepId.clear();
 
@@ -1033,7 +1067,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     //phistarZ2      = cand.userFloat("phistar2");
     xi            = cand.userFloat("xi");
     xistar        = cand.userFloat("xistar");
-   
+
 
     //Float_t ZZLD = cand.userFloat("LD");
     //Float_t ZZLDPSig = cand.userFloat("PSig");
@@ -1054,8 +1088,8 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     p0hplus_VAJHU = cand.userFloat("p0hplus_VAJHU"); // 0h+ (high dimensional operator), vector algebra, JHUgen
     //Float_t p1_mela = cand.userFloat("p1_mela");
     //Float_t p1_prodIndep_mela = cand.userFloat("p1_prodIndep_mela");
-    //Float_t p1plus_mela = cand.userFloat("p1plus_mela"); // 1+, analytic distribution 
-    //Float_t p1plus_prodIndep_mela = cand.userFloat("p1plus_prodIndep_mela"); // 1+, analytic distribution 
+    //Float_t p1plus_mela = cand.userFloat("p1plus_mela"); // 1+, analytic distribution
+    //Float_t p1plus_prodIndep_mela = cand.userFloat("p1plus_prodIndep_mela"); // 1+, analytic distribution
     p1_VAJHU = cand.userFloat("p1_VAJHU");
     p1_prodIndep_VAJHU = cand.userFloat("p1_prodIndep_VAJHU");
     p1plus_VAJHU = cand.userFloat("p1plus_VAJHU"); // 1+ (axial vector), vector algebra, JHUgen,
@@ -1093,9 +1127,9 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     p2h9minus_gg_VAJHU= cand.userFloat(          "p2h9minus_gg_VAJHU"       );
     p2h9minus_qqbar_VAJHU= cand.userFloat(       "p2h9minus_qqbar_VAJHU"    );
     p2h9minus_prodIndep_VAJHU= cand.userFloat(   "p2h9minus_prodIndep_VAJHU");
-    p2h10minus_gg_VAJHU= cand.userFloat(         "p2h10minus_gg_VAJHU"      ); 
-    p2h10minus_qqbar_VAJHU= cand.userFloat(      "p2h10minus_qqbar_VAJHU"   ); 
-    p2h10minus_prodIndep_VAJHU= cand.userFloat(  "p2h10minus_prodIndep_VAJHU"); 
+    p2h10minus_gg_VAJHU= cand.userFloat(         "p2h10minus_gg_VAJHU"      );
+    p2h10minus_qqbar_VAJHU= cand.userFloat(      "p2h10minus_qqbar_VAJHU"   );
+    p2h10minus_prodIndep_VAJHU= cand.userFloat(  "p2h10minus_prodIndep_VAJHU");
     // bkg_mela = cand.userFloat("bkg_mela");
     bkg_VAMCFM = cand.userFloat("bkg_VAMCFM");
     bkg_prodIndep_VAMCFM = cand.userFloat("bkg_prodIndep_VAMCFM");
@@ -1193,7 +1227,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     Z1   = cand.daughter("Z1");
     Z2   = cand.daughter("Z2");
     userdatahelpers::getSortedLeptons(cand, leptons, labels, fsrPhot, fsrIndex);
-  } else {              // Special handling of Z+l candidates 
+  } else {              // Special handling of Z+l candidates
     Z1   = cand.daughter(0); // the Z
     Z2   = cand.daughter(1); // This is actually the additional lepton!
     userdatahelpers::getSortedLeptons(cand, leptons, labels, fsrPhot, fsrIndex, false); // note: we get just 3 leptons in this case.
@@ -1202,7 +1236,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   Z1Mass = Z1->mass();
   Z1Pt =   Z1->pt();
   Z1Flav = abs(Z1->daughter(0)->pdgId()) * Z1->daughter(0)->charge() * abs(Z1->daughter(1)->pdgId()) * Z1->daughter(1)->charge(); // FIXME: temporarily changed, waiting for a fix to the mismatch of charge() and pdgId() for muons with BTT=4
-  
+
   Z2Mass = Z2->mass();
   Z2Pt =   Z2->pt();
   Z2Flav = theChannel==ZL ? 0 : abs(Z2->daughter(0)->pdgId()) * Z2->daughter(0)->charge() * abs(Z2->daughter(1)->pdgId()) * Z2->daughter(1)->charge(); // FIXME: temporarily changed, waiting for a fix to the mismatch of charge() and pdgId() for muons with BTT=4
@@ -1211,7 +1245,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   if(theChannel==ZZ){
 
     // Precomputed selections
-    bool candPass70Z2Loose = cand.userFloat("Z2Mass") && 
+    bool candPass70Z2Loose = cand.userFloat("Z2Mass") &&
                              cand.userFloat("MAllComb") &&
                              cand.userFloat("pt1")>20 && cand.userFloat("pt2")>10. &&
                              ZZMass>70.;
@@ -1219,7 +1253,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     bool candPassFullSel   = cand.userFloat("FullSel");
     bool candIsBest = cand.userFloat("isBestCand");
     bool passMz_zz = (Z1Mass>60. && Z1Mass<120. && Z2Mass>60. && Z2Mass<120.);   //FIXME hardcoded cut
-  
+
     if (candIsBest) {
       //    sel = 10; //FIXME see above
       if (candPass70Z2Loose) sel=70;
@@ -1239,7 +1273,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   vector<float> SIP(4);
   vector<float> combRelIsoPF(4);
   passIsoPreFSR = true;
-  
+
   for (unsigned int i=0; i<leptons.size(); ++i){
     short lepFlav = std::abs(leptons[i]->pdgId());
 
@@ -1255,7 +1289,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
       combRelIsoPF[i]    = userdatahelpers::getUserFloat(leptons[i],"combRelIsoPF");
     }
 
-    //Fill the info on the lepton candidates  
+    //Fill the info on the lepton candidates
     LepPt .push_back( leptons[i]->pt() );
     LepEta.push_back( leptons[i]->eta() );
     LepPhi.push_back( leptons[i]->phi() );
@@ -1271,8 +1305,8 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     LepCombRelIsoPF.push_back( combRelIsoPF[i] );
   }
 
-  // FSR 
-  for (unsigned i=0; i<fsrPhot.size(); ++i) { 
+  // FSR
+  for (unsigned i=0; i<fsrPhot.size(); ++i) {
     math::XYZTLorentzVector fsr = fsrPhot[i]->p4();
     fsrPt.push_back(fsr.pt());
     fsrEta.push_back(fsr.eta());
@@ -1294,10 +1328,10 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
       }
     }
     fsrGenPt.push_back(genpT);
-    
+
 
   }
-  
+
   //convention: 0 -> 4mu   1 -> 4e   2 -> 2mu2e
   if(CRFLAG){
     ZXFakeweight = 1.;
@@ -1307,11 +1341,11 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   ZZsel = sel;
 
   if (theChannel!=ZL) {
-    
+
     //Fill the info on categorization
     nExtraLep = cand.userFloat("nExtraLep"); // Why is this still a float at this point?
     nExtraZ=cand.userFloat("nExtraZ");
-    
+
     //Fill the info on the extra leptons
     for (int iExtraLep=1; iExtraLep<=(int)nExtraLep; iExtraLep++){
       TString extraString;extraString.Form("ExtraLep%d",iExtraLep);
@@ -1321,7 +1355,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 	ExtraLepPt.push_back(candPtr->pt());
 	ExtraLepEta.push_back(candPtr->eta());
 	ExtraLepPhi.push_back(candPtr->phi());
-	ExtraLepLepId.push_back(candPtr->pdgId());  
+	ExtraLepLepId.push_back(candPtr->pdgId());
       }
     }
 
@@ -1397,7 +1431,7 @@ void HZZ4lNtupleMaker::endJob()
 void HZZ4lNtupleMaker::beginRun(edm::Run const& iRun, edm::EventSetup const&)
 {
   // // code that helps find the indices of LHE weights
-  // edm::Handle<LHERunInfoProduct> run; 
+  // edm::Handle<LHERunInfoProduct> run;
   // typedef std::vector<LHERunInfoProduct::Header>::const_iterator headers_const_iterator;
   // iRun.getByLabel( "externalLHEProducer", run );
   // LHERunInfoProduct myLHERunInfoProduct = *(run.product());
@@ -1406,9 +1440,9 @@ void HZZ4lNtupleMaker::beginRun(edm::Run const& iRun, edm::EventSetup const&)
   //   std::vector<std::string> lines = iter->lines();
   //   for (unsigned int iLine = 0; iLine<lines.size(); iLine++) {
   //     std::cout << lines.at(iLine);
-  //   } 
+  //   }
   // }
-  
+
 }
 
 // ------------ method called when ending the processing of a run  ------------
@@ -1429,11 +1463,11 @@ void HZZ4lNtupleMaker::endLuminosityBlock(edm::LuminosityBlock const& iLumi, edm
   edm::Handle<edm::MergeableCounter> preSkimCounter;
   if (iLumi.getByToken(preSkimToken, preSkimCounter)) { // Counter before skim. Does not exist for non-skimmed samples.
     Nevt_preskim = preSkimCounter->value;
-  }  
+  }
 
   // Nevt_gen: this is the number before any skim
   if (Nevt_preskim>=0.) {
-    Nevt_Gen += Nevt_preskim; 
+    Nevt_Gen += Nevt_preskim;
   } else {
     Nevt_Gen += Nevt_Gen_lumiBlock ;
   }
@@ -1453,21 +1487,21 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
 {
   if (skipDataMCWeight) return 1.;
 
-  Float_t weight  = 1.; 
+  Float_t weight  = 1.;
   //Float_t errCorr = 0.;
   //Float_t errCorrSyst = 0.;
 
   Float_t myLepPt = Lep->pt();
   Float_t myLepEta = Lep->eta();
   Int_t   myLepID = abs(Lep->pdgId());
-  
+
   //avoid to go out of the TH boundary
   if(myLepID == 13 && myLepPt > 79.) myLepPt = 79.;
   if(myLepID == 11 && myLepPt > 199.) myLepPt = 199.;
   if(myLepID == 11) myLepEta = fabs(myLepEta);
 
-  if(myLepID == 13){  
-   
+  if(myLepID == 13){
+
     weight = hTH2D_Mu_All->GetBinContent(hTH2D_Mu_All->GetXaxis()->FindBin(myLepEta),hTH2D_Mu_All->GetYaxis()->FindBin(myLepPt));
 
   }else if(myLepID == 11){
@@ -1475,7 +1509,7 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
     if((bool)userdatahelpers::getUserFloat(Lep,"isCrack"))
       weight = hTH2D_El_IdIsoSip_Cracks   ->GetBinContent(hTH2D_El_IdIsoSip_Cracks   ->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_Cracks   ->GetYaxis()->FindBin(myLepEta));
     else
-      weight = hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_notCracks->GetYaxis()->FindBin(myLepEta));   
+      weight = hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_notCracks->GetYaxis()->FindBin(myLepEta));
 
   }else{
 
@@ -1483,7 +1517,7 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
     //abort();
     weight = 0.;
 
-  }   
+  }
 
   //FIXME
   if(myLepPt < 5. && myLepID == 13) weight = 1.;
@@ -1503,9 +1537,9 @@ Float_t HZZ4lNtupleMaker::getHqTWeight(double mH, double genPt) const
 
   //cout<<"mH = "<<mH<<", genPt = "<<genPt<<endl;
   if (mH<400 || genPt>250) return 1.;
-  
+
   double weight = 1.;
-  
+
   const int masses[4] = {400,600,800,1000};
   double massDiff = 1000;
   int iMass = -1;
@@ -1516,7 +1550,7 @@ Float_t HZZ4lNtupleMaker::getHqTWeight(double mH, double genPt) const
       iMass = i;
     }
   }
-  
+
   if (iMass>=0) {
     weight = h_weight->GetBinContent(h_weight->FindBin(genPt));
   }
@@ -1528,14 +1562,14 @@ Float_t HZZ4lNtupleMaker::getHqTWeight(double mH, double genPt) const
 Float_t HZZ4lNtupleMaker::getFakeWeight(Float_t LepPt, Float_t LepEta, Int_t LepID, Int_t LepZ1ID)
 {
   if (skipFakeWeight) return 1.;
-  
+
   // year 0 = 2011
   // year 1 = 2012
 
   Float_t weight  = 1.;
 
   Int_t nHisto=0;
-  
+
   Float_t myLepPt   = LepPt;
   Float_t myLepEta  = fabs(LepEta);
   Int_t   myLepID   = abs(LepID);
@@ -1547,26 +1581,26 @@ Float_t HZZ4lNtupleMaker::getFakeWeight(Float_t LepPt, Float_t LepEta, Int_t Lep
   if(myLepPt > 79.) myLepPt = 79.;
   if(myLepID==13)nHisto+=2;
   if(myZ1LepID==13)nHisto+=1;
- 
- 
+
+
   TString Z1flavor = "Z1ee";     if(myZ1LepID==13) Z1flavor = "Z1mumu";
   TString Z2flavor = "electron"; if(myLepID==13)   Z2flavor = "muon";
   TString histo_name = "eff_"+Z1flavor+"_plus_"+Z2flavor;
-  
+
   //cout << " histo = " << histo_name << endl;
 
   weight = h_ZXWeight[nHisto]->GetBinContent(h_ZXWeight[nHisto]->GetXaxis()->FindBin(myLepPt), h_ZXWeight[nHisto]->GetYaxis()->FindBin(myLepEta));
   /*
   h_ZXWeight[0]=FileZXWeightEle->Get("eff_Z1ee_plus_electron")->Clone();
   h_ZXWeight[2]=FileZXWeightEle->Get("eff_Z1mumu_plus_electron")->Clone();
-  
+
   h_ZXWeight[5]=FileZXWeightMuo->Get("eff_Z1ee_plus_muon")->Clone();
   h_ZXWeight[7]=FileZXWeightMuo->Get("eff_Z1mumu_plus_muon")->Clone();
 */
   return weight;
 
 } // end of getFakeWeight
-void HZZ4lNtupleMaker::FillZGenInfo(Short_t Z1Id, Short_t Z2Id, 
+void HZZ4lNtupleMaker::FillZGenInfo(Short_t Z1Id, Short_t Z2Id,
 				    const math::XYZTLorentzVector pZ1, const math::XYZTLorentzVector pZ2)
 {
   GenZ1Mass= pZ1.M();
@@ -1584,8 +1618,8 @@ void HZZ4lNtupleMaker::FillZGenInfo(Short_t Z1Id, Short_t Z2Id,
   return;
 }
 
-void HZZ4lNtupleMaker::FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t Lep3Id, Short_t Lep4Id, 
-				      const math::XYZTLorentzVector Lep1, const math::XYZTLorentzVector Lep2, 
+void HZZ4lNtupleMaker::FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t Lep3Id, Short_t Lep4Id,
+				      const math::XYZTLorentzVector Lep1, const math::XYZTLorentzVector Lep2,
 				      const math::XYZTLorentzVector Lep3, const math::XYZTLorentzVector Lep4)
 {
   GenLep1Pt=Lep1.Pt();
@@ -1607,7 +1641,11 @@ void HZZ4lNtupleMaker::FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t Le
   GenLep4Eta=Lep4.Eta();
   GenLep4Phi=Lep4.Phi();
   GenLep4Id=Lep4Id;
-  
+
+  if (doreweighting) {
+    mela::computeAngles(zzanalysis::tlv(Lep1), Lep1Id, zzanalysis::tlv(Lep2), Lep2Id, zzanalysis::tlv(Lep3), Lep3Id, zzanalysis::tlv(Lep4), Lep4Id, Gencosthetastar, GenhelcosthetaZ1, GenhelcosthetaZ2, Genhelphi, GenphistarZ1);
+  }
+
   return;
 }
 
@@ -1727,7 +1765,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("fsrLeptId",fsrLeptID);
     myTree->Book("fsrGenPt",fsrGenPt);
   }
-  
+
   //Discriminants
     myTree->Book("p0plus_VAJHU",p0plus_VAJHU);
     myTree->Book("p0minus_VAJHU",p0minus_VAJHU);
@@ -1836,7 +1874,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("pbbh_VAJHU",pbbh_VAJHU);
   myTree->Book("pbbh_VAJHU_up",pbbh_VAJHU_up);
   myTree->Book("pbbh_VAJHU_dn",pbbh_VAJHU_dn);
-  
+
   //Jet variables
   myTree->Book("JetPt",JetPt);
   myTree->Book("JetEta",JetEta);
@@ -1860,6 +1898,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("genFinalState",genFinalState);
   myTree->Book("genProcessId",genProcessId);
   myTree->Book("genHEPMCweight",genHEPMCweight);
+  myTree->Book("genHEPMCweight_reweighted",genHEPMCweight_reweighted);
   myTree->Book("LHEweight_QCDscale_muR1_muF1",LHEweight_QCDscale_muR1_muF1);
   myTree->Book("LHEweight_QCDscale_muR1_muF2",LHEweight_QCDscale_muR1_muF2);
   myTree->Book("LHEweight_QCDscale_muR1_muF0p5",LHEweight_QCDscale_muR1_muF0p5);
@@ -1875,7 +1914,6 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("HqTMCweight",HqTMCweight);
   myTree->Book("ZXFakeweight",ZXFakeweight);
   myTree->Book("overallEventWeight",overallEventWeight);
-  myTree->Book("overallEventWeight_reweighted",overallEventWeight_reweighted);
   myTree->Book("GenHMass",GenHMass);
   myTree->Book("GenHPt",GenHPt);
   myTree->Book("GenHRapidity",GenHRapidity);

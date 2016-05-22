@@ -13,7 +13,7 @@ double selfDHwwcoupl[SIZE_HVV][2];
 namespace {
   const int g1index = 0;
   const int g2index = 1;
-  const int g4index = 4;
+  const int g4index = 3;
   const int g1prime2index = 11;
 
   const double g2mix = 1.65684;
