@@ -101,15 +101,6 @@ private:
 };
 
 
-static int SetupToSqrts(int setup) {
-  if (setup==2011) return 7;
-  else if (setup==2012) return 8;
-  else if (setup==2015) return 13;
-  else if (setup==2016) return 13;
-  else return 0;
-}
-
-
 ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
   candidateToken(consumes<edm::View<reco::CompositeCandidate> >(iConfig.getParameter<edm::InputTag>("src"))),
   preBestCandSelection(iConfig.getParameter<edm::ParameterSet>("bestCandAmong")),
