@@ -508,7 +508,6 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   std::string reweightingtype_string = pset.getParameter<std::string>("reweightingtype");
   if (reweightingtype_string == "none") {
     doreweighting = false;
-    reweightingtype = TVar::ZZINDEPENDENT; //doesn't matter, just to initialize it to something
   }
   else {
     doreweighting = true;
@@ -754,7 +753,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     }
 
     reweightingweights.clear();
-    if (reweightingtype == TVar::ZZGG) {
+    if (doreweighting && reweightingtype == TVar::ZZGG) {
       assert(genZLeps.size()==4 && genFinalState!=BUGGY); //otherwise this reweighting doesn't make sense
       int flavor = 3 - 2*(genFinalState == EEEE) - 1*(genFinalState==MMMM || GenZ1Flav*GenZ2Flav==/*15^4=*/50625);
       float myprobability;
@@ -1394,10 +1393,9 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     dataMCWeight *= getAllWeight(leptons[i]);
   }
   overallEventWeight = PUWeight * genHEPMCweight * dataMCWeight;
-  for (int i = 0; i < nReweightingSamples; i++) {
-    overallEventWeight_reweighted.push_back(PUWeight * genHEPMCweight_reweighted[i] * dataMCWeight);
-  }
-
+  if (doreweighting)
+    for (int i = 0; i < nReweightingSamples; i++)
+      overallEventWeight_reweighted.push_back(PUWeight * genHEPMCweight_reweighted[i] * dataMCWeight);
 }
 
 
@@ -1409,9 +1407,11 @@ void HZZ4lNtupleMaker::beginJob()
   myTree = new HZZ4lNtupleFactory( fs->make<TTree>(theFileName,"Event Summary"));
   const int nbins = 45;
   hCounter = fs->make<TH1F>("Counters", "Counters", nbins, 0., nbins);
-  hCounter_reweighted = fs->make<TH2F>("Counters_reweighted", "Counters_reweighted", nbins, 0., nbins, nReweightingSamples, 0, nReweightingSamples);
-  couplingstree = fs->make<TTree>("couplings", "reweighting couplings");
-  fillcouplingstree(couplingstree);
+  if (doreweighting) {
+    hCounter_reweighted = fs->make<TH2F>("Counters_reweighted", "Counters_reweighted", nbins, 0., nbins, nReweightingSamples, 0, nReweightingSamples);
+    couplingstree = fs->make<TTree>("couplings", "reweighting couplings");
+    fillcouplingstree(couplingstree);
+  }
   BookAllBranches();
 }
 
@@ -1437,30 +1437,32 @@ void HZZ4lNtupleMaker::endJob()
   hCounter->SetBinContent(41,gen_sumGenMCWeight);
   hCounter->SetBinContent(42,gen_sumPUWeight);
 
-  for (int i = 0; i < nReweightingSamples; i++) {
-    hCounter_reweighted->SetBinContent(0 , i+1, gen_sumWeights_reweighted[i]); // also stored in bin 40
-    hCounter_reweighted->SetBinContent(1 , i+1, Nevt_Gen_reweighted[i]-gen_BUGGY_reweighted[i]);
-    hCounter_reweighted->SetBinContent(2 , i+1, gen_ZZ4mu_reweighted[i]);
-    hCounter_reweighted->SetBinContent(3 , i+1, gen_ZZ4e_reweighted[i]);
-    hCounter_reweighted->SetBinContent(4 , i+1, gen_ZZ2mu2e_reweighted[i]);
-    hCounter_reweighted->SetBinContent(5 , i+1, gen_ZZ2l2tau_reweighted[i]);
-    hCounter_reweighted->SetBinContent(6 , i+1, gen_ZZ4mu_EtaAcceptance_reweighted[i]);
-    hCounter_reweighted->SetBinContent(7 , i+1, gen_ZZ4mu_LeptonAcceptance_reweighted[i]);
-    hCounter_reweighted->SetBinContent(10, i+1, gen_ZZ4e_EtaAcceptance_reweighted[i]);
-    hCounter_reweighted->SetBinContent(11, i+1, gen_ZZ4e_LeptonAcceptance_reweighted[i]);
-    hCounter_reweighted->SetBinContent(14, i+1, gen_ZZ2mu2e_EtaAcceptance_reweighted[i]);
-    hCounter_reweighted->SetBinContent(15, i+1, gen_ZZ2mu2e_LeptonAcceptance_reweighted[i]);
-    hCounter_reweighted->SetBinContent(19, i+1, gen_BUGGY_reweighted[i]);
-    hCounter_reweighted->SetBinContent(20, i+1, gen_Unknown_reweighted[i]);
+  if (doreweighting) {
+    for (int i = 0; i < nReweightingSamples; i++) {
+      hCounter_reweighted->SetBinContent(0 , i+1, gen_sumWeights_reweighted[i]); // also stored in bin 40
+      hCounter_reweighted->SetBinContent(1 , i+1, Nevt_Gen_reweighted[i]-gen_BUGGY_reweighted[i]);
+      hCounter_reweighted->SetBinContent(2 , i+1, gen_ZZ4mu_reweighted[i]);
+      hCounter_reweighted->SetBinContent(3 , i+1, gen_ZZ4e_reweighted[i]);
+      hCounter_reweighted->SetBinContent(4 , i+1, gen_ZZ2mu2e_reweighted[i]);
+      hCounter_reweighted->SetBinContent(5 , i+1, gen_ZZ2l2tau_reweighted[i]);
+      hCounter_reweighted->SetBinContent(6 , i+1, gen_ZZ4mu_EtaAcceptance_reweighted[i]);
+      hCounter_reweighted->SetBinContent(7 , i+1, gen_ZZ4mu_LeptonAcceptance_reweighted[i]);
+      hCounter_reweighted->SetBinContent(10, i+1, gen_ZZ4e_EtaAcceptance_reweighted[i]);
+      hCounter_reweighted->SetBinContent(11, i+1, gen_ZZ4e_LeptonAcceptance_reweighted[i]);
+      hCounter_reweighted->SetBinContent(14, i+1, gen_ZZ2mu2e_EtaAcceptance_reweighted[i]);
+      hCounter_reweighted->SetBinContent(15, i+1, gen_ZZ2mu2e_LeptonAcceptance_reweighted[i]);
+      hCounter_reweighted->SetBinContent(19, i+1, gen_BUGGY_reweighted[i]);
+      hCounter_reweighted->SetBinContent(20, i+1, gen_Unknown_reweighted[i]);
 
-    hCounter_reweighted->SetBinContent(40, i+1, gen_sumWeights_reweighted[i]); // Also stored in underflow bin; added here for convenience
-    hCounter_reweighted->SetBinContent(41, i+1, gen_sumGenMCWeight_reweighted[i]);
-    hCounter_reweighted->SetBinContent(42, i+1, gen_sumPUWeight);
+      hCounter_reweighted->SetBinContent(40, i+1, gen_sumWeights_reweighted[i]); // Also stored in underflow bin; added here for convenience
+      hCounter_reweighted->SetBinContent(41, i+1, gen_sumGenMCWeight_reweighted[i]);
+      hCounter_reweighted->SetBinContent(42, i+1, gen_sumPUWeight);
+    }
   }
 
 
   TH1 *h[2] = {hCounter, hCounter_reweighted};
-  for (int i = 0; i < 2; i++) {
+  for (int i = 0; i < 2 && (doreweighting || i==0); i++) {
     h[i]->GetXaxis()->SetBinLabel(1 ,"Nevt_Gen");
     h[i]->GetXaxis()->SetBinLabel(2 ,"gen_ZZ4mu");
     h[i]->GetXaxis()->SetBinLabel(3 ,"gen_ZZ4e");
@@ -1959,7 +1961,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("genFinalState",genFinalState);
   myTree->Book("genProcessId",genProcessId);
   myTree->Book("genHEPMCweight",genHEPMCweight);
-  myTree->Book("genHEPMCweight_reweighted",genHEPMCweight_reweighted);
+  if (doreweighting) myTree->Book("genHEPMCweight_reweighted",genHEPMCweight_reweighted);
   myTree->Book("LHEweight_QCDscale_muR1_muF1",LHEweight_QCDscale_muR1_muF1);
   myTree->Book("LHEweight_QCDscale_muR1_muF2",LHEweight_QCDscale_muR1_muF2);
   myTree->Book("LHEweight_QCDscale_muR1_muF0p5",LHEweight_QCDscale_muR1_muF0p5);
@@ -1975,7 +1977,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("HqTMCweight",HqTMCweight);
   myTree->Book("ZXFakeweight",ZXFakeweight);
   myTree->Book("overallEventWeight",overallEventWeight);
-  myTree->Book("overallEventWeight_reweighted",overallEventWeight_reweighted);
+  if (doreweighting) myTree->Book("overallEventWeight_reweighted",overallEventWeight_reweighted);
   myTree->Book("GenHMass",GenHMass);
   myTree->Book("GenHPt",GenHPt);
   myTree->Book("GenHRapidity",GenHRapidity);
@@ -2016,8 +2018,9 @@ void HZZ4lNtupleMaker::BookAllBranches(){
 
 void HZZ4lNtupleMaker::addweight(float &weight, vector<float> &weight_reweighted, float weighttoadd) {
   weight += weighttoadd;
-  for (int i = 0; i < nReweightingSamples; i++)
-    weight_reweighted[i] += weighttoadd * reweightingweights[i];
+  if (doreweighting)
+    for (int i = 0; i < nReweightingSamples; i++)
+      weight_reweighted[i] += weighttoadd * reweightingweights[i];
 }
 
 //define this as a plug-in
