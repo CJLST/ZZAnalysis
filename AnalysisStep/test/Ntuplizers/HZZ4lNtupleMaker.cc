@@ -279,6 +279,7 @@ namespace {
   Short_t genFinalState  = 0;
   Int_t genProcessId  = 0;
   Float_t genHEPMCweight  = 0;
+  std::vector<float> reweightingweights;
   std::vector<float> genHEPMCweight_reweighted;
   Float_t LHEweight_QCDscale_muR1_muF1  = 0;
   Float_t LHEweight_QCDscale_muR1_muF2  = 0;
@@ -295,6 +296,7 @@ namespace {
   Float_t HqTMCweight  = 0;
   Float_t ZXFakeweight  = 0;
   Float_t overallEventWeight  = 0;
+  std::vector<float> overallEventWeight_reweighted;
   Float_t GenHMass  = 0;
   Float_t GenHPt  = 0;
   Float_t GenHRapidity  = 0;
@@ -375,6 +377,8 @@ private:
   Float_t getHqTWeight(double mH, double genPt) const;
   Float_t getFakeWeight(Float_t LepPt, Float_t LepEta, Int_t LepID, Int_t LepZ1ID);
 
+  void addweight(float &weight, vector<float> &weight_reweighted, float weighttoadd);
+
   // ----------member data ---------------------------
   ZZ4lConfigHelper myHelper;
   int theChannel;
@@ -383,6 +387,7 @@ private:
 
   HZZ4lNtupleFactory *myTree;
   TH1F *hCounter;
+  TH2F *hCounter_reweighted;
   TTree *couplingstree;
 
   Bool_t isMC;
@@ -436,6 +441,25 @@ private:
   Float_t gen_sumPUWeight;
   Float_t gen_sumGenMCWeight;
   Float_t gen_sumWeights;
+
+  std::vector<Float_t> Nevt_Gen_reweighted = std::vector<Float_t>(nReweightingSamples, 0);
+  std::vector<Float_t> Nevt_Gen_lumiBlock_reweighted = std::vector<Float_t>(nReweightingSamples, 0);
+
+  std::vector<Float_t> gen_ZZ4mu_reweighted = std::vector<Float_t>(nReweightingSamples, 0);
+  std::vector<Float_t> gen_ZZ4e_reweighted = std::vector<Float_t>(nReweightingSamples, 0);
+  std::vector<Float_t> gen_ZZ2mu2e_reweighted = std::vector<Float_t>(nReweightingSamples, 0);
+  std::vector<Float_t> gen_ZZ2l2tau_reweighted = std::vector<Float_t>(nReweightingSamples, 0);
+  std::vector<Float_t> gen_ZZ4mu_EtaAcceptance_reweighted = std::vector<Float_t>(nReweightingSamples, 0);
+  std::vector<Float_t> gen_ZZ4mu_LeptonAcceptance_reweighted = std::vector<Float_t>(nReweightingSamples, 0);
+  std::vector<Float_t> gen_ZZ4e_EtaAcceptance_reweighted = std::vector<Float_t>(nReweightingSamples, 0);
+  std::vector<Float_t> gen_ZZ4e_LeptonAcceptance_reweighted = std::vector<Float_t>(nReweightingSamples, 0);
+  std::vector<Float_t> gen_ZZ2mu2e_EtaAcceptance_reweighted = std::vector<Float_t>(nReweightingSamples, 0);
+  std::vector<Float_t> gen_ZZ2mu2e_LeptonAcceptance_reweighted = std::vector<Float_t>(nReweightingSamples, 0);
+  std::vector<Float_t> gen_BUGGY_reweighted = std::vector<Float_t>(nReweightingSamples, 0);
+  std::vector<Float_t> gen_Unknown_reweighted = std::vector<Float_t>(nReweightingSamples, 0);
+
+  std::vector<Float_t> gen_sumGenMCWeight_reweighted = std::vector<Float_t>(nReweightingSamples, 0);
+  std::vector<Float_t> gen_sumWeights_reweighted = std::vector<Float_t>(nReweightingSamples, 0);
 
   string sampleName;
 
@@ -685,55 +709,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     genHEPMCweight = mch.gethepMCweight();
     genExtInfo = mch.genAssociatedFS();
 
-    // keep track of sum of weights
-    gen_sumPUWeight    += PUWeight;
-    gen_sumGenMCWeight += genHEPMCweight;
-    gen_sumWeights     += PUWeight*genHEPMCweight;
-
-    // LHE weights
-    vector<edm::Handle<LHEEventProduct> > EvtHandles;
-    event.getManyByType(EvtHandles); // using this method because the label is not always the same (e.g. "source" in the ttH sample)
-    if(EvtHandles.size()>0){
-      edm::Handle<LHEEventProduct> EvtHandle = EvtHandles.front();
-      if(EvtHandle.isValid() && EvtHandle->weights().size()>=9){
-	LHEweight_QCDscale_muR1_muF1     = genHEPMCweight * EvtHandle->weights()[0].wgt / EvtHandle->originalXWGTUP(); // just for verification (should be 1)
-	LHEweight_QCDscale_muR1_muF2     = genHEPMCweight * EvtHandle->weights()[1].wgt / EvtHandle->originalXWGTUP();
-	LHEweight_QCDscale_muR1_muF0p5   = genHEPMCweight * EvtHandle->weights()[2].wgt / EvtHandle->originalXWGTUP();
-	LHEweight_QCDscale_muR2_muF1     = genHEPMCweight * EvtHandle->weights()[3].wgt / EvtHandle->originalXWGTUP();
-	LHEweight_QCDscale_muR2_muF2     = genHEPMCweight * EvtHandle->weights()[4].wgt / EvtHandle->originalXWGTUP();
-	LHEweight_QCDscale_muR2_muF0p5   = genHEPMCweight * EvtHandle->weights()[5].wgt / EvtHandle->originalXWGTUP();
-	LHEweight_QCDscale_muR0p5_muF1   = genHEPMCweight * EvtHandle->weights()[6].wgt / EvtHandle->originalXWGTUP();
-	LHEweight_QCDscale_muR0p5_muF2   = genHEPMCweight * EvtHandle->weights()[7].wgt / EvtHandle->originalXWGTUP();
-	LHEweight_QCDscale_muR0p5_muF0p5 = genHEPMCweight * EvtHandle->weights()[8].wgt / EvtHandle->originalXWGTUP();
-      }
-    }
-
-
-    mch.genAcceptance(gen_ZZ4lInEtaAcceptance, gen_ZZ4lInEtaPtAcceptance);
-
-    ++Nevt_Gen_lumiBlock;
-    if (genFinalState == EEEE) {
-      ++gen_ZZ4e;
-      if (gen_ZZ4lInEtaAcceptance) ++gen_ZZ4e_EtaAcceptance;
-      if (gen_ZZ4lInEtaPtAcceptance) ++gen_ZZ4e_LeptonAcceptance;
-    } else if (genFinalState == MMMM) {
-      ++gen_ZZ4mu;
-      if (gen_ZZ4lInEtaAcceptance) ++gen_ZZ4mu_EtaAcceptance;
-      if (gen_ZZ4lInEtaPtAcceptance) ++gen_ZZ4mu_LeptonAcceptance;
-    } else if (genFinalState == EEMM) {
-      ++gen_ZZ2mu2e;
-      if (gen_ZZ4lInEtaAcceptance) ++gen_ZZ2mu2e_EtaAcceptance;
-      if (gen_ZZ4lInEtaPtAcceptance) ++gen_ZZ2mu2e_LeptonAcceptance;
-    } else if (genFinalState == LLTT){
-      ++gen_ZZ2l2tau;
-    } else if (genFinalState == BUGGY){ // handle H->ddbar 2012 generator bug!!!
-      ++gen_BUGGY;
-      return; // BUGGY events are skipped
-    } else {
-      ++gen_Unknown;
-    }
-
-
     //Information on generated candidates, will be used later
     genH = mch.genH();
     genZLeps     = mch.sortedGenZZLeps();
@@ -778,6 +753,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
     }
 
+    reweightingweights.clear();
     if (reweightingtype == TVar::ZZGG) {
       assert(genZLeps.size()==4 && genFinalState!=BUGGY); //otherwise this reweighting doesn't make sense
       int flavor = 3 - 2*(genFinalState == EEEE) - 1*(genFinalState==MMMM || GenZ1Flav*GenZ2Flav==/*15^4=*/50625);
@@ -788,9 +764,60 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       for (int i = 0; i < nReweightingSamples; i++) {
         setcouplings(i);
         myMela.computeP(GenHMass, GenZ1Mass, GenZ2Mass, Gencosthetastar, GenhelcosthetaZ1, GenhelcosthetaZ2, Genhelphi, GenphistarZ1, flavor, selfDHvvcoupl, probabilities[i]);
-        genHEPMCweight_reweighted.push_back(genHEPMCweight * probabilities[i] / myprobability);
+        reweightingweights.push_back(probabilities[i] / myprobability);
+        genHEPMCweight_reweighted.push_back(genHEPMCweight * reweightingweights[i]);
       }
     }
+
+    // keep track of sum of weights
+    gen_sumPUWeight += PUWeight;
+    addweight(gen_sumGenMCWeight, gen_sumGenMCWeight_reweighted, genHEPMCweight);
+    addweight(gen_sumWeights, gen_sumWeights_reweighted, PUWeight*genHEPMCweight);
+
+
+    // LHE weights
+    vector<edm::Handle<LHEEventProduct> > EvtHandles;
+    event.getManyByType(EvtHandles); // using this method because the label is not always the same (e.g. "source" in the ttH sample)
+    if(EvtHandles.size()>0){
+      edm::Handle<LHEEventProduct> EvtHandle = EvtHandles.front();
+      if(EvtHandle.isValid() && EvtHandle->weights().size()>=9){
+	LHEweight_QCDscale_muR1_muF1     = genHEPMCweight * EvtHandle->weights()[0].wgt / EvtHandle->originalXWGTUP(); // just for verification (should be 1)
+	LHEweight_QCDscale_muR1_muF2     = genHEPMCweight * EvtHandle->weights()[1].wgt / EvtHandle->originalXWGTUP();
+	LHEweight_QCDscale_muR1_muF0p5   = genHEPMCweight * EvtHandle->weights()[2].wgt / EvtHandle->originalXWGTUP();
+	LHEweight_QCDscale_muR2_muF1     = genHEPMCweight * EvtHandle->weights()[3].wgt / EvtHandle->originalXWGTUP();
+	LHEweight_QCDscale_muR2_muF2     = genHEPMCweight * EvtHandle->weights()[4].wgt / EvtHandle->originalXWGTUP();
+	LHEweight_QCDscale_muR2_muF0p5   = genHEPMCweight * EvtHandle->weights()[5].wgt / EvtHandle->originalXWGTUP();
+	LHEweight_QCDscale_muR0p5_muF1   = genHEPMCweight * EvtHandle->weights()[6].wgt / EvtHandle->originalXWGTUP();
+	LHEweight_QCDscale_muR0p5_muF2   = genHEPMCweight * EvtHandle->weights()[7].wgt / EvtHandle->originalXWGTUP();
+	LHEweight_QCDscale_muR0p5_muF0p5 = genHEPMCweight * EvtHandle->weights()[8].wgt / EvtHandle->originalXWGTUP();
+      }
+    }
+
+
+    mch.genAcceptance(gen_ZZ4lInEtaAcceptance, gen_ZZ4lInEtaPtAcceptance);
+
+    addweight(Nevt_Gen_lumiBlock, Nevt_Gen_lumiBlock_reweighted, 1);
+    if (genFinalState == EEEE) {
+      addweight(gen_ZZ4e, gen_ZZ4e_reweighted, 1);
+      if (gen_ZZ4lInEtaAcceptance) addweight(gen_ZZ4e_EtaAcceptance, gen_ZZ4e_EtaAcceptance_reweighted, 1);
+      if (gen_ZZ4lInEtaPtAcceptance) addweight(gen_ZZ4e_LeptonAcceptance, gen_ZZ4e_LeptonAcceptance_reweighted, 1);;
+    } else if (genFinalState == MMMM) {
+      addweight(gen_ZZ4mu, gen_ZZ4mu_reweighted, 1);
+      if (gen_ZZ4lInEtaAcceptance) addweight(gen_ZZ4mu_EtaAcceptance, gen_ZZ4mu_EtaAcceptance_reweighted, 1);
+      if (gen_ZZ4lInEtaPtAcceptance) addweight(gen_ZZ4mu_LeptonAcceptance, gen_ZZ4mu_LeptonAcceptance_reweighted, 1);;
+    } else if (genFinalState == EEMM) {
+      addweight(gen_ZZ2mu2e, gen_ZZ2mu2e_reweighted, 1);
+      if (gen_ZZ4lInEtaAcceptance) addweight(gen_ZZ2mu2e_EtaAcceptance, gen_ZZ2mu2e_EtaAcceptance_reweighted, 1);
+      if (gen_ZZ4lInEtaPtAcceptance) addweight(gen_ZZ2mu2e_LeptonAcceptance, gen_ZZ2mu2e_LeptonAcceptance_reweighted, 1);;
+    } else if (genFinalState == LLTT){
+      addweight(gen_ZZ2l2tau, gen_ZZ2l2tau_reweighted, 1);
+    } else if (genFinalState == BUGGY){ // handle H->ddbar 2012 generator bug!!!
+      addweight(gen_BUGGY, gen_BUGGY_reweighted, 1);
+      return; // BUGGY events are skipped
+    } else {
+      addweight(gen_Unknown, gen_Unknown_reweighted, 1);
+    }
+
 
   }
   // End of MC history analysis ------------------------------------------
@@ -1367,6 +1394,9 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     dataMCWeight *= getAllWeight(leptons[i]);
   }
   overallEventWeight = PUWeight * genHEPMCweight * dataMCWeight;
+  for (int i = 0; i < nReweightingSamples; i++) {
+    overallEventWeight_reweighted.push_back(PUWeight * genHEPMCweight_reweighted[i] * dataMCWeight);
+  }
 
 }
 
@@ -1377,7 +1407,9 @@ void HZZ4lNtupleMaker::beginJob()
 {
   edm::Service<TFileService> fs;
   myTree = new HZZ4lNtupleFactory( fs->make<TTree>(theFileName,"Event Summary"));
-  hCounter = fs->make<TH1F>("Counters", "Counters", 45, 0., 45.);
+  const int nbins = 45;
+  hCounter = fs->make<TH1F>("Counters", "Counters", nbins, 0., nbins);
+  hCounter_reweighted = fs->make<TH2F>("Counters_reweighted", "Counters_reweighted", nbins, 0., nbins, nReweightingSamples, 0, nReweightingSamples);
   couplingstree = fs->make<TTree>("couplings", "reweighting couplings");
   fillcouplingstree(couplingstree);
   BookAllBranches();
@@ -1405,24 +1437,48 @@ void HZZ4lNtupleMaker::endJob()
   hCounter->SetBinContent(41,gen_sumGenMCWeight);
   hCounter->SetBinContent(42,gen_sumPUWeight);
 
+  for (int i = 0; i < nReweightingSamples; i++) {
+    hCounter_reweighted->SetBinContent(0 , i+1, gen_sumWeights_reweighted[i]); // also stored in bin 40
+    hCounter_reweighted->SetBinContent(1 , i+1, Nevt_Gen_reweighted[i]-gen_BUGGY_reweighted[i]);
+    hCounter_reweighted->SetBinContent(2 , i+1, gen_ZZ4mu_reweighted[i]);
+    hCounter_reweighted->SetBinContent(3 , i+1, gen_ZZ4e_reweighted[i]);
+    hCounter_reweighted->SetBinContent(4 , i+1, gen_ZZ2mu2e_reweighted[i]);
+    hCounter_reweighted->SetBinContent(5 , i+1, gen_ZZ2l2tau_reweighted[i]);
+    hCounter_reweighted->SetBinContent(6 , i+1, gen_ZZ4mu_EtaAcceptance_reweighted[i]);
+    hCounter_reweighted->SetBinContent(7 , i+1, gen_ZZ4mu_LeptonAcceptance_reweighted[i]);
+    hCounter_reweighted->SetBinContent(10, i+1, gen_ZZ4e_EtaAcceptance_reweighted[i]);
+    hCounter_reweighted->SetBinContent(11, i+1, gen_ZZ4e_LeptonAcceptance_reweighted[i]);
+    hCounter_reweighted->SetBinContent(14, i+1, gen_ZZ2mu2e_EtaAcceptance_reweighted[i]);
+    hCounter_reweighted->SetBinContent(15, i+1, gen_ZZ2mu2e_LeptonAcceptance_reweighted[i]);
+    hCounter_reweighted->SetBinContent(19, i+1, gen_BUGGY_reweighted[i]);
+    hCounter_reweighted->SetBinContent(20, i+1, gen_Unknown_reweighted[i]);
 
-  hCounter->GetXaxis()->SetBinLabel(1 ,"Nevt_Gen");
-  hCounter->GetXaxis()->SetBinLabel(2 ,"gen_ZZ4mu");
-  hCounter->GetXaxis()->SetBinLabel(3 ,"gen_ZZ4e");
-  hCounter->GetXaxis()->SetBinLabel(4 ,"gen_ZZ2mu2e");
-  hCounter->GetXaxis()->SetBinLabel(5 ,"gen_ZZ2l2tau");
-  hCounter->GetXaxis()->SetBinLabel(6 ,"gen_ZZ4mu_EtaAcceptance");
-  hCounter->GetXaxis()->SetBinLabel(7 ,"gen_ZZ4mu_LeptonAcceptance");
-  hCounter->GetXaxis()->SetBinLabel(10,"gen_ZZ4e_EtaAcceptance");
-  hCounter->GetXaxis()->SetBinLabel(11,"gen_ZZ4e_LeptonAcceptance");
-  hCounter->GetXaxis()->SetBinLabel(14,"gen_ZZ2mu2e_EtaAcceptance");
-  hCounter->GetXaxis()->SetBinLabel(15,"gen_ZZ2mu2e_LeptonAcceptance");
-  hCounter->GetXaxis()->SetBinLabel(19,"gen_BUGGY");
-  hCounter->GetXaxis()->SetBinLabel(20,"gen_Unknown");
+    hCounter_reweighted->SetBinContent(40, i+1, gen_sumWeights_reweighted[i]); // Also stored in underflow bin; added here for convenience
+    hCounter_reweighted->SetBinContent(41, i+1, gen_sumGenMCWeight_reweighted[i]);
+    hCounter_reweighted->SetBinContent(42, i+1, gen_sumPUWeight);
+  }
 
-  hCounter->GetXaxis()->SetBinLabel(40,"gen_sumWeights");
-  hCounter->GetXaxis()->SetBinLabel(41,"gen_sumGenMCWeight");
-  hCounter->GetXaxis()->SetBinLabel(42,"gen_sumPUWeight");
+
+  TH1 *h[2] = {hCounter, hCounter_reweighted};
+  for (int i = 0; i < 2; i++) {
+    h[i]->GetXaxis()->SetBinLabel(1 ,"Nevt_Gen");
+    h[i]->GetXaxis()->SetBinLabel(2 ,"gen_ZZ4mu");
+    h[i]->GetXaxis()->SetBinLabel(3 ,"gen_ZZ4e");
+    h[i]->GetXaxis()->SetBinLabel(4 ,"gen_ZZ2mu2e");
+    h[i]->GetXaxis()->SetBinLabel(5 ,"gen_ZZ2l2tau");
+    h[i]->GetXaxis()->SetBinLabel(6 ,"gen_ZZ4mu_EtaAcceptance");
+    h[i]->GetXaxis()->SetBinLabel(7 ,"gen_ZZ4mu_LeptonAcceptance");
+    h[i]->GetXaxis()->SetBinLabel(10,"gen_ZZ4e_EtaAcceptance");
+    h[i]->GetXaxis()->SetBinLabel(11,"gen_ZZ4e_LeptonAcceptance");
+    h[i]->GetXaxis()->SetBinLabel(14,"gen_ZZ2mu2e_EtaAcceptance");
+    h[i]->GetXaxis()->SetBinLabel(15,"gen_ZZ2mu2e_LeptonAcceptance");
+    h[i]->GetXaxis()->SetBinLabel(19,"gen_BUGGY");
+    h[i]->GetXaxis()->SetBinLabel(20,"gen_Unknown");
+
+    h[i]->GetXaxis()->SetBinLabel(40,"gen_sumWeights");
+    h[i]->GetXaxis()->SetBinLabel(41,"gen_sumGenMCWeight");
+    h[i]->GetXaxis()->SetBinLabel(42,"gen_sumPUWeight");
+  }
 
   return;
 }
@@ -1454,6 +1510,8 @@ void HZZ4lNtupleMaker::endRun(edm::Run const&, edm::EventSetup const&)
 void HZZ4lNtupleMaker::beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
 {
   Nevt_Gen_lumiBlock = 0;
+  for (auto it = Nevt_Gen_lumiBlock_reweighted.begin(); it != Nevt_Gen_lumiBlock_reweighted.end(); ++it)
+    *it = 0;
 }
 
 // ------------ method called when ending the processing of a luminosity block  ------------
@@ -1466,10 +1524,13 @@ void HZZ4lNtupleMaker::endLuminosityBlock(edm::LuminosityBlock const& iLumi, edm
   }
 
   // Nevt_gen: this is the number before any skim
-  if (Nevt_preskim>=0.) {
+  if (Nevt_preskim>=0. && !doreweighting) {
     Nevt_Gen += Nevt_preskim;
   } else {
+    if (Nevt_preskim>=0.) assert(Nevt_preskim == Nevt_Gen_lumiBlock);
     Nevt_Gen += Nevt_Gen_lumiBlock ;
+    for (int i = 0; i < nReweightingSamples; i++)
+      Nevt_Gen_reweighted[i] += Nevt_Gen_lumiBlock_reweighted[i];
   }
 }
 
@@ -1914,6 +1975,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("HqTMCweight",HqTMCweight);
   myTree->Book("ZXFakeweight",ZXFakeweight);
   myTree->Book("overallEventWeight",overallEventWeight);
+  myTree->Book("overallEventWeight_reweighted",overallEventWeight_reweighted);
   myTree->Book("GenHMass",GenHMass);
   myTree->Book("GenHPt",GenHPt);
   myTree->Book("GenHRapidity",GenHRapidity);
@@ -1950,6 +2012,12 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("GenAssocLep2Phi",GenAssocLep2Phi);
   myTree->Book("GenAssocLep2Id",GenAssocLep2Id);
 
+}
+
+void HZZ4lNtupleMaker::addweight(float &weight, vector<float> &weight_reweighted, float weighttoadd) {
+  weight += weighttoadd;
+  for (int i = 0; i < nReweightingSamples; i++)
+    weight_reweighted[i] += weighttoadd * reweightingweights[i];
 }
 
 //define this as a plug-in
