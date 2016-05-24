@@ -980,7 +980,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     if (writeJets && theChannel!=ZL) FillJet(*(cleanedJets.at(i))); // No additional pT cut (for JEC studies)
   }
 
-
   // Now we can write the variables for candidates
   int nFilled=0;
   for( edm::View<pat::CompositeCandidate>::const_iterator cand = cands->begin(); cand != cands->end(); ++cand) {
@@ -1003,7 +1002,10 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   }
 
   // If no candidate was filled but we still want to keep gen-level and weights, we need to fill one entry anyhow.
-  if (skipEmptyEvents==false && nFilled==0)myTree->FillCurrentTree();
+  if (skipEmptyEvents==false && nFilled==0) {
+    overallEventWeight_reweighted.resize(nReweightingSamples);
+    myTree->FillCurrentTree();
+  }
 }
 
 
@@ -1393,9 +1395,11 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     dataMCWeight *= getAllWeight(leptons[i]);
   }
   overallEventWeight = PUWeight * genHEPMCweight * dataMCWeight;
-  if (doreweighting)
+  if (doreweighting) {
+    overallEventWeight_reweighted.clear();
     for (int i = 0; i < nReweightingSamples; i++)
       overallEventWeight_reweighted.push_back(PUWeight * genHEPMCweight_reweighted[i] * dataMCWeight);
+  }
 }
 
 
