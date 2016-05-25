@@ -280,7 +280,6 @@ namespace {
   Int_t genProcessId  = 0;
   Float_t genHEPMCweight  = 0;
   std::vector<float> reweightingweights;
-  std::vector<float> genHEPMCweight_reweighted;
   Float_t LHEweight_QCDscale_muR1_muF1  = 0;
   Float_t LHEweight_QCDscale_muR1_muF2  = 0;
   Float_t LHEweight_QCDscale_muR1_muF0p5  = 0;
@@ -296,7 +295,6 @@ namespace {
   Float_t HqTMCweight  = 0;
   Float_t ZXFakeweight  = 0;
   Float_t overallEventWeight  = 0;
-  std::vector<float> overallEventWeight_reweighted;
   Float_t GenHMass  = 0;
   Float_t GenHPt  = 0;
   Float_t GenHRapidity  = 0;
@@ -764,7 +762,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
         setcouplings(i);
         myMela.computeP(GenHMass, GenZ1Mass, GenZ2Mass, Gencosthetastar, GenhelcosthetaZ1, GenhelcosthetaZ2, Genhelphi, GenphistarZ1, flavor, selfDHvvcoupl, probabilities[i]);
         reweightingweights.push_back(probabilities[i] / myprobability);
-        genHEPMCweight_reweighted.push_back(genHEPMCweight * reweightingweights[i]);
       }
     }
 
@@ -1002,10 +999,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   }
 
   // If no candidate was filled but we still want to keep gen-level and weights, we need to fill one entry anyhow.
-  if (skipEmptyEvents==false && nFilled==0) {
-    overallEventWeight_reweighted.resize(nReweightingSamples);
-    myTree->FillCurrentTree();
-  }
+  if (skipEmptyEvents==false && nFilled==0) myTree->FillCurrentTree();
 }
 
 
@@ -1395,11 +1389,6 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     dataMCWeight *= getAllWeight(leptons[i]);
   }
   overallEventWeight = PUWeight * genHEPMCweight * dataMCWeight;
-  if (doreweighting) {
-    overallEventWeight_reweighted.clear();
-    for (int i = 0; i < nReweightingSamples; i++)
-      overallEventWeight_reweighted.push_back(PUWeight * genHEPMCweight_reweighted[i] * dataMCWeight);
-  }
 }
 
 
@@ -1965,7 +1954,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("genFinalState",genFinalState);
   myTree->Book("genProcessId",genProcessId);
   myTree->Book("genHEPMCweight",genHEPMCweight);
-  if (doreweighting) myTree->Book("genHEPMCweight_reweighted",genHEPMCweight_reweighted);
+  if (doreweighting) myTree->Book("reweightingweights",reweightingweights);
   myTree->Book("LHEweight_QCDscale_muR1_muF1",LHEweight_QCDscale_muR1_muF1);
   myTree->Book("LHEweight_QCDscale_muR1_muF2",LHEweight_QCDscale_muR1_muF2);
   myTree->Book("LHEweight_QCDscale_muR1_muF0p5",LHEweight_QCDscale_muR1_muF0p5);
@@ -1981,7 +1970,6 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("HqTMCweight",HqTMCweight);
   myTree->Book("ZXFakeweight",ZXFakeweight);
   myTree->Book("overallEventWeight",overallEventWeight);
-  if (doreweighting) myTree->Book("overallEventWeight_reweighted",overallEventWeight_reweighted);
   myTree->Book("GenHMass",GenHMass);
   myTree->Book("GenHPt",GenHPt);
   myTree->Book("GenHRapidity",GenHRapidity);
