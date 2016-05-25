@@ -3,7 +3,7 @@ LEPTON_SETUP = 2015
 PD = ""
 MCFILTER = ""
 ELECORRTYPE = "RunII" # "None", "Moriond", "Paper", or "RunII"
-ELEREGRESSION = "None" # "None", "Moriond", "PaperNoComb", or "Paper" 
+ELEREGRESSION = "Paper" # "None", "Moriond", "PaperNoComb", or "Paper" 
 APPLYMUCORR = True
 BUNCH_SPACING = 25
 #FSRMODE = "Legacy" # Legacy or Run II
@@ -34,18 +34,17 @@ process.source.inputCommands = cms.untracked.vstring("keep *", "drop LHERunInfoP
 
 process.source.fileNames = cms.untracked.vstring(
 
-    ## Fall15 MiniAODv1 files for a first synchronization on MC
-    #'/store/mc/RunIIFall15MiniAODv1/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/00000/E2490ECF-CBA7-E511-9B19-001E67398458.root',
-    #'/store/mc/RunIIFall15MiniAODv1/WminusH_HToZZTo4L_M125_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/50000/282C35FB-68A3-E511-A0C4-0CC47A4C8E5E.root',
-    #'/store/mc/RunIIFall15MiniAODv1/WplusH_HToZZTo4L_M125_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/20000/E2DA5AA7-C5AC-E511-97E0-0CC47A4C8E98.root',
-    '/store/mc/RunIIFall15MiniAODv1/BulkGravToZZToZlepZhad_narrow_M-800_13TeV-madgraph/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/20000/14E8B66A-E5B0-E511-8CDC-B083FED177B1.root'
+     #'/store/mc/RunIIFall15MiniAODv1/BulkGravToZZToZlepZhad_narrow_M-800_13TeV-madgraph/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/20000/14E8B66A-E5B0-E511-8CDC-B083FED177B1.root'
+    '/store/mc/RunIIFall15MiniAODv1/GluGluHToZZTo2L2Q_M750_NWA_13TeV_powheg2_JHUgenV6_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/00000/0AABE4A2-25DE-E511-823C-00266CF2580C.root'
+
+  
 
     )
 
 process.calibratedPatElectrons.isSynchronization = cms.bool(True)
 process.calibratedMuons.isSynchronization = cms.bool(True)
 
-process.maxEvents.input = 2000
+process.maxEvents.input = -1
 #process.source.skipEvents = cms.untracked.uint32(5750)
 
 # Silence output
@@ -62,8 +61,8 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 # Debug
 process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
-      dump = cms.untracked.bool(False),
-     dumpTrigger = cms.untracked.bool(False),
+      dump = cms.untracked.bool(True),
+     dumpTrigger = cms.untracked.bool(True),
 #     muonSrc = cms.InputTag("slimmedMuons"),
 #     electronSrc = cms.InputTag("slimmedElectrons"),
      muonSrc = cms.InputTag("appendPhotons:muons"), 
@@ -74,8 +73,8 @@ process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
    #     Zjjb  = cms.InputTag("bareZjjCand"),     
         Z     = cms.InputTag("ZCand"),                                  
         ZZ  = cms.InputTag("ZZCand"),
-       Zjj  = cms.InputTag("ZjjCand"),
-         ZZb  = cms.InputTag("bareZZCand"),
+       ZZfat  = cms.InputTag("ZZCandFat"),
+#         ZZb  = cms.InputTag("bareZZCand"),
 #        ZL  = cms.InputTag("ZlCand"),
      ),
   #   jetSrc = cms.InputTag("cleanJets"),
@@ -99,7 +98,7 @@ process.trees = cms.EndPath(process.ZZTree)
 
 #Dump reconstructed variables
 #process.appendPhotons.debug = cms.untracked.bool(True)
-process.dump = cms.Path(process.dumpUserData)
+#process.dump = cms.Path(process.dumpUserData)
 
 #Print MC history
 #process.mch = cms.EndPath(process.printTree)

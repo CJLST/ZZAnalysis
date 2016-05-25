@@ -306,7 +306,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
       if (process>0) eventWeight = ( lumin * 1000 * scaleF[process] / NGenEvt[d] ) * xsec ;
       if (z == 0) cout << "cross-section = " << xsec << " pb; eventweight = " << eventWeight << endl;       
 
-      // find leading lepton and leading jet
+      // find leading jets (notice this vector also includes subjets (identified by a btagger value of -1) which must be removed!
       float pt1stJet = 0.0001;
       float pt2ndJet = 0.0001;
       float btag1stJet = 0.;
@@ -314,19 +314,23 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
       int nExtraJets = 0;
 
       for (unsigned int nJet=0; nJet<JetPt->size(); nJet++) {
-	if (JetIsInZZCand->at(nJet) && JetBTagger->at(nJet) > -0.999 /*remove subjets of fat jet also included in this collection! */) {         
-	  if (pt1stJet < JetPt->at(nJet)) {
-            pt2ndJet = pt1stJet;
-	    pt1stJet = JetPt->at(nJet);
-            btag1stJet = JetBTagger->at(nJet);
-	  } else if (pt2ndJet < JetPt->at(nJet)) {
-	    pt2ndJet = JetPt->at(nJet);
-	  }
-	  nInJets++;
-	} else
-	nExtraJets++;  
+	if (fabs(JetBTagger->at(nJet)+1.) > 0.001) {
+        // cout << " prova " << JetPt->at(nJet) << " " << JetIsInZZCand->at(nJet) << " " << JetBTagger->at(nJet) << " " << ZZMass->size() << " " << abs(ZZCandType->at(0)) << endl;
+	  if (JetIsInZZCand->at(nJet) ) {         
+	    if (pt1stJet < JetPt->at(nJet)) {
+	      pt2ndJet = pt1stJet;
+	      pt1stJet = JetPt->at(nJet);
+	      btag1stJet = JetBTagger->at(nJet);
+	    } else if (pt2ndJet < JetPt->at(nJet)) {
+	      pt2ndJet = JetPt->at(nJet);
+	    }
+	    nInJets++;
+	  } else nExtraJets++;  
+	}
       } 
-  
+      // cout << " xxxxxxxxxxxxxxxxxxxx " << endl;
+      
+      // find leading leptons
       float pt1stLep = 0.0001;
       float pt2ndLep = 0.0001;
       for (unsigned int nLep=0; nLep<LepPt->size(); nLep++) {
@@ -351,7 +355,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 
       // dump for synchronization 
       if (ZZMass->size() == 1 && abs(ZZCandType->at(0)) == 1) {
-	if (writeThis) myfile << RunNumber << ":" << EventNumber << ":" << LumiNumber << ":" << Z2Mass->at(0)  << ":" << (abs(Z2Flav->at(0))==121 ? "Ele:" : "Muo:")  << pt1stLep << ":" << pt2ndLep << ":" << ZZMass->at(0) << ":" << Z1Mass->at(0) << ":" << ":" << Z1tau21->at(0) << ":" << Z1Pt->at(0) << ":-1:-1:-1:-1:-1:" << Met << endl; 
+	if (writeThis) myfile << RunNumber << ":" << EventNumber << ":" << LumiNumber << ":" << Z2Mass->at(0)  << ":" << (abs(Z2Flav->at(0))==121 ? "Ele:" : "Muo:")  << pt1stLep << ":" << pt2ndLep << ":" << ZZMass->at(0) << ":" << Z1Mass->at(0) << ":" << Z1tau21->at(0) << ":" << Z1Pt->at(0) << ":-1:-1:-1:-1:-1:" << Met << endl; 
 	nPassMerged++;
       }
       else if (ZZMass->size() == 1 && abs(ZZCandType->at(0)) == 2) {
@@ -390,7 +394,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 
           if (typ==0 || typ==3) {   // only resolved
 	    for (unsigned int nJet=0; nJet<JetPt->size(); nJet++) {
-	      if (JetIsInZZCand->at(nJet) && JetBTagger->at(nJet) > -0.999 /*remove subjets of fat jet also included in this collection! */) {
+	      if (JetIsInZZCand->at(nJet) && fabs(JetBTagger->at(nJet)+1.) > 0.001 /*remove subjets of fat jet also included in this collection! */) {
 		h1[11][process][rs][typ]->Fill(JetBTagger->at(nJet),eventWeight);
 		h1[10][process][rs][typ]->Fill(JetQGLikelihood->at(nJet),eventWeight); 
 	      } 
