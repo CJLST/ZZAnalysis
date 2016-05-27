@@ -434,7 +434,6 @@ process.softElectrons = cms.EDProducer("EleFiller",
    #mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring15NonTrig25nsV1Values"), # (when running VID)
    )
 
-
 #process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons) # (use this version when running VID)
 process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.bareSoftElectrons + process.softElectrons)
 
@@ -585,6 +584,7 @@ process.bareZCand = cms.EDProducer("PATCandViewShallowCloneCombiner",
     cut = cms.string('0'), # see below
     checkCharge = cms.bool(True)
 )
+
 
 if KEEPLOOSECOMB:
     process.bareZCand.cut = cms.string('mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId())') # Propagate also combinations of loose leptons (for debugging)

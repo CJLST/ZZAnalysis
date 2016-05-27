@@ -235,10 +235,14 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
   //----------------------------------------------------------------------
   //--- Loop over input candidates
+  //LogPrint("") << "Size of ZZ candidates" << LLLLCands->size();
   for( View<CompositeCandidate>::const_iterator cand = LLLLCands->begin(); cand != LLLLCands->end(); ++ cand ) {
     int icand = distance(LLLLCands->begin(),cand);
 
     pat::CompositeCandidate myCand(*cand);
+
+//    if(myCand.daughter(0).daugther(0).pdgid())
+//    LogPrint("") << "ID " << myCand.daughter(0)->daughter(0)->pdgId();
 
     if (embedDaughterFloats){  
       userdatahelpers::embedDaughterData(myCand);
@@ -296,6 +300,14 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     int id22 = Z2L2->pdgId();
     int candChannel = id11*id12*id21*id22;
 
+    if(id11 == 22) id11 = -1 * id12;
+    if(id12 == 22) id12 = -1 * id11;
+    if(id21 == 22) id21 = -1 * id22;
+    if(id22 == 22) id22 = -1 * id21;
+
+    if((id11 && id12 == 22) || (id21 == 22 && id22 == 22)) LogError("Z with 2 tle") << "Found a Z candidate made up of 2 trackless electrons";
+    //LogPrint("") << id11 << id12 <<id21 <<id22;
+    
     // Recompute isolation for all four leptons if FSR is present
     for (int zIdx=0; zIdx<2; ++zIdx) {
       float worstMuIso=0;
@@ -1266,7 +1278,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
   } // End of loop over input candidates
 
-
+  //LogPrint("") << "post looop";
   //--- For each of the bestCandAmong preselections, find the best candidate and store its index (bestCandIdx)
   Comparators::BestCandComparator myComp(*result, bestCandType);
   for (int iCRname=0; iCRname<(int)preSelCands.size(); ++iCRname) {
@@ -1313,4 +1325,3 @@ ZZCandidateFiller::getPairMass(const reco::Candidate* lp, const reco::Candidate*
 
 #include <FWCore/Framework/interface/MakerMacros.h>
 DEFINE_FWK_MODULE(ZZCandidateFiller);
-

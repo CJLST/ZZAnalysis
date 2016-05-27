@@ -107,7 +107,8 @@ namespace {
   Float_t ZZEta  = 0;
   Float_t ZZPhi  = 0;
   Int_t CRflag  = 0;
-  std::vector<int> CR_int_flag;
+  std::vector<short> CR_int_flag;
+  Int_t ZZ_tle = 0;
   Float_t Z1Mass  = 0;
   Float_t Z1Pt  = 0;
   Short_t Z1Flav  = 0;
@@ -712,8 +713,8 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   const edm::View<pat::CompositeCandidate>* cands_tle = candHandle_tle.product();
 
   CR_int_flag.clear();
+  //if(cands->size() == 0) cands = cands_tle;
 
-  if(cands->size() == 0) cands = cands_tle;
 
   if ((skipEmptyEvents && cands->size() == 0) ) return; // Skip events with no candidate, unless skipEmptyEvents = false
 
@@ -848,6 +849,16 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       NRecoEle++;
   }
   
+  // Save if event also passed TLE selection 
+  int n_tle_Filled = 0;
+  for( edm::View<pat::CompositeCandidate>::const_iterator cand = cands_tle->begin(); cand != cands_tle->end(); ++cand) {
+    //size_t icand= cand-cands_tle->begin();
+    if (!(theChannel==ZL || (bool)(cand->userFloat("isBestCand")) )) continue; // Skip events other than the best cand (or CR candidates in the CR)
+    ++n_tle_Filled;
+  }
+
+  ZZ_tle = n_tle_Filled;
+
 
   //Loop on the candidates
   vector<Int_t> CRFLAG(cands->size());
@@ -857,6 +868,13 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     //    int candChannel = cand->userFloat("candChannel"); // This is currently the product of pdgId of leptons (eg 14641, 28561, 20449)
     
     if (theChannel==ZLL) {
+      // Cross check region for Z + 1 loose electron + 1 loose TLE (optional)
+      if (cand->hasUserFloat("isbestCRZLL")&&cand->hasUserFloat("CRZLL")) {
+        if (cand->userFloat("isBestCRZLL")&&cand->userFloat("CRZLL")) {
+          set_bit(CRFLAG[icand],ZLL);      
+          CR_int_flag.push_back(ZLL);
+        }
+      } 
       // AA CRs
       if (cand->userFloat("isBestCRZLLss")&&cand->userFloat("CRZLLss")) {
         set_bit(CRFLAG[icand],CRZLLss);      
@@ -1684,7 +1702,9 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("ZZEta",ZZEta);
   myTree->Book("ZZPhi",ZZPhi);
   myTree->Book("CRflag",CRflag);
-  mytree->Book("CR_int_flag",CR_int_flag);
+  myTree->Book("CR_int_flag",CR_int_flag);
+  myTree->Book("ZZ_tle",ZZ_tle);
+
   myTree->Book("Z1Mass",Z1Mass);
   myTree->Book("Z1Pt",Z1Pt);
   myTree->Book("Z1Flav",Z1Flav);
