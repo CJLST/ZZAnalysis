@@ -13,8 +13,8 @@
 git cms-merge-topic -u matteosan1:smearer_76X
 
 #ZZAnalysis
-git clone -b 2l2q https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
-(cd ZZAnalysis; git checkout 2l2q)
+git clone -b 2l2q_80X https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
+(cd ZZAnalysis; git checkout 2l2q_80X)
 
 #effective areas (to be updated)
 git clone -n https://github.com/latinos/UserCode-sixie-Muon-MuonAnalysisTools Muon/MuonAnalysisTools
