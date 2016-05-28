@@ -93,17 +93,44 @@ userdatahelpers::getSortedLeptons(const pat::CompositeCandidate& cand, vector<co
 
     // Sort leptons by charge so that the order is Z1Lp, Z1Ln, Z2Lp, Z2Ln;
     // do nothing for the same-sign collections used for CRs
-    if (leptons[0]->charge() < 0 && leptons[0]->charge()*leptons[1]->charge()<0) {
-      swap(leptons[0],leptons[1]);
-      swap(labels[0],labels[1]);
-      swap(lOrder[0],lOrder[1]);
+    //
+    bool need_swap = false;
+
+    if(abs(leptons[0]->pdgId()) == 22 || abs(leptons[1]->pdgId()) == 22) {
+        int non_TLE_index = -1;
+        if(abs(leptons[0]->pdgId()) != 22) non_TLE_index = 0;
+        if(abs(leptons[1]->pdgId()) != 22) non_TLE_index = 1;   
+        if(non_TLE_index == -1) edm::LogError("") << "Found a Z candidate made of two TLE, this should never happen!";
+        if(leptons[non_TLE_index]->charge() < 0 && non_TLE_index == 0) need_swap = true; 
+    } else {
+      if (leptons[0]->charge() < 0 && leptons[0]->charge()*leptons[1]->charge()<0) {
+        need_swap = true;
+      }
     }
-    if (leptons[2]->charge() < 0 && leptons[2]->charge()*leptons[3]->charge()<0) {
-      swap(leptons[2],leptons[3]);
-      swap(labels[2],labels[3]);
-      swap(lOrder[2],lOrder[3]);
+    if(need_swap) {
+        swap(leptons[0],leptons[1]);
+        swap(labels[0],labels[1]);
+        swap(lOrder[0],lOrder[1]);
     }
-     
+
+    need_swap = false;
+    if(abs(leptons[2]->pdgId()) == 22 || abs(leptons[3]->pdgId()) == 22) {
+        int non_TLE_index = -1;
+        if(abs(leptons[2]->pdgId()) != 22) non_TLE_index = 2;
+        if(abs(leptons[3]->pdgId()) != 22) non_TLE_index = 3;   
+        if(non_TLE_index == -1) edm::LogError("") << "Found a Z candidate made of two TLE, this should never happen!";
+        if(leptons[non_TLE_index]->charge() < 0 && non_TLE_index == 2) need_swap = true; 
+    } else {
+      if(leptons[2]->charge() < 0 && leptons[2]->charge()*leptons[3]->charge()<0) {        
+        need_swap = true;
+      }
+    }
+    if(need_swap) {
+        swap(leptons[2],leptons[3]);
+        swap(labels[2],labels[3]);
+        swap(lOrder[2],lOrder[3]);
+    }
+
     // Collect FSR
     for (unsigned iZ=0; iZ<2; ++iZ) {
       for (unsigned ifsr=2; ifsr<Zs[iZ]->numberOfDaughters(); ++ifsr) {
