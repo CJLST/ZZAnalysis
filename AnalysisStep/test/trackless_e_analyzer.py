@@ -8,8 +8,10 @@ process.bareSoftPhotons = cms.EDFilter("PATPhotonRefSelector",
 from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
 dataFormat = DataFormat.MiniAOD
 switchOnVIDPhotonIdProducer(process, dataFormat)
-my_id_modules = ['RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_Spring15_25ns_nonTrig_V2_cff']
-
+my_id_modules = [
+                'RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_Spring15_25ns_nonTrig_V2_cff',
+                'RecoEgamma.PhotonIdentification.Identification.mvaTLEID_Fall15_V1_cff',
+                ]
 #add them to the VID producer
 for idmod in my_id_modules:
     setupAllVIDIdsInModule(process,idmod,setupVIDPhotonSelection)
@@ -17,7 +19,9 @@ for idmod in my_id_modules:
 
 process.softPhotons = cms.EDProducer("Philler",
    src    = cms.InputTag("bareSoftPhotons"),
-   mvaValuesMap= cms.InputTag("photonMVAValueMapProducer:PhotonMVAEstimatorRun2Spring15NonTrig25nsV2Values"),
+   srcElectrons = cms.InputTag("softElectrons"),
+   mvaValuesMap= cms.InputTag("photonMVAValueMapProducer:TLEMVAEstimatorRun2Fall15V1Values"),
+#   mvaValuesMap= cms.InputTag("photonMVAValueMapProducer:PhotonMVAEstimatorRun2Spring15NonTrig25nsV2Values"),
    sampleType = cms.int32(SAMPLE_TYPE),
    setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
    cut = cms.string("1"),# removed cut because variable is in Spring15 ID  && userFloat('missingHit')<=1"),
@@ -74,6 +78,7 @@ process.bareZZCandtle= cms.EDProducer("PATCandViewShallowCloneCombiner",
 process.ZZCandtle = cms.EDProducer("ZZCandidateFiller",
     src = cms.InputTag("bareZZCandtle"),
     sampleType = cms.int32(SAMPLE_TYPE),
+    sampleName = cms.string(SAMPLENAME),
     setup = cms.int32(LEPTON_SETUP),
     superMelaMass = cms.double(SUPERMELA_MASS),
     isMC = cms.bool(IsMC),

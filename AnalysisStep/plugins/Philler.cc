@@ -50,6 +50,7 @@ class Philler : public edm::EDProducer {
 
   //edm::EDGetTokenT<pat::PhotonRefVector> photonToken;
   edm::EDGetTokenT<edm::View<reco::Photon>> photonToken;
+  edm::EDGetTokenT<pat::ElectronCollection> electronToken;
 
   bool recomputeBDT = false;
   int sampleType;
@@ -65,6 +66,7 @@ class Philler : public edm::EDProducer {
 Philler::Philler(const edm::ParameterSet& iConfig) :
 //  photonToken(consumes<pat::PhotonRefVector>(iConfig.getParameter<edm::InputTag>("src"))),
   photonToken(consumes<edm::View<reco::Photon>>(iConfig.getParameter<edm::InputTag>("src"))),
+  electronToken(consumes<pat::ElectronCollection>(iConfig.getParameter<edm::InputTag>("srcElectron"))),
   sampleType(iConfig.getParameter<int>("sampleType")),
   setup(iConfig.getParameter<int>("setup")),
   cut(iConfig.getParameter<std::string>("cut")),
@@ -87,8 +89,12 @@ Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 //  edm::Handle<pat::PhotonRefVector> photonHandle;
 
   edm::Handle<edm::View<reco::Photon>> photonHandle;
-
   iEvent.getByToken(photonToken, photonHandle);
+
+  edm::Handle<pat::ElectronCollection> electronHandle;
+  iEvent.getByToken(electronToken, electronHandle);
+
+
 
   edm::Handle<double> rhoHandle;
   iEvent.getByToken(rhoToken, rhoHandle);
@@ -105,11 +111,22 @@ Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   for (unsigned int i = 0; i< photonHandle->size(); ++i){
 
+    pat::Photon l(*(photonHandle->ptrAt(i)));
+    float min_ele_dR = 999;
+    float curr_dR = 999;
+    int min_dR_index = -1;
+    for(size_t i_ele = 0; i_ele < electronHandle->size(); ++i_ele) {
+      curr_dR = reco::deltaR(l, electronHandle->at(i_ele));
+      if(curr_dR < min_ele_dR) {
+        min_ele_dR = curr_dR;
+        min_dR_index = i_ele;
+      }
+    }
+ 
     //---Clone the pat::Photon
 //    pat::Photon l(*((*photonHandle)[i].get()));
 
     //LogWarning("") << "b4";
-    pat::Photon l(*(photonHandle->ptrAt(i)));
     //LogWarning("") << "after";
 
     //--- PF ISO
@@ -123,7 +140,7 @@ Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 //    float PFPhotonIso       = l.pfIsolationVariables().sumPhotonEt;
 
     //float fSCeta = fabs(l.eta()); 
-    //float fSCeta = fabs(l.superCluster()->eta());
+    float fSCeta = fabs(l.superCluster()->eta());
 
     float combRelIsoPF = LeptonIsoHelper::combRelIsoPF(sampleType, setup, rho, l);
 
@@ -160,9 +177,13 @@ Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     bool isBDT = false;
 
     // temporary ID https://twiki.cern.ch/twiki/bin/view/CMS/MultivariatePhotonIdentificationRun2
-    if(l.isEB() && BDT > 0.374) 
+
+    // WP for TLE ID v1
+    if(l.isEB() && fSCeta < 0.8 && BDT > -0.68) 
         isBDT = true;// 0.374;
-    else if(l.isEE() && BDT > 0.336) 
+    if(l.isEB() && fSCeta >= 0.8 && BDT > -0.66) 
+        isBDT = true;// 0.374;
+    if(l.isEE() && BDT > -0.6) 
         isBDT = true;// 0.336;
     //LogPrint("") << "isBDT:" << isBDT<<" " << BDT;
  /*(pt <= 10 && ((fSCeta < 0.8                    && BDT > -0.265) ||
@@ -215,7 +236,23 @@ Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     l.addUserFloat("isBDT",isBDT);
     l.addUserFloat("isCrack",isCrack);
     l.addUserFloat("HLTMatch", HLTMatch);
-    //l.addUserFloat("missingHit", missingHit);
+
+    int ele_is_ID = -1;
+    int ele_is_ISO = -1;
+    int ele_is_SIP = -1;
+ 
+    if(min_dR_index != -1) {
+        pat::Electron ele((electronHandle->at(min_dR_index)));
+        if(ele.hasUserFloat("ID")) ele_is_ID = ele.userFloat("ID");
+        if(ele.hasUserFloat("combRelIsoPF")) ele_is_ISO = ele.userFloat("combRelIsoPF") < 0.35;
+        if(ele.hasUserFloat("SIP")) ele_is_SIP = ele.userFloat("SIP") < 4.0;
+    }
+    l.addUserFloat("min_ele_dR", min_ele_dR);
+    l.addUserFloat("ele_isID", ele_is_ID);
+    l.addUserFloat("ele_isISO", ele_is_ISO);
+    l.addUserFloat("ele_isSIP", ele_is_SIP);
+
+
     //l.addUserFloat("passCombRelIsoPFFSRCorr", 0.);
     //l.addUserFloat("pfSCfbrem", pfSCfbrem);
     //l.addUserFloat("is_tle", true);

@@ -53,6 +53,10 @@
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
 #include <ZZAnalysis/AnalysisStep/interface/JetCleaner.h>
 
+#include <ZZAnalysis/AnalysisStep/interface/IDMatchingUtilities.h>
+
+
+
 #include "ZZ4lConfigHelper.h"
 #include "HZZ4lNtupleFactory.h"
 
@@ -103,6 +107,7 @@ namespace {
   Float_t ZZMassPreFSR  = 0;
   Short_t ZZsel  = 0;
   Short_t ZZ_n_tle = 0;
+  Short_t ZZ_match = -1;
   Float_t ZZPt  = 0;
   Float_t ZZEta  = 0;
   Float_t ZZPhi  = 0;
@@ -112,6 +117,7 @@ namespace {
   Float_t Z1Mass  = 0;
   Float_t Z1Pt  = 0;
   Short_t Z1Flav  = 0;
+  Short_t Z1_match = -1;
   Float_t ZZMassRefit  = 0;
   Float_t ZZMassRefitErr  = 0;
   Float_t ZZMassUnrefitErr  = 0;
@@ -120,6 +126,7 @@ namespace {
   Float_t Z2Mass  = 0;
   Float_t Z2Pt  = 0;
   Short_t Z2Flav  = 0;
+  Short_t Z2_match = -1;
   Float_t costhetastar  = 0;
   Float_t helphi  = 0;
   Float_t helcosthetaZ1  = 0;
@@ -141,6 +148,19 @@ namespace {
   //std::vector<float> LepNeutralHadIso;
   //std::vector<float> LepPhotonIso;
   std::vector<float> LepCombRelIsoPF;
+  std::vector<float> Lep_min_ele_dR;
+  std::vector<short> Lep_ele_isID;
+  std::vector<short> Lep_ele_isISO;
+  std::vector<short> Lep_ele_isSIP;
+
+  std::vector<short> Lep_match;
+  std::vector<short> Lep_id_match;
+  std::vector<short> Lep_id_mother_id;
+  std::vector<short> Lep_id_mother_status;
+  std::vector<float> Lep_id_gen_pt;
+  std::vector<float> Lep_id_gen_eta;
+  std::vector<short> Lep_id_gen_ID;
+
   std::vector<float> fsrPt;
   std::vector<float> fsrEta; 
   std::vector<float> fsrPhi;
@@ -384,6 +404,7 @@ private:
   int year;
 
   edm::EDGetTokenT<edm::View<reco::Candidate> > genParticleToken;
+  edm::Handle<edm::View<reco::Candidate> > genParticles;
   edm::EDGetTokenT<GenEventInfoProduct> genInfoToken;
   edm::EDGetTokenT<edm::View<pat::CompositeCandidate> > candToken;
   edm::EDGetTokenT<edm::View<pat::CompositeCandidate> > candToken_tle;
@@ -607,7 +628,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   std::vector<const reco::Candidate *> genZLeps;
   std::vector<const reco::Candidate *> genAssocLeps;
 
-  edm::Handle<edm::View<reco::Candidate> > genParticles;
   edm::Handle<GenEventInfoProduct> genInfo;
 
   if (isMC) {
@@ -990,6 +1010,20 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   //LepNeutralHadIso.clear();
   //LepPhotonIso.clear();
   LepCombRelIsoPF.clear();
+  Lep_min_ele_dR.clear();
+  Lep_ele_isID.clear();
+  Lep_ele_isISO.clear();
+  Lep_ele_isSIP.clear();
+
+  Lep_match.clear();
+  Lep_id_match.clear();
+  Lep_id_mother_id.clear();
+  Lep_id_mother_status.clear();
+  Lep_id_gen_pt.clear();
+  Lep_id_gen_eta.clear();
+  Lep_id_gen_ID.clear();
+
+
   fsrPt.clear();
   fsrEta.clear();
   fsrPhi.clear();
@@ -1289,12 +1323,56 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     LepSIP  .push_back( SIP[i] );
     LepTime .push_back( lepFlav==13 ? userdatahelpers::getUserFloat(leptons[i],"time") : 0. );
     LepisID .push_back( userdatahelpers::getUserFloat(leptons[i],"ID") );
-    LepBDT  .push_back( lepFlav==11 ? userdatahelpers::getUserFloat(leptons[i],"BDT") : 0. );
+    LepBDT  .push_back( lepFlav==11 ||lepFlav==22 ? userdatahelpers::getUserFloat(leptons[i],"BDT") : 0. );
     LepMissingHit.push_back( lepFlav==11 ? userdatahelpers::getUserFloat(leptons[i],"missingHit") : 0 );
     //LepChargedHadIso[i].push_back( userdatahelpers::getUserFloat(leptons[i],"PFChargedHadIso") );
     //LepNeutralHadIso[i].push_back( userdatahelpers::getUserFloat(leptons[i],"PFNeutralHadIso") );
     //LepPhotonIso[i].push_back( userdatahelpers::getUserFloat(leptons[i],"PFPhotonIso") );
     LepCombRelIsoPF.push_back( combRelIsoPF[i] );
+
+    float min_ele_dR = lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"min_ele_dR") : -2; 
+    short ele_isID = lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"ele_isID") : -2; 
+    short ele_isISO = lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"ele_isISO") : -2;
+    short ele_isSIP = lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"ele_isSIP") : -2;
+
+    Lep_min_ele_dR.push_back(min_ele_dR);    
+    Lep_ele_isID.push_back(ele_isID);
+    Lep_ele_isISO.push_back(ele_isISO);
+    Lep_ele_isSIP.push_back(ele_isSIP);
+
+    int Z_lep_match = isMC ? cand.userFloat(labels[i] + "Z_lep_match") : -1;
+    Lep_match.push_back(Z_lep_match);
+
+    int id_match = -1;
+    const reco::Candidate* genParticle = nullptr;
+    int mother_ID = 0;
+    int mother_status = -1;
+    float gen_pT = -1;
+    float gen_eta = -999;
+    float gen_ID = 0;
+ 
+    if(isMC) {
+      if(abs(leptons[i]->pdgId()) != 13) {
+        id_match = matchToTruth(leptons[i], genParticles);
+      }
+      genParticle = GetClosestGenParticle(leptons[i], genParticles);
+
+      if(genParticle != nullptr) {
+        findFirstNonElectronMother(genParticle, mother_ID, mother_status);
+      }
+
+      if(genParticle != nullptr) {
+         gen_pT = genParticle->p4().Pt();
+         gen_eta = genParticle->p4().Eta();
+         gen_ID = genParticle->pdgId();
+      }
+    }
+    Lep_id_match.push_back(id_match);
+    Lep_id_mother_id.push_back(mother_ID);
+    Lep_id_mother_status.push_back(mother_status);
+    Lep_id_gen_pt.push_back(gen_pT);
+    Lep_id_gen_eta.push_back(gen_eta);
+    Lep_id_gen_ID.push_back(gen_ID);
   }
 
   // FSR 
@@ -1359,6 +1437,13 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     dataMCWeight *= getAllWeight(leptons[i]);
   }
   overallEventWeight = PUWeight * genHEPMCweight * dataMCWeight;
+
+
+  if(isMC) {
+    ZZ_match = cand.userFloat("Z_lep_match");
+    Z1_match = cand.userFloat("d0.Z_lep_match");
+    Z2_match = cand.userFloat("d1.Z_lep_match");
+  }
 
 }
 
@@ -1704,10 +1789,12 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("CRflag",CRflag);
   myTree->Book("CR_int_flag",CR_int_flag);
   myTree->Book("ZZ_tle",ZZ_tle);
+  myTree->Book("ZZ_match",ZZ_match);
 
   myTree->Book("Z1Mass",Z1Mass);
   myTree->Book("Z1Pt",Z1Pt);
   myTree->Book("Z1Flav",Z1Flav);
+  myTree->Book("Z1_match",Z1_match);
 
   //Kin refitted info
   if (addKinRefit) {
@@ -1724,6 +1811,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("Z2Mass",Z2Mass);
   myTree->Book("Z2Pt",Z2Pt);
   myTree->Book("Z2Flav",Z2Flav);
+  myTree->Book("Z2_match",Z2_match);
   myTree->Book("costhetastar",costhetastar);
   myTree->Book("helphi",helphi);
   myTree->Book("helcosthetaZ1",helcosthetaZ1);
@@ -1745,6 +1833,20 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   //myTree->Book("LepNeutralHadIso",LepNeutralHadIso);
   //myTree->Book("LepPhotonIso",LepPhotonIso);
   myTree->Book("LepCombRelIsoPF",LepCombRelIsoPF);
+  myTree->Book("Lep_min_ele_dR",Lep_min_ele_dR);
+  myTree->Book("Lep_ele_isID",Lep_ele_isID);
+  myTree->Book("Lep_ele_isISO",Lep_ele_isISO);
+  myTree->Book("Lep_ele_isSIP",Lep_ele_isSIP);
+//  myTree->Book("",);
+
+  myTree->Book("Lep_match",Lep_match);
+  myTree->Book("Lep_id_match",Lep_id_match);
+  myTree->Book("Lep_id_mother_id",Lep_id_mother_id);
+  myTree->Book("Lep_id_mother_status",Lep_id_mother_status);
+  myTree->Book("Lep_id_gen_pt",Lep_id_gen_pt);
+  myTree->Book("Lep_id_gen_eta",Lep_id_gen_eta);
+  myTree->Book("Lep_id_gen_ID",Lep_id_gen_ID);
+
   myTree->Book("fsrPt",fsrPt);
   myTree->Book("fsrEta",fsrEta);
   myTree->Book("fsrPhi",fsrPhi);
