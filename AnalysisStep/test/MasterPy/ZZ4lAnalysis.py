@@ -531,7 +531,7 @@ process.appendPhotons = cms.EDProducer("LeptonPhotonMatcher",
     photonSrc = cms.InputTag("boostedFsrPhotons"),
     sampleType = cms.int32(SAMPLE_TYPE),                     
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
-    photonSel = cms.string(FSRMODE)  # "skip", "passThrough", "Legacy", "RunII"
+    photonSel = cms.string(FSRMODE),  # "skip", "passThrough", "Legacy", "RunII"
     muon_iso_cut = cms.double(MUISOCUT),
     electron_iso_cut = cms.double(ELEISOCUT),
     )
@@ -808,7 +808,7 @@ process.ZZCand = cms.EDProducer("ZZCandidateFiller",
         SR = cms.string(SR),
         FullSel70 = cms.string(SR), #Obsolete, use "SR"
         FullSel = cms.string(FULLSEL),
-    )
+    ),
     muon_iso_cut = cms.double(MUISOCUT),
     electron_iso_cut = cms.double(ELEISOCUT),
 )
@@ -926,7 +926,7 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
       CRZLLss = cms.string(CR_BASESEL),             #combine with proper isBestCRZLLss for AA ss/os CRss    
       CRZLLos_2P2F = cms.string(CR_ZLLosSEL_2P2F),        
       CRZLLos_3P1F = cms.string(CR_ZLLosSEL_3P1F),        
-    )
+    ),
     muon_iso_cut = cms.double(MUISOCUT),
     electron_iso_cut = cms.double(ELEISOCUT),
 )
