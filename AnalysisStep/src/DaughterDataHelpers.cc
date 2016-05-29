@@ -11,8 +11,10 @@ using namespace reco;
 void userdatahelpers::embedDaughterData(pat::CompositeCandidate& cand) {
 
   for (unsigned i = 0; i<cand.numberOfDaughters(); ++i) {
-    const reco::Candidate* d = cand.daughter(i)->masterClone().get();
+    const reco::Candidate* d = cand.daughter(i);
 
+    if(d->hasMasterClone()) d = d->masterClone().get();
+    
     // We need the concrete object to access the method userFloat(). 
     // (A more general solution would be to creat a StringObjectFunction on the fly for each 
     // entry in userFloatNames(). That's maybe too time consuming (to be checked))
