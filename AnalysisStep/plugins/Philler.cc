@@ -122,7 +122,7 @@ Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         min_dR_index = i_ele;
       }
     }
-    if(min_ele_dR < 0.02) continue;
+    if(min_ele_dR < 0.1) continue;
     //---Clone the pat::Photon
 //    pat::Photon l(*((*photonHandle)[i].get()));
 
