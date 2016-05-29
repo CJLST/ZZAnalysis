@@ -92,6 +92,9 @@ private:
   reco::CompositeCandidate::role_collection rolesZ2Z1;
   bool isMC;
   bool recomputeIsoForFSR;
+
+  float muon_iso_cut, electron_iso_cut;
+
   TH2F* corrSigmaMu;
   TH2F* corrSigmaEle;
   Comparators::ComparatorTypes bestCandType;
@@ -184,8 +187,8 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
 
   //-- kinematic refitter
   kinZfitter = new KinZfitter(!isMC);
-
- 
+  muon_iso_cut = iConfig.getParameter<double>("muon_iso_cut");
+  electron_iso_cut = iConfig.getParameter<double>("electron_iso_cut");
 }
 
 
@@ -408,7 +411,14 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 	  str << "d" << zIdx << "." << "d" << dauIdx << ".";
 	  str >> base;
 	  myCand.addUserFloat(base+"combRelIsoPFFSRCorr",combRelIsoPFCorr);
-	  myCand.addUserFloat(base+"passCombRelIsoPFFSRCorr",combRelIsoPFCorr < LeptonIsoHelper::isoCut(d)); // FIXME: not the most elegant solution; hard coded right now to see how things evolve about lepton isolation requirements. 
+      float cut_value = 0;
+      if(d->isMuon()) cut_value = muon_iso_cut;
+      if(d->isElectron()) cut_value = electron_iso_cut;
+      if(d->isPhoton()) {
+         cut_value = 999;    
+         edm::LogError("") << "Requesting isolation cut for TLE, is not implemented";
+      }
+	  myCand.addUserFloat(base+"passCombRelIsoPFFSRCorr",combRelIsoPFCorr < cut_value); 
 	} else {
 	  combRelIsoPFCorr = userdatahelpers::getUserFloat(d,"combRelIsoPFFSRCorr");
 	}	

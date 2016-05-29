@@ -19,7 +19,7 @@ for idmod in my_id_modules:
 
 process.softPhotons = cms.EDProducer("Philler",
    src    = cms.InputTag("bareSoftPhotons"),
-   srcElectrons = cms.InputTag("softElectrons"),
+   srcElectron = cms.InputTag("softElectrons"),
    mvaValuesMap= cms.InputTag("photonMVAValueMapProducer:TLEMVAEstimatorRun2Fall15V1Values"),
 #   mvaValuesMap= cms.InputTag("photonMVAValueMapProducer:PhotonMVAEstimatorRun2Spring15NonTrig25nsV2Values"),
    sampleType = cms.int32(SAMPLE_TYPE),
@@ -51,6 +51,11 @@ process.bareZCandtle = cms.EDProducer("CandViewShallowCloneCombiner",
     checkCharge = cms.bool(False)
 )
 
+#process.bareZCandtleown = cms.EDProducer("bareZFiller",
+#    decay = cms.string('appendPhotons:electrons appendPhotons:electronstle'),
+#    cut = cms.string(''),#mass>40 && mass <180'), # protect against ghosts
+##    checkCharge = cms.bool(False)
+#)
 
 
 process.ZCandtle = cms.EDProducer("ZCandidateFiller",
@@ -95,6 +100,8 @@ process.ZZCandtle = cms.EDProducer("ZZCandidateFiller",
         FullSel = cms.string(FULLSEL),
         number_trackless_electrons = cms.string("abs(1)"),
     )
+    muon_iso_cut = cms.double(MUISOCUT),
+    electron_iso_cut = cms.double(ELEISOCUT),
 )
 
 process.ZZTree.CandCollection_tle = cms.untracked.string('ZZCandtle')
@@ -180,6 +187,8 @@ process.ZLLCandtle = cms.EDProducer("ZZCandidateFiller",
       CRZLLos_3P1F = cms.string(CR_ZLLosSEL_3P1F_tle),        
       number_trackless_electrons = cms.string("abs(1)"),
     )
+    muon_iso_cut = cms.double(MUISOCUT),
+    electron_iso_cut = cms.double(ELEISOCUT),
 )
 
 

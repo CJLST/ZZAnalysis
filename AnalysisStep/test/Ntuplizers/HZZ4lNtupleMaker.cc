@@ -69,7 +69,7 @@
 
 namespace {
   bool writeJets = true;     // Write jets in the tree. FIXME: make this configurable
-  bool addKinRefit = true;
+  bool addKinRefit = false;
   bool addVtxFit = false;
   bool addFSRDetails = false;
   bool skipDataMCWeight = false; // skip computation of data/MC weight
@@ -1304,7 +1304,8 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     short lepFlav = std::abs(leptons[i]->pdgId());
 
     SIP[i]             = userdatahelpers::getUserFloat(leptons[i],"SIP");
-    passIsoPreFSR      = passIsoPreFSR&&(userdatahelpers::getUserFloat(leptons[i],"combRelIsoPF")<LeptonIsoHelper::isoCut(leptons[i]));
+    // this cut needs to be fixed!!!
+    passIsoPreFSR      = passIsoPreFSR&&(userdatahelpers::getUserFloat(leptons[i],"combRelIsoPF")< 0.35);// LeptonIsoHelper::isoCut(leptons[i]));
 
     //in the Legacy approach,  FSR-corrected iso is attached to the Z, not to the lepton!
     if (theChannel!=ZL) {

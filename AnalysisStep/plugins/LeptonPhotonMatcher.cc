@@ -69,6 +69,9 @@ class LeptonPhotonMatcher : public edm::EDProducer {
   bool debug;
   edm::EDGetTokenT<double> rhoForMuToken;
   edm::EDGetTokenT<double> rhoForEleToken;
+
+  float muon_iso_cut;
+  float electron_iso_cut;
 };
 
 
@@ -96,6 +99,9 @@ LeptonPhotonMatcher::LeptonPhotonMatcher(const edm::ParameterSet& iConfig) :
     abort();
   }
   
+  muon_iso_cut = iConfig.getParameter<double>("muon_iso_cut");
+  electron_iso_cut = iConfig.getParameter<double>("electron_iso_cut");
+
 
   produces<pat::MuonCollection>("muons");
   produces<pat::ElectronCollection>("electrons");
@@ -329,7 +335,7 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       } 
       float combRelIsoPFCorr =  LeptonIsoHelper::combRelIsoPF(sampleType, setup, rhoForMu, *m, fsrCorr);
       m->addUserFloat("combRelIsoPFFSRCorr", combRelIsoPFCorr);
-      m->addUserFloat("passCombRelIsoPFFSRCorr",combRelIsoPFCorr < LeptonIsoHelper::isoCut(&*m)); // FIXME should move this to the .py, once we drop support for the old FSR strategy
+      m->addUserFloat("passCombRelIsoPFFSRCorr",combRelIsoPFCorr < muon_iso_cut);
     }
 
     for (pat::ElectronCollection::iterator e= resultEle->begin(); e!=resultEle->end(); ++e){
@@ -344,7 +350,7 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
       float combRelIsoPFCorr =  LeptonIsoHelper::combRelIsoPF(sampleType, setup, rhoForEle, *e, fsrCorr);
       e->addUserFloat("combRelIsoPFFSRCorr", combRelIsoPFCorr);
-      e->addUserFloat("passCombRelIsoPFFSRCorr",combRelIsoPFCorr < LeptonIsoHelper::isoCut(&*e)); // FIXME should move this to the .py, once we drop support for the old FSR strategy
+      e->addUserFloat("passCombRelIsoPFFSRCorr",combRelIsoPFCorr < electron_iso_cut);
     }
     for (pat::PhotonCollection::iterator e= resultTle->begin(); e!=resultTle->end(); ++e){
 //      float fsrCorr = 0; // The correction to PFPhotonIso
@@ -359,7 +365,7 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       }*/
       float combRelIsoPFCorr = 0.;// LeptonIsoHelper::combRelIsoPF(sampleType, setup, rhoForEle, *e, fsrCorr);
       e->addUserFloat("combRelIsoPFFSRCorr", combRelIsoPFCorr);
-      e->addUserFloat("passCombRelIsoPFFSRCorr",combRelIsoPFCorr < LeptonIsoHelper::isoCut(&*e)); // FIXME should move this to the .py, once we drop support for the old FSR strategy
+      e->addUserFloat("passCombRelIsoPFFSRCorr",combRelIsoPFCorr < 999.); //LeptonIsoHelper::isoCut(&*e)); // FIXME should move this to the .py, once we drop support for the old FSR strategy
     }
 
 
