@@ -1,0 +1,16 @@
+identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments,comment
+
+
+###,,,,,,,,,,,Data 
+DoubleMu2016B,, -1, ,, /DoubleMuon/Run2016B-PromptReco-v2/MINIAOD,dbs,,2,PD=DoubleMu,json_2016_Silver.py,
+DoubleEG2016B,, -1, ,, /DoubleEG/Run2016B-PromptReco-v2/MINIAOD,dbs,,2,PD=DoubleEle,json_2016_Silver.py,
+MuonEG2016B,,   -1, ,, /MuonEG/Run2016B-PromptReco-v2/MINIAOD,dbs,,2,PD=MuEG,json_2016_Silver.py,
+SingleEle2016B,,-1, ,, /SingleElectron/Run2016B-PromptReco-v2/MINIAOD,dbs,,5,PD=SingleElectron,json_2016_Silver.py,
+
+###,,,,,,,,,,,MC signal - Fall15 samples
+
+### See comment field,,,,,,,,,,,Unless otherwise stated; signal x-sections are taken from https://hypernews.cern.ch/HyperNews/CMS/get/higgs/1738.html
+###,,,,,,,,,,,in the [120;130] range they are taken from the YR4 SM 13TeV tab; i.e. they are NNLO+NNLL (+EW)
+###,,,,,,,,,,,while for other mass points they are taken from the YR4 BSM 13TeV tab; i.e. they are in NWA and without EWK corrections; see https://hypernews.cern.ch/HyperNews/CMS/get/higgs/1738/1/1/1.html
+###,,,,,,,,,,,For ZH and ttH the BR is obtained as BR(H->ZZ->2L2X) = BR(H->4L) + BR(H->2L2q) + BR(H->ZZ*->2L2nu) * BR(H->2L2nu) / [ BR(H->ZZ*->2L2nu) + BR(H->WW*->2L2nu) ] where BR(H->4L) BR(H->2L2q) and BR(H->2L2nu) are taken from the YR3 Twikis.
+###,,,,,,,,,,,For ZH and ttH the BR column also includes the gen filter efficiency (0.15038 for ZH and 0.1544 for ttH).

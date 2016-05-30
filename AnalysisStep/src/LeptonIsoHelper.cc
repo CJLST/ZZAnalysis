@@ -33,8 +33,10 @@ InputTag LeptonIsoHelper::getMuRhoTag(int sampleType, int setup) {
     rhoTag = InputTag("fixedGridRhoFastjetAll","");
   } else if (setup==2015) { 
     rhoTag = InputTag("fixedGridRhoFastjetAll","");
+  } else if (setup==2016) {
+    rhoTag = InputTag("fixedGridRhoFastjetAll","");
   } else {
-    cout << "LeptonIsoHelper: Incorrect setup: " << setup << endl;
+    cout << "LeptonIsoHelper: AIncorrect setup: " << setup << endl;
     abort();
   }
   return rhoTag;
@@ -48,8 +50,10 @@ InputTag LeptonIsoHelper::getEleRhoTag(int sampleType, int setup) {
     rhoTag = InputTag("fixedGridRhoFastjetAll","");
   } else if (setup==2015) {
     rhoTag = InputTag("fixedGridRhoFastjetAll","");
+  } else if (setup==2016) {
+    rhoTag = InputTag("fixedGridRhoFastjetAll","");
   } else {
-    cout << "LeptonIsoHelper: Incorrect setup: " << setup << endl;
+    cout << "LeptonIsoHelper: BIncorrect setup: " << setup << endl;
     abort();
   }
   return rhoTag;
@@ -77,8 +81,10 @@ float LeptonIsoHelper::combRelIsoPF(int sampleType, int setup, double rho, const
     EAsetup = MuonEffectiveArea::kMuEAData2012;
   } else if (setup==2015) { 
     EAsetup = MuonEffectiveArea::kMuEAPhys14MC; //FIXME: replace with EAs from data when available
+  } else if (setup==2016) { 
+    EAsetup = MuonEffectiveArea::kMuEAPhys14MC; //FIXME: update to 2016!
   } else {
-    cout << "LeptonIsoHelper: Incorrect setup: " << setup << endl;
+    cout << "LeptonIsoHelper: CIncorrect setup: " << setup << endl;
     abort();
   }
 
@@ -118,8 +124,11 @@ float LeptonIsoHelper::combRelIsoPF(int sampleType, int setup, double rho, const
     //EAsetup = ElectronEffectiveArea::kEleEAPhys14MC; //This was from Phys14 MC, 72X
     EAsetup = ElectronEffectiveArea::kEleEA25nsSpring15MC; // from Spring15 MC, 74X
     //FIXME: are effective areas foreseen from Fall15 MC /76X or from RunII data ?
+  } else if (setup==2016) { 
+    EAsetup = ElectronEffectiveArea::kEleEA25nsSpring15MC; 
+    //FIXME: update to 2016!
   } else {
-    cout << "LeptonIsoHelper: Incorrect setup: " << setup << endl;
+    cout << "LeptonIsoHelper: DIncorrect setup: " << setup << endl;
     abort();
   }
 

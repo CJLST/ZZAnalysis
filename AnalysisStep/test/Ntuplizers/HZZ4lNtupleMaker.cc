@@ -68,7 +68,7 @@ namespace {
   bool addKinRefit = true;
   bool addVtxFit = false;
   bool addFSRDetails = false;
-  bool skipDataMCWeight = false; // skip computation of data/MC weight
+  bool skipDataMCWeight = true; // skip computation of data/MC weight
   bool skipFakeWeight = true;   // skip computation of fake rate weight for CRs
   bool skipHqTWeight = true;    // skip computation of hQT weight 
 

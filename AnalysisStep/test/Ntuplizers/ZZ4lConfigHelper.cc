@@ -19,8 +19,8 @@ ZZ4lConfigHelper::ZZ4lConfigHelper(const ParameterSet& pset) :
   theChannel = finalState(channel);
   
   // Check for inconsistent configurations
-  if ( ( theSampleType!=2011 && theSampleType!=2012 && theSampleType!=2015 ) ||
-       ( theSetup!=2011 && theSetup!=2012 && theSetup!=2015 ) ||
+  if ( ( theSampleType!=2011 && theSampleType!=2012 && theSampleType!=2015 && theSampleType!=2016 ) ||
+       ( theSetup!=2011 && theSetup!=2012 && theSetup!=2015 && theSetup!=2016 ) ||
        ( theSampleType!=theSetup ) // No sample rescaling supported as of now.
        // We may add exception for MC only when needed.
        ) {
@@ -80,12 +80,12 @@ ZZ4lConfigHelper::passTrigger(const edm::Event & event, edm::Handle<edm::Trigger
     }
   }
   bool passTriEle = false;
-  if (theSetup >= 2012) {
+  if (theSetup == 2012 || theSetup == 2015) {
     passTriEle = passFilter(event, trigRes, "triggerTriEle");
   }
   bool passTriMu = false;
   bool passSingleEle = false;
-  if (theSetup >= 2015) {
+  if (theSetup == 2015) {
     passTriMu = passFilter(event, trigRes, "triggerTriMu");
     passSingleEle = passFilter(event, trigRes, "triggerSingleEle");
   }
@@ -147,6 +147,7 @@ ZZ4lConfigHelper::passFilter(const edm::Event & event, edm::Handle<edm::TriggerR
   }
 
   unsigned i =  triggerNames->triggerIndex(filterPath);
+  
   if (i== triggerNames->size()){
     cout << "ERROR: ZZ4lConfigHelper::isTriggerBit: path does not exist! " << filterPath << endl;
     abort();

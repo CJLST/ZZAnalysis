@@ -12,7 +12,7 @@ process = cms.Process("ZZ")
 declareDefault("IsMC", True, globals())
 
 # Set of effective areas, rho corrections, etc. (can be 2011, 2012 or 2015)
-declareDefault("LEPTON_SETUP", 2015, globals())
+declareDefault("LEPTON_SETUP", 2016, globals())
 
 # Flag that reflects the actual sqrts of the sample (can be 2011, 2012 or 2015)
 # Can differ from SAMPLE_TYPE for samples that are rescaled to a different sqrts.
@@ -71,7 +71,7 @@ if (SAMPLE_TYPE == 2011) :
         process.GlobalTag.globaltag = 'GR_R_44_V15C::All'
 #        process.GlobalTag.connect = "sqlite_file:/afs/cern.ch/user/a/alcaprod/public/Alca/GlobalTag/GR_R_44_V15C.db"
 
-elif (SAMPLE_TYPE == 2012) : 
+elif (SAMPLE_TYPE == 2012) :
     if IsMC:
 #        process.GlobalTag.globaltag = 'START53_V7G::All'   #for 53X MC
 #        process.GlobalTag.globaltag = 'START53_V23::All'   #for 53X MC, updated JEC on top of pattuples produced with START53_V7G
@@ -80,13 +80,20 @@ elif (SAMPLE_TYPE == 2012) :
 #        process.GlobalTag.globaltag = 'FT_53_V21_AN3::All' # For 22Jan2013
 #        process.GlobalTag.globaltag = 'FT_53_V21_AN4::All' # For 22Jan2013, updated JEC on top of pattuples produced with FT_53_V21_AN3
         process.GlobalTag.globaltag = 'GR_70_V2_AN1::All'
-        
-else: 
+
+elif (SAMPLE_TYPE == 2015) :
     from Configuration.AlCa.GlobalTag import GlobalTag
     if IsMC:
         process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
     else:
         process.GlobalTag.globaltag = '76X_dataRun2_v15'
+
+else:
+    from Configuration.AlCa.GlobalTag import GlobalTag
+    if IsMC:
+        process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
+    else:
+        process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_data', '')
 
 print '\t',process.GlobalTag.globaltag
 
@@ -183,6 +190,24 @@ elif (LEPTON_SETUP == 2015):
     process.triggerTriEle = cms.Path(process.hltFilterTriEle)
     process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
     process.triggerSingleEle = cms.Path(process.hltFilterSingleEle)
+
+elif (LEPTON_SETUP == 2016):
+    #FIXME: For now, the MC paths are the ones used in the RunIISpring15DR74 MC samples for 25ns,7e33 conditions.
+    process.hltFilterDiEle.HLTPaths = ["HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*"]
+    #process.hltFilterDiEle.HLTPaths = ["HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*"] #for 25ns,14e33 (not necessary in 2015 data)
+    process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*"]
+    process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"]
+    #process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"] #for 25ns,14e33 (not necessary in 2015 data)
+    process.hltFilterTriEle.HLTPaths = ["HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v*"]
+    process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_12_10_5_v*"]
+    process.hltFilterSingleEle.HLTPaths = ["HLT_Ele23_WPLoose_Gsf_v*"]
+    process.triggerTriEle = cms.Path(process.hltFilterTriEle)
+    process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
+    process.triggerSingleEle = cms.Path(process.hltFilterSingleEle)
+#    process.hltFilterDiEle.HLTPaths = [""]
+#    process.hltFilterTriEle.HLTPaths = [""]
+#    process.hltFilterDiMu.HLTPaths = [""]
+#    process.hltFilterMuEle.HLTPaths = [""]
 
 process.triggerDiMu   = cms.Path(process.hltFilterDiMu)
 process.triggerDiEle  = cms.Path(process.hltFilterDiEle)
