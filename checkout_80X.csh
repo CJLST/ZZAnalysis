@@ -35,8 +35,8 @@ git clone -n https://github.com/VBF-HZZ/UFHZZAnalysisRun2
 (cd UFHZZAnalysisRun2 ; git checkout origin/csa14 FSRPhotons) #This does not set the correct branch, but picks the right one anyway
 
 #kinematic refitting
-git clone -b 2l2q https://github.com/covarell/KinZfitter.git
-(cd KinZfitter ; git checkout -b from-v1.0 v1.0)
+git clone https://github.com/tocheng/KinZfitter.git
+(cd KinZfitter; git checkout -b from-Zhadv1.0 Zhadv1.0)
 
 #muon momentum scale corrections (76X)
 git clone https://github.com/bachtis/Analysis.git -b KaMuCa_V2 KaMuCa 

@@ -188,6 +188,11 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     iEvent.getByToken(rhoForEleToken, rhoHandle);
     rhoForEle = *rhoHandle;
   }
+  
+  JME::JetResolution resolution_pt, resolution_phi;
+
+  resolution_pt = JME::JetResolution::get(iSetup, "AK4PFchs_pt"); 
+  resolution_phi = JME::JetResolution::get(iSetup, "AK4PFchs_phi");  
 
   // Get LLLL candidates (both resolved and merged jets
   Handle<edm::View<CompositeCandidate> > LLLLCands;
@@ -300,6 +305,7 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     int id21 = Z2L1->pdgId();
     int id22 = Z2L2->pdgId();
     int candChannel = id21*id22;
+    float rho = 0.;
 
     // Recompute isolation for all four leptons if FSR is present
     //  for (int zIdx=0; zIdx<2; ++zIdx) {
@@ -319,7 +325,7 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 	    fsrCorr += ifsr->second->pt();
 	  }
 	}
-	float rho = ((d->isMuon())?rhoForMu:rhoForEle);
+	rho = ((d->isMuon())?rhoForMu:rhoForEle);
 	combRelIsoPFCorr =  LeptonIsoHelper::combRelIsoPF(sampleType, setup, rho, d, fsrCorr);
 	string base;
 	stringstream str;
@@ -970,31 +976,37 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
  
     if(!isMerged){
 
-      vector<reco::Candidate *> selectedLeptons;
-      std::map<unsigned int, TLorentzVector> selectedFsrMap;
+      vector<TLorentzVector> selectedLeptons;
+      vector<TLorentzVector> selectedJets;
+      // std::map<unsigned int, TLorentzVector> selectedFsrMap;
 
       for(unsigned ilep=0; ilep<4; ilep++){
 
         reco::Candidate* oneLep = (reco::Candidate*)ZZLeps[ilep];
         if (oneLep->hasMasterClone()) oneLep = (reco::Candidate*)oneLep->masterClone().get();
-	selectedLeptons.push_back(oneLep);
+        TLorentzVector p4;
+        p4.SetPxPyPzE(oneLep->px(),oneLep->py(),oneLep->pz(),oneLep->energy());
 
 	if(FSRMap.find(ZZLeps[ilep])!=FSRMap.end()){
 	  pat::PFParticle fsr = *(FSRMap[ZZLeps[ilep]]);
-	  TLorentzVector p4;
-	  p4.SetPxPyPzE(fsr.px(),fsr.py(),fsr.pz(),fsr.energy());
-	  selectedFsrMap[ilep] = p4;
+	  TLorentzVector p4fsr;
+	  p4fsr.SetPxPyPzE(fsr.px(),fsr.py(),fsr.pz(),fsr.energy());
+	  p4 += p4fsr;
 	}
+        if (ilep<2) selectedJets.push_back(p4);
+        else selectedLeptons.push_back(p4);
 
       }
 
       
-      kinZfitter->Setup(selectedLeptons, selectedFsrMap);
-      kinZfitter->KinRefitZ1();
+      kinZfitter->Setup2L2Q(selectedLeptons,selectedJets,resolution_pt,resolution_phi,rho);
+      kinZfitter->KinRefitZlepZhad();
       
-      ZZMassRefit = kinZfitter->GetRefitM4l();
-      ZZMassRefitErr = kinZfitter->GetRefitM4lErrFullCov();
-      ZZMassUnrefitErr = kinZfitter->GetM4lErr();
+      // To get refit mZZ
+      ZZMassRefit = kinZfitter->GetRefitMZZ2L2Q();
+      // To get refit hadronic mZ (mjj)
+      ZZMassRefitErr = kinZfitter->GetRefitMZhad();
+      ZZMassUnrefitErr = -1.;
 
       // four 4-vectors after refitting order by Z1_1,Z1_2,Z2_1,Z2_2
       //vector<TLorentzVector> p4 = kinZfitter->GetRefitP4s(); 
