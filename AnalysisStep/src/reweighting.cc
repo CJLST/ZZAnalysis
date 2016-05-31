@@ -124,30 +124,28 @@ public:
     switch (reweightingtype) {
       case NoReweighting: nReweightingSamples = 0; break;
       case HVV_spin0: nReweightingSamples = 7; break;
+      case HVV_spin012: nReweightingSamples = 8; break;
       default: assert(false);
     }
   }
 
   void setmycouplings() {
     spin = myspin;
+    setHVVcouplings(myHvvcoupl);
+    setHWWcouplings(myHwwcoupl);
+    setZVVcouplings(myZvvcoupl);
+    setGggcouplings(myGggcoupl);
+    setGVVcouplings(myGvvcoupl);
     switch (myspin) {
-      case 0:
-        setHVVcouplings(myHvvcoupl);
-        setHWWcouplings(myHwwcoupl);
-        break;
-      case 1:
-        setZVVcouplings(myZvvcoupl);
-        break;
-      case 2:
-        setGggcouplings(myGggcoupl);
-        setGVVcouplings(myGvvcoupl);
-        break;
-      default:
-        assert(false);
+      case 0: myMela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG); break;
+      case 1: myMela.setProcess(TVar::SelfDefine_spin1, TVar::JHUGen, TVar::ZZGG); break;
+      case 2: myMela.setProcess(TVar::SelfDefine_spin2, TVar::JHUGen, TVar::ZZGG); break;
+      default: assert(false);
     }
   }
 
   void setcouplings(int reweightinghypothesis) {
+    if (reweightingtype == NoReweighting) return;
     if (reweightingtype == HVV_spin0) {
       myMela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
       spin = 0;
@@ -163,7 +161,37 @@ public:
         default: assert(false);
       }
       setHVVcouplings(couplings);
+      return;
     }
+    else if (reweightingtype == HVV_spin012) {
+      double couplingsHVV[SIZE_HVV][2] = {{0}};
+      double couplingsZVV[SIZE_ZVV][2] = {{0}};
+      double couplingsGgg[SIZE_GGG][2] = {{0}};
+      double couplingsGVV[SIZE_GVV][2] = {{0}};
+      switch (reweightinghypothesis) {
+        case 0: couplingsHVV[g1index][0] = 1; spin = 0; break;                                               //0+m
+        case 1: couplingsHVV[g2index][0] = 1; spin = 0; break;                                               //0+h
+        case 2: couplingsHVV[g4index][0] = 1; spin = 0; break;                                               //0-
+        case 3: couplingsHVV[g1prime2index][0] = 1; spin = 0; break;                                         //L1
+        case 4: couplingsHVV[g1index][0] = 1; couplingsHVV[g2index][0] = g2mix; spin = 0; break;             //fa2=0.5
+        case 5: couplingsHVV[g1index][0] = 1; couplingsHVV[g4index][0] = g4mix; spin = 0; break;             //fa3=0.5
+        case 6: couplingsHVV[g1index][0] = 1; couplingsHVV[g1prime2index][0] = g1prime2mix; spin = 0; break; //fL1=0.5
+        case 7: couplingsGgg[a1index][0] = 1; couplingsGVV[b5index][0] = 1; spin = 2; break;                 //2b+
+        default: assert(false);
+      }
+      switch (spin) {
+        case 0: myMela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG); break;
+        case 1: myMela.setProcess(TVar::SelfDefine_spin1, TVar::JHUGen, TVar::ZZGG); break;
+        case 2: myMela.setProcess(TVar::SelfDefine_spin2, TVar::JHUGen, TVar::ZZGG); break;
+        default: cout << spin << endl; assert(false);
+      }
+      setHVVcouplings(couplingsHVV);
+      setZVVcouplings(couplingsZVV);
+      setGggcouplings(couplingsGgg);
+      setGVVcouplings(couplingsGVV);
+      return;
+    }
+    assert(false);
   }
 
   bool canreweight(unsigned int nleptons, short genFinalState) {
@@ -180,8 +208,8 @@ public:
 
   TTree *fillcouplingstree(TTree *t) {
     vector<double> g1, g2, g4, g1prime2, a1, b5;
-    vector<int> spin;
-    t->Branch("spin", &spin);
+    vector<int> spin_v;
+    t->Branch("spin", &spin_v);
     if (reweightingtype == HVV_spin0 || reweightingtype == HVV_spin012) {
       t->Branch("g1", &g1);
       t->Branch("g2", &g2);
@@ -195,8 +223,8 @@ public:
 
     for (int i = 0; i < nReweightingSamples; i++) {
       setcouplings(i);
-      spin.push_back(myspin);
-      if (myspin == 0) {
+      spin_v.push_back(spin);
+      if (spin == 0) {
         g1.push_back(selfDHvvcoupl[g1index][0]);
         g2.push_back(selfDHvvcoupl[g2index][0]);
         g4.push_back(selfDHvvcoupl[g4index][0]);
@@ -209,7 +237,7 @@ public:
         g1prime2.push_back(0);
       }
 
-      if (myspin == 2) {
+      if (spin == 2) {
         a1.push_back(selfDGggcoupl[a1index][0]);
         b5.push_back(selfDGvvcoupl[b5index][0]);
       }
