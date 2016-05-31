@@ -14,9 +14,10 @@ declareDefault("XSEC", 1, globals())
 declareDefault("PROCESS_CR", False, globals())
 declareDefault("REWEIGHTING_TYPE", "none", globals())
 
-#spin 0 HVV couplings
+#couplings for reweighting
+declareDefault("SPIN", 0, globals())
 couplings = Couplings()
-for coupling in couplings.couplingsorder_Z + couplings.couplingsorder_W:
+for coupling in couplings.allnames():
     declareDefault(coupling, 0, globals())
     couplings[coupling] = globals()[coupling]
 
@@ -123,10 +124,17 @@ TreeSetup = cms.EDAnalyzer("HZZ4lNtupleMaker",
                            sampleName = cms.string(SAMPLENAME),
                            superMelaMass = cms.double(SUPERMELA_MASS),
                            xsec = cms.double(XSEC),
-                           HZZcouplings_real = cms.vdouble(*couplings.getcouplings(WW=False, imag=False)),
-                           HZZcouplings_imag = cms.vdouble(*couplings.getcouplings(WW=False, imag=True)),
-                           HWWcouplings_real = cms.vdouble(*couplings.getcouplings(WW=True, imag=False)),
-                           HWWcouplings_imag = cms.vdouble(*couplings.getcouplings(WW=True, imag=True)),
+                           spin = cms.int32(SPIN),
+                           HVVcouplings_real = cms.vdouble(*couplings.getcouplings(spin=0, WW=False, imag=False)),
+                           HVVcouplings_imag = cms.vdouble(*couplings.getcouplings(spin=0, WW=False, imag=True)),
+                           HWWcouplings_real = cms.vdouble(*couplings.getcouplings(spin=0, WW=True, imag=False)),
+                           HWWcouplings_imag = cms.vdouble(*couplings.getcouplings(spin=0, WW=True, imag=True)),
+                           ZVVcouplings_real = cms.vdouble(*couplings.getcouplings(spin=1, imag=False)),
+                           ZVVcouplings_imag = cms.vdouble(*couplings.getcouplings(spin=1, imag=True)),
+                           GVVcouplings_real = cms.vdouble(*couplings.getcouplings(spin=2, gg=False, imag=False)),
+                           GVVcouplings_imag = cms.vdouble(*couplings.getcouplings(spin=2, gg=False, imag=True)),
+                           Gggcouplings_real = cms.vdouble(*couplings.getcouplings(spin=2, gg=True, imag=False)),
+                           Gggcouplings_imag = cms.vdouble(*couplings.getcouplings(spin=2, gg=True, imag=True)),
                            reweightingtype = cms.string(REWEIGHTING_TYPE),
                            )
 
