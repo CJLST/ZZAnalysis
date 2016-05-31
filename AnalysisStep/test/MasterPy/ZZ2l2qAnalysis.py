@@ -128,7 +128,7 @@ elif (SAMPLE_TYPE == 2012) :
 else: 
     process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
     if IsMC:
-        process.GlobalTag.globaltag = '76X_mcRun2_asymptotic_v12'
+        process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_v3'
     else:
         process.GlobalTag.globaltag = '76X_dataRun2_v15'
 
@@ -796,6 +796,8 @@ process.ZZCandFat = cms.EDProducer("ZZjjCandidateFiller",
 ### Load JEC
 process.load("CondCore.DBCommon.CondDBCommon_cfi")
 from CondCore.DBCommon.CondDBSetup_cfi import *
+### Load JER
+process.load("JetMETCorrections.Modules.JetResolutionESProducer_cfi")
 
 if IsMC: 
     process.jec = cms.ESSource("PoolDBESSource",
@@ -806,16 +808,25 @@ if IsMC:
         toGet = cms.VPSet(
         cms.PSet(
             record = cms.string('JetCorrectionsRecord'),
-            tag    = cms.string('JetCorrectorParametersCollection_Fall15_25nsV2_MC_AK4PFchs'),
+            tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV1_MC_AK4PFchs'),
             label  = cms.untracked.string('AK4PFchs')
             ),
         cms.PSet(
             record = cms.string('JetCorrectionsRecord'),
-            tag    = cms.string('JetCorrectorParametersCollection_Fall15_25nsV2_MC_AK8PFchs'),
+            tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV1_MC_AK8PFchs'),
             label  = cms.untracked.string('AK8PFchs')
             ),
+#        cms.PSet(
+#            record = cms.string('JetResolutionRcd'),
+#            tag    = cms.string('JR_Spring16_25nsV1_MC_PtResolution_AK4PFchs'),
+#            label  = cms.untracked.string('AK4PFchs_pt') 
+#        ),
+#        cms.PSet(
+#            record = cms.string('JetResolutionRcd'),
+#            tag    = cms.string('JR_Spring16_25nsV1_MC_PhiResolution_AK4PFchs'),
+#            label  = cms.untracked.string('AK4PFchs_phi') )
         ),                        
-        connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall15_25nsV2_MC.db'),
+        connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Spring16_25nsV1_MC.db'),
     )
 else: 
     process.jec = cms.ESSource("PoolDBESSource",
@@ -841,16 +852,16 @@ else:
 process.es_prefer_jec = cms.ESPrefer('PoolDBESSource','jec')
 
 ### reapply JEC
-from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated
-process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
+from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import updatedPatJetCorrFactors
+process.patJetCorrFactorsReapplyJEC = updatedPatJetCorrFactors.clone(
   src = cms.InputTag("slimmedJets"),
   levels = ['L1FastJet','L2Relative','L3Absolute'],
   payload = 'AK4PFchs' )
 if not IsMC:
     process.patJetCorrFactorsReapplyJEC.levels = ['L1FastJet','L2Relative','L3Absolute','L2L3Residual']
 
-from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetsUpdated
-process.patJetsReapplyJEC = patJetsUpdated.clone(
+from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import updatedPatJets
+process.patJetsReapplyJEC = updatedPatJets.clone(
   jetSource = cms.InputTag("slimmedJets"),
   jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
   )
@@ -916,12 +927,12 @@ if FSRMODE=="Legacy" :
 ### reapply JEC
 from PhysicsTools.SelectorUtils.pfJetIDSelector_cfi import pfJetIDSelector
 
-process.patJetCorrFactorsReapplyJECFat = patJetCorrFactorsUpdated.clone(
+process.patJetCorrFactorsReapplyJECFat = updatedPatJetCorrFactors.clone(
                                     src     = cms.InputTag("slimmedJetsAK8"),
                                     levels  = ['L1FastJet','L2Relative','L3Absolute'],
                                     payload = 'AK8PFchs')
 
-process.patJetsReapplyJECFat = patJetsUpdated.clone(
+process.patJetsReapplyJECFat = updatedPatJets.clone(
                                     jetSource = cms.InputTag("slimmedJetsAK8"),
                                     jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJECFat") ))
 
