@@ -41,6 +41,16 @@ class Couplings(dict):
                         "ghz4_prime7",
                        ]
     couplingsorder_W = [coupling.replace("z", "w") for coupling in couplingsorder_Z]
+    couplingsorder_spin1 = [
+                            "zprime_zz_1",
+                            "zprime_zz_2",
+                           ]
+    couplingsorder_spin2_gg = [
+                               "a%i"%i for i in range(1,6)
+                              ]
+    couplingsorder_spin2 = [
+                            "b%i"%i for i in range(1,11)
+                           ]
     def __setitem__(self, key, value):
         try:
             if isinstance(value, str):   #allow writing 3+2i, where python wants 3+2j
@@ -50,14 +60,41 @@ class Couplings(dict):
             raise ValueError("coupling {} needs to be a complex number!".format(key))
         super(Couplings, self).__setitem__(key, value)
 
-    def getcouplings(self, WW=False, imag=False):
-        if not WW:
-            if not imag:
-                return [self[name].real for name in self.couplingsorder_Z]
+    def allnames(self):
+        return self.couplingsorder_Z + self.couplingsorder_W + self.couplingsorder_spin1 + self.couplingsorder_spin2_gg + self.couplingsorder_spin2
+
+    def getcouplings(self, spin, gg=False, WW=False, imag=False):
+        if spin == 0:
+            assert not gg
+            if not WW:
+                if not imag:
+                    return [self[name].real for name in self.couplingsorder_Z]
+                else:
+                    return [self[name].imag for name in self.couplingsorder_Z]
             else:
-                return [self[name].imag for name in self.couplingsorder_Z]
-        else:
+                if not imag:
+                    return [self[name].real for name in self.couplingsorder_W]
+                else:
+                    return [self[name].imag for name in self.couplingsorder_W]
+
+        if spin == 1:
+            assert not gg and not WW
             if not imag:
-                return [self[name].real for name in self.couplingsorder_W]
+                return [self[name].real for name in self.couplingsorder_spin1]
             else:
-                return [self[name].imag for name in self.couplingsorder_W]
+                return [self[name].imag for name in self.couplingsorder_spin1]
+
+        if spin == 2:
+            assert not WW
+            if not gg:
+                if not imag:
+                    return [self[name].real for name in self.couplingsorder_spin2]
+                else:
+                    return [self[name].imag for name in self.couplingsorder_spin2]
+            else:
+                if not imag:
+                    return [self[name].real for name in self.couplingsorder_spin2_gg]
+                else:
+                    return [self[name].imag for name in self.couplingsorder_spin2_gg]
+
+        assert False
