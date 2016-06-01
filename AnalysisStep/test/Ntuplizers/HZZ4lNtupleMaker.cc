@@ -427,6 +427,8 @@ private:
   Float_t gen_ZZ4e;
   Float_t gen_ZZ2mu2e;
   Float_t gen_ZZ2l2tau;
+  Float_t gen_ZZ2emu2tau;
+  Float_t gen_ZZ4tau;
   Float_t gen_ZZ4mu_EtaAcceptance;
   Float_t gen_ZZ4mu_LeptonAcceptance;
   Float_t gen_ZZ4e_EtaAcceptance;
@@ -447,6 +449,8 @@ private:
   std::vector<Float_t> gen_ZZ4e_reweighted;
   std::vector<Float_t> gen_ZZ2mu2e_reweighted;
   std::vector<Float_t> gen_ZZ2l2tau_reweighted;
+  std::vector<Float_t> gen_ZZ2emu2tau_reweighted;
+  std::vector<Float_t> gen_ZZ4tau_reweighted;
   std::vector<Float_t> gen_ZZ4mu_EtaAcceptance_reweighted;
   std::vector<Float_t> gen_ZZ4mu_LeptonAcceptance_reweighted;
   std::vector<Float_t> gen_ZZ4e_EtaAcceptance_reweighted;
@@ -523,6 +527,8 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   gen_ZZ4e_reweighted.resize(nReweightingSamples);
   gen_ZZ2mu2e_reweighted.resize(nReweightingSamples);
   gen_ZZ2l2tau_reweighted.resize(nReweightingSamples);
+  gen_ZZ2emu2tau_reweighted.resize(nReweightingSamples);
+  gen_ZZ4tau_reweighted.resize(nReweightingSamples);
   gen_ZZ4mu_EtaAcceptance_reweighted.resize(nReweightingSamples);
   gen_ZZ4mu_LeptonAcceptance_reweighted.resize(nReweightingSamples);
   gen_ZZ4e_EtaAcceptance_reweighted.resize(nReweightingSamples);
@@ -567,6 +573,8 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   gen_ZZ4e = 0;
   gen_ZZ2mu2e = 0;
   gen_ZZ2l2tau = 0;
+  gen_ZZ2emu2tau = 0;
+  gen_ZZ4tau = 0;
   gen_ZZ4mu_EtaAcceptance = 0;
   gen_ZZ4mu_LeptonAcceptance = 0;
   gen_ZZ4e_EtaAcceptance = 0;
@@ -818,7 +826,11 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       addweight(gen_ZZ2mu2e, gen_ZZ2mu2e_reweighted, 1);
       if (gen_ZZ4lInEtaAcceptance) addweight(gen_ZZ2mu2e_EtaAcceptance, gen_ZZ2mu2e_EtaAcceptance_reweighted, 1);
       if (gen_ZZ4lInEtaPtAcceptance) addweight(gen_ZZ2mu2e_LeptonAcceptance, gen_ZZ2mu2e_LeptonAcceptance_reweighted, 1);;
-    } else if (genFinalState == LLTT){
+    } else if (genFinalState == llTT){
+      addweight(gen_ZZ2emu2tau, gen_ZZ2emu2tau_reweighted, 1);
+      addweight(gen_ZZ2l2tau, gen_ZZ2l2tau_reweighted, 1);
+    } else if (genFinalState == TTTT){
+      addweight(gen_ZZ4tau, gen_ZZ4tau_reweighted, 1);
       addweight(gen_ZZ2l2tau, gen_ZZ2l2tau_reweighted, 1);
     } else if (genFinalState == BUGGY){ // handle H->ddbar 2012 generator bug!!!
       addweight(gen_BUGGY, gen_BUGGY_reweighted, 1);
@@ -1432,6 +1444,8 @@ void HZZ4lNtupleMaker::endJob()
   hCounter->SetBinContent(5 ,gen_ZZ2l2tau);
   hCounter->SetBinContent(6 ,gen_ZZ4mu_EtaAcceptance);
   hCounter->SetBinContent(7 ,gen_ZZ4mu_LeptonAcceptance);
+  hCounter->SetBinContent(8 ,gen_ZZ2emu2tau);
+  hCounter->SetBinContent(9 ,gen_ZZ4tau);
   hCounter->SetBinContent(10,gen_ZZ4e_EtaAcceptance);
   hCounter->SetBinContent(11,gen_ZZ4e_LeptonAcceptance);
   hCounter->SetBinContent(14,gen_ZZ2mu2e_EtaAcceptance);
@@ -1453,6 +1467,8 @@ void HZZ4lNtupleMaker::endJob()
       hCounter_reweighted->SetBinContent(5 , i+1, gen_ZZ2l2tau_reweighted[i]);
       hCounter_reweighted->SetBinContent(6 , i+1, gen_ZZ4mu_EtaAcceptance_reweighted[i]);
       hCounter_reweighted->SetBinContent(7 , i+1, gen_ZZ4mu_LeptonAcceptance_reweighted[i]);
+      hCounter_reweighted->SetBinContent(8 , i+1, gen_ZZ2emu2tau[i]);
+      hCounter_reweighted->SetBinContent(9 , i+1, gen_ZZ4tau[i]);
       hCounter_reweighted->SetBinContent(10, i+1, gen_ZZ4e_EtaAcceptance_reweighted[i]);
       hCounter_reweighted->SetBinContent(11, i+1, gen_ZZ4e_LeptonAcceptance_reweighted[i]);
       hCounter_reweighted->SetBinContent(14, i+1, gen_ZZ2mu2e_EtaAcceptance_reweighted[i]);
@@ -1476,6 +1492,8 @@ void HZZ4lNtupleMaker::endJob()
     h[i]->GetXaxis()->SetBinLabel(5 ,"gen_ZZ2l2tau");
     h[i]->GetXaxis()->SetBinLabel(6 ,"gen_ZZ4mu_EtaAcceptance");
     h[i]->GetXaxis()->SetBinLabel(7 ,"gen_ZZ4mu_LeptonAcceptance");
+    h[i]->GetXaxis()->SetBinLabel(8 ,"gen_ZZ2emu2tau");
+    h[i]->GetXaxis()->SetBinLabel(9 ,"gen_ZZ4tau");
     h[i]->GetXaxis()->SetBinLabel(10,"gen_ZZ4e_EtaAcceptance");
     h[i]->GetXaxis()->SetBinLabel(11,"gen_ZZ4e_LeptonAcceptance");
     h[i]->GetXaxis()->SetBinLabel(14,"gen_ZZ2mu2e_EtaAcceptance");

@@ -416,8 +416,10 @@ MCHistoryTools::genFinalState(){
       gen_finalState = MMMM;
     } else if (ifs==20449) {
       gen_finalState = EEMM;
-    } else if (ifs==38025||ifs==27225||ifs==50625) {
-      gen_finalState = LLTT;
+    } else if (ifs==38025||ifs==27225) {
+      gen_finalState = llTT;
+    } else if (ifs==50625) {
+      gen_finalState = TTTT;
     } else {
       return NONE;
     }
