@@ -23,6 +23,9 @@ float PUReweight::weight(int MC, int target, float input) {
       h = hTPuToLegacy13;
     } else if (MC==2015&&target==2015) {
       h = hTPuTo201576X;
+    } else if (MC==2016&&target==2016) {
+      // FIXME currently re-using 2015 wieghts
+      h = hTPuTo201576X;
     } else{
       std::cout << "ERROR: PUReweight: " << MC << " " << target << std::endl;
       abort();

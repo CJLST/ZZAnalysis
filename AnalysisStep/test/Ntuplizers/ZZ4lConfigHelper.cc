@@ -80,12 +80,12 @@ ZZ4lConfigHelper::passTrigger(const edm::Event & event, edm::Handle<edm::Trigger
     }
   }
   bool passTriEle = false;
-  if (theSetup == 2012 || theSetup == 2015) {
+  if (theSetup == 2012 || theSetup >= 2015) {
     passTriEle = passFilter(event, trigRes, "triggerTriEle");
   }
   bool passTriMu = false;
   bool passSingleEle = false;
-  if (theSetup == 2015) {
+  if (theSetup >= 2015) {
     passTriMu = passFilter(event, trigRes, "triggerTriMu");
     passSingleEle = passFilter(event, trigRes, "triggerSingleEle");
   }
@@ -146,12 +146,14 @@ ZZ4lConfigHelper::passFilter(const edm::Event & event, edm::Handle<edm::TriggerR
     cout << "ERROR: failed to get TriggerResults" << endl;
   }
 
+  //  for (unsigned i=0; i<triggerNames->size(); i++) cout << triggerNames->triggerName(i) << endl;
   unsigned i =  triggerNames->triggerIndex(filterPath);
   
   if (i== triggerNames->size()){
     cout << "ERROR: ZZ4lConfigHelper::isTriggerBit: path does not exist! " << filterPath << endl;
     abort();
   }
+  //  cout << " Trigger result for " << filterPath << " : accept=" << triggerResults->accept(i) << endl;
   return triggerResults->accept(i);
 
 }
