@@ -274,6 +274,11 @@ process.goodPrimaryVertices = cms.EDFilter("VertexSelector",
 SIP =  "userFloat('SIP')<4"
 GOODLEPTON = "userFloat('ID') && " + SIP  # Lepton passing tight ID + SIP [ISO is asked AFTER FSR!!!]
 
+if LEPTON_SETUP == 2016:
+    TIGHTMUON = "userFloat('isPFMuon') || (userFloat('isTrackerHighPtMuon') && pt>20)"
+else:
+    TIGHTMUON = "userFloat('isPFMuon')"
+
 
 
 #------- MUONS -------
@@ -354,7 +359,7 @@ process.softMuons = cms.EDProducer("MuFiller",
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
     cut = cms.string("userFloat('dxy')<0.5 && userFloat('dz')<1."),
     flags = cms.PSet(
-        ID = cms.string("userFloat('isPFMuon')" ), # PF ID
+        ID = cms.string(TIGHTMUON), # tight muon ID
         isSIP = cms.string(SIP),
         isGood = cms.string(GOODLEPTON),
         isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<" + MUISOCUT),
