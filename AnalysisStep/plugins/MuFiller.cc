@@ -154,6 +154,15 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       l.addUserFloat("isPFMuon",l.isPFMuon());
     }
     
+    // isHighPtTrackerMuon - used in 2016 tight muon ID
+    bool isTrackerHighPt = ( l.numberOfMatchedStations() > 1 
+        && (l.muonBestTrack()->ptError()/l.muonBestTrack()->pt()) < 0.3 
+        && std::abs(l.muonBestTrack()->dxy(vertex->position())) < 0.2 
+        && std::abs(l.muonBestTrack()->dz(vertex->position())) < 0.5 
+        && l.innerTrack()->hitPattern().numberOfValidPixelHits() > 0 
+        && l.innerTrack()->hitPattern().trackerLayersWithMeasurement() > 5 );
+    l.addUserFloat("isTrackerHighPtMuon",isTrackerHighPt);
+    
     //--- MC parent code 
 //     MCHistoryTools mch(iEvent);
 //     if (mch.isMC()) {

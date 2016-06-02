@@ -195,9 +195,8 @@ elif (LEPTON_SETUP == 2016):
     if (IsMC):
 	#At the moment trigger results are not stored in the MC files
         process.hltFilterMuEle.HLTPaths = ["*"]
-	process.hltFilterTriEle.HLTPaths = ["*"]
-        process.hltFilterTriMu.HLTPaths = ["*"]
-        process.hltFilterSingleEle.HLTPaths = ["*"]
+	process.hltFilterDiEle.HLTPaths = ["*"]
+        process.hltFilterDiMu.HLTPaths = ["*"]
     
     else:
         #FIXME: For now, the MC paths are the ones used in the RunIISpring15DR74 MC samples for 25ns,7e33 conditions.
