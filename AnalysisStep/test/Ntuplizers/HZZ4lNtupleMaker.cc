@@ -1467,8 +1467,8 @@ void HZZ4lNtupleMaker::endJob()
       hCounter_reweighted->SetBinContent(5 , i+1, gen_ZZ2l2tau_reweighted[i]);
       hCounter_reweighted->SetBinContent(6 , i+1, gen_ZZ4mu_EtaAcceptance_reweighted[i]);
       hCounter_reweighted->SetBinContent(7 , i+1, gen_ZZ4mu_LeptonAcceptance_reweighted[i]);
-      hCounter_reweighted->SetBinContent(8 , i+1, gen_ZZ2emu2tau[i]);
-      hCounter_reweighted->SetBinContent(9 , i+1, gen_ZZ4tau[i]);
+      hCounter_reweighted->SetBinContent(8 , i+1, gen_ZZ2emu2tau_reweighted[i]);
+      hCounter_reweighted->SetBinContent(9 , i+1, gen_ZZ4tau_reweighted[i]);
       hCounter_reweighted->SetBinContent(10, i+1, gen_ZZ4e_EtaAcceptance_reweighted[i]);
       hCounter_reweighted->SetBinContent(11, i+1, gen_ZZ4e_LeptonAcceptance_reweighted[i]);
       hCounter_reweighted->SetBinContent(14, i+1, gen_ZZ2mu2e_EtaAcceptance_reweighted[i]);
