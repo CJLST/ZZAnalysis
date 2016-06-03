@@ -6,7 +6,7 @@ namespace {
 
 
 std::string finalState(int iFS) {
-  if (iFS<0 || iFS>=nFS) return "None";
+  if (iFS<0 || iFS>=(int)nFS) return "None";
   const std::string finalStates[nFS] = {"MMMM",      // 0
 					"EEEE",      // 1
 					"EEMM",      // 2
