@@ -7,6 +7,7 @@
 namespace zzanalysis{
   TLorentzVector tlv(const math::XYZTLorentzVector& v);
 }
+int SetupToSqrts(int setup);
 
 
 
