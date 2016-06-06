@@ -418,7 +418,7 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
     } else if (genFinalState == EEMM) {
       ++gen_ZZ2mu2e;
       hGenZZMass_2e2mu->Fill( GenZZMass, genHEPMCweight*PUweight );
-    } else if (genFinalState == LLTT){
+    } else if (genFinalState == LLTT || genFinalState == llTT || genFinalState == TTTT){
       ++gen_ZZtau;
       hGenZZMass_2l2tau->Fill( GenZZMass, genHEPMCweight*PUweight );
     } else if (genFinalState == BUGGY){

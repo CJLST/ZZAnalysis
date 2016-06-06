@@ -366,7 +366,7 @@ private:
 
   void FillHGenInfo(const math::XYZTLorentzVector Hp, float w);
   void FillZGenInfo(Short_t Z1Id, Short_t Z2Id,
-		    const math::XYZTLorentzVector pZ1, const math::XYZTLorentzVector pZ2);
+                    const math::XYZTLorentzVector pZ1, const math::XYZTLorentzVector pZ2);
   void FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t Lep3Id, Short_t Lep4Id,
     const math::XYZTLorentzVector Lep1, const math::XYZTLorentzVector Lep2, const math::XYZTLorentzVector Lep3, const math::XYZTLorentzVector Lep4);
   void FillAssocLepGenInfo(std::vector<const reco::Candidate *>& AssocLeps);
@@ -498,16 +498,16 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
               myMela,
               pset.getParameter<std::string>("reweightingtype"),
               pset.getParameter<int>("spin"),
-              pset.getParameter<std::vector<double>>("HVVcouplings_real"),
-              pset.getParameter<std::vector<double>>("HVVcouplings_imag"),
-              pset.getParameter<std::vector<double>>("HWWcouplings_real"),
-              pset.getParameter<std::vector<double>>("HWWcouplings_imag"),
-              pset.getParameter<std::vector<double>>("ZVVcouplings_real"),
-              pset.getParameter<std::vector<double>>("ZVVcouplings_imag"),
-              pset.getParameter<std::vector<double>>("Gggcouplings_real"),
-              pset.getParameter<std::vector<double>>("Gggcouplings_imag"),
-              pset.getParameter<std::vector<double>>("GVVcouplings_real"),
-              pset.getParameter<std::vector<double>>("GVVcouplings_imag")
+              pset.getParameter<std::vector<double> >("HVVcouplings_real"),
+              pset.getParameter<std::vector<double> >("HVVcouplings_imag"),
+              pset.getParameter<std::vector<double> >("HWWcouplings_real"),
+              pset.getParameter<std::vector<double> >("HWWcouplings_imag"),
+              pset.getParameter<std::vector<double> >("ZVVcouplings_real"),
+              pset.getParameter<std::vector<double> >("ZVVcouplings_imag"),
+              pset.getParameter<std::vector<double> >("Gggcouplings_real"),
+              pset.getParameter<std::vector<double> >("Gggcouplings_imag"),
+              pset.getParameter<std::vector<double> >("GVVcouplings_real"),
+              pset.getParameter<std::vector<double> >("GVVcouplings_imag")
              ),
   nReweightingSamples(reweighting.nReweightingSamples),
   doreweighting(nReweightingSamples != 0),
@@ -746,23 +746,23 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
         // "generated Zs" defined with standard pairing applied on gen leptons (genZLeps is sorted by MCHistoryTools)
         FillZGenInfo(genZLeps.at(0)->pdgId()*genZLeps.at(1)->pdgId(),
-		     genZLeps.at(2)->pdgId()*genZLeps.at(3)->pdgId(),
-		     genZLeps.at(0)->p4()+genZLeps.at(1)->p4(),
+                     genZLeps.at(2)->pdgId()*genZLeps.at(3)->pdgId(),
+                     genZLeps.at(0)->p4()+genZLeps.at(1)->p4(),
                      genZLeps.at(2)->p4()+genZLeps.at(3)->p4());
 
         // Gen leptons
         FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), genZLeps.at(2)->pdgId(), genZLeps.at(3)->pdgId(),
-                               genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), genZLeps.at(3)->p4());
+		       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), genZLeps.at(3)->p4());
 
       }
 
       if (genZLeps.size()==3) {
         FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), genZLeps.at(2)->pdgId(), 0,
-		       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), *(new math::XYZTLorentzVector));
+                       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), *(new math::XYZTLorentzVector));
       }
       if (genZLeps.size()==2) {
         FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), 0, 0,
-		       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), *(new math::XYZTLorentzVector), *(new math::XYZTLorentzVector));
+                       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), *(new math::XYZTLorentzVector), *(new math::XYZTLorentzVector));
       }
 
       if (genAssocLeps.size()==1 || genAssocLeps.size()==2) {
@@ -798,15 +798,15 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     if(EvtHandles.size()>0){
       edm::Handle<LHEEventProduct> EvtHandle = EvtHandles.front();
       if(EvtHandle.isValid() && EvtHandle->weights().size()>=9){
-	LHEweight_QCDscale_muR1_muF1     = genHEPMCweight * EvtHandle->weights()[0].wgt / EvtHandle->originalXWGTUP(); // just for verification (should be 1)
-	LHEweight_QCDscale_muR1_muF2     = genHEPMCweight * EvtHandle->weights()[1].wgt / EvtHandle->originalXWGTUP();
-	LHEweight_QCDscale_muR1_muF0p5   = genHEPMCweight * EvtHandle->weights()[2].wgt / EvtHandle->originalXWGTUP();
-	LHEweight_QCDscale_muR2_muF1     = genHEPMCweight * EvtHandle->weights()[3].wgt / EvtHandle->originalXWGTUP();
-	LHEweight_QCDscale_muR2_muF2     = genHEPMCweight * EvtHandle->weights()[4].wgt / EvtHandle->originalXWGTUP();
-	LHEweight_QCDscale_muR2_muF0p5   = genHEPMCweight * EvtHandle->weights()[5].wgt / EvtHandle->originalXWGTUP();
-	LHEweight_QCDscale_muR0p5_muF1   = genHEPMCweight * EvtHandle->weights()[6].wgt / EvtHandle->originalXWGTUP();
-	LHEweight_QCDscale_muR0p5_muF2   = genHEPMCweight * EvtHandle->weights()[7].wgt / EvtHandle->originalXWGTUP();
-	LHEweight_QCDscale_muR0p5_muF0p5 = genHEPMCweight * EvtHandle->weights()[8].wgt / EvtHandle->originalXWGTUP();
+        LHEweight_QCDscale_muR1_muF1     = genHEPMCweight * EvtHandle->weights()[0].wgt / EvtHandle->originalXWGTUP(); // just for verification (should be 1)
+        LHEweight_QCDscale_muR1_muF2     = genHEPMCweight * EvtHandle->weights()[1].wgt / EvtHandle->originalXWGTUP();
+        LHEweight_QCDscale_muR1_muF0p5   = genHEPMCweight * EvtHandle->weights()[2].wgt / EvtHandle->originalXWGTUP();
+        LHEweight_QCDscale_muR2_muF1     = genHEPMCweight * EvtHandle->weights()[3].wgt / EvtHandle->originalXWGTUP();
+        LHEweight_QCDscale_muR2_muF2     = genHEPMCweight * EvtHandle->weights()[4].wgt / EvtHandle->originalXWGTUP();
+        LHEweight_QCDscale_muR2_muF0p5   = genHEPMCweight * EvtHandle->weights()[5].wgt / EvtHandle->originalXWGTUP();
+        LHEweight_QCDscale_muR0p5_muF1   = genHEPMCweight * EvtHandle->weights()[6].wgt / EvtHandle->originalXWGTUP();
+        LHEweight_QCDscale_muR0p5_muF2   = genHEPMCweight * EvtHandle->weights()[7].wgt / EvtHandle->originalXWGTUP();
+        LHEweight_QCDscale_muR0p5_muF0p5 = genHEPMCweight * EvtHandle->weights()[8].wgt / EvtHandle->originalXWGTUP();
       }
     }
 
@@ -967,12 +967,12 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       if (cand->userFloat("isBestCRZLLos_3P1F")&&cand->userFloat("CRZLLos_3P1F")) set_bit(CRFLAG[icand],CRZLLos_3P1F);
 
       if (CRFLAG[icand]) { // This candidate belongs to one of the CRs: perform additional jet cleaning.
-	// Note that this is (somewhat incorrectly) done per-event, so there could be some over-cleaning in events with >1 CR candidate.
-	for (unsigned i=0; i<cleanedJets.size(); ++i) {
-	  if (cleanedJets[i]!=0  && (!jetCleaner::isGood(*cand, *(cleanedJets[i])))) {
-	    cleanedJets[i]=0;
-	  }
-	}
+        // Note that this is (somewhat incorrectly) done per-event, so there could be some over-cleaning in events with >1 CR candidate.
+        for (unsigned i=0; i<cleanedJets.size(); ++i) {
+          if (cleanedJets[i]!=0  && (!jetCleaner::isGood(*cand, *(cleanedJets[i])))) {
+            cleanedJets[i]=0;
+          }
+        }
       }
     }
   }
@@ -1305,11 +1305,11 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
       //    sel = 10; //FIXME see above
       if (candPass70Z2Loose) sel=70;
       if (candPassFullSel70){ // includes MZ2 > 12
-	sel = 90;
-	if (candPassFullSel){
-	  sel=100;
-	  if (passMz_zz) sel = 120;
-	}
+        sel = 90;
+        if (candPassFullSel){
+          sel=100;
+          if (passMz_zz) sel = 120;
+        }
       }
     }
     if (!(evtPass)) {sel = -sel;} // avoid confusion when we write events which do not pass trigger/skim
@@ -1371,7 +1371,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 //       etaGen = genFSR[igen]->eta();
 //       phiGen = genFSR[igen]->phi();
       if (dRGenVsReco<0.3) {// matching cut - FIXME
-	genpT=genFSR[igen]->pt();
+        genpT=genFSR[igen]->pt();
       }
     }
     fsrGenPt.push_back(genpT);
@@ -1396,13 +1396,13 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     //Fill the info on the extra leptons
     for (int iExtraLep=1; iExtraLep<=(int)nExtraLep; iExtraLep++){
       TString extraString;extraString.Form("ExtraLep%d",iExtraLep);
-      if(cand.hasUserCand(extraString.Data())){
-	//for(int iextra=0;iextra<4;iextra++)varExtra[iextra].Prepend(extraString.Data());
-	reco::CandidatePtr candPtr=cand.userCand(extraString.Data());
-	ExtraLepPt.push_back(candPtr->pt());
-	ExtraLepEta.push_back(candPtr->eta());
-	ExtraLepPhi.push_back(candPtr->phi());
-	ExtraLepLepId.push_back(candPtr->pdgId());
+      if (cand.hasUserCand(extraString.Data())){
+        //for(int iextra=0;iextra<4;iextra++)varExtra[iextra].Prepend(extraString.Data());
+        reco::CandidatePtr candPtr=cand.userCand(extraString.Data());
+        ExtraLepPt.push_back(candPtr->pt());
+        ExtraLepEta.push_back(candPtr->eta());
+        ExtraLepPhi.push_back(candPtr->phi());
+        ExtraLepLepId.push_back(candPtr->pdgId());
       }
     }
 
@@ -1547,16 +1547,13 @@ void HZZ4lNtupleMaker::endLuminosityBlock(edm::LuminosityBlock const& iLumi, edm
   edm::Handle<edm::MergeableCounter> preSkimCounter;
   if (iLumi.getByToken(preSkimToken, preSkimCounter)) { // Counter before skim. Does not exist for non-skimmed samples.
     Nevt_preskim = preSkimCounter->value;
+    // We do not use a filtering skim for the time being; so this is just left as a check in case we need it again in the future.
+    if (Nevt_preskim>=0.) assert(Nevt_preskim == Nevt_Gen_lumiBlock);
   }
 
-  // Nevt_gen: this is the number before any skim
-  if (Nevt_preskim>=0. && !doreweighting) {
-    Nevt_Gen += Nevt_preskim;
-  } else {
-    if (Nevt_preskim>=0.) assert(Nevt_preskim == Nevt_Gen_lumiBlock);
-    Nevt_Gen += Nevt_Gen_lumiBlock ;
-    for (int i = 0; i < nReweightingSamples; i++)
-      Nevt_Gen_reweighted[i] += Nevt_Gen_lumiBlock_reweighted[i];
+  Nevt_Gen += Nevt_Gen_lumiBlock;
+  for (int i = 0; i < nReweightingSamples; i++) {
+    Nevt_Gen_reweighted[i] += Nevt_Gen_lumiBlock_reweighted[i];
   }
 }
 
@@ -1688,7 +1685,7 @@ Float_t HZZ4lNtupleMaker::getFakeWeight(Float_t LepPt, Float_t LepEta, Int_t Lep
 
 } // end of getFakeWeight
 void HZZ4lNtupleMaker::FillZGenInfo(Short_t Z1Id, Short_t Z2Id,
-				    const math::XYZTLorentzVector pZ1, const math::XYZTLorentzVector pZ2)
+                                    const math::XYZTLorentzVector pZ1, const math::XYZTLorentzVector pZ2)
 {
   GenZ1Mass= pZ1.M();
   GenZ1Pt= pZ1.Pt();
@@ -1706,8 +1703,8 @@ void HZZ4lNtupleMaker::FillZGenInfo(Short_t Z1Id, Short_t Z2Id,
 }
 
 void HZZ4lNtupleMaker::FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t Lep3Id, Short_t Lep4Id,
-				      const math::XYZTLorentzVector Lep1, const math::XYZTLorentzVector Lep2,
-				      const math::XYZTLorentzVector Lep3, const math::XYZTLorentzVector Lep4)
+                                      const math::XYZTLorentzVector Lep1, const math::XYZTLorentzVector Lep2,
+                                      const math::XYZTLorentzVector Lep3, const math::XYZTLorentzVector Lep4)
 {
   GenLep1Pt=Lep1.Pt();
   GenLep1Eta=Lep1.Eta();
@@ -2040,7 +2037,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
 }
 
 void HZZ4lNtupleMaker::addweight(float &weight, vector<float> &weight_reweighted, float weighttoadd) {
-  cout << weight_reweighted.size() << endl;
+  //  cout << weight_reweighted.size() << endl;
   weight += weighttoadd;
   if (doreweighting)
     for (int i = 0; i < nReweightingSamples; i++)
