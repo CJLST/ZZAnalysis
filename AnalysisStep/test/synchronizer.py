@@ -7,6 +7,7 @@ import os, sys
 from syncUtils import *
 from operator import attrgetter
 
+addM4lRefit = False #set true to add fields on mass refit
 
 # define function for parsing options
 def parseOptions():
@@ -73,8 +74,9 @@ def loop():
         tree.SetBranchStatus("Z2Flav",1)
         tree.SetBranchStatus("ZZMassErr",1)
         tree.SetBranchStatus("ZZMassErrCorr",1)
-        tree.SetBranchStatus("ZZMassRefit",1)
-        tree.SetBranchStatus("ZZMassRefitErr",1)
+        if addM4lRefit:
+            tree.SetBranchStatus("ZZMassRefit",1)
+            tree.SetBranchStatus("ZZMassRefitErr",1)
         tree.SetBranchStatus("p0plus_VAJHU",1)
         tree.SetBranchStatus("p0minus_VAJHU",1)
         tree.SetBranchStatus("p0hplus_VAJHU",1)
@@ -127,8 +129,11 @@ def loop():
                 mZ2           = tree.Z2Mass
                 massErrRaw    = tree.ZZMassErr
                 massErrCorr   = tree.ZZMassErrCorr
-                m4lRefit      = tree.ZZMassRefit
-                m4lRefitErr   = tree.ZZMassRefitErr
+                m4lRefit      = -1
+                m4lRefitErr   = -1
+                if addM4lRefit:
+                    m4lRefit      = tree.ZZMassRefit
+                    m4lRefitErr   = tree.ZZMassRefitErr
                 p0plus_VAJHU  = tree.p0plus_VAJHU
                 p0minus_VAJHU = tree.p0minus_VAJHU
                 p0hplus_VAJHU = tree.p0hplus_VAJHU

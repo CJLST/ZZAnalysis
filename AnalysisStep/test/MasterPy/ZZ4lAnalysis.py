@@ -21,17 +21,20 @@ declareDefault("SAMPLE_TYPE", LEPTON_SETUP, globals())
 #Optional name of the sample/dataset being analyzed
 declareDefault("SAMPLENAME", "", globals())
 
-#Type of electron scale correction/smearing
-declareDefault("ELECORRTYPE", "RunII", globals())
+#Type of electron scale correction/smearing: "None", "RunII"
+declareDefault("ELECORRTYPE", "None", globals())
 
 #Apply electron escale regression
 declareDefault("ELEREGRESSION", "None", globals())
 
-#Apply muon scale correction. FIXME: False causes a crash in the Z fitter, use MUCORRTYPE="None" for the time being (to be fixed)
-declareDefault("APPLYMUCORR", True, globals())
+#Apply muon scale correction #FIXME: if set to False, doKinFit should be set to False in ZZCandidateFiller.cc
+declareDefault("APPLYMUCORR", False, globals())
 
 #muon scale correction identifier, "None" for pass-through, "MC_76X_13TeV" for 2015
 declareDefault("MUCORRTYPE", "None", globals())
+
+#Reapply JEC
+declareDefault("APPLYJEC", True, globals())
 
 #FSR mode
 declareDefault("FSRMODE", "RunII", globals())
@@ -965,75 +968,81 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
 ### Jets
 ### ----------------------------------------------------------------------
 
-
-### Load JEC
-process.load("CondCore.CondDB.CondDB_cfi")
-
-if IsMC: 
-    process.jec = cms.ESSource("PoolDBESSource",
-        DBParameters = cms.PSet(
-            messageLevel = cms.untracked.int32(1)
-        ),
-        timetype = cms.string('runnumber'),
-        toGet = cms.VPSet(
-        cms.PSet(
-            record = cms.string('JetCorrectionsRecord'),
-            tag    = cms.string('JetCorrectorParametersCollection_Fall15_25nsV2_MC_AK4PFchs'),
-            label  = cms.untracked.string('AK4PFchs')
-            ),
-        ), 
-        connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall15_25nsV2_MC.db'),
-    )
-else: 
-    process.jec = cms.ESSource("PoolDBESSource",
-        DBParameters = cms.PSet(
-            messageLevel = cms.untracked.int32(1)
-        ),
-        timetype = cms.string('runnumber'),
-        toGet = cms.VPSet(
-        cms.PSet(
-            record = cms.string('JetCorrectionsRecord'),
-            tag    = cms.string('JetCorrectorParametersCollection_Fall15_25nsV2_DATA_AK4PFchs'),
-            label  = cms.untracked.string('AK4PFchs')
-            ),
-        ), 
-        connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall15_25nsV2_DATA.db'),
-    )
-## add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
-process.es_prefer_jec = cms.ESPrefer('PoolDBESSource','jec')
-
-### reapply JEC
-from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import updatedPatJetCorrFactors
-process.patJetCorrFactorsReapplyJEC = updatedPatJetCorrFactors.clone(
-  src = cms.InputTag("slimmedJets"),
-  levels = ['L1FastJet','L2Relative','L3Absolute'],
-  payload = 'AK4PFchs' )
-if not IsMC:
-    process.patJetCorrFactorsReapplyJEC.levels = ['L1FastJet','L2Relative','L3Absolute','L2L3Residual']
-
-from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import updatedPatJets
-process.patJetsReapplyJEC = updatedPatJets.clone(
-  jetSource = cms.InputTag("slimmedJets"),
-  jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
-  )
-
-
 # embed q/g likelihood
 process.load('RecoJets.JetProducers.QGTagger_cfi')
-#process.QGTagger.srcJets = cms.InputTag( 'slimmedJets' )
-process.QGTagger.srcJets = cms.InputTag( 'patJetsReapplyJEC' )
+process.QGTagger.srcJets = cms.InputTag( 'slimmedJets' )
 process.QGTagger.jetsLabel = cms.string('QGL_AK4PFchs')
 
 process.dressedJets = cms.EDProducer("JetFiller",
-    #src = cms.InputTag("slimmedJets"),
-    src = cms.InputTag("patJetsReapplyJEC"),
+    src = cms.InputTag("slimmedJets"),
     cut = cms.string("pt>20 && abs(eta)<4.7"),
     bTaggerName = cms.string("pfCombinedInclusiveSecondaryVertexV2BJetTags"),
     jecType = cms.string("AK4PFchs"),
     flags = cms.PSet(
         isBtagged = cms.string("userFloat('bTagger')>0.800"),
+        )
     )
-)
+
+### Load JEC
+if APPLYJEC: 
+    process.load("CondCore.CondDB.CondDB_cfi")
+
+    if IsMC: 
+        process.jec = cms.ESSource("PoolDBESSource",
+            DBParameters = cms.PSet(
+                messageLevel = cms.untracked.int32(1)
+                ),
+            timetype = cms.string('runnumber'),
+            toGet = cms.VPSet(
+                cms.PSet(
+                    record = cms.string('JetCorrectionsRecord'),
+#                    tag    = cms.string('JetCorrectorParametersCollection_Fall15_25nsV2_MC_AK4PFchs'), #for 76X
+                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV1_MC_AK4PFchs'), #for 80X
+                    label  = cms.untracked.string('AK4PFchs')
+                    ),
+                ), 
+#            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall15_25nsV2_MC.db'), #for 76X
+             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Spring16_25nsV1_MC.db'), #for 80X
+            
+            )
+    else: 
+        process.jec = cms.ESSource("PoolDBESSource",
+            DBParameters = cms.PSet(
+                messageLevel = cms.untracked.int32(1)
+                ),
+            timetype = cms.string('runnumber'),
+            toGet = cms.VPSet(
+                cms.PSet(
+                    record = cms.string('JetCorrectionsRecord'),
+                    tag    = cms.string('JetCorrectorParametersCollection_Fall15_25nsV2_DATA_AK4PFchs'), #for 76X FIXME: update for 80X
+                    label  = cms.untracked.string('AK4PFchs')
+                    ),
+                ), 
+            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall15_25nsV2_DATA.db'), #for 76X FIXME: update for 80X   
+            )
+
+    ## add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
+    process.es_prefer_jec = cms.ESPrefer('PoolDBESSource','jec')
+
+    ### reapply JEC
+    from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import updatedPatJetCorrFactors
+    process.patJetCorrFactorsReapplyJEC = updatedPatJetCorrFactors.clone(
+        src = cms.InputTag("slimmedJets"),
+        levels = ['L1FastJet','L2Relative','L3Absolute'],
+        payload = 'AK4PFchs' )
+    if not IsMC:
+        process.patJetCorrFactorsReapplyJEC.levels = ['L1FastJet','L2Relative','L3Absolute','L2L3Residual']
+
+    from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import updatedPatJets
+    process.patJetsReapplyJEC = updatedPatJets.clone(
+        jetSource = cms.InputTag("slimmedJets"),
+        jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
+        )
+
+    ### Replace inputs in QGTagger and dressedJets
+    process.QGTagger.srcJets = cms.InputTag( 'patJetsReapplyJEC')
+    process.dressedJets.src = cms.InputTag('patJetsReapplyJEC')
+
 
 
 # Clean jets wrt. good (preFSR-)isolated leptons
@@ -1063,9 +1072,11 @@ if FSRMODE=="Legacy" :
 process.preSkimCounter = cms.EDProducer("EventCountProducer")
 process.PVfilter =  cms.Path(process.preSkimCounter+process.goodPrimaryVertices)
 
-#process.Jets = cms.Path( process.QGTagger + process.dressedJets )
-# reapply JEC
-process.Jets = cms.Path( process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.QGTagger + process.dressedJets )
+if APPLYJEC:
+    process.Jets = cms.Path( process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.QGTagger + process.dressedJets )
+else:
+    process.Jets = cms.Path( process.QGTagger + process.dressedJets )
+    
 
 # Prepare lepton collections
 process.Candidates = cms.Path(

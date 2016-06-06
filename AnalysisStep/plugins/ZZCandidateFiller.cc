@@ -52,7 +52,7 @@
 
 using namespace zzanalysis;
 
-bool doKinFit = true;
+bool doKinFit = false;
 bool doVtxFit = false;
 
 class ZZCandidateFiller : public edm::EDProducer {

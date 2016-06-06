@@ -71,7 +71,7 @@
 
 namespace {
   bool writeJets = true;     // Write jets in the tree. FIXME: make this configurable
-  bool addKinRefit = true;
+  bool addKinRefit = false;
   bool addVtxFit = false;
   bool addFSRDetails = false;
   bool skipDataMCWeight = true; // skip computation of data/MC weight
