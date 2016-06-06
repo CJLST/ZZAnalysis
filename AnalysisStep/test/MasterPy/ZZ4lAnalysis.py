@@ -27,8 +27,11 @@ declareDefault("ELECORRTYPE", "RunII", globals())
 #Apply electron escale regression
 declareDefault("ELEREGRESSION", "None", globals())
 
-#Apply muon scale correction
+#Apply muon scale correction. FIXME: False causes a crash in the Z fitter, use MUCORRTYPE="None" for the time being (to be fixed)
 declareDefault("APPLYMUCORR", True, globals())
+
+#muon scale correction identifier, "None" for pass-through, "MC_76X_13TeV" for 2015
+declareDefault("MUCORRTYPE", "None", globals())
 
 #FSR mode
 declareDefault("FSRMODE", "RunII", globals())
@@ -300,7 +303,7 @@ else:
 #--- Mu e-scale corrections (KalmanMuonCalibrator, 2015)
 process.calibratedMuons = cms.EDProducer("KalmanPATMuonCorrector", 
                                          src = cms.InputTag("slimmedMuons"),
-                                         identifier = cms.string("MC_76X_13TeV"),
+                                         identifier = cms.string(MUCORRTYPE),
                                          isMC = cms.bool(IsMC),
                                          isSynchronization = cms.bool(False),
                                          )

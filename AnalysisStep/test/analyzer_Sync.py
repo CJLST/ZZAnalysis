@@ -1,10 +1,11 @@
 
-LEPTON_SETUP = 2015
+LEPTON_SETUP = 2016
 PD = ""
 MCFILTER = ""
-ELECORRTYPE = "RunII" # "None", "Moriond", "Paper", or "RunII"
+ELECORRTYPE = "None" # "None", "Moriond", "Paper", or "RunII"
 ELEREGRESSION = "None" # "None", "Moriond", "PaperNoComb", or "Paper" 
-APPLYMUCORR = True
+APPLYMUCORR = True #FIXME: False causes a crash in the Z fitter, use MUCORRTYPE="None" for the time being (to be fixed)
+MUCORRTYPE = "None" # "None", "MC_76X_13TeV". See above.
 BUNCH_SPACING = 25
 #FSRMODE = "Legacy" # Legacy or Run II
 

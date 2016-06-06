@@ -48,9 +48,10 @@ KalmanPATMuonCorrector::KalmanPATMuonCorrector(const edm::ParameterSet& iConfig)
   muonToken_(consumes<vector<pat::Muon> >(iConfig.getParameter<edm::InputTag>("src"))),
   identifier_(iConfig.getParameter<string>("identifier")),
   isMC_(iConfig.getParameter<bool>("isMC")),
-  isSync_(iConfig.getParameter<bool>("isSynchronization"))
+  isSync_(iConfig.getParameter<bool>("isSynchronization")),
+  calibrator(0)
 {
-  calibrator = new KalmanMuonCalibrator(identifier_);
+  if (identifier_!="None") calibrator = new KalmanMuonCalibrator(identifier_);
 
   produces<pat::MuonCollection>();
 }
@@ -76,28 +77,34 @@ KalmanPATMuonCorrector::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
     double newPt, newPtError;
 
-    if(isMC_){
-      /// ====== ON MC (correction plus smearing) =====
+    if (calibrator==0) { //passthrough mode
+	  newPt = mu.pt();
+	  newPtError = mu.muonBestTrack()->ptError();
+    } else {
 
-      double corrPt = calibrator->getCorrectedPt(mu.pt(), mu.eta(), mu.phi(), mu.charge());
-      double corrPtError = corrPt * calibrator->getCorrectedError(corrPt, mu.eta(), mu.bestTrack()->ptError()/corrPt );
+      if(isMC_){
+	/// ====== ON MC (correction plus smearing) =====
 
-      if(!isSync_) 
-	newPt = calibrator->smear(corrPt, mu.eta());
-      else
-	newPt = calibrator->smearForSync(corrPt, mu.eta());
-      newPtError = newPt * calibrator->getCorrectedErrorAfterSmearing(newPt, mu.eta(), corrPtError / newPt );
+	double corrPt = calibrator->getCorrectedPt(mu.pt(), mu.eta(), mu.phi(), mu.charge());
+	double corrPtError = corrPt * calibrator->getCorrectedError(corrPt, mu.eta(), mu.bestTrack()->ptError()/corrPt );
 
-    }else{
-      /// ====== ON DATA (correction only) =====
-      if(mu.pt()>2.0 && fabs(mu.eta())<2.4){
-	newPt = calibrator->getCorrectedPt(mu.pt(), mu.eta(), mu.phi(), mu.charge());
-	newPtError = newPt * calibrator->getCorrectedError(newPt, mu.eta(), mu.bestTrack()->ptError()/newPt );
+	if(!isSync_) 
+	  newPt = calibrator->smear(corrPt, mu.eta());
+	else
+	  newPt = calibrator->smearForSync(corrPt, mu.eta());
+	newPtError = newPt * calibrator->getCorrectedErrorAfterSmearing(newPt, mu.eta(), corrPtError / newPt );
+
       }else{
-	newPt = mu.pt();
-	newPtError = mu.muonBestTrack()->ptError();
-      }
+	/// ====== ON DATA (correction only) =====
+	if(mu.pt()>2.0 && fabs(mu.eta())<2.4){
+	  newPt = calibrator->getCorrectedPt(mu.pt(), mu.eta(), mu.phi(), mu.charge());
+	  newPtError = newPt * calibrator->getCorrectedError(newPt, mu.eta(), mu.bestTrack()->ptError()/newPt );
+	}else{
+	  newPt = mu.pt();
+	  newPtError = mu.muonBestTrack()->ptError();
+	}
 
+      }
     }
 
     p4.SetPtEtaPhiM(newPt, mu.eta(), mu.phi(), mu.mass());
