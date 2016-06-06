@@ -149,9 +149,14 @@ namespace {
   //std::vector<float> LepPhotonIso;
   std::vector<float> LepCombRelIsoPF;
   std::vector<float> Lep_min_ele_dR;
+  std::vector<float> Lep_has_matching_ele;
+  std::vector<float> Lep_ele_ID;
   std::vector<short> Lep_ele_isID;
-  std::vector<short> Lep_ele_isISO;
-  std::vector<short> Lep_ele_isSIP;
+  std::vector<float> Lep_ele_ISO;
+  std::vector<float> Lep_ele_SIP;
+  std::vector<short> Lep_ele_charge;
+  std::vector<float> Lep_ele_pt;
+
 
   std::vector<short> Lep_match;
   std::vector<short> Lep_id_match;
@@ -950,9 +955,13 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   int nFilled=0;
   for( edm::View<pat::CompositeCandidate>::const_iterator cand = cands->begin(); cand != cands->end(); ++cand) {
     size_t icand= cand-cands->begin();
-
-    if (!( theChannel==ZL || CRFLAG[icand] || (bool)(cand->userFloat("isBestCand")) )) continue; // Skip events other than the best cand (or CR candidates in the CR)
-    
+    bool store_only_matched = false;
+    if(store_only_matched ) {
+      if(cand->userFloat("Z_lep_match") < 3) continue;
+    } else {
+    // note taht this is bugged in 4e fs!
+      if(!( theChannel==ZL || CRFLAG[icand] || (bool)(cand->userFloat("isBestCand")) )) continue; // Skip events other than the best cand (or CR candidates in the CR)
+    }
     //For the SR, also fold information about acceptance in CRflag. 
     if (isMC && (theChannel==ZZ)) {
       if (gen_ZZ4lInEtaAcceptance) { 
@@ -1011,9 +1020,13 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   //LepPhotonIso.clear();
   LepCombRelIsoPF.clear();
   Lep_min_ele_dR.clear();
+  Lep_has_matching_ele.clear();
+  Lep_ele_ID.clear();
   Lep_ele_isID.clear();
-  Lep_ele_isISO.clear();
-  Lep_ele_isSIP.clear();
+  Lep_ele_ISO.clear();
+  Lep_ele_SIP.clear();
+  Lep_ele_charge.clear();
+  Lep_ele_pt.clear();
 
   Lep_match.clear();
   Lep_id_match.clear();
@@ -1320,7 +1333,12 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     LepPt .push_back( leptons[i]->pt() );
     LepEta.push_back( leptons[i]->eta() );
     LepPhi.push_back( leptons[i]->phi() );
-    LepLepId.push_back( leptons[i]->pdgId() );
+    int charge = 0;
+    if(leptons[i]->pdgId() == 22) {
+        if(i == 0 || i == 2) charge = +1;
+        if(i == 1 || i == 3) charge = -1;
+    }
+    LepLepId.push_back( charge == 0 ? leptons[i]->pdgId() : charge * leptons[i]->pdgId() );
     LepSIP  .push_back( SIP[i] );
     LepTime .push_back( lepFlav==13 ? userdatahelpers::getUserFloat(leptons[i],"time") : 0. );
     LepisID .push_back( userdatahelpers::getUserFloat(leptons[i],"ID") );
@@ -1331,18 +1349,16 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     //LepPhotonIso[i].push_back( userdatahelpers::getUserFloat(leptons[i],"PFPhotonIso") );
     LepCombRelIsoPF.push_back( combRelIsoPF[i] );
 
-    float min_ele_dR = lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"min_ele_dR") : -2; 
-    short ele_isID = lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"ele_isID") : -2; 
-    short ele_isISO = lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"ele_isISO") : -2;
-    short ele_isSIP = lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"ele_isSIP") : -2;
 
-    Lep_min_ele_dR.push_back(min_ele_dR);    
-    Lep_ele_isID.push_back(ele_isID);
-    Lep_ele_isISO.push_back(ele_isISO);
-    Lep_ele_isSIP.push_back(ele_isSIP);
-
-    int Z_lep_match = isMC ? cand.userFloat(labels[i] + "Z_lep_match") : -1;
-    Lep_match.push_back(Z_lep_match);
+    Lep_has_matching_ele.push_back(lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"ele_has_matching_ele") : -2);
+    Lep_min_ele_dR.push_back(22 ? userdatahelpers::getUserFloat(leptons[i],"min_ele_dR") : -2);    
+    Lep_ele_ID.push_back(lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"ele_ID") : -2);
+    Lep_ele_isID.push_back(lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"ele_isID") : -2);
+    Lep_ele_ISO.push_back(22 ? userdatahelpers::getUserFloat(leptons[i],"ele_ISO") : -2);
+    Lep_ele_SIP.push_back(22 ? userdatahelpers::getUserFloat(leptons[i],"ele_SIP") : -2);
+    Lep_ele_charge.push_back(lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"ele_charge") : -3);
+    Lep_ele_pt.push_back(lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"ele_pt") : -2);
+    Lep_match.push_back(isMC ? cand.userFloat(labels[i] + "Z_lep_match") : -1);
 
     int id_match = -1;
     const reco::Candidate* genParticle = nullptr;
@@ -1835,9 +1851,16 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   //myTree->Book("LepPhotonIso",LepPhotonIso);
   myTree->Book("LepCombRelIsoPF",LepCombRelIsoPF);
   myTree->Book("Lep_min_ele_dR",Lep_min_ele_dR);
+  myTree->Book("Lep_has_matching_ele",Lep_has_matching_ele);
+
   myTree->Book("Lep_ele_isID",Lep_ele_isID);
-  myTree->Book("Lep_ele_isISO",Lep_ele_isISO);
-  myTree->Book("Lep_ele_isSIP",Lep_ele_isSIP);
+  myTree->Book("Lep_ele_ID",Lep_ele_ID);
+  myTree->Book("Lep_ele_ISO",Lep_ele_ISO);
+  myTree->Book("Lep_ele_SIP",Lep_ele_SIP);
+  myTree->Book("Lep_ele_charge",Lep_ele_charge);
+  myTree->Book("Lep_ele_pt",Lep_ele_pt);
+
+
 //  myTree->Book("",);
 
   myTree->Book("Lep_match",Lep_match);

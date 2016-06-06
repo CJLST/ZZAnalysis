@@ -353,7 +353,7 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       e->addUserFloat("passCombRelIsoPFFSRCorr",combRelIsoPFCorr < electron_iso_cut);
     }
     for (pat::PhotonCollection::iterator e= resultTle->begin(); e!=resultTle->end(); ++e){
-//      float fsrCorr = 0; // The correction to PFPhotonIso
+      float fsrCorr = 0; // The correction to PFPhotonIso
       /*
       for (PhotonPtrVector::const_iterator g = allSelFSR.begin();g!= allSelFSR.end(); ++g) {
 	    const pat::PFParticle* gamma = g->get();
@@ -363,9 +363,10 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	        fsrCorr += gamma->pt();
  	    }
       }*/
-      float combRelIsoPFCorr = 0.;// LeptonIsoHelper::combRelIsoPF(sampleType, setup, rhoForEle, *e, fsrCorr);
+      float combRelIsoPFCorr = LeptonIsoHelper::combRelIsoPF(sampleType, setup, rhoForEle, *e, fsrCorr);
       e->addUserFloat("combRelIsoPFFSRCorr", combRelIsoPFCorr);
-      e->addUserFloat("passCombRelIsoPFFSRCorr",combRelIsoPFCorr < 999.); //LeptonIsoHelper::isoCut(&*e)); // FIXME should move this to the .py, once we drop support for the old FSR strategy
+      // Isolation os included in TLE ID
+      e->addUserFloat("passCombRelIsoPFFSRCorr",combRelIsoPFCorr < 99999.); //LeptonIsoHelper::isoCut(&*e)); // FIXME should move this to the .py, once we drop support for the old FSR strategy
     }
 
 

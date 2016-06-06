@@ -60,6 +60,8 @@ class Philler : public edm::EDProducer {
   edm::EDGetTokenT<double> rhoToken;
   edm::EDGetTokenT<vector<Vertex> > vtxToken;
   EDGetTokenT<ValueMap<float> > BDTValueMapToken;
+  EDGetTokenT<ValueMap<float> > BDTValueMapToken2;
+
 };
 
 
@@ -72,7 +74,9 @@ Philler::Philler(const edm::ParameterSet& iConfig) :
   cut(iConfig.getParameter<std::string>("cut")),
   flags(iConfig.getParameter<ParameterSet>("flags")),
   //myMVATrig(0),
-  BDTValueMapToken(consumes<ValueMap<float> >(iConfig.getParameter<InputTag>("mvaValuesMap")))
+  BDTValueMapToken(consumes<ValueMap<float> >(iConfig.getParameter<InputTag>("mvaValuesMap"))),
+  BDTValueMapToken2(consumes<ValueMap<float> >(iConfig.getParameter<InputTag>("mvaValuesMap2")))
+
 {
   rhoToken = consumes<double>(LeptonIsoHelper::getEleRhoTag(sampleType, setup));
   vtxToken = consumes<vector<Vertex> >(edm::InputTag("goodPrimaryVertices"));
@@ -106,23 +110,39 @@ Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   Handle<ValueMap<float> > BDTValues;
   iEvent.getByToken(BDTValueMapToken, BDTValues);
 
+  Handle<ValueMap<float> > BDTValues2;
+  iEvent.getByToken(BDTValueMapToken2, BDTValues2);
+
+
   // Output collection
   auto_ptr<pat::PhotonCollection> result( new pat::PhotonCollection() );
 
   for (unsigned int i = 0; i< photonHandle->size(); ++i){
 
     pat::Photon l(*(photonHandle->ptrAt(i)));
+    const auto ph_SC = l.parentSuperCluster();
+
     float min_ele_dR = 999;
+    bool has_matching_ele = false;
     float curr_dR = 999;
     int min_dR_index = -1;
     for(size_t i_ele = 0; i_ele < electronHandle->size(); ++i_ele) {
+      const auto ele_parent_SC = electronHandle->at(i_ele).parentSuperCluster();
+
       curr_dR = reco::deltaR(l, electronHandle->at(i_ele));
-      if(curr_dR < min_ele_dR) {
-        min_ele_dR = curr_dR;
-        min_dR_index = i_ele;
+      if(ph_SC==ele_parent_SC) {
+         has_matching_ele = true;
+         min_dR_index = i_ele;
+         min_ele_dR = curr_dR;
+
       }
+//      if(curr_dR < min_ele_dR) {
+//        min_ele_dR = curr_dR;
+//        min_dR_index = i_ele;
+//      }
     }
-    if(min_ele_dR < 0.1) continue;
+//    if(has_matching_ele) continue;
+//    if(min_ele_dR < 0.1) continue;
     //---Clone the pat::Photon
 //    pat::Photon l(*((*photonHandle)[i].get()));
 
@@ -185,29 +205,25 @@ Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         isBDT = true;// 0.374;
     if(l.isEE() && BDT > -0.6) 
         isBDT = true;// 0.336;
-    //LogPrint("") << "isBDT:" << isBDT<<" " << BDT;
- /*(pt <= 10 && ((fSCeta < 0.8                    && BDT > -0.265) ||
-                               (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.556) ||
-                               (fSCeta >= 1.479                 && BDT > -0.551)   )) ||
-                 (pt >  10 && ((fSCeta < 0.8                    && BDT > -0.072) ||
-                               (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.286) ||
-                               (fSCeta >= 1.479                 && BDT > -0.267)   ));
-*/
 
-    //-- Missing hit  
-    //int missingHit = -1;
-    if(l.gsfTrack().isNonnull() && l.gsfTrack().isAvailable())
+
+    // Photon 90% MVA ID
+    /*
+    if(l.isEB() && BDT > 0.374) 
+        isBDT = true;// 0.374;
+    if(l.isEE() && BDT > 0.336) 
+        isBDT = true;// 0.336;
+    */
+
+   if(l.gsfTrack().isNonnull() && l.gsfTrack().isAvailable())
         l.gsfTrack()->hitPattern().numberOfHits(HitPattern::MISSING_INNER_HITS);
     //-- Flag for crack photons (which use different efficiency SFs)
-    bool isCrack = 0; //l.isGap(); 
+    bool isCrack = (l.isEBEEGap())||(l.isEBGap())||(l.isEEGap());// l.isGap(); 
     //--- Trigger matching
     int HLTMatch = 0; //FIXME
 
     const edm::Ptr<reco::Photon> phRecoPtr(photonHandle->ptrAt(i));
-    //LogWarning("") << "b4 SC";
-
     auto superCluster = phRecoPtr->superCluster();
-    //LogWarning("") << "after SC";
 
     /*
     float pfSCfbrem = 999.;
@@ -237,21 +253,37 @@ Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     l.addUserFloat("isCrack",isCrack);
     l.addUserFloat("HLTMatch", HLTMatch);
 
-    int ele_is_ID = -1;
-    int ele_is_ISO = -1;
-    int ele_is_SIP = -1;
- 
+    float ele_is_ID = -1;
+    float ele_is_ISO = -1;
+    float ele_is_SIP = -1;
+    int ele_charge = -2;
+    float ele_pt = -1;
     if(min_dR_index != -1) {
         pat::Electron ele((electronHandle->at(min_dR_index)));
-        if(ele.hasUserFloat("ID")) ele_is_ID = ele.userFloat("ID");
-        if(ele.hasUserFloat("combRelIsoPF")) ele_is_ISO = ele.userFloat("combRelIsoPF") < 0.35;
-        if(ele.hasUserFloat("SIP")) ele_is_SIP = ele.userFloat("SIP") < 4.0;
+        if(ele.hasUserFloat("ID")) ele_is_ID = ele.userFloat("BDT");
+        if(ele.hasUserFloat("combRelIsoPF")) ele_is_ISO = ele.userFloat("combRelIsoPF");
+        if(ele.hasUserFloat("SIP")) ele_is_SIP = ele.userFloat("SIP");
+        ele_charge = ele.charge();
+        ele_pt = ele.pt(); 
     }
     l.addUserFloat("min_ele_dR", min_ele_dR);
-    l.addUserFloat("ele_isID", ele_is_ID);
-    l.addUserFloat("ele_isISO", ele_is_ISO);
-    l.addUserFloat("ele_isSIP", ele_is_SIP);
+    l.addUserFloat("ele_has_matching_ele", has_matching_ele);
+    l.addUserFloat("ele_ID", ele_is_ID);
+    l.addUserFloat("ele_ISO", ele_is_ISO);
+    l.addUserFloat("ele_SIP", ele_is_SIP);
+    l.addUserFloat("ele_charge", ele_charge);
+    l.addUserFloat("ele_pt", ele_pt);
 
+    float BDT2 = (*BDTValues2)[photonHandle->ptrAt(i)];
+    bool isBDT2 = false;
+    if(l.isEB() && fSCeta < 0.8 && BDT2 > -0.68)
+        isBDT2 = true;// 0.374;
+    if(l.isEB() && fSCeta >= 0.8 && BDT2 > -0.66)
+        isBDT2 = true;// 0.374;
+    if(l.isEE() && BDT2 > -0.6)
+        isBDT2 = true;// 0.336; 
+    l.addUserFloat("BDT2", BDT2);
+    l.addUserFloat("isBDT2", isBDT2);
 
     //l.addUserFloat("passCombRelIsoPFFSRCorr", 0.);
     //l.addUserFloat("pfSCfbrem", pfSCfbrem);
