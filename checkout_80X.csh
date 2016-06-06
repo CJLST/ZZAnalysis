@@ -29,6 +29,7 @@ git clone -n https://github.com/cms-analysis/EgammaAnalysis-ElectronTools EGamma
 
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
+(cd ZZMatrixElement ; git checkout -b from-c6d45de c6d45de)
 
 #photon ISO information for FSR 
 git clone -n https://github.com/VBF-HZZ/UFHZZAnalysisRun2

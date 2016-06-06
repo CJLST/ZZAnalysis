@@ -34,10 +34,9 @@ process.source.inputCommands = cms.untracked.vstring("keep *", "drop LHERunInfoP
 
 process.source.fileNames = cms.untracked.vstring(
 
-    ## Fall15 MiniAODv1 files for a first synchronization on MC
-    '/store/mc/RunIIFall15MiniAODv1/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/00000/E2490ECF-CBA7-E511-9B19-001E67398458.root',
-    '/store/mc/RunIIFall15MiniAODv1/WminusH_HToZZTo4L_M125_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/50000/282C35FB-68A3-E511-A0C4-0CC47A4C8E5E.root',
-    '/store/mc/RunIIFall15MiniAODv1/WplusH_HToZZTo4L_M125_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/20000/E2DA5AA7-C5AC-E511-97E0-0CC47A4C8E98.root',
+    ## Spring16 MiniAODv1 files for synchronization
+    '/store/mc/RunIISpring16MiniAODv1/VBF_HToZZTo4L_M190_13TeV_powheg2_JHUgenV6_pythia8/MINIAODSIM/PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_v3-v1/00000/28ADE6D5-021F-E611-B1A4-00145E5521B9.root',
+    '/store/mc/RunIISpring16MiniAODv1/WminusH_HToZZTo4L_M150_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/MINIAODSIM/PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_v3-v1/00000/C6DF34D4-CF20-E611-A8EE-782BCB27B958.root'
 
     )
 
@@ -57,7 +56,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 ### ----------------------------------------------------------------------
 
 
-#process.source.eventsToProcess = cms.untracked.VEventRange("1:122490", "1:1343", "1:177684")
+#process.source.eventsToProcess = cms.untracked.VEventRange("1:72285")
 
 # Debug
 process.dumpUserData =  cms.EDAnalyzer("dumpUserData",

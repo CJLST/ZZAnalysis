@@ -964,8 +964,7 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
 
 
 ### Load JEC
-process.load("CondCore.DBCommon.CondDBCommon_cfi")
-from CondCore.DBCommon.CondDBSetup_cfi import *
+process.load("CondCore.CondDB.CondDB_cfi")
 
 if IsMC: 
     process.jec = cms.ESSource("PoolDBESSource",
