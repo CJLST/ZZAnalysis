@@ -478,7 +478,8 @@ HZZ2l2qNtupleMaker::HZZ2l2qNtupleMaker(const edm::ParameterSet& pset) :
   preSkimToken = consumes<edm::MergeableCounter,edm::InLumi>(edm::InputTag("preSkimCounter"));
 
   if (skipEmptyEvents) {
-    applyTrigger=true;
+    // applyTrigger=true;         // Trigger does not work in 80X
+    applyTrigger=false;
     applySkim=true;
   } else {
     applyTrigger=false;
@@ -1003,15 +1004,15 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
     ZZPhi.push_back(cand.p4().phi());
 
     if(addKinRefit){
-      if (isMerged) {
+      /*  if (isMerged) {
 	ZZMassRefit.push_back(-1.);
 	ZZMassRefitErr.push_back(-1.);
 	ZZMassUnrefitErr.push_back(-1.);
-      } else {
-	ZZMassRefit.push_back(cand.userFloat("ZZMassRefit"));
-	ZZMassRefitErr.push_back(cand.userFloat("ZZMassRefitErr"));
-	ZZMassUnrefitErr.push_back(cand.userFloat("ZZMassUnrefitErr"));
-      }
+	} else { */
+      ZZMassRefit.push_back(cand.userFloat("ZZMassRefit"));
+      ZZMassRefitErr.push_back(cand.userFloat("ZZMassRefitErr"));
+      ZZMassUnrefitErr.push_back(cand.userFloat("ZZMassUnrefitErr"));
+      // }
     }
     if(addVtxFit && !isMerged){
       ZZMassCFit.push_back(cand.userFloat("CFitM"));
@@ -1265,10 +1266,10 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
     JetIsInZZCand.push_back(true);
     
     // std::cout << "PDGId " << i << " : " << leptons[i]->pdgId() << endl; 
-    bTagger[i] = -1.;
-    isBTagged[i] = -1.;
-    qgLik[i] = -1.;
-    JecUnc[i] = -1.; 
+    bTagger[i] = -900.;
+    isBTagged[i] = -900.;
+    qgLik[i] = -900.;
+    JecUnc[i] = -900.; 
 
     if (!isMerged) {
       bTagger[i]           = userdatahelpers::getUserFloat(leptons[i],"bTagger");
@@ -1277,6 +1278,11 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
       JecUnc[i]           = userdatahelpers::getUserFloat(leptons[i],"jec_unc");
       
       //Fill the info on the jet candidates       
+    } else {
+      const pat::Jet* jet = dynamic_cast<const pat::Jet*>(leptons[i]);
+      bTagger[i] = jet->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
+      isBTagged[i] = (float)(jet->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags")>0.800);
+      //Fill the info on the subjet candidates   
     }
 
     JetBTagger .push_back( bTagger[i] );
