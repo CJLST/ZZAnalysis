@@ -4,10 +4,10 @@
 # wget -pP /tmp https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_76X/checkout_70X.csh
 # cd $CMSSW_BASE/src
 # cmsenv
-# source /tmp/checkout_70X.csh
+# source /tmp/checkout_80X.csh
 
 
-############## For CMSSW_7_6_3_patch2
+############## For CMSSW_8_0_4
 
 #electron momentum scale corrections (76X).
 git cms-merge-topic -u matteosan1:smearer_76X
@@ -36,7 +36,7 @@ git clone -n https://github.com/VBF-HZZ/UFHZZAnalysisRun2
 
 #kinematic refitting
 git clone https://github.com/tocheng/KinZfitter.git
-(cd KinZfitter; git checkout -b from-Zhadv1.0 Zhadv1.0)
+(cd KinZfitter; git checkout -b from-Zhadv1.1 Zhadv1.1)
 
 #muon momentum scale corrections (76X)
 git clone https://github.com/bachtis/Analysis.git -b KaMuCa_V2 KaMuCa 
