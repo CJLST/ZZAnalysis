@@ -1351,14 +1351,14 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 
 
     Lep_has_matching_ele.push_back(lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"ele_has_matching_ele") : -2);
-    Lep_min_ele_dR.push_back(22 ? userdatahelpers::getUserFloat(leptons[i],"min_ele_dR") : -2);    
+    Lep_min_ele_dR.push_back(lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"min_ele_dR") : -2);    
     Lep_ele_ID.push_back(lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"ele_ID") : -2);
-    Lep_ele_isID.push_back(lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"ele_isID") : -2);
-    Lep_ele_ISO.push_back(22 ? userdatahelpers::getUserFloat(leptons[i],"ele_ISO") : -2);
-    Lep_ele_SIP.push_back(22 ? userdatahelpers::getUserFloat(leptons[i],"ele_SIP") : -2);
+    Lep_ele_isID.push_back(lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"ele_is_ID") : -2);
+    Lep_ele_ISO.push_back(lepFlav ==22 ? userdatahelpers::getUserFloat(leptons[i],"ele_ISO") : -2);
+    Lep_ele_SIP.push_back(lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"ele_SIP") : -2);
     Lep_ele_charge.push_back(lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"ele_charge") : -3);
     Lep_ele_pt.push_back(lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"ele_pt") : -2);
-    Lep_match.push_back(isMC ? cand.userFloat(labels[i] + "Z_lep_match") : -1);
+    Lep_match.push_back(isMC && cand.hasUserFloat(labels[i] + "Z_lep_match") ? cand.userFloat(labels[i] + "Z_lep_match") : -1);
 
     int id_match = -1;
     const reco::Candidate* genParticle = nullptr;
@@ -1456,7 +1456,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   overallEventWeight = PUWeight * genHEPMCweight * dataMCWeight;
 
 
-  if(isMC) {
+  if(isMC && theChannel!=ZL) {
     ZZ_match = cand.userFloat("Z_lep_match");
     Z1_match = cand.userFloat("d0.Z_lep_match");
     Z2_match = cand.userFloat("d1.Z_lep_match");

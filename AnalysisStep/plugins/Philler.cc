@@ -253,14 +253,16 @@ Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     l.addUserFloat("isCrack",isCrack);
     l.addUserFloat("HLTMatch", HLTMatch);
 
-    float ele_is_ID = -1;
+    int ele_is_ID = -1;
+    float ele_ID = -1;
     float ele_is_ISO = -1;
     float ele_is_SIP = -1;
     int ele_charge = -2;
     float ele_pt = -1;
     if(min_dR_index != -1) {
         pat::Electron ele((electronHandle->at(min_dR_index)));
-        if(ele.hasUserFloat("ID")) ele_is_ID = ele.userFloat("BDT");
+        if(ele.hasUserFloat("isBDT")) ele_is_ID = ele.userFloat("isBDT");
+        if(ele.hasUserFloat("BDT")) ele_ID = ele.userFloat("BDT");
         if(ele.hasUserFloat("combRelIsoPF")) ele_is_ISO = ele.userFloat("combRelIsoPF");
         if(ele.hasUserFloat("SIP")) ele_is_SIP = ele.userFloat("SIP");
         ele_charge = ele.charge();
@@ -268,7 +270,8 @@ Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
     l.addUserFloat("min_ele_dR", min_ele_dR);
     l.addUserFloat("ele_has_matching_ele", has_matching_ele);
-    l.addUserFloat("ele_ID", ele_is_ID);
+    l.addUserFloat("ele_ID", ele_ID);
+    l.addUserFloat("ele_is_ID", ele_is_ID);
     l.addUserFloat("ele_ISO", ele_is_ISO);
     l.addUserFloat("ele_SIP", ele_is_SIP);
     l.addUserFloat("ele_charge", ele_charge);
