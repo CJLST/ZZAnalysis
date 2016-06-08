@@ -114,7 +114,7 @@ namespace {
   std::vector<short> Z1Flav  ;		   
   std::vector<float> Z1tau21  ;		   
   std::vector<float> ZZMassRefit  ;	   
-  std::vector<float> ZZMassRefitErr  ;	   
+  std::vector<float> Z1MassRefit  ;	   
   std::vector<float> ZZMassUnrefitErr  ;   
   std::vector<float> ZZMassCFit  ;	   
   std::vector<float> ZZChi2CFit  ;	   
@@ -1006,11 +1006,11 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
     if(addKinRefit){
       /*  if (isMerged) {
 	ZZMassRefit.push_back(-1.);
-	ZZMassRefitErr.push_back(-1.);
+	Z1MassRefitpush_back(-1.);
 	ZZMassUnrefitErr.push_back(-1.);
 	} else { */
       ZZMassRefit.push_back(cand.userFloat("ZZMassRefit"));
-      ZZMassRefitErr.push_back(cand.userFloat("ZZMassRefitErr"));
+      Z1MassRefit.push_back(cand.userFloat("Z1MassRefit"));
       ZZMassUnrefitErr.push_back(cand.userFloat("ZZMassUnrefitErr"));
       // }
     }
@@ -1736,7 +1736,7 @@ void HZZ2l2qNtupleMaker::BookAllBranches(){
   //Kin refitted info
   if (addKinRefit) {
     myTree->Book("ZZMassRefit",ZZMassRefit);
-    myTree->Book("ZZMassRefitErr",ZZMassRefitErr);
+    myTree->Book("Z1MassRefit",Z1MassRefit);
     myTree->Book("ZZMassUnrefitErr",ZZMassUnrefitErr);
   }
   if (addVtxFit){

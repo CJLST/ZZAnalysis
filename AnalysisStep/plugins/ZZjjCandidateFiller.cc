@@ -973,7 +973,7 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     //--- kinematic refitting using Z mass constraint (also for merged!)
 
     float ZZMassRefit = 0.;
-    float ZZMassRefitErr = 0.;
+    float Z1MassRefit = 0.;
     float ZZMassUnrefitErr = 0.;
  
     //  if(!isMerged){
@@ -1007,7 +1007,7 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     // To get refit mZZ
     ZZMassRefit = kinZfitter->GetRefitMZZ2L2Q();
     // To get refit hadronic mZ (mjj)
-    ZZMassRefitErr = kinZfitter->GetRefitMZhad();
+    Z1MassRefit = kinZfitter->GetRefitMZhad();
     ZZMassUnrefitErr = -1.;
     
     // four 4-vectors after refitting order by Z1_1,Z1_2,Z2_1,Z2_2
@@ -1128,7 +1128,7 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 
     // if(!isMerged) {
     myCand.addUserFloat("ZZMassRefit"   , ZZMassRefit);
-    myCand.addUserFloat("ZZMassRefitErr", ZZMassRefitErr);
+    myCand.addUserFloat("Z1MassRefit", Z1MassRefit);
     myCand.addUserFloat("ZZMassUnrefitErr", ZZMassUnrefitErr);
       // }
 
