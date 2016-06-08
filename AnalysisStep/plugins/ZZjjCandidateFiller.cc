@@ -311,10 +311,13 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     //  for (int zIdx=0; zIdx<2; ++zIdx) {
     float worstMuIso=0;
     float worstEleIso=0;
+    //cout << "LLLLCands ==== " << endl;
     for (int dauIdx=0; dauIdx<2; ++dauIdx) { 
       const reco::Candidate* z = myCand.daughter(1);
       const reco::Candidate* d = z->daughter(dauIdx);
+      // cout << "LLLLCands " << d->isMuon() << endl;
       float combRelIsoPFCorr = 0;
+      rho = ((d->isMuon())?rhoForMu:rhoForEle);
       if (recomputeIsoForFSR) {  //FIXME: will recompute iso for individual leptons in the new scheme
 	float fsrCorr = 0; // The correction to PFPhotonIso
 	for (FSRToLepMap::const_iterator ifsr=FSRMap.begin(); ifsr!=FSRMap.end(); ++ifsr) {
@@ -324,8 +327,7 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 			 (d->isElectron() && (fabs((static_cast<const pat::Electron*>(d->masterClone().get()))->superCluster()->eta()) < 1.479 || dR > 0.08)))) {
 	    fsrCorr += ifsr->second->pt();
 	  }
-	}
-	rho = ((d->isMuon())?rhoForMu:rhoForEle);
+	}	
 	combRelIsoPFCorr =  LeptonIsoHelper::combRelIsoPF(sampleType, setup, rho, d, fsrCorr);
 	string base;
 	stringstream str;
@@ -968,50 +970,50 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
   
     
     //----------------------------------------------------------------------
-    //--- kinematic refitting using Z mass constraint
+    //--- kinematic refitting using Z mass constraint (also for merged!)
 
     float ZZMassRefit = 0.;
     float ZZMassRefitErr = 0.;
     float ZZMassUnrefitErr = 0.;
  
-    if(!isMerged){
+    //  if(!isMerged){
 
-      vector<TLorentzVector> selectedLeptons;
-      vector<TLorentzVector> selectedJets;
-      // std::map<unsigned int, TLorentzVector> selectedFsrMap;
+    vector<TLorentzVector> selectedLeptons;
+    vector<TLorentzVector> selectedJets;
+    // std::map<unsigned int, TLorentzVector> selectedFsrMap;
 
-      for(unsigned ilep=0; ilep<4; ilep++){
+    for(unsigned ilep=0; ilep<4; ilep++){
+      
+      reco::Candidate* oneLep = (reco::Candidate*)ZZLeps[ilep];
+      if (oneLep->hasMasterClone()) oneLep = (reco::Candidate*)oneLep->masterClone().get();
+      TLorentzVector p4;
+      p4.SetPxPyPzE(oneLep->px(),oneLep->py(),oneLep->pz(),oneLep->energy());
 
-        reco::Candidate* oneLep = (reco::Candidate*)ZZLeps[ilep];
-        if (oneLep->hasMasterClone()) oneLep = (reco::Candidate*)oneLep->masterClone().get();
-        TLorentzVector p4;
-        p4.SetPxPyPzE(oneLep->px(),oneLep->py(),oneLep->pz(),oneLep->energy());
-
-	if(FSRMap.find(ZZLeps[ilep])!=FSRMap.end()){
-	  pat::PFParticle fsr = *(FSRMap[ZZLeps[ilep]]);
-	  TLorentzVector p4fsr;
-	  p4fsr.SetPxPyPzE(fsr.px(),fsr.py(),fsr.pz(),fsr.energy());
-	  p4 += p4fsr;
-	}
-        if (ilep<2) selectedJets.push_back(p4);
-        else selectedLeptons.push_back(p4);
-
+      if(FSRMap.find(ZZLeps[ilep])!=FSRMap.end()){
+	pat::PFParticle fsr = *(FSRMap[ZZLeps[ilep]]);
+	TLorentzVector p4fsr;
+	p4fsr.SetPxPyPzE(fsr.px(),fsr.py(),fsr.pz(),fsr.energy());
+	p4 += p4fsr;
       }
-
+      if (ilep<2) selectedJets.push_back(p4);
+      else selectedLeptons.push_back(p4);
       
-      kinZfitter->Setup2L2Q(selectedLeptons,selectedJets,resolution_pt,resolution_phi,rho);
-      kinZfitter->KinRefitZlepZhad();
-      
-      // To get refit mZZ
-      ZZMassRefit = kinZfitter->GetRefitMZZ2L2Q();
-      // To get refit hadronic mZ (mjj)
-      ZZMassRefitErr = kinZfitter->GetRefitMZhad();
-      ZZMassUnrefitErr = -1.;
-
-      // four 4-vectors after refitting order by Z1_1,Z1_2,Z2_1,Z2_2
-      //vector<TLorentzVector> p4 = kinZfitter->GetRefitP4s(); 
-
     }
+
+      
+    kinZfitter->Setup2L2Q(selectedLeptons,selectedJets,resolution_pt,resolution_phi,rho);
+    kinZfitter->KinRefitZlepZhad();
+    
+    // To get refit mZZ
+    ZZMassRefit = kinZfitter->GetRefitMZZ2L2Q();
+    // To get refit hadronic mZ (mjj)
+    ZZMassRefitErr = kinZfitter->GetRefitMZhad();
+    ZZMassUnrefitErr = -1.;
+    
+    // four 4-vectors after refitting order by Z1_1,Z1_2,Z2_1,Z2_2
+    //vector<TLorentzVector> p4 = kinZfitter->GetRefitP4s(); 
+    
+    // }
 
 
     //----------------------------------------------------------------------
@@ -1123,11 +1125,12 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     myCand.addUserFloat("xi",             xi);      //azimuthal angle of higgs in lab frame
 
     myCand.addUserFloat("m4l",            (Z1Lm->p4()+Z1Lp->p4()+Z2Lm->p4()+Z2Lp->p4()).mass()); // mass without FSR
-    if(!isMerged) {
-      myCand.addUserFloat("ZZMassRefit"   , ZZMassRefit);
-      myCand.addUserFloat("ZZMassRefitErr", ZZMassRefitErr);
-      myCand.addUserFloat("ZZMassUnrefitErr", ZZMassUnrefitErr);
-    }
+
+    // if(!isMerged) {
+    myCand.addUserFloat("ZZMassRefit"   , ZZMassRefit);
+    myCand.addUserFloat("ZZMassRefitErr", ZZMassRefitErr);
+    myCand.addUserFloat("ZZMassUnrefitErr", ZZMassUnrefitErr);
+      // }
 
     // Jet quantities
     myCand.addUserFloat("DiJetMass", DiJetMass);

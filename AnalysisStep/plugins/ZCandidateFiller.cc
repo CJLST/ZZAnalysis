@@ -122,6 +122,7 @@ ZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   int bestLLidx = -1;
 
   //--- Loop over LL Candidates
+  // cout << "LLCands ==== " << endl;
   for(unsigned int i = 0; i < LLCands->size(); ++i) {
     const CompositeCandidate& c = (*LLCands)[i];
     pat::CompositeCandidate myCand(c); 
@@ -132,6 +133,8 @@ ZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     int id0 = myCand.daughter(0)->pdgId();
     int id1 = myCand.daughter(1)->pdgId();
+    // cout << "LLCands" << id0 << " " << id1 << endl;
+
     bool OS = (id0*id1)<0;
     bool SF = abs(id0)==abs(id1);
 

@@ -35,7 +35,7 @@ process.source.inputCommands = cms.untracked.vstring("keep *", "drop LHERunInfoP
 process.source.fileNames = cms.untracked.vstring(
 
      #'/store/mc/RunIIFall15MiniAODv1/BulkGravToZZToZlepZhad_narrow_M-800_13TeV-madgraph/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/20000/14E8B66A-E5B0-E511-8CDC-B083FED177B1.root'
-    '/store/mc/RunIISpring16MiniAODv1/Graviton2PBqqbarToZZTo4L_width0p3_M-750_13TeV-JHUgenV6-pythia8/MINIAODSIM/PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_v3-v1/70000/0CB9721B-0623-E611-9466-0025905505BE.root'
+    '/store/mc/RunIISpring16MiniAODv1/Graviton2PBToZZTo2L2Q_width0_M-750_13TeV-JHUgenV6-pythia8/MINIAODSIM/PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_v3-v1/60000/E81C6E34-3022-E611-A82A-008CFA002ED8.root'
 
   
 
