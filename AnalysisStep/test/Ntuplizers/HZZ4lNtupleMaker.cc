@@ -74,6 +74,7 @@ namespace {
   bool addKinRefit = true;
   bool addVtxFit = false;
   bool addFSRDetails = false;
+  bool addQGLInputs = false;
   bool skipDataMCWeight = false; // skip computation of data/MC weight
   bool skipFakeWeight = true;   // skip computation of fake rate weight for CRs
   bool skipHqTWeight = true;    // skip computation of hQT weight
@@ -266,6 +267,9 @@ namespace {
   std::vector<float> JetBTagger ;
   std::vector<float> JetIsBtagged;
   std::vector<float> JetQGLikelihood;
+  std::vector<float> JetAxis2;
+  std::vector<float> JetMult;
+  std::vector<float> JetPtD;
   std::vector<float> JetSigma ;
   Float_t DiJetMass  = -99;
 //   Float_t DiJetMassPlus  = -99;
@@ -1039,6 +1043,11 @@ void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
    JetBTagger .push_back( jet.userFloat("bTagger"));
    JetIsBtagged .push_back( jet.userFloat("isBtagged"));
    JetQGLikelihood .push_back( jet.userFloat("qgLikelihood"));
+   if(addQGLInputs){
+     JetAxis2 .push_back( jet.userFloat("axis2"));
+     JetMult .push_back( jet.userFloat("mult"));
+     JetPtD .push_back( jet.userFloat("ptD"));
+   }
    JetSigma .push_back(jet.userFloat("jec_unc"));
 }
 
@@ -1975,6 +1984,11 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("JetBTagger",JetBTagger);
   myTree->Book("JetIsBtagged",JetIsBtagged);
   myTree->Book("JetQGLikelihood",JetQGLikelihood);
+  if(addQGLInputs){
+    myTree->Book("JetAxis2",JetAxis2);
+    myTree->Book("JetMult",JetMult);
+    myTree->Book("JetPtD",JetPtD);
+  }
   myTree->Book("JetSigma",JetSigma);
   myTree->Book("DiJetMass",DiJetMass);
 //   myTree->Book("DiJetMassPlus",DiJetMassPlus); // FIXME: add back once filled again
