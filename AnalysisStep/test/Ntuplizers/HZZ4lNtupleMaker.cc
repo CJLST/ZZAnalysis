@@ -248,9 +248,11 @@ namespace {
   Float_t pwh_hadronic_VAJHU  = 0;
   Float_t pwh_hadronic_VAJHU_up  = 0;
   Float_t pwh_hadronic_VAJHU_dn  = 0;
+  Float_t pwh_leptonic_VAJHU  = 0;
   Float_t pzh_hadronic_VAJHU  = 0;
   Float_t pzh_hadronic_VAJHU_up  = 0;
   Float_t pzh_hadronic_VAJHU_dn  = 0;
+  Float_t pzh_leptonic_VAJHU  = 0;
   Float_t ptth_VAJHU  = 0;
   Float_t ptth_VAJHU_up  = 0;
   Float_t ptth_VAJHU_dn  = 0;
@@ -1248,9 +1250,13 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     pwh_hadronic_VAJHU_up = cand.userFloat("pwh_hadronic_VAJHU_up");
     pwh_hadronic_VAJHU_dn = cand.userFloat("pwh_hadronic_VAJHU_dn");
 
+    pwh_leptonic_VAJHU = cand.userFloat("pwh_leptonic_VAJHU");
+
     pzh_hadronic_VAJHU = cand.userFloat("pzh_hadronic_VAJHU");
     pzh_hadronic_VAJHU_up = cand.userFloat("pzh_hadronic_VAJHU_up");
     pzh_hadronic_VAJHU_dn = cand.userFloat("pzh_hadronic_VAJHU_dn");
+
+    pzh_leptonic_VAJHU = cand.userFloat("pzh_leptonic_VAJHU");
 
     ptth_VAJHU = cand.userFloat("ptth_VAJHU");
     ptth_VAJHU_up = cand.userFloat("ptth_VAJHU_up");
@@ -1949,9 +1955,11 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("pwh_hadronic_VAJHU",pwh_hadronic_VAJHU);
   myTree->Book("pwh_hadronic_VAJHU_up",pwh_hadronic_VAJHU_up);
   myTree->Book("pwh_hadronic_VAJHU_dn",pwh_hadronic_VAJHU_dn);
+  myTree->Book("pwh_leptonic_VAJHU",pwh_leptonic_VAJHU);
   myTree->Book("pzh_hadronic_VAJHU",pzh_hadronic_VAJHU);
   myTree->Book("pzh_hadronic_VAJHU_up",pzh_hadronic_VAJHU_up);
   myTree->Book("pzh_hadronic_VAJHU_dn",pzh_hadronic_VAJHU_dn);
+  myTree->Book("pzh_leptonic_VAJHU",pzh_leptonic_VAJHU);
   myTree->Book("ptth_VAJHU",ptth_VAJHU);
   myTree->Book("ptth_VAJHU_up",ptth_VAJHU_up);
   myTree->Book("ptth_VAJHU_dn",ptth_VAJHU_dn);
