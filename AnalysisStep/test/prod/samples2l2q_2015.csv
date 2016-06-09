@@ -2,14 +2,44 @@ identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,spli
 
 ## Assume cross-section observed by ATLAS at 750 GeV and BR(gg) = BR(ZZ)
 ## S (from bkgd-subtracted histogram) is ~ 14
-## sigma = S/(L*eff) ~ 14/(3.2*40%) = 10.9 fb
-## BR(ZZ -> 2l2q) = 2 x 6.6% x 70% = 9.24%
+## sigma = S/(L*eff) ~ 14/(3.2*60%) = 7.3 fb
+## BR(ZZ -> 2l2q) = 2 x 9.9% x 70% = 13.86%
 
-BulkGrav800, ,0.0109,0.0924,,/BulkGravToZZToZlepZhad_narrow_M-800_13TeV-madgraph/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
-Higgs750, ,0.0109,0.0924,,/GluGluHToZZTo2L2Q_M750_NWA_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,15,,,
-# RSGrav800, ,0.0109,0.0924,,/RSGravToZZToZlepZhad_narrow_M-800_13TeV-madgraph/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
+BulkGrav800, ,0.0073,0.1386,,/BulkGravToZZToZlepZhad_narrow_M-800_13TeV-madgraph/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
+Higgs750, ,0.0073,0.1386,,/GluGluHToZZTo2L2Q_M750_NWA_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
+# RSGrav800, ,0.0073,0.0924,,/RSGravToZZToZlepZhad_narrow_M-800_13TeV-madgraph/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,1,,,
 
 ## DYjets
-DY2JetsToLL,,     331.4,    ,,/DY2JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,10,,,
-DY3JetsToLL,,     96.4,    ,,/DY3JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,10,,,
-DY4JetsToLL,,     51.4,    ,,/DY4JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,10,,,
+#DY2JetsToLL,,     331.4,    ,,/DY2JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,10,,,
+#DY3JetsToLL,,     96.4,    ,,/DY3JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,10,,,
+#DY4JetsToLL,,     51.4,    ,,/DY4JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,10,,,
+
+## DYjets high HT
+DYJetsToLL,,    6025.2,    ,, /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12_ext1-v1/MINIAODSIM,dbs,,30,,,
+DYHT100,,     147.40,    ,,/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,10,,,
+DYHT200,,     40.99,    ,,/DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,10,,,
+DYHT400,,     5.678,    ,,/DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,8,,,
+DYHT600,,     2.198,    ,,/DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,5,,,
+
+##TTBar dileptons
+TTBar,,     87.31,    ,,/TTTo2L2Nu_13TeV-powheg/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,10,,,
+
+##Dibosons
+WZDib,,     47.13,    ,,/WZ_TuneCUETP8M1_13TeV-pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,5,,,
+ZZDib,,     16.523,    ,,/ZZ_TuneCUETP8M1_13TeV-pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,5,,,
+
+
+###,,,,,,,,,,,Data 50ns
+DoubleMu2015B,,      -1, ,, /DoubleMuon/Run2015B-16Dec2015-v1/MINIAOD,dbs,,15,PD=DoubleMu;BUNCH_SPACING=50,json_2015_50ns.py,
+DoubleEG2015B,,      -1, ,, /DoubleEG/Run2015B-16Dec2015-v1/MINIAOD,dbs,,15,PD=DoubleEle;BUNCH_SPACING=50,json_2015_50ns.py,
+
+DoubleMu2015C_50ns,, -1, ,, /DoubleMuon/Run2015C_50ns-16Dec2015-v1/MINIAOD,dbs,,20,PD=DoubleMu;BUNCH_SPACING=50,json_2015_50ns.py,
+DoubleEG2015C_50ns,, -1, ,, /DoubleEG/Run2015C_50ns-16Dec2015-v1/MINIAOD,dbs,,15,PD=DoubleEle;BUNCH_SPACING=50,json_2015_50ns.py,
+
+###,,,,,,,,,,,Data 25ns
+DoubleMu2015C,, -1, ,, /DoubleMuon/Run2015C_25ns-16Dec2015-v1/MINIAOD,dbs,,10,PD=DoubleMu,json_2015_25ns_Silver.py,
+DoubleEG2015C,, -1, ,, /DoubleEG/Run2015C_25ns-16Dec2015-v1/MINIAOD,dbs,,10,PD=DoubleEle,json_2015_25ns_Silver.py,
+
+DoubleMu2015D,, -1, ,, /DoubleMuon/Run2015D-16Dec2015-v1/MINIAOD,dbs,,15,PD=DoubleMu,json_2015_25ns_Silver.py,
+DoubleEG2015D,, -1, ,, /DoubleEG/Run2015D-16Dec2015-v2/MINIAOD,dbs,,20,PD=DoubleEle,json_2015_25ns_Silver.py,
+
