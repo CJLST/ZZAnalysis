@@ -40,6 +40,9 @@ class JetFiller : public edm::EDProducer {
   const std::string jecType;
   const CutSet<pat::Jet> flags;
   edm::EDGetTokenT<edm::ValueMap<float> > qgToken;
+  edm::EDGetTokenT<edm::ValueMap<float> > axis2Token;
+  edm::EDGetTokenT<edm::ValueMap<int> > multToken;
+  edm::EDGetTokenT<edm::ValueMap<float> > ptDToken;
 
 };
 
@@ -51,7 +54,12 @@ JetFiller::JetFiller(const edm::ParameterSet& iConfig) :
   jecType(iConfig.getParameter<std::string>("jecType")),
   flags(iConfig.getParameter<edm::ParameterSet>("flags"))
 {
+
   qgToken = consumes<edm::ValueMap<float> >(edm::InputTag("QGTagger", "qgLikelihood"));
+  axis2Token = consumes<edm::ValueMap<float> >(edm::InputTag("QGTagger", "axis2"));
+  multToken = consumes<edm::ValueMap<int> >(edm::InputTag("QGTagger", "mult"));
+  ptDToken = consumes<edm::ValueMap<float> >(edm::InputTag("QGTagger", "ptD"));
+
   produces<pat::JetCollection>();
 }
 
@@ -67,6 +75,12 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   //--- q/g tagger
   Handle<edm::ValueMap<float> > qgHandle; 
   iEvent.getByToken(qgToken, qgHandle);
+  Handle<edm::ValueMap<float> > axis2Handle; 
+  iEvent.getByToken(axis2Token, axis2Handle);
+  Handle<edm::ValueMap<int> > multHandle; 
+  iEvent.getByToken(multToken, multHandle);
+  Handle<edm::ValueMap<float> > ptDHandle; 
+  iEvent.getByToken(ptDToken, ptDHandle);
 
   //-- JEC uncertanties 
   ESHandle<JetCorrectorParametersCollection> JetCorParColl;
@@ -89,6 +103,9 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     //--- Retrieve the q/g likelihood
     edm::RefToBase<pat::Jet> jetRef(edm::Ref<edm::View<pat::Jet> >(jetHandle, jet - jetHandle->begin()));
     float qgLikelihood = (*qgHandle)[jetRef];
+    float axis2 = (*axis2Handle)[jetRef];
+    int mult = (*multHandle)[jetRef];
+    float ptD = (*ptDHandle)[jetRef];
 
     //--- Get JEC uncertainties 
     jecUnc.setJetEta(j.eta());
@@ -98,6 +115,9 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     //--- Embed user variables
     j.addUserFloat("bTagger",bTagger);
     j.addUserFloat("qgLikelihood",qgLikelihood);
+    j.addUserFloat("axis2",axis2);
+    j.addUserFloat("mult",mult);
+    j.addUserFloat("ptD",ptD);
     j.addUserFloat("jec_unc", jec_unc);
 
     //--- Embed flags (ie flags specified in the "flags" pset)
