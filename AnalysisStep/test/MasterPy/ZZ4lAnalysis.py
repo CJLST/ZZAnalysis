@@ -281,7 +281,7 @@ SIP =  "userFloat('SIP')<4"
 GOODLEPTON = "userFloat('ID') && " + SIP  # Lepton passing tight ID + SIP [ISO is asked AFTER FSR!!!]
 
 if LEPTON_SETUP == 2016:
-    TIGHTMUON = "userFloat('isPFMuon') || (userFloat('isTrackerHighPtMuon') && pt>20)"
+    TIGHTMUON = "userFloat('isPFMuon') || (userFloat('isTrackerHighPtMuon') && pt>200)"
 else:
     TIGHTMUON = "userFloat('isPFMuon')"
 
