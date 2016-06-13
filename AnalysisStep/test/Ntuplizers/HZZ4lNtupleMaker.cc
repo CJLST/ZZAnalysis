@@ -563,6 +563,8 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
     applySkim=false;
   }
 
+  if (year==2016) applyTrigger=false;
+
   isMC = myHelper.isMC();
 
   Nevt_Gen = 0;

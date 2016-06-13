@@ -114,7 +114,6 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   //--- Get the photons
   edm::Handle<edm::View<pat::PFParticle> > photonHandle;
-//  edm::Handle<edm::View<pat::Photon> > photonHandle;
   iEvent.getByToken(photonToken, photonHandle);
 
   //--- Get the PF cands
@@ -129,7 +128,6 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   typedef map<const reco::Candidate*, PhotonPtrVector> PhotonLepMap;
   PhotonLepMap theMap;
 
-
   if (selectionMode!=0 && muonHandle->size()+electronHandle->size()>0) {
     //----------------------
     // Loop on photons
@@ -138,44 +136,6 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       
       // Get the photon as edm::Ptr
       PhotonPtr g = photonHandle->ptrAt(i);
-
-      // Photon preselection (is currently already applied on pat::Photon collection)
-      if (!(g->pt()>2. && fabs(g->eta())<2.4)) continue;
-
-      //---------------------
-      // // Supercluster veto
-      //---------------------
-      bool SCVeto=false;
-      
-      for (unsigned int j = 0; j< electronHandle->size(); ++j){
-        const pat::Electron* e = &((*electronHandle)[j]);
-        if (e->userFloat("isSIP")){
-          if (setup==2016) {
-            if ((e->associatedPackedPFCandidates()).size()) {
-              edm::RefVector < pat::PackedCandidateCollection > pfcands = e->associatedPackedPFCandidates();
-              for ( auto itr: pfcands ) {
-                if ((fabs(g->eta() - itr->eta())<0.05 && fabs(reco::deltaPhi(g->phi(), itr->phi()))<0.05)) {
-      	          SCVeto=true; 
-      	          if (debug) cout << "SC veto: " << itr->eta() << " " << itr->phi() << "   " 
-      	                	  << fabs(g->eta() - itr->eta()) << " " << reco::deltaPhi(g->phi(), itr->phi()) <<endl;
-      	          break;
-      	        }  
-              }
-            }
-          } else {
-      	    double dR = reco::deltaR(*(e->superCluster()), *g);
-            if ((fabs(g->eta() - e->superCluster()->eta())<0.05 && fabs(reco::deltaPhi(g->phi(), e->superCluster()->phi()))<2.) || dR<0.15) {
-    	      SCVeto=true;
-    	      if (debug) cout << "SC veto: "<< g->pt() << " " << e->pt() << " " << dR << " "
-    	  		      << fabs(g->eta() - e->superCluster()->eta()) << " " << reco::deltaPhi(g->phi(), e->superCluster()->phi()) <<endl;
-    	      break;
-    	    } 
-    	  }
-    	}  
-      }
-      if (debug) cout << "GAMMA: " << g->pt() << " " << g->eta() << " " << g->phi() << " SCVeto: " << SCVeto << endl;
-      if (SCVeto) continue;
-
 
       //------------------------------------------------------
       // Get the closest lepton among those satisfying loose ID + SIP
@@ -241,6 +201,7 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	}
 
 	if(debug) cout << "   " << "   closest lep: " << closestLep->pdgId() << " " << closestLep->pt() <<  " gRelIso: " << gRelIso << " (ch: " << chg << " n+p: " <<  neu << " ) " << " dRMin: " << dRMin << " accept: " << accept << endl;
+	
 	if (accept) theMap[closestLep].push_back(g);
       }
     } // end of loop over photon collection

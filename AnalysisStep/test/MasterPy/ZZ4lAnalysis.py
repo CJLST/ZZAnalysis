@@ -205,6 +205,9 @@ elif (LEPTON_SETUP == 2016):
         process.hltFilterDiMu.HLTPaths = ["*"]
     
     else:
+        #process.hltFilterMuEle.HLTPaths = ["*"]
+	#process.hltFilterDiEle.HLTPaths = ["*"]
+        #process.hltFilterDiMu.HLTPaths = ["*"]
         #FIXME: For now, the MC paths are the ones used in the RunIISpring15DR74 MC samples for 25ns,7e33 conditions.
         process.hltFilterDiEle.HLTPaths = ["HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*"]
         process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*"]
@@ -281,7 +284,7 @@ SIP =  "userFloat('SIP')<4"
 GOODLEPTON = "userFloat('ID') && " + SIP  # Lepton passing tight ID + SIP [ISO is asked AFTER FSR!!!]
 
 if LEPTON_SETUP == 2016:
-    TIGHTMUON = "userFloat('isPFMuon') || (userFloat('isTrackerHighPtMuon') && pt>20)"
+    TIGHTMUON = "userFloat('isPFMuon') || (userFloat('isTrackerHighPtMuon') && pt>200)"
 else:
     TIGHTMUON = "userFloat('isPFMuon')"
 
@@ -553,12 +556,13 @@ process.cleanSoftElectrons = cms.EDProducer("PATElectronCleaner",
 ### ----------------------------------------------------------------------
 
 # Create a photon collection; cfg extracted from "UFHZZAnalysisRun2.FSRPhotons.fsrPhotons_cff"
-process.fsrPhotons = cms.EDProducer("FSRPhotonProducer",
-    srcCands = cms.InputTag("packedPFCandidates"),
-    muons = cms.InputTag("slimmedMuons"), 
-    ptThresh = cms.double(2.0),
-    extractMuonFSR = cms.bool(False),
+process.fsrPhotons = cms.EDProducer("PhotonFiller",
+    electronSrc = cms.InputTag("cleanSoftElectrons"),
+    sampleType = cms.int32(SAMPLE_TYPE),                     
+    setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
+    photonSel = cms.string(FSRMODE)  # "skip", "passThrough", "Legacy", "RunII"
 )
+
 import PhysicsTools.PatAlgos.producersLayer1.pfParticleProducer_cfi 
 process.boostedFsrPhotons = PhysicsTools.PatAlgos.producersLayer1.pfParticleProducer_cfi.patPFParticles.clone(
     pfCandidateSource = 'fsrPhotons'
