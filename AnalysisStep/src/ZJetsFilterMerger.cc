@@ -119,11 +119,8 @@ ZJetsFilterMerger::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
    } 
 
    for(std::vector<reco::GenParticle>::const_iterator genParticle=genParticles->begin(); genParticle!=genParticles->end(); ++genParticle){
-     if( ( abs(genParticle->pdgId())/100 == 5 || abs(genParticle->pdgId())/1000 == 5)) {
-     cout << genParticle->pdgId() << " " << genParticle->status() << endl;
-    }
-
-// && genParticle->status()==2) nBGen++;
+     if( ( abs(genParticle->pdgId())/100 == 5 || abs(genParticle->pdgId())/1000 == 5) && genParticle->status()==2) nBGen++;
+     // cout << genParticle->pdgId() << " " << genParticle->status() << endl;
    }
 
    if (option == 1 && nBLHE == 0 && nBGen == 0) return true;   
