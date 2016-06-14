@@ -26,7 +26,7 @@ PyFilePath = os.environ['CMSSW_BASE'] + "/src/ZZAnalysis/AnalysisStep/test/"
 
 execfile(PyFilePath + "analyzer2l2q.py")
 
-process.source.inputCommands = cms.untracked.vstring("keep *", "drop LHERunInfoProduct_*_*_*", "drop LHEEventProduct_*_*_*")
+process.source.inputCommands = cms.untracked.vstring("keep *", "drop LHERunInfoProduct_*_*_*")
 
 ### ----------------------------------------------------------------------
 ### Replace parameters
@@ -43,8 +43,9 @@ process.source.fileNames = cms.untracked.vstring(
 
 process.calibratedPatElectrons.isSynchronization = cms.bool(True)
 process.calibratedMuons.isSynchronization = cms.bool(True)
+# process.zJetsFilter.option = 1
 
-process.maxEvents.input = -1
+process.maxEvents.input = 200
 #process.source.skipEvents = cms.untracked.uint32(5750)
 
 # Silence output

@@ -283,6 +283,13 @@ process.goodPrimaryVertices = cms.EDFilter("VertexSelector",
   filter = cms.bool(True),
 )
 
+# Filter for Zbb enrichment
+
+process.zJetsFilter = cms.EDFilter("ZJetsFilterMerger",
+  theLHESrc = cms.InputTag('externalLHEProducer'),
+  theGenSrc = cms.InputTag('prunedGenParticles'),
+  option = cms.untracked.int32(0),
+)
 
 
 ### ----------------------------------------------------------------------
@@ -974,7 +981,7 @@ if FSRMODE=="Legacy" :
 ### ----------------------------------------------------------------------
 
 process.preSkimCounter = cms.EDProducer("EventCountProducer")
-process.PVfilter =  cms.Path(process.preSkimCounter+process.goodPrimaryVertices)
+process.PVfilter =  cms.Path(process.preSkimCounter+process.goodPrimaryVertices+process.zJetsFilter)
 
 #process.Jets = cms.Path( process.QGTagger + process.dressedJets )
 # reapply JEC
