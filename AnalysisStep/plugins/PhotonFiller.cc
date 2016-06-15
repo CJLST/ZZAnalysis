@@ -107,6 +107,7 @@ PhotonFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     for (unsigned int i=0;i<pfCands->size();++i) {
       
       // Get the candidate as edm::Ptr
+      //edm::Ptr<pat::PackedCandidate> g = pfCands->ptrAt(i);
       edm::Ptr<pat::PackedCandidate> g = pfCands->ptrAt(i);
       
       // We only want photons
@@ -120,32 +121,33 @@ PhotonFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       //---------------------
       bool SCVeto=false;
       
-      if (electronHandle->size()>0)
-      for (unsigned int j = 0; j< electronHandle->size(); ++j){
-        const pat::Electron* e = &((*electronHandle)[j]);
-        if (e->userFloat("isSIP")){
-          if (setup==2016) {
-            if ((e->associatedPackedPFCandidates()).size()) {
-              edm::RefVector < pat::PackedCandidateCollection > pfcands = e->associatedPackedPFCandidates();
-              for ( auto itr: pfcands ) {
-                if ((fabs(g->eta() - itr->eta())<0.05 && fabs(reco::deltaPhi(g->phi(), itr->phi()))<0.05)) {
-      	          SCVeto=true; 
-      	          if (debug) cout << "SC veto: " << itr->eta() << " " << itr->phi() << "   " 
-      	                	  << fabs(g->eta() - itr->eta()) << " " << reco::deltaPhi(g->phi(), itr->phi()) <<endl;
-      	          break;
-      	        }  
+      if (electronHandle->size()>0) {
+        for (unsigned int j = 0; j< electronHandle->size(); ++j){
+          const pat::Electron* e = &((*electronHandle)[j]);
+          if (e->userFloat("isSIP")){
+            if (setup==2016) {
+              if ((e->associatedPackedPFCandidates()).size()) {
+    	        edm::RefVector < pat::PackedCandidateCollection > pfcands = e->associatedPackedPFCandidates();
+    	        for ( auto itr: pfcands ) {
+                  if (g.get()==&(*itr)) {
+      	            SCVeto=true; 
+      	            if (debug) cout << "SC veto: " << itr->eta() << " " << itr->phi() << "   " 
+      	                	    << fabs(g->eta() - itr->eta()) << " " << reco::deltaPhi(g->phi(), itr->phi()) <<endl;
+      	            break;
+      	          }  
+                }
               }
-            }
-          } else {
-      	    double dR = reco::deltaR(*(e->superCluster()), *g);
-            if ((fabs(g->eta() - e->superCluster()->eta())<0.05 && fabs(reco::deltaPhi(g->phi(), e->superCluster()->phi()))<2.) || dR<0.15) {
-    	      SCVeto=true;
-    	      if (debug) cout << "SC veto: "<< g->pt() << " " << e->pt() << " " << dR << " "
-    	  		      << fabs(g->eta() - e->superCluster()->eta()) << " " << reco::deltaPhi(g->phi(), e->superCluster()->phi()) <<endl;
-    	      break;
-    	    } 
-    	  }
-    	}  
+            } else {
+      	      double dR = reco::deltaR(*(e->superCluster()), *g);
+              if ((fabs(g->eta() - e->superCluster()->eta())<0.05 && fabs(reco::deltaPhi(g->phi(), e->superCluster()->phi()))<2.) || dR<0.15) {
+    	        SCVeto=true;
+    	        if (debug) cout << "SC veto: "<< g->pt() << " " << e->pt() << " " << dR << " "
+    	  		        << fabs(g->eta() - e->superCluster()->eta()) << " " << reco::deltaPhi(g->phi(), e->superCluster()->phi()) <<endl;
+    	        break;
+    	      } 
+    	    }
+    	  }  
+        }
       }
       if (debug) cout << "GAMMA: " << g->pt() << " " << g->eta() << " " << g->phi() << " SCVeto: " << SCVeto << endl;
 
