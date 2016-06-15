@@ -56,7 +56,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 ### ----------------------------------------------------------------------
 
 
-#process.source.eventsToProcess = cms.untracked.VEventRange("1:72285")
+#process.source.eventsToProcess = cms.untracked.VEventRange("1:8670")
 
 # Debug
 process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
@@ -92,6 +92,7 @@ process.trees = cms.EndPath(process.ZZTree)
 
 #Dump reconstructed variables
 #process.appendPhotons.debug = cms.untracked.bool(True)
+#process.fsrPhotons.debug = cms.untracked.bool(True)
 #process.dump = cms.Path(process.dumpUserData)
 
 #Print MC history
