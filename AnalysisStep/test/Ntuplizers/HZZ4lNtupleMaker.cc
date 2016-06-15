@@ -74,6 +74,7 @@ namespace {
   bool addKinRefit = false;
   bool addVtxFit = false;
   bool addFSRDetails = false;
+  bool addQGLInputs = false;
   bool skipDataMCWeight = true; // skip computation of data/MC weight
   bool skipFakeWeight = true;   // skip computation of fake rate weight for CRs
   bool skipHqTWeight = true;    // skip computation of hQT weight
@@ -248,9 +249,11 @@ namespace {
   Float_t pwh_hadronic_VAJHU  = 0;
   Float_t pwh_hadronic_VAJHU_up  = 0;
   Float_t pwh_hadronic_VAJHU_dn  = 0;
+  Float_t pwh_leptonic_VAJHU  = 0;
   Float_t pzh_hadronic_VAJHU  = 0;
   Float_t pzh_hadronic_VAJHU_up  = 0;
   Float_t pzh_hadronic_VAJHU_dn  = 0;
+  Float_t pzh_leptonic_VAJHU  = 0;
   Float_t ptth_VAJHU  = 0;
   Float_t ptth_VAJHU_up  = 0;
   Float_t ptth_VAJHU_dn  = 0;
@@ -264,6 +267,9 @@ namespace {
   std::vector<float> JetBTagger ;
   std::vector<float> JetIsBtagged;
   std::vector<float> JetQGLikelihood;
+  std::vector<float> JetAxis2;
+  std::vector<float> JetMult;
+  std::vector<float> JetPtD;
   std::vector<float> JetSigma ;
   Float_t DiJetMass  = -99;
 //   Float_t DiJetMassPlus  = -99;
@@ -1039,6 +1045,11 @@ void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
    JetBTagger .push_back( jet.userFloat("bTagger"));
    JetIsBtagged .push_back( jet.userFloat("isBtagged"));
    JetQGLikelihood .push_back( jet.userFloat("qgLikelihood"));
+   if(addQGLInputs){
+     JetAxis2 .push_back( jet.userFloat("axis2"));
+     JetMult .push_back( jet.userFloat("mult"));
+     JetPtD .push_back( jet.userFloat("ptD"));
+   }
    JetSigma .push_back(jet.userFloat("jec_unc"));
 }
 
@@ -1250,9 +1261,13 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     pwh_hadronic_VAJHU_up = cand.userFloat("pwh_hadronic_VAJHU_up");
     pwh_hadronic_VAJHU_dn = cand.userFloat("pwh_hadronic_VAJHU_dn");
 
+    pwh_leptonic_VAJHU = cand.userFloat("pwh_leptonic_VAJHU");
+
     pzh_hadronic_VAJHU = cand.userFloat("pzh_hadronic_VAJHU");
     pzh_hadronic_VAJHU_up = cand.userFloat("pzh_hadronic_VAJHU_up");
     pzh_hadronic_VAJHU_dn = cand.userFloat("pzh_hadronic_VAJHU_dn");
+
+    pzh_leptonic_VAJHU = cand.userFloat("pzh_leptonic_VAJHU");
 
     ptth_VAJHU = cand.userFloat("ptth_VAJHU");
     ptth_VAJHU_up = cand.userFloat("ptth_VAJHU_up");
@@ -1951,9 +1966,11 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("pwh_hadronic_VAJHU",pwh_hadronic_VAJHU);
   myTree->Book("pwh_hadronic_VAJHU_up",pwh_hadronic_VAJHU_up);
   myTree->Book("pwh_hadronic_VAJHU_dn",pwh_hadronic_VAJHU_dn);
+  myTree->Book("pwh_leptonic_VAJHU",pwh_leptonic_VAJHU);
   myTree->Book("pzh_hadronic_VAJHU",pzh_hadronic_VAJHU);
   myTree->Book("pzh_hadronic_VAJHU_up",pzh_hadronic_VAJHU_up);
   myTree->Book("pzh_hadronic_VAJHU_dn",pzh_hadronic_VAJHU_dn);
+  myTree->Book("pzh_leptonic_VAJHU",pzh_leptonic_VAJHU);
   myTree->Book("ptth_VAJHU",ptth_VAJHU);
   myTree->Book("ptth_VAJHU_up",ptth_VAJHU_up);
   myTree->Book("ptth_VAJHU_dn",ptth_VAJHU_dn);
@@ -1969,6 +1986,11 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("JetBTagger",JetBTagger);
   myTree->Book("JetIsBtagged",JetIsBtagged);
   myTree->Book("JetQGLikelihood",JetQGLikelihood);
+  if(addQGLInputs){
+    myTree->Book("JetAxis2",JetAxis2);
+    myTree->Book("JetMult",JetMult);
+    myTree->Book("JetPtD",JetPtD);
+  }
   myTree->Book("JetSigma",JetSigma);
   myTree->Book("DiJetMass",DiJetMass);
 //   myTree->Book("DiJetMassPlus",DiJetMassPlus); // FIXME: add back once filled again
