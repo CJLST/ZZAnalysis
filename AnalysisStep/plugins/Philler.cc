@@ -195,7 +195,7 @@ Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     // WP for Spring15-based BDT as proposed in https://indico.cern.ch/event/439325/session/1/contribution/21/attachments/1156760/1663207/slides_20150918.pdf
     bool isBDT = false;
-
+    bool pass_WP_2 = false;
     // temporary ID https://twiki.cern.ch/twiki/bin/view/CMS/MultivariatePhotonIdentificationRun2
 
     // WP for TLE ID v1
@@ -205,6 +205,14 @@ Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         isBDT = true;// 0.374;
     if(l.isEE() && BDT > -0.6) 
         isBDT = true;// 0.336;
+
+    // tighter WP for TLE ID v1
+    if(l.isEB() && fSCeta < 0.8 && BDT > -0.379) 
+        pass_WP_2 = true;
+    if(l.isEB() && fSCeta >= 0.8 && BDT > -0.369) 
+        pass_WP_2 = true;
+    if(l.isEE() && BDT > -0.294) 
+        pass_WP_2 = true;
 
 
     // Photon 90% MVA ID
@@ -287,7 +295,7 @@ Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         isBDT2 = true;// 0.336; 
     l.addUserFloat("BDT2", BDT2);
     l.addUserFloat("isBDT2", isBDT2);
-
+    l.addUserFloat("pass_WP_2", pass_WP_2);
     //l.addUserFloat("passCombRelIsoPFFSRCorr", 0.);
     //l.addUserFloat("pfSCfbrem", pfSCfbrem);
     //l.addUserFloat("is_tle", true);
