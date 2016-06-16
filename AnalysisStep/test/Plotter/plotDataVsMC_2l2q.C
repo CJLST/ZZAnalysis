@@ -162,14 +162,14 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
   float lumin = 2.6;   // Moriond
   setTDRStyle();
   // gStyle->SetOptStat(1111111);
-  const int nDatasets = 13;
+  const int nDatasets = 11;
   const int nDatasetsMC = 9;
   
   TFile* inputFile[nDatasets];
   TChain* inputTree[nDatasets];
   TH1F* hCounters[nDatasets]; 
   Long64_t NGenEvt[nDatasets];
-  string Dsname[nDatasets] = {"BulkGrav800","Higgs750","DYHT100","DYHT200","DYHT400","DYHT600","TTBar","WZDib","ZZDib","DoubleEG2015C","DoubleEG2015D","DoubleMu2015C","DoubleMu2015D"};
+  string Dsname[nDatasets] = {"BulkGrav800","Higgs750","DYHT100","DYHT200","DYHT400","DYHT600","TTBar","WZDib","ZZDib","DoubleEG2016B","DoubleMu2015B"};
   // Float_t partialEventWeight[nDatasets];
 
   if (!useHTBinned) {
@@ -528,10 +528,10 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
           // if (typ > 3 && Met > 50.) continue;
 
           // test basic cuts 
-          if (tmvaJetPt1 < 150.) continue;
-          if (tmvaJetPt2 < 40.) continue;
-          if (tmvaLepPt1 < 150.) continue;
-          if (tmvaLepPt2 < 30.) continue;
+          // if (tmvaJetPt1 < 150.) continue;
+          // if (tmvaJetPt2 < 40.) continue;
+          // if (tmvaLepPt1 < 150.) continue;
+          // if (tmvaLepPt2 < 30.) continue;
          
 	  h1[0][process][rs][typ]->Fill(ZZMass->at(theCand),eventWeight);
 	  h1[1][process][rs][typ]->Fill(ZZPt->at(theCand),eventWeight);

@@ -29,8 +29,9 @@ enum Channel {MMMM=0,
 	      CRZLLHiSIPMM=15,
 	      CRZLLHiSIPKin=16,
 	      CRZLL=17,   // Old CR for Z2 with no SIP
-	      CRZ2mLL=19, // A CR: Z->mumu + l+l- (with at least 1F)
+	      CRZJ=19, // Z+1jet for QG likelihood
 	      CRZ2eLL=20, // A CR: Z->ee   + l+l- (with at least 1F)
+	      //  CRZJ=55,
 	      NONE = 99, BUGGY=666};
 
 //Return string corresponding to integer code 

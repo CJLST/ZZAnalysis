@@ -707,18 +707,17 @@ void HZZ2l2qNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup&
 
   // Get candidate collection
   edm::Handle<edm::View<pat::CompositeCandidate> > candHandle;
-  event.getByToken(candToken, candHandle);
+  if (!event.getByToken(candToken, candHandle)) return ;
   const edm::View<pat::CompositeCandidate>* cands = candHandle.product();
-
+    
   edm::Handle<edm::View<pat::CompositeCandidate> > candHandleFat;
-  event.getByToken(candTokenFat, candHandleFat);
+  if (!event.getByToken(candTokenFat, candHandleFat)) return;
   const edm::View<pat::CompositeCandidate>* candsFat = candHandleFat.product();
 
   if (skipEmptyEvents && cands->size() == 0 && candsFat->size() == 0) return; // Skip events with no candidate, unless skipEmptyEvents = false
 
   // For Z+L CRs, we want only events with exactly 1 Z+l candidate. FIXME: this has to be reviewed.
-  if (theChannel==ZL && cands->size() != 1) return;
-
+  // if (theChannel==CRZJ && cands->size() != 1) return;
 
   // Retrieve trigger results
   Handle<edm::TriggerResults> triggerResults;
@@ -910,17 +909,19 @@ void HZZ2l2qNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup&
 
   // Now we can write the variables for candidates (fat first)
   int nFilled=0;
-  for( edm::View<pat::CompositeCandidate>::const_iterator cand = candsFat->begin(); cand != candsFat->end(); ++cand) {
-    
-    if (!( theChannel==ZL || (bool)(cand->userFloat("isBestCand")) )) continue; // Skip events other than the best cand (or CR candidates in the CR)
-    
-    FillCandidate(*cand, evtPassTrigger&&evtPassSkim, event, -1, true);
-    
-    // Fill the candidate as one entry in the tree. Do not reinitialize the event variables, as in CRs
-    // there could be several candidates per event.
-    // myTree->FillCurrentTree();
-    ++nFilled;
-  } 
+  if (theChannel!=CRZJ) {
+    for( edm::View<pat::CompositeCandidate>::const_iterator cand = candsFat->begin(); cand != candsFat->end(); ++cand) {
+      
+      if (!( theChannel==ZL || (bool)(cand->userFloat("isBestCand")) )) continue; // Skip events other than the best cand (or CR candidates in the CR)
+      
+      FillCandidate(*cand, evtPassTrigger&&evtPassSkim, event, -1, true);
+      
+      // Fill the candidate as one entry in the tree. Do not reinitialize the event variables, as in CRs
+      // there could be several candidates per event.
+      // myTree->FillCurrentTree();
+      ++nFilled;
+    } 
+  }
   for( edm::View<pat::CompositeCandidate>::const_iterator cand = cands->begin(); cand != cands->end(); ++cand) {
     size_t icand= cand-cands->begin();
     
@@ -991,7 +992,7 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
        
   CRflag.push_back((short)CRFLAG);
 
-  if(theChannel!=ZL){
+  if(theChannel!=ZL && theChannel!=CRZJ){
 
     //Fill the info on the Higgs candidate
     ZZMass.push_back(cand.p4().mass());
@@ -1190,14 +1191,14 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
   vector<short> fsrIndex;
   vector<string> labels;
 
-  if (theChannel!=ZL) { // Regular 2l2q candidates
+  if (theChannel!=ZL && theChannel!=CRZJ) { // Regular 2l2q candidates
     Z1  = cand.daughter("Z1");
     Z2  = cand.daughter("Z2");
-    userdatahelpers::getSortedJetsAndLeptons(cand, leptons, labels, fsrPhot, fsrIndex);
-  } else {              // Special handling of Z+l candidates 
-    Z1   = cand.daughter(0); // the Z
-    Z2   = cand.daughter(1); // This is actually the additional lepton!
-    userdatahelpers::getSortedJetsAndLeptons(cand, leptons, labels, fsrPhot, fsrIndex); // note: we get just 3 leptons in this case.
+    userdatahelpers::getSortedJetsAndLeptons(cand, leptons, labels, fsrPhot, fsrIndex, true);
+  } else {              // Special handling of Z+l candidates
+    Z1   = cand.daughter(1); // the Z
+    Z2   = cand.daughter(0); // This is actually the additional jet!
+    userdatahelpers::getSortedJetsAndLeptons(cand, leptons, labels, fsrPhot, fsrIndex, false); // note: we get just 3 leptons in this case.
   }
 
   if (isMerged) Z1Mass.push_back(cand.userFloat("d0.ak8PFJetsCHSCorrPrunedMass"));
@@ -1208,12 +1209,12 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
   Z1tau21.push_back(thisZ1tau21);
 
   short int thisZZCandType = 0;
-  if ((isMerged && Z1Mass.back() > 65. && Z1Mass.back() < 105.) || (!isMerged && Z1Mass.back() > 75. && Z1Mass.back() < 115.)) thisZZCandType = 1;
+  if ((isMerged && Z1Mass.back() > 70. && Z1Mass.back() < 105.) || (!isMerged && Z1Mass.back() > 75. && Z1Mass.back() < 115.)) thisZZCandType = 1;
   else thisZZCandType = -1;
   if (!isMerged) thisZZCandType *= 2;
   ZZCandType.push_back(thisZZCandType);
 
-  Z1Pt.push_back(  Z1->pt());
+  Z1Pt.push_back( Z1->pt());
   Z1Flav.push_back(abs(Z1->daughter(0)->pdgId()) * Z1->daughter(0)->charge() * abs(Z1->daughter(1)->pdgId()) * Z1->daughter(1)->charge()); // FIXME: temporarily changed, waiting for a fix to the mismatch of charge() and pdgId() for muons with BTT=4
   
   Z2Mass.push_back(Z2->mass());
@@ -1256,9 +1257,11 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
   vector<float> isBTagged(2);
   vector<float> JecUnc(2);
   passIsoPreFSR = true;
+  unsigned int nJets = 2;
+  if (theChannel==CRZJ) nJets = 1;
   
-  for (unsigned int i=0; i<2; ++i){
-    
+  for (unsigned int i=0; i<nJets; ++i){
+
     JetPt .push_back( leptons[i]->pt() );
     JetEta.push_back( leptons[i]->eta() );
     JetPhi.push_back( leptons[i]->phi() );
@@ -1291,20 +1294,20 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
     JetSigma .push_back( JecUnc[i] );
 
   }
-  for (unsigned int i=2; i<leptons.size(); ++i){
+  for (unsigned int i=nJets; i<leptons.size(); ++i){
     // std::cout << "PDGId " << i << " : " << leptons[i]->pdgId() << endl; 
     short lepFlav = std::abs(leptons[i]->pdgId());
 
-    SIP[i-2]           = userdatahelpers::getUserFloat(leptons[i],"SIP");
+    SIP[i-nJets]           = userdatahelpers::getUserFloat(leptons[i],"SIP");
     passIsoPreFSR      = passIsoPreFSR&&(userdatahelpers::getUserFloat(leptons[i],"combRelIsoPF")<LeptonIsoHelper::isoCut(leptons[i]));
 
     //in the Legacy approach,  FSR-corrected iso is attached to the Z, not to the lepton!
     if (theChannel!=ZL) {
-      combRelIsoPF[i-2]    = cand.userFloat(labels[i]+"combRelIsoPFFSRCorr"); // Note: the
-      assert(SIP[i-2] == cand.userFloat(labels[i]+"SIP")); // Check that I don't mess up with labels[] and leptons[]
+      combRelIsoPF[i-nJets]    = cand.userFloat(labels[i]+"combRelIsoPFFSRCorr"); // Note: the
+      assert(SIP[i-nJets] == cand.userFloat(labels[i]+"SIP")); // Check that I don't mess up with labels[] and leptons[]
     } else {
       //FIXME: at the moment,  FSR-corrected iso is not computed for Z+L CRs
-      combRelIsoPF[i-2]    = userdatahelpers::getUserFloat(leptons[i],"combRelIsoPF");
+      combRelIsoPF[i-nJets]    = userdatahelpers::getUserFloat(leptons[i],"combRelIsoPF");
     }
 
     //Fill the info on the lepton candidates  
@@ -1312,7 +1315,7 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
     LepEta.push_back( leptons[i]->eta() );
     LepPhi.push_back( leptons[i]->phi() );
     LepLepId.push_back( leptons[i]->pdgId() );
-    LepSIP  .push_back( SIP[i-2] );
+    LepSIP  .push_back( SIP[i-nJets] );
     LepTime .push_back( lepFlav==13 ? userdatahelpers::getUserFloat(leptons[i],"time") : 0. );
     LepisID .push_back( userdatahelpers::getUserFloat(leptons[i],"ID") );
     LepBDT  .push_back( lepFlav==11 ? userdatahelpers::getUserFloat(leptons[i],"BDT") : 0. );
@@ -1320,7 +1323,7 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
     //LepChargedHadIso[i].push_back( userdatahelpers::getUserFloat(leptons[i],"PFChargedHadIso") );
     //LepNeutralHadIso[i].push_back( userdatahelpers::getUserFloat(leptons[i],"PFNeutralHadIso") );
     //LepPhotonIso[i].push_back( userdatahelpers::getUserFloat(leptons[i],"PFPhotonIso") );
-    LepCombRelIsoPF.push_back( combRelIsoPF[i-2] );
+    LepCombRelIsoPF.push_back( combRelIsoPF[i-nJets] );
   }
 
   // FSR 

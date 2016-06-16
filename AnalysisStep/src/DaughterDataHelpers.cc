@@ -158,41 +158,62 @@ userdatahelpers::getSortedZLeptons(const pat::CompositeCandidate& cand, vector<c
 }
 
 void 
-userdatahelpers::getSortedJetsAndLeptons(const pat::CompositeCandidate& cand, vector<const Candidate*>& leptons, vector<string>& labels, vector<const Candidate*>& fsrPhotons, std::vector<short>& fsrIndex) {
-
-  // Pointers to Z, sorted by mass
-  vector<const Candidate*> Zs   = {cand.daughter("Z1"), cand.daughter("Z2")};
+userdatahelpers::getSortedJetsAndLeptons(const pat::CompositeCandidate& cand, vector<const Candidate*>& leptons, vector<string>& labels, vector<const Candidate*>& fsrPhotons, std::vector<short>& fsrIndex, bool is4l) {
   
-  //Pointer to leptons (Z11,Z12,Z21,Z22, to be sorted by charge)
-  leptons = {Zs[0]->daughter(0), Zs[0]->daughter(1), Zs[1]->daughter(0), Zs[1]->daughter(1)};
+  if (is4l) { // Regular 4 lepton SR/CR
 
-  // Set prefixes for ZZCand userFloats
-  string Z1Label = "d0.";
-  string Z2Label = "d1.";
-  if (cand.daughter("Z1")==cand.daughter(1)) swap(Z1Label,Z2Label);
-  labels = {Z1Label+"d0.",Z1Label +"d1.", Z2Label+"d0.",Z2Label+"d1."};
-
-  vector<unsigned> lOrder = {0,1,2,3};
-  
-  // Sort leptons by charge so that the order is Z1Lp, Z1Ln, Z2Lp, Z2Ln;
-  // do nothing for the same-sign collections used for CRs
-  if (leptons[0]->charge() < 0 && leptons[0]->charge()*leptons[1]->charge()<0) {
+    // Pointers to Z, sorted by mass
+    vector<const Candidate*> Zs   = {cand.daughter("Z1"), cand.daughter("Z2")};
+    
+    //Pointer to leptons (Z11,Z12,Z21,Z22, to be sorted by charge)
+    leptons = {Zs[0]->daughter(0), Zs[0]->daughter(1), Zs[1]->daughter(0), Zs[1]->daughter(1)};
+    
+    // Set prefixes for ZZCand userFloats
+    string Z1Label = "d0.";
+    string Z2Label = "d1.";
+    if (cand.daughter("Z1")==cand.daughter(1)) swap(Z1Label,Z2Label);
+    labels = {Z1Label+"d0.",Z1Label +"d1.", Z2Label+"d0.",Z2Label+"d1."};
+    
+    vector<unsigned> lOrder = {0,1,2,3};
+    
+    // Sort leptons by charge so that the order is Z1Lp, Z1Ln, Z2Lp, Z2Ln;
+    // do nothing for the same-sign collections used for CRs
+    if (leptons[0]->charge() < 0 && leptons[0]->charge()*leptons[1]->charge()<0) {
       swap(leptons[0],leptons[1]);
       swap(labels[0],labels[1]);
       swap(lOrder[0],lOrder[1]);
-  }
-  if (leptons[2]->charge() < 0 && leptons[2]->charge()*leptons[3]->charge()<0) {
-    swap(leptons[2],leptons[3]);
-    swap(labels[2],labels[3]);
-    swap(lOrder[2],lOrder[3]);
-  }
-  
-  // Collect FSR
-  for (unsigned ifsr=2; ifsr<Zs[1]->numberOfDaughters(); ++ifsr) {
-    const pat::PFParticle* fsr = static_cast<const pat::PFParticle*>(Zs[1]->daughter(ifsr));
-    int ilep = 2+fsr->userFloat("leptIdx");
-    fsrPhotons.push_back(fsr);
-    fsrIndex.push_back(lOrder[ilep]);
+    }
+    if (leptons[2]->charge() < 0 && leptons[2]->charge()*leptons[3]->charge()<0) {
+      swap(leptons[2],leptons[3]);
+      swap(labels[2],labels[3]);
+      swap(lOrder[2],lOrder[3]);
+    }
+    
+    // Collect FSR
+    for (unsigned ifsr=2; ifsr<Zs[1]->numberOfDaughters(); ++ifsr) {
+      const pat::PFParticle* fsr = static_cast<const pat::PFParticle*>(Zs[1]->daughter(ifsr));
+      int ilep = 2+fsr->userFloat("leptIdx");
+      fsrPhotons.push_back(fsr);
+      fsrIndex.push_back(lOrder[ilep]);
+    }
+  } else {   // CR
+    const Candidate* Z1 = cand.daughter(1); // the Z    
+    leptons = {cand.daughter(0), Z1->daughter(0), Z1->daughter(1) };
+    labels = {"d0.","d1.d0.","d1.d1."};
+    vector<unsigned> lOrder = {0,1,2};
+
+    if (leptons[1]->charge() < 0 && leptons[1]->charge()*leptons[2]->charge()<0) {
+      swap(leptons[1],leptons[2]);
+      swap(labels[1],labels[2]);
+      swap(lOrder[1],lOrder[2]);
+    }
+
+    for (unsigned ifsr=2; ifsr<Z1->numberOfDaughters(); ++ifsr) { //FIXME this will not pick FSR from l
+	const pat::PFParticle* fsr = static_cast<const pat::PFParticle*>(Z1->daughter(ifsr));
+	int ilep = fsr->userFloat("leptIdx");
+	fsrPhotons.push_back(fsr);
+	fsrIndex.push_back(lOrder[ilep]);
+    }
   }
 
 }

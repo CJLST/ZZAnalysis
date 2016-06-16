@@ -70,7 +70,8 @@ namespace userdatahelpers {
 			       std::vector<const reco::Candidate*>& leptons, 
 			       std::vector<std::string>& labels, 
 			       std::vector<const reco::Candidate*>& fsr,
-			       std::vector<short>& fsrIndex);
+			       std::vector<short>& fsrIndex,
+			       bool is4l=true);
 
 }
 #endif

@@ -130,7 +130,7 @@ else:
     if IsMC:
         process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_v3'
     else:
-        process.GlobalTag.globaltag = '76X_dataRun2_v15'
+        process.GlobalTag.globaltag = '80X_dataRun2_Prompt_v8'
 
 print '\t',process.GlobalTag.globaltag
 
@@ -700,8 +700,8 @@ else:
     sys.exit()
 
 
-FULLSEL            = (SR      + "&&" +
-                      M4l100)
+#FULLSEL            = (SR      + "&&" +
+#                      M4l100)
 
 
 # Ghost Suppression cut
@@ -709,8 +709,8 @@ NOGHOST4l = ("deltaR(daughter(0).daughter(0).eta, daughter(0).daughter(0).phi, d
              "deltaR(daughter(0).daughter(0).eta, daughter(0).daughter(0).phi, daughter(1).daughter(1).eta, daughter(1).daughter(1).phi)>0.02 && "+
              "deltaR(daughter(0).daughter(1).eta, daughter(0).daughter(1).phi, daughter(1).daughter(0).eta, daughter(1).daughter(0).phi)>0.02 && "+
              "deltaR(daughter(0).daughter(1).eta, daughter(0).daughter(1).phi, daughter(1).daughter(1).eta, daughter(1).daughter(1).phi)>0.02 && "+  # protect against ghosts
-             "abs(daughter(0).daughter(0).eta)<2.5 && "+
-             "abs(daughter(0).daughter(1).eta)<2.5") # jets only in tracker
+             "abs(daughter(0).daughter(0).eta)<2.4 && "+
+             "abs(daughter(0).daughter(1).eta)<2.4") # jets only in tracker
 
 # Preselection of 4l candidates
 LLLLPRESEL = NOGHOST4l # Just suppress candidates with overlapping leptons
@@ -751,7 +751,7 @@ process.ZZCand = cms.EDProducer("ZZjjCandidateFiller",
         MAllComb = cms.string(MLLALLCOMB),
         SR = cms.string(SR),
         FullSel70 = cms.string(SR), #Obsolete, use "SR"
-        FullSel = cms.string(FULLSEL),
+        FullSel = cms.string(SR),
     )
 )
 
@@ -760,7 +760,7 @@ process.ZZCand = cms.EDProducer("ZZjjCandidateFiller",
 # Ghost Suppression cut
 NOGHOST3l = ("deltaR(daughter(0).eta, daughter(0).phi, daughter(1).daughter(0).eta, daughter(1).daughter(0).phi)>0.02 && "+
              "deltaR(daughter(0).eta, daughter(0).phi, daughter(1).daughter(1).eta, daughter(1).daughter(1).phi)>0.02 && "+  # protect against ghosts
-             "abs(daughter(0).eta)<2.5") # jets only in tracker
+             "abs(daughter(0).eta)<2.4") # jets only in tracker
 
 
 # Preselection of 4l candidates
@@ -790,7 +790,7 @@ process.ZZCandFat = cms.EDProducer("ZZjjCandidateFiller",
         MAllComb = cms.string(MLLALLCOMB),
         SR = cms.string(SR2),
         FullSel70 = cms.string(SR2), #Obsolete, use "SR"
-        FullSel = cms.string(FULLSEL),
+        FullSel = cms.string(SR2),
     )
 )
 

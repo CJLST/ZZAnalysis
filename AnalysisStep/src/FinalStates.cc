@@ -1,12 +1,12 @@
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
 
 namespace {
-  const unsigned nFS = 19;
+  const unsigned nFS = 20;
 }
 
 
 std::string finalState(int iFS) {
-  if (iFS<0||iFS>18) return "None";
+  if (iFS<0||iFS>19) return "None";
   const std::string finalStates[nFS] = {"MMMM",      // 0
 					"EEEE",      // 1
 					"EEMM",      // 2
@@ -25,7 +25,8 @@ std::string finalState(int iFS) {
 					"CRZLLHiSIPMM", //15
 					"CRZLLHiSIPKin",//16
 					"CRZLL",     //17
-					"ZLL"        //18
+					"ZLL",        //18
+                                        "CRZJ"       //19
   };
   return finalStates[iFS];			     	
 }
