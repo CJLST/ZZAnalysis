@@ -33,7 +33,7 @@ git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMa
 
 #MELA dependencies
 git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
-(cd HiggsAnalysis/CombinedLimit; git checkout 74x-root6)
+(cd HiggsAnalysis/CombinedLimit; git checkout -b from-d738669 d738669)
 
 #photon ISO information for FSR 
 git clone -n https://github.com/VBF-HZZ/UFHZZAnalysisRun2

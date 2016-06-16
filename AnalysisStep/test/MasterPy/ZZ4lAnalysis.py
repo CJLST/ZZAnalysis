@@ -576,6 +576,8 @@ Z1PRESEL    = (ZLEPTONSEL + " && mass > 40 && mass < 120") # Note: this is witho
 
 BESTZ_AMONG = ( Z1PRESEL + "&& userFloat('d0.passCombRelIsoPFFSRCorr') && userFloat('d1.passCombRelIsoPFFSRCorr')" )
 
+TWOGOODISOLEPTONS = ( TWOGOODLEPTONS + "&& userFloat('d0.passCombRelIsoPFFSRCorr') && userFloat('d1.passCombRelIsoPFFSRCorr')" )
+
 ### ----------------------------------------------------------------------
 ### Dileptons (Z->ee, Z->mm)
 ### ----------------------------------------------------------------------
@@ -604,6 +606,7 @@ process.ZCand = cms.EDProducer("ZCandidateFiller",
     FSRMode = cms.string(FSRMODE), # "skip", "Legacy", "RunII"
     flags = cms.PSet(
         GoodLeptons = cms.string(ZLEPTONSEL),
+        GoodIsoLeptons = cms.string(TWOGOODISOLEPTONS),
         Z1Presel = cms.string(Z1PRESEL),
     )
 )

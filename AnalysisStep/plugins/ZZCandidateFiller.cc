@@ -36,7 +36,9 @@
 #include <RecoVertex/KinematicFitPrimitives/interface/KinematicParticleFactoryFromTransientTrack.h>
 
 #include <SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h>
+#include <DataFormats/PatCandidates/interface/MET.h>
 #include <DataFormats/METReco/interface/PFMET.h>
+#include <DataFormats/METReco/interface/PFMETCollection.h>
 #include <ZZAnalysis/AnalysisStep/interface/Fisher.h>
 #include <ZZAnalysis/AnalysisStep/interface/Comparators.h>
 #include <ZZAnalysis/AnalysisStep/interface/utils.h>
@@ -52,6 +54,8 @@
 #include "TLorentzVector.h"
 
 #include <string>
+
+#define WMASSPDG 80.385
 
 using namespace zzanalysis;
 
@@ -102,21 +106,13 @@ private:
   edm::EDGetTokenT<double> rhoForMuToken;
   edm::EDGetTokenT<double> rhoForEleToken;
   edm::EDGetTokenT<edm::View<pat::Jet> > jetToken;
-  edm::EDGetTokenT<vector<reco::MET> > METToken;
+  edm::EDGetTokenT<pat::METCollection> metToken;
   edm::EDGetTokenT<edm::View<reco::Candidate> > softLeptonToken;
   edm::EDGetTokenT<edm::View<reco::CompositeCandidate> > ZCandToken;
 
   edm::EDGetTokenT<edm::View<reco::Candidate> > genParticleToken;
   edm::EDGetTokenT<GenEventInfoProduct> genInfoToken;
 };
-
-
-static int SetupToSqrts(int setup) {
-  if (setup==2011) return 7;
-  else if (setup==2012) return 8;
-  else if (setup==2015) return 13;
-  else return 0;
-}
 
 
 ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
@@ -151,7 +147,7 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
   rhoForMuToken = consumes<double>(LeptonIsoHelper::getMuRhoTag(sampleType, setup));
   rhoForEleToken = consumes<double>(LeptonIsoHelper::getEleRhoTag(sampleType, setup));
   jetToken = consumes<edm::View<pat::Jet> >(edm::InputTag("cleanJets"));
-  METToken = consumes<vector<reco::MET> >(edm::InputTag("slimmedMETs"));
+  metToken = consumes<pat::METCollection>(edm::InputTag("slimmedMETs"));
   softLeptonToken = consumes<edm::View<reco::Candidate> >(edm::InputTag("softLeptons"));
   ZCandToken = consumes<edm::View<reco::CompositeCandidate> >(edm::InputTag("ZCand"));
   
@@ -236,10 +232,14 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   iEvent.getByToken(jetToken, CleanJets);
 
   // Get MET
-  Handle<vector<reco::MET> > pfmetcoll;
-  iEvent.getByToken(METToken, pfmetcoll);
-  math::XYZTLorentzVector pfmet;
-  if(pfmetcoll.isValid()) pfmet = pfmetcoll->front().p4(); // standard MET is pfmet.pt();
+  float PFMET = 0.;
+  float PFMETPhi = 0.;
+  Handle<pat::METCollection> metHandle;
+  iEvent.getByToken(metToken, metHandle);
+  if(metHandle.isValid()){
+    PFMET = metHandle->front().pt();
+    PFMETPhi = metHandle->front().phi();
+  }
 
   // Get leptons (in order to store extra leptons)
   Handle<View<reco::Candidate> > softleptoncoll;
@@ -564,6 +564,9 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
     //--- store good isolated leptons that are not involved in the current ZZ candidate
     int nExtraLep = 0;
+    math::XYZTLorentzVector lepForWH; 
+    int idOfLepForWH = 0;
+    float extraLepPtMax = 0.;
     for( vector<reco::CandidatePtr>::const_iterator lepPtr = goodisoleptonPtrs.begin(); lepPtr != goodisoleptonPtrs.end(); ++ lepPtr ) {
       const reco::Candidate* lep = lepPtr->get();
       if( reco::deltaR( lep->p4(), Z1L1->p4() ) > 0.02 &&
@@ -572,6 +575,11 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 	  reco::deltaR( lep->p4(), Z2L2->p4() ) > 0.02 ){
 	nExtraLep++;
 	myCand.addUserCand("ExtraLep"+to_string(nExtraLep),*lepPtr);
+	if(lep->pt()>extraLepPtMax){
+	  lepForWH = lep->p4();
+	  idOfLepForWH = lep->pdgId();
+	  extraLepPtMax = lep->pt();
+	}
       }
     }
     myCand.addUserFloat("nExtraLep",nExtraLep);
@@ -589,7 +597,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 	  reco::deltaR( zcand->daughter(1)->p4(), Z2L1->p4() ) > 0.02 &&
 	  reco::deltaR( zcand->daughter(1)->p4(), Z2L2->p4() ) > 0.02    ){
 	const reco::CandidatePtr myZCand(ZCands,zcand-ZCands->begin());
-	if((bool)userdatahelpers::getUserFloat(&*myZCand,"GoodLeptons")){
+	if((bool)userdatahelpers::getUserFloat(&*myZCand,"GoodIsoLeptons")){
 	  nExtraZ++;
 	  extraZs.push_back(&*zcand);
 	  myCand.addUserCand("assocZ"+to_string(nExtraZ),myZCand);
@@ -987,8 +995,50 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
       cleanedJetsPt30.push_back(&*jet);
     }
 
-    float pzh_VAJHU=-1.;
-    // ZH discriminant
+
+    // VH discriminants
+
+    float pwh_leptonic_VAJHU=-1.;
+    float pzh_leptonic_VAJHU=-1.;
+
+    //leptonically decaying WH
+    if (nExtraLep>=1) {
+
+      myMela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::WH);
+      int nuid = -idOfLepForWH + (idOfLepForWH>0?-1:+1);
+
+      // take neutrino momentum from the MET, using a W mass constraint to solve for the z component
+      float a = lepForWH.Px();
+      float b = lepForWH.Py();
+      float c = lepForWH.Pz();
+      float f = lepForWH.E();
+      TLorentzVector myLep(a,b,c,f);
+      float x = PFMET*TMath::Cos(PFMETPhi);
+      float y = PFMET*TMath::Sin(PFMETPhi);
+      float m = WMASSPDG;
+      float delta = c*c*(-4*a*a - 4*b*b - 4*c*c + 4*f*f - 4*m*m - 8*a*x - 8*b*y)*(-4*a*a - 4*b*b - 4*c*c + 4*f*f - 4*m*m - 8*a*x - 8*b*y) - 4*(-4*c*c + 4*f*f)*(-a*a*a*a - 2*a*a*b*b - b*b*b*b - 2*a*a*c*c - 2*b*b*c*c - c*c*c*c + 2*a*a*f*f + 2*b*b*f*f + 2*c*c*f*f - f*f*f*f - 2*a*a*m*m - 2*b*b*m*m - 2*c*c*m*m + 2*f*f*m*m - m*m*m*m - 4*a*a*a*x - 4*a*b*b*x - 4*a*c*c*x + 4*a*f*f*x - 4*a*m*m*x - 4*a*a*x*x + 4*f*f*x*x - 4*a*a*b*y - 4*b*b*b*y - 4*b*c*c*y + 4*b*f*f*y - 4*b*m*m*y - 8*a*b*x*y - 4*b*b*y*y + 4*f*f*y*y);
+
+      if(delta>=0){
+	float z1 = (-c*(-4*a*a - 4*b*b - 4*c*c + 4*f*f - 4*m*m - 8*a*x - 8*b*y) - TMath::Sqrt(delta)) / (2*(-4*c*c + 4*f*f));
+	float z2 = (-c*(-4*a*a - 4*b*b - 4*c*c + 4*f*f - 4*m*m - 8*a*x - 8*b*y) + TMath::Sqrt(delta)) / (2*(-4*c*c + 4*f*f));
+	math::XYZTLorentzVector sol[2];
+	sol[0].SetPxPyPzE(x,y,z1,TMath::Sqrt(x*x+y*y+z1*z1));
+	sol[1].SetPxPyPzE(x,y,z2,TMath::Sqrt(x*x+y*y+z2*z2));
+	// choose the solution that maximizes the probability
+	float pwh_leptonic_VAJHU_temp0 = -1.;
+	float pwh_leptonic_VAJHU_temp1 = -1.;
+	TLorentzVector myNu0(sol[0].x(),sol[0].y(),sol[0].z(),sol[0].t());
+	TLorentzVector myNu1(sol[1].x(),sol[1].y(),sol[1].z(),sol[1].t());
+	myMela->computeProdP(myLep, idOfLepForWH, myNu0, nuid, pL11+pL12+pL21+pL22, pwh_leptonic_VAJHU_temp0);
+	myMela->computeProdP(myLep, idOfLepForWH, myNu1, nuid, pL11+pL12+pL21+pL22, pwh_leptonic_VAJHU_temp1);
+	pwh_leptonic_VAJHU = std::max(pwh_leptonic_VAJHU_temp0,pwh_leptonic_VAJHU_temp1);
+      }else{ 
+	TLorentzVector myNu(x,y,0,TMath::Sqrt(x*x+y*y));
+	myMela->computeProdP(myLep, idOfLepForWH, myNu, nuid, pL11+pL12+pL21+pL22, pwh_leptonic_VAJHU);
+      }
+    }
+
+    //leptonically decaying ZH
     if (extraZs.size()>=1) {
       myMela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::ZH);
       double selfDHvvcoupl[SIZE_HVV_VBF][2] = { { 0 } };
@@ -999,9 +1049,9 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
 	TLorentzVector aZLeps[2] = {tlv(Zal1->p4()), tlv(Zal2->p4())};
 	int aZLepsId[2] = {Zal1->pdgId(),Zal2->pdgId()};
-	float pzh_VAJHU_tmp;
-	myMela->computeProdP(aZLeps, partP.data(), aZLepsId, partId.data(), false, selfDHvvcoupl, pzh_VAJHU_tmp); 
-	pzh_VAJHU = std::max(pzh_VAJHU_tmp,pzh_VAJHU);
+	float pzh_leptonic_VAJHU_tmp;
+	myMela->computeProdP(aZLeps, partP.data(), aZLepsId, partId.data(), false, selfDHvvcoupl, pzh_leptonic_VAJHU_tmp); 
+	pzh_leptonic_VAJHU = std::max(pzh_leptonic_VAJHU_tmp,pzh_leptonic_VAJHU);
       }
     } 
     
@@ -1315,9 +1365,13 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     myCand.addUserFloat("pwh_hadronic_VAJHU_up", pwh_hadronic_VAJHU_up);
     myCand.addUserFloat("pwh_hadronic_VAJHU_dn", pwh_hadronic_VAJHU_dn);
 
+    myCand.addUserFloat("pwh_leptonic_VAJHU",pwh_leptonic_VAJHU);
+
     myCand.addUserFloat("pzh_hadronic_VAJHU", pzh_hadronic_VAJHU);
     myCand.addUserFloat("pzh_hadronic_VAJHU_up", pzh_hadronic_VAJHU_up);
     myCand.addUserFloat("pzh_hadronic_VAJHU_dn", pzh_hadronic_VAJHU_dn);
+
+    myCand.addUserFloat("pzh_leptonic_VAJHU",pzh_leptonic_VAJHU);
 
     myCand.addUserFloat("ptth_VAJHU", ptth_VAJHU);
     myCand.addUserFloat("ptth_VAJHU_up", ptth_VAJHU_up);
@@ -1327,9 +1381,6 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     myCand.addUserFloat("pbbh_VAJHU_up", pbbh_VAJHU_up);
     myCand.addUserFloat("pbbh_VAJHU_dn", pbbh_VAJHU_dn);
 
-
-    // VH
-    myCand.addUserFloat("pzh_VAJHU",pzh_VAJHU);
 
     //--- MC matching. To be revised, cf. MuFiller, EleFiller
 //     if (isMC) {

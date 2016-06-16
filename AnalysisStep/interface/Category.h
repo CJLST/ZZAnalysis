@@ -3,7 +3,7 @@
 
 
 
-//---------- full RunII categorization 
+//---------- full RunII categorization (initial 2014 proposal)
 
 enum Category {
   Untagged     = 0,
@@ -16,16 +16,16 @@ enum Category {
 
 //int category(
 extern "C" int category(
-	     int nExtraLeptons,
+	     int nExtraLep,
 	     float ZZPt,
 	     float ZZMass,
-	     int nJets, 
-	     int nBTaggedJets,
+	     int nCleanedJetsPt30, 
+	     int nCleanedJetsPt30BTagged,
 	     float* jetpt,
 	     float* jeteta,
 	     float* jetphi,
 	     float* jetmass,
-	     float Fisher
+	     float DiJetFisher
 	     );
 
 
@@ -38,10 +38,38 @@ enum CategoryMor16 {
 };
 
 extern "C" int categoryMor16(
-			     int nJets,
+			     int nCleanedJetsPt30,
 			     float pvbf_VAJHU_old,
 			     float phjj_VAJHU_old
 			     );
+
+
+
+//---------- ICHEP 2016 categorization (temporary version)
+
+enum CategoryIchep16 {
+  UntaggedIchep16     = 0,
+  VBF1jTaggedIchep16  = 1,
+  VBF2jTaggedIchep16  = 2, 
+  VHLeptTaggedIchep16 = 3, 
+  VHHadrTaggedIchep16 = 4, 
+  ttHTaggedIchep16    = 5
+};
+
+//int category(
+extern "C" int categoryIchep16(
+	     int nExtraLep,
+	     int nExtraZ,
+	     int nCleanedJetsPt30, 
+	     int nCleanedJetsPt30BTagged,
+	     float* jetQGLikelihood,
+	     float phjj_VAJHU_old,
+	     float phj_VAJHU,
+	     float pvbf_VAJHU_old,
+	     float pAux_vbf_VAJHU,
+	     float pwh_hadronic_VAJHU,
+	     float pzh_hadronic_VAJHU
+	     );
 
 
 
@@ -52,7 +80,7 @@ enum CategoryLegacy {
   Dijet      = 1
 };
 
-extern "C" int categoryLegacy( int nJets );
+extern "C" int categoryLegacy( int nCleanedJetsPt30 );
 
 
 
