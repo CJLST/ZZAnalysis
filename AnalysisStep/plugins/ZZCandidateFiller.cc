@@ -271,7 +271,6 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   vector<int> bestCandIdx(preBestCandSelection.size(),-1); 
   vector<float> maxPtSum(preBestCandSelection.size(),-1); 
   vector< vector<int> > preSelCands(preBestCandSelection.size());  
-
   //----------------------------------------------------------------------
   //--- Loop over input candidates
   //LogPrint("") << "Size of ZZ candidates" << LLLLCands->size();
