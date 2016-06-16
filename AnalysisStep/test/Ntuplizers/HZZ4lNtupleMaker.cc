@@ -118,6 +118,7 @@ namespace {
   Float_t Z1Pt  = 0;
   Short_t Z1Flav  = 0;
   Short_t Z1_match = -1;
+  Short_t Z1_isLoose = -1;
   Float_t ZZMassRefit  = 0;
   Float_t ZZMassRefitErr  = 0;
   Float_t ZZMassUnrefitErr  = 0;
@@ -127,6 +128,7 @@ namespace {
   Float_t Z2Pt  = 0;
   Short_t Z2Flav  = 0;
   Short_t Z2_match = -1;
+  Short_t Z2_isLoose = -1;
   Float_t costhetastar  = 0;
   Float_t helphi  = 0;
   Float_t helcosthetaZ1  = 0;
@@ -135,6 +137,9 @@ namespace {
   Float_t phistarZ2  = 0;
   Float_t xi  = 0;
   Float_t xistar  = 0;
+  Float_t TLE_dR_Z = -1;
+  Float_t TLE_min_dR_3l = 999;
+
   std::vector<float> LepPt;
   std::vector<float> LepEta;
   std::vector<float> LepPhi;
@@ -147,11 +152,17 @@ namespace {
   //std::vector<float> LepChargedHadIso;
   //std::vector<float> LepNeutralHadIso;
   //std::vector<float> LepPhotonIso;
+  std::vector<float> LepPFChargedHadIso; 
+  std::vector<float> LepPFNeutralHadIso ; 
+  std::vector<float> LepPFPhotonIso      ;
+  std::vector<float> LepPFPUChargedHadIso;
   std::vector<float> LepCombRelIsoPF;
   std::vector<float> Lep_min_ele_dR;
   std::vector<float> Lep_has_matching_ele;
   std::vector<float> Lep_ele_ID;
   std::vector<short> Lep_ele_isID;
+  std::vector<short> LepisID2;
+  std::vector<short> LepisLoose;
   std::vector<float> Lep_ele_ISO;
   std::vector<float> Lep_ele_SIP;
   std::vector<short> Lep_ele_charge;
@@ -885,6 +896,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   ZZ_tle = n_tle_Filled;
 
 
+  if(!skipEmptyEvents) edm::LogError("") << "loose ZZ size: " << cands->size();
   //Loop on the candidates
   vector<Int_t> CRFLAG(cands->size());
   for( edm::View<pat::CompositeCandidate>::const_iterator cand = cands->begin(); cand != cands->end(); ++cand) {
@@ -1018,15 +1030,24 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   //LepChargedHadIso.clear();
   //LepNeutralHadIso.clear();
   //LepPhotonIso.clear();
+  LepPFChargedHadIso.clear();  
+  LepPFNeutralHadIso.clear();  
+  LepPFPhotonIso.clear();      
+  LepPFPUChargedHadIso.clear();
   LepCombRelIsoPF.clear();
   Lep_min_ele_dR.clear();
   Lep_has_matching_ele.clear();
   Lep_ele_ID.clear();
   Lep_ele_isID.clear();
+  LepisID2.clear();
+  LepisLoose.clear();
+
   Lep_ele_ISO.clear();
   Lep_ele_SIP.clear();
   Lep_ele_charge.clear();
   Lep_ele_pt.clear();
+
+  TLE_dR_Z = -1;
 
   Lep_match.clear();
   Lep_id_match.clear();
@@ -1269,15 +1290,30 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 
   Z1Mass = Z1->mass();
   Z1Pt =   Z1->pt();
+  Z1_isLoose = userdatahelpers::hasUserFloat(Z1 ,"isLoose") == 1 ? userdatahelpers::getUserFloat(Z1, "isLoose") : -2;
+
   Z1Flav = abs(Z1->daughter(0)->pdgId()) * Z1->daughter(0)->charge() * abs(Z1->daughter(1)->pdgId()) * Z1->daughter(1)->charge(); // FIXME: temporarily changed, waiting for a fix to the mismatch of charge() and pdgId() for muons with BTT=4
   if (Z1Flav == 0) Z1Flav = Z1->daughter(0)->pdgId() * Z1->daughter(1)->pdgId();
  
   Z2Mass = Z2->mass();
   Z2Pt =   Z2->pt();
+  Z2_isLoose = userdatahelpers::hasUserFloat(Z2 ,"isLoose") == 1 ? userdatahelpers::getUserFloat(Z2, "isLoose") : -2;
   Z2Flav = theChannel==ZL ? 0 : abs(Z2->daughter(0)->pdgId()) * Z2->daughter(0)->charge() * abs(Z2->daughter(1)->pdgId()) * Z2->daughter(1)->charge(); // FIXME: temporarily changed, waiting for a fix to the mismatch of charge() and pdgId() for muons with BTT=4
   if (Z2Flav == 0 && theChannel != ZL) Z2Flav = Z2->daughter(0)->pdgId() * Z2->daughter(1)->pdgId()  ;
   //LogPrint("") << "E";
   if (Z2Flav == 0 && theChannel == ZL) Z2Flav = Z2->pdgId();
+
+  const reco::Candidate* non_TLE_Z = nullptr;
+  size_t TLE_index = 999;
+  if(abs(Z1Flav) == 11*11 || abs(Z1Flav) == 13*13) non_TLE_Z = Z1;
+  if(abs(Z2Flav) == 11*11 || abs(Z2Flav) == 13*13) non_TLE_Z = Z2;
+  for (size_t i=0; i<leptons.size(); ++i){
+    short lepFlav = std::abs(leptons[i]->pdgId());
+    if(abs(lepFlav) == 22) TLE_index = i;
+  }
+  if(TLE_index < 999 && non_TLE_Z != nullptr) {
+    TLE_dR_Z = reco::deltaR(non_TLE_Z->p4(), leptons[TLE_index]->p4()); 
+  }  
 
   Int_t sel = 0;
   if(theChannel==ZZ){
@@ -1314,6 +1350,12 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
    //LogPrint("") << "F";
  
   for (unsigned int i=0; i<leptons.size(); ++i){
+    float curr_dR = 999;
+    if(i != TLE_index && TLE_index < 999)
+      curr_dR = reco::deltaR(leptons[i]->p4(), leptons[TLE_index]->p4());
+
+    if(curr_dR < TLE_min_dR_3l) TLE_min_dR_3l = curr_dR; 
+
     short lepFlav = std::abs(leptons[i]->pdgId());
 
     SIP[i]             = userdatahelpers::getUserFloat(leptons[i],"SIP");
@@ -1338,6 +1380,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
         if(i == 0 || i == 2) charge = +1;
         if(i == 1 || i == 3) charge = -1;
     }
+
     LepLepId.push_back( charge == 0 ? leptons[i]->pdgId() : charge * leptons[i]->pdgId() );
     LepSIP  .push_back( SIP[i] );
     LepTime .push_back( lepFlav==13 ? userdatahelpers::getUserFloat(leptons[i],"time") : 0. );
@@ -1350,10 +1393,27 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     LepCombRelIsoPF.push_back( combRelIsoPF[i] );
 
 
+    const pat::Electron* ele = dynamic_cast<const pat::Electron*>(leptons[i]);
+    if(ele) {
+ 
+      LepPFChargedHadIso  .push_back( ele->pfIsolationVariables().sumChargedHadronPt);
+      LepPFNeutralHadIso  .push_back( ele->pfIsolationVariables().sumNeutralHadronEt);
+      LepPFPhotonIso      .push_back( ele->pfIsolationVariables().sumPhotonEt);
+      LepPFPUChargedHadIso.push_back( ele->pfIsolationVariables().sumPUPt);
+    } else {
+      LepPFChargedHadIso  .push_back(-1);
+      LepPFNeutralHadIso  .push_back(-1);
+      LepPFPhotonIso      .push_back(-1);
+      LepPFPUChargedHadIso.push_back(-1);
+    }
+    LepisLoose.push_back(userdatahelpers::hasUserFloat(leptons[i],"isLoose") == 1 ? userdatahelpers::getUserFloat(leptons[i],"isLoose") : -2);
+
     Lep_has_matching_ele.push_back(lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"ele_has_matching_ele") : -2);
     Lep_min_ele_dR.push_back(lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"min_ele_dR") : -2);    
     Lep_ele_ID.push_back(lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"ele_ID") : -2);
     Lep_ele_isID.push_back(lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"ele_is_ID") : -2);
+    LepisID2.push_back(lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"pass_WP_2") : -2);
+
     Lep_ele_ISO.push_back(lepFlav ==22 ? userdatahelpers::getUserFloat(leptons[i],"ele_ISO") : -2);
     Lep_ele_SIP.push_back(lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"ele_SIP") : -2);
     Lep_ele_charge.push_back(lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"ele_charge") : -3);
@@ -1812,6 +1872,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("Z1Pt",Z1Pt);
   myTree->Book("Z1Flav",Z1Flav);
   myTree->Book("Z1_match",Z1_match);
+  myTree->Book("Z1_isLoose",Z1_isLoose);
 
   //Kin refitted info
   if (addKinRefit) {
@@ -1829,6 +1890,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("Z2Pt",Z2Pt);
   myTree->Book("Z2Flav",Z2Flav);
   myTree->Book("Z2_match",Z2_match);
+  myTree->Book("Z2_isLoose",Z2_isLoose);
   myTree->Book("costhetastar",costhetastar);
   myTree->Book("helphi",helphi);
   myTree->Book("helcosthetaZ1",helcosthetaZ1);
@@ -1837,6 +1899,9 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("phistarZ2",phistarZ2);
   myTree->Book("xi",xi);
   myTree->Book("xistar",xistar);
+  myTree->Book("TLE_dR_Z",TLE_dR_Z);
+  myTree->Book("TLE_min_dR_3l",TLE_min_dR_3l);
+
   myTree->Book("LepPt",LepPt);
   myTree->Book("LepEta",LepEta);
   myTree->Book("LepPhi",LepPhi);
@@ -1844,11 +1909,17 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("LepSIP",LepSIP);
   myTree->Book("LepTime",LepTime);
   myTree->Book("LepisID",LepisID);
+  myTree->Book("LepisID2",LepisID2);
+  myTree->Book("LepisLoose",LepisLoose);
   myTree->Book("LepBDT",LepBDT);
   myTree->Book("LepMissingHit",LepMissingHit);
   //myTree->Book("LepChargedHadIso",LepChargedHadIso);
   //myTree->Book("LepNeutralHadIso",LepNeutralHadIso);
   //myTree->Book("LepPhotonIso",LepPhotonIso);
+  myTree->Book("LepPFChargedHadIso", LepPFChargedHadIso);  
+  myTree->Book("LepPFNeutralHadIso", LepPFNeutralHadIso);  
+  myTree->Book("LepPFPhotonIso", LepPFPhotonIso);      
+  myTree->Book("LepPFPUChargedHadIso", LepPFPUChargedHadIso);
   myTree->Book("LepCombRelIsoPF",LepCombRelIsoPF);
   myTree->Book("Lep_min_ele_dR",Lep_min_ele_dR);
   myTree->Book("Lep_has_matching_ele",Lep_has_matching_ele);
