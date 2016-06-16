@@ -49,7 +49,21 @@ float userdatahelpers::getUserFloat(const reco::Candidate* c, const char* name){
   return 0;
 }
 
+int userdatahelpers::hasUserFloat(const reco::Candidate* c, const char* name){
+  if(c->hasMasterClone()) c = c->masterClone().get();
+  if (const pat::Muon* mu = dynamic_cast<const pat::Muon*>(c)) {
+    return mu->hasUserFloat(name);
+  } else if (const pat::Electron* ele = dynamic_cast<const pat::Electron*>(c)) {
+    return ele->hasUserFloat(name);
+  } else if (const pat::Photon* ele = dynamic_cast<const pat::Photon*>(c)) {
+    return ele->hasUserFloat(name);
+  } else if (const pat::CompositeCandidate* cc = dynamic_cast<const pat::CompositeCandidate*>(c)) {
+    return cc->hasUserFloat(name);
+  }
+  edm::LogError("") << "userdatahelpers::hasUserFloat: Unsupported daughter type";
 
+  return -1;
+}
 const PhotonPtrVector*  
 userdatahelpers::getUserPhotons(const reco::Candidate* c){
   if(c->hasMasterClone())  c = c->masterClone().get();
