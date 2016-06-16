@@ -76,7 +76,6 @@ ZCandidateFiller::ZCandidateFiller(const edm::ParameterSet& iConfig) :
     abort();
   }
   
-
   produces<pat::CompositeCandidateCollection>();
 }
 
@@ -234,6 +233,7 @@ ZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       float mll = myCand.mass(); // pre-FSR mass
       for (int dauIdx=0; dauIdx<2; ++dauIdx) { 
 	    const Candidate* d = myCand.daughter(dauIdx);
+        //if(d->isElectron() && userdatahelpers::getUserFloat(d, "SIP") > 4.0) edm::LogError("") << "SIP " <<  userdatahelpers::getUserFloat(d, "SIP");
         //LogPrint("") << "ID" <<myCand.daughter(dauIdx)->pdgId(); 
 	    const PhotonPtrVector* gammas = userdatahelpers::getUserPhotons(d);
 	    if (gammas==0) continue;
@@ -291,7 +291,6 @@ ZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     //     myCand.addUserFloat("SF",SF);
     result->push_back(myCand);
   }
-
 
   //--- Embed isBestZ flag (must be done in a separate loop)
   for (int i = 0; i< (int)result->size(); ++i) {
