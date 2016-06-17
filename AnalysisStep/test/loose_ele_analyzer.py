@@ -163,8 +163,10 @@ Z2LL_SS_looseEle = Z2LL_looseEle #"daughter(1).daughter(0).pdgId()==daughter(1).
 Z2LL_OS_looseEle = "abs(1)"
 
 # Need to drop the SIP cut for teh Z2 candidate
+Z2SIP_looseEle = "userFloat('d1.d0.isSIP')< 4 && userFloat('d1.d1.isSIP')"  
 CR_BESTCANDBASE_AA_looseEle = ("userFloat('d0.Z1Presel') && userFloat('d0.worstEleIso') <" + ELEISOCUT +
-                               "&& userFloat('d0.worstMuIso') <" + MUISOCUT) #Z2SIP) # base for AA CR: # Z1 with tight leptons passing SIP and ISO, mass cuts; SIP on Z2
+                               "&& userFloat('d0.worstMuIso') <" + MUISOCUT + "&&" +
+                                Z2SIP_looseEle) # base for AA CR: # Z1 with tight leptons passing SIP and ISO, mass cuts; SIP on Z2
 
 if SELSETUP == "allCutsAtOncePlusSmart" :
     CR_BESTZLLss_looseEle = CR_BESTCANDBASE_AA_looseEle + "&&" + Z2LL_SS_looseEle + "&&" +CR_Z2MASS + "&&" + MLLALLCOMB + "&&" + PT20_10 + "&&" + "mass>70" + "&&" + "daughter(1).mass>12" + "&&" + SMARTMALLCOMB
@@ -292,6 +294,7 @@ process.Candidates_loose = cms.Path(
 
 process.CRlooseEle = cms.Sequence(
     #    process.trackless_electrons +
+        process.appendPhotonsLoose +
        process.bareZCand +
        process.bareLLCandlooseEle       + process.LLCandlooseEle    +
        process.bareZLLCandlooseEle       + process.ZLLCandlooseEle   +

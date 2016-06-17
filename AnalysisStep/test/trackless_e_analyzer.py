@@ -120,7 +120,7 @@ process.bareZLLCandtle= cms.EDProducer("CandViewShallowCloneCombiner",
 
 Z2LL_tle = "abs(daughter(1).daughter(0).pdgId * daughter(1).daughter(1).pdgId) == 242"   #Z2 = e * e w/o track
 Z2LL_SS_tle = Z2LL_tle #"daughter(1).daughter(0).pdgId()==daughter(1).daughter(1).pdgId()"       #Z2 = same-sign, same-flavour
-Z2LL_OS_tle = Z2LL_tle
+Z2LL_OS_tle = "abs(1)"
 
 if SELSETUP == "allCutsAtOncePlusSmart" :
     CR_BESTZLLss_tle = CR_BESTCANDBASE_AA + "&&" + Z2LL_SS_tle + "&&" +CR_Z2MASS + "&&" + MLLALLCOMB + "&&" + PT20_10 + "&&" + "mass>70" + "&&" + "daughter(1).mass>12" + "&&" + SMARTMALLCOMB
