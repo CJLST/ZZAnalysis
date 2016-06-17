@@ -27,7 +27,7 @@ declareDefault("ELECORRTYPE", "None", globals())
 #Apply electron escale regression
 declareDefault("ELEREGRESSION", "None", globals())
 
-#Apply muon scale correction #FIXME: if set to False, doKinFit should be set to False in ZZCandidateFiller.cc
+#Apply muon scale correction
 declareDefault("APPLYMUCORR", False, globals())
 
 #muon scale correction identifier, "None" for pass-through, "MC_76X_13TeV" for 2015
@@ -53,6 +53,9 @@ declareDefault("BESTCANDCOMPARATOR", "byBestZ1bestZ2", globals())
 
 # Set to True to make candidates with the full combinatorial of loose leptons (for debug; much slower)
 declareDefault("KEEPLOOSECOMB", False, globals())
+
+# Activate the Z kinematic refit (very slow)
+declareDefault("KINREFIT", False, globals())
 
 
 if SELSETUP=="Legacy" and not BESTCANDCOMPARATOR=="byBestZ1bestZ2":
@@ -674,7 +677,6 @@ process.LLCand = cms.EDProducer("ZCandidateFiller",
 ### ----------------------------------------------------------------------
 ### TriLeptons (for fake rate)
 ### ----------------------------------------------------------------------
-#FIXME: to be reviseed since ISOLATION is no longer included in isBestZ and Z1Presel!
 Z_PLUS_LEP_MIJ=("sqrt(pow(daughter(0).daughter({0}).energy+daughter(1).energy, 2) - " +
                 "     pow(daughter(0).daughter({0}).px    +daughter(1).px, 2) -" +  
                 "     pow(daughter(0).daughter({0}).py    +daughter(1).py, 2) -" +  
@@ -686,7 +688,7 @@ process.ZlCand = cms.EDProducer("PATCandViewShallowCloneCombiner",
                      "deltaR(daughter(0).daughter(1).eta, daughter(0).daughter(1).phi, daughter(1).eta, daughter(1).phi)>0.02 &&" +
                      ("(daughter(0).daughter(0).charge == daughter(1).charge || %s > 4) && " % ( Z_PLUS_LEP_MIJ.format(0))) +       # mLL>4 for the OS pair (Giovanni's impl)
                      ("(daughter(0).daughter(1).charge == daughter(1).charge || %s > 4) && " % ( Z_PLUS_LEP_MIJ.format(1))) +
-                     "daughter(0).masterClone.userFloat('isBestZ') &&" +
+                     "daughter(0).masterClone.userFloat('isBestZ') &&" + # This includes the Z1 isolation requirement
                      "daughter(0).masterClone.userFloat('Z1Presel')"
                      ),
     checkCharge = cms.bool(False)
@@ -707,7 +709,7 @@ FOURGOODLEPTONS    =  ("userFloat('d0.GoodLeptons') && userFloat('d1.GoodLeptons
 
 
 Z1MASS            = "daughter('Z1').mass>40 && daughter('Z1').mass<120"
-Z2MASS            = "daughter('Z2').mass>4  && daughter('Z2').mass<120" # (was > 4 in Synch) to deal with m12 cut at gen level #FIXME
+Z2MASS            = "daughter('Z2').mass>4  && daughter('Z2').mass<120" # (was > 4 in Synch) to deal with m12 cut at gen level
 #MLL3On4_12        = "userFloat('mZa')>12" # mll>12 on 3/4 pairs; 
 #MLLALLCOMB        = "userFloat('mLL6')>4" # mll>4 on 6/6 AF/AS pairs;
 MLLALLCOMB        = "userFloat('mLL4')>4" # mll>4 on 4/4 AF/OS pairs;
@@ -843,6 +845,7 @@ process.ZZCand = cms.EDProducer("ZZCandidateFiller",
     bestCandComparator = cms.string(BESTCANDCOMPARATOR),
     ZRolesByMass = cms.bool(True),
     recomputeIsoForFSR = cms.bool(RECOMPUTEISOFORFSR),
+    doKinFit = cms.bool(KINREFIT),
     flags = cms.PSet(
         GoodLeptons =  cms.string(FOURGOODLEPTONS),
         Z2Mass  = cms.string(Z2MASS),
@@ -961,6 +964,7 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
     ),
     ZRolesByMass = cms.bool(False),  # daughter('Z1') = daughter(0)
     recomputeIsoForFSR = cms.bool(RECOMPUTEISOFORFSR),
+    doKinFit = cms.bool(KINREFIT),
     flags = cms.PSet(
       SR = cms.string(SR),
       CRZLLss = cms.string(CR_BASESEL),             #combine with proper isBestCRZLLss for AA ss/os CRss    

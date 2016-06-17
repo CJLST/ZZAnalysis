@@ -158,7 +158,7 @@ class Candidate:
 #        line  += ":" + "{0:.3f}".format(self.kds.KD_qqgrav) 
         line  += ":" + "{0:d}".format(self.category)
         if self.m4lRefit>=0:
-            line  += ":" + "{0:.2f}".format(wm4lRefit)
+            line  += ":" + "{0:.2f}".format(self.m4lRefit)
             line  += ":" + "{0:.2f}".format(self.m4lRefitErr)
             line  += ":" + "{0:.3f}".format(self.weight)
 

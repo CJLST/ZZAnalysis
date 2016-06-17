@@ -2,9 +2,11 @@
 #LEPTON_SETUP = 2016
 #ELECORRTYPE = "None" # "None", "Moriond", "Paper", or "RunII"
 #ELEREGRESSION = "None" # "None", "Moriond", "PaperNoComb", or "Paper" 
-#APPLYMUCORR = False #FIXME: if set to False, doKinFit should be set to False accordingly in ZZCandidateFiller.cc
+#APPLYMUCORR = False
 #BUNCH_SPACING = 25
 #FSRMODE = "RunII" # Legacy or Run II
+#KINREFIT =True
+
 PD = ""
 MCFILTER = ""
 

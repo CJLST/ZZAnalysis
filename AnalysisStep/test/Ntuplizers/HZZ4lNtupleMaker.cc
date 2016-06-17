@@ -71,7 +71,7 @@
 
 namespace {
   bool writeJets = true;     // Write jets in the tree. FIXME: make this configurable
-  bool addKinRefit = false;
+  bool addKinRefit = true;
   bool addVtxFit = false;
   bool addFSRDetails = false;
   bool addQGLInputs = false;
@@ -1105,9 +1105,11 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     ZZPhi = cand.p4().phi();
 
     if(addKinRefit){
-      ZZMassRefit = cand.userFloat("ZZMassRefit");
-      ZZMassRefitErr = cand.userFloat("ZZMassRefitErr");
-      ZZMassUnrefitErr = cand.userFloat("ZZMassUnrefitErr");
+      if (cand.hasUserFloat("ZZMassRefit")) {
+	ZZMassRefit = cand.userFloat("ZZMassRefit");
+	ZZMassRefitErr = cand.userFloat("ZZMassRefitErr");
+	ZZMassUnrefitErr = cand.userFloat("ZZMassUnrefitErr");
+      }
     }
     if(addVtxFit){
       ZZMassCFit = cand.userFloat("CFitM");

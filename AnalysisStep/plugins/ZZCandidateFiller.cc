@@ -56,7 +56,6 @@
 
 using namespace zzanalysis;
 
-bool doKinFit = false;
 bool doVtxFit = false;
 
 class ZZCandidateFiller : public edm::EDProducer {
@@ -92,6 +91,7 @@ private:
   reco::CompositeCandidate::role_collection rolesZ2Z1;
   bool isMC;
   bool recomputeIsoForFSR;
+  bool doKinFit;
   TH2F* corrSigmaMu;
   TH2F* corrSigmaEle;
   Comparators::ComparatorTypes bestCandType;
@@ -117,6 +117,7 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
   ZRolesByMass(iConfig.getParameter<bool>("ZRolesByMass")),
   isMC(iConfig.getParameter<bool>("isMC")),
   recomputeIsoForFSR(iConfig.getParameter<bool>("recomputeIsoForFSR")),
+  doKinFit(iConfig.getParameter<bool>("doKinFit")),
   corrSigmaMu(0),
   corrSigmaEle(0),
   kinZfitter(0)
