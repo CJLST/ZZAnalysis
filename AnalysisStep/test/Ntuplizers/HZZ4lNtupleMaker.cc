@@ -845,9 +845,11 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       addweight(gen_Unknown, gen_Unknown_reweighted, 1);
     }
 
-
+// End of MC history analysis ------------------------------------------
+  } else { 
+    ++Nevt_Gen_lumiBlock; // keep track of # events for data as well
   }
-  // End of MC history analysis ------------------------------------------
+  
 
 
   // Get candidate collection
