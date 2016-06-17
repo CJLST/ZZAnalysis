@@ -1,0 +1,15 @@
+identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments,comment
+
+
+###,,,,,,,,,,,Data 
+
+###,,,,,,,,,,,MC signal - Fall15 samples
+
+identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments,comment
+0L1, ,-1,0,,/Higgs0L1ToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,2,ghz1_prime2=1;SPIN=0;REWEIGHTING_TYPE=HVV_spin012,,
+0L1f05ph0, ,-1,0,,/Higgs0L1f05ph0ToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,2,ghz1=1;ghz1_prime2=-12100.42;REWEIGHTING_TYPE=HVV_spin012,,
+#0M, ,-1,0,,/Higgs0MToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,2,ghz4=1;REWEIGHTING_TYPE=HVV_spin012,,
+#0Mf05ph0, ,-1,0,,/Higgs0Mf05ph0ToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,2,ghz1=1;ghz4=2.55052;REWEIGHTING_TYPE=HVV_spin012,,
+0PH, ,-1,0,,/Higgs0PHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,2,ghz2=1;REWEIGHTING_TYPE=HVV_spin012,,
+#0PHf05ph0, ,-1,0,,/Higgs0PHf05ph0ToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,2,ghz1=1;ghz2=1.65684;REWEIGHTING_TYPE=HVV_spin012,,
+0PM, ,-1,0,,/Higgs0PMToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,2,ghz1=1;REWEIGHTING_TYPE=HVV_spin012,,
