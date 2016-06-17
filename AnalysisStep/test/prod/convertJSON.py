@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-filename = 'json_2016_Silver.txt'
+filename = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-274443_13TeV_PromptReco_Collisions16_JSON.txt'
 
 json = eval( open(filename).read() )
 
