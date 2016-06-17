@@ -149,7 +149,7 @@ PhotonFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     	  }  
         }
       }
-      if (debug) cout << "GAMMA: " << g->pt() << " " << g->eta() << " " << g->phi() << " SCVeto: " << SCVeto << endl;
+      if (debug) cout << "PhotonFiller: gamma:" << g->pt() << " " << g->eta() << " " << g->phi() << " SCVeto: " << SCVeto << endl;
 
       if (SCVeto) continue;
       

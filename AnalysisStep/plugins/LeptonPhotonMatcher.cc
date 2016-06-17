@@ -200,7 +200,7 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  }
 	}
 
-	if(debug) cout << "   " << "   closest lep: " << closestLep->pdgId() << " " << closestLep->pt() <<  " gRelIso: " << gRelIso << " (ch: " << chg << " n+p: " <<  neu << " ) " << " dRMin: " << dRMin << " accept: " << accept << endl;
+	if(debug) cout << "LPMatcher: gamma pT: " << g->pt() << " closest lep: " << closestLep->pdgId() << " " << closestLep->pt() <<  " gRelIso: " << gRelIso << " (ch: " << chg << " n+p: " <<  neu << ")  dR: " << dRMin << " dR/ET2: " << dRMin/g->pt()/g->pt() << " accept: " << accept << endl;
 	
 	if (accept) theMap[closestLep].push_back(g);
       }
@@ -306,7 +306,7 @@ PhotonPtr LeptonPhotonMatcher::selectFSR(const PhotonPtrVector& photons, const r
 //   }
 
   //Select lowest-DR/ET2
-  PhotonPtr g = *(std::min_element(photons.begin(),photons.end(), [lepMomentum](const PhotonPtr& g1, const PhotonPtr& g2){return  (ROOT::Math::VectorUtil::DeltaR(g1->momentum(),lepMomentum)/g1->pt()/g1->pt())<(ROOT::Math::VectorUtil::DeltaR(g2->momentum(),lepMomentum)/g2->pt()*g2->pt());}));
+  PhotonPtr g = *(std::min_element(photons.begin(),photons.end(), [lepMomentum](const PhotonPtr& g1, const PhotonPtr& g2){return  (ROOT::Math::VectorUtil::DeltaR(g1->momentum(),lepMomentum)/g1->pt()/g1->pt())<(ROOT::Math::VectorUtil::DeltaR(g2->momentum(),lepMomentum)/g2->pt()/g2->pt());}));
 
   // Select highest-ET
 //   PhotonPtr g = *(std::max_element(photons.begin(),photons.end(), [](const PhotonPtr& g1, const PhotonPtr& g2){return g1->pt()<g2->pt();}));
