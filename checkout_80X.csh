@@ -31,10 +31,6 @@ git clone -n https://github.com/cms-analysis/EgammaAnalysis-ElectronTools EGamma
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
 (cd ZZMatrixElement ; git checkout -b from-c6d45de c6d45de)
 
-#photon ISO information for FSR 
-git clone -n https://github.com/VBF-HZZ/UFHZZAnalysisRun2
-(cd UFHZZAnalysisRun2 ; git checkout origin/csa14 FSRPhotons) #This does not set the correct branch, but picks the right one anyway
-
 #kinematic refitting
 git clone https://github.com/tocheng/KinZfitter.git
 (cd KinZfitter ; git checkout -b from-v1.0 v1.0)
