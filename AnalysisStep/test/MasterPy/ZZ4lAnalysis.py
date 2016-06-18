@@ -579,6 +579,7 @@ process.appendPhotons = cms.EDProducer("LeptonPhotonMatcherLoose",
     photonSel = cms.string(FSRMODE),  # "skip", "passThrough", "Legacy", "RunII"
     muon_iso_cut = cms.double(MUISOCUT),
     electron_iso_cut = cms.double(ELEISOCUT),
+    #debug = cms.untracked.bool(True),
     )
 
 
