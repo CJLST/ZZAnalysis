@@ -46,6 +46,9 @@
 #include <ZZAnalysis/AnalysisStep/interface/JetCleaner.h>
 #include <KinZfitter/KinZfitter/interface/KinZfitter.h>
 
+
+#include <ZZAnalysis/AnalysisStep/interface/MCHistoryTools.h>
+
 #include "TH2F.h"
 #include "TFile.h"
 #include "TLorentzVector.h"
@@ -81,6 +84,7 @@ private:
   const CutSet<pat::CompositeCandidate> preBestCandSelection;
   const CutSet<pat::CompositeCandidate> cuts;
   int sampleType;
+  string sampleName;
   int setup;
   float superMelaMass;
   MEMs combinedMEM;
@@ -92,6 +96,9 @@ private:
   bool isMC;
   bool recomputeIsoForFSR;
   bool doKinFit;
+
+  float muon_iso_cut, electron_iso_cut;
+
   TH2F* corrSigmaMu;
   TH2F* corrSigmaEle;
   Comparators::ComparatorTypes bestCandType;
@@ -102,6 +109,9 @@ private:
   edm::EDGetTokenT<pat::METCollection> metToken;
   edm::EDGetTokenT<edm::View<reco::Candidate> > softLeptonToken;
   edm::EDGetTokenT<edm::View<reco::CompositeCandidate> > ZCandToken;
+
+  edm::EDGetTokenT<edm::View<reco::Candidate> > genParticleToken;
+  edm::EDGetTokenT<GenEventInfoProduct> genInfoToken;
 };
 
 
@@ -122,6 +132,17 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
   corrSigmaEle(0),
   kinZfitter(0)
 {
+  if(isMC) {
+    genParticleToken = consumes<edm::View<reco::Candidate> >(edm::InputTag("prunedGenParticles"));
+    genInfoToken = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
+  }
+
+
+  if(iConfig.exists("sampleName")) {
+    sampleName = iConfig.getParameter<string>("sampleName");
+  } else {
+    sampleName = "not_set";
+  }
   produces<pat::CompositeCandidateCollection>();
 
   rhoForMuToken = consumes<double>(LeptonIsoHelper::getMuRhoTag(sampleType, setup));
@@ -163,7 +184,8 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
 
   //-- kinematic refitter
   kinZfitter = new KinZfitter(!isMC);
-
+  muon_iso_cut = iConfig.getParameter<double>("muon_iso_cut");
+  electron_iso_cut = iConfig.getParameter<double>("electron_iso_cut");
 }
 
 
@@ -171,6 +193,23 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   using namespace edm;
   using namespace std;
   using namespace reco;
+
+  std::vector<const reco::Candidate *> genZLeps;
+
+  if(isMC) {
+//    genParticleToken = consumes<edm::View<reco::Candidate> >(edm::InputTag("prunedGenParticles"));
+//    genInfoToken = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
+
+    edm::Handle<edm::View<reco::Candidate> > genParticles;
+    edm::Handle<GenEventInfoProduct> genInfo;
+
+    iEvent.getByToken(genParticleToken, genParticles);
+    iEvent.getByToken(genInfoToken, genInfo);    
+    MCHistoryTools mch(iEvent, sampleName, genParticles, genInfo);
+    genZLeps     = mch.sortedGenZZLeps(); 
+  }
+
+
 
   std::auto_ptr<pat::CompositeCandidateCollection> result(new pat::CompositeCandidateCollection);
 
@@ -233,13 +272,16 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   vector<int> bestCandIdx(preBestCandSelection.size(),-1); 
   vector<float> maxPtSum(preBestCandSelection.size(),-1); 
   vector< vector<int> > preSelCands(preBestCandSelection.size());  
-
   //----------------------------------------------------------------------
   //--- Loop over input candidates
+  //LogPrint("") << "Size of ZZ candidates" << LLLLCands->size();
   for( View<CompositeCandidate>::const_iterator cand = LLLLCands->begin(); cand != LLLLCands->end(); ++ cand ) {
     int icand = distance(LLLLCands->begin(),cand);
 
     pat::CompositeCandidate myCand(*cand);
+
+//    if(myCand.daughter(0).daugther(0).pdgid())
+//    LogPrint("") << "ID " << myCand.daughter(0)->daughter(0)->pdgId();
 
     if (embedDaughterFloats){  
       userdatahelpers::embedDaughterData(myCand);
@@ -270,8 +312,8 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     const reco::Candidate* Z2L1= Z2->daughter(0);
     const reco::Candidate* Z2L2= Z2->daughter(1);
     vector<const reco::Candidate*> ZZLeps = {Z1L1,Z1L2,Z2L1,Z2L2}; // array, in the original order
-
     // Create corresponding array of fourmomenta; will add FSR (below)
+
     vector<math::XYZTLorentzVector> pij(4);
     std::transform(ZZLeps.begin(), ZZLeps.end(),pij.begin(), [](const reco::Candidate* c){return c->p4();});
 
@@ -297,6 +339,53 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     int id22 = Z2L2->pdgId();
     int candChannel = id11*id12*id21*id22;
 
+    if(id11 == 22) id11 = -1 * id12;
+    if(id12 == 22) id12 = -1 * id11;
+    if(id21 == 22) id21 = -1 * id22;
+    if(id22 == 22) id22 = -1 * id21;
+
+    if((id11 && id12 == 22) || (id21 == 22 && id22 == 22)) LogError("Z with 2 tle") << "Found a Z candidate made up of 2 trackless electrons";
+    //LogPrint("") << id11 << id12 <<id21 <<id22;
+ 
+
+    
+    // Do truth matching - curently this should be post FSR for both GEN and RECO ?!
+    vector<int> ZZLeps_id = {id11, id12, id21, id22}; // array, in the original order
+    enum Z_lep_match {UNMATCHED, ANY_GEN_MATCHED, TAU_MATCHED, ABS_CHARGE_MATCHED, CHARGE_MATCHED};
+
+    vector<Z_lep_match> ZZleps_is_gen_matched = {UNMATCHED, UNMATCHED, UNMATCHED, UNMATCHED};
+
+    if(isMC) {
+      bool in_dR;
+      for(size_t i_lep = 0; i_lep < ZZLeps.size(); ++ i_lep) {
+        Z_lep_match best_match = UNMATCHED; 
+        Z_lep_match curr_match = UNMATCHED;
+        for(auto gen_lep : genZLeps) {
+          in_dR = false;
+          curr_match = UNMATCHED;
+          if(reco::deltaR(*gen_lep, *ZZLeps.at(i_lep)) < 0.1) in_dR = true;
+          if(in_dR) curr_match = ANY_GEN_MATCHED;
+          if(in_dR && abs(gen_lep->pdgId()) == 15) curr_match = TAU_MATCHED;
+          if(in_dR && abs(ZZLeps_id.at(i_lep)) == abs(gen_lep->pdgId())) curr_match = ABS_CHARGE_MATCHED;
+          if(in_dR && ZZLeps_id.at(i_lep) == gen_lep->pdgId()) curr_match = CHARGE_MATCHED;
+
+          if(curr_match > best_match) best_match = curr_match;
+        }
+        ZZleps_is_gen_matched.at(i_lep) = best_match;
+      }
+       myCand.addUserFloat("Z_lep_match", (float) *std::min_element(ZZleps_is_gen_matched.begin(), ZZleps_is_gen_matched.end())); 
+       myCand.addUserFloat("d0.Z_lep_match", std::min(ZZleps_is_gen_matched.at(0), ZZleps_is_gen_matched.at(1)));
+       myCand.addUserFloat("d1.Z_lep_match", std::min(ZZleps_is_gen_matched.at(2), ZZleps_is_gen_matched.at(3)));
+       myCand.addUserFloat("d0.d0.Z_lep_match", ZZleps_is_gen_matched.at(0));
+       myCand.addUserFloat("d0.d1.Z_lep_match", ZZleps_is_gen_matched.at(1));
+       myCand.addUserFloat("d1.d0.Z_lep_match", ZZleps_is_gen_matched.at(2));
+       myCand.addUserFloat("d1.d1.Z_lep_match", ZZleps_is_gen_matched.at(3));
+
+
+//    dynamic_cast<const pat::CompositeCandidate*>(Z1)->addUserFloat("Z_lep_match", std::min(ZZleps_is_gen_matched.at(0), ZZleps_is_gen_matched.at(1))); 
+    }
+
+   
     // Recompute isolation for all four leptons if FSR is present
     for (int zIdx=0; zIdx<2; ++zIdx) {
       float worstMuIso=0;
@@ -322,7 +411,14 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 	  str << "d" << zIdx << "." << "d" << dauIdx << ".";
 	  str >> base;
 	  myCand.addUserFloat(base+"combRelIsoPFFSRCorr",combRelIsoPFCorr);
-	  myCand.addUserFloat(base+"passCombRelIsoPFFSRCorr",combRelIsoPFCorr < LeptonIsoHelper::isoCut(d)); // FIXME: not the most elegant solution; hard coded right now to see how things evolve about lepton isolation requirements. 
+      float cut_value = 0;
+      if(d->isMuon()) cut_value = muon_iso_cut;
+      if(d->isElectron()) cut_value = electron_iso_cut;
+      if(d->isPhoton()) {
+         cut_value = 999;    
+         edm::LogError("") << "Requesting isolation cut for TLE, is not implemented";
+      }
+	  myCand.addUserFloat(base+"passCombRelIsoPFFSRCorr",combRelIsoPFCorr < cut_value); 
 	} else {
 	  combRelIsoPFCorr = userdatahelpers::getUserFloat(d,"combRelIsoPFFSRCorr");
 	}	
@@ -1318,7 +1414,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
   } // End of loop over input candidates
 
-
+  //LogPrint("") << "post looop";
   //--- For each of the bestCandAmong preselections, find the best candidate and store its index (bestCandIdx)
   Comparators::BestCandComparator myComp(*result, bestCandType);
   for (int iCRname=0; iCRname<(int)preSelCands.size(); ++iCRname) {
@@ -1365,4 +1461,3 @@ ZZCandidateFiller::getPairMass(const reco::Candidate* lp, const reco::Candidate*
 
 #include <FWCore/Framework/interface/MakerMacros.h>
 DEFINE_FWK_MODULE(ZZCandidateFiller);
-

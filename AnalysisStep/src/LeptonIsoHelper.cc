@@ -148,6 +148,54 @@ float LeptonIsoHelper::combRelIsoPF(int sampleType, int setup, double rho, const
   return 0;
 }
 
+float LeptonIsoHelper::combRelIsoPF(int sampleType, int setup, double rho, const pat::Photon& l, float fsr, int correctionType) {
+
+  // for cone size R=0.4 :
+  // Need to sync with electron ISO
+  float PFChargedHadIso   = l.chargedHadronIso();
+  float PFNeutralHadIso   = l.neutralHadronIso();
+  float PFPhotonIso       = l.photonIso();
+  float PFPUChargedHadIso = l.puChargedHadronIso();
+
+  // for cone size R=0.3 :
+  //float PFChargedHadIso   = l.pfIsolationVariables().sumChargedHadronPt;
+  //float PFNeutralHadIso   = l.pfIsolationVariables().sumNeutralHadronEt;
+  //float PFPhotonIso       = l.pfIsolationVariables().sumPhotonEt;
+  //float PFPUChargedHadIso = l.pfIsolationVariables().sumPUPt;
+
+  ElectronEffectiveArea::ElectronEffectiveAreaTarget EAsetup;
+  if (setup==2011) {
+    EAsetup = ElectronEffectiveArea::kEleEAData2011;
+  } else if (setup==2012) { 
+    EAsetup = ElectronEffectiveArea::kEleEAData2012;
+  } else if (setup==2015) { 
+    //EAsetup = ElectronEffectiveArea::kEleEAPhys14MC; //This was from Phys14 MC, 72X
+    EAsetup = ElectronEffectiveArea::kEleEA25nsSpring15MC; // from Spring15 MC, 74X
+    //FIXME: are effective areas foreseen from Fall15 MC /76X or from RunII data ?
+  } else if (setup==2016) {
+    EAsetup = ElectronEffectiveArea::kEleEA25nsSpring15MC;
+    //FIXME: update to 2016!
+  } else {
+    cout << "LeptonIsoHelper: Incorrect setup: " << setup << endl;
+    abort();
+  }
+
+  if (correctionType==0) {
+    return  (PFChargedHadIso + PFNeutralHadIso + PFPhotonIso - fsr)/l.pt();
+  } else if (correctionType==1) {
+    //float EA = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04,
+    //			 				       l.eta(), // l.superCluster()->eta(), 
+    //							       EAsetup);
+    float EA = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03,
+    							       l.superCluster()->eta(), 
+    							       EAsetup);
+    return  (PFChargedHadIso + max(0., PFNeutralHadIso + PFPhotonIso - fsr - rho * EA))/l.pt();
+  } else if (correctionType==2) {
+    return  (PFChargedHadIso + max(0., PFNeutralHadIso + PFPhotonIso - fsr - 0.5*PFPUChargedHadIso))/l.pt();
+  }
+  return 0;
+}
+
 
 float LeptonIsoHelper::combRelIsoPF(int sampleType, int setup, double rho, const Candidate* lep, float fsr, int correctionType) {
   // should check if lep->hasMasterClone()?  
@@ -156,6 +204,9 @@ float LeptonIsoHelper::combRelIsoPF(int sampleType, int setup, double rho, const
     return combRelIsoPF(sampleType, setup, rho, *mu, fsr, correctionType<0?defaultCorrTypeMu:correctionType);
   } else if (lep->isElectron()) {
     const pat::Electron* ele = dynamic_cast<const pat::Electron*>(lep->masterClone().get());
+    return combRelIsoPF(sampleType, setup, rho, *ele, fsr, correctionType<0?defaultCorrTypeEle:correctionType);    
+  } else if (lep->isPhoton()) {
+    const pat::Photon* ele = dynamic_cast<const pat::Photon*>(lep->masterClone().get());
     return combRelIsoPF(sampleType, setup, rho, *ele, fsr, correctionType<0?defaultCorrTypeEle:correctionType);    
   } else {
     cout << "ERROR: LeptonIsoHelper: unknown type; pdgId=" << lep->pdgId() << endl;
@@ -207,5 +258,8 @@ void LeptonIsoHelper::fsrIso(const reco::PFCandidate* photon, edm::Handle<edm::V
 
 float LeptonIsoHelper::isoCut(const reco::Candidate* d) { 
   // FIXME: cut is hardcoded here, need to see how things evolve about lepton isolation requirements
+
+  //return 99999;
   return (d->isMuon()?0.35:0.35);
 }
+

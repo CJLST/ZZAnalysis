@@ -11,8 +11,10 @@ using namespace reco;
 void userdatahelpers::embedDaughterData(pat::CompositeCandidate& cand) {
 
   for (unsigned i = 0; i<cand.numberOfDaughters(); ++i) {
-    const reco::Candidate* d = cand.daughter(i)->masterClone().get();
+    const reco::Candidate* d = cand.daughter(i);
 
+    if(d->hasMasterClone()) d = d->masterClone().get();
+    
     // We need the concrete object to access the method userFloat(). 
     // (A more general solution would be to creat a StringObjectFunction on the fly for each 
     // entry in userFloatNames(). That's maybe too time consuming (to be checked))
@@ -22,8 +24,10 @@ void userdatahelpers::embedDaughterData(pat::CompositeCandidate& cand) {
       embedDaughterData(cand, i, mu);
     } else if (const pat::Electron* ele = dynamic_cast<const pat::Electron*>(d)) {
       embedDaughterData(cand, i, ele);
+    } else if (const pat::Photon* ele = dynamic_cast<const pat::Photon*>(d)) {
+      embedDaughterData(cand, i, ele);
     } else {
-      cout << "DaughterDataEmbedder: Unsupported daughter type" << endl;
+      edm::LogError("") << "DaughterDataEmbedder: Unsupported daughter type";
     }
   }
 }
@@ -35,13 +39,31 @@ float userdatahelpers::getUserFloat(const reco::Candidate* c, const char* name){
     return mu->userFloat(name);
   } else if (const pat::Electron* ele = dynamic_cast<const pat::Electron*>(c)) {
     return ele->userFloat(name);
+  } else if (const pat::Photon* ele = dynamic_cast<const pat::Photon*>(c)) {
+    return ele->userFloat(name);
   } else if (const pat::CompositeCandidate* cc = dynamic_cast<const pat::CompositeCandidate*>(c)) {
     return cc->userFloat(name);
   }
+  edm::LogError("") << "userdatahelpers::getUserFloat: Unsupported daughter type";
+
   return 0;
 }
 
+int userdatahelpers::hasUserFloat(const reco::Candidate* c, const char* name){
+  if(c->hasMasterClone()) c = c->masterClone().get();
+  if (const pat::Muon* mu = dynamic_cast<const pat::Muon*>(c)) {
+    return mu->hasUserFloat(name);
+  } else if (const pat::Electron* ele = dynamic_cast<const pat::Electron*>(c)) {
+    return ele->hasUserFloat(name);
+  } else if (const pat::Photon* ele = dynamic_cast<const pat::Photon*>(c)) {
+    return ele->hasUserFloat(name);
+  } else if (const pat::CompositeCandidate* cc = dynamic_cast<const pat::CompositeCandidate*>(c)) {
+    return cc->hasUserFloat(name);
+  }
+  edm::LogError("") << "userdatahelpers::hasUserFloat: Unsupported daughter type";
 
+  return -1;
+}
 const PhotonPtrVector*  
 userdatahelpers::getUserPhotons(const reco::Candidate* c){
   if(c->hasMasterClone())  c = c->masterClone().get();
@@ -52,6 +74,11 @@ userdatahelpers::getUserPhotons(const reco::Candidate* c){
     } else return 0;
   } else if (abs(c->pdgId())==11) {
     const pat::Electron* ele = static_cast<const pat::Electron*>(c);
+    if (ele->hasUserData("FSRCandidates")){
+      return ele->userData<PhotonPtrVector>("FSRCandidates");
+    } else return 0;
+  } else if (abs(c->pdgId())==22) {
+    const pat::Photon* ele = static_cast<const pat::Photon*>(c);
     if (ele->hasUserData("FSRCandidates")){
       return ele->userData<PhotonPtrVector>("FSRCandidates");
     } else return 0;
@@ -82,17 +109,44 @@ userdatahelpers::getSortedLeptons(const pat::CompositeCandidate& cand, vector<co
 
     // Sort leptons by charge so that the order is Z1Lp, Z1Ln, Z2Lp, Z2Ln;
     // do nothing for the same-sign collections used for CRs
-    if (leptons[0]->charge() < 0 && leptons[0]->charge()*leptons[1]->charge()<0) {
-      swap(leptons[0],leptons[1]);
-      swap(labels[0],labels[1]);
-      swap(lOrder[0],lOrder[1]);
+    //
+    bool need_swap = false;
+
+    if(abs(leptons[0]->pdgId()) == 22 || abs(leptons[1]->pdgId()) == 22) {
+        int non_TLE_index = -1;
+        if(abs(leptons[0]->pdgId()) != 22) non_TLE_index = 0;
+        if(abs(leptons[1]->pdgId()) != 22) non_TLE_index = 1;   
+        if(non_TLE_index == -1) edm::LogError("") << "Found a Z candidate made of two TLE, this should never happen!";
+        if(leptons[non_TLE_index]->charge() < 0 && non_TLE_index == 0) need_swap = true; 
+    } else {
+      if (leptons[0]->charge() < 0 && leptons[0]->charge()*leptons[1]->charge()<0) {
+        need_swap = true;
+      }
     }
-    if (leptons[2]->charge() < 0 && leptons[2]->charge()*leptons[3]->charge()<0) {
-      swap(leptons[2],leptons[3]);
-      swap(labels[2],labels[3]);
-      swap(lOrder[2],lOrder[3]);
+    if(need_swap) {
+        swap(leptons[0],leptons[1]);
+        swap(labels[0],labels[1]);
+        swap(lOrder[0],lOrder[1]);
     }
-     
+
+    need_swap = false;
+    if(abs(leptons[2]->pdgId()) == 22 || abs(leptons[3]->pdgId()) == 22) {
+        int non_TLE_index = -1;
+        if(abs(leptons[2]->pdgId()) != 22) non_TLE_index = 2;
+        if(abs(leptons[3]->pdgId()) != 22) non_TLE_index = 3;   
+        if(non_TLE_index == -1) edm::LogError("") << "Found a Z candidate made of two TLE, this should never happen!";
+        if(leptons[non_TLE_index]->charge() < 0 && non_TLE_index == 2) need_swap = true; 
+    } else {
+      if(leptons[2]->charge() < 0 && leptons[2]->charge()*leptons[3]->charge()<0) {        
+        need_swap = true;
+      }
+    }
+    if(need_swap) {
+        swap(leptons[2],leptons[3]);
+        swap(labels[2],labels[3]);
+        swap(lOrder[2],lOrder[3]);
+    }
+
     // Collect FSR
     for (unsigned iZ=0; iZ<2; ++iZ) {
       for (unsigned ifsr=2; ifsr<Zs[iZ]->numberOfDaughters(); ++ifsr) {

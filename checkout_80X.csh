@@ -29,7 +29,19 @@ git clone -n https://github.com/cms-analysis/EgammaAnalysis-ElectronTools EGamma
 
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
+<<<<<<< HEAD:checkout_80X.csh
 (cd ZZMatrixElement ; git checkout -b from-c6d45de c6d45de)
+=======
+(cd ZZMatrixElement ; git checkout -b from-V00-02-01-patch1 V00-02-01-patch1)
+
+#MELA dependencies
+git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
+(cd HiggsAnalysis/CombinedLimit; git checkout -b from-d738669 d738669)
+
+#photon ISO information for FSR 
+git clone -n https://github.com/VBF-HZZ/UFHZZAnalysisRun2
+(cd UFHZZAnalysisRun2 ; git checkout origin/csa14 FSRPhotons) #This does not set the correct branch, but picks the right one anyway
+>>>>>>> miniAOD_76X_tle:checkout_70X.csh
 
 #kinematic refitting
 git clone https://github.com/tocheng/KinZfitter.git

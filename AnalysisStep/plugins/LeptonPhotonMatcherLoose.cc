@@ -1,4 +1,4 @@
-/** \class LeptonPhotonMatcher
+/** \class LeptonPhotonMatcherLoose
  *
  *  No description available.
  *
@@ -43,13 +43,13 @@ using namespace edm;
 using namespace std;
 using namespace reco;
 
-class LeptonPhotonMatcher : public edm::EDProducer {
+class LeptonPhotonMatcherLoose : public edm::EDProducer {
  public:
   /// Constructor
-  explicit LeptonPhotonMatcher(const edm::ParameterSet&);
+  explicit LeptonPhotonMatcherLoose(const edm::ParameterSet&);
     
   /// Destructor
-  ~LeptonPhotonMatcher(){};  
+  ~LeptonPhotonMatcherLoose(){};  
 
  private:
   virtual void beginJob(){};  
@@ -59,7 +59,7 @@ class LeptonPhotonMatcher : public edm::EDProducer {
 
   edm::EDGetTokenT<pat::MuonCollection> muonToken;
   edm::EDGetTokenT<pat::ElectronCollection> electronToken;
-  //edm::EDGetTokenT<pat::ElectronCollection> looseElectronToken;
+  edm::EDGetTokenT<pat::ElectronCollection> looseElectronToken;
   edm::EDGetTokenT<pat::PhotonCollection> tleToken;
 
   edm::EDGetTokenT<edm::View<pat::PFParticle> > photonToken;
@@ -73,15 +73,15 @@ class LeptonPhotonMatcher : public edm::EDProducer {
 
   float muon_iso_cut;
   float electron_iso_cut;
+
+  bool do_RSE, do_TLE;
 };
 
 
-LeptonPhotonMatcher::LeptonPhotonMatcher(const edm::ParameterSet& iConfig) :
+LeptonPhotonMatcherLoose::LeptonPhotonMatcherLoose(const edm::ParameterSet& iConfig) :
   muonToken(consumes<pat::MuonCollection>(iConfig.getParameter<edm::InputTag>("muonSrc"))),
   electronToken(consumes<pat::ElectronCollection>(iConfig.getParameter<edm::InputTag>("electronSrc"))),
-  //looseElectronToken(consumes<pat::ElectronCollection>(iConfig.getParameter<edm::InputTag>("looseElectronSrc"))),
-  tleToken(consumes<pat::PhotonCollection>(iConfig.getParameter<edm::InputTag>("tleSrc"))),
-  photonToken(consumes<edm::View<pat::PFParticle> >(iConfig.getParameter<edm::InputTag>("photonSrc"))),
+ photonToken(consumes<edm::View<pat::PFParticle> >(iConfig.getParameter<edm::InputTag>("photonSrc"))),
   sampleType(iConfig.getParameter<int>("sampleType")),
   setup(iConfig.getParameter<int>("setup")),
   debug(iConfig.getUntrackedParameter<bool>("debug",false))
@@ -90,6 +90,19 @@ LeptonPhotonMatcher::LeptonPhotonMatcher(const edm::ParameterSet& iConfig) :
   rhoForMuToken = consumes<double>(LeptonIsoHelper::getMuRhoTag(sampleType, setup));
   rhoForEleToken = consumes<double>(LeptonIsoHelper::getEleRhoTag(sampleType, setup));
 
+  do_RSE = false;
+  do_TLE = false;
+
+  if(iConfig.exists("looseElectronSrc")) {
+    do_RSE = true;
+    looseElectronToken = consumes<pat::ElectronCollection>(iConfig.getParameter<edm::InputTag>("looseElectronSrc"));
+  }
+  
+  if(iConfig.exists("tleSrc")) {
+    do_TLE = true;
+    tleToken = consumes<pat::PhotonCollection>(iConfig.getParameter<edm::InputTag>("tleSrc"));
+  }
+ 
   string mode = iConfig.getParameter<string>("photonSel");
   
   if      (mode == "skip")        selectionMode = 0; // no FSR
@@ -97,7 +110,7 @@ LeptonPhotonMatcher::LeptonPhotonMatcher(const edm::ParameterSet& iConfig) :
   else if (mode == "Legacy")      selectionMode = 2;
   else if (mode == "RunII")       selectionMode = 3;
   else {
-    cout << "LeptonPhotonMatcher: mode " << mode << " not supported" << endl;
+    cout << "LeptonPhotonMatcherLoose: mode " << mode << " not supported" << endl;
     abort();
   }
   
@@ -107,14 +120,14 @@ LeptonPhotonMatcher::LeptonPhotonMatcher(const edm::ParameterSet& iConfig) :
 
   produces<pat::MuonCollection>("muons");
   produces<pat::ElectronCollection>("electrons");
-  //produces<pat::ElectronCollection>("looseElectrons");
-  produces<pat::PhotonCollection>("electronstle");
+  if(do_RSE) produces<pat::ElectronCollection>("looseElectrons");
+  if(do_TLE) produces<pat::PhotonCollection>("electronstle");
 
 }
 
 
 void
-LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+LeptonPhotonMatcherLoose::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 
   //--- Get leptons and rho
@@ -126,13 +139,14 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::Handle<pat::ElectronCollection> electronHandle;
   iEvent.getByToken(electronToken, electronHandle);
 
-//  edm::Handle<pat::ElectronCollection> looseElectronHandle;
-//  iEvent.getByToken(looseElectronToken, looseElectronHandle);
+  edm::Handle<pat::ElectronCollection> looseElectronHandle;
+
+  if(do_RSE) iEvent.getByToken(looseElectronToken, looseElectronHandle);
 
 
   //  edm::Handle<pat::ElectronRefVector> electronHandle;
   edm::Handle<pat::PhotonCollection> tleHandle;
-  iEvent.getByToken(tleToken, tleHandle);
+  if(do_TLE) iEvent.getByToken(tleToken, tleHandle);
 
   //--- Get the photons
   edm::Handle<edm::View<pat::PFParticle> > photonHandle;
@@ -145,12 +159,13 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   // Output collections
   auto_ptr<pat::MuonCollection> resultMu( new pat::MuonCollection() );
   auto_ptr<pat::ElectronCollection> resultEle( new pat::ElectronCollection() );
-//  auto_ptr<pat::ElectronCollection> resultLooseEle( new pat::ElectronCollection() );
+  auto_ptr<pat::ElectronCollection> resultLooseEle( new pat::ElectronCollection() );
   auto_ptr<pat::PhotonCollection> resultTle( new pat::PhotonCollection() );
 
   // Associate a vector of Ptr<Photon> to lepton pointers
   typedef map<const reco::Candidate*, PhotonPtrVector> PhotonLepMap;
   PhotonLepMap theMap;
+
 
   if (selectionMode!=0 && muonHandle->size()+electronHandle->size()>0) {
     //----------------------
@@ -184,49 +199,64 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       // Loop over pat::Electron
       //---------------------
       for (unsigned int j = 0; j< electronHandle->size(); ++j){
-	//      const pat::Electron* e = ((*electronHandle)[j]).get();
-	const pat::Electron* e = &((*electronHandle)[j]);
-	if ( ! e->userFloat("isSIP")) continue;
-	double dR = ROOT::Math::VectorUtil::DeltaR(e->momentum(),g->momentum());
-	if (dR>0.5) continue;
-	if (dR<dRMin) {
-	  dRMin = dR;
-	  closestLep = e;
-	}
+	    //      const pat::Electron* e = ((*electronHandle)[j]).get();
+	    const pat::Electron* e = &((*electronHandle)[j]);
+	    if ( ! e->userFloat("isSIP")) continue;
+	    double dR = ROOT::Math::VectorUtil::DeltaR(e->momentum(),g->momentum());
+	    if (dR>0.5) continue;
+	    if (dR<dRMin) {
+	      dRMin = dR;
+	      closestLep = e;
+	    }
       }//end loop over electron collection
+
+      //---------------------
+      // Loop over loose pat::Electron
+      //---------------------
+      if(do_RSE) {
+        for (unsigned int j = 0; j< electronHandle->size(); ++j){
+	      const pat::Electron* e = &((*looseElectronHandle)[j]);
+	      if ( ! e->userFloat("isSIP")) continue;
+	      double dR = ROOT::Math::VectorUtil::DeltaR(e->momentum(),g->momentum());
+	      if (dR>0.5) continue;
+	      if (dR<dRMin) {
+	        dRMin = dR;
+	        closestLep = e;
+	      }
+        }//end loop over loose electron collection
+      }
 
       // Add photon to the vector that will be attached as userData for the corresponding lepton 
       if(closestLep!=0) {
-	// Now that we know the closest lepton, apply Photon Selection
-	bool accept = false;
-	double gRelIso = 999., neu(999.), chg(999.), chgByWorstPV(999.);
-	double pT = g->pt();
+	  // Now that we know the closest lepton, apply Photon Selection
+	  bool accept = false;
+	  double gRelIso = 999., neu(999.), chg(999.), chgByWorstPV(999.);
+	  double pT = g->pt();
 
-	if (selectionMode==1) { // passThrough: no photon selection, for FSR studies
-	  accept = (dRMin<0.5 && pT>2.); 
+	  if (selectionMode==1) { // passThrough: no photon selection, for FSR studies
+	    accept = (dRMin<0.5 && pT>2.); 
 
-	} else if (selectionMode==3) { // RunII
-	  if (dRMin<0.5 && g->pt()>2. && dRMin/pT/pT<0.012) {
-	    LeptonIsoHelper::fsrIso(&(*g), pfCands, neu, chg, chgByWorstPV);
-	    gRelIso = (neu + chg)/pT;
-	    if (gRelIso<1.8) accept = true;
+	  } else if (selectionMode==3) { // RunII
+	    if (dRMin<0.5 && g->pt()>2. && dRMin/pT/pT<0.012) {
+	      LeptonIsoHelper::fsrIso(&(*g), pfCands, neu, chg, chgByWorstPV);
+	      gRelIso = (neu + chg)/pT;
+	      if (gRelIso<1.8) accept = true;
+	    }
+	  } else if (selectionMode==2) { // Legacy
+	    if( dRMin<0.07 ){
+	      if (g->pt()>2.) accept = true;
+	    } else if (g->pt()>4 && dRMin<0.5 ){ // DR<0.5 is implicit, but does not hurt
+	      // double relIso = g->relIso(0.5); // This is buggy, needs to recompute it.
+	      LeptonIsoHelper::fsrIso(&(*g), pfCands, neu, chg, chgByWorstPV);
+	      gRelIso = (neu + chg)/g->pt();
+	      // For collections where this is precomputed
+	      // double gRelIso2 = (g->userFloat("fsrPhotonPFIsoChHadPUNoPU03pt02") + g->userFloat("fsrPhotonPFIsoNHadPhoton03")) / g->pt();
+	      if (gRelIso<1.) accept = true;
+	    }
 	  }
-	} else if (selectionMode==2) { // Legacy
-	  if( dRMin<0.07 ){
-	    if (g->pt()>2.) accept = true;
-	  } else if (g->pt()>4 && dRMin<0.5 ){ // DR<0.5 is implicit, but does not hurt
-	    // double relIso = g->relIso(0.5); // This is buggy, needs to recompute it.
-	    LeptonIsoHelper::fsrIso(&(*g), pfCands, neu, chg, chgByWorstPV);
-	    gRelIso = (neu + chg)/g->pt();
-	    // For collections where this is precomputed
-	    // double gRelIso2 = (g->userFloat("fsrPhotonPFIsoChHadPUNoPU03pt02") + g->userFloat("fsrPhotonPFIsoNHadPhoton03")) / g->pt();
-	    if (gRelIso<1.) accept = true;
-	  }
-	}
 
-	if(debug) cout << "LPMatcher: gamma pT: " << g->pt() << " closest lep: " << closestLep->pdgId() << " " << closestLep->pt() <<  " gRelIso: " << gRelIso << " (ch: " << chg << " n+p: " <<  neu << ")  dR: " << dRMin << " dR/ET2: " << dRMin/g->pt()/g->pt() << " accept: " << accept << endl;
-	
-	if (accept) theMap[closestLep].push_back(g);
+	  if(debug) cout << "   " << "   closest lep: " << closestLep->pdgId() << " " << closestLep->pt() <<  " gRelIso: " << gRelIso << " (ch: " << chg << " n+p: " <<  neu << " ) " << " dRMin: " << dRMin << " accept: " << accept << endl;
+	  if (accept) theMap[closestLep].push_back(g);
       }
     } // end of loop over photon collection
   }
@@ -254,6 +284,29 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     resultMu->push_back(newM);
   }
 
+
+  if(do_RSE) {
+    //Loop over electrons again to write the result as userData
+    for(unsigned int j = 0; j < looseElectronHandle->size(); ++j) {
+      const pat::Electron* e = &((*looseElectronHandle)[j]);
+      //---Clone the pat::Electron
+      pat::Electron newE(*e);
+      if (selectionMode != 0) {
+        PhotonLepMap::const_iterator fsr = theMap.find(e);
+        if (fsr!=theMap.end()) {
+          if (selectionMode == 3) { // Run II: select one per lepton; highest-pT if >4GeV, lowest-DR otherwise
+            PhotonPtr g = selectFSR(fsr->second,e->momentum());
+            PhotonPtrVector gv = {g};	  
+            newE.addUserData("FSRCandidates",gv);
+            allSelFSR.push_back(g);
+          } else { //Legacy, etc.: keep all
+            newE.addUserData("FSRCandidates",fsr->second);
+          }
+        }
+      }
+      resultLooseEle->push_back(newE);
+    }
+  }
   //Loop over electrons again to write the result as userData
   for (unsigned int j = 0; j< electronHandle->size(); ++j){
     const pat::Electron* e = &((*electronHandle)[j]);
@@ -275,29 +328,30 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     resultEle->push_back(newE);
   }
 
-  //Loop over electrons again to write the result as userData
-  for (unsigned int j = 0; j< tleHandle->size(); ++j){
-    const pat::Photon* e = &((*tleHandle)[j]);
-    //---Clone the pat::Electron
-    pat::Photon newE(*e);
-    /*if (selectionMode!=0) {
-      PhotonLepMap::const_iterator fsr = theMap.find(e);
-      if (fsr!=theMap.end()) {
-	if (selectionMode==3) { // Run II: select one per lepton; highest-pT if >4GeV, lowest-DR otherwise
-	  PhotonPtr g = selectFSR(fsr->second,e->momentum());
-	  PhotonPtrVector gv = {g};	  
-	  newE.addUserData("FSRCandidates",gv);
-	  allSelFSR.push_back(g);
-	} else { //Legacy, etc.: keep all
-	  newE.addUserData("FSRCandidates",fsr->second);
-	}
+  if(do_TLE) {
+    //Loop over electrons again to write the result as userData
+    for (unsigned int j = 0; j< tleHandle->size(); ++j){
+      const pat::Photon* e = &((*tleHandle)[j]);
+      //---Clone the pat::Electron
+      pat::Photon newE(*e);
+      /*if (selectionMode!=0) {
+        PhotonLepMap::const_iterator fsr = theMap.find(e);
+        if (fsr!=theMap.end()) {
+      if (selectionMode==3) { // Run II: select one per lepton; highest-pT if >4GeV, lowest-DR otherwise
+        PhotonPtr g = selectFSR(fsr->second,e->momentum());
+        PhotonPtrVector gv = {g};	  
+        newE.addUserData("FSRCandidates",gv);
+        allSelFSR.push_back(g);
+      } else { //Legacy, etc.: keep all
+        newE.addUserData("FSRCandidates",fsr->second);
       }
-    }*/
-    resultTle->push_back(newE);
+        }
+      }*/
+      resultTle->push_back(newE);
+    }
   }
-
-  //Loop over electrons again to write the result as userData
 /*
+  //Loop over electrons again to write the result as userData
   for (unsigned int j = 0; j< looseElectronHandle->size(); ++j){
     const pat::Electron* e = &((*looseElectronHandle)[j]);
     //---Clone the pat::Electron
@@ -346,56 +400,53 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       e->addUserFloat("combRelIsoPFFSRCorr", combRelIsoPFCorr);
       e->addUserFloat("passCombRelIsoPFFSRCorr",combRelIsoPFCorr < electron_iso_cut);
     }
-    for (pat::PhotonCollection::iterator e= resultTle->begin(); e!=resultTle->end(); ++e){
-      float fsrCorr = 0; // The correction to PFPhotonIso
-      /*
-      for (PhotonPtrVector::const_iterator g = allSelFSR.begin();g!= allSelFSR.end(); ++g) {
-	    const pat::PFParticle* gamma = g->get();
-	    double dR = ROOT::Math::VectorUtil::DeltaR(gamma->momentum(),e->momentum());
-	    // Check if the photon is in the lepton's iso cone and not vetoed
-	    if (dR<0.3 && (fabs(e->superCluster()->eta()) < 1.479 || dR > 0.08)) {
-	        fsrCorr += gamma->pt();
- 	    }
-      }*/
-      float combRelIsoPFCorr = LeptonIsoHelper::combRelIsoPF(sampleType, setup, rhoForEle, *e, fsrCorr);
-      e->addUserFloat("combRelIsoPFFSRCorr", combRelIsoPFCorr);
-      // Isolation os included in TLE ID
-      e->addUserFloat("passCombRelIsoPFFSRCorr",combRelIsoPFCorr < electron_iso_cut); //LeptonIsoHelper::isoCut(&*e)); // FIXME should move this to the .py, once we drop support for the old FSR strategy
-    }
-//    edm::LogError("") << "About to touch loose of size : " << resultLooseEle->size();
 
-/*
-    for (pat::ElectronCollection::iterator e= resultLooseEle->begin(); e != resultLooseEle->end(); ++e){
-      float fsrCorr = 0; // The correction to PFPhotonIso
-      
-      for (PhotonPtrVector::const_iterator g = allSelFSR.begin();g!= allSelFSR.end(); ++g) {
-	    const pat::PFParticle* gamma = g->get();
-	    double dR = ROOT::Math::VectorUtil::DeltaR(gamma->momentum(),e->momentum());
-	    // Check if the photon is in the lepton's iso cone and not vetoed
-	    if (dR<0.3 && (fabs(e->superCluster()->eta()) < 1.479 || dR > 0.08)) {
-	        fsrCorr += gamma->pt();
- 	    }
+    if(do_TLE) {
+      for (pat::PhotonCollection::iterator e= resultTle->begin(); e!=resultTle->end(); ++e){
+        float fsrCorr = 0; // The correction to PFPhotonIso
+        /*
+        for (PhotonPtrVector::const_iterator g = allSelFSR.begin();g!= allSelFSR.end(); ++g) {
+	      const pat::PFParticle* gamma = g->get();
+	      double dR = ROOT::Math::VectorUtil::DeltaR(gamma->momentum(),e->momentum());
+	      // Check if the photon is in the lepton's iso cone and not vetoed
+	      if (dR<0.3 && (fabs(e->superCluster()->eta()) < 1.479 || dR > 0.08)) {
+	          fsrCorr += gamma->pt();
+ 	      }
+        }*/
+        float combRelIsoPFCorr = LeptonIsoHelper::combRelIsoPF(sampleType, setup, rhoForEle, *e, fsrCorr);
+        e->addUserFloat("combRelIsoPFFSRCorr", combRelIsoPFCorr);
+        // Isolation os included in TLE ID
+        e->addUserFloat("passCombRelIsoPFFSRCorr",combRelIsoPFCorr < electron_iso_cut); //LeptonIsoHelper::isoCut(&*e)); // FIXME should move this to the .py, once we drop support for the old FSR strategy
       }
-  //    edm::LogVerbatim("") << "Loose!";
-      float combRelIsoPFCorr = LeptonIsoHelper::combRelIsoPF(sampleType, setup, rhoForEle, *e, fsrCorr);
-      e->addUserFloat("combRelIsoPFFSRCorr", combRelIsoPFCorr);
-      // Isolation os included in TLE ID
-      e->addUserFloat("passCombRelIsoPFFSRCorr",combRelIsoPFCorr < electron_iso_cut); //LeptonIsoHelper::isoCut(&*e)); // FIXME should move this to the .py, once we drop support for the old FSR strategy
     }
-*/
-
-
+    
+    if(do_TLE) {
+      for (pat::ElectronCollection::iterator e= resultLooseEle->begin(); e != resultLooseEle->end(); ++e){
+        float fsrCorr = 0; // The correction to PFPhotonIso
+        
+        for (PhotonPtrVector::const_iterator g = allSelFSR.begin();g!= allSelFSR.end(); ++g) {
+	      const pat::PFParticle* gamma = g->get();
+	      double dR = ROOT::Math::VectorUtil::DeltaR(gamma->momentum(),e->momentum());
+	      // Check if the photon is in the lepton's iso cone and not vetoed
+	      if (dR<0.3 && (fabs(e->superCluster()->eta()) < 1.479 || dR > 0.08)) {
+	          fsrCorr += gamma->pt();
+ 	      }
+        }
+        float combRelIsoPFCorr = LeptonIsoHelper::combRelIsoPF(sampleType, setup, rhoForEle, *e, fsrCorr);
+        e->addUserFloat("combRelIsoPFFSRCorr", combRelIsoPFCorr);
+        e->addUserFloat("passCombRelIsoPFFSRCorr",combRelIsoPFCorr < electron_iso_cut);
+      }
+    }
   }
   
   //Put the result in the event
   iEvent.put(resultMu,"muons");
   iEvent.put(resultEle,"electrons");
-  iEvent.put(resultTle,"electronstle");
-  //iEvent.put(resultLooseEle,"looseElectrons");
-
+  if(do_TLE) iEvent.put(resultTle,"electronstle");
+  if(do_RSE) iEvent.put(resultLooseEle,"looseElectrons");
 }
 
-PhotonPtr LeptonPhotonMatcher::selectFSR(const PhotonPtrVector& photons, const reco::LeafCandidate::Vector& lepMomentum){ 
+PhotonPtr LeptonPhotonMatcherLoose::selectFSR(const PhotonPtrVector& photons, const reco::LeafCandidate::Vector& lepMomentum){ 
   // select one photon per lepton; highest-pT if >4GeV, lowest-DR otherwise
 //   PhotonPtr g = *(std::max_element(photons.begin(),photons.end(), [](const PhotonPtr& g1, const PhotonPtr& g2){return g1->pt()<g2->pt();}));
 //   if (g->pt()<=4) {
@@ -403,7 +454,7 @@ PhotonPtr LeptonPhotonMatcher::selectFSR(const PhotonPtrVector& photons, const r
 //   }
 
   //Select lowest-DR/ET2
-  PhotonPtr g = *(std::min_element(photons.begin(),photons.end(), [lepMomentum](const PhotonPtr& g1, const PhotonPtr& g2){return  (ROOT::Math::VectorUtil::DeltaR(g1->momentum(),lepMomentum)/g1->pt()/g1->pt())<(ROOT::Math::VectorUtil::DeltaR(g2->momentum(),lepMomentum)/g2->pt()/g2->pt());}));
+  PhotonPtr g = *(std::min_element(photons.begin(),photons.end(), [lepMomentum](const PhotonPtr& g1, const PhotonPtr& g2){return  (ROOT::Math::VectorUtil::DeltaR(g1->momentum(),lepMomentum)/g1->pt()/g1->pt())<(ROOT::Math::VectorUtil::DeltaR(g2->momentum(),lepMomentum)/g2->pt()*g2->pt());}));
 
   // Select highest-ET
 //   PhotonPtr g = *(std::max_element(photons.begin(),photons.end(), [](const PhotonPtr& g1, const PhotonPtr& g2){return g1->pt()<g2->pt();}));
@@ -412,5 +463,5 @@ PhotonPtr LeptonPhotonMatcher::selectFSR(const PhotonPtrVector& photons, const r
 
 
 #include <FWCore/Framework/interface/MakerMacros.h>
-DEFINE_FWK_MODULE(LeptonPhotonMatcher);
+DEFINE_FWK_MODULE(LeptonPhotonMatcherLoose);
 

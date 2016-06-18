@@ -54,7 +54,7 @@ class EleFiller : public edm::EDProducer {
   edm::EDGetTokenT<double> rhoToken;
   edm::EDGetTokenT<vector<Vertex> > vtxToken;
   //EGammaMvaEleEstimatorCSA14* myMVATrig;
-  //EDGetTokenT<ValueMap<float> > BDTValueMapToken;
+  EDGetTokenT<ValueMap<float> > BDTValueMapToken;
 };
 
 
@@ -63,9 +63,9 @@ EleFiller::EleFiller(const edm::ParameterSet& iConfig) :
   sampleType(iConfig.getParameter<int>("sampleType")),
   setup(iConfig.getParameter<int>("setup")),
   cut(iConfig.getParameter<std::string>("cut")),
-  flags(iConfig.getParameter<ParameterSet>("flags"))
+  flags(iConfig.getParameter<ParameterSet>("flags")),
   //myMVATrig(0),
-  //BDTValueMapToken(consumes<ValueMap<float> >(iConfig.getParameter<InputTag>("mvaValuesMap")))
+  BDTValueMapToken(consumes<ValueMap<float> >(iConfig.getParameter<InputTag>("mvaValuesMap")))
 {
   rhoToken = consumes<double>(LeptonIsoHelper::getEleRhoTag(sampleType, setup));
   vtxToken = consumes<vector<Vertex> >(edm::InputTag("goodPrimaryVertices"));
@@ -114,8 +114,8 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::Handle<vector<Vertex> > vertices;
   iEvent.getByToken(vtxToken,vertices);
 
-  //Handle<ValueMap<float> > BDTValues;
-  //iEvent.getByToken(BDTValueMapToken, BDTValues);
+  Handle<ValueMap<float> > BDTValues;
+  iEvent.getByToken(BDTValueMapToken, BDTValues);
 
   // Output collection
   auto_ptr<pat::ElectronCollection> result( new pat::ElectronCollection() );
@@ -157,19 +157,20 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     
     // RunII BDT ID
     float BDT = 0.;
+    float BDT_8X = 0.;
     if (recomputeBDT) {
 
       //Phys14 BDT
       //BDT = myMVATrig->mvaValue(l,false);
 
       //Spring15 BDT running VID
-      //BDT = (*BDTValues)[(*electronHandle)[i]];
 
     } else {
 
       //Spring15 BDT taking the userfloat (possible as of MiniAODv2 of 74X)
       BDT = l.userFloat("ElectronMVAEstimatorRun2Spring15NonTrig25nsV1Values");
 
+      BDT_8X = (*BDTValues)[(*electronHandle)[i]];
     }
     
     float pt = l.pt();
@@ -219,6 +220,8 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     l.addUserFloat("dxy",dxy);
     l.addUserFloat("dz",dz);
     l.addUserFloat("BDT",BDT);    
+    l.addUserFloat("BDT_8X",BDT_8X);    
+
     l.addUserFloat("isBDT",isBDT);
     l.addUserFloat("isCrack",isCrack);
     l.addUserFloat("HLTMatch", HLTMatch);
