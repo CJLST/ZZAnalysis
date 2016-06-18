@@ -229,6 +229,7 @@ process.ZLLCandlooseEle = cms.EDProducer("ZZCandidateFiller",
     ),
     ZRolesByMass = cms.bool(False),  # daughter('Z1') = daughter(0)
     recomputeIsoForFSR = cms.bool(RECOMPUTEISOFORFSR),
+    doKinFit = cms.bool(KINREFIT),
     flags = cms.PSet(
       SR = cms.string(SR),
       CRZLLss = cms.string(CR_BASESEL),             #combine with proper isBestCRZLLss for AA ss/os CRss    

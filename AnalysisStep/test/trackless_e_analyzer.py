@@ -180,6 +180,7 @@ process.ZLLCandtle = cms.EDProducer("ZZCandidateFiller",
     ),
     ZRolesByMass = cms.bool(False),  # daughter('Z1') = daughter(0)
     recomputeIsoForFSR = cms.bool(RECOMPUTEISOFORFSR),
+    doKinFit = cms.bool(KINREFIT),
     flags = cms.PSet(
       SR = cms.string(SR),
       CRZLL = cms.string(CR_BESTZLLos_tle),
