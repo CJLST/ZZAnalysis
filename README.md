@@ -11,7 +11,7 @@ Download and execute the setup script:
 #wget -O /tmp/checkout_80X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_80X/checkout_80X.csh
 
 # Use own repo 
-wget -O /tmp/checkout_80X.csh https://github.com/Werbellin/ZZAnalysis_tle/blob/miniAOD_80X_with_loose_ele/checkout_80X.csh
+wget -O /tmp/checkout_80X.csh https://raw.githubusercontent.com/Werbellin/ZZAnalysis_tle/miniAOD_80X_with_loose_ele/checkout_80X.csh 
 
 cd $CMSSW_BASE/src
 cmsenv
