@@ -157,6 +157,7 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     
     // RunII BDT ID
     float BDT = 0.;
+    float BDT_7X = 0.;
     float BDT_8X = 0.;
     if (recomputeBDT) {
 
@@ -168,7 +169,7 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     } else {
 
       //Spring15 BDT taking the userfloat (possible as of MiniAODv2 of 74X)
-      BDT = l.userFloat("ElectronMVAEstimatorRun2Spring15NonTrig25nsV1Values");
+      BDT_7X = l.userFloat("ElectronMVAEstimatorRun2Spring15NonTrig25nsV1Values");
 
       BDT_8X = (*BDTValues)[(*electronHandle)[i]];
     }
@@ -187,22 +188,24 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 // 			       (fSCeta >= 1.479               && BDT > 0.6)));
 
     //WP for preliminary 8X ID BDT
-    bool isBDT_8X = (pt<=10 && ((fSCeta<0.8                  && BDT > -0.211) ||
-                                (fSCeta>=0.8 && fSCeta<1.479 && BDT > -0.396) ||
-                                (fSCeta>=1.479               && BDT > -0.215))) 
-                 || (pt>10  && ((fSCeta<0.8                  && BDT > -0.870) ||
-                                (fSCeta>=0.8 && fSCeta<1.479 && BDT > -0.838) || 
-                                (fSCeta>=1.479               && BDT > -0.763)));
+    bool isBDT_8X = (pt<=10 && ((fSCeta<0.8                  && BDT_8X > -0.211) ||
+                                (fSCeta>=0.8 && fSCeta<1.479 && BDT_8X > -0.396) ||
+                                (fSCeta>=1.479               && BDT_8X > -0.215))) 
+                 || (pt>10  && ((fSCeta<0.8                  && BDT_8X > -0.870) ||
+                                (fSCeta>=0.8 && fSCeta<1.479 && BDT_8X > -0.838) || 
+                                (fSCeta>=1.479               && BDT_8X > -0.763)));
 
     // WP for Spring15-based BDT as proposed in https://indico.cern.ch/event/439325/session/1/contribution/21/attachments/1156760/1663207/slides_20150918.pdf
-    bool isBDT = (pt <= 10 && ((fSCeta < 0.8                    && BDT > -0.265) ||
-                               (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.556) ||
-                               (fSCeta >= 1.479                 && BDT > -0.551)   )) ||
-                 (pt >  10 && ((fSCeta < 0.8                    && BDT > -0.072) ||
-                               (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.286) ||
-                               (fSCeta >= 1.479                 && BDT > -0.267)   ));
+    bool isBDT_7X = (pt <= 10 && ((fSCeta < 0.8                    && BDT_7X > -0.265) ||
+                                  (fSCeta >= 0.8 && fSCeta < 1.479 && BDT_7X > -0.556) ||
+                                  (fSCeta >= 1.479                 && BDT_7X > -0.551)   )) ||
+                    (pt >  10 && ((fSCeta < 0.8                    && BDT_7X > -0.072) ||
+                                  (fSCeta >= 0.8 && fSCeta < 1.479 && BDT_7X > -0.286) ||
+                                  (fSCeta >= 1.479                 && BDT_7X > -0.267)   ));
 
-
+    // Select desired ID to be used in analysis
+    bool isBDT = isBDT_8X;
+    BDT = BDT_8X;
     //-- Missing hit  
     int missingHit = l.gsfTrack()->hitPattern().numberOfHits(HitPattern::MISSING_INNER_HITS);
     //-- Flag for crack electrons (which use different efficiency SFs)
