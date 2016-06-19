@@ -9,6 +9,10 @@
 
 ############## For CMSSW_8_0_6
 
+#Preliminary 8X electron ID
+git clone git@github.com:Werbellin/RecoEgamma_8X.git RecoEgamma
+(cd RecoEgamma git checkout efbfafb) 
+
 #electron momentum scale corrections (76X).
 git cms-merge-topic -u matteosan1:smearer_76X
 
