@@ -150,6 +150,19 @@ namespace {
   std::vector<short> fsrLeptID;
   std::vector<float> fsrGenPt;
   Bool_t  passIsoPreFSR ;
+
+  std::vector<float> pVAMCFM_qqZJJ_bkg  ;
+  std::vector<float> pVAJHUGen_ggZZ_SM_sig  ;
+  std::vector<float> pVAJHUGen_ggZZ_0minus_sig  ;
+  std::vector<float> pVAJHUGen_ggZZ_0hplus_sig  ;
+  std::vector<float> pVAJHUGen_ggZZ_2bplus_sig  ;
+  std::vector<float> pVAJHUGen_ggZZ_2mplus_sig  ;
+  std::vector<float> pvbf_VAJHU_old_NEW  ;
+  std::vector<float> phjj_VAJHU_old_NEW  ;
+  std::vector<float> pvbf_VAJHU_old  ;
+  std::vector<float> phjj_VAJHU_old  ;
+
+/*
   std::vector<float> p0plus_VAJHU  ;		   
   std::vector<float> p0minus_VAJHU  ;		   
   std::vector<float> p0plus_VAMCFM  ;		   
@@ -255,6 +268,7 @@ namespace {
   std::vector<float> pbbh_VAJHU  ;		   
   std::vector<float> pbbh_VAJHU_up  ;		   
   std::vector<float> pbbh_VAJHU_dn  ;              
+*/
   std::vector<float> JetPt ;
   std::vector<float> JetEta ;
   std::vector<float> JetPhi ;
@@ -1035,7 +1049,18 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
     //phistarZ2     .push_back(cand.userFloat("phistar2"));
     xi           .push_back(cand.userFloat("xi"));
     xistar       .push_back(cand.userFloat("xistar"));
-   
+  
+
+    pVAMCFM_qqZJJ_bkg.push_back(cand.userFloat("pVAMCFM_qqZJJ_bkg"));
+    pVAJHUGen_ggZZ_SM_sig.push_back(cand.userFloat("pVAJHUGen_ggZZ_SM_sig"));
+    pVAJHUGen_ggZZ_0minus_sig.push_back(cand.userFloat("pVAJHUGen_ggZZ_0minus_sig"));
+    pVAJHUGen_ggZZ_0hplus_sig.push_back(cand.userFloat("pVAJHUGen_ggZZ_0hplus_sig"));
+    pVAJHUGen_ggZZ_2bplus_sig.push_back(cand.userFloat("pVAJHUGen_ggZZ_2bplus_sig"));
+    pVAJHUGen_ggZZ_2mplus_sig.push_back(cand.userFloat("pVAJHUGen_ggZZ_2mplus_sig"));
+    pvbf_VAJHU_old_NEW.push_back(cand.userFloat("pvbf_VAJHU_old_NEW"));
+    phjj_VAJHU_old_NEW.push_back(cand.userFloat("phjj_VAJHU_old_NEW")); 
+    pvbf_VAJHU_old.push_back(cand.userFloat("pvbf_VAJHU_old"));
+    phjj_VAJHU_old.push_back(cand.userFloat("phjj_VAJHU_old"));
 
     //Float_t ZZLD = cand.userFloat("LD");
     //Float_t ZZLDPSig = cand.userFloat("PSig");
@@ -1050,24 +1075,29 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
     //Float_t p0plus_mela = cand.userFloat("p0plus_mela");
     //Float_t p0minus_mela = cand.userFloat("p0minus_mela");
     //Float_t p0hplus_mela = cand.userFloat("p0hplus_mela"); // 0h+, analytic distribution
+/* 
     p0plus_VAJHU.push_back(cand.userFloat("p0plus_VAJHU"));
     p0minus_VAJHU.push_back(cand.userFloat("p0minus_VAJHU"));
     p0plus_VAMCFM.push_back(cand.userFloat("p0plus_VAMCFM"));
     p0hplus_VAJHU.push_back(cand.userFloat("p0hplus_VAJHU")); // 0h+ (high dimensional operator), vector algebra, JHUgen
+*/
     //Float_t p1_mela = cand.userFloat("p1_mela");
     //Float_t p1_prodIndep_mela = cand.userFloat("p1_prodIndep_mela");
     //Float_t p1plus_mela = cand.userFloat("p1plus_mela"); // 1+, analytic distribution 
     //Float_t p1plus_prodIndep_mela = cand.userFloat("p1plus_prodIndep_mela"); // 1+, analytic distribution 
+/*
     p1_VAJHU.push_back(cand.userFloat("p1_VAJHU"));
     p1_prodIndep_VAJHU.push_back(cand.userFloat("p1_prodIndep_VAJHU"));
     p1plus_VAJHU.push_back(cand.userFloat("p1plus_VAJHU")); // 1+ (axial vector), vector algebra, JHUgen,
     p1plus_prodIndep_VAJHU.push_back(cand.userFloat("p1plus_prodIndep_VAJHU")); // 1+ (axial vector), vector algebra, JHUgen,
+*/
     //Float_t p2_mela  = cand.userFloat("p2_mela");
     //Float_t p2_prodIndep_mela  = cand.userFloat("p2_prodIndep_mela");
     //Float_t p2qqb_mela = cand.userFloat("p2qqb_mela"); // graviton produced by qqbar vector algebra, analytical,
     //Float_t p2hplus_mela = cand.userFloat("p2hplus_mela"); // graviton produced by qqbar vector algebra, analytical,
     //Float_t p2hminus_mela = cand.userFloat("p2hminus_mela"); // graviton produced by qqbar vector algebra, analytical,
     //Float_t p2bplus_mela = cand.userFloat("p2bplus_mela"); // graviton produced by qqbar vector algebra, analytical,
+/*
     p2_VAJHU.push_back(cand.userFloat("p2_VAJHU"));
     p2_prodIndep_VAJHU.push_back(cand.userFloat("p2_prodIndep_VAJHU"));
     p2qqb_VAJHU.push_back(cand.userFloat("p2qqb_VAJHU"));
@@ -1098,7 +1128,9 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
     p2h10minus_gg_VAJHU.push_back(cand.userFloat(         "p2h10minus_gg_VAJHU"      )); 
     p2h10minus_qqbar_VAJHU.push_back(cand.userFloat(      "p2h10minus_qqbar_VAJHU"   )); 
     p2h10minus_prodIndep_VAJHU.push_back(cand.userFloat(  "p2h10minus_prodIndep_VAJHU")); 
+*/
     // bkg_mela.push_back(cand.userFloat("bkg_mela"));
+/*
     bkg_VAMCFM.push_back(cand.userFloat("bkg_VAMCFM"));
     bkg_prodIndep_VAMCFM.push_back(cand.userFloat("bkg_prodIndep_VAMCFM"));
     ggzz_VAMCFM.push_back(cand.userFloat("ggzz_VAMCFM"));
@@ -1106,12 +1138,14 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
     ggzz_c1_VAMCFM.push_back(cand.userFloat("ggzz_c1_VAMCFM"));
     ggzz_c5_VAMCFM.push_back(cand.userFloat("ggzz_c5_VAMCFM"));
     ggzz_ci_VAMCFM.push_back(cand.userFloat("ggzz_ci_VAMCFM"));
+*/
     // bkg_VAMCFMNorm = cand.userFloat("bkg_VAMCFMNorm"));
     // p0_pt = cand.userFloat("p0_pt"));
     // p0_y = cand.userFloat("p0_y"));
     // bkg_pt = cand.userFloat("bkg_pt"));
     // bkg_y = cand.userFloat("bkg_y"));
 
+/*
     pg1g4_mela.push_back(cand.userFloat("pg1g4_mela"));
     pg1g4_VAJHU.push_back(cand.userFloat("pg1g4_VAJHU"));
     pg1g4_pi2_VAJHU.push_back(cand.userFloat("pg1g4_pi2_VAJHU"));
@@ -1180,7 +1214,7 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
     pbbh_VAJHU.push_back(cand.userFloat("pbbh_VAJHU"));
     pbbh_VAJHU_up.push_back(cand.userFloat("pbbh_VAJHU_up"));
     pbbh_VAJHU_dn.push_back(cand.userFloat("pbbh_VAJHU_dn"));
-
+*/
   }
 
   //Z1 and Z2 variables
@@ -1784,6 +1818,18 @@ void HZZ2l2qNtupleMaker::BookAllBranches(){
   }
   
   //Discriminants
+
+  myTree->Book("pVAMCFM_qqZJJ_bkg",pVAMCFM_qqZJJ_bkg);
+  myTree->Book("pVAJHUGen_ggZZ_SM_sig",pVAJHUGen_ggZZ_SM_sig);
+  myTree->Book("pVAJHUGen_ggZZ_0minus_sig",pVAJHUGen_ggZZ_0minus_sig);
+  myTree->Book("pVAJHUGen_ggZZ_0hplus_sig",pVAJHUGen_ggZZ_0hplus_sig);
+  myTree->Book("pVAJHUGen_ggZZ_2bplus_sig",pVAJHUGen_ggZZ_2bplus_sig);
+  myTree->Book("pVAJHUGen_ggZZ_2mplus_sig",pVAJHUGen_ggZZ_2mplus_sig);
+  myTree->Book("pvbf_VAJHU_old_NEW",pvbf_VAJHU_old_NEW);
+  myTree->Book("phjj_VAJHU_old_NEW",phjj_VAJHU_old_NEW);
+  myTree->Book("pvbf_VAJHU_old",pvbf_VAJHU_old);
+  myTree->Book("phjj_VAJHU_old",phjj_VAJHU_old);
+/*
     myTree->Book("p0plus_VAJHU",p0plus_VAJHU);
     myTree->Book("p0minus_VAJHU",p0minus_VAJHU);
     myTree->Book("p0plus_VAMCFM",p0plus_VAMCFM);
@@ -1891,7 +1937,7 @@ void HZZ2l2qNtupleMaker::BookAllBranches(){
   myTree->Book("pbbh_VAJHU",pbbh_VAJHU);
   myTree->Book("pbbh_VAJHU_up",pbbh_VAJHU_up);
   myTree->Book("pbbh_VAJHU_dn",pbbh_VAJHU_dn);
-  
+ */ 
   //Jet variables
   myTree->Book("JetPt",JetPt);
   myTree->Book("JetEta",JetEta);
