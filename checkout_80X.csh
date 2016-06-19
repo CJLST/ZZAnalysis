@@ -10,15 +10,21 @@
 ############## For CMSSW_8_0_6
 
 #Preliminary 8X electron ID
-git clone git@github.com:Werbellin/RecoEgamma_8X.git RecoEgamma
+git clone https://github.com/Werbellin/RecoEgamma_8X.git RecoEgamma
 (cd RecoEgamma git checkout efbfafb) 
 
 #electron momentum scale corrections (76X).
 git cms-merge-topic -u matteosan1:smearer_76X
 
-#ZZAnalysis
-git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
-(cd ZZAnalysis; git checkout miniAOD_80X)
+#ZZAnalysis - temporary repo with loose electrons
+git clone https://github.com/Werbellin/ZZAnalysis_tle.git ZZAnalysis
+(cd ZZAnalysis; git checkout miniAOD_80X_with_loose_ele )
+
+##ZZAnalysis
+#git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
+#(cd ZZAnalysis; git checkout miniAOD_80X)
+
+
 
 #effective areas (to be updated)
 git clone -n https://github.com/latinos/UserCode-sixie-Muon-MuonAnalysisTools Muon/MuonAnalysisTools
