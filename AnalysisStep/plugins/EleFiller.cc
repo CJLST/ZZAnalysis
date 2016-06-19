@@ -186,13 +186,13 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 // 			       (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.65) ||
 // 			       (fSCeta >= 1.479               && BDT > 0.6)));
 
-//    //WP for fixed Phys14-based BDT
-//    bool isBDT = (pt <= 10 && ((fSCeta < 0.8                    && BDT > -0.586) ||
-//                               (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.712) ||
-//                               (fSCeta >= 1.479                 && BDT > -0.662)   )) ||
-//                 (pt >  10 && ((fSCeta < 0.8                    && BDT > -0.652) ||
-//                               (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.701) ||
-//                               (fSCeta >= 1.479                 && BDT > -0.350)   ));
+    //WP for preliminary 8X ID BDT
+    bool isBDT_8X = (pt<=10 && ((fSCeta<0.8                  && BDT > -0.211) ||
+                                (fSCeta>=0.8 && fSCeta<1.479 && BDT > -0.396) ||
+                                (fSCeta>=1.479               && BDT > -0.215))) 
+                 || (pt>10  && ((fSCeta<0.8                  && BDT > -0.870) ||
+                                (fSCeta>=0.8 && fSCeta<1.479 && BDT > -0.838) || 
+                                (fSCeta>=1.479               && BDT > -0.763)));
 
     // WP for Spring15-based BDT as proposed in https://indico.cern.ch/event/439325/session/1/contribution/21/attachments/1156760/1663207/slides_20150918.pdf
     bool isBDT = (pt <= 10 && ((fSCeta < 0.8                    && BDT > -0.265) ||
@@ -223,6 +223,7 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     l.addUserFloat("BDT_8X",BDT_8X);    
 
     l.addUserFloat("isBDT",isBDT);
+    l.addUserFloat("isBDT_8X",isBDT_8X);
     l.addUserFloat("isCrack",isCrack);
     l.addUserFloat("HLTMatch", HLTMatch);
     l.addUserFloat("missingHit", missingHit);
