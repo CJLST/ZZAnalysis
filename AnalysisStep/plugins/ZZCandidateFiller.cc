@@ -1017,7 +1017,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
       }
 
       kinZfitter->Setup(selectedLeptons, selectedFsrMap);
-      kinZfitter->KinRefitZ1();
+      kinZfitter->KinRefitZ();
       
       ZZMassRefit = kinZfitter->GetRefitM4l();
       ZZMassRefitErr = kinZfitter->GetRefitM4lErrFullCov();
