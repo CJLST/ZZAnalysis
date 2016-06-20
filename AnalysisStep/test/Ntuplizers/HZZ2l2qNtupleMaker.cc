@@ -151,12 +151,12 @@ namespace {
   std::vector<float> fsrGenPt;
   Bool_t  passIsoPreFSR ;
 
-  std::vector<float> pVAMCFM_qqZJJ_bkg  ;
-  std::vector<float> pVAJHUGen_ggZZ_SM_sig  ;
-  std::vector<float> pVAJHUGen_ggZZ_0minus_sig  ;
-  std::vector<float> pVAJHUGen_ggZZ_0hplus_sig  ;
-  std::vector<float> pVAJHUGen_ggZZ_2bplus_sig  ;
-  std::vector<float> pVAJHUGen_ggZZ_2mplus_sig  ;
+  std::vector<float> pqqZJJ_VAMCFM  ;
+  std::vector<float> p0plus_VAJHU  ;
+  std::vector<float> p0minus_VAJHU  ;
+  std::vector<float> p0hplus_VAJHU  ;
+  std::vector<float> p2bplus_VAJHU  ;
+  std::vector<float> p2_VAJHU  ;
   std::vector<float> pvbf_VAJHU_old_NEW  ;
   std::vector<float> phjj_VAJHU_old_NEW  ;
   std::vector<float> pvbf_VAJHU_old  ;
@@ -1051,12 +1051,12 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
     xistar       .push_back(cand.userFloat("xistar"));
   
 
-    pVAMCFM_qqZJJ_bkg.push_back(cand.userFloat("pVAMCFM_qqZJJ_bkg"));
-    pVAJHUGen_ggZZ_SM_sig.push_back(cand.userFloat("pVAJHUGen_ggZZ_SM_sig"));
-    pVAJHUGen_ggZZ_0minus_sig.push_back(cand.userFloat("pVAJHUGen_ggZZ_0minus_sig"));
-    pVAJHUGen_ggZZ_0hplus_sig.push_back(cand.userFloat("pVAJHUGen_ggZZ_0hplus_sig"));
-    pVAJHUGen_ggZZ_2bplus_sig.push_back(cand.userFloat("pVAJHUGen_ggZZ_2bplus_sig"));
-    pVAJHUGen_ggZZ_2mplus_sig.push_back(cand.userFloat("pVAJHUGen_ggZZ_2mplus_sig"));
+    pqqZJJ_VAMCFM.push_back(cand.userFloat("pqqZJJ_VAMCFM"));
+    p0plus_VAJHU.push_back(cand.userFloat("p0plus_VAJHU"));
+    p0minus_VAJHU.push_back(cand.userFloat("p0minus_VAJHU"));
+    p0hplus_VAJHU.push_back(cand.userFloat("p0hplus_VAJHU"));
+    p2bplus_VAJHU.push_back(cand.userFloat("p2bplus_VAJHU"));
+    p2_VAJHU.push_back(cand.userFloat("p2_VAJHU"));
     pvbf_VAJHU_old_NEW.push_back(cand.userFloat("pvbf_VAJHU_old_NEW"));
     phjj_VAJHU_old_NEW.push_back(cand.userFloat("phjj_VAJHU_old_NEW")); 
     pvbf_VAJHU_old.push_back(cand.userFloat("pvbf_VAJHU_old"));
@@ -1819,12 +1819,12 @@ void HZZ2l2qNtupleMaker::BookAllBranches(){
   
   //Discriminants
 
-  myTree->Book("pVAMCFM_qqZJJ_bkg",pVAMCFM_qqZJJ_bkg);
-  myTree->Book("pVAJHUGen_ggZZ_SM_sig",pVAJHUGen_ggZZ_SM_sig);
-  myTree->Book("pVAJHUGen_ggZZ_0minus_sig",pVAJHUGen_ggZZ_0minus_sig);
-  myTree->Book("pVAJHUGen_ggZZ_0hplus_sig",pVAJHUGen_ggZZ_0hplus_sig);
-  myTree->Book("pVAJHUGen_ggZZ_2bplus_sig",pVAJHUGen_ggZZ_2bplus_sig);
-  myTree->Book("pVAJHUGen_ggZZ_2mplus_sig",pVAJHUGen_ggZZ_2mplus_sig);
+  myTree->Book("pqqZJJ_VAMCFM",pqqZJJ_VAMCFM);
+  myTree->Book("p0plus_VAJHU",p0plus_VAJHU);
+  myTree->Book("p0minus_VAJHU",p0minus_VAJHU);
+  myTree->Book("p0hplus_VAJHU",p0hplus_VAJHU);
+  myTree->Book("p2bplus_VAJHU",p2bplus_VAJHU);
+  myTree->Book("p2_VAJHU",p2_VAJHU);
   myTree->Book("pvbf_VAJHU_old_NEW",pvbf_VAJHU_old_NEW);
   myTree->Book("phjj_VAJHU_old_NEW",phjj_VAJHU_old_NEW);
   myTree->Book("pvbf_VAJHU_old",pvbf_VAJHU_old);

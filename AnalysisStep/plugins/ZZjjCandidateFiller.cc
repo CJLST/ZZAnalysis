@@ -15,8 +15,7 @@
 #include <ZZAnalysis/AnalysisStep/interface/CutSet.h>
 #include <ZZAnalysis/AnalysisStep/interface/DaughterDataHelpers.h>
 #include <ZZMatrixElement/MELA/interface/Mela.h>
-//#include <ZZMatrixElement/MELA/interface/TUtil.hh>
-#include <ZZMatrixElement/MELA/src/computeAngles.h>
+//#include <ZZMatrixElement/MELA/src/computeAngles.h>
 #include <ZZMatrixElement/MEMCalculators/interface/MEMCalculators.h>
 //#include <ZZAnalysis/AnalysisStep/interface/ZZMassErrors.h>
 //#include <ZZAnalysis/AnalysisStep/interface/MCHistoryTools.h>
@@ -118,8 +117,7 @@ ZZjjCandidateFiller::ZZjjCandidateFiller(const edm::ParameterSet& iConfig) :
   setup(iConfig.getParameter<int>("setup")),
   superMelaMass(iConfig.getParameter<double>("superMelaMass")),
   combinedMEM(SetupToSqrts(setup),superMelaMass,"CTEQ6L"),
-//  mela(SetupToSqrts(setup),superMelaMass , TVar::SILENT ),
-  mela(SetupToSqrts(setup),superMelaMass , TVar::DEBUG ),
+  mela(SetupToSqrts(setup),superMelaMass , TVar::SILENT ),
   embedDaughterFloats(iConfig.getUntrackedParameter<bool>("embedDaughterFloats",true)),
   // ZRolesByMass(iConfig.getParameter<bool>("ZRolesByMass")),
   isMerged(iConfig.getParameter<bool>("isMerged")),
@@ -129,8 +127,8 @@ ZZjjCandidateFiller::ZZjjCandidateFiller(const edm::ParameterSet& iConfig) :
   corrSigmaEle(0),
   kinZfitter(0)
 {
+  mela.setCandidateDecayMode(TVar::CandidateDecay_ZZ);
   produces<pat::CompositeCandidateCollection>();
-
   rhoForMuToken = consumes<double>(LeptonIsoHelper::getMuRhoTag(sampleType, setup));
   rhoForEleToken = consumes<double>(LeptonIsoHelper::getEleRhoTag(sampleType, setup));
   jetToken = consumes<edm::View<pat::Jet> >(edm::InputTag("cleanJets"));
@@ -547,33 +545,32 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     cout << partId.at(idau)<<endl; 
     }
  
-    mela.setCandidateDecayMode(TVar::CandidateDecay_ZZ);
     mela.setInputEvent(&daughters_ZZ, (SimpleParticleCollection_t*)0, 0, 0);
 
-    float pVAMCFM_qqZJJ_bkg=0;
+    float pqqZJJ_VAMCFM=0;
     mela.setProcess(TVar::bkgZJJ, TVar::MCFM, TVar::ZZQQB);
 //    mela.setProcess(TVar::bkgZJJ, TVar::MCFM, TVar::JJQCD);
-    mela.computeP(pVAMCFM_qqZJJ_bkg, false);
+    mela.computeP(pqqZJJ_VAMCFM, false);
 
-    float pVAJHUGen_ggZZ_SM_sig=0;
+    float p0plus_VAJHU=0;
     mela.setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::ZZGG);
-    mela.computeP(pVAJHUGen_ggZZ_SM_sig, true);
+    mela.computeP(p0plus_VAJHU, true);
 
-    float pVAJHUGen_ggZZ_0minus_sig;
+    float p0minus_VAJHU;
     mela.setProcess(TVar::H0minus, TVar::JHUGen, TVar::ZZGG);
-    mela.computeP(pVAJHUGen_ggZZ_0minus_sig, true);
+    mela.computeP(p0minus_VAJHU, true);
 
-    float pVAJHUGen_ggZZ_0hplus_sig;
+    float p0hplus_VAJHU;
     mela.setProcess(TVar::H0hplus, TVar::JHUGen, TVar::ZZGG);
-    mela.computeP(pVAJHUGen_ggZZ_0hplus_sig, true);
+    mela.computeP(p0hplus_VAJHU, true);
 
-    float pVAJHUGen_ggZZ_2bplus_sig=0;
+    float p2bplus_VAJHU=0;
     mela.setProcess(TVar::H2_g5, TVar::JHUGen, TVar::ZZGG);
-    mela.computeP(pVAJHUGen_ggZZ_2bplus_sig, true);
+    mela.computeP(p2bplus_VAJHU, true);
 
-    float pVAJHUGen_ggZZ_2mplus_sig=0;
+    float p2_VAJHU=0;
     mela.setProcess(TVar::H2_g1g5, TVar::JHUGen, TVar::ZZGG);
-    mela.computeP(pVAJHUGen_ggZZ_2mplus_sig, true);
+    mela.computeP(p2_VAJHU, true);
 
     float pvbf_VAJHU_old_NEW=0; 
     mela.setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::JJVBF);
@@ -590,7 +587,7 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     //--- compute angles
     float costheta1=0, costheta2=0, phi=0, costhetastar=0, phistar1=0;
 //    mela::computeAngles(pL11,47,pL12,-47,pL21,id21,pL22,id22,costhetastar,costheta1,costheta2,phi,phistar1);
-    mela::computeAngles(pL11,0,pL12,0,pL21,id21,pL22,id22,costhetastar,costheta1,costheta2,phi,phistar1); 
+    TUtil::computeAngles(pL11,0,pL12,0,pL21,id21,pL22,id22,costhetastar,costheta1,costheta2,phi,phistar1); 
     //--- compute higgs azimuthal angles, xi
     TLorentzVector higgs = pL11+pL12+pL21+pL22;
     TLorentzVector Z14vec = pL11+pL12;
@@ -916,8 +913,6 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
           phjj_VAJHU_old = phjj_VAJHU_old_temp;
           pvbf_VAJHU_old = pvbf_VAJHU_old_temp;
 /*
-          phjj_VAJHU_new = phjj_VAJHU_new_temp;
-          pvbf_VAJHU_new = pvbf_VAJHU_new_temp;
          if (jecnum == 0){
           phjj_VAJHU_old = phjj_VAJHU_old_temp;
           pvbf_VAJHU_old = pvbf_VAJHU_old_temp;
@@ -1211,12 +1206,12 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     myCand.addUserFloat("DiJetFisher", DiJetFisher);
 
 //Mela v2
-    myCand.addUserFloat("pVAMCFM_qqZJJ_bkg", pVAMCFM_qqZJJ_bkg);
-    myCand.addUserFloat("pVAJHUGen_ggZZ_SM_sig", pVAJHUGen_ggZZ_SM_sig);
-    myCand.addUserFloat("pVAJHUGen_ggZZ_0minus_sig", pVAJHUGen_ggZZ_0minus_sig);
-    myCand.addUserFloat("pVAJHUGen_ggZZ_0hplus_sig", pVAJHUGen_ggZZ_0hplus_sig);
-    myCand.addUserFloat("pVAJHUGen_ggZZ_2bplus_sig", pVAJHUGen_ggZZ_2bplus_sig);
-    myCand.addUserFloat("pVAJHUGen_ggZZ_2mplus_sig", pVAJHUGen_ggZZ_2mplus_sig);
+    myCand.addUserFloat("pqqZJJ_VAMCFM", pqqZJJ_VAMCFM);
+    myCand.addUserFloat("p0plus_VAJHU", p0plus_VAJHU);
+    myCand.addUserFloat("p0minus_VAJHU", p0minus_VAJHU);
+    myCand.addUserFloat("p0hplus_VAJHU", p0hplus_VAJHU);
+    myCand.addUserFloat("p2bplus_VAJHU", p2bplus_VAJHU);
+    myCand.addUserFloat("p2_VAJHU", p2_VAJHU);
     myCand.addUserFloat("pvbf_VAJHU_old_NEW", pvbf_VAJHU_old_NEW);
     myCand.addUserFloat("phjj_VAJHU_old_NEW", phjj_VAJHU_old_NEW);
     myCand.addUserFloat("phjj_VAJHU_old", phjj_VAJHU_old);
