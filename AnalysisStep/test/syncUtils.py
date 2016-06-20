@@ -73,7 +73,9 @@ class KDs:
 
 class Candidate:
 
-    def __init__(self,event,m,mZ1,mZ2,mErr,mErrCorr,m4lRefit,m4lRefitErr,pt,nExtraLep,jets30pt,jets30eta,jets30phi,jets30mass,njets30Btag,mjj,detajj,kds,weight):
+    def __init__(self,event,m,mZ1,mZ2,mErr,mErrCorr,m4lRefit,m4lRefitErr,pt,nExtraLep,nExtraZ,jets30pt,jets30eta,jets30phi,jets30mass,njets30Btag,mjj,detajj,kds,weight,
+                 jetQGLikelihood,phjj_VAJHU_old,phj_VAJHU,pvbf_VAJHU_old,pAux_vbf_VAJHU,pwh_hadronic_VAJHU,pzh_hadronic_VAJHU
+                 ):
 
         self.eventInfo   = event
         self.weight      = weight
@@ -87,6 +89,7 @@ class Candidate:
         self.kds         = kds
         self.pt4l        = pt
         self.nExtraLep   = nExtraLep
+        self.nExtraZ     = nExtraZ
         self.jets30pt    = jets30pt
         self.jets30eta   = jets30eta
         self.jets30phi   = jets30phi
@@ -100,18 +103,35 @@ class Candidate:
         self.jet1pt      = -1.
         self.jet2pt      = -1.
         self.fillJetInfo()
-        self.category    = ctypes.CDLL('libZZAnalysisAnalysisStep.so').category(
+
+        # Winter 2015 version
+#         self.category    = ctypes.CDLL('libZZAnalysisAnalysisStep.so').category(
+#             c_int(nExtraLep),
+#             c_float(self.pt4l),
+#             c_float(self.mass4l),
+#             c_int(self.njets30),
+#             c_int(self.njets30Btag),
+#             (ctypes.c_float * len(self.jets30pt  ))(*self.jets30pt  ),
+#             (ctypes.c_float * len(self.jets30eta ))(*self.jets30eta ),
+#             (ctypes.c_float * len(self.jets30phi ))(*self.jets30phi ),
+#             (ctypes.c_float * len(self.jets30mass))(*self.jets30mass),
+#             c_float(self.fishjj),
+#             )
+        # Summer 2016 version
+        self.category    = ctypes.CDLL('libZZAnalysisAnalysisStep.so').categoryIchep16(
             c_int(nExtraLep),
-            c_float(self.pt4l),
-            c_float(self.mass4l),
+            c_int(nExtraZ),
             c_int(self.njets30),
-            c_int(self.njets30Btag),
-            (ctypes.c_float * len(self.jets30pt  ))(*self.jets30pt  ),
-            (ctypes.c_float * len(self.jets30eta ))(*self.jets30eta ),
-            (ctypes.c_float * len(self.jets30phi ))(*self.jets30phi ),
-            (ctypes.c_float * len(self.jets30mass))(*self.jets30mass),
-            c_float(self.fishjj),
+            c_int(njets30Btag),
+            (ctypes.c_float * len(jetQGLikelihood))(*jetQGLikelihood),
+            c_float(phjj_VAJHU_old),
+            c_float(phj_VAJHU),
+            c_float(pvbf_VAJHU_old),
+            c_float(pAux_vbf_VAJHU),
+            c_float(pwh_hadronic_VAJHU),
+            c_float(pzh_hadronic_VAJHU)
             )
+
 
     def fillJetInfo(self):
         
