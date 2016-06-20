@@ -49,7 +49,7 @@ declareDefault("SUPERMELA_MASS", 125, globals())
 declareDefault("SELSETUP", "allCutsAtOncePlusSmart", globals())
 
 #Best candidate comparator (see interface/Comparators.h)
-declareDefault("BESTCANDCOMPARATOR", "byBestZ1bestZ2", globals())
+declareDefault("BESTCANDCOMPARATOR", "byBestKD", globals())
 
 # Set to True to make candidates with the full combinatorial of loose leptons (for debug; much slower)
 declareDefault("KEEPLOOSECOMB", False, globals())
