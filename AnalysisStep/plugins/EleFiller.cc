@@ -29,7 +29,7 @@ using namespace std;
 using namespace reco;
 
 
-bool recomputeBDT = false;
+bool recomputeBDT = true; // true = pick BDT from VID; false = from existing userfloat
 
 class EleFiller : public edm::EDProducer {
  public:
@@ -54,7 +54,7 @@ class EleFiller : public edm::EDProducer {
   edm::EDGetTokenT<double> rhoToken;
   edm::EDGetTokenT<vector<Vertex> > vtxToken;
   //EGammaMvaEleEstimatorCSA14* myMVATrig;
-  //EDGetTokenT<ValueMap<float> > BDTValueMapToken;
+  EDGetTokenT<ValueMap<float> > BDTValueMapToken;
 };
 
 
@@ -63,38 +63,13 @@ EleFiller::EleFiller(const edm::ParameterSet& iConfig) :
   sampleType(iConfig.getParameter<int>("sampleType")),
   setup(iConfig.getParameter<int>("setup")),
   cut(iConfig.getParameter<std::string>("cut")),
-  flags(iConfig.getParameter<ParameterSet>("flags"))
+  flags(iConfig.getParameter<ParameterSet>("flags")),
   //myMVATrig(0),
-  //BDTValueMapToken(consumes<ValueMap<float> >(iConfig.getParameter<InputTag>("mvaValuesMap")))
+  BDTValueMapToken(consumes<ValueMap<float> >(iConfig.getParameter<InputTag>("mvaValuesMap")))
 {
   rhoToken = consumes<double>(LeptonIsoHelper::getEleRhoTag(sampleType, setup));
   vtxToken = consumes<vector<Vertex> >(edm::InputTag("goodPrimaryVertices"));
   produces<pat::ElectronCollection>();
-
-  if (recomputeBDT) {
-
-    // // Phys14 BDT reading
-    // std::vector<std::string> myManualCatWeigths;
-
-    // myManualCatWeigths.push_back("EgammaAnalysis/ElectronTools/data/PHYS14FIX/EIDmva_EB1_5_oldscenario2phys14FIX_BDT.weights.xml");
-    // myManualCatWeigths.push_back("EgammaAnalysis/ElectronTools/data/PHYS14FIX/EIDmva_EB2_5_oldscenario2phys14FIX_BDT.weights.xml");
-    // myManualCatWeigths.push_back("EgammaAnalysis/ElectronTools/data/PHYS14FIX/EIDmva_EE_5_oldscenario2phys14FIX_BDT.weights.xml");
-    // myManualCatWeigths.push_back("EgammaAnalysis/ElectronTools/data/PHYS14FIX/EIDmva_EB1_10_oldscenario2phys14FIX_BDT.weights.xml");
-    // myManualCatWeigths.push_back("EgammaAnalysis/ElectronTools/data/PHYS14FIX/EIDmva_EB2_10_oldscenario2phys14FIX_BDT.weights.xml");
-    // myManualCatWeigths.push_back("EgammaAnalysis/ElectronTools/data/PHYS14FIX/EIDmva_EE_10_oldscenario2phys14FIX_BDT.weights.xml");
-
-    // vector<string> myManualCatWeigthsTrig;
-    // string the_path;
-    // for (unsigned i = 0 ; i < myManualCatWeigths.size() ; i++){
-    //   the_path = edm::FileInPath ( myManualCatWeigths[i] ).fullPath();
-    //   myManualCatWeigthsTrig.push_back(the_path);
-    // }
-    // myMVATrig = new EGammaMvaEleEstimatorCSA14();
-    // myMVATrig->initialize("BDT",
-    // 			  EGammaMvaEleEstimatorCSA14::kNonTrigPhys14,
-    // 			  true,
-    // 			  myManualCatWeigthsTrig);
-  }
 
 }
 
@@ -114,8 +89,8 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::Handle<vector<Vertex> > vertices;
   iEvent.getByToken(vtxToken,vertices);
 
-  //Handle<ValueMap<float> > BDTValues;
-  //iEvent.getByToken(BDTValueMapToken, BDTValues);
+  Handle<ValueMap<float> > BDTValues;
+  iEvent.getByToken(BDTValueMapToken, BDTValues);
 
   // Output collection
   auto_ptr<pat::ElectronCollection> result( new pat::ElectronCollection() );
@@ -159,11 +134,8 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     float BDT = 0.;
     if (recomputeBDT) {
 
-      //Phys14 BDT
-      //BDT = myMVATrig->mvaValue(l,false);
-
-      //Spring15 BDT running VID
-      //BDT = (*BDTValues)[(*electronHandle)[i]];
+      //BDT running VID
+      BDT = (*BDTValues)[(*electronHandle)[i]];
 
     } else {
 
@@ -194,12 +166,20 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 //                               (fSCeta >= 1.479                 && BDT > -0.350)   ));
 
     // WP for Spring15-based BDT as proposed in https://indico.cern.ch/event/439325/session/1/contribution/21/attachments/1156760/1663207/slides_20150918.pdf
-    bool isBDT = (pt <= 10 && ((fSCeta < 0.8                    && BDT > -0.265) ||
-                               (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.556) ||
-                               (fSCeta >= 1.479                 && BDT > -0.551)   )) ||
-                 (pt >  10 && ((fSCeta < 0.8                    && BDT > -0.072) ||
-                               (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.286) ||
-                               (fSCeta >= 1.479                 && BDT > -0.267)   ));
+//     bool isBDT = (pt <= 10 && ((fSCeta < 0.8                    && BDT > -0.265) ||
+//                                (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.556) ||
+//                                (fSCeta >= 1.479                 && BDT > -0.551)   )) ||
+//                  (pt >  10 && ((fSCeta < 0.8                    && BDT > -0.072) ||
+//                                (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.286) ||
+//                                (fSCeta >= 1.479                 && BDT > -0.267)   ));
+
+    //WP for preliminary 8X ID BDT
+    bool isBDT = (pt<=10 && ((fSCeta<0.8                  && BDT > -0.211) ||
+                                (fSCeta>=0.8 && fSCeta<1.479 && BDT > -0.396) ||
+                                (fSCeta>=1.479               && BDT > -0.215))) 
+                 || (pt>10  && ((fSCeta<0.8                  && BDT > -0.870) ||
+                                (fSCeta>=0.8 && fSCeta<1.479 && BDT > -0.838) || 
+                                (fSCeta>=1.479               && BDT > -0.763)));
 
 
     //-- Missing hit  

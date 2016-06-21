@@ -445,17 +445,17 @@ if (BUNCH_SPACING == 50):
     process.calibratedPatElectrons.grbForestName = cms.string("gedelectron_p4combination_50ns")
 
 
-##--- Set up electron ID (VID framework)
-#from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
-## turn on VID producer, indicate data format to be DataFormat.MiniAOD, as appropriate
-#dataFormat = DataFormat.MiniAOD
-#switchOnVIDElectronIdProducer(process, dataFormat)
-## define which IDs we want to produce
-#my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring15_25ns_nonTrig_V1_cff']
-## add them to the VID producer
-#for idmod in my_id_modules:
-#    setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
-## and don't forget to add the producer 'process.egmGsfElectronIDSequence' to the path, i.e. process.electrons
+#--- Set up electron ID (VID framework)
+from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
+# turn on VID producer, indicate data format to be DataFormat.MiniAOD, as appropriate
+dataFormat = DataFormat.MiniAOD
+switchOnVIDElectronIdProducer(process, dataFormat)
+# define which IDs we want to produce
+my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_V1_cff']
+# add them to the VID producer
+for idmod in my_id_modules:
+    setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
+# and don't forget to add the producer 'process.egmGsfElectronIDSequence' to the path, i.e. process.electrons
 
 
 process.bareSoftElectrons = cms.EDFilter("PATElectronRefSelector",
@@ -475,17 +475,16 @@ process.softElectrons = cms.EDProducer("EleFiller",
         isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<"+ELEISOCUT)
 #       Note: passCombRelIsoPFFSRCorr is currently set in LeptonPhotonMatcher for new FSR strategy; in ZZCandidateFiller for the old one
         ),
-   #mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring15NonTrig25nsV1Values"), # (when running VID)
+   mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16V1Values"), # (when running VID)
    )
 
-
-#process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons) # (use this version when running VID)
-process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.bareSoftElectrons + process.softElectrons)
+process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons) # (use this version when running VID)
+#process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.bareSoftElectrons + process.softElectrons) # (use this version without VID)
 
 # Handle special cases
 if ELEREGRESSION == "None" and (ELECORRTYPE == "None" or BUNCH_SPACING == 50) :   # No correction at all. Skip correction modules.
     process.bareSoftElectrons.src = cms.InputTag('slimmedElectrons')
-    process.electrons = cms.Sequence(process.bareSoftElectrons + process.softElectrons)
+    process.electrons = cms.Sequence(process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
 
 #elif ELEREGRESSION == "None" and ELECORRTYPE == "RunII" :
 #    process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('calibratedPatElectrons') # (when running VID)
@@ -577,7 +576,9 @@ process.appendPhotons = cms.EDProducer("LeptonPhotonMatcher",
     photonSrc = cms.InputTag("boostedFsrPhotons"),
     sampleType = cms.int32(SAMPLE_TYPE),                     
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
-    photonSel = cms.string(FSRMODE)  # "skip", "passThrough", "Legacy", "RunII"
+    photonSel = cms.string(FSRMODE),  # "skip", "passThrough", "Legacy", "RunII"
+    muon_iso_cut = cms.double(MUISOCUT),
+    electron_iso_cut = cms.double(ELEISOCUT),
     )
 
 
@@ -632,6 +633,7 @@ process.bareZCand = cms.EDProducer("PATCandViewShallowCloneCombiner",
     cut = cms.string('0'), # see below
     checkCharge = cms.bool(True)
 )
+
 
 if KEEPLOOSECOMB:
     process.bareZCand.cut = cms.string('mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId())') # Propagate also combinations of loose leptons (for debugging)
@@ -853,7 +855,9 @@ process.ZZCand = cms.EDProducer("ZZCandidateFiller",
         SR = cms.string(SR),
         FullSel70 = cms.string(SR), #Obsolete, use "SR"
         FullSel = cms.string(FULLSEL),
-    )
+    ),
+    muon_iso_cut = cms.double(MUISOCUT),
+    electron_iso_cut = cms.double(ELEISOCUT),
 )
 
 
@@ -970,7 +974,9 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
       CRZLLss = cms.string(CR_BASESEL),             #combine with proper isBestCRZLLss for AA ss/os CRss    
       CRZLLos_2P2F = cms.string(CR_ZLLosSEL_2P2F),        
       CRZLLos_3P1F = cms.string(CR_ZLLosSEL_3P1F),        
-    )
+    ),
+    muon_iso_cut = cms.double(MUISOCUT),
+    electron_iso_cut = cms.double(ELEISOCUT),
 )
 
 
