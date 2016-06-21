@@ -136,6 +136,7 @@ TreeSetup = cms.EDAnalyzer("HZZ2l2qNtupleMaker",
                            PD = cms.string(PD),
                            MCFilterPath = cms.string(MCFILTER),
                            skipEmptyEvents = cms.bool(True),
+#                           skipEmptyEvents = cms.bool(False),
                            sampleName = cms.string(SAMPLENAME),
                            superMelaMass = cms.double(SUPERMELA_MASS),
                            xsec = cms.double(XSEC)
