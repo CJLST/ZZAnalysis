@@ -44,11 +44,18 @@ def split(comps):
     return splitComps
 
 
-def batchScriptCERN( index, remoteDir=''):
-   '''prepare the LSF version of the batch script, to run on LSF'''
+def batchScriptCERN(index, working_dir):
+    '''prepare the LSF version of the batch script, to run on LSF'''
 #   print "INDEX", index
 #   print "remotedir", remoteDir
-   script = """#!/bin/tcsh
+    print 'index: ', index
+    print 'working_dir ', working_dir
+    import os
+    cmsswBase=os.environ['CMSSW_BASE']
+
+    scriptFile = open(working_dir + '/cjlst_' + str(index) + '.sh', 'w')
+
+    script = """#!/bin/tcsh
 #BSUB -q 8nh
 #BSUB -o job_%J.txt
 #ulimit -v 3000000
@@ -108,8 +115,34 @@ endif
 echo '...done at' `date`
 exit $cmsRunStatus
 """ 
-   return script
+ 
+    scriptFile.write(script)
+    scriptFile.close()
 
+def batch_LLR(index, working_dir) :
+
+    print 'index: ', index
+    print 'working_dir ', working_dir
+    import os
+    cmsswBase=os.environ['CMSSW_BASE']
+
+    scriptFile = open(working_dir + '/cjlst_' + str(index) + '.sh', 'w')
+    scriptFile.write('#!/bin/bash\n')
+    scriptFile.write('export X509_USER_PROXY=~/.t3/proxy.cert\n')
+    scriptFile.write('source /cvmfs/cms.cern.ch/cmsset_default.sh\n')
+    scriptFile.write('export SCRAM_ARCH=slc6_amd64_gcc472\n')
+    scriptFile.write('cd {}\n'.format(cmsswBase + '/src/'))
+    scriptFile.write('eval `scram r -sh`\n')
+    #scriptFile.write('cd $TMPDIR\n')#%s\n'%jobsDir)
+    scriptFile.write('cd %s\n' % working_dir)#%s\n'%jobsDir)
+
+    #scriptFile.write('cd %s\n'%jobsDir)
+    scriptFile.write('cmsRun run_cfg.py &> log_job.txt \n')
+    scriptFile.write('echo "All done for job" \n')
+    #scriptFile.write('ls -la &> %s/ls_log_%d.txt \n' % (jobsDir, n) )
+    #scriptFile.write('/usr/bin/rfcp outputFile_%d.root %s &> %s/cp_log_%d.txt' % (n, storagePath, jobsDir, n) )
+    scriptFile.close()
+    #os.system('chmod u+rwx batchScript.sh')
             
 class MyBatchManager:
     '''Batch manager specific to cmsRun processes.''' 
@@ -143,7 +176,7 @@ class MyBatchManager:
 
         self.parser_.add_option("-i", "--input", dest="cfgFileName",
                                 help="input cfg",
-                                default="analyzer_2015.py")
+                                default="analyzer_2015_with_trackless.py")
 
         self.parser_.add_option("-d", "--debug", action="store_true",
                                 dest="verbose",default =False,
@@ -227,12 +260,15 @@ class MyBatchManager:
 #       print splitComponents[value]
 
        #prepare the batch script
-       scriptFileName = jobDir+'/batchScript.sh'
-       scriptFile = open(scriptFileName,'w')
-       scriptFile.write( batchScriptCERN( value ) )
-       scriptFile.close()
-       os.system('chmod +x %s' % scriptFileName)
-       
+       #scriptFileName = jobDir+'/.sh'
+       #scriptFile = open(scriptFileName,'w')
+#       scriptFile.write( batchScriptCERN( value ) )
+       #scriptFile.write( batch_LLR( value, jobDir ) )
+       #scriptFile.close()
+       cluster = 'LLR' 
+       batch_LLR( value, jobDir )
+       #os.system('chmod +x %s' % scriptFileName)
+
        print '\t',splitComponents[value].pyFragments
 
        variables = splitComponents[value].variables
@@ -258,7 +294,14 @@ class MyBatchManager:
        process = variables.get('process') 
        process.source = splitComponents[value].source
        process.source.fileNames = splitComponents[value].files
-
+       if cluster == 'LLR' :
+            STORAGE_PATH = '/data/DATA/temp_pigard/TLE/' 
+            job_dir_name = os.path.basename(os.path.normpath(jobDir))
+            #print 'job_dir_name ', job_dir_name
+            full_job_storage_path = STORAGE_PATH + self.options_.outputDir + '/' + job_dir_name + "/"
+            os.system('mkdir -p %s'%full_job_storage_path)
+            print 'full_job_storage_path ', full_job_storage_path 
+            process.TFileService.fileName=cms.string(full_job_storage_path + 'ZZ4lAnalysis.root') 
        for fragment in pyFragments:
            execfile('pyFragments/{0:s}'.format(fragment),variables)  
 

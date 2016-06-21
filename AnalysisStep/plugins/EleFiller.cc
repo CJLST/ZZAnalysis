@@ -29,7 +29,7 @@ using namespace std;
 using namespace reco;
 
 
-bool recomputeBDT = false;
+bool recomputeBDT = true; // true = pick BDT from VID; false = from existing userfloat
 
 class EleFiller : public edm::EDProducer {
  public:
@@ -70,31 +70,6 @@ EleFiller::EleFiller(const edm::ParameterSet& iConfig) :
   rhoToken = consumes<double>(LeptonIsoHelper::getEleRhoTag(sampleType, setup));
   vtxToken = consumes<vector<Vertex> >(edm::InputTag("goodPrimaryVertices"));
   produces<pat::ElectronCollection>();
-
-  if (recomputeBDT) {
-
-    // // Phys14 BDT reading
-    // std::vector<std::string> myManualCatWeigths;
-
-    // myManualCatWeigths.push_back("EgammaAnalysis/ElectronTools/data/PHYS14FIX/EIDmva_EB1_5_oldscenario2phys14FIX_BDT.weights.xml");
-    // myManualCatWeigths.push_back("EgammaAnalysis/ElectronTools/data/PHYS14FIX/EIDmva_EB2_5_oldscenario2phys14FIX_BDT.weights.xml");
-    // myManualCatWeigths.push_back("EgammaAnalysis/ElectronTools/data/PHYS14FIX/EIDmva_EE_5_oldscenario2phys14FIX_BDT.weights.xml");
-    // myManualCatWeigths.push_back("EgammaAnalysis/ElectronTools/data/PHYS14FIX/EIDmva_EB1_10_oldscenario2phys14FIX_BDT.weights.xml");
-    // myManualCatWeigths.push_back("EgammaAnalysis/ElectronTools/data/PHYS14FIX/EIDmva_EB2_10_oldscenario2phys14FIX_BDT.weights.xml");
-    // myManualCatWeigths.push_back("EgammaAnalysis/ElectronTools/data/PHYS14FIX/EIDmva_EE_10_oldscenario2phys14FIX_BDT.weights.xml");
-
-    // vector<string> myManualCatWeigthsTrig;
-    // string the_path;
-    // for (unsigned i = 0 ; i < myManualCatWeigths.size() ; i++){
-    //   the_path = edm::FileInPath ( myManualCatWeigths[i] ).fullPath();
-    //   myManualCatWeigthsTrig.push_back(the_path);
-    // }
-    // myMVATrig = new EGammaMvaEleEstimatorCSA14();
-    // myMVATrig->initialize("BDT",
-    // 			  EGammaMvaEleEstimatorCSA14::kNonTrigPhys14,
-    // 			  true,
-    // 			  myManualCatWeigthsTrig);
-  }
 
 }
 
@@ -157,21 +132,16 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     
     // RunII BDT ID
     float BDT = 0.;
-    float BDT_7X = 0.;
-    float BDT_8X = 0.;
     if (recomputeBDT) {
 
-      //Phys14 BDT
-      //BDT = myMVATrig->mvaValue(l,false);
-
-      //Spring15 BDT running VID
+      //BDT running VID
+      BDT = (*BDTValues)[(*electronHandle)[i]];
 
     } else {
 
       //Spring15 BDT taking the userfloat (possible as of MiniAODv2 of 74X)
-      BDT_7X = l.userFloat("ElectronMVAEstimatorRun2Spring15NonTrig25nsV1Values");
+      BDT = l.userFloat("ElectronMVAEstimatorRun2Spring15NonTrig25nsV1Values");
 
-      BDT_8X = (*BDTValues)[(*electronHandle)[i]];
     }
     
     float pt = l.pt();
@@ -187,25 +157,31 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 // 			       (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.65) ||
 // 			       (fSCeta >= 1.479               && BDT > 0.6)));
 
-    //WP for preliminary 8X ID BDT
-    bool isBDT_8X = (pt<=10 && ((fSCeta<0.8                  && BDT_8X > -0.211) ||
-                                (fSCeta>=0.8 && fSCeta<1.479 && BDT_8X > -0.396) ||
-                                (fSCeta>=1.479               && BDT_8X > -0.215))) 
-                 || (pt>10  && ((fSCeta<0.8                  && BDT_8X > -0.870) ||
-                                (fSCeta>=0.8 && fSCeta<1.479 && BDT_8X > -0.838) || 
-                                (fSCeta>=1.479               && BDT_8X > -0.763)));
+//    //WP for fixed Phys14-based BDT
+//    bool isBDT = (pt <= 10 && ((fSCeta < 0.8                    && BDT > -0.586) ||
+//                               (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.712) ||
+//                               (fSCeta >= 1.479                 && BDT > -0.662)   )) ||
+//                 (pt >  10 && ((fSCeta < 0.8                    && BDT > -0.652) ||
+//                               (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.701) ||
+//                               (fSCeta >= 1.479                 && BDT > -0.350)   ));
 
     // WP for Spring15-based BDT as proposed in https://indico.cern.ch/event/439325/session/1/contribution/21/attachments/1156760/1663207/slides_20150918.pdf
-    bool isBDT_7X = (pt <= 10 && ((fSCeta < 0.8                    && BDT_7X > -0.265) ||
-                                  (fSCeta >= 0.8 && fSCeta < 1.479 && BDT_7X > -0.556) ||
-                                  (fSCeta >= 1.479                 && BDT_7X > -0.551)   )) ||
-                    (pt >  10 && ((fSCeta < 0.8                    && BDT_7X > -0.072) ||
-                                  (fSCeta >= 0.8 && fSCeta < 1.479 && BDT_7X > -0.286) ||
-                                  (fSCeta >= 1.479                 && BDT_7X > -0.267)   ));
+//     bool isBDT = (pt <= 10 && ((fSCeta < 0.8                    && BDT > -0.265) ||
+//                                (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.556) ||
+//                                (fSCeta >= 1.479                 && BDT > -0.551)   )) ||
+//                  (pt >  10 && ((fSCeta < 0.8                    && BDT > -0.072) ||
+//                                (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.286) ||
+//                                (fSCeta >= 1.479                 && BDT > -0.267)   ));
 
-    // Select desired ID to be used in analysis
-    bool isBDT = isBDT_8X;
-    BDT = BDT_8X;
+    //WP for preliminary 8X ID BDT
+    bool isBDT = (pt<=10 && ((fSCeta<0.8                  && BDT > -0.211) ||
+                                (fSCeta>=0.8 && fSCeta<1.479 && BDT > -0.396) ||
+                                (fSCeta>=1.479               && BDT > -0.215))) 
+                 || (pt>10  && ((fSCeta<0.8                  && BDT > -0.870) ||
+                                (fSCeta>=0.8 && fSCeta<1.479 && BDT > -0.838) || 
+                                (fSCeta>=1.479               && BDT > -0.763)));
+
+
     //-- Missing hit  
     int missingHit = l.gsfTrack()->hitPattern().numberOfHits(HitPattern::MISSING_INNER_HITS);
     //-- Flag for crack electrons (which use different efficiency SFs)
@@ -223,10 +199,7 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     l.addUserFloat("dxy",dxy);
     l.addUserFloat("dz",dz);
     l.addUserFloat("BDT",BDT);    
-    l.addUserFloat("BDT_8X",BDT_8X);    
-
     l.addUserFloat("isBDT",isBDT);
-    l.addUserFloat("isBDT_8X",isBDT_8X);
     l.addUserFloat("isCrack",isCrack);
     l.addUserFloat("HLTMatch", HLTMatch);
     l.addUserFloat("missingHit", missingHit);
