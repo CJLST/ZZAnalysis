@@ -13,13 +13,9 @@
 #electron momentum scale corrections (76X).
 git cms-merge-topic -u matteosan1:smearer_76X
 
-#ZZAnalysis - temporary repo with loose electrons
-git clone https://github.com/Werbellin/ZZAnalysis_tle.git ZZAnalysis
-(cd ZZAnalysis; git checkout miniAOD_80X_with_loose_ele )
-
 ##ZZAnalysis
-#git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
-#(cd ZZAnalysis; git checkout miniAOD_80X)
+git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
+(cd ZZAnalysis; git checkout miniAOD_80X_with_loose_ele)
 
 #Preliminary 8X electron ID
 git clone git@github.com:Werbellin/RecoEgamma_8X.git RecoEgamma
