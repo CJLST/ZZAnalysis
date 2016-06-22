@@ -96,11 +96,19 @@ class KDs:
             self.D_VBF1j_VAJHU = self.pvbf_VAJHU*self.pAux_vbf_VAJHU/(self.pvbf_VAJHU*self.pAux_vbf_VAJHU+5.*self.phj_VAJHU) # VBF(1j) vs. gg->H+1j
         ##MELA+q/g production discriminants:
         if self.njets30 >= 2 :
-            self.Dfull_VBF2j = 1/(1+ (1./self.Djet_VAJHU-1.) * cubicroot((1./self.jetQGL[0]-1.)*(1./self.jetQGL[1]-1.)) ) ; # VBF(2j) vs. gg->H+2j
-            self.Dfull_WHh = 1/(1+ (1./self.D_WHh_VAJHU-1.) * (1./self.jetQGL[0]-1.)*(1./self.jetQGL[1]-1.) ) ; # W(->2j)H vs. gg->H+2j
-            self.Dfull_ZHh = 1/(1+ (1./self.D_ZHh_VAJHU-1.) * (1./self.jetQGL[0]-1.)*(1./self.jetQGL[1]-1.) ) ;  # VBF(2j) vs. gg->H+2j
+            if self.jetQGL[0] == 0. or self.jetQGL[1] == 0.:
+                self.Dfull_VBF2j = 0.
+                self.Dfull_WHh = 0.
+                self.Dfull_ZHh = 0.
+            else:
+                self.Dfull_VBF2j = 1/(1+ (1./self.Djet_VAJHU-1.) * cubicroot((1./self.jetQGL[0]-1.)*(1./self.jetQGL[1]-1.)) ) ; # VBF(2j) vs. gg->H+2j
+                self.Dfull_WHh = 1/(1+ (1./self.D_WHh_VAJHU-1.) * (1./self.jetQGL[0]-1.)*(1./self.jetQGL[1]-1.) ) ; # W(->2j)H vs. gg->H+2j
+                self.Dfull_ZHh = 1/(1+ (1./self.D_ZHh_VAJHU-1.) * (1./self.jetQGL[0]-1.)*(1./self.jetQGL[1]-1.) ) ;  # VBF(2j) vs. gg->H+2j
         if self.njets30 == 1 :
-            self.Dfull_VBF1j = 1/(1+ (1./self.D_VBF1j_VAJHU-1.) * cubicroot(1./self.jetQGL[0]-1.) ) ; # VBF(1j) vs. gg->H+1j
+            if self.jetQGL[0] == 0.:
+                self.Dfull_VBF1j = 0.
+            else:
+                self.Dfull_VBF1j = 1/(1+ (1./self.D_VBF1j_VAJHU-1.) * cubicroot(1./self.jetQGL[0]-1.) ) ; # VBF(1j) vs. gg->H+1j
 
 
 class Candidate:
