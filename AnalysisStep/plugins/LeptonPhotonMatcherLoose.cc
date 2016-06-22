@@ -74,7 +74,7 @@ class LeptonPhotonMatcherLoose : public edm::EDProducer {
   float muon_iso_cut;
   float electron_iso_cut;
 
-  bool do_RSE, do_TLE;
+  bool do_RSE, do_FSR_for_RSE, do_TLE;
 };
 
 
@@ -91,6 +91,7 @@ LeptonPhotonMatcherLoose::LeptonPhotonMatcherLoose(const edm::ParameterSet& iCon
   rhoForEleToken = consumes<double>(LeptonIsoHelper::getEleRhoTag(sampleType, setup));
 
   do_RSE = false;
+  do_FSR_for_RSE = false;
   do_TLE = false;
 
   if(iConfig.exists("looseElectronSrc")) {
@@ -213,7 +214,7 @@ LeptonPhotonMatcherLoose::produce(edm::Event& iEvent, const edm::EventSetup& iSe
       //---------------------
       // Loop over loose pat::Electron
       //---------------------
-      if(do_RSE) {
+      if(do_RSE && do_FSR_for_RSE) {
         for (unsigned int j = 0; j< electronHandle->size(); ++j){
 	      const pat::Electron* e = &((*looseElectronHandle)[j]);
 	      if ( ! e->userFloat("isSIP")) continue;
@@ -290,7 +291,7 @@ LeptonPhotonMatcherLoose::produce(edm::Event& iEvent, const edm::EventSetup& iSe
       const pat::Electron* e = &((*looseElectronHandle)[j]);
       //---Clone the pat::Electron
       pat::Electron newE(*e);
-      if (selectionMode != 0) {
+      if (selectionMode != 0 && do_FSR_for_RSE) {
         PhotonLepMap::const_iterator fsr = theMap.find(e);
         if (fsr!=theMap.end()) {
           if (selectionMode == 3) { // Run II: select one per lepton; highest-pT if >4GeV, lowest-DR otherwise
@@ -419,7 +420,7 @@ LeptonPhotonMatcherLoose::produce(edm::Event& iEvent, const edm::EventSetup& iSe
       }
     }
     
-    if(do_TLE) {
+    if(do_RSE) {
       for (pat::ElectronCollection::iterator e= resultLooseEle->begin(); e != resultLooseEle->end(); ++e){
         float fsrCorr = 0; // The correction to PFPhotonIso
         
