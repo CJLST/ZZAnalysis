@@ -13,6 +13,8 @@ declareDefault("MCFILTER", "", globals())
 declareDefault("XSEC", 1, globals())
 declareDefault("PROCESS_CR", False, globals())
 declareDefault("REWEIGHTING_TYPE", "none", globals())
+declareDefault("ADDLOOSEELE", True, globals())
+
 
 #couplings for reweighting
 declareDefault("SPIN", 0, globals())
@@ -200,3 +202,10 @@ else:
     
 process.plots = cms.EndPath(process.PlotsZZ)
 
+
+
+if (ADDLOOSEELE) :
+    print 'Loading trackless_e_analyzer.py'
+    execfile(PyFilePath + "trackless_e_analyzer.py")
+    print 'Loading loose_electron_analyzer.py'
+    execfile(PyFilePath + "loose_ele_analyzer.py")
