@@ -90,7 +90,7 @@ if (CRSync) :
     process.CRtrees = cms.EndPath(process.CRZLLTree + process.CRZLTree)
 
 # replace the paths in analyzer.py
-process.trees = cms.EndPath(process.ZZTree)
+#process.trees = cms.EndPath(process.ZZTree)
 
 #Dump reconstructed variables
 #process.appendPhotons.debug = cms.untracked.bool(True)
@@ -99,3 +99,5 @@ process.trees = cms.EndPath(process.ZZTree)
 
 #Print MC history
 #process.mch = cms.EndPath(process.printTree)
+
+
