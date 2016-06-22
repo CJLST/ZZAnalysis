@@ -11,10 +11,10 @@ process = cms.Process("ZZ")
 
 declareDefault("IsMC", True, globals())
 
-# Set of effective areas, rho corrections, etc. (can be 2011, 2012 or 2015)
+# Set of effective areas, rho corrections, etc. (can be 2011, 2012, 2015 or 2016)
 declareDefault("LEPTON_SETUP", 2016, globals())
 
-# Flag that reflects the actual sqrts of the sample (can be 2011, 2012 or 2015)
+# Flag that reflects the actual sqrts of the sample (can be 2011, 2012, 2015 or 2016)
 # Can differ from SAMPLE_TYPE for samples that are rescaled to a different sqrts.
 declareDefault("SAMPLE_TYPE", LEPTON_SETUP, globals())
 
@@ -990,7 +990,20 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
 ### Jets
 ### ----------------------------------------------------------------------
 
-# embed q/g likelihood
+# q/g likelihood
+qgDatabaseVersion = 'v2b'
+from CondCore.DBCommon.CondDBSetup_cfi import *
+QGPoolDBESSource = cms.ESSource("PoolDBESSource",
+      CondDBSetup,
+      toGet = cms.VPSet(),
+      connect = cms.string('frontier://FrontierProd/CMS_COND_PAT_000'),
+)
+for type in ['AK4PFchs']:
+  QGPoolDBESSource.toGet.extend(cms.VPSet(cms.PSet(
+    record = cms.string('QGLikelihoodRcd'),
+    tag    = cms.string('QGLikelihoodObject_'+qgDatabaseVersion+'_'+type),
+    label  = cms.untracked.string('QGL_'+type)
+  )))
 process.load('RecoJets.JetProducers.QGTagger_cfi')
 process.QGTagger.srcJets = cms.InputTag( 'slimmedJets' )
 process.QGTagger.jetsLabel = cms.string('QGL_AK4PFchs')
