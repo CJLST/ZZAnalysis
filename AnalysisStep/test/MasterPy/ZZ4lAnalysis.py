@@ -11,10 +11,10 @@ process = cms.Process("ZZ")
 
 declareDefault("IsMC", True, globals())
 
-# Set of effective areas, rho corrections, etc. (can be 2011, 2012 or 2015)
+# Set of effective areas, rho corrections, etc. (can be 2011, 2012, 2015 or 2016)
 declareDefault("LEPTON_SETUP", 2016, globals())
 
-# Flag that reflects the actual sqrts of the sample (can be 2011, 2012 or 2015)
+# Flag that reflects the actual sqrts of the sample (can be 2011, 2012, 2015 or 2016)
 # Can differ from SAMPLE_TYPE for samples that are rescaled to a different sqrts.
 declareDefault("SAMPLE_TYPE", LEPTON_SETUP, globals())
 
@@ -143,6 +143,7 @@ process.hltFilterMuEle3 = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clo
 process.hltFilterTriEle = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 process.hltFilterTriMu  = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 process.hltFilterSingleEle = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+process.hltFilterSingleMu  = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 process.hltFilterDiMu.TriggerResultsTag  = cms.InputTag("TriggerResults","","HLT")
 process.hltFilterDiEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
 process.hltFilterMuEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
@@ -151,6 +152,7 @@ process.hltFilterMuEle3.TriggerResultsTag = cms.InputTag("TriggerResults","","HL
 process.hltFilterTriEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
 process.hltFilterTriMu.TriggerResultsTag  = cms.InputTag("TriggerResults","","HLT")
 process.hltFilterSingleEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
+process.hltFilterSingleMu.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
 process.hltFilterDiMu.throw  = cms.bool(False) #FIXME: beware of this!
 process.hltFilterDiEle.throw = cms.bool(False) #FIXME: beware of this!
 process.hltFilterMuEle.throw = cms.bool(False) #FIXME: beware of this!
@@ -159,6 +161,7 @@ process.hltFilterMuEle3.throw = cms.bool(False) #FIXME: beware of this!
 process.hltFilterTriEle.throw = cms.bool(False) #FIXME: beware of this!
 process.hltFilterTriMu.throw  = cms.bool(False) #FIXME: beware of this!
 process.hltFilterSingleEle.throw = cms.bool(False) #FIXME: beware of this!
+process.hltFilterSingleMu.throw  = cms.bool(False) #FIXME: beware of this!
 
 # MuEG
 
@@ -202,26 +205,28 @@ elif (LEPTON_SETUP == 2015):
 
 elif (LEPTON_SETUP == 2016):
     if (IsMC):
-	#At the moment trigger results are not stored in the MC files
-        process.hltFilterMuEle.HLTPaths = ["*"]
+	#At the moment, the HLT paths are not present in the "tranche 1" background MC and MiniAODv1 signal MC. They will be added in "tranche 2"/"tranche 3" and MiniAODv2. 
 	process.hltFilterDiEle.HLTPaths = ["*"]
         process.hltFilterDiMu.HLTPaths = ["*"]
+        process.hltFilterMuEle.HLTPaths = ["*"]
+        process.hltFilterTriEle.HLTPaths = ["*"]
+        process.hltFilterTriMu.HLTPaths = ["*"]
+        process.hltFilterSingleEle.HLTPaths = ["*"]
+        process.hltFilterSingleMu.HLTPaths = ["*"]
     
     else:
-        #process.hltFilterMuEle.HLTPaths = ["*"]
-	#process.hltFilterDiEle.HLTPaths = ["*"]
-        #process.hltFilterDiMu.HLTPaths = ["*"]
-        #FIXME: For now, the MC paths are the ones used in the RunIISpring15DR74 MC samples for 25ns,7e33 conditions.
-        process.hltFilterDiEle.HLTPaths = ["HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*"]
+        process.hltFilterDiEle.HLTPaths = ["HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v*"]
         process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*"]
-        process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"]
+        process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"]
+        process.hltFilterTriEle.HLTPaths = ["HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v*"]
+        process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_12_10_5_v*"]
+        process.hltFilterSingleEle.HLTPaths = ["HLT_Ele25_eta2p1_WPTight_Gsf_v*","HLT_Ele27_WPTight_Gsf_v*","HLT_Ele27_eta2p1_WPLoose_Gsf_v*"]
+        process.hltFilterSingleMu.HLTPaths = ["HLT_IsoMu20_v*","HLT_IsoTkMu20_v*","HLT_IsoMu22_v*","HLT_IsoTkMu22_v*"]
 
-    process.hltFilterTriEle.HLTPaths = ["HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v*"]
-    process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_12_10_5_v*"]
-    process.hltFilterSingleEle.HLTPaths = ["HLT_Ele23_WPLoose_Gsf_v*"]
     process.triggerTriEle = cms.Path(process.hltFilterTriEle)
     process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
     process.triggerSingleEle = cms.Path(process.hltFilterSingleEle)
+    process.triggerSingleMu  = cms.Path(process.hltFilterSingleMu )
 
 process.triggerDiMu   = cms.Path(process.hltFilterDiMu)
 process.triggerDiEle  = cms.Path(process.hltFilterDiEle)
@@ -987,7 +992,20 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
 ### Jets
 ### ----------------------------------------------------------------------
 
-# embed q/g likelihood
+# q/g likelihood
+qgDatabaseVersion = 'v2b'
+from CondCore.DBCommon.CondDBSetup_cfi import *
+QGPoolDBESSource = cms.ESSource("PoolDBESSource",
+      CondDBSetup,
+      toGet = cms.VPSet(),
+      connect = cms.string('frontier://FrontierProd/CMS_COND_PAT_000'),
+)
+for type in ['AK4PFchs']:
+  QGPoolDBESSource.toGet.extend(cms.VPSet(cms.PSet(
+    record = cms.string('QGLikelihoodRcd'),
+    tag    = cms.string('QGLikelihoodObject_'+qgDatabaseVersion+'_'+type),
+    label  = cms.untracked.string('QGL_'+type)
+  )))
 process.load('RecoJets.JetProducers.QGTagger_cfi')
 process.QGTagger.srcJets = cms.InputTag( 'slimmedJets' )
 process.QGTagger.jetsLabel = cms.string('QGL_AK4PFchs')
