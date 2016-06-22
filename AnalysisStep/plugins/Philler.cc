@@ -1,13 +1,7 @@
 /** \class Philler
  *
- *  No description available.
+ *  Prodice collection of photons to be used for TLEs
  *
- *  $Date: 2013/05/24 15:42:42 $
- *  $Revision: 1.28 $
- *  \author N. Amapane (Torino)
- *  \author S. Bolognesi (JHU)
- *  \author C. Botta (CERN)
- *  \author S. Casasso (Torino)
  */
 
 #include <FWCore/Framework/interface/Frameworkfwd.h>
@@ -141,7 +135,8 @@ Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 //        min_dR_index = i_ele;
 //      }
     }
-//    if(has_matching_ele) continue;
+
+    if(has_matching_ele) continue;
 //    if(min_ele_dR < 0.1) continue;
     //---Clone the pat::Photon
 //    pat::Photon l(*((*photonHandle)[i].get()));

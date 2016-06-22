@@ -286,6 +286,7 @@ process.Candidates_loose = cms.Path(
 #       process.muons             +
 #       process.electrons         + process.cleanSoftElectrons +
        process.loose_electrons + process.appendPhotonsLoose +
+       process.SRFilter           +
 #       process.fsrPhotons        + process.boostedFsrPhotons +
 #       process.appendPhotons     +
 #       process.softLeptons       +
@@ -321,6 +322,6 @@ if (PROCESS_CR or not IsMC):
     process.trees += cms.Sequence( process.ZZTreelooseEle + process.CRZLLTreelooseEle + process.CRZLTreelooseEle)
 
 else:
-    process.CRPath = cms.Path(process.CRZl) #still needed by the plotter
     process.trees += cms.Sequence(process.ZZTreelooseEle)
+
 

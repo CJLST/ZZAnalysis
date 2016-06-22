@@ -1084,6 +1084,7 @@ if FSRMODE=="Legacy" :
     process.cleanJets.ElectronPreselection = "userFloat('isGood') && userFloat('isIsoFSRUncorr')"
     process.cleanJets.cleanFSRFromLeptons = False
 
+
 ### ----------------------------------------------------------------------
 ### Paths
 ### ----------------------------------------------------------------------
@@ -1126,6 +1127,22 @@ process.CR = cms.Sequence(
        process.bareZLLCand       + process.ZLLCand   +
        process.ZlCand            
    )
+
+### ----------------------------------------------------------------------
+### Filters
+### ----------------------------------------------------------------------
+### Create filter for events with one candidate in the SR
+process.ZZCandSR = cms.EDFilter("PATCompositeCandidateRefSelector",
+    src = cms.InputTag("ZZCand"),
+    cut = cms.string(SR) # That is, all candidates with m4l>70 
+ )
+
+process.ZZCandFilter = cms.EDFilter("CandViewCountFilter",
+                                src = cms.InputTag("ZZCandSR"),
+                                minNumber = cms.uint32(1)
+                            )
+process.SRFilter = cms.Sequence(process.ZZCandSR + process.ZZCandFilter)
+
 
 ### Skim, triggers and MC filters (Only store filter result, no filter is applied)
 

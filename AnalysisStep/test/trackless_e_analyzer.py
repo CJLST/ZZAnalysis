@@ -251,8 +251,9 @@ process.Candidates_trackless = cms.Path(
 #       process.cleanJets         +
 # Build 4-lepton candidates
 #       process.bareZCand         + process.ZCand     +
-       process.bareZCandtle + process.ZCandtle +  
-       process.bareZZCandtle        + process.ZZCandtle
+       process.SRFilter           +
+       process.bareZCandtle       + process.ZCandtle +  
+       process.bareZZCandtle      + process.ZZCandtle
     )
 
 process.CRtle = cms.Sequence(
@@ -276,6 +277,5 @@ if (PROCESS_CR or not IsMC):
 #        process.dumpCR = cms.Path(process.CRFiltered + process.CRSelection + process.dumpUserData)
     process.trees += cms.Sequence( process.ZZTreetle + process.CRZLLTreetle + process.CRZLTreetle)
 else:
-##    process.CRPath = cms.Path(process.CRZl) #still needed by the plotter
     process.trees += cms.Sequence(process.ZZTreetle)
 

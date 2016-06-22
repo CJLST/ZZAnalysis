@@ -197,11 +197,9 @@ if (PROCESS_CR or not IsMC):
         process.dumpCR = cms.Path(process.CRFiltered + process.CRSelection + process.dumpUserData)
     process.trees = cms.EndPath( process.ZZTree + process.CRZLLTree + process.CRZLTree)
 else:
-#    process.CRPath = cms.Path(process.CRZl) #still needed by the plotter
     process.trees = cms.EndPath(process.ZZTree)
     
 process.plots = cms.EndPath(process.PlotsZZ)
-
 
 
 if (ADDLOOSEELE) :
