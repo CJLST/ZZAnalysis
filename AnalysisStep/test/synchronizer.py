@@ -169,7 +169,8 @@ def loop():
                 njets30Btag   = tree.nCleanedJetsPt30BTagged
                 mjj           = tree.DiJetMass
                 detajj        = tree.DiJetDEta
-                weight        = sign(tree.genHEPMCweight) * tree.PUWeight * tree.dataMCWeight
+                weight        = sign(tree.genHEPMCweight)
+#                weight        = sign(tree.genHEPMCweight) * tree.PUWeight * tree.dataMCWeight
 
                 jets30pt = []
                 jets30eta = []
