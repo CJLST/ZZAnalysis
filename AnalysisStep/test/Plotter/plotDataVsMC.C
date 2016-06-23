@@ -1355,6 +1355,20 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
   }
   cout<<"Total: "<<expectedYieldSR[nFinalStates]<<endl;
 
+  //---------- Smooth histogram if requested
+  if(SMOOTHZPLUSXFULLRUN2SS){
+    Float_t integral = 0;
+    for(int bl=0; bl<nBlindings; bl++){
+      for(int fs=0; fs<nFinalStates+1; fs++){
+	for(int v=0; v<nVariables; v++){
+	  integral = h1[v][bl][fs]->Integral();
+	  h1[v][bl][fs]->Smooth(1);
+	  h1[v][bl][fs]->Scale( integral / h1[v][bl][fs]->Integral() );
+	}
+      }
+    }
+  }
+
   //---------- Normalize to official Z+X yield (combination of OS and SS)
   if(RENORMALIZEZPLUSXFULLRUN2SS){
     if(MERGE2E2MU){
@@ -1368,7 +1382,6 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
 	for(int fs=0; fs<nFinalStates+1; fs++){
 	  if(fs==fs2mu2e) continue;
 	  for(int v=0; v<nVariables; v++){
-	    if(SMOOTHZPLUSXFULLRUN2SS) h1[v][bl][fs]->Smooth(1);
 	    h1[v][bl][fs]->Scale( normZPlusXFullSR[fs] / expectedYieldSR[fs] );
 	  }
 	}
@@ -1459,16 +1472,11 @@ void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, st
 
   //----- prepare reducible background
   TH1F* hZPlusX = 0;
-  Float_t ZplusXYield = 0.;
   Bool_t useZPlusX = USEZPLUSXFULLRUN2SS ||
     (USEZPLUSXRUN2COMBINEDSHAPE && (varName[v].find("M4l")==0 && varName[v].find("Refit")==string::npos && varCutLabel[v]=="") );
   if(useZPlusX){
     hZPlusX = hZPX;
-    ZplusXYield = hZPlusX->Integral();
-    if(USEZPLUSXFULLRUN2SS){
-      //if(SMOOTHZPLUSXFULLRUN2SS) hZPlusX->Smooth(1);
-      if(logY) hZPlusX->SetMinimum(1e-20);
-    }
+    if(logY) hZPlusX->SetMinimum(1e-20);
     hZPlusX->SetFillColor(processFillColor[DY]);
     hZPlusX->SetLineColor(DRAWLINES?processLineColor[DY]:processFillColor[DY]);
     hZPlusX->SetLineWidth(LINEWIDTH);
@@ -1476,7 +1484,7 @@ void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, st
       if((useProcess[pr] && !((maskH125 || varName[v].find("Djet")==0) && pr==H125)) || (varName[v].find("Djet")==0 && (pr==H125VBF || pr==H125NONVBF)))
 	hStacks[pr]->Add(hZPlusX);
     cout<<"full expected yield for variable "<<varName[v]<<": "<<hStacks[idxSumMC]->Integral()<<endl;
-    cout<<"Z+X yield for variable "<<varName[v]<<": "<<ZplusXYield; if(USEZPLUSXFULLRUN2SS && SMOOTHZPLUSXFULLRUN2SS) cout<<" (after smoothing: "<<hZPlusX->Integral()<<")"<<endl; else cout<<endl;
+    cout<<"Z+X yield for variable "<<varName[v]<<": "<<hZPlusX->Integral()<<endl;
   }
 
   //----- prepare data graph
@@ -1655,7 +1663,7 @@ void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, st
   cout<<"Yields for blinding "<<bl<<" and variable "<<varName[v]<<endl;
   cout<<"  qqZZ             "<<h[qqZZ]->Integral()<<endl;
   cout<<"  ggZZ             "<<h[ggZZ]->Integral()<<endl;
-  cout<<"  Z+X              "<<ZplusXYield; if(USEZPLUSXFULLRUN2SS && SMOOTHZPLUSXFULLRUN2SS) cout<<" (after smoothing: "<<hZPlusX->Integral()<<")"<<endl; else cout<<endl;
+  cout<<"  Z+X              "<<hZPlusX->Integral()<<endl;
   cout<<"  all backgrounds  "<<hStacks[idxSumMC]->Integral() - h[H125]->Integral()<<endl;
   cout<<"  signal           "<<h[H125]->Integral()<<endl;
   cout<<"  total expected   "<<hStacks[idxSumMC]->Integral()<<endl;
@@ -1942,6 +1950,7 @@ void doPlots(string outputDirectory, int variableList, int varPairList, int blin
       if(!plotThisBlinding[blindingList][bl]) continue;
       for(int v=0; v<nVariables; v++){
 	if(!plotThisVar[variableList][v]) continue;
+	if(varName[v].find("M4L118130")!=string::npos && bl!=unblinded) continue;
 	bool large = varName[v]=="M4lV2"||varName[v]=="M4lV2Refit"||varName[v]=="M4lV2b";//0;//
 	gStyle->SetFrameLineWidth(large?2:1);
 	canvasName = string(Form("c_%s_%s_%s",sBlinding[bl].c_str(),varName[v].c_str(),sFinalState[FINALSTATE].c_str()));
@@ -1960,6 +1969,7 @@ void doPlots(string outputDirectory, int variableList, int varPairList, int blin
       if(!plotThisBlinding[blindingList][bl]) continue;
       for(int v2=0; v2<nVarPairs; v2++){
 	if(!plotThisVarPair[varPairList][v2]) continue;
+	if(varPairName[v2].find("M4L118130")!=string::npos && bl!=unblinded) continue;
 	canvasName = string(Form("c_%s_2D_%s_%s",sBlinding[bl].c_str(),varPairName[v2].c_str(),sFinalState[FINALSTATE].c_str()));
 	c2[v2] = new TCanvas(canvasName.c_str(),canvasName.c_str(),500,500);
 	DrawDataMC2D(c2[v2],h2[v2][bl],g2Data[v2][bl],v2,bl,lumiText,STYLE2DPLOT,varPairLogx[v2],varPairLogy[v2]);
@@ -1976,6 +1986,7 @@ void doPlots(string outputDirectory, int variableList, int varPairList, int blin
       if(!plotThisBlinding[blindingList][bl]) continue;
       for(int v2=0; v2<nVarPairs; v2++){
 	if(!plotThisVarPair[varPairList][v2]) continue;
+	if(varPairName[v2].find("M4L118130")!=string::npos && bl!=unblinded) continue;
 	canvasName = string(Form("c_%s_2D_%s_%s_st%i",sBlinding[bl].c_str(),varPairName[v2].c_str(),sFinalState[FINALSTATE].c_str(),st));
 	c2[v2][st] = new TCanvas(canvasName.c_str(),canvasName.c_str(),500,500);
 	DrawDataMC2D(c2[v2][st],h2[v2][bl],g2Data[v2][bl],v2,bl,lumiText,st,varPairLogx[v2],varPairLogy[v2]);
