@@ -152,11 +152,23 @@ class MyBatchManager:
 
         (self.options_,self.args_) = self.parser_.parse_args()
 
+
+        if ( len(self.args_)!=1) :
+            print "Please specify sample.csv file to be used.\n"
+            sys.exit(1)
+             
+        csvfile = self.args_[0]
+
+        if (os.path.exists(csvfile) == False ):
+            print "File", csvfile, "does not exist; please specify a valid one.\n"
+            sys.exit(1)
+
         # Handle output directory
         outputDir = self.options_.outputDir
         if outputDir==None:
-            today = date.today()
-            outputDir = 'OutCmsBatch_%s' % today.strftime("%d%h%y_%H%M")
+#             today = date.today()
+#             outputDir = 'OutCmsBatch_%s' % today.strftime("%d%h%y_%H%M")
+            outputDir = "PROD_" + csvfile.replace('.csv','')
             print 'output directory not specified, using %s' % outputDir
         self.outputDir_ = os.path.abspath(outputDir)
         if( os.path.isdir(self.outputDir_) == True ):
