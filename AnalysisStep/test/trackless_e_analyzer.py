@@ -244,15 +244,15 @@ process.CRZLTreetle.CandCollection = 'ZlCandtle'
 process.Candidates_trackless = cms.Path(
 #       process.muons             +
 #       process.electrons         + process.cleanSoftElectrons +
-       process.trackless_electrons +
+       process.trackless_electrons+
+       process.appendPhotonsLoose + 
 #       process.fsrPhotons        + process.boostedFsrPhotons +
 #       process.appendPhotons     +
 #       process.softLeptons       +
 #       process.cleanJets         +
 # Build 4-lepton candidates
 #       process.bareZCand         + process.ZCand     +
-        ~process.ZZCandFilter + 
-#       process.SRFilter           +
+       process.ZZCandSR           + ~process.ZZCandFilter + 
        process.bareZCandtle       + process.ZCandtle +  
        process.bareZZCandtle      + process.ZZCandtle
     )
@@ -260,7 +260,7 @@ process.Candidates_trackless = cms.Path(
 process.CRtle = cms.Sequence(
     #    process.trackless_electrons +
        process.bareLLCandtle       + process.LLCandtle    +
-       process.bareZLLCandtle       + process.ZLLCandtle   +
+       process.bareZLLCandtle      + process.ZLLCandtle   +
        process.ZlCandtle 
    )
 

@@ -1129,8 +1129,6 @@ process.ZZCandFilter = cms.EDFilter("CandViewCountFilter",
                                 minNumber = cms.uint32(1)
                             )
 
-
-process.SRFilter = cms.Sequence(process.ZZCandSR + process.ZZCandFilter)
 # Prepare lepton collections
 process.Candidates = cms.Path(
        process.muons             +
@@ -1141,8 +1139,7 @@ process.Candidates = cms.Path(
        process.cleanJets         +
 # Build 4-lepton candidates
        process.bareZCand         + process.ZCand     +  
-       process.bareZZCand        + process.ZZCand +
-       process.SRFilter
+       process.bareZZCand        + process.ZZCand
     )
 
 # Optional sequence to build control regions. To get it, add

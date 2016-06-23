@@ -285,22 +285,22 @@ process.CRZLTreelooseEle.CandCollection = 'ZlCandlooseEle'
 process.Candidates_loose = cms.Path(
 #       process.muons             +
 #       process.electrons         + process.cleanSoftElectrons +
-       process.loose_electrons + process.appendPhotonsLoose  + 
-        ~process.ZZCandFilter +
-#       process.SRFilter           +
+       process.loose_electrons    +
+       process.appendPhotonsLoose + 
+       process.ZZCandSR           + ~process.ZZCandFilter + 
 #       process.fsrPhotons        + process.boostedFsrPhotons +
 #       process.appendPhotons     +
 #       process.softLeptons       +
 #       process.cleanJets         +
 # Build 4-lepton candidates
 #       process.bareZCand         + process.ZCand     +
-       process.bareZCandlooseEle + process.ZCandlooseEle +  
-       process.bareZZCandlooseEle        + process.ZZCandlooseEle
+       process.bareZCandlooseEle  + process.ZCandlooseEle +  
+       process.bareZZCandlooseEle + process.ZZCandlooseEle
     )
 
 process.CRlooseEle = cms.Sequence(
     #    process.trackless_electrons +
-        process.appendPhotonsLoose +
+       process.appendPhotonsLoose +
        process.bareZCand +
        process.bareLLCandlooseEle       + process.LLCandlooseEle    +
        process.bareZLLCandlooseEle       + process.ZLLCandlooseEle   +
