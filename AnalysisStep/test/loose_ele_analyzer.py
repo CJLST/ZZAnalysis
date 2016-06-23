@@ -20,7 +20,7 @@ for idmod in my_id_modules:
     setupAllVIDIdsInModule(process,idmod,setupVIDPhotonSelection)
 
 
-SIP_LOOSE = "userFloat('SIP')<100"
+SIP_LOOSE = "userFloat('SIP')<100000"
 GOODLEPTON_LOOSE = "userFloat('ID') && " + SIP_LOOSE
 
 
@@ -286,7 +286,8 @@ process.Candidates_loose = cms.Path(
 #       process.muons             +
 #       process.electrons         + process.cleanSoftElectrons +
        process.loose_electrons + process.appendPhotonsLoose  + 
-       process.SRFilter           +
+        ~process.ZZCandFilter +
+#       process.SRFilter           +
 #       process.fsrPhotons        + process.boostedFsrPhotons +
 #       process.appendPhotons     +
 #       process.softLeptons       +
