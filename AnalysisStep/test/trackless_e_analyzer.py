@@ -251,7 +251,8 @@ process.Candidates_trackless = cms.Path(
 #       process.cleanJets         +
 # Build 4-lepton candidates
 #       process.bareZCand         + process.ZCand     +
-       process.SRFilter           +
+        ~process.ZZCandFilter + 
+#       process.SRFilter           +
        process.bareZCandtle       + process.ZCandtle +  
        process.bareZZCandtle      + process.ZZCandtle
     )
@@ -269,6 +270,7 @@ process.CRlZtle = cms.Sequence(
 #       process.bareZCand         + process.ZCand     +  
        process.ZlCandtle            
    )
+
 
 if (PROCESS_CR or not IsMC):
     process.CRPath += process.CRtle
