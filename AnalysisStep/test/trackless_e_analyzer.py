@@ -219,16 +219,16 @@ process.ZZTreetle.CandCollection_regular = cms.untracked.string('ZZCand')
 ### TLE Trees for control regions only
 process.CRZLLTreetle = TreeSetup.clone()
 process.CRZLLTreetle.channel = 'ZLL'
-process.CRZLLTreetle.is_loose_ele_selection = cms.bool(True)
 process.CRZLLTreetle.CandCollection = 'ZLLCandtle'
-process.CRZLLTreetle.CandCollection_regular = cms.untracked.string('ZLLCand')
+#process.CRZLLTreetle.is_loose_ele_selection = cms.bool(True)
+#process.CRZLLTreetle.CandCollection_regular = cms.untracked.string('ZLLCand')
 
 ### TLE Trilepton CR, for fake rate
 process.CRZLTreetle = TreeSetup.clone()
 process.CRZLTreetle.channel = 'ZL'
-process.CRZLTreetle.is_loose_ele_selection = cms.bool(True)
 process.CRZLTreetle.CandCollection = 'ZlCandtle'
-process.CRZLTreetle.CandCollection_regular = cms.untracked.string('ZlCand')
+#process.CRZLTreetle.is_loose_ele_selection = cms.bool(True)
+#process.CRZLTreetle.CandCollection_regular = cms.untracked.string('ZlCand')
 
 
 #if KEEPLOOSECOMB:

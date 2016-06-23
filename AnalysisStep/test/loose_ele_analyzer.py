@@ -267,16 +267,16 @@ process.ZZTreelooseEle.CandCollection_regular = cms.untracked.string('ZZCand')
 #### TLE Trees for control regions only
 process.CRZLLTreelooseEle = TreeSetup.clone()
 process.CRZLLTreelooseEle.channel = 'ZLL'
-process.CRZLLTreelooseEle.is_loose_ele_selection = cms.bool(True)
 process.CRZLLTreelooseEle.CandCollection = 'ZLLCandlooseEle'
-process.CRZLLTreelooseEle.CandCollection_regular = cms.untracked.string('ZLLCand')
+#process.CRZLLTreelooseEle.is_loose_ele_selection = cms.bool(True)
+#process.CRZLLTreelooseEle.CandCollection_regular = cms.untracked.string('ZLLCand')
 #
 #### Loose electron Trilepton CR, for fake rate
 process.CRZLTreelooseEle = TreeSetup.clone()
 process.CRZLTreelooseEle.channel = 'ZL'
-process.CRZLTreelooseEle.is_loose_ele_selection = cms.bool(True)
 process.CRZLTreelooseEle.CandCollection = 'ZlCandlooseEle'
-process.CRZLTreelooseEle.CandCollection_regular = cms.untracked.string('ZlCand')
+#process.CRZLTreelooseEle.is_loose_ele_selection = cms.bool(True)
+#process.CRZLTreelooseEle.CandCollection_regular = cms.untracked.string('ZlCand')
 #
 
 
@@ -285,7 +285,7 @@ process.CRZLTreelooseEle.CandCollection_regular = cms.untracked.string('ZlCand')
 process.Candidates_loose = cms.Path(
 #       process.muons             +
 #       process.electrons         + process.cleanSoftElectrons +
-       process.loose_electrons + process.appendPhotonsLoose +
+       process.loose_electrons + process.appendPhotonsLoose  + 
        process.SRFilter           +
 #       process.fsrPhotons        + process.boostedFsrPhotons +
 #       process.appendPhotons     +
