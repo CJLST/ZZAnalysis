@@ -245,7 +245,7 @@ process.Candidates_trackless = cms.Path(
 #       process.muons             +
 #       process.electrons         + process.cleanSoftElectrons +
        process.trackless_electrons+
-       process.appendPhotonsLoose + 
+       process.appendPhotons      + 
 #       process.fsrPhotons        + process.boostedFsrPhotons +
 #       process.appendPhotons     +
 #       process.softLeptons       +

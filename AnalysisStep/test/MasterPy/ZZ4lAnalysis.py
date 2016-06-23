@@ -575,11 +575,13 @@ process.boostedFsrPhotons = PhysicsTools.PatAlgos.producersLayer1.pfParticleProd
     pfCandidateSource = 'fsrPhotons'
 )
 
-process.appendPhotons = cms.EDProducer("LeptonPhotonMatcherLoose",
+process.appendPhotons = cms.EDProducer("LeptonPhotonMatcher",
     muonSrc = cms.InputTag("softMuons"),
     electronSrc = cms.InputTag("cleanSoftElectrons"),
+    looseElectronSrc = cms.InputTag("cleanSoftLooseElectrons"),
     photonSrc = cms.InputTag("boostedFsrPhotons"),
-    sampleType = cms.int32(SAMPLE_TYPE),                     
+    tleSrc = cms.InputTag("softPhotons"),
+    sampleType = cms.int32(SAMPLE_TYPE),
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
     photonSel = cms.string(FSRMODE),  # "skip", "passThrough", "Legacy", "RunII"
     muon_iso_cut = cms.double(MUISOCUT),

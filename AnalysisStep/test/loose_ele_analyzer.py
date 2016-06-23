@@ -65,26 +65,13 @@ process.cleanSoftLooseElectrons = cms.EDProducer("PATElectronCleaner",
     finalCut = cms.string(''),
 )
 
-process.appendPhotonsLoose = cms.EDProducer("LeptonPhotonMatcherLoose",
-    muonSrc = cms.InputTag("softMuons"),
-    electronSrc = cms.InputTag("cleanSoftElectrons"),
-    looseElectronSrc = cms.InputTag("cleanSoftLooseElectrons"),
-    photonSrc = cms.InputTag("boostedFsrPhotons"),
-    sampleType = cms.int32(SAMPLE_TYPE),
-    setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
-    photonSel = cms.string(FSRMODE),  # "skip", "passThrough", "Legacy", "RunII"
-    muon_iso_cut = cms.double(MUISOCUT),
-    electron_iso_cut = cms.double(ELEISOCUT),
-    )
-
-process.appendPhotonsLoose.tleSrc = cms.InputTag("softPhotons")
 process.loose_electrons = cms.Sequence(process.bareSoftLooseElectrons + process.egmPhotonIDSequence + process.softLooseElectrons + process.cleanSoftLooseElectrons )
 process.electrons += process.loose_electrons
 
 # l+l- (SFOS, both e and mu)
 # Note special cuts to allow SS pairs and deactivation of checkCharge (does not combine anything if set to True)
 process.bareZCandlooseEle = cms.EDProducer("CandViewShallowCloneCombiner",
-    decay = cms.string('appendPhotons:electrons appendPhotonsLoose:looseElectrons'),
+    decay = cms.string('appendPhotons:electrons appendPhotons:looseElectrons'),
     cut = cms.string('mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId())'),
     checkCharge = cms.bool(False)
 )
@@ -197,7 +184,7 @@ CR_ZLLosSEL_2P2F_looseEle    = (CR_BESTZLLos_looseEle + "&&" + BOTHFAIL)  # Is t
 CR_ZLLosSEL_3P1F             = (CR_BESTZLLos_looseEle + "&&" + PASSD0_XOR_PASSD1)
 # ll, any combination of flavour/charge, for control regions only
 process.bareLLCandlooseEle = cms.EDProducer("CandViewShallowCloneCombiner",
-    decay = cms.string('appendPhotons:electrons appendPhotonsLoose:looseElectrons'),
+    decay = cms.string('appendPhotons:electrons appendPhotons:looseElectrons'),
     cut = cms.string('deltaR(daughter(0).eta, daughter(0).phi, daughter(1).eta, daughter(1).phi)>0.02'), # protect against ghosts
     checkCharge = cms.bool(False)
 )
@@ -246,7 +233,7 @@ process.ZLLCandlooseEle = cms.EDProducer("ZZCandidateFiller",
 
 
 process.ZlCandlooseEle = cms.EDProducer("PATCandViewShallowCloneCombiner",
-    decay = cms.string('ZCand appendPhotonsLoose:looseElectrons'),
+    decay = cms.string('ZCand appendPhotons:looseElectrons'),
     cut = cms.string("deltaR(daughter(0).daughter(0).eta, daughter(0).daughter(0).phi, daughter(1).eta, daughter(1).phi)>0.02 &&" + # Ghost suppression
                      "deltaR(daughter(0).daughter(1).eta, daughter(0).daughter(1).phi, daughter(1).eta, daughter(1).phi)>0.02 &&" +
                      ("( %s > 4) && " % ( Z_PLUS_LEP_MIJ.format(0))) + # mLL>4 for any pair cause no charge for looseEle OS pair (Giovanni's impl)
@@ -285,9 +272,8 @@ process.CRZLTreelooseEle.CandCollection = 'ZlCandlooseEle'
 process.Candidates_loose = cms.Path(
 #       process.muons             +
 #       process.electrons         + process.cleanSoftElectrons +
-       process.loose_electrons    +
-       process.appendPhotonsLoose + 
-       process.ZZCandSR           + ~process.ZZCandFilter + 
+       process.appendPhotons      + 
+       process.ZZCandSR           + ~process.ZZCandFilter +
 #       process.fsrPhotons        + process.boostedFsrPhotons +
 #       process.appendPhotons     +
 #       process.softLeptons       +
@@ -300,7 +286,6 @@ process.Candidates_loose = cms.Path(
 
 process.CRlooseEle = cms.Sequence(
     #    process.trackless_electrons +
-       process.appendPhotonsLoose +
        process.bareZCand +
        process.bareLLCandlooseEle       + process.LLCandlooseEle    +
        process.bareZLLCandlooseEle       + process.ZLLCandlooseEle   +

@@ -31,9 +31,8 @@ namespace LeptonIsoHelper {
   /// Compute combRelIsoPF for an ele
   float combRelIsoPF(int sampleType, int setup, double rho, const pat::Electron& ele, float fsr=0, int correctionType=defaultCorrTypeEle);
 
-  /// Compute combRelIsoPF for a photon (comin from a track-less electron)
+  /// Compute combRelIsoPF for a photon (coming from a track-less electron)
   float combRelIsoPF(int sampleType, int setup, double rho, const pat::Photon& ele, float fsr=0, int correctionType=defaultCorrTypeEle);
- 
   
   /// Generic version, assuming that Lep is a PATObject; calls one of the above
   float combRelIsoPF(int sampleType, int setup, double rho, const reco::Candidate* lep, float fsr=0, int correctionType=-1);

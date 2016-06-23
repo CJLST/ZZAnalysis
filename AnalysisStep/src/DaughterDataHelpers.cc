@@ -64,6 +64,7 @@ int userdatahelpers::hasUserFloat(const reco::Candidate* c, const char* name){
 
   return -1;
 }
+
 const PhotonPtrVector*  
 userdatahelpers::getUserPhotons(const reco::Candidate* c){
   if(c->hasMasterClone())  c = c->masterClone().get();
@@ -108,15 +109,18 @@ userdatahelpers::getSortedLeptons(const pat::CompositeCandidate& cand, vector<co
     vector<unsigned> lOrder = {0,1,2,3};
 
     // Sort leptons by charge so that the order is Z1Lp, Z1Ln, Z2Lp, Z2Ln;
+    // for TLEs, assume they are opposite-sign to the other lepton.
     // do nothing for the same-sign collections used for CRs
-    //
     bool need_swap = false;
 
     if(abs(leptons[0]->pdgId()) == 22 || abs(leptons[1]->pdgId()) == 22) {
         int non_TLE_index = -1;
         if(abs(leptons[0]->pdgId()) != 22) non_TLE_index = 0;
         if(abs(leptons[1]->pdgId()) != 22) non_TLE_index = 1;   
-        if(non_TLE_index == -1) edm::LogError("") << "Found a Z candidate made of two TLE, this should never happen!";
+        if(non_TLE_index == -1) {
+	  edm::LogError("") << "Found a Z candidate made of two TLE, this should never happen!";
+	  abort();
+	}
         if(leptons[non_TLE_index]->charge() < 0 && non_TLE_index == 0) need_swap = true; 
     } else {
       if (leptons[0]->charge() < 0 && leptons[0]->charge()*leptons[1]->charge()<0) {
@@ -134,7 +138,10 @@ userdatahelpers::getSortedLeptons(const pat::CompositeCandidate& cand, vector<co
         int non_TLE_index = -1;
         if(abs(leptons[2]->pdgId()) != 22) non_TLE_index = 2;
         if(abs(leptons[3]->pdgId()) != 22) non_TLE_index = 3;   
-        if(non_TLE_index == -1) edm::LogError("") << "Found a Z candidate made of two TLE, this should never happen!";
+        if(non_TLE_index == -1) {
+	  edm::LogError("") << "Found a Z candidate made of two TLE, this should never happen!";
+	  abort();
+	}
         if(leptons[non_TLE_index]->charge() < 0 && non_TLE_index == 2) need_swap = true; 
     } else {
       if(leptons[2]->charge() < 0 && leptons[2]->charge()*leptons[3]->charge()<0) {        

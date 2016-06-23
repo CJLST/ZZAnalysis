@@ -258,8 +258,6 @@ void LeptonIsoHelper::fsrIso(const reco::PFCandidate* photon, edm::Handle<edm::V
 
 float LeptonIsoHelper::isoCut(const reco::Candidate* d) { 
   // FIXME: cut is hardcoded here, need to see how things evolve about lepton isolation requirements
-
-  //return 99999;
   return (d->isMuon()?0.35:0.35);
 }
 

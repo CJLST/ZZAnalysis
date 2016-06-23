@@ -3,10 +3,8 @@
 
 /** \class DaughterDataEmbedder
  *
- *  No description available.
+ *  A set of helpers to handle userFloats and UserData
  *
- *  $Date: 2012/06/06 00:27:43 $
- *  $Revision: 1.3 $
  *  \author N. Amapane - CERN
  */
 
@@ -27,7 +25,6 @@ namespace userdatahelpers {
   /// Test if the userFloat "name" from a reco::Candidate c exists
   int hasUserFloat(const reco::Candidate* c, const char* name);
 
-
   /// Retrieve matched photons stored as userData
   const PhotonPtrVector* getUserPhotons(const reco::Candidate* c);
 
@@ -43,23 +40,11 @@ namespace userdatahelpers {
     stringstream str;
     str << "d" << i << ".";
     str >> base;
-
-    /*
-    if(d->isElectron()) edm::LogPrint("") << "Filling Electron daughter";
-    if(d->isPhoton()) edm::LogPrint("") << "Filling Photon daughter";
-    if(d->isElectron() || d->isPhoton()) { 
-        edm::LogPrint("") << "eta " << d->eta() << " pt " << d->pt(); 
-        edm::LogPrint("") << "isBDT " << d->userFloat("isBDT");
-    }*/
     const vector<string> & userLabels = d->userFloatNames();
     for (vector<string>::const_iterator name = userLabels.begin(); name!= userLabels.end(); ++name){      
       string newname = base + *name;
-      //if(d->isElectron() || d->isPhoton())
-      //  edm::LogPrint("") << "In DaughterHelper adding "<< newname << " value " << d->userFloat(*name);
       cand.addUserFloat(newname, d->userFloat(*name));
     }
-    // edm::LogPrint("") << "--------------------------------------------";
-  
   }
 
 
