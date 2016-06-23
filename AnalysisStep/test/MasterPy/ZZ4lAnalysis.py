@@ -993,10 +993,12 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
 ### ----------------------------------------------------------------------
 
 # q/g likelihood
+process.load("CondCore.CondDB.CondDB_cfi")
+
 qgDatabaseVersion = 'v2b'
-from CondCore.DBCommon.CondDBSetup_cfi import *
 QGPoolDBESSource = cms.ESSource("PoolDBESSource",
-      CondDBSetup,
+      DBParameters = cms.PSet(messageLevel = cms.untracked.int32(1)),
+      timetype = cms.string('runnumber'),
       toGet = cms.VPSet(),
       connect = cms.string('frontier://FrontierProd/CMS_COND_PAT_000'),
 )
@@ -1022,8 +1024,6 @@ process.dressedJets = cms.EDProducer("JetFiller",
 
 ### Load JEC
 if APPLYJEC: 
-    process.load("CondCore.CondDB.CondDB_cfi")
-
     if IsMC: 
         process.jec = cms.ESSource("PoolDBESSource",
             DBParameters = cms.PSet(
