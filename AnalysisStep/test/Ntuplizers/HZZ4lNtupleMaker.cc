@@ -908,6 +908,10 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   // Get candidate collection
   edm::Handle<edm::View<pat::CompositeCandidate> > candHandle;
   event.getByToken(candToken, candHandle);
+  if(candHandle.failedToGet()) {
+    if(is_loose_ele_selection) return;
+    else edm::LogError("") << "ZZ collection not found in non-loose electron flow. This should never happen";
+  }
   const edm::View<pat::CompositeCandidate>* cands = candHandle.product();
 
   // Get candidate collection including trackless electrons
