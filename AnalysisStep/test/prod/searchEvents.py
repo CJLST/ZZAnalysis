@@ -5,6 +5,13 @@
 ## R. Bellan (UNITO) - Sep 2014 ##
 ##################################
 
+
+inputdir = '/data3/Higgs/160624/Chunks_V1/' # path of the production Chunks
+samples   = ['MuonEG2016B', 'DoubleEG2016B', 'DoubleMu2016B', 'MuonEG2016B', 'SingleEle2016B', 'SingleMuon2016B'] #which samples to look at
+wantedEvents = [312810956]
+
+
+
 import sys, os, commands, math, re, string
 
 import ROOT
@@ -20,21 +27,11 @@ def Green(st):
     return '\033[0;32m'+str(st)+'\033[00m'
 
 
-inputdir = '/data3/2014/HZZ_out/140519/PRODFSR_8TeV/'
-sample   = 'DYJetsToLLTuneZ2M50-NoB'
-wantedEvents = [70756397,55091083,26404299]
-
-
-
-
-
 
 def findEvents(wantedEvents, sample, inputdir):
     failure, output = commands.getstatusoutput('ls {0:s}/{1:s}_Chunk*/*.root | grep Chunk'.format(inputdir,sample))
     files = output.split()
-    checkTree('ZZ4muTree/candTree', wantedEvents, files)
-    checkTree('ZZ4eTree/candTree', wantedEvents, files)
-    checkTree('ZZ2e2muTree/candTree', wantedEvents, files)
+    checkTree('ZZTree/candTree', wantedEvents, files)
 
 def checkTree(treename,wantedEvents, files):
 
@@ -42,7 +39,6 @@ def checkTree(treename,wantedEvents, files):
     for f in files:
         tree.Add(f)
     entries = tree.GetEntries()
-
 
     cfgfiles = []
 
@@ -55,6 +51,7 @@ def checkTree(treename,wantedEvents, files):
         if nb<=0: continue
         # use the values directly from the tree
         #    print mychain.MHT, weight
+        # print  tree.EventNumber
         if tree.EventNumber in wantedEvents:
             print Green("Found {0:.0f} in local tree {1:s} of file {2:s}".format(tree.EventNumber, treename, tree.GetCurrentFile().GetName()))
             cfg = tree.GetCurrentFile().GetName().replace('ZZ4lAnalysis.root','run_cfg.py')
@@ -81,4 +78,5 @@ def checkTree(treename,wantedEvents, files):
                     print Green("Found {0:.0f} in edm file {1:s}".format(event.eventAuxiliary().event(), edmRootFile)) 
 
 
-findEvents(wantedEvents, sample, inputdir)
+for sample in samples :
+    findEvents(wantedEvents, sample, inputdir)
