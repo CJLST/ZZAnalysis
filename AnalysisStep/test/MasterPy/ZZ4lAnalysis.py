@@ -1115,7 +1115,22 @@ if APPLYJEC:
 else:
     process.Jets = cms.Path( process.QGTagger + process.dressedJets )
     
+### ----------------------------------------------------------------------
+### Filters
+### ----------------------------------------------------------------------
+### Create filter for events with one candidate in the SR
+process.ZZCandSR = cms.EDFilter("PATCompositeCandidateRefSelector",
+    src = cms.InputTag("ZZCand"),
+    cut = cms.string(SR) # That is, all candidates with m4l>70 
+ )
 
+process.ZZCandFilter = cms.EDFilter("CandViewCountFilter",
+                                src = cms.InputTag("ZZCandSR"),
+                                minNumber = cms.uint32(1)
+                            )
+
+
+process.SRFilter = cms.Sequence(process.ZZCandSR + process.ZZCandFilter)
 # Prepare lepton collections
 process.Candidates = cms.Path(
        process.muons             +
@@ -1126,7 +1141,8 @@ process.Candidates = cms.Path(
        process.cleanJets         +
 # Build 4-lepton candidates
        process.bareZCand         + process.ZCand     +  
-       process.bareZZCand        + process.ZZCand
+       process.bareZZCand        + process.ZZCand +
+       process.SRFilter
     )
 
 # Optional sequence to build control regions. To get it, add
@@ -1145,21 +1161,6 @@ process.CR = cms.Sequence(
        process.bareZLLCand       + process.ZLLCand   +
        process.ZlCand            
    )
-
-### ----------------------------------------------------------------------
-### Filters
-### ----------------------------------------------------------------------
-### Create filter for events with one candidate in the SR
-process.ZZCandSR = cms.EDFilter("PATCompositeCandidateRefSelector",
-    src = cms.InputTag("ZZCand"),
-    cut = cms.string(SR) # That is, all candidates with m4l>70 
- )
-
-process.ZZCandFilter = cms.EDFilter("CandViewCountFilter",
-                                src = cms.InputTag("ZZCandSR"),
-                                minNumber = cms.uint32(1)
-                            )
-process.SRFilter = cms.Sequence(process.ZZCandSR + process.ZZCandFilter)
 
 
 ### Skim, triggers and MC filters (Only store filter result, no filter is applied)
