@@ -19,6 +19,7 @@ def parseOptions():
     parser.add_option('-o', '--output', dest='outFile', type='string', default="eventlist.txt",    help='output sync file')
     parser.add_option('-f', '--finalState', dest='finalState', type='string', default="all",    help='final states: all, 4e, 4mu, 2e2mu')
     parser.add_option('-l', '--long', dest='longOutput', action='store_true', default=False,    help='long output')
+    parser.add_option('-b', '--blind', dest='blind', action='store_true', default=False,    help='apply blinding')
 
 
     # store options and arguments as global variables
@@ -124,9 +125,13 @@ def loop():
                 if (aChan=="4e" and ZZflav!=14641) or (aChan=="4mu" and ZZflav!=28561) or (aChan=="2e2mu" and ZZflav!=20449) : continue
 
                 mass4l        = tree.ZZMass
+                if (opt.blind) :
                 ## blind Higgs peak
-                #if mass4l>110 : continue
-                #if mass4l<150 : continue
+                    if not ((mass4l>=70 and mass4l<=110)
+                            or
+                            (mass4l>=150 and mass4l<=500)
+                            ): continue
+                    if (run>273730) : continue #FIXME: we ran a newer json than what currently agreed for the sync
 
                 totCounter += 1
                 chanCounter[aChan] += 1
