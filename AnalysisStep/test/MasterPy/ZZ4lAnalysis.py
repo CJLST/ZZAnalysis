@@ -578,8 +578,10 @@ process.boostedFsrPhotons = PhysicsTools.PatAlgos.producersLayer1.pfParticleProd
 process.appendPhotons = cms.EDProducer("LeptonPhotonMatcher",
     muonSrc = cms.InputTag("softMuons"),
     electronSrc = cms.InputTag("cleanSoftElectrons"),
+#    looseElectronSrc = cms.InputTag("cleanSoftLooseElectrons"),
     photonSrc = cms.InputTag("boostedFsrPhotons"),
-    sampleType = cms.int32(SAMPLE_TYPE),                     
+#    tleSrc = cms.InputTag("softPhotons"),
+    sampleType = cms.int32(SAMPLE_TYPE),
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
     photonSel = cms.string(FSRMODE),  # "skip", "passThrough", "Legacy", "RunII"
     muon_iso_cut = cms.double(MUISOCUT),
@@ -1100,6 +1102,7 @@ if FSRMODE=="Legacy" :
     process.cleanJets.ElectronPreselection = "userFloat('isGood') && userFloat('isIsoFSRUncorr')"
     process.cleanJets.cleanFSRFromLeptons = False
 
+
 ### ----------------------------------------------------------------------
 ### Paths
 ### ----------------------------------------------------------------------
@@ -1112,6 +1115,19 @@ if APPLYJEC:
 else:
     process.Jets = cms.Path( process.QGTagger + process.dressedJets )
     
+### ----------------------------------------------------------------------
+### Filters
+### ----------------------------------------------------------------------
+### Create filter for events with one candidate in the SR
+process.ZZCandSR = cms.EDFilter("PATCompositeCandidateRefSelector",
+    src = cms.InputTag("ZZCand"),
+    cut = cms.string(SR) # That is, all candidates with m4l>70 
+ )
+
+process.ZZCandFilter = cms.EDFilter("CandViewCountFilter",
+                                src = cms.InputTag("ZZCandSR"),
+                                minNumber = cms.uint32(1)
+                            )
 
 # Prepare lepton collections
 process.Candidates = cms.Path(
@@ -1142,6 +1158,7 @@ process.CR = cms.Sequence(
        process.bareZLLCand       + process.ZLLCand   +
        process.ZlCand            
    )
+
 
 ### Skim, triggers and MC filters (Only store filter result, no filter is applied)
 
