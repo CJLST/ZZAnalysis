@@ -1,10 +1,5 @@
 #process.TFileService.fileName=cms.string(STORAGE_PATH + 'ZZ4lAnalysis.root')
 
-process.bareSoftPhotons = cms.EDFilter("PATPhotonRefSelector",
-   src = cms.InputTag("slimmedPhotons"),
-   cut = cms.string("pt>7 && abs(eta)<2.5")
-   )
-
 from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
 dataFormat = DataFormat.MiniAOD
 switchOnVIDPhotonIdProducer(process, dataFormat)
@@ -16,28 +11,6 @@ my_id_modules = [
 for idmod in my_id_modules:
     setupAllVIDIdsInModule(process,idmod,setupVIDPhotonSelection)
 
-
-process.softPhotons = cms.EDProducer("Philler",
-   src    = cms.InputTag("bareSoftPhotons"),
-   srcElectron = cms.InputTag("softElectrons"),
-   mvaValuesMap = cms.InputTag("photonMVAValueMapProducer:TLEMVAEstimatorRun2Fall15V1Values"),
-   mvaValuesMap2 = cms.InputTag("photonMVAValueMapProducer:PhotonMVAEstimatorRun2Spring15NonTrig25nsV2Values"),
-   sampleType = cms.int32(SAMPLE_TYPE),
-   setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
-   cut = cms.string("1"),# removed cut because variable is in Spring15 ID  && userFloat('missingHit')<=1"),
-   flags = cms.PSet(
-        ID = cms.string("userFloat('isBDT')"),
-        isSIP = cms.string(SIP),
-        isGood = cms.string(GOODLEPTON),
-        pass_lepton_ID = cms.string("userFloat('isBDT')"),
-        pass_lepton_SIP = cms.string(SIP),
-#        isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<"+ELEISOCUT),
-        #combRelIsoPFFSRCorr = cms.string("abs(0)"),
-        #passCombRelIsoPFFSRCorr = cms.string("abs(1)"),
-#       Note: passCombRelIsoPFFSRCorr is currently set in LeptonPhotonMatcher for new FSR strategy; in ZZCandidateFiller for the old one
-        ),
-   #mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring15NonTrig25nsV1Values"), # (when running VID)
-   )
 
 process.appendPhotons.tleSrc = cms.InputTag("softPhotons")
 process.trackless_electrons = cms.Sequence(process.bareSoftPhotons + process.egmPhotonIDSequence + process.softPhotons)

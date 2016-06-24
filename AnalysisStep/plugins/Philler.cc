@@ -1,6 +1,6 @@
 /** \class Philler
  *
- *  Prodice collection of photons to be used for TLEs
+ *  Produce collection of photons to be used for TLEs
  *
  */
 
@@ -42,7 +42,6 @@ class Philler : public edm::EDProducer {
   virtual void produce(edm::Event&, const edm::EventSetup&);
   virtual void endJob(){};
 
-  //edm::EDGetTokenT<pat::PhotonRefVector> photonToken;
   edm::EDGetTokenT<edm::View<reco::Photon>> photonToken;
   edm::EDGetTokenT<pat::ElectronCollection> electronToken;
 
@@ -60,7 +59,6 @@ class Philler : public edm::EDProducer {
 
 
 Philler::Philler(const edm::ParameterSet& iConfig) :
-//  photonToken(consumes<pat::PhotonRefVector>(iConfig.getParameter<edm::InputTag>("src"))),
   photonToken(consumes<edm::View<reco::Photon>>(iConfig.getParameter<edm::InputTag>("src"))),
   electronToken(consumes<pat::ElectronCollection>(iConfig.getParameter<edm::InputTag>("srcElectron"))),
   sampleType(iConfig.getParameter<int>("sampleType")),
@@ -81,10 +79,7 @@ Philler::Philler(const edm::ParameterSet& iConfig) :
 
 void
 Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
-{  
-
-  // Get leptons and rho
-//  edm::Handle<pat::PhotonRefVector> photonHandle;
+{
 
   edm::Handle<edm::View<reco::Photon>> photonHandle;
   iEvent.getByToken(photonToken, photonHandle);
@@ -141,14 +136,7 @@ Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     //---Clone the pat::Photon
 //    pat::Photon l(*((*photonHandle)[i].get()));
 
-    //LogWarning("") << "b4";
-    //LogWarning("") << "after";
-
     //--- PF ISO
-    // for cone size R=???:
-    //float PFChargedHadIso   = l.chargedHadronIso();
-    //float PFNeutralHadIso   = l.neutralHadronIso();
-    //float PFPhotonIso       = l.photonIso();
     // for cone size R=0.3 :
 //    float PFChargedHadIso   = l.pfIsolationVariables().sumChargedHadronPt;
 //    float PFNeutralHadIso   = l.pfIsolationVariables().sumNeutralHadronEt;
@@ -166,27 +154,11 @@ Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     //float dxy = 999.;
     //float dz  = 999.;
-    /*
-    const Vertex* vertex = 0;
-    if (vertices->size()>0) {
-      vertex = &(vertices->front());
-      dxy = fabs(l.gsfTrack()->dxy(vertex->position()));
-      dz  = fabs(l.gsfTrack()->dz(vertex->position()));
-    } 
-    */
     
     // RunII BDT ID
     float BDT = 0.;
 
     BDT =(*BDTValues)[photonHandle->ptrAt(i)]; // l.userFloat("PhotonMVAEstimatorRun2Spring15NonTrig25nsV1Values");
-    /*if (recomputeBDT) {
-    } else {
-
-      //Spring15 BDT taking the userfloat (possible as of MiniAODv2 of 74X)
-
-    }*/
-    
-//    float pt = l.pt();
 
     // WP for Spring15-based BDT as proposed in https://indico.cern.ch/event/439325/session/1/contribution/21/attachments/1156760/1663207/slides_20150918.pdf
     bool isBDT = false;
@@ -291,19 +263,16 @@ Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     l.addUserFloat("BDT2", BDT2);
     l.addUserFloat("isBDT2", isBDT2);
     l.addUserFloat("pass_WP_2", pass_WP_2);
-    //l.addUserFloat("passCombRelIsoPFFSRCorr", 0.);
     //l.addUserFloat("pfSCfbrem", pfSCfbrem);
     //l.addUserFloat("is_tle", true);
     //edm::LogPrint("") << "isBDT: " << isBDT;
     //edm::LogPrint("") << "In Philler, reading userFloat: isBDT" << l.userFloat("isBDT") << " eta " << l.eta() << "pt " << l.pt();
 
-    //--- Check selection cut. Being done here, flags are not available; but this way we 
-    //    avoid wasting time on rejected leptons.
+    //--- Check selection cuts.
     if (!cut(l)) continue;
 
     //--- Embed flags (ie flags specified in the "flags" pset)
     for(CutSet<pat::Photon>::const_iterator flag = flags.begin(); flag != flags.end(); ++flag) {
-      //edm::LogPrint("") << "Adding flag " << flag->first << " value " << int((*(flag->second))(l)); 
       l.addUserFloat(flag->first,int((*(flag->second))(l)));
     }
 
