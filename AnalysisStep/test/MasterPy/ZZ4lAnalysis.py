@@ -472,7 +472,7 @@ process.softElectrons = cms.EDProducer("EleFiller",
    src    = cms.InputTag("bareSoftElectrons"),
    sampleType = cms.int32(SAMPLE_TYPE),          
    setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
-   cut = cms.string("userFloat('dxy')<0.5 && userFloat('dz')<1"),# removed cut because variable is in Spring15 ID  && userFloat('missingHit')<=1"),
+   cut = cms.string("userFloat('dxy')<0.5 && userFloat('dz')<1"),
    flags = cms.PSet(
         ID = cms.string("userFloat('isBDT')"),
         isSIP = cms.string(SIP),
@@ -517,6 +517,31 @@ if ELEREGRESSION == "None" and (ELECORRTYPE == "None" or BUNCH_SPACING == 50) : 
 #    process.calibratedPatElectrons.correctionsType   = 1
 #    process.calibratedPatElectrons.combinationType   = 0
     
+
+#--- TrackLess Electrons
+process.bareSoftPhotons = cms.EDFilter("PATPhotonRefSelector",
+   src = cms.InputTag("slimmedPhotons"),
+   cut = cms.string("pt>7 && abs(eta)<2.5")
+   )
+
+process.softPhotons = cms.EDProducer("Philler",
+   src    = cms.InputTag("bareSoftPhotons"),
+   srcElectron = cms.InputTag("softElectrons"),
+   mvaValuesMap = cms.InputTag("photonMVAValueMapProducer:TLEMVAEstimatorRun2Fall15V1Values"),
+   mvaValuesMap2 = cms.InputTag("photonMVAValueMapProducer:PhotonMVAEstimatorRun2Spring15NonTrig25nsV2Values"),
+   sampleType = cms.int32(SAMPLE_TYPE),
+   setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
+   cut = cms.string("1"), # dxy, dz not applied
+   flags = cms.PSet(
+        ID = cms.string("userFloat('isBDT')"),
+        isSIP = cms.string(SIP),
+        isGood = cms.string(GOODLEPTON),
+        pass_lepton_ID = cms.string("userFloat('isBDT')"),
+        pass_lepton_SIP = cms.string(SIP),
+#        isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<"+ELEISOCUT), #TLE isolation is not corrected for FSR gammas.
+        ),
+   )
+
 
 process.electronMatch = cms.EDProducer("MCMatcher",       # cut on deltaR, deltaPt/Pt; pick best by deltaR
                                        src         = cms.InputTag("bareSoftElectrons"), # RECO objects to match
