@@ -69,6 +69,46 @@ VBFH800, ,0.1622,3.01E-03,,/VBF_HToZZTo4L_M800_13TeV_powheg2_JHUgenV698_pythia8/
 VBFH900, ,0.118,3.10E-03,,/VBF_HToZZTo4L_M900_13TeV_powheg2_JHUgenV698_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,,,
 VBFH1000,,0.08732,3.18E-03,,/VBF_HToZZTo4L_M1000_13TeV_powheg2_JHUgenV698_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,,,
 
+phantom_VBF_2e2mu,,-1,,,/VBFToHiggs0PMToZZTo2e2muJJ_M125_GaSM_13TeV_phantom_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,,,
+#phantom_VBF_4e,,-1,,,/VBFToHiggs0PMToZZTo4eJJ_M125_GaSM_13TeV_phantom_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,,,
+phantom_VBF_4mu,,-1,,,/VBFToHiggs0PMToZZTo4muJJ_M125_GaSM_13TeV_phantom_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,,,
+
+#phantom_VBFbkg_2e2mu,,-1,,,/VBFToContinZZTo2e2muJJ_13TeV_phantom_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,,,
+phantom_VBFbkg_4e,,-1,,,/VBFToContinZZTo4eJJ_13TeV_phantom_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,,,
+phantom_VBFbkg_4mu,,-1,,,/VBFToContinZZTo4muJJ_13TeV_phantom_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,,,
+
+#phantom_VBFBSI_2e2mu,,-1,,,/VBFToHiggs0PMContinToZZTo2e2muJJ_M125_GaSM_13TeV_phantom_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,,,
+#phantom_VBFBSI_4e,,-1,,,/VBFToHiggs0PMContinToZZTo4eJJ_M125_GaSM_13TeV_phantom_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,,,
+#phantom_VBFBSI_4mu,,-1,,,/VBFToHiggs0PMContinToZZTo4muJJ_M125_GaSM_13TeV_phantom_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,,,
+
+gg2bp_W0_M750,,-1,,,/Graviton2PBToZZTo4L_width0_M-750_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,REWEIGHTING_TYPE=HVV_spin012;SPIN=2;a1=1;b5=1,,
+gg2bp_W0_M800,,-1,,,/Graviton2PBToZZTo4L_width0_M-800_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,REWEIGHTING_TYPE=HVV_spin012;SPIN=2;a1=1;b5=1,,
+gg2bp_W0_M1200,,-1,,,/Graviton2PBToZZTo4L_width0_M-1200_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,REWEIGHTING_TYPE=HVV_spin012;SPIN=2;a1=1;b5=1,,
+gg2bp_W0_M2000,,-1,,,/Graviton2PBToZZTo4L_width0_M-2000_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,REWEIGHTING_TYPE=HVV_spin012;SPIN=2;a1=1;b5=1,,
+gg2bp_W0_M3000,,-1,,,/Graviton2PBToZZTo4L_width0_M-3000_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,REWEIGHTING_TYPE=HVV_spin012;SPIN=2;a1=1;b5=1,,
+gg2bp_W0_M4000,,-1,,,/Graviton2PBToZZTo4L_width0_M-4000_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,REWEIGHTING_TYPE=HVV_spin012;SPIN=2;a1=1;b5=1,,
+
+gg2bp_W0p1_M750,,-1,,,/Graviton2PBToZZTo4L_width0p1_M-750_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,REWEIGHTING_TYPE=HVV_spin012;SPIN=2;a1=1;b5=1,,
+gg2bp_W0p1_M800,,-1,,,/Graviton2PBToZZTo4L_width0p1_M-800_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,REWEIGHTING_TYPE=HVV_spin012;SPIN=2;a1=1;b5=1,,
+gg2bp_W0p1_M1200,,-1,,,/Graviton2PBToZZTo4L_width0p1_M-1200_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,REWEIGHTING_TYPE=HVV_spin012;SPIN=2;a1=1;b5=1,,
+gg2bp_W0p1_M2000,,-1,,,/Graviton2PBToZZTo4L_width0p1_M-2000_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,REWEIGHTING_TYPE=HVV_spin012;SPIN=2;a1=1;b5=1,,
+gg2bp_W0p1_M3000,,-1,,,/Graviton2PBToZZTo4L_width0p1_M-3000_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,REWEIGHTING_TYPE=HVV_spin012;SPIN=2;a1=1;b5=1,,
+gg2bp_W0p1_M4000,,-1,,,/Graviton2PBToZZTo4L_width0p1_M-4000_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,REWEIGHTING_TYPE=HVV_spin012;SPIN=2;a1=1;b5=1,,
+
+gg2bp_W0p2_M750,,-1,,,/Graviton2PBToZZTo4L_width0p2_M-750_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,REWEIGHTING_TYPE=HVV_spin012;SPIN=2;a1=1;b5=1,,
+gg2bp_W0p2_M800,,-1,,,/Graviton2PBToZZTo4L_width0p2_M-800_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,REWEIGHTING_TYPE=HVV_spin012;SPIN=2;a1=1;b5=1,,
+gg2bp_W0p2_M1200,,-1,,,/Graviton2PBToZZTo4L_width0p2_M-1200_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,REWEIGHTING_TYPE=HVV_spin012;SPIN=2;a1=1;b5=1,,
+gg2bp_W0p2_M2000,,-1,,,/Graviton2PBToZZTo4L_width0p2_M-2000_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,REWEIGHTING_TYPE=HVV_spin012;SPIN=2;a1=1;b5=1,,
+gg2bp_W0p2_M3000,,-1,,,/Graviton2PBToZZTo4L_width0p2_M-3000_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,REWEIGHTING_TYPE=HVV_spin012;SPIN=2;a1=1;b5=1,,
+gg2bp_W0p2_M4000,,-1,,,/Graviton2PBToZZTo4L_width0p2_M-4000_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,REWEIGHTING_TYPE=HVV_spin012;SPIN=2;a1=1;b5=1,,
+
+gg2bp_W0p3_M750,,-1,,,/Graviton2PBToZZTo4L_width0p3_M-750_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,REWEIGHTING_TYPE=HVV_spin012;SPIN=2;a1=1;b5=1,,
+gg2bp_W0p3_M800,,-1,,,/Graviton2PBToZZTo4L_width0p3_M-800_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,REWEIGHTING_TYPE=HVV_spin012;SPIN=2;a1=1;b5=1,,
+gg2bp_W0p3_M1200,,-1,,,/Graviton2PBToZZTo4L_width0p3_M-1200_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,REWEIGHTING_TYPE=HVV_spin012;SPIN=2;a1=1;b5=1,,
+gg2bp_W0p3_M2000,,-1,,,/Graviton2PBToZZTo4L_width0p3_M-2000_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,REWEIGHTING_TYPE=HVV_spin012;SPIN=2;a1=1;b5=1,,
+gg2bp_W0p3_M3000,,-1,,,/Graviton2PBToZZTo4L_width0p3_M-3000_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,REWEIGHTING_TYPE=HVV_spin012;SPIN=2;a1=1;b5=1,,
+gg2bp_W0p3_M4000,,-1,,,/Graviton2PBToZZTo4L_width0p3_M-4000_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,REWEIGHTING_TYPE=HVV_spin012;SPIN=2;a1=1;b5=1,,
+
 #ZH115, ,1.155,0.000247135035228579,,/ZH_HToZZ_4LFilter_M115_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIISpring16MiniAODv1-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_v3-v1/MINIAODSIM,dbs,,2,,,
 #ZH120, ,0.993920889277692,0.000453888586726606,,/ZH_HToZZ_4LFilter_M120_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIISpring16MiniAODv1-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_v3-v1/MINIAODSIM,dbs,,2,,,
 #ZH124, ,0.905149809820469,0.000688170962528139,,/ZH_HToZZ_4LFilter_M124_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIISpring16MiniAODv1-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_v3-v1/MINIAODSIM,dbs,,2,,,
