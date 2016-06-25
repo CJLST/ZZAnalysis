@@ -234,8 +234,8 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
     ggTree->SetBranchAddress("nExtraLep",&nExtraLeptons);
     ggTree->SetBranchAddress("nCleanedJets",&nJets);
     ggTree->SetBranchAddress("nCleanedJetsPt30BTagged",&nBTaggedJets);
-    ggTree->SetBranchAddress("pvbf_VAJHU_old",&PVBF_VAJHU_old);
-    ggTree->SetBranchAddress("phjj_VAJHU_old",&PHJJ_VAJHU_old);
+    ggTree->SetBranchAddress("pvbf_VAJHU_highestPTJets",&PVBF_VAJHU_old);
+    ggTree->SetBranchAddress("phjj_VAJHU_highestPTJets",&PHJJ_VAJHU_old);
     ggTree->SetBranchAddress("DiJetFisher",&Fisher); 
     
     ggTree->SetBranchAddress("JetPt",&jetpt);

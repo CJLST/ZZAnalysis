@@ -221,18 +221,18 @@ namespace {
   Float_t bkg_m4l_ResUp  = 0;
   Float_t p0plus_m4l_ResDown  = 0;
   Float_t bkg_m4l_ResDown  = 0;
-  Float_t phjj_VAJHU_old  = 0;
-  Float_t pvbf_VAJHU_old  = 0;
-  Float_t phjj_VAJHU_old_up  = 0;
-  Float_t pvbf_VAJHU_old_up  = 0;
-  Float_t phjj_VAJHU_old_dn  = 0;
-  Float_t pvbf_VAJHU_old_dn  = 0;
-  Float_t phjj_VAJHU_new  = 0;
-  Float_t pvbf_VAJHU_new  = 0;
-  Float_t phjj_VAJHU_new_up  = 0;
-  Float_t pvbf_VAJHU_new_up  = 0;
-  Float_t phjj_VAJHU_new_dn  = 0;
-  Float_t pvbf_VAJHU_new_dn  = 0;
+  Float_t phjj_VAJHU_highestPTJets  = 0;
+  Float_t pvbf_VAJHU_highestPTJets  = 0;
+  Float_t phjj_VAJHU_highestPTJets_up  = 0;
+  Float_t pvbf_VAJHU_highestPTJets_up  = 0;
+  Float_t phjj_VAJHU_highestPTJets_dn  = 0;
+  Float_t pvbf_VAJHU_highestPTJets_dn  = 0;
+  Float_t phjj_VAJHU_bestDjet  = 0;
+  Float_t pvbf_VAJHU_bestDjet  = 0;
+  Float_t phjj_VAJHU_bestDjet_up  = 0;
+  Float_t pvbf_VAJHU_bestDjet_up  = 0;
+  Float_t phjj_VAJHU_bestDjet_dn  = 0;
+  Float_t pvbf_VAJHU_bestDjet_dn  = 0;
   Float_t pAux_vbf_VAJHU  = 0;
   Float_t pAux_vbf_VAJHU_up  = 0;
   Float_t pAux_vbf_VAJHU_dn  = 0;
@@ -1108,18 +1108,18 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     p0plus_m4l_ResDown = cand.userFloat("p0plus_m4l_ResDown");// signal m4l probability for systematics
     bkg_m4l_ResDown = cand.userFloat("bkg_m4l_ResDown");// backgroun m4l probability for systematics
 
-    phjj_VAJHU_old = cand.userFloat("phjj_VAJHU_old");
-    pvbf_VAJHU_old = cand.userFloat("pvbf_VAJHU_old");
-    phjj_VAJHU_old_up = cand.userFloat("phjj_VAJHU_old_up");
-    pvbf_VAJHU_old_up = cand.userFloat("pvbf_VAJHU_old_up");
-    phjj_VAJHU_old_dn = cand.userFloat("phjj_VAJHU_old_dn");
-    pvbf_VAJHU_old_dn = cand.userFloat("pvbf_VAJHU_old_dn");
-    phjj_VAJHU_new = cand.userFloat("phjj_VAJHU_new");
-    pvbf_VAJHU_new = cand.userFloat("pvbf_VAJHU_new");
-    phjj_VAJHU_new_up = cand.userFloat("phjj_VAJHU_new_up");
-    pvbf_VAJHU_new_up = cand.userFloat("pvbf_VAJHU_new_up");
-    phjj_VAJHU_new_dn = cand.userFloat("phjj_VAJHU_new_dn");
-    pvbf_VAJHU_new_dn = cand.userFloat("pvbf_VAJHU_new_dn");
+    phjj_VAJHU_highestPTJets = cand.userFloat("phjj_VAJHU_highestPTJets");
+    pvbf_VAJHU_highestPTJets = cand.userFloat("pvbf_VAJHU_highestPTJets");
+    phjj_VAJHU_highestPTJets_up = cand.userFloat("phjj_VAJHU_highestPTJets_up");
+    pvbf_VAJHU_highestPTJets_up = cand.userFloat("pvbf_VAJHU_highestPTJets_up");
+    phjj_VAJHU_highestPTJets_dn = cand.userFloat("phjj_VAJHU_highestPTJets_dn");
+    pvbf_VAJHU_highestPTJets_dn = cand.userFloat("pvbf_VAJHU_highestPTJets_dn");
+    phjj_VAJHU_bestDjet = cand.userFloat("phjj_VAJHU_bestDjet");
+    pvbf_VAJHU_bestDjet = cand.userFloat("pvbf_VAJHU_bestDjet");
+    phjj_VAJHU_bestDjet_up = cand.userFloat("phjj_VAJHU_bestDjet_up");
+    pvbf_VAJHU_bestDjet_up = cand.userFloat("pvbf_VAJHU_bestDjet_up");
+    phjj_VAJHU_bestDjet_dn = cand.userFloat("phjj_VAJHU_bestDjet_dn");
+    pvbf_VAJHU_bestDjet_dn = cand.userFloat("pvbf_VAJHU_bestDjet_dn");
 
     pAux_vbf_VAJHU = cand.userFloat("pAux_vbf_VAJHU");
     pAux_vbf_VAJHU_up = cand.userFloat("pAux_vbf_VAJHU_up");
@@ -1770,18 +1770,18 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("bkg_m4l_ResDown",bkg_m4l_ResDown);
 
   //Production MELA
-  myTree->Book("phjj_VAJHU_old",phjj_VAJHU_old);
-  myTree->Book("pvbf_VAJHU_old",pvbf_VAJHU_old);
-  myTree->Book("phjj_VAJHU_old_up",phjj_VAJHU_old_up);
-  myTree->Book("pvbf_VAJHU_old_up",pvbf_VAJHU_old_up);
-  myTree->Book("phjj_VAJHU_old_dn",phjj_VAJHU_old_dn);
-  myTree->Book("pvbf_VAJHU_old_dn",pvbf_VAJHU_old_dn);
-  myTree->Book("phjj_VAJHU_new",phjj_VAJHU_new);
-  myTree->Book("pvbf_VAJHU_new",pvbf_VAJHU_new);
-  myTree->Book("phjj_VAJHU_new_up",phjj_VAJHU_new_up);
-  myTree->Book("pvbf_VAJHU_new_up",pvbf_VAJHU_new_up);
-  myTree->Book("phjj_VAJHU_new_dn",phjj_VAJHU_new_dn);
-  myTree->Book("pvbf_VAJHU_new_dn",pvbf_VAJHU_new_dn);
+  myTree->Book("phjj_VAJHU_highestPTJets",phjj_VAJHU_highestPTJets);
+  myTree->Book("pvbf_VAJHU_highestPTJets",pvbf_VAJHU_highestPTJets);
+  myTree->Book("phjj_VAJHU_highestPTJets_up",phjj_VAJHU_highestPTJets_up);
+  myTree->Book("pvbf_VAJHU_highestPTJets_up",pvbf_VAJHU_highestPTJets_up);
+  myTree->Book("phjj_VAJHU_highestPTJets_dn",phjj_VAJHU_highestPTJets_dn);
+  myTree->Book("pvbf_VAJHU_highestPTJets_dn",pvbf_VAJHU_highestPTJets_dn);
+  myTree->Book("phjj_VAJHU_bestDjet",phjj_VAJHU_bestDjet);
+  myTree->Book("pvbf_VAJHU_bestDjet",pvbf_VAJHU_bestDjet);
+  myTree->Book("phjj_VAJHU_bestDjet_up",phjj_VAJHU_bestDjet_up);
+  myTree->Book("pvbf_VAJHU_bestDjet_up",pvbf_VAJHU_bestDjet_up);
+  myTree->Book("phjj_VAJHU_bestDjet_dn",phjj_VAJHU_bestDjet_dn);
+  myTree->Book("pvbf_VAJHU_bestDjet_dn",pvbf_VAJHU_bestDjet_dn);
   myTree->Book("pAux_vbf_VAJHU",pAux_vbf_VAJHU);
   myTree->Book("pAux_vbf_VAJHU_up",pAux_vbf_VAJHU_up);
   myTree->Book("pAux_vbf_VAJHU_dn",pAux_vbf_VAJHU_dn);

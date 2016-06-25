@@ -207,8 +207,8 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
   Short_t Z1Flav;
   Short_t Z2Flav;
   Float_t DiJetFisher;
-  Float_t pvbf_VAJHU_old;
-  Float_t phjj_VAJHU_old;
+  Float_t pvbf_VAJHU_highestPTJets;
+  Float_t phjj_VAJHU_highestPTJets;
   vector<Float_t> *CandLepEta = 0;
   vector<Float_t> *CandLepPhi = 0;
   Short_t nExtraLep;
@@ -327,8 +327,8 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
       inputTree[d]->SetBranchAddress("JetPhi", &JetPhi);
       inputTree[d]->SetBranchAddress("JetMass", &JetMass);
       inputTree[d]->SetBranchAddress("DiJetFisher", &DiJetFisher);
-      inputTree[d]->SetBranchAddress("pvbf_VAJHU_old", &pvbf_VAJHU_old);
-      inputTree[d]->SetBranchAddress("phjj_VAJHU_old", &phjj_VAJHU_old);
+      inputTree[d]->SetBranchAddress("pvbf_VAJHU_highestPTJets", &pvbf_VAJHU_highestPTJets);
+      inputTree[d]->SetBranchAddress("phjj_VAJHU_highestPTJets", &phjj_VAJHU_highestPTJets);
       inputTree[d]->SetBranchAddress("GenHMass", &GenHMass);
       inputTree[d]->SetBranchAddress("GenZ1Phi", &GenZ1Phi);
       inputTree[d]->SetBranchAddress("GenZ2Phi", &GenZ2Phi);
@@ -440,8 +440,8 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
 	//* ---------- Moriond 2016 categorization 
 	currentCategory = categoryMor16(
 	   nJets,
-           pvbf_VAJHU_old,
-           phjj_VAJHU_old
+           pvbf_VAJHU_highestPTJets,
+           phjj_VAJHU_highestPTJets
            );
 	//*/
 

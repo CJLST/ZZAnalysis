@@ -97,18 +97,18 @@ public :
    std::vector<float>   *ggzz_c1_VAMCFM;
    std::vector<float>   *ggzz_c5_VAMCFM;
    std::vector<float>   *ggzz_ci_VAMCFM;
-   std::vector<float>   *phjj_VAJHU_old;
-   std::vector<float>   *pvbf_VAJHU_old;
-   std::vector<float>   *phjj_VAJHU_old_up;
-   std::vector<float>   *pvbf_VAJHU_old_up;
-   std::vector<float>   *phjj_VAJHU_old_dn;
-   std::vector<float>   *pvbf_VAJHU_old_dn;
-   std::vector<float>   *phjj_VAJHU_new;
-   std::vector<float>   *pvbf_VAJHU_new;
-   std::vector<float>   *phjj_VAJHU_new_up;
-   std::vector<float>   *pvbf_VAJHU_new_up;
-   std::vector<float>   *phjj_VAJHU_new_dn;
-   std::vector<float>   *pvbf_VAJHU_new_dn;
+   std::vector<float>   *phjj_VAJHU_highestPTJets;
+   std::vector<float>   *pvbf_VAJHU_highestPTJets;
+   std::vector<float>   *phjj_VAJHU_highestPTJets_up;
+   std::vector<float>   *pvbf_VAJHU_highestPTJets_up;
+   std::vector<float>   *phjj_VAJHU_highestPTJets_dn;
+   std::vector<float>   *pvbf_VAJHU_highestPTJets_dn;
+   std::vector<float>   *phjj_VAJHU_bestDjet;
+   std::vector<float>   *pvbf_VAJHU_bestDjet;
+   std::vector<float>   *phjj_VAJHU_bestDjet_up;
+   std::vector<float>   *pvbf_VAJHU_bestDjet_up;
+   std::vector<float>   *phjj_VAJHU_bestDjet_dn;
+   std::vector<float>   *pvbf_VAJHU_bestDjet_dn;
    std::vector<float>   *p0_g1prime2_VAJHU;
    std::vector<float>   *pg1g1prime2_VAJHU;
    std::vector<float>   *Dgg10_VAMCFM;
@@ -299,18 +299,18 @@ public :
    TBranch        *b_ggzz_c5_VAMCFM;   //!
    TBranch        *b_ggzz_c1_VAMCFM;   //!
    TBranch        *b_ggzz_ci_VAMCFM;   //!
-   TBranch        *b_phjj_VAJHU_old;   //!
-   TBranch        *b_pvbf_VAJHU_old;   //!
-   TBranch        *b_phjj_VAJHU_old_up;   //!
-   TBranch        *b_pvbf_VAJHU_old_up;   //!
-   TBranch        *b_phjj_VAJHU_old_dn;   //!
-   TBranch        *b_pvbf_VAJHU_old_dn;   //!
-   TBranch        *b_phjj_VAJHU_new;   //!
-   TBranch        *b_pvbf_VAJHU_new;   //!
-   TBranch        *b_phjj_VAJHU_new_up;   //!
-   TBranch        *b_pvbf_VAJHU_new_up;   //!
-   TBranch        *b_phjj_VAJHU_new_dn;   //!
-   TBranch        *b_pvbf_VAJHU_new_dn;   //!
+   TBranch        *b_phjj_VAJHU_highestPTJets;   //!
+   TBranch        *b_pvbf_VAJHU_highestPTJets;   //!
+   TBranch        *b_phjj_VAJHU_highestPTJets_up;   //!
+   TBranch        *b_pvbf_VAJHU_highestPTJets_up;   //!
+   TBranch        *b_phjj_VAJHU_highestPTJets_dn;   //!
+   TBranch        *b_pvbf_VAJHU_highestPTJets_dn;   //!
+   TBranch        *b_phjj_VAJHU_bestDjet;   //!
+   TBranch        *b_pvbf_VAJHU_bestDjet;   //!
+   TBranch        *b_phjj_VAJHU_bestDjet_up;   //!
+   TBranch        *b_pvbf_VAJHU_bestDjet_up;   //!
+   TBranch        *b_phjj_VAJHU_bestDjet_dn;   //!
+   TBranch        *b_pvbf_VAJHU_bestDjet_dn;   //!
    TBranch        *b_p0_g1prime2_VAJHU;   //!
    TBranch        *b_pg1g1prime2_VAJHU;   //!
    TBranch        *b_Dgg10_VAMCFM;   //!
@@ -552,18 +552,18 @@ void HZZ4lBase::Init(TTree *tree)
    ggzz_c1_VAMCFM = 0;
    ggzz_c5_VAMCFM = 0;
    ggzz_ci_VAMCFM = 0;
-   phjj_VAJHU_old = 0;
-   pvbf_VAJHU_old = 0;
-   phjj_VAJHU_old_up = 0;
-   pvbf_VAJHU_old_up = 0;
-   phjj_VAJHU_old_dn = 0;
-   pvbf_VAJHU_old_dn = 0;
-   phjj_VAJHU_new = 0;
-   pvbf_VAJHU_new = 0;
-   phjj_VAJHU_new_up = 0;
-   pvbf_VAJHU_new_up = 0;
-   phjj_VAJHU_new_dn = 0;
-   pvbf_VAJHU_new_dn = 0;
+   phjj_VAJHU_highestPTJets = 0;
+   pvbf_VAJHU_highestPTJets = 0;
+   phjj_VAJHU_highestPTJets_up = 0;
+   pvbf_VAJHU_highestPTJets_up = 0;
+   phjj_VAJHU_highestPTJets_dn = 0;
+   pvbf_VAJHU_highestPTJets_dn = 0;
+   phjj_VAJHU_bestDjet = 0;
+   pvbf_VAJHU_bestDjet = 0;
+   phjj_VAJHU_bestDjet_up = 0;
+   pvbf_VAJHU_bestDjet_up = 0;
+   phjj_VAJHU_bestDjet_dn = 0;
+   pvbf_VAJHU_bestDjet_dn = 0;
    p0_g1prime2_VAJHU = 0;
    pg1g1prime2_VAJHU = 0;
    Dgg10_VAMCFM = 0;
@@ -731,18 +731,18 @@ void HZZ4lBase::Init(TTree *tree)
    fChain->SetBranchAddress("ggzz_c5_VAMCFM", &ggzz_c5_VAMCFM, &b_ggzz_c5_VAMCFM);
    fChain->SetBranchAddress("ggzz_c1_VAMCFM", &ggzz_c1_VAMCFM, &b_ggzz_c1_VAMCFM);
    fChain->SetBranchAddress("ggzz_ci_VAMCFM", &ggzz_ci_VAMCFM, &b_ggzz_ci_VAMCFM);
-   fChain->SetBranchAddress("phjj_VAJHU_old", &phjj_VAJHU_old, &b_phjj_VAJHU_old);
-   fChain->SetBranchAddress("pvbf_VAJHU_old", &pvbf_VAJHU_old, &b_pvbf_VAJHU_old);
-   fChain->SetBranchAddress("phjj_VAJHU_old_up", &phjj_VAJHU_old_up, &b_phjj_VAJHU_old_up);
-   fChain->SetBranchAddress("pvbf_VAJHU_old_up", &pvbf_VAJHU_old_up, &b_pvbf_VAJHU_old_up);
-   fChain->SetBranchAddress("phjj_VAJHU_old_dn", &phjj_VAJHU_old_dn, &b_phjj_VAJHU_old_dn);
-   fChain->SetBranchAddress("pvbf_VAJHU_old_dn", &pvbf_VAJHU_old_dn, &b_pvbf_VAJHU_old_dn);
-   fChain->SetBranchAddress("phjj_VAJHU_new", &phjj_VAJHU_new, &b_phjj_VAJHU_new);
-   fChain->SetBranchAddress("pvbf_VAJHU_new", &pvbf_VAJHU_new, &b_pvbf_VAJHU_new);
-   fChain->SetBranchAddress("phjj_VAJHU_new_up", &phjj_VAJHU_new_up, &b_phjj_VAJHU_new_up);
-   fChain->SetBranchAddress("pvbf_VAJHU_new_up", &pvbf_VAJHU_new_up, &b_pvbf_VAJHU_new_up);
-   fChain->SetBranchAddress("phjj_VAJHU_new_dn", &phjj_VAJHU_new_dn, &b_phjj_VAJHU_new_dn);
-   fChain->SetBranchAddress("pvbf_VAJHU_new_dn", &pvbf_VAJHU_new_dn, &b_pvbf_VAJHU_new_dn);
+   fChain->SetBranchAddress("phjj_VAJHU_highestPTJets", &phjj_VAJHU_highestPTJets, &b_phjj_VAJHU_highestPTJets);
+   fChain->SetBranchAddress("pvbf_VAJHU_highestPTJets", &pvbf_VAJHU_highestPTJets, &b_pvbf_VAJHU_highestPTJets);
+   fChain->SetBranchAddress("phjj_VAJHU_highestPTJets_up", &phjj_VAJHU_highestPTJets_up, &b_phjj_VAJHU_highestPTJets_up);
+   fChain->SetBranchAddress("pvbf_VAJHU_highestPTJets_up", &pvbf_VAJHU_highestPTJets_up, &b_pvbf_VAJHU_highestPTJets_up);
+   fChain->SetBranchAddress("phjj_VAJHU_highestPTJets_dn", &phjj_VAJHU_highestPTJets_dn, &b_phjj_VAJHU_highestPTJets_dn);
+   fChain->SetBranchAddress("pvbf_VAJHU_highestPTJets_dn", &pvbf_VAJHU_highestPTJets_dn, &b_pvbf_VAJHU_highestPTJets_dn);
+   fChain->SetBranchAddress("phjj_VAJHU_bestDjet", &phjj_VAJHU_bestDjet, &b_phjj_VAJHU_bestDjet);
+   fChain->SetBranchAddress("pvbf_VAJHU_bestDjet", &pvbf_VAJHU_bestDjet, &b_pvbf_VAJHU_bestDjet);
+   fChain->SetBranchAddress("phjj_VAJHU_bestDjet_up", &phjj_VAJHU_bestDjet_up, &b_phjj_VAJHU_bestDjet_up);
+   fChain->SetBranchAddress("pvbf_VAJHU_bestDjet_up", &pvbf_VAJHU_bestDjet_up, &b_pvbf_VAJHU_bestDjet_up);
+   fChain->SetBranchAddress("phjj_VAJHU_bestDjet_dn", &phjj_VAJHU_bestDjet_dn, &b_phjj_VAJHU_bestDjet_dn);
+   fChain->SetBranchAddress("pvbf_VAJHU_bestDjet_dn", &pvbf_VAJHU_bestDjet_dn, &b_pvbf_VAJHU_bestDjet_dn);
    fChain->SetBranchAddress("p0_g1prime2_VAJHU", &p0_g1prime2_VAJHU, &b_p0_g1prime2_VAJHU);
    fChain->SetBranchAddress("pg1g1prime2_VAJHU", &pg1g1prime2_VAJHU, &b_pg1g1prime2_VAJHU);
    fChain->SetBranchAddress("Dgg10_VAMCFM", &Dgg10_VAMCFM, &b_Dgg10_VAMCFM);

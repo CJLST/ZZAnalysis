@@ -264,8 +264,8 @@ void fitSignalShapeSimul(int massBin[40],int maxMassBin, int selAna, int channel
     ggTree->SetBranchAddress("nExtraLep",&nExtraLeptons);
     ggTree->SetBranchAddress("nCleanedJets",&nJets);
     ggTree->SetBranchAddress("nCleanedJetsPt30BTagged",&nBTaggedJets);
-    ggTree->SetBranchAddress("pvbf_VAJHU_old",&PVBF_VAJHU_old);
-    ggTree->SetBranchAddress("phjj_VAJHU_old",&PHJJ_VAJHU_old);
+    ggTree->SetBranchAddress("pvbf_VAJHU_highestPTJets",&PVBF_VAJHU_old);
+    ggTree->SetBranchAddress("phjj_VAJHU_highestPTJets",&PHJJ_VAJHU_old);
     ggTree->SetBranchAddress("DiJetFisher",&Fisher); 
     
     ggTree->SetBranchAddress("JetPt",&jetpt);
