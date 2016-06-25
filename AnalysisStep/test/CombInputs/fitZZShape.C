@@ -234,8 +234,8 @@ void fitZZShapeW(int channels,int categ, int sample,
   ggTree->SetBranchAddress("nCleanedJets",&nJets);
   ggTree->SetBranchAddress("nCleanedJetsPt30BTagged",&nBTaggedJets);
   ggTree->SetBranchAddress("DiJetFisher",&Fisher);
-  ggTree->SetBranchAddress("pvbf_VAJHU_old",&PVBF_VAJHU_old);
-  ggTree->SetBranchAddress("phjj_VAJHU_old",&PHJJ_VAJHU_old);
+  ggTree->SetBranchAddress("pvbf_VAJHU_highestPTJets",&PVBF_VAJHU_old);
+  ggTree->SetBranchAddress("phjj_VAJHU_highestPTJets",&PHJJ_VAJHU_old);
   if(sample ==1){
   ggTree->SetBranchAddress("GenZ1Phi",&GenZ1Phi);
   ggTree->SetBranchAddress("GenZ2Phi",&GenZ2Phi);}

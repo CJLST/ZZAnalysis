@@ -572,17 +572,17 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     mela.setProcess(TVar::H2_g1g5, TVar::JHUGen, TVar::ZZGG);
     mela.computeP(p2_VAJHU, true);
 
-    float pvbf_VAJHU_old_NEW=0; 
+    float pvbf_VAJHU_highestPTJets_NEW=0; 
     mela.setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::JJVBF);
-    mela.computeProdP(pvbf_VAJHU_old_NEW, true);
+    mela.computeProdP(pvbf_VAJHU_highestPTJets_NEW, true);
 
-    float phjj_VAJHU_old_NEW=0;
+    float phjj_VAJHU_highestPTJets_NEW=0;
     mela.setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::JJGG);
 //    mela.setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::JJQCD);
-    mela.computeProdP(phjj_VAJHU_old_NEW, true);
+    mela.computeProdP(phjj_VAJHU_highestPTJets_NEW, true);
 
-    double phjj_VAJHU_old = -1.;
-    double pvbf_VAJHU_old = -1.;
+    double phjj_VAJHU_highestPTJets = -1.;
+    double pvbf_VAJHU_highestPTJets = -1.;
 
     //--- compute angles
     float costheta1=0, costheta2=0, phi=0, costhetastar=0, phistar1=0;
@@ -728,18 +728,18 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 
 //    TLorentzVector nullFourVector(0, 0, 0, 0);
 
-    double phjj_VAJHU_old = -1.;
-    double pvbf_VAJHU_old = -1.;
-    double phjj_VAJHU_old_up = -1.;
-    double pvbf_VAJHU_old_up = -1.;
-    double phjj_VAJHU_old_dn = -1.;
-    double pvbf_VAJHU_old_dn = -1.;
-    double phjj_VAJHU_new = -1.;
-    double pvbf_VAJHU_new = -1.;
-    double phjj_VAJHU_new_up = -1.;
-    double pvbf_VAJHU_new_up = -1.;
-    double phjj_VAJHU_new_dn = -1.;
-    double pvbf_VAJHU_new_dn = -1.;
+    double phjj_VAJHU_highestPTJets = -1.;
+    double pvbf_VAJHU_highestPTJets = -1.;
+    double phjj_VAJHU_highestPTJets_up = -1.;
+    double pvbf_VAJHU_highestPTJets_up = -1.;
+    double phjj_VAJHU_highestPTJets_dn = -1.;
+    double pvbf_VAJHU_highestPTJets_dn = -1.;
+    double phjj_VAJHU_bestDjet = -1.;
+    double pvbf_VAJHU_bestDjet = -1.;
+    double phjj_VAJHU_bestDjet_up = -1.;
+    double pvbf_VAJHU_bestDjet_up = -1.;
+    double phjj_VAJHU_bestDjet_dn = -1.;
+    double pvbf_VAJHU_bestDjet_dn = -1.;
 
     double pAux_vbf_VAJHU = 1;
     double pAux_vbf_VAJHU_up = 1;
@@ -821,11 +821,11 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
         TLorentzVector jet1, jet2;
 //        double djet_max = -1;
 
-        double phjj_VAJHU_old_temp = -1;
-        double pvbf_VAJHU_old_temp = -1;
+        double phjj_VAJHU_highestPTJets_temp = -1;
+        double pvbf_VAJHU_highestPTJets_temp = -1;
 /*
-        double phjj_VAJHU_new_temp = -1;
-        double pvbf_VAJHU_new_temp = -1;
+        double phjj_VAJHU_bestDjet_temp = -1;
+        double pvbf_VAJHU_bestDjet_temp = -1;
         double pAux_vbf_VAJHU_temp = 1;
 
         double phj_VAJHU_temp = -1;
@@ -853,15 +853,15 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 /*            double djet_temp = pvbf_temp / (pvbf_temp + phjj_temp);
 
             if (djet_temp > djet_max){
-              phjj_VAJHU_new_temp = phjj_temp;
-              pvbf_VAJHU_new_temp = pvbf_temp;
+              phjj_VAJHU_bestDjet_temp = phjj_temp;
+              pvbf_VAJHU_bestDjet_temp = pvbf_temp;
               djet_max = djet_temp;
             }
 */
 
             if (firstjet == 0 && secondjet == 1){
-              phjj_VAJHU_old_temp = phjj_temp;
-              pvbf_VAJHU_old_temp = pvbf_temp;
+              phjj_VAJHU_highestPTJets_temp = phjj_temp;
+              pvbf_VAJHU_highestPTJets_temp = pvbf_temp;
 /*
               float pwh_temp = -1;
               float pzh_temp = -1;
@@ -901,23 +901,23 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 
             djet_max = (double)(pjvbf_temp*pAux_vbf_temp / (pjvbf_temp*pAux_vbf_temp + phj_temp));
             phj_VAJHU_temp = (double)phj_temp;
-            pvbf_VAJHU_old_temp = (double)pjvbf_temp;
+            pvbf_VAJHU_highestPTJets_temp = (double)pjvbf_temp;
             pAux_vbf_VAJHU_temp = (double)pAux_vbf_temp;
-            pvbf_VAJHU_new_temp = pvbf_VAJHU_old_temp;
+            pvbf_VAJHU_bestDjet_temp = pvbf_VAJHU_highestPTJets_temp;
 */
           }
 
           partPprod.pop_back();
         }
 
-          phjj_VAJHU_old = phjj_VAJHU_old_temp;
-          pvbf_VAJHU_old = pvbf_VAJHU_old_temp;
+          phjj_VAJHU_highestPTJets = phjj_VAJHU_highestPTJets_temp;
+          pvbf_VAJHU_highestPTJets = pvbf_VAJHU_highestPTJets_temp;
 /*
          if (jecnum == 0){
-          phjj_VAJHU_old = phjj_VAJHU_old_temp;
-          pvbf_VAJHU_old = pvbf_VAJHU_old_temp;
-          phjj_VAJHU_new = phjj_VAJHU_new_temp;
-          pvbf_VAJHU_new = pvbf_VAJHU_new_temp;
+          phjj_VAJHU_highestPTJets = phjj_VAJHU_highestPTJets_temp;
+          pvbf_VAJHU_highestPTJets = pvbf_VAJHU_highestPTJets_temp;
+          phjj_VAJHU_bestDjet = phjj_VAJHU_bestDjet_temp;
+          pvbf_VAJHU_bestDjet = pvbf_VAJHU_bestDjet_temp;
   
           pAux_vbf_VAJHU = pAux_vbf_VAJHU_temp;
   
@@ -928,10 +928,10 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
           pbbh_VAJHU = pbbh_VAJHU_temp;
         }
         if (jecnum == 1){
-          phjj_VAJHU_old_up = phjj_VAJHU_old_temp;
-          pvbf_VAJHU_old_up = pvbf_VAJHU_old_temp;
-          phjj_VAJHU_new_up = phjj_VAJHU_new_temp;
-          pvbf_VAJHU_new_up = pvbf_VAJHU_new_temp;
+          phjj_VAJHU_highestPTJets_up = phjj_VAJHU_highestPTJets_temp;
+          pvbf_VAJHU_highestPTJets_up = pvbf_VAJHU_highestPTJets_temp;
+          phjj_VAJHU_bestDjet_up = phjj_VAJHU_bestDjet_temp;
+          pvbf_VAJHU_bestDjet_up = pvbf_VAJHU_bestDjet_temp;
  
           pAux_vbf_VAJHU_up = pAux_vbf_VAJHU_temp;
 
@@ -942,10 +942,10 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
           pbbh_VAJHU_up = pbbh_VAJHU_temp;
         }
         if (jecnum == 2){
-          phjj_VAJHU_old_dn = phjj_VAJHU_old_temp;
-          pvbf_VAJHU_old_dn = pvbf_VAJHU_old_temp;
-          phjj_VAJHU_new_dn = phjj_VAJHU_new_temp;
-          pvbf_VAJHU_new_dn = pvbf_VAJHU_new_temp;
+          phjj_VAJHU_highestPTJets_dn = phjj_VAJHU_highestPTJets_temp;
+          pvbf_VAJHU_highestPTJets_dn = pvbf_VAJHU_highestPTJets_temp;
+          phjj_VAJHU_bestDjet_dn = phjj_VAJHU_bestDjet_temp;
+          pvbf_VAJHU_bestDjet_dn = pvbf_VAJHU_bestDjet_temp;
   
           pAux_vbf_VAJHU_dn = pAux_vbf_VAJHU_temp;
   
@@ -1212,10 +1212,10 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     myCand.addUserFloat("p0hplus_VAJHU", p0hplus_VAJHU);
     myCand.addUserFloat("p2bplus_VAJHU", p2bplus_VAJHU);
     myCand.addUserFloat("p2_VAJHU", p2_VAJHU);
-    myCand.addUserFloat("pvbf_VAJHU_old_NEW", pvbf_VAJHU_old_NEW);
-    myCand.addUserFloat("phjj_VAJHU_old_NEW", phjj_VAJHU_old_NEW);
-    myCand.addUserFloat("phjj_VAJHU_old", phjj_VAJHU_old);
-    myCand.addUserFloat("pvbf_VAJHU_old", pvbf_VAJHU_old);
+    myCand.addUserFloat("pvbf_VAJHU_highestPTJets_NEW", pvbf_VAJHU_highestPTJets_NEW);
+    myCand.addUserFloat("phjj_VAJHU_highestPTJets_NEW", phjj_VAJHU_highestPTJets_NEW);
+    myCand.addUserFloat("phjj_VAJHU_highestPTJets", phjj_VAJHU_highestPTJets);
+    myCand.addUserFloat("pvbf_VAJHU_highestPTJets", pvbf_VAJHU_highestPTJets);
 /*
     // add probabilities
     myCand.addUserFloat("p0plus_VAJHU",   p0plus_VAJHU);   // higgs, vector algebra, JHUgen
@@ -1313,18 +1313,18 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     myCand.addUserFloat("pzzzg_g1prime2_pi2_VAJHU", pzzzg_g1prime2_pi2_VAJHU);
 
     // Production MELA
-    myCand.addUserFloat("phjj_VAJHU_old", phjj_VAJHU_old);
-    myCand.addUserFloat("pvbf_VAJHU_old", pvbf_VAJHU_old);
-    myCand.addUserFloat("phjj_VAJHU_old_up", phjj_VAJHU_old_up);
-    myCand.addUserFloat("pvbf_VAJHU_old_up", pvbf_VAJHU_old_up);
-    myCand.addUserFloat("phjj_VAJHU_old_dn", phjj_VAJHU_old_dn);
-    myCand.addUserFloat("pvbf_VAJHU_old_dn", pvbf_VAJHU_old_dn);
-    myCand.addUserFloat("phjj_VAJHU_new", phjj_VAJHU_new);
-    myCand.addUserFloat("pvbf_VAJHU_new", pvbf_VAJHU_new);
-    myCand.addUserFloat("phjj_VAJHU_new_up", phjj_VAJHU_new_up);
-    myCand.addUserFloat("pvbf_VAJHU_new_up", pvbf_VAJHU_new_up);
-    myCand.addUserFloat("phjj_VAJHU_new_dn", phjj_VAJHU_new_dn);
-    myCand.addUserFloat("pvbf_VAJHU_new_dn", pvbf_VAJHU_new_dn);
+    myCand.addUserFloat("phjj_VAJHU_highestPTJets", phjj_VAJHU_highestPTJets);
+    myCand.addUserFloat("pvbf_VAJHU_highestPTJets", pvbf_VAJHU_highestPTJets);
+    myCand.addUserFloat("phjj_VAJHU_highestPTJets_up", phjj_VAJHU_highestPTJets_up);
+    myCand.addUserFloat("pvbf_VAJHU_highestPTJets_up", pvbf_VAJHU_highestPTJets_up);
+    myCand.addUserFloat("phjj_VAJHU_highestPTJets_dn", phjj_VAJHU_highestPTJets_dn);
+    myCand.addUserFloat("pvbf_VAJHU_highestPTJets_dn", pvbf_VAJHU_highestPTJets_dn);
+    myCand.addUserFloat("phjj_VAJHU_bestDjet", phjj_VAJHU_bestDjet);
+    myCand.addUserFloat("pvbf_VAJHU_bestDjet", pvbf_VAJHU_bestDjet);
+    myCand.addUserFloat("phjj_VAJHU_bestDjet_up", phjj_VAJHU_bestDjet_up);
+    myCand.addUserFloat("pvbf_VAJHU_bestDjet_up", pvbf_VAJHU_bestDjet_up);
+    myCand.addUserFloat("phjj_VAJHU_bestDjet_dn", phjj_VAJHU_bestDjet_dn);
+    myCand.addUserFloat("pvbf_VAJHU_bestDjet_dn", pvbf_VAJHU_bestDjet_dn);
 
     myCand.addUserFloat("pAux_vbf_VAJHU", pAux_vbf_VAJHU);
     myCand.addUserFloat("pAux_vbf_VAJHU_up", pAux_vbf_VAJHU_up);

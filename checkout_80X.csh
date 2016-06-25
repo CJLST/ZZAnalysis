@@ -28,9 +28,8 @@ git clone -n https://github.com/cms-analysis/EgammaAnalysis-ElectronTools EGamma
 #git clone https://github.com/scasasso/usercode MuScleFit
 
 #MELA
-#git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
-git clone https://github.com/usarica/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
-(cd ZZMatrixElement ; git checkout master)
+git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
+(cd ZZMatrixElement ; git checkout -b v2.0.0 ; . setup.sh -j 12)
 
 #photon ISO information for FSR 
 git clone -n https://github.com/VBF-HZZ/UFHZZAnalysisRun2

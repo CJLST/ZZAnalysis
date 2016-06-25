@@ -75,8 +75,8 @@ def loop():
     tree.SetBranchStatus("p0plus_m4l",1)
     tree.SetBranchStatus("bkg_m4l",1)
     tree.SetBranchStatus("Dgg10_VAMCFM",1)
-    tree.SetBranchStatus("pvbf_VAJHU_old",1)
-    tree.SetBranchStatus("phjj_VAJHU_old",1)
+    tree.SetBranchStatus("pvbf_VAJHU_highestPTJets",1)
+    tree.SetBranchStatus("phjj_VAJHU_highestPTJets",1)
     tree.SetBranchStatus("ZZPt",1)
     tree.SetBranchStatus("nExtraLep",1)
     tree.SetBranchStatus("nCleanedJetsPt30BTagged",1)
@@ -126,8 +126,8 @@ def loop():
                     p0plus_m4l    = tree.p0plus_m4l
                     bkg_m4l       = tree.bkg_m4l
                     Dgg10_VAMCFM  = tree.Dgg10_VAMCFM
-                    pvbf_VAJHU    = tree.pvbf_VAJHU_old
-                    phjj_VAJHU    = tree.phjj_VAJHU_old
+                    pvbf_VAJHU    = tree.pvbf_VAJHU_highestPTJets
+                    phjj_VAJHU    = tree.phjj_VAJHU_highestPTJets
                     pt4l          = tree.ZZPt
                     nExtraLep     = tree.nExtraLep
                     jetpt         = tree.JetPt

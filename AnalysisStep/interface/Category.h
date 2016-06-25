@@ -39,8 +39,8 @@ enum CategoryMor16 {
 
 extern "C" int categoryMor16(
 			     int nJets,
-			     float pvbf_VAJHU_old,
-			     float phjj_VAJHU_old
+			     float pvbf_VAJHU_highestPTJets,
+			     float phjj_VAJHU_highestPTJets
 			     );
 
 

@@ -439,8 +439,8 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
   Float_t ZZEta;
   Float_t p0plus_VAJHU;
   Float_t bkg_VAMCFM;
-  Float_t pvbf_VAJHU_old;
-  Float_t phjj_VAJHU_old;
+  Float_t pvbf_VAJHU_highestPTJets;
+  Float_t phjj_VAJHU_highestPTJets;
   Float_t Z1Mass;
   Float_t Z2Mass;
   Short_t Z1Flav;
@@ -578,8 +578,8 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
     inputTree[d]->SetBranchAddress("ZZEta", &ZZEta);
     inputTree[d]->SetBranchAddress("p0plus_VAJHU", &p0plus_VAJHU);
     inputTree[d]->SetBranchAddress("bkg_VAMCFM", &bkg_VAMCFM);
-    inputTree[d]->SetBranchAddress("pvbf_VAJHU_old", &pvbf_VAJHU_old);
-    inputTree[d]->SetBranchAddress("phjj_VAJHU_old", &phjj_VAJHU_old);
+    inputTree[d]->SetBranchAddress("pvbf_VAJHU_highestPTJets", &pvbf_VAJHU_highestPTJets);
+    inputTree[d]->SetBranchAddress("phjj_VAJHU_highestPTJets", &phjj_VAJHU_highestPTJets);
     inputTree[d]->SetBranchAddress("Z1Mass", &Z1Mass);
     inputTree[d]->SetBranchAddress("Z2Mass", &Z2Mass);
     inputTree[d]->SetBranchAddress("Z1Flav", &Z1Flav);
@@ -710,8 +710,8 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
       //* ---------- Moriond 2016 categorization 
       currentCategory = categoryMor16(
 	 nJets,
-         pvbf_VAJHU_old,
-         phjj_VAJHU_old
+         pvbf_VAJHU_highestPTJets,
+         phjj_VAJHU_highestPTJets
          );
       //*/
 
@@ -733,7 +733,7 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
       //----- fill histograms
 
       Float_t KD = p0plus_VAJHU / ( p0plus_VAJHU + bkg_VAMCFM ) ;
-      Float_t vbfMela = pvbf_VAJHU_old / ( phjj_VAJHU_old + pvbf_VAJHU_old );
+      Float_t vbfMela = pvbf_VAJHU_highestPTJets / ( phjj_VAJHU_highestPTJets + pvbf_VAJHU_highestPTJets );
       Float_t varVal[nVariables] = {
 	ZZMass,
 	ZZMass,
@@ -1066,8 +1066,8 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
   Float_t ZZEta;
   Float_t p0plus_VAJHU;
   Float_t bkg_VAMCFM;
-  Float_t pvbf_VAJHU_old;
-  Float_t phjj_VAJHU_old;
+  Float_t pvbf_VAJHU_highestPTJets;
+  Float_t phjj_VAJHU_highestPTJets;
   Float_t Z1Mass;
   Float_t Z2Mass;
   Short_t Z1Flav;
@@ -1094,8 +1094,8 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
   mytree->SetBranchAddress("ZZEta", &ZZEta);
   mytree->SetBranchAddress("p0plus_VAJHU", &p0plus_VAJHU);
   mytree->SetBranchAddress("bkg_VAMCFM", &bkg_VAMCFM);
-  mytree->SetBranchAddress("pvbf_VAJHU_old", &pvbf_VAJHU_old);
-  mytree->SetBranchAddress("phjj_VAJHU_old", &phjj_VAJHU_old);
+  mytree->SetBranchAddress("pvbf_VAJHU_highestPTJets", &pvbf_VAJHU_highestPTJets);
+  mytree->SetBranchAddress("phjj_VAJHU_highestPTJets", &phjj_VAJHU_highestPTJets);
   mytree->SetBranchAddress("Z1Mass", &Z1Mass);
   mytree->SetBranchAddress("Z2Mass", &Z2Mass);
   mytree->SetBranchAddress("Z1Flav", &Z1Flav);
@@ -1162,7 +1162,7 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
     //----- fill histograms, update counters
 
     Float_t KD = p0plus_VAJHU / ( p0plus_VAJHU + bkg_VAMCFM ) ;
-    Float_t vbfMela = pvbf_VAJHU_old / ( phjj_VAJHU_old + pvbf_VAJHU_old );
+    Float_t vbfMela = pvbf_VAJHU_highestPTJets / ( phjj_VAJHU_highestPTJets + pvbf_VAJHU_highestPTJets );
     Float_t varVal[nVariables] = {
       ZZMass,
       ZZMass,

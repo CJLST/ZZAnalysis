@@ -157,10 +157,10 @@ namespace {
   std::vector<float> p0hplus_VAJHU  ;
   std::vector<float> p2bplus_VAJHU  ;
   std::vector<float> p2_VAJHU  ;
-  std::vector<float> pvbf_VAJHU_old_NEW  ;
-  std::vector<float> phjj_VAJHU_old_NEW  ;
-  std::vector<float> pvbf_VAJHU_old  ;
-  std::vector<float> phjj_VAJHU_old  ;
+  std::vector<float> pvbf_VAJHU_highestPTJets_NEW  ;
+  std::vector<float> phjj_VAJHU_highestPTJets_NEW  ;
+  std::vector<float> pvbf_VAJHU_highestPTJets  ;
+  std::vector<float> phjj_VAJHU_highestPTJets  ;
 
 /*
   std::vector<float> p0plus_VAJHU  ;		   
@@ -238,18 +238,18 @@ namespace {
   std::vector<float> bkg_m2l2q_ResUp  ;		   
   std::vector<float> p0plus_m2l2q_ResDown  ;	   
   std::vector<float> bkg_m2l2q_ResDown  ;	   
-  std::vector<float> phjj_VAJHU_old  ;		   
-  std::vector<float> pvbf_VAJHU_old  ;		   
-  std::vector<float> phjj_VAJHU_old_up  ;	   
-  std::vector<float> pvbf_VAJHU_old_up  ;	   
-  std::vector<float> phjj_VAJHU_old_dn  ;	   
-  std::vector<float> pvbf_VAJHU_old_dn  ;	   
-  std::vector<float> phjj_VAJHU_new  ;		   
-  std::vector<float> pvbf_VAJHU_new  ;		   
-  std::vector<float> phjj_VAJHU_new_up  ;	   
-  std::vector<float> pvbf_VAJHU_new_up  ;	   
-  std::vector<float> phjj_VAJHU_new_dn  ;	   
-  std::vector<float> pvbf_VAJHU_new_dn  ;	   
+  std::vector<float> phjj_VAJHU_highestPTJets  ;		   
+  std::vector<float> pvbf_VAJHU_highestPTJets  ;		   
+  std::vector<float> phjj_VAJHU_highestPTJets_up  ;	   
+  std::vector<float> pvbf_VAJHU_highestPTJets_up  ;	   
+  std::vector<float> phjj_VAJHU_highestPTJets_dn  ;	   
+  std::vector<float> pvbf_VAJHU_highestPTJets_dn  ;	   
+  std::vector<float> phjj_VAJHU_bestDjet  ;		   
+  std::vector<float> pvbf_VAJHU_bestDjet  ;		   
+  std::vector<float> phjj_VAJHU_bestDjet_up  ;	   
+  std::vector<float> pvbf_VAJHU_bestDjet_up  ;	   
+  std::vector<float> phjj_VAJHU_bestDjet_dn  ;	   
+  std::vector<float> pvbf_VAJHU_bestDjet_dn  ;	   
   std::vector<float> pAux_vbf_VAJHU  ;		   
   std::vector<float> pAux_vbf_VAJHU_up  ;	   
   std::vector<float> pAux_vbf_VAJHU_dn  ;	   
@@ -1057,10 +1057,10 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
     p0hplus_VAJHU.push_back(cand.userFloat("p0hplus_VAJHU"));
     p2bplus_VAJHU.push_back(cand.userFloat("p2bplus_VAJHU"));
     p2_VAJHU.push_back(cand.userFloat("p2_VAJHU"));
-    pvbf_VAJHU_old_NEW.push_back(cand.userFloat("pvbf_VAJHU_old_NEW"));
-    phjj_VAJHU_old_NEW.push_back(cand.userFloat("phjj_VAJHU_old_NEW")); 
-    pvbf_VAJHU_old.push_back(cand.userFloat("pvbf_VAJHU_old"));
-    phjj_VAJHU_old.push_back(cand.userFloat("phjj_VAJHU_old"));
+    pvbf_VAJHU_highestPTJets_NEW.push_back(cand.userFloat("pvbf_VAJHU_highestPTJets_NEW"));
+    phjj_VAJHU_highestPTJets_NEW.push_back(cand.userFloat("phjj_VAJHU_highestPTJets_NEW")); 
+    pvbf_VAJHU_highestPTJets.push_back(cand.userFloat("pvbf_VAJHU_highestPTJets"));
+    phjj_VAJHU_highestPTJets.push_back(cand.userFloat("phjj_VAJHU_highestPTJets"));
 
     //Float_t ZZLD = cand.userFloat("LD");
     //Float_t ZZLDPSig = cand.userFloat("PSig");
@@ -1178,18 +1178,18 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
     p0plus_m2l2q_ResDown.push_back(cand.userFloat("p0plus_m4l_ResDown"));// signal m2l2q probability for systematics
     bkg_m2l2q_ResDown.push_back(cand.userFloat("bkg_m4l_ResDown"));// backgroun m2l2q probability for systematics
 
-    phjj_VAJHU_old.push_back(cand.userFloat("phjj_VAJHU_old"));
-    pvbf_VAJHU_old.push_back(cand.userFloat("pvbf_VAJHU_old"));
-    phjj_VAJHU_old_up.push_back(cand.userFloat("phjj_VAJHU_old_up"));
-    pvbf_VAJHU_old_up.push_back(cand.userFloat("pvbf_VAJHU_old_up"));
-    phjj_VAJHU_old_dn.push_back(cand.userFloat("phjj_VAJHU_old_dn"));
-    pvbf_VAJHU_old_dn.push_back(cand.userFloat("pvbf_VAJHU_old_dn"));
-    phjj_VAJHU_new.push_back(cand.userFloat("phjj_VAJHU_new"));
-    pvbf_VAJHU_new.push_back(cand.userFloat("pvbf_VAJHU_new"));
-    phjj_VAJHU_new_up.push_back(cand.userFloat("phjj_VAJHU_new_up"));
-    pvbf_VAJHU_new_up.push_back(cand.userFloat("pvbf_VAJHU_new_up"));
-    phjj_VAJHU_new_dn.push_back(cand.userFloat("phjj_VAJHU_new_dn"));
-    pvbf_VAJHU_new_dn.push_back(cand.userFloat("pvbf_VAJHU_new_dn"));
+    phjj_VAJHU_highestPTJets.push_back(cand.userFloat("phjj_VAJHU_highestPTJets"));
+    pvbf_VAJHU_highestPTJets.push_back(cand.userFloat("pvbf_VAJHU_highestPTJets"));
+    phjj_VAJHU_highestPTJets_up.push_back(cand.userFloat("phjj_VAJHU_highestPTJets_up"));
+    pvbf_VAJHU_highestPTJets_up.push_back(cand.userFloat("pvbf_VAJHU_highestPTJets_up"));
+    phjj_VAJHU_highestPTJets_dn.push_back(cand.userFloat("phjj_VAJHU_highestPTJets_dn"));
+    pvbf_VAJHU_highestPTJets_dn.push_back(cand.userFloat("pvbf_VAJHU_highestPTJets_dn"));
+    phjj_VAJHU_bestDjet.push_back(cand.userFloat("phjj_VAJHU_bestDjet"));
+    pvbf_VAJHU_bestDjet.push_back(cand.userFloat("pvbf_VAJHU_bestDjet"));
+    phjj_VAJHU_bestDjet_up.push_back(cand.userFloat("phjj_VAJHU_bestDjet_up"));
+    pvbf_VAJHU_bestDjet_up.push_back(cand.userFloat("pvbf_VAJHU_bestDjet_up"));
+    phjj_VAJHU_bestDjet_dn.push_back(cand.userFloat("phjj_VAJHU_bestDjet_dn"));
+    pvbf_VAJHU_bestDjet_dn.push_back(cand.userFloat("pvbf_VAJHU_bestDjet_dn"));
 
     pAux_vbf_VAJHU.push_back(cand.userFloat("pAux_vbf_VAJHU"));
     pAux_vbf_VAJHU_up.push_back(cand.userFloat("pAux_vbf_VAJHU_up"));
@@ -1825,10 +1825,10 @@ void HZZ2l2qNtupleMaker::BookAllBranches(){
   myTree->Book("p0hplus_VAJHU",p0hplus_VAJHU);
   myTree->Book("p2bplus_VAJHU",p2bplus_VAJHU);
   myTree->Book("p2_VAJHU",p2_VAJHU);
-  myTree->Book("pvbf_VAJHU_old_NEW",pvbf_VAJHU_old_NEW);
-  myTree->Book("phjj_VAJHU_old_NEW",phjj_VAJHU_old_NEW);
-  myTree->Book("pvbf_VAJHU_old",pvbf_VAJHU_old);
-  myTree->Book("phjj_VAJHU_old",phjj_VAJHU_old);
+  myTree->Book("pvbf_VAJHU_highestPTJets_NEW",pvbf_VAJHU_highestPTJets_NEW);
+  myTree->Book("phjj_VAJHU_highestPTJets_NEW",phjj_VAJHU_highestPTJets_NEW);
+  myTree->Book("pvbf_VAJHU_highestPTJets",pvbf_VAJHU_highestPTJets);
+  myTree->Book("phjj_VAJHU_highestPTJets",phjj_VAJHU_highestPTJets);
 /*
     myTree->Book("p0plus_VAJHU",p0plus_VAJHU);
     myTree->Book("p0minus_VAJHU",p0minus_VAJHU);
@@ -1907,18 +1907,18 @@ void HZZ2l2qNtupleMaker::BookAllBranches(){
     myTree->Book("bkg_m2l2q_ResDown",bkg_m2l2q_ResDown);
 
   //Production MELA
-  myTree->Book("phjj_VAJHU_old",phjj_VAJHU_old);
-  myTree->Book("pvbf_VAJHU_old",pvbf_VAJHU_old);
-  myTree->Book("phjj_VAJHU_old_up",phjj_VAJHU_old_up);
-  myTree->Book("pvbf_VAJHU_old_up",pvbf_VAJHU_old_up);
-  myTree->Book("phjj_VAJHU_old_dn",phjj_VAJHU_old_dn);
-  myTree->Book("pvbf_VAJHU_old_dn",pvbf_VAJHU_old_dn);
-  myTree->Book("phjj_VAJHU_new",phjj_VAJHU_new);
-  myTree->Book("pvbf_VAJHU_new",pvbf_VAJHU_new);
-  myTree->Book("phjj_VAJHU_new_up",phjj_VAJHU_new_up);
-  myTree->Book("pvbf_VAJHU_new_up",pvbf_VAJHU_new_up);
-  myTree->Book("phjj_VAJHU_new_dn",phjj_VAJHU_new_dn);
-  myTree->Book("pvbf_VAJHU_new_dn",pvbf_VAJHU_new_dn);
+  myTree->Book("phjj_VAJHU_highestPTJets",phjj_VAJHU_highestPTJets);
+  myTree->Book("pvbf_VAJHU_highestPTJets",pvbf_VAJHU_highestPTJets);
+  myTree->Book("phjj_VAJHU_highestPTJets_up",phjj_VAJHU_highestPTJets_up);
+  myTree->Book("pvbf_VAJHU_highestPTJets_up",pvbf_VAJHU_highestPTJets_up);
+  myTree->Book("phjj_VAJHU_highestPTJets_dn",phjj_VAJHU_highestPTJets_dn);
+  myTree->Book("pvbf_VAJHU_highestPTJets_dn",pvbf_VAJHU_highestPTJets_dn);
+  myTree->Book("phjj_VAJHU_bestDjet",phjj_VAJHU_bestDjet);
+  myTree->Book("pvbf_VAJHU_bestDjet",pvbf_VAJHU_bestDjet);
+  myTree->Book("phjj_VAJHU_bestDjet_up",phjj_VAJHU_bestDjet_up);
+  myTree->Book("pvbf_VAJHU_bestDjet_up",pvbf_VAJHU_bestDjet_up);
+  myTree->Book("phjj_VAJHU_bestDjet_dn",phjj_VAJHU_bestDjet_dn);
+  myTree->Book("pvbf_VAJHU_bestDjet_dn",pvbf_VAJHU_bestDjet_dn);
   myTree->Book("pAux_vbf_VAJHU",pAux_vbf_VAJHU);
   myTree->Book("pAux_vbf_VAJHU_up",pAux_vbf_VAJHU_up);
   myTree->Book("pAux_vbf_VAJHU_dn",pAux_vbf_VAJHU_dn);
