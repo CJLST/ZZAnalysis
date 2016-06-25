@@ -804,6 +804,7 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
       else selectedLeptons.push_back(p4);
       
     }
+    mela->resetInputEvent();
 
       
     kinZfitter->Setup2L2Q(selectedLeptons,selectedJets,resolution_pt,resolution_phi,rho);
