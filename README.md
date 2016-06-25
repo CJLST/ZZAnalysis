@@ -3,14 +3,14 @@ ZZAnalysis
 
 To install a complete CMSSW area (including this package)
 ------------------------------
-Please use a CMSSW_7_6_X version >= 7_6_3_patch2.
+Please use a CMSSW_8_0_X version >= 8_0_4.
 
 Download and execute the setup script:
 ```
-wget -O /tmp/checkout_70X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/2l2q/checkout_70X.csh
+wget -O /tmp/checkout_80X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/2l2q_80X/checkout_80X.csh
 cd $CMSSW_BASE/src
 cmsenv
-source /tmp/checkout_70X.csh
+source /tmp/checkout_80X.csh
 ```
 
 To update this package from the release
@@ -32,7 +32,7 @@ Once you are ready to commit
 git pull
 git add [files to be added]
 git commit -m ["commit message"] [files to be added]
-git push origin 2l2q
+git push origin 2l2q_80X
 ```
 
 Otherwise you can make a fork of the repository, develop therein, and make a pull request in the same way as for CMSSW.
