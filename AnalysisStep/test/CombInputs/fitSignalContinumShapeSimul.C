@@ -13,8 +13,8 @@
 #include "TCanvas.h"
 #include "TLegend.h"
 #include "TGraphErrors.h"
-// #include "HiggsAnalysis/CombinedLimit/interface/HZZ4LRooPdfs.h"
-#include "HiggsAnalysis/CombinedLimit/interface/HZZ2L2QRooPdfs.h"
+#include "ZZMatrixElement/MELA/interface/HZZ4LRooPdfs.h"
+#include "ZZMatrixElement/MELA/interface/HZZ2L2QRooPdfs.h"
 #include "ZZAnalysis/AnalysisStep/interface/Category.h"
 #include "Math/GenVector/LorentzVector.h"
 #include "Math/GenVector/PtEtaPhiM4D.h"
@@ -50,6 +50,8 @@
 #include "RooAbsCollection.h"
 #include "RooWorkspace.h"
 #include "RooChebychev.h"
+#include "RooLandau.h"
+
 using namespace RooFit;
 
 
@@ -78,57 +80,47 @@ string scategory;
 string ssample;
 string sselAna;
 
-
-void fitSignalShapeW(int massBin, int id,int selAna, int ch, int cat,  int sample,
-                     double rangeLow, double rangeHigh,
-                     double bwSigma,
-                     double fitValues[7], double fitErrors[7], double covQual[1]);
-
-void fitSignalShapeSimul(int massBin[40], int maxMassBin, int selAna, int ch, int cat, int sample,
-                     double rangeLow[40], double rangeHigh[40],
-                     double bwSigma[40],
-                     double fitValues[7], double fitErrors[7], double covQual[1]);
-
-bool do7TeV;
-bool doFFT;
+void fitSignalContinumShapeSimul(int massBin[40], int maxMassBin, int selAna, int ch, int cat, int sample, double rangeLow[40], double rangeHigh[40],
+                          double bwSigma[40], double fitValues[7], double fitErrors[7], double covQual[1]);
 
 
 void all(int selAna =-10,  int channels=0, int categ =-10, int sample = 0 ){
 
   if (selAna == 0) sselAna = "Moriond";
-  if (selAna == 1) sselAna = "Current";
+  if (selAna == 1) sselAna = "ICHEP";
 
   if (channels == 0) schannel = "4mu";
   if (channels == 1) schannel = "4e";
   if (channels == 2) schannel = "2e2mu";
 
   if (categ < 0 ) scategory = "ALL";
-  if (categ == 0 && selAna == 0 ) scategory = "ZeroOneJet";
-  if (categ == 1 && selAna == 0 ) scategory = "Dijet";
+  if (categ == 0 && selAna == 0 ) scategory = "Untagged";
+  if (categ == 1 && selAna == 0 ) scategory = "VBFtagged";
 
   if (categ == 0 && selAna == 1 ) scategory = "Untagged";
-  if (categ == 1 && selAna == 1 ) scategory = "OneJetTagged";
-  if (categ == 2 && selAna == 1 ) scategory = "VBFTagged";
-  if (categ == 3 && selAna == 1 ) scategory = "VHLeptTagged";
-  if (categ == 4 && selAna == 1 ) scategory = "VHHadrTagged";
+  if (categ == 1 && selAna == 1 ) scategory = "VBF1JetTagged";
+  if (categ == 2 && selAna == 1 ) scategory = "VBF2JetTagged";
+  if (categ == 3 && selAna == 1 ) scategory = "VHHadrTagged";
+  if (categ == 4 && selAna == 1 ) scategory = "VHLepTagged";
   if (categ == 5 && selAna == 1 ) scategory = "ttHTagged";
 
   if (sample ==3) ssample = "ZH";
   if (sample ==4) ssample = "WH";
+  if (sample ==5) ssample = "ttH";
 
   double bwSigma[40];
   int mass[40]; int id[40]; double xLow[40]; double xHigh[40];
   int maxMassBin;
   maxMassBin = 5; 
 
-  float masses[5] = {125,120,124,126,130};
+  float masses[5] = {120,124,125,126,130};
   for(int i=0;i<5;++i) {
     mass[i] = masses[i]; 
     id[i]=masses[i]; 
     xLow[i] = 105.; // getFitEdge(masses[i],width,true); 
     xHigh[i] = 140.; // getFitEdge(masses[i],width,false); 
     //cout << "For mass = " << masses[i] << " width = " << width << "; => Fit Range = [" << xLow[i] << "," << xHigh[i] << "]" << endl;
-    bwSigma[i] = 0.004;
+   // bwSigma[i] = 0.004;
   }
   // -----------------------
 
@@ -152,8 +144,8 @@ void all(int selAna =-10,  int channels=0, int categ =-10, int sample = 0 ){
   double covQual[1];
 
 
-    fitSignalShapeSimul(mass,maxMassBin,selAna,channels,categ,sample,xLow,xHigh,bwSigma,fitValues,fitErrors,covQual); 
-//    fitSignalShapeSimul(mass,maxMassBin,selAna,channels,1,sample,xLow,xHigh,bwSigma,fitValues,fitErrors,covQual);
+    fitSignalContinumShapeSimul(mass,maxMassBin,selAna,channels,categ,sample,xLow,xHigh,bwSigma,fitValues,fitErrors,covQual); 
+//    fitSignalContinumShapeSimul(mass,maxMassBin,selAna,channels,1,sample,xLow,xHigh,bwSigma,fitValues,fitErrors,covQual);
   
       cout << "meanCB_p0 value "  << fitValues[0] << " , " << "mean_p1 value:"  << fitValues[6] << endl;
       cout << "sigmaCB_p0 value " << fitValues[1] << " , " << "sigma_p1 value:" << fitValues[7] << endl;
@@ -161,29 +153,28 @@ void all(int selAna =-10,  int channels=0, int categ =-10, int sample = 0 ){
       cout << "n1_p0 value "      << fitValues[3] << " , " << "n1_p1 value:"    << fitValues[9]  << endl;
       cout << "a2_p0 value "      << fitValues[4] << " , " << "a2_p1 value:"    << fitValues[10]  << endl;
       cout << "n2_p0 value "      << fitValues[5] << " , " << "n2_p1 value:"    << fitValues[11]  << endl;
-      cout << "p0 value "         << fitValues[12]<< endl;
-      cout << "p1 value "         << fitValues[13]<< endl;
+      cout << "ml value "         << fitValues[12]<< endl;
+      cout << "sl value "         << fitValues[13]<< endl;
       cout << "frac value "       << fitValues[14]<< endl;
 
 
       string filename = "signal_shape_parametrization_13TeV_" + ssample + "_" + schannel + "_" + sselAna + "_" + scategory + "." + "yaml" ;
       ofstream outFile;
       outFile.open(filename);
-      outFile <<"#Sample : "<< ssample << endl;
-      outFile <<"#Channel: "<< schannel << endl;
-      outFile << scategory << ": &untagged" <<endl;
+      if(channels == 2)outFile<<"shape : " <<"\"RooDCBall::"<<ssample<<"_mass(mean,sigma,alpha,n,alpha2,n2)*(frac)+(RooLandau::"<<ssample<<"_mass(p0,p1))*(1-frac)\""<< endl;
+      outFile << schannel <<"    :" << endl;
       outFile <<"    mean   : " <<"'"<<fitValues[0]<<"+"<<"("<<fitValues[6] <<")*(@0-125)"<<"'"<<endl;
       outFile <<"    sigma  : " <<"'"<<fitValues[1]<<"+"<<"("<<fitValues[7] <<")*(@0-125)"<<"'"<<endl;
       outFile <<"    alpha  : " <<"'"<<fitValues[2]<<"+"<<"("<<fitValues[8] <<")*(@0-125)"<<"'"<<endl;
       outFile <<"    n      : " <<"'"<<fitValues[3]<<"+"<<"("<<fitValues[9] <<")*(@0-125)"<<"'"<<endl;
       outFile <<"    alpha2 : " <<"'"<<fitValues[4]<<"+"<<"("<<fitValues[10]<<")*(@0-125)"<<"'"<<endl;
       outFile <<"    n2     : " <<"'"<<fitValues[5]<<"+"<<"("<<fitValues[11]<<")*(@0-125)"<<"'"<<endl;
-      outFile <<"    p0     : " <<"'"<<fitValues[12]<<endl;
-      outFile <<"    p1     : " <<"'"<<fitValues[13]<<endl;
+      outFile <<"    ml     : " <<"'"<<fitValues[12]<<endl;
+      outFile <<"    sl     : " <<"'"<<fitValues[13]<<endl;
       outFile <<"    frac   : " <<"'"<<fitValues[14]<<endl;
       outFile << endl;
   }
-void fitSignalShapeSimul(int massBin[40],int maxMassBin, int selAna, int channels,int categ, int sample,double rangeLow[40], double rangeHigh[40],
+void fitSignalContinumShapeSimul(int massBin[40],int maxMassBin, int selAna, int channels,int categ, int sample,double rangeLow[40], double rangeHigh[40],
 		          double bwSigma[40], double fitValues[7], double fitErrors[7], double covQual[1]){
  // ------ root settings ---------
   gROOT->Reset();  
@@ -201,8 +192,8 @@ void fitSignalShapeSimul(int massBin[40],int maxMassBin, int selAna, int channel
 
   ROOT::Math::MinimizerOptions::SetDefaultTolerance( 1.E-7);
  
-  if (categ == 0 && selAna == 0 ) scategory = "ZeroOneJet";
-  if (categ == 1 && selAna == 0 ) scategory = "Dijet";
+  if (categ == 0 && selAna == 0 ) scategory = "Untagged";
+  if (categ == 1 && selAna == 0 ) scategory = "VBFtagged";
 
   float m4l;
   
@@ -210,13 +201,18 @@ void fitSignalShapeSimul(int massBin[40],int maxMassBin, int selAna, int channel
   float weight;
 
   Short_t nExtraLeptons;   
-  float ZZPt, PVBF_VAJHU_old, PHJJ_VAJHU_old;
+  Short_t ExtraZ;
+  Short_t nCleanedJets;
+  float ZZPt, PVBF_VAJHU_old, PHJJ_VAJHU_old, PHJ_VAJHU, PAUX_VBF_VAJHU, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU;
+  
   Short_t nJets;
   Short_t nBTaggedJets;
+  std::vector<float> * JETQGLikeliHood = 0;
   std::vector<float> * jetpt = 0;
   std::vector<float> * jeteta = 0;
   std::vector<float> * jetphi = 0;
   std::vector<float> * jetmass = 0;
+  float jetQGLL[100];
   float jet30pt[10];
   float jet30eta[10];
   float jet30phi[10];
@@ -242,8 +238,9 @@ void fitSignalShapeSimul(int massBin[40],int maxMassBin, int selAna, int channel
 
   stringstream FileName[40];
   for (int i=0; i<maxMassBin; i++) {
-    if(sample==3) FileName[i] << "root://lxcms03//data3/Higgs/160121/ZH" << massBin[i] << "/ZZ4lAnalysis.root";
-    else if(sample==4) FileName[i] << "root://lxcms03//data3/Higgs/160121/WminusH" << massBin[i] << "/ZZ4lAnalysis.root";
+    if(sample==3) FileName[i] << "root://lxcms03//data3/Higgs/160624/ZH" << massBin[i] << "/ZZ4lAnalysis.root";
+    else if(sample==4) FileName[i] << "root://lxcms03//data3/Higgs/160624/WplusH" << massBin[i] << "/ZZ4lAnalysis.root";
+    else if(sample==5) FileName[i] << "root://lxcms03//data3/Higgs/160624/ttH" << massBin[i] << "/ZZ4lAnalysis.root";
     else {
       cout << "Wrong sample ." << endl;
       return;
@@ -266,7 +263,15 @@ void fitSignalShapeSimul(int massBin[40],int maxMassBin, int selAna, int channel
     ggTree->SetBranchAddress("nCleanedJetsPt30BTagged",&nBTaggedJets);
     ggTree->SetBranchAddress("pvbf_VAJHU_old",&PVBF_VAJHU_old);
     ggTree->SetBranchAddress("phjj_VAJHU_old",&PHJJ_VAJHU_old);
+
     ggTree->SetBranchAddress("DiJetFisher",&Fisher); 
+    ggTree->SetBranchAddress("nExtraZ",&ExtraZ);
+    ggTree->SetBranchAddress("nCleanedJetsPt30",&nCleanedJets);
+    ggTree->SetBranchAddress("JetQGLikelihood",&JETQGLikeliHood);
+    ggTree->SetBranchAddress("phj_VAJHU",&PHJ_VAJHU);
+    ggTree->SetBranchAddress("pAux_vbf_VAJHU",&PAUX_VBF_VAJHU);
+    ggTree->SetBranchAddress("pwh_hadronic_VAJHU",&PWH_hadronic_VAJHU);
+    ggTree->SetBranchAddress("pzh_hadronic_VAJHU",&PZH_hadronic_VAJHU);
     
     ggTree->SetBranchAddress("JetPt",&jetpt);
     ggTree->SetBranchAddress("JetEta",&jeteta);
@@ -282,6 +287,11 @@ void fitSignalShapeSimul(int massBin[40],int maxMassBin, int selAna, int channel
 
     for(int k=0; k<nentries; k++){
       ggTree->GetEvent(k);
+
+      int nj = 0;
+      for (unsigned int nj = 0; nj < JETQGLikeliHood->size(); nj++) {
+        jetQGLL[nj] = (*JETQGLikeliHood)[nj];
+        }
       
       int njet30 = 0;
       for (unsigned int ijet = 0; ijet < jetpt->size(); ijet++) { 
@@ -294,8 +304,9 @@ void fitSignalShapeSimul(int massBin[40],int maxMassBin, int selAna, int channel
 	}
       }  
       int Cat = -10 ;
-      if (selAna == 1) Cat = category(nExtraLeptons, ZZPt, m4l, njet30, nBTaggedJets, jet30pt, jet30eta, jet30phi,jet30mass, Fisher); 
+//      if (selAna == 1) Cat = category(nExtraLeptons, ZZPt, m4l, njet30, nBTaggedJets, jet30pt, jet30eta, jet30phi,jet30mass, Fisher); 
       if (selAna == 0) Cat = categoryMor16(nJets, PVBF_VAJHU_old, PHJJ_VAJHU_old );	    
+      if (selAna == 1) Cat = categoryIchep16(nExtraLeptons, ExtraZ, nCleanedJets, nBTaggedJets,jetQGLL, PHJJ_VAJHU_old, PHJ_VAJHU, PVBF_VAJHU_old, PAUX_VBF_VAJHU, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU );
 
       if (categ >= 0 && categ != Cat ) continue;
       
@@ -320,6 +331,7 @@ void fitSignalShapeSimul(int massBin[40],int maxMassBin, int selAna, int channel
   cout << "dataset 125 n entries: " << dataset125->sumEntries() << endl;
 
   TCanvas *c1 = new TCanvas("c1","c1",725,725);
+  TCanvas *c2 = new TCanvas("c2","c2",725,725);
 
   TPad *pad1 = new TPad("pad1","This is pad1",0.05,0.35,0.95,0.97);
   pad1->Draw();
@@ -348,29 +360,47 @@ void fitSignalShapeSimul(int massBin[40],int maxMassBin, int selAna, int channel
 
   RooRealVar n2_p0("n2_p0","n2_p0", 40., -50., 50.);
   RooRealVar n2_p1("n2_p1","n2_p1", 0, -0.5, 0.5);
-//----- Cheby Poly
-  RooRealVar A1("A1","A1",-1,-3 ,3.);
-  RooRealVar A2("A2","A2",0.5,-3.,3.);
+
+//  RooRealVar ml_p1("ml_p0","ml_p0",0,-1.5 ,1.5);
+//  RooRealVar sl_p1("sl_p0","sl_p0",0.5,-0.5,0.5);
+
+//-------- Landau  
+  RooRealVar ml_p0("ml_p0","mean landau",145.,100.,250.) ;
+  RooRealVar sl_p0("sl_p0","sigma landau",15.,2.,50.) ;
+
+//  ml_p0.setConstant(kTRUE);
+//  sl_p0.setConstant(kTRUE);
+
 
 //----- Fraction
-  RooRealVar frac("frac","Fraction for PDF",0.5,0.,1.);  
+  RooRealVar frac_p0("frac","Fraction for PDF",0.5,0.,1.);  
+//  RooRealVar frac_p1("frac","Fraction for PDF",0.1,-0.5,0.5);
 
-  RooArgSet* params_Inter = new RooArgSet(RooArgList( mean_p0, sigma_p0, a1_p0, n1_p0, a2_p0, n2_p0, A1, A2, frac));
+  RooArgSet* params_Inter = new RooArgSet(RooArgList( mean_p0, sigma_p0, a1_p0, n1_p0, a2_p0, n2_p0, ml_p0, sl_p0));
   RooArgSet* params_slope = new RooArgSet(RooArgList( mean_p1, sigma_p1, a1_p1, n1_p1, a2_p1, n2_p1));
-   
-  if (sample != 1 || categ > 0 ) {
+  
+  if (sample != 1 ) {
     if(channels==0 ) params_Inter->readFromFile("Ch0_Cat0_paraI.txt","p0");  
     if(channels==1 ) params_Inter->readFromFile("Ch1_Cat0_paraI.txt","p0");  
     if(channels==2 ) params_Inter->readFromFile("Ch2_Cat0_paraI.txt","p0"); 
   }
+  if (categ > 0 ) {
+    if(channels==0 ) params_Inter->readFromFile("Ch0_Cat0_paraIIL.txt");  
+    if(channels==1 ) params_Inter->readFromFile("Ch1_Cat0_paraIIL.txt");  
+    if(channels==2 ) params_Inter->readFromFile("Ch2_Cat0_paraIIL.txt"); 
+  }
+
+  params_Inter->Print("v");
 
   // Prefit at 125
-
-
+  RooLandau landau("lx","lx",x,ml_p0,sl_p0) ;
   RooDoubleCB DCBall("DCBall","Double Crystal ball",x,mean_p0,sigma_p0,a1_p0,n1_p0,a2_p0,n2_p0);
-  RooChebychev BkgPDF("BkgPDF","BkgPDF",x ,RooArgList(A1,A2));
+  //RooChebychev BkgPDF("BkgPDF","BkgPDF",x ,RooArgList(ml_p0,sl_p0));
 
-  RooAddPdf totPDF("totPDF","Total PDF ",RooArgList(DCBall,BkgPDF),RooArgList(frac));
+  
+  RooAddPdf totPDF("totPDF","Total PDF ",RooArgList(DCBall,landau),RooArgList(frac_p0));
+     
+  //RooAddPdf totPDF("totPDF","Total PDF ",RooArgList(DCBall,BkgPDF),RooArgList(frac));
   RooFitResult *fitres = (RooFitResult*)totPDF.fitTo(*dataset125,SumW2Error(1),Range(xMin,xMax),Strategy(2),NumCPU(8),Save(true));
   
   cout << "Prefit done" << endl;
@@ -385,16 +415,26 @@ void fitSignalShapeSimul(int massBin[40],int maxMassBin, int selAna, int channel
   xframe->SetTitle("");
   xframe->SetName("m4lplot");
   dataset125->plotOn(xframe,DataError(RooAbsData::SumW2), MarkerStyle(kOpenCircle), MarkerSize(1.1) );
-  int col;
+  int col, col1, col2;
+  col1=kYellow+1;
+  col2=kPink+1;
   if(channels==0) col=kOrange+7;
   if(channels==1) col=kAzure+2;
   if(channels==2) col=kGreen+3;
-  DCBall.plotOn(xframe,LineColor(col));
-
+  totPDF.plotOn(xframe,LineColor(col));
   RooHist* hpull = xframe->pullHist();
+
+  DCBall.plotOn(xframe,LineColor(col1));
+  landau.plotOn(xframe,LineColor(col2));  
+
   RooPlot* frame3 = x.frame(Title("Pull Distribution")) ;
   frame3->addPlotable(hpull,"P");
   cout << "Reduced chi2 = " << xframe->chiSquare() << endl;
+
+  double * Rentries = hpull->GetY();
+  TH1D *hh = new TH1D("Pull Distribution","Pull Distribution",10,-5,5);
+  for (int i =0; i < 70; i++ ){
+  hh->Fill(Rentries[i]);}
 
   TLegend *legend = new TLegend(0.20,0.45,0.45,0.60,NULL,"brNDC");
   legend->SetBorderSize(     0);
@@ -447,7 +487,7 @@ void fitSignalShapeSimul(int massBin[40],int maxMassBin, int selAna, int channel
   
   xframe->GetYaxis()->SetTitleOffset(1.5);
 
-  pad1->cd();
+  c1->cd();
   stringstream nameFile, nameFileC, nameFilePng;
   nameFile    << "PrefitM125" << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".pdf";
   nameFileC   << "PrefitM125" << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".C";
@@ -456,7 +496,16 @@ void fitSignalShapeSimul(int massBin[40],int maxMassBin, int selAna, int channel
   xframe->Draw(); 
   gPad->Update(); legend->Draw(); text->Draw(); sigmat->Draw(); titlet->Draw();
 
-  pad2->cd() ;
+  c1->Print (nameFile.str().c_str());
+  c1->SaveAs(nameFileC.str().c_str());
+  c1->SaveAs(nameFilePng.str().c_str());
+ 
+  c2->Divide(1,2);
+
+  c2->cd(1) ;
+  hh->Draw() ;
+
+  c2->cd(2) ;
   frame3->Draw() ;
   frame3->SetMinimum(-3);
   frame3->SetMaximum(3);
@@ -464,35 +513,41 @@ void fitSignalShapeSimul(int massBin[40],int maxMassBin, int selAna, int channel
   TLine *line1 = new TLine(105,0,140,0);
   line1->SetLineColor(kRed);
   line1->Draw();
-  
-  c1->Print (nameFile.str().c_str());
-  c1->SaveAs(nameFileC.str().c_str());
-  c1->SaveAs(nameFilePng.str().c_str());
 
+  stringstream nameFilePull, nameFilePullC, nameFilePullPng;
+  nameFilePull    << "Pre_PullM"    << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".pdf";
+  nameFilePullC    << "Pre_PullM"   << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".C";
+  nameFilePullPng   << "Pre_PullM"  << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".png";
+
+  c2->Print(nameFilePull.str().c_str());
+  c2->SaveAs(nameFilePullC.str().c_str());
+  c2->SaveAs(nameFilePullPng.str().c_str());
   mean_p0.setConstant(kTRUE);
   sigma_p0.setConstant(kTRUE);
   a1_p0.setConstant(kTRUE);
   n1_p0.setConstant(kTRUE);
   a2_p0.setConstant(kTRUE);
   n2_p0.setConstant(kTRUE);
-  A1.setConstant(kTRUE);
-  A2.setConstant(kTRUE);
-  frac.setConstant(kTRUE);
-
+  //frac_p0.setConstant(kTRUE);
+  ml_p0.setConstant(kTRUE);
+  sl_p0.setConstant(kTRUE); 
 
   RooArgSet * params = totPDF.getParameters(x);
 
-  if (sample == 1 && categ <= 0 ){ 
-    if(channels==0 ) params->writeToFile("Ch0_Cat0_paraI.txt") ;
-    if(channels==1 ) params->writeToFile("Ch1_Cat0_paraI.txt") ;
-    if(channels==2 ) params->writeToFile("Ch2_Cat0_paraI.txt") ;
+  if (categ <= 0 ){ 
+    if(channels==0 ) params->writeToFile("Ch0_Cat0_paraIIL.txt") ;
+    if(channels==1 ) params->writeToFile("Ch1_Cat0_paraIIL.txt") ;
+    if(channels==2 ) params->writeToFile("Ch2_Cat0_paraIIL.txt") ;
   }
 
   a1_p1.setConstant(kTRUE);
   n1_p1.setConstant(kTRUE);
-  //a2_p1.setConstant(kTRUE);
+  a2_p1.setConstant(kTRUE);
   n2_p1.setConstant(kTRUE);
-  
+  //frac_p1.setConstant(kTRUE);
+  //ml_p1.setConstant(kTRUE);
+  //sl_p1.setConstant(kTRUE);
+    
   // Simultaneous fit
   RooSimultaneous rs("rs","rs",massrc);  
 
@@ -502,8 +557,14 @@ void fitSignalShapeSimul(int massBin[40],int maxMassBin, int selAna, int channel
   RooFormulaVar* a2[40];
   RooFormulaVar* n1[40];
   RooFormulaVar* n2[40];
+//  RooFormulaVar* ml[40];
+//  RooFormulaVar* sl[40];
+//  RooFormulaVar* frac[40];
+
   RooDoubleCB* DCBall2[40];
-  RooChebychev* BkgPDF2[40];
+//  RooChebychev* BkgPDF2[40];
+  RooLandau* landau2[40];
+
   RooAddPdf* totPDF2[40];
   for (int i=0; i<maxMassBin; i++) {
     char formulamass[200];
@@ -516,23 +577,38 @@ void fitSignalShapeSimul(int massBin[40],int maxMassBin, int selAna, int channel
     n1[i] = new RooFormulaVar("n1_CB","n1_CB",formulamass,RooArgList(n1_p0,n1_p1));
     a2[i] = new RooFormulaVar("a2_CB","a2_CB",formulamass,RooArgList(a2_p0,a2_p1));
     n2[i] = new RooFormulaVar("n2_CB","n2_CB",formulamass,RooArgList(n2_p0,n2_p1));
+//    ml[i] = new RooFormulaVar("ml","ml",formulamass,RooArgList(ml_p0,ml_p1));
+//    sl[i] = new RooFormulaVar("sl","sl",formulamass,RooArgList(sl_p0,sl_p1));
+//    frac[i] = new RooFormulaVar("sl","sl",formulamass,RooArgList(frac_p0,frac_p1));
 
     DCBall2[i] = new RooDoubleCB("DCBall2","Double Crystal ball 2",x,*mean[i],*sigma[i],*a1[i],*n1[i],*a2[i],*n2[i]);
-    BkgPDF2[i] = new RooChebychev("BkgPDF2","BkgPDF2",x ,RooArgList(A1,A2));
-    totPDF2[i] = new RooAddPdf("totPDF","Total PDF ",RooArgList(*DCBall2[i],*BkgPDF2[i]),RooArgList(frac));
+
+//    landau2[i] = new RooLandau("landau2","landau 2",x,*ml[i],*sl[i]);
+    landau2[i] = new RooLandau("landau2","landau 2",x,ml_p0,sl_p0);
+
+//    totPDF2[i] = new RooAddPdf("totPDF","Total PDF ",RooArgList(*DCBall2[i],*landau2[i]),RooArgList(*frac[i]));
+//    totPDF2[i] = new RooAddPdf("totPDF","Total PDF ",RooArgList(*DCBall2[i],*landau2[i],*frac[i]));
+   totPDF2[i] = new RooAddPdf("totPDF","Total PDF ",RooArgList(*DCBall2[i],*landau2[i]),RooArgList(frac_p0));
+//    BkgPDF2[i] = new RooChebychev("BkgPDF2","BkgPDF2",x ,RooArgList(ml_p0,sl_p0));
+//    totPDF2[i] = new RooAddPdf("totPDF","Total PDF ",RooArgList(*DCBall2[i],*BkgPDF2[i]),RooArgList(frac));
     char tempmass[4];
     sprintf(tempmass,"mh%d",massBin[i]);
     rs.addPdf(*totPDF2[i], tempmass);
   }
 
   RooArgSet * params2 = rs.getParameters(RooArgList(x,massrc));
-  if (sample != 1 || categ > 0 ) {
-  
+//    if (sample != 3 || categ > 0 ) {
+/*    if (categ <= 0){   
+    if(channels==0 )params2->readFromFile("Ch0_Cat0_paraIIL.txt") ;
+    if(channels==1 )params2->readFromFile("Ch1_Cat0_paraIIL.txt") ;
+    if(channels==2 )params2->readFromFile("Ch2_Cat0_paraIIL.txt") ;	
+    }
+//  if (sample == 3 && categ > 0 ) {
+    if (categ > 0){
     if(channels==0 )params2->readFromFile("Ch0_Cat0_paraf.txt") ;
     if(channels==1 )params2->readFromFile("Ch1_Cat0_paraf.txt") ;
-    if(channels==2 )params2->readFromFile("Ch2_Cat0_paraf.txt") ;	
-  }
-
+    if(channels==2 )params2->readFromFile("Ch2_Cat0_paraf.txt") ;
+  }*/
   RooFitResult *fitressim = (RooFitResult*)rs.fitTo(dataset,SumW2Error(1),Range(xMin,xMax),Strategy(2),NumCPU(8),Save(true));
  
   mean_p1.setConstant(kTRUE);
@@ -541,16 +617,19 @@ void fitSignalShapeSimul(int massBin[40],int maxMassBin, int selAna, int channel
   n1_p1.setConstant(kTRUE);
   a2_p1.setConstant(kTRUE);
   n2_p1.setConstant(kTRUE);
+//  ml_p1.setConstant(kTRUE);
+//  sl_p1.setConstant(kTRUE);
 
-  if (sample == 1 && categ <= 0 ) {
-  
+//  if (sample == 3 && categ <= 0 ) {
+  if (categ <= 0){
     if(channels==0 )params2->writeToFile("Ch0_Cat0_paraf.txt") ;
     if(channels==1 )params2->writeToFile("Ch1_Cat0_paraf.txt") ;
     if(channels==2 )params2->writeToFile("Ch2_Cat0_paraf.txt") ;	
   }
 
   cout << "Full fit done" << endl;
- 
+
+  double ChiSq[5];
   for (int i=0; i<maxMassBin; i++) {
 
     stringstream frameTitle;
@@ -569,11 +648,18 @@ void fitSignalShapeSimul(int massBin[40],int maxMassBin, int selAna, int channel
     
     dataset.plotOn(xframe2,DataError(RooAbsData::SumW2), MarkerStyle(kOpenCircle), MarkerSize(1.1), Cut(tempmass) );
     rs.plotOn(xframe2,LineColor(col),Slice(massrc,tempmass2),ProjWData(massrc,dataset));
-    
+    //landau2.plotOn(xframe2,LineColor(kPink),Slice(massrc,tempmass2),ProjWData(massrc,dataset)); 
+   
     RooHist* hpull = xframe2->pullHist();
     RooPlot* frame4 = x.frame(Title("Pull Distribution")) ;
     frame4->addPlotable(hpull,"P");
     cout << "Reduced chi2 = " << xframe2->chiSquare() << endl;
+    ChiSq[i] = xframe2->chiSquare();
+
+    double * Rentries = hpull->GetY();
+    TH1D *hh1 = new TH1D("Pull Distribution","Pull Distribution",10,-5,5);
+    for (int i =0; i < 70; i++ ){
+    hh1->Fill(Rentries[i]);}
 
     // cosmetics
     TPaveText *titlet2 = new TPaveText(0.15,0.80,0.60,0.85,"brNDC");
@@ -586,7 +672,7 @@ void fitSignalShapeSimul(int massBin[40],int maxMassBin, int selAna, int channel
   
     xframe2->GetYaxis()->SetTitleOffset(1.5);
 
-    pad1->cd();
+    c1->cd();
     stringstream nameFile, nameFileC, nameFilePng;
     nameFile    << "fitM" << massBin[i] << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".pdf";
     nameFileC   << "fitM" << massBin[i] << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".C";
@@ -595,18 +681,57 @@ void fitSignalShapeSimul(int massBin[40],int maxMassBin, int selAna, int channel
     xframe2->Draw(); 
     gPad->Update(); legend->Draw(); text->Draw(); titlet2->Draw();
 
-    pad2->cd() ;
-    frame4->Draw() ;
-    frame4->SetMinimum(-3);
-    frame4->SetMaximum(3);
-
-    line1->Draw();
-    
     c1->Print (nameFile.str().c_str());
     c1->SaveAs(nameFileC.str().c_str());
     c1->SaveAs(nameFilePng.str().c_str());
 
+
+    c2->cd(1) ;
+    hh1->Draw();
+
+    c2->cd(2) ;
+    frame4->Draw() ;
+    frame4->SetMinimum(-3);
+    frame4->SetMaximum(3);
+    line1->Draw();
+
+    stringstream nameFilePull, nameFilePullC, nameFilePullPng;
+    nameFilePull     << "PullM" << massBin[i] << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".pdf";
+    nameFilePullC    << "PullM" << massBin[i] << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".C";
+    nameFilePullPng  << "PullM" << massBin[i] << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".png";
+    c2->Print (nameFilePull.str().c_str());
+    c2->SaveAs(nameFilePullC.str().c_str());
+    c2->SaveAs(nameFilePullPng.str().c_str());
+
   }
+
+    for (int j=0; j<5 ; j++ )
+    cout<<"Chi2 for mass " << massBin[j] << " GeV: " << ChiSq[j] << endl;
+
+   Int_t ni = 5;
+   Double_t xi[ni], yi[ni];
+   for (Int_t i=0;i<ni;i++) {
+      xi[i] = massBin[i];
+      yi[i] = ChiSq[i];
+   }
+    stringstream nameGraphChi;
+    nameGraphChi    << "Chi2"  << "_" << ssample << "_" << schannel << "_"<< scategory;
+    TGraph *gr  = new TGraph(ni,xi,yi);
+    gr->SetTitle(nameGraphChi.str().c_str());
+    gr->GetXaxis()->SetTitle("Mass GeV");
+    gr->GetYaxis()->SetTitle("Chi2/ndof");
+    gr->SetMinimum(0);
+    gr->SetMaximum(5);
+
+    TCanvas *c3 = new TCanvas("c3","Chi2 ",200,10,600,400);
+    gr->Draw();
+    stringstream nameFileChi, nameFilePngChi;
+    nameFileChi    << "Chi2" << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".pdf";
+    nameFilePngChi    << "Chi2" << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".png";
+    c3->SaveAs(nameFileChi.str().c_str());
+    c3->SaveAs(nameFilePngChi.str().c_str());
+
+
     if(fitValues!=0){
 
     fitValues[0] = mean_p0.getVal();
@@ -622,9 +747,9 @@ void fitSignalShapeSimul(int massBin[40],int maxMassBin, int selAna, int channel
     fitValues[9]  = n1_p1.getVal();
     fitValues[10] = a2_p1.getVal();
     fitValues[11] = n2_p1.getVal();
-    fitValues[12] = A1.getVal();
-    fitValues[13] = A2.getVal();
-    fitValues[14] = frac.getVal();
+    fitValues[12] = ml_p0.getVal();
+    fitValues[13] = sl_p0.getVal();
+    fitValues[14] = frac_p0.getVal();
 
     }
 
@@ -743,7 +868,7 @@ void plotRegrVsNoRegr(int channel, int massBin) {
   filenoregr << "m4lplots/noregr/fitM" << massBin << "_channel" << channel << ".root";
 
   int col;
-  if(channel==0) col=kOrange+7;
+  if(channel==0) col= kOrange+7;
   if(channel==1) col=kAzure+2;
   if(channel==2) col=kGreen+3;
 

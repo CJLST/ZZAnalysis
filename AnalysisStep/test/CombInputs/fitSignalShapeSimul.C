@@ -13,8 +13,9 @@
 #include "TCanvas.h"
 #include "TLegend.h"
 #include "TGraphErrors.h"
-// #include "HiggsAnalysis/CombinedLimit/interface/HZZ4LRooPdfs.h"
-#include "HiggsAnalysis/CombinedLimit/interface/HZZ2L2QRooPdfs.h"
+#include "TGraph.h"
+#include "ZZMatrixElement/MELA/interface/HZZ4LRooPdfs.h"
+#include "ZZMatrixElement/MELA/interface/HZZ2L2QRooPdfs.h"
 #include "ZZAnalysis/AnalysisStep/interface/Category.h"
 #include "Math/GenVector/LorentzVector.h"
 #include "Math/GenVector/PtEtaPhiM4D.h"
@@ -81,22 +82,22 @@ void fitSignalShapeSimul(int massBin[40], int maxMassBin, int selAna, int ch, in
 
 void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
 
-  if (selAna == 0) sselAna = "Moriond";
-  if (selAna == 1) sselAna = "Current";
+  if (selAna == 0) sselAna = "Morinod";
+  if (selAna == 1) sselAna = "ICHEP";
 
   if (channels == 0) schannel = "4mu";
   if (channels == 1) schannel = "4e";
   if (channels == 2) schannel = "2e2mu";
 
   if (categ < 0 ) scategory = "ALL";
-  if (categ == 0 && selAna == 0 ) scategory = "ZeroOneJet";
-  if (categ == 1 && selAna == 0 ) scategory = "Dijet";
+  if (categ == 0 && selAna == 0 ) scategory = "Untagged";
+  if (categ == 1 && selAna == 0 ) scategory = "VBFtagged";
 
   if (categ == 0 && selAna == 1 ) scategory = "Untagged";
-  if (categ == 1 && selAna == 1 ) scategory = "OneJetTagged";
-  if (categ == 2 && selAna == 1 ) scategory = "VBFTagged";
-  if (categ == 3 && selAna == 1 ) scategory = "VHLeptTagged";
-  if (categ == 4 && selAna == 1 ) scategory = "VHHadrTagged";
+  if (categ == 1 && selAna == 1 ) scategory = "VBF1JetTagged";
+  if (categ == 2 && selAna == 1 ) scategory = "VBF2JetTagged";
+  if (categ == 3 && selAna == 1 ) scategory = "VHHadrTagged";
+  if (categ == 4 && selAna == 1 ) scategory = "VHLeptTagged";
   if (categ == 5 && selAna == 1 ) scategory = "ttHTagged";
 
   if (sample ==1) ssample = "ggH";
@@ -105,10 +106,10 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
   double bwSigma[40];
   int mass[40]; int id[40]; double xLow[40]; double xHigh[40];
   int maxMassBin;
-  maxMassBin = 5; 
+  maxMassBin = 3; 
 
-  float masses[5] = {120,124,125,126,130};
-  for(int i=0;i<5;++i) {
+  float masses[3] = {120,125,126};
+  for(int i=0;i<3;++i) {
     mass[i] = masses[i]; 
     id[i]=masses[i]; 
     xLow[i] = 105.;  
@@ -149,9 +150,8 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
       string filename = "signal_shape_parametrization_13TeV_" + ssample + "_" + schannel + "_" + sselAna + "_" + scategory + "." + "yaml" ;
       ofstream outFile;
       outFile.open(filename);
-      outFile <<"#Sample : "<< ssample << endl;
-      outFile <<"#Channel: "<< schannel << endl;
-      outFile << scategory << ": &untagged" <<endl;
+      if(channels == 0)outFile<<"shape : " <<"\"RooDCBall::"<<ssample<<"_mass(mean,sigma,alpha,n,alpha2,n2)\""<< endl;
+      outFile << schannel <<"    :" << endl;
       outFile <<"    mean   : " <<"'"<<fitValues[0]<<"+"<<"("<<fitValues[6] <<")*(@0-125)"<<"'"<<endl;
       outFile <<"    sigma  : " <<"'"<<fitValues[1]<<"+"<<"("<<fitValues[7] <<")*(@0-125)"<<"'"<<endl;
       outFile <<"    alpha  : " <<"'"<<fitValues[2]<<"+"<<"("<<fitValues[8] <<")*(@0-125)"<<"'"<<endl;
@@ -174,22 +174,26 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
   gStyle->SetPadLeftMargin(0.14);
   gStyle->SetPadRightMargin(0.06);
   // ------------------------------ 
-
   ROOT::Math::MinimizerOptions::SetDefaultTolerance( 1.E-7);
  
   float m4l;
   
   Short_t z1flav, z2flav; 
   float weight;
+  
+  Short_t ExtraZ;
+  Short_t nExtraLeptons;
+  Short_t nCleanedJets;   
 
-  Short_t nExtraLeptons;   
-  float ZZPt, PVBF_VAJHU_old, PHJJ_VAJHU_old;
+  float ZZPt, PVBF_VAJHU_old, PHJJ_VAJHU_old, PHJ_VAJHU, PAUX_VBF_VAJHU, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU;
   Short_t nJets;
   Short_t nBTaggedJets;
+  std::vector<float> * JETQGLikeliHood = 0;
   std::vector<float> * jetpt = 0;
   std::vector<float> * jeteta = 0;
   std::vector<float> * jetphi = 0;
   std::vector<float> * jetmass = 0;
+  float jetQGLL[100];
   float jet30pt[10];
   float jet30eta[10];
   float jet30phi[10];
@@ -215,8 +219,8 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
 
   stringstream FileName[40];
   for (int i=0; i<maxMassBin; i++) {
-    if(sample==1)      FileName[i] << "root://lxcms03//data3/Higgs/160121/ggH" << massBin[i] << "/ZZ4lAnalysis.root";
-    else if(sample==2) FileName[i] << "root://lxcms03//data3/Higgs/160121/VBF" << massBin[i] << "/ZZ4lAnalysis.root";
+    if(sample==1)      FileName[i] << "root://lxcms03//data3/Higgs/160624/ggH" << massBin[i] << "/ZZ4lAnalysis.root";
+    else if(sample==2) FileName[i] << "root://lxcms03//data3/Higgs/160624/VBFH" << massBin[i] << "/ZZ4lAnalysis.root";
     else {
       cout << "Wrong sample ." << endl;
       return;
@@ -236,8 +240,17 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
     ggTree->SetBranchAddress("nCleanedJetsPt30BTagged",&nBTaggedJets);
     ggTree->SetBranchAddress("pvbf_VAJHU_old",&PVBF_VAJHU_old);
     ggTree->SetBranchAddress("phjj_VAJHU_old",&PHJJ_VAJHU_old);
+
     ggTree->SetBranchAddress("DiJetFisher",&Fisher); 
-    
+    ggTree->SetBranchAddress("nExtraZ",&ExtraZ);
+    ggTree->SetBranchAddress("nCleanedJetsPt30",&nCleanedJets);
+    ggTree->SetBranchAddress("JetQGLikelihood",&JETQGLikeliHood);
+    ggTree->SetBranchAddress("phj_VAJHU",&PHJ_VAJHU);
+    ggTree->SetBranchAddress("pAux_vbf_VAJHU",&PAUX_VBF_VAJHU);
+    ggTree->SetBranchAddress("pwh_hadronic_VAJHU",&PWH_hadronic_VAJHU);
+    ggTree->SetBranchAddress("pzh_hadronic_VAJHU",&PZH_hadronic_VAJHU);
+
+ 
     ggTree->SetBranchAddress("JetPt",&jetpt);
     ggTree->SetBranchAddress("JetEta",&jeteta);
     ggTree->SetBranchAddress("JetPhi",&jetphi);
@@ -250,7 +263,11 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
 
     for(int k=0; k<nentries; k++){
       ggTree->GetEvent(k);
-      
+         
+      int nj = 0;
+      for (unsigned int nj = 0; nj < JETQGLikeliHood->size(); nj++) {
+	jetQGLL[nj] = (*JETQGLikeliHood)[nj];
+ 	}
       int njet30 = 0;
       for (unsigned int ijet = 0; ijet < jetpt->size(); ijet++) { 
 	if ( (*jetpt)[ijet] > 30. ) {
@@ -262,9 +279,8 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
 	}
       }  
       int Cat = -10 ;
-      if (selAna == 1) Cat = category(nExtraLeptons, ZZPt, m4l, njet30, nBTaggedJets, jet30pt, jet30eta, jet30phi,jet30mass, Fisher); 
       if (selAna == 0) Cat = categoryMor16(nJets, PVBF_VAJHU_old, PHJJ_VAJHU_old );	    
-
+      if (selAna == 1) Cat = categoryIchep16(nExtraLeptons, ExtraZ, nCleanedJets, nBTaggedJets,jetQGLL, PHJJ_VAJHU_old, PHJ_VAJHU, PVBF_VAJHU_old, PAUX_VBF_VAJHU, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU );
       if (categ >= 0 && categ != Cat ) continue;
       
       if(channels==0 && z1flav*z2flav != 28561) continue;
@@ -287,21 +303,17 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
   cout << "dataset 125 n entries: " << dataset125->sumEntries() << endl;
 
   TCanvas *c1 = new TCanvas("c1","c1",725,725);
-
-  TPad *pad1 = new TPad("pad1","This is pad1",0.05,0.35,0.95,0.97);
-  pad1->Draw();
-  TPad *pad2 = new TPad("pad2","This is pad2",0.05,0.02,0.95,0.35);
-  pad2->Draw();
+  TCanvas *c2 = new TCanvas("c2","c2",725,725);
 
 
   //--- double CrystalBall
 
   RooRealVar mH("mH","MH",125.,90.,900.);
 
-  RooRealVar mean_p0("mean_p0","mean_p0",125.,124., 126.) ;
+  RooRealVar mean_p0("mean_p0","mean_p0",125.,120., 130.) ;
   RooRealVar mean_p1("mean_p1","mean_p1",0, -1.5, 1.5);
 
-  RooRealVar sigma_p0("sigma_p0","sigma_p0",1.5, 0, 30);
+  RooRealVar sigma_p0("sigma_p0","sigma_p0",1.6, 0, 30);
   RooRealVar sigma_p1("sigma_p1","sigma_p1",0,-0.5, 0.5);
 
   RooRealVar a1_p0("a1_p0","a1_p0", 1.46, 0.5, 5.);
@@ -314,15 +326,15 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
   RooRealVar a2_p1("a2_p1","a2_p1", 0, -0.5, 0.5);
 
   RooRealVar n2_p0("n2_p0","n2_p0", 20., 1., 50.);
-  RooRealVar n2_p1("n2_p1","n2_p1", 0, -0.5, 0.5);
-
+  RooRealVar n2_p1("n2_p1","n2_p1", 0, -1, 1);
+  
   RooArgSet* params_Inter = new RooArgSet(RooArgList( mean_p0, sigma_p0, a1_p0, n1_p0, a2_p0, n2_p0));
   RooArgSet* params_slope = new RooArgSet(RooArgList( mean_p1, sigma_p1, a1_p1, n1_p1, a2_p1, n2_p1));
-   
+  
   if (sample != 1 || categ > 0 ) {
-    if(channels==0 ) params_Inter->readFromFile("Ch0_Cat0_paraI.txt");  
-    if(channels==1 ) params_Inter->readFromFile("Ch1_Cat0_paraI.txt");  
-    if(channels==2 ) params_Inter->readFromFile("Ch2_Cat0_paraI.txt"); 
+    if(channels==0 ) params_Inter->readFromFile("Ch0_Cat0_paraI.txt");
+    if(channels==1 ) params_Inter->readFromFile("Ch1_Cat0_paraI.txt");
+    if(channels==2 ) params_Inter->readFromFile("Ch2_Cat0_paraI.txt");
   }
 
   // Prefit at 125
@@ -342,16 +354,20 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
   xframe->SetTitle("");
   xframe->SetName("m4lplot");
   dataset125->plotOn(xframe,DataError(RooAbsData::SumW2), MarkerStyle(kOpenCircle), MarkerSize(1.1) );
-  int col;
+  int col ;
   if(channels==0) col=kOrange+7;
-  if(channels==1) col=kAzure+2;
-  if(channels==2) col=kGreen+3;
+  if(channels==1) col=kAzure+2; 
+  if(channels==2) col=kGreen+3; 
   DCBall.plotOn(xframe,LineColor(col));
 
   RooHist* hpull = xframe->pullHist();
   RooPlot* frame3 = x.frame(Title("Pull Distribution")) ;
   frame3->addPlotable(hpull,"P");
-  cout << "Reduced chi2 = " << xframe->chiSquare() << endl;
+
+  double * Rentries = hpull->GetY();
+  TH1D *hh = new TH1D("Pull Distribution","Pull Distribution",10,-5,5);
+  for (int i =0; i < 70; i++ ){
+  hh->Fill(Rentries[i]);}
 
   TLegend *legend = new TLegend(0.20,0.45,0.45,0.60,NULL,"brNDC");
   legend->SetBorderSize(     0);
@@ -362,13 +378,15 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
 
   TH1F *dummyPoints = new TH1F("dummyP","dummyP",1,0,1);
   TH1F *dummyLine = new TH1F("dummyL","dummyL",1,0,1);
+  TH1F *dummyLine1 = new TH1F("dummyL","dummyL",1,0,1);
+
   dummyPoints->SetMarkerStyle(kOpenCircle);
   dummyPoints->SetMarkerSize(1.1);
   dummyLine->SetLineColor(col);
-  
+
   legend->AddEntry(dummyPoints, "Simulation", "pe");
   legend->AddEntry(dummyLine, "Parametric Model", "l");
-  
+
   TPaveText *text = new TPaveText(0.15,0.90,0.77,0.98,"brNDC");
   text->AddText("CMS Simulation");
   text->SetBorderSize(0);
@@ -404,27 +422,41 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
   
   xframe->GetYaxis()->SetTitleOffset(1.5);
 
-  pad1->cd();
+  c1->cd(); 
   stringstream nameFile, nameFileC, nameFilePng;
   nameFile    << "PrefitM125" << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".pdf";
   nameFileC   << "PrefitM125" << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".C";
   nameFilePng << "PrefitM125" << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".png";
   
-  xframe->Draw(); 
-  gPad->Update(); legend->Draw(); text->Draw(); sigmat->Draw(); titlet->Draw();
+  xframe->Draw();
+  gPad->Update(); legend->Draw(); text->Draw(); titlet->Draw();
 
-  pad2->cd() ;
+  c1->Print (nameFile.str().c_str());
+  c1->SaveAs(nameFileC.str().c_str());
+  c1->SaveAs(nameFilePng.str().c_str());
+
+  c2->Divide(1,2);
+
+  c2->cd(1) ;
+  hh->Draw() ;
+
+  c2->cd(2) ;
   frame3->Draw() ;
   frame3->SetMinimum(-3);
   frame3->SetMaximum(3);
 
-  TLine *line1 = new TLine(105,0,140,0);
+  TLine *line1 = new TLine(105,0,150,0);
   line1->SetLineColor(kRed);
   line1->Draw();
-  
-  c1->Print (nameFile.str().c_str());
-  c1->SaveAs(nameFileC.str().c_str());
-  c1->SaveAs(nameFilePng.str().c_str());
+
+  stringstream nameFilePull, nameFilePullC, nameFilePullPng;
+  nameFilePull    << "Pre_PullM"    << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".pdf";
+  nameFilePullC    << "Pre_PullM"   << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".C";
+  nameFilePullPng   << "Pre_PullM"  << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".png";
+
+  c2->Print(nameFilePull.str().c_str());
+  c2->SaveAs(nameFilePullC.str().c_str());
+  c2->SaveAs(nameFilePullPng.str().c_str());
 
   mean_p0.setConstant(kTRUE);
   sigma_p0.setConstant(kTRUE);
@@ -434,16 +466,16 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
   n2_p0.setConstant(kTRUE);
   RooArgSet * params = DCBall.getParameters(x);
 
-  if (sample == 1 && categ <= 0 ){ 
+  if (sample == 1 && categ == 0 ){ 
     if(channels==0 ) params->writeToFile("Ch0_Cat0_paraI.txt") ;
     if(channels==1 ) params->writeToFile("Ch1_Cat0_paraI.txt") ;
     if(channels==2 ) params->writeToFile("Ch2_Cat0_paraI.txt") ;
   }
 
   //a1_p1.setConstant(kTRUE);
-  //n1_p1.setConstant(kTRUE);
+  n1_p1.setConstant(kTRUE);
   //a2_p1.setConstant(kTRUE);
-  //n2_p1.setConstant(kTRUE);
+  n2_p1.setConstant(kTRUE);
   
   // Simultaneous fit
   RooSimultaneous rs("rs","rs",massrc);  
@@ -468,18 +500,19 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
     a2[i] = new RooFormulaVar("a2_CB","a2_CB",formulamass,RooArgList(a2_p0,a2_p1));
     n2[i] = new RooFormulaVar("n2_CB","n2_CB",formulamass,RooArgList(n2_p0,n2_p1));
     DCBall2[i] = new RooDoubleCB("DCBall2","Double Crystal ball 2",x,*mean[i],*sigma[i],*a1[i],*n1[i],*a2[i],*n2[i]);
+
     char tempmass[4];
     sprintf(tempmass,"mh%d",massBin[i]);
     rs.addPdf(*DCBall2[i], tempmass);
+
   }
 
-  RooArgSet * params2 = rs.getParameters(RooArgList(x,massrc));
-  if (sample != 1 || categ > 0 ) {
-  
+ RooArgSet * params2 = rs.getParameters(RooArgList(x,massrc));
+/*  if (sample != 1 ||  categ > 0 ) {
     if(channels==0 )params2->readFromFile("Ch0_Cat0_paraf.txt") ;
     if(channels==1 )params2->readFromFile("Ch1_Cat0_paraf.txt") ;
     if(channels==2 )params2->readFromFile("Ch2_Cat0_paraf.txt") ;	
-  }
+  }*/
 
   RooFitResult *fitressim = (RooFitResult*)rs.fitTo(dataset,SumW2Error(1),Range(xMin,xMax),Strategy(2),NumCPU(8),Save(true));
  
@@ -490,15 +523,16 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
   a2_p1.setConstant(kTRUE);
   n2_p1.setConstant(kTRUE);
 
-  if (sample == 1 && categ <= 0 ) {
+  if (sample == 1 && categ == 0 ) {
   
     if(channels==0 )params2->writeToFile("Ch0_Cat0_paraf.txt") ;
     if(channels==1 )params2->writeToFile("Ch1_Cat0_paraf.txt") ;
     if(channels==2 )params2->writeToFile("Ch2_Cat0_paraf.txt") ;	
   }
-  
-  cout << "Full fit done" << endl;
  
+  cout << "Full fit done" << endl;
+
+  double ChiSq[3]; 
   for (int i=0; i<maxMassBin; i++) {
 
     stringstream frameTitle;
@@ -517,12 +551,18 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
     
     dataset.plotOn(xframe2,DataError(RooAbsData::SumW2), MarkerStyle(kOpenCircle), MarkerSize(1.1), Cut(tempmass) );
     rs.plotOn(xframe2,LineColor(col),Slice(massrc,tempmass2),ProjWData(massrc,dataset));
-    
+
     RooHist* hpull = xframe2->pullHist();
     RooPlot* frame4 = x.frame(Title("Pull Distribution")) ;
     frame4->addPlotable(hpull,"P");
     cout << "Reduced chi2 = " << xframe2->chiSquare() << endl;
+    ChiSq[i] = xframe2->chiSquare();
 
+  double * Rentries = hpull->GetY();
+  TH1D *hh1 = new TH1D("Pull Distribution","Pull Distribution",10,-5,5);
+  for (int i =0; i < 70; i++ ){
+  hh1->Fill(Rentries[i]);}
+  
     // cosmetics
     TPaveText *titlet2 = new TPaveText(0.15,0.80,0.60,0.85,"brNDC");
     titlet2->AddText(frameTitle.str().c_str());
@@ -533,8 +573,8 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
     titlet2->SetTextSize(0.045);   
   
     xframe2->GetYaxis()->SetTitleOffset(1.5);
-
-    pad1->cd();
+    
+    c1->cd();
     stringstream nameFile, nameFileC, nameFilePng;
     nameFile    << "fitM" << massBin[i] << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".pdf";
     nameFileC   << "fitM" << massBin[i] << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".C";
@@ -542,19 +582,55 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
   
     xframe2->Draw(); 
     gPad->Update(); legend->Draw(); text->Draw(); titlet2->Draw();
-
-    pad2->cd() ;
-    frame4->Draw() ;
-    frame4->SetMinimum(-3);
-    frame4->SetMaximum(3);
-
-    line1->Draw();
-    
     c1->Print (nameFile.str().c_str());
     c1->SaveAs(nameFileC.str().c_str());
     c1->SaveAs(nameFilePng.str().c_str());
+
+    c2->cd(1) ;
+    hh1->Draw();
+
+    c2->cd(2) ;
+    frame4->Draw() ;
+    frame4->SetMinimum(-3);
+    frame4->SetMaximum(3);
+    line1->Draw();
+
+    stringstream nameFilePull, nameFilePullC, nameFilePullPng;
+    nameFilePull     << "PullM" << massBin[i] << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".pdf";
+    nameFilePullC    << "PullM" << massBin[i] << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".C";
+    nameFilePullPng  << "PullM" << massBin[i] << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".png";
+    c2->Print (nameFilePull.str().c_str());
+    c2->SaveAs(nameFilePullC.str().c_str());
+    c2->SaveAs(nameFilePullPng.str().c_str());
     }
-   
+
+    for (int j=0; j<3 ; j++ )
+    cout<<"Chi2 for mass " << massBin[j] << " GeV: " << ChiSq[j] << endl; 
+
+   Int_t ni = 3;
+   Double_t xi[ni], yi[ni];
+   for (Int_t i=0;i<ni;i++) {
+      xi[i] = massBin[i];
+      yi[i] = ChiSq[i];
+   }
+    stringstream nameGraphChi;
+    nameGraphChi    << "Chi2"  << "_" << ssample << "_" << schannel << "_"<< scategory;
+    TGraph *gr  = new TGraph(ni,xi,yi);
+    gr->SetTitle(nameGraphChi.str().c_str());
+    gr->GetXaxis()->SetTitle("Mass GeV");
+    gr->GetYaxis()->SetTitle("Chi2/ndof");
+    gr->SetMinimum(0);
+    gr->SetMaximum(5);
+
+    TCanvas *c3 = new TCanvas("c3","Chi2 ",200,10,600,400);
+    gr->Draw();
+    stringstream nameFileChi, nameFilePngChi;
+    nameFileChi    << "Chi2" << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".pdf"; 
+    nameFilePngChi    << "Chi2" << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".png";               
+    c3->SaveAs(nameFileChi.str().c_str());
+    c3->SaveAs(nameFilePngChi.str().c_str());
+
+
     if(fitValues!=0){
    
     fitValues[0] = mean_p0.getVal();
@@ -687,7 +763,7 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
   filenoregr << "m4lplots/noregr/fitM" << massBin << "_channel" << channel << ".root";
 
   int col;
-  if(channel==0) col=kOrange+7;
+  if(channel==0) col=kOrange;
   if(channel==1) col=kAzure+2;
   if(channel==2) col=kGreen+3;
 
