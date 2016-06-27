@@ -55,7 +55,7 @@ declareDefault("BESTCANDCOMPARATOR", "byBestKD", globals())
 declareDefault("KEEPLOOSECOMB", False, globals())
 
 # Activate the Z kinematic refit (very slow)
-declareDefault("KINREFIT", False, globals())
+declareDefault("KINREFIT", True, globals())
 
 
 if SELSETUP=="Legacy" and not BESTCANDCOMPARATOR=="byBestZ1bestZ2":
