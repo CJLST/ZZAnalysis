@@ -5,7 +5,7 @@
 #include "TTree.h"
 #include "THStack.h"
 #include "TH2.h"
-#include  <TF1.h>
+#include "TF1.h"
 #include "TChain.h"
 #include "TLine.h"
 #include "TCut.h"
@@ -14,15 +14,13 @@
 #include "TCanvas.h"
 #include "TLegend.h"
 #include "TGraphErrors.h"
-#include "HiggsAnalysis/CombinedLimit/interface/HZZ4LRooPdfs.h"
-#include "HiggsAnalysis/CombinedLimit/interface/HZZ2L2QRooPdfs.h"
+#include "ZZMatrixElement/MELA/interface/HZZ4LRooPdfs.h"
+#include "ZZMatrixElement/MELA/interface/HZZ2L2QRooPdfs.h"
 #include "ZZAnalysis/AnalysisStep/interface/Category.h"
 #include "Math/GenVector/LorentzVector.h"
 #include "Math/GenVector/PtEtaPhiM4D.h"
-#include "TSpline.h"
 
 #include <cmath>
-#include "TMath.h"
 #include "Math/GenVector/LorentzVector.h"
 #include "Math/GenVector/PtEtaPhiM4D.h"
 
@@ -72,35 +70,30 @@ Double_t effSigma(RooAbsPdf *pdf, RooRealVar *obs, Int_t nbins);
 float getFitEdge(float mass, float width, bool low);
 float getFitEdgeHighMass(float mass, float width, bool low);
 
-string schannel;
-string scategory;
-string ssample;
+string schannel, scategory, ssample, sselAna;
 
+void fitZZShape(int selAna, int ch, int cat,  int sample, double rangeLow, double rangeHigh, double fitValues[7], double fitErrors[7], double covQual[1]);
 
+void all(int selAna=-10, int channels=0, int categ=-1, int sample = 0 ){
 
-
-void fitZZShapeW(int ch, int cat,  int sample,
-		     double rangeLow, double rangeHigh,
-		     double fitValues[7], double fitErrors[7], double covQual[1]);
-
-bool do7TeV;
-bool doFFT;
-// sample 1 = ggH , sample 2 = VBFH 
-void all(int channels=0, int categ=-1, int sample = 0 )/*,bool doSfLepton=true)*/{
-
+  if (selAna == 0) sselAna = "Morinod";
+  if (selAna == 1) sselAna = "ICHEP";
 
   if (channels == 0) schannel = "4mu";
   if (channels == 1) schannel = "4e";
   if (channels == 2) schannel = "2e2mu";
 
   if (categ < 0)  scategory = "All";
-  if (categ == 0) scategory = "Untagged";
-  if (categ == 1) scategory = "VBFtagged";
-/*  if (categ == 2) scategory = "VBFtagged";
-  if (categ == 3) scategory = "VHleptonictagged";
-  if (categ == 4) scategory = "VHHadronictagged";
-  if (categ == 5) scategory = "ttHtagged";
-*/
+  if (categ == 0 && selAna == 0) scategory = "Untagged";
+  if (categ == 1 && selAna == 0) scategory = "VBFtagged";
+  
+  if (categ == 0 && selAna == 1 ) scategory = "Untagged";
+  if (categ == 1 && selAna == 1 ) scategory = "VBF1JetTagged";
+  if (categ == 2 && selAna == 1 ) scategory = "VBF2JetTagged";
+  if (categ == 3 && selAna == 1 ) scategory = "VHLeptTagged";
+  if (categ == 4 && selAna == 1 ) scategory = "VHhadrTagged";
+  if (categ == 5 && selAna == 1 ) scategory = "ttHTagged";
+
   if (sample ==1) ssample = "qqZZ";
   if (sample ==2) ssample = "ggZZ";
 
@@ -108,25 +101,19 @@ void all(int channels=0, int categ=-1, int sample = 0 )/*,bool doSfLepton=true)*
   double fitErrors[10];
   double covQual[1];
 
-  fitZZShapeW(channels,categ, sample,105., 165.,
-		    fitValues,fitErrors,covQual);  
+  fitZZShape(selAna,channels,categ, sample,105., 160., fitValues,fitErrors,covQual);  
   
   cout << "pol1 value,error: " << fitValues[0] << " , " << fitErrors[0] << endl; 
-  
   cout << "pol2 value,error: " << fitValues[1] << " , " << fitErrors[1] << endl; 
-  
   cout << "pol3 value,error: " << fitValues[2] << " , " << fitErrors[2] << endl; 
-  
   cout << "covQual of the fit: " << covQual[0] << endl;
   
   
-  string filename = "bkg_shape_parametriztion_13TeV_" + ssample + "_" + schannel + "_" + scategory + "." + "yaml" ;
-  
+  string filename = "bkg_shape_parametriztion_13TeV_" + ssample + "_" + schannel + "_" + sselAna + "_" + scategory + "." + "yaml" ;
   ofstream outFile;
   outFile.open(filename);
-  outFile <<"Sample   : "<< ssample << endl;
-  outFile <<"Channel  : "<< schannel << endl;
-  outFile <<"Category : "<< scategory <<endl;
+  if(channels == 2)outFile<<"shape : " <<"\"RooChebyChev::"<<ssample<<"(mass4l,chebPol1,chebPol2,chebPol3)\""<< endl;
+  outFile << schannel <<"    :" << endl;
   outFile <<"    chebPol1 : " <<"'"<<fitValues[0]<<"'"<<endl;
   outFile <<"    chebPol2 : " <<"'"<<fitValues[1]<<"'"<<endl;
   outFile <<"    chebPol3 : " <<"'"<<fitValues[2]<<"'"<<endl;
@@ -135,9 +122,8 @@ void all(int channels=0, int categ=-1, int sample = 0 )/*,bool doSfLepton=true)*
 }
 
 
-void fitZZShapeW(int channels,int categ, int sample, 
-		     double rangeLow, double rangeHigh,
-		     double fitValues[7], double fitErrors[7], double covQual[1]){
+  void fitZZShape(int selAna, int channels,int categ, int sample, double rangeLow, double rangeHigh,
+		 double fitValues[7], double fitErrors[7], double covQual[1]){
  // ------ root settings ---------
   gROOT->Reset();  
   gROOT->SetStyle("Plain");
@@ -151,36 +137,19 @@ void fitZZShapeW(int channels,int categ, int sample,
   gStyle->SetPadLeftMargin(0.14);
   gStyle->SetPadRightMargin(0.06);
   // ------------------------------ 
-
-  string scategory;
-  string ssample;
-  
-  if (sample ==1) ssample = "qqZZ";
-  if (sample ==2) ssample = "ggZZ";
-   
-  if (categ == 0  ) scategory = "Untagged";
-  if (categ == 1  ) scategory = "VBFtagged";
-  
-/*  if (categ < 0)  scategory = "All";
-  if (categ == 0) scategory = "Untagged";
-  if (categ == 1) scategory = "1Jettagged";
-  if (categ == 2) scategory = "VBFtagged";
-  if (categ == 3) scategory = "VHleptonictagged";
-  if (categ == 4) scategory = "VHHadronictagged";
-  if (categ == 5) scategory = "ttHtagged";
-*/
+ 
   ROOT::Math::MinimizerOptions::SetDefaultTolerance( 1.E-7);
-  TFile * kfact = new TFile( "../Plotter/ggZZKfactors/Kfactor_ggHZZ_2l2l_NNLO_NNPDF_NarrowWidth_13TeV.root");  
+ 
   stringstream FileName[6];
   int howmany = 1;
-  if(sample==1) FileName[0] << "root://lxcms03//data3/Higgs/160121/ZZTo4l/ZZ4lAnalysis.root";
+  if(sample==1) FileName[0] << "root://lxcms03//data3/Higgs/160624/ZZTo4l/ZZ4lAnalysis.root";
   else if(sample==2) {
-    FileName[0] << "root://lxcms03//data3/Higgs/150915/ggZZ4e/ZZ4lAnalysis.root";
-    FileName[1] << "root://lxcms03//data3/Higgs/150915/ggZZ4mu/ZZ4lAnalysis.root";
-    FileName[2] << "root://lxcms03//data3/Higgs/150915/ggZZ4tau/ZZ4lAnalysis.root";
-    FileName[3] << "root://lxcms03//data3/Higgs/160121/ggZZ2e2mu/ZZ4lAnalysis.root";
-    FileName[4] << "root://lxcms03//data3/Higgs/160121/ggZZ2mu2tau/ZZ4lAnalysis.root";
-    FileName[5] << "root://lxcms03//data3/Higgs/160121/ggZZ2e2tau/ZZ4lAnalysis.root";
+    FileName[0] << "root://lxcms03//data3/Higgs/160624/ggZZ4e/ZZ4lAnalysis.root";
+    FileName[1] << "root://lxcms03//data3/Higgs/160624/ggZZ4mu/ZZ4lAnalysis.root";
+    FileName[2] << "root://lxcms03//data3/Higgs/160624/ggZZ4tau/ZZ4lAnalysis.root";
+    FileName[3] << "root://lxcms03//data3/Higgs/160624/ggZZ2e2mu/ZZ4lAnalysis.root";
+    FileName[4] << "root://lxcms03//data3/Higgs/160624/ggZZ2mu2tau/ZZ4lAnalysis.root";
+    FileName[5] << "root://lxcms03//data3/Higgs/160624/ggZZ2e2tau/ZZ4lAnalysis.root";
     howmany=6;
   }
   
@@ -188,12 +157,7 @@ void fitZZShapeW(int channels,int categ, int sample,
     cout << "Wrong sample ." << endl;
     return;
   }
-  
- 
-   
-
-  TSpline3 * f1 = (TSpline3*)kfact->Get("sp_Kfactor");  
-  
+      
   TChain *ggTree = new TChain("ZZTree/candTree");
 
   for (int ifil = 0; ifil < howmany; ifil++) {
@@ -201,21 +165,23 @@ void fitZZShapeW(int channels,int categ, int sample,
     ggTree->Add(FileName[ifil].str().c_str());
   } 
 
-    // TTree* ggTree = (TTree*) ggFile->Get("ZZTree/candTree");
-
   float m4l;
-  
   Short_t z1flav, z2flav; 
   float weight;
- 
-  Short_t nExtraLeptons;   
-  float ZZPt,PVBF_VAJHU_old, PHJJ_VAJHU_old,GenHMass, GenZ1Phi,GenZ2Phi;
+
+  Short_t ExtraZ;
+  Short_t nExtraLeptons;
+  Short_t nCleanedJets;
+
+  float ZZPt, PVBF_VAJHU_old, PHJJ_VAJHU_old, PHJ_VAJHU, PAUX_VBF_VAJHU, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU;
   Short_t nJets;
   Short_t nBTaggedJets;
+  std::vector<float> * JETQGLikeliHood = 0;
   std::vector<float> * jetpt = 0;
   std::vector<float> * jeteta = 0;
   std::vector<float> * jetphi = 0;
   std::vector<float> * jetmass = 0;
+  float jetQGLL[100];
   float jet30pt[10];
   float jet30eta[10];
   float jet30phi[10];
@@ -226,7 +192,6 @@ void fitZZShapeW(int channels,int categ, int sample,
  
   //--- ggTree part
   ggTree->SetBranchAddress("ZZMass",&m4l);
-  ggTree->SetBranchAddress("ZZMass",&m4l);
   ggTree->SetBranchAddress("Z1Flav",&z1flav);
   ggTree->SetBranchAddress("Z2Flav",&z2flav);
   ggTree->SetBranchAddress("genHEPMCweight",&weight);
@@ -236,17 +201,20 @@ void fitZZShapeW(int channels,int categ, int sample,
   ggTree->SetBranchAddress("DiJetFisher",&Fisher);
   ggTree->SetBranchAddress("pvbf_VAJHU_old",&PVBF_VAJHU_old);
   ggTree->SetBranchAddress("phjj_VAJHU_old",&PHJJ_VAJHU_old);
-  if(sample ==1){
-  ggTree->SetBranchAddress("GenZ1Phi",&GenZ1Phi);
-  ggTree->SetBranchAddress("GenZ2Phi",&GenZ2Phi);}
- 
+
+  ggTree->SetBranchAddress("nExtraZ",&ExtraZ);
+  ggTree->SetBranchAddress("nCleanedJetsPt30",&nCleanedJets);
+  ggTree->SetBranchAddress("JetQGLikelihood",&JETQGLikeliHood);
+  ggTree->SetBranchAddress("phj_VAJHU",&PHJ_VAJHU);
+  ggTree->SetBranchAddress("pAux_vbf_VAJHU",&PAUX_VBF_VAJHU);
+  ggTree->SetBranchAddress("pwh_hadronic_VAJHU",&PWH_hadronic_VAJHU);
+  ggTree->SetBranchAddress("pzh_hadronic_VAJHU",&PZH_hadronic_VAJHU);
+
   ggTree->SetBranchAddress("JetPt",&jetpt);
   ggTree->SetBranchAddress("JetEta",&jeteta);
   ggTree->SetBranchAddress("JetPhi",&jetphi);
   ggTree->SetBranchAddress("JetMass",&jetmass);
   ggTree->SetBranchAddress("ZZPt",&ZZPt);
-
-  ggTree->SetBranchAddress("GenHMass",&GenHMass);
 
   //--- rooFit part
   double xMin,xMax;
@@ -254,19 +222,15 @@ void fitZZShapeW(int channels,int categ, int sample,
   xMin = rangeLow;
   xMax = rangeHigh ;
   cout << "Fit range: [" << xMin << " , " << xMax << "]" << endl;
+  
   TH1F *hmass = new TH1F("hmass","hmass",200,xMin,xMax);
   //---------  
-  
   RooRealVar x("mass","m_{4l}",140.,xMin,xMax,"GeV");
   RooRealVar w("myW","myW",1.0,0.,1000.);
- 
- float newWeight = 0; 
- float GENdPhiZZ = 0;
- 
   RooArgSet ntupleVarSet(x,w);
   RooDataSet dataset("mass4l","mass4l",ntupleVarSet,WeightVar("myW"));
-  
- for(int k=0; k<nentries; k++){
+
+  for(int k=0; k<nentries; k++){
     ggTree->GetEvent(k);
 
     int njet30 = 0;
@@ -279,26 +243,18 @@ void fitZZShapeW(int channels,int categ, int sample,
 	njet30++;
       }
     }  
-//    int Cat = category(nExtraLeptons, ZZPt, m4l, njet30, nBTaggedJets, jet30pt, jet30eta, jet30phi,jet30mass, Fisher); 
-    int Cat = categoryMor16(nJets, PVBF_VAJHU_old, PHJJ_VAJHU_old );
-    if (categ >= 0 && categ != Cat ) continue;
-    
+    int Cat = -10;
+    if (selAna == 0) Cat = categoryMor16(nJets, PVBF_VAJHU_old, PHJJ_VAJHU_old );
+    if (selAna == 1) Cat = categoryIchep16(nExtraLeptons, ExtraZ, nCleanedJets, nBTaggedJets,jetQGLL, PHJJ_VAJHU_old, PHJ_VAJHU, PVBF_VAJHU_old, PAUX_VBF_VAJHU, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU );
+    if (categ >= 0 && categ != Cat ) continue; 
+
     if(channels==0 && z1flav*z2flav != 28561) continue;
     if(channels==1 && z1flav*z2flav != 14641) continue;
     if (weight <= 0 ) cout << "Warning! Negative weight events" << endl;
     if(channels==2 && z1flav*z2flav != 20449) continue;
+    if (weight <= 0 ) cout << "Warning! Negative weight events" << endl;
     
-    if (sample ==1){     
-    GENdPhiZZ = TMath::Abs(GenZ1Phi-GenZ2Phi); 
-    if(GENdPhiZZ > TMath::Pi()) GENdPhiZZ = TMath::TwoPi() - GENdPhiZZ; 
-    if (channels <= 1)(newWeight = 1.51583892176*(abs(GENdPhiZZ)>0.0&&abs(GENdPhiZZ)<=0.1)+1.49625666541*(abs(GENdPhiZZ)>0.1&&abs(GENdPhiZZ)<=0.2)+1.49552206191*(abs(GENdPhiZZ)>0.2&&abs(GENdPhiZZ)<=0.3)+1.48327315425*(abs(GENdPhiZZ)>0.3&&abs(GENdPhiZZ)<=0.4)+1.46558970113*(abs(GENdPhiZZ)>0.4&&abs(GENdPhiZZ)<=0.5)+1.49150088751*(abs(GENdPhiZZ)>0.5&&abs(GENdPhiZZ)<=0.6)+1.44118358045*(abs(GENdPhiZZ)>0.6&&abs(GENdPhiZZ)<=0.7)+1.44083060399*(abs(GENdPhiZZ)>0.7&&abs(GENdPhiZZ)<=0.8)+1.41433901912*(abs(GENdPhiZZ)>0.8&&abs(GENdPhiZZ)<=0.9)+1.42253421856*(abs(GENdPhiZZ)>0.9&&abs(GENdPhiZZ)<=1.0)+1.401037066*(abs(GENdPhiZZ)>1.0&&abs(GENdPhiZZ)<=1.1)+1.40853942881*(abs(GENdPhiZZ)>1.1&&abs(GENdPhiZZ)<=1.2)+1.38124774408*(abs(GENdPhiZZ)>1.2&&abs(GENdPhiZZ)<=1.3)+1.37055335743*(abs(GENdPhiZZ)>1.3&&abs(GENdPhiZZ)<=1.4)+1.347323316*(abs(GENdPhiZZ)>1.4&&abs(GENdPhiZZ)<=1.5)+1.34011343745*(abs(GENdPhiZZ)>1.5&&abs(GENdPhiZZ)<=1.6)+1.31266103651*(abs(GENdPhiZZ)>1.6&&abs(GENdPhiZZ)<=1.7)+1.29005506201*(abs(GENdPhiZZ)>1.7&&abs(GENdPhiZZ)<=1.8)+1.25532261479*(abs(GENdPhiZZ)>1.8&&abs(GENdPhiZZ)<=1.9)+1.25445564245*(abs(GENdPhiZZ)>1.9&&abs(GENdPhiZZ)<=2.0)+1.22404766442*(abs(GENdPhiZZ)>2.0&&abs(GENdPhiZZ)<=2.1)+1.17881678267*(abs(GENdPhiZZ)>2.1&&abs(GENdPhiZZ)<=2.2)+1.16262482714*(abs(GENdPhiZZ)>2.2&&abs(GENdPhiZZ)<=2.3)+1.10540114094*(abs(GENdPhiZZ)>2.3&&abs(GENdPhiZZ)<=2.4)+1.07474926569*(abs(GENdPhiZZ)>2.4&&abs(GENdPhiZZ)<=2.5)+1.02186459938*(abs(GENdPhiZZ)>2.5&&abs(GENdPhiZZ)<=2.6)+0.946334793286*(abs(GENdPhiZZ)>2.6&&abs(GENdPhiZZ)<=2.7)+0.857458082628*(abs(GENdPhiZZ)>2.7&&abs(GENdPhiZZ)<=2.8)+0.716607670482*(abs(GENdPhiZZ)>2.8&&abs(GENdPhiZZ)<=2.9)+1.13284178484*(abs(GENdPhiZZ)>2.9&&abs(GENdPhiZZ)<=3.1416));  
-    
-    if(channels ==2 )(newWeight = 1.51383448915*(abs(GENdPhiZZ)>0.0&&abs(GENdPhiZZ)<=0.1)+1.54173878018*(abs(GENdPhiZZ)>0.1&&abs(GENdPhiZZ)<=0.2)+1.49782963251*(abs(GENdPhiZZ)>0.2&&abs(GENdPhiZZ)<=0.3)+1.53495678292*(abs(GENdPhiZZ)>0.3&&abs(GENdPhiZZ)<=0.4)+1.47821703306*(abs(GENdPhiZZ)>0.4&&abs(GENdPhiZZ)<=0.5)+1.50433085929*(abs(GENdPhiZZ)>0.5&&abs(GENdPhiZZ)<=0.6)+1.52062624685*(abs(GENdPhiZZ)>0.6&&abs(GENdPhiZZ)<=0.7)+1.50701309003*(abs(GENdPhiZZ)>0.7&&abs(GENdPhiZZ)<=0.8)+1.49424315625*(abs(GENdPhiZZ)>0.8&&abs(GENdPhiZZ)<=0.9)+1.45053609615*(abs(GENdPhiZZ)>0.9&&abs(GENdPhiZZ)<=1.0)+1.46081252166*(abs(GENdPhiZZ)>1.0&&abs(GENdPhiZZ)<=1.1)+1.4716036222*(abs(GENdPhiZZ)>1.1&&abs(GENdPhiZZ)<=1.2)+1.4677000382*(abs(GENdPhiZZ)>1.2&&abs(GENdPhiZZ)<=1.3)+1.42240869064*(abs(GENdPhiZZ)>1.3&&abs(GENdPhiZZ)<=1.4)+1.39718402273*(abs(GENdPhiZZ)>1.4&&abs(GENdPhiZZ)<=1.5)+1.37559344752*(abs(GENdPhiZZ)>1.5&&abs(GENdPhiZZ)<=1.6)+1.39190131837*(abs(GENdPhiZZ)>1.6&&abs(GENdPhiZZ)<=1.7)+1.36856435056*(abs(GENdPhiZZ)>1.7&&abs(GENdPhiZZ)<=1.8)+1.31788480429*(abs(GENdPhiZZ)>1.8&&abs(GENdPhiZZ)<=1.9)+1.3140199508*(abs(GENdPhiZZ)>1.9&&abs(GENdPhiZZ)<=2.0)+1.27464174991*(abs(GENdPhiZZ)>2.0&&abs(GENdPhiZZ)<=2.1)+1.24234660682*(abs(GENdPhiZZ)>2.1&&abs(GENdPhiZZ)<=2.2)+1.24472740384*(abs(GENdPhiZZ)>2.2&&abs(GENdPhiZZ)<=2.3)+1.14625935167*(abs(GENdPhiZZ)>2.3&&abs(GENdPhiZZ)<=2.4)+1.10780499352*(abs(GENdPhiZZ)>2.4&&abs(GENdPhiZZ)<=2.5)+1.04205364674*(abs(GENdPhiZZ)>2.5&&abs(GENdPhiZZ)<=2.6)+0.973608545141*(abs(GENdPhiZZ)>2.6&&abs(GENdPhiZZ)<=2.7)+0.872169942668*(abs(GENdPhiZZ)>2.7&&abs(GENdPhiZZ)<=2.8)+0.734505279177*(abs(GENdPhiZZ)>2.8&&abs(GENdPhiZZ)<=2.9)+1.16315283723*(abs(GENdPhiZZ)>2.9&&abs(GENdPhiZZ)<=3.1416));
-    }
-    if (sample == 2)
-    newWeight=f1->Eval(GenHMass);
 
-    weight = weight * newWeight;
     ntupleVarSet.setRealValue("mass",m4l);
     ntupleVarSet.setRealValue("myW",weight);
     if(x.getVal()>xMin && x.getVal()<xMax)
@@ -306,22 +262,20 @@ void fitZZShapeW(int channels,int categ, int sample,
     hmass->Fill(m4l);
 
   }
-  //---------
+
+  
+
+//---------
 
   cout << "dataset n entries: " << dataset.sumEntries() << endl;
-
-
   TCanvas *c1 = new TCanvas("c1","c1",725,725);
-
   TPad *pad1 = new TPad("pad1","This is pad1",0.05,0.35,0.95,0.97);
   pad1->Draw();
   TPad *pad2 = new TPad("pad2","This is pad2",0.05,0.02,0.95,0.35);
   pad2->Draw();
 
-
-  //--- double CrystalBall
-  //Chebyshev-Polynomial
-  RooRealVar A1("A1","A1",-1,-3,3.);
+//-----Chebyshev-Polynomial
+  RooRealVar A1("A1","A1",1,-3,3.);
   RooRealVar A2("A2","A2",0.5,-3.,3.);
   RooRealVar A3("A3","A3",0.,-3.,3.);
   RooChebychev model("model","model",x ,RooArgList(A1,A2,A3));
@@ -351,9 +305,6 @@ void fitZZShapeW(int channels,int categ, int sample,
   RooHist* hpull = xframe->pullHist();
   RooPlot* frame3 = x.frame(Title("Pull Distribution")) ;
   frame3->addPlotable(hpull,"P");
-
-
-
 
   // cosmetics
   TLegend *legend = new TLegend(0.70,0.15,0.85,0.25,NULL,"brNDC");
@@ -394,13 +345,13 @@ void fitZZShapeW(int channels,int categ, int sample,
 
   pad1->cd();
   stringstream nameFile, nameFileC, nameFilePng;
-  nameFile << "fitM" << ssample << "_" << schannel<< "_category"<< scategory << ".pdf";
-  nameFileC << "fitM" << ssample << "_" << schannel << "_category"<< scategory << ".C";
-  nameFilePng << "fitM" << ssample << "_" << schannel << "_category"<< scategory << ".png";
+  nameFile << "fitM"  << "_" << sselAna << "_" << ssample << "_" << schannel<< "_"<< scategory << ".pdf";
+  nameFileC << "fitM"  << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".C";
+  nameFilePng << "fitM"  << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".png";
   
   xframe->Draw(); 
   gPad->Update(); 
-  // legend->Draw(); 
+   legend->Draw(); 
   text->Draw(); titlet->Draw();
 
   pad2->cd() ;
@@ -408,7 +359,7 @@ void fitZZShapeW(int channels,int categ, int sample,
   frame3->SetMinimum(-3);
   frame3->SetMaximum(3);
 
-  TLine *line1 = new TLine(105,0,165,0);
+  TLine *line1 = new TLine(105,0,140,0);
   line1->SetLineColor(kRed);
   line1->Draw();
   
