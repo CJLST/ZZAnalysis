@@ -100,8 +100,8 @@ void all(int selAna =-10,  int channels=0, int categ =-10, int sample = 0 ){
   if (categ == 0 && selAna == 1 ) scategory = "Untagged";
   if (categ == 1 && selAna == 1 ) scategory = "VBF1JetTagged";
   if (categ == 2 && selAna == 1 ) scategory = "VBF2JetTagged";
-  if (categ == 3 && selAna == 1 ) scategory = "VHHadrTagged";
-  if (categ == 4 && selAna == 1 ) scategory = "VHLepTagged";
+  if (categ == 3 && selAna == 1 ) scategory = "VHLeptTagged";
+  if (categ == 4 && selAna == 1 ) scategory = "VHHadrTagged";
   if (categ == 5 && selAna == 1 ) scategory = "ttHTagged";
 
   if (sample ==3) ssample = "ZH";
