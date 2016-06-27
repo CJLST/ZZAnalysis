@@ -508,11 +508,11 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
   }
 
  RooArgSet * params2 = rs.getParameters(RooArgList(x,massrc));
-/*  if (sample != 1 ||  categ > 0 ) {
+  if (sample != 1 ||  categ > 0 ) {
     if(channels==0 )params2->readFromFile("Ch0_Cat0_paraf.txt") ;
     if(channels==1 )params2->readFromFile("Ch1_Cat0_paraf.txt") ;
     if(channels==2 )params2->readFromFile("Ch2_Cat0_paraf.txt") ;	
-  }*/
+  }
 
   RooFitResult *fitressim = (RooFitResult*)rs.fitTo(dataset,SumW2Error(1),Range(xMin,xMax),Strategy(2),NumCPU(8),Save(true));
  
