@@ -90,21 +90,23 @@ Float_t normZPlusXFullSR2e2mu = 3.2;
 ////////////////////////////////////////////////////////////////////////////////
 
 
-enum Blindings {fullyblind=0, blindabove110=1, blindbelow150=2, blind110150=3, unblinded=4};
-const int nBlindings = 5;
-string sBlinding[nBlindings] = {"fullyblind", "M4l70To110", "M4l150ToInf", "blind110150", "unblinded"};
+enum Blindings {fullyblind=0, blindabove110=1, blindbelow150=2, blind110150=3, blind110150andabove500=4, unblinded=5};
+const int nBlindings = 6;
+string sBlinding[nBlindings] = {"fullyblind", "M4l70To110", "M4l150ToInf", "blind110150", "blind110150andabove500", "unblinded"};
 Bool_t plotThisBlinding[7][nBlindings] = {
-  {1,1,1,1,1,},
-  {1,0,0,0,0,},
-  {0,1,0,0,0,},
-  {0,0,1,0,0,},
-  {0,0,0,1,0,},
-  {0,0,0,0,1,},
-  {0,1,1,1,0,},
+  {1,1,1,1,1,1},
+  {1,0,0,0,0,0},
+  {0,1,0,0,0,0},
+  {0,0,1,0,0,0},
+  {0,0,0,1,0,0},
+  {0,0,0,0,1,0},
+  {0,0,0,0,0,1},
 };
-string blindingLabel[nBlindings] = {"", "70 < m_{4#font[12]{l}} < 110 GeV", "m_{4#font[12]{l}} > 150 GeV", "#splitline{m_{4#font[12]{l}} > 70 GeV}{m_{4#font[12]{l}} #notin [110, 150] GeV}", ""};
-Float_t xHistoBlindLow[nBlindings] = {  0.,  110.,   0., 110.,  0. };
-Float_t xHistoBlindUp [nBlindings] = { -1., 1000., 150., 150., -1. };
+string blindingLabel[nBlindings] = {"", "70 < m_{4#font[12]{l}} < 110 GeV", "m_{4#font[12]{l}} > 150 GeV", "#splitline{m_{4#font[12]{l}} > 70 GeV}{m_{4#font[12]{l}} #notin [110, 150] GeV}", "#splitline{m_{4#font[12]{l}} #in [70, 500] GeV}{m_{4#font[12]{l}} #notin [110, 150] GeV}", ""};
+Float_t xHistoBlindLow[nBlindings] = {  0.,  110.,   0., 110., 110.,  0. };
+Float_t xHistoBlindUp [nBlindings] = { -1., 3000., 150., 150., 150., -1. };
+Float_t xHistoBlind2Low[nBlindings] = {  0.,  0.,  0.,  0.,  500.,  0. };
+Float_t xHistoBlind2Up [nBlindings] = { -1., -1., -1., -1., 3000., -1. };
 
 const int nVariables = 35;
 string varName[nVariables] = {
@@ -236,6 +238,7 @@ Float_t varMax[nVariables] = { 886, 1000.5, 886, 886, 887, 885, 890, 890, 110, 1
 Bool_t varLogx[nVariables] = {1,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,};
 Bool_t varLogy[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1,1,1,0,0,};
 Int_t restrictCountVar[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,4,2,0,0,};
+Bool_t separateVbf[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,};
 Float_t varMinFactor[nVariables] = {0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,2000.,0.,0.,0.,2000.,0.,0.,0.,0.,0.,0.,0.,70.,0.,0.,0.,20000.,2000.,100000.,0.,};
 Int_t varCMSPos[nVariables] = {33,33, 0,33,33,33,33,33,11,11,11,11, 0,33, 0,33, 0,33, 0,33, 0,33, 0, 0,33,33,33, 0,33,11,11,11,11,11,11,};
 Int_t varLegPos[nVariables] = {33,33,33,33,33,33,33,33,33,33,33,33,33,33,11,11,11,11,11,11,33,11,33,33,33,33,33,33,33,33,33,33,33,33,33,};
@@ -246,6 +249,7 @@ Float_t varMaxCorrector[nBlindings][nVariables] = {
   { 1., 1. , 1.1, 1.1, 1., 1., 1., 1., 1.3, 1., 1., 1., 1., 1., 1., 1., 1.1, 1., 1., 1. , 1.9, 1. , 1.3, 3. , 1., 1., 1., 1., 1., 1.4, 1.,  1., 1., 1. , 1. , },
   { 1., 1. , 1. , 1. , 1., 1., 1., 1., 1. , 1., 1., 1., 1., 1., 1., 1., 1. , 1., 1., 1. , 1. , 1. , 1.1, 1. , 1., 1., 1., 1., 1., 1. , 1.,  1., 1., 1. , 1. , },
   { 1., 1.2, 1. , 1. , 1., 1., 1., 1., 1. , 1., 1., 1., 1., 1., 1., 1., 1. , 1., 1., 1. , 1. , 1. , 1.1, 1. , 1., 1., 1., 1., 1., 1. , 1., 10., 1., 1. , 1. , },
+  { 1., 1. , 1. , 1. , 1., 1., 1., 1., 1. , 1., 1., 1., 1., 1., 1., 1., 1. , 1., 1., 1. , 1. , 1. , 1.1, 1. , 1., 1., 1., 1., 1., 1.5, 1., 10., 1., 1.6, 1. , },
   { 1., 1. , 1. , 1. , 1., 1., 1., 1., 1. , 1., 1., 1., 1., 1., 1., 1., 1. , 1., 1., 1. , 1. , 1. , 1.1, 1. , 1., 1., 1., 1., 1., 1.5, 1., 10., 1., 1.6, 1. , },
   { 1., 1. , 1. , 1. , 1., 1., 1., 1., 1. , 1., 1., 1., 1., 1., 1., 1., 1. , 1., 1., 1. , 1. , 1. , 1.1, 1. , 1., 1., 1., 1., 1., 1. , 1.,  5., 1., 1. , 1.2, },
 };
@@ -363,7 +367,7 @@ string fsLabelForSS[nFinalStates] = {
 };
 
 
-/* ---------- full RunII categorization 
+/* ---------- early RunII categorization proposal 
 const int nCategories = 6;
 string sCategory[nCategories+1] = {
   "UnTagged",
@@ -375,13 +379,24 @@ string sCategory[nCategories+1] = {
   "inclusive",
 };
 //*/
-
 //* ---------- Moriond 2016 categorization 
 const int nCategories = 2;
 string sCategory[nCategories+1] = {
   "UnTagged",
   "VBFTagged", 
   "inclusive", 
+};
+//*/
+/* ---------- Ichep 2016 categorization 
+const int nCategories = 6;
+string sCategory[nCategories+1] = {
+  "UnTagged",
+  "VBF1jTagged",
+  "VBF2jTagged", 
+  "VHLeptTagged",
+  "VHHadrTagged",
+  "ttHTagged",
+  "inclusive",
 };
 //*/
 
@@ -403,8 +418,8 @@ string sResonantStatus[nResStatuses+1] = {"resonant", "nonresonant", "allres"};
 void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lumi)
 {
 
-  TFile* ggZZKFactorFile = TFile::Open("../../data/kfactors/Kfactor_Collected_ggHZZ_2l2l_NNLO_NNPDF_NarrowWidth_13TeV.root");
-  TSpline3* sp = (TSpline3*)ggZZKFactorFile->Get("sp_kfactor_Nominal");
+  //TFile* ggZZKFactorFile = TFile::Open("../../data/kfactors/Kfactor_Collected_ggHZZ_2l2l_NNLO_NNPDF_NarrowWidth_13TeV.root");
+  //TSpline3* sp = (TSpline3*)ggZZKFactorFile->Get("sp_kfactor_Nominal");
 
   const int nDatasets = 16;
   string datasets[nDatasets] = {
@@ -475,6 +490,10 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
   Float_t bkg_VAMCFM;
   Float_t pvbf_VAJHU_old;
   Float_t phjj_VAJHU_old;
+  Float_t pAux_vbf_VAJHU;
+  Float_t phj_VAJHU;
+  Float_t pwh_hadronic_VAJHU;
+  Float_t pzh_hadronic_VAJHU;
   Float_t Z1Mass;
   Float_t Z2Mass;
   Short_t Z1Flav;
@@ -485,16 +504,20 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
   Short_t nExtraLep;
   vector<Float_t> *ExtraLepEta = 0;
   vector<Float_t> *ExtraLepPhi = 0;
+  Short_t nExtraZ;
   Short_t nJets;
   Short_t nJetsBTagged;
   vector<Float_t> *JetPt = 0;
   vector<Float_t> *JetEta = 0;
   vector<Float_t> *JetPhi = 0;
   vector<Float_t> *JetMass = 0;
+  vector<Float_t> *JetQGLikelihood = 0;
   Float_t jetPt[99];
   Float_t jetEta[99];
   Float_t jetPhi[99];
   Float_t jetMass[99];
+  Float_t jetQGL[99];
+  Float_t jetPgOverPq[99];
   Float_t GenHMass;
   Float_t GenZ1Phi;
   Float_t GenZ2Phi;
@@ -616,6 +639,10 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
     inputTree[d]->SetBranchAddress("bkg_VAMCFM", &bkg_VAMCFM);
     inputTree[d]->SetBranchAddress("pvbf_VAJHU_old", &pvbf_VAJHU_old);
     inputTree[d]->SetBranchAddress("phjj_VAJHU_old", &phjj_VAJHU_old);
+    inputTree[d]->SetBranchAddress("pAux_vbf_VAJHU", &pAux_vbf_VAJHU);
+    inputTree[d]->SetBranchAddress("phj_VAJHU", &phj_VAJHU);
+    inputTree[d]->SetBranchAddress("pwh_hadronic_VAJHU", &pwh_hadronic_VAJHU);
+    inputTree[d]->SetBranchAddress("pzh_hadronic_VAJHU", &pzh_hadronic_VAJHU);
     inputTree[d]->SetBranchAddress("Z1Mass", &Z1Mass);
     inputTree[d]->SetBranchAddress("Z2Mass", &Z2Mass);
     inputTree[d]->SetBranchAddress("Z1Flav", &Z1Flav);
@@ -625,12 +652,14 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
     inputTree[d]->SetBranchAddress("nExtraLep", &nExtraLep);
     inputTree[d]->SetBranchAddress("ExtraLepEta", &ExtraLepEta);
     inputTree[d]->SetBranchAddress("ExtraLepPhi", &ExtraLepPhi);
+    inputTree[d]->SetBranchAddress("nExtraZ", &nExtraZ);
     inputTree[d]->SetBranchAddress("nCleanedJetsPt30", &nJets);
     inputTree[d]->SetBranchAddress("nCleanedJetsPt30BTagged", &nJetsBTagged);
     inputTree[d]->SetBranchAddress("JetPt", &JetPt);
     inputTree[d]->SetBranchAddress("JetEta", &JetEta);
     inputTree[d]->SetBranchAddress("JetPhi", &JetPhi);
     inputTree[d]->SetBranchAddress("JetMass", &JetMass);
+    inputTree[d]->SetBranchAddress("JetQGLikelihood", &JetQGLikelihood);
     inputTree[d]->SetBranchAddress("DiJetFisher", &DiJetFisher);
     inputTree[d]->SetBranchAddress("GenHMass", &GenHMass);
     inputTree[d]->SetBranchAddress("GenZ1Phi", &GenZ1Phi);
@@ -680,7 +709,7 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 	  
 	  //kfactor = 1.1; // Jamboree
 	  
-	  kfactor = KFactorEWKqqZZ * KFactorQCDqqZZ_M ; // Moriond2016 
+	  kfactor = KFactorEWKqqZZ * KFactorQCDqqZZ_M ; // as of Moriond2016 
 
 	}else if(currentProcess==ggZZ){
 	  
@@ -688,8 +717,9 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 	  
 	  //kfactor = 1.7; // Jamboree
 	  
-	  kfactor = (float)sp->Eval(GenHMass); // Moriond2016
-	  //kfactor = KFactorggZZ; // Moriond2016
+	  kfactor = KFactorggZZ; // as of Moriond2016
+
+	  //kfactor = (float)sp->Eval(GenHMass); // (same as previous)
 	  
 	}
 	
@@ -728,8 +758,10 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 	jetEta[j] = JetEta->at(j);
 	jetPhi[j] = JetPhi->at(j);
 	jetMass[j] = JetMass->at(j);
+	jetQGL[j] = JetQGLikelihood->at(j);
+	jetPgOverPq[j] = 1./JetQGLikelihood->at(j) - 1.;
       }
-      /* ---------- full RunII categorization 
+      /* ---------- early RunII categorization proposal 
       currentCategory = category(
 	 nExtraLep,
 	 ZZPt,
@@ -749,6 +781,21 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
          pvbf_VAJHU_old,
          phjj_VAJHU_old
          );
+      //*/
+      /* ---------- Ichep 2016 categorization 
+      currentCategory = categoryIchep16(
+	 nExtraLep,
+	 nExtraZ,
+	 nJets,
+	 nJetsBTagged,
+	 jetQGL,
+	 phjj_VAJHU_old,
+	 phj_VAJHU,
+	 pvbf_VAJHU_old,
+	 pAux_vbf_VAJHU,
+	 pwh_hadronic_VAJHU,
+	 pzh_hadronic_VAJHU
+	 );
       //*/
 
 
@@ -770,6 +817,7 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 
       Float_t KD = p0plus_VAJHU / ( p0plus_VAJHU + bkg_VAMCFM ) ;
       Float_t vbfMela = pvbf_VAJHU_old / ( phjj_VAJHU_old + pvbf_VAJHU_old );
+      Float_t DCombVbf2j = (nJets>=2) ? 1/(1+ phjj_VAJHU_old/pvbf_VAJHU_old * TMath::Power(jetPgOverPq[0]*jetPgOverPq[1],1/3.) ) : -2 ;
       Float_t varVal[nVariables] = {
 	ZZMass,
 	ZZMass,
@@ -833,6 +881,7 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 	(currentProcess!=Data || ZZMass<110),
 	(currentProcess!=Data || ZZMass>150),
 	(currentProcess!=Data || ZZMass<110 || ZZMass>150),
+	(currentProcess!=Data || ZZMass<110 || (ZZMass>150&&ZZMass<500)),
 	true,
       };
       bool fillOtherThanM4l[nBlindings] = {
@@ -840,6 +889,7 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 	ZZMass<110,
 	ZZMass>150,
 	ZZMass<110 || ZZMass>150,
+	ZZMass<110 || (ZZMass>150&&ZZMass<500),
 	true,
       };
 
@@ -951,14 +1001,16 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
   
 
   //---------- Write histograms to a ROOT file
-  TFile* fOutHistos = new TFile(Form("histos_plotDataVsMC_%.3ffb-1%s.root",lumi,(MERGE2E2MU?"_m":"")),"recreate");
+  string outFileName = string(Form("histos_plotDataVsMC_%.3ffb-1%s.root",lumi,(MERGE2E2MU?"_m":"")));
+  cout<<"Writing MC histograms and data graphs into file "<<outFileName<<" ..."<<endl;
+  TFile* fOutHistos = new TFile(outFileName.c_str(),"recreate");
   fOutHistos->cd();
   for(int bl=0; bl<nBlindings; bl++){
     for(int fs=0; fs<nFinalStates+1; fs++){
       for(int cat=0; cat<nCategories+1; cat++){
 	for(int rs=0; rs<nResStatuses+1; rs++){
 	  for(int pr=0; pr<nProcesses; pr++){
-	    if( //(fs==nFinalStates || pr==DY) &&
+	    if( (fs==nFinalStates || pr==DY) &&
 		cat==nCategories &&
 		rs==nResStatuses ){
 	      for(int v=0; v<nVariables; v++){
@@ -1168,6 +1220,10 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
   Float_t bkg_VAMCFM;
   Float_t pvbf_VAJHU_old;
   Float_t phjj_VAJHU_old;
+  Float_t pAux_vbf_VAJHU;
+  Float_t phj_VAJHU;
+  Float_t pwh_hadronic_VAJHU;
+  Float_t pzh_hadronic_VAJHU;
   Float_t Z1Mass;
   Float_t Z2Mass;
   Short_t Z1Flav;
@@ -1178,8 +1234,11 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
   vector<Float_t> *LepPhi = 0;
   vector<Short_t> *LepLepId = 0;
   Short_t nExtraLep;
+  Short_t nExtraZ;
   Short_t nJets;
   Short_t nJetsBTagged;
+  vector<Float_t> *JetQGLikelihood = 0;
+  Float_t jetPgOverPq[99];
 
   TFile* dataFile = TFile::Open(inputFileAllData.c_str());
   TTree* mytree = (TTree*)dataFile->Get("CRZLLTree/candTree");
@@ -1197,6 +1256,10 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
   mytree->SetBranchAddress("bkg_VAMCFM", &bkg_VAMCFM);
   mytree->SetBranchAddress("pvbf_VAJHU_old", &pvbf_VAJHU_old);
   mytree->SetBranchAddress("phjj_VAJHU_old", &phjj_VAJHU_old);
+  mytree->SetBranchAddress("pAux_vbf_VAJHU", &pAux_vbf_VAJHU);
+  mytree->SetBranchAddress("phj_VAJHU", &phj_VAJHU);
+  mytree->SetBranchAddress("pwh_hadronic_VAJHU", &pwh_hadronic_VAJHU);
+  mytree->SetBranchAddress("pzh_hadronic_VAJHU", &pzh_hadronic_VAJHU);
   mytree->SetBranchAddress("Z1Mass", &Z1Mass);
   mytree->SetBranchAddress("Z2Mass", &Z2Mass);
   mytree->SetBranchAddress("Z1Flav", &Z1Flav);
@@ -1207,8 +1270,10 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
   mytree->SetBranchAddress("LepPhi", &LepPhi);
   mytree->SetBranchAddress("LepLepId", &LepLepId);
   mytree->SetBranchAddress("nExtraLep", &nExtraLep);
+  mytree->SetBranchAddress("nExtraZ", &nExtraZ);
   mytree->SetBranchAddress("nCleanedJetsPt30", &nJets);
   mytree->SetBranchAddress("nCleanedJetsPt30BTagged", &nJetsBTagged);
+  mytree->SetBranchAddress("JetQGLikelihood", &JetQGLikelihood);
 
   TH1F* h1[nVariables][nBlindings][nFinalStates+1];
   for(int bl=0; bl<nBlindings; bl++){
@@ -1262,13 +1327,16 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
 
     //----- fill histograms, update counters
 
+    for(int j=0; j<nJets; j++) jetPgOverPq[j] = 1./JetQGLikelihood->at(j) - 1.;
     Float_t KD = p0plus_VAJHU / ( p0plus_VAJHU + bkg_VAMCFM ) ;
     Float_t vbfMela = pvbf_VAJHU_old / ( phjj_VAJHU_old + pvbf_VAJHU_old );
+    Float_t DCombVbf2j = (nJets>=2) ? 1/(1+ phjj_VAJHU_old/pvbf_VAJHU_old * TMath::Power(jetPgOverPq[0]*jetPgOverPq[1],1/3.) ) : -2 ;
     Float_t varVal[nVariables] = {
       ZZMass,
       ZZMass,
       ZZMass,
       ZZMassRefit,
+      ZZMass,
       ZZMass,
       ZZMass,
       ZZMass,
@@ -1309,6 +1377,7 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
       ZZMass<110,
       ZZMass>150,
       ZZMass<110 || ZZMass>150,
+      ZZMass<110 || (ZZMass>150&&ZZMass<500),
       true,
     };
 
@@ -1392,7 +1461,9 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
   }
 
   //---------- Write histograms to a ROOT file
-  TFile* fOutHistos = new TFile(Form("histos_plotDataVsMC_ZPlusXSS_%.3ffb-1%s.root",lumi,(MERGE2E2MU?"_m":"")),"recreate");
+  string outFileName = string(Form("histos_plotDataVsMC_ZPlusXSS_%.3ffb-1%s.root",lumi,(MERGE2E2MU?"_m":"")));
+  cout<<"Writing Z+X histograms into file "<<outFileName<<" ..."<<endl;
+  TFile* fOutHistos = new TFile(outFileName.c_str(),"recreate");
   fOutHistos->cd();
   for(int bl=0; bl<nBlindings; bl++){
     for(int fs=0; fs<nFinalStates+1; fs++){
@@ -1428,6 +1499,7 @@ void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, st
     ( MASKH125FORHIGHMASS && bl==blindbelow150 && (varName[v].find("M4l")==string::npos || varName[v].find("M4l_above150")==0) ) ;
   bool withRatioPlot = DRAWDATAMCRATIO && drawData;
   bool doBlindingHisto = xHistoBlindLow[bl]<xHistoBlindUp[bl] && varName[v].find("M4l")==0;
+  bool doBlindingHisto2 = xHistoBlind2Low[bl]<xHistoBlind2Up[bl] && varName[v].find("M4l")==0;
 
   //----- prepare canvas
   TStyle* style = (TStyle*)gROOT->GetStyle("tdrStyle")->Clone();
@@ -1444,7 +1516,7 @@ void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, st
   bool first = true;
   int previous = -1;
   for(int pr=nProcesses-1; pr>=1; pr--){
-    if((useProcess[pr] && !((maskH125 || varName[v].find("Djet")==0) && pr==H125)) || (varName[v].find("Djet")==0 && (pr==H125VBF || pr==H125NONVBF))){
+    if((useProcess[pr] && !((maskH125 || separateVbf[v]) && pr==H125)) || (separateVbf[v] && (pr==H125VBF || pr==H125NONVBF))){
       if(REBINDYANDTTBAR && (pr==DY || pr==ttbar)) h[pr] = Smooth(h[pr],rebinningDYTTbar[v]);
       hStacks[pr] = (TH1F*)h[pr]->Clone();
       if(!first) hStacks[pr]->Add(hStacks[previous]);
@@ -1474,6 +1546,7 @@ void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, st
   TH1F* hZPlusX = 0;
   Bool_t useZPlusX = USEZPLUSXFULLRUN2SS ||
     (USEZPLUSXRUN2COMBINEDSHAPE && (varName[v].find("M4l")==0 && varName[v].find("Refit")==string::npos && varCutLabel[v]=="") );
+  useZPlusX = useZPlusX && hZPX->Integral()>0.;
   if(useZPlusX){
     hZPlusX = hZPX;
     if(logY) hZPlusX->SetMinimum(1e-20);
@@ -1481,7 +1554,7 @@ void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, st
     hZPlusX->SetLineColor(DRAWLINES?processLineColor[DY]:processFillColor[DY]);
     hZPlusX->SetLineWidth(LINEWIDTH);
     for(int pr=nProcesses-1; pr>=1; pr--)
-      if((useProcess[pr] && !((maskH125 || varName[v].find("Djet")==0) && pr==H125)) || (varName[v].find("Djet")==0 && (pr==H125VBF || pr==H125NONVBF)))
+      if((useProcess[pr] && !((maskH125 || separateVbf[v]) && pr==H125)) || (separateVbf[v] && (pr==H125VBF || pr==H125NONVBF)))
 	hStacks[pr]->Add(hZPlusX);
     cout<<"full expected yield for variable "<<varName[v]<<": "<<hStacks[idxSumMC]->Integral()<<endl;
     cout<<"Z+X yield for variable "<<varName[v]<<": "<<hZPlusX->Integral()<<endl;
@@ -1518,6 +1591,13 @@ void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, st
     hBlind->SetFillStyle(3013); //also tried 3001 and a few others, but they look bad in pdf format
     hBlind->SetLineColorAlpha(kWhite,0.);
   }
+  TH1F* hBlind2 = new TH1F(Form("hBlind2_%s_%s",varName[v].c_str(),sBlinding[bl].c_str()),";;",1,xHistoBlind2Low[bl],xHistoBlind2Up[bl]);
+  if(doBlindingHisto2){
+    hBlind2->SetBinContent(1,cmax);
+    hBlind2->SetFillColor(kGray+3);
+    hBlind2->SetFillStyle(3013);
+    hBlind2->SetLineColorAlpha(kWhite,0.);
+  }
 
   //----- prepare legend
   bool useBlindingLabel = blindingLabel[bl]!="" && varName[v].find("M4l")==string::npos;
@@ -1532,7 +1612,7 @@ void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, st
   if(!drawData) legHeight -= 0.04;
   if(maskH125) legHeight -= 0.04;
   if(useZPlusX) legHeight += 0.04;
-  if(varName[v].find("Djet")==0) legHeight += 0.04;
+  if(separateVbf[v]) legHeight += 0.04;
   if(withRatioPlot) legHeight /= 0.72;
   if(large){ legWidth *= 1.15; legHeight *= 1.15; legTextSize *= 1.15; }
   TLegend* lgd = new TLegend(legLeft,legUp-legHeight,legLeft+legWidth,legUp);
@@ -1542,7 +1622,7 @@ void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, st
   if(drawData)
     lgd->AddEntry(h[0],processLabel[0].c_str(),"p");
   for(int pr=1; pr<nProcesses; pr++)
-    if((useProcess[pr] && !((maskH125 || varName[v].find("Djet")==0) && pr==H125)) || (varName[v].find("Djet")==0 && (pr==H125VBF || pr==H125NONVBF)))
+    if((useProcess[pr] && !((maskH125 || separateVbf[v]) && pr==H125)) || (separateVbf[v] && (pr==H125VBF || pr==H125NONVBF)))
       lgd->AddEntry(hStacks[pr],processLabel[pr].c_str(),"f");
   if(useZPlusX)
     lgd->AddEntry(hZPlusX," Z+X","f");
@@ -1565,11 +1645,12 @@ void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, st
 
     //--- no Data/MC graph -> draw on main pad
     for(int pr=1; pr<nProcesses; pr++)
-      if((useProcess[pr] && !((maskH125 || varName[v].find("Djet")==0) && pr==H125)) || (varName[v].find("Djet")==0 && (pr==H125VBF || pr==H125NONVBF)))
+      if((useProcess[pr] && !((maskH125 || separateVbf[v]) && pr==H125)) || (separateVbf[v] && (pr==H125VBF || pr==H125NONVBF)))
 	hStacks[pr]->Draw( pr==idxSumMC ? "HIST" : "HIST SAME" );
     if(useZPlusX) hZPlusX->Draw("HIST SAME");
     if(drawData) gData->Draw("P");
     if(doBlindingHisto) hBlind->Draw("HIST SAME");
+    if(doBlindingHisto2) hBlind2->Draw("HIST SAME");
     lgd->Draw();
     if(useLabel) pav->Draw();
     gPad->RedrawAxis();
@@ -1596,7 +1677,7 @@ void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, st
     //--- main pad
     pad1->cd();
     for(int pr=1; pr<nProcesses; pr++){
-      if((useProcess[pr] && !((maskH125 || varName[v].find("Djet")==0) && pr==H125)) || (varName[v].find("Djet")==0 && (pr==H125VBF || pr==H125NONVBF))){
+      if((useProcess[pr] && !((maskH125 || separateVbf[v]) && pr==H125)) || (separateVbf[v] && (pr==H125VBF || pr==H125NONVBF))){
 	hStacks[pr]->GetYaxis()->SetTitleOffset(1.);
 	hStacks[pr]->GetYaxis()->SetTitleSize(0.06);
 	hStacks[pr]->GetYaxis()->SetLabelSize(0.06);
@@ -1607,6 +1688,7 @@ void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, st
     if(bl!=fullyblind) gData->Draw("P");
     hStacks[idxSumMC]->GetXaxis()->SetLabelSize(0.);
     if(doBlindingHisto) hBlind->Draw("HIST SAME");
+    if(doBlindingHisto2) hBlind2->Draw("HIST SAME");
     lgd->Draw();
     if(useLabel) pav->Draw();
     pad1->RedrawAxis();
@@ -1633,9 +1715,14 @@ void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, st
     TGraphAsymmErrors* gRatio = getDataOverMCGraph(gData,hStacks[idxSumMC]);
     gRatio->Draw("P");
     if(doBlindingHisto){
-      TH1F* hBlind2 = (TH1F*)hBlind->Clone();
-      hBlind2->SetBinContent(1,2.);
-      hBlind2->Draw("HIST SAME");
+      TH1F* hBlindDataMC = (TH1F*)hBlind->Clone();
+      hBlindDataMC->SetBinContent(1,2.);
+      hBlindDataMC->Draw("HIST SAME");
+    }
+    if(doBlindingHisto2){
+      TH1F* hBlindDataMC2 = (TH1F*)hBlind2->Clone();
+      hBlindDataMC2->SetBinContent(1,2.);
+      hBlindDataMC2->Draw("HIST SAME");
     }
     pad2->RedrawAxis();
 
@@ -1663,7 +1750,7 @@ void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, st
   cout<<"Yields for blinding "<<bl<<" and variable "<<varName[v]<<endl;
   cout<<"  qqZZ             "<<h[qqZZ]->Integral()<<endl;
   cout<<"  ggZZ             "<<h[ggZZ]->Integral()<<endl;
-  cout<<"  Z+X              "<<hZPlusX->Integral()<<endl;
+  if(useZPlusX) cout<<"  Z+X              "<<hZPlusX->Integral()<<endl;
   cout<<"  all backgrounds  "<<hStacks[idxSumMC]->Integral() - h[H125]->Integral()<<endl;
   cout<<"  signal           "<<h[H125]->Integral()<<endl;
   cout<<"  total expected   "<<hStacks[idxSumMC]->Integral()<<endl;
@@ -1762,6 +1849,16 @@ void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraphErrors** g2, int v2, int bl, stri
     box->SetFillColor(kBlack);
     box->SetFillStyle(3013);
   }
+  bool doBlindingArea2 = xHistoBlind2Low[bl]<xHistoBlind2Up[bl] 
+    && varPairName[v2].find("M4l")==0
+    && xHistoBlind2Low[bl]<h2Stacked->GetXaxis()->GetXmax()
+    && xHistoBlind2Up [bl]>h2Stacked->GetXaxis()->GetXmin(); 
+  TBox* box2 = 0;
+  if(doBlindingArea2){
+    box2 = new TBox(TMath::Max((Float_t)xHistoBlind2Low[bl],(Float_t)h2Stacked->GetXaxis()->GetXmin()),h2Stacked->GetYaxis()->GetXmin(),TMath::Min((Float_t)xHistoBlind2Up[bl],(Float_t)h2Stacked->GetXaxis()->GetXmax()),h2Stacked->GetYaxis()->GetXmax());
+    box2->SetFillColor(kBlack);
+    box2->SetFillStyle(3013);
+  }
 
   //----- prepare legend
   int legPos = varPairLegPos[v2];
@@ -1831,6 +1928,7 @@ void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraphErrors** g2, int v2, int bl, stri
     g2[fs4e]->Draw(withMassErrors?"P":"XP");
   }
   if(doBlindingArea) box->Draw();
+  if(doBlindingArea2) box2->Draw();
   if(bl!=fullyblind) lgd->Draw();
   if(useLabel) pav->Draw();
   gPad->RedrawAxis();
@@ -1872,7 +1970,9 @@ void doPlots(string outputDirectory, int variableList, int varPairList, int blin
   TH1F* h1[nVariables][nBlindings][nProcesses];
   TH2F* h2[nVarPairs ][nBlindings][nProcesses];
   TGraphErrors* g2Data[nVarPairs][nBlindings][nFinalStates];
-  TFile* fInHistos = TFile::Open(Form("histos_plotDataVsMC_%.3ffb-1%s.root",lumi,(MERGE2E2MU?"_m":"")));
+  string inFileName = string(Form("histos_plotDataVsMC_%.3ffb-1%s.root",lumi,(MERGE2E2MU?"_m":"")));
+  cout<<"Retrieving MC histograms and data graphs from file "<<inFileName<<" ..."<<endl;
+  TFile* fInHistos = TFile::Open(inFileName.c_str());
   for(int bl=0; bl<nBlindings; bl++){
     for(int fs=0; fs<nFinalStates+1; fs++){
       for(int cat=0; cat<nCategories+1; cat++){
@@ -1910,7 +2010,9 @@ void doPlots(string outputDirectory, int variableList, int varPairList, int blin
   //---------- get Z+X histograms
   TH1F* h1_ZPlusX[nVariables][nBlindings];
   if(USEZPLUSXFULLRUN2SS){
-    TFile* fInHistos_ZPlusXSS = TFile::Open(Form("histos_plotDataVsMC_ZPlusXSS_%.3ffb-1%s.root",lumi,(MERGE2E2MU?"_m":"")));
+    string inFileName_ZPlusXSS = string(Form("histos_plotDataVsMC_ZPlusXSS_%.3ffb-1%s.root",lumi,(MERGE2E2MU?"_m":"")));
+    cout<<"Retrieving Z+X histograms from file "<<inFileName_ZPlusXSS<<" ..."<<endl;
+    TFile* fInHistos_ZPlusXSS = TFile::Open(inFileName_ZPlusXSS.c_str());
     for(int bl=0; bl<nBlindings; bl++){
       for(int fs=0; fs<nFinalStates+1; fs++){
 	if(fs==FINALSTATE){
@@ -1946,11 +2048,12 @@ void doPlots(string outputDirectory, int variableList, int varPairList, int blin
   string canvasName;
   TCanvas* c1[nVariables];
   if(DO1DPLOTS){
+    cout<<"Doing 1D plots ..."<<endl;
     for(int bl=0; bl<nBlindings; bl++){
       if(!plotThisBlinding[blindingList][bl]) continue;
       for(int v=0; v<nVariables; v++){
 	if(!plotThisVar[variableList][v]) continue;
-	if(varName[v].find("M4L118130")!=string::npos && bl!=unblinded) continue;
+	if(varName[v].find("M4L118130")!=string::npos && bl!=unblinded && bl!=fullyblind) continue;
 	bool large = varName[v]=="M4lV2"||varName[v]=="M4lV2Refit"||varName[v]=="M4lV2b";//0;//
 	gStyle->SetFrameLineWidth(large?2:1);
 	canvasName = string(Form("c_%s_%s_%s",sBlinding[bl].c_str(),varName[v].c_str(),sFinalState[FINALSTATE].c_str()));
@@ -1965,11 +2068,12 @@ void doPlots(string outputDirectory, int variableList, int varPairList, int blin
   //*
   TCanvas* c2[nVarPairs];
   if(DO2DPLOTS){
+    cout<<"Doing 2D plots ..."<<endl;
     for(int bl=0; bl<nBlindings; bl++){
       if(!plotThisBlinding[blindingList][bl]) continue;
       for(int v2=0; v2<nVarPairs; v2++){
 	if(!plotThisVarPair[varPairList][v2]) continue;
-	if(varPairName[v2].find("M4L118130")!=string::npos && bl!=unblinded) continue;
+	if(varPairName[v2].find("M4L118130")!=string::npos && bl!=unblinded && bl!=fullyblind) continue;
 	canvasName = string(Form("c_%s_2D_%s_%s",sBlinding[bl].c_str(),varPairName[v2].c_str(),sFinalState[FINALSTATE].c_str()));
 	c2[v2] = new TCanvas(canvasName.c_str(),canvasName.c_str(),500,500);
 	DrawDataMC2D(c2[v2],h2[v2][bl],g2Data[v2][bl],v2,bl,lumiText,STYLE2DPLOT,varPairLogx[v2],varPairLogy[v2]);
@@ -2033,7 +2137,7 @@ void plotDataVsMC(bool redoHistograms = true, string outputPath = "PlotsDataVsMC
   int varPairList = 3;//4;//5;//6;//
 
   // Choose a list of ways of blinding some m4l regions
-  int blindingList = 5;//4;//1;//
+  int blindingList = 6;//4;//1;//
 
 
   // --------------- processing ---------------
