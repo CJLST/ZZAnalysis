@@ -859,12 +859,10 @@ LLLLPRESEL = NOGHOST4l # Just suppress candidates with overlapping leptons
 # ZZ Candidates
 
 if FSRMODE == "Legacy":
-    RECOMPUTEISOFORFSR = True
-elif FSRMODE == "RunII":
-    RECOMPUTEISOFORFSR = False
+    print "\nERROR: FSRMODE=Legacy is no longer supported. Aborting...\n"
+    exit(1)
 
-
-
+    
 process.bareZZCand= cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string('ZCand ZCand'),
     cut = cms.string(LLLLPRESEL),
@@ -880,7 +878,6 @@ process.ZZCand = cms.EDProducer("ZZCandidateFiller",
     bestCandAmong = cms.PSet(isBestCand = cms.string(BESTCAND_AMONG)),
     bestCandComparator = cms.string(BESTCANDCOMPARATOR),
     ZRolesByMass = cms.bool(True),
-    recomputeIsoForFSR = cms.bool(RECOMPUTEISOFORFSR),
     doKinFit = cms.bool(KINREFIT),
     flags = cms.PSet(
         GoodLeptons =  cms.string(FOURGOODLEPTONS),
@@ -1001,7 +998,6 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
 
     ),
     ZRolesByMass = cms.bool(False),  # daughter('Z1') = daughter(0)
-    recomputeIsoForFSR = cms.bool(RECOMPUTEISOFORFSR),
     doKinFit = cms.bool(KINREFIT),
     flags = cms.PSet(
       SR = cms.string(SR),

@@ -94,7 +94,6 @@ private:
   reco::CompositeCandidate::role_collection rolesZ1Z2;  
   reco::CompositeCandidate::role_collection rolesZ2Z1;
   bool isMC;
-  bool recomputeIsoForFSR;
   bool doKinFit;
 
   float muon_iso_cut, electron_iso_cut;
@@ -103,8 +102,6 @@ private:
   TH2F* corrSigmaEle;
   Comparators::ComparatorTypes bestCandType;
   KinZfitter *kinZfitter;
-  edm::EDGetTokenT<double> rhoForMuToken;
-  edm::EDGetTokenT<double> rhoForEleToken;
   edm::EDGetTokenT<edm::View<pat::Jet> > jetToken;
   edm::EDGetTokenT<pat::METCollection> metToken;
   edm::EDGetTokenT<edm::View<reco::Candidate> > softLeptonToken;
@@ -126,7 +123,6 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
   embedDaughterFloats(iConfig.getUntrackedParameter<bool>("embedDaughterFloats",true)),
   ZRolesByMass(iConfig.getParameter<bool>("ZRolesByMass")),
   isMC(iConfig.getParameter<bool>("isMC")),
-  recomputeIsoForFSR(iConfig.getParameter<bool>("recomputeIsoForFSR")),
   doKinFit(iConfig.getParameter<bool>("doKinFit")),
   corrSigmaMu(0),
   corrSigmaEle(0),
@@ -145,8 +141,6 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
   }
   produces<pat::CompositeCandidateCollection>();
 
-  rhoForMuToken = consumes<double>(LeptonIsoHelper::getMuRhoTag(sampleType, setup));
-  rhoForEleToken = consumes<double>(LeptonIsoHelper::getEleRhoTag(sampleType, setup));
   jetToken = consumes<edm::View<pat::Jet> >(edm::InputTag("cleanJets"));
   metToken = consumes<pat::METCollection>(edm::InputTag("slimmedMETs"));
   softLeptonToken = consumes<edm::View<reco::Candidate> >(edm::InputTag("softLeptons"));
@@ -214,15 +208,6 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   std::auto_ptr<pat::CompositeCandidateCollection> result(new pat::CompositeCandidateCollection);
 
   const float ZmassValue = 91.1876;
-
-  double rhoForMu, rhoForEle;
-  {
-    edm::Handle<double> rhoHandle;
-    iEvent.getByToken(rhoForMuToken, rhoHandle);
-    rhoForMu = *rhoHandle;
-    iEvent.getByToken(rhoForEleToken, rhoHandle);
-    rhoForEle = *rhoHandle;
-  }
 
   // Get LLLL candidates
   Handle<edm::View<CompositeCandidate> > LLLLCands;
@@ -339,12 +324,13 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     int id22 = Z2L2->pdgId();
     int candChannel = id11*id12*id21*id22;
 
+    if((id11 == 22 && id12 == 22) || (id21 == 22 && id22 == 22)) LogError("Z with 2 tle") << "Found a Z candidate made up of 2 trackless electrons";
+
     if(id11 == 22) id11 = -1 * id12;
     if(id12 == 22) id12 = -1 * id11;
     if(id21 == 22) id21 = -1 * id22;
     if(id22 == 22) id22 = -1 * id21;
 
-    if((id11 && id12 == 22) || (id21 == 22 && id22 == 22)) LogError("Z with 2 tle") << "Found a Z candidate made up of 2 trackless electrons";
     //LogPrint("") << id11 << id12 <<id21 <<id22;
  
 
@@ -386,42 +372,14 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     }
 
    
-    // Recompute isolation for all four leptons if FSR is present
+    // Compute worst-lepton isolation
     for (int zIdx=0; zIdx<2; ++zIdx) {
       float worstMuIso=0;
       float worstEleIso=0;
       for (int dauIdx=0; dauIdx<2; ++dauIdx) { 
 	const reco::Candidate* z = myCand.daughter(zIdx);
 	const reco::Candidate* d = z->daughter(dauIdx);
-	float combRelIsoPFCorr = 0;
-	if (recomputeIsoForFSR) {  //FIXME: will recompute iso for individual leptons in the new scheme
-	  float fsrCorr = 0; // The correction to PFPhotonIso
-	  for (FSRToLepMap::const_iterator ifsr=FSRMap.begin(); ifsr!=FSRMap.end(); ++ifsr) {
-	    double dR = ROOT::Math::VectorUtil::DeltaR(ifsr->second->p4(),d->momentum());
-	    // Check if the photon is in the lepton's iso cone and not vetoed
-	    if (dR<0.3 && ((d->isMuon() && dR > 0.01) ||
-			   (d->isElectron() && (fabs((static_cast<const pat::Electron*>(d->masterClone().get()))->superCluster()->eta()) < 1.479 || dR > 0.08)))) {
-	      fsrCorr += ifsr->second->pt();
-	    }
-	  }
-	  float rho = ((d->isMuon())?rhoForMu:rhoForEle);
-	  combRelIsoPFCorr =  LeptonIsoHelper::combRelIsoPF(sampleType, setup, rho, d, fsrCorr);
-	  string base;
-	  stringstream str;
-	  str << "d" << zIdx << "." << "d" << dauIdx << ".";
-	  str >> base;
-	  myCand.addUserFloat(base+"combRelIsoPFFSRCorr",combRelIsoPFCorr);
-      float cut_value = 0;
-      if(d->isMuon()) cut_value = muon_iso_cut;
-      if(d->isElectron()) cut_value = electron_iso_cut;
-      if(d->isPhoton()) {
-         cut_value = 999;    
-         edm::LogError("") << "Requesting isolation cut for TLE, is not implemented";
-      }
-	  myCand.addUserFloat(base+"passCombRelIsoPFFSRCorr",combRelIsoPFCorr < cut_value); 
-	} else {
-	  combRelIsoPFCorr = userdatahelpers::getUserFloat(d,"combRelIsoPFFSRCorr");
-	}	
+	float combRelIsoPFCorr = userdatahelpers::getUserFloat(d,"combRelIsoPFFSRCorr");
 	if (d->isMuon()) worstMuIso  = max(worstMuIso,  combRelIsoPFCorr);
 	else             worstEleIso = max(worstEleIso, combRelIsoPFCorr);
       }

@@ -116,7 +116,6 @@ process.ZZCandlooseEle = cms.EDProducer("ZZCandidateFiller",
     bestCandAmong = cms.PSet(isBestCand = cms.string(BESTCAND_AMONG)),
     bestCandComparator = cms.string(BESTCANDCOMPARATOR),
     ZRolesByMass = cms.bool(True),
-    recomputeIsoForFSR = cms.bool(RECOMPUTEISOFORFSR),
     doKinFit = cms.bool(KINREFIT),
     flags = cms.PSet(
         GoodLeptons =  cms.string(FOURGOODLEPTONS),
@@ -215,7 +214,6 @@ process.ZLLCandlooseEle = cms.EDProducer("ZZCandidateFiller",
 
     ),
     ZRolesByMass = cms.bool(False),  # daughter('Z1') = daughter(0)
-    recomputeIsoForFSR = cms.bool(RECOMPUTEISOFORFSR),
     doKinFit = cms.bool(KINREFIT),
     flags = cms.PSet(
       SR = cms.string(SR),
