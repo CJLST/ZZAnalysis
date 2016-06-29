@@ -140,17 +140,17 @@ void all(int selAna=-10, int channels=0, int categ=-1, int sample = 0 ){
  
   ROOT::Math::MinimizerOptions::SetDefaultTolerance( 1.E-7);
  
-  stringstream FileName[6];
+  stringstream FileName[4];
   int howmany = 1;
   if(sample==1) FileName[0] << "root://lxcms03//data3/Higgs/160624/ZZTo4l/ZZ4lAnalysis.root";
   else if(sample==2) {
     FileName[0] << "root://lxcms03//data3/Higgs/160624/ggZZ4e/ZZ4lAnalysis.root";
     FileName[1] << "root://lxcms03//data3/Higgs/160624/ggZZ4mu/ZZ4lAnalysis.root";
     FileName[2] << "root://lxcms03//data3/Higgs/160624/ggZZ4tau/ZZ4lAnalysis.root";
-    FileName[3] << "root://lxcms03//data3/Higgs/160624/ggZZ2e2mu/ZZ4lAnalysis.root";
-    FileName[4] << "root://lxcms03//data3/Higgs/160624/ggZZ2mu2tau/ZZ4lAnalysis.root";
-    FileName[5] << "root://lxcms03//data3/Higgs/160624/ggZZ2e2tau/ZZ4lAnalysis.root";
-    howmany=6;
+//    FileName[3] << "root://lxcms03//data3/Higgs/160624/ggZZ2e2mu/ZZ4lAnalysis.root";
+    FileName[3] << "root://lxcms03//data3/Higgs/160624/ggZZ2mu2tau/ZZ4lAnalysis.root";
+//    FileName[5] << "root://lxcms03//data3/Higgs/160624/ggZZ2e2tau/ZZ4lAnalysis.root";
+    howmany=4;
   }
   
   else {
@@ -225,13 +225,17 @@ void all(int selAna=-10, int channels=0, int categ=-1, int sample = 0 ){
   
   TH1F *hmass = new TH1F("hmass","hmass",200,xMin,xMax);
   //---------  
-  RooRealVar x("mass","m_{4l}",140.,xMin,xMax,"GeV");
+  RooRealVar x("mass","m_{4l}",160.,xMin,xMax,"GeV");
   RooRealVar w("myW","myW",1.0,0.,1000.);
   RooArgSet ntupleVarSet(x,w);
   RooDataSet dataset("mass4l","mass4l",ntupleVarSet,WeightVar("myW"));
 
   for(int k=0; k<nentries; k++){
     ggTree->GetEvent(k);
+      int nj = 0;
+      for (unsigned int nj = 0; nj < JETQGLikeliHood->size(); nj++) {
+        jetQGLL[nj] = (*JETQGLikeliHood)[nj];
+        }
 
     int njet30 = 0;
     for (unsigned int ijet = 0; ijet < jetpt->size(); ijet++) { 
@@ -359,7 +363,7 @@ void all(int selAna=-10, int channels=0, int categ=-1, int sample = 0 ){
   frame3->SetMinimum(-3);
   frame3->SetMaximum(3);
 
-  TLine *line1 = new TLine(105,0,140,0);
+  TLine *line1 = new TLine(105,0,160,0);
   line1->SetLineColor(kRed);
   line1->Draw();
   

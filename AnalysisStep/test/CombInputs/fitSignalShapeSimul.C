@@ -108,7 +108,7 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
   int maxMassBin;
   maxMassBin = 3; 
 
-  float masses[3] = {120,125,126};
+  float masses[3] = {120,125,130};
   for(int i=0;i<3;++i) {
     mass[i] = masses[i]; 
     id[i]=masses[i]; 
@@ -137,7 +137,6 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
 
     
     fitSignalShapeSimul(mass,maxMassBin,selAna,channels,categ,sample,/* 10.,doSfLepton,*/xLow,xHigh,bwSigma,fitValues,fitErrors,covQual); 
-//    fitSignalShapeSimul(mass,maxMassBin,selAna,channels,categ,sample,/* 10.,doSfLepton,*/xLow,xHigh,bwSigma,fitValues,fitErrors,covQual);
  
       cout << "meanCB_p0 value "  << fitValues[0] << " , " << "mean_p1 value:"  << fitValues[6] << endl;
       cout << "sigmaCB_p0 value " << fitValues[1] << " , " << "sigma_p1 value:" << fitValues[7] << endl;
@@ -150,7 +149,7 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
       string filename = "signal_shape_parametrization_13TeV_" + ssample + "_" + schannel + "_" + sselAna + "_" + scategory + "." + "yaml" ;
       ofstream outFile;
       outFile.open(filename);
-      if(channels == 0)outFile<<"shape : " <<"\"RooDCBall::"<<ssample<<"_mass(mean,sigma,alpha,n,alpha2,n2)\""<< endl;
+      if(channels == 2)outFile<<"shape : " <<"\"RooDCBall::"<<ssample<<"_mass(mean,sigma,alpha,n,alpha2,n2)\""<< endl;
       outFile << schannel <<"    :" << endl;
       outFile <<"    mean   : " <<"'"<<fitValues[0]<<"+"<<"("<<fitValues[6] <<")*(@0-125)"<<"'"<<endl;
       outFile <<"    sigma  : " <<"'"<<fitValues[1]<<"+"<<"("<<fitValues[7] <<")*(@0-125)"<<"'"<<endl;
@@ -508,7 +507,11 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
   }
 
  RooArgSet * params2 = rs.getParameters(RooArgList(x,massrc));
+<<<<<<< HEAD
+ if (sample != 1 ||  categ > 0 ) {
+=======
   if (sample != 1 ||  categ > 0 ) {
+>>>>>>> 0be7df8e819abce49f799ee79c716ca05f1343c2
     if(channels==0 )params2->readFromFile("Ch0_Cat0_paraf.txt") ;
     if(channels==1 )params2->readFromFile("Ch1_Cat0_paraf.txt") ;
     if(channels==2 )params2->readFromFile("Ch2_Cat0_paraf.txt") ;	
