@@ -186,7 +186,7 @@ void densityHist(TH1F* hist)
 void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./goodDatasetsWithData.txt", bool norm = false, bool CR = false, bool draw = true)
 {
   
-  float lumin = 2.6;   // Moriond
+  float lumin = 4.1;   // ICHEP partial
   setTDRStyle();
   // gStyle->SetOptStat(1111111);
   const int nDatasets = 13;          // Moriond: 11
@@ -600,8 +600,8 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	    if ((typ==0 || typ==3) && nExtraJets > 1 && vbfmela > 0.5) typ=typ+8;
 	    if ((typ==1 || typ==2) && nExtraJets > 1 && vbfmela > 0.5) typ=typ+8;             
   	    
-	    if ((typ==0 || typ==3) && btag1stJet > 0.605 && btag2ndJet > 0.605) typ=typ+4;
-	    if ((typ==1 || typ==2) && btag1stSubjet > 0.605 && btag2ndSubjet > 0.605) typ=typ+4;
+	    if ((typ==0 || typ==3) && btag1stJet > 0.46 && btag2ndJet > 0.46) typ=typ+4;
+	    if ((typ==1 || typ==2) && btag1stSubjet > 0.46 && btag2ndSubjet > 0.46) typ=typ+4;
 	    
 	    tmvaZZPt = (float)ZZPt->at(theCand); 
 	    tmvaZ2Mass = (float)Z2Mass->at(theCand);
