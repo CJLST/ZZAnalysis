@@ -74,7 +74,7 @@
 
 namespace {
   bool writeJets = true;     // Write jets in the tree. FIXME: make this configurable
-  bool addKinRefit = false;
+  bool addKinRefit = true;
   bool addVtxFit = false;
   bool addFSRDetails = false;
   bool addQGLInputs = false;
@@ -119,7 +119,6 @@ namespace {
   Float_t ZZPhi  = 0;
   Int_t CRflag  = 0;
   std::vector<short> CR_int_flag;
-  Int_t event_has_regular_ZZ = 0;
   Float_t Z1Mass  = 0;
   Float_t Z1Pt  = 0;
   Short_t Z1Flav  = 0;
@@ -454,7 +453,6 @@ private:
   edm::Handle<edm::View<reco::Candidate> > genParticles;
   edm::EDGetTokenT<GenEventInfoProduct> genInfoToken;
   edm::EDGetTokenT<edm::View<pat::CompositeCandidate> > candToken;
-  edm::EDGetTokenT<edm::View<pat::CompositeCandidate> > candToken_regular;
   edm::EDGetTokenT<edm::TriggerResults> triggerResultToken;
   edm::EDGetTokenT<vector<reco::Vertex> > vtxToken;
   edm::EDGetTokenT<edm::View<pat::Jet> > jetToken;
@@ -595,15 +593,8 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   candToken = consumes<edm::View<pat::CompositeCandidate> >(edm::InputTag(theCandLabel));
 
   is_loose_ele_selection = false;
-  if(pset.exists("is_loose_ele_selection")) {
+  if(pset.exists("is_loose_ele_selection")) { 
     is_loose_ele_selection = true;
-    if(pset.exists("CandCollection_regular")) {
-
-      candToken_regular = consumes<edm::View<pat::CompositeCandidate> >(edm::InputTag(pset.getUntrackedParameter<string>("CandCollection_regular")));
-    } else {
-      edm::LogError("loose ele") << "Running in loose electron mode without regular collection - can not determine overlap with regular selction. Aborting";
-      return;
-    }
   }
   triggerResultToken = consumes<edm::TriggerResults>(edm::InputTag("TriggerResults"));
   vtxToken = consumes<vector<reco::Vertex> >(edm::InputTag("goodPrimaryVertices"));
@@ -914,18 +905,11 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   }
   const edm::View<pat::CompositeCandidate>* cands = candHandle.product();
 
-  // Get candidate collection including trackless electrons
-  edm::Handle<edm::View<pat::CompositeCandidate> > candHandle_regular;
-  const edm::View<pat::CompositeCandidate>* cands_regular = nullptr;
 
-  if(is_loose_ele_selection) { 
-    event.getByToken(candToken_regular, candHandle_regular);
-    cands_regular = candHandle_regular.product();
-  }
   CR_int_flag.clear();
 
 
-  if ((skipEmptyEvents && cands->size() == 0) ) return; // Skip events with no candidate, unless skipEmptyEvents = false
+  if (skipEmptyEvents && cands->size() == 0) return; // Skip events with no candidate, unless skipEmptyEvents = false
 
   // For Z+L CRs, we want only events with exactly 1 Z+l candidate. FIXME: this has to be reviewed.
   if (theChannel==ZL && cands->size() != 1) return;
@@ -1025,21 +1009,8 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     if(e->pt()>5) // this cut is implicit in miniAOD
       NRecoEle++;
   }
-  
-  // Save if event also passed TLE selection 
-  int n_regular_Filled = 0;
-  if(is_loose_ele_selection) {
-    for( edm::View<pat::CompositeCandidate>::const_iterator cand = cands_regular->begin(); cand != cands_regular->end(); ++cand) {
-      //size_t icand= cand-cands_tle->begin();
-      if (!(theChannel==ZL || (bool)(cand->userFloat("isBestCand")) )) continue; // Skip events other than the best cand (or CR candidates in the CR)
-      ++n_regular_Filled;
-    }
-  }
-  if(n_regular_Filled > 0) event_has_regular_ZZ = true;
 
-  if(is_loose_ele_selection && event_has_regular_ZZ) return;
 
-  if(!skipEmptyEvents) edm::LogError("") << "loose ZZ size: " << cands->size();
   //Loop on the candidates
   vector<Int_t> CRFLAG(cands->size());
   for( edm::View<pat::CompositeCandidate>::const_iterator cand = cands->begin(); cand != cands->end(); ++cand) {
@@ -1071,12 +1042,12 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
         CR_int_flag.push_back(CRZLLos_3P1F);
       }
       if (CRFLAG[icand]) { // This candidate belongs to one of the CRs: perform additional jet cleaning. 
-	    // Note that this is (somewhat incorrectly) done per-event, so there could be some over-cleaning in events with >1 CR candidate.
-	    for (unsigned i=0; i<cleanedJets.size(); ++i) {	  
-	      if (cleanedJets[i]!=0  && (!jetCleaner::isGood(*cand, *(cleanedJets[i])))) {
-	        cleanedJets[i]=0;
-	      }
-	    }
+        // Note that this is (somewhat incorrectly) done per-event, so there could be some over-cleaning in events with >1 CR candidate.
+        for (unsigned i=0; i<cleanedJets.size(); ++i) {
+          if (cleanedJets[i]!=0  && (!jetCleaner::isGood(*cand, *(cleanedJets[i])))) {
+            cleanedJets[i]=0;
+          }
+        }
       }
     }
   }
@@ -1118,8 +1089,8 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     // note taht this is bugged in 4e fs!
       if(!( theChannel==ZL || CRFLAG[icand] || (bool)(cand->userFloat("isBestCand")) )) continue; // Skip events other than the best cand (or CR candidates in the CR)
     }
-    //For the SR, also fold information about acceptance in CRflag. 
 
+    //For the SR, also fold information about acceptance in CRflag.
     if (isMC && (theChannel==ZZ)) {
       if (gen_ZZ4lInEtaAcceptance) { 
         set_bit(CRFLAG[icand],28);
@@ -1222,9 +1193,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 
   CRflag = CRFLAG;
 
-  //LogPrint("") << "A";
-  if(theChannel!=ZL) {
-     //LogPrint("") << "B";
+  if(theChannel!=ZL){
 
     // Fill how many trackless electrons are used in selected Z pair
     // Currently its always 1 for tle selection path
@@ -1420,7 +1389,6 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     pbbh_VAJHU_dn = cand.userFloat("pbbh_VAJHU_dn");
 
   }
-  //LogPrint("") << "C";
 
   //Z1 and Z2 variables
   const reco::Candidate* Z1;
@@ -1437,28 +1405,22 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   } else {              // Special handling of Z+l candidates
     Z1   = cand.daughter(0); // the Z
     Z2   = cand.daughter(1); // This is actually the additional lepton!
-  //LogPrint("") << "D";
-
     userdatahelpers::getSortedLeptons(cand, leptons, labels, fsrPhot, fsrIndex, false); // note: we get just 3 leptons in this case.
-  //LogPrint("") << "D2";
-
   }
 
   Z1Mass = Z1->mass();
   Z1Pt =   Z1->pt();
-  Z1_isLoose = userdatahelpers::hasUserFloat(Z1 ,"isLoose") == 1 ? userdatahelpers::getUserFloat(Z1, "isLoose") : -2;
-
   Z1Flav = abs(Z1->daughter(0)->pdgId()) * Z1->daughter(0)->charge() * abs(Z1->daughter(1)->pdgId()) * Z1->daughter(1)->charge(); // FIXME: temporarily changed, waiting for a fix to the mismatch of charge() and pdgId() for muons with BTT=4
   // In the TLE selection we need set this manually becasue photon charge is zero
   if (Z1Flav == 0) Z1Flav = Z1->daughter(0)->pdgId() * Z1->daughter(1)->pdgId();
+  Z1_isLoose = userdatahelpers::hasUserFloat(Z1 ,"isLoose") == 1 ? userdatahelpers::getUserFloat(Z1, "isLoose") : -2;
  
   Z2Mass = Z2->mass();
   Z2Pt =   Z2->pt();
-  Z2_isLoose = userdatahelpers::hasUserFloat(Z2 ,"isLoose") == 1 ? userdatahelpers::getUserFloat(Z2, "isLoose") : -2;
   Z2Flav = theChannel==ZL ? 0 : abs(Z2->daughter(0)->pdgId()) * Z2->daughter(0)->charge() * abs(Z2->daughter(1)->pdgId()) * Z2->daughter(1)->charge(); // FIXME: temporarily changed, waiting for a fix to the mismatch of charge() and pdgId() for muons with BTT=4
   if (Z2Flav == 0 && theChannel != ZL) Z2Flav = Z2->daughter(0)->pdgId() * Z2->daughter(1)->pdgId()  ;
-  //LogPrint("") << "E";
   if (Z2Flav == 0 && theChannel == ZL) Z2Flav = Z2->pdgId();
+  Z2_isLoose = userdatahelpers::hasUserFloat(Z2 ,"isLoose") == 1 ? userdatahelpers::getUserFloat(Z2, "isLoose") : -2;
 
   const reco::Candidate* non_TLE_Z = nullptr;
   size_t TLE_index = 999;
@@ -1514,8 +1476,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     short lepFlav = std::abs(leptons[i]->pdgId());
 
     SIP[i]             = userdatahelpers::getUserFloat(leptons[i],"SIP");
-    // this cut needs to be fixed!!!
-    passIsoPreFSR      = passIsoPreFSR&&(userdatahelpers::getUserFloat(leptons[i],"combRelIsoPF")< 0.35);// LeptonIsoHelper::isoCut(leptons[i]));
+    passIsoPreFSR      = passIsoPreFSR&&(userdatahelpers::getUserFloat(leptons[i],"combRelIsoPF")<LeptonIsoHelper::isoCut(leptons[i]));
 
     //in the Legacy approach,  FSR-corrected iso is attached to the Z, not to the lepton!
     if (theChannel!=ZL) {
@@ -2061,7 +2022,6 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("ZZPhi",ZZPhi);
   myTree->Book("CRflag",CRflag);
   myTree->Book("CR_int_flag",CR_int_flag);
-  myTree->Book("event_has_regular_ZZ",event_has_regular_ZZ);
   myTree->Book("ZZ_match",ZZ_match);
 
   myTree->Book("Z1Mass",Z1Mass);

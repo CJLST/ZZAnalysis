@@ -141,7 +141,7 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::Handle<pat::ElectronCollection> looseElectronHandle;
   if(do_RSE) iEvent.getByToken(looseElectronToken, looseElectronHandle);
 
-edm::Handle<pat::PhotonCollection> tleHandle;
+  edm::Handle<pat::PhotonCollection> tleHandle;
   if(do_TLE) iEvent.getByToken(tleToken, tleHandle);
 
   //--- Get the photons

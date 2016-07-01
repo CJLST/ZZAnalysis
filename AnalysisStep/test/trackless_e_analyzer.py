@@ -77,8 +77,6 @@ process.ZZCandtle = cms.EDProducer("ZZCandidateFiller",
     electron_iso_cut = cms.double(ELEISOCUT),
 )
 
-process.ZZTree.CandCollection_regular = cms.untracked.string('ZZCandtle')
-
 ### Trees for control regions only
 # what to do in CR where charge is needed?
 
@@ -185,7 +183,6 @@ process.ZZTreetle = TreeSetup.clone()
 process.ZZTreetle.channel = 'ZZ'
 process.ZZTreetle.is_loose_ele_selection = cms.bool(True)
 process.ZZTreetle.CandCollection = 'ZZCandtle'
-process.ZZTreetle.CandCollection_regular = cms.untracked.string('ZZCand')
 
 ### TLE Trees for control regions only
 process.CRZLLTreetle = TreeSetup.clone()

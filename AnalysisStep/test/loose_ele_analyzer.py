@@ -247,7 +247,6 @@ process.ZZTreelooseEle = TreeSetup.clone()
 process.ZZTreelooseEle.channel = 'ZZ'
 process.ZZTreelooseEle.is_loose_ele_selection = cms.bool(True)
 process.ZZTreelooseEle.CandCollection = 'ZZCandlooseEle'
-process.ZZTreelooseEle.CandCollection_regular = cms.untracked.string('ZZCand')
 
 #### TLE Trees for control regions only
 process.CRZLLTreelooseEle = TreeSetup.clone()
