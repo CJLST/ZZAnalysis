@@ -889,6 +889,12 @@ process.ZZCand = cms.EDProducer("ZZCandidateFiller",
     electron_iso_cut = cms.double(ELEISOCUT),
 )
 
+# LHECandidate
+process.LHECand = cms.EDProducer(
+    "LHECandidateFiller",
+    isMC = cms.bool(IsMC)
+)
+
 
 ### ----------------------------------------------------------------------
 ### Z+LL Control regions.
@@ -1136,7 +1142,11 @@ if APPLYJEC:
     process.Jets = cms.Path( process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.QGTagger + process.dressedJets )
 else:
     process.Jets = cms.Path( process.QGTagger + process.dressedJets )
-    
+
+# LHE info
+# Prepare lepton collections
+process.LHECandidates = cms.Path(process.LHECand)
+
 ### ----------------------------------------------------------------------
 ### Filters
 ### ----------------------------------------------------------------------
