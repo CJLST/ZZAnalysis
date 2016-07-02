@@ -14,7 +14,7 @@
 git cms-merge-topic -u matteosan1:smearer_76X
 
 #Preliminary 8X electron ID
-git clone git@github.com:Werbellin/RecoEgamma_8X.git RecoEgamma
+git clone https://github.com/Werbellin/RecoEgamma_8X.git RecoEgamma
 (cd RecoEgamma; git checkout d716460) 
 
 #ZZAnalysis
