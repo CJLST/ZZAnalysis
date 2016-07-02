@@ -35,6 +35,7 @@ using namespace std;
 
 class LHECandidateFiller : public edm::EDProducer {
 public:
+
   // Constructor
   explicit LHECandidateFiller(const edm::ParameterSet&);
 
@@ -42,123 +43,132 @@ public:
   ~LHECandidateFiller(){}
 
 private:
+
   virtual void beginJob(){}
   virtual void produce(edm::Event&, const edm::EventSetup&);
   virtual void endJob(){}
 
-  edm::InputTag src_;
+  virtual void add_PtEtaPhiMassId_Data(std::auto_ptr<pat::CompositeCandidate>& cand, string owner, int id, TLorentzVector mom, bool usePz);
+  virtual void get_PtEtaPhiMassId_DataStrings(vector<string>& blist, string owner, bool usePz);
+
 };
 
 
-LHECandidateFiller::LHECandidateFiller(const edm::ParameterSet& iConfig) :
-src_(iConfig.getParameter<edm::InputTag>("src"))
-{
+LHECandidateFiller::LHECandidateFiller(const edm::ParameterSet&/* iConfig*/){
+  consumesMany<LHEEventProduct>();
   produces<pat::CompositeCandidate>();
 }
 
 
 void LHECandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup){
-  std::auto_ptr<pat::CompositeCandidate> result(new pat::CompositeCandidate);
+  std::auto_ptr<pat::CompositeCandidate> cand(new pat::CompositeCandidate);
 
   edm::Handle<LHEEventProduct> lhe_evt;
-  iEvent.getByLabel(src_, lhe_evt);
-  const lhef::HEPEUP hepeup_ = lhe_evt->hepeup();
-  const int nup_ = hepeup_.NUP;
-  const std::vector<int> istup_ = hepeup_.ISTUP;
-  const std::vector<std::pair<int, int>> mothup_ = hepeup_.MOTHUP;
-  const std::vector<int> idup_ = hepeup_.IDUP;
-  const std::vector<lhef::HEPEUP::FiveVector> pup_ = hepeup_.PUP;
+  vector<edm::Handle<LHEEventProduct> > lhe_handles;
+  iEvent.getManyByType(lhe_handles);
+  if (lhe_handles.size()>0) lhe_evt = lhe_handles.front();
+
+  if (lhe_evt.isValid()){
+    const lhef::HEPEUP hepeup_ = lhe_evt->hepeup();
+    const int nup_ = hepeup_.NUP;
+    const std::vector<int> istup_ = hepeup_.ISTUP;
+    const std::vector<std::pair<int, int>> mothup_ = hepeup_.MOTHUP;
+    const std::vector<int> idup_ = hepeup_.IDUP;
+    const std::vector<lhef::HEPEUP::FiveVector> pup_ = hepeup_.PUP;
 
 
-  // PDF scale
-  float LHE_PDFScale = -1;
-  if (lhe_evt->pdf()!=NULL) LHE_PDFScale = lhe_evt->pdf()->scalePDF;
-  result.addUserFloat("LHE_PDFScale", LHE_PDFScale);
-  //
+    // PDF scale
+    float LHE_PDFScale = -1;
+    if (lhe_evt->pdf()!=NULL) LHE_PDFScale = lhe_evt->pdf()->scalePDF;
+    cand->addUserFloat("LHE_PDFScale", LHE_PDFScale);
+    //
 
-  // Mothers, daughters (+ associated particles)
-  std::vector<int> idMother;
-  std::vector<TLorentzVector> pMother;
-  std::vector<int> idDaughter;
-  std::vector<TLorentzVector> pDaughter;
-  for (int ipart = 0; ipart<nup_; ipart++){
-    if (istup_.at(ipart)==-1){
-      idMother.push_back(idup_.at(ipart));
-      TLorentzVector tmpMom(pup_.at(ipart)[0], pup_.at(ipart)[1], pup_.at(ipart)[2], pup_.at(ipart)[3]);
-      pMother.push_back(tmpMom);
+    // Mothers, daughters (+ associated particles)
+    std::vector<std::pair<int, TLorentzVector>> pMother;
+    std::vector<std::pair<int, TLorentzVector>> pDaughter;
+    for (int ipart = 0; ipart<nup_; ipart++){
+      if (istup_.at(ipart)==-1) pMother.push_back(std::pair<int, TLorentzVector>(idup_.at(ipart), TLorentzVector(pup_.at(ipart)[0], pup_.at(ipart)[1], pup_.at(ipart)[2], pup_.at(ipart)[3])));
+      else if (istup_.at(ipart)==1){
+        // TO BE IMPROVED DURING MIGRATION TO MELA V2:
+        // - ADD MELACANDIDATE, LHEEVENT FROM LHEANALYZER
+        // - DO SORTING, SELECTION TO FIND HIGGS/ZZ DAUGHTERS VS ASSOCIATED PARTICLES
+        // - IMPLEMENT CONVERTLHE-STYLE COMPARATORS
+        pDaughter.push_back(std::pair<int, TLorentzVector>(idup_.at(ipart), TLorentzVector(pup_.at(ipart)[0], pup_.at(ipart)[1], pup_.at(ipart)[2], pup_.at(ipart)[3])));
+      }
     }
-    else if(istup_.at(ipart)==1){
-      idDaughter.push_back(idup_.at(ipart));
-      TLorentzVector tmpMom(pup_.at(ipart)[0], pup_.at(ipart)[1], pup_.at(ipart)[2], pup_.at(ipart)[3]);
-      pDaughter.push_back(tmpMom);
+
+    int nMothers=pMother.size();
+    cand->addUserInt("nLHEMothers", nMothers);
+    for (int imot=0; imot<nMothers; imot++){
+      TString strowner = Form("Mother%i", imot+1);
+      string owner = strowner.Data();
+      add_PtEtaPhiMassId_Data(cand, owner, pMother.at(imot).first, pMother.at(imot).second, true); // usePz=true since Pt=0
     }
-  }
-  int nMothers=idMother.size();
-  int nDaughters=idDaughter.size();
-  result.addUserInt("nLHEMothers", nMothers);
-  result.addUserInt("nDaughters", nDaughters);
-  for (int imot=0; imot<nMothers; imot++){
-    result.addUserFloat();
-  }
 
-
-
-  // TBC
-
-  // LHE weights
-  float LHEweight_QCDscale_muR1_muF1=0;
-  float LHEweight_QCDscale_muR1_muF2=0;
-  float LHEweight_QCDscale_muR1_muF0p5=0;
-  float LHEweight_QCDscale_muR2_muF1=0;
-  float LHEweight_QCDscale_muR2_muF2=0;
-  float LHEweight_QCDscale_muR2_muF0p5=0;
-  float LHEweight_QCDscale_muR0p5_muF1=0;
-  float LHEweight_QCDscale_muR0p5_muF2=0;
-  float LHEweight_QCDscale_muR0p5_muF0p5=0;
-  if (lhe_evt->weights().size()){
-    if (lhe_evt->weights().size()>=9){
-      LHEweight_QCDscale_muR1_muF1 = lhe_evt->weights().at(0).wgt / lhe_evt->originalXWGTUP(); // just for verification (should be 1)
-      LHEweight_QCDscale_muR1_muF2 = lhe_evt->weights().at(1).wgt / lhe_evt->originalXWGTUP();
-      LHEweight_QCDscale_muR1_muF0p5 = lhe_evt->weights().at(2).wgt / lhe_evt->originalXWGTUP();
-      LHEweight_QCDscale_muR2_muF1 = lhe_evt->weights().at(3).wgt / lhe_evt->originalXWGTUP();
-      LHEweight_QCDscale_muR2_muF2 = lhe_evt->weights().at(4).wgt / lhe_evt->originalXWGTUP();
-      LHEweight_QCDscale_muR2_muF0p5 = lhe_evt->weights().at(5).wgt / lhe_evt->originalXWGTUP();
-      LHEweight_QCDscale_muR0p5_muF1 = lhe_evt->weights().at(6).wgt / lhe_evt->originalXWGTUP();
-      LHEweight_QCDscale_muR0p5_muF2 = lhe_evt->weights().at(7).wgt / lhe_evt->originalXWGTUP();
-      LHEweight_QCDscale_muR0p5_muF0p5 = lhe_evt->weights().at(8).wgt / lhe_evt->originalXWGTUP();
+    int nDaughters=pDaughter.size();
+    cand->addUserInt("nLHEDaughters", nDaughters);
+    for (int imot=0; imot<nDaughters; imot++){
+      TString strowner = Form("Daughter%i", imot+1);
+      string owner = strowner.Data();
+      add_PtEtaPhiMassId_Data(cand, owner, pDaughter.at(imot).first, pDaughter.at(imot).second, false);
     }
-  }
-  result.addUserFloat("LHEweight_QCDscale_muR1_muF1", LHEweight_QCDscale_muR1_muF1);
-  result.addUserFloat("LHEweight_QCDscale_muR1_muF2", LHEweight_QCDscale_muR1_muF2);
-  result.addUserFloat("LHEweight_QCDscale_muR1_muF0p5", LHEweight_QCDscale_muR1_muF0p5);
-  result.addUserFloat("LHEweight_QCDscale_muR2_muF1", LHEweight_QCDscale_muR2_muF1);
-  result.addUserFloat("LHEweight_QCDscale_muR2_muF2", LHEweight_QCDscale_muR2_muF2);
-  result.addUserFloat("LHEweight_QCDscale_muR2_muF0p5", LHEweight_QCDscale_muR2_muF0p5);
-  result.addUserFloat("LHEweight_QCDscale_muR0p5_muF1", LHEweight_QCDscale_muR0p5_muF1);
-  result.addUserFloat("LHEweight_QCDscale_muR0p5_muF2", LHEweight_QCDscale_muR0p5_muF2);
-  result.addUserFloat("LHEweight_QCDscale_muR0p5_muF0p5", LHEweight_QCDscale_muR0p5_muF0p5);
-  //
 
-  iEvent.put(result);
+    // LHE weights
+    // TO BE IMPROVED TO CONTAIN EVERYTHING
+    float LHEweight_QCDscale_muR1_muF1=0;
+    float LHEweight_QCDscale_muR1_muF2=0;
+    float LHEweight_QCDscale_muR1_muF0p5=0;
+    float LHEweight_QCDscale_muR2_muF1=0;
+    float LHEweight_QCDscale_muR2_muF2=0;
+    float LHEweight_QCDscale_muR2_muF0p5=0;
+    float LHEweight_QCDscale_muR0p5_muF1=0;
+    float LHEweight_QCDscale_muR0p5_muF2=0;
+    float LHEweight_QCDscale_muR0p5_muF0p5=0;
+    if (lhe_evt->weights().size()){
+      if (lhe_evt->weights().size()>=9){
+        LHEweight_QCDscale_muR1_muF1 = lhe_evt->weights().at(0).wgt / lhe_evt->originalXWGTUP(); // just for verification (should be 1)
+        LHEweight_QCDscale_muR1_muF2 = lhe_evt->weights().at(1).wgt / lhe_evt->originalXWGTUP();
+        LHEweight_QCDscale_muR1_muF0p5 = lhe_evt->weights().at(2).wgt / lhe_evt->originalXWGTUP();
+        LHEweight_QCDscale_muR2_muF1 = lhe_evt->weights().at(3).wgt / lhe_evt->originalXWGTUP();
+        LHEweight_QCDscale_muR2_muF2 = lhe_evt->weights().at(4).wgt / lhe_evt->originalXWGTUP();
+        LHEweight_QCDscale_muR2_muF0p5 = lhe_evt->weights().at(5).wgt / lhe_evt->originalXWGTUP();
+        LHEweight_QCDscale_muR0p5_muF1 = lhe_evt->weights().at(6).wgt / lhe_evt->originalXWGTUP();
+        LHEweight_QCDscale_muR0p5_muF2 = lhe_evt->weights().at(7).wgt / lhe_evt->originalXWGTUP();
+        LHEweight_QCDscale_muR0p5_muF0p5 = lhe_evt->weights().at(8).wgt / lhe_evt->originalXWGTUP();
+      }
+    }
+    cand->addUserFloat("LHEweight_QCDscale_muR1_muF1", LHEweight_QCDscale_muR1_muF1);
+    cand->addUserFloat("LHEweight_QCDscale_muR1_muF2", LHEweight_QCDscale_muR1_muF2);
+    cand->addUserFloat("LHEweight_QCDscale_muR1_muF0p5", LHEweight_QCDscale_muR1_muF0p5);
+    cand->addUserFloat("LHEweight_QCDscale_muR2_muF1", LHEweight_QCDscale_muR2_muF1);
+    cand->addUserFloat("LHEweight_QCDscale_muR2_muF2", LHEweight_QCDscale_muR2_muF2);
+    cand->addUserFloat("LHEweight_QCDscale_muR2_muF0p5", LHEweight_QCDscale_muR2_muF0p5);
+    cand->addUserFloat("LHEweight_QCDscale_muR0p5_muF1", LHEweight_QCDscale_muR0p5_muF1);
+    cand->addUserFloat("LHEweight_QCDscale_muR0p5_muF2", LHEweight_QCDscale_muR0p5_muF2);
+    cand->addUserFloat("LHEweight_QCDscale_muR0p5_muF0p5", LHEweight_QCDscale_muR0p5_muF0p5);
+    //
+
+  }
+  iEvent.put(cand);
 }
 
 
 
 // TBC
-void LHECandidateFiller::addPtEtaPhiMassIdData(string owner, int id, TLorentzVector mom, bool usePz){
+void LHECandidateFiller::add_PtEtaPhiMassId_Data(std::auto_ptr<pat::CompositeCandidate>& cand, string owner, int id, TLorentzVector mom, bool usePz){
   vector<string> tmpBranchList;
-  getPtEtaPhiMassIdDataStrings(owner, usePz);
+  get_PtEtaPhiMassId_DataStrings(tmpBranchList, owner, usePz);
   for (unsigned int b=0; b<tmpBranchList.size(); b++){
     string branchname = tmpBranchList.at(b);
-    if(!addId || branchname.find("Id")==string::npos) reserveBranch(tmpBranchList.at(b), btype, doSetAddress);
-    else{
-      BaseTree::BranchTypes bInttype = BaseTree::bInt;
-      if (btype==BaseTree::bVectorDouble) bInttype = BaseTree::bVectorInt;
-      reserveBranch(tmpBranchList.at(b), bInttype, doSetAddress);
-    }
+    if (branchname.find("Id")!=string::npos) cand->addUserInt(branchname, id);
+    else if (branchname.find("Pt")!=string::npos) cand->addUserFloat(branchname, (float)mom.Pt());
+    else if (branchname.find("Pz")!=string::npos) cand->addUserFloat(branchname, (float)mom.Z());
+    else if (branchname.find("Eta")!=string::npos) cand->addUserFloat(branchname, (float)mom.Eta());
+    else if (branchname.find("Phi")!=string::npos) cand->addUserFloat(branchname, (float)mom.Phi());
+    else if (branchname.find("Mass")!=string::npos) cand->addUserFloat(branchname, (float)mom.M());
   }
 }
-void LHECandidateFiller::getPtEtaPhiMIdBranches(vector<string>& blist, string owner, bool usePz){
+void LHECandidateFiller::get_PtEtaPhiMassId_DataStrings(vector<string>& blist, string owner, bool usePz){
   string strGen = "LHE";
   vector<string> strtmp;
 
