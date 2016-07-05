@@ -37,7 +37,7 @@ process.softLooseElectrons = cms.EDProducer("EleFiller",
         isLoose = cms.string("abs(1)"),
 #       Note: passCombRelIsoPFFSRCorr is currently set in LeptonPhotonMatcher for new FSR strategy; in ZZCandidateFiller for the old one
         ),
-   mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring15NonTrig25nsV1Values"), # (when running VID)
+   mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16V1Values"), # (when running VID)
    )
 
 ### ----------------------------------------------------------------------
