@@ -9,8 +9,13 @@
 
 ############## For CMSSW_8_0_6
 
+# NOTE: custom packages must be added *after* any CMSSW package (cms-merge-topic, etc)
 #electron momentum scale corrections (76X).
 git cms-merge-topic -u matteosan1:smearer_76X
+
+#Preliminary 8X electron ID
+git clone git@github.com:Werbellin/RecoEgamma_8X.git RecoEgamma
+(cd RecoEgamma; git checkout d716460) 
 
 #ZZAnalysis
 git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
@@ -32,8 +37,8 @@ git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMa
 (cd ZZMatrixElement ; git checkout -b from-c6d45de c6d45de)
 
 #kinematic refitting
-git clone https://github.com/tocheng/KinZfitter.git
-(cd KinZfitter ; git checkout -b from-v1.0 v1.0)
+git clone https://github.com/mhl0116/KinZfitter.git
+(cd KinZfitter ; git checkout -b from-f5271ae f5271ae)
 
 #muon momentum scale corrections (76X)
 git clone https://github.com/bachtis/Analysis.git -b KaMuCa_V2 KaMuCa 

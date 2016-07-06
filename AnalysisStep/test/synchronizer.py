@@ -19,6 +19,7 @@ def parseOptions():
     parser.add_option('-o', '--output', dest='outFile', type='string', default="eventlist.txt",    help='output sync file')
     parser.add_option('-f', '--finalState', dest='finalState', type='string', default="all",    help='final states: all, 4e, 4mu, 2e2mu')
     parser.add_option('-l', '--long', dest='longOutput', action='store_true', default=False,    help='long output')
+    parser.add_option('-b', '--blind', dest='blind', action='store_true', default=False,    help='apply blinding')
 
 
     # store options and arguments as global variables
@@ -88,14 +89,21 @@ def loop():
         tree.SetBranchStatus("bkg_m4l",1)
         tree.SetBranchStatus("Dgg10_VAMCFM",1)
         tree.SetBranchStatus("pvbf_VAJHU_old",1)
-        tree.SetBranchStatus("phjj_VAJHU_old",1)        
+        tree.SetBranchStatus("phjj_VAJHU_old",1)   
+        tree.SetBranchStatus("phj_VAJHU",1)
+        tree.SetBranchStatus("pAux_vbf_VAJHU",1)
+        tree.SetBranchStatus("pwh_hadronic_VAJHU",1)
+        tree.SetBranchStatus("pzh_hadronic_VAJHU",1)     
         tree.SetBranchStatus("ZZPt",1)
         tree.SetBranchStatus("nExtraLep",1)
+        tree.SetBranchStatus("nExtraZ",1)
+        tree.SetBranchStatus("nCleanedJetsPt30",1)
         tree.SetBranchStatus("nCleanedJetsPt30BTagged",1)
         tree.SetBranchStatus("JetPt",1)
         tree.SetBranchStatus("JetEta",1)
         tree.SetBranchStatus("JetPhi",1)
         tree.SetBranchStatus("JetMass",1)
+        tree.SetBranchStatus("JetQGLikelihood",1)
         tree.SetBranchStatus("DiJetMass",1)
         tree.SetBranchStatus("DiJetDEta",1)
 
@@ -117,9 +125,13 @@ def loop():
                 if (aChan=="4e" and ZZflav!=14641) or (aChan=="4mu" and ZZflav!=28561) or (aChan=="2e2mu" and ZZflav!=20449) : continue
 
                 mass4l        = tree.ZZMass
+                if (opt.blind) :
                 ## blind Higgs peak
-                #if mass4l>110 : continue
-                #if mass4l<150 : continue
+                    if not ((mass4l>=70 and mass4l<=110)
+                            or
+                            (mass4l>=150 and mass4l<=500)
+                            ): continue
+                    if (run>273730) : continue #FIXME: we ran a newer json than what currently agreed for the sync
 
                 totCounter += 1
                 chanCounter[aChan] += 1
@@ -146,21 +158,33 @@ def loop():
                 Dgg10_VAMCFM  = tree.Dgg10_VAMCFM
                 pvbf_VAJHU    = tree.pvbf_VAJHU_old
                 phjj_VAJHU    = tree.phjj_VAJHU_old
+                phj_VAJHU     = tree.phj_VAJHU
+                pAux_vbf_VAJHU     = tree.pAux_vbf_VAJHU
+                pwh_hadronic_VAJHU = tree.pwh_hadronic_VAJHU
+                pzh_hadronic_VAJHU = tree.pzh_hadronic_VAJHU
                 pt4l          = tree.ZZPt
                 nExtraLep     = tree.nExtraLep
+                nExtraZ       = tree.nExtraZ
                 jetpt         = tree.JetPt
                 jeteta        = tree.JetEta
                 jetphi        = tree.JetPhi
                 jetmass       = tree.JetMass
+                jetQGLikelihood = tree.JetQGLikelihood
+                njets30       = tree.nCleanedJetsPt30
                 njets30Btag   = tree.nCleanedJetsPt30BTagged
                 mjj           = tree.DiJetMass
                 detajj        = tree.DiJetDEta
-                weight        = sign(tree.genHEPMCweight) * tree.PUWeight * tree.dataMCWeight
+                weight        = sign(tree.genHEPMCweight)
+#                weight        = sign(tree.genHEPMCweight) * tree.PUWeight * tree.dataMCWeight
 
                 jets30pt = []
                 jets30eta = []
                 jets30phi = []
                 jets30mass = []
+#                jetQGLikelihood = []    = 
+
+                
+
 
                 for i in range(len(jetpt)): 
                     if jetpt[i]>30.:
@@ -169,8 +193,8 @@ def loop():
                         jets30phi.append(jetphi[i])
                         jets30mass.append(jetmass[i])
                     
-                theKDs = KDs(p0plus_VAJHU,p0minus_VAJHU,p0hplus_VAJHU,p1plus_VAJHU,p1_VAJHU,p2_VAJHU,p2qqb_VAJHU,bkg_VAMCFM,p0plus_m4l,bkg_m4l,Dgg10_VAMCFM,pvbf_VAJHU,phjj_VAJHU)
-                theCand = Candidate(theEvent,mass4l,mZ1,mZ2,massErrRaw,massErrCorr,m4lRefit,m4lRefitErr,pt4l,nExtraLep,jets30pt,jets30eta,jets30phi,jets30mass,njets30Btag,mjj,detajj,theKDs,weight)
+                theKDs = KDs(p0plus_VAJHU,p0minus_VAJHU,p0hplus_VAJHU,p1plus_VAJHU,p1_VAJHU,p2_VAJHU,p2qqb_VAJHU,bkg_VAMCFM,p0plus_m4l,bkg_m4l,Dgg10_VAMCFM,pvbf_VAJHU,phjj_VAJHU,phj_VAJHU,pAux_vbf_VAJHU,pwh_hadronic_VAJHU,pzh_hadronic_VAJHU,njets30,jetQGLikelihood)
+                theCand = Candidate(theEvent,mass4l,mZ1,mZ2,massErrRaw,massErrCorr,m4lRefit,m4lRefitErr,pt4l,nExtraLep,nExtraZ,jets30pt,jets30eta,jets30phi,jets30mass,njets30,njets30Btag,mjj,detajj,theKDs,weight,jetQGLikelihood,phjj_VAJHU,phj_VAJHU,pvbf_VAJHU,pAux_vbf_VAJHU,pwh_hadronic_VAJHU,pzh_hadronic_VAJHU)
                 cands.append(theCand)
 
 

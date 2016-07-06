@@ -87,6 +87,11 @@ def listFiles(sample, path, rec = False, full_info = False):
 
     result = []
 
+    if path=="list" :
+        with open(sample) as f:
+            result = f.readlines()
+        return result
+
     # listing from dbs
     if path=="dbs" :
         files, _, _ =runDBS(sample)

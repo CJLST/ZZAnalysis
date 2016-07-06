@@ -11,10 +11,10 @@ process = cms.Process("ZZ")
 
 declareDefault("IsMC", True, globals())
 
-# Set of effective areas, rho corrections, etc. (can be 2011, 2012 or 2015)
+# Set of effective areas, rho corrections, etc. (can be 2011, 2012, 2015 or 2016)
 declareDefault("LEPTON_SETUP", 2016, globals())
 
-# Flag that reflects the actual sqrts of the sample (can be 2011, 2012 or 2015)
+# Flag that reflects the actual sqrts of the sample (can be 2011, 2012, 2015 or 2016)
 # Can differ from SAMPLE_TYPE for samples that are rescaled to a different sqrts.
 declareDefault("SAMPLE_TYPE", LEPTON_SETUP, globals())
 
@@ -49,13 +49,13 @@ declareDefault("SUPERMELA_MASS", 125, globals())
 declareDefault("SELSETUP", "allCutsAtOncePlusSmart", globals())
 
 #Best candidate comparator (see interface/Comparators.h)
-declareDefault("BESTCANDCOMPARATOR", "byBestZ1bestZ2", globals())
+declareDefault("BESTCANDCOMPARATOR", "byBestKD", globals())
 
 # Set to True to make candidates with the full combinatorial of loose leptons (for debug; much slower)
 declareDefault("KEEPLOOSECOMB", False, globals())
 
 # Activate the Z kinematic refit (very slow)
-declareDefault("KINREFIT", False, globals())
+declareDefault("KINREFIT", True, globals())
 
 
 if SELSETUP=="Legacy" and not BESTCANDCOMPARATOR=="byBestZ1bestZ2":
@@ -143,6 +143,7 @@ process.hltFilterMuEle3 = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clo
 process.hltFilterTriEle = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 process.hltFilterTriMu  = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 process.hltFilterSingleEle = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+process.hltFilterSingleMu  = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 process.hltFilterDiMu.TriggerResultsTag  = cms.InputTag("TriggerResults","","HLT")
 process.hltFilterDiEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
 process.hltFilterMuEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
@@ -151,6 +152,7 @@ process.hltFilterMuEle3.TriggerResultsTag = cms.InputTag("TriggerResults","","HL
 process.hltFilterTriEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
 process.hltFilterTriMu.TriggerResultsTag  = cms.InputTag("TriggerResults","","HLT")
 process.hltFilterSingleEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
+process.hltFilterSingleMu.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
 process.hltFilterDiMu.throw  = cms.bool(False) #FIXME: beware of this!
 process.hltFilterDiEle.throw = cms.bool(False) #FIXME: beware of this!
 process.hltFilterMuEle.throw = cms.bool(False) #FIXME: beware of this!
@@ -159,6 +161,7 @@ process.hltFilterMuEle3.throw = cms.bool(False) #FIXME: beware of this!
 process.hltFilterTriEle.throw = cms.bool(False) #FIXME: beware of this!
 process.hltFilterTriMu.throw  = cms.bool(False) #FIXME: beware of this!
 process.hltFilterSingleEle.throw = cms.bool(False) #FIXME: beware of this!
+process.hltFilterSingleMu.throw  = cms.bool(False) #FIXME: beware of this!
 
 # MuEG
 
@@ -202,26 +205,28 @@ elif (LEPTON_SETUP == 2015):
 
 elif (LEPTON_SETUP == 2016):
     if (IsMC):
-	#At the moment trigger results are not stored in the MC files
-        process.hltFilterMuEle.HLTPaths = ["*"]
+	#At the moment, the HLT paths are not present in the "tranche 1" background MC and MiniAODv1 signal MC. They will be added in "tranche 2"/"tranche 3" and MiniAODv2. 
 	process.hltFilterDiEle.HLTPaths = ["*"]
         process.hltFilterDiMu.HLTPaths = ["*"]
+        process.hltFilterMuEle.HLTPaths = ["*"]
+        process.hltFilterTriEle.HLTPaths = ["*"]
+        process.hltFilterTriMu.HLTPaths = ["*"]
+        process.hltFilterSingleEle.HLTPaths = ["*"]
+        process.hltFilterSingleMu.HLTPaths = ["*"]
     
     else:
-        #process.hltFilterMuEle.HLTPaths = ["*"]
-	#process.hltFilterDiEle.HLTPaths = ["*"]
-        #process.hltFilterDiMu.HLTPaths = ["*"]
-        #FIXME: For now, the MC paths are the ones used in the RunIISpring15DR74 MC samples for 25ns,7e33 conditions.
-        process.hltFilterDiEle.HLTPaths = ["HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*"]
+        process.hltFilterDiEle.HLTPaths = ["HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v*"]
         process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*"]
-        process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"]
+        process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"]
+        process.hltFilterTriEle.HLTPaths = ["HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v*"]
+        process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_12_10_5_v*"]
+        process.hltFilterSingleEle.HLTPaths = ["HLT_Ele25_eta2p1_WPTight_Gsf_v*","HLT_Ele27_WPTight_Gsf_v*","HLT_Ele27_eta2p1_WPLoose_Gsf_v*"]
+        process.hltFilterSingleMu.HLTPaths = ["HLT_IsoMu20_v*","HLT_IsoTkMu20_v*","HLT_IsoMu22_v*","HLT_IsoTkMu22_v*"]
 
-    process.hltFilterTriEle.HLTPaths = ["HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v*"]
-    process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_12_10_5_v*"]
-    process.hltFilterSingleEle.HLTPaths = ["HLT_Ele23_WPLoose_Gsf_v*"]
     process.triggerTriEle = cms.Path(process.hltFilterTriEle)
     process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
     process.triggerSingleEle = cms.Path(process.hltFilterSingleEle)
+    process.triggerSingleMu  = cms.Path(process.hltFilterSingleMu )
 
 process.triggerDiMu   = cms.Path(process.hltFilterDiMu)
 process.triggerDiEle  = cms.Path(process.hltFilterDiEle)
@@ -445,17 +450,17 @@ if (BUNCH_SPACING == 50):
     process.calibratedPatElectrons.grbForestName = cms.string("gedelectron_p4combination_50ns")
 
 
-##--- Set up electron ID (VID framework)
-#from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
-## turn on VID producer, indicate data format to be DataFormat.MiniAOD, as appropriate
-#dataFormat = DataFormat.MiniAOD
-#switchOnVIDElectronIdProducer(process, dataFormat)
-## define which IDs we want to produce
-#my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring15_25ns_nonTrig_V1_cff']
-## add them to the VID producer
-#for idmod in my_id_modules:
-#    setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
-## and don't forget to add the producer 'process.egmGsfElectronIDSequence' to the path, i.e. process.electrons
+#--- Set up electron ID (VID framework)
+from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
+# turn on VID producer, indicate data format to be DataFormat.MiniAOD, as appropriate
+dataFormat = DataFormat.MiniAOD
+switchOnVIDElectronIdProducer(process, dataFormat)
+# define which IDs we want to produce
+my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_V1_cff']
+# add them to the VID producer
+for idmod in my_id_modules:
+    setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
+# and don't forget to add the producer 'process.egmGsfElectronIDSequence' to the path, i.e. process.electrons
 
 
 process.bareSoftElectrons = cms.EDFilter("PATElectronRefSelector",
@@ -467,7 +472,7 @@ process.softElectrons = cms.EDProducer("EleFiller",
    src    = cms.InputTag("bareSoftElectrons"),
    sampleType = cms.int32(SAMPLE_TYPE),          
    setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
-   cut = cms.string("userFloat('dxy')<0.5 && userFloat('dz')<1"),# removed cut because variable is in Spring15 ID  && userFloat('missingHit')<=1"),
+   cut = cms.string("userFloat('dxy')<0.5 && userFloat('dz')<1"),
    flags = cms.PSet(
         ID = cms.string("userFloat('isBDT')"),
         isSIP = cms.string(SIP),
@@ -475,17 +480,16 @@ process.softElectrons = cms.EDProducer("EleFiller",
         isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<"+ELEISOCUT)
 #       Note: passCombRelIsoPFFSRCorr is currently set in LeptonPhotonMatcher for new FSR strategy; in ZZCandidateFiller for the old one
         ),
-   #mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring15NonTrig25nsV1Values"), # (when running VID)
+   mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16V1Values"), # (when running VID)
    )
 
-
-#process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons) # (use this version when running VID)
-process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.bareSoftElectrons + process.softElectrons)
+process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons) # (use this version when running VID)
+#process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.bareSoftElectrons + process.softElectrons) # (use this version without VID)
 
 # Handle special cases
 if ELEREGRESSION == "None" and (ELECORRTYPE == "None" or BUNCH_SPACING == 50) :   # No correction at all. Skip correction modules.
     process.bareSoftElectrons.src = cms.InputTag('slimmedElectrons')
-    process.electrons = cms.Sequence(process.bareSoftElectrons + process.softElectrons)
+    process.electrons = cms.Sequence(process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
 
 #elif ELEREGRESSION == "None" and ELECORRTYPE == "RunII" :
 #    process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('calibratedPatElectrons') # (when running VID)
@@ -513,6 +517,31 @@ if ELEREGRESSION == "None" and (ELECORRTYPE == "None" or BUNCH_SPACING == 50) : 
 #    process.calibratedPatElectrons.correctionsType   = 1
 #    process.calibratedPatElectrons.combinationType   = 0
     
+
+#--- TrackLess Electrons
+process.bareSoftPhotons = cms.EDFilter("PATPhotonRefSelector",
+   src = cms.InputTag("slimmedPhotons"),
+   cut = cms.string("pt>7 && abs(eta)<2.5")
+   )
+
+process.softPhotons = cms.EDProducer("Philler",
+   src    = cms.InputTag("bareSoftPhotons"),
+   srcElectron = cms.InputTag("softElectrons"),
+   mvaValuesMap = cms.InputTag("photonMVAValueMapProducer:TLEMVAEstimatorRun2Fall15V1Values"),
+   mvaValuesMap2 = cms.InputTag("photonMVAValueMapProducer:PhotonMVAEstimatorRun2Spring15NonTrig25nsV2Values"),
+   sampleType = cms.int32(SAMPLE_TYPE),
+   setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
+   cut = cms.string("1"), # dxy, dz not applied
+   flags = cms.PSet(
+        ID = cms.string("userFloat('isBDT')"),
+        isSIP = cms.string(SIP),
+        isGood = cms.string(GOODLEPTON),
+        pass_lepton_ID = cms.string("userFloat('isBDT')"),
+        pass_lepton_SIP = cms.string(SIP),
+#        isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<"+ELEISOCUT), #TLE isolation is not corrected for FSR gammas.
+        ),
+   )
+
 
 process.electronMatch = cms.EDProducer("MCMatcher",       # cut on deltaR, deltaPt/Pt; pick best by deltaR
                                        src         = cms.InputTag("bareSoftElectrons"), # RECO objects to match
@@ -574,10 +603,14 @@ process.boostedFsrPhotons = PhysicsTools.PatAlgos.producersLayer1.pfParticleProd
 process.appendPhotons = cms.EDProducer("LeptonPhotonMatcher",
     muonSrc = cms.InputTag("softMuons"),
     electronSrc = cms.InputTag("cleanSoftElectrons"),
+#    looseElectronSrc = cms.InputTag("cleanSoftLooseElectrons"),
     photonSrc = cms.InputTag("boostedFsrPhotons"),
-    sampleType = cms.int32(SAMPLE_TYPE),                     
+#    tleSrc = cms.InputTag("softPhotons"),
+    sampleType = cms.int32(SAMPLE_TYPE),
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
-    photonSel = cms.string(FSRMODE)  # "skip", "passThrough", "Legacy", "RunII"
+    photonSel = cms.string(FSRMODE),  # "skip", "passThrough", "Legacy", "RunII"
+    muon_iso_cut = cms.double(MUISOCUT),
+    electron_iso_cut = cms.double(ELEISOCUT),
     )
 
 
@@ -632,6 +665,7 @@ process.bareZCand = cms.EDProducer("PATCandViewShallowCloneCombiner",
     cut = cms.string('0'), # see below
     checkCharge = cms.bool(True)
 )
+
 
 if KEEPLOOSECOMB:
     process.bareZCand.cut = cms.string('mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId())') # Propagate also combinations of loose leptons (for debugging)
@@ -824,11 +858,8 @@ LLLLPRESEL = NOGHOST4l # Just suppress candidates with overlapping leptons
 # ZZ Candidates
 
 if FSRMODE == "Legacy":
-    RECOMPUTEISOFORFSR = True
-elif FSRMODE == "RunII":
-    RECOMPUTEISOFORFSR = False
-
-
+    print "\nERROR: FSRMODE=Legacy is no longer supported. Aborting...\n"
+    exit(1)
 
 process.bareZZCand= cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string('ZCand ZCand'),
@@ -844,7 +875,6 @@ process.ZZCand = cms.EDProducer("ZZCandidateFiller",
     bestCandAmong = cms.PSet(isBestCand = cms.string(BESTCAND_AMONG)),
     bestCandComparator = cms.string(BESTCANDCOMPARATOR),
     ZRolesByMass = cms.bool(True),
-    recomputeIsoForFSR = cms.bool(RECOMPUTEISOFORFSR),
     doKinFit = cms.bool(KINREFIT),
     flags = cms.PSet(
         GoodLeptons =  cms.string(FOURGOODLEPTONS),
@@ -853,7 +883,10 @@ process.ZZCand = cms.EDProducer("ZZCandidateFiller",
         SR = cms.string(SR),
         FullSel70 = cms.string(SR), #Obsolete, use "SR"
         FullSel = cms.string(FULLSEL),
-    )
+    ),
+    #These are actually no longer needed after we dropped the Legacy FSR algorithm
+    muon_iso_cut = cms.double(MUISOCUT),
+    electron_iso_cut = cms.double(ELEISOCUT),
 )
 
 
@@ -963,14 +996,16 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
 
     ),
     ZRolesByMass = cms.bool(False),  # daughter('Z1') = daughter(0)
-    recomputeIsoForFSR = cms.bool(RECOMPUTEISOFORFSR),
     doKinFit = cms.bool(KINREFIT),
     flags = cms.PSet(
       SR = cms.string(SR),
       CRZLLss = cms.string(CR_BASESEL),             #combine with proper isBestCRZLLss for AA ss/os CRss    
       CRZLLos_2P2F = cms.string(CR_ZLLosSEL_2P2F),        
       CRZLLos_3P1F = cms.string(CR_ZLLosSEL_3P1F),        
-    )
+    ),
+    #These are actually no longer needed after we dropped the Legacy FSR algorithm
+    muon_iso_cut = cms.double(MUISOCUT),
+    electron_iso_cut = cms.double(ELEISOCUT),
 )
 
 
@@ -979,7 +1014,22 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
 ### Jets
 ### ----------------------------------------------------------------------
 
-# embed q/g likelihood
+# q/g likelihood
+process.load("CondCore.CondDB.CondDB_cfi")
+
+qgDatabaseVersion = 'v2b'
+QGPoolDBESSource = cms.ESSource("PoolDBESSource",
+      DBParameters = cms.PSet(messageLevel = cms.untracked.int32(1)),
+      timetype = cms.string('runnumber'),
+      toGet = cms.VPSet(),
+      connect = cms.string('frontier://FrontierProd/CMS_COND_PAT_000'),
+)
+for type in ['AK4PFchs']:
+  QGPoolDBESSource.toGet.extend(cms.VPSet(cms.PSet(
+    record = cms.string('QGLikelihoodRcd'),
+    tag    = cms.string('QGLikelihoodObject_'+qgDatabaseVersion+'_'+type),
+    label  = cms.untracked.string('QGL_'+type)
+  )))
 process.load('RecoJets.JetProducers.QGTagger_cfi')
 process.QGTagger.srcJets = cms.InputTag( 'slimmedJets' )
 process.QGTagger.jetsLabel = cms.string('QGL_AK4PFchs')
@@ -996,8 +1046,6 @@ process.dressedJets = cms.EDProducer("JetFiller",
 
 ### Load JEC
 if APPLYJEC: 
-    process.load("CondCore.CondDB.CondDB_cfi")
-
     if IsMC: 
         process.jec = cms.ESSource("PoolDBESSource",
             DBParameters = cms.PSet(
@@ -1076,6 +1124,7 @@ if FSRMODE=="Legacy" :
     process.cleanJets.ElectronPreselection = "userFloat('isGood') && userFloat('isIsoFSRUncorr')"
     process.cleanJets.cleanFSRFromLeptons = False
 
+
 ### ----------------------------------------------------------------------
 ### Paths
 ### ----------------------------------------------------------------------
@@ -1088,6 +1137,19 @@ if APPLYJEC:
 else:
     process.Jets = cms.Path( process.QGTagger + process.dressedJets )
     
+### ----------------------------------------------------------------------
+### Filters
+### ----------------------------------------------------------------------
+### Create filter for events with one candidate in the SR
+process.ZZCandSR = cms.EDFilter("PATCompositeCandidateRefSelector",
+    src = cms.InputTag("ZZCand"),
+    cut = cms.string(SR) # That is, all candidates with m4l>70 
+ )
+
+process.ZZCandFilter = cms.EDFilter("CandViewCountFilter",
+                                src = cms.InputTag("ZZCandSR"),
+                                minNumber = cms.uint32(1)
+                            )
 
 # Prepare lepton collections
 process.Candidates = cms.Path(
@@ -1118,6 +1180,7 @@ process.CR = cms.Sequence(
        process.bareZLLCand       + process.ZLLCand   +
        process.ZlCand            
    )
+
 
 ### Skim, triggers and MC filters (Only store filter result, no filter is applied)
 
