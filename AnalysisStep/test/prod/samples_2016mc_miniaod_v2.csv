@@ -83,10 +83,6 @@ VBFH2000,,-1,,,/VBF_HToZZTo4L_M2000_13TeV_powheg2_JHUgenV698_pythia8/RunIISpring
 VBFH2500,,-1,,,/VBF_HToZZTo4L_M2500_13TeV_powheg2_JHUgenV698_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,,,
 VBFH3000,,-1,,,/VBF_HToZZTo4L_M3000_13TeV_powheg2_JHUgenV698_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,,,
 
-#phantom_VBFBSI_2e2mu,,-1,,,/VBFToHiggs0PMContinToZZTo2e2muJJ_M125_GaSM_13TeV_phantom_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,,,
-#phantom_VBFBSI_4e,,-1,,,/VBFToHiggs0PMContinToZZTo4eJJ_M125_GaSM_13TeV_phantom_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,,,
-#phantom_VBFBSI_4mu,,-1,,,/VBFToHiggs0PMContinToZZTo4muJJ_M125_GaSM_13TeV_phantom_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,,,
-
 #ZH115, ,1.155,0.000247135035228579,,/ZH_HToZZ_4LFilter_M115_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIISpring16MiniAODv1-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_v3-v1/MINIAODSIM,dbs,,2,,,
 #ZH120, ,0.993920889277692,0.000453888586726606,,/ZH_HToZZ_4LFilter_M120_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIISpring16MiniAODv1-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_v3-v1/MINIAODSIM,dbs,,2,,,
 #ZH124, ,0.905149809820469,0.000688170962528139,,/ZH_HToZZ_4LFilter_M124_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIISpring16MiniAODv1-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_v3-v1/MINIAODSIM,dbs,,2,,,
