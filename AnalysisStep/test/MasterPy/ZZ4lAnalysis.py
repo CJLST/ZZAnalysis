@@ -1020,22 +1020,23 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
 ### Jets
 ### ----------------------------------------------------------------------
 
-# q/g likelihood
 process.load("CondCore.CondDB.CondDB_cfi")
 
-qgDatabaseVersion = 'v2b'
-QGPoolDBESSource = cms.ESSource("PoolDBESSource",
+# q/g likelihood
+qgDatabaseVersion = '80X'
+process.QGPoolDBESSource = cms.ESSource("PoolDBESSource",
       DBParameters = cms.PSet(messageLevel = cms.untracked.int32(1)),
       timetype = cms.string('runnumber'),
-      toGet = cms.VPSet(),
-      connect = cms.string('frontier://FrontierProd/CMS_COND_PAT_000'),
+      toGet = cms.VPSet(
+        cms.PSet(
+            record = cms.string('QGLikelihoodRcd'),
+            tag    = cms.string('QGLikelihoodObject_'+qgDatabaseVersion+'_AK4PFchs'),
+            label  = cms.untracked.string('QGL_AK4PFchs')
+        ),
+      ),
+      connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/QGTagging/QGL_'+qgDatabaseVersion+'.db')
 )
-for type in ['AK4PFchs']:
-  QGPoolDBESSource.toGet.extend(cms.VPSet(cms.PSet(
-    record = cms.string('QGLikelihoodRcd'),
-    tag    = cms.string('QGLikelihoodObject_'+qgDatabaseVersion+'_'+type),
-    label  = cms.untracked.string('QGL_'+type)
-  )))
+process.es_prefer_qg = cms.ESPrefer('PoolDBESSource','QGPoolDBESSource')
 process.load('RecoJets.JetProducers.QGTagger_cfi')
 process.QGTagger.srcJets = cms.InputTag( 'slimmedJets' )
 process.QGTagger.jetsLabel = cms.string('QGL_AK4PFchs')
