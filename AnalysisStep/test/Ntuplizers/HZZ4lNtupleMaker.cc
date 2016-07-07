@@ -409,7 +409,7 @@ private:
   TTree *couplingstree;
 
   bool isMC;
-  bool is_loose_ele_selection; // Collection icludes candidates with loose electrons/TLEs
+  bool is_loose_ele_selection; // Collection includes candidates with loose electrons/TLEs
   bool applyTrigger;    // Keep only events passing trigger
   bool applySkim;       //   "     "      "     skim
   bool skipEmptyEvents; // Skip events whith no selected candidate (otherwise, gen info is preserved for all events)
@@ -1888,8 +1888,11 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("phistarZ2",phistarZ2);
   myTree->Book("xi",xi);
   myTree->Book("xistar",xistar);
-  myTree->Book("TLE_dR_Z",TLE_dR_Z);
-  myTree->Book("TLE_min_dR_3l",TLE_min_dR_3l);
+
+  if (is_loose_ele_selection) {
+    myTree->Book("TLE_dR_Z",TLE_dR_Z);
+    myTree->Book("TLE_min_dR_3l",TLE_min_dR_3l);
+  }
 
   myTree->Book("LepPt",LepPt);
   myTree->Book("LepEta",LepEta);
