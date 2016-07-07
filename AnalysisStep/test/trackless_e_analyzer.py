@@ -71,7 +71,6 @@ process.ZZCandtle = cms.EDProducer("ZZCandidateFiller",
         SR = cms.string(SR),
         FullSel70 = cms.string(SR), #Obsolete, use "SR"
         FullSel = cms.string(FULLSEL),
-        number_trackless_electrons = cms.string("abs(1)"),
     ),
     muon_iso_cut = cms.double(MUISOCUT),
     electron_iso_cut = cms.double(ELEISOCUT),
