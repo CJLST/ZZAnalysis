@@ -7,11 +7,18 @@
 # source /tmp/checkout_80X.csh
 
 
-############## For CMSSW_8_0_6
+############## For CMSSW_8_0_8
+git cms-init
+# Electron scale recipe according to https://twiki.cern.ch/twiki/bin/view/CMS/EGMSmearer
+git remote add -f -t smearings80X shervin86 https://github.com/shervin86/cmssw.git
+git cherry-pick f3b0b0140483c336212baa035cf9a820a016a799
+git cherry-pick a5aaeb7a598800ae98e88ea1a952ecd1d66aa059
+git cherry-pick c7ac16dd88969510d2d6d6ea2c4702e0108bf151
+git cherry-pick 054a90830c77423ee673204611522018ace69c5d
+git cms-addpkg EgammaAnalysis/ElectronTools
+(cd EgammaAnalysis/ElectronTools/data ; git clone -b ICHEP2016_approval_4fb https://github.com/ECALELFS/ScalesSmearings.git)
 
-# NOTE: custom packages must be added *after* any CMSSW package (cms-merge-topic, etc)
-#electron momentum scale corrections (76X).
-git cms-merge-topic -u matteosan1:smearer_76X
+#### Please do not add any custom (non-CMSSW) package before this line ####
 
 #Preliminary 8X electron ID
 git clone git@github.com:Werbellin/RecoEgamma_8X.git RecoEgamma
@@ -41,7 +48,7 @@ git clone https://github.com/mhl0116/KinZfitter.git
 (cd KinZfitter ; git checkout -b from-f5271ae f5271ae)
 
 #muon momentum scale corrections (76X)
-git clone https://github.com/bachtis/Analysis.git -b KaMuCa_V2 KaMuCa 
+git clone https://github.com/bachtis/Analysis.git -b KaMuCa_V3 KaMuCa 
 
 #hack the KinZfitter to use the corrected muon pT error
 sed -i 's/reco::Muon/pat::Muon/g' KinZfitter/HelperFunction/interface/HelperFunction.h
