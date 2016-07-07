@@ -57,6 +57,9 @@ declareDefault("KEEPLOOSECOMB", False, globals())
 # Activate the Z kinematic refit (very slow)
 declareDefault("KINREFIT", True, globals())
 
+# Activate paths for loose electron categories
+declareDefault("ADDLOOSEELE", False, globals())
+
 
 if SELSETUP=="Legacy" and not BESTCANDCOMPARATOR=="byBestZ1bestZ2":
     print "WARNING: In ZZ4lAnalysis.py the SELSETUP=\"Legacy\" flag is meant to reproduce the Legacy results, ignoring the setting of the BESTCANDCOMPARATOR: ",BESTCANDCOMPARATOR
@@ -603,16 +606,18 @@ process.boostedFsrPhotons = PhysicsTools.PatAlgos.producersLayer1.pfParticleProd
 process.appendPhotons = cms.EDProducer("LeptonPhotonMatcher",
     muonSrc = cms.InputTag("softMuons"),
     electronSrc = cms.InputTag("cleanSoftElectrons"),
-#    looseElectronSrc = cms.InputTag("cleanSoftLooseElectrons"),
     photonSrc = cms.InputTag("boostedFsrPhotons"),
-#    tleSrc = cms.InputTag("softPhotons"),
     sampleType = cms.int32(SAMPLE_TYPE),
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
     photonSel = cms.string(FSRMODE),  # "skip", "passThrough", "Legacy", "RunII"
     muon_iso_cut = cms.double(MUISOCUT),
     electron_iso_cut = cms.double(ELEISOCUT),
+    debug = cms.untracked.bool(False),
     )
 
+if ADDLOOSEELE:
+    process.appendPhotons.looseElectronSrc = cms.InputTag("cleanSoftLooseElectrons")
+    process.appendPhotons.tleSrc = cms.InputTag("softPhotons")
 
 
 # All leptons, any F/C.
@@ -861,6 +866,7 @@ if FSRMODE == "Legacy":
     print "\nERROR: FSRMODE=Legacy is no longer supported. Aborting...\n"
     exit(1)
 
+    
 process.bareZZCand= cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string('ZCand ZCand'),
     cut = cms.string(LLLLPRESEL),
