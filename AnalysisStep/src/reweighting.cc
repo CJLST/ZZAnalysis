@@ -155,24 +155,24 @@ public:
     vector<int> spin_v;
     t->Branch("spin", &spin_v);
     if (reweightingtype == HVV_spin0 || reweightingtype == HVV_spin012) {
-      t->Branch("ghz1", &ghz1);
-      t->Branch("ghz2", &ghz2);
-      t->Branch("ghz4", &ghz4);
-      t->Branch("ghz1_prime2", &ghz1_prime2);
+      t->Branch("ghz1Re", &ghz1);
+      t->Branch("ghz2Re", &ghz2);
+      t->Branch("ghz4Re", &ghz4);
+      t->Branch("ghz1_prime2Re", &ghz1_prime2);
     }
     if (reweightingtype == HVV_spin012) {
-      t->Branch("a1", &a1);
-      t->Branch("b5", &b5);
+      t->Branch("a1Re", &a1);
+      t->Branch("b5Re", &b5);
     }
 
     for (int i = 0; i < nReweightingSamples; i++) {
       setcouplings(i);
       spin_v.push_back(spin);
       if (spin == 0) {
-        ghz1.push_back(mela.selfDHvvcoupl[0][ghz1_index][0]);
-        ghz2.push_back(mela.selfDHvvcoupl[0][ghz2_index][0]);
-        ghz4.push_back(mela.selfDHvvcoupl[0][ghz4_index][0]);
-        ghz1_prime2.push_back(mela.selfDHvvcoupl[0][ghz1_prime2_index][0]);
+        ghz1.push_back(mela.selfDHzzcoupl[0][ghz1_index][0]);
+        ghz2.push_back(mela.selfDHzzcoupl[0][ghz2_index][0]);
+        ghz4.push_back(mela.selfDHzzcoupl[0][ghz4_index][0]);
+        ghz1_prime2.push_back(mela.selfDHzzcoupl[0][ghz1_prime2_index][0]);
       }
       else {
         ghz1.push_back(0);

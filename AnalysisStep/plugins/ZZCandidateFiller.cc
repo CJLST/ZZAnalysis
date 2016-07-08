@@ -940,7 +940,6 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     float pzh_leptonic_VAJHU=-1.;
 
     TLorentzVector highestWHMENeutrino(0, 0, 0, 0); // Keep track of the neutrino used
-    int bestAssociatedZ=-1;
     if (nExtraLep>0){
       MELACandidate* melaCand = mela->getCurrentCandidate();
 
@@ -976,7 +975,6 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
           if (fabs(associatedV->m()-PDGHelpers::Zmass)<dZmass){ dZmass=associatedV->m()-PDGHelpers::Zmass; chosenZ=(int)iV; }
         }
         if(chosenZ>=0){
-          bestAssociatedZ=chosenZ;
           // Disable every associated Z boson and its daughters unless it is the chosen one
           for (unsigned int disableV=iSortedVstart; disableV<nSortedVs; disableV++){
             bool flag=(((int)disableV)==chosenZ);
