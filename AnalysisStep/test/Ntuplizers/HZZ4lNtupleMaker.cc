@@ -59,9 +59,6 @@
 #include <ZZMatrixElement/MELA/interface/TVar.hh>
 #include <ZZMatrixElement/MELA/src/computeAngles.h>
 
-#include <ZZAnalysis/AnalysisStep/interface/IDMatchingUtilities.h>
-
-
 #include "ZZ4lConfigHelper.h"
 #include "HZZ4lNtupleFactory.h"
 
@@ -77,7 +74,7 @@ namespace {
   bool addKinRefit = true;
   bool addVtxFit = false;
   bool addFSRDetails = false;
-  bool addQGLInputs = false;
+  bool addQGLInputs = true;
   bool skipDataMCWeight = true; // skip computation of data/MC weight
   bool skipFakeWeight = true;   // skip computation of fake rate weight for CRs
   bool skipHqTWeight = true;    // skip computation of hQT weight
@@ -112,18 +109,13 @@ namespace {
   Float_t ZZMassErrCorr  = 0;
   Float_t ZZMassPreFSR  = 0;
   Short_t ZZsel  = 0;
-  Short_t ZZ_n_tle = 0;
-  Short_t ZZ_match = -1;
   Float_t ZZPt  = 0;
   Float_t ZZEta  = 0;
   Float_t ZZPhi  = 0;
   Int_t CRflag  = 0;
-  std::vector<short> CR_int_flag;
   Float_t Z1Mass  = 0;
   Float_t Z1Pt  = 0;
   Short_t Z1Flav  = 0;
-  Short_t Z1_match = -1;
-  Short_t Z1_isLoose = -1;
   Float_t ZZMassRefit  = 0;
   Float_t ZZMassRefitErr  = 0;
   Float_t ZZMassUnrefitErr  = 0;
@@ -132,8 +124,6 @@ namespace {
   Float_t Z2Mass  = 0;
   Float_t Z2Pt  = 0;
   Short_t Z2Flav  = 0;
-  Short_t Z2_match = -1;
-  Short_t Z2_isLoose = -1;
   Float_t costhetastar  = 0;
   Float_t helphi  = 0;
   Float_t helcosthetaZ1  = 0;
@@ -142,8 +132,8 @@ namespace {
   Float_t phistarZ2  = 0;
   Float_t xi  = 0;
   Float_t xistar  = 0;
-  Float_t TLE_dR_Z = -1;
-  Float_t TLE_min_dR_3l = 999;
+  Float_t TLE_dR_Z = -1; // Delta-R between a TLE and the Z it does not belong to.
+  Float_t TLE_min_dR_3l = 999; // Minimum DR between a TLE and any of the other leptons
 
   std::vector<float> LepPt;
   std::vector<float> LepEta;
@@ -157,31 +147,8 @@ namespace {
   //std::vector<float> LepChargedHadIso;
   //std::vector<float> LepNeutralHadIso;
   //std::vector<float> LepPhotonIso;
-  std::vector<float> LepPFChargedHadIso; 
-  std::vector<float> LepPFNeutralHadIso ; 
-  std::vector<float> LepPFPhotonIso      ;
-  std::vector<float> LepPFPUChargedHadIso;
   std::vector<float> LepCombRelIsoPF;
-  std::vector<float> Lep_min_ele_dR;
-  std::vector<float> Lep_has_matching_ele;
-  std::vector<float> Lep_ele_ID;
-  std::vector<short> Lep_ele_isID;
-  std::vector<short> LepisID2;
   std::vector<short> LepisLoose;
-  std::vector<float> Lep_ele_ISO;
-  std::vector<float> Lep_ele_SIP;
-  std::vector<short> Lep_ele_charge;
-  std::vector<float> Lep_ele_pt;
-
-
-  std::vector<short> Lep_match;
-  std::vector<short> Lep_id_match;
-  std::vector<short> Lep_id_mother_id;
-  std::vector<short> Lep_id_mother_status;
-  std::vector<float> Lep_id_gen_pt;
-  std::vector<float> Lep_id_gen_eta;
-  std::vector<short> Lep_id_gen_ID;
-
   std::vector<float> fsrPt;
   std::vector<float> fsrEta;
   std::vector<float> fsrPhi;
@@ -380,6 +347,16 @@ namespace {
   Float_t GenhelcosthetaZ1  = 0;
   Float_t GenhelcosthetaZ2  = 0;
   Float_t GenphistarZ1  = 0;
+
+
+//FIXME: temporary fix to the mismatch of charge() and sign(pdgId()) for muons with BTT=4
+  int getPdgId(const reco::Candidate* p) {
+    int id = p->pdgId();
+    if (id!=22 && //for TLEs
+	signbit(id) && p->charge()<0) id*=-1; // negative pdgId must be positive charge
+    return id;
+  }
+
 }
 
 using namespace std;
@@ -431,10 +408,8 @@ private:
   TH2F *hCounter_reweighted;
   TTree *couplingstree;
 
-  Bool_t isMC;
-
-  bool is_loose_ele_selection;
-
+  bool isMC;
+  bool is_loose_ele_selection; // Collection includes candidates with loose electrons/TLEs
   bool applyTrigger;    // Keep only events passing trigger
   bool applySkim;       //   "     "      "     skim
   bool skipEmptyEvents; // Skip events whith no selected candidate (otherwise, gen info is preserved for all events)
@@ -594,7 +569,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
 
   is_loose_ele_selection = false;
   if(pset.exists("is_loose_ele_selection")) { 
-    is_loose_ele_selection = true;
+    is_loose_ele_selection = pset.getParameter<bool>("is_loose_ele_selection");
   }
   triggerResultToken = consumes<edm::TriggerResults>(edm::InputTag("TriggerResults"));
   vtxToken = consumes<vector<reco::Vertex> >(edm::InputTag("goodPrimaryVertices"));
@@ -900,14 +875,10 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   edm::Handle<edm::View<pat::CompositeCandidate> > candHandle;
   event.getByToken(candToken, candHandle);
   if(candHandle.failedToGet()) {
-    if(is_loose_ele_selection) return;
+    if(is_loose_ele_selection) return; // The collection can be missing in this case since we have a filter to skip the module when a regular candidate is present.
     else edm::LogError("") << "ZZ collection not found in non-loose electron flow. This should never happen";
   }
   const edm::View<pat::CompositeCandidate>* cands = candHandle.product();
-
-
-  CR_int_flag.clear();
-
 
   if (skipEmptyEvents && cands->size() == 0) return; // Skip events with no candidate, unless skipEmptyEvents = false
 
@@ -1019,29 +990,19 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     //    int candChannel = cand->userFloat("candChannel"); // This is currently the product of pdgId of leptons (eg 14641, 28561, 20449)
 
     if (theChannel==ZLL) {
-      // Cross check region for Z + 1 loose electron + 1 loose TLE (optional)
-      if (cand->hasUserFloat("isbestCRZLL")&&cand->hasUserFloat("CRZLL")) {
-        if (cand->userFloat("isBestCRZLL")&&cand->userFloat("CRZLL")) {
-          set_bit(CRFLAG[icand],ZLL);      
-          CR_int_flag.push_back(ZLL);
-        }
-      } 
-      // AA CRs
+      // Cross check region for Z + 1 loose electron + 1 loose TLE (defined only in loose_ele paths) 
+      if (is_loose_ele_selection) {
+        if (cand->userFloat("isBestCRZLL")&&cand->userFloat("CRZLL")) set_bit(CRFLAG[icand],ZLL);
+      }
 
-      if (cand->userFloat("isBestCRZLLss")&&cand->userFloat("CRZLLss")) {
-        set_bit(CRFLAG[icand],CRZLLss);      
-        CR_int_flag.push_back(CRZLLss);
-      }
+      // AA CRs
+      if (cand->userFloat("isBestCRZLLss")&&cand->userFloat("CRZLLss")) set_bit(CRFLAG[icand],CRZLLss);
+
       // A CRs
-      if (cand->userFloat("isBestCRZLLos_2P2F")&&cand->userFloat("CRZLLos_2P2F")) {
-        set_bit(CRFLAG[icand],CRZLLos_2P2F);      
-        CR_int_flag.push_back(CRZLLos_2P2F);
-      }
-      if (cand->userFloat("isBestCRZLLos_3P1F")&&cand->userFloat("CRZLLos_3P1F")) { 
-        set_bit(CRFLAG[icand],CRZLLos_3P1F);
-        CR_int_flag.push_back(CRZLLos_3P1F);
-      }
-      if (CRFLAG[icand]) { // This candidate belongs to one of the CRs: perform additional jet cleaning. 
+      if (cand->userFloat("isBestCRZLLos_2P2F")&&cand->userFloat("CRZLLos_2P2F")) set_bit(CRFLAG[icand],CRZLLos_2P2F);
+      if (cand->userFloat("isBestCRZLLos_3P1F")&&cand->userFloat("CRZLLos_3P1F")) set_bit(CRFLAG[icand],CRZLLos_3P1F);
+
+      if (CRFLAG[icand]) { // This candidate belongs to one of the CRs: perform additional jet cleaning.
         // Note that this is (somewhat incorrectly) done per-event, so there could be some over-cleaning in events with >1 CR candidate.
         for (unsigned i=0; i<cleanedJets.size(); ++i) {
           if (cleanedJets[i]!=0  && (!jetCleaner::isGood(*cand, *(cleanedJets[i])))) {
@@ -1082,24 +1043,12 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   for( edm::View<pat::CompositeCandidate>::const_iterator cand = cands->begin(); cand != cands->end(); ++cand) {
     size_t icand= cand-cands->begin();
 
-    bool store_only_matched = false;
-    if(store_only_matched ) {
-      if(cand->userFloat("Z_lep_match") < 3) continue;
-    } else {
-    // note taht this is bugged in 4e fs!
-      if(!( theChannel==ZL || CRFLAG[icand] || (bool)(cand->userFloat("isBestCand")) )) continue; // Skip events other than the best cand (or CR candidates in the CR)
-    }
+    if (!( theChannel==ZL || CRFLAG[icand] || (bool)(cand->userFloat("isBestCand")) )) continue; // Skip events other than the best cand (or CR candidates in the CR)
 
     //For the SR, also fold information about acceptance in CRflag.
     if (isMC && (theChannel==ZZ)) {
-      if (gen_ZZ4lInEtaAcceptance) { 
-        set_bit(CRFLAG[icand],28);
-        CR_int_flag.push_back(28);
-      } 
-      if (gen_ZZ4lInEtaPtAcceptance) {
-        set_bit(CRFLAG[icand],29);
-        CR_int_flag.push_back(29);  
-      }
+      if (gen_ZZ4lInEtaAcceptance)   set_bit(CRFLAG[icand],28);
+      if (gen_ZZ4lInEtaPtAcceptance) set_bit(CRFLAG[icand],29);
     }
     FillCandidate(*cand, evtPassTrigger&&evtPassSkim, event, CRFLAG[icand]);
 
@@ -1151,34 +1100,8 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   //LepChargedHadIso.clear();
   //LepNeutralHadIso.clear();
   //LepPhotonIso.clear();
-  LepPFChargedHadIso.clear();  
-  LepPFNeutralHadIso.clear();  
-  LepPFPhotonIso.clear();      
-  LepPFPUChargedHadIso.clear();
   LepCombRelIsoPF.clear();
-  Lep_min_ele_dR.clear();
-  Lep_has_matching_ele.clear();
-  Lep_ele_ID.clear();
-  Lep_ele_isID.clear();
-  LepisID2.clear();
-  LepisLoose.clear();
-
-  Lep_ele_ISO.clear();
-  Lep_ele_SIP.clear();
-  Lep_ele_charge.clear();
-  Lep_ele_pt.clear();
-
   TLE_dR_Z = -1;
-
-  Lep_match.clear();
-  Lep_id_match.clear();
-  Lep_id_mother_id.clear();
-  Lep_id_mother_status.clear();
-  Lep_id_gen_pt.clear();
-  Lep_id_gen_eta.clear();
-  Lep_id_gen_ID.clear();
-
-
   fsrPt.clear();
   fsrEta.clear();
   fsrPhi.clear();
@@ -1194,13 +1117,6 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   CRflag = CRFLAG;
 
   if(theChannel!=ZL){
-
-    // Fill how many trackless electrons are used in selected Z pair
-    // Currently its always 1 for tle selection path
-    if(cand.hasUserFloat("number_trackless_electrons"))
-      ZZ_n_tle = (int) cand.userFloat("number_trackless_electrons");
-
-
     //Fill the info on the Higgs candidate
     ZZMass = cand.p4().mass();
     ZZMassErr = cand.userFloat("massError");
@@ -1410,29 +1326,22 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 
   Z1Mass = Z1->mass();
   Z1Pt =   Z1->pt();
-  Z1Flav = abs(Z1->daughter(0)->pdgId()) * Z1->daughter(0)->charge() * abs(Z1->daughter(1)->pdgId()) * Z1->daughter(1)->charge(); // FIXME: temporarily changed, waiting for a fix to the mismatch of charge() and pdgId() for muons with BTT=4
-  // In the TLE selection we need set this manually becasue photon charge is zero
-  if (Z1Flav == 0) Z1Flav = Z1->daughter(0)->pdgId() * Z1->daughter(1)->pdgId();
-  Z1_isLoose = userdatahelpers::hasUserFloat(Z1 ,"isLoose") == 1 ? userdatahelpers::getUserFloat(Z1, "isLoose") : -2;
+  Z1Flav =  getPdgId(Z1->daughter(0)) * getPdgId(Z1->daughter(1));
  
   Z2Mass = Z2->mass();
   Z2Pt =   Z2->pt();
-  Z2Flav = theChannel==ZL ? 0 : abs(Z2->daughter(0)->pdgId()) * Z2->daughter(0)->charge() * abs(Z2->daughter(1)->pdgId()) * Z2->daughter(1)->charge(); // FIXME: temporarily changed, waiting for a fix to the mismatch of charge() and pdgId() for muons with BTT=4
-  if (Z2Flav == 0 && theChannel != ZL) Z2Flav = Z2->daughter(0)->pdgId() * Z2->daughter(1)->pdgId()  ;
-  if (Z2Flav == 0 && theChannel == ZL) Z2Flav = Z2->pdgId();
-  Z2_isLoose = userdatahelpers::hasUserFloat(Z2 ,"isLoose") == 1 ? userdatahelpers::getUserFloat(Z2, "isLoose") : -2;
+  Z2Flav = theChannel==ZL ? getPdgId(Z2) : getPdgId(Z2->daughter(0)) * getPdgId(Z2->daughter(1));
 
   const reco::Candidate* non_TLE_Z = nullptr;
   size_t TLE_index = 999;
   if(abs(Z1Flav) == 11*11 || abs(Z1Flav) == 13*13) non_TLE_Z = Z1;
   if(abs(Z2Flav) == 11*11 || abs(Z2Flav) == 13*13) non_TLE_Z = Z2;
   for (size_t i=0; i<leptons.size(); ++i){
-    short lepFlav = std::abs(leptons[i]->pdgId());
-    if(abs(lepFlav) == 22) TLE_index = i;
+    if(abs(leptons[i]->pdgId()) == 22) TLE_index = i;
   }
   if(TLE_index < 999 && non_TLE_Z != nullptr) {
     TLE_dR_Z = reco::deltaR(non_TLE_Z->p4(), leptons[TLE_index]->p4()); 
-  }  
+  }
 
   Int_t sel = 0;
   if(theChannel==ZZ){
@@ -1470,8 +1379,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     float curr_dR = 999;
     if(i != TLE_index && TLE_index < 999)
       curr_dR = reco::deltaR(leptons[i]->p4(), leptons[TLE_index]->p4());
-
-    if(curr_dR < TLE_min_dR_3l) TLE_min_dR_3l = curr_dR; 
+    if(curr_dR < TLE_min_dR_3l) TLE_min_dR_3l = curr_dR;
 
     short lepFlav = std::abs(leptons[i]->pdgId());
 
@@ -1491,13 +1399,9 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     LepPt .push_back( leptons[i]->pt() );
     LepEta.push_back( leptons[i]->eta() );
     LepPhi.push_back( leptons[i]->phi() );
-    int charge = 0;
-    if(leptons[i]->pdgId() == 22) {
-        if(i == 0 || i == 2) charge = +1;
-        if(i == 1 || i == 3) charge = -1;
-    }
-
-    LepLepId.push_back( charge == 0 ? leptons[i]->pdgId() : charge * leptons[i]->pdgId() );
+    int id =  leptons[i]->pdgId();
+    if(id == 22 && (i == 1 || i == 3)) id=-22; //FIXME this assumes a standard ordering of leptons.
+    LepLepId.push_back( id );
     LepSIP  .push_back( SIP[i] );
     LepTime .push_back( lepFlav==13 ? userdatahelpers::getUserFloat(leptons[i],"time") : 0. );
     LepisID .push_back( userdatahelpers::getUserFloat(leptons[i],"ID") );
@@ -1507,65 +1411,8 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     //LepNeutralHadIso[i].push_back( userdatahelpers::getUserFloat(leptons[i],"PFNeutralHadIso") );
     //LepPhotonIso[i].push_back( userdatahelpers::getUserFloat(leptons[i],"PFPhotonIso") );
     LepCombRelIsoPF.push_back( combRelIsoPF[i] );
-
-
-    const pat::Electron* ele = dynamic_cast<const pat::Electron*>(leptons[i]);
-    if(ele) {
- 
-      LepPFChargedHadIso  .push_back( ele->pfIsolationVariables().sumChargedHadronPt);
-      LepPFNeutralHadIso  .push_back( ele->pfIsolationVariables().sumNeutralHadronEt);
-      LepPFPhotonIso      .push_back( ele->pfIsolationVariables().sumPhotonEt);
-      LepPFPUChargedHadIso.push_back( ele->pfIsolationVariables().sumPUPt);
-    } else {
-      LepPFChargedHadIso  .push_back(-1);
-      LepPFNeutralHadIso  .push_back(-1);
-      LepPFPhotonIso      .push_back(-1);
-      LepPFPUChargedHadIso.push_back(-1);
-    }
     LepisLoose.push_back(userdatahelpers::hasUserFloat(leptons[i],"isLoose") == 1 ? userdatahelpers::getUserFloat(leptons[i],"isLoose") : -2);
 
-    Lep_has_matching_ele.push_back(lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"ele_has_matching_ele") : -2);
-    Lep_min_ele_dR.push_back(lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"min_ele_dR") : -2);    
-    Lep_ele_ID.push_back(lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"ele_ID") : -2);
-    Lep_ele_isID.push_back(lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"ele_is_ID") : -2);
-    LepisID2.push_back(lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"pass_WP_2") : -2);
-
-    Lep_ele_ISO.push_back(lepFlav ==22 ? userdatahelpers::getUserFloat(leptons[i],"ele_ISO") : -2);
-    Lep_ele_SIP.push_back(lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"ele_SIP") : -2);
-    Lep_ele_charge.push_back(lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"ele_charge") : -3);
-    Lep_ele_pt.push_back(lepFlav == 22 ? userdatahelpers::getUserFloat(leptons[i],"ele_pt") : -2);
-    Lep_match.push_back(isMC && cand.hasUserFloat(labels[i] + "Z_lep_match") ? cand.userFloat(labels[i] + "Z_lep_match") : -1);
-
-    int id_match = -1;
-    const reco::Candidate* genParticle = nullptr;
-    int mother_ID = 0;
-    int mother_status = -1;
-    float gen_pT = -1;
-    float gen_eta = -999;
-    float gen_ID = 0;
- 
-    if(isMC) {
-      if(abs(leptons[i]->pdgId()) != 13) {
-        id_match = matchToTruth(leptons[i], genParticles);
-      }
-      genParticle = GetClosestGenParticle(leptons[i], genParticles);
-
-      if(genParticle != nullptr) {
-        findFirstNonElectronMother(genParticle, mother_ID, mother_status);
-      }
-
-      if(genParticle != nullptr) {
-         gen_pT = genParticle->p4().Pt();
-         gen_eta = genParticle->p4().Eta();
-         gen_ID = genParticle->pdgId();
-      }
-    }
-    Lep_id_match.push_back(id_match);
-    Lep_id_mother_id.push_back(mother_ID);
-    Lep_id_mother_status.push_back(mother_status);
-    Lep_id_gen_pt.push_back(gen_pT);
-    Lep_id_gen_eta.push_back(gen_eta);
-    Lep_id_gen_ID.push_back(gen_ID);
   }
 
   // FSR
@@ -1630,12 +1477,6 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     dataMCWeight *= getAllWeight(leptons[i]);
   }
   overallEventWeight = PUWeight * genHEPMCweight * dataMCWeight;
-
-  if(isMC && theChannel!=ZL) {
-    ZZ_match = cand.userFloat("Z_lep_match");
-    Z1_match = cand.userFloat("d0.Z_lep_match");
-    Z2_match = cand.userFloat("d1.Z_lep_match");
-  }
 }
 
 
@@ -2016,19 +1857,13 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("ZZMassErrCorr",ZZMassErrCorr);
   myTree->Book("ZZMassPreFSR",ZZMassPreFSR);
   myTree->Book("ZZsel",ZZsel);
-  myTree->Book("ZZ_n_tle",ZZ_n_tle);
   myTree->Book("ZZPt",ZZPt);
   myTree->Book("ZZEta",ZZEta);
   myTree->Book("ZZPhi",ZZPhi);
   myTree->Book("CRflag",CRflag);
-  myTree->Book("CR_int_flag",CR_int_flag);
-  myTree->Book("ZZ_match",ZZ_match);
-
   myTree->Book("Z1Mass",Z1Mass);
   myTree->Book("Z1Pt",Z1Pt);
   myTree->Book("Z1Flav",Z1Flav);
-  myTree->Book("Z1_match",Z1_match);
-  myTree->Book("Z1_isLoose",Z1_isLoose);
 
   //Kin refitted info
   if (addKinRefit) {
@@ -2045,8 +1880,6 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("Z2Mass",Z2Mass);
   myTree->Book("Z2Pt",Z2Pt);
   myTree->Book("Z2Flav",Z2Flav);
-  myTree->Book("Z2_match",Z2_match);
-  myTree->Book("Z2_isLoose",Z2_isLoose);
   myTree->Book("costhetastar",costhetastar);
   myTree->Book("helphi",helphi);
   myTree->Book("helcosthetaZ1",helcosthetaZ1);
@@ -2055,8 +1888,11 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("phistarZ2",phistarZ2);
   myTree->Book("xi",xi);
   myTree->Book("xistar",xistar);
-  myTree->Book("TLE_dR_Z",TLE_dR_Z);
-  myTree->Book("TLE_min_dR_3l",TLE_min_dR_3l);
+
+  if (is_loose_ele_selection) {
+    myTree->Book("TLE_dR_Z",TLE_dR_Z);
+    myTree->Book("TLE_min_dR_3l",TLE_min_dR_3l);
+  }
 
   myTree->Book("LepPt",LepPt);
   myTree->Book("LepEta",LepEta);
@@ -2065,39 +1901,13 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("LepSIP",LepSIP);
   myTree->Book("LepTime",LepTime);
   myTree->Book("LepisID",LepisID);
-  myTree->Book("LepisID2",LepisID2);
   myTree->Book("LepisLoose",LepisLoose);
   myTree->Book("LepBDT",LepBDT);
   myTree->Book("LepMissingHit",LepMissingHit);
   //myTree->Book("LepChargedHadIso",LepChargedHadIso);
   //myTree->Book("LepNeutralHadIso",LepNeutralHadIso);
   //myTree->Book("LepPhotonIso",LepPhotonIso);
-  myTree->Book("LepPFChargedHadIso", LepPFChargedHadIso);  
-  myTree->Book("LepPFNeutralHadIso", LepPFNeutralHadIso);  
-  myTree->Book("LepPFPhotonIso", LepPFPhotonIso);      
-  myTree->Book("LepPFPUChargedHadIso", LepPFPUChargedHadIso);
   myTree->Book("LepCombRelIsoPF",LepCombRelIsoPF);
-  myTree->Book("Lep_min_ele_dR",Lep_min_ele_dR);
-  myTree->Book("Lep_has_matching_ele",Lep_has_matching_ele);
-
-  myTree->Book("Lep_ele_isID",Lep_ele_isID);
-  myTree->Book("Lep_ele_ID",Lep_ele_ID);
-  myTree->Book("Lep_ele_ISO",Lep_ele_ISO);
-  myTree->Book("Lep_ele_SIP",Lep_ele_SIP);
-  myTree->Book("Lep_ele_charge",Lep_ele_charge);
-  myTree->Book("Lep_ele_pt",Lep_ele_pt);
-
-
-//  myTree->Book("",);
-
-  myTree->Book("Lep_match",Lep_match);
-  myTree->Book("Lep_id_match",Lep_id_match);
-  myTree->Book("Lep_id_mother_id",Lep_id_mother_id);
-  myTree->Book("Lep_id_mother_status",Lep_id_mother_status);
-  myTree->Book("Lep_id_gen_pt",Lep_id_gen_pt);
-  myTree->Book("Lep_id_gen_eta",Lep_id_gen_eta);
-  myTree->Book("Lep_id_gen_ID",Lep_id_gen_ID);
-
   myTree->Book("fsrPt",fsrPt);
   myTree->Book("fsrEta",fsrEta);
   myTree->Book("fsrPhi",fsrPhi);

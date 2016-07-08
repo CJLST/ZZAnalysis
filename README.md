@@ -3,7 +3,7 @@ ZZAnalysis
 
 To install a complete CMSSW area (including this package)
 ------------------------------
-Please use a CMSSW_8_0_0 version >= 8_0_6.
+Please use CMSSW_8_0_8.
 
 Download and execute the setup script:
 ```
