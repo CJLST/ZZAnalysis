@@ -113,7 +113,7 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
 {
   produces<pat::CompositeCandidateCollection>();
 
-  mela = new Mela(SetupToSqrts(setup), superMelaMass, TVar::SILENT);
+  mela = new Mela(SetupToSqrts(setup), superMelaMass, TVar::ERROR);
   mela->setCandidateDecayMode(TVar::CandidateDecay_ZZ);
 
   jetToken = consumes<edm::View<pat::Jet> >(edm::InputTag("cleanJets"));
@@ -531,8 +531,8 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
     // Lepton TLorentzVectors, including FSR
     SimpleParticleCollection_t daughters;
-    daughters.push_back(SimpleParticle_t(0, TLorentzVector(p11.x(), p11.y(), p11.z(), p11.t())));
-    daughters.push_back(SimpleParticle_t(0, TLorentzVector(p12.x(), p12.y(), p12.z(), p12.t())));
+    daughters.push_back(SimpleParticle_t(id11, TLorentzVector(p11.x(), p11.y(), p11.z(), p11.t())));
+    daughters.push_back(SimpleParticle_t(id12, TLorentzVector(p12.x(), p12.y(), p12.z(), p12.t())));
     daughters.push_back(SimpleParticle_t(id21, TLorentzVector(p21.x(), p21.y(), p21.z(), p21.t())));
     daughters.push_back(SimpleParticle_t(id22, TLorentzVector(p22.x(), p22.y(), p22.z(), p22.t())));
 

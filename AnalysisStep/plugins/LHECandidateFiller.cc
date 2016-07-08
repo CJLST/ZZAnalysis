@@ -48,7 +48,7 @@ private:
   virtual void produce(edm::Event&, const edm::EventSetup&);
   virtual void endJob(){}
 
-  virtual void add_PtEtaPhiMassId_Data(std::auto_ptr<pat::CompositeCandidate>& cand, string owner, int id, TLorentzVector mom, bool usePz);
+  virtual void add_PtEtaPhiMassId_Data(pat::CompositeCandidate* cand, string owner, int id, TLorentzVector mom, bool usePz);
   virtual void get_PtEtaPhiMassId_DataStrings(vector<string>& blist, string owner, bool usePz);
 
   bool isMC;
@@ -60,12 +60,13 @@ LHECandidateFiller::LHECandidateFiller(const edm::ParameterSet& iConfig) :
 isMC(iConfig.getParameter<bool>("isMC"))
 {
   consumesMany<LHEEventProduct>();
-  produces<pat::CompositeCandidate>();
+  produces<pat::CompositeCandidateCollection>();
 }
 
 
 void LHECandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup){
-  std::auto_ptr<pat::CompositeCandidate> cand(new pat::CompositeCandidate);
+  std::auto_ptr<pat::CompositeCandidateCollection> result(new pat::CompositeCandidateCollection);
+  pat::CompositeCandidate cand;
 
   if (isMC){
     edm::Handle<LHEEventProduct> lhe_evt;
@@ -86,7 +87,7 @@ void LHECandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSet
       // PDF scale
       float LHE_PDFScale = -1;
       if (lhe_evt->pdf()!=NULL) LHE_PDFScale = lhe_evt->pdf()->scalePDF;
-      cand->addUserFloat("LHE_PDFScale", LHE_PDFScale);
+      cand.addUserFloat("LHE_PDFScale", LHE_PDFScale);
       //
 
       // Mothers, daughters (+ associated particles)
@@ -106,21 +107,21 @@ void LHECandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSet
 
       // Fill mothers
       int nMothers=pMother.size();
-      cand->addUserInt("nLHEMothers", nMothers);
+      cand.addUserInt("nLHEMothers", nMothers);
       for (int imot=0; imot<nMothers; imot++){
         TString strowner = Form("Mother%i", imot+1);
         string owner = strowner.Data();
-        add_PtEtaPhiMassId_Data(cand, owner, pMother.at(imot).first, pMother.at(imot).second, true); // usePz=true since Pt=0
+        add_PtEtaPhiMassId_Data(&cand, owner, pMother.at(imot).first, pMother.at(imot).second, true); // usePz=true since Pt=0
       }
       //
 
       // Fill daughters
       int nDaughters=pDaughter.size();
-      cand->addUserInt("nLHEDaughters", nDaughters);
+      cand.addUserInt("nLHEDaughters", nDaughters);
       for (int idau=0; idau<nDaughters; idau++){
         TString strowner = Form("Daughter%i", idau+1);
         string owner = strowner.Data();
-        add_PtEtaPhiMassId_Data(cand, owner, pDaughter.at(idau).first, pDaughter.at(idau).second, false);
+        add_PtEtaPhiMassId_Data(&cand, owner, pDaughter.at(idau).first, pDaughter.at(idau).second, false);
       }
       //
 
@@ -148,25 +149,26 @@ void LHECandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSet
           LHEweight_QCDscale_muR0p5_muF0p5 = lhe_evt->weights().at(8).wgt / lhe_evt->originalXWGTUP();
         }
       }
-      cand->addUserFloat("LHEweight_QCDscale_muR1_muF1", LHEweight_QCDscale_muR1_muF1);
-      cand->addUserFloat("LHEweight_QCDscale_muR1_muF2", LHEweight_QCDscale_muR1_muF2);
-      cand->addUserFloat("LHEweight_QCDscale_muR1_muF0p5", LHEweight_QCDscale_muR1_muF0p5);
-      cand->addUserFloat("LHEweight_QCDscale_muR2_muF1", LHEweight_QCDscale_muR2_muF1);
-      cand->addUserFloat("LHEweight_QCDscale_muR2_muF2", LHEweight_QCDscale_muR2_muF2);
-      cand->addUserFloat("LHEweight_QCDscale_muR2_muF0p5", LHEweight_QCDscale_muR2_muF0p5);
-      cand->addUserFloat("LHEweight_QCDscale_muR0p5_muF1", LHEweight_QCDscale_muR0p5_muF1);
-      cand->addUserFloat("LHEweight_QCDscale_muR0p5_muF2", LHEweight_QCDscale_muR0p5_muF2);
-      cand->addUserFloat("LHEweight_QCDscale_muR0p5_muF0p5", LHEweight_QCDscale_muR0p5_muF0p5);
+      cand.addUserFloat("LHEweight_QCDscale_muR1_muF1", LHEweight_QCDscale_muR1_muF1);
+      cand.addUserFloat("LHEweight_QCDscale_muR1_muF2", LHEweight_QCDscale_muR1_muF2);
+      cand.addUserFloat("LHEweight_QCDscale_muR1_muF0p5", LHEweight_QCDscale_muR1_muF0p5);
+      cand.addUserFloat("LHEweight_QCDscale_muR2_muF1", LHEweight_QCDscale_muR2_muF1);
+      cand.addUserFloat("LHEweight_QCDscale_muR2_muF2", LHEweight_QCDscale_muR2_muF2);
+      cand.addUserFloat("LHEweight_QCDscale_muR2_muF0p5", LHEweight_QCDscale_muR2_muF0p5);
+      cand.addUserFloat("LHEweight_QCDscale_muR0p5_muF1", LHEweight_QCDscale_muR0p5_muF1);
+      cand.addUserFloat("LHEweight_QCDscale_muR0p5_muF2", LHEweight_QCDscale_muR0p5_muF2);
+      cand.addUserFloat("LHEweight_QCDscale_muR0p5_muF0p5", LHEweight_QCDscale_muR0p5_muF0p5);
       //
     }
   }
-  iEvent.put(cand);
+  result->push_back(cand);
+  iEvent.put(result);
 }
 
 
 
 // TBC
-void LHECandidateFiller::add_PtEtaPhiMassId_Data(std::auto_ptr<pat::CompositeCandidate>& cand, string owner, int id, TLorentzVector mom, bool usePz){
+void LHECandidateFiller::add_PtEtaPhiMassId_Data(pat::CompositeCandidate* cand, string owner, int id, TLorentzVector mom, bool usePz){
   vector<string> tmpBranchList;
   get_PtEtaPhiMassId_DataStrings(tmpBranchList, owner, usePz);
   for (unsigned int b=0; b<tmpBranchList.size(); b++){
