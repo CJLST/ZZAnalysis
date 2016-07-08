@@ -437,9 +437,8 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
     //--- store good isolated leptons that are not involved in the current ZZ candidate
     int nExtraLep = 0;
-    vector<reco::CandidatePtr> extraLeptons_pTOrdered;
     SimpleParticleCollection_t associatedLeptons;
-    for (vector<reco::CandidatePtr>::const_iterator lepPtr = goodisoleptonPtrs.begin(); lepPtr != goodisoleptonPtrs.end(); ++lepPtr) {
+    for (vector<reco::CandidatePtr>::const_iterator lepPtr = goodisoleptonPtrs.begin(); lepPtr != goodisoleptonPtrs.end(); ++lepPtr){
       const reco::Candidate* lep = lepPtr->get();
       if (
         reco::deltaR(lep->p4(), Z1L1->p4()) > 0.02 &&
@@ -447,26 +446,23 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
         reco::deltaR(lep->p4(), Z2L1->p4()) > 0.02 &&
         reco::deltaR(lep->p4(), Z2L2->p4()) > 0.02
         ){
+        myCand.addUserCand("ExtraLep"+to_string(nExtraLep), *lepPtr);
+
+        SimpleParticle_t theLepton(
+        lep->pdgId(),
+        TLorentzVector(lep->p4().x(), lep->p4().y(), lep->p4().z(), lep->p4().t())
+        );
         bool inserted=false;
-        for (vector<reco::CandidatePtr>::const_iterator ielo=extraLeptons_pTOrdered.begin(); ielo<extraLeptons_pTOrdered.end(); ielo++){
-          if (lep->pt()>(*ielo)->get()->pt()){
+        for (SimpleParticleCollection_t::iterator ielo=associatedLeptons.begin(); ielo<associatedLeptons.end(); ielo++){
+          if (lep->pt()>(*ielo).second.Pt()){
             inserted=true;
-            extraLeptons_pTOrdered.insert(ielo, lepPtr);
+            associatedLeptons.insert(ielo, theLepton);
             break;
           }
         }
-        if (!inserted) extraLeptons_pTOrdered.push_back(*lepPtr);
+        if (!inserted) associatedLeptons.push_back(theLepton);
+        nExtraLep++;
       }
-    }
-    for (vector<reco::CandidatePtr>::const_iterator lepPtr = extraLeptons_pTOrdered.begin(); lepPtr != extraLeptons_pTOrdered.end(); ++lepPtr) {
-      nExtraLep++;
-      myCand.addUserCand("ExtraLep"+to_string(nExtraLep), *lepPtr);
-      associatedLeptons.push_back(
-        SimpleParticle_t(
-        lepPtr->get()->pdgId(),
-        TLorentzVector(lepPtr->get()->p4().x(), lepPtr->get()->p4().y(), lepPtr->get()->p4().z(), lepPtr->get()->p4().t())
-        )
-        );
     }
     myCand.addUserFloat("nExtraLep",nExtraLep);
 

@@ -123,8 +123,8 @@ public:
       case 3: mela.selfDHzzcoupl[0][ghz1_prime2_index][0] = 1; spin = 0; break;                                         //L1
       case 4: mela.selfDHzzcoupl[0][ghz1_index][0] = 1; mela.selfDHzzcoupl[0][ghz2_index][0] = ghz2mix; spin = 0; break;             //fa2=0.5
       case 5: mela.selfDHzzcoupl[0][ghz1_index][0] = 1; mela.selfDHzzcoupl[0][ghz4_index][0] = ghz4mix; spin = 0; break;             //fa3=0.5
-      case 6: mela.selfDHzzcoupl[ghz1_index][0] = 1; mela.selfDHzzcoupl[0][ghz1_prime2_index][0] = ghz1_prime2mix; spin = 0; break; //fL1=0.5
-      case 7: mela.selfDGggcoupl[a1_index][0] = 1; mela.selfDGvvcoup[b5_index][0] = 1; spin = 2; break;                 //2b+
+      case 6: mela.selfDHzzcoupl[0][ghz1_index][0] = 1; mela.selfDHzzcoupl[0][ghz1_prime2_index][0] = ghz1_prime2mix; spin = 0; break; //fL1=0.5
+      case 7: mela.selfDGggcoupl[a1_index][0] = 1; mela.selfDGvvcoupl[b5_index][0] = 1; spin = 2; break;                 //2b+
       default: assert(false);
       }
       switch (spin) {
@@ -169,10 +169,10 @@ public:
       setcouplings(i);
       spin_v.push_back(spin);
       if (spin == 0) {
-        ghz1.push_back(selfDHvvcoupl[ghz1_index][0]);
-        ghz2.push_back(selfDHvvcoupl[ghz2_index][0]);
-        ghz4.push_back(selfDHvvcoupl[ghz4_index][0]);
-        ghz1_prime2.push_back(selfDHvvcoupl[ghz1_prime2_index][0]);
+        ghz1.push_back(mela.selfDHvvcoupl[0][ghz1_index][0]);
+        ghz2.push_back(mela.selfDHvvcoupl[0][ghz2_index][0]);
+        ghz4.push_back(mela.selfDHvvcoupl[0][ghz4_index][0]);
+        ghz1_prime2.push_back(mela.selfDHvvcoupl[0][ghz1_prime2_index][0]);
       }
       else {
         ghz1.push_back(0);
@@ -182,8 +182,8 @@ public:
       }
 
       if (spin == 2) {
-        a1.push_back(selfDGggcoupl[a1_index][0]);
-        b5.push_back(selfDGvvcoupl[b5_index][0]);
+        a1.push_back(mela.selfDGggcoupl[a1_index][0]);
+        b5.push_back(mela.selfDGvvcoupl[b5_index][0]);
       }
       else {
         a1.push_back(0);
