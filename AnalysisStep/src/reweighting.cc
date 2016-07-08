@@ -93,9 +93,9 @@ public:
       default: assert(false);
     }
 
-    for (unsigned int ic=0; ic<SIZE_HVV; ic++){ for(int im=0; im<2; im++) mela.selfDHzzcoupl[0][ic][im] = myHvvcoupl[ic][im];
-    for (unsigned int ic=0; ic<SIZE_GGG; ic++){ for(int im=0; im<2; im++) mela.selfDGggcoupl[ic][im] = myGggcoupl[ic][im];
-    for (unsigned int ic=0; ic<SIZE_GVV; ic++){ for(int im=0; im<2; im++) mela.selfDGvvcoupl[ic][im] = myGvvcoupl[ic][im];
+    for (unsigned int ic=0; ic<SIZE_HVV; ic++){ for(int im=0; im<2; im++) mela.selfDHzzcoupl[0][ic][im] = myHvvcoupl[ic][im]; }
+    for (unsigned int ic=0; ic<SIZE_GGG; ic++){ for(int im=0; im<2; im++) mela.selfDGggcoupl[ic][im] = myGggcoupl[ic][im]; }
+    for (unsigned int ic=0; ic<SIZE_GVV; ic++){ for(int im=0; im<2; im++) mela.selfDGvvcoupl[ic][im] = myGvvcoupl[ic][im]; }
   }
 
   void setcouplings(int reweightinghypothesis) {

@@ -705,6 +705,13 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     (mela->selfDHzzcoupl)[0][30][0]=1.;
     mela->computeP(p0plus_zz_g1prime2_zgs_VAJHU, true);
     p0plus_zz_g1prime2_zgs_VAJHU -= p0plus_VAJHU+p0_g1prime2_zgs_VAJHU;
+    // 0+m ZZ -- 0+L1 Zg* (phase(0+L1 Zgs*)=pi/2)
+    float p0plus_zz_g1prime2_zgs_pi2_VAJHU=0;
+    (mela->selfDHggcoupl)[0][0]=1.;
+    (mela->selfDHzzcoupl)[0][0][0]=1.;
+    (mela->selfDHzzcoupl)[0][30][1]=1.;
+    mela->computeP(p0plus_zz_g1prime2_zgs_pi2_VAJHU, true);
+    p0plus_zz_g1prime2_zgs_pi2_VAJHU -= p0plus_VAJHU+p0_g1prime2_zgs_VAJHU;
     // 0+m ZZ -- 0+h Zg*
     float p0plus_zz_0hplus_zgs_VAJHU=0;
     (mela->selfDHggcoupl)[0][0]=1.;
@@ -973,11 +980,12 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
           if (fabs(associatedV->m()-PDGHelpers::Zmass)<dZmass){ dZmass=associatedV->m()-PDGHelpers::Zmass; chosenZ=(int)iV; }
         }
         if(chosenZ>=0){
+          bestAssociatedZ=chosenZ;
           // Disable every associated Z boson and its daughters unless it is the chosen one
           for (unsigned int disableV=iSortedVstart; disableV<nSortedVs; disableV++){
             bool flag=(((int)disableV)==chosenZ);
             MELAParticle* einV = melaCand->getSortedV(disableV);
-            if (PDGHelpers::isAZboson(einV->id)){
+            if (PDGHelpers::isAZBoson(einV->id)){
               einV->setSelected(flag);
               for (int iVj=0; iVj<einV->getNDaughters(); iVj++) einV->getDaughter(iVj)->setSelected(flag);
             }
@@ -988,7 +996,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
           // Re-enable every associated Z boson and its daughters, should be exactly the same loop as used in disabling them except for the setSelected flag.
           for (unsigned int disableV=iSortedVstart; disableV<nSortedVs; disableV++){
             MELAParticle* einV = melaCand->getSortedV(disableV);
-            if (PDGHelpers::isAZboson(einV->id)){
+            if (PDGHelpers::isAZBoson(einV->id)){
               einV->setSelected(true);
               for (int iVj=0; iVj<einV->getNDaughters(); iVj++) einV->getDaughter(iVj)->setSelected(true);
             }
@@ -1093,6 +1101,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
                 float pwh_temp = -1;
                 float pzh_temp = -1;
+                float ptth_temp = -1;
                 float pbbh_temp = -1;
                 mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::Had_WH);
                 mela->computeProdP(pwh_temp, true);
