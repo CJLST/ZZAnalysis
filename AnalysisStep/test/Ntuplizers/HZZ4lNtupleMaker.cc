@@ -535,8 +535,6 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
               pset.getParameter<int>("spin"),
               pset.getParameter<std::vector<double> >("HVVcouplings_real"),
               pset.getParameter<std::vector<double> >("HVVcouplings_imag"),
-              pset.getParameter<std::vector<double> >("HWWcouplings_real"),
-              pset.getParameter<std::vector<double> >("HWWcouplings_imag"),
               pset.getParameter<std::vector<double> >("ZVVcouplings_real"),
               pset.getParameter<std::vector<double> >("ZVVcouplings_imag"),
               pset.getParameter<std::vector<double> >("Gggcouplings_real"),
@@ -788,7 +786,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
         // Gen leptons
         FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), genZLeps.at(2)->pdgId(), genZLeps.at(3)->pdgId(),
-		       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), genZLeps.at(3)->p4());
+           genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), genZLeps.at(3)->p4());
 
       }
 
@@ -807,11 +805,11 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
     }
 
-    // Note: Shouldmove into LHECandidateFiller -- U. Sarica
+    // Note: Should move into LHECandidateFiller -- U. Sarica
     reweightingweights.clear();
     if (doreweighting) {
       assert(reweighting.canreweight(genZLeps.size(), genFinalState));
-      int flavor = 3 - 2*(genFinalState == EEEE) - 1*(genFinalState==MMMM || GenZ1Flav*GenZ2Flav==/*15^4=*/50625);
+      int flavor = (GenZ1Flav==GenZ2Flav ? 0 : 2);
       float myprobability;
       vector<float> probabilities(nReweightingSamples);
       reweighting.setmycouplings();
@@ -871,10 +869,10 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     }
 
 // End of MC history analysis ------------------------------------------
-  } else { 
+  } else {
     ++Nevt_Gen_lumiBlock; // keep track of # events for data as well
   }
-  
+
 
 
   // Get candidate collection
@@ -1128,16 +1126,14 @@ void HZZ4lNtupleMaker::FillLHECandidate(const pat::CompositeCandidate& cand){
   }
 
   getCheckedUserFloat(cand, "LHEweight_QCDscale_muR1_muF1", LHEweight_QCDscale_muR1_muF1, 1);
-  // LEFT HERE
-  if (cand.hasUserFloat("LHEweight_QCDscale_muR1_muF1")) LHEweight_QCDscale_muR1_muF1 = cand.userFloat("LHEweight_QCDscale_muR1_muF1");
-  if (cand.hasUserFloat("LHEweight_QCDscale_muR1_muF2")) LHEweight_QCDscale_muR1_muF2 = cand.userFloat("LHEweight_QCDscale_muR1_muF2");
-  if (cand.hasUserFloat("LHEweight_QCDscale_muR1_muF0p5")) LHEweight_QCDscale_muR1_muF0p5 = cand.userFloat("LHEweight_QCDscale_muR1_muF0p5");
-  if (cand.hasUserFloat("LHEweight_QCDscale_muR2_muF1")) LHEweight_QCDscale_muR2_muF1 = cand.userFloat("LHEweight_QCDscale_muR2_muF1");
-  if (cand.hasUserFloat("LHEweight_QCDscale_muR2_muF2")) LHEweight_QCDscale_muR2_muF2 = cand.userFloat("LHEweight_QCDscale_muR2_muF2");
-  if (cand.hasUserFloat("LHEweight_QCDscale_muR2_muF0p5")) LHEweight_QCDscale_muR2_muF0p5 = cand.userFloat("LHEweight_QCDscale_muR2_muF0p5");
-  if (cand.hasUserFloat("LHEweight_QCDscale_muR0p5_muF1")) LHEweight_QCDscale_muR0p5_muF1 = cand.userFloat("LHEweight_QCDscale_muR0p5_muF1");
-  if (cand.hasUserFloat("LHEweight_QCDscale_muR0p5_muF2")) LHEweight_QCDscale_muR0p5_muF2 = cand.userFloat("LHEweight_QCDscale_muR0p5_muF2");
-  if (cand.hasUserFloat("LHEweight_QCDscale_muR0p5_muF0p5")) LHEweight_QCDscale_muR0p5_muF0p5 = cand.userFloat("LHEweight_QCDscale_muR0p5_muF0p5");
+  getCheckedUserFloat(cand, "LHEweight_QCDscale_muR1_muF2", LHEweight_QCDscale_muR1_muF2, 1);
+  getCheckedUserFloat(cand, "LHEweight_QCDscale_muR1_muF0p5", LHEweight_QCDscale_muR1_muF0p5, 1);
+  getCheckedUserFloat(cand, "LHEweight_QCDscale_muR2_muF1", LHEweight_QCDscale_muR2_muF1, 1);
+  getCheckedUserFloat(cand, "LHEweight_QCDscale_muR2_muF2", LHEweight_QCDscale_muR2_muF2, 1);
+  getCheckedUserFloat(cand, "LHEweight_QCDscale_muR2_muF0p5", LHEweight_QCDscale_muR2_muF0p5, 1);
+  getCheckedUserFloat(cand, "LHEweight_QCDscale_muR0p5_muF1", LHEweight_QCDscale_muR0p5_muF1, 1);
+  getCheckedUserFloat(cand, "LHEweight_QCDscale_muR0p5_muF2", LHEweight_QCDscale_muR0p5_muF2, 1);
+  getCheckedUserFloat(cand, "LHEweight_QCDscale_muR0p5_muF0p5", LHEweight_QCDscale_muR0p5_muF0p5, 1);
 }
 
 
@@ -1191,9 +1187,9 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 
     if(addKinRefit){
       if (cand.hasUserFloat("ZZMassRefit")) {
-	ZZMassRefit = cand.userFloat("ZZMassRefit");
-	ZZMassRefitErr = cand.userFloat("ZZMassRefitErr");
-	ZZMassUnrefitErr = cand.userFloat("ZZMassUnrefitErr");
+  ZZMassRefit = cand.userFloat("ZZMassRefit");
+  ZZMassRefitErr = cand.userFloat("ZZMassRefitErr");
+  ZZMassUnrefitErr = cand.userFloat("ZZMassUnrefitErr");
       }
     }
     if(addVtxFit){

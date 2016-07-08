@@ -58,14 +58,14 @@ class ZZCandidateFiller : public edm::EDProducer {
 public:
   /// Constructor
   explicit ZZCandidateFiller(const edm::ParameterSet&);
-    
+
   /// Destructor
   ~ZZCandidateFiller();
 
 private:
   typedef map<const reco::Candidate*, const pat::PFParticle*> FSRToLepMap;
 
-  virtual void beginJob(){};  
+  virtual void beginJob(){};
   virtual void produce(edm::Event&, const edm::EventSetup&);
   virtual void endJob(){};
 
@@ -80,7 +80,7 @@ private:
   Mela* mela;
   bool embedDaughterFloats;
   bool ZRolesByMass;
-  reco::CompositeCandidate::role_collection rolesZ1Z2;  
+  reco::CompositeCandidate::role_collection rolesZ1Z2;
   reco::CompositeCandidate::role_collection rolesZ2Z1;
   bool isMC;
   bool doKinFit;
@@ -119,10 +119,10 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
   metToken = consumes<pat::METCollection>(edm::InputTag("slimmedMETs"));
   softLeptonToken = consumes<edm::View<reco::Candidate> >(edm::InputTag("softLeptons"));
   ZCandToken = consumes<edm::View<reco::CompositeCandidate> >(edm::InputTag("ZCand"));
-  
+
   rolesZ1Z2 = {"Z1", "Z2"};
   rolesZ2Z1 = {"Z2", "Z1"};
-  
+
   edm::FileInPath fip("ZZAnalysis/AnalysisStep/data/ebeOverallCorrections.Legacy2013.v0.root");
   std::string ebePath=fip.fullPath();
 
@@ -131,14 +131,14 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
     // EbE corrections
     TFile* fCorrSigma = new TFile(ebePath.data()); // FIXME: is leaked
     std::string sigmaCorrType = (isMC?"mc":"reco");
-    std::string sigmaCorrYear = ""; 
+    std::string sigmaCorrYear = "";
     if (setup==2011) sigmaCorrYear = "42x";
     else if (setup==2012) sigmaCorrYear = "53x";
 
-    corrSigmaMu=  (TH2F*)fCorrSigma->Get(("mu_"+sigmaCorrType+sigmaCorrYear).data()); 
+    corrSigmaMu=  (TH2F*)fCorrSigma->Get(("mu_"+sigmaCorrType+sigmaCorrYear).data());
     corrSigmaEle= (TH2F*)fCorrSigma->Get(("el_"+sigmaCorrType+sigmaCorrYear).data());
   }
-  
+
   string cmp=iConfig.getParameter<string>("bestCandComparator");
   if      (cmp=="byBestZ1bestZ2") bestCandType=Comparators::byBestZ1bestZ2;
   else if (cmp=="byBestKD")       bestCandType=Comparators::byBestKD;
@@ -158,7 +158,7 @@ ZZCandidateFiller::~ZZCandidateFiller(){
 }
 
 
-void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup){  
+void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup){
   using namespace edm;
   using namespace std;
   using namespace reco;
@@ -189,8 +189,8 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   Handle<View<reco::Candidate> > softleptoncoll;
   iEvent.getByToken(softLeptonToken, softleptoncoll);
   vector<reco::CandidatePtr> goodisoleptonPtrs;
-  for( View<reco::Candidate>::const_iterator lep = softleptoncoll->begin(); lep != softleptoncoll->end(); ++ lep ){ 
-    if((bool)userdatahelpers::getUserFloat(&*lep,"isGood") 
+  for( View<reco::Candidate>::const_iterator lep = softleptoncoll->begin(); lep != softleptoncoll->end(); ++ lep ){
+    if((bool)userdatahelpers::getUserFloat(&*lep,"isGood")
        //       && (bool)userdatahelpers::getUserFloat(&*lep,"isIsoFSRUncorr") // with old FSR strategy
        && (bool)userdatahelpers::getUserFloat(&*lep,"passCombRelIsoPFFSRCorr") // with new FSR strategy
        ){
@@ -209,12 +209,12 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 //   int processID = gen->signalProcessID();
 
   // to calculate mass resolution
-  CompositeCandMassResolution errorBuilder;       
+  CompositeCandMassResolution errorBuilder;
   errorBuilder.init(iSetup);
 
-  vector<int> bestCandIdx(preBestCandSelection.size(),-1); 
-  vector<float> maxPtSum(preBestCandSelection.size(),-1); 
-  vector< vector<int> > preSelCands(preBestCandSelection.size());  
+  vector<int> bestCandIdx(preBestCandSelection.size(),-1);
+  vector<float> maxPtSum(preBestCandSelection.size(),-1);
+  vector< vector<int> > preSelCands(preBestCandSelection.size());
   //----------------------------------------------------------------------
   //--- Loop over input candidates
   for( View<CompositeCandidate>::const_iterator cand = LLLLCands->begin(); cand != LLLLCands->end(); ++ cand ) {
@@ -222,16 +222,16 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
     pat::CompositeCandidate myCand(*cand);
 
-    if (embedDaughterFloats){  
+    if (embedDaughterFloats){
       userdatahelpers::embedDaughterData(myCand);
     }
 
-    //--- Set id of the Z1 and "Z1"/"Z2" labels. This allows to call e.g. aHiggs->daughter("Z1"). 
+    //--- Set id of the Z1 and "Z1"/"Z2" labels. This allows to call e.g. aHiggs->daughter("Z1").
     // if ZRolesByMass is true, 'Z1' and iZ1 refer to the  Z closest to mZ; otherwise Z1 = daughter(0). The latter is used for control regions.
     const reco::CompositeCandidate::role_collection* ZRoles = &rolesZ1Z2;
     int iZ1 = 0;
     int iZ2 = 1;
-    if (ZRolesByMass) { 
+    if (ZRolesByMass) {
       if(std::abs(myCand.daughter(0)->mass()-ZmassValue)>=std::abs(myCand.daughter(1)->mass()-ZmassValue)){
         swap(iZ1,iZ2);
         ZRoles = &rolesZ2Z1;
@@ -260,10 +260,10 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     FSRToLepMap FSRMap;
     for (unsigned iZ=0; iZ<2; ++iZ) {
       for (unsigned ifsr=2; ifsr<Zs[iZ]->numberOfDaughters(); ++ifsr) {
-	const pat::PFParticle* fsr = static_cast<const pat::PFParticle*>(Zs[iZ]->daughter(ifsr));
-	int ilep = iZ*2+fsr->userFloat("leptIdx");
-	FSRMap[ZZLeps[ilep]]= fsr;
-	pij[ilep]+=fsr->p4();
+    const pat::PFParticle* fsr = static_cast<const pat::PFParticle*>(Zs[iZ]->daughter(ifsr));
+    int ilep = iZ*2+fsr->userFloat("leptIdx");
+    FSRMap[ZZLeps[ilep]]= fsr;
+    pij[ilep]+=fsr->p4();
       }
     }
 
@@ -290,12 +290,12 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     for (int zIdx=0; zIdx<2; ++zIdx) {
       float worstMuIso=0;
       float worstEleIso=0;
-      for (int dauIdx=0; dauIdx<2; ++dauIdx) { 
-	const reco::Candidate* z = myCand.daughter(zIdx);
-	const reco::Candidate* d = z->daughter(dauIdx);
-	float combRelIsoPFCorr = userdatahelpers::getUserFloat(d,"combRelIsoPFFSRCorr");
-	if (d->isMuon()) worstMuIso  = max(worstMuIso,  combRelIsoPFCorr);
-	else             worstEleIso = max(worstEleIso, combRelIsoPFCorr);
+      for (int dauIdx=0; dauIdx<2; ++dauIdx) {
+    const reco::Candidate* z = myCand.daughter(zIdx);
+    const reco::Candidate* d = z->daughter(dauIdx);
+    float combRelIsoPFCorr = userdatahelpers::getUserFloat(d,"combRelIsoPFFSRCorr");
+    if (d->isMuon()) worstMuIso  = max(worstMuIso,  combRelIsoPFCorr);
+    else             worstEleIso = max(worstEleIso, combRelIsoPFCorr);
       }
       string base = (zIdx==0?"d0.":"d1.");
       myCand.addUserFloat(base+"worstMuIso",worstMuIso);
@@ -304,7 +304,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
 
     //----------------------------------------------------------------------
-    //--- Alternative lepton pairings: "smart cut" and QCD suppression and 
+    //--- Alternative lepton pairings: "smart cut" and QCD suppression and
 
     //--- Sign-ordered leptons and leptopn four-vectors (without FSR), to be used to compute mZa, mZb, mZalpha, mZbeta
     const reco::Candidate* Z1Lp(Z1L1);
@@ -314,25 +314,25 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
     // Sort leptons for OS Z candidates; no sorting for the same-sign collections used for CRs
     if (Z1Lp->charge() < 0 && Z1Lp->charge()*Z1Lm->charge()<0) {
-      swap(Z1Lp,Z1Lm);    
+      swap(Z1Lp,Z1Lm);
     }
     if (Z2Lp->charge() < 0 && Z2Lp->charge()*Z2Lm->charge()<0) {
       swap(Z2Lp,Z2Lm);
-    }    
-    
+    }
+
     math::XYZTLorentzVector p1p(Z1Lp->p4());
     math::XYZTLorentzVector p1m(Z1Lm->p4());
     math::XYZTLorentzVector p2p(Z2Lp->p4());
     math::XYZTLorentzVector p2m(Z2Lm->p4());
 
-    // Build the other SF/OS combination 
+    // Build the other SF/OS combination
     float mZ1= Z1->mass();
     float mZa, mZb;
     int ZaID, ZbID;
     getPairMass(Z1Lp,Z2Lm,FSRMap,mZa,ZaID);
     getPairMass(Z1Lm,Z2Lp,FSRMap,mZb,ZbID);
 
-    // For same-sign CRs, the Z2 leptons are same sign, so we need to check also the other combination. 
+    // For same-sign CRs, the Z2 leptons are same sign, so we need to check also the other combination.
     float mZalpha, mZbeta;
     int ZalphaID, ZbetaID;
     getPairMass(Z1Lp,Z2Lp,FSRMap,mZalpha,ZalphaID);
@@ -340,11 +340,11 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
     // Sort (mZa,mZb and) (mZalpha,mZbeta) so that a and alpha are the ones closest to mZ
     if (std::abs(mZa-ZmassValue)>=std::abs(mZb-ZmassValue)) {
-      swap(mZa,mZb); 
+      swap(mZa,mZb);
       swap(ZaID,ZbID);
     }
     if (std::abs(mZalpha-ZmassValue)>=std::abs(mZbeta-ZmassValue)) {
-      swap(mZalpha,mZbeta); 
+      swap(mZalpha,mZbeta);
       swap(ZalphaID,ZbetaID);
     }
 
@@ -361,7 +361,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     lep.push_back(Z1Lp);
     lep.push_back(Z2Lm);
     lep.push_back(Z2Lp);
-    
+
     float mll6 = 9999;
     float mll4 = 9999;
     for (int i=0;i<4;++i) {
@@ -373,8 +373,8 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
         }
       }
     }
-    
-  
+
+
     //--- worst SIP value
     vector<double> SIPS = {myCand.userFloat("d0.d0.SIP"), myCand.userFloat("d0.d1.SIP"), myCand.userFloat("d1.d0.SIP"), myCand.userFloat("d1.d1.SIP")};
     sort(SIPS.begin(),SIPS.end());
@@ -412,7 +412,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
       myCand.addUserFloat("massError23",    errs[4+offset]);
       sigma[1][2]=errs[4+offset];
     }
-  
+
     float massErrorCorr=0;
     for (int i=0; i<2; ++i) {
       for (int j=0; j<2; ++j) {
@@ -420,12 +420,12 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
         const TH2F* h;
         if (l->isMuon()) h = corrSigmaMu;
         else             h = corrSigmaEle;
-	float ebecorr=1.;
-	if (h!=0) {
-	  int ptBin  = min(max(1,h->GetXaxis()->FindBin(l->pt())), h->GetNbinsX());
-	  int etaBin = min(max(1,h->GetYaxis()->FindBin(fabs(l->eta()))), h->GetNbinsY());
-	  ebecorr = h->GetBinContent(ptBin, etaBin);
-	}
+    float ebecorr=1.;
+    if (h!=0) {
+      int ptBin  = min(max(1,h->GetXaxis()->FindBin(l->pt())), h->GetNbinsX());
+      int etaBin = min(max(1,h->GetYaxis()->FindBin(fabs(l->eta()))), h->GetNbinsY());
+      ebecorr = h->GetBinContent(ptBin, etaBin);
+    }
         massErrorCorr+= (sigma[i][j]*ebecorr)*(sigma[i][j]*ebecorr);
       }
     }
@@ -470,7 +470,6 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     }
     myCand.addUserFloat("nExtraLep",nExtraLep);
 
-    // LEFT HERE: CHECK THIS FORMALISM
     // Leptonically decaying WH
     if (nExtraLep>=1){
       // Take leading-pT lepton to compute fake neutrino
@@ -507,19 +506,19 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     vector<const CompositeCandidate*> extraZs;
     for( View<CompositeCandidate>::const_iterator zcand = ZCands->begin(); zcand != ZCands->end(); ++ zcand ) {
       if( reco::deltaR( zcand->daughter(0)->p4(), Z1L1->p4() ) > 0.02 &&
-	  reco::deltaR( zcand->daughter(0)->p4(), Z1L2->p4() ) > 0.02 &&
-	  reco::deltaR( zcand->daughter(0)->p4(), Z2L1->p4() ) > 0.02 &&
-	  reco::deltaR( zcand->daughter(0)->p4(), Z2L2->p4() ) > 0.02 &&
-	  reco::deltaR( zcand->daughter(1)->p4(), Z1L1->p4() ) > 0.02 &&
-	  reco::deltaR( zcand->daughter(1)->p4(), Z1L2->p4() ) > 0.02 &&
-	  reco::deltaR( zcand->daughter(1)->p4(), Z2L1->p4() ) > 0.02 &&
-	  reco::deltaR( zcand->daughter(1)->p4(), Z2L2->p4() ) > 0.02    ){
-	const reco::CandidatePtr myZCand(ZCands,zcand-ZCands->begin());
-	if((bool)userdatahelpers::getUserFloat(&*myZCand,"GoodIsoLeptons")){
-	  nExtraZ++;
-	  extraZs.push_back(&*zcand);
-	  myCand.addUserCand("assocZ"+to_string(nExtraZ),myZCand);
-	}
+      reco::deltaR( zcand->daughter(0)->p4(), Z1L2->p4() ) > 0.02 &&
+      reco::deltaR( zcand->daughter(0)->p4(), Z2L1->p4() ) > 0.02 &&
+      reco::deltaR( zcand->daughter(0)->p4(), Z2L2->p4() ) > 0.02 &&
+      reco::deltaR( zcand->daughter(1)->p4(), Z1L1->p4() ) > 0.02 &&
+      reco::deltaR( zcand->daughter(1)->p4(), Z1L2->p4() ) > 0.02 &&
+      reco::deltaR( zcand->daughter(1)->p4(), Z2L1->p4() ) > 0.02 &&
+      reco::deltaR( zcand->daughter(1)->p4(), Z2L2->p4() ) > 0.02    ){
+    const reco::CandidatePtr myZCand(ZCands,zcand-ZCands->begin());
+    if((bool)userdatahelpers::getUserFloat(&*myZCand,"GoodIsoLeptons")){
+      nExtraZ++;
+      extraZs.push_back(&*zcand);
+      myCand.addUserCand("assocZ"+to_string(nExtraZ),myZCand);
+    }
       }
     }
     myCand.addUserFloat("nExtraZ",nExtraZ);
@@ -531,7 +530,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     /**********************/
     /**********************/
 
-    // Lepton TLorentzVectors, including FSR 
+    // Lepton TLorentzVectors, including FSR
     SimpleParticleCollection_t daughters;
     daughters.push_back(SimpleParticle_t(0, TLorentzVector(p11.x(), p11.y(), p11.z(), p11.t())));
     daughters.push_back(SimpleParticle_t(0, TLorentzVector(p12.x(), p12.y(), p12.z(), p12.t())));
@@ -553,11 +552,11 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     TVector3 Xaxis(1, 0, 0);
     float xi = higgs.Phi();
     // boost Z1 into rest frame of higgs
-    // xistar is the angle between Z decay plane and x-axis 
+    // xistar is the angle between Z decay plane and x-axis
     Z14vec.Boost(-higgs.BoostVector());
     float xistar = Z14vec.Phi();
-    // detaJJ, Mjj and Fisher. These are per-event variables in the SR, but not necessarily in the CR as we clean jets also 
-    // for loose-but-not-tight leptons.    
+    // detaJJ, Mjj and Fisher. These are per-event variables in the SR, but not necessarily in the CR as we clean jets also
+    // for loose-but-not-tight leptons.
     float DiJetMass  = -99;
     float DiJetDEta  = -99;
     float DiJetFisher  = -99;
@@ -580,8 +579,8 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
         float newPt = jet->pt() * ratio;
         // apply pt>30GeV cut
         if (newPt<=30.) continue;
-        // additional jets cleaning for loose leptons belonging to this candidate (for CRs only; 
-        // does nothing for the SR as jets are already cleaned with all tight isolated leptons ) 
+        // additional jets cleaning for loose leptons belonging to this candidate (for CRs only;
+        // does nothing for the SR as jets are already cleaned with all tight isolated leptons )
         if (!jetCleaner::isGood(myCand, *jet)) continue;
         // store jets and up/down ratio
         cleanedJetsPt30Jec.push_back(&*jet);
@@ -1198,26 +1197,26 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
       for(unsigned ilep=0; ilep<4; ilep++){
 
-	selectedLeptons.push_back((reco::Candidate*)(ZZLeps[ilep]->masterClone().get()));
+    selectedLeptons.push_back((reco::Candidate*)(ZZLeps[ilep]->masterClone().get()));
 
-	if(FSRMap.find(ZZLeps[ilep])!=FSRMap.end()){
-	  pat::PFParticle fsr = *(FSRMap[ZZLeps[ilep]]);
-	  TLorentzVector p4;
-	  p4.SetPxPyPzE(fsr.px(),fsr.py(),fsr.pz(),fsr.energy());
-	  selectedFsrMap[ilep] = p4;
-	}
+    if(FSRMap.find(ZZLeps[ilep])!=FSRMap.end()){
+      pat::PFParticle fsr = *(FSRMap[ZZLeps[ilep]]);
+      TLorentzVector p4;
+      p4.SetPxPyPzE(fsr.px(),fsr.py(),fsr.pz(),fsr.energy());
+      selectedFsrMap[ilep] = p4;
+    }
 
       }
 
       kinZfitter->Setup(selectedLeptons, selectedFsrMap);
       kinZfitter->KinRefitZ();
-      
+
       ZZMassRefit = kinZfitter->GetRefitM4l();
       ZZMassRefitErr = kinZfitter->GetRefitM4lErrFullCov();
       ZZMassUnrefitErr = kinZfitter->GetM4lErr();
 
       // four 4-vectors after refitting order by Z1_1,Z1_2,Z2_1,Z2_2
-      //vector<TLorentzVector> p4 = kinZfitter->GetRefitP4s(); 
+      //vector<TLorentzVector> p4 = kinZfitter->GetRefitP4s();
 
     }
 
@@ -1227,32 +1226,32 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
     //CandConstraintFit::fit(&myCand, iSetup);
     if (doVtxFit && abs(id11)==13 && abs(id12)==13 && abs(id21)==13 && abs(id22)==13) {
-      
+
       edm::ESHandle<TransientTrackBuilder> theTTBuilder;
       iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theTTBuilder);
 
       //Creating a KinematicParticleFactory
       KinematicParticleFactoryFromTransientTrack factory;
-      
+
       const ParticleMass muon_mass = 0.1056583;
       const ParticleMass electron_mass = 0.0005;
       float muon_sigma = 0.0000000001;
       float electron_sigma = 0.0000000001;
-      
-      //initial chi2 and ndf before kinematic fits. The chi2 of the reconstruction is not considered 
+
+      //initial chi2 and ndf before kinematic fits. The chi2 of the reconstruction is not considered
       float chi;
       float ndof;
-  
+
       vector<RefCountedKinematicParticle> Particles;
       //vector<TransientTrack> t_tks;
-    
+
       for (unsigned k = 0; k < myCand.numberOfDaughters(); ++k ) {
         const reco::Candidate* Z = myCand.daughter(k);
         for (unsigned l = 0; l < Z->numberOfDaughters(); ++l ) {
           chi = 0.; ndof = 0.;
 
           const reco::Candidate* lepton= Z->daughter(l);
-          
+
           if (lepton->isGlobalMuon() || lepton->isTrackerMuon()){
             TransientTrack tt = theTTBuilder->build(lepton->get<TrackRef>());
             Particles.push_back(factory.particle (tt,muon_mass,chi,ndof,muon_sigma));
@@ -1265,34 +1264,34 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
           }
         }
       }
-      
+
       //cout << "Number of particle for constrain fitter= " << Particles.size()<< endl;
-      
+
       if (Particles.size()>=4){
-        KinematicParticleVertexFitter fitter; 
-        RefCountedKinematicTree myTree = fitter.fit(Particles); 
-        
+        KinematicParticleVertexFitter fitter;
+        RefCountedKinematicTree myTree = fitter.fit(Particles);
+
         if ( !myTree->isEmpty()) {
           //accessing the tree components
           myTree->movePointerToTheTop();
-          
+
           RefCountedKinematicParticle allLeptonsCand     = myTree->currentParticle();
           RefCountedKinematicVertex allLeptonsVertex     = myTree->currentDecayVertex();
-          
+
           // if(dbg) cout << "m(" << myCand->numberOfDaughters() << "l): " << allLeptonsCand->currentState().mass() << " +- "
           //                   << sqrt(allLeptonsCand->currentState().kinematicParametersError().matrix()(6,6) ) << endl;
-          
+
           reco::Vertex constrainedVertex(reco::Vertex::Point(allLeptonsVertex->position()),
-                                         allLeptonsVertex->error().matrix_new(), 
-                                         allLeptonsVertex->chiSquared(), 
-                                         allLeptonsVertex->degreesOfFreedom(),0);       
-          
-          //      if(dbg) cout << "kinematicFit vertex, ndof, chi2, prob: " 
-          //                   << allLeptonsVertex->position() << " , " 
+                                         allLeptonsVertex->error().matrix_new(),
+                                         allLeptonsVertex->chiSquared(),
+                                         allLeptonsVertex->degreesOfFreedom(),0);
+
+          //      if(dbg) cout << "kinematicFit vertex, ndof, chi2, prob: "
+          //                   << allLeptonsVertex->position() << " , "
           //                   << allLeptonsVertex->degreesOfFreedom() << " , "
           //                   << allLeptonsVertex->chiSquared()   << " , "
           //                   << TMath::Prob(allLeptonsVertex->chiSquared(),allLeptonsVertex->degreesOfFreedom()) << endl;
-          
+
           //myCand->addUserData("ConstrainedCandVtx",constrainedVertex);
           myCand.addUserFloat("CFitM",allLeptonsCand->currentState().mass());
           myCand.addUserFloat("CFitSigmaM",allLeptonsCand->currentState().kinematicParametersError().matrix()(6,6));
@@ -1301,10 +1300,10 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
         } else {
           cout << " ERROR CandConstraintFit: KinematicParticleVertexFitter failed " << endl;
-        } 
+        }
       }
     }
-  
+
     //----------------------------------------------------------------------
     //--- Embed variables
     myCand.addUserFloat("candChannel",    candChannel);
@@ -1474,20 +1473,20 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 //                       myCand.userFloat("d0.d1.MCParentCode")==refID &&
 //                       myCand.userFloat("d1.d0.MCParentCode")==refID &&
 //                       myCand.userFloat("d1.d1.MCParentCode")==refID);
-//       bool MC_isRightPair = false; //FIXME to be 
+//       bool MC_isRightPair = false; //FIXME to be
 
 //       myCand.addUserFloat("MC_isRight",     MC_isRight);
 //       myCand.addUserFloat("MC_isRightPair", MC_isRightPair);
 //     }
- 
 
 
-    //----------------------------------------------------------------------    
+
+    //----------------------------------------------------------------------
     //--- Check if candedate passes the "bestCandAmong" selections (2011 PRL logic)
     int iCRname=0;
     for(CutSet<pat::CompositeCandidate>::const_iterator bca = preBestCandSelection.begin(); bca != preBestCandSelection.end(); ++bca){
-      int preBestCandResult= int((*(bca->second))(myCand));     
-      
+      int preBestCandResult= int((*(bca->second))(myCand));
+
       if (preBestCandResult){
         // Fill preSelCands matrix
         preSelCands[iCRname].push_back(icand);
@@ -1524,14 +1523,14 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
       myCand.addUserFloat(cut->first,int((*(cut->second))(myCand)));
     }
   }
-  
+
   iEvent.put(result);
 
 }
 
 
-  
-void 
+
+void
 ZZCandidateFiller::getPairMass(const reco::Candidate* lp, const reco::Candidate* lm, ZZCandidateFiller::FSRToLepMap& photons, float& mass, int& ID) {
   math::XYZTLorentzVector llp4 = lp->p4()+lm->p4();
   auto lpp = photons.find(lp);

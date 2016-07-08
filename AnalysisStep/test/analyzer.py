@@ -8,7 +8,7 @@ from ZZAnalysis.AnalysisStep.couplings import *
 ###----------------------------------------------------------------------
 
 # Set defaults for variables used in this file (in case they are not defined by a caller script)
-declareDefault("PD", "", globals()) # "" for MC, "DoubleEle", "DoubleMu", or "MuEG" for data 
+declareDefault("PD", "", globals()) # "" for MC, "DoubleEle", "DoubleMu", or "MuEG" for data
 declareDefault("MCFILTER", "", globals())
 declareDefault("XSEC", 1, globals())
 declareDefault("PROCESS_CR", False, globals())
@@ -55,12 +55,12 @@ process.PlotsZZ    = cms.EDAnalyzer("ZZ4lAnalyzer",
                                     channel = cms.untracked.string('ZZ'),
                                     candCollection = cms.untracked.string('ZZCand'),
                                     isMC = cms.untracked.bool(IsMC),
-                                    sampleType = cms.int32(SAMPLE_TYPE),                                    
+                                    sampleType = cms.int32(SAMPLE_TYPE),
                                     setup = cms.int32(LEPTON_SETUP),
                                     skimPaths = cms.vstring(SkimPaths),
                                     PD = cms.string(PD),
                                     MCFilterPath = cms.string(MCFILTER),
-                                    sampleName = cms.string(SAMPLENAME),                                    
+                                    sampleName = cms.string(SAMPLENAME),
                                     dumpForSync = cms.untracked.bool(False),
                                     )
 
@@ -128,8 +128,6 @@ TreeSetup = cms.EDAnalyzer("HZZ4lNtupleMaker",
                            spin = cms.int32(int(SPIN)),
                            HVVcouplings_real = cms.vdouble(*couplings.getcouplings(spin=0, WW=False, imag=False)),
                            HVVcouplings_imag = cms.vdouble(*couplings.getcouplings(spin=0, WW=False, imag=True)),
-                           HWWcouplings_real = cms.vdouble(*couplings.getcouplings(spin=0, WW=True, imag=False)),
-                           HWWcouplings_imag = cms.vdouble(*couplings.getcouplings(spin=0, WW=True, imag=True)),
                            ZVVcouplings_real = cms.vdouble(*couplings.getcouplings(spin=1, imag=False)),
                            ZVVcouplings_imag = cms.vdouble(*couplings.getcouplings(spin=1, imag=True)),
                            GVVcouplings_real = cms.vdouble(*couplings.getcouplings(spin=2, gg=False, imag=False)),
@@ -180,7 +178,7 @@ process.CRSelection= cms.EDFilter("CandViewCountFilter",
 
 process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
      dumpTrigger = cms.untracked.bool(True),
-     muonSrc = cms.InputTag("appendPhotons:muons"), 
+     muonSrc = cms.InputTag("appendPhotons:muons"),
      electronSrc = cms.InputTag("appendPhotons:electrons"),
      candidateSrcs = cms.PSet(
         Z     = cms.InputTag("ZCand"),
@@ -198,6 +196,6 @@ if (PROCESS_CR or not IsMC):
 else:
 #    process.CRPath = cms.Path(process.CRZl) #still needed by the plotter
     process.trees = cms.EndPath(process.ZZTree)
-    
+
 process.plots = cms.EndPath(process.PlotsZZ)
 

@@ -14,9 +14,7 @@ class Reweighting {
 private:
 
   double myHvvcoupl[SIZE_HVV][2];
-  //double myZqqcoupl[SIZE_ZQQ][2];
   double myZvvcoupl[SIZE_ZVV][2];
-  //double myGqqcoupl[SIZE_GQQ][2];
   double myGggcoupl[SIZE_GGG][2];
   double myGvvcoupl[SIZE_GVV][2];
 
@@ -44,7 +42,7 @@ private:
     return NoReweighting;
   }
 
-  template <unsigned int size> void couplingsfromvectors(double (&couplings)[size][2], vector<double> real, vector<double> imaginary) { // Could just ave had a pair -- U. Sarica
+  template <unsigned int size> void couplingsfromvectors(double (&couplings)[size][2], vector<double> real, vector<double> imaginary) { // Could just have had a pair -- U. Sarica
     if (real.size() != size || imaginary.size() != size) {
       std::cout << "couplings should have size " << size << " but have size " << real.size() << " " << imaginary.size() << std::endl;
       assert(false);
@@ -94,6 +92,10 @@ public:
       case 2: mela.setProcess(TVar::SelfDefine_spin2, TVar::JHUGen, TVar::ZZGG); break;
       default: assert(false);
     }
+
+    for (unsigned int ic=0; ic<SIZE_HVV; ic++){ for(int im=0; im<2; im++) mela.selfDHzzcoupl[0][ic][im] = myHvvcoupl[ic][im];
+    for (unsigned int ic=0; ic<SIZE_GGG; ic++){ for(int im=0; im<2; im++) mela.selfDGggcoupl[ic][im] = myGggcoupl[ic][im];
+    for (unsigned int ic=0; ic<SIZE_GVV; ic++){ for(int im=0; im<2; im++) mela.selfDGvvcoupl[ic][im] = myGvvcoupl[ic][im];
   }
 
   void setcouplings(int reweightinghypothesis) {
@@ -123,7 +125,7 @@ public:
       case 5: mela.selfDHzzcoupl[0][ghz1_index][0] = 1; mela.selfDHzzcoupl[0][ghz4_index][0] = ghz4mix; spin = 0; break;             //fa3=0.5
       case 6: mela.selfDHzzcoupl[ghz1_index][0] = 1; mela.selfDHzzcoupl[0][ghz1_prime2_index][0] = ghz1_prime2mix; spin = 0; break; //fL1=0.5
       case 7: mela.selfDGggcoupl[a1_index][0] = 1; mela.selfDGvvcoup[b5_index][0] = 1; spin = 2; break;                 //2b+
-        default: assert(false);
+      default: assert(false);
       }
       switch (spin) {
         case 0: mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG); break;
