@@ -102,11 +102,11 @@ extern "C" int category(
 
 extern "C" int categoryMor16(
 			     int nCleanedJetsPt30,
-			     float pvbf_VAJHU_old,
-			     float phjj_VAJHU_old
+			     float pvbf_VAJHU_highestPTJets,
+			     float phjj_VAJHU_highestPTJets
 			     )
 {
-  float vbfMela = pvbf_VAJHU_old / ( phjj_VAJHU_old + pvbf_VAJHU_old );
+  float vbfMela = pvbf_VAJHU_highestPTJets / ( phjj_VAJHU_highestPTJets + pvbf_VAJHU_highestPTJets );
 
   if(nCleanedJetsPt30>=2 && vbfMela>0.5)
     return VBFTaggedMor16;
@@ -121,9 +121,9 @@ extern "C" int categoryIchep16(
 	     int nCleanedJetsPt30, 
 	     int nCleanedJetsPt30BTagged,
 	     float* jetQGLikelihood,
-	     float phjj_VAJHU_old,
+	     float phjj_VAJHU_highestPTJets,
 	     float phj_VAJHU,
-	     float pvbf_VAJHU_old,
+	     float pvbf_VAJHU_highestPTJets,
 	     float pAux_vbf_VAJHU,
 	     float pwh_hadronic_VAJHU,
 	     float pzh_hadronic_VAJHU
@@ -141,10 +141,10 @@ extern "C" int categoryIchep16(
   float jetPgOverPq[nCleanedJetsPt30];
   for(int j=0; j<nCleanedJetsPt30; j++) jetPgOverPq[j] = 1./jetQGLikelihood[j] - 1.;
 
-  float D_VBF2j = (nCleanedJetsPt30>=2) ? 1/(1+ phjj_VAJHU_old/pvbf_VAJHU_old * TMath::Power(jetPgOverPq[0]*jetPgOverPq[1],1/3.) ) : -2 ;
-  float D_VBF1j = (nCleanedJetsPt30>=1) ? 1/(1+ (c_Mela1j*phj_VAJHU)/(pvbf_VAJHU_old*pAux_vbf_VAJHU) * TMath::Power(jetPgOverPq[0],1/3.) ) : -2 ;
-  float D_WHh = (nCleanedJetsPt30>=2) ? 1/(1+ c_MelaWH*phjj_VAJHU_old/pwh_hadronic_VAJHU * jetPgOverPq[0]*jetPgOverPq[1] ) : -2 ;
-  float D_ZHh = (nCleanedJetsPt30>=2) ? 1/(1+ c_MelaZH*phjj_VAJHU_old/pzh_hadronic_VAJHU * jetPgOverPq[0]*jetPgOverPq[1] ) : -2 ;
+  float D_VBF2j = (nCleanedJetsPt30>=2) ? 1/(1+ phjj_VAJHU_highestPTJets/pvbf_VAJHU_highestPTJets * TMath::Power(jetPgOverPq[0]*jetPgOverPq[1],1/3.) ) : -2 ;
+  float D_VBF1j = (nCleanedJetsPt30>=1) ? 1/(1+ (c_Mela1j*phj_VAJHU)/(pvbf_VAJHU_highestPTJets*pAux_vbf_VAJHU) * TMath::Power(jetPgOverPq[0],1/3.) ) : -2 ;
+  float D_WHh = (nCleanedJetsPt30>=2) ? 1/(1+ c_MelaWH*phjj_VAJHU_highestPTJets/pwh_hadronic_VAJHU * jetPgOverPq[0]*jetPgOverPq[1] ) : -2 ;
+  float D_ZHh = (nCleanedJetsPt30>=2) ? 1/(1+ c_MelaZH*phjj_VAJHU_highestPTJets/pzh_hadronic_VAJHU * jetPgOverPq[0]*jetPgOverPq[1] ) : -2 ;
 
   if( nExtraLep==0 && nCleanedJetsPt30==1 && D_VBF1j>WP_VBF1j ){
 

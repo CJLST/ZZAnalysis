@@ -1,11 +1,7 @@
 #include <assert.h>
-
-#include "TTree.h"
-
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
-
 #include <ZZMatrixElement/MELA/interface/Mela.h>
-#include <ZZMatrixElement/MELA/interface/TVar.hh>
+#include "TTree.h"
 
 enum ReweightingType {
   NoReweighting = 0,
@@ -17,65 +13,28 @@ class Reweighting {
 
 private:
 
-  //when MELA is updated, can remove these and replace
-  //all occurences with mela->selfD???coupl
-  double selfDHvvcoupl[SIZE_HVV][2];
-  double selfDHwwcoupl[SIZE_HVV][2];
-  //double selfDZqqcoupl[SIZE_ZQQ][2];
-  double selfDZvvcoupl[SIZE_ZVV][2];
-  //double selfDGqqcoupl[SIZE_GQQ][2];
-  double selfDGggcoupl[SIZE_GGG][2];
-  double selfDGvvcoupl[SIZE_GVV][2];
-
   double myHvvcoupl[SIZE_HVV][2];
-  double myHwwcoupl[SIZE_HVV][2];
   //double myZqqcoupl[SIZE_ZQQ][2];
   double myZvvcoupl[SIZE_ZVV][2];
   //double myGqqcoupl[SIZE_GQQ][2];
   double myGggcoupl[SIZE_GGG][2];
   double myGvvcoupl[SIZE_GVV][2];
 
-  const int g1index = 0;
-  const int g2index = 1;
-  const int g4index = 3;
-  const int g1prime2index = 11;
+  const int ghz1_index = 0;
+  const int ghz2_index = 1;
+  const int ghz4_index = 3;
+  const int ghz1_prime2_index = 11;
 
-  const double g2mix = 1.65684;
-  const double g4mix = 2.55052;
-  const double g1prime2mix = -12100.42;
+  const double ghz2mix = 1.65684;
+  const double ghz4mix = 2.55052;
+  const double ghz1_prime2mix = -12100.42;
 
-  const int a1index = 0;
-  const int b5index = 4;
+  const int a1_index = 0;
+  const int b5_index = 4;
 
   int spin;
   int myspin;
-  Mela &myMela;
-
-  void setHVVcouplings(double couplings[SIZE_HVV][2]) {
-    for (int i = 0; i < SIZE_HVV; i++)
-      for (int j = 0; j < 2; j++)
-        selfDHvvcoupl[i][j] = couplings[i][j];
-  }
-  void setHWWcouplings(double couplings[SIZE_HVV][2]) {
-    for (int i = 0; i < SIZE_HVV; i++)
-      for (int j = 0; j < 2; j++)
-        selfDHwwcoupl[i][j] = couplings[i][j];
-  }
-  void setZVVcouplings(double couplings[SIZE_ZVV][2]) {
-    for (int i = 0; i < SIZE_ZVV; i++)
-      for (int j = 0; j < 2; j++)
-        selfDZvvcoupl[i][j] = couplings[i][j];
-  }
-  void setGVVcouplings(double couplings[SIZE_GVV][2]) {
-    for (int i = 0; i < SIZE_GVV; i++)
-      for (int j = 0; j < 2; j++)
-        selfDGvvcoupl[i][j] = couplings[i][j];
-  }
-  void setGggcouplings(double couplings[SIZE_GGG][2]) {
-    for (int i = 0; i < SIZE_GGG; i++)
-      for (int j = 0; j < 2; j++)
-        selfDGggcoupl[i][j] = couplings[i][j];
-  }
+  Mela &mela;
 
   ReweightingType reweightingtypefromstring(std::string reweightingtypestring) {
     if (reweightingtypestring == "none") return NoReweighting;
@@ -85,7 +44,7 @@ private:
     return NoReweighting;
   }
 
-  template <unsigned int size> void couplingsfromvectors(double (&couplings)[size][2], vector<double> real, vector<double> imaginary) {
+  template <unsigned int size> void couplingsfromvectors(double (&couplings)[size][2], vector<double> real, vector<double> imaginary) { // Could just ave had a pair -- U. Sarica
     if (real.size() != size || imaginary.size() != size) {
       std::cout << "couplings should have size " << size << " but have size " << real.size() << " " << imaginary.size() << std::endl;
       assert(false);
@@ -97,15 +56,14 @@ private:
   }
 
 public:
+
   int nReweightingSamples;
   ReweightingType reweightingtype;
 
-  Reweighting(Mela &mela, std::string reweightingtypestring,
+  Reweighting(Mela &mela_, std::string reweightingtypestring,
               int inputspin,
               std::vector<double> HVVcouplings_real,
               std::vector<double> HVVcouplings_imag,
-              std::vector<double> HWWcouplings_real,
-              std::vector<double> HWWcouplings_imag,
               std::vector<double> ZVVcouplings_real,
               std::vector<double> ZVVcouplings_imag,
               std::vector<double> Gggcouplings_real,
@@ -113,11 +71,10 @@ public:
               std::vector<double> GVVcouplings_real,
               std::vector<double> GVVcouplings_imag
              ) : myspin(inputspin),
-                 myMela(mela),
+                 mela(mela_),
                  reweightingtype(reweightingtypefromstring(reweightingtypestring))
   {
     couplingsfromvectors(myHvvcoupl, HVVcouplings_real, HVVcouplings_imag);
-    couplingsfromvectors(myHwwcoupl, HWWcouplings_real, HWWcouplings_imag);
     couplingsfromvectors(myZvvcoupl, ZVVcouplings_real, ZVVcouplings_imag);
     couplingsfromvectors(myGggcoupl, Gggcouplings_real, Gggcouplings_imag);
     couplingsfromvectors(myGvvcoupl, GVVcouplings_real, GVVcouplings_imag);
@@ -131,15 +88,10 @@ public:
 
   void setmycouplings() {
     spin = myspin;
-    setHVVcouplings(myHvvcoupl);
-    setHWWcouplings(myHwwcoupl);
-    setZVVcouplings(myZvvcoupl);
-    setGggcouplings(myGggcoupl);
-    setGVVcouplings(myGvvcoupl);
     switch (myspin) {
-      case 0: myMela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG); break;
-      case 1: myMela.setProcess(TVar::SelfDefine_spin1, TVar::JHUGen, TVar::ZZGG); break;
-      case 2: myMela.setProcess(TVar::SelfDefine_spin2, TVar::JHUGen, TVar::ZZGG); break;
+      case 0: mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG); break;
+      case 1: mela.setProcess(TVar::SelfDefine_spin1, TVar::JHUGen, TVar::ZZGG); break;
+      case 2: mela.setProcess(TVar::SelfDefine_spin2, TVar::JHUGen, TVar::ZZGG); break;
       default: assert(false);
     }
   }
@@ -147,48 +99,38 @@ public:
   void setcouplings(int reweightinghypothesis) {
     if (reweightingtype == NoReweighting) return;
     if (reweightingtype == HVV_spin0) {
-      myMela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
+      mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
       spin = 0;
-      double couplings[SIZE_HVV][2] = {{0}};
       switch (reweightinghypothesis) {
-        case 0: couplings[g1index][0] = 1; break;                                            //0+m
-        case 1: couplings[g2index][0] = 1; break;                                            //0+h
-        case 2: couplings[g4index][0] = 1; break;                                            //0-
-        case 3: couplings[g1prime2index][0] = 1; break;                                      //L1
-        case 4: couplings[g1index][0] = 1; couplings[g2index][0] = g2mix; break;             //fa2=0.5
-        case 5: couplings[g1index][0] = 1; couplings[g4index][0] = g4mix; break;             //fa3=0.5
-        case 6: couplings[g1index][0] = 1; couplings[g1prime2index][0] = g1prime2mix; break; //fL1=0.5
+        case 0: mela.selfDHzzcoupl[0][ghz1_index][0] = 1; break;                                            //0+m
+        case 1: mela.selfDHzzcoupl[0][ghz2_index][0] = 1; break;                                            //0+h
+        case 2: mela.selfDHzzcoupl[0][ghz4_index][0] = 1; break;                                            //0-
+        case 3: mela.selfDHzzcoupl[0][ghz1_prime2_index][0] = 1; break;                                      //L1
+        case 4: mela.selfDHzzcoupl[0][ghz1_index][0] = 1; mela.selfDHzzcoupl[0][ghz2_index][0] = ghz2mix; break;             //fa2=0.5
+        case 5: mela.selfDHzzcoupl[0][ghz1_index][0] = 1; mela.selfDHzzcoupl[0][ghz4_index][0] = ghz4mix; break;             //fa3=0.5
+        case 6: mela.selfDHzzcoupl[0][ghz1_index][0] = 1; mela.selfDHzzcoupl[0][ghz1_prime2_index][0] = ghz1_prime2mix; break; //fL1=0.5
         default: assert(false);
       }
-      setHVVcouplings(couplings);
       return;
     }
     else if (reweightingtype == HVV_spin012) {
-      double couplingsHVV[SIZE_HVV][2] = {{0}};
-      double couplingsZVV[SIZE_ZVV][2] = {{0}};
-      double couplingsGgg[SIZE_GGG][2] = {{0}};
-      double couplingsGVV[SIZE_GVV][2] = {{0}};
       switch (reweightinghypothesis) {
-        case 0: couplingsHVV[g1index][0] = 1; spin = 0; break;                                               //0+m
-        case 1: couplingsHVV[g2index][0] = 1; spin = 0; break;                                               //0+h
-        case 2: couplingsHVV[g4index][0] = 1; spin = 0; break;                                               //0-
-        case 3: couplingsHVV[g1prime2index][0] = 1; spin = 0; break;                                         //L1
-        case 4: couplingsHVV[g1index][0] = 1; couplingsHVV[g2index][0] = g2mix; spin = 0; break;             //fa2=0.5
-        case 5: couplingsHVV[g1index][0] = 1; couplingsHVV[g4index][0] = g4mix; spin = 0; break;             //fa3=0.5
-        case 6: couplingsHVV[g1index][0] = 1; couplingsHVV[g1prime2index][0] = g1prime2mix; spin = 0; break; //fL1=0.5
-        case 7: couplingsGgg[a1index][0] = 1; couplingsGVV[b5index][0] = 1; spin = 2; break;                 //2b+
+      case 0: mela.selfDHzzcoupl[0][ghz1_index][0] = 1; spin = 0; break;                                               //0+m
+      case 1: mela.selfDHzzcoupl[0][ghz2_index][0] = 1; spin = 0; break;                                               //0+h
+      case 2: mela.selfDHzzcoupl[0][ghz4_index][0] = 1; spin = 0; break;                                               //0-
+      case 3: mela.selfDHzzcoupl[0][ghz1_prime2_index][0] = 1; spin = 0; break;                                         //L1
+      case 4: mela.selfDHzzcoupl[0][ghz1_index][0] = 1; mela.selfDHzzcoupl[0][ghz2_index][0] = ghz2mix; spin = 0; break;             //fa2=0.5
+      case 5: mela.selfDHzzcoupl[0][ghz1_index][0] = 1; mela.selfDHzzcoupl[0][ghz4_index][0] = ghz4mix; spin = 0; break;             //fa3=0.5
+      case 6: mela.selfDHzzcoupl[ghz1_index][0] = 1; mela.selfDHzzcoupl[0][ghz1_prime2_index][0] = ghz1_prime2mix; spin = 0; break; //fL1=0.5
+      case 7: mela.selfDGggcoupl[a1_index][0] = 1; mela.selfDGvvcoup[b5_index][0] = 1; spin = 2; break;                 //2b+
         default: assert(false);
       }
       switch (spin) {
-        case 0: myMela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG); break;
-        case 1: myMela.setProcess(TVar::SelfDefine_spin1, TVar::JHUGen, TVar::ZZGG); break;
-        case 2: myMela.setProcess(TVar::SelfDefine_spin2, TVar::JHUGen, TVar::ZZGG); break;
+        case 0: mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG); break;
+        case 1: mela.setProcess(TVar::SelfDefine_spin1, TVar::JHUGen, TVar::ZZGG); break;
+        case 2: mela.setProcess(TVar::SelfDefine_spin2, TVar::JHUGen, TVar::ZZGG); break;
         default: cout << spin << endl; assert(false);
       }
-      setHVVcouplings(couplingsHVV);
-      setZVVcouplings(couplingsZVV);
-      setGggcouplings(couplingsGgg);
-      setGVVcouplings(couplingsGVV);
       return;
     }
     assert(false);
@@ -200,21 +142,21 @@ public:
         return true;
       case HVV_spin0:
       case HVV_spin012:
-        return nleptons == 4 && genFinalState != BUGGY;
+        return genFinalState != BUGGY;
       default:
         return false;
     }
   }
 
   TTree *fillcouplingstree(TTree *t) {
-    vector<double> g1, g2, g4, g1prime2, a1, b5;
+    vector<double> ghz1, ghz2, ghz4, ghz1_prime2, a1, b5;
     vector<int> spin_v;
     t->Branch("spin", &spin_v);
     if (reweightingtype == HVV_spin0 || reweightingtype == HVV_spin012) {
-      t->Branch("g1", &g1);
-      t->Branch("g2", &g2);
-      t->Branch("g4", &g4);
-      t->Branch("g1prime2", &g1prime2);
+      t->Branch("ghz1", &ghz1);
+      t->Branch("ghz2", &ghz2);
+      t->Branch("ghz4", &ghz4);
+      t->Branch("ghz1_prime2", &ghz1_prime2);
     }
     if (reweightingtype == HVV_spin012) {
       t->Branch("a1", &a1);
@@ -225,21 +167,21 @@ public:
       setcouplings(i);
       spin_v.push_back(spin);
       if (spin == 0) {
-        g1.push_back(selfDHvvcoupl[g1index][0]);
-        g2.push_back(selfDHvvcoupl[g2index][0]);
-        g4.push_back(selfDHvvcoupl[g4index][0]);
-        g1prime2.push_back(selfDHvvcoupl[g1prime2index][0]);
+        ghz1.push_back(selfDHvvcoupl[ghz1_index][0]);
+        ghz2.push_back(selfDHvvcoupl[ghz2_index][0]);
+        ghz4.push_back(selfDHvvcoupl[ghz4_index][0]);
+        ghz1_prime2.push_back(selfDHvvcoupl[ghz1_prime2_index][0]);
       }
       else {
-        g1.push_back(0);
-        g2.push_back(0);
-        g4.push_back(0);
-        g1prime2.push_back(0);
+        ghz1.push_back(0);
+        ghz2.push_back(0);
+        ghz4.push_back(0);
+        ghz1_prime2.push_back(0);
       }
 
       if (spin == 2) {
-        a1.push_back(selfDGggcoupl[a1index][0]);
-        b5.push_back(selfDGvvcoupl[b5index][0]);
+        a1.push_back(selfDGggcoupl[a1_index][0]);
+        b5.push_back(selfDGvvcoupl[b5_index][0]);
       }
       else {
         a1.push_back(0);
@@ -251,22 +193,42 @@ public:
     return t;
   }
 
-  float computeP(float mZZ, float mZ1, float mZ2,
-                 float costhetastar, float costheta1, float costheta2, float phi, float phi1,
-                 int flavor
-                ) {
+  float computeP(float mzz, float m1, float m2,
+                 float hs, float h1, float h2, float phi, float phi1,
+                 int flavor // Need to replace the flavor and actuially this entire stuff, extremely inefficient
+                ){
     float result;
-    switch (spin) {
-      case 0:
-        myMela.computeP(mZZ, mZ1, mZ2, costhetastar, costheta1, costheta2, phi, phi1, flavor, selfDHvvcoupl, result);
-        break;
-      case 1:
-        myMela.computeP_selfDspin1(mZZ, mZ1, mZ2, costhetastar, costheta1, costheta2, phi, phi1, flavor, selfDZvvcoupl, result);
-        break;
-      case 2:
-        myMela.computeP_selfDspin2(mZZ, mZ1, mZ2, costhetastar, costheta1, costheta2, phi, phi1, flavor, selfDGggcoupl, selfDGvvcoupl, result);
-        break;
+
+    int idOrdered[4];
+    if (flavor == 2){
+      idOrdered[0]=13;
+      idOrdered[1]=-13;
+      idOrdered[2]=11;
+      idOrdered[3]=-11;
     }
+    else if (flavor == 1){
+      idOrdered[0]=11;
+      idOrdered[1]=-11;
+      idOrdered[2]=11;
+      idOrdered[3]=-11;
+    }
+    else if (flavor == 0){
+      idOrdered[0]=13;
+      idOrdered[1]=-13;
+      idOrdered[2]=13;
+      idOrdered[3]=-13;
+    }
+    else return 0;
+    TLorentzVector pOrdered[4];
+    std::vector<TLorentzVector> daus = mela.calculate4Momentum(mzz, m1, m2, acos(hs), acos(h1), acos(h2), phi1, phi);
+    for (int ip=0; ip<min(4, (int)daus.size()); ip++) pOrdered[ip]=daus.at(ip);
+    SimpleParticleCollection_t daughters_ZZ;
+    for (unsigned int idau=0; idau<4; idau++) daughters_ZZ.push_back(SimpleParticle_t(idOrdered[idau], pOrdered[idau]));
+
+    mela.setInputEvent(&daughters_ZZ, (SimpleParticleCollection_t*)0, (SimpleParticleCollection_t*)0, false);
+    mela.computeP(result, false);
+    mela.resetInputEvent(); // Poor efficiency, result of passing vectors for each ME
+
     return result;
   }
 };

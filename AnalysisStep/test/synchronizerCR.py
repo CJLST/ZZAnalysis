@@ -69,14 +69,14 @@ def loop():
     tree.SetBranchStatus("p0hplus_VAJHU",1)
     tree.SetBranchStatus("p1plus_VAJHU",1)
     tree.SetBranchStatus("p1_VAJHU",1)
-    tree.SetBranchStatus("p2_VAJHU",1)
-    tree.SetBranchStatus("p2qqb_VAJHU",1)            
+    tree.SetBranchStatus("p2plus_gg_VAJHU",1)
+    tree.SetBranchStatus("p2plus_qqb_VAJHU",1)            
     tree.SetBranchStatus("bkg_VAMCFM",1)
     tree.SetBranchStatus("p0plus_m4l",1)
     tree.SetBranchStatus("bkg_m4l",1)
     tree.SetBranchStatus("Dgg10_VAMCFM",1)
-    tree.SetBranchStatus("pvbf_VAJHU_old",1)
-    tree.SetBranchStatus("phjj_VAJHU_old",1)
+    tree.SetBranchStatus("pvbf_VAJHU_highestPTJets",1)
+    tree.SetBranchStatus("phjj_VAJHU_highestPTJets",1)
     tree.SetBranchStatus("phj_VAJHU",1)
     tree.SetBranchStatus("pAux_vbf_VAJHU",1)
     tree.SetBranchStatus("pwh_hadronic_VAJHU",1)
@@ -127,14 +127,14 @@ def loop():
                     p0hplus_VAJHU = tree.p0hplus_VAJHU
                     p1plus_VAJHU  = tree.p1plus_VAJHU 
                     p1_VAJHU      = tree.p1_VAJHU     
-                    p2_VAJHU      = tree.p2_VAJHU     
-                    p2qqb_VAJHU   = tree.p2qqb_VAJHU              
+                    p2plus_gg_VAJHU      = tree.p2plus_gg_VAJHU     
+                    p2plus_qqb_VAJHU   = tree.p2plus_qqb_VAJHU              
                     bkg_VAMCFM    = tree.bkg_VAMCFM
                     p0plus_m4l    = tree.p0plus_m4l
                     bkg_m4l       = tree.bkg_m4l
                     Dgg10_VAMCFM  = tree.Dgg10_VAMCFM
-                    pvbf_VAJHU    = tree.pvbf_VAJHU_old
-                    phjj_VAJHU    = tree.phjj_VAJHU_old
+                    pvbf_VAJHU    = tree.pvbf_VAJHU_highestPTJets
+                    phjj_VAJHU    = tree.phjj_VAJHU_highestPTJets
                     phj_VAJHU     = tree.phj_VAJHU
                     pAux_vbf_VAJHU     = tree.pAux_vbf_VAJHU
                     pwh_hadronic_VAJHU = tree.pwh_hadronic_VAJHU
@@ -165,7 +165,7 @@ def loop():
                             jets30phi.append(jetphi[i])
                             jets30mass.append(jetmass[i])
                             
-                    theKDs = KDs(p0plus_VAJHU,p0minus_VAJHU,p0hplus_VAJHU,p1plus_VAJHU,p1_VAJHU,p2_VAJHU,p2qqb_VAJHU,bkg_VAMCFM,p0plus_m4l,bkg_m4l,Dgg10_VAMCFM,pvbf_VAJHU,phjj_VAJHU,phj_VAJHU,pAux_vbf_VAJHU,pwh_hadronic_VAJHU,pzh_hadronic_VAJHU,njets30,jetQGLikelihood)
+                    theKDs = KDs(p0plus_VAJHU,p0minus_VAJHU,p0hplus_VAJHU,p1plus_VAJHU,p1_VAJHU,p2plus_gg_VAJHU,p2plus_qqb_VAJHU,bkg_VAMCFM,p0plus_m4l,bkg_m4l,Dgg10_VAMCFM,pvbf_VAJHU,phjj_VAJHU,phj_VAJHU,pAux_vbf_VAJHU,pwh_hadronic_VAJHU,pzh_hadronic_VAJHU,njets30,jetQGLikelihood)
                     theCand = Candidate(theEvent,mass4l,mZ1,mZ2,massErrRaw,massErrCorr,m4lRefit,m4lRefitErr,pt4l,nExtraLep,nExtraZ,jets30pt,jets30eta,jets30phi,jets30mass,njets30,njets30Btag,mjj,detajj,theKDs,weight,jetQGLikelihood,phjj_VAJHU,phj_VAJHU,pvbf_VAJHU,pAux_vbf_VAJHU,pwh_hadronic_VAJHU,pzh_hadronic_VAJHU)
                     crCands[aCR].append(theCand)
 
