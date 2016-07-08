@@ -47,7 +47,7 @@
 #include <ZZAnalysis/AnalysisStep/interface/MCHistoryTools.h>
 #include <ZZAnalysis/AnalysisStep/interface/PUReweight.h>
 #include "ZZAnalysis/AnalysisStep/interface/EwkCorrections.h"
-#include "ZZAnalysis/AnalysisStep/src/reweighting.cc"
+#include "ZZAnalysis/AnalysisStep/interface/reweighting.h"
 #include "ZZAnalysis/AnalysisStep/src/kFactors.C"
 #include <ZZAnalysis/AnalysisStep/interface/bitops.h>
 #include <ZZAnalysis/AnalysisStep/interface/Fisher.h>
