@@ -10,6 +10,5 @@
 
 #pragma link C++ class Reweighting;
 
-
-
 #endif
+

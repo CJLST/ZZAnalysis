@@ -69,6 +69,7 @@ public:
     std::vector<double> GVVcouplings_real,
     std::vector<double> GVVcouplings_imag
     );
+  virtual ~Reweighting(){}
 
   void setmycouplings();
 
@@ -76,7 +77,7 @@ public:
 
   bool canreweight(unsigned int nleptons, short genFinalState);
 
-  TTree* fillcouplingstree(TTree* t);
+  void fillcouplingstree(TTree* t);
 
   float computeP(
     float mzz, float m1, float m2,

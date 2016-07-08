@@ -34,7 +34,7 @@ git clone -n https://github.com/cms-analysis/EgammaAnalysis-ElectronTools EGamma
 
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
-(cd ZZMatrixElement ; git checkout -b from-v200 v200 ; . setup.sh -j 12)
+(cd ZZMatrixElement ; git checkout -b from-v200 v2.0.0 ; . setup.sh -j 12)
 
 #kinematic refitting
 git clone https://github.com/mhl0116/KinZfitter.git

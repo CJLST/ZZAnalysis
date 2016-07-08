@@ -60,9 +60,10 @@ void Reweighting::setmycouplings() {
   default: assert(false);
   }
 
-  for (unsigned int ic=0; ic<SIZE_HVV; ic++){ for (int im=0; im<2; im++) mela->selfDHzzcoupl[0][ic][im] = myHvvcoupl[ic][im]; }
-  for (unsigned int ic=0; ic<SIZE_GGG; ic++){ for (int im=0; im<2; im++) mela->selfDGggcoupl[ic][im] = myGggcoupl[ic][im]; }
-  for (unsigned int ic=0; ic<SIZE_GVV; ic++){ for (int im=0; im<2; im++) mela->selfDGvvcoupl[ic][im] = myGvvcoupl[ic][im]; }
+  mela->selfDHggcoupl[0][0] = 1;
+  for (unsigned int ic=0; ic<SIZE_HVV; ic++){ for (unsigned int im=0; im<2; im++) mela->selfDHzzcoupl[0][ic][im] = myHvvcoupl[ic][im]; }
+  for (unsigned int ic=0; ic<SIZE_GGG; ic++){ for (unsigned int im=0; im<2; im++) mela->selfDGggcoupl[ic][im] = myGggcoupl[ic][im]; }
+  for (unsigned int ic=0; ic<SIZE_GVV; ic++){ for (unsigned int im=0; im<2; im++) mela->selfDGvvcoupl[ic][im] = myGvvcoupl[ic][im]; }
 }
 
 void Reweighting::setcouplings(int reweightinghypothesis) {
@@ -70,6 +71,7 @@ void Reweighting::setcouplings(int reweightinghypothesis) {
   if (reweightingtype == HVV_spin0) {
     mela->setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
     spin = 0;
+    mela->selfDHggcoupl[0][0] = 1;
     switch (reweightinghypothesis) {
     case 0: mela->selfDHzzcoupl[0][ghz1_index][0] = 1; break;                                            //0+m
     case 1: mela->selfDHzzcoupl[0][ghz2_index][0] = 1; break;                                            //0+h
@@ -83,6 +85,7 @@ void Reweighting::setcouplings(int reweightinghypothesis) {
     return;
   }
   else if (reweightingtype == HVV_spin012) {
+    mela->selfDHggcoupl[0][0] = 1;
     switch (reweightinghypothesis) {
     case 0: mela->selfDHzzcoupl[0][ghz1_index][0] = 1; spin = 0; break;                                               //0+m
     case 1: mela->selfDHzzcoupl[0][ghz2_index][0] = 1; spin = 0; break;                                               //0+h
@@ -117,7 +120,7 @@ bool Reweighting::canreweight(unsigned int nleptons, short genFinalState) {
   }
 }
 
-TTree* Reweighting::fillcouplingstree(TTree* t) {
+void Reweighting::fillcouplingstree(TTree* t) {
   vector<double> ghz1, ghz2, ghz4, ghz1_prime2, a1, b5;
   vector<int> spin_v;
   t->Branch("spin", &spin_v);
@@ -157,12 +160,11 @@ TTree* Reweighting::fillcouplingstree(TTree* t) {
       b5.push_back(0);
     }
   }
-
   t->Fill();
-  return t;
 }
 
-float Reweighting::computeP(float mzz, float m1, float m2,
+float Reweighting::computeP(
+  float mzz, float m1, float m2,
   float hs, float h1, float h2, float phi, float phi1,
   int flavor // Need to replace the flavor and actuially this entire stuff, extremely inefficient
   ){
@@ -191,10 +193,10 @@ float Reweighting::computeP(float mzz, float m1, float m2,
   TLorentzVector pOrdered[4];
   std::vector<TLorentzVector> daus = mela->calculate4Momentum(mzz, m1, m2, acos(hs), acos(h1), acos(h2), phi1, phi);
   for (int ip=0; ip<min(4, (int)daus.size()); ip++) pOrdered[ip]=daus.at(ip);
-  SimpleParticleCollection_t daughters_ZZ;
-  for (unsigned int idau=0; idau<4; idau++) daughters_ZZ.push_back(SimpleParticle_t(idOrdered[idau], pOrdered[idau]));
+  SimpleParticleCollection_t daughters;
+  for (unsigned int idau=0; idau<4; idau++) daughters.push_back(SimpleParticle_t(idOrdered[idau], pOrdered[idau]));
 
-  mela->setInputEvent(&daughters_ZZ, (SimpleParticleCollection_t*)0, (SimpleParticleCollection_t*)0, false);
+  mela->setInputEvent(&daughters, (SimpleParticleCollection_t*)0, (SimpleParticleCollection_t*)0, false);
   mela->computeP(result, false);
   mela->resetInputEvent(); // Poor efficiency, result of passing vectors for each ME
 

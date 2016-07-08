@@ -6,6 +6,7 @@
 <use name="RecoParticleFlow/PFClusterTools" />
 <use name="PhysicsTools/KinFitter"/>
 <use name="TrackingTools/Records"/>
+<use name="ZZMatrixElement/MELA"/>
 <use name="RecoVertex/KinematicFit"/>
 <use name="root"/>
 <use name="roofit"/>
