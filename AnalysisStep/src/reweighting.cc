@@ -58,7 +58,7 @@ public:
   int nReweightingSamples;
   ReweightingType reweightingtype;
 
-  Reweighting(Mela &mela_, std::string reweightingtypestring,
+  Reweighting(Mela* mela_, std::string reweightingtypestring,
               int inputspin,
               std::vector<double> HVVcouplings_real,
               std::vector<double> HVVcouplings_imag,
