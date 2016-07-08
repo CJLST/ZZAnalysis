@@ -84,6 +84,7 @@ private:
   reco::CompositeCandidate::role_collection rolesZ2Z1;
   bool isMC;
   bool doKinFit;
+  // float muon_iso_cut, electron_iso_cut;
   TH2F* corrSigmaMu;
   TH2F* corrSigmaEle;
   Comparators::ComparatorTypes bestCandType;
@@ -149,7 +150,9 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
 
   //-- kinematic refitter
   kinZfitter = new KinZfitter(!isMC);
-
+  // No longer used, but keept for future needs
+//   muon_iso_cut = iConfig.getParameter<double>("muon_iso_cut");
+//   electron_iso_cut = iConfig.getParameter<double>("electron_iso_cut");
 }
 
 ZZCandidateFiller::~ZZCandidateFiller(){

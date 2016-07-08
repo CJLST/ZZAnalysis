@@ -57,6 +57,9 @@ declareDefault("KEEPLOOSECOMB", False, globals())
 # Activate the Z kinematic refit (very slow)
 declareDefault("KINREFIT", True, globals())
 
+# Activate paths for loose electron categories
+declareDefault("ADDLOOSEELE", False, globals())
+
 
 if SELSETUP=="Legacy" and not BESTCANDCOMPARATOR=="byBestZ1bestZ2":
     print "WARNING: In ZZ4lAnalysis.py the SELSETUP=\"Legacy\" flag is meant to reproduce the Legacy results, ignoring the setting of the BESTCANDCOMPARATOR: ",BESTCANDCOMPARATOR
@@ -603,16 +606,18 @@ process.boostedFsrPhotons = PhysicsTools.PatAlgos.producersLayer1.pfParticleProd
 process.appendPhotons = cms.EDProducer("LeptonPhotonMatcher",
     muonSrc = cms.InputTag("softMuons"),
     electronSrc = cms.InputTag("cleanSoftElectrons"),
-#    looseElectronSrc = cms.InputTag("cleanSoftLooseElectrons"),
     photonSrc = cms.InputTag("boostedFsrPhotons"),
-#    tleSrc = cms.InputTag("softPhotons"),
     sampleType = cms.int32(SAMPLE_TYPE),
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
     photonSel = cms.string(FSRMODE),  # "skip", "passThrough", "Legacy", "RunII"
     muon_iso_cut = cms.double(MUISOCUT),
     electron_iso_cut = cms.double(ELEISOCUT),
+    debug = cms.untracked.bool(False),
     )
 
+if ADDLOOSEELE:
+    process.appendPhotons.looseElectronSrc = cms.InputTag("cleanSoftLooseElectrons")
+    process.appendPhotons.tleSrc = cms.InputTag("softPhotons")
 
 
 # All leptons, any F/C.
@@ -655,6 +660,16 @@ BESTZ_AMONG = ( Z1PRESEL + "&& userFloat('d0.passCombRelIsoPFFSRCorr') && userFl
 
 TWOGOODISOLEPTONS = ( TWOGOODLEPTONS + "&& userFloat('d0.passCombRelIsoPFFSRCorr') && userFloat('d1.passCombRelIsoPFFSRCorr')" )
 
+# Cut to filter out unneeded ll combinations as upstream as possible
+if KEEPLOOSECOMB:
+    KEEPLOOSECOMB_CUT = 'mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId())' # Propagate also combinations of loose leptons (for debugging); just require same-flavour
+else:
+    if FSRMODE == "RunII" : # Just keep combinations of tight leptons (passing ID, SIP and ISO)
+        KEEPLOOSECOMB_CUT = "mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId()) && daughter(0).masterClone.userFloat('isGood') && daughter(1).masterClone.userFloat('isGood') && daughter(0).masterClone.userFloat('passCombRelIsoPFFSRCorr') &&  daughter(1).masterClone.userFloat('passCombRelIsoPFFSRCorr')"
+    else :
+        print "KEEPLOOSECOMB == False && FSRMODE =! RunII", FSRMODE, "is no longer supported"
+        sys.exit()
+
 ### ----------------------------------------------------------------------
 ### Dileptons (Z->ee, Z->mm)
 ### ----------------------------------------------------------------------
@@ -662,7 +677,7 @@ TWOGOODISOLEPTONS = ( TWOGOODLEPTONS + "&& userFloat('d0.passCombRelIsoPFFSRCorr
 # l+l- (SFOS, both e and mu)
 process.bareZCand = cms.EDProducer("PATCandViewShallowCloneCombiner",
     decay = cms.string('softLeptons@+ softLeptons@-'),
-    cut = cms.string('0'), # see below
+    cut = cms.string(KEEPLOOSECOMB_CUT), # see below
     checkCharge = cms.bool(True)
 )
 
@@ -861,6 +876,7 @@ if FSRMODE == "Legacy":
     print "\nERROR: FSRMODE=Legacy is no longer supported. Aborting...\n"
     exit(1)
 
+    
 process.bareZZCand= cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string('ZCand ZCand'),
     cut = cms.string(LLLLPRESEL),
@@ -1220,4 +1236,7 @@ SkimPaths = cms.vstring('PVfilter') #Do not apply skim
 # FIXME total kin filter?
 
 
-
+if (ADDLOOSEELE) :
+    import os
+    execfile(os.environ['CMSSW_BASE'] + "/src/ZZAnalysis/AnalysisStep/test/MasterPy/LooseEle.py")
+    execfile(os.environ['CMSSW_BASE'] + "/src/ZZAnalysis/AnalysisStep/test/MasterPy/TracklessEle.py")

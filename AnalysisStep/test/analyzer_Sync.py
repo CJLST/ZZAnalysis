@@ -6,11 +6,10 @@
 #BUNCH_SPACING = 25
 #FSRMODE = "RunII" # Legacy or Run II
 #KINREFIT =True
+#PROCESS_CR = True # Uncomment to run CR paths and trees
 
 PD = ""
 MCFILTER = ""
-
-CRSync = False #add CR paths
 
 #KEEPLOOSECOMB = True # Do not skip loose lepton ZZ combinations (for debugging
 
@@ -39,6 +38,9 @@ process.source.fileNames = cms.untracked.vstring(
     ## Spring16 MiniAODv1 files for synchronization
     '/store/mc/RunIISpring16MiniAODv1/VBF_HToZZTo4L_M190_13TeV_powheg2_JHUgenV6_pythia8/MINIAODSIM/PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_v3-v1/00000/28ADE6D5-021F-E611-B1A4-00145E5521B9.root',
     '/store/mc/RunIISpring16MiniAODv1/WminusH_HToZZTo4L_M150_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/MINIAODSIM/PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_v3-v1/00000/C6DF34D4-CF20-E611-A8EE-782BCB27B958.root'
+
+    ## High-mass sync file
+#    '/store/mc/RunIISpring16MiniAODv2/Graviton2PBToZZTo4L_width0p1_M-2000_13TeV-JHUgenV6-pythia8/MINIAODSIM/PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/00000/EC1FA990-8A24-E611-9E70-0025905A48F2.root'
 
     )
 
@@ -83,14 +85,8 @@ process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
 # Keep all events in the tree, even if no candidate is selected
 #process.ZZTree.skipEmptyEvents = False
 
-
-# Also process CRs
-if (CRSync) :
-    process.CRPath = cms.Path(process.CR)
-    process.CRtrees = cms.EndPath(process.CRZLLTree + process.CRZLTree)
-
 # replace the paths in analyzer.py
-process.trees = cms.EndPath(process.ZZTree)
+#process.trees = cms.EndPath(process.ZZTree)
 
 #Dump reconstructed variables
 #process.appendPhotons.debug = cms.untracked.bool(True)
@@ -99,3 +95,5 @@ process.trees = cms.EndPath(process.ZZTree)
 
 #Print MC history
 #process.mch = cms.EndPath(process.printTree)
+
+
