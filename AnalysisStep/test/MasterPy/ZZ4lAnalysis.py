@@ -660,6 +660,16 @@ BESTZ_AMONG = ( Z1PRESEL + "&& userFloat('d0.passCombRelIsoPFFSRCorr') && userFl
 
 TWOGOODISOLEPTONS = ( TWOGOODLEPTONS + "&& userFloat('d0.passCombRelIsoPFFSRCorr') && userFloat('d1.passCombRelIsoPFFSRCorr')" )
 
+# Cut to filter out unneeded ll combinations as upstream as possible
+if KEEPLOOSECOMB:
+    KEEPLOOSECOMB_CUT = 'mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId())' # Propagate also combinations of loose leptons (for debugging); just require same-flavour
+else:
+    if FSRMODE == "RunII" : # Just keep combinations of tight leptons (passing ID, SIP and ISO)
+        KEEPLOOSECOMB_CUT = "mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId()) && daughter(0).masterClone.userFloat('isGood') && daughter(1).masterClone.userFloat('isGood') && daughter(0).masterClone.userFloat('passCombRelIsoPFFSRCorr') &&  daughter(1).masterClone.userFloat('passCombRelIsoPFFSRCorr')"
+    else :
+        print "KEEPLOOSECOMB == False && FSRMODE =! RunII", FSRMODE, "is no longer supported"
+        sys.exit()
+
 ### ----------------------------------------------------------------------
 ### Dileptons (Z->ee, Z->mm)
 ### ----------------------------------------------------------------------
@@ -667,7 +677,7 @@ TWOGOODISOLEPTONS = ( TWOGOODLEPTONS + "&& userFloat('d0.passCombRelIsoPFFSRCorr
 # l+l- (SFOS, both e and mu)
 process.bareZCand = cms.EDProducer("PATCandViewShallowCloneCombiner",
     decay = cms.string('softLeptons@+ softLeptons@-'),
-    cut = cms.string('0'), # see below
+    cut = cms.string(KEEPLOOSECOMB_CUT), # see below
     checkCharge = cms.bool(True)
 )
 
@@ -1216,4 +1226,7 @@ SkimPaths = cms.vstring('PVfilter') #Do not apply skim
 # FIXME total kin filter?
 
 
-
+if (ADDLOOSEELE) :
+    import os
+    execfile(os.environ['CMSSW_BASE'] + "/src/ZZAnalysis/AnalysisStep/test/MasterPy/LooseEle.py")
+    execfile(os.environ['CMSSW_BASE'] + "/src/ZZAnalysis/AnalysisStep/test/MasterPy/TracklessEle.py")

@@ -18,8 +18,9 @@ def parseOptions():
     parser.add_option('-n', '--noOutput', dest='noOutput', action='store_true', default=False, help='do not write sync file in output')
     parser.add_option('-o', '--output', dest='outFile', type='string', default="eventlist.txt",    help='output sync file')
     parser.add_option('-f', '--finalState', dest='finalState', type='string', default="all",    help='final states: all, 4e, 4mu, 2e2mu')
-    parser.add_option('-l', '--long', dest='longOutput', action='store_true', default=False,    help='long output')
+    parser.add_option('-l', '--long', dest='longOutput', action='store_true', default=True,    help='long output')
     parser.add_option('-b', '--blind', dest='blind', action='store_true', default=False,    help='apply blinding')
+    parser.add_option('-s', '--selection', dest='selection', type='string', default="REG",    help='select REG/TLE/RSE trees')
 
 
     # store options and arguments as global variables
@@ -38,7 +39,18 @@ def loop():
     inFileName = opt.inFile
     outFileName = opt.outFile
     finalState = opt.finalState
-        
+    selection = opt.selection
+
+    is_loose_ele = False
+    if selection == 'REG' :
+        tree_name = "ZZTree/candTree"     
+    elif selection == 'TLE' :
+        tree_name = "ZZTreetle/candTree"
+        is_loose_ele = True
+    elif selection == 'RSE' :
+        tree_name = "ZZTreelooseEle/candTree"
+        is_loose_ele = True
+
     print "Processing file: ",inFileName,"..."
 
     cands = []
@@ -48,14 +60,17 @@ def loop():
     hfile = ROOT.TFile(inFileName)
     hCounters = hfile.Get("ZZTree/Counters")
 
-    for aChan in ["4mu","4e","2e2mu"]:
+    list_final_states = ["4mu","4e","2e2mu"] if not is_loose_ele else ["2m1e1Loose", "3e1Loose"]
+
+
+    for aChan in list_final_states :
 
         chanCounter[aChan] = 0
 
         if finalState!="all" and aChan!=finalState: continue
         
 #        tree = ROOT.TChain("ZZ"+aChan+"Tree/candTree")
-        tree = ROOT.TChain("ZZTree/candTree")
+        tree = ROOT.TChain(tree_name)
         tree.Add(inFileName)
         tree.SetBranchStatus("*",0)
 
@@ -106,6 +121,8 @@ def loop():
         tree.SetBranchStatus("JetQGLikelihood",1)
         tree.SetBranchStatus("DiJetMass",1)
         tree.SetBranchStatus("DiJetDEta",1)
+        tree.SetBranchStatus("LepLepId",1)
+        tree.SetBranchStatus("LepPt",1)
 
         iEntry=0
         while tree.GetEntry(iEntry):
@@ -118,12 +135,33 @@ def loop():
             event       = tree.EventNumber
 
             theEvent = Event(run,lumi,event)
+            pass_selection = False
+            
+            if selection == 'REG' :
+                if ZZsel>=90 : pass_selection = True
+   
+            if selection == 'RSE' :
+                if ZZsel>=120 : pass_selection = True
+            if selection == 'TLE' :
+                TLE_index = -1
+#                print tree.LepLepId[0]
+                for i, ID in enumerate(tree.LepLepId) :
+                    if abs(ID) == 22 :
+                        TLE_index = i
+                if TLE_index < 0 : 
+                    print 'Did not find TLE'
+                    continue
+                if ZZsel>=120 and tree.TLE_dR_Z < 1.6 and tree.LepPt[TLE_index] >= 30. : pass_selection = True
+                    
+            if pass_selection :
 
-            if ZZsel>=90 :
-
-                ZZflav        = tree.Z1Flav*tree.Z2Flav
-                if (aChan=="4e" and ZZflav!=14641) or (aChan=="4mu" and ZZflav!=28561) or (aChan=="2e2mu" and ZZflav!=20449) : continue
-
+                if not is_loose_ele :
+                    ZZflav        = tree.Z1Flav*tree.Z2Flav
+                    if (aChan=="4e" and ZZflav != 14641) or (aChan=="4mu" and ZZflav!=28561) or (aChan=="2e2mu" and ZZflav!=20449) : continue
+                else :
+#                    print 'Event is ', abs(tree.Z1Flav*tree.Z2Flav)
+                    ZZflav = abs(tree.Z1Flav*tree.Z2Flav)
+                    if not ((aChan=="2m1e1Loose" and (ZZflav==169*242 or ZZflav==169*121)) or (aChan=="3e1Loose" and (ZZflav==121*242 or ZZflav==121*121))) : continue
                 mass4l        = tree.ZZMass
                 if (opt.blind) :
                 ## blind Higgs peak
@@ -222,10 +260,13 @@ def loop():
 
         print "## Total/4e/4mu/2e2mu/2l2tau : ", int(hCounters.GetBinContent(1)),  "/",  int(hCounters.GetBinContent(3)),  "/",  int(hCounters.GetBinContent(2)),  "/",  int(hCounters.GetBinContent(4)), "/", int (hCounters.GetBinContent(5))
 
-    counterStr = str(totCounter) + "/" + str(chanCounter["4e"]) + "/" + str(chanCounter["4mu"]) + "/" + str(chanCounter["2e2mu"])
-    print "\n## Selected events all/4e/4mu/2e2mu : "+counterStr
-    
-
+    if not is_loose_ele :
+        counterStr = str(totCounter) + "/" + str(chanCounter["4e"]) + "/" + str(chanCounter["4mu"]) + "/" + str(chanCounter["2e2mu"])
+        print "\n## Selected events all/4e/4mu/2e2mu : "+counterStr
+    else :
+        counterStr = str(totCounter) + "/" + str(chanCounter["2m1e1Loose"]) + "/" + str(chanCounter["3e1Loose"])
+        print "\n## Selected events all/2m1e1Loose/3e1Loose : "+counterStr
+ 
         
 
 if __name__ == "__main__":
