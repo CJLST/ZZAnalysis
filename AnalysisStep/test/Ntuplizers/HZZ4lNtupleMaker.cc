@@ -530,7 +530,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   Hmass(pset.getParameter<double>("superMelaMass")),
   mela(sqrts, Hmass, TVar::ERROR),
   reweighting(
-              mela,
+              &mela,
               pset.getParameter<std::string>("reweightingtype"),
               pset.getParameter<int>("spin"),
               pset.getParameter<std::vector<double> >("HVVcouplings_real"),
