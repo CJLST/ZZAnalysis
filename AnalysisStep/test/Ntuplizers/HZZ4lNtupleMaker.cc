@@ -48,6 +48,7 @@
 #include <ZZAnalysis/AnalysisStep/interface/PUReweight.h>
 #include "ZZAnalysis/AnalysisStep/interface/EwkCorrections.h"
 #include "ZZAnalysis/AnalysisStep/interface/reweighting.h"
+#include "ZZAnalysis/AnalysisStep/interface/LHEHandler.h"
 #include "ZZAnalysis/AnalysisStep/src/kFactors.C"
 #include <ZZAnalysis/AnalysisStep/interface/bitops.h>
 #include <ZZAnalysis/AnalysisStep/interface/Fisher.h>
@@ -301,17 +302,21 @@ namespace {
   Float_t genHEPMCweight  = 0;
   std::vector<float> reweightingweights;
 
-  std::vector<float> LHEMotherPt;
   std::vector<float> LHEMotherPz;
-  std::vector<float> LHEMotherPhi;
-  std::vector<float> LHEMotherMass;
+  std::vector<float> LHEMotherE;
   std::vector<short> LHEMotherId;
   std::vector<float> LHEDaughterPt;
   std::vector<float> LHEDaughterEta;
   std::vector<float> LHEDaughterPhi;
   std::vector<float> LHEDaughterMass;
   std::vector<short> LHEDaughterId;
+  std::vector<float> LHEAssociatedParticlePt;
+  std::vector<float> LHEAssociatedParticleEta;
+  std::vector<float> LHEAssociatedParticlePhi;
+  std::vector<float> LHEAssociatedParticleMass;
+  std::vector<short> LHEAssociatedParticleId;
 
+  Float_t LHEPDFScale = 0;
   Float_t LHEweight_QCDscale_muR1_muF1  = 0;
   Float_t LHEweight_QCDscale_muR1_muF2  = 0;
   Float_t LHEweight_QCDscale_muR1_muF0p5  = 0;
@@ -403,7 +408,7 @@ private:
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
 
   void BookAllBranches();
-  virtual void FillLHECandidate(const pat::CompositeCandidate& cand);
+  virtual void FillLHECandidate();
   virtual void FillCandidate(const pat::CompositeCandidate& higgs, bool evtPass, const edm::Event&, const Int_t CRflag);
   virtual void FillJet(const pat::Jet& jet);
   virtual void endJob() ;
@@ -427,7 +432,6 @@ private:
   ZZ4lConfigHelper myHelper;
   int theChannel;
   std::string theCandLabel;
-  std::string theLHECandLabel;
   TString theFileName;
 
   HZZ4lNtupleFactory *myTree;
@@ -450,6 +454,9 @@ private:
   int nReweightingSamples;
   bool doreweighting;
   ReweightingType reweightingtype;
+
+  bool addLHEKinematics;
+  LHEHandler* lheHandler;
 
   edm::EDGetTokenT<edm::View<reco::Candidate> > genParticleToken;
   edm::Handle<edm::View<reco::Candidate> > genParticles;
@@ -536,7 +543,6 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   myHelper(pset),
   theChannel(myHelper.channel()), // Valid options: ZZ, ZLL, ZL
   theCandLabel(pset.getUntrackedParameter<string>("CandCollection")), // Name of input ZZ collection
-  theLHECandLabel(pset.getUntrackedParameter<string>("LHECandCollection")), // Name of input ZZ collection
   theFileName(pset.getUntrackedParameter<string>("fileName")),
   skipEmptyEvents(pset.getParameter<bool>("skipEmptyEvents")), // Do not store
   xsec(pset.getParameter<double>("xsec")),
@@ -560,6 +566,8 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   nReweightingSamples(reweighting.nReweightingSamples),
   doreweighting(nReweightingSamples != 0),
   reweightingtype(reweighting.reweightingtype),
+  addLHEKinematics(pset.getParameter<bool>("AddLHEKinematics")),
+  lheHandler(0),
   reweight(),
   sampleName(pset.getParameter<string>("sampleName")),
   hTH2D_Mu_All(0),
@@ -593,7 +601,6 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   genInfoToken = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
   consumesMany<LHEEventProduct>();
   candToken = consumes<edm::View<pat::CompositeCandidate> >(edm::InputTag(theCandLabel));
-  lhecandToken = consumes<edm::View<pat::CompositeCandidate> >(edm::InputTag(theLHECandLabel));
 
   is_loose_ele_selection = false;
   if(pset.exists("is_loose_ele_selection")) { 
@@ -618,6 +625,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   }
 
   isMC = myHelper.isMC();
+  if (isMC) lheHandler = new LHEHandler(pset.getParameter<int>("VVMode"), pset.getParameter<int>("VVDecayMode"), addLHEKinematics);
 
   Nevt_Gen = 0;
   Nevt_Gen_lumiBlock = 0;
@@ -725,6 +733,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
 
 HZZ4lNtupleMaker::~HZZ4lNtupleMaker()
 {
+  if (lheHandler!=0) delete lheHandler;
 }
 
 
@@ -824,7 +833,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
     }
 
-    // Note: Should move into LHECandidateFiller -- U. Sarica
+    // Note: Should move into LHEHandler -- U. Sarica
     reweightingweights.clear();
     if (doreweighting) {
       assert(reweighting.canreweight(genZLeps.size(), genFinalState));
@@ -847,14 +856,15 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
 
     // LHE information
-    edm::Handle<edm::View<pat::CompositeCandidate> > lhecandHandle;
-    event.getByToken(lhecandToken, lhecandHandle);
-    const edm::View<pat::CompositeCandidate>* lhe_cands = lhecandHandle.product();
-    unsigned int nlhecands=0;
-    for (edm::View<pat::CompositeCandidate>::const_iterator cand = lhe_cands->begin(); cand != lhe_cands->end(); ++cand){ // Ought to be only one candidate
-      if (nlhecands>=1){ std::cerr << "More than one LHE candidate! Breaking." << endl; break; }
-      FillLHECandidate(*cand);
-      nlhecands++;
+    if (isMC){
+      edm::Handle<LHEEventProduct> lhe_evt;
+      vector<edm::Handle<LHEEventProduct> > lhe_handles;
+      event.getManyByType(lhe_handles);
+      if (lhe_handles.size()>0) lhe_evt = lhe_handles.front();
+      lheHandler->setHandle(&lhe_evt);
+      lheHandler->extract();
+      FillLHECandidate();
+      lheHandler->clear();
     }
     //
 
@@ -1105,18 +1115,22 @@ void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
 }
 
 
-void HZZ4lNtupleMaker::FillLHECandidate(const pat::CompositeCandidate& cand){
-  LHEMotherPt.clear();
+void HZZ4lNtupleMaker::FillLHECandidate(){
   LHEMotherPz.clear();
-  LHEMotherPhi.clear();
-  LHEMotherMass.clear();
+  LHEMotherE.clear();
   LHEMotherId.clear();
   LHEDaughterPt.clear();
   LHEDaughterEta.clear();
   LHEDaughterPhi.clear();
   LHEDaughterMass.clear();
   LHEDaughterId.clear();
+  LHEAssociatedParticlePt.clear();
+  LHEAssociatedParticleEta.clear();
+  LHEAssociatedParticlePhi.clear();
+  LHEAssociatedParticleMass.clear();
+  LHEAssociatedParticleId.clear();
 
+  LHEPDFScale = 0;
   LHEweight_QCDscale_muR1_muF1=0;
   LHEweight_QCDscale_muR1_muF2=0;
   LHEweight_QCDscale_muR1_muF0p5=0;
@@ -1127,41 +1141,78 @@ void HZZ4lNtupleMaker::FillLHECandidate(const pat::CompositeCandidate& cand){
   LHEweight_QCDscale_muR0p5_muF2=0;
   LHEweight_QCDscale_muR0p5_muF0p5=0;
 
-  unsigned int nMothers=0;
-  if (cand.hasUserInt("nLHEMothers")) nMothers = cand.userInt("nLHEMothers");
-  for (unsigned int imot=0; imot<nMothers; imot++){
-    TString strowner = Form("LHEMother%i", imot+1);
-    string owner = strowner.Data();
-    string strvar;
-    strvar = owner + "Pt"; LHEMotherPt.push_back(cand.userFloat(strvar));
-    strvar = owner + "Pz"; LHEMotherPz.push_back(cand.userFloat(strvar));
-    strvar = owner + "Phi"; LHEMotherPhi.push_back(cand.userFloat(strvar));
-    strvar = owner + "Mass"; LHEMotherMass.push_back(cand.userFloat(strvar));
-    strvar = owner + "Id"; LHEMotherId.push_back((short)cand.userInt(strvar));
+  MELACandidate* cand = lheHandler->getBestCandidate();
+  if (cand!=0 && addLHEKinematics){
+    for (int imot=0; imot<cand->getNMothers(); imot++){
+      MELAParticle* apart = cand->getMother(imot);
+      if (apart==0){ LHEMotherPz.clear(); LHEMotherE.clear(); LHEMotherId.clear(); break; } // Something went wrong
+      LHEMotherPz.push_back(apart->z());
+      LHEMotherE.push_back(apart->t());
+      LHEMotherId.push_back((short)apart->id);
+    }
+
+    for (int iV=0; iV<cand->getNSortedVs(); iV++){
+      MELAParticle* Vi = cand->getSortedV(iV);
+      if (Vi!=0){
+        for (int iVj=0; iVj<Vi->getNDaughters(); iVj++){
+          MELAParticle* Vij = Vi->getDaughter(iVj);
+          if (Vij!=0){
+            LHEDaughterPt.push_back(Vij->pt());
+            LHEDaughterEta.push_back(Vij->eta());
+            LHEDaughterPhi.push_back(Vij->phi());
+            LHEDaughterMass.push_back(Vij->m());
+            LHEDaughterId.push_back((short)Vij->id);
+          }
+        }
+      }
+    }
+
+    vector<MELAParticle*> AssociatedParticle;
+    vector<MELAParticle*> tmpAssociatedParticle;
+    for (int aa=0; aa<cand->getNAssociatedJets(); aa++){
+      MELAParticle* apart = cand->getAssociatedJet(aa);
+      tmpAssociatedParticle.push_back(apart);
+    }
+    for (int aa=0; aa<cand->getNAssociatedLeptons(); aa++){
+      MELAParticle* apart = cand->getAssociatedLepton(aa);
+      if (!PDGHelpers::isANeutrino(apart->id)) tmpAssociatedParticle.push_back(apart);
+    }
+    for (int aa=0; aa<cand->getNAssociatedNeutrinos(); aa++){
+      MELAParticle* apart = cand->getAssociatedNeutrino(aa);
+      tmpAssociatedParticle.push_back(apart);
+    }
+    while (tmpAssociatedParticle.size()>0){ // Re-sort all associated particles by leading pT (categories are individually sorted, but mixing categories loses this sorting)
+      MELAParticle* tmpPart=0;
+      int pos=0;
+      for (unsigned int el=0; el<tmpAssociatedParticle.size(); el++){
+        if (tmpPart==0){ tmpPart = tmpAssociatedParticle.at(el); pos=el; }
+        else if (tmpPart->pt()<tmpAssociatedParticle.at(el)->pt()){ tmpPart = tmpAssociatedParticle.at(el); pos=el; } // Safer to do in two steps
+      }
+      AssociatedParticle.push_back(tmpPart);
+      tmpAssociatedParticle.erase(tmpAssociatedParticle.begin()+pos);
+    }
+    for (unsigned int aa=0; aa<AssociatedParticle.size(); aa++){
+      MELAParticle* apart = AssociatedParticle.at(aa);
+      if (apart!=0){
+        LHEAssociatedParticlePt.push_back(apart->pt());
+        LHEAssociatedParticleEta.push_back(apart->eta());
+        LHEAssociatedParticlePhi.push_back(apart->phi());
+        LHEAssociatedParticleMass.push_back(apart->m());
+        LHEAssociatedParticleId.push_back((short)apart->id);
+      }
+    }
   }
 
-  unsigned int nDaughters=0;
-  if (cand.hasUserInt("nLHEDaughters")) nDaughters = cand.userInt("nLHEDaughters");
-  for (unsigned int idau=0; idau<nDaughters; idau++){
-    TString strowner = Form("LHEDaughter%i", idau+1);
-    string owner = strowner.Data();
-    string strvar;
-    strvar = owner + "Pt"; LHEDaughterPt.push_back(cand.userFloat(strvar));
-    strvar = owner + "Eta"; LHEDaughterEta.push_back(cand.userFloat(strvar));
-    strvar = owner + "Phi"; LHEDaughterPhi.push_back(cand.userFloat(strvar));
-    strvar = owner + "Mass"; LHEDaughterMass.push_back(cand.userFloat(strvar));
-    strvar = owner + "Id"; LHEDaughterId.push_back((short)cand.userInt(strvar));
-  }
-
-  getCheckedUserFloat(cand, "LHEweight_QCDscale_muR1_muF1", LHEweight_QCDscale_muR1_muF1, 1);
-  getCheckedUserFloat(cand, "LHEweight_QCDscale_muR1_muF2", LHEweight_QCDscale_muR1_muF2, 1);
-  getCheckedUserFloat(cand, "LHEweight_QCDscale_muR1_muF0p5", LHEweight_QCDscale_muR1_muF0p5, 1);
-  getCheckedUserFloat(cand, "LHEweight_QCDscale_muR2_muF1", LHEweight_QCDscale_muR2_muF1, 1);
-  getCheckedUserFloat(cand, "LHEweight_QCDscale_muR2_muF2", LHEweight_QCDscale_muR2_muF2, 1);
-  getCheckedUserFloat(cand, "LHEweight_QCDscale_muR2_muF0p5", LHEweight_QCDscale_muR2_muF0p5, 1);
-  getCheckedUserFloat(cand, "LHEweight_QCDscale_muR0p5_muF1", LHEweight_QCDscale_muR0p5_muF1, 1);
-  getCheckedUserFloat(cand, "LHEweight_QCDscale_muR0p5_muF2", LHEweight_QCDscale_muR0p5_muF2, 1);
-  getCheckedUserFloat(cand, "LHEweight_QCDscale_muR0p5_muF0p5", LHEweight_QCDscale_muR0p5_muF0p5, 1);
+  LHEPDFScale = lheHandler->getPDFScale();
+  LHEweight_QCDscale_muR1_muF1 = lheHandler->getLHEWeight(0, 1.);
+  LHEweight_QCDscale_muR1_muF2 = lheHandler->getLHEWeight(1, 1.);
+  LHEweight_QCDscale_muR1_muF0p5 = lheHandler->getLHEWeight(2, 1.);
+  LHEweight_QCDscale_muR2_muF1 = lheHandler->getLHEWeight(3, 1.);
+  LHEweight_QCDscale_muR2_muF2 = lheHandler->getLHEWeight(4, 1.);
+  LHEweight_QCDscale_muR2_muF0p5 = lheHandler->getLHEWeight(5, 1.);
+  LHEweight_QCDscale_muR0p5_muF1 = lheHandler->getLHEWeight(6, 1.);
+  LHEweight_QCDscale_muR0p5_muF2 = lheHandler->getLHEWeight(7, 1.);
+  LHEweight_QCDscale_muR0p5_muF0p5 = lheHandler->getLHEWeight(8, 1.);
 }
 
 
@@ -1893,12 +1944,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("Nvtx",Nvtx);
   myTree->Book("NObsInt",NObsInt);
   myTree->Book("NTrueInt",NTrueInt);
-  myTree->Book("PUWeight",PUWeight);
-  myTree->Book("KFactorggZZ",KFactorggZZ);
-  myTree->Book("KFactorEWKqqZZ",KFactorEWKqqZZ);
-  myTree->Book("KFactorQCDqqZZ_dPhi",KFactorQCDqqZZ_dPhi);
-  myTree->Book("KFactorQCDqqZZ_M",KFactorQCDqqZZ_M);
-  myTree->Book("KFactorQCDqqZZ_Pt",KFactorQCDqqZZ_Pt);
+
   myTree->Book("PFMET",PFMET);
   myTree->Book("PFMETPhi",PFMETPhi);
   myTree->Book("PFMETNoHF",PFMETNoHF);
@@ -2115,23 +2161,80 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("ExtraLepEta",ExtraLepEta);
   myTree->Book("ExtraLepPhi",ExtraLepPhi);
   myTree->Book("ExtraLepLepId",ExtraLepLepId);
-  myTree->Book("genFinalState",genFinalState);
-  myTree->Book("genProcessId",genProcessId);
-  myTree->Book("genHEPMCweight",genHEPMCweight);
-  if (doreweighting) myTree->Book("reweightingweights",reweightingweights);
+
+  myTree->Book("ZXFakeweight", ZXFakeweight);
+  myTree->Book("overallEventWeight", overallEventWeight);
 
   if (isMC){
-    myTree->Book("LHEMotherPt", LHEMotherPt);
-    myTree->Book("LHEMotherPz", LHEMotherPz);
-    myTree->Book("LHEMotherPhi", LHEMotherPhi);
-    myTree->Book("LHEMotherMass", LHEMotherMass);
-    myTree->Book("LHEMotherId", LHEMotherId);
-    myTree->Book("LHEDaughterPt", LHEDaughterPt);
-    myTree->Book("LHEDaughterEta", LHEDaughterEta);
-    myTree->Book("LHEDaughterPhi", LHEDaughterPhi);
-    myTree->Book("LHEDaughterMass", LHEDaughterMass);
-    myTree->Book("LHEDaughterId", LHEDaughterId);
+    myTree->Book("PUWeight", PUWeight);
+    myTree->Book("KFactorggZZ", KFactorggZZ);
+    myTree->Book("KFactorEWKqqZZ", KFactorEWKqqZZ);
+    myTree->Book("KFactorQCDqqZZ_dPhi", KFactorQCDqqZZ_dPhi);
+    myTree->Book("KFactorQCDqqZZ_M", KFactorQCDqqZZ_M);
+    myTree->Book("KFactorQCDqqZZ_Pt", KFactorQCDqqZZ_Pt);
 
+    myTree->Book("genFinalState", genFinalState);
+    myTree->Book("genProcessId", genProcessId);
+    myTree->Book("genHEPMCweight", genHEPMCweight);
+    myTree->Book("genExtInfo", genExtInfo);
+    myTree->Book("xsec", xsection);
+    myTree->Book("dataMCWeight", dataMCWeight);
+    myTree->Book("HqTMCweight", HqTMCweight);
+    myTree->Book("GenHMass", GenHMass);
+    myTree->Book("GenHPt", GenHPt);
+    myTree->Book("GenHRapidity", GenHRapidity);
+    myTree->Book("GenZ1Mass", GenZ1Mass);
+    myTree->Book("GenZ1Pt", GenZ1Pt);
+    myTree->Book("GenZ1Phi", GenZ1Phi);
+    myTree->Book("GenZ1Flav", GenZ1Flav);
+    myTree->Book("GenZ2Mass", GenZ2Mass);
+    myTree->Book("GenZ2Pt", GenZ2Pt);
+    myTree->Book("GenZ2Phi", GenZ2Phi);
+    myTree->Book("GenZ2Flav", GenZ2Flav);
+    myTree->Book("GenLep1Pt", GenLep1Pt);
+    myTree->Book("GenLep1Eta", GenLep1Eta);
+    myTree->Book("GenLep1Phi", GenLep1Phi);
+    myTree->Book("GenLep1Id", GenLep1Id);
+    myTree->Book("GenLep2Pt", GenLep2Pt);
+    myTree->Book("GenLep2Eta", GenLep2Eta);
+    myTree->Book("GenLep2Phi", GenLep2Phi);
+    myTree->Book("GenLep2Id", GenLep2Id);
+    myTree->Book("GenLep3Pt", GenLep3Pt);
+    myTree->Book("GenLep3Eta", GenLep3Eta);
+    myTree->Book("GenLep3Phi", GenLep3Phi);
+    myTree->Book("GenLep3Id", GenLep3Id);
+    myTree->Book("GenLep4Pt", GenLep4Pt);
+    myTree->Book("GenLep4Eta", GenLep4Eta);
+    myTree->Book("GenLep4Phi", GenLep4Phi);
+    myTree->Book("GenLep4Id", GenLep4Id);
+    myTree->Book("GenAssocLep1Pt", GenAssocLep1Pt);
+    myTree->Book("GenAssocLep1Eta", GenAssocLep1Eta);
+    myTree->Book("GenAssocLep1Phi", GenAssocLep1Phi);
+    myTree->Book("GenAssocLep1Id", GenAssocLep1Id);
+    myTree->Book("GenAssocLep2Pt", GenAssocLep2Pt);
+    myTree->Book("GenAssocLep2Eta", GenAssocLep2Eta);
+    myTree->Book("GenAssocLep2Phi", GenAssocLep2Phi);
+    myTree->Book("GenAssocLep2Id", GenAssocLep2Id);
+
+    if (doreweighting) myTree->Book("reweightingweights", reweightingweights);
+
+    if (addLHEKinematics){
+      myTree->Book("LHEMotherPz", LHEMotherPz);
+      myTree->Book("LHEMotherE", LHEMotherE);
+      myTree->Book("LHEMotherId", LHEMotherId);
+      myTree->Book("LHEDaughterPt", LHEDaughterPt);
+      myTree->Book("LHEDaughterEta", LHEDaughterEta);
+      myTree->Book("LHEDaughterPhi", LHEDaughterPhi);
+      myTree->Book("LHEDaughterMass", LHEDaughterMass);
+      myTree->Book("LHEDaughterId", LHEDaughterId);
+      myTree->Book("LHEAssociatedParticlePt", LHEAssociatedParticlePt);
+      myTree->Book("LHEAssociatedParticleEta", LHEAssociatedParticleEta);
+      myTree->Book("LHEAssociatedParticlePhi", LHEAssociatedParticlePhi);
+      myTree->Book("LHEAssociatedParticleMass", LHEAssociatedParticleMass);
+      myTree->Book("LHEAssociatedParticleId", LHEAssociatedParticleId);
+    }
+
+    myTree->Book("LHEPDFScale", LHEPDFScale);
     myTree->Book("LHEweight_QCDscale_muR1_muF1", LHEweight_QCDscale_muR1_muF1);
     myTree->Book("LHEweight_QCDscale_muR1_muF2", LHEweight_QCDscale_muR1_muF2);
     myTree->Book("LHEweight_QCDscale_muR1_muF0p5", LHEweight_QCDscale_muR1_muF0p5);
@@ -2142,48 +2245,6 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("LHEweight_QCDscale_muR0p5_muF2", LHEweight_QCDscale_muR0p5_muF2);
     myTree->Book("LHEweight_QCDscale_muR0p5_muF0p5", LHEweight_QCDscale_muR0p5_muF0p5);
   }
-
-  myTree->Book("genExtInfo",genExtInfo);
-  myTree->Book("xsec",xsection);
-  myTree->Book("dataMCWeight",dataMCWeight);
-  myTree->Book("HqTMCweight",HqTMCweight);
-  myTree->Book("ZXFakeweight",ZXFakeweight);
-  myTree->Book("overallEventWeight",overallEventWeight);
-  myTree->Book("GenHMass",GenHMass);
-  myTree->Book("GenHPt",GenHPt);
-  myTree->Book("GenHRapidity",GenHRapidity);
-  myTree->Book("GenZ1Mass",GenZ1Mass);
-  myTree->Book("GenZ1Pt",GenZ1Pt);
-  myTree->Book("GenZ1Phi",GenZ1Phi);
-  myTree->Book("GenZ1Flav",GenZ1Flav);
-  myTree->Book("GenZ2Mass",GenZ2Mass);
-  myTree->Book("GenZ2Pt",GenZ2Pt);
-  myTree->Book("GenZ2Phi",GenZ2Phi);
-  myTree->Book("GenZ2Flav",GenZ2Flav);
-  myTree->Book("GenLep1Pt",GenLep1Pt);
-  myTree->Book("GenLep1Eta",GenLep1Eta);
-  myTree->Book("GenLep1Phi",GenLep1Phi);
-  myTree->Book("GenLep1Id",GenLep1Id);
-  myTree->Book("GenLep2Pt",GenLep2Pt);
-  myTree->Book("GenLep2Eta",GenLep2Eta);
-  myTree->Book("GenLep2Phi",GenLep2Phi);
-  myTree->Book("GenLep2Id",GenLep2Id);
-  myTree->Book("GenLep3Pt",GenLep3Pt);
-  myTree->Book("GenLep3Eta",GenLep3Eta);
-  myTree->Book("GenLep3Phi",GenLep3Phi);
-  myTree->Book("GenLep3Id",GenLep3Id);
-  myTree->Book("GenLep4Pt",GenLep4Pt);
-  myTree->Book("GenLep4Eta",GenLep4Eta);
-  myTree->Book("GenLep4Phi",GenLep4Phi);
-  myTree->Book("GenLep4Id",GenLep4Id);
-  myTree->Book("GenAssocLep1Pt",GenAssocLep1Pt);
-  myTree->Book("GenAssocLep1Eta",GenAssocLep1Eta);
-  myTree->Book("GenAssocLep1Phi",GenAssocLep1Phi);
-  myTree->Book("GenAssocLep1Id",GenAssocLep1Id);
-  myTree->Book("GenAssocLep2Pt",GenAssocLep2Pt);
-  myTree->Book("GenAssocLep2Eta",GenAssocLep2Eta);
-  myTree->Book("GenAssocLep2Phi",GenAssocLep2Phi);
-  myTree->Book("GenAssocLep2Id",GenAssocLep2Id);
 
 }
 

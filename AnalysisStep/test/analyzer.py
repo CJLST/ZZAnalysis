@@ -14,12 +14,17 @@ declareDefault("XSEC", 1, globals())
 declareDefault("PROCESS_CR", False, globals())
 declareDefault("REWEIGHTING_TYPE", "none", globals())
 
-#couplings for reweighting
+# Couplings for reweighting
 declareDefault("SPIN", 0, globals())
 couplings = Couplings()
 for coupling in couplings.allnames():
     declareDefault(coupling, 0, globals())
     couplings[coupling] = globals()[coupling]
+
+# LHE info
+declareDefault("VVMODE", 0, globals())
+declareDefault("VVDECAYMODE", 0, globals())
+declareDefault("ADDLHEKINEMATICS", False, globals())
 
 # Get absolute path
 import os
@@ -113,7 +118,6 @@ process.PlotsZZ    = cms.EDAnalyzer("ZZ4lAnalyzer",
 TreeSetup = cms.EDAnalyzer("HZZ4lNtupleMaker",
                            channel = cms.untracked.string('aChannel'),
                            CandCollection = cms.untracked.string('ZZCand'),
-                           LHECandCollection = cms.untracked.string('LHECand'),
                            fileName = cms.untracked.string('candTree'),
                            isMC = cms.untracked.bool(IsMC),
                            sampleType = cms.int32(SAMPLE_TYPE),
@@ -135,6 +139,9 @@ TreeSetup = cms.EDAnalyzer("HZZ4lNtupleMaker",
                            Gggcouplings_real = cms.vdouble(*couplings.getcouplings(spin=2, gg=True, imag=False)),
                            Gggcouplings_imag = cms.vdouble(*couplings.getcouplings(spin=2, gg=True, imag=True)),
                            reweightingtype = cms.string(REWEIGHTING_TYPE),
+                           VVMode = cms.int32(VVMODE),
+                           VVDecayMode = cms.int32(VVDECAYMODE),
+                           AddLHEKinematics = cms.bool(ADDLHEKINEMATICS),
                            )
 
 ### Signal region
