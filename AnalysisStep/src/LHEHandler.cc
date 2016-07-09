@@ -29,11 +29,11 @@ genCand(0)
 LHEHandler::~LHEHandler(){ clear(); }
 
 
-void LHEHandler::setHandle(edm::Handle<LHEEventProduct>* lhe_evt_){ clear(); lhe_evt=lhe_evt; }
+void LHEHandler::setHandle(edm::Handle<LHEEventProduct>* lhe_evt_){ clear(); lhe_evt=lhe_evt_; }
 void LHEHandler::clear(){
   lhe_evt=0;
 
-  if (genEvent!=0) delete genEvent;
+  if (genEvent!=0){ delete genEvent; genEvent=0; }
   genCand=0;
 
   for (unsigned int p=0; p<particleList.size(); p++){
@@ -56,7 +56,11 @@ float LHEHandler::getPDFScale(){ return PDFScale; }
 
 
 void LHEHandler::extract(){
+  if (lhe_evt==0) cerr << "LHEHandler::extract: lhe_evt==0" << endl;
+
   if (lhe_evt!=0){
+    if (!lhe_evt->isValid()) cerr << "LHEHandler::extract: lhe_evt invalid!" << endl;
+
     if (lhe_evt->isValid()){
 
       readEvent();
@@ -146,11 +150,12 @@ MELACandidate* LHEHandler::matchAHiggsToParticle(LHE_Event& ev, MELAParticle* ge
   MELACandidate* cand=0;
   for (int t=0; t<ev.getNZZCandidates(); t++){
     MELACandidate* tmpCand = ev.getZZCandidate(t);
-    // FIX ME
-    double genhmassquant = genH->m()+genH->pt()+fabs(genH->z());
-    double massdiff = fabs(genhmassquant-tmpCand->m()-tmpCand->pt()-fabs(tmpCand->z()));
+
+    double dotproduct = sqrt(genH->p4.Vect().Dot(tmpCand->p4.Vect()) + genH->t()*tmpCand->t());
+    double genhdotproduct = sqrt(genH->p4.Vect().Dot(genH->p4.Vect()) + genH->t()*genH->t());
+    double massdiff = fabs(genhdotproduct-dotproduct);
     double massratio = 0;
-    if (genhmassquant>0) massratio = massdiff / genhmassquant;
+    if (genhdotproduct>0) massratio = massdiff / genhdotproduct;
     if (massratio<0.001){
       if (cand==0) cand = tmpCand;
       else{

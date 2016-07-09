@@ -860,11 +860,14 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       edm::Handle<LHEEventProduct> lhe_evt;
       vector<edm::Handle<LHEEventProduct> > lhe_handles;
       event.getManyByType(lhe_handles);
-      if (lhe_handles.size()>0) lhe_evt = lhe_handles.front();
-      lheHandler->setHandle(&lhe_evt);
-      lheHandler->extract();
-      FillLHECandidate();
-      lheHandler->clear();
+      if (lhe_handles.size()>0){
+        lhe_evt = lhe_handles.front();
+        lheHandler->setHandle(&lhe_evt);
+        lheHandler->extract();
+        FillLHECandidate();
+        lheHandler->clear();
+      }
+      //else cerr << "lhe_handles.size()==0" << endl;
     }
     //
 
@@ -1151,7 +1154,7 @@ void HZZ4lNtupleMaker::FillLHECandidate(){
       LHEMotherId.push_back((short)apart->id);
     }
 
-    for (int iV=0; iV<cand->getNSortedVs(); iV++){
+    for (int iV=0; iV<min(2, cand->getNSortedVs()); iV++){
       MELAParticle* Vi = cand->getSortedV(iV);
       if (Vi!=0){
         for (int iVj=0; iVj<Vi->getNDaughters(); iVj++){
@@ -1201,6 +1204,17 @@ void HZZ4lNtupleMaker::FillLHECandidate(){
         LHEAssociatedParticleId.push_back((short)apart->id);
       }
     }
+
+    /*
+    cout << "NEW EVENT:" << endl;
+    cout << "Mothers:" << endl;
+    for (unsigned int ipart=0; ipart<LHEMotherId.size(); ipart++) cout << "\t Mot" << ipart << " (pz, E, id) = " << LHEMotherPz.at(ipart) << " " << LHEMotherE.at(ipart) << " " << LHEMotherId.at(ipart) << endl;
+    cout << "Daughters:" << endl;
+    for (unsigned int ipart=0; ipart<LHEDaughterId.size(); ipart++) cout << "\t Dau" << ipart << " (pt, eta, phi, m, id) = " << LHEDaughterPt.at(ipart) << " " << LHEDaughterEta.at(ipart) << " " << LHEDaughterPhi.at(ipart) << " " << LHEDaughterMass.at(ipart) << " " << LHEDaughterId.at(ipart) << endl;
+    cout << "Associated:" << endl;
+    for (unsigned int ipart=0; ipart<LHEAssociatedParticleId.size(); ipart++) cout << "\t APart" << ipart << " (pt, eta, phi, m, id) = " << LHEAssociatedParticlePt.at(ipart) << " " << LHEAssociatedParticleEta.at(ipart) << " " << LHEAssociatedParticlePhi.at(ipart) << " " << LHEAssociatedParticleMass.at(ipart) << " " << LHEAssociatedParticleId.at(ipart) << endl;
+    cout << endl;
+    */
   }
 
   LHEPDFScale = lheHandler->getPDFScale();

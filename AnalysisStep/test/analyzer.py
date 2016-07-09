@@ -139,8 +139,8 @@ TreeSetup = cms.EDAnalyzer("HZZ4lNtupleMaker",
                            Gggcouplings_real = cms.vdouble(*couplings.getcouplings(spin=2, gg=True, imag=False)),
                            Gggcouplings_imag = cms.vdouble(*couplings.getcouplings(spin=2, gg=True, imag=True)),
                            reweightingtype = cms.string(REWEIGHTING_TYPE),
-                           VVMode = cms.int32(VVMODE),
-                           VVDecayMode = cms.int32(VVDECAYMODE),
+                           VVMode = cms.int32(int(VVMODE)),
+                           VVDecayMode = cms.int32(int(VVDECAYMODE)),
                            AddLHEKinematics = cms.bool(ADDLHEKINEMATICS),
                            )
 
