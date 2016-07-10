@@ -19,7 +19,7 @@ def parseOptions():
     parser.add_option('-o', '--output', dest='outFile', type='string', default="eventlist.txt",    help='output sync file')
     parser.add_option('-f', '--finalState', dest='finalState', type='string', default="all",    help='final states: all, 4e, 4mu, 2e2mu')
     parser.add_option('-l', '--long', dest='longOutput', action='store_true', default=True,    help='long output')
-    parser.add_option('-b', '--blind', dest='blind', action='store_true', default=False,    help='apply blinding')
+    parser.add_option('-u', '--unblind', dest='unblind', action='store_true', default=False,    help='Unblinded (affects data only)')
     parser.add_option('-s', '--selection', dest='selection', type='string', default="REG",    help='select REG/TLE/RSE trees')
 
 
@@ -134,6 +134,8 @@ def loop():
             lumi        = tree.LumiNumber
             event       = tree.EventNumber
 
+            
+
             theEvent = Event(run,lumi,event)
             pass_selection = False
             
@@ -163,13 +165,12 @@ def loop():
                     ZZflav = abs(tree.Z1Flav*tree.Z2Flav)
                     if not ((aChan=="2m1e1Loose" and (ZZflav==169*242 or ZZflav==169*121)) or (aChan=="3e1Loose" and (ZZflav==121*242 or ZZflav==121*121))) : continue
                 mass4l        = tree.ZZMass
-                if (opt.blind) :
-                ## blind Higgs peak
+                if run>100 and opt.unblind==False :
+                ## blind Higgs peak in data
                     if not ((mass4l>=70 and mass4l<=110)
                             or
                             (mass4l>=150 and mass4l<=500)
                             ): continue
-                    if (run>273730) : continue #FIXME: we ran a newer json than what currently agreed for the sync
 
                 totCounter += 1
                 chanCounter[aChan] += 1
@@ -242,7 +243,10 @@ def loop():
 
     if not opt.noOutput:
         # Print in sync format
-        outFileName = outFileName.replace(".","_"+opt.finalState+".")
+        ext = opt.finalState
+        if selection != "REG" :
+            ext += selection
+        outFileName = outFileName.replace(".","_"+ext+".")        
         outFile = open(outFileName,"w")
         line = ""
         

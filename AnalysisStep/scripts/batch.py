@@ -73,7 +73,7 @@ echo
 cd `find . -type d | grep /`
 pwd
 echo 'Running at:' `date`
-cmsRun run_cfg.py >& log.txt
+cmsRun run_cfg.py |& grep -v -e 'MINUIT WARNING' -e 'Second derivative zero' -e 'Negative diagonal element' -e 'added to diagonal of error matrix' > log.txt
 set cmsRunStatus=$?
 echo 'cmsRun done at: ' `date` with exit status: $cmsRunStatus
 if ( $cmsRunStatus != 0 ) echo $cmsRunStatus > exitStatus.txt

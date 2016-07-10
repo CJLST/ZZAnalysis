@@ -1,12 +1,13 @@
 
 #LEPTON_SETUP = 2016
-#ELECORRTYPE = "None" # "None", "Moriond", "Paper", or "RunII"
-#ELEREGRESSION = "None" # "None", "Moriond", "PaperNoComb", or "Paper" 
-#APPLYMUCORR = False
+#ELECORRTYPE = "None" # "None" to switch off
+#ELEREGRESSION = "None" # Not supported as of 2016
+#APPLYMUCORR = False # Switch off muon scale corrections
 #BUNCH_SPACING = 25
-#FSRMODE = "RunII" # Legacy or Run II
-#KINREFIT =True
+#FSRMODE = "RunII" # only Run II supported as of 2016
+#KINREFIT = False  # control KinZFitter (very slow)
 #PROCESS_CR = True # Uncomment to run CR paths and trees
+#ADDLOOSELE = True # Run paths for loose electrons
 
 PD = ""
 MCFILTER = ""

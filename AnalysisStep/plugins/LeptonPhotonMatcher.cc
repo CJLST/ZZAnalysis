@@ -69,6 +69,7 @@ class LeptonPhotonMatcher : public edm::EDProducer {
   edm::EDGetTokenT<double> rhoForMuToken;
   edm::EDGetTokenT<double> rhoForEleToken;
 
+  float tleMinPt;
   float muon_iso_cut;
   float electron_iso_cut;
 
@@ -82,7 +83,8 @@ LeptonPhotonMatcher::LeptonPhotonMatcher(const edm::ParameterSet& iConfig) :
   photonToken(consumes<edm::View<pat::PFParticle> >(iConfig.getParameter<edm::InputTag>("photonSrc"))),
   sampleType(iConfig.getParameter<int>("sampleType")),
   setup(iConfig.getParameter<int>("setup")),
-  debug(iConfig.getUntrackedParameter<bool>("debug",false))
+  debug(iConfig.getUntrackedParameter<bool>("debug",false)),
+  tleMinPt(0.)
 {
   pfCandToken = consumes<edm::View<pat::PackedCandidate> >(edm::InputTag("packedPFCandidates"));
   rhoForMuToken = consumes<double>(LeptonIsoHelper::getMuRhoTag(sampleType, setup));
@@ -100,6 +102,10 @@ LeptonPhotonMatcher::LeptonPhotonMatcher(const edm::ParameterSet& iConfig) :
   if(iConfig.exists("tleSrc")) {
     do_TLE = true;
     tleToken = consumes<pat::PhotonCollection>(iConfig.getParameter<edm::InputTag>("tleSrc"));
+
+    if(iConfig.exists("tleSrc")) {
+      tleMinPt=iConfig.getParameter<double>("TLEMinPt");
+    }
   }
  
   string mode = iConfig.getParameter<string>("photonSel");
@@ -330,6 +336,7 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     for (unsigned int j = 0; j< tleHandle->size(); ++j){
       const pat::Photon* e = &((*tleHandle)[j]);
       //---Clone the pat::Electron
+      if (e->pt()<tleMinPt) continue;
       pat::Photon newE(*e);
       /*if (selectionMode!=0) {
         PhotonLepMap::const_iterator fsr = theMap.find(e);
