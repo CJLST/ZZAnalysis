@@ -1146,15 +1146,29 @@ void HZZ4lNtupleMaker::FillKFactors(edm::Handle<GenEventInfoProduct>& genInfo, s
       if (spkfactor_ggzz_nnlo[7]!=0) KFactor_QCD_ggZZ_PDFReplicaDn = (float)spkfactor_ggzz_nnlo[7]->Eval(GenHMass);
       if (spkfactor_ggzz_nnlo[8]!=0) KFactor_QCD_ggZZ_PDFReplicaUp = (float)spkfactor_ggzz_nnlo[8]->Eval(GenHMass);
       if (apply_K_NNLOQCD_ZZGG==2){
-        if (spkfactor_ggzz_nlo[0]!=0) KFactor_QCD_ggZZ_Nominal /= (float)spkfactor_ggzz_nlo[0]->Eval(GenHMass); else KFactor_QCD_ggZZ_Nominal=0;
-        if (spkfactor_ggzz_nlo[1]!=0) KFactor_QCD_ggZZ_PDFScaleDn /= (float)spkfactor_ggzz_nlo[1]->Eval(GenHMass); else KFactor_QCD_ggZZ_PDFScaleDn=0;
-        if (spkfactor_ggzz_nlo[2]!=0) KFactor_QCD_ggZZ_PDFScaleUp /= (float)spkfactor_ggzz_nlo[2]->Eval(GenHMass); else KFactor_QCD_ggZZ_PDFScaleUp=0;
-        if (spkfactor_ggzz_nlo[3]!=0) KFactor_QCD_ggZZ_QCDScaleDn /= (float)spkfactor_ggzz_nlo[3]->Eval(GenHMass); else KFactor_QCD_ggZZ_QCDScaleDn=0;
-        if (spkfactor_ggzz_nlo[4]!=0) KFactor_QCD_ggZZ_QCDScaleUp /= (float)spkfactor_ggzz_nlo[4]->Eval(GenHMass); else KFactor_QCD_ggZZ_QCDScaleUp=0;
-        if (spkfactor_ggzz_nlo[5]!=0) KFactor_QCD_ggZZ_AsDn /= (float)spkfactor_ggzz_nlo[5]->Eval(GenHMass); else KFactor_QCD_ggZZ_AsDn=0;
-        if (spkfactor_ggzz_nlo[6]!=0) KFactor_QCD_ggZZ_AsUp /= (float)spkfactor_ggzz_nlo[6]->Eval(GenHMass); else KFactor_QCD_ggZZ_AsUp=0;
-        if (spkfactor_ggzz_nlo[7]!=0) KFactor_QCD_ggZZ_PDFReplicaDn /= (float)spkfactor_ggzz_nlo[7]->Eval(GenHMass); else KFactor_QCD_ggZZ_PDFReplicaDn=0;
-        if (spkfactor_ggzz_nlo[8]!=0) KFactor_QCD_ggZZ_PDFReplicaUp /= (float)spkfactor_ggzz_nlo[8]->Eval(GenHMass); else KFactor_QCD_ggZZ_PDFReplicaUp=0;
+        if (spkfactor_ggzz_nlo[0]!=0){
+          float divisor = (float)spkfactor_ggzz_nlo[0]->Eval(GenHMass);
+          KFactor_QCD_ggZZ_Nominal /= divisor;
+          KFactor_QCD_ggZZ_PDFScaleDn /= divisor;
+          KFactor_QCD_ggZZ_PDFScaleUp /= divisor;
+          KFactor_QCD_ggZZ_QCDScaleDn /= divisor;
+          KFactor_QCD_ggZZ_QCDScaleUp /= divisor;
+          KFactor_QCD_ggZZ_AsDn /= divisor;
+          KFactor_QCD_ggZZ_AsUp /= divisor;
+          KFactor_QCD_ggZZ_PDFReplicaDn /= divisor;
+          KFactor_QCD_ggZZ_PDFReplicaUp /= divisor;
+        }
+        else{
+          KFactor_QCD_ggZZ_Nominal=0;
+          KFactor_QCD_ggZZ_PDFScaleDn=0;
+          KFactor_QCD_ggZZ_PDFScaleUp=0;
+          KFactor_QCD_ggZZ_QCDScaleDn=0;
+          KFactor_QCD_ggZZ_QCDScaleUp=0;
+          KFactor_QCD_ggZZ_AsDn=0;
+          KFactor_QCD_ggZZ_AsUp=0;
+          KFactor_QCD_ggZZ_PDFReplicaDn=0;
+          KFactor_QCD_ggZZ_PDFReplicaUp=0;
+        }
       }
     }
     else if (apply_K_NNLOQCD_ZZGG==3){
