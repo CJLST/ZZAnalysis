@@ -449,6 +449,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
         reco::deltaR(lep->p4(), Z2L1->p4()) > 0.02 &&
         reco::deltaR(lep->p4(), Z2L2->p4()) > 0.02
         ){
+        nExtraLep++;
         myCand.addUserCand("ExtraLep"+to_string(nExtraLep), *lepPtr);
 
         SimpleParticle_t theLepton(
@@ -464,7 +465,6 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
           }
         }
         if (!inserted) associatedLeptons.push_back(theLepton);
-        nExtraLep++;
       }
     }
     myCand.addUserFloat("nExtraLep",nExtraLep);
