@@ -436,7 +436,7 @@ private:
 
   void addweight(float &weight, vector<float> &weight_reweighted, float weighttoadd);
 
-  void getCheckedUserFloat(const pat::CompositeCandidate& cand, std::string strval, Float_t& setval, Float_t defaultval=0);
+  void getCheckedUserFloat(const pat::CompositeCandidate& cand, const std::string& strval, Float_t& setval, Float_t defaultval=0);
 
   // ----------member data ---------------------------
   ZZ4lConfigHelper myHelper;
@@ -474,8 +474,8 @@ private:
   edm::EDGetTokenT<edm::View<reco::Candidate> > genParticleToken;
   edm::Handle<edm::View<reco::Candidate> > genParticles;
   edm::EDGetTokenT<GenEventInfoProduct> genInfoToken;
-  edm::EDGetTokenT<edm::View<pat::CompositeCandidate>> candToken;
-  edm::EDGetTokenT<edm::View<pat::CompositeCandidate>> lhecandToken;
+  edm::EDGetTokenT<edm::View<pat::CompositeCandidate> > candToken;
+  edm::EDGetTokenT<edm::View<pat::CompositeCandidate> > lhecandToken;
   edm::EDGetTokenT<edm::TriggerResults> triggerResultToken;
   edm::EDGetTokenT<vector<reco::Vertex> > vtxToken;
   edm::EDGetTokenT<edm::View<pat::Jet> > jetToken;
@@ -536,7 +536,7 @@ private:
 
   std::vector<const reco::Candidate *> genFSR;
 
-  std::vector<std::vector<float>> ewkTable;
+  std::vector<std::vector<float> > ewkTable;
   TSpline3* spkfactor_ggzz_nnlo[9]; // Nominal, PDFScaleDn, PDFScaleUp, QCDScaleDn, QCDScaleUp, AsDn, AsUp, PDFReplicaDn, PDFReplicaUp
   TSpline3* spkfactor_ggzz_nlo[9]; // Nominal, PDFScaleDn, PDFScaleUp, QCDScaleDn, QCDScaleUp, AsDn, AsUp, PDFReplicaDn, PDFReplicaUp
 
@@ -1202,7 +1202,7 @@ void HZZ4lNtupleMaker::FillKFactors(edm::Handle<GenEventInfoProduct>& genInfo, s
 
 
 void HZZ4lNtupleMaker::FillLHECandidate(){
-  LHEMotherPz.clear();
+  LHEMotherPz.clear(); //FIXME
   LHEMotherE.clear();
   LHEMotherId.clear();
   LHEDaughterPt.clear();
@@ -1679,7 +1679,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 }
 
 
-void HZZ4lNtupleMaker::getCheckedUserFloat(const pat::CompositeCandidate& cand, std::string strval, Float_t& setval, Float_t defaultval){
+void HZZ4lNtupleMaker::getCheckedUserFloat(const pat::CompositeCandidate& cand, const std::string& strval, Float_t& setval, Float_t defaultval){
   if (cand.hasUserFloat(strval)) setval = cand.userFloat(strval);
   else setval = defaultval;
 }

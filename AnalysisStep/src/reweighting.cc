@@ -5,7 +5,7 @@
 #include <ZZAnalysis/AnalysisStep/interface/reweighting.h>
 
 
-ReweightingType Reweighting::reweightingtypefromstring(std::string reweightingtypestring) {
+ReweightingType Reweighting::reweightingtypefromstring(const std::string& reweightingtypestring) {
   if (reweightingtypestring == "none") return NoReweighting;
   else if (reweightingtypestring == "HVV_spin0") return HVV_spin0;
   else if (reweightingtypestring == "HVV_spin012") return HVV_spin012;

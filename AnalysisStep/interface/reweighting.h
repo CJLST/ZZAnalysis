@@ -38,7 +38,7 @@ protected:
   int myspin;
   Mela* mela;
 
-  ReweightingType reweightingtypefromstring(std::string reweightingtypestring);
+  ReweightingType reweightingtypefromstring(const std::string& reweightingtypestring);
 
   template <unsigned int size> void couplingsfromvectors(double(&couplings)[size][2], vector<double> real, vector<double> imaginary) { // Could just have had a pair -- U. Sarica
     if (real.size() != size || imaginary.size() != size) {
