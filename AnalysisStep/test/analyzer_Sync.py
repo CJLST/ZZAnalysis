@@ -97,3 +97,7 @@ process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
 #process.mch = cms.EndPath(process.printTree)
 
 
+#Monitor memory usage
+#process.SimpleMemoryCheck = cms.Service("SimpleMemoryCheck",
+#    ignoreTotal = cms.untracked.int32(1)
+#)

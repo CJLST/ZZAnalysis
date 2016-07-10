@@ -75,7 +75,8 @@ namespace {
   bool addVtxFit = false;
   bool addFSRDetails = false;
   bool addQGLInputs = true;
-  bool skipDataMCWeight = true; // skip computation of data/MC weight
+  bool skipMuDataMCWeight = false; // skip computation of data/MC weight for mu
+  bool skipEleDataMCWeight = true; // skip computation of data/MC weight for ele
   bool skipFakeWeight = true;   // skip computation of fake rate weight for CRs
   bool skipHqTWeight = true;    // skip computation of hQT weight
 
@@ -628,24 +629,19 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   spkfactor = (TSpline3*)ggZZKFactorFile->Get("sp_kfactor_Nominal")->Clone();
   ggZZKFactorFile->Close();
 
-  if (!skipDataMCWeight) {
-    //Scale factors for data/MC efficiency
-
-    // only LEPTON_SETUP=2015 is supported
-    if(year!=2015){
-      cout<<"Error: data/MC weights are not supported for this LEPTON_SETUP; see HZZ4lNtupleMaker.cc"<<endl;
-      abort();
-    }
-
+  //Scale factors for data/MC efficiency
+  if (!skipMuDataMCWeight) {
     TString filename;
-
     filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_%d.root",year);
     edm::FileInPath fipMu(filename.Data());
     fipPath = fipMu.fullPath();
     TFile *fMuWeight = TFile::Open(fipPath.data(),"READ");
     hTH2D_Mu_All = (TH2D*)fMuWeight->Get("FINAL")->Clone();
     fMuWeight->Close();
-
+  }
+  
+  if (!skipEleDataMCWeight) {
+    TString filename;  
     filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_%d_IdIsoSip.root",year);
     edm::FileInPath fipEleNotCracks(filename.Data());
     fipPath = fipEleNotCracks.fullPath();
@@ -659,7 +655,6 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
     TFile *fEleWeightCracks = TFile::Open(fipPath.data(),"READ");
     hTH2D_El_IdIsoSip_Cracks = (TH2D*)fEleWeightCracks->Get("hScaleFactors_IdIsoSip_Cracks")->Clone();
     fEleWeightCracks->Close();
-
   }
 
   if (!skipHqTWeight) {
@@ -1631,7 +1626,9 @@ void HZZ4lNtupleMaker::fillDescriptions(edm::ConfigurationDescriptions& descript
 
 Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
 {
-  if (skipDataMCWeight) return 1.;
+  Int_t   myLepID = abs(Lep->pdgId());
+  if (skipMuDataMCWeight&& myLepID==13) return 1.;
+  if (skipEleDataMCWeight&& myLepID==11) return 1.;
 
   Float_t weight  = 1.;
   //Float_t errCorr = 0.;
@@ -1639,7 +1636,6 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
 
   Float_t myLepPt = Lep->pt();
   Float_t myLepEta = Lep->eta();
-  Int_t   myLepID = abs(Lep->pdgId());
 
   //avoid to go out of the TH boundary
   if(myLepID == 13 && myLepPt > 79.) myLepPt = 79.;

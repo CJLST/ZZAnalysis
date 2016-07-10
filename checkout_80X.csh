@@ -44,16 +44,11 @@ git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMa
 (cd ZZMatrixElement ; git checkout -b from-c6d45de c6d45de)
 
 #kinematic refitting
-git clone https://github.com/mhl0116/KinZfitter.git
-(cd KinZfitter ; git checkout -b from-f5271ae f5271ae)
+git clone https://github.com/VBF-HZZ/KinZfitter.git
+(cd KinZfitter ; git checkout -b from-7f3893d 7f3893d)
 
 #muon momentum scale corrections (76X)
 git clone https://github.com/bachtis/Analysis.git -b KaMuCa_V3 KaMuCa 
-
-#hack the KinZfitter to use the corrected muon pT error
-sed -i 's/reco::Muon/pat::Muon/g' KinZfitter/HelperFunction/interface/HelperFunction.h
-sed -i 's/reco::Muon/pat::Muon/g' KinZfitter/HelperFunction/src/HelperFunction.cc
-sed -i 's/double pterr = mu->muonBestTrack()->ptError();/double pterr = mu->userFloat("correctedPtError");/g' KinZfitter/HelperFunction/src/HelperFunction.cc
 
 #Jet energy corrections (CMGTools)
 #(mkdir -p CMGTools/Common; cd CMGTools/Common ; wget https://raw.githubusercontent.com/CERN-PH-CMG/cmg-cmssw/a875832047532c5469aa9795751f0363cd5d9244/CMGTools/Common/plugins/JetEnergyCorrector.h)

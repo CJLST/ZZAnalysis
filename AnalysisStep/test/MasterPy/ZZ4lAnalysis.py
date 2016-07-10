@@ -22,16 +22,16 @@ declareDefault("SAMPLE_TYPE", LEPTON_SETUP, globals())
 declareDefault("SAMPLENAME", "", globals())
 
 #Type of electron scale correction/smearing: "None", "RunII"
-declareDefault("ELECORRTYPE", "None", globals())
+declareDefault("ELECORRTYPE", "RunII", globals())
 
 #Apply electron escale regression
 declareDefault("ELEREGRESSION", "None", globals())
 
 #Apply muon scale correction
-declareDefault("APPLYMUCORR", False, globals())
+declareDefault("APPLYMUCORR", True, globals())
 
-#muon scale correction identifier, "None" for pass-through, "MC_76X_13TeV" for 2015
-declareDefault("MUCORRTYPE", "None", globals())
+#muon scale correction identifier, "None" for pass-through, "MC_76X_13TeV" for 2015, "MC_80X_13TeV" for ICHEP2016
+declareDefault("MUCORRTYPE", "MC_80X_13TeV", globals())
 
 #Reapply JEC
 declareDefault("APPLYJEC", True, globals())
@@ -399,6 +399,8 @@ else:
 
 #------- ELECTRONS -------
 
+#--- Run1 types of corrections below here, just as a reference
+#
 ##--- Electron regression+calibrarion must be applied after BDT is recomputed
 ## NOTE patElectronsWithRegression->eleRegressionEnergy;  calibratedElectrons-> calibratedPatElectrons
 ## Default: NEW ECAL regression + NEW calibration + NEW combination
@@ -446,7 +448,7 @@ process.calibratedPatElectrons = cms.EDProducer("CalibratedPatElectronProducerRu
     gbrForestName = cms.string("gedelectron_p4combination_25ns"),
     isMC = cms.bool(IsMC),
     isSynchronization = cms.bool(False),
-    correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/76X_16DecRereco_2015")
+    correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/80X_Golden22June_approval")
 )
 
 if (BUNCH_SPACING == 50):
@@ -493,6 +495,10 @@ process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.cali
 if ELEREGRESSION == "None" and (ELECORRTYPE == "None" or BUNCH_SPACING == 50) :   # No correction at all. Skip correction modules.
     process.bareSoftElectrons.src = cms.InputTag('slimmedElectrons')
     process.electrons = cms.Sequence(process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
+elif ELECORRTYPE == "RunII" :
+    process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag("calibratedPatElectrons")
+    process.electronMVAValueMapProducer.srcMiniAOD=cms.InputTag("calibratedPatElectrons")
+
 
 #elif ELEREGRESSION == "None" and ELECORRTYPE == "RunII" :
 #    process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('calibratedPatElectrons') # (when running VID)
@@ -618,7 +624,7 @@ process.appendPhotons = cms.EDProducer("LeptonPhotonMatcher",
 if ADDLOOSEELE:
     process.appendPhotons.looseElectronSrc = cms.InputTag("cleanSoftLooseElectrons")
     process.appendPhotons.tleSrc = cms.InputTag("softPhotons")
-
+    process.appendPhotons.TLEMinPt = cms.double(25.)
 
 # All leptons, any F/C.
 # CAVEAT: merging creates copies of the objects, so that CandViewShallowCloneCombiner is not able to find 
@@ -1073,12 +1079,14 @@ if APPLYJEC:
                 cms.PSet(
                     record = cms.string('JetCorrectionsRecord'),
 #                    tag    = cms.string('JetCorrectorParametersCollection_Fall15_25nsV2_MC_AK4PFchs'), #for 76X
-                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV1_MC_AK4PFchs'), #for 80X
+#                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV1_MC_AK4PFchs'), #for 80X/Moriond16
+                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV6_MC_AK4PFchs'), #for 80X/ICHEP16
                     label  = cms.untracked.string('AK4PFchs')
                     ),
                 ), 
 #            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall15_25nsV2_MC.db'), #for 76X
-             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Spring16_25nsV1_MC.db'), #for 80X
+#             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Spring16_25nsV1_MC.db'), #for 80X/Moriond16
+             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Spring16_25nsV6_MC.db'), #for 80X/ICHEP16
             
             )
     else: 
@@ -1090,11 +1098,13 @@ if APPLYJEC:
             toGet = cms.VPSet(
                 cms.PSet(
                     record = cms.string('JetCorrectionsRecord'),
-                    tag    = cms.string('JetCorrectorParametersCollection_Fall15_25nsV2_DATA_AK4PFchs'), #for 76X FIXME: update for 80X
+#                    tag    = cms.string('JetCorrectorParametersCollection_Fall15_25nsV2_DATA_AK4PFchs'), #for 76X
+                    tag    = cms.string('JetCorrectorParametersCollection_Fall15_25nsV2_DATA_AK4PFchs'), #for 80X/ICHEP16
                     label  = cms.untracked.string('AK4PFchs')
                     ),
                 ), 
-            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall15_25nsV2_DATA.db'), #for 76X FIXME: update for 80X   
+#            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall15_25nsV2_DATA.db'), #for 76X
+            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall15_25nsV2_DATA.db'), #for 80X/ICHEP16
             )
 
     ## add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
@@ -1230,3 +1240,5 @@ if (ADDLOOSEELE) :
     import os
     execfile(os.environ['CMSSW_BASE'] + "/src/ZZAnalysis/AnalysisStep/test/MasterPy/LooseEle.py")
     execfile(os.environ['CMSSW_BASE'] + "/src/ZZAnalysis/AnalysisStep/test/MasterPy/TracklessEle.py")
+
+
