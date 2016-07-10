@@ -707,7 +707,8 @@ process.ZCand = cms.EDProducer("ZCandidateFiller",
 # ll, any combination of flavour/charge, for control regions only
 process.bareLLCand = cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string('softLeptons softLeptons'),
-    cut = cms.string('deltaR(daughter(0).eta, daughter(0).phi, daughter(1).eta, daughter(1).phi)>0.02'), # protect against ghosts
+    #cut = cms.string('deltaR(daughter(0).eta, daughter(0).phi, daughter(1).eta, daughter(1).phi)>0.02'), # protect against ghosts
+    cut = cms.string('deltaR(daughter(0).eta, daughter(0).phi, daughter(1).eta, daughter(1).phi)>0.02 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId())'), # protect against ghosts -- id fix for MELA
     checkCharge = cms.bool(False)
 )
 process.LLCand = cms.EDProducer("ZCandidateFiller",
