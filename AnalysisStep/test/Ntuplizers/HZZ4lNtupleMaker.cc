@@ -1839,6 +1839,7 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
   Int_t   myLepID = abs(Lep->pdgId());
   if (skipMuDataMCWeight&& myLepID==13) return 1.;
   if (skipEleDataMCWeight&& myLepID==11) return 1.;
+  if (myLepID==22) return 1.; // FIXME - what SFs should be used in this case?
 
   Float_t weight  = 1.;
   //Float_t errCorr = 0.;
