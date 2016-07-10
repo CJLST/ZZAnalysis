@@ -21,7 +21,7 @@ git cms-addpkg EgammaAnalysis/ElectronTools
 #### Please do not add any custom (non-CMSSW) package before this line ####
 
 #Preliminary 8X electron ID
-git clone git@github.com:Werbellin/RecoEgamma_8X.git RecoEgamma
+git clone https://github.com/Werbellin/RecoEgamma_8X.git RecoEgamma
 (cd RecoEgamma; git checkout d716460) 
 
 #ZZAnalysis
@@ -41,7 +41,7 @@ git clone -n https://github.com/cms-analysis/EgammaAnalysis-ElectronTools EGamma
 
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
-(cd ZZMatrixElement ; git checkout -b from-c6d45de c6d45de)
+(cd ZZMatrixElement ; git checkout -b from-v200p3 v2.0.0_patch3 ; source setup.sh -j 12)
 
 #kinematic refitting
 git clone https://github.com/VBF-HZZ/KinZfitter.git

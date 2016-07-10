@@ -47,7 +47,8 @@
 #include <ZZAnalysis/AnalysisStep/interface/MCHistoryTools.h>
 #include <ZZAnalysis/AnalysisStep/interface/PUReweight.h>
 #include "ZZAnalysis/AnalysisStep/interface/EwkCorrections.h"
-#include "ZZAnalysis/AnalysisStep/src/reweighting.cc"
+#include "ZZAnalysis/AnalysisStep/interface/reweighting.h"
+#include "ZZAnalysis/AnalysisStep/interface/LHEHandler.h"
 #include "ZZAnalysis/AnalysisStep/src/kFactors.C"
 #include <ZZAnalysis/AnalysisStep/interface/bitops.h>
 #include <ZZAnalysis/AnalysisStep/interface/Fisher.h>
@@ -56,8 +57,6 @@
 #include <ZZAnalysis/AnalysisStep/interface/utils.h>
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
-#include <ZZMatrixElement/MELA/interface/TVar.hh>
-#include <ZZMatrixElement/MELA/src/computeAngles.h>
 
 #include "ZZ4lConfigHelper.h"
 #include "HZZ4lNtupleFactory.h"
@@ -90,11 +89,19 @@ namespace {
   Short_t NObsInt  = 0;
   Float_t NTrueInt  = 0;
   Float_t PUWeight  = 0;
-  Float_t KFactorggZZ = 0;
-  Float_t KFactorEWKqqZZ = 0;
-  Float_t KFactorQCDqqZZ_dPhi = 0;
-  Float_t KFactorQCDqqZZ_M = 0;
-  Float_t KFactorQCDqqZZ_Pt = 0;
+  Float_t KFactor_QCD_ggZZ_Nominal = 0;
+  Float_t KFactor_QCD_ggZZ_PDFScaleDn = 0;
+  Float_t KFactor_QCD_ggZZ_PDFScaleUp = 0;
+  Float_t KFactor_QCD_ggZZ_QCDScaleDn = 0;
+  Float_t KFactor_QCD_ggZZ_QCDScaleUp = 0;
+  Float_t KFactor_QCD_ggZZ_AsDn = 0;
+  Float_t KFactor_QCD_ggZZ_AsUp = 0;
+  Float_t KFactor_QCD_ggZZ_PDFReplicaDn = 0;
+  Float_t KFactor_QCD_ggZZ_PDFReplicaUp = 0;
+  Float_t KFactor_EW_qqZZ = 0;
+  Float_t KFactor_QCD_qqZZ_dPhi = 0;
+  Float_t KFactor_QCD_qqZZ_M = 0;
+  Float_t KFactor_QCD_qqZZ_Pt = 0;
   Float_t PFMET  =  -99;
   Float_t PFMETPhi  =  -99;
   Float_t PFMETNoHF  =  -99;
@@ -158,113 +165,125 @@ namespace {
   std::vector<short> fsrLeptID;
   std::vector<float> fsrGenPt;
   Bool_t passIsoPreFSR = 0;
-  Float_t p0plus_VAJHU  = 0;
-  Float_t p0minus_VAJHU  = 0;
-  Float_t p0plus_VAMCFM  = 0;
-  Float_t p0hplus_VAJHU  = 0;
-  Float_t p1_VAJHU  = 0;
-  Float_t p1_prodIndep_VAJHU  = 0;
-  Float_t p1plus_VAJHU  = 0;
-  Float_t p1plus_prodIndep_VAJHU  = 0;
-  Float_t p2_VAJHU  = 0;
-  Float_t p2_prodIndep_VAJHU  = 0;
-  Float_t p2qqb_VAJHU  = 0;
-  Float_t p2hplus_VAJHU  = 0;
-  Float_t p2hminus_VAJHU  = 0;
-  Float_t p2bplus_VAJHU  = 0;
-  Float_t p2hplus_qqb_VAJHU  = 0;
-  Float_t p2hplus_prodIndep_VAJHU  = 0;
-  Float_t p2hminus_qqb_VAJHU  = 0;
-  Float_t p2hminus_prodIndep_VAJHU  = 0;
-  Float_t p2bplus_qqb_VAJHU  = 0;
-  Float_t p2bplus_prodIndep_VAJHU  = 0;
-  Float_t p2h2plus_gg_VAJHU  = 0;
-  Float_t p2h2plus_qqbar_VAJHU                 =                0;
-  Float_t p2h2plus_prodIndep_VAJHU     =        0;
-  Float_t p2h3plus_gg_VAJHU            =        0;
-  Float_t p2h3plus_qqbar_VAJHU         =        0;
-  Float_t p2h3plus_prodIndep_VAJHU     =        0;
-  Float_t p2h6plus_gg_VAJHU            =        0;
-  Float_t p2h6plus_qqbar_VAJHU         =        0;
-  Float_t p2h6plus_prodIndep_VAJHU     =        0;
-  Float_t p2h7plus_gg_VAJHU            =        0;
-  Float_t p2h7plus_qqbar_VAJHU         =        0;
-  Float_t p2h7plus_prodIndep_VAJHU     =        0;
-  Float_t p2h9minus_gg_VAJHU           =                0;
-  Float_t p2h9minus_qqbar_VAJHU        =                0;
-  Float_t p2h9minus_prodIndep_VAJHU    =                0;
-  Float_t p2h10minus_gg_VAJHU         =                 0;
-  Float_t p2h10minus_qqbar_VAJHU      =                 0;
-  Float_t p2h10minus_prodIndep_VAJHU  =                 0;
-  Float_t bkg_VAMCFM  = 0;
-  Float_t bkg_prodIndep_VAMCFM  = 0;
-  Float_t ggzz_VAMCFM  = 0;
-  Float_t ggzz_p0plus_VAMCFM  = 0;
-  Float_t ggzz_c1_VAMCFM  = 0;
-  Float_t ggzz_c5_VAMCFM  = 0;
-  Float_t ggzz_ci_VAMCFM  = 0;
-  Float_t pg1g4_mela  = 0;
-  Float_t pg1g4_VAJHU  = 0;
-  Float_t pg1g4_pi2_VAJHU  = 0;
-  Float_t pg1g2_pi2_VAJHU  = 0;
-  Float_t pg1g2_mela  = 0;
-  Float_t pg1g2_VAJHU  = 0;
-  Float_t p0_g1prime2_VAJHU  =  0;
-  Float_t pg1g1prime2_VAJHU  =  0;
-  Float_t Dgg10_VAMCFM  =  0;
-  Float_t pzzzg_VAJHU  =  0;
-  Float_t pzzgg_VAJHU  =  0;
-  Float_t pzzzg_PS_VAJHU  =  0;
-  Float_t pzzgg_PS_VAJHU  =  0;
-  Float_t p0Zgs_VAJHU  =  0;
-  Float_t p0gsgs_VAJHU  =  0;
-  Float_t p0Zgs_PS_VAJHU  =  0;
-  Float_t p0gsgs_PS_VAJHU  =  0;
-  Float_t p0Zgs_g1prime2_VAJHU  =  0;
-  Float_t pzzzg_g1prime2_VAJHU  =  0;
-  Float_t pzzzg_g1prime2_pi2_VAJHU  =  0;
-  Float_t p0plus_m4l  =  0;
-  Float_t bkg_m4l  =  0;
-  Float_t p0plus_m4l_ScaleUp  =  0;
-  Float_t bkg_m4l_ScaleUp  = 0;
-  Float_t p0plus_m4l_ScaleDown  = 0;
-  Float_t bkg_m4l_ScaleDown  = 0;
-  Float_t p0plus_m4l_ResUp  = 0;
-  Float_t bkg_m4l_ResUp  = 0;
-  Float_t p0plus_m4l_ResDown  = 0;
-  Float_t bkg_m4l_ResDown  = 0;
-  Float_t phjj_VAJHU_old  = 0;
-  Float_t pvbf_VAJHU_old  = 0;
-  Float_t phjj_VAJHU_old_up  = 0;
-  Float_t pvbf_VAJHU_old_up  = 0;
-  Float_t phjj_VAJHU_old_dn  = 0;
-  Float_t pvbf_VAJHU_old_dn  = 0;
-  Float_t phjj_VAJHU_new  = 0;
-  Float_t pvbf_VAJHU_new  = 0;
-  Float_t phjj_VAJHU_new_up  = 0;
-  Float_t pvbf_VAJHU_new_up  = 0;
-  Float_t phjj_VAJHU_new_dn  = 0;
-  Float_t pvbf_VAJHU_new_dn  = 0;
-  Float_t pAux_vbf_VAJHU  = 0;
-  Float_t pAux_vbf_VAJHU_up  = 0;
-  Float_t pAux_vbf_VAJHU_dn  = 0;
-  Float_t phj_VAJHU  = 0;
-  Float_t phj_VAJHU_up  = 0;
-  Float_t phj_VAJHU_dn  = 0;
-  Float_t pwh_hadronic_VAJHU  = 0;
-  Float_t pwh_hadronic_VAJHU_up  = 0;
-  Float_t pwh_hadronic_VAJHU_dn  = 0;
-  Float_t pwh_leptonic_VAJHU  = 0;
-  Float_t pzh_hadronic_VAJHU  = 0;
-  Float_t pzh_hadronic_VAJHU_up  = 0;
-  Float_t pzh_hadronic_VAJHU_dn  = 0;
-  Float_t pzh_leptonic_VAJHU  = 0;
-  Float_t ptth_VAJHU  = 0;
-  Float_t ptth_VAJHU_up  = 0;
-  Float_t ptth_VAJHU_dn  = 0;
-  Float_t pbbh_VAJHU  = 0;
-  Float_t pbbh_VAJHU_up  = 0;
-  Float_t pbbh_VAJHU_dn  = 0;
+
+  Float_t p0plus_VAJHU = 0;
+  Float_t p0_g1prime2_VAJHU = 0;
+  Float_t p0hplus_VAJHU = 0;
+  Float_t p0minus_VAJHU = 0;
+
+  Float_t p0_g1prime2_zgs_VAJHU = 0;
+  Float_t p0hplus_zgs_VAJHU = 0;
+  Float_t p0minus_zgs_VAJHU = 0;
+  Float_t p0hplus_gsgs_VAJHU = 0;
+  Float_t p0minus_gsgs_VAJHU = 0;
+
+  Float_t pg1g1prime2_VAJHU = 0;
+  Float_t pg1g2_VAJHU = 0;
+  Float_t pg1g2_pi2_VAJHU = 0;
+  Float_t pg1g4_VAJHU = 0;
+  Float_t pg1g4_pi2_VAJHU = 0;
+
+  Float_t p0plus_zz_g1prime2_zgs_VAJHU = 0;
+  Float_t p0plus_zz_g1prime2_zgs_pi2_VAJHU = 0;
+  Float_t p0plus_zz_0hplus_zgs_VAJHU = 0;
+  Float_t p0plus_zz_0minus_zgs_VAJHU = 0;
+  Float_t p0plus_zz_0hplus_gsgs_VAJHU = 0;
+  Float_t p0plus_zz_0minus_gsgs_VAJHU = 0;
+
+  Float_t p1_VAJHU = 0;
+  Float_t p1_prodIndep_VAJHU = 0;
+  Float_t p1plus_VAJHU = 0;
+  Float_t p1plus_prodIndep_VAJHU = 0;
+
+  Float_t p2plus_gg_VAJHU = 0;
+  Float_t p2plus_qqb_VAJHU = 0;
+  Float_t p2plus_prodIndep_VAJHU = 0;
+  Float_t p2h2plus_gg_VAJHU = 0;
+  Float_t p2h2plus_qqb_VAJHU = 0;
+  Float_t p2h2plus_prodIndep_VAJHU = 0;
+  Float_t p2h3plus_gg_VAJHU = 0;
+  Float_t p2h3plus_qqb_VAJHU = 0;
+  Float_t p2h3plus_prodIndep_VAJHU = 0;
+  Float_t p2h4plus_gg_VAJHU = 0;
+  Float_t p2h4plus_qqb_VAJHU = 0;
+  Float_t p2h4plus_prodIndep_VAJHU = 0;
+  Float_t p2bplus_gg_VAJHU = 0;
+  Float_t p2bplus_qqb_VAJHU = 0;
+  Float_t p2bplus_prodIndep_VAJHU = 0;
+  Float_t p2h6plus_gg_VAJHU = 0;
+  Float_t p2h6plus_qqb_VAJHU = 0;
+  Float_t p2h6plus_prodIndep_VAJHU = 0;
+  Float_t p2h7plus_gg_VAJHU = 0;
+  Float_t p2h7plus_qqb_VAJHU = 0;
+  Float_t p2h7plus_prodIndep_VAJHU = 0;
+  Float_t p2hminus_gg_VAJHU = 0;
+  Float_t p2hminus_qqb_VAJHU = 0;
+  Float_t p2hminus_prodIndep_VAJHU = 0;
+  Float_t p2h9minus_gg_VAJHU = 0;
+  Float_t p2h9minus_qqb_VAJHU = 0;
+  Float_t p2h9minus_prodIndep_VAJHU = 0;
+  Float_t p2h10minus_gg_VAJHU = 0;
+  Float_t p2h10minus_qqb_VAJHU = 0;
+  Float_t p2h10minus_prodIndep_VAJHU = 0;
+
+  Float_t p0plus_VAMCFM = 0;
+  Float_t ggzz_VAMCFM = 0;
+  Float_t ggzz_p0plus_VAMCFM = 0;
+  Float_t bkg_VAMCFM = 0;
+  Float_t bkg_prodIndep_VAMCFM = 0;
+  Float_t pZJJ_VAMCFM = 0;
+  Float_t Dgg10_VAMCFM = 0;
+
+  Float_t p0plus_m4l = 0;
+  Float_t p0plus_m4l_ScaleUp = 0;
+  Float_t p0plus_m4l_ScaleDown = 0;
+  Float_t p0plus_m4l_ResUp = 0;
+  Float_t p0plus_m4l_ResDown = 0;
+  Float_t bkg_m4l = 0;
+  Float_t bkg_m4l_ScaleUp = 0;
+  Float_t bkg_m4l_ScaleDown = 0;
+  Float_t bkg_m4l_ResUp = 0;
+  Float_t bkg_m4l_ResDown = 0;
+
+  Float_t pwh_leptonic_VAJHU = 0;
+  Float_t pzh_leptonic_VAJHU = 0;
+
+  Float_t phjj_VAJHU_highestPTJets = 0;
+  Float_t pvbf_VAJHU_highestPTJets = 0;
+  Float_t phjj_VAJHU_highestPTJets_up = 0;
+  Float_t pvbf_VAJHU_highestPTJets_up = 0;
+  Float_t phjj_VAJHU_highestPTJets_dn = 0;
+  Float_t pvbf_VAJHU_highestPTJets_dn = 0;
+
+  Float_t phjj_VAJHU_bestDjet = 0;
+  Float_t pvbf_VAJHU_bestDjet = 0;
+  Float_t phjj_VAJHU_bestDjet_up = 0;
+  Float_t pvbf_VAJHU_bestDjet_up = 0;
+  Float_t phjj_VAJHU_bestDjet_dn = 0;
+  Float_t pvbf_VAJHU_bestDjet_dn = 0;
+
+  Float_t pAux_vbf_VAJHU = 0;
+  Float_t pAux_vbf_VAJHU_up = 0;
+  Float_t pAux_vbf_VAJHU_dn = 0;
+
+  Float_t phj_VAJHU = 0;
+  Float_t phj_VAJHU_up = 0;
+  Float_t phj_VAJHU_dn = 0;
+
+  Float_t pwh_hadronic_VAJHU = 0;
+  Float_t pwh_hadronic_VAJHU_up = 0;
+  Float_t pwh_hadronic_VAJHU_dn = 0;
+  Float_t pzh_hadronic_VAJHU = 0;
+  Float_t pzh_hadronic_VAJHU_up = 0;
+  Float_t pzh_hadronic_VAJHU_dn = 0;
+
+  Float_t ptth_VAJHU = 0;
+  Float_t ptth_VAJHU_up = 0;
+  Float_t ptth_VAJHU_dn = 0;
+  Float_t pbbh_VAJHU = 0;
+  Float_t pbbh_VAJHU_up = 0;
+  Float_t pbbh_VAJHU_dn = 0;
+
   std::vector<float> JetPt ;
   std::vector<float> JetEta ;
   std::vector<float> JetPhi ;
@@ -291,6 +310,22 @@ namespace {
   Int_t genProcessId  = 0;
   Float_t genHEPMCweight  = 0;
   std::vector<float> reweightingweights;
+
+  std::vector<float> LHEMotherPz;
+  std::vector<float> LHEMotherE;
+  std::vector<short> LHEMotherId;
+  std::vector<float> LHEDaughterPt;
+  std::vector<float> LHEDaughterEta;
+  std::vector<float> LHEDaughterPhi;
+  std::vector<float> LHEDaughterMass;
+  std::vector<short> LHEDaughterId;
+  std::vector<float> LHEAssociatedParticlePt;
+  std::vector<float> LHEAssociatedParticleEta;
+  std::vector<float> LHEAssociatedParticlePhi;
+  std::vector<float> LHEAssociatedParticleMass;
+  std::vector<short> LHEAssociatedParticleId;
+
+  Float_t LHEPDFScale = 0;
   Float_t LHEweight_QCDscale_muR1_muF1  = 0;
   Float_t LHEweight_QCDscale_muR1_muF2  = 0;
   Float_t LHEweight_QCDscale_muR1_muF0p5  = 0;
@@ -300,6 +335,7 @@ namespace {
   Float_t LHEweight_QCDscale_muR0p5_muF1  = 0;
   Float_t LHEweight_QCDscale_muR0p5_muF2  = 0;
   Float_t LHEweight_QCDscale_muR0p5_muF0p5  = 0;
+
   Short_t genExtInfo  = 0;
   Float_t xsection  = 0;
   Float_t dataMCWeight  = 0;
@@ -381,6 +417,8 @@ private:
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
 
   void BookAllBranches();
+  virtual void FillKFactors(edm::Handle<GenEventInfoProduct>& genInfo, std::vector<const reco::Candidate *>& genZLeps);
+  virtual void FillLHECandidate();
   virtual void FillCandidate(const pat::CompositeCandidate& higgs, bool evtPass, const edm::Event&, const Int_t CRflag);
   virtual void FillJet(const pat::Jet& jet);
   virtual void endJob() ;
@@ -397,6 +435,8 @@ private:
   Float_t getFakeWeight(Float_t LepPt, Float_t LepEta, Int_t LepID, Int_t LepZ1ID);
 
   void addweight(float &weight, vector<float> &weight_reweighted, float weighttoadd);
+
+  void getCheckedUserFloat(const pat::CompositeCandidate& cand, std::string strval, Float_t& setval, Float_t defaultval=0);
 
   // ----------member data ---------------------------
   ZZ4lConfigHelper myHelper;
@@ -419,16 +459,23 @@ private:
   double sqrts;
   double Hmass;
 
-  Mela myMela;
+  Mela mela;
   Reweighting reweighting;
   int nReweightingSamples;
   bool doreweighting;
   ReweightingType reweightingtype;
 
+  bool addLHEKinematics;
+  LHEHandler* lheHandler;
+  int apply_K_NNLOQCD_ZZGG; // 0: Do not; 1: NNLO/LO; 2: NNLO/NLO; 3: NLO/LO
+  bool apply_K_NNLOQCD_ZZQQB;
+  bool apply_K_NLOEW_ZZQQB;
+
   edm::EDGetTokenT<edm::View<reco::Candidate> > genParticleToken;
   edm::Handle<edm::View<reco::Candidate> > genParticles;
   edm::EDGetTokenT<GenEventInfoProduct> genInfoToken;
-  edm::EDGetTokenT<edm::View<pat::CompositeCandidate> > candToken;
+  edm::EDGetTokenT<edm::View<pat::CompositeCandidate>> candToken;
+  edm::EDGetTokenT<edm::View<pat::CompositeCandidate>> lhecandToken;
   edm::EDGetTokenT<edm::TriggerResults> triggerResultToken;
   edm::EDGetTokenT<vector<reco::Vertex> > vtxToken;
   edm::EDGetTokenT<edm::View<pat::Jet> > jetToken;
@@ -490,7 +537,8 @@ private:
   std::vector<const reco::Candidate *> genFSR;
 
   std::vector<std::vector<float>> ewkTable;
-  TSpline3* spkfactor;
+  TSpline3* spkfactor_ggzz_nnlo[9]; // Nominal, PDFScaleDn, PDFScaleUp, QCDScaleDn, QCDScaleUp, AsDn, AsUp, PDFReplicaDn, PDFReplicaUp
+  TSpline3* spkfactor_ggzz_nlo[9]; // Nominal, PDFScaleDn, PDFScaleUp, QCDScaleDn, QCDScaleUp, AsDn, AsUp, PDFReplicaDn, PDFReplicaUp
 
   TH2D *hTH2D_Mu_All;
   TH2D *hTH2D_El_IdIsoSip_notCracks;
@@ -515,15 +563,13 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   year(pset.getParameter<int>("setup")),
   sqrts(SetupToSqrts(year)),
   Hmass(pset.getParameter<double>("superMelaMass")),
-  myMela(sqrts, Hmass),
+  mela(sqrts, Hmass, TVar::ERROR),
   reweighting(
-              myMela,
+              &mela,
               pset.getParameter<std::string>("reweightingtype"),
               pset.getParameter<int>("spin"),
               pset.getParameter<std::vector<double> >("HVVcouplings_real"),
               pset.getParameter<std::vector<double> >("HVVcouplings_imag"),
-              pset.getParameter<std::vector<double> >("HWWcouplings_real"),
-              pset.getParameter<std::vector<double> >("HWWcouplings_imag"),
               pset.getParameter<std::vector<double> >("ZVVcouplings_real"),
               pset.getParameter<std::vector<double> >("ZVVcouplings_imag"),
               pset.getParameter<std::vector<double> >("Gggcouplings_real"),
@@ -534,6 +580,11 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   nReweightingSamples(reweighting.nReweightingSamples),
   doreweighting(nReweightingSamples != 0),
   reweightingtype(reweighting.reweightingtype),
+  addLHEKinematics(pset.getParameter<bool>("AddLHEKinematics")),
+  lheHandler(0),
+  apply_K_NNLOQCD_ZZGG(pset.getParameter<int>("Apply_K_NNLOQCD_ZZGG")),
+  apply_K_NNLOQCD_ZZQQB(pset.getParameter<bool>("Apply_K_NNLOQCD_ZZQQB")),
+  apply_K_NLOEW_ZZQQB(pset.getParameter<bool>("Apply_K_NLOEW_ZZQQB")),
   reweight(),
   sampleName(pset.getParameter<string>("sampleName")),
   hTH2D_Mu_All(0),
@@ -591,6 +642,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   }
 
   isMC = myHelper.isMC();
+  if (isMC) lheHandler = new LHEHandler(pset.getParameter<int>("VVMode"), pset.getParameter<int>("VVDecayMode"), addLHEKinematics);
 
   Nevt_Gen = 0;
   Nevt_Gen_lumiBlock = 0;
@@ -623,10 +675,18 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   ewkTable = EwkCorrections::readFile_and_loadEwkTable(fipPath.data());
 
   // Read the ggZZ k-factor shape from file
-  edm::FileInPath ggzzFIP("ZZAnalysis/AnalysisStep/data/kfactors/Kfactor_Collected_ggHZZ_2l2l_NNLO_NNPDF_NarrowWidth_13TeV.root");
-  fipPath=ggzzFIP.fullPath();
+  TString strZZGGKFVar[9]={
+    "Nominal", "PDFScaleDn", "PDFScaleUp", "QCDScaleDn", "QCDScaleUp", "AsDn", "AsUp", "PDFReplicaDn", "PDFReplicaUp"
+  };
+  edm::FileInPath ggzzFIP_NNLO("ZZAnalysis/AnalysisStep/data/kfactors/Kfactor_Collected_ggHZZ_2l2l_NNLO_NNPDF_NarrowWidth_13TeV.root");
+  fipPath=ggzzFIP_NNLO.fullPath();
   TFile* ggZZKFactorFile = TFile::Open(fipPath.data());
-  spkfactor = (TSpline3*)ggZZKFactorFile->Get("sp_kfactor_Nominal")->Clone();
+  for (unsigned int ikf=0; ikf<9; ikf++) spkfactor_ggzz_nnlo[ikf] = (TSpline3*)ggZZKFactorFile->Get(Form("sp_kfactor_%s", strZZGGKFVar[ikf].Data()))->Clone(Form("sp_kfactor_%s_NNLO", strZZGGKFVar[ikf].Data()));
+  ggZZKFactorFile->Close();
+  edm::FileInPath ggzzFIP_NLO("ZZAnalysis/AnalysisStep/data/kfactors/Kfactor_Collected_ggHZZ_2l2l_NLO_NNPDF_NarrowWidth_13TeV.root");
+  fipPath=ggzzFIP_NLO.fullPath();
+  ggZZKFactorFile = TFile::Open(fipPath.data());
+  for (unsigned int ikf=0; ikf<9; ikf++) spkfactor_ggzz_nlo[ikf] = (TSpline3*)ggZZKFactorFile->Get(Form("sp_kfactor_%s", strZZGGKFVar[ikf].Data()))->Clone(Form("sp_kfactor_%s_NLO", strZZGGKFVar[ikf].Data()));
   ggZZKFactorFile->Close();
 
   //Scale factors for data/MC efficiency
@@ -692,6 +752,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
 
 HZZ4lNtupleMaker::~HZZ4lNtupleMaker()
 {
+  if (lheHandler!=0) delete lheHandler;
 }
 
 
@@ -772,7 +833,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
         // Gen leptons
         FillLepGenInfo(genZLeps.at(0)->pdgId(), genZLeps.at(1)->pdgId(), genZLeps.at(2)->pdgId(), genZLeps.at(3)->pdgId(),
-		       genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), genZLeps.at(3)->p4());
+           genZLeps.at(0)->p4(), genZLeps.at(1)->p4(), genZLeps.at(2)->p4(), genZLeps.at(3)->p4());
 
       }
 
@@ -791,10 +852,11 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
     }
 
+    // Note: Should move into LHEHandler -- U. Sarica
     reweightingweights.clear();
     if (doreweighting) {
       assert(reweighting.canreweight(genZLeps.size(), genFinalState));
-      int flavor = 3 - 2*(genFinalState == EEEE) - 1*(genFinalState==MMMM || GenZ1Flav*GenZ2Flav==/*15^4=*/50625);
+      int flavor = (GenZ1Flav==GenZ2Flav ? 0 : 2);
       float myprobability;
       vector<float> probabilities(nReweightingSamples);
       reweighting.setmycouplings();
@@ -812,23 +874,21 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     addweight(gen_sumWeights, gen_sumWeights_reweighted, PUWeight*genHEPMCweight);
 
 
-    // LHE weights
-    vector<edm::Handle<LHEEventProduct> > EvtHandles;
-    event.getManyByType(EvtHandles); // using this method because the label is not always the same (e.g. "source" in the ttH sample)
-    if(EvtHandles.size()>0){
-      edm::Handle<LHEEventProduct> EvtHandle = EvtHandles.front();
-      if(EvtHandle.isValid() && EvtHandle->weights().size()>=9){
-        LHEweight_QCDscale_muR1_muF1     = genHEPMCweight * EvtHandle->weights()[0].wgt / EvtHandle->originalXWGTUP(); // just for verification (should be 1)
-        LHEweight_QCDscale_muR1_muF2     = genHEPMCweight * EvtHandle->weights()[1].wgt / EvtHandle->originalXWGTUP();
-        LHEweight_QCDscale_muR1_muF0p5   = genHEPMCweight * EvtHandle->weights()[2].wgt / EvtHandle->originalXWGTUP();
-        LHEweight_QCDscale_muR2_muF1     = genHEPMCweight * EvtHandle->weights()[3].wgt / EvtHandle->originalXWGTUP();
-        LHEweight_QCDscale_muR2_muF2     = genHEPMCweight * EvtHandle->weights()[4].wgt / EvtHandle->originalXWGTUP();
-        LHEweight_QCDscale_muR2_muF0p5   = genHEPMCweight * EvtHandle->weights()[5].wgt / EvtHandle->originalXWGTUP();
-        LHEweight_QCDscale_muR0p5_muF1   = genHEPMCweight * EvtHandle->weights()[6].wgt / EvtHandle->originalXWGTUP();
-        LHEweight_QCDscale_muR0p5_muF2   = genHEPMCweight * EvtHandle->weights()[7].wgt / EvtHandle->originalXWGTUP();
-        LHEweight_QCDscale_muR0p5_muF0p5 = genHEPMCweight * EvtHandle->weights()[8].wgt / EvtHandle->originalXWGTUP();
+    // LHE information
+    if (isMC){
+      edm::Handle<LHEEventProduct> lhe_evt;
+      vector<edm::Handle<LHEEventProduct> > lhe_handles;
+      event.getManyByType(lhe_handles);
+      if (lhe_handles.size()>0){
+        lhe_evt = lhe_handles.front();
+        lheHandler->setHandle(&lhe_evt);
+        lheHandler->extract();
+        FillLHECandidate();
+        lheHandler->clear();
       }
+      //else cerr << "lhe_handles.size()==0" << endl;
     }
+    //
 
 
     mch.genAcceptance(gen_ZZ4lInEtaAcceptance, gen_ZZ4lInEtaPtAcceptance);
@@ -860,10 +920,10 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     }
 
 // End of MC history analysis ------------------------------------------
-  } else { 
+  } else {
     ++Nevt_Gen_lumiBlock; // keep track of # events for data as well
   }
-  
+
 
 
   // Get candidate collection
@@ -898,31 +958,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
 
   //Fill MC truth information
-  if (isMC) {
-    GenEventInfoProduct  genInfoP = *(genInfo.product());
-    // Calculate NNLO QCD K factors for ggZZ
-    //KFactorggZZ = 2.;
-    //KFactorggZZ = 1.7; // Jamboree
-    KFactorggZZ = (float)spkfactor->Eval(GenHMass); // Moriond2016
-
-    if (genFinalState!=BUGGY) {
-
-      if (genZLeps.size()==4) {
-        // Calculate NNLO/NLO QCD K factors for qqZZ
-        bool sameflavor=(genZLeps.at(0)->pdgId()*genZLeps.at(1)->pdgId() == genZLeps.at(2)->pdgId()*genZLeps.at(3)->pdgId());
-        KFactorQCDqqZZ_dPhi = kfactor_qqZZ_qcd_dPhi( fabs(GenZ1Phi-GenZ2Phi), (sameflavor)?1:2 );
-        KFactorQCDqqZZ_M    = kfactor_qqZZ_qcd_M   ( GenHMass, (sameflavor)?1:2 );
-        KFactorQCDqqZZ_Pt   = kfactor_qqZZ_qcd_Pt  ( GenHPt, (sameflavor)?1:2 );
-
-        // Calculate NLO EWK K factors for qqZZ
-        TLorentzVector GENZ1Vec,GENZ2Vec;
-        GENZ1Vec.SetPtEtaPhiM(GenZ1Pt, GenZ1Eta, GenZ1Phi, GenZ1Mass);
-        GENZ2Vec.SetPtEtaPhiM(GenZ2Pt, GenZ2Eta, GenZ2Phi, GenZ2Mass);
-        KFactorEWKqqZZ = EwkCorrections::getEwkCorrections(genParticles, ewkTable, genInfoP, GENZ1Vec,GENZ2Vec);
-      }
-    }
-  }
-
+  if (isMC) FillKFactors(genInfo, genZLeps);
 
   // General event information
   RunNumber=event.id().run();
@@ -1077,6 +1113,206 @@ void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
 }
 
 
+void HZZ4lNtupleMaker::FillKFactors(edm::Handle<GenEventInfoProduct>& genInfo, std::vector<const reco::Candidate *>& genZLeps){
+  KFactor_QCD_ggZZ_Nominal=1;
+  KFactor_QCD_ggZZ_PDFScaleDn=1;
+  KFactor_QCD_ggZZ_PDFScaleUp=1;
+  KFactor_QCD_ggZZ_QCDScaleDn=1;
+  KFactor_QCD_ggZZ_QCDScaleUp=1;
+  KFactor_QCD_ggZZ_AsDn=1;
+  KFactor_QCD_ggZZ_AsUp=1;
+  KFactor_QCD_ggZZ_PDFReplicaDn=1;
+  KFactor_QCD_ggZZ_PDFReplicaUp=1;
+  KFactor_QCD_qqZZ_dPhi=1;
+  KFactor_QCD_qqZZ_M=1;
+  KFactor_QCD_qqZZ_Pt=1;
+  KFactor_EW_qqZZ=1;
+
+  if (isMC){
+    GenEventInfoProduct  genInfoP = *(genInfo.product());
+    if (apply_K_NNLOQCD_ZZGG>0 && apply_K_NNLOQCD_ZZGG!=3){
+      if (spkfactor_ggzz_nnlo[0]!=0) KFactor_QCD_ggZZ_Nominal = (float)spkfactor_ggzz_nnlo[0]->Eval(GenHMass);
+      if (spkfactor_ggzz_nnlo[1]!=0) KFactor_QCD_ggZZ_PDFScaleDn = (float)spkfactor_ggzz_nnlo[1]->Eval(GenHMass);
+      if (spkfactor_ggzz_nnlo[2]!=0) KFactor_QCD_ggZZ_PDFScaleUp = (float)spkfactor_ggzz_nnlo[2]->Eval(GenHMass);
+      if (spkfactor_ggzz_nnlo[3]!=0) KFactor_QCD_ggZZ_QCDScaleDn = (float)spkfactor_ggzz_nnlo[3]->Eval(GenHMass);
+      if (spkfactor_ggzz_nnlo[4]!=0) KFactor_QCD_ggZZ_QCDScaleUp = (float)spkfactor_ggzz_nnlo[4]->Eval(GenHMass);
+      if (spkfactor_ggzz_nnlo[5]!=0) KFactor_QCD_ggZZ_AsDn = (float)spkfactor_ggzz_nnlo[5]->Eval(GenHMass);
+      if (spkfactor_ggzz_nnlo[6]!=0) KFactor_QCD_ggZZ_AsUp = (float)spkfactor_ggzz_nnlo[6]->Eval(GenHMass);
+      if (spkfactor_ggzz_nnlo[7]!=0) KFactor_QCD_ggZZ_PDFReplicaDn = (float)spkfactor_ggzz_nnlo[7]->Eval(GenHMass);
+      if (spkfactor_ggzz_nnlo[8]!=0) KFactor_QCD_ggZZ_PDFReplicaUp = (float)spkfactor_ggzz_nnlo[8]->Eval(GenHMass);
+      if (apply_K_NNLOQCD_ZZGG==2){
+        if (spkfactor_ggzz_nlo[0]!=0){
+          float divisor = (float)spkfactor_ggzz_nlo[0]->Eval(GenHMass);
+          KFactor_QCD_ggZZ_Nominal /= divisor;
+          KFactor_QCD_ggZZ_PDFScaleDn /= divisor;
+          KFactor_QCD_ggZZ_PDFScaleUp /= divisor;
+          KFactor_QCD_ggZZ_QCDScaleDn /= divisor;
+          KFactor_QCD_ggZZ_QCDScaleUp /= divisor;
+          KFactor_QCD_ggZZ_AsDn /= divisor;
+          KFactor_QCD_ggZZ_AsUp /= divisor;
+          KFactor_QCD_ggZZ_PDFReplicaDn /= divisor;
+          KFactor_QCD_ggZZ_PDFReplicaUp /= divisor;
+        }
+        else{
+          KFactor_QCD_ggZZ_Nominal=0;
+          KFactor_QCD_ggZZ_PDFScaleDn=0;
+          KFactor_QCD_ggZZ_PDFScaleUp=0;
+          KFactor_QCD_ggZZ_QCDScaleDn=0;
+          KFactor_QCD_ggZZ_QCDScaleUp=0;
+          KFactor_QCD_ggZZ_AsDn=0;
+          KFactor_QCD_ggZZ_AsUp=0;
+          KFactor_QCD_ggZZ_PDFReplicaDn=0;
+          KFactor_QCD_ggZZ_PDFReplicaUp=0;
+        }
+      }
+    }
+    else if (apply_K_NNLOQCD_ZZGG==3){
+      if (spkfactor_ggzz_nlo[0]!=0) KFactor_QCD_ggZZ_Nominal = (float)spkfactor_ggzz_nlo[0]->Eval(GenHMass);
+      if (spkfactor_ggzz_nlo[1]!=0) KFactor_QCD_ggZZ_PDFScaleDn = (float)spkfactor_ggzz_nlo[1]->Eval(GenHMass);
+      if (spkfactor_ggzz_nlo[2]!=0) KFactor_QCD_ggZZ_PDFScaleUp = (float)spkfactor_ggzz_nlo[2]->Eval(GenHMass);
+      if (spkfactor_ggzz_nlo[3]!=0) KFactor_QCD_ggZZ_QCDScaleDn = (float)spkfactor_ggzz_nlo[3]->Eval(GenHMass);
+      if (spkfactor_ggzz_nlo[4]!=0) KFactor_QCD_ggZZ_QCDScaleUp = (float)spkfactor_ggzz_nlo[4]->Eval(GenHMass);
+      if (spkfactor_ggzz_nlo[5]!=0) KFactor_QCD_ggZZ_AsDn = (float)spkfactor_ggzz_nlo[5]->Eval(GenHMass);
+      if (spkfactor_ggzz_nlo[6]!=0) KFactor_QCD_ggZZ_AsUp = (float)spkfactor_ggzz_nlo[6]->Eval(GenHMass);
+      if (spkfactor_ggzz_nlo[7]!=0) KFactor_QCD_ggZZ_PDFReplicaDn = (float)spkfactor_ggzz_nlo[7]->Eval(GenHMass);
+      if (spkfactor_ggzz_nlo[8]!=0) KFactor_QCD_ggZZ_PDFReplicaUp = (float)spkfactor_ggzz_nlo[8]->Eval(GenHMass);
+    }
+
+    if (genFinalState!=BUGGY){
+      if (genZLeps.size()==4) {
+        // Calculate NNLO/NLO QCD K factors for qqZZ
+        if (apply_K_NNLOQCD_ZZQQB){
+          bool sameflavor=(genZLeps.at(0)->pdgId()*genZLeps.at(1)->pdgId() == genZLeps.at(2)->pdgId()*genZLeps.at(3)->pdgId());
+          KFactor_QCD_qqZZ_dPhi = kfactor_qqZZ_qcd_dPhi(fabs(GenZ1Phi-GenZ2Phi), (sameflavor) ? 1 : 2);
+          KFactor_QCD_qqZZ_M    = kfactor_qqZZ_qcd_M(GenHMass, (sameflavor) ? 1 : 2);
+          KFactor_QCD_qqZZ_Pt   = kfactor_qqZZ_qcd_Pt(GenHPt, (sameflavor) ? 1 : 2);
+        }
+        // Calculate NLO EWK K factors for qqZZ
+        if (apply_K_NLOEW_ZZQQB){
+          TLorentzVector GENZ1Vec, GENZ2Vec;
+          GENZ1Vec.SetPtEtaPhiM(GenZ1Pt, GenZ1Eta, GenZ1Phi, GenZ1Mass);
+          GENZ2Vec.SetPtEtaPhiM(GenZ2Pt, GenZ2Eta, GenZ2Phi, GenZ2Mass);
+          KFactor_EW_qqZZ = EwkCorrections::getEwkCorrections(genParticles, ewkTable, genInfoP, GENZ1Vec, GENZ2Vec);
+        }
+      }
+    }
+  }
+
+}
+
+
+void HZZ4lNtupleMaker::FillLHECandidate(){
+  LHEMotherPz.clear();
+  LHEMotherE.clear();
+  LHEMotherId.clear();
+  LHEDaughterPt.clear();
+  LHEDaughterEta.clear();
+  LHEDaughterPhi.clear();
+  LHEDaughterMass.clear();
+  LHEDaughterId.clear();
+  LHEAssociatedParticlePt.clear();
+  LHEAssociatedParticleEta.clear();
+  LHEAssociatedParticlePhi.clear();
+  LHEAssociatedParticleMass.clear();
+  LHEAssociatedParticleId.clear();
+
+  LHEPDFScale = 0;
+  LHEweight_QCDscale_muR1_muF1=0;
+  LHEweight_QCDscale_muR1_muF2=0;
+  LHEweight_QCDscale_muR1_muF0p5=0;
+  LHEweight_QCDscale_muR2_muF1=0;
+  LHEweight_QCDscale_muR2_muF2=0;
+  LHEweight_QCDscale_muR2_muF0p5=0;
+  LHEweight_QCDscale_muR0p5_muF1=0;
+  LHEweight_QCDscale_muR0p5_muF2=0;
+  LHEweight_QCDscale_muR0p5_muF0p5=0;
+
+  MELACandidate* cand = lheHandler->getBestCandidate();
+  if (cand!=0 && addLHEKinematics){
+    for (int imot=0; imot<cand->getNMothers(); imot++){
+      MELAParticle* apart = cand->getMother(imot);
+      if (apart==0){ LHEMotherPz.clear(); LHEMotherE.clear(); LHEMotherId.clear(); break; } // Something went wrong
+      LHEMotherPz.push_back(apart->z());
+      LHEMotherE.push_back(apart->t());
+      LHEMotherId.push_back((short)apart->id);
+    }
+
+    for (int iV=0; iV<min(2, cand->getNSortedVs()); iV++){
+      MELAParticle* Vi = cand->getSortedV(iV);
+      if (Vi!=0){
+        for (int iVj=0; iVj<Vi->getNDaughters(); iVj++){
+          MELAParticle* Vij = Vi->getDaughter(iVj);
+          if (Vij!=0){
+            LHEDaughterPt.push_back(Vij->pt());
+            LHEDaughterEta.push_back(Vij->eta());
+            LHEDaughterPhi.push_back(Vij->phi());
+            LHEDaughterMass.push_back(Vij->m());
+            LHEDaughterId.push_back((short)Vij->id);
+          }
+        }
+      }
+    }
+
+    vector<MELAParticle*> AssociatedParticle;
+    vector<MELAParticle*> tmpAssociatedParticle;
+    for (int aa=0; aa<cand->getNAssociatedJets(); aa++){
+      MELAParticle* apart = cand->getAssociatedJet(aa);
+      tmpAssociatedParticle.push_back(apart);
+    }
+    for (int aa=0; aa<cand->getNAssociatedLeptons(); aa++){
+      MELAParticle* apart = cand->getAssociatedLepton(aa);
+      if (!PDGHelpers::isANeutrino(apart->id)) tmpAssociatedParticle.push_back(apart);
+    }
+    for (int aa=0; aa<cand->getNAssociatedNeutrinos(); aa++){
+      MELAParticle* apart = cand->getAssociatedNeutrino(aa);
+      tmpAssociatedParticle.push_back(apart);
+    }
+    while (tmpAssociatedParticle.size()>0){ // Re-sort all associated particles by leading pT (categories are individually sorted, but mixing categories loses this sorting)
+      MELAParticle* tmpPart=0;
+      int pos=0;
+      for (unsigned int el=0; el<tmpAssociatedParticle.size(); el++){
+        if (tmpPart==0){ tmpPart = tmpAssociatedParticle.at(el); pos=el; }
+        else if (tmpPart->pt()<tmpAssociatedParticle.at(el)->pt()){ tmpPart = tmpAssociatedParticle.at(el); pos=el; } // Safer to do in two steps
+      }
+      AssociatedParticle.push_back(tmpPart);
+      tmpAssociatedParticle.erase(tmpAssociatedParticle.begin()+pos);
+    }
+    for (unsigned int aa=0; aa<AssociatedParticle.size(); aa++){
+      MELAParticle* apart = AssociatedParticle.at(aa);
+      if (apart!=0){
+        LHEAssociatedParticlePt.push_back(apart->pt());
+        LHEAssociatedParticleEta.push_back(apart->eta());
+        LHEAssociatedParticlePhi.push_back(apart->phi());
+        LHEAssociatedParticleMass.push_back(apart->m());
+        LHEAssociatedParticleId.push_back((short)apart->id);
+      }
+    }
+
+    /*
+    cout << "NEW EVENT:" << endl;
+    cout << "Mothers:" << endl;
+    for (unsigned int ipart=0; ipart<LHEMotherId.size(); ipart++) cout << "\t Mot" << ipart << " (pz, E, id) = " << LHEMotherPz.at(ipart) << " " << LHEMotherE.at(ipart) << " " << LHEMotherId.at(ipart) << endl;
+    cout << "Daughters:" << endl;
+    for (unsigned int ipart=0; ipart<LHEDaughterId.size(); ipart++) cout << "\t Dau" << ipart << " (pt, eta, phi, m, id) = " << LHEDaughterPt.at(ipart) << " " << LHEDaughterEta.at(ipart) << " " << LHEDaughterPhi.at(ipart) << " " << LHEDaughterMass.at(ipart) << " " << LHEDaughterId.at(ipart) << endl;
+    cout << "Associated:" << endl;
+    for (unsigned int ipart=0; ipart<LHEAssociatedParticleId.size(); ipart++) cout << "\t APart" << ipart << " (pt, eta, phi, m, id) = " << LHEAssociatedParticlePt.at(ipart) << " " << LHEAssociatedParticleEta.at(ipart) << " " << LHEAssociatedParticlePhi.at(ipart) << " " << LHEAssociatedParticleMass.at(ipart) << " " << LHEAssociatedParticleId.at(ipart) << endl;
+    cout << endl;
+    */
+  }
+
+  LHEPDFScale = lheHandler->getPDFScale();
+  LHEweight_QCDscale_muR1_muF1 = lheHandler->getLHEWeight(0, 1.);
+  LHEweight_QCDscale_muR1_muF2 = lheHandler->getLHEWeight(1, 1.);
+  LHEweight_QCDscale_muR1_muF0p5 = lheHandler->getLHEWeight(2, 1.);
+  LHEweight_QCDscale_muR2_muF1 = lheHandler->getLHEWeight(3, 1.);
+  LHEweight_QCDscale_muR2_muF2 = lheHandler->getLHEWeight(4, 1.);
+  LHEweight_QCDscale_muR2_muF0p5 = lheHandler->getLHEWeight(5, 1.);
+  LHEweight_QCDscale_muR0p5_muF1 = lheHandler->getLHEWeight(6, 1.);
+  LHEweight_QCDscale_muR0p5_muF2 = lheHandler->getLHEWeight(7, 1.);
+  LHEweight_QCDscale_muR0p5_muF0p5 = lheHandler->getLHEWeight(8, 1.);
+}
+
+
 void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool evtPass, const edm::Event& event, Int_t CRFLAG)
 {
   //Initialize a new candidate into the tree
@@ -1124,9 +1360,9 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 
     if(addKinRefit){
       if (cand.hasUserFloat("ZZMassRefit")) {
-	ZZMassRefit = cand.userFloat("ZZMassRefit");
-	ZZMassRefitErr = cand.userFloat("ZZMassRefitErr");
-	ZZMassUnrefitErr = cand.userFloat("ZZMassUnrefitErr");
+  ZZMassRefit = cand.userFloat("ZZMassRefit");
+  ZZMassRefitErr = cand.userFloat("ZZMassRefitErr");
+  ZZMassUnrefitErr = cand.userFloat("ZZMassUnrefitErr");
       }
     }
     if(addVtxFit){
@@ -1150,154 +1386,122 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     xi            = cand.userFloat("xi");
     xistar        = cand.userFloat("xistar");
 
+    // Get MELA probabilities, implemented with getCheckedUserFloat to later be able to disable some MEs through additional options
+    getCheckedUserFloat(cand, "p0plus_VAJHU", p0plus_VAJHU, 0);
+    getCheckedUserFloat(cand, "p0_g1prime2_VAJHU", p0_g1prime2_VAJHU, 0);
+    getCheckedUserFloat(cand, "p0hplus_VAJHU", p0hplus_VAJHU, 0);
+    getCheckedUserFloat(cand, "p0minus_VAJHU", p0minus_VAJHU, 0);
+    getCheckedUserFloat(cand, "p0_g1prime2_zgs_VAJHU", p0_g1prime2_zgs_VAJHU, 0);
+    getCheckedUserFloat(cand, "p0hplus_zgs_VAJHU", p0hplus_zgs_VAJHU, 0);
+    getCheckedUserFloat(cand, "p0minus_zgs_VAJHU", p0minus_zgs_VAJHU, 0);
+    getCheckedUserFloat(cand, "p0hplus_gsgs_VAJHU", p0hplus_gsgs_VAJHU, 0);
+    getCheckedUserFloat(cand, "p0minus_gsgs_VAJHU", p0minus_gsgs_VAJHU, 0);
 
-    //Float_t ZZLD = cand.userFloat("LD");
-    //Float_t ZZLDPSig = cand.userFloat("PSig");
-    //Float_t ZZLDPBkg = cand.userFloat("PBkg");
-    //Float_t ZZpseudoLD = cand.userFloat("pseudoLD");
-    //Float_t ZZgravLD = cand.userFloat("spin2PMLD");
-    //Float_t ZZMEKDLD = cand.userFloat("MEKD_LD");
-    //Float_t ZZMEKDpseudoLD = cand.userFloat("MEKD_PseudoLD");
-    //Float_t ZZMEKDgravLD = cand.userFloat("MEKD_GravLD");
+    getCheckedUserFloat(cand, "pg1g1prime2_VAJHU", pg1g1prime2_VAJHU, 0);
+    getCheckedUserFloat(cand, "pg1g2_VAJHU", pg1g2_VAJHU, 0);
+    getCheckedUserFloat(cand, "pg1g2_pi2_VAJHU", pg1g2_pi2_VAJHU, 0);
+    getCheckedUserFloat(cand, "pg1g4_VAJHU", pg1g4_VAJHU, 0);
+    getCheckedUserFloat(cand, "pg1g4_pi2_VAJHU", pg1g4_pi2_VAJHU, 0);
+    getCheckedUserFloat(cand, "p0plus_zz_g1prime2_zgs_VAJHU", p0plus_zz_g1prime2_zgs_VAJHU, 0);
+    getCheckedUserFloat(cand, "p0plus_zz_g1prime2_zgs_pi2_VAJHU", p0plus_zz_g1prime2_zgs_pi2_VAJHU, 0);
+    getCheckedUserFloat(cand, "p0plus_zz_0hplus_zgs_VAJHU", p0plus_zz_0hplus_zgs_VAJHU, 0);
+    getCheckedUserFloat(cand, "p0plus_zz_0minus_zgs_VAJHU", p0plus_zz_0minus_zgs_VAJHU, 0);
+    getCheckedUserFloat(cand, "p0plus_zz_0hplus_gsgs_VAJHU", p0plus_zz_0hplus_gsgs_VAJHU, 0);
+    getCheckedUserFloat(cand, "p0plus_zz_0minus_gsgs_VAJHU", p0plus_zz_0minus_gsgs_VAJHU, 0);
 
-    //Float_t p0plus_melaNorm = cand.userFloat("p0plus_melaNorm");
-    //Float_t p0plus_mela = cand.userFloat("p0plus_mela");
-    //Float_t p0minus_mela = cand.userFloat("p0minus_mela");
-    //Float_t p0hplus_mela = cand.userFloat("p0hplus_mela"); // 0h+, analytic distribution
-    p0plus_VAJHU = cand.userFloat("p0plus_VAJHU");
-    p0minus_VAJHU = cand.userFloat("p0minus_VAJHU");
-    p0plus_VAMCFM = cand.userFloat("p0plus_VAMCFM");
-    p0hplus_VAJHU = cand.userFloat("p0hplus_VAJHU"); // 0h+ (high dimensional operator), vector algebra, JHUgen
-    //Float_t p1_mela = cand.userFloat("p1_mela");
-    //Float_t p1_prodIndep_mela = cand.userFloat("p1_prodIndep_mela");
-    //Float_t p1plus_mela = cand.userFloat("p1plus_mela"); // 1+, analytic distribution
-    //Float_t p1plus_prodIndep_mela = cand.userFloat("p1plus_prodIndep_mela"); // 1+, analytic distribution
-    p1_VAJHU = cand.userFloat("p1_VAJHU");
-    p1_prodIndep_VAJHU = cand.userFloat("p1_prodIndep_VAJHU");
-    p1plus_VAJHU = cand.userFloat("p1plus_VAJHU"); // 1+ (axial vector), vector algebra, JHUgen,
-    p1plus_prodIndep_VAJHU = cand.userFloat("p1plus_prodIndep_VAJHU"); // 1+ (axial vector), vector algebra, JHUgen,
-    //Float_t p2_mela  = cand.userFloat("p2_mela");
-    //Float_t p2_prodIndep_mela  = cand.userFloat("p2_prodIndep_mela");
-    //Float_t p2qqb_mela = cand.userFloat("p2qqb_mela"); // graviton produced by qqbar vector algebra, analytical,
-    //Float_t p2hplus_mela = cand.userFloat("p2hplus_mela"); // graviton produced by qqbar vector algebra, analytical,
-    //Float_t p2hminus_mela = cand.userFloat("p2hminus_mela"); // graviton produced by qqbar vector algebra, analytical,
-    //Float_t p2bplus_mela = cand.userFloat("p2bplus_mela"); // graviton produced by qqbar vector algebra, analytical,
-    p2_VAJHU = cand.userFloat("p2_VAJHU");
-    p2_prodIndep_VAJHU = cand.userFloat("p2_prodIndep_VAJHU");
-    p2qqb_VAJHU = cand.userFloat("p2qqb_VAJHU");
-    p2hplus_VAJHU = cand.userFloat("p2hplus_VAJHU");
-    p2hminus_VAJHU = cand.userFloat("p2hminus_VAJHU");
-    p2bplus_VAJHU = cand.userFloat("p2bplus_VAJHU");
-    p2hplus_qqb_VAJHU= cand.userFloat(           "p2hplus_qqb_VAJHU");
-    p2hplus_prodIndep_VAJHU= cand.userFloat(     "p2hplus_prodIndep_VAJHU");
-    p2hminus_qqb_VAJHU= cand.userFloat(          "p2hminus_qqb_VAJHU");
-    p2hminus_prodIndep_VAJHU= cand.userFloat(    "p2hminus_prodIndep_VAJHU");
-    p2bplus_qqb_VAJHU= cand.userFloat(           "p2bplus_qqb_VAJHU");
-    p2bplus_prodIndep_VAJHU= cand.userFloat(     "p2bplus_prodIndep_VAJHU");
-    p2h2plus_gg_VAJHU= cand.userFloat(           "p2h2plus_gg_VAJHU");
-    p2h2plus_qqbar_VAJHU= cand.userFloat(        "p2h2plus_qqbar_VAJHU");
-    p2h2plus_prodIndep_VAJHU= cand.userFloat(    "p2h2plus_prodIndep_VAJHU");
-    p2h3plus_gg_VAJHU= cand.userFloat(           "p2h3plus_gg_VAJHU"       );
-    p2h3plus_qqbar_VAJHU= cand.userFloat(        "p2h3plus_qqbar_VAJHU"    );
-    p2h3plus_prodIndep_VAJHU= cand.userFloat(    "p2h3plus_prodIndep_VAJHU");
-    p2h6plus_gg_VAJHU= cand.userFloat(           "p2h6plus_gg_VAJHU"       );
-    p2h6plus_qqbar_VAJHU= cand.userFloat(        "p2h6plus_qqbar_VAJHU"    );
-    p2h6plus_prodIndep_VAJHU= cand.userFloat(    "p2h6plus_prodIndep_VAJHU");
-    p2h7plus_gg_VAJHU= cand.userFloat(           "p2h7plus_gg_VAJHU"       );
-    p2h7plus_qqbar_VAJHU= cand.userFloat(        "p2h7plus_qqbar_VAJHU"    );
-    p2h7plus_prodIndep_VAJHU= cand.userFloat(    "p2h7plus_prodIndep_VAJHU");
-    p2h9minus_gg_VAJHU= cand.userFloat(          "p2h9minus_gg_VAJHU"       );
-    p2h9minus_qqbar_VAJHU= cand.userFloat(       "p2h9minus_qqbar_VAJHU"    );
-    p2h9minus_prodIndep_VAJHU= cand.userFloat(   "p2h9minus_prodIndep_VAJHU");
-    p2h10minus_gg_VAJHU= cand.userFloat(         "p2h10minus_gg_VAJHU"      );
-    p2h10minus_qqbar_VAJHU= cand.userFloat(      "p2h10minus_qqbar_VAJHU"   );
-    p2h10minus_prodIndep_VAJHU= cand.userFloat(  "p2h10minus_prodIndep_VAJHU");
-    // bkg_mela = cand.userFloat("bkg_mela");
-    bkg_VAMCFM = cand.userFloat("bkg_VAMCFM");
-    bkg_prodIndep_VAMCFM = cand.userFloat("bkg_prodIndep_VAMCFM");
-    ggzz_VAMCFM = cand.userFloat("ggzz_VAMCFM");
-    ggzz_p0plus_VAMCFM = cand.userFloat("ggzz_p0plus_VAMCFM");
-    ggzz_c1_VAMCFM = cand.userFloat("ggzz_c1_VAMCFM");
-    ggzz_c5_VAMCFM = cand.userFloat("ggzz_c5_VAMCFM");
-    ggzz_ci_VAMCFM = cand.userFloat("ggzz_ci_VAMCFM");
-    // bkg_VAMCFMNorm = cand.userFloat("bkg_VAMCFMNorm");
-    // p0_pt = cand.userFloat("p0_pt");
-    // p0_y = cand.userFloat("p0_y");
-    // bkg_pt = cand.userFloat("bkg_pt");
-    // bkg_y = cand.userFloat("bkg_y");
+    getCheckedUserFloat(cand, "p1_VAJHU", p1_VAJHU, 0);
+    getCheckedUserFloat(cand, "p1_prodIndep_VAJHU", p1_prodIndep_VAJHU, 0);
+    getCheckedUserFloat(cand, "p1plus_VAJHU", p1plus_VAJHU, 0);
+    getCheckedUserFloat(cand, "p1plus_prodIndep_VAJHU", p1plus_prodIndep_VAJHU, 0);
 
-    pg1g4_mela = cand.userFloat("pg1g4_mela");
-    pg1g4_VAJHU = cand.userFloat("pg1g4_VAJHU");
-    pg1g4_pi2_VAJHU = cand.userFloat("pg1g4_pi2_VAJHU");
-    pg1g2_pi2_VAJHU = cand.userFloat("pg1g2_pi2_VAJHU");
-    pg1g2_mela = cand.userFloat("pg1g2_mela");
-    pg1g2_VAJHU = cand.userFloat("pg1g2_VAJHU");
-    p0_g1prime2_VAJHU = cand.userFloat("p0_g1prime2_VAJHU");
-    pg1g1prime2_VAJHU = cand.userFloat("pg1g1prime2_VAJHU");
-    Dgg10_VAMCFM = cand.userFloat("Dgg10_VAMCFM");
-    pzzzg_VAJHU = cand.userFloat("pzzzg_VAJHU");
-    pzzgg_VAJHU = cand.userFloat("pzzgg_VAJHU");
-    pzzzg_PS_VAJHU = cand.userFloat("pzzzg_PS_VAJHU");
-    pzzgg_PS_VAJHU = cand.userFloat("pzzgg_PS_VAJHU");
-    p0Zgs_VAJHU = cand.userFloat("p0Zgs_VAJHU");
-    p0gsgs_VAJHU = cand.userFloat("p0gsgs_VAJHU");
-    p0Zgs_PS_VAJHU = cand.userFloat("p0Zgs_PS_VAJHU");
-    p0gsgs_PS_VAJHU = cand.userFloat("p0gsgs_PS_VAJHU");
-    p0Zgs_g1prime2_VAJHU = cand.userFloat("p0Zgs_g1prime2_VAJHU");
-    pzzzg_g1prime2_VAJHU = cand.userFloat("pzzzg_g1prime2_VAJHU");
-    pzzzg_g1prime2_pi2_VAJHU = cand.userFloat("pzzzg_g1prime2_pi2_VAJHU");
+    getCheckedUserFloat(cand, "p2plus_gg_VAJHU", p2plus_gg_VAJHU, 0);
+    getCheckedUserFloat(cand, "p2plus_qqb_VAJHU", p2plus_qqb_VAJHU, 0);
+    getCheckedUserFloat(cand, "p2plus_prodIndep_VAJHU", p2plus_prodIndep_VAJHU, 0);
+    getCheckedUserFloat(cand, "p2h2plus_gg_VAJHU", p2h2plus_gg_VAJHU, 0);
+    getCheckedUserFloat(cand, "p2h2plus_qqb_VAJHU", p2h2plus_qqb_VAJHU, 0);
+    getCheckedUserFloat(cand, "p2h2plus_prodIndep_VAJHU", p2h2plus_prodIndep_VAJHU, 0);
+    getCheckedUserFloat(cand, "p2h3plus_gg_VAJHU", p2h3plus_gg_VAJHU, 0);
+    getCheckedUserFloat(cand, "p2h3plus_qqb_VAJHU", p2h3plus_qqb_VAJHU, 0);
+    getCheckedUserFloat(cand, "p2h3plus_prodIndep_VAJHU", p2h3plus_prodIndep_VAJHU, 0);
+    getCheckedUserFloat(cand, "p2h4plus_gg_VAJHU", p2h4plus_gg_VAJHU, 0);
+    getCheckedUserFloat(cand, "p2h4plus_qqb_VAJHU", p2h4plus_qqb_VAJHU, 0);
+    getCheckedUserFloat(cand, "p2h4plus_prodIndep_VAJHU", p2h4plus_prodIndep_VAJHU, 0);
+    getCheckedUserFloat(cand, "p2bplus_gg_VAJHU", p2bplus_gg_VAJHU, 0);
+    getCheckedUserFloat(cand, "p2bplus_qqb_VAJHU", p2bplus_qqb_VAJHU, 0);
+    getCheckedUserFloat(cand, "p2bplus_prodIndep_VAJHU", p2bplus_prodIndep_VAJHU, 0);
+    getCheckedUserFloat(cand, "p2h6plus_gg_VAJHU", p2h6plus_gg_VAJHU, 0);
+    getCheckedUserFloat(cand, "p2h6plus_qqb_VAJHU", p2h6plus_qqb_VAJHU, 0);
+    getCheckedUserFloat(cand, "p2h6plus_prodIndep_VAJHU", p2h6plus_prodIndep_VAJHU, 0);
+    getCheckedUserFloat(cand, "p2h7plus_gg_VAJHU", p2h7plus_gg_VAJHU, 0);
+    getCheckedUserFloat(cand, "p2h7plus_qqb_VAJHU", p2h7plus_qqb_VAJHU, 0);
+    getCheckedUserFloat(cand, "p2h7plus_prodIndep_VAJHU", p2h7plus_prodIndep_VAJHU, 0);
+    getCheckedUserFloat(cand, "p2hminus_gg_VAJHU", p2hminus_gg_VAJHU, 0);
+    getCheckedUserFloat(cand, "p2hminus_qqb_VAJHU", p2hminus_qqb_VAJHU, 0);
+    getCheckedUserFloat(cand, "p2hminus_prodIndep_VAJHU", p2hminus_prodIndep_VAJHU, 0);
+    getCheckedUserFloat(cand, "p2h9minus_gg_VAJHU", p2h9minus_gg_VAJHU, 0);
+    getCheckedUserFloat(cand, "p2h9minus_qqb_VAJHU", p2h9minus_qqb_VAJHU, 0);
+    getCheckedUserFloat(cand, "p2h9minus_prodIndep_VAJHU", p2h9minus_prodIndep_VAJHU, 0);
+    getCheckedUserFloat(cand, "p2h10minus_gg_VAJHU", p2h10minus_gg_VAJHU, 0);
+    getCheckedUserFloat(cand, "p2h10minus_qqb_VAJHU", p2h10minus_qqb_VAJHU, 0);
+    getCheckedUserFloat(cand, "p2h10minus_prodIndep_VAJHU", p2h10minus_prodIndep_VAJHU, 0);
 
-    p0plus_m4l = cand.userFloat("p0plus_m4l");
-    bkg_m4l = cand.userFloat("bkg_m4l");
-    p0plus_m4l_ScaleUp = cand.userFloat("p0plus_m4l_ScaleUp");// signal m4l probability for systematics
-    bkg_m4l_ScaleUp = cand.userFloat("bkg_m4l_ScaleUp");// backgroun m4l probability for systematics
-    p0plus_m4l_ScaleDown = cand.userFloat("p0plus_m4l_ScaleDown");// signal m4l probability for systematics
-    bkg_m4l_ScaleDown = cand.userFloat("bkg_m4l_ScaleDown");// backgroun m4l probability for systematics
-    p0plus_m4l_ResUp = cand.userFloat("p0plus_m4l_ResUp");// signal m4l probability for systematics
-    bkg_m4l_ResUp = cand.userFloat("bkg_m4l_ResUp");// backgroun m4l probability for systematics
-    p0plus_m4l_ResDown = cand.userFloat("p0plus_m4l_ResDown");// signal m4l probability for systematics
-    bkg_m4l_ResDown = cand.userFloat("bkg_m4l_ResDown");// backgroun m4l probability for systematics
+    getCheckedUserFloat(cand, "p0plus_VAMCFM", p0plus_VAMCFM, 0);
+    getCheckedUserFloat(cand, "ggzz_VAMCFM", ggzz_VAMCFM, 0);
+    getCheckedUserFloat(cand, "ggzz_p0plus_VAMCFM", ggzz_p0plus_VAMCFM, 0);
+    getCheckedUserFloat(cand, "bkg_VAMCFM", bkg_VAMCFM, 0);
+    getCheckedUserFloat(cand, "bkg_prodIndep_VAMCFM", bkg_prodIndep_VAMCFM, 0);
+    getCheckedUserFloat(cand, "pZJJ_VAMCFM", pZJJ_VAMCFM, 0);
+    getCheckedUserFloat(cand, "Dgg10_VAMCFM", Dgg10_VAMCFM, -1);
 
-    phjj_VAJHU_old = cand.userFloat("phjj_VAJHU_old");
-    pvbf_VAJHU_old = cand.userFloat("pvbf_VAJHU_old");
-    phjj_VAJHU_old_up = cand.userFloat("phjj_VAJHU_old_up");
-    pvbf_VAJHU_old_up = cand.userFloat("pvbf_VAJHU_old_up");
-    phjj_VAJHU_old_dn = cand.userFloat("phjj_VAJHU_old_dn");
-    pvbf_VAJHU_old_dn = cand.userFloat("pvbf_VAJHU_old_dn");
-    phjj_VAJHU_new = cand.userFloat("phjj_VAJHU_new");
-    pvbf_VAJHU_new = cand.userFloat("pvbf_VAJHU_new");
-    phjj_VAJHU_new_up = cand.userFloat("phjj_VAJHU_new_up");
-    pvbf_VAJHU_new_up = cand.userFloat("pvbf_VAJHU_new_up");
-    phjj_VAJHU_new_dn = cand.userFloat("phjj_VAJHU_new_dn");
-    pvbf_VAJHU_new_dn = cand.userFloat("pvbf_VAJHU_new_dn");
+    getCheckedUserFloat(cand, "p0plus_m4l", p0plus_m4l, -1);
+    getCheckedUserFloat(cand, "p0plus_m4l_ScaleUp", p0plus_m4l_ScaleUp, -1);
+    getCheckedUserFloat(cand, "p0plus_m4l_ScaleDown", p0plus_m4l_ScaleDown, -1);
+    getCheckedUserFloat(cand, "p0plus_m4l_ResUp", p0plus_m4l_ResUp, -1);
+    getCheckedUserFloat(cand, "p0plus_m4l_ResDown", p0plus_m4l_ResDown, -1);
+    getCheckedUserFloat(cand, "bkg_m4l", bkg_m4l, -1);
+    getCheckedUserFloat(cand, "bkg_m4l_ScaleUp", bkg_m4l_ScaleUp, -1);
+    getCheckedUserFloat(cand, "bkg_m4l_ScaleDown", bkg_m4l_ScaleDown, -1);
+    getCheckedUserFloat(cand, "bkg_m4l_ResUp", bkg_m4l_ResUp, -1);
+    getCheckedUserFloat(cand, "bkg_m4l_ResDown", bkg_m4l_ResDown, -1);
 
-    pAux_vbf_VAJHU = cand.userFloat("pAux_vbf_VAJHU");
-    pAux_vbf_VAJHU_up = cand.userFloat("pAux_vbf_VAJHU_up");
-    pAux_vbf_VAJHU_dn = cand.userFloat("pAux_vbf_VAJHU_dn");
+    getCheckedUserFloat(cand, "pwh_leptonic_VAJHU", pwh_leptonic_VAJHU, -1);
+    getCheckedUserFloat(cand, "pzh_leptonic_VAJHU", pzh_leptonic_VAJHU, -1);
 
-    phj_VAJHU = cand.userFloat("phj_VAJHU");
-    phj_VAJHU_up = cand.userFloat("phj_VAJHU_up");
-    phj_VAJHU_dn = cand.userFloat("phj_VAJHU_dn");
+    getCheckedUserFloat(cand, "phjj_VAJHU_highestPTJets", phjj_VAJHU_highestPTJets, -1);
+    getCheckedUserFloat(cand, "pvbf_VAJHU_highestPTJets", pvbf_VAJHU_highestPTJets, -1);
+    getCheckedUserFloat(cand, "phjj_VAJHU_highestPTJets_up", phjj_VAJHU_highestPTJets_up, -1);
+    getCheckedUserFloat(cand, "pvbf_VAJHU_highestPTJets_up", pvbf_VAJHU_highestPTJets_up, -1);
+    getCheckedUserFloat(cand, "phjj_VAJHU_highestPTJets_dn", phjj_VAJHU_highestPTJets_dn, -1);
+    getCheckedUserFloat(cand, "pvbf_VAJHU_highestPTJets_dn", pvbf_VAJHU_highestPTJets_dn, -1);
+    getCheckedUserFloat(cand, "phjj_VAJHU_bestDjet", phjj_VAJHU_bestDjet, -1);
+    getCheckedUserFloat(cand, "pvbf_VAJHU_bestDjet", pvbf_VAJHU_bestDjet, -1);
+    getCheckedUserFloat(cand, "phjj_VAJHU_bestDjet_up", phjj_VAJHU_bestDjet_up, -1);
+    getCheckedUserFloat(cand, "pvbf_VAJHU_bestDjet_up", pvbf_VAJHU_bestDjet_up, -1);
+    getCheckedUserFloat(cand, "phjj_VAJHU_bestDjet_dn", phjj_VAJHU_bestDjet_dn, -1);
+    getCheckedUserFloat(cand, "pvbf_VAJHU_bestDjet_dn", pvbf_VAJHU_bestDjet_dn, -1);
 
-    pwh_hadronic_VAJHU = cand.userFloat("pwh_hadronic_VAJHU");
-    pwh_hadronic_VAJHU_up = cand.userFloat("pwh_hadronic_VAJHU_up");
-    pwh_hadronic_VAJHU_dn = cand.userFloat("pwh_hadronic_VAJHU_dn");
+    getCheckedUserFloat(cand, "pAux_vbf_VAJHU", pAux_vbf_VAJHU, 1);
+    getCheckedUserFloat(cand, "pAux_vbf_VAJHU_up", pAux_vbf_VAJHU_up, 1);
+    getCheckedUserFloat(cand, "pAux_vbf_VAJHU_dn", pAux_vbf_VAJHU_dn, 1);
 
-    pwh_leptonic_VAJHU = cand.userFloat("pwh_leptonic_VAJHU");
+    getCheckedUserFloat(cand, "phj_VAJHU", phj_VAJHU, -1);
+    getCheckedUserFloat(cand, "phj_VAJHU_up", phj_VAJHU_up, -1);
+    getCheckedUserFloat(cand, "phj_VAJHU_dn", phj_VAJHU_dn, -1);
 
-    pzh_hadronic_VAJHU = cand.userFloat("pzh_hadronic_VAJHU");
-    pzh_hadronic_VAJHU_up = cand.userFloat("pzh_hadronic_VAJHU_up");
-    pzh_hadronic_VAJHU_dn = cand.userFloat("pzh_hadronic_VAJHU_dn");
+    getCheckedUserFloat(cand, "pwh_hadronic_VAJHU", pwh_hadronic_VAJHU, -1);
+    getCheckedUserFloat(cand, "pwh_hadronic_VAJHU_up", pwh_hadronic_VAJHU_up, -1);
+    getCheckedUserFloat(cand, "pwh_hadronic_VAJHU_dn", pwh_hadronic_VAJHU_dn, -1);
+    getCheckedUserFloat(cand, "pzh_hadronic_VAJHU", pzh_hadronic_VAJHU, -1);
+    getCheckedUserFloat(cand, "pzh_hadronic_VAJHU_up", pzh_hadronic_VAJHU_up, -1);
+    getCheckedUserFloat(cand, "pzh_hadronic_VAJHU_dn", pzh_hadronic_VAJHU_dn, -1);
 
-    pzh_leptonic_VAJHU = cand.userFloat("pzh_leptonic_VAJHU");
+    getCheckedUserFloat(cand, "ptth_VAJHU", ptth_VAJHU, -1);
+    getCheckedUserFloat(cand, "ptth_VAJHU_up", ptth_VAJHU_up, -1);
+    getCheckedUserFloat(cand, "ptth_VAJHU_dn", ptth_VAJHU_dn, -1);
 
-    ptth_VAJHU = cand.userFloat("ptth_VAJHU");
-    ptth_VAJHU_up = cand.userFloat("ptth_VAJHU_up");
-    ptth_VAJHU_dn = cand.userFloat("ptth_VAJHU_dn");
-
-    pbbh_VAJHU = cand.userFloat("pbbh_VAJHU");
-    pbbh_VAJHU_up = cand.userFloat("pbbh_VAJHU_up");
-    pbbh_VAJHU_dn = cand.userFloat("pbbh_VAJHU_dn");
+    getCheckedUserFloat(cand, "pbbh_VAJHU", pbbh_VAJHU, -1);
+    getCheckedUserFloat(cand, "pbbh_VAJHU_up", pbbh_VAJHU_up, -1);
+    getCheckedUserFloat(cand, "pbbh_VAJHU_dn", pbbh_VAJHU_dn, -1);
 
   }
 
@@ -1472,6 +1676,12 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     dataMCWeight *= getAllWeight(leptons[i]);
   }
   overallEventWeight = PUWeight * genHEPMCweight * dataMCWeight;
+}
+
+
+void HZZ4lNtupleMaker::getCheckedUserFloat(const pat::CompositeCandidate& cand, std::string strval, Float_t& setval, Float_t defaultval){
+  if (cand.hasUserFloat(strval)) setval = cand.userFloat(strval);
+  else setval = defaultval;
 }
 
 
@@ -1785,7 +1995,7 @@ void HZZ4lNtupleMaker::FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t Le
   GenLep4Id=Lep4Id;
 
   if (doreweighting) {
-    mela::computeAngles(zzanalysis::tlv(Lep1), Lep1Id, zzanalysis::tlv(Lep2), Lep2Id, zzanalysis::tlv(Lep3), Lep3Id, zzanalysis::tlv(Lep4), Lep4Id, Gencosthetastar, GenhelcosthetaZ1, GenhelcosthetaZ2, Genhelphi, GenphistarZ1);
+    TUtil::computeAngles(zzanalysis::tlv(Lep1), Lep1Id, zzanalysis::tlv(Lep2), Lep2Id, zzanalysis::tlv(Lep3), Lep3Id, zzanalysis::tlv(Lep4), Lep4Id, Gencosthetastar, GenhelcosthetaZ1, GenhelcosthetaZ2, Genhelphi, GenphistarZ1);
   }
 
   return;
@@ -1832,12 +2042,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("Nvtx",Nvtx);
   myTree->Book("NObsInt",NObsInt);
   myTree->Book("NTrueInt",NTrueInt);
-  myTree->Book("PUWeight",PUWeight);
-  myTree->Book("KFactorggZZ",KFactorggZZ);
-  myTree->Book("KFactorEWKqqZZ",KFactorEWKqqZZ);
-  myTree->Book("KFactorQCDqqZZ_dPhi",KFactorQCDqqZZ_dPhi);
-  myTree->Book("KFactorQCDqqZZ_M",KFactorQCDqqZZ_M);
-  myTree->Book("KFactorQCDqqZZ_Pt",KFactorQCDqqZZ_Pt);
+
   myTree->Book("PFMET",PFMET);
   myTree->Book("PFMETPhi",PFMETPhi);
   myTree->Book("PFMETNoHF",PFMETNoHF);
@@ -1916,115 +2121,118 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   }
 
   //Discriminants
-    myTree->Book("p0plus_VAJHU",p0plus_VAJHU);
-    myTree->Book("p0minus_VAJHU",p0minus_VAJHU);
-    myTree->Book("p0plus_VAMCFM",p0plus_VAMCFM);
-    myTree->Book("p0hplus_VAJHU",p0hplus_VAJHU);
-    myTree->Book("p1_VAJHU",p1_VAJHU);
-    myTree->Book("p1_prodIndep_VAJHU",p1_prodIndep_VAJHU);
-    myTree->Book("p1plus_VAJHU",p1plus_VAJHU);
-    myTree->Book("p1plus_prodIndep_VAJHU",p1plus_prodIndep_VAJHU);
-    myTree->Book("p2_VAJHU",p2_VAJHU);
-    myTree->Book("p2_prodIndep_VAJHU",p2_prodIndep_VAJHU);
-    myTree->Book("p2qqb_VAJHU",p2qqb_VAJHU);
-    myTree->Book("p2hplus_VAJHU",p2hplus_VAJHU);
-    myTree->Book("p2hminus_VAJHU",p2hminus_VAJHU);
-    myTree->Book("p2bplus_VAJHU",p2bplus_VAJHU);
-    myTree->Book("p2hplus_qqb_VAJHU",p2hplus_qqb_VAJHU);
-    myTree->Book("p2hplus_prodIndep_VAJHU",p2hplus_prodIndep_VAJHU);
-    myTree->Book("p2hminus_qqb_VAJHU",p2hminus_qqb_VAJHU);
-    myTree->Book("p2hminus_prodIndep_VAJHU",p2hminus_prodIndep_VAJHU);
-    myTree->Book("p2bplus_qqb_VAJHU",p2bplus_qqb_VAJHU);
-    myTree->Book("p2bplus_prodIndep_VAJHU",p2bplus_prodIndep_VAJHU);
-    myTree->Book("p2h2plus_gg_VAJHU",p2h2plus_gg_VAJHU);
-    myTree->Book("p2h2plus_qqbar_VAJHU"               ,p2h2plus_qqbar_VAJHU               );
-    myTree->Book("p2h2plus_prodIndep_VAJHU"   ,p2h2plus_prodIndep_VAJHU   );
-    myTree->Book("p2h3plus_gg_VAJHU"          ,p2h3plus_gg_VAJHU          );
-    myTree->Book("p2h3plus_qqbar_VAJHU"       ,p2h3plus_qqbar_VAJHU       );
-    myTree->Book("p2h3plus_prodIndep_VAJHU"   ,p2h3plus_prodIndep_VAJHU   );
-    myTree->Book("p2h6plus_gg_VAJHU"          ,p2h6plus_gg_VAJHU          );
-    myTree->Book("p2h6plus_qqbar_VAJHU"       ,p2h6plus_qqbar_VAJHU       );
-    myTree->Book("p2h6plus_prodIndep_VAJHU"   ,p2h6plus_prodIndep_VAJHU   );
-    myTree->Book("p2h7plus_gg_VAJHU"          ,p2h7plus_gg_VAJHU          );
-    myTree->Book("p2h7plus_qqbar_VAJHU"       ,p2h7plus_qqbar_VAJHU       );
-    myTree->Book("p2h7plus_prodIndep_VAJHU"   ,p2h7plus_prodIndep_VAJHU   );
-    myTree->Book("p2h9minus_gg_VAJHU"         ,p2h9minus_gg_VAJHU         );
-    myTree->Book("p2h9minus_qqbar_VAJHU"      ,p2h9minus_qqbar_VAJHU      );
-    myTree->Book("p2h9minus_prodIndep_VAJHU"  ,p2h9minus_prodIndep_VAJHU  );
-    myTree->Book("p2h10minus_gg_VAJHU"       ,p2h10minus_gg_VAJHU       );
-    myTree->Book("p2h10minus_qqbar_VAJHU"    ,p2h10minus_qqbar_VAJHU    );
-    myTree->Book("p2h10minus_prodIndep_VAJHU",p2h10minus_prodIndep_VAJHU);
-    myTree->Book("bkg_VAMCFM",bkg_VAMCFM);
-    myTree->Book("bkg_prodIndep_VAMCFM",bkg_prodIndep_VAMCFM);
-    myTree->Book("ggzz_VAMCFM",ggzz_VAMCFM);
-    myTree->Book("ggzz_p0plus_VAMCFM",ggzz_p0plus_VAMCFM);
-    myTree->Book("ggzz_c1_VAMCFM",ggzz_c1_VAMCFM);
-    myTree->Book("ggzz_c5_VAMCFM",ggzz_c5_VAMCFM);
-    myTree->Book("ggzz_ci_VAMCFM",ggzz_ci_VAMCFM);
-    myTree->Book("pg1g4_mela",pg1g4_mela);
-    myTree->Book("pg1g4_VAJHU",pg1g4_VAJHU);
-    myTree->Book("pg1g4_pi2_VAJHU",pg1g4_pi2_VAJHU);
-    myTree->Book("pg1g2_pi2_VAJHU",pg1g2_pi2_VAJHU);
-    myTree->Book("pg1g2_mela",pg1g2_mela);
-    myTree->Book("pg1g2_VAJHU",pg1g2_VAJHU);
-    myTree->Book("p0_g1prime2_VAJHU",p0_g1prime2_VAJHU);
-    myTree->Book("pg1g1prime2_VAJHU",pg1g1prime2_VAJHU);
-    myTree->Book("Dgg10_VAMCFM",Dgg10_VAMCFM);
-    myTree->Book("pzzzg_VAJHU",pzzzg_VAJHU);
-    myTree->Book("pzzgg_VAJHU",pzzgg_VAJHU);
-    myTree->Book("pzzzg_PS_VAJHU",pzzzg_PS_VAJHU);
-    myTree->Book("pzzgg_PS_VAJHU",pzzgg_PS_VAJHU);
-    myTree->Book("p0Zgs_VAJHU",p0Zgs_VAJHU);
-    myTree->Book("p0gsgs_VAJHU",p0gsgs_VAJHU);
-    myTree->Book("p0Zgs_PS_VAJHU",p0Zgs_PS_VAJHU);
-    myTree->Book("p0gsgs_PS_VAJHU",p0gsgs_PS_VAJHU);
-    myTree->Book("p0Zgs_g1prime2_VAJHU",p0Zgs_g1prime2_VAJHU);
-    myTree->Book("pzzzg_g1prime2_VAJHU",pzzzg_g1prime2_VAJHU);
-    myTree->Book("pzzzg_g1prime2_pi2_VAJHU",pzzzg_g1prime2_pi2_VAJHU);
-    myTree->Book("p0plus_m4l",p0plus_m4l);
-    myTree->Book("bkg_m4l",bkg_m4l);
-    myTree->Book("p0plus_m4l_ScaleUp",p0plus_m4l_ScaleUp);
-    myTree->Book("bkg_m4l_ScaleUp",bkg_m4l_ScaleUp);
-    myTree->Book("p0plus_m4l_ScaleDown",p0plus_m4l_ScaleDown);
-    myTree->Book("bkg_m4l_ScaleDown",bkg_m4l_ScaleDown);
-    myTree->Book("p0plus_m4l_ResUp",p0plus_m4l_ResUp);
-    myTree->Book("bkg_m4l_ResUp",bkg_m4l_ResUp);
-    myTree->Book("p0plus_m4l_ResDown",p0plus_m4l_ResDown);
-    myTree->Book("bkg_m4l_ResDown",bkg_m4l_ResDown);
+  myTree->Book("p0plus_VAJHU", p0plus_VAJHU);
+  myTree->Book("p0_g1prime2_VAJHU", p0_g1prime2_VAJHU);
+  myTree->Book("p0hplus_VAJHU", p0hplus_VAJHU);
+  myTree->Book("p0minus_VAJHU", p0minus_VAJHU);
+
+  myTree->Book("p0_g1prime2_zgs_VAJHU", p0_g1prime2_zgs_VAJHU);
+  myTree->Book("p0hplus_zgs_VAJHU", p0hplus_zgs_VAJHU);
+  myTree->Book("p0minus_zgs_VAJHU", p0minus_zgs_VAJHU);
+  myTree->Book("p0hplus_gsgs_VAJHU", p0hplus_gsgs_VAJHU);
+  myTree->Book("p0minus_gsgs_VAJHU", p0minus_gsgs_VAJHU);
+
+  myTree->Book("pg1g1prime2_VAJHU", pg1g1prime2_VAJHU);
+  myTree->Book("pg1g2_VAJHU", pg1g2_VAJHU);
+  myTree->Book("pg1g2_pi2_VAJHU", pg1g2_pi2_VAJHU);
+  myTree->Book("pg1g4_VAJHU", pg1g4_VAJHU);
+  myTree->Book("pg1g4_pi2_VAJHU", pg1g4_pi2_VAJHU);
+
+  myTree->Book("p0plus_zz_g1prime2_zgs_VAJHU", p0plus_zz_g1prime2_zgs_VAJHU);
+  myTree->Book("p0plus_zz_g1prime2_zgs_pi2_VAJHU", p0plus_zz_g1prime2_zgs_pi2_VAJHU);
+  myTree->Book("p0plus_zz_0hplus_zgs_VAJHU", p0plus_zz_0hplus_zgs_VAJHU);
+  myTree->Book("p0plus_zz_0minus_zgs_VAJHU", p0plus_zz_0minus_zgs_VAJHU);
+  myTree->Book("p0plus_zz_0hplus_gsgs_VAJHU", p0plus_zz_0hplus_gsgs_VAJHU);
+  myTree->Book("p0plus_zz_0minus_gsgs_VAJHU", p0plus_zz_0minus_gsgs_VAJHU);
+
+  myTree->Book("p1_VAJHU", p1_VAJHU);
+  myTree->Book("p1_prodIndep_VAJHU", p1_prodIndep_VAJHU);
+  myTree->Book("p1plus_VAJHU", p1plus_VAJHU);
+  myTree->Book("p1plus_prodIndep_VAJHU", p1plus_prodIndep_VAJHU);
+
+  myTree->Book("p2plus_gg_VAJHU", p2plus_gg_VAJHU);
+  myTree->Book("p2plus_prodIndep_VAJHU", p2plus_prodIndep_VAJHU);
+  myTree->Book("p2plus_qqb_VAJHU", p2plus_qqb_VAJHU);
+  myTree->Book("p2h2plus_gg_VAJHU", p2h2plus_gg_VAJHU);
+  myTree->Book("p2h2plus_qqb_VAJHU", p2h2plus_qqb_VAJHU);
+  myTree->Book("p2h2plus_prodIndep_VAJHU", p2h2plus_prodIndep_VAJHU);
+  myTree->Book("p2h3plus_gg_VAJHU", p2h3plus_gg_VAJHU);
+  myTree->Book("p2h3plus_qqb_VAJHU", p2h3plus_qqb_VAJHU);
+  myTree->Book("p2h3plus_prodIndep_VAJHU", p2h3plus_prodIndep_VAJHU);
+  myTree->Book("p2h4plus_gg_VAJHU", p2h4plus_gg_VAJHU);
+  myTree->Book("p2h4plus_qqb_VAJHU", p2h4plus_qqb_VAJHU);
+  myTree->Book("p2h4plus_prodIndep_VAJHU", p2h4plus_prodIndep_VAJHU);
+  myTree->Book("p2bplus_gg_VAJHU", p2bplus_gg_VAJHU);
+  myTree->Book("p2bplus_qqb_VAJHU", p2bplus_qqb_VAJHU);
+  myTree->Book("p2bplus_prodIndep_VAJHU", p2bplus_prodIndep_VAJHU);
+  myTree->Book("p2h6plus_gg_VAJHU", p2h6plus_gg_VAJHU);
+  myTree->Book("p2h6plus_qqb_VAJHU", p2h6plus_qqb_VAJHU);
+  myTree->Book("p2h6plus_prodIndep_VAJHU", p2h6plus_prodIndep_VAJHU);
+  myTree->Book("p2h7plus_gg_VAJHU", p2h7plus_gg_VAJHU);
+  myTree->Book("p2h7plus_qqb_VAJHU", p2h7plus_qqb_VAJHU);
+  myTree->Book("p2h7plus_prodIndep_VAJHU", p2h7plus_prodIndep_VAJHU);
+  myTree->Book("p2hminus_gg_VAJHU", p2hminus_gg_VAJHU);
+  myTree->Book("p2hminus_qqb_VAJHU", p2hminus_qqb_VAJHU);
+  myTree->Book("p2hminus_prodIndep_VAJHU", p2hminus_prodIndep_VAJHU);
+  myTree->Book("p2h9minus_gg_VAJHU", p2h9minus_gg_VAJHU);
+  myTree->Book("p2h9minus_qqb_VAJHU", p2h9minus_qqb_VAJHU);
+  myTree->Book("p2h9minus_prodIndep_VAJHU", p2h9minus_prodIndep_VAJHU);
+  myTree->Book("p2h10minus_gg_VAJHU", p2h10minus_gg_VAJHU);
+  myTree->Book("p2h10minus_qqb_VAJHU", p2h10minus_qqb_VAJHU);
+  myTree->Book("p2h10minus_prodIndep_VAJHU", p2h10minus_prodIndep_VAJHU);
+
+  myTree->Book("p0plus_VAMCFM", p0plus_VAMCFM);
+  myTree->Book("ggzz_VAMCFM", ggzz_VAMCFM);
+  myTree->Book("ggzz_p0plus_VAMCFM", ggzz_p0plus_VAMCFM);
+  myTree->Book("bkg_VAMCFM", bkg_VAMCFM);
+  myTree->Book("bkg_prodIndep_VAMCFM", bkg_prodIndep_VAMCFM);
+  myTree->Book("pZJJ_VAMCFM", pZJJ_VAMCFM);
+  myTree->Book("Dgg10_VAMCFM", Dgg10_VAMCFM);
+
+  myTree->Book("p0plus_m4l", p0plus_m4l);
+  myTree->Book("p0plus_m4l_ScaleUp", p0plus_m4l_ScaleUp);
+  myTree->Book("p0plus_m4l_ScaleDown", p0plus_m4l_ScaleDown);
+  myTree->Book("p0plus_m4l_ResUp", p0plus_m4l_ResUp);
+  myTree->Book("p0plus_m4l_ResDown", p0plus_m4l_ResDown);
+  myTree->Book("bkg_m4l", bkg_m4l);
+  myTree->Book("bkg_m4l_ScaleUp", bkg_m4l_ScaleUp);
+  myTree->Book("bkg_m4l_ScaleDown", bkg_m4l_ScaleDown);
+  myTree->Book("bkg_m4l_ResUp", bkg_m4l_ResUp);
+  myTree->Book("bkg_m4l_ResDown", bkg_m4l_ResDown);
 
   //Production MELA
-  myTree->Book("phjj_VAJHU_old",phjj_VAJHU_old);
-  myTree->Book("pvbf_VAJHU_old",pvbf_VAJHU_old);
-  myTree->Book("phjj_VAJHU_old_up",phjj_VAJHU_old_up);
-  myTree->Book("pvbf_VAJHU_old_up",pvbf_VAJHU_old_up);
-  myTree->Book("phjj_VAJHU_old_dn",phjj_VAJHU_old_dn);
-  myTree->Book("pvbf_VAJHU_old_dn",pvbf_VAJHU_old_dn);
-  myTree->Book("phjj_VAJHU_new",phjj_VAJHU_new);
-  myTree->Book("pvbf_VAJHU_new",pvbf_VAJHU_new);
-  myTree->Book("phjj_VAJHU_new_up",phjj_VAJHU_new_up);
-  myTree->Book("pvbf_VAJHU_new_up",pvbf_VAJHU_new_up);
-  myTree->Book("phjj_VAJHU_new_dn",phjj_VAJHU_new_dn);
-  myTree->Book("pvbf_VAJHU_new_dn",pvbf_VAJHU_new_dn);
-  myTree->Book("pAux_vbf_VAJHU",pAux_vbf_VAJHU);
-  myTree->Book("pAux_vbf_VAJHU_up",pAux_vbf_VAJHU_up);
-  myTree->Book("pAux_vbf_VAJHU_dn",pAux_vbf_VAJHU_dn);
-  myTree->Book("phj_VAJHU",phj_VAJHU);
-  myTree->Book("phj_VAJHU_up",phj_VAJHU_up);
-  myTree->Book("phj_VAJHU_dn",phj_VAJHU_dn);
-  myTree->Book("pwh_hadronic_VAJHU",pwh_hadronic_VAJHU);
-  myTree->Book("pwh_hadronic_VAJHU_up",pwh_hadronic_VAJHU_up);
-  myTree->Book("pwh_hadronic_VAJHU_dn",pwh_hadronic_VAJHU_dn);
-  myTree->Book("pwh_leptonic_VAJHU",pwh_leptonic_VAJHU);
-  myTree->Book("pzh_hadronic_VAJHU",pzh_hadronic_VAJHU);
-  myTree->Book("pzh_hadronic_VAJHU_up",pzh_hadronic_VAJHU_up);
-  myTree->Book("pzh_hadronic_VAJHU_dn",pzh_hadronic_VAJHU_dn);
-  myTree->Book("pzh_leptonic_VAJHU",pzh_leptonic_VAJHU);
-  myTree->Book("ptth_VAJHU",ptth_VAJHU);
-  myTree->Book("ptth_VAJHU_up",ptth_VAJHU_up);
-  myTree->Book("ptth_VAJHU_dn",ptth_VAJHU_dn);
-  myTree->Book("pbbh_VAJHU",pbbh_VAJHU);
-  myTree->Book("pbbh_VAJHU_up",pbbh_VAJHU_up);
-  myTree->Book("pbbh_VAJHU_dn",pbbh_VAJHU_dn);
+  myTree->Book("pwh_leptonic_VAJHU", pwh_leptonic_VAJHU);
+  myTree->Book("pzh_leptonic_VAJHU", pzh_leptonic_VAJHU);
+  myTree->Book("phjj_VAJHU_highestPTJets", phjj_VAJHU_highestPTJets);
+  myTree->Book("pvbf_VAJHU_highestPTJets", pvbf_VAJHU_highestPTJets);
+  myTree->Book("phjj_VAJHU_highestPTJets_up", phjj_VAJHU_highestPTJets_up);
+  myTree->Book("pvbf_VAJHU_highestPTJets_up", pvbf_VAJHU_highestPTJets_up);
+  myTree->Book("phjj_VAJHU_highestPTJets_dn", phjj_VAJHU_highestPTJets_dn);
+  myTree->Book("pvbf_VAJHU_highestPTJets_dn", pvbf_VAJHU_highestPTJets_dn);
+  myTree->Book("phjj_VAJHU_bestDjet", phjj_VAJHU_bestDjet);
+  myTree->Book("pvbf_VAJHU_bestDjet", pvbf_VAJHU_bestDjet);
+  myTree->Book("phjj_VAJHU_bestDjet_up", phjj_VAJHU_bestDjet_up);
+  myTree->Book("pvbf_VAJHU_bestDjet_up", pvbf_VAJHU_bestDjet_up);
+  myTree->Book("phjj_VAJHU_bestDjet_dn", phjj_VAJHU_bestDjet_dn);
+  myTree->Book("pvbf_VAJHU_bestDjet_dn", pvbf_VAJHU_bestDjet_dn);
+  myTree->Book("pAux_vbf_VAJHU", pAux_vbf_VAJHU);
+  myTree->Book("pAux_vbf_VAJHU_up", pAux_vbf_VAJHU_up);
+  myTree->Book("pAux_vbf_VAJHU_dn", pAux_vbf_VAJHU_dn);
+  myTree->Book("phj_VAJHU", phj_VAJHU);
+  myTree->Book("phj_VAJHU_up", phj_VAJHU_up);
+  myTree->Book("phj_VAJHU_dn", phj_VAJHU_dn);
+  myTree->Book("pwh_hadronic_VAJHU", pwh_hadronic_VAJHU);
+  myTree->Book("pwh_hadronic_VAJHU_up", pwh_hadronic_VAJHU_up);
+  myTree->Book("pwh_hadronic_VAJHU_dn", pwh_hadronic_VAJHU_dn);
+  myTree->Book("pzh_hadronic_VAJHU", pzh_hadronic_VAJHU);
+  myTree->Book("pzh_hadronic_VAJHU_up", pzh_hadronic_VAJHU_up);
+  myTree->Book("pzh_hadronic_VAJHU_dn", pzh_hadronic_VAJHU_dn);
+  myTree->Book("ptth_VAJHU", ptth_VAJHU);
+  myTree->Book("ptth_VAJHU_up", ptth_VAJHU_up);
+  myTree->Book("ptth_VAJHU_dn", ptth_VAJHU_dn);
+  myTree->Book("pbbh_VAJHU", pbbh_VAJHU);
+  myTree->Book("pbbh_VAJHU_up", pbbh_VAJHU_up);
+  myTree->Book("pbbh_VAJHU_dn", pbbh_VAJHU_dn);
 
   //Jet variables
   myTree->Book("JetPt",JetPt);
@@ -2051,60 +2259,102 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("ExtraLepEta",ExtraLepEta);
   myTree->Book("ExtraLepPhi",ExtraLepPhi);
   myTree->Book("ExtraLepLepId",ExtraLepLepId);
-  myTree->Book("genFinalState",genFinalState);
-  myTree->Book("genProcessId",genProcessId);
-  myTree->Book("genHEPMCweight",genHEPMCweight);
-  if (doreweighting) myTree->Book("reweightingweights",reweightingweights);
-  myTree->Book("LHEweight_QCDscale_muR1_muF1",LHEweight_QCDscale_muR1_muF1);
-  myTree->Book("LHEweight_QCDscale_muR1_muF2",LHEweight_QCDscale_muR1_muF2);
-  myTree->Book("LHEweight_QCDscale_muR1_muF0p5",LHEweight_QCDscale_muR1_muF0p5);
-  myTree->Book("LHEweight_QCDscale_muR2_muF1",LHEweight_QCDscale_muR2_muF1);
-  myTree->Book("LHEweight_QCDscale_muR2_muF2",LHEweight_QCDscale_muR2_muF2);
-  myTree->Book("LHEweight_QCDscale_muR2_muF0p5",LHEweight_QCDscale_muR2_muF0p5);
-  myTree->Book("LHEweight_QCDscale_muR0p5_muF1",LHEweight_QCDscale_muR0p5_muF1);
-  myTree->Book("LHEweight_QCDscale_muR0p5_muF2",LHEweight_QCDscale_muR0p5_muF2);
-  myTree->Book("LHEweight_QCDscale_muR0p5_muF0p5",LHEweight_QCDscale_muR0p5_muF0p5);
-  myTree->Book("genExtInfo",genExtInfo);
-  myTree->Book("xsec",xsection);
-  myTree->Book("dataMCWeight",dataMCWeight);
-  myTree->Book("HqTMCweight",HqTMCweight);
-  myTree->Book("ZXFakeweight",ZXFakeweight);
-  myTree->Book("overallEventWeight",overallEventWeight);
-  myTree->Book("GenHMass",GenHMass);
-  myTree->Book("GenHPt",GenHPt);
-  myTree->Book("GenHRapidity",GenHRapidity);
-  myTree->Book("GenZ1Mass",GenZ1Mass);
-  myTree->Book("GenZ1Pt",GenZ1Pt);
-  myTree->Book("GenZ1Phi",GenZ1Phi);
-  myTree->Book("GenZ1Flav",GenZ1Flav);
-  myTree->Book("GenZ2Mass",GenZ2Mass);
-  myTree->Book("GenZ2Pt",GenZ2Pt);
-  myTree->Book("GenZ2Phi",GenZ2Phi);
-  myTree->Book("GenZ2Flav",GenZ2Flav);
-  myTree->Book("GenLep1Pt",GenLep1Pt);
-  myTree->Book("GenLep1Eta",GenLep1Eta);
-  myTree->Book("GenLep1Phi",GenLep1Phi);
-  myTree->Book("GenLep1Id",GenLep1Id);
-  myTree->Book("GenLep2Pt",GenLep2Pt);
-  myTree->Book("GenLep2Eta",GenLep2Eta);
-  myTree->Book("GenLep2Phi",GenLep2Phi);
-  myTree->Book("GenLep2Id",GenLep2Id);
-  myTree->Book("GenLep3Pt",GenLep3Pt);
-  myTree->Book("GenLep3Eta",GenLep3Eta);
-  myTree->Book("GenLep3Phi",GenLep3Phi);
-  myTree->Book("GenLep3Id",GenLep3Id);
-  myTree->Book("GenLep4Pt",GenLep4Pt);
-  myTree->Book("GenLep4Eta",GenLep4Eta);
-  myTree->Book("GenLep4Phi",GenLep4Phi);
-  myTree->Book("GenLep4Id",GenLep4Id);
-  myTree->Book("GenAssocLep1Pt",GenAssocLep1Pt);
-  myTree->Book("GenAssocLep1Eta",GenAssocLep1Eta);
-  myTree->Book("GenAssocLep1Phi",GenAssocLep1Phi);
-  myTree->Book("GenAssocLep1Id",GenAssocLep1Id);
-  myTree->Book("GenAssocLep2Pt",GenAssocLep2Pt);
-  myTree->Book("GenAssocLep2Eta",GenAssocLep2Eta);
-  myTree->Book("GenAssocLep2Phi",GenAssocLep2Phi);
-  myTree->Book("GenAssocLep2Id",GenAssocLep2Id);
+
+  myTree->Book("ZXFakeweight", ZXFakeweight);
+  myTree->Book("overallEventWeight", overallEventWeight);
+
+  if (isMC){
+    myTree->Book("PUWeight", PUWeight);
+    if (apply_K_NNLOQCD_ZZGG>0){
+      myTree->Book("KFactor_QCD_ggZZ_Nominal", KFactor_QCD_ggZZ_Nominal);
+      myTree->Book("KFactor_QCD_ggZZ_PDFScaleDn", KFactor_QCD_ggZZ_PDFScaleDn);
+      myTree->Book("KFactor_QCD_ggZZ_PDFScaleUp", KFactor_QCD_ggZZ_PDFScaleUp);
+      myTree->Book("KFactor_QCD_ggZZ_QCDScaleDn", KFactor_QCD_ggZZ_QCDScaleDn);
+      myTree->Book("KFactor_QCD_ggZZ_QCDScaleUp", KFactor_QCD_ggZZ_QCDScaleUp);
+      myTree->Book("KFactor_QCD_ggZZ_AsDn", KFactor_QCD_ggZZ_AsDn);
+      myTree->Book("KFactor_QCD_ggZZ_AsUp", KFactor_QCD_ggZZ_AsUp);
+      myTree->Book("KFactor_QCD_ggZZ_PDFReplicaDn", KFactor_QCD_ggZZ_PDFReplicaDn);
+      myTree->Book("KFactor_QCD_ggZZ_PDFReplicaUp", KFactor_QCD_ggZZ_PDFReplicaUp);
+    }
+    if (apply_K_NLOEW_ZZQQB) myTree->Book("KFactor_EW_qqZZ", KFactor_EW_qqZZ);
+    if (apply_K_NNLOQCD_ZZQQB){
+      myTree->Book("KFactor_QCD_qqZZ_dPhi", KFactor_QCD_qqZZ_dPhi);
+      myTree->Book("KFactor_QCD_qqZZ_M", KFactor_QCD_qqZZ_M);
+      myTree->Book("KFactor_QCD_qqZZ_Pt", KFactor_QCD_qqZZ_Pt);
+    }
+
+    myTree->Book("genFinalState", genFinalState);
+    myTree->Book("genProcessId", genProcessId);
+    myTree->Book("genHEPMCweight", genHEPMCweight);
+    myTree->Book("genExtInfo", genExtInfo);
+    myTree->Book("xsec", xsection);
+    myTree->Book("dataMCWeight", dataMCWeight);
+    myTree->Book("HqTMCweight", HqTMCweight);
+    myTree->Book("GenHMass", GenHMass);
+    myTree->Book("GenHPt", GenHPt);
+    myTree->Book("GenHRapidity", GenHRapidity);
+    myTree->Book("GenZ1Mass", GenZ1Mass);
+    myTree->Book("GenZ1Pt", GenZ1Pt);
+    myTree->Book("GenZ1Phi", GenZ1Phi);
+    myTree->Book("GenZ1Flav", GenZ1Flav);
+    myTree->Book("GenZ2Mass", GenZ2Mass);
+    myTree->Book("GenZ2Pt", GenZ2Pt);
+    myTree->Book("GenZ2Phi", GenZ2Phi);
+    myTree->Book("GenZ2Flav", GenZ2Flav);
+    myTree->Book("GenLep1Pt", GenLep1Pt);
+    myTree->Book("GenLep1Eta", GenLep1Eta);
+    myTree->Book("GenLep1Phi", GenLep1Phi);
+    myTree->Book("GenLep1Id", GenLep1Id);
+    myTree->Book("GenLep2Pt", GenLep2Pt);
+    myTree->Book("GenLep2Eta", GenLep2Eta);
+    myTree->Book("GenLep2Phi", GenLep2Phi);
+    myTree->Book("GenLep2Id", GenLep2Id);
+    myTree->Book("GenLep3Pt", GenLep3Pt);
+    myTree->Book("GenLep3Eta", GenLep3Eta);
+    myTree->Book("GenLep3Phi", GenLep3Phi);
+    myTree->Book("GenLep3Id", GenLep3Id);
+    myTree->Book("GenLep4Pt", GenLep4Pt);
+    myTree->Book("GenLep4Eta", GenLep4Eta);
+    myTree->Book("GenLep4Phi", GenLep4Phi);
+    myTree->Book("GenLep4Id", GenLep4Id);
+    myTree->Book("GenAssocLep1Pt", GenAssocLep1Pt);
+    myTree->Book("GenAssocLep1Eta", GenAssocLep1Eta);
+    myTree->Book("GenAssocLep1Phi", GenAssocLep1Phi);
+    myTree->Book("GenAssocLep1Id", GenAssocLep1Id);
+    myTree->Book("GenAssocLep2Pt", GenAssocLep2Pt);
+    myTree->Book("GenAssocLep2Eta", GenAssocLep2Eta);
+    myTree->Book("GenAssocLep2Phi", GenAssocLep2Phi);
+    myTree->Book("GenAssocLep2Id", GenAssocLep2Id);
+
+    if (doreweighting) myTree->Book("reweightingweights", reweightingweights);
+
+    if (addLHEKinematics){
+      myTree->Book("LHEMotherPz", LHEMotherPz);
+      myTree->Book("LHEMotherE", LHEMotherE);
+      myTree->Book("LHEMotherId", LHEMotherId);
+      myTree->Book("LHEDaughterPt", LHEDaughterPt);
+      myTree->Book("LHEDaughterEta", LHEDaughterEta);
+      myTree->Book("LHEDaughterPhi", LHEDaughterPhi);
+      myTree->Book("LHEDaughterMass", LHEDaughterMass);
+      myTree->Book("LHEDaughterId", LHEDaughterId);
+      myTree->Book("LHEAssociatedParticlePt", LHEAssociatedParticlePt);
+      myTree->Book("LHEAssociatedParticleEta", LHEAssociatedParticleEta);
+      myTree->Book("LHEAssociatedParticlePhi", LHEAssociatedParticlePhi);
+      myTree->Book("LHEAssociatedParticleMass", LHEAssociatedParticleMass);
+      myTree->Book("LHEAssociatedParticleId", LHEAssociatedParticleId);
+    }
+
+    myTree->Book("LHEPDFScale", LHEPDFScale);
+    myTree->Book("LHEweight_QCDscale_muR1_muF1", LHEweight_QCDscale_muR1_muF1);
+    myTree->Book("LHEweight_QCDscale_muR1_muF2", LHEweight_QCDscale_muR1_muF2);
+    myTree->Book("LHEweight_QCDscale_muR1_muF0p5", LHEweight_QCDscale_muR1_muF0p5);
+    myTree->Book("LHEweight_QCDscale_muR2_muF1", LHEweight_QCDscale_muR2_muF1);
+    myTree->Book("LHEweight_QCDscale_muR2_muF2", LHEweight_QCDscale_muR2_muF2);
+    myTree->Book("LHEweight_QCDscale_muR2_muF0p5", LHEweight_QCDscale_muR2_muF0p5);
+    myTree->Book("LHEweight_QCDscale_muR0p5_muF1", LHEweight_QCDscale_muR0p5_muF1);
+    myTree->Book("LHEweight_QCDscale_muR0p5_muF2", LHEweight_QCDscale_muR0p5_muF2);
+    myTree->Book("LHEweight_QCDscale_muR0p5_muF0p5", LHEweight_QCDscale_muR0p5_muF0p5);
+  }
 
 }
 

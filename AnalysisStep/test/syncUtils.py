@@ -36,15 +36,15 @@ class Event:
 
 class KDs:
 
-    def __init__(self,p0plus_VAJHU,p0minus_VAJHU,p0hplus_VAJHU,p1plus_VAJHU,p1_VAJHU,p2_VAJHU,p2qqb_VAJHU,bkg_VAMCFM,p0plus_m4l,bkg_m4l,Dgg10_VAMCFM,pvbf_VAJHU,phjj_VAJHU,phj_VAJHU,pAux_vbf_VAJHU,pwh_hadronic_VAJHU,pzh_hadronic_VAJHU,njets30,jetQGLikelihood):
+    def __init__(self,p0plus_VAJHU,p0minus_VAJHU,p0hplus_VAJHU,p1plus_VAJHU,p1_VAJHU,p2plus_gg_VAJHU,p2plus_qqb_VAJHU,bkg_VAMCFM,p0plus_m4l,bkg_m4l,Dgg10_VAMCFM,pvbf_VAJHU,phjj_VAJHU,phj_VAJHU,pAux_vbf_VAJHU,pwh_hadronic_VAJHU,pzh_hadronic_VAJHU,njets30,jetQGLikelihood):
 
         self.p0plus_VAJHU  = p0plus_VAJHU
         self.p0minus_VAJHU = p0minus_VAJHU
         self.p0hplus_VAJHU = p0hplus_VAJHU
         self.p1plus_VAJHU  = p1plus_VAJHU 
         self.p1_VAJHU      = p1_VAJHU     
-        self.p2_VAJHU      = p2_VAJHU     
-        self.p2qqb_VAJHU   = p2qqb_VAJHU              
+        self.p2plus_gg_VAJHU      = p2plus_gg_VAJHU     
+        self.p2plus_qqb_VAJHU   = p2plus_qqb_VAJHU              
         self.bkg_VAMCFM    = bkg_VAMCFM
         self.p0plus_m4l    = p0plus_m4l        
         self.bkg_m4l       = bkg_m4l        
@@ -85,8 +85,8 @@ class KDs:
         self.KD_highdim = self.p0plus_VAJHU/(self.p0plus_VAJHU + self.p0hplus_VAJHU)
         self.KD_vec     = self.p0plus_VAJHU/(self.p0plus_VAJHU + self.p1plus_VAJHU) 	 
         self.KD_psvec   = self.p0plus_VAJHU/(self.p0plus_VAJHU + self.p1_VAJHU) 	 
-        self.KD_gggrav  = self.p0plus_VAJHU/(self.p0plus_VAJHU + self.p2_VAJHU) 	 
-        self.KD_qqgrav  = self.p0plus_VAJHU/(self.p0plus_VAJHU + self.p2qqb_VAJHU) 
+        self.KD_gggrav  = self.p0plus_VAJHU/(self.p0plus_VAJHU + self.p2plus_gg_VAJHU) 	 
+        self.KD_qqgrav  = self.p0plus_VAJHU/(self.p0plus_VAJHU + self.p2plus_qqb_VAJHU) 
         ##MELA-only production discriminants:
         if self.njets30 >= 2 :
             self.Djet_VAJHU = self.pvbf_VAJHU/(self.pvbf_VAJHU+self.phjj_VAJHU ) # VBF(2j) vs. gg->H+2j
@@ -114,7 +114,7 @@ class KDs:
 class Candidate:
 
     def __init__(self,event,m,mZ1,mZ2,mErr,mErrCorr,m4lRefit,m4lRefitErr,pt,nExtraLep,nExtraZ,jets30pt,jets30eta,jets30phi,jets30mass,njets30,njets30Btag,mjj,detajj,kds,weight,
-                 jetQGLikelihood,phjj_VAJHU_old,phj_VAJHU,pvbf_VAJHU_old,pAux_vbf_VAJHU,pwh_hadronic_VAJHU,pzh_hadronic_VAJHU
+                 jetQGLikelihood,phjj_VAJHU_highestPTJets,phj_VAJHU,pvbf_VAJHU_highestPTJets,pAux_vbf_VAJHU,pwh_hadronic_VAJHU,pzh_hadronic_VAJHU
                  ):
 
         self.eventInfo   = event
@@ -167,9 +167,9 @@ class Candidate:
             c_int(njets30),
             c_int(njets30Btag),
             (ctypes.c_float * len(jetQGLikelihood))(*jetQGLikelihood),
-            c_float(phjj_VAJHU_old),
+            c_float(phjj_VAJHU_highestPTJets),
             c_float(phj_VAJHU),
-            c_float(pvbf_VAJHU_old),
+            c_float(pvbf_VAJHU_highestPTJets),
             c_float(pAux_vbf_VAJHU),
             c_float(pwh_hadronic_VAJHU),
             c_float(pzh_hadronic_VAJHU)
