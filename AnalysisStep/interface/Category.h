@@ -39,8 +39,8 @@ enum CategoryMor16 {
 
 extern "C" int categoryMor16(
 			     int nCleanedJetsPt30,
-			     float pvbf_VAJHU_old,
-			     float phjj_VAJHU_old
+			     float pvbf_VAJHU_highestPTJets,
+			     float phjj_VAJHU_highestPTJets
 			     );
 
 
@@ -63,9 +63,9 @@ extern "C" int categoryIchep16(
 	     int nCleanedJetsPt30, 
 	     int nCleanedJetsPt30BTagged,
 	     float* jetQGLikelihood,
-	     float phjj_VAJHU_old,
+	     float phjj_VAJHU_highestPTJets,
 	     float phj_VAJHU,
-	     float pvbf_VAJHU_old,
+	     float pvbf_VAJHU_highestPTJets,
 	     float pAux_vbf_VAJHU,
 	     float pwh_hadronic_VAJHU,
 	     float pzh_hadronic_VAJHU

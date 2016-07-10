@@ -471,11 +471,11 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
   Short_t NObsInt;
   Float_t NTrueInt;
   Float_t overallEventWeight;
-  Float_t KFactorggZZ;
-  Float_t KFactorEWKqqZZ;
-  Float_t KFactorQCDqqZZ_dPhi;
-  Float_t KFactorQCDqqZZ_M;
-  Float_t KFactorQCDqqZZ_Pt;
+  Float_t KFactor_QCD_ggZZ_Nominal;
+  Float_t KFactor_EW_qqZZ;
+  Float_t KFactor_QCD_qqZZ_dPhi;
+  Float_t KFactor_QCD_qqZZ_M;
+  Float_t KFactor_QCD_qqZZ_Pt;
   Float_t xsec;
   Short_t ZZsel;
   Float_t ZZMass;
@@ -488,8 +488,8 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
   Float_t ZZEta;
   Float_t p0plus_VAJHU;
   Float_t bkg_VAMCFM;
-  Float_t pvbf_VAJHU_old;
-  Float_t phjj_VAJHU_old;
+  Float_t pvbf_VAJHU_highestPTJets;
+  Float_t phjj_VAJHU_highestPTJets;
   Float_t pAux_vbf_VAJHU;
   Float_t phj_VAJHU;
   Float_t pwh_hadronic_VAJHU;
@@ -620,11 +620,11 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
     inputTree[d]->SetBranchAddress("NObsInt", &NObsInt);
     inputTree[d]->SetBranchAddress("NTrueInt", &NTrueInt);
     inputTree[d]->SetBranchAddress("overallEventWeight", &overallEventWeight);
-    inputTree[d]->SetBranchAddress("KFactorggZZ", &KFactorggZZ);
-    inputTree[d]->SetBranchAddress("KFactorEWKqqZZ", &KFactorEWKqqZZ);
-    inputTree[d]->SetBranchAddress("KFactorQCDqqZZ_dPhi", &KFactorQCDqqZZ_dPhi);
-    inputTree[d]->SetBranchAddress("KFactorQCDqqZZ_M", &KFactorQCDqqZZ_M);
-    inputTree[d]->SetBranchAddress("KFactorQCDqqZZ_Pt", &KFactorQCDqqZZ_Pt);
+    inputTree[d]->SetBranchAddress("KFactor_QCD_ggZZ_Nominal", &KFactor_QCD_ggZZ_Nominal);
+    inputTree[d]->SetBranchAddress("KFactor_EW_qqZZ", &KFactor_EW_qqZZ);
+    inputTree[d]->SetBranchAddress("KFactor_QCD_qqZZ_dPhi", &KFactor_QCD_qqZZ_dPhi);
+    inputTree[d]->SetBranchAddress("KFactor_QCD_qqZZ_M", &KFactor_QCD_qqZZ_M);
+    inputTree[d]->SetBranchAddress("KFactor_QCD_qqZZ_Pt", &KFactor_QCD_qqZZ_Pt);
     inputTree[d]->SetBranchAddress("xsec", &xsec);
     inputTree[d]->SetBranchAddress("ZZsel", &ZZsel);
     inputTree[d]->SetBranchAddress("ZZMass", &ZZMass);
@@ -637,8 +637,8 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
     inputTree[d]->SetBranchAddress("ZZEta", &ZZEta);
     inputTree[d]->SetBranchAddress("p0plus_VAJHU", &p0plus_VAJHU);
     inputTree[d]->SetBranchAddress("bkg_VAMCFM", &bkg_VAMCFM);
-    inputTree[d]->SetBranchAddress("pvbf_VAJHU_old", &pvbf_VAJHU_old);
-    inputTree[d]->SetBranchAddress("phjj_VAJHU_old", &phjj_VAJHU_old);
+    inputTree[d]->SetBranchAddress("pvbf_VAJHU_highestPTJets", &pvbf_VAJHU_highestPTJets);
+    inputTree[d]->SetBranchAddress("phjj_VAJHU_highestPTJets", &phjj_VAJHU_highestPTJets);
     inputTree[d]->SetBranchAddress("pAux_vbf_VAJHU", &pAux_vbf_VAJHU);
     inputTree[d]->SetBranchAddress("phj_VAJHU", &phj_VAJHU);
     inputTree[d]->SetBranchAddress("pwh_hadronic_VAJHU", &pwh_hadronic_VAJHU);
@@ -709,7 +709,7 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 	  
 	  //kfactor = 1.1; // Jamboree
 	  
-	  kfactor = KFactorEWKqqZZ * KFactorQCDqqZZ_M ; // as of Moriond2016 
+	  kfactor = KFactor_EW_qqZZ * KFactor_QCD_qqZZ_M ; // as of Moriond2016 
 
 	}else if(currentProcess==ggZZ){
 	  
@@ -717,7 +717,7 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 	  
 	  //kfactor = 1.7; // Jamboree
 	  
-	  kfactor = KFactorggZZ; // as of Moriond2016
+	  kfactor = KFactor_QCD_ggZZ_Nominal; // as of Moriond2016
 
 	  //kfactor = (float)sp->Eval(GenHMass); // (same as previous)
 	  
@@ -778,8 +778,8 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
       /* ---------- Moriond 2016 categorization 
       currentCategory = categoryMor16(
 	 nJets,
-         pvbf_VAJHU_old,
-         phjj_VAJHU_old
+         pvbf_VAJHU_highestPTJets,
+         phjj_VAJHU_highestPTJets
          );
       //*/
       //* ---------- Ichep 2016 categorization 
@@ -789,9 +789,9 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 	 nJets,
 	 nJetsBTagged,
 	 jetQGL,
-	 phjj_VAJHU_old,
+	 phjj_VAJHU_highestPTJets,
 	 phj_VAJHU,
-	 pvbf_VAJHU_old,
+	 pvbf_VAJHU_highestPTJets,
 	 pAux_vbf_VAJHU,
 	 pwh_hadronic_VAJHU,
 	 pzh_hadronic_VAJHU
@@ -816,8 +816,8 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
       //----- fill histograms
 
       Float_t KD = p0plus_VAJHU / ( p0plus_VAJHU + bkg_VAMCFM ) ;
-      Float_t vbfMela = pvbf_VAJHU_old / ( phjj_VAJHU_old + pvbf_VAJHU_old );
-      Float_t DCombVbf2j = (nJets>=2) ? 1/(1+ phjj_VAJHU_old/pvbf_VAJHU_old * TMath::Power(jetPgOverPq[0]*jetPgOverPq[1],1/3.) ) : -2 ;
+      Float_t vbfMela = pvbf_VAJHU_highestPTJets / ( phjj_VAJHU_highestPTJets + pvbf_VAJHU_highestPTJets );
+      Float_t DCombVbf2j = (nJets>=2) ? 1/(1+ phjj_VAJHU_highestPTJets/pvbf_VAJHU_highestPTJets * TMath::Power(jetPgOverPq[0]*jetPgOverPq[1],1/3.) ) : -2 ;
       Float_t varVal[nVariables] = {
 	ZZMass,
 	ZZMass,
@@ -1218,8 +1218,8 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
   Float_t ZZEta;
   Float_t p0plus_VAJHU;
   Float_t bkg_VAMCFM;
-  Float_t pvbf_VAJHU_old;
-  Float_t phjj_VAJHU_old;
+  Float_t pvbf_VAJHU_highestPTJets;
+  Float_t phjj_VAJHU_highestPTJets;
   Float_t pAux_vbf_VAJHU;
   Float_t phj_VAJHU;
   Float_t pwh_hadronic_VAJHU;
@@ -1254,8 +1254,8 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
   mytree->SetBranchAddress("ZZEta", &ZZEta);
   mytree->SetBranchAddress("p0plus_VAJHU", &p0plus_VAJHU);
   mytree->SetBranchAddress("bkg_VAMCFM", &bkg_VAMCFM);
-  mytree->SetBranchAddress("pvbf_VAJHU_old", &pvbf_VAJHU_old);
-  mytree->SetBranchAddress("phjj_VAJHU_old", &phjj_VAJHU_old);
+  mytree->SetBranchAddress("pvbf_VAJHU_highestPTJets", &pvbf_VAJHU_highestPTJets);
+  mytree->SetBranchAddress("phjj_VAJHU_highestPTJets", &phjj_VAJHU_highestPTJets);
   mytree->SetBranchAddress("pAux_vbf_VAJHU", &pAux_vbf_VAJHU);
   mytree->SetBranchAddress("phj_VAJHU", &phj_VAJHU);
   mytree->SetBranchAddress("pwh_hadronic_VAJHU", &pwh_hadronic_VAJHU);
@@ -1329,8 +1329,8 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
 
     for(int j=0; j<nJets; j++) jetPgOverPq[j] = 1./JetQGLikelihood->at(j) - 1.;
     Float_t KD = p0plus_VAJHU / ( p0plus_VAJHU + bkg_VAMCFM ) ;
-    Float_t vbfMela = pvbf_VAJHU_old / ( phjj_VAJHU_old + pvbf_VAJHU_old );
-    Float_t DCombVbf2j = (nJets>=2) ? 1/(1+ phjj_VAJHU_old/pvbf_VAJHU_old * TMath::Power(jetPgOverPq[0]*jetPgOverPq[1],1/3.) ) : -2 ;
+    Float_t vbfMela = pvbf_VAJHU_highestPTJets / ( phjj_VAJHU_highestPTJets + pvbf_VAJHU_highestPTJets );
+    Float_t DCombVbf2j = (nJets>=2) ? 1/(1+ phjj_VAJHU_highestPTJets/pvbf_VAJHU_highestPTJets * TMath::Power(jetPgOverPq[0]*jetPgOverPq[1],1/3.) ) : -2 ;
     Float_t varVal[nVariables] = {
       ZZMass,
       ZZMass,

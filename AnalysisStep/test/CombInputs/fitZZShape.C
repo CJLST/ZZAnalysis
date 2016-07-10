@@ -173,7 +173,7 @@ void all(int selAna=-10, int channels=0, int categ=-1, int sample = 0 ){
   Short_t nExtraLeptons;
   Short_t nCleanedJets;
 
-  float ZZPt, PVBF_VAJHU_old, PHJJ_VAJHU_old, PHJ_VAJHU, PAUX_VBF_VAJHU, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU;
+  float ZZPt, pvbf_VAJHU_highestPTJets, phjj_VAJHU_highestPTJets, PHJ_VAJHU, PAUX_VBF_VAJHU, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU;
   Short_t nJets;
   Short_t nBTaggedJets;
   std::vector<float> * JETQGLikeliHood = 0;
@@ -199,8 +199,8 @@ void all(int selAna=-10, int channels=0, int categ=-1, int sample = 0 ){
   ggTree->SetBranchAddress("nCleanedJets",&nJets);
   ggTree->SetBranchAddress("nCleanedJetsPt30BTagged",&nBTaggedJets);
   ggTree->SetBranchAddress("DiJetFisher",&Fisher);
-  ggTree->SetBranchAddress("pvbf_VAJHU_old",&PVBF_VAJHU_old);
-  ggTree->SetBranchAddress("phjj_VAJHU_old",&PHJJ_VAJHU_old);
+  ggTree->SetBranchAddress("pvbf_VAJHU_highestPTJets",&pvbf_VAJHU_highestPTJets);
+  ggTree->SetBranchAddress("phjj_VAJHU_highestPTJets",&phjj_VAJHU_highestPTJets);
 
   ggTree->SetBranchAddress("nExtraZ",&ExtraZ);
   ggTree->SetBranchAddress("nCleanedJetsPt30",&nCleanedJets);
@@ -248,8 +248,8 @@ void all(int selAna=-10, int channels=0, int categ=-1, int sample = 0 ){
       }
     }  
     int Cat = -10;
-    if (selAna == 0) Cat = categoryMor16(nJets, PVBF_VAJHU_old, PHJJ_VAJHU_old );
-    if (selAna == 1) Cat = categoryIchep16(nExtraLeptons, ExtraZ, nCleanedJets, nBTaggedJets,jetQGLL, PHJJ_VAJHU_old, PHJ_VAJHU, PVBF_VAJHU_old, PAUX_VBF_VAJHU, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU );
+    if (selAna == 0) Cat = categoryMor16(nJets, pvbf_VAJHU_highestPTJets, phjj_VAJHU_highestPTJets );
+    if (selAna == 1) Cat = categoryIchep16(nExtraLeptons, ExtraZ, nCleanedJets, nBTaggedJets,jetQGLL, phjj_VAJHU_highestPTJets, PHJ_VAJHU, pvbf_VAJHU_highestPTJets, PAUX_VBF_VAJHU, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU );
     if (categ >= 0 && categ != Cat ) continue; 
 
     if(channels==0 && z1flav*z2flav != 28561) continue;

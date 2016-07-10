@@ -8,18 +8,41 @@ from ZZAnalysis.AnalysisStep.couplings import *
 ###----------------------------------------------------------------------
 
 # Set defaults for variables used in this file (in case they are not defined by a caller script)
-declareDefault("PD", "", globals()) # "" for MC, "DoubleEle", "DoubleMu", or "MuEG" for data 
+declareDefault("PD", "", globals()) # "" for MC, "DoubleEle", "DoubleMu", or "MuEG" for data
 declareDefault("MCFILTER", "", globals())
 declareDefault("XSEC", 1, globals())
 declareDefault("PROCESS_CR", False, globals())
-declareDefault("REWEIGHTING_TYPE", "none", globals())
 
-#couplings for reweighting
+# Couplings for reweighting
+declareDefault("REWEIGHTING_TYPE", "none", globals())
 declareDefault("SPIN", 0, globals())
 couplings = Couplings()
 for coupling in couplings.allnames():
     declareDefault(coupling, 0, globals())
     couplings[coupling] = globals()[coupling]
+
+# LHE info
+#  VVDECAYMODE\VVMODE  / ZZ==1 / WW==0  / Yukawa==2 / Zgam=3 / gamgam=4 / Z+nj=5
+#                     0: 4l    / lnulnu / 2l        / 2l     / gam      / 2l
+#                     1: 4q    / 4q     / 2q        / 2q     / -        / 2q
+#                     2: 2l2q  / lnu2q  / -         / -      / -        / -
+#                     3: 2l2nu / -      / -         / -      / -        / -
+#                     4: 2q2nu / -      / -         / -      / -        / -
+#                     5: 4nu   / -      / -         / 2nu    / -        / 2nu
+#                    -1: [ Any                                                 ]
+#                    -2: [ 2l2X         ]
+#                    -3: [ 2nu2X        ]
+#                    -4: [ 2q2X         ]
+declareDefault("VVMODE", 0, globals())
+declareDefault("VVDECAYMODE", 0, globals())
+declareDefault("ADDLHEKINEMATICS", False, globals())
+declareDefault("SAMPLEPRODUCTIONID", "", globals()) # Reserve for reweighting, not yet used
+declareDefault("SAMPLEPROCESSID", "", globals()) # Reserve for reweighting, not yet used
+
+# K factors
+declareDefault("APPLY_K_NNLOQCD_ZZGG", 0, globals()) # 0: Do not; 1: NNLO/LO; 2: NNLO/NLO; 3: NLO/LO
+declareDefault("APPLY_K_NNLOQCD_ZZQQB", False, globals())
+declareDefault("APPLY_K_NLOEW_ZZQQB", False, globals())
 
 # Get absolute path
 import os
@@ -55,12 +78,12 @@ process.PlotsZZ    = cms.EDAnalyzer("ZZ4lAnalyzer",
                                     channel = cms.untracked.string('ZZ'),
                                     candCollection = cms.untracked.string('ZZCand'),
                                     isMC = cms.untracked.bool(IsMC),
-                                    sampleType = cms.int32(SAMPLE_TYPE),                                    
+                                    sampleType = cms.int32(SAMPLE_TYPE),
                                     setup = cms.int32(LEPTON_SETUP),
                                     skimPaths = cms.vstring(SkimPaths),
                                     PD = cms.string(PD),
                                     MCFilterPath = cms.string(MCFILTER),
-                                    sampleName = cms.string(SAMPLENAME),                                    
+                                    sampleName = cms.string(SAMPLENAME),
                                     dumpForSync = cms.untracked.bool(False),
                                     )
 
@@ -127,8 +150,6 @@ TreeSetup = cms.EDAnalyzer("HZZ4lNtupleMaker",
                            spin = cms.int32(int(SPIN)),
                            HVVcouplings_real = cms.vdouble(*couplings.getcouplings(spin=0, WW=False, imag=False)),
                            HVVcouplings_imag = cms.vdouble(*couplings.getcouplings(spin=0, WW=False, imag=True)),
-                           HWWcouplings_real = cms.vdouble(*couplings.getcouplings(spin=0, WW=True, imag=False)),
-                           HWWcouplings_imag = cms.vdouble(*couplings.getcouplings(spin=0, WW=True, imag=True)),
                            ZVVcouplings_real = cms.vdouble(*couplings.getcouplings(spin=1, imag=False)),
                            ZVVcouplings_imag = cms.vdouble(*couplings.getcouplings(spin=1, imag=True)),
                            GVVcouplings_real = cms.vdouble(*couplings.getcouplings(spin=2, gg=False, imag=False)),
@@ -136,6 +157,14 @@ TreeSetup = cms.EDAnalyzer("HZZ4lNtupleMaker",
                            Gggcouplings_real = cms.vdouble(*couplings.getcouplings(spin=2, gg=True, imag=False)),
                            Gggcouplings_imag = cms.vdouble(*couplings.getcouplings(spin=2, gg=True, imag=True)),
                            reweightingtype = cms.string(REWEIGHTING_TYPE),
+                           VVMode = cms.int32(int(VVMODE)),
+                           VVDecayMode = cms.int32(int(VVDECAYMODE)),
+                           AddLHEKinematics = cms.bool(ADDLHEKINEMATICS),
+                           sampleProductionId = cms.string(SAMPLEPRODUCTIONID),
+                           sampleProcessId = cms.string(SAMPLEPROCESSID),
+                           Apply_K_NNLOQCD_ZZGG = cms.int32(int(APPLY_K_NNLOQCD_ZZGG)),
+                           Apply_K_NNLOQCD_ZZQQB = cms.bool(APPLY_K_NNLOQCD_ZZQQB),
+                           Apply_K_NLOEW_ZZQQB = cms.bool(APPLY_K_NLOEW_ZZQQB),
                            )
 
 ### Signal region
@@ -217,7 +246,7 @@ process.CRSelection= cms.EDFilter("CandViewCountFilter",
 
 process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
      dumpTrigger = cms.untracked.bool(True),
-     muonSrc = cms.InputTag("appendPhotons:muons"), 
+     muonSrc = cms.InputTag("appendPhotons:muons"),
      electronSrc = cms.InputTag("appendPhotons:electrons"),
      candidateSrcs = cms.PSet(
         Z     = cms.InputTag("ZCand"),
@@ -235,7 +264,7 @@ if (PROCESS_CR or not IsMC):
 else:
 #    process.CRPath = cms.Path(process.CRZl) #still needed by the plotter
     process.trees = cms.EndPath(process.ZZTree)
-    
+
 process.plots = cms.EndPath(process.PlotsZZ)
 
 
