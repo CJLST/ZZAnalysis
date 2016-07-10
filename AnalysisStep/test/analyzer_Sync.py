@@ -7,7 +7,7 @@
 #FSRMODE = "RunII" # only Run II supported as of 2016
 #KINREFIT = False  # control KinZFitter (very slow)
 #PROCESS_CR = True # Uncomment to run CR paths and trees
-#ADDLOOSELE = True # Run paths for loose electrons
+#ADDLOOSEELE = True # Run paths for loose electrons
 
 PD = ""
 MCFILTER = ""
@@ -66,12 +66,20 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 # Debug
 process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
      dumpTrigger = cms.untracked.bool(True),
-#     muonSrc = cms.InputTag("slimmedMuons"),
-#     electronSrc = cms.InputTag("slimmedElectrons"),
-     muonSrc = cms.InputTag("appendPhotons:muons"), 
-     electronSrc = cms.InputTag("appendPhotons:electrons"),
+     muonSrcs = cms.PSet(
+#       slimmedMuons = cms.InputTag("slimmedMuons"),
+        muons = cms.InputTag("appendPhotons:muons"),
+     ),
+     electronSrcs = cms.PSet(
+#       slimmedElectron = cms.InputTag("slimmedElectrons"),
+        electrons = cms.InputTag("appendPhotons:electrons"),
+#        RSE = cms.InputTag("appendPhotons:looseElectrons"), #FIXME: loose collections are filtered, should add a check
+#        TLE = cms.InputTag("appendPhotons:electronstle"), #These are actually photons, should add a photonSrcs section for them.
+     ),
      candidateSrcs = cms.PSet(
-        Z     = cms.InputTag("ZCand"),                                  
+        Z     = cms.InputTag("ZCand"),
+#        ZRSE     = cms.InputTag("ZCandlooseEle"), #FIXME: loose collections are filtered, should add a check
+#        ZTLE     = cms.InputTag("ZCandtle"),
         ZZ  = cms.InputTag("ZZCand"),
 #        ZLL  = cms.InputTag("ZLLCand"),
 #        ZL  = cms.InputTag("ZlCand"),

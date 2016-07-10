@@ -73,7 +73,7 @@ process.ZCandlooseEle = cms.EDProducer("ZCandidateFiller",
 
 # used to be CandViewShallowCloneCombiner
 process.bareZZCandlooseEle= cms.EDProducer("CandViewShallowCloneCombiner",
-    decay = cms.string('ZCandlooseEle ZCand'),
+    decay = cms.string('ZCand ZCandlooseEle'),
     cut = cms.string(LLLLPRESEL),
     checkCharge = cms.bool(False)
 )

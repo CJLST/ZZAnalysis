@@ -43,12 +43,14 @@ public:
   void dumpCandidates(const View<pat::CompositeCandidate>& cands);
   template<typename T> void dumpUserVal(const T& cand);
 
-  edm::EDGetTokenT<pat::MuonCollection> muonToken;
-  edm::EDGetTokenT<pat::ElectronCollection> electronToken;
   bool dumpJets;
   edm::EDGetTokenT<pat::JetCollection> jetToken;
   edm::EDGetTokenT<vector<reco::Vertex> > vtxToken;
   vector<string> collNames;
+  vector<string> muCollNames;
+  vector<string> eleCollNames;
+  vector<edm::EDGetTokenT<pat::MuonCollection> > muCandidateSrcTokens;
+  vector<edm::EDGetTokenT<pat::ElectronCollection> > eleCandidateSrcTokens;
   vector<edm::EDGetTokenT<edm::View<pat::CompositeCandidate> > > candidateSrcTokens;
   bool listTriggers;
   edm::EDGetTokenT<edm::TriggerResults> triggerResultToken;
@@ -57,8 +59,6 @@ public:
 
 
 dumpUserData::dumpUserData(const ParameterSet& pset):
-  muonToken(consumes<pat::MuonCollection>(pset.getParameter<InputTag>("muonSrc"))),
-  electronToken(consumes<pat::ElectronCollection>(pset.getParameter<InputTag>("electronSrc"))),
   dumpJets(pset.existsAs<InputTag>("jetSrc")),
   jetToken( dumpJets ? consumes<pat::JetCollection>(pset.getParameter<InputTag>("jetSrc")) : edm::EDGetTokenT<pat::JetCollection>() ),
   listTriggers(pset.getUntrackedParameter<bool>("dumpTrigger",false))
@@ -66,7 +66,20 @@ dumpUserData::dumpUserData(const ParameterSet& pset):
 
   vtxToken = consumes<vector<reco::Vertex> >(edm::InputTag("offlinePrimaryVertices"));
 
+  ParameterSet muCollps = pset.getParameter<ParameterSet>("muonSrcs");
+  ParameterSet eleCollps = pset.getParameter<ParameterSet>("electronSrcs");
   ParameterSet collps = pset.getParameter<ParameterSet>("candidateSrcs");
+
+  muCollNames = muCollps.getParameterNamesForType<InputTag>();
+  for( unsigned i=0; i<muCollNames.size(); ++i) {
+    muCandidateSrcTokens.push_back(consumes<pat::MuonCollection>(muCollps.getParameter<InputTag>(muCollNames[i])));
+  }
+
+  eleCollNames = eleCollps.getParameterNamesForType<InputTag>();
+  for( unsigned i=0; i<eleCollNames.size(); ++i) {
+    eleCandidateSrcTokens.push_back(consumes<pat::ElectronCollection>(eleCollps.getParameter<InputTag>(eleCollNames[i])));
+  }
+
   collNames = collps.getParameterNamesForType<InputTag>();
   for( unsigned i=0; i<collNames.size(); ++i) {
     candidateSrcTokens.push_back(consumes<edm::View<pat::CompositeCandidate> >(collps.getParameter<InputTag>(collNames[i])));
@@ -89,12 +102,6 @@ void dumpUserData::analyze(const Event & event, const EventSetup& eventSetup){
   int ils =event.luminosityBlock();
   cout << "Dump for event " << irun << ":" << ils << ":" << ievt << endl; 
 
-  Handle<pat::MuonCollection> muons;
-  event.getByToken(muonToken, muons);
-
-  Handle<pat::ElectronCollection> electrons;
-  event.getByToken(electronToken, electrons);
-
   bool dumpVertices=false;
   if (dumpVertices) {  
     edm::Handle<vector<reco::Vertex> > vtxs;
@@ -113,66 +120,75 @@ void dumpUserData::analyze(const Event & event, const EventSetup& eventSetup){
   
   
 
-  cout << " mu Candidates:    " << muons->size() << endl;
-  cout << " e  Candidates:    " << electrons->size() << endl;
+  unsigned int nColls = muCollNames.size();
+  for(unsigned i=0; i<muCollNames.size(); ++i) {
+    Handle<pat::MuonCollection> muons;
+    int j = nColls-i-1;
+    event.getByToken(muCandidateSrcTokens[j],muons);
+    cout << muCollNames[j] << ": " << muons->size() << endl;
 
-  cout << "Muons:" << endl;  
-  for( pat::MuonCollection::const_iterator lep =muons->begin(); lep != muons->end(); ++lep ) {
-    int i = distance(muons->begin(),lep);
+    for( pat::MuonCollection::const_iterator lep =muons->begin(); lep != muons->end(); ++lep ) {
+      int i = distance(muons->begin(),lep);
 
-    int genID=0;
-    float genPT=0.;
-    const reco::GenParticle * gp =lep->genLepton();
-    if (gp) {
-      genID=gp->pdgId();
-      genPT=gp->pt();
-    }
+      int genID=0;
+      float genPT=0.;
+      const reco::GenParticle * gp =lep->genLepton();
+      if (gp) {
+	genID=gp->pdgId();
+	genPT=gp->pt();
+      }
 
-    cout << "#" << i << " mu"  << ((lep->charge()>0)?"+ ":"- ") << " pt= " << lep->pt() << " eta= " << lep->eta() << " phi= " << lep->phi() << " GLB= " << lep->isGlobalMuon() << " TK= " << lep->isTrackerMuon() << " matches= " << lep->numberOfMatches() << " BTT= " << lep->muonBestTrackType() << " t0_nDof: " << lep->time().nDof << " t0(ns): " << lep->time().timeAtIpInOut << " genID= " << genID <<  " genPT= " << genPT;
+      cout << "#" << i << " mu"  << ((lep->charge()>0)?"+ ":"- ") << " pt= " << lep->pt() << " eta= " << lep->eta() << " phi= " << lep->phi() << " GLB= " << lep->isGlobalMuon() << " TK= " << lep->isTrackerMuon() << " matches= " << lep->numberOfMatches() << " BTT= " << lep->muonBestTrackType() << " t0_nDof: " << lep->time().nDof << " t0(ns): " << lep->time().timeAtIpInOut << " genID= " << genID <<  " genPT= " << genPT;
 
 //	 << " BTPT: " <<  lep->muonBestTrack()->pt() << " " << lep->innerTrack()->pt() << " " <<  lep->innerTrack()->eta() << " " << lep->innerTrack()->phi();
-    dumpUserVal(*lep);
-    if (lep->hasUserData("FSRCandidates")){
-      const PhotonPtrVector* fsrEle = lep->userData<PhotonPtrVector>("FSRCandidates");
-      if (fsrEle->size()) {
-	cout << " Photons: pT=";	
-	for (PhotonPtrVector::const_iterator g = fsrEle->begin(); g!=fsrEle->end(); ++g) {
-	  cout << " " << (*g)->pt();
+      dumpUserVal(*lep);
+      if (lep->hasUserData("FSRCandidates")){
+	const PhotonPtrVector* fsrEle = lep->userData<PhotonPtrVector>("FSRCandidates");
+	if (fsrEle->size()) {
+	  cout << " Photons: pT=";	
+	  for (PhotonPtrVector::const_iterator g = fsrEle->begin(); g!=fsrEle->end(); ++g) {
+	    cout << " " << (*g)->pt();
+	  }
 	}
       }
+      cout << endl;
     }
-    cout << endl;
   }
 
-  cout << "Electrons:" << endl;
-  for( pat::ElectronCollection::const_iterator lep = electrons->begin(); lep != electrons->end(); ++lep ) {
-    int i = distance(electrons->begin(),lep);
+  nColls = eleCollNames.size();
+  for(unsigned i=0; i<eleCollNames.size(); ++i) {
+    Handle<pat::ElectronCollection> electrons;
+    int j = nColls-i-1;
+    event.getByToken(eleCandidateSrcTokens[j],electrons);
+    cout << eleCollNames[j] << ": " << electrons->size() << endl;
+    for( pat::ElectronCollection::const_iterator lep = electrons->begin(); lep != electrons->end(); ++lep ) {
+      int i = distance(electrons->begin(),lep);
 
-    int genID=0;
-    float genPT=0.;
-    const reco::GenParticle * gp =lep->genLepton();
-    if (gp) {
-      genID=gp->pdgId();
-      genPT=gp->pt();
-    }
+      int genID=0;
+      float genPT=0.;
+      const reco::GenParticle * gp =lep->genLepton();
+      if (gp) {
+	genID=gp->pdgId();
+	genPT=gp->pt();
+      }
 
-    cout << "#" << i << " e"  << ((lep->charge()>0)?"+  ":"-  ") << " pt= " << lep->pt() << " eta= " << lep->eta() << " phi= " << lep->phi() << " genID= " << genID <<  " genPT= " << genPT;
+      cout << "#" << i << " e"  << ((lep->charge()>0)?"+  ":"-  ") << " pt= " << lep->pt() << " eta= " << lep->eta() << " phi= " << lep->phi() << " genID= " << genID <<  " genPT= " << genPT;
 
-    dumpUserVal(*lep);
-    if (lep->hasUserData("FSRCandidates")){
-      const PhotonPtrVector* fsrEle = lep->userData<PhotonPtrVector>("FSRCandidates");
-      if (fsrEle->size()) {
-	cout << " Photon pTs:"; // fsrEle->size() << endl;
-	for (PhotonPtrVector::const_iterator g = fsrEle->begin(); g!=fsrEle->end(); ++g) {
-	  cout << " (pt=" << (*g)->pt() ;//<< " isFromMu=" << (*g)->isFromMuon() << ")";
+      dumpUserVal(*lep);
+      if (lep->hasUserData("FSRCandidates")){
+	const PhotonPtrVector* fsrEle = lep->userData<PhotonPtrVector>("FSRCandidates");
+	if (fsrEle->size()) {
+	  cout << " Photon pTs:"; // fsrEle->size() << endl;
+	  for (PhotonPtrVector::const_iterator g = fsrEle->begin(); g!=fsrEle->end(); ++g) {
+	    cout << " (pt=" << (*g)->pt() ;//<< " isFromMu=" << (*g)->isFromMuon() << ")";
+	  }
 	}
       }
+      cout << endl;
     }
-    cout << endl;
   }
-
   
-  unsigned int nColls = collNames.size();
+  nColls = collNames.size();
   for(unsigned i=0; i<collNames.size(); ++i) {
     Handle<View<pat::CompositeCandidate> > coll;
     int j = nColls-i-1;

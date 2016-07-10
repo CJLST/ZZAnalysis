@@ -30,9 +30,6 @@ declareDefault("ELEREGRESSION", "None", globals())
 #Apply muon scale correction
 declareDefault("APPLYMUCORR", True, globals())
 
-#muon scale correction identifier, "None" for pass-through, "MC_76X_13TeV" for 2015, "MC_80X_13TeV" for ICHEP2016
-declareDefault("MUCORRTYPE", "MC_80X_13TeV", globals())
-
 #Reapply JEC
 declareDefault("APPLYJEC", True, globals())
 
@@ -320,7 +317,7 @@ else:
 #--- Mu e-scale corrections (KalmanMuonCalibrator, 2015)
 process.calibratedMuons = cms.EDProducer("KalmanPATMuonCorrector", 
                                          src = cms.InputTag("slimmedMuons"),
-                                         identifier = cms.string(MUCORRTYPE),
+                                         identifier = cms.string(""),
                                          isMC = cms.bool(IsMC),
                                          isSynchronization = cms.bool(False),
                                          )
@@ -336,12 +333,20 @@ elif LEPTON_SETUP == 2012: # (MuScleFit)
         process.calibratedMuons.identifier = cms.string("Summer12_DR53X_smearReReco")
     else:
         process.calibratedMuons.identifier = cms.string("Data2012_53X_ReReco")
-else: # (KalmanMuonCalibrator, 2015)
+elif LEPTON_SETUP == 2015: # (KalmanMuonCalibrator, 2015)
     if IsMC:
         process.calibratedMuons.identifier = cms.string("MC_76X_13TeV")
     else:
         process.calibratedMuons.identifier = cms.string("DATA_76X_13TeV")
-
+elif LEPTON_SETUP == 2016: # (KalmanMuonCalibrator, 2016)
+    if IsMC:
+        process.calibratedMuons.identifier = cms.string("MC_80X_13TeV")
+    else:
+        process.calibratedMuons.identifier = cms.string("DATA_80X_13TeV")
+else:
+    if APPLYMUCORR:
+        print "APPLYMUCORR not configured for LEPTON_SETUP =", LEPTON_SETUP
+        sys.exit()
 
 #--- Mu Ghost cleaning
 process.cleanedMu = cms.EDProducer("PATMuonCleanerBySegments",

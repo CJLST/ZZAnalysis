@@ -43,7 +43,7 @@ process.ZCandtle = cms.EDProducer("ZCandidateFiller",
 
 
 process.bareZZCandtle= cms.EDProducer("PATCandViewShallowCloneCombiner",
-    decay = cms.string('ZCandtle ZCand'),
+    decay = cms.string('ZCand ZCandtle'),
     cut = cms.string(LLLLPRESEL),
     checkCharge = cms.bool(False)
 )
