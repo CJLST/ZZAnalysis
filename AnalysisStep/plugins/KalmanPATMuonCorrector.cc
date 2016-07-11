@@ -75,42 +75,37 @@ KalmanPATMuonCorrector::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
     pat::Muon mu = inputMuons->at(i);
 
-    double newPt, newPtError;
+    double oldpt=mu.pt();
+    double newpt=oldpt;
+    double oldpterr=mu.muonBestTrack()->ptError();
+    double newpterr=oldpterr;
 
-    if (calibrator==0) { //passthrough mode
-	  newPt = mu.pt();
-	  newPtError = mu.muonBestTrack()->ptError();
-    } else {
-
+    if (calibrator != 0 && mu.muonBestTrackType() == 1) { //skip correction for passthrough mode, or if muon pt does not come from InnerTrack
       if(isMC_){
 	/// ====== ON MC (correction plus smearing) =====
-
-	double corrPt = calibrator->getCorrectedPt(mu.pt(), mu.eta(), mu.phi(), mu.charge());
-	double corrPtError = corrPt * calibrator->getCorrectedError(corrPt, mu.eta(), mu.bestTrack()->ptError()/corrPt );
+	double corrPt = calibrator->getCorrectedPt(oldpt, mu.eta(), mu.phi(), mu.charge());
+	//	double corrPtError = corrPt * calibrator->getCorrectedError(corrPt, mu.eta(), mu.bestTrack()->ptError()/corrPt ); //FIXME: will revert to this once it's ready
 
 	if(!isSync_) {
-	  newPt = calibrator->smear(corrPt, mu.eta());
+	  newpt = calibrator->smear(corrPt, mu.eta());
 	} else {
-	  newPt = calibrator->smearForSync(corrPt, mu.eta());
+	  newpt = calibrator->smearForSync(corrPt, mu.eta());
 	}
-	//	newPtError = newPt * calibrator->getCorrectedErrorAfterSmearing(newPt, mu.eta(), corrPtError / newPt ); //FIXME: will revert to this once it's available again
-	newPtError = mu.muonBestTrack()->ptError();
-      }else{
+	//	newPtError = newpt * calibrator->getCorrectedErrorAfterSmearing(newpt, mu.eta(), corrPtError / newpt ); //FIXME: will revert to this once it's ready
+      } else {
 	/// ====== ON DATA (correction only) =====
 	if(mu.pt()>2.0 && fabs(mu.eta())<2.4){
-	  newPt = calibrator->getCorrectedPt(mu.pt(), mu.eta(), mu.phi(), mu.charge());
-	  newPtError = newPt * calibrator->getCorrectedError(newPt, mu.eta(), mu.bestTrack()->ptError()/newPt );
-	}else{
-	  newPt = mu.pt();
-	  newPtError = mu.muonBestTrack()->ptError();
+	  newpt = calibrator->getCorrectedPt(oldpt, mu.eta(), mu.phi(), mu.charge());
+	  // newPtError = newpt * calibrator->getCorrectedError(newpt, mu.eta(), mu.bestTrack()->ptError()/newpt); //FIXME: will revert to this once it's ready
+	} else {
+	  // keep old values
 	}
-
       }
     }
 
-    p4.SetPtEtaPhiM(newPt, mu.eta(), mu.phi(), mu.mass());
+    p4.SetPtEtaPhiM(newpt, mu.eta(), mu.phi(), mu.mass());
     mu.setP4(reco::Particle::PolarLorentzVector(p4.Pt(), p4.Eta(), p4.Phi(), mu.mass()));
-    mu.addUserFloat("correctedPtError",newPtError);
+    mu.addUserFloat("correctedPtError",newpterr);
     
     outputMuons->push_back(mu);
   }
