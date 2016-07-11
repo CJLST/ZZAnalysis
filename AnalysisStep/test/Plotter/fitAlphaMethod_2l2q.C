@@ -50,9 +50,9 @@ using namespace std;
 const int nChannels = 6;
 string channelSPart1[nChannels] = {"resolved","merged","resolved","merged","resolved","merged"};
 string channelSPart2[nChannels] = {"","","btag","btag","vbf","vbf"};
-float minX[nChannels] = {450.,600.,450.,600.,450.,600.};
-float maxX[nChannels] = {2000.,2000.,1600.,1600.,1600.,1600.};
-int binsForAlpha[nChannels] = {2,3,4,10,3,3};
+float minX[nChannels] = {450.,650.,450.,650.,450.,650.};
+float maxX[nChannels] = {2000.,2000.,2000.,1600.,1600.,2000.};
+int binsForAlpha[nChannels] = {2,3,4,4,3,3};
 
 Double_t myfunction(Double_t *x, Double_t *par)
 {
@@ -132,6 +132,8 @@ void fitAlphaMethod_2l2q(string dirout = "fitAlpha", string theNtuple = "TMVAAnd
     TH1F* alphaDen = (TH1F*)inFile->Get(histoName);
     sprintf(histoName,"hmass_%sSR%s_DY",channelSPart1[tc].c_str(),channelSPart2[tc].c_str());
     TH1F* alphaNum = (TH1F*)inFile->Get(histoName);
+    sprintf(histoName,"results_%s%s.txt",channelSPart1[tc].c_str(),channelSPart2[tc].c_str());
+    ofstream out(histoName);
 
     // "rebin" alpha histograms if not enough events
     TH1F* alphaNumRebin = (TH1F*)alphaNum->Clone();
@@ -213,8 +215,20 @@ void fitAlphaMethod_2l2q(string dirout = "fitAlpha", string theNtuple = "TMVAAnd
     c1.cd();
     TFitResultPtr frp = fitHist->Fit(histoName,"S","",minX[tc],maxX[tc]);
     TMatrixD cov = frp->GetCovarianceMatrix();
-    cov.Print();
     double* covElem = cov.GetMatrixArray(); 
+
+    out << "The integral of the function in [600-2500] is:" << endl;
+    out << "   " << ffit[tc]->Integral(600,2500)/50. << endl;
+    out << "The parameters are: " << endl;
+    for (int j=0; j<4; j++) 
+      out << ffit[tc]->GetParName(j) << "\t" << ffit[tc]->GetParameter(j) << endl;
+    out << "The covariance matrix is: " << endl;
+    for (int i=0; i<16; i++) {
+      out << covElem[i] << "\t";
+      if ((i+1)%4 == 0) out << endl;
+    }      
+    out << endl;  
+    out.close();
 
     // Build upper and lower 1sigma function
     sprintf(histoName,"ffitup%d",tc);

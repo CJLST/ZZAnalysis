@@ -32,6 +32,7 @@
 #include "TSystem.h"
 #include "TTree.h"
 #include "TChain.h"
+#include "TEfficiency.h"
 #include "TMVA/Tools.h"
 #include "TMVA/Reader.h"
 
@@ -141,9 +142,9 @@ string varYLabel[nVariables] = {
   "Events / 0.025", 
   "Events / 0.025",
 };
-Int_t  varNbin[nVariables] = { 50, 50, 50,  44,  44, 50,50, 400,  50,  50,  50,  50,  50,  50,  50, 50, 50, 25, 25, 4, 50, 26, 40, 40, 40};
-Float_t varMin[nVariables] = {  250,  0,  250,  40,  40,  90, 90, -200,  0, 0, -0.2, -0.2, 0,  0, -0.2, -1.2, -1.2, -3.15, -3.15, -0.5, 0., -0.05,-0.3,0.,0.};
-Float_t varMax[nVariables] = { 1500, 500, 1500, 150, 150, 800, 800, 0, 500, 500, 1.2, 1.2, 500, 500, 1.2, 1.2, 1.2 , 3.15, 3.15, 3.5, 300., 1.05, 0.3, 1.,1.};
+Int_t  varNbin[nVariables] = { 70, 50, 70,  56,  44, 50,50, 400,  50,  50,  50,  50,  50,  50,  50, 50, 50, 25, 25, 4, 50, 26, 40, 40, 40};
+Float_t varMin[nVariables] = {  250,  0,  250,  40,  40,  90, 90, -200,  0, 0, -0.2, -0.2, 0,  0, -0.2, -1.2, -1.2, 0., 0., -0.5, 0., -0.05,-0.3,0.,0.};
+Float_t varMax[nVariables] = { 2000, 500, 2000, 180, 150, 800, 800, 0, 500, 500, 1.2, 1.2, 500, 500, 1.2, 1.2, 1.2 , 3.15, 3.15, 3.5, 300., 1.05, 0.3, 1.,1.};
 Bool_t varLogx[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 Bool_t varLogy[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0};
 
@@ -183,13 +184,13 @@ void densityHist(TH1F* hist)
   hist->GetYaxis()->SetTitle("Events / 50 GeV");
 }
 
-void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./goodDatasetsWithData.txt", bool norm = false, bool CR = false, bool draw = true)
+void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./goodDatasetsWithData.txt", bool norm = false, bool CR = false, bool draw = true, bool weightMCtrig = true)
 {
   
-  float lumin = 4.1;   // ICHEP partial
+  float lumin = 4.3;   // ICHEP partial
   setTDRStyle();
   // gStyle->SetOptStat(1111111);
-  const int nDatasets = 13;          // Moriond: 11
+  const int nDatasets = 15;          // Moriond: 11
   const int nDatasetsMC = 11;         // Moriond: 9
   
   TFile* inputFile[nDatasets];
@@ -200,7 +201,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
   Float_t sumWeights[nDatasets];
   Int_t mass[nDatasets];
 
-  string Dsname[nDatasets] = {"ggHiggs750","ggHiggs1000","DY1JetsToLL","DY2JetsToLL","DY3JetsToLL","DY4JetsToLL","DYBJetsToLL","DYBFiltJetsToLL","TTBar","WZDib","ZZDib","DoubleEG2016B","DoubleMu2016B"};
+  string Dsname[nDatasets] = {"ggHiggs750","ggHiggs1000","DY1JetsToLL","DY2JetsToLL","DY3JetsToLL","DY4JetsToLL","DYBJetsToLL","DYBFiltJetsToLL","TTBar","WZDib","ZZDib","DoubleEG2016B","DoubleMu2016B","SingleEG2016B","SingleMu2016B"};
 
   // string Dsname[nDatasets] = {"BulkGrav800","Higgs750","DY1JetsToLL","DY2JetsToLL","DY3JetsToLL","DY4JetsToLL","DYBJetsToLL","DYBFiltJetsToLL","TTBar","WZDib","ZZDib","DoubleEG2016B","DoubleMu2016B"};
   
@@ -213,6 +214,28 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
     Dsname[5] = "DYHT600";
     processLabel[3] = "Z + jets (HT > 100 GeV)"; 
   }
+
+  // trigger weights
+  TFile *f_data_se  = new TFile("trigeff/eff_data_2d_se.root","READ");
+  TFile *f_data_de1 = new TFile("trigeff/eff_data_2d_de1.root","READ");
+  TFile *f_data_de2 = new TFile("trigeff/eff_data_2d_de2.root","READ");
+  TFile *f_data_sm  = new TFile("trigeff/eff_data_2d_sm.root","READ");
+  TFile *f_data_dm1 = new TFile("trigeff/eff_data_2d_dm1.root","READ");
+  TFile *f_data_dm2 = new TFile("trigeff/eff_data_2d_dm2.root","READ");
+  
+  TCanvas *c_data_se = (TCanvas*)f_data_se->Get("c1");
+  TEfficiency *eff_data_se = (TEfficiency*)c_data_se->GetPrimitive("den_se_2d_clone");
+  TCanvas *c_data_de1 = (TCanvas*)f_data_de1->Get("c1");
+  TEfficiency *eff_data_de1 = (TEfficiency*)c_data_de1->GetPrimitive("den_de1_2d_clone");
+  TCanvas *c_data_de2 = (TCanvas*)f_data_de2->Get("c1");
+  TEfficiency *eff_data_de2 = (TEfficiency*)c_data_de2->GetPrimitive("den_de2_2d_clone");
+  TCanvas *c_data_sm = (TCanvas*)f_data_sm->Get("c1");
+  TEfficiency *eff_data_sm = (TEfficiency*)c_data_sm->GetPrimitive("den_sm_2d_clone");
+  TCanvas *c_data_dm1 = (TCanvas*)f_data_dm1->Get("c1");
+  TEfficiency *eff_data_dm1 = (TEfficiency*)c_data_dm1->GetPrimitive("den_dm1_2d_clone");
+  TCanvas *c_data_dm2 = (TCanvas*)f_data_dm2->Get("c1");
+  TEfficiency *eff_data_dm2 = (TEfficiency*)c_data_dm2->GetPrimitive("den_dm2_2d_clone");
+  // end trigger weights
 
   /// I/O to TMVA 
   float tmvaZZPt, tmvaZ2Mass, tmvaZ1Pt, tmvaZ1tau21, tmvaZ2Pt, tmvaLepPt1, tmvaLepPt2, tmvaJetPt1, tmvaJetPt2;
@@ -234,12 +257,6 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
     outputTree[t]->Branch("tmvaZZPt", &tmvaZZPt);
     outputTree[t]->Branch("tmvaZ2Mass", &tmvaZ2Mass);
     outputTree[t]->Branch("tmvaZ1tau21", &tmvaZ1tau21);
-    outputTree[t]->Branch("tmvaZ1Pt", &tmvaZ1Pt);
-    outputTree[t]->Branch("tmvaZ2Pt", &tmvaZ2Pt);
-    outputTree[t]->Branch("tmvaLepPt1", &tmvaLepPt1);
-    outputTree[t]->Branch("tmvaJetPt1", &tmvaJetPt1);
-    outputTree[t]->Branch("tmvaLepPt2", &tmvaLepPt2);
-    outputTree[t]->Branch("tmvaJetPt2", &tmvaJetPt2);
     outputTree[t]->Branch("tmvaJetQGLikelihood1", &tmvaJetQGLikelihood1);
     outputTree[t]->Branch("tmvaJetQGLikelihood2", &tmvaJetQGLikelihood2);
     outputTree[t]->Branch("tmvaabshelcosthetaZ1",&tmvaabshelcosthetaZ1);  
@@ -254,12 +271,6 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
   readerM->AddVariable("tmvaZZPt", &tmvaZZPt);
   readerM->AddVariable("tmvaZ2Mass", &tmvaZ2Mass);
   readerM->AddVariable("tmvaZ1tau21", &tmvaZ1tau21);
-  // readerM->AddVariable("tmvaZ1Pt", &tmvaZ1Pt);
-  // readerM->AddVariable("tmvaZ2Pt", &tmvaZ2Pt);
-  /* readerM->AddVariable("tmvaLepPt1", &tmvaLepPt1);
-  readerM->AddVariable("tmvaJetPt1", &tmvaJetPt1);
-  readerM->AddVariable("tmvaLepPt2", &tmvaLepPt2);
-  readerM->AddVariable("tmvaJetPt2", &tmvaJetPt2); */
   readerM->AddVariable("tmvaabshelcosthetaZ1",&tmvaabshelcosthetaZ1);  
   readerM->AddVariable("tmvahelcosthetaZ2",&tmvahelcosthetaZ2);  
   readerM->AddVariable("tmvacosthetastar",&tmvacosthetastar);	  	
@@ -271,12 +282,6 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 
   readerR->AddVariable("tmvaZZPt", &tmvaZZPt);
   readerR->AddVariable("tmvaZ2Mass", &tmvaZ2Mass);
-  // readerR->AddVariable("tmvaZ1Pt", &tmvaZ1Pt);
-  // readerR->AddVariable("tmvaZ2Pt", &tmvaZ2Pt);
-  /* readerR->AddVariable("tmvaLepPt1", &tmvaLepPt1);
-  readerR->AddVariable("tmvaJetPt1", &tmvaJetPt1);
-  readerR->AddVariable("tmvaLepPt2", &tmvaLepPt2);
-  readerR->AddVariable("tmvaJetPt2", &tmvaJetPt2);  */
   readerR->AddVariable("tmvaJetQGLikelihood1", &tmvaJetQGLikelihood1);
   readerR->AddVariable("tmvaJetQGLikelihood2", &tmvaJetQGLikelihood2);
   readerR->AddVariable("tmvaabshelcosthetaZ1",&tmvaabshelcosthetaZ1);  
@@ -303,6 +308,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
   vector<Short_t> *Z2Flav = 0;
   vector<Short_t> *ZZCandType = 0;
   vector<Float_t> *LepPt = 0;
+  vector<Float_t> *LepEta = 0;
   Short_t nJets;
   Short_t nJetsBTagged;
   vector<Float_t> *JetPt = 0;
@@ -361,16 +367,14 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 
   //---------- Will loop over all datasets
   for (int d=0; d<nDatasets; d++) {
-    if (d<nDatasets) { 
-      NGenEvt[d] = 0;      NEvtNarrow[d] = 0.;
-      sumWeights[d] = 0.;  mass[d] = 0;
-    }
+    NGenEvt[d] = 0;      NEvtNarrow[d] = 0.;
+    sumWeights[d] = 0.;  mass[d] = 0;
     inputTree[d] = new TChain("ZZTree/candTree");
   }
 
   ifstream list(theNtupleFile.c_str());
-  char fileName[200];
-  char filestring[200];
+  char fileName[400];
+  char filestring[400];
   while (list >> fileName) {
     if (string(fileName).find("store") != std::string::npos) sprintf(filestring,"root://eoscms//eos/cms/%s",fileName); 
     else sprintf(filestring,"%s",fileName);
@@ -416,6 +420,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
     inputTree[d]->SetBranchAddress("Z2Flav", &Z2Flav);
     inputTree[d]->SetBranchAddress("ZZCandType", &ZZCandType);
     inputTree[d]->SetBranchAddress("LepPt", &LepPt);
+    inputTree[d]->SetBranchAddress("LepEta", &LepEta);
     inputTree[d]->SetBranchAddress("JetPt", &JetPt);
     inputTree[d]->SetBranchAddress("JetIsInZZCand", &JetIsInZZCand);
     inputTree[d]->SetBranchAddress("JetBTagger", &JetBTagger);
@@ -530,16 +535,21 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
       // find leading leptons
       float pt1stLep = 0.0001;
       float pt2ndLep = 0.0001;
+      float eta1stLep = 0.0001;
+      float eta2ndLep = 0.0001;
       for (unsigned int nLep=0; nLep<LepPt->size(); nLep++) {
 	if (pt1stLep < LepPt->at(nLep)) {
 	  pt2ndLep = pt1stLep;
+          eta2ndLep = eta1stLep;
 	  pt1stLep = LepPt->at(nLep);
+          eta1stLep = LepEta->at(nLep);
 	} else if (pt2ndLep < LepPt->at(nLep)) {
 	  pt2ndLep = LepPt->at(nLep);
+          eta2ndLep = LepEta->at(nLep);
 	}
       }  
    
-      //----- fill histograms
+      //----- find lepton flavor
 
       int fsstart,fsend;
       if (abs(Z2Flav->at(0))==121) {
@@ -551,33 +561,64 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
       }
 
       int preferType = 0;    // choose merged or resolved
-      // dump for synchronization 
+                             // and dump for synchronization 
       if (ZZMass->size() == 1 && abs(ZZCandType->at(0)) == 1) {
-	if (writeThis) myfile << RunNumber << ":" << EventNumber << ":" << LumiNumber << ":" << Z2Mass->at(0)  << ":" << (abs(Z2Flav->at(0))==121 ? "Ele:" : "Muo:")  << pt1stLep << ":" << pt2ndLep << ":" << ZZMass->at(0) << ":" << Z1Mass->at(0) << ":" << Z1tau21->at(0) << ":" << Z1Pt->at(0) << ":-1:-1:-1:-1:-1:" << Met << endl; 
+        float mela = 1./(1.+0.035*(pqqZJJ_VAMCFM->at(0)/p0plus_VAJHU->at(0)));
+        float vbfmela = 1./(1.+0.06*(phjj_VAJHU_highestPTJets->at(0)/pvbf_VAJHU_highestPTJets->at(0)));
+	if (writeThis) myfile << RunNumber << ":" << EventNumber << ":" << LumiNumber << ":" << Z2Mass->at(0)  << ":" << (abs(Z2Flav->at(0))==121 ? "Ele:" : "Muo:")  << pt1stLep << ":" << pt2ndLep << ":" << ZZMass->at(0) << ":" << Z1Mass->at(0) << ":" << Z1tau21->at(0) << ":" << Z1Pt->at(0) << ":" << mela << ":" << vbfmela << ":-1:-1:-1:-1:-1:-1:-1:" << Met << endl; 
 	nPassMerged++;
 	preferType = 1;
       }
       else if (ZZMass->size() == 1 && abs(ZZCandType->at(0)) == 2) {
-	if (writeThis) myfile << RunNumber << ":" << EventNumber << ":" << LumiNumber << ":" << Z2Mass->at(0)  << ":" << (abs(Z2Flav->at(0))==121 ? "Ele:" : "Muo:")  << pt1stLep << ":" << pt2ndLep << ":-1:-1:-1:-1:" << ZZMass->at(0) << ":" << Z1Mass->at(0) << ":" << pt1stJet << ":" << pt2ndJet << ":" << btag1stJet << ":" << Met << endl;
+	float mela = 1./(1.+0.035*(pqqZJJ_VAMCFM->at(0)/p0plus_VAJHU->at(0)));
+        float vbfmela = 1./(1.+0.06*(phjj_VAJHU_highestPTJets->at(0)/pvbf_VAJHU_highestPTJets->at(0)));
+	if (writeThis) myfile << RunNumber << ":" << EventNumber << ":" << LumiNumber << ":" << Z2Mass->at(0)  << ":" << (abs(Z2Flav->at(0))==121 ? "Ele:" : "Muo:")  << pt1stLep << ":" << pt2ndLep << ":-1:-1:-1:-1:-1:-1:" << ZZMass->at(0) << ":" << Z1Mass->at(0) << ":" << pt1stJet << ":" << pt2ndJet << ":" << btag1stJet << ":" << mela << ":" << vbfmela << ":" << Met << endl;
 	nPassResol++;
         preferType = 2;
       }
       else if (ZZMass->size() == 2 && abs(ZZCandType->at(0)) == 1) {
-	if (writeThis) myfile << RunNumber << ":" << EventNumber << ":" << LumiNumber << ":" << Z2Mass->at(0)  << ":" << (abs(Z2Flav->at(0))==121 ? "Ele:" : "Muo:")  << pt1stLep << ":" << pt2ndLep << ":" << ZZMass->at(0) << ":" << Z1Mass->at(0) << ":" << Z1tau21->at(0) << ":" << Z1Pt->at(0) << ":" << ZZMass->at(1) << ":" << Z1Mass->at(1) << ":" << pt1stJet << ":" << pt2ndJet << ":" << btag1stJet << ":" << Met << endl;
+	float mela[2] = {0.,0.}; 
+        float vbfmela[2] = {0.,0.};
+	for(unsigned int theCand=0; theCand<2; theCand++){
+	  mela[theCand] = 1./(1.+0.035*(pqqZJJ_VAMCFM->at(theCand)/p0plus_VAJHU->at(theCand)));   
+          vbfmela[theCand] = 1./(1.+0.06*(phjj_VAJHU_highestPTJets->at(theCand)/pvbf_VAJHU_highestPTJets->at(theCand)));
+	}
+	if (writeThis) myfile << RunNumber << ":" << EventNumber << ":" << LumiNumber << ":" << Z2Mass->at(0)  << ":" << (abs(Z2Flav->at(0))==121 ? "Ele:" : "Muo:")  << pt1stLep << ":" << pt2ndLep << ":" << ZZMass->at(0) << ":" << Z1Mass->at(0) << ":" << Z1tau21->at(0) << ":" << Z1Pt->at(0) << ":" << mela[0] << ":" << vbfmela[0] << ":" << ZZMass->at(1) << ":" << Z1Mass->at(1) << ":" << pt1stJet << ":" << pt2ndJet << ":" << btag1stJet << ":" << mela[1] << ":" << vbfmela[1] << ":" << Met << endl;
 	nPassMerged++; nPassResol++;
-        if (ZZCandType->at(0) > 0) preferType = 2;
+
+        // resolved -> merged (SR first)
+        /* if (ZZCandType->at(0) > 0) preferType = 2;
         else if (ZZCandType->at(1) > 0) preferType = 1;
-        else preferType = 2;
-      }
-      else if (ZZMass->size() == 2 && abs(ZZCandType->at(0)) == 2) {
-	if (writeThis) myfile << RunNumber << ":" << EventNumber << ":" << LumiNumber << ":" << Z2Mass->at(0)  << ":" << (abs(Z2Flav->at(0))==121 ? "Ele:" : "Muo:")  << pt1stLep << ":" << pt2ndLep << ":" << ZZMass->at(1) << ":" << Z1Mass->at(1) << ":" << Z1tau21->at(1) << ":" << Z1Pt->at(1) << ":" << ZZMass->at(0) << ":" << Z1Mass->at(0) << ":" << pt1stJet << ":" << pt2ndJet << ":" << btag1stJet << ":" << Met << endl;
-	nPassMerged++; nPassResol++;
-        if (ZZCandType->at(1) > 0) preferType = 2;
-        else if (ZZCandType->at(0) > 0) preferType = 1;
-        else preferType = 2;
+        else preferType = 2;  */
+
+        // merged -> resolved (but ask for J quality)
+        if (Z2Pt->at(0) > 200. && Z1Pt->at(0) > 300. && Z1tau21->at(0) < 0.6) preferType = 1;
+        else preferType = 2; 
       }
     
-      // end dump for synchronization
+      // end dump for synchronization and choice
+
+      // apply trigger weights
+      if (weightMCtrig) {
+        if (abs(Z2Flav->at(0))==121) {
+	  int bin1 = eff_data_se->FindFixBin(eta1stLep,TMath::Min(pt1stLep,(float)199.0));
+	  int bin2 = eff_data_se->FindFixBin(eta2ndLep,TMath::Min(pt2ndLep,(float)199.0));
+	  // data eff
+	  double dataeff_se = eff_data_se->GetEfficiency(bin1)+eff_data_se->GetEfficiency(bin2)-eff_data_se->GetEfficiency(bin1)*eff_data_se->GetEfficiency(bin2);
+	  double dataeff_de = eff_data_de1->GetEfficiency(bin1)*eff_data_de2->GetEfficiency(bin2);
+	  eventWeight *= dataeff_se+dataeff_de-dataeff_se*dataeff_de;
+	} else {
+	  int bin1 = eff_data_sm->FindFixBin(eta1stLep,TMath::Min(pt1stLep,(float)199.0));
+	  int bin2 = eff_data_sm->FindFixBin(eta2ndLep,TMath::Min(pt2ndLep,(float)199.0));
+	  // data eff
+	  double dataeff_sm = eff_data_sm->GetEfficiency(bin1)+eff_data_sm->GetEfficiency(bin2)-eff_data_sm->GetEfficiency(bin1)*eff_data_sm->GetEfficiency(bin2);
+	  double dataeff_dm = eff_data_dm1->GetEfficiency(bin1)*eff_data_dm2->GetEfficiency(bin2);
+	  eventWeight *= dataeff_sm+dataeff_dm-dataeff_sm*dataeff_dm;
+	}
+      }
+
+
+      // ----- fill histos
 
       for(int rs=fsstart; rs<fsend; rs++){
       
@@ -592,7 +633,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	    if (typ==2 && process == 2) whichTmvaTree = 0;
 	    if (typ==2 && process == 3) whichTmvaTree = 1;
 	    if (typ==3 && process == 2) whichTmvaTree = 2;
-	    if (typ==3 && process == 3) whichTmvaTree = 3;
+ 	    if (typ==3 && process == 3) whichTmvaTree = 3;
  
             float mela = 1./(1.+0.035*(pqqZJJ_VAMCFM->at(theCand)/p0plus_VAJHU->at(theCand)));
             float vbfmela = 1./(1.+0.06*(phjj_VAJHU_highestPTJets->at(theCand)/pvbf_VAJHU_highestPTJets->at(theCand)));
@@ -638,7 +679,9 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	    // if (tmvaLepPt1 < 150.) continue;
 	    // if (tmvaLepPt2 < 30.) continue;	    
 	    if (tmvaZ2Mass < 60.) continue;
+            if (tmvaZ1Pt < 100. || tmvaZ2Pt < 100.) continue;
             if ((typ==1 || typ==2 || typ==5 || typ==6 || typ==9 || typ==10) && tmvaZ1tau21 > 0.6) continue;
+            if (ZZMass->at(theCand) < 300.) continue;
             // if (mela < 0.8) continue;
 	    
 	    h1[0][process][rs][typ]->Fill(ZZMass->at(theCand),eventWeight);
@@ -686,8 +729,8 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	    h1[14][process][rs][typ]->Fill(abs(helcosthetaZ1->at(theCand)),eventWeight);
 	    h1[15][process][rs][typ]->Fill(helcosthetaZ2->at(theCand),eventWeight);
 	    h1[16][process][rs][typ]->Fill(costhetastar->at(theCand),eventWeight);
-	    h1[17][process][rs][typ]->Fill(helphi->at(theCand),eventWeight);
-	    h1[18][process][rs][typ]->Fill(phistarZ1->at(theCand),eventWeight);
+	    h1[17][process][rs][typ]->Fill(phistarZ1->at(theCand),eventWeight);
+	    h1[18][process][rs][typ]->Fill(fabs(helphi->at(theCand)),eventWeight);
 	    
 	    h1[19][process][rs][typ]->Fill(nExtraJets,eventWeight);
 	    h1[20][process][rs][typ]->Fill(Met,eventWeight);
