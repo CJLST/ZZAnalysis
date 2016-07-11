@@ -93,8 +93,8 @@ KalmanPATMuonCorrector::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 	} else {
 	  newPt = calibrator->smearForSync(corrPt, mu.eta());
 	}
-	//	newPtError = newPt * calibrator->getCorrectedErrorAfterSmearing(newPt, mu.eta(), corrPtError / newPt ); //FIXME: no longer available?
-	newPtError = newPt * calibrator->getCorrectedError(newPt, mu.eta(), corrPtError / newPt ); // FIXME recheck if this is now OK
+	//	newPtError = newPt * calibrator->getCorrectedErrorAfterSmearing(newPt, mu.eta(), corrPtError / newPt ); //FIXME: will revert to this once it's available again
+	newPtError = mu.muonBestTrack()->ptError();
       }else{
 	/// ====== ON DATA (correction only) =====
 	if(mu.pt()>2.0 && fabs(mu.eta())<2.4){
