@@ -89,11 +89,11 @@ class KDs:
         self.KD_qqgrav  = self.p0plus_VAJHU/(self.p0plus_VAJHU + self.p2plus_qqb_VAJHU) 
         ##MELA-only production discriminants:
         if self.njets30 >= 2 :
-            self.Djet_VAJHU = self.pvbf_VAJHU/(self.pvbf_VAJHU+self.phjj_VAJHU ) # VBF(2j) vs. gg->H+2j
+            self.Djet_VAJHU = self.pvbf_VAJHU/(self.pvbf_VAJHU+0.06*self.phjj_VAJHU ) # VBF(2j) vs. gg->H+2j
             self.D_WHh_VAJHU   = self.pwh_hadronic_VAJHU/(self.pwh_hadronic_VAJHU+100000.*self.phjj_VAJHU) # W(->2j)H vs. gg->H+2j
             self.D_ZHh_VAJHU   = self.pzh_hadronic_VAJHU/(self.pzh_hadronic_VAJHU+10000.*self.phjj_VAJHU) # Z(->2j)H vs. gg->H+2j
         if self.njets30 == 1 :
-            self.D_VBF1j_VAJHU = self.pvbf_VAJHU*self.pAux_vbf_VAJHU/(self.pvbf_VAJHU*self.pAux_vbf_VAJHU+5.*self.phj_VAJHU) # VBF(1j) vs. gg->H+1j
+            self.D_VBF1j_VAJHU = self.pvbf_VAJHU*self.pAux_vbf_VAJHU/(self.pvbf_VAJHU*self.pAux_vbf_VAJHU+0.3*self.phj_VAJHU) # VBF(1j) vs. gg->H+1j
         ##MELA+q/g production discriminants:
         if self.njets30 >= 2 :
             if self.jetQGL[0] == 0. or self.jetQGL[1] == 0.:

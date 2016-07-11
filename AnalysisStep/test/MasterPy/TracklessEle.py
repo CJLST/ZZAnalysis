@@ -150,7 +150,6 @@ process.ZLLCandtle = cms.EDProducer("ZZCandidateFiller",
       CRZLLss = cms.string(CR_BASESEL),             #combine with proper isBestCRZLLss for AA ss/os CRss    
       CRZLLos_2P2F = cms.string(CR_ZLLosSEL_2P2F_tle),        
       CRZLLos_3P1F = cms.string(CR_ZLLosSEL_3P1F_tle),        
-      number_trackless_electrons = cms.string("abs(1)"),
     ),
     muon_iso_cut = cms.double(MUISOCUT),
     electron_iso_cut = cms.double(ELEISOCUT),

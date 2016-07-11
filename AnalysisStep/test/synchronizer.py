@@ -261,9 +261,8 @@ def loop():
         outFile.close()
         
         print "Output written in file: ",outFileName,"\n"
-
-        print "## Total/4e/4mu/2e2mu/2l2tau : ", int(hCounters.GetBinContent(1)),  "/",  int(hCounters.GetBinContent(3)),  "/",  int(hCounters.GetBinContent(2)),  "/",  int(hCounters.GetBinContent(4)), "/", int (hCounters.GetBinContent(5))
-
+        counterStr=str(int(hCounters.GetBinContent(1)))+"/"+str(int(hCounters.GetBinContent(3)))+"/"+str(int(hCounters.GetBinContent(2)))+"/"+str(int(hCounters.GetBinContent(4)))+"/"+str(int(hCounters.GetBinContent(5)))
+        print "## Total/4e/4mu/2e2mu/2l2tau : "+counterStr
     if not is_loose_ele :
         counterStr = str(totCounter) + "/" + str(chanCounter["4e"]) + "/" + str(chanCounter["4mu"]) + "/" + str(chanCounter["2e2mu"])
         print "\n## Selected events all/4e/4mu/2e2mu : "+counterStr
