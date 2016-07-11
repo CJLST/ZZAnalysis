@@ -33,6 +33,9 @@ declareDefault("APPLYMUCORR", True, globals())
 #Reapply JEC
 declareDefault("APPLYJEC", True, globals())
 
+#Apply JER
+declareDefault("APPLYJER", True, globals())
+
 #FSR mode
 declareDefault("FSRMODE", "RunII", globals())
 
@@ -100,9 +103,9 @@ elif (SAMPLE_TYPE == 2015) :
 else:
     from Configuration.AlCa.GlobalTag import GlobalTag
     if IsMC:
-        process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_miniAODv2_v1', '')
     else:
-        process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_data', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_Prompt_ICHEP16JEC_v0', '')
 
 print '\t',process.GlobalTag.globaltag
 
@@ -1066,9 +1069,14 @@ process.QGTagger.jetsLabel = cms.string('QGL_AK4PFchs')
 
 process.dressedJets = cms.EDProducer("JetFiller",
     src = cms.InputTag("slimmedJets"),
+    sampleType = cms.int32(SAMPLE_TYPE),
+    setup = cms.int32(LEPTON_SETUP),
     cut = cms.string("pt>20 && abs(eta)<4.7"),
+    isMC = cms.bool(IsMC),
     bTaggerName = cms.string("pfCombinedInclusiveSecondaryVertexV2BJetTags"),
     jecType = cms.string("AK4PFchs"),
+    applyJER = cms.bool(APPLYJER),
+    jerType = cms.string("AK4PFchs"),
     flags = cms.PSet(
         isBtagged = cms.string("userFloat('bTagger')>0.800"),
         )
