@@ -81,7 +81,7 @@ class KDs:
 
         self.D_bkg_kin  = self.p0plus_VAJHU/(self.p0plus_VAJHU + self.bkg_VAMCFM)    
         self.D_bkg      = self.p0plus_VAJHU*self.p0plus_m4l/(self.p0plus_VAJHU*self.p0plus_m4l+self.bkg_VAMCFM*self.bkg_m4l)
-        self.D_g4       = self.p0plus_VAJHU/(self.p0plus_VAJHU + self.p0minus_VAJHU) # D_0-
+        self.D_g4       = self.p0plus_VAJHU/(self.p0plus_VAJHU + pow(2.521, 2)*self.p0minus_VAJHU) # D_0-
         self.KD_highdim = self.p0plus_VAJHU/(self.p0plus_VAJHU + self.p0hplus_VAJHU)
         self.KD_vec     = self.p0plus_VAJHU/(self.p0plus_VAJHU + self.p1plus_VAJHU) 	 
         self.KD_psvec   = self.p0plus_VAJHU/(self.p0plus_VAJHU + self.p1_VAJHU) 	 
