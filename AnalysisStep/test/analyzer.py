@@ -246,8 +246,12 @@ process.CRSelection= cms.EDFilter("CandViewCountFilter",
 
 process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
      dumpTrigger = cms.untracked.bool(True),
-     muonSrc = cms.InputTag("appendPhotons:muons"),
-     electronSrc = cms.InputTag("appendPhotons:electrons"),
+     muonSrcs =  cms.PSet(
+        muons = cms.InputTag("appendPhotons:muons"),
+     ),
+     electronSrcs = cms.PSet(
+        electrons = cms.InputTag("appendPhotons:electrons"),
+     ),
      candidateSrcs = cms.PSet(
         Z     = cms.InputTag("ZCand"),
         ZZ  = cms.InputTag("ZZCand"),
