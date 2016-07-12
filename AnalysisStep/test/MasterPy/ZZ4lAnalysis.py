@@ -1071,7 +1071,7 @@ process.dressedJets = cms.EDProducer("JetFiller",
     src = cms.InputTag("slimmedJets"),
     sampleType = cms.int32(SAMPLE_TYPE),
     setup = cms.int32(LEPTON_SETUP),
-    cut = cms.string("pt>20 && abs(eta)<4.7"),
+    cut = cms.string("pt>20 && abs(eta)<4.7 && userFloat('looseJetID') && userFloat('PUjetID')"),
     isMC = cms.bool(IsMC),
     bTaggerName = cms.string("pfCombinedInclusiveSecondaryVertexV2BJetTags"),
     jecType = cms.string("AK4PFchs"),
@@ -1157,7 +1157,8 @@ process.cleanJets = cms.EDProducer("JetsWithLeptonsRemover",
                                    DiBosonPreselection  = cms.string(""),
                                    MatchingType = cms.string("byDeltaR"),
                                    cleanFSRFromLeptons = cms.bool(True),
-                                   DebugPlots = cms.untracked.bool(False)
+                                   DebugPlots = cms.untracked.bool(False),
+                                   DebugPrintOuts = cms.untracked.bool(False)
                                    )
 
 if FSRMODE=="Legacy" :
