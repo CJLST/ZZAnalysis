@@ -263,6 +263,9 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     result->push_back(j);
   }
 
+  //--- Reorder jets by pT
+  std::sort(result->begin(),result->end(), [](const Jet& j1, const Jet& j2){return j1.pt()>j2.pt();});
+
   iEvent.put(result);
 }
 
