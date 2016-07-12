@@ -187,6 +187,7 @@ void Reweighting::fillreweightingweights(
   }
 
   for (int i = 0; i < nReweightingSamples; i++) {
+    setcouplings(i);
     mela->computeP(probability, false);
     reweightingweights.push_back(probability/myprobability);
   }
