@@ -114,7 +114,7 @@ bool Reweighting::canreweight(unsigned int nleptons, short genFinalState) {
     return true;
   case HVV_spin0:
   case HVV_spin012:
-    return genFinalState != BUGGY;
+    return genFinalState != BUGGY;  //probably not needed
   default:
     return false;
   }
@@ -178,6 +178,14 @@ void Reweighting::fillreweightingweights(
   setmycouplings();
   float myprobability, probability;
   mela->computeP(myprobability, false);
+
+  if (myprobability == 0) {
+    for (int i = 0; i < nReweightingSamples; i++) {
+      reweightingweights.push_back(0);
+    }
+    return;
+  }
+
   for (int i = 0; i < nReweightingSamples; i++) {
     mela->computeP(probability, false);
     reweightingweights.push_back(probability/myprobability);
