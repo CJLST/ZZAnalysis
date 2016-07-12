@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
 #include <ZZMatrixElement/MELA/interface/Mela.h>
+#include <ZZMatrixElement/MELA/interface/TVar.hh>
 #include "TTree.h"
 
 enum ReweightingType {
@@ -79,11 +80,13 @@ public:
 
   void fillcouplingstree(TTree* t);
 
-  float computeP(
-    float mzz, float m1, float m2,
-    float hs, float h1, float h2, float phi, float phi1,
-    int flavor
-    );
+  void fillreweightingweights(
+    vector<float> &reweightingweights,
+    SimpleParticleCollection_t* pDaughters,
+    SimpleParticleCollection_t* pAssociated,
+    SimpleParticleCollection_t* pMothers,
+    bool isGen
+  );
 };
 
 

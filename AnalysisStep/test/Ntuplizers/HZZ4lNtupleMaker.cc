@@ -380,11 +380,6 @@ namespace {
   Float_t GenAssocLep2Eta  = 0;
   Float_t GenAssocLep2Phi  = 0;
   Short_t GenAssocLep2Id  = 0;
-  Float_t Gencosthetastar  = 0;
-  Float_t Genhelphi  = 0;
-  Float_t GenhelcosthetaZ1  = 0;
-  Float_t GenhelcosthetaZ2  = 0;
-  Float_t GenphistarZ1  = 0;
 
 
 //FIXME: temporary fix to the mismatch of charge() and sign(pdgId()) for muons with BTT=4
@@ -854,19 +849,11 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     }
 
     // Note: Should move into LHEHandler -- U. Sarica
-    reweightingweights.clear();
     if (doreweighting) {
       assert(reweighting.canreweight(genZLeps.size(), genFinalState));
-      int flavor = (GenZ1Flav==GenZ2Flav ? 0 : 2);
-      float myprobability;
-      vector<float> probabilities(nReweightingSamples);
-      reweighting.setmycouplings();
-      myprobability = reweighting.computeP(GenHMass, GenZ1Mass, GenZ2Mass, Gencosthetastar, GenhelcosthetaZ1, GenhelcosthetaZ2, Genhelphi, GenphistarZ1, flavor);
-      for (int i = 0; i < nReweightingSamples; i++) {
-        reweighting.setcouplings(i);
-        probabilities[i] = reweighting.computeP(GenHMass, GenZ1Mass, GenZ2Mass, Gencosthetastar, GenhelcosthetaZ1, GenhelcosthetaZ2, Genhelphi, GenphistarZ1, flavor);
-        reweightingweights.push_back(probabilities[i] / myprobability);
-      }
+      SimpleParticleCollection_t daughters;
+      for (unsigned int i = 0; i < genZLeps.size(); i++) daughters.emplace_back(genZLeps.at(i)->pdgId(), zzanalysis::tlv(genZLeps.at(i)->p4()));
+      reweighting.fillreweightingweights(reweightingweights, &daughters, 0, 0, false);
     }
 
     // keep track of sum of weights
@@ -2005,9 +1992,8 @@ void HZZ4lNtupleMaker::FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t Le
   GenLep4Phi=Lep4.Phi();
   GenLep4Id=Lep4Id;
 
-  if (doreweighting) {
-    TUtil::computeAngles(zzanalysis::tlv(Lep1), Lep1Id, zzanalysis::tlv(Lep2), Lep2Id, zzanalysis::tlv(Lep3), Lep3Id, zzanalysis::tlv(Lep4), Lep4Id, Gencosthetastar, GenhelcosthetaZ1, GenhelcosthetaZ2, Genhelphi, GenphistarZ1);
-  }
+  //can comment this back in if Gen angles are needed for any reason...
+  //TUtil::computeAngles(zzanalysis::tlv(Lep1), Lep1Id, zzanalysis::tlv(Lep2), Lep2Id, zzanalysis::tlv(Lep3), Lep3Id, zzanalysis::tlv(Lep4), Lep4Id, Gencosthetastar, GenhelcosthetaZ1, GenhelcosthetaZ2, Genhelphi, GenphistarZ1);
 
   return;
 }

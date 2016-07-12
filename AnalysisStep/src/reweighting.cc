@@ -163,44 +163,26 @@ void Reweighting::fillcouplingstree(TTree* t) {
   t->Fill();
 }
 
-float Reweighting::computeP(
-  float mzz, float m1, float m2,
-  float hs, float h1, float h2, float phi, float phi1,
-  int flavor // Need to replace the flavor and actuially this entire stuff, extremely inefficient
-  ){
-  float result;
+void Reweighting::fillreweightingweights(
+  vector<float> &reweightingweights,
+  SimpleParticleCollection_t* pDaughters,
+  SimpleParticleCollection_t* pAssociated,
+  SimpleParticleCollection_t* pMothers,
+  bool isGen
+) {
+  if (nReweightingSamples == 0) return;
+  reweightingweights.clear();
 
-  int idOrdered[4];
-  if (flavor == 2){
-    idOrdered[0]=13;
-    idOrdered[1]=-13;
-    idOrdered[2]=11;
-    idOrdered[3]=-11;
-  }
-  else if (flavor == 1){
-    idOrdered[0]=11;
-    idOrdered[1]=-11;
-    idOrdered[2]=11;
-    idOrdered[3]=-11;
-  }
-  else if (flavor == 0){
-    idOrdered[0]=13;
-    idOrdered[1]=-13;
-    idOrdered[2]=13;
-    idOrdered[3]=-13;
-  }
-  else return 0;
-  TLorentzVector pOrdered[4];
-  std::vector<TLorentzVector> daus = mela->calculate4Momentum(mzz, m1, m2, acos(hs), acos(h1), acos(h2), phi1, phi);
-  for (int ip=0; ip<min(4, (int)daus.size()); ip++) pOrdered[ip]=daus.at(ip);
-  SimpleParticleCollection_t daughters;
-  for (unsigned int idau=0; idau<4; idau++) daughters.push_back(SimpleParticle_t(idOrdered[idau], pOrdered[idau]));
+  mela->setInputEvent(pDaughters, pAssociated, pMothers, isGen);
 
-  mela->setInputEvent(&daughters, (SimpleParticleCollection_t*)0, (SimpleParticleCollection_t*)0, false);
-  mela->computeP(result, false);
-  mela->resetInputEvent(); // Poor efficiency, result of passing vectors for each ME
-
-  return result;
+  setmycouplings();
+  float myprobability, probability;
+  mela->computeP(myprobability, false);
+  for (int i = 0; i < nReweightingSamples; i++) {
+    mela->computeP(probability, false);
+    reweightingweights.push_back(probability/myprobability);
+  }
+  mela->resetInputEvent();
 }
 
 
