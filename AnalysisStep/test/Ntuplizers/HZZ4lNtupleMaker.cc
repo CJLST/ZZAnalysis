@@ -99,6 +99,7 @@ namespace {
   Float_t KFactor_QCD_ggZZ_PDFReplicaDn = 0;
   Float_t KFactor_QCD_ggZZ_PDFReplicaUp = 0;
   Float_t KFactor_EW_qqZZ = 0;
+  Float_t KFactor_EW_qqZZ_unc = 0;
   Float_t KFactor_QCD_qqZZ_dPhi = 0;
   Float_t KFactor_QCD_qqZZ_M = 0;
   Float_t KFactor_QCD_qqZZ_Pt = 0;
@@ -1127,6 +1128,7 @@ void HZZ4lNtupleMaker::FillKFactors(edm::Handle<GenEventInfoProduct>& genInfo, s
   KFactor_QCD_qqZZ_M=1;
   KFactor_QCD_qqZZ_Pt=1;
   KFactor_EW_qqZZ=1;
+  KFactor_EW_qqZZ_unc=0;
 
   if (isMC){
     GenEventInfoProduct  genInfoP = *(genInfo.product());
@@ -1184,15 +1186,23 @@ void HZZ4lNtupleMaker::FillKFactors(edm::Handle<GenEventInfoProduct>& genInfo, s
         if (apply_K_NNLOQCD_ZZQQB){
           bool sameflavor=(genZLeps.at(0)->pdgId()*genZLeps.at(1)->pdgId() == genZLeps.at(2)->pdgId()*genZLeps.at(3)->pdgId());
           KFactor_QCD_qqZZ_dPhi = kfactor_qqZZ_qcd_dPhi(fabs(GenZ1Phi-GenZ2Phi), (sameflavor) ? 1 : 2);
-          KFactor_QCD_qqZZ_M    = kfactor_qqZZ_qcd_M(GenHMass, (sameflavor) ? 1 : 2);
+          KFactor_QCD_qqZZ_M    = kfactor_qqZZ_qcd_M(GenHMass, (sameflavor) ? 1 : 2, 2) / kfactor_qqZZ_qcd_M(GenHMass, (sameflavor) ? 1 : 2, 1);
           KFactor_QCD_qqZZ_Pt   = kfactor_qqZZ_qcd_Pt(GenHPt, (sameflavor) ? 1 : 2);
         }
         // Calculate NLO EWK K factors for qqZZ
         if (apply_K_NLOEW_ZZQQB){
-          TLorentzVector GENZ1Vec, GENZ2Vec;
+          TLorentzVector GENZ1Vec, GENZ2Vec, GENZZVec;
           GENZ1Vec.SetPtEtaPhiM(GenZ1Pt, GenZ1Eta, GenZ1Phi, GenZ1Mass);
           GENZ2Vec.SetPtEtaPhiM(GenZ2Pt, GenZ2Eta, GenZ2Phi, GenZ2Mass);
+          GENZZVec = GENZ1Vec + GENZ2Vec;
+
           KFactor_EW_qqZZ = EwkCorrections::getEwkCorrections(genParticles, ewkTable, genInfoP, GENZ1Vec, GENZ2Vec);
+
+          bool sameflavor=(genZLeps.at(0)->pdgId()*genZLeps.at(1)->pdgId() == genZLeps.at(2)->pdgId()*genZLeps.at(3)->pdgId());
+          float K_NNLO_LO = kfactor_qqZZ_qcd_M(GenHMass, (sameflavor) ? 1 : 2, 2);
+          float rho = GENZZVec.Pt()/(GenLep1Pt+GenLep2Pt+GenLep3Pt+GenLep4Pt);
+          if (rho<0.3) KFactor_EW_qqZZ_unc = fabs((K_NNLO_LO-1.)*(1.-KFactor_EW_qqZZ));
+          else KFactor_EW_qqZZ_unc = fabs(1.-KFactor_EW_qqZZ);
         }
       }
     }
@@ -2277,7 +2287,10 @@ void HZZ4lNtupleMaker::BookAllBranches(){
       myTree->Book("KFactor_QCD_ggZZ_PDFReplicaDn", KFactor_QCD_ggZZ_PDFReplicaDn);
       myTree->Book("KFactor_QCD_ggZZ_PDFReplicaUp", KFactor_QCD_ggZZ_PDFReplicaUp);
     }
-    if (apply_K_NLOEW_ZZQQB) myTree->Book("KFactor_EW_qqZZ", KFactor_EW_qqZZ);
+    if (apply_K_NLOEW_ZZQQB){
+      myTree->Book("KFactor_EW_qqZZ", KFactor_EW_qqZZ);
+      myTree->Book("KFactor_EW_qqZZ_unc", KFactor_EW_qqZZ_unc);
+    }
     if (apply_K_NNLOQCD_ZZQQB){
       myTree->Book("KFactor_QCD_qqZZ_dPhi", KFactor_QCD_qqZZ_dPhi);
       myTree->Book("KFactor_QCD_qqZZ_M", KFactor_QCD_qqZZ_M);
