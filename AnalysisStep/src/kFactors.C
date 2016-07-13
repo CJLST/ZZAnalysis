@@ -1,4 +1,4 @@
-float kfactor_qqZZ_qcd_dPhi(float GENabsdPhiZZ, int finalState)
+ float kfactor_qqZZ_qcd_dPhi(float GENabsdPhiZZ, int finalState)
 {
 
     // finalState=1 : 4e/4mu/4tau
@@ -78,7 +78,7 @@ float kfactor_qqZZ_qcd_dPhi(float GENabsdPhiZZ, int finalState)
 
 float xsec_qqZZ_qcd_M(float GenMassZZ, int finalState, int order){ // Order: 0=LO, 1=NLO, 2=NNLO
   const int nbins=20;
-  float xsec[2][nbins][4]={
+  static const float xsec[2][nbins][4]={
     {
       { 0, 1.095828532, 1.623089848, 2.006355102 },
       { 25, 1.70498411, 2.55680607, 3.00553358 },

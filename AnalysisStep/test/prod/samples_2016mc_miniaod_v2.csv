@@ -169,8 +169,8 @@ ZZTo4l,,            1.256,      ,,/ZZTo4L_13TeV_powheg_pythia8/RunIISpring16Mini
 ggTo4e_Contin_MCFM701,,      0.00158549,   ,,/GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;ADDLOOSEELE=True,,
 ggTo4mu_Contin_MCFM701,,     0.00158549,   ,,/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;ADDLOOSEELE=True,,
 ggTo4tau_Contin_MCFM701,,    0.00158549,   ,,/GluGluToContinToZZTo4tau_13TeV_MCFM701_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,5,PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;ADDLOOSEELE=True,,
-ggTo2e2mu_Contin_MCFM701,,   0.0031942,    ,,/GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;ADDLOOSEELE=True,,,
-ggTo2e2tau_Contin_MCFM701,,  0.0031942,    ,,/GluGluToContinToZZTo2e2tau_13TeV_MCFM701_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,2,PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;ADDLOOSEELE=True,,,
+#ggTo2e2mu_Contin_MCFM701,,   0.0031942,    ,,/GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;ADDLOOSEELE=True,,
+#ggTo2e2tau_Contin_MCFM701,,  0.0031942,    ,,/GluGluToContinToZZTo2e2tau_13TeV_MCFM701_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,2,PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;ADDLOOSEELE=True,,
 ggTo2mu2tau_Contin_MCFM701,, 0.0031942,    ,,/GluGluToContinToZZTo2mu2tau_13TeV_MCFM701_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,4,PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;ADDLOOSEELE=True,,
 
 
