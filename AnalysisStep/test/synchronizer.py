@@ -68,7 +68,8 @@ def loop():
         chanCounter[aChan] = 0
 
         if finalState!="all" and aChan!=finalState: continue
-        
+
+        isMC = False
 #        tree = ROOT.TChain("ZZ"+aChan+"Tree/candTree")
         tree = ROOT.TChain(tree_name)
         tree.Add(inFileName)
@@ -79,9 +80,11 @@ def loop():
         tree.SetBranchStatus("RunNumber",1)
         tree.SetBranchStatus("LumiNumber",1)
         tree.SetBranchStatus("EventNumber",1)
-        tree.SetBranchStatus("genHEPMCweight",1)
-        tree.SetBranchStatus("PUWeight",1)
-        tree.SetBranchStatus("dataMCWeight",1)
+        if tree.GetBranch("genHEPMCweight") :
+            isMC = True
+            tree.SetBranchStatus("genHEPMCweight",1)
+            tree.SetBranchStatus("PUWeight",1)
+            tree.SetBranchStatus("dataMCWeight",1)
         tree.SetBranchStatus("ZZMass",1)
         tree.SetBranchStatus("Z1Mass",1)
         tree.SetBranchStatus("Z2Mass",1)
@@ -213,8 +216,9 @@ def loop():
                 njets30Btag   = tree.nCleanedJetsPt30BTagged
                 mjj           = tree.DiJetMass
                 detajj        = tree.DiJetDEta
-                weight        = sign(tree.genHEPMCweight)
-                weight        = sign(tree.genHEPMCweight) * tree.PUWeight * tree.dataMCWeight
+                weight        = 1.
+                if (isMC) :
+                    weight    = sign(tree.genHEPMCweight) * tree.PUWeight * tree.dataMCWeight
 
                 jets30pt = []
                 jets30eta = []
