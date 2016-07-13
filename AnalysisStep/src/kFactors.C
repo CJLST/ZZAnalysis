@@ -76,7 +76,7 @@ float kfactor_qqZZ_qcd_dPhi(float GENabsdPhiZZ, int finalState)
 
 }
 
-float xsec_qqZZ_qcd_M(float GenMassZZ, int finalstate, int order){ // Order: 0=LO, 1=NLO, 2=NNLO
+float xsec_qqZZ_qcd_M(float GenMassZZ, int finalState, int order){ // Order: 0=LO, 1=NLO, 2=NNLO
   const int nbins=33;
   float xsec[2][nbins][4]={
     {
