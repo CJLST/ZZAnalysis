@@ -68,7 +68,8 @@ extern "C" int categoryIchep16(
 	     float pvbf_VAJHU_highestPTJets,
 	     float pAux_vbf_VAJHU,
 	     float pwh_hadronic_VAJHU,
-	     float pzh_hadronic_VAJHU
+	     float pzh_hadronic_VAJHU,
+	     bool useQGTagging = true
 	     );
 
 
