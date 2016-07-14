@@ -256,7 +256,8 @@ process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
         Z     = cms.InputTag("ZCand"),
         ZZ  = cms.InputTag("ZZCand"),
         ZLL   =cms.InputTag("ZLLCand"),    # Starting point for all CRs
-     )
+     ),
+    jetSrc = cms.InputTag("cleanJets"),
 )
 
 if (PROCESS_CR or not IsMC):

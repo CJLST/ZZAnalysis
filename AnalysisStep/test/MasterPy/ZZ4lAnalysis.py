@@ -448,7 +448,7 @@ process.selectedSlimmedElectrons = cms.EDFilter("PATElectronSelector",
     ## this protects against a crash in electron calibration
     ## due to electrons with eta > 2.5
     src = cms.InputTag("slimmedElectrons"),
-    cut = cms.string("pt>5 && abs(eta)<2.5 && abs(-log(tan(superClusterPosition.theta/2.)))<2.5")
+    cut = cms.string("pt>5 && abs(eta)<2.5") # Philipp's protection cut: "&& abs(-log(tan(superClusterPosition.theta/2.)))<2.5")
 )
 
 process.calibratedPatElectrons = cms.EDProducer("CalibratedPatElectronProducerRun2",
@@ -1113,12 +1113,12 @@ if APPLYJEC:
                 cms.PSet(
                     record = cms.string('JetCorrectionsRecord'),
 #                    tag    = cms.string('JetCorrectorParametersCollection_Fall15_25nsV2_DATA_AK4PFchs'), #for 76X
-                    tag    = cms.string('JetCorrectorParametersCollection_Fall15_25nsV2_DATA_AK4PFchs'), #for 80X/ICHEP16
+                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV6_DATA_AK4PFchs'), #for 80X/ICHEP16
                     label  = cms.untracked.string('AK4PFchs')
                     ),
                 ), 
 #            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall15_25nsV2_DATA.db'), #for 76X
-            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall15_25nsV2_DATA.db'), #for 80X/ICHEP16
+            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Spring16_25nsV6_DATA.db'), #for 80X/ICHEP16
             )
 
     ## add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
