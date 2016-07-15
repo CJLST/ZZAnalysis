@@ -41,7 +41,6 @@ public:
   virtual ~JetsWithLeptonsRemover() { }
 
   virtual void produce(edm::Event & iEvent, const edm::EventSetup & iSetup);
-  bool isGood(const pat::Jet &jet) const;
   bool checkLeptonJet(const edm::Event & event, const pat::Jet& jet);
   bool isMatchingWithZZLeptons(const edm::Event & event, const pat::Jet& jet);
   template <typename LEP>
@@ -141,7 +140,7 @@ void JetsWithLeptonsRemover::produce(edm::Event & event, const edm::EventSetup &
   auto_ptr<vector<pat::Jet> > out(new vector<pat::Jet>());
   foreach(const pat::Jet& jet, *jets){
 
-    if(!preselectionJ_(jet) || !isGood(jet)) continue;
+    if(!preselectionJ_(jet)) continue;
     ++passPresel;
       
     if(activateDebugPrintOuts_) std::cout<<"\n+++++ Jet +++++ pt: " << jet.pt() << " eta: " << jet.eta() << " phi: " << jet.phi() << std::endl;
@@ -158,49 +157,6 @@ void JetsWithLeptonsRemover::produce(edm::Event & event, const edm::EventSetup &
 					<< "\n-------------------------------------------------------------------------" << std::endl;
   
   event.put(out);
-}
-
-
-
-bool JetsWithLeptonsRemover::isGood(const pat::Jet& jet) const {
-  
-  float jeta=fabs(jet.eta());
-
-  // cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID#Recommendations_for_13_TeV_data
-
-  float NHF = jet.neutralHadronEnergyFraction();
-  float NEMF = jet.neutralEmEnergyFraction();
-  float CHF = jet.chargedHadronEnergyFraction();
-  float CEMF = jet.chargedEmEnergyFraction();
-  int NumConst = jet.chargedMultiplicity()+jet.neutralMultiplicity();
-  int NumNeutralParticles = jet.neutralMultiplicity();
-  float CHM = jet.chargedMultiplicity();
-
-  bool looseJetID = (jeta<=3. && (NHF<0.99 && NEMF<0.99 && NumConst>1) && (jeta>2.4 || (CHF>0 && CHM>0 && CEMF<0.99)) )
-    || (jeta>3. && NEMF<0.90 && NumNeutralParticles>10);
-   
-  if(!looseJetID) return false;
-
-  bool passPU = true;
-  
-//   float jpt=jet.pt();
-//   float jpumva=jet.userFloat("pileupJetId:fullDiscriminant");
-
-//   if(jpt>20){
-//     if(jeta > 3.)       { if(jpumva <= -0.45) passPU=false;}
-//     else if(jeta > 2.75){ if(jpumva <= -0.55) passPU=false;}
-//     else if(jeta > 2.50){ if(jpumva <= -0.60) passPU=false;}
-//     else                { if(jpumva <= -0.63) passPU=false;}
-//   }
-//   else{
-//     if(jeta > 3.)       { if(jpumva <= -0.95) passPU=false;}
-//     else if(jeta > 2.75){ if(jpumva <= -0.94) passPU=false;}
-//     else if(jeta > 2.50){ if(jpumva <= -0.96) passPU=false;}
-//     else                { if(jpumva <= -0.95) passPU=false;}
-//   }
-  
-
-  return looseJetID && passPU;
 }
 
 

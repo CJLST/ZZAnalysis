@@ -1,16 +1,28 @@
 #!/bin/tcsh -fe
 #
 # Instructions:
-# wget -pP /tmp https://raw.githubusercontent.com/CJLST/ZZAnalysis/2l2q_80X/checkout_80X.csh
+# wget -O /tmp/checkout_80X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_80X/checkout_80X.csh
 # cd $CMSSW_BASE/src
 # cmsenv
 # source /tmp/checkout_80X.csh
 
 
-############## For CMSSW_8_0_4
+############## For CMSSW_8_0_8
+git cms-init
+# Electron scale recipe according to https://twiki.cern.ch/twiki/bin/view/CMS/EGMSmearer
+git remote add -f -t smearings80X shervin86 https://github.com/shervin86/cmssw.git
+git cherry-pick f3b0b0140483c336212baa035cf9a820a016a799
+git cherry-pick a5aaeb7a598800ae98e88ea1a952ecd1d66aa059
+git cherry-pick c7ac16dd88969510d2d6d6ea2c4702e0108bf151
+git cherry-pick 054a90830c77423ee673204611522018ace69c5d
+git cms-addpkg EgammaAnalysis/ElectronTools
+(cd EgammaAnalysis/ElectronTools/data ; git clone -b ICHEP2016_approval_4fb https://github.com/ECALELFS/ScalesSmearings.git)
 
-#electron momentum scale corrections (76X).
-git cms-merge-topic -u matteosan1:smearer_76X
+#### Please do not add any custom (non-CMSSW) package before this line ####
+
+#Preliminary 8X electron ID
+git clone https://github.com/Werbellin/RecoEgamma_8X.git RecoEgamma
+(cd RecoEgamma; git checkout d716460) 
 
 #ZZAnalysis
 git clone -b 2l2q_80X https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
@@ -29,18 +41,11 @@ git clone -n https://github.com/cms-analysis/EgammaAnalysis-ElectronTools EGamma
 
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
-(cd ZZMatrixElement ; git checkout -b from-v200p4 v2.0.0_patch4 ; . setup.sh -j 12)
-
-#photon ISO information for FSR 
-git clone -n https://github.com/VBF-HZZ/UFHZZAnalysisRun2
-(cd UFHZZAnalysisRun2 ; git checkout origin/csa14 FSRPhotons) #This does not set the correct branch, but picks the right one anyway
+(cd ZZMatrixElement ; git checkout -b from-v200p5 v2.0.0_patch5 ; cd MELA; ./setup.sh -j 8)
 
 #kinematic refitting
 git clone https://github.com/tocheng/KinZfitter.git
 (cd KinZfitter; git checkout -b from-Zhadv1.1 Zhadv1.1)
-
-#muon momentum scale corrections (76X)
-git clone https://github.com/bachtis/Analysis.git -b KaMuCa_V2 KaMuCa 
 
 #hack the KinZfitter to use the corrected muon pT error
 sed -i 's/reco::Muon/pat::Muon/g' KinZfitter/HelperFunction/interface/HelperFunction.h
@@ -48,11 +53,11 @@ sed -i 's/reco::Muon/pat::Muon/g' KinZfitter/HelperFunction/src/HelperFunction.c
 sed -i 's/double pterr = mu->muonBestTrack()->ptError();/double pterr = mu->userFloat("correctedPtError");/g' KinZfitter/HelperFunction/src/HelperFunction.cc
 
 
+#muon momentum scale corrections (76X)
+git clone https://github.com/bachtis/Analysis.git -b KaMuCa_V3 KaMuCa 
+
 #Jet energy corrections (CMGTools)
 #(mkdir -p CMGTools/Common; cd CMGTools/Common ; wget https://raw.githubusercontent.com/CERN-PH-CMG/cmg-cmssw/a875832047532c5469aa9795751f0363cd5d9244/CMGTools/Common/plugins/JetEnergyCorrector.h)
-
-#Not needed anymore (dependency removed)
-#git clone https://github.com/HZZ4l/CombinationPy.git HZZ4L_Combination/CombinationPy
 
 # Not needed, for the time being
 #git clone https://github.com/msnowball/HCSaW Higgs/Higgs_CS_and_Width

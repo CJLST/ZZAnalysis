@@ -14,7 +14,7 @@ except NameError:
 try:
     LEPTON_SETUP
 except NameError:
-    LEPTON_SETUP = 2015
+    LEPTON_SETUP = 2016
 
 #Lepton selection
 try:
@@ -26,7 +26,7 @@ except NameError:
 try:
     SAMPLE_TYPE
 except NameError:
-    SAMPLE_TYPE = 2015 # LEPTON_SETUP can differ from SAMPLE_TYPE for samples that are rescaled to a different sqrts.
+    SAMPLE_TYPE = 2016 # LEPTON_SETUP can differ from SAMPLE_TYPE for samples that are rescaled to a different sqrts.
 
 #Optional name of the sample/dataset being analyzed
 try:
@@ -126,11 +126,12 @@ elif (SAMPLE_TYPE == 2012) :
         process.GlobalTag.globaltag = 'GR_70_V2_AN1::All'
         
 else: 
-    process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
+    from Configuration.AlCa.GlobalTag import GlobalTag
     if IsMC:
-        process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_v3'
+        #process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_v3'
+        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_miniAODv2_v1', '')
     else:
-        process.GlobalTag.globaltag = '80X_dataRun2_Prompt_v8'
+        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_Prompt_ICHEP16JEC_v0', '')
 
 print '\t',process.GlobalTag.globaltag
 
@@ -217,7 +218,7 @@ elif (LEPTON_SETUP == 2012):
   #  process.hltFilterTriEle.HLTPaths = ["HLT_Ele15_Ele8_Ele5_CaloIdL_TrkIdVL_v*"]
   #  process.triggerTriEle  = cms.Path(process.hltFilterTriEle)
 
-elif (LEPTON_SETUP == 2015):
+elif (LEPTON_SETUP == 2016):
     #FIXME: For now, the MC paths are the ones used in the RunIISpring15DR74 MC samples for 25ns,7e33 conditions.
     process.hltFilterDiEle.HLTPaths = ["HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*"]
     #process.hltFilterDiEle.HLTPaths = ["HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*"] #for 25ns,14e33 (not necessary in 2015 data)
@@ -304,7 +305,10 @@ if (LEPTON_SEL == "heep") :
 
 GOODLEPTON = "userFloat('ID') && " + SIP  # Lepton passing tight ID + SIP [ISO is asked AFTER FSR!!!]
 
-
+if LEPTON_SETUP == 2016:
+    TIGHTMUON = "userFloat('isPFMuon') || (userFloat('isTrackerHighPtMuon') && pt>200)"
+else:
+    TIGHTMUON = "userFloat('isPFMuon')"
 
 #------- MUONS -------
 
@@ -325,7 +329,7 @@ GOODLEPTON = "userFloat('ID') && " + SIP  # Lepton passing tight ID + SIP [ISO i
 #--- Mu e-scale corrections (KalmanMuonCalibrator, 2015)
 process.calibratedMuons = cms.EDProducer("KalmanPATMuonCorrector", 
                                          src = cms.InputTag("slimmedMuons"),
-                                         identifier = cms.string("MC_76X_13TeV"),
+                                         identifier = cms.string(""),
                                          isMC = cms.bool(IsMC),
                                          isSynchronization = cms.bool(False),
                                          )
@@ -341,11 +345,17 @@ elif LEPTON_SETUP == 2012: # (MuScleFit)
         process.calibratedMuons.identifier = cms.string("Summer12_DR53X_smearReReco")
     else:
         process.calibratedMuons.identifier = cms.string("Data2012_53X_ReReco")
-else: # (KalmanMuonCalibrator, 2015)
+elif LEPTON_SETUP == 2015: # (KalmanMuonCalibrator, 2015)
     if IsMC:
         process.calibratedMuons.identifier = cms.string("MC_76X_13TeV")
     else:
         process.calibratedMuons.identifier = cms.string("DATA_76X_13TeV")
+elif LEPTON_SETUP == 2016: # (KalmanMuonCalibrator, 2016)
+    if IsMC:
+        process.calibratedMuons.identifier = cms.string("MC_80X_13TeV")
+    else:
+        process.calibratedMuons.identifier = cms.string("DATA_80X_13TeV")
+
 
 
 #--- Mu Ghost cleaning
@@ -387,7 +397,7 @@ process.softMuons = cms.EDProducer("MuFiller",
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
     cut = cms.string("userFloat('dxy')<0.5 && userFloat('dz')<1."),
     flags = cms.PSet(
-        ID = cms.string("userFloat('isPFMuon')" ), # PF ID
+        ID = cms.string(TIGHTMUON), # PF ID
         isSIP = cms.string(SIP),
         isGood = cms.string(GOODLEPTON),
         isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<" + MUISOCUT),
@@ -425,11 +435,24 @@ process.calibratedPatElectrons = cms.EDProducer("CalibratedPatElectronProducerRu
     gbrForestName = cms.string("gedelectron_p4combination_25ns"),
     isMC = cms.bool(IsMC),
     isSynchronization = cms.bool(False),
-    correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/76X_16DecRereco_2015")
+    correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/80X_Golden22June_approval")
 )
 
 if (BUNCH_SPACING == 50):
     process.calibratedPatElectrons.grbForestName = cms.string("gedelectron_p4combination_50ns")
+
+#--- Set up electron ID (VID framework)
+from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
+# turn on VID producer, indicate data format to be DataFormat.MiniAOD, as appropriate
+dataFormat = DataFormat.MiniAOD
+switchOnVIDElectronIdProducer(process, dataFormat)
+# define which IDs we want to produce
+my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_V1_cff']
+# add them to the VID producer
+for idmod in my_id_modules:
+    setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
+# and don't forget to add the producer 'process.egmGsfElectronIDSequence' to the path, i.e. process.electrons
+
 
 process.bareSoftElectrons = cms.EDFilter("PATElectronRefSelector",
    src = cms.InputTag("calibratedPatElectrons"),
@@ -448,19 +471,22 @@ process.softElectrons = cms.EDProducer("EleFiller",
         isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<"+ELEISOCUT)
 #       Note: passCombRelIsoPFFSRCorr is currently set in LeptonPhotonMatcher for new FSR strategy; in ZZCandidateFiller for the old one
         ),
-   #mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring15NonTrig25nsV1Values"), # (when running VID)
+   mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16V1Values"), # (when running VID)
    )
 
 if (LEPTON_SEL == "heep") :
    process.softElectrons.cut = "userFloat('dxy')<0.05"  
    process.softElectrons.flags.ID = "userFloat('isHEEP')" 
  
-process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.bareSoftElectrons + process.softElectrons)
+process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
 
 # Handle special cases
 if ELEREGRESSION == "None" and (ELECORRTYPE == "None" or BUNCH_SPACING == 50) :   # No correction at all. Skip correction modules.
     process.bareSoftElectrons.src = cms.InputTag('slimmedElectrons')
-    process.electrons = cms.Sequence(process.bareSoftElectrons + process.softElectrons)
+    process.electrons = cms.Sequence(process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
+elif ELECORRTYPE == "RunII" :
+    process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag("calibratedPatElectrons")
+    process.electronMVAValueMapProducer.srcMiniAOD=cms.InputTag("calibratedPatElectrons")
 
 process.electronMatch = cms.EDProducer("MCMatcher",       # cut on deltaR, deltaPt/Pt; pick best by deltaR
                                        src         = cms.InputTag("bareSoftElectrons"), # RECO objects to match
@@ -507,13 +533,14 @@ process.cleanSoftElectrons = cms.EDProducer("PATElectronCleaner",
 ### ----------------------------------------------------------------------
 
 # Create a photon collection; cfg extracted from "UFHZZAnalysisRun2.FSRPhotons.fsrPhotons_cff"
-process.fsrPhotons = cms.EDProducer("FSRPhotonProducer",
-    srcCands = cms.InputTag("packedPFCandidates"),
-    muons = cms.InputTag("slimmedMuons"), 
-    ptThresh = cms.double(2.0),
-    extractMuonFSR = cms.bool(False),
+process.fsrPhotons = cms.EDProducer("PhotonFiller",
+    electronSrc = cms.InputTag("cleanSoftElectrons"),
+    sampleType = cms.int32(SAMPLE_TYPE),
+    setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
+    photonSel = cms.string(FSRMODE)  # "skip", "passThrough", "Legacy", "RunII"
 )
-import PhysicsTools.PatAlgos.producersLayer1.pfParticleProducer_cfi 
+
+import PhysicsTools.PatAlgos.producersLayer1.pfParticleProducer_cfi
 process.boostedFsrPhotons = PhysicsTools.PatAlgos.producersLayer1.pfParticleProducer_cfi.patPFParticles.clone(
     pfCandidateSource = 'fsrPhotons'
 )
@@ -522,11 +549,13 @@ process.appendPhotons = cms.EDProducer("LeptonPhotonMatcher",
     muonSrc = cms.InputTag("softMuons"),
     electronSrc = cms.InputTag("cleanSoftElectrons"),
     photonSrc = cms.InputTag("boostedFsrPhotons"),
-    sampleType = cms.int32(SAMPLE_TYPE),                     
+    sampleType = cms.int32(SAMPLE_TYPE),
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
-    photonSel = cms.string(FSRMODE)  # "skip", "passThrough", "Legacy", "RunII"
-    )
-
+    photonSel = cms.string(FSRMODE),  # "skip", "passThrough", "Legacy", "RunII"
+    muon_iso_cut = cms.double(MUISOCUT),
+    electron_iso_cut = cms.double(ELEISOCUT),
+    debug = cms.untracked.bool(False),
+)
 
 
 # All leptons, any F/C.
@@ -805,56 +834,48 @@ process.load("CondCore.DBCommon.CondDBCommon_cfi")
 from CondCore.DBCommon.CondDBSetup_cfi import *
 ### Load JER
 process.load("JetMETCorrections.Modules.JetResolutionESProducer_cfi")
+   
+if IsMC:
+    process.jec = cms.ESSource("PoolDBESSource",
+        DBParameters = cms.PSet(
+                messageLevel = cms.untracked.int32(1)
+        ),
+        timetype = cms.string('runnumber'),
+            toGet = cms.VPSet(
+                cms.PSet(
+                    record = cms.string('JetCorrectionsRecord'),
+                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV6_MC_AK4PFchs'), #for 80X/ICHEP16
+                    label  = cms.untracked.string('AK4PFchs')
+                    ),
+                cms.PSet(
+                    record = cms.string('JetCorrectionsRecord'),
+                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV6_MC_AK8PFchs'), #for 80X/ICHEP16
+                    label  = cms.untracked.string('AK8PFchs')
+                    ),
+                ),
+             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Spring16_25nsV6_MC.db'), #for 80X/ICHEP16          
+            )
+else:
+   process.jec = cms.ESSource("PoolDBESSource",
+         DBParameters = cms.PSet(
+                messageLevel = cms.untracked.int32(1)
+            ),
+            timetype = cms.string('runnumber'),
+            toGet = cms.VPSet(
+                cms.PSet(
+                    record = cms.string('JetCorrectionsRecord'),
+                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV6_DATA_AK4PFchs'), #for 80X/ICHEP16
+                    label  = cms.untracked.string('AK4PFchs')
+                    ),
+                cms.PSet(
+                    record = cms.string('JetCorrectionsRecord'),
+                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV6_DATA_AK8PFchs'), #for 80X/ICHEP16
+                    label  = cms.untracked.string('AK8PFchs')
+                    ),
+                ), 
+            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Spring16_25nsV6_DATA.db'), #for 80X/ICHEP16
+)
 
-if IsMC: 
-    process.jec = cms.ESSource("PoolDBESSource",
-        DBParameters = cms.PSet(
-            messageLevel = cms.untracked.int32(1)
-        ),
-        timetype = cms.string('runnumber'),
-        toGet = cms.VPSet(
-        cms.PSet(
-            record = cms.string('JetCorrectionsRecord'),
-            tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV1_MC_AK4PFchs'),
-            label  = cms.untracked.string('AK4PFchs')
-            ),
-        cms.PSet(
-            record = cms.string('JetCorrectionsRecord'),
-            tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV1_MC_AK8PFchs'),
-            label  = cms.untracked.string('AK8PFchs')
-            ),
-#        cms.PSet(
-#            record = cms.string('JetResolutionRcd'),
-#            tag    = cms.string('JR_Spring16_25nsV1_MC_PtResolution_AK4PFchs'),
-#            label  = cms.untracked.string('AK4PFchs_pt') 
-#        ),
-#        cms.PSet(
-#            record = cms.string('JetResolutionRcd'),
-#            tag    = cms.string('JR_Spring16_25nsV1_MC_PhiResolution_AK4PFchs'),
-#            label  = cms.untracked.string('AK4PFchs_phi') )
-        ),                        
-        connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Spring16_25nsV1_MC.db'),
-    )
-else: 
-    process.jec = cms.ESSource("PoolDBESSource",
-        DBParameters = cms.PSet(
-            messageLevel = cms.untracked.int32(1)
-        ),
-        timetype = cms.string('runnumber'),
-        toGet = cms.VPSet(
-        cms.PSet(
-            record = cms.string('JetCorrectionsRecord'),
-            tag    = cms.string('JetCorrectorParametersCollection_Fall15_25nsV2_DATA_AK4PFchs'),
-            label  = cms.untracked.string('AK4PFchs')
-            ),
-        cms.PSet(
-            record = cms.string('JetCorrectionsRecord'),
-            tag    = cms.string('JetCorrectorParametersCollection_Fall15_25nsV2_DATA_AK8PFchs'),
-            label  = cms.untracked.string('AK8PFchs')
-            ),
-        ),
-        connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall15_25nsV2_DATA.db'),
-    )
 ## add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
 process.es_prefer_jec = cms.ESPrefer('PoolDBESSource','jec')
 
@@ -874,37 +895,41 @@ process.patJetsReapplyJEC = updatedPatJets.clone(
   )
 
 ## read q/g likelihood calibration
-#qgDatabaseVersion = 'v2b' # check https://twiki.cern.ch/twiki/bin/viewauth/CMS/QGDataBaseVersion
-
-#process.QGPoolDBESSource = cms.ESSource("PoolDBESSource",
-#      CondDBSetup,
-#      toGet = cms.VPSet(),
-#      connect = cms.string('frontier://FrontierProd/CMS_COND_PAT_000'),
-#)
-
-#for type in ['AK4PFchs','AK4PFchs_antib']:
-#  process.QGPoolDBESSource.toGet.extend(cms.VPSet(cms.PSet(
-#    record = cms.string('QGLikelihoodRcd'),
-#    tag    = cms.string('QGLikelihoodObject_'+qgDatabaseVersion+'_'+type),
-#    label  = cms.untracked.string('QGL_'+type)
-#  )))
-
-# embed q/g likelihood
+qgDatabaseVersion = '80X'
+process.QGPoolDBESSource = cms.ESSource("PoolDBESSource",
+      DBParameters = cms.PSet(messageLevel = cms.untracked.int32(1)),
+      timetype = cms.string('runnumber'),
+      toGet = cms.VPSet(
+        cms.PSet(
+            record = cms.string('QGLikelihoodRcd'),
+            tag    = cms.string('QGLikelihoodObject_'+qgDatabaseVersion+'_AK4PFchs'),
+            label  = cms.untracked.string('QGL_AK4PFchs')
+        ),
+      ),
+      connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/QGTagging/QGL_'+qgDatabaseVersion+'.db')
+)
+process.es_prefer_qg = cms.ESPrefer('PoolDBESSource','QGPoolDBESSource')
 process.load('RecoJets.JetProducers.QGTagger_cfi')
-#process.QGTagger.srcJets = cms.InputTag( 'slimmedJets' )
-process.QGTagger.srcJets = cms.InputTag( 'patJetsReapplyJEC' )
+process.QGTagger.srcJets = cms.InputTag( 'slimmedJets' )
 process.QGTagger.jetsLabel = cms.string('QGL_AK4PFchs')
 
 process.dressedJets = cms.EDProducer("JetFiller",
-    #src = cms.InputTag("slimmedJets"),
-    src = cms.InputTag("patJetsReapplyJEC"),
-    cut = cms.string("pt>30 && abs(eta)<4.7"),
+    src = cms.InputTag("slimmedJets"),
+    sampleType = cms.int32(SAMPLE_TYPE),
+    setup = cms.int32(LEPTON_SETUP),
+    cut = cms.string("pt>20 && abs(eta)<4.7 && userFloat('looseJetID') && userFloat('PUjetID')"),
+    isMC = cms.bool(IsMC),
     bTaggerName = cms.string("pfCombinedInclusiveSecondaryVertexV2BJetTags"),
     jecType = cms.string("AK4PFchs"),
+    applyJER = cms.bool(True),
+    jerType = cms.string("AK4PFchs"),
     flags = cms.PSet(
-        isBtagged = cms.string("userFloat('bTagger')>0.800"),
-    )
+        isBtagged = cms.string("userFloat('bTagger')>0.460"),
+        )
 )
+
+process.QGTagger.srcJets = cms.InputTag('patJetsReapplyJEC')
+process.dressedJets.src = cms.InputTag('patJetsReapplyJEC')
 
 
 # Clean jets wrt. good (preFSR-)isolated leptons

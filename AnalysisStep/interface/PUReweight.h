@@ -3,10 +3,8 @@
 
 /** \class PUReweight
  *
- *  PU Weights from Boris.
+ *  Implement PU reweighting.
  *
- *  $Date: 2013/06/11 15:02:59 $
- *  $Revision: 1.8 $
  */
 
 #include <TH1F.h>
@@ -42,7 +40,6 @@ public:
   // HCP Samples
   TH1F* hTPuV07ToIchep52X;
   TH1F* hTPuV10ToIchep53X;
-
   TH1F*	hTPuV07ToHcp53X;
   TH1F* hTPuV10ToHcp53X;
   TH1F* hTPuToMoriond13;
@@ -51,6 +48,8 @@ public:
   // 2015
   TH1F* hTPuTo2015;
   TH1F* hTPuTo201576X;
-  
+
+  // 2016
+  TH1F* hTPuToIchep16;
 };
 #endif

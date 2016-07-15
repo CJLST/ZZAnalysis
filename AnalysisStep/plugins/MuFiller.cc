@@ -130,9 +130,7 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     float muontime = 0;
     if (l.time().nDof>4) muontime= l.time().timeAtIpInOut;
     
-    //FIXME
-    
-    //--- Embed user variables
+//--- Embed user variables
     l.addUserFloat("PFChargedHadIso",PFChargedHadIso);
     l.addUserFloat("PFNeutralHadIso",PFNeutralHadIso);
     l.addUserFloat("PFPhotonIso",PFPhotonIso);
@@ -154,6 +152,20 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       l.addUserFloat("isPFMuon",l.isPFMuon());
     }
     
+    // isHighPtTrackerMuon - used in 2016 tight muon ID
+    bool isTrackerHighPt = ( l.numberOfMatchedStations() > 1 
+        && (l.muonBestTrack()->ptError()/l.muonBestTrack()->pt()) < 0.3 
+        && dxy < 0.2
+        && dz < 0.5 
+        && l.innerTrack()->hitPattern().numberOfValidPixelHits() > 0 
+        && l.innerTrack()->hitPattern().trackerLayersWithMeasurement() > 5 );
+    l.addUserFloat("isTrackerHighPtMuon",isTrackerHighPt);
+    
+
+    if (!l.hasUserFloat("correctedPtError")) {
+      l.addUserFloat("correctedPtError",l.muonBestTrack()->ptError()); //This is expected by the kin fitter
+    }
+
     //--- MC parent code 
 //     MCHistoryTools mch(iEvent);
 //     if (mch.isMC()) {

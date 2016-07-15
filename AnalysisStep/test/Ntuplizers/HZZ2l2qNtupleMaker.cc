@@ -551,10 +551,10 @@ HZZ2l2qNtupleMaker::HZZ2l2qNtupleMaker(const edm::ParameterSet& pset) :
     //Scale factors for data/MC efficiency
 
     // only LEPTON_SETUP=2015 is supported
-    if(year!=2015){
+    /* if(year!=2015){
       cout<<"Error: data/MC weights are not supported for this LEPTON_SETUP; see HZZ2l2qNtupleMaker.cc"<<endl;
       abort();
-    }
+      }*/
 
     TString filename;
 
@@ -564,6 +564,8 @@ HZZ2l2qNtupleMaker::HZZ2l2qNtupleMaker(const edm::ParameterSet& pset) :
     TFile *fMuWeight = TFile::Open(fipPath.data(),"READ");
     hTH2D_Mu_All = (TH2D*)fMuWeight->Get("FINAL")->Clone();
     fMuWeight->Close();
+
+    year = 2015;
 
     filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_%d_IdIsoSip.root",year); 
     edm::FileInPath fipEleNotCracks(filename.Data());
@@ -1437,7 +1439,7 @@ ZZsel.push_back(sel);
 
   //Compute the data/MC weight and overall event weight
   dataMCWeight = 1.;
-  for(unsigned int i=0; i<leptons.size(); ++i){
+  for(unsigned int i=nJets; i<leptons.size(); ++i){
     dataMCWeight *= getAllWeight(leptons[i]);
   }
   overallEventWeight = PUWeight * genHEPMCweight * dataMCWeight;

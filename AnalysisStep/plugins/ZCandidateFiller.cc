@@ -30,11 +30,6 @@
 
 using namespace std;
 
-namespace {
-  bool recomputeIsoForFSR=false; // add "combRelIsoPFFSRCorr" for Z leptons (a' la Legacy)
-}
-
-
 class ZCandidateFiller : public edm::EDProducer {
  public:
   /// Constructor
@@ -76,7 +71,6 @@ ZCandidateFiller::ZCandidateFiller(const edm::ParameterSet& iConfig) :
     abort();
   }
   
-
   produces<pat::CompositeCandidateCollection>();
 }
 
@@ -94,19 +88,6 @@ ZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   Handle<View<reco::CompositeCandidate> > LLCands;
   iEvent.getByToken(candidateToken, LLCands);
 
-#define USE_FSR
-#ifdef USE_FSR
-  // Get rho, to recompute isolation for leptons with FSR
-  double rhoForMu=0., rhoForEle=0.;
-  if (recomputeIsoForFSR) {
-    edm::Handle<double> rhoHandle;
-    iEvent.getByLabel(LeptonIsoHelper::getMuRhoTag(sampleType, setup), rhoHandle);
-    rhoForMu = *rhoHandle;
-    iEvent.getByLabel(LeptonIsoHelper::getEleRhoTag(sampleType, setup), rhoHandle);
-    rhoForEle = *rhoHandle;
-  }
-#endif
-
   //--- Fill user info
 
   const float ZmassValue = 91.1876;
@@ -122,7 +103,6 @@ ZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   int bestLLidx = -1;
 
   //--- Loop over LL Candidates
-  // cout << "LLCands ==== " << endl;
   for(unsigned int i = 0; i < LLCands->size(); ++i) {
     const CompositeCandidate& c = (*LLCands)[i];
     pat::CompositeCandidate myCand(c); 
@@ -133,8 +113,6 @@ ZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     int id0 = myCand.daughter(0)->pdgId();
     int id1 = myCand.daughter(1)->pdgId();
-    // cout << "LLCands" << id0 << " " << id1 << endl;
-
     bool OS = (id0*id1)<0;
     bool SF = abs(id0)==abs(id1);
 
@@ -153,114 +131,87 @@ ZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       int minDRgLep=-1; // are associated
 
       for (int dauIdx=0; dauIdx<2; ++dauIdx) { 
-	const Candidate* d = myCand.daughter(dauIdx);
-	const PhotonPtrVector* gammas = userdatahelpers::getUserPhotons(d);
-	if (gammas==0) continue;
-	for (PhotonPtrVector::const_iterator g = gammas->begin();
-	     g!= gammas->end(); ++g) {
-	  const pat::PFParticle* gamma = g->get();
-	  reco::Candidate::LorentzVector p4G = gamma->p4();
-	  reco::Candidate::LorentzVector p4LL = myCand.p4();
-	  double mLLG = (p4LL + p4G).M();
-	  bool movesToZPeak = (fabs(mLLG-ZmassValue) < fabs(myCand.mass()-ZmassValue));
-	  if (movesToZPeak && mLLG<100. && mLLG>4) { // Mass cuts (4 is implicit)
+        const Candidate* d = myCand.daughter(dauIdx);
+        const PhotonPtrVector* gammas = userdatahelpers::getUserPhotons(d);
+        if (gammas==0) continue;
+        for (PhotonPtrVector::const_iterator g = gammas->begin();
+             g!= gammas->end(); ++g) {
+          const pat::PFParticle* gamma = g->get();
+          reco::Candidate::LorentzVector p4G = gamma->p4();
+          reco::Candidate::LorentzVector p4LL = myCand.p4();
+          double mLLG = (p4LL + p4G).M();
+          bool movesToZPeak = (fabs(mLLG-ZmassValue) < fabs(myCand.mass()-ZmassValue));
+          if (movesToZPeak && mLLG<100. && mLLG>4) { // Mass cuts (4 is implicit)
 
-	    double pt = gamma->pt();
-	    if (pt>maxPT) {
-	      maxPT  = pt;
-	      maxPTg = gamma;
-	      maxPTgLep = dauIdx;
-	    }
-	  
-	    double dR = ROOT::Math::VectorUtil::DeltaR(gamma->momentum(),d->momentum());
-	    if (dR<minDR) {
-	      minDR  = dR;
-	      minDRg = gamma;
-	      minDRgLep = dauIdx;
-	    }
-	  }
-	} // end loop on photons
+            double pt = gamma->pt();
+            if (pt>maxPT) {
+              maxPT  = pt;
+              maxPTg = gamma;
+              maxPTgLep = dauIdx;
+            }
+
+            double dR = ROOT::Math::VectorUtil::DeltaR(gamma->momentum(),d->momentum());
+            if (dR<minDR) {
+              minDR  = dR;
+              minDRg = gamma;
+              minDRgLep = dauIdx;
+            }
+          }
+        } // end loop on photons
       } // end loop on daughters (leptons)
     
       // Define the selected FSR photon.
       const pat::PFParticle* fsr=0;    
       int lepWithFsr=-1; 
       if (maxPTg!=0) { // at least 1 photon selected
-	if (maxPT>4) { // First case: take highest-pT
-	  fsr=maxPTg;
-	  lepWithFsr=maxPTgLep;
-	} else {
-	  fsr=minDRg;
-	  lepWithFsr=minDRgLep;
-	}
+        if (maxPT>4) { // First case: take highest-pT
+          fsr=maxPTg;
+          lepWithFsr=maxPTgLep;
+        } else {
+          fsr=minDRg;
+          lepWithFsr=minDRgLep;
+        }
       }
 
       myCand.addUserFloat("dauWithFSR",lepWithFsr); // Index of the cand daughter with associated FSR photon //FIXME must be removed
 
       if (fsr!=0) {
-	// Add daughter and set p4.
-	myCand.addUserFloat("mll",myCand.mass()); // for debug purposes
-	myCand.setP4(myCand.p4()+fsr->p4());
-	//      myCand.addDaughter(reco::ShallowCloneCandidate(fsr->masterClone()),"FSR"); //FIXME: fsr does not have a masterClone
-	pat::PFParticle myFsr(*fsr);
-	myFsr.setPdgId(22); // Fix: photons that are isFromMu have abs(pdgId)=13!!!
-	myFsr.addUserFloat("leptIdx",lepWithFsr);
-	myCand.addDaughter(myFsr,"FSR");
+        // Add daughter and set p4.
+        myCand.addUserFloat("mll",myCand.mass()); // for debug purposes
+        myCand.setP4(myCand.p4()+fsr->p4());
+        //      myCand.addDaughter(reco::ShallowCloneCandidate(fsr->masterClone()),"FSR"); //FIXME: fsr does not have a masterClone
+        pat::PFParticle myFsr(*fsr);
+        myFsr.setPdgId(22); // Fix: photons that are isFromMu have abs(pdgId)=13!!!
+        myFsr.addUserFloat("leptIdx",lepWithFsr);
+        myCand.addDaughter(myFsr,"FSR");
       }
-    
-      if (recomputeIsoForFSR) {
-	// Recompute iso for leptons with FSR
-	for (int dauIdx=0; dauIdx<2; ++dauIdx) { 
-	  const Candidate* d = myCand.daughter(dauIdx);
-	  float fsrCorr = 0; // The correction to PFPhotonIso
-	  if (fsr!=0) {
-	    //	if (!fsr->isFromMuon()) { // Type 1 photons should be subtracted from muon iso cones
-	    double dR = ROOT::Math::VectorUtil::DeltaR(fsr->momentum(),d->momentum());
-	    if (dR<0.3 && ((d->isMuon() && dR > 0.01) ||
-			   (d->isElectron() && (fabs((static_cast<const pat::Electron*>(d->masterClone().get()))->superCluster()->eta()) < 1.479 || dR > 0.08)))) {
-	      fsrCorr = fsr->pt();
-	    }
-	  }
-
-	  float rho = ((d->isMuon())?rhoForMu:rhoForEle);
-	  float combRelIsoPFCorr =  LeptonIsoHelper::combRelIsoPF(sampleType, setup, rho, d, fsrCorr);
-      
-	  string base;
-	  stringstream str;
-	  str << "d" << dauIdx << ".";
-	  str >> base;	  
-	  myCand.addUserFloat(base+"combRelIsoPFFSRCorr",combRelIsoPFCorr);
-	}
-      } // end loop on daughters
 
     } else if (FSRMode==2) { // Run II
       float mll = myCand.mass(); // pre-FSR mass
       for (int dauIdx=0; dauIdx<2; ++dauIdx) { 
-	const Candidate* d = myCand.daughter(dauIdx);
-	const PhotonPtrVector* gammas = userdatahelpers::getUserPhotons(d);
-	if (gammas==0) continue;
-	assert(gammas->size()<=1); // Must have already been preselected.
-	if (gammas->size()==1){
-	  const pat::PFParticle* fsr = gammas->begin()->get();
-	  pat::PFParticle myFsr(*fsr);
-	  myCand.setP4(myCand.p4()+fsr->p4());
-	  myFsr.setPdgId(22);
-	  myFsr.addUserFloat("leptIdx",dauIdx);
-	  //	myFsr.addUserFloat("gRelIso",0.);
-	  myCand.addDaughter(myFsr);
-	}
+        const Candidate* d = myCand.daughter(dauIdx);
+        const PhotonPtrVector* gammas = userdatahelpers::getUserPhotons(d);
+        if (gammas==0) continue;
+        assert(gammas->size()<=1); // Must have already been preselected.
+        if (gammas->size()==1){
+          const pat::PFParticle* fsr = gammas->begin()->get();
+          pat::PFParticle myFsr(*fsr);
+          myCand.setP4(myCand.p4()+fsr->p4());
+          myFsr.setPdgId(22);
+          myFsr.addUserFloat("leptIdx",dauIdx);
+          //        myFsr.addUserFloat("gRelIso",0.);
+          myCand.addDaughter(myFsr);
+        }
       }
       
       if (myCand.numberOfDaughters()>4) {
-	myCand.addUserFloat("mll",mll);
+        myCand.addUserFloat("mll",mll);
       }
 
     } else if (FSRMode==0) { // no FSR
-      /*  if (embedDaughterFloats) {
-        myCand.addUserFloat("dauWithFSR",-1);
-	myCand.addUserFloat("d0.combRelIsoPFFSRCorr",myCand.userFloat("d0.combRelIsoPF"));
-	myCand.addUserFloat("d1.combRelIsoPFFSRCorr",myCand.userFloat("d1.combRelIsoPF"));  
-      }*/
+      /* myCand.addUserFloat("dauWithFSR",-1);
+      myCand.addUserFloat("d0.combRelIsoPFFSRCorr",myCand.userFloat("d0.combRelIsoPF"));
+      myCand.addUserFloat("d1.combRelIsoPFFSRCorr",myCand.userFloat("d1.combRelIsoPF")); */
     }
 
     
@@ -268,35 +219,30 @@ ZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     if (preBestZSelection(myCand)) {
       float diffZmass = fabs(ZmassValue - myCand.mass());
       if (diffZmass < closestLLMassDiff) { // Best among any ll in the collection
-	bestLLidx = i;
-	closestLLMassDiff = diffZmass;
+        bestLLidx = i;
+        closestLLMassDiff = diffZmass;
       }
       if (OS&&SF) {
-	if (diffZmass < closestZMassDiff) { // Best among all OSSF pairs in the collection
-	  bestZidx = i;
-	  closestZMassDiff = diffZmass;
-	}
-	if (abs(id0) == 13) { 
-	  if (diffZmass < closestZmmMassDiff) { // Best among all mu+mu- pairs in the collection
-	    bestZmmidx = i;
-	    closestZmmMassDiff = diffZmass;
-	  }
-	} else if (abs(id0) == 11) {
-	  if (diffZmass < closestZeeMassDiff) { // Best among all e+e- pairs in the collection
-	    bestZeeidx = i;
-	    closestZeeMassDiff = diffZmass;
-	  }
-	}
+        if (diffZmass < closestZMassDiff) { // Best among all OSSF pairs in the collection
+          bestZidx = i;
+          closestZMassDiff = diffZmass;
+        }
+        if (abs(id0) == 13) { 
+          if (diffZmass < closestZmmMassDiff) { // Best among all mu+mu- pairs in the collection
+            bestZmmidx = i;
+            closestZmmMassDiff = diffZmass;
+          }
+        } else if (abs(id0) == 11) {
+          if (diffZmass < closestZeeMassDiff) { // Best among all e+e- pairs in the collection
+            bestZeeidx = i;
+            closestZeeMassDiff = diffZmass;
+          }
+        }
       }
     }
 
-    //--- Embed shortcut variables
-//     myCand.addUserFloat("OS",OS);
-//     myCand.addUserFloat("SF",SF);
-
     result->push_back(myCand);
   }
-
 
   //--- Embed isBestZ flag (must be done in a separate loop)
   for (int i = 0; i< (int)result->size(); ++i) {
