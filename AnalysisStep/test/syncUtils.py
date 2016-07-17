@@ -172,7 +172,9 @@ class Candidate:
             c_float(pvbf_VAJHU_highestPTJets),
             c_float(pAux_vbf_VAJHU),
             c_float(pwh_hadronic_VAJHU),
-            c_float(pzh_hadronic_VAJHU)
+            c_float(pzh_hadronic_VAJHU),
+            (ctypes.c_float * len(jets30phi))(*jets30phi),
+            c_float(self.mass4l)
             )
 
 
