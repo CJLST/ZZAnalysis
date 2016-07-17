@@ -15,8 +15,9 @@ process.softLooseElectrons = cms.EDProducer("EleFiller",
         ID = cms.string("userFloat('isBDT')"),
         isSIP = cms.string(SIP_LOOSE),
         isGood = cms.string(GOODLEPTON_LOOSE),
+        isGoodRegular = cms.string(GOODLEPTON), # the "regular" (tight) selection
         isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<"+ELEISOCUT),
-        isLoose = cms.string("abs(1)"),
+        isLoose = cms.string("abs(1)"), #FIXME: I'd set this to  (isGood&&!isGoodTight), that would be clearer I think.
 #       Note: passCombRelIsoPFFSRCorr is currently set in LeptonPhotonMatcher for new FSR strategy; in ZZCandidateFiller for the old one
         ),
    mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16V1Values"), # (when running VID)
@@ -52,9 +53,15 @@ process.electrons += process.loose_electrons
 
 # l+l- (SFOS, both e and mu)
 # Note special cuts to allow SS pairs and deactivation of checkCharge (does not combine anything if set to True)
+# SKIPPERMUTATIONS is used since the loose ele collection also include electrons passing the standard (tight) selection, when both electrons pass the standard selection we end up with 2 pairings, and can skip either one. this is not the case when d1 passes the loos selection and not the tight one.
+SKIPPERMUTATIONS = "((daughter(0).pt>daughter(1).pt)||(!daughter(1).masterClone.userFloat('isGoodRegular')))" 
+
+#FIXME: in SS "standard" pairs, the second electron (loose) does not have FSR! To handle FSR correctly one would have to build
+# SS "standard" pairs from 'appendPhotons:electrons appendPhotons:electrons', and merge with the SS/OS standard+loose pairs.
+
 process.bareZCandlooseEle = cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string('appendPhotons:electrons appendPhotons:looseElectrons'),
-    cut = cms.string(KEEPLOOSECOMB_CUT),
+    cut = cms.string(KEEPLOOSECOMB_CUT+"&&"+SKIPPERMUTATIONS),
     checkCharge = cms.bool(False)
 )
 
@@ -153,7 +160,7 @@ CR_ZLLosSEL_3P1F             = (CR_BESTZLLos_looseEle + "&&" + PASSD0_XOR_PASSD1
 # ll, any combination of flavour/charge, for control regions only
 process.bareLLCandlooseEle = cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string('appendPhotons:electrons appendPhotons:looseElectrons'),
-    cut = cms.string('deltaR(daughter(0).eta, daughter(0).phi, daughter(1).eta, daughter(1).phi)>0.02'), # protect against ghosts
+    cut = cms.string('deltaR(daughter(0).eta, daughter(0).phi, daughter(1).eta, daughter(1).phi)>0.02&&'+SKIPPERMUTATIONS), # protect against ghosts && skip permuations of the same 2 electrons (See above)
     checkCharge = cms.bool(False)
 )
 process.LLCandlooseEle = cms.EDProducer("ZCandidateFiller",
