@@ -48,7 +48,7 @@ git clone -n https://github.com/cms-analysis/EgammaAnalysis-ElectronTools EGamma
 
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
-(cd ZZMatrixElement ; git checkout -b from-v200p4 v2.0.0_patch5)
+(cd ZZMatrixElement ; git checkout -b from-v200p5 v2.0.0_patch5)
 # replace ZZMatrixElement/MELA/setup.sh -j 8)
 pushd ${CMSSW_BASE}/src/ZZMatrixElement/MELA/fortran/
 make all
