@@ -75,7 +75,7 @@ namespace {
   bool addFSRDetails = false;
   bool addQGLInputs = true;
   bool skipMuDataMCWeight = false; // skip computation of data/MC weight for mu
-  bool skipEleDataMCWeight = true; // skip computation of data/MC weight for ele
+  bool skipEleDataMCWeight = false; // skip computation of data/MC weight for ele
   bool skipTrigEffWeight = false; // skip application of trigger efficiency (concerns samples where trigger is not applied)
   bool skipFakeWeight = true;   // skip computation of fake rate weight for CRs
   bool skipHqTWeight = true;    // skip computation of hQT weight
