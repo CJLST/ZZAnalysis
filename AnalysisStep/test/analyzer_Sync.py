@@ -8,7 +8,7 @@
 #KINREFIT = False  # control KinZFitter (very slow)
 #PROCESS_CR = True # Uncomment to run CR paths and trees
 #ADDLOOSEELE = True # Run paths for loose electrons
-APPLYTRIG = False  # must set to valse for all MC samples except MINIAODv2-reHLT
+APPLYTRIG = False  # must set to False for all MC samples except MINIAODv2-reHLT
 
 PD = ""
 MCFILTER = ""
