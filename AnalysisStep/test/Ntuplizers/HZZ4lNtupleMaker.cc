@@ -1849,7 +1849,7 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
   Int_t   myLepID = abs(Lep->pdgId());
   if (skipMuDataMCWeight&& myLepID==13) return 1.;
   if (skipEleDataMCWeight&& myLepID==11) return 1.;
-  if (myLepID==22) return 1.; // FIXME - what SFs should be used in this case?
+  if (myLepID==22) return 1.; // FIXME - what SFs should be used for TLEs?
 
   Float_t weight  = 1.;
   //Float_t errCorr = 0.;
@@ -1858,16 +1858,31 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
   Float_t myLepPt = Lep->pt();
   Float_t myLepEta = Lep->eta();
 
-  //avoid to go out of the TH boundary
-  if(myLepID == 13 && myLepPt > 79.) myLepPt = 79.;
-  if(myLepID == 11 && myLepPt > 199.) myLepPt = 199.;
-  if(myLepID == 11) myLepEta = fabs(myLepEta);
 
   if(myLepID == 13){
+    //avoid to go out of the TH boundary
+    if(myLepPt > 79.) myLepPt = 79.;
 
     weight = hTH2D_Mu_All->GetBinContent(hTH2D_Mu_All->GetXaxis()->FindBin(myLepEta),hTH2D_Mu_All->GetYaxis()->FindBin(myLepPt));
 
-  }else if(myLepID == 11 || myLepID == 22){
+    // add tracking SFs for 2016, as per https://twiki.cern.ch/twiki/bin/view/CMS/MuonReferenceEffsRun2
+    if      (myLepEta>-2.4 &&
+	     myLepEta<-2.1) weight*= .9639;
+    else if (myLepEta<-1.6) weight*= .9783;    
+    else if (myLepEta<-1.1) weight*= .9762;
+    else if (myLepEta<-0.6) weight*= .9702;
+    else if (myLepEta<0.0 ) weight*= .9672;
+    else if (myLepEta<0.6 ) weight*= .9761;
+    else if (myLepEta<1.1 ) weight*= .9814;
+    else if (myLepEta<1.6 ) weight*= .9797;
+    else if (myLepEta<2.1 ) weight*= .9778;
+    else if (myLepEta<2.4 ) weight*= .9532;
+
+
+  } else if(myLepID == 11) {
+
+    if(myLepPt > 199.) myLepPt = 199.;
+    myLepEta = fabs(myLepEta);
 
     if((bool)userdatahelpers::getUserFloat(Lep,"isCrack"))
       weight = hTH2D_El_IdIsoSip_Cracks   ->GetBinContent(hTH2D_El_IdIsoSip_Cracks   ->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_Cracks   ->GetYaxis()->FindBin(myLepEta));
