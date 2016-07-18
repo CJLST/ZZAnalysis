@@ -60,6 +60,10 @@ declareDefault("KINREFIT", True, globals())
 # Activate paths for loose electron categories
 declareDefault("ADDLOOSEELE", False, globals())
 
+# Activate trigger paths in MC; note that for 2016, only reHLT samples have the correct triggers!!!
+declareDefault("APPLYTRIG", True, globals())
+
+
 
 if SELSETUP=="Legacy" and not BESTCANDCOMPARATOR=="byBestZ1bestZ2":
     print "WARNING: In ZZ4lAnalysis.py the SELSETUP=\"Legacy\" flag is meant to reproduce the Legacy results, ignoring the setting of the BESTCANDCOMPARATOR: ",BESTCANDCOMPARATOR
@@ -207,7 +211,7 @@ elif (LEPTON_SETUP == 2015):
     process.triggerSingleEle = cms.Path(process.hltFilterSingleEle)
 
 elif (LEPTON_SETUP == 2016):
-    if (IsMC):
+    if (IsMC and not APPLYTRIG):
 	#At the moment, the HLT paths are not present in the "tranche 1" background MC and MiniAODv1 signal MC. They will be added in "tranche 2"/"tranche 3" and MiniAODv2.
 	process.hltFilterDiEle.HLTPaths = ["*"]
         process.hltFilterDiMu.HLTPaths = ["*"]

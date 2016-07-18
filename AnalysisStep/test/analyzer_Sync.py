@@ -8,6 +8,7 @@
 #KINREFIT = False  # control KinZFitter (very slow)
 #PROCESS_CR = True # Uncomment to run CR paths and trees
 #ADDLOOSEELE = True # Run paths for loose electrons
+APPLYTRIG = False  # must set to valse for all MC samples except MINIAODv2-reHLT
 
 PD = ""
 MCFILTER = ""
@@ -73,14 +74,16 @@ process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
      electronSrcs = cms.PSet(
 #       slimmedElectron = cms.InputTag("slimmedElectrons"),
         electrons = cms.InputTag("appendPhotons:electrons"),
-#        RSE = cms.InputTag("appendPhotons:looseElectrons"), #FIXME: loose collections are filtered, should add a check
+#        RSE = cms.InputTag("appendPhotons:looseElectrons"),
 #        TLE = cms.InputTag("appendPhotons:electronstle"), #These are actually photons, should add a photonSrcs section for them.
      ),
      candidateSrcs = cms.PSet(
         Z     = cms.InputTag("ZCand"),
-#        ZRSE     = cms.InputTag("ZCandlooseEle"), #FIXME: loose collections are filtered, should add a check
+#        ZRSE     = cms.InputTag("ZCandlooseEle"),
 #        ZTLE     = cms.InputTag("ZCandtle"),
         ZZ  = cms.InputTag("ZZCand"),
+#        ZZRSE     = cms.InputTag("ZZCandlooseEle"),
+#        ZZTLE     = cms.InputTag("ZZCandtle"),
 #        ZLL  = cms.InputTag("ZLLCand"),
 #        ZL  = cms.InputTag("ZlCand"),
      ),
