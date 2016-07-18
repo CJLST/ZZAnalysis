@@ -104,18 +104,13 @@ const int nMHPoints = 7;
 string  sMHPoint[nMHPoints] = {"","115","120","124","125","126","130",};
 Float_t fMHPoint[nMHPoints] = {0., 115., 120., 124., 125., 126., 130.,};
 int indexOf125 = 4;
-//Int_t nMHPointsProcess[nProcesses] = {6,6,6,6,6,0,0};
-Int_t nMHPointsProcess[nProcesses] = {4,6,5,5,5,0,0}; //FIXME: some mass points are still missing
+Int_t nMHPointsProcess[nProcesses] = {6,6,6,6,6,0,0};
 bool hasMHPoint[nProcesses][nMHPoints] = {
-  //{0,1,1,1,1,1,1,},//ggH
-  {0,1,1,0,1,1,0,},//ggH
+  {0,1,1,1,1,1,1,},//ggH
   {0,1,1,1,1,1,1,},//qqH
-  //{0,1,1,1,1,1,1,},//WH
-  {0,1,1,1,0,1,1,},//WH
-  //{0,1,1,1,1,1,1,},//ZH
-  {0,0,1,1,1,1,1,},//ZH
-  //{0,1,1,1,1,1,1,},//ttH
-  {0,1,1,1,1,1,0,},//ttH
+  {0,1,1,1,1,1,1,},//WH
+  {0,1,1,1,1,1,1,},//ZH
+  {0,1,1,1,1,1,1,},//ttH
   {1,0,0,0,0,0,0,},//qqZZ
   {1,0,0,0,0,0,0,},//ggZZ
 };
@@ -198,12 +193,12 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
     "ZH",
     "ttH",
     "ZZTo4l",
-    "ggZZ4e",
-    "ggZZ4mu",
-    "ggZZ4tau",
-    "ggZZ2e2mu",
-    "ggZZ2e2tau",
-    "ggZZ2mu2tau",
+    "ggTo4e_Contin_MCFM701",//"ggZZ4e",
+    "ggTo4mu_Contin_MCFM701",//"ggZZ4mu",
+    "ggTo4tau_Contin_MCFM701",//"ggZZ4tau",
+    "ggZZ2e2mu",//"ggTo2e2mu_Contin_MCFM701",
+    "ggZZ2e2tau",//"ggTo2e2tau_Contin_MCFM701",
+    "ggTo2mu2tau_Contin_MCFM701",//"ggZZ2mu2tau",
   };
 
   TFile* inputFile[nDatasets];
@@ -314,7 +309,13 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
        datasets[d]=="ggZZ4tau"||
        datasets[d]=="ggZZ2e2mu"||
        datasets[d]=="ggZZ2e2tau"||
-       datasets[d]=="ggZZ2mu2tau") 
+       datasets[d]=="ggZZ2mu2tau"||
+       datasets[d]=="ggTo4e_Contin_MCFM701"||
+       datasets[d]=="ggTo4mu_Contin_MCFM701"||
+       datasets[d]=="ggTo4tau_Contin_MCFM701"||
+       datasets[d]=="ggTo2e2mu_Contin_MCFM701"||
+       datasets[d]=="ggTo2e2tau_Contin_MCFM701"||
+       datasets[d]=="ggTo2mu2tau_Contin_MCFM701") 
       currentProcess = ggZZ;
     
     for(int mp=0; mp<nMHPoints; mp++){
@@ -499,7 +500,10 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
 	   pvbf_VAJHU_highestPTJets,
 	   pAux_vbf_VAJHU,
 	   pwh_hadronic_VAJHU,
-	   pzh_hadronic_VAJHU
+	   pzh_hadronic_VAJHU,
+	   jetPhi,
+	   ZZMass,
+	   false
 	   );
 	//*/
 
@@ -1020,11 +1024,11 @@ void prepareYields(bool recomputeYields = true) {
   float sqrts = 13.;
 
   // Define the luminosity
-  //float lumi = 10.;
-  float lumi = 2.6;
+  float lumi = 10.;
+  //float lumi = 2.6;
 
   // m4l window
-  //*
+  /*
   float m4l_min = 105.;
   float m4l_max = 140.;
   //*/
@@ -1036,7 +1040,7 @@ void prepareYields(bool recomputeYields = true) {
   float m4l_min = 70.;
   float m4l_max = 3000.;
   //*/
-  /*
+  //*
   float m4l_min = 118.;
   float m4l_max = 130.;
   //*/
@@ -1048,6 +1052,7 @@ void prepareYields(bool recomputeYields = true) {
 
   // --------------- processing ---------------
 
+  outputPath = string(Form("%s_m4l_%.0f_%.0f",outputPath.c_str(),m4l_min,m4l_max));
   gSystem->Exec(("mkdir -p "+outputPath).c_str());
 
   // Compute the yields for all available processes and mH values, and store them in a ROOT file 

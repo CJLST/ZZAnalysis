@@ -447,12 +447,12 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
     "ZH125",
     "ttH125",
     "ZZTo4l",//"ZZTo4lamcatnlo",//
-    "ggZZ4e",
-    "ggZZ4mu",
-    "ggZZ4tau",
-    "ggZZ2e2mu",
-    "ggZZ2e2tau",
-    "ggZZ2mu2tau",
+    "ggTo4e_Contin_MCFM701",//"ggZZ4e",
+    "ggTo4mu_Contin_MCFM701",//"ggZZ4mu",
+    "ggTo4tau_Contin_MCFM701",//"ggZZ4tau",
+    "ggZZ2e2mu",//"ggTo2e2mu_Contin_MCFM701",
+    "ggZZ2e2tau",//"ggTo2e2tau_Contin_MCFM701",
+    "ggTo2mu2tau_Contin_MCFM701",//"ggZZ2mu2tau",
     "DYJetsToLL_M50",
     "TTTo2L2Nu",//"TTJets",
   };
@@ -597,7 +597,13 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
        datasets[d]=="ggZZ4tau"||
        datasets[d]=="ggZZ2e2mu"||
        datasets[d]=="ggZZ2e2tau"||
-       datasets[d]=="ggZZ2mu2tau") 
+       datasets[d]=="ggZZ2mu2tau"||
+       datasets[d]=="ggTo4e_Contin_MCFM701"|| 
+       datasets[d]=="ggTo4mu_Contin_MCFM701"||
+       datasets[d]=="ggTo4tau_Contin_MCFM701"||
+       datasets[d]=="ggTo2e2mu_Contin_MCFM701"||
+       datasets[d]=="ggTo2e2tau_Contin_MCFM701"||
+       datasets[d]=="ggTo2mu2tau_Contin_MCFM701") 
       currentProcess = ggZZ;
     if(datasets[d]=="DYJetsToLL_M50") currentProcess = DY;
     if(datasets[d]=="TTJets"||
@@ -794,7 +800,10 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 	 pvbf_VAJHU_highestPTJets,
 	 pAux_vbf_VAJHU,
 	 pwh_hadronic_VAJHU,
-	 pzh_hadronic_VAJHU
+	 pzh_hadronic_VAJHU,
+	 jetPhi,
+	 ZZMass,
+	 false
 	 );
       //*/
 
