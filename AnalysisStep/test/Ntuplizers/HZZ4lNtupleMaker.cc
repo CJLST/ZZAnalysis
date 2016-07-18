@@ -76,6 +76,7 @@ namespace {
   bool addQGLInputs = true;
   bool skipMuDataMCWeight = false; // skip computation of data/MC weight for mu
   bool skipEleDataMCWeight = true; // skip computation of data/MC weight for ele
+  bool skipTrigEffWeight = false; // skip application of trigger efficiency (concerns samples where trigger is not applied)
   bool skipFakeWeight = true;   // skip computation of fake rate weight for CRs
   bool skipHqTWeight = true;    // skip computation of hQT weight
 
@@ -340,6 +341,7 @@ namespace {
   Short_t genExtInfo  = 0;
   Float_t xsection  = 0;
   Float_t dataMCWeight  = 0;
+  Float_t trigEffWeight  = 0;
   Float_t HqTMCweight  = 0;
   Float_t ZXFakeweight  = 0;
   Float_t overallEventWeight  = 0;
@@ -559,6 +561,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   theChannel(myHelper.channel()), // Valid options: ZZ, ZLL, ZL
   theCandLabel(pset.getUntrackedParameter<string>("CandCollection")), // Name of input ZZ collection
   theFileName(pset.getUntrackedParameter<string>("fileName")),
+  applyTrigger(pset.getParameter<bool>("applyTrigger")),
   skipEmptyEvents(pset.getParameter<bool>("skipEmptyEvents")), // Do not store
   xsec(pset.getParameter<double>("xsec")),
   year(pset.getParameter<int>("setup")),
@@ -635,10 +638,10 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   preSkimToken = consumes<edm::MergeableCounter,edm::InLumi>(edm::InputTag("preSkimCounter"));
 
   if (skipEmptyEvents) {
-    applyTrigger=true;
+    //applyTrigger is now handled by a configurable parameter
     applySkim=true;
   } else {
-    applyTrigger=false;
+    applyTrigger=false; // override configurable parameter
     applySkim=false;
   }
 
@@ -1680,12 +1683,24 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 
   }
 
-  //Compute the data/MC weight and overall event weight
+  //Compute the data/MC weight
   dataMCWeight = 1.;
   for(unsigned int i=0; i<leptons.size(); ++i){
     dataMCWeight *= getAllWeight(leptons[i]);
   }
-  overallEventWeight = PUWeight * genHEPMCweight * dataMCWeight;
+  //When the trigger is not applied in the MC, apply a trigger efficiency factor instead (FIXME: here hardcoding the efficiencies computed for ICHEP2016)
+  trigEffWeight = 1.;
+  Int_t ZZFlav = abs(Z1Flav*Z2Flav);
+  if(isMC && !applyTrigger && !skipTrigEffWeight){
+    if(ZZFlav==121*121 || ZZFlav==121*242) //4e
+      trigEffWeight = 0.992;
+    if(ZZFlav==169*169) //4mu
+      trigEffWeight = 0.996;
+    if(ZZFlav==169*121 || ZZFlav==169*242) //2e2mu
+      trigEffWeight = 0.995;
+  }
+  //Store an overall event weight (which is normalized by gen_sumWeights)
+  overallEventWeight = PUWeight * genHEPMCweight * dataMCWeight * trigEffWeight;
 }
 
 
@@ -2318,6 +2333,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("genExtInfo", genExtInfo);
     myTree->Book("xsec", xsection);
     myTree->Book("dataMCWeight", dataMCWeight);
+    myTree->Book("trigEffWeight", trigEffWeight);
     myTree->Book("HqTMCweight", HqTMCweight);
     myTree->Book("GenHMass", GenHMass);
     myTree->Book("GenHPt", GenHPt);
