@@ -84,19 +84,19 @@ KalmanPATMuonCorrector::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
       if(isMC_){
 	/// ====== ON MC (correction plus smearing) =====
 	double corrPt = calibrator->getCorrectedPt(oldpt, mu.eta(), mu.phi(), mu.charge());
-	//	double corrPtError = corrPt * calibrator->getCorrectedError(corrPt, mu.eta(), mu.bestTrack()->ptError()/corrPt ); //FIXME: will revert to this once it's ready
+	double corrPtError = corrPt * calibrator->getCorrectedError(corrPt, mu.eta(), oldpterr/corrPt); 
 
 	if(!isSync_) {
 	  newpt = calibrator->smear(corrPt, mu.eta());
 	} else {
 	  newpt = calibrator->smearForSync(corrPt, mu.eta());
 	}
-	//	newPtError = newpt * calibrator->getCorrectedErrorAfterSmearing(newpt, mu.eta(), corrPtError / newpt ); //FIXME: will revert to this once it's ready
+	newpterr = newpt * calibrator->getCorrectedError(newpt, mu.eta(), corrPtError/newpt);
       } else {
 	/// ====== ON DATA (correction only) =====
 	if(mu.pt()>2.0 && fabs(mu.eta())<2.4){
 	  newpt = calibrator->getCorrectedPt(oldpt, mu.eta(), mu.phi(), mu.charge());
-	  // newPtError = newpt * calibrator->getCorrectedError(newpt, mu.eta(), mu.bestTrack()->ptError()/newpt); //FIXME: will revert to this once it's ready
+	  newpterr = newpt * calibrator->getCorrectedError(newpt, mu.eta(), oldpterr/newpt);
 	} else {
 	  // keep old values
 	}
