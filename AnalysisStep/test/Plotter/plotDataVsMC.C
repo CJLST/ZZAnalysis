@@ -61,14 +61,14 @@ using namespace std;
 #define MASKH125FORHIGHMASS 1
 #define MASKDATAFORHIGHMASS 0
 
-#define USEZPLUSXRUN2COMBINEDSHAPE 0 // for variables where it is available (up to now, just m4l, but the current shape is from the 2015 dataset)
+#define USEZPLUSXRUN2COMBINEDSHAPE 1 // for variables where it is available (up to now, only m4l)
 #define USEZPLUSXFULLRUN2SS 1
 #define SMOOTHZPLUSXFULLRUN2SS 1
-#define RENORMALIZEZPLUSXFULLRUN2SS 0
-//Z+X normalization from combination of SS and OS method
-Float_t normZPlusXFullSR4e    = 0.; // to be defined for the 2016 dataset
-Float_t normZPlusXFullSR4mu   = 0.; // to be defined for the 2016 dataset
-Float_t normZPlusXFullSR2e2mu = 0.; // to be defined for the 2016 dataset
+#define RENORMALIZEZPLUSXFULLRUN2SS 1
+//Z+X normalization from combination of SS and OS method: here numbers sent by Pedja on July 18th 2016, which correspond to 7.6/fb
+Float_t normZPlusXFullSR4e    = 6.4;
+Float_t normZPlusXFullSR4mu   = 6.7;
+Float_t normZPlusXFullSR2e2mu = 13.2;
 
 #define STYLE1DPLOT 2 // 0:Legacy-like 1:Jamboree2015 2:Moriond2016
 #define DRAWLINES (STYLE1DPLOT!=1)
@@ -93,13 +93,14 @@ Float_t normZPlusXFullSR2e2mu = 0.; // to be defined for the 2016 dataset
 enum Blindings {fullyblind=0, blindabove110=1, blindbelow150=2, blind110150=3, blind110150andabove500=4, unblinded=5};
 const int nBlindings = 6;
 string sBlinding[nBlindings] = {"fullyblind", "M4l70To110", "M4l150ToInf", "blind110150", "blind110150andabove500", "unblinded"};
-Bool_t plotThisBlinding[7][nBlindings] = {
+Bool_t plotThisBlinding[8][nBlindings] = {
   {1,1,1,1,1,0},
   {1,0,0,0,0,0},
   {0,1,0,0,0,0},
   {0,0,1,0,0,0},
   {0,0,0,1,0,0},
   {0,0,0,0,1,0},
+  {0,0,0,0,0,1},
   {0,1,1,1,0,0},
 };
 string blindingLabel[nBlindings] = {"", "70 < m_{4#font[12]{l}} < 110 GeV", "m_{4#font[12]{l}} > 150 GeV", "#splitline{m_{4#font[12]{l}} > 70 GeV}{m_{4#font[12]{l}} #notin [110, 150] GeV}", "#splitline{m_{4#font[12]{l}} #in [70, 500] GeV}{m_{4#font[12]{l}} #notin [110, 150] GeV}", ""};
@@ -251,7 +252,7 @@ Float_t varMaxCorrector[nBlindings][nVariables] = {
   { 1., 1.2, 1. , 1. , 1., 1., 1., 1., 1. , 1., 1., 1., 1., 1., 1., 1., 1. , 1., 1., 1. , 1. , 1. , 1.1, 1. , 1., 1., 1., 1., 1., 1. , 1., 10., 1., 1. , 1. , },
   { 1., 1. , 1. , 1. , 1., 1., 1., 1., 1. , 1., 1., 1., 1., 1., 1., 1., 1. , 1., 1., 1. , 1. , 1. , 1.1, 1. , 1., 1., 1., 1., 1., 1.5, 1., 10., 1., 1.6, 1. , },
   { 1., 1. , 1. , 1. , 1., 1., 1., 1., 1. , 1., 1., 1., 1., 1., 1., 1., 1. , 1., 1., 1. , 1. , 1. , 1.1, 1. , 1., 1., 1., 1., 1., 1.5, 1., 10., 1., 1.6, 1. , },
-  { 1., 1. , 1. , 1. , 1., 1., 1., 1., 1. , 1., 1., 1., 1., 1., 1., 1., 1. , 1., 1., 1. , 1. , 1. , 1.1, 1. , 1., 1., 1., 1., 1., 1. , 1.,  5., 1., 1. , 1.2, },
+  { 1., 1. , 1. , 1. , 1., 1., 1., 1., 1. , 1., 1., 1., 1., 1., 1., 1., 1. , 1., 1., 1. , 1. , 1. , 1.1, 1.6, 1., 1., 1., 1., 1., 1. , 1.,  5., 1., 1. , 1.2, },
 };
 
 const int nVarPairs = 12;
@@ -2130,13 +2131,13 @@ void plotDataVsMC(bool redoHistograms = true, string outputPath = "PlotsDataVsMC
   // Define input/output location
   string inputPathMC   = "";
   string inputPathData = "";
-  string inputFileDataForCR = "../DataTrees_160624/ZZ4lAnalysis.root";
-  string inputFileFakeRates = "../../data/FakeRates/FakeRate_SS_2015.root"; //FIXME: to be replaced
+  string inputFileDataForCR = "../DataTrees_160716/ZZ4lAnalysis.root";
+  string inputFileFakeRates = "../../data/FakeRates/FakeRate_SS_2016B.root";
   //string outputPath = "$pl/";
 
   // Define the luminosity
-  float lumi = 2.6;
-  string lumiText = "2.6 fb^{-1}";
+  float lumi = 7.65;
+  string lumiText = "7.65 fb^{-1}";
 
 
   // Choose a list of 1D plots
