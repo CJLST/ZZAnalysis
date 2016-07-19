@@ -1,5 +1,13 @@
 #!/bin/tcsh -f
 
+set QUEUE=$1
+if ($QUEUE == "") set QUEUE="8nh"
+
+if ($QUEUE != "8nh" && $QUEUE != "1nd") then
+   echo "Invalid queue" $QUEUE
+   exit
+endif
+
 # Make the grid proxy available, if existing and valid
 set proxy_valid=`voms-proxy-info --timeleft`
 if ($proxy_valid > 10 ) then
@@ -13,8 +21,10 @@ else
    echo "Note: no valid GRID proxy found."
 endif
 
+set JOBNAME=`basename $PWD`
+
 foreach x (*Chunk*) 
  cd $x
- bsub -J ${PWD} -q 8nh < ./batchScript.sh |& tee jobid
+ bsub -q $QUEUE -J $JOBNAME < ./batchScript.sh |& tee jobid
  cd -
 end
