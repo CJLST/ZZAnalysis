@@ -627,12 +627,15 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
     inputTree[d]->SetBranchAddress("NObsInt", &NObsInt);
     inputTree[d]->SetBranchAddress("NTrueInt", &NTrueInt);
     inputTree[d]->SetBranchAddress("overallEventWeight", &overallEventWeight);
-    inputTree[d]->SetBranchAddress("KFactor_QCD_ggZZ_Nominal", &KFactor_QCD_ggZZ_Nominal);
-    inputTree[d]->SetBranchAddress("KFactor_EW_qqZZ", &KFactor_EW_qqZZ);
-    inputTree[d]->SetBranchAddress("KFactor_QCD_qqZZ_dPhi", &KFactor_QCD_qqZZ_dPhi);
-    inputTree[d]->SetBranchAddress("KFactor_QCD_qqZZ_M", &KFactor_QCD_qqZZ_M);
-    inputTree[d]->SetBranchAddress("KFactor_QCD_qqZZ_Pt", &KFactor_QCD_qqZZ_Pt);
-    inputTree[d]->SetBranchAddress("xsec", &xsec);
+    if(currentProcess==ggZZ){
+      inputTree[d]->SetBranchAddress("KFactor_QCD_ggZZ_Nominal", &KFactor_QCD_ggZZ_Nominal);
+    }
+    if(currentProcess==qqZZ){
+      inputTree[d]->SetBranchAddress("KFactor_EW_qqZZ", &KFactor_EW_qqZZ);
+      inputTree[d]->SetBranchAddress("KFactor_QCD_qqZZ_dPhi", &KFactor_QCD_qqZZ_dPhi);
+      inputTree[d]->SetBranchAddress("KFactor_QCD_qqZZ_M", &KFactor_QCD_qqZZ_M);
+      inputTree[d]->SetBranchAddress("KFactor_QCD_qqZZ_Pt", &KFactor_QCD_qqZZ_Pt);
+    }
     inputTree[d]->SetBranchAddress("ZZsel", &ZZsel);
     inputTree[d]->SetBranchAddress("ZZMass", &ZZMass);
     inputTree[d]->SetBranchAddress("ZZMassErr", &ZZMassErr);
@@ -668,23 +671,26 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
     inputTree[d]->SetBranchAddress("JetMass", &JetMass);
     inputTree[d]->SetBranchAddress("JetQGLikelihood", &JetQGLikelihood);
     inputTree[d]->SetBranchAddress("DiJetFisher", &DiJetFisher);
-    inputTree[d]->SetBranchAddress("GenHMass", &GenHMass);
-    inputTree[d]->SetBranchAddress("GenZ1Phi", &GenZ1Phi);
-    inputTree[d]->SetBranchAddress("GenZ2Phi", &GenZ2Phi);
-    inputTree[d]->SetBranchAddress("GenZ1Flav", &GenZ1Flav);
-    inputTree[d]->SetBranchAddress("GenZ2Flav", &GenZ2Flav);
-    inputTree[d]->SetBranchAddress("GenLep1Eta", &GenLep1Eta);
-    inputTree[d]->SetBranchAddress("GenLep1Phi", &GenLep1Phi);
-    inputTree[d]->SetBranchAddress("GenLep1Id", &GenLep1Id);
-    inputTree[d]->SetBranchAddress("GenLep2Eta", &GenLep2Eta);
-    inputTree[d]->SetBranchAddress("GenLep2Phi", &GenLep2Phi);
-    inputTree[d]->SetBranchAddress("GenLep2Id", &GenLep2Id);
-    inputTree[d]->SetBranchAddress("GenLep3Eta", &GenLep3Eta);
-    inputTree[d]->SetBranchAddress("GenLep3Phi", &GenLep3Phi);
-    inputTree[d]->SetBranchAddress("GenLep3Id", &GenLep3Id);
-    inputTree[d]->SetBranchAddress("GenLep4Eta", &GenLep4Eta);
-    inputTree[d]->SetBranchAddress("GenLep4Phi", &GenLep4Phi);
-    inputTree[d]->SetBranchAddress("GenLep4Id", &GenLep4Id);
+    if(currentProcess!=Data){
+      inputTree[d]->SetBranchAddress("xsec", &xsec);     
+      inputTree[d]->SetBranchAddress("GenHMass", &GenHMass);
+      inputTree[d]->SetBranchAddress("GenZ1Phi", &GenZ1Phi);
+      inputTree[d]->SetBranchAddress("GenZ2Phi", &GenZ2Phi);
+      inputTree[d]->SetBranchAddress("GenZ1Flav", &GenZ1Flav);
+      inputTree[d]->SetBranchAddress("GenZ2Flav", &GenZ2Flav);
+      inputTree[d]->SetBranchAddress("GenLep1Eta", &GenLep1Eta);
+      inputTree[d]->SetBranchAddress("GenLep1Phi", &GenLep1Phi);
+      inputTree[d]->SetBranchAddress("GenLep1Id", &GenLep1Id);
+      inputTree[d]->SetBranchAddress("GenLep2Eta", &GenLep2Eta);
+      inputTree[d]->SetBranchAddress("GenLep2Phi", &GenLep2Phi);
+      inputTree[d]->SetBranchAddress("GenLep2Id", &GenLep2Id);
+      inputTree[d]->SetBranchAddress("GenLep3Eta", &GenLep3Eta);
+      inputTree[d]->SetBranchAddress("GenLep3Phi", &GenLep3Phi);
+      inputTree[d]->SetBranchAddress("GenLep3Id", &GenLep3Id);
+      inputTree[d]->SetBranchAddress("GenLep4Eta", &GenLep4Eta);
+      inputTree[d]->SetBranchAddress("GenLep4Phi", &GenLep4Phi);
+      inputTree[d]->SetBranchAddress("GenLep4Id", &GenLep4Id);
+    }
 
 
     //---------- Process tree
