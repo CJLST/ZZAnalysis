@@ -13,3 +13,9 @@ DoubleEG2016C,, -1, ,, /DoubleEG/Run2016C-PromptReco-v2/MINIAOD,dbs,,2,PD=Double
 MuonEG2016C,,   -1, ,, /MuonEG/Run2016C-PromptReco-v2/MINIAOD,dbs,,2,PD=MuEG;ADDLOOSEELE=True,json_2016.py,
 SingleEle2016C,,-1, ,, /SingleElectron/Run2016C-PromptReco-v2/MINIAOD,dbs,,5,PD=SingleElectron;ADDLOOSEELE=True,json_2016.py,
 SingleMuon2016C,,-1,,, /SingleMuon/Run2016C-PromptReco-v2/MINIAOD,dbs,,5,PD=SingleMuon;ADDLOOSEELE=True,json_2016.py,
+
+DoubleMu2016D,, -1, ,, /DoubleMuon/Run2016D-PromptReco-v2/MINIAOD,dbs,,2,PD=DoubleMu;ADDLOOSEELE=True,json_2016.py,
+DoubleEG2016D,, -1, ,, /DoubleEG/Run2016D-PromptReco-v2/MINIAOD,dbs,,2,PD=DoubleEle;ADDLOOSEELE=True,json_2016.py,
+MuonEG2016D,,   -1, ,, /MuonEG/Run2016D-PromptReco-v2/MINIAOD,dbs,,2,PD=MuEG;ADDLOOSEELE=True,json_2016.py,
+SingleEle2016D,,-1, ,, /SingleElectron/Run2016D-PromptReco-v2/MINIAOD,dbs,,5,PD=SingleElectron;ADDLOOSEELE=True,json_2016.py,
+SingleMuon2016D,,-1,,, /SingleMuon/Run2016D-PromptReco-v2/MINIAOD,dbs,,5,PD=SingleMuon;ADDLOOSEELE=True,json_2016.py,

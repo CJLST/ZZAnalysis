@@ -143,6 +143,7 @@ TreeSetup = cms.EDAnalyzer("HZZ4lNtupleMaker",
                            skimPaths = cms.vstring(SkimPaths),
                            PD = cms.string(PD),
                            MCFilterPath = cms.string(MCFILTER),
+                           applyTrigEff = cms.bool(not APPLYTRIG), #add trigger efficiency as a weight, for samples where the trigger cannot be applied.
                            skipEmptyEvents = cms.bool(True),
                            sampleName = cms.string(SAMPLENAME),
                            superMelaMass = cms.double(SUPERMELA_MASS),
@@ -256,7 +257,8 @@ process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
         Z     = cms.InputTag("ZCand"),
         ZZ  = cms.InputTag("ZZCand"),
         ZLL   =cms.InputTag("ZLLCand"),    # Starting point for all CRs
-     )
+     ),
+    jetSrc = cms.InputTag("cleanJets"),
 )
 
 if (PROCESS_CR or not IsMC):

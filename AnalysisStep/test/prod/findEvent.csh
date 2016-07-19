@@ -1,10 +1,12 @@
 #!/bin/tcsh -f
 
 set EVENT=$1 
-set SET=160203
+set SET=160712
+
+#set echo
 
 if ( $2 == "full" ) then 
-    zgrep -a -E ${EVENT}\|Closed /data3/Higgs/$SET/Chunks/Double*/*.gz /data3/Higgs/$SET/Chunks/MuEG*/Double*/*.gz | grep -A1 $EVENT | tee info_${EVENT}.txt
+    zgrep -a -E ${EVENT}\|Closed /data3/Higgs/$SET/Chunks*/Double*/*.gz /data3/Higgs/$SET/Chunks/MuEG*/Double*/*.gz /data3/Higgs/$SET/Chunks/MuEG*/Single*/*.gz| grep -A1 $EVENT | tee info_${EVENT}.txt
 endif
 
 set FILE = `grep Closed info_${EVENT}.txt | awk '{print $NF}'`

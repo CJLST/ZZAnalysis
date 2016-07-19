@@ -3,6 +3,7 @@
 #include <cmath>
 
 #include "TMath.h"
+#include "TRandom3.h"
 #include "Math/GenVector/LorentzVector.h"
 #include "Math/GenVector/PtEtaPhiM4D.h"
 
@@ -127,6 +128,8 @@ extern "C" int categoryIchep16(
 	     float pAux_vbf_VAJHU,
 	     float pwh_hadronic_VAJHU,
 	     float pzh_hadronic_VAJHU,
+             float* jetPhi,
+	     float ZZMass,
 	     bool useQGTagging 
 	     )
 {
@@ -134,12 +137,13 @@ extern "C" int categoryIchep16(
   float WP_VBF2j, WP_VBF1j, WP_WHh, WP_ZHh;
   if(useQGTagging){
     WP_VBF2j = 0.926;
-    WP_VBF1j = 0.46;
+    WP_VBF1j = 0.829;
     WP_WHh = 0.973;
     WP_ZHh = 0.996;
   }else{
-    WP_VBF2j = 0.938;
-    WP_VBF1j = 0.43;
+    //WP_VBF2j = 0.938; // non mass-dependent cut
+    WP_VBF2j = 0.536+665./(ZZMass+1530.); // mass-dependent cut
+    WP_VBF1j = 0.815;
     WP_WHh = 0.959;
     WP_ZHh = 0.9946;
   }
@@ -148,11 +152,20 @@ extern "C" int categoryIchep16(
   float c_Mela1j = 0.3;
   float c_MelaWH = 100000.;
   float c_MelaZH = 10000.;
+
   float jetPgOverPq[nCleanedJetsPt30];
-  for(int j=0; j<nCleanedJetsPt30; j++) jetPgOverPq[j] = 1./jetQGLikelihood[j] - 1.;
+  for(int j=0; j<nCleanedJetsPt30; j++){
+    if(jetQGLikelihood[j]<0. && j<2){
+      TRandom3 rand;
+      rand.SetSeed(abs(static_cast<int>(sin(jetPhi[j])*100000)));
+      jetPgOverPq[j] = 1./rand.Uniform() - 1.;
+    }else{    
+      jetPgOverPq[j] = 1./jetQGLikelihood[j] - 1.;
+    }
+  }
 
   float D_VBF2j = (nCleanedJetsPt30>=2) ? 1/(1+ c_Mela2j*phjj_VAJHU_highestPTJets/pvbf_VAJHU_highestPTJets * ( useQGTagging ? TMath::Power(jetPgOverPq[0]*jetPgOverPq[1],1/3.) : 1. ) ) : -2 ;
-  float D_VBF1j = (nCleanedJetsPt30>=1) ? 1/(1+ (c_Mela1j*phj_VAJHU)/(pvbf_VAJHU_highestPTJets*pAux_vbf_VAJHU) * (useQGTagging ? jetPgOverPq[0] : 1. ) ) : -2 ;
+  float D_VBF1j = (nCleanedJetsPt30>=1) ? 1/(1+ (c_Mela1j*phj_VAJHU)/(pvbf_VAJHU_highestPTJets*pAux_vbf_VAJHU) * (useQGTagging ? TMath::Power(jetPgOverPq[0],1/3.) : 1. ) ) : -2 ;
   float D_WHh = (nCleanedJetsPt30>=2) ? 1/(1+ c_MelaWH*phjj_VAJHU_highestPTJets/pwh_hadronic_VAJHU * (useQGTagging ? TMath::Power(jetPgOverPq[0]*jetPgOverPq[1],1/3.) : 1. ) ) : -2 ;
   float D_ZHh = (nCleanedJetsPt30>=2) ? 1/(1+ c_MelaZH*phjj_VAJHU_highestPTJets/pzh_hadronic_VAJHU * (useQGTagging ? TMath::Power(jetPgOverPq[0]*jetPgOverPq[1],1/3.) : 1. ) ) : -2 ;
 

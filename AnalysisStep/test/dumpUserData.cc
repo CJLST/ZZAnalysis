@@ -125,6 +125,7 @@ void dumpUserData::analyze(const Event & event, const EventSetup& eventSetup){
     Handle<pat::MuonCollection> muons;
     int j = nColls-i-1;
     event.getByToken(muCandidateSrcTokens[j],muons);
+    
     cout << muCollNames[j] << ": " << muons->size() << endl;
 
     for( pat::MuonCollection::const_iterator lep =muons->begin(); lep != muons->end(); ++lep ) {
@@ -193,6 +194,9 @@ void dumpUserData::analyze(const Event & event, const EventSetup& eventSetup){
     Handle<View<pat::CompositeCandidate> > coll;
     int j = nColls-i-1;
     event.getByToken(candidateSrcTokens[j],coll);
+    if(coll.failedToGet()) { // protection for filtered collections like TLE and RSE
+      continue;
+    }
     cout << collNames[j] << ": " << coll->size() << endl;
     dumpCandidates(*coll);
   }

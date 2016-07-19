@@ -1034,9 +1034,59 @@ PUReweight::PUReweight(Type type) :
     }
   }
 
-  //80XMC weighted to 2016 data
-  //  hTPuToIchep16 = new TH1F("hTPuToIchep16 ","hTPuToIchep16 ",50,0.,50.);
-  //FIXME still not implemented
+  //80XMC weighted to 2016 data (preliminary)
+  hTPuToIchep16 = new TH1F("hTPuToIchep16 ","hTPuToIchep16 ",50,0.,50.);
+  hTPuToIchep16->SetBinContent(1,0.0006977897);
+  hTPuToIchep16->SetBinContent(2,0.01355602);
+  hTPuToIchep16->SetBinContent(3,0.02092033);
+  hTPuToIchep16->SetBinContent(4,0.03753119);
+  hTPuToIchep16->SetBinContent(5,0.05806716);
+  hTPuToIchep16->SetBinContent(6,0.0470678);
+  hTPuToIchep16->SetBinContent(7,0.09734445);
+  hTPuToIchep16->SetBinContent(8,0.3871528);
+  hTPuToIchep16->SetBinContent(9,0.6245049);
+  hTPuToIchep16->SetBinContent(10,0.9889339);
+  hTPuToIchep16->SetBinContent(11,1.274338);
+  hTPuToIchep16->SetBinContent(12,1.498751);
+  hTPuToIchep16->SetBinContent(13,1.735016);
+  hTPuToIchep16->SetBinContent(14,1.9445);
+  hTPuToIchep16->SetBinContent(15,2.084375);
+  hTPuToIchep16->SetBinContent(16,1.928796);
+  hTPuToIchep16->SetBinContent(17,1.671028);
+  hTPuToIchep16->SetBinContent(18,1.614396);
+  hTPuToIchep16->SetBinContent(19,1.419708);
+  hTPuToIchep16->SetBinContent(20,1.370662);
+  hTPuToIchep16->SetBinContent(21,1.078287);
+  hTPuToIchep16->SetBinContent(22,0.8692069);
+  hTPuToIchep16->SetBinContent(23,0.744226);
+  hTPuToIchep16->SetBinContent(24,0.6291096);
+  hTPuToIchep16->SetBinContent(25,0.4742221);
+  hTPuToIchep16->SetBinContent(26,0.3862415);
+  hTPuToIchep16->SetBinContent(27,0.2543844);
+  hTPuToIchep16->SetBinContent(28,0.1851091);
+  hTPuToIchep16->SetBinContent(29,0.1134851);
+  hTPuToIchep16->SetBinContent(30,0.07546794);
+  hTPuToIchep16->SetBinContent(31,0.04801787);
+  hTPuToIchep16->SetBinContent(32,0.03072565);
+  hTPuToIchep16->SetBinContent(33,0.02607218);
+  hTPuToIchep16->SetBinContent(34,0.02043605);
+  hTPuToIchep16->SetBinContent(35,0.02261487);
+  hTPuToIchep16->SetBinContent(36,0.03027836);
+  hTPuToIchep16->SetBinContent(37,0.05515847);
+  hTPuToIchep16->SetBinContent(38,0.07193636);
+  hTPuToIchep16->SetBinContent(39,0.);
+  hTPuToIchep16->SetBinContent(40,0.);
+  hTPuToIchep16->SetBinContent(41,0.);
+  hTPuToIchep16->SetBinContent(42,0.);
+  hTPuToIchep16->SetBinContent(43,0.);
+  hTPuToIchep16->SetBinContent(44,0.);
+  hTPuToIchep16->SetBinContent(45,0.);
+  hTPuToIchep16->SetBinContent(46,0.);
+  hTPuToIchep16->SetBinContent(47,0.);
+  hTPuToIchep16->SetBinContent(48,0.);
+  hTPuToIchep16->SetBinContent(49,0.);
+  hTPuToIchep16->SetBinContent(50,0.);
+
 }
 
 

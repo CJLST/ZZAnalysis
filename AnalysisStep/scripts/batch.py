@@ -8,6 +8,7 @@ import shutil
 import pickle
 import math
 import pprint
+import subprocess
 from datetime import date
 from optparse import OptionParser
 from ZZAnalysis.AnalysisStep.eostools import *
@@ -168,7 +169,8 @@ class MyBatchManager:
         if outputDir==None:
 #             today = date.today()
 #             outputDir = 'OutCmsBatch_%s' % today.strftime("%d%h%y_%H%M")
-            outputDir = "PROD_" + csvfile.replace('.csv','')
+            gitrevision = subprocess.check_output(['git', "rev-parse", "--short", "HEAD"]) #revision of the git area where the command is exectuted
+            outputDir = "PROD_" + csvfile.replace('.csv','') + "_"+gitrevision.rstrip()
             print 'output directory not specified, using %s' % outputDir
         self.outputDir_ = os.path.abspath(outputDir)
         if( os.path.isdir(self.outputDir_) == True ):

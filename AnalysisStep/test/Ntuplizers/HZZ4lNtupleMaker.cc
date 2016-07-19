@@ -75,7 +75,7 @@ namespace {
   bool addFSRDetails = false;
   bool addQGLInputs = true;
   bool skipMuDataMCWeight = false; // skip computation of data/MC weight for mu
-  bool skipEleDataMCWeight = true; // skip computation of data/MC weight for ele
+  bool skipEleDataMCWeight = false; // skip computation of data/MC weight for ele
   bool skipFakeWeight = true;   // skip computation of fake rate weight for CRs
   bool skipHqTWeight = true;    // skip computation of hQT weight
 
@@ -340,6 +340,7 @@ namespace {
   Short_t genExtInfo  = 0;
   Float_t xsection  = 0;
   Float_t dataMCWeight  = 0;
+  Float_t trigEffWeight  = 0;
   Float_t HqTMCweight  = 0;
   Float_t ZXFakeweight  = 0;
   Float_t overallEventWeight  = 0;
@@ -447,9 +448,10 @@ private:
 
   bool isMC;
   bool is_loose_ele_selection; // Collection includes candidates with loose electrons/TLEs
-  bool applyTrigger;    // Keep only events passing trigger
-  bool applySkim;       //   "     "      "     skim
-  bool skipEmptyEvents; // Skip events whith no selected candidate (otherwise, gen info is preserved for all events)
+  bool applyTrigger;    // Keep only events passing trigger (if skipEmptyEvents=true)
+  bool applySkim;       //   "     "      "         skim (if skipEmptyEvents=true)
+  bool skipEmptyEvents; // Skip events whith no selected candidate (otherwise, gen info is preserved for all events; candidates not passing trigger&&skim are flagged with negative ZZsel)
+  bool applyTrigEffWeight;// apply trigger efficiency weight (concerns samples where trigger is not applied)
   Float_t xsec;
   int year;
   double sqrts;
@@ -537,8 +539,8 @@ private:
   TSpline3* spkfactor_ggzz_nlo[9]; // Nominal, PDFScaleDn, PDFScaleUp, QCDScaleDn, QCDScaleUp, AsDn, AsUp, PDFReplicaDn, PDFReplicaUp
 
   TH2D *hTH2D_Mu_All;
-  TH2D *hTH2D_El_IdIsoSip_notCracks;
-  TH2D *hTH2D_El_IdIsoSip_Cracks;
+  TH1 *hTH2D_El_IdIsoSip_notCracks;
+  TH1 *hTH2D_El_IdIsoSip_Cracks;
   TH2D* h_weight; //HqT weights
   //TH2F *h_ZXWeightMuo;
   //TH2F *h_ZXWeightEle;
@@ -555,6 +557,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   theCandLabel(pset.getUntrackedParameter<string>("CandCollection")), // Name of input ZZ collection
   theFileName(pset.getUntrackedParameter<string>("fileName")),
   skipEmptyEvents(pset.getParameter<bool>("skipEmptyEvents")), // Do not store
+  applyTrigEffWeight(pset.getParameter<bool>("applyTrigEff")),
   xsec(pset.getParameter<double>("xsec")),
   year(pset.getParameter<int>("setup")),
   sqrts(SetupToSqrts(year)),
@@ -697,20 +700,32 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   }
   
   if (!skipEleDataMCWeight) {
-    TString filename;  
-    filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_%d_IdIsoSip.root",year);
-    edm::FileInPath fipEleNotCracks(filename.Data());
-    fipPath = fipEleNotCracks.fullPath();
-    TFile *fEleWeightNotCracks = TFile::Open(fipPath.data(),"READ");
-    hTH2D_El_IdIsoSip_notCracks = (TH2D*)fEleWeightNotCracks->Get("hScaleFactors_IdIsoSip")->Clone();
-    fEleWeightNotCracks->Close();
 
-    filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_%d_IdIsoSip_Cracks.root",year);
-    edm::FileInPath fipEleCracks(filename.Data());
-    fipPath = fipEleCracks.fullPath();
-    TFile *fEleWeightCracks = TFile::Open(fipPath.data(),"READ");
-    hTH2D_El_IdIsoSip_Cracks = (TH2D*)fEleWeightCracks->Get("hScaleFactors_IdIsoSip_Cracks")->Clone();
-    fEleWeightCracks->Close();
+    if(year>=2016) {
+        TString filename("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ele_scale_factors_2016_v1.root");  
+        edm::FileInPath fipEleNotCracks(filename.Data());
+        fipPath = fipEleNotCracks.fullPath();
+        TFile *root_file = TFile::Open(fipPath.data(),"READ");
+        hTH2D_El_IdIsoSip_notCracks = (TH1*) root_file->Get("ele_scale_factors")->Clone();
+        hTH2D_El_IdIsoSip_Cracks = (TH1*) root_file->Get("ele_scale_factors_gap")->Clone();
+        root_file->Close();
+    } else {
+        TString filename;
+        filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_%d_IdIsoSip.root",year);
+        edm::FileInPath fipEleNotCracks(filename.Data());
+        fipPath = fipEleNotCracks.fullPath();
+        TFile *fEleWeightNotCracks = TFile::Open(fipPath.data(),"READ");
+        hTH2D_El_IdIsoSip_notCracks = (TH2D*)fEleWeightNotCracks->Get("hScaleFactors_IdIsoSip")->Clone();
+        fEleWeightNotCracks->Close();
+
+
+        filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_%d_IdIsoSip_Cracks.root",year);
+        edm::FileInPath fipEleCracks(filename.Data());
+        fipPath = fipEleCracks.fullPath();
+        TFile *fEleWeightCracks = TFile::Open(fipPath.data(),"READ");
+        hTH2D_El_IdIsoSip_Cracks = (TH2D*)fEleWeightCracks->Get("hScaleFactors_IdIsoSip_Cracks")->Clone();
+        fEleWeightCracks->Close();
+    }
   }
 
   if (!skipHqTWeight) {
@@ -1667,12 +1682,26 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
 
   }
 
-  //Compute the data/MC weight and overall event weight
+  //Compute the data/MC weight
   dataMCWeight = 1.;
-  for(unsigned int i=0; i<leptons.size(); ++i){
-    dataMCWeight *= getAllWeight(leptons[i]);
+  //When the trigger is not applied in the MC, apply a trigger efficiency factor instead (FIXME: here hardcoding the efficiencies computed for ICHEP2016)
+  trigEffWeight = 1.;
+  if(isMC) {
+    for(unsigned int i=0; i<leptons.size(); ++i){
+      dataMCWeight *= getAllWeight(leptons[i]);
+    }
+    if (applyTrigEffWeight){
+      Int_t ZZFlav = abs(Z1Flav*Z2Flav);
+      if(ZZFlav==121*121 || ZZFlav==121*242) //4e
+	trigEffWeight = 0.992;
+      if(ZZFlav==169*169) //4mu
+	trigEffWeight = 0.996;
+      if(ZZFlav==169*121 || ZZFlav==169*242) //2e2mu
+	trigEffWeight = 0.995;
+    }
   }
-  overallEventWeight = PUWeight * genHEPMCweight * dataMCWeight;
+  //Store an overall event weight (which is normalized by gen_sumWeights)
+  overallEventWeight = PUWeight * genHEPMCweight * dataMCWeight * trigEffWeight;
 }
 
 
@@ -1836,7 +1865,7 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
   Int_t   myLepID = abs(Lep->pdgId());
   if (skipMuDataMCWeight&& myLepID==13) return 1.;
   if (skipEleDataMCWeight&& myLepID==11) return 1.;
-  if (myLepID==22) return 1.; // FIXME - what SFs should be used in this case?
+  if (myLepID==22) return 1.; // FIXME - what SFs should be used for TLEs?
 
   Float_t weight  = 1.;
   //Float_t errCorr = 0.;
@@ -1844,23 +1873,54 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
 
   Float_t myLepPt = Lep->pt();
   Float_t myLepEta = Lep->eta();
-
-  //avoid to go out of the TH boundary
-  if(myLepID == 13 && myLepPt > 79.) myLepPt = 79.;
-  if(myLepID == 11 && myLepPt > 199.) myLepPt = 199.;
-  if(myLepID == 11) myLepEta = fabs(myLepEta);
+  Float_t mySIP = userdatahelpers::getUserFloat(Lep, "SIP"); 
 
   if(myLepID == 13){
+    //avoid to go out of the TH boundary
+    if(myLepPt > 79.) myLepPt = 79.;
 
     weight = hTH2D_Mu_All->GetBinContent(hTH2D_Mu_All->GetXaxis()->FindBin(myLepEta),hTH2D_Mu_All->GetYaxis()->FindBin(myLepPt));
 
-  }else if(myLepID == 11 || myLepID == 22){
+    // add tracking SFs for 2016, as per https://twiki.cern.ch/twiki/bin/view/CMS/MuonReferenceEffsRun2
+    if      (myLepEta>-2.4 &&
+	     myLepEta<-2.1) weight*= .9639;
+    else if (myLepEta<-1.6) weight*= .9783;    
+    else if (myLepEta<-1.1) weight*= .9762;
+    else if (myLepEta<-0.6) weight*= .9702;
+    else if (myLepEta<0.0 ) weight*= .9672;
+    else if (myLepEta<0.6 ) weight*= .9761;
+    else if (myLepEta<1.1 ) weight*= .9814;
+    else if (myLepEta<1.6 ) weight*= .9797;
+    else if (myLepEta<2.1 ) weight*= .9778;
+    else if (myLepEta<2.4 ) weight*= .9532;
 
-    if((bool)userdatahelpers::getUserFloat(Lep,"isCrack"))
-      weight = hTH2D_El_IdIsoSip_Cracks   ->GetBinContent(hTH2D_El_IdIsoSip_Cracks   ->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_Cracks   ->GetYaxis()->FindBin(myLepEta));
-    else
-      weight = hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_notCracks->GetYaxis()->FindBin(myLepEta));
 
+  } else if(myLepID == 11) {
+
+    if(mySIP >= 4.0 ) {
+        // No SF for RSE yet
+        return 1.;
+    } else {
+        if(year >= 2016) {
+            if(myLepPt > 65.) myLepPt = 65.;
+        } else {
+            if(myLepPt > 199.) myLepPt = 199.;
+        }
+        myLepEta = fabs(myLepEta);
+
+
+        if(year >= 2016) {
+            if((bool)userdatahelpers::getUserFloat(Lep,"isCrack"))
+                 weight = hTH2D_El_IdIsoSip_Cracks->GetBinContent(hTH2D_El_IdIsoSip_Cracks->FindFixBin(myLepEta, myLepPt));
+            else
+                 weight = hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->FindFixBin(myLepEta, myLepPt));
+        } else {
+            if((bool)userdatahelpers::getUserFloat(Lep,"isCrack"))
+              weight = hTH2D_El_IdIsoSip_Cracks   ->GetBinContent(hTH2D_El_IdIsoSip_Cracks   ->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_Cracks   ->GetYaxis()->FindBin(myLepEta));
+            else
+              weight = hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_notCracks->GetYaxis()->FindBin(myLepEta));
+        }
+    }
   } else {
 
     cout<<"ERROR! wrong lepton ID "<<myLepID<<endl;
@@ -2258,10 +2318,8 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("ExtraLepLepId",ExtraLepLepId);
 
   myTree->Book("ZXFakeweight", ZXFakeweight);
-  myTree->Book("overallEventWeight", overallEventWeight);
 
   if (isMC){
-    myTree->Book("PUWeight", PUWeight);
     if (apply_K_NNLOQCD_ZZGG>0){
       myTree->Book("KFactor_QCD_ggZZ_Nominal", KFactor_QCD_ggZZ_Nominal);
       myTree->Book("KFactor_QCD_ggZZ_PDFScaleDn", KFactor_QCD_ggZZ_PDFScaleDn);
@@ -2286,10 +2344,13 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("genFinalState", genFinalState);
     myTree->Book("genProcessId", genProcessId);
     myTree->Book("genHEPMCweight", genHEPMCweight);
-    myTree->Book("genExtInfo", genExtInfo);
-    myTree->Book("xsec", xsection);
+    myTree->Book("PUWeight", PUWeight);
     myTree->Book("dataMCWeight", dataMCWeight);
+    myTree->Book("trigEffWeight", trigEffWeight);
+    myTree->Book("overallEventWeight", overallEventWeight);
     myTree->Book("HqTMCweight", HqTMCweight);
+    myTree->Book("xsec", xsection);
+    myTree->Book("genExtInfo", genExtInfo);
     myTree->Book("GenHMass", GenHMass);
     myTree->Book("GenHPt", GenHPt);
     myTree->Book("GenHRapidity", GenHRapidity);

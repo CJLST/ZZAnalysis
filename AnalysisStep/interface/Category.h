@@ -69,6 +69,8 @@ extern "C" int categoryIchep16(
 	     float pAux_vbf_VAJHU,
 	     float pwh_hadronic_VAJHU,
 	     float pzh_hadronic_VAJHU,
+             float* jetPhi,
+             float ZZMass,
 	     bool useQGTagging = true
 	     );
 

@@ -61,14 +61,14 @@ using namespace std;
 #define MASKH125FORHIGHMASS 1
 #define MASKDATAFORHIGHMASS 0
 
-#define USEZPLUSXRUN2COMBINEDSHAPE 0 // for variables where it is available (up to now, just m4l, but the current shape is from the 2015 dataset)
+#define USEZPLUSXRUN2COMBINEDSHAPE 1 // for variables where it is available (up to now, only m4l)
 #define USEZPLUSXFULLRUN2SS 1
 #define SMOOTHZPLUSXFULLRUN2SS 1
-#define RENORMALIZEZPLUSXFULLRUN2SS 0
-//Z+X normalization from combination of SS and OS method
-Float_t normZPlusXFullSR4e    = 0.; // to be defined for the 2016 dataset
-Float_t normZPlusXFullSR4mu   = 0.; // to be defined for the 2016 dataset
-Float_t normZPlusXFullSR2e2mu = 0.; // to be defined for the 2016 dataset
+#define RENORMALIZEZPLUSXFULLRUN2SS 1
+//Z+X normalization from combination of SS and OS method: here numbers sent by Pedja on July 18th 2016, which correspond to 7.6/fb
+Float_t normZPlusXFullSR4e    = 6.4;
+Float_t normZPlusXFullSR4mu   = 6.7;
+Float_t normZPlusXFullSR2e2mu = 13.2;
 
 #define STYLE1DPLOT 2 // 0:Legacy-like 1:Jamboree2015 2:Moriond2016
 #define DRAWLINES (STYLE1DPLOT!=1)
@@ -93,13 +93,14 @@ Float_t normZPlusXFullSR2e2mu = 0.; // to be defined for the 2016 dataset
 enum Blindings {fullyblind=0, blindabove110=1, blindbelow150=2, blind110150=3, blind110150andabove500=4, unblinded=5};
 const int nBlindings = 6;
 string sBlinding[nBlindings] = {"fullyblind", "M4l70To110", "M4l150ToInf", "blind110150", "blind110150andabove500", "unblinded"};
-Bool_t plotThisBlinding[7][nBlindings] = {
+Bool_t plotThisBlinding[8][nBlindings] = {
   {1,1,1,1,1,0},
   {1,0,0,0,0,0},
   {0,1,0,0,0,0},
   {0,0,1,0,0,0},
   {0,0,0,1,0,0},
   {0,0,0,0,1,0},
+  {0,0,0,0,0,1},
   {0,1,1,1,0,0},
 };
 string blindingLabel[nBlindings] = {"", "70 < m_{4#font[12]{l}} < 110 GeV", "m_{4#font[12]{l}} > 150 GeV", "#splitline{m_{4#font[12]{l}} > 70 GeV}{m_{4#font[12]{l}} #notin [110, 150] GeV}", "#splitline{m_{4#font[12]{l}} #in [70, 500] GeV}{m_{4#font[12]{l}} #notin [110, 150] GeV}", ""};
@@ -251,7 +252,7 @@ Float_t varMaxCorrector[nBlindings][nVariables] = {
   { 1., 1.2, 1. , 1. , 1., 1., 1., 1., 1. , 1., 1., 1., 1., 1., 1., 1., 1. , 1., 1., 1. , 1. , 1. , 1.1, 1. , 1., 1., 1., 1., 1., 1. , 1., 10., 1., 1. , 1. , },
   { 1., 1. , 1. , 1. , 1., 1., 1., 1., 1. , 1., 1., 1., 1., 1., 1., 1., 1. , 1., 1., 1. , 1. , 1. , 1.1, 1. , 1., 1., 1., 1., 1., 1.5, 1., 10., 1., 1.6, 1. , },
   { 1., 1. , 1. , 1. , 1., 1., 1., 1., 1. , 1., 1., 1., 1., 1., 1., 1., 1. , 1., 1., 1. , 1. , 1. , 1.1, 1. , 1., 1., 1., 1., 1., 1.5, 1., 10., 1., 1.6, 1. , },
-  { 1., 1. , 1. , 1. , 1., 1., 1., 1., 1. , 1., 1., 1., 1., 1., 1., 1., 1. , 1., 1., 1. , 1. , 1. , 1.1, 1. , 1., 1., 1., 1., 1., 1. , 1.,  5., 1., 1. , 1.2, },
+  { 1., 1. , 1. , 1. , 1., 1., 1., 1., 1. , 1., 1., 1., 1., 1., 1., 1., 1. , 1., 1., 1. , 1. , 1. , 1.1, 1.6, 1., 1., 1., 1., 1., 1. , 1.,  5., 1., 1. , 1.2, },
 };
 
 const int nVarPairs = 12;
@@ -447,12 +448,12 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
     "ZH125",
     "ttH125",
     "ZZTo4l",//"ZZTo4lamcatnlo",//
-    "ggZZ4e",
-    "ggZZ4mu",
-    "ggZZ4tau",
-    "ggZZ2e2mu",
-    "ggZZ2e2tau",
-    "ggZZ2mu2tau",
+    "ggTo4e_Contin_MCFM701",//"ggZZ4e",
+    "ggTo4mu_Contin_MCFM701",//"ggZZ4mu",
+    "ggTo4tau_Contin_MCFM701",//"ggZZ4tau",
+    "ggZZ2e2mu",//"ggTo2e2mu_Contin_MCFM701",
+    "ggZZ2e2tau",//"ggTo2e2tau_Contin_MCFM701",
+    "ggTo2mu2tau_Contin_MCFM701",//"ggZZ2mu2tau",
     "DYJetsToLL_M50",
     "TTTo2L2Nu",//"TTJets",
   };
@@ -597,7 +598,13 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
        datasets[d]=="ggZZ4tau"||
        datasets[d]=="ggZZ2e2mu"||
        datasets[d]=="ggZZ2e2tau"||
-       datasets[d]=="ggZZ2mu2tau") 
+       datasets[d]=="ggZZ2mu2tau"||
+       datasets[d]=="ggTo4e_Contin_MCFM701"|| 
+       datasets[d]=="ggTo4mu_Contin_MCFM701"||
+       datasets[d]=="ggTo4tau_Contin_MCFM701"||
+       datasets[d]=="ggTo2e2mu_Contin_MCFM701"||
+       datasets[d]=="ggTo2e2tau_Contin_MCFM701"||
+       datasets[d]=="ggTo2mu2tau_Contin_MCFM701") 
       currentProcess = ggZZ;
     if(datasets[d]=="DYJetsToLL_M50") currentProcess = DY;
     if(datasets[d]=="TTJets"||
@@ -620,12 +627,15 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
     inputTree[d]->SetBranchAddress("NObsInt", &NObsInt);
     inputTree[d]->SetBranchAddress("NTrueInt", &NTrueInt);
     inputTree[d]->SetBranchAddress("overallEventWeight", &overallEventWeight);
-    inputTree[d]->SetBranchAddress("KFactor_QCD_ggZZ_Nominal", &KFactor_QCD_ggZZ_Nominal);
-    inputTree[d]->SetBranchAddress("KFactor_EW_qqZZ", &KFactor_EW_qqZZ);
-    inputTree[d]->SetBranchAddress("KFactor_QCD_qqZZ_dPhi", &KFactor_QCD_qqZZ_dPhi);
-    inputTree[d]->SetBranchAddress("KFactor_QCD_qqZZ_M", &KFactor_QCD_qqZZ_M);
-    inputTree[d]->SetBranchAddress("KFactor_QCD_qqZZ_Pt", &KFactor_QCD_qqZZ_Pt);
-    inputTree[d]->SetBranchAddress("xsec", &xsec);
+    if(currentProcess==ggZZ){
+      inputTree[d]->SetBranchAddress("KFactor_QCD_ggZZ_Nominal", &KFactor_QCD_ggZZ_Nominal);
+    }
+    if(currentProcess==qqZZ){
+      inputTree[d]->SetBranchAddress("KFactor_EW_qqZZ", &KFactor_EW_qqZZ);
+      inputTree[d]->SetBranchAddress("KFactor_QCD_qqZZ_dPhi", &KFactor_QCD_qqZZ_dPhi);
+      inputTree[d]->SetBranchAddress("KFactor_QCD_qqZZ_M", &KFactor_QCD_qqZZ_M);
+      inputTree[d]->SetBranchAddress("KFactor_QCD_qqZZ_Pt", &KFactor_QCD_qqZZ_Pt);
+    }
     inputTree[d]->SetBranchAddress("ZZsel", &ZZsel);
     inputTree[d]->SetBranchAddress("ZZMass", &ZZMass);
     inputTree[d]->SetBranchAddress("ZZMassErr", &ZZMassErr);
@@ -661,23 +671,26 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
     inputTree[d]->SetBranchAddress("JetMass", &JetMass);
     inputTree[d]->SetBranchAddress("JetQGLikelihood", &JetQGLikelihood);
     inputTree[d]->SetBranchAddress("DiJetFisher", &DiJetFisher);
-    inputTree[d]->SetBranchAddress("GenHMass", &GenHMass);
-    inputTree[d]->SetBranchAddress("GenZ1Phi", &GenZ1Phi);
-    inputTree[d]->SetBranchAddress("GenZ2Phi", &GenZ2Phi);
-    inputTree[d]->SetBranchAddress("GenZ1Flav", &GenZ1Flav);
-    inputTree[d]->SetBranchAddress("GenZ2Flav", &GenZ2Flav);
-    inputTree[d]->SetBranchAddress("GenLep1Eta", &GenLep1Eta);
-    inputTree[d]->SetBranchAddress("GenLep1Phi", &GenLep1Phi);
-    inputTree[d]->SetBranchAddress("GenLep1Id", &GenLep1Id);
-    inputTree[d]->SetBranchAddress("GenLep2Eta", &GenLep2Eta);
-    inputTree[d]->SetBranchAddress("GenLep2Phi", &GenLep2Phi);
-    inputTree[d]->SetBranchAddress("GenLep2Id", &GenLep2Id);
-    inputTree[d]->SetBranchAddress("GenLep3Eta", &GenLep3Eta);
-    inputTree[d]->SetBranchAddress("GenLep3Phi", &GenLep3Phi);
-    inputTree[d]->SetBranchAddress("GenLep3Id", &GenLep3Id);
-    inputTree[d]->SetBranchAddress("GenLep4Eta", &GenLep4Eta);
-    inputTree[d]->SetBranchAddress("GenLep4Phi", &GenLep4Phi);
-    inputTree[d]->SetBranchAddress("GenLep4Id", &GenLep4Id);
+    if(currentProcess!=Data){
+      inputTree[d]->SetBranchAddress("xsec", &xsec);     
+      inputTree[d]->SetBranchAddress("GenHMass", &GenHMass);
+      inputTree[d]->SetBranchAddress("GenZ1Phi", &GenZ1Phi);
+      inputTree[d]->SetBranchAddress("GenZ2Phi", &GenZ2Phi);
+      inputTree[d]->SetBranchAddress("GenZ1Flav", &GenZ1Flav);
+      inputTree[d]->SetBranchAddress("GenZ2Flav", &GenZ2Flav);
+      inputTree[d]->SetBranchAddress("GenLep1Eta", &GenLep1Eta);
+      inputTree[d]->SetBranchAddress("GenLep1Phi", &GenLep1Phi);
+      inputTree[d]->SetBranchAddress("GenLep1Id", &GenLep1Id);
+      inputTree[d]->SetBranchAddress("GenLep2Eta", &GenLep2Eta);
+      inputTree[d]->SetBranchAddress("GenLep2Phi", &GenLep2Phi);
+      inputTree[d]->SetBranchAddress("GenLep2Id", &GenLep2Id);
+      inputTree[d]->SetBranchAddress("GenLep3Eta", &GenLep3Eta);
+      inputTree[d]->SetBranchAddress("GenLep3Phi", &GenLep3Phi);
+      inputTree[d]->SetBranchAddress("GenLep3Id", &GenLep3Id);
+      inputTree[d]->SetBranchAddress("GenLep4Eta", &GenLep4Eta);
+      inputTree[d]->SetBranchAddress("GenLep4Phi", &GenLep4Phi);
+      inputTree[d]->SetBranchAddress("GenLep4Id", &GenLep4Id);
+    }
 
 
     //---------- Process tree
@@ -794,7 +807,10 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 	 pvbf_VAJHU_highestPTJets,
 	 pAux_vbf_VAJHU,
 	 pwh_hadronic_VAJHU,
-	 pzh_hadronic_VAJHU
+	 pzh_hadronic_VAJHU,
+	 jetPhi,
+	 ZZMass,
+	 false
 	 );
       //*/
 
@@ -2121,13 +2137,13 @@ void plotDataVsMC(bool redoHistograms = true, string outputPath = "PlotsDataVsMC
   // Define input/output location
   string inputPathMC   = "";
   string inputPathData = "";
-  string inputFileDataForCR = "../DataTrees_160624/ZZ4lAnalysis.root";
-  string inputFileFakeRates = "../../data/FakeRates/FakeRate_SS_2015.root"; //FIXME: to be replaced
+  string inputFileDataForCR = "../DataTrees_160716/ZZ4lAnalysis.root";
+  string inputFileFakeRates = "../../data/FakeRates/FakeRate_SS_2016B.root";
   //string outputPath = "$pl/";
 
   // Define the luminosity
-  float lumi = 2.6;
-  string lumiText = "2.6 fb^{-1}";
+  float lumi = 7.65;
+  string lumiText = "7.65 fb^{-1}";
 
 
   // Choose a list of 1D plots

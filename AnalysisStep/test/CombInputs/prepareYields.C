@@ -37,13 +37,42 @@ using namespace std;
 #define APPLYKFACTORS 1
 #define USEPUWEIGHT 1
 
+#define JUST125 0
+
 #define USEDJETEFFICIENCYFORGGZZ 0
 #define GGZZDJETEFFICIENCY 0.02572353
 
-#define DOZPLUSXFROMRUN2COMBINEDSHAPE 0
-#define ZPLUSXDJETEFFICIENCY 0.02803343
+#define DOZPLUSXFROMRUN2COMBINEDSHAPE 1 //FIXME: shapes have to be updated for ICHEP2016
+//Normalization of Z+X in final states and categories
+//FIXME: to be updated! Current version is a mixture of categorized numbers from Ulascan's pre-approval slides and combined 0S+SS inclusive numbers sent by Pedja on July 18th 2016
+Float_t normFullRange4e[7] = {
+  1.827 *6.4/2.196, //Untagged
+  0.018 *6.4/2.196, //VBF1jTagged
+  0.120 *6.4/2.196, //VBF2jTagged
+  0.019 *6.4/2.196, //VHLeptTagged
+  0.013 *6.4/2.196, //VHHadrTagged
+  0.036 *6.4/2.196, //ttHTagged
+  2.196 *6.4/2.196, //inclusive
+};
+Float_t normFullRange4mu[7] = {
+  2.306 *6.7/3.003,
+  0.113 *6.7/3.003,
+  0.308 *6.7/3.003,
+  0.019 *6.7/3.003,
+  0.061 *6.7/3.003,
+  0.196 *6.7/3.003,
+  3.003 *6.7/3.003,
+};
+Float_t normFullRange2e2mu[7] = {
+  (2.560+2.099) *13.2/(3.115+2.612),
+  (0.243+0.173) *13.2/(3.115+2.612),
+  (0.172+0.156) *13.2/(3.115+2.612),
+  (0.041+0.038) *13.2/(3.115+2.612),
+  (0.040+0.037) *13.2/(3.115+2.612),
+  (0.050+0.109) *13.2/(3.115+2.612),
+  (3.115+2.612) *13.2/(3.115+2.612),
+};
 
-#define JUST125 0
 
 
 
@@ -104,18 +133,13 @@ const int nMHPoints = 7;
 string  sMHPoint[nMHPoints] = {"","115","120","124","125","126","130",};
 Float_t fMHPoint[nMHPoints] = {0., 115., 120., 124., 125., 126., 130.,};
 int indexOf125 = 4;
-//Int_t nMHPointsProcess[nProcesses] = {6,6,6,6,6,0,0};
-Int_t nMHPointsProcess[nProcesses] = {4,6,5,5,5,0,0}; //FIXME: some mass points are still missing
+Int_t nMHPointsProcess[nProcesses] = {6,6,6,6,6,0,0};
 bool hasMHPoint[nProcesses][nMHPoints] = {
-  //{0,1,1,1,1,1,1,},//ggH
-  {0,1,1,0,1,1,0,},//ggH
+  {0,1,1,1,1,1,1,},//ggH
   {0,1,1,1,1,1,1,},//qqH
-  //{0,1,1,1,1,1,1,},//WH
-  {0,1,1,1,0,1,1,},//WH
-  //{0,1,1,1,1,1,1,},//ZH
-  {0,0,1,1,1,1,1,},//ZH
-  //{0,1,1,1,1,1,1,},//ttH
-  {0,1,1,1,1,1,0,},//ttH
+  {0,1,1,1,1,1,1,},//WH
+  {0,1,1,1,1,1,1,},//ZH
+  {0,1,1,1,1,1,1,},//ttH
   {1,0,0,0,0,0,0,},//qqZZ
   {1,0,0,0,0,0,0,},//ggZZ
 };
@@ -198,12 +222,12 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
     "ZH",
     "ttH",
     "ZZTo4l",
-    "ggZZ4e",
-    "ggZZ4mu",
-    "ggZZ4tau",
-    "ggZZ2e2mu",
-    "ggZZ2e2tau",
-    "ggZZ2mu2tau",
+    "ggTo4e_Contin_MCFM701",//"ggZZ4e",
+    "ggTo4mu_Contin_MCFM701",//"ggZZ4mu",
+    "ggTo4tau_Contin_MCFM701",//"ggZZ4tau",
+    "ggZZ2e2mu",//"ggTo2e2mu_Contin_MCFM701",
+    "ggZZ2e2tau",//"ggTo2e2tau_Contin_MCFM701",
+    "ggTo2mu2tau_Contin_MCFM701",//"ggZZ2mu2tau",
   };
 
   TFile* inputFile[nDatasets];
@@ -314,7 +338,13 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
        datasets[d]=="ggZZ4tau"||
        datasets[d]=="ggZZ2e2mu"||
        datasets[d]=="ggZZ2e2tau"||
-       datasets[d]=="ggZZ2mu2tau") 
+       datasets[d]=="ggZZ2mu2tau"||
+       datasets[d]=="ggTo4e_Contin_MCFM701"||
+       datasets[d]=="ggTo4mu_Contin_MCFM701"||
+       datasets[d]=="ggTo4tau_Contin_MCFM701"||
+       datasets[d]=="ggTo2e2mu_Contin_MCFM701"||
+       datasets[d]=="ggTo2e2tau_Contin_MCFM701"||
+       datasets[d]=="ggTo2mu2tau_Contin_MCFM701") 
       currentProcess = ggZZ;
     
     for(int mp=0; mp<nMHPoints; mp++){
@@ -340,11 +370,15 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
       inputTree[d]->SetBranchAddress("PUWeight",&PUWeight);
       inputTree[d]->SetBranchAddress("dataMCWeight",&dataMCWeight);
       inputTree[d]->SetBranchAddress("overallEventWeight", &overallEventWeight);
-      inputTree[d]->SetBranchAddress("KFactor_QCD_ggZZ_Nominal", &KFactor_QCD_ggZZ_Nominal);
-      inputTree[d]->SetBranchAddress("KFactor_EW_qqZZ", &KFactor_EW_qqZZ);
-      inputTree[d]->SetBranchAddress("KFactor_QCD_qqZZ_dPhi", &KFactor_QCD_qqZZ_dPhi);
-      inputTree[d]->SetBranchAddress("KFactor_QCD_qqZZ_M", &KFactor_QCD_qqZZ_M);
-      inputTree[d]->SetBranchAddress("KFactor_QCD_qqZZ_Pt", &KFactor_QCD_qqZZ_Pt);
+      if(currentProcess==ggZZ){
+	inputTree[d]->SetBranchAddress("KFactor_QCD_ggZZ_Nominal", &KFactor_QCD_ggZZ_Nominal);
+      }
+      if(currentProcess==qqZZ){
+	inputTree[d]->SetBranchAddress("KFactor_EW_qqZZ", &KFactor_EW_qqZZ);
+	inputTree[d]->SetBranchAddress("KFactor_QCD_qqZZ_dPhi", &KFactor_QCD_qqZZ_dPhi);
+	inputTree[d]->SetBranchAddress("KFactor_QCD_qqZZ_M", &KFactor_QCD_qqZZ_M);
+	inputTree[d]->SetBranchAddress("KFactor_QCD_qqZZ_Pt", &KFactor_QCD_qqZZ_Pt);
+      }
       inputTree[d]->SetBranchAddress("xsec", &xsec);
       inputTree[d]->SetBranchAddress("ZZsel", &ZZsel);
       inputTree[d]->SetBranchAddress("ZZMass", &ZZMass);
@@ -499,7 +533,10 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
 	   pvbf_VAJHU_highestPTJets,
 	   pAux_vbf_VAJHU,
 	   pwh_hadronic_VAJHU,
-	   pzh_hadronic_VAJHU
+	   pzh_hadronic_VAJHU,
+	   jetPhi,
+	   ZZMass,
+	   false
 	   );
 	//*/
 
@@ -600,30 +637,27 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
 }
 
 
-void getZPlusXYields_Run2CombinedShape(Float_t* yieldZPX, Int_t m4lMin, Int_t m4lMax) {
+void getZPlusXYields_Run2CombinedShape_InCateg(Float_t* yieldZPX4mu, Float_t* yieldZPX4e, Float_t* yieldZPX2e2mu, Float_t* yieldZPX4l, Int_t m4lMin, Int_t m4lMax) {
 
-  //----- take the Z+X shapes sent by Pedja on March 1st
+  //----- take the Z+X shapes sent by Pedja on March 1st (take the same for all categ). FIXME: to be updated for ICHEP2016
 
-  TF1 *f4eComb = new TF1("f4eComb", "landau(0)*(1 + exp( pol1(3))) + [5]*(TMath::Landau(x, [6], [7]))", 70, 1000);
-  TF1 *f4muComb = new TF1("f4muComb","landau(0)",70,1000);
-  TF1 *f2e2muComb = new TF1("f2e2muComb","landau(0)",70,1000);
+  TF1 *f4eComb = new TF1("f4eComb", "landau(0)*(1 + exp( pol1(3))) + [5]*(TMath::Landau(x, [6], [7]))", 70, 5000);
+  TF1 *f4muComb = new TF1("f4muComb","landau(0)",70,5000);
+  TF1 *f2e2muComb = new TF1("f2e2muComb","landau(0)",70,5000);
 
   f4eComb->SetParameters(4.404e-05,151.2,36.6,7.06,-0.00497,0.01446,157.3,26.00);
   f4muComb->SetParameters(0.04276,134.6,24.4);
   f2e2muComb->SetParameters(0.04130,144.5,25.3);
 
-  //----- take the normalization sent by Pedja on March 1st
-
-  Float_t normFullRange4e    = 2.2;
-  Float_t normFullRange4mu   = 2.1;
-  Float_t normFullRange2e2mu = 3.2;
 
   //----- compute normalization of the subrange of interest
 
-  yieldZPX[fs4mu  ] = normFullRange4mu   * f4muComb  ->Integral(m4lMin,m4lMax) / f4muComb  ->Integral(70,1000);
-  yieldZPX[fs4e   ] = normFullRange4e    * f4eComb   ->Integral(m4lMin,m4lMax) / f4eComb   ->Integral(70,1000);
-  yieldZPX[fs2e2mu] = normFullRange2e2mu * f2e2muComb->Integral(m4lMin,m4lMax) / f2e2muComb->Integral(70,1000);
-  yieldZPX[nFinalStates] = yieldZPX[fs4mu] + yieldZPX[fs4e] + yieldZPX[fs2e2mu];
+  for(int cat=0; cat<nCategories+1; cat++){
+    yieldZPX4mu  [cat] = normFullRange4mu  [cat] * f4muComb  ->Integral(m4lMin,m4lMax) / f4muComb  ->Integral(70,3000);
+    yieldZPX4e   [cat] = normFullRange4e   [cat] * f4eComb   ->Integral(m4lMin,m4lMax) / f4eComb   ->Integral(70,3000);
+    yieldZPX2e2mu[cat] = normFullRange2e2mu[cat] * f2e2muComb->Integral(m4lMin,m4lMax) / f2e2muComb->Integral(70,3000);
+    yieldZPX4l   [cat] = yieldZPX4mu[cat] + yieldZPX4e[cat] + yieldZPX2e2mu[cat];
+  }
 
 }
 
@@ -823,36 +857,32 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
   }
 
   TF1* fYield[nProcesses][nFinalStates][nCategories+1];
-  TFile* fInYieldFunctions = TFile::Open(Form("yieldFunctions_%iTeV_m4l%.1f-%.1f_%.3ffb-1%s.root",(int)sqrts,m4lMin,m4lMax,lumi,(MERGE2E2MU?"_m":"")));
-  for(int pr=0; pr<nProcesses; pr++){
-    if(!isSignal[pr]) continue;
-    for(int cat=0; cat<nCategories+1; cat++){
-      for(int fs=0; fs<nFinalStates; fs++){
-	if(MERGE2E2MU && fs==fs2mu2e) continue;
-	fYield[pr][fs][cat] = (TF1*)fInYieldFunctions->Get(Form("f_%s_%s_%s",sProcess[pr].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str()));
-      }	 
-      if(isSignal[pr]&&(mHoption=="param"||mHoption=="125")&&!hasMHPoint[pr][indexOf125]){
-	yield[pr][nFinalStates][cat] = 0.;
+  TFile* fInYieldFunctions;
+  if(mHoption=="param"){
+    fInYieldFunctions = TFile::Open(Form("yieldFunctions_%iTeV_m4l%.1f-%.1f_%.3ffb-1%s.root",(int)sqrts,m4lMin,m4lMax,lumi,(MERGE2E2MU?"_m":"")));
+    for(int pr=0; pr<nProcesses; pr++){
+      if(!isSignal[pr]) continue;
+      for(int cat=0; cat<nCategories+1; cat++){
 	for(int fs=0; fs<nFinalStates; fs++){
 	  if(MERGE2E2MU && fs==fs2mu2e) continue;
-	  yield[pr][fs][cat] = fYield[pr][fs][cat]->Eval(125.);
-	  yield[pr][nFinalStates][cat] += yield[pr][fs][cat];
+	  fYield[pr][fs][cat] = (TF1*)fInYieldFunctions->Get(Form("f_%s_%s_%s",sProcess[pr].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str()));
+	}	 
+	if(isSignal[pr]&&(mHoption=="param"||mHoption=="125")&&!hasMHPoint[pr][indexOf125]){
+	  yield[pr][nFinalStates][cat] = 0.;
+	  for(int fs=0; fs<nFinalStates; fs++){
+	    if(MERGE2E2MU && fs==fs2mu2e) continue;
+	    yield[pr][fs][cat] = fYield[pr][fs][cat]->Eval(125.);
+	    yield[pr][nFinalStates][cat] += yield[pr][fs][cat];
+	  }
 	}
       }
     }
   }
 
-  //Z+X yield for Moriond16
+  //Z+X yield
   Float_t yieldZPlusX[nFinalStates+1][nCategories+1];
   if(DOZPLUSXFROMRUN2COMBINEDSHAPE && MERGE2E2MU){
-    Float_t yieldZPX[nFinalStates+1];
-    getZPlusXYields_Run2CombinedShape(yieldZPX,m4lMin,m4lMax);
-    for(int fs=0; fs<nFinalStates+1; fs++){
-      if(MERGE2E2MU && fs==fs2mu2e) continue;
-      yieldZPlusX[fs][nCategories] = yieldZPX[fs];
-      yieldZPlusX[fs][UntaggedMor16] = (1.-ZPLUSXDJETEFFICIENCY) * yieldZPX[fs];
-      yieldZPlusX[fs][VBFTaggedMor16] = ZPLUSXDJETEFFICIENCY * yieldZPX[fs];
-    }
+    getZPlusXYields_Run2CombinedShape_InCateg(yieldZPlusX[fs4mu],yieldZPlusX[fs4e],yieldZPlusX[fs2e2mu],yieldZPlusX[nFinalStates],m4lMin,m4lMax);
   }
 
 
@@ -897,7 +927,8 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
 	if(isSignal[pr] && mHoption=="param"){
 	  outFile[fs]<<"    "<<sProcess[pr]<<": ";
 	  for(int ord=0; ord<=orderOfPolynomial[pr]; ord++){
-	    outFile[fs]<<"("<<fYield[pr][fs][cat]->GetParameter(ord);
+	    Float_t param = fYield[pr][fs][cat]->GetParameter(ord);
+	    outFile[fs]<<"("<<(param!=param?0.:param); // if param is NaN, it means that a polynomial of lower order was used, so we put 0 for this coefficient
 	    for(int ord2=0; ord2<=ord-1; ord2++) outFile[fs]<<"*@0";
 	    outFile[fs]<<")";
 	    if(ord<orderOfPolynomial[pr]) outFile[fs]<<"+";
@@ -1021,10 +1052,10 @@ void prepareYields(bool recomputeYields = true) {
 
   // Define the luminosity
   //float lumi = 10.;
-  float lumi = 2.6;
+  float lumi = 7.65;
 
   // m4l window
-  //*
+  /*
   float m4l_min = 105.;
   float m4l_max = 140.;
   //*/
@@ -1036,7 +1067,7 @@ void prepareYields(bool recomputeYields = true) {
   float m4l_min = 70.;
   float m4l_max = 3000.;
   //*/
-  /*
+  //*
   float m4l_min = 118.;
   float m4l_max = 130.;
   //*/
@@ -1048,6 +1079,7 @@ void prepareYields(bool recomputeYields = true) {
 
   // --------------- processing ---------------
 
+  outputPath = string(Form("%s_m4l_%.0f_%.0f_%.2ffbinv",outputPath.c_str(),m4l_min,m4l_max,lumi));
   gSystem->Exec(("mkdir -p "+outputPath).c_str());
 
   // Compute the yields for all available processes and mH values, and store them in a ROOT file 
