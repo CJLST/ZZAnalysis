@@ -80,7 +80,7 @@ KalmanPATMuonCorrector::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     double oldpterr=mu.muonBestTrack()->ptError();
     double newpterr=oldpterr;
 
-    if (calibrator != 0 && mu.muonBestTrackType() == 1) { //skip correction for passthrough mode, or if muon pt does not come from InnerTrack
+    if (calibrator != 0 && mu.muonBestTrackType() == 1 && oldpt<=200.) { //skip correction for passthrough mode, or if muon pt does not come from InnerTrack, or for muons above 200 GeV
       if(isMC_){
 	/// ====== ON MC (correction plus smearing) =====
 	double corrPt = calibrator->getCorrectedPt(oldpt, mu.eta(), mu.phi(), mu.charge());
