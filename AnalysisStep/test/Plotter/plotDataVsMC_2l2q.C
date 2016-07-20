@@ -344,7 +344,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
     for(int pr=0; pr<nProcesses; pr++){
       for(int nt=0; nt<nType; nt++){
 	for(int v=0; v<nVariables; v++){
-	  if (nt==0 || nt==3) 
+	  if (nt < 4) 
 	    h1[v][pr][rs][nt] = new TH1F(Form("h1_%s_%s_%s_%s",varName[v].c_str(),sFS[rs].c_str(),typeS[nt].c_str(),sProcess[pr].c_str()),
 					 Form("h1_%s_%s_%s_%s",varName[v].c_str(),sFS[rs].c_str(),typeS[nt].c_str(),sProcess[pr].c_str()),		
 					 varNbin[v],varMin[v],varMax[v]);
@@ -651,9 +651,23 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	
 	  if (!CR) {   // regular events 
             if (abs(ZZCandType->at(theCand)) != preferType) continue;
-	    int typ = ZZCandType->at(theCand)+2;
-	    if (typ>2) typ--;
 	    
+	    // int typ = ZZCandType->at(theCand)+2;
+	    // if (typ>2) typ--;
+	    
+	    // redefine type
+	    int typ = -1;
+	    if (abs(ZZCandType->at(theCand)) == 1) {
+	      if (Z1Mass->at(theCand) > 70. && Z1Mass->at(theCand) < 105.) typ = 2;
+	      else typ = 1;
+	    } else {
+	      if (Z1Mass->at(theCand) > 70. && Z1Mass->at(theCand) < 105.) typ = 3;
+	      else typ = 0;
+	    }
+
+	    // blind higgs region
+	    if (Z1Mass->at(theCand) > 105. && Z1Mass->at(theCand) < 135.) continue;
+	      
 	    int whichTmvaTree = -1;
 	    if (typ==2 && process == 2) whichTmvaTree = 0;
 	    if (typ==2 && process == 3) whichTmvaTree = 1;
@@ -705,7 +719,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	    // if (tmvaLepPt1 < 150.) continue;
 	    // if (tmvaLepPt2 < 30.) continue;	    
 	    if (tmvaZ2Mass < 60.) continue;
-            if (tmvaZ1Pt < 100. || tmvaZ2Pt < 100.) continue;
+            if (tmvaZ1Pt < 100. || tmvaZ2Pt < 100.) continue;   // TEST!
             if ((typ==1 || typ==2 || typ==5 || typ==6 || typ==9 || typ==10) && tmvaZ1tau21 > 0.6) continue;
             if (ZZMass->at(theCand) < 300.) continue;
             // if (mela < 0.8) continue;
@@ -959,6 +973,14 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	  line.SetLineColor(kRed);
 	  line.SetLineStyle(kDashed);
 	  line.Draw("same");  
+
+          /* if (norm && v == 21 && nt == 1 && rs==0) {   // tau21
+	    ofstream ofs("tau21_sf.txt");
+	    for (int i=1; i<=ratio->GetNbinsX(); i++) {
+	      ofs << ratio->GetXaxis()->GetBinLowEdge(i)  << ", " << ratio->GetXaxis()->GetBinUpEdge(i)  << ", " <<  ratio->GetBinContent(i) << endl;
+	    }
+	    ofs.close();
+	  } */
 	  
           if (norm) 
 	    c1.SaveAs(Form("~/www/graviton/%snorm/%s_%s_%s.png",dirout.c_str(),varName[v].c_str(),sFS[rs].c_str(),typeS[nt].c_str()));

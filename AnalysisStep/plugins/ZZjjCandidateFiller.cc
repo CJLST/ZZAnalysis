@@ -27,6 +27,12 @@
 #include <DataFormats/GeometryVector/interface/Point3DBase.h>
 #include "RecoVertex/VertexTools/interface/VertexDistance3D.h"
 
+#include <DataFormats/PatCandidates/interface/Jet.h>
+#include <CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h>
+#include <CondFormats/JetMETObjects/interface/JetCorrectorParameters.h>
+#include <JetMETCorrections/Objects/interface/JetCorrectionsRecord.h>
+#include <JetMETCorrections/Modules/interface/JetResolution.h>
+
 #include <RecoVertex/KinematicFitPrimitives/interface/KinematicParticle.h>
 #include <RecoVertex/KinematicFit/interface/KinematicParticleVertexFitter.h>
 #include <RecoVertex/KinematicFitPrimitives/interface/KinematicParticleFactoryFromTransientTrack.h>
@@ -186,6 +192,12 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     iEvent.getByToken(rhoForEleToken, rhoHandle);
     rhoForEle = *rhoHandle;
   }
+
+  //--- JEC uncertanties for fat jets
+  ESHandle<JetCorrectorParametersCollection> JetCorParColl;
+  iSetup.get<JetCorrectionsRecord>().get("AK8PFchs",JetCorParColl);
+  JetCorrectorParameters const & JetCorPar = (*JetCorParColl)["Uncertainty"];
+  JetCorrectionUncertainty jecUnc(JetCorPar);
   
   JME::JetResolution resolution_pt, resolution_phi;
 
@@ -364,31 +376,6 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     math::XYZTLorentzVector p2p(Z2Lp->p4());
     math::XYZTLorentzVector p2m(Z2Lm->p4());
 
-    // Build the other SF/OS combination 
-    /* float mZ1= Z1->mass();
-    float mZa, mZb;
-    int ZaID, ZbID;
-    getPairMass(Z1Lp,Z2Lm,FSRMap,mZa,ZaID);
-    getPairMass(Z1Lm,Z2Lp,FSRMap,mZb,ZbID);
-
-    // For same-sign CRs, the Z2 leptons are same sign, so we need to check also the other combination.
-    float mZalpha, mZbeta;
-    int ZalphaID, ZbetaID;
-    getPairMass(Z1Lp,Z2Lp,FSRMap,mZalpha,ZalphaID);
-    getPairMass(Z1Lm,Z2Lm,FSRMap,mZbeta,ZbetaID);
-
-    // Sort (mZa,mZb and) (mZalpha,mZbeta) so that a and alpha are the ones closest to mZ
-    if (std::abs(mZa-ZmassValue)>=std::abs(mZb-ZmassValue)) {
-    swap(mZa,mZb);
-    swap(ZaID,ZbID);
-    }
-    if (std::abs(mZalpha-ZmassValue)>=std::abs(mZbeta-ZmassValue)) {
-    swap(mZalpha,mZbeta);
-    swap(ZalphaID,ZbetaID);
-    }*/
-
-    // "smart cut" mll logic: veto the candidate if by swapping leptons we find a better Z1 and the Z2 is below 12 GeV.
-    // To handle same-sign CRs, we have to check both alternate pairings, and consider those that have a SF/OS Z1.
     bool passSmartMLL = true;
     /* if (((ZaID==-121||ZaID==-169) && std::abs(mZa-ZmassValue)<std::abs(mZ1-ZmassValue) && mZb<12) ||
        ((ZalphaID==-121||ZalphaID==-169) && std::abs(mZalpha-ZmassValue)<std::abs(mZ1-ZmassValue) && mZbeta<12)) passSmartMLL = false;  */
@@ -400,19 +387,6 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     lep.push_back(Z1Lp);
     lep.push_back(Z2Lm);
     lep.push_back(Z2Lp);
-
-    /* float mll6 = 9999;
-    float mll4 = 9999;
-    for (int i=0;i<4;++i) {
-    for (int j=i+1;j<4;++j) {
-    float mll = (lep[i]->p4()+lep[j]->p4()).mass();
-    mll6 = min(mll, mll6);
-    if (lep[i]->charge()*lep[j]->charge()<0) { //OS
-    mll4 = min (mll,mll4);
-    }
-    }
-    }*/
-
 
     //--- worst SIP value
     vector<double> SIPS ={ myCand.userFloat("d1.d0.SIP"), myCand.userFloat("d1.d1.SIP") };
@@ -426,91 +400,7 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     ptS.push_back(Z2Lm->pt());
     ptS.push_back(Z2Lp->pt());
     sort(ptS.begin(), ptS.end());
-
-    //--- Mass and Lepton uncertainties
-    /* std::vector<double> errs;
-    float massError = errorBuilder.getMassResolutionWithComponents(myCand, errs);
-    int offset =0;
-    float sigma[2][3] = {{0,0,0}, {0,0,0}};
-
-    myCand.addUserFloat("massError",      massError);
-    myCand.addUserFloat("massError11",    errs[0]);
-    sigma[0][0] = errs[0];
-    myCand.addUserFloat("massError12",    errs[1]);
-    sigma[0][1] = errs[1];
-    if (myCand.daughter(0)->numberOfDaughters()==3){
-    myCand.addUserFloat("massError13",    errs[2]);
-    sigma[0][2] = errs[2];
-    offset = 1;
-    }
-    myCand.addUserFloat("massError21",    errs[2+offset]);
-    sigma[1][0] = errs[2+offset];
-    myCand.addUserFloat("massError22",    errs[3+offset]);
-    sigma[1][1] = errs[3+offset];
-    if (myCand.daughter(1)->numberOfDaughters()==3){
-    myCand.addUserFloat("massError23",    errs[4+offset]);
-    sigma[1][2]=errs[4+offset];
-    }
-
-    float massErrorCorr=0;
-    for (int i=0; i<2; ++i) {
-    for (int j=0; j<2; ++j) {
-    const reco::Candidate* l=cand->daughter(i)->daughter(j);
-    const TH2F* h;
-    if (l->isMuon()) h = corrSigmaMu;
-    else             h = corrSigmaEle;
-    float ebecorr=1.;
-    if (h!=0) {
-    int ptBin  = min(max(1,h->GetXaxis()->FindBin(l->pt())), h->GetNbinsX());
-    int etaBin = min(max(1,h->GetYaxis()->FindBin(fabs(l->eta()))), h->GetNbinsY());
-    ebecorr = h->GetBinContent(ptBin, etaBin);
-    }
-    massErrorCorr+= (sigma[i][j]*ebecorr)*(sigma[i][j]*ebecorr);
-    }
-    }
-    massErrorCorr += (sigma[0][2])*(sigma[0][2]);
-    massErrorCorr += (sigma[1][2])*(sigma[1][2]);
-    massErrorCorr = sqrt(massErrorCorr);
-    myCand.addUserFloat("massErrorCorr",      massErrorCorr);
-
-
-    //--- store good isolated leptons that are not involved in the current ZZ candidate
-    int nExtraLep = 0;
-    for( vector<reco::CandidatePtr>::const_iterator lepPtr = goodisoleptonPtrs.begin(); lepPtr != goodisoleptonPtrs.end(); ++ lepPtr ) {
-    const reco::Candidate* lep = lepPtr->get();
-    if( reco::deltaR( lep->p4(), Z1J1->p4() ) > 0.02 &&
-    reco::deltaR( lep->p4(), Z1J2->p4() ) > 0.02 &&
-    reco::deltaR( lep->p4(), Z2L1->p4() ) > 0.02 &&
-    reco::deltaR( lep->p4(), Z2L2->p4() ) > 0.02 ){
-    nExtraLep++;
-    myCand.addUserCand("ExtraLep"+to_string(nExtraLep),*lepPtr);
-    }
-    }
-    myCand.addUserFloat("nExtraLep",nExtraLep);
-
-    //--- store Z candidates whose leptons are not involved in the current ZZ candidate
-    int nExtraZ = 0;
-    vector<const CompositeCandidate*> extraZs;
-    for( View<CompositeCandidate>::const_iterator zcand = ZCands->begin(); zcand != ZCands->end(); ++ zcand ) {
-    if( reco::deltaR( zcand->daughter(0)->p4(), Z1J1->p4() ) > 0.02 &&
-    reco::deltaR( zcand->daughter(0)->p4(), Z1J2->p4() ) > 0.02 &&
-    reco::deltaR( zcand->daughter(0)->p4(), Z2L1->p4() ) > 0.02 &&
-    reco::deltaR( zcand->daughter(0)->p4(), Z2L2->p4() ) > 0.02 &&
-    reco::deltaR( zcand->daughter(1)->p4(), Z1J1->p4() ) > 0.02 &&
-    reco::deltaR( zcand->daughter(1)->p4(), Z1J2->p4() ) > 0.02 &&
-    reco::deltaR( zcand->daughter(1)->p4(), Z2L1->p4() ) > 0.02 &&
-    reco::deltaR( zcand->daughter(1)->p4(), Z2L2->p4() ) > 0.02    ){
-    const reco::CandidatePtr myZCand(ZCands,zcand-ZCands->begin());
-    if((bool)userdatahelpers::getUserFloat(&*myZCand,"GoodLeptons")){
-    nExtraZ++;
-    extraZs.push_back(&*zcand);
-    myCand.addUserCand("assocZ"+to_string(nExtraZ),myZCand);
-    }
-    }
-    }
-    myCand.addUserFloat("nExtraZ",nExtraZ);
-    */
-
+   
     //----------------------------------------------------------------------
     //--- Embed angular information and probabilities to build discriminants
 
@@ -556,6 +446,43 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 
       vector<const pat::Jet*> cleanedJetsPt30Jec;
       vector<float> jec_ratio;
+
+      // JEC corrected masses
+      if (jecnum > 0 ) {
+	float newZ1Mass = 0.;
+	float newZZMass = 0.;
+	const reco::Candidate* z = myCand.daughter(0);
+	if (isMerged) {
+	  const pat::Jet* thejet = dynamic_cast <const pat::Jet*> (z->masterClone().get());
+	  jecUnc.setJetEta(thejet->eta());
+	  jecUnc.setJetPt(thejet->pt());
+	  float jec_unc = jecUnc.getUncertainty(true);
+	  float ratio = 1. + jecnum_multiplier * jec_unc;
+	  newZ1Mass = ratio*myCand.userFloat("d0.ak8PFJetsCHSCorrPrunedMass");
+	  newZZMass = (ratio*z->p4() + myCand.daughter(1)->p4()).mass();
+	  
+	} else {	  
+	  const reco::Candidate* d1 = z->daughter(0);
+	  const pat::Jet* thejet1 = dynamic_cast <const pat::Jet*> (d1->masterClone().get());
+	  float jec_unc1 = thejet1->userFloat("jec_unc");
+	  float ratio1 = 1. + jecnum_multiplier * jec_unc1;
+	  const reco::Candidate* d2 = z->daughter(1);
+	  const pat::Jet* thejet2 = dynamic_cast <const pat::Jet*> (d2->masterClone().get());
+	  float jec_unc2 = thejet2->userFloat("jec_unc");
+	  float ratio2 = 1. + jecnum_multiplier * jec_unc2;
+	  newZ1Mass = (ratio1*d1->p4() + ratio2*d2->p4()).mass();
+	  newZZMass = (ratio1*d1->p4() + ratio2*d2->p4() + myCand.daughter(1)->p4()).mass();
+	}
+	if (jecnum == 1) {
+	  myCand.addUserFloat("Z1Mass_JecUp", newZ1Mass);
+	  myCand.addUserFloat("ZZMass_JecUp", newZZMass);
+	} else {
+	  myCand.addUserFloat("Z1Mass_JecDown", newZ1Mass);
+	  myCand.addUserFloat("ZZMass_JecDown", newZZMass);
+	} 
+      }
+
+      // MELA variables
       for (edm::View<pat::Jet>::const_iterator jet = CleanJets->begin(); jet != CleanJets->end(); ++jet){
         // calculate JEC uncertainty up/down
         float jec_unc = jet->userFloat("jec_unc");
@@ -563,8 +490,7 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
         float newPt = jet->pt() * ratio;
         // apply pt>30GeV cut
         if (newPt<=30.0) continue;
-        // additional jets cleaning for loose leptons belonging to this candidate (for CRs only; 
-        // does nothing for the SR as jets are already cleaned with all tight isolated leptons ) 
+        // additional jets cleaning 
         if (!jetCleaner::isGood(myCand, *jet)) continue;
         // remove jets belonging to the candidate
         bool belongs = false;
@@ -776,52 +702,50 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     } // for jecnum = 0 to 2
     
     //----------------------------------------------------------------------
-    //--- kinematic refitting using Z mass constraint (also for merged!)
+    //--- kinematic refitting using Z mass constraint (not for merged!)
 
-    float ZZMassRefit = 0.;
-    float Z1MassRefit = 0.;
-    float ZZMassUnrefitErr = 0.;
+    float ZZMassRefit = -1.;
+    float Z1MassRefit = -1.;
+    float ZZMassUnrefitErr = -1.;
  
-    //  if(!isMerged){
-
-    vector<TLorentzVector> selectedLeptons;
-    vector<TLorentzVector> selectedJets;
-    // std::map<unsigned int, TLorentzVector> selectedFsrMap;
-
-    for(unsigned ilep=0; ilep<4; ilep++){
+    if(!isMerged){
       
-      reco::Candidate* oneLep = (reco::Candidate*)ZZLeps[ilep];
-      if (oneLep->hasMasterClone()) oneLep = (reco::Candidate*)oneLep->masterClone().get();
-      TLorentzVector p4;
-      p4.SetPxPyPzE(oneLep->px(),oneLep->py(),oneLep->pz(),oneLep->energy());
-
-      if(FSRMap.find(ZZLeps[ilep])!=FSRMap.end()){
-	pat::PFParticle fsr = *(FSRMap[ZZLeps[ilep]]);
-	TLorentzVector p4fsr;
-	p4fsr.SetPxPyPzE(fsr.px(),fsr.py(),fsr.pz(),fsr.energy());
-	p4 += p4fsr;
+      vector<TLorentzVector> selectedLeptons;
+      vector<TLorentzVector> selectedJets;
+      // std::map<unsigned int, TLorentzVector> selectedFsrMap;
+      
+      for(unsigned ilep=0; ilep<4; ilep++){
+	
+	reco::Candidate* oneLep = (reco::Candidate*)ZZLeps[ilep];
+	if (oneLep->hasMasterClone()) oneLep = (reco::Candidate*)oneLep->masterClone().get();
+	TLorentzVector p4;
+	p4.SetPxPyPzE(oneLep->px(),oneLep->py(),oneLep->pz(),oneLep->energy());
+	
+	if(FSRMap.find(ZZLeps[ilep])!=FSRMap.end()){
+	  pat::PFParticle fsr = *(FSRMap[ZZLeps[ilep]]);
+	  TLorentzVector p4fsr;
+	  p4fsr.SetPxPyPzE(fsr.px(),fsr.py(),fsr.pz(),fsr.energy());
+	  p4 += p4fsr;
+	}
+	if (ilep<2) selectedJets.push_back(p4);
+	else selectedLeptons.push_back(p4);
+	
       }
-      if (ilep<2) selectedJets.push_back(p4);
-      else selectedLeptons.push_back(p4);
       
+      kinZfitter->Setup2L2Q(selectedLeptons,selectedJets,resolution_pt,resolution_phi,rho);
+      kinZfitter->KinRefitZlepZhad();
+      
+      // To get refit mZZ
+      ZZMassRefit = kinZfitter->GetRefitMZZ2L2Q();
+      // To get refit hadronic mZ (mjj)
+      Z1MassRefit = kinZfitter->GetRefitMZhad();
+      ZZMassUnrefitErr = -1.;
+      
+      // four 4-vectors after refitting order by Z1_1,Z1_2,Z2_1,Z2_2
+      //vector<TLorentzVector> p4 = kinZfitter->GetRefitP4s(); 
     }
-    mela->resetInputEvent();
-
       
-    kinZfitter->Setup2L2Q(selectedLeptons,selectedJets,resolution_pt,resolution_phi,rho);
-    kinZfitter->KinRefitZlepZhad();
-    
-    // To get refit mZZ
-    ZZMassRefit = kinZfitter->GetRefitMZZ2L2Q();
-    // To get refit hadronic mZ (mjj)
-    Z1MassRefit = kinZfitter->GetRefitMZhad();
-    ZZMassUnrefitErr = -1.;
-    
-    // four 4-vectors after refitting order by Z1_1,Z1_2,Z2_1,Z2_2
-    //vector<TLorentzVector> p4 = kinZfitter->GetRefitP4s(); 
-    
-    // }
-
+    mela->resetInputEvent();
 
     //----------------------------------------------------------------------
     //--- 4l vertex fits (experimental)
@@ -963,140 +887,6 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     myCand.addUserFloat("ggzz_VAMCFM", ggzz_VAMCFM);
     myCand.addUserFloat("ggzz_p0plus_VAMCFM", ggzz_p0plus_VAMCFM);
     myCand.addUserFloat("Dgg10_VAMCFM", Dgg10_VAMCFM);
-
-/*
-    // add probabilities
-    myCand.addUserFloat("p0plus_VAJHU",   p0plus_VAJHU);   // higgs, vector algebra, JHUgen
-    myCand.addUserFloat("p0minus_VAJHU",  p0minus_VAJHU);  // pseudoscalar, vector algebra, JHUgen
-    myCand.addUserFloat("p0plus_VAMCFM",  p0plus_VAMCFM);  // higgs, vector algebra, MCFM
-    myCand.addUserFloat("p0hplus_VAJHU",  p0hplus_VAJHU);// 0h+ (high dimensional operator), vector algebra, JHUgen
-    myCand.addUserFloat("p1_VAJHU",       p1_VAJHU);       // zprime, vector algebra, JHUgen,
-    myCand.addUserFloat("p1plus_VAJHU",   p1plus_VAJHU);// 1+ (axial vector), vector algebra, JHUgen,
-    myCand.addUserFloat("p1_prodIndep_VAJHU",       p1_prodIndep_VAJHU);       // zprime, vector algebra, JHUgen,
-    myCand.addUserFloat("p1plus_prodIndep_VAJHU",   p1plus_prodIndep_VAJHU);// 1+ (axial vector), vector algebra, JHUgen,
-    myCand.addUserFloat("p2_VAJHU",       p2_VAJHU);       // graviton, vector algebra, JHUgen,
-    myCand.addUserFloat("p2qqb_VAJHU",    p2qqb_VAJHU);       // graviton, vector algebra, JHUgen,
-    //backgrounds
-    myCand.addUserFloat("bkg_VAMCFM",     bkg_VAMCFM);     // background, vector algebra, MCFM
-    myCand.addUserFloat("ggzz_VAMCFM",  ggzz_VAMCFM); //background, vector algebra, MCFM for ggzz
-    myCand.addUserFloat("ggzz_p0plus_VAMCFM",  ggzz_p0plus_VAMCFM); //background, vector algebra, MCFM for ggzz
-    myCand.addUserFloat("ggzz_c1_VAMCFM",  ggzz_c1_VAMCFM); //higgs + background + interference, vector algebra, MCFM for ggzz
-    myCand.addUserFloat("ggzz_c5_VAMCFM",  ggzz_c5_VAMCFM); //higgs (w/ 5 times coupling) + background + interference, vector algebra, MCFM for ggzz
-    myCand.addUserFloat("ggzz_ci_VAMCFM",  ggzz_ci_VAMCFM); //higgs (w/ complex coupling) + background + interference, vector algebra, MCFM for ggzz
-    myCand.addUserFloat("p2_prodIndep_VAJHU",    p2_prodIndep_VAJHU);       // graviton, vector algebra, JHUgen,
-    myCand.addUserFloat("p2hplus_VAJHU",    p2hplus_VAJHU);       // graviton, vector algebra, JHUgen,
-    myCand.addUserFloat("p2hminus_VAJHU",    p2hminus_VAJHU);       // graviton, vector algebra, JHUgen,
-    myCand.addUserFloat("p2bplus_VAJHU",    p2bplus_VAJHU);       // graviton, vector algebra, JHUgen,
-    myCand.addUserFloat("bkg_prodIndep_VAMCFM",     bkg_prodIndep_VAMCFM);     // background, vector algebra, MCFM
-
-    myCand.addUserFloat("p2hplus_qqb_VAJHU"         ,   p2hplus_qqb_VAJHU);
-    myCand.addUserFloat("p2hplus_prodIndep_VAJHU"   ,   p2hplus_prodIndep_VAJHU);
-    myCand.addUserFloat("p2hminus_qqb_VAJHU"        ,   p2hminus_qqb_VAJHU);
-    myCand.addUserFloat("p2hminus_prodIndep_VAJHU"  ,   p2hminus_prodIndep_VAJHU);
-    myCand.addUserFloat("p2bplus_qqb_VAJHU"         ,   p2bplus_qqb_VAJHU);
-    myCand.addUserFloat("p2bplus_prodIndep_VAJHU"   ,   p2bplus_prodIndep_VAJHU);
-
-    myCand.addUserFloat("p2h2plus_gg_VAJHU"         ,   p2h2plus_gg_VAJHU);
-    myCand.addUserFloat("p2h2plus_qqbar_VAJHU"      ,   p2h2plus_qqbar_VAJHU);
-    myCand.addUserFloat("p2h2plus_prodIndep_VAJHU"  ,   p2h2plus_prodIndep_VAJHU);
-    myCand.addUserFloat("p2h3plus_gg_VAJHU"         ,   p2h3plus_gg_VAJHU);
-    myCand.addUserFloat("p2h3plus_qqbar_VAJHU"      ,   p2h3plus_qqbar_VAJHU);
-    myCand.addUserFloat("p2h3plus_prodIndep_VAJHU"  ,   p2h3plus_prodIndep_VAJHU);
-    myCand.addUserFloat("p2h6plus_gg_VAJHU"         ,   p2h6plus_gg_VAJHU);
-    myCand.addUserFloat("p2h6plus_qqbar_VAJHU"      ,   p2h6plus_qqbar_VAJHU);
-    myCand.addUserFloat("p2h6plus_prodIndep_VAJHU"  ,   p2h6plus_prodIndep_VAJHU);
-    myCand.addUserFloat("p2h7plus_gg_VAJHU"         ,   p2h7plus_gg_VAJHU);
-    myCand.addUserFloat("p2h7plus_qqbar_VAJHU"      ,   p2h7plus_qqbar_VAJHU);
-    myCand.addUserFloat("p2h7plus_prodIndep_VAJHU"  ,   p2h7plus_prodIndep_VAJHU);
-    myCand.addUserFloat("p2h9minus_gg_VAJHU"        ,   p2h9minus_gg_VAJHU);
-    myCand.addUserFloat("p2h9minus_qqbar_VAJHU"     ,   p2h9minus_qqbar_VAJHU);
-    myCand.addUserFloat("p2h9minus_prodIndep_VAJHU" ,   p2h9minus_prodIndep_VAJHU);
-    myCand.addUserFloat("p2h10minus_gg_VAJHU"       ,   p2h10minus_gg_VAJHU);       
-    myCand.addUserFloat("p2h10minus_qqbar_VAJHU"    ,   p2h10minus_qqbar_VAJHU);  
-    myCand.addUserFloat("p2h10minus_prodIndep_VAJHU",   p2h10minus_prodIndep_VAJHU);
-
-    //pt/rapidity
-    //myCand.addUserFloat("p0_pt",          p0_pt);          // multiplicative probability for signal pt
-    //myCand.addUserFloat("p0_y",           p0_y);           // multiplicative probability for signal y
-    //myCand.addUserFloat("bkg_pt",         bkg_pt);         // multiplicative probability for bkg pt
-    //myCand.addUserFloat("bkg_y",          bkg_y);          // multiplicative probability for bkg y
-    
-    // supermela
-    myCand.addUserFloat("p0plus_m4l",     p0plus_m4l);  // signal m4l probability as in datacards
-    myCand.addUserFloat("bkg_m4l",        bkg_m4l);     // backgroun m4l probability as in datacards
-    myCand.addUserFloat("p0plus_m4l_ScaleUp",p0plus_m4l_ScaleUp);// signal m4l probability for systematics
-    myCand.addUserFloat("bkg_m4l_ScaleUp",bkg_m4l_ScaleUp);// backgroun m4l probability for systematics
-    myCand.addUserFloat("p0plus_m4l_ScaleDown",p0plus_m4l_ScaleDown);// signal m4l probability for systematics
-    myCand.addUserFloat("bkg_m4l_ScaleDown",bkg_m4l_ScaleDown);// backgroun m4l probability for systematics
-    myCand.addUserFloat("p0plus_m4l_ResUp",p0plus_m4l_ResUp);// signal m4l probability for systematics
-    myCand.addUserFloat("bkg_m4l_ResUp",bkg_m4l_ResUp);// backgroun m4l probability for systematics
-    myCand.addUserFloat("p0plus_m4l_ResDown",p0plus_m4l_ResDown);// signal m4l probability for systematics
-    myCand.addUserFloat("bkg_m4l_ResDown",bkg_m4l_ResDown);// backgroun m4l probability for systematics
-  
-    // spinMELA
-    myCand.addUserFloat("pg1g4_mela",      pg1g4_mela);
-    myCand.addUserFloat("pg1g4_VAJHU",     pg1g4_VAJHU);
-    myCand.addUserFloat("pg1g4_pi2_VAJHU", pg1g4_pi2_VAJHU);
-    myCand.addUserFloat("pg1g2_pi2_VAJHU", pg1g2_pi2_VAJHU);
-    myCand.addUserFloat("pg1g2_mela",      pg1g2_mela);
-    myCand.addUserFloat("pg1g2_VAJHU",     pg1g2_VAJHU);
-
-    myCand.addUserFloat("p0_g1prime2_VAJHU",p0_g1prime2_VAJHU);
-    myCand.addUserFloat("pg1g1prime2_VAJHU",pg1g1prime2_VAJHU);
-    myCand.addUserFloat("Dgg10_VAMCFM",Dgg10_VAMCFM);
-
-    myCand.addUserFloat("pzzzg_VAJHU",pzzzg_VAJHU);
-    myCand.addUserFloat("pzzgg_VAJHU",pzzgg_VAJHU);
-    myCand.addUserFloat("p0Zgs_VAJHU",p0Zgs_VAJHU);
-    myCand.addUserFloat("p0gsgs_VAJHU",p0gsgs_VAJHU);
-
-    myCand.addUserFloat("pzzzg_PS_VAJHU",pzzzg_PS_VAJHU);
-    myCand.addUserFloat("pzzgg_PS_VAJHU",pzzgg_PS_VAJHU);
-    myCand.addUserFloat("p0Zgs_PS_VAJHU",p0Zgs_PS_VAJHU);
-    myCand.addUserFloat("p0gsgs_PS_VAJHU",p0gsgs_PS_VAJHU);
-
-    myCand.addUserFloat("p0Zgs_g1prime2_VAJHU", p0Zgs_g1prime2_VAJHU);
-    myCand.addUserFloat("pzzzg_g1prime2_VAJHU", pzzzg_g1prime2_VAJHU);
-    myCand.addUserFloat("pzzzg_g1prime2_pi2_VAJHU", pzzzg_g1prime2_pi2_VAJHU);
-
-    // Production MELA
-    myCand.addUserFloat("phjj_VAJHU_highestPTJets", phjj_VAJHU_highestPTJets);
-    myCand.addUserFloat("pvbf_VAJHU_highestPTJets", pvbf_VAJHU_highestPTJets);
-    myCand.addUserFloat("phjj_VAJHU_highestPTJets_up", phjj_VAJHU_highestPTJets_up);
-    myCand.addUserFloat("pvbf_VAJHU_highestPTJets_up", pvbf_VAJHU_highestPTJets_up);
-    myCand.addUserFloat("phjj_VAJHU_highestPTJets_dn", phjj_VAJHU_highestPTJets_dn);
-    myCand.addUserFloat("pvbf_VAJHU_highestPTJets_dn", pvbf_VAJHU_highestPTJets_dn);
-    myCand.addUserFloat("phjj_VAJHU_bestDjet", phjj_VAJHU_bestDjet);
-    myCand.addUserFloat("pvbf_VAJHU_bestDjet", pvbf_VAJHU_bestDjet);
-    myCand.addUserFloat("phjj_VAJHU_bestDjet_up", phjj_VAJHU_bestDjet_up);
-    myCand.addUserFloat("pvbf_VAJHU_bestDjet_up", pvbf_VAJHU_bestDjet_up);
-    myCand.addUserFloat("phjj_VAJHU_bestDjet_dn", phjj_VAJHU_bestDjet_dn);
-    myCand.addUserFloat("pvbf_VAJHU_bestDjet_dn", pvbf_VAJHU_bestDjet_dn);
-
-    myCand.addUserFloat("pAux_vbf_VAJHU", pAux_vbf_VAJHU);
-    myCand.addUserFloat("pAux_vbf_VAJHU_up", pAux_vbf_VAJHU_up);
-    myCand.addUserFloat("pAux_vbf_VAJHU_dn", pAux_vbf_VAJHU_dn);
-
-    myCand.addUserFloat("phj_VAJHU", phj_VAJHU);
-    myCand.addUserFloat("phj_VAJHU_up", phj_VAJHU_up);
-    myCand.addUserFloat("phj_VAJHU_dn", phj_VAJHU_dn);
-
-    myCand.addUserFloat("pwh_hadronic_VAJHU", pwh_hadronic_VAJHU);
-    myCand.addUserFloat("pwh_hadronic_VAJHU_up", pwh_hadronic_VAJHU_up);
-    myCand.addUserFloat("pwh_hadronic_VAJHU_dn", pwh_hadronic_VAJHU_dn);
-
-    myCand.addUserFloat("pzh_hadronic_VAJHU", pzh_hadronic_VAJHU);
-    myCand.addUserFloat("pzh_hadronic_VAJHU_up", pzh_hadronic_VAJHU_up);
-    myCand.addUserFloat("pzh_hadronic_VAJHU_dn", pzh_hadronic_VAJHU_dn);
-
-    myCand.addUserFloat("ptth_VAJHU", ptth_VAJHU);
-    myCand.addUserFloat("ptth_VAJHU_up", ptth_VAJHU_up);
-    myCand.addUserFloat("ptth_VAJHU_dn", ptth_VAJHU_dn);
-
-    myCand.addUserFloat("pbbh_VAJHU", pbbh_VAJHU);
-    myCand.addUserFloat("pbbh_VAJHU_up", pbbh_VAJHU_up);
-    myCand.addUserFloat("pbbh_VAJHU_dn", pbbh_VAJHU_dn);
-*/
 
     // VH
     // myCand.addUserFloat("pzh_VAJHU",pzh_VAJHU);

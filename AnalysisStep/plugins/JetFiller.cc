@@ -131,6 +131,8 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     double jabseta = fabs(jeta);
     double jphi = j.phi();
 
+    int partonFlavour = -1;
+    if(isMC_) partonFlavour = j.hadronFlavour();
 
     //--- Re-embed b-tagger (so that it is chosen in one place only)
     float bTagger = j.bDiscriminator(bTaggerName);
@@ -238,6 +240,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     
     //--- Embed user variables
+    j.addUserFloat("partonFlavor",partonFlavour);
     j.addUserFloat("bTagger",bTagger);
     j.addUserFloat("qgLikelihood",qgLikelihood);
     j.addUserFloat("axis2",axis2);

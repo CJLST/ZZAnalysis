@@ -60,6 +60,10 @@
 #include "TLorentzVector.h"
 #include "TSpline.h"
 
+#include "CondFormats/BTauObjects/interface/BTagCalibration.h"
+#include "CondFormats/BTauObjects/interface/BTagCalibrationReader.h"
+
+
 #include <string>
 
 namespace {
@@ -97,6 +101,8 @@ namespace {
   Short_t nCleanedJetsPt30BTagged  = 0;
   Short_t trigWord  = 0;
   std::vector<float> ZZMass;
+  std::vector<float> ZZMass_JecUp;
+  std::vector<float> ZZMass_JecDown;
   std::vector<float> ZZMassErr;
   std::vector<float> ZZMassErrCorr;
   std::vector<float> ZZMassPreFSR;
@@ -106,10 +112,12 @@ namespace {
   std::vector<float> ZZPhi;
   std::vector<short> CRflag;
   std::vector<short> ZZCandType;         // 1 = Merged, SR
-  // -1 = Merged, SBR
-  // 2 = Resloved, SR
-  // -2 = Resloved, SBR
+                                         // -1 = Merged, SBR
+                                         // 2 = Resloved, SR
+                                          // -2 = Resloved, SBR
   std::vector<float> Z1Mass;
+  std::vector<float> Z1Mass_JecUp;
+  std::vector<float> Z1Mass_JecDown;
   std::vector<float> Z1Pt;
   std::vector<short> Z1Flav;
   std::vector<float> Z1tau21;
@@ -389,6 +397,7 @@ private:
   void FillAssocLepGenInfo(std::vector<const reco::Candidate *>& AssocLeps);
 
   Float_t getAllWeight(const reco::Candidate* Lep) const;
+  Float_t getAllWeightJet(const reco::Candidate* Jet) const;
   Float_t getHqTWeight(double mH, double genPt) const;
   Float_t getFakeWeight(Float_t LepPt, Float_t LepEta, Int_t LepID, Int_t LepZ1ID);
 
@@ -462,6 +471,11 @@ private:
   //TH2F *h_ZXWeightEle;
   TH2D* h_ZXWeight[4];
 
+  BTagCalibration* calib;
+  BTagCalibrationReader* reader;     // cntrl
+  BTagCalibrationReader* reader_up;  // sys up
+  BTagCalibrationReader* reader_do;  // sys down
+
 };
 
 //
@@ -501,16 +515,16 @@ HZZ2l2qNtupleMaker::HZZ2l2qNtupleMaker(const edm::ParameterSet& pset) :
 
   preSkimToken = consumes<edm::MergeableCounter,edm::InLumi>(edm::InputTag("preSkimCounter"));
 
+  isMC = myHelper.isMC();
+
   if (skipEmptyEvents) {
-    // applyTrigger=true;         // Trigger does not work in 80X
-    applyTrigger=false;
+    applyTrigger=true;         // Trigger does not work in 80X
+    if(isMC) applyTrigger=false;
     applySkim=true;
   } else {
     applyTrigger=false;
     applySkim=false;    
   }
-
-  isMC = myHelper.isMC();
 
   Nevt_Gen = 0;
   Nevt_Gen_lumiBlock = 0;
@@ -581,6 +595,12 @@ HZZ2l2qNtupleMaker::HZZ2l2qNtupleMaker(const edm::ParameterSet& pset) :
     hTH2D_El_IdIsoSip_Cracks = (TH2D*)fEleWeightCracks->Get("hScaleFactors_IdIsoSip_Cracks")->Clone();
     fEleWeightCracks->Close();
 
+    edm::FileInPath btagFIP("ZZAnalysis/AnalysisStep/data/CSVv2_4invfb_systJuly15.csv");
+    fipPath=btagFIP.fullPath();
+    calib = new BTagCalibration("csvv2",fipPath);
+    reader = new BTagCalibrationReader(calib,BTagEntry::OP_LOOSE,"comb","central");
+    reader_up = new BTagCalibrationReader(calib,BTagEntry::OP_LOOSE,"comb","up");
+    reader_do = new BTagCalibrationReader(calib,BTagEntry::OP_LOOSE,"comb","down");
   }
   
   if (!skipHqTWeight) {
@@ -614,6 +634,7 @@ HZZ2l2qNtupleMaker::HZZ2l2qNtupleMaker(const edm::ParameterSet& pset) :
     FileZXWeightEle->Close();
     FileZXWeightMuo->Close();
   }
+
 }
 
 HZZ2l2qNtupleMaker::~HZZ2l2qNtupleMaker()
@@ -1022,6 +1043,8 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
 
     //Fill the info on the Higgs candidate
     ZZMass.push_back(cand.p4().mass());
+    ZZMass_JecUp.push_back(cand.userFloat("ZZMass_JecUp"));
+    ZZMass_JecDown.push_back(cand.userFloat("ZZMass_JecDown"));
     // ZZMassErr.push_back(cand.userFloat("massError"));
     // ZZMassErrCorr.push_back(cand.userFloat("massErrorCorr"));
     ZZMassPreFSR.push_back(cand.userFloat("m4l"));
@@ -1258,13 +1281,15 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
 
   if (isMerged) Z1Mass.push_back(cand.userFloat("d0.ak8PFJetsCHSCorrPrunedMass"));
   else Z1Mass.push_back(Z1->mass());
+  Z1Mass_JecUp.push_back(cand.userFloat("Z1Mass_JecUp"));
+  Z1Mass_JecDown.push_back(cand.userFloat("Z1Mass_JecDown"));
 
   float thisZ1tau21 = 0.;
   if (isMerged) thisZ1tau21 = cand.userFloat("d0.NjettinessAK8:tau2")/cand.userFloat("d0.NjettinessAK8:tau1");
   Z1tau21.push_back(thisZ1tau21);
 
   short int thisZZCandType = 0;
-  if ((isMerged && Z1Mass.back() > 70. && Z1Mass.back() < 105.) || (!isMerged && Z1Mass.back() > 75. && Z1Mass.back() < 115.)) thisZZCandType = 1;
+  if (Z1Mass.back() > 70. && Z1Mass.back() < 105.) thisZZCandType = 1;
   else thisZZCandType = -1;
   if (!isMerged) thisZZCandType *= 2;
   ZZCandType.push_back(thisZZCandType);
@@ -1339,7 +1364,7 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
     } else {
       const pat::Jet* jet = dynamic_cast<const pat::Jet*>(leptons[i]);
       bTagger[i] = jet->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
-      isBTagged[i] = (float)(jet->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags")>0.800);
+      isBTagged[i] = (float)(jet->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags")>0.460);
       //Fill the info on the subjet candidates   
     }
 
@@ -1439,6 +1464,11 @@ ZZsel.push_back(sel);
 
   //Compute the data/MC weight and overall event weight
   dataMCWeight = 1.;
+  if (!isMerged) {
+    for(unsigned int i=0; i<nJets; ++i){
+      dataMCWeight *= getAllWeightJet(leptons[i]);
+    }
+  }
   for(unsigned int i=nJets; i<leptons.size(); ++i){
     dataMCWeight *= getAllWeight(leptons[i]);
   }
@@ -1604,6 +1634,38 @@ Float_t HZZ2l2qNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
   return weight;
 }
 
+Float_t HZZ2l2qNtupleMaker::getAllWeightJet(const reco::Candidate* Jet) const
+{
+  if (skipDataMCWeight) return 1.;
+  
+  float MaxBJetPt = 669.9, MaxLJetPt = 999.9;  // value must be below the boundary
+  // bool DoubleUncertainty = false;   
+  float JetPt =Jet->pt();
+  float weight = 1.;
+
+  cout << "jet " << userdatahelpers::getUserFloat(Jet,"partonFlavor") << " " << JetPt << " " << Jet->eta() << endl;
+  
+  if (userdatahelpers::getUserFloat(Jet,"partonFlavor") == 5) {
+    if (JetPt>MaxBJetPt)  { // use MaxLJetPt for light jets
+      JetPt = MaxBJetPt; 
+      // DoubleUncertainty = true;
+    }  
+    weight *= reader->eval(BTagEntry::FLAV_B, Jet->eta(), JetPt); 
+  } else if (userdatahelpers::getUserFloat(Jet,"partonFlavor") == 4) {
+    if (JetPt>MaxBJetPt)  { // use MaxLJetPt for light jets
+      JetPt = MaxBJetPt; 
+      // DoubleUncertainty = true;
+    }  
+    weight *= reader->eval(BTagEntry::FLAV_C, Jet->eta(), JetPt); 
+  } else {
+    if (JetPt>MaxLJetPt)  { // use MaxLJetPt for light jets
+      JetPt = MaxLJetPt; 
+      // DoubleUncertainty = true;
+    }  
+    weight *= reader->eval(BTagEntry::FLAV_UDSG, Jet->eta(), JetPt); 
+  } 
+  return weight;
+}
 
 Float_t HZZ2l2qNtupleMaker::getHqTWeight(double mH, double genPt) const
 {
@@ -1777,6 +1839,8 @@ void HZZ2l2qNtupleMaker::BookAllBranches(){
   myTree->Book("nCleanedJetsPt30BTagged",nCleanedJetsPt30BTagged);
   myTree->Book("trigWord",trigWord);
   myTree->Book("ZZMass",ZZMass);
+  myTree->Book("ZZMass_JecUp",ZZMass_JecUp);
+  myTree->Book("ZZMass_JecDown",ZZMass_JecDown);
   myTree->Book("ZZMassErr",ZZMassErr);
   myTree->Book("ZZMassErrCorr",ZZMassErrCorr);
   myTree->Book("ZZMassPreFSR",ZZMassPreFSR);
@@ -1787,6 +1851,8 @@ void HZZ2l2qNtupleMaker::BookAllBranches(){
   myTree->Book("ZZPhi",ZZPhi);
   myTree->Book("CRflag",CRflag);
   myTree->Book("Z1Mass",Z1Mass);
+  myTree->Book("Z1Mass_JecUp",Z1Mass_JecUp);
+  myTree->Book("Z1Mass_JecDown",Z1Mass_JecDown);
   myTree->Book("Z1Pt",Z1Pt);
   myTree->Book("Z1Flav",Z1Flav);
   myTree->Book("Z1tau21",Z1tau21);
