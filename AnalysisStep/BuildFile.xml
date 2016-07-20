@@ -7,6 +7,7 @@
 <use name="PhysicsTools/KinFitter"/>
 <use name="TrackingTools/Records"/>
 <use name="RecoVertex/KinematicFit"/>
+<use name="CondFormats/BTauObjects"/>
 <use name="root"/>
 <use name="roofit"/>
 
