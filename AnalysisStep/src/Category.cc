@@ -1,4 +1,5 @@
 #include <ZZAnalysis/AnalysisStep/interface/Category.h>
+#include <ZZAnalysis/AnalysisStep/interface/cConstants.h>
 
 #include <cmath>
 
@@ -136,20 +137,19 @@ extern "C" int categoryIchep16(
 
   float WP_VBF2j, WP_VBF1j, WP_WHh, WP_ZHh;
   if(useQGTagging){
-    WP_VBF2j = 0.926;
-    WP_VBF1j = 0.829;
+    WP_VBF2j = 0.391;
+    WP_VBF1j = 0.72;
     WP_WHh = 0.973;
     WP_ZHh = 0.996;
   }else{
-    //WP_VBF2j = 0.938; // non mass-dependent cut
-    WP_VBF2j = 0.536+665./(ZZMass+1530.); // mass-dependent cut
-    WP_VBF1j = 0.815;
+    WP_VBF2j = 1.043-460./(ZZMass+634.);
+    WP_VBF1j = 0.699;
     WP_WHh = 0.959;
     WP_ZHh = 0.9946;
   }
 
-  float c_Mela2j = 0.06;
-  float c_Mela1j = 0.3;
+  float c_Mela2j = getDVBF2jetsConstant(ZZMass);
+  float c_Mela1j = getDVBF1jetConstant(ZZMass);
   float c_MelaWH = 100000.;
   float c_MelaZH = 10000.;
 
