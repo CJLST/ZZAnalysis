@@ -1,4 +1,5 @@
-import os, sys, ctypes
+import math, os, sys, ctypes
+from ROOT import *
 from ctypes import *
 
 def sign(x):
@@ -36,7 +37,7 @@ class Event:
 
 class KDs:
 
-    def __init__(self,p0plus_VAJHU,p0minus_VAJHU,p0hplus_VAJHU,p1plus_VAJHU,p1_VAJHU,p2plus_gg_VAJHU,p2plus_qqb_VAJHU,bkg_VAMCFM,p0plus_m4l,bkg_m4l,Dgg10_VAMCFM,pvbf_VAJHU,phjj_VAJHU,phj_VAJHU,pAux_vbf_VAJHU,pwh_hadronic_VAJHU,pzh_hadronic_VAJHU,njets30,jets30QGLikelihood,ZZFlav,ZZMass):
+    def __init__(self,p0plus_VAJHU,p0minus_VAJHU,p0hplus_VAJHU,p1plus_VAJHU,p1_VAJHU,p2plus_gg_VAJHU,p2plus_qqb_VAJHU,bkg_VAMCFM,p0plus_m4l,bkg_m4l,Dgg10_VAMCFM,pvbf_VAJHU,phjj_VAJHU,phj_VAJHU,pAux_vbf_VAJHU,pwh_hadronic_VAJHU,pzh_hadronic_VAJHU,njets30,jets30QGLikelihood,jets30phi,ZZFlav,ZZMass):
 
         self.p0plus_VAJHU  = p0plus_VAJHU
         self.p0minus_VAJHU = p0minus_VAJHU
@@ -57,6 +58,7 @@ class KDs:
         self.pzh_hadronic_VAJHU = pzh_hadronic_VAJHU
         self.njets30       = njets30
         self.jets30QGL     = jets30QGLikelihood
+        self.jets30phi     = jets30phi
         self.ZZFlav        = ZZFlav
         self.ZZMass        = ZZMass
         self.D_bkg_kin     = -1.
@@ -103,20 +105,28 @@ class KDs:
         if self.njets30 == 1 :
             self.D_VBF1j_VAJHU = self.pvbf_VAJHU*self.pAux_vbf_VAJHU/(self.pvbf_VAJHU*self.pAux_vbf_VAJHU+self.phj_VAJHU*lib.getDVBF1jetConstant(c_float(self.ZZMass))) # VBF(1j) vs. gg->H+1j
         ##MELA+q/g production discriminants:
+        jets30PgOverPq = []
+        for i in range(self.njets30):
+            if self.jets30QGL[i]<0. and i<2 :
+                rand = TRandom3()
+                rand.SetSeed(abs(int(math.sin(self.jets30phi[i])*100000)))
+                jets30PgOverPq.append( 1./rand.Uniform() - 1. )
+            else:
+                jets30PgOverPq.append( 1./self.jets30QGL[i] - 1. )
         if self.njets30 >= 2 :
             if self.jets30QGL[0] == 0. or self.jets30QGL[1] == 0.:
                 self.Dfull_VBF2j = 0.
                 self.Dfull_WHh = 0.
                 self.Dfull_ZHh = 0.
             else:
-                self.Dfull_VBF2j = 1/(1+ (1./self.Djet_VAJHU-1.) * cubicroot((1./self.jets30QGL[0]-1.)*(1./self.jets30QGL[1]-1.)) ) ; # VBF(2j) vs. gg->H+2j
-                self.Dfull_WHh = 1/(1+ (1./self.D_WHh_VAJHU-1.) * cubicroot((1./self.jets30QGL[0]-1.)*(1./self.jets30QGL[1]-1.)) ) ; # W(->2j)H vs. gg->H+2j
-                self.Dfull_ZHh = 1/(1+ (1./self.D_ZHh_VAJHU-1.) * cubicroot((1./self.jets30QGL[0]-1.)*(1./self.jets30QGL[1]-1.)) ) ;  # VBF(2j) vs. gg->H+2j
+                self.Dfull_VBF2j = 1/(1+ (1./self.Djet_VAJHU-1.) * cubicroot(jets30PgOverPq[0]*jets30PgOverPq[1]) ) ; # VBF(2j) vs. gg->H+2j
+                self.Dfull_WHh = 1/(1+ (1./self.D_WHh_VAJHU-1.) * cubicroot(jets30PgOverPq[0]*jets30PgOverPq[1]) ) ; # W(->2j)H vs. gg->H+2j
+                self.Dfull_ZHh = 1/(1+ (1./self.D_ZHh_VAJHU-1.) * cubicroot(jets30PgOverPq[0]*jets30PgOverPq[1]) ) ;  # VBF(2j) vs. gg->H+2j
         if self.njets30 == 1 :
             if self.jets30QGL[0] == 0.:
                 self.Dfull_VBF1j = 0.
             else:
-                self.Dfull_VBF1j = 1/(1+ (1./self.D_VBF1j_VAJHU-1.) * cubicroot(1./self.jets30QGL[0]-1.) ) ; # VBF(1j) vs. gg->H+1j
+                self.Dfull_VBF1j = 1/(1+ (1./self.D_VBF1j_VAJHU-1.) * cubicroot(jets30PgOverPq[0]) ) ; # VBF(1j) vs. gg->H+1j
 
 
 class Candidate:
@@ -182,7 +192,8 @@ class Candidate:
             c_float(pwh_hadronic_VAJHU),
             c_float(pzh_hadronic_VAJHU),
             (ctypes.c_float * len(jets30phi))(*jets30phi),
-            c_float(self.mass4l)
+            c_float(self.mass4l),
+            c_bool(False)
             )
 
 
