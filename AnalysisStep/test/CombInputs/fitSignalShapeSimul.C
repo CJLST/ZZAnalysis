@@ -179,7 +179,7 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
   
   Short_t z1flav, z2flav; 
   float weight;
-  
+  bool useQGTagging = false;  
   Short_t ExtraZ;
   Short_t nExtraLeptons;
   Short_t nCleanedJets;   
@@ -193,6 +193,7 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
   std::vector<float> * jetphi = 0;
   std::vector<float> * jetmass = 0;
   float jetQGLL[100];
+  float jetPHI[100];
   float jet30pt[10];
   float jet30eta[10];
   float jet30phi[10];
@@ -218,8 +219,8 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
 
   stringstream FileName[40];
   for (int i=0; i<maxMassBin; i++) {
-    if(sample==1)      FileName[i] << "root://lxcms03//data3/Higgs/160624/ggH" << massBin[i] << "/ZZ4lAnalysis.root";
-    else if(sample==2) FileName[i] << "root://lxcms03//data3/Higgs/160624/VBFH" << massBin[i] << "/ZZ4lAnalysis.root";
+    if(sample==1)      FileName[i] << "root://lxcms03//data3/Higgs/160720/ggH" << massBin[i] << "/ZZ4lAnalysis.root";
+    else if(sample==2) FileName[i] << "root://lxcms03//data3/Higgs/160720/VBFH" << massBin[i] << "/ZZ4lAnalysis.root";
     else {
       cout << "Wrong sample ." << endl;
       return;
@@ -233,7 +234,7 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
     ggTree->SetBranchAddress("ZZMass",&m4l);
     ggTree->SetBranchAddress("Z1Flav",&z1flav);
     ggTree->SetBranchAddress("Z2Flav",&z2flav);
-    ggTree->SetBranchAddress("genHEPMCweight",&weight);
+    ggTree->SetBranchAddress("overallEventWeight",&weight);
     ggTree->SetBranchAddress("nExtraLep",&nExtraLeptons);
     ggTree->SetBranchAddress("nCleanedJets",&nJets);
     ggTree->SetBranchAddress("nCleanedJetsPt30BTagged",&nBTaggedJets);
@@ -267,6 +268,12 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
       for (unsigned int nj = 0; nj < JETQGLikeliHood->size(); nj++) {
 	jetQGLL[nj] = (*JETQGLikeliHood)[nj];
  	}
+      int kj = 0;
+      for (unsigned int kj = 0; kj < jetphi->size(); kj++) {
+        jetPHI[kj] = (*jetphi)[nj];
+        }
+
+
       int njet30 = 0;
       for (unsigned int ijet = 0; ijet < jetpt->size(); ijet++) { 
 	if ( (*jetpt)[ijet] > 30. ) {
@@ -279,7 +286,7 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
       }  
       int Cat = -10 ;
       if (selAna == 0) Cat = categoryMor16(nJets, pvbf_VAJHU_highestPTJets, phjj_VAJHU_highestPTJets );	    
-      if (selAna == 1) Cat = categoryIchep16(nExtraLeptons, ExtraZ, nCleanedJets, nBTaggedJets,jetQGLL, phjj_VAJHU_highestPTJets, PHJ_VAJHU, pvbf_VAJHU_highestPTJets, PAUX_VBF_VAJHU, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU );
+      if (selAna == 1) Cat = categoryIchep16(nExtraLeptons, ExtraZ, nCleanedJets, nBTaggedJets,jetQGLL, phjj_VAJHU_highestPTJets, PHJ_VAJHU, pvbf_VAJHU_highestPTJets, PAUX_VBF_VAJHU, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU, jetPHI, m4l,  useQGTagging );
       if (categ >= 0 && categ != Cat ) continue;
       
       if(channels==0 && z1flav*z2flav != 28561) continue;
@@ -507,11 +514,7 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
   }
 
  RooArgSet * params2 = rs.getParameters(RooArgList(x,massrc));
-<<<<<<< HEAD
  if (sample != 1 ||  categ > 0 ) {
-=======
-  if (sample != 1 ||  categ > 0 ) {
->>>>>>> 0be7df8e819abce49f799ee79c716ca05f1343c2
     if(channels==0 )params2->readFromFile("Ch0_Cat0_paraf.txt") ;
     if(channels==1 )params2->readFromFile("Ch1_Cat0_paraf.txt") ;
     if(channels==2 )params2->readFromFile("Ch2_Cat0_paraf.txt") ;	
