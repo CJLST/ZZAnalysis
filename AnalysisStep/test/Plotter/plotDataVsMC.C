@@ -35,10 +35,10 @@
 #include "CMS_lumi.C"
 #include "plotUtils.C"
 #include "ZZAnalysis/AnalysisStep/src/kFactors.C"
-
-#include <ZZAnalysis/AnalysisStep/src/Category.cc>
-#include <ZZAnalysis/AnalysisStep/src/bitops.cc>
-#include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
+#include "ZZAnalysis/AnalysisStep/src/cConstants.cc"
+#include "ZZAnalysis/AnalysisStep/src/Category.cc"
+#include "ZZAnalysis/AnalysisStep/src/bitops.cc"
+#include "ZZAnalysis/AnalysisStep/interface/FinalStates.h"
 
 using namespace std;
 
@@ -136,9 +136,9 @@ string varName[nVariables] = {
   "KD",
   "KD_M4L118130",
   "DjetFisher",
-  "DCombVbf2j",//"DjetVbfMela",
-  "DCombVbf2j_M4L118130",//"DjetVbfMela_M4L118130",
-  "DCombVbf2jLog_M4L118130",//"DjetVbfMelaLog_M4L118130",
+  "D2jet",
+  "D2jet_M4L118130",
+  "D2jet_M4L118130_Log",
   "Pt4l",
   "Eta4l",
   "NExtraLep",
@@ -172,10 +172,10 @@ string varXLabel[nVariables] = {
   "m_{Z2} (GeV)",
   "D_{bkg}^{kin}",
   "D_{bkg}^{kin}",
-  "D_{jet}",
-  "D_{2jet}^{comb.}",//"D_{jet}",
-  "D_{2jet}^{comb.}",//"D_{jet}",
-  "D_{2jet}^{comb.}",//"D_{jet}",
+  "D_{jet}^{Fisher}",
+  "D_{2jet}",
+  "D_{2jet}",
+  "D_{2jet}",
   "p_{T}^{4#font[12]{l}} (GeV)",
   "#eta^{4#font[12]{l}}",
   "number of additional leptons",
@@ -262,8 +262,7 @@ string varPairName[nVarPairs] = {
   "M4lVsKD_M4L100170",
   "M4lVsKD_M4L170780",
   "M4lVsKD_M4L150700",
-  "M4lVsDjet_M4L100170",
-  //  "M4lVsDjet_M4L114180",
+  "M4lVsD2jet_M4L100170",
   "MZ1VsMZ2V1",
   "MZ1VsMZ2V2",
   "MZ1VsMZ2V3",
@@ -291,7 +290,7 @@ string varPairYLabel[nVarPairs] = {
   "D_{bkg}^{kin}",
   "D_{bkg}^{kin}",
   "D_{bkg}^{kin}",
-  "D_{jet}",
+  "D_{2jet}",
   "m_{Z2} (GeV)",
   "m_{Z2} (GeV)",
   "m_{Z2} (GeV)",
@@ -831,9 +830,9 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 
       //----- fill histograms
 
-      Float_t KD = p0plus_VAJHU / ( p0plus_VAJHU + bkg_VAMCFM ) ;
-      Float_t vbfMela = pvbf_VAJHU_highestPTJets / ( phjj_VAJHU_highestPTJets + pvbf_VAJHU_highestPTJets );
-      Float_t DCombVbf2j = (nJets>=2) ? 1/(1+ phjj_VAJHU_highestPTJets/pvbf_VAJHU_highestPTJets * TMath::Power(jetPgOverPq[0]*jetPgOverPq[1],1/3.) ) : -2 ;
+      Float_t KD = p0plus_VAJHU / ( p0plus_VAJHU + bkg_VAMCFM*getDbkgkinConstant(Z1Flav*Z2Flav,ZZMass) );
+      Float_t D2jet = (nJets>=2) ? pvbf_VAJHU_highestPTJets / ( pvbf_VAJHU_highestPTJets + phjj_VAJHU_highestPTJets*getDVBF2jetsConstant(ZZMass) ) : -2 ;
+      //Float_t D2jetComb = (nJets>=2) ? 1/(1+ (1./D2jet-1.) * TMath::Power(jetPgOverPq[0]*jetPgOverPq[1],1/3.) ) : -2 ;
       Float_t varVal[nVariables] = {
 	ZZMass,
 	ZZMass,
@@ -860,9 +859,9 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 	KD,
 	KD,
 	DiJetFisher,
-	DCombVbf2j,//vbfMela,
-	DCombVbf2j,//vbfMela,
-	DCombVbf2j,//vbfMela,
+	D2jet,
+	D2jet,
+	D2jet,
 	ZZPt,
 	ZZEta,
 	(Float_t)nExtraLep,
@@ -880,7 +879,7 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 	{ ZZMass, KD },
 	{ ZZMass, KD },
 	{ ZZMass, KD },
-	{ ZZMass, vbfMela },
+	{ ZZMass, D2jet },
 	{ Z1Mass, Z2Mass },
 	{ Z1Mass, Z2Mass },
 	{ Z1Mass, Z2Mass },
@@ -1344,9 +1343,9 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
     //----- fill histograms, update counters
 
     for(int j=0; j<nJets; j++) jetPgOverPq[j] = 1./JetQGLikelihood->at(j) - 1.;
-    Float_t KD = p0plus_VAJHU / ( p0plus_VAJHU + bkg_VAMCFM ) ;
-    Float_t vbfMela = pvbf_VAJHU_highestPTJets / ( phjj_VAJHU_highestPTJets + pvbf_VAJHU_highestPTJets );
-    Float_t DCombVbf2j = (nJets>=2) ? 1/(1+ phjj_VAJHU_highestPTJets/pvbf_VAJHU_highestPTJets * TMath::Power(jetPgOverPq[0]*jetPgOverPq[1],1/3.) ) : -2 ;
+    Float_t KD = p0plus_VAJHU / ( p0plus_VAJHU + bkg_VAMCFM*getDbkgkinConstant(Z1Flav*Z2Flav,ZZMass) );
+    Float_t D2jet = (nJets>=2) ? pvbf_VAJHU_highestPTJets / ( pvbf_VAJHU_highestPTJets + phjj_VAJHU_highestPTJets*getDVBF2jetsConstant(ZZMass) ) : -2 ;
+    //Float_t D2jetComb = (nJets>=2) ? 1/(1+ (1./D2jet-1.) * TMath::Power(jetPgOverPq[0]*jetPgOverPq[1],1/3.) ) : -2 ;
     Float_t varVal[nVariables] = {
       ZZMass,
       ZZMass,
@@ -1373,9 +1372,9 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
       KD,
       KD,
       DiJetFisher,
-      DCombVbf2j,//vbfMela,
-      DCombVbf2j,//vbfMela,
-      DCombVbf2j,//vbfMela,
+      D2jet,
+      D2jet,
+      D2jet,
       ZZPt,
       ZZEta,
       (Float_t)nExtraLep,
