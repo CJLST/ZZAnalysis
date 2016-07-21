@@ -169,9 +169,9 @@ void all(int selAna =-10,  int channels=0, int categ =-10, int sample = 0 ){
       outFile <<"    n      : " <<"'"<<fitValues[3]<<"+"<<"("<<fitValues[9] <<")*(@0-125)"<<"'"<<endl;
       outFile <<"    alpha2 : " <<"'"<<fitValues[4]<<"+"<<"("<<fitValues[10]<<")*(@0-125)"<<"'"<<endl;
       outFile <<"    n2     : " <<"'"<<fitValues[5]<<"+"<<"("<<fitValues[11]<<")*(@0-125)"<<"'"<<endl;
-      outFile <<"    ml     : " <<"'"<<fitValues[12]<<endl;
-      outFile <<"    sl     : " <<"'"<<fitValues[13]<<endl;
-      outFile <<"    frac   : " <<"'"<<fitValues[14]<<endl;
+      outFile <<"    ml     : " <<"'"<<fitValues[12]<<"'"<<endl;
+      outFile <<"    sl     : " <<"'"<<fitValues[13]<<"'"<<endl;
+      outFile <<"    frac   : " <<"'"<<fitValues[14]<<"'"<<endl;
       outFile << endl;
   }
 void fitSignalContinumShapeSimul(int massBin[40],int maxMassBin, int selAna, int channels,int categ, int sample,double rangeLow[40], double rangeHigh[40],
