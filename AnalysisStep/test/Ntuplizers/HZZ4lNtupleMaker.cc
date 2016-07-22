@@ -1895,19 +1895,31 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
     weight = hTH2D_Mu_All->GetBinContent(hTH2D_Mu_All->GetXaxis()->FindBin(myLepEta),hTH2D_Mu_All->GetYaxis()->FindBin(myLepPt));
 
     // add tracking SFs for 2016, as per https://twiki.cern.ch/twiki/bin/view/CMS/MuonReferenceEffsRun2
-    if      (myLepEta>-2.4 &&
-	     myLepEta<-2.1) weight*= .9639;
-    else if (myLepEta<-1.6) weight*= .9783;    
-    else if (myLepEta<-1.1) weight*= .9762;
-    else if (myLepEta<-0.6) weight*= .9702;
-    else if (myLepEta<0.0 ) weight*= .9672;
-    else if (myLepEta<0.6 ) weight*= .9761;
-    else if (myLepEta<1.1 ) weight*= .9814;
-    else if (myLepEta<1.6 ) weight*= .9797;
-    else if (myLepEta<2.1 ) weight*= .9778;
-    else if (myLepEta<2.4 ) weight*= .9532;
-
-
+    if (myLepPt>10) {
+      if      (myLepEta>-2.4 &&
+	       myLepEta<-2.1) weight*= .9824;
+      else if (myLepEta<-1.6) weight*= .9917;    
+      else if (myLepEta<-1.1) weight*= .9959;
+      else if (myLepEta<-0.6) weight*= .9934;
+      else if (myLepEta<0.0 ) weight*= .9915;
+      else if (myLepEta<0.6 ) weight*= .9947;
+      else if (myLepEta<1.1 ) weight*= .9967;
+      else if (myLepEta<1.6 ) weight*= .9949;
+      else if (myLepEta<2.1 ) weight*= .9912;
+      else if (myLepEta<2.4 ) weight*= .9768;
+    } else {
+      if      (myLepEta>-2.4 &&
+	       myLepEta<-2.1) weight*= .9544;
+      else if (myLepEta<-1.6) weight*= .9714;    
+      else if (myLepEta<-1.1) weight*= .9691;
+      else if (myLepEta<-0.6) weight*= .9622;
+      else if (myLepEta<0.0 ) weight*= .9586;
+      else if (myLepEta<0.6 ) weight*= .9703;
+      else if (myLepEta<1.1 ) weight*= .9764;
+      else if (myLepEta<1.6 ) weight*= .9729;
+      else if (myLepEta<2.1 ) weight*= .9711;
+      else if (myLepEta<2.4 ) weight*= .9412;
+    }
   } else if(myLepID == 11) {
 
     if(mySIP >= 4.0 ) {
