@@ -1,16 +1,16 @@
 identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments,comment
 
 ### See comment field,,,,,,,,,,,Unless otherwise stated; signal x-sections are taken from https://hypernews.cern.ch/HyperNews/CMS/get/higgs/1738.html
-###,,,,,,,,,,,in the [120;130] range they are taken from the YR4 SM 13TeV tab; i.e. they are NNLO+NNLL (+EW)
+###,,,,,,,,,,,in the [120;130] range they are taken from the YR4 SM 13TeV tab; i.e. they are N3LO QCD + NLO EW
 ###,,,,,,,,,,,while for other mass points they are taken from the YR4 BSM 13TeV tab; i.e. they are in NWA and without EWK corrections; see https://hypernews.cern.ch/HyperNews/CMS/get/higgs/1738/1/1/1.html
 ###,,,,,,,,,,,For ZH and ttH the BR is obtained as BR(H->ZZ->2L2X) = BR(H->4L) + BR(H->2L2q) + BR(H->ZZ*->2L2nu) * BR(H->2L2nu) / [ BR(H->ZZ*->2L2nu) + BR(H->WW*->2L2nu) ] where BR(H->4L) BR(H->2L2q) and BR(H->2L2nu) are taken from the YR3 Twikis.
 ###,,,,,,,,,,,For ZH and ttH the BR column also includes the gen filter efficiency (0.15038 for ZH and 0.1544 for ttH).
 
 ggH115, ,48.69,9.22E-05,,/GluGluHToZZTo4L_M115_13TeV_powheg2_JHUgenV6_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM,dbs,,2,REWEIGHTING_TYPE=HVV_spin012;ghz1=1;APPLY_K_NNLOQCD_ZZGG=2,,
-ggH120, ,47.38,1.67E-04,,/GluGluHToZZTo4L_M120_13TeV_powheg2_JHUgenV6_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM,dbs,,2,REWEIGHTING_TYPE=HVV_spin012;ghz1=1;APPLY_K_NNLOQCD_ZZGG=2,,
-ggH124, ,44.76,2.52E-04,,/GluGluHToZZTo4L_M124_13TeV_powheg2_JHUgenV6_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM,dbs,,2,REWEIGHTING_TYPE=HVV_spin012;ghz1=1;APPLY_K_NNLOQCD_ZZGG=2,,
-ggH125, ,44.14,2.76E-04,,/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM,dbs,,2,REWEIGHTING_TYPE=HVV_spin012;ghz1=1;APPLY_K_NNLOQCD_ZZGG=2,,
-ggH130, ,41.23,4.14E-04,,/GluGluHToZZTo4L_M130_13TeV_powheg2_JHUgenV6_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM,dbs,,2,REWEIGHTING_TYPE=HVV_spin012;ghz1=1;APPLY_K_NNLOQCD_ZZGG=2,,
+ggH120, ,52.22,1.67E-04,,/GluGluHToZZTo4L_M120_13TeV_powheg2_JHUgenV6_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM,dbs,,2,REWEIGHTING_TYPE=HVV_spin012;ghz1=1;APPLY_K_NNLOQCD_ZZGG=2,,
+ggH124, ,49.27,2.52E-04,,/GluGluHToZZTo4L_M124_13TeV_powheg2_JHUgenV6_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM,dbs,,2,REWEIGHTING_TYPE=HVV_spin012;ghz1=1;APPLY_K_NNLOQCD_ZZGG=2,,
+ggH125, ,48.58,2.76E-04,,/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM,dbs,,2,REWEIGHTING_TYPE=HVV_spin012;ghz1=1;APPLY_K_NNLOQCD_ZZGG=2,,
+ggH130, ,45.31,4.14E-04,,/GluGluHToZZTo4L_M130_13TeV_powheg2_JHUgenV6_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM,dbs,,2,REWEIGHTING_TYPE=HVV_spin012;ghz1=1;APPLY_K_NNLOQCD_ZZGG=2,,
 ggH135, ,41.23,4.14E-04,,/GluGluHToZZTo4L_M135_13TeV_powheg2_JHUgenV6_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM,dbs,,2,REWEIGHTING_TYPE=HVV_spin012;ghz1=1;APPLY_K_NNLOQCD_ZZGG=2,,
 ggH140, ,34.28,7.11E-04,,/GluGluHToZZTo4L_M140_13TeV_powheg2_JHUgenV6_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM,dbs,,2,REWEIGHTING_TYPE=HVV_spin012;ghz1=1;APPLY_K_NNLOQCD_ZZGG=2,,
 ggH145, ,32.19,8.17E-04,,/GluGluHToZZTo4L_M145_13TeV_powheg2_JHUgenV6_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM,dbs,,2,REWEIGHTING_TYPE=HVV_spin012;ghz1=1;APPLY_K_NNLOQCD_ZZGG=2,,
