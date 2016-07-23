@@ -707,7 +707,8 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   if (!skipEleDataMCWeight) {
 
     if(year>=2016) {
-        TString filename("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ele_scale_factors_2016_v1.root");  
+        TString filename("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_2016_v2.root");
+        //TString filename("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ele_scale_factors_2016_v1.root");  
         edm::FileInPath fipEleNotCracks(filename.Data());
         fipPath = fipEleNotCracks.fullPath();
         TFile *root_file = TFile::Open(fipPath.data(),"READ");
@@ -1926,11 +1927,14 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
         // No SF for RSE yet
         return 1.;
     } else {
+
+        if(myLepPt > 199.) myLepPt = 199.;
+        /*
         if(year >= 2016) {
             if(myLepPt > 65.) myLepPt = 65.;
         } else {
             if(myLepPt > 199.) myLepPt = 199.;
-        }
+        }*/
         myLepEta = fabs(myLepEta);
 
 
