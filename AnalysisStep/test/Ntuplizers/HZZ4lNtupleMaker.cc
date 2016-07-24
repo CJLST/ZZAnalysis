@@ -336,6 +336,10 @@ namespace {
   Float_t LHEweight_QCDscale_muR0p5_muF1  = 0;
   Float_t LHEweight_QCDscale_muR0p5_muF2  = 0;
   Float_t LHEweight_QCDscale_muR0p5_muF0p5  = 0;
+  Float_t LHEweight_PDFVariation_Up = 0;
+  Float_t LHEweight_PDFVariation_Dn = 0;
+  Float_t LHEweight_AsMZ_Up = 0;
+  Float_t LHEweight_AsMZ_Dn = 0;
 
   Short_t genExtInfo  = 0;
   Float_t xsection  = 0;
@@ -1335,6 +1339,10 @@ void HZZ4lNtupleMaker::FillLHECandidate(){
   LHEweight_QCDscale_muR0p5_muF1 = lheHandler->getLHEWeight(6, 1.);
   LHEweight_QCDscale_muR0p5_muF2 = lheHandler->getLHEWeight(7, 1.);
   LHEweight_QCDscale_muR0p5_muF0p5 = lheHandler->getLHEWeight(8, 1.);
+  LHEweight_PDFVariation_Up = lheHandler->getLHEWeight_PDFVariationUpDn(1, 1.);
+  LHEweight_PDFVariation_Dn = lheHandler->getLHEWeight_PDFVariationUpDn(-1, 1.);
+  LHEweight_AsMZ_Up = lheHandler->getLHEWeigh_AsMZUpDn(1, 1.);
+  LHEweight_AsMZ_Dn = lheHandler->getLHEWeigh_AsMZUpDn(-1, 1.);
 }
 
 
@@ -2429,6 +2437,10 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("LHEweight_QCDscale_muR0p5_muF1", LHEweight_QCDscale_muR0p5_muF1);
     myTree->Book("LHEweight_QCDscale_muR0p5_muF2", LHEweight_QCDscale_muR0p5_muF2);
     myTree->Book("LHEweight_QCDscale_muR0p5_muF0p5", LHEweight_QCDscale_muR0p5_muF0p5);
+    myTree->Book("LHEweight_PDFVariation_Up", LHEweight_PDFVariation_Up);
+    myTree->Book("LHEweight_PDFVariation_Dn", LHEweight_PDFVariation_Dn);
+    myTree->Book("LHEweight_AsMZ_Up", LHEweight_AsMZ_Up);
+    myTree->Book("LHEweight_AsMZ_Dn", LHEweight_AsMZ_Dn);
   }
 
 }

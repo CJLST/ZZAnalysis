@@ -28,11 +28,7 @@
 #include <ZZMatrixElement/MELA/interface/Mela.h>
 #include <ZZAnalysis/AnalysisStep/interface/LHE_Event.h>
 
-#include <iomanip>
-#include <iostream>
-#include <string>
-#include "TLorentzVector.h"
-#include "TString.h"
+#include <vector>
 
 
 class LHEHandler{
@@ -48,6 +44,8 @@ public:
 
   MELACandidate* getBestCandidate();
   float getLHEWeight(unsigned int whichWeight, float defaultValue=1);
+  float getLHEWeight_PDFVariationUpDn(int whichUpDn, float defaultValue=1);
+  float getLHEWeigh_AsMZUpDn(int whichUpDn, float defaultValue=1);
   float getPDFScale();
 
 protected:
@@ -61,7 +59,11 @@ protected:
   vector<MELAParticle*> particleList;
   LHE_Event* genEvent;
   MELACandidate* genCand;
+
   vector<float> LHEWeight;
+  vector<float> LHEWeight_PDFVariationUpDn;
+  vector<float> LHEWeight_AsMZUpDn;
+  vector<int> PDFid;
   float PDFScale;
 
   void readEvent();
@@ -69,6 +71,9 @@ protected:
   MELACandidate* matchAHiggsToParticle(LHE_Event& ev, MELAParticle* genH);
   MELACandidate* candidateSelector(LHE_Event& ev, int isZZ);
   MELACandidate* candComparator(MELACandidate* cand1, MELACandidate* cand2, int isZZ);
+  //
+  void addByLowestInAbs(float val, std::vector<float>& valArray);
+  float findNearestOneSigma(float ref, int lowhigh, vector<float> wgt_array);
 
 };
 
