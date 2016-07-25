@@ -65,6 +65,10 @@ process.bareZCandlooseEle = cms.EDProducer("CandViewShallowCloneCombiner",
     checkCharge = cms.bool(False)
 )
 
+TRUE_RSE_Z = "((daughter(0).pdgId*daughter(1).pdgId == +121) || (daughter(0).masterClone.userFloat('SIP') >= 4.0 || daughter(1).masterClone.userFloat('SIP') >= 4.0))"
+TIGHT_RSE_Z = "mass > 60. && mass < 120."
+TRUE_TIGHT_RSE_Z = TRUE_RSE_Z + '&&' + TIGHT_RSE_Z 
+
 process.ZCandlooseEle = cms.EDProducer("ZCandidateFiller",
     src = cms.InputTag("bareZCandlooseEle"),
     sampleType = cms.int32(SAMPLE_TYPE),
@@ -75,6 +79,7 @@ process.ZCandlooseEle = cms.EDProducer("ZCandidateFiller",
         GoodLeptons = cms.string(ZLEPTONSEL),
         Z1Presel = cms.string(Z1PRESEL),
         isLoose = cms.string("abs(1)"),
+        isTrueTightRSEZ = cms.string(TRUE_TIGHT_RSE_Z),
     )
 )
 
@@ -118,11 +123,49 @@ process.ZZCandlooseEle = cms.EDProducer("ZZCandidateFiller",
 
 # Z (OSSF,both e/mu) + LL (any F/C, with no ID/iso); this is the starting point for control regions
 
+# Need to add the CR where the (tight) Z1 is made of an RSE+electron and the LL-pair is from the regular e/mu colections
+Z1_IS_TRUE_TIGHT_RSE = "daughter(0).masterClone.userFloat('isTrueTightRSEZ')"
+
 process.bareZLLCandlooseEle= cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string('ZCand LLCandlooseEle'),
     cut = cms.string(NOGHOST4l),
     checkCharge = cms.bool(False)
 )
+
+process.bareZLLCandlooseEleZ1RSE = cms.EDProducer("CandViewShallowCloneCombiner",
+    decay = cms.string('ZCandlooseEle LLCand'),
+    cut = cms.string(NOGHOST4l + '&&' + Z1_IS_TRUE_TIGHT_RSE),
+    checkCharge = cms.bool(False)
+)
+
+process.ZLLCandZ1RSE = cms.EDProducer("ZZCandidateFiller",
+    src = cms.InputTag("bareZLLCandlooseEleZ1RSE"),
+    sampleType = cms.int32(SAMPLE_TYPE),                    
+    setup = cms.int32(LEPTON_SETUP),
+    superMelaMass = cms.double(SUPERMELA_MASS),
+    isMC = cms.bool(IsMC),
+    bestCandComparator = cms.string(BESTCANDCOMPARATOR),
+    bestCandAmong = cms.PSet(
+      isBestCand    = cms.string("0"), #do not set SR best cand flag
+      isBestCRZLLss = cms.string(CR_BESTZLLss),
+      isBestCRZLLos_2P2F = cms.string(CR_BESTZLLos_2P2F),
+      isBestCRZLLos_3P1F = cms.string(CR_BESTZLLos_3P1F)
+
+    ),
+    ZRolesByMass = cms.bool(False),  # daughter('Z1') = daughter(0)
+    doKinFit = cms.bool(KINREFIT),
+    flags = cms.PSet(
+      SR = cms.string(SR),
+      CRZLLss = cms.string(CR_BASESEL),             #combine with proper isBestCRZLLss for AA ss/os CRss    
+      CRZLLos_2P2F = cms.string(CR_ZLLosSEL_2P2F), 
+      CRZLLos_3P1F = cms.string(CR_ZLLosSEL_3P1F),        
+      number_trackless_electrons = cms.string("abs(1)"),
+    ),
+    muon_iso_cut = cms.double(MUISOCUT),
+    electron_iso_cut = cms.double(ELEISOCUT),
+)
+
+
 
 
 Z2LL_looseEle = "abs(daughter(1).daughter(0).pdgId * daughter(1).daughter(1).pdgId) == 242"   #Z2 = e * e w/o track
@@ -238,9 +281,12 @@ process.Candidates_loose = cms.Path(
 
 process.CRlooseEle = cms.Sequence(
     #    process.trackless_electrons +
-       process.bareZCand +
+       process.bareZCand + 
+       process.bareZCandlooseEle + process.ZCandlooseEle +
        process.bareLLCandlooseEle       + process.LLCandlooseEle    +
        process.bareZLLCandlooseEle       + process.ZLLCandlooseEle   +
+       process.bareZLLCandlooseEleZ1RSE + process.ZLLCandZ1RSE + 
+
        process.ZlCandlooseEle 
    )
 
