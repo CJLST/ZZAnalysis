@@ -223,7 +223,7 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
 
   stringstream FileName[40];
   for (int i=0; i<maxMassBin; i++) {
-    if(sample==1) FileName[i] << "root://lxcms03//data3/Higgs/160719/AllData/ZZ4lAnalysis.root";
+    if(sample==1) FileName[i] << "root://lxcms03//data3/Higgs/160720/AllData/ZZ4lAnalysis.root";
     else {
       cout << "Wrong sample ." << endl;
       return;
