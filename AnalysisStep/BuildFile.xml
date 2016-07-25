@@ -8,6 +8,7 @@
 <use name="TrackingTools/Records"/>
 <use name="ZZMatrixElement/MELA"/>
 <use name="RecoVertex/KinematicFit"/>
+<use name="CondFormats/BTauObjects"/>
 <use name="root"/>
 <use name="roofit"/>
 

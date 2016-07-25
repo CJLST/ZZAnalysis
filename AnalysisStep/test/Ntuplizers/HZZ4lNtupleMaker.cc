@@ -112,6 +112,9 @@ namespace {
   Short_t nCleanedJetsPt30_jecUp  = 0;
   Short_t nCleanedJetsPt30_jecDn  = 0;
   Short_t nCleanedJetsPt30BTagged  = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF  = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSFUp  = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSFDn  = 0;
   Short_t trigWord  = 0;
   Float_t ZZMass  = 0;
   Float_t ZZMassErr  = 0;
@@ -291,11 +294,15 @@ namespace {
   std::vector<float> JetMass ;
   std::vector<float> JetBTagger ;
   std::vector<float> JetIsBtagged;
+  std::vector<float> JetIsBtaggedWithSF;
+  std::vector<float> JetIsBtaggedWithSFUp;
+  std::vector<float> JetIsBtaggedWithSFDn;
   std::vector<float> JetQGLikelihood;
   std::vector<float> JetAxis2;
   std::vector<float> JetMult;
   std::vector<float> JetPtD;
   std::vector<float> JetSigma ;
+  std::vector<short> JetHadronFlavour;
   Float_t DiJetMass  = -99;
 //   Float_t DiJetMassPlus  = -99;
 //   Float_t DiJetMassMinus  = -99;
@@ -1085,6 +1092,9 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     if(cleanedJets[i]->pt()>30){
       ++nCleanedJetsPt30;
       if(cleanedJets[i]->userFloat("isBtagged")) ++nCleanedJetsPt30BTagged;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF_Up")) ++nCleanedJetsPt30BTagged_bTagSFUp;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF_Dn")) ++nCleanedJetsPt30BTagged_bTagSFDn;
     }
 
     // count jec up/down njets pt30
@@ -1134,6 +1144,9 @@ void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
    JetMass .push_back( jet.p4().M());
    JetBTagger .push_back( jet.userFloat("bTagger"));
    JetIsBtagged .push_back( jet.userFloat("isBtagged"));
+   JetIsBtaggedWithSF .push_back( jet.userFloat("isBtaggedWithSF"));
+   JetIsBtaggedWithSFUp .push_back( jet.userFloat("isBtaggedWithSF_Up"));
+   JetIsBtaggedWithSFDn .push_back( jet.userFloat("isBtaggedWithSF_Dn"));
    JetQGLikelihood .push_back( jet.userFloat("qgLikelihood"));
    if(addQGLInputs){
      JetAxis2 .push_back( jet.userFloat("axis2"));
@@ -1141,6 +1154,7 @@ void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
      JetPtD .push_back( jet.userFloat("ptD"));
    }
    JetSigma .push_back(jet.userFloat("jec_unc"));
+   JetHadronFlavour .push_back(jet.hadronFlavour());
 }
 
 
@@ -2150,6 +2164,9 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("nCleanedJetsPt30_jecUp",nCleanedJetsPt30_jecUp);
   myTree->Book("nCleanedJetsPt30_jecDn",nCleanedJetsPt30_jecDn);
   myTree->Book("nCleanedJetsPt30BTagged",nCleanedJetsPt30BTagged);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF",nCleanedJetsPt30BTagged_bTagSF);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSFUp",nCleanedJetsPt30BTagged_bTagSFUp);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSFDn",nCleanedJetsPt30BTagged_bTagSFDn);
   myTree->Book("trigWord",trigWord);
   myTree->Book("ZZMass",ZZMass);
   myTree->Book("ZZMassErr",ZZMassErr);
@@ -2339,6 +2356,9 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("JetMass",JetMass);
   myTree->Book("JetBTagger",JetBTagger);
   myTree->Book("JetIsBtagged",JetIsBtagged);
+  myTree->Book("JetIsBtaggedWithSF",JetIsBtaggedWithSF);
+  myTree->Book("JetIsBtaggedWithSFUp",JetIsBtaggedWithSFUp);
+  myTree->Book("JetIsBtaggedWithSFDn",JetIsBtaggedWithSFDn);
   myTree->Book("JetQGLikelihood",JetQGLikelihood);
   if(addQGLInputs){
     myTree->Book("JetAxis2",JetAxis2);
@@ -2346,6 +2366,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("JetPtD",JetPtD);
   }
   myTree->Book("JetSigma",JetSigma);
+  myTree->Book("JetHadronFlavour",JetHadronFlavour);
   myTree->Book("DiJetMass",DiJetMass);
 //   myTree->Book("DiJetMassPlus",DiJetMassPlus); // FIXME: add back once filled again
 //   myTree->Book("DiJetMassMinus",DiJetMassMinus);

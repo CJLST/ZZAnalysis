@@ -15,6 +15,7 @@
 
 #include <ZZAnalysis/AnalysisStep/interface/CutSet.h>
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
+#include <ZZAnalysis/AnalysisStep/interface/BTaggingSFHelper.h>
 
 #include "TRandom3.h"
 
@@ -45,9 +46,13 @@ class JetFiller : public edm::EDProducer {
   const StringCutObjectSelector<pat::Jet, true> cut;
   bool isMC_;
   const std::string bTaggerName;
+  float bTaggerThreshold;
   const std::string jecType;
   bool applyJER_;
   const std::string jerType;
+  std::string bTagSFFile;
+  std::string bTagMCEffFile;
+  BTaggingSFHelper bTagSFHelper;
   const CutSet<pat::Jet> flags;
   edm::EDGetTokenT<double> rhoToken;
   edm::EDGetTokenT<edm::ValueMap<float> > qgToken;
@@ -69,9 +74,13 @@ JetFiller::JetFiller(const edm::ParameterSet& iConfig) :
   cut(iConfig.getParameter<std::string>("cut")),
   isMC_(iConfig.getParameter<bool>("isMC")),
   bTaggerName(iConfig.getParameter<std::string>("bTaggerName")),
+  bTaggerThreshold(iConfig.getParameter<double>("bTaggerThreshold")),
   jecType(iConfig.getParameter<std::string>("jecType")),
   applyJER_(iConfig.getParameter<bool>("applyJER")),
   jerType(iConfig.getParameter<std::string>("jerType")),
+  bTagSFFile(iConfig.getParameter<std::string>("bTagSFFile")),
+  bTagMCEffFile(iConfig.getParameter<std::string>("bTagMCEffFile")),
+  bTagSFHelper(bTagSFFile,bTagMCEffFile),
   flags(iConfig.getParameter<edm::ParameterSet>("flags"))
 {
 
@@ -132,15 +141,13 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     double jphi = j.phi();
 
 
-    //--- Re-embed b-tagger (so that it is chosen in one place only)
-    float bTagger = j.bDiscriminator(bTaggerName);
-
     //--- Retrieve the q/g likelihood
     edm::RefToBase<pat::Jet> jetRef(edm::Ref<edm::View<pat::Jet> >(jetHandle, jet - jetHandle->begin()));
     float qgLikelihood = (*qgHandle)[jetRef];
     float axis2 = (*axis2Handle)[jetRef];
     int mult = (*multHandle)[jetRef];
     float ptD = (*ptDHandle)[jetRef];
+
 
     //--- Get JEC uncertainties 
     jecUnc.setJetEta(jeta);
@@ -186,6 +193,45 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     //     else if(jabseta > 2.50){ if(jpumva <= -0.96) passPU=false;}
     //     else                   { if(jpumva <= -0.95) passPU=false;}
     //   }
+
+
+    //--- b-tagging and scaling factors
+    float bTagger = j.bDiscriminator(bTaggerName);
+    bool isBtagged = bTagger > bTaggerThreshold;
+    bool isBtaggedWithSF   = isBtagged;
+    bool isBtaggedWithSFUp = isBtagged;
+    bool isBtaggedWithSFDn = isBtagged;
+    if(isMC_){
+      int flav = j.hadronFlavour();
+      TRandom3 rand;
+      rand.SetSeed(abs(static_cast<int>(sin(jphi)*100000)));
+      float R = rand.Uniform();
+      float SF   = bTagSFHelper.getSF(central,flav,jpt,jeta);
+      float SFUp = bTagSFHelper.getSF(up     ,flav,jpt,jeta);
+      float SFDn = bTagSFHelper.getSF(down   ,flav,jpt,jeta);
+      float bTagMCEff = bTagSFHelper.getEff(flav,jpt,jeta);
+      if(SF  <=1 && isBtagged && R<1.-SF  ) isBtaggedWithSF   = false;
+      if(SFUp<=1 && isBtagged && R<1.-SFUp) isBtaggedWithSFUp = false;
+      if(SFDn<=1 && isBtagged && R<1.-SFDn) isBtaggedWithSFDn = false;
+      if(SF  >1 && !isBtagged && R<(1.-SF  )/(1.-1./bTagMCEff)) isBtaggedWithSF   = true;
+      if(SFUp>1 && !isBtagged && R<(1.-SFUp)/(1.-1./bTagMCEff)) isBtaggedWithSFUp = true;
+      if(SFDn>1 && !isBtagged && R<(1.-SFDn)/(1.-1./bTagMCEff)) isBtaggedWithSFDn = true;
+      /* //for debug
+      if(jpt>30 && jabseta<2.4){
+	cout<<"jet pT="<<jpt<<", eta="<<jeta<<endl;
+	cout<<" flav = "<<flav<<endl;
+	cout<<" SF   = "<<SF  <<endl;
+	cout<<" SFUp = "<<SFUp<<endl;
+	cout<<" SFDn = "<<SFDn<<endl;
+	cout<<" bTagMCEff = "<<bTagMCEff<<endl;
+	cout<<" R = "<<R<<endl;
+	cout<<" isBtagged         = "<<isBtagged        <<endl;
+	cout<<" isBtaggedWithSF   = "<<isBtaggedWithSF  <<endl;
+	cout<<" isBtaggedWithSFUp = "<<isBtaggedWithSFUp<<endl;
+	cout<<" isBtaggedWithSFDn = "<<isBtaggedWithSFDn<<endl;
+      }
+      //*/
+    }
 
 
     //--- JER
@@ -238,7 +284,6 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     
     //--- Embed user variables
-    j.addUserFloat("bTagger",bTagger);
     j.addUserFloat("qgLikelihood",qgLikelihood);
     j.addUserFloat("axis2",axis2);
     j.addUserFloat("mult",mult);
@@ -248,6 +293,11 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     j.addUserFloat("pt_jerdn", pt_jerdn);
     j.addUserFloat("looseJetID",looseJetID);
     j.addUserFloat("PUjetID",PUjetID);
+    j.addUserFloat("bTagger",bTagger);
+    j.addUserFloat("isBtagged",isBtagged);
+    j.addUserFloat("isBtaggedWithSF",isBtaggedWithSF);
+    j.addUserFloat("isBtaggedWithSF_Up",isBtaggedWithSFUp);
+    j.addUserFloat("isBtaggedWithSF_Dn",isBtaggedWithSFDn);
 
 
     //--- Apply selection cuts

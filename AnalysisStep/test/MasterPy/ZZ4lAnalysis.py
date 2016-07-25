@@ -1089,12 +1089,13 @@ process.dressedJets = cms.EDProducer("JetFiller",
     cut = cms.string("pt>20 && abs(eta)<4.7 && userFloat('looseJetID') && userFloat('PUjetID')"),
     isMC = cms.bool(IsMC),
     bTaggerName = cms.string("pfCombinedInclusiveSecondaryVertexV2BJetTags"),
+    bTaggerThreshold = cms.double(0.800),
     jecType = cms.string("AK4PFchs"),
     applyJER = cms.bool(APPLYJER),
     jerType = cms.string("AK4PFchs"),
-    flags = cms.PSet(
-        isBtagged = cms.string("userFloat('bTagger')>0.800"),
-        )
+    bTagSFFile = cms.string("/afs/cern.ch/user/s/sregnard/public/BTaggingSFICHEP/CSVv2_ichep.csv"),
+    bTagMCEffFile = cms.string("/afs/cern.ch/user/s/sregnard/public/BTaggingSFICHEP/bTagEfficiencies_80X.root"),
+    flags = cms.PSet()
     )
 
 ### Load JEC
