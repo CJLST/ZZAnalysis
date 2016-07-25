@@ -544,6 +544,7 @@ private:
   TSpline3* spkfactor_ggzz_nlo[9]; // Nominal, PDFScaleDn, PDFScaleUp, QCDScaleDn, QCDScaleUp, AsDn, AsUp, PDFReplicaDn, PDFReplicaUp
 
   TH2D *hTH2D_Mu_All;
+  TH2F *hTH2F_El_Reco;
   TH1 *hTH2D_El_IdIsoSip_notCracks;
   TH1 *hTH2D_El_IdIsoSip_Cracks;
   TH2D* h_weight; //HqT weights
@@ -592,6 +593,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   reweight(),
   sampleName(pset.getParameter<string>("sampleName")),
   hTH2D_Mu_All(0),
+  hTH2F_El_Reco(0),
   hTH2D_El_IdIsoSip_notCracks(0),
   hTH2D_El_IdIsoSip_Cracks(0),
   h_weight(0)
@@ -715,6 +717,14 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
         hTH2D_El_IdIsoSip_notCracks = (TH1*) root_file->Get("ele_scale_factors")->Clone();
         hTH2D_El_IdIsoSip_Cracks = (TH1*) root_file->Get("ele_scale_factors_gap")->Clone();
         root_file->Close();
+
+	TString filenameEleReco("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi.txt_SF2D.root");
+        edm::FileInPath fipEleReco(filenameEleReco.Data());
+        fipPath = fipEleReco.fullPath();
+        TFile *root_file_reco = TFile::Open(fipPath.data(),"READ");
+        hTH2F_El_Reco = (TH2F*) root_file_reco->Get("EGamma_SF2D")->Clone();
+        root_file_reco->Close();
+
     } else {
         TString filename;
         filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_%d_IdIsoSip.root",year);
@@ -1716,6 +1726,19 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   }
   //Store an overall event weight (which is normalized by gen_sumWeights)
   overallEventWeight = PUWeight * genHEPMCweight * dataMCWeight * trigEffWeight;
+
+  /* // debug printout for weights
+  cout<<"Event "<<event.id().run()<<":"<<event.luminosityBlock()<<":"<<event.id().event()<<endl;
+  cout<<" pileup weight =         "<<PUWeight<<endl;
+  cout<<" sign of gen. weight =   "<<genHEPMCweight/fabs(genHEPMCweight)<<endl;
+  cout<<" lepton data/MC weight = "<<dataMCWeight<<endl;
+  for(unsigned int i=0; i<leptons.size(); ++i)
+    cout<<"   lepton ID="<<leptons[i]->pdgId()<<", pT="<<leptons[i]->pt()<<", weight="<<getAllWeight(leptons[i])<<endl;
+  cout<<" trigger eff. weight =   "<<trigEffWeight<<endl;
+  cout<<"product of all =         "<<overallEventWeight/fabs(genHEPMCweight)<<endl;;
+  cout<<endl;
+  //*/
+
 }
 
 
@@ -1909,20 +1932,25 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
         } else {
             if(myLepPt > 199.) myLepPt = 199.;
         }*/
-        myLepEta = fabs(myLepEta);
+        Float_t myLepAbsEta = fabs(myLepEta);
 
 
         if(year >= 2016) {
             if((bool)userdatahelpers::getUserFloat(Lep,"isCrack"))
-                 weight = hTH2D_El_IdIsoSip_Cracks->GetBinContent(hTH2D_El_IdIsoSip_Cracks->FindFixBin(myLepEta, myLepPt));
+                 weight = hTH2D_El_IdIsoSip_Cracks->GetBinContent(hTH2D_El_IdIsoSip_Cracks->FindFixBin(myLepAbsEta, myLepPt));
             else
-                 weight = hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->FindFixBin(myLepEta, myLepPt));
+                 weight = hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->FindFixBin(myLepAbsEta, myLepPt));
         } else {
             if((bool)userdatahelpers::getUserFloat(Lep,"isCrack"))
-              weight = hTH2D_El_IdIsoSip_Cracks   ->GetBinContent(hTH2D_El_IdIsoSip_Cracks   ->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_Cracks   ->GetYaxis()->FindBin(myLepEta));
+              weight = hTH2D_El_IdIsoSip_Cracks   ->GetBinContent(hTH2D_El_IdIsoSip_Cracks   ->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_Cracks   ->GetYaxis()->FindBin(myLepAbsEta));
             else
-              weight = hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_notCracks->GetYaxis()->FindBin(myLepEta));
+              weight = hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_notCracks->GetYaxis()->FindBin(myLepAbsEta));
         }
+
+	// electron reconstruction scale factor
+	if(myLepPt < 20.) myLepPt = 20.;
+	weight *= hTH2F_El_Reco->GetBinContent(hTH2F_El_Reco->GetXaxis()->FindBin(myLepEta),hTH2F_El_Reco->GetYaxis()->FindBin(myLepPt));
+
     }
   } else {
 
