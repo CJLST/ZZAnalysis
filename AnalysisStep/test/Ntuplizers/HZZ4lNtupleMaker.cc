@@ -1955,9 +1955,10 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
               weight = hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_notCracks->GetYaxis()->FindBin(myLepAbsEta));
         }
 
-	// electron reconstruction scale factor
+	// electron reconstruction scale factor, as a function of supercluster eta
+	Float_t SCeta = userdatahelpers::getUserFloat(Lep,"SCeta");
 	if(myLepPt < 20.) myLepPt = 20.;
-	weight *= hTH2F_El_Reco->GetBinContent(hTH2F_El_Reco->GetXaxis()->FindBin(myLepEta),hTH2F_El_Reco->GetYaxis()->FindBin(myLepPt));
+	weight *= hTH2F_El_Reco->GetBinContent(hTH2F_El_Reco->GetXaxis()->FindBin(SCeta),hTH2F_El_Reco->GetYaxis()->FindBin(myLepPt));
 
     }
   } else {
