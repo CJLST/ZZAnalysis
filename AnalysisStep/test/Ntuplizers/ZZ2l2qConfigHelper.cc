@@ -20,7 +20,7 @@ ZZ2l2qConfigHelper::ZZ2l2qConfigHelper(const ParameterSet& pset) :
   
   // Check for inconsistent configurations
   if ( ( theSampleType!=2011 && theSampleType!=2012 && theSampleType!=2015 && theSampleType!=2016 ) ||
-       ( theSetup!=2011 && theSetup!=2012 && theSetup!=2015 && theSetup!=2016) ||
+       ( theSetup!=2011 && theSetup!=2012 && theSetup!=2015 && theSampleType!=2016) ||
        ( theSampleType!=theSetup ) // No sample rescaling supported as of now.
        // We may add exception for MC only when needed.
        ) {
@@ -29,7 +29,7 @@ ZZ2l2qConfigHelper::ZZ2l2qConfigHelper(const ParameterSet& pset) :
   }
   
   
-  if ((isMC_&&PD!="") || (!isMC_ && (PD!="DoubleEle" && PD!="DoubleMu" && PD!="MuEG" && PD!="DoubleEG" && PD!="DoubleMuon" && PD!="MuonEG" && PD!="SingleElectron"))) {
+  if ((isMC_&&PD!="") || (!isMC_ && (PD!="DoubleEle" && PD!="DoubleMu" && PD!="MuEG" && PD!="DoubleEG" && PD!="DoubleMuon" && PD!="MuonEG" && PD!="SingleElectron"&& PD!="SingleMuon"))) {
     cout << "ERROR: ZZ2l2qConfigHelper: isMC: " << isMC_ << " PD: " << PD << endl;
     abort();
   }    
@@ -84,7 +84,8 @@ ZZ2l2qConfigHelper::passTrigger(const edm::Event & event, edm::Handle<edm::Trigg
   //   passTriEle = passFilter(event, trigRes, "triggerTriEle");
   // }
   bool passTriMu = false;
-  bool passSingleEle = false;
+  bool passSingleMu = passFilter(event, trigRes, "triggerSingleMu");
+  bool passSingleEle = passFilter(event, trigRes, "triggerSingleEle");
   // if (theSetup >= 2015) {
   //  passTriMu = passFilter(event, trigRes, "triggerTriMu");
   //  passSingleEle = passFilter(event, trigRes, "triggerSingleEle");
@@ -99,7 +100,8 @@ ZZ2l2qConfigHelper::passTrigger(const edm::Event & event, edm::Handle<edm::Trigg
 	  ((PD=="DoubleEle"||PD=="DoubleEG"  ) && (passDiEle || passTriEle)) ||
 	  ((PD=="DoubleMu" ||PD=="DoubleMuon") && (passDiMu || passTriMu) && !passDiEle && !passTriEle) ||
 	  ((PD=="MuEG"     ||PD=="MuonEG"    ) && passMuEle && !passDiMu && !passTriMu && !passDiEle && !passTriEle) ||
-	  (PD=="SingleElectron" && passSingleEle && !passMuEle && !passDiMu && !passTriMu && !passDiEle && !passTriEle) //FIXME: do we want to use the single-ele path and run on the SingleElectron PD ?
+	  (PD=="SingleElectron" && passSingleEle && !passSingleMu && !passMuEle && !passDiMu && !passTriMu && !passDiEle && !passTriEle) || //FIXME: do we want to use the single-ele path and run on the SingleElectron PD ?
+	  (PD=="SingleMuon" && passSingleMu && !passMuEle && !passDiMu && !passTriMu && !passDiEle && !passTriEle) //FIXME: do we want to use the single-ele path and run on the SingleElectron PD ?
 	  ) {
 	evtPassTrigger = true;
       } 

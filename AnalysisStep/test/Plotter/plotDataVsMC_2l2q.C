@@ -53,6 +53,7 @@ int useHTBinned = 2;         // 0 - use simple DY inclusive
                              // 2 - use jet binned + b-enricchement
 
 bool enforceNarrowWidth = true;
+bool unblind = false;
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -61,7 +62,7 @@ bool enforceNarrowWidth = true;
 ////////////////////////////////////////////////////////////////////////////////
 
 
-const int nVariables = 25;
+const int nVariables = 26;
 string varName[nVariables] = {
   "ZZMass",
   "ZZPt",
@@ -87,7 +88,8 @@ string varName[nVariables] = {
   "Z1Tau21",
   "JetQGProduct",
   "ZjetMELA",
-  "vbfMELA"
+  "vbfMELA",
+  "ZZMasshighMELA",
 };
 string varXLabel[nVariables] = {
   "m_{2#font[12]{l}2q} (GeV)",
@@ -115,6 +117,7 @@ string varXLabel[nVariables] = {
   "Quark gluon likelihood product",
   "ZjetMELA",
   "vbfMELA",
+  "m_{2#font[12]{l}2q} (GeV) for ZjetMELA > 0.5"
 };
 string varYLabel[nVariables] = {
   "Events / 25 GeV",
@@ -142,20 +145,21 @@ string varYLabel[nVariables] = {
   "Events / 0.025",
   "Events / 0.025", 
   "Events / 0.025",
+  "Events / 25 GeV"
 };
-Int_t  varNbin[nVariables] = { 70, 50, 70,  56,  44, 50,50, 400,  50,  50,  50,  50,  50,  50,  50, 50, 50, 25, 25, 4, 50, 26, 50, 40, 82};
-Float_t varMin[nVariables] = {  250,  0,  250,  40,  40,  90, 90, -200,  0, 0, -0.2, -0.2, 0,  0, -0.2, -1.2, -1.2, 0., 0., -0.5, 0., -0.05,-0.2,0.,-1.05};
-Float_t varMax[nVariables] = { 2000, 500, 2000, 180, 150, 800, 800, 0, 500, 500, 1.2, 1.2, 500, 500, 1.2, 1.2, 1.2 , 3.15, 3.15, 3.5, 300., 1.05, 1.2, 1.,1.};
-Bool_t varLogx[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-Bool_t varLogy[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1};
+Int_t  varNbin[nVariables] = { 70, 50, 70,  56,  44, 50,50, 400,  50,  50,  50,  50,  50,  50,  50, 50, 50, 25, 25, 4, 50, 26, 50, 40, 82, 50};
+Float_t varMin[nVariables] = {  250,  0,  250,  40,  40,  90, 90, -200,  0, 0, -0.2, -0.2, 0,  0, -0.2, -1.2, -1.2, 0., 0., -0.5, 0., -0.05,-0.2,0.,-1.05, 250};
+Float_t varMax[nVariables] = { 2000, 500, 2000, 180, 150, 800, 800, 0, 500, 500, 1.2, 1.2, 500, 500, 1.2, 1.2, 1.2 , 3.15, 3.15, 3.5, 300., 1.05, 1.2, 1.,1., 2000};
+Bool_t varLogx[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+Bool_t varLogy[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1,0};
 
-const int nMasses = 13;
-string signalMasses[nMasses] = {"200","250","300","350","400","450","500","550","600","750","800","1000","2000"};
+const int nMasses = 14;
+string signalMasses[nMasses] = {"200","250","300","350","400","450","500","550","600","750","800","900","1000","2000"};
 
 enum Process {Data=0, BulkG=1, Spin0=2, DYjets=3, TTBar=4, Diboson=5};
 const int nProcesses = 6;
 string sProcess[nProcesses] = {"Data", "Spin0750", "Spin01000", "DY", "TT", "VV"};
-string processLabel[nProcesses] = {"Data", "ggH_{NWA}(750)#rightarrowZZ", "VBFH_{NWA}(900)#rightarrowZZ", "Z + jets", "ttbar", "WZ, ZZ"};
+string processLabel[nProcesses] = {"Data", "ggH_{NWA}(750)#rightarrowZZ", "VBFH_{NWA}(900)#rightarrowZZ", "Z + jets", "ttbar", "ZZ, WZ, WW"};
 
 
 //Float_t scaleF[nProcesses] = {1.,20.,20.,1.,1.,1.};
@@ -194,14 +198,14 @@ void densityHist(TH1F* hist)
   hist->GetYaxis()->SetTitle("Events / 50 GeV");
 }
 
-void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./goodDatasetsWithData.txt", /* bool norm = false,*/ bool CR = false, bool draw = true, bool weightMCtrig = true)
+void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./goodDatasetsWithData.txt", /* bool norm = false,*/ bool CR = false, bool draw = true, bool weightMCtrig = true, bool weighttau21 = true)
 {
   
-  float lumin = 4.3;   // ICHEP partial
+  float lumin = 11.0;   // ICHEP total
   setTDRStyle();
   // gStyle->SetOptStat(1111111);
-  const int nDatasets = 15;          // Moriond: 11
-  const int nDatasetsMC = 11;         // Moriond: 9
+  const int nDatasets = 25;          // Moriond: 11
+  const int nDatasetsMC = 13;         // Moriond: 9
   
   TFile* inputFile[nDatasets];
   TChain* inputTree[nDatasets];
@@ -211,7 +215,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
   Float_t sumWeights[nDatasets];
   Int_t mass[nDatasets];
 
-  string Dsname[nDatasets] = {"ggHiggs750","VBFHiggs900","DY1JetsToLL","DY2JetsToLL","DY3JetsToLL","DY4JetsToLL","DYBJetsToLL","DYBFiltJetsToLL","TTBar","WZDib","ZZDib","DoubleEG2016B","DoubleMu2016B","SingleEG2016B","SingleMu2016B"};
+  string Dsname[nDatasets] = {"ggHiggs750","VBFHiggs900","DY1JetsToLL","DY2JetsToLL","DY3JetsToLL","DY4JetsToLL","DYBJetsToLL","DYBFiltJetsToLL","TTBar","WZ2l2qDib","ZZ2l2qDib","WW2l2nDib","WZ3ln","DoubleEG2016B","DoubleMu2016B","SingleEG2016B","SingleMu2016B","DoubleEG2016C","DoubleMu2016C","SingleEG2016C","SingleMu2016C","DoubleEG2016D","DoubleMu2016D","SingleEG2016D","SingleMu2016D"};
 
   // string Dsname[nDatasets] = {"BulkGrav800","Higgs750","DY1JetsToLL","DY2JetsToLL","DY3JetsToLL","DY4JetsToLL","DYBJetsToLL","DYBFiltJetsToLL","TTBar","WZDib","ZZDib","DoubleEG2016B","DoubleMu2016B"};
   
@@ -247,6 +251,58 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
   TEfficiency *eff_data_dm2 = (TEfficiency*)c_data_dm2->GetPrimitive("den_dm2_2d_clone");
   // end trigger weights
 
+  // tau21 weights
+  float tau21bin[25] = {
+    -0.00769231,
+    0.0346154,  
+    0.0769231,  
+    0.119231,   
+    0.161538,   
+    0.203846,   
+    0.246154,   
+    0.288462,   
+    0.330769,   
+    0.373077,   
+    0.415385,   
+    0.457692,   
+    0.5,        
+    0.542308,   
+    0.584615,   
+    0.626923,   
+    0.669231,   
+    0.711538,   
+    0.753846,   
+    0.796154,   
+    0.838461,   
+    0.880769,   
+    0.923077,   
+    0.965385,   
+    1.00769} ;
+  float tau21corr[24] = {0,	      	   
+    0      ,	   
+    0,	   
+    0.290173  , 
+    -0.377686 , 
+    0.0977722  ,
+    0.412889   ,
+    0.322422   ,
+    -0.169658  ,
+    -0.272581  ,
+    -0.384607  ,
+    0.109909   ,
+    -0.123669  ,
+    -0.158826  ,
+    0.0764657  ,
+    0.155703   ,
+    -0.0750966 ,
+    -0.0484963 ,
+    0.239322   ,
+    0.107814   ,
+    -1.40918   ,
+    0	   ,
+    0	  , 
+    0	   };    
+  
   /// I/O to TMVA 
   float tmvaZZPt, tmvaZ2Mass, tmvaZ1Pt, tmvaZ1tau21, tmvaZ2Pt, tmvaLepPt1, tmvaLepPt2, tmvaJetPt1, tmvaJetPt2;
   float tmvaJetQGLikelihood1, tmvaJetQGLikelihood2, tmvaabshelcosthetaZ1, tmvahelcosthetaZ2, tmvacosthetastar, tmvahelphi, tmvaphistarZ1; 
@@ -306,6 +362,8 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
   Long64_t EventNumber;
   Int_t LumiNumber;
   Float_t genEventWeight;
+  Float_t overallEventWeight;
+  Float_t Nvtx;
   Float_t genHMass;
   vector<Float_t> *ZZMass = 0;
   vector<Float_t> *ZZMassRefit = 0;
@@ -344,7 +402,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
     for(int pr=0; pr<nProcesses; pr++){
       for(int nt=0; nt<nType; nt++){
 	for(int v=0; v<nVariables; v++){
-	  if (nt < 4) 
+	  if (nt == 0 || nt == 3) 
 	    h1[v][pr][rs][nt] = new TH1F(Form("h1_%s_%s_%s_%s",varName[v].c_str(),sFS[rs].c_str(),typeS[nt].c_str(),sProcess[pr].c_str()),
 					 Form("h1_%s_%s_%s_%s",varName[v].c_str(),sFS[rs].c_str(),typeS[nt].c_str(),sProcess[pr].c_str()),		
 					 varNbin[v],varMin[v],varMax[v]);
@@ -398,7 +456,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	if (d<nDatasetsMC) {
 	  hCounters[d] = (TH1F*)ftemp->Get("ZZTree/Counters");
 	  NGenEvt[d] += hCounters[d]->GetBinContent(1);
-          sumWeights[d] += hCounters[d]->GetBinContent(41);
+          sumWeights[d] += hCounters[d]->GetBinContent(40);  // all weights
 	}
 	if (d<3) {
 	  for (int m=0; m<nMasses; m++) {
@@ -417,10 +475,12 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
     if (useHTBinned == 0 && d>2 && d<8) continue;   // in this case there is just one DY
     if (useHTBinned == 1 && d>5 && d<8) continue;   // in this case there are just four DY
 
+    inputTree[d]->SetBranchAddress("Nvtx", &Nvtx);
     inputTree[d]->SetBranchAddress("RunNumber", &RunNumber);
     inputTree[d]->SetBranchAddress("EventNumber", &EventNumber);
     inputTree[d]->SetBranchAddress("LumiNumber", &LumiNumber);
     inputTree[d]->SetBranchAddress("genHEPMCweight", &genEventWeight);
+    inputTree[d]->SetBranchAddress("overallEventWeight", &overallEventWeight);
     inputTree[d]->SetBranchAddress("ZZMass", &ZZMass);
     inputTree[d]->SetBranchAddress("ZZMassRefit", &ZZMassRefit);
     inputTree[d]->SetBranchAddress("ZZPt", &ZZPt);
@@ -461,7 +521,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
     else if (d==1) process=2;
     else if (d>1 && d<8) process=3;
     else if (d==8) process=4;
-    else if (d>8 && d<11) process=5;
+    else if (d>8 && d<13) process=5;
     else process=0;
 
     // for synchronization
@@ -485,10 +545,13 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
       bool writeThis = (z<100 && process==2); 
 
       Double_t eventWeight = 1. ;
-      if (process>0) eventWeight = ( lumin * 1000 * scaleF[process]  / NGenEvt[d] ) * xsec ;
+      /* if (process>0) eventWeight = ( lumin * 1000 * scaleF[process]  / NGenEvt[d] ) * xsec ;
       if (process > 0 && z == 0) cout << "cross-section = " << xsec << " pb; eventweight = " << eventWeight << endl;       
       if (d == 7)  eventWeight *= (NGenEvt[d]*genEventWeight/sumWeights[d]);
-      // use event weight for multiple hadronization sample
+      // use event weight for multiple hadronization sample  */
+
+      if (process>0) eventWeight = ( lumin * 1000 * scaleF[process] * overallEventWeight  / sumWeights[d] ) * xsec ;
+      if (process > 0 && z == 0) cout << "cross-section = " << xsec << " pb; eventweight = " << eventWeight << endl;       
 
       // keep only events around nominal mass!!!   
       if (enforceNarrowWidth && mass[d] > 0 && fabs(genHMass-(float)mass[d]) > 0.01*mass[d]) continue;
@@ -667,6 +730,23 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 
 	    // blind higgs region
 	    if (Z1Mass->at(theCand) > 105. && Z1Mass->at(theCand) < 135.) continue;
+
+            // additional blinding
+	    /* if (abs(ZZCandType->at(theCand)) == 1) {
+               if (ZZMass->at(theCand) > 550. && ZZMass->at(theCand) < 750.) continue;
+	       if (ZZMass->at(theCand) > 950.) continue;
+            } else {
+               if (ZZMassRefit->at(theCand) > 550. && ZZMassRefit->at(theCand) < 750.) continue;
+	       if (ZZMassRefit->at(theCand) > 950.) continue;
+            } */
+
+            // correct tau21
+	    float t12weight = 1.;
+	    if (process> 0 && abs(ZZCandType->at(theCand)) == 1) {
+	      for (int itau = 0; itau < 24; itau++) {
+		if (Z1tau21->at(theCand) > tau21bin[itau] && Z1tau21->at(theCand) < tau21bin[itau+1]) t12weight = 1.+tau21corr[itau];
+	      }
+	    } 
 	      
 	    int whichTmvaTree = -1;
 	    if (typ==2 && process == 2) whichTmvaTree = 0;
@@ -675,11 +755,10 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
  	    if (typ==3 && process == 3) whichTmvaTree = 3;
  
             float mela = 1./(1.+0.035*(pqqZJJ_VAMCFM->at(theCand)/p0plus_VAJHU->at(theCand)));
-            float vbfmela = (nExtraJets > 1 ? 1./(1.+0.06*(phjj_VAJHU_highestPTJets->at(theCand)/pvbf_VAJHU_highestPTJets->at(theCand))) : -1.);
-              
+            float vbfmela = ((phjj_VAJHU_highestPTJets->at(theCand) > 0. && nExtraJets > 1) ? 1./(1.+0.06*(phjj_VAJHU_highestPTJets->at(theCand)/pvbf_VAJHU_highestPTJets->at(theCand))) : -1.); 
 
-	    if ((typ==0 || typ==3) && nExtraJets > 1 && vbfmela > 0.5) typ=typ+8;
-	    if ((typ==1 || typ==2) && nExtraJets > 1 && vbfmela > 0.5) typ=typ+8;             
+	    if ((typ==0 || typ==3) && nExtraJets > 1 && vbfmela > 0.536+665./(ZZMass->at(theCand)+1530.)) typ=typ+8;
+	    if ((typ==1 || typ==2) && nExtraJets > 1 && vbfmela > 0.536+665./(ZZMass->at(theCand)+1530.)) typ=typ+8;             
   	    
 	    if ((typ==0 || typ==3) && btag1stJet > 0.46 && btag2ndJet > 0.46) typ=typ+4;
 	    if ((typ==1 || typ==2) && btag1stSubjet > 0.46 && btag2ndSubjet > 0.46) typ=typ+4;
@@ -724,63 +803,66 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
             if (ZZMass->at(theCand) < 300.) continue;
             // if (mela < 0.8) continue;
 	    
-	    h1[0][process][rs][typ]->Fill(ZZMass->at(theCand),eventWeight);
-	    h1[1][process][rs][typ]->Fill(ZZPt->at(theCand),eventWeight);
+	    h1[0][process][rs][typ]->Fill(ZZMass->at(theCand),eventWeight*t12weight);
+	    h1[1][process][rs][typ]->Fill(ZZPt->at(theCand),eventWeight*t12weight);
 	    
-	    h1[2][process][rs][typ]->Fill(ZZMassRefit->at(theCand),eventWeight);
-            if (rs == 1) {
-	      if (typ==0 || typ==3 || typ==4 || typ==7 || typ==8 || typ==11) hmass[process][typ]->Fill(ZZMassRefit->at(theCand),eventWeight);
-	      else hmass[process][typ]->Fill(ZZMass->at(theCand),eventWeight);
-            }
+	    h1[2][process][rs][typ]->Fill(ZZMassRefit->at(theCand),eventWeight*t12weight);
+	    if (typ==0 || typ==3 || typ==4 || typ==7 || typ==8 || typ==11) { 
+	      if (rs == 1) hmass[process][typ]->Fill(ZZMassRefit->at(theCand),eventWeight*t12weight);
+	      if (mela > 0.5) h1[25][process][rs][typ]->Fill(ZZMassRefit->at(theCand),eventWeight*t12weight);
+	    } else {
+              if (rs == 1) hmass[process][typ]->Fill(ZZMass->at(theCand),eventWeight*t12weight);
+	      if (mela > 0.5) h1[25][process][rs][typ]->Fill(ZZMass->at(theCand),eventWeight*t12weight);
+	    }
  
-	    h1[3][process][rs][typ]->Fill(Z1Mass->at(theCand),eventWeight);
+	    h1[3][process][rs][typ]->Fill(Z1Mass->at(theCand),eventWeight*t12weight);
 	    
-	    h1[4][process][rs][typ]->Fill(Z2Mass->at(theCand),eventWeight);
-	    h1[5][process][rs][typ]->Fill(Z1Pt->at(theCand),eventWeight);
-	    h1[6][process][rs][typ]->Fill(Z2Pt->at(theCand),eventWeight);
-	    h1[7][process][rs][typ]->Fill(Z2Flav->at(theCand),eventWeight);
+	    h1[4][process][rs][typ]->Fill(Z2Mass->at(theCand),eventWeight*t12weight);
+	    h1[5][process][rs][typ]->Fill(Z1Pt->at(theCand),eventWeight*t12weight);
+	    h1[6][process][rs][typ]->Fill(Z2Pt->at(theCand),eventWeight*t12weight);
+	    h1[7][process][rs][typ]->Fill(Z2Flav->at(theCand),eventWeight*t12weight);
 	    
 	    if (typ==0 || typ==3 || typ==4 || typ==7 || typ==8 || typ==11) {   // only resolved
-	      h1[8][process][rs][typ]->Fill(pt1stJet,eventWeight);
-	      h1[9][process][rs][typ]->Fill(pt2ndJet,eventWeight);
+	      h1[8][process][rs][typ]->Fill(pt1stJet,eventWeight*t12weight);
+	      h1[9][process][rs][typ]->Fill(pt2ndJet,eventWeight*t12weight);
 	    } else {
-	      h1[8][process][rs][typ]->Fill(pt1stSubjet,eventWeight);
-	      h1[9][process][rs][typ]->Fill(pt2ndSubjet,eventWeight);
+	      h1[8][process][rs][typ]->Fill(pt1stSubjet,eventWeight*t12weight);
+	      h1[9][process][rs][typ]->Fill(pt2ndSubjet,eventWeight*t12weight);
 	    }
 	    
 	    if (typ==0 || typ==3 || typ==4 || typ==7  || typ==8 || typ==11) {   // only resolved
 	      for (unsigned int nJet=0; nJet<JetPt->size(); nJet++) {
 		if (JetIsInZZCand->at(nJet) && JetQGLikelihood->at(nJet) > -800. /*remove subjets of fat jet also included in this collection! */) {
-		  h1[11][process][rs][typ]->Fill(JetBTagger->at(nJet),eventWeight);
-		  h1[10][process][rs][typ]->Fill(JetQGLikelihood->at(nJet),eventWeight); 
+		  h1[11][process][rs][typ]->Fill(JetBTagger->at(nJet),eventWeight*t12weight);
+		  h1[10][process][rs][typ]->Fill(JetQGLikelihood->at(nJet),eventWeight*t12weight); 
 		} 
 	      }
 	    } else {  
 	      for (unsigned int nJet=0; nJet<JetPt->size(); nJet++) {
 		if (JetIsInZZCand->at(nJet) && JetQGLikelihood->at(nJet) < -800. /*subjets of fat jet also included in this collection! */) {
-		  h1[11][process][rs][typ]->Fill(JetBTagger->at(nJet),eventWeight);
+		  h1[11][process][rs][typ]->Fill(JetBTagger->at(nJet),eventWeight*t12weight);
 		} 
 	      }
 	    } 
 	    
-	    h1[12][process][rs][typ]->Fill(pt1stLep,eventWeight);
-	    h1[13][process][rs][typ]->Fill(pt2ndLep,eventWeight);
+	    h1[12][process][rs][typ]->Fill(pt1stLep,eventWeight*t12weight);
+	    h1[13][process][rs][typ]->Fill(pt2ndLep,eventWeight*t12weight);
 	    
-	    h1[14][process][rs][typ]->Fill(abs(helcosthetaZ1->at(theCand)),eventWeight);
-	    h1[15][process][rs][typ]->Fill(helcosthetaZ2->at(theCand),eventWeight);
-	    h1[16][process][rs][typ]->Fill(costhetastar->at(theCand),eventWeight);
-	    h1[17][process][rs][typ]->Fill(phistarZ1->at(theCand),eventWeight);
-	    h1[18][process][rs][typ]->Fill(fabs(helphi->at(theCand)),eventWeight);
+	    h1[14][process][rs][typ]->Fill(abs(helcosthetaZ1->at(theCand)),eventWeight*t12weight);
+	    h1[15][process][rs][typ]->Fill(helcosthetaZ2->at(theCand),eventWeight*t12weight);
+	    h1[16][process][rs][typ]->Fill(costhetastar->at(theCand),eventWeight*t12weight);
+	    h1[17][process][rs][typ]->Fill(phistarZ1->at(theCand),eventWeight*t12weight);
+	    h1[18][process][rs][typ]->Fill(fabs(helphi->at(theCand)),eventWeight*t12weight);
 	    
-	    h1[19][process][rs][typ]->Fill(nExtraJets,eventWeight);
-	    h1[20][process][rs][typ]->Fill(Met,eventWeight);
+	    h1[19][process][rs][typ]->Fill(nExtraJets,eventWeight*t12weight);
+	    h1[20][process][rs][typ]->Fill(Met,eventWeight*t12weight);
 
 	    if (typ==1 || typ==2 || typ==5 || typ==6  || typ==9 || typ==10) 
-	      h1[21][process][rs][typ]->Fill(Z1tau21->at(theCand),eventWeight);   // only merged
+	      h1[21][process][rs][typ]->Fill(Z1tau21->at(theCand),eventWeight*t12weight);   // only merged
 	    else 
-	      h1[22][process][rs][typ]->Fill(tmvaJetQGLikelihood1*tmvaJetQGLikelihood2,eventWeight);     // only resolved
-            h1[23][process][rs][typ]->Fill(mela,eventWeight);
-            h1[24][process][rs][typ]->Fill(vbfmela,eventWeight);
+	      h1[22][process][rs][typ]->Fill(tmvaJetQGLikelihood1*tmvaJetQGLikelihood2,eventWeight*t12weight);     // only resolved
+            h1[23][process][rs][typ]->Fill(mela,eventWeight*t12weight);
+            h1[24][process][rs][typ]->Fill(vbfmela,eventWeight*t12weight);
 	    
 	    if (rs == 1 && whichTmvaTree > -1) outputTree[whichTmvaTree]->Fill();
 	  } else { // control region for QG (only fille some variables)
@@ -878,8 +960,10 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
     }
   }
 
+  ofstream aa("unblind.txt");
+
   for(int norm=0; norm<2; norm++){  
-    for(int rs=0; rs<nFS; rs++){   //ee, mumu, or all
+    for(int rs=0; rs<nFS; rs++){   // ee, mumu, or all
       for(int v=0; v<nVariables; v++){
 	for(int nt=0; nt<nType; nt++){
   
@@ -918,7 +1002,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	  t->DrawLatex(0.7,0.88,"4.3 fb^{-1} (13 TeV)"); 
          
 	  // cout << rs << " " << h1[v][3][rs][nt]->GetEntries() << endl;
-	  if (nt==0 || nt==1 || nt==4 || nt==5 || nt==8 || nt==9 || CR) {
+	  if (nt==0 || nt==1 || nt==4 || nt==5 || nt==8 || nt==9 || CR || unblind) {
 
 	    float a = h1[v][3][rs][nt]->GetMaximum();
 	    float b = h1[v][0][rs][nt]->GetMaximum();
@@ -936,6 +1020,12 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	    if (!norm) {
 	      h1[v][2][rs][nt]->Draw("histsame"); 
 	      h1[v][1][rs][nt]->Draw("histsame");
+	      if (unblind && (v==0 || v==2)) {
+	        int thebin1 = h1[v][3][rs][nt]->FindBin(550.);
+	        int thebin2 = h1[v][3][rs][nt]->FindBin(750.);
+                aa << "INTEGRAL in (550,750): DATA / " << varName[v] << " / " << sFS[rs] << " / " << typeS[nt] << " = " << h1[v][0][rs][nt]->Integral(thebin1,thebin2) << endl;
+                aa << "INTEGRAL in (550,750): MC / " << varName[v] << " / " << sFS[rs] << " / " << typeS[nt] << " = " << h1[v][3][rs][nt]->Integral(thebin1,thebin2) << endl;
+              }
 	    }
 	    
 	    h1[v][0][rs][nt]->Draw("esame");
@@ -963,7 +1053,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	  ratio->SetMinimum(-0.5);
 	  ratio->SetMaximum(0.5); 
 	  ratio->GetYaxis()->SetTitle("(Data-MC)/Data");
-	  if (!(nt==0 || nt==1 || nt==4 || nt==5 || nt==8 || nt==9 || CR)) {
+	  if (!(nt==0 || nt==1 || nt==4 || nt==5 || nt==8 || nt==9 || CR || unblind)) {
 	    ratio->SetLineColor(kWhite);
 	    ratio->SetMarkerColor(kWhite);
 	  }
@@ -984,13 +1074,15 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	  
           if (norm) 
 	    c1.SaveAs(Form("~/www/graviton/%snorm/%s_%s_%s.png",dirout.c_str(),varName[v].c_str(),sFS[rs].c_str(),typeS[nt].c_str()));
-	  else
+	  else 
 	    c1.SaveAs(Form("~/www/graviton/%s/%s_%s_%s.png",dirout.c_str(),varName[v].c_str(),sFS[rs].c_str(),typeS[nt].c_str()));
 	}
       }
     }
   }
   
+  aa.close();
+
   if (!CR) {
     outputFile->cd();
     for (int t=0; t<4; t++) {

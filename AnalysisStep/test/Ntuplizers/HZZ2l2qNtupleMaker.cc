@@ -1465,9 +1465,9 @@ ZZsel.push_back(sel);
   //Compute the data/MC weight and overall event weight
   dataMCWeight = 1.;
   if (!isMerged) {
-    for(unsigned int i=0; i<nJets; ++i){
-      dataMCWeight *= getAllWeightJet(leptons[i]);
-    }
+    // for(unsigned int i=0; i<nJets; ++i){
+    //  dataMCWeight *= getAllWeightJet(leptons[i]);
+    // }
   }
   for(unsigned int i=nJets; i<leptons.size(); ++i){
     dataMCWeight *= getAllWeight(leptons[i]);
