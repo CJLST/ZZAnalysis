@@ -112,6 +112,9 @@ namespace {
   Short_t nCleanedJetsPt30_jecUp  = 0;
   Short_t nCleanedJetsPt30_jecDn  = 0;
   Short_t nCleanedJetsPt30BTagged  = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF  = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSFUp  = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSFDn  = 0;
   Short_t trigWord  = 0;
   Float_t ZZMass  = 0;
   Float_t ZZMassErr  = 0;
@@ -291,11 +294,15 @@ namespace {
   std::vector<float> JetMass ;
   std::vector<float> JetBTagger ;
   std::vector<float> JetIsBtagged;
+  std::vector<float> JetIsBtaggedWithSF;
+  std::vector<float> JetIsBtaggedWithSFUp;
+  std::vector<float> JetIsBtaggedWithSFDn;
   std::vector<float> JetQGLikelihood;
   std::vector<float> JetAxis2;
   std::vector<float> JetMult;
   std::vector<float> JetPtD;
   std::vector<float> JetSigma ;
+  std::vector<short> JetHadronFlavour;
   Float_t DiJetMass  = -99;
 //   Float_t DiJetMassPlus  = -99;
 //   Float_t DiJetMassMinus  = -99;
@@ -336,6 +343,10 @@ namespace {
   Float_t LHEweight_QCDscale_muR0p5_muF1  = 0;
   Float_t LHEweight_QCDscale_muR0p5_muF2  = 0;
   Float_t LHEweight_QCDscale_muR0p5_muF0p5  = 0;
+  Float_t LHEweight_PDFVariation_Up = 0;
+  Float_t LHEweight_PDFVariation_Dn = 0;
+  Float_t LHEweight_AsMZ_Up = 0;
+  Float_t LHEweight_AsMZ_Dn = 0;
 
   Short_t genExtInfo  = 0;
   Float_t xsection  = 0;
@@ -544,6 +555,7 @@ private:
   TSpline3* spkfactor_ggzz_nlo[9]; // Nominal, PDFScaleDn, PDFScaleUp, QCDScaleDn, QCDScaleUp, AsDn, AsUp, PDFReplicaDn, PDFReplicaUp
 
   TH2D *hTH2D_Mu_All;
+  TH2F *hTH2F_El_Reco;
   TH1 *hTH2D_El_IdIsoSip_notCracks;
   TH1 *hTH2D_El_IdIsoSip_Cracks;
   TH2D* h_weight; //HqT weights
@@ -592,6 +604,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   reweight(),
   sampleName(pset.getParameter<string>("sampleName")),
   hTH2D_Mu_All(0),
+  hTH2F_El_Reco(0),
   hTH2D_El_IdIsoSip_notCracks(0),
   hTH2D_El_IdIsoSip_Cracks(0),
   h_weight(0)
@@ -715,6 +728,14 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
         hTH2D_El_IdIsoSip_notCracks = (TH1*) root_file->Get("ele_scale_factors")->Clone();
         hTH2D_El_IdIsoSip_Cracks = (TH1*) root_file->Get("ele_scale_factors_gap")->Clone();
         root_file->Close();
+
+	TString filenameEleReco("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi.txt_SF2D.root");
+        edm::FileInPath fipEleReco(filenameEleReco.Data());
+        fipPath = fipEleReco.fullPath();
+        TFile *root_file_reco = TFile::Open(fipPath.data(),"READ");
+        hTH2F_El_Reco = (TH2F*) root_file_reco->Get("EGamma_SF2D")->Clone();
+        root_file_reco->Close();
+
     } else {
         TString filename;
         filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_%d_IdIsoSip.root",year);
@@ -1071,6 +1092,9 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     if(cleanedJets[i]->pt()>30){
       ++nCleanedJetsPt30;
       if(cleanedJets[i]->userFloat("isBtagged")) ++nCleanedJetsPt30BTagged;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF_Up")) ++nCleanedJetsPt30BTagged_bTagSFUp;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF_Dn")) ++nCleanedJetsPt30BTagged_bTagSFDn;
     }
 
     // count jec up/down njets pt30
@@ -1120,6 +1144,9 @@ void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
    JetMass .push_back( jet.p4().M());
    JetBTagger .push_back( jet.userFloat("bTagger"));
    JetIsBtagged .push_back( jet.userFloat("isBtagged"));
+   JetIsBtaggedWithSF .push_back( jet.userFloat("isBtaggedWithSF"));
+   JetIsBtaggedWithSFUp .push_back( jet.userFloat("isBtaggedWithSF_Up"));
+   JetIsBtaggedWithSFDn .push_back( jet.userFloat("isBtaggedWithSF_Dn"));
    JetQGLikelihood .push_back( jet.userFloat("qgLikelihood"));
    if(addQGLInputs){
      JetAxis2 .push_back( jet.userFloat("axis2"));
@@ -1127,6 +1154,7 @@ void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
      JetPtD .push_back( jet.userFloat("ptD"));
    }
    JetSigma .push_back(jet.userFloat("jec_unc"));
+   JetHadronFlavour .push_back(jet.hadronFlavour());
 }
 
 
@@ -1336,6 +1364,10 @@ void HZZ4lNtupleMaker::FillLHECandidate(){
   LHEweight_QCDscale_muR0p5_muF1 = lheHandler->getLHEWeight(6, 1.);
   LHEweight_QCDscale_muR0p5_muF2 = lheHandler->getLHEWeight(7, 1.);
   LHEweight_QCDscale_muR0p5_muF0p5 = lheHandler->getLHEWeight(8, 1.);
+  LHEweight_PDFVariation_Up = lheHandler->getLHEWeight_PDFVariationUpDn(1, 1.);
+  LHEweight_PDFVariation_Dn = lheHandler->getLHEWeight_PDFVariationUpDn(-1, 1.);
+  LHEweight_AsMZ_Up = lheHandler->getLHEWeigh_AsMZUpDn(1, 1.);
+  LHEweight_AsMZ_Dn = lheHandler->getLHEWeigh_AsMZUpDn(-1, 1.);
 }
 
 
@@ -1716,6 +1748,19 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   }
   //Store an overall event weight (which is normalized by gen_sumWeights)
   overallEventWeight = PUWeight * genHEPMCweight * dataMCWeight * trigEffWeight;
+
+  /* // debug printout for weights
+  cout<<"Event "<<event.id().run()<<":"<<event.luminosityBlock()<<":"<<event.id().event()<<endl;
+  cout<<" pileup weight =         "<<PUWeight<<endl;
+  cout<<" sign of gen. weight =   "<<genHEPMCweight/fabs(genHEPMCweight)<<endl;
+  cout<<" lepton data/MC weight = "<<dataMCWeight<<endl;
+  for(unsigned int i=0; i<leptons.size(); ++i)
+    cout<<"   lepton ID="<<leptons[i]->pdgId()<<", pT="<<leptons[i]->pt()<<", weight="<<getAllWeight(leptons[i])<<endl;
+  cout<<" trigger eff. weight =   "<<trigEffWeight<<endl;
+  cout<<"product of all =         "<<overallEventWeight/fabs(genHEPMCweight)<<endl;;
+  cout<<endl;
+  //*/
+
 }
 
 
@@ -1895,32 +1940,6 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
 
     weight = hTH2D_Mu_All->GetBinContent(hTH2D_Mu_All->GetXaxis()->FindBin(myLepEta),hTH2D_Mu_All->GetYaxis()->FindBin(myLepPt));
 
-    // add tracking SFs for 2016, as per https://twiki.cern.ch/twiki/bin/view/CMS/MuonReferenceEffsRun2
-    if (myLepPt>10) {
-      if      (myLepEta>-2.4 &&
-	       myLepEta<-2.1) weight*= .9824;
-      else if (myLepEta<-1.6) weight*= .9917;    
-      else if (myLepEta<-1.1) weight*= .9959;
-      else if (myLepEta<-0.6) weight*= .9934;
-      else if (myLepEta<0.0 ) weight*= .9915;
-      else if (myLepEta<0.6 ) weight*= .9947;
-      else if (myLepEta<1.1 ) weight*= .9967;
-      else if (myLepEta<1.6 ) weight*= .9949;
-      else if (myLepEta<2.1 ) weight*= .9912;
-      else if (myLepEta<2.4 ) weight*= .9768;
-    } else {
-      if      (myLepEta>-2.4 &&
-	       myLepEta<-2.1) weight*= .9544;
-      else if (myLepEta<-1.6) weight*= .9714;    
-      else if (myLepEta<-1.1) weight*= .9691;
-      else if (myLepEta<-0.6) weight*= .9622;
-      else if (myLepEta<0.0 ) weight*= .9586;
-      else if (myLepEta<0.6 ) weight*= .9703;
-      else if (myLepEta<1.1 ) weight*= .9764;
-      else if (myLepEta<1.6 ) weight*= .9729;
-      else if (myLepEta<2.1 ) weight*= .9711;
-      else if (myLepEta<2.4 ) weight*= .9412;
-    }
   } else if(myLepID == 11) {
 
     if(mySIP >= 4.0 ) {
@@ -1935,20 +1954,26 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
         } else {
             if(myLepPt > 199.) myLepPt = 199.;
         }*/
-        myLepEta = fabs(myLepEta);
+        Float_t myLepAbsEta = fabs(myLepEta);
 
 
         if(year >= 2016) {
             if((bool)userdatahelpers::getUserFloat(Lep,"isCrack"))
-                 weight = hTH2D_El_IdIsoSip_Cracks->GetBinContent(hTH2D_El_IdIsoSip_Cracks->FindFixBin(myLepEta, myLepPt));
+                 weight = hTH2D_El_IdIsoSip_Cracks->GetBinContent(hTH2D_El_IdIsoSip_Cracks->FindFixBin(myLepAbsEta, myLepPt));
             else
-                 weight = hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->FindFixBin(myLepEta, myLepPt));
+                 weight = hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->FindFixBin(myLepAbsEta, myLepPt));
         } else {
             if((bool)userdatahelpers::getUserFloat(Lep,"isCrack"))
-              weight = hTH2D_El_IdIsoSip_Cracks   ->GetBinContent(hTH2D_El_IdIsoSip_Cracks   ->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_Cracks   ->GetYaxis()->FindBin(myLepEta));
+              weight = hTH2D_El_IdIsoSip_Cracks   ->GetBinContent(hTH2D_El_IdIsoSip_Cracks   ->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_Cracks   ->GetYaxis()->FindBin(myLepAbsEta));
             else
-              weight = hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_notCracks->GetYaxis()->FindBin(myLepEta));
+              weight = hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_notCracks->GetYaxis()->FindBin(myLepAbsEta));
         }
+
+	// electron reconstruction scale factor, as a function of supercluster eta
+	Float_t SCeta = userdatahelpers::getUserFloat(Lep,"SCeta");
+	if(myLepPt < 20.) myLepPt = 20.;
+	weight *= hTH2F_El_Reco->GetBinContent(hTH2F_El_Reco->GetXaxis()->FindBin(SCeta),hTH2F_El_Reco->GetYaxis()->FindBin(myLepPt));
+
     }
   } else {
 
@@ -2139,6 +2164,9 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("nCleanedJetsPt30_jecUp",nCleanedJetsPt30_jecUp);
   myTree->Book("nCleanedJetsPt30_jecDn",nCleanedJetsPt30_jecDn);
   myTree->Book("nCleanedJetsPt30BTagged",nCleanedJetsPt30BTagged);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF",nCleanedJetsPt30BTagged_bTagSF);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSFUp",nCleanedJetsPt30BTagged_bTagSFUp);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSFDn",nCleanedJetsPt30BTagged_bTagSFDn);
   myTree->Book("trigWord",trigWord);
   myTree->Book("ZZMass",ZZMass);
   myTree->Book("ZZMassErr",ZZMassErr);
@@ -2328,6 +2356,9 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("JetMass",JetMass);
   myTree->Book("JetBTagger",JetBTagger);
   myTree->Book("JetIsBtagged",JetIsBtagged);
+  myTree->Book("JetIsBtaggedWithSF",JetIsBtaggedWithSF);
+  myTree->Book("JetIsBtaggedWithSFUp",JetIsBtaggedWithSFUp);
+  myTree->Book("JetIsBtaggedWithSFDn",JetIsBtaggedWithSFDn);
   myTree->Book("JetQGLikelihood",JetQGLikelihood);
   if(addQGLInputs){
     myTree->Book("JetAxis2",JetAxis2);
@@ -2335,6 +2366,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("JetPtD",JetPtD);
   }
   myTree->Book("JetSigma",JetSigma);
+  myTree->Book("JetHadronFlavour",JetHadronFlavour);
   myTree->Book("DiJetMass",DiJetMass);
 //   myTree->Book("DiJetMassPlus",DiJetMassPlus); // FIXME: add back once filled again
 //   myTree->Book("DiJetMassMinus",DiJetMassMinus);
@@ -2445,6 +2477,10 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("LHEweight_QCDscale_muR0p5_muF1", LHEweight_QCDscale_muR0p5_muF1);
     myTree->Book("LHEweight_QCDscale_muR0p5_muF2", LHEweight_QCDscale_muR0p5_muF2);
     myTree->Book("LHEweight_QCDscale_muR0p5_muF0p5", LHEweight_QCDscale_muR0p5_muF0p5);
+    myTree->Book("LHEweight_PDFVariation_Up", LHEweight_PDFVariation_Up);
+    myTree->Book("LHEweight_PDFVariation_Dn", LHEweight_PDFVariation_Dn);
+    myTree->Book("LHEweight_AsMZ_Up", LHEweight_AsMZ_Up);
+    myTree->Book("LHEweight_AsMZ_Dn", LHEweight_AsMZ_Dn);
   }
 
 }

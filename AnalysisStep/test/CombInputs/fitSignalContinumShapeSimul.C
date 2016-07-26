@@ -163,7 +163,7 @@ void all(int selAna =-10,  int channels=0, int categ =-10, int sample = 0 ){
       outFile.open(filename);
       if(channels == 2)outFile<<"shape : " <<"\"RooDCBall::"<<ssample<<"_mass(mean,sigma,alpha,n,alpha2,n2)*(frac)+(RooLandau::"<<ssample<<"_mass(p0,p1))*(1-frac)\""<< endl;
       outFile << schannel <<"    :" << endl;
-      outFile <<"    mean   : " <<"'"<<fitValues[0]<<"+"<<"("<<fitValues[6] <<")*(@0-125)"<<"'"<<endl;
+      outFile <<"    mean   : " <<"'"<<fitValues[0]<<"+"<<"("<<fitValues[6] <<"+1)*(@0-125)"<<"'"<<endl;
       outFile <<"    sigma  : " <<"'"<<fitValues[1]<<"+"<<"("<<fitValues[7] <<")*(@0-125)"<<"'"<<endl;
       outFile <<"    alpha  : " <<"'"<<fitValues[2]<<"+"<<"("<<fitValues[8] <<")*(@0-125)"<<"'"<<endl;
       outFile <<"    n      : " <<"'"<<fitValues[3]<<"+"<<"("<<fitValues[9] <<")*(@0-125)"<<"'"<<endl;
@@ -603,9 +603,9 @@ void fitSignalContinumShapeSimul(int massBin[40],int maxMassBin, int selAna, int
 
   RooArgSet * params2 = rs.getParameters(RooArgList(x,massrc));
     if (sample != 3 || categ > 0 ) {
-    if(channels==0 )params2->readFromFile("Ch0_Cat0_paraf.txt") ;
-    if(channels==1 )params2->readFromFile("Ch1_Cat0_paraf.txt") ;
-    if(channels==2 )params2->readFromFile("Ch2_Cat0_paraf.txt") ;
+    if(channels==0 )params2->readFromFile("Ch0_Cat0_paraIIf.txt") ;
+    if(channels==1 )params2->readFromFile("Ch1_Cat0_paraIIf.txt") ;
+    if(channels==2 )params2->readFromFile("Ch2_Cat0_paraIIf.txt") ;
   }
   RooFitResult *fitressim = (RooFitResult*)rs.fitTo(dataset,SumW2Error(1),Range(xMin,xMax),Strategy(2),NumCPU(8),Save(true));
  
@@ -619,9 +619,9 @@ void fitSignalContinumShapeSimul(int massBin[40],int maxMassBin, int selAna, int
 //  sl_p1.setConstant(kTRUE);
 
   if (sample == 3 && categ <= 0 ) {
-    if(channels==0 )params2->writeToFile("Ch0_Cat0_paraf.txt") ;
-    if(channels==1 )params2->writeToFile("Ch1_Cat0_paraf.txt") ;
-    if(channels==2 )params2->writeToFile("Ch2_Cat0_paraf.txt") ;	
+    if(channels==0 )params2->writeToFile("Ch0_Cat0_paraIIf.txt") ;
+    if(channels==1 )params2->writeToFile("Ch1_Cat0_paraIIf.txt") ;
+    if(channels==2 )params2->writeToFile("Ch2_Cat0_paraIIf.txt") ;	
   }
 
   cout << "Full fit done" << endl;
