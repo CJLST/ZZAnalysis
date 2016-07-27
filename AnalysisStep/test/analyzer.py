@@ -15,7 +15,6 @@ declareDefault("PROCESS_CR", False, globals())
 
 # Couplings for reweighting
 declareDefault("REWEIGHTING_TYPE", "none", globals())
-declareDefault("SPIN", 0, globals())
 couplings = Couplings()
 for coupling in couplings.allnames():
     declareDefault(coupling, 0, globals())
@@ -148,7 +147,7 @@ TreeSetup = cms.EDAnalyzer("HZZ4lNtupleMaker",
                            sampleName = cms.string(SAMPLENAME),
                            superMelaMass = cms.double(SUPERMELA_MASS),
                            xsec = cms.double(XSEC),
-                           spin = cms.int32(int(SPIN)),
+                           spin = cms.int32(couplings.getspin(doreweighting=(REWEIGHTING_TYPE!="none"))),
                            HVVcouplings_real = cms.vdouble(*couplings.getcouplings(spin=0, WW=False, imag=False)),
                            HVVcouplings_imag = cms.vdouble(*couplings.getcouplings(spin=0, WW=False, imag=True)),
                            ZVVcouplings_real = cms.vdouble(*couplings.getcouplings(spin=1, imag=False)),

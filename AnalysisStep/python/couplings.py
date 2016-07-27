@@ -63,6 +63,29 @@ class Couplings(dict):
     def allnames(self):
         return self.couplingsorder_Z + self.couplingsorder_W + self.couplingsorder_spin1 + self.couplingsorder_spin2_gg + self.couplingsorder_spin2
 
+    def getspin(self, doreweighting):
+        if not doreweighting: return 0
+        spin = {S: False for S in (0, 1, 2)}
+        for coupling in self.couplingsorder_Z + self.couplingsorder_W:
+            if self[coupling]:
+                spin[0] = True
+        for coupling in self.couplingsorder_spin1:
+            if self[coupling]:
+                spin[1] = True
+        for coupling in self.couplingsorder_spin2_gg + self.couplingsorder_spin2:
+            if self[coupling]:
+                spin[2] = True
+
+        if sum(spin.values()) > 1:
+            raise ValueError("Couplings for more than one spin set (" + ", ".join(k for k, v in spin.iteritems() if v) + ").  Please set couplings for only one spin value: ghz* for spin 0, zprime_zz_* for spin 1, or a* and b* for spin 2.")
+
+        if sum(spin.values()) == 0:
+            raise ValueError("Reweighting is turned on, but no couplings are set!")
+
+        for k, v in spin.iteritems():
+            if v:
+                return k
+
     def getcouplings(self, spin, gg=False, WW=False, imag=False):
         if spin == 0:
             assert not gg
