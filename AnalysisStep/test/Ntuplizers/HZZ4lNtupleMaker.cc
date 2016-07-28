@@ -1942,44 +1942,41 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
 
   } else if(myLepID == 11) {
 
-    if(mySIP >= 4.0 ) {
-        // No SF for RSE yet
-        return 1.;
-    } else {
-
-        if(myLepPt > 199.) myLepPt = 199.;
-        /*
-        if(year >= 2016) {
-            if(myLepPt > 65.) myLepPt = 65.;
-        } else {
-            if(myLepPt > 199.) myLepPt = 199.;
-        }*/
-        Float_t myLepAbsEta = fabs(myLepEta);
-
-
-        if(year >= 2016) {
-            if((bool)userdatahelpers::getUserFloat(Lep,"isCrack"))
-                 weight = hTH2D_El_IdIsoSip_Cracks->GetBinContent(hTH2D_El_IdIsoSip_Cracks->FindFixBin(myLepAbsEta, myLepPt));
-            else
-                 weight = hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->FindFixBin(myLepAbsEta, myLepPt));
-        } else {
-            if((bool)userdatahelpers::getUserFloat(Lep,"isCrack"))
-              weight = hTH2D_El_IdIsoSip_Cracks   ->GetBinContent(hTH2D_El_IdIsoSip_Cracks   ->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_Cracks   ->GetYaxis()->FindBin(myLepAbsEta));
-            else
-              weight = hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_notCracks->GetYaxis()->FindBin(myLepAbsEta));
-        }
-
-    }
 	// electron reconstruction scale factor, as a function of supercluster eta
 	Float_t SCeta = userdatahelpers::getUserFloat(Lep,"SCeta");
 	if(myLepPt < 20.) myLepPt = 20.;
+    if(myLepPt > 199.) myLepPt = 199.;
+
 	weight *= hTH2F_El_Reco->GetBinContent(hTH2F_El_Reco->GetXaxis()->FindBin(SCeta),hTH2F_El_Reco->GetYaxis()->FindBin(myLepPt));
+
+    // reset pt for next lookup with different limits    
+    myLepPt = Lep->pt();
+
+    if(mySIP >= 4.0 ) {
+        // No SF for RSE yet
+        //return 1.;
+    } else {
+
+        if(myLepPt > 199.) myLepPt = 199.;
+        Float_t myLepAbsEta = fabs(myLepEta);
+
+        if(year >= 2016) {
+            if((bool)userdatahelpers::getUserFloat(Lep,"isCrack"))
+                 weight *= hTH2D_El_IdIsoSip_Cracks->GetBinContent(hTH2D_El_IdIsoSip_Cracks->FindFixBin(myLepAbsEta, myLepPt));
+            else
+                 weight *= hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->FindFixBin(myLepAbsEta, myLepPt));
+        } else {
+            if((bool)userdatahelpers::getUserFloat(Lep,"isCrack"))
+              weight *= hTH2D_El_IdIsoSip_Cracks   ->GetBinContent(hTH2D_El_IdIsoSip_Cracks   ->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_Cracks   ->GetYaxis()->FindBin(myLepAbsEta));
+            else
+              weight *= hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_notCracks->GetYaxis()->FindBin(myLepAbsEta));
+        }
+    }
   } else {
 
     cout<<"ERROR! wrong lepton ID "<<myLepID<<endl;
     //abort();
     weight = 0.;
-
   }
 
   //FIXME
