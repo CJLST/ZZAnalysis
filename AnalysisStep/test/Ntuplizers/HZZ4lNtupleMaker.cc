@@ -720,7 +720,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   if (!skipEleDataMCWeight) {
 
     if(year>=2016) {
-        TString filename("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_2016_v2.root");
+        TString filename("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_2016_v3.root");
         //TString filename("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ele_scale_factors_2016_v1.root");  
         edm::FileInPath fipEleNotCracks(filename.Data());
         fipPath = fipEleNotCracks.fullPath();
@@ -1969,12 +1969,11 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
               weight = hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_notCracks->GetYaxis()->FindBin(myLepAbsEta));
         }
 
+    }
 	// electron reconstruction scale factor, as a function of supercluster eta
 	Float_t SCeta = userdatahelpers::getUserFloat(Lep,"SCeta");
 	if(myLepPt < 20.) myLepPt = 20.;
 	weight *= hTH2F_El_Reco->GetBinContent(hTH2F_El_Reco->GetXaxis()->FindBin(SCeta),hTH2F_El_Reco->GetYaxis()->FindBin(myLepPt));
-
-    }
   } else {
 
     cout<<"ERROR! wrong lepton ID "<<myLepID<<endl;
