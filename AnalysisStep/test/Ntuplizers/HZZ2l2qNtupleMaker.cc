@@ -464,8 +464,7 @@ private:
   TSpline3* spkfactor;
 
   TH2D *hTH2D_Mu_All;
-  TH2D *hTH2D_El_notCracks;
-  TH2D *hTH2D_El_Cracks;
+  TH2F *hTH2F_El_Reco;
   TH2D *hTH2D_El_IdIsoSip_notCracks;
   TH2D *hTH2D_El_IdIsoSip_Cracks;
   TH2D* h_weight; //HqT weights
@@ -487,8 +486,7 @@ HZZ2l2qNtupleMaker::HZZ2l2qNtupleMaker(const edm::ParameterSet& pset) :
   myHelper(pset),
   reweight(),
   hTH2D_Mu_All(0),
-  hTH2D_El_notCracks(0),
-  hTH2D_El_Cracks(0),
+  hTH2F_El_Reco(0),
   hTH2D_El_IdIsoSip_notCracks(0),
   hTH2D_El_IdIsoSip_Cracks(0),
   h_weight(0)
@@ -583,29 +581,19 @@ HZZ2l2qNtupleMaker::HZZ2l2qNtupleMaker(const edm::ParameterSet& pset) :
     hTH2D_Mu_All = (TH2D*)fMuWeight->Get("FINAL")->Clone();
     fMuWeight->Close();
 
-    filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ele_scale_factors_%d_v1.root",year);
+    filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ele_scale_factors_%d_v3.root",year);
     edm::FileInPath fipEle(filename.Data());
     fipPath = fipEle.fullPath();
     TFile *fEleWeight = TFile::Open(fipPath.data(),"READ");
-    hTH2D_El_notCracks =  (TH2D*)fEleWeight->Get("ele_scale_factors")->Clone();
-    hTH2D_El_Cracks =  (TH2D*)fEleWeight->Get("ele_scale_factors_gap")->Clone();
+    hTH2D_El_IdIsoSip_notCracks =  (TH2D*)fEleWeight->Get("ele_scale_factors")->Clone();
+    hTH2D_El_IdIsoSip_Cracks =  (TH2D*)fEleWeight->Get("ele_scale_factors_gap")->Clone();
     fEleWeight->Close();
 
-    year = 2015;
-
-    filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_%d_IdIsoSip.root",year); 
-    edm::FileInPath fipEleNotCracks(filename.Data());
-    fipPath = fipEleNotCracks.fullPath();
-    TFile *fEleWeightNotCracks = TFile::Open(fipPath.data(),"READ");
-    hTH2D_El_IdIsoSip_notCracks = (TH2D*)fEleWeightNotCracks->Get("hScaleFactors_IdIsoSip")->Clone();
-    fEleWeightNotCracks->Close();
-
-    filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_%d_IdIsoSip_Cracks.root",year); 
-    edm::FileInPath fipEleCracks(filename.Data());
-    fipPath = fipEleCracks.fullPath();
-    TFile *fEleWeightCracks = TFile::Open(fipPath.data(),"READ");
-    hTH2D_El_IdIsoSip_Cracks = (TH2D*)fEleWeightCracks->Get("hScaleFactors_IdIsoSip_Cracks")->Clone();
-    fEleWeightCracks->Close();
+    edm::FileInPath fipEleReco("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi.txt_SF2D.root");
+    fipPath = fipEleReco.fullPath();
+    TFile *fEleReco = TFile::Open(fipPath.data(),"READ");
+    hTH2F_El_Reco = (TH2F*)fEleReco->Get("EGamma_SF2D")->Clone();
+    fEleReco->Close();
 
     edm::FileInPath btagFIP("ZZAnalysis/AnalysisStep/data/CSVv2_4invfb_systJuly15.csv");
     fipPath=btagFIP.fullPath();
@@ -1623,9 +1611,12 @@ Float_t HZZ2l2qNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
   }else if(myLepID == 11){
 
     if((bool)userdatahelpers::getUserFloat(Lep,"isCrack"))
-      weight = hTH2D_El_Cracks   ->GetBinContent(hTH2D_El_Cracks   ->GetXaxis()->FindBin(myLepPt),hTH2D_El_Cracks   ->GetYaxis()->FindBin(myLepEta));
+      weight = hTH2D_El_IdIsoSip_Cracks->GetBinContent(hTH2D_El_IdIsoSip_Cracks->FindFixBin(myLepEta, myLepPt));
     else
-      weight = hTH2D_El_notCracks->GetBinContent(hTH2D_El_notCracks->GetXaxis()->FindBin(myLepPt),hTH2D_El_notCracks->GetYaxis()->FindBin(myLepEta));
+      weight = hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->FindFixBin(myLepEta, myLepPt));
+
+    if(myLepPt < 20.) myLepPt = 20.;
+    weight *= hTH2F_El_Reco->GetBinContent(hTH2F_El_Reco->GetXaxis()->FindBin(myLepEta),hTH2F_El_Reco->GetYaxis()->FindBin(myLepPt));
 
   }else{
 
