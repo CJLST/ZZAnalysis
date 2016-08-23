@@ -222,6 +222,17 @@ elif (LEPTON_SETUP == 2016):
         process.hltFilterSingleMu.HLTPaths = ["*"]
 
     else:
+        if (IsMC): #re-miniAOD (APPLYTRIG=True) have TriggerResult labelled HLT2...
+            process.hltFilterDiMu.TriggerResultsTag  = cms.InputTag("TriggerResults","","HLT2")
+            process.hltFilterDiEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT2")
+            process.hltFilterMuEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT2")
+            process.hltFilterMuEle2.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT2")
+            process.hltFilterMuEle3.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT2")
+            process.hltFilterTriEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT2")
+            process.hltFilterTriMu.TriggerResultsTag  = cms.InputTag("TriggerResults","","HLT2")
+            process.hltFilterSingleEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT2")
+            process.hltFilterSingleMu.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT2")
+
         process.hltFilterDiEle.HLTPaths = ["HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v*"]
         process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*"]
         process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"]
@@ -460,7 +471,7 @@ process.calibratedPatElectrons = cms.EDProducer("CalibratedPatElectronProducerRu
     gbrForestName = cms.string("gedelectron_p4combination_25ns"),
     isMC = cms.bool(IsMC),
     isSynchronization = cms.bool(False),
-    correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/80X_Golden22June_approval")
+    correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/80X_ichepV1_2016_ele")
 )
 
 if (BUNCH_SPACING == 50):
@@ -1078,12 +1089,13 @@ process.dressedJets = cms.EDProducer("JetFiller",
     cut = cms.string("pt>20 && abs(eta)<4.7 && userFloat('looseJetID') && userFloat('PUjetID')"),
     isMC = cms.bool(IsMC),
     bTaggerName = cms.string("pfCombinedInclusiveSecondaryVertexV2BJetTags"),
+    bTaggerThreshold = cms.double(0.800),
     jecType = cms.string("AK4PFchs"),
     applyJER = cms.bool(APPLYJER),
     jerType = cms.string("AK4PFchs"),
-    flags = cms.PSet(
-        isBtagged = cms.string("userFloat('bTagger')>0.800"),
-        )
+    bTagSFFile = cms.string("/afs/cern.ch/user/s/sregnard/public/BTaggingSFICHEP/CSVv2_ichep.csv"),
+    bTagMCEffFile = cms.string("/afs/cern.ch/user/s/sregnard/public/BTaggingSFICHEP/bTagEfficiencies_80X.root"),
+    flags = cms.PSet()
     )
 
 ### Load JEC

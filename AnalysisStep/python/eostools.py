@@ -75,7 +75,7 @@ def lfnToPFN( path, tfcProt = 'rfio'):
 
 def runDBS(dataset):
     cmd = 'file dataset='+dataset
-    command = ['das_client.py', '--limit=0', '--query', cmd]
+    command = ['/afs/cern.ch/cms/common/das_client' , '--limit=0', '--query', cmd]
     runner = cmsIO.cmsFileManip()
     # print ' '.join(command)
     return runner.runCommand(command)

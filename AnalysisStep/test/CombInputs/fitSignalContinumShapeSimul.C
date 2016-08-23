@@ -111,10 +111,10 @@ void all(int selAna =-10,  int channels=0, int categ =-10, int sample = 0 ){
   double bwSigma[40];
   int mass[40]; int id[40]; double xLow[40]; double xHigh[40];
   int maxMassBin;
-  maxMassBin = 5; 
+  maxMassBin = 3; 
 
-  float masses[5] = {120,124,125,126,130};
-  for(int i=0;i<5;++i) {
+  float masses[3] = {120,125,130};
+  for(int i=0;i<3;++i) {
     mass[i] = masses[i]; 
     id[i]=masses[i]; 
     xLow[i] = 105.; // getFitEdge(masses[i],width,true); 
@@ -163,15 +163,15 @@ void all(int selAna =-10,  int channels=0, int categ =-10, int sample = 0 ){
       outFile.open(filename);
       if(channels == 2)outFile<<"shape : " <<"\"RooDCBall::"<<ssample<<"_mass(mean,sigma,alpha,n,alpha2,n2)*(frac)+(RooLandau::"<<ssample<<"_mass(p0,p1))*(1-frac)\""<< endl;
       outFile << schannel <<"    :" << endl;
-      outFile <<"    mean   : " <<"'"<<fitValues[0]<<"+"<<"("<<fitValues[6] <<")*(@0-125)"<<"'"<<endl;
+      outFile <<"    mean   : " <<"'"<<fitValues[0]<<"+"<<"("<<fitValues[6] <<"+1)*(@0-125)"<<"'"<<endl;
       outFile <<"    sigma  : " <<"'"<<fitValues[1]<<"+"<<"("<<fitValues[7] <<")*(@0-125)"<<"'"<<endl;
       outFile <<"    alpha  : " <<"'"<<fitValues[2]<<"+"<<"("<<fitValues[8] <<")*(@0-125)"<<"'"<<endl;
       outFile <<"    n      : " <<"'"<<fitValues[3]<<"+"<<"("<<fitValues[9] <<")*(@0-125)"<<"'"<<endl;
       outFile <<"    alpha2 : " <<"'"<<fitValues[4]<<"+"<<"("<<fitValues[10]<<")*(@0-125)"<<"'"<<endl;
       outFile <<"    n2     : " <<"'"<<fitValues[5]<<"+"<<"("<<fitValues[11]<<")*(@0-125)"<<"'"<<endl;
-      outFile <<"    ml     : " <<"'"<<fitValues[12]<<endl;
-      outFile <<"    sl     : " <<"'"<<fitValues[13]<<endl;
-      outFile <<"    frac   : " <<"'"<<fitValues[14]<<endl;
+      outFile <<"    ml     : " <<"'"<<fitValues[12]<<"'"<<endl;
+      outFile <<"    sl     : " <<"'"<<fitValues[13]<<"'"<<endl;
+      outFile <<"    frac   : " <<"'"<<fitValues[14]<<"'"<<endl;
       outFile << endl;
   }
 void fitSignalContinumShapeSimul(int massBin[40],int maxMassBin, int selAna, int channels,int categ, int sample,double rangeLow[40], double rangeHigh[40],
@@ -199,7 +199,7 @@ void fitSignalContinumShapeSimul(int massBin[40],int maxMassBin, int selAna, int
   
   Short_t z1flav, z2flav; 
   float weight;
-
+  bool useQGTagging = false;
   Short_t nExtraLeptons;   
   Short_t ExtraZ;
   Short_t nCleanedJets;
@@ -213,6 +213,7 @@ void fitSignalContinumShapeSimul(int massBin[40],int maxMassBin, int selAna, int
   std::vector<float> * jetphi = 0;
   std::vector<float> * jetmass = 0;
   float jetQGLL[100];
+  float jetPHI[100];
   float jet30pt[10];
   float jet30eta[10];
   float jet30phi[10];
@@ -238,9 +239,9 @@ void fitSignalContinumShapeSimul(int massBin[40],int maxMassBin, int selAna, int
 
   stringstream FileName[40];
   for (int i=0; i<maxMassBin; i++) {
-    if(sample==3) FileName[i] << "root://lxcms03//data3/Higgs/160624/ZH" << massBin[i] << "/ZZ4lAnalysis.root";
-    else if(sample==4) FileName[i] << "root://lxcms03//data3/Higgs/160624/WplusH" << massBin[i] << "/ZZ4lAnalysis.root";
-    else if(sample==5) FileName[i] << "root://lxcms03//data3/Higgs/160624/ttH" << massBin[i] << "/ZZ4lAnalysis.root";
+    if(sample==3) FileName[i] << "root://lxcms03//data3/Higgs/160720/ZH" << massBin[i] << "/ZZ4lAnalysis.root";
+    else if(sample==4) FileName[i] << "root://lxcms03//data3/Higgs/160720/WplusH" << massBin[i] << "/ZZ4lAnalysis.root";
+    else if(sample==5) FileName[i] << "root://lxcms03//data3/Higgs/160720/ttH" << massBin[i] << "/ZZ4lAnalysis.root";
     else {
       cout << "Wrong sample ." << endl;
       return;
@@ -257,7 +258,7 @@ void fitSignalContinumShapeSimul(int massBin[40],int maxMassBin, int selAna, int
     ggTree->SetBranchAddress("ZZMass",&m4l);
     ggTree->SetBranchAddress("Z1Flav",&z1flav);
     ggTree->SetBranchAddress("Z2Flav",&z2flav);
-    ggTree->SetBranchAddress("genHEPMCweight",&weight);
+    ggTree->SetBranchAddress("overallEventWeight",&weight);
     ggTree->SetBranchAddress("nExtraLep",&nExtraLeptons);
     ggTree->SetBranchAddress("nCleanedJets",&nJets);
     ggTree->SetBranchAddress("nCleanedJetsPt30BTagged",&nBTaggedJets);
@@ -291,8 +292,12 @@ void fitSignalContinumShapeSimul(int massBin[40],int maxMassBin, int selAna, int
       int nj = 0;
       for (unsigned int nj = 0; nj < JETQGLikeliHood->size(); nj++) {
         jetQGLL[nj] = (*JETQGLikeliHood)[nj];
-        }
-      
+       }
+     int kj = 0;
+     for (unsigned int kj = 0; kj < jetphi->size(); kj++) {
+      jetPHI[kj] = (*jetphi)[nj];
+       }
+    
       int njet30 = 0;
       for (unsigned int ijet = 0; ijet < jetpt->size(); ijet++) { 
 	if ( (*jetpt)[ijet] > 30. ) {
@@ -306,13 +311,13 @@ void fitSignalContinumShapeSimul(int massBin[40],int maxMassBin, int selAna, int
       int Cat = -10 ;
 //      if (selAna == 1) Cat = category(nExtraLeptons, ZZPt, m4l, njet30, nBTaggedJets, jet30pt, jet30eta, jet30phi,jet30mass, Fisher); 
       if (selAna == 0) Cat = categoryMor16(nJets, pvbf_VAJHU_highestPTJets, phjj_VAJHU_highestPTJets );	    
-      if (selAna == 1) Cat = categoryIchep16(nExtraLeptons, ExtraZ, nCleanedJets, nBTaggedJets,jetQGLL, phjj_VAJHU_highestPTJets, PHJ_VAJHU, pvbf_VAJHU_highestPTJets, PAUX_VBF_VAJHU, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU );
+      if (selAna == 1) Cat = categoryIchep16(nExtraLeptons, ExtraZ, nCleanedJets, nBTaggedJets,jetQGLL, phjj_VAJHU_highestPTJets, PHJ_VAJHU, pvbf_VAJHU_highestPTJets, PAUX_VBF_VAJHU, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU, jetPHI, m4l,  useQGTagging  );
 
       if (categ >= 0 && categ != Cat ) continue;
       
       if(channels==0 && z1flav*z2flav != 28561) continue;
       if(channels==1 && z1flav*z2flav != 14641) continue;
-      if (weight <= 0 ) cout << "Warning! Negative weight events" << endl;
+      //if (weight <= 0 ) cout << "Warning! Negative weight events" << endl;
       if(channels==2 && z1flav*z2flav != 20449) continue;
       
       ntupleVarSet.setCatIndex("massrc",massBin[i]);
@@ -597,18 +602,11 @@ void fitSignalContinumShapeSimul(int massBin[40],int maxMassBin, int selAna, int
   }
 
   RooArgSet * params2 = rs.getParameters(RooArgList(x,massrc));
-//    if (sample != 3 || categ > 0 ) {
-/*    if (categ <= 0){   
-    if(channels==0 )params2->readFromFile("Ch0_Cat0_paraIIL.txt") ;
-    if(channels==1 )params2->readFromFile("Ch1_Cat0_paraIIL.txt") ;
-    if(channels==2 )params2->readFromFile("Ch2_Cat0_paraIIL.txt") ;	
-    }
-//  if (sample == 3 && categ > 0 ) {
-    if (categ > 0){
-    if(channels==0 )params2->readFromFile("Ch0_Cat0_paraf.txt") ;
-    if(channels==1 )params2->readFromFile("Ch1_Cat0_paraf.txt") ;
-    if(channels==2 )params2->readFromFile("Ch2_Cat0_paraf.txt") ;
-  }*/
+    if (sample != 3 || categ > 0 ) {
+    if(channels==0 )params2->readFromFile("Ch0_Cat0_paraIIf.txt") ;
+    if(channels==1 )params2->readFromFile("Ch1_Cat0_paraIIf.txt") ;
+    if(channels==2 )params2->readFromFile("Ch2_Cat0_paraIIf.txt") ;
+  }
   RooFitResult *fitressim = (RooFitResult*)rs.fitTo(dataset,SumW2Error(1),Range(xMin,xMax),Strategy(2),NumCPU(8),Save(true));
  
   mean_p1.setConstant(kTRUE);
@@ -620,16 +618,15 @@ void fitSignalContinumShapeSimul(int massBin[40],int maxMassBin, int selAna, int
 //  ml_p1.setConstant(kTRUE);
 //  sl_p1.setConstant(kTRUE);
 
-//  if (sample == 3 && categ <= 0 ) {
-  if (categ <= 0){
-    if(channels==0 )params2->writeToFile("Ch0_Cat0_paraf.txt") ;
-    if(channels==1 )params2->writeToFile("Ch1_Cat0_paraf.txt") ;
-    if(channels==2 )params2->writeToFile("Ch2_Cat0_paraf.txt") ;	
+  if (sample == 3 && categ <= 0 ) {
+    if(channels==0 )params2->writeToFile("Ch0_Cat0_paraIIf.txt") ;
+    if(channels==1 )params2->writeToFile("Ch1_Cat0_paraIIf.txt") ;
+    if(channels==2 )params2->writeToFile("Ch2_Cat0_paraIIf.txt") ;	
   }
 
   cout << "Full fit done" << endl;
 
-  double ChiSq[5];
+  double ChiSq[3];
   for (int i=0; i<maxMassBin; i++) {
 
     stringstream frameTitle;
@@ -705,10 +702,10 @@ void fitSignalContinumShapeSimul(int massBin[40],int maxMassBin, int selAna, int
 
   }
 
-    for (int j=0; j<5 ; j++ )
+    for (int j=0; j<3 ; j++ )
     cout<<"Chi2 for mass " << massBin[j] << " GeV: " << ChiSq[j] << endl;
 
-   Int_t ni = 5;
+   Int_t ni = 3;
    Double_t xi[ni], yi[ni];
    for (Int_t i=0;i<ni;i++) {
       xi[i] = massBin[i];

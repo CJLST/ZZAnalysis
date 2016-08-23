@@ -192,6 +192,13 @@ process.CRZLLTreelooseEle = TreeSetup.clone()
 process.CRZLLTreelooseEle.channel = 'ZLL'
 process.CRZLLTreelooseEle.CandCollection = 'ZLLCandlooseEle'
 
+#### Loose electron control region where Z1 is from tight real RSE and the regular leptons are fake
+process.CRZLLTreeZ1RSE = TreeSetup.clone()
+process.CRZLLTreeZ1RSE.channel = 'ZLL'
+process.CRZLLTreeZ1RSE.CandCollection = 'ZLLCandZ1RSE'
+
+
+
 #### Loose electron Trilepton CR, for fake rate
 process.CRZLTreelooseEle = TreeSetup.clone()
 process.CRZLTreelooseEle.channel = 'ZL'
@@ -276,7 +283,7 @@ process.plots = cms.EndPath(process.PlotsZZ)
 if (ADDLOOSEELE) :
     if (PROCESS_CR or not IsMC):
         process.CRPath += process.CRlooseEle
-        process.trees += cms.Sequence( process.ZZTreelooseEle + process.CRZLLTreelooseEle + process.CRZLTreelooseEle)
+        process.trees += cms.Sequence( process.ZZTreelooseEle + process.CRZLLTreelooseEle + process.CRZLTreelooseEle + process.CRZLLTreeZ1RSE)
         process.CRPath += process.CRtle
         process.trees += cms.Sequence( process.ZZTreetle + process.CRZLLTreetle + process.CRZLTreetle)
     else:

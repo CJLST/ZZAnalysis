@@ -31,7 +31,7 @@
 #include "RooCBShape.h"
 #include "RooWorkspace.h"
 #include "RooHist.h"
-#include "RooChebychev.h"
+#include "RooBernstein.h"
 #include "TCanvas.h"
 #include "TLegend.h"
 #include "RooPlot.h"
@@ -112,7 +112,7 @@ void all(int selAna=-10, int channels=0, int categ=-1, int sample = 0 ){
   string filename = "bkg_shape_parametriztion_13TeV_" + ssample + "_" + schannel + "_" + sselAna + "_" + scategory + "." + "yaml" ;
   ofstream outFile;
   outFile.open(filename);
-  if(channels == 2)outFile<<"shape : " <<"\"RooChebyChev::"<<ssample<<"(mass4l,chebPol1,chebPol2,chebPol3)\""<< endl;
+  if(channels == 2)outFile<<"shape : " <<"\"RooBernstein::"<<ssample<<"(mass4l,chebPol1,chebPol2,chebPol3)\""<< endl;
   outFile << schannel <<"    :" << endl;
   outFile <<"    chebPol1 : " <<"'"<<fitValues[0]<<"'"<<endl;
   outFile <<"    chebPol2 : " <<"'"<<fitValues[1]<<"'"<<endl;
@@ -140,17 +140,17 @@ void all(int selAna=-10, int channels=0, int categ=-1, int sample = 0 ){
  
   ROOT::Math::MinimizerOptions::SetDefaultTolerance( 1.E-7);
  
-  stringstream FileName[4];
+  stringstream FileName[6];
   int howmany = 1;
-  if(sample==1) FileName[0] << "root://lxcms03//data3/Higgs/160624/ZZTo4l/ZZ4lAnalysis.root";
+  if(sample==1) FileName[0] << "root://lxcms03//data3/Higgs/160720/ZZTo4l/ZZ4lAnalysis.root";
   else if(sample==2) {
-    FileName[0] << "root://lxcms03//data3/Higgs/160624/ggZZ4e/ZZ4lAnalysis.root";
-    FileName[1] << "root://lxcms03//data3/Higgs/160624/ggZZ4mu/ZZ4lAnalysis.root";
-    FileName[2] << "root://lxcms03//data3/Higgs/160624/ggZZ4tau/ZZ4lAnalysis.root";
-//    FileName[3] << "root://lxcms03//data3/Higgs/160624/ggZZ2e2mu/ZZ4lAnalysis.root";
-    FileName[3] << "root://lxcms03//data3/Higgs/160624/ggZZ2mu2tau/ZZ4lAnalysis.root";
-//    FileName[5] << "root://lxcms03//data3/Higgs/160624/ggZZ2e2tau/ZZ4lAnalysis.root";
-    howmany=4;
+    FileName[0] << "root://lxcms03//data3/Higgs/160720/ggTo4e_Contin_MCFM701/ZZ4lAnalysis.root";
+    FileName[1] << "root://lxcms03//data3/Higgs/160720/ggTo4mu_Contin_MCFM701/ZZ4lAnalysis.root";
+    FileName[2] << "root://lxcms03//data3/Higgs/160720/ggTo4tau_Contin_MCFM701/ZZ4lAnalysis.root";
+    FileName[3] << "root://lxcms03//data3/Higgs/160720/ggTo2e2mu_Contin_MCFM701/ZZ4lAnalysis.root";
+    FileName[4] << "root://lxcms03//data3/Higgs/160720/ggTo2mu2tau_Contin_MCFM701/ZZ4lAnalysis.root";
+    FileName[5] << "root://lxcms03//data3/Higgs/160720/ggTo2e2tau_Contin_MCFM701/ZZ4lAnalysis.root";
+    howmany=6;
   }
   
   else {
@@ -168,6 +168,7 @@ void all(int selAna=-10, int channels=0, int categ=-1, int sample = 0 ){
   float m4l;
   Short_t z1flav, z2flav; 
   float weight;
+  bool useQGTagging = false;
 
   Short_t ExtraZ;
   Short_t nExtraLeptons;
@@ -182,6 +183,7 @@ void all(int selAna=-10, int channels=0, int categ=-1, int sample = 0 ){
   std::vector<float> * jetphi = 0;
   std::vector<float> * jetmass = 0;
   float jetQGLL[100];
+  float jetPHI[100];
   float jet30pt[10];
   float jet30eta[10];
   float jet30phi[10];
@@ -194,7 +196,7 @@ void all(int selAna=-10, int channels=0, int categ=-1, int sample = 0 ){
   ggTree->SetBranchAddress("ZZMass",&m4l);
   ggTree->SetBranchAddress("Z1Flav",&z1flav);
   ggTree->SetBranchAddress("Z2Flav",&z2flav);
-  ggTree->SetBranchAddress("genHEPMCweight",&weight);
+  ggTree->SetBranchAddress("overallEventWeight",&weight);
   ggTree->SetBranchAddress("nExtraLep",&nExtraLeptons);
   ggTree->SetBranchAddress("nCleanedJets",&nJets);
   ggTree->SetBranchAddress("nCleanedJetsPt30BTagged",&nBTaggedJets);
@@ -233,9 +235,15 @@ void all(int selAna=-10, int channels=0, int categ=-1, int sample = 0 ){
   for(int k=0; k<nentries; k++){
     ggTree->GetEvent(k);
       int nj = 0;
+     
       for (unsigned int nj = 0; nj < JETQGLikeliHood->size(); nj++) {
         jetQGLL[nj] = (*JETQGLikeliHood)[nj];
         }
+     int kj = 0; 
+     for (unsigned int kj = 0; kj < jetphi->size(); kj++) {
+      jetPHI[kj] = (*jetphi)[kj];
+       }
+   
 
     int njet30 = 0;
     for (unsigned int ijet = 0; ijet < jetpt->size(); ijet++) { 
@@ -249,7 +257,7 @@ void all(int selAna=-10, int channels=0, int categ=-1, int sample = 0 ){
     }  
     int Cat = -10;
     if (selAna == 0) Cat = categoryMor16(nJets, pvbf_VAJHU_highestPTJets, phjj_VAJHU_highestPTJets );
-    if (selAna == 1) Cat = categoryIchep16(nExtraLeptons, ExtraZ, nCleanedJets, nBTaggedJets,jetQGLL, phjj_VAJHU_highestPTJets, PHJ_VAJHU, pvbf_VAJHU_highestPTJets, PAUX_VBF_VAJHU, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU );
+    if (selAna == 1) Cat = categoryIchep16(nExtraLeptons, ExtraZ, nCleanedJets, nBTaggedJets,jetQGLL, phjj_VAJHU_highestPTJets, PHJ_VAJHU, pvbf_VAJHU_highestPTJets, PAUX_VBF_VAJHU, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU, jetPHI, m4l,useQGTagging );
     if (categ >= 0 && categ != Cat ) continue; 
 
     if(channels==0 && z1flav*z2flav != 28561) continue;
@@ -279,10 +287,10 @@ void all(int selAna=-10, int channels=0, int categ=-1, int sample = 0 ){
   pad2->Draw();
 
 //-----Chebyshev-Polynomial
-  RooRealVar A1("A1","A1",1,-3,3.);
-  RooRealVar A2("A2","A2",0.5,-3.,3.);
-  RooRealVar A3("A3","A3",0.,-3.,3.);
-  RooChebychev model("model","model",x ,RooArgList(A1,A2,A3));
+  RooRealVar A1("A1","A1",1,0,3.);
+  RooRealVar A2("A2","A2",0.5,0.,3.);
+  RooRealVar A3("A3","A3",0.,0.,3.);
+  RooBernstein model("model","model",x ,RooArgList(A1,A2,A3));
  
   RooFitResult *fitres = (RooFitResult*)model.fitTo(dataset,SumW2Error(1),Range(xMin,xMax),Strategy(2),NumCPU(8),Save(true));
   

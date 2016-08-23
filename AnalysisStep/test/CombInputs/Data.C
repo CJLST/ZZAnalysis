@@ -106,10 +106,10 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
   double bwSigma[40];
   int mass[40]; int id[40]; double xLow[40]; double xHigh[40];
   int maxMassBin;
-  maxMassBin = 3; 
+  maxMassBin = 1; 
 
-  float masses[3] = {120,125,130};
-  for(int i=0;i<3;++i) {
+  float masses[1] = {125};
+  for(int i=0;i<1;++i) {
     mass[i] = masses[i]; 
     id[i]=masses[i]; 
     xLow[i] = 105.;  
@@ -137,6 +137,9 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
 
     
     fitSignalShapeSimul(mass,maxMassBin,selAna,channels,categ,sample,/* 10.,doSfLepton,*/xLow,xHigh,bwSigma,fitValues,fitErrors,covQual); 
+
+     
+ 
  
       cout << "meanCB_p0 value "  << fitValues[0] << " , " << "mean_p1 value:"  << fitValues[6] << endl;
       cout << "sigmaCB_p0 value " << fitValues[1] << " , " << "sigma_p1 value:" << fitValues[7] << endl;
@@ -151,7 +154,7 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
       outFile.open(filename);
       if(channels == 2)outFile<<"shape : " <<"\"RooDCBall::"<<ssample<<"_mass(mean,sigma,alpha,n,alpha2,n2)\""<< endl;
       outFile << schannel <<"    :" << endl;
-      outFile <<"    mean   : " <<"'"<<fitValues[0]<<"+"<<"("<<fitValues[6] <<"+1)*(@0-125)"<<"'"<<endl;
+      outFile <<"    mean   : " <<"'"<<fitValues[0]<<"+"<<"("<<fitValues[6] <<")*(@0-125)"<<"'"<<endl;
       outFile <<"    sigma  : " <<"'"<<fitValues[1]<<"+"<<"("<<fitValues[7] <<")*(@0-125)"<<"'"<<endl;
       outFile <<"    alpha  : " <<"'"<<fitValues[2]<<"+"<<"("<<fitValues[8] <<")*(@0-125)"<<"'"<<endl;
       outFile <<"    n      : " <<"'"<<fitValues[3]<<"+"<<"("<<fitValues[9] <<")*(@0-125)"<<"'"<<endl;
@@ -176,15 +179,16 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
   ROOT::Math::MinimizerOptions::SetDefaultTolerance( 1.E-7);
  
   float m4l;
-  
+  bool useQGTagging = false;
   Short_t z1flav, z2flav; 
   float weight;
-  bool useQGTagging = false;  
+  Double_t mass4l, kd;
+
   Short_t ExtraZ;
   Short_t nExtraLeptons;
   Short_t nCleanedJets;   
 
-  float ZZPt, pvbf_VAJHU_highestPTJets, phjj_VAJHU_highestPTJets, PHJ_VAJHU, PAUX_VBF_VAJHU, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU;
+  float ZZPt, pvbf_VAJHU_highestPTJets, phjj_VAJHU_highestPTJets, PHJ_VAJHU, PAUX_VBF_VAJHU, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU, p0plus_VAJHU, bkg_VAMCFM ;
   Short_t nJets;
   Short_t nBTaggedJets;
   std::vector<float> * JETQGLikeliHood = 0;
@@ -219,8 +223,7 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
 
   stringstream FileName[40];
   for (int i=0; i<maxMassBin; i++) {
-    if(sample==1)      FileName[i] << "root://lxcms03//data3/Higgs/160720/ggH" << massBin[i] << "/ZZ4lAnalysis.root";
-    else if(sample==2) FileName[i] << "root://lxcms03//data3/Higgs/160720/VBFH" << massBin[i] << "/ZZ4lAnalysis.root";
+    if(sample==1) FileName[i] << "root://lxcms03//data3/Higgs/160720/AllData/ZZ4lAnalysis.root";
     else {
       cout << "Wrong sample ." << endl;
       return;
@@ -249,13 +252,38 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
     ggTree->SetBranchAddress("pAux_vbf_VAJHU",&PAUX_VBF_VAJHU);
     ggTree->SetBranchAddress("pwh_hadronic_VAJHU",&PWH_hadronic_VAJHU);
     ggTree->SetBranchAddress("pzh_hadronic_VAJHU",&PZH_hadronic_VAJHU);
-
+    ggTree->SetBranchAddress("p0plus_VAJHU",&p0plus_VAJHU);
+    ggTree->SetBranchAddress("bkg_VAMCFM",&bkg_VAMCFM);
+    
  
     ggTree->SetBranchAddress("JetPt",&jetpt);
     ggTree->SetBranchAddress("JetEta",&jeteta);
     ggTree->SetBranchAddress("JetPhi",&jetphi);
     ggTree->SetBranchAddress("JetMass",&jetmass);
     ggTree->SetBranchAddress("ZZPt",&ZZPt);
+   
+string sschannel, sscategory;
+
+  if (channels == 0) sschannel = "4mu";
+  if (channels == 1) sschannel = "4e";
+  if (channels == 2) sschannel = "2e2mu";
+
+  if (categ == 0 && selAna == 1 ) sscategory = "Untagged";
+  if (categ == 1 && selAna == 1 ) sscategory = "VBF1JetTagged";
+  if (categ == 2 && selAna == 1 ) sscategory = "VBF2JetTagged";
+  if (categ == 3 && selAna == 1 ) sscategory = "VHLeptTagged";
+  if (categ == 4 && selAna == 1 ) sscategory = "VHHadrTagged";
+  if (categ == 5 && selAna == 1 ) sscategory = "ttHTagged";
+
+    stringstream output;
+    output << "data_obs_"<< sscategory<<"_"<< sschannel <<".root";
+    cout<< output.str()<<endl;
+    TFile *newFile = new TFile(output.str().c_str(),"RECREATE");
+    newFile->cd();
+    TTree* newTree = new TTree("data_obs","data_obs");
+    newTree->Branch("mass4l",&mass4l,"mass4l/D");
+    newTree->Branch("kd",&kd,"kd/D");
+   
 
     //--- rooFit part
     xInit = (double) massBin[i];
@@ -268,12 +296,9 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
       for (unsigned int nj = 0; nj < JETQGLikeliHood->size(); nj++) {
 	jetQGLL[nj] = (*JETQGLikeliHood)[nj];
  	}
-      int kj = 0;
-      for (unsigned int kj = 0; kj < jetphi->size(); kj++) {
-        jetPHI[kj] = (*jetphi)[nj];
-        }
-
-
+      for(unsigned int kjet =0 ; kjet < jetphi->size(); kjet++){
+	jetPHI[kjet] = (*jetphi)[kjet];
+	} 
       int njet30 = 0;
       for (unsigned int ijet = 0; ijet < jetpt->size(); ijet++) { 
 	if ( (*jetpt)[ijet] > 30. ) {
@@ -286,13 +311,16 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
       }  
       int Cat = -10 ;
       if (selAna == 0) Cat = categoryMor16(nJets, pvbf_VAJHU_highestPTJets, phjj_VAJHU_highestPTJets );	    
-      if (selAna == 1) Cat = categoryIchep16(nExtraLeptons, ExtraZ, nCleanedJets, nBTaggedJets,jetQGLL, phjj_VAJHU_highestPTJets, PHJ_VAJHU, pvbf_VAJHU_highestPTJets, PAUX_VBF_VAJHU, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU, jetPHI, m4l,  useQGTagging );
+      if (selAna == 1) Cat = categoryIchep16(nExtraLeptons, ExtraZ, nCleanedJets, nBTaggedJets,jetQGLL, phjj_VAJHU_highestPTJets, PHJ_VAJHU, pvbf_VAJHU_highestPTJets, PAUX_VBF_VAJHU, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU,jetPHI, m4l, useQGTagging );
       if (categ >= 0 && categ != Cat ) continue;
       
       if(channels==0 && z1flav*z2flav != 28561) continue;
       if(channels==1 && z1flav*z2flav != 14641) continue;
       if(channels==2 && z1flav*z2flav != 20449) continue;
-      if (weight <= 0 ) cout << "Warning! Negative weight events" << endl;
+     
+      mass4l=m4l;
+      kd = p0plus_VAJHU / ( p0plus_VAJHU + bkg_VAMCFM ) ;
+      newTree->Fill(); 
       
       ntupleVarSet.setCatIndex("massrc",massBin[i]);
       ntupleVarSet.setRealValue("mass",m4l);
@@ -302,6 +330,9 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
       //--------
      
     }
+  newTree->Write("data_obs");
+  newFile->Close();
+
   }
 
   cout << "dataset n entries: " << dataset.sumEntries() << endl;
@@ -515,9 +546,9 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
 
  RooArgSet * params2 = rs.getParameters(RooArgList(x,massrc));
  if (sample != 1 ||  categ > 0 ) {
-    if(channels==0 )params2->readFromFile("Ch0_Cat0_paraf.txt") ;
-    if(channels==1 )params2->readFromFile("Ch1_Cat0_paraf.txt") ;
-    if(channels==2 )params2->readFromFile("Ch2_Cat0_paraf.txt") ;	
+    if(channels==0 )params2->readFromFile("Ch0_Cat0_paraIf.txt") ;
+    if(channels==1 )params2->readFromFile("Ch1_Cat0_paraIf.txt") ;
+    if(channels==2 )params2->readFromFile("Ch2_Cat0_paraIf.txt") ;	
   }
 
   RooFitResult *fitressim = (RooFitResult*)rs.fitTo(dataset,SumW2Error(1),Range(xMin,xMax),Strategy(2),NumCPU(8),Save(true));
@@ -531,9 +562,9 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
 
   if (sample == 1 && categ == 0 ) {
   
-    if(channels==0 )params2->writeToFile("Ch0_Cat0_paraf.txt") ;
-    if(channels==1 )params2->writeToFile("Ch1_Cat0_paraf.txt") ;
-    if(channels==2 )params2->writeToFile("Ch2_Cat0_paraf.txt") ;	
+    if(channels==0 )params2->writeToFile("Ch0_Cat0_paraIf.txt") ;
+    if(channels==1 )params2->writeToFile("Ch1_Cat0_paraIf.txt") ;
+    if(channels==2 )params2->writeToFile("Ch2_Cat0_paraIf.txt") ;	
   }
  
   cout << "Full fit done" << endl;

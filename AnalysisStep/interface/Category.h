@@ -71,7 +71,7 @@ extern "C" int categoryIchep16(
 	     float pzh_hadronic_VAJHU,
              float* jetPhi,
              float ZZMass,
-	     bool useQGTagging = true
+	     bool useQGTagging = false
 	     );
 
 
