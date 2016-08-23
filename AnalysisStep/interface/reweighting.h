@@ -37,7 +37,7 @@ protected:
 
   int spin;
   int myspin;
-  Mela* mela;
+  Mela& mela;
 
   ReweightingType reweightingtypefromstring(const std::string& reweightingtypestring);
 
@@ -52,13 +52,17 @@ protected:
     }
   }
 
+  void fillreweightingweights(vector<float> &reweightingweights);
+
+  bool canreweight();
+
 public:
 
   int nReweightingSamples;
   ReweightingType reweightingtype;
 
   Reweighting(
-    Mela* mela_,
+    Mela& mela_,
     std::string reweightingtypestring,
     int inputspin,
     std::vector<double> HVVcouplings_real,
@@ -76,8 +80,6 @@ public:
 
   void setcouplings(int reweightinghypothesis);
 
-  bool canreweight(unsigned int nleptons, short genFinalState);
-
   void fillcouplingstree(TTree* t);
 
   void fillreweightingweights(
@@ -86,6 +88,11 @@ public:
     SimpleParticleCollection_t* pAssociated,
     SimpleParticleCollection_t* pMothers,
     bool isGen
+  );
+
+  void fillreweightingweights(
+    vector<float> &reweightingweights,
+    MELACandidate* candidate
   );
 };
 

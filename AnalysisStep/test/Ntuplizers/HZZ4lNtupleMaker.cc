@@ -576,7 +576,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   Hmass(pset.getParameter<double>("superMelaMass")),
   mela(sqrts, Hmass, TVar::ERROR),
   reweighting(
-              &mela,
+              mela,
               pset.getParameter<std::string>("reweightingtype"),
               pset.getParameter<int>("spin"),
               pset.getParameter<std::vector<double> >("HVVcouplings_real"),
@@ -885,20 +885,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
     }
 
-    // Note: Should move into LHEHandler -- U. Sarica
-    if (doreweighting) {
-      assert(reweighting.canreweight(genZLeps.size(), genFinalState));
-      SimpleParticleCollection_t daughters;
-      for (unsigned int i = 0; i < genZLeps.size(); i++) daughters.emplace_back(genZLeps.at(i)->pdgId(), zzanalysis::tlv(genZLeps.at(i)->p4()));
-      reweighting.fillreweightingweights(reweightingweights, &daughters, 0, 0, false);
-    }
-
-    // keep track of sum of weights
-    gen_sumPUWeight += PUWeight;
-    addweight(gen_sumGenMCWeight, gen_sumGenMCWeight_reweighted, genHEPMCweight);
-    addweight(gen_sumWeights, gen_sumWeights_reweighted, PUWeight*genHEPMCweight);
-
-
     // LHE information
     if (isMC){
       edm::Handle<LHEEventProduct> lhe_evt;
@@ -909,12 +895,19 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
         lheHandler->setHandle(&lhe_evt);
         lheHandler->extract();
         FillLHECandidate();
+        if (doreweighting) {
+          reweighting.fillreweightingweights(reweightingweights, lheHandler->getBestCandidate());
+        }
         lheHandler->clear();
       }
       //else cerr << "lhe_handles.size()==0" << endl;
     }
     //
 
+    // keep track of sum of weights
+    gen_sumPUWeight += PUWeight;
+    addweight(gen_sumGenMCWeight, gen_sumGenMCWeight_reweighted, genHEPMCweight);
+    addweight(gen_sumWeights, gen_sumWeights_reweighted, PUWeight*genHEPMCweight);
 
     mch.genAcceptance(gen_ZZ4lInEtaAcceptance, gen_ZZ4lInEtaPtAcceptance);
 
