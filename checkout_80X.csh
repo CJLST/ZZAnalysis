@@ -22,7 +22,7 @@ git cms-init
 git remote add -f -t ecal_smear_fix_80X emanueledimarco https://github.com/emanueledimarco/cmssw.git
 git cms-addpkg EgammaAnalysis/ElectronTools
 git checkout -b from-277de3c 277de3c
-(cd EgammaAnalysis/ElectronTools/data ; git clone -b ICHEP2016_approval_4fb https://github.com/ECALELFS/ScalesSmearings.git)
+(cd EgammaAnalysis/ElectronTools/data ; git clone -b ICHEP2016_v1 https://github.com/ECALELFS/ScalesSmearings.git)
 
 
 #### Please do not add any custom (non-CMSSW) package before this line ####
