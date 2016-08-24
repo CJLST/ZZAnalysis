@@ -66,7 +66,7 @@ protected:
   void setProcess(MelaProcess melaprocess) {
     mela.setProcess(get<0>(melaprocess), get<1>(melaprocess), get<2>(melaprocess));
   }
-  void computeP(float& prob, bool useConstant = true);
+  void computeP(int reweightinghypothesis, float& prob, bool useConstant = true);
 
 public:
 

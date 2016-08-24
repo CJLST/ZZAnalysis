@@ -34,9 +34,9 @@ Reweighting::Reweighting(
   ghz2mix_decay(1.663195),
   ghz4mix_decay(2.55502),
   ghz1_prime2mix_decay(-12110.20),
-  ghz2mix_VBF(0.271899),
+  ghz2mix_VBF(0.271965),
   ghz4mix_VBF(0.297979),
-  ghz1_prime2mix_VBF(-2156.43),
+  ghz1_prime2mix_VBF(-2158.21),
   a1_index(0),
   b5_index(4),
   myspin(inputspin),
@@ -86,6 +86,8 @@ void Reweighting::setmycouplings() {
 void Reweighting::setcouplings(int reweightinghypothesis) {
   if (reweightingtype == NoReweighting) {
     return;
+  } else if (reweightinghypothesis == -1) {
+    return setmycouplings();
   } else if (reweightingtype == HVV_spin0) {
     decayprocess = make_tuple(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
     productionprocess = make_tuple(TVar::Null, TVar::JHUGen, TVar::ZZGG);
@@ -243,16 +245,12 @@ void Reweighting::fillreweightingweights(
     auto associated = candidate->getAssociatedPhoton(i);
     pAssociated.emplace_back(associated->id, associated->p4);
   }
-  cout << "Associated jets:" << endl;
   for (int i = 0; i < candidate->getNAssociatedJets(); i++) {
     auto associated = candidate->getAssociatedJet(i);
-    cout << "   " << associated->id << endl;
     pAssociated.emplace_back(associated->id, associated->p4);
   }
-  cout << "Mothers:" << endl;
   for (int i = 0; i < candidate->getNMothers(); i++) {
     auto mother = candidate->getMother(i);
-    cout << "   " << mother->id << endl;
     pMothers.emplace_back(mother->id, mother->p4);
   }
   mela.setInputEvent(&pDaughters, &pAssociated, &pMothers, true);
@@ -261,14 +259,16 @@ void Reweighting::fillreweightingweights(
   mela.resetInputEvent();
 }
 
-void Reweighting::computeP(float& prob, bool useConstant) {
+void Reweighting::computeP(int reweightinghypothesis, float& prob, bool useConstant) {
   prob = 1;
   float tmp = 0;
+  setcouplings(reweightinghypothesis);
   if (get<0>(decayprocess) != TVar::Null) {
     setProcess(decayprocess);
     mela.computeP(tmp, useConstant);
     prob *= tmp;
   }
+  setcouplings(reweightinghypothesis);
   if (get<0>(productionprocess) != TVar::Null) {
     setProcess(productionprocess);
     mela.computeProdP(tmp, useConstant);
@@ -283,9 +283,8 @@ void Reweighting::fillreweightingweights(vector<float>& reweightingweights) {
   reweightingweights.clear();
   assert(canreweight());
 
-  setmycouplings();
   float myprobability, probability;
-  computeP(myprobability, false);
+  computeP(-1, myprobability, false);
 
   if (myprobability == 0) {
     for (int i = 0; i < nReweightingSamples; i++) {
@@ -295,8 +294,7 @@ void Reweighting::fillreweightingweights(vector<float>& reweightingweights) {
   }
 
   for (int i = 0; i < nReweightingSamples; i++) {
-    setcouplings(i);
-    computeP(probability, false);
+    computeP(i, probability, false);
     reweightingweights.push_back(probability/myprobability);
   }
 }
