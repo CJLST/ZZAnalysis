@@ -11,7 +11,8 @@
 enum ReweightingType {
   NoReweighting = 0,
   HVV_spin0     = 1,
-  HVV_spin012   = 2
+  HVV_spin012   = 2,
+  VBFHZZ_spin0  = 3,
 };
 
 class Reweighting {
@@ -28,22 +29,29 @@ protected:
   const int ghz4_index;
   const int ghz1_prime2_index;
 
-  const double ghz2mix;
-  const double ghz4mix;
-  const double ghz1_prime2mix;
+  const double ghz2mix_decay;
+  const double ghz4mix_decay;
+  const double ghz1_prime2mix_decay;
+  const double ghz2mix_VBF;
+  const double ghz4mix_VBF;
+  const double ghz1_prime2mix_VBF;
 
   const int a1_index;
   const int b5_index;
 
   int spin;
   int myspin;
+  typedef tuple<TVar::Process, TVar::MatrixElement, TVar::Production> MelaProcess;
+  MelaProcess decayprocess;
+  MelaProcess productionprocess;
+
   Mela& mela;
 
   ReweightingType reweightingtypefromstring(const std::string& reweightingtypestring);
 
   template <unsigned int size> void couplingsfromvectors(double(&couplings)[size][2], vector<double> real, vector<double> imaginary) { // Could just have had a pair -- U. Sarica
     if (real.size() != size || imaginary.size() != size) {
-      std::cout << "couplings should have size " << size << " but have size " << real.size() << " " << imaginary.size() << std::endl;
+      std::cout << "couplings should have size " << size << " but has size " << real.size() << " " << imaginary.size() << std::endl;
       assert(false);
     }
     for (unsigned int i = 0; i < size; i++) {
@@ -55,6 +63,10 @@ protected:
   void fillreweightingweights(vector<float> &reweightingweights);
 
   bool canreweight();
+  void setProcess(MelaProcess melaprocess) {
+    mela.setProcess(get<0>(melaprocess), get<1>(melaprocess), get<2>(melaprocess));
+  }
+  void computeP(float& prob, bool useConstant = true);
 
 public:
 
