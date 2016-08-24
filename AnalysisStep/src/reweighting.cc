@@ -225,7 +225,38 @@ void Reweighting::fillreweightingweights(
   MELACandidate* candidate
 ) {
   if (nReweightingSamples == 0) return;
-  mela.setCurrentCandidate(candidate);
+
+  //mela.setCurrentCandidate(candidate);  //doesn't work, does not append the candidate to TEvtProb::candList and so it doesn't know that it exists
+  /////////////////////////////////////////////////////////////
+  //Hopefully Ulascan will tell me the easier way to do this...
+  SimpleParticleCollection_t pDaughters, pAssociated, pMothers;
+  for (int i = 0; i < candidate->getNDaughters(); i++) {
+    auto daughter = candidate->getSortedDaughter(i);
+    pDaughters.emplace_back(daughter->id, daughter->p4);
+  }
+  for (int i = 0; i < candidate->getNAssociatedLeptons(); i++) {
+    auto associated = candidate->getAssociatedLepton(i);
+    pAssociated.emplace_back(associated->id, associated->p4);
+  }
+  //skip neutrinos, https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement/blob/71f2f5458464e45ad85a9386be2c1247332476da/MELA/src/MELACandidate.cc#L448
+  for (int i = 0; i < candidate->getNAssociatedPhotons(); i++) {
+    auto associated = candidate->getAssociatedPhoton(i);
+    pAssociated.emplace_back(associated->id, associated->p4);
+  }
+  cout << "Associated jets:" << endl;
+  for (int i = 0; i < candidate->getNAssociatedJets(); i++) {
+    auto associated = candidate->getAssociatedJet(i);
+    cout << "   " << associated->id << endl;
+    pAssociated.emplace_back(associated->id, associated->p4);
+  }
+  cout << "Mothers:" << endl;
+  for (int i = 0; i < candidate->getNMothers(); i++) {
+    auto mother = candidate->getMother(i);
+    cout << "   " << mother->id << endl;
+    pMothers.emplace_back(mother->id, mother->p4);
+  }
+  mela.setInputEvent(&pDaughters, &pAssociated, &pMothers, true);
+  /////////////////////////////////////////////////////////////
   fillreweightingweights(reweightingweights);
   mela.resetInputEvent();
 }
