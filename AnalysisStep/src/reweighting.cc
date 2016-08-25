@@ -70,7 +70,7 @@ void Reweighting::setmycouplings() {
   } else if (reweightingtype == VBFHZZ_spin0) {
     assert(myspin == 0);
     productionprocess = make_tuple(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::JJVBF);
-    decayprocess = make_tuple(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
+    decayprocess = make_tuple(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZINDEPENDENT);
   } else {
     assert(false);
   }
@@ -126,7 +126,7 @@ void Reweighting::setcouplings(int reweightinghypothesis) {
     }
     return;
   } else if (reweightingtype == VBFHZZ_spin0) {
-    decayprocess = make_tuple(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
+    decayprocess = make_tuple(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZINDEPENDENT);
     productionprocess = make_tuple(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::JJVBF);
     spin = 0;
     mela.selfDHggcoupl[0][0] = 1;
@@ -141,9 +141,9 @@ void Reweighting::setcouplings(int reweightinghypothesis) {
     case 7: mela.selfDHzzcoupl[0][ghz1_index][0] = 1; mela.selfDHzzcoupl[0][ghz2_index][0] = ghz2mix_VBF; break;                 //fa2_VBF=0.5
     case 8: mela.selfDHzzcoupl[0][ghz1_index][0] = 1; mela.selfDHzzcoupl[0][ghz4_index][0] = ghz4mix_VBF; break;                 //fa3_VBF=0.5
     case 9: mela.selfDHzzcoupl[0][ghz1_index][0] = 1; mela.selfDHzzcoupl[0][ghz1_prime2_index][0] = ghz1_prime2mix_VBF; break;   //fL1_VBF=0.5
-    case 10: mela.selfDHzzcoupl[0][ghz1_index][0] = 1; mela.selfDHzzcoupl[0][ghz2_index][0] = -ghz2mix_VBF*ghz2mix_decay; break; //fa2_VBFdecay=-0.5
-    case 11: mela.selfDHzzcoupl[0][ghz1_index][0] = 1; mela.selfDHzzcoupl[0][ghz4_index][0] = -ghz4mix_VBF*ghz4mix_decay; break; //fa3_VBFdecay=-0.5
-    case 12: mela.selfDHzzcoupl[0][ghz1_index][0] = 1; mela.selfDHzzcoupl[0][ghz1_prime2_index][0] = -ghz1_prime2mix_VBF*ghz1_prime2mix_decay; break; //fL1_VBFdecay=-0.5
+    case 10: mela.selfDHzzcoupl[0][ghz1_index][0] = 1; mela.selfDHzzcoupl[0][ghz2_index][0] = -sqrt(ghz2mix_VBF*ghz2mix_decay); break; //fa2_VBFdecay=-0.5
+    case 11: mela.selfDHzzcoupl[0][ghz1_index][0] = 1; mela.selfDHzzcoupl[0][ghz4_index][0] = -sqrt(ghz4mix_VBF*ghz4mix_decay); break; //fa3_VBFdecay=-0.5
+    case 12: mela.selfDHzzcoupl[0][ghz1_index][0] = 1; mela.selfDHzzcoupl[0][ghz1_prime2_index][0] = -sqrt(ghz1_prime2mix_VBF*ghz1_prime2mix_decay); break; //fL1_VBFdecay=-0.5
     default: assert(false);
     }
     return;
@@ -180,7 +180,9 @@ void Reweighting::fillcouplingstree(TTree* t) {
     t->Branch("b5Re", &b5);
   }
 
+  cerr << "There are about to be " << nReweightingSamples << " warnings about no daughters.  Please ignore them." << endl;
   for (int i = 0; i < nReweightingSamples; i++) {
+    reset_SelfDCouplings();
     setcouplings(i);
     spin_v.push_back(spin);
     if (spin == 0) {

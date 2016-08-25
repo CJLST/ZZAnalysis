@@ -68,6 +68,12 @@ protected:
   }
   void computeP(int reweightinghypothesis, float& prob, bool useConstant = true);
 
+  void reset_SelfDCouplings() {
+    mela.setInputEvent(0, 0, 0, true);
+    float dummy;
+    mela.computeP(dummy, false);
+  }
+
 public:
 
   int nReweightingSamples;
