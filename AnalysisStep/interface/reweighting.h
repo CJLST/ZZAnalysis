@@ -24,20 +24,20 @@ protected:
   double myGggcoupl[SIZE_GGG][2];
   double myGvvcoupl[SIZE_GVV][2];
 
-  const int ghz1_index;
-  const int ghz2_index;
-  const int ghz4_index;
-  const int ghz1_prime2_index;
+  const int ghz1_index = 0;
+  const int ghz2_index = 1;
+  const int ghz4_index = 3;
+  const int ghz1_prime2_index = 11;
 
-  const double ghz2mix_decay;
-  const double ghz4mix_decay;
-  const double ghz1_prime2mix_decay;
-  const double ghz2mix_VBF;
-  const double ghz4mix_VBF;
-  const double ghz1_prime2mix_VBF;
+  const double ghz2mix_decay = 1.663195;
+  const double ghz4mix_decay = 2.55502;
+  const double ghz1_prime2mix_decay = -12110.20;
+  const double ghz2mix_VBF = 0.271965;
+  const double ghz4mix_VBF = 0.297979;
+  const double ghz1_prime2mix_VBF = -2158.21;
 
-  const int a1_index;
-  const int b5_index;
+  const int a1_index = 0;
+  const int b5_index = 4;
 
   int spin;
   int myspin;
@@ -74,10 +74,12 @@ protected:
     mela.computeP(dummy, false);
   }
 
+  int nReweightingSamplesFromType(ReweightingType reweightingtype_);
+
 public:
 
-  int nReweightingSamples;
   ReweightingType reweightingtype;
+  int nReweightingSamples;
 
   Reweighting(
     Mela& mela_,
