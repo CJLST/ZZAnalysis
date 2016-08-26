@@ -586,7 +586,8 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
               pset.getParameter<std::vector<double> >("Gggcouplings_real"),
               pset.getParameter<std::vector<double> >("Gggcouplings_imag"),
               pset.getParameter<std::vector<double> >("GVVcouplings_real"),
-              pset.getParameter<std::vector<double> >("GVVcouplings_imag")
+              pset.getParameter<std::vector<double> >("GVVcouplings_imag"),
+              pset.getParameter<std::vector<double> >("reweightingcutoffs")
              ),
   nReweightingSamples(reweighting.nReweightingSamples),
   doreweighting(nReweightingSamples != 0),

@@ -19,6 +19,8 @@ couplings = Couplings()
 for coupling in couplings.allnames():
     declareDefault(coupling, 0, globals())
     couplings[coupling] = globals()[coupling]
+declareDefault("REWEIGHTING_CUTOFFS", "", globals())
+REWEIGHTING_CUTOFFS = [float(a) for a in REWEIGHTING_CUTOFFS.split("|") if a]
 
 # LHE info
 #  VVDECAYMODE\VVMODE  / ZZ==1 / WW==0  / Yukawa==2 / Zgam=3 / gamgam=4 / Z+nj=5
@@ -157,6 +159,7 @@ TreeSetup = cms.EDAnalyzer("HZZ4lNtupleMaker",
                            Gggcouplings_real = cms.vdouble(*couplings.getcouplings(spin=2, gg=True, imag=False)),
                            Gggcouplings_imag = cms.vdouble(*couplings.getcouplings(spin=2, gg=True, imag=True)),
                            reweightingtype = cms.string(REWEIGHTING_TYPE),
+                           reweightingcutoffs = cms.vdouble(*REWEIGHTING_CUTOFFS),
                            VVMode = cms.int32(int(VVMODE)),
                            VVDecayMode = cms.int32(int(VVDECAYMODE)),
                            AddLHEKinematics = cms.bool(ADDLHEKINEMATICS),

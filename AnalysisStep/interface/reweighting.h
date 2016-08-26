@@ -44,6 +44,7 @@ protected:
   typedef tuple<TVar::Process, TVar::MatrixElement, TVar::Production> MelaProcess;
   MelaProcess decayprocess;
   MelaProcess productionprocess;
+  vector<double> cutoffs;
 
   Mela& mela;
 
@@ -92,7 +93,8 @@ public:
     std::vector<double> Gggcouplings_real,
     std::vector<double> Gggcouplings_imag,
     std::vector<double> GVVcouplings_real,
-    std::vector<double> GVVcouplings_imag
+    std::vector<double> GVVcouplings_imag,
+    std::vector<double> cutoffs
     );
   virtual ~Reweighting(){}
 
@@ -118,4 +120,3 @@ public:
 
 
 #endif
-

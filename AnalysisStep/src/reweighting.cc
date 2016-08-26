@@ -35,13 +35,22 @@ Reweighting::Reweighting(
   std::vector<double> Gggcouplings_real,
   std::vector<double> Gggcouplings_imag,
   std::vector<double> GVVcouplings_real,
-  std::vector<double> GVVcouplings_imag
+  std::vector<double> GVVcouplings_imag,
+  std::vector<double> cutoffs_
   ) :
   myspin(inputspin),
+  cutoffs(cutoffs_),
   mela(mela_),
   reweightingtype(reweightingtypefromstring(reweightingtypestring)),
   nReweightingSamples(nReweightingSamplesFromType(reweightingtype))
 {
+  if (cutoffs.size() == 0)
+    for (int i = 0; i < nReweightingSamples; i++)
+      cutoffs.push_back(-1);
+  if (cutoffs.size() != (unsigned)nReweightingSamples) {
+    cout << "Wrong number of cutoffs (" << cutoffs.size() << ", should be " << nReweightingSamples << ")!" << endl;
+    assert(false);
+  }
   couplingsfromvectors(myHvvcoupl, HVVcouplings_real, HVVcouplings_imag);
   couplingsfromvectors(myZvvcoupl, ZVVcouplings_real, ZVVcouplings_imag);
   couplingsfromvectors(myGggcoupl, Gggcouplings_real, Gggcouplings_imag);
@@ -289,7 +298,9 @@ void Reweighting::fillreweightingweights(vector<float>& reweightingweights) {
 
   for (int i = 0; i < nReweightingSamples; i++) {
     computeP(i, probability, false);
-    reweightingweights.push_back(probability/myprobability);
+    float ratio = probability / myprobability;
+    if (cutoffs[i] > 0 && ratio > cutoffs[i]) ratio = cutoffs[i] / (ratio*ratio);
+    reweightingweights.push_back(ratio);
   }
 }
 
