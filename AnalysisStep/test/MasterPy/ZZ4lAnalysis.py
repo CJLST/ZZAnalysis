@@ -1093,8 +1093,8 @@ process.dressedJets = cms.EDProducer("JetFiller",
     jecType = cms.string("AK4PFchs"),
     applyJER = cms.bool(APPLYJER),
     jerType = cms.string("AK4PFchs"),
-    bTagSFFile = cms.string("/afs/cern.ch/user/s/sregnard/public/BTaggingSFICHEP/CSVv2_ichep.csv"),
-    bTagMCEffFile = cms.string("/afs/cern.ch/user/s/sregnard/public/BTaggingSFICHEP/bTagEfficiencies_80X.root"),
+    bTagSFFile = cms.string("ZZAnalysis/AnalysisStep/data/BTagging/CSVv2_ichep.csv"),
+    bTagMCEffFile = cms.string("ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_80X_ICHEP.root"),
     flags = cms.PSet()
     )
 
