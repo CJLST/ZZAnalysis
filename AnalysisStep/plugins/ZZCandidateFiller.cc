@@ -84,6 +84,7 @@ private:
   reco::CompositeCandidate::role_collection rolesZ2Z1;
   bool isMC;
   bool doKinFit;
+  bool addProdAnomalousProbabilities;
   // float muon_iso_cut, electron_iso_cut;
   TH2F* corrSigmaMu;
   TH2F* corrSigmaEle;
@@ -107,6 +108,7 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
   ZRolesByMass(iConfig.getParameter<bool>("ZRolesByMass")),
   isMC(iConfig.getParameter<bool>("isMC")),
   doKinFit(iConfig.getParameter<bool>("doKinFit")),
+  addProdAnomalousProbabilities(iConfig.getParameter<bool>("addProdAnomalousProbabilities")),
   corrSigmaMu(0),
   corrSigmaEle(0),
   kinZfitter(0)
@@ -1020,6 +1022,16 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     float pvbf_VAJHU_bestDjet_dn=-1;
     float phjj_VAJHU_bestDjet_dn=-1;
 
+    float pvbf_0minus_VAJHU_highestPTJets=-1;
+    float pvbf_0hplus_VAJHU_highestPTJets=-1;
+    float pvbf_0_g1prime2_VAJHU_highestPTJets=-1;
+    float pvbf_g1g4_VAJHU_highestPTJets=-1;
+    float pvbf_g1g2_VAJHU_highestPTJets=-1;
+    float pvbf_g1g1prime2_VAJHU_highestPTJets=-1;
+
+    float phjj_0minus_VAJHU_highestPTJets=-1;
+    float phjj_g2g4_VAJHU_highestPTJets=-1;
+
     float pAux_vbf_VAJHU = 1;
     float phj_VAJHU = -1;
     float pwh_hadronic_VAJHU = -1;
@@ -1051,6 +1063,15 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
         if (hasAtLeastOneJet){
           float phjj_VAJHU_highestPTJets_temp = -1;
           float pvbf_VAJHU_highestPTJets_temp = -1;
+
+          float pvbf_0minus_VAJHU_highestPTJets_temp = -1;
+          float pvbf_0hplus_VAJHU_highestPTJets_temp = -1;
+          float pvbf_0_g1prime2_VAJHU_highestPTJets_temp = -1;
+          float pvbf_g1g4_VAJHU_highestPTJets_temp = -1;
+          float pvbf_g1g2_VAJHU_highestPTJets_temp = -1;
+          float pvbf_g1g1prime2_VAJHU_highestPTJets_temp = -1;
+          float phjj_0minus_VAJHU_highestPTJets_temp = -1;
+          float phjj_g2g4_VAJHU_highestPTJets_temp = -1;
 
           float djet_max = -1;
           float phjj_VAJHU_bestDjet_temp = -1;
@@ -1095,6 +1116,53 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
               if (firstjet == 0 && secondjet == 1){ // If leading/subleading-pT jets
                 phjj_VAJHU_highestPTJets_temp = phjj_temp;
                 pvbf_VAJHU_highestPTJets_temp = pvbf_temp;
+
+                if (addProdAnomalousProbabilities) {
+                  float vbfg4_temp = -1, vbfg2_temp = -1, vbfL1_temp = -1, hjjg4_temp = -1,
+                        vbfg1g4_temp = -1, vbfg1g2_temp = -1, vbfg1L1_temp = -1, hjjg2g4_temp = -1;
+                  double& ghz1 = mela->selfDHzzcoupl[0][0][0];
+                  double& ghz2 = mela->selfDHzzcoupl[0][1][0];
+                  double& ghz4 = mela->selfDHzzcoupl[0][3][0];
+                  double& ghz1_prime2 = mela->selfDHzzcoupl[0][11][0];
+                  double& ghg2 = mela->selfDHggcoupl[0][0];
+                  double& ghg4 = mela->selfDHggcoupl[2][0];
+
+                  mela->setProcess(TVar::H0minus, TVar::JHUGen, TVar::JJVBF);
+                  mela->computeProdP(vbfg4_temp, true);
+                  pvbf_0minus_VAJHU_highestPTJets_temp = vbfg4_temp;
+
+                  mela->setProcess(TVar::H0hplus, TVar::JHUGen, TVar::JJVBF);
+                  mela->computeProdP(vbfg2_temp, true);
+                  pvbf_0hplus_VAJHU_highestPTJets_temp = vbfg2_temp;
+
+                  mela->setProcess(TVar::H0_g1prime2, TVar::JHUGen, TVar::JJVBF);
+                  mela->computeProdP(vbfL1_temp, true);
+                  pvbf_0_g1prime2_VAJHU_highestPTJets_temp = vbfL1_temp;
+
+                  mela->setProcess(TVar::H0minus, TVar::JHUGen, TVar::JJQCD);
+                  mela->computeProdP(hjjg4_temp, true);
+                  phjj_0minus_VAJHU_highestPTJets_temp = hjjg4_temp;
+
+                  mela->setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::JJVBF);
+                  ghz1 = ghz4 = 1.;
+                  mela->computeProdP(vbfg1g4_temp, true);
+                  pvbf_g1g4_VAJHU_highestPTJets_temp = vbfg1g4_temp - pvbf_temp - vbfg4_temp;
+
+                  mela->setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::JJVBF);
+                  ghz1 = ghz2 = 1.;
+                  mela->computeProdP(vbfg1g2_temp, true);
+                  pvbf_g1g2_VAJHU_highestPTJets_temp = vbfg1g2_temp - pvbf_temp - vbfg2_temp;
+
+                  mela->setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::JJVBF);
+                  ghz1 = ghz1_prime2 = 1.;
+                  mela->computeProdP(vbfg1L1_temp, true);
+                  pvbf_g1g1prime2_VAJHU_highestPTJets_temp = vbfg1L1_temp - pvbf_temp - vbfL1_temp;
+
+                  mela->setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::JJQCD);
+                  ghg2 = ghg4 = 1.;
+                  mela->computeProdP(hjjg2g4_temp, true);
+                  phjj_g2g4_VAJHU_highestPTJets_temp = hjjg2g4_temp - phjj_temp - hjjg4_temp;
+                }
 
                 float pwh_temp = -1;
                 float pzh_temp = -1;
@@ -1143,6 +1211,18 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
             pvbf_VAJHU_highestPTJets = pvbf_VAJHU_highestPTJets_temp;
             phjj_VAJHU_bestDjet = phjj_VAJHU_bestDjet_temp;
             pvbf_VAJHU_bestDjet = pvbf_VAJHU_bestDjet_temp;
+
+            if (addProdAnomalousProbabilities) {
+              pvbf_0minus_VAJHU_highestPTJets = pvbf_0minus_VAJHU_highestPTJets_temp;
+              pvbf_0hplus_VAJHU_highestPTJets = pvbf_0hplus_VAJHU_highestPTJets_temp;
+              pvbf_0_g1prime2_VAJHU_highestPTJets = pvbf_0_g1prime2_VAJHU_highestPTJets_temp;
+              pvbf_g1g4_VAJHU_highestPTJets = pvbf_g1g4_VAJHU_highestPTJets_temp;
+              pvbf_g1g2_VAJHU_highestPTJets = pvbf_g1g2_VAJHU_highestPTJets_temp;
+              pvbf_g1g1prime2_VAJHU_highestPTJets = pvbf_g1g1prime2_VAJHU_highestPTJets_temp;
+              phjj_0minus_VAJHU_highestPTJets = phjj_0minus_VAJHU_highestPTJets_temp;
+              phjj_g2g4_VAJHU_highestPTJets = phjj_g2g4_VAJHU_highestPTJets_temp;
+            }
+
             pAux_vbf_VAJHU = pAux_vbf_VAJHU_temp;
             phj_VAJHU = phj_VAJHU_temp;
             pwh_hadronic_VAJHU = pwh_hadronic_VAJHU_temp;
@@ -1446,6 +1526,16 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     myCand.addUserFloat("pvbf_VAJHU_bestDjet_up", pvbf_VAJHU_bestDjet_up);
     myCand.addUserFloat("phjj_VAJHU_bestDjet_dn", phjj_VAJHU_bestDjet_dn);
     myCand.addUserFloat("pvbf_VAJHU_bestDjet_dn", pvbf_VAJHU_bestDjet_dn);
+
+    myCand.addUserFloat("pvbf_0minus_VAJHU_highestPTJets", pvbf_0minus_VAJHU_highestPTJets);
+    myCand.addUserFloat("pvbf_0hplus_VAJHU_highestPTJets", pvbf_0hplus_VAJHU_highestPTJets);
+    myCand.addUserFloat("pvbf_0_g1prime2_VAJHU_highestPTJets", pvbf_0_g1prime2_VAJHU_highestPTJets);
+    myCand.addUserFloat("pvbf_g1g4_VAJHU_highestPTJets", pvbf_g1g4_VAJHU_highestPTJets);
+    myCand.addUserFloat("pvbf_g1g2_VAJHU_highestPTJets", pvbf_g1g2_VAJHU_highestPTJets);
+    myCand.addUserFloat("pvbf_g1g1prime2_VAJHU_highestPTJets", pvbf_g1g1prime2_VAJHU_highestPTJets);
+
+    myCand.addUserFloat("phjj_0minus_VAJHU_highestPTJets", phjj_0minus_VAJHU_highestPTJets);
+    myCand.addUserFloat("phjj_g2g4_VAJHU_highestPTJets", phjj_g2g4_VAJHU_highestPTJets);
 
     myCand.addUserFloat("pAux_vbf_VAJHU", pAux_vbf_VAJHU);
     myCand.addUserFloat("pAux_vbf_VAJHU_up", pAux_vbf_VAJHU_up);

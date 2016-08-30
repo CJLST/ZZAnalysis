@@ -24,20 +24,20 @@ protected:
   double myGggcoupl[SIZE_GGG][2];
   double myGvvcoupl[SIZE_GVV][2];
 
-  const int ghz1_index = 0;
-  const int ghz2_index = 1;
-  const int ghz4_index = 3;
-  const int ghz1_prime2_index = 11;
+  static const int ghz1_index = 0;
+  static const int ghz2_index = 1;
+  static const int ghz4_index = 3;
+  static const int ghz1_prime2_index = 11;
 
-  const double ghz2mix_decay = 1.663195;
-  const double ghz4mix_decay = 2.55502;
-  const double ghz1_prime2mix_decay = -12110.20;
-  const double ghz2mix_VBF = 0.271965;
-  const double ghz4mix_VBF = 0.297979;
-  const double ghz1_prime2mix_VBF = -2158.21;
+  static const constexpr double ghz2mix_decay = 1.663195;
+  static const constexpr double ghz4mix_decay = 2.55502;
+  static const constexpr double ghz1_prime2mix_decay = -12110.20;
+  static const constexpr double ghz2mix_VBF = 0.271965;
+  static const constexpr double ghz4mix_VBF = 0.297979;
+  static const constexpr double ghz1_prime2mix_VBF = -2158.21;
 
-  const int a1_index = 0;
-  const int b5_index = 4;
+  static const int a1_index = 0;
+  static const int b5_index = 4;
 
   int spin;
   int myspin;
@@ -47,6 +47,13 @@ protected:
   vector<double> cutoffs;
 
   Mela& mela;
+
+  double& ghz1;
+  double& ghz2;
+  double& ghz4;
+  double& ghz1_prime2;
+  double& a1;
+  double& b5;
 
   ReweightingType reweightingtypefromstring(const std::string& reweightingtypestring);
 

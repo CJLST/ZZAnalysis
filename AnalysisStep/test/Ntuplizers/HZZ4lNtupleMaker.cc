@@ -259,6 +259,16 @@ namespace {
   Float_t phjj_VAJHU_highestPTJets_dn = 0;
   Float_t pvbf_VAJHU_highestPTJets_dn = 0;
 
+  Float_t pvbf_0minus_VAJHU_highestPTJets=-1;
+  Float_t pvbf_0hplus_VAJHU_highestPTJets=-1;
+  Float_t pvbf_0_g1prime2_VAJHU_highestPTJets=-1;
+  Float_t pvbf_g1g4_VAJHU_highestPTJets=-1;
+  Float_t pvbf_g1g2_VAJHU_highestPTJets=-1;
+  Float_t pvbf_g1g1prime2_VAJHU_highestPTJets=-1;
+
+  Float_t phjj_0minus_VAJHU_highestPTJets=-1;
+  Float_t phjj_g2g4_VAJHU_highestPTJets=-1;
+
   Float_t phjj_VAJHU_bestDjet = 0;
   Float_t pvbf_VAJHU_bestDjet = 0;
   Float_t phjj_VAJHU_bestDjet_up = 0;
@@ -480,6 +490,8 @@ private:
   bool apply_K_NNLOQCD_ZZQQB;
   bool apply_K_NLOEW_ZZQQB;
 
+  bool addProdAnomalousProbabilities;
+
   edm::EDGetTokenT<edm::View<reco::Candidate> > genParticleToken;
   edm::Handle<edm::View<reco::Candidate> > genParticles;
   edm::EDGetTokenT<GenEventInfoProduct> genInfoToken;
@@ -597,6 +609,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   apply_K_NNLOQCD_ZZGG(pset.getParameter<int>("Apply_K_NNLOQCD_ZZGG")),
   apply_K_NNLOQCD_ZZQQB(pset.getParameter<bool>("Apply_K_NNLOQCD_ZZQQB")),
   apply_K_NLOEW_ZZQQB(pset.getParameter<bool>("Apply_K_NLOEW_ZZQQB")),
+  addProdAnomalousProbabilities(pset.getParameter<bool>("addProdAnomalousProbabilities")),
   reweight(),
   sampleName(pset.getParameter<string>("sampleName")),
   hTH2D_Mu_All(0),
@@ -655,7 +668,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   }
 
   isMC = myHelper.isMC();
-  if (isMC) lheHandler = new LHEHandler(pset.getParameter<int>("VVMode"), pset.getParameter<int>("VVDecayMode"), addLHEKinematics);
+  if (isMC) lheHandler = new LHEHandler(pset.getParameter<int>("VVMode"), pset.getParameter<int>("VVDecayMode"), addLHEKinematics || doreweighting);
 
   Nevt_Gen = 0;
   Nevt_Gen_lumiBlock = 0;
@@ -1512,6 +1525,16 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     getCheckedUserFloat(cand, "pvbf_VAJHU_highestPTJets_up", pvbf_VAJHU_highestPTJets_up, -1);
     getCheckedUserFloat(cand, "phjj_VAJHU_highestPTJets_dn", phjj_VAJHU_highestPTJets_dn, -1);
     getCheckedUserFloat(cand, "pvbf_VAJHU_highestPTJets_dn", pvbf_VAJHU_highestPTJets_dn, -1);
+    if (addProdAnomalousProbabilities) {
+      getCheckedUserFloat(cand, "pvbf_0minus_VAJHU_highestPTJets", pvbf_0minus_VAJHU_highestPTJets, -1);
+      getCheckedUserFloat(cand, "pvbf_0hplus_VAJHU_highestPTJets", pvbf_0hplus_VAJHU_highestPTJets, -1);
+      getCheckedUserFloat(cand, "pvbf_0_g1prime2_VAJHU_highestPTJets", pvbf_0_g1prime2_VAJHU_highestPTJets, -1);
+      getCheckedUserFloat(cand, "pvbf_g1g4_VAJHU_highestPTJets", pvbf_g1g4_VAJHU_highestPTJets, -1);
+      getCheckedUserFloat(cand, "pvbf_g1g2_VAJHU_highestPTJets", pvbf_g1g2_VAJHU_highestPTJets, -1);
+      getCheckedUserFloat(cand, "pvbf_g1g1prime2_VAJHU_highestPTJets", pvbf_g1g1prime2_VAJHU_highestPTJets, -1);
+      getCheckedUserFloat(cand, "phjj_0minus_VAJHU_highestPTJets", phjj_0minus_VAJHU_highestPTJets, -1);
+      getCheckedUserFloat(cand, "phjj_g2g4_VAJHU_highestPTJets", phjj_g2g4_VAJHU_highestPTJets, -1);
+    }
     getCheckedUserFloat(cand, "phjj_VAJHU_bestDjet", phjj_VAJHU_bestDjet, -1);
     getCheckedUserFloat(cand, "pvbf_VAJHU_bestDjet", pvbf_VAJHU_bestDjet, -1);
     getCheckedUserFloat(cand, "phjj_VAJHU_bestDjet_up", phjj_VAJHU_bestDjet_up, -1);
@@ -2300,6 +2323,16 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("pvbf_VAJHU_highestPTJets_up", pvbf_VAJHU_highestPTJets_up);
   myTree->Book("phjj_VAJHU_highestPTJets_dn", phjj_VAJHU_highestPTJets_dn);
   myTree->Book("pvbf_VAJHU_highestPTJets_dn", pvbf_VAJHU_highestPTJets_dn);
+  if (addProdAnomalousProbabilities) {
+    myTree->Book("pvbf_0minus_VAJHU_highestPTJets", pvbf_0minus_VAJHU_highestPTJets);
+    myTree->Book("pvbf_0hplus_VAJHU_highestPTJets", pvbf_0hplus_VAJHU_highestPTJets);
+    myTree->Book("pvbf_0_g1prime2_VAJHU_highestPTJets", pvbf_0_g1prime2_VAJHU_highestPTJets);
+    myTree->Book("pvbf_g1g4_VAJHU_highestPTJets", pvbf_g1g4_VAJHU_highestPTJets);
+    myTree->Book("pvbf_g1g2_VAJHU_highestPTJets", pvbf_g1g2_VAJHU_highestPTJets);
+    myTree->Book("pvbf_g1g1prime2_VAJHU_highestPTJets", pvbf_g1g1prime2_VAJHU_highestPTJets);
+    myTree->Book("phjj_0minus_VAJHU_highestPTJets", phjj_0minus_VAJHU_highestPTJets);
+    myTree->Book("phjj_g2g4_VAJHU_highestPTJets", phjj_g2g4_VAJHU_highestPTJets);
+  }
   myTree->Book("phjj_VAJHU_bestDjet", phjj_VAJHU_bestDjet);
   myTree->Book("pvbf_VAJHU_bestDjet", pvbf_VAJHU_bestDjet);
   myTree->Book("phjj_VAJHU_bestDjet_up", phjj_VAJHU_bestDjet_up);
