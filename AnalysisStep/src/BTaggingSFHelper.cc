@@ -1,5 +1,7 @@
 #include "CondFormats/BTauObjects/interface/BTagCalibration.h"
 #include "CondFormats/BTauObjects/interface/BTagCalibrationReader.h"
+#include <FWCore/ParameterSet/interface/FileInPath.h>
+
 #include "../interface/BTaggingSFHelper.h"
 
 #include "TString.h"
@@ -9,7 +11,10 @@ using namespace std;
 
 BTaggingSFHelper::BTaggingSFHelper(std::string SFfilename, std::string effFileName)
 {
-  m_calib = new BTagCalibration("CSVv2", SFfilename.c_str());
+  // Allow relative paths in python config file to be found in C++
+  edm::FileInPath fip_sf(SFfilename);
+ 
+  m_calib = new BTagCalibration("CSVv2", fip_sf.fullPath().c_str());
 
   m_reader_b    = new BTagCalibrationReader(m_calib , BTagEntry::OP_MEDIUM, "comb", "central");
   m_reader_b_up = new BTagCalibrationReader(m_calib , BTagEntry::OP_MEDIUM, "comb", "up"     );
@@ -31,8 +36,10 @@ BTaggingSFHelper::BTaggingSFHelper(std::string SFfilename, std::string effFileNa
   m_readers[2][0] = m_reader_udsg;
   m_readers[2][1] = m_reader_udsg_up;
   m_readers[2][2] = m_reader_udsg_do;
-  
-  m_fileEff = new TFile(effFileName.c_str());
+ 
+  edm::FileInPath fip_eff(effFileName);
+  m_fileEff = new TFile(fip_eff.fullPath().c_str());
+
   TString flavs[3] = {"b", "c", "udsg"};
   for(int flav=0; flav<3; flav++){
     TString name = Form("eff_%s_M_ALL",flavs[flav].Data());
