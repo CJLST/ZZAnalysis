@@ -34,7 +34,7 @@ REWEIGHTING_CUTOFFS = [float(a) for a in REWEIGHTING_CUTOFFS.split("|") if a]
 #                    -2: [ 2l2X         ]
 #                    -3: [ 2nu2X        ]
 #                    -4: [ 2q2X         ]
-declareDefault("VVMODE", 0, globals())
+declareDefault("VVMODE", 1, globals())
 declareDefault("VVDECAYMODE", 0, globals())
 declareDefault("ADDLHEKINEMATICS", False, globals())
 declareDefault("SAMPLEPRODUCTIONID", "", globals()) # Reserve for reweighting, not yet used
