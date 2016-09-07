@@ -60,10 +60,6 @@
 #include "TLorentzVector.h"
 #include "TSpline.h"
 
-#include "CondFormats/BTauObjects/interface/BTagCalibration.h"
-#include "CondFormats/BTauObjects/interface/BTagCalibrationReader.h"
-
-
 #include <string>
 
 namespace {
@@ -397,7 +393,7 @@ private:
   void FillAssocLepGenInfo(std::vector<const reco::Candidate *>& AssocLeps);
 
   Float_t getAllWeight(const reco::Candidate* Lep) const;
-  Float_t getAllWeightJet(const reco::Candidate* Jet) const;
+  // Float_t getAllWeightJet(const reco::Candidate* Jet) const;
   Float_t getHqTWeight(double mH, double genPt) const;
   Float_t getFakeWeight(Float_t LepPt, Float_t LepEta, Int_t LepID, Int_t LepZ1ID);
 
@@ -464,19 +460,13 @@ private:
   TSpline3* spkfactor;
 
   TH2D *hTH2D_Mu_All;
-  TH2D *hTH2D_El_notCracks;
-  TH2D *hTH2D_El_Cracks;
-  TH2D *hTH2D_El_IdIsoSip_notCracks;
-  TH2D *hTH2D_El_IdIsoSip_Cracks;
+  TH2F *hTH2F_El_Reco;
+  TH1 *hTH2D_El_IdIsoSip_notCracks;
+  TH1 *hTH2D_El_IdIsoSip_Cracks;
   TH2D* h_weight; //HqT weights
   //TH2F *h_ZXWeightMuo;
   //TH2F *h_ZXWeightEle;
   TH2D* h_ZXWeight[4];
-
-  BTagCalibration* calib;
-  BTagCalibrationReader* reader;     // cntrl
-  BTagCalibrationReader* reader_up;  // sys up
-  BTagCalibrationReader* reader_do;  // sys down
 
 };
 
@@ -487,8 +477,7 @@ HZZ2l2qNtupleMaker::HZZ2l2qNtupleMaker(const edm::ParameterSet& pset) :
   myHelper(pset),
   reweight(),
   hTH2D_Mu_All(0),
-  hTH2D_El_notCracks(0),
-  hTH2D_El_Cracks(0),
+  hTH2F_El_Reco(0),
   hTH2D_El_IdIsoSip_notCracks(0),
   hTH2D_El_IdIsoSip_Cracks(0),
   h_weight(0)
@@ -583,9 +572,9 @@ HZZ2l2qNtupleMaker::HZZ2l2qNtupleMaker(const edm::ParameterSet& pset) :
     hTH2D_Mu_All = (TH2D*)fMuWeight->Get("FINAL")->Clone();
     fMuWeight->Close();
 
-    TString filename("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_2016_v3.root");
+    TString filename2("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_2016_v3.root");
     //TString filename("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ele_scale_factors_2016_v1.root");  
-    edm::FileInPath fipEleNotCracks(filename.Data());
+    edm::FileInPath fipEleNotCracks(filename2.Data());
     fipPath = fipEleNotCracks.fullPath();
     TFile *root_file = TFile::Open(fipPath.data(),"READ");
     hTH2D_El_IdIsoSip_notCracks = (TH1*) root_file->Get("ele_scale_factors")->Clone();
@@ -616,12 +605,6 @@ HZZ2l2qNtupleMaker::HZZ2l2qNtupleMaker(const edm::ParameterSet& pset) :
     fEleWeightCracks->Close();
     */
 
-    edm::FileInPath btagFIP("ZZAnalysis/AnalysisStep/data/CSVv2_4invfb_systJuly15.csv");
-    fipPath=btagFIP.fullPath();
-    calib = new BTagCalibration("csvv2",fipPath);
-    reader = new BTagCalibrationReader(calib,BTagEntry::OP_LOOSE,"comb","central");
-    reader_up = new BTagCalibrationReader(calib,BTagEntry::OP_LOOSE,"comb","up");
-    reader_do = new BTagCalibrationReader(calib,BTagEntry::OP_LOOSE,"comb","down");
   }
   
   if (!skipHqTWeight) {
@@ -1666,7 +1649,7 @@ Float_t HZZ2l2qNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
   return weight;
 }
 
-Float_t HZZ2l2qNtupleMaker::getAllWeightJet(const reco::Candidate* Jet) const
+/* Float_t HZZ2l2qNtupleMaker::getAllWeightJet(const reco::Candidate* Jet) const
 {
   if (skipDataMCWeight) return 1.;
   
@@ -1697,7 +1680,7 @@ Float_t HZZ2l2qNtupleMaker::getAllWeightJet(const reco::Candidate* Jet) const
     weight *= reader->eval(BTagEntry::FLAV_UDSG, Jet->eta(), JetPt); 
   } 
   return weight;
-}
+  } */
 
 Float_t HZZ2l2qNtupleMaker::getHqTWeight(double mH, double genPt) const
 {
