@@ -237,35 +237,7 @@ void Reweighting::fillreweightingweights(
 ) {
   if (nReweightingSamples == 0) return;
 
-  //mela.setCurrentCandidate(candidate);  //doesn't work, does not append the candidate to TEvtProb::candList and so it doesn't know that it exists
-  /////////////////////////////////////////////////////////////
-  //Hopefully Ulascan will tell me the easier way to do this...
-  SimpleParticleCollection_t pDaughters, pAssociated, pMothers;
-  if (candidate) {
-    for (int i = 0; i < candidate->getNDaughters(); i++) {
-      auto daughter = candidate->getSortedDaughter(i);
-      pDaughters.emplace_back(daughter->id, daughter->p4);
-    }
-    for (int i = 0; i < candidate->getNAssociatedLeptons(); i++) {
-      auto associated = candidate->getAssociatedLepton(i);
-      pAssociated.emplace_back(associated->id, associated->p4);
-    }
-    //skip neutrinos, https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement/blob/71f2f5458464e45ad85a9386be2c1247332476da/MELA/src/MELACandidate.cc#L448
-    for (int i = 0; i < candidate->getNAssociatedPhotons(); i++) {
-      auto associated = candidate->getAssociatedPhoton(i);
-      pAssociated.emplace_back(associated->id, associated->p4);
-    }
-    for (int i = 0; i < candidate->getNAssociatedJets(); i++) {
-      auto associated = candidate->getAssociatedJet(i);
-      pAssociated.emplace_back(associated->id, associated->p4);
-    }
-    for (int i = 0; i < candidate->getNMothers(); i++) {
-      auto mother = candidate->getMother(i);
-      pMothers.emplace_back(mother->id, mother->p4);
-    }
-  }
-  mela.setInputEvent(&pDaughters, &pAssociated, &pMothers, true);
-  /////////////////////////////////////////////////////////////
+  mela.setCurrentCandidate(candidate);
   fillreweightingweights(reweightingweights);
   mela.resetInputEvent();
 }
@@ -273,14 +245,14 @@ void Reweighting::fillreweightingweights(
 void Reweighting::computeP(int reweightinghypothesis, float& prob, bool useConstant) {
   prob = 1;
   float tmp = 0;
-  setcouplings(reweightinghypothesis);
   if (get<0>(decayprocess) != TVar::Null) {
+    setcouplings(reweightinghypothesis);
     setProcess(decayprocess);
     mela.computeP(tmp, useConstant);
     prob *= tmp;
   }
-  setcouplings(reweightinghypothesis);
   if (get<0>(productionprocess) != TVar::Null) {
+    setcouplings(reweightinghypothesis);
     setProcess(productionprocess);
     mela.computeProdP(tmp, useConstant);
     prob *= tmp;
