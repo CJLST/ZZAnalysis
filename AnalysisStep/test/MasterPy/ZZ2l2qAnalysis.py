@@ -435,7 +435,7 @@ process.calibratedPatElectrons = cms.EDProducer("CalibratedPatElectronProducerRu
     gbrForestName = cms.string("gedelectron_p4combination_25ns"),
     isMC = cms.bool(IsMC),
     isSynchronization = cms.bool(False),
-    correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/80X_Golden22June_approval")
+    correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/80X_ichepV1_2016_ele")
 )
 
 if (BUNCH_SPACING == 50):
@@ -920,13 +920,13 @@ process.dressedJets = cms.EDProducer("JetFiller",
     cut = cms.string("pt>30 && abs(eta)<4.7 && userFloat('looseJetID') && userFloat('PUjetID')"),
     isMC = cms.bool(IsMC),
     bTaggerName = cms.string("pfCombinedInclusiveSecondaryVertexV2BJetTags"),
+    bTaggerThreshold = cms.double(0.460),
     jecType = cms.string("AK4PFchs"),
     applyJER = cms.bool(True),
     jerType = cms.string("AK4PFchs"),
     bTagSFFile = cms.string("ZZAnalysis/AnalysisStep/data/BTagging/CSVv2_ichep.csv"),
     bTagMCEffFile = cms.string("ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_80X_ICHEP.root"),
     flags = cms.PSet(
-        isBtagged = cms.string("userFloat('bTagger')>0.460"),
         )
 )
 
