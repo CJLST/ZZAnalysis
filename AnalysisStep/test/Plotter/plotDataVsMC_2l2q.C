@@ -198,6 +198,26 @@ void densityHist(TH1F* hist)
   hist->GetYaxis()->SetTitle("Events / 50 GeV");
 }
 
+float getDVBF2jetsConstant(float ZZMass){
+  float par[9]={
+    1.876,
+    -55.488,
+    403.32,
+    0.3906,
+    80.8,
+    27.7,
+    -0.06,
+    54.97,
+    309.96
+  };
+  float kappa =
+    pow(1.-atan((ZZMass-par[1])/par[2])*2./TMath::Pi(), par[0])
+    + par[3]*exp(-pow((ZZMass-par[4])/par[5], 2))
+    + par[6]*exp(-pow((ZZMass-par[7])/par[8], 2));
+  float constant = kappa/(1.-kappa);
+  return constant;
+}
+
 void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./goodDatasetsWithData.txt", /* bool norm = false,*/ bool CR = false, bool draw = true, bool weightMCtrig = true, bool weighttau21 = true)
 {
   
@@ -652,14 +672,14 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
                              // and dump for synchronization 
       if (ZZMass->size() == 1 && abs(ZZCandType->at(0)) == 1) {
         float mela = 1./(1.+0.035*(pqqZJJ_VAMCFM->at(0)/p0plus_VAJHU->at(0)));
-        float vbfmela = 1./(1.+0.06*(phjj_VAJHU_highestPTJets->at(0)/pvbf_VAJHU_highestPTJets->at(0)));
+        float vbfmela = 1./(1.+getDVBF2jetsConstant(ZZMass->at(0))*(phjj_VAJHU_highestPTJets->at(0)/pvbf_VAJHU_highestPTJets->at(0)));
 	if (writeThis) myfile << RunNumber << ":" << EventNumber << ":" << LumiNumber << ":" << Z2Mass->at(0)  << ":" << (abs(Z2Flav->at(0))==121 ? "Ele:" : "Muo:")  << pt1stLep << ":" << pt2ndLep << ":" << ZZMass->at(0) << ":" << Z1Mass->at(0) << ":" << Z1tau21->at(0) << ":" << Z1Pt->at(0) << ":" << mela << ":" << vbfmela << ":-1:-1:-1:-1:-1:-1:-1:" << Met << endl; 
 	nPassMerged++;
 	preferType = 1;
       }
       else if (ZZMass->size() == 1 && abs(ZZCandType->at(0)) == 2) {
 	float mela = 1./(1.+0.035*(pqqZJJ_VAMCFM->at(0)/p0plus_VAJHU->at(0)));
-        float vbfmela = 1./(1.+0.06*(phjj_VAJHU_highestPTJets->at(0)/pvbf_VAJHU_highestPTJets->at(0)));
+        float vbfmela = 1./(1.+getDVBF2jetsConstant(ZZMass->at(0))*(phjj_VAJHU_highestPTJets->at(0)/pvbf_VAJHU_highestPTJets->at(0)));
 	if (writeThis) myfile << RunNumber << ":" << EventNumber << ":" << LumiNumber << ":" << Z2Mass->at(0)  << ":" << (abs(Z2Flav->at(0))==121 ? "Ele:" : "Muo:")  << pt1stLep << ":" << pt2ndLep << ":-1:-1:-1:-1:-1:-1:" << ZZMass->at(0) << ":" << Z1Mass->at(0) << ":" << pt1stJet << ":" << pt2ndJet << ":" << btag1stJet << ":" << mela << ":" << vbfmela << ":" << Met << endl;
 	nPassResol++;
         preferType = 2;
@@ -669,7 +689,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
         float vbfmela[2] = {0.,0.};
 	for(unsigned int theCand=0; theCand<2; theCand++){
 	  mela[theCand] = 1./(1.+0.035*(pqqZJJ_VAMCFM->at(theCand)/p0plus_VAJHU->at(theCand)));   
-          vbfmela[theCand] = 1./(1.+0.06*(phjj_VAJHU_highestPTJets->at(theCand)/pvbf_VAJHU_highestPTJets->at(theCand)));
+          vbfmela[theCand] = 1./(1.+getDVBF2jetsConstant(ZZMass->at(theCand))*(phjj_VAJHU_highestPTJets->at(theCand)/pvbf_VAJHU_highestPTJets->at(theCand)));
 	}
 	if (writeThis) myfile << RunNumber << ":" << EventNumber << ":" << LumiNumber << ":" << Z2Mass->at(0)  << ":" << (abs(Z2Flav->at(0))==121 ? "Ele:" : "Muo:")  << pt1stLep << ":" << pt2ndLep << ":" << ZZMass->at(0) << ":" << Z1Mass->at(0) << ":" << Z1tau21->at(0) << ":" << Z1Pt->at(0) << ":" << mela[0] << ":" << vbfmela[0] << ":" << ZZMass->at(1) << ":" << Z1Mass->at(1) << ":" << pt1stJet << ":" << pt2ndJet << ":" << btag1stJet << ":" << mela[1] << ":" << vbfmela[1] << ":" << Met << endl;
 	nPassMerged++; nPassResol++;
@@ -755,10 +775,10 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
  	    if (typ==3 && process == 3) whichTmvaTree = 3;
  
             float mela = 1./(1.+0.035*(pqqZJJ_VAMCFM->at(theCand)/p0plus_VAJHU->at(theCand)));
-            float vbfmela = ((phjj_VAJHU_highestPTJets->at(theCand) > 0. && nExtraJets > 1) ? 1./(1.+0.06*(phjj_VAJHU_highestPTJets->at(theCand)/pvbf_VAJHU_highestPTJets->at(theCand))) : -1.); 
+            float vbfmela = ((phjj_VAJHU_highestPTJets->at(theCand) > 0. && nExtraJets > 1) ? 1./(1.+getDVBF2jetsConstant(ZZMass->at(theCand))*(phjj_VAJHU_highestPTJets->at(theCand)/pvbf_VAJHU_highestPTJets->at(theCand))) : -1.); 
 
-	    if ((typ==0 || typ==3) && nExtraJets > 1 && vbfmela > 0.536+665./(ZZMass->at(theCand)+1530.)) typ=typ+8;
-	    if ((typ==1 || typ==2) && nExtraJets > 1 && vbfmela > 0.536+665./(ZZMass->at(theCand)+1530.)) typ=typ+8;             
+	    if ((typ==0 || typ==3) && nExtraJets > 1 && vbfmela > 1.043-460./(ZZMass->at(theCand)+634.)) typ=typ+8;
+	    if ((typ==1 || typ==2) && nExtraJets > 1 && vbfmela > 1.043-460./(ZZMass->at(theCand)+634.)) typ=typ+8;             
   	    
 	    if ((typ==0 || typ==3) && btag1stJet > 0.46 && btag2ndJet > 0.46) typ=typ+4;
 	    if ((typ==1 || typ==2) && btag1stSubjet > 0.46 && btag2ndSubjet > 0.46) typ=typ+4;
