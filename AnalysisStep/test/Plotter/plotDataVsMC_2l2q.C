@@ -235,7 +235,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
   Float_t sumWeights[nDatasets];
   Int_t mass[nDatasets];
 
-  string Dsname[nDatasets] = {"ggHiggs750","VBFHiggs900","DY1JetsToLL","DY2JetsToLL","DY3JetsToLL","DY4JetsToLL","DYBJetsToLL","DYBFiltJetsToLL","TTBar","WZ2l2qDib","ZZ2l2qDib","WW2l2nDib","WZ3ln","DoubleEG2016B","DoubleMu2016B","SingleEG2016B","SingleMu2016B","DoubleEG2016C","DoubleMu2016C","SingleEG2016C","SingleMu2016C","DoubleEG2016D","DoubleMu2016D","SingleEG2016D","SingleMu2016D"};
+  string Dsname[nDatasets] = {"ggHiggs750","VBFHiggs900","DY1JetsToLL","DY2JetsToLL","DY3JetsToLL","DY4JetsToLL","DYBJetsToLL","DYBFiltJetsToLL","TTBar","WZ2l2qDib","ZZ2l2qDib","WW2l2nDib","WZ3lnDib","DoubleEG2016B","DoubleMu2016B","SingleEG2016B","SingleMu2016B","DoubleEG2016C","DoubleMu2016C","SingleEG2016C","SingleMu2016C","DoubleEG2016D","DoubleMu2016D","SingleEG2016D","SingleMu2016D"};
 
   // string Dsname[nDatasets] = {"BulkGrav800","Higgs750","DY1JetsToLL","DY2JetsToLL","DY3JetsToLL","DY4JetsToLL","DYBJetsToLL","DYBFiltJetsToLL","TTBar","WZDib","ZZDib","DoubleEG2016B","DoubleMu2016B"};
   
@@ -269,6 +269,26 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
   TEfficiency *eff_data_dm1 = (TEfficiency*)c_data_dm1->GetPrimitive("den_dm1_2d_clone");
   TCanvas *c_data_dm2 = (TCanvas*)f_data_dm2->Get("c1");
   TEfficiency *eff_data_dm2 = (TEfficiency*)c_data_dm2->GetPrimitive("den_dm2_2d_clone");
+
+  TFile *f_mc_de1 = new TFile("trigeff/eff_mc_2d_de1.root","READ");
+  TFile *f_mc_de2 = new TFile("trigeff/eff_mc_2d_de2.root","READ");
+  TFile *f_mc_sm  = new TFile("trigeff/eff_mc_2d_sm.root","READ");
+  TFile *f_mc_dm1 = new TFile("trigeff/eff_mc_2d_dm1.root","READ");
+  TFile *f_mc_dm2 = new TFile("trigeff/eff_mc_2d_dm2.root","READ");
+  
+  TCanvas *c_mc_se = (TCanvas*)f_mc_se->Get("c1");
+  TEfficiency *eff_mc_se = (TEfficiency*)c_mc_se->GetPrimitive("den_se_2d_clone");
+  TCanvas *c_mc_de1 = (TCanvas*)f_mc_de1->Get("c1");
+  TEfficiency *eff_mc_de1 = (TEfficiency*)c_mc_de1->GetPrimitive("den_de1_2d_clone");
+  TCanvas *c_mc_de2 = (TCanvas*)f_mc_de2->Get("c1");
+  TEfficiency *eff_mc_de2 = (TEfficiency*)c_mc_de2->GetPrimitive("den_de2_2d_clone");
+  TCanvas *c_mc_sm = (TCanvas*)f_mc_sm->Get("c1");
+  TEfficiency *eff_mc_sm = (TEfficiency*)c_mc_sm->GetPrimitive("den_sm_2d_clone");
+  TCanvas *c_mc_dm1 = (TCanvas*)f_mc_dm1->Get("c1");
+  TEfficiency *eff_mc_dm1 = (TEfficiency*)c_mc_dm1->GetPrimitive("den_dm1_2d_clone");
+  TCanvas *c_mc_dm2 = (TCanvas*)f_mc_dm2->Get("c1");
+  TEfficiency *eff_mc_dm2 = (TEfficiency*)c_mc_dm2->GetPrimitive("den_dm2_2d_clone");
+
   // end trigger weights
 
   // tau21 weights
@@ -708,23 +728,40 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 
       // apply trigger weights
       if (weightMCtrig) {
-        if (abs(Z2Flav->at(0))==121) {
-	  int bin1 = eff_data_se->FindFixBin(eta1stLep,TMath::Min(pt1stLep,(float)199.0));
-	  int bin2 = eff_data_se->FindFixBin(eta2ndLep,TMath::Min(pt2ndLep,(float)199.0));
-	  // data eff
-	  double dataeff_se = eff_data_se->GetEfficiency(bin1)+eff_data_se->GetEfficiency(bin2)-eff_data_se->GetEfficiency(bin1)*eff_data_se->GetEfficiency(bin2);
-	  double dataeff_de = eff_data_de1->GetEfficiency(bin1)*eff_data_de2->GetEfficiency(bin2);
-	  eventWeight *= dataeff_se+dataeff_de-dataeff_se*dataeff_de;
+	if (process > 0) {  //mc
+	  if (abs(Z2Flav->at(0))==121) {
+	    int bin1 = eff_mc_se->FindFixBin(eta1stLep,TMath::Min(pt1stLep,(float)199.0));
+	    int bin2 = eff_mc_se->FindFixBin(eta2ndLep,TMath::Min(pt2ndLep,(float)199.0));
+	    // mc eff
+	    double mceff_se = eff_mc_se->GetEfficiency(bin1)+eff_mc_se->GetEfficiency(bin2)-eff_mc_se->GetEfficiency(bin1)*eff_mc_se->GetEfficiency(bin2);
+	    double mceff_de = eff_mc_de1->GetEfficiency(bin1)*eff_mc_de2->GetEfficiency(bin2);
+	    eventWeight *= mceff_se+mceff_de-mceff_se*mceff_de;
+	  } else {
+	    int bin1 = eff_mc_sm->FindFixBin(eta1stLep,TMath::Min(pt1stLep,(float)199.0));
+	    int bin2 = eff_mc_sm->FindFixBin(eta2ndLep,TMath::Min(pt2ndLep,(float)199.0));
+	    // mc eff
+	    double mceff_sm = eff_mc_sm->GetEfficiency(bin1)+eff_mc_sm->GetEfficiency(bin2)-eff_mc_sm->GetEfficiency(bin1)*eff_mc_sm->GetEfficiency(bin2);
+	    double mceff_dm = eff_mc_dm1->GetEfficiency(bin1)*eff_mc_dm2->GetEfficiency(bin2);
+	    eventWeight *= mceff_sm+mceff_dm-mceff_sm*mceff_dm;
+	  }
 	} else {
-	  int bin1 = eff_data_sm->FindFixBin(eta1stLep,TMath::Min(pt1stLep,(float)199.0));
-	  int bin2 = eff_data_sm->FindFixBin(eta2ndLep,TMath::Min(pt2ndLep,(float)199.0));
-	  // data eff
-	  double dataeff_sm = eff_data_sm->GetEfficiency(bin1)+eff_data_sm->GetEfficiency(bin2)-eff_data_sm->GetEfficiency(bin1)*eff_data_sm->GetEfficiency(bin2);
-	  double dataeff_dm = eff_data_dm1->GetEfficiency(bin1)*eff_data_dm2->GetEfficiency(bin2);
-	  eventWeight *= dataeff_sm+dataeff_dm-dataeff_sm*dataeff_dm;
+	  if (abs(Z2Flav->at(0))==121) {
+	    int bin1 = eff_data_se->FindFixBin(eta1stLep,TMath::Min(pt1stLep,(float)199.0));
+	    int bin2 = eff_data_se->FindFixBin(eta2ndLep,TMath::Min(pt2ndLep,(float)199.0));
+	    // data eff
+	    double dataeff_se = eff_data_se->GetEfficiency(bin1)+eff_data_se->GetEfficiency(bin2)-eff_data_se->GetEfficiency(bin1)*eff_data_se->GetEfficiency(bin2);
+	    double dataeff_de = eff_data_de1->GetEfficiency(bin1)*eff_data_de2->GetEfficiency(bin2);
+	    eventWeight *= dataeff_se+dataeff_de-dataeff_se*dataeff_de;
+	  } else {
+	    int bin1 = eff_data_sm->FindFixBin(eta1stLep,TMath::Min(pt1stLep,(float)199.0));
+	    int bin2 = eff_data_sm->FindFixBin(eta2ndLep,TMath::Min(pt2ndLep,(float)199.0));
+	    // data eff
+	    double dataeff_sm = eff_data_sm->GetEfficiency(bin1)+eff_data_sm->GetEfficiency(bin2)-eff_data_sm->GetEfficiency(bin1)*eff_data_sm->GetEfficiency(bin2);
+	    double dataeff_dm = eff_data_dm1->GetEfficiency(bin1)*eff_data_dm2->GetEfficiency(bin2);
+	    eventWeight *= dataeff_sm+dataeff_dm-dataeff_sm*dataeff_dm;
+	  }
 	}
       }
-
 
       // ----- fill histos
 
