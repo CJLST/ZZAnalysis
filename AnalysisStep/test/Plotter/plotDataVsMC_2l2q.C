@@ -52,7 +52,7 @@ int useHTBinned = 2;         // 0 - use simple DY inclusive
                              // 1 - use ht binned
                              // 2 - use jet binned + b-enricchement
 
-bool enforceNarrowWidth = true;
+bool enforceNarrowWidth = false;
 bool unblind = false;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -270,23 +270,24 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
   TCanvas *c_data_dm2 = (TCanvas*)f_data_dm2->Get("c1");
   TEfficiency *eff_data_dm2 = (TEfficiency*)c_data_dm2->GetPrimitive("den_dm2_2d_clone");
 
+  TFile *f_mc_se  = new TFile("trigeff/eff_mc_2d_se.root","READ");
   TFile *f_mc_de1 = new TFile("trigeff/eff_mc_2d_de1.root","READ");
   TFile *f_mc_de2 = new TFile("trigeff/eff_mc_2d_de2.root","READ");
   TFile *f_mc_sm  = new TFile("trigeff/eff_mc_2d_sm.root","READ");
   TFile *f_mc_dm1 = new TFile("trigeff/eff_mc_2d_dm1.root","READ");
   TFile *f_mc_dm2 = new TFile("trigeff/eff_mc_2d_dm2.root","READ");
   
-  TCanvas *c_mc_se = (TCanvas*)f_mc_se->Get("c1");
+  TCanvas *c_mc_se = (TCanvas*)f_mc_se->Get("c2");
   TEfficiency *eff_mc_se = (TEfficiency*)c_mc_se->GetPrimitive("den_se_2d_clone");
-  TCanvas *c_mc_de1 = (TCanvas*)f_mc_de1->Get("c1");
+  TCanvas *c_mc_de1 = (TCanvas*)f_mc_de1->Get("c2");
   TEfficiency *eff_mc_de1 = (TEfficiency*)c_mc_de1->GetPrimitive("den_de1_2d_clone");
-  TCanvas *c_mc_de2 = (TCanvas*)f_mc_de2->Get("c1");
+  TCanvas *c_mc_de2 = (TCanvas*)f_mc_de2->Get("c2");
   TEfficiency *eff_mc_de2 = (TEfficiency*)c_mc_de2->GetPrimitive("den_de2_2d_clone");
-  TCanvas *c_mc_sm = (TCanvas*)f_mc_sm->Get("c1");
+  TCanvas *c_mc_sm = (TCanvas*)f_mc_sm->Get("c2");
   TEfficiency *eff_mc_sm = (TEfficiency*)c_mc_sm->GetPrimitive("den_sm_2d_clone");
-  TCanvas *c_mc_dm1 = (TCanvas*)f_mc_dm1->Get("c1");
+  TCanvas *c_mc_dm1 = (TCanvas*)f_mc_dm1->Get("c2");
   TEfficiency *eff_mc_dm1 = (TEfficiency*)c_mc_dm1->GetPrimitive("den_dm1_2d_clone");
-  TCanvas *c_mc_dm2 = (TCanvas*)f_mc_dm2->Get("c1");
+  TCanvas *c_mc_dm2 = (TCanvas*)f_mc_dm2->Get("c2");
   TEfficiency *eff_mc_dm2 = (TEfficiency*)c_mc_dm2->GetPrimitive("den_dm2_2d_clone");
 
   // end trigger weights
@@ -692,14 +693,14 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
                              // and dump for synchronization 
       if (ZZMass->size() == 1 && abs(ZZCandType->at(0)) == 1) {
         float mela = 1./(1.+0.035*(pqqZJJ_VAMCFM->at(0)/p0plus_VAJHU->at(0)));
-        float vbfmela = 1./(1.+getDVBF2jetsConstant(ZZMass->at(0))*(phjj_VAJHU_highestPTJets->at(0)/pvbf_VAJHU_highestPTJets->at(0)));
+        float vbfmela = ((phjj_VAJHU_highestPTJets->at(0) > 0. && nExtraJets > 1) ? 1./(1.+getDVBF2jetsConstant(ZZMass->at(0))*(phjj_VAJHU_highestPTJets->at(0)/pvbf_VAJHU_highestPTJets->at(0))) : -1.); 
 	if (writeThis) myfile << RunNumber << ":" << EventNumber << ":" << LumiNumber << ":" << Z2Mass->at(0)  << ":" << (abs(Z2Flav->at(0))==121 ? "Ele:" : "Muo:")  << pt1stLep << ":" << pt2ndLep << ":" << ZZMass->at(0) << ":" << Z1Mass->at(0) << ":" << Z1tau21->at(0) << ":" << Z1Pt->at(0) << ":" << mela << ":" << vbfmela << ":-1:-1:-1:-1:-1:-1:-1:" << Met << endl; 
 	nPassMerged++;
 	preferType = 1;
       }
       else if (ZZMass->size() == 1 && abs(ZZCandType->at(0)) == 2) {
 	float mela = 1./(1.+0.035*(pqqZJJ_VAMCFM->at(0)/p0plus_VAJHU->at(0)));
-        float vbfmela = 1./(1.+getDVBF2jetsConstant(ZZMass->at(0))*(phjj_VAJHU_highestPTJets->at(0)/pvbf_VAJHU_highestPTJets->at(0)));
+        float vbfmela = ((phjj_VAJHU_highestPTJets->at(0) > 0. && nExtraJets > 1) ? 1./(1.+getDVBF2jetsConstant(ZZMass->at(0))*(phjj_VAJHU_highestPTJets->at(0)/pvbf_VAJHU_highestPTJets->at(0))) : -1.); 
 	if (writeThis) myfile << RunNumber << ":" << EventNumber << ":" << LumiNumber << ":" << Z2Mass->at(0)  << ":" << (abs(Z2Flav->at(0))==121 ? "Ele:" : "Muo:")  << pt1stLep << ":" << pt2ndLep << ":-1:-1:-1:-1:-1:-1:" << ZZMass->at(0) << ":" << Z1Mass->at(0) << ":" << pt1stJet << ":" << pt2ndJet << ":" << btag1stJet << ":" << mela << ":" << vbfmela << ":" << Met << endl;
 	nPassResol++;
         preferType = 2;
@@ -709,7 +710,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
         float vbfmela[2] = {0.,0.};
 	for(unsigned int theCand=0; theCand<2; theCand++){
 	  mela[theCand] = 1./(1.+0.035*(pqqZJJ_VAMCFM->at(theCand)/p0plus_VAJHU->at(theCand)));   
-          vbfmela[theCand] = 1./(1.+getDVBF2jetsConstant(ZZMass->at(theCand))*(phjj_VAJHU_highestPTJets->at(theCand)/pvbf_VAJHU_highestPTJets->at(theCand)));
+          vbfmela[theCand] = ((phjj_VAJHU_highestPTJets->at(theCand) > 0. && nExtraJets > 1) ? 1./(1.+getDVBF2jetsConstant(ZZMass->at(theCand))*(phjj_VAJHU_highestPTJets->at(theCand)/pvbf_VAJHU_highestPTJets->at(theCand))) : -1.); 
 	}
 	if (writeThis) myfile << RunNumber << ":" << EventNumber << ":" << LumiNumber << ":" << Z2Mass->at(0)  << ":" << (abs(Z2Flav->at(0))==121 ? "Ele:" : "Muo:")  << pt1stLep << ":" << pt2ndLep << ":" << ZZMass->at(0) << ":" << Z1Mass->at(0) << ":" << Z1tau21->at(0) << ":" << Z1Pt->at(0) << ":" << mela[0] << ":" << vbfmela[0] << ":" << ZZMass->at(1) << ":" << Z1Mass->at(1) << ":" << pt1stJet << ":" << pt2ndJet << ":" << btag1stJet << ":" << mela[1] << ":" << vbfmela[1] << ":" << Met << endl;
 	nPassMerged++; nPassResol++;
