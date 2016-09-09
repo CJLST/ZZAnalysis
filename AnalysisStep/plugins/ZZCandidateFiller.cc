@@ -1034,8 +1034,23 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
     float pAux_vbf_VAJHU = 1;
     float phj_VAJHU = -1;
+
     float pwh_hadronic_VAJHU = -1;
+    float pwh_0minus_hadronic_VAJHU = -1;
+    float pwh_0hplus_hadronic_VAJHU = -1;
+    float pwh_0_g1prime2_hadronic_VAJHU = -1;
+    float pwh_g1g4_hadronic_VAJHU = -1;
+    float pwh_g1g2_hadronic_VAJHU = -1;
+    float pwh_g1g1prime2_hadronic_VAJHU = -1;
+
     float pzh_hadronic_VAJHU = -1;
+    float pzh_0minus_hadronic_VAJHU = -1;
+    float pzh_0hplus_hadronic_VAJHU = -1;
+    float pzh_0_g1prime2_hadronic_VAJHU = -1;
+    float pzh_g1g4_hadronic_VAJHU = -1;
+    float pzh_g1g2_hadronic_VAJHU = -1;
+    float pzh_g1g1prime2_hadronic_VAJHU = -1;
+
     float ptth_VAJHU = -1;
     float pbbh_VAJHU = -1;
     float pAux_vbf_VAJHU_up = 1;
@@ -1078,8 +1093,22 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
           float pvbf_VAJHU_bestDjet_temp = -1;
           float pAux_vbf_VAJHU_temp = 1;
           float phj_VAJHU_temp = -1;
+
           float pwh_hadronic_VAJHU_temp = -1;
+          float pwh_0minus_hadronic_VAJHU_temp = -1;
+          float pwh_0hplus_hadronic_VAJHU_temp = -1;
+          float pwh_0_g1prime2_hadronic_VAJHU_temp = -1;
+          float pwh_g1g4_hadronic_VAJHU_temp = -1;
+          float pwh_g1g2_hadronic_VAJHU_temp = -1;
+          float pwh_g1g1prime2_hadronic_VAJHU_temp = -1;
           float pzh_hadronic_VAJHU_temp = -1;
+          float pzh_0minus_hadronic_VAJHU_temp = -1;
+          float pzh_0hplus_hadronic_VAJHU_temp = -1;
+          float pzh_0_g1prime2_hadronic_VAJHU_temp = -1;
+          float pzh_g1g4_hadronic_VAJHU_temp = -1;
+          float pzh_g1g2_hadronic_VAJHU_temp = -1;
+          float pzh_g1g1prime2_hadronic_VAJHU_temp = -1;
+
           float ptth_VAJHU_temp = -1;
           float pbbh_VAJHU_temp = -1;
 
@@ -1117,9 +1146,24 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
                 phjj_VAJHU_highestPTJets_temp = phjj_temp;
                 pvbf_VAJHU_highestPTJets_temp = pvbf_temp;
 
+                float pwh_temp = -1;
+                float pzh_temp = -1;
+                mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::Had_WH);
+                mela->computeProdP(pwh_temp, true);
+                mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::Had_ZH);
+                mela->computeProdP(pzh_temp, true);
+                pwh_hadronic_VAJHU_temp = pwh_temp;
+                pzh_hadronic_VAJHU_temp = pzh_temp;
+
                 if (addProdAnomalousProbabilities) {
-                  float vbfg4_temp = -1, vbfg2_temp = -1, vbfL1_temp = -1, hjjg4_temp = -1,
-                        vbfg1g4_temp = -1, vbfg1g2_temp = -1, vbfg1L1_temp = -1, hjjg2g4_temp = -1;
+                  float
+                        vbfg4_temp = -1, vbfg2_temp = -1, vbfL1_temp = -1,
+                        vbfg1g4_temp = -1, vbfg1g2_temp = -1, vbfg1L1_temp = -1,
+                        whhadg4_temp = -1, whhadg2_temp = -1, whhadL1_temp = -1,
+                        whhadg1g4_temp = -1, whhadg1g2_temp = -1, whhadg1L1_temp = -1,
+                        zhhadg4_temp = -1, zhhadg2_temp = -1, zhhadL1_temp = -1,
+                        zhhadg1g4_temp = -1, zhhadg1g2_temp = -1, zhhadg1L1_temp = -1,
+                        hjjg4_temp = -1, hjjg2g4_temp = -1;
                   double& ghz1 = mela->selfDHzzcoupl[0][0][0];
                   double& ghz2 = mela->selfDHzzcoupl[0][1][0];
                   double& ghz4 = mela->selfDHzzcoupl[0][3][0];
@@ -1139,10 +1183,6 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
                   mela->computeProdP(vbfL1_temp, true);
                   pvbf_0_g1prime2_VAJHU_highestPTJets_temp = vbfL1_temp;
 
-                  mela->setProcess(TVar::H0minus, TVar::JHUGen, TVar::JJQCD);
-                  mela->computeProdP(hjjg4_temp, true);
-                  phjj_0minus_VAJHU_highestPTJets_temp = hjjg4_temp;
-
                   mela->setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::JJVBF);
                   ghz1 = ghz4 = 1.;
                   mela->computeProdP(vbfg1g4_temp, true);
@@ -1158,26 +1198,82 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
                   mela->computeProdP(vbfg1L1_temp, true);
                   pvbf_g1g1prime2_VAJHU_highestPTJets_temp = vbfg1L1_temp - pvbf_temp - vbfL1_temp;
 
+
+
+                  mela->setProcess(TVar::H0minus, TVar::JHUGen, TVar::Had_WH);
+                  mela->computeProdP(whhadg4_temp, true);
+                  pwh_0minus_hadronic_VAJHU_temp = whhadg4_temp;
+
+                  mela->setProcess(TVar::H0hplus, TVar::JHUGen, TVar::Had_WH);
+                  mela->computeProdP(whhadg2_temp, true);
+                  pwh_0hplus_hadronic_VAJHU_temp = whhadg2_temp;
+
+                  mela->setProcess(TVar::H0_g1prime2, TVar::JHUGen, TVar::Had_WH);
+                  mela->computeProdP(whhadL1_temp, true);
+                  pwh_0_g1prime2_hadronic_VAJHU_temp = whhadL1_temp;
+
+                  mela->setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::Had_WH);
+                  ghz1 = ghz4 = 1.;
+                  mela->computeProdP(whhadg1g4_temp, true);
+                  pwh_g1g4_hadronic_VAJHU_temp = whhadg1g4_temp - pwh_temp - whhadg4_temp;
+
+                  mela->setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::Had_WH);
+                  ghz1 = ghz2 = 1.;
+                  mela->computeProdP(whhadg1g2_temp, true);
+                  pwh_g1g2_hadronic_VAJHU_temp = whhadg1g2_temp - pwh_temp - whhadg2_temp;
+
+                  mela->setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::Had_WH);
+                  ghz1 = ghz1_prime2 = 1.;
+                  mela->computeProdP(whhadg1L1_temp, true);
+                  pwh_g1g1prime2_hadronic_VAJHU_temp = whhadg1L1_temp - pwh_temp - whhadL1_temp;
+
+
+
+                  mela->setProcess(TVar::H0minus, TVar::JHUGen, TVar::Had_ZH);
+                  mela->computeProdP(zhhadg4_temp, true);
+                  pzh_0minus_hadronic_VAJHU_temp = zhhadg4_temp;
+
+                  mela->setProcess(TVar::H0hplus, TVar::JHUGen, TVar::Had_ZH);
+                  mela->computeProdP(zhhadg2_temp, true);
+                  pzh_0hplus_hadronic_VAJHU_temp = zhhadg2_temp;
+
+                  mela->setProcess(TVar::H0_g1prime2, TVar::JHUGen, TVar::Had_ZH);
+                  mela->computeProdP(zhhadL1_temp, true);
+                  pzh_0_g1prime2_hadronic_VAJHU_temp = zhhadL1_temp;
+
+                  mela->setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::Had_ZH);
+                  ghz1 = ghz4 = 1.;
+                  mela->computeProdP(zhhadg1g4_temp, true);
+                  pzh_g1g4_hadronic_VAJHU_temp = zhhadg1g4_temp - pzh_temp - zhhadg4_temp;
+
+                  mela->setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::Had_ZH);
+                  ghz1 = ghz2 = 1.;
+                  mela->computeProdP(zhhadg1g2_temp, true);
+                  pzh_g1g2_hadronic_VAJHU_temp = zhhadg1g2_temp - pzh_temp - zhhadg2_temp;
+
+                  mela->setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::Had_ZH);
+                  ghz1 = ghz1_prime2 = 1.;
+                  mela->computeProdP(zhhadg1L1_temp, true);
+                  pzh_g1g1prime2_hadronic_VAJHU_temp = zhhadg1L1_temp - pzh_temp - zhhadL1_temp;
+
+
+
+                  mela->setProcess(TVar::H0minus, TVar::JHUGen, TVar::JJQCD);
+                  mela->computeProdP(hjjg4_temp, true);
+                  phjj_0minus_VAJHU_highestPTJets_temp = hjjg4_temp;
+
                   mela->setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::JJQCD);
                   ghg2 = ghg4 = 1.;
                   mela->computeProdP(hjjg2g4_temp, true);
                   phjj_g2g4_VAJHU_highestPTJets_temp = hjjg2g4_temp - phjj_temp - hjjg4_temp;
                 }
 
-                float pwh_temp = -1;
-                float pzh_temp = -1;
                 float ptth_temp = -1;
                 float pbbh_temp = -1;
-                mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::Had_WH);
-                mela->computeProdP(pwh_temp, true);
-                mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::Had_ZH);
-                mela->computeProdP(pzh_temp, true);
                 mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::ttH);
                 mela->computeProdP(ptth_temp, true);
                 mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::bbH);
                 mela->computeProdP(pbbh_temp, true);
-                pwh_hadronic_VAJHU_temp = pwh_temp;
-                pzh_hadronic_VAJHU_temp = pzh_temp;
                 ptth_VAJHU_temp = ptth_temp;
                 pbbh_VAJHU_temp = pbbh_temp;
               }
@@ -1225,8 +1321,26 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
             pAux_vbf_VAJHU = pAux_vbf_VAJHU_temp;
             phj_VAJHU = phj_VAJHU_temp;
+
             pwh_hadronic_VAJHU = pwh_hadronic_VAJHU_temp;
             pzh_hadronic_VAJHU = pzh_hadronic_VAJHU_temp;
+
+            if (addProdAnomalousProbabilities) {
+              pwh_0minus_hadronic_VAJHU = pwh_0minus_hadronic_VAJHU_temp;
+              pwh_0hplus_hadronic_VAJHU = pwh_0hplus_hadronic_VAJHU_temp;
+              pwh_0_g1prime2_hadronic_VAJHU = pwh_0_g1prime2_hadronic_VAJHU_temp;
+              pwh_g1g4_hadronic_VAJHU = pwh_g1g4_hadronic_VAJHU_temp;
+              pwh_g1g2_hadronic_VAJHU = pwh_g1g2_hadronic_VAJHU_temp;
+              pwh_g1g1prime2_hadronic_VAJHU = pwh_g1g1prime2_hadronic_VAJHU_temp;
+
+              pzh_0minus_hadronic_VAJHU = pzh_0minus_hadronic_VAJHU_temp;
+              pzh_0hplus_hadronic_VAJHU = pzh_0hplus_hadronic_VAJHU_temp;
+              pzh_0_g1prime2_hadronic_VAJHU = pzh_0_g1prime2_hadronic_VAJHU_temp;
+              pzh_g1g4_hadronic_VAJHU = pzh_g1g4_hadronic_VAJHU_temp;
+              pzh_g1g2_hadronic_VAJHU = pzh_g1g2_hadronic_VAJHU_temp;
+              pzh_g1g1prime2_hadronic_VAJHU = pzh_g1g1prime2_hadronic_VAJHU_temp;
+            }
+
             ptth_VAJHU = ptth_VAJHU_temp;
             pbbh_VAJHU = pbbh_VAJHU_temp;
           }
@@ -1552,6 +1666,20 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     myCand.addUserFloat("pzh_hadronic_VAJHU", pzh_hadronic_VAJHU);
     myCand.addUserFloat("pzh_hadronic_VAJHU_up", pzh_hadronic_VAJHU_up);
     myCand.addUserFloat("pzh_hadronic_VAJHU_dn", pzh_hadronic_VAJHU_dn);
+
+    myCand.addUserFloat("pwh_0minus_hadronic_VAJHU", pwh_0minus_hadronic_VAJHU);
+    myCand.addUserFloat("pwh_0hplus_hadronic_VAJHU", pwh_0hplus_hadronic_VAJHU);
+    myCand.addUserFloat("pwh_0_g1prime2_hadronic_VAJHU", pwh_0_g1prime2_hadronic_VAJHU);
+    myCand.addUserFloat("pwh_g1g4_hadronic_VAJHU", pwh_g1g4_hadronic_VAJHU);
+    myCand.addUserFloat("pwh_g1g2_hadronic_VAJHU", pwh_g1g2_hadronic_VAJHU);
+    myCand.addUserFloat("pwh_g1g1prime2_hadronic_VAJHU", pwh_g1g1prime2_hadronic_VAJHU);
+
+    myCand.addUserFloat("pzh_0minus_hadronic_VAJHU", pzh_0minus_hadronic_VAJHU);
+    myCand.addUserFloat("pzh_0hplus_hadronic_VAJHU", pzh_0hplus_hadronic_VAJHU);
+    myCand.addUserFloat("pzh_0_g1prime2_hadronic_VAJHU", pzh_0_g1prime2_hadronic_VAJHU);
+    myCand.addUserFloat("pzh_g1g4_hadronic_VAJHU", pzh_g1g4_hadronic_VAJHU);
+    myCand.addUserFloat("pzh_g1g2_hadronic_VAJHU", pzh_g1g2_hadronic_VAJHU);
+    myCand.addUserFloat("pzh_g1g1prime2_hadronic_VAJHU", pzh_g1g1prime2_hadronic_VAJHU);
 
     myCand.addUserFloat("ptth_VAJHU", ptth_VAJHU);
     myCand.addUserFloat("ptth_VAJHU_up", ptth_VAJHU_up);

@@ -13,6 +13,8 @@ enum ReweightingType {
   HVV_spin0     = 1,
   HVV_spin012   = 2,
   VBFHZZ_spin0  = 3,
+  ZHZZ_spin0    = 4,
+  WHZZ_spin0    = 5,
 };
 
 class Reweighting {
@@ -24,6 +26,7 @@ protected:
   double myGggcoupl[SIZE_GGG][2];
   double myGvvcoupl[SIZE_GVV][2];
 
+  static const int ghg2_index = 0;
   static const int ghz1_index = 0;
   static const int ghz2_index = 1;
   static const int ghz4_index = 3;
@@ -32,9 +35,18 @@ protected:
   static const constexpr double ghz2mix_decay = 1.663195;
   static const constexpr double ghz4mix_decay = 2.55502;
   static const constexpr double ghz1_prime2mix_decay = -12110.20;
+
   static const constexpr double ghz2mix_VBF = 0.271965;
   static const constexpr double ghz4mix_VBF = 0.297979;
   static const constexpr double ghz1_prime2mix_VBF = -2158.21;
+
+  static const constexpr double ghz2mix_ZH = 0.112481;
+  static const constexpr double ghz4mix_ZH = 0.144057;
+  static const constexpr double ghz1_prime2mix_ZH = -517.788;
+
+  static const constexpr double ghz2mix_WH = 0.0998956;
+  static const constexpr double ghz4mix_WH = 0.1236136;
+  static const constexpr double ghz1_prime2mix_WH = -525.274;
 
   static const int a1_index = 0;
   static const int b5_index = 4;
@@ -46,8 +58,11 @@ protected:
   MelaProcess productionprocess;
   vector<double> cutoffs;
 
+  bool fillingcouplingstree;
+
   Mela& mela;
 
+  double& ghg2;
   double& ghz1;
   double& ghz2;
   double& ghz4;
@@ -70,7 +85,6 @@ protected:
 
   void fillreweightingweights(vector<float> &reweightingweights);
 
-  bool canreweight();
   void setProcess(MelaProcess melaprocess) {
     mela.setProcess(get<0>(melaprocess), get<1>(melaprocess), get<2>(melaprocess));
   }
@@ -83,6 +97,8 @@ protected:
   }
 
   int nReweightingSamplesFromType(ReweightingType reweightingtype_);
+
+  TVar::Production getVHtype();
 
 public:
 
