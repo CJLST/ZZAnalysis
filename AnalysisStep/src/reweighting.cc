@@ -318,7 +318,7 @@ void Reweighting::fillreweightingweights(vector<float>& reweightingweights) {
   for (int i = 0; i < nReweightingSamples; i++) {
     computeP(i, probability, false);
     float ratio = probability / myprobability;
-    if (cutoffs[i] > 0 && ratio > cutoffs[i]) ratio = cutoffs[i] / (ratio*ratio);
+    if (cutoffs[i] > 0 && ratio > cutoffs[i]) ratio = cutoffs[i]*cutoffs[i] / ratio;
     reweightingweights.push_back(ratio);
   }
 }
