@@ -4,7 +4,7 @@
 #
 #----------------------------------------------------------------------
 
-LEPTON_SETUP = 2015
+LEPTON_SETUP = 2016
 
 ELECORRTYPE = "RunII"
 ELEREGRESSION = "None"

@@ -1,5 +1,5 @@
 
-LEPTON_SETUP = 2015
+LEPTON_SETUP = 2016
 PD = ""
 MCFILTER = ""
 ELECORRTYPE = "RunII" # "None", "Moriond", "Paper", or "RunII"
@@ -45,7 +45,7 @@ process.calibratedPatElectrons.isSynchronization = cms.bool(True)
 process.calibratedMuons.isSynchronization = cms.bool(True)
 # process.zJetsFilter.option = 1
 
-process.maxEvents.input = 200
+process.maxEvents.input = -1
 #process.source.skipEvents = cms.untracked.uint32(5750)
 
 # Silence output
