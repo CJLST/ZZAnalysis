@@ -175,6 +175,14 @@ namespace {
   std::vector<float> ggzz_VAMCFM;
   std::vector<float> ggzz_p0plus_VAMCFM;
   std::vector<float> Dgg10_VAMCFM;
+  std::vector<float> p0plus_VAJHU_up;
+  std::vector<float> p0plus_VAMCFM_up;
+  std::vector<float> p2bplus_VAJHU_up;
+  std::vector<float> pqqZJJ_VAMCFM_up;
+  std::vector<float> p0plus_VAJHU_dn;
+  std::vector<float> p0plus_VAMCFM_dn;
+  std::vector<float> p2bplus_VAJHU_dn;
+  std::vector<float> pqqZJJ_VAMCFM_dn;
 
   /*
   std::vector<float> p0plus_VAJHU;
@@ -289,6 +297,9 @@ namespace {
   std::vector<float> JetMass;
   std::vector<float> JetBTagger;
   std::vector<float> JetIsBtagged;
+  std::vector<float> JetIsBtaggedWithSF;
+  std::vector<float> JetIsBtaggedWithSF_Up;
+  std::vector<float> JetIsBtaggedWithSF_Dn;
   std::vector<float> JetQGLikelihood;
   std::vector<float> JetSigma;
   std::vector<bool>  JetIsInZZCand;
@@ -943,6 +954,9 @@ void HZZ2l2qNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup&
     if(cleanedJets[i]->pt()>30){
       ++nCleanedJetsPt30;
       if(cleanedJets[i]->userFloat("isBtagged")) ++nCleanedJetsPt30BTagged;
+      /* if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF_Up")) ++nCleanedJetsPt30BTagged_bTagSFUp;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF_Dn")) ++nCleanedJetsPt30BTagged_bTagSFDn;  */
     }
 
     // count jec up/down njets pt30
@@ -1004,6 +1018,9 @@ void HZZ2l2qNtupleMaker::FillJet(const pat::Jet& jet)
    JetMass .push_back( jet.p4().M());
    JetBTagger .push_back( jet.userFloat("bTagger"));
    JetIsBtagged .push_back( jet.userFloat("isBtagged"));
+   JetIsBtaggedWithSF .push_back( jet.userFloat("isBtaggedWithSF"));
+   JetIsBtaggedWithSF_Up .push_back( jet.userFloat("isBtaggedWithSF_Up"));
+   JetIsBtaggedWithSF_Dn .push_back( jet.userFloat("isBtaggedWithSF_Dn"));
    JetQGLikelihood .push_back( jet.userFloat("qgLikelihood"));
    JetSigma .push_back(jet.userFloat("jec_unc"));
    JetIsInZZCand.push_back(false);
@@ -1099,8 +1116,16 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
     phjj_VAJHU_highestPTJets.push_back(cand.userFloat("phjj_VAJHU_highestPTJets"));
     pvbf_VAJHU_highestPTJets_up.push_back(cand.userFloat("pvbf_VAJHU_highestPTJets_up"));
     phjj_VAJHU_highestPTJets_up.push_back(cand.userFloat("phjj_VAJHU_highestPTJets_up"));
+    p0plus_VAJHU_up.push_back(cand.userFloat("p0plus_VAJHU_up"));
+    p0plus_VAMCFM_up.push_back(cand.userFloat("p0plus_VAMCFM_up"));
+    p2bplus_VAJHU_up.push_back(cand.userFloat("p2bplus_VAJHU_up"));
+    pqqZJJ_VAMCFM_up.push_back(cand.userFloat("pqqZJJ_VAMCFM_up"));
     pvbf_VAJHU_highestPTJets_dn.push_back(cand.userFloat("pvbf_VAJHU_highestPTJets_dn"));
     phjj_VAJHU_highestPTJets_dn.push_back(cand.userFloat("phjj_VAJHU_highestPTJets_dn"));
+    p0plus_VAJHU_dn.push_back(cand.userFloat("p0plus_VAJHU_dn"));
+    p0plus_VAMCFM_dn.push_back(cand.userFloat("p0plus_VAMCFM_dn"));
+    p2bplus_VAJHU_dn.push_back(cand.userFloat("p2bplus_VAJHU_dn"));
+    pqqZJJ_VAMCFM_dn.push_back(cand.userFloat("pqqZJJ_VAMCFM_dn"));
 
     // MCFM MEs
     pqqZJJ_VAMCFM.push_back(cand.userFloat("pqqZJJ_VAMCFM"));
@@ -1339,6 +1364,9 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
   vector<float> bTagger(2);
   vector<float> qgLik(2);
   vector<float> isBTagged(2);
+  vector<float> isBTaggedWithSF(2);
+  vector<float> isBTaggedWithSF_Up(2);
+  vector<float> isBTaggedWithSF_Down(2);
   vector<float> JecUnc(2);
   passIsoPreFSR = true;
   unsigned int nJets = 2;
@@ -1355,12 +1383,18 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
     // std::cout << "PDGId " << i << " : " << leptons[i]->pdgId() << endl; 
     bTagger[i] = -900.;
     isBTagged[i] = -900.;
+    isBTaggedWithSF[i] = -900.;
+    isBTaggedWithSF_Up[i] = -900.;
+    isBTaggedWithSF_Down[i] = -900.;
     qgLik[i] = -900.;
     JecUnc[i] = -900.; 
 
     if (!isMerged) {
       bTagger[i]           = userdatahelpers::getUserFloat(leptons[i],"bTagger");
       isBTagged[i]           = userdatahelpers::getUserFloat(leptons[i],"isBtagged");
+      isBTaggedWithSF[i]           = userdatahelpers::getUserFloat(leptons[i],"isBtaggedWithSF");
+      isBTaggedWithSF_Up[i]           = userdatahelpers::getUserFloat(leptons[i],"isBtaggedWithSF_Up");
+      isBTaggedWithSF_Down[i]           = userdatahelpers::getUserFloat(leptons[i],"isBtaggedWithSF_Dn"); 
       qgLik[i]           = userdatahelpers::getUserFloat(leptons[i],"qgLikelihood");
       JecUnc[i]           = userdatahelpers::getUserFloat(leptons[i],"jec_unc");
       
@@ -1369,11 +1403,15 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
       const pat::Jet* jet = dynamic_cast<const pat::Jet*>(leptons[i]);
       bTagger[i] = jet->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
       isBTagged[i] = (float)(jet->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags")>0.460);
+      
       //Fill the info on the subjet candidates   
     }
 
     JetBTagger .push_back( bTagger[i] );
     JetIsBtagged .push_back( isBTagged[i] );
+    JetIsBtaggedWithSF .push_back( isBTaggedWithSF[i] );
+    JetIsBtaggedWithSF_Up .push_back( isBTaggedWithSF_Up[i] );
+    JetIsBtaggedWithSF_Dn .push_back( isBTaggedWithSF_Down[i] );
     JetQGLikelihood .push_back( qgLik[i] );
     JetSigma .push_back( JecUnc[i] );
 
@@ -1854,8 +1892,8 @@ void HZZ2l2qNtupleMaker::BookAllBranches(){
   myTree->Book("nCleanedJetsPt30BTagged",nCleanedJetsPt30BTagged);
   myTree->Book("trigWord",trigWord);
   myTree->Book("ZZMass",ZZMass);
-  myTree->Book("ZZMass_JecUp",ZZMass_JecUp);
-  myTree->Book("ZZMass_JecDown",ZZMass_JecDown);
+  myTree->Book("ZZMass_up",ZZMass_JecUp);
+  myTree->Book("ZZMass_dn",ZZMass_JecDown);
   myTree->Book("ZZMassErr",ZZMassErr);
   myTree->Book("ZZMassErrCorr",ZZMassErrCorr);
   myTree->Book("ZZMassPreFSR",ZZMassPreFSR);
@@ -1866,8 +1904,8 @@ void HZZ2l2qNtupleMaker::BookAllBranches(){
   myTree->Book("ZZPhi",ZZPhi);
   myTree->Book("CRflag",CRflag);
   myTree->Book("Z1Mass",Z1Mass);
-  myTree->Book("Z1Mass_JecUp",Z1Mass_JecUp);
-  myTree->Book("Z1Mass_JecDown",Z1Mass_JecDown);
+  myTree->Book("Z1Mass_up",Z1Mass_JecUp);
+  myTree->Book("Z1Mass_dn",Z1Mass_JecDown);
   myTree->Book("Z1Pt",Z1Pt);
   myTree->Book("Z1Flav",Z1Flav);
   myTree->Book("Z1tau21",Z1tau21);
@@ -1932,6 +1970,14 @@ void HZZ2l2qNtupleMaker::BookAllBranches(){
   myTree->Book("pvbf_VAJHU_highestPTJets_up", pvbf_VAJHU_highestPTJets_up);
   myTree->Book("phjj_VAJHU_highestPTJets_dn", phjj_VAJHU_highestPTJets_dn);
   myTree->Book("pvbf_VAJHU_highestPTJets_dn", pvbf_VAJHU_highestPTJets_dn);
+  myTree->Book("p0plus_VAJHU_up", p0plus_VAJHU_up);
+  myTree->Book("p0plus_VAMCFM_up", p0plus_VAMCFM_up);
+  myTree->Book("p2bplus_VAJHU_up", p2bplus_VAJHU_up);
+  myTree->Book("pqqZJJ_VAMCFM_up", pqqZJJ_VAMCFM_up);
+  myTree->Book("p0plus_VAJHU_dn", p0plus_VAJHU_dn);
+  myTree->Book("p0plus_VAMCFM_dn", p0plus_VAMCFM_dn);
+  myTree->Book("p2bplus_VAJHU_dn", p2bplus_VAJHU_dn);
+  myTree->Book("pqqZJJ_VAMCFM_dn", pqqZJJ_VAMCFM_dn);
 
   myTree->Book("pqqZJJ_VAMCFM", pqqZJJ_VAMCFM);
   myTree->Book("bkg_VAMCFM", bkg_VAMCFM);
@@ -2056,6 +2102,10 @@ void HZZ2l2qNtupleMaker::BookAllBranches(){
   myTree->Book("JetMass",JetMass);
   myTree->Book("JetBTagger",JetBTagger);
   myTree->Book("JetIsBtagged",JetIsBtagged);
+  myTree->Book("JetIsBtaggedWithSF",JetIsBtaggedWithSF);
+  myTree->Book("JetIsBtaggedWithSF_Up",JetIsBtaggedWithSF_Up);
+  myTree->Book("JetIsBtaggedWithSF_Dn",JetIsBtaggedWithSF_Dn);
+  
   myTree->Book("JetQGLikelihood",JetQGLikelihood);
   myTree->Book("JetSigma",JetSigma);
   myTree->Book("JetIsInZZCand",JetIsInZZCand);

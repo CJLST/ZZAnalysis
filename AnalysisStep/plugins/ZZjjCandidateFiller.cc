@@ -403,85 +403,106 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
    
     //----------------------------------------------------------------------
     //--- Embed angular information and probabilities to build discriminants
-
-    // Lepton TLorentzVectors, including FSR 
-    SimpleParticleCollection_t daughters;
-    daughters.push_back(SimpleParticle_t(0, TLorentzVector(p11.x(), p11.y(), p11.z(), p11.t())));
-    daughters.push_back(SimpleParticle_t(0, TLorentzVector(p12.x(), p12.y(), p12.z(), p12.t())));
-    daughters.push_back(SimpleParticle_t(id21, TLorentzVector(p21.x(), p21.y(), p21.z(), p21.t())));
-    daughters.push_back(SimpleParticle_t(id22, TLorentzVector(p22.x(), p22.y(), p22.z(), p22.t())));
-
-    //--- Compute angles, better done here
     float costheta1=0, costheta2=0, phi=0, costhetastar=0, phistar1=0;
-    TUtil::computeAngles(
-      daughters.at(0).second, daughters.at(0).first,
-      daughters.at(1).second, daughters.at(1).first,
-      daughters.at(2).second, daughters.at(2).first,
-      daughters.at(3).second, daughters.at(3).first,
-      costhetastar, costheta1, costheta2, phi, phistar1
-      );
-    //--- compute higgs azimuthal angles, xi
-    TLorentzVector Z14vec = daughters.at(0).second + daughters.at(1).second;
-    TLorentzVector higgs = Z14vec + daughters.at(2).second + daughters.at(3).second;
-    TVector3 Xaxis(1, 0, 0);
-    float xi = higgs.Phi();
-    // boost Z1 into rest frame of higgs
-    // xistar is the angle between Z decay plane and x-axis 
-    Z14vec.Boost(-higgs.BoostVector());
-    float xistar = Z14vec.Phi();
+    float xi=0, xistar=0;
+
     // detaJJ, Mjj and Fisher. These are per-event variables in the SR, but not necessarily in the CR as we clean jets also 
-    // for loose-but-not-tight leptons.    
+    // for loose-but-not-tight leptons.
+    
     float DiJetMass  = -99;
     float DiJetDEta  = -99;
     float DiJetFisher  = -99;
 
     unsigned int nCandidates=0; // Should equal 3 after the loop below
     for (int jecnum = 0; jecnum < 3; jecnum++){
-      SimpleParticleCollection_t associated;
 
-      // multiplier: +1 means JEC up, -1 means JEC down
+      // Lepton TLorentzVectors, including FSR 
+      SimpleParticleCollection_t daughters;
+      
+       // multiplier: +1 means JEC up, -1 means JEC down
       double jecnum_multiplier = 0;
       if (jecnum==1) jecnum_multiplier = 1.;
       else if (jecnum==2) jecnum_multiplier = -1.;
 
+       // JEC corrected masses
+      float newZ1Mass = 0.;
+      float newZZMass = 0.;
+      float jratio=0., jratio1=0., jratio2=0.;
+      const reco::Candidate* z = myCand.daughter(0);
+      if (isMerged) {
+	const pat::Jet* thejet = dynamic_cast <const pat::Jet*> (z->masterClone().get());
+	jecUnc.setJetEta(thejet->eta());
+	jecUnc.setJetPt(thejet->pt());
+	float jec_unc = jecUnc.getUncertainty(true);
+        jratio = 1. + jecnum_multiplier * jec_unc;
+	jecUnc.setJetEta(Z1J1->eta());
+	jecUnc.setJetPt(Z1J1->pt());
+	float jec_unc1 = jecUnc.getUncertainty(true);
+	jratio1 = 1. + jecnum_multiplier * jec_unc1;
+	jecUnc.setJetEta(Z1J2->eta());
+	jecUnc.setJetPt(Z1J2->pt());
+	float jec_unc2 = jecUnc.getUncertainty(true);
+        jratio2 = 1. + jecnum_multiplier * jec_unc2;
+	newZ1Mass = jratio*myCand.userFloat("d0.ak8PFJetsCHSCorrPrunedMass");
+	newZZMass = (jratio*z->p4() + myCand.daughter(1)->p4()).mass();
+	
+      } else {	  
+	const reco::Candidate* d1 = z->daughter(0);
+	const pat::Jet* thejet1 = dynamic_cast <const pat::Jet*> (d1->masterClone().get());
+	float jec_unc1 = thejet1->userFloat("jec_unc");
+	jratio1 = 1. + jecnum_multiplier * jec_unc1;
+	const reco::Candidate* d2 = z->daughter(1);
+	const pat::Jet* thejet2 = dynamic_cast <const pat::Jet*> (d2->masterClone().get());
+	float jec_unc2 = thejet2->userFloat("jec_unc");
+	jratio2 = 1. + jecnum_multiplier * jec_unc2;
+	newZ1Mass = (jratio1*d1->p4() + jratio2*d2->p4()).mass();
+	newZZMass = (jratio1*d1->p4() + jratio2*d2->p4() + myCand.daughter(1)->p4()).mass();
+      }
+      if (jecnum == 1) {
+	myCand.addUserFloat("Z1Mass_JecUp", newZ1Mass);
+	myCand.addUserFloat("ZZMass_JecUp", newZZMass);
+      } else {
+	myCand.addUserFloat("Z1Mass_JecDown", newZ1Mass);
+	myCand.addUserFloat("ZZMass_JecDown", newZZMass);
+      } 
+
+      /* if (isMerged) {
+	daughters.push_back(SimpleParticle_t(0, TLorentzVector(p11.x()*jratio, p11.y()*jratio, p11.z()*jratio, p11.t()*jratio)));
+	daughters.push_back(SimpleParticle_t(0, TLorentzVector(p12.x()*jratio, p12.y()*jratio, p12.z()*jratio, p12.t()*jratio)));
+	daughters.push_back(SimpleParticle_t(id21, TLorentzVector(p21.x(), p21.y(), p21.z(), p21.t())));
+	daughters.push_back(SimpleParticle_t(id22, TLorentzVector(p22.x(), p22.y(), p22.z(), p22.t())));
+	} else { */
+      daughters.push_back(SimpleParticle_t(0, TLorentzVector(p11.x()*jratio1, p11.y()*jratio1, p11.z()*jratio1, p11.t()*jratio1)));
+      daughters.push_back(SimpleParticle_t(0, TLorentzVector(p12.x()*jratio2, p12.y()*jratio2, p12.z()*jratio2, p12.t()*jratio2)));
+      daughters.push_back(SimpleParticle_t(id21, TLorentzVector(p21.x(), p21.y(), p21.z(), p21.t())));
+      daughters.push_back(SimpleParticle_t(id22, TLorentzVector(p22.x(), p22.y(), p22.z(), p22.t())));
+      // } 
+      
+      //--- Compute angles, better done here
+      if (jecnum == 0) {
+	TUtil::computeAngles(
+			     daughters.at(0).second, daughters.at(0).first,
+			     daughters.at(1).second, daughters.at(1).first,
+			     daughters.at(2).second, daughters.at(2).first,
+			     daughters.at(3).second, daughters.at(3).first,
+			     costhetastar, costheta1, costheta2, phi, phistar1
+			     );
+	//--- compute higgs azimuthal angles, xi
+	TLorentzVector Z14vec = daughters.at(0).second + daughters.at(1).second;
+	TLorentzVector higgs = Z14vec + daughters.at(2).second + daughters.at(3).second;
+	TVector3 Xaxis(1, 0, 0);
+	xi = higgs.Phi();
+	// boost Z1 into rest frame of higgs
+	// xistar is the angle between Z decay plane and x-axis 
+	Z14vec.Boost(-higgs.BoostVector());
+ 	xistar = Z14vec.Phi();
+      }
+      
+      SimpleParticleCollection_t associated;
+      
       vector<const pat::Jet*> cleanedJetsPt30Jec;
       vector<float> jec_ratio;
-
-      // JEC corrected masses
-      if (jecnum > 0 ) {
-	float newZ1Mass = 0.;
-	float newZZMass = 0.;
-	const reco::Candidate* z = myCand.daughter(0);
-	if (isMerged) {
-	  const pat::Jet* thejet = dynamic_cast <const pat::Jet*> (z->masterClone().get());
-	  jecUnc.setJetEta(thejet->eta());
-	  jecUnc.setJetPt(thejet->pt());
-	  float jec_unc = jecUnc.getUncertainty(true);
-	  float ratio = 1. + jecnum_multiplier * jec_unc;
-	  newZ1Mass = ratio*myCand.userFloat("d0.ak8PFJetsCHSCorrPrunedMass");
-	  newZZMass = (ratio*z->p4() + myCand.daughter(1)->p4()).mass();
-	  
-	} else {	  
-	  const reco::Candidate* d1 = z->daughter(0);
-	  const pat::Jet* thejet1 = dynamic_cast <const pat::Jet*> (d1->masterClone().get());
-	  float jec_unc1 = thejet1->userFloat("jec_unc");
-	  float ratio1 = 1. + jecnum_multiplier * jec_unc1;
-	  const reco::Candidate* d2 = z->daughter(1);
-	  const pat::Jet* thejet2 = dynamic_cast <const pat::Jet*> (d2->masterClone().get());
-	  float jec_unc2 = thejet2->userFloat("jec_unc");
-	  float ratio2 = 1. + jecnum_multiplier * jec_unc2;
-	  newZ1Mass = (ratio1*d1->p4() + ratio2*d2->p4()).mass();
-	  newZZMass = (ratio1*d1->p4() + ratio2*d2->p4() + myCand.daughter(1)->p4()).mass();
-	}
-	if (jecnum == 1) {
-	  myCand.addUserFloat("Z1Mass_JecUp", newZ1Mass);
-	  myCand.addUserFloat("ZZMass_JecUp", newZZMass);
-	} else {
-	  myCand.addUserFloat("Z1Mass_JecDown", newZ1Mass);
-	  myCand.addUserFloat("ZZMass_JecDown", newZZMass);
-	} 
-      }
-
+    
       // MELA variables
       for (edm::View<pat::Jet>::const_iterator jet = CleanJets->begin(); jet != CleanJets->end(); ++jet){
         // calculate JEC uncertainty up/down
@@ -494,14 +515,31 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
         if (!jetCleaner::isGood(myCand, *jet)) continue;
         // remove jets belonging to the candidate
         bool belongs = false;
-        for (int dauIdx=0; dauIdx<2; ++dauIdx) {
-          const reco::Candidate* z = myCand.daughter(1);
-          const reco::Candidate* d = z->daughter(dauIdx);
-          double dR = ROOT::Math::VectorUtil::DeltaR(jet->p4(), d->momentum());
-          if (dR < 0.04) belongs = true;
+        if (isMerged) {
+          for (int dauIdx=0; dauIdx<2; ++dauIdx) {       
+            const reco::Candidate* z = myCand.daughter(1);
+            const reco::Candidate* d = z->daughter(dauIdx);
+            double dR = ROOT::Math::VectorUtil::DeltaR(jet->p4(), d->momentum());
+            if (dR < 0.4) belongs = true;
+          }
+          const reco::Candidate* z2 = myCand.daughter(0);
+          double dR2 = ROOT::Math::VectorUtil::DeltaR(jet->p4(), z2->momentum());
+          // cout << "signal merged jet pt = " << z2->pt() << " eta = " << z2->eta() << std::endl;
+          if (dR2 < 0.8) belongs = true;
+        } else {
+          for (int theCand=0; theCand<2; ++theCand) {
+            for (int dauIdx=0; dauIdx<2; ++dauIdx) {
+              const reco::Candidate* z = myCand.daughter(theCand);
+              const reco::Candidate* d = z->daughter(dauIdx);
+              double dR = ROOT::Math::VectorUtil::DeltaR(jet->p4(), d->momentum());
+              // if (theCand == 0) cout << "resolved merged jet pt = " << d->pt() << " eta = " << d->eta() << std::endl;
+              if (dR < 0.4) belongs = true;
+            }
+          }
         }
         if (belongs) continue;
         // store jets and up/down ratio
+        // cout << "other jet pt = " << jet->pt() << " eta = " << jet->eta() << std::endl;
         cleanedJetsPt30Jec.push_back(&*jet);
         jec_ratio.push_back(ratio);
       }
@@ -526,34 +564,34 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 
     mela->setCurrentCandidateFromIndex(0);
 
-    float p0plus_VAJHU=0;
-    mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::ZZGG);
-    mela->computeP(p0plus_VAJHU, true);
+    // float p0plus_VAJHU=0;
+    // mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::ZZGG);
+    // mela->computeP(p0plus_VAJHU, true);
     float p0minus_VAJHU=0;
     mela->setProcess(TVar::H0minus, TVar::JHUGen, TVar::ZZGG);
     mela->computeP(p0minus_VAJHU, true);
     float p0hplus_VAJHU=0;
     mela->setProcess(TVar::H0hplus, TVar::JHUGen, TVar::ZZGG);
     mela->computeP(p0hplus_VAJHU, true);
-    float p2bplus_VAJHU=0;
-    mela->setProcess(TVar::H2_g5, TVar::JHUGen, TVar::ZZGG);
-    mela->computeP(p2bplus_VAJHU, true);
+    // float p2bplus_VAJHU=0;
+    // mela->setProcess(TVar::H2_g5, TVar::JHUGen, TVar::ZZGG);
+    // mela->computeP(p2bplus_VAJHU, true);
     float p2_VAJHU=0;
     mela->setProcess(TVar::H2_g1g5, TVar::JHUGen, TVar::ZZGG);
     mela->computeP(p2_VAJHU, true);
 
-    float pqqZJJ_VAMCFM=0;
-    mela->setProcess(TVar::bkgZJets, TVar::MCFM, TVar::JJQCD);
-    mela->computeP(pqqZJJ_VAMCFM, true);
+    // float pqqZJJ_VAMCFM=0;
+    // mela->setProcess(TVar::bkgZJets, TVar::MCFM, TVar::JJQCD);
+    // mela->computeP(pqqZJJ_VAMCFM, true);
     float bkg_VAMCFM=0;
     mela->setProcess(TVar::bkgZZ, TVar::MCFM, TVar::ZZQQB);
     mela->computeP(bkg_VAMCFM, true);
     float ggzz_VAMCFM=0;
     mela->setProcess(TVar::bkgZZ, TVar::MCFM, TVar::ZZGG);
     mela->computeP(ggzz_VAMCFM, true);
-    float p0plus_VAMCFM=0;
-    mela->setProcess(TVar::HSMHiggs, TVar::MCFM, TVar::ZZGG);
-    mela->computeP(p0plus_VAMCFM, true);
+    // float p0plus_VAMCFM=0;
+    // mela->setProcess(TVar::HSMHiggs, TVar::MCFM, TVar::ZZGG);
+    // mela->computeP(p0plus_VAMCFM, true);
     float ggzz_p0plus_VAMCFM=0;
     mela->setProcess(TVar::bkgZZ_SMHiggs, TVar::MCFM, TVar::ZZGG);
     mela->computeP(ggzz_p0plus_VAMCFM, true);
@@ -566,6 +604,19 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     float phjj_VAJHU_highestPTJets_up=-1;
     float pvbf_VAJHU_highestPTJets_dn=-1;
     float phjj_VAJHU_highestPTJets_dn=-1;
+    float pqqZJJ_VAMCFM=-1;
+    float p0plus_VAJHU=-1;
+    float pqqZJJ_VAMCFM_up=-1;
+    float p0plus_VAJHU_up=-1;
+    float pqqZJJ_VAMCFM_dn=-1;
+    float p0plus_VAJHU_dn=-1;
+    float p0plus_VAMCFM=-1;
+    float p2bplus_VAJHU=-1;
+    float p0plus_VAMCFM_up=-1;
+    float p2bplus_VAJHU_up=-1;
+    float p0plus_VAMCFM_dn=-1;
+    float p2bplus_VAJHU_dn=-1;
+    
     // Do these loops at the end to avoid switching particles off first and then on again
     for (unsigned int jecnum=0; jecnum<nCandidates; jecnum++){
       mela->setCurrentCandidateFromIndex(jecnum);
@@ -575,21 +626,23 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
         unsigned int nGoodJets=melaCand->getNAssociatedJets();
         bool hasAtLeastOneJet = (nGoodJets>0);
         //bool hasAtLeastTwoJets = (nGoodJets>1);
+	float pqqZJJ_VAMCFM_temp=-1;
+	float p0plus_VAJHU_temp=-1;
+	float p0plus_VAMCFM_temp=-1;
+	float p2bplus_VAJHU_temp=-1;
+        mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::ZZGG);
+	mela->computeP(p0plus_VAJHU_temp, true);
+        mela->setProcess(TVar::H2_g5, TVar::JHUGen, TVar::ZZGG);
+	mela->computeP(p2bplus_VAJHU_temp, true);
+        mela->setProcess(TVar::bkgZJets, TVar::MCFM, TVar::JJQCD);
+	mela->computeP(pqqZJJ_VAMCFM_temp, true);
+        mela->setProcess(TVar::HSMHiggs, TVar::MCFM, TVar::ZZGG);
+	mela->computeP(p0plus_VAMCFM_temp, true);
+
         if (hasAtLeastOneJet){
           float phjj_VAJHU_highestPTJets_temp = -1;
           float pvbf_VAJHU_highestPTJets_temp = -1;
-          /*
-          float djet_max = -1;
-          float phjj_VAJHU_bestDjet_temp = -1;
-          float pvbf_VAJHU_bestDjet_temp = -1;
-
-          float pAux_vbf_VAJHU_temp = 1;
-          float phj_VAJHU_temp = -1;
-          float pwh_hadronic_VAJHU_temp = -1;
-          float pzh_hadronic_VAJHU_temp = -1;
-          float ptth_VAJHU_temp = -1;
-          float pbbh_VAJHU_temp = -1;
-          */
+      
           for (unsigned int firstjet = 0; firstjet < nGoodJets; firstjet++){
             for (unsigned int secondjet = 1; secondjet < nGoodJets; secondjet++){
               if (secondjet<=firstjet) continue;
@@ -605,58 +658,14 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
               float phjj_temp = -1;
               mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::JJQCD);
               mela->computeProdP(phjj_temp, true);
-              /* 
-              double djet_temp = pvbf_temp / (pvbf_temp + phjj_temp);
-              if (djet_temp > djet_max){
-              phjj_VAJHU_bestDjet_temp = phjj_temp;
-              pvbf_VAJHU_bestDjet_temp = pvbf_temp;
-              djet_max = djet_temp;
-              }
-              */
+            
               if (firstjet == 0 && secondjet == 1){
                 phjj_VAJHU_highestPTJets_temp = phjj_temp;
                 pvbf_VAJHU_highestPTJets_temp = pvbf_temp;
-                /*
-                float pwh_temp = -1;
-                float pzh_temp = -1;
-                float ptth_temp = -1;
-                float pbbh_temp = -1;
-                mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::WH);
-                mela->computeProdP(pwh_temp, true);
-                mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::ZH);
-                mela->computeProdP(pzh_temp, true);
-                mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::ttH);
-                mela->computeProdP(ptth_temp, true);
-                mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::bbH);
-                mela->computeProdP(pbbh_temp, true);
-                pwh_hadronic_VAJHU_temp = pwh_temp;
-                pzh_hadronic_VAJHU_temp = pzh_temp;
-                ptth_VAJHU_temp = ptth_temp;
-                pbbh_VAJHU_temp = pbbh_temp;
-                */
+              
               }
             }
-            /*
-            if (!hasAtLeastTwoJets){ // Compute H + 1 jet
-              for (unsigned int disableJet=0; disableJet<nGoodJets; disableJet++) melaCand->getAssociatedJet(disableJet)->setSelected((disableJet==firstjet));
-              float phj_temp = -1;
-              float pjvbf_temp = -1;
-              float pAux_vbf_temp = -1;
-
-              mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::JQCD);
-              mela->computeProdP(phj_temp, true);
-
-              mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::JJVBF);
-              mela->computeProdP(pjvbf_temp, true); // Un-integrated ME
-              mela->getPAux(pAux_vbf_temp); // = Integrated / un-integrated
-
-              djet_max = (pjvbf_temp*pAux_vbf_temp / (pjvbf_temp*pAux_vbf_temp + phj_temp));
-              phj_VAJHU_temp = phj_temp;
-              pvbf_VAJHU_highestPTJets_temp = pjvbf_temp;
-              pAux_vbf_VAJHU_temp = pAux_vbf_temp;
-              pvbf_VAJHU_bestDjet_temp = pvbf_VAJHU_highestPTJets_temp;
-            }
-            */
+          
           }
 
           for (unsigned int disableJet=0; disableJet<nGoodJets; disableJet++) melaCand->getAssociatedJet(disableJet)->setSelected(true); // Turn everything back on
@@ -664,38 +673,26 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
           if (jecnum == 0){
             phjj_VAJHU_highestPTJets = phjj_VAJHU_highestPTJets_temp;
             pvbf_VAJHU_highestPTJets = pvbf_VAJHU_highestPTJets_temp;
-            //phjj_VAJHU_bestDjet = phjj_VAJHU_bestDjet_temp;
-            //pvbf_VAJHU_bestDjet = pvbf_VAJHU_bestDjet_temp;
-            //pAux_vbf_VAJHU = pAux_vbf_VAJHU_temp;
-            //phj_VAJHU = phj_VAJHU_temp;
-            //pwh_hadronic_VAJHU = pwh_hadronic_VAJHU_temp;
-            //pzh_hadronic_VAJHU = pzh_hadronic_VAJHU_temp;
-            //ptth_VAJHU = ptth_VAJHU_temp;
-            //pbbh_VAJHU = pbbh_VAJHU_temp;
+	    p0plus_VAJHU = p0plus_VAJHU_temp;
+	    p0plus_VAMCFM = p0plus_VAMCFM_temp;
+	    p2bplus_VAJHU = p2bplus_VAJHU_temp;
+	    pqqZJJ_VAMCFM = pqqZJJ_VAMCFM_temp;
           }
           else if (jecnum == 1){
             phjj_VAJHU_highestPTJets_up = phjj_VAJHU_highestPTJets_temp;
             pvbf_VAJHU_highestPTJets_up = pvbf_VAJHU_highestPTJets_temp;
-            //phjj_VAJHU_bestDjet_up = phjj_VAJHU_bestDjet_temp;
-            //pvbf_VAJHU_bestDjet_up = pvbf_VAJHU_bestDjet_temp;
-            //pAux_vbf_VAJHU_up = pAux_vbf_VAJHU_temp;
-            //phj_VAJHU_up = phj_VAJHU_temp;
-            //pwh_hadronic_VAJHU_up = pwh_hadronic_VAJHU_temp;
-            //pzh_hadronic_VAJHU_up = pzh_hadronic_VAJHU_temp;
-            //ptth_VAJHU_up = ptth_VAJHU_temp;
-            //pbbh_VAJHU_up = pbbh_VAJHU_temp;
+	    p0plus_VAJHU_up = p0plus_VAJHU_temp;
+	    p0plus_VAMCFM_up = p0plus_VAMCFM_temp;
+	    p2bplus_VAJHU_up = p2bplus_VAJHU_temp;
+	    pqqZJJ_VAMCFM_up = pqqZJJ_VAMCFM_temp;
           }
           else if (jecnum == 2){
             phjj_VAJHU_highestPTJets_dn = phjj_VAJHU_highestPTJets_temp;
             pvbf_VAJHU_highestPTJets_dn = pvbf_VAJHU_highestPTJets_temp;
-            //phjj_VAJHU_bestDjet_dn = phjj_VAJHU_bestDjet_temp;
-            //pvbf_VAJHU_bestDjet_dn = pvbf_VAJHU_bestDjet_temp;
-            //pAux_vbf_VAJHU_dn = pAux_vbf_VAJHU_temp;
-            //phj_VAJHU_dn = phj_VAJHU_temp;
-            //pwh_hadronic_VAJHU_dn = pwh_hadronic_VAJHU_temp;
-            //pzh_hadronic_VAJHU_dn = pzh_hadronic_VAJHU_temp;
-            //ptth_VAJHU_dn = ptth_VAJHU_temp;
-            //pbbh_VAJHU_dn = pbbh_VAJHU_temp;
+	    p0plus_VAJHU_dn = p0plus_VAJHU_temp;
+	    p0plus_VAMCFM_dn = p0plus_VAMCFM_temp;
+	    p2bplus_VAJHU_dn = p2bplus_VAJHU_temp;
+	    pqqZJJ_VAMCFM_dn = pqqZJJ_VAMCFM_temp; 
           }
         } // if hasAtLeastOneJet
       } // End if melaCand!=0
@@ -877,8 +874,16 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     myCand.addUserFloat("phjj_VAJHU_highestPTJets", phjj_VAJHU_highestPTJets);
     myCand.addUserFloat("pvbf_VAJHU_highestPTJets", pvbf_VAJHU_highestPTJets);
     myCand.addUserFloat("phjj_VAJHU_highestPTJets_up", phjj_VAJHU_highestPTJets_up);
+    myCand.addUserFloat("p0plus_VAJHU_up", p0plus_VAJHU_up);
+    myCand.addUserFloat("p0plus_VAMCFM_up", p0plus_VAMCFM_up);
+    myCand.addUserFloat("p2bplus_VAJHU_up", p2bplus_VAJHU_up);
+    myCand.addUserFloat("pqqZJJ_VAMCFM_up", pqqZJJ_VAMCFM_up);
     myCand.addUserFloat("pvbf_VAJHU_highestPTJets_up", pvbf_VAJHU_highestPTJets_up);
     myCand.addUserFloat("phjj_VAJHU_highestPTJets_dn", phjj_VAJHU_highestPTJets_dn);
+    myCand.addUserFloat("p0plus_VAJHU_dn", p0plus_VAJHU_dn);
+    myCand.addUserFloat("p0plus_VAMCFM_dn", p0plus_VAMCFM_dn);
+    myCand.addUserFloat("p2bplus_VAJHU_dn", p2bplus_VAJHU_dn);
+    myCand.addUserFloat("pqqZJJ_VAMCFM_dn", pqqZJJ_VAMCFM_dn);
     myCand.addUserFloat("pvbf_VAJHU_highestPTJets_dn", pvbf_VAJHU_highestPTJets_dn);
 
     myCand.addUserFloat("pqqZJJ_VAMCFM", pqqZJJ_VAMCFM);
