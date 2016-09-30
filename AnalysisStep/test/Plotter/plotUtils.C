@@ -101,11 +101,13 @@ TPaveText* printInfo(string info, Double_t x1, Double_t y1, Double_t x2, Double_
 
 
 void SaveCanvas(string directory, TCanvas* c, string tag = "") {
-  c->SaveAs(Form("%s%s_%s.root",directory.c_str(),c->GetName(),tag.c_str()));
-  c->SaveAs(Form("%s%s_%s.C"   ,directory.c_str(),c->GetName(),tag.c_str())); //sometimes causes a segfault, but why ?
-  c->SaveAs(Form("%s%s_%s.pdf" ,directory.c_str(),c->GetName(),tag.c_str()));  
-  //c->SaveAs(Form("%s%s_%s.png" ,directory.c_str(),c->GetName(),tag.c_str())); //gives bad quality, it's much better to produce a .png from the .eps by doing: convert -density 150 -quality 100 FILE.eps FILE.png
-  c->SaveAs(Form("%s%s_%s.eps" ,directory.c_str(),c->GetName(),tag.c_str()));
+  string prefix = directory + string(c->GetName()) + "_" + tag;
+  c->SaveAs((prefix+".root").c_str());
+  //c->SaveAs((prefix+".C").c_str()); //sometimes causes a segfault, apprently due to empty TGraphs
+  c->SaveAs((prefix+".pdf").c_str());
+  //c->SaveAs((prefix+".png").c_str()); //gives bad quality, it's much better to produce a .png from the .eps by doing: convert -density 150 -quality 100 FILE.eps FILE.png
+  c->SaveAs((prefix+".eps").c_str());
+  gSystem->Exec(("convert -density 150 -quality 100 "+prefix+".eps "+prefix+".png").c_str());
 }
 
 
