@@ -59,6 +59,7 @@ ggHiggs1000, ,0.0073,0.1386,,/GluGluHToZZTo2L2Q_M1000_13TeV_powheg2_JHUgenV698_p
 ggHiggs1500, ,0.0073,0.1386,,/GluGluHToZZTo2L2Q_M1500_13TeV_powheg2_JHUgenV698_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,,,
 ggHiggs2000, ,0.0073,0.1386,,/GluGluHToZZTo2L2Q_M2000_13TeV_powheg2_JHUgenV698_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,,,
 ggHiggs2500, ,0.0073,0.1386,,/GluGluHToZZTo2L2Q_M2500_13TeV_powheg2_JHUgenV698_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,,,
+ggHiggs3000, ,0.0073,0.1386,,/GluGluHToZZTo2L2Q_M3000_13TeV_powheg2_JHUgenV698_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,,,
 
 ##VBFHiggs
 VBFHiggs200, ,0.0073,0.1386,,/VBF_HToZZTo2L2Q_M200_13TeV_powheg2_JHUgenV698_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,,,
