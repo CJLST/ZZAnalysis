@@ -1,4 +1,3 @@
-
 /* 
  * usage: 
  * -specify parameters at the end of this file
@@ -45,6 +44,7 @@
 #include <ZZAnalysis/AnalysisStep/src/Category.cc>
 #include <ZZAnalysis/AnalysisStep/src/bitops.cc>
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
+#include <ZZAnalysis/AnalysisStep/test/Plotter/fit_functions.C>
 
 using namespace std;
 
@@ -52,8 +52,8 @@ int useHTBinned = 2;         // 0 - use simple DY inclusive
                              // 1 - use ht binned
                              // 2 - use jet binned + b-enricchement
 
-bool enforceNarrowWidth = false;
-bool unblind = false;
+bool enforceNarrowWidth = true;
+bool unblind = true;
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -151,7 +151,7 @@ Int_t  varNbin[nVariables] = { 70, 50, 70,  56,  44, 50,50, 400,  50,  50,  50, 
 Float_t varMin[nVariables] = {  250,  0,  250,  40,  40,  90, 90, -200,  0, 0, -0.2, -0.2, 0,  0, -0.2, -1.2, -1.2, 0., 0., -0.5, 0., -0.05,-0.2,0.,-1.05, 250};
 Float_t varMax[nVariables] = { 2000, 500, 2000, 180, 150, 800, 800, 0, 500, 500, 1.2, 1.2, 500, 500, 1.2, 1.2, 1.2 , 3.15, 3.15, 3.5, 300., 1.05, 1.2, 1.,1., 2000};
 Bool_t varLogx[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-Bool_t varLogy[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1,0};
+Bool_t varLogy[nVariables] = {1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1,0};
 
 const int nMasses = 14;
 string signalMasses[nMasses] = {"200","250","300","350","400","450","500","550","600","750","800","900","1000","2000"};
@@ -178,6 +178,22 @@ string typeS[nType] = {"resolvedSB","mergedSB","mergedSR","resolvedSR","resolved
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+
+TF1* extender(TF1* basis, float xMin, float xMax, int type=0) 
+{
+  TF1* func;
+  if (type==0) func = new TF1("pippo",myfunction,xMin,xMax,4);
+  else if (type==1) func = new TF1("pippo",myfunctionErrUp,xMin,xMax,20);
+  else func = new TF1("pippo",myfunctionErrDown,xMin,xMax,20);
+  func->SetName(basis->GetName());
+  func->SetLineColor(basis->GetLineColor());
+  func->SetLineStyle(basis->GetLineStyle());
+  func->SetLineWidth(basis->GetLineWidth());
+  for (int i=0; i<basis->GetNpar(); i++) {
+    func->SetParameter(i,basis->GetParameter(i));
+  }
+  return func;
+}
 
 float deltaPhi(float phi1, float phi2) 
 {
@@ -221,7 +237,7 @@ float getDVBF2jetsConstant(float ZZMass){
 void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./goodDatasetsWithData.txt", /* bool norm = false,*/ bool CR = false, bool draw = true, bool weightMCtrig = true, bool weighttau21 = true)
 {
   
-  float lumin = 11.0;   // ICHEP total
+  float lumin = 12.95;   // ICHEP total
   setTDRStyle();
   // gStyle->SetOptStat(1111111);
   const int nDatasets = 25;          // Moriond: 11
@@ -399,6 +415,37 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
   readerR->BookMVA( "BDT method" , "../TMVA/weights/resolved/TMVAClassification_BDT.weights.xml" );
   /// END I/O to TMVA
 
+  // background functions (if unblind)
+  TFile ffunc("results.root","READ");
+  TF1* ffit[nType];
+  TF1* ffitup[nType];
+  TF1* ffitdown[nType];
+  TF1* ffit_temp[nType];
+  TF1* ffitup_temp[nType];
+  TF1* ffitdown_temp[nType];
+
+  char filestring[400];
+  float xMin=0.,xMax=2500.;
+
+  if (unblind) {
+    for(int nt=0; nt<nType; nt++){
+      if (string(typeS[nt]).find("merged") != std::string::npos) xMin = 650.;
+      else xMin = 450.;
+      if (string(typeS[nt]).find("SR") != std::string::npos) {
+	sprintf(filestring,"ffit_%s",typeS[nt].c_str()); 
+	ffit_temp[nt] = (TF1*)ffunc.Get(filestring);
+	ffit[nt] = extender(ffit_temp[nt],xMin,xMax,0);
+	sprintf(filestring,"ffitup_%s",typeS[nt].c_str()); 
+	ffitup_temp[nt] = (TF1*)ffunc.Get(filestring);
+	ffitup[nt] = extender(ffitup_temp[nt],xMin,xMax,1);
+	sprintf(filestring,"ffitdown_%s",typeS[nt].c_str()); 
+	ffitdown_temp[nt] = (TF1*)ffunc.Get(filestring);
+	ffitdown[nt] = extender(ffitdown_temp[nt],xMin,xMax,2);	
+      }
+    }
+  }
+  // end background functions
+
   Int_t RunNumber;
   Long64_t EventNumber;
   Int_t LumiNumber;
@@ -423,6 +470,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
   Short_t nJetsBTagged;
   vector<Float_t> *JetPt = 0;
   vector<Float_t> *JetPhi = 0;
+  vector<Float_t> *JetEta = 0;
   vector<bool> *JetIsInZZCand = 0;
   vector<Float_t> *JetBTagger = 0;
   vector<Float_t> *JetQGLikelihood = 0;
@@ -443,7 +491,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
     for(int pr=0; pr<nProcesses; pr++){
       for(int nt=0; nt<nType; nt++){
 	for(int v=0; v<nVariables; v++){
-	  if (nt == 0 || nt == 3) 
+	  if (nt == 0 || ( nt == 3 && (v!=0 && v!=2)) ) 
 	    h1[v][pr][rs][nt] = new TH1F(Form("h1_%s_%s_%s_%s",varName[v].c_str(),sFS[rs].c_str(),typeS[nt].c_str(),sProcess[pr].c_str()),
 					 Form("h1_%s_%s_%s_%s",varName[v].c_str(),sFS[rs].c_str(),typeS[nt].c_str(),sProcess[pr].c_str()),		
 					 varNbin[v],varMin[v],varMax[v]);
@@ -485,7 +533,6 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 
   ifstream list(theNtupleFile.c_str());
   char fileName[400];
-  char filestring[400];
   while (list >> fileName) {
     if (string(fileName).find("store") != std::string::npos) sprintf(filestring,"root://eoscms//eos/cms/%s",fileName); 
     else sprintf(filestring,"%s",fileName);
@@ -536,6 +583,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
     inputTree[d]->SetBranchAddress("LepPhi", &LepPhi);
     inputTree[d]->SetBranchAddress("LepEta", &LepEta);
     inputTree[d]->SetBranchAddress("JetPt", &JetPt);
+    inputTree[d]->SetBranchAddress("JetEta", &JetEta);
     inputTree[d]->SetBranchAddress("JetPhi", &JetPhi);
     inputTree[d]->SetBranchAddress("JetIsInZZCand", &JetIsInZZCand);
     inputTree[d]->SetBranchAddress("JetBTagger", &JetBTagger);
@@ -633,9 +681,12 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
               btag2ndJet = JetBTagger->at(nJet);
 	    }
 	    nInJets++;
-	  } else nExtraJets++;  
-	}
-      } 
+	  } else { 
+            nExtraJets++;
+            // if (writeThis) cout << RunNumber << ":" << EventNumber << ":" << LumiNumber << ":" << JetPt->at(nJet) << ":" << JetEta->at(nJet) << endl;  
+	  }
+        } 
+      }
 
       for (unsigned int nJet=0; nJet<JetPt->size(); nJet++) {
 	if (JetQGLikelihood->at(nJet) < -800.) {            // subjets
@@ -1083,6 +1134,34 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	        int thebin2 = h1[v][3][rs][nt]->FindBin(750.);
                 aa << "INTEGRAL in (550,750): DATA / " << varName[v] << " / " << sFS[rs] << " / " << typeS[nt] << " = " << h1[v][0][rs][nt]->Integral(thebin1,thebin2) << endl;
                 aa << "INTEGRAL in (550,750): MC / " << varName[v] << " / " << sFS[rs] << " / " << typeS[nt] << " = " << h1[v][3][rs][nt]->Integral(thebin1,thebin2) << endl;
+		if (!(nt==0 || nt==1 || nt==4 || nt==5 || nt==8 || nt==9) && rs ==1 ) {
+		  int iii = 0;  float ren=0;
+		  int xmaxForRenorm = 1500., xminForRenorm = 650.;
+		  thebin1 = h1[v][4][rs][nt]->FindBin(xminForRenorm);
+		  thebin2 = h1[v][4][rs][nt]->FindBin(xmaxForRenorm);
+		  const float theRenorm =  50.*h1[v][4][rs][nt]->Integral(thebin1,thebin2)/ffit[nt]->Integral(xminForRenorm, xmaxForRenorm);
+		  const float theRenormUp =  50.*h1[v][4][rs][nt]->Integral(thebin1,thebin2)/ffitup[nt]->Integral(xminForRenorm, xmaxForRenorm);
+		  const float theRenormDown =  50.*h1[v][4][rs][nt]->Integral(thebin1,thebin2)/ffitdown[nt]->Integral(xminForRenorm, xmaxForRenorm);
+
+		  cout << "test before " << nt << ": " << ffit[nt]->GetParameter(0) << endl;
+		  while (iii < 3 && iii != 1) {
+		    ren = ffit[nt]->GetParameter(iii);
+		    ren *= 1. + theRenorm; 
+		    // cout << "test: " << 50.*h1[v][4][rs][nt]->Integral(thebin1,thebin2) << " " << ffit[nt]->Integral(xminForRenorm, xmaxForRenorm) << endl;
+		    ffit[nt]->SetParameter(iii,ren);
+		    ren = ffitup[nt]->GetParameter(iii);
+		    ren *= 1. + theRenormUp;  
+		    ffitup[nt]->SetParameter(iii,ren);
+		    ren = ffitdown[nt]->GetParameter(iii);
+		    ren *= 1. + theRenormDown; 
+		    ffitdown[nt]->SetParameter(iii,ren);
+		    iii++;
+		  }
+		  cout << "test " << nt << ": " << ffit[nt]->GetParameter(0) << endl;
+		  ffit[nt]->Draw("same");
+                  ffitup[nt]->Draw("same");
+                  ffitdown[nt]->Draw("same");  
+		} 
               }
 	    }
 	    
