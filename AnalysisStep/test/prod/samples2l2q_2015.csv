@@ -5,14 +5,6 @@ dentifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,split
 ## sigma = S/(L*eff) ~ 14/(3.2*60%) = 7.3 fb
 ## BR(ZZ -> 2l2q) = 2 x 9.9% x 70% = 13.86%
 
-##BulkGrav
-BulkGrav1200, ,0.0073,0.1386,,/Graviton2PBToZZTo2L2Q_width0p1_M-1200_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,,,
-BulkGrav2000, ,0.0073,0.1386,,/Graviton2PBToZZTo2L2Q_width0p1_M-2000_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,,,
-BulkGrav3000, ,0.0073,0.1386,,/Graviton2PBToZZTo2L2Q_width0p1_M-3000_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,,,
-BulkGrav4000, ,0.0073,0.1386,,/Graviton2PBToZZTo2L2Q_width0p1_M-4000_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,,,
-BulkGrav750, ,0.0073,0.1386,,/Graviton2PBToZZTo2L2Q_width0_M-750_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,,,
-BulkGrav800, ,0.0073,0.1386,,/Graviton2PBToZZTo2L2Q_width0p1_M-800_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,,,
-
 ##BulkGrav JHUGen samples
 2bp_W0_M750, ,-1,,, /Graviton2PBToZZTo2L2Q_width0_M-750_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,,,
 2bp_W0p1_M750, ,-1,,, /Graviton2PBToZZTo2L2Q_width0p1_M-750_13TeV-JHUgenV6-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,1,,,
@@ -85,7 +77,7 @@ DYBFiltJetsToLL,,     229.7,    ,,/DYJetsToLL_BGenFilter_M-50_TuneCUETP8M1_13TeV
 
 
 ## DYjets high HT
-DYJetsToLL,,    6025.2,    ,,/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM,dbs,,30,,,
+DYJetsToLL,,    4895.2,    ,,/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM,dbs,,30,,,
 #DYHT100,,     139.40,    ,,/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM,dbs,,10,,,
 #DYHT200,,     40.99,    ,,DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM,dbs,,10,,,
 #DYHT400,,     5.678,    ,,/DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM,dbs,,8,,,
@@ -99,29 +91,29 @@ TTBar,,     87.31,    ,,/TTTo2L2Nu_13TeV-powheg/RunIISpring16MiniAODv2-PUSpring1
 #ZZDib,,     16.523,    ,,/ZZ_TuneCUETP8M1_13TeV-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,5,,,
 WZ2l2qDib,,     5.595,    ,,/WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,4,,,
 ZZ2l2qDib,,     3.22,   ,,/ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,5,,,
-#ZZ2l2nDib,,     0.564,    ,,/ZZTo2L2Nu_13TeV_powheg_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,4,,,
+ZZ2l2nDib,,     0.564,    ,,/ZZTo2L2Nu_13TeV_powheg_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,4,,,
 WW2l2nDib,,     10.481,    ,,/WWTo2L2Nu_13TeV-powheg/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,5,,,
 WZ3lnDib,,     5.29,    ,,/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,4,,,
 
 
 ###,,,,,,,,,,,Data 25ns
-DoubleMu2016B,, -1, ,, /DoubleMuon/Run2016B-PromptReco-v2/MINIAOD,dbs,,10,PD=DoubleMu,cert.py,
-DoubleEG2016B,, -1, ,, /DoubleEG/Run2016B-PromptReco-v2/MINIAOD,dbs,,10,PD=DoubleEle,cert.py,
+DoubleMu2016B,, -1, ,, /DoubleMuon/Run2016B-PromptReco-v2/MINIAOD,dbs,,7,PD=DoubleMu,cert.py,
+DoubleEG2016B,, -1, ,, /DoubleEG/Run2016B-PromptReco-v2/MINIAOD,dbs,,7,PD=DoubleEle,cert.py,
 
-SingleMu2016B,, -1, ,, /SingleMuon/Run2016B-PromptReco-v2/MINIAOD,dbs,,15,PD=SingleMuon,cert.py,
-SingleEG2016B,, -1, ,, /SingleElectron/Run2016B-PromptReco-v2/MINIAOD,dbs,,25,PD=SingleElectron,cert.py,
+SingleMu2016B,, -1, ,, /SingleMuon/Run2016B-PromptReco-v2/MINIAOD,dbs,,10,PD=SingleMuon,cert.py,
+SingleEG2016B,, -1, ,, /SingleElectron/Run2016B-PromptReco-v2/MINIAOD,dbs,,15,PD=SingleElectron,cert.py,
 
-DoubleMu2016C,, -1, ,, /DoubleMuon/Run2016C-PromptReco-v2/MINIAOD,dbs,,10,PD=DoubleMu,cert.py,
-DoubleEG2016C,, -1, ,, /DoubleEG/Run2016C-PromptReco-v2/MINIAOD,dbs,,10,PD=DoubleEle,cert.py,
+DoubleMu2016C,, -1, ,, /DoubleMuon/Run2016C-PromptReco-v2/MINIAOD,dbs,,7,PD=DoubleMu,cert.py,
+DoubleEG2016C,, -1, ,, /DoubleEG/Run2016C-PromptReco-v2/MINIAOD,dbs,,7,PD=DoubleEle,cert.py,
 
-SingleMu2016C,, -1, ,, /SingleMuon/Run2016C-PromptReco-v2/MINIAOD,dbs,,15,PD=SingleMuon,cert.py,
-SingleEG2016C,, -1, ,, /SingleElectron/Run2016C-PromptReco-v2/MINIAOD,dbs,,25,PD=SingleElectron,cert.py,
+SingleMu2016C,, -1, ,, /SingleMuon/Run2016C-PromptReco-v2/MINIAOD,dbs,,10,PD=SingleMuon,cert.py,
+SingleEG2016C,, -1, ,, /SingleElectron/Run2016C-PromptReco-v2/MINIAOD,dbs,,15,PD=SingleElectron,cert.py,
 
-DoubleMu2016D,, -1, ,, /DoubleMuon/Run2016D-PromptReco-v2/MINIAOD,dbs,,10,PD=DoubleMu,cert.py,
-DoubleEG2016D,, -1, ,, /DoubleEG/Run2016D-PromptReco-v2/MINIAOD,dbs,,10,PD=DoubleEle,cert.py,
+DoubleMu2016D,, -1, ,, /DoubleMuon/Run2016D-PromptReco-v2/MINIAOD,dbs,,7,PD=DoubleMu,cert.py,
+DoubleEG2016D,, -1, ,, /DoubleEG/Run2016D-PromptReco-v2/MINIAOD,dbs,,7,PD=DoubleEle,cert.py,
 
-SingleMu2016D,, -1, ,, /SingleMuon/Run2016D-PromptReco-v2/MINIAOD,dbs,,15,PD=SingleMuon,cert.py,
-SingleEG2016D,, -1, ,, /SingleElectron/Run2016D-PromptReco-v2/MINIAOD,dbs,,25,PD=SingleElectron,cert.py,
+SingleMu2016D,, -1, ,, /SingleMuon/Run2016D-PromptReco-v2/MINIAOD,dbs,,10,PD=SingleMuon,cert.py,
+SingleEG2016D,, -1, ,, /SingleElectron/Run2016D-PromptReco-v2/MINIAOD,dbs,,15,PD=SingleElectron,cert.py,
 
 
 
