@@ -1,4 +1,4 @@
-dentifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments,comment
+identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments,comment
 
 ## Assume cross-section observed by ATLAS at 750 GeV and BR(gg) = BR(ZZ)
 ## S (from bkgd-subtracted histogram) is ~ 14
