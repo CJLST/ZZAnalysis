@@ -63,6 +63,9 @@ declareDefault("ADDLOOSEELE", False, globals())
 # Activate trigger paths in MC; note that for 2016, only reHLT samples have the correct triggers!!!
 declareDefault("APPLYTRIG", True, globals())
 
+# Add anomalous probabilities from production kinematics
+declareDefault("PRODANOMALOUS", False, globals())
+
 
 
 if SELSETUP=="Legacy" and not BESTCANDCOMPARATOR=="byBestZ1bestZ2":
@@ -930,6 +933,7 @@ process.ZZCand = cms.EDProducer("ZZCandidateFiller",
         FullSel70 = cms.string(SR), #Obsolete, use "SR"
         FullSel = cms.string(FULLSEL),
     ),
+    addProdAnomalousProbabilities = cms.bool(PRODANOMALOUS),
     #These are actually no longer needed after we dropped the Legacy FSR algorithm
     muon_iso_cut = cms.double(MUISOCUT),
     electron_iso_cut = cms.double(ELEISOCUT),
@@ -1050,6 +1054,7 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
       CRZLLos_2P2F = cms.string(CR_ZLLosSEL_2P2F),
       CRZLLos_3P1F = cms.string(CR_ZLLosSEL_3P1F),
     ),
+    addProdAnomalousProbabilities = cms.bool(PRODANOMALOUS),
     #These are actually no longer needed after we dropped the Legacy FSR algorithm
     muon_iso_cut = cms.double(MUISOCUT),
     electron_iso_cut = cms.double(ELEISOCUT),

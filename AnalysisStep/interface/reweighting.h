@@ -5,44 +5,76 @@
 #include <assert.h>
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
 #include <ZZMatrixElement/MELA/interface/Mela.h>
+#include <ZZMatrixElement/MELA/interface/TVar.hh>
 #include "TTree.h"
 
 enum ReweightingType {
   NoReweighting = 0,
   HVV_spin0     = 1,
-  HVV_spin012   = 2
+  HVV_spin012   = 2,
+  VBFHZZ_spin0  = 3,
+  ZHZZ_spin0    = 4,
+  WHZZ_spin0    = 5,
 };
 
 class Reweighting {
 
 protected:
 
-  double myHzzcoupl[SIZE_HVV][2];
+  double myHvvcoupl[SIZE_HVV][2];
   double myZvvcoupl[SIZE_ZVV][2];
   double myGggcoupl[SIZE_GGG][2];
   double myGvvcoupl[SIZE_GVV][2];
 
-  const int ghz1_index;
-  const int ghz2_index;
-  const int ghz4_index;
-  const int ghz1_prime2_index;
+  static const int ghg2_index = 0;
+  static const int ghz1_index = 0;
+  static const int ghz2_index = 1;
+  static const int ghz4_index = 3;
+  static const int ghz1_prime2_index = 11;
 
-  const double ghz2mix;
-  const double ghz4mix;
-  const double ghz1_prime2mix;
+  static const constexpr double ghz2mix_decay = 1.663195;
+  static const constexpr double ghz4mix_decay = 2.55502;
+  static const constexpr double ghz1_prime2mix_decay = -12110.20;
 
-  const int a1_index;
-  const int b5_index;
+  static const constexpr double ghz2mix_VBF = 0.271965;
+  static const constexpr double ghz4mix_VBF = 0.297979;
+  static const constexpr double ghz1_prime2mix_VBF = -2158.21;
+
+  static const constexpr double ghz2mix_ZH = 0.112481;
+  static const constexpr double ghz4mix_ZH = 0.144057;
+  static const constexpr double ghz1_prime2mix_ZH = -517.788;
+
+  static const constexpr double ghz2mix_WH = 0.0998956;
+  static const constexpr double ghz4mix_WH = 0.1236136;
+  static const constexpr double ghz1_prime2mix_WH = -525.274;
+
+  static const int a1_index = 0;
+  static const int b5_index = 4;
 
   int spin;
   int myspin;
-  Mela* mela;
+  typedef tuple<TVar::Process, TVar::MatrixElement, TVar::Production> MelaProcess;
+  MelaProcess decayprocess;
+  MelaProcess productionprocess;
+  vector<double> cutoffs;
+
+  bool fillingcouplingstree;
+
+  Mela& mela;
+
+  double& ghg2;
+  double& ghz1;
+  double& ghz2;
+  double& ghz4;
+  double& ghz1_prime2;
+  double& a1;
+  double& b5;
 
   ReweightingType reweightingtypefromstring(const std::string& reweightingtypestring);
 
   template <unsigned int size> void couplingsfromvectors(double(&couplings)[size][2], vector<double> real, vector<double> imaginary) { // Could just have had a pair -- U. Sarica
     if (real.size() != size || imaginary.size() != size) {
-      std::cout << "couplings should have size " << size << " but have size " << real.size() << " " << imaginary.size() << std::endl;
+      std::cout << "couplings should have size " << size << " but has size " << real.size() << " " << imaginary.size() << std::endl;
       assert(false);
     }
     for (unsigned int i = 0; i < size; i++) {
@@ -51,13 +83,30 @@ protected:
     }
   }
 
+  void fillreweightingweights(vector<float> &reweightingweights);
+
+  void setProcess(MelaProcess melaprocess) {
+    mela.setProcess(get<0>(melaprocess), get<1>(melaprocess), get<2>(melaprocess));
+  }
+  void computeP(int reweightinghypothesis, float& prob, bool useConstant = true);
+
+  void reset_SelfDCouplings() {
+    mela.setInputEvent(0, 0, 0, true);
+    float dummy;
+    mela.computeP(dummy, false);
+  }
+
+  int nReweightingSamplesFromType(ReweightingType reweightingtype_);
+
+  TVar::Production getVHtype();
+
 public:
 
-  int nReweightingSamples;
   ReweightingType reweightingtype;
+  int nReweightingSamples;
 
   Reweighting(
-    Mela* mela_,
+    Mela& mela_,
     std::string reweightingtypestring,
     int inputspin,
     std::vector<double> Hzzcouplings_real,
@@ -67,7 +116,8 @@ public:
     std::vector<double> Gggcouplings_real,
     std::vector<double> Gggcouplings_imag,
     std::vector<double> Gvvcouplings_real,
-    std::vector<double> Gvvcouplings_imag
+    std::vector<double> Gvvcouplings_imag,
+    std::vector<double> cutoffs
     );
   virtual ~Reweighting(){}
 
@@ -75,17 +125,21 @@ public:
 
   void setcouplings(int reweightinghypothesis);
 
-  bool canreweight(unsigned int nleptons, short genFinalState);
-
   void fillcouplingstree(TTree* t);
 
-  float computeP(
-    float mzz, float m1, float m2,
-    float hs, float h1, float h2, float phi, float phi1,
-    int flavor
-    );
+  void fillreweightingweights(
+    vector<float> &reweightingweights,
+    SimpleParticleCollection_t* pDaughters,
+    SimpleParticleCollection_t* pAssociated,
+    SimpleParticleCollection_t* pMothers,
+    bool isGen
+  );
+
+  void fillreweightingweights(
+    vector<float> &reweightingweights,
+    MELACandidate* candidate
+  );
 };
 
 
 #endif
-

@@ -259,6 +259,16 @@ namespace {
   Float_t phjj_VAJHU_highestPTJets_dn = 0;
   Float_t pvbf_VAJHU_highestPTJets_dn = 0;
 
+  Float_t pvbf_0minus_VAJHU_highestPTJets=-1;
+  Float_t pvbf_0hplus_VAJHU_highestPTJets=-1;
+  Float_t pvbf_0_g1prime2_VAJHU_highestPTJets=-1;
+  Float_t pvbf_g1g4_VAJHU_highestPTJets=-1;
+  Float_t pvbf_g1g2_VAJHU_highestPTJets=-1;
+  Float_t pvbf_g1g1prime2_VAJHU_highestPTJets=-1;
+
+  Float_t phjj_0minus_VAJHU_highestPTJets=-1;
+  Float_t phjj_g2g4_VAJHU_highestPTJets=-1;
+
   Float_t phjj_VAJHU_bestDjet = 0;
   Float_t pvbf_VAJHU_bestDjet = 0;
   Float_t phjj_VAJHU_bestDjet_up = 0;
@@ -280,6 +290,20 @@ namespace {
   Float_t pzh_hadronic_VAJHU = 0;
   Float_t pzh_hadronic_VAJHU_up = 0;
   Float_t pzh_hadronic_VAJHU_dn = 0;
+
+  Float_t pwh_0minus_hadronic_VAJHU = 0;
+  Float_t pwh_0hplus_hadronic_VAJHU = 0;
+  Float_t pwh_0_g1prime2_hadronic_VAJHU = 0;
+  Float_t pwh_g1g4_hadronic_VAJHU = 0;
+  Float_t pwh_g1g2_hadronic_VAJHU = 0;
+  Float_t pwh_g1g1prime2_hadronic_VAJHU = 0;
+
+  Float_t pzh_0minus_hadronic_VAJHU = 0;
+  Float_t pzh_0hplus_hadronic_VAJHU = 0;
+  Float_t pzh_0_g1prime2_hadronic_VAJHU = 0;
+  Float_t pzh_g1g4_hadronic_VAJHU = 0;
+  Float_t pzh_g1g2_hadronic_VAJHU = 0;
+  Float_t pzh_g1g1prime2_hadronic_VAJHU = 0;
 
   Float_t ptth_VAJHU = 0;
   Float_t ptth_VAJHU_up = 0;
@@ -392,11 +416,6 @@ namespace {
   Float_t GenAssocLep2Eta  = 0;
   Float_t GenAssocLep2Phi  = 0;
   Short_t GenAssocLep2Id  = 0;
-  Float_t Gencosthetastar  = 0;
-  Float_t Genhelphi  = 0;
-  Float_t GenhelcosthetaZ1  = 0;
-  Float_t GenhelcosthetaZ2  = 0;
-  Float_t GenphistarZ1  = 0;
 
 
 //FIXME: temporary fix to the mismatch of charge() and sign(pdgId()) for muons with BTT=4
@@ -484,6 +503,8 @@ private:
   int apply_K_NNLOQCD_ZZGG; // 0: Do not; 1: NNLO/LO; 2: NNLO/NLO; 3: NLO/LO
   bool apply_K_NNLOQCD_ZZQQB;
   bool apply_K_NLOEW_ZZQQB;
+
+  bool addProdAnomalousProbabilities;
 
   edm::EDGetTokenT<edm::View<reco::Candidate> > genParticleToken;
   edm::Handle<edm::View<reco::Candidate> > genParticles;
@@ -581,7 +602,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   Hmass(pset.getParameter<double>("superMelaMass")),
   mela(sqrts, Hmass, TVar::ERROR),
   reweighting(
-              &mela,
+              mela,
               pset.getParameter<std::string>("reweightingtype"),
               pset.getParameter<int>("spin"),
               pset.getParameter<std::vector<double> >("Hzzcouplings_real"),
@@ -591,7 +612,8 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
               pset.getParameter<std::vector<double> >("Gggcouplings_real"),
               pset.getParameter<std::vector<double> >("Gggcouplings_imag"),
               pset.getParameter<std::vector<double> >("Gvvcouplings_real"),
-              pset.getParameter<std::vector<double> >("Gvvcouplings_imag")
+              pset.getParameter<std::vector<double> >("Gvvcouplings_imag"),
+              pset.getParameter<std::vector<double> >("reweightingcutoffs")
              ),
   nReweightingSamples(reweighting.nReweightingSamples),
   doreweighting(nReweightingSamples != 0),
@@ -601,6 +623,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   apply_K_NNLOQCD_ZZGG(pset.getParameter<int>("Apply_K_NNLOQCD_ZZGG")),
   apply_K_NNLOQCD_ZZQQB(pset.getParameter<bool>("Apply_K_NNLOQCD_ZZQQB")),
   apply_K_NLOEW_ZZQQB(pset.getParameter<bool>("Apply_K_NLOEW_ZZQQB")),
+  addProdAnomalousProbabilities(pset.getParameter<bool>("addProdAnomalousProbabilities")),
   reweight(),
   sampleName(pset.getParameter<string>("sampleName")),
   hTH2D_Mu_All(0),
@@ -659,7 +682,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   }
 
   isMC = myHelper.isMC();
-  if (isMC) lheHandler = new LHEHandler(pset.getParameter<int>("VVMode"), pset.getParameter<int>("VVDecayMode"), addLHEKinematics);
+  if (isMC) lheHandler = new LHEHandler(pset.getParameter<int>("VVMode"), pset.getParameter<int>("VVDecayMode"), addLHEKinematics || doreweighting);
 
   Nevt_Gen = 0;
   Nevt_Gen_lumiBlock = 0;
@@ -890,28 +913,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
     }
 
-    // Note: Should move into LHEHandler -- U. Sarica
-    reweightingweights.clear();
-    if (doreweighting) {
-      assert(reweighting.canreweight(genZLeps.size(), genFinalState));
-      int flavor = (GenZ1Flav==GenZ2Flav ? 0 : 2);
-      float myprobability;
-      vector<float> probabilities(nReweightingSamples);
-      reweighting.setmycouplings();
-      myprobability = reweighting.computeP(GenHMass, GenZ1Mass, GenZ2Mass, Gencosthetastar, GenhelcosthetaZ1, GenhelcosthetaZ2, Genhelphi, GenphistarZ1, flavor);
-      for (int i = 0; i < nReweightingSamples; i++) {
-        reweighting.setcouplings(i);
-        probabilities[i] = reweighting.computeP(GenHMass, GenZ1Mass, GenZ2Mass, Gencosthetastar, GenhelcosthetaZ1, GenhelcosthetaZ2, Genhelphi, GenphistarZ1, flavor);
-        reweightingweights.push_back(probabilities[i] / myprobability);
-      }
-    }
-
-    // keep track of sum of weights
-    gen_sumPUWeight += PUWeight;
-    addweight(gen_sumGenMCWeight, gen_sumGenMCWeight_reweighted, genHEPMCweight);
-    addweight(gen_sumWeights, gen_sumWeights_reweighted, PUWeight*genHEPMCweight);
-
-
     // LHE information
     if (isMC){
       edm::Handle<LHEEventProduct> lhe_evt;
@@ -922,12 +923,19 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
         lheHandler->setHandle(&lhe_evt);
         lheHandler->extract();
         FillLHECandidate();
+        if (doreweighting) {
+          reweighting.fillreweightingweights(reweightingweights, lheHandler->getBestCandidate());
+        }
         lheHandler->clear();
       }
       //else cerr << "lhe_handles.size()==0" << endl;
     }
     //
 
+    // keep track of sum of weights
+    gen_sumPUWeight += PUWeight;
+    addweight(gen_sumGenMCWeight, gen_sumGenMCWeight_reweighted, genHEPMCweight);
+    addweight(gen_sumWeights, gen_sumWeights_reweighted, PUWeight*genHEPMCweight);
 
     mch.genAcceptance(gen_ZZ4lInEtaAcceptance, gen_ZZ4lInEtaPtAcceptance);
 
@@ -1531,6 +1539,18 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     getCheckedUserFloat(cand, "pvbf_VAJHU_highestPTJets_up", pvbf_VAJHU_highestPTJets_up, -1);
     getCheckedUserFloat(cand, "phjj_VAJHU_highestPTJets_dn", phjj_VAJHU_highestPTJets_dn, -1);
     getCheckedUserFloat(cand, "pvbf_VAJHU_highestPTJets_dn", pvbf_VAJHU_highestPTJets_dn, -1);
+
+    if (addProdAnomalousProbabilities) {
+      getCheckedUserFloat(cand, "pvbf_0minus_VAJHU_highestPTJets", pvbf_0minus_VAJHU_highestPTJets, -1);
+      getCheckedUserFloat(cand, "pvbf_0hplus_VAJHU_highestPTJets", pvbf_0hplus_VAJHU_highestPTJets, -1);
+      getCheckedUserFloat(cand, "pvbf_0_g1prime2_VAJHU_highestPTJets", pvbf_0_g1prime2_VAJHU_highestPTJets, -1);
+      getCheckedUserFloat(cand, "pvbf_g1g4_VAJHU_highestPTJets", pvbf_g1g4_VAJHU_highestPTJets, -1);
+      getCheckedUserFloat(cand, "pvbf_g1g2_VAJHU_highestPTJets", pvbf_g1g2_VAJHU_highestPTJets, -1);
+      getCheckedUserFloat(cand, "pvbf_g1g1prime2_VAJHU_highestPTJets", pvbf_g1g1prime2_VAJHU_highestPTJets, -1);
+      getCheckedUserFloat(cand, "phjj_0minus_VAJHU_highestPTJets", phjj_0minus_VAJHU_highestPTJets, -1);
+      getCheckedUserFloat(cand, "phjj_g2g4_VAJHU_highestPTJets", phjj_g2g4_VAJHU_highestPTJets, -1);
+    }
+
     getCheckedUserFloat(cand, "phjj_VAJHU_bestDjet", phjj_VAJHU_bestDjet, -1);
     getCheckedUserFloat(cand, "pvbf_VAJHU_bestDjet", pvbf_VAJHU_bestDjet, -1);
     getCheckedUserFloat(cand, "phjj_VAJHU_bestDjet_up", phjj_VAJHU_bestDjet_up, -1);
@@ -1552,6 +1572,22 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     getCheckedUserFloat(cand, "pzh_hadronic_VAJHU", pzh_hadronic_VAJHU, -1);
     getCheckedUserFloat(cand, "pzh_hadronic_VAJHU_up", pzh_hadronic_VAJHU_up, -1);
     getCheckedUserFloat(cand, "pzh_hadronic_VAJHU_dn", pzh_hadronic_VAJHU_dn, -1);
+
+    if (addProdAnomalousProbabilities) {
+      getCheckedUserFloat(cand, "pwh_0minus_hadronic_VAJHU", pwh_0minus_hadronic_VAJHU, -1);
+      getCheckedUserFloat(cand, "pwh_0hplus_hadronic_VAJHU", pwh_0hplus_hadronic_VAJHU, -1);
+      getCheckedUserFloat(cand, "pwh_0_g1prime2_hadronic_VAJHU", pwh_0_g1prime2_hadronic_VAJHU, -1);
+      getCheckedUserFloat(cand, "pwh_g1g4_hadronic_VAJHU", pwh_g1g4_hadronic_VAJHU, -1);
+      getCheckedUserFloat(cand, "pwh_g1g2_hadronic_VAJHU", pwh_g1g2_hadronic_VAJHU, -1);
+      getCheckedUserFloat(cand, "pwh_g1g1prime2_hadronic_VAJHU", pwh_g1g1prime2_hadronic_VAJHU, -1);
+
+      getCheckedUserFloat(cand, "pzh_0minus_hadronic_VAJHU", pzh_0minus_hadronic_VAJHU, -1);
+      getCheckedUserFloat(cand, "pzh_0hplus_hadronic_VAJHU", pzh_0hplus_hadronic_VAJHU, -1);
+      getCheckedUserFloat(cand, "pzh_0_g1prime2_hadronic_VAJHU", pzh_0_g1prime2_hadronic_VAJHU, -1);
+      getCheckedUserFloat(cand, "pzh_g1g4_hadronic_VAJHU", pzh_g1g4_hadronic_VAJHU, -1);
+      getCheckedUserFloat(cand, "pzh_g1g2_hadronic_VAJHU", pzh_g1g2_hadronic_VAJHU, -1);
+      getCheckedUserFloat(cand, "pzh_g1g1prime2_hadronic_VAJHU", pzh_g1g1prime2_hadronic_VAJHU, -1);
+    }
 
     getCheckedUserFloat(cand, "ptth_VAJHU", ptth_VAJHU, -1);
     getCheckedUserFloat(cand, "ptth_VAJHU_up", ptth_VAJHU_up, -1);
@@ -2102,9 +2138,8 @@ void HZZ4lNtupleMaker::FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t Le
   GenLep4Phi=Lep4.Phi();
   GenLep4Id=Lep4Id;
 
-  if (doreweighting) {
-    TUtil::computeAngles(zzanalysis::tlv(Lep1), Lep1Id, zzanalysis::tlv(Lep2), Lep2Id, zzanalysis::tlv(Lep3), Lep3Id, zzanalysis::tlv(Lep4), Lep4Id, Gencosthetastar, GenhelcosthetaZ1, GenhelcosthetaZ2, Genhelphi, GenphistarZ1);
-  }
+  //can comment this back in if Gen angles are needed for any reason...
+  //TUtil::computeAngles(zzanalysis::tlv(Lep1), Lep1Id, zzanalysis::tlv(Lep2), Lep2Id, zzanalysis::tlv(Lep3), Lep3Id, zzanalysis::tlv(Lep4), Lep4Id, Gencosthetastar, GenhelcosthetaZ1, GenhelcosthetaZ2, Genhelphi, GenphistarZ1);
 
   return;
 }
@@ -2314,30 +2349,62 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   //Production MELA
   myTree->Book("pwh_leptonic_VAJHU", pwh_leptonic_VAJHU);
   myTree->Book("pzh_leptonic_VAJHU", pzh_leptonic_VAJHU);
+
   myTree->Book("phjj_VAJHU_highestPTJets", phjj_VAJHU_highestPTJets);
   myTree->Book("pvbf_VAJHU_highestPTJets", pvbf_VAJHU_highestPTJets);
   myTree->Book("phjj_VAJHU_highestPTJets_up", phjj_VAJHU_highestPTJets_up);
   myTree->Book("pvbf_VAJHU_highestPTJets_up", pvbf_VAJHU_highestPTJets_up);
   myTree->Book("phjj_VAJHU_highestPTJets_dn", phjj_VAJHU_highestPTJets_dn);
   myTree->Book("pvbf_VAJHU_highestPTJets_dn", pvbf_VAJHU_highestPTJets_dn);
+
+  if (addProdAnomalousProbabilities) {
+    myTree->Book("pvbf_0minus_VAJHU_highestPTJets", pvbf_0minus_VAJHU_highestPTJets);
+    myTree->Book("pvbf_0hplus_VAJHU_highestPTJets", pvbf_0hplus_VAJHU_highestPTJets);
+    myTree->Book("pvbf_0_g1prime2_VAJHU_highestPTJets", pvbf_0_g1prime2_VAJHU_highestPTJets);
+    myTree->Book("pvbf_g1g4_VAJHU_highestPTJets", pvbf_g1g4_VAJHU_highestPTJets);
+    myTree->Book("pvbf_g1g2_VAJHU_highestPTJets", pvbf_g1g2_VAJHU_highestPTJets);
+    myTree->Book("pvbf_g1g1prime2_VAJHU_highestPTJets", pvbf_g1g1prime2_VAJHU_highestPTJets);
+    myTree->Book("phjj_0minus_VAJHU_highestPTJets", phjj_0minus_VAJHU_highestPTJets);
+    myTree->Book("phjj_g2g4_VAJHU_highestPTJets", phjj_g2g4_VAJHU_highestPTJets);
+  }
+
   myTree->Book("phjj_VAJHU_bestDjet", phjj_VAJHU_bestDjet);
   myTree->Book("pvbf_VAJHU_bestDjet", pvbf_VAJHU_bestDjet);
   myTree->Book("phjj_VAJHU_bestDjet_up", phjj_VAJHU_bestDjet_up);
   myTree->Book("pvbf_VAJHU_bestDjet_up", pvbf_VAJHU_bestDjet_up);
   myTree->Book("phjj_VAJHU_bestDjet_dn", phjj_VAJHU_bestDjet_dn);
   myTree->Book("pvbf_VAJHU_bestDjet_dn", pvbf_VAJHU_bestDjet_dn);
+
   myTree->Book("pAux_vbf_VAJHU", pAux_vbf_VAJHU);
   myTree->Book("pAux_vbf_VAJHU_up", pAux_vbf_VAJHU_up);
   myTree->Book("pAux_vbf_VAJHU_dn", pAux_vbf_VAJHU_dn);
   myTree->Book("phj_VAJHU", phj_VAJHU);
   myTree->Book("phj_VAJHU_up", phj_VAJHU_up);
   myTree->Book("phj_VAJHU_dn", phj_VAJHU_dn);
+
   myTree->Book("pwh_hadronic_VAJHU", pwh_hadronic_VAJHU);
   myTree->Book("pwh_hadronic_VAJHU_up", pwh_hadronic_VAJHU_up);
   myTree->Book("pwh_hadronic_VAJHU_dn", pwh_hadronic_VAJHU_dn);
   myTree->Book("pzh_hadronic_VAJHU", pzh_hadronic_VAJHU);
   myTree->Book("pzh_hadronic_VAJHU_up", pzh_hadronic_VAJHU_up);
   myTree->Book("pzh_hadronic_VAJHU_dn", pzh_hadronic_VAJHU_dn);
+
+  if (addProdAnomalousProbabilities) {
+    myTree->Book("pwh_0minus_hadronic_VAJHU", pwh_0minus_hadronic_VAJHU);
+    myTree->Book("pwh_0hplus_hadronic_VAJHU", pwh_0hplus_hadronic_VAJHU);
+    myTree->Book("pwh_0_g1prime2_hadronic_VAJHU", pwh_0_g1prime2_hadronic_VAJHU);
+    myTree->Book("pwh_g1g4_hadronic_VAJHU", pwh_g1g4_hadronic_VAJHU);
+    myTree->Book("pwh_g1g2_hadronic_VAJHU", pwh_g1g2_hadronic_VAJHU);
+    myTree->Book("pwh_g1g1prime2_hadronic_VAJHU", pwh_g1g1prime2_hadronic_VAJHU);
+
+    myTree->Book("pzh_0minus_hadronic_VAJHU", pzh_0minus_hadronic_VAJHU);
+    myTree->Book("pzh_0hplus_hadronic_VAJHU", pzh_0hplus_hadronic_VAJHU);
+    myTree->Book("pzh_0_g1prime2_hadronic_VAJHU", pzh_0_g1prime2_hadronic_VAJHU);
+    myTree->Book("pzh_g1g4_hadronic_VAJHU", pzh_g1g4_hadronic_VAJHU);
+    myTree->Book("pzh_g1g2_hadronic_VAJHU", pzh_g1g2_hadronic_VAJHU);
+    myTree->Book("pzh_g1g1prime2_hadronic_VAJHU", pzh_g1g1prime2_hadronic_VAJHU);
+  }
+
   myTree->Book("ptth_VAJHU", ptth_VAJHU);
   myTree->Book("ptth_VAJHU_up", ptth_VAJHU_up);
   myTree->Book("ptth_VAJHU_dn", ptth_VAJHU_dn);
