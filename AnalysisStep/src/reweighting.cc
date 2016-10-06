@@ -33,14 +33,14 @@ Reweighting::Reweighting(
   Mela& mela_,
   std::string reweightingtypestring,
   int inputspin,
-  std::vector<double> HVVcouplings_real,
-  std::vector<double> HVVcouplings_imag,
-  std::vector<double> ZVVcouplings_real,
-  std::vector<double> ZVVcouplings_imag,
+  std::vector<double> Hzzcouplings_real,
+  std::vector<double> Hzzcouplings_imag,
+  std::vector<double> Zvvcouplings_real,
+  std::vector<double> Zvvcouplings_imag,
   std::vector<double> Gggcouplings_real,
   std::vector<double> Gggcouplings_imag,
-  std::vector<double> GVVcouplings_real,
-  std::vector<double> GVVcouplings_imag,
+  std::vector<double> Gvvcouplings_real,
+  std::vector<double> Gvvcouplings_imag,
   std::vector<double> cutoffs_
   ) :
   myspin(inputspin),
@@ -64,10 +64,10 @@ Reweighting::Reweighting(
     cout << "Wrong number of cutoffs (" << cutoffs.size() << ", should be " << nReweightingSamples << ")!" << endl;
     assert(false);
   }
-  couplingsfromvectors(myHvvcoupl, HVVcouplings_real, HVVcouplings_imag);
-  couplingsfromvectors(myZvvcoupl, ZVVcouplings_real, ZVVcouplings_imag);
+  couplingsfromvectors(myHvvcoupl, Hzzcouplings_real, Hzzcouplings_imag);
+  couplingsfromvectors(myZvvcoupl, Zvvcouplings_real, Zvvcouplings_imag);
   couplingsfromvectors(myGggcoupl, Gggcouplings_real, Gggcouplings_imag);
-  couplingsfromvectors(myGvvcoupl, GVVcouplings_real, GVVcouplings_imag);
+  couplingsfromvectors(myGvvcoupl, Gvvcouplings_real, Gvvcouplings_imag);
 }
 
 void Reweighting::setmycouplings() {
