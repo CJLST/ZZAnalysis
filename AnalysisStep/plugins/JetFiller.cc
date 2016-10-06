@@ -156,16 +156,18 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 
     //--- loose jet ID, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID#Recommendations_for_13_TeV_data
-    float NHF = j.neutralHadronEnergyFraction();
+    float NHF  = j.neutralHadronEnergyFraction();
     float NEMF = j.neutralEmEnergyFraction();
-    float CHF = j.chargedHadronEnergyFraction();
+    float CHF  = j.chargedHadronEnergyFraction();
     float CEMF = j.chargedEmEnergyFraction();
     int NumConst = j.chargedMultiplicity()+j.neutralMultiplicity();
     int NumNeutralParticles = j.neutralMultiplicity();
-    float CHM = j.chargedMultiplicity();
+    float CHM  = j.chargedMultiplicity();
 
-    bool looseJetID = (jabseta<=3. && (NHF<0.99 && NEMF<0.99 && NumConst>1) && (jabseta>2.4 || (CHF>0 && CHM>0 && CEMF<0.99)) )
-      || (jabseta>3. && NEMF<0.90 && NumNeutralParticles>10);
+    bool looseJetID = ((NHF<0.99 && NEMF<0.99 && NumConst>1) && ((jabseta<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || jabseta>2.4) && jabseta<=2.7) || 
+      ( NEMF<0.90 && NumNeutralParticles>2 && jabseta>2.7 && jabseta<=3.0 ) ||
+      ( NEMF<0.90 && NumNeutralParticles>10 && jabseta>3.0 );
+
     // cout << " NHF "  << NHF
     //      << " NEMF " << NEMF
     //      << " CHF "  << CHF

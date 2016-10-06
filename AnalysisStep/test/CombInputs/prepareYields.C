@@ -23,11 +23,11 @@
 #include "TSystem.h"
 #include "TTree.h"
 
-//#include "Djetefficiency.C"
 #include "../Plotter/tdrstyle.C"
 #include "../Plotter/plotUtils.C"
 #include "ZZAnalysis/AnalysisStep/src/kFactors.C"
-#include <ZZAnalysis/AnalysisStep/src/Category.cc>
+#include "ZZAnalysis/AnalysisStep/src/cConstants.cc"
+#include "ZZAnalysis/AnalysisStep/src/Category.cc"
 
 using namespace std;
 
@@ -36,43 +36,48 @@ using namespace std;
 
 #define APPLYKFACTORS 1
 #define USEPUWEIGHT 1
+#define APPLYBTAGSF 1
 
 #define JUST125 0
 
 #define USEDJETEFFICIENCYFORGGZZ 0
 #define GGZZDJETEFFICIENCY 0.02572353
 
-#define DOZPLUSXFROMRUN2COMBINEDSHAPE 1 //FIXME: shapes have to be updated for ICHEP2016
-//Normalization of Z+X in final states and categories
-//FIXME: to be updated! Current version is a mixture of categorized numbers from Ulascan's pre-approval slides and combined 0S+SS inclusive numbers sent by Pedja on July 18th 2016
-Float_t normFullRange4e[7] = {
-  1.827 *6.4/2.196, //Untagged
-  0.018 *6.4/2.196, //VBF1jTagged
-  0.120 *6.4/2.196, //VBF2jTagged
-  0.019 *6.4/2.196, //VHLeptTagged
-  0.013 *6.4/2.196, //VHHadrTagged
-  0.036 *6.4/2.196, //ttHTagged
-  2.196 *6.4/2.196, //inclusive
+#define DOZPLUSXFROMRUN2COMBINEDSHAPE 1
+#define RESCALEZPLUSXTOCOMBINEDINCLUSIVE 1
+//Combined 0S+SS inclusive numbers sent by Pedja on July 26th 2016 (12.9/fb)
+Float_t normCombFullRange4e    = 9.8;
+Float_t normCombFullRange4mu   = 10.2;
+Float_t normCombFullRange2e2mu = 20.4;
+//Normalization of Z+X in final states and categories.
+//SS categorized numbers from Pedro's July 26th slides (12.9/fb)
+Float_t normSSFullRange4e[7] = {
+  8.250, //Untagged
+  0.687, //VBF1jTagged
+  0.429, //VBF2jTagged
+  0.066, //VHLeptTagged
+  0.118, //VHHadrTagged
+  0.193, //ttHTagged
+  9.743, //inclusive
 };
-Float_t normFullRange4mu[7] = {
-  2.306 *6.7/3.003,
-  0.113 *6.7/3.003,
-  0.308 *6.7/3.003,
-  0.019 *6.7/3.003,
-  0.061 *6.7/3.003,
-  0.196 *6.7/3.003,
-  3.003 *6.7/3.003,
+Float_t normSSFullRange4mu[7] = {
+  8.848,
+  0.758,
+  0.771,
+  0.092,
+  0.208,
+  0.272,
+  10.950,
 };
-Float_t normFullRange2e2mu[7] = {
-  (2.560+2.099) *13.2/(3.115+2.612),
-  (0.243+0.173) *13.2/(3.115+2.612),
-  (0.172+0.156) *13.2/(3.115+2.612),
-  (0.041+0.038) *13.2/(3.115+2.612),
-  (0.040+0.037) *13.2/(3.115+2.612),
-  (0.050+0.109) *13.2/(3.115+2.612),
-  (3.115+2.612) *13.2/(3.115+2.612),
+Float_t normSSFullRange2e2mu[7] = {
+  (8.597+9.843),
+  (0.620+0.911),
+  (0.506+0.490),
+  (0.180+0.117),
+  (0.255+0.167),
+  (0.319+0.203),
+  (10.476+11.731),
 };
-
 
 
 
@@ -110,7 +115,7 @@ bool hasMHPoint[nProcesses][nMHPoints] = {
 const int orderOfPolynomial[nProcesses] = {8,8,8,8,8,0,0};
 //*/
 
-/*
+//*
 const int nMHPoints = 6;
 string  sMHPoint[nMHPoints] = {"","120","124","125","126","130",};
 Float_t fMHPoint[nMHPoints] = {0., 120., 124., 125., 126., 130.,};
@@ -128,7 +133,7 @@ bool hasMHPoint[nProcesses][nMHPoints] = {
 const int orderOfPolynomial[nProcesses] = {2,2,2,2,2,0,0};
 //*/
 
-//*
+/* // Actually, we now avoid using the 115 mass point because it doesn't have the updated ggF N3LO QCD + NLO EW xsecs like the 120-130 points
 const int nMHPoints = 7;
 string  sMHPoint[nMHPoints] = {"","115","120","124","125","126","130",};
 Float_t fMHPoint[nMHPoints] = {0., 115., 120., 124., 125., 126., 130.,};
@@ -225,8 +230,8 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
     "ggTo4e_Contin_MCFM701",//"ggZZ4e",
     "ggTo4mu_Contin_MCFM701",//"ggZZ4mu",
     "ggTo4tau_Contin_MCFM701",//"ggZZ4tau",
-    "ggZZ2e2mu",//"ggTo2e2mu_Contin_MCFM701",
-    "ggZZ2e2tau",//"ggTo2e2tau_Contin_MCFM701",
+    "ggTo2e2mu_Contin_MCFM701",//"ggZZ2e2mu",
+    "ggTo2e2tau_Contin_MCFM701",//"ggZZ2e2tau",
     "ggTo2mu2tau_Contin_MCFM701",//"ggZZ2mu2tau",
   };
 
@@ -346,7 +351,7 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
        datasets[d]=="ggTo2e2tau_Contin_MCFM701"||
        datasets[d]=="ggTo2mu2tau_Contin_MCFM701") 
       currentProcess = ggZZ;
-    
+
     for(int mp=0; mp<nMHPoints; mp++){
 
       if(!hasMHPoint[currentProcess][mp] || (JUST125&&sMHPoint[mp]!="125"&&sMHPoint[mp]!="")) continue;
@@ -392,7 +397,7 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
       inputTree[d]->SetBranchAddress("ExtraLepPhi", &ExtraLepPhi);
       inputTree[d]->SetBranchAddress("nExtraZ", &nExtraZ);
       inputTree[d]->SetBranchAddress("nCleanedJetsPt30", &nJets);
-      inputTree[d]->SetBranchAddress("nCleanedJetsPt30BTagged", &nJetsBTagged);
+      inputTree[d]->SetBranchAddress(APPLYBTAGSF?"nCleanedJetsPt30BTagged_bTagSF":"nCleanedJetsPt30BTagged", &nJetsBTagged);
       inputTree[d]->SetBranchAddress("JetPt", &JetPt);
       inputTree[d]->SetBranchAddress("JetEta", &JetEta);
       inputTree[d]->SetBranchAddress("JetPhi", &JetPhi);
@@ -639,23 +644,27 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
 
 void getZPlusXYields_Run2CombinedShape_InCateg(Float_t* yieldZPX4mu, Float_t* yieldZPX4e, Float_t* yieldZPX2e2mu, Float_t* yieldZPX4l, Int_t m4lMin, Int_t m4lMax) {
 
-  //----- take the Z+X shapes sent by Pedja on March 1st (take the same for all categ). FIXME: to be updated for ICHEP2016
-
-  TF1 *f4eComb = new TF1("f4eComb", "landau(0)*(1 + exp( pol1(3))) + [5]*(TMath::Landau(x, [6], [7]))", 70, 5000);
-  TF1 *f4muComb = new TF1("f4muComb","landau(0)",70,5000);
-  TF1 *f2e2muComb = new TF1("f2e2muComb","landau(0)",70,5000);
-
+  /*// For Moriond: Z+X shapes sent by Pedja on March 1st (take the same for all categ)
+  TF1 *f4eComb = new TF1("f4eComb", "landau(0)*(1 + exp( pol1(3))) + [5]*(TMath::Landau(x, [6], [7]))", 70, 3000);
+  TF1 *f4muComb = new TF1("f4muComb","landau(0)",70,3000);
+  TF1 *f2e2muComb = new TF1("f2e2muComb","landau(0)",70,3000);
   f4eComb->SetParameters(4.404e-05,151.2,36.6,7.06,-0.00497,0.01446,157.3,26.00);
   f4muComb->SetParameters(0.04276,134.6,24.4);
   f2e2muComb->SetParameters(0.04130,144.5,25.3);
+  //*/
 
+  //*// For ICHEP: Z+X shapes sent by Pedja on July 27th (take the same for all categ)
+  TF1 *f4eComb    = new TF1("f4eComb"   ,"TMath::Landau(x, 141.9, 21.3)", 70, 3000);
+  TF1 *f4muComb   = new TF1("f4muComb"  ,"TMath::Landau(x, 130.4, 15.6)", 70, 3000);
+  TF1 *f2e2muComb = new TF1("f2e2muComb","0.45*TMath::Landau(x, 131.1, 18.1) + 0.55*TMath::Landau(x, 133.8, 18.9)", 70, 3000);
+  //*/
 
   //----- compute normalization of the subrange of interest
 
   for(int cat=0; cat<nCategories+1; cat++){
-    yieldZPX4mu  [cat] = normFullRange4mu  [cat] * f4muComb  ->Integral(m4lMin,m4lMax) / f4muComb  ->Integral(70,3000);
-    yieldZPX4e   [cat] = normFullRange4e   [cat] * f4eComb   ->Integral(m4lMin,m4lMax) / f4eComb   ->Integral(70,3000);
-    yieldZPX2e2mu[cat] = normFullRange2e2mu[cat] * f2e2muComb->Integral(m4lMin,m4lMax) / f2e2muComb->Integral(70,3000);
+    yieldZPX4mu  [cat] = normSSFullRange4mu  [cat] * (RESCALEZPLUSXTOCOMBINEDINCLUSIVE?(normCombFullRange4mu  /normSSFullRange4mu  [nCategories]):1.) * f4muComb  ->Integral(m4lMin,m4lMax) / f4muComb  ->Integral(70,3000);
+    yieldZPX4e   [cat] = normSSFullRange4e   [cat] * (RESCALEZPLUSXTOCOMBINEDINCLUSIVE?(normCombFullRange4e   /normSSFullRange4e   [nCategories]):1.) * f4eComb   ->Integral(m4lMin,m4lMax) / f4eComb   ->Integral(70,3000);
+    yieldZPX2e2mu[cat] = normSSFullRange2e2mu[cat] * (RESCALEZPLUSXTOCOMBINEDINCLUSIVE?(normCombFullRange2e2mu/normSSFullRange2e2mu[nCategories]):1.) * f2e2muComb->Integral(m4lMin,m4lMax) / f2e2muComb->Integral(70,3000);
     yieldZPX4l   [cat] = yieldZPX4mu[cat] + yieldZPX4e[cat] + yieldZPX2e2mu[cat];
   }
 
@@ -669,7 +678,7 @@ void getZPlusXYields_Run2CombinedShape_InCateg(Float_t* yieldZPX4mu, Float_t* yi
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-void DrawYieldFits(string outputDirectory, TGraphErrors* g[nProcesses][nFinalStates][nCategories+1], TF1* f[nProcesses][nFinalStates][nCategories+1]){
+void DrawYieldFits(string outputDirectory, TGraphErrors* g[nProcesses][nFinalStates][nCategories+1], TF1* f[nProcesses][nFinalStates][nCategories+1], double lumi){
 
   setTDRStyle();
 
@@ -695,7 +704,7 @@ void DrawYieldFits(string outputDirectory, TGraphErrors* g[nProcesses][nFinalSta
 	if(MERGE2E2MU && fs==fs2mu2e) continue;
 
 	g[pr][fs][cat]->GetXaxis()->SetTitle("generated m_{H}");
-	g[pr][fs][cat]->GetYaxis()->SetTitle("expected yield");
+	g[pr][fs][cat]->GetYaxis()->SetTitle(Form("expected yield in %.1f fb^{-1}",lumi));
 	g[pr][fs][cat]->GetXaxis()->SetTitleOffset(1.2);
 	g[pr][fs][cat]->GetYaxis()->SetTitleOffset(1.6);
 	g[pr][fs][cat]->GetXaxis()->SetLabelFont(42);
@@ -790,14 +799,14 @@ void fitSignalYields(string outputDirectory, double lumi, double sqrts, double m
 	    gYield[pr][fs][cat]->SetPoint(iPoint,fMHPoint[mp],yield[pr][mp][fs][cat]);
 	    gYield[pr][fs][cat]->SetPointError(iPoint,0.,yieldStatError[pr][mp][fs][cat]);
 	    iPoint++;
-	    if(yieldStatError[pr][mp][fs][cat]>0.07*yield[pr][mp][fs][cat]) largeErrors = true;
+	    if(yieldStatError[pr][mp][fs][cat]>0.06*yield[pr][mp][fs][cat]) largeErrors = true;
 	  }
 	}
 
 	string fName = (string)Form("f_%s_%s_%s",sProcess[pr].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str());
 	int order = largeErrors ? 1 : orderOfPolynomial[pr] ;
-	fYield[pr][fs][cat] = new TF1(fName.c_str(),Form("pol%i",order),fMHPoint[1],fMHPoint[nMHPoints-1]); 
-	//fYield[pr][fs][cat] = new TF1(fName.c_str(),"[0]+[1]*x+[2]*x*x",fMHPoint[1],fMHPoint[nMHPoints-1]); // the fit doesn't work with this
+	//fYield[pr][fs][cat] = new TF1(fName.c_str(),Form("pol%i",order),fMHPoint[1],fMHPoint[nMHPoints-1]); 
+	fYield[pr][fs][cat] = new TF1(fName.c_str(),Form("pol%i",order),118,130); 
 	
 	cout<<endl<<sProcess[pr]<<", "<<sFinalState[fs]<<", "<<sCategory[cat]<<endl;
 	gYield[pr][fs][cat]->Fit(fYield[pr][fs][cat],"N S");
@@ -809,7 +818,7 @@ void fitSignalYields(string outputDirectory, double lumi, double sqrts, double m
     }
   }
 
-  DrawYieldFits(outputDirectory,gYield,fYield);
+  DrawYieldFits(outputDirectory,gYield,fYield,lumi);
 
   fOutYieldFunctions->Close();
   delete fOutYieldFunctions; 
@@ -1046,28 +1055,24 @@ void prepareYields(bool recomputeYields = true) {
   string inputPathqqZZ = "";
   string inputPathggZZ = "";
   string outputPath = "YieldFiles";
+  string outputPathPlots = "YieldFiles";
 
   // Define c.o.m. energy (13TeV only for the moment)
   float sqrts = 13.;
 
   // Define the luminosity
-  //float lumi = 10.;
-  float lumi = 7.65;
+  float lumi = 12.9;
 
   // m4l window
-  /*
+  //*
   float m4l_min = 105.;
   float m4l_max = 140.;
   //*/
   /*
   float m4l_min = 70.;
-  float m4l_max = 886.;
-  //*/
-  /*
-  float m4l_min = 70.;
   float m4l_max = 3000.;
   //*/
-  //*
+  /*
   float m4l_min = 118.;
   float m4l_max = 130.;
   //*/
@@ -1081,6 +1086,7 @@ void prepareYields(bool recomputeYields = true) {
 
   outputPath = string(Form("%s_m4l_%.0f_%.0f_%.2ffbinv",outputPath.c_str(),m4l_min,m4l_max,lumi));
   gSystem->Exec(("mkdir -p "+outputPath).c_str());
+  gSystem->Exec(("mkdir -p "+outputPathPlots).c_str());
 
   // Compute the yields for all available processes and mH values, and store them in a ROOT file 
   // (to be done only once, it can take a few minutes)
@@ -1089,7 +1095,7 @@ void prepareYields(bool recomputeYields = true) {
 
   // Parameterize signal yields as a function of mH
   if(!JUST125) 
-    fitSignalYields(outputPath, lumi, sqrts, m4l_min, m4l_max);
+    fitSignalYields(outputPathPlots, lumi, sqrts, m4l_min, m4l_max);
 
   // Prepare the yaml files
   if(JUST125)
