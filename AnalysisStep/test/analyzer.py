@@ -18,8 +18,15 @@ declareDefault("REWEIGHTING_TYPE", "none", globals())
 declareDefault("SPIN", 0, globals())
 couplings = Couplings()
 for coupling in couplings.allnames():
-    declareDefault(coupling, 0, globals())
-    couplings[coupling] = globals()[coupling]
+   defval = complex(0.,0.)
+   if (("Lambda_z" in coupling) or ("Lambda_w" in coupling)):
+      defval = float(100.)
+   elif (("cz_" in coupling) or ("cw_" in coupling)):
+      defval = int(0.)
+   elif (("ghg2" == coupling) or ("kappa" == coupling) or ("zprime_qq" in coupling) or ("graviton_qq" in coupling)):
+      defval = complex(1.,0.)
+   declareDefault(coupling, defval, globals())
+   couplings[coupling] = globals()[coupling]
 
 # LHE info
 #  VVDECAYMODE\VVMODE  / ZZ==1 / WW==0  / Yukawa==2 / Zgam=3 / gamgam=4 / Z+nj=5
@@ -148,16 +155,37 @@ TreeSetup = cms.EDAnalyzer("HZZ4lNtupleMaker",
                            sampleName = cms.string(SAMPLENAME),
                            superMelaMass = cms.double(SUPERMELA_MASS),
                            xsec = cms.double(XSEC),
-                           spin = cms.int32(int(SPIN)),
-                           HVVcouplings_real = cms.vdouble(*couplings.getcouplings(spin=0, WW=False, imag=False)),
-                           HVVcouplings_imag = cms.vdouble(*couplings.getcouplings(spin=0, WW=False, imag=True)),
-                           ZVVcouplings_real = cms.vdouble(*couplings.getcouplings(spin=1, imag=False)),
-                           ZVVcouplings_imag = cms.vdouble(*couplings.getcouplings(spin=1, imag=True)),
-                           GVVcouplings_real = cms.vdouble(*couplings.getcouplings(spin=2, gg=False, imag=False)),
-                           GVVcouplings_imag = cms.vdouble(*couplings.getcouplings(spin=2, gg=False, imag=True)),
-                           Gggcouplings_real = cms.vdouble(*couplings.getcouplings(spin=2, gg=True, imag=False)),
-                           Gggcouplings_imag = cms.vdouble(*couplings.getcouplings(spin=2, gg=True, imag=True)),
+
+                           # Reweigthing block
                            reweightingtype = cms.string(REWEIGHTING_TYPE),
+                           spin = cms.int32(int(SPIN)),
+
+                           Hqqcouplings_real = cms.vdouble(*couplings.getcouplings("Hqqcoupl", imag=False)),
+                           Hqqcouplings_imag = cms.vdouble(*couplings.getcouplings("Hqqcoupl", imag=True)),
+                           Hggcouplings_real = cms.vdouble(*couplings.getcouplings("Hggcoupl", imag=False)),
+                           Hggcouplings_imag = cms.vdouble(*couplings.getcouplings("Hggcoupl", imag=True)),
+                           HzzCLambda_qsq = cms.vint32(*couplings.getcouplings("HzzCLambda_qsq")),
+                           HzzLambda_qsq = cms.vdouble(*couplings.getcouplings("HzzLambda_qsq")),
+                           Hzzcouplings_real = cms.vdouble(*couplings.getcouplings("Hzzcoupl", imag=False)),
+                           Hzzcouplings_imag = cms.vdouble(*couplings.getcouplings("Hzzcoupl", imag=True)),
+                           HwwCLambda_qsq = cms.vint32(*couplings.getcouplings("HwwCLambda_qsq")),
+                           HwwLambda_qsq = cms.vdouble(*couplings.getcouplings("HwwLambda_qsq")),
+                           Hwwcouplings_real = cms.vdouble(*couplings.getcouplings("Hwwcoupl", imag=False)),
+                           Hwwcouplings_imag = cms.vdouble(*couplings.getcouplings("Hwwcoupl", imag=True)),
+
+                           Zqqcouplings_real = cms.vdouble(*couplings.getcouplings("Zqqcoupl", imag=False)),
+                           Zqqcouplings_imag = cms.vdouble(*couplings.getcouplings("Zqqcoupl", imag=True)),
+                           Zvvcouplings_real = cms.vdouble(*couplings.getcouplings("Zvvcoupl", imag=False)),
+                           Zvvcouplings_imag = cms.vdouble(*couplings.getcouplings("Zvvcoupl", imag=True)),
+
+                           Gqqcouplings_real = cms.vdouble(*couplings.getcouplings("Gqqcoupl", imag=False)),
+                           Gqqcouplings_imag = cms.vdouble(*couplings.getcouplings("Gqqcoupl", imag=True)),
+                           Gggcouplings_real = cms.vdouble(*couplings.getcouplings("Gggcoupl", imag=False)),
+                           Gggcouplings_imag = cms.vdouble(*couplings.getcouplings("Gggcoupl", imag=True)),
+                           Gvvcouplings_real = cms.vdouble(*couplings.getcouplings("Gvvcoupl", imag=False)),
+                           Gvvcouplings_imag = cms.vdouble(*couplings.getcouplings("Gvvcoupl", imag=True)),
+
+                           # LHE info. parameters
                            VVMode = cms.int32(int(VVMODE)),
                            VVDecayMode = cms.int32(int(VVDECAYMODE)),
                            AddLHEKinematics = cms.bool(ADDLHEKINEMATICS),

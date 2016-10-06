@@ -17,14 +17,14 @@ Reweighting::Reweighting(
   Mela* mela_,
   std::string reweightingtypestring,
   int inputspin,
-  std::vector<double> HVVcouplings_real,
-  std::vector<double> HVVcouplings_imag,
-  std::vector<double> ZVVcouplings_real,
-  std::vector<double> ZVVcouplings_imag,
+  std::vector<double> Hzzcouplings_real,
+  std::vector<double> Hzzcouplings_imag,
+  std::vector<double> Zvvcouplings_real,
+  std::vector<double> Zvvcouplings_imag,
   std::vector<double> Gggcouplings_real,
   std::vector<double> Gggcouplings_imag,
-  std::vector<double> GVVcouplings_real,
-  std::vector<double> GVVcouplings_imag
+  std::vector<double> Gvvcouplings_real,
+  std::vector<double> Gvvcouplings_imag
   ) :
   ghz1_index(0),
   ghz2_index(1),
