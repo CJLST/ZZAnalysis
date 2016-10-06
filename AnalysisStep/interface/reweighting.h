@@ -17,7 +17,7 @@ class Reweighting {
 
 protected:
 
-  double myHvvcoupl[SIZE_HVV][2];
+  double myHzzcoupl[SIZE_HVV][2];
   double myZvvcoupl[SIZE_ZVV][2];
   double myGggcoupl[SIZE_GGG][2];
   double myGvvcoupl[SIZE_GVV][2];

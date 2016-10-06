@@ -39,10 +39,10 @@ Reweighting::Reweighting(
   mela(mela_),
   reweightingtype(reweightingtypefromstring(reweightingtypestring))
 {
-  couplingsfromvectors(myHvvcoupl, HVVcouplings_real, HVVcouplings_imag);
-  couplingsfromvectors(myZvvcoupl, ZVVcouplings_real, ZVVcouplings_imag);
+  couplingsfromvectors(myHzzcoupl, Hzzcouplings_real, Hzzcouplings_imag);
+  couplingsfromvectors(myZvvcoupl, Zvvcouplings_real, Zvvcouplings_imag);
   couplingsfromvectors(myGggcoupl, Gggcouplings_real, Gggcouplings_imag);
-  couplingsfromvectors(myGvvcoupl, GVVcouplings_real, GVVcouplings_imag);
+  couplingsfromvectors(myGvvcoupl, Gvvcouplings_real, Gvvcouplings_imag);
   switch (reweightingtype) {
   case NoReweighting: nReweightingSamples = 0; break;
   case HVV_spin0: nReweightingSamples = 7; break;
@@ -61,7 +61,7 @@ void Reweighting::setmycouplings() {
   }
 
   mela->selfDHggcoupl[0][0] = 1;
-  for (unsigned int ic=0; ic<SIZE_HVV; ic++){ for (unsigned int im=0; im<2; im++) mela->selfDHzzcoupl[0][ic][im] = myHvvcoupl[ic][im]; }
+  for (unsigned int ic=0; ic<SIZE_HVV; ic++){ for (unsigned int im=0; im<2; im++) mela->selfDHzzcoupl[0][ic][im] = myHzzcoupl[ic][im]; }
   for (unsigned int ic=0; ic<SIZE_GGG; ic++){ for (unsigned int im=0; im<2; im++) mela->selfDGggcoupl[ic][im] = myGggcoupl[ic][im]; }
   for (unsigned int ic=0; ic<SIZE_GVV; ic++){ for (unsigned int im=0; im<2; im++) mela->selfDGvvcoupl[ic][im] = myGvvcoupl[ic][im]; }
 }
