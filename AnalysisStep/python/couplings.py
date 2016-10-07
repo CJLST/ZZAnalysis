@@ -98,6 +98,29 @@ class Couplings(dict):
       "b%i"%i for i in range(1,11)
    ]
 
+   def getspin(self, doreweighting):
+       if not doreweighting: return 0
+       spin = {S: False for S in (0, 1, 2)}
+       for coupling in self.qqcoupl_spin0 + self.ggcoupl_spin0 + self.cqsq_spin0_HVV + self.Lambda_qsq_spin0_HVV + self.vvcoupl_spin0_HVV + self.cqsq_spin0_HWW + self.Lambda_qsq_spin0_HWW + self.vvcoupl_spin0_HWW:
+           if self[coupling]:
+               spin[0] = True
+       for coupling in self.qqcoupl_spin1 + self.vvcoupl_spin1:
+           if self[coupling]:
+               spin[1] = True
+       for coupling in self.qqcoupl_spin2 + self.ggcoupl_spin2 + self.vvcoupl_spin2:
+           if self[coupling]:
+               spin[2] = True
+
+       if sum(spin.values()) > 1:
+           raise ValueError("Couplings for more than one spin set (" + ", ".join(k for k, v in spin.iteritems() if v) + ").  Please set couplings for only one spin value: ghz* for spin 0, zprime_zz_* for spin 1, or a* and b* for spin 2.")
+
+       if sum(spin.values()) == 0:
+           raise ValueError("Reweighting is turned on, but no couplings are set!")
+
+       for k, v in spin.iteritems():
+           if v:
+               return k
+
    def __setitem__(self, key, value):
       try:
          if isinstance(value, str):   #allow writing 3+2i, where python wants 3+2j

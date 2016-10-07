@@ -184,6 +184,8 @@ class MyBatchManager:
                 os.system( 'rm -rf ' + self.outputDir_)
         print 'Job folder: %s' % self.outputDir_
         self.mkdir( self.outputDir_ )
+        with open(os.path.join(self.outputDir_, ".gitignore"), "w") as f:
+            f.write("**/*\n")
 
         #FIXME check this???
         if not self.options_.secondaryInputDir == None:

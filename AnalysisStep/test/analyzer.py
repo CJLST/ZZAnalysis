@@ -15,7 +15,6 @@ declareDefault("PROCESS_CR", False, globals())
 
 # Couplings for reweighting
 declareDefault("REWEIGHTING_TYPE", "none", globals())
-declareDefault("SPIN", 0, globals())
 couplings = Couplings()
 for coupling in couplings.allnames():
    defval = complex(0.,0.)
@@ -27,6 +26,9 @@ for coupling in couplings.allnames():
       defval = complex(1.,0.)
    declareDefault(coupling, defval, globals())
    couplings[coupling] = globals()[coupling]
+
+declareDefault("REWEIGHTING_CUTOFFS", "", globals())
+REWEIGHTING_CUTOFFS = [float(a) for a in REWEIGHTING_CUTOFFS.split("|") if a]
 
 # LHE info
 #  VVDECAYMODE\VVMODE  / ZZ==1 / WW==0  / Yukawa==2 / Zgam=3 / gamgam=4 / Z+nj=5
@@ -40,7 +42,7 @@ for coupling in couplings.allnames():
 #                    -2: [ 2l2X         ]
 #                    -3: [ 2nu2X        ]
 #                    -4: [ 2q2X         ]
-declareDefault("VVMODE", 0, globals())
+declareDefault("VVMODE", 1, globals())
 declareDefault("VVDECAYMODE", 0, globals())
 declareDefault("ADDLHEKINEMATICS", False, globals())
 declareDefault("SAMPLEPRODUCTIONID", "", globals()) # Reserve for reweighting, not yet used
@@ -158,7 +160,8 @@ TreeSetup = cms.EDAnalyzer("HZZ4lNtupleMaker",
 
                            # Reweigthing block
                            reweightingtype = cms.string(REWEIGHTING_TYPE),
-                           spin = cms.int32(int(SPIN)),
+                           reweightingcutoffs = cms.vdouble(*REWEIGHTING_CUTOFFS),
+                           spin = cms.int32(couplings.getspin(doreweighting=(REWEIGHTING_TYPE!="none"))),
 
                            Hqqcouplings_real = cms.vdouble(*couplings.getcouplings("Hqqcoupl", imag=False)),
                            Hqqcouplings_imag = cms.vdouble(*couplings.getcouplings("Hqqcoupl", imag=True)),
@@ -191,6 +194,7 @@ TreeSetup = cms.EDAnalyzer("HZZ4lNtupleMaker",
                            AddLHEKinematics = cms.bool(ADDLHEKINEMATICS),
                            sampleProductionId = cms.string(SAMPLEPRODUCTIONID),
                            sampleProcessId = cms.string(SAMPLEPROCESSID),
+                           addProdAnomalousProbabilities = cms.bool(PRODANOMALOUS),
                            Apply_K_NNLOQCD_ZZGG = cms.int32(int(APPLY_K_NNLOQCD_ZZGG)),
                            Apply_K_NNLOQCD_ZZQQB = cms.bool(APPLY_K_NNLOQCD_ZZQQB),
                            Apply_K_NLOEW_ZZQQB = cms.bool(APPLY_K_NLOEW_ZZQQB),
