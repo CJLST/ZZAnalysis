@@ -26,8 +26,8 @@ typedef std::vector<Double_t> vectorDouble_t;
 
 namespace BranchHelpers{
   enum BranchTypes{
-    bBool, bChar,
-    bShort, bInt, bLong, bFloat, bDouble,
+    bBool, bChar, bShort,
+    bInt, bLong, bFloat, bDouble,
 
     bVectorBool, bVectorChar, bVectorShort,
     bVectorInt, bVectorFloat, bVectorDouble,
@@ -40,30 +40,7 @@ namespace BranchHelpers{
 
   public:
 
-    void setTree(TTree* theTree_){ theTree = theTree_; }
-    BranchHelpers::BranchTypes getBranchType(){
-      if (dynamic_cast<Bool_t>(value)) return BranchHelpers::bBool;
-      else if (dynamic_cast<Char_t>(value)) return BranchHelpers::bChar;
-      else if (dynamic_cast<Short_t>(value)) return BranchHelpers::bShort;
-
-      else if (dynamic_cast<Int_t>(value)) return BranchHelpers::bInt;
-      else if (dynamic_cast<Long64_t>(value)) return BranchHelpers::bLong;
-      else if (dynamic_cast<Float_t>(value)) return BranchHelpers::bFloat;
-      else if (dynamic_cast<Double_t>(value)) return BranchHelpers::bDouble;
-
-      else if (dynamic_cast<vectorBool_t>(value)) return BranchHelpers::bVectorBool;
-      else if (dynamic_cast<vectorChar_t>(value)) return BranchHelpers::bVectorChar;
-      else if (dynamic_cast<vectorShort_t>(value)) return BranchHelpers::bVectorShort;
-
-      else if (dynamic_cast<vectorInt_t>(value)) return BranchHelpers::bVectorInt;
-      else if (dynamic_cast<vectorFloat_t>(value)) return BranchHelpers::bVectorFloat;
-      else if (dynamic_cast<vectorDouble_t>(value)) return BranchHelpers::bVectorDouble;
-
-      else return BranchHelpers::nBranchTypes;
-    }
     void reset(){
-      BranchHelpers::BranchTypes btype = getBranchType();
-      assert(btype!=BranchHelpers::nBranchTypes);
       if (
         btype == BranchHelpers::bVectorBool
         ||
@@ -77,29 +54,10 @@ namespace BranchHelpers{
         ||
         btype == BranchHelpers::bVectorDouble
         ) value.clear();
-      else value = defVal;
+      else if(defVal!=0) value = *defVal;
     }
-    void createBranch(TString bname_, varType defVal_){
-      bname = bname_;
-      defVal = defVal_;
-      reset();
-      BranchHelpers::BranchTypes btype = getBranchType(); // Assert is already called in reset
 
-      TString leaftypename = "";
-      if (btype == BranchHelpers::bBool) leaftypename = "O";
-      else if (btype == BranchHelpers::bChar) leaftypename = "B";
-      else if (btype == BranchHelpers::bShort) leaftypename = "S";
-      else if (btype == BranchHelpers::bInt) leaftypename = "I";
-      else if (btype == BranchHelpers::bLong) leaftypename = "L";
-      else if (btype == BranchHelpers::bFloat) leaftypename = "F";
-      else if (btype == BranchHelpers::bDouble) leaftypename = "D";
-
-      if (leaftypename=="") theTree->Branch(bname, &value);
-      else theTree->Branch(bname, &value, (bname + "/" + leaftypename));
-    }
     template<typename inType> void setVal(inType inVal){
-      BranchHelpers::BranchTypes btype = getBranchType();
-      assert(btype!=BranchHelpers::nBranchTypes);
       if (
         btype == BranchHelpers::bVectorBool
         ||
@@ -118,20 +76,75 @@ namespace BranchHelpers{
     varType getVal(){ return value; }
     varType& getRef(){ return value; }
     varType* getPtr(){ return &value; }
+    TBranch* getBranch(){ return theTree->GetBranch(bname); }
+    BranchHelpers::BranchTypes getType(){ return btype; }
 
-    ExtendedBranch(TTree* theTree_, TString bname_, varType defVal_){
-      setTree(theTree_);
-      createBranch(bname_, defVal);
+    ExtendedBranch(TTree* theTree_, TString bname_, varType defVal_) : theTree(theTree_), bname(bname_), defVal(0)
+    {
+      btype = getBranchType();
+      createBranch(&defVal);
     }
-    virtual ~ExtendedBranch(){}
+    ExtendedBranch(TTree* theTree_, TString bname_) : theTree(theTree_), bname(bname_), defVal(0)
+    {
+      btype = getBranchType();
+      createBranch((varType*)0);
+    }
+    ExtendedBranch(){ /* Do nothing */}
+    virtual ~ExtendedBranch(){
+      delete defVal;
+    }
 
 
   protected:
 
     TTree* theTree;
     TString bname;
+    varType* defVal;
     varType value;
-    varType defVal;
+    BranchHelpers::BranchTypes btype;
+
+    BranchHelpers::BranchTypes getBranchType(){
+      if (dynamic_cast<Bool_t*>(&value)) btype = BranchHelpers::bBool;
+      else if (dynamic_cast<Char_t*>(&value)) btype = BranchHelpers::bChar;
+      else if (dynamic_cast<Short_t*>(&value)) btype = BranchHelpers::bShort;
+
+      else if (dynamic_cast<Int_t*>(&value)) btype = BranchHelpers::bInt;
+      else if (dynamic_cast<Long64_t*>(&value)) btype = BranchHelpers::bLong;
+      else if (dynamic_cast<Float_t*>(&value)) btype = BranchHelpers::bFloat;
+      else if (dynamic_cast<Double_t*>(&value)) btype = BranchHelpers::bDouble;
+
+      else if (dynamic_cast<vectorBool_t*>(&value)) btype = BranchHelpers::bVectorBool;
+      else if (dynamic_cast<vectorChar_t*>(&value)) btype = BranchHelpers::bVectorChar;
+      else if (dynamic_cast<vectorShort_t*>(&value)) btype = BranchHelpers::bVectorShort;
+
+      else if (dynamic_cast<vectorInt_t*>(&value)) btype = BranchHelpers::bVectorInt;
+      else if (dynamic_cast<vectorFloat_t*>(&value)) btype = BranchHelpers::bVectorFloat;
+      else if (dynamic_cast<vectorDouble_t*>(&value)) btype = BranchHelpers::bVectorDouble;
+
+      else{
+        std::cerr << "ExtendedBranch::getBranchType: Could not determine the branch type for branch " << bname << std::endl;
+        assert(0);
+      }
+    }
+    void createBranch(varType* defVal_){
+      if (defVal_!=0){
+        if (defVal!=0) delete defVal; defVal = new varType;
+        *defVal = *defVal_;
+      }
+      reset();
+
+      TString leaftypename = "";
+      if (btype == BranchHelpers::bBool) leaftypename = "O";
+      else if (btype == BranchHelpers::bChar) leaftypename = "B";
+      else if (btype == BranchHelpers::bShort) leaftypename = "S";
+      else if (btype == BranchHelpers::bInt) leaftypename = "I";
+      else if (btype == BranchHelpers::bLong) leaftypename = "L";
+      else if (btype == BranchHelpers::bFloat) leaftypename = "F";
+      else if (btype == BranchHelpers::bDouble) leaftypename = "D";
+
+      if (leaftypename=="") theTree->Branch(bname, &value);
+      else theTree->Branch(bname, &value, (bname + "/" + leaftypename));
+    }
 
   };
 
