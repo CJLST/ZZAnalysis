@@ -461,22 +461,15 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
       if (jecnum == 1) {
 	myCand.addUserFloat("Z1Mass_JecUp", newZ1Mass);
 	myCand.addUserFloat("ZZMass_JecUp", newZZMass);
-      } else {
+      } else if (jecnum == 2) {
 	myCand.addUserFloat("Z1Mass_JecDown", newZ1Mass);
 	myCand.addUserFloat("ZZMass_JecDown", newZZMass);
       } 
 
-      /* if (isMerged) {
-	daughters.push_back(SimpleParticle_t(0, TLorentzVector(p11.x()*jratio, p11.y()*jratio, p11.z()*jratio, p11.t()*jratio)));
-	daughters.push_back(SimpleParticle_t(0, TLorentzVector(p12.x()*jratio, p12.y()*jratio, p12.z()*jratio, p12.t()*jratio)));
-	daughters.push_back(SimpleParticle_t(id21, TLorentzVector(p21.x(), p21.y(), p21.z(), p21.t())));
-	daughters.push_back(SimpleParticle_t(id22, TLorentzVector(p22.x(), p22.y(), p22.z(), p22.t())));
-	} else { */
       daughters.push_back(SimpleParticle_t(0, TLorentzVector(p11.x()*jratio1, p11.y()*jratio1, p11.z()*jratio1, p11.t()*jratio1)));
       daughters.push_back(SimpleParticle_t(0, TLorentzVector(p12.x()*jratio2, p12.y()*jratio2, p12.z()*jratio2, p12.t()*jratio2)));
       daughters.push_back(SimpleParticle_t(id21, TLorentzVector(p21.x(), p21.y(), p21.z(), p21.t())));
       daughters.push_back(SimpleParticle_t(id22, TLorentzVector(p22.x(), p22.y(), p22.z(), p22.t())));
-      // } 
       
       //--- Compute angles, better done here
       if (jecnum == 0) {
@@ -673,28 +666,35 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
           if (jecnum == 0){
             phjj_VAJHU_highestPTJets = phjj_VAJHU_highestPTJets_temp;
             pvbf_VAJHU_highestPTJets = pvbf_VAJHU_highestPTJets_temp;
-	    p0plus_VAJHU = p0plus_VAJHU_temp;
-	    p0plus_VAMCFM = p0plus_VAMCFM_temp;
-	    p2bplus_VAJHU = p2bplus_VAJHU_temp;
-	    pqqZJJ_VAMCFM = pqqZJJ_VAMCFM_temp;
           }
           else if (jecnum == 1){
             phjj_VAJHU_highestPTJets_up = phjj_VAJHU_highestPTJets_temp;
             pvbf_VAJHU_highestPTJets_up = pvbf_VAJHU_highestPTJets_temp;
-	    p0plus_VAJHU_up = p0plus_VAJHU_temp;
-	    p0plus_VAMCFM_up = p0plus_VAMCFM_temp;
-	    p2bplus_VAJHU_up = p2bplus_VAJHU_temp;
-	    pqqZJJ_VAMCFM_up = pqqZJJ_VAMCFM_temp;
           }
           else if (jecnum == 2){
             phjj_VAJHU_highestPTJets_dn = phjj_VAJHU_highestPTJets_temp;
             pvbf_VAJHU_highestPTJets_dn = pvbf_VAJHU_highestPTJets_temp;
-	    p0plus_VAJHU_dn = p0plus_VAJHU_temp;
-	    p0plus_VAMCFM_dn = p0plus_VAMCFM_temp;
-	    p2bplus_VAJHU_dn = p2bplus_VAJHU_temp;
-	    pqqZJJ_VAMCFM_dn = pqqZJJ_VAMCFM_temp; 
           }
         } // if hasAtLeastOneJet
+        if (jecnum == 0){
+	  p0plus_VAJHU = p0plus_VAJHU_temp;
+	  p0plus_VAMCFM = p0plus_VAMCFM_temp;
+	  p2bplus_VAJHU = p2bplus_VAJHU_temp;
+	  pqqZJJ_VAMCFM = pqqZJJ_VAMCFM_temp;
+        }
+        else if (jecnum == 1){
+	  p0plus_VAJHU_up = p0plus_VAJHU_temp;
+	  p0plus_VAMCFM_up = p0plus_VAMCFM_temp;
+	  p2bplus_VAJHU_up = p2bplus_VAJHU_temp;
+	  pqqZJJ_VAMCFM_up = pqqZJJ_VAMCFM_temp;
+        }
+        else if (jecnum == 2){
+	  p0plus_VAJHU_dn = p0plus_VAJHU_temp;
+	  p0plus_VAMCFM_dn = p0plus_VAMCFM_temp;
+	  p2bplus_VAJHU_dn = p2bplus_VAJHU_temp;
+	  pqqZJJ_VAMCFM_dn = pqqZJJ_VAMCFM_temp; 
+        }
+
       } // End if melaCand!=0
     } // for jecnum = 0 to 2
     
