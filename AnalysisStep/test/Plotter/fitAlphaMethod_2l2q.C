@@ -50,78 +50,24 @@ using namespace std;
 
 // float corrFactor[4] = {1.,1.,1.,1.};
 
-const int nChannels = 6;
-string channelSPart1[nChannels] = {"resolved","merged","resolved","merged","resolved","merged"};
-string channelSPart2[nChannels] = {"","","btag","btag","vbf","vbf"};
-float minX[nChannels] = {450.,750.,450.,650.,450.,800.};
-float maxX[nChannels] = {2000.,2000.,2000.,1600.,1600.,1600.};
-std::vector<int> binsForAlpha[nChannels];
+const int nChannels = 8;
+const int maxBinsForAlpha = 11;
 
-const int maxBinsForAlpha = 8;
-int binlim_resolved[maxBinsForAlpha]     = {2,4,6,8,10,13,16,19};
-int binlim_merged[maxBinsForAlpha]       = {2,4,6,8,10,13,16,19};
-int binlim_resolvedbtag[maxBinsForAlpha] = {3,6,10,-1,-1,-1,-1,-1};
-int binlim_mergedbtag[maxBinsForAlpha]   = {3,6,8,10,-1,-1,-1,-1};
-int binlim_resolvedvbf[maxBinsForAlpha]  = {3,6,10,-1,-1,-1,-1,-1};
-int binlim_mergedvbf[maxBinsForAlpha]    = {3,6,10,-1,-1,-1,-1,-1};
+string channelSPart1[nChannels] = {"resolved","merged","resolved","merged","resolved","merged","resolved","merged"};
+string channelSPart2[nChannels] = {"","","btag","btag","vbf","vbf","nobtag","nobtag"};
+float minX[nChannels] = {400.,750.,400.,650.,400.,800.,400.,750.};
+float maxX[nChannels] = {2000.,2000.,2000.,1600.,1600.,1600.,2000.,2000};
+int binsForAlpha[nChannels][maxBinsForAlpha] = {
+                                               {1,2,4,6,8,10,12,14,17,20,23},
+                                               {2,4,6,8,10,12,14,17,20,23,-1},
+                                               {2,5,8,12,-1,-1,-1,-1,-1,-1,-1},
+                                               {2,5,8,10,12,-1,-1,-1,-1,-1,-1},
+                                               {2,5,8,12,-1,-1,-1,-1,-1,-1,-1},
+                                               {2,5,8,12,-1,-1,-1,-1,-1,-1,-1},
+                                               {1,2,4,6,8,10,12,14,17,20,23},
+                                               {2,4,6,8,10,12,14,17,20,23,-1}  } ;
 
-
-/* Double_t myfunction(Double_t *x, Double_t *par)
-{
-   Float_t xx =x[0];
-   Double_t f = par[0]*exp(-par[1]*xx)+par[2]*exp(-par[3]*xx);
-   return f;
-}
-
-Double_t myfunctionErrUp(Double_t *x, Double_t *par)
-{
-   Float_t xx =x[0];
-   Double_t f = par[0]*exp(-par[1]*xx)+par[2]*exp(-par[3]*xx);
-
-   Double_t der[4]; 
-   der[0] = exp(-par[1]*xx);
-   der[1] = -par[0]*xx*exp(-par[1]*xx);   
-   der[2] = exp(-par[3]*xx);
-   der[3] = -par[2]*xx*exp(-par[3]*xx);
-
-   Double_t fsigma = 0.;
-   for (int j=0; j<4; j++) {
-     for (int i=0; i<4; i++) {
-       fsigma += der[i]*par[4+j+4*i]*der[j];
-     }   
-   }
-   return f+sqrt(fabs(fsigma));
-}
-
-Double_t myfunctionErrDown(Double_t *x, Double_t *par)
-{
-   Float_t xx =x[0];
-   Double_t f = par[0]*exp(-par[1]*xx)+par[2]*exp(-par[3]*xx);
-
-   Double_t der[4]; 
-   der[0] = exp(-par[1]*xx);
-   der[1] = -par[0]*xx*exp(-par[1]*xx);   
-   der[2] = exp(-par[3]*xx);
-   der[3] = -par[2]*xx*exp(-par[3]*xx);
-
-   Double_t fsigma = 0.;
-   for (int j=0; j<4; j++) {
-     for (int i=0; i<4; i++) {
-       fsigma += der[i]*par[4+j+4*i]*der[j];
-     }   
-   }
-   return f-sqrt(fabs(fsigma));
-   }*/
-
-/* Double_t myfunction2(Double_t *x, Double_t *par)
-{
-   Float_t xx =x[0];
-   Double_t f = (par[0]+par[2]*xx)*exp(-par[1]*xx);
-   return f;
-   } 
-*/
-
-void fitAlphaMethod_2l2q(string dirout = "fitAlpha", string theNtuple = "TMVAAndRoofitInputs.root")
+void fitAlphaMethod_2l2q(string dirout = "fitAlphaExtended", string theNtuple = "TMVAAndRoofitInputs.root")
 {
   
   setTDRStyle();
@@ -134,15 +80,6 @@ void fitAlphaMethod_2l2q(string dirout = "fitAlpha", string theNtuple = "TMVAAnd
   TF1* ffitup[nChannels];
   TF1* ffitdown[nChannels];
   TFile outf("results.root","RECREATE");
-
-  for (int i = 0; i<maxBinsForAlpha; i++) {
-    binsForAlpha[0].push_back(binlim_resolved[i]);
-    binsForAlpha[1].push_back(binlim_merged[i]);
-    binsForAlpha[2].push_back(binlim_resolvedbtag[i]);
-    binsForAlpha[3].push_back(binlim_mergedbtag[i]);
-    binsForAlpha[4].push_back(binlim_resolvedvbf[i]);
-    binsForAlpha[5].push_back(binlim_mergedvbf[i]);  
-  }
 
   for (int tc=0; tc<nChannels; tc++) {
     char histoName[1000];
@@ -171,9 +108,10 @@ void fitAlphaMethod_2l2q(string dirout = "fitAlpha", string theNtuple = "TMVAAnd
     for (int i=1; i<=alphaNum->GetNbinsX(); i++) {
       totBin += alphaNum->GetBinContent(i);
       totErr += (alphaNum->GetBinError(i))*(alphaNum->GetBinError(i));
-      if (i == binsForAlpha[tc].at(countBinForAlpha)) {
+      if (i == binsForAlpha[tc][countBinForAlpha]) {
         binEnt.push_back(totBin);            totBin = 0;
         binErr.push_back(sqrt(totErr));      totErr = 0;
+        cout << countBinForAlpha << " " << i << " " << binsForAlpha[tc][countBinForAlpha] << endl;
 	countBinForAlpha++;
       }
     }
@@ -183,7 +121,7 @@ void fitAlphaMethod_2l2q(string dirout = "fitAlpha", string theNtuple = "TMVAAnd
     for (int i=1; i<=alphaNum->GetNbinsX(); i++) {
       alphaNumRebin->SetBinContent(i,binEnt.at(countBinForAlpha));
       alphaNumRebin->SetBinError(i,binErr.at(countBinForAlpha));
-      if (i == binsForAlpha[tc].at(countBinForAlpha)) countBinForAlpha++;
+      if (i == binsForAlpha[tc][countBinForAlpha]) countBinForAlpha++;
     }
    
     binEnt.clear();
@@ -195,7 +133,7 @@ void fitAlphaMethod_2l2q(string dirout = "fitAlpha", string theNtuple = "TMVAAnd
     for (int i=1; i<=alphaDen->GetNbinsX(); i++) {
       totBin += alphaDen->GetBinContent(i);
       totErr += (alphaDen->GetBinError(i))*(alphaDen->GetBinError(i));
-      if (i == binsForAlpha[tc].at(countBinForAlpha)) {
+      if (i == binsForAlpha[tc][countBinForAlpha]) {
         binEnt.push_back(totBin);            totBin = 0;
         binErr.push_back(sqrt(totErr));      totErr = 0;
 	countBinForAlpha++;
@@ -207,7 +145,7 @@ void fitAlphaMethod_2l2q(string dirout = "fitAlpha", string theNtuple = "TMVAAnd
     for (int i=1; i<=alphaDen->GetNbinsX(); i++) {
       alphaDenRebin->SetBinContent(i,binEnt.at(countBinForAlpha));
       alphaDenRebin->SetBinError(i,binErr.at(countBinForAlpha));
-      if (i == binsForAlpha[tc].at(countBinForAlpha)) countBinForAlpha++;
+      if (i == binsForAlpha[tc][countBinForAlpha]) countBinForAlpha++;
     }
     
     // end rebin  
@@ -236,11 +174,12 @@ void fitAlphaMethod_2l2q(string dirout = "fitAlpha", string theNtuple = "TMVAAnd
     ffit[tc]->SetLineColor(2);
     ffit[tc]->SetLineStyle(kDashed);
     ffit[tc]->SetLineWidth(3);
-    ffit[tc]->SetParameter(0,fitHist->Integral());
+    int bin1 = fitHist->FindBin(minX[tc]); int bin2 = fitHist->FindBin(maxX[tc]);
+    ffit[tc]->SetParameter(0,fitHist->Integral(bin1,bin2));
     ffit[tc]->SetParameter(1,0.005);
-    ffit[tc]->SetParameter(2,fitHist->Integral()/10.);
+    ffit[tc]->SetParameter(2,fitHist->Integral(bin1,bin2)/10.);
     ffit[tc]->SetParameter(3,0.01);
-    if (tc>0) {
+    if (tc%2 != 0) {
       ffit[tc]->FixParameter(2,0.);
       ffit[tc]->FixParameter(3,0.01);
     }      
@@ -249,6 +188,11 @@ void fitAlphaMethod_2l2q(string dirout = "fitAlpha", string theNtuple = "TMVAAnd
     TFitResultPtr frp = fitHist->Fit(histoName,"S","",minX[tc],maxX[tc]);
     TMatrixD cov = frp->GetCovarianceMatrix();
     double* covElem = cov.GetMatrixArray(); 
+
+    if (tc%2 == 0 ) {
+      out << "The integral of the function in [400-2500] is:" << endl;
+      out << "   " << ffit[tc]->Integral(400,2500)/(50./* *corrFactor[0]*/) << endl;
+    }
 
     out << "The integral of the function in [600-2500] is:" << endl;
     out << "   " << ffit[tc]->Integral(600,2500)/(50./* *corrFactor[0]*/) << endl;

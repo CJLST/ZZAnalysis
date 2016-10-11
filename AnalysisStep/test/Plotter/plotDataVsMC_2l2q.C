@@ -62,7 +62,7 @@ bool unblind = true;
 ////////////////////////////////////////////////////////////////////////////////
 
 
-const int nVariables = 26;
+const int nVariables = 27;
 string varName[nVariables] = {
   "ZZMass",
   "ZZPt",
@@ -87,9 +87,10 @@ string varName[nVariables] = {
   "MET",
   "Z1Tau21",
   "JetQGProduct",
-  "ZjetMELA",
+  "ZjetMELAspin0",
   "vbfMELA",
   "ZZMasshighMELA",
+  "ZjetMELAspin2"
 };
 string varXLabel[nVariables] = {
   "m_{2#font[12]{l}2q} (GeV)",
@@ -115,9 +116,10 @@ string varXLabel[nVariables] = {
   "MET (GeV)",
   "#tau_{21} (J)",
   "Quark gluon likelihood product",
-  "ZjetMELA",
+  "ZjetMELAspin0",
   "vbfMELA",
-  "m_{2#font[12]{l}2q} (GeV) for ZjetMELA > 0.5"
+  "m_{2#font[12]{l}2q} (GeV) for ZjetMELAspin0 > 0.5",
+  "ZjetMELAspin2"
 };
 string varYLabel[nVariables] = {
   "Events / 25 GeV",
@@ -145,13 +147,14 @@ string varYLabel[nVariables] = {
   "Events / 0.025",
   "Events / 0.025", 
   "Events / 0.025",
-  "Events / 25 GeV"
+  "Events / 25 GeV",
+  "Events / 0.025"
 };
-Int_t  varNbin[nVariables] = { 70, 50, 70,  56,  44, 50,50, 400,  50,  50,  50,  50,  50,  50,  50, 50, 50, 25, 25, 4, 50, 26, 50, 40, 82, 50};
-Float_t varMin[nVariables] = {  250,  0,  250,  40,  40,  90, 90, -200,  0, 0, -0.2, -0.2, 0,  0, -0.2, -1.2, -1.2, 0., 0., -0.5, 0., -0.05,-0.2,0.,-1.05, 250};
-Float_t varMax[nVariables] = { 2000, 500, 2000, 180, 150, 800, 800, 0, 500, 500, 1.2, 1.2, 500, 500, 1.2, 1.2, 1.2 , 3.15, 3.15, 3.5, 300., 1.05, 1.2, 1.,1., 2000};
-Bool_t varLogx[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-Bool_t varLogy[nVariables] = {1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1,0};
+Int_t  varNbin[nVariables] = { 70, 50, 70,  56,  44, 50,50, 400,  50,  50,  50,  50,  50,  50,  50, 50, 50, 25, 25, 4, 50, 26, 50, 40, 82, 50, 40};
+Float_t varMin[nVariables] = {  250,  0,  250,  40,  40,  90, 90, -200,  0, 0, -0.2, -0.2, 0,  0, -0.2, -1.2, -1.2, 0., 0., -0.5, 0., -0.05,-0.2,0.,-1.05, 250,0.};
+Float_t varMax[nVariables] = { 2000, 500, 2000, 180, 150, 800, 800, 0, 500, 500, 1.2, 1.2, 500, 500, 1.2, 1.2, 1.2 , 3.15, 3.15, 3.5, 300., 1.05, 1.2, 1.,1., 2000.,1.};
+Bool_t varLogx[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+Bool_t varLogy[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1,0,0};
 
 const int nMasses = 14;
 string signalMasses[nMasses] = {"200","250","300","350","400","450","500","550","600","750","800","900","1000","2000"};
@@ -232,6 +235,15 @@ float getDVBF2jetsConstant(float ZZMass){
     + par[6]*exp(-pow((ZZMass-par[7])/par[8], 2));
   float constant = kappa/(1.-kappa);
   return constant;
+}
+
+float getDZjjspin0Constant(float ZZMass){
+  float constant = 0.035*(3.05+(0.0005*ZZMass)-(2.73/(1.+exp((ZZMass-2500.)/258.26)))) ;
+  return constant;
+}
+
+float getDZjjspin2Constant(float ZZMass){
+  return 0.14;
 }
 
 void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./goodDatasetsWithData.txt", /* bool norm = false,*/ bool CR = false, bool draw = true, bool weightMCtrig = true, bool weighttau21 = true)
@@ -430,7 +442,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
   if (unblind) {
     for(int nt=0; nt<nType; nt++){
       if (string(typeS[nt]).find("merged") != std::string::npos) xMin = 650.;
-      else xMin = 450.;
+      else xMin = 400.;
       if (string(typeS[nt]).find("SR") != std::string::npos) {
 	sprintf(filestring,"ffit_%s",typeS[nt].c_str()); 
 	ffit_temp[nt] = (TF1*)ffunc.Get(filestring);
@@ -480,6 +492,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
   vector<Float_t> *helphi = 0;	  
   vector<Float_t> *phistarZ1 = 0;
   vector<Float_t> *p0plus_VAJHU = 0; 
+  vector<Float_t> *p2bplus_VAJHU = 0; 
   vector<Float_t> *pqqZJJ_VAMCFM = 0;  
   vector<Float_t> *pvbf_VAJHU_highestPTJets = 0; 
   vector<Float_t> *phjj_VAJHU_highestPTJets = 0; 
@@ -505,21 +518,26 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
     }
   }
   
-  TH1F* hmass[nProcesses][nType];
-  Float_t binsincl[] = { 450, 475, 500, 525, 550, 575, 600, 640, 680, 720, 760, 800, 850, 900, 1000, 1100, 1200, 1400, 1600, 2000};
+  TH1F* hmass[nProcesses][nType+4];
+  Float_t binsincl[] = { 350, 375, 400, 425, 450, 475, 500, 525, 550, 575, 600, 640, 680, 720, 760, 800, 850, 900, 1000, 1100, 1200, 1400, 1600, 2000};
   Int_t  binnumincl = sizeof(binsincl)/sizeof(Float_t) - 1; 
-  Float_t binsbtag[] = { 450, 500, 550, 600, 680, 760, 850, 1000, 1200, 1600, 2000};
+  Float_t binsbtag[] = { 350, 400, 450, 500, 550, 600, 680, 760, 850, 1000, 1200, 1600, 2000};
   Int_t  binnumbtag = sizeof(binsbtag)/sizeof(Float_t) - 1; 
   for(int pr=0; pr<nProcesses; pr++){
-    for(int nt=0; nt<nType; nt++){
+    for(int nt=0; nt<nType+4; nt++){
       if (nt<4) 
 	 hmass[pr][nt] = new TH1F(Form("hmass_%s_%s",typeS[nt].c_str(),sProcess[pr].c_str()),
 				  Form("hmass_%s_%s",typeS[nt].c_str(),sProcess[pr].c_str()),		
 			          binnumincl,binsincl);
-      else
+      else if (nt<nType) 
 	 hmass[pr][nt] = new TH1F(Form("hmass_%s_%s",typeS[nt].c_str(),sProcess[pr].c_str()),
 				  Form("hmass_%s_%s",typeS[nt].c_str(),sProcess[pr].c_str()),		
 				  binnumbtag,binsbtag);
+      else 
+	hmass[pr][nt] = new TH1F(Form("hmass_%snobtag_%s",typeS[nt-nType].c_str(),sProcess[pr].c_str()),
+				 Form("hmass_%snobtag_%s",typeS[nt-nType].c_str(),sProcess[pr].c_str()),		
+				 binnumincl,binsincl);
+
       hmass[pr][nt]->Sumw2();
     }
   }
@@ -597,6 +615,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
     inputTree[d]->SetBranchAddress("GenHMass", &genHMass);
     inputTree[d]->SetBranchAddress("PFMET", &Met);
     inputTree[d]->SetBranchAddress("p0plus_VAJHU", &p0plus_VAJHU );
+    inputTree[d]->SetBranchAddress("p2bplus_VAJHU", &p2bplus_VAJHU );
     inputTree[d]->SetBranchAddress("pqqZJJ_VAMCFM", &pqqZJJ_VAMCFM );  
     inputTree[d]->SetBranchAddress("pvbf_VAJHU_highestPTJets", &pvbf_VAJHU_highestPTJets );
     inputTree[d]->SetBranchAddress("phjj_VAJHU_highestPTJets", &phjj_VAJHU_highestPTJets );
@@ -743,14 +762,14 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
       int preferType = 0;    // choose merged or resolved
                              // and dump for synchronization 
       if (ZZMass->size() == 1 && abs(ZZCandType->at(0)) == 1) {
-        float mela = 1./(1.+0.035*(pqqZJJ_VAMCFM->at(0)/p0plus_VAJHU->at(0)));
+        float mela = 1./(1.+getDZjjspin0Constant(ZZMass->at(0))*(pqqZJJ_VAMCFM->at(0)/p0plus_VAJHU->at(0)));
         float vbfmela = ((phjj_VAJHU_highestPTJets->at(0) > 0. && nExtraJets > 1) ? 1./(1.+getDVBF2jetsConstant(ZZMass->at(0))*(phjj_VAJHU_highestPTJets->at(0)/pvbf_VAJHU_highestPTJets->at(0))) : -1.); 
 	if (writeThis) myfile << RunNumber << ":" << EventNumber << ":" << LumiNumber << ":" << Z2Mass->at(0)  << ":" << (abs(Z2Flav->at(0))==121 ? "Ele:" : "Muo:")  << pt1stLep << ":" << pt2ndLep << ":" << ZZMass->at(0) << ":" << Z1Mass->at(0) << ":" << Z1tau21->at(0) << ":" << Z1Pt->at(0) << ":" << mela << ":" << vbfmela << ":-1:-1:-1:-1:-1:-1:-1:" << Met << endl; 
 	nPassMerged++;
 	preferType = 1;
       }
       else if (ZZMass->size() == 1 && abs(ZZCandType->at(0)) == 2) {
-	float mela = 1./(1.+0.035*(pqqZJJ_VAMCFM->at(0)/p0plus_VAJHU->at(0)));
+	float mela = 1./(1.+getDZjjspin0Constant(ZZMass->at(0))*(pqqZJJ_VAMCFM->at(0)/p0plus_VAJHU->at(0)));
         float vbfmela = ((phjj_VAJHU_highestPTJets->at(0) > 0. && nExtraJets > 1) ? 1./(1.+getDVBF2jetsConstant(ZZMass->at(0))*(phjj_VAJHU_highestPTJets->at(0)/pvbf_VAJHU_highestPTJets->at(0))) : -1.); 
 	if (writeThis) myfile << RunNumber << ":" << EventNumber << ":" << LumiNumber << ":" << Z2Mass->at(0)  << ":" << (abs(Z2Flav->at(0))==121 ? "Ele:" : "Muo:")  << pt1stLep << ":" << pt2ndLep << ":-1:-1:-1:-1:-1:-1:" << ZZMass->at(0) << ":" << Z1Mass->at(0) << ":" << pt1stJet << ":" << pt2ndJet << ":" << btag1stJet << ":" << mela << ":" << vbfmela << ":" << Met << endl;
 	nPassResol++;
@@ -760,7 +779,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	float mela[2] = {0.,0.}; 
         float vbfmela[2] = {0.,0.};
 	for(unsigned int theCand=0; theCand<2; theCand++){
-	  mela[theCand] = 1./(1.+0.035*(pqqZJJ_VAMCFM->at(theCand)/p0plus_VAJHU->at(theCand)));   
+	  mela[theCand] = 1./(1.+getDZjjspin0Constant(ZZMass->at(theCand))*(pqqZJJ_VAMCFM->at(theCand)/p0plus_VAJHU->at(theCand)));   
           vbfmela[theCand] = ((phjj_VAJHU_highestPTJets->at(theCand) > 0. && nExtraJets > 1) ? 1./(1.+getDVBF2jetsConstant(ZZMass->at(theCand))*(phjj_VAJHU_highestPTJets->at(theCand)/pvbf_VAJHU_highestPTJets->at(theCand))) : -1.); 
 	}
 	if (writeThis) myfile << RunNumber << ":" << EventNumber << ":" << LumiNumber << ":" << Z2Mass->at(0)  << ":" << (abs(Z2Flav->at(0))==121 ? "Ele:" : "Muo:")  << pt1stLep << ":" << pt2ndLep << ":" << ZZMass->at(0) << ":" << Z1Mass->at(0) << ":" << Z1tau21->at(0) << ":" << Z1Pt->at(0) << ":" << mela[0] << ":" << vbfmela[0] << ":" << ZZMass->at(1) << ":" << Z1Mass->at(1) << ":" << pt1stJet << ":" << pt2ndJet << ":" << btag1stJet << ":" << mela[1] << ":" << vbfmela[1] << ":" << Met << endl;
@@ -863,7 +882,8 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	    if (typ==3 && process == 2) whichTmvaTree = 2;
  	    if (typ==3 && process == 3) whichTmvaTree = 3;
  
-            float mela = 1./(1.+0.035*(pqqZJJ_VAMCFM->at(theCand)/p0plus_VAJHU->at(theCand)));
+            float mela = 1./(1.+getDZjjspin0Constant(ZZMass->at(theCand))*(pqqZJJ_VAMCFM->at(theCand)/p0plus_VAJHU->at(theCand)));
+            float mela2 = 1./(1.+getDZjjspin2Constant(ZZMass->at(theCand))*(pqqZJJ_VAMCFM->at(theCand)/p2bplus_VAJHU->at(theCand)));
             float vbfmela = ((phjj_VAJHU_highestPTJets->at(theCand) > 0. && nExtraJets > 1) ? 1./(1.+getDVBF2jetsConstant(ZZMass->at(theCand))*(phjj_VAJHU_highestPTJets->at(theCand)/pvbf_VAJHU_highestPTJets->at(theCand))) : -1.); 
 
 	    if ((typ==0 || typ==3) && nExtraJets > 1 && vbfmela > 1.043-460./(ZZMass->at(theCand)+634.)) typ=typ+8;
@@ -917,10 +937,18 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	    
 	    h1[2][process][rs][typ]->Fill(ZZMassRefit->at(theCand),eventWeight*t12weight);
 	    if (typ==0 || typ==3 || typ==4 || typ==7 || typ==8 || typ==11) { 
-	      if (rs == 1) hmass[process][typ]->Fill(ZZMassRefit->at(theCand),eventWeight*t12weight);
+	      if (rs == 1) {
+		hmass[process][typ]->Fill(ZZMassRefit->at(theCand),eventWeight*t12weight);
+		if ( typ == 0 || typ==8 ) hmass[process][12]->Fill(ZZMassRefit->at(theCand),eventWeight*t12weight);
+		if ( typ == 3 || typ==11 ) hmass[process][15]->Fill(ZZMassRefit->at(theCand),eventWeight*t12weight);
+	      }
 	      if (mela > 0.5) h1[25][process][rs][typ]->Fill(ZZMassRefit->at(theCand),eventWeight*t12weight);
 	    } else {
-              if (rs == 1) hmass[process][typ]->Fill(ZZMass->at(theCand),eventWeight*t12weight);
+              if (rs == 1) {
+		hmass[process][typ]->Fill(ZZMass->at(theCand),eventWeight*t12weight);
+		if ( typ == 1 || typ== 9 ) hmass[process][13]->Fill(ZZMass->at(theCand),eventWeight*t12weight);
+		if ( typ == 2 || typ== 10 ) hmass[process][14]->Fill(ZZMass->at(theCand),eventWeight*t12weight);
+	      }
 	      if (mela > 0.5) h1[25][process][rs][typ]->Fill(ZZMass->at(theCand),eventWeight*t12weight);
 	    }
  
@@ -972,6 +1000,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	      h1[22][process][rs][typ]->Fill(tmvaJetQGLikelihood1*tmvaJetQGLikelihood2,eventWeight*t12weight);     // only resolved
             h1[23][process][rs][typ]->Fill(mela,eventWeight*t12weight);
             h1[24][process][rs][typ]->Fill(vbfmela,eventWeight*t12weight);
+            h1[26][process][rs][typ]->Fill(mela2,eventWeight*t12weight);
 	    
 	    if (rs == 1 && whichTmvaTree > -1) outputTree[whichTmvaTree]->Fill();
 	  } else { // control region for QG (only fille some variables)
@@ -1038,10 +1067,6 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	h1[v][4][rs][nt]->Add(h1[v][5][rs][nt]);
         h1[v][3][rs][nt]->Add(h1[v][4][rs][nt]);
 
-        if (v==0 && rs==0) {    // do just once!
-	  hmass[4][nt]->Add(hmass[5][nt]);
-	}
-
 	h1[v][3][rs][nt]->GetXaxis()->SetTitle(varXLabel[v].c_str());
 	h1[v][3][rs][nt]->GetYaxis()->SetTitle(varYLabel[v].c_str());
         h1[v][0][rs][nt]->GetXaxis()->SetTitle(varXLabel[v].c_str());
@@ -1067,6 +1092,10 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 
       }
     }
+  }
+
+  for(int nt=0; nt<nType+4; nt++){
+    hmass[4][nt]->Add(hmass[5][nt]);
   }
 
   ofstream aa("unblind.txt");
@@ -1225,7 +1254,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
     for (int t=0; t<4; t++) {
       outputTree[t]->Write();
     }
-    for(int nt=0; nt<nType; nt++){
+    for(int nt=0; nt<nType+4; nt++){
       // do histogram -> density histogram conversion
       densityHist(hmass[0][nt]);
       hmass[0][nt]->Write();
