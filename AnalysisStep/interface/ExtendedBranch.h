@@ -24,6 +24,27 @@ namespace BranchHelpers{
     nBranchTypes
   };
 
+  // Type checking, adaptation of suggestion by Michael Aaron Safyan at http://stackoverflow.com/questions/2728078/is-there-an-easy-way-to-check-a-fundamental-type
+  template<BranchTypes VAL> struct constant_type_value{
+    static const BranchTypes type = VAL;
+  };
+  typedef constant_type_value<nBranchTypes> no_type;
+  typedef constant_type_value<bBool> bool_type;
+  typedef constant_type_value<bChar> char_type;
+  typedef constant_type_value<bShort> short_type;
+  typedef constant_type_value<bInt> int_type;
+  typedef constant_type_value<bLong> long_type;
+  typedef constant_type_value<bFloat> float_type;
+  typedef constant_type_value<bDouble> double_type;
+
+  template<typename T> struct hasType : public no_type{};
+  template<> struct hasType<Bool_t> : public bool_type{};
+  template<> struct hasType<Char_t> : public char_type{};
+  template<> struct hasType<Short_t> : public short_type{};
+  template<> struct hasType<Int_t> : public int_type{};
+  template<> struct hasType<Long64_t> : public long_type{};
+  template<> struct hasType<Float_t> : public float_type{};
+  template<> struct hasType<Double_t> : public double_type{};
 
   template<typename varType> class ExtendedBranch{
 
@@ -76,24 +97,13 @@ namespace BranchHelpers{
 
   protected:
 
-    void getBranchType(){}
-    /*
     void getBranchType(){
-      if (dynamic_cast<Bool_t*>(&value)) btype = BranchHelpers::bBool;
-      else if (dynamic_cast<Char_t*>(&value)) btype = BranchHelpers::bChar;
-      else if (dynamic_cast<Short_t*>(&value)) btype = BranchHelpers::bShort;
-
-      else if (dynamic_cast<Int_t*>(&value)) btype = BranchHelpers::bInt;
-      else if (dynamic_cast<Long64_t*>(&value)) btype = BranchHelpers::bLong;
-      else if (dynamic_cast<Float_t*>(&value)) btype = BranchHelpers::bFloat;
-      else if (dynamic_cast<Double_t*>(&value)) btype = BranchHelpers::bDouble;
-
-      else{
+      btype = hasType<varType>::type;
+      if (btype == nBranchTypes){
         std::cerr << "ExtendedBranch::getBranchType: Could not determine the branch type for branch " << bname << std::endl;
         assert(0);
       }
     }
-    */
     void createBranch(varType* defVal_){
       if (!isVector && defVal_!=0){
         if (defVal!=0) delete defVal; defVal = new varType;

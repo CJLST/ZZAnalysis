@@ -7,7 +7,6 @@
 #ifndef MELABRANCH_H
 #define MELABRANCH_H
 
-#include <ZZMatrixElement/MELA/interface/Mela.h>
 #include "ExtendedBranch.h"
 #include "MELAHypothesis.h"
 

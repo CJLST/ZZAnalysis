@@ -29,9 +29,18 @@ protected:
   SpinOneCouplings* coupl_Zp;
   SpinTwoCouplings* coupl_X;
 
+public:
+
+  /*
+  Special case:
+  If prod==[Lep or Had]_[Z or W]H, need to consider both.
+  External intervention is needed at that time.
+  */
   TVar::Process proc;
   TVar::Production prod;
   TVar::MatrixElement me;
+
+protected:
 
   float hmass;
   float hwidth;
@@ -68,8 +77,12 @@ public:
     );
   virtual ~MELAHypothesis(){}
 
-  void computeP(MELACandidate* cand, bool isGen);
-  void computePM4l(MELACandidate* cand, TVar::SuperMelaSyst syst);
+  void computeP(MELACandidate* cand, bool isGen); // Wrapper
+  void computeP(unsigned int index, bool isGen); // Wrapper
+  void computeP(bool isGen); // Main function
+  void computePM4l(MELACandidate* cand, TVar::SuperMelaSyst syst); // Wrapper
+  void computePM4l(unsigned int index, TVar::SuperMelaSyst syst); // Wrapper
+  void computePM4l(TVar::SuperMelaSyst syst); // Main function
 
 };
 

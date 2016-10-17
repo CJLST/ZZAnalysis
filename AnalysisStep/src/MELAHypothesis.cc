@@ -50,10 +50,16 @@ void MELAHypothesis::reset(){
 }
 
 void MELAHypothesis::computeP(MELACandidate* cand, bool isGen){
-  reset();
   if (cand!=0) mela->setCurrentCandidate(cand);
+  computeP(isGen);
+}
+void MELAHypothesis::computeP(unsigned int index, bool isGen){
+  mela->setCurrentCandidateFromIndex(index);
+  computeP(isGen);
+}
+void MELAHypothesis::computeP(bool isGen){
+  reset();
   MELACandidate* melaCand = mela->getCurrentCandidate();
-
   if (melaCand!=0){
     // Set the couplings
     // Comment: We have more couplings than we will ever need in the next 50 years!
@@ -124,16 +130,20 @@ void MELAHypothesis::computeP(MELACandidate* cand, bool isGen){
       mela->getPAux(pAux);
     }
   }
-
   setVal();
 }
 
 void MELAHypothesis::computePM4l(MELACandidate* cand, TVar::SuperMelaSyst syst){
-  reset();
   if (cand!=0) mela->setCurrentCandidate(cand);
-  MELACandidate* melaCand = mela->getCurrentCandidate();
-
-  if (melaCand!=0) mela->computePM4l(syst, pME);
+  computePM4l(syst);
+}
+void MELAHypothesis::computePM4l(unsigned int index, TVar::SuperMelaSyst syst){
+  mela->setCurrentCandidateFromIndex(index);
+  computePM4l(syst);
+}
+void MELAHypothesis::computePM4l(TVar::SuperMelaSyst syst){
+  reset();
+  if (mela->getCurrentCandidate()!=0) mela->computePM4l(syst, pME);
   setVal();
 }
 
