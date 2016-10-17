@@ -74,7 +74,7 @@ void Reweighting::setmycouplings() {
   if (reweightingtype == NoReweighting) {
     return;
   } else if (reweightingtype == HVV_spin0 || reweightingtype == HVV_spin012) {
-    productionprocess = make_tuple(TVar::Null, TVar::JHUGen, TVar::ZZGG);
+    productionprocess = make_tuple(TVar::nProcesses, TVar::JHUGen, TVar::ZZGG);
     switch (myspin) {
     case 0: decayprocess = make_tuple(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG); break;
     case 1: decayprocess = make_tuple(TVar::SelfDefine_spin1, TVar::JHUGen, TVar::ZZGG); break;
@@ -108,7 +108,7 @@ void Reweighting::setcouplings(int reweightinghypothesis) {
     return setmycouplings();
   } else if (reweightingtype == HVV_spin0) {
     decayprocess = make_tuple(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
-    productionprocess = make_tuple(TVar::Null, TVar::JHUGen, TVar::ZZGG);
+    productionprocess = make_tuple(TVar::nProcesses, TVar::JHUGen, TVar::ZZGG);
     spin = 0;
     ghg2 = 1;
     switch (reweightinghypothesis) {
@@ -123,7 +123,7 @@ void Reweighting::setcouplings(int reweightinghypothesis) {
     }
     return;
   } else if (reweightingtype == HVV_spin012) {
-    productionprocess = make_tuple(TVar::Null, TVar::JHUGen, TVar::ZZGG);
+    productionprocess = make_tuple(TVar::nProcesses, TVar::JHUGen, TVar::ZZGG);
     ghg2 = 1;
     switch (reweightinghypothesis) {
     case 0: ghz1 = 1; spin = 0; break;                                     //0+m
@@ -285,13 +285,13 @@ void Reweighting::fillreweightingweights(
 void Reweighting::computeP(int reweightinghypothesis, float& prob, bool useConstant) {
   prob = 1;
   float tmp = 0;
-  if (get<0>(decayprocess) != TVar::Null) {
+  if (get<0>(decayprocess) != TVar::nProcesses) {
     setcouplings(reweightinghypothesis);
     setProcess(decayprocess);
     mela.computeP(tmp, useConstant);
     prob *= tmp;
   }
-  if (get<0>(productionprocess) != TVar::Null) {
+  if (get<0>(productionprocess) != TVar::nProcesses) {
     setcouplings(reweightinghypothesis);
     setProcess(productionprocess);
     mela.computeProdP(tmp, useConstant);

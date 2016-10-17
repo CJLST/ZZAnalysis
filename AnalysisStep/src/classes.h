@@ -5,16 +5,10 @@
 edm::Ptr<pat::PFParticle> dummy1;
 pat::UserHolder<std::vector<edm::Ptr<pat::PFParticle> > > dummy2;
 
-BranchHelpers::ExtendedBranch<Bool_t> bdummy_b;
-BranchHelpers::ExtendedBranch<Char_t> bdummy_c;
-BranchHelpers::ExtendedBranch<Short_t> bdummy_s;
-BranchHelpers::ExtendedBranch<Int_t> bdummy_i;
-BranchHelpers::ExtendedBranch<Long64_t> bdummy_l;
-BranchHelpers::ExtendedBranch<Float_t> bdummy_f;
-BranchHelpers::ExtendedBranch<Double_t> bdummy_d;
-BranchHelpers::ExtendedBranch<vectorBool_t> bdummy_B;
-BranchHelpers::ExtendedBranch<vectorChar_t> bdummy_C;
-BranchHelpers::ExtendedBranch<vectorShort_t> bdummy_S;
-BranchHelpers::ExtendedBranch<vectorInt_t> bdummy_I;
-BranchHelpers::ExtendedBranch<vectorFloat_t> bdummy_F;
-BranchHelpers::ExtendedBranch<vectorDouble_t> bdummy_D;
+BranchHelpers::ExtendedBranch<Bool_t> bdummy_b(0,"",(Bool_t)false);
+BranchHelpers::ExtendedBranch<Char_t> bdummy_c(0, "", (Char_t)' ');
+BranchHelpers::ExtendedBranch<Short_t> bdummy_s(0, "", (Short_t)0);
+BranchHelpers::ExtendedBranch<Int_t> bdummy_i(0, "", (Int_t)0);
+BranchHelpers::ExtendedBranch<Long64_t> bdummy_l(0, "", (Long64_t)0);
+BranchHelpers::ExtendedBranch<Float_t> bdummy_f(0, "", (Float_t)0);
+BranchHelpers::ExtendedBranch<Double_t> bdummy_d(0, "", (Double_t)0);

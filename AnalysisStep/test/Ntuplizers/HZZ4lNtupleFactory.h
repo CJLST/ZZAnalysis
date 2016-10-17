@@ -13,6 +13,8 @@
 #include "DataFormats/PatCandidates/interface/Electron.h"
 
 #include <ZZAnalysis/AnalysisStep/interface/DaughterDataHelpers.h>
+#include <ZZAnalysis/AnalysisStep/interface/ExtendedBranch.h>
+
 
 class HZZ4lNtupleFactory{
   
