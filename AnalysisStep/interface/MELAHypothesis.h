@@ -12,9 +12,18 @@
 
 class MELAHypothesis{
 
+public:
+
+  enum METype{
+    UseME,
+    UsePAux,
+    UsePConstant
+  };
+
 protected:
 
   Mela* mela;
+  METype calc_type;
 
   SpinZeroCouplings* coupl_H;
   SpinOneCouplings* coupl_Zp;
@@ -29,14 +38,20 @@ protected:
   float h2mass;
   float h2width;
 
-public:
-
   float pME;
   float pAux;
   float cMEAvg;
 
+  void reset();
+  void setVal();
+
+public:
+
+  float value;
+
   MELAHypothesis(
     Mela* mela_,
+    METype calc_type_,
 
     SpinZeroCouplings* coupl_H_,
     SpinOneCouplings* coupl_Zp_,
@@ -53,7 +68,8 @@ public:
     );
   virtual ~MELAHypothesis(){}
 
-  float compute(bool isGen, MELACandidate* cand=0);
+  void computeP(MELACandidate* cand, bool isGen);
+  void computePM4l(MELACandidate* cand, TVar::SuperMelaSyst syst);
 
 };
 

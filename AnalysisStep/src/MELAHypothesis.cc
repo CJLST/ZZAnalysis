@@ -1,15 +1,10 @@
 #include <ZZAnalysis/AnalysisStep/interface/MELAHypothesis.h>
-#include <iomanip>
 #include <iostream>
-#include <cstdlib>
-#include <vector>
-#include <string>
-#include "TLorentzVector.h"
-#include "TString.h"
 
 
 MELAHypothesis::MELAHypothesis(
   Mela* mela_,
+  METype calc_type_,
 
   SpinZeroCouplings* coupl_H_,
   SpinOneCouplings* coupl_Zp_,
@@ -25,6 +20,7 @@ MELAHypothesis::MELAHypothesis(
   float h2width_
   ) :
   mela(mela_),
+  calc_type(calc_type_),
 
   coupl_H(coupl_H_),
   coupl_Zp(coupl_Zp_),
@@ -41,14 +37,20 @@ MELAHypothesis::MELAHypothesis(
 
   pME(-1.),
   pAux(1.),
-  cMEAvg(1.)
+  cMEAvg(1.),
+
+  value(0.)
 {}
 
-float MELAHypothesis::compute(bool isGen, MELACandidate* cand){
+void MELAHypothesis::reset(){
   pME=-1.;
   pAux=1.;
   cMEAvg=1.;
+  value=0.;
+}
 
+void MELAHypothesis::computeP(MELACandidate* cand, bool isGen){
+  reset();
   if (cand!=0) mela->setCurrentCandidate(cand);
   MELACandidate* melaCand = mela->getCurrentCandidate();
 
@@ -106,19 +108,43 @@ float MELAHypothesis::compute(bool isGen, MELACandidate* cand){
 
     // Set the process elemenets
     mela->setProcess(proc, me, prod);
-
-    if (isGen){
-      // LHE-level MEs are always simpler. You have an event; you compute; you are done.
-
-
+    if (
+      prod==TVar::Lep_WH || prod==TVar::Had_WH || prod==TVar::Lep_ZH || prod==TVar::Had_ZH || prod == TVar::GammaH
+      ||
+      prod==TVar::JJVBF || prod==TVar::JJQCD || prod==TVar::JQCD
+      ||
+      prod==TVar::ttH || prod==TVar::bbH
+      ){
+      if (me != TVar::MCFM) mela->computeProdP(pME, !isGen);
+      else mela->computeProdDecP(pME, !isGen);
     }
-    else{
-      // Reco.-level MEs are never simple. You have an event; depending on what ME you requested, you may have to dance around to find the best possibility.
-      // Then you compute, and you can only hope you are done.
+    else mela->computeP(pME, !isGen);
 
-
+    if (!isGen){
+      mela->getPAux(pAux);
     }
-
   }
-  return pME;
+
+  setVal();
 }
+
+void MELAHypothesis::computePM4l(MELACandidate* cand, TVar::SuperMelaSyst syst){
+  reset();
+  if (cand!=0) mela->setCurrentCandidate(cand);
+  MELACandidate* melaCand = mela->getCurrentCandidate();
+
+  if (melaCand!=0) mela->computePM4l(syst, pME);
+  setVal();
+}
+
+void MELAHypothesis::setVal(){
+  if (calc_type==MELAHypothesis::UseME) value = pME;
+  else if (calc_type==MELAHypothesis::UsePAux) value = pAux;
+  else if (calc_type==MELAHypothesis::UsePConstant) value = cMEAvg;
+  else{
+    std::cerr << "MELAHypothesis:: : Could not determine the type (current type=" << calc_type << ") of the requested value. Returning -1!" << std::endl;
+    value = -1;
+  }
+}
+
+

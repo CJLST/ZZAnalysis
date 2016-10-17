@@ -64,17 +64,11 @@ namespace BranchHelpers{
 
     TBranch* getBranch(){ return theTree->GetBranch(bname); }
 
-    ExtendedBranch(TTree* theTree_, TString bname_, varType defVal_) : theTree(theTree_), defVal(0), bname(bname_), isVector(false)
+    ExtendedBranch(TTree* theTree_, TString bname_, varType defVal_, Bool_t isVector_=false) : theTree(theTree_), defVal(0), bname(bname_), isVector(isVector_)
     {
-      btype = getBranchType();
+      getBranchType();
       createBranch(&defVal_);
     }
-    ExtendedBranch(TTree* theTree_, TString bname_) : theTree(theTree_), defVal(0), bname(bname_), isVector(true)
-    {
-      btype = getBranchType();
-      createBranch((varType*)0);
-    }
-    ExtendedBranch() : theTree(0), defVal(0), bname(""), isVector(false){ /* Do nothing */ }
     virtual ~ExtendedBranch(){
       delete defVal;
     }
@@ -82,7 +76,9 @@ namespace BranchHelpers{
 
   protected:
 
-    BranchHelpers::BranchTypes getBranchType(){
+    void getBranchType(){}
+    /*
+    void getBranchType(){
       if (dynamic_cast<Bool_t*>(&value)) btype = BranchHelpers::bBool;
       else if (dynamic_cast<Char_t*>(&value)) btype = BranchHelpers::bChar;
       else if (dynamic_cast<Short_t*>(&value)) btype = BranchHelpers::bShort;
@@ -97,8 +93,9 @@ namespace BranchHelpers{
         assert(0);
       }
     }
+    */
     void createBranch(varType* defVal_){
-      if (defVal_!=0){
+      if (!isVector && defVal_!=0){
         if (defVal!=0) delete defVal; defVal = new varType;
         *defVal = *defVal_;
       }

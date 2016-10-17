@@ -11,26 +11,28 @@
 #include "ExtendedBranch.h"
 #include "MELAHypothesis.h"
 
+namespace BranchHelpers{
 
-class MELABranch : public ExtendedBranch<Float_t>{
+  class MELABranch : public ExtendedBranch<Float_t>{
 
-public:
+  public:
 
-  MELAHypothesis* targetP;
-  MELAHypothesis* originP;
+    MELAHypothesis* targetP;
+    MELAHypothesis* originP;
 
-  MELABranch(
-    TTree* theTree_, TString bname_, Float_t defVal_,
-    MELAHypothesis* targetP_, MELAHypothesis* originP_ = 0
-    ) :
-    ExtendedBranch(theTree_, bname_, defVal_),
-    targetP(targetP_), originP(originP_)
-  {}
-  virtual ~MELABranch(){}
+    MELABranch(
+      TTree* theTree_, TString bname_, Float_t defVal_,
+      MELAHypothesis* targetP_, MELAHypothesis* originP_ = 0
+      ) :
+      ExtendedBranch(theTree_, bname_, defVal_, false),
+      targetP(targetP_), originP(originP_)
+    {}
+    virtual ~MELABranch(){}
 
-  void compute(bool isGen, MELACandidate* cand=0){ value=1.; if (targetP!=0) value *= targetP->compute(isGen, cand); if (originP!=0) value /= originP->compute(isGen, cand); }
+    void setVal(){ Float_t tmp=1.; if (targetP!=0) tmp *= targetP->value; if (originP!=0) tmp /= originP->value; setVal(tmp); }
 
-};
+  };
 
+}
 
 #endif
