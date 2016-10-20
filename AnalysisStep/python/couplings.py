@@ -1,11 +1,11 @@
 class Couplings(dict):
    # Spin-0 HQQ couplings
-   qqcoupl_spin0 = [
+   qqcoupl_spin0_HQQ = [
       "kappa",
       "kappa_tilde"
    ]
    # Spin-0 HGG couplings (point-like interaction)
-   ggcoupl_spin0 = [
+   ggcoupl_spin0_HGG = [
       "ghg2",
       "ghg3",
       "ghg4"
@@ -74,6 +74,14 @@ class Couplings(dict):
    cqsq_spin0_HWW = [coupling.replace("z", "w") for coupling in cqsq_spin0_HVV]
    Lambda_qsq_spin0_HWW = [coupling.replace("z", "w") for coupling in Lambda_qsq_spin0_HVV]
    vvcoupl_spin0_HWW = [coupling.replace("z", "w") for coupling in vvcoupl_spin0_HVV]
+   # Second resonance couplings
+   cqsq_spin0_H2VV = [coupling.replace("cz", "c2z") for coupling in cqsq_spin0_HVV]
+   Lambda_qsq_spin0_H2VV = [coupling.replace("Lambda", "Lambda2") for coupling in Lambda_qsq_spin0_HVV]
+   vvcoupl_spin0_H2VV = [coupling.replace("gh", "gh2") for coupling in vvcoupl_spin0_HVV]
+   cqsq_spin0_H2WW = [coupling.replace("z", "w") for coupling in cqsq_spin0_H2VV]
+   Lambda_qsq_spin0_H2WW = [coupling.replace("z", "w") for coupling in Lambda_qsq_spin0_H2VV]
+   vvcoupl_spin0_H2WW = [coupling.replace("z", "w") for coupling in vvcoupl_spin0_H2VV]
+
    # Spin-1 HQQ couplings
    qqcoupl_spin1 = [
       "zprime_qq_left",
@@ -101,7 +109,7 @@ class Couplings(dict):
    def getspin(self, doreweighting):
        if not doreweighting: return 0
        spin = {S: False for S in (0, 1, 2)}
-       for coupling in self.qqcoupl_spin0 + self.ggcoupl_spin0 + self.cqsq_spin0_HVV + self.Lambda_qsq_spin0_HVV + self.vvcoupl_spin0_HVV + self.cqsq_spin0_HWW + self.Lambda_qsq_spin0_HWW + self.vvcoupl_spin0_HWW:
+       for coupling in self.qqcoupl_spin0_HQQ + self.ggcoupl_spin0_HGG + self.cqsq_spin0_HVV + self.Lambda_qsq_spin0_HVV + self.vvcoupl_spin0_HVV + self.cqsq_spin0_HWW + self.Lambda_qsq_spin0_HWW + self.vvcoupl_spin0_HWW:
            if self[coupling]:
                spin[0] = True
        for coupling in self.qqcoupl_spin1 + self.vvcoupl_spin1:
@@ -136,19 +144,19 @@ class Couplings(dict):
       super(Couplings, self).__setitem__(key, value)
 
    def allnames(self):
-      return self.qqcoupl_spin0 + self.ggcoupl_spin0 + self.cqsq_spin0_HVV + self.Lambda_qsq_spin0_HVV + self.vvcoupl_spin0_HVV + self.cqsq_spin0_HWW + self.Lambda_qsq_spin0_HWW + self.vvcoupl_spin0_HWW + self.qqcoupl_spin1 + self.vvcoupl_spin1 + self.qqcoupl_spin2 + self.ggcoupl_spin2 + self.vvcoupl_spin2
+      return self.qqcoupl_spin0_HQQ + self.ggcoupl_spin0_HGG + self.cqsq_spin0_HVV + self.Lambda_qsq_spin0_HVV + self.vvcoupl_spin0_HVV + self.cqsq_spin0_HWW + self.Lambda_qsq_spin0_HWW + self.vvcoupl_spin0_HWW + self.qqcoupl_spin1 + self.vvcoupl_spin1 + self.qqcoupl_spin2 + self.ggcoupl_spin2 + self.vvcoupl_spin2
 
    def getcouplings(self, key, imag=False):
       if key == "Hqqcoupl":
          if not imag:
-            return [self[name].real for name in self.qqcoupl_spin0]
+            return [self[name].real for name in self.qqcoupl_spin0_HQQ]
          else:
-            return [self[name].imag for name in self.qqcoupl_spin0]
+            return [self[name].imag for name in self.qqcoupl_spin0_HQQ]
       elif key == "Hggcoupl":
          if not imag:
-            return [self[name].real for name in self.ggcoupl_spin0]
+            return [self[name].real for name in self.ggcoupl_spin0_HGG]
          else:
-            return [self[name].imag for name in self.ggcoupl_spin0]
+            return [self[name].imag for name in self.ggcoupl_spin0_HGG]
       elif key == "HzzCLambda_qsq":
          return [self[name].real for name in self.cqsq_spin0_HVV]
       elif key == "HzzLambda_qsq":
