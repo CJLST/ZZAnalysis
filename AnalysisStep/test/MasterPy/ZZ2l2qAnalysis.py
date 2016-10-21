@@ -219,18 +219,16 @@ elif (LEPTON_SETUP == 2012):
   #  process.triggerTriEle  = cms.Path(process.hltFilterTriEle)
 
 elif (LEPTON_SETUP == 2016):
-    #FIXME: For now, the MC paths are the ones used in the RunIISpring15DR74 MC samples for 25ns,7e33 conditions.
-    process.hltFilterDiEle.HLTPaths = ["HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*"]
-    #process.hltFilterDiEle.HLTPaths = ["HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*"] #for 25ns,14e33 (not necessary in 2015 data)
+    process.hltFilterDiEle.HLTPaths = ["HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v*"]
     process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*"]
   #  process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"]
     #process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"] #for 25ns,14e33 (not necessary in 2015 data)
   #  process.hltFilterTriEle.HLTPaths = ["HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v*"]
   #  process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_12_10_5_v*"]
-    process.hltFilterSingleEle.HLTPaths = ["HLT_Ele27_eta2p1_WPLoose_Gsf_v*"]
-    process.hltFilterSingleMu.HLTPaths = ["HLT_IsoMu27_v*"]
-  #  process.triggerTriEle = cms.Path(process.hltFilterTriEle)
-  #  process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
+    process.hltFilterSingleEle.HLTPaths = ["HLT_Ele25_eta2p1_WPTight_Gsf_v*","HLT_Ele27_WPTight_Gsf_v*","HLT_Ele27_eta2p1_WPLoose_Gsf_v*"]
+    process.hltFilterSingleMu.HLTPaths = ["HLT_IsoMu20_v*","HLT_IsoTkMu20_v*","HLT_IsoMu22_v*","HLT_IsoTkMu22_v*"]
+   #  process.triggerTriEle = cms.Path(process.hltFilterTriEle)
+   #  process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
     process.triggerSingleEle = cms.Path(process.hltFilterSingleEle)
     process.triggerSingleMu = cms.Path(process.hltFilterSingleMu)
 
@@ -687,7 +685,7 @@ FOURGOODLEPTONS    =  ("userFloat('d1.GoodLeptons')" +
 
 Z1MASS            = "daughter('Z1').mass>40 && daughter('Z1').mass<180 && daughter('Z1').pt>100"            # SR is 70-115
 JETMASS           = ("daughter('Z1').pt>170. && abs(daughter('Z1').eta)<2.4 &&" +                  " userFloat('d0.ak8PFJetsCHSCorrPrunedMass') > 40. && userFloat('d0.ak8PFJetsCHSCorrPrunedMass') <180. && " + 
-                   "userFloat('d0.NjettinessAK8:tau2')/userFloat('d0.NjettinessAK8:tau1') <0.75")            # SR is 65-105
+                   "userFloat('d0.NjettinessAK8:tau2')/userFloat('d0.NjettinessAK8:tau1') <0.6")            # SR is 65-105
 Z2MASS            = "daughter('Z2').mass>55 && daughter('Z2').mass<120 && daughter('Z2').pt>100" 
 #MLL3On4_12        = "userFloat('mZa')>12" # mll>12 on 3/4 pairs; 
 #MLLALLCOMB        = "userFloat('mLL6')>4" # mll>4 on 6/6 AF/AS pairs;
@@ -945,6 +943,7 @@ process.cleanJets = cms.EDProducer("JetsWithLeptonsRemover",
                                    ElectronPreselection = cms.string("userFloat('isGood') && userFloat('passCombRelIsoPFFSRCorr')"),
                                    DiBosonPreselection  = cms.string(""),
                                    MatchingType = cms.string("byDeltaR"),
+                                   DeltaRCut = cms.untracked.double(0.4),
                                    cleanFSRFromLeptons = cms.bool(True),
                                    DebugPlots = cms.untracked.bool(False)
                                    )
@@ -986,6 +985,7 @@ process.cleanJetsFat = cms.EDProducer("JetsWithLeptonsRemover",
                                    ElectronPreselection = cms.string("userFloat('isGood') && userFloat('passCombRelIsoPFFSRCorr')"),
                                    DiBosonPreselection  = cms.string(""),
                                    MatchingType = cms.string("byDeltaR"),
+                                   DeltaRCut = cms.untracked.double(0.8),  
                                    cleanFSRFromLeptons = cms.bool(True),
                                    DebugPlots = cms.untracked.bool(False)
                                    )

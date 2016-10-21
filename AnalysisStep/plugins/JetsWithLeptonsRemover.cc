@@ -3,7 +3,7 @@
  *
  *  $Date:  $
  *  $Revision: $
- *  \author R. Bellan - UNITO <riccardo.bellan@cern.ch>
+ *  \author R. Covarelli
  */
 
 
@@ -66,6 +66,8 @@ private:
   // Some istograms for monitoring
   bool  activateDebugPrintOuts_;
   bool  doDebugPlots_;
+  double theDeltaRCut_;
+
   TH1F *hNLeptonJets;
   TH1F *hDeltaPt_jet_lepton;
   TH1F *hDeltaPt_jetcomp_lepton;
@@ -91,10 +93,11 @@ JetsWithLeptonsRemover::JetsWithLeptonsRemover(const edm::ParameterSet & iConfig
   , preselectionVV_   (iConfig.getParameter<std::string>("DiBosonPreselection"))
   , cleanFSRFromLeptons_   (iConfig.getParameter<bool>("cleanFSRFromLeptons"))
   , activateDebugPrintOuts_ (iConfig.getUntrackedParameter<bool>("DebugPrintOuts",false))   
-  , doDebugPlots_           (iConfig.getUntrackedParameter<bool>("DebugPlots",false)) 
+  , doDebugPlots_           (iConfig.getUntrackedParameter<bool>("DebugPlots",false))
+  , theDeltaRCut_  (iConfig.getUntrackedParameter<double>("DeltaRCut",0.4))
 {
 
-  std::string matchingType = iConfig.getParameter<std::string>("MatchingType");
+  std::string matchingType = iConfig.getParameter<std::string>("MatchingType"); 
   if(matchingType == "byConstituents") matchingType_ = JetsWithLeptonsRemover::byConstituents;
   else if(matchingType == "byDeltaR")  matchingType_ = JetsWithLeptonsRemover::byDeltaR;
   else std::cout << "Not making any matching, the matching you choose is not foreseen: " << matchingType << std::endl; 
@@ -184,7 +187,7 @@ bool JetsWithLeptonsRemover::isMatchingWithZZLeptons(const edm::Event & event, c
 	for(int j=0; j<2; ++j){
 	  bool checkingVariable = false;
 	  if (matchingType_ == JetsWithLeptonsRemover::byDeltaR)
-	    checkingVariable = reco::deltaR(*v->daughter(j), jet) < 0.4;
+	    checkingVariable = reco::deltaR(*v->daughter(j), jet) < theDeltaRCut_;
 	  else
 	    std::cout << "Not making any matching, the matching you choose is not foreseen" << std::endl;
 	    
@@ -243,7 +246,7 @@ bool JetsWithLeptonsRemover::isMatchingWith(const edm::EDGetTokenT<edm::View<LEP
       
     bool checkingVariable = false;
     if (matchingType_ == JetsWithLeptonsRemover::byDeltaR)
-      checkingVariable = reco::deltaR(lepton, jet) < 0.4;
+      checkingVariable = reco::deltaR(lepton, jet) < theDeltaRCut_;
     else
       std::cout << "Not making any matching, the matching you choose is not foreseen" << std::endl;
     
@@ -259,7 +262,7 @@ bool JetsWithLeptonsRemover::isMatchingWith(const edm::EDGetTokenT<edm::View<LEP
       if (gammas->size()==1){
 	const pat::PFParticle* fsr = gammas->begin()->get();
 	if (matchingType_ == JetsWithLeptonsRemover::byDeltaR) {
-	  checkingVariable = (reco::deltaR(*fsr, jet) < 0.4);
+	  checkingVariable = (reco::deltaR(*fsr, jet) < theDeltaRCut_);
 	}
 	if(checkingVariable){
 	  if(activateDebugPrintOuts_) {
