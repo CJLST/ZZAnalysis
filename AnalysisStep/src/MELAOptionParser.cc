@@ -4,10 +4,13 @@ using namespace std;
 
 
 MELAOptionParser::MELAOptionParser(string stropts) :
+strCluster("Common"),
 noBranching(false),
 includePAux(false),
+includePConst(false),
 isPM4L(false),
 isGenProb(false),
+defME(0.),
 hmass(-1),
 h2mass(-1),
 hwidth(0.),
@@ -51,7 +54,7 @@ void MELAOptionParser::splitOptionRecursive(const string& rawoption, vector<stri
   }
   if (remnant!="") splitoptions.push_back(remnant);
 }
-Bool_t MELAOptionParser::checkListVariable(vector<string>& list, string var){
+Bool_t MELAOptionParser::checkListVariable(const vector<string>& list, const string& var) const{
   for (unsigned int v=0; v<list.size(); v++){
     if (list.at(v)==var) return true; // Look for exact match
   }
@@ -71,6 +74,7 @@ void MELAOptionParser::interpretOption(string wish, string value){
   else if (wish=="isPM4L" || wish=="isPm4l") isPM4L = Bool_t(((UShort_t)atoi(value.c_str()))>0);
   else if (wish=="NoBranch") noBranching = Bool_t(((UShort_t)atoi(value.c_str()))>0);
 
+  else if (wish=="defME" || wish=="Default") defME = (Float_t)atof(value.c_str());
   else if (wish=="hmass" || wish=="MH") hmass = (Float_t)atof(value.c_str());
   else if (wish=="h2mass" || wish=="MH2") h2mass = (Float_t)atof(value.c_str());
   else if (wish=="hwidth" || wish=="GaH") hwidth = (Float_t)atof(value.c_str());
@@ -78,6 +82,7 @@ void MELAOptionParser::interpretOption(string wish, string value){
 
   else if (wish=="Name") strName = value;
   else if (wish=="Alias") strAlias = value;
+  else if (wish=="Cluster") strCluster = value;
 
   else if (wish=="Options"){
     vector<string> vtmp;
@@ -88,6 +93,11 @@ void MELAOptionParser::interpretOption(string wish, string value){
         string tmpwish, tmpvalue;
         splitOption(opt, tmpwish, tmpvalue, '=');
         includePAux=Bool_t(((UShort_t)atoi(tmpvalue.c_str()))>0);
+      }
+      else if (opt.find("AddPConst")){
+        string tmpwish, tmpvalue;
+        splitOption(opt, tmpwish, tmpvalue, '=');
+        includePConst=Bool_t(((UShort_t)atoi(tmpvalue.c_str()))>0);
       }
       else if (opt.find("AddP")!=string::npos) setAddedAliases(opt);
       else if (opt.find("SubtractP")!=string::npos) setSubtractedAliases(opt);

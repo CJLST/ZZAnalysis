@@ -16,7 +16,6 @@
 
 #include <ZZAnalysis/AnalysisStep/interface/CutSet.h>
 #include <ZZAnalysis/AnalysisStep/interface/DaughterDataHelpers.h>
-#include <ZZMatrixElement/MELA/interface/Mela.h>
 //#include <ZZAnalysis/AnalysisStep/interface/ZZMassErrors.h>
 //#include <ZZAnalysis/AnalysisStep/interface/MCHistoryTools.h>
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
@@ -42,6 +41,8 @@
 #include <ZZAnalysis/AnalysisStep/interface/utils.h>
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
 #include <ZZAnalysis/AnalysisStep/interface/JetCleaner.h>
+#include <ZZAnalysis/AnalysisStep/interface/MELABranch.h>
+#include <ZZAnalysis/AnalysisStep/interface/MELACluster.h>
 #include <KinZfitter/KinZfitter/interface/KinZfitter.h>
 
 #include "TH2F.h"
@@ -49,8 +50,10 @@
 #include "TLorentzVector.h"
 
 #include <string>
+#include <vector>
 
 using namespace zzanalysis;
+using namespace BranchHelpers;
 
 bool doVtxFit = false;
 
@@ -70,6 +73,9 @@ private:
   virtual void endJob(){};
 
   void getPairMass(const reco::Candidate* lp, const reco::Candidate* lm, FSRToLepMap& photons, float& mass, int& ID);
+  void buildMELA();
+  bool addToMELACluster(MELAComputation* me_computer);
+  void clearMELA();
 
   edm::EDGetTokenT<edm::View<reco::CompositeCandidate> > candidateToken;
   const CutSet<pat::CompositeCandidate> preBestCandSelection;
@@ -78,6 +84,13 @@ private:
   int setup;
   float superMelaMass;
   Mela* mela;
+  std::vector<std::string> recoMElist;
+  std::vector<MELAHypothesis*> me_units;
+  std::vector<MELAHypothesis*> me_aliased_units;
+  std::vector<MELAComputation*> me_computers;
+  std::vector<MELACluster*> me_clusters;
+  std::vector<MELABranch*> me_branches;
+
   bool embedDaughterFloats;
   bool ZRolesByMass;
   reco::CompositeCandidate::role_collection rolesZ1Z2;
@@ -104,7 +117,9 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
   sampleType(iConfig.getParameter<int>("sampleType")),
   setup(iConfig.getParameter<int>("setup")),
   superMelaMass(iConfig.getParameter<double>("superMelaMass")),
-  embedDaughterFloats(iConfig.getUntrackedParameter<bool>("embedDaughterFloats",true)),
+  mela(0),
+  recoMElist(iConfig.getParameter<std::vector<std::string>>("recoProbabilities")),
+  embedDaughterFloats(iConfig.getUntrackedParameter<bool>("embedDaughterFloats", true)),
   ZRolesByMass(iConfig.getParameter<bool>("ZRolesByMass")),
   isMC(iConfig.getParameter<bool>("isMC")),
   doKinFit(iConfig.getParameter<bool>("doKinFit")),
@@ -115,8 +130,7 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
 {
   produces<pat::CompositeCandidateCollection>();
 
-  mela = new Mela(SetupToSqrts(setup), superMelaMass, TVar::ERROR);
-  mela->setCandidateDecayMode(TVar::CandidateDecay_ZZ);
+  buildMELA();
 
   jetToken = consumes<edm::View<pat::Jet> >(edm::InputTag("cleanJets"));
   metToken = consumes<pat::METCollection>(edm::InputTag("slimmedMETs"));
@@ -159,7 +173,8 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
 
 ZZCandidateFiller::~ZZCandidateFiller(){
   delete kinZfitter;
-  delete mela;
+
+  clearMELA();
 }
 
 
@@ -1755,7 +1770,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
 
 void
-ZZCandidateFiller::getPairMass(const reco::Candidate* lp, const reco::Candidate* lm, ZZCandidateFiller::FSRToLepMap& photons, float& mass, int& ID) {
+ZZCandidateFiller::getPairMass(const reco::Candidate* lp, const reco::Candidate* lm, ZZCandidateFiller::FSRToLepMap& photons, float& mass, int& ID){
   math::XYZTLorentzVector llp4 = lp->p4()+lm->p4();
   auto lpp = photons.find(lp);
   auto lmp = photons.find(lm);
@@ -1763,6 +1778,70 @@ ZZCandidateFiller::getPairMass(const reco::Candidate* lp, const reco::Candidate*
   if (lmp!=photons.end()) llp4+=lmp->second->p4();
   mass=llp4.mass();
   ID=lp->pdgId()*lm->pdgId();
+}
+
+void ZZCandidateFiller::buildMELA(){
+  mela = new Mela(SetupToSqrts(setup), superMelaMass, TVar::ERROR);
+  mela->setCandidateDecayMode(TVar::CandidateDecay_ZZ);
+
+  for (unsigned int it=0; it<recoMElist.size(); it++){
+    // Create a hypothesis for each option
+    MELAHypothesis* me_hypo = new MELAHypothesis(mela, recoMElist.at(it));
+    me_units.push_back(me_hypo);
+
+    MELAOptionParser* me_opt = me_hypo->getOption();
+    if (me_opt->isAliased() )me_aliased_units.push_back(me_hypo);
+
+    // Create a computation for each hypothesis
+    MELAComputation* me_computer = new MELAComputation(me_hypo);
+    me_computers.push_back(me_computer);
+
+    // Add the computation to a named cluster to keep track of JECUp/JECDn, or for best-pWH_SM Lep_WH computations
+    if (!addToMELACluster(me_computer)){
+      MELACluster* tmpcluster = new MELACluster(me_computer->getCluster());
+      me_clusters.push_back(tmpcluster);
+    }
+
+    // Create the necessary branches for each computation
+    // Notice that no tree is passed, so no branches to anything are created.
+    string basename = me_opt->getName();
+    if (me_opt->isGen()) basename = string("Gen_") + basename;
+    MELABranch* tmpbranch;
+    if (me_opt->hasPAux()){
+      tmpbranch = new MELABranch(
+        (TTree*)0, TString((string("pAux_") + basename).c_str()),
+        me_computer->getVal(MELAHypothesis::UsePAux), me_computer
+        );
+      me_branches.push_back(tmpbranch);
+    }
+    if (me_opt->hasPConst()){
+      tmpbranch = new MELABranch(
+        (TTree*)0, TString((string("pConst_") + basename).c_str()),
+        me_computer->getVal(MELAHypothesis::UsePConstant), me_computer
+        );
+      me_branches.push_back(tmpbranch);
+    }
+    tmpbranch = new MELABranch(
+      (TTree*)0, TString((string("p_") + basename).c_str()),
+      me_computer->getVal(MELAHypothesis::UseME), me_computer
+      );
+    me_branches.push_back(tmpbranch);
+  }
+  // Loop over the computations to add any contingencies to aliased hypotheses
+  for (unsigned int it=0; it<me_computers.size(); it++) me_computers.at(it)->addContingencies(me_aliased_units);
+
+}
+bool ZZCandidateFiller::addToMELACluster(MELAComputation* me_computer){
+  for (unsigned int it=0; it<me_clusters.size(); it++){ if (me_clusters.at(it)->getName()==me_computer->getName()){ me_clusters.at(it)->addComputation(me_computer); return true; } }
+  return false;
+}
+void ZZCandidateFiller::clearMELA(){
+  for (unsigned int it=0; it<me_branches.size(); it++) delete me_branches.at(it);
+  for (unsigned int it=0; it<me_clusters.size(); it++) delete me_clusters.at(it);
+  for (unsigned int it=0; it<me_computers.size(); it++) delete me_computers.at(it);
+  //for (unsigned int it=0; it<me_aliased_units.size(); it++) delete me_aliased_units.at(it); // DO NOT DELETE THIS!
+  for (unsigned int it=0; it<me_units.size(); it++) delete me_units.at(it);
+  delete mela;
 }
 
 

@@ -36,6 +36,7 @@ protected:
   std::string couplingsString;
   std::string strName;
   std::string strAlias;
+  std::string strCluster;
 
 public:
 
@@ -56,8 +57,10 @@ protected:
 
   Bool_t noBranching;
   Bool_t includePAux;
+  Bool_t includePConst;
   Bool_t isPM4L;
   Bool_t isGenProb;
+  Float_t defME;
 
 public:
 
@@ -78,17 +81,20 @@ public:
   void splitOptionRecursive(const std::string& rawoption, std::vector<std::string>& splitoptions, char delimiter);
   void interpretOption(std::string wish, std::string value);
 
-  Bool_t usePM4L(){ return isPM4L; }
-  Bool_t isGen(){ return isGenProb; }
-  Bool_t hasPAux(){ return includePAux; }
-  Bool_t isAliased(){ return !strAlias.empty(); }
-  Bool_t doBranch(){ return !noBranching; }
-  std::string getName(){ return strName; }
-  std::string getAlias(){ return strAlias; }
+  Bool_t usePM4L() const{ return isPM4L; }
+  Bool_t isGen() const{ return isGenProb; }
+  Bool_t hasPAux() const{ return includePAux; }
+  Bool_t hasPConst() const{ return includePConst; }
+  Bool_t isAliased() const{ return !strAlias.empty(); }
+  Bool_t doBranch() const{ return !noBranching; }
+  Float_t getDefaultME() const{ return defME; }
+  std::string getName() const{ return strName; }
+  std::string getAlias() const{ return strAlias; }
+  std::string getCluster() const{ return strCluster; }
 
 protected:
 
-  Bool_t checkListVariable(std::vector<std::string>& list, std::string var);
+  Bool_t checkListVariable(const std::vector<std::string>& list, const std::string& var) const;
 
   void setProcess(std::string opt);
   void setProduction(std::string opt);

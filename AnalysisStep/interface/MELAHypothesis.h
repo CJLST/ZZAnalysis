@@ -30,8 +30,6 @@ protected:
   float pAux;
   float cMEAvg;
 
-  void reset();
-
 public:
 
   enum METype{
@@ -40,7 +38,7 @@ public:
     UsePConstant
   };
 
-  Float_t getVal(METype valtype);
+  Float_t getVal(METype valtype) const;
   MELAOptionParser* getOption(){ return opt; }
 
   MELAHypothesis(
@@ -51,7 +49,7 @@ public:
     Mela* mela_,
     std::string stropt
     );
-  virtual ~MELAHypothesis(){ if (optIsOwned) delete opt; }
+  virtual ~MELAHypothesis(){ if (optIsOwned) delete opt; opt=0; }
 
   void computeP(MELACandidate* cand); // Wrapper
   void computeP(unsigned int index); // Wrapper
@@ -59,6 +57,7 @@ public:
   void computePM4l(MELACandidate* cand); // Wrapper
   void computePM4l(unsigned int index); // Wrapper
   void computePM4l(); // Main function
+  void reset();
 
 };
 

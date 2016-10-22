@@ -6,6 +6,9 @@ using namespace std;
 MELAComputation::MELAComputation(MELAHypothesis* targetP_) :
   targetP(targetP_),
   opt(targetP->getOption()),
+  pME(0.),
+  pAux(1.),
+  cMEAvg(1.),
   maximizationCachedVal(-1.)
 {}
 MELAComputation::~MELAComputation(){
@@ -14,7 +17,7 @@ MELAComputation::~MELAComputation(){
   dividedP.clear();
 }
 
-void MELAComputation::addContingencies(vector<MELAHypothesis*> allHypos){
+void MELAComputation::addContingencies(vector<MELAHypothesis*>& allHypos){
   addContingency(allHypos, opt->addedAliases, addedP);
   addContingency(allHypos, opt->subtractedAliases, subtractedP);
   addContingency(allHypos, opt->multipliedAliases, multipliedP);
@@ -71,7 +74,7 @@ Float_t MELAComputation::extractVal(MELAHypothesis::METype valtype){
 
   return tmp;
 }
-Float_t MELAComputation::getVal(MELAHypothesis::METype valtype){
+Float_t MELAComputation::getVal(MELAHypothesis::METype valtype) const{
   switch (valtype){
   case MELAHypothesis::UseME:
     return pME;
@@ -82,6 +85,14 @@ Float_t MELAComputation::getVal(MELAHypothesis::METype valtype){
   default:
     return 0;
   }
+}
+
+void MELAComputation::reset(){
+  maximizationCachedVal=-1.;
+  targetP->reset();
+  pME = targetP->getVal(MELAHypothesis::UseME);
+  pAux = targetP->getVal(MELAHypothesis::UsePAux);
+  cMEAvg = targetP->getVal(MELAHypothesis::UsePConstant);
 }
 
 

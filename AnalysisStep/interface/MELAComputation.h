@@ -29,6 +29,7 @@ protected:
   Float_t pME;
   Float_t pAux;
   Float_t cMEAvg;
+  Float_t maximizationCachedVal;
 
   std::vector<MELAHypothesis*> addedP;
   std::vector<MELAHypothesis*> subtractedP;
@@ -36,7 +37,6 @@ protected:
   std::vector<MELAHypothesis*> dividedP;
   // The calculation done is (targetP-subtractedP)*multipliedP/dividedP
 
-  Float_t maximizationCachedVal;
   std::vector<MELAHypothesis*> maximize_num;
   std::vector<MELAHypothesis*> maximize_denom;
   // If the options specify maximization of num/denom, keep track of the value and only update when needed.
@@ -48,17 +48,22 @@ protected:
 
 public:
 
-  MELAOptionParser* getOptions(){ return opt; }
+  MELAOptionParser* getOption(){ return opt; }
 
-  void addContingencies(std::vector<MELAHypothesis*> allHypos); // Fill addedP, subtractedP, dividedP, multipliedP etc. vectors based on the specifications in the options
+  void addContingencies(std::vector<MELAHypothesis*>& allHypos); // Fill addedP, subtractedP, dividedP, multipliedP etc. vectors based on the specifications in the options
 
   void update();
-  Float_t getVal(MELAHypothesis::METype valtype); // Extract pME, pAux or cMEAvg
+  Float_t getVal(MELAHypothesis::METype valtype) const; // Extract pME, pAux or cMEAvg
   MELAHypothesis* getHypothesis(){ return targetP; } // Return the hypothesis, most likely to group in a vector
+  std::string getName() const{ if (opt!=0) return opt->getName(); else return ""; }
+  std::string getAlias() const{ if (opt!=0) return opt->getAlias(); else return ""; }
+  std::string getCluster() const{ if (opt!=0) return opt->getCluster(); else return ""; }
 
   MELAComputation(MELAHypothesis* targetP_);
   virtual ~MELAComputation();
   
+  void reset();
+
 };
 
 

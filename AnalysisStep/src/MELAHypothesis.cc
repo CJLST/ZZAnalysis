@@ -10,26 +10,18 @@ MELAHypothesis::MELAHypothesis(
   ) :
   mela(mela_),
   opt(opt_),
-  optIsOwned(false),
-
-  pME(-1.),
-  pAux(1.),
-  cMEAvg(1.)
-{}
+  optIsOwned(false)
+{ reset(); }
 MELAHypothesis::MELAHypothesis(
   Mela* mela_,
   string stropt
   ) :
   mela(mela_),
-  optIsOwned(true),
-
-  pME(-1.),
-  pAux(1.),
-  cMEAvg(1.)
-{ opt = new MELAOptionParser(stropt); }
+  optIsOwned(true)
+{ opt = new MELAOptionParser(stropt); reset(); }
 
 void MELAHypothesis::reset(){
-  pME=-1.;
+  pME=0.; if (opt!=0) pME = opt->getDefaultME();
   pAux=1.;
   cMEAvg=1.;
 }
@@ -148,7 +140,7 @@ void MELAHypothesis::computePM4l(){
   if (mela->getCurrentCandidate()!=0) mela->computePM4l(opt->superSyst, pME);
 }
 
-Float_t MELAHypothesis::getVal(METype valtype){
+Float_t MELAHypothesis::getVal(METype valtype) const{
   if (valtype==UseME) return pME;
   else if (valtype==UsePAux) return pAux;
   else if (valtype==UsePConstant) return cMEAvg;
