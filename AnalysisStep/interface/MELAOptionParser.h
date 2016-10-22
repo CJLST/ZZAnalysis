@@ -1,8 +1,17 @@
-/** \class MELABranch
+/** \class MELAOptionParser
 *
 *
 *  \author N. Amapane - Torino
 *  \author U. Sarica - JHU
+*
+*
+*  Description:
+*
+*  This container class is implemented to keep the options of the MELA computation in one place.
+*  Some of the options (e.g. AddPAux) decides if there should be a separate branch related with the same computation.
+*  These options are meant to be used in the main body of the code, the creation of the MELABranches,
+*  and the control of the computation or the hypothesis itself.
+*
 */
 #ifndef MELAOPTIONPARSER_H
 #define MELAOPTIONPARSER_H
@@ -25,15 +34,33 @@ protected:
 
   std::vector<std::string> rawOptions;
   std::string couplingsString;
+  std::string strName;
+  std::string strAlias;
 
 public:
+
+  std::vector<std::string> addedAliases;
+  std::vector<std::string> subtractedAliases;
+  std::vector<std::string> multipliedAliases;
+  std::vector<std::string> dividedAliases;
+
+  std::vector<std::string> maximizationNumerators;
+  std::vector<std::string> maximizationDenominators;
 
   TVar::Process proc;
   TVar::Production prod;
   TVar::MatrixElement ME;
   TVar::SuperMelaSyst superSyst;
+
+protected:
+
+  Bool_t noBranching;
   Bool_t includePAux;
-  UInt_t isGenProb;
+  Bool_t isPM4L;
+  Bool_t isGenProb;
+
+public:
+
   Float_t hmass;
   Float_t h2mass;
   Float_t hwidth;
@@ -47,12 +74,17 @@ public:
   ~MELAOptionParser(){}
 
   void analyze();
-  void splitOption(std::string rawoption, std::string& wish, std::string& value, char delimiter=':');
-  void splitOptionRecursive(std::string rawoption, std::vector<std::string>& splitoptions, char delimiter=';');
+  void splitOption(const std::string& rawoption, std::string& wish, std::string& value, char delimiter);
+  void splitOptionRecursive(const std::string& rawoption, std::vector<std::string>& splitoptions, char delimiter);
   void interpretOption(std::string wish, std::string value);
 
-  Bool_t isGen(){ return Bool_t(isGenProb>0); }
+  Bool_t usePM4L(){ return isPM4L; }
+  Bool_t isGen(){ return isGenProb; }
   Bool_t hasPAux(){ return includePAux; }
+  Bool_t isAliased(){ return !strAlias.empty(); }
+  Bool_t doBranch(){ return !noBranching; }
+  std::string getName(){ return strName; }
+  std::string getAlias(){ return strAlias; }
 
 protected:
 
@@ -63,6 +95,14 @@ protected:
   void setME(std::string opt);
   void setSuperMelaSyst(std::string opt);
   void extractCoupling(std::string opt);
+
+  void setAddedAliases(std::string opt);
+  void setSubtractedAliases(std::string opt);
+  void setMultipliedAliases(std::string opt);
+  void setDividedAliases(std::string opt);
+
+  void setMaximizationNumAliases(std::string opt);
+  void setMaximizationDenomAliases(std::string opt);
 
 };
 

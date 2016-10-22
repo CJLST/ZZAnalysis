@@ -4,7 +4,9 @@ using namespace std;
 
 
 MELAOptionParser::MELAOptionParser(string stropts) :
+noBranching(false),
 includePAux(false),
+isPM4L(false),
 isGenProb(false),
 hmass(-1),
 h2mass(-1),
@@ -22,8 +24,12 @@ void MELAOptionParser::analyze(){
     splitOption(rawOptions.at(opt), wish, value, rawdelimiter);
     interpretOption(wish, value);
   }
+
+  // Check options
+  if (strName==""){ cerr << "MELAOptionParser::analyze: No name detected. Please put a name!" << endl; assert(0); }
+
 }
-void MELAOptionParser::splitOption(string rawoption, string& wish, string& value, char delimiter){
+void MELAOptionParser::splitOption(const string& rawoption, string& wish, string& value, char delimiter){
   size_t posEq = rawoption.find(delimiter);
   if (posEq!=string::npos){
     wish=rawoption;
@@ -35,7 +41,7 @@ void MELAOptionParser::splitOption(string rawoption, string& wish, string& value
     value=rawoption;
   }
 }
-void MELAOptionParser::splitOptionRecursive(string rawoption, vector<string>& splitoptions, char delimiter){
+void MELAOptionParser::splitOptionRecursive(const string& rawoption, vector<string>& splitoptions, char delimiter){
   string suboption=rawoption, result=rawoption;
   string remnant;
   while (result!=""){
@@ -61,19 +67,34 @@ void MELAOptionParser::interpretOption(string wish, string value){
   else if (wish=="MatrixElement") setME(value);
   else if (wish=="SuperMelaSyst") setSuperMelaSyst(value);
 
-  else if (wish=="isGen") isGenProb = (UInt_t)atoi(value.c_str());
+  else if (wish=="isGen" || wish=="IsGen") isGenProb = Bool_t(((UShort_t)atoi(value.c_str()))>0);
+  else if (wish=="isPM4L" || wish=="isPm4l") isPM4L = Bool_t(((UShort_t)atoi(value.c_str()))>0);
+  else if (wish=="NoBranch") noBranching = Bool_t(((UShort_t)atoi(value.c_str()))>0);
 
   else if (wish=="hmass" || wish=="MH") hmass = (Float_t)atof(value.c_str());
   else if (wish=="h2mass" || wish=="MH2") h2mass = (Float_t)atof(value.c_str());
   else if (wish=="hwidth" || wish=="GaH") hwidth = (Float_t)atof(value.c_str());
   else if (wish=="h2width" || wish=="GaH2") h2width = (Float_t)atof(value.c_str());
 
+  else if (wish=="Name") strName = value;
+  else if (wish=="Alias") strAlias = value;
+
   else if (wish=="Options"){
     vector<string> vtmp;
     splitOptionRecursive(value, vtmp, ';');
     for (unsigned int iopt=0; iopt<vtmp.size(); iopt++){
       string opt = vtmp.at(iopt);
-      if (opt=="AddPAux") includePAux=true;
+      if (opt.find("AddPAux")){
+        string tmpwish, tmpvalue;
+        splitOption(opt, tmpwish, tmpvalue, '=');
+        includePAux=Bool_t(((UShort_t)atoi(tmpvalue.c_str()))>0);
+      }
+      else if (opt.find("AddP")!=string::npos) setAddedAliases(opt);
+      else if (opt.find("SubtractP")!=string::npos) setSubtractedAliases(opt);
+      else if (opt.find("MultiplyP")!=string::npos) setMultipliedAliases(opt);
+      else if (opt.find("DivideP")!=string::npos) setDividedAliases(opt);
+      else if (opt.find("MaxNumerator")!=string::npos) setMaximizationNumAliases(opt);
+      else if (opt.find("MaxDenominator")!=string::npos) setMaximizationDenomAliases(opt);
     }
   }
 
@@ -178,8 +199,9 @@ void MELAOptionParser::setSuperMelaSyst(string wish){
 }
 void MELAOptionParser::extractCoupling(string opt){
   string wish, strValRe, strValIm;
-  float valRe=0;
-  float valIm=0;
+  // Use double precision for couplings
+  Double_t valRe=0;
+  Double_t valIm=0;
   splitOption(opt, wish, strValRe, '=');
   // Lambda and cz/cw couplings have no imaginary components, so do not expect to parse them with ','.
   if (
@@ -441,4 +463,36 @@ void MELAOptionParser::extractCoupling(string opt){
   else if (wish=="b10"){ coupl_X.Gvvcoupl[gGRAVITON_VV_10][0]=valRe; coupl_X.Gvvcoupl[gGRAVITON_VV_10][1]=valIm; }
 
   else cerr << "MELAOptionParser::extractCoupling: Coupling " << wish << " is not supported!" << endl;
+}
+
+void MELAOptionParser::setAddedAliases(string opt){
+  string wish, aliases;
+  splitOption(opt, wish, aliases, '=');
+  splitOptionRecursive(aliases, addedAliases, ',');
+}
+void MELAOptionParser::setSubtractedAliases(string opt){
+  string wish, aliases;
+  splitOption(opt, wish, aliases, '=');
+  splitOptionRecursive(aliases, subtractedAliases, ',');
+}
+void MELAOptionParser::setMultipliedAliases(string opt){
+  string wish, aliases;
+  splitOption(opt, wish, aliases, '=');
+  splitOptionRecursive(aliases, multipliedAliases, ',');
+}
+void MELAOptionParser::setDividedAliases(string opt){
+  string wish, aliases;
+  splitOption(opt, wish, aliases, '=');
+  splitOptionRecursive(aliases, dividedAliases, ',');
+}
+
+void MELAOptionParser::setMaximizationNumAliases(string opt){
+  string wish, aliases;
+  splitOption(opt, wish, aliases, '=');
+  splitOptionRecursive(aliases, maximizationNumerators, ',');
+}
+void MELAOptionParser::setMaximizationDenomAliases(string opt){
+  string wish, aliases;
+  splitOption(opt, wish, aliases, '=');
+  splitOptionRecursive(aliases, maximizationDenominators, ',');
 }

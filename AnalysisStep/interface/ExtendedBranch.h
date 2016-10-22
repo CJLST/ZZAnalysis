@@ -69,7 +69,7 @@ namespace BranchHelpers{
     }
 
     void setVal(varType inVal){
-      if (isVector) value.push_back(inVal);
+      if (isVector) valueArray.push_back(inVal);
       else value = inVal;
     }
     varType getDefVal() const{

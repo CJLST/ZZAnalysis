@@ -1,8 +1,15 @@
-/** \class MELABranch
+/** \class MELAHypothesis
 *
 *
 *  \author N. Amapane - Torino
 *  \author U. Sarica - JHU
+*
+*
+*  Description:
+*
+*  This class is the main class to compute any MELA probability.
+*  It is meant to be completely blind to anything else might be happening outside itself.
+*
 */
 #ifndef MELAHYPOTHESIS_H
 #define MELAHYPOTHESIS_H
@@ -17,13 +24,13 @@ protected:
 
   Mela* mela;
   MELAOptionParser* opt;
+  Bool_t optIsOwned;
 
   float pME;
   float pAux;
   float cMEAvg;
 
   void reset();
-  void setVal();
 
 public:
 
@@ -33,13 +40,18 @@ public:
     UsePConstant
   };
 
-  float getVal(METype valtype);
+  Float_t getVal(METype valtype);
+  MELAOptionParser* getOption(){ return opt; }
 
   MELAHypothesis(
     Mela* mela_,
     MELAOptionParser* opt_
     );
-  virtual ~MELAHypothesis(){}
+  MELAHypothesis(
+    Mela* mela_,
+    std::string stropt
+    );
+  virtual ~MELAHypothesis(){ if (optIsOwned) delete opt; }
 
   void computeP(MELACandidate* cand); // Wrapper
   void computeP(unsigned int index); // Wrapper

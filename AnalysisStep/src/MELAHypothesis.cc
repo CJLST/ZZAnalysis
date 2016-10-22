@@ -1,6 +1,8 @@
 #include <ZZAnalysis/AnalysisStep/interface/MELAHypothesis.h>
 #include <iostream>
 
+using namespace std;
+
 
 MELAHypothesis::MELAHypothesis(
   Mela* mela_,
@@ -8,11 +10,23 @@ MELAHypothesis::MELAHypothesis(
   ) :
   mela(mela_),
   opt(opt_),
+  optIsOwned(false),
 
   pME(-1.),
   pAux(1.),
   cMEAvg(1.)
 {}
+MELAHypothesis::MELAHypothesis(
+  Mela* mela_,
+  string stropt
+  ) :
+  mela(mela_),
+  optIsOwned(true),
+
+  pME(-1.),
+  pAux(1.),
+  cMEAvg(1.)
+{ opt = new MELAOptionParser(stropt); }
 
 void MELAHypothesis::reset(){
   pME=-1.;
@@ -29,6 +43,8 @@ void MELAHypothesis::computeP(unsigned int index){
   computeP();
 }
 void MELAHypothesis::computeP(){
+  if (opt->usePM4L()){ computePM4l(); return; }
+
   reset();
 
   bool isGen = opt->isGen();
@@ -132,7 +148,7 @@ void MELAHypothesis::computePM4l(){
   if (mela->getCurrentCandidate()!=0) mela->computePM4l(opt->superSyst, pME);
 }
 
-float MELAHypothesis::getVal(METype valtype){
+Float_t MELAHypothesis::getVal(METype valtype){
   if (valtype==UseME) return pME;
   else if (valtype==UsePAux) return pAux;
   else if (valtype==UsePConstant) return cMEAvg;

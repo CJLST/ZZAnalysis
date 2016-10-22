@@ -8,7 +8,8 @@
 #define MELABRANCH_H
 
 #include "ExtendedBranch.h"
-#include "MELAHypothesis.h"
+#include "MELAComputation.h"
+
 
 namespace BranchHelpers{
 
@@ -16,24 +17,17 @@ namespace BranchHelpers{
 
   public:
 
-    MELAHypothesis* targetP;
-    MELAHypothesis* originP;
-    METype valtype;
+    MELAComputation* computer;
+    MELAHypothesis::METype valtype;
 
     MELABranch(
       TTree* theTree_, TString bname_, Float_t defVal_,
-      MELAHypothesis* targetP_, MELAHypothesis* originP_ = 0
-      ) :
-      ExtendedBranch(theTree_, bname_, defVal_, false),
-      targetP(targetP_), originP(originP_)
-    {
-      if (bname.Contains("pAux")) valtype = MELAHypothesis::UsePAux;
-      else if (bname.Contains("pAux")) valtype = MELAHypothesis::UsePConstant;
-      else valtype = MELAHypothesis::UseME;
-    }
+      MELAComputation* computer_
+      );
     virtual ~MELABranch(){}
 
-    void setVal(){ Float_t tmp=1.; if (targetP!=0) tmp *= targetP->getVal(valtype); if (originP!=0) tmp /= originP->getVal(valtype); setVal(tmp); }
+    // This function should be run after MELAComputation classes are all "update"d.
+    void setVal();
 
   };
 
