@@ -1804,28 +1804,30 @@ void ZZCandidateFiller::buildMELA(){
 
     // Create the necessary branches for each computation
     // Notice that no tree is passed, so no branches to anything are created.
-    string basename = me_opt->getName();
-    if (me_opt->isGen()) basename = string("Gen_") + basename;
-    MELABranch* tmpbranch;
-    if (me_opt->hasPAux()){
+    if (me_opt->doBranch()){
+      string basename = me_opt->getName();
+      if (me_opt->isGen()) basename = string("Gen_") + basename;
+      MELABranch* tmpbranch;
+      if (me_opt->hasPAux()){
+        tmpbranch = new MELABranch(
+          (TTree*)0, TString((string("pAux_") + basename).c_str()),
+          me_computer->getVal(MELAHypothesis::UsePAux), me_computer
+          );
+        me_branches.push_back(tmpbranch);
+      }
+      if (me_opt->hasPConst()){
+        tmpbranch = new MELABranch(
+          (TTree*)0, TString((string("pConst_") + basename).c_str()),
+          me_computer->getVal(MELAHypothesis::UsePConstant), me_computer
+          );
+        me_branches.push_back(tmpbranch);
+      }
       tmpbranch = new MELABranch(
-        (TTree*)0, TString((string("pAux_") + basename).c_str()),
-        me_computer->getVal(MELAHypothesis::UsePAux), me_computer
+        (TTree*)0, TString((string("p_") + basename).c_str()),
+        me_computer->getVal(MELAHypothesis::UseME), me_computer
         );
       me_branches.push_back(tmpbranch);
     }
-    if (me_opt->hasPConst()){
-      tmpbranch = new MELABranch(
-        (TTree*)0, TString((string("pConst_") + basename).c_str()),
-        me_computer->getVal(MELAHypothesis::UsePConstant), me_computer
-        );
-      me_branches.push_back(tmpbranch);
-    }
-    tmpbranch = new MELABranch(
-      (TTree*)0, TString((string("p_") + basename).c_str()),
-      me_computer->getVal(MELAHypothesis::UseME), me_computer
-      );
-    me_branches.push_back(tmpbranch);
   }
   // Loop over the computations to add any contingencies to aliased hypotheses
   for (unsigned int it=0; it<me_computers.size(); it++) me_computers.at(it)->addContingencies(me_aliased_units);
