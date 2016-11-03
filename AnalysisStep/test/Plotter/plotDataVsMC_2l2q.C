@@ -1,3 +1,4 @@
+
 /* 
  * usage: 
  * -specify parameters at the end of this file
@@ -246,8 +247,11 @@ float getDZjjspin2Constant(float ZZMass){
   return 0.14;
 }
 
-void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./goodDatasetsWithData.txt", bool sync = false, bool CR = false, bool draw = true, bool weightMCtrig = true, bool weighttau21 = true)
-{
+void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./goodDatasetsWithData.txt", bool sync = false, bool CR = false, int draw = 1, bool weightMCtrig = true, bool weighttau21 = true)
+{ 
+  // draw = 0 : do not draw, but save inputs for fits
+  //      = 1 : draw only PAS-style plots
+  //      = 2 : draw all
   
   float lumin = 12.95;   // ICHEP total
   setTDRStyle();
@@ -518,13 +522,18 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
     }
   }
   
-  TH1F* hmass[nProcesses][nType+6];
+  TH1F* hmass[nProcesses][nType+7];
   Float_t binsincl[] = { 350, 375, 400, 425, 450, 475, 500, 525, 550, 575, 600, 640, 680, 720, 760, 800, 850, 900, 1000, 1100, 1200, 1400, 1600, 2000};
   Int_t  binnumincl = sizeof(binsincl)/sizeof(Float_t) - 1; 
   Float_t binsbtag[] = { 350, 400, 450, 500, 550, 600, 680, 760, 850, 1000, 1200, 1600, 2000};
   Int_t  binnumbtag = sizeof(binsbtag)/sizeof(Float_t) - 1; 
+  TString hmasstags[nType+7] = {"","","untagged, merged jet","untagged, resolved jets",
+				"","","b-tagged, merged jet","b-tagged, resolved jets",
+				"","","VBF-tagged, merged jet","VBF-tagged, resolved jets",
+				"","","","","all categories, resolved jets","all categories, resolved jets","all categories, resolved jets"};
+
   for(int pr=0; pr<nProcesses; pr++){
-    for(int nt=0; nt<nType+6; nt++){
+    for(int nt=0; nt<nType+7; nt++){
       if (nt<4)        // mZZ high stats
 	 hmass[pr][nt] = new TH1F(Form("hmass_%s_%s",typeS[nt].c_str(),sProcess[pr].c_str()),
 				  Form("hmass_%s_%s",typeS[nt].c_str(),sProcess[pr].c_str()),		
@@ -541,12 +550,15 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	hmass[pr][nt] = new TH1F(Form("hmelaspin0_resolvedSR_%s",sProcess[pr].c_str()),
 				 Form("hmelaspin0_resolvedSR_%s",sProcess[pr].c_str()),		
 				 20,0.,1.);
-      else           // MELA spin-2
+      else if (nt == nType+5)         // MELA spin-2
 	hmass[pr][nt] = new TH1F(Form("hmelaspin2_resolvedSR_%s",sProcess[pr].c_str()),
 				 Form("hmelaspin2_resolvedSR_%s",sProcess[pr].c_str()),		
-				 20,0.,1.);			 
-      
-
+				 20,0.,1.);
+      else if (nt == nType+6)         // VBF-tagged
+	hmass[pr][nt] = new TH1F(Form("hmelavbf_allSR_%s",sProcess[pr].c_str()),
+				 Form("hmelavbf_allSR_%s",sProcess[pr].c_str()),		
+				 42,-1.05,1.05);
+ 
       hmass[pr][nt]->Sumw2();
     }
   }
@@ -772,35 +784,40 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
       int preferType = 0;    // choose merged or resolved
                              // and dump for synchronization 
       if (ZZMass->size() == 1 && abs(ZZCandType->at(0)) == 1) {
-        float mela = 1./(1.+getDZjjspin0Constant(ZZMass->at(0))*(pqqZJJ_VAMCFM->at(0)/p0plus_VAJHU->at(0)));
-        float vbfmela = ((phjj_VAJHU_highestPTJets->at(0) > 0. && nExtraJets > 1) ? 1./(1.+getDVBF2jetsConstant(ZZMass->at(0))*(phjj_VAJHU_highestPTJets->at(0)/pvbf_VAJHU_highestPTJets->at(0))) : -1.); 
-	if (writeThis) myfile << RunNumber << ":" << EventNumber << ":" << LumiNumber << ":" << Z2Mass->at(0)  << ":" << (abs(Z2Flav->at(0))==121 ? "Ele:" : "Muo:")  << pt1stLep << ":" << pt2ndLep << ":" << ZZMass->at(0) << ":" << Z1Mass->at(0) << ":" << Z1tau21->at(0) << ":" << Z1Pt->at(0) << ":" << mela << ":" << vbfmela << ":-1:-1:-1:-1:-1:-1:-1:" << Met << endl; 
-	nPassMerged++;
+	if (ZZMass->at(0) > 400) {
+	  float mela = 1./(1.+getDZjjspin0Constant(ZZMass->at(0))*(pqqZJJ_VAMCFM->at(0)/p0plus_VAJHU->at(0)));
+	  float vbfmela = ((phjj_VAJHU_highestPTJets->at(0) > 0. && nExtraJets > 1) ? 1./(1.+getDVBF2jetsConstant(ZZMass->at(0))*(phjj_VAJHU_highestPTJets->at(0)/pvbf_VAJHU_highestPTJets->at(0))) : -1.); 
+	  if (writeThis) myfile << RunNumber << ":" << EventNumber << ":" << LumiNumber << ":" << Z2Mass->at(0)  << ":" << (abs(Z2Flav->at(0))==121 ? "Ele:" : "Muo:")  << pt1stLep << ":" << pt2ndLep << ":" << ZZMass->at(0) << ":" << Z1Mass->at(0) << ":" << Z1tau21->at(0) << ":" << Z1Pt->at(0) << ":" << mela << ":" << vbfmela << ":-1:-1:-1:-1:-1:-1:-1:-1" << endl; 
+	  nPassMerged++;
+	}
 	preferType = 1;
       }
       else if (ZZMass->size() == 1 && abs(ZZCandType->at(0)) == 2) {
-	float mela = 1./(1.+getDZjjspin0Constant(ZZMass->at(0))*(pqqZJJ_VAMCFM->at(0)/p0plus_VAJHU->at(0)));
-        float vbfmela = ((phjj_VAJHU_highestPTJets->at(0) > 0. && nExtraJets > 1) ? 1./(1.+getDVBF2jetsConstant(ZZMass->at(0))*(phjj_VAJHU_highestPTJets->at(0)/pvbf_VAJHU_highestPTJets->at(0))) : -1.); 
-	if (writeThis) myfile << RunNumber << ":" << EventNumber << ":" << LumiNumber << ":" << Z2Mass->at(0)  << ":" << (abs(Z2Flav->at(0))==121 ? "Ele:" : "Muo:")  << pt1stLep << ":" << pt2ndLep << ":-1:-1:-1:-1:-1:-1:" << ZZMass->at(0) << ":" << Z1Mass->at(0) << ":" << pt1stJet << ":" << pt2ndJet << ":" << btag1stJet << ":" << mela << ":" << vbfmela << ":" << Met << endl;
-	nPassResol++;
+	if (ZZMass->at(0) > 400) {
+	  float mela = 1./(1.+getDZjjspin0Constant(ZZMass->at(0))*(pqqZJJ_VAMCFM->at(0)/p0plus_VAJHU->at(0)));
+	  float vbfmela = ((phjj_VAJHU_highestPTJets->at(0) > 0. && nExtraJets > 1) ? 1./(1.+getDVBF2jetsConstant(ZZMass->at(0))*(phjj_VAJHU_highestPTJets->at(0)/pvbf_VAJHU_highestPTJets->at(0))) : -1.); 
+	  if (writeThis) myfile << RunNumber << ":" << EventNumber << ":" << LumiNumber << ":" << Z2Mass->at(0)  << ":" << (abs(Z2Flav->at(0))==121 ? "Ele:" : "Muo:")  << pt1stLep << ":" << pt2ndLep << ":-1:-1:-1:-1:-1:-1:" << ZZMass->at(0) << ":" << ZZMassRefit->at(0) << ":" << Z1Mass->at(0) << ":" << pt1stJet << ":" << pt2ndJet << ":" << btag1stJet << ":" << mela << ":" << vbfmela << endl;
+	  nPassResol++;
+	}
         preferType = 2;
       }
       else if (ZZMass->size() == 2 && abs(ZZCandType->at(0)) == 1) {
-	float mela[2] = {0.,0.}; 
-        float vbfmela[2] = {0.,0.};
-	for(unsigned int theCand=0; theCand<2; theCand++){
-	  mela[theCand] = 1./(1.+getDZjjspin0Constant(ZZMass->at(theCand))*(pqqZJJ_VAMCFM->at(theCand)/p0plus_VAJHU->at(theCand)));   
-          vbfmela[theCand] = ((phjj_VAJHU_highestPTJets->at(theCand) > 0. && nExtraJets > 1) ? 1./(1.+getDVBF2jetsConstant(ZZMass->at(theCand))*(phjj_VAJHU_highestPTJets->at(theCand)/pvbf_VAJHU_highestPTJets->at(theCand))) : -1.); 
+	if ( ZZMass->at(0) > 400 ) {
+	  float mela[2] = {0.,0.}; 
+	  float vbfmela[2] = {0.,0.};
+	  for(unsigned int theCand=0; theCand<2; theCand++){
+	    mela[theCand] = 1./(1.+getDZjjspin0Constant(ZZMass->at(theCand))*(pqqZJJ_VAMCFM->at(theCand)/p0plus_VAJHU->at(theCand)));   
+	    vbfmela[theCand] = ((phjj_VAJHU_highestPTJets->at(theCand) > 0. && nExtraJets > 1) ? 1./(1.+getDVBF2jetsConstant(ZZMass->at(theCand))*(phjj_VAJHU_highestPTJets->at(theCand)/pvbf_VAJHU_highestPTJets->at(theCand))) : -1.); 
+	  }
+	  if (writeThis) myfile << RunNumber << ":" << EventNumber << ":" << LumiNumber << ":" << Z2Mass->at(0)  << ":" << (abs(Z2Flav->at(0))==121 ? "Ele:" : "Muo:")  << pt1stLep << ":" << pt2ndLep << ":" << ZZMass->at(0) << ":" << Z1Mass->at(0) << ":" << Z1tau21->at(0) << ":" << Z1Pt->at(0) << ":" << mela[0] << ":" << vbfmela[0] << ":" << ZZMass->at(1) << ":" << ZZMassRefit->at(1) << ":" << Z1Mass->at(1) << ":" << pt1stJet << ":" << pt2ndJet << ":" << btag1stJet << ":" << mela[1] << ":" << vbfmela[1] << endl;
+	  nPassMerged++; nPassResol++;
+	  
+	  // resolved -> merged (SR first)
+	  /* if (ZZCandType->at(0) > 0) preferType = 2;
+	     else if (ZZCandType->at(1) > 0) preferType = 1;
+	     else preferType = 2;  */
 	}
-	if (writeThis) myfile << RunNumber << ":" << EventNumber << ":" << LumiNumber << ":" << Z2Mass->at(0)  << ":" << (abs(Z2Flav->at(0))==121 ? "Ele:" : "Muo:")  << pt1stLep << ":" << pt2ndLep << ":" << ZZMass->at(0) << ":" << Z1Mass->at(0) << ":" << Z1tau21->at(0) << ":" << Z1Pt->at(0) << ":" << mela[0] << ":" << vbfmela[0] << ":" << ZZMass->at(1) << ":" << Z1Mass->at(1) << ":" << pt1stJet << ":" << pt2ndJet << ":" << btag1stJet << ":" << mela[1] << ":" << vbfmela[1] << ":" << Met << endl;
-	nPassMerged++; nPassResol++;
-
-        // resolved -> merged (SR first)
-        /* if (ZZCandType->at(0) > 0) preferType = 2;
-        else if (ZZCandType->at(1) > 0) preferType = 1;
-        else preferType = 2;  */
-
-        // merged -> resolved (but ask for J quality)
+	  // merged -> resolved (but ask for J quality)
         if (Z2Pt->at(0) > 200. && Z1Pt->at(0) > 300. && Z1tau21->at(0) < 0.6) preferType = 1;
         else preferType = 2; 
       }
@@ -1011,9 +1028,10 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
             h1[23][process][rs][typ]->Fill(mela,eventWeight*t12weight);
             h1[24][process][rs][typ]->Fill(vbfmela,eventWeight*t12weight);
             h1[26][process][rs][typ]->Fill(mela2,eventWeight*t12weight);
-	    if (rs == 1 && typ == 3) {
+	    if (rs == 1 && (typ == 3 || typ == 7 || typ == 11) ) {
 	      hmass[process][16]->Fill(mela,eventWeight*t12weight);
 	      hmass[process][17]->Fill(mela2,eventWeight*t12weight);
+	      hmass[process][18]->Fill(vbfmela,eventWeight*t12weight);
 	    }
 	    
 	    if (rs == 1 && whichTmvaTree > -1) outputTree[whichTmvaTree]->Fill();
@@ -1107,7 +1125,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
       }
     }
     
-    for(int nt=0; nt<nType+6; nt++){
+    for(int nt=0; nt<nType+7; nt++){
       if (enforceNarrowWidth) {
 	cout << "Only selecting " << NEvtNarrow[0]*100. << "% events close to nominal mass (mimic narrow width)" << endl;
 	cout << "Only selecting " << NEvtNarrow[1]*100. << "% events close to nominal mass (mimic narrow width)" << endl;
@@ -1129,7 +1147,8 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	densityHist(hmass[5][nt]);
       } else {
 	if (nt==nType+4) hmass[3][nt]->GetXaxis()->SetTitle("D_{Zjj} (spin 0)");  
-	else hmass[3][nt]->GetXaxis()->SetTitle("D_{Zjj} (spin 2)");  
+	else if (nt==nType+5) hmass[3][nt]->GetXaxis()->SetTitle("D_{Zjj} (spin 2)");  
+        else hmass[3][nt]->GetXaxis()->SetTitle("D_{2jet}");  
 	hmass[3][nt]->GetYaxis()->SetTitle("Normalized events / 0.05");
 	float normer = hmass[3][nt]->Integral();
         hmass[0][nt]->Scale(1./normer);
@@ -1142,7 +1161,8 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
       }
       
       hmass[3][nt]->SetFillStyle(3001);
-      if (nt<nType+4) hmass[3][nt]->SetMinimum(0.1);
+      if (nt<16) hmass[3][nt]->SetMinimum(0.1);
+      else if (nt==18) hmass[3][nt]->SetMinimum(0.0001);
       else hmass[3][nt]->SetMinimum(0.);
       hmass[3][nt]->SetLineColor(kGreen+2);
       hmass[3][nt]->SetFillColor(kGreen+2);
@@ -1153,7 +1173,8 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
       hmass[5][nt]->SetLineColor(kMagenta-3);
       hmass[5][nt]->SetFillColor(kMagenta-3);
       hmass[2][nt]->SetLineColor(kBlue-1);
-      hmass[2][nt]->SetLineWidth(3);
+      hmass[2][nt]->SetLineWidth(4);
+      hmass[2][nt]->SetLineStyle(kDashed);
       hmass[1][nt]->SetLineColor(kRed-1);
       hmass[1][nt]->SetLineWidth(3);
       hmass[6][nt]->SetLineColor(kOrange+1);
@@ -1162,131 +1183,130 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
       
     }
 
-    hmass[2][16]->SetBinContent(11,hmass[2][16]->GetBinContent(11)*3.);
-    hmass[2][16]->SetBinContent(12,hmass[2][16]->GetBinContent(12)/2.);
-
     ofstream aa("unblind.txt");
     
-    for(int norm=0; norm<2; norm++){  
-      for(int rs=0; rs<nFS; rs++){   // ee, mumu, or all
-	for(int v=0; v<nVariables; v++){
-	  for(int nt=0; nt<nType; nt++){
-	    
-	    float normal = 1.;
-	    if (norm) {
-	      if (h1[v][0][rs][nt]->Integral() > 0) normal = (float)h1[v][3][rs][nt]->Integral()/(float)h1[v][0][rs][nt]->Integral();
-	      h1[v][0][rs][nt]->Scale(normal);
-	      if (h1[v][2][rs][nt]->Integral() > 0) normal = (float)h1[v][3][rs][nt]->Integral()/(float)h1[v][2][rs][nt]->Integral();
-	      h1[v][2][rs][nt]->Scale(normal);
-	      if (h1[v][1][rs][nt]->Integral() > 0) normal = (float)h1[v][3][rs][nt]->Integral()/(float)h1[v][1][rs][nt]->Integral();
-	      h1[v][1][rs][nt]->Scale(normal);
-	    }	
-	    
-	    pad1->cd();  
-	    
-	    TLegend *legend = new TLegend(0.70,0.65,0.95,0.90,NULL,"brNDC");
-	    legend->SetBorderSize(     0);
-	    legend->SetFillColor (     0);
-	    legend->SetTextAlign (    12);
-	    legend->SetTextFont  (    42);
-	    legend->SetTextSize  (0.03);
-	    
-	    legend->AddEntry(h1[v][0][rs][nt], processLabel[0].c_str() , "p");
-	    for(int ipr=1; ipr<nProcesses-1; ipr++){ 
-	      string legType = "f";
-	      if (ipr<3) legType = "l"; 
-	      legend->AddEntry(h1[v][ipr][rs][nt], processLabel[ipr].c_str() , legType.c_str());
-	    }
-	    // c1.cd();
-	    
-	    if (nt==0 || nt==1 || nt==4 || nt==5 || nt==8 || nt==9 || CR || unblind) {
+    if (draw > 1) {
+      for(int norm=0; norm<2; norm++){  
+	for(int rs=0; rs<nFS; rs++){   // ee, mumu, or all
+	  for(int v=0; v<nVariables; v++){
+	    for(int nt=0; nt<nType; nt++){
 	      
-	      float a = h1[v][3][rs][nt]->GetMaximum();
-	      float b = h1[v][0][rs][nt]->GetMaximum();
+	      float normal = 1.;
+	      if (norm) {
+		if (h1[v][0][rs][nt]->Integral() > 0) normal = (float)h1[v][3][rs][nt]->Integral()/(float)h1[v][0][rs][nt]->Integral();
+		h1[v][0][rs][nt]->Scale(normal);
+		if (h1[v][2][rs][nt]->Integral() > 0) normal = (float)h1[v][3][rs][nt]->Integral()/(float)h1[v][2][rs][nt]->Integral();
+		h1[v][2][rs][nt]->Scale(normal);
+		if (h1[v][1][rs][nt]->Integral() > 0) normal = (float)h1[v][3][rs][nt]->Integral()/(float)h1[v][1][rs][nt]->Integral();
+		h1[v][1][rs][nt]->Scale(normal);
+	      }	
 	      
-	      if (a>b) {
-		h1[v][3][rs][nt]->Draw("hist");
-		h1[v][0][rs][nt]->Draw("esame");
-	      } else {
-		h1[v][0][rs][nt]->Draw("e");
-		h1[v][3][rs][nt]->Draw("histsame");
+	      pad1->cd();  
+	      
+	      TLegend *legend = new TLegend(0.70,0.65,0.95,0.90,NULL,"brNDC");
+	      legend->SetBorderSize(     0);
+	      legend->SetFillColor (     0);
+	      legend->SetTextAlign (    12);
+	      legend->SetTextFont  (    42);
+	      legend->SetTextSize  (0.03);
+	      
+	      legend->AddEntry(h1[v][0][rs][nt], processLabel[0].c_str() , "p");
+	      for(int ipr=1; ipr<nProcesses-1; ipr++){ 
+		string legType = "f";
+		if (ipr<3) legType = "l"; 
+		legend->AddEntry(h1[v][ipr][rs][nt], processLabel[ipr].c_str() , legType.c_str());
 	      }
+	      // c1.cd();
 	      
-	      h1[v][4][rs][nt]->Draw("histsame"); 
-	      h1[v][5][rs][nt]->Draw("histsame");
-	      if (!norm) {
-		h1[v][2][rs][nt]->Draw("histsame"); 
-		h1[v][1][rs][nt]->Draw("histsame");
-		if (unblind && (v==0 || v==2)) {
-		  int thebin1 = h1[v][3][rs][nt]->FindBin(550.);
-		  int thebin2 = h1[v][3][rs][nt]->FindBin(750.);
-		  aa << "INTEGRAL in (550,750): DATA / " << varName[v] << " / " << sFS[rs] << " / " << typeS[nt] << " = " << h1[v][0][rs][nt]->Integral(thebin1,thebin2) << endl;
-		  aa << "INTEGRAL in (550,750): MC / " << varName[v] << " / " << sFS[rs] << " / " << typeS[nt] << " = " << h1[v][3][rs][nt]->Integral(thebin1,thebin2) << endl;
+	      if (nt==0 || nt==1 || nt==4 || nt==5 || nt==8 || nt==9 || CR || unblind) {
 		
+		float a = h1[v][3][rs][nt]->GetMaximum();
+		float b = h1[v][0][rs][nt]->GetMaximum();
+		
+		if (a>b) {
+		  h1[v][3][rs][nt]->Draw("hist");
+		  h1[v][0][rs][nt]->Draw("esame");
+		} else {
+		  h1[v][0][rs][nt]->Draw("e");
+		  h1[v][3][rs][nt]->Draw("histsame");
 		}
 		
-		h1[v][0][rs][nt]->Draw("esame");
-		
-	      } else {
-		
-		h1[v][3][rs][nt]->Draw("hist");
 		h1[v][4][rs][nt]->Draw("histsame"); 
 		h1[v][5][rs][nt]->Draw("histsame");
-		h1[v][2][rs][nt]->Draw("histsame"); 
-		h1[v][1][rs][nt]->Draw("histsame");
+		if (!norm) {
+		  h1[v][2][rs][nt]->Draw("histsame"); 
+		  h1[v][1][rs][nt]->Draw("histsame");
+		  if (unblind && (v==0 || v==2)) {
+		    int thebin1 = h1[v][3][rs][nt]->FindBin(550.);
+		    int thebin2 = h1[v][3][rs][nt]->FindBin(750.);
+		    aa << "INTEGRAL in (550,750): DATA / " << varName[v] << " / " << sFS[rs] << " / " << typeS[nt] << " = " << h1[v][0][rs][nt]->Integral(thebin1,thebin2) << endl;
+		    aa << "INTEGRAL in (550,750): MC / " << varName[v] << " / " << sFS[rs] << " / " << typeS[nt] << " = " << h1[v][3][rs][nt]->Integral(thebin1,thebin2) << endl;
+		    
+		  }
+		  
+		  h1[v][0][rs][nt]->Draw("esame");
+		  
+		} else {
+		  
+		  h1[v][3][rs][nt]->Draw("hist");
+		  h1[v][4][rs][nt]->Draw("histsame"); 
+		  h1[v][5][rs][nt]->Draw("histsame");
+		  h1[v][2][rs][nt]->Draw("histsame"); 
+		  h1[v][1][rs][nt]->Draw("histsame");
+		}
+		
+		gPad->SetLogy(varLogy[v]);
+		gPad->SetLogx(varLogx[v]);
+		
+		legend->Draw("same"); 
+		
+		pad2->cd();
+		
+		gPad->SetLogy(0);
+		TH1F* ratio = (TH1F*)h1[v][0][rs][nt]->Clone();
+		ratio->Add(h1[v][0][rs][nt],h1[v][3][rs][nt],1,-1);
+		ratio->Divide(ratio,h1[v][0][rs][nt]);
+		ratio->SetMinimum(-0.5);
+		ratio->SetMaximum(0.5); 
+		ratio->GetYaxis()->SetTitle("(Data-MC)/Data");
+		if (!(nt==0 || nt==1 || nt==4 || nt==5 || nt==8 || nt==9 || CR || unblind)) {
+		  ratio->SetLineColor(kWhite);
+		  ratio->SetMarkerColor(kWhite);
+		}
+		ratio->Draw("e");
+		TLine line(h1[v][0][rs][nt]->GetXaxis()->GetBinLowEdge(1),0.,
+			   h1[v][0][rs][nt]->GetXaxis()->GetBinUpEdge(h1[v][0][rs][nt]->GetNbinsX()-1),0.);
+		line.SetLineColor(kRed);
+		line.SetLineStyle(kDashed);
+		line.Draw("same");  
+		
+		// if (norm && v == 21 && nt == 1 && rs==0) {   // tau21
+		//  ofstream ofs("tau21_sf.txt");
+		//  for (int i=1; i<=ratio->GetNbinsX(); i++) {
+		// ofs << ratio->GetXaxis()->GetBinLowEdge(i)  << ", " << ratio->GetXaxis()->GetBinUpEdge(i)  << ", " <<  ratio->GetBinContent(i) << endl;
+		// }
+		// ofs.close();
+		// } 
+	      
+		if (norm) 
+		  c1.SaveAs(Form("~/www/graviton/%snorm/%s_%s_%s.png",dirout.c_str(),varName[v].c_str(),sFS[rs].c_str(),typeS[nt].c_str()));
+		else 
+		  c1.SaveAs(Form("~/www/graviton/%s/%s_%s_%s.png",dirout.c_str(),varName[v].c_str(),sFS[rs].c_str(),typeS[nt].c_str()));
 	      }
-	      
-	      gPad->SetLogy(varLogy[v]);
-	      gPad->SetLogx(varLogx[v]);
-	      
-	      legend->Draw("same"); 
-	      
-	      pad2->cd();
-	      
-	      gPad->SetLogy(0);
-	      TH1F* ratio = (TH1F*)h1[v][0][rs][nt]->Clone();
-	      ratio->Add(h1[v][0][rs][nt],h1[v][3][rs][nt],1,-1);
-	      ratio->Divide(ratio,h1[v][0][rs][nt]);
-	      ratio->SetMinimum(-0.5);
-	      ratio->SetMaximum(0.5); 
-	      ratio->GetYaxis()->SetTitle("(Data-MC)/Data");
-	      if (!(nt==0 || nt==1 || nt==4 || nt==5 || nt==8 || nt==9 || CR || unblind)) {
-		ratio->SetLineColor(kWhite);
-		ratio->SetMarkerColor(kWhite);
-	      }
-	      ratio->Draw("e");
-	      TLine line(h1[v][0][rs][nt]->GetXaxis()->GetBinLowEdge(1),0.,
-			 h1[v][0][rs][nt]->GetXaxis()->GetBinUpEdge(h1[v][0][rs][nt]->GetNbinsX()-1),0.);
-	      line.SetLineColor(kRed);
-	      line.SetLineStyle(kDashed);
-	      line.Draw("same");  
-	      
-	      /* if (norm && v == 21 && nt == 1 && rs==0) {   // tau21
-		 ofstream ofs("tau21_sf.txt");
-		 for (int i=1; i<=ratio->GetNbinsX(); i++) {
-		 ofs << ratio->GetXaxis()->GetBinLowEdge(i)  << ", " << ratio->GetXaxis()->GetBinUpEdge(i)  << ", " <<  ratio->GetBinContent(i) << endl;
-		 }
-		 ofs.close();
-		 } */
-	      
-	      if (norm) 
-		c1.SaveAs(Form("~/www/graviton/%snorm/%s_%s_%s.png",dirout.c_str(),varName[v].c_str(),sFS[rs].c_str(),typeS[nt].c_str()));
-	      else 
-		c1.SaveAs(Form("~/www/graviton/%s/%s_%s_%s.png",dirout.c_str(),varName[v].c_str(),sFS[rs].c_str(),typeS[nt].c_str()));
 	    }
 	  }
 	}
-      }
+      }  
     }
     
     aa.close();
 
     TCanvas c2("c2","c2",10,10,700,500);
     c2.cd();
-    float maxima[8] = {2000.,10000.,100.,500.,125.,300.,0.18,0.24};
+    float maxima[9] = {3000.,15000.,150.,750.,250.,450.,0.20,0.25,40.};
     int nMaxima = 0;
 
-    for(int nt=0; nt<nType+6; nt++){
+    for(int nt=0; nt<nType+7; nt++){
       if (!(nt==0 || nt==1 || nt==4 || nt==5 || nt==8 || nt==9 || nt==12 || nt==13 || nt==14 || nt==15) && unblind) {
 	
 	TLegend *legend2 = new TLegend(0.63,0.53,0.89,0.90,NULL,"brNDC");
@@ -1302,7 +1322,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	  if (ipr<3) legType = "l"; 
 	  legend2->AddEntry(hmass[ipr][nt], processLabel[ipr].c_str() , legType.c_str());
 	}
-	if (!(nt==16 || nt==17)) {
+	if (nt<16) {
 	  legend2->AddEntry(ffit[nt], "Bkgd. estimation" , "l");
 	  legend2->AddEntry(ffitup[nt], "Bkgd. estimation (#pm1#sigma)", "l");
 	}
@@ -1320,7 +1340,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	  if (ipr<3) legType = "l"; 
 	  legend3->AddEntry(hmass[ipr][nt], processLabel[ipr].c_str() , legType.c_str());
 	}
-	if (!(nt==16 || nt==17)) {
+	if (nt<16) {
 	  legend3->AddEntry(ffit[nt], "Bkgd. estimation" , "l");
 	  legend3->AddEntry(ffitup[nt], "Bkgd. estimation (#pm1#sigma)", "l");	
 	}
@@ -1344,14 +1364,14 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	hmass[0][nt]->Draw("esame");
 	hmass[4][nt]->Draw("histsame"); 
 	hmass[5][nt]->Draw("histsame");
-	if (nt<17) {
+	if (nt!=17) {
 	  hmass[2][nt]->Draw("histsame"); 
 	  hmass[1][nt]->Draw("histsame");
 	} else {
 	  hmass[6][nt]->Draw("histsame");
 	}
 
-	if (!(nt==16 || nt==17)) { 
+	if (nt<16) { 
 	  int iii = 0;  float ren=0;
 	  int xmaxForRenorm = 1500., xminForRenorm = 650.;
 	  int thebin1 = hmass[4][nt]->FindBin(xminForRenorm);
@@ -1384,7 +1404,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	else gPad->SetLogy(0);
 	gPad->SetLogx(0);
 	
-        if (nt<10) legend2->Draw("same");
+        if (nt<10 || nt==18) legend2->Draw("same");
 	else if (nt==16) {
 	   legend2->SetX1NDC(0.43);
 	   legend2->SetX2NDC(0.69);
@@ -1399,16 +1419,21 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	t->SetTextSize(0.05);
 	t->DrawLatex(0.30,0.95,"CMS Preliminary");
 	t->DrawLatex(0.82,0.95,"12.9 fb^{-1} (13 TeV)"); 	    
+	if (nt<16) t->DrawLatex(0.38,0.85,hmasstags[nt].Data()); 	    
+	else t->DrawLatex(0.40,0.85,hmasstags[nt].Data());
 	
-	if (!(nt==16 || nt==17)) {
+	if (nt<16) {
 	  c2.SaveAs(Form("~/www/graviton/%s/hmass_final_%s.png",dirout.c_str(),typeS[nt].c_str()));
 	  c2.SaveAs(Form("~/www/graviton/%s/hmass_final_%s.pdf",dirout.c_str(),typeS[nt].c_str()));
 	} else if (nt==16) {
 	  c2.SaveAs(Form("~/www/graviton/%s/hmelaspin0_final.png",dirout.c_str()));
 	  c2.SaveAs(Form("~/www/graviton/%s/hmelaspin0_final.pdf",dirout.c_str()));
-	} else {
+	} else if (nt==17) {
 	  c2.SaveAs(Form("~/www/graviton/%s/hmelaspin2_final.png",dirout.c_str()));
 	  c2.SaveAs(Form("~/www/graviton/%s/hmelaspin2_final.pdf",dirout.c_str()));
+	} else {
+	  c2.SaveAs(Form("~/www/graviton/%s/hmelavbf_final.png",dirout.c_str()));
+	  c2.SaveAs(Form("~/www/graviton/%s/hmelavbf_final.pdf",dirout.c_str()));
 	}
 	
 	nMaxima++;

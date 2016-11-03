@@ -48,7 +48,7 @@
 
 using namespace std;
 
-// float corrFactor[4] = {1.,1.,1.,1.};
+float corrFactor[4] = {0.921,1.,0.921,1.};
 
 const int nChannels = 8;
 const int maxBinsForAlpha = 11;
@@ -67,9 +67,13 @@ int binsForAlpha[nChannels][maxBinsForAlpha] = {
                                                {1,2,4,6,8,10,12,14,17,20,23},
                                                {2,4,6,8,10,12,14,17,20,23,-1}  } ;
 
-void fitAlphaMethod_2l2q(string dirout = "fitAlphaExtended", string theNtuple = "TMVAAndRoofitInputs.root")
+void fitAlphaMethod_2l2q(string dirout = "fitAlphaExtended", string theNtuple = "TMVAAndRoofitInputs.root", bool extended = true)
 {
   
+  float minLim = 450.;
+  if (extended) minLim = 400.;
+  for (int io = 0; io < 4; io++) {minX[2*io] = minLim;}
+
   setTDRStyle();
   // gStyle->SetOptStat(1111111);
 
@@ -111,7 +115,7 @@ void fitAlphaMethod_2l2q(string dirout = "fitAlphaExtended", string theNtuple = 
       if (i == binsForAlpha[tc][countBinForAlpha]) {
         binEnt.push_back(totBin);            totBin = 0;
         binErr.push_back(sqrt(totErr));      totErr = 0;
-        cout << countBinForAlpha << " " << i << " " << binsForAlpha[tc][countBinForAlpha] << endl;
+        // cout << countBinForAlpha << " " << i << " " << binsForAlpha[tc][countBinForAlpha] << endl;
 	countBinForAlpha++;
       }
     }
@@ -179,7 +183,7 @@ void fitAlphaMethod_2l2q(string dirout = "fitAlphaExtended", string theNtuple = 
     ffit[tc]->SetParameter(1,0.005);
     ffit[tc]->SetParameter(2,fitHist->Integral(bin1,bin2)/10.);
     ffit[tc]->SetParameter(3,0.01);
-    if (tc%2 != 0) {
+    if (tc%2 != 0 || (!extended && tc==2) || (!extended && tc==4)) {
       ffit[tc]->FixParameter(2,0.);
       ffit[tc]->FixParameter(3,0.01);
     }      
@@ -190,15 +194,16 @@ void fitAlphaMethod_2l2q(string dirout = "fitAlphaExtended", string theNtuple = 
     double* covElem = cov.GetMatrixArray(); 
 
     if (tc%2 == 0 ) {
-      out << "The integral of the function in [400-2500] is:" << endl;
-      out << "   " << ffit[tc]->Integral(400,2500)/(50./* *corrFactor[0]*/) << endl;
+      float intLim = (extended ? minLim : minLim+50.);
+      out << "The integral of the function in [" << int(intLim) << "-2500] is:" << endl;
+      out << "   " << ffit[tc]->Integral(intLim,2500)/(50.*corrFactor[0]) << endl;
     }
 
-    out << "The integral of the function in [600-2500] is:" << endl;
-    out << "   " << ffit[tc]->Integral(600,2500)/(50./* *corrFactor[0]*/) << endl;
+    out << "The integral of the function in [700-2500] is:" << endl;
+    out << "   " << ffit[tc]->Integral(700,2500)/(50.*corrFactor[0]) << endl;
     out << "The parameters are: " << endl;
     for (int j=0; j<4; j++) 
-      out << ffit[tc]->GetParName(j) << "\t" << ffit[tc]->GetParameter(j)/* /corrFactor[j]*/ << endl;
+      out << ffit[tc]->GetParName(j) << "\t" << ffit[tc]->GetParameter(j) << endl;
     out << "The covariance matrix is: " << endl;
     for (int i=0; i<16; i++) {
       out << covElem[i] << "\t";
