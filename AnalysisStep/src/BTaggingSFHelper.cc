@@ -39,9 +39,9 @@ BTaggingSFHelper::BTaggingSFHelper(std::string SFfilename, std::string effFileNa
             m_readers[i][2]->load(*m_calib, BTagEntry::FLAV_C, "comb");
         }
         else if(i == 2){
-            m_readers[i][0]->load(*m_calib, BTagEntry::FLAV_UDSG, "comb");
-            m_readers[i][1]->load(*m_calib, BTagEntry::FLAV_UDSG, "comb");
-            m_readers[i][2]->load(*m_calib, BTagEntry::FLAV_UDSG, "comb");
+            m_readers[i][0]->load(*m_calib, BTagEntry::FLAV_UDSG, "incl");
+            m_readers[i][1]->load(*m_calib, BTagEntry::FLAV_UDSG, "incl");
+            m_readers[i][2]->load(*m_calib, BTagEntry::FLAV_UDSG, "incl");
         }
     }
     
