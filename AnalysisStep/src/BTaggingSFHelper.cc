@@ -23,7 +23,28 @@ BTaggingSFHelper::BTaggingSFHelper(std::string SFfilename, std::string effFileNa
     m_readers[i][1] = m_reader_up;
     m_readers[i][2] = m_reader_do;
     }
-
+    
+    for(int i=0 ; i < 3; i++ ){
+        m_readers[i][0] = m_reader;
+        m_readers[i][1] = m_reader_up;
+        m_readers[i][2] = m_reader_do;
+        if(i == 0){
+            m_readers[i][0]->load(*m_calib, BTagEntry::FLAV_B, "comb");
+            m_readers[i][1]->load(*m_calib, BTagEntry::FLAV_B, "comb");
+            m_readers[i][2]->load(*m_calib, BTagEntry::FLAV_B, "comb");
+        }
+        else if(i == 1){
+            m_readers[i][0]->load(*m_calib, BTagEntry::FLAV_C, "comb");
+            m_readers[i][1]->load(*m_calib, BTagEntry::FLAV_C, "comb");
+            m_readers[i][2]->load(*m_calib, BTagEntry::FLAV_C, "comb");
+        }
+        else if(i == 2){
+            m_readers[i][0]->load(*m_calib, BTagEntry::FLAV_UDSG, "comb");
+            m_readers[i][1]->load(*m_calib, BTagEntry::FLAV_UDSG, "comb");
+            m_readers[i][2]->load(*m_calib, BTagEntry::FLAV_UDSG, "comb");
+        }
+    }
+    
     edm::FileInPath fip_eff(effFileName);
     m_fileEff = new TFile(fip_eff.fullPath().c_str());
     
@@ -69,10 +90,7 @@ float BTaggingSFHelper::getSF(SFsyst syst, int jetFlavor, float pt, float eta)
         myPt = MaxLJetPt;
         DoubleUncertainty = true;
     }
-    
-    if(myFlavIndex < 2) m_readers[myFlavIndex][mySystIndex]->load(*m_calib, flav, "comb");
-    else m_readers[myFlavIndex][mySystIndex]->load(*m_calib, flav, "incl");
-    
+
     SF = m_readers[myFlavIndex][mySystIndex]->eval(flav, eta, myPt);
     
     if(DoubleUncertainty && syst!=central){
