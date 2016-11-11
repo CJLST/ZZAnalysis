@@ -44,7 +44,7 @@
 #include <ZZAnalysis/AnalysisStep/src/Category.cc>
 #include <ZZAnalysis/AnalysisStep/src/bitops.cc>
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
-#include <ZZAnalysis/AnalysisStep/test/Plotter/fit_functions.C>
+#include <ZZAnalysis/AnalysisStep/test/Plotter/fit_functions_DijetFunc.C>
 
 using namespace std;
 
@@ -78,7 +78,7 @@ int binsForAlpha2[nChannels][maxBinsForAlpha] = {
                                                {1,3,5,7,9,11,13,15,18,23,-1}  } ;
 
 
-void fitAlphaMethod_2l2q(string dirout = "fitAlphaExtended", string theNtuple = "TMVAAndRoofitInputs.root", bool extended = true, bool altBinning = false)
+void fitAlphaMethodDijetFunc_2l2q(string dirout = "fitAlphaExtended", string theNtuple = "TMVAAndRoofitInputs.root", bool extended = true, bool altBinning = false)
 {
   
   float minLim = 450.;
@@ -214,19 +214,18 @@ void fitAlphaMethod_2l2q(string dirout = "fitAlphaExtended", string theNtuple = 
 
     sprintf(histoName,"ffit_%sSR%s",channelSPart1[tc].c_str(),channelSPart2[tc].c_str());
     // if (tc == 1) ffit[tc] = new TF1(histoName,myfunction2,minX[tc],maxX[tc],3); else
-    ffit[tc] = new TF1(histoName,myfunction,minX[tc],maxX[tc],4);
-    ffit[tc]->SetParNames("constant","slope","constant2","slope2");
+    ffit[tc] = new TF1(histoName,myfunction,minX[tc],maxX[tc],3);
+    ffit[tc]->SetParNames("constant","a","b");
     ffit[tc]->SetLineColor(2);
     ffit[tc]->SetLineStyle(kDashed);
     ffit[tc]->SetLineWidth(3);
     int bin1 = fitHist->FindBin(minX[tc]); int bin2 = fitHist->FindBin(maxX[tc]);
     ffit[tc]->SetParameter(0,fitHist->Integral(bin1,bin2));
-    ffit[tc]->SetParameter(1,0.005);
-    ffit[tc]->SetParameter(2,fitHist->Integral(bin1,bin2)/10.);
-    ffit[tc]->SetParameter(3,0.01);
+    ffit[tc]->SetParameter(1,300.);
+    ffit[tc]->SetParameter(2,0.03);
     if (tc%2 != 0 || (!extended && tc==2) || (!extended && tc==4)) {
-      ffit[tc]->FixParameter(2,0.);
-      ffit[tc]->FixParameter(3,0.01);
+      ffit[tc]->FixParameter(2,ffit[tc-1]->GetParameter(2));
+      if (tc==3 || tc==5) ffit[tc]->FixParameter(1,ffit[tc-1]->GetParameter(1));
     }      
 
     c1.cd();
@@ -244,23 +243,23 @@ void fitAlphaMethod_2l2q(string dirout = "fitAlphaExtended", string theNtuple = 
     out << "The integral of the function in [700-2500] is:" << endl;
     out << "   " << ffit[tc]->Integral(700,2500)/(50.*corrFactor[0]) << endl;
     out << "The parameters are: " << endl;
-    for (int j=0; j<4; j++) 
+    for (int j=0; j<3; j++) 
       out << ffit[tc]->GetParName(j) << "\t" << ffit[tc]->GetParameter(j) << endl;
     out << "The covariance matrix is: " << endl;
-    for (int i=0; i<16; i++) {
+    for (int i=0; i<9; i++) {
       out << covElem[i] << "\t";
-      if ((i+1)%4 == 0) out << endl;
+      if ((i+1)%3 == 0) out << endl;
     }      
     out << endl;  
     out.close();
 
     // Build upper and lower 1sigma function
     sprintf(histoName,"ffitup_%sSR%s",channelSPart1[tc].c_str(),channelSPart2[tc].c_str());
-    ffitup[tc] = new TF1(histoName,myfunctionErrUp,minX[tc],maxX[tc],20);
-    for (int j=0; j<4; j++) {
+    ffitup[tc] = new TF1(histoName,myfunctionErrUp,minX[tc],maxX[tc],12);
+    for (int j=0; j<3; j++) {
       ffitup[tc]->FixParameter(j,ffit[tc]->GetParameter(j));
-      for (int i=0; i<4; i++) {
-	ffitup[tc]->FixParameter(4+j+4*i,covElem[4*j+i]);   // array is filled per column
+      for (int i=0; i<3; i++) {
+	ffitup[tc]->FixParameter(3+j+3*i,covElem[3*j+i]);   // array is filled per column
                                                             // not per row
       }
     }
@@ -270,11 +269,11 @@ void fitAlphaMethod_2l2q(string dirout = "fitAlphaExtended", string theNtuple = 
     ffitup[tc]->Draw("same");
 
     sprintf(histoName,"ffitdown_%sSR%s",channelSPart1[tc].c_str(),channelSPart2[tc].c_str());
-    ffitdown[tc] = new TF1(histoName,myfunctionErrDown,minX[tc],maxX[tc],20);
-    for (int j=0; j<4; j++) {
+    ffitdown[tc] = new TF1(histoName,myfunctionErrDown,minX[tc],maxX[tc],12);
+    for (int j=0; j<3; j++) {
       ffitdown[tc]->FixParameter(j,ffit[tc]->GetParameter(j));
-      for (int i=0; i<4; i++) {
-	ffitdown[tc]->FixParameter(4+j+4*i,covElem[4*j+i]);   // array is filled per column
+      for (int i=0; i<3; i++) {
+	ffitdown[tc]->FixParameter(3+j+3*i,covElem[3*j+i]);   // array is filled per column
                                                               // not per row
       }
     }

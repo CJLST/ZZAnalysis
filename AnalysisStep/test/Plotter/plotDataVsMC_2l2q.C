@@ -155,7 +155,7 @@ Int_t  varNbin[nVariables] = { 70, 50, 70,  56,  44, 50,50, 400,  50,  50,  50, 
 Float_t varMin[nVariables] = {  250,  0,  250,  40,  40,  90, 90, -200,  0, 0, -0.2, -0.2, 0,  0, -0.2, -1.2, -1.2, 0., 0., -0.5, 0., -0.05,-0.2,0.,-1.05, 250,0.};
 Float_t varMax[nVariables] = { 2000, 500, 2000, 180, 150, 800, 800, 0, 500, 500, 1.2, 1.2, 500, 500, 1.2, 1.2, 1.2 , 3.15, 3.15, 3.5, 300., 1.05, 1.2, 1.,1., 2000.,1.};
 Bool_t varLogx[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-Bool_t varLogy[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1,0,0};
+Bool_t varLogy[nVariables] = {1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1,0,0};
 
 const int nMasses = 13;
 string signalMasses[nMasses] = {"200","250","300","350","400","450","500","550","600","750","900","1000","2000"};
@@ -182,6 +182,13 @@ string typeS[nType] = {"resolvedSB","mergedSB","mergedSR","resolvedSR","resolved
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+
+float DoBinCenter(TH1F* hmass, int ib) {
+  float minimX = hmass->GetBinLowEdge(ib);
+  float centrX = hmass->GetBinCenter(ib);
+  if (centrX < 900.) return centrX-0.12*(centrX-minimX);
+  else return centrX+0.12*(centrX-minimX);
+}
 
 TF1* extender(TF1* basis, float xMin, float xMax, int type=0) 
 {
@@ -441,22 +448,23 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
   TF1* ffitdown_temp[nType];
 
   char filestring[400];
-  float xMin=0.,xMax=2500.;
+  float xMin[nType],xMax[nType];
 
   if (unblind) {
     for(int nt=0; nt<nType; nt++){
-      if (string(typeS[nt]).find("merged") != std::string::npos) xMin = 650.;
-      else xMin = 400.;
+      if (string(typeS[nt]).find("merged") != std::string::npos) xMin[nt] = 700.;
+      else xMin[nt] = 500.;
+      xMax[nt] = 2500.;
       if (string(typeS[nt]).find("SR") != std::string::npos) {
 	sprintf(filestring,"ffit_%s",typeS[nt].c_str()); 
 	ffit_temp[nt] = (TF1*)ffunc.Get(filestring);
-	ffit[nt] = extender(ffit_temp[nt],xMin,xMax,0);
+	ffit[nt] = extender(ffit_temp[nt],xMin[nt],xMax[nt],0);
 	sprintf(filestring,"ffitup_%s",typeS[nt].c_str()); 
 	ffitup_temp[nt] = (TF1*)ffunc.Get(filestring);
-	ffitup[nt] = extender(ffitup_temp[nt],xMin,xMax,1);
+	ffitup[nt] = extender(ffitup_temp[nt],xMin[nt],xMax[nt],1);
 	sprintf(filestring,"ffitdown_%s",typeS[nt].c_str()); 
 	ffitdown_temp[nt] = (TF1*)ffunc.Get(filestring);
-	ffitdown[nt] = extender(ffitdown_temp[nt],xMin,xMax,2);	
+	ffitdown[nt] = extender(ffitdown_temp[nt],xMin[nt],xMax[nt],2);	
       }
     }
   }
@@ -1302,13 +1310,16 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
     aa.close();
 
     TCanvas c2("c2","c2",10,10,700,500);
-    c2.cd();
+
     float maxima[9] = {3000.,15000.,150.,750.,250.,450.,0.20,0.25,40.};
     int nMaxima = 0;
 
     for(int nt=0; nt<nType+7; nt++){
       if (!(nt==0 || nt==1 || nt==4 || nt==5 || nt==8 || nt==9 || nt==12 || nt==13 || nt==14 || nt==15) && unblind) {
 	
+        if (nt<16) {c1.cd(); pad1->cd();}
+	else c2.cd();
+
 	TLegend *legend2 = new TLegend(0.63,0.53,0.89,0.90,NULL,"brNDC");
 	legend2->SetBorderSize(     0);
 	legend2->SetFillColor (     0);
@@ -1423,8 +1434,34 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	else t->DrawLatex(0.40,0.85,hmasstags[nt].Data());
 	
 	if (nt<16) {
-	  c2.SaveAs(Form("~/www/graviton/%s/hmass_final_%s.png",dirout.c_str(),typeS[nt].c_str()));
-	  c2.SaveAs(Form("~/www/graviton/%s/hmass_final_%s.pdf",dirout.c_str(),typeS[nt].c_str()));
+	  pad2->cd();
+	  gPad->SetLogy(0);
+	  TH1F* funcHist = (TH1F*)hmass[0][nt]->Clone();
+	  TH1F* errHist  = (TH1F*)hmass[0][nt]->Clone();
+	  for (int ib=1; ib<=funcHist->GetNbinsX(); ib++) {
+	    funcHist->SetBinContent(ib,ffit[nt]->Eval(DoBinCenter(hmass[0][nt],ib)));
+	    errHist->SetBinContent(ib,hmass[0][nt]->GetBinError(ib));
+	  }
+	  TH1F* ratio2 = (TH1F*)funcHist->Clone();
+	  ratio2->Add(hmass[0][nt],funcHist,1.,-1.);
+	  ratio2->Divide(ratio2,errHist);
+	  for (int ib=1; ib<=ratio2->GetNbinsX(); ib++) {
+	    ratio2->SetBinError(ib,1.);
+            if (ratio2->GetBinCenter(ib) < xMin[nt] || ratio2->GetBinCenter(ib) > xMax[nt]) ratio2->SetBinContent(ib,-999.);
+            if (ratio2->GetBinContent(ib) > 3.0) ratio2->SetBinContent(ib,-0.3);
+	  }
+	  ratio2->SetMinimum(-5.);
+	  ratio2->SetMaximum(5.); 
+	  ratio2->GetYaxis()->SetTitle("(Data-fit)/#sigma_{data}");
+	  ratio2->Draw("e");
+	  TLine line2(ratio2->GetXaxis()->GetBinLowEdge(1),0.,
+		      ratio2->GetXaxis()->GetBinUpEdge(ratio2->GetNbinsX()),0.);
+	  line2.SetLineColor(kRed);
+	  line2.SetLineStyle(kDashed);
+	  line2.Draw("same");  
+
+	  c1.SaveAs(Form("~/www/graviton/%s/hmass_final_%s.png",dirout.c_str(),typeS[nt].c_str()));
+	  c1.SaveAs(Form("~/www/graviton/%s/hmass_final_%s.pdf",dirout.c_str(),typeS[nt].c_str()));
 	} else if (nt==16) {
 	  c2.SaveAs(Form("~/www/graviton/%s/hmelaspin0_final.png",dirout.c_str()));
 	  c2.SaveAs(Form("~/www/graviton/%s/hmelaspin0_final.pdf",dirout.c_str()));

@@ -101,19 +101,21 @@ DoubleMu2016B,, -1, ,, /DoubleMuon/Run2016B-PromptReco-v2/MINIAOD,dbs,,7,PD=Doub
 DoubleEG2016B,, -1, ,, /DoubleEG/Run2016B-PromptReco-v2/MINIAOD,dbs,,7,PD=DoubleEle,cert.py,
 
 SingleMu2016B,, -1, ,, /SingleMuon/Run2016B-PromptReco-v2/MINIAOD,dbs,,10,PD=SingleMuon,cert.py,
-SingleEG2016B,, -1, ,, /SingleElectron/Run2016B-PromptReco-v2/MINIAOD,dbs,,15,PD=SingleElectron,cert.py,
 
 DoubleMu2016C,, -1, ,, /DoubleMuon/Run2016C-PromptReco-v2/MINIAOD,dbs,,7,PD=DoubleMu,cert.py,
 DoubleEG2016C,, -1, ,, /DoubleEG/Run2016C-PromptReco-v2/MINIAOD,dbs,,7,PD=DoubleEle,cert.py,
 
 SingleMu2016C,, -1, ,, /SingleMuon/Run2016C-PromptReco-v2/MINIAOD,dbs,,10,PD=SingleMuon,cert.py,
-SingleEG2016C,, -1, ,, /SingleElectron/Run2016C-PromptReco-v2/MINIAOD,dbs,,15,PD=SingleElectron,cert.py,
 
 DoubleMu2016D,, -1, ,, /DoubleMuon/Run2016D-PromptReco-v2/MINIAOD,dbs,,7,PD=DoubleMu,cert.py,
 DoubleEG2016D,, -1, ,, /DoubleEG/Run2016D-PromptReco-v2/MINIAOD,dbs,,7,PD=DoubleEle,cert.py,
 
 SingleMu2016D,, -1, ,, /SingleMuon/Run2016D-PromptReco-v2/MINIAOD,dbs,,10,PD=SingleMuon,cert.py,
-SingleEG2016D,, -1, ,, /SingleElectron/Run2016D-PromptReco-v2/MINIAOD,dbs,,15,PD=SingleElectron,cert.py,
+
+SingleEG2016B,, -1, ,, /SingleElectron/Run2016B-PromptReco-v2/MINIAOD,dbs,,7,PD=SingleElectron,cert.py,
+SingleEG2016C,, -1, ,, /SingleElectron/Run2016C-PromptReco-v2/MINIAOD,dbs,,7,PD=SingleElectron,cert.py,
+SingleEG2016D,, -1, ,, /SingleElectron/Run2016D-PromptReco-v2/MINIAOD,dbs,,7,PD=SingleElectron,cert.py,
+
 
 
 
