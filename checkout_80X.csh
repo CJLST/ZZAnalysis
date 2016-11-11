@@ -20,8 +20,7 @@ git cms-init
 
 #...now superseeded by Emanuele's fix:
 git remote add -f -t ecal_smear_fix_80X emanueledimarco https://github.com/emanueledimarco/cmssw.git
-git cms-addpkg EgammaAnalysis/ElectronTools
-git checkout -b from-277de3c 277de3c
+git checkout 277de3c EgammaAnalysis/ElectronTools
 (cd EgammaAnalysis/ElectronTools/data ; git clone https://github.com/ECALELFS/ScalesSmearings.git ; git checkout tags/ICHEP2016_v2)
 
 
