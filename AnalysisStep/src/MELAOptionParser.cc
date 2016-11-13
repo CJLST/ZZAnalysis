@@ -274,9 +274,17 @@ void MELAOptionParser::extractCoupling(string opt){
   // Spin-0 couplings, first resonance
   else if (wish=="kappa"){ coupl_H.Hqqcoupl[gHIGGS_KAPPA][0]=valRe; coupl_H.Hqqcoupl[gHIGGS_KAPPA][1]=valIm; }
   else if (wish=="kappa_tilde"){ coupl_H.Hqqcoupl[gHIGGS_KAPPA_TILDE][0]=valRe; coupl_H.Hqqcoupl[gHIGGS_KAPPA_TILDE][1]=valIm; }
+  else if (wish=="kappa_top"){ coupl_H.Httcoupl[gHIGGS_KAPPA][0]=valRe; coupl_H.Httcoupl[gHIGGS_KAPPA][1]=valIm; }
+  else if (wish=="kappa_tilde_top"){ coupl_H.Httcoupl[gHIGGS_KAPPA_TILDE][0]=valRe; coupl_H.Httcoupl[gHIGGS_KAPPA_TILDE][1]=valIm; }
+  else if (wish=="kappa_bot"){ coupl_H.Hbbcoupl[gHIGGS_KAPPA][0]=valRe; coupl_H.Hbbcoupl[gHIGGS_KAPPA][1]=valIm; }
+  else if (wish=="kappa_tilde_bot"){ coupl_H.Hbbcoupl[gHIGGS_KAPPA_TILDE][0]=valRe; coupl_H.Hbbcoupl[gHIGGS_KAPPA_TILDE][1]=valIm; }
   else if (wish=="ghg2"){ coupl_H.Hggcoupl[gHIGGS_GG_2][0]=valRe; coupl_H.Hggcoupl[gHIGGS_GG_2][1]=valIm; }
   else if (wish=="ghg3"){ coupl_H.Hggcoupl[gHIGGS_GG_3][0]=valRe; coupl_H.Hggcoupl[gHIGGS_GG_3][1]=valIm; }
   else if (wish=="ghg4"){ coupl_H.Hggcoupl[gHIGGS_GG_4][0]=valRe; coupl_H.Hggcoupl[gHIGGS_GG_4][1]=valIm; }
+  else if (wish=="kappa_4gen_top"){ coupl_H.Ht4t4coupl[gHIGGS_KAPPA][0]=valRe; coupl_H.Ht4t4coupl[gHIGGS_KAPPA][1]=valIm; }
+  else if (wish=="kappa_tilde_4gen_top"){ coupl_H.Ht4t4coupl[gHIGGS_KAPPA_TILDE][0]=valRe; coupl_H.Ht4t4coupl[gHIGGS_KAPPA_TILDE][1]=valIm; }
+  else if (wish=="kappa_4gen_bot"){ coupl_H.Hb4b4coupl[gHIGGS_KAPPA][0]=valRe; coupl_H.Hb4b4coupl[gHIGGS_KAPPA][1]=valIm; }
+  else if (wish=="kappa_tilde_4gen_bot"){ coupl_H.Hb4b4coupl[gHIGGS_KAPPA_TILDE][0]=valRe; coupl_H.Hb4b4coupl[gHIGGS_KAPPA_TILDE][1]=valIm; }
 
   else if (wish=="cz_q1sq"){ coupl_H.HzzCLambda_qsq[cLambdaHIGGS_VV_QSQ1]=(int)valRe; }
   else if (wish=="cz_q2sq"){ coupl_H.HzzCLambda_qsq[cLambdaHIGGS_VV_QSQ2]=(int)valRe; }
@@ -381,6 +389,26 @@ void MELAOptionParser::extractCoupling(string opt){
   else if (wish=="ghw4_prime7"){ coupl_H.Hwwcoupl[gHIGGS_VV_4_PRIME7][0]=valRe; coupl_H.Hwwcoupl[gHIGGS_VV_4_PRIME7][1]=valIm; }
 
   // Spin-0 couplings, second resonance
+  else if (wish=="ghg2_4gen"){ coupl_H.Hg4g4coupl[gHIGGS_GG_2][0]=valRe; coupl_H.Hg4g4coupl[gHIGGS_GG_2][1]=valIm; }
+  else if (wish=="ghg3_4gen"){ coupl_H.Hg4g4coupl[gHIGGS_GG_3][0]=valRe; coupl_H.Hg4g4coupl[gHIGGS_GG_3][1]=valIm; }
+  else if (wish=="ghg4_4gen"){ coupl_H.Hg4g4coupl[gHIGGS_GG_4][0]=valRe; coupl_H.Hg4g4coupl[gHIGGS_GG_4][1]=valIm; }
+  else if (wish=="kappa2"){ coupl_H.H2qqcoupl[gHIGGS_KAPPA][0]=valRe; coupl_H.H2qqcoupl[gHIGGS_KAPPA][1]=valIm; }
+  else if (wish=="kappa2_tilde"){ coupl_H.H2qqcoupl[gHIGGS_KAPPA_TILDE][0]=valRe; coupl_H.H2qqcoupl[gHIGGS_KAPPA_TILDE][1]=valIm; }
+  else if (wish=="kappa2_top"){ coupl_H.H2ttcoupl[gHIGGS_KAPPA][0]=valRe; coupl_H.H2ttcoupl[gHIGGS_KAPPA][1]=valIm; }
+  else if (wish=="kappa2_tilde_top"){ coupl_H.H2ttcoupl[gHIGGS_KAPPA_TILDE][0]=valRe; coupl_H.H2ttcoupl[gHIGGS_KAPPA_TILDE][1]=valIm; }
+  else if (wish=="kappa2_bot"){ coupl_H.H2bbcoupl[gHIGGS_KAPPA][0]=valRe; coupl_H.H2bbcoupl[gHIGGS_KAPPA][1]=valIm; }
+  else if (wish=="kappa2_tilde_bot"){ coupl_H.H2bbcoupl[gHIGGS_KAPPA_TILDE][0]=valRe; coupl_H.H2bbcoupl[gHIGGS_KAPPA_TILDE][1]=valIm; }
+  else if (wish=="gh2g2"){ coupl_H.H2ggcoupl[gHIGGS_GG_2][0]=valRe; coupl_H.H2ggcoupl[gHIGGS_GG_2][1]=valIm; }
+  else if (wish=="gh2g3"){ coupl_H.H2ggcoupl[gHIGGS_GG_3][0]=valRe; coupl_H.H2ggcoupl[gHIGGS_GG_3][1]=valIm; }
+  else if (wish=="gh2g4"){ coupl_H.H2ggcoupl[gHIGGS_GG_4][0]=valRe; coupl_H.H2ggcoupl[gHIGGS_GG_4][1]=valIm; }
+  else if (wish=="kappa2_4gen_top"){ coupl_H.H2t4t4coupl[gHIGGS_KAPPA][0]=valRe; coupl_H.H2t4t4coupl[gHIGGS_KAPPA][1]=valIm; }
+  else if (wish=="kappa2_tilde_4gen_top"){ coupl_H.H2t4t4coupl[gHIGGS_KAPPA_TILDE][0]=valRe; coupl_H.H2t4t4coupl[gHIGGS_KAPPA_TILDE][1]=valIm; }
+  else if (wish=="kappa2_4gen_bot"){ coupl_H.H2b4b4coupl[gHIGGS_KAPPA][0]=valRe; coupl_H.H2b4b4coupl[gHIGGS_KAPPA][1]=valIm; }
+  else if (wish=="kappa2_tilde_4gen_bot"){ coupl_H.H2b4b4coupl[gHIGGS_KAPPA_TILDE][0]=valRe; coupl_H.H2b4b4coupl[gHIGGS_KAPPA_TILDE][1]=valIm; }
+  else if (wish=="gh2g2_4gen"){ coupl_H.H2g4g4coupl[gHIGGS_GG_2][0]=valRe; coupl_H.H2g4g4coupl[gHIGGS_GG_2][1]=valIm; }
+  else if (wish=="gh2g3_4gen"){ coupl_H.H2g4g4coupl[gHIGGS_GG_3][0]=valRe; coupl_H.H2g4g4coupl[gHIGGS_GG_3][1]=valIm; }
+  else if (wish=="gh2g4_4gen"){ coupl_H.H2g4g4coupl[gHIGGS_GG_4][0]=valRe; coupl_H.H2g4g4coupl[gHIGGS_GG_4][1]=valIm; }
+
   else if (wish=="c2z_q1sq"){ coupl_H.H2zzCLambda_qsq[cLambdaHIGGS_VV_QSQ1]=(int)valRe; }
   else if (wish=="c2z_q2sq"){ coupl_H.H2zzCLambda_qsq[cLambdaHIGGS_VV_QSQ2]=(int)valRe; }
   else if (wish=="c2z_q12sq"){ coupl_H.H2zzCLambda_qsq[cLambdaHIGGS_VV_QSQ12]=(int)valRe; }
