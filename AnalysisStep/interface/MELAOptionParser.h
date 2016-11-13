@@ -37,6 +37,7 @@ protected:
   std::string strName;
   std::string strAlias;
   std::string strCluster;
+  std::string strCopyAlias;
 
 public:
 
@@ -77,8 +78,9 @@ public:
   ~MELAOptionParser(){}
 
   void analyze();
-  void splitOption(const std::string& rawoption, std::string& wish, std::string& value, char delimiter);
-  void splitOptionRecursive(const std::string& rawoption, std::vector<std::string>& splitoptions, char delimiter);
+  void analyze(const std::vector<std::string>& optcoll);
+  void splitOption(const std::string rawoption, std::string& wish, std::string& value, char delimiter);
+  void splitOptionRecursive(const std::string rawoption, std::vector<std::string>& splitoptions, char delimiter);
   void interpretOption(std::string wish, std::string value);
 
   Bool_t usePM4L() const{ return isPM4L; }
@@ -86,11 +88,24 @@ public:
   Bool_t hasPAux() const{ return includePAux; }
   Bool_t hasPConst() const{ return includePConst; }
   Bool_t isAliased() const{ return !strAlias.empty(); }
+
+  Bool_t isCopy() const{ return !strCopyAlias.empty(); }
+  // Identify whether te option is a copy or not
+  // Note: MELAHypothesis can own an option pointer, so using a copy option does not necessarily change the method of the hypothesis
+
   Bool_t doBranch() const{ return !noBranching; }
   Float_t getDefaultME() const{ return defME; }
   std::string getName() const{ return strName; }
   std::string getAlias() const{ return strAlias; }
+  std::string getCopyAlias() const{ return strCopyAlias; }
   std::string getCluster() const{ return strCluster; }
+
+  Bool_t testCopyAlias(std::string testAlias) const{ return (strCopyAlias==testAlias); }
+  const std::vector<std::string> getRawOptions() const{ return rawOptions; }
+
+  // Transfer options from secondary to primary
+  // Note: MELAHypothesis can own an option pointer, so using an appended option does not necessarily change the computation
+  static void appendOptions(MELAOptionParser* primary_opt, MELAOptionParser* secondary_opt);
 
 protected:
 

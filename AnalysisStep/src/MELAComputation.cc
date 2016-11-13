@@ -8,9 +8,8 @@ MELAComputation::MELAComputation(MELAHypothesis* targetP_) :
   opt(targetP->getOption()),
   pME(0.),
   pAux(1.),
-  cMEAvg(1.),
-  maximizationCachedVal(-1.)
-{}
+  cMEAvg(1.)
+{ resetMaximizationCache(); }
 MELAComputation::~MELAComputation(){
   subtractedP.clear();
   multipliedP.clear();
@@ -53,6 +52,14 @@ Bool_t MELAComputation::testMaximizationCache(){
   else return false;
 }
 void MELAComputation::update(){
+  if (contUpdate && testMaximizationCache()){
+    pME = extractVal(MELAHypothesis::UseME);
+    pAux = extractVal(MELAHypothesis::UsePAux);
+    cMEAvg = extractVal(MELAHypothesis::UsePConstant);
+    contUpdate = false;
+  }
+}
+void MELAComputation::forceUpdate(){
   if (testMaximizationCache()){
     pME = extractVal(MELAHypothesis::UseME);
     pAux = extractVal(MELAHypothesis::UsePAux);
@@ -87,8 +94,12 @@ Float_t MELAComputation::getVal(MELAHypothesis::METype valtype) const{
   }
 }
 
-void MELAComputation::reset(){
+void MELAComputation::resetMaximizationCache(){
+  contUpdate=true;
   maximizationCachedVal=-1.;
+}
+void MELAComputation::reset(){
+  resetMaximizationCache();
   targetP->reset();
   pME = targetP->getVal(MELAHypothesis::UseME);
   pAux = targetP->getVal(MELAHypothesis::UsePAux);

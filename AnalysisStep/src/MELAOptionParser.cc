@@ -20,9 +20,10 @@ h2width(0.)
   splitOptionRecursive(stropts, rawOptions, ' ');
   analyze();
 }
-void MELAOptionParser::analyze(){
+void MELAOptionParser::analyze(){ analyze(rawOptions); }
+void MELAOptionParser::analyze(const std::vector<std::string>& optcoll){
   char rawdelimiter = ':';
-  for (unsigned int opt=1; opt<rawOptions.size(); opt++){
+  for (unsigned int opt=1; opt<optcoll.size(); opt++){
     string wish, value;
     splitOption(rawOptions.at(opt), wish, value, rawdelimiter);
     interpretOption(wish, value);
@@ -30,9 +31,8 @@ void MELAOptionParser::analyze(){
 
   // Check options
   if (strName==""){ cerr << "MELAOptionParser::analyze: No name detected. Please put a name!" << endl; assert(0); }
-
 }
-void MELAOptionParser::splitOption(const string& rawoption, string& wish, string& value, char delimiter){
+void MELAOptionParser::splitOption(const string rawoption, string& wish, string& value, char delimiter) const{
   size_t posEq = rawoption.find(delimiter);
   if (posEq!=string::npos){
     wish=rawoption;
@@ -44,17 +44,17 @@ void MELAOptionParser::splitOption(const string& rawoption, string& wish, string
     value=rawoption;
   }
 }
-void MELAOptionParser::splitOptionRecursive(const string& rawoption, vector<string>& splitoptions, char delimiter){
+void MELAOptionParser::splitOptionRecursive(const string rawoption, vector<string>& splitoptions, char delimiter){
   string suboption=rawoption, result=rawoption;
   string remnant;
   while (result!=""){
     splitOption(suboption, result, remnant, delimiter);
-    if (result!="") splitoptions.push_back(result);
+    if (result!="" && !checkListVariable(splitoptions, result)) splitoptions.push_back(result);
     suboption = remnant;
   }
   if (remnant!="") splitoptions.push_back(remnant);
 }
-Bool_t MELAOptionParser::checkListVariable(const vector<string>& list, const string& var) const{
+Bool_t MELAOptionParser::checkListVariable(const vector<string>& list, const string& var){
   for (unsigned int v=0; v<list.size(); v++){
     if (list.at(v)==var) return true; // Look for exact match
   }
@@ -82,6 +82,7 @@ void MELAOptionParser::interpretOption(string wish, string value){
 
   else if (wish=="Name") strName = value;
   else if (wish=="Alias") strAlias = value;
+  else if (wish=="Copy" || wish=="CopyFrom") strCopyAlias = value;
   else if (wish=="Cluster") strCluster = value;
 
   else if (wish=="Options"){
@@ -506,3 +507,11 @@ void MELAOptionParser::setMaximizationDenomAliases(string opt){
   splitOption(opt, wish, aliases, '=');
   splitOptionRecursive(aliases, maximizationDenominators, ',');
 }
+
+static void MELAOptionParser::appendOptions(MELAOptionParser* primary_opt, MELAOptionParser* secondary_opt){
+  string tmpopts = primary_opt->getOptionsString();
+  primary_opt->analyze(secondary_opt->getRawOptions());
+  primary_opt->analyze(); // Any specifications from the secondary option are overwritten
+}
+
+

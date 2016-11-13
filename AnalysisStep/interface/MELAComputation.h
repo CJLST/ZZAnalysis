@@ -26,6 +26,7 @@ protected:
 
   MELAHypothesis* targetP;
   MELAOptionParser* opt;
+  Bool_t contUpdate;
   Float_t pME;
   Float_t pAux;
   Float_t cMEAvg;
@@ -53,6 +54,7 @@ public:
   void addContingencies(std::vector<MELAHypothesis*>& allHypos); // Fill addedP, subtractedP, dividedP, multipliedP etc. vectors based on the specifications in the options
 
   void update();
+  void forceUpdate();
   Float_t getVal(MELAHypothesis::METype valtype) const; // Extract pME, pAux or cMEAvg
   MELAHypothesis* getHypothesis(){ return targetP; } // Return the hypothesis, most likely to group in a vector
   std::string getName() const{ if (opt!=0) return opt->getName(); else return ""; }

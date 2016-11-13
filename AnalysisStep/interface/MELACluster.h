@@ -33,6 +33,7 @@ public:
   std::string getName(){ return name; }
   void addComputation(MELAComputation* comp);
   void update();
+  void forceUpdate();
   void reset();
 
 };
