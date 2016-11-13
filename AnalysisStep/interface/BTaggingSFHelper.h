@@ -1,9 +1,10 @@
 #ifndef BTAGGINGSFHELPER_H
 #define BTAGGINGSFHELPER_H
 
-#include "CondFormats/BTauObjects/interface/BTagCalibration.h"
-#include "CondFormats/BTauObjects/interface/BTagCalibrationReader.h"
+//#include "CondFormats/BTauObjects/interface/BTagCalibration.h"
+//#include "CondTools/BTau/interface/BTagCalibrationReader.h"
 
+#include "BTagCalibrationStandalone.h"
 #include <string>
 #include <vector>
 #include <utility>
@@ -27,15 +28,9 @@ class BTaggingSFHelper
 
   // related to scale factors
   BTagCalibration* m_calib;
-  BTagCalibrationReader* m_reader_b;
-  BTagCalibrationReader* m_reader_b_up;
-  BTagCalibrationReader* m_reader_b_do;
-  BTagCalibrationReader* m_reader_c;
-  BTagCalibrationReader* m_reader_c_up;
-  BTagCalibrationReader* m_reader_c_do;
-  BTagCalibrationReader* m_reader_udsg;
-  BTagCalibrationReader* m_reader_udsg_up;
-  BTagCalibrationReader* m_reader_udsg_do;
+  BTagCalibrationReader* m_reader;
+  BTagCalibrationReader* m_reader_up;
+  BTagCalibrationReader* m_reader_do;
   BTagCalibrationReader* m_readers [3][3]; // [b, c, udsg] [central, up, down]
 
   // related to b tag efficiency

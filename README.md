@@ -3,7 +3,7 @@ ZZAnalysis
 
 To install a complete CMSSW area (including this package)
 ------------------------------
-Please use CMSSW_8_0_8.
+Please use CMSSW_8_0_20.
 
 Download and execute the setup script:
 ```
@@ -32,7 +32,7 @@ Once you are ready to commit
 git pull
 git add [files to be added]
 git commit -m ["commit message"] [files to be added]
-git push origin miniAOD_76X
+git push origin miniAOD_80X
 ```
 
 Otherwise you can make a fork of the repository, develop therein, and make a pull request in the same way as for CMSSW.
