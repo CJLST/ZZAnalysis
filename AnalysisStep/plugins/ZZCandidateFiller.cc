@@ -85,6 +85,7 @@ private:
   float superMelaMass;
   Mela* mela;
   std::vector<std::string> recoMElist;
+  std::vector<MELAOptionParser*> me_copyopts;
   std::vector<MELAHypothesis*> me_units;
   std::vector<MELAHypothesis*> me_aliased_units;
   std::vector<MELAComputation*> me_computers;
@@ -1785,25 +1786,80 @@ void ZZCandidateFiller::buildMELA(){
   mela->setCandidateDecayMode(TVar::CandidateDecay_ZZ);
 
   for (unsigned int it=0; it<recoMElist.size(); it++){
+    MELAOptionParser* me_opt;
+    // First find out if the option has a copy specification
+    // These copy options will be evaulated in a separate loop
+    if (recoMElist.at(it).find("Copy")!=string::npos){
+      me_opt = new MELAOptionParser(recoMElist.at(it));
+      me_copyopts.append(me_opt);
+      continue;
+    }
+
     // Create a hypothesis for each option
     MELAHypothesis* me_hypo = new MELAHypothesis(mela, recoMElist.at(it));
     me_units.push_back(me_hypo);
 
-    MELAOptionParser* me_opt = me_hypo->getOption();
-    if (me_opt->isAliased() )me_aliased_units.push_back(me_hypo);
+    me_opt = me_hypo->getOption();
+    if (me_opt->isAliased()) me_aliased_units.push_back(me_hypo);
 
     // Create a computation for each hypothesis
     MELAComputation* me_computer = new MELAComputation(me_hypo);
     me_computers.push_back(me_computer);
 
     // Add the computation to a named cluster to keep track of JECUp/JECDn, or for best-pWH_SM Lep_WH computations
-    if (!addToMELACluster(me_computer)){
-      MELACluster* tmpcluster = new MELACluster(me_computer->getCluster());
-      me_clusters.push_back(tmpcluster);
-    }
+    addToMELACluster(me_computer);
 
     // Create the necessary branches for each computation
-    // Notice that no tree is passed, so no branches to anything are created.
+    // Notice that no tree is passed, so no TBranches are created.
+    if (me_opt->doBranch()){
+      string basename = me_opt->getName();
+      if (me_opt->isGen()) basename = string("Gen_") + basename;
+      MELABranch* tmpbranch;
+      if (me_opt->hasPAux()){
+        tmpbranch = new MELABranch(
+          (TTree*)0, TString((string("pAux_") + basename).c_str()),
+          me_computer->getVal(MELAHypothesis::UsePAux), me_computer
+          );
+        me_branches.push_back(tmpbranch);
+      }
+      if (me_opt->hasPConst()){
+        tmpbranch = new MELABranch(
+          (TTree*)0, TString((string("pConst_") + basename).c_str()),
+          me_computer->getVal(MELAHypothesis::UsePConstant), me_computer
+          );
+        me_branches.push_back(tmpbranch);
+      }
+      tmpbranch = new MELABranch(
+        (TTree*)0, TString((string("p_") + basename).c_str()),
+        me_computer->getVal(MELAHypothesis::UseME), me_computer
+        );
+      me_branches.push_back(tmpbranch);
+    }
+  }
+  // Resolve copy options
+  for (unsigned int it=0; it<me_copyopts.size(); it++){
+    MELAOptionParser* me_opt = me_copyopts.at(it);
+    MELAHypothesis* original_hypo=0;
+    MELAOptionParser* original_opt=0;
+    // Find the original options
+    for (unsigned int ih=0; ih<me_aliased_units.size(); ih++){
+      if (me_opt->testCopyAlias(me_aliased_units.at(ih)->getAlias())){
+        original_hypo = me_aliased_units.at(ih);
+        original_opt = original_hypo->getOption();
+        break;
+      }
+    }
+    // Create a new computation for the copy options
+    MELAComputation* me_computer = new MELAComputation(original_hypo);
+    me_computer->setOption(me_opt);
+    me_computers.push_back(me_computer);
+
+    // The rest is the same story...
+    // Add the computation to a named cluster to keep track of JECUp/JECDn, or for best-pWH_SM Lep_WH computations
+    addToMELACluster(me_computer);
+
+    // Create the necessary branches for each computation
+    // Notice that no tree is passed, so no TBranches are created.
     if (me_opt->doBranch()){
       string basename = me_opt->getName();
       if (me_opt->isGen()) basename = string("Gen_") + basename;
@@ -1831,17 +1887,21 @@ void ZZCandidateFiller::buildMELA(){
   }
   // Loop over the computations to add any contingencies to aliased hypotheses
   for (unsigned int it=0; it<me_computers.size(); it++) me_computers.at(it)->addContingencies(me_aliased_units);
-
 }
-bool ZZCandidateFiller::addToMELACluster(MELAComputation* me_computer){
-  for (unsigned int it=0; it<me_clusters.size(); it++){ if (me_clusters.at(it)->getName()==me_computer->getName()){ me_clusters.at(it)->addComputation(me_computer); return true; } }
-  return false;
+void ZZCandidateFiller::addToMELACluster(MELAComputation* me_computer){
+  bool isAdded=false;
+  for (unsigned int it=0; it<me_clusters.size(); it++){ if (me_clusters.at(it)->getName()==me_computer->getName()){ me_clusters.at(it)->addComputation(me_computer); isAdded=true; } }
+  if (!isAdded){
+    MELACluster* tmpcluster = new MELACluster(me_computer->getCluster());
+    tmpcluster->addComputation(me_computer);
+    me_clusters.push_back(tmpcluster);
+  }
 }
 void ZZCandidateFiller::clearMELA(){
   for (unsigned int it=0; it<me_branches.size(); it++) delete me_branches.at(it);
   for (unsigned int it=0; it<me_clusters.size(); it++) delete me_clusters.at(it);
   for (unsigned int it=0; it<me_computers.size(); it++) delete me_computers.at(it);
-  //for (unsigned int it=0; it<me_aliased_units.size(); it++) delete me_aliased_units.at(it); // DO NOT DELETE THIS!
+  //for (unsigned int it=0; it<me_aliased_units.size(); it++) delete me_aliased_units.at(it); // DO NOT DELETE THIS, WILL BE DELETED WITH me_units!
   for (unsigned int it=0; it<me_units.size(); it++) delete me_units.at(it);
   delete mela;
 }

@@ -5,15 +5,20 @@ using namespace std;
 
 MELAComputation::MELAComputation(MELAHypothesis* targetP_) :
   targetP(targetP_),
-  opt(targetP->getOption()),
   pME(0.),
   pAux(1.),
   cMEAvg(1.)
-{ resetMaximizationCache(); }
+{
+  setOption(targetP->getOption());
+  resetMaximizationCache();
+}
 MELAComputation::~MELAComputation(){
+  addededP.clear();
   subtractedP.clear();
   multipliedP.clear();
   dividedP.clear();
+  maximize_num.clear();
+  maximize_denom.clear();
 }
 
 void MELAComputation::addContingencies(vector<MELAHypothesis*>& allHypos){

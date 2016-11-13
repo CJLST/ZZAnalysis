@@ -103,9 +103,8 @@ public:
   Bool_t testCopyAlias(std::string testAlias) const{ return (strCopyAlias==testAlias); }
   const std::vector<std::string> getRawOptions() const{ return rawOptions; }
 
-  // Transfer options from secondary to primary
-  // Note: MELAHypothesis can own an option pointer, so using an appended option does not necessarily change the computation
-  static void appendOptions(MELAOptionParser* primary_opt, MELAOptionParser* secondary_opt);
+  // Function to pick ME properties of the copy option from its original
+  void pickOriginalOptions(MELAOptionParser* original_opt);
 
 protected:
 

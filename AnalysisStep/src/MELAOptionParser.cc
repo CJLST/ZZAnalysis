@@ -31,6 +31,18 @@ void MELAOptionParser::analyze(const std::vector<std::string>& optcoll){
 
   // Check options
   if (strName==""){ cerr << "MELAOptionParser::analyze: No name detected. Please put a name!" << endl; assert(0); }
+  if (isCopy()){
+    cout
+      << "MELAOptionParser::analyze: Branch " << strName
+      << " will be a copy of the hypothesis with alias " << strCopyAlias
+      << ". ME properties will be overridden with the ME options of the original hypothesis."
+      << endl;
+    if (isAliased()){
+      cerr << "MELAOptionParser::analyze: Branch " << strName << " cannot any aliases." << endl;
+      strAlias = "";
+    }
+  }
+
 }
 void MELAOptionParser::splitOption(const string rawoption, string& wish, string& value, char delimiter) const{
   size_t posEq = rawoption.find(delimiter);
@@ -70,11 +82,11 @@ void MELAOptionParser::interpretOption(string wish, string value){
   else if (wish=="MatrixElement") setME(value);
   else if (wish=="SuperMelaSyst") setSuperMelaSyst(value);
 
-  else if (wish=="isGen" || wish=="IsGen") isGenProb = Bool_t(((UShort_t)atoi(value.c_str()))>0);
-  else if (wish=="isPM4L" || wish=="isPm4l") isPM4L = Bool_t(((UShort_t)atoi(value.c_str()))>0);
+  else if (wish=="isGen") isGenProb = Bool_t(((UShort_t)atoi(value.c_str()))>0);
+  else if (wish=="isPM4L") isPM4L = Bool_t(((UShort_t)atoi(value.c_str()))>0);
   else if (wish=="NoBranch") noBranching = Bool_t(((UShort_t)atoi(value.c_str()))>0);
 
-  else if (wish=="defME" || wish=="Default") defME = (Float_t)atof(value.c_str());
+  else if (wish=="DefaultME") defME = (Float_t)atof(value.c_str());
   else if (wish=="hmass" || wish=="MH") hmass = (Float_t)atof(value.c_str());
   else if (wish=="h2mass" || wish=="MH2") h2mass = (Float_t)atof(value.c_str());
   else if (wish=="hwidth" || wish=="GaH") hwidth = (Float_t)atof(value.c_str());
@@ -120,26 +132,26 @@ void MELAOptionParser::interpretOption(string wish, string value){
 
 void MELAOptionParser::setProcess(string wish){
   if (wish=="HSMHiggs") proc = TVar::HSMHiggs;
-  else if (wish=="H0minus") proc = TVar::H0minus;
-  else if (wish=="H0hplus") proc = TVar::H0hplus;
   else if (wish=="H0_g1prime2") proc = TVar::H0_g1prime2;
-  else if (wish=="H0_Zgs") proc = TVar::H0_Zgs;
-  else if (wish=="H0_gsgs") proc = TVar::H0_gsgs;
-  else if (wish=="H0_Zgs_PS") proc = TVar::H0_Zgs_PS;
-  else if (wish=="H0_gsgs_PS") proc = TVar::H0_gsgs_PS;
+  else if (wish=="H0hplus") proc = TVar::H0hplus;
+  else if (wish=="H0minus") proc = TVar::H0minus;
   else if (wish=="H0_Zgsg1prime2") proc = TVar::H0_Zgsg1prime2;
+  else if (wish=="H0_Zgs") proc = TVar::H0_Zgs;
+  else if (wish=="H0_Zgs_PS") proc = TVar::H0_Zgs_PS;
+  else if (wish=="H0_gsgs") proc = TVar::H0_gsgs;
+  else if (wish=="H0_gsgs_PS") proc = TVar::H0_gsgs_PS;
 
-  else if (wish=="D_g1g4") proc = TVar::D_g1g4;
-  else if (wish=="D_g1g4_pi_2") proc = TVar::D_g1g4_pi_2;
+  else if (wish=="D_g1g1prime2") proc = TVar::D_g1g1prime2;
   else if (wish=="D_g1g2") proc = TVar::D_g1g2;
   else if (wish=="D_g1g2_pi_2") proc = TVar::D_g1g2_pi_2;
-  else if (wish=="D_g1g1prime2") proc = TVar::D_g1g1prime2;
-  else if (wish=="D_zzzg") proc = TVar::D_zzzg;
-  else if (wish=="D_zzgg") proc = TVar::D_zzgg;
-  else if (wish=="D_zzzg_PS") proc = TVar::D_zzzg_PS;
-  else if (wish=="D_zzgg_PS") proc = TVar::D_zzgg_PS;
+  else if (wish=="D_g1g4") proc = TVar::D_g1g4;
+  else if (wish=="D_g1g4_pi_2") proc = TVar::D_g1g4_pi_2;
   else if (wish=="D_zzzg_g1prime2") proc = TVar::D_zzzg_g1prime2;
   else if (wish=="D_zzzg_g1prime2_pi_2") proc = TVar::D_zzzg_g1prime2_pi_2;
+  else if (wish=="D_zzzg") proc = TVar::D_zzzg;
+  else if (wish=="D_zzzg_PS") proc = TVar::D_zzzg_PS;
+  else if (wish=="D_zzgg") proc = TVar::D_zzgg;
+  else if (wish=="D_zzgg_PS") proc = TVar::D_zzgg_PS;
 
   else if (wish=="H1minus") proc = TVar::H1minus;
   else if (wish=="H1plus") proc = TVar::H1plus;
@@ -182,14 +194,37 @@ void MELAOptionParser::setProduction(string wish){
   else if (wish=="ZZQQB_S" || wish=="QQB_S") prod = TVar::ZZQQB_S;
   else if (wish=="ZZQQB_TU" || wish=="QQB_TU") prod = TVar::ZZQQB_TU;
   else if (wish=="ZZINDEPENDENT" || wish=="INDEPENDENT") prod = TVar::ZZINDEPENDENT;
-  else if (wish=="JJQCD") prod = TVar::JJQCD;
-  else if (wish=="JJVBF") prod = TVar::JJVBF;
+
   else if (wish=="JQCD") prod = TVar::JQCD;
+  else if (wish=="GammaH") prod = TVar::GammaH;
+
   else if (wish=="Lep_ZH") prod = TVar::Lep_ZH;
   else if (wish=="Lep_WH") prod = TVar::Lep_WH;
-  else if (wish=="Had_ZH" || wish=="ZH") prod = TVar::Had_ZH;
-  else if (wish=="Had_WH" || wish=="WH") prod = TVar::Had_WH;
-  else if (wish=="GammaH") prod = TVar::GammaH;
+  else if (wish=="Had_ZH") prod = TVar::Had_ZH;
+  else if (wish=="Had_WH") prod = TVar::Had_WH;
+  else if (wish=="JJEWQCD") prod = TVar::JJEWQCD;
+  else if (wish=="JJEW") prod = TVar::JJEW;
+  else if (wish=="JJVBF") prod = TVar::JJVBF;
+  else if (wish=="JJQCD") prod = TVar::JJQCD;
+
+  else if (wish=="Lep_ZH_S") prod = TVar::Lep_ZH_S;
+  else if (wish=="Lep_WH_S") prod = TVar::Lep_WH_S;
+  else if (wish=="Had_ZH_S") prod = TVar::Had_ZH_S;
+  else if (wish=="Had_WH_S") prod = TVar::Had_WH_S;
+  else if (wish=="JJEWQCD_S") prod = TVar::JJEWQCD_S;
+  else if (wish=="JJEW_S") prod = TVar::JJEW_S;
+  else if (wish=="JJVBF_S") prod = TVar::JJVBF_S;
+  else if (wish=="JJQCD_S") prod = TVar::JJQCD_S;
+
+  else if (wish=="Lep_ZH_TU") prod = TVar::Lep_ZH_TU;
+  else if (wish=="Lep_WH_TU") prod = TVar::Lep_WH_TU;
+  else if (wish=="Had_ZH_TU") prod = TVar::Had_ZH_TU;
+  else if (wish=="Had_WH_TU") prod = TVar::Had_WH_TU;
+  else if (wish=="JJEWQCD_TU") prod = TVar::JJEWQCD_TU;
+  else if (wish=="JJEW_TU") prod = TVar::JJEW_TU;
+  else if (wish=="JJVBF_TU") prod = TVar::JJVBF_TU;
+  else if (wish=="JJQCD_TU") prod = TVar::JJQCD_TU;
+
   else if (wish=="ttH") prod = TVar::ttH;
   else if (wish=="bbH") prod = TVar::bbH;
   else cerr << "MELAOptionParser::setProduction(" << wish << "): Failed to find the proper production." << endl;
@@ -508,10 +543,44 @@ void MELAOptionParser::setMaximizationDenomAliases(string opt){
   splitOptionRecursive(aliases, maximizationDenominators, ',');
 }
 
-static void MELAOptionParser::appendOptions(MELAOptionParser* primary_opt, MELAOptionParser* secondary_opt){
-  string tmpopts = primary_opt->getOptionsString();
-  primary_opt->analyze(secondary_opt->getRawOptions());
-  primary_opt->analyze(); // Any specifications from the secondary option are overwritten
+void MELAOptionParser::pickOriginalOptions(MELAOptionParser* original_opt){
+  // Check if name is the same. If so, append "_Copy".
+  if (strName == original_opt->getName()) strName.append("_Copy");
+
+  // Replace these values
+  strCluster = original_opt->strCluster; // The cluster better be the same, overwrite it!
+
+  noBranching = original_opt->noBranching;
+  includePAux = original_opt->includePAux;
+  includePConst = original_opt->includePConst;
+  isPM4L = original_opt->isPM4L;
+  isGenProb = original_opt->isGenProb;
+  defME = original_opt->defME;
+
+  hmass = original_opt->hmass;
+  h2mass = original_opt->h2mass;
+  hwidth = original_opt->hwidth;
+  h2width = original_opt->h2width;
+
+  coupl_H.copy(original_opt->coupl_H);
+  coupl_Zp.copy(original_opt->coupl_Zp);
+  coupl_X.copy(original_opt->coupl_X);
+
+  couplingsString = original_opt->couplingsString;
+
+  proc = original_opt->proc;
+  prod = original_opt->prod;
+  ME = original_opt->ME;
+  superSyst = original_opt->superSyst;
+
+  // Append these arrays instead of replacing them
+  for (unsigned int it=0; it<original_opt->addedAliases.size(); it++){ if (!checkListVariable(addedAliases, (original_opt->addedAliases).at(it))) addedAliases.push_back((original_opt->addedAliases).at(it)); }
+  for (unsigned int it=0; it<original_opt->subtractedAliases.size(); it++){ if (!checkListVariable(subtractedAliases, (original_opt->subtractedAliases).at(it))) subtractedAliases.push_back((original_opt->subtractedAliases).at(it)); }
+  for (unsigned int it=0; it<original_opt->multipliedAliases.size(); it++){ if (!checkListVariable(multipliedAliases, (original_opt->multipliedAliases).at(it))) multipliedAliases.push_back((original_opt->multipliedAliases).at(it)); }
+  for (unsigned int it=0; it<original_opt->dividedAliases.size(); it++){ if (!checkListVariable(dividedAliases, (original_opt->dividedAliases).at(it))) dividedAliases.push_back((original_opt->dividedAliases).at(it)); }
+
+  for (unsigned int it=0; it<original_opt->maximizationNumerators.size(); it++){ if (!checkListVariable(maximizationNumerators, (original_opt->maximizationNumerators).at(it))) maximizationNumerators.push_back((original_opt->maximizationNumerators).at(it)); }
+  for (unsigned int it=0; it<original_opt->maximizationDenominators.size(); it++){ if (!checkListVariable(maximizationDenominators, (original_opt->maximizationDenominators).at(it))) maximizationDenominators.push_back((original_opt->maximizationDenominators).at(it)); }
 }
 
 

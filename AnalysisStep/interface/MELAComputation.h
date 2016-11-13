@@ -50,6 +50,7 @@ protected:
 public:
 
   MELAOptionParser* getOption(){ return opt; }
+  void setOption(MELAOptionParser* opt_){ opt = opt_; }
 
   void addContingencies(std::vector<MELAHypothesis*>& allHypos); // Fill addedP, subtractedP, dividedP, multipliedP etc. vectors based on the specifications in the options
 
