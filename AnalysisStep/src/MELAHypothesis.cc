@@ -47,9 +47,18 @@ void MELAHypothesis::computeP(){
     mela->differentiate_HWW_HZZ = opt->coupl_H.separateWWZZcouplings;
     for (unsigned int im=0; im<2; im++){
       //****Spin-0****//
-      for (int ic=0; ic<(int)SIZE_HQQ; ic++) mela->selfDHqqcoupl[ic][im] = opt->coupl_H.Hqqcoupl[ic][im];
-      for (int ic=0; ic<(int)SIZE_HGG; ic++) mela->selfDHggcoupl[ic][im] = opt->coupl_H.Hggcoupl[ic][im];
-      // The first dimension (of size [nSupportedHiggses=2]) supports a second resonance present in MCFM
+      // First resonance parameters
+      for (int ic=0; ic<(int)SIZE_HQQ; ic++){
+        mela->selfDHqqcoupl[0][ic][im] = opt->coupl_H.Hqqcoupl[ic][im];
+        mela->selfDHbbcoupl[0][ic][im] = opt->coupl_H.Hbbcoupl[ic][im];
+        mela->selfDHttcoupl[0][ic][im] = opt->coupl_H.Httcoupl[ic][im];
+        mela->selfDHb4b4coupl[0][ic][im] = opt->coupl_H.Hb4b4coupl[ic][im];
+        mela->selfDHt4t4coupl[0][ic][im] = opt->coupl_H.Ht4t4coupl[ic][im];
+      }
+      for (int ic=0; ic<(int)SIZE_HGG; ic++){
+        mela->selfDHggcoupl[0][ic][im] = opt->coupl_H.Hggcoupl[ic][im];
+        mela->selfDHg4g4coupl[0][ic][im] = opt->coupl_H.Hg4g4coupl[ic][im];
+      }
       for (int ic=0; ic<(int)SIZE_HVV; ic++){
         mela->selfDHzzcoupl[0][ic][im] = opt->coupl_H.Hzzcoupl[ic][im];
         mela->selfDHwwcoupl[0][ic][im] = opt->coupl_H.Hwwcoupl[ic][im];
@@ -63,6 +72,18 @@ void MELAHypothesis::computeP(){
           mela->selfDHzzCLambda_qsq[0][iq] = opt->coupl_H.HzzCLambda_qsq[iq];
           mela->selfDHwwCLambda_qsq[0][iq] = opt->coupl_H.HwwCLambda_qsq[iq];
         }
+      }
+
+      for (int ic=0; ic<(int)SIZE_HQQ; ic++){
+        mela->selfDHqqcoupl[1][ic][im] = opt->coupl_H.H2qqcoupl[ic][im];
+        mela->selfDHbbcoupl[1][ic][im] = opt->coupl_H.H2bbcoupl[ic][im];
+        mela->selfDHttcoupl[1][ic][im] = opt->coupl_H.H2ttcoupl[ic][im];
+        mela->selfDHb4b4coupl[1][ic][im] = opt->coupl_H.H2b4b4coupl[ic][im];
+        mela->selfDHt4t4coupl[1][ic][im] = opt->coupl_H.H2t4t4coupl[ic][im];
+      }
+      for (int ic=0; ic<(int)SIZE_HGG; ic++){
+        mela->selfDHggcoupl[1][ic][im] = opt->coupl_H.H2ggcoupl[ic][im];
+        mela->selfDHg4g4coupl[1][ic][im] = opt->coupl_H.H2g4g4coupl[ic][im];
       }
       for (int ic=0; ic<(int)SIZE_HVV; ic++){
         mela->selfDHzzcoupl[1][ic][im] = opt->coupl_H.H2zzcoupl[ic][im];
@@ -96,34 +117,42 @@ void MELAHypothesis::computeP(){
     TVar::Process theProc = opt->proc;
     TVar::Production theProd = opt->prod;
     TVar::MatrixElement theME = opt->ME;
+    // In case the VH ME has a mismatch with the event, switch the production.
     if (
-      isGen && theME==TVar::JHUGen && melaCand->getNAssociatedJets()<2
+      isGen && melaCand->getNAssociatedJets()<2
       ){
       if (theProd==TVar::Had_WH) theProd=TVar::Lep_WH;
       else if (theProd==TVar::Had_ZH) theProd=TVar::Lep_ZH;
+      else if (theProd==TVar::Had_WH_S) theProd=TVar::Lep_WH_S;
+      else if (theProd==TVar::Had_ZH_S) theProd=TVar::Lep_ZH_S;
+      else if (theProd==TVar::Had_WH_TU) theProd=TVar::Lep_WH_TU;
+      else if (theProd==TVar::Had_ZH_TU) theProd=TVar::Lep_ZH_TU;
     }
     if (
-      isGen && theME==TVar::JHUGen && melaCand->getNAssociatedLeptons()<2
+      isGen && melaCand->getNAssociatedLeptons()<2
       ){
       if (theProd==TVar::Lep_WH) theProd=TVar::Had_WH;
       else if (theProd==TVar::Lep_ZH) theProd=TVar::Had_ZH;
+      else if (theProd==TVar::Lep_WH_S) theProd=TVar::Had_WH_S;
+      else if (theProd==TVar::Lep_ZH_S) theProd=TVar::Had_ZH_S;
+      else if (theProd==TVar::Lep_WH_TU) theProd=TVar::Had_WH_TU;
+      else if (theProd==TVar::Lep_ZH_TU) theProd=TVar::Had_ZH_TU;
     }
     mela->setProcess(theProc, theME, theProd);
     if (
-      theProd==TVar::Lep_WH || theProd==TVar::Had_WH || theProd==TVar::Lep_ZH || theProd==TVar::Had_ZH || theProd == TVar::GammaH
-      ||
-      theProd==TVar::JJVBF || theProd==TVar::JJQCD || theProd==TVar::JQCD
-      ||
-      theProd==TVar::ttH || theProd==TVar::bbH
+      theProd==TVar::Lep_WH || theProd==TVar::Had_WH || theProd==TVar::Lep_ZH || theProd==TVar::Had_ZH || theProd==TVar::JJVBF || theProd==TVar::JJQCD
+      || theProd==TVar::Lep_WH_S || theProd==TVar::Had_WH_S || theProd==TVar::Lep_ZH_S || theProd==TVar::Had_ZH_S || theProd==TVar::JJVBF_S || theProd==TVar::JJQCD_S
+      || theProd==TVar::Lep_WH_TU || theProd==TVar::Had_WH_TU || theProd==TVar::Lep_ZH_TU || theProd==TVar::Had_ZH_TU || theProd==TVar::JJVBF_TU || theProd==TVar::JJQCD_TU
+      || theProd == TVar::GammaH
+      || theProd==TVar::JQCD
+      || theProd==TVar::ttH || theProd==TVar::bbH
       ){
       if (theME != TVar::MCFM) mela->computeProdP(pME, !isGen);
       else mela->computeProdDecP(pME, !isGen);
     }
     else mela->computeP(pME, !isGen);
 
-    if (!isGen){
-      mela->getPAux(pAux);
-    }
+    if (!isGen) mela->getPAux(pAux);
   }
 }
 

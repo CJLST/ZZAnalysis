@@ -79,7 +79,7 @@ public:
 
   void analyze();
   void analyze(const std::vector<std::string>& optcoll);
-  void splitOption(const std::string rawoption, std::string& wish, std::string& value, char delimiter);
+  void splitOption(const std::string rawoption, std::string& wish, std::string& value, char delimiter)const;
   void splitOptionRecursive(const std::string rawoption, std::vector<std::string>& splitoptions, char delimiter);
   void interpretOption(std::string wish, std::string value);
 
@@ -108,7 +108,7 @@ public:
 
 protected:
 
-  Bool_t checkListVariable(const std::vector<std::string>& list, const std::string& var) const;
+  Bool_t checkListVariable(const std::vector<std::string>& list, const std::string& var)const;
 
   void setProcess(std::string opt);
   void setProduction(std::string opt);

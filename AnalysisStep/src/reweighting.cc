@@ -47,16 +47,16 @@ Reweighting::Reweighting(
   cutoffs(cutoffs_),
   fillingcouplingstree(false),
   mela(mela_),
-  ghg2(mela.selfDHggcoupl[ghg2_index][0]),
+  ghg2(mela.selfDHggcoupl[0][ghg2_index][0]),
   ghz1(mela.selfDHzzcoupl[0][ghz1_index][0]),
   ghz2(mela.selfDHzzcoupl[0][ghz2_index][0]),
   ghz4(mela.selfDHzzcoupl[0][ghz4_index][0]),
   ghz1_prime2(mela.selfDHzzcoupl[0][ghz1_prime2_index][0]),
   a1(mela.selfDGggcoupl[a1_index][0]),
-  b5(mela.selfDGvvcoupl[b5_index][0]),
-  reweightingtype(reweightingtypefromstring(reweightingtypestring)),
-  nReweightingSamples(nReweightingSamplesFromType(reweightingtype))
+  b5(mela.selfDGvvcoupl[b5_index][0])
 {
+  reweightingtype = reweightingtypefromstring(reweightingtypestring);
+  nReweightingSamples = nReweightingSamplesFromType(reweightingtype);
   if (cutoffs.size() == 0)
     for (int i = 0; i < nReweightingSamples; i++)
       cutoffs.push_back(-1);

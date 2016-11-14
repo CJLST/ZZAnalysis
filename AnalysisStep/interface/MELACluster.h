@@ -30,8 +30,10 @@ public:
   MELACluster(std::string name_);
   virtual ~MELACluster();
 
-  std::string getName(){ return name; }
+  std::string getName() const{ return name; }
   void addComputation(MELAComputation* comp);
+  std::vector<MELAComputation*> const* getComputations(){ return &computers; }
+  void computeAll();
   void update();
   void forceUpdate();
   void reset();

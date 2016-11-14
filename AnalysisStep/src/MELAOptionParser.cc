@@ -44,7 +44,7 @@ void MELAOptionParser::analyze(const std::vector<std::string>& optcoll){
   }
 
 }
-void MELAOptionParser::splitOption(const string rawoption, string& wish, string& value, char delimiter) const{
+void MELAOptionParser::splitOption(const string rawoption, string& wish, string& value, char delimiter)const{
   size_t posEq = rawoption.find(delimiter);
   if (posEq!=string::npos){
     wish=rawoption;
@@ -66,7 +66,7 @@ void MELAOptionParser::splitOptionRecursive(const string rawoption, vector<strin
   }
   if (remnant!="") splitoptions.push_back(remnant);
 }
-Bool_t MELAOptionParser::checkListVariable(const vector<string>& list, const string& var){
+Bool_t MELAOptionParser::checkListVariable(const vector<string>& list, const string& var)const{
   for (unsigned int v=0; v<list.size(); v++){
     if (list.at(v)==var) return true; // Look for exact match
   }

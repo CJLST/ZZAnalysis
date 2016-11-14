@@ -74,7 +74,14 @@ private:
 
   void getPairMass(const reco::Candidate* lp, const reco::Candidate* lm, FSRToLepMap& photons, float& mass, int& ID);
   void buildMELA();
-  bool addToMELACluster(MELAComputation* me_computer);
+  void addToMELACluster(MELAComputation* me_computer);
+  void computeMELABranches();
+  void updateMELAClusters_Common();
+  void updateMELAClusters_J1JEC();
+  void updateMELAClusters_J2JEC();
+  void updateMELAClusters_LepWH();
+  void updateMELAClusters_LepZH();
+  void pushMELABranches(pat::CompositeCandidate& myCand);
   void clearMELA();
 
   edm::EDGetTokenT<edm::View<reco::CompositeCandidate> > candidateToken;
@@ -682,77 +689,77 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     mela->setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
     // 0+m -- 0+h
     float pg1g2_VAJHU=0;
-    (mela->selfDHggcoupl)[0][0]=1.;
+    (mela->selfDHggcoupl)[0][0][0]=1.;
     (mela->selfDHzzcoupl)[0][0][0]=1.;
     (mela->selfDHzzcoupl)[0][1][0]=1.;
     mela->computeP(pg1g2_VAJHU, true);
     pg1g2_VAJHU -= p0plus_VAJHU+p0hplus_VAJHU;
     // 0+m -- 0+h (phase(0+h)=pi/2)
     float pg1g2_pi2_VAJHU=0;
-    (mela->selfDHggcoupl)[0][0]=1.;
+    (mela->selfDHggcoupl)[0][0][0]=1.;
     (mela->selfDHzzcoupl)[0][0][0]=1.;
     (mela->selfDHzzcoupl)[0][1][1]=1.;
     mela->computeP(pg1g2_pi2_VAJHU, true);
     pg1g2_pi2_VAJHU -= p0plus_VAJHU+p0hplus_VAJHU;
     // 0+m -- 0-
     float pg1g4_VAJHU=0;
-    (mela->selfDHggcoupl)[0][0]=1.;
+    (mela->selfDHggcoupl)[0][0][0]=1.;
     (mela->selfDHzzcoupl)[0][0][0]=1.;
     (mela->selfDHzzcoupl)[0][3][0]=1.;
     mela->computeP(pg1g4_VAJHU, true);
     pg1g4_VAJHU -= p0plus_VAJHU+p0minus_VAJHU;
     // 0+m -- 0- (phase(0-)=pi/2)
     float pg1g4_pi2_VAJHU=0;
-    (mela->selfDHggcoupl)[0][0]=1.;
+    (mela->selfDHggcoupl)[0][0][0]=1.;
     (mela->selfDHzzcoupl)[0][0][0]=1.;
     (mela->selfDHzzcoupl)[0][3][1]=1.;
     mela->computeP(pg1g4_pi2_VAJHU, true);
     pg1g4_pi2_VAJHU -= p0plus_VAJHU+p0minus_VAJHU;
     // 0+m -- 0+L1 (no phase=pi/2 equivalent)
     float pg1g1prime2_VAJHU=0;
-    (mela->selfDHggcoupl)[0][0]=1.;
+    (mela->selfDHggcoupl)[0][0][0]=1.;
     (mela->selfDHzzcoupl)[0][0][0]=1.;
     (mela->selfDHzzcoupl)[0][11][0]=1.;
     mela->computeP(pg1g1prime2_VAJHU, true);
     pg1g1prime2_VAJHU -= p0plus_VAJHU+p0_g1prime2_VAJHU;
     // 0+m ZZ -- 0+L1 Zg*
     float p0plus_zz_g1prime2_zgs_VAJHU=0;
-    (mela->selfDHggcoupl)[0][0]=1.;
+    (mela->selfDHggcoupl)[0][0][0]=1.;
     (mela->selfDHzzcoupl)[0][0][0]=1.;
     (mela->selfDHzzcoupl)[0][30][0]=1.;
     mela->computeP(p0plus_zz_g1prime2_zgs_VAJHU, true);
     p0plus_zz_g1prime2_zgs_VAJHU -= p0plus_VAJHU+p0_g1prime2_zgs_VAJHU;
     // 0+m ZZ -- 0+L1 Zg* (phase(0+L1 Zgs*)=pi/2)
     float p0plus_zz_g1prime2_zgs_pi2_VAJHU=0;
-    (mela->selfDHggcoupl)[0][0]=1.;
+    (mela->selfDHggcoupl)[0][0][0]=1.;
     (mela->selfDHzzcoupl)[0][0][0]=1.;
     (mela->selfDHzzcoupl)[0][30][1]=1.;
     mela->computeP(p0plus_zz_g1prime2_zgs_pi2_VAJHU, true);
     p0plus_zz_g1prime2_zgs_pi2_VAJHU -= p0plus_VAJHU+p0_g1prime2_zgs_VAJHU;
     // 0+m ZZ -- 0+h Zg*
     float p0plus_zz_0hplus_zgs_VAJHU=0;
-    (mela->selfDHggcoupl)[0][0]=1.;
+    (mela->selfDHggcoupl)[0][0][0]=1.;
     (mela->selfDHzzcoupl)[0][0][0]=1.;
     (mela->selfDHzzcoupl)[0][4][0]=1.;
     mela->computeP(p0plus_zz_0hplus_zgs_VAJHU, true);
     p0plus_zz_0hplus_zgs_VAJHU -= p0plus_VAJHU+p0hplus_zgs_VAJHU;
     // 0+m ZZ -- 0- Zg*
     float p0plus_zz_0minus_zgs_VAJHU=0;
-    (mela->selfDHggcoupl)[0][0]=1.;
+    (mela->selfDHggcoupl)[0][0][0]=1.;
     (mela->selfDHzzcoupl)[0][0][0]=1.;
     (mela->selfDHzzcoupl)[0][6][0]=1.;
     mela->computeP(p0plus_zz_0minus_zgs_VAJHU, true);
     p0plus_zz_0minus_zgs_VAJHU -= p0plus_VAJHU+p0minus_zgs_VAJHU;
     // 0+m ZZ -- 0+h g*g*
     float p0plus_zz_0hplus_gsgs_VAJHU=0;
-    (mela->selfDHggcoupl)[0][0]=1.;
+    (mela->selfDHggcoupl)[0][0][0]=1.;
     (mela->selfDHzzcoupl)[0][0][0]=1.;
     (mela->selfDHzzcoupl)[0][7][0]=1.;
     mela->computeP(p0plus_zz_0hplus_gsgs_VAJHU, true);
     p0plus_zz_0hplus_gsgs_VAJHU -= p0plus_VAJHU+p0hplus_gsgs_VAJHU;
     // 0+m ZZ -- 0- g*g*
     float p0plus_zz_0minus_gsgs_VAJHU=0;
-    (mela->selfDHggcoupl)[0][0]=1.;
+    (mela->selfDHggcoupl)[0][0][0]=1.;
     (mela->selfDHzzcoupl)[0][0][0]=1.;
     (mela->selfDHzzcoupl)[0][9][0]=1.;
     mela->computeP(p0plus_zz_0minus_gsgs_VAJHU, true);
@@ -1171,119 +1178,6 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
                 pwh_hadronic_VAJHU_temp = pwh_temp;
                 pzh_hadronic_VAJHU_temp = pzh_temp;
 
-                if (addProdAnomalousProbabilities) {
-                  float
-                        vbfg4_temp = -1, vbfg2_temp = -1, vbfL1_temp = -1,
-                        vbfg1g4_temp = -1, vbfg1g2_temp = -1, vbfg1L1_temp = -1,
-                        whhadg4_temp = -1, whhadg2_temp = -1, whhadL1_temp = -1,
-                        whhadg1g4_temp = -1, whhadg1g2_temp = -1, whhadg1L1_temp = -1,
-                        zhhadg4_temp = -1, zhhadg2_temp = -1, zhhadL1_temp = -1,
-                        zhhadg1g4_temp = -1, zhhadg1g2_temp = -1, zhhadg1L1_temp = -1,
-                        hjjg4_temp = -1, hjjg2g4_temp = -1;
-                  double& ghz1 = mela->selfDHzzcoupl[0][0][0];
-                  double& ghz2 = mela->selfDHzzcoupl[0][1][0];
-                  double& ghz4 = mela->selfDHzzcoupl[0][3][0];
-                  double& ghz1_prime2 = mela->selfDHzzcoupl[0][11][0];
-                  double& ghg2 = mela->selfDHggcoupl[0][0];
-                  double& ghg4 = mela->selfDHggcoupl[2][0];
-
-                  mela->setProcess(TVar::H0minus, TVar::JHUGen, TVar::JJVBF);
-                  mela->computeProdP(vbfg4_temp, true);
-                  pvbf_0minus_VAJHU_highestPTJets_temp = vbfg4_temp;
-
-                  mela->setProcess(TVar::H0hplus, TVar::JHUGen, TVar::JJVBF);
-                  mela->computeProdP(vbfg2_temp, true);
-                  pvbf_0hplus_VAJHU_highestPTJets_temp = vbfg2_temp;
-
-                  mela->setProcess(TVar::H0_g1prime2, TVar::JHUGen, TVar::JJVBF);
-                  mela->computeProdP(vbfL1_temp, true);
-                  pvbf_0_g1prime2_VAJHU_highestPTJets_temp = vbfL1_temp;
-
-                  mela->setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::JJVBF);
-                  ghz1 = ghz4 = 1.;
-                  mela->computeProdP(vbfg1g4_temp, true);
-                  pvbf_g1g4_VAJHU_highestPTJets_temp = vbfg1g4_temp - pvbf_temp - vbfg4_temp;
-
-                  mela->setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::JJVBF);
-                  ghz1 = ghz2 = 1.;
-                  mela->computeProdP(vbfg1g2_temp, true);
-                  pvbf_g1g2_VAJHU_highestPTJets_temp = vbfg1g2_temp - pvbf_temp - vbfg2_temp;
-
-                  mela->setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::JJVBF);
-                  ghz1 = ghz1_prime2 = 1.;
-                  mela->computeProdP(vbfg1L1_temp, true);
-                  pvbf_g1g1prime2_VAJHU_highestPTJets_temp = vbfg1L1_temp - pvbf_temp - vbfL1_temp;
-
-
-
-                  mela->setProcess(TVar::H0minus, TVar::JHUGen, TVar::Had_WH);
-                  mela->computeProdP(whhadg4_temp, true);
-                  pwh_0minus_hadronic_VAJHU_temp = whhadg4_temp;
-
-                  mela->setProcess(TVar::H0hplus, TVar::JHUGen, TVar::Had_WH);
-                  mela->computeProdP(whhadg2_temp, true);
-                  pwh_0hplus_hadronic_VAJHU_temp = whhadg2_temp;
-
-                  mela->setProcess(TVar::H0_g1prime2, TVar::JHUGen, TVar::Had_WH);
-                  mela->computeProdP(whhadL1_temp, true);
-                  pwh_0_g1prime2_hadronic_VAJHU_temp = whhadL1_temp;
-
-                  mela->setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::Had_WH);
-                  ghz1 = ghz4 = 1.;
-                  mela->computeProdP(whhadg1g4_temp, true);
-                  pwh_g1g4_hadronic_VAJHU_temp = whhadg1g4_temp - pwh_temp - whhadg4_temp;
-
-                  mela->setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::Had_WH);
-                  ghz1 = ghz2 = 1.;
-                  mela->computeProdP(whhadg1g2_temp, true);
-                  pwh_g1g2_hadronic_VAJHU_temp = whhadg1g2_temp - pwh_temp - whhadg2_temp;
-
-                  mela->setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::Had_WH);
-                  ghz1 = ghz1_prime2 = 1.;
-                  mela->computeProdP(whhadg1L1_temp, true);
-                  pwh_g1g1prime2_hadronic_VAJHU_temp = whhadg1L1_temp - pwh_temp - whhadL1_temp;
-
-
-
-                  mela->setProcess(TVar::H0minus, TVar::JHUGen, TVar::Had_ZH);
-                  mela->computeProdP(zhhadg4_temp, true);
-                  pzh_0minus_hadronic_VAJHU_temp = zhhadg4_temp;
-
-                  mela->setProcess(TVar::H0hplus, TVar::JHUGen, TVar::Had_ZH);
-                  mela->computeProdP(zhhadg2_temp, true);
-                  pzh_0hplus_hadronic_VAJHU_temp = zhhadg2_temp;
-
-                  mela->setProcess(TVar::H0_g1prime2, TVar::JHUGen, TVar::Had_ZH);
-                  mela->computeProdP(zhhadL1_temp, true);
-                  pzh_0_g1prime2_hadronic_VAJHU_temp = zhhadL1_temp;
-
-                  mela->setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::Had_ZH);
-                  ghz1 = ghz4 = 1.;
-                  mela->computeProdP(zhhadg1g4_temp, true);
-                  pzh_g1g4_hadronic_VAJHU_temp = zhhadg1g4_temp - pzh_temp - zhhadg4_temp;
-
-                  mela->setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::Had_ZH);
-                  ghz1 = ghz2 = 1.;
-                  mela->computeProdP(zhhadg1g2_temp, true);
-                  pzh_g1g2_hadronic_VAJHU_temp = zhhadg1g2_temp - pzh_temp - zhhadg2_temp;
-
-                  mela->setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::Had_ZH);
-                  ghz1 = ghz1_prime2 = 1.;
-                  mela->computeProdP(zhhadg1L1_temp, true);
-                  pzh_g1g1prime2_hadronic_VAJHU_temp = zhhadg1L1_temp - pzh_temp - zhhadL1_temp;
-
-
-
-                  mela->setProcess(TVar::H0minus, TVar::JHUGen, TVar::JJQCD);
-                  mela->computeProdP(hjjg4_temp, true);
-                  phjj_0minus_VAJHU_highestPTJets_temp = hjjg4_temp;
-
-                  mela->setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::JJQCD);
-                  ghg2 = ghg4 = 1.;
-                  mela->computeProdP(hjjg2g4_temp, true);
-                  phjj_g2g4_VAJHU_highestPTJets_temp = hjjg2g4_temp - phjj_temp - hjjg4_temp;
-                }
-
                 float ptth_temp = -1;
                 float pbbh_temp = -1;
                 mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::ttH);
@@ -1387,6 +1281,8 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
         } // End if hasAtLeastOneJet
       } // End if melaCand!=0
     } // End for jecnum = 0 to 2
+
+    computeMELABranches();
 
     // IMPORTANT: Reset input events at the end all calculations!
     mela->resetInputEvent();
@@ -1705,6 +1601,8 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     myCand.addUserFloat("pbbh_VAJHU_up", pbbh_VAJHU_up);
     myCand.addUserFloat("pbbh_VAJHU_dn", pbbh_VAJHU_dn);
 
+    pushMELABranches(myCand);
+
 
     //--- MC matching. To be revised, cf. MuFiller, EleFiller
 //     if (isMC) {
@@ -1769,7 +1667,6 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 }
 
 
-
 void
 ZZCandidateFiller::getPairMass(const reco::Candidate* lp, const reco::Candidate* lm, ZZCandidateFiller::FSRToLepMap& photons, float& mass, int& ID){
   math::XYZTLorentzVector llp4 = lp->p4()+lm->p4();
@@ -1791,7 +1688,7 @@ void ZZCandidateFiller::buildMELA(){
     // These copy options will be evaulated in a separate loop
     if (recoMElist.at(it).find("Copy")!=string::npos){
       me_opt = new MELAOptionParser(recoMElist.at(it));
-      me_copyopts.append(me_opt);
+      me_copyopts.push_back(me_opt);
       continue;
     }
 
@@ -1843,12 +1740,14 @@ void ZZCandidateFiller::buildMELA(){
     MELAOptionParser* original_opt=0;
     // Find the original options
     for (unsigned int ih=0; ih<me_aliased_units.size(); ih++){
-      if (me_opt->testCopyAlias(me_aliased_units.at(ih)->getAlias())){
+      if (me_opt->testCopyAlias(me_aliased_units.at(ih)->getOption()->getAlias())){
         original_hypo = me_aliased_units.at(ih);
         original_opt = original_hypo->getOption();
         break;
       }
     }
+    if (original_opt==0) continue;
+    else me_opt->pickOriginalOptions(original_opt);
     // Create a new computation for the copy options
     MELAComputation* me_computer = new MELAComputation(original_hypo);
     me_computer->setOption(me_opt);
@@ -1897,10 +1796,189 @@ void ZZCandidateFiller::addToMELACluster(MELAComputation* me_computer){
     me_clusters.push_back(tmpcluster);
   }
 }
+void ZZCandidateFiller::computeMELABranches(){
+  updateMELAClusters_Common(); // "Common"
+  updateMELAClusters_J1JEC(); // "J1JECNominal/Up/Dn"
+  updateMELAClusters_J2JEC(); // "J2JECNominal/Up/Dn"
+  updateMELAClusters_LepWH(); // "LepWH"
+  updateMELAClusters_LepZH(); // "LepZH"
+}
+// Common ME computations with index=0
+void ZZCandidateFiller::updateMELAClusters_Common(){
+  mela->setCurrentCandidateFromIndex(0);
+  MELACandidate* melaCand = mela->getCurrentCandidate();
+  if (melaCand==0) return;
+
+  for (unsigned int ic=0; ic<me_clusters.size(); ic++){
+    MELACluster* theCluster = me_clusters.at(ic);
+    if (theCluster->getName()=="Common"){
+      // Re-compute all related hypotheses first...
+      theCluster->computeAll();
+      // ...then update the cluster
+      theCluster->update();
+    }
+  }
+}
+// Common ME computations for leptonic WH: Loops over possible fake neutrinos
+void ZZCandidateFiller::updateMELAClusters_LepWH(){
+  mela->setCurrentCandidateFromIndex(0);
+  MELACandidate* melaCand = mela->getCurrentCandidate();
+  if (melaCand==0) return;
+
+  int nNeutrinos = melaCand->getNAssociatedNeutrinos();
+  for (int inu=0; inu<nNeutrinos; inu++){
+    // Notice: Looping over Ws does not make much sense unless you have more than one lepton since the fake neutrino is already calculated from the available lepton with W mass constraint.
+    // Such a loop over Ws only makes sense if there are more than one lepton in the event, but in that case, it still does not make sense to cross-match neutrinos and leptons.
+    for (int disableNu=0; disableNu<nNeutrinos; disableNu++) melaCand->getAssociatedNeutrino(disableNu)->setSelected(disableNu==inu); // Disable all neutrinos other than index==inu
+    for (unsigned int icl=0; icl<me_clusters.size(); icl++){ // Loop over clusters to update them
+      MELACluster* theCluster = me_clusters.at(icl);
+      if (theCluster->getName()=="LepWH"){
+        // Re-compute all related hypotheses first...
+        theCluster->computeAll();
+        // ...then force an update the cluster
+        theCluster->forceUpdate(); // MELAComputation::testMaximizationCache still prevents update for a second time if there are no contingencies.
+      }
+    } // End loop over clusters
+  } // End loop over possible neutrinos
+  // Re-enable all neutrinos
+  for (int disableNu=0; disableNu<nNeutrinos; disableNu++) melaCand->getAssociatedNeutrino(disableNu)->setSelected(true);
+}
+// Common ME computations for leptonic ZH: Picks best Z3
+void ZZCandidateFiller::updateMELAClusters_LepZH(){
+  mela->setCurrentCandidateFromIndex(0);
+  MELACandidate* melaCand = mela->getCurrentCandidate();
+  if (melaCand==0) return;
+
+  unsigned int nSortedVs = melaCand->getNSortedVs(); // Be careful, sortedV==0,1 are (guaranteed to be) the ZZ daughters! One needs to start any loop from index=2.
+  const unsigned int iSortedVstart=2;
+  double dZmass=100000; // Hopefully will the greatest achievable mass for a long time...
+  int chosenZ=-1;
+  // Choose the Z by mass closest to mZ (~equivalent to ordering by best SM ME but would be equally valid for BSM MEs as well)
+  for (unsigned int iV=iSortedVstart; iV<nSortedVs; iV++){
+    MELAParticle* associatedV = melaCand->getSortedV(iV);
+    if (!PDGHelpers::isAZBoson(associatedV->id)) continue;
+    if (!PDGHelpers::isALepton(associatedV->getDaughter(0)->id)) continue;
+    if (fabs(associatedV->m()-PDGHelpers::Zmass)<dZmass){ dZmass=associatedV->m()-PDGHelpers::Zmass; chosenZ=(int)iV; }
+  }
+  if (chosenZ>=0){
+    // Disable every associated Z boson and its daughters unless it is the chosen one
+    for (unsigned int disableV=iSortedVstart; disableV<nSortedVs; disableV++){
+      bool flag=(((int)disableV)==chosenZ);
+      MELAParticle* einV = melaCand->getSortedV(disableV);
+      if (PDGHelpers::isAZBoson(einV->id)){
+        einV->setSelected(flag);
+        for (int iVj=0; iVj<einV->getNDaughters(); iVj++) einV->getDaughter(iVj)->setSelected(flag);
+      }
+    }
+
+    for (unsigned int icl=0; icl<me_clusters.size(); icl++){ // Loop over clusters to update them
+      MELACluster* theCluster = me_clusters.at(icl);
+      if (theCluster->getName()=="LepZH"){
+        // Re-compute all related hypotheses first...
+        theCluster->computeAll();
+        // ...then force an update the cluster
+        theCluster->forceUpdate(); // MELAComputation::testMaximizationCache still prevents update for a second time if there are no contingencies.
+      }
+    } // End loop over clusters
+
+  } // End if chosenZ>=0
+  // Re-enable every associated Z boson and its daughters unless it is the chosen one
+  for (unsigned int disableV=iSortedVstart; disableV<nSortedVs; disableV++){
+    bool flag=true;
+    MELAParticle* einV = melaCand->getSortedV(disableV);
+    if (PDGHelpers::isAZBoson(einV->id)){
+      einV->setSelected(flag);
+      for (int iVj=0; iVj<einV->getNDaughters(); iVj++) einV->getDaughter(iVj)->setSelected(flag);
+    }
+  }
+}
+// Common ME computations for JECNominal, Up and Down variations, case where ME requires 2 jets
+void ZZCandidateFiller::updateMELAClusters_J2JEC(){
+  for (int jecnum=0; jecnum<3; jecnum++){
+    mela->setCurrentCandidateFromIndex(jecnum);
+    MELACandidate* melaCand = mela->getCurrentCandidate();
+    if (melaCand==0) continue;
+
+    unsigned int nGoodJets=melaCand->getNAssociatedJets();
+    for (unsigned int firstjet = 0; firstjet < nGoodJets; firstjet++){ // Loop over first jet
+      for (unsigned int secondjet = firstjet+1; secondjet < nGoodJets; secondjet++){ // Loop over second jet
+
+        // Disable jets and tops
+        for (unsigned int disableJet=0; disableJet<nGoodJets; disableJet++) melaCand->getAssociatedJet(disableJet)->setSelected((disableJet==firstjet || disableJet==secondjet)); // Disable the other jets
+        unsigned int nDisabledStableTops=0;
+        for (int itop=0; itop<melaCand->getNAssociatedTops(); itop++){
+          MELATopCandidate* einTop = melaCand->getAssociatedTop(itop);
+          if (einTop->getNDaughters()==3) einTop->setSelected(false); // All unstable tops are disabled in the loop for jets (where "jet"=="stable top") since we are looping over jecnum
+          else{
+            einTop->setSelected((nDisabledStableTops==firstjet || nDisabledStableTops==secondjet)); // Disable the other stable tops
+            nDisabledStableTops++;
+          }
+        }
+
+        for (unsigned int icl=0; icl<me_clusters.size(); icl++){ // Loop over clusters to update them
+          MELACluster* theCluster = me_clusters.at(icl);
+          if (
+            (theCluster->getName()=="J2JECNominal" && jecnum==0) ||
+            (theCluster->getName()=="J2JECUp" && jecnum==1) ||
+            (theCluster->getName()=="J2JECDn" && jecnum==2)
+            ){
+            // Re-compute all related hypotheses first...
+            theCluster->computeAll();
+            // ...then force an update the cluster
+            theCluster->forceUpdate(); // MELAComputation::testMaximizationCache still prevents update for a second time if there are no contingencies.
+          }
+        } // End loop over clusters
+
+      } // End loop over second jet
+    } // End loop over first jet
+    // Turn associated jets/tops back on
+    for (unsigned int disableJet=0; disableJet<nGoodJets; disableJet++) melaCand->getAssociatedJet(disableJet)->setSelected(true); // Turn all jets back on
+    for (int itop=0; itop<melaCand->getNAssociatedTops(); itop++) melaCand->getAssociatedTop(itop)->setSelected(true); // Turn all tops back on
+  } // End jecnum loop
+}
+// Common ME computations for JECNominal, Up and Down variations, case where ME requires 1 jet
+void ZZCandidateFiller::updateMELAClusters_J1JEC(){
+  for (int jecnum=0; jecnum<3; jecnum++){
+    mela->setCurrentCandidateFromIndex(jecnum);
+    MELACandidate* melaCand = mela->getCurrentCandidate();
+    if (melaCand==0) continue;
+
+    unsigned int nGoodJets=melaCand->getNAssociatedJets();
+    for (unsigned int firstjet = 0; firstjet < nGoodJets; firstjet++){ // Loop over first jet
+
+      // Disable jets
+      for (unsigned int disableJet=0; disableJet<nGoodJets; disableJet++) melaCand->getAssociatedJet(disableJet)->setSelected(disableJet==firstjet); // Disable the other jets
+
+      for (unsigned int icl=0; icl<me_clusters.size(); icl++){ // Loop over clusters to update them
+        MELACluster* theCluster = me_clusters.at(icl);
+        if (
+          (theCluster->getName()=="J1JECNominal" && jecnum==0) ||
+          (theCluster->getName()=="J1JECUp" && jecnum==1) ||
+          (theCluster->getName()=="J1JECDn" && jecnum==2)
+          ){
+          // Re-compute all related hypotheses first...
+          theCluster->computeAll();
+          // ...then force an update the cluster
+          theCluster->forceUpdate(); // MELAComputation::testMaximizationCache still prevents update for a second time if there are no contingencies.
+        }
+      } // End loop over clusters
+
+    } // End loop over first jet
+    // Turn associated jets back on
+    for (unsigned int disableJet=0; disableJet<nGoodJets; disableJet++) melaCand->getAssociatedJet(disableJet)->setSelected(true); // Turn all jets back on
+  } // End jecnum loop
+}
+void ZZCandidateFiller::pushMELABranches(pat::CompositeCandidate& myCand){
+  // Push...
+  for (unsigned int ib=0; ib<me_branches.size(); ib++) myCand.addUserFloat(string(me_branches.at(ib)->bname.Data()), (float)me_branches.at(ib)->getVal());
+  // ...then reset
+  for (unsigned int ic=0; ic<me_clusters.size(); ic++) me_clusters.at(ic)->reset();
+}
 void ZZCandidateFiller::clearMELA(){
   for (unsigned int it=0; it<me_branches.size(); it++) delete me_branches.at(it);
   for (unsigned int it=0; it<me_clusters.size(); it++) delete me_clusters.at(it);
   for (unsigned int it=0; it<me_computers.size(); it++) delete me_computers.at(it);
+  for (unsigned int it=0; it<me_copyopts.size(); it++) delete me_copyopts.at(it);
   //for (unsigned int it=0; it<me_aliased_units.size(); it++) delete me_aliased_units.at(it); // DO NOT DELETE THIS, WILL BE DELETED WITH me_units!
   for (unsigned int it=0; it<me_units.size(); it++) delete me_units.at(it);
   delete mela;

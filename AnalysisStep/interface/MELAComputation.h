@@ -47,6 +47,8 @@ protected:
   Bool_t testMaximizationCache(); // Used in update()
   Float_t extractVal(MELAHypothesis::METype valtype); // Computation after all contingencies are added
 
+  void resetMaximizationCache();
+
 public:
 
   MELAOptionParser* getOption(){ return opt; }

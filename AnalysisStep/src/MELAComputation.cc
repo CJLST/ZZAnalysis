@@ -13,7 +13,7 @@ MELAComputation::MELAComputation(MELAHypothesis* targetP_) :
   resetMaximizationCache();
 }
 MELAComputation::~MELAComputation(){
-  addededP.clear();
+  addedP.clear();
   subtractedP.clear();
   multipliedP.clear();
   dividedP.clear();
