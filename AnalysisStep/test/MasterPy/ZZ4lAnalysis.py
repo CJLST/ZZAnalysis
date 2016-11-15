@@ -768,10 +768,11 @@ process.ZlCand = cms.EDProducer("PATCandViewShallowCloneCombiner",
                      ("(daughter(0).daughter(0).charge == daughter(1).charge || %s > 4) && " % ( Z_PLUS_LEP_MIJ.format(0))) +       # mLL>4 for the OS pair (Giovanni's impl)
                      ("(daughter(0).daughter(1).charge == daughter(1).charge || %s > 4) && " % ( Z_PLUS_LEP_MIJ.format(1))) +
                      "daughter(0).masterClone.userFloat('isBestZ') &&" + # This includes the Z1 isolation requirement
-                     "daughter(0).masterClone.userFloat('Z1Presel')"
+                     "daughter(0).masterClone.userFloat('Z1Presel') && daughter(1).masterClone.userFloat('SIP') < 4."
                      ),
     checkCharge = cms.bool(False)
 )
+
 
 
 ### ----------------------------------------------------------------------
@@ -1061,7 +1062,29 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
 ### Jets
 ### ----------------------------------------------------------------------
 
+
+from RecoJets.JetProducers.PileupJetIDParams_cfi import full_80x_chs
+from RecoJets.JetProducers.PileupJetIDCutParams_cfi import full_80x_chs_wp
+
+ 
 process.load("CondCore.CondDB.CondDB_cfi")
+
+
+process.load("RecoJets.JetProducers.PileupJetID_cfi")
+process.pileupJetIdUpdated = process.pileupJetId.clone(
+
+    # algos = cms.VPSet(
+    #     full_80x_chs.clone(
+    #         JetIdParams = full_80x_chs_wp 
+    #         )
+    #     ),
+    
+    jets=cms.InputTag("slimmedJets"),
+    inputIsCorrected=True,
+    applyJec=True,
+    vertexes=cms.InputTag("offlineSlimmedPrimaryVertices")
+    )
+#print process.pileupJetId.dumpConfig()
 
 # q/g likelihood
 qgDatabaseVersion = '80X'
@@ -1142,6 +1165,7 @@ if APPLYJEC:
 
     ### reapply JEC
     from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import updatedPatJetCorrFactors
+
     process.patJetCorrFactorsReapplyJEC = updatedPatJetCorrFactors.clone(
         src = cms.InputTag("slimmedJets"),
         levels = ['L1FastJet','L2Relative','L3Absolute'],
@@ -1154,6 +1178,10 @@ if APPLYJEC:
         jetSource = cms.InputTag("slimmedJets"),
         jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
         )
+
+    #add pileup id and discriminant to patJetsReapplyJEC
+    process.patJetsReapplyJEC.userData.userFloats.src += ['pileupJetIdUpdated:fullDiscriminant'] 
+    process.patJetsReapplyJEC.userData.userInts.src += ['pileupJetIdUpdated:fullId'] 
 
     ### Replace inputs in QGTagger and dressedJets
     process.QGTagger.srcJets = cms.InputTag( 'patJetsReapplyJEC')
@@ -1190,8 +1218,13 @@ if FSRMODE=="Legacy" :
 process.preSkimCounter = cms.EDProducer("EventCountProducer")
 process.PVfilter =  cms.Path(process.preSkimCounter+process.goodPrimaryVertices)
 
+process.dump=cms.EDAnalyzer('EventContentAnalyzer',
+                            #verbose = cms.untracked.bool(True)
+                            getDataForModuleLabels =  cms.untracked.vstring("pileupJetIdUpdated") #HHOT
+)
+
 if APPLYJEC:
-    process.Jets = cms.Path( process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.QGTagger + process.dressedJets )
+    process.Jets = cms.Path(process.pileupJetIdUpdated + process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.QGTagger + process.dressedJets )
 else:
     process.Jets = cms.Path( process.QGTagger + process.dressedJets )
 
