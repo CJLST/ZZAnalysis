@@ -18,6 +18,13 @@ MELABranch::MELABranch(
 }
 
 void MELABranch::setVal(){
-  ExtendedBranch::setVal(computer->getVal(valtype));
+  if (computer!=0) ExtendedBranch::setValue(computer->getVal(valtype));
 }
 
+void MELABranch::Print(){
+  ExtendedBranch::Print();
+  cout << "\tMELABranch extras:" << endl;
+  cout << "\tME type=" << valtype << endl;
+  if (computer!=0) computer->Print();
+  cout << "**********" << endl;
+}

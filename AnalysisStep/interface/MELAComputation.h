@@ -17,7 +17,7 @@
 #ifndef MELACOMPUTATION_H
 #define MELACOMPUTATION_H
 
-#include <ZZAnalysis/AnalysisStep/interface/MELAHypothesis.h>
+#include "MELAHypothesis.h"
 
 
 class MELAComputation{
@@ -68,6 +68,8 @@ public:
   virtual ~MELAComputation();
   
   void reset();
+
+  void Print();
 
 };
 

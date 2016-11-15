@@ -13,8 +13,10 @@
 #include "DataFormats/PatCandidates/interface/Electron.h"
 
 #include <ZZAnalysis/AnalysisStep/interface/DaughterDataHelpers.h>
-#include <ZZAnalysis/AnalysisStep/interface/ExtendedBranch.h>
+#include <ZZAnalysis/AnalysisStep/interface/MELABranch.h>
+#include <ZZAnalysis/AnalysisStep/interface/MELACluster.h>
 
+using namespace BranchHelpers;
 
 class HZZ4lNtupleFactory{
   
@@ -44,6 +46,7 @@ class HZZ4lNtupleFactory{
   void Book(TString branchName, std::vector<short> &value);
   void Book(TString branchName, std::vector<char> &value);
   void Book(TString branchName, std::vector<bool> &value);
+  void BookMELABranches(MELAOptionParser* me_opt, bool isGen, MELAComputation* computer_);
   //void Book(TString branchName, float defaultValue=0,int varType=kFloat);
 
   //void Book(TString *names, int type, int nVarsToFill, float *defaultValues);
@@ -66,9 +69,17 @@ class HZZ4lNtupleFactory{
   //void FillZInfo(Float_t ZMass, Float_t ZPt, short ZFlav);
   //void FillExtraLepInfo(int extraLeptonIndex, bool extraLeptonExists, const reco::CandidatePtr ExtraLep);
 
+  std::vector<MELABranch*>* getRecoMELABranches();
+  std::vector<MELABranch*>* getLHEMELABranches();
+
+
  private:
 
   TTree* _outTree;
+  // MELABranches: Only branches are owned. Every other related object is owned by HZZ4lNtupleMaker.
+  std::vector<MELABranch*> recome_branches;
+  std::vector<MELABranch*> lheme_branches;
+
   /*
   int intVector[99];
   Short_t shortVector[99];

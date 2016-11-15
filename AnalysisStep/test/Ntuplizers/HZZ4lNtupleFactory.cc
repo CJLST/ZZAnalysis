@@ -43,6 +43,9 @@ HZZ4lNtupleFactory::HZZ4lNtupleFactory(TTree* outTree_input)
 ///--- Destructor ---
 HZZ4lNtupleFactory::~HZZ4lNtupleFactory()
 {
+  // Delete MELA branches
+  for (unsigned int ib=0; ib<recome_branches.size(); ib++) delete recome_branches.at(ib);
+  for (unsigned int ib=0; ib<lheme_branches.size(); ib++) delete lheme_branches.at(ib);
 }
 
 ///---- Write an event to TTree ----
@@ -112,6 +115,51 @@ void HZZ4lNtupleFactory::Book(TString name, std::vector<bool> &value){
   defaultsVectorBool[&value] = value;
   _outTree->Branch(name.Data(), &value);
 }
+void HZZ4lNtupleFactory::BookMELABranches(MELAOptionParser* me_opt, bool isGen, MELAComputation* computer_){
+  MELAComputation* computer;
+  std::vector<MELABranch*>* me_branches;
+  if (!isGen){
+    me_branches = &recome_branches;
+    computer=(MELAComputation*)0; // No more computation for reco MEs
+  }
+  else{
+    me_branches = &lheme_branches;
+    computer=computer_;
+    if (computer==0){
+      cerr << "HZZ4lNtupleFactory::BookMELABranches: LHE ME computation for the LHE MELABranch " << me_opt->getName() << " is null. Soemthing went wrong." << endl;
+      assert(0);
+    }
+  }
+
+  if (me_opt->doBranch()){
+    string basename = me_opt->getName();
+    if (me_opt->isGen()) basename = string("Gen_") + basename;
+    MELABranch* tmpbranch;
+    Float_t defVal=1.;
+    if (me_opt->hasPAux()){
+      tmpbranch = new MELABranch(
+        _outTree, TString((string("pAux_") + basename).c_str()),
+        defVal, computer
+        );
+      me_branches->push_back(tmpbranch);
+    }
+    if (me_opt->hasPConst()){
+      tmpbranch = new MELABranch(
+        _outTree, TString((string("pConst_") + basename).c_str()),
+        defVal, computer
+        );
+      me_branches->push_back(tmpbranch);
+    }
+    defVal = me_opt->getDefaultME();
+    tmpbranch = new MELABranch(
+      _outTree, TString((string("p_") + basename).c_str()),
+      defVal, computer
+      );
+    me_branches->push_back(tmpbranch);
+  }
+}
+std::vector<MELABranch*>* HZZ4lNtupleFactory::getRecoMELABranches(){ return &recome_branches; }
+std::vector<MELABranch*>* HZZ4lNtupleFactory::getLHEMELABranches(){ return &lheme_branches; }
 
 
 void HZZ4lNtupleFactory::InitializeVariables()
@@ -126,6 +174,9 @@ void HZZ4lNtupleFactory::InitializeVariables()
  for (auto it = defaultsVectorShort.begin(); it != defaultsVectorShort.end(); ++it ) it->first->clear();
  for (auto it = defaultsVectorChar.begin(); it != defaultsVectorChar.end(); ++it ) it->first->clear();
  for (auto it = defaultsVectorBool.begin(); it != defaultsVectorBool.end(); ++it ) it->first->clear();
+
+ for (unsigned int ib=0; ib<recome_branches.size(); ib++) recome_branches.at(ib)->reset();
+ for (unsigned int ib=0; ib<lheme_branches.size(); ib++) lheme_branches.at(ib)->reset();
 
 /*
   for(int i=0;i<nBranches[kBool];i++){boolVector[i]=defaultVector[kBool].at(i);}

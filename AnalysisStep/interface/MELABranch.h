@@ -29,6 +29,8 @@ namespace BranchHelpers{
     // This function should be run after MELAComputation classes are all "update"d.
     void setVal();
 
+    virtual void Print();
+
   };
 
 }

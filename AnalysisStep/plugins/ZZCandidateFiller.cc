@@ -1786,6 +1786,10 @@ void ZZCandidateFiller::buildMELA(){
   }
   // Loop over the computations to add any contingencies to aliased hypotheses
   for (unsigned int it=0; it<me_computers.size(); it++) me_computers.at(it)->addContingencies(me_aliased_units);
+
+  if (DEBUG_MB){
+    for (unsigned int ib=0; ib<me_branches.size(); ib++) me_branches.at(ib)->Print();
+  }
 }
 void ZZCandidateFiller::addToMELACluster(MELAComputation* me_computer){
   bool isAdded=false;
@@ -1969,8 +1973,12 @@ void ZZCandidateFiller::updateMELAClusters_J1JEC(){
   } // End jecnum loop
 }
 void ZZCandidateFiller::pushMELABranches(pat::CompositeCandidate& myCand){
-  // Push...
-  for (unsigned int ib=0; ib<me_branches.size(); ib++) myCand.addUserFloat(string(me_branches.at(ib)->bname.Data()), (float)me_branches.at(ib)->getVal());
+  for (unsigned int ib=0; ib<me_branches.size(); ib++){
+    // Pull...
+    me_branches.at(ib)->setVal();
+    // ...push...
+    myCand.addUserFloat(string(me_branches.at(ib)->bname.Data()), (float)me_branches.at(ib)->getVal());
+  }
   // ...then reset
   for (unsigned int ic=0; ic<me_clusters.size(); ic++) me_clusters.at(ic)->reset();
 }

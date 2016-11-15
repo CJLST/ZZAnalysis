@@ -4,13 +4,10 @@ using namespace std;
 
 
 MELAComputation::MELAComputation(MELAHypothesis* targetP_) :
-  targetP(targetP_),
-  pME(0.),
-  pAux(1.),
-  cMEAvg(1.)
+  targetP(targetP_)
 {
   setOption(targetP->getOption());
-  resetMaximizationCache();
+  reset();
 }
 MELAComputation::~MELAComputation(){
   addedP.clear();
@@ -111,5 +108,53 @@ void MELAComputation::reset(){
   cMEAvg = targetP->getVal(MELAHypothesis::UsePConstant);
 }
 
+void MELAComputation::Print(){
+  cout << "**********" << endl;
+  cout << "MELAComputation summary:" << endl;
+  cout << "\tPrimary hypothesis name: " << opt->getName() << endl;
+  cout << "\tCluster: " << opt->getCluster() << endl;
+  cout << "\tAlias: " << opt->getAlias() << endl;
+  if (!opt->isCopy()) cout << "\tCopy alias: " << opt->getCopyAlias() << endl;
+
+  cout << "\tCan update continuously? " << (contUpdate ? "True" : "False") << endl;
+
+  cout << "\tValue formula: ";
+  cout << "(";
+  for (unsigned int ip=0; ip<addedP.size(); ip++){
+    if (ip>0) cout << " + ";
+    cout << addedP.at(ip)->getOption()->getAlias();
+  }
+  for (unsigned int ip=0; ip<subtractedP.size(); ip++){
+    if (ip>0 || (addedP.size()>0 && ip==0)) cout << " - ";
+    cout << subtractedP.at(ip)->getOption()->getAlias();
+  }
+  cout << ") * (";
+  for (unsigned int ip=0; ip<multipliedP.size(); ip++){
+    if (ip>0) cout << " * ";
+    cout << multipliedP.at(ip)->getOption()->getAlias();
+  }
+  cout << ") / (";
+  for (unsigned int ip=0; ip<dividedP.size(); ip++){
+    if (ip>0) cout << " * ";
+    cout << dividedP.at(ip)->getOption()->getAlias();
+  }
+  cout << ")" << endl;
+  cout << "\tCurrent (ME, pAux, pConst) = (" << pME << ", " << pAux << ", " << cMEAvg << ")" << endl;
+
+  cout << "\tMaximized formula: ";
+  cout << "(";
+  for (unsigned int ip=0; ip<maximize_num.size(); ip++){
+    if (ip>0) cout << " * ";
+    cout << maximize_num.at(ip)->getOption()->getAlias();
+  }
+  cout << ") / (";
+  for (unsigned int ip=0; ip<maximize_denom.size(); ip++){
+    if (ip>0) cout << " * ";
+    cout << maximize_denom.at(ip)->getOption()->getAlias();
+  }
+  cout << ")" << endl;
+  cout << "\tCached maximized value = " << maximizationCachedVal << endl;
+  cout << "**********" << endl;
+}
 
 

@@ -16,6 +16,10 @@
 #ifndef MELAOPTIONPARSER_H
 #define MELAOPTIONPARSER_H
 
+#ifndef DEBUG_MB
+#define DEBUG_MB true
+#endif
+
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>

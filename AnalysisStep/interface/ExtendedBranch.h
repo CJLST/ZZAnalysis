@@ -68,7 +68,7 @@ namespace BranchHelpers{
       if (defVal!=0) value = *defVal;
     }
 
-    void setVal(varType inVal){
+    void setValue(varType inVal){
       if (isVector) valueArray.push_back(inVal);
       else value = inVal;
     }
@@ -84,6 +84,21 @@ namespace BranchHelpers{
     std::vector<varType> getArray() const{ return valueArray; }
 
     TBranch* getBranch(){ return theTree->GetBranch(bname); }
+
+    virtual void Print(){
+      std::cout << "**********\n";
+      std::cout << "ExtendedBranch summary for " << bname << ":\n";
+      std::cout << "\tType=" << btype << "\n";
+      if (isVector){
+        std::cout << "\tValues = ";
+        for (unsigned int iv=0; iv<valueArray.size(); iv++) std::cout << valueArray.at(iv) << " ";
+        std::cout << "\n";
+      }
+      else std::cout << "\tValue = " << value << " (default = " << (defVal!=0 ? *defVal : 0) << ")\n";
+      std::cout << "\tTree address: " << theTree << "\n";
+      std::cout << "**********";
+      std::cout << std::endl;
+    }
 
     ExtendedBranch(TTree* theTree_, TString bname_, varType defVal_, Bool_t isVector_=false) : theTree(theTree_), defVal(0), bname(bname_), isVector(isVector_)
     {

@@ -15,7 +15,7 @@
 #define MELAHYPOTHESIS_H
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
-#include <ZZAnalysis/AnalysisStep/interface/MELAOptionParser.h>
+#include "MELAOptionParser.h"
 
 
 class MELAHypothesis{

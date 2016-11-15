@@ -259,6 +259,7 @@ namespace {
   Float_t phjj_VAJHU_highestPTJets_dn = 0;
   Float_t pvbf_VAJHU_highestPTJets_dn = 0;
 
+  /*
   Float_t pvbf_0minus_VAJHU_highestPTJets=-1;
   Float_t pvbf_0hplus_VAJHU_highestPTJets=-1;
   Float_t pvbf_0_g1prime2_VAJHU_highestPTJets=-1;
@@ -268,7 +269,7 @@ namespace {
 
   Float_t phjj_0minus_VAJHU_highestPTJets=-1;
   Float_t phjj_g2g4_VAJHU_highestPTJets=-1;
-
+  */
   Float_t phjj_VAJHU_bestDjet = 0;
   Float_t pvbf_VAJHU_bestDjet = 0;
   Float_t phjj_VAJHU_bestDjet_up = 0;
@@ -290,7 +291,7 @@ namespace {
   Float_t pzh_hadronic_VAJHU = 0;
   Float_t pzh_hadronic_VAJHU_up = 0;
   Float_t pzh_hadronic_VAJHU_dn = 0;
-
+  /*
   Float_t pwh_0minus_hadronic_VAJHU = 0;
   Float_t pwh_0hplus_hadronic_VAJHU = 0;
   Float_t pwh_0_g1prime2_hadronic_VAJHU = 0;
@@ -304,7 +305,7 @@ namespace {
   Float_t pzh_g1g4_hadronic_VAJHU = 0;
   Float_t pzh_g1g2_hadronic_VAJHU = 0;
   Float_t pzh_g1g1prime2_hadronic_VAJHU = 0;
-
+  */
   Float_t ptth_VAJHU = 0;
   Float_t ptth_VAJHU_up = 0;
   Float_t ptth_VAJHU_dn = 0;
@@ -470,6 +471,14 @@ private:
 
   void getCheckedUserFloat(const pat::CompositeCandidate& cand, const std::string& strval, Float_t& setval, Float_t defaultval=0);
 
+  void buildMELABranches();
+  void addToMELACluster(MELAComputation* me_computer, std::vector<MELACluster*>& me_clusters);
+  void computeMELABranches(MELACandidate* cand);
+  void updateMELAClusters_Common();
+  void pushRecoMELABranches(const pat::CompositeCandidate& cand);
+  void pushLHEMELABranches();
+  void clearMELABranches();
+
   // ----------member data ---------------------------
   ZZ4lConfigHelper myHelper;
   int theChannel;
@@ -493,6 +502,17 @@ private:
   double Hmass;
 
   Mela mela;
+  std::vector<std::string> recoMElist;
+  std::vector<MELAOptionParser*> recome_originalopts;
+  std::vector<MELAOptionParser*> recome_copyopts;
+  std::vector<std::string> lheMElist;
+  //std::vector<MELAOptionParser*> lheme_originalopts;
+  std::vector<MELAOptionParser*> lheme_copyopts;
+  std::vector<MELAHypothesis*> lheme_units;
+  std::vector<MELAHypothesis*> lheme_aliased_units;
+  std::vector<MELAComputation*> lheme_computers;
+  std::vector<MELACluster*> lheme_clusters;
+
   Reweighting reweighting;
   int nReweightingSamples;
   bool doreweighting;
@@ -601,6 +621,8 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   sqrts(SetupToSqrts(year)),
   Hmass(pset.getParameter<double>("superMelaMass")),
   mela(sqrts, Hmass, TVar::ERROR),
+  recoMElist(pset.getParameter<std::vector<std::string>>("recoProbabilities")),
+  lheMElist(pset.getParameter<std::vector<std::string>>("lheProbabilities")),
   reweighting(
               mela,
               pset.getParameter<std::string>("reweightingtype"),
@@ -752,7 +774,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
         hTH2D_El_IdIsoSip_Cracks = (TH1*) root_file->Get("ele_scale_factors_gap")->Clone();
         root_file->Close();
 
-	TString filenameEleReco("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi.txt_SF2D.root");
+        TString filenameEleReco("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi.txt_SF2D.root");
         edm::FileInPath fipEleReco(filenameEleReco.Data());
         fipPath = fipEleReco.fullPath();
         TFile *root_file_reco = TFile::Open(fipPath.data(),"READ");
@@ -813,6 +835,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
 
 HZZ4lNtupleMaker::~HZZ4lNtupleMaker()
 {
+  clearMELABranches(); // Cleans LHE branches
   if (lheHandler!=0) delete lheHandler;
 }
 
@@ -1132,7 +1155,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     }
     FillCandidate(*cand, evtPassTrigger&&evtPassSkim, event, CRFLAG[icand]);
 
-
     // Fill the candidate as one entry in the tree. Do not reinitialize the event variables, as in CRs
     // there could be several candidates per event.
     myTree->FillCurrentTree();
@@ -1360,6 +1382,9 @@ void HZZ4lNtupleMaker::FillLHECandidate(){
     for (unsigned int ipart=0; ipart<LHEAssociatedParticleId.size(); ipart++) cout << "\t APart" << ipart << " (pt, eta, phi, m, id) = " << LHEAssociatedParticlePt.at(ipart) << " " << LHEAssociatedParticleEta.at(ipart) << " " << LHEAssociatedParticlePhi.at(ipart) << " " << LHEAssociatedParticleMass.at(ipart) << " " << LHEAssociatedParticleId.at(ipart) << endl;
     cout << endl;
     */
+
+    computeMELABranches(cand);
+    pushLHEMELABranches();
   }
 
   LHEPDFScale = lheHandler->getPDFScale();
@@ -1540,17 +1565,6 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     getCheckedUserFloat(cand, "phjj_VAJHU_highestPTJets_dn", phjj_VAJHU_highestPTJets_dn, -1);
     getCheckedUserFloat(cand, "pvbf_VAJHU_highestPTJets_dn", pvbf_VAJHU_highestPTJets_dn, -1);
 
-    if (addProdAnomalousProbabilities) {
-      getCheckedUserFloat(cand, "pvbf_0minus_VAJHU_highestPTJets", pvbf_0minus_VAJHU_highestPTJets, -1);
-      getCheckedUserFloat(cand, "pvbf_0hplus_VAJHU_highestPTJets", pvbf_0hplus_VAJHU_highestPTJets, -1);
-      getCheckedUserFloat(cand, "pvbf_0_g1prime2_VAJHU_highestPTJets", pvbf_0_g1prime2_VAJHU_highestPTJets, -1);
-      getCheckedUserFloat(cand, "pvbf_g1g4_VAJHU_highestPTJets", pvbf_g1g4_VAJHU_highestPTJets, -1);
-      getCheckedUserFloat(cand, "pvbf_g1g2_VAJHU_highestPTJets", pvbf_g1g2_VAJHU_highestPTJets, -1);
-      getCheckedUserFloat(cand, "pvbf_g1g1prime2_VAJHU_highestPTJets", pvbf_g1g1prime2_VAJHU_highestPTJets, -1);
-      getCheckedUserFloat(cand, "phjj_0minus_VAJHU_highestPTJets", phjj_0minus_VAJHU_highestPTJets, -1);
-      getCheckedUserFloat(cand, "phjj_g2g4_VAJHU_highestPTJets", phjj_g2g4_VAJHU_highestPTJets, -1);
-    }
-
     getCheckedUserFloat(cand, "phjj_VAJHU_bestDjet", phjj_VAJHU_bestDjet, -1);
     getCheckedUserFloat(cand, "pvbf_VAJHU_bestDjet", pvbf_VAJHU_bestDjet, -1);
     getCheckedUserFloat(cand, "phjj_VAJHU_bestDjet_up", phjj_VAJHU_bestDjet_up, -1);
@@ -1573,22 +1587,6 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     getCheckedUserFloat(cand, "pzh_hadronic_VAJHU_up", pzh_hadronic_VAJHU_up, -1);
     getCheckedUserFloat(cand, "pzh_hadronic_VAJHU_dn", pzh_hadronic_VAJHU_dn, -1);
 
-    if (addProdAnomalousProbabilities) {
-      getCheckedUserFloat(cand, "pwh_0minus_hadronic_VAJHU", pwh_0minus_hadronic_VAJHU, -1);
-      getCheckedUserFloat(cand, "pwh_0hplus_hadronic_VAJHU", pwh_0hplus_hadronic_VAJHU, -1);
-      getCheckedUserFloat(cand, "pwh_0_g1prime2_hadronic_VAJHU", pwh_0_g1prime2_hadronic_VAJHU, -1);
-      getCheckedUserFloat(cand, "pwh_g1g4_hadronic_VAJHU", pwh_g1g4_hadronic_VAJHU, -1);
-      getCheckedUserFloat(cand, "pwh_g1g2_hadronic_VAJHU", pwh_g1g2_hadronic_VAJHU, -1);
-      getCheckedUserFloat(cand, "pwh_g1g1prime2_hadronic_VAJHU", pwh_g1g1prime2_hadronic_VAJHU, -1);
-
-      getCheckedUserFloat(cand, "pzh_0minus_hadronic_VAJHU", pzh_0minus_hadronic_VAJHU, -1);
-      getCheckedUserFloat(cand, "pzh_0hplus_hadronic_VAJHU", pzh_0hplus_hadronic_VAJHU, -1);
-      getCheckedUserFloat(cand, "pzh_0_g1prime2_hadronic_VAJHU", pzh_0_g1prime2_hadronic_VAJHU, -1);
-      getCheckedUserFloat(cand, "pzh_g1g4_hadronic_VAJHU", pzh_g1g4_hadronic_VAJHU, -1);
-      getCheckedUserFloat(cand, "pzh_g1g2_hadronic_VAJHU", pzh_g1g2_hadronic_VAJHU, -1);
-      getCheckedUserFloat(cand, "pzh_g1g1prime2_hadronic_VAJHU", pzh_g1g1prime2_hadronic_VAJHU, -1);
-    }
-
     getCheckedUserFloat(cand, "ptth_VAJHU", ptth_VAJHU, -1);
     getCheckedUserFloat(cand, "ptth_VAJHU_up", ptth_VAJHU_up, -1);
     getCheckedUserFloat(cand, "ptth_VAJHU_dn", ptth_VAJHU_dn, -1);
@@ -1596,6 +1594,8 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     getCheckedUserFloat(cand, "pbbh_VAJHU", pbbh_VAJHU, -1);
     getCheckedUserFloat(cand, "pbbh_VAJHU_up", pbbh_VAJHU_up, -1);
     getCheckedUserFloat(cand, "pbbh_VAJHU_dn", pbbh_VAJHU_dn, -1);
+
+    pushRecoMELABranches(cand);
 
   }
 
@@ -1820,6 +1820,7 @@ void HZZ4lNtupleMaker::beginJob()
     reweighting.fillcouplingstree(couplingstree);
   }
   BookAllBranches();
+  buildMELABranches();
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
@@ -2357,16 +2358,6 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("phjj_VAJHU_highestPTJets_dn", phjj_VAJHU_highestPTJets_dn);
   myTree->Book("pvbf_VAJHU_highestPTJets_dn", pvbf_VAJHU_highestPTJets_dn);
 
-  if (addProdAnomalousProbabilities) {
-    myTree->Book("pvbf_0minus_VAJHU_highestPTJets", pvbf_0minus_VAJHU_highestPTJets);
-    myTree->Book("pvbf_0hplus_VAJHU_highestPTJets", pvbf_0hplus_VAJHU_highestPTJets);
-    myTree->Book("pvbf_0_g1prime2_VAJHU_highestPTJets", pvbf_0_g1prime2_VAJHU_highestPTJets);
-    myTree->Book("pvbf_g1g4_VAJHU_highestPTJets", pvbf_g1g4_VAJHU_highestPTJets);
-    myTree->Book("pvbf_g1g2_VAJHU_highestPTJets", pvbf_g1g2_VAJHU_highestPTJets);
-    myTree->Book("pvbf_g1g1prime2_VAJHU_highestPTJets", pvbf_g1g1prime2_VAJHU_highestPTJets);
-    myTree->Book("phjj_0minus_VAJHU_highestPTJets", phjj_0minus_VAJHU_highestPTJets);
-    myTree->Book("phjj_g2g4_VAJHU_highestPTJets", phjj_g2g4_VAJHU_highestPTJets);
-  }
 
   myTree->Book("phjj_VAJHU_bestDjet", phjj_VAJHU_bestDjet);
   myTree->Book("pvbf_VAJHU_bestDjet", pvbf_VAJHU_bestDjet);
@@ -2388,22 +2379,6 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("pzh_hadronic_VAJHU", pzh_hadronic_VAJHU);
   myTree->Book("pzh_hadronic_VAJHU_up", pzh_hadronic_VAJHU_up);
   myTree->Book("pzh_hadronic_VAJHU_dn", pzh_hadronic_VAJHU_dn);
-
-  if (addProdAnomalousProbabilities) {
-    myTree->Book("pwh_0minus_hadronic_VAJHU", pwh_0minus_hadronic_VAJHU);
-    myTree->Book("pwh_0hplus_hadronic_VAJHU", pwh_0hplus_hadronic_VAJHU);
-    myTree->Book("pwh_0_g1prime2_hadronic_VAJHU", pwh_0_g1prime2_hadronic_VAJHU);
-    myTree->Book("pwh_g1g4_hadronic_VAJHU", pwh_g1g4_hadronic_VAJHU);
-    myTree->Book("pwh_g1g2_hadronic_VAJHU", pwh_g1g2_hadronic_VAJHU);
-    myTree->Book("pwh_g1g1prime2_hadronic_VAJHU", pwh_g1g1prime2_hadronic_VAJHU);
-
-    myTree->Book("pzh_0minus_hadronic_VAJHU", pzh_0minus_hadronic_VAJHU);
-    myTree->Book("pzh_0hplus_hadronic_VAJHU", pzh_0hplus_hadronic_VAJHU);
-    myTree->Book("pzh_0_g1prime2_hadronic_VAJHU", pzh_0_g1prime2_hadronic_VAJHU);
-    myTree->Book("pzh_g1g4_hadronic_VAJHU", pzh_g1g4_hadronic_VAJHU);
-    myTree->Book("pzh_g1g2_hadronic_VAJHU", pzh_g1g2_hadronic_VAJHU);
-    myTree->Book("pzh_g1g1prime2_hadronic_VAJHU", pzh_g1g1prime2_hadronic_VAJHU);
-  }
 
   myTree->Book("ptth_VAJHU", ptth_VAJHU);
   myTree->Book("ptth_VAJHU_up", ptth_VAJHU_up);
@@ -2546,6 +2521,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("LHEweight_AsMZ_Dn", LHEweight_AsMZ_Dn);
   }
 
+  // MELA branches are booked under buildMELA
 }
 
 void HZZ4lNtupleMaker::addweight(float &weight, vector<float> &weight_reweighted, float weighttoadd) {
@@ -2554,6 +2530,164 @@ void HZZ4lNtupleMaker::addweight(float &weight, vector<float> &weight_reweighted
   if (doreweighting)
     for (int i = 0; i < nReweightingSamples; i++)
       weight_reweighted[i] += weighttoadd * reweightingweights[i];
+}
+
+
+void HZZ4lNtupleMaker::buildMELABranches(){
+  /***********************/
+  /***********************/
+  /**   Reco branches   **/
+  /***********************/
+  /***********************/
+  for (unsigned int it=0; it<recoMElist.size(); it++){
+    MELAOptionParser* me_opt = new MELAOptionParser(recoMElist.at(it));
+    if (recoMElist.at(it).find("Copy")!=string::npos) recome_copyopts.push_back(me_opt);
+    else recome_originalopts.push_back(me_opt);
+  }
+  // Resolve original options
+  for (unsigned int it=0; it<recome_originalopts.size(); it++){
+    MELAOptionParser* me_opt = recome_originalopts.at(it);
+    myTree->BookMELABranches(me_opt, false, 0);
+  }
+  // Resolve copy options
+  for (unsigned int it=0; it<recome_copyopts.size(); it++){
+    MELAOptionParser* me_opt = recome_copyopts.at(it);
+    MELAOptionParser* original_opt=0;
+    // Find the original options
+    for (unsigned int ih=0; ih<recome_originalopts.size(); ih++){
+      if (me_opt->testCopyAlias(recome_originalopts.at(ih)->getAlias())){
+        original_opt = recome_originalopts.at(ih);
+        break;
+      }
+    }
+    if (original_opt==0) continue;
+    else me_opt->pickOriginalOptions(original_opt);
+    myTree->BookMELABranches(me_opt, false, 0);
+  }
+
+  /**********************/
+  /**********************/
+  /**   LHE branches   **/
+  /**********************/
+  /**********************/
+  for (unsigned int it=0; it<lheMElist.size(); it++){
+    MELAOptionParser* lheme_opt;
+    // First find out if the option has a copy specification
+    // These copy options will be evaulated in a separate loop
+    if (lheMElist.at(it).find("Copy")!=string::npos){
+      lheme_opt = new MELAOptionParser(lheMElist.at(it));
+      lheme_copyopts.push_back(lheme_opt);
+      continue;
+    }
+
+    // Create a hypothesis for each option
+    MELAHypothesis* lheme_hypo = new MELAHypothesis(&mela, lheMElist.at(it));
+    lheme_units.push_back(lheme_hypo);
+
+    lheme_opt = lheme_hypo->getOption();
+    if (lheme_opt->isAliased()) lheme_aliased_units.push_back(lheme_hypo);
+
+    // Create a computation for each hypothesis
+    MELAComputation* lheme_computer = new MELAComputation(lheme_hypo);
+    lheme_computers.push_back(lheme_computer);
+
+    // Add the computation to a named cluster to keep track of JECUp/JECDn, or for best-pWH_SM Lep_WH computations
+    addToMELACluster(lheme_computer, lheme_clusters);
+
+    // Create the necessary branches for each computation
+    myTree->BookMELABranches(lheme_opt, true, lheme_computer);
+  }
+  // Resolve copy options
+  for (unsigned int it=0; it<lheme_copyopts.size(); it++){
+    MELAOptionParser* lheme_opt = lheme_copyopts.at(it);
+    MELAHypothesis* original_hypo=0;
+    MELAOptionParser* original_opt=0;
+    // Find the original options
+    for (unsigned int ih=0; ih<lheme_aliased_units.size(); ih++){
+      if (lheme_opt->testCopyAlias(lheme_aliased_units.at(ih)->getOption()->getAlias())){
+        original_hypo = lheme_aliased_units.at(ih);
+        original_opt = original_hypo->getOption();
+        break;
+      }
+    }
+    if (original_opt==0) continue;
+    else lheme_opt->pickOriginalOptions(original_opt);
+    // Create a new computation for the copy options
+    MELAComputation* lheme_computer = new MELAComputation(original_hypo);
+    lheme_computer->setOption(lheme_opt);
+    lheme_computers.push_back(lheme_computer);
+
+    // The rest is the same story...
+    // Add the computation to a named cluster to keep track of JECUp/JECDn, or for best-pWH_SM Lep_WH computations
+    addToMELACluster(lheme_computer, lheme_clusters);
+
+    // Create the necessary branches for each computation
+    myTree->BookMELABranches(lheme_opt, true, lheme_computer);
+  }
+  // Loop over the computations to add any contingencies to aliased hypotheses
+  for (unsigned int it=0; it<lheme_computers.size(); it++) lheme_computers.at(it)->addContingencies(lheme_aliased_units);
+
+  if (DEBUG_MB){
+    std::vector<MELABranch*>* lheme_branches = myTree->getLHEMELABranches();
+    for (unsigned int ib=0; ib<lheme_branches->size(); ib++) lheme_branches->at(ib)->Print();
+  }
+}
+
+void HZZ4lNtupleMaker::addToMELACluster(MELAComputation* me_computer, std::vector<MELACluster*>& me_clusters){
+  bool isAdded=false;
+  for (unsigned int it=0; it<me_clusters.size(); it++){ if (me_clusters.at(it)->getName()==me_computer->getName()){ me_clusters.at(it)->addComputation(me_computer); isAdded=true; } }
+  if (!isAdded){
+    MELACluster* tmpcluster = new MELACluster(me_computer->getCluster());
+    tmpcluster->addComputation(me_computer);
+    me_clusters.push_back(tmpcluster);
+  }
+}
+
+void HZZ4lNtupleMaker::computeMELABranches(MELACandidate* cand){
+  mela.setCurrentCandidate(cand);
+  updateMELAClusters_Common(); // "Common"
+  mela.resetInputEvent();
+}
+// Common ME computations with index=0
+void HZZ4lNtupleMaker::updateMELAClusters_Common(){
+  MELACandidate* melaCand = mela.getCurrentCandidate();
+  if (melaCand==0) return;
+
+  for (unsigned int ic=0; ic<lheme_clusters.size(); ic++){
+    MELACluster* theCluster = lheme_clusters.at(ic);
+    if (theCluster->getName()=="Common"){
+      // Re-compute all related hypotheses first...
+      theCluster->computeAll();
+      // ...then update the cluster
+      theCluster->update();
+    }
+  }
+}
+void HZZ4lNtupleMaker::pushRecoMELABranches(const pat::CompositeCandidate& cand){
+  std::vector<MELABranch*>* recome_branches = myTree->getRecoMELABranches();
+  // Pull + push...
+  for (unsigned int ib=0; ib<recome_branches->size(); ib++){
+    std::string branchname = recome_branches->at(ib)->bname.Data();
+    if (cand.hasUserFloat(branchname)) recome_branches->at(ib)->setValue((Float_t)cand.userFloat(branchname));
+    else cerr << "HZZ4lNtupleMaker::pushRecoMELABranches: Candidate does not contain the reco ME " << branchname << " it should have calculated!" << endl;
+  }
+}
+void HZZ4lNtupleMaker::pushLHEMELABranches(){
+  std::vector<MELABranch*>* lheme_branches = myTree->getLHEMELABranches();
+  // Pull + push...
+  for (unsigned int ib=0; ib<lheme_branches->size(); ib++) lheme_branches->at(ib)->setVal();
+  // ...then reset
+  for (unsigned int ic=0; ic<lheme_clusters.size(); ic++) lheme_clusters.at(ic)->reset();
+}
+void HZZ4lNtupleMaker::clearMELABranches(){
+  for (unsigned int it=0; it<lheme_clusters.size(); it++) delete lheme_clusters.at(it);
+  for (unsigned int it=0; it<lheme_computers.size(); it++) delete lheme_computers.at(it);
+  for (unsigned int it=0; it<lheme_copyopts.size(); it++) delete lheme_copyopts.at(it);
+  //for (unsigned int it=0; it<lheme_aliased_units.size(); it++) delete lheme_aliased_units.at(it); // DO NOT DELETE THIS, WILL BE DELETED WITH lheme_units!
+  for (unsigned int it=0; it<lheme_units.size(); it++) delete lheme_units.at(it);
+
+  for (unsigned int it=0; it<recome_copyopts.size(); it++) delete recome_copyopts.at(it);
+  for (unsigned int it=0; it<recome_originalopts.size(); it++) delete recome_originalopts.at(it);
 }
 
 //define this as a plug-in
