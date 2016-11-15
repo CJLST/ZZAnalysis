@@ -4,12 +4,4 @@
   <class name="std::vector<edm::Ptr<pat::PFParticle> >"/>
   <class name="pat::UserHolder<std::vector<edm::Ptr<pat::PFParticle> > >" />
 
-  <class name="BranchHelpers::ExtendedBranch<Bool_t>" />
-  <class name="BranchHelpers::ExtendedBranch<Char_t>" />
-  <class name="BranchHelpers::ExtendedBranch<Short_t>" />
-  <class name="BranchHelpers::ExtendedBranch<Int_t>" />
-  <class name="BranchHelpers::ExtendedBranch<Long64_t>" />
-  <class name="BranchHelpers::ExtendedBranch<Float_t>" />
-  <class name="BranchHelpers::ExtendedBranch<Double_t>" />
-
 </lcgdict>
