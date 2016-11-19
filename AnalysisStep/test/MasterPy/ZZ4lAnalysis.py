@@ -933,7 +933,7 @@ process.ZZCand = cms.EDProducer("ZZCandidateFiller",
         FullSel = cms.string(FULLSEL),
     ),
     addProdAnomalousProbabilities = cms.bool(PRODANOMALOUS),
-    recoProbabilities = cms.vstring()
+    recoProbabilities = cms.vstring(),
     #These are actually no longer needed after we dropped the Legacy FSR algorithm
     muon_iso_cut = cms.double(MUISOCUT),
     electron_iso_cut = cms.double(ELEISOCUT),

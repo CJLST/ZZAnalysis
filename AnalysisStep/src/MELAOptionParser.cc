@@ -16,6 +16,8 @@ h2mass(-1),
 hwidth(0.),
 h2width(0.)
 {
+  if (DEBUG_MB) cout << "MELAOptionParser::MELAOptionParser: Options:\n\t" << stropts << endl;
+
   // Split all options by whitespace
   splitOptionRecursive(stropts, rawOptions, ' ');
   analyze();
@@ -23,9 +25,10 @@ h2width(0.)
 void MELAOptionParser::analyze(){ analyze(rawOptions); }
 void MELAOptionParser::analyze(const std::vector<std::string>& optcoll){
   char rawdelimiter = ':';
-  for (unsigned int opt=1; opt<optcoll.size(); opt++){
+  for (unsigned int opt=0; opt<optcoll.size(); opt++){
     string wish, value;
-    splitOption(rawOptions.at(opt), wish, value, rawdelimiter);
+    splitOption(optcoll.at(opt), wish, value, rawdelimiter);
+    if (DEBUG_MB) cout << "MELAOptionParser::analyze is now at " << wish << " = " << value << endl;
     interpretOption(wish, value);
   }
 
