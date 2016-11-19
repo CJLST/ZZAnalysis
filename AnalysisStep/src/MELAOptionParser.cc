@@ -31,6 +31,7 @@ void MELAOptionParser::analyze(const std::vector<std::string>& optcoll){
 
   // Check options
   if (strName==""){ cerr << "MELAOptionParser::analyze: No name detected. Please put a name!" << endl; assert(0); }
+  if (strAlias=="<Name>") strAlias=strName;
   if (isCopy()){
     cout
       << "MELAOptionParser::analyze: Branch " << strName

@@ -1942,12 +1942,23 @@ void ZZCandidateFiller::updateMELAClusters_J2JEC(){
 }
 // Common ME computations for JECNominal, Up and Down variations, case where ME requires 1 jet
 void ZZCandidateFiller::updateMELAClusters_J1JEC(){
+  // First determine if any of the candidates has only one jet
+  bool doSkip=true;
   for (int jecnum=0; jecnum<3; jecnum++){
     mela->setCurrentCandidateFromIndex(jecnum);
     MELACandidate* melaCand = mela->getCurrentCandidate();
     if (melaCand==0) continue;
 
     unsigned int nGoodJets=melaCand->getNAssociatedJets();
+    doSkip = doSkip && (nGoodJets!=1);
+  }
+  if (doSkip) return; // If none of the candidates have exactly 1 jet, skip the computations
+  for (int jecnum=0; jecnum<3; jecnum++){
+    mela->setCurrentCandidateFromIndex(jecnum);
+    MELACandidate* melaCand = mela->getCurrentCandidate();
+    if (melaCand==0) continue;
+
+    unsigned int nGoodJets=min(1, melaCand->getNAssociatedJets());
     for (unsigned int firstjet = 0; firstjet < nGoodJets; firstjet++){ // Loop over first jet
 
       // Disable jets

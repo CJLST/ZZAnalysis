@@ -156,6 +156,8 @@ TreeSetup = cms.EDAnalyzer("HZZ4lNtupleMaker",
                            skipEmptyEvents = cms.bool(True),
                            sampleName = cms.string(SAMPLENAME),
                            superMelaMass = cms.double(SUPERMELA_MASS),
+                           recoProbabilities = cms.vstring(),
+                           lheProbabilities = cms.vstring(),
                            xsec = cms.double(XSEC),
 
                            # Reweigthing block
