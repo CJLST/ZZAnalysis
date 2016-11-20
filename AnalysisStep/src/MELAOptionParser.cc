@@ -13,8 +13,8 @@ isGenProb(false),
 defME(0.),
 hmass(-1),
 h2mass(-1),
-hwidth(0.),
-h2width(0.)
+hwidth(-1.),
+h2width(-1.)
 {
   // Split all options by whitespace
   splitOptionRecursive(stropts, rawOptions, ' ');
