@@ -16,8 +16,6 @@ h2mass(-1),
 hwidth(0.),
 h2width(0.)
 {
-  if (DEBUG_MB) cout << "MELAOptionParser::MELAOptionParser: Options:\n\t" << stropts << endl;
-
   // Split all options by whitespace
   splitOptionRecursive(stropts, rawOptions, ' ');
   analyze();
@@ -28,10 +26,8 @@ void MELAOptionParser::analyze(const std::vector<std::string>& optcoll){
   for (unsigned int opt=0; opt<optcoll.size(); opt++){
     string wish, value;
     splitOption(optcoll.at(opt), wish, value, rawdelimiter);
-    if (DEBUG_MB) cout << "MELAOptionParser::analyze is now at " << wish << " = " << value << endl;
     interpretOption(wish, value);
   }
-
   // Check options
   if (strName==""){ cerr << "MELAOptionParser::analyze: No name detected. Please put a name!" << endl; assert(0); }
   if (strAlias=="<Name>") strAlias=strName;
@@ -106,12 +102,12 @@ void MELAOptionParser::interpretOption(string wish, string value){
     splitOptionRecursive(value, vtmp, ';');
     for (unsigned int iopt=0; iopt<vtmp.size(); iopt++){
       string opt = vtmp.at(iopt);
-      if (opt.find("AddPAux")){
+      if (opt.find("AddPAux")!=string::npos){
         string tmpwish, tmpvalue;
         splitOption(opt, tmpwish, tmpvalue, '=');
         includePAux=Bool_t(((UShort_t)atoi(tmpvalue.c_str()))>0);
       }
-      else if (opt.find("AddPConst")){
+      else if (opt.find("AddPConst")!=string::npos){
         string tmpwish, tmpvalue;
         splitOption(opt, tmpwish, tmpvalue, '=');
         includePConst=Bool_t(((UShort_t)atoi(tmpvalue.c_str()))>0);
