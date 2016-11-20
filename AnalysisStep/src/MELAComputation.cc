@@ -45,8 +45,11 @@ void MELAComputation::addContingency(vector<MELAHypothesis*>& allHypos, vector<s
 Bool_t MELAComputation::testMaximizationCache(){
   Float_t testCache = ((maximize_num.size()+maximize_denom.size())>0 ? 1. : -1.);
   // Always use type UseME for such comparisons, the others don't make much sense
-  for (unsigned int ip=0; ip<maximize_num.size(); ip++){ testCache *= maximize_num.at(ip)->getVal(MELAHypothesis::UseME); }
-  for (unsigned int ip=0; ip<maximize_denom.size(); ip++){ testCache /= maximize_denom.at(ip)->getVal(MELAHypothesis::UseME); }
+  for (unsigned int ip=0; ip<maximize_num.size(); ip++) testCache *= maximize_num.at(ip)->getVal(MELAHypothesis::UseME);
+  for (unsigned int ip=0; ip<maximize_denom.size(); ip++){
+    Float_t divVal = maximize_denom.at(ip)->getVal(MELAHypothesis::UseME);
+    if(divVal!=0.) testCache /= divVal;
+  }
   if (testCache>=maximizationCachedVal){
     maximizationCachedVal = testCache;
     return true;
@@ -76,7 +79,12 @@ Float_t MELAComputation::extractVal(MELAHypothesis::METype valtype){
 
   Float_t factor=1;
   for (unsigned int ime=0; ime<multipliedP.size(); ime++){ if (subtractedP.at(ime)!=0) factor *= multipliedP.at(ime)->getVal(valtype); }
-  for (unsigned int ime=0; ime<dividedP.size(); ime++){ if (dividedP.at(ime)!=0) factor /= dividedP.at(ime)->getVal(valtype); }
+  for (unsigned int ime=0; ime<dividedP.size(); ime++){
+    if (dividedP.at(ime)!=0){
+      Float_t divVal = dividedP.at(ime)->getVal(valtype);
+      if (divVal!=0.) factor /= divVal;
+    }
+  }
 
   if (factor==factor) tmp *= factor;
   else tmp=0;

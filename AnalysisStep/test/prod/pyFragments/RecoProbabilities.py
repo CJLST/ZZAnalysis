@@ -32,7 +32,7 @@ DecayProbabilities_SpinZero_JHUGen = [
 ## Production probabilities with >=1 jet(s) ##
 AJetsProdProbabilities_SpinZero_JHUGen_JECNominal = [
    # JVBF
-   "Name:JVBF_SIG_ghz1_1_JHUGen_JECNominal Process:HSMHiggs Production:JJVBF MatrixElement:JHUGen Cluster:J1JECNominal Options:AddPAux",
+   "Name:JVBF_SIG_ghz1_1_JHUGen_JECNominal Process:HSMHiggs Production:JJVBF MatrixElement:JHUGen Cluster:J1JECNominal Options:AddPAux=1",
 
    # JQCD
    "Name:JQCD_SIG_ghg2_1_JHUGen_JECNominal Process:HSMHiggs Production:JQCD MatrixElement:JHUGen Cluster:J1JECNominal",

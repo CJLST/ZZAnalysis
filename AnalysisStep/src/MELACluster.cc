@@ -10,7 +10,9 @@ void MELACluster::computeAll(){
   // Re-compute all related hypotheses
   for (unsigned int ic=0; ic<computers.size(); ic++){
     // Avoid re-computing MEs twice (could happen through copy-computations)
-    if (!computers.at(ic)->getOption()->isCopy()) computers.at(ic)->getHypothesis()->computeP();
+    if (!computers.at(ic)->getOption()->isCopy()){
+      computers.at(ic)->getHypothesis()->computeP();
+    }
   }
 }
 void MELACluster::update(){ for (unsigned int ic=0; ic<computers.size(); ic++) computers.at(ic)->update(); }
