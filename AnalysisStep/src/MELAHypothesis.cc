@@ -110,8 +110,9 @@ void MELAHypothesis::computeP(){
     // That is a lot of them!
 
     // Set the masses
-    mela->setMelaHiggsMassWidth(opt->hmass, opt->hwidth, 0);
-    mela->setMelaHiggsMassWidth(opt->h2mass, opt->h2width, 1);
+    // Notice that >=-1 is used. -1 is the value to disable a resonance in the options
+    if (opt->hmass>=-1.) mela->setMelaHiggsMassWidth(opt->hmass, opt->hwidth, 0);
+    if (opt->h2mass>=-1.) mela->setMelaHiggsMassWidth(opt->h2mass, opt->h2width, 1);
 
     // Set the process elemenets
     TVar::Process theProc = opt->proc;
@@ -165,7 +166,11 @@ void MELAHypothesis::computePM4l(unsigned int index){
 }
 void MELAHypothesis::computePM4l(){
   reset();
-  if (mela->getCurrentCandidate()!=0) mela->computePM4l(opt->superSyst, pME);
+  if (mela->getCurrentCandidate()!=0){
+    // Override the ME and the production
+    mela->setProcess(opt->proc, TVar::JHUGen, TVar::ZZGG);
+    mela->computePM4l(opt->superSyst, pME);
+  }
 }
 
 Float_t MELAHypothesis::getVal(METype valtype) const{

@@ -123,17 +123,18 @@ void MELAComputation::Print(){
   cout << "\tCluster: " << opt->getCluster() << endl;
   cout << "\tAlias: " << opt->getAlias() << endl;
   if (!opt->isCopy()) cout << "\tCopy alias: " << opt->getCopyAlias() << endl;
-
-  cout << "\tCan update continuously? " << (contUpdate ? "True" : "False") << endl;
+  
+  cout << "\tComputes pm4l?: " << (opt->usePM4L() ? "True" : "False" ) << endl;
+  cout << "\tCan update? " << (contUpdate ? "True" : "False") << endl;
 
   cout << "\tValue formula: ";
-  cout << "(";
+  cout << "(Self";
   for (unsigned int ip=0; ip<addedP.size(); ip++){
-    if (ip>0) cout << " + ";
+    cout << " + ";
     cout << addedP.at(ip)->getOption()->getAlias();
   }
   for (unsigned int ip=0; ip<subtractedP.size(); ip++){
-    if (ip>0 || (addedP.size()>0 && ip==0)) cout << " - ";
+    if (ip>0 || (subtractedP.size()>0 && ip==0)) cout << " - ";
     cout << subtractedP.at(ip)->getOption()->getAlias();
   }
   cout << ") * (";

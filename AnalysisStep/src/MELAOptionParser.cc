@@ -11,10 +11,10 @@ includePConst(false),
 isPM4L(false),
 isGenProb(false),
 defME(0.),
-hmass(-1),
-h2mass(-1),
-hwidth(-1.),
-h2width(-1.)
+hmass(-99),
+h2mass(-99),
+hwidth(-99),
+h2width(-99)
 {
   // Split all options by whitespace
   splitOptionRecursive(stropts, rawOptions, ' ');
@@ -244,11 +244,11 @@ void MELAOptionParser::setSuperMelaSyst(string wish){
   else cerr << "MELAOptionParser::setSuperMelaSyst(" << wish << "): Failed to find the proper SuperMELA systematics case." << endl;
 }
 void MELAOptionParser::extractCoupling(string opt){
-  string wish, strValRe, strValIm;
+  string wish, strVal, strValRe, strValIm;
   // Use double precision for couplings
   Double_t valRe=0;
   Double_t valIm=0;
-  splitOption(opt, wish, strValRe, '=');
+  splitOption(opt, wish, strVal, '=');
   // Lambda and cz/cw couplings have no imaginary components, so do not expect to parse them with ','.
   if (
     wish.find("Lambda")==string::npos
@@ -261,16 +261,14 @@ void MELAOptionParser::extractCoupling(string opt){
     &&
     wish!="separateWWZZcouplings"
     ){
-    splitOption(opt, strValRe, strValIm, ',');
+    splitOption(strVal, strValRe, strValIm, ',');
+    valRe = atof(strValRe.c_str());
     valIm = atof(strValIm.c_str());
   }
-  valRe = atof(strValRe.c_str());
+  else valRe = atof(strVal.c_str());
 
   // Here we go again, sillions of couplings
-  if (wish=="separateWWZZcouplings"){
-    coupl_H.allow_WWZZSeparation((bool)valRe);
-  }
-
+  if (wish=="separateWWZZcouplings") coupl_H.allow_WWZZSeparation((bool)valRe);
   // Spin-0 couplings, first resonance
   else if (wish=="kappa"){ coupl_H.Hqqcoupl[gHIGGS_KAPPA][0]=valRe; coupl_H.Hqqcoupl[gHIGGS_KAPPA][1]=valIm; }
   else if (wish=="kappa_tilde"){ coupl_H.Hqqcoupl[gHIGGS_KAPPA_TILDE][0]=valRe; coupl_H.Hqqcoupl[gHIGGS_KAPPA_TILDE][1]=valIm; }
