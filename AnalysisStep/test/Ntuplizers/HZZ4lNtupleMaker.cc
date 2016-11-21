@@ -332,6 +332,9 @@ private:
   void addToMELACluster(MELAComputation* me_computer, std::vector<MELACluster*>& me_clusters);
   void computeMELABranches(MELACandidate* cand);
   void updateMELAClusters_Common();
+  void updateMELAClusters_NoInitialQ();
+  void updateMELAClusters_NoInitialG();
+  void updateMELAClusters_NoInitialGNoAssociatedG();
   void pushRecoMELABranches(const pat::CompositeCandidate& cand);
   void pushLHEMELABranches();
   void clearMELABranches();
@@ -561,7 +564,8 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   }
 
   isMC = myHelper.isMC();
-  if (isMC) lheHandler = new LHEHandler(pset.getParameter<int>("VVMode"), pset.getParameter<int>("VVDecayMode"), addLHEKinematics || doreweighting);
+  addLHEKinematics = addLHEKinematics || lheMElist.size()>0;
+  if (isMC) lheHandler = new LHEHandler(pset.getParameter<int>("VVMode"), pset.getParameter<int>("VVDecayMode"), addLHEKinematics);
 
   Nevt_Gen = 0;
   Nevt_Gen_lumiBlock = 0;
@@ -1143,7 +1147,7 @@ void HZZ4lNtupleMaker::FillKFactors(edm::Handle<GenEventInfoProduct>& genInfo, s
 
 
 void HZZ4lNtupleMaker::FillLHECandidate(){
-  LHEMotherPz.clear(); //FIXME
+  LHEMotherPz.clear();
   LHEMotherE.clear();
   LHEMotherId.clear();
   LHEDaughterPt.clear();
@@ -2250,12 +2254,13 @@ void HZZ4lNtupleMaker::buildMELABranches(){
   if (DEBUG_MB){
     std::vector<MELABranch*>* lheme_branches = myTree->getLHEMELABranches();
     for (unsigned int ib=0; ib<lheme_branches->size(); ib++) lheme_branches->at(ib)->Print();
+    for (unsigned int icl=0; icl<lheme_clusters.size(); icl++) cout << "LHE ME cluster " << lheme_clusters.at(icl)->getName() << " is present in " << lheme_clusters.size() << " clusters with #Computations = " << lheme_clusters.at(icl)->getComputations()->size() << endl;
   }
 }
 
 void HZZ4lNtupleMaker::addToMELACluster(MELAComputation* me_computer, std::vector<MELACluster*>& me_clusters){
   bool isAdded=false;
-  for (unsigned int it=0; it<me_clusters.size(); it++){ if (me_clusters.at(it)->getName()==me_computer->getName()){ me_clusters.at(it)->addComputation(me_computer); isAdded=true; } }
+  for (unsigned int it=0; it<me_clusters.size(); it++){ if (me_clusters.at(it)->getName()==me_computer->getCluster()){ me_clusters.at(it)->addComputation(me_computer); isAdded=true; } }
   if (!isAdded){
     MELACluster* tmpcluster = new MELACluster(me_computer->getCluster());
     tmpcluster->addComputation(me_computer);
@@ -2266,9 +2271,12 @@ void HZZ4lNtupleMaker::addToMELACluster(MELAComputation* me_computer, std::vecto
 void HZZ4lNtupleMaker::computeMELABranches(MELACandidate* cand){
   mela.setCurrentCandidate(cand);
   updateMELAClusters_Common(); // "Common"
+  updateMELAClusters_NoInitialQ(); // "NoInitialQ"
+  updateMELAClusters_NoInitialG(); // "NoInitialG"
+  updateMELAClusters_NoInitialGNoAssociatedG(); // "NoInitialGNoAssociatedG"
   mela.resetInputEvent();
 }
-// Common ME computations with index=0
+// Common ME computations that do not manipulate the LHE candidate
 void HZZ4lNtupleMaker::updateMELAClusters_Common(){
   MELACandidate* melaCand = mela.getCurrentCandidate();
   if (melaCand==0) return;
@@ -2282,6 +2290,90 @@ void HZZ4lNtupleMaker::updateMELAClusters_Common(){
       theCluster->update();
     }
   }
+}
+// ME computations that require no quark initial state
+void HZZ4lNtupleMaker::updateMELAClusters_NoInitialQ(){
+  MELACandidate* melaCand = mela.getCurrentCandidate();
+  if (melaCand==0) return;
+
+  // Manipulate the candidate
+  // Assign 0 to the id of quark mothers
+  std::vector<int> motherIds;
+  for (int imot=0; imot<melaCand->getNMothers(); imot++){
+    motherIds.push_back(melaCand->getMother(imot)->id);
+    if (PDGHelpers::isAQuark(melaCand->getMother(imot)->id)) melaCand->getMother(imot)->id = 0;
+  }
+
+  for (unsigned int ic=0; ic<lheme_clusters.size(); ic++){
+    MELACluster* theCluster = lheme_clusters.at(ic);
+    if (theCluster->getName()=="NoInitialQ"){
+      // Re-compute all related hypotheses first...
+      theCluster->computeAll();
+      // ...then update the cluster
+      theCluster->update();
+    }
+  }
+
+  // Restore the candidate properties
+  for (int imot=0; imot<melaCand->getNMothers(); imot++) melaCand->getMother(imot)->id = motherIds.at(imot); // Restore all mother ids
+}
+// ME computations that require no gluon initial state
+void HZZ4lNtupleMaker::updateMELAClusters_NoInitialG(){
+  MELACandidate* melaCand = mela.getCurrentCandidate();
+  if (melaCand==0) return;
+
+  // Manipulate the candidate
+  // Assign 0 to the id of gluon mothers
+  std::vector<int> motherIds;
+  for (int imot=0; imot<melaCand->getNMothers(); imot++){
+    motherIds.push_back(melaCand->getMother(imot)->id);
+    if (PDGHelpers::isAGluon(melaCand->getMother(imot)->id)) melaCand->getMother(imot)->id = 0;
+  }
+
+  for (unsigned int ic=0; ic<lheme_clusters.size(); ic++){
+    MELACluster* theCluster = lheme_clusters.at(ic);
+    if (theCluster->getName()=="NoInitialG"){
+      // Re-compute all related hypotheses first...
+      theCluster->computeAll();
+      // ...then update the cluster
+      theCluster->update();
+    }
+  }
+
+  // Restore the candidate properties
+  for (int imot=0; imot<melaCand->getNMothers(); imot++) melaCand->getMother(imot)->id = motherIds.at(imot); // Restore all mother ids
+}
+// ME computations that require no gluon initial state and no gluons as associated particles
+void HZZ4lNtupleMaker::updateMELAClusters_NoInitialGNoAssociatedG(){
+  MELACandidate* melaCand = mela.getCurrentCandidate();
+  if (melaCand==0) return;
+
+  // Manipulate the candidate
+  // Assign 0 to the id of gluon mothers
+  std::vector<int> motherIds;
+  std::vector<int> ajetIds;
+  for (int imot=0; imot<melaCand->getNMothers(); imot++){
+    motherIds.push_back(melaCand->getMother(imot)->id);
+    if (PDGHelpers::isAGluon(melaCand->getMother(imot)->id)) melaCand->getMother(imot)->id = 0;
+  }
+  for (int ijet=0; ijet<melaCand->getNAssociatedJets(); ijet++){
+    ajetIds.push_back(melaCand->getAssociatedJet(ijet)->id);
+    if (PDGHelpers::isAGluon(melaCand->getAssociatedJet(ijet)->id)) melaCand->getAssociatedJet(ijet)->id = 0;
+  }
+
+  for (unsigned int ic=0; ic<lheme_clusters.size(); ic++){
+    MELACluster* theCluster = lheme_clusters.at(ic);
+    if (theCluster->getName()=="NoInitialGNoAssociatedG"){
+      // Re-compute all related hypotheses first...
+      theCluster->computeAll();
+      // ...then update the cluster
+      theCluster->update();
+    }
+  }
+
+  // Restore the candidate properties
+  for (int imot=0; imot<melaCand->getNMothers(); imot++) melaCand->getMother(imot)->id = motherIds.at(imot); // Restore all mother ids
+  for (int ijet=0; ijet<melaCand->getNAssociatedJets(); ijet++) melaCand->getAssociatedJet(ijet)->id = ajetIds.at(ijet); // Restore all jets
 }
 void HZZ4lNtupleMaker::pushRecoMELABranches(const pat::CompositeCandidate& cand){
   std::vector<MELABranch*>* recome_branches = myTree->getRecoMELABranches();

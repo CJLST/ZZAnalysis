@@ -1000,11 +1000,12 @@ void ZZCandidateFiller::buildMELA(){
 
   if (DEBUG_MB){
     for (unsigned int ib=0; ib<me_branches.size(); ib++) me_branches.at(ib)->Print();
+    for (unsigned int icl=0; icl<me_clusters.size(); icl++) cout << "Reco ME cluster " << me_clusters.at(icl)->getName() << " is present in " << me_clusters.size() << " clusters with #Computations = " << me_clusters.at(icl)->getComputations()->size() << endl;
   }
 }
 void ZZCandidateFiller::addToMELACluster(MELAComputation* me_computer){
   bool isAdded=false;
-  for (unsigned int it=0; it<me_clusters.size(); it++){ if (me_clusters.at(it)->getName()==me_computer->getName()){ me_clusters.at(it)->addComputation(me_computer); isAdded=true; } }
+  for (unsigned int it=0; it<me_clusters.size(); it++){ if (me_clusters.at(it)->getName()==me_computer->getCluster()){ me_clusters.at(it)->addComputation(me_computer); isAdded=true; } }
   if (!isAdded){
     MELACluster* tmpcluster = new MELACluster(me_computer->getCluster());
     tmpcluster->addComputation(me_computer);
