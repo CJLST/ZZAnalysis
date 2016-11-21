@@ -25,6 +25,8 @@ protected:
   Mela* mela;
   MELAOptionParser* opt;
   Bool_t optIsOwned;
+  Bool_t hasMaximizationClients;
+  Bool_t isUpdated;
 
   float pME;
   float pAux;
@@ -50,6 +52,8 @@ public:
     std::string stropt
     );
   virtual ~MELAHypothesis(){ if (optIsOwned) delete opt; opt=0; }
+
+  void setMaximizationClientStatus(Bool_t flag){ hasMaximizationClients=flag; }
 
   void computeP(MELACandidate* cand); // Wrapper
   void computeP(unsigned int index); // Wrapper

@@ -19,22 +19,24 @@ MELAComputation::~MELAComputation(){
 }
 
 void MELAComputation::addContingencies(vector<MELAHypothesis*>& allHypos){
-  addContingency(allHypos, opt->addedAliases, addedP);
-  addContingency(allHypos, opt->subtractedAliases, subtractedP);
-  addContingency(allHypos, opt->multipliedAliases, multipliedP);
-  addContingency(allHypos, opt->dividedAliases, dividedP);
+  addContingency(allHypos, opt->addedAliases, addedP/*, 0*/);
+  addContingency(allHypos, opt->subtractedAliases, subtractedP/*, 0*/);
+  addContingency(allHypos, opt->multipliedAliases, multipliedP/*, 0*/);
+  addContingency(allHypos, opt->dividedAliases, dividedP/*, 0*/);
 
-  addContingency(allHypos, opt->maximizationNumerators, maximize_num);
-  addContingency(allHypos, opt->maximizationDenominators, maximize_denom);
+  addContingency(allHypos, opt->maximizationNumerators, maximize_num, 1);
+  addContingency(allHypos, opt->maximizationDenominators, maximize_denom, 1);
 }
-void MELAComputation::addContingency(vector<MELAHypothesis*>& allHypos, vector<string>& source, vector<MELAHypothesis*>& dest){
+void MELAComputation::addContingency(vector<MELAHypothesis*>& allHypos, vector<string>& source, vector<MELAHypothesis*>& dest, unsigned int setHypoFlag){
   for (unsigned int is=0; is<source.size(); is++){
     // Match by alias, not by name!
     string aliasToMatch = source.at(is);
 
     for (unsigned int ih=0; ih<allHypos.size(); ih++){
       if (allHypos.at(ih)->getOption()->isAliased() && aliasToMatch==allHypos.at(ih)->getOption()->getAlias()){
-        dest.push_back(allHypos.at(ih));
+        MELAHypothesis* matchedHypo = allHypos.at(ih);
+        if (setHypoFlag==1) matchedHypo->setMaximizationClientStatus(true);
+        dest.push_back(matchedHypo);
         break;
       }
     }
@@ -43,7 +45,8 @@ void MELAComputation::addContingency(vector<MELAHypothesis*>& allHypos, vector<s
 }
 
 Bool_t MELAComputation::testMaximizationCache(){
-  Float_t testCache = ((maximize_num.size()+maximize_denom.size())>0 ? 1. : -1.);
+  Bool_t updateMany = ((maximize_num.size()+maximize_denom.size())>0);
+  Float_t testCache = (updateMany ? 1. : -1.);
   // Always use type UseME for such comparisons, the others don't make much sense
   for (unsigned int ip=0; ip<maximize_num.size(); ip++) testCache *= maximize_num.at(ip)->getVal(MELAHypothesis::UseME);
   for (unsigned int ip=0; ip<maximize_denom.size(); ip++){
@@ -51,7 +54,8 @@ Bool_t MELAComputation::testMaximizationCache(){
     if(divVal!=0.) testCache /= divVal;
   }
   if (testCache>=maximizationCachedVal){
-    maximizationCachedVal = testCache;
+    if (updateMany) maximizationCachedVal = testCache;
+    else maximizationCachedVal = 0.;
     return true;
   }
   else return false;

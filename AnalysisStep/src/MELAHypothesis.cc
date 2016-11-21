@@ -10,17 +10,23 @@ MELAHypothesis::MELAHypothesis(
   ) :
   mela(mela_),
   opt(opt_),
-  optIsOwned(false)
+  optIsOwned(false),
+  hasMaximizationClients(false)
 { reset(); }
 MELAHypothesis::MELAHypothesis(
   Mela* mela_,
   string stropt
   ) :
   mela(mela_),
-  optIsOwned(true)
-{ opt = new MELAOptionParser(stropt); reset(); }
+  optIsOwned(true),
+  hasMaximizationClients(false)
+{
+  opt = new MELAOptionParser(stropt);
+  reset();
+}
 
 void MELAHypothesis::reset(){
+  isUpdated=false;
   pME=0.; if (opt!=0) pME = opt->getDefaultME();
   pAux=1.;
   cMEAvg=1.;
@@ -36,8 +42,9 @@ void MELAHypothesis::computeP(unsigned int index){
 }
 void MELAHypothesis::computeP(){
   if (opt->usePM4L()){ computePM4l(); return; }
+  if (isUpdated && !hasMaximizationClients) return; // Avoid further computations if there are no clients
 
-  reset();
+  reset(); // Note: Sets isUpdated=false.
 
   bool isGen = opt->isGen();
   MELACandidate* melaCand = mela->getCurrentCandidate();
@@ -153,6 +160,8 @@ void MELAHypothesis::computeP(){
     }
     else mela->computeP(pME, !isGen);
     if (!isGen) mela->getPAux(pAux);
+
+    isUpdated = true;
   }
 }
 
@@ -165,11 +174,14 @@ void MELAHypothesis::computePM4l(unsigned int index){
   computePM4l();
 }
 void MELAHypothesis::computePM4l(){
-  reset();
+  if (isUpdated && !hasMaximizationClients) return; // Avoid further computations if there are no clients
+  reset(); // Note: Sets isUpdated=false.
   if (mela->getCurrentCandidate()!=0){
     // Override the ME and the production
     mela->setProcess(opt->proc, TVar::JHUGen, TVar::ZZGG);
     mela->computePM4l(opt->superSyst, pME);
+
+    isUpdated = true;
   }
 }
 

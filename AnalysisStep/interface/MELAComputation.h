@@ -43,7 +43,7 @@ protected:
   // If the options specify maximization of num/denom, keep track of the value and only update when needed.
 
 
-  void addContingency(std::vector<MELAHypothesis*>& allHypos, std::vector<std::string>& source, std::vector<MELAHypothesis*>& dest);
+  void addContingency(std::vector<MELAHypothesis*>& allHypos, std::vector<std::string>& source, std::vector<MELAHypothesis*>& dest, unsigned int setHypoFlag=0); // setHypoFlag==0: None, 1: setMaximizationClientStatus(true)
   Bool_t testMaximizationCache(); // Used in update()
   Float_t extractVal(MELAHypothesis::METype valtype); // Computation after all contingencies are added
 
