@@ -1,5 +1,4 @@
 from ZZAnalysis.AnalysisStep.defaults import *
-from ZZAnalysis.AnalysisStep.couplings import *
 
 ### ----------------------------------------------------------------------
 ###
@@ -12,23 +11,6 @@ declareDefault("PD", "", globals()) # "" for MC, "DoubleEle", "DoubleMu", or "Mu
 declareDefault("MCFILTER", "", globals())
 declareDefault("XSEC", 1, globals())
 declareDefault("PROCESS_CR", False, globals())
-
-# Couplings for reweighting
-declareDefault("REWEIGHTING_TYPE", "none", globals())
-couplings = Couplings()
-for coupling in couplings.allnames():
-   defval = complex(0.,0.)
-   if (("Lambda_z" in coupling) or ("Lambda_w" in coupling)):
-      defval = float(100.)
-   elif (("cz_" in coupling) or ("cw_" in coupling)):
-      defval = int(0.)
-   elif (("ghg2" == coupling) or ("kappa" == coupling) or ("zprime_qq" in coupling) or ("graviton_qq" in coupling)):
-      defval = complex(1.,0.)
-   declareDefault(coupling, defval, globals())
-   couplings[coupling] = globals()[coupling]
-
-declareDefault("REWEIGHTING_CUTOFFS", "", globals())
-REWEIGHTING_CUTOFFS = [float(a) for a in REWEIGHTING_CUTOFFS.split("|") if a]
 
 # LHE info
 #  VVDECAYMODE\VVMODE  / ZZ==1 / WW==0  / Yukawa==2 / Zgam=3 / gamgam=4 / Z+nj=5
@@ -45,8 +27,6 @@ REWEIGHTING_CUTOFFS = [float(a) for a in REWEIGHTING_CUTOFFS.split("|") if a]
 declareDefault("VVMODE", 1, globals())
 declareDefault("VVDECAYMODE", 0, globals())
 declareDefault("ADDLHEKINEMATICS", False, globals())
-declareDefault("SAMPLEPRODUCTIONID", "", globals()) # Reserve for reweighting, not yet used
-declareDefault("SAMPLEPROCESSID", "", globals()) # Reserve for reweighting, not yet used
 
 # K factors
 declareDefault("APPLY_K_NNLOQCD_ZZGG", 0, globals()) # 0: Do not; 1: NNLO/LO; 2: NNLO/NLO; 3: NLO/LO
@@ -155,48 +135,19 @@ TreeSetup = cms.EDAnalyzer("HZZ4lNtupleMaker",
                            applyTrigEff = cms.bool(not APPLYTRIG), #add trigger efficiency as a weight, for samples where the trigger cannot be applied.
                            skipEmptyEvents = cms.bool(True),
                            sampleName = cms.string(SAMPLENAME),
+
+                           # MELA parameters
                            superMelaMass = cms.double(SUPERMELA_MASS),
+
+                           # Reco MEs to pick from the candidate
                            recoProbabilities = cms.vstring(),
-                           lheProbabilities = cms.vstring(),
-                           xsec = cms.double(XSEC),
-
-                           # Reweigthing block
-                           reweightingtype = cms.string(REWEIGHTING_TYPE),
-                           reweightingcutoffs = cms.vdouble(*REWEIGHTING_CUTOFFS),
-                           spin = cms.int32(couplings.getspin(doreweighting=(REWEIGHTING_TYPE!="none"))),
-
-                           Hqqcouplings_real = cms.vdouble(*couplings.getcouplings("Hqqcoupl", imag=False)),
-                           Hqqcouplings_imag = cms.vdouble(*couplings.getcouplings("Hqqcoupl", imag=True)),
-                           Hggcouplings_real = cms.vdouble(*couplings.getcouplings("Hggcoupl", imag=False)),
-                           Hggcouplings_imag = cms.vdouble(*couplings.getcouplings("Hggcoupl", imag=True)),
-                           HzzCLambda_qsq = cms.vint32(*couplings.getcouplings("HzzCLambda_qsq")),
-                           HzzLambda_qsq = cms.vdouble(*couplings.getcouplings("HzzLambda_qsq")),
-                           Hzzcouplings_real = cms.vdouble(*couplings.getcouplings("Hzzcoupl", imag=False)),
-                           Hzzcouplings_imag = cms.vdouble(*couplings.getcouplings("Hzzcoupl", imag=True)),
-                           HwwCLambda_qsq = cms.vint32(*couplings.getcouplings("HwwCLambda_qsq")),
-                           HwwLambda_qsq = cms.vdouble(*couplings.getcouplings("HwwLambda_qsq")),
-                           Hwwcouplings_real = cms.vdouble(*couplings.getcouplings("Hwwcoupl", imag=False)),
-                           Hwwcouplings_imag = cms.vdouble(*couplings.getcouplings("Hwwcoupl", imag=True)),
-
-                           Zqqcouplings_real = cms.vdouble(*couplings.getcouplings("Zqqcoupl", imag=False)),
-                           Zqqcouplings_imag = cms.vdouble(*couplings.getcouplings("Zqqcoupl", imag=True)),
-                           Zvvcouplings_real = cms.vdouble(*couplings.getcouplings("Zvvcoupl", imag=False)),
-                           Zvvcouplings_imag = cms.vdouble(*couplings.getcouplings("Zvvcoupl", imag=True)),
-
-                           Gqqcouplings_real = cms.vdouble(*couplings.getcouplings("Gqqcoupl", imag=False)),
-                           Gqqcouplings_imag = cms.vdouble(*couplings.getcouplings("Gqqcoupl", imag=True)),
-                           Gggcouplings_real = cms.vdouble(*couplings.getcouplings("Gggcoupl", imag=False)),
-                           Gggcouplings_imag = cms.vdouble(*couplings.getcouplings("Gggcoupl", imag=True)),
-                           Gvvcouplings_real = cms.vdouble(*couplings.getcouplings("Gvvcoupl", imag=False)),
-                           Gvvcouplings_imag = cms.vdouble(*couplings.getcouplings("Gvvcoupl", imag=True)),
 
                            # LHE info. parameters
+                           lheProbabilities = cms.vstring(),
+                           xsec = cms.double(XSEC),
                            VVMode = cms.int32(int(VVMODE)),
                            VVDecayMode = cms.int32(int(VVDECAYMODE)),
                            AddLHEKinematics = cms.bool(ADDLHEKINEMATICS),
-                           sampleProductionId = cms.string(SAMPLEPRODUCTIONID),
-                           sampleProcessId = cms.string(SAMPLEPROCESSID),
-                           addProdAnomalousProbabilities = cms.bool(PRODANOMALOUS),
                            Apply_K_NNLOQCD_ZZGG = cms.int32(int(APPLY_K_NNLOQCD_ZZGG)),
                            Apply_K_NNLOQCD_ZZQQB = cms.bool(APPLY_K_NNLOQCD_ZZQQB),
                            Apply_K_NLOEW_ZZQQB = cms.bool(APPLY_K_NLOEW_ZZQQB),

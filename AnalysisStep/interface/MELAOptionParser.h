@@ -17,7 +17,7 @@
 #define MELAOPTIONPARSER_H
 
 #ifndef DEBUG_MB
-#define DEBUG_MB true
+#define DEBUG_MB false
 #endif
 
 #include <iostream>

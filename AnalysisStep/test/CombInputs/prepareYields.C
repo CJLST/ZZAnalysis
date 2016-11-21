@@ -264,12 +264,12 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
   Short_t Z1Flav;
   Short_t Z2Flav;
   Float_t DiJetFisher;
-  Float_t pvbf_VAJHU_highestPTJets;
-  Float_t phjj_VAJHU_highestPTJets;
-  Float_t pAux_vbf_VAJHU;
-  Float_t phj_VAJHU;
-  Float_t pwh_hadronic_VAJHU;
-  Float_t pzh_hadronic_VAJHU;
+  Float_t p_JJVBF_SIG_ghz1_1_JHUGen_JECNominal;
+  Float_t p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal;
+  Float_t pAux_JVBF_SIG_ghz1_1_JHUGen_JECNominal;
+  Float_t p_JQCD_SIG_ghg2_1_JHUGen_JECNominal;
+  Float_t p_HadWH_SIG_ghz1_1_JHUGen_JECNominal;
+  Float_t p_HadZH_SIG_ghz1_1_JHUGen_JECNominal;
   vector<Float_t> *CandLepEta = 0;
   vector<Float_t> *CandLepPhi = 0;
   Short_t nExtraLep;
@@ -404,12 +404,12 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
       inputTree[d]->SetBranchAddress("JetMass", &JetMass);
       inputTree[d]->SetBranchAddress("JetQGLikelihood", &JetQGLikelihood);
       inputTree[d]->SetBranchAddress("DiJetFisher", &DiJetFisher);
-      inputTree[d]->SetBranchAddress("pvbf_VAJHU_highestPTJets", &pvbf_VAJHU_highestPTJets);
-      inputTree[d]->SetBranchAddress("phjj_VAJHU_highestPTJets", &phjj_VAJHU_highestPTJets);
-      inputTree[d]->SetBranchAddress("pAux_vbf_VAJHU", &pAux_vbf_VAJHU);
-      inputTree[d]->SetBranchAddress("phj_VAJHU", &phj_VAJHU);
-      inputTree[d]->SetBranchAddress("pwh_hadronic_VAJHU", &pwh_hadronic_VAJHU);
-      inputTree[d]->SetBranchAddress("pzh_hadronic_VAJHU", &pzh_hadronic_VAJHU);
+      inputTree[d]->SetBranchAddress("p_JJVBF_SIG_ghz1_1_JHUGen_JECNominal", &p_JJVBF_SIG_ghz1_1_JHUGen_JECNominal);
+      inputTree[d]->SetBranchAddress("p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal", &p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal);
+      inputTree[d]->SetBranchAddress("pAux_JVBF_SIG_ghz1_1_JHUGen_JECNominal", &pAux_JVBF_SIG_ghz1_1_JHUGen_JECNominal;
+      inputTree[d]->SetBranchAddress("p_JQCD_SIG_ghg2_1_JHUGen_JECNominal", &p_JQCD_SIG_ghg2_1_JHUGen_JECNominal);
+      inputTree[d]->SetBranchAddress("p_HadWH_SIG_ghz1_1_JHUGen_JECNominal", &p_HadWH_SIG_ghz1_1_JHUGen_JECNominal);
+      inputTree[d]->SetBranchAddress("p_HadZH_SIG_ghz1_1_JHUGen_JECNominal", &p_HadZH_SIG_ghz1_1_JHUGen_JECNominal);
       inputTree[d]->SetBranchAddress("GenHMass", &GenHMass);
       inputTree[d]->SetBranchAddress("GenZ1Phi", &GenZ1Phi);
       inputTree[d]->SetBranchAddress("GenZ2Phi", &GenZ2Phi);
@@ -522,8 +522,8 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
 	/* ---------- Moriond 2016 categorization 
 	currentCategory = categoryMor16(
 	   nJets,
-           pvbf_VAJHU_highestPTJets,
-           phjj_VAJHU_highestPTJets
+           p_JJVBF_SIG_ghz1_1_JHUGen_JECNominal,
+           p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal
            );
 	//*/
 	//* ---------- Ichep 2016 categorization 
@@ -533,12 +533,12 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
 	   nJets,
 	   nJetsBTagged,
 	   jetQGL,
-	   phjj_VAJHU_highestPTJets,
-	   phj_VAJHU,
-	   pvbf_VAJHU_highestPTJets,
-	   pAux_vbf_VAJHU,
-	   pwh_hadronic_VAJHU,
-	   pzh_hadronic_VAJHU,
+	   p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+	   p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
+	   p_JJVBF_SIG_ghz1_1_JHUGen_JECNominal,
+	   pAux_JVBF_SIG_ghz1_1_JHUGen_JECNominal,
+	   p_HadWH_SIG_ghz1_1_JHUGen_JECNominal,
+	   p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
 	   jetPhi,
 	   ZZMass,
 	   false

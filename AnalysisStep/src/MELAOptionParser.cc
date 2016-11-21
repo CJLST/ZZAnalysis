@@ -32,11 +32,13 @@ void MELAOptionParser::analyze(const std::vector<std::string>& optcoll){
   if (strName==""){ cerr << "MELAOptionParser::analyze: No name detected. Please put a name!" << endl; assert(0); }
   if (strAlias=="<Name>") strAlias=strName;
   if (isCopy()){
-    cout
-      << "MELAOptionParser::analyze: Branch " << strName
-      << " will be a copy of the hypothesis with alias " << strCopyAlias
-      << ". ME properties will be overridden with the ME options of the original hypothesis."
-      << endl;
+    if (DEBUG_MB){
+      cout
+        << "MELAOptionParser::analyze: Branch " << strName
+        << " will be a copy of the hypothesis with alias " << strCopyAlias
+        << ". ME properties will be overridden with the ME options of the original hypothesis."
+        << endl;
+    }
     if (isAliased()){
       cerr << "MELAOptionParser::analyze: Branch " << strName << " cannot any aliases." << endl;
       strAlias = "";
