@@ -56,7 +56,7 @@ const int maxBinsForAlpha = 11;
 string channelSPart1[nChannels] = {"resolved","merged","resolved","merged","resolved","merged","resolved","merged"};
 string channelSPart2[nChannels] = {"","","btag","btag","vbf","vbf","nobtag","nobtag"};
 float minX[nChannels] = {400.,750.,400.,650.,400.,800.,400.,750.};
-float maxX[nChannels] = {2000.,2000.,2000.,1600.,1600.,1600.,2000.,2000};
+float maxX[nChannels] = {2400.,2400.,2400.,2400.,2400.,2400.,2400.,2400.};
 int binsForAlpha[nChannels][maxBinsForAlpha] = {
                                                {1,2,4,6,8,10,12,14,17,20,23},
                                                {2,4,6,8,10,12,14,17,20,23,-1},
@@ -102,7 +102,7 @@ void fitAlphaMethodDijetFunc_2l2q(string dirout = "fitAlphaExtended", string the
   TF1* ffit[nChannels];
   TF1* ffitup[nChannels];
   TF1* ffitdown[nChannels];
-  TFile outf("results.root","RECREATE");
+  TFile outf("results_alternat.root","RECREATE");
 
   for (int tc=0; tc<nChannels; tc++) {
     char histoName[1000];
@@ -114,7 +114,7 @@ void fitAlphaMethodDijetFunc_2l2q(string dirout = "fitAlphaExtended", string the
     TH1F* alphaDen = (TH1F*)inFile->Get(histoName);
     sprintf(histoName,"hmass_%sSR%s_DY",channelSPart1[tc].c_str(),channelSPart2[tc].c_str());
     TH1F* alphaNum = (TH1F*)inFile->Get(histoName);
-    sprintf(histoName,"results_%s%s.txt",channelSPart1[tc].c_str(),channelSPart2[tc].c_str());
+    sprintf(histoName,"results_alternat_%s%s.txt",channelSPart1[tc].c_str(),channelSPart2[tc].c_str());
     ofstream out(histoName);  
 
     // "rebin" alpha histograms if not enough events
@@ -211,6 +211,12 @@ void fitAlphaMethodDijetFunc_2l2q(string dirout = "fitAlphaExtended", string the
     
     fitHist->Add(fitHist,ttWZZZHist,1.,-1.);
     fitHist->Multiply(fitHist,alphaNumRebin);
+    for (int ib=1; ib<=fitHist->GetNbinsX(); ib++) {
+      if (fitHist->GetBinContent(ib) <= 0.1) {
+	fitHist->SetBinContent(ib,0.1);
+        fitHist->SetBinError(ib,alphaNumRebin->GetBinError(ib)/alphaNumRebin->GetBinContent(ib));
+      }
+    } 
 
     sprintf(histoName,"ffit_%sSR%s",channelSPart1[tc].c_str(),channelSPart2[tc].c_str());
     // if (tc == 1) ffit[tc] = new TF1(histoName,myfunction2,minX[tc],maxX[tc],3); else

@@ -56,6 +56,10 @@ int useHTBinned = 2;         // 0 - use simple DY inclusive
 bool enforceNarrowWidth = true;
 bool unblind = true;
 
+int onlyOneLep = 1;          // 0 - ee
+                             // 1 - all leptons
+                             // 2 - mumu
+
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -155,7 +159,7 @@ Int_t  varNbin[nVariables] = { 70, 50, 70,  56,  44, 50,50, 400,  50,  50,  50, 
 Float_t varMin[nVariables] = {  250,  0,  250,  40,  40,  90, 90, -200,  0, 0, -0.2, -0.2, 0,  0, -0.2, -1.2, -1.2, 0., 0., -0.5, 0., -0.05,-0.2,0.,-1.05, 250,0.};
 Float_t varMax[nVariables] = { 2000, 500, 2000, 180, 150, 800, 800, 0, 500, 500, 1.2, 1.2, 500, 500, 1.2, 1.2, 1.2 , 3.15, 3.15, 3.5, 300., 1.05, 1.2, 1.,1., 2000.,1.};
 Bool_t varLogx[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-Bool_t varLogy[nVariables] = {1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1,0,0};
+Bool_t varLogy[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1,0,0};
 
 const int nMasses = 13;
 string signalMasses[nMasses] = {"200","250","300","350","400","450","500","550","600","750","900","1000","2000"};
@@ -388,6 +392,9 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
   float tmvaJetQGLikelihood1, tmvaJetQGLikelihood2, tmvaabshelcosthetaZ1, tmvahelcosthetaZ2, tmvacosthetastar, tmvahelphi, tmvaphistarZ1; 
 
   TString outfileName( "TMVAAndRoofitInputs.root" );
+  if (onlyOneLep == 0) outfileName = "TMVAAndRoofitInputs_ee.root";
+  if (onlyOneLep == 2) outfileName = "TMVAAndRoofitInputs_mumu.root";
+  
   TFile* outputFile = TFile::Open( outfileName, "RECREATE" );
 
   TTree* outputTree[4];   // ordered as 0 = sig merged
@@ -478,6 +485,8 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
   Float_t Nvtx;
   Float_t genHMass;
   vector<Float_t> *ZZMass = 0;
+  vector<Float_t> *ZZMass_up = 0;
+  vector<Float_t> *ZZMass_dn = 0;
   vector<Float_t> *ZZMassRefit = 0;
   vector<Float_t> *ZZPt = 0;
   vector<Float_t> *Z1Mass = 0;
@@ -531,9 +540,12 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
   }
   
   TH1F* hmass[nProcesses][nType+7];
-  Float_t binsincl[] = { 350, 375, 400, 425, 450, 475, 500, 525, 550, 575, 600, 640, 680, 720, 760, 800, 850, 900, 1000, 1100, 1200, 1400, 1600, 2000};
+  TH1F* hmass_up[nProcesses][nType+4];
+  TH1F* hmass_down[nProcesses][nType+4];
+
+  Float_t binsincl[] = { 375, 400, 425, 450, 475, 500, 525, 550, 575, 600, 640, 680, 720, 760, 800, 850, 900, 1000, 1100, 1200, 1400, 1600, 2000, 2400};
   Int_t  binnumincl = sizeof(binsincl)/sizeof(Float_t) - 1; 
-  Float_t binsbtag[] = { 350, 400, 450, 500, 550, 600, 680, 760, 850, 1000, 1200, 1600, 2000};
+  Float_t binsbtag[] = { 400, 450, 500, 550, 600, 680, 760, 850, 1000, 1200, 1600, 2000, 2400};
   Int_t  binnumbtag = sizeof(binsbtag)/sizeof(Float_t) - 1; 
   TString hmasstags[nType+7] = {"","","untagged, merged jet","untagged, resolved jets",
 				"","","b-tagged, merged jet","b-tagged, resolved jets",
@@ -542,19 +554,37 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 
   for(int pr=0; pr<nProcesses; pr++){
     for(int nt=0; nt<nType+7; nt++){
-      if (nt<4)        // mZZ high stats
+      if (nt<4) {        // mZZ high stats
 	 hmass[pr][nt] = new TH1F(Form("hmass_%s_%s",typeS[nt].c_str(),sProcess[pr].c_str()),
 				  Form("hmass_%s_%s",typeS[nt].c_str(),sProcess[pr].c_str()),		
 			          binnumincl,binsincl);
-      else if (nt<nType)  // mZZ low stats
+	 hmass_up[pr][nt] = new TH1F(Form("hmass_up_%s_%s",typeS[nt].c_str(),sProcess[pr].c_str()),
+				     Form("hmass_up_%s_%s",typeS[nt].c_str(),sProcess[pr].c_str()),		
+				     binnumincl,binsincl);
+	 hmass_down[pr][nt] = new TH1F(Form("hmass_down_%s_%s",typeS[nt].c_str(),sProcess[pr].c_str()),
+				       Form("hmass_down_%s_%s",typeS[nt].c_str(),sProcess[pr].c_str()),		
+				       binnumincl,binsincl);
+      } else if (nt<nType) { // mZZ low stats
 	 hmass[pr][nt] = new TH1F(Form("hmass_%s_%s",typeS[nt].c_str(),sProcess[pr].c_str()),
 				  Form("hmass_%s_%s",typeS[nt].c_str(),sProcess[pr].c_str()),		
 				  binnumbtag,binsbtag);
-      else if (nt<nType+4)  // mZZ non b-tagged
+	 hmass_up[pr][nt] = new TH1F(Form("hmass_up_%s_%s",typeS[nt].c_str(),sProcess[pr].c_str()),
+				     Form("hmass_up_%s_%s",typeS[nt].c_str(),sProcess[pr].c_str()),		
+				     binnumbtag,binsbtag);
+	 hmass_down[pr][nt] = new TH1F(Form("hmass_down_%s_%s",typeS[nt].c_str(),sProcess[pr].c_str()),
+				       Form("hmass_down_%s_%s",typeS[nt].c_str(),sProcess[pr].c_str()),		
+				       binnumbtag,binsbtag);
+      } else if (nt<nType+4) { // mZZ non b-tagged
 	hmass[pr][nt] = new TH1F(Form("hmass_%snobtag_%s",typeS[nt-nType].c_str(),sProcess[pr].c_str()),
 				 Form("hmass_%snobtag_%s",typeS[nt-nType].c_str(),sProcess[pr].c_str()),		
 				 binnumincl,binsincl);
-      else if (nt == nType+4)          // MELA spin-0
+        hmass_up[pr][nt] = new TH1F(Form("hmass_up_%snobtag_%s",typeS[nt-nType].c_str(),sProcess[pr].c_str()),
+				    Form("hmass_up_%snobtag_%s",typeS[nt-nType].c_str(),sProcess[pr].c_str()),		
+				    binnumincl,binsincl);
+	hmass_down[pr][nt] = new TH1F(Form("hmass_down_%snobtag_%s",typeS[nt-nType].c_str(),sProcess[pr].c_str()),
+				      Form("hmass_down_%snobtag_%s",typeS[nt-nType].c_str(),sProcess[pr].c_str()),		
+				      binnumincl,binsincl);
+      } else if (nt == nType+4)          // MELA spin-0
 	hmass[pr][nt] = new TH1F(Form("hmelaspin0_resolvedSR_%s",sProcess[pr].c_str()),
 				 Form("hmelaspin0_resolvedSR_%s",sProcess[pr].c_str()),		
 				 20,0.,1.);
@@ -617,6 +647,8 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
     inputTree[d]->SetBranchAddress("genHEPMCweight", &genEventWeight);
     inputTree[d]->SetBranchAddress("overallEventWeight", &overallEventWeight);
     inputTree[d]->SetBranchAddress("ZZMass", &ZZMass);
+    inputTree[d]->SetBranchAddress("ZZMass_up", &ZZMass_up);
+    inputTree[d]->SetBranchAddress("ZZMass_dn", &ZZMass_dn);
     inputTree[d]->SetBranchAddress("ZZMassRefit", &ZZMassRefit);
     inputTree[d]->SetBranchAddress("ZZPt", &ZZPt);
     inputTree[d]->SetBranchAddress("Z1Mass", &Z1Mass);
@@ -963,7 +995,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	    // if (tmvaLepPt2 < 30.) continue;	    
 	    if (tmvaZ2Mass < 60.) continue;
             if (tmvaZ1Pt < 100. || tmvaZ2Pt < 100.) continue;   // TEST!
-            if ((typ==1 || typ==2 || typ==5 || typ==6 || typ==9 || typ==10) && tmvaZ1tau21 > 0.6) continue;
+            // if ((typ==1 || typ==2 || typ==5 || typ==6 || typ==9 || typ==10) && tmvaZ1tau21 > 0.6) continue;
             if (ZZMass->at(theCand) < 300.) continue;
             // if (mela < 0.8) continue;
 	    
@@ -972,17 +1004,37 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	    
 	    h1[2][process][rs][typ]->Fill(ZZMassRefit->at(theCand),eventWeight*t12weight);
 	    if (typ==0 || typ==3 || typ==4 || typ==7 || typ==8 || typ==11) { 
-	      if (rs == 1) {
+	      if (rs == onlyOneLep) {
 		hmass[process][typ]->Fill(ZZMassRefit->at(theCand),eventWeight*t12weight);
-		if ( typ == 0 || typ==8 ) hmass[process][12]->Fill(ZZMassRefit->at(theCand),eventWeight*t12weight);
-		if ( typ == 3 || typ==11 ) hmass[process][15]->Fill(ZZMassRefit->at(theCand),eventWeight*t12weight);
+                hmass_up[process][typ]->Fill(ZZMassRefit->at(theCand)*ZZMass_up->at(theCand)/ZZMass->at(theCand),eventWeight*t12weight);
+		hmass_down[process][typ]->Fill(ZZMassRefit->at(theCand)*ZZMass_dn->at(theCand)/ZZMass->at(theCand),eventWeight*t12weight);
+		if ( typ == 0 || typ==8 ) {
+		  hmass[process][12]->Fill(ZZMassRefit->at(theCand),eventWeight*t12weight);
+                  hmass_up[process][12]->Fill(ZZMassRefit->at(theCand)*ZZMass_up->at(theCand)/ZZMass->at(theCand),eventWeight*t12weight);
+		  hmass_down[process][12]->Fill(ZZMassRefit->at(theCand)*ZZMass_dn->at(theCand)/ZZMass->at(theCand),eventWeight*t12weight);
+		}
+		if ( typ == 3 || typ==11 ) {
+		  hmass[process][15]->Fill(ZZMassRefit->at(theCand),eventWeight*t12weight);
+                  hmass_up[process][15]->Fill(ZZMassRefit->at(theCand)*ZZMass_up->at(theCand)/ZZMass->at(theCand),eventWeight*t12weight);
+		  hmass_down[process][15]->Fill(ZZMassRefit->at(theCand)*ZZMass_dn->at(theCand)/ZZMass->at(theCand),eventWeight*t12weight);
+		}
 	      }
 	      if (mela > 0.5) h1[25][process][rs][typ]->Fill(ZZMassRefit->at(theCand),eventWeight*t12weight);
 	    } else {
-              if (rs == 1) {
+              if (rs == onlyOneLep) {
 		hmass[process][typ]->Fill(ZZMass->at(theCand),eventWeight*t12weight);
-		if ( typ == 1 || typ== 9 ) hmass[process][13]->Fill(ZZMass->at(theCand),eventWeight*t12weight);
-		if ( typ == 2 || typ== 10 ) hmass[process][14]->Fill(ZZMass->at(theCand),eventWeight*t12weight);
+                hmass_up[process][typ]->Fill(ZZMass_up->at(theCand),eventWeight*t12weight);
+		hmass_down[process][typ]->Fill(ZZMass_dn->at(theCand),eventWeight*t12weight);
+		if ( typ == 1 || typ== 9 ) {
+		  hmass[process][13]->Fill(ZZMass->at(theCand),eventWeight*t12weight);
+		  hmass_up[process][13]->Fill(ZZMass_up->at(theCand),eventWeight*t12weight);
+		  hmass_down[process][13]->Fill(ZZMass_dn->at(theCand),eventWeight*t12weight);
+		}
+		if ( typ == 2 || typ== 10 ) {
+		  hmass[process][14]->Fill(ZZMass->at(theCand),eventWeight*t12weight);
+		  hmass_up[process][14]->Fill(ZZMass_up->at(theCand),eventWeight*t12weight);
+		  hmass_down[process][14]->Fill(ZZMass_dn->at(theCand),eventWeight*t12weight);
+		}
 	      }
 	      if (mela > 0.5) h1[25][process][rs][typ]->Fill(ZZMass->at(theCand),eventWeight*t12weight);
 	    }
@@ -1036,7 +1088,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
             h1[23][process][rs][typ]->Fill(mela,eventWeight*t12weight);
             h1[24][process][rs][typ]->Fill(vbfmela,eventWeight*t12weight);
             h1[26][process][rs][typ]->Fill(mela2,eventWeight*t12weight);
-	    if (rs == 1 && (typ == 3 || typ == 7 || typ == 11) ) {
+	    if (rs == onlyOneLep && (typ == 3 || typ == 7 || typ == 11) ) {
 	      hmass[process][16]->Fill(mela,eventWeight*t12weight);
 	      hmass[process][17]->Fill(mela2,eventWeight*t12weight);
 	      hmass[process][18]->Fill(vbfmela,eventWeight*t12weight);
@@ -1145,7 +1197,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
       
       hmass[4][nt]->Add(hmass[5][nt]);
       hmass[3][nt]->Add(hmass[4][nt]);
-     
+         
       if (nt<nType+4) {
 	densityHist(hmass[0][nt]);
 	densityHist(hmass[1][nt]);
@@ -1169,7 +1221,8 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
       }
       
       hmass[3][nt]->SetFillStyle(3001);
-      if (nt<16) hmass[3][nt]->SetMinimum(0.1);
+      if (nt<4) hmass[3][nt]->SetMinimum(0.1);
+      else if (nt<16) hmass[3][nt]->SetMinimum(0.01);
       else if (nt==18) hmass[3][nt]->SetMinimum(0.0001);
       else hmass[3][nt]->SetMinimum(0.);
       hmass[3][nt]->SetLineColor(kGreen+2);
@@ -1311,7 +1364,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 
     TCanvas c2("c2","c2",10,10,700,500);
 
-    float maxima[9] = {3000.,15000.,150.,750.,250.,450.,0.20,0.25,40.};
+    float maxima[9] = {3000.,15000.,150.,750.,550.,450.,0.20,0.25,40.};
     int nMaxima = 0;
 
     for(int nt=0; nt<nType+7; nt++){
@@ -1415,14 +1468,14 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	else gPad->SetLogy(0);
 	gPad->SetLogx(0);
 	
-        if (nt<10 || nt==18) legend2->Draw("same");
+        if (nt<16 || nt==18) legend2->Draw("same");
 	else if (nt==16) {
 	   legend2->SetX1NDC(0.43);
 	   legend2->SetX2NDC(0.69);
 	   legend2->Draw("same");
         }
 	else if (nt==17) legend4->Draw("same");
-        else legend3->Draw("same");
+        // else legend3->Draw("same");
 
 	TLatex *t = new TLatex();
 	t->SetNDC();
@@ -1493,6 +1546,20 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	hmass[4][nt]->Add(hmass[5][nt]);
 	densityHist(hmass[4][nt]);
 	hmass[4][nt]->Write();
+        densityHist(hmass_up[0][nt]);
+	hmass_up[0][nt]->Write();
+	densityHist(hmass_up[3][nt]);
+	hmass_up[3][nt]->Write();
+	hmass[4][nt]->Add(hmass_up[5][nt]);
+	densityHist(hmass_up[4][nt]);
+	hmass_up[4][nt]->Write();
+        densityHist(hmass_down[0][nt]);
+	hmass_down[0][nt]->Write();
+	densityHist(hmass_down[3][nt]);
+	hmass_down[3][nt]->Write();
+	hmass[4][nt]->Add(hmass_down[5][nt]);
+	densityHist(hmass_down[4][nt]);
+	hmass_down[4][nt]->Write();
       }
       outputFile->Close(); 
     }
