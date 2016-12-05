@@ -159,7 +159,10 @@ void MELAHypothesis::computeP(){
       else mela->computeProdDecP(pME, !isGen);
     }
     else mela->computeP(pME, !isGen);
-    if (!isGen) mela->getPAux(pAux);
+    if (!isGen){
+      mela->getPAux(pAux);
+      cMEAvg = mela->getIORecord()->getMEConst();
+    }
 
     isUpdated = true;
   }
