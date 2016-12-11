@@ -5,10 +5,12 @@ using namespace std;
 
 MELAOptionParser::MELAOptionParser(string stropts) :
 strCluster("Common"),
+propScheme(TVar::FixedWidth),
 noBranching(false),
 includePAux(false),
 includePConst(false),
 isPM4L(false),
+isProp(false),
 isGenProb(false),
 defME(0.),
 hmass(-99),
@@ -83,9 +85,11 @@ void MELAOptionParser::interpretOption(string wish, string value){
   else if (wish=="Production") setProduction(value);
   else if (wish=="MatrixElement") setME(value);
   else if (wish=="SuperMelaSyst") setSuperMelaSyst(value);
+  else if (wish=="PropScheme") setPropagatorScheme(value);
 
   else if (wish=="isGen") isGenProb = Bool_t(((UShort_t)atoi(value.c_str()))>0);
   else if (wish=="isPM4L") isPM4L = Bool_t(((UShort_t)atoi(value.c_str()))>0);
+  else if (wish=="isProp") isProp = Bool_t(((UShort_t)atoi(value.c_str()))>0);
   else if (wish=="NoBranch") noBranching = Bool_t(((UShort_t)atoi(value.c_str()))>0);
 
   else if (wish=="DefaultME") defME = (Float_t)atof(value.c_str());
@@ -244,6 +248,13 @@ void MELAOptionParser::setSuperMelaSyst(string wish){
   else if (wish=="SMSyst_ScaleDown") superSyst = TVar::SMSyst_ScaleDown;
   else if (wish=="SMSyst_ResDown") superSyst = TVar::SMSyst_ResDown;
   else cerr << "MELAOptionParser::setSuperMelaSyst(" << wish << "): Failed to find the proper SuperMELA systematics case." << endl;
+}
+void MELAOptionParser::setPropagatorScheme(std::string wish){
+  if (wish=="NoPropagator") propScheme = TVar::NoPropagator;
+  else if (wish=="RunningWidth") propScheme = TVar::RunningWidth;
+  else if (wish=="FixedWidth") propScheme = TVar::FixedWidth;
+  else if (wish=="CPS") propScheme = TVar::CPS;
+  else cerr << "MELAOptionParser::setPropagatorScheme(" << wish << "): Failed to find the proper propagator case." << endl;
 }
 void MELAOptionParser::extractCoupling(string opt){
   string wish, strVal, strValRe, strValIm;
@@ -578,10 +589,11 @@ void MELAOptionParser::pickOriginalOptions(MELAOptionParser* original_opt){
   // Replace these values
   strCluster = original_opt->strCluster; // The cluster better be the same, overwrite it!
 
-  noBranching = original_opt->noBranching;
+  //noBranching = original_opt->noBranching;
   includePAux = original_opt->includePAux;
   includePConst = original_opt->includePConst;
   isPM4L = original_opt->isPM4L;
+  isProp = original_opt->isProp;
   isGenProb = original_opt->isGenProb;
   defME = original_opt->defME;
 
@@ -600,6 +612,7 @@ void MELAOptionParser::pickOriginalOptions(MELAOptionParser* original_opt){
   prod = original_opt->prod;
   ME = original_opt->ME;
   superSyst = original_opt->superSyst;
+  propScheme = original_opt->propScheme;
 
   // Append these arrays instead of replacing them
   for (unsigned int it=0; it<original_opt->addedAliases.size(); it++){ if (!checkListVariable(addedAliases, (original_opt->addedAliases).at(it))) addedAliases.push_back((original_opt->addedAliases).at(it)); }

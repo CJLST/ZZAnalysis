@@ -42,8 +42,9 @@ void MELAHypothesis::computeP(unsigned int index){
 }
 void MELAHypothesis::computeP(){
   if (opt->usePM4L()){ computePM4l(); return; }
-  if (isUpdated && !hasMaximizationClients) return; // Avoid further computations if there are no clients
+  else if (opt->usePropagator()){ computePropagator(); return; }
 
+  if (isUpdated && !hasMaximizationClients) return; // Avoid further computations if there are no clients
   reset(); // Note: Sets isUpdated=false.
 
   bool isGen = opt->isGen();
@@ -161,7 +162,7 @@ void MELAHypothesis::computeP(){
     else mela->computeP(pME, !isGen);
     if (!isGen){
       mela->getPAux(pAux);
-      cMEAvg = mela->getIORecord()->getMEConst();
+      mela->getConstant(cMEAvg);
     }
 
     isUpdated = true;
@@ -183,10 +184,29 @@ void MELAHypothesis::computePM4l(){
     // Override the ME and the production
     mela->setProcess(opt->proc, TVar::JHUGen, TVar::ZZGG);
     mela->computePM4l(opt->superSyst, pME);
-
     isUpdated = true;
   }
 }
+
+void MELAHypothesis::computePropagator(MELACandidate* cand){
+  if (cand!=0) mela->setCurrentCandidate(cand);
+  computePropagator();
+}
+void MELAHypothesis::computePropagator(unsigned int index){
+  mela->setCurrentCandidateFromIndex(index);
+  computePropagator();
+}
+void MELAHypothesis::computePropagator(){
+  if (isUpdated && !hasMaximizationClients) return; // Avoid further computations if there are no clients
+  reset(); // Note: Sets isUpdated=false.
+  MELACandidate* melaCand = mela->getCurrentCandidate();
+  if (melaCand!=0){
+    if (opt->hmass>=-1.) mela->setMelaHiggsMassWidth(opt->hmass, opt->hwidth, 0);
+    mela->getXPropagator(opt->propScheme, pME);
+    isUpdated = true;
+  }
+}
+
 
 Float_t MELAHypothesis::getVal(METype valtype) const{
   if (valtype==UseME) return pME;

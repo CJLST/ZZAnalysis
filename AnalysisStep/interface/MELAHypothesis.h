@@ -61,6 +61,9 @@ public:
   void computePM4l(MELACandidate* cand); // Wrapper
   void computePM4l(unsigned int index); // Wrapper
   void computePM4l(); // Main function
+  void computePropagator(MELACandidate* cand); // Wrapper
+  void computePropagator(unsigned int index); // Wrapper
+  void computePropagator(); // Main function
   void reset();
 
 };

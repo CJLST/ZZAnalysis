@@ -57,6 +57,7 @@ public:
   TVar::Production prod;
   TVar::MatrixElement ME;
   TVar::SuperMelaSyst superSyst;
+  TVar::ResonancePropagatorScheme propScheme;
 
 protected:
 
@@ -64,6 +65,7 @@ protected:
   Bool_t includePAux;
   Bool_t includePConst;
   Bool_t isPM4L;
+  Bool_t isProp;
   Bool_t isGenProb;
   Float_t defME;
 
@@ -88,6 +90,7 @@ public:
   void interpretOption(std::string wish, std::string value);
 
   Bool_t usePM4L() const{ return isPM4L; }
+  Bool_t usePropagator() const{ return isProp; }
   Bool_t isGen() const{ return isGenProb; }
   Bool_t hasPAux() const{ return includePAux; }
   Bool_t hasPConst() const{ return includePConst; }
@@ -118,6 +121,7 @@ protected:
   void setProduction(std::string opt);
   void setME(std::string opt);
   void setSuperMelaSyst(std::string opt);
+  void setPropagatorScheme(std::string opt);
   void extractCoupling(std::string opt);
 
   void setAddedAliases(std::string opt);
