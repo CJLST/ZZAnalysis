@@ -5,18 +5,20 @@ indicator="WminusH"
 
 masslist=()
 while IFS=',' read -ra line || [[ -n "$line" ]]; do
-	if [[ "$line" == "$indicator"* ]];then
+	if [[ "$line" == "$indicator"* ]] || [[ "$line" == "#$indicator"* ]];then
 		mass="${line/$indicator/}"
 		mass=${mass%%_*}
+		mass=${mass#\#}
 		masslist+=($mass)
 	fi
 done < $csvfile
 
 indicator="WplusH"
 while IFS=',' read -ra line || [[ -n "$line" ]]; do
-	if [[ "$line" == "$indicator"* ]];then
+	if [[ "$line" == "$indicator"* ]] || [[ "$line" == "#$indicator"* ]];then
 		mass="${line/$indicator/}"
 		mass=${mass%%_*}
+		mass=${mass#\#}
 		let found=0
 		for x in ${masslist[@]}
 		do

@@ -5,10 +5,10 @@ indicator="ggH"
 
 masslist=()
 while IFS=',' read -ra line || [[ -n "$line" ]]; do
-	if [[ "$line" == "$indicator"* ]];then
+	if [[ "$line" == "$indicator"* ]] || [[ "$line" == "#$indicator"* ]];then
 		mass="${line/$indicator/}"
 		mass=${mass%%_*}
-		#echo $mass
+		mass=${mass#\#}
 		masslist+=($mass)
 	fi
 done < $csvfile
