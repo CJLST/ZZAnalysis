@@ -333,6 +333,10 @@ private:
   void updateMELAClusters_NoInitialQ();
   void updateMELAClusters_NoInitialG();
   void updateMELAClusters_NoInitialGNoAssociatedG();
+  void updateMELAClusters_CommonLast();
+  void updateMELAClusters_NoInitialQLast();
+  void updateMELAClusters_NoInitialGLast();
+  void updateMELAClusters_NoInitialGNoAssociatedGLast();
   void pushRecoMELABranches(const pat::CompositeCandidate& cand);
   void pushLHEMELABranches();
   void clearMELABranches();
@@ -2163,6 +2167,10 @@ void HZZ4lNtupleMaker::computeMELABranches(MELACandidate* cand){
   updateMELAClusters_NoInitialQ(); // "NoInitialQ"
   updateMELAClusters_NoInitialG(); // "NoInitialG"
   updateMELAClusters_NoInitialGNoAssociatedG(); // "NoInitialGNoAssociatedG"
+  updateMELAClusters_NoInitialGNoAssociatedGLast(); // "NoInitialGNoAssociatedGLast"
+  updateMELAClusters_NoInitialGLast(); // "NoInitialGLast"
+  updateMELAClusters_NoInitialQLast(); // "NoInitialQLast"
+  updateMELAClusters_CommonLast(); // "CommonLast"
   mela.resetInputEvent();
 }
 // Common ME computations that do not manipulate the LHE candidate
@@ -2173,6 +2181,20 @@ void HZZ4lNtupleMaker::updateMELAClusters_Common(){
   for (unsigned int ic=0; ic<lheme_clusters.size(); ic++){
     MELACluster* theCluster = lheme_clusters.at(ic);
     if (theCluster->getName()=="Common"){
+      // Re-compute all related hypotheses first...
+      theCluster->computeAll();
+      // ...then update the cluster
+      theCluster->update();
+    }
+  }
+}
+void HZZ4lNtupleMaker::updateMELAClusters_CommonLast(){
+  MELACandidate* melaCand = mela.getCurrentCandidate();
+  if (melaCand==0) return;
+
+  for (unsigned int ic=0; ic<lheme_clusters.size(); ic++){
+    MELACluster* theCluster = lheme_clusters.at(ic);
+    if (theCluster->getName()=="CommonLast"){
       // Re-compute all related hypotheses first...
       theCluster->computeAll();
       // ...then update the cluster
@@ -2196,6 +2218,31 @@ void HZZ4lNtupleMaker::updateMELAClusters_NoInitialQ(){
   for (unsigned int ic=0; ic<lheme_clusters.size(); ic++){
     MELACluster* theCluster = lheme_clusters.at(ic);
     if (theCluster->getName()=="NoInitialQ"){
+      // Re-compute all related hypotheses first...
+      theCluster->computeAll();
+      // ...then update the cluster
+      theCluster->update();
+    }
+  }
+
+  // Restore the candidate properties
+  for (int imot=0; imot<melaCand->getNMothers(); imot++) melaCand->getMother(imot)->id = motherIds.at(imot); // Restore all mother ids
+}
+void HZZ4lNtupleMaker::updateMELAClusters_NoInitialQLast(){
+  MELACandidate* melaCand = mela.getCurrentCandidate();
+  if (melaCand==0) return;
+
+  // Manipulate the candidate
+  // Assign 0 to the id of quark mothers
+  std::vector<int> motherIds;
+  for (int imot=0; imot<melaCand->getNMothers(); imot++){
+    motherIds.push_back(melaCand->getMother(imot)->id);
+    if (PDGHelpers::isAQuark(melaCand->getMother(imot)->id)) melaCand->getMother(imot)->id = 0;
+  }
+
+  for (unsigned int ic=0; ic<lheme_clusters.size(); ic++){
+    MELACluster* theCluster = lheme_clusters.at(ic);
+    if (theCluster->getName()=="NoInitialQLast"){
       // Re-compute all related hypotheses first...
       theCluster->computeAll();
       // ...then update the cluster
@@ -2232,6 +2279,31 @@ void HZZ4lNtupleMaker::updateMELAClusters_NoInitialG(){
   // Restore the candidate properties
   for (int imot=0; imot<melaCand->getNMothers(); imot++) melaCand->getMother(imot)->id = motherIds.at(imot); // Restore all mother ids
 }
+void HZZ4lNtupleMaker::updateMELAClusters_NoInitialGLast(){
+  MELACandidate* melaCand = mela.getCurrentCandidate();
+  if (melaCand==0) return;
+
+  // Manipulate the candidate
+  // Assign 0 to the id of gluon mothers
+  std::vector<int> motherIds;
+  for (int imot=0; imot<melaCand->getNMothers(); imot++){
+    motherIds.push_back(melaCand->getMother(imot)->id);
+    if (PDGHelpers::isAGluon(melaCand->getMother(imot)->id)) melaCand->getMother(imot)->id = 0;
+  }
+
+  for (unsigned int ic=0; ic<lheme_clusters.size(); ic++){
+    MELACluster* theCluster = lheme_clusters.at(ic);
+    if (theCluster->getName()=="NoInitialGLast"){
+      // Re-compute all related hypotheses first...
+      theCluster->computeAll();
+      // ...then update the cluster
+      theCluster->update();
+    }
+  }
+
+  // Restore the candidate properties
+  for (int imot=0; imot<melaCand->getNMothers(); imot++) melaCand->getMother(imot)->id = motherIds.at(imot); // Restore all mother ids
+}
 // ME computations that require no gluon initial state and no gluons as associated particles
 void HZZ4lNtupleMaker::updateMELAClusters_NoInitialGNoAssociatedG(){
   MELACandidate* melaCand = mela.getCurrentCandidate();
@@ -2253,6 +2325,37 @@ void HZZ4lNtupleMaker::updateMELAClusters_NoInitialGNoAssociatedG(){
   for (unsigned int ic=0; ic<lheme_clusters.size(); ic++){
     MELACluster* theCluster = lheme_clusters.at(ic);
     if (theCluster->getName()=="NoInitialGNoAssociatedG"){
+      // Re-compute all related hypotheses first...
+      theCluster->computeAll();
+      // ...then update the cluster
+      theCluster->update();
+    }
+  }
+
+  // Restore the candidate properties
+  for (int imot=0; imot<melaCand->getNMothers(); imot++) melaCand->getMother(imot)->id = motherIds.at(imot); // Restore all mother ids
+  for (int ijet=0; ijet<melaCand->getNAssociatedJets(); ijet++) melaCand->getAssociatedJet(ijet)->id = ajetIds.at(ijet); // Restore all jets
+}
+void HZZ4lNtupleMaker::updateMELAClusters_NoInitialGNoAssociatedGLast(){
+  MELACandidate* melaCand = mela.getCurrentCandidate();
+  if (melaCand==0) return;
+
+  // Manipulate the candidate
+  // Assign 0 to the id of gluon mothers
+  std::vector<int> motherIds;
+  std::vector<int> ajetIds;
+  for (int imot=0; imot<melaCand->getNMothers(); imot++){
+    motherIds.push_back(melaCand->getMother(imot)->id);
+    if (PDGHelpers::isAGluon(melaCand->getMother(imot)->id)) melaCand->getMother(imot)->id = 0;
+  }
+  for (int ijet=0; ijet<melaCand->getNAssociatedJets(); ijet++){
+    ajetIds.push_back(melaCand->getAssociatedJet(ijet)->id);
+    if (PDGHelpers::isAGluon(melaCand->getAssociatedJet(ijet)->id)) melaCand->getAssociatedJet(ijet)->id = 0;
+  }
+
+  for (unsigned int ic=0; ic<lheme_clusters.size(); ic++){
+    MELACluster* theCluster = lheme_clusters.at(ic);
+    if (theCluster->getName()=="NoInitialGNoAssociatedGLast"){
       // Re-compute all related hypotheses first...
       theCluster->computeAll();
       // ...then update the cluster

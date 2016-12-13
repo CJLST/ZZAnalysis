@@ -1,7 +1,7 @@
 #!/bin/bash
 
 csvfile=$1
-indicator="ggH"
+indicator="VBFH"
 
 masslist=()
 while IFS=',' read -ra line || [[ -n "$line" ]]; do
@@ -15,6 +15,6 @@ done < $csvfile
 
 for mass in ${masslist[@]};
 do
-	tplToFragment.py --outdir=pyFragments --outname="LHEProbabilities_GG_SIG_0PM_H"$mass"_POWHEG.py" --template=pyFragments/LHEProbabilities_GG_SIG_0PM_H-HMASS-_POWHEG.tpl --indicators="<HMASS>:"$mass
+	tplToFragment.py --outdir=pyFragments --outname="LHEProbabilities_VBF_SIG_0PM_H"$mass"_POWHEG.py" --template=pyFragments/LHEProbabilities_VBF_SIG_0PM_H-HMASS-_POWHEG.tpl --indicators="<HMASS>:"$mass
 done
 
