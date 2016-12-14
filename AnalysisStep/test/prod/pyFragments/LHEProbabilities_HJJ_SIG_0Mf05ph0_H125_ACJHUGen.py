@@ -32,10 +32,10 @@ LHE_DecayProbabilities_SpinZero_JHUGen = [
 LHE_ProdProbabilities_SpinZero_JHUGen = [
    "Name:SampleProductionHypothesisJHUGen Alias:<Name> Process:SelfDefine_spin0 Production:JJQCD MatrixElement:JHUGen Couplings:ghg2=1,0;ghg4=1.0062,0;ghz1=1,0 Cluster:BestLOAssociatedVBF isGen:1 NoBranch:1",
 
-   "Name:HJJ_SIG_ghg1_1_JHUGen Alias:SampleProductionHypothesisJHUGen Process:SelfDefine_spin0 Production:JJQCD MatrixElement:JHUGen Couplings:ghg2=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+   "Name:HJJ_SIG_ghg2_1_JHUGen Alias:SampleProductionHypothesisJHUGen Process:SelfDefine_spin0 Production:JJQCD MatrixElement:JHUGen Couplings:ghg2=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
    "Name:HJJ_SIG_ghg4_1_JHUGen Process:SelfDefine_spin0 Production:JJQCD MatrixElement:JHUGen Couplings:ghg4=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-   "Name:HJJ_SIG_ghg1_1_ghg4_1_JHUGen Process:SelfDefine_spin0 Production:JJQCD MatrixElement:JHUGen Couplings:ghg2=1,0;ghg4=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-   "Name:HJJ_SIG_ghg1_1_ghg4_i_JHUGen Process:SelfDefine_spin0 Production:JJQCD MatrixElement:JHUGen Couplings:ghg2=1,0;ghg4=0,1 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+   "Name:HJJ_SIG_ghg2_1_ghg4_1_JHUGen Process:SelfDefine_spin0 Production:JJQCD MatrixElement:JHUGen Couplings:ghg2=1,0;ghg4=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+   "Name:HJJ_SIG_ghg2_1_ghg4_i_JHUGen Process:SelfDefine_spin0 Production:JJQCD MatrixElement:JHUGen Couplings:ghg2=1,0;ghg4=0,1 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
 ]
 
 # Construct the final list
