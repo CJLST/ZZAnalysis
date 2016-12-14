@@ -48,7 +48,7 @@ class TPLtoPY:
       if string is None:
          sys.exit("TPLtoPY::split: No string provided")
       theList=[]
-      x = string.split(',')
+      x = string.split('|')
       for y in x:
          yy = y.split(':')
          theList.append(yy)
