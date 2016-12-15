@@ -1,4 +1,6 @@
 #include <ZZAnalysis/AnalysisStep/interface/MELAComputation.h>
+#include <utility>
+#include <algorithm>
 
 using namespace std;
 
@@ -90,7 +92,7 @@ Float_t MELAComputation::extractVal(MELAHypothesis::METype valtype){
     }
   }
 
-  if (factor==factor) tmp *= factor;
+  if (!isnan(factor)) tmp *= factor;
   else tmp=0;
 
   return tmp;

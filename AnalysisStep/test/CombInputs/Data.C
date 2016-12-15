@@ -188,7 +188,7 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
   Short_t nExtraLeptons;
   Short_t nCleanedJets;   
 
-  float ZZPt, p_JJVBF_SIG_ghz1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, pAux_VBF_VAJHU, p_HadWH_SIG_ghz1_1_JHUGen_JECNominal, p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, p_GG_SIG_ghg2_1_ghz1_1_JHUGen, p_QQB_BKG_MCFM ;
+  float ZZPt, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, p_HadWH_SIG_ghv1_1_JHUGen_JECNominal, p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, p_GG_SIG_ghg2_1_ghz1_1_JHUGen, p_QQB_BKG_MCFM;
   Short_t nJets;
   Short_t nBTaggedJets;
   std::vector<float> * JETQGLikeliHood = 0;
@@ -241,7 +241,7 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
     ggTree->SetBranchAddress("nExtraLep",&nExtraLeptons);
     ggTree->SetBranchAddress("nCleanedJets",&nJets);
     ggTree->SetBranchAddress("nCleanedJetsPt30BTagged",&nBTaggedJets);
-    ggTree->SetBranchAddress("p_JJVBF_SIG_ghz1_1_JHUGen_JECNominal",&p_JJVBF_SIG_ghz1_1_JHUGen_JECNominal);
+    ggTree->SetBranchAddress("p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal",&p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal);
     ggTree->SetBranchAddress("p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal",&p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal);
 
     ggTree->SetBranchAddress("DiJetFisher",&Fisher); 
@@ -249,8 +249,8 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
     ggTree->SetBranchAddress("nCleanedJetsPt30",&nCleanedJets);
     ggTree->SetBranchAddress("JetQGLikelihood",&JETQGLikeliHood);
     ggTree->SetBranchAddress("p_JQCD_SIG_ghg2_1_JHUGen_JECNominal",&p_JQCD_SIG_ghg2_1_JHUGen_JECNominal);
-    ggTree->SetBranchAddress("pAux_JVBF_SIG_ghz1_1_JHUGen_JECNominal",&pAux_VBF_VAJHU);
-    ggTree->SetBranchAddress("p_HadWH_SIG_ghz1_1_JHUGen_JECNominal",&p_HadWH_SIG_ghz1_1_JHUGen_JECNominal);
+    ggTree->SetBranchAddress("pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal", &pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal);
+    ggTree->SetBranchAddress("p_HadWH_SIG_ghv1_1_JHUGen_JECNominal",&p_HadWH_SIG_ghv1_1_JHUGen_JECNominal);
     ggTree->SetBranchAddress("p_HadZH_SIG_ghz1_1_JHUGen_JECNominal",&p_HadZH_SIG_ghz1_1_JHUGen_JECNominal);
     ggTree->SetBranchAddress("p_GG_SIG_ghg2_1_ghz1_1_JHUGen",&p_GG_SIG_ghg2_1_ghz1_1_JHUGen);
     ggTree->SetBranchAddress("p_QQB_BKG_MCFM",&p_QQB_BKG_MCFM);
@@ -310,8 +310,8 @@ string sschannel, sscategory;
 	}
       }  
       int Cat = -10 ;
-      if (selAna == 0) Cat = categoryMor16(nJets, p_JJVBF_SIG_ghz1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal );	    
-      if (selAna == 1) Cat = categoryIchep16(nExtraLeptons, ExtraZ, nCleanedJets, nBTaggedJets,jetQGLL, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JJVBF_SIG_ghz1_1_JHUGen_JECNominal, pAux_VBF_VAJHU, p_HadWH_SIG_ghz1_1_JHUGen_JECNominal, p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,jetPHI, m4l, useQGTagging );
+      if (selAna == 0) Cat = categoryMor16(nJets, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal );	    
+      if (selAna == 1) Cat = categoryIchep16(nExtraLeptons, ExtraZ, nCleanedJets, nBTaggedJets, jetQGLL, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, p_HadWH_SIG_ghv1_1_JHUGen_JECNominal, p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, jetPHI, m4l, useQGTagging);
       if (categ >= 0 && categ != Cat ) continue;
       
       if(channels==0 && z1flav*z2flav != 28561) continue;

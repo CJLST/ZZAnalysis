@@ -39,7 +39,7 @@ enum CategoryMor16 {
 
 extern "C" int categoryMor16(
 			     int nCleanedJetsPt30,
-			     float p_JJVBF_SIG_ghz1_1_JHUGen_JECNominal,
+			     float p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
 			     float p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal
 			     );
 
@@ -65,10 +65,10 @@ extern "C" int categoryIchep16(
 	     float* jetQGLikelihood,
 	     float p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
 	     float p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
-	     float p_JJVBF_SIG_ghz1_1_JHUGen_JECNominal,
-       float p_JVBF_SIG_ghz1_1_JHUGen_JECNominal,
-       float pAux_JVBF_SIG_ghz1_1_JHUGen_JECNominal,
-	     float p_HadWH_SIG_ghz1_1_JHUGen_JECNominal,
+	     float p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
+       float p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+       float pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+	     float p_HadWH_SIG_ghv1_1_JHUGen_JECNominal,
 	     float p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
              float* jetPhi,
              float ZZMass,
