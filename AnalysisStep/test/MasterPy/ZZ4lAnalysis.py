@@ -112,7 +112,8 @@ else:
     if IsMC:
         process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_miniAODv2_v1', '')
     else:
-        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_Prompt_ICHEP16JEC_v0', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_2016SeptRepro_v4', '')
+#        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_Prompt_ICHEP16JEC_v0', '')
 
 print '\t',process.GlobalTag.globaltag
 
@@ -474,7 +475,7 @@ process.calibratedPatElectrons = cms.EDProducer("CalibratedPatElectronProducerRu
     gbrForestName = cms.string("gedelectron_p4combination_25ns"),
     isMC = cms.bool(IsMC),
     isSynchronization = cms.bool(False),
-    correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/80X_ichepV1_2016_ele")
+    correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/Winter_2016_reReco_v1_ele")
 )
 
 if (BUNCH_SPACING == 50):

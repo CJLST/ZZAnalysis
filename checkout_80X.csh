@@ -7,21 +7,12 @@
 # source /tmp/checkout_80X.csh
 
 
-############## For CMSSW_8_0_8
+############## For CMSSW_8_0_21
 git cms-init
-# Electron scale recipe according to https://twiki.cern.ch/twiki/bin/view/CMS/EGMSmearer
-#git remote add -f -t smearings80X shervin86 https://github.com/shervin86/cmssw.git
-#git cherry-pick f3b0b0140483c336212baa035cf9a820a016a799
-#git cherry-pick a5aaeb7a598800ae98e88ea1a952ecd1d66aa059
-#git cherry-pick c7ac16dd88969510d2d6d6ea2c4702e0108bf151
-#git cherry-pick 054a90830c77423ee673204611522018ace69c5d
-#git cms-addpkg EgammaAnalysis/ElectronTools
-#(cd EgammaAnalysis/ElectronTools/data ; git clone -b ICHEP2016_approval_4fb https://github.com/ECALELFS/ScalesSmearings.git)
-
-#...now superseeded by Emanuele's fix:
-git remote add -f -t ecal_smear_fix_80X emanueledimarco https://github.com/emanueledimarco/cmssw.git
-git checkout 277de3c EgammaAnalysis/ElectronTools
-(cd EgammaAnalysis/ElectronTools; mkdir data; cd data ; git clone https://github.com/ECALELFS/ScalesSmearings.git ; git checkout ICHEP2016_v2)
+# Preliminary electron scale and smearing corrections according to https://twiki.cern.ch/twiki/bin/view/CMS/EGMSmearer
+git cms-merge-topic -u shervin86:Moriond2017_JEC_energyScales
+git cms-addpkg EgammaAnalysis/ElectronTools
+(cd EgammaAnalysis/ElectronTools/data ; git clone -b master https://github.com/ECALELFS/ScalesSmearings.git)
 
 
 #### Please do not add any custom (non-CMSSW) package before this line ####
