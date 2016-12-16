@@ -235,6 +235,16 @@ DecayProbabilities_MCFM = [
    #"Name:INDEPENDENT_BKG_MCFM Process:bkgZZ Production:ZZINDEPENDENT MatrixElement:MCFM",
    "Name:ZJJ_BKG_MCFM Process:bkgZJets Production:JJQCD MatrixElement:MCFM",
 ]
+AJetsProdDecProbabilities_MCFM_JECNominal = [
+   "Name:JJEW_SIG_ghv1_1_MCFM_JECNominal Process:HSMHiggs Production:JJEW MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
+   "Name:JJEW_BSI_ghv1_1_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:JJEW MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
+   "Name:JJEW_BSI_ghv1_i_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz1=0,1 Cluster:J2JECNominal DefaultME:-1",
+   "Name:JJEW_BKG_MCFM_JECNominal Process:bkgZZ Production:JJEW MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
+   "Name:JJVBF_BKG_MCFM_JECNominal Process:bkgZZ Production:JJVBF MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
+   "Name:JJQCD_BKG_MCFM_JECNominal Process:bkgZZ Production:JJQCD MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
+]
+AJetsProdDecProbabilities_MCFM_JECUp = [theME.replace("JECNominal", "JECUp") for theME in AJetsProdDecProbabilities_MCFM_JECNominal]
+AJetsProdDecProbabilities_MCFM_JECDn = [theME.replace("JECNominal", "JECDn") for theME in AJetsProdDecProbabilities_MCFM_JECNominal]
 
 ### m4l probabilities from SuperMELA ###
 PM4L_SUPERMELA = [
@@ -263,6 +273,9 @@ theRecoProbabilities.extend(ALepsProdProbabilities_SpinZero_JHUGen)
 theRecoProbabilities.extend(Probabilities_SpinOne_JHUGen)
 theRecoProbabilities.extend(Probabilities_SpinTwo_JHUGen)
 theRecoProbabilities.extend(DecayProbabilities_MCFM)
+theRecoProbabilities.extend(AJetsProdDecProbabilities_MCFM_JECNominal)
+theRecoProbabilities.extend(AJetsProdDecProbabilities_MCFM_JECUp)
+theRecoProbabilities.extend(AJetsProdDecProbabilities_MCFM_JECDn)
 theRecoProbabilities.extend(PM4L_SUPERMELA)
 
 # Append final list
