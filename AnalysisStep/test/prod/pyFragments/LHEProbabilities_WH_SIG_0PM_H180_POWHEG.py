@@ -160,7 +160,7 @@ LHE_ProdProbabilities_SpinZero_JHUGen = [
 # Construct the final list
 theLHEProbabilities = []
 theLHEProbabilities.extend(LHE_PropagatorRewgt)
-theLHEProbabilities.extend(LHE_DecayProbabilities_MCFM)
+theLHEProbabilities.extend(LHE_Probabilities_MCFM)
 #theLHEProbabilities.extend(LHE_DecayProbabilities_SpinZero_JHUGen)
 #theLHEProbabilities.extend(LHE_ProdProbabilities_SpinZero_JHUGen)
 
