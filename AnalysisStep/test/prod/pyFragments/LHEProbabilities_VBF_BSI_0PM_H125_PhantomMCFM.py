@@ -118,7 +118,7 @@ LHE_Probabilities_MCFM = [
 # Construct the final list
 theLHEProbabilities = []
 theLHEProbabilities.extend(LHE_PropagatorRewgt)
-theLHEProbabilities.extend(LHE_DecayProbabilities_MCFM)
+theLHEProbabilities.extend(LHE_Probabilities_MCFM)
 
 # Append final list
 process.ZZTree.lheProbabilities.extend(theLHEProbabilities)
