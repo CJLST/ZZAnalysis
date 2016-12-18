@@ -105,7 +105,6 @@ private:
   reco::CompositeCandidate::role_collection rolesZ2Z1;
   bool isMC;
   bool doKinFit;
-  bool addProdAnomalousProbabilities;
   // float muon_iso_cut, electron_iso_cut;
   TH2F* corrSigmaMu;
   TH2F* corrSigmaEle;
@@ -131,7 +130,6 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
   ZRolesByMass(iConfig.getParameter<bool>("ZRolesByMass")),
   isMC(iConfig.getParameter<bool>("isMC")),
   doKinFit(iConfig.getParameter<bool>("doKinFit")),
-  addProdAnomalousProbabilities(iConfig.getParameter<bool>("addProdAnomalousProbabilities")),
   corrSigmaMu(0),
   corrSigmaEle(0),
   kinZfitter(0)
