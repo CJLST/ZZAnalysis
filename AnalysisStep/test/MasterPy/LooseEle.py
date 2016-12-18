@@ -109,7 +109,6 @@ process.ZZCandlooseEle = cms.EDProducer("ZZCandidateFiller",
         FullSel70 = cms.string(SR), #Obsolete, use "SR"
         FullSel = cms.string(FULLSEL),
     ),
-    addProdAnomalousProbabilities = cms.bool(PRODANOMALOUS),
     muon_iso_cut = cms.double(MUISOCUT),
     electron_iso_cut = cms.double(ELEISOCUT),
 )
@@ -162,7 +161,6 @@ process.ZLLCandZ1RSE = cms.EDProducer("ZZCandidateFiller",
       CRZLLos_3P1F = cms.string(CR_ZLLosSEL_3P1F),        
       number_trackless_electrons = cms.string("abs(1)"),
     ),
-    addProdAnomalousProbabilities = cms.bool(PRODANOMALOUS),
     muon_iso_cut = cms.double(MUISOCUT),
     electron_iso_cut = cms.double(ELEISOCUT),
 )
@@ -243,7 +241,6 @@ process.ZLLCandlooseEle = cms.EDProducer("ZZCandidateFiller",
       CRZLLos_3P1F = cms.string(CR_ZLLosSEL_3P1F_looseEle),        
       number_trackless_electrons = cms.string("abs(1)"),
     ),
-    addProdAnomalousProbabilities = cms.bool(PRODANOMALOUS),
     muon_iso_cut = cms.double(MUISOCUT),
     electron_iso_cut = cms.double(ELEISOCUT),
 )
