@@ -1050,6 +1050,7 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
       CRZLLos_2P2F = cms.string(CR_ZLLosSEL_2P2F),
       CRZLLos_3P1F = cms.string(CR_ZLLosSEL_3P1F),
     ),
+    recoProbabilities = cms.vstring(),
     #These are actually no longer needed after we dropped the Legacy FSR algorithm
     muon_iso_cut = cms.double(MUISOCUT),
     electron_iso_cut = cms.double(ELEISOCUT),
