@@ -1,12 +1,13 @@
 
-#LEPTON_SETUP = 2016
+LEPTON_SETUP = 2017
 #ELECORRTYPE = "None" # "None" to switch off
 #ELEREGRESSION = "None" # Not supported as of 2016
+#DATA_TAG = "ReReco" # Change to PromptReco for period H
 #APPLYMUCORR = False # Switch off muon scale corrections
 #BUNCH_SPACING = 25
 #FSRMODE = "RunII" # only Run II supported as of 2016
 #KINREFIT = False  # control KinZFitter (very slow)
-#PROCESS_CR = True # Uncomment to run CR paths and trees
+PROCESS_CR = True # Uncomment to run CR paths and trees
 #ADDLOOSEELE = True # Run paths for loose electrons
 #APPLYTRIG = False  # must set to False for all MC samples except MINIAODv2-reHLT
 
@@ -44,19 +45,20 @@ process.source.fileNames = cms.untracked.vstring(
 #    '/store/mc/RunIISpring16MiniAODv2/Graviton2PBToZZTo4L_width0p1_M-2000_13TeV-JHUgenV6-pythia8/MINIAODSIM/PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/00000/EC1FA990-8A24-E611-9E70-0025905A48F2.root'
 
 
-    ## reHLT miniAODv2 files for sync   
-    '/store/mc/RunIISpring16MiniAODv2/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/MINIAODSIM/PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/80000/9AEF77A8-4B3B-E611-97F0-44A842240F8D.root',
-    '/store/mc/RunIISpring16MiniAODv2/WminusH_HToZZTo4L_M125_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/MINIAODSIM/PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/20000/FE43CA0A-993A-E611-91FB-0242AC130002.root'
+    ## reHLT miniAODv2 files for sync
+    '/store/mc/RunIISummer16MiniAODv2/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/120000/0062F021-8DC0-E611-9C48-90B11CBCFFEA.root',
+#    '/store/mc/RunIISpring16MiniAODv2/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/MINIAODSIM/PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/80000/9AEF77A8-4B3B-E611-97F0-44A842240F8D.root',
+                                                 ## '/store/mc/RunIISpring16MiniAODv2/WminusH_HToZZTo4L_M125_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/MINIAODSIM/PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/20000/FE43CA0A-993A-E611-91FB-0242AC130002.root'
 
     ## High-mass reHLT sync file
 #'/store/mc/RunIISpring16MiniAODv2/Graviton2PBToZZTo4L_width0p1_M-2000_13TeV-JHUgenV6-pythia8/MINIAODSIM/PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/20000/EC5DACC2-7539-E611-9499-001C23BED42C.root'
 
     )
 
-process.calibratedPatElectrons.isSynchronization = cms.bool(True)
-process.calibratedMuons.isSynchronization = cms.bool(True)
+process.calibratedPatElectrons.isSynchronization = cms.bool(False)
+process.calibratedMuons.isSynchronization = cms.bool(False)
 
-process.maxEvents.input = -1
+process.maxEvents.input = 1000
 #process.source.skipEvents = cms.untracked.uint32(5750)
 
 # Silence output
