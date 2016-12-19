@@ -89,5 +89,6 @@ for name in (
              "ZZCandtle",       "ZZTreetle",
              "ZLLCandtle",      "CRZLLTreetle",
             ):
-    getattr(process, name).lheProbabilities.extend(theLHEProbabilities)
+    if hasattr(process, name):
+        getattr(process, name).lheProbabilities.extend(theLHEProbabilities)
 

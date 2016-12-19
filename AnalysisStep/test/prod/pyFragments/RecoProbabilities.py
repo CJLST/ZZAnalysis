@@ -288,4 +288,5 @@ for name in (
              "ZZCandtle",       "ZZTreetle",
              "ZLLCandtle",      "CRZLLTreetle",
             ):
-    getattr(process, name).recoProbabilities.extend(theRecoProbabilities)
+    if hasattr(process, name):
+        getattr(process, name).recoProbabilities.extend(theRecoProbabilities)
