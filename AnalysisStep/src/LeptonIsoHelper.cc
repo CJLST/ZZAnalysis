@@ -35,6 +35,8 @@ InputTag LeptonIsoHelper::getMuRhoTag(int sampleType, int setup) {
     rhoTag = InputTag("fixedGridRhoFastjetAll","");
   } else if (setup==2016) {
     rhoTag = InputTag("fixedGridRhoFastjetAll","");
+  } else if (setup==2017) {
+     rhoTag = InputTag("fixedGridRhoFastjetAll","");
   } else {
     cout << "LeptonIsoHelper: AIncorrect setup: " << setup << endl;
     abort();
@@ -52,6 +54,8 @@ InputTag LeptonIsoHelper::getEleRhoTag(int sampleType, int setup) {
     rhoTag = InputTag("fixedGridRhoFastjetAll","");
   } else if (setup==2016) {
     rhoTag = InputTag("fixedGridRhoFastjetAll","");
+  } else if (setup==2017) {
+     rhoTag = InputTag("fixedGridRhoFastjetAll","");
   } else {
     cout << "LeptonIsoHelper: BIncorrect setup: " << setup << endl;
     abort();
@@ -83,6 +87,8 @@ float LeptonIsoHelper::combRelIsoPF(int sampleType, int setup, double rho, const
     EAsetup = MuonEffectiveArea::kMuEAPhys14MC; //FIXME: replace with EAs from data when available
   } else if (setup==2016) { 
     EAsetup = MuonEffectiveArea::kMuEAPhys14MC; //FIXME: update to 2016!
+  } else if (setup==2017) {
+     EAsetup = MuonEffectiveArea::kMuEAPhys14MC; //FIXME: update to 2016!
   } else {
     cout << "LeptonIsoHelper: CIncorrect setup: " << setup << endl;
     abort();
@@ -127,6 +133,9 @@ float LeptonIsoHelper::combRelIsoPF(int sampleType, int setup, double rho, const
   } else if (setup==2016) { 
     EAsetup = ElectronEffectiveArea::kEleEA25nsSpring15MC; 
     //FIXME: update to 2016!
+  } else if (setup==2017) {
+     EAsetup = ElectronEffectiveArea::kEleEA25nsSpring15MC;
+     //FIXME: update to 2017!
   } else {
     cout << "LeptonIsoHelper: DIncorrect setup: " << setup << endl;
     abort();
@@ -175,6 +184,9 @@ float LeptonIsoHelper::combRelIsoPF(int sampleType, int setup, double rho, const
   } else if (setup==2016) {
     EAsetup = ElectronEffectiveArea::kEleEA25nsSpring15MC;
     //FIXME: update to 2016!
+  } else if (setup==2017) {
+     EAsetup = ElectronEffectiveArea::kEleEA25nsSpring15MC;
+     //FIXME: update to 2017!
   } else {
     cout << "LeptonIsoHelper: Incorrect setup: " << setup << endl;
     abort();

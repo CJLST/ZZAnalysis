@@ -11,5 +11,6 @@ int SetupToSqrts(int setup) {
   else if (setup==2012) return 8;
   else if (setup==2015) return 13;
   else if (setup==2016) return 13;
+  else if (setup==2017) return 13;
   else return 0;
 }
