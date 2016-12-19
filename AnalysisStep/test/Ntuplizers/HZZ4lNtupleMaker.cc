@@ -552,7 +552,8 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   //Scale factors for data/MC efficiency
   if (!skipMuDataMCWeight) {
     TString filename;
-    filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_%d.root",year);
+    //filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_%d.root",year);
+    filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_2016.root");//FIXME for 2017
     edm::FileInPath fipMu(filename.Data());
     fipPath = fipMu.fullPath();
     TFile *fMuWeight = TFile::Open(fipPath.data(),"READ");

@@ -279,11 +279,14 @@ theRecoProbabilities.extend(AJetsProdDecProbabilities_MCFM_JECDn)
 theRecoProbabilities.extend(PM4L_SUPERMELA)
 
 # Append final list
-process.ZZCand.recoProbabilities.extend(theRecoProbabilities)
-process.ZZTree.recoProbabilities.extend(theRecoProbabilities)
-process.CRZLLTree.recoProbabilities.extend(theRecoProbabilities)
-process.ZZTreelooseEle.recoProbabilities.extend(theRecoProbabilities)
-process.CRZLLTreelooseEle.recoProbabilities.extend(theRecoProbabilities)
-process.CRZLLTreeZ1RSE.recoProbabilities.extend(theRecoProbabilities)
-process.ZZTreetle.recoProbabilities.extend(theRecoProbabilities)
-process.CRZLLTreetle.recoProbabilities.extend(theRecoProbabilities)
+for name in (
+             "ZZCand",          "ZZTree",
+             "ZLLCand",         "CRZLLTree",
+             "ZZCandlooseEle",  "ZZTreelooseEle",
+             "ZLLCandlooseEle", "CRZLLTreelooseEle",
+             "ZLLCandZ1RSE",    "CRZLLTreeZ1RSE",
+             "ZZCandtle",       "ZZTreetle",
+             "ZLLCandtle",      "CRZLLTreetle",
+            ):
+    if hasattr(process, name):
+        getattr(process, name).recoProbabilities.extend(theRecoProbabilities)

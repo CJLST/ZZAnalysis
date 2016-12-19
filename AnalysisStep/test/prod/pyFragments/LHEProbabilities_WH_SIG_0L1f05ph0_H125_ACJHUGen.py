@@ -51,10 +51,14 @@ theLHEProbabilities.extend(LHE_DecayProbabilities_SpinZero_JHUGen)
 theLHEProbabilities.extend(LHE_ProdProbabilities_SpinZero_JHUGen)
 
 # Append final list
-process.ZZTree.lheProbabilities.extend(theLHEProbabilities)
-process.CRZLLTree.lheProbabilities.extend(theLHEProbabilities)
-process.ZZTreelooseEle.lheProbabilities.extend(theLHEProbabilities)
-process.CRZLLTreelooseEle.lheProbabilities.extend(theLHEProbabilities)
-process.CRZLLTreeZ1RSE.lheProbabilities.extend(theLHEProbabilities)
-process.ZZTreetle.lheProbabilities.extend(theLHEProbabilities)
-process.CRZLLTreetle.lheProbabilities.extend(theLHEProbabilities)
+for name in (
+             "ZZCand",          "ZZTree",
+             "ZLLCand",         "CRZLLTree",
+             "ZZCandlooseEle",  "ZZTreelooseEle",
+             "ZLLCandlooseEle", "CRZLLTreelooseEle",
+             "ZLLCandZ1RSE",    "CRZLLTreeZ1RSE",
+             "ZZCandtle",       "ZZTreetle",
+             "ZLLCandtle",      "CRZLLTreetle",
+            ):
+    if hasattr(process, name):
+        getattr(process, name).lheProbabilities.extend(theLHEProbabilities)

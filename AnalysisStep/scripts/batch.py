@@ -53,6 +53,11 @@ def batchScriptCERN( index, remoteDir=''):
 #BSUB -q 8nh
 #BSUB -o job_%J.txt
 #ulimit -v 3000000
+if ( ! $?LS_SUBCWD ) then
+  #running interactively
+  set LS_SUBCWD=`pwd`
+  cd `mktemp -d`
+endif
 limit
 cat /proc/cpuinfo
 cat /proc/meminfo

@@ -20,6 +20,8 @@ float PUReweight::weight(int MC, int target, float input) {
       h = hTPuTo201576X;
     } else if (MC==2016&&target==2016) {
       h = hTPuToIchep16;
+    } else if (MC==2017&&target==2017) {
+       h = hTPuToIchep16;
     } else{
       std::cout << "ERROR: PUReweight: " << MC << " " << target << std::endl;
       abort();
