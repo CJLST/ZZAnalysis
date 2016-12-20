@@ -52,13 +52,13 @@ theLHEProbabilities.extend(LHE_ProdProbabilities_SpinZero_JHUGen)
 
 # Append final list
 for name in (
-             "ZZCand",          "ZZTree",
-             "ZLLCand",         "CRZLLTree",
-             "ZZCandlooseEle",  "ZZTreelooseEle",
-             "ZLLCandlooseEle", "CRZLLTreelooseEle",
-             "ZLLCandZ1RSE",    "CRZLLTreeZ1RSE",
-             "ZZCandtle",       "ZZTreetle",
-             "ZLLCandtle",      "CRZLLTreetle",
+             "ZZTree",
+             "CRZLLTree",
+             "ZZTreelooseEle",
+             "CRZLLTreelooseEle",
+             "CRZLLTreeZ1RSE",
+             "ZZTreetle",
+             "CRZLLTreetle",
             ):
     if hasattr(process, name):
         getattr(process, name).lheProbabilities.extend(theLHEProbabilities)
