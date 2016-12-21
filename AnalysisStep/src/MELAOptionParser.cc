@@ -255,8 +255,6 @@ void MELAOptionParser::setPropagatorScheme(std::string wish){
   else if (wish=="FixedWidth") propScheme = TVar::FixedWidth;
   else if (wish=="CPS") propScheme = TVar::CPS;
   else cerr << "MELAOptionParser::setPropagatorScheme(" << wish << "): Failed to find the proper propagator case." << endl;
-
-  if (propScheme != TVar::NoPropagator) isProp = true;
 }
 void MELAOptionParser::extractCoupling(string opt){
   string wish, strVal, strValRe, strValIm;
