@@ -1,6 +1,6 @@
 LHE_PropagatorRewgt = [
-   "Name:SamplePropagator Alias:<Name> PropScheme:CPS hmass:210 isGen:1 NoBranch:1",
-   "Name:CPStoBWPropRewgt Alias:<Name> PropScheme:FixedWidth hmass:210 Options:DivideP=SamplePropagator isGen:1",
+   "Name:SamplePropagator Alias:<Name> PropScheme:CPS hmass:210 isGen:1 NoBranch:1 isProp:1
+   "Name:CPStoBWPropRewgt Alias:<Name> PropScheme:FixedWidth hmass:210 Options:DivideP=SamplePropagator isGen:1 isProp:1
 ]
 LHE_Probabilities_MCFM = [
    "Name:SampleHypothesisMCFM Alias:<Name> Process:HSMHiggs Production:HadZH_S MatrixElement:MCFM Couplings:ghz1=1,0 Options:DivideP=SampleHypothesisMCFM hmass:210 Cluster:BestLOAssociatedZ isGen:1 NoBranch:1",
