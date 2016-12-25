@@ -12,14 +12,11 @@ process = cms.Process("ZZ")
 declareDefault("IsMC", True, globals())
 
 # Set of effective areas, rho corrections, etc. (can be 2011, 2012, 2015 or 2016)
-declareDefault("LEPTON_SETUP", 2017, globals())
+declareDefault("LEPTON_SETUP", 2016, globals())
 
 # Flag that reflects the actual sqrts of the sample (can be 2011, 2012, 2015 or 2016)
 # Can differ from SAMPLE_TYPE for samples that are rescaled to a different sqrts.
 declareDefault("SAMPLE_TYPE", LEPTON_SETUP, globals())
-
-# Flag that
-declareDefault("DATA_TAG", "ReReco", globals())
 
 #Optional name of the sample/dataset being analyzed
 declareDefault("SAMPLENAME", "", globals())
@@ -107,21 +104,13 @@ elif (SAMPLE_TYPE == 2015) :
     else:
         process.GlobalTag.globaltag = '76X_dataRun2_v15'
 
-elif (SAMPLE_TYPE == 2016):
+else:
     from Configuration.AlCa.GlobalTag import GlobalTag
     if IsMC:
         process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_miniAODv2_v1', '')
     else:
-        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_Prompt_ICHEP16JEC_v0', '')
-
-elif (SAMPLE_TYPE == 2017):
-    from Configuration.AlCa.GlobalTag import GlobalTag
-    if IsMC:
-        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_TrancheIV_v7', '')
-    elif (DATA_TAG == "ReReco"):
         process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_2016SeptRepro_v4', '')
-    elif (DATA_TAG == "PromptReco"):
-        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_Prompt_v14', '')
+#        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_Prompt_ICHEP16JEC_v0', '')
 
 print '\t',process.GlobalTag.globaltag
 
@@ -225,7 +214,7 @@ elif (LEPTON_SETUP == 2015):
 elif (LEPTON_SETUP == 2016):
     if (IsMC and not APPLYTRIG):
 	#At the moment, the HLT paths are not present in the "tranche 1" background MC and MiniAODv1 signal MC. They will be added in "tranche 2"/"tranche 3" and MiniAODv2.
-        process.hltFilterDiEle.HLTPaths = ["*"]
+	process.hltFilterDiEle.HLTPaths = ["*"]
         process.hltFilterDiMu.HLTPaths = ["*"]
         process.hltFilterMuEle.HLTPaths = ["*"]
         process.hltFilterTriEle.HLTPaths = ["*"]
@@ -257,31 +246,6 @@ elif (LEPTON_SETUP == 2016):
     process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
     process.triggerSingleEle = cms.Path(process.hltFilterSingleEle)
     process.triggerSingleMu  = cms.Path(process.hltFilterSingleMu )
-
-elif (LEPTON_SETUP == 2017):
-   if (IsMC):
-      process.hltFilterDiMu.TriggerResultsTag  = cms.InputTag("TriggerResults","","HLT")
-      process.hltFilterDiEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-      process.hltFilterMuEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-      process.hltFilterMuEle2.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-      process.hltFilterMuEle3.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-      process.hltFilterTriEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-      process.hltFilterTriMu.TriggerResultsTag  = cms.InputTag("TriggerResults","","HLT")
-      process.hltFilterSingleEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-      process.hltFilterSingleMu.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-
-      process.hltFilterDiEle.HLTPaths = ["HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v*"]
-      process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*"]
-      process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"]
-      process.hltFilterTriEle.HLTPaths = ["HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v*"]
-      process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_12_10_5_v*"]
-      process.hltFilterSingleEle.HLTPaths = ["HLT_Ele25_eta2p1_WPTight_Gsf_v*","HLT_Ele27_WPTight_Gsf_v*","HLT_Ele27_eta2p1_WPLoose_Gsf_v*"]
-      process.hltFilterSingleMu.HLTPaths = ["HLT_IsoMu20_v*","HLT_IsoTkMu20_v*","HLT_IsoMu22_v*","HLT_IsoTkMu22_v*"]
-
-   process.triggerTriEle = cms.Path(process.hltFilterTriEle)
-   process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
-   process.triggerSingleEle = cms.Path(process.hltFilterSingleEle)
-   process.triggerSingleMu  = cms.Path(process.hltFilterSingleMu )
 
 process.triggerDiMu   = cms.Path(process.hltFilterDiMu)
 process.triggerDiEle  = cms.Path(process.hltFilterDiEle)
@@ -346,7 +310,7 @@ process.goodPrimaryVertices = cms.EDFilter("VertexSelector",
 SIP =  "userFloat('SIP')<4"
 GOODLEPTON = "userFloat('ID') && " + SIP  # Lepton passing tight ID + SIP [ISO is asked AFTER FSR!!!]
 
-if ((LEPTON_SETUP == 2016) or (LEPTON_SETUP == 2017)) :
+if LEPTON_SETUP == 2016:
     TIGHTMUON = "userFloat('isPFMuon') || (userFloat('isTrackerHighPtMuon') && pt>200)"
 else:
     TIGHTMUON = "userFloat('isPFMuon')"
@@ -398,11 +362,6 @@ elif LEPTON_SETUP == 2016: # (KalmanMuonCalibrator, 2016)
         process.calibratedMuons.identifier = cms.string("MC_80X_13TeV")
     else:
         process.calibratedMuons.identifier = cms.string("DATA_80X_13TeV")
-elif LEPTON_SETUP == 2017: # FIXME To be defined for 2017, atm keep 2016 corrections
-   if IsMC:
-      process.calibratedMuons.identifier = cms.string("MC_80X_13TeV")
-   else:
-      process.calibratedMuons.identifier = cms.string("DATA_80X_13TeV")
 else:
     if APPLYMUCORR:
         print "APPLYMUCORR not configured for LEPTON_SETUP =", LEPTON_SETUP
@@ -508,24 +467,13 @@ process.selectedSlimmedElectrons = cms.EDFilter("PATElectronSelector",
     cut = cms.string("pt>5 && abs(eta)<2.5") # Philipp's protection cut: "&& abs(-log(tan(superClusterPosition.theta/2.)))<2.5")
 )
 
-if (LEPTON_SETUP == 2016):
-   process.calibratedPatElectrons = cms.EDProducer("CalibratedPatElectronProducerRun2",
-       electrons = cms.InputTag('selectedSlimmedElectrons'),
-       gbrForestName = cms.string("gedelectron_p4combination_25ns"),
-       isMC = cms.bool(IsMC),
-       isSynchronization = cms.bool(False),
-       correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/80X_ichepV1_2016_ele")
-   )
-
-elif (LEPTON_SETUP == 2017):
-   process.calibratedPatElectrons = cms.EDProducer("CalibratedPatElectronProducerRun2",
-       electrons = cms.InputTag('selectedSlimmedElectrons'),
-       gbrForestName = cms.string("gedelectron_p4combination_25ns"),
-       isMC = cms.bool(IsMC),
-       isSynchronization = cms.bool(False),
-       correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/Winter_2016_reReco_v1_ele")
-   )
-
+process.calibratedPatElectrons = cms.EDProducer("CalibratedPatElectronProducerRun2",
+    electrons = cms.InputTag('selectedSlimmedElectrons'),
+    gbrForestName = cms.string("gedelectron_p4combination_25ns"),
+    isMC = cms.bool(IsMC),
+    isSynchronization = cms.bool(False),
+    correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/Winter_2016_reReco_v1_ele")
+)
 
 if (BUNCH_SPACING == 50):
     process.calibratedPatElectrons.grbForestName = cms.string("gedelectron_p4combination_50ns")
@@ -1114,6 +1062,33 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
 ### Jets
 ### ----------------------------------------------------------------------
 
+
+from RecoJets.JetProducers.PileupJetIDParams_cfi import full_80x_chs
+from RecoJets.JetProducers.PileupJetIDCutParams_cfi import full_80x_chs_wp
+
+
+process.load("CondCore.CondDB.CondDB_cfi")
+
+
+process.load("RecoJets.JetProducers.PileupJetID_cfi")
+process.pileupJetIdUpdated = process.pileupJetId.clone(
+
+    # algos = cms.VPSet(                                                                                                                                                                                                                     
+    #     full_80x_chs.clone(                                                                                                                                                                                                                
+    #         JetIdParams = full_80x_chs_wp                                                                                                                                                                                                  
+    #         )                                                                                                                                                                                                                              
+    #     ),                                                                                                                                                                                                                                  
+    jets=cms.InputTag("slimmedJets"),
+    inputIsCorrected=True,
+    applyJec=True,
+    vertexes=cms.InputTag("offlineSlimmedPrimaryVertices")
+    )
+#print process.pileupJetId.dumpConfig()  
+
+
+
+
+
 process.load("CondCore.CondDB.CondDB_cfi")
 
 # q/g likelihood
@@ -1208,6 +1183,10 @@ if APPLYJEC:
         jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
         )
 
+    #add pileup id and discriminant to patJetsReapplyJEC
+    process.patJetsReapplyJEC.userData.userFloats.src += ['pileupJetIdUpdated:fullDiscriminant']
+    process.patJetsReapplyJEC.userData.userInts.src += ['pileupJetIdUpdated:fullId']
+    
     ### Replace inputs in QGTagger and dressedJets
     process.QGTagger.srcJets = cms.InputTag( 'patJetsReapplyJEC')
     process.dressedJets.src = cms.InputTag('patJetsReapplyJEC')
@@ -1244,9 +1223,9 @@ process.preSkimCounter = cms.EDProducer("EventCountProducer")
 process.PVfilter =  cms.Path(process.preSkimCounter+process.goodPrimaryVertices)
 
 if APPLYJEC:
-    process.Jets = cms.Path( process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.QGTagger + process.dressedJets )
+    process.Jets = cms.Path(process.pileupJetIdUpdated + process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.QGTagger + process.dressedJets )
 else:
-    process.Jets = cms.Path( process.QGTagger + process.dressedJets )
+    process.Jets = cms.Path( process.QGTagger + process.dressedJets ) #addpileupid
 
 
 ### ----------------------------------------------------------------------
