@@ -22,7 +22,7 @@ namespace BranchHelpers{
 
     MELABranch(
       TTree* theTree_, TString bname_, Float_t defVal_,
-      MELAComputation* computer_
+      MELAComputation* computer_, TTree* failedTree_=0
       );
     virtual ~MELABranch(){}
 

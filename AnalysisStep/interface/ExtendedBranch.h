@@ -51,6 +51,7 @@ namespace BranchHelpers{
   protected:
 
     TTree* theTree;
+    TTree* failedTree;
     varType* defVal;
 
   public:
@@ -100,7 +101,7 @@ namespace BranchHelpers{
       std::cout << std::endl;
     }
 
-    ExtendedBranch(TTree* theTree_, TString bname_, varType defVal_, Bool_t isVector_=false) : theTree(theTree_), defVal(0), bname(bname_), isVector(isVector_)
+    ExtendedBranch(TTree* theTree_, TString bname_, varType defVal_, Bool_t isVector_=false, TTree *failedTree_=0) : theTree(theTree_), failedTree(failedTree_), defVal(0), bname(bname_), isVector(isVector_)
     {
       getBranchType();
       createBranch(&defVal_);
@@ -136,9 +137,12 @@ namespace BranchHelpers{
         else if (btype == BranchHelpers::bFloat) leaftypename = "F";
         else if (btype == BranchHelpers::bDouble) leaftypename = "D";
       }
-      if (theTree!=0 && bname!=""){
-        if (leaftypename=="") theTree->Branch(bname, &valueArray);
-        else theTree->Branch(bname, &value, (bname + "/" + leaftypename));
+      std::vector<TTree*> trees = {theTree, failedTree};
+      for (auto tree : trees){
+        if (tree!=0 && bname!=""){
+          if (leaftypename=="") tree->Branch(bname, &valueArray);
+          else tree->Branch(bname, &value, (bname + "/" + leaftypename));
+        }
       }
     }
 

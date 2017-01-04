@@ -33,6 +33,17 @@ declareDefault("APPLY_K_NNLOQCD_ZZGG", 0, globals()) # 0: Do not; 1: NNLO/LO; 2:
 declareDefault("APPLY_K_NNLOQCD_ZZQQB", False, globals())
 declareDefault("APPLY_K_NLOEW_ZZQQB", False, globals())
 
+#failed events
+declareDefault("SKIP_EMPTY_EVENTS", True)
+declareDefault("FAILED_TREE_LEVEL", 0)
+
+if FAILED_TREE_LEVEL and not SKIP_EMPTY_EVENTS:
+    raise ValueError(
+                     "Inconsistent options: FAILED_TREE_LEVEL={}, SKIP_EMPTY_EVENTS={}\n"
+                     "If you want to write a failed tree, set SKIP_EMPTY_EVENTS=True"
+                     .format(FAILED_TREE_LEVEL, SKIP_EMPTY_EVENTS)
+                    )
+
 # Get absolute path
 import os
 PyFilePath = os.environ['CMSSW_BASE'] + "/src/ZZAnalysis/AnalysisStep/test/"
@@ -133,7 +144,8 @@ TreeSetup = cms.EDAnalyzer("HZZ4lNtupleMaker",
                            PD = cms.string(PD),
                            MCFilterPath = cms.string(MCFILTER),
                            applyTrigEff = cms.bool(not APPLYTRIG), #add trigger efficiency as a weight, for samples where the trigger cannot be applied.
-                           skipEmptyEvents = cms.bool(True),
+                           skipEmptyEvents = cms.bool(SKIP_EMPTY_EVENTS),
+                           failedTreeLevel = cms.bool(FAILED_TREE_LEVEL),
                            sampleName = cms.string(SAMPLENAME),
 
                            # MELA parameters
