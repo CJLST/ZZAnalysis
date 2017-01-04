@@ -190,4 +190,8 @@ for name in (
              "CRZLLTreetle",
             ):
     if hasattr(process, name):
-        getattr(process, name).lheProbabilities.extend(theLHEProbabilities)
+        tree = getattr(process, name)
+        #turn on failedTree keeping the most relevant information
+        tree.lheProbabilities.extend(theLHEProbabilities)
+        if tree.skipEmptyEvents:
+            tree.failedTreeLevel = max(tree.failedTreeLevel, 3)
