@@ -34,8 +34,8 @@ declareDefault("APPLY_K_NNLOQCD_ZZQQB", False, globals())
 declareDefault("APPLY_K_NLOEW_ZZQQB", False, globals())
 
 #failed events
-declareDefault("SKIP_EMPTY_EVENTS", True)
-declareDefault("FAILED_TREE_LEVEL", 0)
+declareDefault("SKIP_EMPTY_EVENTS", True, globals())
+declareDefault("FAILED_TREE_LEVEL", 0, globals())
 
 if FAILED_TREE_LEVEL and not SKIP_EMPTY_EVENTS:
     raise ValueError(
