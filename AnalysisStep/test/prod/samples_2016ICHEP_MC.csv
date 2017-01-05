@@ -166,7 +166,7 @@ ttH135, ,0.42109300804012317,0.001611066787706,,/ttH_HToZZ_4LFilter_M135_13TeV_p
 ttH140, ,0.42921095997158676,0.002024346874442,,/ttH_HToZZ_4LFilter_M140_13TeV_powheg2_JHUgenV6_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM,dbs,,2,,,#FIXME: no official x-section; this is the Powheg one
 ttH145, ,0.35548180671643492,0.002330937930125,,/ttH_HToZZ_4LFilter_M145_13TeV_powheg2_JHUgenV6_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM,dbs,,2,,,#FIXME: no official x-section; this is the Powheg one
 
-###,,,,,,,,,,,MC background - Fall15 samples
+###,,,,,,,,,,,MC background
 
 ZZTo4l,,            1.256,      ,,/ZZTo4L_13TeV_powheg_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,4,PROCESS_CR=True;APPLY_K_NNLOQCD_ZZQQB=True;APPLY_K_NLOEW_ZZQQB=True;ADDLOOSEELE=True;APPLYTRIG=False,,
 #ZZTo4lamcatnlo,,    1.256,      ,,/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,3,PROCESS_CR=True;APPLY_K_NNLOQCD_ZZQQB=True;APPLY_K_NLOEW_ZZQQB=True;APPLYTRIG=False,, # Xsection from the gen: 1.218
