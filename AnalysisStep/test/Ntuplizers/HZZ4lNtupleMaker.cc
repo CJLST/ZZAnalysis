@@ -499,7 +499,6 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
 
   preSkimToken = consumes<edm::MergeableCounter,edm::InLumi>(edm::InputTag("preSkimCounter"));
 
-  skipEmptyEvents = skipEmptyEvents && lheMElist.size()==0;
   if (skipEmptyEvents) {
     applyTrigger=true;
     applySkim=true;
