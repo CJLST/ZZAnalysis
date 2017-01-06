@@ -808,8 +808,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   }
   const edm::View<pat::CompositeCandidate>* cands = candHandle.product();
 
-  if (skipEmptyEvents && cands->size() == 0) return; // Skip events with no candidate, unless skipEmptyEvents = false
-
   // For Z+L CRs, we want only events with exactly 1 Z+l candidate. FIXME: this has to be reviewed.
   if (theChannel==ZL && cands->size() != 1) return;
 
@@ -818,17 +816,22 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   Handle<edm::TriggerResults> triggerResults;
   event.getByToken(triggerResultToken, triggerResults);
 
+  bool failed = false;
+
   // Apply MC filter (skip event)
+  // Heshy note: I'm not turning return into failed = true because it looks like it's applied even if !skipEmptyEvents.
+  //             It only does anything if the MCFILTER variable is set in the csv file, which is not currently the case.
   if (isMC && !(myHelper.passMCFilter(event,triggerResults))) return;
 
   // Apply skim
   bool evtPassSkim = myHelper.passSkim(event,triggerResults,trigWord);
-  if (applySkim && !evtPassSkim) return;
+  if (applySkim && !evtPassSkim) failed = true;       //but gen information will still be recorded if failedTreeLevel != 0
 
   // Apply trigger request (skip event)
   bool evtPassTrigger = myHelper.passTrigger(event,triggerResults,trigWord);
-  if (applyTrigger && !evtPassTrigger) return;
+  if (applyTrigger && !evtPassTrigger) failed = true; //but gen information will still be recorded if failedTreeLevel != 0
 
+  if (skipEmptyEvents && !failedTreeLevel && (cands->size() == 0 || failed)) return; // Skip events with no candidate, unless skipEmptyEvents = false or failedTreeLevel != 0
 
   //Fill MC truth information
   if (isMC) FillKFactors(genInfo, genZLeps);
@@ -889,6 +892,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   //Loop on the candidates
   vector<Int_t> CRFLAG(cands->size());
   for( edm::View<pat::CompositeCandidate>::const_iterator cand = cands->begin(); cand != cands->end(); ++cand) {
+    if (failed) break; //don't waste time on this
     size_t icand= cand-cands->begin();
 
     //    int candChannel = cand->userFloat("candChannel"); // This is currently the product of pdgId of leptons (eg 14641, 28561, 20449)
@@ -948,6 +952,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   // Now we can write the variables for candidates
   int nFilled=0;
   for( edm::View<pat::CompositeCandidate>::const_iterator cand = cands->begin(); cand != cands->end(); ++cand) {
+    if (failed) break; //don't waste time on this
     size_t icand= cand-cands->begin();
 
     if (!( theChannel==ZL || CRFLAG[icand] || (bool)(cand->userFloat("isBestCand")) )) continue; // Skip events other than the best cand (or CR candidates in the CR)
