@@ -150,11 +150,11 @@ LHE_ProdProbabilities_SpinZero_JHUGen = [
    "Name:WH_SIG_ghv4_1_JHUGen Process:SelfDefine_spin0 Production:HadWH MatrixElement:JHUGen Couplings:ghz4=1,0 Options:DivideP=SampleProductionHypothesisJHUGen hmass:210 Cluster:BestLOAssociatedW isGen:1",
 
    "Name:WH_SIG_ghv1_1_ghv1prime2_1E4_JHUGen Process:SelfDefine_spin0 Production:HadWH MatrixElement:JHUGen Couplings:ghz1=1,0;ghz1_prime2=10000,0 Options:DivideP=SampleProductionHypothesisJHUGen hmass:210 Cluster:BestLOAssociatedW isGen:1",
-   "Name:WH_SIG_ghz1_1_ghz1prime2_1E4i_JHUGen Process:SelfDefine_spin0 Production:HadWH MatrixElement:JHUGen Couplings:ghz1=1,0;ghz1_prime2=0,10000 Options:DivideP=SampleProductionHypothesisJHUGen hmass:210 Cluster:BestLOAssociatedW isGen:1",
-   "Name:WH_SIG_ghz1_1_ghz2_1_JHUGen Process:SelfDefine_spin0 Production:HadWH MatrixElement:JHUGen Couplings:ghz1=1,0;ghz2=1,0 Options:DivideP=SampleProductionHypothesisJHUGen hmass:210 Cluster:BestLOAssociatedW isGen:1",
-   "Name:WH_SIG_ghz1_1_ghz2_i_JHUGen Process:SelfDefine_spin0 Production:HadWH MatrixElement:JHUGen Couplings:ghz1=1,0;ghz2=0,1 Options:DivideP=SampleProductionHypothesisJHUGen hmass:210 Cluster:BestLOAssociatedW isGen:1",
-   "Name:WH_SIG_ghz1_1_ghz4_1_JHUGen Process:SelfDefine_spin0 Production:HadWH MatrixElement:JHUGen Couplings:ghz1=1,0;ghz4=1,0 Options:DivideP=SampleProductionHypothesisJHUGen hmass:210 Cluster:BestLOAssociatedW isGen:1",
-   "Name:WH_SIG_ghz1_1_ghz4_i_JHUGen Process:SelfDefine_spin0 Production:HadWH MatrixElement:JHUGen Couplings:ghz1=1,0;ghz4=0,1 Options:DivideP=SampleProductionHypothesisJHUGen hmass:210 Cluster:BestLOAssociatedW isGen:1",
+   "Name:WH_SIG_ghv1_1_ghv1prime2_1E4i_JHUGen Process:SelfDefine_spin0 Production:HadWH MatrixElement:JHUGen Couplings:ghz1=1,0;ghz1_prime2=0,10000 Options:DivideP=SampleProductionHypothesisJHUGen hmass:210 Cluster:BestLOAssociatedW isGen:1",
+   "Name:WH_SIG_ghv1_1_ghv2_1_JHUGen Process:SelfDefine_spin0 Production:HadWH MatrixElement:JHUGen Couplings:ghz1=1,0;ghz2=1,0 Options:DivideP=SampleProductionHypothesisJHUGen hmass:210 Cluster:BestLOAssociatedW isGen:1",
+   "Name:WH_SIG_ghv1_1_ghv2_i_JHUGen Process:SelfDefine_spin0 Production:HadWH MatrixElement:JHUGen Couplings:ghz1=1,0;ghz2=0,1 Options:DivideP=SampleProductionHypothesisJHUGen hmass:210 Cluster:BestLOAssociatedW isGen:1",
+   "Name:WH_SIG_ghv1_1_ghv4_1_JHUGen Process:SelfDefine_spin0 Production:HadWH MatrixElement:JHUGen Couplings:ghz1=1,0;ghz4=1,0 Options:DivideP=SampleProductionHypothesisJHUGen hmass:210 Cluster:BestLOAssociatedW isGen:1",
+   "Name:WH_SIG_ghv1_1_ghv4_i_JHUGen Process:SelfDefine_spin0 Production:HadWH MatrixElement:JHUGen Couplings:ghz1=1,0;ghz4=0,1 Options:DivideP=SampleProductionHypothesisJHUGen hmass:210 Cluster:BestLOAssociatedW isGen:1",
 ]
 
 # Construct the final list
