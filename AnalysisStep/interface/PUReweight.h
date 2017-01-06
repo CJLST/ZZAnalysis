@@ -51,5 +51,8 @@ public:
 
   // 2016
   TH1F* hTPuToIchep16;
+   
+  // 2017
+  TH1F* hTPuToMoriond17;
 };
 #endif
