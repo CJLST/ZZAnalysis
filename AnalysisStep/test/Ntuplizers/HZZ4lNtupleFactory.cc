@@ -159,34 +159,37 @@ void HZZ4lNtupleFactory::BookMELABranches(MELAOptionParser* me_opt, bool isGen, 
     }
   }
 
-  TTree *failedtreetouse = 0;
-  if (isGen) failedtreetouse = _failedTree;
+  vector<TTree*> trees;
+  trees.push_back(_outTree);
+  if (isGen) trees.push_back(_failedTree);
 
   if (me_opt->doBranch()){
-    string basename = me_opt->getName();
-    if (me_opt->isGen()) basename = string("Gen_") + basename;
-    MELABranch* tmpbranch;
-    Float_t defVal=1.;
-    if (me_opt->hasPAux()){
+    for (auto tree : trees) {
+      string basename = me_opt->getName();
+      if (me_opt->isGen()) basename = string("Gen_") + basename;
+      MELABranch* tmpbranch;
+      Float_t defVal=1.;
+      if (me_opt->hasPAux()){
+        tmpbranch = new MELABranch(
+          tree, TString((string("pAux_") + basename).c_str()),
+          defVal, computer
+          );
+        me_branches->push_back(tmpbranch);
+      }
+      if (me_opt->hasPConst()){
+        tmpbranch = new MELABranch(
+          tree, TString((string("pConst_") + basename).c_str()),
+          defVal, computer
+          );
+        me_branches->push_back(tmpbranch);
+      }
+      defVal = me_opt->getDefaultME();
       tmpbranch = new MELABranch(
-        _outTree, TString((string("pAux_") + basename).c_str()),
-        defVal, computer, failedtreetouse
+        tree, TString((string("p_") + basename).c_str()),
+        defVal, computer
         );
       me_branches->push_back(tmpbranch);
     }
-    if (me_opt->hasPConst()){
-      tmpbranch = new MELABranch(
-        _outTree, TString((string("pConst_") + basename).c_str()),
-        defVal, computer, failedtreetouse
-        );
-      me_branches->push_back(tmpbranch);
-    }
-    defVal = me_opt->getDefaultME();
-    tmpbranch = new MELABranch(
-      _outTree, TString((string("p_") + basename).c_str()),
-      defVal, computer, failedtreetouse
-      );
-    me_branches->push_back(tmpbranch);
   }
 }
 std::vector<MELABranch*>* HZZ4lNtupleFactory::getRecoMELABranches(){ return &recome_branches; }

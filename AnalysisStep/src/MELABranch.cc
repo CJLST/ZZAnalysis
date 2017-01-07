@@ -5,9 +5,9 @@ using namespace BranchHelpers;
 
 MELABranch::MELABranch(
   TTree* theTree_, TString bname_, Float_t defVal_,
-  MELAComputation* computer_, TTree *failedTree
+  MELAComputation* computer_
   ) :
-  ExtendedBranch(theTree_, bname_, defVal_, false, failedTree),
+  ExtendedBranch(theTree_, bname_, defVal_, false),
   computer(computer_)
 {
   // Decide what ME to compute by the branch name because AddPAux alone does not decide what the branch does.
