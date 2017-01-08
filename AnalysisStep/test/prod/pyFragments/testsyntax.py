@@ -19,6 +19,6 @@ for filename in os.listdir("."):
         continue
     if filename == os.path.basename(__file__):
         continue #otherwise infinite loop!
-    execfile(filename)
+    execfile(filename, {"process": process, "cms": cms}, {})
 
 print "All files are valid, as far as I can tell."
