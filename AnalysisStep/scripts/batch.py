@@ -70,7 +70,7 @@ echo
 env
 echo
 echo 'Copying' ${LS_SUBCWD} to ${PWD} 
-cp -rf $LS_SUBCWD .
+cp -rf $LS_SUBCWD/ .
 echo '...done'
 echo
 #echo Workdir content:
