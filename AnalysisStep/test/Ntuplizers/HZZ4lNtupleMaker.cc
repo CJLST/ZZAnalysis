@@ -2003,11 +2003,11 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("GenZ1Mass", GenZ1Mass, failedTreeLevel>=5);
     myTree->Book("GenZ1Pt", GenZ1Pt, failedTreeLevel>=5);
     myTree->Book("GenZ1Phi", GenZ1Phi, failedTreeLevel>=5);
-    myTree->Book("GenZ1Flav", GenZ1Flav, failedTreeLevel>=5);
+    myTree->Book("GenZ1Flav", GenZ1Flav, failedTreeLevel>=1);
     myTree->Book("GenZ2Mass", GenZ2Mass, failedTreeLevel>=5);
     myTree->Book("GenZ2Pt", GenZ2Pt, failedTreeLevel>=5);
     myTree->Book("GenZ2Phi", GenZ2Phi, failedTreeLevel>=5);
-    myTree->Book("GenZ2Flav", GenZ2Flav, failedTreeLevel>=5);
+    myTree->Book("GenZ2Flav", GenZ2Flav, failedTreeLevel>=1);
     myTree->Book("GenLep1Pt", GenLep1Pt, failedTreeLevel>=5);
     myTree->Book("GenLep1Eta", GenLep1Eta, failedTreeLevel>=5);
     myTree->Book("GenLep1Phi", GenLep1Phi, failedTreeLevel>=5);
