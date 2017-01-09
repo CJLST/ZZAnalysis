@@ -30,12 +30,12 @@ LHE_DecayProbabilities_SpinZero_JHUGen = [
    "Name:Dec_SIG_ghz1_1_gha4_i_JHUGen Process:SelfDefine_spin0 Production:ZZINDEPENDENT MatrixElement:JHUGen Couplings:ghz1=1,0;ghgsgs4=0,1 Options:DivideP=SampleDecayHypothesisJHUGen isGen:1",
 ]
 LHE_ProdProbabilities_SpinZero_JHUGen = [
-   "Name:SampleProductionHypothesisJHUGen Alias:<Name> Process:SelfDefine_spin0 Production:ttH MatrixElement:JHUGen Couplings:kappa=1,0;kappa_tilde=1.6,0;ghz1=1,0 Cluster:NoAssociatedG isGen:1 NoBranch:1",
+#   "Name:SampleProductionHypothesisJHUGen Alias:<Name> Process:SelfDefine_spin0 Production:ttH MatrixElement:JHUGen Couplings:kappa=1,0;kappa_tilde=1.6,0;ghz1=1,0 Cluster:NoAssociatedG isGen:1 NoBranch:1",
 
-   "Name:ttH_SIG_kappa_1_JHUGen Alias:SampleProductionHypothesisJHUGen Process:SelfDefine_spin0 Production:ttH MatrixElement:JHUGen Couplings:kappa=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:NoAssociatedG isGen:1",
-   "Name:ttH_SIG_kappa_tilde_1_JHUGen Process:SelfDefine_spin0 Production:ttH MatrixElement:JHUGen Couplings:kappa_tilde=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:NoAssociatedG isGen:1",
-   "Name:ttH_SIG_kappa_1_kappa_tilde_1_JHUGen Process:SelfDefine_spin0 Production:ttH MatrixElement:JHUGen Couplings:kappa=1,0;kappa_tilde=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:NoAssociatedG isGen:1",
-   "Name:ttH_SIG_kappa_1_kappa_tilde_i_JHUGen Process:SelfDefine_spin0 Production:ttH MatrixElement:JHUGen Couplings:kappa=1,0;kappa_tilde=0,1 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:NoAssociatedG isGen:1",
+#   "Name:ttH_SIG_kappa_1_JHUGen Alias:SampleProductionHypothesisJHUGen Process:SelfDefine_spin0 Production:ttH MatrixElement:JHUGen Couplings:kappa=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:NoAssociatedG isGen:1",
+#   "Name:ttH_SIG_kappa_tilde_1_JHUGen Process:SelfDefine_spin0 Production:ttH MatrixElement:JHUGen Couplings:kappa_tilde=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:NoAssociatedG isGen:1",
+#   "Name:ttH_SIG_kappa_1_kappa_tilde_1_JHUGen Process:SelfDefine_spin0 Production:ttH MatrixElement:JHUGen Couplings:kappa=1,0;kappa_tilde=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:NoAssociatedG isGen:1",
+#   "Name:ttH_SIG_kappa_1_kappa_tilde_i_JHUGen Process:SelfDefine_spin0 Production:ttH MatrixElement:JHUGen Couplings:kappa=1,0;kappa_tilde=0,1 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:NoAssociatedG isGen:1",
 ]
 
 # Construct the final list
