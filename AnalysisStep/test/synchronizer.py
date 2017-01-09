@@ -197,8 +197,8 @@ def loop():
                 p_QQB_BKG_MCFM    = tree.p_QQB_BKG_MCFM
                 p_m4l_SIG    = tree.p_m4l_SIG
                 p_m4l_BKG       = tree.p_m4l_BKG
-                p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal    = tree.JJVBF_SIG_ghv1_1_JHUGen_JECNominal
-                p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal    = tree.JJQCD_SIG_ghg2_1_JHUGen_JECNominal
+                p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal    = tree.p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal
+                p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal    = tree.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal
                 p_JQCD_SIG_ghg2_1_JHUGen_JECNominal     = tree.p_JQCD_SIG_ghg2_1_JHUGen_JECNominal
                 pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal     = tree.pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal
                 p_JVBF_SIG_ghv1_1_JHUGen_JECNominal     = tree.p_JVBF_SIG_ghv1_1_JHUGen_JECNominal
