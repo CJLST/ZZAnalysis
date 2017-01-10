@@ -194,4 +194,4 @@ for name in (
         #turn on failedTree keeping the most relevant information
         tree.lheProbabilities.extend(theLHEProbabilities)
         if tree.skipEmptyEvents:
-            tree.failedTreeLevel = max(tree.failedTreeLevel.value(), 3)
+            tree.failedTreeLevel = max(tree.failedTreeLevel.value(), LHEFailedTree)

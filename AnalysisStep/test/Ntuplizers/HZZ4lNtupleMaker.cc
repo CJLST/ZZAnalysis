@@ -54,6 +54,7 @@
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
 #include <ZZAnalysis/AnalysisStep/interface/JetCleaner.h>
 #include <ZZAnalysis/AnalysisStep/interface/utils.h>
+#include <ZZAnalysis/AnalysisStep/interface/miscenums.h>
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
 
@@ -355,13 +356,7 @@ private:
   bool applyTrigger;    // Keep only events passing trigger (if skipEmptyEvents=true)
   bool applySkim;       //   "     "      "         skim (if skipEmptyEvents=true)
   bool skipEmptyEvents; // Skip events whith no selected candidate (otherwise, gen info is preserved for all events; candidates not passing trigger&&skim are flagged with negative ZZsel)
-  int failedTreeLevel;  // If skipEmptyEvents is true:
-                        //   0: failed events are removed completely
-                        //   1: failed events are put in a separate tree with minimal information: event info, Higgs momentum, LHE level ME's, weights
-                        //   3: also keep all LHE level information (sufficient to calculate more MEs if needed)
-                        //   5: also keep all Pythia level information
-                        //  10: also keep all reco information available (e.g. JetPt)
-                        //  (skipped numbers could be added as intermediate options)
+  FailedTreeLevel failedTreeLevel;  //if/how events with no selected candidate are written to a separate tree (see miscenums.h for details)
   bool applyTrigEffWeight;// apply trigger efficiency weight (concerns samples where trigger is not applied)
   Float_t xsec;
   int year;
@@ -454,7 +449,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   theCandLabel(pset.getUntrackedParameter<string>("CandCollection")), // Name of input ZZ collection
   theFileName(pset.getUntrackedParameter<string>("fileName")),
   skipEmptyEvents(pset.getParameter<bool>("skipEmptyEvents")), // Do not store
-  failedTreeLevel(pset.getParameter<int>("failedTreeLevel")),
+  failedTreeLevel(FailedTreeLevel(pset.getParameter<int>("failedTreeLevel"))),
   applyTrigEffWeight(pset.getParameter<bool>("applyTrigEff")),
   xsec(pset.getParameter<double>("xsec")),
   year(pset.getParameter<int>("setup")),
@@ -505,7 +500,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   } else {
     applyTrigger=false;
     applySkim=false;
-    failedTreeLevel=0; //failed events are in the main tree
+    failedTreeLevel=noFailedTree; //failed events are in the main tree
   }
 
   isMC = myHelper.isMC();
@@ -1844,28 +1839,28 @@ void HZZ4lNtupleMaker::FillHGenInfo(const math::XYZTLorentzVector pH, float w)
 
 void HZZ4lNtupleMaker::BookAllBranches(){
    //Event variables
-  myTree->Book("RunNumber",RunNumber, failedTreeLevel>=1);
-  myTree->Book("EventNumber",EventNumber, failedTreeLevel>=1);
-  myTree->Book("LumiNumber",LumiNumber, failedTreeLevel>=1);
-  myTree->Book("NRecoMu",NRecoMu, failedTreeLevel>=10);
-  myTree->Book("NRecoEle",NRecoEle, failedTreeLevel>=10);
-  myTree->Book("Nvtx",Nvtx, failedTreeLevel>=10);
-  myTree->Book("NObsInt",NObsInt, failedTreeLevel>=10);
-  myTree->Book("NTrueInt",NTrueInt, failedTreeLevel>=10);
+  myTree->Book("RunNumber",RunNumber, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("EventNumber",EventNumber, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("LumiNumber",LumiNumber, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("NRecoMu",NRecoMu, failedTreeLevel >= fullFailedTree);
+  myTree->Book("NRecoEle",NRecoEle, failedTreeLevel >= fullFailedTree);
+  myTree->Book("Nvtx",Nvtx, failedTreeLevel >= fullFailedTree);
+  myTree->Book("NObsInt",NObsInt, failedTreeLevel >= fullFailedTree);
+  myTree->Book("NTrueInt",NTrueInt, failedTreeLevel >= fullFailedTree);
 
-  myTree->Book("PFMET",PFMET, failedTreeLevel>=10);
-  myTree->Book("PFMETPhi",PFMETPhi, failedTreeLevel>=10);
-  myTree->Book("PFMETNoHF",PFMETNoHF, failedTreeLevel>=10);
-  myTree->Book("PFMETNoHFPhi",PFMETNoHFPhi, failedTreeLevel>=10);
-  myTree->Book("nCleanedJets",nCleanedJets, failedTreeLevel>=10);
-  myTree->Book("nCleanedJetsPt30",nCleanedJetsPt30, failedTreeLevel>=10);
-  myTree->Book("nCleanedJetsPt30_jecUp",nCleanedJetsPt30_jecUp, failedTreeLevel>=10);
-  myTree->Book("nCleanedJetsPt30_jecDn",nCleanedJetsPt30_jecDn, failedTreeLevel>=10);
-  myTree->Book("nCleanedJetsPt30BTagged",nCleanedJetsPt30BTagged, failedTreeLevel>=10);
-  myTree->Book("nCleanedJetsPt30BTagged_bTagSF",nCleanedJetsPt30BTagged_bTagSF, failedTreeLevel>=10);
-  myTree->Book("nCleanedJetsPt30BTagged_bTagSFUp",nCleanedJetsPt30BTagged_bTagSFUp, failedTreeLevel>=10);
-  myTree->Book("nCleanedJetsPt30BTagged_bTagSFDn",nCleanedJetsPt30BTagged_bTagSFDn, failedTreeLevel>=10);
-  myTree->Book("trigWord",trigWord, failedTreeLevel>=1);
+  myTree->Book("PFMET",PFMET, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMETPhi",PFMETPhi, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMETNoHF",PFMETNoHF, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMETNoHFPhi",PFMETNoHFPhi, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJets",nCleanedJets, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30",nCleanedJetsPt30, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30_jecUp",nCleanedJetsPt30_jecUp, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30_jecDn",nCleanedJetsPt30_jecDn, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged",nCleanedJetsPt30BTagged, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF",nCleanedJetsPt30BTagged_bTagSF, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSFUp",nCleanedJetsPt30BTagged_bTagSFUp, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSFDn",nCleanedJetsPt30BTagged_bTagSFDn, failedTreeLevel >= fullFailedTree);
+  myTree->Book("trigWord",trigWord, failedTreeLevel >= minimalFailedTree);
   myTree->Book("ZZMass",ZZMass, false);
   myTree->Book("ZZMassErr",ZZMassErr, false);
   myTree->Book("ZZMassErrCorr",ZZMassErrCorr, false);
@@ -1934,23 +1929,23 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   }
 
   //Jet variables
-  myTree->Book("JetPt",JetPt, failedTreeLevel>=10);
-  myTree->Book("JetEta",JetEta, failedTreeLevel>=10);
-  myTree->Book("JetPhi",JetPhi, failedTreeLevel>=10);
-  myTree->Book("JetMass",JetMass, failedTreeLevel>=10);
-  myTree->Book("JetBTagger",JetBTagger, failedTreeLevel>=10);
-  myTree->Book("JetIsBtagged",JetIsBtagged, failedTreeLevel>=10);
-  myTree->Book("JetIsBtaggedWithSF",JetIsBtaggedWithSF, failedTreeLevel>=10);
-  myTree->Book("JetIsBtaggedWithSFUp",JetIsBtaggedWithSFUp, failedTreeLevel>=10);
-  myTree->Book("JetIsBtaggedWithSFDn",JetIsBtaggedWithSFDn, failedTreeLevel>=10);
-  myTree->Book("JetQGLikelihood",JetQGLikelihood, failedTreeLevel>=10);
+  myTree->Book("JetPt",JetPt, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetEta",JetEta, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPhi",JetPhi, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetMass",JetMass, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetBTagger",JetBTagger, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetIsBtagged",JetIsBtagged, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetIsBtaggedWithSF",JetIsBtaggedWithSF, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetIsBtaggedWithSFUp",JetIsBtaggedWithSFUp, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetIsBtaggedWithSFDn",JetIsBtaggedWithSFDn, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetQGLikelihood",JetQGLikelihood, failedTreeLevel >= fullFailedTree);
   if(addQGLInputs){
-    myTree->Book("JetAxis2",JetAxis2, failedTreeLevel>=10);
-    myTree->Book("JetMult",JetMult, failedTreeLevel>=10);
-    myTree->Book("JetPtD",JetPtD, failedTreeLevel>=10);
+    myTree->Book("JetAxis2",JetAxis2, failedTreeLevel >= fullFailedTree);
+    myTree->Book("JetMult",JetMult, failedTreeLevel >= fullFailedTree);
+    myTree->Book("JetPtD",JetPtD, failedTreeLevel >= fullFailedTree);
   }
-  myTree->Book("JetSigma",JetSigma, failedTreeLevel>=10);
-  myTree->Book("JetHadronFlavour",JetHadronFlavour, failedTreeLevel>=10);
+  myTree->Book("JetSigma",JetSigma, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetHadronFlavour",JetHadronFlavour, failedTreeLevel >= fullFailedTree);
   myTree->Book("DiJetMass",DiJetMass, false);
 //   myTree->Book("DiJetMassPlus",DiJetMassPlus, false); // FIXME: add back once filled again
 //   myTree->Book("DiJetMassMinus",DiJetMassMinus, false);
@@ -1967,102 +1962,102 @@ void HZZ4lNtupleMaker::BookAllBranches(){
 
   if (isMC){
     if (apply_K_NNLOQCD_ZZGG>0){
-      myTree->Book("KFactor_QCD_ggZZ_Nominal", KFactor_QCD_ggZZ_Nominal, failedTreeLevel>=1);
-      myTree->Book("KFactor_QCD_ggZZ_PDFScaleDn", KFactor_QCD_ggZZ_PDFScaleDn, failedTreeLevel>=1);
-      myTree->Book("KFactor_QCD_ggZZ_PDFScaleUp", KFactor_QCD_ggZZ_PDFScaleUp, failedTreeLevel>=1);
-      myTree->Book("KFactor_QCD_ggZZ_QCDScaleDn", KFactor_QCD_ggZZ_QCDScaleDn, failedTreeLevel>=1);
-      myTree->Book("KFactor_QCD_ggZZ_QCDScaleUp", KFactor_QCD_ggZZ_QCDScaleUp, failedTreeLevel>=1);
-      myTree->Book("KFactor_QCD_ggZZ_AsDn", KFactor_QCD_ggZZ_AsDn, failedTreeLevel>=1);
-      myTree->Book("KFactor_QCD_ggZZ_AsUp", KFactor_QCD_ggZZ_AsUp, failedTreeLevel>=1);
-      myTree->Book("KFactor_QCD_ggZZ_PDFReplicaDn", KFactor_QCD_ggZZ_PDFReplicaDn, failedTreeLevel>=1);
-      myTree->Book("KFactor_QCD_ggZZ_PDFReplicaUp", KFactor_QCD_ggZZ_PDFReplicaUp, failedTreeLevel>=1);
+      myTree->Book("KFactor_QCD_ggZZ_Nominal", KFactor_QCD_ggZZ_Nominal, failedTreeLevel >= minimalFailedTree);
+      myTree->Book("KFactor_QCD_ggZZ_PDFScaleDn", KFactor_QCD_ggZZ_PDFScaleDn, failedTreeLevel >= minimalFailedTree);
+      myTree->Book("KFactor_QCD_ggZZ_PDFScaleUp", KFactor_QCD_ggZZ_PDFScaleUp, failedTreeLevel >= minimalFailedTree);
+      myTree->Book("KFactor_QCD_ggZZ_QCDScaleDn", KFactor_QCD_ggZZ_QCDScaleDn, failedTreeLevel >= minimalFailedTree);
+      myTree->Book("KFactor_QCD_ggZZ_QCDScaleUp", KFactor_QCD_ggZZ_QCDScaleUp, failedTreeLevel >= minimalFailedTree);
+      myTree->Book("KFactor_QCD_ggZZ_AsDn", KFactor_QCD_ggZZ_AsDn, failedTreeLevel >= minimalFailedTree);
+      myTree->Book("KFactor_QCD_ggZZ_AsUp", KFactor_QCD_ggZZ_AsUp, failedTreeLevel >= minimalFailedTree);
+      myTree->Book("KFactor_QCD_ggZZ_PDFReplicaDn", KFactor_QCD_ggZZ_PDFReplicaDn, failedTreeLevel >= minimalFailedTree);
+      myTree->Book("KFactor_QCD_ggZZ_PDFReplicaUp", KFactor_QCD_ggZZ_PDFReplicaUp, failedTreeLevel >= minimalFailedTree);
     }
     if (apply_K_NLOEW_ZZQQB){
-      myTree->Book("KFactor_EW_qqZZ", KFactor_EW_qqZZ, failedTreeLevel>=1);
-      myTree->Book("KFactor_EW_qqZZ_unc", KFactor_EW_qqZZ_unc, failedTreeLevel>=1);
+      myTree->Book("KFactor_EW_qqZZ", KFactor_EW_qqZZ, failedTreeLevel >= minimalFailedTree);
+      myTree->Book("KFactor_EW_qqZZ_unc", KFactor_EW_qqZZ_unc, failedTreeLevel >= minimalFailedTree);
     }
     if (apply_K_NNLOQCD_ZZQQB){
-      myTree->Book("KFactor_QCD_qqZZ_dPhi", KFactor_QCD_qqZZ_dPhi, failedTreeLevel>=1);
-      myTree->Book("KFactor_QCD_qqZZ_M", KFactor_QCD_qqZZ_M, failedTreeLevel>=1);
-      myTree->Book("KFactor_QCD_qqZZ_Pt", KFactor_QCD_qqZZ_Pt, failedTreeLevel>=1);
+      myTree->Book("KFactor_QCD_qqZZ_dPhi", KFactor_QCD_qqZZ_dPhi, failedTreeLevel >= minimalFailedTree);
+      myTree->Book("KFactor_QCD_qqZZ_M", KFactor_QCD_qqZZ_M, failedTreeLevel >= minimalFailedTree);
+      myTree->Book("KFactor_QCD_qqZZ_Pt", KFactor_QCD_qqZZ_Pt, failedTreeLevel >= minimalFailedTree);
     }
 
-    myTree->Book("genFinalState", genFinalState, failedTreeLevel>=1);
-    myTree->Book("genProcessId", genProcessId, failedTreeLevel>=1);
-    myTree->Book("genHEPMCweight", genHEPMCweight, failedTreeLevel>=1);
-    myTree->Book("PUWeight", PUWeight, failedTreeLevel>=1);
+    myTree->Book("genFinalState", genFinalState, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("genProcessId", genProcessId, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("genHEPMCweight", genHEPMCweight, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("PUWeight", PUWeight, failedTreeLevel >= minimalFailedTree);
     myTree->Book("dataMCWeight", dataMCWeight, false);
     myTree->Book("trigEffWeight", trigEffWeight, false);
     myTree->Book("overallEventWeight", overallEventWeight, false);
-    myTree->Book("HqTMCweight", HqTMCweight, failedTreeLevel>=1);
-    myTree->Book("xsec", xsection, failedTreeLevel>=1);
-    myTree->Book("genExtInfo", genExtInfo, failedTreeLevel>=1);
-    myTree->Book("GenHMass", GenHMass, failedTreeLevel>=1);
-    myTree->Book("GenHPt", GenHPt, failedTreeLevel>=1);
-    myTree->Book("GenHRapidity", GenHRapidity, failedTreeLevel>=1);
-    myTree->Book("GenZ1Mass", GenZ1Mass, failedTreeLevel>=5);
-    myTree->Book("GenZ1Pt", GenZ1Pt, failedTreeLevel>=5);
-    myTree->Book("GenZ1Phi", GenZ1Phi, failedTreeLevel>=5);
-    myTree->Book("GenZ1Flav", GenZ1Flav, failedTreeLevel>=1);
-    myTree->Book("GenZ2Mass", GenZ2Mass, failedTreeLevel>=5);
-    myTree->Book("GenZ2Pt", GenZ2Pt, failedTreeLevel>=5);
-    myTree->Book("GenZ2Phi", GenZ2Phi, failedTreeLevel>=5);
-    myTree->Book("GenZ2Flav", GenZ2Flav, failedTreeLevel>=1);
-    myTree->Book("GenLep1Pt", GenLep1Pt, failedTreeLevel>=5);
-    myTree->Book("GenLep1Eta", GenLep1Eta, failedTreeLevel>=5);
-    myTree->Book("GenLep1Phi", GenLep1Phi, failedTreeLevel>=5);
-    myTree->Book("GenLep1Id", GenLep1Id, failedTreeLevel>=5);
-    myTree->Book("GenLep2Pt", GenLep2Pt, failedTreeLevel>=5);
-    myTree->Book("GenLep2Eta", GenLep2Eta, failedTreeLevel>=5);
-    myTree->Book("GenLep2Phi", GenLep2Phi, failedTreeLevel>=5);
-    myTree->Book("GenLep2Id", GenLep2Id, failedTreeLevel>=5);
-    myTree->Book("GenLep3Pt", GenLep3Pt, failedTreeLevel>=5);
-    myTree->Book("GenLep3Eta", GenLep3Eta, failedTreeLevel>=5);
-    myTree->Book("GenLep3Phi", GenLep3Phi, failedTreeLevel>=5);
-    myTree->Book("GenLep3Id", GenLep3Id, failedTreeLevel>=5);
-    myTree->Book("GenLep4Pt", GenLep4Pt, failedTreeLevel>=5);
-    myTree->Book("GenLep4Eta", GenLep4Eta, failedTreeLevel>=5);
-    myTree->Book("GenLep4Phi", GenLep4Phi, failedTreeLevel>=5);
-    myTree->Book("GenLep4Id", GenLep4Id, failedTreeLevel>=5);
-    myTree->Book("GenAssocLep1Pt", GenAssocLep1Pt, failedTreeLevel>=5);
-    myTree->Book("GenAssocLep1Eta", GenAssocLep1Eta, failedTreeLevel>=5);
-    myTree->Book("GenAssocLep1Phi", GenAssocLep1Phi, failedTreeLevel>=5);
-    myTree->Book("GenAssocLep1Id", GenAssocLep1Id, failedTreeLevel>=5);
-    myTree->Book("GenAssocLep2Pt", GenAssocLep2Pt, failedTreeLevel>=5);
-    myTree->Book("GenAssocLep2Eta", GenAssocLep2Eta, failedTreeLevel>=5);
-    myTree->Book("GenAssocLep2Phi", GenAssocLep2Phi, failedTreeLevel>=5);
-    myTree->Book("GenAssocLep2Id", GenAssocLep2Id, failedTreeLevel>=5);
+    myTree->Book("HqTMCweight", HqTMCweight, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("xsec", xsection, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("genExtInfo", genExtInfo, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("GenHMass", GenHMass, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("GenHPt", GenHPt, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("GenHRapidity", GenHRapidity, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("GenZ1Mass", GenZ1Mass, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenZ1Pt", GenZ1Pt, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenZ1Phi", GenZ1Phi, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenZ1Flav", GenZ1Flav, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("GenZ2Mass", GenZ2Mass, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenZ2Pt", GenZ2Pt, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenZ2Phi", GenZ2Phi, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenZ2Flav", GenZ2Flav, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("GenLep1Pt", GenLep1Pt, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenLep1Eta", GenLep1Eta, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenLep1Phi", GenLep1Phi, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenLep1Id", GenLep1Id, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenLep2Pt", GenLep2Pt, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenLep2Eta", GenLep2Eta, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenLep2Phi", GenLep2Phi, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenLep2Id", GenLep2Id, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenLep3Pt", GenLep3Pt, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenLep3Eta", GenLep3Eta, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenLep3Phi", GenLep3Phi, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenLep3Id", GenLep3Id, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenLep4Pt", GenLep4Pt, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenLep4Eta", GenLep4Eta, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenLep4Phi", GenLep4Phi, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenLep4Id", GenLep4Id, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenAssocLep1Pt", GenAssocLep1Pt, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenAssocLep1Eta", GenAssocLep1Eta, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenAssocLep1Phi", GenAssocLep1Phi, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenAssocLep1Id", GenAssocLep1Id, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenAssocLep2Pt", GenAssocLep2Pt, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenAssocLep2Eta", GenAssocLep2Eta, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenAssocLep2Phi", GenAssocLep2Phi, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenAssocLep2Id", GenAssocLep2Id, failedTreeLevel >= fullFailedTree);
 
     if (addLHEKinematics){
-      myTree->Book("LHEMotherPz", LHEMotherPz, failedTreeLevel>=3);
-      myTree->Book("LHEMotherE", LHEMotherE, failedTreeLevel>=3);
-      myTree->Book("LHEMotherId", LHEMotherId, failedTreeLevel>=3);
-      myTree->Book("LHEDaughterPt", LHEDaughterPt, failedTreeLevel>=3);
-      myTree->Book("LHEDaughterEta", LHEDaughterEta, failedTreeLevel>=3);
-      myTree->Book("LHEDaughterPhi", LHEDaughterPhi, failedTreeLevel>=3);
-      myTree->Book("LHEDaughterMass", LHEDaughterMass, failedTreeLevel>=3);
-      myTree->Book("LHEDaughterId", LHEDaughterId, failedTreeLevel>=3);
-      myTree->Book("LHEAssociatedParticlePt", LHEAssociatedParticlePt, failedTreeLevel>=3);
-      myTree->Book("LHEAssociatedParticleEta", LHEAssociatedParticleEta, failedTreeLevel>=3);
-      myTree->Book("LHEAssociatedParticlePhi", LHEAssociatedParticlePhi, failedTreeLevel>=3);
-      myTree->Book("LHEAssociatedParticleMass", LHEAssociatedParticleMass, failedTreeLevel>=3);
-      myTree->Book("LHEAssociatedParticleId", LHEAssociatedParticleId, failedTreeLevel>=3);
+      myTree->Book("LHEMotherPz", LHEMotherPz, failedTreeLevel >= LHEFailedTree);
+      myTree->Book("LHEMotherE", LHEMotherE, failedTreeLevel >= LHEFailedTree);
+      myTree->Book("LHEMotherId", LHEMotherId, failedTreeLevel >= LHEFailedTree);
+      myTree->Book("LHEDaughterPt", LHEDaughterPt, failedTreeLevel >= LHEFailedTree);
+      myTree->Book("LHEDaughterEta", LHEDaughterEta, failedTreeLevel >= LHEFailedTree);
+      myTree->Book("LHEDaughterPhi", LHEDaughterPhi, failedTreeLevel >= LHEFailedTree);
+      myTree->Book("LHEDaughterMass", LHEDaughterMass, failedTreeLevel >= LHEFailedTree);
+      myTree->Book("LHEDaughterId", LHEDaughterId, failedTreeLevel >= LHEFailedTree);
+      myTree->Book("LHEAssociatedParticlePt", LHEAssociatedParticlePt, failedTreeLevel >= LHEFailedTree);
+      myTree->Book("LHEAssociatedParticleEta", LHEAssociatedParticleEta, failedTreeLevel >= LHEFailedTree);
+      myTree->Book("LHEAssociatedParticlePhi", LHEAssociatedParticlePhi, failedTreeLevel >= LHEFailedTree);
+      myTree->Book("LHEAssociatedParticleMass", LHEAssociatedParticleMass, failedTreeLevel >= LHEFailedTree);
+      myTree->Book("LHEAssociatedParticleId", LHEAssociatedParticleId, failedTreeLevel >= LHEFailedTree);
     }
 
-    myTree->Book("LHEPDFScale", LHEPDFScale, failedTreeLevel>=1);
-    myTree->Book("LHEweight_QCDscale_muR1_muF1", LHEweight_QCDscale_muR1_muF1, failedTreeLevel>=1);
-    myTree->Book("LHEweight_QCDscale_muR1_muF2", LHEweight_QCDscale_muR1_muF2, failedTreeLevel>=1);
-    myTree->Book("LHEweight_QCDscale_muR1_muF0p5", LHEweight_QCDscale_muR1_muF0p5, failedTreeLevel>=1);
-    myTree->Book("LHEweight_QCDscale_muR2_muF1", LHEweight_QCDscale_muR2_muF1, failedTreeLevel>=1);
-    myTree->Book("LHEweight_QCDscale_muR2_muF2", LHEweight_QCDscale_muR2_muF2, failedTreeLevel>=1);
-    myTree->Book("LHEweight_QCDscale_muR2_muF0p5", LHEweight_QCDscale_muR2_muF0p5, failedTreeLevel>=1);
-    myTree->Book("LHEweight_QCDscale_muR0p5_muF1", LHEweight_QCDscale_muR0p5_muF1, failedTreeLevel>=1);
-    myTree->Book("LHEweight_QCDscale_muR0p5_muF2", LHEweight_QCDscale_muR0p5_muF2, failedTreeLevel>=1);
-    myTree->Book("LHEweight_QCDscale_muR0p5_muF0p5", LHEweight_QCDscale_muR0p5_muF0p5, failedTreeLevel>=1);
-    myTree->Book("LHEweight_PDFVariation_Up", LHEweight_PDFVariation_Up, failedTreeLevel>=1);
-    myTree->Book("LHEweight_PDFVariation_Dn", LHEweight_PDFVariation_Dn, failedTreeLevel>=1);
-    myTree->Book("LHEweight_AsMZ_Up", LHEweight_AsMZ_Up, failedTreeLevel>=1);
-    myTree->Book("LHEweight_AsMZ_Dn", LHEweight_AsMZ_Dn, failedTreeLevel>=1);
+    myTree->Book("LHEPDFScale", LHEPDFScale, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("LHEweight_QCDscale_muR1_muF1", LHEweight_QCDscale_muR1_muF1, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("LHEweight_QCDscale_muR1_muF2", LHEweight_QCDscale_muR1_muF2, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("LHEweight_QCDscale_muR1_muF0p5", LHEweight_QCDscale_muR1_muF0p5, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("LHEweight_QCDscale_muR2_muF1", LHEweight_QCDscale_muR2_muF1, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("LHEweight_QCDscale_muR2_muF2", LHEweight_QCDscale_muR2_muF2, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("LHEweight_QCDscale_muR2_muF0p5", LHEweight_QCDscale_muR2_muF0p5, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("LHEweight_QCDscale_muR0p5_muF1", LHEweight_QCDscale_muR0p5_muF1, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("LHEweight_QCDscale_muR0p5_muF2", LHEweight_QCDscale_muR0p5_muF2, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("LHEweight_QCDscale_muR0p5_muF0p5", LHEweight_QCDscale_muR0p5_muF0p5, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("LHEweight_PDFVariation_Up", LHEweight_PDFVariation_Up, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("LHEweight_PDFVariation_Dn", LHEweight_PDFVariation_Dn, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("LHEweight_AsMZ_Up", LHEweight_AsMZ_Up, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("LHEweight_AsMZ_Dn", LHEweight_AsMZ_Dn, failedTreeLevel >= minimalFailedTree);
   }
 
   // MELA branches are booked under buildMELA
