@@ -495,7 +495,7 @@ process.selectedSlimmedElectrons = cms.EDFilter("PATElectronSelector",
     ## this protects against a crash in electron calibration
     ## due to electrons with eta > 2.5
     src = cms.InputTag("slimmedElectrons"),
-    cut = cms.string("pt>5 && abs(eta)<2.5") # Philipp's protection cut: "&& abs(-log(tan(superClusterPosition.theta/2.)))<2.5")
+    cut = cms.string("pt>5 && abs(eta)<2.5 && abs(-log(tan(superClusterPosition.theta/2.)))<2.5")
 )
 
 if (LEPTON_SETUP == 2016):
