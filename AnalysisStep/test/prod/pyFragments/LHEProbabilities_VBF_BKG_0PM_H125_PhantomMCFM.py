@@ -13,7 +13,7 @@ LHE_Probabilities_MCFM = [
 
    "Name:JJEW_SIG_ghv1_1_ghv1prime2_25E2_MCFM Process:HSMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz1=1,0;ghz1_prime2=2500,0 hmass:125 hwidth:0.00407 Options:DivideP=SampleHypothesisMCFM Cluster:BestLOAssociatedVBF isGen:1",
    "Name:JJEW_SIG_ghv1_1_ghv1prime2_25E2i_MCFM Process:HSMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz1=1,0;ghz1_prime2=0,2500 hmass:125 hwidth:0.00407 Options:DivideP=SampleHypothesisMCFM Cluster:BestLOAssociatedVBF isGen:1",
-   "Name:JJEW_SIG_ghv1_1_ghv2_0p251_MCFM Process:HSMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz1=1,0;ghz2=0.25,0 hmass:125 hwidth:0.00407 Options:DivideP=SampleHypothesisMCFM Cluster:BestLOAssociatedVBF isGen:1",
+   "Name:JJEW_SIG_ghv1_1_ghv2_0p25_MCFM Process:HSMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz1=1,0;ghz2=0.25,0 hmass:125 hwidth:0.00407 Options:DivideP=SampleHypothesisMCFM Cluster:BestLOAssociatedVBF isGen:1",
    "Name:JJEW_SIG_ghv1_1_ghv2_0p25i_MCFM Process:HSMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz1=1,0;ghz2=0,0.25 hmass:125 hwidth:0.00407 Options:DivideP=SampleHypothesisMCFM Cluster:BestLOAssociatedVBF isGen:1",
    "Name:JJEW_SIG_ghv1_1_ghv4_0p25_MCFM Process:HSMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz1=1,0;ghz4=0.25,0 hmass:125 hwidth:0.00407 Options:DivideP=SampleHypothesisMCFM Cluster:BestLOAssociatedVBF isGen:1",
    "Name:JJEW_SIG_ghv1_1_ghv4_0p25i_MCFM Process:HSMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz1=1,0;ghz4=0,0.25 hmass:125 hwidth:0.00407 Options:DivideP=SampleHypothesisMCFM Cluster:BestLOAssociatedVBF isGen:1",
@@ -55,7 +55,7 @@ LHE_Probabilities_MCFM = [
 
    "Name:JJEW_SIG_ghv1_1_ghv1prime2_75E2_MCFM Process:HSMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz1=1,0;ghz1_prime2=7500,0 hmass:125 hwidth:0.00407 Options:DivideP=SampleHypothesisMCFM Cluster:BestLOAssociatedVBF isGen:1",
    "Name:JJEW_SIG_ghv1_1_ghv1prime2_75E2i_MCFM Process:HSMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz1=1,0;ghz1_prime2=0,7500 hmass:125 hwidth:0.00407 Options:DivideP=SampleHypothesisMCFM Cluster:BestLOAssociatedVBF isGen:1",
-   "Name:JJEW_SIG_ghv1_1_ghv2_0p751_MCFM Process:HSMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz1=1,0;ghz2=0.75,0 hmass:125 hwidth:0.00407 Options:DivideP=SampleHypothesisMCFM Cluster:BestLOAssociatedVBF isGen:1",
+   "Name:JJEW_SIG_ghv1_1_ghv2_0p75_MCFM Process:HSMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz1=1,0;ghz2=0.75,0 hmass:125 hwidth:0.00407 Options:DivideP=SampleHypothesisMCFM Cluster:BestLOAssociatedVBF isGen:1",
    "Name:JJEW_SIG_ghv1_1_ghv2_0p75i_MCFM Process:HSMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz1=1,0;ghz2=0,0.75 hmass:125 hwidth:0.00407 Options:DivideP=SampleHypothesisMCFM Cluster:BestLOAssociatedVBF isGen:1",
    "Name:JJEW_SIG_ghv1_1_ghv4_0p75_MCFM Process:HSMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz1=1,0;ghz4=0.75,0 hmass:125 hwidth:0.00407 Options:DivideP=SampleHypothesisMCFM Cluster:BestLOAssociatedVBF isGen:1",
    "Name:JJEW_SIG_ghv1_1_ghv4_0p75i_MCFM Process:HSMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz1=1,0;ghz4=0,0.75 hmass:125 hwidth:0.00407 Options:DivideP=SampleHypothesisMCFM Cluster:BestLOAssociatedVBF isGen:1",
