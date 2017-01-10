@@ -736,10 +736,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
         FillAssocLepGenInfo(genAssocLeps);
       }
 
-    }
-
-    // LHE information
-    if (isMC){
+      // LHE information
       edm::Handle<LHEEventProduct> lhe_evt;
       vector<edm::Handle<LHEEventProduct> > lhe_handles;
       event.getManyByType(lhe_handles);
@@ -752,7 +749,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       }
       //else cerr << "lhe_handles.size()==0" << endl;
     }
-    //
 
     // keep track of sum of weights
     gen_sumPUWeight += PUWeight;
@@ -780,7 +776,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     } else if (genFinalState == TTTT){
       addweight(gen_ZZ4tau, 1);
       addweight(gen_ZZ2l2tau, 1);
-    } else if (genFinalState == BUGGY){ // handle H->ddbar 2012 generator bug!!!
+    } else if (genFinalState == BUGGY){ // handle MCFM ZZ->4tau mZ<2mtau bug
       addweight(gen_BUGGY, 1);
       return; // BUGGY events are skipped
     } else {
