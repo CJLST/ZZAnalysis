@@ -80,7 +80,7 @@ LHE_Probabilities_MCFM = [
    #"Name:JJEW_BSI_gha2_1_MCFM Process:bkgZZ_SMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghgsgs2=1,0 hmass:125 hwidth:0.00407 Options:DivideP=SampleHypothesisMCFM Cluster:BestLOAssociatedVBF isGen:1",
    #"Name:JJEW_BSI_gha4_1_MCFM Process:bkgZZ_SMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghgsgs4=1,0 hmass:125 hwidth:0.00407 Options:DivideP=SampleHypothesisMCFM Cluster:BestLOAssociatedVBF isGen:1",
 
-   #"Name:JJEW_BSI_ghv1_0p5_0p5i_MCFM Process:bkgZZ_SMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz1=0.5,0.5 hmass:125 hwidth:0.00407 Options:DivideP=SampleHypothesisMCFM Cluster:BestLOAssociatedVBF isGen:1",
+   "Name:JJEW_BSI_ghv1_0p5_0p5i_MCFM Process:bkgZZ_SMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz1=0.5,0.5 hmass:125 hwidth:0.00407 Options:DivideP=SampleHypothesisMCFM Cluster:BestLOAssociatedVBF isGen:1",
    #"Name:JJEW_BSI_ghv1prime2_50E2_50E2i_MCFM Process:bkgZZ_SMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz1_prime2=5000,5000 hmass:125 hwidth:0.00407 Options:DivideP=SampleHypothesisMCFM Cluster:BestLOAssociatedVBF isGen:1",
    #"Name:JJEW_BSI_ghv2_0p5_0p5i_MCFM Process:bkgZZ_SMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz2=0.5,0.5 hmass:125 hwidth:0.00407 Options:DivideP=SampleHypothesisMCFM Cluster:BestLOAssociatedVBF isGen:1",
    #"Name:JJEW_BSI_ghv4_0p5_0p5i_MCFM Process:bkgZZ_SMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz4=0.5,0.5 hmass:125 hwidth:0.00407 Options:DivideP=SampleHypothesisMCFM Cluster:BestLOAssociatedVBF isGen:1",
