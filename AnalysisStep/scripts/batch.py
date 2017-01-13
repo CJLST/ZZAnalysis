@@ -200,12 +200,12 @@ class MyBatchManager:
 
 
     def mkdir( self, dirname ):
-        mkdir = 'mkdir -p %s' % dirname
-        ret = os.system( mkdir )
-        if( ret != 0 ):
-            print 'please remove or rename directory: ', dirname
-            sys.exit(4)
-            
+        try:
+            os.makedirs(dirname)
+        except OSError:
+            pass
+    
+
        
     def PrepareJobs(self, listOfValues, listOfDirNames=None):
         print 'PREPARING JOBS ======== '
