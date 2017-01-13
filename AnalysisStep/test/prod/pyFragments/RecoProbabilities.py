@@ -109,17 +109,17 @@ AJetsProdProbabilities_SpinZero_JHUGen_JECNominal = [
    #"Name:HadZH_SIG_ghz1_1_gha4_i_JHUGen_JECNominal Process:SelfDefine_spin0 Production:Had_ZH MatrixElement:JHUGen Cluster:J2JECNominal Couplings:ghz1=1,0;ghgsgs4=0,1 Options:SubtractP=HadZH_SIG_ghz1_1_JHUGen_JECNominal,HadZH_SIG_gha4_1_JHUGen_JECNominal DefaultME:-1",
 
    # Hadronic WH
-   "Name:HadWH_SIG_ghv1_1_JHUGen_JECNominal Alias:<Name> Process:HSMHiggs Production:Had_WH MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1",
-   "Name:HadWH_SIG_ghv1prime2_1E4_JHUGen_JECNominal Alias:<Name> Process:SelfDefine_spin0 Production:Had_WH MatrixElement:JHUGen Cluster:J2JECNominal Couplings:ghz1_prime2=10000,0 DefaultME:-1",
-   "Name:HadWH_SIG_ghv2_1_JHUGen_JECNominal Alias:<Name> Process:H0hplus Production:Had_WH MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1",
-   "Name:HadWH_SIG_ghv4_1_JHUGen_JECNominal Alias:<Name> Process:H0minus Production:Had_WH MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1",
+   "Name:HadWH_SIG_ghw1_1_JHUGen_JECNominal Alias:<Name> Process:HSMHiggs Production:Had_WH MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1",
+   "Name:HadWH_SIG_ghw1prime2_1E4_JHUGen_JECNominal Alias:<Name> Process:SelfDefine_spin0 Production:Had_WH MatrixElement:JHUGen Cluster:J2JECNominal Couplings:ghz1_prime2=10000,0 DefaultME:-1",
+   "Name:HadWH_SIG_ghw2_1_JHUGen_JECNominal Alias:<Name> Process:H0hplus Production:Had_WH MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1",
+   "Name:HadWH_SIG_ghw4_1_JHUGen_JECNominal Alias:<Name> Process:H0minus Production:Had_WH MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1",
 
-   "Name:HadWH_SIG_ghv1_1_ghv1prime2_1E4_JHUGen_JECNominal Process:SelfDefine_spin0 Production:Had_WH MatrixElement:JHUGen Cluster:J2JECNominal Couplings:ghz1=1,0;ghz1_prime2=10000,0 Options:SubtractP=HadWH_SIG_ghv1_1_JHUGen_JECNominal,HadWH_SIG_ghv1prime2_1E4_JHUGen_JECNominal DefaultME:-1",
-   #"Name:HadWH_SIG_ghz1_1_ghz1prime2_1E4i_JHUGen_JECNominal Process:SelfDefine_spin0 Production:Had_WH MatrixElement:JHUGen Cluster:J2JECNominal Couplings:ghz1=1,0;ghz1_prime2=0,10000 Options:SubtractP=HadWH_SIG_ghv1_1_JHUGen_JECNominal,HadWH_SIG_ghv1prime2_1E4_JHUGen_JECNominal DefaultME:-1",
-   "Name:HadWH_SIG_ghz1_1_ghz2_1_JHUGen_JECNominal Process:SelfDefine_spin0 Production:Had_WH MatrixElement:JHUGen Cluster:J2JECNominal Couplings:ghz1=1,0;ghz2=1,0 Options:SubtractP=HadWH_SIG_ghv1_1_JHUGen_JECNominal,HadWH_SIG_ghv2_1_JHUGen_JECNominal DefaultME:-1",
-   #"Name:HadWH_SIG_ghz1_1_ghz2_i_JHUGen_JECNominal Process:SelfDefine_spin0 Production:Had_WH MatrixElement:JHUGen Cluster:J2JECNominal Couplings:ghz1=1,0;ghz2=0,1 Options:SubtractP=HadWH_SIG_ghv1_1_JHUGen_JECNominal,HadWH_SIG_ghv2_1_JHUGen_JECNominal DefaultME:-1",
-   "Name:HadWH_SIG_ghz1_1_ghz4_1_JHUGen_JECNominal Process:SelfDefine_spin0 Production:Had_WH MatrixElement:JHUGen Cluster:J2JECNominal Couplings:ghz1=1,0;ghz4=1,0 Options:SubtractP=HadWH_SIG_ghv1_1_JHUGen_JECNominal,HadWH_SIG_ghv4_1_JHUGen_JECNominal DefaultME:-1",
-   #"Name:HadWH_SIG_ghz1_1_ghz4_i_JHUGen_JECNominal Process:SelfDefine_spin0 Production:Had_WH MatrixElement:JHUGen Cluster:J2JECNominal Couplings:ghz1=1,0;ghz4=0,1 Options:SubtractP=HadWH_SIG_ghv1_1_JHUGen_JECNominal,HadWH_SIG_ghv4_1_JHUGen_JECNominal DefaultME:-1",
+   "Name:HadWH_SIG_ghw1_1_ghw1prime2_1E4_JHUGen_JECNominal Process:SelfDefine_spin0 Production:Had_WH MatrixElement:JHUGen Cluster:J2JECNominal Couplings:ghz1=1,0;ghz1_prime2=10000,0 Options:SubtractP=HadWH_SIG_ghw1_1_JHUGen_JECNominal,HadWH_SIG_ghw1prime2_1E4_JHUGen_JECNominal DefaultME:-1",
+   #"Name:HadWH_SIG_ghw1_1_ghw1prime2_1E4i_JHUGen_JECNominal Process:SelfDefine_spin0 Production:Had_WH MatrixElement:JHUGen Cluster:J2JECNominal Couplings:ghz1=1,0;ghz1_prime2=0,10000 Options:SubtractP=HadWH_SIG_ghw1_1_JHUGen_JECNominal,HadWH_SIG_ghw1prime2_1E4_JHUGen_JECNominal DefaultME:-1",
+   "Name:HadWH_SIG_ghw1_1_ghw2_1_JHUGen_JECNominal Process:SelfDefine_spin0 Production:Had_WH MatrixElement:JHUGen Cluster:J2JECNominal Couplings:ghz1=1,0;ghz2=1,0 Options:SubtractP=HadWH_SIG_ghw1_1_JHUGen_JECNominal,HadWH_SIG_ghw2_1_JHUGen_JECNominal DefaultME:-1",
+   #"Name:HadWH_SIG_ghw1_1_ghw2_i_JHUGen_JECNominal Process:SelfDefine_spin0 Production:Had_WH MatrixElement:JHUGen Cluster:J2JECNominal Couplings:ghz1=1,0;ghz2=0,1 Options:SubtractP=HadWH_SIG_ghw1_1_JHUGen_JECNominal,HadWH_SIG_ghw2_1_JHUGen_JECNominal DefaultME:-1",
+   "Name:HadWH_SIG_ghw1_1_ghw4_1_JHUGen_JECNominal Process:SelfDefine_spin0 Production:Had_WH MatrixElement:JHUGen Cluster:J2JECNominal Couplings:ghz1=1,0;ghz4=1,0 Options:SubtractP=HadWH_SIG_ghw1_1_JHUGen_JECNominal,HadWH_SIG_ghw4_1_JHUGen_JECNominal DefaultME:-1",
+   #"Name:HadWH_SIG_ghw1_1_ghw4_i_JHUGen_JECNominal Process:SelfDefine_spin0 Production:Had_WH MatrixElement:JHUGen Cluster:J2JECNominal Couplings:ghz1=1,0;ghz4=0,1 Options:SubtractP=HadWH_SIG_ghw1_1_JHUGen_JECNominal,HadWH_SIG_ghw4_1_JHUGen_JECNominal DefaultME:-1",
 
    # ttH: Undecayed MEs belong to J2-class clusters
    "Name:ttHUndecayed_SIG_kappa_1_JHUGen_JECNominal Alias:<Name> Process:HSMHiggs Production:ttH MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1",
@@ -128,7 +128,7 @@ AJetsProdProbabilities_SpinZero_JHUGen_JECNominal = [
    #"Name:ttHUndecayed_SIG_kappa_1_kappatilde_i_JHUGen_JECNominal Process:SelfDefine_spin0 Production:ttH MatrixElement:JHUGen Cluster:J2JECNominal Couplings:kappa=1,0;kappa_tilde=0,1 Options:SubtractP=ttH_SIG_kappa_1_JHUGen_JECNominal,ttH_SIG_kappatilde_1_JHUGen_JECNominal DefaultME:-1",
 
    # bbH
-   # Not adding kappa_tilde since it was shown bbH has close to no sensitivity sny time soon
+   # Not adding kappa_tilde since it was shown bbH has close to no sensitivity any time soon
    "Name:bbH_SIG_kappa_1_JHUGen_JECNominal Process:HSMHiggs Production:bbH MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1",
 ]
 AJetsProdProbabilities_SpinZero_JHUGen_JECUp = [theME.replace("JECNominal", "JECUp") for theME in AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
@@ -166,17 +166,17 @@ ALepsProdProbabilities_SpinZero_JHUGen = [
    #"Name:LepZH_SIG_ghz1_1_gha4_i_JHUGen Process:SelfDefine_spin0 Production:Lep_ZH MatrixElement:JHUGen Cluster:LepZH Couplings:ghz1=1,0;ghgsgs4=0,1 Options:SubtractP=LepZH_SIG_ghz1_1_JHUGen,LepZH_SIG_gha4_1_JHUGen DefaultME:-1",
 
    # Leptonic WH (CAUTION: All requiring the SM ME to be maximized)
-   "Name:LepWH_SIG_ghv1_1_JHUGen Alias:<Name> Process:HSMHiggs Production:Lep_WH MatrixElement:JHUGen Cluster:LepWH Options:MaxNumerator=LepWH_SIG_ghv1_1_JHUGen DefaultME:-1",
-   "Name:LepWH_SIG_ghv1prime2_1E4_JHUGen Alias:<Name> Process:SelfDefine_spin0 Production:Lep_WH MatrixElement:JHUGen Cluster:LepWH Options:MaxNumerator=LepWH_SIG_ghz1_1 Couplings:ghz1_prime2=10000,0_JHUGen DefaultME:-1",
-   "Name:LepWH_SIG_ghv2_1_JHUGen Alias:<Name> Process:H0hplus Production:Lep_WH MatrixElement:JHUGen Cluster:LepWH Options:MaxNumerator=LepWH_SIG_ghv1_1_JHUGen DefaultME:-1",
-   "Name:LepWH_SIG_ghv4_1_JHUGen Alias:<Name> Process:H0minus Production:Lep_WH MatrixElement:JHUGen Cluster:LepWH Options:MaxNumerator=LepWH_SIG_ghv1_1_JHUGen DefaultME:-1",
+   "Name:LepWH_SIG_ghw1_1_JHUGen Alias:<Name> Process:HSMHiggs Production:Lep_WH MatrixElement:JHUGen Cluster:LepWH Options:MaxNumerator=LepWH_SIG_ghw1_1_JHUGen DefaultME:-1",
+   "Name:LepWH_SIG_ghw1prime2_1E4_JHUGen Alias:<Name> Process:SelfDefine_spin0 Production:Lep_WH MatrixElement:JHUGen Cluster:LepWH Options:MaxNumerator=LepWH_SIG_ghw1_1 Couplings:ghz1_prime2=10000,0_JHUGen DefaultME:-1",
+   "Name:LepWH_SIG_ghw2_1_JHUGen Alias:<Name> Process:H0hplus Production:Lep_WH MatrixElement:JHUGen Cluster:LepWH Options:MaxNumerator=LepWH_SIG_ghw1_1_JHUGen DefaultME:-1",
+   "Name:LepWH_SIG_ghw4_1_JHUGen Alias:<Name> Process:H0minus Production:Lep_WH MatrixElement:JHUGen Cluster:LepWH Options:MaxNumerator=LepWH_SIG_ghw1_1_JHUGen DefaultME:-1",
 
-   "Name:LepWH_SIG_ghv1_1_ghv1prime2_1E4_JHUGen Process:SelfDefine_spin0 Production:Lep_WH MatrixElement:JHUGen Cluster:LepWH Couplings:ghz1=1,0;ghz1_prime2=10000,0 Options:SubtractP=LepWH_SIG_ghv1_1_JHUGen,LepWH_SIG_ghv1prime2_1E4_JHUGen;MaxNumerator=LepWH_SIG_ghv1_1_JHUGen DefaultME:-1",
-   #"Name:LepWH_SIG_ghz1_1_ghz1prime2_1E4i_JHUGen Process:SelfDefine_spin0 Production:Lep_WH MatrixElement:JHUGen Cluster:LepWH Couplings:ghz1=1,0;ghz1_prime2=0,10000 Options:SubtractP=LepWH_SIG_ghv1_1_JHUGen,LepWH_SIG_ghv1prime2_1E4_JHUGen;MaxNumerator=LepWH_SIG_ghv1_1_JHUGen DefaultME:-1",
-   "Name:LepWH_SIG_ghz1_1_ghz2_1_JHUGen Process:SelfDefine_spin0 Production:Lep_WH MatrixElement:JHUGen Cluster:LepWH Couplings:ghz1=1,0;ghz2=1,0 Options:SubtractP=LepWH_SIG_ghv1_1_JHUGen,LepWH_SIG_ghv2_1_JHUGen;MaxNumerator=LepWH_SIG_ghv1_1_JHUGen DefaultME:-1",
-   #"Name:LepWH_SIG_ghz1_1_ghz2_i_JHUGen Process:SelfDefine_spin0 Production:Lep_WH MatrixElement:JHUGen Cluster:LepWH Couplings:ghz1=1,0;ghz2=0,1 Options:SubtractP=LepWH_SIG_ghv1_1_JHUGen,LepWH_SIG_ghv2_1_JHUGen;MaxNumerator=LepWH_SIG_ghv1_1_JHUGen DefaultME:-1",
-   "Name:LepWH_SIG_ghz1_1_ghz4_1_JHUGen Process:SelfDefine_spin0 Production:Lep_WH MatrixElement:JHUGen Cluster:LepWH Couplings:ghz1=1,0;ghz4=1,0 Options:SubtractP=LepWH_SIG_ghv1_1_JHUGen,LepWH_SIG_ghv4_1_JHUGen;MaxNumerator=LepWH_SIG_ghv1_1_JHUGen DefaultME:-1",
-   #"Name:LepWH_SIG_ghz1_1_ghz4_i_JHUGen Process:SelfDefine_spin0 Production:Lep_WH MatrixElement:JHUGen Cluster:LepWH Couplings:ghz1=1,0;ghz4=0,1 Options:SubtractP=LepWH_SIG_ghv1_1_JHUGen,LepWH_SIG_ghv4_1_JHUGen;MaxNumerator=LepWH_SIG_ghv1_1_JHUGen DefaultME:-1",
+   "Name:LepWH_SIG_ghw1_1_ghw1prime2_1E4_JHUGen Process:SelfDefine_spin0 Production:Lep_WH MatrixElement:JHUGen Cluster:LepWH Couplings:ghz1=1,0;ghz1_prime2=10000,0 Options:SubtractP=LepWH_SIG_ghw1_1_JHUGen,LepWH_SIG_ghw1prime2_1E4_JHUGen;MaxNumerator=LepWH_SIG_ghw1_1_JHUGen DefaultME:-1",
+   #"Name:LepWH_SIG_ghw1_1_ghw1prime2_1E4i_JHUGen Process:SelfDefine_spin0 Production:Lep_WH MatrixElement:JHUGen Cluster:LepWH Couplings:ghz1=1,0;ghz1_prime2=0,10000 Options:SubtractP=LepWH_SIG_ghw1_1_JHUGen,LepWH_SIG_ghw1prime2_1E4_JHUGen;MaxNumerator=LepWH_SIG_ghw1_1_JHUGen DefaultME:-1",
+   "Name:LepWH_SIG_ghw1_1_ghw2_1_JHUGen Process:SelfDefine_spin0 Production:Lep_WH MatrixElement:JHUGen Cluster:LepWH Couplings:ghz1=1,0;ghz2=1,0 Options:SubtractP=LepWH_SIG_ghw1_1_JHUGen,LepWH_SIG_ghw2_1_JHUGen;MaxNumerator=LepWH_SIG_ghw1_1_JHUGen DefaultME:-1",
+   #"Name:LepWH_SIG_ghw1_1_ghw2_i_JHUGen Process:SelfDefine_spin0 Production:Lep_WH MatrixElement:JHUGen Cluster:LepWH Couplings:ghz1=1,0;ghz2=0,1 Options:SubtractP=LepWH_SIG_ghw1_1_JHUGen,LepWH_SIG_ghw2_1_JHUGen;MaxNumerator=LepWH_SIG_ghw1_1_JHUGen DefaultME:-1",
+   "Name:LepWH_SIG_ghw1_1_ghw4_1_JHUGen Process:SelfDefine_spin0 Production:Lep_WH MatrixElement:JHUGen Cluster:LepWH Couplings:ghz1=1,0;ghz4=1,0 Options:SubtractP=LepWH_SIG_ghw1_1_JHUGen,LepWH_SIG_ghw4_1_JHUGen;MaxNumerator=LepWH_SIG_ghw1_1_JHUGen DefaultME:-1",
+   #"Name:LepWH_SIG_ghw1_1_ghw4_i_JHUGen Process:SelfDefine_spin0 Production:Lep_WH MatrixElement:JHUGen Cluster:LepWH Couplings:ghz1=1,0;ghz4=0,1 Options:SubtractP=LepWH_SIG_ghw1_1_JHUGen,LepWH_SIG_ghw4_1_JHUGen;MaxNumerator=LepWH_SIG_ghw1_1_JHUGen DefaultME:-1",
 ]
 
 ### Spin-1 decay probabilities from JHUGen ###

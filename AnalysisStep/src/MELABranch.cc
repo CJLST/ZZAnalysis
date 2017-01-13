@@ -10,7 +10,7 @@ MELABranch::MELABranch(
   ExtendedBranch(theTree_, bname_, defVal_, false),
   computer(computer_)
 {
-  // Decide wat ME to compute by the branch name because AddPAux alone does not decide what the branch does.
+  // Decide what ME to compute by the branch name because AddPAux alone does not decide what the branch does.
   // It just duplicates the branch with the same computer.
   if (bname.Contains("pAux")) valtype = MELAHypothesis::UsePAux;
   else if (bname.Contains("pConst")) valtype = MELAHypothesis::UsePConstant;

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os
+from ZZAnalysis.AnalysisStep import miscenums
 
 class DummyThingThatHasAnyAttribute(object):
     def __getattr__(self, attr):
@@ -19,6 +20,8 @@ for filename in os.listdir("."):
         continue
     if filename == os.path.basename(__file__):
         continue #otherwise infinite loop!
-    execfile(filename)
+    useglobals = {"process": process, "cms": cms}
+    useglobals.update(miscenums.__dict__)
+    execfile(filename, useglobals, {})
 
 print "All files are valid, as far as I can tell."

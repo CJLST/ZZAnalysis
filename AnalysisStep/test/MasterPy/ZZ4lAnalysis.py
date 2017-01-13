@@ -258,24 +258,14 @@ elif (LEPTON_SETUP == 2016):
     process.triggerSingleMu  = cms.Path(process.hltFilterSingleMu )
 
 elif (LEPTON_SETUP == 2017):
-   if (IsMC):
-      process.hltFilterDiMu.TriggerResultsTag  = cms.InputTag("TriggerResults","","HLT")
-      process.hltFilterDiEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-      process.hltFilterMuEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-      process.hltFilterMuEle2.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-      process.hltFilterMuEle3.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-      process.hltFilterTriEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-      process.hltFilterTriMu.TriggerResultsTag  = cms.InputTag("TriggerResults","","HLT")
-      process.hltFilterSingleEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-      process.hltFilterSingleMu.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
 
-      process.hltFilterDiEle.HLTPaths = ["HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v*"]
-      process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*"]
-      process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"]
-      process.hltFilterTriEle.HLTPaths = ["HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v*"]
-      process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_12_10_5_v*"]
-      process.hltFilterSingleEle.HLTPaths = ["HLT_Ele25_eta2p1_WPTight_Gsf_v*","HLT_Ele27_WPTight_Gsf_v*","HLT_Ele27_eta2p1_WPLoose_Gsf_v*"]
-      process.hltFilterSingleMu.HLTPaths = ["HLT_IsoMu20_v*","HLT_IsoTkMu20_v*","HLT_IsoMu22_v*","HLT_IsoTkMu22_v*"]
+   process.hltFilterDiEle.HLTPaths = ["HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v*"]
+   process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*"]
+   process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"]
+   process.hltFilterTriEle.HLTPaths = ["HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v*"]
+   process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_12_10_5_v*"]
+   process.hltFilterSingleEle.HLTPaths = ["HLT_Ele25_eta2p1_WPTight_Gsf_v*","HLT_Ele27_WPTight_Gsf_v*","HLT_Ele27_eta2p1_WPLoose_Gsf_v*"]
+   process.hltFilterSingleMu.HLTPaths = ["HLT_IsoMu20_v*","HLT_IsoTkMu20_v*","HLT_IsoMu22_v*","HLT_IsoTkMu22_v*"]
 
    process.triggerTriEle = cms.Path(process.hltFilterTriEle)
    process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
@@ -504,7 +494,7 @@ process.selectedSlimmedElectrons = cms.EDFilter("PATElectronSelector",
     ## this protects against a crash in electron calibration
     ## due to electrons with eta > 2.5
     src = cms.InputTag("slimmedElectrons"),
-    cut = cms.string("pt>5 && abs(eta)<2.5") # Philipp's protection cut: "&& abs(-log(tan(superClusterPosition.theta/2.)))<2.5")
+    cut = cms.string("pt>5 && abs(eta)<2.5 && abs(-log(tan(superClusterPosition.theta/2.)))<2.5")
 )
 
 if (LEPTON_SETUP == 2016):
@@ -1114,7 +1104,20 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
 ### Jets
 ### ----------------------------------------------------------------------
 
+from RecoJets.JetProducers.PileupJetIDParams_cfi import full_80x_chs
+from RecoJets.JetProducers.PileupJetIDCutParams_cfi import full_80x_chs_wp
+
 process.load("CondCore.CondDB.CondDB_cfi")
+
+
+
+process.load("RecoJets.JetProducers.PileupJetID_cfi")
+process.pileupJetIdUpdated = process.pileupJetId.clone(
+    jets=cms.InputTag("slimmedJets"),
+    inputIsCorrected=True,
+    applyJec=True,
+    vertexes=cms.InputTag("offlineSlimmedPrimaryVertices")
+    )
 
 # q/g likelihood
 qgDatabaseVersion = '80X'
@@ -1208,6 +1211,10 @@ if APPLYJEC:
         jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
         )
 
+    #add pileup id and discriminant to patJetsReapplyJEC
+    process.patJetsReapplyJEC.userData.userFloats.src += ['pileupJetIdUpdated:fullDiscriminant']
+    process.patJetsReapplyJEC.userData.userInts.src += ['pileupJetIdUpdated:fullId']
+
     ### Replace inputs in QGTagger and dressedJets
     process.QGTagger.srcJets = cms.InputTag( 'patJetsReapplyJEC')
     process.dressedJets.src = cms.InputTag('patJetsReapplyJEC')
@@ -1244,7 +1251,7 @@ process.preSkimCounter = cms.EDProducer("EventCountProducer")
 process.PVfilter =  cms.Path(process.preSkimCounter+process.goodPrimaryVertices)
 
 if APPLYJEC:
-    process.Jets = cms.Path( process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.QGTagger + process.dressedJets )
+    process.Jets = cms.Path(process.pileupJetIdUpdated + process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.QGTagger + process.dressedJets )
 else:
     process.Jets = cms.Path( process.QGTagger + process.dressedJets )
 
