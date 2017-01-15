@@ -424,7 +424,14 @@ MCHistoryTools::genFinalState(){
     } else if (ifs==20449) {
       gen_finalState = EEMM;
     } else if (ifs==38025||ifs==27225) {
-      gen_finalState = llTT;
+      if (theGenLeps[0]->p4() == theGenLeps[1]->p4() || theGenLeps[0]->p4() == theGenLeps[2]->p4() || theGenLeps[0]->p4() == theGenLeps[3]->p4()
+                                                     || theGenLeps[1]->p4() == theGenLeps[2]->p4() || theGenLeps[1]->p4() == theGenLeps[3]->p4()
+                                                                                                   || theGenLeps[2]->p4() == theGenLeps[3]->p4()
+         ) {  //MCFM bug where mZ < 2mtau.  In this case it gives each tau half the momentum and energy of the Z.
+        gen_finalState = BUGGY;
+      } else {
+        gen_finalState = llTT;
+      }
     } else if (ifs==50625) {
       if (theGenLeps[0]->p4() == theGenLeps[1]->p4() || theGenLeps[0]->p4() == theGenLeps[2]->p4() || theGenLeps[0]->p4() == theGenLeps[3]->p4()
                                                      || theGenLeps[1]->p4() == theGenLeps[2]->p4() || theGenLeps[1]->p4() == theGenLeps[3]->p4()
