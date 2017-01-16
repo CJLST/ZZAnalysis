@@ -68,7 +68,7 @@ extern "C" int categoryIchep16(
 	     float p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
        float p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
        float pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
-	     float p_HadWH_SIG_ghv1_1_JHUGen_JECNominal,
+	     float p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
 	     float p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
              float* jetPhi,
              float ZZMass,

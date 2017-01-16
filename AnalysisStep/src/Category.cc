@@ -128,7 +128,7 @@ extern "C" int categoryIchep16(
        float p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
        float p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
        float pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
-	     float p_HadWH_SIG_ghv1_1_JHUGen_JECNominal,
+	     float p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
 	     float p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
              float* jetPhi,
 	     float ZZMass,
@@ -167,7 +167,7 @@ extern "C" int categoryIchep16(
 
   float D_VBF2j = (nCleanedJetsPt30>=2) ? 1/(1+ c_Mela2j*p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal/p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal * ( useQGTagging ? TMath::Power(jetPgOverPq[0]*jetPgOverPq[1],1/3.) : 1. ) ) : -2 ;
   float D_VBF1j = (nCleanedJetsPt30>=1) ? 1/(1+ c_Mela1j*p_JQCD_SIG_ghg2_1_JHUGen_JECNominal/p_JVBF_SIG_ghv1_1_JHUGen_JECNominal*pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal * (useQGTagging ? TMath::Power(jetPgOverPq[0],1/3.) : 1. ) ) : -2 ;
-  float D_WHh = (nCleanedJetsPt30>=2) ? 1/(1+ c_MelaWH*p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal/p_HadWH_SIG_ghv1_1_JHUGen_JECNominal * (useQGTagging ? TMath::Power(jetPgOverPq[0]*jetPgOverPq[1],1/3.) : 1. ) ) : -2 ;
+  float D_WHh = (nCleanedJetsPt30>=2) ? 1/(1+ c_MelaWH*p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal/p_HadWH_SIG_ghw1_1_JHUGen_JECNominal * (useQGTagging ? TMath::Power(jetPgOverPq[0]*jetPgOverPq[1],1/3.) : 1. ) ) : -2 ;
   float D_ZHh = (nCleanedJetsPt30>=2) ? 1/(1+ c_MelaZH*p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal/p_HadZH_SIG_ghz1_1_JHUGen_JECNominal * (useQGTagging ? TMath::Power(jetPgOverPq[0]*jetPgOverPq[1],1/3.) : 1. ) ) : -2 ;
 
   if( nExtraLep==0 && nCleanedJetsPt30==1 && D_VBF1j>WP_VBF1j ){
