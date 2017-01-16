@@ -269,7 +269,7 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
   Float_t p_JVBF_SIG_ghv1_1_JHUGen_JECNominal;
   Float_t pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal;
   Float_t p_JQCD_SIG_ghg2_1_JHUGen_JECNominal;
-  Float_t p_HadWH_SIG_ghv1_1_JHUGen_JECNominal;
+  Float_t p_HadWH_SIG_ghw1_1_JHUGen_JECNominal;
   Float_t p_HadZH_SIG_ghz1_1_JHUGen_JECNominal;
   vector<Float_t> *CandLepEta = 0;
   vector<Float_t> *CandLepPhi = 0;
@@ -410,7 +410,7 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
       inputTree[d]->SetBranchAddress("p_JVBF_SIG_ghv1_1_JHUGen_JECNominal", &p_JVBF_SIG_ghv1_1_JHUGen_JECNominal;
       inputTree[d]->SetBranchAddress("pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal", &pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal;
       inputTree[d]->SetBranchAddress("p_JQCD_SIG_ghg2_1_JHUGen_JECNominal", &p_JQCD_SIG_ghg2_1_JHUGen_JECNominal);
-      inputTree[d]->SetBranchAddress("p_HadWH_SIG_ghv1_1_JHUGen_JECNominal", &p_HadWH_SIG_ghv1_1_JHUGen_JECNominal);
+      inputTree[d]->SetBranchAddress("p_HadWH_SIG_ghw1_1_JHUGen_JECNominal", &p_HadWH_SIG_ghw1_1_JHUGen_JECNominal);
       inputTree[d]->SetBranchAddress("p_HadZH_SIG_ghz1_1_JHUGen_JECNominal", &p_HadZH_SIG_ghz1_1_JHUGen_JECNominal);
       inputTree[d]->SetBranchAddress("GenHMass", &GenHMass);
       inputTree[d]->SetBranchAddress("GenZ1Phi", &GenZ1Phi);
@@ -540,7 +540,7 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
 	   p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
      p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
      pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
-     p_HadWH_SIG_ghv1_1_JHUGen_JECNominal,
+     p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
 	   p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
 	   jetPhi,
 	   ZZMass,

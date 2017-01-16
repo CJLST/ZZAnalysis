@@ -37,7 +37,7 @@ class Event:
 
 class KDs:
 
-    def __init__(self,p_GG_SIG_ghg2_1_ghz1_1_JHUGen,p_GG_SIG_ghg2_1_ghz4_1_JHUGen,p_GG_SIG_ghg2_1_ghz2_1_JHUGen,p_QQB_SIG_ZPqqLR_1_gZPz2_1_JHUGen,p_QQB_SIG_ZPqqLR_1_gZPz1_1_JHUGen,p_GG_SIG_gXg1_1_gXz1_1_gXz5_1_JHUGen,p_QQB_SIG_XqqLR_1_gXz1_1_gXz5_1_JHUGen,p_QQB_BKG_MCFM,p_m4l_SIG,p_m4l_BKG,p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,p_HadWH_SIG_ghv1_1_JHUGen_JECNominal,p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,njets30,jets30QGLikelihood,jets30phi,ZZFlav,ZZMass):
+    def __init__(self,p_GG_SIG_ghg2_1_ghz1_1_JHUGen,p_GG_SIG_ghg2_1_ghz4_1_JHUGen,p_GG_SIG_ghg2_1_ghz2_1_JHUGen,p_QQB_SIG_ZPqqLR_1_gZPz2_1_JHUGen,p_QQB_SIG_ZPqqLR_1_gZPz1_1_JHUGen,p_GG_SIG_gXg1_1_gXz1_1_gXz5_1_JHUGen,p_QQB_SIG_XqqLR_1_gXz1_1_gXz5_1_JHUGen,p_QQB_BKG_MCFM,p_m4l_SIG,p_m4l_BKG,p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,njets30,jets30QGLikelihood,jets30phi,ZZFlav,ZZMass):
 
         self.p_GG_SIG_ghg2_1_ghz1_1_JHUGen  = p_GG_SIG_ghg2_1_ghz1_1_JHUGen
         self.p_GG_SIG_ghg2_1_ghz4_1_JHUGen = p_GG_SIG_ghg2_1_ghz4_1_JHUGen
@@ -54,7 +54,7 @@ class KDs:
         self.p_JQCD_SIG_ghg2_1_JHUGen_JECNominal     = p_JQCD_SIG_ghg2_1_JHUGen_JECNominal
         self.p_JVBF_SIG_ghv1_1_JHUGen_JECNominal     = p_JVBF_SIG_ghv1_1_JHUGen_JECNominal
         self.pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal     = pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal
-        self.p_HadWH_SIG_ghv1_1_JHUGen_JECNominal = p_HadWH_SIG_ghv1_1_JHUGen_JECNominal
+        self.p_HadWH_SIG_ghw1_1_JHUGen_JECNominal = p_HadWH_SIG_ghw1_1_JHUGen_JECNominal
         self.p_HadZH_SIG_ghz1_1_JHUGen_JECNominal = p_HadZH_SIG_ghz1_1_JHUGen_JECNominal
         self.njets30       = njets30
         self.jets30QGL     = jets30QGLikelihood
@@ -100,7 +100,7 @@ class KDs:
         ##MELA-only production discriminants:
         if self.njets30 >= 2 :
             self.Djet_VAJHU = self.p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal/(self.p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal+self.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal*lib.getDVBF2jetsConstant(c_float(self.ZZMass))) # VBF(2j) vs. gg->H+2j
-            self.D_WHh_VAJHU   = self.p_HadWH_SIG_ghv1_1_JHUGen_JECNominal/(self.p_HadWH_SIG_ghv1_1_JHUGen_JECNominal+100000.*self.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal) # W(->2j)H vs. gg->H+2j
+            self.D_WHh_VAJHU   = self.p_HadWH_SIG_ghw1_1_JHUGen_JECNominal/(self.p_HadWH_SIG_ghw1_1_JHUGen_JECNominal+100000.*self.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal) # W(->2j)H vs. gg->H+2j
             self.D_ZHh_VAJHU   = self.p_HadZH_SIG_ghz1_1_JHUGen_JECNominal/(self.p_HadZH_SIG_ghz1_1_JHUGen_JECNominal+10000.*self.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal) # Z(->2j)H vs. gg->H+2j
         if self.njets30 == 1 :
             self.D_VBF1j_VAJHU = self.p_JVBF_SIG_ghv1_1_JHUGen_JECNominal*self.pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal/(self.p_JVBF_SIG_ghv1_1_JHUGen_JECNominal*self.pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal+self.p_JQCD_SIG_ghg2_1_JHUGen_JECNominal*lib.getDVBF1jetConstant(c_float(self.ZZMass))) # VBF(1j) vs. gg->H+1j
@@ -133,7 +133,7 @@ class Candidate:
 
     def __init__(self,event,m,mZ1,mZ2,mErr,mErrCorr,m4lRefit,m4lRefitErr,pt,nExtraLep,nExtraZ,jets30pt,jets30eta,jets30phi,jets30mass,njets30,njets30Btag,mjj,detajj,kds,weight,
                  jets30QGLikelihood,
-                 p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,p_HadWH_SIG_ghv1_1_JHUGen_JECNominal,p_HadZH_SIG_ghz1_1_JHUGen_JECNominal
+                 p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,p_HadZH_SIG_ghz1_1_JHUGen_JECNominal
                  ):
 
         self.eventInfo   = event
@@ -191,7 +191,7 @@ class Candidate:
             c_float(p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal),
             c_float(p_JVBF_SIG_ghv1_1_JHUGen_JECNominal),
             c_float(pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal),
-            c_float(p_HadWH_SIG_ghv1_1_JHUGen_JECNominal),
+            c_float(p_HadWH_SIG_ghw1_1_JHUGen_JECNominal),
             c_float(p_HadZH_SIG_ghz1_1_JHUGen_JECNominal),
             (ctypes.c_float * len(jets30phi))(*jets30phi),
             c_float(self.mass4l),

@@ -210,7 +210,7 @@ void all(int selAna=-10, int channels=0, int categ=-1, int sample = 0 ){
   ggTree->SetBranchAddress("p_JQCD_SIG_ghg2_1_JHUGen_JECNominal",&PHJ_VAJHU);
   ggTree->SetBranchAddress("p_JVBF_SIG_ghv1_1_JHUGen_JECNominal", &p_JVBF_SIG_ghv1_1_JHUGen_JECNominal);
   ggTree->SetBranchAddress("pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal", &pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal);
-  ggTree->SetBranchAddress("p_HadWH_SIG_ghv1_1_JHUGen_JECNominal", &PWH_hadronic_VAJHU);
+  ggTree->SetBranchAddress("p_HadWH_SIG_ghw1_1_JHUGen_JECNominal", &PWH_hadronic_VAJHU);
   ggTree->SetBranchAddress("p_HadZH_SIG_ghz1_1_JHUGen_JECNominal",&PZH_hadronic_VAJHU);
 
   ggTree->SetBranchAddress("JetPt",&jetpt);

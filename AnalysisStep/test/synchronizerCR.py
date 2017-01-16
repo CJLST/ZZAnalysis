@@ -81,7 +81,7 @@ def loop():
     tree.SetBranchStatus("p_JQCD_SIG_ghg2_1_JHUGen_JECNominal",1)
     tree.SetBranchStatus("p_JVBF_SIG_ghv1_1_JHUGen_JECNominal",1)
     tree.SetBranchStatus("pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal",1)
-    tree.SetBranchStatus("p_HadWH_SIG_ghv1_1_JHUGen_JECNominal",1)
+    tree.SetBranchStatus("p_HadWH_SIG_ghw1_1_JHUGen_JECNominal",1)
     tree.SetBranchStatus("p_HadZH_SIG_ghz1_1_JHUGen_JECNominal",1)
     tree.SetBranchStatus("ZZPt",1)
     tree.SetBranchStatus("nExtraLep",1)
@@ -139,7 +139,7 @@ def loop():
                     p_JQCD_SIG_ghg2_1_JHUGen_JECNominal     = tree.p_JQCD_SIG_ghg2_1_JHUGen_JECNominal
                     p_JVBF_SIG_ghv1_1_JHUGen_JECNominal     = tree.p_JVBF_SIG_ghv1_1_JHUGen_JECNominal
                     pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal     = tree.pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal
-                    p_HadWH_SIG_ghv1_1_JHUGen_JECNominal = tree.p_HadWH_SIG_ghv1_1_JHUGen_JECNominal
+                    p_HadWH_SIG_ghw1_1_JHUGen_JECNominal = tree.p_HadWH_SIG_ghw1_1_JHUGen_JECNominal
                     p_HadZH_SIG_ghz1_1_JHUGen_JECNominal = tree.p_HadZH_SIG_ghz1_1_JHUGen_JECNominal
                     pt4l          = tree.ZZPt
                     nExtraLep     = tree.nExtraLep
@@ -169,8 +169,8 @@ def loop():
                             jets30mass.append(jetmass[i])
                             jets30QGLikelihood.append(jetQGLikelihood[i])
 
-                    theKDs = KDs(p_GG_SIG_ghg2_1_ghz1_1_JHUGen,p_GG_SIG_ghg2_1_ghz4_1_JHUGen,p_GG_SIG_ghg2_1_ghz2_1_JHUGen,p_QQB_SIG_ZPqqLR_1_gZPz2_1_JHUGen,p_QQB_SIG_ZPqqLR_1_gZPz1_1_JHUGen,p_GG_SIG_gXg1_1_gXz1_1_gXz5_1_JHUGen,p_QQB_SIG_XqqLR_1_gXz1_1_gXz5_1_JHUGen,p_QQB_BKG_MCFM,p_m4l_SIG,p_m4l_BKG,p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,p_HadWH_SIG_ghv1_1_JHUGen_JECNominal,p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,njets30,jets30QGLikelihood,jets30phi,tree.Z1Flav*tree.Z2Flav,mass4l)
-                    theCand = Candidate(theEvent,mass4l,mZ1,mZ2,massErrRaw,massErrCorr,m4lRefit,m4lRefitErr,pt4l,nExtraLep,nExtraZ,jets30pt,jets30eta,jets30phi,jets30mass,njets30,njets30Btag,mjj,detajj,theKDs,weight,jets30QGLikelihood,p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,p_HadWH_SIG_ghv1_1_JHUGen_JECNominal,p_HadZH_SIG_ghz1_1_JHUGen_JECNominal)
+                    theKDs = KDs(p_GG_SIG_ghg2_1_ghz1_1_JHUGen,p_GG_SIG_ghg2_1_ghz4_1_JHUGen,p_GG_SIG_ghg2_1_ghz2_1_JHUGen,p_QQB_SIG_ZPqqLR_1_gZPz2_1_JHUGen,p_QQB_SIG_ZPqqLR_1_gZPz1_1_JHUGen,p_GG_SIG_gXg1_1_gXz1_1_gXz5_1_JHUGen,p_QQB_SIG_XqqLR_1_gXz1_1_gXz5_1_JHUGen,p_QQB_BKG_MCFM,p_m4l_SIG,p_m4l_BKG,p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,njets30,jets30QGLikelihood,jets30phi,tree.Z1Flav*tree.Z2Flav,mass4l)
+                    theCand = Candidate(theEvent,mass4l,mZ1,mZ2,massErrRaw,massErrCorr,m4lRefit,m4lRefitErr,pt4l,nExtraLep,nExtraZ,jets30pt,jets30eta,jets30phi,jets30mass,njets30,njets30Btag,mjj,detajj,theKDs,weight,jets30QGLikelihood,p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,p_HadZH_SIG_ghz1_1_JHUGen_JECNominal)
                     crCands[aCR].append(theCand)
 
 
