@@ -235,8 +235,8 @@ ggTo2mu2tau_Contin_MCFM701,, 0.0031942,    ,,/GluGluToContinToZZTo2mu2tau_13TeV_
 
 
 ###,,,,,,,,,,,Xsec from https://twiki.cern.ch/twiki/bin/view/CMS/PhantomGeneratorCMS averaging grid and events with their errors
-#VBFTo2e2muJJ_Contin_phantom128,,6.429E-04,,,/VBFToContinZZTo2e2muJJ_13TeV_phantom_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=True,RecoProbabilities.py;LHEProbabilities_VBF_BKG_0PM_H125_PhantomMCFM.py,
-#VBFTo4eJJ_Contin_phantom128   ,,3.098E-04,,,/VBFToContinZZTo4eJJ_13TeV_phantom_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM   ,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=True,RecoProbabilities.py;LHEProbabilities_VBF_BKG_0PM_H125_PhantomMCFM.py,
+VBFTo2e2muJJ_Contin_phantom128,,6.429E-04,,,/VBFToContinZZTo2e2muJJ_13TeV_phantom_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=True,RecoProbabilities.py;LHEProbabilities_VBF_BKG_0PM_H125_PhantomMCFM.py,
+VBFTo4eJJ_Contin_phantom128   ,,3.098E-04,,,/VBFToContinZZTo4eJJ_13TeV_phantom_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM   ,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=True,RecoProbabilities.py;LHEProbabilities_VBF_BKG_0PM_H125_PhantomMCFM.py,
 ##VBFTo4muJJ_Contin_phantom128  ,,3.098E-04,,,/VBFToContinZZTo4muJJ_13TeV_phantom_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM  ,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=True,RecoProbabilities.py;LHEProbabilities_VBF_BKG_0PM_H125_PhantomMCFM.py,
 
 #VBFTo2e2muJJ_0PMH125_phantom128,,2.4817E-04,,,/VBFToHiggs0PMToZZTo2e2muJJ_M125_GaSM_13TeV_phantom_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=True,RecoProbabilities.py;LHEProbabilities_VBF_SIG_0PM_H125_PhantomMCFM.py,
