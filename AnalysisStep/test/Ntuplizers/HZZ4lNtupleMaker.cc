@@ -185,6 +185,13 @@ namespace {
   std::vector<float> JetPtD;
   std::vector<float> JetSigma ;
   std::vector<short> JetHadronFlavour;
+
+  std::vector<float> JetPUValue;
+  std::vector<short> JetPUID;
+
+  std::vector<float> JetJERUp ;
+  std::vector<float> JetJERDown ;
+
   Float_t DiJetMass  = -99;
 //   Float_t DiJetMassPlus  = -99;
 //   Float_t DiJetMassMinus  = -99;
@@ -989,6 +996,13 @@ void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
      JetPtD .push_back( jet.userFloat("ptD"));
    }
    JetSigma .push_back(jet.userFloat("jec_unc"));
+
+   JetJERUp .push_back(jet.userFloat("pt_jerup"));
+   JetJERDown .push_back(jet.userFloat("pt_jerdn"));
+
+   JetPUValue.push_back(jet.userFloat("pileupJetIdUpdated:fullDiscriminant"));
+   JetPUID.push_back(jet.userInt("pileupJetIdUpdated:fullId"));
+
    JetHadronFlavour .push_back(jet.hadronFlavour());
 }
 
@@ -1942,6 +1956,13 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   }
   myTree->Book("JetSigma",JetSigma, failedTreeLevel >= fullFailedTree);
   myTree->Book("JetHadronFlavour",JetHadronFlavour, failedTreeLevel >= fullFailedTree);
+
+  myTree->Book("JetJERUp",JetJERUp, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetJERDown",JetJERDown, failedTreeLevel >= fullFailedTree);
+
+  myTree->Book("JetPUID", JetPUID, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPUValue", JetPUValue, failedTreeLevel >= fullFailedTree);
+
   myTree->Book("DiJetMass",DiJetMass, false);
 //   myTree->Book("DiJetMassPlus",DiJetMassPlus, false); // FIXME: add back once filled again
 //   myTree->Book("DiJetMassMinus",DiJetMassMinus, false);
