@@ -74,9 +74,5 @@ extern "C" float getDbkgkinConstant(int ZZflav, float ZZMass){ // ZZflav==id1*id
   return constant;
 }
 extern "C" float getDbkgConstant(int ZZflav, float ZZMass){
-  float cbkgkin = getDbkgkinConstant(ZZflav, ZZMass);
-  if (abs(ZZflav)==121*121 || abs(ZZflav)==121*242 || abs(ZZflav)==242*242) return cbkgkin*35.6; // 4e
-  else if (abs(ZZflav)==169*169) return cbkgkin*22.8; // 4mu
-  else if (abs(ZZflav)==121*169 || abs(ZZflav)==242*169) return cbkgkin*41.8; // 2e2mu
-  else return 1.;
+  return getDbkgkinConstant(ZZflav, ZZMass);
 }
