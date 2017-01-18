@@ -303,6 +303,13 @@ namespace {
   std::vector<float> JetPtD;
   std::vector<float> JetSigma ;
   std::vector<short> JetHadronFlavour;
+
+  std::vector<float> JetPUValue;
+  std::vector<short> JetPUID;
+
+  std::vector<float> JetJERUp ;
+  std::vector<float> JetJERDown ;
+
   Float_t DiJetMass  = -99;
 //   Float_t DiJetMassPlus  = -99;
 //   Float_t DiJetMassMinus  = -99;
@@ -1155,6 +1162,13 @@ void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
      JetPtD .push_back( jet.userFloat("ptD"));
    }
    JetSigma .push_back(jet.userFloat("jec_unc"));
+
+   JetJERUp .push_back(jet.userFloat("pt_jerup"));
+   JetJERDown .push_back(jet.userFloat("pt_jerdn"));
+
+   JetPUValue.push_back(jet.userFloat("pileupJetIdUpdated:fullDiscriminant"));
+   JetPUID.push_back(jet.userInt("pileupJetIdUpdated:fullId"));
+
    JetHadronFlavour .push_back(jet.hadronFlavour());
 }
 
@@ -2364,6 +2378,13 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   }
   myTree->Book("JetSigma",JetSigma);
   myTree->Book("JetHadronFlavour",JetHadronFlavour);
+
+  myTree->Book("JetJERUp",JetJERUp);
+  myTree->Book("JetJERDown",JetJERDown);
+
+  myTree->Book("JetPUID", JetPUID);
+  myTree->Book("JetPUValue", JetPUValue);
+
   myTree->Book("DiJetMass",DiJetMass);
 //   myTree->Book("DiJetMassPlus",DiJetMassPlus); // FIXME: add back once filled again
 //   myTree->Book("DiJetMassMinus",DiJetMassMinus);
