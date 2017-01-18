@@ -100,8 +100,8 @@ class KDs:
         ##MELA-only production discriminants:
         if self.njets30 >= 2 :
             self.Djet_VAJHU = self.p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal/(self.p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal+self.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal*lib.getDVBF2jetsConstant(c_float(self.ZZMass))) # VBF(2j) vs. gg->H+2j
-            self.D_WHh_VAJHU   = self.p_HadWH_SIG_ghw1_1_JHUGen_JECNominal/(self.p_HadWH_SIG_ghw1_1_JHUGen_JECNominal+100000.*self.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal) # W(->2j)H vs. gg->H+2j
-            self.D_ZHh_VAJHU   = self.p_HadZH_SIG_ghz1_1_JHUGen_JECNominal/(self.p_HadZH_SIG_ghz1_1_JHUGen_JECNominal+10000.*self.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal) # Z(->2j)H vs. gg->H+2j
+            self.D_WHh_VAJHU   = self.p_HadWH_SIG_ghw1_1_JHUGen_JECNominal/(self.p_HadWH_SIG_ghw1_1_JHUGen_JECNominal+1e-3*self.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal) # W(->2j)H vs. gg->H+2j
+            self.D_ZHh_VAJHU   = self.p_HadZH_SIG_ghz1_1_JHUGen_JECNominal/(self.p_HadZH_SIG_ghz1_1_JHUGen_JECNominal+1e-4*self.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal) # Z(->2j)H vs. gg->H+2j
         if self.njets30 == 1 :
             self.D_VBF1j_VAJHU = self.p_JVBF_SIG_ghv1_1_JHUGen_JECNominal*self.pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal/(self.p_JVBF_SIG_ghv1_1_JHUGen_JECNominal*self.pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal+self.p_JQCD_SIG_ghg2_1_JHUGen_JECNominal*lib.getDVBF1jetConstant(c_float(self.ZZMass))) # VBF(1j) vs. gg->H+1j
         ##MELA+q/g production discriminants:

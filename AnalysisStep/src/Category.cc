@@ -151,8 +151,8 @@ extern "C" int categoryIchep16(
 
   float c_Mela2j = getDVBF2jetsConstant(ZZMass);
   float c_Mela1j = getDVBF1jetConstant(ZZMass);
-  float c_MelaWH = 100000.;
-  float c_MelaZH = 10000.;
+  float c_MelaWH = 1e-3;
+  float c_MelaZH = 1e-4;
 
   float jetPgOverPq[nCleanedJetsPt30];
   for(int j=0; j<nCleanedJetsPt30; j++){

@@ -177,6 +177,18 @@ void LHEHandler::readEvent(){
     if (wgtid<2000) LHEWeight.push_back(wgtval);
     else if (wgtid<3000) tmpWgtArray.push_back(wgtval); // Add PDF replicas and alphas(mZ) variations from the same pdf
   }
+
+  // Handle LO samples 
+  if (tmpWgtArray.size()==0) {
+    for (int iw=0; iw<(int)((*lhe_evt)->weights().size()); iw++) {
+      int wgtid=atoi((*lhe_evt)->weights().at(iw).id.c_str());
+      if (wgtid>=10 && wgtid<=110) {
+        float wgtval=(*lhe_evt)->weights().at(iw).wgt / (*lhe_evt)->originalXWGTUP();
+        tmpWgtArray.push_back(wgtval);
+      }
+    }
+  }
+
   if (tmpWgtArray.size()>0){
     if (tmpWgtArray.size()>=100){
       for (unsigned int iwgt=0; iwgt<100; iwgt++) addByLowestInAbs(tmpWgtArray.at(iwgt), LHEPDFVariationWgt); // Since weights could be (-) or (+), use LowestInAbs
