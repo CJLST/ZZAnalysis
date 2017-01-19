@@ -88,6 +88,8 @@ class KDs:
         lib.getDbkgConstant.restype = ctypes.c_float
         lib.getDVBF2jetsConstant.restype = ctypes.c_float
         lib.getDVBF1jetConstant.restype = ctypes.c_float
+        lib.getDWHhConstant.restype = ctypes.c_float
+        lib.getDZHhConstant.restype = ctypes.c_float
 
         self.D_bkg_kin  = self.p_GG_SIG_ghg2_1_ghz1_1_JHUGen/(self.p_GG_SIG_ghg2_1_ghz1_1_JHUGen + self.p_QQB_BKG_MCFM*lib.getDbkgkinConstant(c_int(int(self.ZZFlav)),c_float(self.ZZMass)))
         self.D_bkg      = self.p_GG_SIG_ghg2_1_ghz1_1_JHUGen*self.p_m4l_SIG/(self.p_GG_SIG_ghg2_1_ghz1_1_JHUGen*self.p_m4l_SIG+self.p_QQB_BKG_MCFM*self.p_m4l_BKG*lib.getDbkgConstant(c_int(int(self.ZZFlav)),c_float(self.ZZMass)))
@@ -100,8 +102,8 @@ class KDs:
         ##MELA-only production discriminants:
         if self.njets30 >= 2 :
             self.Djet_VAJHU = self.p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal/(self.p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal+self.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal*lib.getDVBF2jetsConstant(c_float(self.ZZMass))) # VBF(2j) vs. gg->H+2j
-            self.D_WHh_VAJHU   = self.p_HadWH_SIG_ghw1_1_JHUGen_JECNominal/(self.p_HadWH_SIG_ghw1_1_JHUGen_JECNominal+1e-3*self.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal) # W(->2j)H vs. gg->H+2j
-            self.D_ZHh_VAJHU   = self.p_HadZH_SIG_ghz1_1_JHUGen_JECNominal/(self.p_HadZH_SIG_ghz1_1_JHUGen_JECNominal+1e-4*self.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal) # Z(->2j)H vs. gg->H+2j
+            self.D_WHh_VAJHU   = self.p_HadWH_SIG_ghw1_1_JHUGen_JECNominal/(self.p_HadWH_SIG_ghw1_1_JHUGen_JECNominal+lib.getDWHhConstant(c_float(self.ZZMass))*self.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal) # W(->2j)H vs. gg->H+2j
+            self.D_ZHh_VAJHU   = self.p_HadZH_SIG_ghz1_1_JHUGen_JECNominal/(self.p_HadZH_SIG_ghz1_1_JHUGen_JECNominal+lib.getDZHhConstant(c_float(self.ZZMass))*self.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal) # Z(->2j)H vs. gg->H+2j
         if self.njets30 == 1 :
             self.D_VBF1j_VAJHU = self.p_JVBF_SIG_ghv1_1_JHUGen_JECNominal*self.pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal/(self.p_JVBF_SIG_ghv1_1_JHUGen_JECNominal*self.pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal+self.p_JQCD_SIG_ghg2_1_JHUGen_JECNominal*lib.getDVBF1jetConstant(c_float(self.ZZMass))) # VBF(1j) vs. gg->H+1j
         ##MELA+q/g production discriminants:
