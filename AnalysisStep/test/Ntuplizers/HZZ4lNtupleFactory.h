@@ -13,6 +13,10 @@
 #include "DataFormats/PatCandidates/interface/Electron.h"
 
 #include <ZZAnalysis/AnalysisStep/interface/DaughterDataHelpers.h>
+#include <ZZAnalysis/AnalysisStep/interface/MELABranch.h>
+#include <ZZAnalysis/AnalysisStep/interface/MELACluster.h>
+
+using namespace BranchHelpers;
 
 class HZZ4lNtupleFactory{
   
@@ -20,28 +24,29 @@ class HZZ4lNtupleFactory{
  protected:
   
  public:
-  HZZ4lNtupleFactory(TTree* outTree_input);
+  HZZ4lNtupleFactory(TTree* outTree_input, TTree* failedTree_input=0);
   ~HZZ4lNtupleFactory();
 
   enum varTypes {kBool,kShort,kInt,kChar,kLong,kFloat,kVectorFloat}; 
 
   //Fill the tree and initialize the variables
-  void FillEvent();
+  void FillEvent(bool passed=true);
   
   //Fill the tree without resetting the variables
-  void FillCurrentTree(){_outTree->Fill();}
+  void FillCurrentTree(bool passed=true);
   void DumpBranches(TString filename) const;
   
-  void Book(TString branchName, Float_t &value);
-  void Book(TString branchName, Char_t &value);
-  void Book(TString branchName, Int_t &value);
-  void Book(TString branchName, Bool_t &value);
-  void Book(TString branchName, Long64_t &value);
-  void Book(TString branchName, std::vector<float> &value);
-  void Book(TString branchName, Short_t &value);
-  void Book(TString branchName, std::vector<short> &value);
-  void Book(TString branchName, std::vector<char> &value);
-  void Book(TString branchName, std::vector<bool> &value);
+  void Book(TString branchName, Float_t &value, bool putinfailedtree=false);
+  void Book(TString branchName, Char_t &value, bool putinfailedtree=false);
+  void Book(TString branchName, Int_t &value, bool putinfailedtree=false);
+  void Book(TString branchName, Bool_t &value, bool putinfailedtree=false);
+  void Book(TString branchName, Long64_t &value, bool putinfailedtree=false);
+  void Book(TString branchName, std::vector<float> &value, bool putinfailedtree=false);
+  void Book(TString branchName, Short_t &value, bool putinfailedtree=false);
+  void Book(TString branchName, std::vector<short> &value, bool putinfailedtree=false);
+  void Book(TString branchName, std::vector<char> &value, bool putinfailedtree=false);
+  void Book(TString branchName, std::vector<bool> &value, bool putinfailedtree=false);
+  void BookMELABranches(MELAOptionParser* me_opt, bool isGen, MELAComputation* computer_);
   //void Book(TString branchName, float defaultValue=0,int varType=kFloat);
 
   //void Book(TString *names, int type, int nVarsToFill, float *defaultValues);
@@ -64,9 +69,18 @@ class HZZ4lNtupleFactory{
   //void FillZInfo(Float_t ZMass, Float_t ZPt, short ZFlav);
   //void FillExtraLepInfo(int extraLeptonIndex, bool extraLeptonExists, const reco::CandidatePtr ExtraLep);
 
+  std::vector<MELABranch*>* getRecoMELABranches();
+  std::vector<MELABranch*>* getLHEMELABranches();
+
+
  private:
 
   TTree* _outTree;
+  TTree* _failedTree;
+  // MELABranches: Only branches are owned. Every other related object is owned by HZZ4lNtupleMaker.
+  std::vector<MELABranch*> recome_branches;
+  std::vector<MELABranch*> lheme_branches;
+
   /*
   int intVector[99];
   Short_t shortVector[99];

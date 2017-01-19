@@ -1,5 +1,5 @@
 from ZZAnalysis.AnalysisStep.defaults import *
-from ZZAnalysis.AnalysisStep.couplings import *
+from ZZAnalysis.AnalysisStep.miscenums import *
 
 ### ----------------------------------------------------------------------
 ###
@@ -13,14 +13,6 @@ declareDefault("MCFILTER", "", globals())
 declareDefault("XSEC", 1, globals())
 declareDefault("PROCESS_CR", False, globals())
 
-# Couplings for reweighting
-declareDefault("REWEIGHTING_TYPE", "none", globals())
-declareDefault("SPIN", 0, globals())
-couplings = Couplings()
-for coupling in couplings.allnames():
-    declareDefault(coupling, 0, globals())
-    couplings[coupling] = globals()[coupling]
-
 # LHE info
 #  VVDECAYMODE\VVMODE  / ZZ==1 / WW==0  / Yukawa==2 / Zgam=3 / gamgam=4 / Z+nj=5
 #                     0: 4l    / lnulnu / 2l        / 2l     / gam      / 2l
@@ -33,16 +25,25 @@ for coupling in couplings.allnames():
 #                    -2: [ 2l2X         ]
 #                    -3: [ 2nu2X        ]
 #                    -4: [ 2q2X         ]
-declareDefault("VVMODE", 0, globals())
+declareDefault("VVMODE", 1, globals())
 declareDefault("VVDECAYMODE", 0, globals())
 declareDefault("ADDLHEKINEMATICS", False, globals())
-declareDefault("SAMPLEPRODUCTIONID", "", globals()) # Reserve for reweighting, not yet used
-declareDefault("SAMPLEPROCESSID", "", globals()) # Reserve for reweighting, not yet used
 
 # K factors
 declareDefault("APPLY_K_NNLOQCD_ZZGG", 0, globals()) # 0: Do not; 1: NNLO/LO; 2: NNLO/NLO; 3: NLO/LO
 declareDefault("APPLY_K_NNLOQCD_ZZQQB", False, globals())
 declareDefault("APPLY_K_NLOEW_ZZQQB", False, globals())
+
+#failed events
+declareDefault("SKIP_EMPTY_EVENTS", True, globals())
+declareDefault("FAILED_TREE_LEVEL", 0, globals())
+
+if FAILED_TREE_LEVEL and not SKIP_EMPTY_EVENTS:
+    raise ValueError(
+                     "Inconsistent options: FAILED_TREE_LEVEL={}, SKIP_EMPTY_EVENTS={}\n"
+                     "If you want to write a failed tree, set SKIP_EMPTY_EVENTS=True"
+                     .format(FAILED_TREE_LEVEL, SKIP_EMPTY_EVENTS)
+                    )
 
 # Get absolute path
 import os
@@ -144,25 +145,22 @@ TreeSetup = cms.EDAnalyzer("HZZ4lNtupleMaker",
                            PD = cms.string(PD),
                            MCFilterPath = cms.string(MCFILTER),
                            applyTrigEff = cms.bool(not APPLYTRIG), #add trigger efficiency as a weight, for samples where the trigger cannot be applied.
-                           skipEmptyEvents = cms.bool(True),
+                           skipEmptyEvents = cms.bool(SKIP_EMPTY_EVENTS),
+                           failedTreeLevel = cms.int32(FAILED_TREE_LEVEL),
                            sampleName = cms.string(SAMPLENAME),
+
+                           # MELA parameters
                            superMelaMass = cms.double(SUPERMELA_MASS),
+
+                           # Reco MEs to pick from the candidate
+                           recoProbabilities = cms.vstring(),
+
+                           # LHE info. parameters
+                           lheProbabilities = cms.vstring(),
                            xsec = cms.double(XSEC),
-                           spin = cms.int32(int(SPIN)),
-                           HVVcouplings_real = cms.vdouble(*couplings.getcouplings(spin=0, WW=False, imag=False)),
-                           HVVcouplings_imag = cms.vdouble(*couplings.getcouplings(spin=0, WW=False, imag=True)),
-                           ZVVcouplings_real = cms.vdouble(*couplings.getcouplings(spin=1, imag=False)),
-                           ZVVcouplings_imag = cms.vdouble(*couplings.getcouplings(spin=1, imag=True)),
-                           GVVcouplings_real = cms.vdouble(*couplings.getcouplings(spin=2, gg=False, imag=False)),
-                           GVVcouplings_imag = cms.vdouble(*couplings.getcouplings(spin=2, gg=False, imag=True)),
-                           Gggcouplings_real = cms.vdouble(*couplings.getcouplings(spin=2, gg=True, imag=False)),
-                           Gggcouplings_imag = cms.vdouble(*couplings.getcouplings(spin=2, gg=True, imag=True)),
-                           reweightingtype = cms.string(REWEIGHTING_TYPE),
                            VVMode = cms.int32(int(VVMODE)),
                            VVDecayMode = cms.int32(int(VVDECAYMODE)),
                            AddLHEKinematics = cms.bool(ADDLHEKINEMATICS),
-                           sampleProductionId = cms.string(SAMPLEPRODUCTIONID),
-                           sampleProcessId = cms.string(SAMPLEPROCESSID),
                            Apply_K_NNLOQCD_ZZGG = cms.int32(int(APPLY_K_NNLOQCD_ZZGG)),
                            Apply_K_NNLOQCD_ZZQQB = cms.bool(APPLY_K_NNLOQCD_ZZQQB),
                            Apply_K_NLOEW_ZZQQB = cms.bool(APPLY_K_NLOEW_ZZQQB),

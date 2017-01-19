@@ -53,6 +53,11 @@ def batchScriptCERN( index, remoteDir=''):
 #BSUB -q 8nh
 #BSUB -o job_%J.txt
 #ulimit -v 3000000
+if ( ! $?LS_SUBCWD ) then
+  #running interactively
+  set LS_SUBCWD=`pwd`
+  cd `mktemp -d`
+endif
 limit
 cat /proc/cpuinfo
 cat /proc/meminfo
@@ -65,7 +70,7 @@ echo
 env
 echo
 echo 'Copying' ${LS_SUBCWD} to ${PWD} 
-cp -rf $LS_SUBCWD .
+cp -rf $LS_SUBCWD/ .
 echo '...done'
 echo
 #echo Workdir content:
@@ -184,6 +189,8 @@ class MyBatchManager:
                 os.system( 'rm -rf ' + self.outputDir_)
         print 'Job folder: %s' % self.outputDir_
         self.mkdir( self.outputDir_ )
+        with open(os.path.join(self.outputDir_, ".gitignore"), "w") as f:
+            f.write("**/*\n")
 
         #FIXME check this???
         if not self.options_.secondaryInputDir == None:

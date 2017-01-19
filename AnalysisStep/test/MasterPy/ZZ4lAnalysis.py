@@ -67,7 +67,6 @@ declareDefault("ADDLOOSEELE", False, globals())
 declareDefault("APPLYTRIG", True, globals())
 
 
-
 if SELSETUP=="Legacy" and not BESTCANDCOMPARATOR=="byBestZ1bestZ2":
     print "WARNING: In ZZ4lAnalysis.py the SELSETUP=\"Legacy\" flag is meant to reproduce the Legacy results, ignoring the setting of the BESTCANDCOMPARATOR: ",BESTCANDCOMPARATOR
     BESTCANDCOMPARATOR = "byBestZ1bestZ2"
@@ -944,7 +943,6 @@ LLLLPRESEL = NOGHOST4l # Just suppress candidates with overlapping leptons
 
 
 # ZZ Candidates
-
 if FSRMODE == "Legacy":
     print "\nERROR: FSRMODE=Legacy is no longer supported. Aborting...\n"
     exit(1)
@@ -973,6 +971,7 @@ process.ZZCand = cms.EDProducer("ZZCandidateFiller",
         FullSel70 = cms.string(SR), #Obsolete, use "SR"
         FullSel = cms.string(FULLSEL),
     ),
+    recoProbabilities = cms.vstring(),
     #These are actually no longer needed after we dropped the Legacy FSR algorithm
     muon_iso_cut = cms.double(MUISOCUT),
     electron_iso_cut = cms.double(ELEISOCUT),
@@ -1093,6 +1092,7 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
       CRZLLos_2P2F = cms.string(CR_ZLLosSEL_2P2F),
       CRZLLos_3P1F = cms.string(CR_ZLLosSEL_3P1F),
     ),
+    recoProbabilities = cms.vstring(),
     #These are actually no longer needed after we dropped the Legacy FSR algorithm
     muon_iso_cut = cms.double(MUISOCUT),
     electron_iso_cut = cms.double(ELEISOCUT),
@@ -1173,7 +1173,7 @@ if APPLYJEC:
                 ),
 #            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall15_25nsV2_MC.db'), #for 76X
 #             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Spring16_25nsV1_MC.db'), #for 80X/Moriond16
-             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Spring16_25nsV6_MC.db'), #for 80X/ICHEP16          
+             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Spring16_25nsV6_MC.db'), #for 80X/ICHEP16
             )
     else:
         process.jec = cms.ESSource("PoolDBESSource",
@@ -1188,7 +1188,7 @@ if APPLYJEC:
                     tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV6_DATA_AK4PFchs'), #for 80X/ICHEP16
                     label  = cms.untracked.string('AK4PFchs')
                     ),
-                ), 
+                ),
 #            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall15_25nsV2_DATA.db'), #for 76X
             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Spring16_25nsV6_DATA.db'), #for 80X/ICHEP16
             )

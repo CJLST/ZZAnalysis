@@ -39,8 +39,8 @@ enum CategoryMor16 {
 
 extern "C" int categoryMor16(
 			     int nCleanedJetsPt30,
-			     float pvbf_VAJHU_highestPTJets,
-			     float phjj_VAJHU_highestPTJets
+			     float p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
+			     float p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal
 			     );
 
 
@@ -63,12 +63,13 @@ extern "C" int categoryIchep16(
 	     int nCleanedJetsPt30, 
 	     int nCleanedJetsPt30BTagged,
 	     float* jetQGLikelihood,
-	     float phjj_VAJHU_highestPTJets,
-	     float phj_VAJHU,
-	     float pvbf_VAJHU_highestPTJets,
-	     float pAux_vbf_VAJHU,
-	     float pwh_hadronic_VAJHU,
-	     float pzh_hadronic_VAJHU,
+	     float p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+	     float p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
+	     float p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
+       float p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+       float pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+	     float p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
+	     float p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
              float* jetPhi,
              float ZZMass,
 	     bool useQGTagging = false

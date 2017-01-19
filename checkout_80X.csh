@@ -38,7 +38,7 @@ git clone -n https://github.com/cms-analysis/EgammaAnalysis-ElectronTools EGamma
 
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
-(cd ZZMatrixElement ; git checkout -b from-v200p5 v2.0.0_patch5)
+(cd ZZMatrixElement; git checkout -b from-v202 v2.0.2)
 # replace ZZMatrixElement/MELA/setup.sh -j 8)
 pushd ${CMSSW_BASE}/src/ZZMatrixElement/MELA/fortran/
 make all
@@ -55,8 +55,3 @@ git clone https://github.com/bachtis/Analysis.git -b KaMuCa_V4 KaMuCa
 #Jet energy corrections (CMGTools)
 #(mkdir -p CMGTools/Common; cd CMGTools/Common ; wget https://raw.githubusercontent.com/CERN-PH-CMG/cmg-cmssw/a875832047532c5469aa9795751f0363cd5d9244/CMGTools/Common/plugins/JetEnergyCorrector.h)
 
-# Not needed, for the time being
-#git clone https://github.com/msnowball/HCSaW Higgs/Higgs_CS_and_Width
-#cd Higgs/Higgs_CS_and_Width
-#git filter-branch --subdirectory-filter Higgs_CS_and_Width
-#cd -

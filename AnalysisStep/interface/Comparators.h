@@ -89,8 +89,8 @@ namespace Comparators {
       // choose based on legacy logic
       else if (theType==byBestKD) {	
 	if (isEquivalent(cand_i,cand_j)) return bestZ1bestZ2(cand_i,cand_j); //same 4 leptons, different pairing
-	double KD_i = cand_i.userFloat("p0plus_VAJHU")/( cand_i.userFloat("p0plus_VAJHU") + cand_i.userFloat("bkg_VAMCFM") );
-	double KD_j = cand_j.userFloat("p0plus_VAJHU")/( cand_j.userFloat("p0plus_VAJHU") + cand_j.userFloat("bkg_VAMCFM") );
+	double KD_i = cand_i.userFloat("p_GG_SIG_ghg2_1_ghz1_1_JHUGen")/( cand_i.userFloat("p_GG_SIG_ghg2_1_ghz1_1_JHUGen") + cand_i.userFloat("p_QQB_BKG_MCFM") );
+	double KD_j = cand_j.userFloat("p_GG_SIG_ghg2_1_ghz1_1_JHUGen")/( cand_j.userFloat("p_GG_SIG_ghg2_1_ghz1_1_JHUGen") + cand_j.userFloat("p_QQB_BKG_MCFM") );
 	return (KD_i>KD_j);
       } // end of byBestKD
 
@@ -99,16 +99,16 @@ namespace Comparators {
 	// FIXME: This is just a temporary implementation for tests!!
 	// FIXME: Note that pzh_VAJHU can in some case be defined only for one of the two candidates (because of FSR/isolation). 
 	// The comparison of KD does not make much sense in that case...
-	double ps_i = cand_i.userFloat("p0plus_VAJHU");
-	double pszh_i = cand_i.userFloat("pzh_VAJHU");
+	double ps_i = cand_i.userFloat("p_GG_SIG_ghg2_1_ghz1_1_JHUGen");
+	double pszh_i = 1.;
 	if (pszh_i>0) ps_i *= pszh_i;
 
-	double ps_j = cand_j.userFloat("p0plus_VAJHU");
-	double pszh_j = cand_j.userFloat("pzh_VAJHU");
+	double ps_j = cand_j.userFloat("p_GG_SIG_ghg2_1_ghz1_1_JHUGen");
+	double pszh_j = 1.;
 	if (pszh_j>0) ps_j *= pszh_j;
 	
-	double KD_i = ps_i/( ps_i + cand_i.userFloat("bkg_VAMCFM") );
-	double KD_j = ps_j/( ps_j + cand_j.userFloat("bkg_VAMCFM") );
+	double KD_i = ps_i/( ps_i + cand_i.userFloat("p_QQB_BKG_MCFM") );
+	double KD_j = ps_j/( ps_j + cand_j.userFloat("p_QQB_BKG_MCFM") );
 
 	if (isEquivalent(cand_i,cand_j)) return bestZ1bestZ2(cand_i,cand_j);
 	else return (KD_i>KD_j);
@@ -117,7 +117,7 @@ namespace Comparators {
 
       else if (theType==byBestPsig) {
 	if (isEquivalent(cand_i,cand_j)) return bestZ1bestZ2(cand_i,cand_j); //same 4 leptons, different pairing
-	return (cand_i.userFloat("p0plus_VAJHU")>cand_j.userFloat("p0plus_VAJHU"));
+	return (cand_i.userFloat("p_GG_SIG_ghg2_1_ghz1_1_JHUGen")>cand_j.userFloat("p_GG_SIG_ghg2_1_ghz1_1_JHUGen"));
       }
 
       else if (theType==byMHWindow) {

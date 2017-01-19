@@ -29,6 +29,7 @@ PyFilePath = os.environ['CMSSW_BASE'] + "/src/ZZAnalysis/AnalysisStep/test/"
 ### ----------------------------------------------------------------------
 
 execfile(PyFilePath + "analyzer.py")
+execfile(PyFilePath + "prod/pyFragments/RecoProbabilities.py")
 
 process.source.inputCommands = cms.untracked.vstring("keep *", "drop LHERunInfoProduct_*_*_*", "drop LHEEventProduct_*_*_*")
 
@@ -58,7 +59,7 @@ process.source.fileNames = cms.untracked.vstring(
 process.calibratedPatElectrons.isSynchronization = cms.bool(False)
 process.calibratedMuons.isSynchronization = cms.bool(False)
 
-process.maxEvents.input = 1000
+process.maxEvents.input = -1
 #process.source.skipEvents = cms.untracked.uint32(5750)
 
 # Silence output

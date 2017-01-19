@@ -182,9 +182,9 @@ void LHEHandler::readEvent(){
   if (tmpWgtArray.size()==0) {
     for (int iw=0; iw<(int)((*lhe_evt)->weights().size()); iw++) {
       int wgtid=atoi((*lhe_evt)->weights().at(iw).id.c_str());
-      if (wgtid >= 10 && wgtid <= 110) {
-        float wgtval=(*lhe_evt)->weights().at(iw).wgt / (*lhe_evt)->originalXWGTUP();    
-	tmpWgtArray.push_back(wgtval);
+      if (wgtid>=10 && wgtid<=110) {
+        float wgtval=(*lhe_evt)->weights().at(iw).wgt / (*lhe_evt)->originalXWGTUP();
+        tmpWgtArray.push_back(wgtval);
       }
     }
   }

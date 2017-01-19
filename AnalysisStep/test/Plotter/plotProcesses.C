@@ -1262,8 +1262,8 @@ void run(
   Float_t ZZMass;
   Float_t ZZPt;
   Float_t DiJetFisher;
-  Float_t p0plus_VAJHU;
-  Float_t bkg_VAMCFM;
+  Float_t p_GG_SIG_ghg2_1_ghz1_1_JHUGen;
+  Float_t p_QQB_BKG_MCFM;
   Float_t Z1Mass;
   Float_t Z2Mass;
   vector<Float_t> *CandLepPt = 0;
@@ -1648,8 +1648,8 @@ void run(
     inputTree[p]->SetBranchAddress("ZZsel", &ZZsel);
     inputTree[p]->SetBranchAddress("ZZMass", &ZZMass);
     inputTree[p]->SetBranchAddress("ZZPt", &ZZPt);
-    inputTree[p]->SetBranchAddress("p0plus_VAJHU", &p0plus_VAJHU);
-    inputTree[p]->SetBranchAddress("bkg_VAMCFM", &bkg_VAMCFM);
+    inputTree[p]->SetBranchAddress("p_GG_SIG_ghg2_1_ghz1_1_JHUGen", &p_GG_SIG_ghg2_1_ghz1_1_JHUGen);
+    inputTree[p]->SetBranchAddress("p_QQB_BKG_MCFM", &p_QQB_BKG_MCFM);
     inputTree[p]->SetBranchAddress("Z1Mass", &Z1Mass);
     inputTree[p]->SetBranchAddress("Z2Mass", &Z2Mass);
     inputTree[p]->SetBranchAddress("LepPt", &CandLepPt);
@@ -2424,7 +2424,7 @@ void run(
 	  ZZMass,
 	  Z1Mass,
 	  Z2Mass,
-	  p0plus_VAJHU / ( p0plus_VAJHU + bkg_VAMCFM ),
+	  p_GG_SIG_ghg2_1_ghz1_1_JHUGen / ( p_GG_SIG_ghg2_1_ghz1_1_JHUGen + p_QQB_BKG_MCFM ),
 	  DiJetFisher,
 	  ZZPt,
 	  (Float_t)nGenLep,
