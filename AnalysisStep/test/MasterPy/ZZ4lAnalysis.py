@@ -58,7 +58,7 @@ declareDefault("BESTCANDCOMPARATOR", "byBestKD", globals())
 declareDefault("KEEPLOOSECOMB", False, globals())
 
 # Activate the Z kinematic refit (very slow)
-declareDefault("KINREFIT", True, globals())
+declareDefault("KINREFIT", False, globals())
 
 # Activate paths for loose electron categories
 declareDefault("ADDLOOSEELE", False, globals())
