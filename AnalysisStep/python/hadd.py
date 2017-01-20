@@ -95,8 +95,12 @@ def haddChunks(idir, removeDestDir, cleanUp=False):
     if len(chunks)==0:
         print 'warning: no chunk found.'
         return
-    for comp, cchunks in chunks.iteritems():
+    for i, (comp, cchunks) in enumerate(chunks.iteritems(), start=1):
         odir = '/'.join( [idir, comp] )
+        print
+        print "======================"
+        print "hadding folder", i, "/", len(chunks)
+        print "======================"
         print odir, cchunks
         if removeDestDir:
             if os.path.isdir( odir ):
