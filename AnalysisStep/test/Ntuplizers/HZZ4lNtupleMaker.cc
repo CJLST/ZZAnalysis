@@ -1147,7 +1147,12 @@ void HZZ4lNtupleMaker::FillLHECandidate(){
           MELAParticle* Vij = Vi->getDaughter(iVj);
           if (Vij!=0){
             LHEDaughterPt.push_back(Vij->pt());
-            LHEDaughterEta.push_back(Vij->eta());
+            if (abs(Vij->pt() / Vij->z()) > 2e-8) {
+              LHEDaughterEta.push_back(Vij->eta());
+            } else {
+              edm::LogWarning("ZeroPt") << "pt = 0!  Using eta = +/-1e10\n" << Vij->id << " " << Vij->x() << " " << Vij->y() << " " << Vij->z() << " " << Vij->t();
+              LHEDaughterEta.push_back(copysign(1e10, Vij->z()));
+            }
             LHEDaughterPhi.push_back(Vij->phi());
             LHEDaughterMass.push_back(Vij->m());
             LHEDaughterId.push_back((short)Vij->id);
@@ -1184,7 +1189,12 @@ void HZZ4lNtupleMaker::FillLHECandidate(){
       MELAParticle* apart = AssociatedParticle.at(aa);
       if (apart!=0){
         LHEAssociatedParticlePt.push_back(apart->pt());
-        LHEAssociatedParticleEta.push_back(apart->eta());
+        if (abs(apart->pt() / apart->z()) > 2e-8) {
+          LHEAssociatedParticleEta.push_back(apart->eta());
+        } else {
+          edm::LogWarning("ZeroPt") << "pt = 0!  Using eta = +/-1e10\n" << apart->id << " " << apart->x() << " " << apart->y() << " " << apart->z() << " " << apart->t();
+          LHEAssociatedParticleEta.push_back(copysign(1e10, apart->z()));
+        }
         LHEAssociatedParticlePhi.push_back(apart->phi());
         LHEAssociatedParticleMass.push_back(apart->m());
         LHEAssociatedParticleId.push_back((short)apart->id);

@@ -136,23 +136,15 @@ extern "C" int categoryIchep16(
 	     )
 {
 
-  float WP_VBF2j, WP_VBF1j, WP_WHh, WP_ZHh;
-  if(useQGTagging){
-    WP_VBF2j = 0.391;
-    WP_VBF1j = 0.72;
-    WP_WHh = 0.973;
-    WP_ZHh = 0.996;
-  }else{
-    WP_VBF2j = 1.043-460./(ZZMass+634.);
-    WP_VBF1j = 0.699;
-    WP_WHh = 0.959;
-    WP_ZHh = 0.9946;
-  }
+  float WP_VBF2j = getDVBF2jetsWP(ZZMass, useQGTagging);
+  float WP_VBF1j = getDVBF1jetWP(ZZMass, useQGTagging);
+  float WP_WHh = getDWHhWP(ZZMass, useQGTagging);
+  float WP_ZHh = getDZHhWP(ZZMass, useQGTagging);
 
   float c_Mela2j = getDVBF2jetsConstant(ZZMass);
   float c_Mela1j = getDVBF1jetConstant(ZZMass);
-  float c_MelaWH = 1e-3;
-  float c_MelaZH = 1e-4;
+  float c_MelaWH = getDWHhConstant(ZZMass);
+  float c_MelaZH = getDZHhConstant(ZZMass);
 
   float jetPgOverPq[nCleanedJetsPt30];
   for(int j=0; j<nCleanedJetsPt30; j++){
