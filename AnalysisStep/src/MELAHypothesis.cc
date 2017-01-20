@@ -149,9 +149,9 @@ void MELAHypothesis::computeP(){
     }
     mela->setProcess(theProc, theME, theProd);
     if (
-      theProd==TVar::Lep_WH || theProd==TVar::Had_WH || theProd==TVar::Lep_ZH || theProd==TVar::Had_ZH || theProd==TVar::JJVBF || theProd==TVar::JJQCD
-      || theProd==TVar::Lep_WH_S || theProd==TVar::Had_WH_S || theProd==TVar::Lep_ZH_S || theProd==TVar::Had_ZH_S || theProd==TVar::JJVBF_S || theProd==TVar::JJQCD_S
-      || theProd==TVar::Lep_WH_TU || theProd==TVar::Had_WH_TU || theProd==TVar::Lep_ZH_TU || theProd==TVar::Had_ZH_TU || theProd==TVar::JJVBF_TU || theProd==TVar::JJQCD_TU
+      theProd==TVar::Lep_WH || theProd==TVar::Had_WH || theProd==TVar::Lep_ZH || theProd==TVar::Had_ZH || theProd==TVar::JJVBF || theProd==TVar::JJEW || theProd==TVar::JJQCD
+      || theProd==TVar::Lep_WH_S || theProd==TVar::Had_WH_S || theProd==TVar::Lep_ZH_S || theProd==TVar::Had_ZH_S || theProd==TVar::JJVBF_S || theProd==TVar::JJEW_S || theProd==TVar::JJQCD_S
+      || theProd==TVar::Lep_WH_TU || theProd==TVar::Had_WH_TU || theProd==TVar::Lep_ZH_TU || theProd==TVar::Had_ZH_TU || theProd==TVar::JJVBF_TU || theProd==TVar::JJEW_TU || theProd==TVar::JJQCD_TU
       || theProd == TVar::GammaH
       || theProd==TVar::JQCD
       || theProd==TVar::ttH || theProd==TVar::bbH
