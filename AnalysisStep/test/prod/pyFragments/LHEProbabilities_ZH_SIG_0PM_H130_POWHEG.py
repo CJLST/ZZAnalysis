@@ -1,11 +1,11 @@
 LHE_PropagatorRewgt = [
    "Name:SamplePropagator Alias:<Name> PropScheme:CPS hmass:130 isGen:1 NoBranch:1 isProp:1",
-   "Name:CPStoBWPropRewgt Alias:<Name> PropScheme:FixedWidth hmass:130 Options:DivideP=SamplePropagator isGen:1 isProp:1",
+   "Name:CPStoBWPropRewgt PropScheme:FixedWidth hmass:130 Options:DivideP=SamplePropagator isGen:1 isProp:1",
 ]
 LHE_Probabilities_MCFM = [
    "Name:SampleHypothesisMCFM Alias:<Name> Process:HSMHiggs Production:Had_ZH_S MatrixElement:MCFM Couplings:ghz1=1,0 Options:DivideP=SampleHypothesisMCFM hmass:130 Cluster:BestLOAssociatedZ isGen:1 NoBranch:1",
 
-   "Name:JJEW_SIG_ghv1_1_MCFM Alias:SampleHypothesisMCFM Process:HSMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz1=1,0 Options:DivideP=SampleHypothesisMCFM hmass:130 Cluster:BestLOAssociatedVBF isGen:1",
+   "Name:JJEW_SIG_ghv1_1_MCFM Process:HSMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz1=1,0 Options:DivideP=SampleHypothesisMCFM hmass:130 Cluster:BestLOAssociatedVBF isGen:1",
    #"Name:JJEW_SIG_ghv1prime2_1E4_MCFM Process:HSMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz1_prime2=10000,0 Options:DivideP=SampleHypothesisMCFM hmass:130 Cluster:BestLOAssociatedVBF isGen:1",
    #"Name:JJEW_SIG_ghv2_1_MCFM Process:HSMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz2=1,0 Options:DivideP=SampleHypothesisMCFM hmass:130 Cluster:BestLOAssociatedVBF isGen:1",
    #"Name:JJEW_SIG_ghv4_1_MCFM Process:HSMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz4=1,0 Options:DivideP=SampleHypothesisMCFM hmass:130 Cluster:BestLOAssociatedVBF isGen:1",

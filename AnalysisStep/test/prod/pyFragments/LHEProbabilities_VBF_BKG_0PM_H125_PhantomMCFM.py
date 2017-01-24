@@ -1,7 +1,7 @@
 LHE_Probabilities_MCFM = [
    "Name:SampleHypothesisMCFM Alias:<Name> Process:bkgZZ Production:JJEW MatrixElement:MCFM Options:DivideP=SampleHypothesisMCFM Cluster:BestLOAssociatedVBF isGen:1 NoBranch:1",
 
-   "Name:JJEW_SIG_ghv1_1_MCFM Alias:SampleHypothesisMCFM Process:HSMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz1=1,0 hmass:125 hwidth:0.00407 Options:DivideP=SampleHypothesisMCFM Cluster:BestLOAssociatedVBF isGen:1",
+   "Name:JJEW_SIG_ghv1_1_MCFM Process:HSMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz1=1,0 hmass:125 hwidth:0.00407 Options:DivideP=SampleHypothesisMCFM Cluster:BestLOAssociatedVBF isGen:1",
    "Name:JJEW_SIG_ghv1prime2_1E4_MCFM Process:HSMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz1_prime2=10000,0 hmass:125 hwidth:0.00407 Options:DivideP=SampleHypothesisMCFM Cluster:BestLOAssociatedVBF isGen:1",
    "Name:JJEW_SIG_ghv2_1_MCFM Process:HSMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz2=1,0 hmass:125 hwidth:0.00407 Options:DivideP=SampleHypothesisMCFM Cluster:BestLOAssociatedVBF isGen:1",
    "Name:JJEW_SIG_ghv4_1_MCFM Process:HSMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz4=1,0 hmass:125 hwidth:0.00407 Options:DivideP=SampleHypothesisMCFM Cluster:BestLOAssociatedVBF isGen:1",
