@@ -1,5 +1,3 @@
-#include "CondFormats/BTauObjects/interface/BTagCalibration.h"
-#include "CondFormats/BTauObjects/interface/BTagCalibrationReader.h"
 #include <FWCore/ParameterSet/interface/FileInPath.h>
 
 #include "../interface/BTaggingSFHelper.h"
@@ -16,27 +14,35 @@ BTaggingSFHelper::BTaggingSFHelper(std::string SFfilename, std::string effFileNa
  
   m_calib = new BTagCalibration("CSVv2", fip_sf.fullPath().c_str());
 
-  m_reader_b    = new BTagCalibrationReader(m_calib , BTagEntry::OP_MEDIUM, "comb", "central");
-  m_reader_b_up = new BTagCalibrationReader(m_calib , BTagEntry::OP_MEDIUM, "comb", "up"     );
-  m_reader_b_do = new BTagCalibrationReader(m_calib , BTagEntry::OP_MEDIUM, "comb", "down"   );
-  m_reader_c    = new BTagCalibrationReader(m_calib , BTagEntry::OP_MEDIUM, "comb", "central");
-  m_reader_c_up = new BTagCalibrationReader(m_calib , BTagEntry::OP_MEDIUM, "comb", "up"     );
-  m_reader_c_do = new BTagCalibrationReader(m_calib , BTagEntry::OP_MEDIUM, "comb", "down"   );
-  m_reader_udsg    = new BTagCalibrationReader(m_calib , BTagEntry::OP_MEDIUM, "incl", "central");
-  m_reader_udsg_up = new BTagCalibrationReader(m_calib , BTagEntry::OP_MEDIUM, "incl", "up"     );
-  m_reader_udsg_do = new BTagCalibrationReader(m_calib , BTagEntry::OP_MEDIUM, "incl", "down"   );
+  m_reader    = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "central");
+  m_reader_up = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "up");
+  m_reader_do = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "down");
 
-  // // [b, c, udsg] [central, up, down]
-  m_readers[0][0] = m_reader_b;
-  m_readers[0][1] = m_reader_b_up;
-  m_readers[0][2] = m_reader_b_do;
-  m_readers[1][0] = m_reader_c;
-  m_readers[1][1] = m_reader_c_up;
-  m_readers[1][2] = m_reader_c_do;
-  m_readers[2][0] = m_reader_udsg;
-  m_readers[2][1] = m_reader_udsg_up;
-  m_readers[2][2] = m_reader_udsg_do;
- 
+  for (int i = 0 ; i < 3; i++) {
+      m_readers[i][0] = m_reader;
+      m_readers[i][1] = m_reader_up;
+      m_readers[i][2] = m_reader_do;
+  }
+
+  for (int i = 0 ; i < 3; i++) {
+      m_readers[i][0] = m_reader;
+      m_readers[i][1] = m_reader_up;
+      m_readers[i][2] = m_reader_do;
+      if (i == 0) {
+	  m_readers[i][0]->load(*m_calib, BTagEntry::FLAV_B, "comb");
+	  m_readers[i][1]->load(*m_calib, BTagEntry::FLAV_B, "comb");
+	  m_readers[i][2]->load(*m_calib, BTagEntry::FLAV_B, "comb");
+      } else if (i == 1) {
+	  m_readers[i][0]->load(*m_calib, BTagEntry::FLAV_C, "comb");
+	  m_readers[i][1]->load(*m_calib, BTagEntry::FLAV_C, "comb");
+	  m_readers[i][2]->load(*m_calib, BTagEntry::FLAV_C, "comb");
+      } else if (i == 2) {
+	  m_readers[i][0]->load(*m_calib, BTagEntry::FLAV_UDSG, "incl");
+	  m_readers[i][1]->load(*m_calib, BTagEntry::FLAV_UDSG, "incl");
+	  m_readers[i][2]->load(*m_calib, BTagEntry::FLAV_UDSG, "incl");
+      }
+  }
+
   edm::FileInPath fip_eff(effFileName);
   m_fileEff = new TFile(fip_eff.fullPath().c_str());
 

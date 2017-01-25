@@ -1,19 +1,19 @@
 #!/bin/tcsh -fe
 #
 # Instructions:
-# wget -O /tmp/checkout_80X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/2l2q_80X/checkout_80X.csh
+# wget -O /tmp/checkout_80X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_80X/checkout_80X.csh
 # cd $CMSSW_BASE/src
 # cmsenv
 # source /tmp/checkout_80X.csh
 
 
-############## For CMSSW_8_0_8
+############## For CMSSW_8_0_21
 git cms-init
-# Electron scale recipe according to https://twiki.cern.ch/twiki/bin/view/CMS/EGMSmearer
-git remote add -f -t ecal_smear_fix_80X emanueledimarco https://github.com/emanueledimarco/cmssw.git
+# Preliminary electron scale and smearing corrections according to https://twiki.cern.ch/twiki/bin/view/CMS/EGMSmearer
+git cms-merge-topic -u shervin86:Moriond2017_JEC_energyScales
 git cms-addpkg EgammaAnalysis/ElectronTools
-git checkout -b from-277de3c 277de3c
-(cd EgammaAnalysis/ElectronTools/data ; git clone https://github.com/ECALELFS/ScalesSmearings.git ; git checkout tags/ICHEP2016_v2)
+(cd EgammaAnalysis/ElectronTools/data ; git clone -b master https://github.com/ECALELFS/ScalesSmearings.git)
+
 
 #### Please do not add any custom (non-CMSSW) package before this line ####
 
@@ -22,7 +22,7 @@ git clone https://github.com/Werbellin/RecoEgamma_8X.git RecoEgamma
 (cd RecoEgamma; git checkout d716460) 
 
 #ZZAnalysis
-git clone -b 2l2q_80X https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
+git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
 (cd ZZAnalysis; git checkout 2l2q_80X)
 
 #effective areas (to be updated)
@@ -38,13 +38,16 @@ git clone -n https://github.com/cms-analysis/EgammaAnalysis-ElectronTools EGamma
 
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
-(cd ZZMatrixElement ; git checkout -b from-v200p5 v2.0.0_patch5 ; cd MELA; ./setup.sh -j 8)
+(cd ZZMatrixElement ; git checkout -b from-v200p5 v2.0.0_patch5)
+# replace ZZMatrixElement/MELA/setup.sh -j 8)
 pushd ${CMSSW_BASE}/src/ZZMatrixElement/MELA/fortran/
 make all
 mv libjhugenmela.so ../data/${SCRAM_ARCH}/
 popd
 
 #kinematic refitting
+#git clone https://github.com/VBF-HZZ/KinZfitter.git
+#(cd KinZfitter ; git checkout -b from-dd5f616 dd5f616)
 git clone https://github.com/tocheng/KinZfitter.git
 (cd KinZfitter; git checkout -b from-Zhadv1.1 Zhadv1.1)
 

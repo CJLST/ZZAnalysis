@@ -1,0 +1,91 @@
+identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments,comment
+
+## Assume cross-section observed by ATLAS at 750 GeV and BR(gg) = BR(ZZ)
+## S (from bkgd-subtracted histogram) is ~ 14
+## sigma = S/(L*eff) ~ 14/(3.2*60%) = 7.3 fb
+## BR(ZZ -> 2l2q) = 2 x 9.9% x 70% = 13.86%
+
+##ggHiggs
+#ggHiggs200, ,0.0073,0.1386,,/GluGluHToZZTo2L2Q_M200_13TeV_powheg2_JHUgenV698_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,10,,,
+#ggHiggs250, ,0.0073,0.1386,,/GluGluHToZZTo2L2Q_M250_13TeV_powheg2_JHUgenV698_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,10,,,
+#ggHiggs300, ,0.0073,0.1386,,/GluGluHToZZTo2L2Q_M300_13TeV_powheg2_JHUgenV698_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,10,,,
+#ggHiggs350, ,0.0073,0.1386,,/GluGluHToZZTo2L2Q_M350_13TeV_powheg2_JHUgenV698_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,10,,,
+#ggHiggs400, ,0.0073,0.1386,,/GluGluHToZZTo2L2Q_M400_13TeV_powheg2_JHUgenV698_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,10,,,
+#ggHiggs450, ,0.0073,0.1386,,/GluGluHToZZTo2L2Q_M450_13TeV_powheg2_JHUgenV698_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,10,,,
+#ggHiggs500, ,0.0073,0.1386,,/GluGluHToZZTo2L2Q_M500_13TeV_powheg2_JHUgenV698_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,10,,,
+#ggHiggs550, ,0.0073,0.1386,,/GluGluHToZZTo2L2Q_M550_13TeV_powheg2_JHUgenV698_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,10,,,
+#ggHiggs600, ,0.0073,0.1386,,/GluGluHToZZTo2L2Q_M600_13TeV_powheg2_JHUgenV698_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,10,,,
+#ggHiggs700, ,0.0073,0.1386,,/GluGluHToZZTo2L2Q_M700_13TeV_powheg2_JHUgenV698_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,10,,,
+#ggHiggs750, ,0.0073,0.1386,,/GluGluHToZZTo2L2Q_M750_13TeV_powheg2_JHUgenV698_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,10,,,
+#ggHiggs800, ,0.0073,0.1386,,/GluGluHToZZTo2L2Q_M800_13TeV_powheg2_JHUgenV698_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,10,,,
+#ggHiggs900, ,0.0073,0.1386,,/GluGluHToZZTo2L2Q_M900_13TeV_powheg2_JHUgenV698_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,10,,,
+#ggHiggs1000, ,0.0073,0.1386,,/GluGluHToZZTo2L2Q_M1000_13TeV_powheg2_JHUgenV698_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,10,,,
+#ggHiggs1500, ,0.0073,0.1386,,/GluGluHToZZTo2L2Q_M1500_13TeV_powheg2_JHUgenV698_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,10,,,
+#ggHiggs2000, ,0.0073,0.1386,,/GluGluHToZZTo2L2Q_M2000_13TeV_powheg2_JHUgenV698_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,10,,,
+#ggHiggs2500, ,0.0073,0.1386,,/GluGluHToZZTo2L2Q_M2500_13TeV_powheg2_JHUgenV698_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,10,,,
+#ggHiggs3000, ,0.0073,0.1386,,/GluGluHToZZTo2L2Q_M3000_13TeV_powheg2_JHUgenV698_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,10,,,
+
+##VBFHiggs
+#VBFHiggs250, ,0.0073,0.1386,,/VBF_HToZZTo2L2Q_M250_13TeV_powheg2_JHUgenV698_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,10,,,
+#VBFHiggs350, ,0.0073,0.1386,,/VBF_HToZZTo2L2Q_M350_13TeV_powheg2_JHUgenV698_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,10,,,
+#VBFHiggs400, ,0.0073,0.1386,,/VBF_HToZZTo2L2Q_M400_13TeV_powheg2_JHUgenV698_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,10,,,
+#VBFHiggs450, ,0.0073,0.1386,,/VBF_HToZZTo2L2Q_M450_13TeV_powheg2_JHUgenV698_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,10,,,
+#VBFHiggs500, ,0.0073,0.1386,,/VBF_HToZZTo2L2Q_M500_13TeV_powheg2_JHUgenV698_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,10,,,
+#VBFHiggs550, ,0.0073,0.1386,,/VBF_HToZZTo2L2Q_M550_13TeV_powheg2_JHUgenV698_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,10,,,
+#VBFHiggs600, ,0.0073,0.1386,,/VBF_HToZZTo2L2Q_M600_13TeV_powheg2_JHUgenV698_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,10,,,
+#VBFHiggs700, ,0.0073,0.1386,,/VBF_HToZZTo2L2Q_M700_13TeV_powheg2_JHUgenV698_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,10,,,
+#VBFHiggs750, ,0.0073,0.1386,,/VBF_HToZZTo2L2Q_M750_13TeV_powheg2_JHUgenV698_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,10,,,
+#VBFHiggs800, ,0.0073,0.1386,,/VBF_HToZZTo2L2Q_M800_13TeV_powheg2_JHUgenV698_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,10,,,
+#VBFHiggs900, ,0.0073,0.1386,,/VBF_HToZZTo2L2Q_M900_13TeV_powheg2_JHUgenV698_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,10,,,
+#VBFHiggs1000, ,0.0073,0.1386,,/VBF_HToZZTo2L2Q_M1000_13TeV_powheg2_JHUgenV698_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,10,,,
+
+
+## DYjets number of jets - our standard DY jets sample. We also have the "BJet" sample that is enriched in b-jets.
+#DYJetsToLL,,  4895.0,    ,,/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/MINIAODSIM,dbs,,5,,,
+#DY1Jet,,      1016.0,    ,,/DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,5,,,
+#DY2Jet,,      331.4,    ,,/DY2JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,5,,,
+#DY3Jet,,      96.36,    ,,/DY3JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,5,,,
+#DY4Jet,,      51.4,    ,,/DY4JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,5,,,
+#DYBJet,,      88.2771,    ,,/DYBJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,5,,,
+
+## DYjets high HT - alternative to the standard DY jets sample
+#DYJetsToLL,,    4895.0,    ,,/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/MINIAODSIM,dbs,,5,,,
+#DYHT70,,      175.30,    ,,/DYJetsToLL_M-50_HT-70to100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,5,,,
+#DYHT100,,     149.20,    ,,/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,5,,,
+#DYHT200,,     40.99,    ,,/DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,5,,,
+#DYHT400,,     5.678,    ,,/DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,5,,,
+#DYHT600,,     1.367,    ,,/DYJetsToLL_M-50_HT-600to800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM,dbs,,5,,,
+#DYHT800,,     0.6304,    ,,/DYJetsToLL_M-50_HT-800to1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,5,,,
+#DYHT1200,,    0.1514,    ,,/DYJetsToLL_M-50_HT-1200to2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,5,,,
+#DYHT2500,,    0.003565,    ,,/DYJetsToLL_M-50_HT-2500toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,5,,,
+
+
+## Minor backgrounds
+## The POWHEG ttbar sample disappeared :(
+#TTBar,,     87.31,    ,,/TTTo2L2Nu_13TeV-powheg/RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM,dbs,,5,,,
+#TTBar,,    57.35,    ,,/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,5,,,
+#WZDib,,     47.13,    ,,/WZ_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,5,,,
+#ZZDib,,     16.523,    ,,/ZZ_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,5,,,
+## If we need some alternativer samples where we force a leptonic Z decay, we can use these
+#/ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM
+#/ZZTo2L2Nu_13TeV_powheg_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM
+#/WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM
+#/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM
+
+
+## Data 25ns, 23Sep2016 Reprocessing
+#DoubleMu2016B,, -1, ,, /DoubleMuon/Run2016B-23Sep2016-v3/MINIAOD,dbs,,7,PD=DoubleMu,cert.py,
+#DoubleMu2016D,, -1, ,, /DoubleMuon/Run2016D-23Sep2016-v1/MINIAOD,dbs,,7,PD=DoubleMu,cert.py, 
+#DoubleMu2016C,, -1, ,, /DoubleMuon/Run2016C-23Sep2016-v1/MINIAOD,dbs,,7,PD=DoubleMu,cert.py,
+#DoubleMu2016F,, -1, ,, /DoubleMuon/Run2016F-23Sep2016-v1/MINIAOD,dbs,,7,PD=DoubleMu,cert.py, 
+#DoubleMu2016E,, -1, ,, /DoubleMuon/Run2016E-23Sep2016-v1/MINIAOD,dbs,,7,PD=DoubleMu,cert.py, 
+#DoubleMu2016G,, -1, ,, /DoubleMuon/Run2016G-23Sep2016-v1/MINIAOD,dbs,,7,PD=DoubleMu,cert.py, 
+#DoubleMu2016H,, -1, ,, /DoubleMuon/Run2016H-PromptReco-v3/MINIAOD,dbs,,7,PD=DoubleMu,cert.py,
+
+#DoubleEG2016B,, -1, ,, /DoubleEG/Run2016B-23Sep2016-v3/MINIAOD,dbs,,10,PD=DoubleEle,cert.py, 
+#DoubleEG2016D,, -1, ,, /DoubleEG/Run2016D-23Sep2016-v1/MINIAOD,dbs,,10,PD=DoubleEle,cert.py,
+#DoubleEG2016C,, -1, ,, /DoubleEG/Run2016C-23Sep2016-v1/MINIAOD,dbs,,10,PD=DoubleEle,cert.py, 
+#DoubleEG2016F,, -1, ,, /DoubleEG/Run2016F-23Sep2016-v1/MINIAOD,dbs,,10,PD=DoubleEle,cert.py, 
+#DoubleEG2016E,, -1, ,, /DoubleEG/Run2016E-23Sep2016-v1/MINIAOD,dbs,,10,PD=DoubleEle,cert.py, 
+#DoubleEG2016G,, -1, ,, /DoubleEG/Run2016G-23Sep2016-v1/MINIAOD,dbs,,10,PD=DoubleEle,cert.py, 
+#DoubleEG2016H,, -1, ,, /DoubleEG/Run2016H-PromptReco-v3/MINIAOD,dbs,,7,PD=DoubleEle,cert.py,
