@@ -32,7 +32,7 @@ LHE_DecayProbabilities_SpinZero_JHUGen = [
 LHE_ProdProbabilities_SpinZero_JHUGen = [
    "Name:SampleProductionHypothesisJHUGen Alias:<Name> Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz1=1,0 Cluster:BestLOAssociatedVBF isGen:1 NoBranch:1",
 
-   "Name:VBF_SIG_ghv1_1_JHUGen Alias:SampleProductionHypothesisJHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz1=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+   "Name:VBF_SIG_ghv1_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz1=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
    "Name:VBF_SIG_ghv1prime2_1E4_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz1_prime2=10000,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
    "Name:VBF_SIG_ghv2_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz2=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
    "Name:VBF_SIG_ghv4_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz4=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",

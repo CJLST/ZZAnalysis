@@ -1075,14 +1075,11 @@ void ZZCandidateFiller::updateMELAClusters_LepZH(){
     if (fabs(associatedV->m()-PDGHelpers::Zmass)<dZmass){ dZmass=associatedV->m()-PDGHelpers::Zmass; chosenZ=(int)iV; }
   }
   if (chosenZ>=0){
-    // Disable every associated Z boson and its daughters unless it is the chosen one
+    // Disable every associated Z boson (and not its daughters!) unless it is the chosen one
     for (unsigned int disableV=iSortedVstart; disableV<nSortedVs; disableV++){
       bool flag=(((int)disableV)==chosenZ);
       MELAParticle* einV = melaCand->getSortedV(disableV);
-      if (PDGHelpers::isAZBoson(einV->id)){
-        einV->setSelected(flag);
-        for (int iVj=0; iVj<einV->getNDaughters(); iVj++) einV->getDaughter(iVj)->setSelected(flag);
-      }
+      if (PDGHelpers::isAZBoson(einV->id)) einV->setSelected(flag);
     }
 
     for (unsigned int icl=0; icl<me_clusters.size(); icl++){ // Loop over clusters to update them
@@ -1100,10 +1097,7 @@ void ZZCandidateFiller::updateMELAClusters_LepZH(){
   for (unsigned int disableV=iSortedVstart; disableV<nSortedVs; disableV++){
     bool flag=true;
     MELAParticle* einV = melaCand->getSortedV(disableV);
-    if (PDGHelpers::isAZBoson(einV->id)){
-      einV->setSelected(flag);
-      for (int iVj=0; iVj<einV->getNDaughters(); iVj++) einV->getDaughter(iVj)->setSelected(flag);
-    }
+    if (PDGHelpers::isAZBoson(einV->id)) einV->setSelected(flag);
   }
 }
 // Common ME computations for JECNominal, Up and Down variations, case where ME requires 2 jets
