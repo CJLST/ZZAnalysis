@@ -3,7 +3,7 @@ LHE_PropagatorRewgt = [
    "Name:CPStoBWPropRewgt PropScheme:FixedWidth hmass:126 Options:DivideP=SamplePropagator isGen:1 isProp:1",
 ]
 LHE_Probabilities_MCFM = [
-   "Name:SampleHypothesisMCFM Alias:<Name> Process:HSMHiggs Production:Had_ZH_S MatrixElement:MCFM Couplings:ghz1=1,0 Options:DivideP=SampleHypothesisMCFM hmass:126 Cluster:BestLOAssociatedZ isGen:1 NoBranch:1",
+   "Name:SampleHypothesisMCFM Alias:<Name> Process:HSMHiggs Production:Had_ZH_S MatrixElement:MCFM Couplings:ghz1=1,0 hmass:126 Cluster:BestLOAssociatedZ isGen:1 NoBranch:1",
 
    "Name:JJEW_SIG_ghv1_1_MCFM Process:HSMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz1=1,0 Options:DivideP=SampleHypothesisMCFM hmass:126 Cluster:BestLOAssociatedVBF isGen:1",
    #"Name:JJEW_SIG_ghv1prime2_1E4_MCFM Process:HSMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz1_prime2=10000,0 Options:DivideP=SampleHypothesisMCFM hmass:126 Cluster:BestLOAssociatedVBF isGen:1",
