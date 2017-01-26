@@ -1120,7 +1120,7 @@ process.pileupJetIdUpdated = process.pileupJetId.clone(
     )
 
 # q/g likelihood
-qgDatabaseVersion = '80X'
+qgDatabaseVersion = 'cmssw8020_v2'
 process.QGPoolDBESSource = cms.ESSource("PoolDBESSource",
       DBParameters = cms.PSet(messageLevel = cms.untracked.int32(1)),
       timetype = cms.string('runnumber'),
