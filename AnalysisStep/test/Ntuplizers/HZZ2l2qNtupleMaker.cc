@@ -353,14 +353,14 @@ namespace {
   Float_t GenLep2Eta  = 0;
   Float_t GenLep2Phi  = 0;
   Short_t GenLep2Id  = 0;
-  /*Float_t GenLep3Pt  = 0;
+  Float_t GenLep3Pt  = 0;
   Float_t GenLep3Eta  = 0;
   Float_t GenLep3Phi  = 0;
   Short_t GenLep3Id  = 0;
   Float_t GenLep4Pt  = 0;
   Float_t GenLep4Eta  = 0;
   Float_t GenLep4Phi  = 0;
-  Short_t GenLep4Id  = 0;*/
+  Short_t GenLep4Id  = 0;
   Float_t GenAssocLep1Pt  = 0;
   Float_t GenAssocLep1Eta  = 0;
   Float_t GenAssocLep1Phi  = 0;
@@ -1821,7 +1821,7 @@ void HZZ2l2qNtupleMaker::FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t 
   GenLep2Phi=Lep2.Phi();
   GenLep2Id=Lep2Id;
 
-  /* GenLep3Pt=Lep3.Pt();
+  GenLep3Pt=Lep3.Pt();
   GenLep3Eta=Lep3.Eta();
   GenLep3Phi=Lep3.Phi();
   GenLep3Id=Lep3Id;
@@ -1829,8 +1829,7 @@ void HZZ2l2qNtupleMaker::FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t 
   GenLep4Pt=Lep4.Pt();
   GenLep4Eta=Lep4.Eta();
   GenLep4Phi=Lep4.Phi();
-  GenLep4Id=Lep4Id; */
-  
+  GenLep4Id=Lep4Id;  
   return;
 }
 
@@ -2157,14 +2156,14 @@ void HZZ2l2qNtupleMaker::BookAllBranches(){
   myTree->Book("GenLep2Eta",GenLep2Eta);
   myTree->Book("GenLep2Phi",GenLep2Phi);
   myTree->Book("GenLep2Id",GenLep2Id);
-  /* myTree->Book("GenLep3Pt",GenLep3Pt);
+  myTree->Book("GenLep3Pt",GenLep3Pt);
   myTree->Book("GenLep3Eta",GenLep3Eta);
   myTree->Book("GenLep3Phi",GenLep3Phi);
   myTree->Book("GenLep3Id",GenLep3Id);
   myTree->Book("GenLep4Pt",GenLep4Pt);
   myTree->Book("GenLep4Eta",GenLep4Eta);
   myTree->Book("GenLep4Phi",GenLep4Phi);
-  myTree->Book("GenLep4Id",GenLep4Id); */
+  myTree->Book("GenLep4Id",GenLep4Id);
   myTree->Book("GenAssocLep1Pt",GenAssocLep1Pt);
   myTree->Book("GenAssocLep1Eta",GenAssocLep1Eta);
   myTree->Book("GenAssocLep1Phi",GenAssocLep1Phi);
