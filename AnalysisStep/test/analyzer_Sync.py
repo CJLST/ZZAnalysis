@@ -1,5 +1,5 @@
 
-LEPTON_SETUP = 2017
+#LEPTON_SETUP = 2017 # current default = 2017 = Moriond2017
 #ELECORRTYPE = "None" # "None" to switch off
 #ELEREGRESSION = "None" # Not supported as of 2016
 #DATA_TAG = "ReReco" # Change to PromptReco for period H
@@ -29,6 +29,7 @@ PyFilePath = os.environ['CMSSW_BASE'] + "/src/ZZAnalysis/AnalysisStep/test/"
 ### ----------------------------------------------------------------------
 
 execfile(PyFilePath + "analyzer.py")
+execfile(PyFilePath + "prod/pyFragments/RecoProbabilities.py")
 
 process.source.inputCommands = cms.untracked.vstring("keep *", "drop LHERunInfoProduct_*_*_*", "drop LHEEventProduct_*_*_*")
 
@@ -38,27 +39,31 @@ process.source.inputCommands = cms.untracked.vstring("keep *", "drop LHERunInfoP
 
 process.source.fileNames = cms.untracked.vstring(
 
-    ## Spring16 MiniAODv1 files for synchronization
-#    '/store/mc/RunIISpring16MiniAODv1/VBF_HToZZTo4L_M190_13TeV_powheg2_JHUgenV6_pythia8/MINIAODSIM/PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_v3-v1/00000/28ADE6D5-021F-E611-B1A4-00145E5521B9.root',
-#    '/store/mc/RunIISpring16MiniAODv1/WminusH_HToZZTo4L_M150_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/MINIAODSIM/PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_v3-v1/00000/C6DF34D4-CF20-E611-A8EE-782BCB27B958.root'
-    ## High-mass sync file
-#    '/store/mc/RunIISpring16MiniAODv2/Graviton2PBToZZTo4L_width0p1_M-2000_13TeV-JHUgenV6-pythia8/MINIAODSIM/PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/00000/EC1FA990-8A24-E611-9E70-0025905A48F2.root'
 
-
+### ICHEP 16 sync files
     ## reHLT miniAODv2 files for sync
-    '/store/mc/RunIISummer16MiniAODv2/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/120000/0062F021-8DC0-E611-9C48-90B11CBCFFEA.root',
+#    '/store/mc/RunIISummer16MiniAODv2/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/120000/0062F021-8DC0-E611-9C48-90B11CBCFFEA.root',
 #    '/store/mc/RunIISpring16MiniAODv2/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/MINIAODSIM/PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/80000/9AEF77A8-4B3B-E611-97F0-44A842240F8D.root',
                                                  ## '/store/mc/RunIISpring16MiniAODv2/WminusH_HToZZTo4L_M125_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/MINIAODSIM/PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/20000/FE43CA0A-993A-E611-91FB-0242AC130002.root'
-
     ## High-mass reHLT sync file
 #'/store/mc/RunIISpring16MiniAODv2/Graviton2PBToZZTo4L_width0p1_M-2000_13TeV-JHUgenV6-pythia8/MINIAODSIM/PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/20000/EC5DACC2-7539-E611-9499-001C23BED42C.root'
 
+
+### Moriond 17 sync files
+    ## Low mass
+    '/store/mc/RunIISummer16MiniAODv2/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/22F32262-3FC5-E611-B373-D4AE526DEDB7.root',
+    '/store/mc/RunIISummer16MiniAODv2/WplusH_HToZZTo4L_M125_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/60000/387FA719-E6CC-E611-A1F0-FA163E7D6032.root',
+    '/store/mc/RunIISummer16MiniAODv2/ZH_HToZZ_4LFilter_M125_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/50DE4DA2-1EC1-E611-9A3C-002590E7E010.root'
+
+    ## High mass
+#    '/store/mc/RunIISummer16MiniAODv2/Graviton2PMToZZTo4L_M750_13TeV_JHUgenV6_pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/120000/9AA3CE64-F3CB-E611-BB50-0025907B5048.root'
+
     )
 
-process.calibratedPatElectrons.isSynchronization = cms.bool(False)
-process.calibratedMuons.isSynchronization = cms.bool(False)
+process.calibratedPatElectrons.isSynchronization = cms.bool(True)
+process.calibratedMuons.isSynchronization = cms.bool(True)
 
-process.maxEvents.input = 1000
+process.maxEvents.input = -1
 #process.source.skipEvents = cms.untracked.uint32(5750)
 
 # Silence output

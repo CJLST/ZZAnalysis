@@ -47,7 +47,6 @@
 #include <ZZAnalysis/AnalysisStep/interface/MCHistoryTools.h>
 #include <ZZAnalysis/AnalysisStep/interface/PUReweight.h>
 #include "ZZAnalysis/AnalysisStep/interface/EwkCorrections.h"
-#include "ZZAnalysis/AnalysisStep/interface/reweighting.h"
 #include "ZZAnalysis/AnalysisStep/interface/LHEHandler.h"
 #include "ZZAnalysis/AnalysisStep/src/kFactors.C"
 #include <ZZAnalysis/AnalysisStep/interface/bitops.h>
@@ -55,6 +54,7 @@
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
 #include <ZZAnalysis/AnalysisStep/interface/JetCleaner.h>
 #include <ZZAnalysis/AnalysisStep/interface/utils.h>
+#include <ZZAnalysis/AnalysisStep/interface/miscenums.h>
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
 
@@ -170,124 +170,6 @@ namespace {
   std::vector<float> fsrGenPt;
   Bool_t passIsoPreFSR = 0;
 
-  Float_t p0plus_VAJHU = 0;
-  Float_t p0_g1prime2_VAJHU = 0;
-  Float_t p0hplus_VAJHU = 0;
-  Float_t p0minus_VAJHU = 0;
-
-  Float_t p0_g1prime2_zgs_VAJHU = 0;
-  Float_t p0hplus_zgs_VAJHU = 0;
-  Float_t p0minus_zgs_VAJHU = 0;
-  Float_t p0hplus_gsgs_VAJHU = 0;
-  Float_t p0minus_gsgs_VAJHU = 0;
-
-  Float_t pg1g1prime2_VAJHU = 0;
-  Float_t pg1g2_VAJHU = 0;
-  Float_t pg1g2_pi2_VAJHU = 0;
-  Float_t pg1g4_VAJHU = 0;
-  Float_t pg1g4_pi2_VAJHU = 0;
-
-  Float_t p0plus_zz_g1prime2_zgs_VAJHU = 0;
-  Float_t p0plus_zz_g1prime2_zgs_pi2_VAJHU = 0;
-  Float_t p0plus_zz_0hplus_zgs_VAJHU = 0;
-  Float_t p0plus_zz_0minus_zgs_VAJHU = 0;
-  Float_t p0plus_zz_0hplus_gsgs_VAJHU = 0;
-  Float_t p0plus_zz_0minus_gsgs_VAJHU = 0;
-
-  Float_t p1_VAJHU = 0;
-  Float_t p1_prodIndep_VAJHU = 0;
-  Float_t p1plus_VAJHU = 0;
-  Float_t p1plus_prodIndep_VAJHU = 0;
-
-  Float_t p2plus_gg_VAJHU = 0;
-  Float_t p2plus_qqb_VAJHU = 0;
-  Float_t p2plus_prodIndep_VAJHU = 0;
-  Float_t p2h2plus_gg_VAJHU = 0;
-  Float_t p2h2plus_qqb_VAJHU = 0;
-  Float_t p2h2plus_prodIndep_VAJHU = 0;
-  Float_t p2h3plus_gg_VAJHU = 0;
-  Float_t p2h3plus_qqb_VAJHU = 0;
-  Float_t p2h3plus_prodIndep_VAJHU = 0;
-  Float_t p2h4plus_gg_VAJHU = 0;
-  Float_t p2h4plus_qqb_VAJHU = 0;
-  Float_t p2h4plus_prodIndep_VAJHU = 0;
-  Float_t p2bplus_gg_VAJHU = 0;
-  Float_t p2bplus_qqb_VAJHU = 0;
-  Float_t p2bplus_prodIndep_VAJHU = 0;
-  Float_t p2h6plus_gg_VAJHU = 0;
-  Float_t p2h6plus_qqb_VAJHU = 0;
-  Float_t p2h6plus_prodIndep_VAJHU = 0;
-  Float_t p2h7plus_gg_VAJHU = 0;
-  Float_t p2h7plus_qqb_VAJHU = 0;
-  Float_t p2h7plus_prodIndep_VAJHU = 0;
-  Float_t p2hminus_gg_VAJHU = 0;
-  Float_t p2hminus_qqb_VAJHU = 0;
-  Float_t p2hminus_prodIndep_VAJHU = 0;
-  Float_t p2h9minus_gg_VAJHU = 0;
-  Float_t p2h9minus_qqb_VAJHU = 0;
-  Float_t p2h9minus_prodIndep_VAJHU = 0;
-  Float_t p2h10minus_gg_VAJHU = 0;
-  Float_t p2h10minus_qqb_VAJHU = 0;
-  Float_t p2h10minus_prodIndep_VAJHU = 0;
-
-  Float_t p0plus_VAMCFM = 0;
-  Float_t ggzz_VAMCFM = 0;
-  Float_t ggzz_p0plus_VAMCFM = 0;
-  Float_t bkg_VAMCFM = 0;
-  Float_t bkg_prodIndep_VAMCFM = 0;
-  Float_t pZJJ_VAMCFM = 0;
-  Float_t Dgg10_VAMCFM = 0;
-
-  Float_t p0plus_m4l = 0;
-  Float_t p0plus_m4l_ScaleUp = 0;
-  Float_t p0plus_m4l_ScaleDown = 0;
-  Float_t p0plus_m4l_ResUp = 0;
-  Float_t p0plus_m4l_ResDown = 0;
-  Float_t bkg_m4l = 0;
-  Float_t bkg_m4l_ScaleUp = 0;
-  Float_t bkg_m4l_ScaleDown = 0;
-  Float_t bkg_m4l_ResUp = 0;
-  Float_t bkg_m4l_ResDown = 0;
-
-  Float_t pwh_leptonic_VAJHU = 0;
-  Float_t pzh_leptonic_VAJHU = 0;
-
-  Float_t phjj_VAJHU_highestPTJets = 0;
-  Float_t pvbf_VAJHU_highestPTJets = 0;
-  Float_t phjj_VAJHU_highestPTJets_up = 0;
-  Float_t pvbf_VAJHU_highestPTJets_up = 0;
-  Float_t phjj_VAJHU_highestPTJets_dn = 0;
-  Float_t pvbf_VAJHU_highestPTJets_dn = 0;
-
-  Float_t phjj_VAJHU_bestDjet = 0;
-  Float_t pvbf_VAJHU_bestDjet = 0;
-  Float_t phjj_VAJHU_bestDjet_up = 0;
-  Float_t pvbf_VAJHU_bestDjet_up = 0;
-  Float_t phjj_VAJHU_bestDjet_dn = 0;
-  Float_t pvbf_VAJHU_bestDjet_dn = 0;
-
-  Float_t pAux_vbf_VAJHU = 0;
-  Float_t pAux_vbf_VAJHU_up = 0;
-  Float_t pAux_vbf_VAJHU_dn = 0;
-
-  Float_t phj_VAJHU = 0;
-  Float_t phj_VAJHU_up = 0;
-  Float_t phj_VAJHU_dn = 0;
-
-  Float_t pwh_hadronic_VAJHU = 0;
-  Float_t pwh_hadronic_VAJHU_up = 0;
-  Float_t pwh_hadronic_VAJHU_dn = 0;
-  Float_t pzh_hadronic_VAJHU = 0;
-  Float_t pzh_hadronic_VAJHU_up = 0;
-  Float_t pzh_hadronic_VAJHU_dn = 0;
-
-  Float_t ptth_VAJHU = 0;
-  Float_t ptth_VAJHU_up = 0;
-  Float_t ptth_VAJHU_dn = 0;
-  Float_t pbbh_VAJHU = 0;
-  Float_t pbbh_VAJHU_up = 0;
-  Float_t pbbh_VAJHU_dn = 0;
-
   std::vector<float> JetPt ;
   std::vector<float> JetEta ;
   std::vector<float> JetPhi ;
@@ -324,7 +206,6 @@ namespace {
   Short_t genFinalState  = 0;
   Int_t genProcessId  = 0;
   Float_t genHEPMCweight  = 0;
-  std::vector<float> reweightingweights;
 
   std::vector<float> LHEMotherPz;
   std::vector<float> LHEMotherE;
@@ -399,11 +280,6 @@ namespace {
   Float_t GenAssocLep2Eta  = 0;
   Float_t GenAssocLep2Phi  = 0;
   Short_t GenAssocLep2Id  = 0;
-  Float_t Gencosthetastar  = 0;
-  Float_t Genhelphi  = 0;
-  Float_t GenhelcosthetaZ1  = 0;
-  Float_t GenhelcosthetaZ2  = 0;
-  Float_t GenphistarZ1  = 0;
 
 
 //FIXME: temporary fix to the mismatch of charge() and sign(pdgId()) for muons with BTT=4
@@ -454,9 +330,24 @@ private:
   Float_t getHqTWeight(double mH, double genPt) const;
   Float_t getFakeWeight(Float_t LepPt, Float_t LepEta, Int_t LepID, Int_t LepZ1ID);
 
-  void addweight(float &weight, vector<float> &weight_reweighted, float weighttoadd);
+  void addweight(float &weight, float weighttoadd);
 
   void getCheckedUserFloat(const pat::CompositeCandidate& cand, const std::string& strval, Float_t& setval, Float_t defaultval=0);
+
+  void buildMELABranches();
+  void addToMELACluster(MELAComputation* me_computer, std::vector<MELACluster*>& me_clusters);
+  void computeMELABranches(MELACandidate* cand);
+  void updateMELAClusters_Common(const string clustertype);
+  void updateMELAClusters_NoInitialQ(const string clustertype);
+  void updateMELAClusters_NoInitialG(const string clustertype);
+  void updateMELAClusters_NoAssociatedG(const string clustertype);
+  void updateMELAClusters_NoInitialGNoAssociatedG(const string clustertype);
+  void updateMELAClusters_BestLOAssociatedZ(const string clustertype);
+  void updateMELAClusters_BestLOAssociatedW(const string clustertype);
+  void updateMELAClusters_BestLOAssociatedVBF(const string clustertype);
+  void pushRecoMELABranches(const pat::CompositeCandidate& cand);
+  void pushLHEMELABranches();
+  void clearMELABranches();
 
   // ----------member data ---------------------------
   ZZ4lConfigHelper myHelper;
@@ -466,14 +357,13 @@ private:
 
   HZZ4lNtupleFactory *myTree;
   TH1F *hCounter;
-  TH2F *hCounter_reweighted;
-  TTree *couplingstree;
 
   bool isMC;
   bool is_loose_ele_selection; // Collection includes candidates with loose electrons/TLEs
   bool applyTrigger;    // Keep only events passing trigger (if skipEmptyEvents=true)
   bool applySkim;       //   "     "      "         skim (if skipEmptyEvents=true)
   bool skipEmptyEvents; // Skip events whith no selected candidate (otherwise, gen info is preserved for all events; candidates not passing trigger&&skim are flagged with negative ZZsel)
+  FailedTreeLevel failedTreeLevel;  //if/how events with no selected candidate are written to a separate tree (see miscenums.h for details)
   bool applyTrigEffWeight;// apply trigger efficiency weight (concerns samples where trigger is not applied)
   Float_t xsec;
   int year;
@@ -481,10 +371,16 @@ private:
   double Hmass;
 
   Mela mela;
-  Reweighting reweighting;
-  int nReweightingSamples;
-  bool doreweighting;
-  ReweightingType reweightingtype;
+  std::vector<std::string> recoMElist;
+  std::vector<MELAOptionParser*> recome_originalopts;
+  std::vector<MELAOptionParser*> recome_copyopts;
+  std::vector<std::string> lheMElist;
+  //std::vector<MELAOptionParser*> lheme_originalopts;
+  std::vector<MELAOptionParser*> lheme_copyopts;
+  std::vector<MELAHypothesis*> lheme_units;
+  std::vector<MELAHypothesis*> lheme_aliased_units;
+  std::vector<MELAComputation*> lheme_computers;
+  std::vector<MELACluster*> lheme_clusters;
 
   bool addLHEKinematics;
   LHEHandler* lheHandler;
@@ -532,27 +428,6 @@ private:
   Float_t gen_sumGenMCWeight;
   Float_t gen_sumWeights;
 
-  std::vector<Float_t> Nevt_Gen_reweighted;
-  std::vector<Float_t> Nevt_Gen_lumiBlock_reweighted;
-
-  std::vector<Float_t> gen_ZZ4mu_reweighted;
-  std::vector<Float_t> gen_ZZ4e_reweighted;
-  std::vector<Float_t> gen_ZZ2mu2e_reweighted;
-  std::vector<Float_t> gen_ZZ2l2tau_reweighted;
-  std::vector<Float_t> gen_ZZ2emu2tau_reweighted;
-  std::vector<Float_t> gen_ZZ4tau_reweighted;
-  std::vector<Float_t> gen_ZZ4mu_EtaAcceptance_reweighted;
-  std::vector<Float_t> gen_ZZ4mu_LeptonAcceptance_reweighted;
-  std::vector<Float_t> gen_ZZ4e_EtaAcceptance_reweighted;
-  std::vector<Float_t> gen_ZZ4e_LeptonAcceptance_reweighted;
-  std::vector<Float_t> gen_ZZ2mu2e_EtaAcceptance_reweighted;
-  std::vector<Float_t> gen_ZZ2mu2e_LeptonAcceptance_reweighted;
-  std::vector<Float_t> gen_BUGGY_reweighted;
-  std::vector<Float_t> gen_Unknown_reweighted;
-
-  std::vector<Float_t> gen_sumGenMCWeight_reweighted;
-  std::vector<Float_t> gen_sumWeights_reweighted;
-
   string sampleName;
 
   std::vector<const reco::Candidate *> genFSR;
@@ -581,33 +456,22 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   theCandLabel(pset.getUntrackedParameter<string>("CandCollection")), // Name of input ZZ collection
   theFileName(pset.getUntrackedParameter<string>("fileName")),
   skipEmptyEvents(pset.getParameter<bool>("skipEmptyEvents")), // Do not store
+  failedTreeLevel(FailedTreeLevel(pset.getParameter<int>("failedTreeLevel"))),
   applyTrigEffWeight(pset.getParameter<bool>("applyTrigEff")),
   xsec(pset.getParameter<double>("xsec")),
   year(pset.getParameter<int>("setup")),
   sqrts(SetupToSqrts(year)),
   Hmass(pset.getParameter<double>("superMelaMass")),
   mela(sqrts, Hmass, TVar::ERROR),
-  reweighting(
-              &mela,
-              pset.getParameter<std::string>("reweightingtype"),
-              pset.getParameter<int>("spin"),
-              pset.getParameter<std::vector<double> >("HVVcouplings_real"),
-              pset.getParameter<std::vector<double> >("HVVcouplings_imag"),
-              pset.getParameter<std::vector<double> >("ZVVcouplings_real"),
-              pset.getParameter<std::vector<double> >("ZVVcouplings_imag"),
-              pset.getParameter<std::vector<double> >("Gggcouplings_real"),
-              pset.getParameter<std::vector<double> >("Gggcouplings_imag"),
-              pset.getParameter<std::vector<double> >("GVVcouplings_real"),
-              pset.getParameter<std::vector<double> >("GVVcouplings_imag")
-             ),
-  nReweightingSamples(reweighting.nReweightingSamples),
-  doreweighting(nReweightingSamples != 0),
-  reweightingtype(reweighting.reweightingtype),
+  recoMElist(pset.getParameter<std::vector<std::string>>("recoProbabilities")),
+
+  lheMElist(pset.getParameter<std::vector<std::string>>("lheProbabilities")),
   addLHEKinematics(pset.getParameter<bool>("AddLHEKinematics")),
   lheHandler(0),
   apply_K_NNLOQCD_ZZGG(pset.getParameter<int>("Apply_K_NNLOQCD_ZZGG")),
   apply_K_NNLOQCD_ZZQQB(pset.getParameter<bool>("Apply_K_NNLOQCD_ZZQQB")),
   apply_K_NLOEW_ZZQQB(pset.getParameter<bool>("Apply_K_NLOEW_ZZQQB")),
+
   reweight(),
   sampleName(pset.getParameter<string>("sampleName")),
   hTH2D_Mu_All(0),
@@ -617,26 +481,6 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   h_weight(0)
 {
   //cout<< "Beginning Constructor\n\n\n" <<endl;
-
-  Nevt_Gen_reweighted.resize(nReweightingSamples);
-  Nevt_Gen_lumiBlock_reweighted.resize(nReweightingSamples);
-  gen_ZZ4mu_reweighted.resize(nReweightingSamples);
-  gen_ZZ4e_reweighted.resize(nReweightingSamples);
-  gen_ZZ2mu2e_reweighted.resize(nReweightingSamples);
-  gen_ZZ2l2tau_reweighted.resize(nReweightingSamples);
-  gen_ZZ2emu2tau_reweighted.resize(nReweightingSamples);
-  gen_ZZ4tau_reweighted.resize(nReweightingSamples);
-  gen_ZZ4mu_EtaAcceptance_reweighted.resize(nReweightingSamples);
-  gen_ZZ4mu_LeptonAcceptance_reweighted.resize(nReweightingSamples);
-  gen_ZZ4e_EtaAcceptance_reweighted.resize(nReweightingSamples);
-  gen_ZZ4e_LeptonAcceptance_reweighted.resize(nReweightingSamples);
-  gen_ZZ2mu2e_EtaAcceptance_reweighted.resize(nReweightingSamples);
-  gen_ZZ2mu2e_LeptonAcceptance_reweighted.resize(nReweightingSamples);
-  gen_BUGGY_reweighted.resize(nReweightingSamples);
-  gen_Unknown_reweighted.resize(nReweightingSamples);
-  gen_sumGenMCWeight_reweighted.resize(nReweightingSamples);
-  gen_sumWeights_reweighted.resize(nReweightingSamples);
-
   consumesMany<std::vector< PileupSummaryInfo > >();
   genParticleToken = consumes<edm::View<reco::Candidate> >(edm::InputTag("prunedGenParticles"));
   genInfoToken = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
@@ -663,9 +507,11 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   } else {
     applyTrigger=false;
     applySkim=false;
+    failedTreeLevel=noFailedTree; //failed events are in the main tree
   }
 
   isMC = myHelper.isMC();
+  addLHEKinematics = addLHEKinematics || lheMElist.size()>0;
   if (isMC) lheHandler = new LHEHandler(pset.getParameter<int>("VVMode"), pset.getParameter<int>("VVDecayMode"), addLHEKinematics);
 
   Nevt_Gen = 0;
@@ -737,7 +583,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
         hTH2D_El_IdIsoSip_Cracks = (TH1*) root_file->Get("ele_scale_factors_gap")->Clone();
         root_file->Close();
 
-	TString filenameEleReco("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi.txt_SF2D.root");
+        TString filenameEleReco("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi.txt_SF2D.root");
         edm::FileInPath fipEleReco(filenameEleReco.Data());
         fipPath = fipEleReco.fullPath();
         TFile *root_file_reco = TFile::Open(fipPath.data(),"READ");
@@ -798,6 +644,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
 
 HZZ4lNtupleMaker::~HZZ4lNtupleMaker()
 {
+  clearMELABranches(); // Cleans LHE branches
   if (lheHandler!=0) delete lheHandler;
 }
 
@@ -896,32 +743,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
         FillAssocLepGenInfo(genAssocLeps);
       }
 
-    }
-
-    // Note: Should move into LHEHandler -- U. Sarica
-    reweightingweights.clear();
-    if (doreweighting) {
-      assert(reweighting.canreweight(genZLeps.size(), genFinalState));
-      int flavor = (GenZ1Flav==GenZ2Flav ? 0 : 2);
-      float myprobability;
-      vector<float> probabilities(nReweightingSamples);
-      reweighting.setmycouplings();
-      myprobability = reweighting.computeP(GenHMass, GenZ1Mass, GenZ2Mass, Gencosthetastar, GenhelcosthetaZ1, GenhelcosthetaZ2, Genhelphi, GenphistarZ1, flavor);
-      for (int i = 0; i < nReweightingSamples; i++) {
-        reweighting.setcouplings(i);
-        probabilities[i] = reweighting.computeP(GenHMass, GenZ1Mass, GenZ2Mass, Gencosthetastar, GenhelcosthetaZ1, GenhelcosthetaZ2, Genhelphi, GenphistarZ1, flavor);
-        reweightingweights.push_back(probabilities[i] / myprobability);
-      }
-    }
-
-    // keep track of sum of weights
-    gen_sumPUWeight += PUWeight;
-    addweight(gen_sumGenMCWeight, gen_sumGenMCWeight_reweighted, genHEPMCweight);
-    addweight(gen_sumWeights, gen_sumWeights_reweighted, PUWeight*genHEPMCweight);
-
-
-    // LHE information
-    if (isMC){
+      // LHE information
       edm::Handle<LHEEventProduct> lhe_evt;
       vector<edm::Handle<LHEEventProduct> > lhe_handles;
       event.getManyByType(lhe_handles);
@@ -934,35 +756,38 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       }
       //else cerr << "lhe_handles.size()==0" << endl;
     }
-    //
 
+    // keep track of sum of weights
+    gen_sumPUWeight += PUWeight;
+    addweight(gen_sumGenMCWeight, genHEPMCweight);
+    addweight(gen_sumWeights, PUWeight*genHEPMCweight);
 
     mch.genAcceptance(gen_ZZ4lInEtaAcceptance, gen_ZZ4lInEtaPtAcceptance);
 
-    addweight(Nevt_Gen_lumiBlock, Nevt_Gen_lumiBlock_reweighted, 1);
+    addweight(Nevt_Gen_lumiBlock, 1);
     if (genFinalState == EEEE) {
-      addweight(gen_ZZ4e, gen_ZZ4e_reweighted, 1);
-      if (gen_ZZ4lInEtaAcceptance) addweight(gen_ZZ4e_EtaAcceptance, gen_ZZ4e_EtaAcceptance_reweighted, 1);
-      if (gen_ZZ4lInEtaPtAcceptance) addweight(gen_ZZ4e_LeptonAcceptance, gen_ZZ4e_LeptonAcceptance_reweighted, 1);;
+      addweight(gen_ZZ4e, 1);
+      if (gen_ZZ4lInEtaAcceptance) addweight(gen_ZZ4e_EtaAcceptance, 1);
+      if (gen_ZZ4lInEtaPtAcceptance) addweight(gen_ZZ4e_LeptonAcceptance, 1);;
     } else if (genFinalState == MMMM) {
-      addweight(gen_ZZ4mu, gen_ZZ4mu_reweighted, 1);
-      if (gen_ZZ4lInEtaAcceptance) addweight(gen_ZZ4mu_EtaAcceptance, gen_ZZ4mu_EtaAcceptance_reweighted, 1);
-      if (gen_ZZ4lInEtaPtAcceptance) addweight(gen_ZZ4mu_LeptonAcceptance, gen_ZZ4mu_LeptonAcceptance_reweighted, 1);;
+      addweight(gen_ZZ4mu, 1);
+      if (gen_ZZ4lInEtaAcceptance) addweight(gen_ZZ4mu_EtaAcceptance, 1);
+      if (gen_ZZ4lInEtaPtAcceptance) addweight(gen_ZZ4mu_LeptonAcceptance, 1);;
     } else if (genFinalState == EEMM) {
-      addweight(gen_ZZ2mu2e, gen_ZZ2mu2e_reweighted, 1);
-      if (gen_ZZ4lInEtaAcceptance) addweight(gen_ZZ2mu2e_EtaAcceptance, gen_ZZ2mu2e_EtaAcceptance_reweighted, 1);
-      if (gen_ZZ4lInEtaPtAcceptance) addweight(gen_ZZ2mu2e_LeptonAcceptance, gen_ZZ2mu2e_LeptonAcceptance_reweighted, 1);;
+      addweight(gen_ZZ2mu2e, 1);
+      if (gen_ZZ4lInEtaAcceptance) addweight(gen_ZZ2mu2e_EtaAcceptance, 1);
+      if (gen_ZZ4lInEtaPtAcceptance) addweight(gen_ZZ2mu2e_LeptonAcceptance, 1);;
     } else if (genFinalState == llTT){
-      addweight(gen_ZZ2emu2tau, gen_ZZ2emu2tau_reweighted, 1);
-      addweight(gen_ZZ2l2tau, gen_ZZ2l2tau_reweighted, 1);
+      addweight(gen_ZZ2emu2tau, 1);
+      addweight(gen_ZZ2l2tau, 1);
     } else if (genFinalState == TTTT){
-      addweight(gen_ZZ4tau, gen_ZZ4tau_reweighted, 1);
-      addweight(gen_ZZ2l2tau, gen_ZZ2l2tau_reweighted, 1);
-    } else if (genFinalState == BUGGY){ // handle H->ddbar 2012 generator bug!!!
-      addweight(gen_BUGGY, gen_BUGGY_reweighted, 1);
+      addweight(gen_ZZ4tau, 1);
+      addweight(gen_ZZ2l2tau, 1);
+    } else if (genFinalState == BUGGY){ // handle MCFM ZZ->4tau mZ<2mtau bug
+      addweight(gen_BUGGY, 1);
       return; // BUGGY events are skipped
     } else {
-      addweight(gen_Unknown, gen_Unknown_reweighted, 1);
+      addweight(gen_Unknown, 1);
     }
 
 // End of MC history analysis ------------------------------------------
@@ -981,8 +806,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   }
   const edm::View<pat::CompositeCandidate>* cands = candHandle.product();
 
-  if (skipEmptyEvents && cands->size() == 0) return; // Skip events with no candidate, unless skipEmptyEvents = false
-
   // For Z+L CRs, we want only events with exactly 1 Z+l candidate. FIXME: this has to be reviewed.
   if (theChannel==ZL && cands->size() != 1) return;
 
@@ -991,17 +814,22 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   Handle<edm::TriggerResults> triggerResults;
   event.getByToken(triggerResultToken, triggerResults);
 
+  bool failed = false;
+
   // Apply MC filter (skip event)
+  // Heshy note: I'm not turning return into failed = true because it looks like it's applied even if !skipEmptyEvents.
+  //             It only does anything if the MCFILTER variable is set in the csv file, which is not currently the case.
   if (isMC && !(myHelper.passMCFilter(event,triggerResults))) return;
 
   // Apply skim
   bool evtPassSkim = myHelper.passSkim(event,triggerResults,trigWord);
-  if (applySkim && !evtPassSkim) return;
+  if (applySkim && !evtPassSkim) failed = true;       //but gen information will still be recorded if failedTreeLevel != 0
 
   // Apply trigger request (skip event)
   bool evtPassTrigger = myHelper.passTrigger(event,triggerResults,trigWord);
-  if (applyTrigger && !evtPassTrigger) return;
+  if (applyTrigger && !evtPassTrigger) failed = true; //but gen information will still be recorded if failedTreeLevel != 0
 
+  if (skipEmptyEvents && !failedTreeLevel && (cands->size() == 0 || failed)) return; // Skip events with no candidate, unless skipEmptyEvents = false or failedTreeLevel != 0
 
   //Fill MC truth information
   if (isMC) FillKFactors(genInfo, genZLeps);
@@ -1062,6 +890,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   //Loop on the candidates
   vector<Int_t> CRFLAG(cands->size());
   for( edm::View<pat::CompositeCandidate>::const_iterator cand = cands->begin(); cand != cands->end(); ++cand) {
+    if (failed) break; //don't waste time on this
     size_t icand= cand-cands->begin();
 
     //    int candChannel = cand->userFloat("candChannel"); // This is currently the product of pdgId of leptons (eg 14641, 28561, 20449)
@@ -1121,6 +950,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   // Now we can write the variables for candidates
   int nFilled=0;
   for( edm::View<pat::CompositeCandidate>::const_iterator cand = cands->begin(); cand != cands->end(); ++cand) {
+    if (failed) break; //don't waste time on this
     size_t icand= cand-cands->begin();
 
     if (!( theChannel==ZL || CRFLAG[icand] || (bool)(cand->userFloat("isBestCand")) )) continue; // Skip events other than the best cand (or CR candidates in the CR)
@@ -1132,15 +962,19 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     }
     FillCandidate(*cand, evtPassTrigger&&evtPassSkim, event, CRFLAG[icand]);
 
-
     // Fill the candidate as one entry in the tree. Do not reinitialize the event variables, as in CRs
     // there could be several candidates per event.
-    myTree->FillCurrentTree();
+    myTree->FillCurrentTree(true);
     ++nFilled;
   }
 
   // If no candidate was filled but we still want to keep gen-level and weights, we need to fill one entry anyhow.
-  if (skipEmptyEvents==false && nFilled==0) myTree->FillCurrentTree();
+  if (nFilled==0) {
+    if (skipEmptyEvents==false)
+      myTree->FillCurrentTree(true);
+    else
+      myTree->FillCurrentTree(false); //puts it in the failed tree if there is one
+  }
 }
 
 
@@ -1271,7 +1105,7 @@ void HZZ4lNtupleMaker::FillKFactors(edm::Handle<GenEventInfoProduct>& genInfo, s
 
 
 void HZZ4lNtupleMaker::FillLHECandidate(){
-  LHEMotherPz.clear(); //FIXME
+  LHEMotherPz.clear();
   LHEMotherE.clear();
   LHEMotherId.clear();
   LHEDaughterPt.clear();
@@ -1313,7 +1147,12 @@ void HZZ4lNtupleMaker::FillLHECandidate(){
           MELAParticle* Vij = Vi->getDaughter(iVj);
           if (Vij!=0){
             LHEDaughterPt.push_back(Vij->pt());
-            LHEDaughterEta.push_back(Vij->eta());
+            if (abs(Vij->pt() / Vij->z()) > 2e-8) {
+              LHEDaughterEta.push_back(Vij->eta());
+            } else {
+              edm::LogWarning("ZeroPt") << "pt = 0!  Using eta = +/-1e10\n" << Vij->id << " " << Vij->x() << " " << Vij->y() << " " << Vij->z() << " " << Vij->t();
+              LHEDaughterEta.push_back(copysign(1e10, Vij->z()));
+            }
             LHEDaughterPhi.push_back(Vij->phi());
             LHEDaughterMass.push_back(Vij->m());
             LHEDaughterId.push_back((short)Vij->id);
@@ -1350,7 +1189,12 @@ void HZZ4lNtupleMaker::FillLHECandidate(){
       MELAParticle* apart = AssociatedParticle.at(aa);
       if (apart!=0){
         LHEAssociatedParticlePt.push_back(apart->pt());
-        LHEAssociatedParticleEta.push_back(apart->eta());
+        if (abs(apart->pt() / apart->z()) > 2e-8) {
+          LHEAssociatedParticleEta.push_back(apart->eta());
+        } else {
+          edm::LogWarning("ZeroPt") << "pt = 0!  Using eta = +/-1e10\n" << apart->id << " " << apart->x() << " " << apart->y() << " " << apart->z() << " " << apart->t();
+          LHEAssociatedParticleEta.push_back(copysign(1e10, apart->z()));
+        }
         LHEAssociatedParticlePhi.push_back(apart->phi());
         LHEAssociatedParticleMass.push_back(apart->m());
         LHEAssociatedParticleId.push_back((short)apart->id);
@@ -1367,6 +1211,9 @@ void HZZ4lNtupleMaker::FillLHECandidate(){
     for (unsigned int ipart=0; ipart<LHEAssociatedParticleId.size(); ipart++) cout << "\t APart" << ipart << " (pt, eta, phi, m, id) = " << LHEAssociatedParticlePt.at(ipart) << " " << LHEAssociatedParticleEta.at(ipart) << " " << LHEAssociatedParticlePhi.at(ipart) << " " << LHEAssociatedParticleMass.at(ipart) << " " << LHEAssociatedParticleId.at(ipart) << endl;
     cout << endl;
     */
+
+    computeMELABranches(cand);
+    pushLHEMELABranches();
   }
 
   LHEPDFScale = lheHandler->getPDFScale();
@@ -1459,122 +1306,8 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     xi            = cand.userFloat("xi");
     xistar        = cand.userFloat("xistar");
 
-    // Get MELA probabilities, implemented with getCheckedUserFloat to later be able to disable some MEs through additional options
-    getCheckedUserFloat(cand, "p0plus_VAJHU", p0plus_VAJHU, 0);
-    getCheckedUserFloat(cand, "p0_g1prime2_VAJHU", p0_g1prime2_VAJHU, 0);
-    getCheckedUserFloat(cand, "p0hplus_VAJHU", p0hplus_VAJHU, 0);
-    getCheckedUserFloat(cand, "p0minus_VAJHU", p0minus_VAJHU, 0);
-    getCheckedUserFloat(cand, "p0_g1prime2_zgs_VAJHU", p0_g1prime2_zgs_VAJHU, 0);
-    getCheckedUserFloat(cand, "p0hplus_zgs_VAJHU", p0hplus_zgs_VAJHU, 0);
-    getCheckedUserFloat(cand, "p0minus_zgs_VAJHU", p0minus_zgs_VAJHU, 0);
-    getCheckedUserFloat(cand, "p0hplus_gsgs_VAJHU", p0hplus_gsgs_VAJHU, 0);
-    getCheckedUserFloat(cand, "p0minus_gsgs_VAJHU", p0minus_gsgs_VAJHU, 0);
-
-    getCheckedUserFloat(cand, "pg1g1prime2_VAJHU", pg1g1prime2_VAJHU, 0);
-    getCheckedUserFloat(cand, "pg1g2_VAJHU", pg1g2_VAJHU, 0);
-    getCheckedUserFloat(cand, "pg1g2_pi2_VAJHU", pg1g2_pi2_VAJHU, 0);
-    getCheckedUserFloat(cand, "pg1g4_VAJHU", pg1g4_VAJHU, 0);
-    getCheckedUserFloat(cand, "pg1g4_pi2_VAJHU", pg1g4_pi2_VAJHU, 0);
-    getCheckedUserFloat(cand, "p0plus_zz_g1prime2_zgs_VAJHU", p0plus_zz_g1prime2_zgs_VAJHU, 0);
-    getCheckedUserFloat(cand, "p0plus_zz_g1prime2_zgs_pi2_VAJHU", p0plus_zz_g1prime2_zgs_pi2_VAJHU, 0);
-    getCheckedUserFloat(cand, "p0plus_zz_0hplus_zgs_VAJHU", p0plus_zz_0hplus_zgs_VAJHU, 0);
-    getCheckedUserFloat(cand, "p0plus_zz_0minus_zgs_VAJHU", p0plus_zz_0minus_zgs_VAJHU, 0);
-    getCheckedUserFloat(cand, "p0plus_zz_0hplus_gsgs_VAJHU", p0plus_zz_0hplus_gsgs_VAJHU, 0);
-    getCheckedUserFloat(cand, "p0plus_zz_0minus_gsgs_VAJHU", p0plus_zz_0minus_gsgs_VAJHU, 0);
-
-    getCheckedUserFloat(cand, "p1_VAJHU", p1_VAJHU, 0);
-    getCheckedUserFloat(cand, "p1_prodIndep_VAJHU", p1_prodIndep_VAJHU, 0);
-    getCheckedUserFloat(cand, "p1plus_VAJHU", p1plus_VAJHU, 0);
-    getCheckedUserFloat(cand, "p1plus_prodIndep_VAJHU", p1plus_prodIndep_VAJHU, 0);
-
-    getCheckedUserFloat(cand, "p2plus_gg_VAJHU", p2plus_gg_VAJHU, 0);
-    getCheckedUserFloat(cand, "p2plus_qqb_VAJHU", p2plus_qqb_VAJHU, 0);
-    getCheckedUserFloat(cand, "p2plus_prodIndep_VAJHU", p2plus_prodIndep_VAJHU, 0);
-    getCheckedUserFloat(cand, "p2h2plus_gg_VAJHU", p2h2plus_gg_VAJHU, 0);
-    getCheckedUserFloat(cand, "p2h2plus_qqb_VAJHU", p2h2plus_qqb_VAJHU, 0);
-    getCheckedUserFloat(cand, "p2h2plus_prodIndep_VAJHU", p2h2plus_prodIndep_VAJHU, 0);
-    getCheckedUserFloat(cand, "p2h3plus_gg_VAJHU", p2h3plus_gg_VAJHU, 0);
-    getCheckedUserFloat(cand, "p2h3plus_qqb_VAJHU", p2h3plus_qqb_VAJHU, 0);
-    getCheckedUserFloat(cand, "p2h3plus_prodIndep_VAJHU", p2h3plus_prodIndep_VAJHU, 0);
-    getCheckedUserFloat(cand, "p2h4plus_gg_VAJHU", p2h4plus_gg_VAJHU, 0);
-    getCheckedUserFloat(cand, "p2h4plus_qqb_VAJHU", p2h4plus_qqb_VAJHU, 0);
-    getCheckedUserFloat(cand, "p2h4plus_prodIndep_VAJHU", p2h4plus_prodIndep_VAJHU, 0);
-    getCheckedUserFloat(cand, "p2bplus_gg_VAJHU", p2bplus_gg_VAJHU, 0);
-    getCheckedUserFloat(cand, "p2bplus_qqb_VAJHU", p2bplus_qqb_VAJHU, 0);
-    getCheckedUserFloat(cand, "p2bplus_prodIndep_VAJHU", p2bplus_prodIndep_VAJHU, 0);
-    getCheckedUserFloat(cand, "p2h6plus_gg_VAJHU", p2h6plus_gg_VAJHU, 0);
-    getCheckedUserFloat(cand, "p2h6plus_qqb_VAJHU", p2h6plus_qqb_VAJHU, 0);
-    getCheckedUserFloat(cand, "p2h6plus_prodIndep_VAJHU", p2h6plus_prodIndep_VAJHU, 0);
-    getCheckedUserFloat(cand, "p2h7plus_gg_VAJHU", p2h7plus_gg_VAJHU, 0);
-    getCheckedUserFloat(cand, "p2h7plus_qqb_VAJHU", p2h7plus_qqb_VAJHU, 0);
-    getCheckedUserFloat(cand, "p2h7plus_prodIndep_VAJHU", p2h7plus_prodIndep_VAJHU, 0);
-    getCheckedUserFloat(cand, "p2hminus_gg_VAJHU", p2hminus_gg_VAJHU, 0);
-    getCheckedUserFloat(cand, "p2hminus_qqb_VAJHU", p2hminus_qqb_VAJHU, 0);
-    getCheckedUserFloat(cand, "p2hminus_prodIndep_VAJHU", p2hminus_prodIndep_VAJHU, 0);
-    getCheckedUserFloat(cand, "p2h9minus_gg_VAJHU", p2h9minus_gg_VAJHU, 0);
-    getCheckedUserFloat(cand, "p2h9minus_qqb_VAJHU", p2h9minus_qqb_VAJHU, 0);
-    getCheckedUserFloat(cand, "p2h9minus_prodIndep_VAJHU", p2h9minus_prodIndep_VAJHU, 0);
-    getCheckedUserFloat(cand, "p2h10minus_gg_VAJHU", p2h10minus_gg_VAJHU, 0);
-    getCheckedUserFloat(cand, "p2h10minus_qqb_VAJHU", p2h10minus_qqb_VAJHU, 0);
-    getCheckedUserFloat(cand, "p2h10minus_prodIndep_VAJHU", p2h10minus_prodIndep_VAJHU, 0);
-
-    getCheckedUserFloat(cand, "p0plus_VAMCFM", p0plus_VAMCFM, 0);
-    getCheckedUserFloat(cand, "ggzz_VAMCFM", ggzz_VAMCFM, 0);
-    getCheckedUserFloat(cand, "ggzz_p0plus_VAMCFM", ggzz_p0plus_VAMCFM, 0);
-    getCheckedUserFloat(cand, "bkg_VAMCFM", bkg_VAMCFM, 0);
-    getCheckedUserFloat(cand, "bkg_prodIndep_VAMCFM", bkg_prodIndep_VAMCFM, 0);
-    getCheckedUserFloat(cand, "pZJJ_VAMCFM", pZJJ_VAMCFM, 0);
-    getCheckedUserFloat(cand, "Dgg10_VAMCFM", Dgg10_VAMCFM, -1);
-
-    getCheckedUserFloat(cand, "p0plus_m4l", p0plus_m4l, -1);
-    getCheckedUserFloat(cand, "p0plus_m4l_ScaleUp", p0plus_m4l_ScaleUp, -1);
-    getCheckedUserFloat(cand, "p0plus_m4l_ScaleDown", p0plus_m4l_ScaleDown, -1);
-    getCheckedUserFloat(cand, "p0plus_m4l_ResUp", p0plus_m4l_ResUp, -1);
-    getCheckedUserFloat(cand, "p0plus_m4l_ResDown", p0plus_m4l_ResDown, -1);
-    getCheckedUserFloat(cand, "bkg_m4l", bkg_m4l, -1);
-    getCheckedUserFloat(cand, "bkg_m4l_ScaleUp", bkg_m4l_ScaleUp, -1);
-    getCheckedUserFloat(cand, "bkg_m4l_ScaleDown", bkg_m4l_ScaleDown, -1);
-    getCheckedUserFloat(cand, "bkg_m4l_ResUp", bkg_m4l_ResUp, -1);
-    getCheckedUserFloat(cand, "bkg_m4l_ResDown", bkg_m4l_ResDown, -1);
-
-    getCheckedUserFloat(cand, "pwh_leptonic_VAJHU", pwh_leptonic_VAJHU, -1);
-    getCheckedUserFloat(cand, "pzh_leptonic_VAJHU", pzh_leptonic_VAJHU, -1);
-
-    getCheckedUserFloat(cand, "phjj_VAJHU_highestPTJets", phjj_VAJHU_highestPTJets, -1);
-    getCheckedUserFloat(cand, "pvbf_VAJHU_highestPTJets", pvbf_VAJHU_highestPTJets, -1);
-    getCheckedUserFloat(cand, "phjj_VAJHU_highestPTJets_up", phjj_VAJHU_highestPTJets_up, -1);
-    getCheckedUserFloat(cand, "pvbf_VAJHU_highestPTJets_up", pvbf_VAJHU_highestPTJets_up, -1);
-    getCheckedUserFloat(cand, "phjj_VAJHU_highestPTJets_dn", phjj_VAJHU_highestPTJets_dn, -1);
-    getCheckedUserFloat(cand, "pvbf_VAJHU_highestPTJets_dn", pvbf_VAJHU_highestPTJets_dn, -1);
-    getCheckedUserFloat(cand, "phjj_VAJHU_bestDjet", phjj_VAJHU_bestDjet, -1);
-    getCheckedUserFloat(cand, "pvbf_VAJHU_bestDjet", pvbf_VAJHU_bestDjet, -1);
-    getCheckedUserFloat(cand, "phjj_VAJHU_bestDjet_up", phjj_VAJHU_bestDjet_up, -1);
-    getCheckedUserFloat(cand, "pvbf_VAJHU_bestDjet_up", pvbf_VAJHU_bestDjet_up, -1);
-    getCheckedUserFloat(cand, "phjj_VAJHU_bestDjet_dn", phjj_VAJHU_bestDjet_dn, -1);
-    getCheckedUserFloat(cand, "pvbf_VAJHU_bestDjet_dn", pvbf_VAJHU_bestDjet_dn, -1);
-
-    getCheckedUserFloat(cand, "pAux_vbf_VAJHU", pAux_vbf_VAJHU, 1);
-    getCheckedUserFloat(cand, "pAux_vbf_VAJHU_up", pAux_vbf_VAJHU_up, 1);
-    getCheckedUserFloat(cand, "pAux_vbf_VAJHU_dn", pAux_vbf_VAJHU_dn, 1);
-
-    getCheckedUserFloat(cand, "phj_VAJHU", phj_VAJHU, -1);
-    getCheckedUserFloat(cand, "phj_VAJHU_up", phj_VAJHU_up, -1);
-    getCheckedUserFloat(cand, "phj_VAJHU_dn", phj_VAJHU_dn, -1);
-
-    getCheckedUserFloat(cand, "pwh_hadronic_VAJHU", pwh_hadronic_VAJHU, -1);
-    getCheckedUserFloat(cand, "pwh_hadronic_VAJHU_up", pwh_hadronic_VAJHU_up, -1);
-    getCheckedUserFloat(cand, "pwh_hadronic_VAJHU_dn", pwh_hadronic_VAJHU_dn, -1);
-    getCheckedUserFloat(cand, "pzh_hadronic_VAJHU", pzh_hadronic_VAJHU, -1);
-    getCheckedUserFloat(cand, "pzh_hadronic_VAJHU_up", pzh_hadronic_VAJHU_up, -1);
-    getCheckedUserFloat(cand, "pzh_hadronic_VAJHU_dn", pzh_hadronic_VAJHU_dn, -1);
-
-    getCheckedUserFloat(cand, "ptth_VAJHU", ptth_VAJHU, -1);
-    getCheckedUserFloat(cand, "ptth_VAJHU_up", ptth_VAJHU_up, -1);
-    getCheckedUserFloat(cand, "ptth_VAJHU_dn", ptth_VAJHU_dn, -1);
-
-    getCheckedUserFloat(cand, "pbbh_VAJHU", pbbh_VAJHU, -1);
-    getCheckedUserFloat(cand, "pbbh_VAJHU_up", pbbh_VAJHU_up, -1);
-    getCheckedUserFloat(cand, "pbbh_VAJHU_dn", pbbh_VAJHU_dn, -1);
+    // Get MELA probabilities
+    pushRecoMELABranches(cand);
 
   }
 
@@ -1790,15 +1523,15 @@ void HZZ4lNtupleMaker::getCheckedUserFloat(const pat::CompositeCandidate& cand, 
 void HZZ4lNtupleMaker::beginJob()
 {
   edm::Service<TFileService> fs;
-  myTree = new HZZ4lNtupleFactory( fs->make<TTree>(theFileName,"Event Summary"));
+  TTree *candTree = fs->make<TTree>(theFileName,"Event Summary");
+  TTree *candTree_failed = 0;
+  if (failedTreeLevel)
+    candTree_failed = fs->make<TTree>(theFileName+"_failed","Event Summary");
+  myTree = new HZZ4lNtupleFactory(candTree, candTree_failed);
   const int nbins = 45;
   hCounter = fs->make<TH1F>("Counters", "Counters", nbins, 0., nbins);
-  if (doreweighting) {
-    hCounter_reweighted = fs->make<TH2F>("Counters_reweighted", "Counters_reweighted", nbins, 0., nbins, nReweightingSamples, 0, nReweightingSamples);
-    couplingstree = fs->make<TTree>("couplings", "reweighting couplings");
-    reweighting.fillcouplingstree(couplingstree);
-  }
   BookAllBranches();
+  buildMELABranches();
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
@@ -1825,33 +1558,8 @@ void HZZ4lNtupleMaker::endJob()
   hCounter->SetBinContent(41,gen_sumGenMCWeight);
   hCounter->SetBinContent(42,gen_sumPUWeight);
 
-  if (doreweighting) {
-    for (int i = 0; i < nReweightingSamples; i++) {
-      hCounter_reweighted->SetBinContent(0 , i+1, gen_sumWeights_reweighted[i]); // also stored in bin 40
-      hCounter_reweighted->SetBinContent(1 , i+1, Nevt_Gen_reweighted[i]-gen_BUGGY_reweighted[i]);
-      hCounter_reweighted->SetBinContent(2 , i+1, gen_ZZ4mu_reweighted[i]);
-      hCounter_reweighted->SetBinContent(3 , i+1, gen_ZZ4e_reweighted[i]);
-      hCounter_reweighted->SetBinContent(4 , i+1, gen_ZZ2mu2e_reweighted[i]);
-      hCounter_reweighted->SetBinContent(5 , i+1, gen_ZZ2l2tau_reweighted[i]);
-      hCounter_reweighted->SetBinContent(6 , i+1, gen_ZZ4mu_EtaAcceptance_reweighted[i]);
-      hCounter_reweighted->SetBinContent(7 , i+1, gen_ZZ4mu_LeptonAcceptance_reweighted[i]);
-      hCounter_reweighted->SetBinContent(8 , i+1, gen_ZZ2emu2tau_reweighted[i]);
-      hCounter_reweighted->SetBinContent(9 , i+1, gen_ZZ4tau_reweighted[i]);
-      hCounter_reweighted->SetBinContent(10, i+1, gen_ZZ4e_EtaAcceptance_reweighted[i]);
-      hCounter_reweighted->SetBinContent(11, i+1, gen_ZZ4e_LeptonAcceptance_reweighted[i]);
-      hCounter_reweighted->SetBinContent(14, i+1, gen_ZZ2mu2e_EtaAcceptance_reweighted[i]);
-      hCounter_reweighted->SetBinContent(15, i+1, gen_ZZ2mu2e_LeptonAcceptance_reweighted[i]);
-      hCounter_reweighted->SetBinContent(19, i+1, gen_BUGGY_reweighted[i]);
-      hCounter_reweighted->SetBinContent(20, i+1, gen_Unknown_reweighted[i]);
-
-      hCounter_reweighted->SetBinContent(40, i+1, gen_sumWeights_reweighted[i]); // Also stored in underflow bin; added here for convenience
-      hCounter_reweighted->SetBinContent(41, i+1, gen_sumGenMCWeight_reweighted[i]);
-      hCounter_reweighted->SetBinContent(42, i+1, gen_sumPUWeight);
-    }
-  }
-
-  TH1 *h[2] = {hCounter, hCounter_reweighted};
-  for (int i = 0; i < 2 && (doreweighting || i==0); i++) {
+  TH1 *h[1] ={ hCounter };
+  for (int i = 0; i < 1; i++) {
     h[i]->GetXaxis()->SetBinLabel(1 ,"Nevt_Gen");
     h[i]->GetXaxis()->SetBinLabel(2 ,"gen_ZZ4mu");
     h[i]->GetXaxis()->SetBinLabel(3 ,"gen_ZZ4e");
@@ -1903,8 +1611,6 @@ void HZZ4lNtupleMaker::endRun(edm::Run const&, edm::EventSetup const&)
 void HZZ4lNtupleMaker::beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
 {
   Nevt_Gen_lumiBlock = 0;
-  for (auto it = Nevt_Gen_lumiBlock_reweighted.begin(); it != Nevt_Gen_lumiBlock_reweighted.end(); ++it)
-    *it = 0;
 }
 
 // ------------ method called when ending the processing of a luminosity block  ------------
@@ -1919,9 +1625,6 @@ void HZZ4lNtupleMaker::endLuminosityBlock(edm::LuminosityBlock const& iLumi, edm
   }
 
   Nevt_Gen += Nevt_Gen_lumiBlock;
-  for (int i = 0; i < nReweightingSamples; i++) {
-    Nevt_Gen_reweighted[i] += Nevt_Gen_lumiBlock_reweighted[i];
-  }
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
@@ -2117,9 +1820,8 @@ void HZZ4lNtupleMaker::FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t Le
   GenLep4Phi=Lep4.Phi();
   GenLep4Id=Lep4Id;
 
-  if (doreweighting) {
-    TUtil::computeAngles(zzanalysis::tlv(Lep1), Lep1Id, zzanalysis::tlv(Lep2), Lep2Id, zzanalysis::tlv(Lep3), Lep3Id, zzanalysis::tlv(Lep4), Lep4Id, Gencosthetastar, GenhelcosthetaZ1, GenhelcosthetaZ2, Genhelphi, GenphistarZ1);
-  }
+  //can comment this back in if Gen angles are needed for any reason...
+  //TUtil::computeAngles(zzanalysis::tlv(Lep1), Lep1Id, zzanalysis::tlv(Lep2), Lep2Id, zzanalysis::tlv(Lep3), Lep3Id, zzanalysis::tlv(Lep4), Lep4Id, Gencosthetastar, GenhelcosthetaZ1, GenhelcosthetaZ2, Genhelphi, GenphistarZ1);
 
   return;
 }
@@ -2157,358 +1859,708 @@ void HZZ4lNtupleMaker::FillHGenInfo(const math::XYZTLorentzVector pH, float w)
 
 void HZZ4lNtupleMaker::BookAllBranches(){
    //Event variables
-  myTree->Book("RunNumber",RunNumber);
-  myTree->Book("EventNumber",EventNumber);
-  myTree->Book("LumiNumber",LumiNumber);
-  myTree->Book("NRecoMu",NRecoMu);
-  myTree->Book("NRecoEle",NRecoEle);
-  myTree->Book("Nvtx",Nvtx);
-  myTree->Book("NObsInt",NObsInt);
-  myTree->Book("NTrueInt",NTrueInt);
+  myTree->Book("RunNumber",RunNumber, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("EventNumber",EventNumber, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("LumiNumber",LumiNumber, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("NRecoMu",NRecoMu, failedTreeLevel >= fullFailedTree);
+  myTree->Book("NRecoEle",NRecoEle, failedTreeLevel >= fullFailedTree);
+  myTree->Book("Nvtx",Nvtx, failedTreeLevel >= fullFailedTree);
+  myTree->Book("NObsInt",NObsInt, failedTreeLevel >= fullFailedTree);
+  myTree->Book("NTrueInt",NTrueInt, failedTreeLevel >= fullFailedTree);
 
-  myTree->Book("PFMET",PFMET);
-  myTree->Book("PFMETPhi",PFMETPhi);
-  myTree->Book("PFMETNoHF",PFMETNoHF);
-  myTree->Book("PFMETNoHFPhi",PFMETNoHFPhi);
-  myTree->Book("nCleanedJets",nCleanedJets);
-  myTree->Book("nCleanedJetsPt30",nCleanedJetsPt30);
-  myTree->Book("nCleanedJetsPt30_jecUp",nCleanedJetsPt30_jecUp);
-  myTree->Book("nCleanedJetsPt30_jecDn",nCleanedJetsPt30_jecDn);
-  myTree->Book("nCleanedJetsPt30BTagged",nCleanedJetsPt30BTagged);
-  myTree->Book("nCleanedJetsPt30BTagged_bTagSF",nCleanedJetsPt30BTagged_bTagSF);
-  myTree->Book("nCleanedJetsPt30BTagged_bTagSFUp",nCleanedJetsPt30BTagged_bTagSFUp);
-  myTree->Book("nCleanedJetsPt30BTagged_bTagSFDn",nCleanedJetsPt30BTagged_bTagSFDn);
-  myTree->Book("trigWord",trigWord);
-  myTree->Book("ZZMass",ZZMass);
-  myTree->Book("ZZMassErr",ZZMassErr);
-  myTree->Book("ZZMassErrCorr",ZZMassErrCorr);
-  myTree->Book("ZZMassPreFSR",ZZMassPreFSR);
-  myTree->Book("ZZsel",ZZsel);
-  myTree->Book("ZZPt",ZZPt);
-  myTree->Book("ZZEta",ZZEta);
-  myTree->Book("ZZPhi",ZZPhi);
-  myTree->Book("CRflag",CRflag);
-  myTree->Book("Z1Mass",Z1Mass);
-  myTree->Book("Z1Pt",Z1Pt);
-  myTree->Book("Z1Flav",Z1Flav);
+  myTree->Book("PFMET",PFMET, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMETPhi",PFMETPhi, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMETNoHF",PFMETNoHF, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMETNoHFPhi",PFMETNoHFPhi, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJets",nCleanedJets, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30",nCleanedJetsPt30, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30_jecUp",nCleanedJetsPt30_jecUp, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30_jecDn",nCleanedJetsPt30_jecDn, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged",nCleanedJetsPt30BTagged, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF",nCleanedJetsPt30BTagged_bTagSF, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSFUp",nCleanedJetsPt30BTagged_bTagSFUp, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSFDn",nCleanedJetsPt30BTagged_bTagSFDn, failedTreeLevel >= fullFailedTree);
+  myTree->Book("trigWord",trigWord, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("ZZMass",ZZMass, false);
+  myTree->Book("ZZMassErr",ZZMassErr, false);
+  myTree->Book("ZZMassErrCorr",ZZMassErrCorr, false);
+  myTree->Book("ZZMassPreFSR",ZZMassPreFSR, false);
+  myTree->Book("ZZsel",ZZsel, false);
+  myTree->Book("ZZPt",ZZPt, false);
+  myTree->Book("ZZEta",ZZEta, false);
+  myTree->Book("ZZPhi",ZZPhi, false);
+  myTree->Book("CRflag",CRflag, false);
+  myTree->Book("Z1Mass",Z1Mass, false);
+  myTree->Book("Z1Pt",Z1Pt, false);
+  myTree->Book("Z1Flav",Z1Flav, false);
 
   //Kin refitted info
   if (addKinRefit) {
-    myTree->Book("ZZMassRefit",ZZMassRefit);
-    myTree->Book("ZZMassRefitErr",ZZMassRefitErr);
-    myTree->Book("ZZMassUnrefitErr",ZZMassUnrefitErr);
+    myTree->Book("ZZMassRefit",ZZMassRefit, false);
+    myTree->Book("ZZMassRefitErr",ZZMassRefitErr, false);
+    myTree->Book("ZZMassUnrefitErr",ZZMassUnrefitErr, false);
   }
   if (addVtxFit){
-    myTree->Book("ZZMassCFit",ZZMassCFit);
-    myTree->Book("ZZChi2CFit",ZZChi2CFit);
+    myTree->Book("ZZMassCFit",ZZMassCFit, false);
+    myTree->Book("ZZChi2CFit",ZZChi2CFit, false);
   }
 
   //Z2 variables
-  myTree->Book("Z2Mass",Z2Mass);
-  myTree->Book("Z2Pt",Z2Pt);
-  myTree->Book("Z2Flav",Z2Flav);
-  myTree->Book("costhetastar",costhetastar);
-  myTree->Book("helphi",helphi);
-  myTree->Book("helcosthetaZ1",helcosthetaZ1);
-  myTree->Book("helcosthetaZ2",helcosthetaZ2);
-  myTree->Book("phistarZ1",phistarZ1);
-  myTree->Book("phistarZ2",phistarZ2);
-  myTree->Book("xi",xi);
-  myTree->Book("xistar",xistar);
+  myTree->Book("Z2Mass",Z2Mass, false);
+  myTree->Book("Z2Pt",Z2Pt, false);
+  myTree->Book("Z2Flav",Z2Flav, false);
+  myTree->Book("costhetastar",costhetastar, false);
+  myTree->Book("helphi",helphi, false);
+  myTree->Book("helcosthetaZ1",helcosthetaZ1, false);
+  myTree->Book("helcosthetaZ2",helcosthetaZ2, false);
+  myTree->Book("phistarZ1",phistarZ1, false);
+  myTree->Book("phistarZ2",phistarZ2, false);
+  myTree->Book("xi",xi, false);
+  myTree->Book("xistar",xistar, false);
 
   if (is_loose_ele_selection) {
-    myTree->Book("TLE_dR_Z",TLE_dR_Z);
-    myTree->Book("TLE_min_dR_3l",TLE_min_dR_3l);
+    myTree->Book("TLE_dR_Z",TLE_dR_Z, false);
+    myTree->Book("TLE_min_dR_3l",TLE_min_dR_3l, false);
   }
 
-  myTree->Book("LepPt",LepPt);
-  myTree->Book("LepEta",LepEta);
-  myTree->Book("LepPhi",LepPhi);
-  myTree->Book("LepLepId",LepLepId);
-  myTree->Book("LepSIP",LepSIP);
-  myTree->Book("LepTime",LepTime);
-  myTree->Book("LepisID",LepisID);
-  myTree->Book("LepisLoose",LepisLoose);
-  myTree->Book("LepBDT",LepBDT);
-  myTree->Book("LepMissingHit",LepMissingHit);
-  //myTree->Book("LepChargedHadIso",LepChargedHadIso);
-  //myTree->Book("LepNeutralHadIso",LepNeutralHadIso);
-  //myTree->Book("LepPhotonIso",LepPhotonIso);
-  myTree->Book("LepCombRelIsoPF",LepCombRelIsoPF);
-  myTree->Book("fsrPt",fsrPt);
-  myTree->Book("fsrEta",fsrEta);
-  myTree->Book("fsrPhi",fsrPhi);
-  myTree->Book("fsrLept",fsrLept);
-  myTree->Book("passIsoPreFSR",passIsoPreFSR);
+  myTree->Book("LepPt",LepPt, false);
+  myTree->Book("LepEta",LepEta, false);
+  myTree->Book("LepPhi",LepPhi, false);
+  myTree->Book("LepLepId",LepLepId, false);
+  myTree->Book("LepSIP",LepSIP, false);
+  myTree->Book("LepTime",LepTime, false);
+  myTree->Book("LepisID",LepisID, false);
+  myTree->Book("LepisLoose",LepisLoose, false);
+  myTree->Book("LepBDT",LepBDT, false);
+  myTree->Book("LepMissingHit",LepMissingHit, false);
+  //myTree->Book("LepChargedHadIso",LepChargedHadIso, false);
+  //myTree->Book("LepNeutralHadIso",LepNeutralHadIso, false);
+  //myTree->Book("LepPhotonIso",LepPhotonIso, false);
+  myTree->Book("LepCombRelIsoPF",LepCombRelIsoPF, false);
+  myTree->Book("fsrPt",fsrPt, false);
+  myTree->Book("fsrEta",fsrEta, false);
+  myTree->Book("fsrPhi",fsrPhi, false);
+  myTree->Book("fsrLept",fsrLept, false);
+  myTree->Book("passIsoPreFSR",passIsoPreFSR, false);
   if (addFSRDetails) {
-    myTree->Book("fsrDR",fsrDR);
-    myTree->Book("fsrLeptId",fsrLeptID);
-    myTree->Book("fsrGenPt",fsrGenPt);
+    myTree->Book("fsrDR",fsrDR, false);
+    myTree->Book("fsrLeptId",fsrLeptID, false);
+    myTree->Book("fsrGenPt",fsrGenPt, false);
   }
-
-  //Discriminants
-  myTree->Book("p0plus_VAJHU", p0plus_VAJHU);
-  myTree->Book("p0_g1prime2_VAJHU", p0_g1prime2_VAJHU);
-  myTree->Book("p0hplus_VAJHU", p0hplus_VAJHU);
-  myTree->Book("p0minus_VAJHU", p0minus_VAJHU);
-
-  myTree->Book("p0_g1prime2_zgs_VAJHU", p0_g1prime2_zgs_VAJHU);
-  myTree->Book("p0hplus_zgs_VAJHU", p0hplus_zgs_VAJHU);
-  myTree->Book("p0minus_zgs_VAJHU", p0minus_zgs_VAJHU);
-  myTree->Book("p0hplus_gsgs_VAJHU", p0hplus_gsgs_VAJHU);
-  myTree->Book("p0minus_gsgs_VAJHU", p0minus_gsgs_VAJHU);
-
-  myTree->Book("pg1g1prime2_VAJHU", pg1g1prime2_VAJHU);
-  myTree->Book("pg1g2_VAJHU", pg1g2_VAJHU);
-  myTree->Book("pg1g2_pi2_VAJHU", pg1g2_pi2_VAJHU);
-  myTree->Book("pg1g4_VAJHU", pg1g4_VAJHU);
-  myTree->Book("pg1g4_pi2_VAJHU", pg1g4_pi2_VAJHU);
-
-  myTree->Book("p0plus_zz_g1prime2_zgs_VAJHU", p0plus_zz_g1prime2_zgs_VAJHU);
-  myTree->Book("p0plus_zz_g1prime2_zgs_pi2_VAJHU", p0plus_zz_g1prime2_zgs_pi2_VAJHU);
-  myTree->Book("p0plus_zz_0hplus_zgs_VAJHU", p0plus_zz_0hplus_zgs_VAJHU);
-  myTree->Book("p0plus_zz_0minus_zgs_VAJHU", p0plus_zz_0minus_zgs_VAJHU);
-  myTree->Book("p0plus_zz_0hplus_gsgs_VAJHU", p0plus_zz_0hplus_gsgs_VAJHU);
-  myTree->Book("p0plus_zz_0minus_gsgs_VAJHU", p0plus_zz_0minus_gsgs_VAJHU);
-
-  myTree->Book("p1_VAJHU", p1_VAJHU);
-  myTree->Book("p1_prodIndep_VAJHU", p1_prodIndep_VAJHU);
-  myTree->Book("p1plus_VAJHU", p1plus_VAJHU);
-  myTree->Book("p1plus_prodIndep_VAJHU", p1plus_prodIndep_VAJHU);
-
-  myTree->Book("p2plus_gg_VAJHU", p2plus_gg_VAJHU);
-  myTree->Book("p2plus_prodIndep_VAJHU", p2plus_prodIndep_VAJHU);
-  myTree->Book("p2plus_qqb_VAJHU", p2plus_qqb_VAJHU);
-  myTree->Book("p2h2plus_gg_VAJHU", p2h2plus_gg_VAJHU);
-  myTree->Book("p2h2plus_qqb_VAJHU", p2h2plus_qqb_VAJHU);
-  myTree->Book("p2h2plus_prodIndep_VAJHU", p2h2plus_prodIndep_VAJHU);
-  myTree->Book("p2h3plus_gg_VAJHU", p2h3plus_gg_VAJHU);
-  myTree->Book("p2h3plus_qqb_VAJHU", p2h3plus_qqb_VAJHU);
-  myTree->Book("p2h3plus_prodIndep_VAJHU", p2h3plus_prodIndep_VAJHU);
-  myTree->Book("p2h4plus_gg_VAJHU", p2h4plus_gg_VAJHU);
-  myTree->Book("p2h4plus_qqb_VAJHU", p2h4plus_qqb_VAJHU);
-  myTree->Book("p2h4plus_prodIndep_VAJHU", p2h4plus_prodIndep_VAJHU);
-  myTree->Book("p2bplus_gg_VAJHU", p2bplus_gg_VAJHU);
-  myTree->Book("p2bplus_qqb_VAJHU", p2bplus_qqb_VAJHU);
-  myTree->Book("p2bplus_prodIndep_VAJHU", p2bplus_prodIndep_VAJHU);
-  myTree->Book("p2h6plus_gg_VAJHU", p2h6plus_gg_VAJHU);
-  myTree->Book("p2h6plus_qqb_VAJHU", p2h6plus_qqb_VAJHU);
-  myTree->Book("p2h6plus_prodIndep_VAJHU", p2h6plus_prodIndep_VAJHU);
-  myTree->Book("p2h7plus_gg_VAJHU", p2h7plus_gg_VAJHU);
-  myTree->Book("p2h7plus_qqb_VAJHU", p2h7plus_qqb_VAJHU);
-  myTree->Book("p2h7plus_prodIndep_VAJHU", p2h7plus_prodIndep_VAJHU);
-  myTree->Book("p2hminus_gg_VAJHU", p2hminus_gg_VAJHU);
-  myTree->Book("p2hminus_qqb_VAJHU", p2hminus_qqb_VAJHU);
-  myTree->Book("p2hminus_prodIndep_VAJHU", p2hminus_prodIndep_VAJHU);
-  myTree->Book("p2h9minus_gg_VAJHU", p2h9minus_gg_VAJHU);
-  myTree->Book("p2h9minus_qqb_VAJHU", p2h9minus_qqb_VAJHU);
-  myTree->Book("p2h9minus_prodIndep_VAJHU", p2h9minus_prodIndep_VAJHU);
-  myTree->Book("p2h10minus_gg_VAJHU", p2h10minus_gg_VAJHU);
-  myTree->Book("p2h10minus_qqb_VAJHU", p2h10minus_qqb_VAJHU);
-  myTree->Book("p2h10minus_prodIndep_VAJHU", p2h10minus_prodIndep_VAJHU);
-
-  myTree->Book("p0plus_VAMCFM", p0plus_VAMCFM);
-  myTree->Book("ggzz_VAMCFM", ggzz_VAMCFM);
-  myTree->Book("ggzz_p0plus_VAMCFM", ggzz_p0plus_VAMCFM);
-  myTree->Book("bkg_VAMCFM", bkg_VAMCFM);
-  myTree->Book("bkg_prodIndep_VAMCFM", bkg_prodIndep_VAMCFM);
-  myTree->Book("pZJJ_VAMCFM", pZJJ_VAMCFM);
-  myTree->Book("Dgg10_VAMCFM", Dgg10_VAMCFM);
-
-  myTree->Book("p0plus_m4l", p0plus_m4l);
-  myTree->Book("p0plus_m4l_ScaleUp", p0plus_m4l_ScaleUp);
-  myTree->Book("p0plus_m4l_ScaleDown", p0plus_m4l_ScaleDown);
-  myTree->Book("p0plus_m4l_ResUp", p0plus_m4l_ResUp);
-  myTree->Book("p0plus_m4l_ResDown", p0plus_m4l_ResDown);
-  myTree->Book("bkg_m4l", bkg_m4l);
-  myTree->Book("bkg_m4l_ScaleUp", bkg_m4l_ScaleUp);
-  myTree->Book("bkg_m4l_ScaleDown", bkg_m4l_ScaleDown);
-  myTree->Book("bkg_m4l_ResUp", bkg_m4l_ResUp);
-  myTree->Book("bkg_m4l_ResDown", bkg_m4l_ResDown);
-
-  //Production MELA
-  myTree->Book("pwh_leptonic_VAJHU", pwh_leptonic_VAJHU);
-  myTree->Book("pzh_leptonic_VAJHU", pzh_leptonic_VAJHU);
-  myTree->Book("phjj_VAJHU_highestPTJets", phjj_VAJHU_highestPTJets);
-  myTree->Book("pvbf_VAJHU_highestPTJets", pvbf_VAJHU_highestPTJets);
-  myTree->Book("phjj_VAJHU_highestPTJets_up", phjj_VAJHU_highestPTJets_up);
-  myTree->Book("pvbf_VAJHU_highestPTJets_up", pvbf_VAJHU_highestPTJets_up);
-  myTree->Book("phjj_VAJHU_highestPTJets_dn", phjj_VAJHU_highestPTJets_dn);
-  myTree->Book("pvbf_VAJHU_highestPTJets_dn", pvbf_VAJHU_highestPTJets_dn);
-  myTree->Book("phjj_VAJHU_bestDjet", phjj_VAJHU_bestDjet);
-  myTree->Book("pvbf_VAJHU_bestDjet", pvbf_VAJHU_bestDjet);
-  myTree->Book("phjj_VAJHU_bestDjet_up", phjj_VAJHU_bestDjet_up);
-  myTree->Book("pvbf_VAJHU_bestDjet_up", pvbf_VAJHU_bestDjet_up);
-  myTree->Book("phjj_VAJHU_bestDjet_dn", phjj_VAJHU_bestDjet_dn);
-  myTree->Book("pvbf_VAJHU_bestDjet_dn", pvbf_VAJHU_bestDjet_dn);
-  myTree->Book("pAux_vbf_VAJHU", pAux_vbf_VAJHU);
-  myTree->Book("pAux_vbf_VAJHU_up", pAux_vbf_VAJHU_up);
-  myTree->Book("pAux_vbf_VAJHU_dn", pAux_vbf_VAJHU_dn);
-  myTree->Book("phj_VAJHU", phj_VAJHU);
-  myTree->Book("phj_VAJHU_up", phj_VAJHU_up);
-  myTree->Book("phj_VAJHU_dn", phj_VAJHU_dn);
-  myTree->Book("pwh_hadronic_VAJHU", pwh_hadronic_VAJHU);
-  myTree->Book("pwh_hadronic_VAJHU_up", pwh_hadronic_VAJHU_up);
-  myTree->Book("pwh_hadronic_VAJHU_dn", pwh_hadronic_VAJHU_dn);
-  myTree->Book("pzh_hadronic_VAJHU", pzh_hadronic_VAJHU);
-  myTree->Book("pzh_hadronic_VAJHU_up", pzh_hadronic_VAJHU_up);
-  myTree->Book("pzh_hadronic_VAJHU_dn", pzh_hadronic_VAJHU_dn);
-  myTree->Book("ptth_VAJHU", ptth_VAJHU);
-  myTree->Book("ptth_VAJHU_up", ptth_VAJHU_up);
-  myTree->Book("ptth_VAJHU_dn", ptth_VAJHU_dn);
-  myTree->Book("pbbh_VAJHU", pbbh_VAJHU);
-  myTree->Book("pbbh_VAJHU_up", pbbh_VAJHU_up);
-  myTree->Book("pbbh_VAJHU_dn", pbbh_VAJHU_dn);
 
   //Jet variables
-  myTree->Book("JetPt",JetPt);
-  myTree->Book("JetEta",JetEta);
-  myTree->Book("JetPhi",JetPhi);
-  myTree->Book("JetMass",JetMass);
-  myTree->Book("JetBTagger",JetBTagger);
-  myTree->Book("JetIsBtagged",JetIsBtagged);
-  myTree->Book("JetIsBtaggedWithSF",JetIsBtaggedWithSF);
-  myTree->Book("JetIsBtaggedWithSFUp",JetIsBtaggedWithSFUp);
-  myTree->Book("JetIsBtaggedWithSFDn",JetIsBtaggedWithSFDn);
-  myTree->Book("JetQGLikelihood",JetQGLikelihood);
+  myTree->Book("JetPt",JetPt, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetEta",JetEta, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPhi",JetPhi, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetMass",JetMass, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetBTagger",JetBTagger, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetIsBtagged",JetIsBtagged, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetIsBtaggedWithSF",JetIsBtaggedWithSF, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetIsBtaggedWithSFUp",JetIsBtaggedWithSFUp, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetIsBtaggedWithSFDn",JetIsBtaggedWithSFDn, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetQGLikelihood",JetQGLikelihood, failedTreeLevel >= fullFailedTree);
   if(addQGLInputs){
-    myTree->Book("JetAxis2",JetAxis2);
-    myTree->Book("JetMult",JetMult);
-    myTree->Book("JetPtD",JetPtD);
+    myTree->Book("JetAxis2",JetAxis2, failedTreeLevel >= fullFailedTree);
+    myTree->Book("JetMult",JetMult, failedTreeLevel >= fullFailedTree);
+    myTree->Book("JetPtD",JetPtD, failedTreeLevel >= fullFailedTree);
   }
-  myTree->Book("JetSigma",JetSigma);
-  myTree->Book("JetHadronFlavour",JetHadronFlavour);
+  myTree->Book("JetSigma",JetSigma, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetHadronFlavour",JetHadronFlavour, failedTreeLevel >= fullFailedTree);
 
-  myTree->Book("JetJERUp",JetJERUp);
-  myTree->Book("JetJERDown",JetJERDown);
+  myTree->Book("JetJERUp",JetJERUp, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetJERDown",JetJERDown, failedTreeLevel >= fullFailedTree);
 
-  myTree->Book("JetPUID", JetPUID);
-  myTree->Book("JetPUValue", JetPUValue);
+  myTree->Book("JetPUID", JetPUID, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPUValue", JetPUValue, failedTreeLevel >= fullFailedTree);
 
-  myTree->Book("DiJetMass",DiJetMass);
-//   myTree->Book("DiJetMassPlus",DiJetMassPlus); // FIXME: add back once filled again
-//   myTree->Book("DiJetMassMinus",DiJetMassMinus);
-  myTree->Book("DiJetDEta",DiJetDEta);
-  myTree->Book("DiJetFisher",DiJetFisher);
-  myTree->Book("nExtraLep",nExtraLep);
-  myTree->Book("nExtraZ",nExtraZ);
-  myTree->Book("ExtraLepPt",ExtraLepPt);
-  myTree->Book("ExtraLepEta",ExtraLepEta);
-  myTree->Book("ExtraLepPhi",ExtraLepPhi);
-  myTree->Book("ExtraLepLepId",ExtraLepLepId);
+  myTree->Book("DiJetMass",DiJetMass, false);
+//   myTree->Book("DiJetMassPlus",DiJetMassPlus, false); // FIXME: add back once filled again
+//   myTree->Book("DiJetMassMinus",DiJetMassMinus, false);
+  myTree->Book("DiJetDEta",DiJetDEta, false);
+  myTree->Book("DiJetFisher",DiJetFisher, false);
+  myTree->Book("nExtraLep",nExtraLep, false);
+  myTree->Book("nExtraZ",nExtraZ, false);
+  myTree->Book("ExtraLepPt",ExtraLepPt, false);
+  myTree->Book("ExtraLepEta",ExtraLepEta, false);
+  myTree->Book("ExtraLepPhi",ExtraLepPhi, false);
+  myTree->Book("ExtraLepLepId",ExtraLepLepId, false);
 
-  myTree->Book("ZXFakeweight", ZXFakeweight);
+  myTree->Book("ZXFakeweight", ZXFakeweight, false);
 
   if (isMC){
     if (apply_K_NNLOQCD_ZZGG>0){
-      myTree->Book("KFactor_QCD_ggZZ_Nominal", KFactor_QCD_ggZZ_Nominal);
-      myTree->Book("KFactor_QCD_ggZZ_PDFScaleDn", KFactor_QCD_ggZZ_PDFScaleDn);
-      myTree->Book("KFactor_QCD_ggZZ_PDFScaleUp", KFactor_QCD_ggZZ_PDFScaleUp);
-      myTree->Book("KFactor_QCD_ggZZ_QCDScaleDn", KFactor_QCD_ggZZ_QCDScaleDn);
-      myTree->Book("KFactor_QCD_ggZZ_QCDScaleUp", KFactor_QCD_ggZZ_QCDScaleUp);
-      myTree->Book("KFactor_QCD_ggZZ_AsDn", KFactor_QCD_ggZZ_AsDn);
-      myTree->Book("KFactor_QCD_ggZZ_AsUp", KFactor_QCD_ggZZ_AsUp);
-      myTree->Book("KFactor_QCD_ggZZ_PDFReplicaDn", KFactor_QCD_ggZZ_PDFReplicaDn);
-      myTree->Book("KFactor_QCD_ggZZ_PDFReplicaUp", KFactor_QCD_ggZZ_PDFReplicaUp);
+      myTree->Book("KFactor_QCD_ggZZ_Nominal", KFactor_QCD_ggZZ_Nominal, failedTreeLevel >= minimalFailedTree);
+      myTree->Book("KFactor_QCD_ggZZ_PDFScaleDn", KFactor_QCD_ggZZ_PDFScaleDn, failedTreeLevel >= minimalFailedTree);
+      myTree->Book("KFactor_QCD_ggZZ_PDFScaleUp", KFactor_QCD_ggZZ_PDFScaleUp, failedTreeLevel >= minimalFailedTree);
+      myTree->Book("KFactor_QCD_ggZZ_QCDScaleDn", KFactor_QCD_ggZZ_QCDScaleDn, failedTreeLevel >= minimalFailedTree);
+      myTree->Book("KFactor_QCD_ggZZ_QCDScaleUp", KFactor_QCD_ggZZ_QCDScaleUp, failedTreeLevel >= minimalFailedTree);
+      myTree->Book("KFactor_QCD_ggZZ_AsDn", KFactor_QCD_ggZZ_AsDn, failedTreeLevel >= minimalFailedTree);
+      myTree->Book("KFactor_QCD_ggZZ_AsUp", KFactor_QCD_ggZZ_AsUp, failedTreeLevel >= minimalFailedTree);
+      myTree->Book("KFactor_QCD_ggZZ_PDFReplicaDn", KFactor_QCD_ggZZ_PDFReplicaDn, failedTreeLevel >= minimalFailedTree);
+      myTree->Book("KFactor_QCD_ggZZ_PDFReplicaUp", KFactor_QCD_ggZZ_PDFReplicaUp, failedTreeLevel >= minimalFailedTree);
     }
     if (apply_K_NLOEW_ZZQQB){
-      myTree->Book("KFactor_EW_qqZZ", KFactor_EW_qqZZ);
-      myTree->Book("KFactor_EW_qqZZ_unc", KFactor_EW_qqZZ_unc);
+      myTree->Book("KFactor_EW_qqZZ", KFactor_EW_qqZZ, failedTreeLevel >= minimalFailedTree);
+      myTree->Book("KFactor_EW_qqZZ_unc", KFactor_EW_qqZZ_unc, failedTreeLevel >= minimalFailedTree);
     }
     if (apply_K_NNLOQCD_ZZQQB){
-      myTree->Book("KFactor_QCD_qqZZ_dPhi", KFactor_QCD_qqZZ_dPhi);
-      myTree->Book("KFactor_QCD_qqZZ_M", KFactor_QCD_qqZZ_M);
-      myTree->Book("KFactor_QCD_qqZZ_Pt", KFactor_QCD_qqZZ_Pt);
+      myTree->Book("KFactor_QCD_qqZZ_dPhi", KFactor_QCD_qqZZ_dPhi, failedTreeLevel >= minimalFailedTree);
+      myTree->Book("KFactor_QCD_qqZZ_M", KFactor_QCD_qqZZ_M, failedTreeLevel >= minimalFailedTree);
+      myTree->Book("KFactor_QCD_qqZZ_Pt", KFactor_QCD_qqZZ_Pt, failedTreeLevel >= minimalFailedTree);
     }
 
-    myTree->Book("genFinalState", genFinalState);
-    myTree->Book("genProcessId", genProcessId);
-    myTree->Book("genHEPMCweight", genHEPMCweight);
-    myTree->Book("PUWeight", PUWeight);
-    myTree->Book("dataMCWeight", dataMCWeight);
-    myTree->Book("trigEffWeight", trigEffWeight);
-    myTree->Book("overallEventWeight", overallEventWeight);
-    myTree->Book("HqTMCweight", HqTMCweight);
-    myTree->Book("xsec", xsection);
-    myTree->Book("genExtInfo", genExtInfo);
-    myTree->Book("GenHMass", GenHMass);
-    myTree->Book("GenHPt", GenHPt);
-    myTree->Book("GenHRapidity", GenHRapidity);
-    myTree->Book("GenZ1Mass", GenZ1Mass);
-    myTree->Book("GenZ1Pt", GenZ1Pt);
-    myTree->Book("GenZ1Phi", GenZ1Phi);
-    myTree->Book("GenZ1Flav", GenZ1Flav);
-    myTree->Book("GenZ2Mass", GenZ2Mass);
-    myTree->Book("GenZ2Pt", GenZ2Pt);
-    myTree->Book("GenZ2Phi", GenZ2Phi);
-    myTree->Book("GenZ2Flav", GenZ2Flav);
-    myTree->Book("GenLep1Pt", GenLep1Pt);
-    myTree->Book("GenLep1Eta", GenLep1Eta);
-    myTree->Book("GenLep1Phi", GenLep1Phi);
-    myTree->Book("GenLep1Id", GenLep1Id);
-    myTree->Book("GenLep2Pt", GenLep2Pt);
-    myTree->Book("GenLep2Eta", GenLep2Eta);
-    myTree->Book("GenLep2Phi", GenLep2Phi);
-    myTree->Book("GenLep2Id", GenLep2Id);
-    myTree->Book("GenLep3Pt", GenLep3Pt);
-    myTree->Book("GenLep3Eta", GenLep3Eta);
-    myTree->Book("GenLep3Phi", GenLep3Phi);
-    myTree->Book("GenLep3Id", GenLep3Id);
-    myTree->Book("GenLep4Pt", GenLep4Pt);
-    myTree->Book("GenLep4Eta", GenLep4Eta);
-    myTree->Book("GenLep4Phi", GenLep4Phi);
-    myTree->Book("GenLep4Id", GenLep4Id);
-    myTree->Book("GenAssocLep1Pt", GenAssocLep1Pt);
-    myTree->Book("GenAssocLep1Eta", GenAssocLep1Eta);
-    myTree->Book("GenAssocLep1Phi", GenAssocLep1Phi);
-    myTree->Book("GenAssocLep1Id", GenAssocLep1Id);
-    myTree->Book("GenAssocLep2Pt", GenAssocLep2Pt);
-    myTree->Book("GenAssocLep2Eta", GenAssocLep2Eta);
-    myTree->Book("GenAssocLep2Phi", GenAssocLep2Phi);
-    myTree->Book("GenAssocLep2Id", GenAssocLep2Id);
-
-    if (doreweighting) myTree->Book("reweightingweights", reweightingweights);
+    myTree->Book("genFinalState", genFinalState, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("genProcessId", genProcessId, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("genHEPMCweight", genHEPMCweight, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("PUWeight", PUWeight, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("dataMCWeight", dataMCWeight, false);
+    myTree->Book("trigEffWeight", trigEffWeight, false);
+    myTree->Book("overallEventWeight", overallEventWeight, false);
+    myTree->Book("HqTMCweight", HqTMCweight, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("xsec", xsection, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("genExtInfo", genExtInfo, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("GenHMass", GenHMass, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("GenHPt", GenHPt, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("GenHRapidity", GenHRapidity, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("GenZ1Mass", GenZ1Mass, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenZ1Pt", GenZ1Pt, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenZ1Phi", GenZ1Phi, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenZ1Flav", GenZ1Flav, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("GenZ2Mass", GenZ2Mass, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenZ2Pt", GenZ2Pt, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenZ2Phi", GenZ2Phi, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenZ2Flav", GenZ2Flav, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("GenLep1Pt", GenLep1Pt, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenLep1Eta", GenLep1Eta, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenLep1Phi", GenLep1Phi, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenLep1Id", GenLep1Id, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenLep2Pt", GenLep2Pt, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenLep2Eta", GenLep2Eta, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenLep2Phi", GenLep2Phi, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenLep2Id", GenLep2Id, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenLep3Pt", GenLep3Pt, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenLep3Eta", GenLep3Eta, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenLep3Phi", GenLep3Phi, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenLep3Id", GenLep3Id, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenLep4Pt", GenLep4Pt, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenLep4Eta", GenLep4Eta, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenLep4Phi", GenLep4Phi, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenLep4Id", GenLep4Id, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenAssocLep1Pt", GenAssocLep1Pt, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenAssocLep1Eta", GenAssocLep1Eta, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenAssocLep1Phi", GenAssocLep1Phi, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenAssocLep1Id", GenAssocLep1Id, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenAssocLep2Pt", GenAssocLep2Pt, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenAssocLep2Eta", GenAssocLep2Eta, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenAssocLep2Phi", GenAssocLep2Phi, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenAssocLep2Id", GenAssocLep2Id, failedTreeLevel >= fullFailedTree);
 
     if (addLHEKinematics){
-      myTree->Book("LHEMotherPz", LHEMotherPz);
-      myTree->Book("LHEMotherE", LHEMotherE);
-      myTree->Book("LHEMotherId", LHEMotherId);
-      myTree->Book("LHEDaughterPt", LHEDaughterPt);
-      myTree->Book("LHEDaughterEta", LHEDaughterEta);
-      myTree->Book("LHEDaughterPhi", LHEDaughterPhi);
-      myTree->Book("LHEDaughterMass", LHEDaughterMass);
-      myTree->Book("LHEDaughterId", LHEDaughterId);
-      myTree->Book("LHEAssociatedParticlePt", LHEAssociatedParticlePt);
-      myTree->Book("LHEAssociatedParticleEta", LHEAssociatedParticleEta);
-      myTree->Book("LHEAssociatedParticlePhi", LHEAssociatedParticlePhi);
-      myTree->Book("LHEAssociatedParticleMass", LHEAssociatedParticleMass);
-      myTree->Book("LHEAssociatedParticleId", LHEAssociatedParticleId);
+      myTree->Book("LHEMotherPz", LHEMotherPz, failedTreeLevel >= LHEFailedTree);
+      myTree->Book("LHEMotherE", LHEMotherE, failedTreeLevel >= LHEFailedTree);
+      myTree->Book("LHEMotherId", LHEMotherId, failedTreeLevel >= LHEFailedTree);
+      myTree->Book("LHEDaughterPt", LHEDaughterPt, failedTreeLevel >= LHEFailedTree);
+      myTree->Book("LHEDaughterEta", LHEDaughterEta, failedTreeLevel >= LHEFailedTree);
+      myTree->Book("LHEDaughterPhi", LHEDaughterPhi, failedTreeLevel >= LHEFailedTree);
+      myTree->Book("LHEDaughterMass", LHEDaughterMass, failedTreeLevel >= LHEFailedTree);
+      myTree->Book("LHEDaughterId", LHEDaughterId, failedTreeLevel >= LHEFailedTree);
+      myTree->Book("LHEAssociatedParticlePt", LHEAssociatedParticlePt, failedTreeLevel >= LHEFailedTree);
+      myTree->Book("LHEAssociatedParticleEta", LHEAssociatedParticleEta, failedTreeLevel >= LHEFailedTree);
+      myTree->Book("LHEAssociatedParticlePhi", LHEAssociatedParticlePhi, failedTreeLevel >= LHEFailedTree);
+      myTree->Book("LHEAssociatedParticleMass", LHEAssociatedParticleMass, failedTreeLevel >= LHEFailedTree);
+      myTree->Book("LHEAssociatedParticleId", LHEAssociatedParticleId, failedTreeLevel >= LHEFailedTree);
     }
 
-    myTree->Book("LHEPDFScale", LHEPDFScale);
-    myTree->Book("LHEweight_QCDscale_muR1_muF1", LHEweight_QCDscale_muR1_muF1);
-    myTree->Book("LHEweight_QCDscale_muR1_muF2", LHEweight_QCDscale_muR1_muF2);
-    myTree->Book("LHEweight_QCDscale_muR1_muF0p5", LHEweight_QCDscale_muR1_muF0p5);
-    myTree->Book("LHEweight_QCDscale_muR2_muF1", LHEweight_QCDscale_muR2_muF1);
-    myTree->Book("LHEweight_QCDscale_muR2_muF2", LHEweight_QCDscale_muR2_muF2);
-    myTree->Book("LHEweight_QCDscale_muR2_muF0p5", LHEweight_QCDscale_muR2_muF0p5);
-    myTree->Book("LHEweight_QCDscale_muR0p5_muF1", LHEweight_QCDscale_muR0p5_muF1);
-    myTree->Book("LHEweight_QCDscale_muR0p5_muF2", LHEweight_QCDscale_muR0p5_muF2);
-    myTree->Book("LHEweight_QCDscale_muR0p5_muF0p5", LHEweight_QCDscale_muR0p5_muF0p5);
-    myTree->Book("LHEweight_PDFVariation_Up", LHEweight_PDFVariation_Up);
-    myTree->Book("LHEweight_PDFVariation_Dn", LHEweight_PDFVariation_Dn);
-    myTree->Book("LHEweight_AsMZ_Up", LHEweight_AsMZ_Up);
-    myTree->Book("LHEweight_AsMZ_Dn", LHEweight_AsMZ_Dn);
+    myTree->Book("LHEPDFScale", LHEPDFScale, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("LHEweight_QCDscale_muR1_muF1", LHEweight_QCDscale_muR1_muF1, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("LHEweight_QCDscale_muR1_muF2", LHEweight_QCDscale_muR1_muF2, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("LHEweight_QCDscale_muR1_muF0p5", LHEweight_QCDscale_muR1_muF0p5, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("LHEweight_QCDscale_muR2_muF1", LHEweight_QCDscale_muR2_muF1, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("LHEweight_QCDscale_muR2_muF2", LHEweight_QCDscale_muR2_muF2, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("LHEweight_QCDscale_muR2_muF0p5", LHEweight_QCDscale_muR2_muF0p5, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("LHEweight_QCDscale_muR0p5_muF1", LHEweight_QCDscale_muR0p5_muF1, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("LHEweight_QCDscale_muR0p5_muF2", LHEweight_QCDscale_muR0p5_muF2, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("LHEweight_QCDscale_muR0p5_muF0p5", LHEweight_QCDscale_muR0p5_muF0p5, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("LHEweight_PDFVariation_Up", LHEweight_PDFVariation_Up, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("LHEweight_PDFVariation_Dn", LHEweight_PDFVariation_Dn, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("LHEweight_AsMZ_Up", LHEweight_AsMZ_Up, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("LHEweight_AsMZ_Dn", LHEweight_AsMZ_Dn, failedTreeLevel >= minimalFailedTree);
   }
 
+  // MELA branches are booked under buildMELA
 }
 
-void HZZ4lNtupleMaker::addweight(float &weight, vector<float> &weight_reweighted, float weighttoadd) {
-  //  cout << weight_reweighted.size() << endl;
+void HZZ4lNtupleMaker::addweight(float &weight, float weighttoadd) {
   weight += weighttoadd;
-  if (doreweighting)
-    for (int i = 0; i < nReweightingSamples; i++)
-      weight_reweighted[i] += weighttoadd * reweightingweights[i];
+}
+
+
+void HZZ4lNtupleMaker::buildMELABranches(){
+  /***********************/
+  /***********************/
+  /**   Reco branches   **/
+  /***********************/
+  /***********************/
+  for (unsigned int it=0; it<recoMElist.size(); it++){
+    MELAOptionParser* me_opt = new MELAOptionParser(recoMElist.at(it));
+    if (recoMElist.at(it).find("Copy")!=string::npos) recome_copyopts.push_back(me_opt);
+    else recome_originalopts.push_back(me_opt);
+  }
+  // Resolve original options
+  for (unsigned int it=0; it<recome_originalopts.size(); it++){
+    MELAOptionParser* me_opt = recome_originalopts.at(it);
+    myTree->BookMELABranches(me_opt, false, 0);
+  }
+  // Resolve copy options
+  for (unsigned int it=0; it<recome_copyopts.size(); it++){
+    MELAOptionParser* me_opt = recome_copyopts.at(it);
+    MELAOptionParser* original_opt=0;
+    // Find the original options
+    for (unsigned int ih=0; ih<recome_originalopts.size(); ih++){
+      if (me_opt->testCopyAlias(recome_originalopts.at(ih)->getAlias())){
+        original_opt = recome_originalopts.at(ih);
+        break;
+      }
+    }
+    if (original_opt==0) continue;
+    else me_opt->pickOriginalOptions(original_opt);
+    myTree->BookMELABranches(me_opt, false, 0);
+  }
+
+  /**********************/
+  /**********************/
+  /**   LHE branches   **/
+  /**********************/
+  /**********************/
+  for (unsigned int it=0; it<lheMElist.size(); it++){
+    MELAOptionParser* lheme_opt;
+    // First find out if the option has a copy specification
+    // These copy options will be evaulated in a separate loop
+    if (lheMElist.at(it).find("Copy")!=string::npos){
+      lheme_opt = new MELAOptionParser(lheMElist.at(it));
+      lheme_copyopts.push_back(lheme_opt);
+      continue;
+    }
+
+    // Create a hypothesis for each option
+    MELAHypothesis* lheme_hypo = new MELAHypothesis(&mela, lheMElist.at(it));
+    lheme_units.push_back(lheme_hypo);
+
+    lheme_opt = lheme_hypo->getOption();
+    if (lheme_opt->isAliased()) lheme_aliased_units.push_back(lheme_hypo);
+
+    // Create a computation for each hypothesis
+    MELAComputation* lheme_computer = new MELAComputation(lheme_hypo);
+    lheme_computers.push_back(lheme_computer);
+
+    // Add the computation to a named cluster to keep track of JECUp/JECDn, or for best-pWH_SM Lep_WH computations
+    addToMELACluster(lheme_computer, lheme_clusters);
+
+    // Create the necessary branches for each computation
+    myTree->BookMELABranches(lheme_opt, true, lheme_computer);
+  }
+  // Resolve copy options
+  for (unsigned int it=0; it<lheme_copyopts.size(); it++){
+    MELAOptionParser* lheme_opt = lheme_copyopts.at(it);
+    MELAHypothesis* original_hypo=0;
+    MELAOptionParser* original_opt=0;
+    // Find the original options
+    for (unsigned int ih=0; ih<lheme_aliased_units.size(); ih++){
+      if (lheme_opt->testCopyAlias(lheme_aliased_units.at(ih)->getOption()->getAlias())){
+        original_hypo = lheme_aliased_units.at(ih);
+        original_opt = original_hypo->getOption();
+        break;
+      }
+    }
+    if (original_opt==0) continue;
+    else lheme_opt->pickOriginalOptions(original_opt);
+    // Create a new computation for the copy options
+    MELAComputation* lheme_computer = new MELAComputation(original_hypo);
+    lheme_computer->setOption(lheme_opt);
+    lheme_computers.push_back(lheme_computer);
+
+    // The rest is the same story...
+    // Add the computation to a named cluster to keep track of JECUp/JECDn, or for best-pWH_SM Lep_WH computations
+    addToMELACluster(lheme_computer, lheme_clusters);
+
+    // Create the necessary branches for each computation
+    myTree->BookMELABranches(lheme_opt, true, lheme_computer);
+  }
+  // Loop over the computations to add any contingencies to aliased hypotheses
+  for (unsigned int it=0; it<lheme_computers.size(); it++) lheme_computers.at(it)->addContingencies(lheme_aliased_units);
+
+  if (DEBUG_MB){
+    std::vector<MELABranch*>* lheme_branches = myTree->getLHEMELABranches();
+    for (unsigned int ib=0; ib<lheme_branches->size(); ib++) lheme_branches->at(ib)->Print();
+    for (unsigned int icl=0; icl<lheme_clusters.size(); icl++) cout << "LHE ME cluster " << lheme_clusters.at(icl)->getName() << " is present in " << lheme_clusters.size() << " clusters with #Computations = " << lheme_clusters.at(icl)->getComputations()->size() << endl;
+  }
+}
+
+void HZZ4lNtupleMaker::addToMELACluster(MELAComputation* me_computer, std::vector<MELACluster*>& me_clusters){
+  bool isAdded=false;
+  for (unsigned int it=0; it<me_clusters.size(); it++){ if (me_clusters.at(it)->getName()==me_computer->getCluster()){ me_clusters.at(it)->addComputation(me_computer); isAdded=true; } }
+  if (!isAdded){
+    MELACluster* tmpcluster = new MELACluster(me_computer->getCluster());
+    tmpcluster->addComputation(me_computer);
+    me_clusters.push_back(tmpcluster);
+  }
+}
+
+void HZZ4lNtupleMaker::computeMELABranches(MELACandidate* cand){
+  mela.setCurrentCandidate(cand);
+  // Sequantial computation
+  updateMELAClusters_Common("Common");
+  updateMELAClusters_NoInitialQ("NoInitialQ");
+  updateMELAClusters_NoInitialG("NoInitialG");
+  updateMELAClusters_BestLOAssociatedZ("BestLOAssociatedZ");
+  updateMELAClusters_BestLOAssociatedW("BestLOAssociatedW");
+  updateMELAClusters_BestLOAssociatedVBF("BestLOAssociatedVBF");
+  updateMELAClusters_NoAssociatedG("NoAssociatedG");
+  updateMELAClusters_NoInitialGNoAssociatedG("NoInitialGNoAssociatedG");
+  // Reverse sequence
+  updateMELAClusters_NoInitialGNoAssociatedG("NoInitialGNoAssociatedGLast");
+  updateMELAClusters_NoAssociatedG("NoAssociatedGLast");
+  updateMELAClusters_BestLOAssociatedVBF("BestLOAssociatedVBFLast");
+  updateMELAClusters_BestLOAssociatedW("BestLOAssociatedWLast");
+  updateMELAClusters_BestLOAssociatedZ("BestLOAssociatedZLast");
+  updateMELAClusters_NoInitialG("NoInitialGLast");
+  updateMELAClusters_NoInitialQ("NoInitialQLast");
+  updateMELAClusters_Common("CommonLast");
+  // Reset mela
+  mela.resetInputEvent();
+}
+// Common ME computations that do not manipulate the LHE candidate
+void HZZ4lNtupleMaker::updateMELAClusters_Common(const string clustertype){
+  MELACandidate* melaCand = mela.getCurrentCandidate();
+  if (melaCand==0) return;
+
+  for (unsigned int ic=0; ic<lheme_clusters.size(); ic++){
+    MELACluster* theCluster = lheme_clusters.at(ic);
+    if (theCluster->getName()==clustertype){
+      // Re-compute all related hypotheses first...
+      theCluster->computeAll();
+      // ...then update the cluster
+      theCluster->update();
+    }
+  }
+}
+// ME computations that require no quark initial state
+void HZZ4lNtupleMaker::updateMELAClusters_NoInitialQ(const string clustertype){
+  MELACandidate* melaCand = mela.getCurrentCandidate();
+  if (melaCand==0) return;
+
+  // Manipulate the candidate
+  // Assign 0 to the id of quark mothers
+  std::vector<int> motherIds;
+  for (int imot=0; imot<melaCand->getNMothers(); imot++){
+    motherIds.push_back(melaCand->getMother(imot)->id);
+    if (PDGHelpers::isAQuark(melaCand->getMother(imot)->id)) melaCand->getMother(imot)->id = 0;
+  }
+
+  for (unsigned int ic=0; ic<lheme_clusters.size(); ic++){
+    MELACluster* theCluster = lheme_clusters.at(ic);
+    if (theCluster->getName()==clustertype){
+      // Re-compute all related hypotheses first...
+      theCluster->computeAll();
+      // ...then update the cluster
+      theCluster->update();
+    }
+  }
+
+  // Restore the candidate properties
+  for (int imot=0; imot<melaCand->getNMothers(); imot++) melaCand->getMother(imot)->id = motherIds.at(imot); // Restore all mother ids
+}
+// ME computations that require no gluon initial state
+void HZZ4lNtupleMaker::updateMELAClusters_NoInitialG(const string clustertype){
+  MELACandidate* melaCand = mela.getCurrentCandidate();
+  if (melaCand==0) return;
+
+  // Manipulate the candidate
+  // Assign 0 to the id of gluon mothers
+  std::vector<int> motherIds;
+  for (int imot=0; imot<melaCand->getNMothers(); imot++){
+    motherIds.push_back(melaCand->getMother(imot)->id);
+    if (PDGHelpers::isAGluon(melaCand->getMother(imot)->id)) melaCand->getMother(imot)->id = 0;
+  }
+
+  for (unsigned int ic=0; ic<lheme_clusters.size(); ic++){
+    MELACluster* theCluster = lheme_clusters.at(ic);
+    if (theCluster->getName()==clustertype){
+      // Re-compute all related hypotheses first...
+      theCluster->computeAll();
+      // ...then update the cluster
+      theCluster->update();
+    }
+  }
+
+  // Restore the candidate properties
+  for (int imot=0; imot<melaCand->getNMothers(); imot++) melaCand->getMother(imot)->id = motherIds.at(imot); // Restore all mother ids
+}
+// ME computations that require no gluons as associated particles
+void HZZ4lNtupleMaker::updateMELAClusters_NoAssociatedG(const string clustertype){
+  MELACandidate* melaCand = mela.getCurrentCandidate();
+  if (melaCand==0) return;
+
+  // Manipulate the candidate
+  // Assign 0 to the id of gluon mothers
+  std::vector<int> ajetIds;
+  for (int ijet=0; ijet<melaCand->getNAssociatedJets(); ijet++){
+    ajetIds.push_back(melaCand->getAssociatedJet(ijet)->id);
+    if (PDGHelpers::isAGluon(melaCand->getAssociatedJet(ijet)->id)) melaCand->getAssociatedJet(ijet)->id = 0;
+  }
+
+  for (unsigned int ic=0; ic<lheme_clusters.size(); ic++){
+    MELACluster* theCluster = lheme_clusters.at(ic);
+    if (theCluster->getName()==clustertype){
+      // Re-compute all related hypotheses first...
+      theCluster->computeAll();
+      // ...then update the cluster
+      theCluster->update();
+    }
+  }
+
+  // Restore the candidate properties
+  for (int ijet=0; ijet<melaCand->getNAssociatedJets(); ijet++) melaCand->getAssociatedJet(ijet)->id = ajetIds.at(ijet); // Restore all jets
+}
+// ME computations that require no gluon initial state and no gluons as associated particles
+void HZZ4lNtupleMaker::updateMELAClusters_NoInitialGNoAssociatedG(const string clustertype){
+  MELACandidate* melaCand = mela.getCurrentCandidate();
+  if (melaCand==0) return;
+
+  // Manipulate the candidate
+  // Assign 0 to the id of gluon mothers
+  std::vector<int> motherIds;
+  std::vector<int> ajetIds;
+  for (int imot=0; imot<melaCand->getNMothers(); imot++){
+    motherIds.push_back(melaCand->getMother(imot)->id);
+    if (PDGHelpers::isAGluon(melaCand->getMother(imot)->id)) melaCand->getMother(imot)->id = 0;
+  }
+  for (int ijet=0; ijet<melaCand->getNAssociatedJets(); ijet++){
+    ajetIds.push_back(melaCand->getAssociatedJet(ijet)->id);
+    if (PDGHelpers::isAGluon(melaCand->getAssociatedJet(ijet)->id)) melaCand->getAssociatedJet(ijet)->id = 0;
+  }
+
+  for (unsigned int ic=0; ic<lheme_clusters.size(); ic++){
+    MELACluster* theCluster = lheme_clusters.at(ic);
+    if (theCluster->getName()==clustertype){
+      // Re-compute all related hypotheses first...
+      theCluster->computeAll();
+      // ...then update the cluster
+      theCluster->update();
+    }
+  }
+
+  // Restore the candidate properties
+  for (int imot=0; imot<melaCand->getNMothers(); imot++) melaCand->getMother(imot)->id = motherIds.at(imot); // Restore all mother ids
+  for (int ijet=0; ijet<melaCand->getNAssociatedJets(); ijet++) melaCand->getAssociatedJet(ijet)->id = ajetIds.at(ijet); // Restore all jets
+}
+// ME computations that require best Z, W or VBF topology at LO (no gluons)
+void HZZ4lNtupleMaker::updateMELAClusters_BestLOAssociatedZ(const string clustertype){
+  MELACandidate* melaCand = mela.getCurrentCandidate();
+  if (melaCand==0) return;
+
+  // Manipulate the candidate
+  // Assign 0 to the id of gluon mothers
+  std::vector<int> motherIds;
+  std::vector<int> ajetIds;
+  for (int imot=0; imot<melaCand->getNMothers(); imot++){
+    motherIds.push_back(melaCand->getMother(imot)->id);
+    if (PDGHelpers::isAGluon(melaCand->getMother(imot)->id)) melaCand->getMother(imot)->id = 0;
+  }
+  for (int ijet=0; ijet<melaCand->getNAssociatedJets(); ijet++){
+    ajetIds.push_back(melaCand->getAssociatedJet(ijet)->id);
+    if (PDGHelpers::isAGluon(melaCand->getAssociatedJet(ijet)->id)) melaCand->getAssociatedJet(ijet)->id = 0;
+  }
+  // Give precedence to leptonic V decays
+  bool hasALepV=false;
+  for (int iv=2; iv<melaCand->getNSortedVs(); iv++){
+    MELAParticle* Vtmp = melaCand->getSortedV(iv);
+    if (Vtmp!=0 && PDGHelpers::isAZBoson(Vtmp->id) && Vtmp->getNDaughters()>=1){
+      if (
+        PDGHelpers::isALepton(Vtmp->getDaughter(0)->id)
+        ||
+        PDGHelpers::isANeutrino(Vtmp->getDaughter(0)->id)
+        ){
+        hasALepV=true;
+      }
+    }
+  }
+  int bestVbyMass=-1;
+  float bestVMassDiff=1e5;
+  for (int iv=2; iv<melaCand->getNSortedVs(); iv++){
+    MELAParticle* Vtmp = melaCand->getSortedV(iv);
+    if (Vtmp!=0 && PDGHelpers::isAZBoson(Vtmp->id) && Vtmp->getNDaughters()>=1){
+      if (
+        PDGHelpers::isAJet(Vtmp->getDaughter(0)->id)
+        && hasALepV
+        ){
+        for (int idau=0; idau<Vtmp->getNDaughters(); idau++) Vtmp->getDaughter(idau)->setSelected(false);
+      }
+      else if (fabs(Vtmp->m()-PDGHelpers::Zmass)<bestVMassDiff){
+        bestVMassDiff=fabs(Vtmp->m()-PDGHelpers::Zmass);
+        bestVbyMass = iv;
+      }
+    }
+  }
+  for (int iv=2; iv<melaCand->getNSortedVs(); iv++){
+    MELAParticle* Vtmp = melaCand->getSortedV(iv);
+    if (Vtmp!=0 && PDGHelpers::isAZBoson(Vtmp->id) && Vtmp->getNDaughters()>=1){
+      for (int idau=0; idau<Vtmp->getNDaughters(); idau++) Vtmp->getDaughter(idau)->setSelected((iv==bestVbyMass));
+    }
+  }
+
+  for (unsigned int ic=0; ic<lheme_clusters.size(); ic++){
+    MELACluster* theCluster = lheme_clusters.at(ic);
+    if (theCluster->getName()==clustertype){
+      // Re-compute all related hypotheses first...
+      theCluster->computeAll();
+      // ...then update the cluster
+      theCluster->update();
+    }
+  }
+
+  // Restore the candidate properties
+  for (int imot=0; imot<melaCand->getNMothers(); imot++) melaCand->getMother(imot)->id = motherIds.at(imot); // Restore all mother ids
+  for (int ijet=0; ijet<melaCand->getNAssociatedJets(); ijet++) melaCand->getAssociatedJet(ijet)->id = ajetIds.at(ijet); // Restore all jets
+  for (int iv=2; iv<melaCand->getNSortedVs(); iv++){
+    MELAParticle* Vtmp = melaCand->getSortedV(iv);
+    if (Vtmp!=0 && PDGHelpers::isAZBoson(Vtmp->id) && Vtmp->getNDaughters()>=1){
+      for (int idau=0; idau<Vtmp->getNDaughters(); idau++) Vtmp->getDaughter(idau)->setSelected(true);
+    }
+  }
+}
+void HZZ4lNtupleMaker::updateMELAClusters_BestLOAssociatedW(const string clustertype){
+  MELACandidate* melaCand = mela.getCurrentCandidate();
+  if (melaCand==0) return;
+
+  // Manipulate the candidate
+  // Assign 0 to the id of gluon mothers
+  std::vector<int> motherIds;
+  std::vector<int> ajetIds;
+  for (int imot=0; imot<melaCand->getNMothers(); imot++){
+    motherIds.push_back(melaCand->getMother(imot)->id);
+    if (PDGHelpers::isAGluon(melaCand->getMother(imot)->id)) melaCand->getMother(imot)->id = 0;
+  }
+  for (int ijet=0; ijet<melaCand->getNAssociatedJets(); ijet++){
+    ajetIds.push_back(melaCand->getAssociatedJet(ijet)->id);
+    if (PDGHelpers::isAGluon(melaCand->getAssociatedJet(ijet)->id)) melaCand->getAssociatedJet(ijet)->id = 0;
+  }
+  // Give precedence to leptonic V decays
+  bool hasALepV=false;
+  for (int iv=2; iv<melaCand->getNSortedVs(); iv++){
+    MELAParticle* Vtmp = melaCand->getSortedV(iv);
+    if (Vtmp!=0 && PDGHelpers::isAWBoson(Vtmp->id) && Vtmp->getNDaughters()>=1){
+      if (
+        PDGHelpers::isALepton(Vtmp->getDaughter(0)->id)
+        ||
+        PDGHelpers::isANeutrino(Vtmp->getDaughter(0)->id)
+        ){
+        hasALepV=true;
+      }
+    }
+  }
+  int bestVbyMass=-1;
+  float bestVMassDiff=1e5;
+  for (int iv=2; iv<melaCand->getNSortedVs(); iv++){
+    MELAParticle* Vtmp = melaCand->getSortedV(iv);
+    if (Vtmp!=0 && PDGHelpers::isAWBoson(Vtmp->id) && Vtmp->getNDaughters()>=1){
+      if (
+        PDGHelpers::isAJet(Vtmp->getDaughter(0)->id)
+        && hasALepV
+        ){
+        for (int idau=0; idau<Vtmp->getNDaughters(); idau++) Vtmp->getDaughter(idau)->setSelected(false);
+      }
+      else if (fabs(Vtmp->m()-PDGHelpers::Wmass)<bestVMassDiff){
+        bestVMassDiff=fabs(Vtmp->m()-PDGHelpers::Wmass);
+        bestVbyMass = iv;
+      }
+    }
+  }
+  for (int iv=2; iv<melaCand->getNSortedVs(); iv++){
+    MELAParticle* Vtmp = melaCand->getSortedV(iv);
+    if (Vtmp!=0 && PDGHelpers::isAWBoson(Vtmp->id) && Vtmp->getNDaughters()>=1){
+      for (int idau=0; idau<Vtmp->getNDaughters(); idau++) Vtmp->getDaughter(idau)->setSelected((iv==bestVbyMass));
+    }
+  }
+
+  for (unsigned int ic=0; ic<lheme_clusters.size(); ic++){
+    MELACluster* theCluster = lheme_clusters.at(ic);
+    if (theCluster->getName()==clustertype){
+      // Re-compute all related hypotheses first...
+      theCluster->computeAll();
+      // ...then update the cluster
+      theCluster->update();
+    }
+  }
+
+  // Restore the candidate properties
+  for (int imot=0; imot<melaCand->getNMothers(); imot++) melaCand->getMother(imot)->id = motherIds.at(imot); // Restore all mother ids
+  for (int ijet=0; ijet<melaCand->getNAssociatedJets(); ijet++) melaCand->getAssociatedJet(ijet)->id = ajetIds.at(ijet); // Restore all jets
+  for (int iv=2; iv<melaCand->getNSortedVs(); iv++){
+    MELAParticle* Vtmp = melaCand->getSortedV(iv);
+    if (Vtmp!=0 && PDGHelpers::isAWBoson(Vtmp->id) && Vtmp->getNDaughters()>=1){
+      for (int idau=0; idau<Vtmp->getNDaughters(); idau++) Vtmp->getDaughter(idau)->setSelected(true);
+    }
+  }
+}
+void HZZ4lNtupleMaker::updateMELAClusters_BestLOAssociatedVBF(const string clustertype){
+  // Same as updateMELAClusters_NoInitialGNoAssociatedG, but keep a separate function for future studies
+  MELACandidate* melaCand = mela.getCurrentCandidate();
+  if (melaCand==0) return;
+
+  // Manipulate the candidate
+  // Assign 0 to the id of gluon mothers
+  std::vector<int> motherIds;
+  std::vector<int> ajetIds;
+  for (int imot=0; imot<melaCand->getNMothers(); imot++){
+    motherIds.push_back(melaCand->getMother(imot)->id);
+    if (PDGHelpers::isAGluon(melaCand->getMother(imot)->id)) melaCand->getMother(imot)->id = 0;
+  }
+  for (int ijet=0; ijet<melaCand->getNAssociatedJets(); ijet++){
+    ajetIds.push_back(melaCand->getAssociatedJet(ijet)->id);
+    if (PDGHelpers::isAGluon(melaCand->getAssociatedJet(ijet)->id)) melaCand->getAssociatedJet(ijet)->id = 0;
+  }
+
+  for (unsigned int ic=0; ic<lheme_clusters.size(); ic++){
+    MELACluster* theCluster = lheme_clusters.at(ic);
+    if (theCluster->getName()==clustertype){
+      // Re-compute all related hypotheses first...
+      theCluster->computeAll();
+      // ...then update the cluster
+      theCluster->update();
+    }
+  }
+
+  // Restore the candidate properties
+  for (int imot=0; imot<melaCand->getNMothers(); imot++) melaCand->getMother(imot)->id = motherIds.at(imot); // Restore all mother ids
+  for (int ijet=0; ijet<melaCand->getNAssociatedJets(); ijet++) melaCand->getAssociatedJet(ijet)->id = ajetIds.at(ijet); // Restore all jets
+}
+
+void HZZ4lNtupleMaker::pushRecoMELABranches(const pat::CompositeCandidate& cand){
+  std::vector<MELABranch*>* recome_branches = myTree->getRecoMELABranches();
+  // Pull + push...
+  for (unsigned int ib=0; ib<recome_branches->size(); ib++){
+    std::string branchname = recome_branches->at(ib)->bname.Data();
+    if (cand.hasUserFloat(branchname)) recome_branches->at(ib)->setValue((Float_t)cand.userFloat(branchname));
+    else cerr << "HZZ4lNtupleMaker::pushRecoMELABranches: Candidate does not contain the reco ME " << branchname << " it should have calculated!" << endl;
+  }
+}
+void HZZ4lNtupleMaker::pushLHEMELABranches(){
+  std::vector<MELABranch*>* lheme_branches = myTree->getLHEMELABranches();
+  // Pull + push...
+  for (unsigned int ib=0; ib<lheme_branches->size(); ib++) lheme_branches->at(ib)->setVal();
+  // ...then reset
+  for (unsigned int ic=0; ic<lheme_clusters.size(); ic++) lheme_clusters.at(ic)->reset();
+}
+void HZZ4lNtupleMaker::clearMELABranches(){
+  for (unsigned int it=0; it<lheme_clusters.size(); it++) delete lheme_clusters.at(it);
+  for (unsigned int it=0; it<lheme_computers.size(); it++) delete lheme_computers.at(it);
+  for (unsigned int it=0; it<lheme_copyopts.size(); it++) delete lheme_copyopts.at(it);
+  //for (unsigned int it=0; it<lheme_aliased_units.size(); it++) delete lheme_aliased_units.at(it); // DO NOT DELETE THIS, WILL BE DELETED WITH lheme_units!
+  for (unsigned int it=0; it<lheme_units.size(); it++) delete lheme_units.at(it);
+
+  for (unsigned int it=0; it<recome_copyopts.size(); it++) delete recome_copyopts.at(it);
+  for (unsigned int it=0; it<recome_originalopts.size(); it++) delete recome_originalopts.at(it);
 }
 
 //define this as a plug-in

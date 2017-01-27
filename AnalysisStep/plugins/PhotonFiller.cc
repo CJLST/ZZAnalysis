@@ -125,7 +125,7 @@ PhotonFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         for (unsigned int j = 0; j< electronHandle->size(); ++j){
           const pat::Electron* e = &((*electronHandle)[j]);
           if (e->userFloat("isSIP")){
-            if (setup==2016) {
+            if (setup>=2016) {
               if ((e->associatedPackedPFCandidates()).size()) {
     	        edm::RefVector < pat::PackedCandidateCollection > pfcands = e->associatedPackedPFCandidates();
     	        for ( auto itr: pfcands ) {

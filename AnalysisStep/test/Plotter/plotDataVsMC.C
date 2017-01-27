@@ -570,14 +570,15 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
   Float_t ZZMassUnrefitErr;
   Float_t ZZPt;
   Float_t ZZEta;
-  Float_t p0plus_VAJHU;
-  Float_t bkg_VAMCFM;
-  Float_t pvbf_VAJHU_highestPTJets;
-  Float_t phjj_VAJHU_highestPTJets;
-  Float_t pAux_vbf_VAJHU;
-  Float_t phj_VAJHU;
-  Float_t pwh_hadronic_VAJHU;
-  Float_t pzh_hadronic_VAJHU;
+  Float_t p_GG_SIG_ghg2_1_ghz1_1_JHUGen;
+  Float_t p_QQB_BKG_MCFM;
+  Float_t p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal;
+  Float_t p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal;
+  Float_t p_JVBF_SIG_ghv1_1_JHUGen_JECNominal;
+  Float_t pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal;
+  Float_t p_JQCD_SIG_ghg2_1_JHUGen_JECNominal;
+  Float_t p_HadWH_SIG_ghw1_1_JHUGen_JECNominal;
+  Float_t p_HadZH_SIG_ghz1_1_JHUGen_JECNominal;
   Float_t Z1Mass;
   Float_t Z2Mass;
   Short_t Z1Flav;
@@ -725,14 +726,15 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
     inputTree[d]->SetBranchAddress("ZZMassUnrefitErr", &ZZMassUnrefitErr);
     inputTree[d]->SetBranchAddress("ZZPt", &ZZPt);
     inputTree[d]->SetBranchAddress("ZZEta", &ZZEta);
-    inputTree[d]->SetBranchAddress("p0plus_VAJHU", &p0plus_VAJHU);
-    inputTree[d]->SetBranchAddress("bkg_VAMCFM", &bkg_VAMCFM);
-    inputTree[d]->SetBranchAddress("pvbf_VAJHU_highestPTJets", &pvbf_VAJHU_highestPTJets);
-    inputTree[d]->SetBranchAddress("phjj_VAJHU_highestPTJets", &phjj_VAJHU_highestPTJets);
-    inputTree[d]->SetBranchAddress("pAux_vbf_VAJHU", &pAux_vbf_VAJHU);
-    inputTree[d]->SetBranchAddress("phj_VAJHU", &phj_VAJHU);
-    inputTree[d]->SetBranchAddress("pwh_hadronic_VAJHU", &pwh_hadronic_VAJHU);
-    inputTree[d]->SetBranchAddress("pzh_hadronic_VAJHU", &pzh_hadronic_VAJHU);
+    inputTree[d]->SetBranchAddress("p_GG_SIG_ghg2_1_ghz1_1_JHUGen", &p_GG_SIG_ghg2_1_ghz1_1_JHUGen);
+    inputTree[d]->SetBranchAddress("p_QQB_BKG_MCFM", &p_QQB_BKG_MCFM);
+    inputTree[d]->SetBranchAddress("p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal", &p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal);
+    inputTree[d]->SetBranchAddress("p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal", &p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal);
+    inputTree[d]->SetBranchAddress("p_JVBF_SIG_ghv1_1_JHUGen_JECNominal", &p_JVBF_SIG_ghv1_1_JHUGen_JECNominal);
+    inputTree[d]->SetBranchAddress("pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal", &pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal);
+    inputTree[d]->SetBranchAddress("p_JQCD_SIG_ghg2_1_JHUGen_JECNominal", &p_JQCD_SIG_ghg2_1_JHUGen_JECNominal);
+    inputTree[d]->SetBranchAddress("p_HadWH_SIG_ghw1_1_JHUGen_JECNominal", &p_HadWH_SIG_ghw1_1_JHUGen_JECNominal);
+    inputTree[d]->SetBranchAddress("p_HadZH_SIG_ghz1_1_JHUGen_JECNominal", &p_HadZH_SIG_ghz1_1_JHUGen_JECNominal);
     inputTree[d]->SetBranchAddress("Z1Mass", &Z1Mass);
     inputTree[d]->SetBranchAddress("Z2Mass", &Z2Mass);
     inputTree[d]->SetBranchAddress("Z1Flav", &Z1Flav);
@@ -872,8 +874,8 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
       /* ---------- Moriond 2016 categorization 
       currentCategory = categoryMor16(
 	 nJets,
-         pvbf_VAJHU_highestPTJets,
-         phjj_VAJHU_highestPTJets
+         p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
+         p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal
          );
       //*/
       //* ---------- Ichep 2016 categorization 
@@ -883,12 +885,13 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 	 nJets,
 	 nJetsBTagged,
 	 jetQGL,
-	 phjj_VAJHU_highestPTJets,
-	 phj_VAJHU,
-	 pvbf_VAJHU_highestPTJets,
-	 pAux_vbf_VAJHU,
-	 pwh_hadronic_VAJHU,
-	 pzh_hadronic_VAJHU,
+	 p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+	 p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
+	 p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
+   p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+   pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+	 p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
+	 p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
 	 jetPhi,
 	 ZZMass,
 	 false
@@ -912,12 +915,12 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 
       //----- fill histograms
 
-      Float_t KD = p0plus_VAJHU / ( p0plus_VAJHU + bkg_VAMCFM*getDbkgkinConstant(Z1Flav*Z2Flav,ZZMass) );
-      Float_t D2jet = (nJets>=2) ? pvbf_VAJHU_highestPTJets / ( pvbf_VAJHU_highestPTJets + phjj_VAJHU_highestPTJets*getDVBF2jetsConstant(ZZMass) ) : -2 ;
+      Float_t KD = p_GG_SIG_ghg2_1_ghz1_1_JHUGen / ( p_GG_SIG_ghg2_1_ghz1_1_JHUGen + p_QQB_BKG_MCFM*getDbkgkinConstant(Z1Flav*Z2Flav,ZZMass) );
+      Float_t D2jet = (nJets>=2) ? p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal / ( p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal + p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal*getDVBF2jetsConstant(ZZMass) ) : -2 ;
       //Float_t D2jetComb = (nJets>=2) ? 1/(1+ (1./D2jet-1.) * TMath::Power(jetPgOverPq[0]*jetPgOverPq[1],1/3.) ) : -2 ;
-      Float_t D1jet = (nJets==1) ? pvbf_VAJHU_highestPTJets*pAux_vbf_VAJHU / ( pvbf_VAJHU_highestPTJets*pAux_vbf_VAJHU + phj_VAJHU*getDVBF1jetConstant(ZZMass) ) : -2 ;
-      Float_t DWH = (nJets>=2) ? pwh_hadronic_VAJHU / ( pwh_hadronic_VAJHU + CUSTOMCCONSTWH*1e5*phjj_VAJHU_highestPTJets ) : -2 ;
-      Float_t DZH = (nJets>=2) ? pzh_hadronic_VAJHU / ( pzh_hadronic_VAJHU + CUSTOMCCONSTZH*1e4*phjj_VAJHU_highestPTJets ) : -2 ;
+      Float_t D1jet = (nJets==1) ? p_JVBF_SIG_ghv1_1_JHUGen_JECNominal*pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal / (p_JVBF_SIG_ghv1_1_JHUGen_JECNominal*pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal + p_JQCD_SIG_ghg2_1_JHUGen_JECNominal*getDVBF1jetConstant(ZZMass)) : -2;
+      Float_t DWH = (nJets>=2) ? p_HadWH_SIG_ghw1_1_JHUGen_JECNominal / ( p_HadWH_SIG_ghw1_1_JHUGen_JECNominal + CUSTOMCCONSTWH*1e5*p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal ) : -2 ;
+      Float_t DZH = (nJets>=2) ? p_HadZH_SIG_ghz1_1_JHUGen_JECNominal / ( p_HadZH_SIG_ghz1_1_JHUGen_JECNominal + CUSTOMCCONSTZH*1e4*p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal ) : -2 ;
       Float_t varVal[nVariables] = {
 	ZZMass,
 	ZZMass,
@@ -1343,14 +1346,15 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
   Float_t ZZMassRefit;
   Float_t ZZPt;
   Float_t ZZEta;
-  Float_t p0plus_VAJHU;
-  Float_t bkg_VAMCFM;
-  Float_t pvbf_VAJHU_highestPTJets;
-  Float_t phjj_VAJHU_highestPTJets;
-  Float_t pAux_vbf_VAJHU;
-  Float_t phj_VAJHU;
-  Float_t pwh_hadronic_VAJHU;
-  Float_t pzh_hadronic_VAJHU;
+  Float_t p_GG_SIG_ghg2_1_ghz1_1_JHUGen;
+  Float_t p_QQB_BKG_MCFM;
+  Float_t p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal;
+  Float_t p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal;
+  Float_t p_JVBF_SIG_ghv1_1_JHUGen_JECNominal;
+  Float_t pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal;
+  Float_t p_JQCD_SIG_ghg2_1_JHUGen_JECNominal;
+  Float_t p_HadWH_SIG_ghw1_1_JHUGen_JECNominal;
+  Float_t p_HadZH_SIG_ghz1_1_JHUGen_JECNominal;
   Float_t Z1Mass;
   Float_t Z2Mass;
   Short_t Z1Flav;
@@ -1382,14 +1386,15 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
   mytree->SetBranchAddress("ZZMassRefit", &ZZMassRefit);
   mytree->SetBranchAddress("ZZPt", &ZZPt);
   mytree->SetBranchAddress("ZZEta", &ZZEta);
-  mytree->SetBranchAddress("p0plus_VAJHU", &p0plus_VAJHU);
-  mytree->SetBranchAddress("bkg_VAMCFM", &bkg_VAMCFM);
-  mytree->SetBranchAddress("pvbf_VAJHU_highestPTJets", &pvbf_VAJHU_highestPTJets);
-  mytree->SetBranchAddress("phjj_VAJHU_highestPTJets", &phjj_VAJHU_highestPTJets);
-  mytree->SetBranchAddress("pAux_vbf_VAJHU", &pAux_vbf_VAJHU);
-  mytree->SetBranchAddress("phj_VAJHU", &phj_VAJHU);
-  mytree->SetBranchAddress("pwh_hadronic_VAJHU", &pwh_hadronic_VAJHU);
-  mytree->SetBranchAddress("pzh_hadronic_VAJHU", &pzh_hadronic_VAJHU);
+  mytree->SetBranchAddress("p_GG_SIG_ghg2_1_ghz1_1_JHUGen", &p_GG_SIG_ghg2_1_ghz1_1_JHUGen);
+  mytree->SetBranchAddress("p_QQB_BKG_MCFM", &p_QQB_BKG_MCFM);
+  mytree->SetBranchAddress("p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal", &p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal);
+  mytree->SetBranchAddress("p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal", &p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal);
+  mytree->SetBranchAddress("p_JVBF_SIG_ghv1_1_JHUGen_JECNominal", &p_JVBF_SIG_ghv1_1_JHUGen_JECNominal);
+  mytree->SetBranchAddress("pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal", &pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal);
+  mytree->SetBranchAddress("p_JQCD_SIG_ghg2_1_JHUGen_JECNominal", &p_JQCD_SIG_ghg2_1_JHUGen_JECNominal);
+  mytree->SetBranchAddress("p_HadWH_SIG_ghw1_1_JHUGen_JECNominal", &p_HadWH_SIG_ghw1_1_JHUGen_JECNominal);
+  mytree->SetBranchAddress("p_HadZH_SIG_ghz1_1_JHUGen_JECNominal", &p_HadZH_SIG_ghz1_1_JHUGen_JECNominal);
   mytree->SetBranchAddress("Z1Mass", &Z1Mass);
   mytree->SetBranchAddress("Z2Mass", &Z2Mass);
   mytree->SetBranchAddress("Z1Flav", &Z1Flav);
@@ -1475,12 +1480,13 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
        nJets,
        nJetsBTagged,
        jetQGL,
-       phjj_VAJHU_highestPTJets,
-       phj_VAJHU,
-       pvbf_VAJHU_highestPTJets,
-       pAux_vbf_VAJHU,
-       pwh_hadronic_VAJHU,
-       pzh_hadronic_VAJHU,
+       p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+       p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
+       p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
+       p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+       pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+       p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
+       p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
        jetPhi,
        ZZMass,
        false
@@ -1491,12 +1497,12 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
     //----- fill histograms, update counters
 
     for(int j=0; j<nJets; j++) jetPgOverPq[j] = 1./JetQGLikelihood->at(j) - 1.;
-    Float_t KD = p0plus_VAJHU / ( p0plus_VAJHU + bkg_VAMCFM*getDbkgkinConstant(Z1Flav*Z2Flav,ZZMass) );
-    Float_t D2jet = (nJets>=2) ? pvbf_VAJHU_highestPTJets / ( pvbf_VAJHU_highestPTJets + phjj_VAJHU_highestPTJets*getDVBF2jetsConstant(ZZMass) ) : -2 ;
+    Float_t KD = p_GG_SIG_ghg2_1_ghz1_1_JHUGen / ( p_GG_SIG_ghg2_1_ghz1_1_JHUGen + p_QQB_BKG_MCFM*getDbkgkinConstant(Z1Flav*Z2Flav,ZZMass) );
+    Float_t D2jet = (nJets>=2) ? p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal / ( p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal + p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal*getDVBF2jetsConstant(ZZMass) ) : -2 ;
     //Float_t D2jetComb = (nJets>=2) ? 1/(1+ (1./D2jet-1.) * TMath::Power(jetPgOverPq[0]*jetPgOverPq[1],1/3.) ) : -2 ;
-    Float_t D1jet = (nJets==1) ? pvbf_VAJHU_highestPTJets*pAux_vbf_VAJHU / ( pvbf_VAJHU_highestPTJets*pAux_vbf_VAJHU + phj_VAJHU*getDVBF1jetConstant(ZZMass) ) : -2 ;
-    Float_t DWH = (nJets>=2) ? pwh_hadronic_VAJHU / ( pwh_hadronic_VAJHU + CUSTOMCCONSTWH*1e5*phjj_VAJHU_highestPTJets ) : -2 ;
-    Float_t DZH = (nJets>=2) ? pzh_hadronic_VAJHU / ( pzh_hadronic_VAJHU + CUSTOMCCONSTZH*1e4*phjj_VAJHU_highestPTJets ) : -2 ;
+    Float_t D1jet = (nJets==1) ? p_JVBF_SIG_ghv1_1_JHUGen_JECNominal*pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal / (p_JVBF_SIG_ghv1_1_JHUGen_JECNominal*pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal + p_JQCD_SIG_ghg2_1_JHUGen_JECNominal*getDVBF1jetConstant(ZZMass)) : -2;
+    Float_t DWH = (nJets>=2) ? p_HadWH_SIG_ghw1_1_JHUGen_JECNominal / ( p_HadWH_SIG_ghw1_1_JHUGen_JECNominal + CUSTOMCCONSTWH*1e5*p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal ) : -2 ;
+    Float_t DZH = (nJets>=2) ? p_HadZH_SIG_ghz1_1_JHUGen_JECNominal / ( p_HadZH_SIG_ghz1_1_JHUGen_JECNominal + CUSTOMCCONSTZH*1e4*p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal ) : -2 ;
     Float_t varVal[nVariables] = {
       ZZMass,
       ZZMass,

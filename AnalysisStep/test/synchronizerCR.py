@@ -28,14 +28,14 @@ def parseOptions():
 def test_bit(mask, iBit):
 
     return (mask >> iBit) & 1
-            
+
 
 def loop():
-    
+
 
     inFileName = opt.inFile
     outFileNameStr = opt.outFile
-        
+
     print "Processing file: ",inFileName,"..."
 
     crCands = {}
@@ -44,13 +44,13 @@ def loop():
     for aCR in CRdict.keys():
         crCounter[aCR] = 0
         crCands[aCR]   = []
-    
+
     tree = ROOT.TChain("CRZLLTree/candTree")
     tree.Add(inFileName)
     tree.SetBranchStatus("*",0)
 
     # Variables we are interested in for the sync
-    tree.SetBranchStatus("CRflag",1)    
+    tree.SetBranchStatus("CRflag",1)
     tree.SetBranchStatus("RunNumber",1)
     tree.SetBranchStatus("LumiNumber",1)
     tree.SetBranchStatus("EventNumber",1)
@@ -66,23 +66,23 @@ def loop():
     tree.SetBranchStatus("ZZMassErrCorr",1)
     tree.SetBranchStatus("ZZMassRefit",1)
     tree.SetBranchStatus("ZZMassRefitErr",1)
-    tree.SetBranchStatus("p0plus_VAJHU",1)
-    tree.SetBranchStatus("p0minus_VAJHU",1)
-    tree.SetBranchStatus("p0hplus_VAJHU",1)
-    tree.SetBranchStatus("p1plus_VAJHU",1)
-    tree.SetBranchStatus("p1_VAJHU",1)
-    tree.SetBranchStatus("p2plus_gg_VAJHU",1)
-    tree.SetBranchStatus("p2plus_qqb_VAJHU",1)            
-    tree.SetBranchStatus("bkg_VAMCFM",1)
-    tree.SetBranchStatus("p0plus_m4l",1)
-    tree.SetBranchStatus("bkg_m4l",1)
-    tree.SetBranchStatus("Dgg10_VAMCFM",1)
-    tree.SetBranchStatus("pvbf_VAJHU_highestPTJets",1)
-    tree.SetBranchStatus("phjj_VAJHU_highestPTJets",1)
-    tree.SetBranchStatus("phj_VAJHU",1)
-    tree.SetBranchStatus("pAux_vbf_VAJHU",1)
-    tree.SetBranchStatus("pwh_hadronic_VAJHU",1)
-    tree.SetBranchStatus("pzh_hadronic_VAJHU",1)   
+    tree.SetBranchStatus("p_GG_SIG_ghg2_1_ghz1_1_JHUGen",1)
+    tree.SetBranchStatus("p_GG_SIG_ghg2_1_ghz4_1_JHUGen",1)
+    tree.SetBranchStatus("p_GG_SIG_ghg2_1_ghz2_1_JHUGen",1)
+    tree.SetBranchStatus("p_QQB_SIG_ZPqqLR_1_gZPz2_1_JHUGen",1)
+    tree.SetBranchStatus("p_QQB_SIG_ZPqqLR_1_gZPz1_1_JHUGen",1)
+    tree.SetBranchStatus("p_GG_SIG_gXg1_1_gXz1_1_gXz5_1_JHUGen",1)
+    tree.SetBranchStatus("p_QQB_SIG_XqqLR_1_gXz1_1_gXz5_1_JHUGen",1)
+    tree.SetBranchStatus("p_QQB_BKG_MCFM",1)
+    tree.SetBranchStatus("p_m4l_SIG",1)
+    tree.SetBranchStatus("p_m4l_BKG",1)
+    tree.SetBranchStatus("p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal",1)
+    tree.SetBranchStatus("p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal",1)
+    tree.SetBranchStatus("p_JQCD_SIG_ghg2_1_JHUGen_JECNominal",1)
+    tree.SetBranchStatus("p_JVBF_SIG_ghv1_1_JHUGen_JECNominal",1)
+    tree.SetBranchStatus("pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal",1)
+    tree.SetBranchStatus("p_HadWH_SIG_ghw1_1_JHUGen_JECNominal",1)
+    tree.SetBranchStatus("p_HadZH_SIG_ghz1_1_JHUGen_JECNominal",1)
     tree.SetBranchStatus("ZZPt",1)
     tree.SetBranchStatus("nExtraLep",1)
     tree.SetBranchStatus("nExtraZ",1)
@@ -94,7 +94,7 @@ def loop():
     tree.SetBranchStatus("JetMass",1)
     tree.SetBranchStatus("JetQGLikelihood",1)
     tree.SetBranchStatus("DiJetMass",1)
-    tree.SetBranchStatus("DiJetDEta",1)            
+    tree.SetBranchStatus("DiJetDEta",1)
 
     iEntry=0
     while tree.GetEntry(iEntry):
@@ -113,10 +113,10 @@ def loop():
         #if event != storedEvent:
         if (True) : #I don't want to reindent everything
             for aCR in CRdict.keys():
-            
+
                 if test_bit(CRflag,CRdict[aCR]):
-                    
-                    crCounter[aCR] += 1                    
+
+                    crCounter[aCR] += 1
                     mass4l        = tree.ZZMass
                     mZ1           = tree.Z1Mass
                     mZ2           = tree.Z2Mass
@@ -124,23 +124,23 @@ def loop():
                     massErrCorr   = tree.ZZMassErrCorr
                     m4lRefit      = tree.ZZMassRefit
                     m4lRefitErr   = tree.ZZMassRefitErr
-                    p0plus_VAJHU  = tree.p0plus_VAJHU
-                    p0minus_VAJHU = tree.p0minus_VAJHU
-                    p0hplus_VAJHU = tree.p0hplus_VAJHU
-                    p1plus_VAJHU  = tree.p1plus_VAJHU 
-                    p1_VAJHU      = tree.p1_VAJHU     
-                    p2plus_gg_VAJHU      = tree.p2plus_gg_VAJHU     
-                    p2plus_qqb_VAJHU   = tree.p2plus_qqb_VAJHU              
-                    bkg_VAMCFM    = tree.bkg_VAMCFM
-                    p0plus_m4l    = tree.p0plus_m4l
-                    bkg_m4l       = tree.bkg_m4l
-                    Dgg10_VAMCFM  = tree.Dgg10_VAMCFM
-                    pvbf_VAJHU    = tree.pvbf_VAJHU_highestPTJets
-                    phjj_VAJHU    = tree.phjj_VAJHU_highestPTJets
-                    phj_VAJHU     = tree.phj_VAJHU
-                    pAux_vbf_VAJHU     = tree.pAux_vbf_VAJHU
-                    pwh_hadronic_VAJHU = tree.pwh_hadronic_VAJHU
-                    pzh_hadronic_VAJHU = tree.pzh_hadronic_VAJHU
+                    p_GG_SIG_ghg2_1_ghz1_1_JHUGen  = tree.p_GG_SIG_ghg2_1_ghz1_1_JHUGen
+                    p_GG_SIG_ghg2_1_ghz4_1_JHUGen = tree.p_GG_SIG_ghg2_1_ghz4_1_JHUGen
+                    p_GG_SIG_ghg2_1_ghz2_1_JHUGen = tree.p_GG_SIG_ghg2_1_ghz2_1_JHUGen
+                    p_QQB_SIG_ZPqqLR_1_gZPz2_1_JHUGen  = tree.p_QQB_SIG_ZPqqLR_1_gZPz2_1_JHUGen
+                    p_QQB_SIG_ZPqqLR_1_gZPz1_1_JHUGen      = tree.p_QQB_SIG_ZPqqLR_1_gZPz1_1_JHUGen
+                    p_GG_SIG_gXg1_1_gXz1_1_gXz5_1_JHUGen      = tree.p_GG_SIG_gXg1_1_gXz1_1_gXz5_1_JHUGen
+                    p_QQB_SIG_XqqLR_1_gXz1_1_gXz5_1_JHUGen   = tree.p_QQB_SIG_XqqLR_1_gXz1_1_gXz5_1_JHUGen
+                    p_QQB_BKG_MCFM    = tree.p_QQB_BKG_MCFM
+                    p_m4l_SIG    = tree.p_m4l_SIG
+                    p_m4l_BKG       = tree.p_m4l_BKG
+                    p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal    = tree.JJVBF_SIG_ghv1_1_JHUGen_JECNominal
+                    p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal    = tree.JJQCD_SIG_ghg2_1_JHUGen_JECNominal
+                    p_JQCD_SIG_ghg2_1_JHUGen_JECNominal     = tree.p_JQCD_SIG_ghg2_1_JHUGen_JECNominal
+                    p_JVBF_SIG_ghv1_1_JHUGen_JECNominal     = tree.p_JVBF_SIG_ghv1_1_JHUGen_JECNominal
+                    pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal     = tree.pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal
+                    p_HadWH_SIG_ghw1_1_JHUGen_JECNominal = tree.p_HadWH_SIG_ghw1_1_JHUGen_JECNominal
+                    p_HadZH_SIG_ghz1_1_JHUGen_JECNominal = tree.p_HadZH_SIG_ghz1_1_JHUGen_JECNominal
                     pt4l          = tree.ZZPt
                     nExtraLep     = tree.nExtraLep
                     nExtraZ       = tree.nExtraZ
@@ -161,45 +161,45 @@ def loop():
                     jets30mass = []
                     jets30QGLikelihood = []
 
-                    for i in range(len(jetpt)):                    
+                    for i in range(len(jetpt)):
                         if jetpt[i]>30.:
                             jets30pt.append(jetpt[i])
                             jets30eta.append(jeteta[i])
                             jets30phi.append(jetphi[i])
                             jets30mass.append(jetmass[i])
                             jets30QGLikelihood.append(jetQGLikelihood[i])
-                            
-                    theKDs = KDs(p0plus_VAJHU,p0minus_VAJHU,p0hplus_VAJHU,p1plus_VAJHU,p1_VAJHU,p2plus_gg_VAJHU,p2plus_qqb_VAJHU,bkg_VAMCFM,p0plus_m4l,bkg_m4l,Dgg10_VAMCFM,pvbf_VAJHU,phjj_VAJHU,phj_VAJHU,pAux_vbf_VAJHU,pwh_hadronic_VAJHU,pzh_hadronic_VAJHU,njets30,jets30QGLikelihood,jets30phi,tree.Z1Flav*tree.Z2Flav,mass4l)
-                    theCand = Candidate(theEvent,mass4l,mZ1,mZ2,massErrRaw,massErrCorr,m4lRefit,m4lRefitErr,pt4l,nExtraLep,nExtraZ,jets30pt,jets30eta,jets30phi,jets30mass,njets30,njets30Btag,mjj,detajj,theKDs,weight,jets30QGLikelihood,phjj_VAJHU,phj_VAJHU,pvbf_VAJHU,pAux_vbf_VAJHU,pwh_hadronic_VAJHU,pzh_hadronic_VAJHU)
+
+                    theKDs = KDs(p_GG_SIG_ghg2_1_ghz1_1_JHUGen,p_GG_SIG_ghg2_1_ghz4_1_JHUGen,p_GG_SIG_ghg2_1_ghz2_1_JHUGen,p_QQB_SIG_ZPqqLR_1_gZPz2_1_JHUGen,p_QQB_SIG_ZPqqLR_1_gZPz1_1_JHUGen,p_GG_SIG_gXg1_1_gXz1_1_gXz5_1_JHUGen,p_QQB_SIG_XqqLR_1_gXz1_1_gXz5_1_JHUGen,p_QQB_BKG_MCFM,p_m4l_SIG,p_m4l_BKG,p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,njets30,jets30QGLikelihood,jets30phi,tree.Z1Flav*tree.Z2Flav,mass4l)
+                    theCand = Candidate(theEvent,mass4l,mZ1,mZ2,massErrRaw,massErrCorr,m4lRefit,m4lRefitErr,pt4l,nExtraLep,nExtraZ,jets30pt,jets30eta,jets30phi,jets30mass,njets30,njets30Btag,mjj,detajj,theKDs,weight,jets30QGLikelihood,p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,p_HadZH_SIG_ghz1_1_JHUGen_JECNominal)
                     crCands[aCR].append(theCand)
 
 
     crSortedCands = crCands
     for aCR in CRdict.keys():
         # Sort candidates on a run / lumisection / event number basis
-        crSortedCands[aCR] = sorted(crCands[aCR], key=attrgetter('eventInfo.run', 'eventInfo.lumi', 'eventInfo.event')) 
+        crSortedCands[aCR] = sorted(crCands[aCR], key=attrgetter('eventInfo.run', 'eventInfo.lumi', 'eventInfo.event'))
 
         # Print in sync format
         outFileName = outFileNameStr.replace(".txt","_"+aCR+".txt")
-        outFile = open(outFileName,"w")        
+        outFile = open(outFileName,"w")
         line = ""
         for aCand in crSortedCands[aCR]:
             line += aCand.eventInfo.printOut()
             line += ":"
             line += aCand.printOut()
             line += "\n"
-            
-        outFile.write(line)
-        outFile.close()        
 
-        
+        outFile.write(line)
+        outFile.close()
+
+
         print "\n## Events in CR "+aCR+": ",crCounter[aCR],"events"
         print "Output written in file: ",outFileName
 
 
 
 
-        
+
 
 if __name__ == "__main__":
 

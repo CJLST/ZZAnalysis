@@ -42,6 +42,62 @@ extern "C" float getDVBF1jetConstant(float ZZMass){
   float constant = kappa/(1.-kappa);
   return constant;
 }
+extern "C" float getDWHhConstant(float ZZMass){
+  return 1e-3;
+}
+extern "C" float getDZHhConstant(float ZZMass){
+  return 1e-4;
+}
+
+extern "C" float getDVBF2jetsWP(float ZZMass, bool useQGTagging){
+  if (useQGTagging)
+    return 0.391;
+  else
+    return 1.043-460./(ZZMass+634.);
+}
+extern "C" float getDVBF1jetWP(float ZZMass, bool useQGTagging){
+  if (useQGTagging)
+    return 0.72;
+  else
+    return 0.699;
+}
+extern "C" float getDWHhWP(float ZZMass, bool useQGTagging){
+  if (useQGTagging)
+    return 0.973;
+  else
+    return 0.959;
+}
+extern "C" float getDZHhWP(float ZZMass, bool useQGTagging){
+  if (useQGTagging)
+    return 0.996;
+  else
+    return 0.9946;
+}
+
+extern "C" float getDVBF2jetsConstant_shiftWP(float ZZMass, bool useQGTagging, float newWP) {
+  float oldc = getDVBF2jetsConstant(ZZMass);
+  float oldWP = getDVBF2jetsWP(ZZMass, useQGTagging);
+  return oldc * (newWP/oldWP) * ((1-oldWP)/(1-newWP));
+}
+extern "C" float getDVBF1jetConstant_shiftWP(float ZZMass, bool useQGTagging, float newWP) {
+  float oldc = getDVBF1jetConstant(ZZMass);
+  float oldWP = getDVBF1jetWP(ZZMass, useQGTagging);
+  return oldc * (newWP/oldWP) * ((1-oldWP)/(1-newWP));
+}
+
+extern "C" float getDWHhConstant_shiftWP(float ZZMass, bool useQGTagging, float newWP) {
+  float oldc = getDWHhConstant(ZZMass);
+  float oldWP = getDWHhWP(ZZMass, useQGTagging);
+  return oldc * (newWP/oldWP) * ((1-oldWP)/(1-newWP));
+}
+
+extern "C" float getDZHhConstant_shiftWP(float ZZMass, bool useQGTagging, float newWP) {
+  float oldc = getDZHhConstant(ZZMass);
+  float oldWP = getDZHhWP(ZZMass, useQGTagging);
+  return oldc * (newWP/oldWP) * ((1-oldWP)/(1-newWP));
+}
+
+
 extern "C" float getDbkgkinConstant(int ZZflav, float ZZMass){ // ZZflav==id1*id2*id3*id4
   float par[14]={
     0.775,
@@ -74,9 +130,5 @@ extern "C" float getDbkgkinConstant(int ZZflav, float ZZMass){ // ZZflav==id1*id
   return constant;
 }
 extern "C" float getDbkgConstant(int ZZflav, float ZZMass){
-  float cbkgkin = getDbkgkinConstant(ZZflav, ZZMass);
-  if (abs(ZZflav)==121*121 || abs(ZZflav)==121*242 || abs(ZZflav)==242*242) return cbkgkin*35.6; // 4e
-  else if (abs(ZZflav)==169*169) return cbkgkin*22.8; // 4mu
-  else if (abs(ZZflav)==121*169 || abs(ZZflav)==242*169) return cbkgkin*41.8; // 2e2mu
-  else return 1.;
+  return getDbkgkinConstant(ZZflav, ZZMass);
 }

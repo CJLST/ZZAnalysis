@@ -188,7 +188,7 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
   Short_t nExtraLeptons;
   Short_t nCleanedJets;   
 
-  float ZZPt, pvbf_VAJHU_highestPTJets, phjj_VAJHU_highestPTJets, PHJ_VAJHU, PAUX_VBF_VAJHU, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU, p0plus_VAJHU, bkg_VAMCFM ;
+  float ZZPt, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, p_HadWH_SIG_ghw1_1_JHUGen_JECNominal, p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, p_GG_SIG_ghg2_1_ghz1_1_JHUGen, p_QQB_BKG_MCFM;
   Short_t nJets;
   Short_t nBTaggedJets;
   std::vector<float> * JETQGLikeliHood = 0;
@@ -241,19 +241,20 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
     ggTree->SetBranchAddress("nExtraLep",&nExtraLeptons);
     ggTree->SetBranchAddress("nCleanedJets",&nJets);
     ggTree->SetBranchAddress("nCleanedJetsPt30BTagged",&nBTaggedJets);
-    ggTree->SetBranchAddress("pvbf_VAJHU_highestPTJets",&pvbf_VAJHU_highestPTJets);
-    ggTree->SetBranchAddress("phjj_VAJHU_highestPTJets",&phjj_VAJHU_highestPTJets);
+    ggTree->SetBranchAddress("p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal",&p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal);
+    ggTree->SetBranchAddress("p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal",&p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal);
 
     ggTree->SetBranchAddress("DiJetFisher",&Fisher); 
     ggTree->SetBranchAddress("nExtraZ",&ExtraZ);
     ggTree->SetBranchAddress("nCleanedJetsPt30",&nCleanedJets);
     ggTree->SetBranchAddress("JetQGLikelihood",&JETQGLikeliHood);
-    ggTree->SetBranchAddress("phj_VAJHU",&PHJ_VAJHU);
-    ggTree->SetBranchAddress("pAux_vbf_VAJHU",&PAUX_VBF_VAJHU);
-    ggTree->SetBranchAddress("pwh_hadronic_VAJHU",&PWH_hadronic_VAJHU);
-    ggTree->SetBranchAddress("pzh_hadronic_VAJHU",&PZH_hadronic_VAJHU);
-    ggTree->SetBranchAddress("p0plus_VAJHU",&p0plus_VAJHU);
-    ggTree->SetBranchAddress("bkg_VAMCFM",&bkg_VAMCFM);
+    ggTree->SetBranchAddress("p_JQCD_SIG_ghg2_1_JHUGen_JECNominal",&p_JQCD_SIG_ghg2_1_JHUGen_JECNominal);
+    ggTree->SetBranchAddress("p_JVBF_SIG_ghv1_1_JHUGen_JECNominal", &p_JVBF_SIG_ghv1_1_JHUGen_JECNominal);
+    ggTree->SetBranchAddress("pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal", &pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal);
+    ggTree->SetBranchAddress("p_HadWH_SIG_ghw1_1_JHUGen_JECNominal", &p_HadWH_SIG_ghw1_1_JHUGen_JECNominal);
+    ggTree->SetBranchAddress("p_HadZH_SIG_ghz1_1_JHUGen_JECNominal",&p_HadZH_SIG_ghz1_1_JHUGen_JECNominal);
+    ggTree->SetBranchAddress("p_GG_SIG_ghg2_1_ghz1_1_JHUGen",&p_GG_SIG_ghg2_1_ghz1_1_JHUGen);
+    ggTree->SetBranchAddress("p_QQB_BKG_MCFM",&p_QQB_BKG_MCFM);
     
  
     ggTree->SetBranchAddress("JetPt",&jetpt);
@@ -310,8 +311,8 @@ string sschannel, sscategory;
 	}
       }  
       int Cat = -10 ;
-      if (selAna == 0) Cat = categoryMor16(nJets, pvbf_VAJHU_highestPTJets, phjj_VAJHU_highestPTJets );	    
-      if (selAna == 1) Cat = categoryIchep16(nExtraLeptons, ExtraZ, nCleanedJets, nBTaggedJets,jetQGLL, phjj_VAJHU_highestPTJets, PHJ_VAJHU, pvbf_VAJHU_highestPTJets, PAUX_VBF_VAJHU, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU,jetPHI, m4l, useQGTagging );
+      if (selAna == 0) Cat = categoryMor16(nJets, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal );	    
+      if (selAna == 1) Cat = categoryIchep16(nExtraLeptons, ExtraZ, nCleanedJets, nBTaggedJets, jetQGLL, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, p_HadWH_SIG_ghw1_1_JHUGen_JECNominal, p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, jetPHI, m4l, useQGTagging);
       if (categ >= 0 && categ != Cat ) continue;
       
       if(channels==0 && z1flav*z2flav != 28561) continue;
@@ -319,7 +320,7 @@ string sschannel, sscategory;
       if(channels==2 && z1flav*z2flav != 20449) continue;
      
       mass4l=m4l;
-      kd = p0plus_VAJHU / ( p0plus_VAJHU + bkg_VAMCFM ) ;
+      kd = p_GG_SIG_ghg2_1_ghz1_1_JHUGen / ( p_GG_SIG_ghg2_1_ghz1_1_JHUGen + p_QQB_BKG_MCFM ) ;
       newTree->Fill(); 
       
       ntupleVarSet.setCatIndex("massrc",massBin[i]);

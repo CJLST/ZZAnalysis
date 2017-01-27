@@ -16,7 +16,6 @@
 
 #include <ZZAnalysis/AnalysisStep/interface/CutSet.h>
 #include <ZZAnalysis/AnalysisStep/interface/DaughterDataHelpers.h>
-#include <ZZMatrixElement/MELA/interface/Mela.h>
 //#include <ZZAnalysis/AnalysisStep/interface/ZZMassErrors.h>
 //#include <ZZAnalysis/AnalysisStep/interface/MCHistoryTools.h>
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
@@ -42,6 +41,8 @@
 #include <ZZAnalysis/AnalysisStep/interface/utils.h>
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
 #include <ZZAnalysis/AnalysisStep/interface/JetCleaner.h>
+#include <ZZAnalysis/AnalysisStep/interface/MELABranch.h>
+#include <ZZAnalysis/AnalysisStep/interface/MELACluster.h>
 #include <KinZfitter/KinZfitter/interface/KinZfitter.h>
 
 #include "TH2F.h"
@@ -49,8 +50,10 @@
 #include "TLorentzVector.h"
 
 #include <string>
+#include <vector>
 
 using namespace zzanalysis;
+using namespace BranchHelpers;
 
 bool doVtxFit = false;
 
@@ -70,6 +73,16 @@ private:
   virtual void endJob(){};
 
   void getPairMass(const reco::Candidate* lp, const reco::Candidate* lm, FSRToLepMap& photons, float& mass, int& ID);
+  void buildMELA();
+  void addToMELACluster(MELAComputation* me_computer);
+  void computeMELABranches();
+  void updateMELAClusters_Common();
+  void updateMELAClusters_J1JEC();
+  void updateMELAClusters_J2JEC();
+  void updateMELAClusters_LepWH();
+  void updateMELAClusters_LepZH();
+  void pushMELABranches(pat::CompositeCandidate& myCand);
+  void clearMELA();
 
   edm::EDGetTokenT<edm::View<reco::CompositeCandidate> > candidateToken;
   const CutSet<pat::CompositeCandidate> preBestCandSelection;
@@ -78,6 +91,14 @@ private:
   int setup;
   float superMelaMass;
   Mela* mela;
+  std::vector<std::string> recoMElist;
+  std::vector<MELAOptionParser*> me_copyopts;
+  std::vector<MELAHypothesis*> me_units;
+  std::vector<MELAHypothesis*> me_aliased_units;
+  std::vector<MELAComputation*> me_computers;
+  std::vector<MELACluster*> me_clusters;
+  std::vector<MELABranch*> me_branches;
+
   bool embedDaughterFloats;
   bool ZRolesByMass;
   reco::CompositeCandidate::role_collection rolesZ1Z2;
@@ -103,7 +124,9 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
   sampleType(iConfig.getParameter<int>("sampleType")),
   setup(iConfig.getParameter<int>("setup")),
   superMelaMass(iConfig.getParameter<double>("superMelaMass")),
-  embedDaughterFloats(iConfig.getUntrackedParameter<bool>("embedDaughterFloats",true)),
+  mela(0),
+  recoMElist(iConfig.getParameter<std::vector<std::string>>("recoProbabilities")),
+  embedDaughterFloats(iConfig.getUntrackedParameter<bool>("embedDaughterFloats", true)),
   ZRolesByMass(iConfig.getParameter<bool>("ZRolesByMass")),
   isMC(iConfig.getParameter<bool>("isMC")),
   doKinFit(iConfig.getParameter<bool>("doKinFit")),
@@ -113,8 +136,7 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
 {
   produces<pat::CompositeCandidateCollection>();
 
-  mela = new Mela(SetupToSqrts(setup), superMelaMass, TVar::ERROR);
-  mela->setCandidateDecayMode(TVar::CandidateDecay_ZZ);
+  buildMELA();
 
   jetToken = consumes<edm::View<pat::Jet> >(edm::InputTag("cleanJets"));
   metToken = consumes<pat::METCollection>(edm::InputTag("slimmedMETs"));
@@ -157,7 +179,8 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
 
 ZZCandidateFiller::~ZZCandidateFiller(){
   delete kinZfitter;
-  delete mela;
+
+  clearMELA();
 }
 
 
@@ -616,568 +639,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
       }
       nCandidates++;
     }
-
-    mela->setCurrentCandidateFromIndex(0);
-
-    /****************************/
-    /***** SPIN-0 JHUGEN ME *****/
-    /****************************/
-    /***** PURE MEs *****/
-    // 0+m
-    float p0plus_VAJHU=0;
-    mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::ZZGG);
-    mela->computeP(p0plus_VAJHU, true);
-    // 0+L1
-    float p0_g1prime2_VAJHU=0;
-    mela->setProcess(TVar::H0_g1prime2, TVar::JHUGen, TVar::ZZGG);
-    mela->computeP(p0_g1prime2_VAJHU, true);
-    // 0+h
-    float p0hplus_VAJHU=0;
-    mela->setProcess(TVar::H0hplus, TVar::JHUGen, TVar::ZZGG);
-    mela->computeP(p0hplus_VAJHU, true);
-    // 0-
-    float p0minus_VAJHU=0;
-    mela->setProcess(TVar::H0minus, TVar::JHUGen, TVar::ZZGG);
-    mela->computeP(p0minus_VAJHU, true);
-    // 0+hzgs
-    float p0hplus_zgs_VAJHU=0;
-    mela->setProcess(TVar::H0_Zgs, TVar::JHUGen, TVar::ZZGG);
-    mela->computeP(p0hplus_zgs_VAJHU, true);
-    // 0+L1zgs
-    float p0_g1prime2_zgs_VAJHU=0;
-    mela->setProcess(TVar::H0_Zgsg1prime2, TVar::JHUGen, TVar::ZZGG);
-    mela->computeP(p0_g1prime2_zgs_VAJHU, true);
-    // 0-zgs
-    float p0minus_zgs_VAJHU=0;
-    mela->setProcess(TVar::H0_Zgs_PS, TVar::JHUGen, TVar::ZZGG);
-    mela->computeP(p0minus_zgs_VAJHU, true);
-    // 0+hgsgs
-    float p0hplus_gsgs_VAJHU=0;
-    mela->setProcess(TVar::H0_gsgs, TVar::JHUGen, TVar::ZZGG);
-    mela->computeP(p0hplus_gsgs_VAJHU, true);
-    // 0-gsgs
-    float p0minus_gsgs_VAJHU=0;
-    mela->setProcess(TVar::H0_gsgs_PS, TVar::JHUGen, TVar::ZZGG);
-    mela->computeP(p0minus_gsgs_VAJHU, true);
-
-    /***** MIXTURE MEs *****/
-    mela->setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
-    // 0+m -- 0+h
-    float pg1g2_VAJHU=0;
-    (mela->selfDHggcoupl)[0][0]=1.;
-    (mela->selfDHzzcoupl)[0][0][0]=1.;
-    (mela->selfDHzzcoupl)[0][1][0]=1.;
-    mela->computeP(pg1g2_VAJHU, true);
-    pg1g2_VAJHU -= p0plus_VAJHU+p0hplus_VAJHU;
-    // 0+m -- 0+h (phase(0+h)=pi/2)
-    float pg1g2_pi2_VAJHU=0;
-    (mela->selfDHggcoupl)[0][0]=1.;
-    (mela->selfDHzzcoupl)[0][0][0]=1.;
-    (mela->selfDHzzcoupl)[0][1][1]=1.;
-    mela->computeP(pg1g2_pi2_VAJHU, true);
-    pg1g2_pi2_VAJHU -= p0plus_VAJHU+p0hplus_VAJHU;
-    // 0+m -- 0-
-    float pg1g4_VAJHU=0;
-    (mela->selfDHggcoupl)[0][0]=1.;
-    (mela->selfDHzzcoupl)[0][0][0]=1.;
-    (mela->selfDHzzcoupl)[0][3][0]=1.;
-    mela->computeP(pg1g4_VAJHU, true);
-    pg1g4_VAJHU -= p0plus_VAJHU+p0minus_VAJHU;
-    // 0+m -- 0- (phase(0-)=pi/2)
-    float pg1g4_pi2_VAJHU=0;
-    (mela->selfDHggcoupl)[0][0]=1.;
-    (mela->selfDHzzcoupl)[0][0][0]=1.;
-    (mela->selfDHzzcoupl)[0][3][1]=1.;
-    mela->computeP(pg1g4_pi2_VAJHU, true);
-    pg1g4_pi2_VAJHU -= p0plus_VAJHU+p0minus_VAJHU;
-    // 0+m -- 0+L1 (no phase=pi/2 equivalent)
-    float pg1g1prime2_VAJHU=0;
-    (mela->selfDHggcoupl)[0][0]=1.;
-    (mela->selfDHzzcoupl)[0][0][0]=1.;
-    (mela->selfDHzzcoupl)[0][11][0]=1.;
-    mela->computeP(pg1g1prime2_VAJHU, true);
-    pg1g1prime2_VAJHU -= p0plus_VAJHU+p0_g1prime2_VAJHU;
-    // 0+m ZZ -- 0+L1 Zg*
-    float p0plus_zz_g1prime2_zgs_VAJHU=0;
-    (mela->selfDHggcoupl)[0][0]=1.;
-    (mela->selfDHzzcoupl)[0][0][0]=1.;
-    (mela->selfDHzzcoupl)[0][30][0]=1.;
-    mela->computeP(p0plus_zz_g1prime2_zgs_VAJHU, true);
-    p0plus_zz_g1prime2_zgs_VAJHU -= p0plus_VAJHU+p0_g1prime2_zgs_VAJHU;
-    // 0+m ZZ -- 0+L1 Zg* (phase(0+L1 Zgs*)=pi/2)
-    float p0plus_zz_g1prime2_zgs_pi2_VAJHU=0;
-    (mela->selfDHggcoupl)[0][0]=1.;
-    (mela->selfDHzzcoupl)[0][0][0]=1.;
-    (mela->selfDHzzcoupl)[0][30][1]=1.;
-    mela->computeP(p0plus_zz_g1prime2_zgs_pi2_VAJHU, true);
-    p0plus_zz_g1prime2_zgs_pi2_VAJHU -= p0plus_VAJHU+p0_g1prime2_zgs_VAJHU;
-    // 0+m ZZ -- 0+h Zg*
-    float p0plus_zz_0hplus_zgs_VAJHU=0;
-    (mela->selfDHggcoupl)[0][0]=1.;
-    (mela->selfDHzzcoupl)[0][0][0]=1.;
-    (mela->selfDHzzcoupl)[0][4][0]=1.;
-    mela->computeP(p0plus_zz_0hplus_zgs_VAJHU, true);
-    p0plus_zz_0hplus_zgs_VAJHU -= p0plus_VAJHU+p0hplus_zgs_VAJHU;
-    // 0+m ZZ -- 0- Zg*
-    float p0plus_zz_0minus_zgs_VAJHU=0;
-    (mela->selfDHggcoupl)[0][0]=1.;
-    (mela->selfDHzzcoupl)[0][0][0]=1.;
-    (mela->selfDHzzcoupl)[0][6][0]=1.;
-    mela->computeP(p0plus_zz_0minus_zgs_VAJHU, true);
-    p0plus_zz_0minus_zgs_VAJHU -= p0plus_VAJHU+p0minus_zgs_VAJHU;
-    // 0+m ZZ -- 0+h g*g*
-    float p0plus_zz_0hplus_gsgs_VAJHU=0;
-    (mela->selfDHggcoupl)[0][0]=1.;
-    (mela->selfDHzzcoupl)[0][0][0]=1.;
-    (mela->selfDHzzcoupl)[0][7][0]=1.;
-    mela->computeP(p0plus_zz_0hplus_gsgs_VAJHU, true);
-    p0plus_zz_0hplus_gsgs_VAJHU -= p0plus_VAJHU+p0hplus_gsgs_VAJHU;
-    // 0+m ZZ -- 0- g*g*
-    float p0plus_zz_0minus_gsgs_VAJHU=0;
-    (mela->selfDHggcoupl)[0][0]=1.;
-    (mela->selfDHzzcoupl)[0][0][0]=1.;
-    (mela->selfDHzzcoupl)[0][9][0]=1.;
-    mela->computeP(p0plus_zz_0minus_gsgs_VAJHU, true);
-    p0plus_zz_0minus_gsgs_VAJHU -= p0plus_VAJHU+p0minus_gsgs_VAJHU;
-
-    /****************************/
-    /***** SPIN-1 JHUGEN ME *****/
-    /****************************/
-    // qqb 1- VV
-    float p1_VAJHU=0;
-    mela->setProcess(TVar::H1minus, TVar::JHUGen, TVar::ZZQQB);
-    mela->computeP(p1_VAJHU, true);
-    // 1- VV
-    float p1_prodIndep_VAJHU=0;
-    mela->setProcess(TVar::H1minus, TVar::JHUGen, TVar::ZZINDEPENDENT);
-    mela->computeP(p1_prodIndep_VAJHU, true);
-    // qqb 1+ VV
-    float p1plus_VAJHU=0;
-    mela->setProcess(TVar::H1plus, TVar::JHUGen, TVar::ZZQQB);
-    mela->computeP(p1plus_VAJHU, true);
-    // 1+ VV
-    float p1plus_prodIndep_VAJHU=0;
-    mela->setProcess(TVar::H1plus, TVar::JHUGen, TVar::ZZINDEPENDENT);
-    mela->computeP(p1plus_prodIndep_VAJHU, true);
-
-    /****************************/
-    /***** SPIN-2 JHUGEN ME *****/
-    /****************************/
-    // Should find a nicer way -- U. Sarica
-    // gg 2+m VV (g1=1, g5=1)
-    float p2plus_gg_VAJHU=0;
-    mela->setProcess(TVar::H2_g1g5, TVar::JHUGen, TVar::ZZGG);
-    mela->computeP(p2plus_gg_VAJHU, true);
-    // qqb 2+m VV (g1=1, g5=1)
-    float p2plus_qqb_VAJHU=0;
-    mela->setProcess(TVar::H2_g1g5, TVar::JHUGen, TVar::ZZQQB);
-    mela->computeP(p2plus_qqb_VAJHU, true);
-    // 2+m VV (g1=1, g5=1)
-    float p2plus_prodIndep_VAJHU=0;
-    mela->setProcess(TVar::H2_g1g5, TVar::JHUGen, TVar::ZZINDEPENDENT);
-    mela->computeP(p2plus_prodIndep_VAJHU, true);
-
-    // gg 2+h2 VV (g2=1)
-    float p2h2plus_gg_VAJHU=0;
-    mela->setProcess(TVar::H2_g2, TVar::JHUGen, TVar::ZZGG);
-    mela->computeP(p2h2plus_gg_VAJHU, true);
-    // qqb 2+h2 VV (g2=1)
-    float p2h2plus_qqb_VAJHU=0;
-    mela->setProcess(TVar::H2_g2, TVar::JHUGen, TVar::ZZQQB);
-    mela->computeP(p2h2plus_qqb_VAJHU, true);
-    // 2+h2 VV (g2=1)
-    float p2h2plus_prodIndep_VAJHU=0;
-    mela->setProcess(TVar::H2_g2, TVar::JHUGen, TVar::ZZINDEPENDENT);
-    mela->computeP(p2h2plus_prodIndep_VAJHU, true);
-
-    // gg 2+h3 VV (g3=1)
-    float p2h3plus_gg_VAJHU=0;
-    mela->setProcess(TVar::H2_g3, TVar::JHUGen, TVar::ZZGG);
-    mela->computeP(p2h3plus_gg_VAJHU, true);
-    // qqb 2+h3 VV (g3=1)
-    float p2h3plus_qqb_VAJHU=0;
-    mela->setProcess(TVar::H2_g3, TVar::JHUGen, TVar::ZZQQB);
-    mela->computeP(p2h3plus_qqb_VAJHU, true);
-    // 2+h3 VV (g3=1)
-    float p2h3plus_prodIndep_VAJHU=0;
-    mela->setProcess(TVar::H2_g3, TVar::JHUGen, TVar::ZZINDEPENDENT);
-    mela->computeP(p2h3plus_prodIndep_VAJHU, true);
-
-    // gg 2+h4 VV (g4=1)
-    float p2h4plus_gg_VAJHU=0;
-    mela->setProcess(TVar::H2_g4, TVar::JHUGen, TVar::ZZGG);
-    mela->computeP(p2h4plus_gg_VAJHU, true);
-    // qqb 2+h4 VV (g4=1)
-    float p2h4plus_qqb_VAJHU=0;
-    mela->setProcess(TVar::H2_g4, TVar::JHUGen, TVar::ZZQQB);
-    mela->computeP(p2h4plus_qqb_VAJHU, true);
-    // 2+h4 VV (g4=1)
-    float p2h4plus_prodIndep_VAJHU=0;
-    mela->setProcess(TVar::H2_g4, TVar::JHUGen, TVar::ZZINDEPENDENT);
-    mela->computeP(p2h4plus_prodIndep_VAJHU, true);
-
-    // gg 2+b VV (g5=1)
-    float p2bplus_gg_VAJHU=0;
-    mela->setProcess(TVar::H2_g5, TVar::JHUGen, TVar::ZZGG);
-    mela->computeP(p2bplus_gg_VAJHU, true);
-    // qqb 2+b VV (g5=1)
-    float p2bplus_qqb_VAJHU=0;
-    mela->setProcess(TVar::H2_g5, TVar::JHUGen, TVar::ZZQQB);
-    mela->computeP(p2bplus_qqb_VAJHU, true);
-    // 2+b VV (g5=1)
-    float p2bplus_prodIndep_VAJHU=0;
-    mela->setProcess(TVar::H2_g5, TVar::JHUGen, TVar::ZZINDEPENDENT);
-    mela->computeP(p2bplus_prodIndep_VAJHU, true);
-
-    // gg 2+h6 VV (g6=1)
-    float p2h6plus_gg_VAJHU=0;
-    mela->setProcess(TVar::H2_g6, TVar::JHUGen, TVar::ZZGG);
-    mela->computeP(p2h6plus_gg_VAJHU, true);
-    // qqb 2+h6 VV (g6=1)
-    float p2h6plus_qqb_VAJHU=0;
-    mela->setProcess(TVar::H2_g6, TVar::JHUGen, TVar::ZZQQB);
-    mela->computeP(p2h6plus_qqb_VAJHU, true);
-    // 2+h6 VV (g6=1)
-    float p2h6plus_prodIndep_VAJHU=0;
-    mela->setProcess(TVar::H2_g6, TVar::JHUGen, TVar::ZZINDEPENDENT);
-    mela->computeP(p2h6plus_prodIndep_VAJHU, true);
-
-    // gg 2+h7 VV (g7=1)
-    float p2h7plus_gg_VAJHU=0;
-    mela->setProcess(TVar::H2_g7, TVar::JHUGen, TVar::ZZGG);
-    mela->computeP(p2h7plus_gg_VAJHU, true);
-    // qqb 2+h7 VV (g7=1)
-    float p2h7plus_qqb_VAJHU=0;
-    mela->setProcess(TVar::H2_g7, TVar::JHUGen, TVar::ZZQQB);
-    mela->computeP(p2h7plus_qqb_VAJHU, true);
-    // 2+h7 VV (g7=1)
-    float p2h7plus_prodIndep_VAJHU=0;
-    mela->setProcess(TVar::H2_g7, TVar::JHUGen, TVar::ZZINDEPENDENT);
-    mela->computeP(p2h7plus_prodIndep_VAJHU, true);
-
-    // gg 2-h8 VV (g8=1)
-    float p2hminus_gg_VAJHU=0;
-    mela->setProcess(TVar::H2_g8, TVar::JHUGen, TVar::ZZGG);
-    mela->computeP(p2hminus_gg_VAJHU, true);
-    // qqb 2-h8 VV (g8=1)
-    float p2hminus_qqb_VAJHU=0;
-    mela->setProcess(TVar::H2_g8, TVar::JHUGen, TVar::ZZQQB);
-    mela->computeP(p2hminus_qqb_VAJHU, true);
-    // 2-h8 VV (g8=1)
-    float p2hminus_prodIndep_VAJHU=0;
-    mela->setProcess(TVar::H2_g8, TVar::JHUGen, TVar::ZZINDEPENDENT);
-    mela->computeP(p2hminus_prodIndep_VAJHU, true);
-
-    // gg 2-h9 VV (g9=1)
-    float p2h9minus_gg_VAJHU=0;
-    mela->setProcess(TVar::H2_g9, TVar::JHUGen, TVar::ZZGG);
-    mela->computeP(p2h9minus_gg_VAJHU, true);
-    // qqb 2-h9 VV (g9=1)
-    float p2h9minus_qqb_VAJHU=0;
-    mela->setProcess(TVar::H2_g9, TVar::JHUGen, TVar::ZZQQB);
-    mela->computeP(p2h9minus_qqb_VAJHU, true);
-    // 2-h9 VV (g9=1)
-    float p2h9minus_prodIndep_VAJHU=0;
-    mela->setProcess(TVar::H2_g9, TVar::JHUGen, TVar::ZZINDEPENDENT);
-    mela->computeP(p2h9minus_prodIndep_VAJHU, true);
-
-    // gg 2-h10 VV (g10=1)
-    float p2h10minus_gg_VAJHU=0;
-    mela->setProcess(TVar::H2_g10, TVar::JHUGen, TVar::ZZGG);
-    mela->computeP(p2h10minus_gg_VAJHU, true);
-    // qqb 2-h10 VV (g10=1)
-    float p2h10minus_qqb_VAJHU=0;
-    mela->setProcess(TVar::H2_g10, TVar::JHUGen, TVar::ZZQQB);
-    mela->computeP(p2h10minus_qqb_VAJHU, true);
-    // 2-h10 VV (g10=1)
-    float p2h10minus_prodIndep_VAJHU=0;
-    mela->setProcess(TVar::H2_g10, TVar::JHUGen, TVar::ZZINDEPENDENT);
-    mela->computeP(p2h10minus_prodIndep_VAJHU, true);
-
-    /****************************************/
-    /***** SIGNAL OR BACKGROUND MCFM ME *****/
-    /****************************************/
-    float p0plus_VAMCFM=0;
-    mela->setProcess(TVar::HSMHiggs, TVar::MCFM, TVar::ZZGG);
-    mela->computeP(p0plus_VAMCFM, true);
-    float ggzz_p0plus_VAMCFM=0;
-    mela->setProcess(TVar::bkgZZ_SMHiggs, TVar::MCFM, TVar::ZZGG);
-    mela->computeP(ggzz_p0plus_VAMCFM, true);
-    float ggzz_VAMCFM=0;
-    mela->setProcess(TVar::bkgZZ, TVar::MCFM, TVar::ZZGG);
-    mela->computeP(ggzz_VAMCFM, true);
-    float bkg_VAMCFM=0;
-    mela->setProcess(TVar::bkgZZ, TVar::MCFM, TVar::ZZQQB);
-    mela->computeP(bkg_VAMCFM, true);
-    float bkg_prodIndep_VAMCFM=0;
-    mela->setProcess(TVar::bkgZZ, TVar::MCFM, TVar::ZZINDEPENDENT);
-    mela->computeP(bkg_prodIndep_VAMCFM, true);
-    float pZJJ_VAMCFM=0;
-    mela->setProcess(TVar::bkgZJets, TVar::MCFM, TVar::JJQCD);
-    mela->computeP(pZJJ_VAMCFM, true);
-    float Dgg10_VAMCFM=0;
-    mela->computeD_gg(TVar::MCFM, TVar::D_gg10, Dgg10_VAMCFM);
-
-    /*********************/
-    /***** SuperMELA *****/
-    /*********************/
-    // Signal
-    mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::ZZGG);
-    float p0plus_m4l=0; mela->computePM4l(TVar::SMSyst_None, p0plus_m4l);
-    float p0plus_m4l_ScaleUp=0; mela->computePM4l(TVar::SMSyst_ScaleUp, p0plus_m4l_ScaleUp);
-    float p0plus_m4l_ScaleDown=0; mela->computePM4l(TVar::SMSyst_ScaleDown, p0plus_m4l_ScaleDown);
-    float p0plus_m4l_ResUp=0; mela->computePM4l(TVar::SMSyst_ResUp, p0plus_m4l_ResUp);
-    float p0plus_m4l_ResDown=0; mela->computePM4l(TVar::SMSyst_ResDown, p0plus_m4l_ResDown);
-    // Background
-    mela->setProcess(TVar::bkgZZ, TVar::JHUGen, TVar::ZZGG);
-    float bkg_m4l=0; mela->computePM4l(TVar::SMSyst_None, bkg_m4l);
-    float bkg_m4l_ScaleUp=0; mela->computePM4l(TVar::SMSyst_ScaleUp, bkg_m4l_ScaleUp);
-    float bkg_m4l_ScaleDown=0; mela->computePM4l(TVar::SMSyst_ScaleDown, bkg_m4l_ScaleDown);
-    float bkg_m4l_ResUp=0; mela->computePM4l(TVar::SMSyst_ResUp, bkg_m4l_ResUp);
-    float bkg_m4l_ResDown=0; mela->computePM4l(TVar::SMSyst_ResDown, bkg_m4l_ResDown);
-
-    /*********************************************/
-    /***** Probabilities for H + 1/2 leptons *****/
-    /*********************************************/
-    float pwh_leptonic_VAJHU=-1.;
-    float pzh_leptonic_VAJHU=-1.;
-
-    TLorentzVector highestWHMENeutrino(0, 0, 0, 0); // Keep track of the neutrino used
-    if (nExtraLep>0){
-      MELACandidate* melaCand = mela->getCurrentCandidate();
-
-      if (melaCand!=0){
-        /***** WH *****/
-        int nNeutrinos = melaCand->getNAssociatedNeutrinos();
-        for (int inu=0; inu<nNeutrinos; inu++){
-          for (int disableNu=0; disableNu<nNeutrinos; disableNu++) melaCand->getAssociatedNeutrino(disableNu)->setSelected(disableNu==inu); // Disable all neutrinos other than index==inu
-          // Compute WH MEs
-          float pwh_leptonic_VAJHU_tmp;
-          mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::Lep_WH);
-          mela->computeProdP(pwh_leptonic_VAJHU_tmp, true);
-          // Select the MEs to record
-          // For now, pick neutrino based on best SM ME, will revise later -- U. Sarica
-          if (pwh_leptonic_VAJHU_tmp>pwh_leptonic_VAJHU){
-            pwh_leptonic_VAJHU = pwh_leptonic_VAJHU_tmp;
-            highestWHMENeutrino = melaCand->getAssociatedNeutrino(inu)->p4;
-          }
-        }
-        for (int disableNu=0; disableNu<nNeutrinos; disableNu++) melaCand->getAssociatedNeutrino(disableNu)->setSelected(true); // Return every nu selection back to true
-        /***** End WH *****/
-        /****************/
-        /***** ZH *****/
-        unsigned int nSortedVs = melaCand->getNSortedVs(); // Be careful, sortedV==0,1 are (guaranteed to be) the ZZ daughters! One needs to start any loop from index=2.
-        const unsigned int iSortedVstart=2;
-        double dZmass=20000;
-        int chosenZ=-1;
-        // Choose the Z by mass closest to mZ (~equivalent to ordering by best SM ME but would be equally valid for BSM MEs as well)
-        for (unsigned int iV=iSortedVstart; iV<nSortedVs; iV++){
-          MELAParticle* associatedV = melaCand->getSortedV(iV);
-          if (!PDGHelpers::isAZBoson(associatedV->id)) continue;
-          if (!PDGHelpers::isALepton(associatedV->getDaughter(0)->id)) continue;
-          if (fabs(associatedV->m()-PDGHelpers::Zmass)<dZmass){ dZmass=associatedV->m()-PDGHelpers::Zmass; chosenZ=(int)iV; }
-        }
-        if(chosenZ>=0){
-          // Disable every associated Z boson and its daughters unless it is the chosen one
-          for (unsigned int disableV=iSortedVstart; disableV<nSortedVs; disableV++){
-            bool flag=(((int)disableV)==chosenZ);
-            MELAParticle* einV = melaCand->getSortedV(disableV);
-            if (PDGHelpers::isAZBoson(einV->id)){
-              einV->setSelected(flag);
-              for (int iVj=0; iVj<einV->getNDaughters(); iVj++) einV->getDaughter(iVj)->setSelected(flag);
-            }
-          }
-          // Compute ZH MEs
-          mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::Lep_ZH);
-          mela->computeProdP(pzh_leptonic_VAJHU, true);
-          // Re-enable every associated Z boson and its daughters, should be exactly the same loop as used in disabling them except for the setSelected flag.
-          for (unsigned int disableV=iSortedVstart; disableV<nSortedVs; disableV++){
-            MELAParticle* einV = melaCand->getSortedV(disableV);
-            if (PDGHelpers::isAZBoson(einV->id)){
-              einV->setSelected(true);
-              for (int iVj=0; iVj<einV->getNDaughters(); iVj++) einV->getDaughter(iVj)->setSelected(true);
-            }
-          }
-        }
-        /***** End ZH *****/
-      } // End if melaCand!=0
-    } // End if nExtraLep>0
-
-    /******************************************/
-    /***** Probabilities for H + 1/2 jets *****/
-    /******************************************/
-    float pvbf_VAJHU_highestPTJets=-1;
-    float phjj_VAJHU_highestPTJets=-1;
-    float pvbf_VAJHU_highestPTJets_up=-1;
-    float phjj_VAJHU_highestPTJets_up=-1;
-    float pvbf_VAJHU_highestPTJets_dn=-1;
-    float phjj_VAJHU_highestPTJets_dn=-1;
-
-    float pvbf_VAJHU_bestDjet=-1;
-    float phjj_VAJHU_bestDjet=-1;
-    float pvbf_VAJHU_bestDjet_up=-1;
-    float phjj_VAJHU_bestDjet_up=-1;
-    float pvbf_VAJHU_bestDjet_dn=-1;
-    float phjj_VAJHU_bestDjet_dn=-1;
-
-    float pAux_vbf_VAJHU = 1;
-    float phj_VAJHU = -1;
-    float pwh_hadronic_VAJHU = -1;
-    float pzh_hadronic_VAJHU = -1;
-    float ptth_VAJHU = -1;
-    float pbbh_VAJHU = -1;
-    float pAux_vbf_VAJHU_up = 1;
-    float phj_VAJHU_up = -1;
-    float pwh_hadronic_VAJHU_up = -1;
-    float pzh_hadronic_VAJHU_up = -1;
-    float ptth_VAJHU_up = -1;
-    float pbbh_VAJHU_up = -1;
-    float pAux_vbf_VAJHU_dn = 1;
-    float phj_VAJHU_dn = -1;
-    float pwh_hadronic_VAJHU_dn = -1;
-    float pzh_hadronic_VAJHU_dn = -1;
-    float ptth_VAJHU_dn = -1;
-    float pbbh_VAJHU_dn = -1;
-
-    // Do these loops at the end to avoid switching particles off first and then on again
-    for (unsigned int jecnum=0; jecnum<nCandidates; jecnum++){
-      mela->setCurrentCandidateFromIndex(jecnum);
-      MELACandidate* melaCand = mela->getCurrentCandidate();
-
-      if (melaCand!=0){
-        unsigned int nGoodJets=melaCand->getNAssociatedJets();
-        bool hasAtLeastOneJet = (nGoodJets>0);
-        bool hasAtLeastTwoJets = (nGoodJets>1);
-        if (hasAtLeastOneJet){
-          float phjj_VAJHU_highestPTJets_temp = -1;
-          float pvbf_VAJHU_highestPTJets_temp = -1;
-
-          float djet_max = -1;
-          float phjj_VAJHU_bestDjet_temp = -1;
-          float pvbf_VAJHU_bestDjet_temp = -1;
-          float pAux_vbf_VAJHU_temp = 1;
-          float phj_VAJHU_temp = -1;
-          float pwh_hadronic_VAJHU_temp = -1;
-          float pzh_hadronic_VAJHU_temp = -1;
-          float ptth_VAJHU_temp = -1;
-          float pbbh_VAJHU_temp = -1;
-
-          for (unsigned int firstjet = 0; firstjet < nGoodJets; firstjet++){ // Loop over first jet
-            for (unsigned int secondjet = 1; secondjet < nGoodJets; secondjet++){ // Loop over second jet
-              if (secondjet<=firstjet) continue;
-
-              // Disable jets and tops
-              for (unsigned int disableJet=0; disableJet<nGoodJets; disableJet++) melaCand->getAssociatedJet(disableJet)->setSelected((disableJet==firstjet || disableJet==secondjet)); // Disable the other jets
-              unsigned int nDisabledStableTops=0;
-              for (int itop=0; itop<melaCand->getNAssociatedTops(); itop++){
-                MELATopCandidate* einTop = melaCand->getAssociatedTop(itop);
-                if (einTop->getNDaughters()==3) einTop->setSelected(false); // All unstable tops are disabled in the loop for jets (where "jet"=="stable top") since we are looping over jecnum
-                else{
-                  einTop->setSelected((nDisabledStableTops==firstjet || nDisabledStableTops==secondjet)); // Disable the other stable tops
-                  nDisabledStableTops++;
-                }
-              }
-
-              float pvbf_temp = -1;
-              mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::JJVBF);
-              mela->computeProdP(pvbf_temp, true);
-              float phjj_temp = -1;
-              mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::JJQCD);
-              mela->computeProdP(phjj_temp, true);
-
-              double djet_temp = pvbf_temp / phjj_temp;
-              if (djet_temp > djet_max){
-                phjj_VAJHU_bestDjet_temp = phjj_temp;
-                pvbf_VAJHU_bestDjet_temp = pvbf_temp;
-                djet_max = djet_temp;
-              }
-
-              if (firstjet == 0 && secondjet == 1){ // If leading/subleading-pT jets
-                phjj_VAJHU_highestPTJets_temp = phjj_temp;
-                pvbf_VAJHU_highestPTJets_temp = pvbf_temp;
-
-                float pwh_temp = -1;
-                float pzh_temp = -1;
-                float ptth_temp = -1;
-                float pbbh_temp = -1;
-                mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::Had_WH);
-                mela->computeProdP(pwh_temp, true);
-                mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::Had_ZH);
-                mela->computeProdP(pzh_temp, true);
-                mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::ttH);
-                mela->computeProdP(ptth_temp, true);
-                mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::bbH);
-                mela->computeProdP(pbbh_temp, true);
-                pwh_hadronic_VAJHU_temp = pwh_temp;
-                pzh_hadronic_VAJHU_temp = pzh_temp;
-                ptth_VAJHU_temp = ptth_temp;
-                pbbh_VAJHU_temp = pbbh_temp;
-              }
-            } // End loop over second jet
-
-            if (!hasAtLeastTwoJets){ // Compute H + 1 jet
-              for (unsigned int disableJet=0; disableJet<nGoodJets; disableJet++) melaCand->getAssociatedJet(disableJet)->setSelected((disableJet==firstjet)); // Disable everything except the single jet
-
-              float phj_temp = -1;
-              float pjvbf_temp = -1;
-              float pAux_vbf_temp = -1;
-              mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::JQCD);
-              mela->computeProdP(phj_temp, true);
-              mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::JJVBF);
-              mela->computeProdP(pjvbf_temp, true); // Un-integrated ME
-              mela->getPAux(pAux_vbf_temp); // = Integrated / un-integrated
-
-              djet_max = pjvbf_temp*pAux_vbf_temp / phj_temp;
-              phj_VAJHU_temp = phj_temp;
-              pvbf_VAJHU_highestPTJets_temp = pjvbf_temp;
-              pAux_vbf_VAJHU_temp = pAux_vbf_temp;
-              pvbf_VAJHU_bestDjet_temp = pvbf_VAJHU_highestPTJets_temp;
-            }
-          } // End loop over first jet
-
-          for (unsigned int disableJet=0; disableJet<nGoodJets; disableJet++) melaCand->getAssociatedJet(disableJet)->setSelected(true); // Turn all jets back on
-          for (int itop=0; itop<melaCand->getNAssociatedTops(); itop++) melaCand->getAssociatedTop(itop)->setSelected(true); // Turn all tops back on
-
-          if (jecnum == 0){
-            phjj_VAJHU_highestPTJets = phjj_VAJHU_highestPTJets_temp;
-            pvbf_VAJHU_highestPTJets = pvbf_VAJHU_highestPTJets_temp;
-            phjj_VAJHU_bestDjet = phjj_VAJHU_bestDjet_temp;
-            pvbf_VAJHU_bestDjet = pvbf_VAJHU_bestDjet_temp;
-            pAux_vbf_VAJHU = pAux_vbf_VAJHU_temp;
-            phj_VAJHU = phj_VAJHU_temp;
-            pwh_hadronic_VAJHU = pwh_hadronic_VAJHU_temp;
-            pzh_hadronic_VAJHU = pzh_hadronic_VAJHU_temp;
-            ptth_VAJHU = ptth_VAJHU_temp;
-            pbbh_VAJHU = pbbh_VAJHU_temp;
-          }
-          else if (jecnum == 1){
-            phjj_VAJHU_highestPTJets_up = phjj_VAJHU_highestPTJets_temp;
-            pvbf_VAJHU_highestPTJets_up = pvbf_VAJHU_highestPTJets_temp;
-            phjj_VAJHU_bestDjet_up = phjj_VAJHU_bestDjet_temp;
-            pvbf_VAJHU_bestDjet_up = pvbf_VAJHU_bestDjet_temp;
-            pAux_vbf_VAJHU_up = pAux_vbf_VAJHU_temp;
-            phj_VAJHU_up = phj_VAJHU_temp;
-            pwh_hadronic_VAJHU_up = pwh_hadronic_VAJHU_temp;
-            pzh_hadronic_VAJHU_up = pzh_hadronic_VAJHU_temp;
-            ptth_VAJHU_up = ptth_VAJHU_temp;
-            pbbh_VAJHU_up = pbbh_VAJHU_temp;
-          }
-          else if (jecnum == 2){
-            phjj_VAJHU_highestPTJets_dn = phjj_VAJHU_highestPTJets_temp;
-            pvbf_VAJHU_highestPTJets_dn = pvbf_VAJHU_highestPTJets_temp;
-            phjj_VAJHU_bestDjet_dn = phjj_VAJHU_bestDjet_temp;
-            pvbf_VAJHU_bestDjet_dn = pvbf_VAJHU_bestDjet_temp;
-            pAux_vbf_VAJHU_dn = pAux_vbf_VAJHU_temp;
-            phj_VAJHU_dn = phj_VAJHU_temp;
-            pwh_hadronic_VAJHU_dn = pwh_hadronic_VAJHU_temp;
-            pzh_hadronic_VAJHU_dn = pzh_hadronic_VAJHU_temp;
-            ptth_VAJHU_dn = ptth_VAJHU_temp;
-            pbbh_VAJHU_dn = pbbh_VAJHU_temp;
-          }
-        } // End if hasAtLeastOneJet
-      } // End if melaCand!=0
-    } // End for jecnum = 0 to 2
-
+    computeMELABranches();
     // IMPORTANT: Reset input events at the end all calculations!
     mela->resetInputEvent();
 
@@ -1347,129 +809,8 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     myCand.addUserFloat("DiJetDEta", DiJetDEta);
     myCand.addUserFloat("DiJetFisher", DiJetFisher);
 
-    // MELA probabilities
-    // JHUGen
-    myCand.addUserFloat("p0plus_VAJHU",   p0plus_VAJHU);
-    myCand.addUserFloat("p0_g1prime2_VAJHU", p0_g1prime2_VAJHU);
-    myCand.addUserFloat("p0hplus_VAJHU", p0hplus_VAJHU);
-    myCand.addUserFloat("p0minus_VAJHU", p0minus_VAJHU);
-
-    myCand.addUserFloat("p0_g1prime2_zgs_VAJHU", p0_g1prime2_zgs_VAJHU);
-    myCand.addUserFloat("p0hplus_zgs_VAJHU", p0hplus_zgs_VAJHU);
-    myCand.addUserFloat("p0minus_zgs_VAJHU", p0minus_zgs_VAJHU);
-    myCand.addUserFloat("p0hplus_gsgs_VAJHU", p0hplus_gsgs_VAJHU);
-    myCand.addUserFloat("p0minus_gsgs_VAJHU", p0minus_gsgs_VAJHU);
-
-    myCand.addUserFloat("pg1g1prime2_VAJHU", pg1g1prime2_VAJHU);
-    myCand.addUserFloat("pg1g2_VAJHU", pg1g2_VAJHU);
-    myCand.addUserFloat("pg1g2_pi2_VAJHU", pg1g2_pi2_VAJHU);
-    myCand.addUserFloat("pg1g4_VAJHU", pg1g4_VAJHU);
-    myCand.addUserFloat("pg1g4_pi2_VAJHU", pg1g4_pi2_VAJHU);
-
-    myCand.addUserFloat("p0plus_zz_g1prime2_zgs_VAJHU", p0plus_zz_g1prime2_zgs_VAJHU);
-    myCand.addUserFloat("p0plus_zz_g1prime2_zgs_pi2_VAJHU", p0plus_zz_g1prime2_zgs_pi2_VAJHU);
-    myCand.addUserFloat("p0plus_zz_0hplus_zgs_VAJHU", p0plus_zz_0hplus_zgs_VAJHU);
-    myCand.addUserFloat("p0plus_zz_0minus_zgs_VAJHU", p0plus_zz_0minus_zgs_VAJHU);
-    myCand.addUserFloat("p0plus_zz_0hplus_gsgs_VAJHU", p0plus_zz_0hplus_gsgs_VAJHU);
-    myCand.addUserFloat("p0plus_zz_0minus_gsgs_VAJHU", p0plus_zz_0minus_gsgs_VAJHU);
-
-    myCand.addUserFloat("p1_VAJHU", p1_VAJHU);
-    myCand.addUserFloat("p1_prodIndep_VAJHU", p1_prodIndep_VAJHU);
-    myCand.addUserFloat("p1plus_VAJHU", p1plus_VAJHU);
-    myCand.addUserFloat("p1plus_prodIndep_VAJHU", p1plus_prodIndep_VAJHU);
-
-    myCand.addUserFloat("p2plus_gg_VAJHU", p2plus_gg_VAJHU); // 2+mg1g5
-    myCand.addUserFloat("p2plus_qqb_VAJHU", p2plus_qqb_VAJHU); // 2+mg1g5
-    myCand.addUserFloat("p2plus_prodIndep_VAJHU", p2plus_prodIndep_VAJHU); // 2+mg1g5
-    myCand.addUserFloat("p2h2plus_gg_VAJHU", p2h2plus_gg_VAJHU); // 2+h2
-    myCand.addUserFloat("p2h2plus_qqb_VAJHU", p2h2plus_qqb_VAJHU); // 2+h2
-    myCand.addUserFloat("p2h2plus_prodIndep_VAJHU", p2h2plus_prodIndep_VAJHU); // 2+h2
-    myCand.addUserFloat("p2h3plus_gg_VAJHU", p2h3plus_gg_VAJHU); // 2+h3
-    myCand.addUserFloat("p2h3plus_qqb_VAJHU", p2h3plus_qqb_VAJHU); // 2+h3
-    myCand.addUserFloat("p2h3plus_prodIndep_VAJHU", p2h3plus_prodIndep_VAJHU); // 2+h3
-    myCand.addUserFloat("p2h4plus_gg_VAJHU", p2h4plus_gg_VAJHU); // 2+h4
-    myCand.addUserFloat("p2h4plus_qqb_VAJHU", p2h4plus_qqb_VAJHU); // 2+h4
-    myCand.addUserFloat("p2h4plus_prodIndep_VAJHU", p2h4plus_prodIndep_VAJHU); // 2+h4
-    myCand.addUserFloat("p2bplus_gg_VAJHU", p2bplus_gg_VAJHU); // 2+h5
-    myCand.addUserFloat("p2bplus_qqb_VAJHU", p2bplus_qqb_VAJHU); // 2+h5
-    myCand.addUserFloat("p2bplus_prodIndep_VAJHU", p2bplus_prodIndep_VAJHU); // 2+h5
-    myCand.addUserFloat("p2h6plus_gg_VAJHU", p2h6plus_gg_VAJHU); // 2+h6
-    myCand.addUserFloat("p2h6plus_qqb_VAJHU", p2h6plus_qqb_VAJHU); // 2+h6
-    myCand.addUserFloat("p2h6plus_prodIndep_VAJHU", p2h6plus_prodIndep_VAJHU); // 2+h6
-    myCand.addUserFloat("p2h7plus_gg_VAJHU", p2h7plus_gg_VAJHU); // 2+h7
-    myCand.addUserFloat("p2h7plus_qqb_VAJHU", p2h7plus_qqb_VAJHU); // 2+h7
-    myCand.addUserFloat("p2h7plus_prodIndep_VAJHU", p2h7plus_prodIndep_VAJHU); // 2+h7
-    myCand.addUserFloat("p2hminus_gg_VAJHU", p2hminus_gg_VAJHU); // 2-h8
-    myCand.addUserFloat("p2hminus_qqb_VAJHU", p2hminus_qqb_VAJHU); // 2-h8
-    myCand.addUserFloat("p2hminus_prodIndep_VAJHU", p2hminus_prodIndep_VAJHU); // 2-h8
-    myCand.addUserFloat("p2h9minus_gg_VAJHU", p2h9minus_gg_VAJHU); // 2-h9
-    myCand.addUserFloat("p2h9minus_qqb_VAJHU", p2h9minus_qqb_VAJHU); // 2-h9
-    myCand.addUserFloat("p2h9minus_prodIndep_VAJHU", p2h9minus_prodIndep_VAJHU); // 2-h9
-    myCand.addUserFloat("p2h10minus_gg_VAJHU", p2h10minus_gg_VAJHU); // 2-h10
-    myCand.addUserFloat("p2h10minus_qqb_VAJHU", p2h10minus_qqb_VAJHU); // 2-h10
-    myCand.addUserFloat("p2h10minus_prodIndep_VAJHU", p2h10minus_prodIndep_VAJHU); // 2-h10
-
-    // MCFM
-    myCand.addUserFloat("p0plus_VAMCFM", p0plus_VAMCFM);
-    myCand.addUserFloat("ggzz_VAMCFM", ggzz_VAMCFM);
-    myCand.addUserFloat("ggzz_p0plus_VAMCFM", ggzz_p0plus_VAMCFM);
-    myCand.addUserFloat("bkg_VAMCFM", bkg_VAMCFM);
-    myCand.addUserFloat("bkg_prodIndep_VAMCFM", bkg_prodIndep_VAMCFM);
-    myCand.addUserFloat("pZJJ_VAMCFM", pZJJ_VAMCFM);
-    myCand.addUserFloat("Dgg10_VAMCFM", Dgg10_VAMCFM);
-
-    // SuperMELA
-    myCand.addUserFloat("p0plus_m4l", p0plus_m4l);
-    myCand.addUserFloat("p0plus_m4l_ScaleUp", p0plus_m4l_ScaleUp);
-    myCand.addUserFloat("p0plus_m4l_ScaleDown", p0plus_m4l_ScaleDown);
-    myCand.addUserFloat("p0plus_m4l_ResUp", p0plus_m4l_ResUp);
-    myCand.addUserFloat("p0plus_m4l_ResDown", p0plus_m4l_ResDown);
-    myCand.addUserFloat("bkg_m4l", bkg_m4l);
-    myCand.addUserFloat("bkg_m4l_ScaleUp", bkg_m4l_ScaleUp);
-    myCand.addUserFloat("bkg_m4l_ScaleDown", bkg_m4l_ScaleDown);
-    myCand.addUserFloat("bkg_m4l_ResUp", bkg_m4l_ResUp);
-    myCand.addUserFloat("bkg_m4l_ResDown", bkg_m4l_ResDown);
-
-    // JHUGen production
-    myCand.addUserFloat("pwh_leptonic_VAJHU", pwh_leptonic_VAJHU);
-    myCand.addUserFloat("pzh_leptonic_VAJHU", pzh_leptonic_VAJHU);
-
-    myCand.addUserFloat("phjj_VAJHU_highestPTJets", phjj_VAJHU_highestPTJets);
-    myCand.addUserFloat("pvbf_VAJHU_highestPTJets", pvbf_VAJHU_highestPTJets);
-    myCand.addUserFloat("phjj_VAJHU_highestPTJets_up", phjj_VAJHU_highestPTJets_up);
-    myCand.addUserFloat("pvbf_VAJHU_highestPTJets_up", pvbf_VAJHU_highestPTJets_up);
-    myCand.addUserFloat("phjj_VAJHU_highestPTJets_dn", phjj_VAJHU_highestPTJets_dn);
-    myCand.addUserFloat("pvbf_VAJHU_highestPTJets_dn", pvbf_VAJHU_highestPTJets_dn);
-    myCand.addUserFloat("phjj_VAJHU_bestDjet", phjj_VAJHU_bestDjet);
-    myCand.addUserFloat("pvbf_VAJHU_bestDjet", pvbf_VAJHU_bestDjet);
-    myCand.addUserFloat("phjj_VAJHU_bestDjet_up", phjj_VAJHU_bestDjet_up);
-    myCand.addUserFloat("pvbf_VAJHU_bestDjet_up", pvbf_VAJHU_bestDjet_up);
-    myCand.addUserFloat("phjj_VAJHU_bestDjet_dn", phjj_VAJHU_bestDjet_dn);
-    myCand.addUserFloat("pvbf_VAJHU_bestDjet_dn", pvbf_VAJHU_bestDjet_dn);
-
-    myCand.addUserFloat("pAux_vbf_VAJHU", pAux_vbf_VAJHU);
-    myCand.addUserFloat("pAux_vbf_VAJHU_up", pAux_vbf_VAJHU_up);
-    myCand.addUserFloat("pAux_vbf_VAJHU_dn", pAux_vbf_VAJHU_dn);
-
-    myCand.addUserFloat("phj_VAJHU", phj_VAJHU);
-    myCand.addUserFloat("phj_VAJHU_up", phj_VAJHU_up);
-    myCand.addUserFloat("phj_VAJHU_dn", phj_VAJHU_dn);
-
-    myCand.addUserFloat("pwh_hadronic_VAJHU", pwh_hadronic_VAJHU);
-    myCand.addUserFloat("pwh_hadronic_VAJHU_up", pwh_hadronic_VAJHU_up);
-    myCand.addUserFloat("pwh_hadronic_VAJHU_dn", pwh_hadronic_VAJHU_dn);
-
-    myCand.addUserFloat("pzh_hadronic_VAJHU", pzh_hadronic_VAJHU);
-    myCand.addUserFloat("pzh_hadronic_VAJHU_up", pzh_hadronic_VAJHU_up);
-    myCand.addUserFloat("pzh_hadronic_VAJHU_dn", pzh_hadronic_VAJHU_dn);
-
-    myCand.addUserFloat("ptth_VAJHU", ptth_VAJHU);
-    myCand.addUserFloat("ptth_VAJHU_up", ptth_VAJHU_up);
-    myCand.addUserFloat("ptth_VAJHU_dn", ptth_VAJHU_dn);
-
-    myCand.addUserFloat("pbbh_VAJHU", pbbh_VAJHU);
-    myCand.addUserFloat("pbbh_VAJHU_up", pbbh_VAJHU_up);
-    myCand.addUserFloat("pbbh_VAJHU_dn", pbbh_VAJHU_dn);
+    // MELA branches
+    pushMELABranches(myCand);
 
 
     //--- MC matching. To be revised, cf. MuFiller, EleFiller
@@ -1535,9 +876,8 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 }
 
 
-
 void
-ZZCandidateFiller::getPairMass(const reco::Candidate* lp, const reco::Candidate* lm, ZZCandidateFiller::FSRToLepMap& photons, float& mass, int& ID) {
+ZZCandidateFiller::getPairMass(const reco::Candidate* lp, const reco::Candidate* lm, ZZCandidateFiller::FSRToLepMap& photons, float& mass, int& ID){
   math::XYZTLorentzVector llp4 = lp->p4()+lm->p4();
   auto lpp = photons.find(lp);
   auto lmp = photons.find(lm);
@@ -1545,6 +885,326 @@ ZZCandidateFiller::getPairMass(const reco::Candidate* lp, const reco::Candidate*
   if (lmp!=photons.end()) llp4+=lmp->second->p4();
   mass=llp4.mass();
   ID=lp->pdgId()*lm->pdgId();
+}
+
+void ZZCandidateFiller::buildMELA(){
+  mela = new Mela(SetupToSqrts(setup), superMelaMass, TVar::ERROR);
+  mela->setCandidateDecayMode(TVar::CandidateDecay_ZZ);
+
+  for (unsigned int it=0; it<recoMElist.size(); it++){
+    MELAOptionParser* me_opt;
+    // First find out if the option has a copy specification
+    // These copy options will be evaulated in a separate loop
+    if (recoMElist.at(it).find("Copy")!=string::npos){
+      me_opt = new MELAOptionParser(recoMElist.at(it));
+      me_copyopts.push_back(me_opt);
+      continue;
+    }
+
+    // Create a hypothesis for each option
+    MELAHypothesis* me_hypo = new MELAHypothesis(mela, recoMElist.at(it));
+    me_units.push_back(me_hypo);
+
+    me_opt = me_hypo->getOption();
+    if (me_opt->isAliased()) me_aliased_units.push_back(me_hypo);
+
+    // Create a computation for each hypothesis
+    MELAComputation* me_computer = new MELAComputation(me_hypo);
+    me_computers.push_back(me_computer);
+
+    // Add the computation to a named cluster to keep track of JECUp/JECDn, or for best-pWH_SM Lep_WH computations
+    addToMELACluster(me_computer);
+
+    // Create the necessary branches for each computation
+    // Notice that no tree is passed, so no TBranches are created.
+    if (me_opt->doBranch()){
+      string basename = me_opt->getName();
+      if (me_opt->isGen()) basename = string("Gen_") + basename;
+      MELABranch* tmpbranch;
+      if (me_opt->hasPAux()){
+        tmpbranch = new MELABranch(
+          (TTree*)0, TString((string("pAux_") + basename).c_str()),
+          me_computer->getVal(MELAHypothesis::UsePAux), me_computer
+          );
+        me_branches.push_back(tmpbranch);
+      }
+      if (me_opt->hasPConst()){
+        tmpbranch = new MELABranch(
+          (TTree*)0, TString((string("pConst_") + basename).c_str()),
+          me_computer->getVal(MELAHypothesis::UsePConstant), me_computer
+          );
+        me_branches.push_back(tmpbranch);
+      }
+      tmpbranch = new MELABranch(
+        (TTree*)0, TString((string("p_") + basename).c_str()),
+        me_computer->getVal(MELAHypothesis::UseME), me_computer
+        );
+      me_branches.push_back(tmpbranch);
+    }
+  }
+  // Resolve copy options
+  for (unsigned int it=0; it<me_copyopts.size(); it++){
+    MELAOptionParser* me_opt = me_copyopts.at(it);
+    MELAHypothesis* original_hypo=0;
+    MELAOptionParser* original_opt=0;
+    // Find the original options
+    for (unsigned int ih=0; ih<me_aliased_units.size(); ih++){
+      if (me_opt->testCopyAlias(me_aliased_units.at(ih)->getOption()->getAlias())){
+        original_hypo = me_aliased_units.at(ih);
+        original_opt = original_hypo->getOption();
+        break;
+      }
+    }
+    if (original_opt==0) continue;
+    else me_opt->pickOriginalOptions(original_opt);
+    // Create a new computation for the copy options
+    MELAComputation* me_computer = new MELAComputation(original_hypo);
+    me_computer->setOption(me_opt);
+    me_computers.push_back(me_computer);
+
+    // The rest is the same story...
+    // Add the computation to a named cluster to keep track of JECUp/JECDn, or for best-pWH_SM Lep_WH computations
+    addToMELACluster(me_computer);
+
+    // Create the necessary branches for each computation
+    // Notice that no tree is passed, so no TBranches are created.
+    if (me_opt->doBranch()){
+      string basename = me_opt->getName();
+      if (me_opt->isGen()) basename = string("Gen_") + basename;
+      MELABranch* tmpbranch;
+      if (me_opt->hasPAux()){
+        tmpbranch = new MELABranch(
+          (TTree*)0, TString((string("pAux_") + basename).c_str()),
+          me_computer->getVal(MELAHypothesis::UsePAux), me_computer
+          );
+        me_branches.push_back(tmpbranch);
+      }
+      if (me_opt->hasPConst()){
+        tmpbranch = new MELABranch(
+          (TTree*)0, TString((string("pConst_") + basename).c_str()),
+          me_computer->getVal(MELAHypothesis::UsePConstant), me_computer
+          );
+        me_branches.push_back(tmpbranch);
+      }
+      tmpbranch = new MELABranch(
+        (TTree*)0, TString((string("p_") + basename).c_str()),
+        me_computer->getVal(MELAHypothesis::UseME), me_computer
+        );
+      me_branches.push_back(tmpbranch);
+    }
+  }
+  // Loop over the computations to add any contingencies to aliased hypotheses
+  for (unsigned int it=0; it<me_computers.size(); it++) me_computers.at(it)->addContingencies(me_aliased_units);
+
+  if (DEBUG_MB){
+    for (unsigned int ib=0; ib<me_branches.size(); ib++) me_branches.at(ib)->Print();
+    for (unsigned int icl=0; icl<me_clusters.size(); icl++) cout << "Reco ME cluster " << me_clusters.at(icl)->getName() << " is present in " << me_clusters.size() << " clusters with #Computations = " << me_clusters.at(icl)->getComputations()->size() << endl;
+  }
+}
+void ZZCandidateFiller::addToMELACluster(MELAComputation* me_computer){
+  bool isAdded=false;
+  for (unsigned int it=0; it<me_clusters.size(); it++){ if (me_clusters.at(it)->getName()==me_computer->getCluster()){ me_clusters.at(it)->addComputation(me_computer); isAdded=true; } }
+  if (!isAdded){
+    MELACluster* tmpcluster = new MELACluster(me_computer->getCluster());
+    tmpcluster->addComputation(me_computer);
+    me_clusters.push_back(tmpcluster);
+  }
+}
+void ZZCandidateFiller::computeMELABranches(){
+  updateMELAClusters_Common(); // "Common"
+  updateMELAClusters_J1JEC(); // "J1JECNominal/Up/Dn"
+  updateMELAClusters_J2JEC(); // "J2JECNominal/Up/Dn"
+  updateMELAClusters_LepWH(); // "LepWH"
+  updateMELAClusters_LepZH(); // "LepZH"
+}
+// Common ME computations with index=0
+void ZZCandidateFiller::updateMELAClusters_Common(){
+  mela->setCurrentCandidateFromIndex(0);
+  MELACandidate* melaCand = mela->getCurrentCandidate();
+  if (melaCand==0) return;
+
+  for (unsigned int ic=0; ic<me_clusters.size(); ic++){
+    MELACluster* theCluster = me_clusters.at(ic);
+    if (theCluster->getName()=="Common"){
+      // Re-compute all related hypotheses first...
+      theCluster->computeAll();
+      // ...then update the cluster
+      theCluster->update();
+    }
+  }
+}
+// Common ME computations for leptonic WH: Loops over possible fake neutrinos
+void ZZCandidateFiller::updateMELAClusters_LepWH(){
+  mela->setCurrentCandidateFromIndex(0);
+  MELACandidate* melaCand = mela->getCurrentCandidate();
+  if (melaCand==0) return;
+
+  int nNeutrinos = melaCand->getNAssociatedNeutrinos();
+  for (int inu=0; inu<nNeutrinos; inu++){
+    // Notice: Looping over Ws does not make much sense unless you have more than one lepton since the fake neutrino is already calculated from the available lepton with W mass constraint.
+    // Such a loop over Ws only makes sense if there are more than one lepton in the event, but in that case, it still does not make sense to cross-match neutrinos and leptons.
+    for (int disableNu=0; disableNu<nNeutrinos; disableNu++) melaCand->getAssociatedNeutrino(disableNu)->setSelected(disableNu==inu); // Disable all neutrinos other than index==inu
+    for (unsigned int icl=0; icl<me_clusters.size(); icl++){ // Loop over clusters to update them
+      MELACluster* theCluster = me_clusters.at(icl);
+      if (theCluster->getName()=="LepWH"){
+        // Re-compute all related hypotheses first...
+        theCluster->computeAll();
+        // ...then force an update the cluster
+        theCluster->forceUpdate(); // MELAComputation::testMaximizationCache still prevents update for a second time if there are no contingencies.
+      }
+    } // End loop over clusters
+  } // End loop over possible neutrinos
+  // Re-enable all neutrinos
+  for (int disableNu=0; disableNu<nNeutrinos; disableNu++) melaCand->getAssociatedNeutrino(disableNu)->setSelected(true);
+}
+// Common ME computations for leptonic ZH: Picks best Z3
+void ZZCandidateFiller::updateMELAClusters_LepZH(){
+  mela->setCurrentCandidateFromIndex(0);
+  MELACandidate* melaCand = mela->getCurrentCandidate();
+  if (melaCand==0) return;
+
+  unsigned int nSortedVs = melaCand->getNSortedVs(); // Be careful, sortedV==0,1 are (guaranteed to be) the ZZ daughters! One needs to start any loop from index=2.
+  const unsigned int iSortedVstart=2;
+  double dZmass=100000; // Hopefully will the greatest achievable mass for a long time...
+  int chosenZ=-1;
+  // Choose the Z by mass closest to mZ (~equivalent to ordering by best SM ME but would be equally valid for BSM MEs as well)
+  for (unsigned int iV=iSortedVstart; iV<nSortedVs; iV++){
+    MELAParticle* associatedV = melaCand->getSortedV(iV);
+    if (!PDGHelpers::isAZBoson(associatedV->id)) continue;
+    if (!PDGHelpers::isALepton(associatedV->getDaughter(0)->id)) continue;
+    if (fabs(associatedV->m()-PDGHelpers::Zmass)<dZmass){ dZmass=associatedV->m()-PDGHelpers::Zmass; chosenZ=(int)iV; }
+  }
+  if (chosenZ>=0){
+    // Disable every associated Z boson (and not its daughters!) unless it is the chosen one
+    for (unsigned int disableV=iSortedVstart; disableV<nSortedVs; disableV++){
+      bool flag=(((int)disableV)==chosenZ);
+      MELAParticle* einV = melaCand->getSortedV(disableV);
+      if (PDGHelpers::isAZBoson(einV->id)) einV->setSelected(flag);
+    }
+
+    for (unsigned int icl=0; icl<me_clusters.size(); icl++){ // Loop over clusters to update them
+      MELACluster* theCluster = me_clusters.at(icl);
+      if (theCluster->getName()=="LepZH"){
+        // Re-compute all related hypotheses first...
+        theCluster->computeAll();
+        // ...then force an update the cluster
+        theCluster->forceUpdate(); // MELAComputation::testMaximizationCache still prevents update for a second time if there are no contingencies.
+      }
+    } // End loop over clusters
+
+  } // End if chosenZ>=0
+  // Re-enable every associated Z boson and its daughters unless it is the chosen one
+  for (unsigned int disableV=iSortedVstart; disableV<nSortedVs; disableV++){
+    bool flag=true;
+    MELAParticle* einV = melaCand->getSortedV(disableV);
+    if (PDGHelpers::isAZBoson(einV->id)) einV->setSelected(flag);
+  }
+}
+// Common ME computations for JECNominal, Up and Down variations, case where ME requires 2 jets
+void ZZCandidateFiller::updateMELAClusters_J2JEC(){
+  for (int jecnum=0; jecnum<3; jecnum++){
+    mela->setCurrentCandidateFromIndex(jecnum);
+    MELACandidate* melaCand = mela->getCurrentCandidate();
+    if (melaCand==0) continue;
+
+    unsigned int nGoodJets=melaCand->getNAssociatedJets();
+    for (unsigned int firstjet = 0; firstjet < nGoodJets; firstjet++){ // Loop over first jet
+      for (unsigned int secondjet = firstjet+1; secondjet < nGoodJets; secondjet++){ // Loop over second jet
+
+        // Disable jets and tops
+        for (unsigned int disableJet=0; disableJet<nGoodJets; disableJet++) melaCand->getAssociatedJet(disableJet)->setSelected((disableJet==firstjet || disableJet==secondjet)); // Disable the other jets
+        unsigned int nDisabledStableTops=0;
+        for (int itop=0; itop<melaCand->getNAssociatedTops(); itop++){
+          MELATopCandidate* einTop = melaCand->getAssociatedTop(itop);
+          if (einTop->getNDaughters()==3) einTop->setSelected(false); // All unstable tops are disabled in the loop for jets (where "jet"=="stable top") since we are looping over jecnum
+          else{
+            einTop->setSelected((nDisabledStableTops==firstjet || nDisabledStableTops==secondjet)); // Disable the other stable tops
+            nDisabledStableTops++;
+          }
+        }
+
+        for (unsigned int icl=0; icl<me_clusters.size(); icl++){ // Loop over clusters to update them
+          MELACluster* theCluster = me_clusters.at(icl);
+          if (
+            (theCluster->getName()=="J2JECNominal" && jecnum==0) ||
+            (theCluster->getName()=="J2JECUp" && jecnum==1) ||
+            (theCluster->getName()=="J2JECDn" && jecnum==2)
+            ){
+            // Re-compute all related hypotheses first...
+            theCluster->computeAll();
+            // ...then force an update the cluster
+            theCluster->forceUpdate(); // MELAComputation::testMaximizationCache still prevents update for a second time if there are no contingencies.
+          }
+        } // End loop over clusters
+
+      } // End loop over second jet
+    } // End loop over first jet
+    // Turn associated jets/tops back on
+    for (unsigned int disableJet=0; disableJet<nGoodJets; disableJet++) melaCand->getAssociatedJet(disableJet)->setSelected(true); // Turn all jets back on
+    for (int itop=0; itop<melaCand->getNAssociatedTops(); itop++) melaCand->getAssociatedTop(itop)->setSelected(true); // Turn all tops back on
+  } // End jecnum loop
+}
+// Common ME computations for JECNominal, Up and Down variations, case where ME requires 1 jet
+void ZZCandidateFiller::updateMELAClusters_J1JEC(){
+  // First determine if any of the candidates has only one jet
+  bool doSkip=true;
+  for (int jecnum=0; jecnum<3; jecnum++){
+    mela->setCurrentCandidateFromIndex(jecnum);
+    MELACandidate* melaCand = mela->getCurrentCandidate();
+    if (melaCand==0) continue;
+
+    unsigned int nGoodJets=melaCand->getNAssociatedJets();
+    doSkip = doSkip && (nGoodJets!=1);
+  }
+  if (doSkip) return; // If none of the candidates have exactly 1 jet, skip the computations
+  for (int jecnum=0; jecnum<3; jecnum++){
+    mela->setCurrentCandidateFromIndex(jecnum);
+    MELACandidate* melaCand = mela->getCurrentCandidate();
+    if (melaCand==0) continue;
+
+    unsigned int nGoodJets=min(1, melaCand->getNAssociatedJets());
+    for (unsigned int firstjet = 0; firstjet < nGoodJets; firstjet++){ // Loop over first jet
+
+      // Disable jets
+      for (unsigned int disableJet=0; disableJet<nGoodJets; disableJet++) melaCand->getAssociatedJet(disableJet)->setSelected(disableJet==firstjet); // Disable the other jets
+
+      for (unsigned int icl=0; icl<me_clusters.size(); icl++){ // Loop over clusters to update them
+        MELACluster* theCluster = me_clusters.at(icl);
+        if (
+          (theCluster->getName()=="J1JECNominal" && jecnum==0) ||
+          (theCluster->getName()=="J1JECUp" && jecnum==1) ||
+          (theCluster->getName()=="J1JECDn" && jecnum==2)
+          ){
+          // Re-compute all related hypotheses first...
+          theCluster->computeAll();
+          // ...then force an update the cluster
+          theCluster->forceUpdate(); // MELAComputation::testMaximizationCache still prevents update for a second time if there are no contingencies.
+        }
+      } // End loop over clusters
+
+    } // End loop over first jet
+    // Turn associated jets back on
+    for (unsigned int disableJet=0; disableJet<nGoodJets; disableJet++) melaCand->getAssociatedJet(disableJet)->setSelected(true); // Turn all jets back on
+  } // End jecnum loop
+}
+void ZZCandidateFiller::pushMELABranches(pat::CompositeCandidate& myCand){
+  for (unsigned int ib=0; ib<me_branches.size(); ib++){
+    // Pull...
+    me_branches.at(ib)->setVal();
+    // ...push...
+    myCand.addUserFloat(string(me_branches.at(ib)->bname.Data()), (float)me_branches.at(ib)->getVal());
+  }
+  // ...then reset
+  for (unsigned int ic=0; ic<me_clusters.size(); ic++) me_clusters.at(ic)->reset();
+}
+void ZZCandidateFiller::clearMELA(){
+  for (unsigned int it=0; it<me_branches.size(); it++) delete me_branches.at(it);
+  for (unsigned int it=0; it<me_clusters.size(); it++) delete me_clusters.at(it);
+  for (unsigned int it=0; it<me_computers.size(); it++) delete me_computers.at(it);
+  for (unsigned int it=0; it<me_copyopts.size(); it++) delete me_copyopts.at(it);
+  //for (unsigned int it=0; it<me_aliased_units.size(); it++) delete me_aliased_units.at(it); // DO NOT DELETE THIS, WILL BE DELETED WITH me_units!
+  for (unsigned int it=0; it<me_units.size(); it++) delete me_units.at(it);
+  delete mela;
 }
 
 
