@@ -253,12 +253,12 @@ MELACandidate* LHEHandler::candidateSelector(LHE_Event& ev, int isZZ){
 MELACandidate* LHEHandler::candComparator(MELACandidate* cand1, MELACandidate* cand2, int isZZ){
   MELACandidate* theChosenOne=0;
 
-  double defaultHVVmass = PDGHelpers::HVVmass;
-  if (isZZ==0) PDGHelpers::setHVVmass(PDGHelpers::Wmass);
-  else PDGHelpers::setHVVmass(PDGHelpers::Zmass);
+  double HVVmass = PDGHelpers::Zeromass;
+  if (isZZ==0) HVVmass = PDGHelpers::Wmass;
+  else if (isZZ==1 || isZZ==3) HVVmass = PDGHelpers::Zmass;
 
-  double diffmass1 = fabs(cand1->getSortedV(0)->m()-PDGHelpers::HVVmass);
-  double diffmass2 = fabs(cand2->getSortedV(0)->m()-PDGHelpers::HVVmass);
+  double diffmass1 = fabs(cand1->getSortedV(0)->m()-HVVmass);
+  double diffmass2 = fabs(cand2->getSortedV(0)->m()-HVVmass);
   double Z2scsumpt_cand1=0, Z2scsumpt_cand2=0;
   MELAParticle* c11 = cand1->getSortedV(1)->getDaughter(0);
   MELAParticle* c12 = cand1->getSortedV(1)->getDaughter(1);
@@ -274,8 +274,6 @@ MELACandidate* LHEHandler::candComparator(MELACandidate* cand1, MELACandidate* c
     (diffmass1==diffmass2 && Z2scsumpt_cand2>Z2scsumpt_cand1)
     ) theChosenOne = cand2;
   else theChosenOne = cand1;
-
-  PDGHelpers::setHVVmass(defaultHVVmass);
   return theChosenOne;
 }
 

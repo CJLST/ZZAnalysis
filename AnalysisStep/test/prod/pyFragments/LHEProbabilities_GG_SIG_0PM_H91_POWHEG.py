@@ -1,6 +1,6 @@
 LHE_PropagatorRewgt = [
    "Name:SamplePropagator Alias:<Name> PropScheme:CPS hmass:91 isGen:1 NoBranch:1 isProp:1",
-   "Name:CPStoBWPropRewgt Alias:<Name> PropScheme:FixedWidth hmass:91 Options:DivideP=SamplePropagator isGen:1 isProp:1",
+   "Name:CPStoBWPropRewgt PropScheme:FixedWidth hmass:91 Options:DivideP=SamplePropagator isGen:1 isProp:1",
 ]
 LHE_DecayProbabilities_MCFM = [
    "Name:GG_SIG_kappaTopBot_1_ghz1_1_MCFM Alias:SampleHypothesisMCFM Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz1=1,0 Options:DivideP=SampleHypothesisMCFM hmass:91 Cluster:NoInitialQ isGen:1",
@@ -95,3 +95,4 @@ for name in (
         tree.lheProbabilities.extend(theLHEProbabilities)
         if name == "ZZTree" and tree.skipEmptyEvents:
             tree.failedTreeLevel = max(tree.failedTreeLevel.value(), LHEFailedTree)
+

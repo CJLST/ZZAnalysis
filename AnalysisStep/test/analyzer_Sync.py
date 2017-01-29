@@ -1,5 +1,5 @@
 
-LEPTON_SETUP = 2017
+#LEPTON_SETUP = 2017 # current default = 2017 = Moriond2017
 #ELECORRTYPE = "None" # "None" to switch off
 #ELEREGRESSION = "None" # Not supported as of 2016
 #DATA_TAG = "ReReco" # Change to PromptReco for period H
@@ -52,15 +52,16 @@ process.source.fileNames = cms.untracked.vstring(
 ### Moriond 17 sync files
     ## Low mass
     '/store/mc/RunIISummer16MiniAODv2/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/22F32262-3FC5-E611-B373-D4AE526DEDB7.root',
-    '/store/mc/RunIISummer16MiniAODv2/WplusH_HToZZTo4L_M125_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/60000/387FA719-E6CC-E611-A1F0-FA163E7D6032.root'
+    '/store/mc/RunIISummer16MiniAODv2/WplusH_HToZZTo4L_M125_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/60000/387FA719-E6CC-E611-A1F0-FA163E7D6032.root',
+    '/store/mc/RunIISummer16MiniAODv2/ZH_HToZZ_4LFilter_M125_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/50DE4DA2-1EC1-E611-9A3C-002590E7E010.root'
 
     ## High mass
 #    '/store/mc/RunIISummer16MiniAODv2/Graviton2PMToZZTo4L_M750_13TeV_JHUgenV6_pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/120000/9AA3CE64-F3CB-E611-BB50-0025907B5048.root'
 
     )
 
-process.calibratedPatElectrons.isSynchronization = cms.bool(False)
-process.calibratedMuons.isSynchronization = cms.bool(False)
+process.calibratedPatElectrons.isSynchronization = cms.bool(True)
+process.calibratedMuons.isSynchronization = cms.bool(True)
 
 process.maxEvents.input = -1
 #process.source.skipEvents = cms.untracked.uint32(5750)
