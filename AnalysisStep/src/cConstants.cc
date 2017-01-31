@@ -77,24 +77,24 @@ extern "C" float getDZHhWP(float ZZMass, bool useQGTagging){
 extern "C" float getDVBF2jetsConstant_shiftWP(float ZZMass, bool useQGTagging, float newWP) {
   float oldc = getDVBF2jetsConstant(ZZMass);
   float oldWP = getDVBF2jetsWP(ZZMass, useQGTagging);
-  return oldc * (newWP/oldWP) * ((1-oldWP)/(1-newWP));
+  return oldc * (oldWP/newWP) * ((1-newWP)/(1-oldWP));
 }
 extern "C" float getDVBF1jetConstant_shiftWP(float ZZMass, bool useQGTagging, float newWP) {
   float oldc = getDVBF1jetConstant(ZZMass);
   float oldWP = getDVBF1jetWP(ZZMass, useQGTagging);
-  return oldc * (newWP/oldWP) * ((1-oldWP)/(1-newWP));
+  return oldc * (oldWP/newWP) * ((1-newWP)/(1-oldWP));
 }
 
 extern "C" float getDWHhConstant_shiftWP(float ZZMass, bool useQGTagging, float newWP) {
   float oldc = getDWHhConstant(ZZMass);
   float oldWP = getDWHhWP(ZZMass, useQGTagging);
-  return oldc * (newWP/oldWP) * ((1-oldWP)/(1-newWP));
+  return oldc * (oldWP/newWP) * ((1-newWP)/(1-oldWP));
 }
 
 extern "C" float getDZHhConstant_shiftWP(float ZZMass, bool useQGTagging, float newWP) {
   float oldc = getDZHhConstant(ZZMass);
   float oldWP = getDZHhWP(ZZMass, useQGTagging);
-  return oldc * (newWP/oldWP) * ((1-oldWP)/(1-newWP));
+  return oldc * (oldWP/newWP) * ((1-newWP)/(1-oldWP));
 }
 
 
