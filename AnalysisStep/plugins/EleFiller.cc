@@ -110,8 +110,8 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     float PFNeutralHadIso   = l.pfIsolationVariables().sumNeutralHadronEt;
     float PFPhotonIso       = l.pfIsolationVariables().sumPhotonEt;
 
-    //float fSCeta = fabs(l.eta()); 
-    float fSCeta = fabs(l.superCluster()->eta());
+    float SCeta = l.superCluster()->eta(); 
+    float fSCeta = fabs(SCeta);
 
     float combRelIsoPF = LeptonIsoHelper::combRelIsoPF(sampleType, setup, rho, l);
 
@@ -194,6 +194,7 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     l.addUserFloat("PFNeutralHadIso",PFNeutralHadIso);
     l.addUserFloat("PFPhotonIso",PFPhotonIso);
     l.addUserFloat("combRelIsoPF",combRelIsoPF);
+    l.addUserFloat("SCeta",SCeta);
     l.addUserFloat("rho",rho);
     l.addUserFloat("SIP",SIP);
     l.addUserFloat("dxy",dxy);
