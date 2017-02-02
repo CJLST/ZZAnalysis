@@ -169,7 +169,7 @@ import HLTrigger.HLTfilters.hltHighLevel_cfi
 
 process.hltFilterDiMu  = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 process.hltFilterDiEle = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
-# process.hltFilterMuEle = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+process.hltFilterMuEle = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 # process.hltFilterMuEle2 = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 # process.hltFilterMuEle3 = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 # process.hltFilterTriEle = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
@@ -178,7 +178,7 @@ process.hltFilterSingleEle = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.
 process.hltFilterSingleMu = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 process.hltFilterDiMu.TriggerResultsTag  = cms.InputTag("TriggerResults","","HLT")
 process.hltFilterDiEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-# process.hltFilterMuEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
+process.hltFilterMuEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
 # process.hltFilterMuEle2.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
 # process.hltFilterMuEle3.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
 # process.hltFilterTriEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
@@ -187,7 +187,7 @@ process.hltFilterSingleEle.TriggerResultsTag = cms.InputTag("TriggerResults","",
 process.hltFilterSingleMu.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
 process.hltFilterDiMu.throw  = cms.bool(False) #FIXME: beware of this!
 process.hltFilterDiEle.throw = cms.bool(False) #FIXME: beware of this!
-# process.hltFilterMuEle.throw = cms.bool(False) #FIXME: beware of this!
+process.hltFilterMuEle.throw = cms.bool(False) #FIXME: beware of this!
 # process.hltFilterMuEle2.throw = cms.bool(False) #FIXME: beware of this!
 # process.hltFilterMuEle3.throw = cms.bool(False) #FIXME: beware of this!
 # process.hltFilterTriEle.throw = cms.bool(False) #FIXME: beware of this!
@@ -222,19 +222,21 @@ elif (LEPTON_SETUP == 2012):
   #  process.triggerTriEle  = cms.Path(process.hltFilterTriEle)
 
 elif (LEPTON_SETUP == 2016):
-    process.hltFilterDiEle.HLTPaths = ["HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v*"]
-    process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*"]
-  #  process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"]
-    #process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"] #for 25ns,14e33 (not necessary in 2015 data)
-  #  process.hltFilterTriEle.HLTPaths = ["HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v*"]
-  #  process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_12_10_5_v*"]
-    process.hltFilterSingleEle.HLTPaths = ["HLT_Ele25_eta2p1_WPTight_Gsf_v*","HLT_Ele27_WPTight_Gsf_v*","HLT_Ele27_eta2p1_WPLoose_Gsf_v*"]
-    process.hltFilterSingleMu.HLTPaths = ["HLT_IsoMu20_v*","HLT_IsoTkMu20_v*","HLT_IsoMu22_v*","HLT_IsoTkMu22_v*","HLT_IsoMu24_v*","HLT_IsoTkMu24_v*"]
-   #  process.triggerTriEle = cms.Path(process.hltFilterTriEle)
-   #  process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
-    process.triggerSingleEle = cms.Path(process.hltFilterSingleEle)
-    process.triggerSingleMu = cms.Path(process.hltFilterSingleMu)
+    process.hltFilterDiEle.HLTPaths = ["HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*",
+                                       "HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v*"]
+    process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*",
+                                      "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*"]
+    process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*",
+                                       "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*",
+                                       "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v*"]
+                                       "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v*"]
+    process.hltFilterSingleEle.HLTPaths = ["HLT_Ele25_eta2p1_WPTight_Gsf_v*",
+                                           "HLT_Ele27_WPTight_Gsf_v*"]
+    process.hltFilterSingleMu.HLTPaths = ["HLT_IsoMu24_v*","HLT_IsoTkMu24_v*"]
 
+process.triggerSingleEle = cms.Path(process.hltFilterSingleEle)
+process.triggerSingleMu = cms.Path(process.hltFilterSingleMu)
+process.triggerMuEle = cms.Path(process.hltFilterMuEle)
 process.triggerDiEle = cms.Path(process.hltFilterDiEle)
 process.triggerDiMu = cms.Path(process.hltFilterDiMu)
 
@@ -845,16 +847,16 @@ if IsMC:
             toGet = cms.VPSet(
                 cms.PSet(
                     record = cms.string('JetCorrectionsRecord'),
-                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV6_MC_AK4PFchs'), #for 80X/ICHEP16
+                    tag    = cms.string('JetCorrectorParametersCollection_Summer16_23Sep2016V3_MC_AK4PFchs'), #for 80X/Moriond17
                     label  = cms.untracked.string('AK4PFchs')
                     ),
                 cms.PSet(
                     record = cms.string('JetCorrectionsRecord'),
-                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV6_MC_AK8PFchs'), #for 80X/ICHEP16
+                    tag    = cms.string('JetCorrectorParametersCollection_Summer16_23Sep2016V3_MC_AK8PFchs'), #for 80X/Moriond17
                     label  = cms.untracked.string('AK8PFchs')
                     ),
                 ),
-             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Spring16_25nsV6_MC.db'), #for 80X/ICHEP16          
+             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Summer16_23Sep2016V3_MC.db'), #for 80X/Moriond17
             )
 else:
    process.jec = cms.ESSource("PoolDBESSource",
