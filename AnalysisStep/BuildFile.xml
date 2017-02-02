@@ -9,6 +9,7 @@
 <use name="ZZMatrixElement/MELA"/>
 <use name="RecoVertex/KinematicFit"/>
 <use name="CondFormats/BTauObjects"/>
+<use name="HiggsMassConstraint/HiggsMassConstraint"/>
 <use name="root"/>
 <use name="roofit"/>
 

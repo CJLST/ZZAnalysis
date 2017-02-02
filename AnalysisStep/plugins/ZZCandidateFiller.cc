@@ -44,6 +44,7 @@
 #include <ZZAnalysis/AnalysisStep/interface/MELABranch.h>
 #include <ZZAnalysis/AnalysisStep/interface/MELACluster.h>
 #include <KinZfitter/KinZfitter/interface/KinZfitter.h>
+#include <HiggsMassConstraint/HiggsMassConstraint/interface/HiggsMassConstraint.h>
 
 #include "TH2F.h"
 #include "TFile.h"
@@ -110,6 +111,7 @@ private:
   TH2F* corrSigmaEle;
   Comparators::ComparatorTypes bestCandType;
   KinZfitter *kinZfitter;
+  HiggsMassConstraint* hmcfitter;
   edm::EDGetTokenT<edm::View<pat::Jet> > jetToken;
   edm::EDGetTokenT<pat::METCollection> metToken;
   edm::EDGetTokenT<edm::View<reco::Candidate> > softLeptonToken;
@@ -132,7 +134,8 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
   doKinFit(iConfig.getParameter<bool>("doKinFit")),
   corrSigmaMu(0),
   corrSigmaEle(0),
-  kinZfitter(0)
+  kinZfitter(0),
+  hmcfitter(0)
 {
   produces<pat::CompositeCandidateCollection>();
 
@@ -172,12 +175,18 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
 
   //-- kinematic refitter
   kinZfitter = new KinZfitter(!isMC);
+  hmcfitter = new HiggsMassConstraint(SetupToSqrts(setup), RooSpin::kVdecayType_Zll, RooSpin::kVdecayType_Zll);
+  hmcfitter->setJECUserFloatString("jec_unc");
+  hmcfitter->setMuonKalmanCorrectedPtErrorString("correctedPtError");
+  //hmcfitter->setFastPDF(true);
+  hmcfitter->setFastPDF(false);
   // No longer used, but keept for future needs
 //   muon_iso_cut = iConfig.getParameter<double>("muon_iso_cut");
 //   electron_iso_cut = iConfig.getParameter<double>("electron_iso_cut");
 }
 
 ZZCandidateFiller::~ZZCandidateFiller(){
+  delete hmcfitter;
   delete kinZfitter;
 
   clearMELA();
@@ -685,6 +694,19 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
       // four 4-vectors after refitting order by Z1_1,Z1_2,Z2_1,Z2_2
       //vector<TLorentzVector> p4 = kinZfitter->GetRefitP4s();
+
+      std::vector<pair<const reco::Candidate*, const pat::PFParticle*>> FermionWithFSR;
+      for (unsigned ilep=0; ilep<4; ilep++){
+        if (FSRMap.find(ZZLeps[ilep])!=FSRMap.end()) FermionWithFSR.push_back(
+          pair<const reco::Candidate*, const pat::PFParticle*>((ZZLeps[ilep]->masterClone().get()), &(*(FSRMap[ZZLeps[ilep]])))
+          );
+        else FermionWithFSR.push_back(
+          pair<const reco::Candidate*, const pat::PFParticle*>((ZZLeps[ilep]->masterClone().get()), 0)
+          );
+      }
+      hmcfitter->fitTo(FermionWithFSR);
+      cout << "KinZfitter mass, err, unrefit err " << ZZMassRefit << " , " << ZZMassRefitErr << " , " << ZZMassUnrefitErr << endl;
+      for (int im=0; im<3; im++)  cout << "HMC mass(" << im << "),err = " << hmcfitter->getRefittedMass(im) << " , " << hmcfitter->getRefittedMassError(im) << endl;
 
     }
 
