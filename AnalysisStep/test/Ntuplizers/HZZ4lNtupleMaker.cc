@@ -186,6 +186,7 @@ namespace {
   std::vector<float> JetPtD;
   std::vector<float> JetSigma ;
   std::vector<short> JetHadronFlavour;
+  std::vector<short> JetPartonFlavour;
 
   std::vector<float> JetPUValue;
   std::vector<short> JetPUID;
@@ -1005,6 +1006,7 @@ void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
    JetPUID.push_back(jet.userInt("pileupJetIdUpdated:fullId"));
 
    JetHadronFlavour .push_back(jet.hadronFlavour());
+   JetPartonFlavour .push_back(jet.partonFlavour());
 }
 
 
@@ -1954,6 +1956,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   }
   myTree->Book("JetSigma",JetSigma, failedTreeLevel >= fullFailedTree);
   myTree->Book("JetHadronFlavour",JetHadronFlavour, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPartonFlavour",JetPartonFlavour, failedTreeLevel >= fullFailedTree);
 
   myTree->Book("JetJERUp",JetJERUp, failedTreeLevel >= fullFailedTree);
   myTree->Book("JetJERDown",JetJERDown, failedTreeLevel >= fullFailedTree);
