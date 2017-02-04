@@ -264,7 +264,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
   //      = 1 : draw only PAS-style plots
   //      = 2 : draw all
   
-  float lumin = 36.8;   // ICHEP total
+  float lumin = 28.2;   // ICHEP total
   setTDRStyle();
   // gStyle->SetOptStat(1111111);
   const int nDatasets = 23;          // Moriond: 11
@@ -544,9 +544,9 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
   TH1F* hmass_up[nProcesses][nType+4];
   TH1F* hmass_down[nProcesses][nType+4];
 
-  Float_t binsincl[] = { 375, 400, 425, 450, 475, 500, 525, 550, 575, 600, 640, 680, 720, 760, 800, 850, 900, 1000, 1100, 1200, 1400, 1600, 2000, 2400};
+  Float_t binsincl[] = { 375, 400, 425, 450, 475, 500, 525, 550, 575, 600, 640, 680, 720, 760, 800, 850, 900, 1000, 1100, 1200, 1400, 1600, 2000, 2400, 2800, 3200};
   Int_t  binnumincl = sizeof(binsincl)/sizeof(Float_t) - 1; 
-  Float_t binsbtag[] = { 400, 450, 500, 550, 600, 680, 760, 850, 1000, 1200, 1600, 2000, 2400};
+  Float_t binsbtag[] = { 400, 450, 500, 550, 600, 680, 760, 850, 1000, 1200, 1600, 2000, 2400, 3200};
   Int_t  binnumbtag = sizeof(binsbtag)/sizeof(Float_t) - 1; 
   TString hmasstags[nType+7] = {"","","untagged, merged jet","untagged, resolved jets",
 				"","","b-tagged, merged jet","b-tagged, resolved jets",
@@ -1218,7 +1218,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	hmass[5][nt]->Scale(1./normer);
 	hmass[1][nt]->Scale(1./hmass[1][nt]->Integral());
 	hmass[2][nt]->Scale(1./hmass[2][nt]->Integral());
-	hmass[6][nt]->Scale(1./hmass[6][nt]->Integral());
+	// hmass[6][nt]->Scale(1./hmass[6][nt]->Integral());
       }
       
       hmass[3][nt]->SetFillStyle(3001);
@@ -1239,8 +1239,8 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
       hmass[2][nt]->SetLineStyle(kDashed);
       hmass[1][nt]->SetLineColor(kRed-1);
       hmass[1][nt]->SetLineWidth(3);
-      hmass[6][nt]->SetLineColor(kOrange+1);
-      hmass[6][nt]->SetLineWidth(3);
+      // hmass[6][nt]->SetLineColor(kOrange+1);
+      // hmass[6][nt]->SetLineWidth(3);
       hmass[0][nt]->SetMarkerStyle(20);
       
     }
@@ -1306,55 +1306,55 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 		    
 		  }
                 }
-		  
+		
 		h1[v][0][rs][nt]->Draw("esame");
-		  
+		
 	      } else {
-		  
-		  h1[v][3][rs][nt]->Draw("hist");
-		  h1[v][4][rs][nt]->Draw("histsame"); 
-		  h1[v][5][rs][nt]->Draw("histsame");
-		  h1[v][2][rs][nt]->Draw("histsame"); 
-		  h1[v][1][rs][nt]->Draw("histsame");
+		
+		h1[v][3][rs][nt]->Draw("hist");
+		h1[v][4][rs][nt]->Draw("histsame"); 
+		h1[v][5][rs][nt]->Draw("histsame");
+		h1[v][2][rs][nt]->Draw("histsame"); 
+		h1[v][1][rs][nt]->Draw("histsame");
 	      }
-		
-		gPad->SetLogy(varLogy[v]);
-		gPad->SetLogx(varLogx[v]);
-		
-		legend->Draw("same"); 
-		
-		pad2->cd();
-		
-		gPad->SetLogy(0);
-		TH1F* ratio = (TH1F*)h1[v][0][rs][nt]->Clone();
-		ratio->Add(h1[v][0][rs][nt],h1[v][3][rs][nt],1,-1);
-		ratio->Divide(ratio,h1[v][0][rs][nt]);
-		ratio->SetMinimum(-0.5);
-		ratio->SetMaximum(0.5); 
-		ratio->GetYaxis()->SetTitle("(Data-MC)/Data");
-		if (!(nt==0 || nt==1 || nt==4 || nt==5 || nt==8 || nt==9 || CR || unblind)) {
-		  ratio->SetLineColor(kWhite);
-		  ratio->SetMarkerColor(kWhite);
-		}
-		ratio->Draw("e");
-		TLine line(h1[v][0][rs][nt]->GetXaxis()->GetBinLowEdge(1),0.,
-			   h1[v][0][rs][nt]->GetXaxis()->GetBinUpEdge(h1[v][0][rs][nt]->GetNbinsX()-1),0.);
-		line.SetLineColor(kRed);
-		line.SetLineStyle(kDashed);
-		line.Draw("same");  
-		
-		// if (norm && v == 21 && nt == 1 && rs==0) {   // tau21
-		//  ofstream ofs("tau21_sf.txt");
-		//  for (int i=1; i<=ratio->GetNbinsX(); i++) {
-		// ofs << ratio->GetXaxis()->GetBinLowEdge(i)  << ", " << ratio->GetXaxis()->GetBinUpEdge(i)  << ", " <<  ratio->GetBinContent(i) << endl;
-		// }
-		// ofs.close();
-		// } 
 	      
-		if (norm) 
-		  c1.SaveAs(Form("~/www/graviton/%snorm/%s_%s_%s.png",dirout.c_str(),varName[v].c_str(),sFS[rs].c_str(),typeS[nt].c_str()));
-		else 
-		  c1.SaveAs(Form("~/www/graviton/%s/%s_%s_%s.png",dirout.c_str(),varName[v].c_str(),sFS[rs].c_str(),typeS[nt].c_str()));
+	      gPad->SetLogy(varLogy[v]);
+	      gPad->SetLogx(varLogx[v]);
+	      
+	      legend->Draw("same"); 
+	      
+	      pad2->cd();
+	      
+	      gPad->SetLogy(0);
+	      TH1F* ratio = (TH1F*)h1[v][0][rs][nt]->Clone();
+	      ratio->Add(h1[v][0][rs][nt],h1[v][3][rs][nt],1,-1);
+	      ratio->Divide(ratio,h1[v][0][rs][nt]);
+	      ratio->SetMinimum(-0.5);
+	      ratio->SetMaximum(0.5); 
+	      ratio->GetYaxis()->SetTitle("(Data-MC)/Data");
+	      if (!(nt==0 || nt==1 || nt==4 || nt==5 || nt==8 || nt==9 || CR || unblind)) {
+		ratio->SetLineColor(kWhite);
+		ratio->SetMarkerColor(kWhite);
+	      }
+	      ratio->Draw("e");
+	      TLine line(h1[v][0][rs][nt]->GetXaxis()->GetBinLowEdge(1),0.,
+			 h1[v][0][rs][nt]->GetXaxis()->GetBinUpEdge(h1[v][0][rs][nt]->GetNbinsX()-1),0.);
+	      line.SetLineColor(kRed);
+	      line.SetLineStyle(kDashed);
+	      line.Draw("same");  
+	      
+	      // if (norm && v == 21 && nt == 1 && rs==0) {   // tau21
+	      //  ofstream ofs("tau21_sf.txt");
+	      //  for (int i=1; i<=ratio->GetNbinsX(); i++) {
+	      // ofs << ratio->GetXaxis()->GetBinLowEdge(i)  << ", " << ratio->GetXaxis()->GetBinUpEdge(i)  << ", " <<  ratio->GetBinContent(i) << endl;
+	      // }
+	      // ofs.close();
+	      // } 
+	      
+	      if (norm) 
+		c1.SaveAs(Form("~/www/graviton/%snorm/%s_%s_%s.png",dirout.c_str(),varName[v].c_str(),sFS[rs].c_str(),typeS[nt].c_str()));
+	      else 
+		c1.SaveAs(Form("~/www/graviton/%s/%s_%s_%s.png",dirout.c_str(),varName[v].c_str(),sFS[rs].c_str(),typeS[nt].c_str()));
 	      
 	    }
 	  }
@@ -1419,7 +1419,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	legend4->SetTextSize  (0.035);
 	
 	legend4->AddEntry(hmass[0][nt], processLabel[0].c_str() , "p");
-	legend4->AddEntry(hmass[6][nt], processLabel[6].c_str() , "l");
+	// legend4->AddEntry(hmass[6][nt], processLabel[6].c_str() , "l");
 	for(int ipr=3; ipr<nProcesses-1; ipr++){ 
 	  legend4->AddEntry(hmass[ipr][nt], processLabel[ipr].c_str() , "f");
 	}
@@ -1434,7 +1434,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	  hmass[2][nt]->Draw("histsame"); 
 	  hmass[1][nt]->Draw("histsame");
 	} else {
-	  hmass[6][nt]->Draw("histsame");
+	  // hmass[6][nt]->Draw("histsame");
 	}
 
 	if (nt<16) { 
@@ -1484,7 +1484,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 	t->SetTextAlign(22);
 	t->SetTextSize(0.05);
 	t->DrawLatex(0.30,0.95,"CMS Preliminary");
-	t->DrawLatex(0.82,0.95,"36.8 fb^{-1} (13 TeV)"); 	    
+	t->DrawLatex(0.82,0.95,"28.2 fb^{-1} (13 TeV - Run B-G)"); 	    
 	if (nt<16) t->DrawLatex(0.38,0.85,hmasstags[nt].Data()); 	    
 	else t->DrawLatex(0.40,0.85,hmasstags[nt].Data());
 	
