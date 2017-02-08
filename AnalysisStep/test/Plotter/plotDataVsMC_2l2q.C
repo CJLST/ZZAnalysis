@@ -53,7 +53,7 @@ int useHTBinned = 2;         // 0 - use simple DY inclusive
 // 1 - use ht binned
 // 2 - use jet binned + b-enricchement
 
-bool enforceNarrowWidth = true;
+bool enforceNarrowWidth = false;
 bool unblind = false;
 
 int onlyOneLep = 1;          // 0 - ee
@@ -155,11 +155,11 @@ string varYLabel[nVariables] = {
     "Events / 25 GeV",
     "Events / 0.025"
 };
-Int_t  varNbin[nVariables] = { 70, 50, 70,  56,  44, 50, 50, 400,  50,  50,  50,  50,  50,  50,  50, 50, 50, 25, 25, 4, 50, 78, 50, 40, 82, 50, 40};
+Int_t  varNbin[nVariables] = {  110, 50, 70,  56,  44, 50, 50, 400,  50,  50,  50,  50,  50,  50,  50, 50, 50, 25, 25, 4, 50, 44, 50, 40, 82, 50, 40};
 Float_t varMin[nVariables] = {  250,  0,  250,  40,  40,  90, 90, -200,  0, 0, -0.2, -0.2, 0,  0, -0.2, -1.2, -1.2, 0., 0., -0.5, 0., -0.05, -0.2, 0., -1.05, 250, 0.};
-Float_t varMax[nVariables] = { 2000, 500, 2000, 180, 150, 800, 800, 0, 500, 500, 1.2, 1.2, 500, 500, 1.2, 1.2, 1.2 , 3.15, 3.15, 3.5, 300., 1.05, 1.2, 1., 1., 2000., 1.};
-Bool_t varLogx[nVariables] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-Bool_t varLogy[nVariables] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0};
+Float_t varMax[nVariables] = {  3000, 500, 2000, 180, 150, 800, 800, 0, 500, 500, 1.2, 1.2, 500, 500, 1.2, 1.2, 1.2 , 3.15, 3.15, 3.5, 300., 1.05, 1.2, 1., 1., 2000., 1.};
+Bool_t varLogx[nVariables] = {  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+Bool_t varLogy[nVariables] = {  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0};
 
 const int nMasses = 13;
 string signalMasses[nMasses] = {"200", "250", "300", "350", "400", "450", "500", "550", "600", "750", "900", "1000", "2000"};
@@ -177,7 +177,8 @@ const int nFS = 3;
 string sFS[nFS] = {"ee", "all", "mm"};
 
 const int nType = 12;
-string typeS[nType] = {"resolvedSB", "mergedSB", "mergedSR", "resolvedSR", "resolvedSBbtag", "mergedSBbtag", "mergedSRbtag", "resolvedSRbtag", "resolvedSBvbf", "mergedSBvbf", "mergedSRvbf", "resolvedSRvbf"};
+string typeS[nType] = {"resolvedSB", "mergedSB", "mergedSR", "resolvedSR", "resolvedSBbtag",  "mergedSBbtag", "mergedSRbtag", "resolvedSRbtag", "resolvedSBvbf", "mergedSBvbf", "mergedSRvbf", "resolvedSRvbf"};
+
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -1624,5 +1625,4 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
             outputFile->Close();
         }
     }
-
 }
