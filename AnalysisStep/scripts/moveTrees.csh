@@ -67,7 +67,7 @@ set CHUNKPATH=Chunks_${SETNAME}
 mkdir ${CHUNKPATH}
 mv ${SETNAME}/*Chunk* ${CHUNKPATH}
 mv ${SETNAME}/* .
-rm -r ${SETNAME}
+rmdir ${SETNAME} # If any of the above fails (eg because a sample was already present), ${SETNAME} will not be empty and will not be deleted
 
 
 ## Prepare a merged file of all data
