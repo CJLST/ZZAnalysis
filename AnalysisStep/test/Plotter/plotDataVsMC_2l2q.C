@@ -177,7 +177,9 @@ const int nFS = 3;
 string sFS[nFS] = {"ee", "all", "mm"};
 
 const int nType = 12;
-string typeS[nType] = {"resolvedSB", "mergedSB", "mergedSR", "resolvedSR", "resolvedSBbtag",  "mergedSBbtag", "mergedSRbtag", "resolvedSRbtag", "resolvedSBvbf", "mergedSBvbf", "mergedSRvbf", "resolvedSRvbf"};
+string typeS[nType] = { "resolvedSB", "mergedSB", "mergedSR", "resolvedSR",
+                        "resolvedSBbtag",  "mergedSBbtag", "mergedSRbtag", "resolvedSRbtag", 
+                        "resolvedSBvbf", "mergedSBvbf", "mergedSRvbf", "resolvedSRvbf"};
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -565,6 +567,8 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
     Float_t xsec;
     Float_t Met;
 
+
+    /// Book "all plots" histograms
     TH1F *h1[nVariables][nProcesses][nFS][nType];
     for (int rs = 0; rs < nFS; rs++) { //ee, mumu, or all
         for (int pr = 0; pr < nProcesses; pr++) {
@@ -584,6 +588,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
         }
     }
 
+
     TH1F *hmass[nProcesses][nType + 7];
     TH1F *hmass_up[nProcesses][nType + 4];
     TH1F *hmass_down[nProcesses][nType + 4];
@@ -598,6 +603,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
                                     "", "", "", "", "all categories, resolved jets", "all categories, resolved jets", "all categories, resolved jets"
                                    };
 
+    /// Book "ZZ mass only" histograms
     for (int pr = 0; pr < nProcesses; pr++) {
         for (int nt = 0; nt < nType + 7; nt++) {
             if (nt < 4) {      // mZZ high stats
@@ -647,7 +653,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
         }
     }
 
-    //---------- Will loop over all datasets
+    /// Initial loop over all datasets to setup the counters
     for (int d = 0; d < nDatasets; d++) {
         NGenEvt[d] = 0;
         NEvtNarrow[d] = 0.;
@@ -656,6 +662,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
         inputTree[d] = new TChain("ZZTree/candTree");
     }
 
+    /// Loop over list of files and assign them to each dataset
     ifstream list(theNtupleFile.c_str());
     char fileName[400];
     while (list >> fileName) {
@@ -684,7 +691,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
         }
     }
 
-    /// Start loop over datasets
+    /// Start loop over datasets and do the analysis / plotting proper
     for (int d = 0; d < nDatasets; d++) {
 
         if (useHTBinned == 0 && d > 2 && d < 8) continue; // in this case there is just one DY
@@ -735,6 +742,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 
         Long64_t entries = inputTree[d]->GetEntries();
 
+        /// FIXME: this is very error-prone, change to enums
         int process;
         if (d == 0) process = 1;
         else if (d == 1) process = 2;
@@ -795,6 +803,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
             int nInJets = 0;
             int nExtraJets = 0;
 
+            /// Two loops over jets (one for dijet, one for fat jet) - but is this actually used?
             for (unsigned int nJet = 0; nJet < JetPt->size(); nJet++) {
                 if (JetQGLikelihood->at(nJet) > -800.) {            // real jets
                     if (JetIsInZZCand->at(nJet)) {
@@ -873,7 +882,11 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
                 fsend = 3;
             }
 
-            int preferType = 0;    // choose merged or resolved
+            /// Algorithm to choose MERGED or RESOLVED
+            /// FIXME: preferType = 1 (MERGED) or 2 (RESOLVED).
+            /// Actually... why is this linked with ZZCandType->at(0), i.e., the
+            /// type of the FIRST candidate?
+            int preferType = 0;
             // and dump for synchronization
             if (ZZMass->size() == 1 && abs(ZZCandType->at(0)) == 1) {
                 if (ZZMass->at(0) > 400) {
@@ -892,13 +905,16 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
                 }
                 preferType = 2;
             } else if (ZZMass->size() == 2 && abs(ZZCandType->at(0)) == 1) {
+                
                 if (ZZMass->at(0) > 400) {
                     float mela[2] = {0., 0.};
                     float vbfmela[2] = {0., 0.};
+                    
                     for (unsigned int theCand = 0; theCand < 2; theCand++) {
                         mela[theCand] = 1. / (1. + getDZjjspin0Constant(ZZMass->at(theCand)) * (pqqZJJ_VAMCFM->at(theCand) / p0plus_VAJHU->at(theCand)));
                         vbfmela[theCand] = ((phjj_VAJHU_highestPTJets->at(theCand) > 0. && nExtraJets > 1) ? 1. / (1. + getDVBF2jetsConstant(ZZMass->at(theCand)) * (phjj_VAJHU_highestPTJets->at(theCand) / pvbf_VAJHU_highestPTJets->at(theCand))) : -1.);
                     }
+                    
                     if (writeThis) myfile << RunNumber << ":" << EventNumber << ":" << LumiNumber << ":" << Z2Mass->at(0)  << ":" << (abs(Z2Flav->at(0)) == 121 ? "Ele:" : "Muo:")  << pt1stLep << ":" << pt2ndLep << ":" << ZZMass->at(0) << ":" << Z1Mass->at(0) << ":" << Z1tau21->at(0) << ":" << Z1Pt->at(0) << ":" << mela[0] << ":" << vbfmela[0] << ":" << ZZMass->at(1) << ":" << ZZMassRefit->at(1) << ":" << Z1Mass->at(1) << ":" << pt1stJet << ":" << pt2ndJet << ":" << btag1stJet << ":" << mela[1] << ":" << vbfmela[1] << endl;
                     nPassMerged++;
                     nPassResol++;
@@ -907,7 +923,8 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
                     /* if (ZZCandType->at(0) > 0) preferType = 2;
                        else if (ZZCandType->at(1) > 0) preferType = 1;
                        else preferType = 2;  */
-                }
+                }/// Close check of ZZMass > 400 GeV
+                
                 // merged -> resolved (but ask for J quality)
                 if (Z2Pt->at(0) > 200. && Z1Pt->at(0) > 300. && Z1tau21->at(0) < 0.6) preferType = 1;
                 else preferType = 2;
@@ -953,7 +970,10 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
             }
 
             // ----- fill histos
-
+            
+            /// Begin loop over flavours. We do it like this to be able to fill 
+            /// electrons in 0 and 1, and muons in 1 and 2.
+            /// So it translates to ele=0, both=1, mu=2.
             for (int rs = fsstart; rs < fsend; rs++) {
 
                 for (unsigned int theCand = 0; theCand < Z1Mass->size(); theCand++) {
@@ -964,6 +984,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
                         // int typ = ZZCandType->at(theCand)+2;
                         // if (typ>2) typ--;
 
+                        /// FIXME: change magic numbers to enums and constants
                         // redefine type
                         int typ = -1;
                         if (abs(ZZCandType->at(theCand)) == 1) {
@@ -1004,6 +1025,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
                         float mela2 = 1. / (1. + getDZjjspin2Constant(ZZMass->at(theCand)) * (pqqZJJ_VAMCFM->at(theCand) / p2bplus_VAJHU->at(theCand)));
                         float vbfmela = ((phjj_VAJHU_highestPTJets->at(theCand) > 0. && nExtraJets > 1) ? 1. / (1. + getDVBF2jetsConstant(ZZMass->at(theCand)) * (phjj_VAJHU_highestPTJets->at(theCand) / pvbf_VAJHU_highestPTJets->at(theCand))) : -1.);
 
+                        /// FIXME: change magic numbers to enums and constants
                         if ((typ == 0 || typ == 3) && nExtraJets > 1 && vbfmela > 1.043 - 460. / (ZZMass->at(theCand) + 634.)) typ = typ + 8;
                         if ((typ == 1 || typ == 2) && nExtraJets > 1 && vbfmela > 1.043 - 460. / (ZZMass->at(theCand) + 634.)) typ = typ + 8;
 
@@ -1032,6 +1054,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
                             tmvaJetPt2 = (float)pt2ndSubjet;
                         }
                         float bdt = 0.;
+                        /*
                         // if (typ==0 || typ==3 || typ==4 || typ==7 || typ==8 || typ==11) bdt = readerR->EvaluateMVA( "BDT method" );
                         // else bdt = readerM->EvaluateMVA( "BDT method" );
 
@@ -1044,12 +1067,15 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
                         // if (tmvaJetPt2 < 40.) continue;
                         // if (tmvaLepPt1 < 150.) continue;
                         // if (tmvaLepPt2 < 30.) continue;
+                        */
                         if (tmvaZ2Mass < 60.) continue;
                         if (tmvaZ1Pt < 100. || tmvaZ2Pt < 100.) continue;   // TEST!
                         if ((typ == 1 || typ == 2 || typ == 5 || typ == 6 || typ == 9 || typ == 10) && tmvaZ1tau21 > 0.6) continue;
                         if (ZZMass->at(theCand) < 300.) continue;
                         // if (mela < 0.8) continue;
 
+                        /// If we arrived here, we have passed all the cuts.
+                        /// Start filling the histograms!
                         h1[0][process][rs][typ]->Fill(ZZMass->at(theCand), eventWeight * t12weight);
                         h1[1][process][rs][typ]->Fill(ZZPt->at(theCand), eventWeight * t12weight);
 
@@ -1146,7 +1172,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
                         }
 
                         // if (rs == 1 && whichTmvaTree > -1) outputTree[whichTmvaTree]->Fill();
-                    } else { // control region for QG (only fille some variables)
+                    } else { // control region for QG (only fill some variables)
 
                         for (unsigned int nJet = 0; nJet < JetPt->size(); nJet++) {
                             if (JetIsInZZCand->at(nJet) && JetQGLikelihood->at(nJet) > -800. /*remove subjets of fat jet also included in this collection! */) {
@@ -1172,8 +1198,8 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
                         h1[12][process][rs][3]->Fill(pt1stLep, eventWeight);
                         h1[13][process][rs][3]->Fill(pt2ndLep, eventWeight);
                     }
-                }
-            }
+                } /// Close loop over candidates
+            } /// Close loop over flavours
         } /// Close loop over entries
 
         /// Special for NARROW WIDTH
@@ -1191,6 +1217,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 
     } /// Close loop over datasets
 
+    /// Make plots
     if (draw) {
         TCanvas c1;
         c1.cd();
