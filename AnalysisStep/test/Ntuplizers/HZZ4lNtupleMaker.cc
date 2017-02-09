@@ -46,7 +46,9 @@
 #include <ZZAnalysis/AnalysisStep/interface/DaughterDataHelpers.h>
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
 #include <ZZAnalysis/AnalysisStep/interface/MCHistoryTools.h>
-#include <ZZAnalysis/AnalysisStep/interface/PUReweight.h>
+//#include <ZZAnalysis/AnalysisStep/interface/PileUpWeight.h>
+#include <ZZAnalysis/AnalysisStep/interface/PileUpWeight.h>
+
 #include "ZZAnalysis/AnalysisStep/interface/EwkCorrections.h"
 #include "ZZAnalysis/AnalysisStep/interface/LHEHandler.h"
 #include "ZZAnalysis/AnalysisStep/src/kFactors.C"
@@ -90,6 +92,9 @@ namespace {
   Short_t NObsInt  = 0;
   Float_t NTrueInt  = 0;
   Float_t PUWeight  = 0;
+  Float_t PUWeight_Up  = 0;
+  Float_t PUWeight_Dn  = 0;
+
   Float_t KFactor_QCD_ggZZ_Nominal = 0;
   Float_t KFactor_QCD_ggZZ_PDFScaleDn = 0;
   Float_t KFactor_QCD_ggZZ_PDFScaleUp = 0;
@@ -162,6 +167,12 @@ namespace {
   //std::vector<float> LepPhotonIso;
   std::vector<float> LepCombRelIsoPF;
   std::vector<short> LepisLoose;
+  std::vector<float> LepRecoSF;
+  std::vector<float> LepRecoSF_Unc;
+  std::vector<float> LepSelSF;
+  std::vector<float> LepSelSF_Unc;
+
+
   std::vector<float> fsrPt;
   std::vector<float> fsrEta;
   std::vector<float> fsrPhi;
@@ -328,6 +339,7 @@ private:
     const math::XYZTLorentzVector Lep1, const math::XYZTLorentzVector Lep2, const math::XYZTLorentzVector Lep3, const math::XYZTLorentzVector Lep4);
   void FillAssocLepGenInfo(std::vector<const reco::Candidate *>& AssocLeps);
 
+  
   Float_t getAllWeight(const reco::Candidate* Lep) const;
   Float_t getHqTWeight(double mH, double genPt) const;
   Float_t getFakeWeight(Float_t LepPt, Float_t LepEta, Int_t LepID, Int_t LepZ1ID);
@@ -405,7 +417,7 @@ private:
 
   edm::EDGetTokenT<edm::MergeableCounter> preSkimToken;
 
-  PUReweight reweight;
+  PileUpWeight pileUpReweight;
 
   //counters
   Float_t Nevt_Gen;
@@ -474,7 +486,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   apply_K_NNLOQCD_ZZQQB(pset.getParameter<bool>("Apply_K_NNLOQCD_ZZQQB")),
   apply_K_NLOEW_ZZQQB(pset.getParameter<bool>("Apply_K_NLOEW_ZZQQB")),
 
-  reweight(),
+  pileUpReweight(myHelper.sampleType(), myHelper.setup()),
   sampleName(pset.getParameter<string>("sampleName")),
   hTH2D_Mu_All(0),
   hTH2F_El_Reco(0),
@@ -692,7 +704,9 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     }
 
     // get PU weight
-    PUWeight = reweight.weight(myHelper.sampleType(), myHelper.setup(), NTrueInt);
+    PUWeight = pileUpReweight.weight(NTrueInt);
+    PUWeight_Up = pileUpReweight.weight(NTrueInt, PileUpWeight::PUvar::VARUP);
+    PUWeight_Dn = pileUpReweight.weight(NTrueInt, PileUpWeight::PUvar::VARDOWN);
 
     event.getByToken(genParticleToken, genParticles);
     event.getByToken(genInfoToken, genInfo);
@@ -1666,7 +1680,11 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
     
     Float_t lookup_pT = 50.;  // FIXME: the histogram contains 1 bin only, and overflows/underflows are intended to be included (?)
 
-    weight *= hTH2F_El_Reco->GetBinContent(hTH2F_El_Reco->GetXaxis()->FindBin(SCeta),hTH2F_El_Reco->GetYaxis()->FindBin(lookup_pT));
+    Float_t RecoSF = hTH2F_El_Reco->GetBinContent(hTH2F_El_Reco->GetXaxis()->FindBin(SCeta),hTH2F_El_Reco->GetYaxis()->FindBin(lookup_pT));
+    //RecoSF_Unc = = hTH2F_El_Reco->GetBinError(hTH2F_El_Reco->GetXaxis()->FindBin(SCeta),hTH2F_El_Reco->GetYaxis()->FindBin(lookup_pT));
+
+    //LepRecoSF.push_back(RecoSF)
+    weight *= RecoSF;
 
     if(mySIP >= 4.0 ) { // FIXME: use a better way to find RSE electrons!
         // No SF for RSE yet
@@ -2004,6 +2022,8 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("genProcessId", genProcessId, failedTreeLevel >= minimalFailedTree);
     myTree->Book("genHEPMCweight", genHEPMCweight, failedTreeLevel >= minimalFailedTree);
     myTree->Book("PUWeight", PUWeight, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("PUWeight_Dn", PUWeight_Dn, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("PUWeight_Up", PUWeight_Up, failedTreeLevel >= minimalFailedTree);
     myTree->Book("dataMCWeight", dataMCWeight, false);
     myTree->Book("trigEffWeight", trigEffWeight, false);
     myTree->Book("overallEventWeight", overallEventWeight, false);
