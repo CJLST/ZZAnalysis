@@ -40,12 +40,15 @@
 #include "tdrstyle.C"
 // #include "CMS_lumi.C"
 #include "plotUtils.C"
+
+/// Try to take this stuff out
 #include "ZZAnalysis/AnalysisStep/src/kFactors.C"
 
 #include <ZZAnalysis/AnalysisStep/src/Category.cc>
 #include <ZZAnalysis/AnalysisStep/src/bitops.cc>
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
 #include <ZZAnalysis/AnalysisStep/test/Plotter/fit_functions.C>
+///
 
 using namespace std;
 
@@ -56,9 +59,14 @@ int useHTBinned = 2;         // 0 - use simple DY inclusive
 bool enforceNarrowWidth = false;
 bool unblind = false;
 
-int onlyOneLep = 1;          // 0 - ee
-// 1 - all leptons
-// 2 - mumu
+int onlyOneLep = 1; // 0 - ee
+                    // 1 - all leptons
+                    // 2 - mumu
+
+const double lowerZhadMass = 70.0;
+const double higherZhadMass = 105.0;
+const double higherHhadMass = 135.0;
+const double bTagThres = 0.46;
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -177,6 +185,9 @@ const int nFS = 3;
 string sFS[nFS] = {"ee", "all", "mm"};
 
 const int nType = 12;
+enum eType {resolvedSB, mergedSB, mergedSR, resolvedSR,
+            resolvedSBbtag,  mergedSBbtag, mergedSRbtag, resolvedSRbtag, 
+            resolvedSBvbf, mergedSBvbf, mergedSRvbf, resolvedSRvbf};
 string typeS[nType] = { "resolvedSB", "mergedSB", "mergedSR", "resolvedSR",
                         "resolvedSBbtag",  "mergedSBbtag", "mergedSRbtag", "resolvedSRbtag", 
                         "resolvedSBvbf", "mergedSBvbf", "mergedSRvbf", "resolvedSRvbf"};
@@ -263,6 +274,11 @@ float getDZjjspin2Constant(float ZZMass)
     return 0.14;
 }
 
+bool passVBFCut(int nExtraJets, double vbfmela, double ZZMass) 
+{
+    return nExtraJets > 1 && vbfmela > 1.043 - 460. / ZZMass + 634.;
+}
+
 void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./goodDatasetsWithData.txt", bool sync = false, bool CR = false, int draw = 1, bool weightMCtrig = true, bool weighttau21 = true)
 {
     // draw = 0 : do not draw, but save inputs for fits
@@ -270,7 +286,13 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
     //      = 2 : draw all
 
     string plotsDestination = "/eos/user/t/tomei/www/graviton/";
-    float lumin = 36.811;   // ICHEP total
+    float lumin = 36.811;   // 2016 total
+    //float lumin = 12.9; // ICHEP
+    //float lumin = 4.12; // Run E
+    //float lumin = 3.19; // Run F
+    //float lumin = 7.72; // Run G
+    //float lumin = 8.86; // Run H
+    //float lumin = 29.1; // All but Run G
     setTDRStyle();
     gROOT->ProcessLine("gErrorIgnoreLevel = 1001;");
     // gStyle->SetOptStat(1111111);
@@ -984,21 +1006,21 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
                         // int typ = ZZCandType->at(theCand)+2;
                         // if (typ>2) typ--;
 
-                        /// FIXME: change magic numbers to enums and constants
-                        // redefine type
-                        int typ = -1;
+                        /// Redefine the candidate type to split into the four different categories:
+                        /// (See enum eType above)
+                        int typ = -1; // Notice that -1 is not in the enum!
                         if (abs(ZZCandType->at(theCand)) == 1) {
-                            if (Z1Mass->at(theCand) > 70. && Z1Mass->at(theCand) < 105.) typ = 2;
-                            else typ = 1;
+                            if (Z1Mass->at(theCand) > lowerZhadMass && Z1Mass->at(theCand) < higherZhadMass) typ = mergedSR;
+                            else typ = mergedSB;
                         } else {
-                            if (Z1Mass->at(theCand) > 70. && Z1Mass->at(theCand) < 105.) typ = 3;
-                            else typ = 0;
+                            if (Z1Mass->at(theCand) > lowerZhadMass && Z1Mass->at(theCand) < higherZhadMass) typ = resolvedSR;
+                            else typ = resolvedSB;
                         }
 
                         // blind higgs region
-                        if (Z1Mass->at(theCand) > 105. && Z1Mass->at(theCand) < 135.) continue;
+                        if (Z1Mass->at(theCand) > higherZhadMass && Z1Mass->at(theCand) < higherHhadMass) continue;
 
-                        // additional blinding
+                        // additional blinding (obsolete)
                         /* if (abs(ZZCandType->at(theCand)) == 1) {
                                if (ZZMass->at(theCand) > 550. && ZZMass->at(theCand) < 750.) continue;
                            if (ZZMass->at(theCand) > 950.) continue;
@@ -1015,22 +1037,25 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
                             }
                         }
 
+                        /// FIXME: is this actually used???
                         int whichTmvaTree = -1;
-                        if (typ == 2 && process == 2) whichTmvaTree = 0;
-                        if (typ == 2 && process == 3) whichTmvaTree = 1;
-                        if (typ == 3 && process == 2) whichTmvaTree = 2;
-                        if (typ == 3 && process == 3) whichTmvaTree = 3;
+                        if (typ == mergedSR && process == 2) whichTmvaTree = 0;
+                        if (typ == mergedSR && process == 3) whichTmvaTree = 1;
+                        if (typ == resolvedSR && process == 2) whichTmvaTree = 2;
+                        if (typ == resolvedSR && process == 3) whichTmvaTree = 3;
 
                         float mela = 1. / (1. + getDZjjspin0Constant(ZZMass->at(theCand)) * (pqqZJJ_VAMCFM->at(theCand) / p0plus_VAJHU->at(theCand)));
                         float mela2 = 1. / (1. + getDZjjspin2Constant(ZZMass->at(theCand)) * (pqqZJJ_VAMCFM->at(theCand) / p2bplus_VAJHU->at(theCand)));
                         float vbfmela = ((phjj_VAJHU_highestPTJets->at(theCand) > 0. && nExtraJets > 1) ? 1. / (1. + getDVBF2jetsConstant(ZZMass->at(theCand)) * (phjj_VAJHU_highestPTJets->at(theCand) / pvbf_VAJHU_highestPTJets->at(theCand))) : -1.);
 
-                        /// FIXME: change magic numbers to enums and constants
-                        if ((typ == 0 || typ == 3) && nExtraJets > 1 && vbfmela > 1.043 - 460. / (ZZMass->at(theCand) + 634.)) typ = typ + 8;
-                        if ((typ == 1 || typ == 2) && nExtraJets > 1 && vbfmela > 1.043 - 460. / (ZZMass->at(theCand) + 634.)) typ = typ + 8;
-
-                        if ((typ == 0 || typ == 3) && btag1stJet > 0.46 && btag2ndJet > 0.46) typ = typ + 4;
-                        if ((typ == 1 || typ == 2) && btag1stSubjet > 0.46 && btag2ndSubjet > 0.46) typ = typ + 4;
+                        /// If we are untagged and pass the VBF mela cut, move to the VBF category
+                        /// FIXME: change magic numbers to constants
+                        if ((typ == resolvedSB || typ == resolvedSR) && nExtraJets > 1 && vbfmela > 1.043 - 460. / (ZZMass->at(theCand) + 634.)) typ = typ + 8;
+                        if ((typ == mergedSB || typ == mergedSR) && nExtraJets > 1 && vbfmela > 1.043 - 460. / (ZZMass->at(theCand) + 634.)) typ = typ + 8;
+    
+                        /// If we are untagged and pass the b-tag cut, move to b-tag category 
+                        if ((typ == resolvedSB || typ == resolvedSR) && btag1stJet > bTagThres && btag2ndJet > bTagThres) typ = typ + 4;
+                        if ((typ == mergedSB || typ == mergedSR) && btag1stSubjet > bTagThres && btag2ndSubjet > bTagThres) typ = typ + 4;
 
                         tmvaZZPt = (float)ZZPt->at(theCand);
                         tmvaZ2Mass = (float)Z2Mass->at(theCand);
