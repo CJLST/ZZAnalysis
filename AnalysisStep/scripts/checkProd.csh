@@ -38,7 +38,7 @@ foreach chunk ( *Chunk* )
  set nonomatch
  set jobRep = ( ${chunk}/job_*.txt )
  if ( -e $jobRep[1] ) then
-   if ( `grep -c "CPU time limit exceeded" ${chunk}/job_*.txt` != 0 ) then 
+   if ( `grep -c "CPU time limit exceeded" $jobRep[$#jobRep]` != 0 ) then 
       set exitStatus=152 
       set fail="true"
    endif
