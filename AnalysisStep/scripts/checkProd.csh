@@ -31,8 +31,19 @@ foreach chunk ( *Chunk* )
  set exitStatus = 0
  if ( -es ${chunk}/exitStatus.txt ) then
    set exitStatus=`cat ${chunk}/exitStatus.txt`
-   set fail="true"     
+   set fail="true"
  endif
+ # Check for CPU time exceeded (this can also be reported explicitly with exit status 152, which is then catched above)
+
+ set nonomatch
+ set jobRep = ( ${chunk}/job_*.txt )
+ if ( -e $jobRep[1] ) then
+   if ( `grep -c "CPU time limit exceeded" ${chunk}/job_*.txt` != 0 ) then 
+      set exitStatus=152 
+      set fail="true"
+   endif
+ endif
+ unset nonomatch
 
  # Archive succesful jobs, or report failure
  if ( $fail == "false" ) then
