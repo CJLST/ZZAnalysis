@@ -46,7 +46,8 @@
 #include <ZZAnalysis/AnalysisStep/interface/DaughterDataHelpers.h>
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
 #include <ZZAnalysis/AnalysisStep/interface/MCHistoryTools.h>
-#include <ZZAnalysis/AnalysisStep/interface/PUReweight.h>
+//#include <ZZAnalysis/AnalysisStep/interface/PUReweight.h>
+#include <ZZAnalysis/AnalysisStep/interface/PileUpWeight.h>
 #include "ZZAnalysis/AnalysisStep/interface/EwkCorrections.h"
 #include <ZZAnalysis/AnalysisStep/interface/bitops.h>
 #include <ZZAnalysis/AnalysisStep/interface/Fisher.h>
@@ -82,6 +83,8 @@ namespace {
   Short_t NObsInt  = 0;
   Float_t NTrueInt  = 0;
   Float_t PUWeight  = 0;
+  Float_t PUWeight_Up  = 0;
+  Float_t PUWeight_Dn  = 0;
   Float_t KFactorggZZ = 0;
   Float_t KFactorEWKqqZZ = 0;
   Float_t KFactorQCDqqZZ_dPhi = 0;
@@ -441,8 +444,9 @@ private:
 
   edm::EDGetTokenT<edm::MergeableCounter> preSkimToken;
   
-  PUReweight reweight;
-
+  //PUReweight reweight;
+  PileUpWeight pileUpReweight;
+  
   //counters
   Float_t Nevt_Gen;
   Float_t Nevt_Gen_lumiBlock;
@@ -487,7 +491,8 @@ private:
 //
 HZZ2l2qNtupleMaker::HZZ2l2qNtupleMaker(const edm::ParameterSet& pset) :
   myHelper(pset),
-  reweight(),
+  //reweight(),
+  pileUpReweight(myHelper.sampleType(), myHelper.setup()),
   hTH2D_Mu_All(0),
   hTH2F_El_Reco(0),
   hTH2D_El_IdIsoSip_notCracks(0),
@@ -699,8 +704,11 @@ void HZZ2l2qNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup&
     }
 
     // get PU weight
-    PUWeight = reweight.weight(myHelper.sampleType(), myHelper.setup(), NTrueInt);
-
+    //PUWeight = reweight.weight(myHelper.sampleType(), myHelper.setup(), NTrueInt);
+    PUWeight = pileUpReweight.weight(NTrueInt);
+    PUWeight_Up = pileUpReweight.weight(NTrueInt, PileUpWeight::PUvar::VARUP);
+    PUWeight_Dn = pileUpReweight.weight(NTrueInt, PileUpWeight::PUvar::VARDOWN);
+    
     event.getByToken(genParticleToken, genParticles);
     event.getByToken(genInfoToken, genInfo);
 
@@ -1874,6 +1882,8 @@ void HZZ2l2qNtupleMaker::BookAllBranches(){
   myTree->Book("NObsInt",NObsInt);
   myTree->Book("NTrueInt",NTrueInt);
   myTree->Book("PUWeight",PUWeight);
+  myTree->Book("PUWeight_Dn", PUWeight_Dn);
+  myTree->Book("PUWeight_Up", PUWeight_Up);
   myTree->Book("KFactorggZZ",KFactorggZZ);
   myTree->Book("KFactorEWKqqZZ",KFactorEWKqqZZ);
   myTree->Book("KFactorQCDqqZZ_dPhi",KFactorQCDqqZZ_dPhi);
