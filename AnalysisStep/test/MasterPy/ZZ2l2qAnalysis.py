@@ -926,7 +926,7 @@ process.dressedJets = cms.EDProducer("JetFiller",
     jecType = cms.string("AK4PFchs"),
     applyJER = cms.bool(True),
     jerType = cms.string("AK4PFchs"),
-    bTagSFFile = cms.string("ZZAnalysis/AnalysisStep/data/CSVv2_Moriond17_B_H.csv"),
+    bTagSFFile = cms.string("ZZAnalysis/AnalysisStep/data/BTagging/CSVv2_Moriond17_B_H.csv"),
     bTagMCEffFile = cms.string("ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_80X_ICHEP.root"),
     flags = cms.PSet(
         )
