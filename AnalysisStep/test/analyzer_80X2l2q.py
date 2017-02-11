@@ -33,19 +33,16 @@ process.source.inputCommands = cms.untracked.vstring("keep *", "drop LHERunInfoP
 ### ----------------------------------------------------------------------
 
 process.source.fileNames = cms.untracked.vstring(
-     #'/store/mc/RunIIFall15MiniAODv1/BulkGravToZZToZlepZhad_narrow_M-800_13TeV-madgraph/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/20000/14E8B66A-E5B0-E511-8CDC-B083FED177B1.root'
-    '/store/mc/RunIISummer16MiniAODv2/BulkGravToZZToZlepZhad_narrow_M-1000_13TeV-madgraph/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/80000/12EF1D5C-A4B6-E611-9596-00266CFCC618.root',
-    '/store/mc/RunIISummer16MiniAODv2/BulkGravToZZToZlepZhad_narrow_M-1000_13TeV-madgraph/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/80000/42CB5991-A4B6-E611-8243-02163E013F94.root',
-    '/store/mc/RunIISummer16MiniAODv2/BulkGravToZZToZlepZhad_narrow_M-1000_13TeV-madgraph/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/80000/46D85D63-A4B6-E611-A2E3-848F69FD0EAB.root',
-    '/store/mc/RunIISummer16MiniAODv2/BulkGravToZZToZlepZhad_narrow_M-1000_13TeV-madgraph/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/80000/4CE3CF95-A3B6-E611-9A9D-D4AE526A0C89.root',
-    '/store/mc/RunIISummer16MiniAODv2/BulkGravToZZToZlepZhad_narrow_M-1000_13TeV-madgraph/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/80000/5EE83C52-A4B6-E611-BD85-7CD30ABD2EE8.root',
+    '/store/mc/RunIISummer16MiniAODv2/GluGluHToZZTo2L2Q_M1000_13TeV_powheg2_JHUgenV698_pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/60000/0ECDBF89-22D5-E611-BFC1-90B11C27F101.root',
+    '/store/mc/RunIISummer16MiniAODv2/GluGluHToZZTo2L2Q_M1000_13TeV_powheg2_JHUgenV698_pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/60000/109961C9-17D6-E611-A8CA-0CC47A7C3636.root',
+    '/store/mc/RunIISummer16MiniAODv2/GluGluHToZZTo2L2Q_M1000_13TeV_powheg2_JHUgenV698_pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/60000/3665EE1D-17D6-E611-96D5-0025905A612E.root'
     )
 
 process.calibratedPatElectrons.isSynchronization = cms.bool(True)
 process.calibratedMuons.isSynchronization = cms.bool(True)
 # process.zJetsFilter.option = 1
 
-process.maxEvents.input = 1000
+process.maxEvents.input = 3000
 #process.source.skipEvents = cms.untracked.uint32(5750)
 
 # Silence output

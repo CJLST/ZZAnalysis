@@ -128,13 +128,10 @@ elif (SAMPLE_TYPE == 2012) :
 else: 
     from Configuration.AlCa.GlobalTag import GlobalTag
     if IsMC:
-        #process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_v3'
-        #process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_miniAODv2_v1', '')
-        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_TrancheIV_v7', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_TrancheIV_v8', '')
     else:
-        #process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_Prompt_ICHEP16JEC_v0', '')
-        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_2016SeptRepro_v6', '')
-        #process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_Prompt_v14', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_2016SeptRepro_v7', '')
+        #process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_Prompt_v16', '') # For RunH
         
 print '\t',process.GlobalTag.globaltag
 
@@ -438,7 +435,8 @@ process.calibratedPatElectrons = cms.EDProducer("CalibratedPatElectronProducerRu
     gbrForestName = cms.string("gedelectron_p4combination_25ns"),
     isMC = cms.bool(IsMC),
     isSynchronization = cms.bool(False),
-    correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/80X_ichepV1_2016_ele")
+    #correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/80X_ichepV1_2016_ele")
+    correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/Winter_2016_reReco_v1_ele")
 )
 
 if (BUNCH_SPACING == 50):
@@ -689,8 +687,8 @@ FOURGOODLEPTONS    =  ("userFloat('d1.GoodLeptons')" +
 
 
 Z1MASS            = "daughter('Z1').mass>40 && daughter('Z1').mass<180 && daughter('Z1').pt>100"            # SR is 70-115
-JETMASS           = ("daughter('Z1').pt>170. && abs(daughter('Z1').eta)<2.4 &&" +                  " userFloat('d0.ak8PFJetsCHSCorrPrunedMass') > 40. && userFloat('d0.ak8PFJetsCHSCorrPrunedMass') <180. && " + 
-                   "userFloat('d0.NjettinessAK8:tau2')/userFloat('d0.NjettinessAK8:tau1') <0.6")            # SR is 65-105
+JETMASS           = ("daughter('Z1').pt>170. && abs(daughter('Z1').eta)<2.4 &&" + " userFloat('d0.ak8PFJetsCHSCorrPrunedMass') > 40. && userFloat('d0.ak8PFJetsCHSCorrPrunedMass') <180. ")
+#                   "userFloat('d0.NjettinessAK8:tau2')/userFloat('d0.NjettinessAK8:tau1') <0.6")
 Z2MASS            = "daughter('Z2').mass>55 && daughter('Z2').mass<120 && daughter('Z2').pt>100" 
 #MLL3On4_12        = "userFloat('mZa')>12" # mll>12 on 3/4 pairs; 
 #MLLALLCOMB        = "userFloat('mLL6')>4" # mll>4 on 6/6 AF/AS pairs;
@@ -831,6 +829,7 @@ process.ZZCandFat = cms.EDProducer("ZZjjCandidateFiller",
 ### Jets
 ### ----------------------------------------------------------------------
 
+BTAGGINGTHRESHOLD = 0.5426 #New value for Moriond2017, see https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco#Supported_Algorithms_and_Operati
 
 ### Load JEC
 process.load("CondCore.DBCommon.CondDBCommon_cfi")
@@ -847,16 +846,16 @@ if IsMC:
             toGet = cms.VPSet(
                 cms.PSet(
                     record = cms.string('JetCorrectionsRecord'),
-                    tag    = cms.string('JetCorrectorParametersCollection_Summer16_23Sep2016V3_MC_AK4PFchs'), #for 80X/Moriond17
+                    tag    = cms.string('JetCorrectorParametersCollection_Summer16_23Sep2016V4_MC_AK4PFchs'), #for 80X/Moriond17
                     label  = cms.untracked.string('AK4PFchs')
                     ),
                 cms.PSet(
                     record = cms.string('JetCorrectionsRecord'),
-                    tag    = cms.string('JetCorrectorParametersCollection_Summer16_23Sep2016V3_MC_AK8PFchs'), #for 80X/Moriond17
+                    tag    = cms.string('JetCorrectorParametersCollection_Summer16_23Sep2016V4_MC_AK8PFchs'), #for 80X/Moriond17
                     label  = cms.untracked.string('AK8PFchs')
                     ),
                 ),
-             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Summer16_23Sep2016V3_MC.db'), #for 80X/Moriond17
+             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Summer16_23Sep2016V4_MC.db'), #for 80X/Moriond17
             )
 else:
    process.jec = cms.ESSource("PoolDBESSource",
@@ -867,16 +866,16 @@ else:
             toGet = cms.VPSet(
                 cms.PSet(
                     record = cms.string('JetCorrectionsRecord'),
-                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV6_DATA_AK4PFchs'), #for 80X/ICHEP16
+                    tag    = cms.string('JetCorrectorParametersCollection_Summer16_23Sep2016AllV4_DATA_AK4PFchs'), #for 80X/Moriond17
                     label  = cms.untracked.string('AK4PFchs')
                     ),
                 cms.PSet(
                     record = cms.string('JetCorrectionsRecord'),
-                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV6_DATA_AK8PFchs'), #for 80X/ICHEP16
+                    tag    = cms.string('JetCorrectorParametersCollection_Summer16_23Sep2016AllV4_DATA_AK8PFchs'), #for 80X/Moriond17
                     label  = cms.untracked.string('AK8PFchs')
                     ),
                 ), 
-            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Spring16_25nsV6_DATA.db'), #for 80X/ICHEP16
+            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Summer16_23Sep2016AllV4_DATA.db'), #for 80X/Moriond17
 )
 
 ## add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
@@ -923,11 +922,11 @@ process.dressedJets = cms.EDProducer("JetFiller",
     cut = cms.string("pt>30 && abs(eta)<4.7 && userFloat('looseJetID') && userFloat('PUjetID')"),
     isMC = cms.bool(IsMC),
     bTaggerName = cms.string("pfCombinedInclusiveSecondaryVertexV2BJetTags"),
-    bTaggerThreshold = cms.double(0.460),
+    bTaggerThreshold = cms.double(BTAGGINGTHRESHOLD),
     jecType = cms.string("AK4PFchs"),
     applyJER = cms.bool(True),
     jerType = cms.string("AK4PFchs"),
-    bTagSFFile = cms.string("ZZAnalysis/AnalysisStep/data/BTagging/CSVv2_ichep.csv"),
+    bTagSFFile = cms.string("ZZAnalysis/AnalysisStep/data/CSVv2_Moriond17_B_H.csv"),
     bTagMCEffFile = cms.string("ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_80X_ICHEP.root"),
     flags = cms.PSet(
         )
@@ -974,6 +973,7 @@ process.patJetsReapplyJECFat = updatedPatJets.clone(
                                     jetSource = cms.InputTag("slimmedJetsAK8"),
                                     jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJECFat") ))
 
+### FIXME: should we be dressing the fat jets as well?
 process.goodJetsFat = cms.EDFilter("PFJetIDSelectionFunctorFilter",
                          filterParams = pfJetIDSelector.clone(),
                          src = cms.InputTag("patJetsReapplyJECFat"),
