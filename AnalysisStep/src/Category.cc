@@ -1,4 +1,5 @@
 #include <ZZAnalysis/AnalysisStep/interface/Category.h>
+#include <ZZAnalysis/AnalysisStep/interface/Discriminants.h>
 #include <ZZAnalysis/AnalysisStep/interface/cConstants.h>
 
 #include <cmath>
@@ -136,31 +137,32 @@ extern "C" int categoryIchep16(
 	     )
 {
 
+  float D_VBF2j = -2;
+  float D_VBF1j = -2;
+  float D_WHh   = -2;
+  float D_ZHh   = -2;
+  if(useQGTagging){
+    if(nCleanedJetsPt30==1){
+      D_VBF1j = DVBF1j_ME_QG(p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass, jetQGLikelihood, jetPhi);
+    }else if(nCleanedJetsPt30>=2){
+      D_VBF2j = DVBF2j_ME_QG(p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass, jetQGLikelihood, jetPhi);
+      D_WHh   = DWHh_ME_QG(p_HadWH_SIG_ghw1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass, jetQGLikelihood, jetPhi);
+      D_ZHh   = DZHh_ME_QG(p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass, jetQGLikelihood, jetPhi);
+    }
+  }else{
+    if(nCleanedJetsPt30==1){
+      D_VBF1j = DVBF1j_ME(p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass);
+    }else if(nCleanedJetsPt30>=2){
+      D_VBF2j = DVBF2j_ME(p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass);
+      D_WHh   = DWHh_ME(p_HadWH_SIG_ghw1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass);
+      D_ZHh   = DZHh_ME(p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass);
+    }
+  }
+
   float WP_VBF2j = getDVBF2jetsWP(ZZMass, useQGTagging);
   float WP_VBF1j = getDVBF1jetWP(ZZMass, useQGTagging);
   float WP_WHh = getDWHhWP(ZZMass, useQGTagging);
   float WP_ZHh = getDZHhWP(ZZMass, useQGTagging);
-
-  float c_Mela2j = getDVBF2jetsConstant(ZZMass);
-  float c_Mela1j = getDVBF1jetConstant(ZZMass);
-  float c_MelaWH = getDWHhConstant(ZZMass);
-  float c_MelaZH = getDZHhConstant(ZZMass);
-
-  float jetPgOverPq[nCleanedJetsPt30];
-  for(int j=0; j<nCleanedJetsPt30; j++){
-    if(jetQGLikelihood[j]<0. && j<2){
-      TRandom3 rand;
-      rand.SetSeed(abs(static_cast<int>(sin(jetPhi[j])*100000)));
-      jetPgOverPq[j] = 1./rand.Uniform() - 1.;
-    }else{    
-      jetPgOverPq[j] = 1./jetQGLikelihood[j] - 1.;
-    }
-  }
-
-  float D_VBF2j = (nCleanedJetsPt30>=2) ? 1/(1+ c_Mela2j*p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal/p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal * ( useQGTagging ? TMath::Power(jetPgOverPq[0]*jetPgOverPq[1],1/3.) : 1. ) ) : -2 ;
-  float D_VBF1j = (nCleanedJetsPt30>=1) ? 1/(1+ c_Mela1j*p_JQCD_SIG_ghg2_1_JHUGen_JECNominal/p_JVBF_SIG_ghv1_1_JHUGen_JECNominal*pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal * (useQGTagging ? TMath::Power(jetPgOverPq[0],1/3.) : 1. ) ) : -2 ;
-  float D_WHh = (nCleanedJetsPt30>=2) ? 1/(1+ c_MelaWH*p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal/p_HadWH_SIG_ghw1_1_JHUGen_JECNominal * (useQGTagging ? TMath::Power(jetPgOverPq[0]*jetPgOverPq[1],1/3.) : 1. ) ) : -2 ;
-  float D_ZHh = (nCleanedJetsPt30>=2) ? 1/(1+ c_MelaZH*p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal/p_HadZH_SIG_ghz1_1_JHUGen_JECNominal * (useQGTagging ? TMath::Power(jetPgOverPq[0]*jetPgOverPq[1],1/3.) : 1. ) ) : -2 ;
 
   if( nExtraLep==0 && nCleanedJetsPt30==1 && D_VBF1j>WP_VBF1j ){
 

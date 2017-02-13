@@ -86,10 +86,14 @@ class KDs:
         lib = ctypes.CDLL('libZZAnalysisAnalysisStep.so')
         lib.getDbkgkinConstant.restype = ctypes.c_float
         lib.getDbkgConstant.restype = ctypes.c_float
-        lib.getDVBF2jetsConstant.restype = ctypes.c_float
-        lib.getDVBF1jetConstant.restype = ctypes.c_float
-        lib.getDWHhConstant.restype = ctypes.c_float
-        lib.getDZHhConstant.restype = ctypes.c_float
+        lib.DVBF2j_ME.restype = ctypes.c_float
+        lib.DVBF1j_ME.restype = ctypes.c_float
+        lib.DWHh_ME.restype = ctypes.c_float
+        lib.DZHh_ME.restype = ctypes.c_float
+        lib.DVBF2j_ME_QG.restype = ctypes.c_float
+        lib.DVBF1j_ME_QG.restype = ctypes.c_float
+        lib.DWHh_ME_QG.restype = ctypes.c_float
+        lib.DZHh_ME_QG.restype = ctypes.c_float
 
         self.D_bkg_kin  = self.p_GG_SIG_ghg2_1_ghz1_1_JHUGen/(self.p_GG_SIG_ghg2_1_ghz1_1_JHUGen + self.p_QQB_BKG_MCFM*lib.getDbkgkinConstant(c_int(int(self.ZZFlav)),c_float(self.ZZMass)))
         self.D_bkg      = self.p_GG_SIG_ghg2_1_ghz1_1_JHUGen*self.p_m4l_SIG/(self.p_GG_SIG_ghg2_1_ghz1_1_JHUGen*self.p_m4l_SIG+self.p_QQB_BKG_MCFM*self.p_m4l_BKG*lib.getDbkgConstant(c_int(int(self.ZZFlav)),c_float(self.ZZMass)))
@@ -101,34 +105,52 @@ class KDs:
         self.KD_qqgrav  = self.p_GG_SIG_ghg2_1_ghz1_1_JHUGen/(self.p_GG_SIG_ghg2_1_ghz1_1_JHUGen + self.p_QQB_SIG_XqqLR_1_gXz1_1_gXz5_1_JHUGen)
         ##MELA-only production discriminants:
         if self.njets30 >= 2 :
-            self.Djet_VAJHU = self.p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal/(self.p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal+self.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal*lib.getDVBF2jetsConstant(c_float(self.ZZMass))) # VBF(2j) vs. gg->H+2j
-            self.D_WHh_VAJHU   = self.p_HadWH_SIG_ghw1_1_JHUGen_JECNominal/(self.p_HadWH_SIG_ghw1_1_JHUGen_JECNominal+lib.getDWHhConstant(c_float(self.ZZMass))*self.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal) # W(->2j)H vs. gg->H+2j
-            self.D_ZHh_VAJHU   = self.p_HadZH_SIG_ghz1_1_JHUGen_JECNominal/(self.p_HadZH_SIG_ghz1_1_JHUGen_JECNominal+lib.getDZHhConstant(c_float(self.ZZMass))*self.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal) # Z(->2j)H vs. gg->H+2j
+            self.Djet_VAJHU = lib.DVBF2j_ME(
+                c_float(self.p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal),
+                c_float(self.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal),
+                c_float(self.ZZMass))
+            self.D_WHh_VAJHU = lib.DWHh_ME(
+                c_float(self.p_HadWH_SIG_ghw1_1_JHUGen_JECNominal),
+                c_float(self.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal),
+                c_float(self.ZZMass))
+            self.D_ZHh_VAJHU = lib.DZHh_ME(
+                c_float(self.p_HadZH_SIG_ghz1_1_JHUGen_JECNominal),
+                c_float(self.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal),
+                c_float(self.ZZMass))
         if self.njets30 == 1 :
-            self.D_VBF1j_VAJHU = self.p_JVBF_SIG_ghv1_1_JHUGen_JECNominal*self.pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal/(self.p_JVBF_SIG_ghv1_1_JHUGen_JECNominal*self.pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal+self.p_JQCD_SIG_ghg2_1_JHUGen_JECNominal*lib.getDVBF1jetConstant(c_float(self.ZZMass))) # VBF(1j) vs. gg->H+1j
+            self.D_VBF1j_VAJHU = lib.DVBF1j_ME(
+                c_float(self.p_JVBF_SIG_ghv1_1_JHUGen_JECNominal),
+                c_float(self.pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal),
+                c_float(self.p_JQCD_SIG_ghg2_1_JHUGen_JECNominal),
+                c_float(self.ZZMass))
         ##MELA+q/g production discriminants:
-        jets30PgOverPq = []
-        for i in range(self.njets30):
-            if self.jets30QGL[i]<0. and i<2 :
-                rand = TRandom3()
-                rand.SetSeed(abs(int(math.sin(self.jets30phi[i])*100000)))
-                jets30PgOverPq.append( 1./rand.Uniform() - 1. )
-            else:
-                jets30PgOverPq.append( 1./self.jets30QGL[i] - 1. )
         if self.njets30 >= 2 :
-            if self.jets30QGL[0] == 0. or self.jets30QGL[1] == 0.:
-                self.Dfull_VBF2j = 0.
-                self.Dfull_WHh = 0.
-                self.Dfull_ZHh = 0.
-            else:
-                self.Dfull_VBF2j = 1/(1+ (1./self.Djet_VAJHU-1.) * cubicroot(jets30PgOverPq[0]*jets30PgOverPq[1]) ) ; # VBF(2j) vs. gg->H+2j
-                self.Dfull_WHh = 1/(1+ (1./self.D_WHh_VAJHU-1.) * cubicroot(jets30PgOverPq[0]*jets30PgOverPq[1]) ) ; # W(->2j)H vs. gg->H+2j
-                self.Dfull_ZHh = 1/(1+ (1./self.D_ZHh_VAJHU-1.) * cubicroot(jets30PgOverPq[0]*jets30PgOverPq[1]) ) ;  # VBF(2j) vs. gg->H+2j
+            self.Dfull_VBF2j = lib.DVBF2j_ME_QG(
+                c_float(self.p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal),
+                c_float(self.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal),
+                c_float(self.ZZMass),
+                (ctypes.c_float * len(self.jets30QGL))(*self.jets30QGL),
+                (ctypes.c_float * len(self.jets30phi))(*self.jets30phi))
+            self.Dfull_WHh = lib.DWHh_ME_QG(
+                c_float(self.p_HadWH_SIG_ghw1_1_JHUGen_JECNominal),
+                c_float(self.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal),
+                c_float(self.ZZMass),
+                (ctypes.c_float * len(self.jets30QGL))(*self.jets30QGL),
+                (ctypes.c_float * len(self.jets30phi))(*self.jets30phi))
+            self.Dfull_ZHh = lib.DZHh_ME_QG(
+                c_float(self.p_HadZH_SIG_ghz1_1_JHUGen_JECNominal),
+                c_float(self.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal),
+                c_float(self.ZZMass),
+                (ctypes.c_float * len(self.jets30QGL))(*self.jets30QGL),
+                (ctypes.c_float * len(self.jets30phi))(*self.jets30phi))
         if self.njets30 == 1 :
-            if self.jets30QGL[0] == 0.:
-                self.Dfull_VBF1j = 0.
-            else:
-                self.Dfull_VBF1j = 1/(1+ (1./self.D_VBF1j_VAJHU-1.) * cubicroot(jets30PgOverPq[0]) ) ; # VBF(1j) vs. gg->H+1j
+            self.Dfull_VBF1j = lib.DVBF1j_ME_QG(
+                c_float(self.p_JVBF_SIG_ghv1_1_JHUGen_JECNominal),
+                c_float(self.pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal),
+                c_float(self.p_JQCD_SIG_ghg2_1_JHUGen_JECNominal),
+                c_float(self.ZZMass),
+                (ctypes.c_float * len(self.jets30QGL))(*self.jets30QGL),
+                (ctypes.c_float * len(self.jets30phi))(*self.jets30phi))
 
 
 class Candidate:
@@ -168,20 +190,7 @@ class Candidate:
         self.jet2qgl     = -1.
         self.fillJetInfo()
 
-        # Winter 2015 version
-#         self.category    = ctypes.CDLL('libZZAnalysisAnalysisStep.so').category(
-#             c_int(nExtraLep),
-#             c_float(self.pt4l),
-#             c_float(self.mass4l),
-#             c_int(self.njets30),
-#             c_int(self.njets30Btag),
-#             (ctypes.c_float * len(self.jets30pt  ))(*self.jets30pt  ),
-#             (ctypes.c_float * len(self.jets30eta ))(*self.jets30eta ),
-#             (ctypes.c_float * len(self.jets30phi ))(*self.jets30phi ),
-#             (ctypes.c_float * len(self.jets30mass))(*self.jets30mass),
-#             c_float(self.fishjj),
-#             )
-        # Summer 2016 version
+        # ICHEP2016 categories
         self.category    = ctypes.CDLL('libZZAnalysisAnalysisStep.so').categoryIchep16(
             c_int(nExtraLep),
             c_int(nExtraZ),
