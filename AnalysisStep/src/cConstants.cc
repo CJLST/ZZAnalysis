@@ -51,27 +51,27 @@ extern "C" float getDZHhConstant(float ZZMass){
 
 extern "C" float getDVBF2jetsWP(float ZZMass, bool useQGTagging){
   if (useQGTagging)
-    return 0.391;
+    return 0.363;
   else
     return 1.043-460./(ZZMass+634.);
 }
 extern "C" float getDVBF1jetWP(float ZZMass, bool useQGTagging){
   if (useQGTagging)
-    return 0.72;
+    return 0.716;
   else
-    return 0.699;
+    return 0.697;
 }
 extern "C" float getDWHhWP(float ZZMass, bool useQGTagging){
   if (useQGTagging)
-    return 0.973;
+    return 0.965;
   else
-    return 0.959;
+    return 0.951;
 }
 extern "C" float getDZHhWP(float ZZMass, bool useQGTagging){
   if (useQGTagging)
-    return 0.996;
+    return 0.9952;
   else
-    return 0.9946;
+    return 0.9937;
 }
 
 extern "C" float getDVBF2jetsConstant_shiftWP(float ZZMass, bool useQGTagging, float newWP) {
