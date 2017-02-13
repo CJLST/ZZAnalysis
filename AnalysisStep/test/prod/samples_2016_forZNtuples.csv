@@ -1,0 +1,69 @@
+identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments,comment
+
+
+###,,,,,,,,,,,Data 
+DoubleMu2016B,, -1, ,, /DoubleMuon/Run2016B-23Sep2016-v3/MINIAOD,dbs,,2,PD=DoubleMu;PROCESS_CR=True,json_2016.py;RecoProbabilities.py,
+DoubleEG2016B,, -1, ,, /DoubleEG/Run2016B-23Sep2016-v3/MINIAOD,dbs,,2,PD=DoubleEle;PROCESS_CR=True,json_2016.py;RecoProbabilities.py,
+MuonEG2016B,,   -1, ,, /MuonEG/Run2016B-23Sep2016-v3/MINIAOD,dbs,,2,PD=MuEG;PROCESS_CR=True,json_2016.py;RecoProbabilities.py,
+SingleEle2016B,,-1, ,, /SingleElectron/Run2016B-23Sep2016-v3/MINIAOD,dbs,,5,PD=SingleElectron;PROCESS_CR=True,json_2016.py;RecoProbabilities.py,
+SingleMuon2016B,,-1,,, /SingleMuon/Run2016B-23Sep2016-v3/MINIAOD,dbs,,5,PD=SingleMuon;PROCESS_CR=True,json_2016.py;RecoProbabilities.py,
+
+DoubleMu2016C,, -1, ,, /DoubleMuon/Run2016C-23Sep2016-v1/MINIAOD,dbs,,2,PD=DoubleMu;PROCESS_CR=True,json_2016.py;RecoProbabilities.py,
+DoubleEG2016C,, -1, ,, /DoubleEG/Run2016C-23Sep2016-v1/MINIAOD,dbs,,2,PD=DoubleEle;PROCESS_CR=True,json_2016.py;RecoProbabilities.py,
+MuonEG2016C,,   -1, ,, /MuonEG/Run2016C-23Sep2016-v1/MINIAOD,dbs,,2,PD=MuEG;PROCESS_CR=True,json_2016.py;RecoProbabilities.py,
+SingleEle2016C,,-1, ,, /SingleElectron/Run2016C-23Sep2016-v1/MINIAOD,dbs,,5,PD=SingleElectron;PROCESS_CR=True,json_2016.py;RecoProbabilities.py,
+SingleMuon2016C,,-1,,, /SingleMuon/Run2016C-23Sep2016-v1/MINIAOD,dbs,,5,PD=SingleMuon;PROCESS_CR=True,json_2016.py;RecoProbabilities.py,
+
+DoubleMu2016D,, -1, ,, /DoubleMuon/Run2016D-23Sep2016-v1/MINIAOD,dbs,,2,PD=DoubleMu;PROCESS_CR=True,json_2016.py;RecoProbabilities.py,
+DoubleEG2016D,, -1, ,, /DoubleEG/Run2016D-23Sep2016-v1/MINIAOD,dbs,,2,PD=DoubleEle;PROCESS_CR=True,json_2016.py;RecoProbabilities.py,
+MuonEG2016D,,   -1, ,, /MuonEG/Run2016D-23Sep2016-v1/MINIAOD,dbs,,2,PD=MuEG;PROCESS_CR=True,json_2016.py;RecoProbabilities.py,
+SingleEle2016D,,-1, ,, /SingleElectron/Run2016D-23Sep2016-v1/MINIAOD,dbs,,5,PD=SingleElectron;PROCESS_CR=True,json_2016.py;RecoProbabilities.py,
+SingleMuon2016D,,-1,,, /SingleMuon/Run2016D-23Sep2016-v1/MINIAOD,dbs,,5,PD=SingleMuon;PROCESS_CR=True,json_2016.py;RecoProbabilities.py,
+
+DoubleMu2016E,, -1, ,, /DoubleMuon/Run2016E-23Sep2016-v1/MINIAOD,dbs,,2,PD=DoubleMu;PROCESS_CR=True,json_2016.py;RecoProbabilities.py,
+DoubleEG2016E,, -1, ,, /DoubleEG/Run2016E-23Sep2016-v1/MINIAOD,dbs,,2,PD=DoubleEle;PROCESS_CR=True,json_2016.py;RecoProbabilities.py,
+MuonEG2016E,,   -1, ,, /MuonEG/Run2016E-23Sep2016-v1/MINIAOD,dbs,,2,PD=MuEG;PROCESS_CR=True,json_2016.py;RecoProbabilities.py,
+SingleEle2016E,,-1, ,, /SingleElectron/Run2016E-23Sep2016-v1/MINIAOD,dbs,,5,PD=SingleElectron;PROCESS_CR=True,json_2016.py;RecoProbabilities.py,
+SingleMuon2016E,,-1,,, /SingleMuon/Run2016E-23Sep2016-v1/MINIAOD,dbs,,5,PD=SingleMuon;PROCESS_CR=True,json_2016.py;RecoProbabilities.py,
+
+DoubleMu2016F,, -1, ,, /DoubleMuon/Run2016F-23Sep2016-v1/MINIAOD,dbs,,2,PD=DoubleMu;PROCESS_CR=True,json_2016.py;RecoProbabilities.py,
+DoubleEG2016F,, -1, ,, /DoubleEG/Run2016F-23Sep2016-v1/MINIAOD,dbs,,2,PD=DoubleEle;PROCESS_CR=True,json_2016.py;RecoProbabilities.py,
+MuonEG2016F,,   -1, ,, /MuonEG/Run2016F-23Sep2016-v1/MINIAOD,dbs,,2,PD=MuEG;PROCESS_CR=True,json_2016.py;RecoProbabilities.py,
+SingleEle2016F,,-1, ,, /SingleElectron/Run2016F-23Sep2016-v1/MINIAOD,dbs,,5,PD=SingleElectron;PROCESS_CR=True,json_2016.py;RecoProbabilities.py,
+SingleMuon2016F,,-1,,, /SingleMuon/Run2016F-23Sep2016-v1/MINIAOD,dbs,,5,PD=SingleMuon;PROCESS_CR=True,json_2016.py;RecoProbabilities.py,
+
+DoubleMu2016G,, -1, ,, /DoubleMuon/Run2016G-23Sep2016-v1/MINIAOD,dbs,,2,PD=DoubleMu;PROCESS_CR=True,json_2016.py;RecoProbabilities.py,
+DoubleEG2016G,, -1, ,, /DoubleEG/Run2016G-23Sep2016-v1/MINIAOD,dbs,,2,PD=DoubleEle;PROCESS_CR=True,json_2016.py;RecoProbabilities.py,
+MuonEG2016G,,   -1, ,, /MuonEG/Run2016G-23Sep2016-v1/MINIAOD,dbs,,2,PD=MuEG;PROCESS_CR=True,json_2016.py;RecoProbabilities.py,
+SingleEle2016G,,-1, ,, /SingleElectron/Run2016G-23Sep2016-v1/MINIAOD,dbs,,5,PD=SingleElectron;PROCESS_CR=True,json_2016.py;RecoProbabilities.py,
+SingleMuon2016G,,-1,,, /SingleMuon/Run2016G-23Sep2016-v1/MINIAOD,dbs,,5,PD=SingleMuon;PROCESS_CR=True,json_2016.py;RecoProbabilities.py,
+
+DoubleMu2016Hv1,, -1, ,, /DoubleMuon/Run2016H-PromptReco-v1/MINIAOD,dbs,,2,PD=DoubleMu;PROCESS_CR=True;DATA_TAG=PromptReco,json_2016.py;RecoProbabilities.py,
+DoubleEG2016Hv1,, -1, ,, /DoubleEG/Run2016H-PromptReco-v1/MINIAOD,dbs,,2,PD=DoubleEle;PROCESS_CR=True;DATA_TAG=PromptReco,json_2016.py;RecoProbabilities.py,
+MuonEG2016Hv1,,   -1, ,, /MuonEG/Run2016H-PromptReco-v1/MINIAOD,dbs,,2,PD=MuEG;PROCESS_CR=True;DATA_TAG=PromptReco,json_2016.py;RecoProbabilities.py,
+SingleEle2016Hv1,,-1, ,, /SingleElectron/Run2016H-PromptReco-v1/MINIAOD,dbs,,5,PD=SingleElectron;PROCESS_CR=True;DATA_TAG=PromptReco,json_2016.py;RecoProbabilities.py,
+SingleMuon2016Hv1,,-1,,, /SingleMuon/Run2016H-PromptReco-v1/MINIAOD,dbs,,5,PD=SingleMuon;PROCESS_CR=True;DATA_TAG=PromptReco,json_2016.py;RecoProbabilities.py,
+
+DoubleMu2016Hv2,, -1, ,, /DoubleMuon/Run2016H-PromptReco-v2/MINIAOD,dbs,,2,PD=DoubleMu;PROCESS_CR=True;DATA_TAG=PromptReco,json_2016.py;RecoProbabilities.py,
+DoubleEG2016Hv2,, -1, ,, /DoubleEG/Run2016H-PromptReco-v2/MINIAOD,dbs,,2,PD=DoubleEle;PROCESS_CR=True;DATA_TAG=PromptReco,json_2016.py;RecoProbabilities.py,
+MuonEG2016Hv2,,   -1, ,, /MuonEG/Run2016H-PromptReco-v2/MINIAOD,dbs,,2,PD=MuEG;PROCESS_CR=True;DATA_TAG=PromptReco,json_2016.py;RecoProbabilities.py,
+SingleEle2016Hv2,,-1, ,, /SingleElectron/Run2016H-PromptReco-v2/MINIAOD,dbs,,5,PD=SingleElectron;PROCESS_CR=True;DATA_TAG=PromptReco,json_2016.py;RecoProbabilities.py,
+SingleMuon2016Hv2,,-1,,, /SingleMuon/Run2016H-PromptReco-v2/MINIAOD,dbs,,5,PD=SingleMuon;PROCESS_CR=True;DATA_TAG=PromptReco,json_2016.py;RecoProbabilities.py,
+
+DoubleMu2016Hv3,, -1, ,, /DoubleMuon/Run2016H-PromptReco-v3/MINIAOD,dbs,,2,PD=DoubleMu;PROCESS_CR=True;DATA_TAG=PromptReco,json_2016.py;RecoProbabilities.py,
+DoubleEG2016Hv3,, -1, ,, /DoubleEG/Run2016H-PromptReco-v3/MINIAOD,dbs,,2,PD=DoubleEle;PROCESS_CR=True;DATA_TAG=PromptReco,json_2016.py;RecoProbabilities.py,
+MuonEG2016Hv3,,   -1, ,, /MuonEG/Run2016H-PromptReco-v3/MINIAOD,dbs,,2,PD=MuEG;PROCESS_CR=True;DATA_TAG=PromptReco,json_2016.py;RecoProbabilities.py,
+SingleEle2016Hv3,,-1, ,, /SingleElectron/Run2016H-PromptReco-v3/MINIAOD,dbs,,5,PD=SingleElectron;PROCESS_CR=True;DATA_TAG=PromptReco,json_2016.py;RecoProbabilities.py,
+SingleMuon2016Hv3,,-1,,, /SingleMuon/Run2016H-PromptReco-v3/MINIAOD,dbs,,5,PD=SingleMuon;PROCESS_CR=True;DATA_TAG=PromptReco,json_2016.py;RecoProbabilities.py,
+
+
+###,,,,,,,,,,,MC
+ZZTo4l,,                1.256,  ,,/ZZTo4L_13TeV_powheg_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,1,PROCESS_CR=True;APPLY_K_NNLOQCD_ZZQQB=True;APPLY_K_NLOEW_ZZQQB=True;ADDLOOSEELE=False,RecoProbabilities.py,
+DYJetsToLL_M50,,     6025.2,    ,,/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-herwigpp_30M/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,4,PROCESS_CR=True;ADDLOOSEELE=False,RecoProbabilities.py,
+DYJetsToLL_M10to50,,18610.0,    ,,/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,4,PROCESS_CR=True;ADDLOOSEELE=False,RecoProbabilities.py,
+TTJets_DiLept,,       5.684e+01,,,/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,2,PROCESS_CR=True;ADDLOOSEELE=False,RecoProbabilities.py,
+TTJets_DiLept_ext1,,  5.684e+01,,,/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM,dbs,,2,PROCESS_CR=True;ADDLOOSEELE=False,RecoProbabilities.py,
+WWTo2L2Nu,,             0.481,  ,,/WWTo2L2Nu_13TeV-powheg/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,4,PROCESS_CR=True;ADDLOOSEELE=False,RecoProbabilities.py,
+WZTo3LNu,,              4.670,  ,,/WZTo3LNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,4,PROCESS_CR=True;ADDLOOSEELE=False,RecoProbabilities.py,
+
+

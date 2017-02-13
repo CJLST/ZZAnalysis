@@ -33,7 +33,7 @@
 #include <SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h>
 
 #include <ZZAnalysis/AnalysisStep/interface/DaughterDataHelpers.h>
-#include <ZZAnalysis/AnalysisStep/interface/PUReweight.h>
+#include <ZZAnalysis/AnalysisStep/interface/PileUpWeight.h>
 #include <ZZAnalysis/AnalysisStep/interface/bitops.h>
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
 #include <ZZAnalysis/AnalysisStep/interface/PUReweight.h>
@@ -47,7 +47,9 @@ using namespace std;
 using namespace edm;
 
 namespace {
-  //bool skipDataMCWeight = true; // skip computation of data/MC weight 
+  bool skipMuDataMCWeight = false; // skip computation of data/MC weight for mu
+  bool skipEleDataMCWeight = false; // skip computation of data/MC weight for ele
+  bool addQGLInputs = true;
 
   //List of variables with default values
   Int_t RunNumber = 0;
@@ -58,7 +60,6 @@ namespace {
   Float_t NTrueInt = 0;
   Float_t PUWeight = 0;
   Short_t trigWord = 0;
-  Short_t nCleanedJetsPt30 = 0;
   Short_t Zsel = 0;
   Float_t ZMass = 0;
   Float_t ZPt = 0;
@@ -85,6 +86,48 @@ namespace {
   std::vector<float> fsrDR;
   std::vector<short> fsrLept;
   std::vector<short> fsrLeptID;
+  Short_t nAddEle = 0;
+  std::vector<float> AddElePt;
+  std::vector<float> AddEleEta;
+  std::vector<float> AddElePhi;
+  std::vector<short> AddEleLepId;
+  std::vector<float> AddEleSIP;
+  std::vector<bool> AddEleisID;
+  std::vector<float> AddEleBDT;
+  std::vector<char> AddEleMissingHit;
+  std::vector<float> AddEleChargedHadIso;
+  std::vector<float> AddEleNeutralHadIso;
+  std::vector<float> AddElePhotonIso;
+  std::vector<float> AddEleCombRelIsoPF;
+  Short_t nAddMu = 0;
+  std::vector<float> AddMuPt;
+  std::vector<float> AddMuEta;
+  std::vector<float> AddMuPhi;
+  std::vector<short> AddMuLepId;
+  std::vector<float> AddMuSIP;
+  std::vector<float> AddMuTime;
+  std::vector<bool> AddMuisID;
+  std::vector<float> AddMuChargedHadIso;
+  std::vector<float> AddMuNeutralHadIso;
+  std::vector<float> AddMuPhotonIso;
+  std::vector<float> AddMuCombRelIsoPF;
+  Short_t nCleanedJetsPt30 = 0;
+  std::vector<float> JetPt;
+  std::vector<float> JetEta;
+  std::vector<float> JetPhi;
+  std::vector<float> JetMass;
+  std::vector<float> JetBTagger;
+  std::vector<float> JetIsBtagged;
+  std::vector<float> JetIsBtaggedWithSF;
+  std::vector<float> JetIsBtaggedWithSFUp;
+  std::vector<float> JetIsBtaggedWithSFDn;
+  std::vector<float> JetQGLikelihood;
+  std::vector<float> JetAxis2;
+  std::vector<float> JetMult;
+  std::vector<float> JetPtD;
+  std::vector<float> JetSigma;
+  std::vector<short> JetHadronFlavour;
+  std::vector<short> JetPartonFlavour;
   Float_t genHEPMCweight = 0;
   Float_t xsection = 0;
   Float_t dataMCWeight = 0;
@@ -111,9 +154,10 @@ private:
 
   void BookAllBranches();  
   virtual void FillCandidate(const pat::CompositeCandidate& higgs, bool evtPass, const edm::Event&);
+  virtual void FillJet(const pat::Jet& jet);
   virtual void endJob();
 
-  Float_t getAllWeight(Float_t LepPt, Float_t LepEta, Int_t LepID) const;
+  Float_t getAllWeight(const reco::Candidate* Lep) const;
 
   // ----------member data ---------------------------
   ZZ4lConfigHelper myHelper;
@@ -138,8 +182,13 @@ private:
   edm::EDGetTokenT<edm::View<pat::Jet> > jetToken;
 
   edm::EDGetTokenT<edm::MergeableCounter> preSkimToken;
-  
-  PUReweight reweight;
+
+  edm::EDGetTokenT<vector<pat::Electron> > electronToken;
+  const vector<pat::Electron>* softElectrons;
+  edm::EDGetTokenT<vector<pat::Muon> > muonToken;
+  const vector<pat::Muon>* softMuons;
+
+  PileUpWeight pileUpReweight;
 
   //counters
   Float_t Nevt_Gen;
@@ -150,6 +199,11 @@ private:
   Float_t gen_sumWeights;
 
   string sampleName;
+
+  TH2D *hTH2D_Mu_All;
+  TH2F *hTH2F_El_Reco;
+  TH1 *hTH2D_El_IdIsoSip_notCracks;
+  TH1 *hTH2D_El_IdIsoSip_Cracks;
 };
 
 //
@@ -157,7 +211,11 @@ private:
 //
 ZNtupleMaker::ZNtupleMaker(const edm::ParameterSet& pset) :
   myHelper(pset),
-  reweight()
+  pileUpReweight(myHelper.sampleType(), myHelper.setup()),
+  hTH2D_Mu_All(0),
+  hTH2F_El_Reco(0),
+  hTH2D_El_IdIsoSip_notCracks(0),
+  hTH2D_El_IdIsoSip_Cracks(0)
 {
   theCandLabel = pset.getUntrackedParameter<string>("CandCollection"); // Name of input Z collection
   theFileName = pset.getUntrackedParameter<string>("fileName"); 
@@ -172,6 +230,11 @@ ZNtupleMaker::ZNtupleMaker(const edm::ParameterSet& pset) :
   triggerResultToken = consumes<edm::TriggerResults>(edm::InputTag("TriggerResults"));
   vtxToken = consumes<vector<reco::Vertex> >(edm::InputTag("goodPrimaryVertices"));
   jetToken = consumes<edm::View<pat::Jet> >(edm::InputTag("cleanJets"));
+
+  electronToken = consumes<vector<pat::Electron> >(edm::InputTag("softElectrons"));
+  //softElectrons->clear();
+  muonToken = consumes<vector<pat::Muon> >(edm::InputTag("softMuons"));
+  //softMuons->clear();
 
   preSkimToken = consumes<edm::MergeableCounter,edm::InLumi>(edm::InputTag("preSkimCounter"));
 
@@ -191,8 +254,62 @@ ZNtupleMaker::ZNtupleMaker(const edm::ParameterSet& pset) :
   gen_sumPUWeight = 0.f;
   gen_sumGenMCWeight = 0.f;
   gen_sumWeights =0.f;
+
+  //Scale factors for data/MC efficiency
+
+  std::string fipPath;
+
+  if (!skipMuDataMCWeight) {
+    TString filename;
+    //filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_%d.root",year);
+    filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_Moriond2017.root");//FIXME for 2017
+    edm::FileInPath fipMu(filename.Data());
+    fipPath = fipMu.fullPath();
+    TFile *fMuWeight = TFile::Open(fipPath.data(),"READ");
+    hTH2D_Mu_All = (TH2D*)fMuWeight->Get("FINAL")->Clone();
+    fMuWeight->Close();
+  }
+
+  if (!skipEleDataMCWeight) {
+
+    if(year>=2016) {
+      TString filename("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_2016_v4.root");
+      //TString filename("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ele_scale_factors_2016_v1.root");  
+      edm::FileInPath fipEleNotCracks(filename.Data());
+      fipPath = fipEleNotCracks.fullPath();
+      TFile *root_file = TFile::Open(fipPath.data(),"READ");
+      hTH2D_El_IdIsoSip_notCracks = (TH1*) root_file->Get("ele_scale_factors")->Clone();
+      hTH2D_El_IdIsoSip_Cracks = (TH1*) root_file->Get("ele_scale_factors_gap")->Clone();
+      root_file->Close();
+
+      TString filenameEleReco("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi_EGM2D_Moriond2017.root");
+      edm::FileInPath fipEleReco(filenameEleReco.Data());
+      fipPath = fipEleReco.fullPath();
+      TFile *root_file_reco = TFile::Open(fipPath.data(),"READ");
+      hTH2F_El_Reco = (TH2F*) root_file_reco->Get("EGamma_SF2D")->Clone();
+      root_file_reco->Close();
+
+    } else {
+      TString filename;
+      filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_%d_IdIsoSip.root",year);
+      edm::FileInPath fipEleNotCracks(filename.Data());
+      fipPath = fipEleNotCracks.fullPath();
+      TFile *fEleWeightNotCracks = TFile::Open(fipPath.data(),"READ");
+      hTH2D_El_IdIsoSip_notCracks = (TH2D*)fEleWeightNotCracks->Get("hScaleFactors_IdIsoSip")->Clone();
+      fEleWeightNotCracks->Close();
+
+
+      filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_%d_IdIsoSip_Cracks.root",year);
+      edm::FileInPath fipEleCracks(filename.Data());
+      fipPath = fipEleCracks.fullPath();
+      TFile *fEleWeightCracks = TFile::Open(fipPath.data(),"READ");
+      hTH2D_El_IdIsoSip_Cracks = (TH2D*)fEleWeightCracks->Get("hScaleFactors_IdIsoSip_Cracks")->Clone();
+      fEleWeightCracks->Close();
+    }
+  }
   
 }
+
 
 ZNtupleMaker::~ZNtupleMaker()
 {
@@ -221,7 +338,7 @@ void ZNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& eSetu
       } 
     }
 
-    PUWeight = reweight.weight(myHelper.sampleType(), myHelper.setup(), NTrueInt);
+    PUWeight = pileUpReweight.weight(NTrueInt);
 
     edm::Handle<GenEventInfoProduct> gen;
     event.getByToken(genInfoToken, gen);
@@ -272,13 +389,26 @@ void ZNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& eSetu
   Handle<edm::View<pat::Jet> > CleanedJets;
   event.getByToken(jetToken, CleanedJets);
   for(edm::View<pat::Jet>::const_iterator jet = CleanedJets->begin(); jet != CleanedJets->end(); ++jet)
-    if(jet->pt()>30)
+    if(jet->pt()>30){
       nCleanedJetsPt30++;
-  
+      FillJet(*jet);
+    }
+
+  // all soft leptons
+  edm::Handle<vector<pat::Electron> > electronHandle;
+  event.getByToken(electronToken, electronHandle);
+  softElectrons = electronHandle.product();
+  edm::Handle<vector<pat::Muon> > muonHandle;
+  event.getByToken(muonToken, muonHandle);
+  softMuons = muonHandle.product();
 
   // Loop on candidates
   int nFilled = 0;
   for( edm::View<pat::CompositeCandidate>::const_iterator cand = cands->begin(); cand != cands->end(); ++cand) {
+
+    // let's take only the selected Z's now, since we don't plot other events anyway
+    if(!((bool)(cand->userFloat("isBestZ")))) continue;
+
     FillCandidate(*cand, evtPassTrigger&&evtPassSkim, event);
     // Fill the candidate as one entry in the tree. Do not reinitialize the event variables, as there could be several candidates per event.
     myTree->FillCurrentTree();
@@ -374,15 +504,97 @@ void ZNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool evtPa
     fsrDR.push_back(ROOT::Math::VectorUtil::DeltaR(leptons[fsrIndex[i]]->momentum(), fsrPhot[i]->momentum()));
   }
 
+  //additional leptons
+  AddElePt.clear();
+  AddEleEta.clear();
+  AddElePhi.clear();
+  AddEleLepId.clear();
+  AddEleSIP.clear();
+  AddEleisID.clear();
+  AddEleBDT.clear();
+  AddEleMissingHit.clear();
+  AddEleChargedHadIso.clear();
+  AddEleNeutralHadIso.clear();
+  AddElePhotonIso.clear();
+  AddEleCombRelIsoPF.clear();
+  for (unsigned i=0; i<softElectrons->size(); ++i) {
+    pat::Electron lep = softElectrons->at(i);
+    if(reco::deltaR(lep.p4(), leptons[0]->p4()) > 0.02 && reco::deltaR(lep.p4(), leptons[1]->p4()) > 0.02){
+      nAddEle++;
+      AddElePt .push_back( lep.pt() );
+      AddEleEta.push_back( lep.eta() );
+      AddElePhi.push_back( lep.phi() );
+      AddEleLepId.push_back( lep.pdgId() );
+      AddEleSIP  .push_back( lep.userFloat("SIP") );
+      AddEleisID .push_back( lep.userFloat("ID") );
+      AddEleBDT  .push_back( lep.userFloat("BDT") );
+      AddEleMissingHit.push_back( lep.userFloat("missingHit") );
+      AddEleChargedHadIso.push_back( lep.userFloat("PFChargedHadIso") );
+      AddEleNeutralHadIso.push_back( lep.userFloat("PFNeutralHadIso") );
+      AddElePhotonIso    .push_back( lep.userFloat("PFPhotonIso") );
+      AddEleCombRelIsoPF .push_back( lep.userFloat("combRelIsoPF") );
+    }
+  }
+  AddMuPt.clear();
+  AddMuEta.clear();
+  AddMuPhi.clear();
+  AddMuLepId.clear();
+  AddMuSIP.clear();
+  AddMuTime.clear();
+  AddMuisID.clear();
+  AddMuChargedHadIso.clear();
+  AddMuNeutralHadIso.clear();
+  AddMuPhotonIso.clear();
+  AddMuCombRelIsoPF.clear();
+  for (unsigned i=0; i<softMuons->size(); ++i) {
+    pat::Muon lep = softMuons->at(i);
+    if(reco::deltaR(lep.p4(), leptons[0]->p4()) > 0.02 && reco::deltaR(lep.p4(), leptons[1]->p4()) > 0.02){
+      nAddMu++;
+      AddMuPt .push_back( lep.pt() );
+      AddMuEta.push_back( lep.eta() );
+      AddMuPhi.push_back( lep.phi() );
+      AddMuLepId.push_back( lep.pdgId() );
+      AddMuSIP  .push_back( lep.userFloat("SIP") );
+      AddMuTime .push_back( lep.userFloat("time") );
+      AddMuisID .push_back( lep.userFloat("ID") );
+      AddMuChargedHadIso.push_back( lep.userFloat("PFChargedHadIso") );
+      AddMuNeutralHadIso.push_back( lep.userFloat("PFNeutralHadIso") );
+      AddMuPhotonIso    .push_back( lep.userFloat("PFPhotonIso") );
+      AddMuCombRelIsoPF .push_back( lep.userFloat("combRelIsoPF") );
+    }
+  }
+
   //Compute the data/MC weight and overall event weight
   dataMCWeight = 1.;
   for(unsigned int i=0; i<leptons.size(); ++i){
-    dataMCWeight *= getAllWeight(leptons[i]->pt(), leptons[i]->eta(), leptons[i]->pdgId());
+    dataMCWeight *= getAllWeight(leptons[i]);
   }
   overallEventWeight = PUWeight * genHEPMCweight * dataMCWeight;
 
 }
 
+
+void ZNtupleMaker::FillJet(const pat::Jet& jet)
+{
+  JetPt  .push_back( jet.pt());
+  JetEta .push_back( jet.eta());
+  JetPhi .push_back( jet.phi());
+  JetMass .push_back( jet.p4().M());
+  JetBTagger .push_back( jet.userFloat("bTagger"));
+  JetIsBtagged .push_back( jet.userFloat("isBtagged"));
+  JetIsBtaggedWithSF .push_back( jet.userFloat("isBtaggedWithSF"));
+  JetIsBtaggedWithSFUp .push_back( jet.userFloat("isBtaggedWithSF_Up"));
+  JetIsBtaggedWithSFDn .push_back( jet.userFloat("isBtaggedWithSF_Dn"));
+  JetQGLikelihood .push_back( jet.userFloat("qgLikelihood"));
+  if(addQGLInputs){
+    JetAxis2 .push_back( jet.userFloat("axis2"));
+    JetMult .push_back( jet.userFloat("mult"));
+    JetPtD .push_back( jet.userFloat("ptD"));
+  }
+  JetSigma .push_back(jet.userFloat("jec_unc"));
+  JetHadronFlavour .push_back(jet.hadronFlavour());
+  JetPartonFlavour .push_back(jet.partonFlavour());
+}
 
 
 // ------------ method called once each job just before starting event loop  ------------
@@ -451,11 +663,66 @@ void ZNtupleMaker::fillDescriptions(edm::ConfigurationDescriptions& descriptions
 }
 
 
-Float_t ZNtupleMaker::getAllWeight(Float_t LepPt, Float_t LepEta, Int_t LepID) const
+Float_t ZNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
 {
-  // deactivated for the moment
-  //if(skipDataMCWeight)
-    return 1.;
+  Int_t   myLepID = abs(Lep->pdgId());
+  if (skipMuDataMCWeight&& myLepID==13) return 1.;
+  if (skipEleDataMCWeight&& myLepID==11) return 1.;
+  if (myLepID==22) return 1.; // FIXME - what SFs should be used for TLEs?
+
+  Float_t weight  = 1.;
+  //Float_t errCorr = 0.;
+  //Float_t errCorrSyst = 0.;
+
+  Float_t myLepPt = Lep->pt();
+  Float_t myLepEta = Lep->eta();
+  Float_t mySIP = userdatahelpers::getUserFloat(Lep, "SIP"); 
+
+  if(myLepID == 13 ){
+    if(myLepPt >= 5. ) { //FIXME assume this is the min value for SFs
+      weight = hTH2D_Mu_All->GetBinContent(hTH2D_Mu_All->GetXaxis()->FindBin(myLepEta),hTH2D_Mu_All->GetYaxis()->FindBin(std::min(myLepPt,199.f))); //last bin contains the overflow
+    }
+  } else if(myLepID == 11) {
+
+    // electron reconstruction scale factor, as a function of supercluster eta
+    Float_t SCeta = userdatahelpers::getUserFloat(Lep,"SCeta");
+    
+    Float_t lookup_pT = 50.;  // FIXME: the histogram contains 1 bin only, and overflows/underflows are intended to be included (?)
+
+    Float_t RecoSF = hTH2F_El_Reco->GetBinContent(hTH2F_El_Reco->GetXaxis()->FindBin(SCeta),hTH2F_El_Reco->GetYaxis()->FindBin(lookup_pT));
+    //RecoSF_Unc = = hTH2F_El_Reco->GetBinError(hTH2F_El_Reco->GetXaxis()->FindBin(SCeta),hTH2F_El_Reco->GetYaxis()->FindBin(lookup_pT));
+
+    //LepRecoSF.push_back(RecoSF)
+    weight *= RecoSF;
+
+    if(mySIP >= 4.0 ) { // FIXME: use a better way to find RSE electrons!
+      // No SF for RSE yet
+      //return 1.;
+    } else {
+
+      if(year >= 2016) {
+	if((bool)userdatahelpers::getUserFloat(Lep,"isCrack"))
+	  weight *= hTH2D_El_IdIsoSip_Cracks->GetBinContent(hTH2D_El_IdIsoSip_Cracks->FindFixBin(std::abs(myLepEta), std::min(myLepPt,199.f))); //FIXME will move to SCeta as well?
+	else
+	  weight *= hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->FindFixBin(SCeta, std::min(myLepPt,199.f)));
+      } else {
+	cout << "ele SFs for < 2016 no longer supported" << endl;
+	abort();
+      }
+    }
+  } else {
+
+    cout<<"ERROR! wrong lepton ID "<<myLepID<<endl;
+    //abort();
+    weight = 0.;
+  }
+
+  if(weight < 0.001 || weight > 10.){
+    cout << "ERROR! LEP out of range! myLepPt = " << myLepPt << " myLepEta = " << myLepEta <<" myLepID "<<myLepID<< " weight = " << weight << endl;
+    //abort();  //no correction should be zero, if you find one, stop
+  }
+
+  return weight;
 }
 
 
@@ -468,7 +735,6 @@ void ZNtupleMaker::BookAllBranches(){
   myTree->Book("NTrueInt",NTrueInt);
   myTree->Book("PUWeight",PUWeight);
   myTree->Book("trigWord",trigWord);
-  myTree->Book("nCleanedJetsPt30",nCleanedJetsPt30);
   myTree->Book("Zsel",Zsel);
   myTree->Book("ZMass",ZMass);
   myTree->Book("ZPt",ZPt);
@@ -495,6 +761,50 @@ void ZNtupleMaker::BookAllBranches(){
   myTree->Book("fsrLept",fsrLept);
   myTree->Book("fsrDR",fsrDR);
   myTree->Book("fsrLeptId",fsrLeptID);
+  myTree->Book("nAddEle",nAddEle);
+  myTree->Book("AddElePt",AddElePt);
+  myTree->Book("AddEleEta",AddEleEta);
+  myTree->Book("AddElePhi",AddElePhi);
+  myTree->Book("AddEleLepId",AddEleLepId);
+  myTree->Book("AddEleSIP",AddEleSIP);
+  myTree->Book("AddEleisID",AddEleisID);
+  myTree->Book("AddEleBDT",AddEleBDT);
+  myTree->Book("AddEleMissingHit",AddEleMissingHit);
+  myTree->Book("AddEleChargedHadIso",AddEleChargedHadIso);
+  myTree->Book("AddEleNeutralHadIso",AddEleNeutralHadIso);
+  myTree->Book("AddElePhotonIso",AddElePhotonIso);
+  myTree->Book("AddEleCombRelIsoPF",AddEleCombRelIsoPF);
+  myTree->Book("nAddMu",nAddMu);
+  myTree->Book("AddMuPt",AddMuPt);
+  myTree->Book("AddMuEta",AddMuEta);
+  myTree->Book("AddMuPhi",AddMuPhi);
+  myTree->Book("AddMuLepId",AddMuLepId);
+  myTree->Book("AddMuSIP",AddMuSIP);
+  myTree->Book("AddMuTime",AddMuTime);
+  myTree->Book("AddMuisID",AddMuisID);
+  myTree->Book("AddMuChargedHadIso",AddMuChargedHadIso);
+  myTree->Book("AddMuNeutralHadIso",AddMuNeutralHadIso);
+  myTree->Book("AddMuPhotonIso",AddMuPhotonIso);
+  myTree->Book("AddMuCombRelIsoPF",AddMuCombRelIsoPF);
+  myTree->Book("nCleanedJetsPt30",nCleanedJetsPt30);
+  myTree->Book("JetPt",JetPt);
+  myTree->Book("JetEta",JetEta);
+  myTree->Book("JetPhi",JetPhi);
+  myTree->Book("JetMass",JetMass);
+  myTree->Book("JetBTagger",JetBTagger);
+  myTree->Book("JetIsBtagged",JetIsBtagged);
+  myTree->Book("JetIsBtaggedWithSF",JetIsBtaggedWithSF);
+  myTree->Book("JetIsBtaggedWithSFUp",JetIsBtaggedWithSFUp);
+  myTree->Book("JetIsBtaggedWithSFDn",JetIsBtaggedWithSFDn);
+  myTree->Book("JetQGLikelihood",JetQGLikelihood);
+  if(addQGLInputs){
+    myTree->Book("JetAxis2",JetAxis2);
+    myTree->Book("JetMult",JetMult);
+    myTree->Book("JetPtD",JetPtD);
+  }
+  myTree->Book("JetSigma",JetSigma);
+  myTree->Book("JetHadronFlavour",JetHadronFlavour);
+  myTree->Book("JetPartonFlavour",JetPartonFlavour);
   myTree->Book("genHEPMCweight",genHEPMCweight);
   myTree->Book("xsec",xsection);
   myTree->Book("dataMCWeight",dataMCWeight);
