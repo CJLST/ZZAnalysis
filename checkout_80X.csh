@@ -17,10 +17,6 @@ git cms-addpkg EgammaAnalysis/ElectronTools
 
 #### Please do not add any custom (non-CMSSW) package before this line ####
 
-#Preliminary 8X electron ID
-git clone https://github.com/Werbellin/RecoEgamma_8X.git RecoEgamma
-(cd RecoEgamma; git checkout d716460) 
-
 #ZZAnalysis
 git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
 (cd ZZAnalysis; git checkout miniAOD_80X)
