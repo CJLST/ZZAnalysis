@@ -451,6 +451,8 @@ private:
   TSpline3* spkfactor_ggzz_nlo[9]; // Nominal, PDFScaleDn, PDFScaleUp, QCDScaleDn, QCDScaleUp, AsDn, AsUp, PDFReplicaDn, PDFReplicaUp
 
   TH2D *hTH2D_Mu_All;
+  TH2D *hTH2D_Mu_Unc;
+
   TH2F *hTH2F_El_Reco;
   TH1 *hTH2D_El_IdIsoSip_notCracks;
   TH1 *hTH2D_El_IdIsoSip_Cracks;
@@ -489,6 +491,8 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   pileUpReweight(myHelper.sampleType(), myHelper.setup()),
   sampleName(pset.getParameter<string>("sampleName")),
   hTH2D_Mu_All(0),
+  hTH2D_Mu_Unc(0),
+
   hTH2F_El_Reco(0),
   hTH2D_El_IdIsoSip_notCracks(0),
   hTH2D_El_IdIsoSip_Cracks(0),
@@ -575,32 +579,29 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
 
   //Scale factors for data/MC efficiency
   if (!skipMuDataMCWeight) {
-    TString filename;
-    //filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_%d.root",year);
-    filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_Moriond2017.root");//FIXME for 2017
-    edm::FileInPath fipMu(filename.Data());
-    fipPath = fipMu.fullPath();
-    TFile *fMuWeight = TFile::Open(fipPath.data(),"READ");
+    edm::FileInPath fipMu("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_Moriond2017.root");
+    TFile *fMuWeight = TFile::Open(fipMu.fullPath().data(),"READ");
     hTH2D_Mu_All = (TH2D*)fMuWeight->Get("FINAL")->Clone();
+    hTH2D_Mu_Unc = (TH2D*)fMuWeight->Get("ERROR")->Clone();
+
     fMuWeight->Close();
   }
   
   if (!skipEleDataMCWeight) {
 
     if(year>=2016) {
-        TString filename("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_2016_v4.root");
-        //TString filename("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ele_scale_factors_2016_v1.root");  
-        edm::FileInPath fipEleNotCracks(filename.Data());
-        fipPath = fipEleNotCracks.fullPath();
-        TFile *root_file = TFile::Open(fipPath.data(),"READ");
-        hTH2D_El_IdIsoSip_notCracks = (TH1*) root_file->Get("ele_scale_factors")->Clone();
-        hTH2D_El_IdIsoSip_Cracks = (TH1*) root_file->Get("ele_scale_factors_gap")->Clone();
+        edm::FileInPath fipEleNotCracks("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_non_gap_ele_Moriond2017_v2.root");
+        TFile *root_file = TFile::Open(fipEleNotCracks.fullPath().data(),"READ");
+        hTH2D_El_IdIsoSip_notCracks = (TH1*) root_file->Get("EGamma_SF2D")->Clone();
         root_file->Close();
-
-        TString filenameEleReco("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi_EGM2D_Moriond2017.root");
-        edm::FileInPath fipEleReco(filenameEleReco.Data());
-        fipPath = fipEleReco.fullPath();
-        TFile *root_file_reco = TFile::Open(fipPath.data(),"READ");
+       
+        edm::FileInPath fipEleCracks("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_gap_ele_Moriond2017_v2.root");
+        root_file = TFile::Open(fipEleCracks.fullPath().data(),"READ");
+        hTH2D_El_IdIsoSip_Cracks = (TH1*) root_file->Get("EGamma_SF2D")->Clone();
+        root_file->Close();
+ 
+        edm::FileInPath fipEleReco("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_RECO_ele_Moriond2017_v1.root");
+        TFile *root_file_reco = TFile::Open(fipEleReco.fullPath().data(),"READ");
         hTH2F_El_Reco = (TH2F*) root_file_reco->Get("EGamma_SF2D")->Clone();
         root_file_reco->Close();
 
@@ -1269,6 +1270,12 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   //LepNeutralHadIso.clear();
   //LepPhotonIso.clear();
   LepCombRelIsoPF.clear();
+
+  LepRecoSF.clear();
+  LepRecoSF_Unc.clear();
+  LepSelSF.clear();
+  LepSelSF_Unc.clear();
+
   TLE_dR_Z = -1;
   fsrPt.clear();
   fsrEta.clear();
@@ -1662,16 +1669,25 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
   if (myLepID==22) return 1.; // FIXME - what SFs should be used for TLEs?
 
   Float_t weight  = 1.;
-  //Float_t errCorr = 0.;
-  //Float_t errCorrSyst = 0.;
 
   Float_t myLepPt = Lep->pt();
   Float_t myLepEta = Lep->eta();
   Float_t mySIP = userdatahelpers::getUserFloat(Lep, "SIP"); 
 
+  Float_t RecoSF = 0.;
+  Float_t RecoSF_Unc = 0.;
+
+  Float_t SelSF = 0.;
+  Float_t SelSF_Unc = 0.;
+
+
   if(myLepID == 13 ){
     if(myLepPt >= 5. ) { //FIXME assume this is the min value for SFs
-    weight = hTH2D_Mu_All->GetBinContent(hTH2D_Mu_All->GetXaxis()->FindBin(myLepEta),hTH2D_Mu_All->GetYaxis()->FindBin(std::min(myLepPt,199.f))); //last bin contains the overflow
+      RecoSF = 1.; // The scale factor combines all afficiecnies
+      RecoSF_Unc = 0.;	
+      SelSF = hTH2D_Mu_All->GetBinContent(hTH2D_Mu_All->GetXaxis()->FindBin(myLepEta),hTH2D_Mu_All->GetYaxis()->FindBin(std::min(myLepPt,199.f))); //last bin contains the overflow
+      SelSF_Unc = hTH2D_Mu_Unc->GetBinContent(hTH2D_Mu_Unc->GetXaxis()->FindBin(myLepEta),hTH2D_Mu_Unc->GetYaxis()->FindBin(std::min(myLepPt,199.f))); //last bin contains the overflow
+
     }
   } else if(myLepID == 11) {
 
@@ -1680,35 +1696,50 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
     
     Float_t lookup_pT = 50.;  // FIXME: the histogram contains 1 bin only, and overflows/underflows are intended to be included (?)
 
-    Float_t RecoSF = hTH2F_El_Reco->GetBinContent(hTH2F_El_Reco->GetXaxis()->FindBin(SCeta),hTH2F_El_Reco->GetYaxis()->FindBin(lookup_pT));
-    //RecoSF_Unc = = hTH2F_El_Reco->GetBinError(hTH2F_El_Reco->GetXaxis()->FindBin(SCeta),hTH2F_El_Reco->GetYaxis()->FindBin(lookup_pT));
+    RecoSF = hTH2F_El_Reco->GetBinContent(hTH2F_El_Reco->GetXaxis()->FindBin(SCeta),hTH2F_El_Reco->GetYaxis()->FindBin(lookup_pT));
+    RecoSF_Unc = hTH2F_El_Reco->GetBinError(hTH2F_El_Reco->GetXaxis()->FindBin(SCeta),hTH2F_El_Reco->GetYaxis()->FindBin(lookup_pT));
 
-    //LepRecoSF.push_back(RecoSF)
-    weight *= RecoSF;
+    // POG recommendation to add 1% systematics for pT<20 or >80 GeV
+    // see https://twiki.cern.ch/twiki/bin/view/CMS/EgammaIDRecipesRun2#
+    if(myLepPt < 20. || myLepPt > 80.) RecoSF_Unc += 0.01;
 
     if(mySIP >= 4.0 ) { // FIXME: use a better way to find RSE electrons!
         // No SF for RSE yet
         //return 1.;
     } else {
-
         if(year >= 2016) {
-            if((bool)userdatahelpers::getUserFloat(Lep,"isCrack"))
-	      weight *= hTH2D_El_IdIsoSip_Cracks->GetBinContent(hTH2D_El_IdIsoSip_Cracks->FindFixBin(std::abs(myLepEta), std::min(myLepPt,199.f))); //FIXME will move to SCeta as well?
-            else
-              weight *= hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->FindFixBin(SCeta, std::min(myLepPt,199.f)));
+            if((bool)userdatahelpers::getUserFloat(Lep,"isCrack")) {
+              SelSF = hTH2D_El_IdIsoSip_Cracks->GetBinContent(hTH2D_El_IdIsoSip_Cracks->FindFixBin(SCeta, std::min(myLepPt,199.f)));
+              SelSF_Unc = hTH2D_El_IdIsoSip_Cracks->GetBinError(hTH2D_El_IdIsoSip_Cracks->FindFixBin(SCeta, std::min(myLepPt,199.f)));
+            } else {
+              SelSF = hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->FindFixBin(SCeta, std::min(myLepPt,199.f)));
+              SelSF_Unc = hTH2D_El_IdIsoSip_notCracks->GetBinError(hTH2D_El_IdIsoSip_notCracks->FindFixBin(SCeta, std::min(myLepPt,199.f)));
+	    }
         } else {
-	  cout << "ele SFs for < 2016 no longer supported" << endl;
-	  abort();
+          edm::LogError("MC scale factor") << "ele SFs for < 2016 no longer supported";
+          abort();
         }
     }
   } else {
 
-    cout<<"ERROR! wrong lepton ID "<<myLepID<<endl;
-    //abort();
+    edm::LogError("MC scale factor") << "ERROR! wrong lepton ID "<<myLepID;
     weight = 0.;
   }
 
-  if(weight < 0.001 || weight > 10.){
+  LepRecoSF.push_back(RecoSF);
+  LepRecoSF_Unc.push_back(RecoSF_Unc);
+
+  weight *= RecoSF;
+
+  LepSelSF.push_back(SelSF);
+  LepSelSF_Unc.push_back(SelSF_Unc);
+
+  weight *= SelSF;
+
+  //edm::LogWarning("MC scale factor") << "Overall weight: " << weight << " RECO " << RecoSF << " +-" << RecoSF_Unc << " selection " << SelSF << " +-" << SelSF_Unc; 
+
+
+ if(weight < 0.001 || weight > 10.){
     cout << "ERROR! LEP out of range! myLepPt = " << myLepPt << " myLepEta = " << myLepEta <<" myLepID "<<myLepID<< " weight = " << weight << endl;
     //abort();  //no correction should be zero, if you find one, stop
   }
@@ -1945,6 +1976,12 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   //myTree->Book("LepNeutralHadIso",LepNeutralHadIso, false);
   //myTree->Book("LepPhotonIso",LepPhotonIso, false);
   myTree->Book("LepCombRelIsoPF",LepCombRelIsoPF, false);
+  myTree->Book("LepRecoSF",LepRecoSF, false);
+  myTree->Book("LepRecoSF_Unc",LepRecoSF_Unc, false);
+  myTree->Book("LepSelSF",LepSelSF, false);
+  myTree->Book("LepSelSF_Unc",LepSelSF_Unc, false);
+
+
   myTree->Book("fsrPt",fsrPt, false);
   myTree->Book("fsrEta",fsrEta, false);
   myTree->Book("fsrPhi",fsrPhi, false);
