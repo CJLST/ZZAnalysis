@@ -28,7 +28,7 @@ declareDefault("SAMPLENAME", "", globals())
 declareDefault("ELECORRTYPE", "RunII", globals())
 
 #Apply electron escale regression
-declareDefault("ELEREGRESSION", "None", globals())
+declareDefault("ELEREGRESSION", "Moriond17v1", globals())
 
 #Apply muon scale correction
 declareDefault("APPLYMUCORR", True, globals())
@@ -563,7 +563,13 @@ if ELEREGRESSION == "None" and (ELECORRTYPE == "None" or BUNCH_SPACING == 50) : 
 elif ELECORRTYPE == "RunII" :
     process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag("calibratedPatElectrons")
     process.electronMVAValueMapProducer.srcMiniAOD=cms.InputTag("calibratedPatElectrons")
+if ELEREGRESSION == "Moriond17v1" :
+   from EgammaAnalysis.ElectronTools.regressionWeights_cfi import regressionWeights
+   process = regressionWeights(process)
+   process.load('EgammaAnalysis.ElectronTools.regressionApplication_cff')
 
+   process.selectedSlimmedElectrons.src = cms.InputTag("slimmedElectrons")
+   process.electrons = cms.Sequence(process.regressionApplication + process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
 
 #elif ELEREGRESSION == "None" and ELECORRTYPE == "RunII" :
 #    process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('calibratedPatElectrons') # (when running VID)
