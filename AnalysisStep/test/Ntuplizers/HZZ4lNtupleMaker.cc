@@ -1667,7 +1667,6 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
   if (skipMuDataMCWeight&& myLepID==13) return 1.;
   if (skipEleDataMCWeight&& myLepID==11) return 1.;
   if (myLepID==22) return 1.; // FIXME - what SFs should be used for TLEs?
-
   Float_t weight  = 1.;
 
   Float_t myLepPt = Lep->pt();
@@ -1687,7 +1686,6 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
       RecoSF_Unc = 0.;	
       SelSF = hTH2D_Mu_All->GetBinContent(hTH2D_Mu_All->GetXaxis()->FindBin(myLepEta),hTH2D_Mu_All->GetYaxis()->FindBin(std::min(myLepPt,199.f))); //last bin contains the overflow
       SelSF_Unc = hTH2D_Mu_Unc->GetBinContent(hTH2D_Mu_Unc->GetXaxis()->FindBin(myLepEta),hTH2D_Mu_Unc->GetYaxis()->FindBin(std::min(myLepPt,199.f))); //last bin contains the overflow
-
     }
   } else if(myLepID == 11) {
 
@@ -1705,7 +1703,9 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
 
     if(mySIP >= 4.0 ) { // FIXME: use a better way to find RSE electrons!
         // No SF for RSE yet
+        // This is also the case for the loose lepton in Z+l
         //return 1.;
+	SelSF = 1.;
     } else {
         if(year >= 2016) {
             if((bool)userdatahelpers::getUserFloat(Lep,"isCrack")) {
@@ -1721,7 +1721,6 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
         }
     }
   } else {
-
     edm::LogError("MC scale factor") << "ERROR! wrong lepton ID "<<myLepID;
     weight = 0.;
   }
@@ -1736,11 +1735,10 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
 
   weight *= SelSF;
 
-  //edm::LogWarning("MC scale factor") << "Overall weight: " << weight << " RECO " << RecoSF << " +-" << RecoSF_Unc << " selection " << SelSF << " +-" << SelSF_Unc; 
-
 
  if(weight < 0.001 || weight > 10.){
-    cout << "ERROR! LEP out of range! myLepPt = " << myLepPt << " myLepEta = " << myLepEta <<" myLepID "<<myLepID<< " weight = " << weight << endl;
+    edm::LogError("MC scale factor") << "ERROR! LEP out of range! myLepPt = " << myLepPt << " myLepEta = " << myLepEta <<" myLepID "<<myLepID<< " weight = " << weight;
+    edm::LogWarning("MC scale factor") << "Overall weight: " << weight << " RECO " << RecoSF << " +-" << RecoSF_Unc << " selection " << SelSF << " +-" << SelSF_Unc;      
     //abort();  //no correction should be zero, if you find one, stop
   }
 
