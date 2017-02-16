@@ -34,31 +34,65 @@ puMC = {
 puMCscenario = puMC['Spring2016MC_M17PUscenario']
 len_mc = len(puMCscenario)
 
-data_file_name = '2016MyDataPileupHistogram63000.root'
+data_file_name = 'DataPileupHistogram69200_75bins.root'
+data_file_name_varUp = 'DataPileupHistogram72383_75bins.root'
+data_file_name_varDn = 'DataPileupHistogram66017_75bins.root'
 
-h_d = rt.TH1F('Data', '', len_mc , 0, len_mc - 1) 
+h_d = rt.TH1F('Data', '', len_mc , 0, len_mc) 
+h_d_varUp = rt.TH1F('Data_varUp', '', len_mc , 0, len_mc) 
+h_d_varDn = rt.TH1F('Data_varDn', '', len_mc , 0, len_mc) 
+
+
 fpu = rt.TFile.Open(data_file_name,'read')
-
 h_din = fpu.Get('pileup')
-for i in range(len_mc) :
+for i in range(1, len_mc + 1) :
     h_d.SetBinContent(i, h_din.GetBinContent(i))
 h_d.Scale(1./h_d.Integral())
 fpu.Close()
 
+fpu = rt.TFile.Open(data_file_name_varUp,'read')
+h_din = fpu.Get('pileup')
+for i in range(1, len_mc + 1) :
+    h_d_varUp.SetBinContent(i, h_din.GetBinContent(i))
+h_d_varUp.Scale(1./h_d_varUp.Integral())
+fpu.Close()
 
-h_mc = rt.TH1F('MC', ';true number interactions;normalized to unity', len_mc , 0, len_mc - 1)
+fpu = rt.TFile.Open(data_file_name_varDn,'read')
+h_din = fpu.Get('pileup')
+for i in range(1, len_mc + 1) :
+    h_d_varDn.SetBinContent(i, h_din.GetBinContent(i))
+h_d_varDn.Scale(1./h_d_varDn.Integral())
+fpu.Close()
+
+
+h_mc = rt.TH1F('MC out-of-the-box', ';true number of interactions;normalized to unity', len_mc , 0, len_mc)
 for ipu in range(len(puMCscenario)) :
     puMCscenario[ipu]
-    h_mc.SetBinContent(ipu, puMCscenario[ipu])
+    h_mc.SetBinContent(ipu + 1, puMCscenario[ipu])
 
 h_mc.Scale(1./h_mc.Integral())
+
 h_w = h_d.Clone('weights')
 h_w.Divide(h_mc)
 
-h_mc_rw = h_mc.Clone('MC reweighted')
 
-for i in range(len_mc) :
+h_w_varUp = h_d_varUp.Clone('weights_varUp')
+h_w_varUp.Divide(h_mc)
+
+h_w_varDn = h_d_varDn.Clone('weights_varDn')
+h_w_varDn.Divide(h_mc)
+
+h_mc_rw = h_mc.Clone('MC reweighted')
+h_mc_rw_varUp = h_mc.Clone('MC_up')
+h_mc_rw_varUp.SetTitle("MC reweighted +1#sigma")
+h_mc_rw_varDn = h_mc.Clone('MC reweighted')
+h_mc_rw_varDn.SetTitle("MC reweighted -1#sigma")
+
+
+for i in range(1, len_mc + 1) :
     h_mc_rw.SetBinContent(i, h_mc.GetBinContent(i)*h_w.GetBinContent(i))
+    h_mc_rw_varUp.SetBinContent(i, h_mc.GetBinContent(i)*h_w_varUp.GetBinContent(i))
+    h_mc_rw_varDn.SetBinContent(i, h_mc.GetBinContent(i)*h_w_varDn.GetBinContent(i))
 
 can = rt.TCanvas('can', 'can', 400, 400)
 h_mc.SetLineColor(rt.kBlue)
@@ -66,16 +100,29 @@ h_mc.Draw()
 #h_mc.GetYaxis().SetRangeUser
 h_mc.SetMaximum(0.12)
 h_mc.Draw()
-h_d.SetLineColor(rt.kRed)
-h_d.SetFillColor(rt.kRed)
+h_d.SetLineColor(rt.kRed-2)
+h_d.SetFillColor(rt.kRed-2)
+h_d.SetFillStyle(3004)
 h_d.Draw('HISTSAME')
 h_mc_rw.SetLineColor(rt.kGreen)
 h_mc_rw.Draw('SAME')
+
+h_mc_rw_varUp.SetLineColor(rt.kGreen + 2)
+h_mc_rw_varUp.SetLineStyle(2)
+h_mc_rw_varUp.Draw('SAME')
+
+h_mc_rw_varDn.SetLineColor(rt.kGreen + 2)
+h_mc_rw_varDn.SetLineStyle(3)
+h_mc_rw_varDn.Draw('SAME')
+
 leg = can.BuildLegend()
 leg.Draw('SAME')
 
 f_out = rt.TFile.Open('pu_weights.root', 'recreate')
 h_w.Write()
+h_w_varDn.Write()
+h_w_varUp.Write()
+
 h_mc.Write()
 h_d.Write()
 h_mc_rw.Write()
