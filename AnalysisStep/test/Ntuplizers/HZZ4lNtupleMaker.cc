@@ -456,6 +456,8 @@ private:
   TH2F *hTH2F_El_Reco;
   TH1 *hTH2D_El_IdIsoSip_notCracks;
   TH1 *hTH2D_El_IdIsoSip_Cracks;
+  TH1 *hTH2F_El_RSE;
+
   TH2D* h_weight; //HqT weights
   //TH2F *h_ZXWeightMuo;
   //TH2F *h_ZXWeightEle;
@@ -496,6 +498,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   hTH2F_El_Reco(0),
   hTH2D_El_IdIsoSip_notCracks(0),
   hTH2D_El_IdIsoSip_Cracks(0),
+  hTH2F_El_RSE(0),
   h_weight(0)
 {
   //cout<< "Beginning Constructor\n\n\n" <<endl;
@@ -604,6 +607,13 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
         TFile *root_file_reco = TFile::Open(fipEleReco.fullPath().data(),"READ");
         hTH2F_El_Reco = (TH2F*) root_file_reco->Get("EGamma_SF2D")->Clone();
         root_file_reco->Close();
+
+        edm::FileInPath fipEleRSE("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_RSE_ele_Moriond2017_v1.root");
+        root_file = TFile::Open(fipEleRSE.fullPath().data(),"READ");
+        hTH2F_El_RSE = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
+        root_file->Close();
+
+
 
     } else {
         TString filename;
@@ -1702,10 +1712,9 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
     if(myLepPt < 20. || myLepPt > 80.) RecoSF_Unc += 0.01;
 
     if(mySIP >= 4.0 ) { // FIXME: use a better way to find RSE electrons!
-        // No SF for RSE yet
         // This is also the case for the loose lepton in Z+l
-        //return 1.;
-	SelSF = 1.;
+	SelSF = hTH2F_El_RSE->GetBinContent(hTH2F_El_RSE->FindFixBin(SCeta, std::min(myLepPt,199.f)));
+	SelSF_Unc = hTH2F_El_RSE->GetBinError(hTH2F_El_RSE->FindFixBin(SCeta, std::min(myLepPt,199.f)));
     } else {
         if(year >= 2016) {
             if((bool)userdatahelpers::getUserFloat(Lep,"isCrack")) {
