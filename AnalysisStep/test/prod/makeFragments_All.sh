@@ -8,6 +8,7 @@ do
   bash makeFragments_VBFPOWHEG.sh $csv
   bash makeFragments_WHPOWHEG.sh $csv
   bash makeFragments_ZHPOWHEG.sh $csv
+  bash makeFragments_ttHPOWHEG.sh $csv
 done
 
 bash makeFragments_ACJHUGen.sh Couplings_ACJHUGen.lst
