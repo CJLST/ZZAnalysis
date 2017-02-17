@@ -55,6 +55,7 @@ class Candidate:
         self.njets30Btag   = treeEntry.nCleanedJetsPt30BTagged
         self.mjj           = treeEntry.DiJetMass
         self.detajj        = treeEntry.DiJetDEta
+        self.pfMet         = treeEntry.PFMET
         self.weight        = 1.
         if (isMC) : self.weight = sign(treeEntry.genHEPMCweight) * treeEntry.PUWeight * treeEntry.dataMCWeight
 
@@ -86,8 +87,27 @@ class Candidate:
 	if options.synchMode == 'HZZ' :
 	    self.computeKDs(treeEntry)
 		
-	    # ICHEP2016 categories
-	    self.category    = CDLL('libZZAnalysisAnalysisStep.so').categoryIchep16(
+#	    # ICHEP2016 categories
+#	    self.category    = CDLL('libZZAnalysisAnalysisStep.so').categoryIchep16(
+#	        c_int(self.nExtraLep),
+#	        c_int(self.nExtraZ),
+#	        c_int(self.njets30),
+#	        c_int(self.njets30Btag),
+#	        (c_float * len(self.jets30QGLikelihood))(*self.jets30QGLikelihood),
+#	        c_float(treeEntry.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal),
+#	        c_float(treeEntry.p_JQCD_SIG_ghg2_1_JHUGen_JECNominal),
+#	        c_float(treeEntry.p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal),
+#	        c_float(treeEntry.p_JVBF_SIG_ghv1_1_JHUGen_JECNominal),
+#	        c_float(treeEntry.pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal),
+#	        c_float(treeEntry.p_HadWH_SIG_ghw1_1_JHUGen_JECNominal),
+#	        c_float(treeEntry.p_HadZH_SIG_ghz1_1_JHUGen_JECNominal),
+#	        (c_float * len(self.jets30phi))(*self.jets30phi),
+#	        c_float(self.ZZMass),
+#	        c_bool(False)
+#	        )
+		
+	    # Moriond2017 categories
+	    self.category    = CDLL('libZZAnalysisAnalysisStep.so').categoryMor17(
 	        c_int(self.nExtraLep),
 	        c_int(self.nExtraZ),
 	        c_int(self.njets30),
@@ -102,7 +122,9 @@ class Candidate:
 	        c_float(treeEntry.p_HadZH_SIG_ghz1_1_JHUGen_JECNominal),
 	        (c_float * len(self.jets30phi))(*self.jets30phi),
 	        c_float(self.ZZMass),
-	        c_bool(False)
+	        c_float(self.pfMet),
+	        c_bool(True), #useVHMETTagged
+	        c_bool(False) #useQGTagging
 	        )
 
     def computeKDs(self, treeEntry):
