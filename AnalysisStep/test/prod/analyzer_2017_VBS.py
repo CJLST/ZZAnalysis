@@ -1,6 +1,6 @@
 #----------------------------------------------------------------------
 #
-# Configuration for data, DoubleMu stream
+# Configuration for ZZjj VBS analysis 
 #
 #----------------------------------------------------------------------
 
@@ -10,7 +10,6 @@ import os
 PyFilePath = os.environ['CMSSW_BASE'] + "/src/ZZAnalysis/AnalysisStep/test/"
 execfile(PyFilePath + "analyzer.py")        
 
-#declareDefault("BESTCANDCOMPARATOR", "byBestZ1bestZ2", globals())
 
 # use SMP ZZ arbitrator (does not alter RSE/TLE)
 process.ZLLCand.bestCandComparator = cms.string('byBestZ1bestZ2')
