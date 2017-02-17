@@ -4,7 +4,7 @@ LHE_PropagatorRewgt = [
 ]
 ### Spin-0 decay probabilities from JHUGen ###
 LHE_DecayProbabilities_SpinZero_JHUGen = [
-   "Name:SampleDecayHypothesisJHUGen Alias:<Name> Process:SelfDefine_spin0 Production:ZZINDEPENDENT MatrixElement:JHUGen Couplings:<COUPLINGS> hmass:<HMASS> isGen:1 NoBranch:1",
+   "Name:SampleDecayHypothesisJHUGen Alias:<Name> Process:SelfDefine_spin0 Production:ZZINDEPENDENT MatrixElement:JHUGen Couplings:ghz1=1,0 hmass:<HMASS> isGen:1 NoBranch:1",
 
 #   "Name:Dec_SIG_ghz1_1_JHUGen Process:SelfDefine_spin0 Production:ZZINDEPENDENT MatrixElement:JHUGen Couplings:ghz1=1,0 Options:DivideP=SampleDecayHypothesisJHUGen hmass:<HMASS> isGen:1",
 #   "Name:Dec_SIG_ghz1prime2_1E4_JHUGen Process:SelfDefine_spin0 Production:ZZINDEPENDENT MatrixElement:JHUGen Couplings:ghz1_prime2=10000,0 Options:DivideP=SampleDecayHypothesisJHUGen hmass:<HMASS> isGen:1",
@@ -34,7 +34,7 @@ LHE_DecayProbabilities_SpinZero_JHUGen = [
 #   "Name:Dec_SIG_ghz1_1_gha4_i_JHUGen Process:SelfDefine_spin0 Production:ZZINDEPENDENT MatrixElement:JHUGen Couplings:ghz1=1,0;ghgsgs4=0,1 Options:DivideP=SampleDecayHypothesisJHUGen hmass:<HMASS> isGen:1",
 ]
 LHE_ProdProbabilities_SpinZero_JHUGen = [
-#   "Name:SampleProductionHypothesisJHUGen Alias:<Name> Process:SelfDefine_spin0 Production:ttH MatrixElement:JHUGen Couplings:<COUPLINGS> Cluster:NoAssociatedG hmass:<HMASS> isGen:1 NoBranch:1",
+#   "Name:SampleProductionHypothesisJHUGen Alias:<Name> Process:SelfDefine_spin0 Production:ttH MatrixElement:JHUGen Couplings:kappa=1,0 Cluster:NoAssociatedG hmass:<HMASS> isGen:1 NoBranch:1",
 
 #   "Name:ttH_SIG_kappa_1_JHUGen Alias:SampleProductionHypothesisJHUGen Process:SelfDefine_spin0 Production:ttH MatrixElement:JHUGen Couplings:kappa=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:NoAssociatedG hmass:<HMASS> isGen:1",
 #   "Name:ttH_SIG_kappa_tilde_1_JHUGen Process:SelfDefine_spin0 Production:ttH MatrixElement:JHUGen Couplings:kappa_tilde=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:NoAssociatedG hmass:<HMASS> isGen:1",
