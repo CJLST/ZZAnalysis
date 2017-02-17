@@ -3,14 +3,21 @@
 #include <ZZAnalysis/AnalysisStep/interface/cConstants.h>
 
 #include <cmath>
+#include <iostream>
 
 #include "TMath.h"
 #include "TRandom3.h"
+
+using namespace std;
+
+#define VERBOSE 1
 
 
 
 extern "C" int categoryLegacy( int nCleanedJetsPt30 )
 {
+  if(VERBOSE) cout << "WARNING: using deprecated categorization function 'categoryLegacy'" << endl;
+
   if(nCleanedJetsPt30>=2)
     return Dijet;
   else
@@ -24,6 +31,8 @@ extern "C" int categoryMor16(
 			     float p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal
 			     )
 {
+  if(VERBOSE) cout << "WARNING: using deprecated categorization function 'categoryMor16'" << endl;
+
   float vbfMela = p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal / ( p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal + p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal );
 
   if(nCleanedJetsPt30>=2 && vbfMela>0.5)
@@ -51,6 +60,7 @@ extern "C" int categoryIchep16(
 			       bool useQGTagging 
 			       )
 {
+  if(VERBOSE) cout << "WARNING: using deprecated categorization function 'categoryIchep16'" << endl;
 
   float D_VBF2j = -2;
   float D_VBF1j = -2;
