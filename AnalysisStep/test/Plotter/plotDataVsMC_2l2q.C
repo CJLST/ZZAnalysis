@@ -34,21 +34,18 @@
 #include "TTree.h"
 #include "TChain.h"
 #include "TEfficiency.h"
-#include "TMVA/Tools.h"
-#include "TMVA/Reader.h"
+//#include "TMVA/Tools.h"
+//#include "TMVA/Reader.h"
 
 #include "tdrstyle.C"
-// #include "CMS_lumi.C"
-#include "plotUtils.C"
+//#include "CMS_lumi.C"
+//#include "plotUtils.C"
 
-/// Try to take this stuff out
-#include "ZZAnalysis/AnalysisStep/src/kFactors.C"
-
-#include <ZZAnalysis/AnalysisStep/src/Category.cc>
-#include <ZZAnalysis/AnalysisStep/src/bitops.cc>
-#include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
-#include <ZZAnalysis/AnalysisStep/test/Plotter/fit_functions.C>
-///
+//#include "ZZAnalysis/AnalysisStep/src/kFactors.C"
+//#include <ZZAnalysis/AnalysisStep/src/Category.cc>
+//#include <ZZAnalysis/AnalysisStep/src/bitops.cc>
+//#include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
+#include "fit_functions.C"
 
 using namespace std;
 
@@ -66,7 +63,10 @@ int onlyOneLep = 1; // 0 - ee
 const double lowerZhadMass = 70.0;
 const double higherZhadMass = 105.0;
 const double higherHhadMass = 135.0;
-const double bTagThres = 0.46;
+const double bTagThres = 0.5426;
+const double tau21Thres = 0.6;
+//const string dirpath = "./plots";
+const string dirpath = "/eos/user/t/tomei/www/graviton/Moriond_V2";
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -75,7 +75,7 @@ const double bTagThres = 0.46;
 ////////////////////////////////////////////////////////////////////////////////
 
 
-const int nVariables = 27;
+const int nVariables = 28;
 string varName[nVariables] = {
     "ZZMass",
     "ZZPt",
@@ -103,7 +103,8 @@ string varName[nVariables] = {
     "ZjetMELAspin0",
     "vbfMELA",
     "ZZMasshighMELA",
-    "ZjetMELAspin2"
+    "ZjetMELAspin2",
+    "NVtx",
 };
 string varXLabel[nVariables] = {
     "m_{2#font[12]{l}2q} (GeV)",
@@ -132,7 +133,8 @@ string varXLabel[nVariables] = {
     "ZjetMELAspin0",
     "vbfMELA",
     "m_{2#font[12]{l}2q} (GeV) for ZjetMELAspin0 > 0.5",
-    "ZjetMELAspin2"
+    "ZjetMELAspin2",
+    "NVtx"
 };
 string varYLabel[nVariables] = {
     "Events / 25 GeV",
@@ -161,11 +163,13 @@ string varYLabel[nVariables] = {
     "Events / 0.025",
     "Events / 0.025",
     "Events / 25 GeV",
-    "Events / 0.025"
+    "Events / 0.025",
+    "Events",
 };
-Int_t  varNbin[nVariables] = {  110, 50, 70,  56,  44, 50, 50, 400,  50,  50,  50,  50,  50,  50,  50, 50, 50, 25, 25, 4, 50, 44, 50, 40, 82, 50, 40};
-Float_t varMin[nVariables] = {  250,  0,  250,  40,  40,  90, 90, -200,  0, 0, -0.2, -0.2, 0,  0, -0.2, -1.2, -1.2, 0., 0., -0.5, 0., -0.05, -0.2, 0., -1.05, 250, 0.};
-Float_t varMax[nVariables] = {  3000, 500, 2000, 180, 150, 800, 800, 0, 500, 500, 1.2, 1.2, 500, 500, 1.2, 1.2, 1.2 , 3.15, 3.15, 3.5, 300., 1.05, 1.2, 1., 1., 2000., 1.};
+
+Int_t  varNbin[nVariables] = {  110,   50,  110,  56,  44,   60,   60,  400,   100,  100,   50,   50,   100,  100,   50,   50,   50,   25,   25,    4,   50,    44,   50,  40,    82,   110, 40,   50};
+Float_t varMin[nVariables] = {  250,    0,  250,  40,  40,    0,    0, -200,     0,    0, -0.2, -0.2,     0,    0, -0.2, -1.2, -1.2,   0.,   0., -0.5,   0., -0.05, -0.2,  0., -1.05,   250, 0., -0.5};
+Float_t varMax[nVariables] = {  3000, 500, 2000, 180, 150, 1500, 1500,    0,  1000, 1000,  1.2,  1.2,  1000, 1000,  1.2,  1.2,  1.2, 3.15, 3.15,  3.5, 300.,  1.05,  1.2,  1.,    1., 3000., 1., 49.5};
 Bool_t varLogx[nVariables] = {  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 Bool_t varLogy[nVariables] = {  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0};
 
@@ -174,7 +178,7 @@ string signalMasses[nMasses] = {"200", "250", "300", "350", "400", "450", "500",
 
 enum Process {Data = 0, ggSpin0 = 1, VBFSpin0 = 2, DYjets = 3, TTBar = 4, Diboson = 5}; // Spin2=6};
 const int nProcesses = 6;
-string sProcess[nProcesses] = {"Data", "Spin0750", "Spin01000", "DY", "TT", "VV"}; // "Spin2800"};
+string sProcess[nProcesses] = {"Data", "Spin01000", "Spin01500", "DY", "TT", "VV"}; // "Spin2800"};
 string processLabel[nProcesses] = {"Data", "ggH_{NWA}(750)#rightarrowZZ", "ggH_{NWA}(900)#rightarrowZZ", "Z + jets", "t#bar{t}", "ZZ, WZ, WW"}; // , "ggG^{*}_{NWA}(800)#rightarrowZZ"};
 
 
@@ -186,10 +190,10 @@ string sFS[nFS] = {"ee", "all", "mm"};
 
 const int nType = 12;
 enum eType {resolvedSB, mergedSB, mergedSR, resolvedSR,
-            resolvedSBbtag,  mergedSBbtag, mergedSRbtag, resolvedSRbtag, 
+            resolvedSBbtag,  mergedSBbtag, mergedSRbtag, resolvedSRbtag,
             resolvedSBvbf, mergedSBvbf, mergedSRvbf, resolvedSRvbf};
 string typeS[nType] = { "resolvedSB", "mergedSB", "mergedSR", "resolvedSR",
-                        "resolvedSBbtag",  "mergedSBbtag", "mergedSRbtag", "resolvedSRbtag", 
+                        "resolvedSBbtag",  "mergedSBbtag", "mergedSRbtag", "resolvedSRbtag",
                         "resolvedSBvbf", "mergedSBvbf", "mergedSRvbf", "resolvedSRvbf"};
 
 
@@ -274,7 +278,7 @@ float getDZjjspin2Constant(float ZZMass)
     return 0.14;
 }
 
-bool passVBFCut(int nExtraJets, double vbfmela, double ZZMass) 
+bool passVBFCut(int nExtraJets, double vbfmela, double ZZMass)
 {
     return nExtraJets > 1 && vbfmela > 1.043 - 460. / ZZMass + 634.;
 }
@@ -286,18 +290,17 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
     //      = 2 : draw all
 
     string plotsDestination = "/eos/user/t/tomei/www/graviton/";
-    float lumin = 36.811;   // 2016 total
+    float lumin = 35.867;   // 2016 total, 2016-02-11 update
     //float lumin = 12.9; // ICHEP
     //float lumin = 4.12; // Run E
     //float lumin = 3.19; // Run F
     //float lumin = 7.72; // Run G
     //float lumin = 8.86; // Run H
-    //float lumin = 29.1; // All but Run G
     setTDRStyle();
     gROOT->ProcessLine("gErrorIgnoreLevel = 1001;");
     // gStyle->SetOptStat(1111111);
-    const int nDatasets = 37;          // Moriond: 11
-    const int nDatasetsMC = 9;         // Moriond: 9
+    const int nDatasets = 39;
+    const int nDatasetsMC = 11;
 
     TFile *inputFile[nDatasets];
     TChain *inputTree[nDatasets];
@@ -307,15 +310,17 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
     Float_t sumWeights[nDatasets];
     Int_t mass[nDatasets];
 
-    string Dsname[nDatasets] = {"ggHiggs750",
-                                "ggHiggs900",
+    string Dsname[nDatasets] = {"ggHiggs1000",
+                                "ggHiggs1500",
                                 "DY1Jet",
                                 "DY2Jet",
                                 "DY3Jet",
                                 "DY4Jet",
+                                "DYBFiltJets",
+                                "DYBJets",
                                 "TTBar",
-                                "WZDiboson",
-                                "ZZDiboson",
+                                "WZDib",
+                                "ZZDib",
                                 "DoubleEG2016B",
                                 "DoubleMu2016B",
                                 "SingleEG2016B",
@@ -551,7 +556,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
     Int_t LumiNumber;
     Float_t genEventWeight;
     Float_t overallEventWeight;
-    Float_t Nvtx;
+    Short_t Nvtx;
     Float_t genHMass;
     vector<Float_t> *ZZMass = 0;
     vector<Float_t> *ZZMass_up = 0;
@@ -603,7 +608,8 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
                     else
                         h1[v][pr][rs][nt] = new TH1F(Form("h1_%s_%s_%s_%s", varName[v].c_str(), sFS[rs].c_str(), typeS[nt].c_str(), sProcess[pr].c_str()),
                                                      Form("h1_%s_%s_%s_%s", varName[v].c_str(), sFS[rs].c_str(), typeS[nt].c_str(), sProcess[pr].c_str()),
-                                                     varNbin[v] / 2, varMin[v], varMax[v]);
+                                                     //varNbin[v] / 2, varMin[v], varMax[v]);
+                                                     varNbin[v], varMin[v], varMax[v]);
                     h1[v][pr][rs][nt]->Sumw2();
                 }
             }
@@ -694,6 +700,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
         cout << filestring << endl;
         for (int d = 0; d < nDatasets; d++) {
             if (string(fileName).find(Dsname[d].c_str()) != std::string::npos) {
+                //cout << "Matched! Adding " << filestring << " to dataset " << Dsname[d].c_str() << endl;
                 inputTree[d]->Add(filestring);
                 if (d < nDatasetsMC) {
                     hCounters[d] = (TH1F *)ftemp->Get("ZZTree/Counters");
@@ -766,11 +773,10 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 
         /// FIXME: this is very error-prone, change to enums
         int process;
-        if (d == 0) process = 1;
-        else if (d == 1) process = 2;
-        else if (d > 1 && d < 6) process = 3;
-        else if (d == 6) process = 4;
-        else if (d > 6 && d < 9) process = 5;
+        if (d == 0 || d == 1) process = 1;
+        else if (d > 1 && d < 8) process = 3;
+        else if (d == 8) process = 4;
+        else if (d > 8 && d < 11) process = 5;
         // else if (d==25) process=6;
         else process = 0;
 
@@ -788,10 +794,11 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
             cout << "Processing dataset " << Dsname[d] << " (" << entries << " entries)" << endl;
         }
 
+        cout << "loop for entries" << endl;
         /// Begin loop over entries
         for (Long64_t z = 0; z < entries; ++z) {
 
-            // cout<<"Processing entry "<<z<<endl;
+            //cout<<"Processing entry "<<z<<endl;
 
             inputTree[d]->GetEntry(z);
             bool writeThis = (process == 0 && sync);
@@ -804,6 +811,8 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 
             if (process > 0) eventWeight = (lumin * 1000 * scaleF[process] * overallEventWeight  / sumWeights[d]) * xsec ;
             if (process > 0 && z == 0) cout << "cross-section = " << xsec << " pb; eventweight = " << eventWeight << endl;
+
+            if(Z1Mass->size() ==0 or Z2Mass->size() ==0) continue;
 
             // keep only events around nominal mass!!!
             if (enforceNarrowWidth && mass[d] > 0 && fabs(genHMass - (float)mass[d]) > 0.01 * mass[d]) continue;
@@ -872,6 +881,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
             }
 
             // find leading leptons
+
             float pt1stLep = 0.0001;
             float pt2ndLep = 0.0001;
             float eta1stLep = 0.0001;
@@ -909,6 +919,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
             /// Actually... why is this linked with ZZCandType->at(0), i.e., the
             /// type of the FIRST candidate?
             int preferType = 0;
+
             // and dump for synchronization
             if (ZZMass->size() == 1 && abs(ZZCandType->at(0)) == 1) {
                 if (ZZMass->at(0) > 400) {
@@ -927,16 +938,16 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
                 }
                 preferType = 2;
             } else if (ZZMass->size() == 2 && abs(ZZCandType->at(0)) == 1) {
-                
+
                 if (ZZMass->at(0) > 400) {
                     float mela[2] = {0., 0.};
                     float vbfmela[2] = {0., 0.};
-                    
+
                     for (unsigned int theCand = 0; theCand < 2; theCand++) {
                         mela[theCand] = 1. / (1. + getDZjjspin0Constant(ZZMass->at(theCand)) * (pqqZJJ_VAMCFM->at(theCand) / p0plus_VAJHU->at(theCand)));
                         vbfmela[theCand] = ((phjj_VAJHU_highestPTJets->at(theCand) > 0. && nExtraJets > 1) ? 1. / (1. + getDVBF2jetsConstant(ZZMass->at(theCand)) * (phjj_VAJHU_highestPTJets->at(theCand) / pvbf_VAJHU_highestPTJets->at(theCand))) : -1.);
                     }
-                    
+
                     if (writeThis) myfile << RunNumber << ":" << EventNumber << ":" << LumiNumber << ":" << Z2Mass->at(0)  << ":" << (abs(Z2Flav->at(0)) == 121 ? "Ele:" : "Muo:")  << pt1stLep << ":" << pt2ndLep << ":" << ZZMass->at(0) << ":" << Z1Mass->at(0) << ":" << Z1tau21->at(0) << ":" << Z1Pt->at(0) << ":" << mela[0] << ":" << vbfmela[0] << ":" << ZZMass->at(1) << ":" << ZZMassRefit->at(1) << ":" << Z1Mass->at(1) << ":" << pt1stJet << ":" << pt2ndJet << ":" << btag1stJet << ":" << mela[1] << ":" << vbfmela[1] << endl;
                     nPassMerged++;
                     nPassResol++;
@@ -946,15 +957,15 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
                        else if (ZZCandType->at(1) > 0) preferType = 1;
                        else preferType = 2;  */
                 }/// Close check of ZZMass > 400 GeV
-                
+
                 // merged -> resolved (but ask for J quality)
-                if (Z2Pt->at(0) > 200. && Z1Pt->at(0) > 300. && Z1tau21->at(0) < 0.6) preferType = 1;
+                if (Z2Pt->at(0) > 200. && Z1Pt->at(0) > 300. && Z1tau21->at(0) < tau21Thres) preferType = 1;
                 else preferType = 2;
             }
 
             // end dump for synchronization and choice
 
-            // apply trigger weights
+            /// FIXME: apply trigger weights and/or scale factors
             if (weightMCtrig) {
                 if (process > 0) {  //mc
                     if (abs(Z2Flav->at(0)) == 121) {
@@ -992,8 +1003,8 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
             }
 
             // ----- fill histos
-            
-            /// Begin loop over flavours. We do it like this to be able to fill 
+
+            /// Begin loop over flavours. We do it like this to be able to fill
             /// electrons in 0 and 1, and muons in 1 and 2.
             /// So it translates to ele=0, both=1, mu=2.
             for (int rs = fsstart; rs < fsend; rs++) {
@@ -1029,20 +1040,20 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
                            if (ZZMassRefit->at(theCand) > 950.) continue;
                             } */
 
-                        // correct tau21
+                        /// FIXME: correct tau21, and understand how/why is this done.-
                         float t12weight = 1.;
-                        if (process > 0 && abs(ZZCandType->at(theCand)) == 1) {
+                        if (weighttau21==true && process > 0 && abs(ZZCandType->at(theCand)) == 1) {
                             for (int itau = 0; itau < 24; itau++) {
                                 if (Z1tau21->at(theCand) > tau21bin[itau] && Z1tau21->at(theCand) < tau21bin[itau + 1]) t12weight = 1. + tau21corr[itau];
                             }
                         }
 
                         /// FIXME: is this actually used???
-                        int whichTmvaTree = -1;
-                        if (typ == mergedSR && process == 2) whichTmvaTree = 0;
-                        if (typ == mergedSR && process == 3) whichTmvaTree = 1;
-                        if (typ == resolvedSR && process == 2) whichTmvaTree = 2;
-                        if (typ == resolvedSR && process == 3) whichTmvaTree = 3;
+                        //int whichTmvaTree = -1;
+                        //if (typ == mergedSR && process == 2) whichTmvaTree = 0;
+                        //if (typ == mergedSR && process == 3) whichTmvaTree = 1;
+                        //if (typ == resolvedSR && process == 2) whichTmvaTree = 2;
+                        //if (typ == resolvedSR && process == 3) whichTmvaTree = 3;
 
                         float mela = 1. / (1. + getDZjjspin0Constant(ZZMass->at(theCand)) * (pqqZJJ_VAMCFM->at(theCand) / p0plus_VAJHU->at(theCand)));
                         float mela2 = 1. / (1. + getDZjjspin2Constant(ZZMass->at(theCand)) * (pqqZJJ_VAMCFM->at(theCand) / p2bplus_VAJHU->at(theCand)));
@@ -1052,8 +1063,8 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
                         /// FIXME: change magic numbers to constants
                         if ((typ == resolvedSB || typ == resolvedSR) && nExtraJets > 1 && vbfmela > 1.043 - 460. / (ZZMass->at(theCand) + 634.)) typ = typ + 8;
                         if ((typ == mergedSB || typ == mergedSR) && nExtraJets > 1 && vbfmela > 1.043 - 460. / (ZZMass->at(theCand) + 634.)) typ = typ + 8;
-    
-                        /// If we are untagged and pass the b-tag cut, move to b-tag category 
+
+                        /// If we are untagged and pass the b-tag cut, move to b-tag category
                         if ((typ == resolvedSB || typ == resolvedSR) && btag1stJet > bTagThres && btag2ndJet > bTagThres) typ = typ + 4;
                         if ((typ == mergedSB || typ == mergedSR) && btag1stSubjet > bTagThres && btag2ndSubjet > bTagThres) typ = typ + 4;
 
@@ -1095,7 +1106,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
                         */
                         if (tmvaZ2Mass < 60.) continue;
                         if (tmvaZ1Pt < 100. || tmvaZ2Pt < 100.) continue;   // TEST!
-                        if ((typ == 1 || typ == 2 || typ == 5 || typ == 6 || typ == 9 || typ == 10) && tmvaZ1tau21 > 0.6) continue;
+                        if ((typ == 1 || typ == 2 || typ == 5 || typ == 6 || typ == 9 || typ == 10) && tmvaZ1tau21 > tau21Thres) continue;
                         if (ZZMass->at(theCand) < 300.) continue;
                         // if (mela < 0.8) continue;
 
@@ -1195,7 +1206,8 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
                             hmass[process][17]->Fill(mela2, eventWeight * t12weight);
                             hmass[process][18]->Fill(vbfmela, eventWeight * t12weight);
                         }
-
+                        h1[27][process][rs][typ]->Fill(Nvtx, eventWeight * t12weight);
+                        
                         // if (rs == 1 && whichTmvaTree > -1) outputTree[whichTmvaTree]->Fill();
                     } else { // control region for QG (only fill some variables)
 
@@ -1358,6 +1370,10 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
             for (int norm = 0; norm < 2; norm++) {
                 for (int rs = 0; rs < nFS; rs++) { // ee, mumu, or all
                     for (int v = 0; v < nVariables; v++) {
+
+                        /// Comment this line to draw ALL variables
+                        //if(not(v==3 or v==5 or v==21 or v==27)) continue; // Draw only some variables.
+                        
                         for (int nt = 0; nt < nType; nt++) {
 
                             float normal = 1.;
@@ -1459,11 +1475,11 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
                             // }
 
                             if (norm) {
-                                c1.SaveAs(Form("/eos/user/t/tomei/www/graviton/%snorm/%s_%s_%s.png", dirout.c_str(), varName[v].c_str(), sFS[rs].c_str(), typeS[nt].c_str()));
-                                c1.SaveAs(Form("/eos/user/t/tomei/www/graviton/%snorm/%s_%s_%s.pdf", dirout.c_str(), varName[v].c_str(), sFS[rs].c_str(), typeS[nt].c_str()));
+                                c1.SaveAs(Form("%s/%snorm/%s_%s_%s.png", dirpath.c_str(), dirout.c_str(), varName[v].c_str(), sFS[rs].c_str(), typeS[nt].c_str()));
+                                c1.SaveAs(Form("%s/%snorm/%s_%s_%s.pdf", dirpath.c_str(), dirout.c_str(), varName[v].c_str(), sFS[rs].c_str(), typeS[nt].c_str()));
                             } else {
-                                c1.SaveAs(Form("/eos/user/t/tomei/www/graviton/%s/%s_%s_%s.png", dirout.c_str(), varName[v].c_str(), sFS[rs].c_str(), typeS[nt].c_str()));
-                                c1.SaveAs(Form("/eos/user/t/tomei/www/graviton/%s/%s_%s_%s.pdf", dirout.c_str(), varName[v].c_str(), sFS[rs].c_str(), typeS[nt].c_str()));
+                                c1.SaveAs(Form("%s/%s/%s_%s_%s.png", dirpath.c_str(), dirout.c_str(), varName[v].c_str(), sFS[rs].c_str(), typeS[nt].c_str()));
+                                c1.SaveAs(Form("%s/%s/%s_%s_%s.pdf", dirpath.c_str(), dirout.c_str(), varName[v].c_str(), sFS[rs].c_str(), typeS[nt].c_str()));
                             }
                         }
                     }
