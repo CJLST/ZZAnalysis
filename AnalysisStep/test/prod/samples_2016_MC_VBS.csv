@@ -1,6 +1,6 @@
 identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments,comment
 
-# MC samples used in ZZjj VBS analysis
+###,,,,,,,,,,,MC samples used in ZZjj VBS analysis
 
 ### See comment field,,,,,,,,,,,Unless otherwise stated; signal x-sections are taken from https://hypernews.cern.ch/HyperNews/CMS/get/higgs/1738.html
 ###,,,,,,,,,,,in the [120;130] range they are taken from the YR4 SM 13TeV tab; i.e. they are N3LO QCD + NLO EW
