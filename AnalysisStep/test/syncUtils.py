@@ -283,9 +283,9 @@ class Candidate:
             line  += ":" + str(int(self.lumi))
             line  += ":" + str(int(self.event))
 	    channel = ''
-	    if self.ZZFlav == 11^4 : channel = 'eeee'
-	    if self.ZZFlav == 11^1*13^2 : channel = 'eemm'
-	    if self.ZZFlav == 13^4 : channel = 'mmmm'
+	    if self.ZZFlav == 11**4 : channel = 'eeee'
+	    if self.ZZFlav == 11**2*13**2 : channel = 'eemm'
+	    if self.ZZFlav == 13**4 : channel = 'mmmm'
 	    line  += ":%s"%channel
             line  += ":{0:.2f}".format(self.ZZMass)
             line  += ":" + "{0:.2f}".format(self.Z1Mass)
