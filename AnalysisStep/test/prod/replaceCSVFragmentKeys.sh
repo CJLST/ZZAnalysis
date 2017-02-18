@@ -1,5 +1,10 @@
 #!/bin/bash
 
+##
+# This script replaces the csv file template that contains "LHEProbabilities_-PROD-_SIG_0PM_H-HMASS-_POWHEG.py" as a pyFragment to contain proper -HMASS-.
+# Specify the csv template file as argument 1 to this script.
+##
+
 csvfile=$1
 newcsvfile=$csvfile"tmp"
 rm -f $newcsvfile
