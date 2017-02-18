@@ -512,7 +512,7 @@ elif (LEPTON_SETUP == 2017):
        gbrForestName = cms.string("gedelectron_p4combination_25ns"),
        isMC = cms.bool(IsMC),
        isSynchronization = cms.bool(False),
-       correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/Winter_2016_reReco_v1_ele")
+       correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/Moriond17_23Jan")
    )
 
 
