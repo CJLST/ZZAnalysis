@@ -509,10 +509,13 @@ if (LEPTON_SETUP == 2016):
 elif (LEPTON_SETUP == 2017):
    process.calibratedPatElectrons = cms.EDProducer("CalibratedPatElectronProducerRun2",
        electrons = cms.InputTag('selectedSlimmedElectrons'),
-       gbrForestName = cms.string("gedelectron_p4combination_25ns"),
+       gbrForestName = cms.vstring('electron_eb_ECALTRK_lowpt', 'electron_eb_ECALTRK',
+                                   'electron_ee_ECALTRK_lowpt', 'electron_ee_ECALTRK',
+                                   'electron_eb_ECALTRK_lowpt_var', 'electron_eb_ECALTRK_var',
+                                   'electron_ee_ECALTRK_lowpt_var', 'electron_ee_ECALTRK_var'),
        isMC = cms.bool(IsMC),
        isSynchronization = cms.bool(False),
-       correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/Moriond17_23Jan")
+       correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/Moriond17_23Jan_ele")
    )
 
 
