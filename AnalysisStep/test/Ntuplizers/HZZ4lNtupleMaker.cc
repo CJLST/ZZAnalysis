@@ -582,7 +582,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
 
   //Scale factors for data/MC efficiency
   if (!skipMuDataMCWeight) {
-    edm::FileInPath fipMu("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_Moriond2017.root");
+    edm::FileInPath fipMu("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_Moriond2017_v2.root");
     TFile *fMuWeight = TFile::Open(fipMu.fullPath().data(),"READ");
     hTH2D_Mu_All = (TH2D*)fMuWeight->Get("FINAL")->Clone();
     hTH2D_Mu_Unc = (TH2D*)fMuWeight->Get("ERROR")->Clone();
