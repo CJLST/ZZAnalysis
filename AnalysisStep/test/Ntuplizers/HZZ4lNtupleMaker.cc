@@ -252,6 +252,7 @@ namespace {
   Short_t genExtInfo  = 0;
   Float_t xsection  = 0;
   Float_t dataMCWeight  = 0;
+  Float_t dataMCWeight_Unc = 0;
   Float_t trigEffWeight  = 0;
   Float_t HqTMCweight  = 0;
   Float_t ZXFakeweight  = 0;
@@ -340,7 +341,7 @@ private:
   void FillAssocLepGenInfo(std::vector<const reco::Candidate *>& AssocLeps);
 
   
-  Float_t getAllWeight(const reco::Candidate* Lep) const;
+  Float_t getAllWeight(const vector<const reco::Candidate*>& leptons, Float_t& eventUncert) const;
   Float_t getHqTWeight(double mH, double genPt) const;
   Float_t getFakeWeight(Float_t LepPt, Float_t LepEta, Int_t LepID, Int_t LepZ1ID);
 
@@ -1515,9 +1516,9 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   //When the trigger is not applied in the MC, apply a trigger efficiency factor instead (FIXME: here hardcoding the efficiencies computed for ICHEP2016)
   trigEffWeight = 1.;
   if(isMC) {
-    for(unsigned int i=0; i<leptons.size(); ++i){
-      dataMCWeight *= getAllWeight(leptons[i]);
-    }
+    
+    dataMCWeight = getAllWeight(leptons,dataMCWeight_Unc);
+    
     if (applyTrigEffWeight){
       Int_t ZZFlav = abs(Z1Flav*Z2Flav);
       if(ZZFlav==121*121 || ZZFlav==121*242) //4e
@@ -1671,87 +1672,101 @@ void HZZ4lNtupleMaker::fillDescriptions(edm::ConfigurationDescriptions& descript
 }
 
 
-Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
+Float_t HZZ4lNtupleMaker::getAllWeight(const vector<const reco::Candidate*>& leptons, Float_t& eventUncert) const
 {
-  Int_t   myLepID = abs(Lep->pdgId());
-  if (skipMuDataMCWeight&& myLepID==13) return 1.;
-  if (skipEleDataMCWeight&& myLepID==11) return 1.;
-  if (myLepID==22) return 1.; // FIXME - what SFs should be used for TLEs?
-  Float_t weight  = 1.;
+  Float_t totWeight = 1.;
+  Float_t ele_Unc2 = 0.;
+  Float_t muon_Unc2 = 0.;
+  
 
-  Float_t myLepPt = Lep->pt();
-  Float_t myLepEta = Lep->eta();
-  Float_t mySIP = userdatahelpers::getUserFloat(Lep, "SIP"); 
+  for(unsigned int i=0; i<leptons.size(); ++i){ 
+    Int_t   myLepID = abs(leptons[i]->pdgId());
+    if (skipMuDataMCWeight&& myLepID==13) return 1.;
+    if (skipEleDataMCWeight&& myLepID==11) return 1.;
+    if (myLepID==22) return 1.; // FIXME - what SFs should be used for TLEs?
+    Float_t weight  = 1.;
+  
+    Float_t myLepPt = leptons[i]->pt();
+    Float_t myLepEta = leptons[i]->eta();
+    Float_t mySIP = userdatahelpers::getUserFloat(leptons[i], "SIP"); 
 
-  Float_t RecoSF = 0.;
-  Float_t RecoSF_Unc = 0.;
+    Float_t RecoSF = 0.;
+    Float_t RecoSF_Unc = 0.;
 
-  Float_t SelSF = 0.;
-  Float_t SelSF_Unc = 0.;
+    Float_t SelSF = 0.;
+    Float_t SelSF_Unc = 0.;
 
 
-  if(myLepID == 13 ){
-    if(myLepPt >= 5. ) { //FIXME assume this is the min value for SFs
-      RecoSF = 1.; // The scale factor combines all afficiecnies
-      RecoSF_Unc = 0.;	
-      SelSF = hTH2D_Mu_All->GetBinContent(hTH2D_Mu_All->GetXaxis()->FindBin(myLepEta),hTH2D_Mu_All->GetYaxis()->FindBin(std::min(myLepPt,199.f))); //last bin contains the overflow
-      SelSF_Unc = hTH2D_Mu_Unc->GetBinContent(hTH2D_Mu_Unc->GetXaxis()->FindBin(myLepEta),hTH2D_Mu_Unc->GetYaxis()->FindBin(std::min(myLepPt,199.f))); //last bin contains the overflow
-    }
-  } else if(myLepID == 11) {
+    if(myLepID == 13 ){
+      if(myLepPt >= 5. ) { //FIXME assume this is the min value for SFs
+        RecoSF = 1.; // The scale factor combines all afficiecnies
+        RecoSF_Unc = 0.;	
+        SelSF = hTH2D_Mu_All->GetBinContent(hTH2D_Mu_All->GetXaxis()->FindBin(myLepEta),hTH2D_Mu_All->GetYaxis()->FindBin(std::min(myLepPt,199.f))); //last bin contains the overflow
+        SelSF_Unc = hTH2D_Mu_Unc->GetBinContent(hTH2D_Mu_Unc->GetXaxis()->FindBin(myLepEta),hTH2D_Mu_Unc->GetYaxis()->FindBin(std::min(myLepPt,199.f))); //last bin contains the overflow
+        muon_Unc2 += RecoSF_Unc*RecoSF_Unc + SelSF_Unc*SelSF_Unc; // assume full correlation between different muons (and uncorrelated reco and sel uncertainties)
+      }
+    } else if(myLepID == 11) {
 
-    // electron reconstruction scale factor, as a function of supercluster eta
-    Float_t SCeta = userdatahelpers::getUserFloat(Lep,"SCeta");
+      // electron reconstruction scale factor, as a function of supercluster eta
+      Float_t SCeta = userdatahelpers::getUserFloat(leptons[i],"SCeta");
     
-    Float_t lookup_pT = 50.;  // FIXME: the histogram contains 1 bin only, and overflows/underflows are intended to be included (?)
+      Float_t lookup_pT = 50.;  // FIXME: the histogram contains 1 bin only, and overflows/underflows are intended to be included (?)
 
-    RecoSF = hTH2F_El_Reco->GetBinContent(hTH2F_El_Reco->GetXaxis()->FindBin(SCeta),hTH2F_El_Reco->GetYaxis()->FindBin(lookup_pT));
-    RecoSF_Unc = hTH2F_El_Reco->GetBinError(hTH2F_El_Reco->GetXaxis()->FindBin(SCeta),hTH2F_El_Reco->GetYaxis()->FindBin(lookup_pT));
+      RecoSF = hTH2F_El_Reco->GetBinContent(hTH2F_El_Reco->GetXaxis()->FindBin(SCeta),hTH2F_El_Reco->GetYaxis()->FindBin(lookup_pT));
+      RecoSF_Unc = hTH2F_El_Reco->GetBinError(hTH2F_El_Reco->GetXaxis()->FindBin(SCeta),hTH2F_El_Reco->GetYaxis()->FindBin(lookup_pT));
 
-    // POG recommendation to add 1% systematics for pT<20 or >80 GeV
-    // see https://twiki.cern.ch/twiki/bin/view/CMS/EgammaIDRecipesRun2#
-    if(myLepPt < 20. || myLepPt > 80.) RecoSF_Unc += 0.01;
+      // POG recommendation to add 1% systematics for pT<20 or >80 GeV
+      // see https://twiki.cern.ch/twiki/bin/view/CMS/EgammaIDRecipesRun2#
+      if(myLepPt < 20. || myLepPt > 80.) RecoSF_Unc += 0.01;
 
-    if(mySIP >= 4.0 ) { // FIXME: use a better way to find RSE electrons!
-        // This is also the case for the loose lepton in Z+l
-	SelSF = hTH2F_El_RSE->GetBinContent(hTH2F_El_RSE->FindFixBin(SCeta, std::min(myLepPt,199.f)));
-	SelSF_Unc = hTH2F_El_RSE->GetBinError(hTH2F_El_RSE->FindFixBin(SCeta, std::min(myLepPt,199.f)));
+      if(mySIP >= 4.0 ) { // FIXME: use a better way to find RSE electrons!
+          // This is also the case for the loose lepton in Z+l
+   	  SelSF = hTH2F_El_RSE->GetBinContent(hTH2F_El_RSE->FindFixBin(SCeta, std::min(myLepPt,199.f)));
+ 	  SelSF_Unc = hTH2F_El_RSE->GetBinError(hTH2F_El_RSE->FindFixBin(SCeta, std::min(myLepPt,199.f)));
+      } else {
+          if(year >= 2016) {
+              if((bool)userdatahelpers::getUserFloat(leptons[i],"isCrack")) {
+                SelSF = hTH2D_El_IdIsoSip_Cracks->GetBinContent(hTH2D_El_IdIsoSip_Cracks->FindFixBin(SCeta, std::min(myLepPt,199.f)));
+                SelSF_Unc = hTH2D_El_IdIsoSip_Cracks->GetBinError(hTH2D_El_IdIsoSip_Cracks->FindFixBin(SCeta, std::min(myLepPt,199.f)));
+              } else {
+                SelSF = hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->FindFixBin(SCeta, std::min(myLepPt,199.f)));
+                SelSF_Unc = hTH2D_El_IdIsoSip_notCracks->GetBinError(hTH2D_El_IdIsoSip_notCracks->FindFixBin(SCeta, std::min(myLepPt,199.f)));
+	      }
+          } else {
+            edm::LogError("MC scale factor") << "ele SFs for < 2016 no longer supported";
+            abort();
+          }
+      }
+      ele_Unc2 += RecoSF_Unc*RecoSF_Unc + SelSF_Unc*SelSF_Unc; // assume full correlation between different electrons (and uncorrelated reco and sel uncertainties)
     } else {
-        if(year >= 2016) {
-            if((bool)userdatahelpers::getUserFloat(Lep,"isCrack")) {
-              SelSF = hTH2D_El_IdIsoSip_Cracks->GetBinContent(hTH2D_El_IdIsoSip_Cracks->FindFixBin(SCeta, std::min(myLepPt,199.f)));
-              SelSF_Unc = hTH2D_El_IdIsoSip_Cracks->GetBinError(hTH2D_El_IdIsoSip_Cracks->FindFixBin(SCeta, std::min(myLepPt,199.f)));
-            } else {
-              SelSF = hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->FindFixBin(SCeta, std::min(myLepPt,199.f)));
-              SelSF_Unc = hTH2D_El_IdIsoSip_notCracks->GetBinError(hTH2D_El_IdIsoSip_notCracks->FindFixBin(SCeta, std::min(myLepPt,199.f)));
-	    }
-        } else {
-          edm::LogError("MC scale factor") << "ele SFs for < 2016 no longer supported";
-          abort();
-        }
+      edm::LogError("MC scale factor") << "ERROR! wrong lepton ID "<<myLepID;
+      weight = 0.;
     }
-  } else {
-    edm::LogError("MC scale factor") << "ERROR! wrong lepton ID "<<myLepID;
-    weight = 0.;
-  }
 
-  LepRecoSF.push_back(RecoSF);
-  LepRecoSF_Unc.push_back(RecoSF_Unc);
+    LepRecoSF.push_back(RecoSF);
+    LepRecoSF_Unc.push_back(RecoSF_Unc);
 
-  weight *= RecoSF;
+    weight *= RecoSF;
 
-  LepSelSF.push_back(SelSF);
-  LepSelSF_Unc.push_back(SelSF_Unc);
+    LepSelSF.push_back(SelSF);
+    LepSelSF_Unc.push_back(SelSF_Unc);
 
-  weight *= SelSF;
+    weight *= SelSF;
 
 
- if(weight < 0.001 || weight > 10.){
-    edm::LogError("MC scale factor") << "ERROR! LEP out of range! myLepPt = " << myLepPt << " myLepEta = " << myLepEta <<" myLepID "<<myLepID<< " weight = " << weight;
-    edm::LogWarning("MC scale factor") << "Overall weight: " << weight << " RECO " << RecoSF << " +-" << RecoSF_Unc << " selection " << SelSF << " +-" << SelSF_Unc;      
-    //abort();  //no correction should be zero, if you find one, stop
-  }
+   if(weight < 0.001 || weight > 10.){
+      edm::LogError("MC scale factor") << "ERROR! LEP out of range! myLepPt = " << myLepPt << " myLepEta = " << myLepEta <<" myLepID "<<myLepID<< " weight = " << weight;
+      edm::LogWarning("MC scale factor") << "Overall weight: " << weight << " RECO " << RecoSF << " +-" << RecoSF_Unc << " selection " << SelSF << " +-" << SelSF_Unc;      
+      //abort();  //no correction should be zero, if you find one, stop
+    }
 
-  return weight;
+
+    totWeight *= weight;
+  } 
+  
+  eventUncert = sqrt(ele_Unc2 + muon_Unc2); // assume they are uncorrelated
+
+  return totWeight;
 }
 
 
@@ -2069,6 +2084,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("PUWeight_Dn", PUWeight_Dn, failedTreeLevel >= minimalFailedTree);
     myTree->Book("PUWeight_Up", PUWeight_Up, failedTreeLevel >= minimalFailedTree);
     myTree->Book("dataMCWeight", dataMCWeight, false);
+    myTree->Book("dataMCWeight_Unc", dataMCWeight_Unc, false);
     myTree->Book("trigEffWeight", trigEffWeight, false);
     myTree->Book("overallEventWeight", overallEventWeight, false);
     myTree->Book("HqTMCweight", HqTMCweight, failedTreeLevel >= minimalFailedTree);
