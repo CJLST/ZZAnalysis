@@ -204,25 +204,25 @@ process.CRZLTreelooseEle.channel = 'ZL'
 process.CRZLTreelooseEle.CandCollection = 'ZlCandlooseEle'
 
 
-### TLE Signal region
-process.ZZTreetle = TreeSetup.clone()
-process.ZZTreetle.channel = 'ZZ'
-process.ZZTreetle.is_loose_ele_selection = cms.bool(True)
-process.ZZTreetle.CandCollection = 'ZZCandtle'
-
-### TLE Trees for control regions only
-process.CRZLLTreetle = TreeSetup.clone()
-process.CRZLLTreetle.channel = 'ZLL'
-process.CRZLLTreetle.CandCollection = 'ZLLCandtle'
-#process.CRZLLTreetle.is_loose_ele_selection = cms.bool(True)
-#process.CRZLLTreetle.CandCollection_regular = cms.untracked.string('ZLLCand')
-
-### TLE Trilepton CR, for fake rate
-process.CRZLTreetle = TreeSetup.clone()
-process.CRZLTreetle.channel = 'ZL'
-process.CRZLTreetle.CandCollection = 'ZlCandtle'
-#process.CRZLTreetle.is_loose_ele_selection = cms.bool(True)
-#process.CRZLTreetle.CandCollection_regular = cms.untracked.string('ZlCand')
+#### TLE Signal region
+#process.ZZTreetle = TreeSetup.clone()
+#process.ZZTreetle.channel = 'ZZ'
+#process.ZZTreetle.is_loose_ele_selection = cms.bool(True)
+#process.ZZTreetle.CandCollection = 'ZZCandtle'
+#
+#### TLE Trees for control regions only
+#process.CRZLLTreetle = TreeSetup.clone()
+#process.CRZLLTreetle.channel = 'ZLL'
+#process.CRZLLTreetle.CandCollection = 'ZLLCandtle'
+##process.CRZLLTreetle.is_loose_ele_selection = cms.bool(True)
+##process.CRZLLTreetle.CandCollection_regular = cms.untracked.string('ZLLCand')
+#
+#### TLE Trilepton CR, for fake rate
+#process.CRZLTreetle = TreeSetup.clone()
+#process.CRZLTreetle.channel = 'ZL'
+#process.CRZLTreetle.CandCollection = 'ZlCandtle'
+##process.CRZLTreetle.is_loose_ele_selection = cms.bool(True)
+##process.CRZLTreetle.CandCollection_regular = cms.untracked.string('ZlCand')
 
 
 
@@ -283,8 +283,8 @@ if (ADDLOOSEELE) :
     if (PROCESS_CR or not IsMC):
         process.CRPath += process.CRlooseEle
         process.trees += cms.Sequence( process.ZZTreelooseEle + process.CRZLLTreelooseEle + process.CRZLTreelooseEle + process.CRZLLTreeZ1RSE)
-        process.CRPath += process.CRtle
-        process.trees += cms.Sequence( process.ZZTreetle + process.CRZLLTreetle + process.CRZLTreetle)
+        #process.CRPath += process.CRtle
+        #process.trees += cms.Sequence( process.ZZTreetle + process.CRZLLTreetle + process.CRZLTreetle)
     else:
         process.trees += cms.Sequence(process.ZZTreelooseEle)
-        process.trees += cms.Sequence(process.ZZTreetle)
+        #process.trees += cms.Sequence(process.ZZTreetle)

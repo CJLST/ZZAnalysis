@@ -138,6 +138,9 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     double jpt = j.pt();
     double jeta = j.eta();
     double jabseta = fabs(jeta);
+
+    // 20170220: using a flaot instead of adouble  changes of the JER seed from 99494 to 99495, and changes post JER jet pT.
+    // Note that while PAT::Candidate has this fucntion as double, we only save float accuracy in miniAOD anyway.
     double jphi = j.phi();
 
 

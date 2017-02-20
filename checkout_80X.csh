@@ -10,16 +10,14 @@
 ############## For CMSSW_8_0_26_patch1
 git cms-init
 # Preliminary electron scale and smearing corrections according to https://twiki.cern.ch/twiki/bin/view/CMS/EGMSmearer
-git cms-merge-topic -u shervin86:Moriond17_23Jan
+git cms-merge-topic rafaellopesdesa:EgammaAnalysis80_EGMSmearer_Moriond17_23Jan
+
 git cms-addpkg EgammaAnalysis/ElectronTools
 (cd EgammaAnalysis/ElectronTools/data ; git clone -b master https://github.com/ECALELFS/ScalesSmearings.git ; git checkout tags/Moriond17_23Jan_v1)
 
 
 #### Please do not add any custom (non-CMSSW) package before this line ####
 
-
-# Electron regression
-git cms-merge-topic rafaellopesdesa:RegressionCheckNegEnergy
 
 
 #ZZAnalysis
