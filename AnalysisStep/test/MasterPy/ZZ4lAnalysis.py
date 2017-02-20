@@ -39,6 +39,9 @@ declareDefault("APPLYJEC", True, globals())
 #Apply JER
 declareDefault("APPLYJER", True, globals())
 
+#Recorrect MET
+declareDefault("RECORRECTMET", True, globals())
+
 #FSR mode
 declareDefault("FSRMODE", "RunII", globals())
 
@@ -1256,6 +1259,67 @@ if FSRMODE=="Legacy" :
 
 
 ### ----------------------------------------------------------------------
+### Missing ET
+### ----------------------------------------------------------------------
+
+metTag = cms.InputTag("slimmedMETs")
+
+### Recorrect MET, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription#Instructions_for_8_0_X_X_26_patc
+if RECORRECTMET:
+
+    from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
+    runMetCorAndUncFromMiniAOD(process,
+                               isData=(not IsMC),
+                               )
+    metTag = cms.InputTag("slimmedMETs","","ZZ")
+
+    if not IsMC: 
+        ### recorrect MET based on e/gamma gain switch correction on the fly for Re-Miniaod Data
+        ### cf. https://twiki.cern.ch/twiki/bin/view/CMSPublic/ReMiniAOD03Feb2017Notes#MET_Recipes 
+
+        from PhysicsTools.PatUtils.tools.corMETFromMuonAndEG import corMETFromMuonAndEG
+        corMETFromMuonAndEG(process,
+                            pfCandCollection="",
+                            electronCollection="slimmedElectronsBeforeGSFix",
+                            photonCollection="slimmedPhotonsBeforeGSFix",
+                            corElectronCollection="slimmedElectrons",
+                            corPhotonCollection="slimmedPhotons",
+                            allMETEGCorrected=True,
+                            muCorrection=False,
+                            eGCorrection=True,
+                            runOnMiniAOD=True,
+                            postfix="MuEGClean"
+                            )
+        process.slimmedMETsMuEGClean = process.slimmedMETs.clone()
+        process.slimmedMETsMuEGClean.src = cms.InputTag("patPFMetT1MuEGClean")
+        process.slimmedMETsMuEGClean.rawVariation =  cms.InputTag("patPFMetRawMuEGClean")
+        process.slimmedMETsMuEGClean.t1Uncertainties = cms.InputTag("patPFMetT1%sMuEGClean")
+        del process.slimmedMETsMuEGClean.caloMET
+ 
+        process.egcorrMET = cms.Sequence(
+            process.cleanedPhotonsMuEGClean+process.cleanedCorPhotonsMuEGClean+
+            process.matchedPhotonsMuEGClean + process.matchedElectronsMuEGClean +
+            process.corMETPhotonMuEGClean+process.corMETElectronMuEGClean+
+            process.patPFMetT1MuEGClean+process.patPFMetRawMuEGClean+
+            process.patPFMetT1SmearMuEGClean+process.patPFMetT1TxyMuEGClean+
+            process.patPFMetTxyMuEGClean+process.patPFMetT1JetEnUpMuEGClean+
+            process.patPFMetT1JetResUpMuEGClean+process.patPFMetT1SmearJetResUpMuEGClean+
+            process.patPFMetT1ElectronEnUpMuEGClean+process.patPFMetT1PhotonEnUpMuEGClean+
+            process.patPFMetT1MuonEnUpMuEGClean+process.patPFMetT1TauEnUpMuEGClean+
+            process.patPFMetT1UnclusteredEnUpMuEGClean+process.patPFMetT1JetEnDownMuEGClean+
+            process.patPFMetT1JetResDownMuEGClean+process.patPFMetT1SmearJetResDownMuEGClean+
+            process.patPFMetT1ElectronEnDownMuEGClean+process.patPFMetT1PhotonEnDownMuEGClean+
+            process.patPFMetT1MuonEnDownMuEGClean+process.patPFMetT1TauEnDownMuEGClean+
+            process.patPFMetT1UnclusteredEnDownMuEGClean+process.slimmedMETsMuEGClean)
+
+        metTag = cms.InputTag("slimmedMETsMuEGClean","","ZZ")
+
+    ### somehow MET recorrection gets this lost again...
+    process.patJetsReapplyJEC.userData.userFloats.src += ['pileupJetIdUpdated:fullDiscriminant']
+    process.patJetsReapplyJEC.userData.userInts.src += ['pileupJetIdUpdated:fullId']
+
+
+### ----------------------------------------------------------------------
 ### Paths
 ### ----------------------------------------------------------------------
 
@@ -1266,6 +1330,12 @@ if APPLYJEC:
     process.Jets = cms.Path(process.pileupJetIdUpdated + process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.QGTagger + process.dressedJets )
 else:
     process.Jets = cms.Path( process.QGTagger + process.dressedJets )
+
+if RECORRECTMET:
+    if IsMC:
+        process.MET = cms.Path(process.fullPatMetSequence)
+    else:
+        process.MET = cms.Path(process.fullPatMetSequence + process.egcorrMET)
 
 
 ### ----------------------------------------------------------------------

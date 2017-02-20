@@ -110,9 +110,11 @@ namespace {
   Float_t KFactor_QCD_qqZZ_M = 0;
   Float_t KFactor_QCD_qqZZ_Pt = 0;
   Float_t PFMET  =  -99;
+  Float_t PFMET_jesUp  =  -99;
+  Float_t PFMET_jesDn  =  -99;
   Float_t PFMETPhi  =  -99;
-  Float_t PFMETNoHF  =  -99;
-  Float_t PFMETNoHFPhi  =  -99;
+  //Float_t PFMETNoHF  =  -99;
+  //Float_t PFMETNoHFPhi  =  -99;
   Short_t nCleanedJets  =  0;
   Short_t nCleanedJetsPt30  = 0;
   Short_t nCleanedJetsPt30_jecUp  = 0;
@@ -379,6 +381,7 @@ private:
   bool applySkim;       //   "     "      "         skim (if skipEmptyEvents=true)
   bool skipEmptyEvents; // Skip events whith no selected candidate (otherwise, gen info is preserved for all events; candidates not passing trigger&&skim are flagged with negative ZZsel)
   FailedTreeLevel failedTreeLevel;  //if/how events with no selected candidate are written to a separate tree (see miscenums.h for details)
+  edm::InputTag metTag;
   bool applyTrigEffWeight;// apply trigger efficiency weight (concerns samples where trigger is not applied)
   Float_t xsec;
   int year;
@@ -412,7 +415,7 @@ private:
   edm::EDGetTokenT<vector<reco::Vertex> > vtxToken;
   edm::EDGetTokenT<edm::View<pat::Jet> > jetToken;
   edm::EDGetTokenT<pat::METCollection> metToken;
-  edm::EDGetTokenT<pat::METCollection> metNoHFToken;
+  //edm::EDGetTokenT<pat::METCollection> metNoHFToken;
   edm::EDGetTokenT<pat::MuonCollection> muonToken;
   edm::EDGetTokenT<pat::ElectronCollection> electronToken;
 
@@ -476,6 +479,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   theFileName(pset.getUntrackedParameter<string>("fileName")),
   skipEmptyEvents(pset.getParameter<bool>("skipEmptyEvents")), // Do not store
   failedTreeLevel(FailedTreeLevel(pset.getParameter<int>("failedTreeLevel"))),
+  metTag(pset.getParameter<edm::InputTag>("metSrc")),
   applyTrigEffWeight(pset.getParameter<bool>("applyTrigEff")),
   xsec(pset.getParameter<double>("xsec")),
   year(pset.getParameter<int>("setup")),
@@ -516,8 +520,8 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   triggerResultToken = consumes<edm::TriggerResults>(edm::InputTag("TriggerResults"));
   vtxToken = consumes<vector<reco::Vertex> >(edm::InputTag("goodPrimaryVertices"));
   jetToken = consumes<edm::View<pat::Jet> >(edm::InputTag("cleanJets"));
-  metToken     = consumes<pat::METCollection>(edm::InputTag("slimmedMETs"));
-  metNoHFToken = consumes<pat::METCollection>(edm::InputTag("slimmedMETsNoHF"));
+  metToken = consumes<pat::METCollection>(metTag);
+  //metNoHFToken = consumes<pat::METCollection>(edm::InputTag("slimmedMETsNoHF"));
   muonToken = consumes<pat::MuonCollection>(edm::InputTag("slimmedMuons"));
   electronToken = consumes<pat::ElectronCollection>(edm::InputTag("slimmedElectrons"));
 
@@ -885,17 +889,20 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
   // MET
   Handle<pat::METCollection> metHandle;
-  Handle<pat::METCollection> metNoHFHandle;
   event.getByToken(metToken, metHandle);
-  event.getByToken(metNoHFToken, metNoHFHandle);
   if(metHandle.isValid()){
-    PFMET = metHandle->front().pt();
-    PFMETPhi = metHandle->front().phi();
+    const pat::MET &met = metHandle->front();
+    PFMET = met.pt();
+    PFMET_jesUp = met.shiftedPt(pat::MET::JetEnUp);
+    PFMET_jesDn = met.shiftedPt(pat::MET::JetEnDown);
+    PFMETPhi = met.phi();
   }
-  if(metNoHFHandle.isValid()){
-    PFMETNoHF = metNoHFHandle->front().pt();
-    PFMETNoHFPhi = metNoHFHandle->front().phi();
-  }
+  //Handle<pat::METCollection> metNoHFHandle;
+  //event.getByToken(metNoHFToken, metNoHFHandle);
+  //if(metNoHFHandle.isValid()){
+  //  PFMETNoHF = metNoHFHandle->front().pt();
+  //  PFMETNoHFPhi = metNoHFHandle->front().phi();
+  //}
 
 
   // number of reconstructed leptons
@@ -1930,9 +1937,11 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("NTrueInt",NTrueInt, failedTreeLevel >= fullFailedTree);
 
   myTree->Book("PFMET",PFMET, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMET_jesUp",PFMET_jesUp, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMET_jesDn",PFMET_jesDn, failedTreeLevel >= fullFailedTree);
   myTree->Book("PFMETPhi",PFMETPhi, failedTreeLevel >= fullFailedTree);
-  myTree->Book("PFMETNoHF",PFMETNoHF, failedTreeLevel >= fullFailedTree);
-  myTree->Book("PFMETNoHFPhi",PFMETNoHFPhi, failedTreeLevel >= fullFailedTree);
+  //myTree->Book("PFMETNoHF",PFMETNoHF, failedTreeLevel >= fullFailedTree);
+  //myTree->Book("PFMETNoHFPhi",PFMETNoHFPhi, failedTreeLevel >= fullFailedTree);
   myTree->Book("nCleanedJets",nCleanedJets, failedTreeLevel >= fullFailedTree);
   myTree->Book("nCleanedJetsPt30",nCleanedJetsPt30, failedTreeLevel >= fullFailedTree);
   myTree->Book("nCleanedJetsPt30_jecUp",nCleanedJetsPt30_jecUp, failedTreeLevel >= fullFailedTree);

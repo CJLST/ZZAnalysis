@@ -15,10 +15,12 @@ git cms-merge-topic rafaellopesdesa:EgammaAnalysis80_EGMSmearer_Moriond17_23Jan
 git cms-addpkg EgammaAnalysis/ElectronTools
 (cd EgammaAnalysis/ElectronTools/data ; git clone -b master https://github.com/ECALELFS/ScalesSmearings.git ; cd ScalesSmearings ; git checkout tags/Moriond17_23Jan_v1)
 
+#MET recipe according to https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription#Instructions_for_8_0_X_X_26_patc
+git cms-merge-topic cms-met:METRecipe_8020 -u
+git cms-merge-topic cms-met:METRecipe_80X_part2 -u
+
 
 #### Please do not add any custom (non-CMSSW) package before this line ####
-
-
 
 #ZZAnalysis
 git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis

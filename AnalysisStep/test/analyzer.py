@@ -144,6 +144,7 @@ TreeSetup = cms.EDAnalyzer("HZZ4lNtupleMaker",
                            skimPaths = cms.vstring(SkimPaths),
                            PD = cms.string(PD),
                            MCFilterPath = cms.string(MCFILTER),
+                           metSrc = metTag,
                            applyTrigEff = cms.bool(not APPLYTRIG), #add trigger efficiency as a weight, for samples where the trigger cannot be applied.
                            skipEmptyEvents = cms.bool(SKIP_EMPTY_EVENTS),
                            failedTreeLevel = cms.int32(FAILED_TREE_LEVEL),
