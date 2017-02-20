@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """
-Some tools stolen from https://github.com/CERN-PH-CMG/cmg-cmssw/blob/CMGTools-from-CMSSW_7_4_0/CMGTools/Production/python/eostools.py
+Some tools to handle accesing datasets information on dbs and files on eos 
+stolen from https://github.com/CERN-PH-CMG/cmg-cmssw/blob/CMGTools-from-CMSSW_7_4_0/CMGTools/Production/python/eostools.py
 and from CMGTools.Production.datasetToSource
 """
 
@@ -98,24 +99,25 @@ def runDBS(dataset, instance = 'prod/global'):
 
 
 def listFiles(sample, path, rec = False, full_info = False):
-    """Provides a list of the specified directory
+    """Provides a list of files with different methods according to path. Valid paths: 'list', 'dbs', 'dbs-USER', a local filesystem path, an eos path
     """
-    # -- listing on the local filesystem --
-
-    result = []
-
+    result = []    
+   
+    # -- list from a local file --
     if path=="list" :
         with open(sample) as f:
             result = f.readlines()
         return result
 
-    # listing from dbs
+    # -- listing from dbs --
     if path=="dbs" :
         files, _, _ =runDBS(sample)
         for line in files.split('\n'):
 #            result.append("root://cms-xrd-global.cern.ch//"+line)
             result.append(line)
         return result
+    
+    # -- listing from user dbs --
     elif path=="dbs-USER" :
 	print 'Querying USER db'
 	files, _, _ =runDBS(sample, 'prod/phys03')
@@ -124,7 +126,7 @@ def listFiles(sample, path, rec = False, full_info = False):
         return result
 
 
-    # listing from local dir
+    # -- listing from path=local dir --
     elif os.path.isdir( path ):
         if not rec:
             # not recursive
@@ -139,7 +141,7 @@ def listFiles(sample, path, rec = False, full_info = False):
             result.extend(allFiles)
             return result
 
-    # -- listing on EOS --
+    # -- listing from EOS (path = eos path prefix) --
     else  :
         cmd = 'dirlist'
         if rec:

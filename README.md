@@ -7,10 +7,10 @@ Please use CMSSW_8_0_26_patch1.
 
 Download and execute the setup script:
 ```
-wget -O /tmp/checkout_80X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_80X/checkout_80X.csh
+wget -O ${TMPDIR}/checkout_80X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_80X/checkout_80X.csh
 cd $CMSSW_BASE/src
 cmsenv
-source /tmp/checkout_80X.csh
+source ${TMPDIR}/checkout_80X.csh
 ```
 
 To update this package from the release

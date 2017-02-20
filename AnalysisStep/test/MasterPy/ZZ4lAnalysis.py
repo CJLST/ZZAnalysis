@@ -1315,25 +1315,13 @@ process.CR = cms.Sequence(
 
 ### Skim, triggers and MC filters (Only store filter result, no filter is applied)
 
-### 2011 HZZ Skim
-#process.afterSkimCounter = cms.EDProducer("EventCountProducer")
-#process.load("ZZAnalysis.AnalysisStep.HZZSkim_cfg")
-#process.skim = cms.Path(process.skim2011 + process.afterSkimCounter) # the 2011 skim
-
-### 2012 skim.
-#FIXME this is the version from /afs/cern.ch/user/p/psilva/public/HZZSkim/PDWG_HZZSkim_cff.py
-#      which is buggy!!
-#process.load("ZZAnalysis.AnalysisStep.PDWG_HZZSkim_cff")
-#SkimPaths = cms.vstring('HZZ4ePath', 'HZZ2e2mPath', 'HZZ2m2ePath', 'HZZ4mPath', 'HZZem2ePath', 'HZZem2mPath')
-
-# Reimplementation by Giovanni
+# 2012 skim, Reimplementation by Giovanni
 #process.load("ZZAnalysis.AnalysisStep.Skim2012_cfg")
 #process.SkimSequence = cms.Sequence(process.HZZSkim2012)
 #process.Skim = cms.Path(process.SkimSequence)
 
-
 #SkimPaths = cms.vstring('Skim')
-SkimPaths = cms.vstring('PVfilter') #Do not apply skim
+SkimPaths = cms.vstring('PVfilter') #Do not apply skim, just require a good PV
 
 # process.HF = cms.Path(process.heavyflavorfilter)
 
