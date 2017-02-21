@@ -123,7 +123,7 @@ elif (SAMPLE_TYPE == 2017):
     elif (DATA_TAG == "ReReco"):
         process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_2016SeptRepro_v7', '')
     elif (DATA_TAG == "PromptReco"):
-        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_Prompt_v14', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_Prompt_v16', '')
 
 print '\t',process.GlobalTag.globaltag
 
