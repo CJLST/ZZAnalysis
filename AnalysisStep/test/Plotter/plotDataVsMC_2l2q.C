@@ -55,6 +55,7 @@ int useHTBinned = 2;         // 0 - use simple DY inclusive
 
 bool enforceNarrowWidth = false;
 bool unblind = false;
+bool sophisticatedKFactors = false;
 
 int onlyOneLep = 1; // 0 - ee
                     // 1 - all leptons
@@ -63,10 +64,13 @@ int onlyOneLep = 1; // 0 - ee
 const double lowerZhadMass = 70.0;
 const double higherZhadMass = 105.0;
 const double higherHhadMass = 135.0;
+const double lowerZlepMass = 60.0;
+const double lowerZhadPt = 100.0; 
+const double lowerZlepPt = 100.0;
 const double bTagThres = 0.5426;
 const double tau21Thres = 0.6;
-//const string dirpath = "./plots";
-const string dirpath = "/eos/user/t/tomei/www/graviton/Moriond_V2";
+const string dirpath = "./plots";
+//const string dirpath = "/eos/user/t/tomei/www/graviton/Moriond_V2";
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -139,8 +143,8 @@ string varXLabel[nVariables] = {
 string varYLabel[nVariables] = {
     "Events / 25 GeV",
     "Events / 10 GeV",
-    "Events / 25 GeV",
-    "Events / 2.5 GeV",
+    "Events / 15 GeV",
+    "Events / 2.0 GeV",
     "Events / 2.5 GeV",
     "Events / 10 GeV",
     "Events / 10 GeV",
@@ -167,11 +171,11 @@ string varYLabel[nVariables] = {
     "Events",
 };
 
-Int_t  varNbin[nVariables] = {  110,   50,  110,  56,  44,   60,   60,  400,   100,  100,   50,   50,   100,  100,   50,   50,   50,   25,   25,    4,   50,    44,   50,  40,    82,   110, 40,   50};
+Int_t  varNbin[nVariables] = {  110,   50,  110,  70,  55,   60,   60,  400,   100,  100,   50,   50,   100,  100,   50,   50,   50,   25,   25,    4,   50,    44,   50,  40,    82,   110, 40,   50};
 Float_t varMin[nVariables] = {  250,    0,  250,  40,  40,    0,    0, -200,     0,    0, -0.2, -0.2,     0,    0, -0.2, -1.2, -1.2,   0.,   0., -0.5,   0., -0.05, -0.2,  0., -1.05,   250, 0., -0.5};
 Float_t varMax[nVariables] = {  3000, 500, 2000, 180, 150, 1500, 1500,    0,  1000, 1000,  1.2,  1.2,  1000, 1000,  1.2,  1.2,  1.2, 3.15, 3.15,  3.5, 300.,  1.05,  1.2,  1.,    1., 3000., 1., 49.5};
-Bool_t varLogx[nVariables] = {  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-Bool_t varLogy[nVariables] = {  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0};
+Bool_t varLogx[nVariables] = {  0,      0,    0,   0,   0,    0,    0,    0,     0,    0,    0,    0,     0,    0,    0,    0,    0,    0,    0,    0,    0,     0,    0,   0,     0,     0,  0,    0};
+Bool_t varLogy[nVariables] = {  1,      0,    1,   0,   0,    1,    1,    0,     1,    1,    0,    0,     1,    1,    0,    0,    0,    0,    0,    1,    1,     0,    0,   0,     1,     0,  0,    0};
 
 const int nMasses = 13;
 string signalMasses[nMasses] = {"200", "250", "300", "350", "400", "450", "500", "550", "600", "750", "900", "1000", "2000"};
@@ -278,6 +282,16 @@ float getDZjjspin2Constant(float ZZMass)
     return 0.14;
 }
 
+/// Function to correct LO to NLO in Zpt
+double theKFactor(double genZPt) {
+    double p0, p1, p2;
+    p0 =  6.55E-1;
+    p1 = -3.50E-3;
+    p2 = 100.0;
+    double result = 1+p0*exp(p1*(genZPt-p2));
+    return result;
+}
+
 bool passVBFCut(int nExtraJets, double vbfmela, double ZZMass)
 {
     return nExtraJets > 1 && vbfmela > 1.043 - 460. / ZZMass + 634.;
@@ -289,18 +303,31 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
     //      = 1 : draw only PAS-style plots
     //      = 2 : draw all
 
-    string plotsDestination = "/eos/user/t/tomei/www/graviton/";
     float lumin = 35.867;   // 2016 total, 2016-02-11 update
-    //float lumin = 12.9; // ICHEP
-    //float lumin = 4.12; // Run E
-    //float lumin = 3.19; // Run F
-    //float lumin = 7.72; // Run G
-    //float lumin = 8.86; // Run H
+    //float lumin = 12.61; // ICHEP
+    //float lumin = 4.01; // Run E
+    //float lumin = 3.10; // Run F
+    //float lumin = 7.54; // Run G
+    //float lumin = 8.61; // Run H
     setTDRStyle();
     gROOT->ProcessLine("gErrorIgnoreLevel = 1001;");
     // gStyle->SetOptStat(1111111);
     const int nDatasets = 39;
     const int nDatasetsMC = 11;
+
+    cout << "***********************" << endl;
+    cout << "enforceNarrowWidth = " << (enforceNarrowWidth?"TRUE":"FALSE") << endl;
+    cout << "unblind = " << (unblind?"TRUE":"FALSE") << endl;
+    cout << "sophisticatedKFactors = " << (sophisticatedKFactors?"TRUE":"FALSE") << endl;
+    cout << "lowerZhadMass = " << lowerZhadMass << endl;
+    cout << "higherZhadMass = " << higherZhadMass << endl;
+    cout << "higherHhadMass = " << higherHhadMass << endl;
+    cout << "lowerZlepMass = " << lowerZlepMass << endl;
+    cout << "lowerZhadPt = " << lowerZhadPt << endl;
+    cout << "lowerZlepPt = " << lowerZlepPt << endl;
+    cout << "bTagThres = " << bTagThres << endl;
+    cout << "tau21Thres = " << tau21Thres << endl;
+    cout << "***********************" << endl;
 
     TFile *inputFile[nDatasets];
     TChain *inputTree[nDatasets];
@@ -354,7 +381,10 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
     // string Dsname[nDatasets] = {"BulkGrav800","Higgs750","DY1JetsToLL","DY2JetsToLL","DY3JetsToLL","DY4JetsToLL","DYBJetsToLL","DYBFiltJetsToLL","TTBar","WZDib","ZZDib","DoubleEG2016B","DoubleMu2016B"};
 
     if (useHTBinned == 0) {
-        Dsname[2] = "DYJetsToLL";
+        Dsname[2] = "DYJets";
+        Dsname[3] = "dummy";
+        Dsname[4] = "dummy";
+        Dsname[5] = "dummy";
     } else if (useHTBinned == 1) {
         Dsname[2] = "DYHT100";
         Dsname[3] = "DYHT200";
@@ -520,6 +550,12 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
     /// END I/O to TMVA
 
     // background functions (if unblind)
+    
+    /// EWK corrections
+    TFile EWCorrections("ElectroweakCorrections.root", "READ");
+    TF1* EWKZ = (TF1*)EWCorrections.Get("green")->Clone("EWKZ");
+    EWCorrections.Close();
+        
     TFile ffunc("results.root", "READ");
     TF1 *ffit[nType];
     TF1 *ffitup[nType];
@@ -531,6 +567,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
     char filestring[400];
     float xMin[nType], xMax[nType];
 
+    /// TODO: understand this shit
     if (unblind) {
         for (int nt = 0; nt < nType; nt++) {
             if (string(typeS[nt]).find("merged") != std::string::npos) xMin[nt] = 700.;
@@ -593,6 +630,10 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
     vector<Float_t> *phjj_VAJHU_highestPTJets = 0;
     Float_t xsec;
     Float_t Met;
+    Float_t GenLep1Pt;
+    Float_t GenLep1Phi;
+    Float_t GenLep2Pt;
+    Float_t GenLep2Phi;
 
 
     /// Book "all plots" histograms
@@ -700,7 +741,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
         cout << filestring << endl;
         for (int d = 0; d < nDatasets; d++) {
             if (string(fileName).find(Dsname[d].c_str()) != std::string::npos) {
-                //cout << "Matched! Adding " << filestring << " to dataset " << Dsname[d].c_str() << endl;
+                cout << "Matched! Adding " << filestring << " to dataset " << Dsname[d].c_str() << endl;
                 inputTree[d]->Add(filestring);
                 if (d < nDatasetsMC) {
                     hCounters[d] = (TH1F *)ftemp->Get("ZZTree/Counters");
@@ -721,6 +762,8 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
     }
 
     /// Start loop over datasets and do the analysis / plotting proper
+    ofstream selectedEvents;
+    selectedEvents.open("selectedEvents.txt");
     for (int d = 0; d < nDatasets; d++) {
 
         if (useHTBinned == 0 && d > 2 && d < 8) continue; // in this case there is just one DY
@@ -766,6 +809,11 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
         inputTree[d]->SetBranchAddress("pqqZJJ_VAMCFM", &pqqZJJ_VAMCFM);
         inputTree[d]->SetBranchAddress("pvbf_VAJHU_highestPTJets", &pvbf_VAJHU_highestPTJets);
         inputTree[d]->SetBranchAddress("phjj_VAJHU_highestPTJets", &phjj_VAJHU_highestPTJets);
+        inputTree[d]->SetBranchAddress("GenLep1Pt", &GenLep1Pt);
+        inputTree[d]->SetBranchAddress("GenLep1Phi", &GenLep1Phi);
+        inputTree[d]->SetBranchAddress("GenLep2Pt", &GenLep2Pt);
+        inputTree[d]->SetBranchAddress("GenLep2Phi", &GenLep2Phi);
+
 
         //---------- Process tree
 
@@ -811,6 +859,15 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 
             if (process > 0) eventWeight = (lumin * 1000 * scaleF[process] * overallEventWeight  / sumWeights[d]) * xsec ;
             if (process > 0 && z == 0) cout << "cross-section = " << xsec << " pb; eventweight = " << eventWeight << endl;
+
+            /// Apply extra kFactors: LO to NLO in QCD, plus EWK corrections
+            if(sophisticatedKFactors and process==3) {
+                double ZPt = sqrt(GenLep1Pt*GenLep1Pt + GenLep2Pt+GenLep2Pt + 2*GenLep1Pt*GenLep2Pt+cos(GenLep1Phi-GenLep2Phi));
+                double extraKFactor = theKFactor(ZPt);
+                eventWeight /= scaleF[process];
+                eventWeight *= extraKFactor;
+                eventWeight *= EWKZ->Eval(ZPt);
+            }
 
             if(Z1Mass->size() ==0 or Z2Mass->size() ==0) continue;
 
@@ -1055,6 +1112,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
                         //if (typ == resolvedSR && process == 2) whichTmvaTree = 2;
                         //if (typ == resolvedSR && process == 3) whichTmvaTree = 3;
 
+                        /// Calculate the MELA discriminators values!
                         float mela = 1. / (1. + getDZjjspin0Constant(ZZMass->at(theCand)) * (pqqZJJ_VAMCFM->at(theCand) / p0plus_VAJHU->at(theCand)));
                         float mela2 = 1. / (1. + getDZjjspin2Constant(ZZMass->at(theCand)) * (pqqZJJ_VAMCFM->at(theCand) / p2bplus_VAJHU->at(theCand)));
                         float vbfmela = ((phjj_VAJHU_highestPTJets->at(theCand) > 0. && nExtraJets > 1) ? 1. / (1. + getDVBF2jetsConstant(ZZMass->at(theCand)) * (phjj_VAJHU_highestPTJets->at(theCand) / pvbf_VAJHU_highestPTJets->at(theCand))) : -1.);
@@ -1104,19 +1162,26 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
                         // if (tmvaLepPt1 < 150.) continue;
                         // if (tmvaLepPt2 < 30.) continue;
                         */
-                        if (tmvaZ2Mass < 60.) continue;
-                        if (tmvaZ1Pt < 100. || tmvaZ2Pt < 100.) continue;   // TEST!
+    
+                        ///
+                        /// THIS IS ACTUALLY WHERE THE CUTS ARE APPLIED
+                        ///
+                        if (tmvaZ2Mass < lowerZlepMass) continue;
+                        if (tmvaZ1Pt < lowerZhadPt || tmvaZ2Pt < lowerZlepPt) continue;
                         if ((typ == 1 || typ == 2 || typ == 5 || typ == 6 || typ == 9 || typ == 10) && tmvaZ1tau21 > tau21Thres) continue;
                         if (ZZMass->at(theCand) < 300.) continue;
                         // if (mela < 0.8) continue;
 
                         /// If we arrived here, we have passed all the cuts.
                         /// Start filling the histograms!
+                        if((rs==0 or rs==2) and process == 0)
+                            selectedEvents << RunNumber << " : " << LumiNumber << " : " << EventNumber << endl;
+                            
                         h1[0][process][rs][typ]->Fill(ZZMass->at(theCand), eventWeight * t12weight);
                         h1[1][process][rs][typ]->Fill(ZZPt->at(theCand), eventWeight * t12weight);
 
                         h1[2][process][rs][typ]->Fill(ZZMassRefit->at(theCand), eventWeight * t12weight);
-                        if (typ == 0 || typ == 3 || typ == 4 || typ == 7 || typ == 8 || typ == 11) {
+                        if (typ == 0 || typ == 3 || typ == 4 || typ == 7 || typ == 8 || typ == 11) { // If resolved
                             if (rs == onlyOneLep) {
                                 hmass[process][typ]->Fill(ZZMassRefit->at(theCand), eventWeight * t12weight);
                                 hmass_up[process][typ]->Fill(ZZMassRefit->at(theCand)*ZZMass_up->at(theCand) / ZZMass->at(theCand), eventWeight * t12weight);
@@ -1133,7 +1198,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
                                 }
                             }
                             if (mela > 0.5) h1[25][process][rs][typ]->Fill(ZZMassRefit->at(theCand), eventWeight * t12weight);
-                        } else {
+                        } else { // If merged
                             if (rs == onlyOneLep) {
                                 hmass[process][typ]->Fill(ZZMass->at(theCand), eventWeight * t12weight);
                                 hmass_up[process][typ]->Fill(ZZMass_up->at(theCand), eventWeight * t12weight);
@@ -1253,10 +1318,11 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
         }
 
     } /// Close loop over datasets
+    selectedEvents.close();
 
     /// Make plots
     if (draw) {
-        TCanvas c1;
+        TCanvas c1("c1","c1",1000,1000);
         c1.cd();
 
         TPad *pad1 = new TPad("pad1", "This is pad1", 0.05, 0.35, 0.95, 0.97);
@@ -1372,7 +1438,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
                     for (int v = 0; v < nVariables; v++) {
 
                         /// Comment this line to draw ALL variables
-                        //if(not(v==3 or v==5 or v==21 or v==27)) continue; // Draw only some variables.
+                        //if(not(v==3 or v==5 or v==6 or v==21 or v==27)) continue; // Draw only some variables.
                         
                         for (int nt = 0; nt < nType; nt++) {
 
@@ -1403,7 +1469,8 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
                             }
                             // c1.cd();
 
-                            if (nt == 0 || nt == 1 || nt == 4 || nt == 5 || nt == 8 || nt == 9 || CR || unblind) {
+                            /// HERE is where we choose if we want to draw data in the SR
+                            if (nt == 0 || nt == 1 || nt == 4 || nt == 5 || nt == 8 || nt == 9 || CR || unblind || false) {
 
                                 float a = h1[v][3][rs][nt]->GetMaximum();
                                 float b = h1[v][0][rs][nt]->GetMaximum();
@@ -1450,14 +1517,21 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
 
                             gPad->SetLogy(0);
                             TH1F *ratio = (TH1F *)h1[v][0][rs][nt]->Clone();
+                            double totalData = ratio->Integral();
+                            double totalMC = h1[v][3][rs][nt]->Integral();
+                            double totalRatio = totalData/totalMC;
+                            TLatex lat;
+                            lat.SetTextSize(0.08);
+                            lat.SetTextFont(42);
                             ratio->Add(h1[v][0][rs][nt], h1[v][3][rs][nt], 1, -1);
                             ratio->Divide(ratio, h1[v][0][rs][nt]);
                             ratio->SetMinimum(-0.5);
                             ratio->SetMaximum(0.5);
                             ratio->GetYaxis()->SetTitle("(Data-MC)/Data");
-                            if (!(nt == 0 || nt == 1 || nt == 4 || nt == 5 || nt == 8 || nt == 9 || CR || unblind)) {
+                            if ( !(nt == 0 || nt == 1 || nt == 4 || nt == 5 || nt == 8 || nt == 9 || CR || unblind)) {
                                 ratio->SetLineColor(kWhite);
                                 ratio->SetMarkerColor(kWhite);
+                                lat.DrawLatexNDC(0.5,0.85,Form("Data/MC = %4.2lf",totalRatio));
                             }
                             ratio->Draw("e");
                             TLine line(h1[v][0][rs][nt]->GetXaxis()->GetBinLowEdge(1), 0.,
@@ -1465,6 +1539,7 @@ void plotDataVsMC_2l2q(string dirout = "test13TeV", string theNtupleFile = "./go
                             line.SetLineColor(kRed);
                             line.SetLineStyle(kDashed);
                             line.Draw("same");
+                            
 
                             // if (norm && v == 21 && nt == 1 && rs==0) {   // tau21
                             //  ofstream ofs("tau21_sf.txt");
