@@ -123,7 +123,7 @@ elif (SAMPLE_TYPE == 2017):
     elif (DATA_TAG == "ReReco"):
         process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_2016SeptRepro_v7', '')
     elif (DATA_TAG == "PromptReco"):
-        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_Prompt_v14', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_Prompt_v16', '')
 
 print '\t',process.GlobalTag.globaltag
 
@@ -700,8 +700,8 @@ process.appendPhotons = cms.EDProducer("LeptonPhotonMatcher",
 
 if ADDLOOSEELE:
     process.appendPhotons.looseElectronSrc = cms.InputTag("cleanSoftLooseElectrons")
-    process.appendPhotons.tleSrc = cms.InputTag("softPhotons")
-    process.appendPhotons.TLEMinPt = cms.double(25.)
+#    process.appendPhotons.tleSrc = cms.InputTag("softPhotons")
+#    process.appendPhotons.TLEMinPt = cms.double(25.)
 
 # All leptons, any F/C.
 # CAVEAT: merging creates copies of the objects, so that CandViewShallowCloneCombiner is not able to find
@@ -1404,3 +1404,149 @@ if (ADDLOOSEELE) :
 #    execfile(os.environ['CMSSW_BASE'] + "/src/ZZAnalysis/AnalysisStep/test/MasterPy/TracklessEle.py")
 
 
+process.GlobalTag.toGet = cms.VPSet( (cms.PSet(
+        connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+        label = cms.untracked.string('electron_eb_ECALonly'),
+        record = cms.string('GBRDWrapperRcd'),
+        tag = cms.string('GEDelectron_EBCorrection_80X_EGM_v4')
+    ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_eb_ECALonly_lowpt'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_lowpt_EBCorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_eb_ECALonly_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_EBUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_eb_ECALonly_lowpt_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_lowpt_EBUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_ee_ECALonly'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_EECorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_ee_ECALonly_lowpt'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_lowpt_EECorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_ee_ECALonly_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_EEUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_ee_ECALonly_lowpt_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_lowpt_EEUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_eb_ECALTRK'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_track_EBCorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_eb_ECALTRK_lowpt'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_track_lowpt_EBCorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_eb_ECALTRK_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_track_EBUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_eb_ECALTRK_lowpt_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_track_lowpt_EBUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_ee_ECALTRK'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_track_EECorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_ee_ECALTRK_lowpt'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_track_lowpt_EECorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_ee_ECALTRK_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_track_EEUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_ee_ECALTRK_lowpt_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_track_lowpt_EEUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('photon_eb_ECALonly'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDphoton_EBCorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('photon_eb_ECALonly_lowpt'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDphoton_lowpt_EBCorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('photon_eb_ECALonly_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDphoton_EBUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('photon_eb_ECALonly_lowpt_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDphoton_lowpt_EBUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('photon_ee_ECALonly'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDphoton_EECorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('photon_ee_ECALonly_lowpt'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDphoton_lowpt_EECorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('photon_ee_ECALonly_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDphoton_EEUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('photon_ee_ECALonly_lowpt_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDphoton_lowpt_EEUncertainty_80X_EGM_v4')
+        ),
+    )
+)
