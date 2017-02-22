@@ -241,7 +241,7 @@ class MyBatchManager:
        if not self.secondaryInputDir_ == None: self.inputPDFDir_ = '/'.join( [self.secondaryInputDir_, dname])
 
 #       print 'self.outputDir_=',self.outputDir_
-       if value == 0 :
+       if dirname.endswith('Chunk0'):
            self.PrepareJobUserTemplate( jobDir, value )
        self.PrepareJobUserFromTemplate(jobDir, value)
 
