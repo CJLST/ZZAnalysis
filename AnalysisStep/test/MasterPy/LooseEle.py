@@ -20,7 +20,7 @@ process.softLooseElectrons = cms.EDProducer("EleFiller",
         isLoose = cms.string("abs(1)"), #FIXME: I'd set this to  (isGood&&!isGoodTight), that would be clearer I think.
 #       Note: passCombRelIsoPFFSRCorr is currently set in LeptonPhotonMatcher for new FSR strategy; in ZZCandidateFiller for the old one
         ),
-   mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16V1Values"), # (when running VID)
+   mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16HZZV1Values"), # (when running VID)
    )
 
 ### ----------------------------------------------------------------------
