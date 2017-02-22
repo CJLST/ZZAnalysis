@@ -254,7 +254,8 @@ namespace {
   Short_t genExtInfo  = 0;
   Float_t xsection  = 0;
   Float_t dataMCWeight  = 0;
-  Float_t dataMCWeight_Unc = 0;
+  Float_t muonSF_Unc = 0;
+  Float_t eleSF_Unc = 0;
   Float_t trigEffWeight  = 0;
   Float_t HqTMCweight  = 0;
   Float_t ZXFakeweight  = 0;
@@ -343,7 +344,7 @@ private:
   void FillAssocLepGenInfo(std::vector<const reco::Candidate *>& AssocLeps);
 
   
-  Float_t getAllWeight(const vector<const reco::Candidate*>& leptons, Float_t& eventUncert) const;
+  Float_t getAllWeight(const vector<const reco::Candidate*>& leptons, Float_t& muonSFUncert, Float_t& eleSFUncert) const;
   Float_t getHqTWeight(double mH, double genPt) const;
   Float_t getFakeWeight(Float_t LepPt, Float_t LepEta, Int_t LepID, Int_t LepZ1ID);
 
@@ -1524,7 +1525,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   trigEffWeight = 1.;
   if(isMC) {
     
-    dataMCWeight = getAllWeight(leptons,dataMCWeight_Unc);
+    dataMCWeight = getAllWeight(leptons,muonSF_Unc,eleSF_Unc);
     
     if (applyTrigEffWeight){
       Int_t ZZFlav = abs(Z1Flav*Z2Flav);
@@ -1679,12 +1680,13 @@ void HZZ4lNtupleMaker::fillDescriptions(edm::ConfigurationDescriptions& descript
 }
 
 
-Float_t HZZ4lNtupleMaker::getAllWeight(const vector<const reco::Candidate*>& leptons, Float_t& eventUncert) const
+Float_t HZZ4lNtupleMaker::getAllWeight(const vector<const reco::Candidate*>& leptons, Float_t& muonSFUncert, Float_t& eleSFUncert) const
 {
   Float_t totWeight = 1.;
-  Float_t ele_Unc2 = 0.;
-  Float_t muon_Unc2 = 0.;
-  
+  Float_t ele_Unc_rel = 0.; //relative uncertainty for product of electron weights
+  Float_t muon_Unc_rel = 0.; // same for mu
+  Float_t muonSF = 1.; // just used to get the absolute uncertainty on muon SF
+  Float_t eleSF = 1.;  // same for ele
 
   for(unsigned int i=0; i<leptons.size(); ++i){ 
     Int_t   myLepID = abs(leptons[i]->pdgId());
@@ -1710,7 +1712,9 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const vector<const reco::Candidate*>& lep
         RecoSF_Unc = 0.;	
         SelSF = hTH2D_Mu_All->GetBinContent(hTH2D_Mu_All->GetXaxis()->FindBin(myLepEta),hTH2D_Mu_All->GetYaxis()->FindBin(std::min(myLepPt,199.f))); //last bin contains the overflow
         SelSF_Unc = hTH2D_Mu_Unc->GetBinContent(hTH2D_Mu_Unc->GetXaxis()->FindBin(myLepEta),hTH2D_Mu_Unc->GetYaxis()->FindBin(std::min(myLepPt,199.f))); //last bin contains the overflow
-        muon_Unc2 += RecoSF_Unc*RecoSF_Unc + SelSF_Unc*SelSF_Unc; // assume full correlation between different muons (and uncorrelated reco and sel uncertainties)
+
+        muonSF *= RecoSF*SelSF;  
+        muon_Unc_rel += sqrt( RecoSF_Unc*RecoSF_Unc/(RecoSF*RecoSF) + SelSF_Unc*SelSF_Unc/(SelSF*SelSF) ); // assume full correlation between different muons (and uncorrelated reco and sel uncertainties)
       }
     } else if(myLepID == 11) {
 
@@ -1744,7 +1748,8 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const vector<const reco::Candidate*>& lep
             abort();
           }
       }
-      ele_Unc2 += RecoSF_Unc*RecoSF_Unc + SelSF_Unc*SelSF_Unc; // assume full correlation between different electrons (and uncorrelated reco and sel uncertainties)
+      eleSF *= RecoSF*SelSF;  
+      ele_Unc_rel += sqrt( RecoSF_Unc*RecoSF_Unc/(RecoSF*RecoSF) + SelSF_Unc*SelSF_Unc/(SelSF*SelSF) ); // assume full correlation between different electrons (and uncorrelated reco and sel uncertainties)
     } else {
       edm::LogError("MC scale factor") << "ERROR! wrong lepton ID "<<myLepID;
       weight = 0.;
@@ -1770,9 +1775,11 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const vector<const reco::Candidate*>& lep
 
     totWeight *= weight;
   } 
-  
-  eventUncert = sqrt(ele_Unc2 + muon_Unc2); // assume they are uncorrelated
-
+ 
+  // get absolute uncertainty from relative one
+  muonSFUncert =  muonSF* muon_Unc_rel;
+  eleSFUncert = eleSF* ele_Unc_rel;
+ 
   return totWeight;
 }
 
@@ -2093,7 +2100,8 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("PUWeight_Dn", PUWeight_Dn, failedTreeLevel >= minimalFailedTree);
     myTree->Book("PUWeight_Up", PUWeight_Up, failedTreeLevel >= minimalFailedTree);
     myTree->Book("dataMCWeight", dataMCWeight, false);
-    myTree->Book("dataMCWeight_Unc", dataMCWeight_Unc, false);
+    myTree->Book("muonSF_Unc", muonSF_Unc, false);
+    myTree->Book("eleSF_Unc", eleSF_Unc, false);
     myTree->Book("trigEffWeight", trigEffWeight, false);
     myTree->Book("overallEventWeight", overallEventWeight, false);
     myTree->Book("HqTMCweight", HqTMCweight, failedTreeLevel >= minimalFailedTree);
