@@ -213,14 +213,10 @@ class MyBatchManager:
         self.listOfJobs_ = []
 
         if listOfDirNames is None:
-	    print 'here'
             for value in listOfValues:
                 self.PrepareJob( value )
         else:
-	    print 'yay!'
             for value, name in zip( listOfValues, listOfDirNames):
-		print 'value=', value
-		print 'name=', name
                 self.PrepareJob( value, name )
         if batchManager.options_.verbose:
             print "list of jobs:"
@@ -234,7 +230,7 @@ class MyBatchManager:
        
        calls PrepareJobUser, which should be overloaded by the user.
        '''
-       print 'PrepareJob : %s' % value 
+       print '---PrepareJob N: ', value,  ' name: ', dirname 
        dname = dirname
        if dname  is None:
            dname = 'Job_{value}'.format( value=value )
@@ -244,13 +240,8 @@ class MyBatchManager:
        self.listOfJobs_.append( jobDir )
        if not self.secondaryInputDir_ == None: self.inputPDFDir_ = '/'.join( [self.secondaryInputDir_, dname])
 
-       print 'dirname=',dirname
-       print 'self.outputDir_=',self.outputDir_
-       chunk_number = dirname[dirname.find('Chunk') + len('Chunk')]
-        
-       print 'chunk=', chunk_number
-       chunk_number = float(chunk_number)
-       if chunk_number == 0 :
+#       print 'self.outputDir_=',self.outputDir_
+       if value == 0 :
            self.PrepareJobUserTemplate( jobDir, value )
        self.PrepareJobUserFromTemplate(jobDir, value)
 
@@ -332,7 +323,7 @@ class MyBatchManager:
 
 
        template_name = variables['SAMPLENAME'] + 'run_template_cfg.py'
-       print 'Save template as=', '%s/%s'%(self.outputDir_, template_name)
+       print 'Saving template as=', '%s/%s'%(self.outputDir_, template_name)
        print 'jobDir=',jobDir
        cfgFile = open('%s/%s'%(self.outputDir_, template_name),'w')
        cfgFile.write( process.dumpPython() )
@@ -354,12 +345,21 @@ class MyBatchManager:
 
 class Component(object):
 
-    def __init__(self, name, prefix, dataset, pattern, splitFactor, variables, pyFragments, xsec, BR, setup, pdfstep):
+    def __init__(self, name, prefix, dataset, pattern, splitFactor, variables, pyFragments, xsec, BR, setup, pdfstep, cfgFileName=""):
         self.name = name
         self.samplename = name
         print "checking "+self.name
-        self.source = datasetToSource( prefix, dataset, pattern)
-        self.files = self.source.fileNames
+
+        if prefix=="source.fileNames" : #take the files that are specified in the process.source.fileNames in the input .py
+            handle = open(cfgFileName, 'r')
+            cfo = imp.load_source("pycfg", cfgFileName, handle)
+            handle.close()
+            self.source = copy.deepcopy(cfo.process.source)
+            self.files = copy.deepcopy(cfo.process.source.fileNames)
+            
+        else : # Query dbs, eos, etc. to get the file list
+            self.source = datasetToSource( prefix, dataset, pattern)
+            self.files = self.source.fileNames
         print len(self.files)
         if len(self.files)==0 :
             sys.exit("ERROR: no input files found")
@@ -390,7 +390,7 @@ if __name__ == '__main__':
     for sample, settings in sampleDB.iteritems():
         if settings['execute']:
             pdfstep = batchManager.options_.PDFstep
-            components.append(Component(sample, settings['prefix'], settings['dataset'], settings['pattern'], settings['splitLevel'], settings['::variables'],settings['::pyFragments'],settings['crossSection'], settings['BR'], setup, pdfstep)) #FIXME-RB not bool(settings['pdf']))) #settings['pdf'] used here as full sel, without cuts.
+            components.append(Component(sample, settings['prefix'], settings['dataset'], settings['pattern'], settings['splitLevel'], settings['::variables'],settings['::pyFragments'],settings['crossSection'], settings['BR'], setup, pdfstep,cfgFileName)) #FIXME-RB not bool(settings['pdf']))) #settings['pdf'] used here as full sel, without cuts.
     
     handle.close()
 
