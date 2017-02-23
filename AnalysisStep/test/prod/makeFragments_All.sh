@@ -7,7 +7,7 @@
 # Temporary note specific to mH=125 GeV: The anomalous coupling probabilities from MCFM are currently commented out in the tpl, so one needs to comment them back in manually.
 ##
 
-csvfiles=( samples_2015.csv samples_2016_MC.csv samples_2016ICHEP_MC.csv )
+csvfiles=( samples_2015.csv samples_2016_MC.csv )
 
 for csv in "${csvfiles[@]}"
 do
