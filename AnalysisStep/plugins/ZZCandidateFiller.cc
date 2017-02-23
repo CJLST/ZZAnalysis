@@ -178,8 +178,8 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
   hmcfitter = new HiggsMassConstraint(SetupToSqrts(setup), RooSpin::kVdecayType_Zll, RooSpin::kVdecayType_Zll);
   hmcfitter->setJECUserFloatString("jec_unc");
   hmcfitter->setMuonKalmanCorrectedPtErrorString("correctedPtError");
-  //hmcfitter->setFastPDF(true);
-  hmcfitter->setFastPDF(false);
+  hmcfitter->setFastPDF(true);
+  //hmcfitter->setFastPDF(false);
   // No longer used, but keept for future needs
 //   muon_iso_cut = iConfig.getParameter<double>("muon_iso_cut");
 //   electron_iso_cut = iConfig.getParameter<double>("electron_iso_cut");
@@ -666,6 +666,15 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     float ZZMassRefit = 0.;
     float ZZMassRefitErr = 0.;
     float ZZMassUnrefitErr = 0.;
+    float ZZMassHMCRefit = 0;
+    float ZZMassHMCUnrefitErr = 0;
+    float ZZMassHMCRefitErr = 0;
+    float Z1MassHMCRefit = 0;
+    float Z1MassHMCUnrefitErr = 0;
+    float Z1MassHMCRefitErr = 0;
+    float Z2MassHMCUnrefitErr = 0;
+    float Z2MassHMCRefit = 0;
+    float Z2MassHMCRefitErr = 0;
 
     if(doKinFit){
 
@@ -705,8 +714,18 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
           );
       }
       hmcfitter->fitTo(FermionWithFSR);
-      cout << "KinZfitter mass, err, unrefit err " << ZZMassRefit << " , " << ZZMassRefitErr << " , " << ZZMassUnrefitErr << endl;
-      for (int im=0; im<3; im++)  cout << "HMC mass(" << im << "),err = " << hmcfitter->getRefittedMass(im) << " , " << hmcfitter->getRefittedMassError(im) << endl;
+      Z1MassHMCRefit=hmcfitter->getRefittedMass(0);
+      Z2MassHMCRefit=hmcfitter->getRefittedMass(1);
+      ZZMassHMCRefit=hmcfitter->getRefittedMass(2);
+      Z1MassHMCRefitErr=hmcfitter->getRefittedMassError(0);
+      Z2MassHMCRefitErr=hmcfitter->getRefittedMassError(1);
+      ZZMassHMCRefitErr=hmcfitter->getRefittedMassError(2);
+      Z1MassHMCUnrefitErr=hmcfitter->getObsMassError(0);
+      Z2MassHMCUnrefitErr=hmcfitter->getObsMassError(1);
+      ZZMassHMCUnrefitErr=hmcfitter->getObsMassError(2);
+
+      //cout << "KinZfitter mass, err, unrefit err " << ZZMassRefit << " , " << ZZMassRefitErr << " , " << ZZMassUnrefitErr << endl;
+      //for (int im=0; im<3; im++)  cout << "HMC mass(" << im << "),err = " << hmcfitter->getRefittedMass(im) << " , " << hmcfitter->getRefittedMassError(im) << endl;
 
     }
 
@@ -824,6 +843,15 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
       myCand.addUserFloat("ZZMassRefit"   , ZZMassRefit);
       myCand.addUserFloat("ZZMassRefitErr", ZZMassRefitErr);
       myCand.addUserFloat("ZZMassUnrefitErr", ZZMassUnrefitErr);
+      myCand.addUserFloat("ZZMassHMCRefit", ZZMassHMCRefit);
+      myCand.addUserFloat("ZZMassHMCUnrefitErr", ZZMassHMCUnrefitErr);
+      myCand.addUserFloat("ZZMassHMCRefitErr", ZZMassHMCRefitErr);
+      myCand.addUserFloat("Z1MassHMCRefit", Z1MassHMCRefit);
+      myCand.addUserFloat("Z1MassHMCUnrefitErr", Z1MassHMCUnrefitErr);
+      myCand.addUserFloat("Z1MassHMCRefitErr", Z1MassHMCRefitErr);
+      myCand.addUserFloat("Z2MassHMCRefit", Z2MassHMCRefit);
+      myCand.addUserFloat("Z2MassHMCUnrefitErr", Z2MassHMCUnrefitErr);
+      myCand.addUserFloat("Z2MassHMCRefitErr", Z2MassHMCRefitErr);
     }
 
     // Jet quantities

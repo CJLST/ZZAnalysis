@@ -131,6 +131,17 @@ namespace {
   Float_t ZZMassRefit  = 0;
   Float_t ZZMassRefitErr  = 0;
   Float_t ZZMassUnrefitErr  = 0;
+
+  Float_t ZZMassHMCRefit  = 0;
+  Float_t ZZMassHMCUnrefitErr  = 0;
+  Float_t ZZMassHMCRefitErr  = 0;
+  Float_t Z1MassHMCRefit  = 0;
+  Float_t Z1MassHMCUnrefitErr  = 0;
+  Float_t Z1MassHMCRefitErr  = 0;
+  Float_t Z2MassHMCRefit  = 0;
+  Float_t Z2MassHMCUnrefitErr  = 0;
+  Float_t Z2MassHMCRefitErr  = 0;
+
   Float_t ZZMassCFit  = 0;
   Float_t ZZChi2CFit  = 0;
   Float_t Z2Mass  = 0;
@@ -1284,6 +1295,16 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   ZZMassRefit = cand.userFloat("ZZMassRefit");
   ZZMassRefitErr = cand.userFloat("ZZMassRefitErr");
   ZZMassUnrefitErr = cand.userFloat("ZZMassUnrefitErr");
+
+  ZZMassHMCRefit = cand.userFloat("ZZMassHMCRefit");
+  ZZMassHMCUnrefitErr = cand.userFloat("ZZMassHMCUnrefitErr");
+  ZZMassHMCRefitErr = cand.userFloat("ZZMassHMCRefitErr");
+  Z1MassHMCRefit = cand.userFloat("Z1MassHMCRefit");
+  Z1MassHMCUnrefitErr = cand.userFloat("Z1MassHMCUnrefitErr");
+  Z1MassHMCRefitErr = cand.userFloat("Z1MassHMCRefitErr");
+  Z2MassHMCRefit = cand.userFloat("Z2MassHMCRefit");
+  Z2MassHMCUnrefitErr = cand.userFloat("Z2MassHMCUnrefitErr");
+  Z2MassHMCRefitErr = cand.userFloat("Z2MassHMCRefitErr");
       }
     }
     if(addVtxFit){
@@ -1896,10 +1917,20 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("Z1Flav",Z1Flav, false);
 
   //Kin refitted info
-  if (addKinRefit) {
+  if (addKinRefit){
     myTree->Book("ZZMassRefit",ZZMassRefit, false);
     myTree->Book("ZZMassRefitErr",ZZMassRefitErr, false);
     myTree->Book("ZZMassUnrefitErr",ZZMassUnrefitErr, false);
+
+    myTree->Book("ZZMassHMCRefit", ZZMassHMCRefit, false);
+    myTree->Book("ZZMassHMCUnrefitErr", ZZMassHMCUnrefitErr, false);
+    myTree->Book("ZZMassHMCRefitErr", ZZMassHMCRefitErr, false);
+    myTree->Book("Z1MassHMCRefit", Z1MassHMCRefit, false);
+    myTree->Book("Z1MassHMCUnrefitErr", Z1MassHMCUnrefitErr, false);
+    myTree->Book("Z1MassHMCRefitErr", Z1MassHMCRefitErr, false);
+    myTree->Book("Z2MassHMCRefit", Z2MassHMCRefit, false);
+    myTree->Book("Z2MassHMCUnrefitErr", Z2MassHMCUnrefitErr, false);
+    myTree->Book("Z2MassHMCRefitErr", Z2MassHMCRefitErr, false);
   }
   if (addVtxFit){
     myTree->Book("ZZMassCFit",ZZMassCFit, false);
