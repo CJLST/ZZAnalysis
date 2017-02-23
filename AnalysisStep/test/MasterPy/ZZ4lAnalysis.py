@@ -28,7 +28,7 @@ declareDefault("SAMPLENAME", "", globals())
 declareDefault("ELECORRTYPE", "RunII", globals())
 
 #Apply electron escale regression
-declareDefault("ELEREGRESSION", "None", globals())
+declareDefault("ELEREGRESSION", "Moriond17v1", globals())
 
 #Apply muon scale correction
 declareDefault("APPLYMUCORR", True, globals())
@@ -38,6 +38,9 @@ declareDefault("APPLYJEC", True, globals())
 
 #Apply JER
 declareDefault("APPLYJER", True, globals())
+
+#Recorrect MET
+declareDefault("RECORRECTMET", True, globals())
 
 #FSR mode
 declareDefault("FSRMODE", "RunII", globals())
@@ -116,11 +119,11 @@ elif (SAMPLE_TYPE == 2016):
 elif (SAMPLE_TYPE == 2017):
     from Configuration.AlCa.GlobalTag import GlobalTag
     if IsMC:
-        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_TrancheIV_v7', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_TrancheIV_v8', '')
     elif (DATA_TAG == "ReReco"):
-        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_2016SeptRepro_v4', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_2016SeptRepro_v7', '')
     elif (DATA_TAG == "PromptReco"):
-        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_Prompt_v14', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_Prompt_v16', '')
 
 print '\t',process.GlobalTag.globaltag
 
@@ -264,8 +267,8 @@ elif (LEPTON_SETUP == 2017):
    process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"]
    process.hltFilterTriEle.HLTPaths = ["HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v*"]
    process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_12_10_5_v*"]
-   process.hltFilterSingleEle.HLTPaths = ["HLT_Ele25_eta2p1_WPTight_Gsf_v*","HLT_Ele27_WPTight_Gsf_v*","HLT_Ele27_eta2p1_WPLoose_Gsf_v*"]
-   process.hltFilterSingleMu.HLTPaths = ["HLT_IsoMu20_v*","HLT_IsoTkMu20_v*","HLT_IsoMu22_v*","HLT_IsoTkMu22_v*"]
+   process.hltFilterSingleEle.HLTPaths = ["HLT_Ele25_eta2p1_WPTight_Gsf_v*","HLT_Ele27_WPTight_Gsf_v*","HLT_Ele27_eta2p1_WPLoose_Gsf_v*", "HLT_Ele32_eta2p1_WPTight_Gsf_v*"]
+   process.hltFilterSingleMu.HLTPaths = ["HLT_IsoMu20_v*","HLT_IsoTkMu20_v*","HLT_IsoMu22_v*","HLT_IsoTkMu22_v*","HLT_IsoMu24_v*","HLT_IsoTkMu24_v*"]
 
    process.triggerTriEle = cms.Path(process.hltFilterTriEle)
    process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
@@ -509,10 +512,13 @@ if (LEPTON_SETUP == 2016):
 elif (LEPTON_SETUP == 2017):
    process.calibratedPatElectrons = cms.EDProducer("CalibratedPatElectronProducerRun2",
        electrons = cms.InputTag('selectedSlimmedElectrons'),
-       gbrForestName = cms.string("gedelectron_p4combination_25ns"),
+       gbrForestName = cms.vstring('electron_eb_ECALTRK_lowpt', 'electron_eb_ECALTRK',
+                                   'electron_ee_ECALTRK_lowpt', 'electron_ee_ECALTRK',
+                                   'electron_eb_ECALTRK_lowpt_var', 'electron_eb_ECALTRK_var',
+                                   'electron_ee_ECALTRK_lowpt_var', 'electron_ee_ECALTRK_var'),
        isMC = cms.bool(IsMC),
        isSynchronization = cms.bool(False),
-       correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/Winter_2016_reReco_v1_ele")
+       correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/Moriond17_23Jan_ele")
    )
 
 
@@ -526,7 +532,7 @@ from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
 dataFormat = DataFormat.MiniAOD
 switchOnVIDElectronIdProducer(process, dataFormat)
 # define which IDs we want to produce
-my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_V1_cff']
+my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_HZZ_V1_cff']
 # add them to the VID producer
 for idmod in my_id_modules:
     setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
@@ -550,7 +556,7 @@ process.softElectrons = cms.EDProducer("EleFiller",
         isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<"+ELEISOCUT)
 #       Note: passCombRelIsoPFFSRCorr is currently set in LeptonPhotonMatcher for new FSR strategy; in ZZCandidateFiller for the old one
         ),
-   mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16V1Values"), # (when running VID)
+   mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16HZZV1Values"), # (when running VID)
    )
 
 process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons) # (use this version when running VID)
@@ -563,7 +569,13 @@ if ELEREGRESSION == "None" and (ELECORRTYPE == "None" or BUNCH_SPACING == 50) : 
 elif ELECORRTYPE == "RunII" :
     process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag("calibratedPatElectrons")
     process.electronMVAValueMapProducer.srcMiniAOD=cms.InputTag("calibratedPatElectrons")
+if ELEREGRESSION == "Moriond17v1" :
+   from EgammaAnalysis.ElectronTools.regressionWeights_cfi import regressionWeights
+   process = regressionWeights(process)
+   process.load('EgammaAnalysis.ElectronTools.regressionApplication_cff')
 
+   process.selectedSlimmedElectrons.src = cms.InputTag("slimmedElectrons")
+   process.electrons = cms.Sequence(process.regressionApplication + process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
 
 #elif ELEREGRESSION == "None" and ELECORRTYPE == "RunII" :
 #    process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('calibratedPatElectrons') # (when running VID)
@@ -688,8 +700,8 @@ process.appendPhotons = cms.EDProducer("LeptonPhotonMatcher",
 
 if ADDLOOSEELE:
     process.appendPhotons.looseElectronSrc = cms.InputTag("cleanSoftLooseElectrons")
-    process.appendPhotons.tleSrc = cms.InputTag("softPhotons")
-    process.appendPhotons.TLEMinPt = cms.double(25.)
+#    process.appendPhotons.tleSrc = cms.InputTag("softPhotons")
+#    process.appendPhotons.TLEMinPt = cms.double(25.)
 
 # All leptons, any F/C.
 # CAVEAT: merging creates copies of the objects, so that CandViewShallowCloneCombiner is not able to find
@@ -1119,8 +1131,8 @@ process.pileupJetIdUpdated = process.pileupJetId.clone(
     vertexes=cms.InputTag("offlineSlimmedPrimaryVertices")
     )
 
-# q/g likelihood
-qgDatabaseVersion = '80X'
+### q/g likelihood
+qgDatabaseVersion = 'cmssw8020_v2'
 process.QGPoolDBESSource = cms.ESSource("PoolDBESSource",
       DBParameters = cms.PSet(messageLevel = cms.untracked.int32(1)),
       timetype = cms.string('runnumber'),
@@ -1145,11 +1157,11 @@ process.dressedJets = cms.EDProducer("JetFiller",
     cut = cms.string("pt>20 && abs(eta)<4.7 && userFloat('looseJetID') && userFloat('PUjetID')"),
     isMC = cms.bool(IsMC),
     bTaggerName = cms.string("pfCombinedInclusiveSecondaryVertexV2BJetTags"),
-    bTaggerThreshold = cms.double(0.800),
+    bTaggerThreshold = cms.double(0.8484), #CSVv2M, from https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco
     jecType = cms.string("AK4PFchs"),
     applyJER = cms.bool(APPLYJER),
     jerType = cms.string("AK4PFchs"),
-    bTagSFFile = cms.string("ZZAnalysis/AnalysisStep/data/BTagging/CSVv2_ichep.csv"),
+    bTagSFFile = cms.string("ZZAnalysis/AnalysisStep/data/BTagging/CSVv2Moriond17_2017_1_26_BtoH.csv"), #Preliminary Moriond17 SF, from https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco
     bTagMCEffFile = cms.string("ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_80X_ICHEP.root"),
     flags = cms.PSet()
     )
@@ -1167,13 +1179,15 @@ if APPLYJEC:
                     record = cms.string('JetCorrectionsRecord'),
 #                    tag    = cms.string('JetCorrectorParametersCollection_Fall15_25nsV2_MC_AK4PFchs'), #for 76X
 #                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV1_MC_AK4PFchs'), #for 80X/Moriond16
-                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV6_MC_AK4PFchs'), #for 80X/ICHEP16
+#                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV6_MC_AK4PFchs'), #for 80X/ICHEP16
+                    tag    = cms.string('JetCorrectorParametersCollection_Summer16_23Sep2016V4_MC_AK4PFchs'), #for 80X/Moriond17
                     label  = cms.untracked.string('AK4PFchs')
                     ),
                 ),
 #            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall15_25nsV2_MC.db'), #for 76X
 #             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Spring16_25nsV1_MC.db'), #for 80X/Moriond16
-             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Spring16_25nsV6_MC.db'), #for 80X/ICHEP16
+#             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Spring16_25nsV6_MC.db'), #for 80X/ICHEP16
+             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Summer16_23Sep2016V4_MC.db'), #for 80X/Moriond17
             )
     else:
         process.jec = cms.ESSource("PoolDBESSource",
@@ -1185,12 +1199,13 @@ if APPLYJEC:
                 cms.PSet(
                     record = cms.string('JetCorrectionsRecord'),
 #                    tag    = cms.string('JetCorrectorParametersCollection_Fall15_25nsV2_DATA_AK4PFchs'), #for 76X
-                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV6_DATA_AK4PFchs'), #for 80X/ICHEP16
+#                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV6_DATA_AK4PFchs'), #for 80X/ICHEP16
+                    tag    = cms.string('JetCorrectorParametersCollection_Summer16_23Sep2016AllV4_DATA_AK4PFchs'), #for 80X/Moriond17
                     label  = cms.untracked.string('AK4PFchs')
                     ),
                 ),
 #            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall15_25nsV2_DATA.db'), #for 76X
-            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Spring16_25nsV6_DATA.db'), #for 80X/ICHEP16
+            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Summer16_23Sep2016AllV4_DATA.db'), #for 80X/ICHEP16
             )
 
     ## add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
@@ -1211,7 +1226,7 @@ if APPLYJEC:
         jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
         )
 
-    #add pileup id and discriminant to patJetsReapplyJEC
+    ### add pileup id and discriminant to patJetsReapplyJEC
     process.patJetsReapplyJEC.userData.userFloats.src += ['pileupJetIdUpdated:fullDiscriminant']
     process.patJetsReapplyJEC.userData.userInts.src += ['pileupJetIdUpdated:fullId']
 
@@ -1221,7 +1236,7 @@ if APPLYJEC:
 
 
 
-# Clean jets wrt. good (preFSR-)isolated leptons
+### Clean jets wrt. good (preFSR-)isolated leptons
 process.cleanJets = cms.EDProducer("JetsWithLeptonsRemover",
                                    Jets      = cms.InputTag("dressedJets"),
                                    Muons     = cms.InputTag("appendPhotons:muons"),
@@ -1244,6 +1259,67 @@ if FSRMODE=="Legacy" :
 
 
 ### ----------------------------------------------------------------------
+### Missing ET
+### ----------------------------------------------------------------------
+
+metTag = cms.InputTag("slimmedMETs")
+
+### Recorrect MET, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription#Instructions_for_8_0_X_X_26_patc
+if RECORRECTMET:
+
+    from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
+    runMetCorAndUncFromMiniAOD(process,
+                               isData=(not IsMC),
+                               )
+    metTag = cms.InputTag("slimmedMETs","","ZZ")
+
+    if not IsMC: 
+        ### recorrect MET based on e/gamma gain switch correction on the fly for Re-Miniaod Data
+        ### cf. https://twiki.cern.ch/twiki/bin/view/CMSPublic/ReMiniAOD03Feb2017Notes#MET_Recipes 
+
+        from PhysicsTools.PatUtils.tools.corMETFromMuonAndEG import corMETFromMuonAndEG
+        corMETFromMuonAndEG(process,
+                            pfCandCollection="",
+                            electronCollection="slimmedElectronsBeforeGSFix",
+                            photonCollection="slimmedPhotonsBeforeGSFix",
+                            corElectronCollection="slimmedElectrons",
+                            corPhotonCollection="slimmedPhotons",
+                            allMETEGCorrected=True,
+                            muCorrection=False,
+                            eGCorrection=True,
+                            runOnMiniAOD=True,
+                            postfix="MuEGClean"
+                            )
+        process.slimmedMETsMuEGClean = process.slimmedMETs.clone()
+        process.slimmedMETsMuEGClean.src = cms.InputTag("patPFMetT1MuEGClean")
+        process.slimmedMETsMuEGClean.rawVariation =  cms.InputTag("patPFMetRawMuEGClean")
+        process.slimmedMETsMuEGClean.t1Uncertainties = cms.InputTag("patPFMetT1%sMuEGClean")
+        del process.slimmedMETsMuEGClean.caloMET
+ 
+        process.egcorrMET = cms.Sequence(
+            process.cleanedPhotonsMuEGClean+process.cleanedCorPhotonsMuEGClean+
+            process.matchedPhotonsMuEGClean + process.matchedElectronsMuEGClean +
+            process.corMETPhotonMuEGClean+process.corMETElectronMuEGClean+
+            process.patPFMetT1MuEGClean+process.patPFMetRawMuEGClean+
+            process.patPFMetT1SmearMuEGClean+process.patPFMetT1TxyMuEGClean+
+            process.patPFMetTxyMuEGClean+process.patPFMetT1JetEnUpMuEGClean+
+            process.patPFMetT1JetResUpMuEGClean+process.patPFMetT1SmearJetResUpMuEGClean+
+            process.patPFMetT1ElectronEnUpMuEGClean+process.patPFMetT1PhotonEnUpMuEGClean+
+            process.patPFMetT1MuonEnUpMuEGClean+process.patPFMetT1TauEnUpMuEGClean+
+            process.patPFMetT1UnclusteredEnUpMuEGClean+process.patPFMetT1JetEnDownMuEGClean+
+            process.patPFMetT1JetResDownMuEGClean+process.patPFMetT1SmearJetResDownMuEGClean+
+            process.patPFMetT1ElectronEnDownMuEGClean+process.patPFMetT1PhotonEnDownMuEGClean+
+            process.patPFMetT1MuonEnDownMuEGClean+process.patPFMetT1TauEnDownMuEGClean+
+            process.patPFMetT1UnclusteredEnDownMuEGClean+process.slimmedMETsMuEGClean)
+
+        metTag = cms.InputTag("slimmedMETsMuEGClean","","ZZ")
+
+    ### somehow MET recorrection gets this lost again...
+    process.patJetsReapplyJEC.userData.userFloats.src += ['pileupJetIdUpdated:fullDiscriminant']
+    process.patJetsReapplyJEC.userData.userInts.src += ['pileupJetIdUpdated:fullId']
+
+
+### ----------------------------------------------------------------------
 ### Paths
 ### ----------------------------------------------------------------------
 
@@ -1254,6 +1330,12 @@ if APPLYJEC:
     process.Jets = cms.Path(process.pileupJetIdUpdated + process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.QGTagger + process.dressedJets )
 else:
     process.Jets = cms.Path( process.QGTagger + process.dressedJets )
+
+if RECORRECTMET:
+    if IsMC:
+        process.MET = cms.Path(process.fullPatMetSequence)
+    else:
+        process.MET = cms.Path(process.fullPatMetSequence + process.egcorrMET)
 
 
 ### ----------------------------------------------------------------------
@@ -1303,25 +1385,13 @@ process.CR = cms.Sequence(
 
 ### Skim, triggers and MC filters (Only store filter result, no filter is applied)
 
-### 2011 HZZ Skim
-#process.afterSkimCounter = cms.EDProducer("EventCountProducer")
-#process.load("ZZAnalysis.AnalysisStep.HZZSkim_cfg")
-#process.skim = cms.Path(process.skim2011 + process.afterSkimCounter) # the 2011 skim
-
-### 2012 skim.
-#FIXME this is the version from /afs/cern.ch/user/p/psilva/public/HZZSkim/PDWG_HZZSkim_cff.py
-#      which is buggy!!
-#process.load("ZZAnalysis.AnalysisStep.PDWG_HZZSkim_cff")
-#SkimPaths = cms.vstring('HZZ4ePath', 'HZZ2e2mPath', 'HZZ2m2ePath', 'HZZ4mPath', 'HZZem2ePath', 'HZZem2mPath')
-
-# Reimplementation by Giovanni
+# 2012 skim, Reimplementation by Giovanni
 #process.load("ZZAnalysis.AnalysisStep.Skim2012_cfg")
 #process.SkimSequence = cms.Sequence(process.HZZSkim2012)
 #process.Skim = cms.Path(process.SkimSequence)
 
-
 #SkimPaths = cms.vstring('Skim')
-SkimPaths = cms.vstring('PVfilter') #Do not apply skim
+SkimPaths = cms.vstring('PVfilter') #Do not apply skim, just require a good PV
 
 # process.HF = cms.Path(process.heavyflavorfilter)
 
@@ -1331,6 +1401,152 @@ SkimPaths = cms.vstring('PVfilter') #Do not apply skim
 if (ADDLOOSEELE) :
     import os
     execfile(os.environ['CMSSW_BASE'] + "/src/ZZAnalysis/AnalysisStep/test/MasterPy/LooseEle.py")
-    execfile(os.environ['CMSSW_BASE'] + "/src/ZZAnalysis/AnalysisStep/test/MasterPy/TracklessEle.py")
+#    execfile(os.environ['CMSSW_BASE'] + "/src/ZZAnalysis/AnalysisStep/test/MasterPy/TracklessEle.py")
 
 
+process.GlobalTag.toGet = cms.VPSet( (cms.PSet(
+        connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+        label = cms.untracked.string('electron_eb_ECALonly'),
+        record = cms.string('GBRDWrapperRcd'),
+        tag = cms.string('GEDelectron_EBCorrection_80X_EGM_v4')
+    ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_eb_ECALonly_lowpt'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_lowpt_EBCorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_eb_ECALonly_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_EBUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_eb_ECALonly_lowpt_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_lowpt_EBUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_ee_ECALonly'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_EECorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_ee_ECALonly_lowpt'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_lowpt_EECorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_ee_ECALonly_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_EEUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_ee_ECALonly_lowpt_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_lowpt_EEUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_eb_ECALTRK'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_track_EBCorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_eb_ECALTRK_lowpt'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_track_lowpt_EBCorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_eb_ECALTRK_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_track_EBUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_eb_ECALTRK_lowpt_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_track_lowpt_EBUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_ee_ECALTRK'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_track_EECorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_ee_ECALTRK_lowpt'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_track_lowpt_EECorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_ee_ECALTRK_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_track_EEUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_ee_ECALTRK_lowpt_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_track_lowpt_EEUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('photon_eb_ECALonly'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDphoton_EBCorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('photon_eb_ECALonly_lowpt'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDphoton_lowpt_EBCorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('photon_eb_ECALonly_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDphoton_EBUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('photon_eb_ECALonly_lowpt_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDphoton_lowpt_EBUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('photon_ee_ECALonly'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDphoton_EECorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('photon_ee_ECALonly_lowpt'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDphoton_lowpt_EECorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('photon_ee_ECALonly_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDphoton_EEUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('photon_ee_ECALonly_lowpt_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDphoton_lowpt_EEUncertainty_80X_EGM_v4')
+        ),
+    )
+)

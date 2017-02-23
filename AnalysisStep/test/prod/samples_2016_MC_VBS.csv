@@ -1,55 +1,61 @@
 identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments,comment
 
+###,,,,,,,,,,,MC samples used in ZZjj VBS analysis
+
 ### See comment field,,,,,,,,,,,Unless otherwise stated; signal x-sections are taken from https://hypernews.cern.ch/HyperNews/CMS/get/higgs/1738.html
 ###,,,,,,,,,,,in the [120;130] range they are taken from the YR4 SM 13TeV tab; i.e. they are N3LO QCD + NLO EW
 ###,,,,,,,,,,,while for other mass points they are taken from the YR4 BSM 13TeV tab; i.e. they are in NWA and without EWK corrections; see https://hypernews.cern.ch/HyperNews/CMS/get/higgs/1738/1/1/1.html
 ###,,,,,,,,,,,For ZH and ttH the BR is obtained as BR(H->ZZ->2L2X) = BR(H->4L) + BR(H->2L2q) + BR(H->ZZ*->2L2nu) * BR(H->2L2nu) / [ BR(H->ZZ*->2L2nu) + BR(H->WW*->2L2nu) ] where BR(H->4L) BR(H->2L2q) and BR(H->2L2nu) are taken from the YR3 Twikis.
 ###,,,,,,,,,,,For ZH and ttH the BR column also includes the gen filter efficiency (0.15038 for ZH and 0.1544 for ttH).
 
-ggH125, ,48.58,2.76E-04,,/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,2,REWEIGHTING_TYPE=HVV_spin012;ghz1=1;APPLY_K_NNLOQCD_ZZGG=2;BESTCANDCOMPARATOR=byBestZ1bestZ2,,
-VBFH125, ,3.782,2.76E-04,,/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,1,ADLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;BESTCANDCOMPARATOR=byBestZ1bestZ2,,
-WplusH125, ,0.839913391993366,2.76E-04,,/WplusH_HToZZTo4L_M125_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;BESTCANDCOMPARATOR=byBestZ1bestZ2,,
-WminusH125, ,0.532731376975169,2.76E-04,,/WminusH_HToZZTo4L_M125_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;BESTCANDCOMPARATOR=byBestZ1bestZ2,,
-ZH125, ,0.883888217433748,0.000755429641610507,,/ZH_HToZZ_4LFilter_M125_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,2,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;BESTCANDCOMPARATOR=byBestZ1bestZ2,,
-ttH125, ,0.5071,0.000775623996972085,          ,/ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,2,BESTCANDCOMPARATOR=byBestZ1bestZ2,,
+ggH125, ,48.58,2.76E-04,,/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,2,REWEIGHTING_TYPE=HVV_spin012;ghz1=1;APPLY_K_NNLOQCD_ZZGG=2,RecoProbabilities_minimal.py,
+ggH125_NNLOPS, ,48.58,2.76E-04,,/GluGluHToZZTo4L_M125_13TeV_powheg2_minloHJ_NNLOPS_JHUgenV702_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,2,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;APPLY_K_NNLOQCD_ZZGG=2,RecoProbabilities_minimal.py;LHEProbabilities_GG_SIG_0PM_H125_POWHEG.py,
+VBFH125, ,3.782,2.76E-04,,/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,1,ADLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0,RecoProbabilities_minimal.py,
+WplusH125, ,0.839913391993366,2.76E-04,,/WplusH_HToZZTo4L_M125_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0,RecoProbabilities_minimal.py,
+WminusH125, ,0.532731376975169,2.76E-04,,/WminusH_HToZZTo4L_M125_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0,RecoProbabilities_minimal.py,
+ZH125, ,0.883888217433748,0.000755429641610507,,/ZH_HToZZ_4LFilter_M125_13TeV_powheg2-minlo-HZJ_JHUgenV6_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,2,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2,RecoProbabilities_minimal.py,
+ttH125, ,0.5071,0.000775623996972085,          ,/ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,2,BESTCANDCOMPARATOR=byBestZ1bestZ2,RecoProbabilities_minimal.py,
 
 
-ZZTo4l,,            1.256,      ,,/ZZTo4L_13TeV_powheg_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,4,PROCESS_CR=True;APPLY_K_NNLOQCD_ZZQQB=True;APPLY_K_NLOEW_ZZQQB=True;ADDLOOSEELE=True;BESTCANDCOMPARATOR=byBestZ1bestZ2,,
-ZZTo4lsherpa,,      1.256,      ,,/ZZTo4L_13TeV-sherpa/RunIISummer16MiniAODv2-PUMoriond17_v2_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,4,PROCESS_CR=True;APPLY_K_NNLOQCD_ZZQQB=True;APPLY_K_NLOEW_ZZQQB=True;ADDLOOSEELE=True;BESTCANDCOMPARATOR=byBestZ1bestZ2,, # GenXsection: 4.605e-01 ?
+ZZTo4l,,            1.256,      ,,/ZZTo4L_13TeV_powheg_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,4,PROCESS_CR=True;APPLY_K_NNLOQCD_ZZQQB=True;APPLY_K_NLOEW_ZZQQB=True;ADDLOOSEELE=True,RecoProbabilities_minimal.py,
+ZZTo4lsherpa,,      1.256,      ,,/ZZTo4L_13TeV-sherpa/RunIISummer16MiniAODv2-PUMoriond17_v2_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,4,PROCESS_CR=True;APPLY_K_NNLOQCD_ZZQQB=True;APPLY_K_NLOEW_ZZQQB=True;ADDLOOSEELE=True,RecoProbabilities_minimal.py, # GenXsection: 4.605e-01 ?
 
-ZZTo4lamcatnlo,,    1.256,      ,,/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM,dbs,,1,PROCESS_CR=True;APPLY_K_NNLOQCD_ZZQQB=True;APPLY_K_NLOEW_ZZQQB=True;ADDLOOSEELE=False;APPLYTRIG=False;BESTCANDCOMPARATOR=byBestZ1bestZ2,, # Xsection from the gen: 1.218
+ZZTo4lamcatnlo,,    1.256,      ,,/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM,dbs,,1,PROCESS_CR=True;APPLY_K_NNLOQCD_ZZQQB=True;APPLY_K_NLOEW_ZZQQB=True;ADDLOOSEELE=False;APPLYTRIG=False,RecoProbabilities_minimal.py, # Xsection from the gen: 1.218
 
-#ZZTo4l_FxFx_0,,    4.229e-02,      ,,/ZZp0j_FxFx_GEN-SIM_prod_v1/ppigard-ZZp0j_FxFx_MINIAODSIM_prod_v1-28028af67189b3de7224b79195bd0e1d/USER,dbs-USER,,1,PROCESS_CR=True;APPLY_K_NNLOQCD_ZZQQB=True;APPLY_K_NLOEW_ZZQQB=True;ADDLOOSEELE=False;APPLYTRIG=False,,
-#ZZTo4l_FxFx_1,,    1.602e-02,      ,,/ZZp1j_FxFx_GEN-SIM_prod_v1b/ppigard-ZZp1j_FxFx_MINIAODSIM_prod_v1a-28028af67189b3de7224b79195bd0e1d/USER,dbs-USER,,1,PROCESS_CR=True;APPLY_K_NNLOQCD_ZZQQB=True;APPLY_K_NLOEW_ZZQQB=True;ADDLOOSEELE=False;APPLYTRIG=False,,
-#ZZTo4l_FxFx_2,,    8.169e-03,      ,,/ZZp2j_FxFx_GEN-SIM_prod_v1b/ppigard-ZZp2j_FxFx_MINIAODSIM_prod_v1d-28028af67189b3de7224b79195bd0e1d/USER,dbs-USER,,1,PROCESS_CR=True;APPLY_K_NNLOQCD_ZZQQB=True;APPLY_K_NLOEW_ZZQQB=True;ADDLOOSEELE=False;APPLYTRIG=False,,
+ZZTo4l_FxFx_0,,    4.210e-02,      ,,/ZZTo4L_0Jets_ZZOnShell_13TeV-amcatnloFXFX-madspin-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,1,PROCESS_CR=True;ADDLOOSEELE=False;APPLYTRIG=False,RecoProbabilities_minimal.py,
+ZZTo4l_FxFx_1,,    1.693e-02,      ,,/ZZTo4L_1Jets_ZZOnShell_13TeV-amcatnloFXFX-madspin-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,1,PROCESS_CR=True;ADDLOOSEELE=False;APPLYTRIG=False,RecoProbabilities_minimal.py,
+ZZTo4l_FxFx_2,,    8.758e-03,      ,,/ZZTo4L_2Jets_ZZOnShell_13TeV-amcatnloFXFX-madspin-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,1,PROCESS_CR=True;ADDLOOSEELE=False;APPLYTRIG=False,RecoProbabilities_minimal.py,
 
-ggTo4e_Contin_MCFM701,,      0.00158549,   ,,/GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,1,PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;ADDLOOSEELE=True;BESTCANDCOMPARATOR=byBestZ1bestZ2,,
-ggTo4mu_Contin_MCFM701,,     0.00158549,   ,,/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,1,PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;ADDLOOSEELE=True;BESTCANDCOMPARATOR=byBestZ1bestZ2,,
-ggTo2e2mu_Contin_MCFM701,,   0.0031942,    ,,/GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,1,PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;ADDLOOSEELE=True;BESTCANDCOMPARATOR=byBestZ1bestZ2,,
-
-
-#ggTo2e2mu_Contin_MCFM701_NonWimpy,,    0.0031942,      ,,/GluGluToContinZZTo2e2mu_13TeV_MCFM701_pythia8/ppigard-GluGluToContinZZTo2e2mu_MINIAODSIM_prod_v1d-28028af67189b3de7224b79195bd0e1d/USER,dbs-USER,,5,PROCESS_CR=True;APPLY_K_NNLOQCD_ZZGG=1;ADDLOOSEELE=False;APPLYTRIG=False,,
-#ggTo4mu_Contin_MCFM701_NonWimpy,,    0.00158549,      ,,/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/ppigard-GluGluToContinToZZTo4mu_MINIAODSIM_prod_v1d-28028af67189b3de7224b79195bd0e1d/USER,dbs-USER,,5,PROCESS_CR=True;APPLY_K_NNLOQCD_ZZGG=1;ADDLOOSEELE=False;APPLYTRIG=False,,
-#ggTo42_Contin_MCFM701_NonWimpy,,    0.00158549,      ,,/GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8/ppigard-GluGluToContinZZTo4e_MINIAODSIM_prod_v1d-28028af67189b3de7224b79195bd0e1d/USER,dbs-USER,,5,PROCESS_CR=True;APPLY_K_NNLOQCD_ZZGG=1;ADDLOOSEELE=False;APPLYTRIG=False,,
+ggTo2e2mu_Contin_MCFM701,,   0.0031942,    ,,/GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,1,PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;ADDLOOSEELE=True,RecoProbabilities_minimal.py,
+ggTo4mu_Contin_MCFM701,,     0.00158549,   ,,/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,1,PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;ADDLOOSEELE=True,RecoProbabilities_minimal.py,
+ggTo4e_Contin_MCFM701,,     0.00158549,   ,,/GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,1,PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;ADDLOOSEELE=True,RecoProbabilities_minimal.py,
 
 
-VBFTo2e2muJJ_0PMH125Contin_phantom128,,8.357E-04,,,/VBFToHiggs0PMContinToZZTo2e2muJJ_M125_GaSM_13TeV_phantom_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=True;BESTCANDCOMPARATOR=byBestZ1bestZ2,,
-VBFTo4eJJ_0PMH125Contin_phantom128   ,,4.180E-04,,,/VBFToHiggs0PMContinToZZTo4eJJ_M125_GaSM_13TeV_phantom_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM   ,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=True;BESTCANDCOMPARATOR=byBestZ1bestZ2,,
-VBFTo4muJJ_0PMH125Contin_phantom128  ,,4.180E-04,,,/VBFToHiggs0PMContinToZZTo4muJJ_M125_GaSM_13TeV_phantom_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM  ,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=True;BESTCANDCOMPARATOR=byBestZ1bestZ2,,
+
+
+ggTo4e_Contin_MCFM701_DefaultShower,,      0.00158549,   ,,/GluGluToContinToZZTo4e_13TeV_DefaultShower_MCFM701_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM,dbs,,1,PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;ADDLOOSEELE=True,RecoProbabilities_minimal.py,
+ggTo4mu_Contin_MCFM701_DefaultShower,,     0.00158549,   ,,/GluGluToContinToZZTo4mu_13TeV_DefaultShower_MCFM701_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM,dbs,,1,PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;ADDLOOSEELE=True,RecoProbabilities_minimal.py,
+ggTo2e2mu_Contin_MCFM701_DefaultShower,,   0.0031942,    ,,/GluGluToContinZZTo2e2mu_13TeV_DefaultShower_MCFM701_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM,dbs,,1,PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;ADDLOOSEELE=True,RecoProbabilities_minimal.py,
+
+
+
+VBFTo2e2muJJ_0PMH125Contin_phantom128,,8.357E-04,,,/VBFToHiggs0PMContinToZZTo2e2muJJ_M125_GaSM_13TeV_phantom_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=True,RecoProbabilities_minimal.py,
+VBFTo4eJJ_0PMH125Contin_phantom128   ,,4.180E-04,,,/VBFToHiggs0PMContinToZZTo4eJJ_M125_GaSM_13TeV_phantom_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM   ,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=True,RecoProbabilities_minimal.py,
+VBFTo4muJJ_0PMH125Contin_phantom128  ,,4.180E-04,,,/VBFToHiggs0PMContinToZZTo4muJJ_M125_GaSM_13TeV_phantom_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM  ,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=True,RecoProbabilities_minimal.py,
 #
 ###,,,,,,,,,,,Xsec from https://twiki.cern.ch/twiki/bin/view/CMS/PhantomGeneratorCMS averaging grid and events with their errors
-#VBFTo2e2muJJ_0PMH125_phantom128,,2.4817E-04,,,/VBFToHiggs0PMToZZTo2e2muJJ_M125_GaSM_13TeV_phantom_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=False,,
-#VBFTo4eJJ_0PMH125_phantom128,,1.3339E-04,,,/VBFToHiggs0PMToZZTo4eJJ_M125_GaSM_13TeV_phantom_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=False,,
-#VBFTo4muJJ_0PMH125_phantom128,,1.3339E-04,,,/VBFToHiggs0PMToZZTo4muJJ_M125_GaSM_13TeV_phantom_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=False,,
+#VBFTo2e2muJJ_0PMH125_phantom128,,2.4817E-04,,,/VBFToHiggs0PMToZZTo2e2muJJ_M125_GaSM_13TeV_phantom_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=False,RecoProbabilities_minimal.py,
+#VBFTo4eJJ_0PMH125_phantom128,,1.3339E-04,,,/VBFToHiggs0PMToZZTo4eJJ_M125_GaSM_13TeV_phantom_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=False,RecoProbabilities_minimal.py,
+#VBFTo4muJJ_0PMH125_phantom128,,1.3339E-04,,,/VBFToHiggs0PMToZZTo4muJJ_M125_GaSM_13TeV_phantom_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=False,RecoProbabilities_minimal.py,
 
-#VBFTo2e2muJJ_Contin_phantom128,,6.429E-04,,,/VBFToContinZZTo2e2muJJ_13TeV_phantom_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0,,
-#VBFTo4eJJ_Contin_phantom128,,3.098E-04,,,/VBFToContinZZTo4eJJ_13TeV_phantom_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=False,,
-#VBFTo4muJJ_Contin_phantom128,,3.098E-04,,,/VBFToContinZZTo4muJJ_13TeV_phantom_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=False,,
+#VBFTo2e2muJJ_Contin_phantom128,,6.429E-04,,,/VBFToContinZZTo2e2muJJ_13TeV_phantom_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0,RecoProbabilities_minimal.py,
+#VBFTo4eJJ_Contin_phantom128,,3.098E-04,,,/VBFToContinZZTo4eJJ_13TeV_phantom_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=False,RecoProbabilities_minimal.py,
+#VBFTo4muJJ_Contin_phantom128,,3.098E-04,,,/VBFToContinZZTo4muJJ_13TeV_phantom_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=False,RecoProbabilities_minimal.py,
 
 
 
-ZZjj_qcd,,9.335E-03,,,/ZZJJTo4L_QCD_13TeV-madgraph-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM ,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=False;APPLYTRIG=False;BESTCANDCOMPARATOR=byBestZ1bestZ2,,
-ZZjj_ewk,,0.4404E-03,,,/ZZJJTo4L_EWK_13TeV-madgraph-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM ,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=False;APPLYTRIG=False;BESTCANDCOMPARATOR=byBestZ1bestZ2,,
+ZZjj_qcd,,9.335E-03,,,/ZZJJTo4L_QCD_13TeV-madgraph-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM ,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=False;APPLYTRIG=False,RecoProbabilities_minimal.py,
+ZZjj_ewk,,0.4404E-03,,,/ZZJJTo4L_EWK_13TeV-madgraph-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM ,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=False;APPLYTRIG=False,RecoProbabilities_minimal.py,
 
 
 
@@ -59,23 +65,23 @@ ZZjj_ewk,,0.4404E-03,,,/ZZJJTo4L_EWK_13TeV-madgraph-pythia8/RunIISummer16MiniAOD
 
 
 # Irreducible background
-TTZToLLNuNu_M10,,0.25271,,,/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM,dbs,,1,ADDLOOSEELE=True;BESTCANDCOMPARATOR=byBestZ1bestZ2,,
-TTZToLL_M1to1O_MLM,,0.04695,,,/TTZToLL_M-1to10_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,1,ADDLOOSEELE=True;BESTCANDCOMPARATOR=byBestZ1bestZ2,,
-#TTZJets_M10_MLM,,0.259,,,/ttZJets_13TeV_madgraphMLM/RunIISummer16MiniAODv2-80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,4,ADDLOOSEELE=True,,
-WWZ,,0.163215,,,/WWZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,1,ADDLOOSEELE=True;BESTCANDCOMPARATOR=byBestZ1bestZ2,,
+TTZToLLNuNu_M10,,0.25271,,,/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM,dbs,,1,ADDLOOSEELE=True,RecoProbabilities_minimal.py,
+TTZToLL_M1to1O_MLM,,0.04695,,,/TTZToLL_M-1to10_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,1,ADDLOOSEELE=True,RecoProbabilities_minimal.py,
+TTZJets_M10_MLM,,6.624e-01,,,/ttZJets_13TeV_madgraphMLM/RunIISummer16MiniAODv2-80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,4,ADDLOOSEELE=True,RecoProbabilities_minimal.py,
+WWZ,,0.163215,,,/WWZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,1,ADDLOOSEELE=True,RecoProbabilities_minimal.py,
 
-NOT_READY_ZZZ,,0.163215,,,/ZZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,1,ADDLOOSEELE=True;BESTCANDCOMPARATOR=byBestZ1bestZ2,,
-
-
-DYToLL_0J,,        4759.,    ,,/DYToLL_0J_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM,dbs,,10,PROCESS_CR=True;ADDLOOSEELE=True;BESTCANDCOMPARATOR=byBestZ1bestZ2,,
-DYToLL_0J_backup,, 4753.,    ,,/DYToLL_0J_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_backup_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,10,PROCESS_CR=True;ADDLOOSEELE=True;BESTCANDCOMPARATOR=byBestZ1bestZ2,,
-DYToLL_1J_backup,, 881.0,    ,,/DYToLL_1J_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_backup_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,10,PROCESS_CR=True;ADDLOOSEELE=True;BESTCANDCOMPARATOR=byBestZ1bestZ2,,
-DYToLL_2J,,        336.3,    ,,/DYToLL_2J_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM,dbs,,10,PROCESS_CR=True;ADDLOOSEELE=True;BESTCANDCOMPARATOR=byBestZ1bestZ2,,
-
-TTJets_DiLept,,       5.684e+01,    ,,/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,2,PROCESS_CR=True;ADDLOOSEELE=True;BESTCANDCOMPARATOR=byBestZ1bestZ2,,
-TTJets_DiLept_ext1,,  5.684e+01,    ,,/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM,dbs,,2,PROCESS_CR=True;ADDLOOSEELE=True;BESTCANDCOMPARATOR=byBestZ1bestZ2,,
-WZTo3LNu,,           4.670,   ,,/WZTo3LNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,4,PROCESS_CR=True;ADDLOOSEELE=True;BESTCANDCOMPARATOR=byBestZ1bestZ2,,
+NOT_READY_ZZZ,,0.163215,,,/ZZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,1,ADDLOOSEELE=True,RecoProbabilities_minimal.py,
 
 
-#DYJetsToLL_M50,,     6025.2,    ,,/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,4,PROCESS_CR=True;ADDLOOSEELE=False;APPLYTRIG=False,,
+DYJetsToLL_M50,,     6025.2,    ,,/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM,dbs,,4,PROCESS_CR=True;ADDLOOSEELE=True,RecoProbabilities_minimal.py,
+DYToLL_0J,,        4759.,    ,,/DYToLL_0J_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM,dbs,,10,PROCESS_CR=True;ADDLOOSEELE=True,RecoProbabilities_minimal.py,
+DYToLL_0J_backup,, 4753.,    ,,/DYToLL_0J_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_backup_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,10,PROCESS_CR=True;ADDLOOSEELE=True,RecoProbabilities_minimal.py,
+DYToLL_1J_backup,, 881.0,    ,,/DYToLL_1J_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_backup_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,10,PROCESS_CR=True;ADDLOOSEELE=True,RecoProbabilities_minimal.py,
+DYToLL_2J,,        336.3,    ,,/DYToLL_2J_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM,dbs,,10,PROCESS_CR=True;ADDLOOSEELE=True,RecoProbabilities_minimal.py,
+
+TTJets_DiLept,,       5.684e+01,    ,,/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,2,PROCESS_CR=True;ADDLOOSEELE=True,RecoProbabilities_minimal.py,
+TTJets_DiLept_ext1,,  5.684e+01,    ,,/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM,dbs,,2,PROCESS_CR=True;ADDLOOSEELE=True,RecoProbabilities_minimal.py,
+WZTo3LNu,,           4.670,   ,,/WZTo3LNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,4,PROCESS_CR=True;ADDLOOSEELE=True,RecoProbabilities_minimal.py,
+
+
 #TTJets,,             831.76,    ,,/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM,dbs,,2,PROCESS_CR=True;ADDLOOSEELE=False;APPLYTRIG=False,,

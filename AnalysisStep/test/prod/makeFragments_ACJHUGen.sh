@@ -1,5 +1,11 @@
 #!/bin/bash
 
+##
+# This script reads list of couplings (see Couplings_ACJHUGen.lst for formatting) to create JHUGen anomalous couplings pyFragments.
+# It replaces the sample hypothesis <COUPLINGS> in the pyFragment template with whichever actual couplings are put into the lst file.
+# Specify the lst file of couplings as argument 1 to this script.
+##
+
 lstfile=$1
 
 indicators=()

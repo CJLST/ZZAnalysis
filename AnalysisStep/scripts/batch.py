@@ -200,10 +200,11 @@ class MyBatchManager:
 
 
     def mkdir( self, dirname ):
-        try:
-            os.makedirs(dirname)
-        except OSError:
-            pass
+       mkdir = 'mkdir -p %s' % dirname
+       ret = os.system( mkdir )
+       if( ret != 0 ):
+          print 'please remove or rename directory: ', dirname
+          sys.exit(4)
     
 
        
@@ -314,12 +315,21 @@ class MyBatchManager:
 
 class Component(object):
 
-    def __init__(self, name, prefix, dataset, pattern, splitFactor, variables, pyFragments, xsec, BR, setup, pdfstep):
+    def __init__(self, name, prefix, dataset, pattern, splitFactor, variables, pyFragments, xsec, BR, setup, pdfstep, cfgFileName=""):
         self.name = name
         self.samplename = name
         print "checking "+self.name
-        self.source = datasetToSource( prefix, dataset, pattern)
-        self.files = self.source.fileNames
+
+        if prefix=="source.fileNames" : #take the files that are specified in the process.source.fileNames in the input .py
+            handle = open(cfgFileName, 'r')
+            cfo = imp.load_source("pycfg", cfgFileName, handle)
+            handle.close()
+            self.source = copy.deepcopy(cfo.process.source)
+            self.files = copy.deepcopy(cfo.process.source.fileNames)
+            
+        else : # Query dbs, eos, etc. to get the file list
+            self.source = datasetToSource( prefix, dataset, pattern)
+            self.files = self.source.fileNames
         print len(self.files)
         if len(self.files)==0 :
             sys.exit("ERROR: no input files found")
@@ -350,7 +360,7 @@ if __name__ == '__main__':
     for sample, settings in sampleDB.iteritems():
         if settings['execute']:
             pdfstep = batchManager.options_.PDFstep
-            components.append(Component(sample, settings['prefix'], settings['dataset'], settings['pattern'], settings['splitLevel'], settings['::variables'],settings['::pyFragments'],settings['crossSection'], settings['BR'], setup, pdfstep)) #FIXME-RB not bool(settings['pdf']))) #settings['pdf'] used here as full sel, without cuts.
+            components.append(Component(sample, settings['prefix'], settings['dataset'], settings['pattern'], settings['splitLevel'], settings['::variables'],settings['::pyFragments'],settings['crossSection'], settings['BR'], setup, pdfstep,cfgFileName)) #FIXME-RB not bool(settings['pdf']))) #settings['pdf'] used here as full sel, without cuts.
     
     handle.close()
 

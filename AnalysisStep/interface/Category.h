@@ -3,30 +3,14 @@
 
 
 
-//---------- full RunII categorization (initial 2014 proposal)
+//---------- RunI categorization 
 
-enum Category {
-  Untagged     = 0,
-  OneJetTagged = 1,
-  VBFTagged    = 2, 
-  VHLeptTagged = 3, 
-  VHHadrTagged = 4, 
-  ttHTagged    = 5
+enum CategoryLegacy {
+  ZeroOneJet = 0,
+  Dijet      = 1
 };
 
-//int category(
-extern "C" int category(
-	     int nExtraLep,
-	     float ZZPt,
-	     float ZZMass,
-	     int nCleanedJetsPt30, 
-	     int nCleanedJetsPt30BTagged,
-	     float* jetpt,
-	     float* jeteta,
-	     float* jetphi,
-	     float* jetmass,
-	     float DiJetFisher
-	     );
+extern "C" int categoryLegacy( int nCleanedJetsPt30 );
 
 
 
@@ -45,7 +29,7 @@ extern "C" int categoryMor16(
 
 
 
-//---------- ICHEP 2016 categorization (temporary version)
+//---------- ICHEP 2016 categorization
 
 enum CategoryIchep16 {
   UntaggedIchep16     = 0,
@@ -58,33 +42,57 @@ enum CategoryIchep16 {
 
 //int category(
 extern "C" int categoryIchep16(
-	     int nExtraLep,
-	     int nExtraZ,
-	     int nCleanedJetsPt30, 
-	     int nCleanedJetsPt30BTagged,
-	     float* jetQGLikelihood,
-	     float p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
-	     float p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
-	     float p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
-       float p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
-       float pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
-	     float p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
-	     float p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
-             float* jetPhi,
-             float ZZMass,
-	     bool useQGTagging = false
-	     );
+			       int nExtraLep,
+			       int nExtraZ,
+			       int nCleanedJetsPt30, 
+			       int nCleanedJetsPt30BTagged_bTagSF,
+			       float* jetQGLikelihood,
+			       float p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+			       float p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
+			       float p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
+			       float p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+			       float pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+			       float p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
+			       float p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
+			       float* jetPhi,
+			       float ZZMass,
+			       bool useQGTagging = false
+			       );
 
 
 
-//---------- RunI categorization 
+//---------- Moriond 2017 categorization
 
-enum CategoryLegacy {
-  ZeroOneJet = 0,
-  Dijet      = 1
+enum CategoryMor17 {
+  UntaggedMor17     = 0,
+  VBF1jTaggedMor17  = 1,
+  VBF2jTaggedMor17  = 2, 
+  VHLeptTaggedMor17 = 3, 
+  VHHadrTaggedMor17 = 4,
+  ttHTaggedMor17    = 5,
+  VHMETTaggedMor17  = 6
 };
 
-extern "C" int categoryLegacy( int nCleanedJetsPt30 );
+//int category(
+extern "C" int categoryMor17(
+			     int nExtraLep,
+			     int nExtraZ,
+			     int nCleanedJetsPt30, 
+			     int nCleanedJetsPt30BTagged_bTagSF,
+			     float* jetQGLikelihood,
+			     float p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+			     float p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
+			     float p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
+			     float p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+			     float pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+			     float p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
+			     float p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
+			     float* jetPhi,
+			     float ZZMass,
+			     float PFMET,
+			     bool useVHMETTagged = true,
+			     bool useQGTagging = false
+			     );
 
 
 

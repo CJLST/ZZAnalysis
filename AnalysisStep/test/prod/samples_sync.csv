@@ -1,0 +1,5 @@
+identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments,comment
+###,,,,,,,,,,,Run the standard sync with 1 file/job. To execute:
+###,,,,,,,,,,,batch.py -i ../analyzer_Sync.py samples_sync.csv
+
+sync,, -1, ,,,source.fileNames,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;APPLY_K_NNLOQCD_ZZGG=2,RecoProbabilities.py;LHEProbabilities_GG_SIG_0PM_H115_POWHEG.py,

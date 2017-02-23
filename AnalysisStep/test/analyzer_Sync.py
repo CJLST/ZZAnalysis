@@ -7,14 +7,13 @@
 #BUNCH_SPACING = 25
 #FSRMODE = "RunII" # only Run II supported as of 2016
 #KINREFIT = False  # control KinZFitter (very slow)
-PROCESS_CR = True # Uncomment to run CR paths and trees
+PROCESS_CR = False # Uncomment to run CR paths and trees
 #ADDLOOSEELE = True # Run paths for loose electrons
 #APPLYTRIG = False  # must set to False for all MC samples except MINIAODv2-reHLT
+#KEEPLOOSECOMB = True # Do not skip loose lepton ZZ combinations (for debugging)
 
 PD = ""
 MCFILTER = ""
-
-#KEEPLOOSECOMB = True # Do not skip loose lepton ZZ combinations (for debugging
 
 #For DATA: 
 #IsMC = False

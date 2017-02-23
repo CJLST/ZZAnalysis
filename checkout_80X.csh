@@ -7,19 +7,20 @@
 # source /tmp/checkout_80X.csh
 
 
-############## For CMSSW_8_0_21
+############## For CMSSW_8_0_26_patch1
 git cms-init
 # Preliminary electron scale and smearing corrections according to https://twiki.cern.ch/twiki/bin/view/CMS/EGMSmearer
-git cms-merge-topic -u shervin86:Moriond2017_JEC_energyScales
+git cms-merge-topic rafaellopesdesa:EgammaAnalysis80_EGMSmearer_Moriond17_23Jan
+
 git cms-addpkg EgammaAnalysis/ElectronTools
-(cd EgammaAnalysis/ElectronTools/data ; git clone -b master https://github.com/ECALELFS/ScalesSmearings.git)
+(cd EgammaAnalysis/ElectronTools/data ; git clone -b master https://github.com/ECALELFS/ScalesSmearings.git ; cd ScalesSmearings ; git checkout tags/Moriond17_23Jan_v1)
+
+#MET recipe according to https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription#Instructions_for_8_0_X_X_26_patc
+git cms-merge-topic cms-met:METRecipe_8020 -u
+git cms-merge-topic cms-met:METRecipe_80X_part2 -u
 
 
 #### Please do not add any custom (non-CMSSW) package before this line ####
-
-#Preliminary 8X electron ID
-git clone https://github.com/Werbellin/RecoEgamma_8X.git RecoEgamma
-(cd RecoEgamma; git checkout d716460) 
 
 #ZZAnalysis
 git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
@@ -38,7 +39,7 @@ git clone -n https://github.com/cms-analysis/EgammaAnalysis-ElectronTools EGamma
 
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
-(cd ZZMatrixElement; git checkout -b from-v203 v2.0.3)
+(cd ZZMatrixElement; git checkout -b from-v204 v2.0.4)
 # replace ZZMatrixElement/MELA/setup.sh -j 8)
 pushd ${CMSSW_BASE}/src/ZZMatrixElement/MELA/fortran/
 make all

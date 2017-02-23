@@ -52,7 +52,7 @@ using namespace std;
 ////////////////////////////////////////////////////////////////////////////////
 
 
-const int nVariables = 14;
+const int nVariables = 34;
 string varName[nVariables] = {
   "Nvtx",
   "Mll",
@@ -68,6 +68,26 @@ string varName[nVariables] = {
   "BDT2",
   "Iso1",
   "Iso2",
+  "Njets",
+  "Jet1Pt",
+  "Jet1Eta",
+  "Jet1Phi",
+  "Jet1BTagger",
+  "JetQGLikelihood",
+  "NAddEle",
+  "NAddMu",
+  "PtEle3",
+  "PtMu3",
+  "EtaEle3",
+  "EtaMu3",
+  "PhiEle3",
+  "PhiMu3",
+  "SIPEle3",
+  "SIPMu3",
+  "BDTEle3",
+  "BDTMu3",
+  "IsoEle3",
+  "IsoMu3",
 };
 string varXLabel[nVariables] = {
   "number of vertices",
@@ -78,12 +98,33 @@ string varXLabel[nVariables] = {
   "#eta (trailing lepton)",
   "#phi (leading lepton)",
   "#phi (trailing lepton)",
-  "SIP (leading lepton)",
-  "SIP (trailing lepton)",
+  "SIP_{3D} (leading lepton)",
+  "SIP_{3D} (trailing lepton)",
   "BDT (leading lepton)",
   "BDT (trailing lepton)",
   "isolation (leading lepton)",
   "isolation (trailing lepton)",
+  "number of selected jets",
+  "p_{T} (leading jet) [GeV]",
+  "#eta (leading jet)",
+  "#phi (leading jet)",
+  "b-tagger (leading jet)",
+  "q/g tagger (leading jet)",
+  "number of extra electrons",
+  "number of extra muons",
+  "electron p_{T} [GeV]",
+  "muon p_{T} [GeV]",
+  "electron #eta",
+  "muon #eta",
+  "electron #phi",
+  "muon #phi",
+  "electron SIP_{3D}",
+  "muon SIP_{3D}",
+  "electron BDT output score",
+  "####",
+  "I^{e}_{PF}",
+  "I^{#mu}_{PF}",
+
 };
 string varYLabel[nVariables] = {
   "Events",
@@ -100,20 +141,42 @@ string varYLabel[nVariables] = {
   "Events / 0.02",
   "Events / 0.01",
   "Events / 0.01",
+  "Events",
+  "Events / 1 GeV",
+  "Events / 0.1",
+  "Events / 0.1",
+  "Events / 0.01",
+  "Events / 0.01",
+  "Events",
+  "Events",
+  "Events / 2 GeV",
+  "Events / 2 GeV",
+  "Events / 0.1",
+  "Events / 0.1",
+  "Events / 0.1",
+  "Events / 0.1",
+  "Events / 0.05",
+  "Events / 0.05",
+  "Events / 0.02",
+  "Events / 0.02",
+  "Events / 0.01",
+  "Events / 0.01",
 };
 Bool_t plotThisVar[2][nVariables] = {
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,},
-  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,},
+  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,},
+  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,},
 };
-Int_t  varNbin[nVariables] = { 50,  60, 100, 100, 60, 60, 80, 80, 90  , 90  , 100, 100, 55   , 55   , };
-Float_t varMin[nVariables] = {  0,  60,   0,   0, -3, -3, -4, -4,  0  ,  0  ,  -1,  -1,  0   ,  0   , };
-Float_t varMax[nVariables] = { 50, 120, 200, 200,  3,  3,  4,  4,  4.5,  4.5,   1,   1,  0.55,  0.55, };
-Bool_t varLogx[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,};
-Bool_t varLogy[nVariables] = {1,1,1,1,0,0,0,0,1,1,1,1,1,1,};
-Int_t restrictCountVar[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,};
-Float_t varMinFactor[nVariables] = {0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,};
-Int_t varCMSPos[nVariables] = {11,11,11,11,11,11,11,11,11,11,33,33,11,11,};
-Int_t varLegPos[nVariables] = {33,33,33,33,33,33,33,33,33,33,11,11,33,33,};
+//Int_t  varNbin[nVariables] = { 50,  60, 100, 100, 60, 60, 80, 80, 90  , 90  , 100, 100, 55   , 55   , 10, 200, 100, 80, 100, 100, 5, 5, 100, 100, 60, 60, 80, 80, 100, 100, 50, 50, 80, 80, };
+Int_t  varNbin[nVariables] = { 50,  60, 100, 100, 60, 60, 80, 80, 90  , 90  , 100, 100, 55   , 55   , 10,  60, 50, 40, 50, 50, 5, 5, 100, 100, 60, 60, 80, 80, 40, 40, 30, 30, 40, 40, };
+Float_t varMin[nVariables] = {  0,  60,   0,   0, -3, -3, -4, -4,  0  ,  0  ,  -1,  -1,  0   ,  0   ,  0,   0, -5, -4,  0,  0, 0, 0,   0,   0, -3, -3, -4, -4,  0,  0, -1, -1,  0,  0, };
+Float_t varMax[nVariables] = { 50, 120, 200, 200,  3,  3,  4,  4,  4.5,  4.5,   1,   1,  0.55,  0.55, 10, 200,  5,  4,  1,  1, 5, 5, 200, 200,  3,  3,  4,  4,  8,  8,  1,  1,  4,  4, };
+Bool_t varLogx[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,};
+Bool_t varLogy[nVariables] = {1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,};
+Bool_t varIsNotLep[nVariables] = {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,};
+Int_t restrictCountVar[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,};
+Float_t varMinFactor[nVariables] = {0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,};
+Int_t varCMSPos[nVariables] = {11,11,11,11,11,11,11,11,11,11,33,33,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,};
+Int_t varLegPos[nVariables] = {33,33,33,33,33,33,33,33,33,33,11,11,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,};
 
 const int nVarPairs = 1;
 string varPairName[nVarPairs] = { "Pt1VsEta1", };
@@ -137,7 +200,7 @@ Bool_t plotThisVarPair[2][nVarPairs] = {
 enum Process {Data=0, DY=1, ttbar=2, DiBoson=3};
 const int nProcesses = 4;
 string sProcess[nProcesses] = {"Data", "DY", "ttbar", "DiBoson"};
-string processLabel[nProcesses] = {"Data", "Z + jets", "t#bar{t}", "diboson"};
+string processLabel[nProcesses] = {" Data", " Z+jets", " t#bar{t}", " WW, WZ, ZZ"};
 Int_t processFillColor[nProcesses] = {TColor::GetColor("#000000"), TColor::GetColor("#669966"), TColor::GetColor("#9a6666"), DRAWLINES?TColor::GetColor("#99ccff"):TColor::GetColor("#8bc5ff")};
 Int_t processLineColor[nProcesses] = {TColor::GetColor("#000000"), TColor::GetColor("#003300"), TColor::GetColor("#5f3f3f"), TColor::GetColor("#000099")};
 Bool_t useProcess[nProcesses] = {1,1,1,1,};
@@ -157,34 +220,24 @@ string fsLabel[nFinalStates+1] = {"2#mu", "2e", "2#font[12]{l}"};
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+void printStatus(Int_t n, Int_t interval, Int_t total, string label) {
+  if(n==0)              cout<<"  "<<1  <<" / "<<total<<" "<<label<<endl;
+  if((n+1)%interval==0) cout<<"  "<<n+1<<" / "<<total<<" "<<label<<endl;
+  if(n==total-1)        cout<<"  "<<n+1<<" / "<<total<<" "<<label<<endl;
+}
 
 void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lumi)
 {
 
-  const int nDatasets = 6;
+  const int nDatasets = 7;
   string datasets[nDatasets] = {
-    // "DoubleMu2015B",
-    // "DoubleEG2015B",
-    // "MuonEG2015B",
-    // "SingleEle2015B",
-    // "DoubleMu2015C",
-    // "DoubleEG2015C",
-    // "MuonEG2015C",
-    // "SingleEle2015C",
-    // "DoubleMu2015C_50ns",
-    // "DoubleEG2015C_50ns",
-    // "MuonEG2015C_50ns",
-    // "SingleEle2015C_50ns",
-    // "DoubleMu2015D",
-    // "DoubleEG2015D",
-    // "MuonEG2015D",
-    // "SingleEle2015D",
     "AllData",
     "DYJetsToLL_M50",
     "DYJetsToLL_M10to50",
-    "TTTo2L2Nu",
+    "TTJets_DiLept",//"TTTo2L2Nu",
     "WWTo2L2Nu",
-    "WZJets",
+    "WZTo3LNu",
+    "ZZTo4l",
   };
 
   TFile* inputFile[nDatasets];
@@ -231,6 +284,43 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
   vector<Float_t> *fsrDR = 0;
   vector<Short_t> *fsrLept = 0;
   vector<Short_t> *fsrLeptID = 0;
+  Short_t nAddEle;
+  vector<float> *AddElePt = 0;
+  vector<float> *AddEleEta = 0;
+  vector<float> *AddElePhi = 0;
+  vector<short> *AddEleLepId = 0;
+  vector<float> *AddEleSIP = 0;
+  vector<bool> *AddEleisID = 0;
+  vector<float> *AddEleBDT = 0;
+  vector<char> *AddEleMissingHit = 0;
+  vector<float> *AddEleChargedHadIso = 0;
+  vector<float> *AddEleNeutralHadIso = 0;
+  vector<float> *AddElePhotonIso = 0;
+  vector<float> *AddEleCombRelIsoPF = 0;
+  Short_t nAddMu;
+  vector<float> *AddMuPt = 0;
+  vector<float> *AddMuEta = 0;
+  vector<float> *AddMuPhi = 0;
+  vector<short> *AddMuLepId = 0;
+  vector<float> *AddMuSIP = 0;
+  vector<float> *AddMuTime = 0;
+  vector<bool> *AddMuisID = 0;
+  vector<float> *AddMuChargedHadIso = 0;
+  vector<float> *AddMuNeutralHadIso = 0;
+  vector<float> *AddMuPhotonIso = 0;
+  vector<float> *AddMuCombRelIsoPF = 0;
+  Short_t nCleanedJetsPt30; 
+  vector<Float_t> *JetPt = 0;
+  vector<Float_t> *JetEta = 0;
+  vector<Float_t> *JetPhi = 0;
+  vector<Float_t> *JetMass = 0;
+  vector<Float_t> *JetBTagger = 0;
+  vector<Float_t> *JetIsBtagged = 0;
+  vector<Float_t> *JetQGLikelihood = 0;
+  vector<Float_t> *JetAxis2 = 0;
+  vector<Float_t> *JetMult = 0;
+  vector<Float_t> *JetPtD = 0;
+  vector<Float_t> *JetSigma = 0;
 
   TH1F* h1[nVariables][nFinalStates+1][nProcesses];
   TH2F* h2[nVarPairs ][nFinalStates+1][nProcesses];
@@ -260,14 +350,14 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 
     //----- assign dataset to correct process
     currentProcess = -1;
-    if(datasets[d].find("2015")!=string::npos||
+    if(datasets[d].find("2016")!=string::npos||
        datasets[d]=="AllData")
       currentProcess = Data;
     if(datasets[d].find("DY")!=string::npos) 
       currentProcess = DY;
-    if(datasets[d]=="WWTo2L2Nu"||datasets[d]=="WZJets")
+    if(datasets[d]=="WWTo2L2Nu"||datasets[d]=="WZJets"||datasets[d]=="WZTo3LNu"||datasets[d]=="ZZTo4l")
       currentProcess = DiBoson;
-    if(datasets[d]=="TTTo2L2Nu")
+    if(datasets[d]=="TTTo2L2Nu"||datasets[d]=="TTJets_DiLept")
       currentProcess = ttbar;
 
     string inputFileName = string(Form("%s%s/ZZ4lAnalysis.root",(currentProcess==Data?inputFilePath_Data:inputFilePath_MC).c_str(),datasets[d].c_str()));
@@ -316,6 +406,43 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
     inputTree[d]->SetBranchAddress("fsrLept",&fsrLept);
     inputTree[d]->SetBranchAddress("fsrDR",&fsrDR);
     inputTree[d]->SetBranchAddress("fsrLeptId",&fsrLeptID);
+    inputTree[d]->SetBranchAddress("nAddEle",&nAddEle);
+    inputTree[d]->SetBranchAddress("AddElePt",&AddElePt);
+    inputTree[d]->SetBranchAddress("AddEleEta",&AddEleEta);
+    inputTree[d]->SetBranchAddress("AddElePhi",&AddElePhi);
+    inputTree[d]->SetBranchAddress("AddEleLepId",&AddEleLepId);
+    inputTree[d]->SetBranchAddress("AddEleSIP",&AddEleSIP);
+    inputTree[d]->SetBranchAddress("AddEleisID",&AddEleisID);
+    inputTree[d]->SetBranchAddress("AddEleBDT",&AddEleBDT);
+    inputTree[d]->SetBranchAddress("AddEleMissingHit",&AddEleMissingHit);
+    inputTree[d]->SetBranchAddress("AddEleChargedHadIso",&AddEleChargedHadIso);
+    inputTree[d]->SetBranchAddress("AddEleNeutralHadIso",&AddEleNeutralHadIso);
+    inputTree[d]->SetBranchAddress("AddElePhotonIso",&AddElePhotonIso);
+    inputTree[d]->SetBranchAddress("AddEleCombRelIsoPF",&AddEleCombRelIsoPF);
+    inputTree[d]->SetBranchAddress("nAddMu",&nAddMu);
+    inputTree[d]->SetBranchAddress("AddMuPt",&AddMuPt);
+    inputTree[d]->SetBranchAddress("AddMuEta",&AddMuEta);
+    inputTree[d]->SetBranchAddress("AddMuPhi",&AddMuPhi);
+    inputTree[d]->SetBranchAddress("AddMuLepId",&AddMuLepId);
+    inputTree[d]->SetBranchAddress("AddMuSIP",&AddMuSIP);
+    inputTree[d]->SetBranchAddress("AddMuTime",&AddMuTime);
+    inputTree[d]->SetBranchAddress("AddMuisID",&AddMuisID);
+    inputTree[d]->SetBranchAddress("AddMuChargedHadIso",&AddMuChargedHadIso);
+    inputTree[d]->SetBranchAddress("AddMuNeutralHadIso",&AddMuNeutralHadIso);
+    inputTree[d]->SetBranchAddress("AddMuPhotonIso",&AddMuPhotonIso);
+    inputTree[d]->SetBranchAddress("AddMuCombRelIsoPF",&AddMuCombRelIsoPF);
+    inputTree[d]->SetBranchAddress("nCleanedJetsPt30",&nCleanedJetsPt30);
+    inputTree[d]->SetBranchAddress("JetPt",&JetPt);
+    inputTree[d]->SetBranchAddress("JetEta",&JetEta);
+    inputTree[d]->SetBranchAddress("JetPhi",&JetPhi);
+    inputTree[d]->SetBranchAddress("JetMass",&JetMass);
+    inputTree[d]->SetBranchAddress("JetBTagger",&JetBTagger);
+    inputTree[d]->SetBranchAddress("JetIsBtagged",&JetIsBtagged);
+    inputTree[d]->SetBranchAddress("JetQGLikelihood",&JetQGLikelihood);
+    inputTree[d]->SetBranchAddress("JetAxis2",&JetAxis2);
+    inputTree[d]->SetBranchAddress("JetMult",&JetMult);
+    inputTree[d]->SetBranchAddress("JetPtD",&JetPtD);
+    inputTree[d]->SetBranchAddress("JetSigma",&JetSigma);
 
 
     //---------- Process tree
@@ -326,6 +453,7 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
     for (Long64_t z=0; z<entries; ++z){
 
       if(DEBUG && z>1000) break;
+      printStatus(z,500000,entries,"entries");
 
       inputTree[d]->GetEntry(z);
       
@@ -357,6 +485,11 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 
       //----- fill histograms
 
+      //Bool_t jetCriterion = (nCleanedJetsPt30>0);
+      //Bool_t jetCriterion = (nCleanedJetsPt30==1);
+      Bool_t jetCriterion = (nCleanedJetsPt30==1 && (nAddEle+nAddMu==1));
+      Bool_t eleCriterion = (nAddEle==1);
+      Bool_t muCriterion = (nAddMu==1);
       Float_t varVal[nVariables] = {
 	(Float_t)Nvtx,
 	ZMass,
@@ -372,6 +505,26 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 	LepBDT->at(l2),
 	LepCombRelIsoPF->at(l1),
 	LepCombRelIsoPF->at(l2),
+	(Float_t)nCleanedJetsPt30,
+        (!jetCriterion) ? -9999 : JetPt->at(0),
+	(!jetCriterion) ? -9999 : JetEta->at(0),
+	(!jetCriterion) ? -9999 : JetPhi->at(0),
+	(!jetCriterion) ? -9999 : JetBTagger->at(0),
+	(!jetCriterion) ? -9999 : JetQGLikelihood->at(0),
+	(Float_t)nAddEle,
+	(Float_t)nAddMu,
+	(!eleCriterion) ? -9999 : AddElePt->at(0),
+	(!muCriterion) ? -9999 : AddMuPt->at(0),
+	(!eleCriterion) ? -9999 : AddEleEta->at(0),
+	(!muCriterion) ? -9999 : AddMuEta->at(0),
+	(!eleCriterion) ? -9999 : AddElePhi->at(0),
+	(!muCriterion) ? -9999 : AddMuPhi->at(0),
+	(!eleCriterion) ? -9999 : AddEleSIP->at(0),
+	(!muCriterion) ? -9999 : AddMuSIP->at(0),
+	(!eleCriterion) ? -9999 : AddEleBDT->at(0),
+	0,
+	(!eleCriterion) ? -9999 : AddEleCombRelIsoPF->at(0),
+	(!muCriterion) ? -9999 : AddMuCombRelIsoPF->at(0),
       };
       Float_t varPairVal[nVarPairs][2] = {
 	{ LepPt->at(l1), LepEta->at(l1) },
@@ -404,6 +557,7 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
   for(int fs=0; fs<nFinalStates+1; fs++){
     for(int pr=0; pr<nProcesses; pr++){
       for(int v=0; v<nVariables; v++){
+	if((varIsNotLep[v]&&fs!=nFinalStates)||((!varIsNotLep[v])&&fs==nFinalStates)) continue;
 	h1[v][fs][pr]->Write(h1[v][fs][pr]->GetName());
 	delete h1[v][fs][pr];
       }
@@ -453,6 +607,7 @@ void DrawDataMC(TCanvas* c, TH1F** h, int v, string lumiText, Bool_t logX = fals
       hStacks[pr]->SetFillColor(processFillColor[pr]);
       hStacks[pr]->SetLineColor(DRAWLINES?processLineColor[pr]:processFillColor[pr]);
       if(!DRAWLINES) hStacks[pr]->SetLineColorAlpha(processFillColor[pr],0.);
+      hStacks[pr]->GetXaxis()->SetTitle(varXLabel[v].c_str());
       hStacks[pr]->GetXaxis()->SetTitleOffset(1.2);
       hStacks[pr]->GetYaxis()->SetTitleOffset(1.4);
       hStacks[pr]->GetXaxis()->SetLabelFont(42);
@@ -655,6 +810,7 @@ void doPlots(string outputDirectory, int variableList, int varPairList, double l
   for(int fs=0; fs<nFinalStates+1; fs++){
     for(int pr=0; pr<nProcesses; pr++){
       for(int v=0; v<nVariables; v++){
+	if((varIsNotLep[v]&&fs!=nFinalStates)||((!varIsNotLep[v])&&fs==nFinalStates)) continue;
 	h1[v][fs][pr] = (TH1F*)fInHistos->Get( Form("h1_%s_%s_%s",varName[v].c_str(),sFinalState[fs].c_str(),sProcess[pr].c_str()) );
 	if(fs==fs2e ){
 	  h1[v][fs][pr]->GetXaxis()->SetTitle(ReplaceString(h1[v][fs][pr]->GetXaxis()->GetTitle(),"lepton","electron").c_str());
@@ -677,9 +833,10 @@ void doPlots(string outputDirectory, int variableList, int varPairList, double l
   string canvasName;
   TCanvas* c1[nVariables][nFinalStates+1];
   TCanvas* c2[nVarPairs ][nFinalStates+1];
-  for(int fs=0; fs<nFinalStates; fs++){
+  for(int fs=0; fs<nFinalStates+1; fs++){
     for(int v=0; v<nVariables; v++){
       if(!plotThisVar[variableList][v]) continue;
+      if((varIsNotLep[v]&&fs!=nFinalStates)||((!varIsNotLep[v])&&fs==nFinalStates)) continue;
       canvasName = string(Form("c1_%s_%s",varName[v].c_str(),sFinalState[fs].c_str()));
       c1[v][fs] = new TCanvas(canvasName.c_str(),canvasName.c_str(),500,500);
       DrawDataMC(c1[v][fs],h1[v][fs],v,lumiText,varLogx[v],varLogy[v]);
@@ -714,11 +871,11 @@ void plotDataVsMC_LeptonVars(bool redoHistograms = true) {
   // Define input/output location
   string inputPathMC   = "";
   string inputPathData = "";
-  string outputPath = "PlotsDataVsMC_LeptonVars/";
+  string outputPath = "";
 
   // Define the luminosity
-  float lumi = 2.762;
-  string lumiText = "2.8 fb^{-1}";
+  float lumi = 36.8;
+  string lumiText = "36.8 fb^{-1}";
 
   // Choose a list of 1D plots
   int variableList = 1;

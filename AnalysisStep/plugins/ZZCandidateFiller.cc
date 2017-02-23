@@ -416,11 +416,11 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     float SIP4 = SIPS[3];
 
     //--- Sorted pTs
-    vector<double> ptS;
-    ptS.push_back(Z1Lm->pt());
-    ptS.push_back(Z1Lp->pt());
-    ptS.push_back(Z2Lm->pt());
-    ptS.push_back(Z2Lp->pt());
+    vector<pair<double, int>> ptS;
+    ptS.push_back(make_pair(Z1Lm->pt(), Z1Lm->pdgId()));
+    ptS.push_back(make_pair(Z1Lp->pt(), Z1Lp->pdgId()));
+    ptS.push_back(make_pair(Z2Lm->pt(), Z2Lm->pdgId()));
+    ptS.push_back(make_pair(Z2Lp->pt(), Z2Lp->pdgId()));
     sort(ptS.begin(),ptS.end());
 
     //--- Mass and Lepton uncertainties
@@ -817,8 +817,9 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     //--- Embed variables
     myCand.addUserFloat("candChannel",    candChannel);
     myCand.addUserFloat("SIP4",           SIP4);
-    myCand.addUserFloat("pt1",            ptS[3]); // leading-pT
-    myCand.addUserFloat("pt2",            ptS[2]); // sub-leading pT
+    myCand.addUserFloat("pt1",            ptS.at(3).first); // leading-pT
+    myCand.addUserFloat("pt2",            ptS.at(2).first); // sub-leading pT
+    myCand.addUserFloat("pdgId2",         ptS.at(2).second); // sub-leading pT
     myCand.addUserFloat("mZa",            mZa);
     myCand.addUserFloat("mZb",            mZb);
     myCand.addUserFloat("ZaID",           ZaID);

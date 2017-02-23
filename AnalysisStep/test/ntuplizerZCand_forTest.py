@@ -1,5 +1,5 @@
 
-LEPTON_SETUP = 2015
+LEPTON_SETUP = 2017
 PD = ""
 MCFILTER = ""
 ELECORRTYPE = "RunII" # "None", "Moriond", "Paper", or "RunII"
@@ -30,13 +30,9 @@ process.source.inputCommands = cms.untracked.vstring("keep *", "drop LHERunInfoP
 ### ----------------------------------------------------------------------
 
 process.source.fileNames = cms.untracked.vstring(
-
-    ## Fall15 MiniAODv1 sync files
-    #'/store/mc/RunIIFall15MiniAODv1/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/00000/E2490ECF-CBA7-E511-9B19-001E67398458.root',
-    #'/store/mc/RunIIFall15MiniAODv1/WminusH_HToZZTo4L_M125_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/50000/282C35FB-68A3-E511-A0C4-0CC47A4C8E5E.root',
-    #'/store/mc/RunIIFall15MiniAODv1/WplusH_HToZZTo4L_M125_13TeV_powheg2-minlo-HWJ_JHUgenV6_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/20000/E2DA5AA7-C5AC-E511-97E0-0CC47A4C8E98.root',
-     
-    '/store/mc/RunIIFall15MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PU25nsData2015v1_HCALDebug_76X_mcRun2_asymptotic_v12-v1/00000/006C9F73-3FB9-E511-9AFE-001E67E95C52.root',
+    
+    '/store/mc/RunIISummer16MiniAODv2/ZZTo4L_13TeV_powheg_pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/120000/221CC46F-2FC6-E611-8FFC-0CC47A1E0488.root',
+    '/store/mc/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-herwigpp_30M/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/110000/043B3BC8-8BB7-E611-8CCE-0090FAA573E0.root',
 
     )
 
@@ -55,8 +51,12 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 # Debug
 process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
      dumpTrigger = cms.untracked.bool(True),
-     muonSrc = cms.InputTag("appendPhotons:muons"), 
-     electronSrc = cms.InputTag("appendPhotons:electrons"),
+     muonSrcs =  cms.PSet(
+        muons = cms.InputTag("appendPhotons:muons"),
+     ),
+     electronSrcs = cms.PSet(
+        electrons = cms.InputTag("appendPhotons:electrons"),
+     ),
      candidateSrcs = cms.PSet(
         Z = cms.InputTag("ZCand"),
      ),

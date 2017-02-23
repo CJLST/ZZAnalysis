@@ -7,6 +7,7 @@
 // system include files
 #include <memory>
 #include <cmath>
+#include <algorithm>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -45,7 +46,9 @@
 #include <ZZAnalysis/AnalysisStep/interface/DaughterDataHelpers.h>
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
 #include <ZZAnalysis/AnalysisStep/interface/MCHistoryTools.h>
-#include <ZZAnalysis/AnalysisStep/interface/PUReweight.h>
+//#include <ZZAnalysis/AnalysisStep/interface/PileUpWeight.h>
+#include <ZZAnalysis/AnalysisStep/interface/PileUpWeight.h>
+
 #include "ZZAnalysis/AnalysisStep/interface/EwkCorrections.h"
 #include "ZZAnalysis/AnalysisStep/interface/LHEHandler.h"
 #include "ZZAnalysis/AnalysisStep/src/kFactors.C"
@@ -89,6 +92,9 @@ namespace {
   Short_t NObsInt  = 0;
   Float_t NTrueInt  = 0;
   Float_t PUWeight  = 0;
+  Float_t PUWeight_Up  = 0;
+  Float_t PUWeight_Dn  = 0;
+
   Float_t KFactor_QCD_ggZZ_Nominal = 0;
   Float_t KFactor_QCD_ggZZ_PDFScaleDn = 0;
   Float_t KFactor_QCD_ggZZ_PDFScaleUp = 0;
@@ -104,9 +110,11 @@ namespace {
   Float_t KFactor_QCD_qqZZ_M = 0;
   Float_t KFactor_QCD_qqZZ_Pt = 0;
   Float_t PFMET  =  -99;
+  Float_t PFMET_jesUp  =  -99;
+  Float_t PFMET_jesDn  =  -99;
   Float_t PFMETPhi  =  -99;
-  Float_t PFMETNoHF  =  -99;
-  Float_t PFMETNoHFPhi  =  -99;
+  //Float_t PFMETNoHF  =  -99;
+  //Float_t PFMETNoHFPhi  =  -99;
   Short_t nCleanedJets  =  0;
   Short_t nCleanedJetsPt30  = 0;
   Short_t nCleanedJetsPt30_jecUp  = 0;
@@ -172,6 +180,12 @@ namespace {
   //std::vector<float> LepPhotonIso;
   std::vector<float> LepCombRelIsoPF;
   std::vector<short> LepisLoose;
+  std::vector<float> LepRecoSF;
+  std::vector<float> LepRecoSF_Unc;
+  std::vector<float> LepSelSF;
+  std::vector<float> LepSelSF_Unc;
+
+
   std::vector<float> fsrPt;
   std::vector<float> fsrEta;
   std::vector<float> fsrPhi;
@@ -196,6 +210,7 @@ namespace {
   std::vector<float> JetPtD;
   std::vector<float> JetSigma ;
   std::vector<short> JetHadronFlavour;
+  std::vector<short> JetPartonFlavour;
 
   std::vector<float> JetPUValue;
   std::vector<short> JetPUID;
@@ -250,6 +265,8 @@ namespace {
   Short_t genExtInfo  = 0;
   Float_t xsection  = 0;
   Float_t dataMCWeight  = 0;
+  Float_t muonSF_Unc = 0;
+  Float_t eleSF_Unc = 0;
   Float_t trigEffWeight  = 0;
   Float_t HqTMCweight  = 0;
   Float_t ZXFakeweight  = 0;
@@ -337,7 +354,8 @@ private:
     const math::XYZTLorentzVector Lep1, const math::XYZTLorentzVector Lep2, const math::XYZTLorentzVector Lep3, const math::XYZTLorentzVector Lep4);
   void FillAssocLepGenInfo(std::vector<const reco::Candidate *>& AssocLeps);
 
-  Float_t getAllWeight(const reco::Candidate* Lep) const;
+  
+  Float_t getAllWeight(const vector<const reco::Candidate*>& leptons, Float_t& muonSFUncert, Float_t& eleSFUncert) const;
   Float_t getHqTWeight(double mH, double genPt) const;
   Float_t getFakeWeight(Float_t LepPt, Float_t LepEta, Int_t LepID, Int_t LepZ1ID);
 
@@ -375,6 +393,7 @@ private:
   bool applySkim;       //   "     "      "         skim (if skipEmptyEvents=true)
   bool skipEmptyEvents; // Skip events whith no selected candidate (otherwise, gen info is preserved for all events; candidates not passing trigger&&skim are flagged with negative ZZsel)
   FailedTreeLevel failedTreeLevel;  //if/how events with no selected candidate are written to a separate tree (see miscenums.h for details)
+  edm::InputTag metTag;
   bool applyTrigEffWeight;// apply trigger efficiency weight (concerns samples where trigger is not applied)
   Float_t xsec;
   int year;
@@ -408,13 +427,13 @@ private:
   edm::EDGetTokenT<vector<reco::Vertex> > vtxToken;
   edm::EDGetTokenT<edm::View<pat::Jet> > jetToken;
   edm::EDGetTokenT<pat::METCollection> metToken;
-  edm::EDGetTokenT<pat::METCollection> metNoHFToken;
+  //edm::EDGetTokenT<pat::METCollection> metNoHFToken;
   edm::EDGetTokenT<pat::MuonCollection> muonToken;
   edm::EDGetTokenT<pat::ElectronCollection> electronToken;
 
   edm::EDGetTokenT<edm::MergeableCounter> preSkimToken;
 
-  PUReweight reweight;
+  PileUpWeight pileUpReweight;
 
   //counters
   Float_t Nevt_Gen;
@@ -448,9 +467,13 @@ private:
   TSpline3* spkfactor_ggzz_nlo[9]; // Nominal, PDFScaleDn, PDFScaleUp, QCDScaleDn, QCDScaleUp, AsDn, AsUp, PDFReplicaDn, PDFReplicaUp
 
   TH2D *hTH2D_Mu_All;
+  TH2D *hTH2D_Mu_Unc;
+
   TH2F *hTH2F_El_Reco;
   TH1 *hTH2D_El_IdIsoSip_notCracks;
   TH1 *hTH2D_El_IdIsoSip_Cracks;
+  TH1 *hTH2F_El_RSE;
+
   TH2D* h_weight; //HqT weights
   //TH2F *h_ZXWeightMuo;
   //TH2F *h_ZXWeightEle;
@@ -468,6 +491,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   theFileName(pset.getUntrackedParameter<string>("fileName")),
   skipEmptyEvents(pset.getParameter<bool>("skipEmptyEvents")), // Do not store
   failedTreeLevel(FailedTreeLevel(pset.getParameter<int>("failedTreeLevel"))),
+  metTag(pset.getParameter<edm::InputTag>("metSrc")),
   applyTrigEffWeight(pset.getParameter<bool>("applyTrigEff")),
   xsec(pset.getParameter<double>("xsec")),
   year(pset.getParameter<int>("setup")),
@@ -483,12 +507,15 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   apply_K_NNLOQCD_ZZQQB(pset.getParameter<bool>("Apply_K_NNLOQCD_ZZQQB")),
   apply_K_NLOEW_ZZQQB(pset.getParameter<bool>("Apply_K_NLOEW_ZZQQB")),
 
-  reweight(),
+  pileUpReweight(myHelper.sampleType(), myHelper.setup()),
   sampleName(pset.getParameter<string>("sampleName")),
   hTH2D_Mu_All(0),
+  hTH2D_Mu_Unc(0),
+
   hTH2F_El_Reco(0),
   hTH2D_El_IdIsoSip_notCracks(0),
   hTH2D_El_IdIsoSip_Cracks(0),
+  hTH2F_El_RSE(0),
   h_weight(0)
 {
   //cout<< "Beginning Constructor\n\n\n" <<endl;
@@ -505,8 +532,8 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   triggerResultToken = consumes<edm::TriggerResults>(edm::InputTag("TriggerResults"));
   vtxToken = consumes<vector<reco::Vertex> >(edm::InputTag("goodPrimaryVertices"));
   jetToken = consumes<edm::View<pat::Jet> >(edm::InputTag("cleanJets"));
-  metToken     = consumes<pat::METCollection>(edm::InputTag("slimmedMETs"));
-  metNoHFToken = consumes<pat::METCollection>(edm::InputTag("slimmedMETsNoHF"));
+  metToken = consumes<pat::METCollection>(metTag);
+  //metNoHFToken = consumes<pat::METCollection>(edm::InputTag("slimmedMETsNoHF"));
   muonToken = consumes<pat::MuonCollection>(edm::InputTag("slimmedMuons"));
   electronToken = consumes<pat::ElectronCollection>(edm::InputTag("slimmedElectrons"));
 
@@ -572,34 +599,38 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
 
   //Scale factors for data/MC efficiency
   if (!skipMuDataMCWeight) {
-    TString filename;
-    //filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_%d.root",year);
-    filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_2016.root");//FIXME for 2017
-    edm::FileInPath fipMu(filename.Data());
-    fipPath = fipMu.fullPath();
-    TFile *fMuWeight = TFile::Open(fipPath.data(),"READ");
+    edm::FileInPath fipMu("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_Moriond2017_v2.root");
+    TFile *fMuWeight = TFile::Open(fipMu.fullPath().data(),"READ");
     hTH2D_Mu_All = (TH2D*)fMuWeight->Get("FINAL")->Clone();
+    hTH2D_Mu_Unc = (TH2D*)fMuWeight->Get("ERROR")->Clone();
+
     fMuWeight->Close();
   }
   
   if (!skipEleDataMCWeight) {
 
     if(year>=2016) {
-        TString filename("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_2016_v3.root");
-        //TString filename("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ele_scale_factors_2016_v1.root");  
-        edm::FileInPath fipEleNotCracks(filename.Data());
-        fipPath = fipEleNotCracks.fullPath();
-        TFile *root_file = TFile::Open(fipPath.data(),"READ");
-        hTH2D_El_IdIsoSip_notCracks = (TH1*) root_file->Get("ele_scale_factors")->Clone();
-        hTH2D_El_IdIsoSip_Cracks = (TH1*) root_file->Get("ele_scale_factors_gap")->Clone();
+        edm::FileInPath fipEleNotCracks("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_non_gap_ele_Moriond2017_v2.root");
+        TFile *root_file = TFile::Open(fipEleNotCracks.fullPath().data(),"READ");
+        hTH2D_El_IdIsoSip_notCracks = (TH1*) root_file->Get("EGamma_SF2D")->Clone();
         root_file->Close();
-
-        TString filenameEleReco("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi.txt_SF2D.root");
-        edm::FileInPath fipEleReco(filenameEleReco.Data());
-        fipPath = fipEleReco.fullPath();
-        TFile *root_file_reco = TFile::Open(fipPath.data(),"READ");
+       
+        edm::FileInPath fipEleCracks("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_gap_ele_Moriond2017_v2.root");
+        root_file = TFile::Open(fipEleCracks.fullPath().data(),"READ");
+        hTH2D_El_IdIsoSip_Cracks = (TH1*) root_file->Get("EGamma_SF2D")->Clone();
+        root_file->Close();
+ 
+        edm::FileInPath fipEleReco("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_RECO_ele_Moriond2017_v1.root");
+        TFile *root_file_reco = TFile::Open(fipEleReco.fullPath().data(),"READ");
         hTH2F_El_Reco = (TH2F*) root_file_reco->Get("EGamma_SF2D")->Clone();
         root_file_reco->Close();
+
+        edm::FileInPath fipEleRSE("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_RSE_ele_Moriond2017_v1.root");
+        root_file = TFile::Open(fipEleRSE.fullPath().data(),"READ");
+        hTH2F_El_RSE = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
+        root_file->Close();
+
+
 
     } else {
         TString filename;
@@ -701,7 +732,9 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     }
 
     // get PU weight
-    PUWeight = reweight.weight(myHelper.sampleType(), myHelper.setup(), NTrueInt);
+    PUWeight = pileUpReweight.weight(NTrueInt);
+    PUWeight_Up = pileUpReweight.weight(NTrueInt, PileUpWeight::PUvar::VARUP);
+    PUWeight_Dn = pileUpReweight.weight(NTrueInt, PileUpWeight::PUvar::VARDOWN);
 
     event.getByToken(genParticleToken, genParticles);
     event.getByToken(genInfoToken, genInfo);
@@ -868,17 +901,20 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
   // MET
   Handle<pat::METCollection> metHandle;
-  Handle<pat::METCollection> metNoHFHandle;
   event.getByToken(metToken, metHandle);
-  event.getByToken(metNoHFToken, metNoHFHandle);
   if(metHandle.isValid()){
-    PFMET = metHandle->front().pt();
-    PFMETPhi = metHandle->front().phi();
+    const pat::MET &met = metHandle->front();
+    PFMET = met.pt();
+    PFMET_jesUp = met.shiftedPt(pat::MET::JetEnUp);
+    PFMET_jesDn = met.shiftedPt(pat::MET::JetEnDown);
+    PFMETPhi = met.phi();
   }
-  if(metNoHFHandle.isValid()){
-    PFMETNoHF = metNoHFHandle->front().pt();
-    PFMETNoHFPhi = metNoHFHandle->front().phi();
-  }
+  //Handle<pat::METCollection> metNoHFHandle;
+  //event.getByToken(metNoHFToken, metNoHFHandle);
+  //if(metNoHFHandle.isValid()){
+  //  PFMETNoHF = metNoHFHandle->front().pt();
+  //  PFMETNoHFPhi = metNoHFHandle->front().phi();
+  //}
 
 
   // number of reconstructed leptons
@@ -1015,6 +1051,7 @@ void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
    JetPUID.push_back(jet.userInt("pileupJetIdUpdated:fullId"));
 
    JetHadronFlavour .push_back(jet.hadronFlavour());
+   JetPartonFlavour .push_back(jet.partonFlavour());
 }
 
 
@@ -1263,6 +1300,12 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   //LepNeutralHadIso.clear();
   //LepPhotonIso.clear();
   LepCombRelIsoPF.clear();
+
+  LepRecoSF.clear();
+  LepRecoSF_Unc.clear();
+  LepSelSF.clear();
+  LepSelSF_Unc.clear();
+
   TLE_dR_Z = -1;
   fsrPt.clear();
   fsrEta.clear();
@@ -1502,9 +1545,9 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   //When the trigger is not applied in the MC, apply a trigger efficiency factor instead (FIXME: here hardcoding the efficiencies computed for ICHEP2016)
   trigEffWeight = 1.;
   if(isMC) {
-    for(unsigned int i=0; i<leptons.size(); ++i){
-      dataMCWeight *= getAllWeight(leptons[i]);
-    }
+    
+    dataMCWeight = getAllWeight(leptons,muonSF_Unc,eleSF_Unc);
+    
     if (applyTrigEffWeight){
       Int_t ZZFlav = abs(Z1Flav*Z2Flav);
       if(ZZFlav==121*121 || ZZFlav==121*242) //4e
@@ -1658,75 +1701,107 @@ void HZZ4lNtupleMaker::fillDescriptions(edm::ConfigurationDescriptions& descript
 }
 
 
-Float_t HZZ4lNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
+Float_t HZZ4lNtupleMaker::getAllWeight(const vector<const reco::Candidate*>& leptons, Float_t& muonSFUncert, Float_t& eleSFUncert) const
 {
-  Int_t   myLepID = abs(Lep->pdgId());
-  if (skipMuDataMCWeight&& myLepID==13) return 1.;
-  if (skipEleDataMCWeight&& myLepID==11) return 1.;
-  if (myLepID==22) return 1.; // FIXME - what SFs should be used for TLEs?
+  Float_t totWeight = 1.;
+  Float_t ele_Unc_rel = 0.; //relative uncertainty for product of electron weights
+  Float_t muon_Unc_rel = 0.; // same for mu
+  Float_t muonSF = 1.; // just used to get the absolute uncertainty on muon SF
+  Float_t eleSF = 1.;  // same for ele
 
-  Float_t weight  = 1.;
-  //Float_t errCorr = 0.;
-  //Float_t errCorrSyst = 0.;
+  for(unsigned int i=0; i<leptons.size(); ++i){ 
+    Int_t   myLepID = abs(leptons[i]->pdgId());
+    if (skipMuDataMCWeight&& myLepID==13) return 1.;
+    if (skipEleDataMCWeight&& myLepID==11) return 1.;
+    if (myLepID==22) return 1.; // FIXME - what SFs should be used for TLEs?
+    Float_t weight  = 1.;
+  
+    Float_t myLepPt = leptons[i]->pt();
+    Float_t myLepEta = leptons[i]->eta();
+    Float_t mySIP = userdatahelpers::getUserFloat(leptons[i], "SIP"); 
 
-  Float_t myLepPt = Lep->pt();
-  Float_t myLepEta = Lep->eta();
-  Float_t mySIP = userdatahelpers::getUserFloat(Lep, "SIP"); 
+    Float_t RecoSF = 0.;
+    Float_t RecoSF_Unc = 0.;
 
-  if(myLepID == 13){
-    //avoid to go out of the TH boundary
-    if(myLepPt > 79.) myLepPt = 79.;
+    Float_t SelSF = 0.;
+    Float_t SelSF_Unc = 0.;
 
-    weight = hTH2D_Mu_All->GetBinContent(hTH2D_Mu_All->GetXaxis()->FindBin(myLepEta),hTH2D_Mu_All->GetYaxis()->FindBin(myLepPt));
 
-  } else if(myLepID == 11) {
+    if(myLepID == 13 ){
+      if(myLepPt >= 5. ) { //FIXME assume this is the min value for SFs
+        RecoSF = 1.; // The scale factor combines all afficiecnies
+        RecoSF_Unc = 0.;	
+        SelSF = hTH2D_Mu_All->GetBinContent(hTH2D_Mu_All->GetXaxis()->FindBin(myLepEta),hTH2D_Mu_All->GetYaxis()->FindBin(std::min(myLepPt,199.f))); //last bin contains the overflow
+        SelSF_Unc = hTH2D_Mu_Unc->GetBinContent(hTH2D_Mu_Unc->GetXaxis()->FindBin(myLepEta),hTH2D_Mu_Unc->GetYaxis()->FindBin(std::min(myLepPt,199.f))); //last bin contains the overflow
 
-	// electron reconstruction scale factor, as a function of supercluster eta
-	Float_t SCeta = userdatahelpers::getUserFloat(Lep,"SCeta");
-	if(myLepPt < 20.) myLepPt = 20.;
-    if(myLepPt > 199.) myLepPt = 199.;
+        muonSF *= RecoSF*SelSF;  
+        muon_Unc_rel += sqrt( RecoSF_Unc*RecoSF_Unc/(RecoSF*RecoSF) + SelSF_Unc*SelSF_Unc/(SelSF*SelSF) ); // assume full correlation between different muons (and uncorrelated reco and sel uncertainties)
+      }
+    } else if(myLepID == 11) {
 
-	weight *= hTH2F_El_Reco->GetBinContent(hTH2F_El_Reco->GetXaxis()->FindBin(SCeta),hTH2F_El_Reco->GetYaxis()->FindBin(myLepPt));
+      // electron reconstruction scale factor, as a function of supercluster eta
+      Float_t SCeta = userdatahelpers::getUserFloat(leptons[i],"SCeta");
+    
+      Float_t lookup_pT = 50.;  // FIXME: the histogram contains 1 bin only, and overflows/underflows are intended to be included (?)
 
-    // reset pt for next lookup with different limits    
-    myLepPt = Lep->pt();
+      RecoSF = hTH2F_El_Reco->GetBinContent(hTH2F_El_Reco->GetXaxis()->FindBin(SCeta),hTH2F_El_Reco->GetYaxis()->FindBin(lookup_pT));
+      RecoSF_Unc = hTH2F_El_Reco->GetBinError(hTH2F_El_Reco->GetXaxis()->FindBin(SCeta),hTH2F_El_Reco->GetYaxis()->FindBin(lookup_pT));
 
-    if(mySIP >= 4.0 ) {
-        // No SF for RSE yet
-        //return 1.;
+      // POG recommendation to add 1% systematics for pT<20 or >80 GeV
+      // see https://twiki.cern.ch/twiki/bin/view/CMS/EgammaIDRecipesRun2#
+      if(myLepPt < 20. || myLepPt > 80.) RecoSF_Unc += 0.01;
+
+      if(mySIP >= 4.0 ) { // FIXME: use a better way to find RSE electrons!
+          // This is also the case for the loose lepton in Z+l
+   	  SelSF = hTH2F_El_RSE->GetBinContent(hTH2F_El_RSE->FindFixBin(SCeta, std::min(myLepPt,199.f)));
+ 	  SelSF_Unc = hTH2F_El_RSE->GetBinError(hTH2F_El_RSE->FindFixBin(SCeta, std::min(myLepPt,199.f)));
+      } else {
+          if(year >= 2016) {
+              if((bool)userdatahelpers::getUserFloat(leptons[i],"isCrack")) {
+                SelSF = hTH2D_El_IdIsoSip_Cracks->GetBinContent(hTH2D_El_IdIsoSip_Cracks->FindFixBin(SCeta, std::min(myLepPt,199.f)));
+                SelSF_Unc = hTH2D_El_IdIsoSip_Cracks->GetBinError(hTH2D_El_IdIsoSip_Cracks->FindFixBin(SCeta, std::min(myLepPt,199.f)));
+              } else {
+                SelSF = hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->FindFixBin(SCeta, std::min(myLepPt,199.f)));
+                SelSF_Unc = hTH2D_El_IdIsoSip_notCracks->GetBinError(hTH2D_El_IdIsoSip_notCracks->FindFixBin(SCeta, std::min(myLepPt,199.f)));
+	      }
+          } else {
+            edm::LogError("MC scale factor") << "ele SFs for < 2016 no longer supported";
+            abort();
+          }
+      }
+      eleSF *= RecoSF*SelSF;  
+      ele_Unc_rel += sqrt( RecoSF_Unc*RecoSF_Unc/(RecoSF*RecoSF) + SelSF_Unc*SelSF_Unc/(SelSF*SelSF) ); // assume full correlation between different electrons (and uncorrelated reco and sel uncertainties)
     } else {
-
-        if(myLepPt > 199.) myLepPt = 199.;
-        Float_t myLepAbsEta = fabs(myLepEta);
-
-        if(year >= 2016) {
-            if((bool)userdatahelpers::getUserFloat(Lep,"isCrack"))
-                 weight *= hTH2D_El_IdIsoSip_Cracks->GetBinContent(hTH2D_El_IdIsoSip_Cracks->FindFixBin(myLepAbsEta, myLepPt));
-            else
-                 weight *= hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->FindFixBin(myLepAbsEta, myLepPt));
-        } else {
-            if((bool)userdatahelpers::getUserFloat(Lep,"isCrack"))
-              weight *= hTH2D_El_IdIsoSip_Cracks   ->GetBinContent(hTH2D_El_IdIsoSip_Cracks   ->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_Cracks   ->GetYaxis()->FindBin(myLepAbsEta));
-            else
-              weight *= hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_notCracks->GetYaxis()->FindBin(myLepAbsEta));
-        }
+      edm::LogError("MC scale factor") << "ERROR! wrong lepton ID "<<myLepID;
+      weight = 0.;
     }
-  } else {
 
-    cout<<"ERROR! wrong lepton ID "<<myLepID<<endl;
-    //abort();
-    weight = 0.;
-  }
+    LepRecoSF.push_back(RecoSF);
+    LepRecoSF_Unc.push_back(RecoSF_Unc);
 
-  //FIXME
-  if(myLepPt < 5. && myLepID == 13) weight = 1.;
+    weight *= RecoSF;
 
-  if(weight < 0.001 || weight > 10.){
-    cout << "ERROR! LEP out of range! myLepPt = " << myLepPt << " myLepEta = " << myLepEta <<" myLepID "<<myLepID<< " weight = " << weight << endl;
-    //abort();  //no correction should be zero, if you find one, stop
-  }
+    LepSelSF.push_back(SelSF);
+    LepSelSF_Unc.push_back(SelSF_Unc);
 
-  return weight;
+    weight *= SelSF;
+
+
+   if(weight < 0.001 || weight > 10.){
+      edm::LogError("MC scale factor") << "ERROR! LEP out of range! myLepPt = " << myLepPt << " myLepEta = " << myLepEta <<" myLepID "<<myLepID<< " weight = " << weight;
+      edm::LogWarning("MC scale factor") << "Overall weight: " << weight << " RECO " << RecoSF << " +-" << RecoSF_Unc << " selection " << SelSF << " +-" << SelSF_Unc;      
+      //abort();  //no correction should be zero, if you find one, stop
+    }
+
+
+    totWeight *= weight;
+  } 
+ 
+  // get absolute uncertainty from relative one
+  muonSFUncert =  muonSF* muon_Unc_rel;
+  eleSFUncert = eleSF* ele_Unc_rel;
+ 
+  return totWeight;
 }
 
 
@@ -1890,9 +1965,11 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("NTrueInt",NTrueInt, failedTreeLevel >= fullFailedTree);
 
   myTree->Book("PFMET",PFMET, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMET_jesUp",PFMET_jesUp, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMET_jesDn",PFMET_jesDn, failedTreeLevel >= fullFailedTree);
   myTree->Book("PFMETPhi",PFMETPhi, failedTreeLevel >= fullFailedTree);
-  myTree->Book("PFMETNoHF",PFMETNoHF, failedTreeLevel >= fullFailedTree);
-  myTree->Book("PFMETNoHFPhi",PFMETNoHFPhi, failedTreeLevel >= fullFailedTree);
+  //myTree->Book("PFMETNoHF",PFMETNoHF, failedTreeLevel >= fullFailedTree);
+  //myTree->Book("PFMETNoHFPhi",PFMETNoHFPhi, failedTreeLevel >= fullFailedTree);
   myTree->Book("nCleanedJets",nCleanedJets, failedTreeLevel >= fullFailedTree);
   myTree->Book("nCleanedJetsPt30",nCleanedJetsPt30, failedTreeLevel >= fullFailedTree);
   myTree->Book("nCleanedJetsPt30_jecUp",nCleanedJetsPt30_jecUp, failedTreeLevel >= fullFailedTree);
@@ -1968,6 +2045,12 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   //myTree->Book("LepNeutralHadIso",LepNeutralHadIso, false);
   //myTree->Book("LepPhotonIso",LepPhotonIso, false);
   myTree->Book("LepCombRelIsoPF",LepCombRelIsoPF, false);
+  myTree->Book("LepRecoSF",LepRecoSF, false);
+  myTree->Book("LepRecoSF_Unc",LepRecoSF_Unc, false);
+  myTree->Book("LepSelSF",LepSelSF, false);
+  myTree->Book("LepSelSF_Unc",LepSelSF_Unc, false);
+
+
   myTree->Book("fsrPt",fsrPt, false);
   myTree->Book("fsrEta",fsrEta, false);
   myTree->Book("fsrPhi",fsrPhi, false);
@@ -1997,6 +2080,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   }
   myTree->Book("JetSigma",JetSigma, failedTreeLevel >= fullFailedTree);
   myTree->Book("JetHadronFlavour",JetHadronFlavour, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPartonFlavour",JetPartonFlavour, failedTreeLevel >= fullFailedTree);
 
   myTree->Book("JetJERUp",JetJERUp, failedTreeLevel >= fullFailedTree);
   myTree->Book("JetJERDown",JetJERDown, failedTreeLevel >= fullFailedTree);
@@ -2044,7 +2128,11 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("genProcessId", genProcessId, failedTreeLevel >= minimalFailedTree);
     myTree->Book("genHEPMCweight", genHEPMCweight, failedTreeLevel >= minimalFailedTree);
     myTree->Book("PUWeight", PUWeight, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("PUWeight_Dn", PUWeight_Dn, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("PUWeight_Up", PUWeight_Up, failedTreeLevel >= minimalFailedTree);
     myTree->Book("dataMCWeight", dataMCWeight, false);
+    myTree->Book("muonSF_Unc", muonSF_Unc, false);
+    myTree->Book("eleSF_Unc", eleSF_Unc, false);
     myTree->Book("trigEffWeight", trigEffWeight, false);
     myTree->Book("overallEventWeight", overallEventWeight, false);
     myTree->Book("HqTMCweight", HqTMCweight, failedTreeLevel >= minimalFailedTree);
