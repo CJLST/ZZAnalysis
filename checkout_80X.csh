@@ -47,7 +47,11 @@ popd
 
 #kinematic refitting
 git clone https://github.com/VBF-HZZ/KinZfitter.git
-(cd KinZfitter ; git checkout -b from-dd5f616 dd5f616)
+(cd KinZfitter ; git checkout -b from-b627cde b627cde)
+
+# HMC refitter
+git clone https://github.com/usarica/HiggsMassConstraint.git
+(cd HiggsMassConstraint; git checkout -b from-v1.0.1 v1.0.1)
 
 #muon momentum scale corrections (76X)
 git clone https://github.com/bachtis/Analysis.git -b KaMuCa_V4 KaMuCa 
