@@ -21,6 +21,7 @@ def parseOptions():
     parser.add_option('-f', '--finalState', dest='finalState', type='string', default="all",    help='final states: all, 4e, 4mu, 2e2mu')
     parser.add_option('-l', '--long', dest='longOutput', action='store_true', default=True,    help='long output')
     parser.add_option('-u', '--unblind', dest='unblind', action='store_true', default=False,    help='Unblinded (affects data only)')
+    parser.add_option('-r', '--range', dest='range', type='string', default='full',    help='full,low,high mass region (only for blinded data)')
     parser.add_option('-s', '--selection', dest='selection', type='string', default="REG",    help='select REG/TLE/RSE trees')
 
 
@@ -171,12 +172,14 @@ def loop():
                     ZZflav = abs(tree.Z1Flav*tree.Z2Flav)
                     if not ((aChan=="2m1e1Loose" and (ZZflav==169*242 or ZZflav==169*121)) or (aChan=="3e1Loose" and (ZZflav==121*242 or ZZflav==121*121))) : continue
                 mass4l        = tree.ZZMass
+
                 if run>100 and opt.unblind==False :
                 ## blind Higgs peak in data
-                    if not ((mass4l>=70 and mass4l<=110)
-                            or
-                            (mass4l>=150 and mass4l<=500)
-                            ): continue
+                    isLowUnblind  = (mass4l>=70 and mass4l<=110)
+                    isHighUnblind = (mass4l>=150 and mass4l<=500)
+                    if opt.range=='low' and not isLowUnblind : continue
+                    elif opt.range=='high' and not isHighUnblind : continue
+                    elif opt.range=='full' and not (isLowUnblind or isHighUnblind) : continue
 
                 totCounter += 1
                 chanCounter[aChan] += 1
@@ -194,6 +197,8 @@ def loop():
         ext = opt.finalState
         if selection != "REG" :
             ext += selection
+        if opt.unblind==False and opt.range!='all' :
+            ext+='_'+opt.range
         outFileName = outFileName.replace(".","_"+ext+".")
         outFile = open(outFileName,"w")
         line = ""
