@@ -502,7 +502,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   if(pset.exists("is_loose_ele_selection")) { 
     is_loose_ele_selection = pset.getParameter<bool>("is_loose_ele_selection");
   }
-  //triggerResultToken = consumes<edm::TriggerResults>(edm::InputTag("TriggerResults"));
+  triggerResultToken = consumes<edm::TriggerResults>(edm::InputTag("TriggerResults"));
   vtxToken = consumes<vector<reco::Vertex> >(edm::InputTag("goodPrimaryVertices"));
   jetToken = consumes<edm::View<pat::Jet> >(edm::InputTag("cleanJets"));
   metToken     = consumes<pat::METCollection>(edm::InputTag("slimmedMETs"));
@@ -513,7 +513,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   preSkimToken = consumes<edm::MergeableCounter,edm::InLumi>(edm::InputTag("preSkimCounter"));
 
   if (skipEmptyEvents) {
-    applyTrigger=false;
+    applyTrigger=true;
     applySkim=true;
   } else {
     applyTrigger=false;
@@ -822,24 +822,23 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
 
   // Retrieve trigger results
-  //Handle<edm::TriggerResults> triggerResults;
-  //event.getByToken(triggerResultToken, triggerResults);
+  Handle<edm::TriggerResults> triggerResults;
+  event.getByToken(triggerResultToken, triggerResults);
 
   bool failed = false;
 
   // Apply MC filter (skip event)
   // Heshy note: I'm not turning return into failed = true because it looks like it's applied even if !skipEmptyEvents.
   //             It only does anything if the MCFILTER variable is set in the csv file, which is not currently the case.
-  //if (isMC && !(myHelper.passMCFilter(event,triggerResults))) return;
+  if (isMC && !(myHelper.passMCFilter(event,triggerResults))) return;
 
   // Apply skim
-  bool evtPassSkim = true/*myHelper.passSkim(event,triggerResults,trigWord)*/;
-  //if (applySkim && !evtPassSkim) failed = true;       //but gen information will still be recorded if failedTreeLevel != 0
+  bool evtPassSkim = myHelper.passSkim(event, triggerResults, trigWord);
+  if (applySkim && !evtPassSkim) failed = true;       //but gen information will still be recorded if failedTreeLevel != 0
 
   // Apply trigger request (skip event)
-  //bool evtPassTrigger = myHelper.passTrigger(event, triggerResults, trigWord);
-  bool evtPassTrigger = true;
-  //if (applyTrigger && !evtPassTrigger) failed = true; //but gen information will still be recorded if failedTreeLevel != 0
+  bool evtPassTrigger = myHelper.passTrigger(event, triggerResults, trigWord);
+  if (applyTrigger && !evtPassTrigger) failed = true; //but gen information will still be recorded if failedTreeLevel != 0
 
   if (skipEmptyEvents && !failedTreeLevel && (cands->size() == 0 || failed)) return; // Skip events with no candidate, unless skipEmptyEvents = false or failedTreeLevel != 0
 
