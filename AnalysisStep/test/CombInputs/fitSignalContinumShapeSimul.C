@@ -88,6 +88,7 @@ void all(int selAna =-10,  int channels=0, int categ =-10, int sample = 0 ){
 
   if (selAna == 0) sselAna = "Moriond";
   if (selAna == 1) sselAna = "ICHEP";
+  if (selAna == 2) sselAna = "Mor17";
 
   if (channels == 0) schannel = "4mu";
   if (channels == 1) schannel = "4e";
@@ -104,6 +105,14 @@ void all(int selAna =-10,  int channels=0, int categ =-10, int sample = 0 ){
   if (categ == 4 && selAna == 1 ) scategory = "VHLepTagged";
   if (categ == 5 && selAna == 1 ) scategory = "ttHTagged";
 
+  if (categ == 0 && selAna == 2 ) scategory = "UntaggedMor17";
+  if (categ == 1 && selAna == 2 ) scategory = "VBF1JetTaggedMor17";
+  if (categ == 2 && selAna == 2 ) scategory = "VBF2JetTaggedMor17";
+  if (categ == 3 && selAna == 2 ) scategory = "VHLeptTaggedMor17";
+  if (categ == 4 && selAna == 2 ) scategory = "VHHadrTaggedMor17";
+  if (categ == 5 && selAna == 2 ) scategory = "ttHTaggedMor17";
+  if (categ == 6 && selAna == 2 ) scategory = "VHMETTaggedMor17";
+
   if (sample ==3) ssample = "ZH";
   if (sample ==4) ssample = "WH";
   if (sample ==5) ssample = "ttH";
@@ -111,10 +120,10 @@ void all(int selAna =-10,  int channels=0, int categ =-10, int sample = 0 ){
   double bwSigma[40];
   int mass[40]; int id[40]; double xLow[40]; double xHigh[40];
   int maxMassBin;
-  maxMassBin = 3; 
+  maxMassBin = 5; 
 
-  float masses[3] = {120,125,130};
-  for(int i=0;i<3;++i) {
+  float masses[5] = {120,124,125,126,130};
+  for(int i=0;i<5;++i) {
     mass[i] = masses[i]; 
     id[i]=masses[i]; 
     xLow[i] = 105.; // getFitEdge(masses[i],width,true); 
@@ -200,10 +209,11 @@ void fitSignalContinumShapeSimul(int massBin[40],int maxMassBin, int selAna, int
   Short_t z1flav, z2flav; 
   float weight;
   bool useQGTagging = false;
+  bool useVHMETTagged = true;
   Short_t nExtraLeptons;   
   Short_t ExtraZ;
   Short_t nCleanedJets;
-  float ZZPt, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, PHJ_VAJHU, p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU;
+  float ZZPt, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, PHJ_VAJHU, p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU, PFMET;
   
   Short_t nJets;
   Short_t nBTaggedJets;
@@ -239,9 +249,9 @@ void fitSignalContinumShapeSimul(int massBin[40],int maxMassBin, int selAna, int
 
   stringstream FileName[40];
   for (int i=0; i<maxMassBin; i++) {
-    if(sample==3) FileName[i] << "root://lxcms03//data3/Higgs/160720/ZH" << massBin[i] << "/ZZ4lAnalysis.root";
-    else if(sample==4) FileName[i] << "root://lxcms03//data3/Higgs/160720/WplusH" << massBin[i] << "/ZZ4lAnalysis.root";
-    else if(sample==5) FileName[i] << "root://lxcms03//data3/Higgs/160720/ttH" << massBin[i] << "/ZZ4lAnalysis.root";
+    if(sample==3) FileName[i] << "root://lxcms03//data3/Higgs/170222/ZH" << massBin[i] << "/ZZ4lAnalysis.root";
+    else if(sample==4) FileName[i] << "root://lxcms03//data3/Higgs/170222/WplusH" << massBin[i] << "/ZZ4lAnalysis.root";
+    else if(sample==5) FileName[i] << "root://lxcms03//data3/Higgs/170222/ttH" << massBin[i] << "/ZZ4lAnalysis.root";
     else {
       cout << "Wrong sample ." << endl;
       return;
@@ -274,7 +284,7 @@ void fitSignalContinumShapeSimul(int massBin[40],int maxMassBin, int selAna, int
     ggTree->SetBranchAddress("pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal", &pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal);
     ggTree->SetBranchAddress("p_HadWH_SIG_ghw1_1_JHUGen_JECNominal", &PWH_hadronic_VAJHU);
     ggTree->SetBranchAddress("p_HadZH_SIG_ghz1_1_JHUGen_JECNominal",&PZH_hadronic_VAJHU);
-    
+    ggTree->SetBranchAddress("PFMET",&PFMET);
     ggTree->SetBranchAddress("JetPt",&jetpt);
     ggTree->SetBranchAddress("JetEta",&jeteta);
     ggTree->SetBranchAddress("JetPhi",&jetphi);
@@ -313,7 +323,7 @@ void fitSignalContinumShapeSimul(int massBin[40],int maxMassBin, int selAna, int
 //      if (selAna == 1) Cat = category(nExtraLeptons, ZZPt, m4l, njet30, nBTaggedJets, jet30pt, jet30eta, jet30phi,jet30mass, Fisher); 
       if (selAna == 0) Cat = categoryMor16(nJets, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal );	    
       if (selAna == 1) Cat = categoryIchep16(nExtraLeptons, ExtraZ, nCleanedJets, nBTaggedJets, jetQGLL, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, PHJ_VAJHU, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU, jetPHI, m4l, useQGTagging);
-
+      if (selAna == 2) Cat = categoryMor17(nExtraLeptons, ExtraZ, nCleanedJets, nBTaggedJets, jetQGLL, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, PHJ_VAJHU, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU, jetPHI, m4l, PFMET, useVHMETTagged, useQGTagging);
       if (categ >= 0 && categ != Cat ) continue;
       
       if(channels==0 && z1flav*z2flav != 28561) continue;
@@ -627,7 +637,7 @@ void fitSignalContinumShapeSimul(int massBin[40],int maxMassBin, int selAna, int
 
   cout << "Full fit done" << endl;
 
-  double ChiSq[3];
+  double ChiSq[5];
   for (int i=0; i<maxMassBin; i++) {
 
     stringstream frameTitle;
@@ -703,10 +713,10 @@ void fitSignalContinumShapeSimul(int massBin[40],int maxMassBin, int selAna, int
 
   }
 
-    for (int j=0; j<3 ; j++ )
+    for (int j=0; j<5 ; j++ )
     cout<<"Chi2 for mass " << massBin[j] << " GeV: " << ChiSq[j] << endl;
 
-   Int_t ni = 3;
+   Int_t ni = 5;
    Double_t xi[ni], yi[ni];
    for (Int_t i=0;i<ni;i++) {
       xi[i] = massBin[i];
