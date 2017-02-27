@@ -9,6 +9,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <math.h>
 
 #include "TCanvas.h"
 #include "TFile.h"
@@ -27,56 +28,65 @@
 #include "../Plotter/plotUtils.C"
 #include "ZZAnalysis/AnalysisStep/src/kFactors.C"
 #include "ZZAnalysis/AnalysisStep/src/cConstants.cc"
+#include "ZZAnalysis/AnalysisStep/src/Discriminants.cc"
 #include "ZZAnalysis/AnalysisStep/src/Category.cc"
+#include "ZZAnalysis/AnalysisStep/src/bitops.cc"
+#include "ZZAnalysis/AnalysisStep/interface/FinalStates.h"
 
 using namespace std;
 
-#define DEBUG 0
-#define MERGE2E2MU 1
-
-#define APPLYKFACTORS 1
-#define USEPUWEIGHT 1
-#define APPLYBTAGSF 1
-
 #define JUST125 0
 
-#define USEDJETEFFICIENCYFORGGZZ 0
-#define GGZZDJETEFFICIENCY 0.02572353
+#define DEBUG 0
+#define MERGE2E2MU 1
+#define APPLYKFACTORS 1
+#define USEPUWEIGHT 1
+#define USEVHMETTAG 1
+#define UNBLINDSR 0
+#define PRINTLATEXTABLES 0
+#define SPLITVHHADLEP 1
 
 #define DOZPLUSXFROMRUN2COMBINEDSHAPE 1
-#define RESCALEZPLUSXTOCOMBINEDINCLUSIVE 1
-//Combined 0S+SS inclusive numbers sent by Pedja on July 26th 2016 (12.9/fb)
-Float_t normCombFullRange4e    = 9.8;
-Float_t normCombFullRange4mu   = 10.2;
-Float_t normCombFullRange2e2mu = 20.4;
-//Normalization of Z+X in final states and categories.
-//SS categorized numbers from Pedro's July 26th slides (12.9/fb)
-Float_t normSSFullRange4e[7] = {
-  8.250, //Untagged
-  0.687, //VBF1jTagged
-  0.429, //VBF2jTagged
-  0.066, //VHLeptTagged
-  0.118, //VHHadrTagged
-  0.193, //ttHTagged
-  9.743, //inclusive
+#define BUILDZPLUSXYIELDFROMSSCR 1 // Obtain Z+X yields in every category from rerunning over SS CR. Overwrites hardcoded global arrays.
+#define RESCALEZPLUSXTOCOMBINEDINCLUSIVE 0 // Renormalize all Z+X yields to the hardcoded SS/OS-combined numbers.
+
+//Combined 0S+SS inclusive, numbers to be updated for the full 2016 data set.
+Float_t normCombFullRange4e    = 0.;
+Float_t normCombFullRange4mu   = 0.;
+Float_t normCombFullRange2e2mu = 0.;
+
+//Normalization of Z+X in final states and categories. 
+//These numbers get overwritten if the BUILDZPLUSXYIELDFROMSSCR flag is on.
+//Here: SS-based numbers from 170222 trees, for the full 2016 data set.
+Float_t normSSFullRange4e[8] = {
+  16.1702, //Untagged
+  1.35714, //VBF1jTagged
+  0.933429, //VBF2jTagged
+  0.182454, //VHLeptTagged
+  0.295943, //VHHadrTagged
+  0.318589, //ttHTagged
+  0.281382, //VHMETTagged    
+  19.5391, //inclusive
 };
-Float_t normSSFullRange4mu[7] = {
-  8.848,
-  0.758,
-  0.771,
-  0.092,
-  0.208,
-  0.272,
-  10.950,
+Float_t normSSFullRange4mu[8] = {
+  28.0966,
+  2.43438,
+  2.297,
+  0.458604,
+  0.929289,
+  0.80248,
+  0.945141,
+  35.9635,
 };
-Float_t normSSFullRange2e2mu[7] = {
-  (8.597+9.843),
-  (0.620+0.911),
-  (0.506+0.490),
-  (0.180+0.117),
-  (0.255+0.167),
-  (0.319+0.203),
-  (10.476+11.731),
+Float_t normSSFullRange2e2mu[8] = {
+  44.4236,
+  3.48285,
+  3.12444,
+  0.854668,
+  1.28802,
+  1.11163,
+  1.17629,
+  55.4615,
 };
 
 
@@ -87,100 +97,42 @@ Float_t normSSFullRange2e2mu[7] = {
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-enum Process {ggH=0, qqH=1, WH=2, ZH=3, ttH=4, qqZZ=5, ggZZ=6};
-const int nProcesses = 7;
-string sProcess[nProcesses] = {"ggH", "qqH", "WH", "ZH", "ttH", "qqZZ", "ggZZ"};
-bool isSignal[nProcesses] = {1,1,1,1,1,0,0,};
+enum Process {ggH=0, qqH=1, WH=2, WH_lep=3, WH_had=4, ZH=5, ZH_lep=6, ZH_had=7, ttH=8, bbH=9, qqZZ=10, ggZZ=11};
+const int nProcesses = 12;
+string sProcess[nProcesses] = {"ggH", "qqH", "WH", "WH_lep", "WH_had", "ZH", "ZH_lep", "ZH_had", "ttH", "bbH", "qqZZ", "ggZZ"};
+bool isSignal[nProcesses] = {1,1,1,1,1,1,1,1,1,0,0,0,};
+bool includeInYaml[nProcesses] = {1,1,!SPLITVHHADLEP,SPLITVHHADLEP,SPLITVHHADLEP,!SPLITVHHADLEP,SPLITVHHADLEP,SPLITVHHADLEP,1,0,1,1,};
 
-/*
-const int nMHPoints = 35;
-string sMHPoint[nMHPoints] = {"","115","120","124","125","126","130","135","140","145","150","155","160","165","170","175","180","190","200","210","230","250","270","300","350","400","450","500","550","600","700","750","800","900","1000",};
-Float_t fMHPoint[nMHPoints] = {0., 115., 120., 124., 125., 126., 130., 135., 140., 145., 150., 155., 160., 165., 170., 175., 180., 190., 200., 210., 230., 250., 270., 300., 350., 400., 450., 500., 550., 600., 700., 750., 800., 900., 1000.};
-int indexOf125 = 4;
-Int_t nMHPointsProcess[nProcesses] = {34,34,25,25,18,0,0};
-bool hasMHPoint[nProcesses][nMHPoints] = {
-  //{0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,},//ggH
-  {0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,},//ggH
-  //{0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,},//qqH
-  {0,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,},//qqH
-  //{0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,},//WH
-  {0,1,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,},//WH
-  //{0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,},//ZH
-  {0,0,1,1,1,1,0,0,1,1,1,1,0,1,1,1,1,1,1,1,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,},//ZH
-  //{0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,},//ttH
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,},//ttH
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,},//qqZZ
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,},//ggZZ
-};
-const int orderOfPolynomial[nProcesses] = {8,8,8,8,8,0,0};
-//*/
-
-//*
 const int nMHPoints = 6;
 string  sMHPoint[nMHPoints] = {"","120","124","125","126","130",};
 Float_t fMHPoint[nMHPoints] = {0., 120., 124., 125., 126., 130.,};
 int indexOf125 = 3;
-Int_t nMHPointsProcess[nProcesses] = {5,5,5,5,5,0,0};
+Int_t nMHPointsProcess[nProcesses] = {5,5,5,5,5,5,5,5,5,0,0,0};
 bool hasMHPoint[nProcesses][nMHPoints] = {
   {0,1,1,1,1,1,},//ggH
   {0,1,1,1,1,1,},//qqH
   {0,1,1,1,1,1,},//WH
+  {0,1,1,1,1,1,},//WH_lep
+  {0,1,1,1,1,1,},//WH_had
   {0,1,1,1,1,1,},//ZH
+  {0,1,1,1,1,1,},//ZH_lep
+  {0,1,1,1,1,1,},//ZH_had
   {0,1,1,1,1,1,},//ttH
+  {1,0,0,0,0,0,},//bbH
   {1,0,0,0,0,0,},//qqZZ
   {1,0,0,0,0,0,},//ggZZ
 };
-const int orderOfPolynomial[nProcesses] = {2,2,2,2,2,0,0};
-//*/
-
-/* // Actually, we now avoid using the 115 mass point because it doesn't have the updated ggF N3LO QCD + NLO EW xsecs like the 120-130 points
-const int nMHPoints = 7;
-string  sMHPoint[nMHPoints] = {"","115","120","124","125","126","130",};
-Float_t fMHPoint[nMHPoints] = {0., 115., 120., 124., 125., 126., 130.,};
-int indexOf125 = 4;
-Int_t nMHPointsProcess[nProcesses] = {6,6,6,6,6,0,0};
-bool hasMHPoint[nProcesses][nMHPoints] = {
-  {0,1,1,1,1,1,1,},//ggH
-  {0,1,1,1,1,1,1,},//qqH
-  {0,1,1,1,1,1,1,},//WH
-  {0,1,1,1,1,1,1,},//ZH
-  {0,1,1,1,1,1,1,},//ttH
-  {1,0,0,0,0,0,0,},//qqZZ
-  {1,0,0,0,0,0,0,},//ggZZ
-};
-const int orderOfPolynomial[nProcesses] = {2,2,2,2,2,0,0};
-//*/
+const int orderOfPolynomial[nProcesses] = {2,2,2,2,2,2,2,2,2,0,0,0};
 
 enum FinalState {fs4mu=0, fs4e=1, fs2e2mu=2, fs2mu2e=3};
 const int nFinalStates = 4;
 string sFinalState[nFinalStates+1] = {"4mu", "4e", "2e2mu", "2mu2e", "4l"};
 Int_t fsMarkerStyle[nFinalStates+1] = {20,22,21,33,29};
+int fs2[nFinalStates] = {1,0,2,4};
+Float_t fsROSSS[nFinalStates] = { 1.22, 0.97, 1.30, 0.98 };
 
-
-/* ---------- early RunII categorization proposal 
-const int nCategories = 6;
-string sCategory[nCategories+1] = {
-  "UnTagged",
-  "OneJetTagged",
-  "VBFTagged", 
-  "VHLeptTagged",
-  "VHHadrTagged",
-  "ttHTagged",
-  "inclusive",
-};
-Color_t catColor[nCategories+1] = {kBlue-9, kCyan-6, kGreen-6, kRed-7, kOrange+6, kMagenta-6, kBlack, };
-//*/
-/* ---------- Moriond 2016 categorization 
-const int nCategories = 2;
-string sCategory[nCategories+1] = {
-  "UnTagged",
-  "VBFTagged", 
-  "inclusive", 
-};
-Color_t catColor[nCategories+1] = {kBlue-9, kGreen-6, kBlack, };
-//*/
-//* ---------- Ichep 2016 categorization 
-const int nCategories = 6;
+// Moriond 2017 categorization 
+const int nCategories = 7;
 string sCategory[nCategories+1] = {
   "UnTagged",
   "VBF1jTagged",
@@ -188,18 +140,43 @@ string sCategory[nCategories+1] = {
   "VHLeptTagged",
   "VHHadrTagged",
   "ttHTagged",
+  "VHMETTagged",
   "inclusive",
 };
-Color_t catColor[nCategories+1] = {kBlue-9, kCyan-6, kGreen-6, kRed-7, kOrange+6, kMagenta-6, kBlack, };
-//*/
+string sCatLatex[nCategories] = {"Untagged","VBF-1j","VBF-2j","VH-lept.","VH-hadr.","ttH","VH-MET"};
+Color_t catColor[nCategories+1] = {kBlue-9, kCyan-6, kGreen-6, kRed-7, kOrange+6, kMagenta-6, kBlack, kGray };
 
 enum ResonantStatus {resonant=0, nonresonant=1};
 const int nResStatuses = 2;
 string sResonantStatus[nResStatuses+1] = {"resonant", "nonresonant", "allres"};
 
+enum SystShift {nominal=0, jecUp=1, jecDn=2, btagUp=3, btagDn=4};
+const int nSystShifts = 5;
+string sSystShift[nSystShifts] = {"SystNominal","JecUp","JecDn","bTagUp","bTagDn"};
+
 Double_t deltaR(Double_t e1, Double_t p1, Double_t e2, Double_t p2) {
   Double_t deltaPhi = acos(cos(p1-p2));
   return TMath::Sqrt((e1-e2)*(e1-e2) + deltaPhi*deltaPhi);
+}
+
+Float_t fround(Float_t val, Int_t nDigits) { 
+  Int_t f = pow(10,nDigits);
+  return roundf(val * f) / f; 
+}
+string sround(Float_t val, Int_t nDigits) { 
+  return string(Form(("%."+string(Form("%i",nDigits))+"f").c_str(),val)); 
+}
+string fixWidth(string str, unsigned n, bool atBeginning) {
+  if(str.length()>n){
+    cout<<"Error in function fixWidth('"<<str<<"',"<<n<<") : string '"<<str<<"' is too long."<<endl;
+    return "";
+  }else{
+    string res = "";
+    if(atBeginning) res += str;
+    for(int i=0; i<(int)n-(int)(str.length()); i++) res += " ";
+    if(!atBeginning) res += str;
+    return res;
+  }
 }
 
 
@@ -218,7 +195,7 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
   //TFile* ggZZKFactorFile = TFile::Open("../../data/kfactors/Kfactor_Collected_ggHZZ_2l2l_NNLO_NNPDF_NarrowWidth_13TeV.root");
   //TSpline3* sp = (TSpline3*)ggZZKFactorFile->Get("sp_kfactor_Nominal");
 
-  const int nDatasets = 13;
+  const int nDatasets = 14;
   string datasets[nDatasets] = {
     "ggH",
     "VBFH",
@@ -226,6 +203,7 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
     "WminusH",
     "ZH",
     "ttH",
+    "bbH125",
     "ZZTo4l",
     "ggTo4e_Contin_MCFM701",//"ggZZ4e",
     "ggTo4mu_Contin_MCFM701",//"ggZZ4mu",
@@ -245,6 +223,10 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
   Int_t nRun;
   Long64_t nEvent;
   Int_t nLumi;
+  Float_t PFMET;
+  Float_t PFMET_jesUp;
+  Float_t PFMET_jesDn;
+  Short_t genExtInfo;
   Short_t Nvtx;
   Short_t NObsInt;
   Float_t NTrueInt;
@@ -263,22 +245,42 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
   Float_t ZZPt;
   Short_t Z1Flav;
   Short_t Z2Flav;
-  Float_t DiJetFisher;
   Float_t p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal;
+  Float_t p_JJVBF_SIG_ghv1_1_JHUGen_JECUp;
+  Float_t p_JJVBF_SIG_ghv1_1_JHUGen_JECDn;
   Float_t p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal;
+  Float_t p_JJQCD_SIG_ghg2_1_JHUGen_JECUp;
+  Float_t p_JJQCD_SIG_ghg2_1_JHUGen_JECDn;
   Float_t p_JVBF_SIG_ghv1_1_JHUGen_JECNominal;
+  Float_t p_JVBF_SIG_ghv1_1_JHUGen_JECUp;
+  Float_t p_JVBF_SIG_ghv1_1_JHUGen_JECDn;
   Float_t pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal;
+  Float_t pAux_JVBF_SIG_ghv1_1_JHUGen_JECUp;
+  Float_t pAux_JVBF_SIG_ghv1_1_JHUGen_JECDn;
   Float_t p_JQCD_SIG_ghg2_1_JHUGen_JECNominal;
+  Float_t p_JQCD_SIG_ghg2_1_JHUGen_JECUp;
+  Float_t p_JQCD_SIG_ghg2_1_JHUGen_JECDn;
   Float_t p_HadWH_SIG_ghw1_1_JHUGen_JECNominal;
+  Float_t p_HadWH_SIG_ghw1_1_JHUGen_JECUp;
+  Float_t p_HadWH_SIG_ghw1_1_JHUGen_JECDn;
   Float_t p_HadZH_SIG_ghz1_1_JHUGen_JECNominal;
-  vector<Float_t> *CandLepEta = 0;
-  vector<Float_t> *CandLepPhi = 0;
+  Float_t p_HadZH_SIG_ghz1_1_JHUGen_JECUp;
+  Float_t p_HadZH_SIG_ghz1_1_JHUGen_JECDn;
+  vector<Float_t> *LepEta = 0;
+  vector<Float_t> *LepPhi = 0;
   Short_t nExtraLep;
   vector<Float_t> *ExtraLepEta = 0;
   vector<Float_t> *ExtraLepPhi = 0;
   Short_t nExtraZ;
-  Short_t nJets;
-  Short_t nJetsBTagged;
+  Short_t nCleanedJets;
+  Short_t nCleanedJetsPt30;
+  Short_t nCleanedJetsPt30_jecUp;
+  Short_t nCleanedJetsPt30_jecDn;
+  Short_t nCleanedJetsPt30BTagged_bTagSF;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jecUp;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jecDn;
+  Short_t nCleanedJetsPt30BTagged_bTagSFUp;
+  Short_t nCleanedJetsPt30BTagged_bTagSFDn;
   vector<Float_t> *JetPt = 0;
   vector<Float_t> *JetEta = 0;
   vector<Float_t> *JetPhi = 0;
@@ -307,20 +309,21 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
   Float_t GenLep4Phi;
   Short_t GenLep4Id;
 
-  TH1F* hYield[nProcesses][nMHPoints][nFinalStates+1][nCategories+1][nResStatuses+1];
+  TH1F* hYield[nProcesses][nMHPoints][nFinalStates+1][nCategories+1][nResStatuses+1][nSystShifts];
   for(int pr=0; pr<nProcesses; pr++)
     for(int mp=0; mp<nMHPoints; mp++)
       if(hasMHPoint[pr][mp])
 	for(int fs=0; fs<nFinalStates+1; fs++)
 	  for(int cat=0; cat<nCategories+1; cat++)
-	    for(int rs=0; rs<nResStatuses+1; rs++){
-	      hYield[pr][mp][fs][cat][rs] = new TH1F(Form("hYield_%s%s_%s_%s_%s",sProcess[pr].c_str(),sMHPoint[mp].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[rs].c_str()),"",1,0,1);
-	      hYield[pr][mp][fs][cat][rs]->Sumw2(true);
-	    }
+	    for(int rs=0; rs<nResStatuses+1; rs++)
+	      for(int sy=0; sy<nSystShifts; sy++){
+		hYield[pr][mp][fs][cat][rs][sy] = new TH1F(Form("hYield_%s%s_%s_%s_%s_%s",sProcess[pr].c_str(),sMHPoint[mp].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[rs].c_str(),sSystShift[sy].c_str()),"",1,0,1);
+		hYield[pr][mp][fs][cat][rs][sy]->Sumw2(true);
+	      }
   
   int currentProcess;
   int currentFinalState;
-  int currentCategory;
+  int currentCategory[nSystShifts];
   int currentResStatus;
 
 
@@ -336,6 +339,7 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
     if(datasets[d]=="WminusH") currentProcess = WH;
     if(datasets[d]=="ZH") currentProcess = ZH;
     if(datasets[d]=="ttH") currentProcess = ttH;
+    if(datasets[d]=="bbH125") currentProcess = bbH;
     if(datasets[d]=="ZZTo4l"||
        datasets[d]=="ZZTo4lamcatnlo") 
       currentProcess = qqZZ;
@@ -353,6 +357,8 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
        datasets[d]=="ggTo2mu2tau_Contin_MCFM701") 
       currentProcess = ggZZ;
 
+    int initialCurrentProcess = currentProcess;
+
     for(int mp=0; mp<nMHPoints; mp++){
 
       if(!hasMHPoint[currentProcess][mp] || (JUST125&&sMHPoint[mp]!="125"&&sMHPoint[mp]!="")) continue;
@@ -369,6 +375,10 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
       inputTree[d]->SetBranchAddress("RunNumber", &nRun);
       inputTree[d]->SetBranchAddress("EventNumber", &nEvent);
       inputTree[d]->SetBranchAddress("LumiNumber", &nLumi);
+      inputTree[d]->SetBranchAddress("PFMET", &PFMET);
+      inputTree[d]->SetBranchAddress("PFMET_jesUp", &PFMET_jesUp);
+      inputTree[d]->SetBranchAddress("PFMET_jesDn", &PFMET_jesDn);
+      inputTree[d]->SetBranchAddress("genExtInfo", &genExtInfo);
       inputTree[d]->SetBranchAddress("Nvtx", &Nvtx);
       inputTree[d]->SetBranchAddress("NObsInt", &NObsInt);
       inputTree[d]->SetBranchAddress("NTrueInt", &NTrueInt);
@@ -391,27 +401,47 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
       inputTree[d]->SetBranchAddress("ZZPt", &ZZPt);
       inputTree[d]->SetBranchAddress("Z1Flav", &Z1Flav);
       inputTree[d]->SetBranchAddress("Z2Flav", &Z2Flav);
-      inputTree[d]->SetBranchAddress("LepEta", &CandLepEta);
-      inputTree[d]->SetBranchAddress("LepPhi", &CandLepPhi);
+      inputTree[d]->SetBranchAddress("LepEta", &LepEta);
+      inputTree[d]->SetBranchAddress("LepPhi", &LepPhi);
       inputTree[d]->SetBranchAddress("nExtraLep", &nExtraLep);
       inputTree[d]->SetBranchAddress("ExtraLepEta", &ExtraLepEta);
       inputTree[d]->SetBranchAddress("ExtraLepPhi", &ExtraLepPhi);
       inputTree[d]->SetBranchAddress("nExtraZ", &nExtraZ);
-      inputTree[d]->SetBranchAddress("nCleanedJetsPt30", &nJets);
-      inputTree[d]->SetBranchAddress(APPLYBTAGSF?"nCleanedJetsPt30BTagged_bTagSF":"nCleanedJetsPt30BTagged", &nJetsBTagged);
+      inputTree[d]->SetBranchAddress("nCleanedJets", &nCleanedJets);
+      inputTree[d]->SetBranchAddress("nCleanedJetsPt30", &nCleanedJetsPt30);
+      inputTree[d]->SetBranchAddress("nCleanedJetsPt30_jecUp", &nCleanedJetsPt30_jecUp);
+      inputTree[d]->SetBranchAddress("nCleanedJetsPt30_jecDn", &nCleanedJetsPt30_jecDn);
+      inputTree[d]->SetBranchAddress("nCleanedJetsPt30BTagged_bTagSF", &nCleanedJetsPt30BTagged_bTagSF);
+      inputTree[d]->SetBranchAddress("nCleanedJetsPt30BTagged_bTagSF_jecUp", &nCleanedJetsPt30BTagged_bTagSF_jecUp);
+      inputTree[d]->SetBranchAddress("nCleanedJetsPt30BTagged_bTagSF_jecDn", &nCleanedJetsPt30BTagged_bTagSF_jecDn);
+      inputTree[d]->SetBranchAddress("nCleanedJetsPt30BTagged_bTagSFUp", &nCleanedJetsPt30BTagged_bTagSFUp);
+      inputTree[d]->SetBranchAddress("nCleanedJetsPt30BTagged_bTagSFDn", &nCleanedJetsPt30BTagged_bTagSFDn);
       inputTree[d]->SetBranchAddress("JetPt", &JetPt);
       inputTree[d]->SetBranchAddress("JetEta", &JetEta);
       inputTree[d]->SetBranchAddress("JetPhi", &JetPhi);
       inputTree[d]->SetBranchAddress("JetMass", &JetMass);
       inputTree[d]->SetBranchAddress("JetQGLikelihood", &JetQGLikelihood);
-      inputTree[d]->SetBranchAddress("DiJetFisher", &DiJetFisher);
       inputTree[d]->SetBranchAddress("p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal", &p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal);
+      inputTree[d]->SetBranchAddress("p_JJVBF_SIG_ghv1_1_JHUGen_JECUp", &p_JJVBF_SIG_ghv1_1_JHUGen_JECUp);
+      inputTree[d]->SetBranchAddress("p_JJVBF_SIG_ghv1_1_JHUGen_JECDn", &p_JJVBF_SIG_ghv1_1_JHUGen_JECDn);
       inputTree[d]->SetBranchAddress("p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal", &p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal);
-      inputTree[d]->SetBranchAddress("p_JVBF_SIG_ghv1_1_JHUGen_JECNominal", &p_JVBF_SIG_ghv1_1_JHUGen_JECNominal;
-      inputTree[d]->SetBranchAddress("pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal", &pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal;
+      inputTree[d]->SetBranchAddress("p_JJQCD_SIG_ghg2_1_JHUGen_JECUp", &p_JJQCD_SIG_ghg2_1_JHUGen_JECUp);
+      inputTree[d]->SetBranchAddress("p_JJQCD_SIG_ghg2_1_JHUGen_JECDn", &p_JJQCD_SIG_ghg2_1_JHUGen_JECDn);
+      inputTree[d]->SetBranchAddress("p_JVBF_SIG_ghv1_1_JHUGen_JECNominal", &p_JVBF_SIG_ghv1_1_JHUGen_JECNominal);
+      inputTree[d]->SetBranchAddress("p_JVBF_SIG_ghv1_1_JHUGen_JECUp", &p_JVBF_SIG_ghv1_1_JHUGen_JECUp);
+      inputTree[d]->SetBranchAddress("p_JVBF_SIG_ghv1_1_JHUGen_JECDn", &p_JVBF_SIG_ghv1_1_JHUGen_JECDn);
+      inputTree[d]->SetBranchAddress("pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal", &pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal);
+      inputTree[d]->SetBranchAddress("pAux_JVBF_SIG_ghv1_1_JHUGen_JECUp", &pAux_JVBF_SIG_ghv1_1_JHUGen_JECUp);
+      inputTree[d]->SetBranchAddress("pAux_JVBF_SIG_ghv1_1_JHUGen_JECDn", &pAux_JVBF_SIG_ghv1_1_JHUGen_JECDn);
       inputTree[d]->SetBranchAddress("p_JQCD_SIG_ghg2_1_JHUGen_JECNominal", &p_JQCD_SIG_ghg2_1_JHUGen_JECNominal);
+      inputTree[d]->SetBranchAddress("p_JQCD_SIG_ghg2_1_JHUGen_JECUp", &p_JQCD_SIG_ghg2_1_JHUGen_JECUp);
+      inputTree[d]->SetBranchAddress("p_JQCD_SIG_ghg2_1_JHUGen_JECDn", &p_JQCD_SIG_ghg2_1_JHUGen_JECDn);
       inputTree[d]->SetBranchAddress("p_HadWH_SIG_ghw1_1_JHUGen_JECNominal", &p_HadWH_SIG_ghw1_1_JHUGen_JECNominal);
+      inputTree[d]->SetBranchAddress("p_HadWH_SIG_ghw1_1_JHUGen_JECUp", &p_HadWH_SIG_ghw1_1_JHUGen_JECUp);
+      inputTree[d]->SetBranchAddress("p_HadWH_SIG_ghw1_1_JHUGen_JECDn", &p_HadWH_SIG_ghw1_1_JHUGen_JECDn);
       inputTree[d]->SetBranchAddress("p_HadZH_SIG_ghz1_1_JHUGen_JECNominal", &p_HadZH_SIG_ghz1_1_JHUGen_JECNominal);
+      inputTree[d]->SetBranchAddress("p_HadZH_SIG_ghz1_1_JHUGen_JECUp", &p_HadZH_SIG_ghz1_1_JHUGen_JECUp);
+      inputTree[d]->SetBranchAddress("p_HadZH_SIG_ghz1_1_JHUGen_JECDn", &p_HadZH_SIG_ghz1_1_JHUGen_JECDn);
       inputTree[d]->SetBranchAddress("GenHMass", &GenHMass);
       inputTree[d]->SetBranchAddress("GenZ1Phi", &GenZ1Phi);
       inputTree[d]->SetBranchAddress("GenZ2Phi", &GenZ2Phi);
@@ -447,32 +477,24 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
 
 	Float_t kfactor = 1.;
 	if(APPLYKFACTORS){
-	
-	  if(currentProcess==qqZZ){
-	  
-	    //kfactor = 1.065;
-	  
-	    //kfactor = (GenZ1Flav==GenZ2Flav) ? 1.09 : 1.11 ;
-	  
-	    //kfactor = 1.1; // Jamboree
-	  
-	    kfactor = KFactor_EW_qqZZ * KFactor_QCD_qqZZ_M ; // as of Moriond2016 
-
-	  }else if(currentProcess==ggZZ){
-	  
-	    //kfactor = 2.;
-	  
-	    //kfactor = 1.7; // Jamboree
-	  
-	    kfactor = KFactor_QCD_ggZZ_Nominal; // as of Moriond2016
-
-	    //kfactor = (float)sp->Eval(GenHMass); // (same as previous)
-	  
-	  }
-
+	  if(currentProcess==qqZZ)      kfactor = KFactor_EW_qqZZ * KFactor_QCD_qqZZ_M;
+	  else if(currentProcess==ggZZ) kfactor = KFactor_QCD_ggZZ_Nominal;
 	}
 
 	Double_t eventWeight = partialSampleWeight[d] * xsec * kfactor * (USEPUWEIGHT ? overallEventWeight : genHEPMCweight*dataMCWeight) ;
+
+
+	//----- find subprocess if needed
+
+	if(SPLITVHHADLEP){
+	  if(initialCurrentProcess==WH){
+	    if(genExtInfo>10) currentProcess = WH_lep;
+	    else currentProcess = WH_had;
+	  }else if(initialCurrentProcess==ZH){
+	    if(genExtInfo>10) currentProcess = ZH_lep;
+	    else currentProcess = ZH_had;
+	  }
+	}
 
 
 	//----- find final state
@@ -500,53 +522,44 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
 
 	//----- find category
 
-	for(int j=0; j<nJets; j++){
+	for(int j=0; j<nCleanedJets; j++){
 	  jetPt[j] = JetPt->at(j);
 	  jetEta[j] = JetEta->at(j);
 	  jetPhi[j] = JetPhi->at(j);
 	  jetMass[j] = JetMass->at(j);
 	  jetQGL[j] = JetQGLikelihood->at(j);
 	}
-        /* ---------- early RunII categorization proposal 
-	currentCategory = category(
-	   nExtraLep,
-	   ZZPt,
-	   ZZMass,
-	   nJets, 
-	   nJetsBTagged,
-	   jetPt,
-	   jetEta,
-	   jetPhi,
-	   jetMass,
-	   DiJetFisher
-	   );
-	//*/
-	/* ---------- Moriond 2016 categorization 
-	currentCategory = categoryMor16(
-	   nJets,
-           p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
-           p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal
-           );
-	//*/
-	//* ---------- Ichep 2016 categorization 
-	currentCategory = categoryIchep16(
-	   nExtraLep,
-	   nExtraZ,
-	   nJets,
-	   nJetsBTagged,
-	   jetQGL,
-	   p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
-	   p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
-	   p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
-     p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
-     pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
-     p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
-	   p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
-	   jetPhi,
-	   ZZMass,
-	   false
-	   );
-	//*/
+	Short_t varied_nCleanedJetsPt30[nSystShifts] = {nCleanedJetsPt30,nCleanedJetsPt30_jecUp,nCleanedJetsPt30_jecDn,nCleanedJetsPt30,nCleanedJetsPt30};
+	Short_t varied_nCleanedJetsPt30BTagged[nSystShifts] = {nCleanedJetsPt30BTagged_bTagSF,nCleanedJetsPt30BTagged_bTagSF_jecUp,nCleanedJetsPt30BTagged_bTagSF_jecDn,nCleanedJetsPt30BTagged_bTagSFUp,nCleanedJetsPt30BTagged_bTagSFDn};
+	Float_t varied_p_JJQCD_SIG_ghg2_1_JHUGen  [nSystShifts] = {p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal  ,p_JJQCD_SIG_ghg2_1_JHUGen_JECUp  ,p_JJQCD_SIG_ghg2_1_JHUGen_JECDn  ,p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal  ,p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal  };
+	Float_t varied_p_JQCD_SIG_ghg2_1_JHUGen   [nSystShifts] = {p_JQCD_SIG_ghg2_1_JHUGen_JECNominal   ,p_JQCD_SIG_ghg2_1_JHUGen_JECUp   ,p_JQCD_SIG_ghg2_1_JHUGen_JECDn   ,p_JQCD_SIG_ghg2_1_JHUGen_JECNominal   ,p_JQCD_SIG_ghg2_1_JHUGen_JECNominal   };
+	Float_t varied_p_JJVBF_SIG_ghv1_1_JHUGen  [nSystShifts] = {p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal  ,p_JJVBF_SIG_ghv1_1_JHUGen_JECUp  ,p_JJVBF_SIG_ghv1_1_JHUGen_JECDn  ,p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal  ,p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal  };
+	Float_t varied_p_JVBF_SIG_ghv1_1_JHUGen   [nSystShifts] = {p_JVBF_SIG_ghv1_1_JHUGen_JECNominal   ,p_JVBF_SIG_ghv1_1_JHUGen_JECUp   ,p_JVBF_SIG_ghv1_1_JHUGen_JECDn   ,p_JVBF_SIG_ghv1_1_JHUGen_JECNominal   ,p_JVBF_SIG_ghv1_1_JHUGen_JECNominal   };
+	Float_t varied_pAux_JVBF_SIG_ghv1_1_JHUGen[nSystShifts] = {pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,pAux_JVBF_SIG_ghv1_1_JHUGen_JECUp,pAux_JVBF_SIG_ghv1_1_JHUGen_JECDn,pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal};
+	Float_t varied_p_HadWH_SIG_ghw1_1_JHUGen  [nSystShifts] = {p_HadWH_SIG_ghw1_1_JHUGen_JECNominal  ,p_HadWH_SIG_ghw1_1_JHUGen_JECUp  ,p_HadWH_SIG_ghw1_1_JHUGen_JECDn  ,p_HadWH_SIG_ghw1_1_JHUGen_JECNominal  ,p_HadWH_SIG_ghw1_1_JHUGen_JECNominal  };
+	Float_t varied_p_HadZH_SIG_ghz1_1_JHUGen  [nSystShifts] = {p_HadZH_SIG_ghz1_1_JHUGen_JECNominal  ,p_HadZH_SIG_ghz1_1_JHUGen_JECUp  ,p_HadZH_SIG_ghz1_1_JHUGen_JECDn  ,p_HadZH_SIG_ghz1_1_JHUGen_JECNominal  ,p_HadZH_SIG_ghz1_1_JHUGen_JECNominal  };
+	Float_t varied_PFMET[nSystShifts] = {PFMET,PFMET_jesUp,PFMET_jesDn,PFMET,PFMET};
+	for(int sy=0; sy<nSystShifts; sy++){
+	  currentCategory[sy] = categoryMor17(
+	    nExtraLep,
+	    nExtraZ,
+	    varied_nCleanedJetsPt30[sy],
+	    varied_nCleanedJetsPt30BTagged[sy],
+	    jetQGL,
+	    varied_p_JJQCD_SIG_ghg2_1_JHUGen[sy],
+	    varied_p_JQCD_SIG_ghg2_1_JHUGen[sy],
+	    varied_p_JJVBF_SIG_ghv1_1_JHUGen[sy],
+	    varied_p_JVBF_SIG_ghv1_1_JHUGen[sy],
+	    varied_pAux_JVBF_SIG_ghv1_1_JHUGen[sy],
+	    varied_p_HadWH_SIG_ghw1_1_JHUGen[sy],
+	    varied_p_HadZH_SIG_ghz1_1_JHUGen[sy],
+	    jetPhi,
+	    ZZMass,
+	    varied_PFMET[sy],
+	    USEVHMETTAG,
+	    false
+	    );
+	}
 
 
 	//----- check if this is resonant signal (ie. H->4l with correct lepton choice)
@@ -562,7 +575,7 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
 	  if(abs(GenHLepId[iGenHLep])==11 || abs(GenHLepId[iGenHLep])==13){
 	    nGenHLep++;
 	    for(Int_t iCandLep=0; iCandLep<4; iCandLep++){
-	      if(deltaR(GenHLepEta[iGenHLep],GenHLepPhi[iGenHLep],CandLepEta->at(iCandLep),CandLepPhi->at(iCandLep)) < 0.1){
+	      if(deltaR(GenHLepEta[iGenHLep],GenHLepPhi[iGenHLep],LepEta->at(iCandLep),LepPhi->at(iCandLep)) < 0.1){
 		nRecoLepMatchedToGenHLep[iGenHLep]++;
 		nGenHLepMatchedToCandLep[iCandLep]++;
 	      }
@@ -587,8 +600,8 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
 
 
 	//----- fill yield histogram
-
-	hYield[currentProcess][mp][currentFinalState][currentCategory][currentResStatus]->Fill(0.5,eventWeight);
+	for(int sy=0; sy<nSystShifts; sy++)
+	  hYield[currentProcess][mp][currentFinalState][currentCategory[sy]][currentResStatus][sy]->Fill(0.5,eventWeight);
 
 
       } // end for entries
@@ -605,21 +618,24 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
 	for(int fs=0; fs<nFinalStates; fs++)
 	  for(int cat=0; cat<nCategories; cat++)
 	    for(int rs=0; rs<nResStatuses; rs++)
-	      hYield[pr][mp][nFinalStates][cat][rs]->Add(hYield[pr][mp][fs][cat][rs]);
+	      for(int sy=0; sy<nSystShifts; sy++)
+		hYield[pr][mp][nFinalStates][cat][rs][sy]->Add(hYield[pr][mp][fs][cat][rs][sy]);
   for(int pr=0; pr<nProcesses; pr++)
     for(int mp=0; mp<nMHPoints; mp++)
       if(hasMHPoint[pr][mp])
 	for(int fs=0; fs<nFinalStates+1; fs++)
 	  for(int cat=0; cat<nCategories; cat++)
 	    for(int rs=0; rs<nResStatuses; rs++)
-	      hYield[pr][mp][fs][nCategories][rs]->Add(hYield[pr][mp][fs][cat][rs]);
+	      for(int sy=0; sy<nSystShifts; sy++)
+		hYield[pr][mp][fs][nCategories][rs][sy]->Add(hYield[pr][mp][fs][cat][rs][sy]);
   for(int pr=0; pr<nProcesses; pr++)
     for(int mp=0; mp<nMHPoints; mp++)
       if(hasMHPoint[pr][mp])
 	for(int fs=0; fs<nFinalStates+1; fs++)
 	  for(int cat=0; cat<nCategories+1; cat++)
 	    for(int rs=0; rs<nResStatuses; rs++)
-	      hYield[pr][mp][fs][cat][nResStatuses]->Add(hYield[pr][mp][fs][cat][rs]);
+	      for(int sy=0; sy<nSystShifts; sy++)
+		hYield[pr][mp][fs][cat][nResStatuses][sy]->Add(hYield[pr][mp][fs][cat][rs][sy]);
 
   //---------- Write yield arrays to a ROOT file
 
@@ -632,8 +648,10 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
 	if(MERGE2E2MU && fs==fs2mu2e) continue;
 	for(int cat=0; cat<nCategories+1; cat++){
 	  for(int rs=0; rs<nResStatuses+1; rs++){
-	    hYield[pr][mp][fs][cat][rs]->Write(hYield[pr][mp][fs][cat][rs]->GetName());
-	    delete hYield[pr][mp][fs][cat][rs];
+	    for(int sy=0; sy<nSystShifts; sy++){
+	      hYield[pr][mp][fs][cat][rs][sy]->Write(hYield[pr][mp][fs][cat][rs][sy]->GetName());
+	      delete hYield[pr][mp][fs][cat][rs][sy];
+	    }
 	  }
 	}
       }
@@ -645,9 +663,263 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
 }
 
 
+TGraph* gr_FRmu_EB = 0;
+TGraph* gr_FRmu_EE = 0;
+TGraph* gr_FRel_EB = 0;
+TGraph* gr_FRel_EE = 0;
+
+Float_t fakeRate13TeV(Float_t LepPt, Float_t LepEta, Int_t LepID) {
+  Float_t myLepPt = LepPt>=80. ? 79. : LepPt;
+  Int_t   myLepID = abs(LepID);
+
+  int bin = 0;
+  if(myLepPt > 5 && myLepPt<=7) bin = 0;
+  else if(myLepPt > 7 && myLepPt<=10) bin = 1;
+  else if(myLepPt > 10 && myLepPt<=20) bin = 2;
+  else if(myLepPt > 20 && myLepPt<=30) bin = 3;
+  else if(myLepPt > 30 && myLepPt<=40) bin = 4;
+  else if(myLepPt > 40 && myLepPt<=50) bin = 5;
+  else if(myLepPt > 50 && myLepPt<=80) bin = 6;
+  if(fabs(myLepID)==11) bin = bin-1; // there is no [5, 7] bin in the electron fake rate      
+
+  if(myLepID==11){
+    if(fabs(LepEta)<1.479)
+      return (gr_FRel_EB->GetY())[bin];
+    else
+      return (gr_FRel_EE->GetY())[bin];
+  }else if(myLepID==13){
+    if(fabs(LepEta)<1.2)
+      return (gr_FRmu_EB->GetY())[bin];
+    else
+      return (gr_FRmu_EE->GetY())[bin];
+  }else{
+    cout<<"ERROR! wrong lepton ID : "<<myLepID<<endl;
+    return 0.;
+  }
+}
+
+
+void computeYieldsZPlusXSS(string inputFileAllData, string inputFileFakeRates, double lumi)
+{
+
+  cout<<"Preparing Z+X yields (SS method) from "<<inputFileAllData<<endl;
+
+  TFile* fFakeRates = TFile::Open(inputFileFakeRates.c_str());                                                                                                                  gr_FRmu_EB = (TGraph*)fFakeRates->Get("FR_SS_muon_EB");
+  gr_FRmu_EE = (TGraph*)fFakeRates->Get("FR_SS_muon_EE");
+  gr_FRel_EB = (TGraph*)fFakeRates->Get("FR_SS_electron_EB");
+  gr_FRel_EE = (TGraph*)fFakeRates->Get("FR_SS_electron_EE");
+
+  TH1::SetDefaultSumw2(true);
+
+  Int_t nRun;
+  Long64_t nEvent;
+  Int_t nLumi;
+  Float_t PFMET;
+  Int_t CRflag;
+  Short_t ZZsel;
+  Float_t ZZMass;
+  Float_t ZZPt;
+  Short_t Z1Flav;
+  Short_t Z2Flav;
+  Float_t p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal;
+  Float_t p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal;
+  Float_t p_JVBF_SIG_ghv1_1_JHUGen_JECNominal;
+  Float_t pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal;
+  Float_t p_JQCD_SIG_ghg2_1_JHUGen_JECNominal;
+  Float_t p_HadWH_SIG_ghw1_1_JHUGen_JECNominal;
+  Float_t p_HadZH_SIG_ghz1_1_JHUGen_JECNominal;
+  vector<Float_t> *LepPt = 0;
+  vector<Float_t> *LepEta = 0;
+  vector<Float_t> *LepLepId = 0;
+  Short_t nExtraLep;
+  Short_t nExtraZ;
+  Short_t nCleanedJetsPt30;
+  Short_t nCleanedJetsPt30BTagged;
+  vector<Float_t> *JetPt = 0;
+  vector<Float_t> *JetEta = 0;
+  vector<Float_t> *JetPhi = 0;
+  vector<Float_t> *JetMass = 0;
+  vector<Float_t> *JetQGLikelihood = 0;
+  Float_t jetPt[99];
+  Float_t jetEta[99];
+  Float_t jetPhi[99];
+  Float_t jetMass[99];
+  Float_t jetQGL[99]; 
+
+  Float_t expectedYieldSR[nFinalStates+1][nCategories+1];
+  Int_t NumberOfEventsCR[nFinalStates+1][nCategories+1];
+  for(int fs=0; fs<nFinalStates+1; fs++){
+    for(int cat=0; cat<nCategories+1; cat++){
+      expectedYieldSR[fs][cat] = 0.;
+      NumberOfEventsCR[fs][cat] = 0.;
+    }
+  }
+  //*
+  TH1F* hYieldSR[nFinalStates+1][nCategories+1];
+  for(int fs=0; fs<nFinalStates+1; fs++)
+    for(int cat=0; cat<nCategories+1; cat++){
+      hYieldSR[fs][cat] = new TH1F(Form("hYield_ZPlusXSS_%s_%s",sFinalState[fs].c_str(),sCategory[cat].c_str()),"",1,0,1);
+      hYieldSR[fs][cat]->Sumw2(true);
+    }
+  //*/
+
+  int currentFinalState;
+  int currentCategory;
+
+  TFile* dataFile = TFile::Open(inputFileAllData.c_str());
+  TTree* mytree = (TTree*)dataFile->Get("CRZLLTree/candTree");
+
+  mytree->SetBranchAddress("RunNumber", &nRun);
+  mytree->SetBranchAddress("EventNumber", &nEvent);
+  mytree->SetBranchAddress("LumiNumber", &nLumi);
+  mytree->SetBranchAddress("PFMET", &PFMET);
+  mytree->SetBranchAddress("CRflag", &CRflag);
+  mytree->SetBranchAddress("ZZsel", &ZZsel);
+  mytree->SetBranchAddress("ZZMass", &ZZMass);
+  mytree->SetBranchAddress("ZZPt", &ZZPt);
+  mytree->SetBranchAddress("Z1Flav", &Z1Flav);
+  mytree->SetBranchAddress("Z2Flav", &Z2Flav);
+  mytree->SetBranchAddress("LepPt", &LepPt);
+  mytree->SetBranchAddress("LepEta", &LepEta);
+  mytree->SetBranchAddress("LepLepId", &LepLepId);
+  mytree->SetBranchAddress("nExtraLep", &nExtraLep);
+  mytree->SetBranchAddress("nExtraZ", &nExtraZ);
+  mytree->SetBranchAddress("nCleanedJetsPt30", &nCleanedJetsPt30);
+  mytree->SetBranchAddress("nCleanedJetsPt30BTagged", &nCleanedJetsPt30BTagged);
+  mytree->SetBranchAddress("JetPt", &JetPt);
+  mytree->SetBranchAddress("JetEta", &JetEta);
+  mytree->SetBranchAddress("JetPhi", &JetPhi);
+  mytree->SetBranchAddress("JetMass", &JetMass);
+  mytree->SetBranchAddress("JetQGLikelihood", &JetQGLikelihood);
+  mytree->SetBranchAddress("p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal", &p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal);
+  mytree->SetBranchAddress("p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal", &p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal);
+  mytree->SetBranchAddress("p_JVBF_SIG_ghv1_1_JHUGen_JECNominal", &p_JVBF_SIG_ghv1_1_JHUGen_JECNominal);
+  mytree->SetBranchAddress("pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal", &pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal);
+  mytree->SetBranchAddress("p_JQCD_SIG_ghg2_1_JHUGen_JECNominal", &p_JQCD_SIG_ghg2_1_JHUGen_JECNominal);
+  mytree->SetBranchAddress("p_HadWH_SIG_ghw1_1_JHUGen_JECNominal", &p_HadWH_SIG_ghw1_1_JHUGen_JECNominal);
+  mytree->SetBranchAddress("p_HadZH_SIG_ghz1_1_JHUGen_JECNominal", &p_HadZH_SIG_ghz1_1_JHUGen_JECNominal);
+  
+  
+  //---------- Process tree
+  
+  Long64_t entries = mytree->GetEntries();
+  for (Long64_t z=0; z<entries; ++z){
+    
+    mytree->GetEntry(z);
+    
+    if(!CRflag) continue;
+    if(!test_bit(CRflag,CRZLLss)) continue;
+    
+    //----- find final state
+    currentFinalState = -1;
+    if(Z1Flav==-121){
+      if(Z2Flav==+121)
+	currentFinalState = fs4e;
+      else if(Z2Flav==+169)
+	currentFinalState = fs2e2mu;
+      else
+	cerr<<"error in event "<<nRun<<":"<<nLumi<<":"<<nEvent<<", Z2Flav="<<Z2Flav<<endl;
+    }else if(Z1Flav==-169){
+      if(Z2Flav==+121)
+	currentFinalState = fs2mu2e;
+      else if(Z2Flav==+169)
+	currentFinalState = fs4mu;
+      else
+	cerr<<"error in event "<<nRun<<":"<<nLumi<<":"<<nEvent<<", Z2Flav="<<Z2Flav<<endl;
+    }else{
+      cerr<<"error in event "<<nRun<<":"<<nLumi<<":"<<nEvent<<", Z1Flav="<<Z1Flav<<endl;
+    }
+
+    //----- find category
+    for(int j=0; j<nCleanedJetsPt30; j++){
+      jetPt[j] = JetPt->at(j);
+      jetEta[j] = JetEta->at(j);
+      jetPhi[j] = JetPhi->at(j);
+      jetMass[j] = JetMass->at(j);
+      jetQGL[j] = JetQGLikelihood->at(j);
+    }
+    currentCategory = categoryMor17(
+       nExtraLep,
+       nExtraZ,
+       nCleanedJetsPt30,
+       nCleanedJetsPt30BTagged,
+       jetQGL,
+       p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+       p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
+       p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
+       p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+       pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+       p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
+       p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
+       jetPhi,
+       ZZMass,
+       PFMET,
+       USEVHMETTAG,
+       false
+    );
+
+    //----- fill yield histogram
+
+    Float_t yieldSR = fsROSSS[currentFinalState] * fakeRate13TeV(LepPt->at(2),LepEta->at(2),LepLepId->at(2)) * fakeRate13TeV(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
+
+    if(MERGE2E2MU && currentFinalState==fs2mu2e)
+      hYieldSR[fs2e2mu][currentCategory]->Fill(0.5,yieldSR);
+    else
+      hYieldSR[currentFinalState][currentCategory]->Fill(0.5,yieldSR);
+
+    expectedYieldSR[currentFinalState][currentCategory] += yieldSR;
+    NumberOfEventsCR[currentFinalState][currentCategory]++;
+
+  }
+
+
+  //---------- Fill 'inclusive' counters
+  for(int fs=0; fs<nFinalStates; fs++)
+    for(int cat=0; cat<nCategories; cat++)
+      hYieldSR[nFinalStates][cat]->Add(hYieldSR[fs][cat]);
+  for(int fs=0; fs<nFinalStates+1; fs++)
+    for(int cat=0; cat<nCategories; cat++)
+      hYieldSR[fs][nCategories]->Add(hYieldSR[fs][cat]);
+  for(int fs=0; fs<nFinalStates; fs++){
+    for(int cat=0; cat<nCategories; cat++){
+      expectedYieldSR[nFinalStates][cat] += expectedYieldSR[fs][cat];
+      NumberOfEventsCR[nFinalStates][cat] += NumberOfEventsCR[fs][cat];
+    }
+  }
+  for(int fs=0; fs<nFinalStates+1; fs++){
+    for(int cat=0; cat<nCategories; cat++){
+      expectedYieldSR[fs][nCategories] += expectedYieldSR[fs][cat];
+      NumberOfEventsCR[fs][nCategories] += NumberOfEventsCR[fs][cat];
+    }
+  }
+  if(MERGE2E2MU)
+    for(int cat=0; cat<nCategories+1; cat++)
+      expectedYieldSR[fs2e2mu][cat] += expectedYieldSR[fs2mu2e][cat];
+
+  //---------- Refill global array 
+  for(int cat=0; cat<nCategories+1; cat++){
+    normSSFullRange4e[cat] = expectedYieldSR[fs4e][cat];//hYieldSR[fs4e][cat]->Integral();
+    normSSFullRange4mu[cat] = expectedYieldSR[fs4mu][cat];//hYieldSR[fs4mu][cat]->Integral();
+    normSSFullRange2e2mu[cat] = expectedYieldSR[fs2e2mu][cat];//hYieldSR[fs2e2mu][cat]->Integral();
+  }
+
+  //---------- Print Z+X expected yields
+  for(int fs=0; fs<nFinalStates; fs++){
+    cout<<sFinalState[fs]<<" : "
+        <<expectedYieldSR[fs][nCategories]
+        <<" +/- "<<expectedYieldSR[fs][nCategories]/sqrt(NumberOfEventsCR[fs][nCategories])<<" (stat., evt: "<<NumberOfEventsCR[fs][nCategories]<<")"
+        <<" +/- "<<expectedYieldSR[fs][nCategories]*0.50<< " (syst.)"
+        <<endl;
+  }
+  cout<<"Total: "<<expectedYieldSR[nFinalStates][nCategories]<<endl;
+  cout<<endl;
+
+}
+
+
 void getZPlusXYields_Run2CombinedShape_InCateg(Float_t* yieldZPX4mu, Float_t* yieldZPX4e, Float_t* yieldZPX2e2mu, Float_t* yieldZPX4l, Int_t m4lMin, Int_t m4lMax) {
 
-  /*// For Moriond: Z+X shapes sent by Pedja on March 1st (take the same for all categ)
+  /*// For Moriond'16: Z+X shapes sent by Pedja on March 1st 2016 (take the same for all categ)
   TF1 *f4eComb = new TF1("f4eComb", "landau(0)*(1 + exp( pol1(3))) + [5]*(TMath::Landau(x, [6], [7]))", 70, 3000);
   TF1 *f4muComb = new TF1("f4muComb","landau(0)",70,3000);
   TF1 *f2e2muComb = new TF1("f2e2muComb","landau(0)",70,3000);
@@ -656,7 +928,7 @@ void getZPlusXYields_Run2CombinedShape_InCateg(Float_t* yieldZPX4mu, Float_t* yi
   f2e2muComb->SetParameters(0.04130,144.5,25.3);
   //*/
 
-  //*// For ICHEP: Z+X shapes sent by Pedja on July 27th (take the same for all categ)
+  //*// For ICHEP'16: Z+X shapes sent by Pedja on July 27th 2016 (take the same for all categ)
   TF1 *f4eComb    = new TF1("f4eComb"   ,"TMath::Landau(x, 141.9, 21.3)", 70, 3000);
   TF1 *f4muComb   = new TF1("f4muComb"  ,"TMath::Landau(x, 130.4, 15.6)", 70, 3000);
   TF1 *f2e2muComb = new TF1("f2e2muComb","0.45*TMath::Landau(x, 131.1, 18.1) + 0.55*TMath::Landau(x, 133.8, 18.9)", 70, 3000);
@@ -669,9 +941,181 @@ void getZPlusXYields_Run2CombinedShape_InCateg(Float_t* yieldZPX4mu, Float_t* yi
     yieldZPX4e   [cat] = normSSFullRange4e   [cat] * (RESCALEZPLUSXTOCOMBINEDINCLUSIVE?(normCombFullRange4e   /normSSFullRange4e   [nCategories]):1.) * f4eComb   ->Integral(m4lMin,m4lMax) / f4eComb   ->Integral(70,3000);
     yieldZPX2e2mu[cat] = normSSFullRange2e2mu[cat] * (RESCALEZPLUSXTOCOMBINEDINCLUSIVE?(normCombFullRange2e2mu/normSSFullRange2e2mu[nCategories]):1.) * f2e2muComb->Integral(m4lMin,m4lMax) / f2e2muComb->Integral(70,3000);
     yieldZPX4l   [cat] = yieldZPX4mu[cat] + yieldZPX4e[cat] + yieldZPX2e2mu[cat];
+    //cout<<sCategory[cat]<<"  "<<normSSFullRange4mu[cat]<<"  "<<normSSFullRange4e[cat]<<"  "<<normSSFullRange2e2mu[cat]<<endl;
+    //cout<<sCategory[cat]<<"  "<<yieldZPX4mu[cat]<<"  "<<yieldZPX4e[cat]<<"  "<<yieldZPX2e2mu[cat]<<"  "<<yieldZPX4l[cat]<<endl;
   }
 
 }
+
+
+void dataEventCounts(string inputFileAllData, double m4lMin, double m4lMax)
+{
+
+  cout<<"Counting SR event in data in ["<<m4lMin<<","<<m4lMax<<"]GeV from "<<inputFileAllData<<endl;
+
+  Int_t nRun;
+  Long64_t nEvent;
+  Int_t nLumi;
+  Float_t PFMET;
+  Short_t ZZsel;
+  Float_t ZZMass;
+  Float_t ZZPt;
+  Short_t Z1Flav;
+  Short_t Z2Flav;
+  Float_t p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal;
+  Float_t p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal;
+  Float_t p_JVBF_SIG_ghv1_1_JHUGen_JECNominal;
+  Float_t pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal;
+  Float_t p_JQCD_SIG_ghg2_1_JHUGen_JECNominal;
+  Float_t p_HadWH_SIG_ghw1_1_JHUGen_JECNominal;
+  Float_t p_HadZH_SIG_ghz1_1_JHUGen_JECNominal;
+  vector<Float_t> *LepPt = 0;
+  vector<Float_t> *LepEta = 0;
+  vector<Float_t> *LepLepId = 0;
+  Short_t nExtraLep;
+  Short_t nExtraZ;
+  Short_t nCleanedJetsPt30;
+  Short_t nCleanedJetsPt30BTagged;
+  vector<Float_t> *JetPt = 0;
+  vector<Float_t> *JetEta = 0;
+  vector<Float_t> *JetPhi = 0;
+  vector<Float_t> *JetMass = 0;
+  vector<Float_t> *JetQGLikelihood = 0;
+  Float_t jetPt[99];
+  Float_t jetEta[99];
+  Float_t jetPhi[99];
+  Float_t jetMass[99];
+  Float_t jetQGL[99]; 
+
+  Int_t NumberOfEventsSR[nFinalStates+1][nCategories+1];
+  for(int fs=0; fs<nFinalStates+1; fs++)
+    for(int cat=0; cat<nCategories+1; cat++)
+      NumberOfEventsSR[fs][cat] = 0.;
+
+  int currentFinalState;
+  int currentCategory;
+
+  TFile* dataFile = TFile::Open(inputFileAllData.c_str());
+  TTree* mytree = (TTree*)dataFile->Get("ZZTree/candTree");
+
+  mytree->SetBranchAddress("RunNumber", &nRun);
+  mytree->SetBranchAddress("EventNumber", &nEvent);
+  mytree->SetBranchAddress("LumiNumber", &nLumi);
+  mytree->SetBranchAddress("PFMET", &PFMET);
+  mytree->SetBranchAddress("ZZsel", &ZZsel);
+  mytree->SetBranchAddress("ZZMass", &ZZMass);
+  mytree->SetBranchAddress("ZZPt", &ZZPt);
+  mytree->SetBranchAddress("Z1Flav", &Z1Flav);
+  mytree->SetBranchAddress("Z2Flav", &Z2Flav);
+  mytree->SetBranchAddress("LepPt", &LepPt);
+  mytree->SetBranchAddress("LepEta", &LepEta);
+  mytree->SetBranchAddress("LepLepId", &LepLepId);
+  mytree->SetBranchAddress("nExtraLep", &nExtraLep);
+  mytree->SetBranchAddress("nExtraZ", &nExtraZ);
+  mytree->SetBranchAddress("nCleanedJetsPt30", &nCleanedJetsPt30);
+  mytree->SetBranchAddress("nCleanedJetsPt30BTagged", &nCleanedJetsPt30BTagged);
+  mytree->SetBranchAddress("JetPt", &JetPt);
+  mytree->SetBranchAddress("JetEta", &JetEta);
+  mytree->SetBranchAddress("JetPhi", &JetPhi);
+  mytree->SetBranchAddress("JetMass", &JetMass);
+  mytree->SetBranchAddress("JetQGLikelihood", &JetQGLikelihood);
+  mytree->SetBranchAddress("p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal", &p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal);
+  mytree->SetBranchAddress("p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal", &p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal);
+  mytree->SetBranchAddress("p_JVBF_SIG_ghv1_1_JHUGen_JECNominal", &p_JVBF_SIG_ghv1_1_JHUGen_JECNominal);
+  mytree->SetBranchAddress("pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal", &pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal);
+  mytree->SetBranchAddress("p_JQCD_SIG_ghg2_1_JHUGen_JECNominal", &p_JQCD_SIG_ghg2_1_JHUGen_JECNominal);
+  mytree->SetBranchAddress("p_HadWH_SIG_ghw1_1_JHUGen_JECNominal", &p_HadWH_SIG_ghw1_1_JHUGen_JECNominal);
+  mytree->SetBranchAddress("p_HadZH_SIG_ghz1_1_JHUGen_JECNominal", &p_HadZH_SIG_ghz1_1_JHUGen_JECNominal);
+  
+  
+  //---------- Process tree
+  
+  Long64_t entries = mytree->GetEntries();
+  for (Long64_t z=0; z<entries; ++z){
+    
+    mytree->GetEntry(z);
+
+    if( !(ZZsel>=90) ) continue;
+    if(ZZMass<m4lMin || ZZMass>m4lMax) continue;
+    
+    //----- find final state
+    currentFinalState = -1;
+    if(Z1Flav==-121){
+      if(Z2Flav==-121)
+	currentFinalState = fs4e;
+      else if(Z2Flav==-169)
+	currentFinalState = fs2e2mu;
+      else
+	cerr<<"error in event "<<nRun<<":"<<nLumi<<":"<<nEvent<<", Z2Flav="<<Z2Flav<<endl;
+    }else if(Z1Flav==-169){
+      if(Z2Flav==-121)
+	currentFinalState = fs2mu2e;
+      else if(Z2Flav==-169)
+	currentFinalState = fs4mu;
+      else
+	cerr<<"error in event "<<nRun<<":"<<nLumi<<":"<<nEvent<<", Z2Flav="<<Z2Flav<<endl;
+    }else{
+      cerr<<"error in event "<<nRun<<":"<<nLumi<<":"<<nEvent<<", Z1Flav="<<Z1Flav<<endl;
+    }
+
+    //----- find category
+    for(int j=0; j<nCleanedJetsPt30; j++){
+      jetPt[j] = JetPt->at(j);
+      jetEta[j] = JetEta->at(j);
+      jetPhi[j] = JetPhi->at(j);
+      jetMass[j] = JetMass->at(j);
+      jetQGL[j] = JetQGLikelihood->at(j);
+    }
+    currentCategory = categoryMor17(
+       nExtraLep,
+       nExtraZ,
+       nCleanedJetsPt30,
+       nCleanedJetsPt30BTagged,
+       jetQGL,
+       p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+       p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
+       p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
+       p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+       pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+       p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
+       p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
+       jetPhi,
+       ZZMass,
+       PFMET,
+       USEVHMETTAG,
+       false
+    );
+
+    //----- update counter
+
+    if(MERGE2E2MU && currentFinalState==fs2mu2e) currentFinalState=fs2e2mu;
+    NumberOfEventsSR[currentFinalState][currentCategory]++;
+
+  }
+
+  //---------- Fill 'inclusive' counters
+  for(int fs=0; fs<nFinalStates; fs++)
+    for(int cat=0; cat<nCategories; cat++)
+      NumberOfEventsSR[nFinalStates][cat] += NumberOfEventsSR[fs][cat];
+  for(int fs=0; fs<nFinalStates+1; fs++)
+    for(int cat=0; cat<nCategories; cat++)
+      NumberOfEventsSR[fs][nCategories] += NumberOfEventsSR[fs][cat];
+
+  //---------- Print a table
+  int w1 = 12;
+  int w2 = 5;
+  cout<<fixWidth("",w1,1);
+  for(int fs=0; fs<nFinalStates; fs++) cout<<"  "<<fixWidth(sFinalState[fs2[fs]],w2,0);
+  cout<<endl;
+  for(int cat=0; cat<nCategories+1; cat++){
+    cout<<fixWidth(sCategory[cat],w1,1);
+    for(int fs=0; fs<nFinalStates; fs++) cout<<"  "<<fixWidth(string(Form("%i",NumberOfEventsSR[fs2[fs]][cat])),w2,0); 
+    cout<<endl;
+  }
+  cout<<endl;
+
+}
+
 
 
 
@@ -692,6 +1136,7 @@ void DrawYieldFits(string outputDirectory, TGraphErrors* g[nProcesses][nFinalSta
   bool first;
 
   for(int pr=0; pr<nProcesses; pr++){
+    if(!includeInYaml[pr]) continue;
     if(!isSignal[pr]) continue;
     
     for(int cat=0; cat<nCategories; cat++){
@@ -764,13 +1209,14 @@ void fitSignalYields(string outputDirectory, double lumi, double sqrts, double m
   Float_t yield[nProcesses][nMHPoints][nFinalStates][nCategories+1];
   Float_t yieldStatError[nProcesses][nMHPoints][nFinalStates][nCategories+1];
   for(int pr=0; pr<nProcesses; pr++){
+    if(!includeInYaml[pr]) continue;
     if(!isSignal[pr]) continue;
     for(int mp=0; mp<nMHPoints; mp++){
       if(hasMHPoint[pr][mp] && isSignal[pr]){
 	for(int fs=0; fs<nFinalStates; fs++){
 	  if(MERGE2E2MU && fs==fs2mu2e) continue;
 	  for(int cat=0; cat<nCategories+1; cat++){
-	    hTemp = (TH1F*)fInYields->Get(Form("hYield_%s%s_%s_%s_%s",sProcess[pr].c_str(),sMHPoint[mp].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[nResStatuses].c_str()));
+	    hTemp = (TH1F*)fInYields->Get(Form("hYield_%s%s_%s_%s_%s_%s",sProcess[pr].c_str(),sMHPoint[mp].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[nResStatuses].c_str(),sSystShift[nominal].c_str()));
 	    yield[pr][mp][fs][cat] = hTemp->GetBinContent(1);
 	    yieldStatError[pr][mp][fs][cat] = hTemp->GetBinError(1);//0.;//
 	  }
@@ -786,6 +1232,7 @@ void fitSignalYields(string outputDirectory, double lumi, double sqrts, double m
   TF1* fYield[nProcesses][nFinalStates][nCategories+1];
 
   for(int pr=0; pr<nProcesses; pr++){
+    if(!includeInYaml[pr]) continue;
     if(!isSignal[pr]) continue;
 
     for(int fs=0; fs<nFinalStates; fs++){
@@ -805,15 +1252,21 @@ void fitSignalYields(string outputDirectory, double lumi, double sqrts, double m
 	    if(yieldStatError[pr][mp][fs][cat]>0.06*yield[pr][mp][fs][cat]) largeErrors = true;
 	  }
 	}
+	int order = largeErrors ? 1 : orderOfPolynomial[pr] ; // if error bars are too large, take a linear function
 
 	string fName = (string)Form("f_%s_%s_%s",sProcess[pr].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str());
-	int order = largeErrors ? 1 : orderOfPolynomial[pr] ;
 	//fYield[pr][fs][cat] = new TF1(fName.c_str(),Form("pol%i",order),fMHPoint[1],fMHPoint[nMHPoints-1]); 
-	fYield[pr][fs][cat] = new TF1(fName.c_str(),Form("pol%i",order),118,130); 
+	fYield[pr][fs][cat] = new TF1(fName.c_str(),Form("pol%i",order),120,130); 
 	
 	cout<<endl<<sProcess[pr]<<", "<<sFinalState[fs]<<", "<<sCategory[cat]<<endl;
 	gYield[pr][fs][cat]->Fit(fYield[pr][fs][cat],"N S");
 
+	if(fYield[pr][fs][cat]->Eval(120.)<0. || fYield[pr][fs][cat]->Eval(130.)<fYield[pr][fs][cat]->Eval(120.)){ // if the fitted function decreases or goes negative, take a constant function
+	  delete fYield[pr][fs][cat];
+	  fYield[pr][fs][cat] = new TF1(fName.c_str(),Form("pol%i",0),120,130);
+	  gYield[pr][fs][cat]->Fit(fYield[pr][fs][cat],"N S");
+	}
+	  
 	//cout<<fYield[pr][fs][cat]->GetExpFormula("P")<<endl;
 	fYield[pr][fs][cat]->Write();
 	
@@ -839,32 +1292,33 @@ void fitSignalYields(string outputDirectory, double lumi, double sqrts, double m
 void generateFragments(string outputDirectory, double lumi, double sqrts, double m4lMin, double m4lMax, string mHoption)
 {
 
+  bool doSystStudy = (mHoption=="param"||mHoption=="125");
+  for(int pr=0; pr<nProcesses; pr++) if(isSignal[pr] && !hasMHPoint[pr][indexOf125]){ doSystStudy = false; break; }
+
   //---------- Retrieve yields and functions from the ROOT file
 
   TFile* fInYields = TFile::Open(Form("yields_%iTeV_m4l%.1f-%.1f_%.3ffb-1%s.root",(int)sqrts,m4lMin,m4lMax,lumi,(MERGE2E2MU?"_m":"")));
   TH1F* hTemp;
   Float_t yield[nProcesses][nFinalStates+1][nCategories+1];
   Float_t yieldStatError[nProcesses][nFinalStates+1][nCategories+1];
+  Float_t yield_4l_forSyst[nProcesses][nCategories+1][nSystShifts];
   for(int pr=0; pr<nProcesses; pr++){
     if(isSignal[pr]&&(mHoption=="param"||mHoption=="125")&&!hasMHPoint[pr][indexOf125]) continue;
     for(int fs=0; fs<nFinalStates+1; fs++){
       if(MERGE2E2MU && fs==fs2mu2e) continue;
       for(int cat=0; cat<nCategories+1; cat++){
-	hTemp = (TH1F*)fInYields->Get(Form("hYield_%s%s_%s_%s_%s",sProcess[pr].c_str(),(isSignal[pr]?(mHoption!="param"?mHoption.c_str():"125"):""),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[nResStatuses].c_str()));
+	hTemp = (TH1F*)fInYields->Get(Form("hYield_%s%s_%s_%s_%s_%s",sProcess[pr].c_str(),(isSignal[pr]?(mHoption!="param"?mHoption.c_str():"125"):""),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[nResStatuses].c_str(),sSystShift[nominal].c_str()));
 	yield[pr][fs][cat] = hTemp->GetBinContent(1);
 	yieldStatError[pr][fs][cat] = hTemp->GetBinError(1);
       }
     }
-  }
-
-  // for Moriond16 categorization, use Heshy's parameterization of Djet efficiency:
-  if(USEDJETEFFICIENCYFORGGZZ){
-    for(int fs=0; fs<nFinalStates+1; fs++){
-      if(MERGE2E2MU && fs==fs2mu2e) continue;
-      yield[ggZZ][fs][UntaggedMor16] = (1.-GGZZDJETEFFICIENCY) * yield[ggZZ][fs][nCategories];
-      yieldStatError[ggZZ][fs][UntaggedMor16] = (1.-GGZZDJETEFFICIENCY) * yieldStatError[ggZZ][fs][nCategories];
-      yield[ggZZ][fs][VBFTaggedMor16] = GGZZDJETEFFICIENCY * yield[ggZZ][fs][nCategories];
-      yieldStatError[ggZZ][fs][VBFTaggedMor16] = GGZZDJETEFFICIENCY * yieldStatError[ggZZ][fs][nCategories];
+    if(doSystStudy){
+      for(int cat=0; cat<nCategories+1; cat++){
+	for(int sy=0; sy<nSystShifts; sy++){
+	  hTemp = (TH1F*)fInYields->Get(Form("hYield_%s%s_%s_%s_%s_%s",sProcess[pr].c_str(),(isSignal[pr]?"125":""),sFinalState[nFinalStates].c_str(),sCategory[cat].c_str(),sResonantStatus[nResStatuses].c_str(),sSystShift[sy].c_str()));
+	  yield_4l_forSyst[pr][cat][sy] = hTemp->GetBinContent(1);
+	}
+      }
     }
   }
 
@@ -873,6 +1327,7 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
   if(mHoption=="param"){
     fInYieldFunctions = TFile::Open(Form("yieldFunctions_%iTeV_m4l%.1f-%.1f_%.3ffb-1%s.root",(int)sqrts,m4lMin,m4lMax,lumi,(MERGE2E2MU?"_m":"")));
     for(int pr=0; pr<nProcesses; pr++){
+      if(!includeInYaml[pr]) continue;
       if(!isSignal[pr]) continue;
       for(int cat=0; cat<nCategories+1; cat++){
 	for(int fs=0; fs<nFinalStates; fs++){
@@ -932,9 +1387,12 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
     // outFile[fs]<<endl;
 
     for(int cat=0; cat<nCategories; cat++){
+      if(!USEVHMETTAG && cat==6) continue;
+
       outFile[fs]<<sCategory[cat]<<": "<<endl;
 
       for(int pr=0; pr<nProcesses; pr++){
+	if(!includeInYaml[pr]) continue;
 
 	if(isSignal[pr] && mHoption=="param"){
 	  outFile[fs]<<"    "<<sProcess[pr]<<": ";
@@ -981,64 +1439,138 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
       totalYield[nFinalStates][cat] += totalYield[fs][cat];
     }
 
+  if(doSystStudy){
+    float jecUpFactor, jecDnFactor, btagUpFactor, btagDnFactor;
+    ofstream outFileSyst;
+    
+    outFileSyst.open((outputDirectory+"/partof_systematics_expt_13TeV.yaml").c_str());
 
-
-
-  //---------- Print the yields
-
-  cout<<"In mass window ["<<m4lMin<<","<<m4lMax<<"] : "<<endl;
-  cout<<"In inclusive event category : "<<endl;
-
-  cout<<" "<<"Total signal @ 125 GeV"<<":        "<<totalYieldSgnl[nFinalStates][nCategories]<<endl;
-  cout<<" "<<"Total signal @ 125 GeV"<<", 4e   : "<<totalYieldSgnl[fs4e        ][nCategories]<<endl;
-  cout<<" "<<"Total signal @ 125 GeV"<<", 4mu  : "<<totalYieldSgnl[fs4mu       ][nCategories]<<endl;
-  cout<<" "<<"Total signal @ 125 GeV"<<", 2e2mu: "<<totalYieldSgnl[fs2e2mu     ][nCategories]<<endl;
-  if(!MERGE2E2MU)
-    cout<<" "<<"Total signal @ 125 GeV"<<", 2mu2e: "<<totalYieldSgnl[fs2mu2e     ][nCategories]<<endl;
-
-  cout<<" "<<"Total background"<<":        "<<totalYieldBkgd[nFinalStates][nCategories]<<endl;
-  cout<<" "<<"Total background"<<", 4e   : "<<totalYieldBkgd[fs4e        ][nCategories]<<endl;
-  cout<<" "<<"Total background"<<", 4mu  : "<<totalYieldBkgd[fs4mu       ][nCategories]<<endl;
-  cout<<" "<<"Total background"<<", 2e2mu: "<<totalYieldBkgd[fs2e2mu     ][nCategories]<<endl;
-  if(!MERGE2E2MU)
-    cout<<" "<<"Total background"<<", 2mu2e: "<<totalYieldBkgd[fs2mu2e     ][nCategories]<<endl;
-
-  cout<<" "<<"Total signal+background"<<":        "<<totalYield[nFinalStates][nCategories]<<endl;
-  cout<<" "<<"Total signal+background"<<", 4e   : "<<totalYield[fs4e        ][nCategories]<<endl;
-  cout<<" "<<"Total signal+background"<<", 4mu  : "<<totalYield[fs4mu       ][nCategories]<<endl;
-  cout<<" "<<"Total signal+background"<<", 2e2mu: "<<totalYield[fs2e2mu     ][nCategories]<<endl;
-  if(!MERGE2E2MU)
-    cout<<" "<<"Total signal+background"<<", 2mu2e: "<<totalYield[fs2mu2e     ][nCategories]<<endl;
-
-  for(int pr=0; pr<nProcesses; pr++){
-    cout<<"  "<<sProcess[pr]<<":        "<<yield[pr][nFinalStates][nCategories]<<endl;
-    cout<<"  "<<sProcess[pr]<<", 4e   : "<<yield[pr][fs4e        ][nCategories]<<endl;
-    cout<<"  "<<sProcess[pr]<<", 4mu  : "<<yield[pr][fs4mu       ][nCategories]<<endl;
-    cout<<"  "<<sProcess[pr]<<", 2e2mu: "<<yield[pr][fs2e2mu     ][nCategories]<<endl;
-    if(!MERGE2E2MU)
-      cout<<"  "<<sProcess[pr]<<", 2mu2e: "<<yield[pr][fs2mu2e     ][nCategories]<<endl;
-  }
-  if(DOZPLUSXFROMRUN2COMBINEDSHAPE && MERGE2E2MU){
-    cout<<"  Z+X:        "<<yieldZPlusX[nFinalStates][nCategories]<<endl;
-    cout<<"  Z+X, 4e   : "<<yieldZPlusX[fs4e        ][nCategories]<<endl;
-    cout<<"  Z+X, 4mu  : "<<yieldZPlusX[fs4mu       ][nCategories]<<endl;
-    cout<<"  Z+X, 2e2mu: "<<yieldZPlusX[fs2e2mu     ][nCategories]<<endl;
-  }
-
-  for(int cat=0; cat<nCategories; cat++){
-    cout<<"In category "<<sCategory[cat]<<" : "<<endl;
-    cout<<" "<<"Total signal @ 125 GeV "<<":        "<<totalYieldSgnl[nFinalStates][cat]<<endl;
-    cout<<" "<<"Total background       "<<":        "<<totalYieldBkgd[nFinalStates][cat]<<endl;
-    cout<<" "<<"Total signal+background"<<":        "<<totalYield[nFinalStates][cat]<<endl;
-    for(int pr=0; pr<nProcesses; pr++)
-      cout<<"  "<<sProcess[pr]<<":        "<<yield[pr][nFinalStates][cat]<<endl;
-    if(DOZPLUSXFROMRUN2COMBINEDSHAPE && MERGE2E2MU){
-      cout<<"  Z+X:        "<<yieldZPlusX[nFinalStates][cat]<<endl;
+    outFileSyst<<"JES:"<<endl;
+    for(int cat=0; cat<nCategories; cat++){
+      if(!USEVHMETTAG && cat==6) continue;
+      outFileSyst<<"    "<<sCategory[cat]<<": "<<endl;
+      outFileSyst<<"        type: lnN"<<endl;
+      for(int pr=0; pr<nProcesses; pr++){
+	if(!includeInYaml[pr]) continue;
+	jecUpFactor = fround( yield_4l_forSyst[pr][cat][jecUp] / yield_4l_forSyst[pr][cat][nominal], 4);
+	jecDnFactor = fround( yield_4l_forSyst[pr][cat][jecDn] / yield_4l_forSyst[pr][cat][nominal], 4);
+	if(jecUpFactor==1 && jecDnFactor==1) continue;
+	outFileSyst<<"        "<<sProcess[pr]<<": "<<Form("%.4f",jecUpFactor)<<"/"<<Form("%.4f",jecDnFactor)<<endl;
+      }
     }
+    outFileSyst<<endl;
+
+    outFileSyst<<"bTagSF:"<<endl;
+    for(int cat=0; cat<nCategories; cat++){
+      if(!USEVHMETTAG && cat==6) continue;
+      outFileSyst<<"    "<<sCategory[cat]<<": "<<endl;
+      outFileSyst<<"        type: lnN"<<endl;
+      for(int pr=0; pr<nProcesses; pr++){
+	if(!includeInYaml[pr]) continue;
+	btagUpFactor = fround( yield_4l_forSyst[pr][cat][btagUp] / yield_4l_forSyst[pr][cat][nominal], 4);
+	btagDnFactor = fround( yield_4l_forSyst[pr][cat][btagDn] / yield_4l_forSyst[pr][cat][nominal], 4);
+	if(btagUpFactor==1 && btagDnFactor==1) continue;
+	outFileSyst<<"        "<<sProcess[pr]<<": "<<Form("%.4f",btagUpFactor)<<"/"<<Form("%.4f",btagDnFactor)<<endl;
+      }
+    }
+    outFileSyst<<endl;
+
+    outFileSyst.close();
   }
 
+
+  //* //Control printout
+  string sep = "----------------------------------------------------";
+  cout<<sep<<endl<<"Expected yields for integrated luminosity "<<lumi<<"/fb, for m4l in ["<<m4lMin<<","<<m4lMax<<"]GeV"<<endl;
+  cout<<sep<<endl<<"Process  Category  4e  4mu  2e2mu  4l"<<endl;
+  cout<<sep<<endl;
+  for(int pr=0; pr<nProcesses; pr++){
+    for(int cat=0; cat<nCategories+1; cat++)
+      cout<<sProcess[pr]<<"  "<<fixWidth(sCategory[cat],12,1)<<"  "<<yield[pr][1][cat]<<"  "<<yield[pr][0][cat]<<"  "<<yield[pr][2][cat]<<"  "<<yield[pr][4][cat]<<endl;
+    cout<<sep<<endl;
+  }
+  if(DOZPLUSXFROMRUN2COMBINEDSHAPE && MERGE2E2MU)
+    for(int cat=0; cat<nCategories+1; cat++)
+      cout<<"Z+X"<<"  "<<fixWidth(sCategory[cat],12,1)<<"  "<<yieldZPlusX[1][cat]<<"  "<<yieldZPlusX[0][cat]<<"  "<<yieldZPlusX[2][cat]<<"  "<<yieldZPlusX[4][cat]<<endl;
+  cout<<sep<<endl;
+  for(int cat=0; cat<nCategories+1; cat++)
+    cout<<"Total H125"<<"  "<<fixWidth(sCategory[cat],12,1)<<"  "<<totalYieldSgnl[1][cat]<<"  "<<totalYieldSgnl[0][cat]<<"  "<<totalYieldSgnl[2][cat]<<"  "<<totalYieldSgnl[4][cat]<<endl;
+  cout<<sep<<endl;
+  for(int cat=0; cat<nCategories+1; cat++)
+    cout<<"Total bkgd"<<"  "<<fixWidth(sCategory[cat],12,1)<<"  "<<totalYieldBkgd[1][cat]<<"  "<<totalYieldBkgd[0][cat]<<"  "<<totalYieldBkgd[2][cat]<<"  "<<totalYieldBkgd[4][cat]<<endl;
+  cout<<sep<<endl;
+  for(int cat=0; cat<nCategories+1; cat++)
+    cout<<"Total exp."<<"  "<<fixWidth(sCategory[cat],12,1)<<"  "<<totalYield[1][cat]<<"  "<<totalYield[0][cat]<<"  "<<totalYield[2][cat]<<"  "<<totalYield[4][cat]<<endl;
+  cout<<sep<<endl;
+  cout<<endl;
+  //*/
+
+  if(PRINTLATEXTABLES){
+
+    //* //per-FS table in LaTeX format for the PAS
+    int w1 = 23;
+    int w2 = 6;
+    int ndec = 2; //1;
+    cout<<fixWidth("Channel",w1,1);
+    for(int fs=0; fs<nFinalStates; fs++) cout<<" & "<<fixWidth(sFinalState[fs2[fs]],w2+2,0)<<"                ";
+    cout<<" \\\\"<<endl;
+    cout<<"\\hline"<<endl;
+    cout<<fixWidth("\\qqZZ",w1,1);
+    for(int fs=0; fs<nFinalStates; fs++) cout<<" & $"<<fixWidth(sround(yield[qqZZ][fs2[fs]][nCategories],ndec),w2,0)<<"^{+ y.y}_{- z.z}$";
+    cout<<" \\\\"<<endl;
+    cout<<fixWidth("\\ggZZ",w1,1);
+    for(int fs=0; fs<nFinalStates; fs++) cout<<" & $"<<fixWidth(sround(yield[ggZZ][fs2[fs]][nCategories],ndec),w2,0)<<"^{+ y.y}_{- z.z}$";
+    cout<<" \\\\"<<endl;
+    cout<<fixWidth("\\cPZ\\ + X",w1,1);
+    for(int fs=0; fs<nFinalStates; fs++) cout<<" & $"<<fixWidth(sround(yieldZPlusX[fs2[fs]][nCategories],ndec),w2,0)<<"^{+ y.y}_{- z.z}$";
+    cout<<" \\\\"<<endl;
+    cout<<"\\hline"<<endl;
+    cout<<fixWidth("Sum of backgrounds",w1,1);
+    for(int fs=0; fs<nFinalStates; fs++) cout<<" & $"<<fixWidth(sround(totalYieldBkgd[fs2[fs]][nCategories],ndec),w2,0)<<"^{+ y.y}_{- z.z}$";
+    cout<<" \\\\"<<endl;
+    cout<<"\\hline"<<endl;
+    cout<<fixWidth("Signal ($\\mH=125~\\GeV$)",w1,1);
+    for(int fs=0; fs<nFinalStates; fs++) cout<<" & $"<<fixWidth(sround(totalYieldSgnl[fs2[fs]][nCategories],ndec),w2,0)<<"^{+ y.y}_{- z.z}$";
+    cout<<" \\\\"<<endl;
+    cout<<"\\hline"<<endl;
+    cout<<fixWidth("Total expected",w1,1);
+    for(int fs=0; fs<nFinalStates; fs++) cout<<" & $"<<fixWidth(sround(totalYield[fs2[fs]][nCategories],ndec),w2,0)<<"^{+ y.y}_{- z.z}$";
+    cout<<" \\\\"<<endl;
+    cout<<"\\hline"<<endl;
+    cout<<fixWidth("Observed",w1,1);
+    for(int fs=0; fs<nFinalStates; fs++) cout<<" & XXX";
+    cout<<" \\\\"<<endl;
+    
+    cout<<"\\hline \\hline"<<endl;
+    cout<<endl;
+    //*/
+
+    //* //per-category table in LaTeX format for the PAS
+    int w3 = 9;
+    int w4 = 5;
+    cout<<fixWidth("category",w3,1)<<" & ";
+    for(int pr=0; pr<nProcesses; pr++) if(includeInYaml[pr]||pr==bbH) cout<<fixWidth(sProcess[pr],w4+2,0)<<" & ";
+    cout<<fixWidth("Z+X",w4+2,0)<<" & ";
+    cout<<fixWidth("Total",w4+2,0)<<" & Obs \\\\"<<endl;
+    cout<<"\\hline"<<endl;
+    for(int cat=0; cat<nCategories; cat++){
+      cout<<fixWidth(sCatLatex[cat],w3,1)<<" & ";
+      for(int pr=0; pr<nProcesses; pr++) if(includeInYaml[pr]||pr==bbH) cout<<"$"<<fixWidth(sround(yield[pr][4][cat],2),w4,0)<<"$"<<" & ";
+      cout<<"$"<<fixWidth(sround(yieldZPlusX[4][cat],2),w4,0)<<"$"<<" & ";
+      cout<<"$"<<fixWidth(sround(totalYield[4][cat],2),w4,0)<<"$"<<" & XXX \\\\"<<endl;
+    }
+    cout<<"\\hline"<<endl;
+    cout<<fixWidth("Total",w3,1)<<" & ";
+    for(int pr=0; pr<nProcesses; pr++) if(includeInYaml[pr]||pr==bbH) cout<<"$"<<fixWidth(sround(yield[pr][4][nCategories],2),w4,0)<<"$"<<" & ";
+    cout<<"$"<<fixWidth(sround(yieldZPlusX[4][nCategories],2),w4,0)<<"$"<<" & ";
+    cout<<"$"<<fixWidth(sround(totalYield[4][nCategories],2),w4,0)<<"$"<<" & XXX \\\\"<<endl;
+    cout<<"\\hline \\hline"<<endl;
+    cout<<endl;
+    //*/
+  }
 
 }
+
 
 
 
@@ -1055,16 +1587,20 @@ void prepareYields(bool recomputeYields = true) {
 
   // Define input/output location
   string inputPathSignal = "";
-  string inputPathqqZZ = "";
-  string inputPathggZZ = "";
+  string inputFileData = "";
+
+  string inputPathqqZZ = inputPathSignal;
+  string inputPathggZZ = inputPathSignal;
+  string inputFileFakeRates = "../../data/FakeRates/FakeRate_SS_Moriond368.root";
+
   string outputPath = "YieldFiles";
-  string outputPathPlots = "YieldFiles";
+  string outputPathPlots = "$pl";//"YieldFiles";
 
   // Define c.o.m. energy (13TeV only for the moment)
   float sqrts = 13.;
 
   // Define the luminosity
-  float lumi = 12.9;
+  float lumi = 35.86706;
 
   // m4l window
   //*
@@ -1096,6 +1632,13 @@ void prepareYields(bool recomputeYields = true) {
   if(recomputeYields)
     computeYields(inputPathSignal, inputPathqqZZ, inputPathggZZ, lumi, sqrts, m4l_min, m4l_max);
 
+  // Prepare Z+X yields from SS CR, but in the full range, to be then normalized thanks to the shape
+  if(BUILDZPLUSXYIELDFROMSSCR)
+    computeYieldsZPlusXSS(inputFileData, inputFileFakeRates, lumi);
+
+  // /!\ Counting observed events
+  if(UNBLINDSR) dataEventCounts(inputFileData, m4l_min, m4l_max);
+
   // Parameterize signal yields as a function of mH
   if(!JUST125) 
     fitSignalYields(outputPathPlots, lumi, sqrts, m4l_min, m4l_max);
@@ -1106,6 +1649,7 @@ void prepareYields(bool recomputeYields = true) {
   else
     generateFragments(outputPath, lumi, sqrts, m4l_min, m4l_max, "param"); // This puts the yield(mH) expression when possible.
 
+  //generateFragments(outputPath, lumi, sqrts, m4l_min, m4l_max, "120"); // just for debugging
 
 }
 
