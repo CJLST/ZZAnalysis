@@ -1,9 +1,11 @@
-/* 
- * usage: 
- * -specify parameters at the end of this file
- * -run with:
- *   root -l plotDataVsMC.C++
- */
+/// 
+/// usage: 
+/// -specify parameters (input/output location, luminosity) at the end of this file
+/// -run with:
+///   root -l plotDataVsMC.C++
+/// -later, once histograms have been stored, use parameter 0 to not rerun over all MC:
+///   root -l plotDataVsMC.C++(0)
+///
 
 #include <iostream>
 #include <fstream>
@@ -38,6 +40,7 @@
 #include "plotUtils.C"
 #include "ZZAnalysis/AnalysisStep/src/kFactors.C"
 #include "ZZAnalysis/AnalysisStep/src/cConstants.cc"
+#include "ZZAnalysis/AnalysisStep/src/Discriminants.cc"
 #include "ZZAnalysis/AnalysisStep/src/Category.cc"
 #include "ZZAnalysis/AnalysisStep/src/bitops.cc"
 #include "ZZAnalysis/AnalysisStep/interface/FinalStates.h"
@@ -45,67 +48,71 @@
 using namespace std;
 
 #define DEBUG 0
+#define VERBOSE2 0
 
 #define DO1DPLOTS 1
 #define DO2DPLOTS 1
-
-//#define FINALSTATE 4 // 0:4mu, 1:4e, 2:2e2mu, 3:2mu2e, 4:inclusive
-//#define CATEGORY 6 // 6:inclusive
-
-#define MERGE2E2MU 1 // if activated, 2e2mu means "2e2mu and 2mu2e"
+#define PLOTLEVEL 2 // choose a set of plots: 0:test 1:PAS 2:AN 3:All
+#define BLINDING 5 // 0:blind 5:unblinded, see below for intermediary options
 
 #define APPLYKFACTORS 1
-#define APPLYBTAGSF 1
-
 #define USEDYANDTTBAR 0
 #define REBINDYANDTTBAR 0
-
 #define MASKH125FORLOWMASS 1
 #define MASKH125FORHIGHMASS 1
 #define MASKDATAFORHIGHMASS 0
+#define MERGE2E2MU 1 // If activated, 2e2mu means "2e2mu and 2mu2e". Don't change this unless you really know what you are doing.
 
 #define USEZPLUSXANALYTICALSHAPE 1 // Obtain Z+X histograms from the analytical shapes when they are available (up to now, only for m4l).
-#define BUILDZPLUSXHISTOFROMSSCR 1 // Obtain Z+X histograms by directly applying the FR to the SS CR. Overriden by the analytical shapes when the latter are available.
-#define SMOOTHZPLUSXHISTOFROMSSCR 1 // Smooth the aforementioned SS-CR-based histos, preserving their normalization.
-#define RENORMZPLUSXTOOFFICIALINCLNB 1 // Normalize all Z+X histos to the inclusive combined numbers (rather than to the SS-CR-based numbers).
-//Common inclusive normalization for Z+X. Combined 0S+SS inclusive numbers sent by Pedja on July 26th 2016 (12.9/fb) 
-Float_t normZPlusXFullSR4e    = 9.8;
-Float_t normZPlusXFullSR4mu   = 10.2;
-Float_t normZPlusXFullSR2e2mu = 20.4;
+#define BUILDZPLUSXHISTOFROMSSCR 1 // Obtain Z+X histograms by running over the SS CR. Overriden by the analytical shapes when relevant.
+#define SMOOTHZPLUSXHISTOFROMSSCR 0 // Smooth the aforementioned SS-CR-based histos, preserving their normalization.
+#define RENORMZPLUSXTOOFFICIALCATEG 0 // Normalize all Z+X histos to the hardcoded SS-based numbers in categories.
+#define RENORMZPLUSXTOOFFICIALINCL 1 // (Re-)normalize all Z+X histos to the hardcoded SS/OS-combined inclusive numbers.
+
+//Combined 0S+SS inclusive Z+X prediction
+//Here: numbers for the full 2016 data set, computed by Roberto on March 3rd 2017
+Float_t normZPlusXFullSR4e    = 21.1;
+Float_t normZPlusXFullSR4mu   = 34.4;
+Float_t normZPlusXFullSR2e2mu = 59.9;
+
 //Normalization of Z+X in final states and categories.
-//SS categorized numbers from Pedro's July 26th slides (12.9/fb)
-Float_t normSSFullRange4e[7] = {
-  8.250, //Untagged
-  0.687, //VBF1jTagged
-  0.429, //VBF2jTagged
-  0.066, //VHLeptTagged
-  0.118, //VHHadrTagged
-  0.193, //ttHTagged
-  9.743, //inclusive
+//These numbers get overwritten if the RENORMZPLUSXTOOFFICIALCATEG flag is off.
+//Here: SS-based numbers from 170222 trees, for the full 2016 data set.
+Float_t normSSFullRange4e[8] = {
+  16.1702, //Untagged
+  1.35714, //VBF1jTagged
+  0.933429, //VBF2jTagged
+  0.182454, //VHLeptTagged
+  0.295943, //VHHadrTagged
+  0.318589, //ttHTagged
+  0.281382, //VHMETTagged
+  19.5391, //inclusive
 };
-Float_t normSSFullRange4mu[7] = {
-  8.848,
-  0.758,
-  0.771,
-  0.092,
-  0.208,
-  0.272,
-  10.950,
+Float_t normSSFullRange4mu[8] = {
+  28.0966,
+  2.43438,
+  2.297,
+  0.458604,
+  0.929289,
+  0.80248,
+  0.945141,
+  35.9635,
 };
-Float_t normSSFullRange2e2mu[7] = {
-  (8.597+9.843),
-  (0.620+0.911),
-  (0.506+0.490),
-  (0.180+0.117),
-  (0.255+0.167),
-  (0.319+0.203),
-  (10.476+11.731),
+Float_t normSSFullRange2e2mu[8] = {
+  44.4236,
+  3.48285,
+  3.12444,
+  0.854668,
+  1.28802,
+  1.11163,
+  1.17629,
+  55.4615,
 };
 
 #define STYLE1DPLOT 2 // 0:Legacy-like 1:Jamboree2015 2:Moriond2016
 #define DRAWLINES (STYLE1DPLOT!=1)
 #define LINEWIDTH (STYLE1DPLOT==0?2:STYLE1DPLOT==2?1:1)
-#define DRAWLABELBYHAND 1
+#define CUSTOMXAXISLABELS 1
 #define DRAWDATAMCRATIO 0
 #define DRAWWP1D 1
 
@@ -117,10 +124,10 @@ Float_t normSSFullRange2e2mu[7] = {
 #define DRAWWP2D 1
 
 // These are the same 4 WP as in Category.cc
-#define WP2J 0.437 // This is the value at 125GeV of 1.043-460./(ZZMass+634.). The latter is also hardcoded in the definition of varPairExprWP.
-#define WP1J 0.699
-#define OLDWPWH 0.959
-#define OLDWPZH 0.9946
+#define WP2J 0.437 // This is the value at 125GeV (0.431 at 118 GeV) of 1.043-460./(ZZMass+634.). The latter formula is also hardcoded in the definition of varPairExprWP.
+#define WP1J 0.697
+#define OLDWPWH 0.951
+#define OLDWPZH 0.9937
 // Let's change the c-constants of D_WP and D_ZH for visualization purposes:
 #define NEWWPWH 0.8
 #define NEWWPZH 0.8
@@ -128,278 +135,12 @@ Float_t normSSFullRange2e2mu[7] = {
 #define CUSTOMCCONSTZH ((1.-NEWWPZH)/(NEWWPZH/OLDWPZH-NEWWPZH))
 
 
+
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-
-
-enum Blindings {fullyblind=0, blindabove110=1, blindbelow150=2, blind110150=3, blind110150andabove500=4, unblinded=5};
-const int nBlindings = 6;
-string sBlinding[nBlindings] = {"fullyblind", "M4l70To110", "M4l150ToInf", "blind110150", "blind110150andabove500", "unblinded"};
-Bool_t plotThisBlinding[8][nBlindings] = {
-  {1,1,1,1,1,0},
-  {1,0,0,0,0,0},
-  {0,1,0,0,0,0},
-  {0,0,1,0,0,0},
-  {0,0,0,1,0,0},
-  {0,0,0,0,1,0},
-  {0,0,0,0,0,1},
-  {0,1,1,1,0,0},
-};
-string blindingLabel[nBlindings] = {"", "70 < m_{4#font[12]{l}} < 110 GeV", "m_{4#font[12]{l}} > 150 GeV", "#splitline{m_{4#font[12]{l}} > 70 GeV}{m_{4#font[12]{l}} #notin [110, 150] GeV}", "#splitline{m_{4#font[12]{l}} #in [70, 500] GeV}{m_{4#font[12]{l}} #notin [110, 150] GeV}", ""};
-Float_t xHistoBlindLow[nBlindings] = {  0.,  110.,   0., 110., 110.,  0. };
-Float_t xHistoBlindUp [nBlindings] = { -1., 3000., 150., 150., 150., -1. };
-Float_t xHistoBlind2Low[nBlindings] = {  0.,  0.,  0.,  0.,  500.,  0. };
-Float_t xHistoBlind2Up [nBlindings] = { -1., -1., -1., -1., 3000., -1. };
-
-const int nVariables = 40;
-string varName[nVariables] = {
-  "M4lV1",
-  "M4lV1b",
-  "M4lV2",
-  "M4lV2Refit",
-  "M4lV2b",
-  "M4lV3",
-  "M4lV4",
-  "M4lV5",
-  "M4l_70110B4",
-  "M4l_70110B5",
-  "M4l_110150",
-  "M4l_105140",
-  "M4l_70182",
-  "M4l_70170",
-  "M4l_above150",
-  "M4l_above170",
-  "MZ1V1",
-  "MZ1V1Log",
-  "MZ1V1_M4L118130",
-  "MZ1V2",
-  "MZ2V1",
-  "MZ2V1Log",
-  "MZ2V1_M4L118130",
-  "MZ2V2",
-  "KD",
-  "KD_M4L118130",
-  "DjetFisher",
-  "D2jet",
-  "D2jet_M4L118130",
-  "D2jet_M4L118130_Log",
-  "D1jet_M4L118130",
-  "DWH_M4L118130_Log",
-  "DZH_M4L118130_Log",
-  "Pt4l",
-  "Eta4l",
-  "NExtraLep",
-  "NJets",
-  "NJetsBTagged",
-  "M4l_100180_HighKD",
-  "M4l_110150_HighKD",
-};
-string varXLabel[nVariables] = {
-  "m_{4#font[12]{l}} (GeV)",
-  "m_{4#font[12]{l}} (GeV)",
-  "m_{4#font[12]{l}} (GeV)",
-  "m_{4#font[12]{l}}^{refit} (GeV)",
-  "m_{4#font[12]{l}} (GeV)",
-  "m_{4#font[12]{l}} (GeV)",
-  "m_{4#font[12]{l}} (GeV)",
-  "m_{4#font[12]{l}} (GeV)",
-  "m_{4#font[12]{l}} (GeV)",
-  "m_{4#font[12]{l}} (GeV)",
-  "m_{4#font[12]{l}} (GeV)",
-  "m_{4#font[12]{l}} (GeV)",
-  "m_{4#font[12]{l}} (GeV)",
-  "m_{4#font[12]{l}} (GeV)",
-  "m_{4#font[12]{l}} (GeV)",
-  "m_{4#font[12]{l}} (GeV)",
-  "m_{Z1} (GeV)",
-  "m_{Z1} (GeV)",
-  "m_{Z1} (GeV)",
-  "m_{Z1} (GeV)",
-  "m_{Z2} (GeV)",
-  "m_{Z2} (GeV)",
-  "m_{Z2} (GeV)",
-  "m_{Z2} (GeV)",
-  "D_{bkg}^{kin}",
-  "D_{bkg}^{kin}",
-  "D_{jet}^{Fisher}",
-  "D_{2jet}",
-  "D_{2jet}",
-  "D_{2jet}",
-  "D_{1jet}",
-  "D_{WH}",
-  "D_{ZH}",
-  "p_{T}^{4#font[12]{l}} (GeV)",
-  "#eta^{4#font[12]{l}}",
-  "number of additional leptons",
-  "number of jets",
-  "number of b-tagged jets",
-  "m_{4#font[12]{l}} (GeV)",
-  "m_{4#font[12]{l}} (GeV)",
-};
-string varYLabel[nVariables] = {
-  "Events / 3 GeV",
-  "Events / 3 GeV",
-  "Events / 4 GeV",
-  "Events / 4 GeV",
-  "Events / 4 GeV",
-  "Events / 5 GeV",
-  "Events / 10 GeV",
-  "Events / 10 GeV",
-  "Events / 4 GeV",
-  "Events / 5 GeV",
-  "Events / 2 GeV",
-  "Events / 1 GeV",
-  "Events / 4 GeV",
-  "Events / 4 GeV",
-  "Events / 20 GeV",
-  "Events / 20 GeV",
-  "Events / 2 GeV",
-  "Events / 2 GeV",
-  "Events / 4 GeV",
-  "Events / 5 GeV",
-  "Events / 2 GeV",
-  "Events / 2 GeV",
-  "Events / 4 GeV",
-  "Events / 5 GeV",
-  "Events / 0.05",
-  "Events / 0.1",
-  "Events / 0.1",
-  "Events / 0.05",
-  "Events / 0.05",
-  "Events / 0.05",
-  "Events / 0.05",
-  "Events / 0.05",
-  "Events / 0.05",
-  "Events / 10 GeV",
-  "Events / 0.5",
-  "Events",
-  "Events",
-  "Events",
-  "Events / 3 GeV",
-  "Events / 2 GeV",
-};
-string varCutLabel[nVariables] = {
-  "","","","","","","","","","","","","","","","","","","118 < m_{4#font[12]{l}} < 130 GeV","","","","118 < m_{4#font[12]{l}} < 130 GeV","","","118 < m_{4#font[12]{l}} < 130 GeV","N(jets) #geq 2","N(jets) #geq 2","#splitline{118 < m_{4#font[12]{l}} < 130 GeV}{N(jets) #geq 2}","#splitline{118 < m_{4#font[12]{l}} < 130 GeV}{N(jets) #geq 2}","#splitline{118 < m_{4#font[12]{l}} < 130 GeV}{N(jets) = 1}","#splitline{118 < m_{4#font[12]{l}} < 130 GeV}{N(jets) #geq 2}","#splitline{118 < m_{4#font[12]{l}} < 130 GeV}{N(jets) #geq 2}","","","","","","D_{bkg}^{kin} > 0.5","D_{bkg}^{kin} > 0.5",
-};
-Bool_t plotThisVar[7][nVariables] = {
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,},
-  {0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,1,1,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,},
-  {0,0,1,0,0,0,1,1,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,},
-  {0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,1,0,1,0,1,0,1,0,1,1,0,0,0,1,1,1,1,0,0,1,1,1,0,0,},//for AN
-  {0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,1,0,0,0,1,0,0,1,0,0,0,1,1,1,1,0,0,0,0,0,0,0,},//for PAS
-  {0,0,1,0,1,0,0,0,0,0,1,0,0,1,0,0,1,0,1,0,1,0,1,0,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0,1,},//for unblinding
-  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,},
-};
-Int_t  varNbin[nVariables] = { 272,  333  , 204, 204, 204, 163,  82,  82,  10,   8,  20,  35,  28,  25,  35,  34,  40,  40,  20,/*  75,*/  30,  54,  54,  27,/*  75,*/  30, 20, 10, 20, 20, 20, 20, 20, 20, 20,  40,  20, 6, 17, 8,  27,  20, };
-Float_t varMin[nVariables] = {  70,    1.5,  70,  70,  71,  70,  70,  70,  70,  70, 110, 105,  70,  70, 150, 170,  40,  40,  40,/*   0,*/   0,  12,  12,  12,/*   0,*/   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,   0, -10, 0,  0, 0, 100, 110, };
-Float_t varMax[nVariables] = { 886, 1000.5, 886, 886, 887, 885, 890, 890, 110, 110, 150, 140, 182, 170, 850, 850, 120, 120, 120,/* 150,*/ 150, 120, 120, 120,/* 150,*/ 150,  1,  1,  2,  1,  1,  1,  1,  1,  1, 400,  10, 6, 17, 8, 181, 150, };
-Bool_t varLogx[nVariables] = {1,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,};
-Bool_t varLogy[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,1,0,1,1,0,0,1,1,1,0,0,};
-Int_t restrictCountVar[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,4,2,0,0,};
-Bool_t separateVbf[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,};
-Bool_t separateVh[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,};
-Float_t varValWP[nVariables] = {0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,WP2J,WP2J,WP2J,WP2J,WP1J,NEWWPWH,NEWWPZH,0.,0.,0.,0.,0.,0.,0.};
-Float_t varMinFactor[nVariables] = {0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,2000.,0.,0.,0.,2000.,0.,0.,0.,0.,0.,0.,0.,40.,0.,80.,80.,0.,0.,2000.,200.,1000.,0.,0.};
-Int_t varCMSPos[nVariables] = {33,33, 0,33,33,33,33,33,11,11,11,11, 0, 0, 0, 0, 0,33, 0,33, 0,33, 0,33, 0, 0,33,33,33, 0, 0, 0, 0,33,11,11,11,11,11,11,};
-Int_t varLegPos[nVariables] = {33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,11,11,11,11,11,11,33,11,33,11,33,33,33,33,11,33,33,33,33,33,33,33,33,33,};
-Int_t varCutPos[nVariables] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,33,0,0,0,11,33,11,11,0,0,0,0,0,0,0,};
-//Int_t rebinning[nVariables] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,2,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,};
-Int_t rebinningDYTTbar[nVariables] = {16,1,1,1,1,1,8,1,2,2,1,1,1,1,3,3,5,5,5,2,5,5,5,2,4,4,4,4,4,2,2,2,2,2,2,1,1,1,1,1,};
-
-Float_t varMaxCorrector[nBlindings][nVariables] = {
-  { 1., 1. , 1.1, 1.1, 1., 1., 1., 1., 1.3, 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.1, 1., 1., 1. , 1.9, 1. , 1.3, 3. , 1., 1., 1., 1., 1., 1., 1., 1., 1.4, 1.,  1., 1., 1. , 1. , },
-  { 1., 1. , 1. , 1. , 1., 1., 1., 1., 1. , 1., 1., 1., 1., 1., 1., 1., 1., 1., 1. , 1., 1., 1. , 1. , 1. , 1.1, 1. , 1., 1., 1., 1., 1., 1., 1., 1., 1. , 1.,  1., 1., 1. , 1. , },
-  { 1., 1.2, 1. , 1. , 1., 1., 1., 1., 1. , 1., 1., 1., 1., 1., 1., 1., 1., 1., 1. , 1., 1., 1. , 1. , 1. , 1.1, 1. , 1., 1., 1., 1., 1., 1., 1., 1., 1. , 1., 10., 1., 1. , 1. , },
-  { 1., 1. , 1. , 1. , 1., 1., 1., 1., 1. , 1., 1., 1., 1., 1., 1., 1., 1., 1., 1. , 1., 1., 1. , 1. , 1. , 1.1, 1. , 1., 1., 1., 1., 1., 1., 1., 1., 1.5, 1., 10., 1., 1.6, 1. , },
-  { 1., 1. , 1. , 1. , 1., 1., 1., 1., 1. , 1., 1., 1., 1., 1., 1., 1., 1., 1., 1. , 1., 1., 1. , 1. , 1. , 1.1, 1. , 1., 1., 1., 1., 1., 1., 1., 1., 1.5, 1., 10., 1., 1.6, 1. , },
-  { 1., 1. , 1. , 1. , 1., 1., 1., 1., 1. , 1., 1., 1., 1., 1., 1., 1., 1., 1., 1. , 1., 1., 1. , 1. , 1. , 1.1, 1.4, 1., 1., 1., 3.,1.8, 1., 1., 1., 1. , 1.,  5., 1., 1. , 1.2, },
-};
-
-const int nVarPairs = 15;
-string varPairName[nVarPairs] = {
-  "M4lVsKD",
-  "M4lVsKD_M4L70110",
-  "M4lVsKD_M4L100170",
-  "M4lVsKD_M4L170850",
-  "M4lVsKD_M4L150700",
-  "M4lVsD2jet_M4L100170",
-  "M4lVsD1jet_M4L100170",
-  "M4lVsDWH_M4L100170",
-  "M4lVsDZH_M4L100170",
-  "MZ1VsMZ2V1",
-  "MZ1VsMZ2V2",
-  "MZ1VsMZ2V3",
-  "MZ1VsMZ2V2_M4L118130",
-  "M4lVsM4lRefit",
-  "M4lVsM4lRefit_100180",
-};
-string varPairXLabel[nVarPairs] = {
-  "m_{4#font[12]{l}} (GeV)",
-  "m_{4#font[12]{l}} (GeV)",
-  "m_{4#font[12]{l}} (GeV)",
-  "m_{4#font[12]{l}} (GeV)",
-  "m_{4#font[12]{l}} (GeV)",
-  "m_{4#font[12]{l}} (GeV)",
-  "m_{4#font[12]{l}} (GeV)",
-  "m_{4#font[12]{l}} (GeV)",
-  "m_{4#font[12]{l}} (GeV)",
-  "m_{Z1} (GeV)",
-  "m_{Z1} (GeV)",
-  "m_{Z1} (GeV)",
-  "m_{Z1} (GeV)",
-  "m_{4#font[12]{l}} (GeV)",
-  "m_{4#font[12]{l}} (GeV)",
-};
-string varPairYLabel[nVarPairs] = {
-  "D_{bkg}^{kin}",
-  "D_{bkg}^{kin}",
-  "D_{bkg}^{kin}",
-  "D_{bkg}^{kin}",
-  "D_{bkg}^{kin}",
-  "D_{2jet}",
-  "D_{1jet}",
-  "D_{WH}",
-  "D_{ZH}",
-  "m_{Z2} (GeV)",
-  "m_{Z2} (GeV)",
-  "m_{Z2} (GeV)",
-  "m_{Z2} (GeV)",
-  "m_{4#font[12]{l}}^{refit} (GeV)",
-  "m_{4#font[12]{l}}^{refit} (GeV)",
-};
-string varPairCutLabel[nVariables] = {
-  "","","","","","","","","","","","","118 < m_{4#font[12]{l}} < 130 GeV","","",
-};
-Int_t  varPairXNbin[nVarPairs] = { 262,  40,  35, 136, 110,  35,  35,  35,  35,  40,  80,  60,  80, 302,  80, };
-Float_t varPairXMin[nVarPairs] = { 100,  70, 100, 170, 150, 100, 100, 100, 100,  40,  40,  75,  40,  70, 100, };
-Float_t varPairXMax[nVarPairs] = { 886, 110, 170, 850, 700, 170, 170, 170, 170, 120, 120, 105, 120, 886, 180, };
-Int_t  varPairYNbin[nVarPairs] = { 30, 30, 30, 30, 30, 30, 30, 30, 30,  54, 108,  60, 108, 302,  80, };
-Float_t varPairYMin[nVarPairs] = {  0,  0,  0,  0,  0,  0,  0,  0,  0,  12,  12,  75,  12,  70, 100, };
-Float_t varPairYMax[nVarPairs] = {  1,  1,  1,  1,  1,  1,  1,  1,  1, 120, 120, 105, 120, 886, 180, };
-Bool_t varPairLogx[nVarPairs] = {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,};
-Bool_t varPairLogy[nVarPairs] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,};
-Bool_t varPairPlotWithCateg[nVarPairs] = {0,0,1,0,0,1,1,1,1,0,0,0,0,0,0,};
-string varPairExprWP[nVarPairs] = {
-  //  "","","","","","1.043-460./(x+634.)","0.699","0.959","0.9946","","","","","","",
-  "","","","","","1.043-460./(x+634.)",string(Form("%.3f",WP1J)),string(Form("%.3f",NEWWPWH)),string(Form("%.3f",NEWWPZH)),"","","","","","",
-};
-Int_t varPairLegPos[nVarPairs] = {33,33,33,33,33,33,33,33,33,11,11,11,33,11,};
-Bool_t varPairLegIsWhite[nVarPairs] = {1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,};
-Bool_t varPairUseGrayStyle[nVarPairs] = {0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,};
-Bool_t plotThisVarPair[7][nVarPairs] = {
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,}, 
-  {0,1,0,0,1,0,0,0,0,0,1,0,0,0,0,}, 
-  {0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,}, //for style tests
-  {0,0,1,1,0,1,1,1,1,0,1,0,1,0,0,}, //for AN
-  {0,0,1,0,0,1,1,1,1,0,0,0,1,0,0,}, //for PAS 
-  {0,0,1,1,0,0,0,0,0,0,1,0,1,0,0,}, //for unblinding
-  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,}, 
-};
-
-
 
 enum Process {Data=0, H125=1, H125VBF=2, H125VH=3, H125NONVBFVH=4, qqZZ=5, ggZZ=6, DY=7, ttbar=8};
 const int nProcesses = 9;
@@ -447,35 +188,16 @@ string fsLabelForSS[nFinalStates] = {
 };
 
 
-/* ---------- early RunII categorization proposal 
-const int nCategories = 6;
-string sCategory[nCategories+1] = {
-  "UnTagged",
-  "OneJetTagged",
-  "VBFTagged", 
-  "VHLeptTagged",
-  "VHHadrTagged",
-  "ttHTagged",
-  "inclusive",
-};
-//*/
-/* ---------- Moriond 2016 categorization 
-const int nCategories = 2;
-string sCategory[nCategories+1] = {
-  "UnTagged",
-  "VBFTagged", 
-  "inclusive", 
-};
-//*/
-//* ---------- Ichep 2016 categorization 
-const int nCategories = 6;
+// Moriond 2017 categorization
+const int nCategories = 7;
 string sCategory[nCategories+1] = {
   "UnTagged",
   "VBF1jTagged",
-  "VBF2jTagged", 
+  "VBF2jTagged",
   "VHLeptTagged",
   "VHHadrTagged",
   "ttHTagged",
+  "VHMETTagged",
   "inclusive",
 };
 string categoryLabel[nCategories+1] = {
@@ -485,6 +207,7 @@ string categoryLabel[nCategories+1] = {
   "VH-leptonic-tagged category",
   "VH-hadronic-tagged category",
   "t#bar{t}H-tagged category",
+  "VH-MET-tagged category",
   "all event categories",
 };
 string categoryLegLabel[nCategories+1] = {
@@ -494,16 +217,126 @@ string categoryLegLabel[nCategories+1] = {
   "VH-lept. tagged",
   "VH-hadr. tagged",
   "t#bar{t}H tagged",
+  "VH-MET tagged",
   "inclusive",
 };
-Int_t categMarkerStyle[nCategories] = {20,26,32,28,27,30};
-//Int_t categMarkerStyle[nCategories] = {24,22,23,34,33,29};
-//*/
+Int_t categMarkerStyle[nCategories] = {20,26,32,28,27,30,25};
+
 
 enum ResonantStatus {resonant=0, nonresonant=1};
-const int nResStatuses = 2;
-string sResonantStatus[nResStatuses+1] = {"resonant", "nonresonant", "allres"};
+const int nRS = 2;
+string sResonantStatus[nRS+1] = {"resonant", "nonresonant", "allres"};
 
+
+enum Blindings {fullyblind=0, blindabove110=1, blindbelow150=2, blind110150=3, blind110150andabove300=4, unblinded=5};
+const int nBlindings = 6;
+string sBlinding[nBlindings] = {"fullyblind", "M4l70To110", "M4l150ToInf", "blind110150", "blind110150andabove300", "unblinded"};
+string blindingLabel[nBlindings] = {"", "70 < m_{4#font[12]{l}} < 110 GeV", "m_{4#font[12]{l}} > 150 GeV", "#splitline{m_{4#font[12]{l}} > 70 GeV}{m_{4#font[12]{l}} #notin [110, 150] GeV}", "#splitline{m_{4#font[12]{l}} #in [70, 300] GeV}{m_{4#font[12]{l}} #notin [110, 150] GeV}", ""}; // corresponding cut have to be defined within the loops
+Float_t xHistoBlindLow[nBlindings] = {  0.,  110.,   0., 110., 110.,  0. };
+Float_t xHistoBlindUp [nBlindings] = { -1., 3000., 150., 150., 150., -1. };
+Float_t xHistoBlind2Low[nBlindings] = {  0.,  0.,  0.,  0.,  300.,  0. };
+Float_t xHistoBlind2Up [nBlindings] = { -1., -1., -1., -1., 3000., -1. };
+
+
+struct Var1 {
+  string Name;
+  string XLabel;
+  string YLabel;
+  string CutLabel;
+  Short_t plotLvl;
+  Float_t Min;
+  Float_t Max;
+  Int_t Nbin;
+  Bool_t isLogx;
+  Bool_t isLogy;
+  Bool_t Large;
+  Bool_t InCateg;
+  Bool_t InFS;
+  Int_t restrCountVar;
+  Bool_t sepVbf;
+  Bool_t sepVh;
+  Float_t ValWP;
+  Float_t MinFactor;
+  Int_t CMSPos;
+  Int_t LegPos;
+  Int_t CutPos;
+  Bool_t CXL;
+  Int_t rebinningDYTTbar;
+  Float_t MaxCorrector[nBlindings];
+  string canvPrefix;
+};
+
+const int nVariables = 23;
+Var1 myV1[nVariables] = {
+//{ Name,                 XLabel,                           YLabel,           CutLabel,                                                        plotLvl, Min, Max, Nbin, isLogx, isLogy, Large, InCateg, InFS, restrCountVar, sepVbf, sepVh, ValWP,   MinFactor, CMSPos, LegPos, CutPos, CXL,  rebinningDYTTbar, MaxCorrector,              canvPrefix},
+  { "M4l_Full",           "m_{4#font[12]{l}} (GeV)",        "Events / 4 GeV", "",                                                              1,       70,  990, 230,  1,      0,      1,     0,       1,    0,             0,      0,     0.,      0.,        0,      33,     0,      1,    1,                {1.1,1. ,1. ,1. ,1. ,1. }, "a"},
+//{ "M4l_ForMergeRun1",   "m_{4#font[12]{l}} (GeV)",        "Events / 3 GeV", "",                                                              3,       1.5,1000.5,333, 0,      0,      0,     0,       0,    0,             0,      0,     0.,      0.,        0,      33,     0,      0,    1,                {1. ,1. ,1. ,1. ,1. ,1. }, "a"},
+//{ "M4l_Full_Bin5GeV",   "m_{4#font[12]{l}} (GeV)",        "Events / 5 GeV", "",                                                              3,       70,  1000,186,  1,      0,      1,     0,       0,    0,             0,      0,     0.,      0.,        0,      33,     0,      0,    1,                {1. ,1. ,1. ,1. ,1. ,1. }, "a"},
+  { "M4l_3p5TeV_Bin5GeV", "m_{4#font[12]{l}} (GeV)",        "Events / 5 GeV", "",                                                              3,       70,  3500,686,  1,      0,      1,     0,       0,    0,             0,      0,     0.,      0.,        0,      33,     0,      0,    1,                {1. ,1. ,1. ,1. ,1. ,1. }, "a"},
+  { "M4l_70110",          "m_{4#font[12]{l}} (GeV)",        "Events / 4 GeV", "",                                                              3,       70,  110, 10,   0,      0,      0,     0,       0,    0,             0,      0,     0.,      0.,        0,      33,     0,      0,    1,                {1.3,1. ,1. ,1. ,1. ,1. }, "a"},
+  { "M4l_110150",         "m_{4#font[12]{l}} (GeV)",        "Events / 2 GeV", "",                                                              3,       110, 150, 20,   0,      0,      0,     0,       0,    0,             0,      0,     0.,      0.,        0,      33,     0,      0,    1,                {1. ,1. ,1. ,1. ,1. ,1. }, "a"},
+  { "M4l_70170",          "m_{4#font[12]{l}} (GeV)",        "Events / 2 GeV", "",                                                              1,       70,  170, 50,   0,      0,      0,     1,       1,    0,             0,      0,     0.,      0.,        0,      33,     0,      0,    1,                {1. ,1. ,1. ,1. ,1. ,1. }, "a"},
+  { "M4l_above170",       "m_{4#font[12]{l}} (GeV)",        "Events / 10 GeV","",                                                              1,       170, 1010,42,   0,      0,      0,     0,       0,    0,             0,      0,     0.,      0.,        0,      33,     0,      0,    1,                {1. ,1. ,1. ,1. ,1. ,1. }, "a"},
+  { "M4l_100170_HighKD",  "m_{4#font[12]{l}} (GeV)",        "Events / 2 GeV", "D_{bkg}^{kin} > 0.5",                                           3,       100, 170, 35,   0,      0,      0,     0,       0,    0,             0,      0,     0.,      0.,        0,      33,     11,     0,    1,                {1. ,1. ,1. ,1.6,1.6,1. }, "a"},
+//{ "M4lrefit_Full",      "m_{4#font[12]{l}}^{refit} (GeV)","Events / 4 GeV", "",                                                              3,       70,  990, 230,  1,      0,      1,     0,       0,    0,             0,      0,     0.,      0.,        0,      33,     0,      1,    1,                {1.1,1. ,1. ,1. ,1. ,1. }, "a"},
+  { "MZ1",                "m_{Z1} (GeV)",                   "Events / 2 GeV", "",                                                              2,       40,  120, 40,   0,      0,      0,     0,       0,    0,             0,      0,     0.,      0.,        0,      11,     0,      0,    1,                {1. ,1. ,1. ,1. ,1. ,1. }, "b"},
+  { "MZ1_M4L118130",      "m_{Z1} (GeV)",                   "Events / 4 GeV", "118 < m_{4#font[12]{l}} < 130 GeV"                            , 1,       40,  120, 20,   0,      0,      0,     0,       0,    0,             0,      0,     0.,      0.,        0,      11,     0,      0,    1,                {1.1,1. ,1. ,1. ,1. ,1. }, "b"},
+  { "MZ2",                "m_{Z2} (GeV)",                   "Events / 2 GeV", "",                                                              2,       12,  120, 54,   0,      0,      0,     0,       0,    0,             0,      0,     0.,      0.,        0,      11,     0,      0,    1,                {1. ,1. ,1. ,1. ,1. ,1. }, "b"},
+  { "MZ2_M4L118130",      "m_{Z2} (GeV)",                   "Events / 4 GeV", "118 < m_{4#font[12]{l}} < 130 GeV"                            , 1,       12,  120, 27,   0,      0,      0,     0,       0,    0,             0,      0,     0.,      0.,        0,      33,     0,      0,    1,                {1.9,1. ,1. ,1. ,1. ,1. }, "b"},
+  { "KD",                 "D_{bkg}^{kin}",                  "Events / 0.05" , "",                                                              2,       0,   1,   20,   0,      0,      0,     0,       0,    0,             0,      0,     0.,      0.,        0,      33,     0,      0,    1,                {1.3,1.1,1.1,1.1,1.1,1.1}, "d"},
+  { "KD_M4L118130",       "D_{bkg}^{kin}",                  "Events / 0.1"  , "118 < m_{4#font[12]{l}} < 130 GeV"                            , 1,       0,   1,   10,   0,      0,      0,     0,       0,    0,             0,      0,     0.,      0.,        0,      11,     33,     0,    1,                {3. ,1. ,1. ,1. ,1. ,1.4}, "d"},
+  { "D2jet",              "D_{2jet}",                       "Events / 0.05" , "N(jets) #geq 2",                                                3,       0,   1,   20,   0,      0,      0,     0,       0,    0,             1,      0,     0.,      0.,        0,      33,     11,     0,    1,                {1. ,1. ,1. ,1. ,1. ,1. }, "e"},
+  { "D2jet_M4L118130",    "D_{2jet}",                       "Events / 0.05" , "#splitline{118 < m_{4#font[12]{l}} < 130 GeV}{N(jets) #geq 2}", 1,       0,   1,   20,   0,      1,      0,     0,       0,    0,             1,      0,     0.,      40.,       0,      33,     11,     0,    1,                {1. ,1. ,1. ,1. ,1. ,3. }, "e"},
+  { "D1jet_M4L118130",    "D_{1jet}",                       "Events / 0.05" , "#splitline{118 < m_{4#font[12]{l}} < 130 GeV}{N(jets) = 1}",    1,       0,   1,   20,   0,      0,      0,     0,       0,    0,             1,      0,     WP1J,    0.,        0,      11,     33,     0,    1,                {1. ,1. ,1. ,1. ,1. ,1.8}, "e"},
+  { "DWH_M4L118130",      "D_{WH}",                         "Events / 0.05" , "#splitline{118 < m_{4#font[12]{l}} < 130 GeV}{N(jets) #geq 2}", 1,       0,   1,   20,   0,      1,      0,     0,       0,    0,             0,      1,     NEWWPWH, 80.,       0,      33,     11,     0,    1,                {1. ,1. ,1. ,1. ,1. ,1. }, "e"},
+  { "DZH_M4L118130",      "D_{ZH}",                         "Events / 0.05" , "#splitline{118 < m_{4#font[12]{l}} < 130 GeV}{N(jets) #geq 2}", 1,       0,   1,   20,   0,      1,      0,     0,       0,    0,             0,      1,     NEWWPZH, 80.,       0,      33,     11,     0,    1,                {1. ,1. ,1. ,1. ,1. ,1. }, "e"},
+  { "Pt4l",               "p_{T}^{4#font[12]{l}} (GeV)",    "Events / 10 GeV","",                                                              3,       0,   400, 40,   0,      0,      0,     0,       0,    0,             0,      0,     0.,      0.,        0,      33,     0,      0,    1,                {1. ,1. ,1. ,1. ,1. ,1. }, "h"},
+  { "Eta4l",              "#eta^{4#font[12]{l}}",           "Events / 0.5",   "",                                                              3,       -10, 10,  40,   0,      0,      0,     0,       0,    0,             0,      0,     0.,      0.,        0,      33,     0,      0,    1,                {1.4,1. ,1. ,1.5,1.5,1. }, "h"},
+  { "NExtraLep",          "number of additional leptons",   "Events",         "",                                                              3,       0,   6,   6,    0,      1,      0,     0,       0,    2,             0,      0,     0.,      2000.,     0,      33,     0,      0,    1,                {1. ,1. ,1. ,1. ,1. ,1. }, "h"},
+  { "NJets",              "number of jets",                 "Events",         "",                                                              3,       0,   17,  17,   0,      1,      0,     0,       0,    4,             0,      0,     0.,      200.,      0,      33,     0,      0,    1,                {1. ,1. ,10.,10.,10.,5. }, "h"},
+  { "NJetsBTagged",       "number of b-tagged jets",        "Events",         "",                                                              3,       0,   8,   8,    0,      1,      0,     0,       0,    2,             0,      0,     0.,      1000.,     0,      33,     0,      0,    1,                {1. ,1. ,1. ,1. ,1. ,1. }, "h"},
+};
+
+
+struct Var2 {
+  string Name;
+  string XLabel;
+  string YLabel;
+  string CutLabel;
+  Short_t plotLvl;
+  Float_t XMin;
+  Float_t XMax;
+  Int_t XNbin;
+  Float_t YMin;
+  Float_t YMax;
+  Int_t YNbin;
+  Bool_t isLogx;
+  Bool_t isLogy;
+  Bool_t WithCateg;
+  string exprWP;
+  Int_t LegPos;
+  Bool_t LegIsWhite;
+  string canvPrefix;
+};
+
+const int nVarPairs = 8;
+Var2 myV2[nVarPairs] = {
+//{ Name,                   XLabel,                    YLabel,          CutLabel,                            plotLvl, XMin, XMax, XNbin, YMin, YMax, YNbin, isLogx, isLogy, WithCateg, exprWP,                       LegPos, LegIsWhite, canvPrefix },
+//{ "M4lVsKD",              "m_{4#font[12]{l}} (GeV)", "D_{bkg}^{kin}", "",                                  3,       100,  1000, 180,   0,    1,    30,    1,      0,      0,         "",                           33,     1,          "d"        },
+//{ "M4lVsKD_M4L70110",     "m_{4#font[12]{l}} (GeV)", "D_{bkg}^{kin}", "",                                  3,       70,   110,  40,    0,    1,    30,    0,      0,      0,         "",                           33,     1,          "d"        },
+  { "M4lVsKD_M4L100170",    "m_{4#font[12]{l}} (GeV)", "D_{bkg}^{kin}", "",                                  1,       100,  170,  35,    0,    1,    30,    0,      0,      1,         "",                           33,     1,          "d"        },
+  { "M4lVsKD_M4L1701000",   "m_{4#font[12]{l}} (GeV)", "D_{bkg}^{kin}", "",                                  2,       170,  1000, 166,   0,    1,    30,    0,      0,      0,         "",                           33,     1,          "d"        },
+  { "M4lVsD2jet_M4L100170", "m_{4#font[12]{l}} (GeV)", "D_{2jet}",      "",                                  1,       100,  170,  35,    0,    1,    30,    0,      0,      1,         "1.043-460./(x+634.)",        33,     1,          "e"        },
+  { "M4lVsD1jet_M4L100170", "m_{4#font[12]{l}} (GeV)", "D_{1jet}",      "",                                  1,       100,  170,  35,    0,    1,    30,    0,      0,      1,         string(Form("%.3f",WP1J)),    33,     1,          "e"        },
+  { "M4lVsDWH_M4L100170",   "m_{4#font[12]{l}} (GeV)", "D_{WH}",        "",                                  1,       100,  170,  35,    0,    1,    30,    0,      0,      1,         string(Form("%.3f",NEWWPWH)), 33,     1,          "e"        },
+  { "M4lVsDZH_M4L100170",   "m_{4#font[12]{l}} (GeV)", "D_{ZH}",        "",                                  1,       100,  170,  35,    0,    1,    30,    0,      0,      1,         string(Form("%.3f",NEWWPZH)), 33,     1,          "e"        },
+  { "MZ1VsMZ2",             "m_{Z1} (GeV)",            "m_{Z2} (GeV)",  "",                                  2,       40,   120,  80,    12,   120,  108,   0,      0,      0,         "",                           11,     0,          "b"        },
+  { "MZ1VsMZ2_M4L118130",   "m_{Z1} (GeV)",            "m_{Z2} (GeV)",  "118 < m_{4#font[12]{l}} < 130 GeV", 1,       40,   120,  80,    12,   120,  108,   0,      0,      0,         "",                           11,     0,          "b"        },
+//{ "MZ1VsMZ2_alt1",        "m_{Z1} (GeV)",            "m_{Z2} (GeV)",  "",                                  3,       40,   120,  40,    12,   120,  54,    0,      0,      0,         "",                           11,     0,          "b"        },
+//{ "MZ1VsMZ2_alt2",        "m_{Z1} (GeV)",            "m_{Z2} (GeV)",  "",                                  3,       75,   105,  60,    75,   105,  60,    0,      0,      0,         "",                           11,     0,          "b"        },
+//{ "M4lVsM4lRefit",        "m_{4#font[12]{l}} (GeV)", "m_{4#font[12]{l}}^{refit} (GeV)", "",                3,       70,   1000, 310,   70,   1000, 310,   0,      0,      0,         "",                           33,     0,          "z"        },
+//{ "M4lVsM4lRefit_100180", "m_{4#font[12]{l}} (GeV)", "m_{4#font[12]{l}}^{refit} (GeV)", "",                3,       100,  180,  80,    100,  180,  80,    0,      0,      0,         "",                           11,     0,          "z"        },
+};
 
 
 
@@ -515,13 +348,13 @@ string sResonantStatus[nResStatuses+1] = {"resonant", "nonresonant", "allres"};
 ////////////////////////////////////////////////////////////////////////////////
 
 
-void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lumi)
+void doHistograms(string inputPathMC, string inputPathData, double lumi)
 {
 
   //TFile* ggZZKFactorFile = TFile::Open("../../data/kfactors/Kfactor_Collected_ggHZZ_2l2l_NNLO_NNPDF_NarrowWidth_13TeV.root");
   //TSpline3* sp = (TSpline3*)ggZZKFactorFile->Get("sp_kfactor_Nominal");
 
-  const int nDatasets = 16;
+  const int nDatasets = 17;
   string datasets[nDatasets] = {
     "AllData",
     "ggH125",
@@ -530,6 +363,7 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
     "WminusH125",
     "ZH125",
     "ttH125",
+    "bbH125",
     "ZZTo4l",//"ZZTo4lamcatnlo",//
     "ggTo4e_Contin_MCFM701",//"ggZZ4e",
     "ggTo4mu_Contin_MCFM701",//"ggZZ4mu",
@@ -551,6 +385,7 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
   Int_t nRun;
   Long64_t nEvent;
   Int_t nLumi;
+  Float_t PFMET;
   Short_t Nvtx;
   Short_t NObsInt;
   Float_t NTrueInt;
@@ -621,25 +456,25 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
   Float_t GenLep4Phi;
   Short_t GenLep4Id;
 
-  TH1F* h1[nVariables][nBlindings][nFinalStates+1][nCategories+1][nResStatuses+1][nProcesses];
-  TH2F* h2[nVarPairs ][nBlindings][nFinalStates+1][nCategories+1][nResStatuses+1][nProcesses];
+  TH1F* h1[nVariables][nBlindings][nFinalStates+1][nCategories+1][nRS+1][nProcesses];
+  TH2F* h2[nVarPairs ][nBlindings][nFinalStates+1][nCategories+1][nRS+1][nProcesses];
   for(int bl=0; bl<nBlindings; bl++){
     for(int fs=0; fs<nFinalStates+1; fs++){
       for(int cat=0; cat<nCategories+1; cat++){
-	for(int rs=0; rs<nResStatuses+1; rs++){
+	for(int rs=0; rs<nRS+1; rs++){
 	  for(int pr=0; pr<nProcesses; pr++){
-	    for(int v=0; v<nVariables; v++){
-	      h1[v][bl][fs][cat][rs][pr] = new TH1F(
-                 Form("h1_%s_%s_%s_%s_%s_%s",varName[v].c_str(),sBlinding[bl].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[rs].c_str(),sProcess[pr].c_str()),
-		 Form(";%s;%s",varXLabel[v].c_str(),varYLabel[v].c_str()),
-		 varNbin[v],varMin[v],varMax[v]);
+	    for(int v1=0; v1<nVariables; v1++){
+	      h1[v1][bl][fs][cat][rs][pr] = new TH1F(
+                 Form("h1_%s_%s_%s_%s_%s_%s",myV1[v1].Name.c_str(),sBlinding[bl].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[rs].c_str(),sProcess[pr].c_str()),
+		 Form(";%s;%s",myV1[v1].XLabel.c_str(),myV1[v1].YLabel.c_str()),
+		 myV1[v1].Nbin,myV1[v1].Min,myV1[v1].Max);
 	    }
 	    for(int v2=0; v2<nVarPairs; v2++){
 	      h2[v2][bl][fs][cat][rs][pr] = new TH2F(
-                 Form("h2_%s_%s_%s_%s_%s_%s",varPairName[v2].c_str(),sBlinding[bl].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[rs].c_str(),sProcess[pr].c_str()),
-		 Form(";%s;%s",varPairXLabel[v2].c_str(),varPairYLabel[v2].c_str()),
-		 varPairXNbin[v2],varPairXMin[v2],varPairXMax[v2],
-		 varPairYNbin[v2]*2,varPairYMin[v2],varPairYMax[v2]*2);
+                 Form("h2_%s_%s_%s_%s_%s_%s",myV2[v2].Name.c_str(),sBlinding[bl].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[rs].c_str(),sProcess[pr].c_str()),
+		 Form(";%s;%s",myV2[v2].XLabel.c_str(),myV2[v2].YLabel.c_str()),
+		 myV2[v2].XNbin,myV2[v2].XMin,myV2[v2].XMax,
+		 myV2[v2].YNbin*2,myV2[v2].YMin,myV2[v2].YMax*2);
 	    }
 	  }
 	}
@@ -647,11 +482,11 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
     }
   }
 
-  vector<Float_t> g2DataX[nVarPairs][nBlindings][nFinalStates+1][nCategories+1][nResStatuses+1];
-  vector<Float_t> g2DataY[nVarPairs][nBlindings][nFinalStates+1][nCategories+1][nResStatuses+1];
-  vector<Float_t> g2DataEX[nVarPairs][nBlindings][nFinalStates+1][nCategories+1][nResStatuses+1];
-  vector<Float_t> g2DataEY[nVarPairs][nBlindings][nFinalStates+1][nCategories+1][nResStatuses+1];
-  TGraphErrors* g2Data[nVarPairs][nBlindings][nFinalStates+1][nCategories+1][nResStatuses+1];
+  vector<Float_t> g2DataX[nVarPairs][nBlindings][nFinalStates+1][nCategories+1][nRS+1];
+  vector<Float_t> g2DataY[nVarPairs][nBlindings][nFinalStates+1][nCategories+1][nRS+1];
+  vector<Float_t> g2DataEX[nVarPairs][nBlindings][nFinalStates+1][nCategories+1][nRS+1];
+  vector<Float_t> g2DataEY[nVarPairs][nBlindings][nFinalStates+1][nCategories+1][nRS+1];
+  TGraphErrors* g2Data[nVarPairs][nBlindings][nFinalStates+1][nCategories+1][nRS+1];
   
   int currentProcess;
   int currentFinalState;
@@ -672,6 +507,7 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
     if(datasets[d]=="WminusH125") currentProcess = H125VH;
     if(datasets[d]=="ZH125") currentProcess = H125VH;
     if(datasets[d]=="ttH125") currentProcess = H125NONVBFVH;
+    if(datasets[d]=="bbH125") currentProcess = H125NONVBFVH;
     if(datasets[d]=="ZZTo4l"||
        datasets[d]=="ZZTo4lamcatnlo") 
       currentProcess = qqZZ;
@@ -693,7 +529,7 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
        datasets[d]=="TTTo2L2Nu")
       currentProcess = ttbar;
 
-    string inputFileName = string(Form("%s%s/ZZ4lAnalysis.root",(currentProcess==Data?inputFilePath_Data:inputFilePath_MC).c_str(),datasets[d].c_str()));
+    string inputFileName = string(Form("%s%s/ZZ4lAnalysis.root",(currentProcess==Data?inputPathData:inputPathMC).c_str(),datasets[d].c_str()));
     inputFile[d] = TFile::Open(inputFileName.c_str());
 
     hCounters[d] = (TH1F*)inputFile[d]->Get("ZZTree/Counters");
@@ -705,6 +541,7 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
     inputTree[d]->SetBranchAddress("RunNumber", &nRun);
     inputTree[d]->SetBranchAddress("EventNumber", &nEvent);
     inputTree[d]->SetBranchAddress("LumiNumber", &nLumi);
+    inputTree[d]->SetBranchAddress("PFMET", &PFMET);
     inputTree[d]->SetBranchAddress("Nvtx", &Nvtx);
     inputTree[d]->SetBranchAddress("NObsInt", &NObsInt);
     inputTree[d]->SetBranchAddress("NTrueInt", &NTrueInt);
@@ -746,7 +583,7 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
     inputTree[d]->SetBranchAddress("ExtraLepPhi", &ExtraLepPhi);
     inputTree[d]->SetBranchAddress("nExtraZ", &nExtraZ);
     inputTree[d]->SetBranchAddress("nCleanedJetsPt30", &nJets);
-    inputTree[d]->SetBranchAddress((APPLYBTAGSF&&currentProcess!=Data)?"nCleanedJetsPt30BTagged_bTagSF":"nCleanedJetsPt30BTagged", &nJetsBTagged);
+    inputTree[d]->SetBranchAddress("nCleanedJetsPt30BTagged_bTagSF", &nJetsBTagged);
     inputTree[d]->SetBranchAddress("JetPt", &JetPt);
     inputTree[d]->SetBranchAddress("JetEta", &JetEta);
     inputTree[d]->SetBranchAddress("JetPhi", &JetPhi);
@@ -796,29 +633,8 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 
       Float_t kfactor = 1.;
       if(APPLYKFACTORS){
-	
-	if(currentProcess==qqZZ){
-	  
-	  //kfactor = 1.065;
-	  
-	  //kfactor = (GenZ1Flav==GenZ2Flav) ? 1.09 : 1.11 ;
-	  
-	  //kfactor = 1.1; // Jamboree
-	  
-	  kfactor = KFactor_EW_qqZZ * KFactor_QCD_qqZZ_M ; // as of Moriond2016 
-
-	}else if(currentProcess==ggZZ){
-	  
-	  //kfactor = 2.;
-	  
-	  //kfactor = 1.7; // Jamboree
-	  
-	  kfactor = KFactor_QCD_ggZZ_Nominal; // as of Moriond2016
-
-	  //kfactor = (float)sp->Eval(GenHMass); // (same as previous)
-	  
-	}
-	
+	if(currentProcess==qqZZ)      kfactor = KFactor_EW_qqZZ * KFactor_QCD_qqZZ_M;
+	else if(currentProcess==ggZZ) kfactor = KFactor_QCD_ggZZ_Nominal;
       }
 
       Double_t eventWeight = partialSampleWeight[d] * xsec * kfactor * overallEventWeight ;
@@ -857,29 +673,7 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 	jetQGL[j] = JetQGLikelihood->at(j);
 	jetPgOverPq[j] = 1./JetQGLikelihood->at(j) - 1.;
       }
-      /* ---------- early RunII categorization proposal 
-      currentCategory = category(
-	 nExtraLep,
-	 ZZPt,
-	 ZZMass,
-	 nJets, 
-	 nJetsBTagged,
-	 jetPt,
-	 jetEta,
-	 jetPhi,
-	 jetMass,
-	 DiJetFisher
-	 );
-      //*/
-      /* ---------- Moriond 2016 categorization 
-      currentCategory = categoryMor16(
-	 nJets,
-         p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
-         p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal
-         );
-      //*/
-      //* ---------- Ichep 2016 categorization 
-      currentCategory = categoryIchep16(
+      currentCategory = categoryMor17(
 	 nExtraLep,
 	 nExtraZ,
 	 nJets,
@@ -888,19 +682,19 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 	 p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
 	 p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
 	 p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
-   p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
-   pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+	 p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+	 pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
 	 p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
 	 p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
 	 jetPhi,
 	 ZZMass,
+	 PFMET,
+	 true,
 	 false
 	 );
-      //*/
 
 
-      //----- here, define resonant signal as H->4l where l=e,mu (excluding decays to taus and 'wrong signal' from associated production)
-
+      /* //----- here, define resonant signal as H->4l where l=e,mu (excluding decays to taus and 'wrong signal' from associated production)
       if(currentProcess==Data){
 	currentResStatus = resonant;
       }else{	
@@ -912,87 +706,67 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 	}
 	currentResStatus = (nGenHLep==4) ? resonant : nonresonant ;
       }
+      //*/
 
       //----- fill histograms
 
       Float_t KD = p_GG_SIG_ghg2_1_ghz1_1_JHUGen / ( p_GG_SIG_ghg2_1_ghz1_1_JHUGen + p_QQB_BKG_MCFM*getDbkgkinConstant(Z1Flav*Z2Flav,ZZMass) );
-      Float_t D2jet = (nJets>=2) ? p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal / ( p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal + p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal*getDVBF2jetsConstant(ZZMass) ) : -2 ;
-      //Float_t D2jetComb = (nJets>=2) ? 1/(1+ (1./D2jet-1.) * TMath::Power(jetPgOverPq[0]*jetPgOverPq[1],1/3.) ) : -2 ;
-      Float_t D1jet = (nJets==1) ? p_JVBF_SIG_ghv1_1_JHUGen_JECNominal*pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal / (p_JVBF_SIG_ghv1_1_JHUGen_JECNominal*pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal + p_JQCD_SIG_ghg2_1_JHUGen_JECNominal*getDVBF1jetConstant(ZZMass)) : -2;
-      Float_t DWH = (nJets>=2) ? p_HadWH_SIG_ghw1_1_JHUGen_JECNominal / ( p_HadWH_SIG_ghw1_1_JHUGen_JECNominal + CUSTOMCCONSTWH*1e5*p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal ) : -2 ;
-      Float_t DZH = (nJets>=2) ? p_HadZH_SIG_ghz1_1_JHUGen_JECNominal / ( p_HadZH_SIG_ghz1_1_JHUGen_JECNominal + CUSTOMCCONSTZH*1e4*p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal ) : -2 ;
-      Float_t varVal[nVariables] = {
-	ZZMass,
-	ZZMass,
-	ZZMass,
-	ZZMassRefit,
-	ZZMass,
-	ZZMass,
-	ZZMass,
-	ZZMass,
-	ZZMass,
-	ZZMass,
-	ZZMass,
-	ZZMass,
-	ZZMass,
-	ZZMass,
-	ZZMass,
-	ZZMass,
-	Z1Mass,
-	Z1Mass,
-	Z1Mass,
-	Z1Mass,
-	Z2Mass,
-	Z2Mass,
-	Z2Mass,
-	Z2Mass,
-	KD,
-	KD,
-	DiJetFisher,
-	D2jet,
-	D2jet,
-	D2jet,
-	D1jet,
-	DWH,
-	DZH,
-	ZZPt,
-	ZZEta,
-	(Float_t)nExtraLep,
-	(Float_t)nJets,
-	(Float_t)nJetsBTagged,
-	ZZMass,
-	ZZMass,
-      };
-      Bool_t varPassCut[nVariables] = {
-	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,118<=ZZMass&&ZZMass<=130,1,1,1,118<=ZZMass&&ZZMass<=130,1,1,118<=ZZMass&&ZZMass<=130,nJets>=2,nJets>=2,nJets>=2&&118<=ZZMass&&ZZMass<=130,nJets>=2&&118<=ZZMass&&ZZMass<=130,nJets==1&&118<=ZZMass&&ZZMass<=130,nJets>=2&&118<=ZZMass&&ZZMass<=130,nJets>=2&&118<=ZZMass&&ZZMass<=130,1,1,1,1,1,KD>0.5,KD>0.5,
-      };
-      Float_t varPairVal[nVarPairs][2] = {
-	{ ZZMass, KD },
-	{ ZZMass, KD },
-	{ ZZMass, KD },
-	{ ZZMass, KD },
-	{ ZZMass, KD },
-	{ ZZMass, D2jet },
-	{ ZZMass, D1jet },
-	{ ZZMass, DWH },
-	{ ZZMass, DZH },
-	{ Z1Mass, Z2Mass },
-	{ Z1Mass, Z2Mass },
-	{ Z1Mass, Z2Mass },
-	{ Z1Mass, Z2Mass },
-	{ ZZMass, ZZMassRefit },
-	{ ZZMass, ZZMassRefit },
-      };
-      Bool_t varPairPassCut[nVarPairs] = {
-	1,1,1,1,1,nJets>=2,nJets==1,nJets>=2,nJets>=2,1,1,1,118<=ZZMass&&ZZMass<=130,1,1,
-      };
+      Float_t D2jet = (nJets>=2) ? DVBF2j_ME(p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
+      Float_t D1jet = (nJets==1) ? DVBF1j_ME(p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
+      Float_t DWH = (nJets>=2) ? DWHh_ME(p_HadWH_SIG_ghw1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
+      DWH = 1/(CUSTOMCCONSTWH*(1/DWH-1)+1);
+      Float_t DZH = (nJets>=2) ? DZHh_ME(p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
+      DZH = 1/(CUSTOMCCONSTZH*(1/DZH-1)+1);
+
+      Float_t varVal[nVariables];
+      Bool_t varPassCut[nVariables];
+      for(int v1=0; v1<nVariables; v1++){
+	string varStr = myV1[v1].Name.substr(0,myV1[v1].Name.find("_"));
+	if     (varStr=="M4l") varVal[v1] = ZZMass;
+	else if(varStr=="MZ1") varVal[v1] = Z1Mass;
+	else if(varStr=="MZ2") varVal[v1] = Z2Mass;
+	else if(varStr=="KD") varVal[v1] = KD;
+	else if(varStr=="D2jet") varVal[v1] = D2jet;
+	else if(varStr=="D1jet") varVal[v1] = D1jet;
+	else if(varStr=="DWH") varVal[v1] = DWH;
+	else if(varStr=="DZH") varVal[v1] = DZH;
+	else if(varStr=="MET") varVal[v1] = PFMET;
+	else if(varStr=="NExtraLep") varVal[v1] = (Float_t)nExtraLep;
+	else if(varStr=="NJets") varVal[v1] = (Float_t)nJets;
+	else if(varStr=="NJetsBTagged") varVal[v1] = (Float_t)nJetsBTagged;
+	else if(varStr=="Pt4l") varVal[v1] = ZZPt;
+	else if(varStr=="Eta4l") varVal[v1] = ZZEta;
+	else if(varStr=="M4lrefit") varVal[v1] = ZZMassRefit;
+	varPassCut[v1] = true;
+	if(myV1[v1].Name.find("M4L118130")!=string::npos) varPassCut[v1] = varPassCut[v1] && 118<=ZZMass && ZZMass<=130; 
+	if(myV1[v1].Name.find("HighKD")!=string::npos) varPassCut[v1] = varPassCut[v1] && KD>0.5;
+	if(varStr=="D2jet" || varStr=="DWH" || varStr=="DZH") varPassCut[v1] = varPassCut[v1] && nJets>=2; 
+	else if(varStr=="D1jet") varPassCut[v1] = varPassCut[v1] && nJets==1; 
+      }
+
+      Float_t varPairVal[nVarPairs][2];
+      Bool_t varPairPassCut[nVarPairs];
+      for(int v2=0; v2<nVarPairs; v2++){
+	string varPairStr = myV2[v2].Name.substr(0,myV2[v2].Name.find("_"));
+	if     (varPairStr=="M4lVsKD") { varPairVal[v2][0] = ZZMass; varPairVal[v2][1] = KD; }
+	else if(varPairStr=="M4lVsD2jet") { varPairVal[v2][0] = ZZMass; varPairVal[v2][1] = D2jet; }
+	else if(varPairStr=="M4lVsD1jet") { varPairVal[v2][0] = ZZMass; varPairVal[v2][1] = D1jet; }
+	else if(varPairStr=="M4lVsDWH") { varPairVal[v2][0] = ZZMass; varPairVal[v2][1] = DWH; }
+	else if(varPairStr=="M4lVsDZH") { varPairVal[v2][0] = ZZMass; varPairVal[v2][1] = DZH; }
+	else if(varPairStr=="MZ1VsMZ2") { varPairVal[v2][0] = Z1Mass; varPairVal[v2][1] = Z2Mass; }
+	else if(varPairStr=="M4lVsM4lRefit") { varPairVal[v2][0] = ZZMass; varPairVal[v2][1] = ZZMassRefit; }
+	varPairPassCut[v2] = true;
+	if(myV2[v2].Name.find("M4L118130")!=string::npos) varPairPassCut[v2] = varPairPassCut[v2] && 118<=ZZMass && ZZMass<=130; 
+	if(varPairStr=="M4lVsD2jet" || varPairStr=="M4lVsDWH" || varPairStr=="M4lVsDZH") varPairPassCut[v2] = varPairPassCut[v2] && nJets>=2; 
+	else if(varPairStr=="M4lVsD1jet") varPairPassCut[v2] = varPairPassCut[v2] && nJets==1; 
+      }
 
       bool fillM4l[nBlindings] = {
 	currentProcess!=Data,
 	(currentProcess!=Data || ZZMass<110),
 	(currentProcess!=Data || ZZMass>150),
 	(currentProcess!=Data || ZZMass<110 || ZZMass>150),
-	(currentProcess!=Data || ZZMass<110 || (ZZMass>150&&ZZMass<500)),
+	(currentProcess!=Data || ZZMass<110 || (ZZMass>150&&ZZMass<300)),
 	true,
       };
       bool fillOtherThanM4l[nBlindings] = {
@@ -1000,33 +774,34 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 	ZZMass<110,
 	ZZMass>150,
 	ZZMass<110 || ZZMass>150,
-	ZZMass<110 || (ZZMass>150&&ZZMass<500),
+	ZZMass<110 || (ZZMass>150&&ZZMass<300),
 	true,
       };
 
-      //float m4lerr = ZZMassErr;
+      float m4lerr = ZZMassErr;
       //float m4lerr = ZZMassErrCorr;
-      float m4lerr = ZZMassUnrefitErr;
+      //float m4lerr = ZZMassUnrefitErr;
+      //cout<<"m4lerr"<<m4lerr<<endl;
 
       for(int bl=0; bl<nBlindings; bl++){
-	for(int v=0; v<nVariables; v++){
-	  if( (varName[v].find("M4l")==0 && fillM4l         [bl]) ||
-	      (varName[v].find("M4l")!=0 && fillOtherThanM4l[bl])    ){
-	    if(varPassCut[v]){
-	      h1[v][bl][currentFinalState][currentCategory][currentResStatus][currentProcess]->Fill(varVal[v],(currentProcess==Data)?1.:eventWeight);
+	for(int v1=0; v1<nVariables; v1++){
+	  if( (myV1[v1].Name.find("M4l")==0 && fillM4l         [bl]) ||
+	      (myV1[v1].Name.find("M4l")!=0 && fillOtherThanM4l[bl])    ){
+	    if(varPassCut[v1]){
+	      h1[v1][bl][currentFinalState][currentCategory][nRS][currentProcess]->Fill(varVal[v1],(currentProcess==Data)?1.:eventWeight);
 	    }
 	  }
 	}
 	for(int v2=0; v2<nVarPairs; v2++){
-	  if( (varPairName[v2].find("M4l")==0 && fillM4l         [bl]) ||
-	      (varPairName[v2].find("M4l")!=0 && fillOtherThanM4l[bl])    ){
+	  if( (myV2[v2].Name.find("M4l")==0 && fillM4l         [bl]) ||
+	      (myV2[v2].Name.find("M4l")!=0 && fillOtherThanM4l[bl])    ){
 	    if(varPairPassCut[v2]){
-	      h2[v2][bl][currentFinalState][currentCategory][currentResStatus][currentProcess]->Fill(varPairVal[v2][0],varPairVal[v2][1],(currentProcess==Data)?1.:eventWeight);
+	      h2[v2][bl][currentFinalState][currentCategory][nRS][currentProcess]->Fill(varPairVal[v2][0],varPairVal[v2][1],(currentProcess==Data)?1.:eventWeight);
 	      if(currentProcess==Data){
-		g2DataX[v2][bl][currentFinalState][currentCategory][currentResStatus].push_back(varPairVal[v2][0]);
-		g2DataY[v2][bl][currentFinalState][currentCategory][currentResStatus].push_back(varPairVal[v2][1]);
-		g2DataEX[v2][bl][currentFinalState][currentCategory][currentResStatus].push_back((varPairName[v2].find("M4l")==0)?m4lerr:0.);
-		g2DataEY[v2][bl][currentFinalState][currentCategory][currentResStatus].push_back(0.);
+		g2DataX[v2][bl][currentFinalState][currentCategory][nRS].push_back(varPairVal[v2][0]);
+		g2DataY[v2][bl][currentFinalState][currentCategory][nRS].push_back(varPairVal[v2][1]);
+		g2DataEX[v2][bl][currentFinalState][currentCategory][nRS].push_back((myV2[v2].Name.find("M4l")==0)?m4lerr:0.);
+		g2DataEY[v2][bl][currentFinalState][currentCategory][nRS].push_back(0.);
 	      }	      
 	    }
 	  }
@@ -1039,75 +814,77 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 
 
   //---------- Fill 'inclusive' histograms
+  cout<<"Adding histograms ..."<<endl;
   for(int bl=0; bl<nBlindings; bl++){
+    if(bl!=BLINDING) continue;
     for(int fs=0; fs<nFinalStates+1; fs++){
       for(int cat=0; cat<nCategories+1; cat++){
-	for(int rs=0; rs<nResStatuses+1; rs++){
-	  for(int v=0; v<nVariables; v++){
-	    h1[v][bl][fs][cat][rs][H125]->Add(h1[v][bl][fs][cat][rs][H125VBF]);
-	    h1[v][bl][fs][cat][rs][H125]->Add(h1[v][bl][fs][cat][rs][H125VH]);
-	    h1[v][bl][fs][cat][rs][H125]->Add(h1[v][bl][fs][cat][rs][H125NONVBFVH]);
-	  }
-	  for(int v2=0; v2<nVarPairs; v2++){
-	    h2[v2][bl][fs][cat][rs][H125]->Add(h2[v2][bl][fs][cat][rs][H125VBF]);
-	    h2[v2][bl][fs][cat][rs][H125]->Add(h2[v2][bl][fs][cat][rs][H125VH]);
-	    h2[v2][bl][fs][cat][rs][H125]->Add(h2[v2][bl][fs][cat][rs][H125NONVBFVH]);
-	  }
+	//for(int rs=0; rs<nRS+1; rs++){
+	for(int v1=0; v1<nVariables; v1++){
+	  h1[v1][bl][fs][cat][nRS][H125]->Add(h1[v1][bl][fs][cat][nRS][H125VBF]);
+	  h1[v1][bl][fs][cat][nRS][H125]->Add(h1[v1][bl][fs][cat][nRS][H125VH]);
+	  h1[v1][bl][fs][cat][nRS][H125]->Add(h1[v1][bl][fs][cat][nRS][H125NONVBFVH]);
 	}
+	for(int v2=0; v2<nVarPairs; v2++){
+	  h2[v2][bl][fs][cat][nRS][H125]->Add(h2[v2][bl][fs][cat][nRS][H125VBF]);
+	  h2[v2][bl][fs][cat][nRS][H125]->Add(h2[v2][bl][fs][cat][nRS][H125VH]);
+	  h2[v2][bl][fs][cat][nRS][H125]->Add(h2[v2][bl][fs][cat][nRS][H125NONVBFVH]);
+	}
+	//}
       }
     }
     for(int pr=0; pr<nProcesses; pr++){
       for(int fs=0; fs<nFinalStates; fs++){
 	for(int cat=0; cat<nCategories; cat++){
-	  for(int rs=0; rs<nResStatuses; rs++){
-	    for(int v=0; v<nVariables; v++){
-	      h1[v][bl][nFinalStates][cat][rs][pr]->Add(h1[v][bl][fs][cat][rs][pr]);
-	    }
-	    for(int v2=0; v2<nVarPairs; v2++){
-	      h2[v2][bl][nFinalStates][cat][rs][pr]->Add(h2[v2][bl][fs][cat][rs][pr]);
-	      if(pr==Data){
-		g2DataX[v2][bl][nFinalStates][cat][rs].insert(g2DataX[v2][bl][nFinalStates][cat][rs].end(), g2DataX[v2][bl][fs][cat][rs].begin(), g2DataX[v2][bl][fs][cat][rs].end());
-		g2DataY[v2][bl][nFinalStates][cat][rs].insert(g2DataY[v2][bl][nFinalStates][cat][rs].end(), g2DataY[v2][bl][fs][cat][rs].begin(), g2DataY[v2][bl][fs][cat][rs].end());
-		g2DataEX[v2][bl][nFinalStates][cat][rs].insert(g2DataEX[v2][bl][nFinalStates][cat][rs].end(), g2DataEX[v2][bl][fs][cat][rs].begin(), g2DataEX[v2][bl][fs][cat][rs].end());
-		g2DataEY[v2][bl][nFinalStates][cat][rs].insert(g2DataEY[v2][bl][nFinalStates][cat][rs].end(), g2DataEY[v2][bl][fs][cat][rs].begin(), g2DataEY[v2][bl][fs][cat][rs].end());
-	      }
+	  //for(int rs=0; rs<nRS; rs++){
+	  for(int v1=0; v1<nVariables; v1++){
+	    h1[v1][bl][nFinalStates][cat][nRS][pr]->Add(h1[v1][bl][fs][cat][nRS][pr]);
+	  }
+	  for(int v2=0; v2<nVarPairs; v2++){
+	    h2[v2][bl][nFinalStates][cat][nRS][pr]->Add(h2[v2][bl][fs][cat][nRS][pr]);
+	    if(pr==Data){
+	      g2DataX[v2][bl][nFinalStates][cat][nRS].insert(g2DataX[v2][bl][nFinalStates][cat][nRS].end(), g2DataX[v2][bl][fs][cat][nRS].begin(), g2DataX[v2][bl][fs][cat][nRS].end());
+	      g2DataY[v2][bl][nFinalStates][cat][nRS].insert(g2DataY[v2][bl][nFinalStates][cat][nRS].end(), g2DataY[v2][bl][fs][cat][nRS].begin(), g2DataY[v2][bl][fs][cat][nRS].end());
+	      g2DataEX[v2][bl][nFinalStates][cat][nRS].insert(g2DataEX[v2][bl][nFinalStates][cat][nRS].end(), g2DataEX[v2][bl][fs][cat][nRS].begin(), g2DataEX[v2][bl][fs][cat][nRS].end());
+	      g2DataEY[v2][bl][nFinalStates][cat][nRS].insert(g2DataEY[v2][bl][nFinalStates][cat][nRS].end(), g2DataEY[v2][bl][fs][cat][nRS].begin(), g2DataEY[v2][bl][fs][cat][nRS].end());
 	    }
 	  }
+	  //}
 	}
       }
       for(int fs=0; fs<nFinalStates+1; fs++){
 	for(int cat=0; cat<nCategories; cat++){
-	  for(int rs=0; rs<nResStatuses; rs++){
-	    for(int v=0; v<nVariables; v++){
-	      h1[v][bl][fs][nCategories][rs][pr]->Add(h1[v][bl][fs][cat][rs][pr]);
-	    }
-	    for(int v2=0; v2<nVarPairs; v2++){
-	      h2[v2][bl][fs][nCategories][rs][pr]->Add(h2[v2][bl][fs][cat][rs][pr]);
-	      if(pr==Data){
-		g2DataX[v2][bl][fs][nCategories][rs].insert(g2DataX[v2][bl][fs][nCategories][rs].end(), g2DataX[v2][bl][fs][cat][rs].begin(), g2DataX[v2][bl][fs][cat][rs].end());
-		g2DataY[v2][bl][fs][nCategories][rs].insert(g2DataY[v2][bl][fs][nCategories][rs].end(), g2DataY[v2][bl][fs][cat][rs].begin(), g2DataY[v2][bl][fs][cat][rs].end());
-		g2DataEX[v2][bl][fs][nCategories][rs].insert(g2DataEX[v2][bl][fs][nCategories][rs].end(), g2DataEX[v2][bl][fs][cat][rs].begin(), g2DataEX[v2][bl][fs][cat][rs].end());
-		g2DataEY[v2][bl][fs][nCategories][rs].insert(g2DataEY[v2][bl][fs][nCategories][rs].end(), g2DataEY[v2][bl][fs][cat][rs].begin(), g2DataEY[v2][bl][fs][cat][rs].end());
-	      }
+	  //for(int rs=0; rs<nRS; rs++){
+	  for(int v1=0; v1<nVariables; v1++){
+	    h1[v1][bl][fs][nCategories][nRS][pr]->Add(h1[v1][bl][fs][cat][nRS][pr]);
+	  }
+	  for(int v2=0; v2<nVarPairs; v2++){
+	    h2[v2][bl][fs][nCategories][nRS][pr]->Add(h2[v2][bl][fs][cat][nRS][pr]);
+	    if(pr==Data){
+	      g2DataX[v2][bl][fs][nCategories][nRS].insert(g2DataX[v2][bl][fs][nCategories][nRS].end(), g2DataX[v2][bl][fs][cat][nRS].begin(), g2DataX[v2][bl][fs][cat][nRS].end());
+	      g2DataY[v2][bl][fs][nCategories][nRS].insert(g2DataY[v2][bl][fs][nCategories][nRS].end(), g2DataY[v2][bl][fs][cat][nRS].begin(), g2DataY[v2][bl][fs][cat][nRS].end());
+	      g2DataEX[v2][bl][fs][nCategories][nRS].insert(g2DataEX[v2][bl][fs][nCategories][nRS].end(), g2DataEX[v2][bl][fs][cat][nRS].begin(), g2DataEX[v2][bl][fs][cat][nRS].end());
+	      g2DataEY[v2][bl][fs][nCategories][nRS].insert(g2DataEY[v2][bl][fs][nCategories][nRS].end(), g2DataEY[v2][bl][fs][cat][nRS].begin(), g2DataEY[v2][bl][fs][cat][nRS].end());
 	    }
 	  }
+	  //}
 	}
-	for(int cat=0; cat<nCategories+1; cat++){
-	  for(int rs=0; rs<nResStatuses; rs++){
-	    for(int v=0; v<nVariables; v++){
-	      h1[v][bl][fs][cat][nResStatuses][pr]->Add(h1[v][bl][fs][cat][rs][pr]);
-	    }
-	    for(int v2=0; v2<nVarPairs; v2++){
-	      h2[v2][bl][fs][cat][nResStatuses][pr]->Add(h2[v2][bl][fs][cat][rs][pr]);
-	      if(pr==Data){
-		g2DataX[v2][bl][fs][cat][nResStatuses].insert(g2DataX[v2][bl][fs][cat][nResStatuses].end(), g2DataX[v2][bl][fs][cat][rs].begin(), g2DataX[v2][bl][fs][cat][rs].end());
-		g2DataY[v2][bl][fs][cat][nResStatuses].insert(g2DataY[v2][bl][fs][cat][nResStatuses].end(), g2DataY[v2][bl][fs][cat][rs].begin(), g2DataY[v2][bl][fs][cat][rs].end());
-		g2DataEX[v2][bl][fs][cat][nResStatuses].insert(g2DataEX[v2][bl][fs][cat][nResStatuses].end(), g2DataEX[v2][bl][fs][cat][rs].begin(), g2DataEX[v2][bl][fs][cat][rs].end());
-		g2DataEY[v2][bl][fs][cat][nResStatuses].insert(g2DataEY[v2][bl][fs][cat][nResStatuses].end(), g2DataEY[v2][bl][fs][cat][rs].begin(), g2DataEY[v2][bl][fs][cat][rs].end());
-	      }
-	    }
-	  }
-	}
+	//for(int cat=0; cat<nCategories+1; cat++){
+	//  for(int rs=0; rs<nRS; rs++){
+	//    for(int v1=0; v1<nVariables; v1++){
+	//      h1[v1][bl][fs][cat][nRS][pr]->Add(h1[v1][bl][fs][cat][rs][pr]);
+	//    }
+	//    for(int v2=0; v2<nVarPairs; v2++){
+	//      h2[v2][bl][fs][cat][nRS][pr]->Add(h2[v2][bl][fs][cat][rs][pr]);
+	//      if(pr==Data){
+	//	g2DataX[v2][bl][fs][cat][nRS].insert(g2DataX[v2][bl][fs][cat][nRS].end(), g2DataX[v2][bl][fs][cat][rs].begin(), g2DataX[v2][bl][fs][cat][rs].end());
+	//	g2DataY[v2][bl][fs][cat][nRS].insert(g2DataY[v2][bl][fs][cat][nRS].end(), g2DataY[v2][bl][fs][cat][rs].begin(), g2DataY[v2][bl][fs][cat][rs].end());
+	//	g2DataEX[v2][bl][fs][cat][nRS].insert(g2DataEX[v2][bl][fs][cat][nRS].end(), g2DataEX[v2][bl][fs][cat][rs].begin(), g2DataEX[v2][bl][fs][cat][rs].end());
+	//	g2DataEY[v2][bl][fs][cat][nRS].insert(g2DataEY[v2][bl][fs][cat][nRS].end(), g2DataEY[v2][bl][fs][cat][rs].begin(), g2DataEY[v2][bl][fs][cat][rs].end());
+	//      }
+	//    }
+	//  }
+	//}
       }
     }
   }
@@ -1119,35 +896,39 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
   TFile* fOutHistos = new TFile(outFileName.c_str(),"recreate");
   fOutHistos->cd();
   for(int bl=0; bl<nBlindings; bl++){
+    if(bl!=BLINDING) continue;
     for(int fs=0; fs<nFinalStates+1; fs++){
+      //cout<<" Writing FS "<<sFinalState[fs]<<endl;
       for(int cat=0; cat<nCategories+1; cat++){
-	for(int rs=0; rs<nResStatuses+1; rs++){
+	//cout<<" Writing cat. "<<sCategory[cat]<<endl;
+	for(int rs=0; rs<nRS+1; rs++){
+	  if(rs!=nRS) continue;
 	  for(int pr=0; pr<nProcesses; pr++){
-	    if( (fs==nFinalStates || pr==DY) &&
-		cat==nCategories &&
-		rs==nResStatuses ){
-	      for(int v=0; v<nVariables; v++){
-		h1[v][bl][fs][cat][rs][pr]->Write(h1[v][bl][fs][cat][rs][pr]->GetName());
-		delete h1[v][bl][fs][cat][rs][pr];
+	    for(int v1=0; v1<nVariables; v1++){
+	      if(myV1[v1].plotLvl>3) continue;
+	      if( (fs==nFinalStates || myV1[v1].InFS) &&
+		  (cat==nCategories || myV1[v1].InCateg) ){
+		h1[v1][bl][fs][cat][rs][pr]->Write(h1[v1][bl][fs][cat][rs][pr]->GetName());
+		delete h1[v1][bl][fs][cat][rs][pr];
 	      }
-	      for(int v2=0; v2<nVarPairs; v2++){
+	    }
+	    for(int v2=0; v2<nVarPairs; v2++){
+	      if(myV2[v2].plotLvl>3) continue;
+	      if(fs==nFinalStates && cat==nCategories){	      
 		h2[v2][bl][fs][cat][rs][pr]->Write(h2[v2][bl][fs][cat][rs][pr]->GetName());
 		delete h2[v2][bl][fs][cat][rs][pr];
 	      }
 	    }
 	  }
-	  if( //cat==nCategories &&
-	      rs==nResStatuses ){
-	    for(int v2=0; v2<nVarPairs; v2++){
-	      if(MERGE2E2MU && fs==fs2mu2e) continue;
-	      g2Data[v2][bl][fs][cat][rs] = new TGraphErrors( g2DataX[v2][bl][fs][cat][rs].size(),
-							      &(g2DataX[v2][bl][fs][cat][rs][0]),
-							      &(g2DataY[v2][bl][fs][cat][rs][0]),
-							      &(g2DataEX[v2][bl][fs][cat][rs][0]),
-							      &(g2DataEY[v2][bl][fs][cat][rs][0]) );
-	      g2Data[v2][bl][fs][cat][rs]->Write(Form("g2Data_%s_%s_%s_%s_%s",varPairName[v2].c_str(),sBlinding[bl].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[rs].c_str()));
-	      delete g2Data[v2][bl][fs][cat][rs];
-	    }
+	  for(int v2=0; v2<nVarPairs; v2++){
+	    if(MERGE2E2MU && fs==fs2mu2e) continue;
+	    g2Data[v2][bl][fs][cat][rs] = new TGraphErrors( g2DataX[v2][bl][fs][cat][rs].size(),
+							    &(g2DataX[v2][bl][fs][cat][rs][0]),
+							    &(g2DataY[v2][bl][fs][cat][rs][0]),
+							    &(g2DataEX[v2][bl][fs][cat][rs][0]),
+							    &(g2DataEY[v2][bl][fs][cat][rs][0]) );
+	    g2Data[v2][bl][fs][cat][rs]->Write(Form("g2Data_%s_%s_%s_%s_%s",myV2[v2].Name.c_str(),sBlinding[bl].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[rs].c_str()));
+	    delete g2Data[v2][bl][fs][cat][rs];
 	  }
 	}
       }
@@ -1170,116 +951,6 @@ void doHistograms(string inputFilePath_MC, string inputFilePath_Data, double lum
 ////////////////////////////////////////////////////////////////////////////////
 
 
-TH1F* getM4lZPlusXHistoFromAnalyticalShape_InCateg(Int_t nbins, Int_t xmin, Int_t xmax, Int_t finalState, Int_t category, double lumi) {
-
-  /*// For Moriond: Z+X shapes sent by Pedja on March 1st (take the same for all categ)
-  TF1 *f4eComb = new TF1("f4eComb", "landau(0)*(1 + exp( pol1(3))) + [5]*(TMath::Landau(x, [6], [7]))", 70, 1000);
-  TF1 *f4muComb = new TF1("f4muComb","landau(0)",70,1000);
-  TF1 *f2e2muComb = new TF1("f2e2muComb","landau(0)",70,1000);
-  f4eComb->SetParameters(4.404e-05,151.2,36.6,7.06,-0.00497,0.01446,157.3,26.00);
-  f4muComb->SetParameters(0.04276,134.6,24.4);
-  f2e2muComb->SetParameters(0.04130,144.5,25.3);
-  //*/
-
-  //*// For ICHEP: Z+X shapes sent by Pedja on July 27th (take the same for all categ)
-  TF1 *f4eComb    = new TF1("f4eComb"   ,"TMath::Landau(x, 141.9, 21.3)", 70, 3000);
-  TF1 *f4muComb   = new TF1("f4muComb"  ,"TMath::Landau(x, 130.4, 15.6)", 70, 3000);
-  TF1 *f2e2muComb = new TF1("f2e2muComb","0.45*TMath::Landau(x, 131.1, 18.1) + 0.55*TMath::Landau(x, 133.8, 18.9)", 70, 3000);
-  //*/ 
-
-  //----- compute normalization of the subrange of interest
-
-  Int_t nentries = 1000000;
-
-  TH1F* hFullRange4mu   = new TH1F("hFullRange4mu"  ,";;",2930,70,3000);
-  TH1F* hFullRange4e    = new TH1F("hFullRange4e"   ,";;",2930,70,3000);
-  TH1F* hFullRange2e2mu = new TH1F("hFullRange2e2mu",";;",2930,70,3000);
-  hFullRange4mu  ->FillRandom("f4muComb"  ,nentries);
-  hFullRange4e   ->FillRandom("f4eComb"   ,nentries);
-  hFullRange2e2mu->FillRandom("f2e2muComb",nentries);
-  Float_t norm4mu   = normSSFullRange4mu  [category] * hFullRange4mu  ->Integral(hFullRange4mu  ->FindBin(xmin), hFullRange4mu  ->FindBin(xmax)-1) / hFullRange4mu  ->Integral();
-  Float_t norm4e    = normSSFullRange4e   [category] * hFullRange4e   ->Integral(hFullRange4e   ->FindBin(xmin), hFullRange4e   ->FindBin(xmax)-1) / hFullRange4e   ->Integral();
-  Float_t norm2e2mu = normSSFullRange2e2mu[category] * hFullRange2e2mu->Integral(hFullRange2e2mu->FindBin(xmin), hFullRange2e2mu->FindBin(xmax)-1) / hFullRange2e2mu->Integral();
-  delete hFullRange4mu;
-  delete hFullRange4e;
-  delete hFullRange2e2mu;
-
-  //---------- Normalize to official inclusive Z+X yield
-  if(RENORMZPLUSXTOOFFICIALINCLNB){
-    if(MERGE2E2MU){
-      norm4mu   *= normZPlusXFullSR4mu   / normSSFullRange4mu  [nCategories] ;
-      norm4e    *= normZPlusXFullSR4e    / normSSFullRange4e   [nCategories] ;
-      norm2e2mu *= normZPlusXFullSR2e2mu / normSSFullRange2e2mu[nCategories] ;
-    }else{
-      cout<<"WARNING: cannot renormalize Z+X histograms to official numbers when treating 2e2mu and 2mu2e separately"<<endl;
-    }
-  }
-
-  /*
-  cout<<"In function getM4lZPlusXHistoFromAnalyticalShape_InCateg, xmin="<<xmin<<", xmax="<<xmax<<","<<endl;
-  cout<<"  yield in 4mu   = "<<norm4mu<<endl;
-  cout<<"  yield in 4e    = "<<norm4e<<endl;
-  cout<<"  yield in 2e2mu = "<<norm2e2mu<<endl;
-  cout<<"  total yield in 4l = "<<norm4mu+norm4e+norm2e2mu<<endl;
-  //*/
-
-  //----- build final histograms
-
-  TH1F* h4mu   = new TH1F("h4mu"  ,";;",nbins,xmin,xmax);
-  TH1F* h4e    = new TH1F("h4e"   ,";;",nbins,xmin,xmax);
-  TH1F* h2e2mu = new TH1F("h2e2mu",";;",nbins,xmin,xmax);
-  h4mu  ->FillRandom("f4muComb"  ,nentries);
-  h4e   ->FillRandom("f4eComb"   ,nentries);
-  h2e2mu->FillRandom("f2e2muComb",nentries);
-  h4mu  ->Scale(norm4mu   / h4mu  ->Integral());
-  h4e   ->Scale(norm4e    / h4e   ->Integral());
-  h2e2mu->Scale(norm2e2mu / h2e2mu->Integral());
-  TH1F* h4l = new TH1F("h4l",";;",nbins,xmin,xmax);
-  h4l->Add(h4mu  );
-  h4l->Add(h4e   );
-  h4l->Add(h2e2mu);
-
-  //----- return
-
-  if(finalState==fs4mu) return h4mu;
-  else if(finalState==fs4e) return h4e;
-  else if(finalState==fs2e2mu) return h2e2mu;
-  else if(finalState==nFinalStates) return h4l;
-  else{
-    cout<<"ERROR computing Z+X histogram: wrong final state"<<endl;
-    abort();
-  } 
-
-}
-
-
-/* //for GianLuca's FR files
-TH1F* h1D_FRmu_EB = 0;
-TH1F* h1D_FRmu_EE = 0;
-TH1F* h1D_FRel_EB = 0;
-TH1F* h1D_FRel_EE = 0;
-
-Float_t fakeRate13TeV(Float_t LepPt, Float_t LepEta, Int_t LepID) {
-  Float_t myLepPt = LepPt>=80. ? 79. : LepPt;
-  Int_t   myLepID = abs(LepID);
-  if(myLepID==11){
-    if(fabs(LepEta)<1.449)
-      return h1D_FRel_EB->GetBinContent(h1D_FRel_EB->GetXaxis()->FindBin(myLepPt));
-    else
-      return h1D_FRel_EE->GetBinContent(h1D_FRel_EE->GetXaxis()->FindBin(myLepPt));
-  }else if(myLepID==13){
-    if(fabs(LepEta)<1.2)
-      return h1D_FRmu_EB->GetBinContent(h1D_FRmu_EB->GetXaxis()->FindBin(myLepPt));
-    else
-      return h1D_FRmu_EE->GetBinContent(h1D_FRmu_EE->GetXaxis()->FindBin(myLepPt));
-  }else{
-    cout<<"ERROR! wrong lepton ID : "<<myLepID<<endl;
-    return 0.;
-  }  
-}
-//*/
-
-//* //for Christophe's FR files
 TGraph* gr_FRmu_EB = 0;
 TGraph* gr_FRmu_EE = 0;
 TGraph* gr_FRel_EB = 0;
@@ -1300,7 +971,7 @@ Float_t fakeRate13TeV(Float_t LepPt, Float_t LepEta, Int_t LepID) {
   if(fabs(myLepID)==11) bin = bin-1; // there is no [5, 7] bin in the electron fake rate
 
   if(myLepID==11){
-    if(fabs(LepEta)<1.449)
+    if(fabs(LepEta)<1.479)
       return (gr_FRel_EB->GetY())[bin];
     else
       return (gr_FRel_EE->GetY())[bin];
@@ -1314,32 +985,22 @@ Float_t fakeRate13TeV(Float_t LepPt, Float_t LepEta, Int_t LepID) {
     return 0.;
   }  
 }
-//*/
 
-void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, double lumi)
+void doHistogramsZPlusXSS(string inputPathDataForCR, string inputFileFakeRates, double lumi)
 {
 
-  cout<<"Preparing Z+X histograms (SS method) from "<<inputFileAllData<<endl;
+  cout<<"Preparing Z+X histograms (SS method) from "<<inputPathDataForCR<<endl;
 
   TFile* fFakeRates = TFile::Open(inputFileFakeRates.c_str());
-
-  /* //for GianLuca's FR files
-  h1D_FRmu_EB = (TH1F*)fFakeRates->Get("NoWZ_h1D_FRmu_EB");
-  h1D_FRmu_EE = (TH1F*)fFakeRates->Get("NoWZ_h1D_FRmu_EE");
-  h1D_FRel_EB = (TH1F*)fFakeRates->Get("NoWZ_h1D_FRel_EB");
-  h1D_FRel_EE = (TH1F*)fFakeRates->Get("NoWZ_h1D_FRel_EE");
-  //*/
-
-  //* //for Christophe's FR files
   gr_FRmu_EB = (TGraph*)fFakeRates->Get("FR_SS_muon_EB");
   gr_FRmu_EE = (TGraph*)fFakeRates->Get("FR_SS_muon_EE");
   gr_FRel_EB = (TGraph*)fFakeRates->Get("FR_SS_electron_EB");
   gr_FRel_EE = (TGraph*)fFakeRates->Get("FR_SS_electron_EE");
-  //*/
 
   Int_t nRun;
   Long64_t nEvent;
   Int_t nLumi;
+  Float_t PFMET;
   Int_t CRflag;
   Short_t ZZsel;
   Float_t ZZMass;
@@ -1374,12 +1035,13 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
   Float_t jetQGL[99];
   Float_t jetPgOverPq[99];
 
-  TFile* dataFile = TFile::Open(inputFileAllData.c_str());
+  TFile* dataFile = TFile::Open((inputPathDataForCR+"AllData/ZZ4lAnalysis.root").c_str());
   TTree* mytree = (TTree*)dataFile->Get("CRZLLTree/candTree");
 
   mytree->SetBranchAddress("RunNumber", &nRun);
   mytree->SetBranchAddress("EventNumber", &nEvent);
   mytree->SetBranchAddress("LumiNumber", &nLumi);
+  mytree->SetBranchAddress("PFMET", &PFMET);
   mytree->SetBranchAddress("CRflag", &CRflag);
   mytree->SetBranchAddress("ZZsel", &ZZsel);
   mytree->SetBranchAddress("ZZMass", &ZZMass);
@@ -1407,7 +1069,7 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
   mytree->SetBranchAddress("nExtraLep", &nExtraLep);
   mytree->SetBranchAddress("nExtraZ", &nExtraZ);
   mytree->SetBranchAddress("nCleanedJetsPt30", &nJets);
-  mytree->SetBranchAddress(APPLYBTAGSF?"nCleanedJetsPt30BTagged_bTagSF":"nCleanedJetsPt30BTagged", &nJetsBTagged);
+  mytree->SetBranchAddress("nCleanedJetsPt30BTagged_bTagSF", &nJetsBTagged);
   mytree->SetBranchAddress("JetPhi", &JetPhi);
   mytree->SetBranchAddress("JetQGLikelihood", &JetQGLikelihood);
 
@@ -1415,11 +1077,11 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
   for(int bl=0; bl<nBlindings; bl++){
     for(int fs=0; fs<nFinalStates+1; fs++){
       for(int cat=0; cat<nCategories+1; cat++){
-	for(int v=0; v<nVariables; v++){
-	  h1[v][bl][fs][cat] = new TH1F(
-	     Form("h1_ZPlusXSS_%s_%s_%s_%s",varName[v].c_str(),sBlinding[bl].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str()),
-	     Form(";%s;%s",varXLabel[v].c_str(),varYLabel[v].c_str()),
-	     varNbin[v],varMin[v],varMax[v]);
+	for(int v1=0; v1<nVariables; v1++){
+	  h1[v1][bl][fs][cat] = new TH1F(
+	     Form("h1_ZPlusXSS_%s_%s_%s_%s",myV1[v1].Name.c_str(),sBlinding[bl].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str()),
+	     Form(";%s;%s",myV1[v1].XLabel.c_str(),myV1[v1].YLabel.c_str()),
+	     myV1[v1].Nbin,myV1[v1].Min,myV1[v1].Max);
 	}
       }
     }
@@ -1472,9 +1134,9 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
     for(int j=0; j<nJets; j++){
       jetPhi[j] = JetPhi->at(j);
       jetQGL[j] = JetQGLikelihood->at(j);
+      jetPgOverPq[j] = 1./JetQGLikelihood->at(j) - 1.;
     }
-    //* ---------- Ichep 2016 categorization 
-    currentCategory = categoryIchep16(
+    currentCategory = categoryMor17(
        nExtraLep,
        nExtraZ,
        nJets,
@@ -1489,85 +1151,67 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
        p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
        jetPhi,
        ZZMass,
+       PFMET,
+       true,
        false
        );
-    //*/
 
 
     //----- fill histograms, update counters
 
-    for(int j=0; j<nJets; j++) jetPgOverPq[j] = 1./JetQGLikelihood->at(j) - 1.;
     Float_t KD = p_GG_SIG_ghg2_1_ghz1_1_JHUGen / ( p_GG_SIG_ghg2_1_ghz1_1_JHUGen + p_QQB_BKG_MCFM*getDbkgkinConstant(Z1Flav*Z2Flav,ZZMass) );
-    Float_t D2jet = (nJets>=2) ? p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal / ( p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal + p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal*getDVBF2jetsConstant(ZZMass) ) : -2 ;
-    //Float_t D2jetComb = (nJets>=2) ? 1/(1+ (1./D2jet-1.) * TMath::Power(jetPgOverPq[0]*jetPgOverPq[1],1/3.) ) : -2 ;
-    Float_t D1jet = (nJets==1) ? p_JVBF_SIG_ghv1_1_JHUGen_JECNominal*pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal / (p_JVBF_SIG_ghv1_1_JHUGen_JECNominal*pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal + p_JQCD_SIG_ghg2_1_JHUGen_JECNominal*getDVBF1jetConstant(ZZMass)) : -2;
-    Float_t DWH = (nJets>=2) ? p_HadWH_SIG_ghw1_1_JHUGen_JECNominal / ( p_HadWH_SIG_ghw1_1_JHUGen_JECNominal + CUSTOMCCONSTWH*1e5*p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal ) : -2 ;
-    Float_t DZH = (nJets>=2) ? p_HadZH_SIG_ghz1_1_JHUGen_JECNominal / ( p_HadZH_SIG_ghz1_1_JHUGen_JECNominal + CUSTOMCCONSTZH*1e4*p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal ) : -2 ;
-    Float_t varVal[nVariables] = {
-      ZZMass,
-      ZZMass,
-      ZZMass,
-      ZZMassRefit,
-      ZZMass,
-      ZZMass,
-      ZZMass,
-      ZZMass,
-      ZZMass,
-      ZZMass,
-      ZZMass,
-      ZZMass,
-      ZZMass,
-      ZZMass,
-      ZZMass,
-      ZZMass,
-      Z1Mass,
-      Z1Mass,
-      Z1Mass,
-      Z1Mass,
-      Z2Mass,
-      Z2Mass,
-      Z2Mass,
-      Z2Mass,
-      KD,
-      KD,
-      DiJetFisher,
-      D2jet,
-      D2jet,
-      D2jet,
-      D1jet,
-      DWH,
-      DZH,
-      ZZPt,
-      ZZEta,
-      (Float_t)nExtraLep,
-      (Float_t)nJets,
-      (Float_t)nJetsBTagged,
-      ZZMass,
-      ZZMass,
-    };
-    Bool_t varPassCut[nVariables] = {
-      1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,118<=ZZMass&&ZZMass<=130,1,1,1,118<=ZZMass&&ZZMass<=130,1,1,118<=ZZMass&&ZZMass<=130,nJets>=2,nJets>=2,nJets>=2&&118<=ZZMass&&ZZMass<=130,nJets>=2&&118<=ZZMass&&ZZMass<=130,nJets==1&&118<=ZZMass&&ZZMass<=130,nJets>=2&&118<=ZZMass&&ZZMass<=130,nJets>=2&&118<=ZZMass&&ZZMass<=130,1,1,1,1,1,KD>0.5,KD>0.5,
-    };
+    Float_t D2jet = (nJets>=2) ? DVBF2j_ME(p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
+    Float_t D1jet = (nJets==1) ? DVBF1j_ME(p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
+    Float_t DWH = (nJets>=2) ? DWHh_ME(p_HadWH_SIG_ghw1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
+    DWH = 1/(CUSTOMCCONSTWH*(1/DWH-1)+1);
+    Float_t DZH = (nJets>=2) ? DZHh_ME(p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
+    DZH = 1/(CUSTOMCCONSTZH*(1/DZH-1)+1);
+
+    Float_t varVal[nVariables];
+    Bool_t varPassCut[nVariables];
+    for(int v1=0; v1<nVariables; v1++){
+      string varStr = myV1[v1].Name.substr(0,myV1[v1].Name.find("_"));
+      if     (varStr=="M4l") varVal[v1] = ZZMass;
+      else if(varStr=="MZ1") varVal[v1] = Z1Mass;
+      else if(varStr=="MZ2") varVal[v1] = Z2Mass;
+      else if(varStr=="KD") varVal[v1] = KD;
+      else if(varStr=="D2jet") varVal[v1] = D2jet;
+      else if(varStr=="D1jet") varVal[v1] = D1jet;
+      else if(varStr=="DWH") varVal[v1] = DWH;
+      else if(varStr=="DZH") varVal[v1] = DZH;
+      else if(varStr=="MET") varVal[v1] = PFMET;
+      else if(varStr=="NExtraLep") varVal[v1] = (Float_t)nExtraLep;
+      else if(varStr=="NJets") varVal[v1] = (Float_t)nJets;
+      else if(varStr=="NJetsBTagged") varVal[v1] = (Float_t)nJetsBTagged;
+      else if(varStr=="Pt4l") varVal[v1] = ZZPt;
+      else if(varStr=="Eta4l") varVal[v1] = ZZEta;
+      else if(varStr=="M4lrefit") varVal[v1] = ZZMassRefit;
+      varPassCut[v1] = true;
+      if(myV1[v1].Name.find("M4L118130")!=string::npos) varPassCut[v1] = varPassCut[v1] && 118<=ZZMass && ZZMass<=130; 
+      if(myV1[v1].Name.find("HighKD")!=string::npos) varPassCut[v1] = varPassCut[v1] && KD>0.5;
+      if(varStr=="D2jet" || varStr=="DWH" || varStr=="DZH") varPassCut[v1] = varPassCut[v1] && nJets>=2; 
+      else if(varStr=="D1jet") varPassCut[v1] = varPassCut[v1] && nJets==1; 
+    }
     
     bool varPassBlindingCut[nBlindings] = {
       true,
       ZZMass<110,
       ZZMass>150,
       ZZMass<110 || ZZMass>150,
-      ZZMass<110 || (ZZMass>150&&ZZMass<500),
+      ZZMass<110 || (ZZMass>150&&ZZMass<300),
       true,
     };
 
     Float_t yieldSR = fsROSSS[currentFinalState] * fakeRate13TeV(LepPt->at(2),LepEta->at(2),LepLepId->at(2)) * fakeRate13TeV(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
 
     for(int bl=0; bl<nBlindings; bl++){
-      for(int v=0; v<nVariables; v++){
-	if( varName[v].find("M4l")==0 || (varName[v].find("M4l")!=0 && varPassBlindingCut[bl]) ){
-	  if(varPassCut[v]){
+      for(int v1=0; v1<nVariables; v1++){
+	if( myV1[v1].Name.find("M4l")==0 || (myV1[v1].Name.find("M4l")!=0 && varPassBlindingCut[bl]) ){
+	  if(varPassCut[v1]){
 	    if(MERGE2E2MU && currentFinalState==fs2mu2e)
-	      h1[v][bl][fs2e2mu][currentCategory]->Fill(varVal[v], yieldSR);
+	      h1[v1][bl][fs2e2mu][currentCategory]->Fill(varVal[v1], yieldSR);
 	    else
-	      h1[v][bl][currentFinalState][currentCategory]->Fill(varVal[v], yieldSR);
+	      h1[v1][bl][currentFinalState][currentCategory]->Fill(varVal[v1], yieldSR);
 	  }
 	}
       }
@@ -1579,16 +1223,16 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
   }
 
   //---------- Fill 'inclusive' histograms
-  for(int v=0; v<nVariables; v++){
+  for(int v1=0; v1<nVariables; v1++){
     for(int bl=0; bl<nBlindings; bl++){
       for(int fs=0; fs<nFinalStates; fs++){
 	for(int cat=0; cat<nCategories; cat++){
-	  h1[v][bl][nFinalStates][cat]->Add(h1[v][bl][fs][cat]);
+	  h1[v1][bl][nFinalStates][cat]->Add(h1[v1][bl][fs][cat]);
 	}
       }
       for(int fs=0; fs<nFinalStates+1; fs++){
 	for(int cat=0; cat<nCategories; cat++){
-	  h1[v][bl][fs][nCategories]->Add(h1[v][bl][fs][cat]);
+	  h1[v1][bl][fs][nCategories]->Add(h1[v1][bl][fs][cat]);
 	}
       }
     }
@@ -1607,14 +1251,16 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
   }
 
   //---------- Print Z+X expected yields
-  for(int fs=0; fs<nFinalStates; fs++){
-    cout<<fsLabelForSS[fs]<<" : "
-	<<expectedYieldSR[fs][nCategories]
-	<<" +/- "<<expectedYieldSR[fs][nCategories]/sqrt(NumberOfEventsCR[fs][nCategories])<<" (stat., evt: "<<NumberOfEventsCR[fs][nCategories]<<")" 
-	<<" +/- "<<expectedYieldSR[fs][nCategories]*0.50<< " (syst.)" 
-	<<endl;
+  if(VERBOSE2){
+    for(int fs=0; fs<nFinalStates; fs++){
+      cout<<fsLabelForSS[fs]<<" : "
+	  <<expectedYieldSR[fs][nCategories]
+	  <<" +/- "<<expectedYieldSR[fs][nCategories]/sqrt(NumberOfEventsCR[fs][nCategories])
+	  <<" (stat., evt: "<<NumberOfEventsCR[fs][nCategories]<<")" 
+	  <<endl;
+    }
+    cout<<"Total: "<<expectedYieldSR[nFinalStates][nCategories]<<endl;
   }
-  cout<<"Total: "<<expectedYieldSR[nFinalStates][nCategories]<<endl;
 
   //---------- Smooth histogram if requested
   if(SMOOTHZPLUSXHISTOFROMSSCR){
@@ -1622,10 +1268,10 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
     for(int bl=0; bl<nBlindings; bl++){
       for(int fs=0; fs<nFinalStates+1; fs++){
 	for(int cat=0; cat<nCategories+1; cat++){
-	  for(int v=0; v<nVariables; v++){
-	    integral = h1[v][bl][fs][cat]->Integral();
-	    h1[v][bl][fs][cat]->Smooth(1);
-	    h1[v][bl][fs][cat]->Scale( integral / h1[v][bl][fs][cat]->Integral() );
+	  for(int v1=0; v1<nVariables; v1++){
+	    integral = h1[v1][bl][fs][cat]->Integral();
+	    h1[v1][bl][fs][cat]->Smooth(1);
+	    h1[v1][bl][fs][cat]->Scale( integral / h1[v1][bl][fs][cat]->Integral() );
 	  }
 	}
       }
@@ -1636,31 +1282,40 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
     for(int cat=0; cat<nCategories+1; cat++)
       expectedYieldSR[fs2e2mu][cat] += expectedYieldSR[fs2mu2e][cat];
 
-  //---------- Normalize to official yield in categories
-  if(MERGE2E2MU){
-    Float_t normSSFullRange[nFinalStates+1][nCategories+1];
+  if(! RENORMZPLUSXTOOFFICIALCATEG){
+    // Refill global array
     for(int cat=0; cat<nCategories+1; cat++){
-      normSSFullRange[fs4e][cat] = normSSFullRange4e[cat];
-      normSSFullRange[fs4mu][cat] = normSSFullRange4mu[cat];
-      normSSFullRange[fs2e2mu][cat] = normSSFullRange2e2mu[cat];
-      normSSFullRange[nFinalStates][cat] = normSSFullRange4e[cat] + normSSFullRange4mu[cat] + normSSFullRange2e2mu[cat] ;
+      normSSFullRange4e[cat] = expectedYieldSR[fs4e][cat];
+      normSSFullRange4mu[cat] = expectedYieldSR[fs4mu][cat];
+      normSSFullRange2e2mu[cat] = expectedYieldSR[fs2e2mu][cat];
     }
-    for(int bl=0; bl<nBlindings; bl++){
-      for(int fs=0; fs<nFinalStates+1; fs++){
-	if(fs==fs2mu2e) continue;
-	for(int cat=0; cat<nCategories+1; cat++){
-	  for(int v=0; v<nVariables; v++){
-	    h1[v][bl][fs][cat]->Scale( normSSFullRange[fs][cat] / expectedYieldSR[fs][cat] );
+  }
+  Float_t normSSFullRange[nFinalStates+1][nCategories+1];
+  for(int cat=0; cat<nCategories+1; cat++){
+    normSSFullRange[fs4e][cat] = normSSFullRange4e[cat];
+    normSSFullRange[fs4mu][cat] = normSSFullRange4mu[cat];
+    normSSFullRange[fs2e2mu][cat] = normSSFullRange2e2mu[cat];
+    normSSFullRange[nFinalStates][cat] = normSSFullRange4e[cat] + normSSFullRange4mu[cat] + normSSFullRange2e2mu[cat] ;
+  }
+  if(RENORMZPLUSXTOOFFICIALCATEG){
+    // Normalize to externally provided Z+X yield in categories from global arrays
+    if(MERGE2E2MU){
+      for(int bl=0; bl<nBlindings; bl++){
+	for(int fs=0; fs<nFinalStates+1; fs++){
+	  if(fs==fs2mu2e) continue;
+	  for(int cat=0; cat<nCategories+1; cat++){
+	    for(int v1=0; v1<nVariables; v1++){
+	      h1[v1][bl][fs][cat]->Scale( normSSFullRange[fs][cat] / expectedYieldSR[fs][cat] );
+	    }
 	  }
 	}
       }
+    }else{
+      cout<<"WARNING: cannot renormalize Z+X histograms to official numbers when treating 2e2mu and 2mu2e separately"<<endl;
     }
-  }else{
-    cout<<"WARNING: cannot renormalize Z+X histograms to official numbers when treating 2e2mu and 2mu2e separately"<<endl;
   }
-
-  //---------- Normalize to official inclusive Z+X yield
-  if(RENORMZPLUSXTOOFFICIALINCLNB){
+  if(RENORMZPLUSXTOOFFICIALINCL){
+    // Normalize to externally provided inclusive Z+X yield from global variables
     if(MERGE2E2MU){
       Float_t normZPlusXFullSR[nFinalStates+1];
       normZPlusXFullSR[fs4e] = normZPlusXFullSR4e;
@@ -1671,8 +1326,8 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
 	for(int fs=0; fs<nFinalStates+1; fs++){
 	  if(fs==fs2mu2e) continue;
 	  for(int cat=0; cat<nCategories+1; cat++){
-	    for(int v=0; v<nVariables; v++){
-	      h1[v][bl][fs][cat]->Scale( normZPlusXFullSR[fs] / expectedYieldSR[fs][nCategories] );
+	    for(int v1=0; v1<nVariables; v1++){
+	      h1[v1][bl][fs][cat]->Scale( normZPlusXFullSR[fs] / normSSFullRange[fs][nCategories] );
 	    }
 	  }
 	}
@@ -1691,9 +1346,9 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
     for(int fs=0; fs<nFinalStates+1; fs++){
       for(int cat=0; cat<nCategories+1; cat++){
 	//if(fs==nFinalStates){
-	for(int v=0; v<nVariables; v++){
-	  h1[v][bl][fs][cat]->Write(h1[v][bl][fs][cat]->GetName());
-	  delete h1[v][bl][fs][cat];
+	for(int v1=0; v1<nVariables; v1++){
+	  h1[v1][bl][fs][cat]->Write(h1[v1][bl][fs][cat]->GetName());
+	  delete h1[v1][bl][fs][cat];
 	}
 	//}
       }
@@ -1706,6 +1361,63 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
 
 
 
+void getM4lZPlusXHistoFromAnalyticalShape_InCateg(TH1F** hZPX4mu, TH1F** hZPX4e, TH1F** hZPX2e2mu, TH1F** hZPX4l, Int_t nbins, Float_t xmin, Float_t xmax, Int_t v1) {
+
+  /*// For Moriond'16: Z+X shapes sent by Pedja on March 1st 2016 (take the same for all categ) 
+  TF1 *f4eComb = new TF1("f4eComb", "landau(0)*(1 + exp( pol1(3))) + [5]*(TMath::Landau(x, [6], [7]))", 70, 1000);
+  TF1 *f4muComb = new TF1("f4muComb","landau(0)",70,1000);
+  TF1 *f2e2muComb = new TF1("f2e2muComb","landau(0)",70,1000);
+  f4eComb->SetParameters(4.404e-05,151.2,36.6,7.06,-0.00497,0.01446,157.3,26.00);
+  f4muComb->SetParameters(0.04276,134.6,24.4);
+  f2e2muComb->SetParameters(0.04130,144.5,25.3);
+  //*/
+
+  //*// For ICHEP'16: Z+X shapes sent by Pedja on July 27th 2016 (take the same for all categ)
+  TF1 *f4eComb    = new TF1("f4eComb"   ,"TMath::Landau(x, 141.9, 21.3)", 70, 3000);
+  TF1 *f4muComb   = new TF1("f4muComb"  ,"TMath::Landau(x, 130.4, 15.6)", 70, 3000);
+  TF1 *f2e2muComb = new TF1("f2e2muComb","0.45*TMath::Landau(x, 131.1, 18.1) + 0.55*TMath::Landau(x, 133.8, 18.9)", 70, 3000);
+  //*/ 
+
+  Int_t nentries = 1000000; //tried more entries but it takes too long
+
+  for(int cat=0; cat<nCategories+1; cat++){
+
+    //----- compute normalization of the subrange of interest
+    Float_t norm4mu   = normSSFullRange4mu  [cat] * f4muComb  ->Integral(xmin,xmax) / f4muComb  ->Integral(70,3000);
+    Float_t norm4e    = normSSFullRange4e   [cat] * f4eComb   ->Integral(xmin,xmax) / f4eComb   ->Integral(70,3000);
+    Float_t norm2e2mu = normSSFullRange2e2mu[cat] * f2e2muComb->Integral(xmin,xmax) / f2e2muComb->Integral(70,3000);
+
+    //---------- Normalize to SS/OS-combined inclusive Z+X yields from global variables
+    if(RENORMZPLUSXTOOFFICIALINCL){
+      if(MERGE2E2MU){
+	norm4mu   *= normZPlusXFullSR4mu   / normSSFullRange4mu  [nCategories] ;
+	norm4e    *= normZPlusXFullSR4e    / normSSFullRange4e   [nCategories] ;
+	norm2e2mu *= normZPlusXFullSR2e2mu / normSSFullRange2e2mu[nCategories] ;
+      }else{
+	cout<<"WARNING: cannot renormalize Z+X histograms to official numbers when treating 2e2mu and 2mu2e separately"<<endl;
+      }
+    }
+
+    //----- build final histograms
+    hZPX4mu  [cat] = new TH1F(Form("h4mu_%s_%s"  ,sCategory[cat].c_str(),myV1[v1].Name.c_str()),";;",nbins,xmin,xmax);
+    hZPX4e   [cat] = new TH1F(Form("h4e_%s_%s"   ,sCategory[cat].c_str(),myV1[v1].Name.c_str()),";;",nbins,xmin,xmax);
+    hZPX2e2mu[cat] = new TH1F(Form("h2e2mu_%s_%s",sCategory[cat].c_str(),myV1[v1].Name.c_str()),";;",nbins,xmin,xmax);
+    hZPX4mu  [cat]->FillRandom("f4muComb"  ,nentries);
+    hZPX4e   [cat]->FillRandom("f4eComb"   ,nentries);
+    hZPX2e2mu[cat]->FillRandom("f2e2muComb",nentries);
+    hZPX4mu  [cat]->Scale(norm4mu   / hZPX4mu  [cat]->Integral());
+    hZPX4e   [cat]->Scale(norm4e    / hZPX4e   [cat]->Integral());
+    hZPX2e2mu[cat]->Scale(norm2e2mu / hZPX2e2mu[cat]->Integral());
+    hZPX4l[cat] = new TH1F(Form("h4l_%s_%s"   ,sCategory[cat].c_str(),myV1[v1].Name.c_str()),";;",nbins,xmin,xmax);
+    hZPX4l[cat]->Add(hZPX4mu  [cat]);
+    hZPX4l[cat]->Add(hZPX4e   [cat]);
+    hZPX4l[cat]->Add(hZPX2e2mu[cat]);
+
+  }
+
+}
+
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1715,16 +1427,16 @@ void doHistogramsZPlusXSS(string inputFileAllData, string inputFileFakeRates, do
 ////////////////////////////////////////////////////////////////////////////////
 
 
-void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, string lumiText, Int_t category, Bool_t large, Bool_t logX = false, Bool_t logY = false) {
+void DrawDataMC1D(TCanvas* c, TH1F** h, TH1F* hZPX, int v1, int bl, double lumi, string lumiText, Int_t category, Bool_t large, Bool_t logX = false, Bool_t logY = false) {
 
   bool drawData = !( (MASKDATAFORHIGHMASS && bl==blindbelow150) || bl==fullyblind );
   bool maskH125 = 
-    ( MASKH125FORLOWMASS && bl==blindabove110 && (varName[v].find("M4l")==string::npos || varName[v].find("M4l_70110")==0 || varName[v].find("M4l_70109")==0) ) ||
-    ( MASKH125FORHIGHMASS && bl==blindbelow150 && (varName[v].find("M4l")==string::npos || varName[v].find("M4l_above150")==0) ) ;
+    ( MASKH125FORLOWMASS && bl==blindabove110 && (myV1[v1].Name.find("M4l")==string::npos || myV1[v1].Name.find("M4l_70110")==0 || myV1[v1].Name.find("M4l_70109")==0) ) ||
+    ( MASKH125FORHIGHMASS && bl==blindbelow150 && (myV1[v1].Name.find("M4l")==string::npos || myV1[v1].Name.find("M4l_above150")==0) ) ;
   bool withRatioPlot = DRAWDATAMCRATIO && drawData;
-  bool doBlindingHisto = xHistoBlindLow[bl]<xHistoBlindUp[bl] && varName[v].find("M4l")==0;
-  bool doBlindingHisto2 = xHistoBlind2Low[bl]<xHistoBlind2Up[bl] && varName[v].find("M4l")==0;
-  bool withWP = DRAWWP1D && varValWP[v]!=0.;
+  bool doBlindingHisto = xHistoBlindLow[bl]<xHistoBlindUp[bl] && myV1[v1].Name.find("M4l")==0;
+  bool doBlindingHisto2 = xHistoBlind2Low[bl]<xHistoBlind2Up[bl] && myV1[v1].Name.find("M4l")==0;
+  bool withWP = DRAWWP1D && myV1[v1].ValWP!=0.;
 
   //----- prepare canvas
   TStyle* style = (TStyle*)gROOT->GetStyle("tdrStyle")->Clone();
@@ -1741,23 +1453,21 @@ void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, st
   bool first = true;
   int previous = -1;
   for(int pr=nProcesses-1; pr>=1; pr--){
-    //if((useProcess[pr] && !((maskH125 || separateVbf[v]) && pr==H125)) || (separateVbf[v] && (pr==H125VBF || pr==H125NONVBF))){
-    if((useProcess[pr] && !((maskH125 || separateVbf[v] || separateVh[v]) && pr==H125)) || (separateVbf[v] && (pr==H125VBF || pr==H125NONVBFVH)) || (separateVh[v] && (pr==H125VH || pr==H125NONVBFVH))){
-      if(REBINDYANDTTBAR && (pr==DY || pr==ttbar)) h[pr] = Smooth(h[pr],rebinningDYTTbar[v]);
+    //if((useProcess[pr] && !((maskH125 || myV1[v1].sepVbf) && pr==H125)) || (myV1[v1].sepVbf && (pr==H125VBF || pr==H125NONVBF))){
+    if((useProcess[pr] && !((maskH125 || myV1[v1].sepVbf || myV1[v1].sepVh) && pr==H125)) || (myV1[v1].sepVbf && (pr==H125VBF || pr==H125NONVBFVH)) || (myV1[v1].sepVh && (pr==H125VH || pr==H125NONVBFVH))){
+      if(REBINDYANDTTBAR && (pr==DY || pr==ttbar)) h[pr] = Smooth(h[pr],myV1[v1].rebinningDYTTbar);
       hStacks[pr] = (TH1F*)h[pr]->Clone();
-      if(separateVbf[v] && pr==H125NONVBFVH) hStacks[pr]->Add((TH1F*)h[H125VH]->Clone());
-      if(separateVh[v] && pr==H125NONVBFVH) hStacks[pr]->Add((TH1F*)h[H125VBF]->Clone());
+      if(myV1[v1].sepVbf && pr==H125NONVBFVH) hStacks[pr]->Add((TH1F*)h[H125VH]->Clone());
+      if(myV1[v1].sepVh && pr==H125NONVBFVH) hStacks[pr]->Add((TH1F*)h[H125VBF]->Clone());
       if(!first) hStacks[pr]->Add(hStacks[previous]);
       hStacks[pr]->SetFillColor(processFillColor[pr]);
       hStacks[pr]->SetLineColor(DRAWLINES?processLineColor[pr]:processFillColor[pr]);
       hStacks[pr]->SetLineWidth(LINEWIDTH);
       if(!DRAWLINES) hStacks[pr]->SetLineColorAlpha(processFillColor[pr],0.);
-      hStacks[pr]->GetXaxis()->SetTitleOffset(large?1.15:1.2);
-      hStacks[pr]->GetYaxis()->SetTitleOffset(large?1.:1.4);
-      if(large){
-	hStacks[pr]->GetXaxis()->SetTitleSize(0.05);
-	hStacks[pr]->GetYaxis()->SetTitleSize(0.05);
-      }
+      hStacks[pr]->GetXaxis()->SetTitleOffset(large?1.1:1.1);
+      hStacks[pr]->GetYaxis()->SetTitleOffset(large?1.:1.2);
+      hStacks[pr]->GetXaxis()->SetTitleSize(0.05);
+      hStacks[pr]->GetYaxis()->SetTitleSize(0.05);
       hStacks[pr]->GetXaxis()->SetLabelFont(42);
       hStacks[pr]->GetYaxis()->SetLabelFont(42);
       hStacks[pr]->GetXaxis()->SetTitleFont(42);
@@ -1773,7 +1483,7 @@ void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, st
   //----- prepare reducible background
   TH1F* hZPlusX = 0;
   Bool_t useZPlusX = BUILDZPLUSXHISTOFROMSSCR ||
-    (USEZPLUSXANALYTICALSHAPE && (varName[v].find("M4l")==0 /*&& varName[v].find("Refit")==string::npos*/ && varCutLabel[v]=="") );
+    (USEZPLUSXANALYTICALSHAPE && (myV1[v1].Name.find("M4l")==0 /*&& myV1[v1].Name.find("Refit")==string::npos*/ && myV1[v1].CutLabel=="") );
   useZPlusX = useZPlusX && hZPX->Integral()>0.;
   if(useZPlusX){
     hZPlusX = hZPX;
@@ -1782,10 +1492,10 @@ void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, st
     hZPlusX->SetLineColor(DRAWLINES?processLineColor[DY]:processFillColor[DY]);
     hZPlusX->SetLineWidth(LINEWIDTH);
     for(int pr=nProcesses-1; pr>=1; pr--)
-      if((useProcess[pr] && !((maskH125 || separateVbf[v] || separateVh[v]) && pr==H125)) || (separateVbf[v] && (pr==H125VBF || pr==H125NONVBFVH)) || (separateVh[v] && (pr==H125VH || pr==H125NONVBFVH)))
+      if((useProcess[pr] && !((maskH125 || myV1[v1].sepVbf || myV1[v1].sepVh) && pr==H125)) || (myV1[v1].sepVbf && (pr==H125VBF || pr==H125NONVBFVH)) || (myV1[v1].sepVh && (pr==H125VH || pr==H125NONVBFVH)))
 	hStacks[pr]->Add(hZPlusX);
-    cout<<"full expected yield for variable "<<varName[v]<<": "<<hStacks[idxSumMC]->Integral()<<endl;
-    cout<<"Z+X yield for variable "<<varName[v]<<": "<<hZPlusX->Integral()<<endl;
+    //cout<<"full expected yield for variable "<<myV1[v1].Name<<": "<<hStacks[idxSumMC]->Integral()<<endl;
+    //cout<<"Z+X yield for variable "<<myV1[v1].Name<<": "<<hZPlusX->Integral()<<endl;
   }
 
   //----- prepare data graph
@@ -1804,14 +1514,15 @@ void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, st
   if(drawData && npoints>0) cmax = TMath::Max( (Float_t)hStacks[idxSumMC]->GetMaximum(), (Float_t)TMath::MaxElement(npoints,gDataErrorBarUp) );
   else cmax = (Float_t)hStacks[idxSumMC]->GetMaximum();
   cmax *= logY ? 30. : 1.1 ;
-  cmax *= varMaxCorrector[bl][v];
-  Float_t cminlog = hStacks[idxSumMC]->GetMaximum() / varMinFactor[v];
+  cmax *= myV1[v1].MaxCorrector[bl];
+  Float_t cminlog = hStacks[idxSumMC]->GetMaximum() / myV1[v1].MinFactor;
   hStacks[idxSumMC]->SetMaximum(cmax);
   hStacks[idxSumMC]->SetMinimum(logY?cminlog:0.);
   
   //----- prepare grey area/grid for blind region
-  TH1F* hBlind = new TH1F(Form("hBlind_%s_%s",varName[v].c_str(),sBlinding[bl].c_str()),";;",1,xHistoBlindLow[bl],xHistoBlindUp[bl]);
+  TH1F* hBlind = 0;
   if(doBlindingHisto){
+    hBlind = new TH1F(Form("hBlind_%s_%s",myV1[v1].Name.c_str(),sBlinding[bl].c_str()),";;",1,xHistoBlindLow[bl],xHistoBlindUp[bl]);
     hBlind->SetBinContent(1,cmax);
     //hBlind->SetFillColorAlpha(kBlack,0.2);
     //hBlind->SetLineColorAlpha(kBlack,0.2);
@@ -1819,8 +1530,9 @@ void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, st
     hBlind->SetFillStyle(3013); //also tried 3001 and a few others, but they look bad in pdf format
     hBlind->SetLineColorAlpha(kWhite,0.);
   }
-  TH1F* hBlind2 = new TH1F(Form("hBlind2_%s_%s",varName[v].c_str(),sBlinding[bl].c_str()),";;",1,xHistoBlind2Low[bl],xHistoBlind2Up[bl]);
+  TH1F* hBlind2 = 0;
   if(doBlindingHisto2){
+    hBlind2 = new TH1F(Form("hBlind2_%s_%s",myV1[v1].Name.c_str(),sBlinding[bl].c_str()),";;",1,xHistoBlind2Low[bl],xHistoBlind2Up[bl]);
     hBlind2->SetBinContent(1,cmax);
     hBlind2->SetFillColor(kGray+3);
     hBlind2->SetFillStyle(3013);
@@ -1828,19 +1540,19 @@ void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, st
   }
 
   //----- prepare legend
-  bool useBlindingLabel = blindingLabel[bl]!="" && varName[v].find("M4l")==string::npos;
+  bool useBlindingLabel = blindingLabel[bl]!="" && myV1[v1].Name.find("M4l")==string::npos;
   float legTextSize = 0.034;
-  int legPos = varLegPos[v];
-  if(bl==blindabove110 && varName[v].find("MZ")!=string::npos) legPos = 33;
+  int legPos = myV1[v1].LegPos;
+  if(bl==blindabove110 && myV1[v1].Name.find("MZ")!=string::npos) legPos = 33;
   float legLeft = (legPos==11) ? 0.20 : 0.68 ;
   float legWidth = 0.19;
   float legUp = 0.9;
-  if(!withRatioPlot && legPos==varCMSPos[v] && !large) legUp -= 0.1;
+  if(!withRatioPlot && legPos==myV1[v1].CMSPos && !large) legUp -= 0.1;
   float legHeight = 0.16;
   if(!drawData) legHeight -= 0.04;
   if(maskH125) legHeight -= 0.04;
   if(useZPlusX) legHeight += 0.04;
-  if(separateVbf[v]||separateVh[v]) legHeight += 0.04;
+  if(myV1[v1].sepVbf||myV1[v1].sepVh) legHeight += 0.04;
   if(withRatioPlot) legHeight /= 0.72;
   if(large){ legWidth *= 1.15; legHeight *= 1.15; legTextSize *= 1.15; }
   TLegend* lgd = new TLegend(legLeft,legUp-legHeight,legLeft+legWidth,legUp);
@@ -1850,17 +1562,17 @@ void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, st
   if(drawData)
     lgd->AddEntry(h[0],processLabel[0].c_str(),"p");
   for(int pr=1; pr<nProcesses; pr++)
-    if((useProcess[pr] && !((maskH125 || separateVbf[v] || separateVh[v]) && pr==H125)) || (separateVbf[v] && (pr==H125VBF || pr==H125NONVBFVH)) || (separateVh[v] && (pr==H125VH || pr==H125NONVBFVH)))
+    if((useProcess[pr] && !((maskH125 || myV1[v1].sepVbf || myV1[v1].sepVh) && pr==H125)) || (myV1[v1].sepVbf && (pr==H125VBF || pr==H125NONVBFVH)) || (myV1[v1].sepVh && (pr==H125VH || pr==H125NONVBFVH)))
       lgd->AddEntry(hStacks[pr],processLabel[pr].c_str(),"f");
   if(useZPlusX)
     lgd->AddEntry(hZPlusX," Z+X","f");
     
 
   //----- prepare label for cut/blinding
-  bool useLabel = useBlindingLabel || varCutLabel[v]!="";
+  bool useLabel = useBlindingLabel || myV1[v1].CutLabel!="";
   TPaveText* pav = 0;
   if(useLabel){
-    int pavPos = varCutPos[v];
+    int pavPos = myV1[v1].CutPos;
     float pavLeft = (pavPos==11) ? 0.20 : (pavPos==33) ? 0.64 : legLeft-0.02 ;
     float pavWidth = 0.27;
     float pavUp = pavPos!=0 ? 0.93 : legUp-legHeight+0.05;
@@ -1872,7 +1584,7 @@ void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, st
     pav->SetTextAlign(pavPos==11?11:pavPos==33?31:legPos==11?13:33);
     pav->SetTextSize(0.037);
     pav->SetTextFont(42);
-    pav->AddText((varCutLabel[v]!="")?varCutLabel[v].c_str():blindingLabel[bl].c_str());
+    pav->AddText((myV1[v1].CutLabel!="")?myV1[v1].CutLabel.c_str():blindingLabel[bl].c_str());
   }
 
   //----- prepare label for category
@@ -1891,7 +1603,7 @@ void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, st
   //----- line for WP
   TLine *lineWP = 0;
   if(withWP){
-    lineWP = new TLine(varValWP[v],logY?cminlog:0.,varValWP[v],logY?cminlog*exp(0.6*log(cmax/cminlog)):0.6*cmax);
+    lineWP = new TLine(myV1[v1].ValWP,logY?cminlog:0.,myV1[v1].ValWP,logY?cminlog*exp(0.6*log(cmax/cminlog)):0.6*cmax);
     lineWP->SetLineStyle(9);
     lineWP->SetLineWidth(8);
     lineWP->SetLineColor(13);
@@ -1902,7 +1614,7 @@ void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, st
 
     //--- no Data/MC graph -> draw on main pad
     for(int pr=1; pr<nProcesses; pr++)
-      if((useProcess[pr] && !((maskH125 || separateVbf[v] || separateVh[v]) && pr==H125)) || (separateVbf[v] && (pr==H125VBF || pr==H125NONVBFVH)) || (separateVh[v] && (pr==H125VH || pr==H125NONVBFVH)))
+      if((useProcess[pr] && !((maskH125 || myV1[v1].sepVbf || myV1[v1].sepVh) && pr==H125)) || (myV1[v1].sepVbf && (pr==H125VBF || pr==H125NONVBFVH)) || (myV1[v1].sepVh && (pr==H125VH || pr==H125NONVBFVH)))
 	hStacks[pr]->Draw( pr==idxSumMC ? "HIST" : "HIST SAME" );
     if(useZPlusX) hZPlusX->Draw("HIST SAME");
     if(withWP) lineWP->Draw();
@@ -1936,7 +1648,7 @@ void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, st
     //--- main pad
     pad1->cd();
     for(int pr=1; pr<nProcesses; pr++){
-      if((useProcess[pr] && !((maskH125 || separateVbf[v] || separateVh[v]) && pr==H125)) || (separateVbf[v] && (pr==H125VBF || pr==H125NONVBFVH)) || (separateVh[v] && (pr==H125VH || pr==H125NONVBFVH))){
+      if((useProcess[pr] && !((maskH125 || myV1[v1].sepVbf || myV1[v1].sepVh) && pr==H125)) || (myV1[v1].sepVbf && (pr==H125VBF || pr==H125NONVBFVH)) || (myV1[v1].sepVh && (pr==H125VH || pr==H125NONVBFVH))){
 	hStacks[pr]->GetYaxis()->SetTitleOffset(1.);
 	hStacks[pr]->GetYaxis()->SetTitleSize(0.06);
 	hStacks[pr]->GetYaxis()->SetLabelSize(0.06);
@@ -1989,33 +1701,33 @@ void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, st
   }
 
   //----- customize m4l axis labels
-  if(DRAWLABELBYHAND && logX && (varName[v]=="M4lV1"||varName[v]=="M4lV2"||varName[v]=="M4lV2Refit"||varName[v]=="M4lV2b"||varName[v]=="M4lV3"||varName[v]=="M4lV4")){
+  if(CUSTOMXAXISLABELS && myV1[v1].CXL){
     c->cd();
     TText t;
     t.SetNDC();
     t.SetTextSize(0.04);
     t.SetTextFont(42);
-    t.DrawText(large?0.811:0.805,0.093,"600");
-    t.DrawText(large?0.904:0.898,0.093,"800");
+    t.DrawText(0.830,0.093,"700");
+    t.DrawText(0.907,0.093,"900");
   }
 
   //----- print official CMS labels and lumi
   writeExtraText = true;
   extraText  = "Preliminary";
   lumi_sqrtS = lumiText + " (13 TeV)";
-  CMS_lumi( c, 0, (withRatioPlot || large) ? 0 : varCMSPos[v] );
+  CMS_lumi( c, 0, (withRatioPlot || large) ? 0 : myV1[v1].CMSPos );
 
   //----- print yields
-  //if(varName[v]=="MZ1"){
-  cout<<"Yields for blinding "<<bl<<" and variable "<<varName[v]<<endl;
-  cout<<"  qqZZ             "<<h[qqZZ]->Integral()<<endl;
-  cout<<"  ggZZ             "<<h[ggZZ]->Integral()<<endl;
-  if(useZPlusX) cout<<"  Z+X              "<<hZPlusX->Integral()<<endl;
-  cout<<"  all backgrounds  "<<hStacks[idxSumMC]->Integral() - h[H125]->Integral()<<endl;
-  cout<<"  signal           "<<h[H125]->Integral()<<endl;
-  cout<<"  total expected   "<<hStacks[idxSumMC]->Integral()<<endl;
-  cout<<"  observed         "<<h[0]->Integral()<<endl;
-    //}
+  if(VERBOSE2){
+    cout<<"Yields for variable "<<myV1[v1].Name<<":"<<endl;
+    cout<<"  qqZZ             "<<h[qqZZ]->Integral()<<endl;
+    cout<<"  ggZZ             "<<h[ggZZ]->Integral()<<endl;
+    if(useZPlusX) cout<<"  Z+X              "<<hZPlusX->Integral()<<endl;
+    cout<<"  all backgrounds  "<<hStacks[idxSumMC]->Integral() - h[H125]->Integral()<<endl;
+    cout<<"  signal           "<<h[H125]->Integral()<<endl;
+    cout<<"  total expected   "<<hStacks[idxSumMC]->Integral()<<endl;
+    cout<<"  observed         "<<h[0]->Integral()<<endl;
+  }
 
 }
 
@@ -2023,11 +1735,11 @@ void DrawDataMC(TCanvas* c, TH1F** h, TH1F* hZPX, int v, int bl, double lumi, st
 void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraphErrors* g2[nFinalStates+1][nCategories+1], int v2, int bl, string lumiText, int style2D, Bool_t logX = false, Bool_t logY = false) {
 
   bool maskH125 = 
-    ( MASKH125FORLOWMASS  && bl==blindabove110 && (varPairName[v2].find("M4l")==string::npos || varPairName[v2].find("M4L70110")!=string::npos) ) ||
-    ( MASKH125FORHIGHMASS && bl==blindbelow150 && (varPairName[v2].find("M4l")==string::npos || varPairName[v2].find("M4L180780")!=string::npos || varPairName[v2].find("M4L150700")!=string::npos) ) ;
-  bool categMode = CATEGIN2D && varPairPlotWithCateg[v2];
+    ( MASKH125FORLOWMASS  && bl==blindabove110 && (myV2[v2].Name.find("M4l")==string::npos || myV2[v2].Name.find("M4L70110")!=string::npos) ) ||
+    ( MASKH125FORHIGHMASS && bl==blindbelow150 && (myV2[v2].Name.find("M4l")==string::npos || myV2[v2].Name.find("M4L180780")!=string::npos || myV2[v2].Name.find("M4L150700")!=string::npos) ) ;
+  bool categMode = CATEGIN2D && myV2[v2].WithCateg;
   float factorHeight = 1.2;
-  bool withWP = DRAWWP2D && varPairExprWP[v2]!="";
+  bool withWP = DRAWWP2D && myV2[v2].exprWP!="";
   bool legendOutMode = LEGENDOUTOF2DFRAME && !categMode;
 
   //----- prepare canvas
@@ -2039,15 +1751,16 @@ void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraphErrors* g2[nFinalStates+1][nCateg
 
   bool LEGENDWHITE = 0;
   bool signalSeparately = (style2D==7);
-  if(style2D==0 || varPairName[v2].find("M4lVsM4lRefit")==0){
+  if(style2D==0 || myV2[v2].Name.find("M4lVsM4lRefit")==0){
     setColZGradient_Rainbow2();
-    LEGENDWHITE = varPairLegIsWhite[v2];
+    LEGENDWHITE = myV2[v2].LegIsWhite;
   }else if(style2D==8){
     setColZGradient_TwoColors();
   }else{
-    setColZGradient_OneColor(style2D,varPairName[v2].find("MZ1VsMZ2")==0);
+    setColZGradient_OneColor(style2D,myV2[v2].Name.find("MZ1VsMZ2")==0);
   }
-  bool withMassErrors = (varPairName[v2].find("M4l")==0 && MARKERSTYLE==0);
+  bool withMassErrors = (myV2[v2].Name.find("M4l")==0 && MARKERSTYLE==0);
+  //cout<<"withMassErrors = "<<withMassErrors<<endl;
 
   c->cd();
   //c->SetFrameBorderMode(0);
@@ -2066,10 +1779,12 @@ void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraphErrors* g2[nFinalStates+1][nCateg
       first = false;
     }
   }
-  h2Stacked->GetYaxis()->SetRangeUser(varPairYMin[v2],(categMode?factorHeight-0.0001:1.)*varPairYMax[v2]);
-  h2Stacked->GetXaxis()->SetTitleOffset(1.2);
-  h2Stacked->GetYaxis()->SetTitleOffset(1.4);
-  h2Stacked->GetZaxis()->SetTitleOffset(1.15);//1.35);
+  h2Stacked->GetYaxis()->SetRangeUser(myV2[v2].YMin,(categMode?factorHeight-0.0001:1.)*myV2[v2].YMax);
+  h2Stacked->GetXaxis()->SetTitleSize(0.05);
+  h2Stacked->GetYaxis()->SetTitleSize(0.05);
+  h2Stacked->GetXaxis()->SetTitleOffset(1.1);
+  h2Stacked->GetYaxis()->SetTitleOffset(1.15);
+  h2Stacked->GetZaxis()->SetTitleOffset(1.);//1.15);
   h2Stacked->GetXaxis()->SetLabelFont(42);
   h2Stacked->GetYaxis()->SetLabelFont(42);
   h2Stacked->GetZaxis()->SetLabelFont(42);
@@ -2080,7 +1795,7 @@ void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraphErrors* g2[nFinalStates+1][nCateg
   h2Stacked->GetZaxis()->SetTitle("Events / bin");
   if(logX) h2Stacked->GetXaxis()->SetMoreLogLabels();
   if(logX) h2Stacked->GetXaxis()->SetNoExponent();
-  if(varPairName[v2].find("MZ1VsMZ2")==string::npos) h2Stacked->SetMinimum(-1e-20); // avoid white bins
+  if(myV2[v2].Name.find("MZ1VsMZ2")==string::npos) h2Stacked->SetMinimum(-1e-20); // avoid white bins
   else h2Stacked->SetMinimum(+1e-20);//(+1e-5);//
 
   TH2F* h2Signal = 0;
@@ -2117,7 +1832,7 @@ void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraphErrors* g2[nFinalStates+1][nCateg
   
   //----- prepare grid for blind region
   bool doBlindingArea = xHistoBlindLow[bl]<xHistoBlindUp[bl] 
-    && varPairName[v2].find("M4l")==0
+    && myV2[v2].Name.find("M4l")==0
     && xHistoBlindLow[bl]<h2Stacked->GetXaxis()->GetXmax()
     && xHistoBlindUp [bl]>h2Stacked->GetXaxis()->GetXmin(); 
   TBox* box = 0;
@@ -2127,7 +1842,7 @@ void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraphErrors* g2[nFinalStates+1][nCateg
     box->SetFillStyle(3013);
   }
   bool doBlindingArea2 = xHistoBlind2Low[bl]<xHistoBlind2Up[bl] 
-    && varPairName[v2].find("M4l")==0
+    && myV2[v2].Name.find("M4l")==0
     && xHistoBlind2Low[bl]<h2Stacked->GetXaxis()->GetXmax()
     && xHistoBlind2Up [bl]>h2Stacked->GetXaxis()->GetXmin(); 
   TBox* box2 = 0;
@@ -2138,7 +1853,7 @@ void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraphErrors* g2[nFinalStates+1][nCateg
   }
 
   //----- prepare legend
-  int legPos = varPairLegPos[v2];
+  int legPos = myV2[v2].LegPos;
   float legLeft = legendOutMode ? 0.87 : (legPos==11) ? 0.20 : 0.7 ;
   float legWidth = 0.12;
   float legUp = legendOutMode ? 0.95 : 0.92;
@@ -2179,7 +1894,7 @@ void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraphErrors* g2[nFinalStates+1][nCateg
   }
 
   //----- prepare label for cut/blinding
-  bool useLabel = (blindingLabel[bl]!="" && varPairName[v2].find("M4l")==string::npos) || varPairCutLabel[v2]!="";
+  bool useLabel = (blindingLabel[bl]!="" && myV2[v2].Name.find("M4l")==string::npos) || myV2[v2].CutLabel!="";
   TPaveText* pav = 0;
   if(useLabel){
     float pavLeft = legendOutMode ? 0.52 : legLeft-(legPos==11?0.02:0.18) ;
@@ -2193,7 +1908,7 @@ void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraphErrors* g2[nFinalStates+1][nCateg
     pav->SetTextSize(0.034);
     pav->SetTextFont(42);
     pav->SetTextColor(LEGENDWHITE?kWhite:kBlack);
-    pav->AddText((varPairCutLabel[v2]!="")?varPairCutLabel[v2].c_str():blindingLabel[bl].c_str());
+    pav->AddText((myV2[v2].CutLabel!="")?myV2[v2].CutLabel.c_str():blindingLabel[bl].c_str());
   }
 
   //----- draw everything
@@ -2208,15 +1923,15 @@ void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraphErrors* g2[nFinalStates+1][nCateg
     h2Signal->Add(hOne);
   }
   if(withWP){
-    TF1* fWP = new TF1("fWP",varPairExprWP[v2].c_str(),varPairXMin[v2],varPairXMax[v2]);
+    TF1* fWP = new TF1("fWP",myV2[v2].exprWP.c_str(),myV2[v2].XMin,myV2[v2].XMax);
     fWP->SetLineStyle(7);
     fWP->SetLineWidth(4);
     fWP->SetLineColor(13);
     fWP->Draw("same");
   }
-  if(bl!=fullyblind && varPairName[v2]!="M4lVsM4lRefit"){
+  if(bl!=fullyblind && myV2[v2].Name!="M4lVsM4lRefit"){
     if(categMode){
-      TBox* lgdBox = new TBox(varPairXMin[v2],varPairYMax[v2],varPairXMax[v2],factorHeight*varPairYMax[v2]);
+      TBox* lgdBox = new TBox(myV2[v2].XMin,myV2[v2].YMax,myV2[v2].XMax,factorHeight*myV2[v2].YMax);
       lgdBox->SetFillColor(kWhite);
       lgdBox->SetLineWidth(1);
       lgdBox->SetLineColor(kBlack);
@@ -2224,7 +1939,7 @@ void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraphErrors* g2[nFinalStates+1][nCateg
       float legTextSize = 0.032;
       TLegend* lgd1 = new TLegend(0.14,0.82,0.27,0.94);
       TLegend* lgd2 = new TLegend(0.28,0.82,0.55,0.94);
-      TLegend* lgd3 = new TLegend(0.55,0.82,0.82,0.94);
+      TLegend* lgd3 = new TLegend(0.55,0.815,0.82,0.945);
       lgd1->SetFillStyle(0);
       lgd2->SetFillStyle(0);
       lgd3->SetFillStyle(0);
@@ -2250,8 +1965,9 @@ void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraphErrors* g2[nFinalStates+1][nCateg
       lgd2->AddEntry(gLegCat[0],categoryLegLabel[0].c_str(),withMassErrors?"lp":"p");
       lgd2->AddEntry(gLegCat[1],categoryLegLabel[1].c_str(),withMassErrors?"lp":"p");
       lgd2->AddEntry(gLegCat[2],categoryLegLabel[2].c_str(),withMassErrors?"lp":"p");
-      lgd3->AddEntry(gLegCat[3],categoryLegLabel[3].c_str(),withMassErrors?"lp":"p");
       lgd3->AddEntry(gLegCat[4],categoryLegLabel[4].c_str(),withMassErrors?"lp":"p");
+      lgd3->AddEntry(gLegCat[3],categoryLegLabel[3].c_str(),withMassErrors?"lp":"p");
+      lgd3->AddEntry(gLegCat[6],categoryLegLabel[6].c_str(),withMassErrors?"lp":"p");
       lgd3->AddEntry(gLegCat[5],categoryLegLabel[5].c_str(),withMassErrors?"lp":"p");
       lgd1->Draw();
       lgd2->Draw();
@@ -2264,7 +1980,7 @@ void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraphErrors* g2[nFinalStates+1][nCateg
       }
       //h2Stacked->GetYaxis()->SetLimits(0.,1.199);
       h2Stacked->GetYaxis()->SetTitle(Form("%s           ",h2Stacked->GetYaxis()->GetTitle()));
-      h2Stacked->GetYaxis()->SetTitleOffset(1.2);
+      h2Stacked->GetYaxis()->SetTitleOffset(1.);//1.2);
     }else{
       g2[fs2e2mu][nCategories]->Draw(withMassErrors?"P":"XP");
       if(!MERGE2E2MU) g2[fs2mu2e][nCategories]->Draw(withMassErrors?"P":"XP");
@@ -2274,7 +1990,7 @@ void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraphErrors* g2[nFinalStates+1][nCateg
   }
   if(doBlindingArea) box->Draw();
   if(doBlindingArea2) box2->Draw();
-  if(!categMode && bl!=fullyblind && varPairName[v2]!="M4lVsM4lRefit") lgd->Draw();
+  if(!categMode && bl!=fullyblind && myV2[v2].Name!="M4lVsM4lRefit") lgd->Draw();
   if(useLabel) pav->Draw();
   if(!categMode) gPad->RedrawAxis();
 
@@ -2289,15 +2005,15 @@ void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraphErrors* g2[nFinalStates+1][nCateg
   }
 
   //----- customize m4l axis labels
-  if(DRAWLABELBYHAND && logX && varPairName[v2]=="M4lVsKD"){
+  if(CUSTOMXAXISLABELS && logX && myV2[v2].Name=="M4lVsKD"){
     c->cd();
     TText t;
     t.SetNDC();
     t.SetTextSize(0.04);
     t.SetTextFont(42);
     t.DrawText(0.122,0.093,"110");
-    t.DrawText(0.720,0.093,"600");
-    t.DrawText(0.820,0.093,"800");
+    t.DrawText(0.760,0.093,"700");
+    t.DrawText(0.830,0.093,"900");
   }
 
   //----- print official CMS labels and lumi
@@ -2318,66 +2034,61 @@ void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraphErrors* g2[nFinalStates+1][nCateg
 }
 
 
-void doPlots(string outputDirectory, int variableList, int varPairList, int blindingList, double lumi, string lumiText, Int_t FINALSTATE, Int_t CATEGORY)
+void doPlots(string outputDirectory, double lumi, string lumiText, Int_t FINALSTATE, Int_t CATEGORY)
 {
 
   setTDRStyle();
   gStyle->SetGridColor(kGray);
 
   //---------- retrieve histograms from the main ROOT file
-  TH1F* h1[nVariables][nBlindings][nProcesses];
-  TH2F* h2[nVarPairs ][nBlindings][nProcesses];
-  TGraphErrors* g2Data[nVarPairs][nBlindings][nFinalStates+1][nCategories+1];
+  TH1F* h1[nVariables][nFinalStates+1][nCategories+1][nProcesses];
+  TH2F* h2[nVarPairs ][nProcesses];
+  TGraphErrors* g2Data[nVarPairs][nFinalStates+1][nCategories+1];
   string inFileName = string(Form("histos_plotDataVsMC_%.3ffb-1%s.root",lumi,(MERGE2E2MU?"_m":"")));
   cout<<"Retrieving MC histograms and data graphs from file "<<inFileName<<" ..."<<endl;
   TFile* fInHistos = TFile::Open(inFileName.c_str());
-  for(int bl=0; bl<nBlindings; bl++){
-    for(int fs=0; fs<nFinalStates+1; fs++){
-      for(int cat=0; cat<nCategories+1; cat++){
-	for(int rs=0; rs<nResStatuses+1; rs++){
-	  if( fs==FINALSTATE &&
-	      cat==CATEGORY &&
-	      rs==nResStatuses ){
-	    for(int pr=0; pr<nProcesses; pr++){
-	      for(int v=0; v<nVariables; v++){
-		h1[v][bl][pr] = (TH1F*)fInHistos->Get( Form("h1_%s_%s_%s_%s_%s_%s",varName[v].c_str(),sBlinding[bl].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[rs].c_str(),sProcess[pr].c_str()) );
-		h1[v][bl][pr]->GetXaxis()->SetTitle(ReplaceString(h1[v][bl][pr]->GetXaxis()->GetTitle(),"4#font[12]{l}",fsLabel[fs]).c_str());
-		if(restrictCountVar[v]) restrictXAxis(h1[v][bl][pr],restrictCountVar[v]);
-	      }
-	      for(int v2=0; v2<nVarPairs; v2++){
-		h2[v2][bl][pr] = (TH2F*)fInHistos->Get( Form("h2_%s_%s_%s_%s_%s_%s",varPairName[v2].c_str(),sBlinding[bl].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[rs].c_str(),sProcess[pr].c_str()) );
-		h2[v2][bl][pr]->GetXaxis()->SetTitle(ReplaceString(h2[v2][bl][pr]->GetXaxis()->GetTitle(),"4#font[12]{l}",fsLabel[fs]).c_str());
-		h2[v2][bl][pr]->GetYaxis()->SetTitle(ReplaceString(h2[v2][bl][pr]->GetYaxis()->GetTitle(),"4#font[12]{l}",fsLabel[fs]).c_str());
-	      }
-	    }
-	  }
-	  if( rs==nResStatuses ){
-	    for(int v2=0; v2<nVarPairs; v2++){
-	      if(MERGE2E2MU && fs==fs2mu2e) continue;
-	      g2Data[v2][bl][fs][cat] = (TGraphErrors*)fInHistos->Get( Form("g2Data_%s_%s_%s_%s_%s",varPairName[v2].c_str(),sBlinding[bl].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[rs].c_str()) );
-	    }
-	  }
+  for(int fs=0; fs<nFinalStates+1; fs++){
+    if(MERGE2E2MU && fs==fs2mu2e) continue;
+    for(int cat=0; cat<nCategories+1; cat++){
+      for(int pr=0; pr<nProcesses; pr++){
+	for(int v1=0; v1<nVariables; v1++){
+	  if(myV1[v1].plotLvl>PLOTLEVEL) continue;
+	  if(!( (fs==FINALSTATE || (FINALSTATE==nFinalStates && myV1[v1].InFS && cat==CATEGORY)) &&
+		(cat==CATEGORY || (CATEGORY==nCategories && myV1[v1].InCateg && fs==FINALSTATE)) )) continue;		
+	  h1[v1][fs][cat][pr] = (TH1F*)fInHistos->Get( Form("h1_%s_%s_%s_%s_%s_%s",myV1[v1].Name.c_str(),sBlinding[BLINDING].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[nRS].c_str(),sProcess[pr].c_str()) );
+	  h1[v1][fs][cat][pr]->GetXaxis()->SetTitle(ReplaceString(h1[v1][fs][cat][pr]->GetXaxis()->GetTitle(),"4#font[12]{l}",fsLabel[fs]).c_str());
+	  if(myV1[v1].restrCountVar) restrictXAxis(h1[v1][fs][cat][pr],myV1[v1].restrCountVar);
 	}
+	for(int v2=0; v2<nVarPairs; v2++){
+	  if(myV2[v2].plotLvl>PLOTLEVEL) continue;
+	  if(!( fs==nFinalStates && cat==nCategories )) continue;	      
+	  h2[v2][pr] = (TH2F*)fInHistos->Get( Form("h2_%s_%s_%s_%s_%s_%s",myV2[v2].Name.c_str(),sBlinding[BLINDING].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[nRS].c_str(),sProcess[pr].c_str()) );
+	  h2[v2][pr]->GetXaxis()->SetTitle(ReplaceString(h2[v2][pr]->GetXaxis()->GetTitle(),"4#font[12]{l}",fsLabel[fs]).c_str());
+	  h2[v2][pr]->GetYaxis()->SetTitle(ReplaceString(h2[v2][pr]->GetYaxis()->GetTitle(),"4#font[12]{l}",fsLabel[fs]).c_str());
+	}
+      }
+      for(int v2=0; v2<nVarPairs; v2++){
+	if(MERGE2E2MU && fs==fs2mu2e) continue;
+	g2Data[v2][fs][cat] = (TGraphErrors*)fInHistos->Get( Form("g2Data_%s_%s_%s_%s_%s",myV2[v2].Name.c_str(),sBlinding[BLINDING].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[nRS].c_str()) );
       }
     }
   }
 
   //---------- get Z+X histograms
-  TH1F* h1_ZPlusX[nVariables][nBlindings];
+  TH1F* h1_ZPlusX[nVariables][nFinalStates+1][nCategories+1];
   if(BUILDZPLUSXHISTOFROMSSCR){
     string inFileName_ZPlusXSS = string(Form("histos_plotDataVsMC_ZPlusXSS_%.3ffb-1%s.root",lumi,(MERGE2E2MU?"_m":"")));
     cout<<"Retrieving Z+X histograms from file "<<inFileName_ZPlusXSS<<" ..."<<endl;
-    TFile* fInHistos_ZPlusXSS = TFile::Open(inFileName_ZPlusXSS.c_str());
-    for(int bl=0; bl<nBlindings; bl++){
-      for(int fs=0; fs<nFinalStates+1; fs++){
-	for(int cat=0; cat<nCategories+1; cat++){
-	  if( fs==FINALSTATE && 
-	      cat==CATEGORY ){
-	    for(int v=0; v<nVariables; v++){
-	      h1_ZPlusX[v][bl] = (TH1F*)fInHistos_ZPlusXSS->Get( Form("h1_ZPlusXSS_%s_%s_%s_%s",varName[v].c_str(),sBlinding[bl].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str()) );
-	      if(restrictCountVar[v]) restrictXAxis(h1_ZPlusX[v][bl],restrictCountVar[v]);
-	    }
-	  }
+    TFile*fInHistos_ZPlusXSS = TFile::Open(inFileName_ZPlusXSS.c_str());
+    for(int fs=0; fs<nFinalStates+1; fs++){
+      if(MERGE2E2MU && fs==fs2mu2e) continue;
+      for(int cat=0; cat<nCategories+1; cat++){
+	for(int v1=0; v1<nVariables; v1++){
+	  if(myV1[v1].plotLvl>PLOTLEVEL) continue;
+	  if(!( (fs==FINALSTATE || (FINALSTATE==nFinalStates && myV1[v1].InFS && cat==CATEGORY)) &&
+		(cat==CATEGORY || (CATEGORY==nCategories && myV1[v1].InCateg && fs==FINALSTATE)) )) continue;		
+	  h1_ZPlusX[v1][fs][cat] = (TH1F*)fInHistos_ZPlusXSS->Get( Form("h1_ZPlusXSS_%s_%s_%s_%s",myV1[v1].Name.c_str(),sBlinding[BLINDING].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str()) );
+	  if(myV1[v1].restrCountVar) restrictXAxis(h1_ZPlusX[v1][fs][cat],myV1[v1].restrCountVar);
 	}
       }
     }
@@ -2386,79 +2097,61 @@ void doPlots(string outputDirectory, int variableList, int varPairList, int blin
     if(!MERGE2E2MU){
       cout<<"ERROR: cannot get Z+X histograms from combined shape for 2e2mu and 2mu2e separately"<<endl;
       abort();
-    }
-    for(int bl=0; bl<nBlindings; bl++){
-      if(!plotThisBlinding[blindingList][bl]) continue;
-      if(bl==fullyblind || bl==unblinded){
-	for(int v=0; v<nVariables; v++){
-	  if(varName[v].find("M4l")==0 /*&& varName[v].find("Refit")==string::npos*/ && varCutLabel[v]==""){ 
-	    h1_ZPlusX[v][bl] = getM4lZPlusXHistoFromAnalyticalShape_InCateg(varNbin[v],varMin[v],varMax[v],FINALSTATE,CATEGORY,lumi); // overrides the histogram from SS method if any
-	    if(restrictCountVar[v]) restrictXAxis(h1_ZPlusX[v][bl],restrictCountVar[v]);
-	  }
+    }else{ // override the histograms from SS method if any 
+      for(int v1=0; v1<nVariables; v1++){
+	if(myV1[v1].plotLvl>PLOTLEVEL) continue;
+	if(myV1[v1].Name.find("M4l")==0 && myV1[v1].Name.find("refit")==string::npos && myV1[v1].CutLabel==""){
+	  getM4lZPlusXHistoFromAnalyticalShape_InCateg(h1_ZPlusX[v1][fs4mu],h1_ZPlusX[v1][fs4e],h1_ZPlusX[v1][fs2e2mu],h1_ZPlusX[v1][nFinalStates],myV1[v1].Nbin,myV1[v1].Min,myV1[v1].Max,v1); 
 	}
-      }else{
-	cout<<"WARNING: cannot get Z+X histogram from combined shape for requested blinding strategy"<<endl;
       }
     }
   }
 
-  //---------- do the plots (1 canvas per variable and per blinding policy)
-
+  //---------- do the plots
   string canvasName;
   TCanvas* c1[nVariables];
   if(DO1DPLOTS){
     cout<<"Doing 1D plots ..."<<endl;
-    for(int bl=0; bl<nBlindings; bl++){
-      if(!plotThisBlinding[blindingList][bl]) continue;
-      for(int v=0; v<nVariables; v++){
-	if(!plotThisVar[variableList][v]) continue;
-	if(varName[v].find("M4L118130")!=string::npos && bl!=unblinded && bl!=fullyblind) continue;
-	bool large = varName[v]=="M4lV2"||varName[v]=="M4lV2Refit"||varName[v]=="M4lV2b";//0;//
-	gStyle->SetFrameLineWidth(large?2:1);
-	canvasName = string(Form("c_%s_%s_%s_%s",sBlinding[bl].c_str(),varName[v].c_str(),sFinalState[FINALSTATE].c_str(),sCategory[CATEGORY].c_str()));
-	c1[v] = new TCanvas(canvasName.c_str(),canvasName.c_str(),large?650:500,500);
-	DrawDataMC(c1[v],h1[v][bl],h1_ZPlusX[v][bl],v,bl,lumi,lumiText,CATEGORY,large,varLogx[v],varLogy[v]);
-	SaveCanvas(outputDirectory,c1[v]);
+    for(int fs=0; fs<nFinalStates+1; fs++){
+      if(MERGE2E2MU && fs==fs2mu2e) continue;
+      for(int cat=0; cat<nCategories+1; cat++){
+	for(int v1=0; v1<nVariables; v1++){
+	  if(myV1[v1].plotLvl>PLOTLEVEL) continue;
+	  if(myV1[v1].Name.find("M4L118130")!=string::npos && BLINDING!=unblinded && BLINDING!=fullyblind) continue;
+	  if(!( (fs==FINALSTATE || (FINALSTATE==nFinalStates && myV1[v1].InFS && cat==CATEGORY)) &&
+		(cat==CATEGORY || (CATEGORY==nCategories && myV1[v1].InCateg && fs==FINALSTATE)) )) continue;		
+	  bool large = myV1[v1].Large;
+	  gStyle->SetFrameLineWidth(large?2:1);
+	  canvasName = string(Form("%s%s_%s_%s_%s",fs!=nFinalStates?"f":cat!=nCategories?"g":myV1[v1].canvPrefix.c_str(),(BLINDING==unblinded?"":"_"+sBlinding[BLINDING]).c_str(),myV1[v1].Name.c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str()));
+	  c1[v1] = new TCanvas(canvasName.c_str(),canvasName.c_str(),large?650:500,500);
+	  DrawDataMC1D(c1[v1],h1[v1][fs][cat],h1_ZPlusX[v1][fs][cat],v1,BLINDING,lumi,lumiText,cat,large,myV1[v1].isLogx,myV1[v1].isLogy);
+	  SaveCanvas(outputDirectory,c1[v1]);
+	}
       }
     }
   }
-
-
-  //*
   TCanvas* c2[nVarPairs];
+  //TCanvas* c2[nVarPairs][NSTYLES2DPLOT]; //for style tests
   if(DO2DPLOTS && FINALSTATE==nFinalStates && CATEGORY==nCategories){
     cout<<"Doing 2D plots ..."<<endl;
-    for(int bl=0; bl<nBlindings; bl++){
-      if(!plotThisBlinding[blindingList][bl]) continue;
-      for(int v2=0; v2<nVarPairs; v2++){
-	if(!plotThisVarPair[varPairList][v2]) continue;
-	if(varPairName[v2].find("M4L118130")!=string::npos && bl!=unblinded && bl!=fullyblind) continue;
-	canvasName = string(Form("c_%s_2D_%s_%s",sBlinding[bl].c_str(),varPairName[v2].c_str(),sFinalState[FINALSTATE].c_str()));
-	c2[v2] = new TCanvas(canvasName.c_str(),canvasName.c_str(),500,500);
-	DrawDataMC2D(c2[v2],h2[v2][bl],g2Data[v2][bl],v2,bl,lumiText,STYLE2DPLOT,varPairLogx[v2],varPairLogy[v2]);
-	SaveCanvas(outputDirectory,c2[v2]);
-      }
-    }
-  }
-  //*/
-  /*
-  TCanvas* c2[nVarPairs][NSTYLES2DPLOT];
-  if(DO2DPLOTS){
-    for(int st=0; st<NSTYLES2DPLOT; st++){
-    for(int bl=0; bl<nBlindings; bl++){
-      if(!plotThisBlinding[blindingList][bl]) continue;
-      for(int v2=0; v2<nVarPairs; v2++){
-	if(!plotThisVarPair[varPairList][v2]) continue;
-	if(varPairName[v2].find("M4L118130")!=string::npos && bl!=unblinded) continue;
-	canvasName = string(Form("c_%s_2D_%s_%s_st%i",sBlinding[bl].c_str(),varPairName[v2].c_str(),sFinalState[FINALSTATE].c_str(),st));
+    for(int v2=0; v2<nVarPairs; v2++){
+      if(myV2[v2].plotLvl>PLOTLEVEL) continue;
+      if(myV2[v2].Name.find("M4L118130")!=string::npos && BLINDING!=unblinded && BLINDING!=fullyblind) continue;
+      canvasName = string(Form("%s%s_2D_%s_%s",myV2[v2].canvPrefix.c_str(),(BLINDING==unblinded?"":"_"+sBlinding[BLINDING]).c_str(),myV2[v2].Name.c_str(),sFinalState[FINALSTATE].c_str()));
+      c2[v2] = new TCanvas(canvasName.c_str(),canvasName.c_str(),500,500);
+      DrawDataMC2D(c2[v2],h2[v2],g2Data[v2],v2,BLINDING,lumiText,STYLE2DPLOT,myV2[v2].isLogx,myV2[v2].isLogy);
+      SaveCanvas(outputDirectory,c2[v2]);
+      /* //for style tests
+      for(int st=0; st<NSTYLES2DPLOT; st++){
+	canvasName = string(Form("z%s_2D_%s_%s_st%i",(BLINDING==unblinded?"":"_"+sBlinding[BLINDING]).c_str(),myV2[v2].Name.c_str(),sFinalState[FINALSTATE].c_str(),st));
 	c2[v2][st] = new TCanvas(canvasName.c_str(),canvasName.c_str(),500,500);
-	DrawDataMC2D(c2[v2][st],h2[v2][bl],g2Data[v2][bl],v2,bl,lumiText,st,varPairLogx[v2],varPairLogy[v2]);
+	DrawDataMC2D(c2[v2][st],h2[v2],g2Data[v2],v2,BLINDING,lumiText,st,myV2[v2].isLogx,myV2[v2].isLogy);
 	SaveCanvas(outputDirectory,c2[v2][st]);
       }
-    }
+      //*/
     }
   }
-  //*/
+
 
 }
 
@@ -2475,43 +2168,39 @@ void doPlots(string outputDirectory, int variableList, int varPairList, int blin
 
 void plotDataVsMC(bool redoHistograms = true, Int_t FINALSTATE = nFinalStates, Int_t CATEGORY = nCategories) {
 
-  // --------------- inputs ---------------
 
-  // Define input/output location
+  // --------------- definitions ---------------
+
+  // Specify input/output location
+
   string inputPathMC   = "";
-  string inputPathData = "";
-  string inputFileDataForCR = "../DataTrees_160725/ZZ4lAnalysis.root";
-  string inputFileFakeRates = "../../data/FakeRates/FakeRate_SS_2016D.root";
-  string outputPath = "$pl/";
+  string inputPathData = ""; // NB. Having at least the data tree copied locally really speeds things up.
+
+  string inputPathDataForCR = inputPathData;
+  string inputFileFakeRates = "../../data/FakeRates/FakeRate_SS_Moriond368.root";
+
+  string outputPath = "";
 
   // Define the luminosity
-  float lumi = 12.9;
-  string lumiText = "12.9 fb^{-1}";
-
-  // Choose a list of 1D plots
-  int variableList = 3;//4;//5;//6;//
-
-  // Choose a list of 2D plots
-  int varPairList = 3;//4;//5;//6;//
-
-  // Choose a list of ways of blinding some m4l regions
-  int blindingList = 6;//5;//4;//1;//
+  float lumi = 35.86706;
+  string lumiText = "35.9 fb^{-1}";
 
 
   // --------------- processing ---------------
 
   gSystem->Exec(("mkdir -p "+outputPath).c_str());
 
-  // Prepare the histograms and store them in a ROOT file (to be done only once, it can take a few minutes)
+  // Prepare the histograms and store them in a ROOT file 
+  // (to be done only once, it can take a few minutes)
   if(redoHistograms)
     doHistograms(inputPathMC, inputPathData, lumi);
 
   // Prepare Z+X histograms
   if(BUILDZPLUSXHISTOFROMSSCR)
-    doHistogramsZPlusXSS(inputFileDataForCR, inputFileFakeRates, lumi);
+    doHistogramsZPlusXSS(inputPathDataForCR, inputFileFakeRates, lumi);
 
   // Do the plots (+- instantaneous)
-  doPlots(outputPath, variableList, varPairList, blindingList, lumi, lumiText, FINALSTATE, CATEGORY);
+  doPlots(outputPath, lumi, lumiText, FINALSTATE, CATEGORY);
 
 }
 
