@@ -198,7 +198,27 @@ bool JetsWithLeptonsRemover::isMatchingWithZZLeptons(const edm::Event & event, c
 	    }
 	    return true;
 	  }
+	  
+	  if (cleanFSRFromLeptons_) {
+	    const PhotonPtrVector* gammas = userdatahelpers::getUserPhotons(&*v->daughter(j));
+	    if (gammas==0) continue;
+	    assert(gammas->size()<=1); // Must have already been preselected, so there should be at most 1 per l
+	    if (gammas->size()==1){
+	      const pat::PFParticle* fsr = gammas->begin()->get();
+	      if (matchingType_ == JetsWithLeptonsRemover::byDeltaR) {
+		checkingVariable = (reco::deltaR(*fsr, jet) < 0.4);
+	      }
+	      if(checkingVariable){
+		if(activateDebugPrintOuts_) {
+		  double photon_en_frac = fsr->energy()/jet.energy();
+		  std::cout << "\t\t !!! Found a matching FSR-jet !!! " <<  fsr->energy() << " " << jet.energy() << " " << photon_en_frac<<  std::endl;
+		}
+		return true;
+	      }
+	    }
+	  }
 	}
+	
 	  
 	// Check if the jet matches FSR photons
 	for (unsigned jfsr=2; jfsr<v->numberOfDaughters(); ++jfsr) {

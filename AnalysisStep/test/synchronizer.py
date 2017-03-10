@@ -176,7 +176,7 @@ def loop():
                 if run>100 and opt.unblind==False :
                 ## blind Higgs peak in data
                     isLowUnblind  = (mass4l>=70 and mass4l<=110)
-                    isHighUnblind = (mass4l>=150 and mass4l<=500)
+                    isHighUnblind = (mass4l>=150 and mass4l<=300)
                     if opt.range=='low' and not isLowUnblind : continue
                     elif opt.range=='high' and not isHighUnblind : continue
                     elif opt.range=='full' and not (isLowUnblind or isHighUnblind) : continue

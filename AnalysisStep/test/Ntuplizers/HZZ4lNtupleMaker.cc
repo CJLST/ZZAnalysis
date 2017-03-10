@@ -121,6 +121,8 @@ namespace {
   Short_t nCleanedJetsPt30_jecDn  = 0;
   Short_t nCleanedJetsPt30BTagged  = 0;
   Short_t nCleanedJetsPt30BTagged_bTagSF  = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jecUp  = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jecDn  = 0;
   Short_t nCleanedJetsPt30BTagged_bTagSFUp  = 0;
   Short_t nCleanedJetsPt30BTagged_bTagSFDn  = 0;
   Short_t trigWord  = 0;
@@ -962,23 +964,29 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     }
 
     ++nCleanedJets;
-    if(cleanedJets[i]->pt()>30){
+
+    // count jec up/down njets pt30
+    float jec_unc = cleanedJets[i]->userFloat("jec_unc");
+
+    float pt_nominal = cleanedJets[i]->pt();
+    float pt_up = pt_nominal * (1.0 + jec_unc);
+    float pt_dn = pt_nominal * (1.0 - jec_unc);
+
+    if(pt_nominal>30){
       ++nCleanedJetsPt30;
       if(cleanedJets[i]->userFloat("isBtagged")) ++nCleanedJetsPt30BTagged;
       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF;
       if(cleanedJets[i]->userFloat("isBtaggedWithSF_Up")) ++nCleanedJetsPt30BTagged_bTagSFUp;
       if(cleanedJets[i]->userFloat("isBtaggedWithSF_Dn")) ++nCleanedJetsPt30BTagged_bTagSFDn;
     }
-
-    // count jec up/down njets pt30
-    float jec_unc = cleanedJets[i]->userFloat("jec_unc");
-
-    float pt_up = cleanedJets[i]->pt() * (1.0 + jec_unc);
-    float pt_dn = cleanedJets[i]->pt() * (1.0 - jec_unc);
-
-    if (pt_up>30) ++nCleanedJetsPt30_jecUp;
-    if (pt_dn>30) ++nCleanedJetsPt30_jecDn;
-
+    if(pt_up>30){
+      ++nCleanedJetsPt30_jecUp;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jecUp;
+    }
+    if(pt_dn>30){
+      ++nCleanedJetsPt30_jecDn;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jecDn;
+    }
 
     if (writeJets && theChannel!=ZL) FillJet(*(cleanedJets.at(i))); // No additional pT cut (for JEC studies)
   }
@@ -1955,6 +1963,8 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("nCleanedJetsPt30_jecDn",nCleanedJetsPt30_jecDn, failedTreeLevel >= fullFailedTree);
   myTree->Book("nCleanedJetsPt30BTagged",nCleanedJetsPt30BTagged, failedTreeLevel >= fullFailedTree);
   myTree->Book("nCleanedJetsPt30BTagged_bTagSF",nCleanedJetsPt30BTagged_bTagSF, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jecUp",nCleanedJetsPt30BTagged_bTagSF_jecUp, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jecDn",nCleanedJetsPt30BTagged_bTagSF_jecDn, failedTreeLevel >= fullFailedTree);
   myTree->Book("nCleanedJetsPt30BTagged_bTagSFUp",nCleanedJetsPt30BTagged_bTagSFUp, failedTreeLevel >= fullFailedTree);
   myTree->Book("nCleanedJetsPt30BTagged_bTagSFDn",nCleanedJetsPt30BTagged_bTagSFDn, failedTreeLevel >= fullFailedTree);
   myTree->Book("trigWord",trigWord, failedTreeLevel >= minimalFailedTree);
