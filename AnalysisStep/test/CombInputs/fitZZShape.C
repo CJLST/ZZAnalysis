@@ -78,6 +78,7 @@ void all(int selAna=-10, int channels=0, int categ=-1, int sample = 0 ){
 
   if (selAna == 0) sselAna = "Morinod";
   if (selAna == 1) sselAna = "ICHEP";
+  if (selAna == 2) sselAna = "Mor17";
 
   if (channels == 0) schannel = "4mu";
   if (channels == 1) schannel = "4e";
@@ -94,6 +95,13 @@ void all(int selAna=-10, int channels=0, int categ=-1, int sample = 0 ){
   if (categ == 4 && selAna == 1 ) scategory = "VHhadrTagged";
   if (categ == 5 && selAna == 1 ) scategory = "ttHTagged";
 
+  if (categ == 0 && selAna == 2 ) scategory = "UntaggedMor17";
+  if (categ == 1 && selAna == 2 ) scategory = "VBF1JetTaggedMor17";
+  if (categ == 2 && selAna == 2 ) scategory = "VBF2JetTaggedMor17";
+  if (categ == 3 && selAna == 2 ) scategory = "VHLeptTaggedMor17";
+  if (categ == 4 && selAna == 2 ) scategory = "VHHadrTaggedMor17";
+  if (categ == 5 && selAna == 2 ) scategory = "ttHTaggedMor17";
+  if (categ == 6 && selAna == 2 ) scategory = "VHMETTaggedMor17";
   if (sample ==1) ssample = "qqZZ";
   if (sample ==2) ssample = "ggZZ";
 
@@ -142,14 +150,14 @@ void all(int selAna=-10, int channels=0, int categ=-1, int sample = 0 ){
  
   stringstream FileName[6];
   int howmany = 1;
-  if(sample==1) FileName[0] << "root://lxcms03//data3/Higgs/160720/ZZTo4l/ZZ4lAnalysis.root";
+  if(sample==1) FileName[0] << "root://lxcms03//data3/Higgs/170222/ZZTo4l/ZZ4lAnalysis.root";
   else if(sample==2) {
-    FileName[0] << "root://lxcms03//data3/Higgs/160720/ggTo4e_Contin_MCFM701/ZZ4lAnalysis.root";
-    FileName[1] << "root://lxcms03//data3/Higgs/160720/ggTo4mu_Contin_MCFM701/ZZ4lAnalysis.root";
-    FileName[2] << "root://lxcms03//data3/Higgs/160720/ggTo4tau_Contin_MCFM701/ZZ4lAnalysis.root";
-    FileName[3] << "root://lxcms03//data3/Higgs/160720/ggTo2e2mu_Contin_MCFM701/ZZ4lAnalysis.root";
-    FileName[4] << "root://lxcms03//data3/Higgs/160720/ggTo2mu2tau_Contin_MCFM701/ZZ4lAnalysis.root";
-    FileName[5] << "root://lxcms03//data3/Higgs/160720/ggTo2e2tau_Contin_MCFM701/ZZ4lAnalysis.root";
+    FileName[0] << "root://lxcms03//data3/Higgs/170222/ggTo4e_Contin_MCFM701/ZZ4lAnalysis.root";
+    FileName[1] << "root://lxcms03//data3/Higgs/170222/ggTo4mu_Contin_MCFM701/ZZ4lAnalysis.root";
+    FileName[2] << "root://lxcms03//data3/Higgs/170222/ggTo4tau_Contin_MCFM701/ZZ4lAnalysis.root";
+    FileName[3] << "root://lxcms03//data3/Higgs/170222/ggTo2e2mu_Contin_MCFM701/ZZ4lAnalysis.root";
+    FileName[4] << "root://lxcms03//data3/Higgs/170222/ggTo2mu2tau_Contin_MCFM701/ZZ4lAnalysis.root";
+    FileName[5] << "root://lxcms03//data3/Higgs/170222/ggTo2e2tau_Contin_MCFM701/ZZ4lAnalysis.root";
     howmany=6;
   }
   
@@ -169,12 +177,13 @@ void all(int selAna=-10, int channels=0, int categ=-1, int sample = 0 ){
   Short_t z1flav, z2flav; 
   float weight;
   bool useQGTagging = false;
+  bool useVHMETTagged = true;
 
   Short_t ExtraZ;
   Short_t nExtraLeptons;
   Short_t nCleanedJets;
 
-  float ZZPt, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, PHJ_VAJHU, p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU;
+  float ZZPt, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, PHJ_VAJHU, p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU, PFMET;
   Short_t nJets;
   Short_t nBTaggedJets;
   std::vector<float> * JETQGLikeliHood = 0;
@@ -213,6 +222,7 @@ void all(int selAna=-10, int channels=0, int categ=-1, int sample = 0 ){
   ggTree->SetBranchAddress("p_HadWH_SIG_ghw1_1_JHUGen_JECNominal", &PWH_hadronic_VAJHU);
   ggTree->SetBranchAddress("p_HadZH_SIG_ghz1_1_JHUGen_JECNominal",&PZH_hadronic_VAJHU);
 
+  ggTree->SetBranchAddress("PFMET",&PFMET);
   ggTree->SetBranchAddress("JetPt",&jetpt);
   ggTree->SetBranchAddress("JetEta",&jeteta);
   ggTree->SetBranchAddress("JetPhi",&jetphi);
@@ -259,6 +269,7 @@ void all(int selAna=-10, int channels=0, int categ=-1, int sample = 0 ){
     int Cat = -10;
     if (selAna == 0) Cat = categoryMor16(nJets, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal );
     if (selAna == 1) Cat = categoryIchep16(nExtraLeptons, ExtraZ, nCleanedJets, nBTaggedJets, jetQGLL, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, PHJ_VAJHU, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU, jetPHI, m4l, useQGTagging);
+      if (selAna == 2) Cat = categoryMor17(nExtraLeptons, ExtraZ, nCleanedJets, nBTaggedJets, jetQGLL, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, PHJ_VAJHU, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU, jetPHI, m4l, PFMET, useVHMETTagged, useQGTagging);
     if (categ >= 0 && categ != Cat ) continue; 
 
     if(channels==0 && z1flav*z2flav != 28561) continue;
@@ -402,190 +413,4 @@ void all(int selAna=-10, int channels=0, int categ=-1, int sample = 0 ){
   
 }
 
-
-float getFitEdge(float mass, float width, bool low) {
-  double windowVal = max(width, float(1.));
-  double lowside = (mass >= 275) ? 180. : 100.;
-  double highside = (mass >= 650) ? 1500. : 800.;
-  if (low) return std::max((mass - 20.*windowVal), lowside);
-  else return std::min((mass + 15.*windowVal), highside);
-}
-
-
-float getFitEdgeHighMass(float mass, float width, bool low) {
-  if (low) return std::max(200.,double(mass-5*width));
-  else return std::min(1500.,double(mass+5*width));
-}
-
-//*************************************************************************************************
-//Computes Eff Sigma
-//*************************************************************************************************
-
-
-Double_t effSigma(TH1 *hist )
-{
-
-  TAxis *xaxis = hist->GetXaxis();
-  Int_t nb = xaxis->GetNbins();
-  if(nb < 10) {
-    cout << "effsigma: Not a valid histo. nbins = " << nb << endl;
-    return 0.;
-  }
-  
-  Double_t bwid = xaxis->GetBinWidth(1);
-  if(bwid == 0) {
-    cout << "effsigma: Not a valid histo. bwid = " << bwid << endl;
-    return 0.;
-  }
-  Double_t xmin = xaxis->GetXmin();
-  Double_t ave = hist->GetMean();
-  Double_t rms = hist->GetRMS();
-
-  Double_t total=0.;
-  for(Int_t i=0; i<nb+2; i++) {
-    total+=hist->GetBinContent(i);
-  }
-  if(total < 100.) {
-    cout << "effsigma: Too few entries " << total << endl;
-    return 0.;
-  }
-  Int_t ierr=0;
-  Int_t ismin=999;
-  
-  Double_t rlim=0.683*total;
-  Int_t nrms=rms/(bwid);    // Set scan size to +/- rms
-  if(nrms > nb/10) nrms=nb/10; // Could be tuned...
-
-  Double_t widmin=9999999.;
-  for(Int_t iscan=-nrms;iscan<nrms+1;iscan++) { // Scan window centre
-    Int_t ibm=(ave-xmin)/bwid+1+iscan;
-    Double_t x=(ibm-0.5)*bwid+xmin;
-    Double_t xj=x;
-    Double_t xk=x;
-    Int_t jbm=ibm;
-    Int_t kbm=ibm;
-    Double_t bin=hist->GetBinContent(ibm);
-    total=bin;
-    for(Int_t j=1;j<nb;j++){
-      if(jbm < nb) {
-        jbm++;
-        xj+=bwid;
-        bin=hist->GetBinContent(jbm);
-        total+=bin;
-        if(total > rlim) break;
-      }
-      else ierr=1;
-      if(kbm > 0) {
-        kbm--;
-        xk-=bwid;
-        bin=hist->GetBinContent(kbm);
-        total+=bin;
-        if(total > rlim) break;
-      }
-      else ierr=1;
-    }
-    Double_t dxf=(total-rlim)*bwid/bin;
-    Double_t wid=(xj-xk+bwid-dxf)*0.5;
-    if(wid < widmin) {
-      widmin=wid;
-      ismin=iscan;
-    }   
-  }
-  if(ismin == nrms || ismin == -nrms) ierr=3;
-  if(ierr != 0) cout << "effsigma: Error of type " << ierr << endl;
-  
-  return widmin;
-  
-}
-
-
-///-----------------------------------------------------------------------------
-Double_t effSigma(RooAbsPdf *pdf, RooRealVar *obs, Int_t nbins)
-{
-  TH1 *hist = pdf->createHistogram(obs->GetName(), nbins);
-  hist->Scale(nbins);
-
-  return effSigma( hist);
-}
-
-
-void plotRegrVsNoRegr(int channel, int massBin) {
-  stringstream filenom, filenoregr;
-  filenom << "m4lplots/nominal/fitM" << massBin << "_channel" << channel << ".root";
-  filenoregr << "m4lplots/noregr/fitM" << massBin << "_channel" << channel << ".root";
-
-  int col;
-  if(channel==0) col=kOrange+7;
-  if(channel==1) col=kAzure+2;
-  if(channel==2) col=kGreen+3;
-
-  TCanvas *c1 = new TCanvas("c1","c1",750,750);
-
-  TFile *tfilenom = TFile::Open(filenom.str().c_str());
-  RooPlot *plotnom = (RooPlot*)tfilenom->Get("m4lplot");
-  plotnom->SetMarkerStyle(kOpenSquare);
-  plotnom->Draw();
-  TPaveText *pavenom = (TPaveText*)tfilenom->Get("TPave");
-  pavenom->SetTextColor(col);
-  pavenom->Draw("same");
-
-  TFile *tfilenoregr = TFile::Open(filenoregr.str().c_str());
-  RooPlot *plotnoregr = (RooPlot*)tfilenoregr->Get("m4lplot");
-  plotnoregr->Draw("same");
-  TPaveText *pavenoregr = (TPaveText*)tfilenoregr->Get("TPave");
-  pavenoregr->Draw("same");
-
-  // cosmetics
-  TLegend *legend = new TLegend(0.20,0.65,0.45,0.90,NULL,"brNDC");
-  legend->SetBorderSize(     0);
-  legend->SetFillColor (     0);
-  legend->SetTextAlign (    12);
-  legend->SetTextFont  (    42);
-  legend->SetTextSize  (0.03);
-
-  TH1F *dummyPointsNom = new TH1F("dummyPNom","dummyPNom",1,0,1);
-  TH1F *dummyPointsNoRegr = new TH1F("dummyPNoregr","dummyPNoregr",1,0,1);
-  TH1F *dummyLine = new TH1F("dummyL","dummyL",1,0,1);
-  dummyPointsNoRegr->SetMarkerStyle(kFullCircle);
-  dummyPointsNoRegr->SetMarkerSize(1.1);
-  dummyPointsNom->SetMarkerStyle(kFullSquare);
-  dummyPointsNom->SetMarkerColor(col);
-  dummyPointsNom->SetLineColor(col);
-  dummyPointsNom->SetMarkerSize(1.1);
-  dummyLine->SetLineColor(col);
-  
-  legend->AddEntry(dummyPointsNoRegr, "Simulation (E_{std}-p comb.)", "pel");
-  legend->AddEntry(dummyPointsNom, "Simulation (E_{regr}-p comb.)", "pel");
-
-  legend->Draw();
-
-  TPaveText *text = new TPaveText(0.15,0.90,0.77,0.98,"brNDC");
-  text->AddText("CMS Simulation");
-  text->SetBorderSize(0);
-  text->SetFillStyle(0);
-  text->SetTextAlign(12);
-  text->SetTextFont(42);
-  text->SetTextSize(0.03);
-
-  text->Draw();
-
-  stringstream frameTitle;
-  if(channel==0){frameTitle << "4#mu, m_{H} = ";}
-  if(channel==1){frameTitle << "4e, m_{H} = ";}
-  if(channel==2){frameTitle << "2e2#mu, m_{H} = ";}
-  frameTitle << massBin << " GeV";
-
-  TPaveText *titlet = new TPaveText(0.15,0.80,0.60,0.85,"brNDC");
-  titlet->AddText(frameTitle.str().c_str());
-  titlet->SetBorderSize(0);
-  titlet->SetFillStyle(0);
-  titlet->SetTextAlign(12);
-  titlet->SetTextFont(132);
-  titlet->SetTextSize(0.045);
-
-  titlet->Draw();
-
-  c1->SaveAs("comp.pdf");
-
-}
 
