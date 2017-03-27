@@ -1,6 +1,6 @@
 LHE_DecayProbabilities_MCFM = [
-   # ghz1=10*sqrt(0.9771908764)=9.885296538, hwidth=40.7 MeV
-   "Name:SampleHypothesisMCFM Alias:<Name> Process:bkgZZ_SMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz1=3.1260052406,0 hmass:125 hwidth:0.0407 Cluster:NoInitialQ isGen:1 NoBranch:1", # Hide this branch
+   # ghz1=sqrt(0.9771908764)=0.9885296538
+   "Name:SampleHypothesisMCFM Alias:<Name> Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz4=0.3621517928,0 hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1 NoBranch:1", # Hide this branch
 
    "Name:GG_SIG_kappaTopBot_1_ghz1_1_MCFM Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz1=1,0 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
    "Name:GG_SIG_kappaTopBot_1_ghz1prime2_1E4_MCFM Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz1_prime2=10000,0 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
