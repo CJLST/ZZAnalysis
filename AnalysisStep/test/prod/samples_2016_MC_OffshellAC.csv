@@ -155,5 +155,5 @@ ggToContinToZZTo4mu, ,1.58549,,,/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/R
 ggToContinToZZTo4tau, ,1.58549,,,/GluGluToContinToZZTo4tau_13TeV_MCFM701_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,2,,RecoProbabilities.py,
 ggToContinToZZTo4e_DS, ,1.58549,,,/GluGluToContinToZZTo4e_13TeV_DefaultShower_MCFM701_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM,dbs,,2,,RecoProbabilities.py,
 ggToContinToZZTo4mu_DS, ,1.58549,,,/GluGluToContinToZZTo4mu_13TeV_DefaultShower_MCFM701_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM,dbs,,2,,RecoProbabilities.py,
-ggToContinToZZTo2e2mu_DS, ,-3.19142,,,/GluGluToContinZZTo2e2mu_13TeV_DefaultShower_MCFM701_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM,dbs,,2,,RecoProbabilities.py,
+ggToContinToZZTo2e2mu_DS, ,3.19142,,,/GluGluToContinZZTo2e2mu_13TeV_DefaultShower_MCFM701_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM,dbs,,2,,RecoProbabilities.py,
 
