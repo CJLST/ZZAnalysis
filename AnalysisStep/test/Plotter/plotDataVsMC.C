@@ -11,6 +11,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <math.h>
 
 #include "Math/DistFunc.h"
 #include "TBox.h"
@@ -61,11 +62,12 @@ using namespace std;
 #define MASKH125FORLOWMASS 1
 #define MASKH125FORHIGHMASS 1
 #define MASKDATAFORHIGHMASS 0
+#define USEBBH 0
 #define MERGE2E2MU 1 // If activated, 2e2mu means "2e2mu and 2mu2e". Don't change this unless you really know what you are doing.
 
 #define USEZPLUSXANALYTICALSHAPE 1 // Obtain Z+X histograms from the analytical shapes when they are available (up to now, only for m4l).
 #define BUILDZPLUSXHISTOFROMSSCR 1 // Obtain Z+X histograms by running over the SS CR. Overriden by the analytical shapes when relevant.
-#define SMOOTHZPLUSXHISTOFROMSSCR 0 // Smooth the aforementioned SS-CR-based histos, preserving their normalization.
+#define SMOOTHZPLUSXHISTOFROMSSCR 1 // Smooth the aforementioned SS-CR-based histos, preserving their normalization.
 #define RENORMZPLUSXTOOFFICIALCATEG 0 // Normalize all Z+X histos to the hardcoded SS-based numbers in categories.
 #define RENORMZPLUSXTOOFFICIALINCL 1 // (Re-)normalize all Z+X histos to the hardcoded SS/OS-combined inclusive numbers.
 
@@ -126,29 +128,32 @@ Float_t normSSFullRange2e2mu[8] = {
 // These are the same 4 WP as in Category.cc
 #define WP2J 0.437 // This is the value at 125GeV (0.431 at 118 GeV) of 1.043-460./(ZZMass+634.). The latter formula is also hardcoded in the definition of varPairExprWP.
 #define WP1J 0.697
-#define OLDWPWH 0.951
-#define OLDWPZH 0.9937
-// Let's change the c-constants of D_WP and D_ZH for visualization purposes:
-#define NEWWPWH 0.8
-#define NEWWPZH 0.8
-#define CUSTOMCCONSTWH ((1.-NEWWPWH)/(NEWWPWH/OLDWPWH-NEWWPWH))
-#define CUSTOMCCONSTZH ((1.-NEWWPZH)/(NEWWPZH/OLDWPZH-NEWWPZH))
+#define WPWH 0.951
+#define WPZH 0.9937
+// To change the c-constants for visualization purposes:
+#define NEWWP2J 0.5
+#define NEWWP1J 0.5
+#define COMWPVH 0.5 //0.8
+#define NEWWPWH COMWPVH
+#define NEWWPZH COMWPVH
+#define NEWWPVH COMWPVH // This one only makes sense if DWH and DZH have the same WP.
+#define MINFACTVH 200. //80.
 
 
-
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-enum Process {Data=0, H125=1, H125VBF=2, H125VH=3, H125NONVBFVH=4, qqZZ=5, ggZZ=6, DY=7, ttbar=8};
-const int nProcesses = 9;
-string sProcess[nProcesses] = {"Data", "H125", "H125VBF", "H125VH", "H125NONVBFVH", "qqZZ", "ggZZ", "DY", "ttbar"};
-string processLabel[nProcesses] = {" Data", " H(125)", " H(125), VBF", " H(125), VH", " H(125), other", " q#bar{q}#rightarrowZZ, Z#gamma*", " gg#rightarrowZZ, Z#gamma*", " Z + jets", " t#bar{t}"};
+enum Process {Data=0, H125=1, H125VBF=2, H125VH=3, H125TTH=4, H125NONVBFVHTTH=5, qqZZ=6, ggZZ=7, DY=8, ttbar=9};
+const int nProcesses = 10;
+string sProcess[nProcesses] = {"Data", "H125", "H125VBF", "H125VH", "H125TTH", "H125NONVBFVHTTH", "qqZZ", "ggZZ", "DY", "ttbar"};
+string processLabel[nProcesses] = {" Data", " H(125)", " H(125), VBF", " H(125), VH", " H(125), t#bar{t}H", " H(125), other", " q#bar{q}#rightarrowZZ, Z#gamma*", " gg#rightarrowZZ, Z#gamma*", " Z + jets", " t#bar{t}"};
 Int_t processFillColor[nProcesses] = {
   TColor::GetColor("#000000"), 
   TColor::GetColor((STYLE1DPLOT==0)?"#ffffff":(STYLE1DPLOT==1)?"#ff9090":"#ffb2b2"), //"#ffc18b"),
+  TColor::GetColor((STYLE1DPLOT==0)?"#ffffff":(STYLE1DPLOT==1)?"#ff6868":"#ff9b9b"),
   TColor::GetColor((STYLE1DPLOT==0)?"#ffffff":(STYLE1DPLOT==1)?"#ff6868":"#ff9b9b"),
   TColor::GetColor((STYLE1DPLOT==0)?"#ffffff":(STYLE1DPLOT==1)?"#ff6868":"#ff9b9b"),
   TColor::GetColor((STYLE1DPLOT==0)?"#ff0000":(STYLE1DPLOT==1)?"#ff9090":"#ffdcdc"),
@@ -163,18 +168,19 @@ Int_t processLineColor[nProcesses] = {
   TColor::GetColor((STYLE1DPLOT==0)?"#ff0000":"#cc0000"),//"#770000"), 
   TColor::GetColor((STYLE1DPLOT==0)?"#ff0000":"#cc0000"),//"#770000"), 
   TColor::GetColor((STYLE1DPLOT==0)?"#ff0000":"#cc0000"),//"#770000"), 
+  TColor::GetColor((STYLE1DPLOT==0)?"#ff0000":"#cc0000"),//"#770000"), 
   TColor::GetColor("#000099"),
   TColor::GetColor("#000099"),
   TColor::GetColor("#003300"),
   TColor::GetColor("#5f3f3f")
 };
-Bool_t useProcess[nProcesses] = {1,1,0,0,0,1,1,USEDYANDTTBAR,USEDYANDTTBAR,};
+Bool_t useProcess[nProcesses] = {1,1,0,0,0,0,1,1,USEDYANDTTBAR,USEDYANDTTBAR,};
 
 
 enum FinalState {fs4mu=0, fs4e=1, fs2e2mu=2, fs2mu2e=3};
 const int nFinalStates = 4;
 string sFinalState[nFinalStates+1] = {"4mu", "4e", "2e2mu", "2mu2e", "4l"};
-string fsLabel[nFinalStates+1] = {" 4#mu", " 4e", " 2e2#mu", " 2#mu2e", " 4#font[12]{l}"};
+string fsLabel[nFinalStates+1] = {"4#mu", "4e", "2e2#mu", "2#mu2e", "4#font[12]{l}"};
 Int_t fsMarkerStyleFull[nFinalStates+1] = {20,22,21,33,29};
 Int_t fsMarkerStyleOpen[nFinalStates+1] = {5,2,4,25,29};
 Int_t fsMarkerColor[nFinalStates+1] = {kRed+1,kGreen+2,kAzure,kViolet,kBlack};
@@ -189,8 +195,8 @@ string fsLabelForSS[nFinalStates] = {
 
 
 // Moriond 2017 categorization
-const int nCategories = 7;
-string sCategory[nCategories+1] = {
+const int nCat = 7;
+string sCategory[nCat+1] = {
   "UnTagged",
   "VBF1jTagged",
   "VBF2jTagged",
@@ -200,7 +206,7 @@ string sCategory[nCategories+1] = {
   "VHMETTagged",
   "inclusive",
 };
-string categoryLabel[nCategories+1] = {
+string categoryLabel[nCat+1] = {
   "untagged category",
   "VBF-1jet-tagged category",
   "VBF-2jet-tagged category", 
@@ -210,7 +216,7 @@ string categoryLabel[nCategories+1] = {
   "VH-MET-tagged category",
   "all event categories",
 };
-string categoryLegLabel[nCategories+1] = {
+string categoryLegLabel[nCat+1] = {
   "untagged",
   "VBF-1j tagged",
   "VBF-2j tagged", 
@@ -220,7 +226,8 @@ string categoryLegLabel[nCategories+1] = {
   "VH-MET tagged",
   "inclusive",
 };
-Int_t categMarkerStyle[nCategories] = {20,26,32,28,27,30,25};
+Int_t categMarkerStyle[nCat] = {20,26,32,28,27,30,25};
+//Int_t categMarkerStyle[nCat] = {24,22,23,34,33,29,21};
 
 
 enum ResonantStatus {resonant=0, nonresonant=1};
@@ -250,51 +257,80 @@ struct Var1 {
   Bool_t isLogx;
   Bool_t isLogy;
   Bool_t Large;
-  Bool_t InCateg;
+  Int_t Categ;
   Bool_t InFS;
-  Int_t restrCountVar;
+  Int_t restrXmax;
   Bool_t sepVbf;
   Bool_t sepVh;
+  Bool_t sepTth;
   Float_t ValWP;
   Float_t MinFactor;
   Int_t CMSPos;
   Int_t LegPos;
   Int_t CutPos;
   Bool_t CXL;
-  Int_t rebinningDYTTbar;
+  Int_t rebinDYTT;
   Float_t MaxCorrector[nBlindings];
-  string canvPrefix;
+  string prefix;
+  Bool_t WithRatio;
+  Bool_t SmoothZpX;
 };
 
-const int nVariables = 23;
+const int nVariables = 44;
 Var1 myV1[nVariables] = {
-//{ Name,                 XLabel,                           YLabel,           CutLabel,                                                        plotLvl, Min, Max, Nbin, isLogx, isLogy, Large, InCateg, InFS, restrCountVar, sepVbf, sepVh, ValWP,   MinFactor, CMSPos, LegPos, CutPos, CXL,  rebinningDYTTbar, MaxCorrector,              canvPrefix},
-  { "M4l_Full",           "m_{4#font[12]{l}} (GeV)",        "Events / 4 GeV", "",                                                              1,       70,  990, 230,  1,      0,      1,     0,       1,    0,             0,      0,     0.,      0.,        0,      33,     0,      1,    1,                {1.1,1. ,1. ,1. ,1. ,1. }, "a"},
-//{ "M4l_ForMergeRun1",   "m_{4#font[12]{l}} (GeV)",        "Events / 3 GeV", "",                                                              3,       1.5,1000.5,333, 0,      0,      0,     0,       0,    0,             0,      0,     0.,      0.,        0,      33,     0,      0,    1,                {1. ,1. ,1. ,1. ,1. ,1. }, "a"},
-//{ "M4l_Full_Bin5GeV",   "m_{4#font[12]{l}} (GeV)",        "Events / 5 GeV", "",                                                              3,       70,  1000,186,  1,      0,      1,     0,       0,    0,             0,      0,     0.,      0.,        0,      33,     0,      0,    1,                {1. ,1. ,1. ,1. ,1. ,1. }, "a"},
-  { "M4l_3p5TeV_Bin5GeV", "m_{4#font[12]{l}} (GeV)",        "Events / 5 GeV", "",                                                              3,       70,  3500,686,  1,      0,      1,     0,       0,    0,             0,      0,     0.,      0.,        0,      33,     0,      0,    1,                {1. ,1. ,1. ,1. ,1. ,1. }, "a"},
-  { "M4l_70110",          "m_{4#font[12]{l}} (GeV)",        "Events / 4 GeV", "",                                                              3,       70,  110, 10,   0,      0,      0,     0,       0,    0,             0,      0,     0.,      0.,        0,      33,     0,      0,    1,                {1.3,1. ,1. ,1. ,1. ,1. }, "a"},
-  { "M4l_110150",         "m_{4#font[12]{l}} (GeV)",        "Events / 2 GeV", "",                                                              3,       110, 150, 20,   0,      0,      0,     0,       0,    0,             0,      0,     0.,      0.,        0,      33,     0,      0,    1,                {1. ,1. ,1. ,1. ,1. ,1. }, "a"},
-  { "M4l_70170",          "m_{4#font[12]{l}} (GeV)",        "Events / 2 GeV", "",                                                              1,       70,  170, 50,   0,      0,      0,     1,       1,    0,             0,      0,     0.,      0.,        0,      33,     0,      0,    1,                {1. ,1. ,1. ,1. ,1. ,1. }, "a"},
-  { "M4l_above170",       "m_{4#font[12]{l}} (GeV)",        "Events / 10 GeV","",                                                              1,       170, 1010,42,   0,      0,      0,     0,       0,    0,             0,      0,     0.,      0.,        0,      33,     0,      0,    1,                {1. ,1. ,1. ,1. ,1. ,1. }, "a"},
-  { "M4l_100170_HighKD",  "m_{4#font[12]{l}} (GeV)",        "Events / 2 GeV", "D_{bkg}^{kin} > 0.5",                                           3,       100, 170, 35,   0,      0,      0,     0,       0,    0,             0,      0,     0.,      0.,        0,      33,     11,     0,    1,                {1. ,1. ,1. ,1.6,1.6,1. }, "a"},
-//{ "M4lrefit_Full",      "m_{4#font[12]{l}}^{refit} (GeV)","Events / 4 GeV", "",                                                              3,       70,  990, 230,  1,      0,      1,     0,       0,    0,             0,      0,     0.,      0.,        0,      33,     0,      1,    1,                {1.1,1. ,1. ,1. ,1. ,1. }, "a"},
-  { "MZ1",                "m_{Z1} (GeV)",                   "Events / 2 GeV", "",                                                              2,       40,  120, 40,   0,      0,      0,     0,       0,    0,             0,      0,     0.,      0.,        0,      11,     0,      0,    1,                {1. ,1. ,1. ,1. ,1. ,1. }, "b"},
-  { "MZ1_M4L118130",      "m_{Z1} (GeV)",                   "Events / 4 GeV", "118 < m_{4#font[12]{l}} < 130 GeV"                            , 1,       40,  120, 20,   0,      0,      0,     0,       0,    0,             0,      0,     0.,      0.,        0,      11,     0,      0,    1,                {1.1,1. ,1. ,1. ,1. ,1. }, "b"},
-  { "MZ2",                "m_{Z2} (GeV)",                   "Events / 2 GeV", "",                                                              2,       12,  120, 54,   0,      0,      0,     0,       0,    0,             0,      0,     0.,      0.,        0,      11,     0,      0,    1,                {1. ,1. ,1. ,1. ,1. ,1. }, "b"},
-  { "MZ2_M4L118130",      "m_{Z2} (GeV)",                   "Events / 4 GeV", "118 < m_{4#font[12]{l}} < 130 GeV"                            , 1,       12,  120, 27,   0,      0,      0,     0,       0,    0,             0,      0,     0.,      0.,        0,      33,     0,      0,    1,                {1.9,1. ,1. ,1. ,1. ,1. }, "b"},
-  { "KD",                 "D_{bkg}^{kin}",                  "Events / 0.05" , "",                                                              2,       0,   1,   20,   0,      0,      0,     0,       0,    0,             0,      0,     0.,      0.,        0,      33,     0,      0,    1,                {1.3,1.1,1.1,1.1,1.1,1.1}, "d"},
-  { "KD_M4L118130",       "D_{bkg}^{kin}",                  "Events / 0.1"  , "118 < m_{4#font[12]{l}} < 130 GeV"                            , 1,       0,   1,   10,   0,      0,      0,     0,       0,    0,             0,      0,     0.,      0.,        0,      11,     33,     0,    1,                {3. ,1. ,1. ,1. ,1. ,1.4}, "d"},
-  { "D2jet",              "D_{2jet}",                       "Events / 0.05" , "N(jets) #geq 2",                                                3,       0,   1,   20,   0,      0,      0,     0,       0,    0,             1,      0,     0.,      0.,        0,      33,     11,     0,    1,                {1. ,1. ,1. ,1. ,1. ,1. }, "e"},
-  { "D2jet_M4L118130",    "D_{2jet}",                       "Events / 0.05" , "#splitline{118 < m_{4#font[12]{l}} < 130 GeV}{N(jets) #geq 2}", 1,       0,   1,   20,   0,      1,      0,     0,       0,    0,             1,      0,     0.,      40.,       0,      33,     11,     0,    1,                {1. ,1. ,1. ,1. ,1. ,3. }, "e"},
-  { "D1jet_M4L118130",    "D_{1jet}",                       "Events / 0.05" , "#splitline{118 < m_{4#font[12]{l}} < 130 GeV}{N(jets) = 1}",    1,       0,   1,   20,   0,      0,      0,     0,       0,    0,             1,      0,     WP1J,    0.,        0,      11,     33,     0,    1,                {1. ,1. ,1. ,1. ,1. ,1.8}, "e"},
-  { "DWH_M4L118130",      "D_{WH}",                         "Events / 0.05" , "#splitline{118 < m_{4#font[12]{l}} < 130 GeV}{N(jets) #geq 2}", 1,       0,   1,   20,   0,      1,      0,     0,       0,    0,             0,      1,     NEWWPWH, 80.,       0,      33,     11,     0,    1,                {1. ,1. ,1. ,1. ,1. ,1. }, "e"},
-  { "DZH_M4L118130",      "D_{ZH}",                         "Events / 0.05" , "#splitline{118 < m_{4#font[12]{l}} < 130 GeV}{N(jets) #geq 2}", 1,       0,   1,   20,   0,      1,      0,     0,       0,    0,             0,      1,     NEWWPZH, 80.,       0,      33,     11,     0,    1,                {1. ,1. ,1. ,1. ,1. ,1. }, "e"},
-  { "Pt4l",               "p_{T}^{4#font[12]{l}} (GeV)",    "Events / 10 GeV","",                                                              3,       0,   400, 40,   0,      0,      0,     0,       0,    0,             0,      0,     0.,      0.,        0,      33,     0,      0,    1,                {1. ,1. ,1. ,1. ,1. ,1. }, "h"},
-  { "Eta4l",              "#eta^{4#font[12]{l}}",           "Events / 0.5",   "",                                                              3,       -10, 10,  40,   0,      0,      0,     0,       0,    0,             0,      0,     0.,      0.,        0,      33,     0,      0,    1,                {1.4,1. ,1. ,1.5,1.5,1. }, "h"},
-  { "NExtraLep",          "number of additional leptons",   "Events",         "",                                                              3,       0,   6,   6,    0,      1,      0,     0,       0,    2,             0,      0,     0.,      2000.,     0,      33,     0,      0,    1,                {1. ,1. ,1. ,1. ,1. ,1. }, "h"},
-  { "NJets",              "number of jets",                 "Events",         "",                                                              3,       0,   17,  17,   0,      1,      0,     0,       0,    4,             0,      0,     0.,      200.,      0,      33,     0,      0,    1,                {1. ,1. ,10.,10.,10.,5. }, "h"},
-  { "NJetsBTagged",       "number of b-tagged jets",        "Events",         "",                                                              3,       0,   8,   8,    0,      1,      0,     0,       0,    2,             0,      0,     0.,      1000.,     0,      33,     0,      0,    1,                {1. ,1. ,1. ,1. ,1. ,1. }, "h"},
+//{ Name,                 XLabel,                           YLabel,           CutLabel,                                                        plotLvl, Min, Max, Nbin, isLogx, isLogy, Large, Categ, InFS, restrXmax, sepVbf, sepVh, sepTth, ValWP,   MinFactor, CMSPos, LegPos, CutPos, CXL,  rebinDYTT, MaxCorrector,              prefix, WithRatio, SmoothZpX},
+  { "M4l_Full",           "m_{4#font[12]{l}} (GeV)",        "Events / 4 GeV", "",                                                              1,       70,  990, 230,  1,      0,      1,     nCat,  1,    0,         0,      0,     0,      0.,      0.,        0,      33,     0,      1,    1,         {1.1,1. ,1. ,1. ,1. ,1. }, "a",    0,         0,       },
+  { "M4l_ForMergeRun1",   "m_{4#font[12]{l}} (GeV)",        "Events / 3 GeV", "",                                                              3,       1.5,1000.5,333, 0,      0,      0,     nCat,  0,    0,         0,      0,     0,      0.,      0.,        0,      33,     0,      0,    1,         {1. ,1. ,1. ,1. ,1. ,1. }, "a",    0,         0,       },
+//{ "M4l_Full_Bin5GeV",   "m_{4#font[12]{l}} (GeV)",        "Events / 5 GeV", "",                                                              3,       70,  1000,186,  1,      0,      1,     nCat,  0,    0,         0,      0,     0,      0.,      0.,        0,      33,     0,      0,    1,         {1. ,1. ,1. ,1. ,1. ,1. }, "a",    0,         0,       },
+  { "M4l_3p5TeV_Bin5GeV", "m_{4#font[12]{l}} (GeV)",        "Events / 5 GeV", "",                                                              3,       70,  3500,686,  1,      0,      1,     nCat,  0,    0,         0,      0,     0,      0.,      0.,        0,      33,     0,      0,    1,         {1. ,1. ,1. ,1. ,1. ,1. }, "a",    0,         0,       },
+  { "M4l_70110",          "m_{4#font[12]{l}} (GeV)",        "Events / 4 GeV", "",                                                              3,       70,  110, 10,   0,      0,      0,     nCat,  0,    0,         0,      0,     0,      0.,      0.,        0,      33,     0,      0,    1,         {1.3,1. ,1. ,1. ,1. ,1. }, "a",    0,         0,       },
+  { "M4l_110150",         "m_{4#font[12]{l}} (GeV)",        "Events / 2 GeV", "",                                                              3,       110, 150, 20,   0,      0,      0,     nCat,  0,    0,         0,      0,     0,      0.,      0.,        0,      33,     0,      0,    1,         {1. ,1. ,1. ,1. ,1. ,1. }, "a",    0,         0,       },
+  { "M4l_70170",          "m_{4#font[12]{l}} (GeV)",        "Events / 2 GeV", "",                                                              1,       70,  170, 50,   0,      0,      0,     nCat,  1,    0,         0,      0,     0,      0.,      0.,        0,      33,     0,      0,    1,         {1. ,1. ,1. ,1. ,1. ,1. }, "a",    0,         0,       },
+  { "M4l_70170_0",        "m_{4#font[12]{l}} (GeV)",        "Events / 2 GeV", "",                                                              1,       70,  170, 50,   0,      0,      0,     0,     0,    0,         0,      0,     0,      0.,      0.,        0,      33,     0,      0,    1,         {1. ,1. ,1. ,1. ,1. ,1.1}, "g",    0,         0,       },
+  { "M4l_70170_1",        "m_{4#font[12]{l}} (GeV)",        "Events / 4 GeV", "",                                                              1,       70,  170, 25,   0,      0,      0,     1,     0,    0,         1,      0,     0,      0.,      0.,        0,      33,     0,      0,    1,         {1. ,1. ,1. ,1. ,1. ,1.1}, "g",    0,         0,       },
+  { "M4l_70170_2",        "m_{4#font[12]{l}} (GeV)",        "Events / 4 GeV", "",                                                              1,       70,  170, 25,   0,      0,      0,     2,     0,    0,         1,      0,     0,      0.,      0.,        0,      33,     0,      0,    1,         {1. ,1. ,1. ,1. ,1.,1.45}, "g",    0,         0,       },
+  { "M4l_70170_3",        "m_{4#font[12]{l}} (GeV)",        "Events / 4 GeV", "",                                                              1,       70,  170, 25,   0,      0,      0,     3,     0,    0,         0,      1,     0,      0.,      0.,        0,      11,     0,      0,    1,         {1. ,1. ,1. ,1. ,1. ,1.5}, "g",    0,         0,       },
+  { "M4l_70170_4",        "m_{4#font[12]{l}} (GeV)",        "Events / 4 GeV", "",                                                              1,       70,  170, 25,   0,      0,      0,     4,     0,    0,         0,      1,     0,      0.,      0.,        0,      33,     0,      0,    1,         {1. ,1. ,1. ,1. ,1. ,1.1}, "g",    0,         0,       },
+  { "M4l_70170_5",        "m_{4#font[12]{l}} (GeV)",        "Events / 4 GeV", "",                                                              1,       70,  170, 25,   0,      0,      0,     5,     0,    0,         0,      0,     1,      0.,      0.,        0,      11,     0,      0,    1,         {1. ,1. ,1. ,1. ,1. ,1.1}, "g",    0,         0,       },
+  { "M4l_70170_6",        "m_{4#font[12]{l}} (GeV)",        "Events / 4 GeV", "",                                                              1,       70,  170, 25,   0,      0,      0,     6,     0,    0,         0,      1,     0,      0.,      0.,        0,      11,     0,      0,    1,         {1. ,1. ,1. ,1. ,1. ,1.1}, "g",    0,         0,       },
+  { "M4l_above170",       "m_{4#font[12]{l}} (GeV)",        "Events / 10 GeV","",                                                              1,       170, 1010,42,   0,      0,      0,     nCat,  0,    0,         0,      0,     0,      0.,      0.,        0,      33,     0,      0,    1,         {1. ,1. ,1. ,1. ,1. ,1. }, "a",    0,         0,       },
+  { "M4l_Full_HighKD",    "m_{4#font[12]{l}} (GeV)",        "Events / 4 GeV", "D_{bkg}^{kin} > 0.5            ",                               2,       70,  990, 230,  1,      0,      1,     nCat,  0,    0,         0,      0,     0,      0.,      0.,        0,      33,     0,      1,    1,         {1.1,1. ,1. ,1. ,1. ,1. }, "a",    0,         1,       },
+  { "M4l_70170_HighKD",   "m_{4#font[12]{l}} (GeV)",        "Events / 2 GeV", "D_{bkg}^{kin} > 0.5         ",                                  2,       70,  170, 50,   0,      0,      0,     nCat,  0,    0,         0,      0,     0,      0.,      0.,        0,      33,     0,      0,    1,         {1. ,1. ,1. ,1. ,1. ,1. }, "a",    0,         1,       },
+  { "M4l_100170_HighKD",  "m_{4#font[12]{l}} (GeV)",        "Events / 2 GeV", "D_{bkg}^{kin} > 0.5",                                           3,       100, 170, 35,   0,      0,      0,     nCat,  0,    0,         0,      0,     0,      0.,      0.,        0,      33,     11,     0,    1,         {1. ,1. ,1. ,1.6,1.6,1. }, "a",    0,         1,       },
+//{ "M4lrefit_Full",      "m_{4#font[12]{l}}^{refit} (GeV)","Events / 4 GeV", "",                                                              3,       70,  990, 230,  1,      0,      1,     nCat,  0,    0,         0,      0,     0,      0.,      0.,        0,      33,     0,      1,    1,         {1.1,1. ,1. ,1. ,1. ,1. }, "a",    0,         0,       },
+  { "MZ1",                "m_{Z1} (GeV)",                   "Events / 2 GeV", "",                                                              2,       40,  120, 40,   0,      0,      0,     nCat,  0,    0,         0,      0,     0,      0.,      0.,        0,      11,     0,      0,    1,         {1. ,1. ,1. ,1. ,1. ,1. }, "b",    0,         0,       },
+  { "MZ1_M4L118130",      "m_{Z1} (GeV)",                   "Events / 4 GeV", "118 < m_{4#font[12]{l}} < 130 GeV",                             1,       40,  120, 20,   0,      0,      0,     nCat,  0,    0,         0,      0,     0,      0.,      0.,        0,      11,     0,      0,    1,         {1.1,1. ,1. ,1. ,1. ,1. }, "b",    0,         0,       },
+  { "MZ2",                "m_{Z2} (GeV)",                   "Events / 2 GeV", "",                                                              2,       12,  120, 54,   0,      0,      0,     nCat,  0,    0,         0,      0,     0,      0.,      0.,        0,      11,     0,      0,    1,         {1. ,1. ,1. ,1. ,1. ,1. }, "b",    0,         0,       },
+  { "MZ2_M4L118130",      "m_{Z2} (GeV)",                   "Events / 4 GeV", "118 < m_{4#font[12]{l}} < 130 GeV",                             1,       12,  120, 27,   0,      0,      0,     nCat,  0,    0,         0,      0,     0,      0.,      0.,        0,      33,     0,      0,    1,         {1.9,1. ,1. ,1. ,1. ,1. }, "b",    0,         0,       },
+  { "KD",                 "D_{bkg}^{kin}",                  "Events / 0.05",  "",                                                              2,       0,   1,   20,   0,      0,      0,     nCat,  0,    0,         0,      0,     0,      0.,      0.,        0,      33,     0,      0,    1,         {1.3,1.1,1.1,1.1,1.1,1.1}, "d",    0,         0,       },
+//{ "KD_30bins",          "D_{bkg}^{kin}",                  "Events / bin",   "",                                                              3,       0,   1,   30,   0,      0,      0,     nCat,  0,    0,         0,      0,     0,      0.,      0.,        0,      33,     0,      0,    1,         {1.3,1.1,1.1,1.1,1.1,1.1}, "d",    0,         0,       },
+  { "KD_30bins_M4Labove100","D_{bkg}^{kin}",                "Events / bin",   "m_{4#font[12]{l}} > 100 GeV",                                   3,       0,   1,   30,   0,      0,      0,     nCat,  0,    0,         0,      0,     0,      0.,      0.,        0,      33,     11,     0,    1,         {1.3,1.1,1.1,1.1,1.1,1.1}, "d",    0,         0,       },
+  { "KD_M4L118130",       "D_{bkg}^{kin}",                  "Events / 0.1",   "118 < m_{4#font[12]{l}} < 130 GeV",                             1,       0,   1,   10,   0,      0,      0,     nCat,  0,    0,         0,      0,     0,      0.,      0.,        0,      11,     33,     0,    1,         {3. ,1. ,1. ,1. ,1. ,1.4}, "d",    0,         0,       },
+  { "D2jet",              "D_{2jet}",                       "Events / 0.05",  "N(jets) #geq 2",                                                3,       0,   1,   20,   0,      0,      0,     nCat,  0,    0,         1,      0,     0,      0.,      0.,        0,      33,     11,     0,    1,         {1. ,1. ,1. ,1. ,1. ,1. }, "e",    0,         0,       },
+  { "D2jet_M4L118130",    "D_{2jet}",                       "Events / 0.1",   "#splitline{118 < m_{4#font[12]{l}} < 130 GeV}{N(jets) #geq 2}", 1,       0,   1,   10,   0,      0,      0,     nCat,  0,    0,         1,      0,     0,      NEWWP2J, 0.,        0,      33,     11,     0,    1,         {1. ,1. ,1. ,1. ,1. ,1.2}, "e",    0,         0,       },
+  { "D1jet_M4L118130",    "D_{1jet}",                       "Events / 0.1",   "#splitline{118 < m_{4#font[12]{l}} < 130 GeV}{N(jets) = 1}",    1,       0,   1,   10,   0,      0,      0,     nCat,  0,    0,         1,      0,     0,      NEWWP1J, 0.,        0,      11,     33,     0,    1,         {1. ,1. ,1. ,1. ,1. ,1.3}, "e",    0,         0,       },
+  { "DWH_M4L118130",      "D_{WH}",                         "Events / 0.1",   "#splitline{118 < m_{4#font[12]{l}} < 130 GeV}{N(jets) #geq 2}", 3,       0,   1,   10,   0,      0,      0,     nCat,  0,    0,         0,      1,     0,      NEWWPWH, 0.,        0,      33,     11,     0,    1,         {1. ,1. ,1. ,1. ,1. ,1. }, "e",    0,         0,       },
+  { "DZH_M4L118130",      "D_{ZH}",                         "Events / 0.1",   "#splitline{118 < m_{4#font[12]{l}} < 130 GeV}{N(jets) #geq 2}", 3,       0,   1,   10,   0,      0,      0,     nCat,  0,    0,         0,      1,     0,      NEWWPZH, 0.,        0,      33,     11,     0,    1,         {1. ,1. ,1. ,1. ,1. ,1. }, "e",    0,         0,       },
+  { "DVH_M4L118130",      "D_{VH}",                         "Events / 0.1",   "#splitline{118 < m_{4#font[12]{l}} < 130 GeV}{N(jets) #geq 2}", 1,       0,   1,   10,   0,      0,      0,     nCat,  0,    0,         0,      1,     0,      NEWWPVH, 0.,        0,      33,     11,     0,    1,         {1. ,1. ,1. ,1. ,1. ,1. }, "e",    0,         0,       },
+//{ "D2jet_M4L118130",    "D_{2jet}",                       "Events / 0.05",  "#splitline{118 < m_{4#font[12]{l}} < 130 GeV}{N(jets) #geq 2}", 1,       0,   1,   20,   0,      1,      0,     nCat,  0,    0,         1,      0,     0,      NEWWP2J, 40.,       0,      33,     11,     0,    1,         {1. ,1. ,1. ,1. ,1. ,3. }, "e",    0,         0,       },
+//{ "D1jet_M4L118130",    "D_{1jet}",                       "Events / 0.05",  "#splitline{118 < m_{4#font[12]{l}} < 130 GeV}{N(jets) = 1}",    1,       0,   1,   20,   0,      0,      0,     nCat,  0,    0,         1,      0,     0,      NEWWP1J, 0.,        0,      11,     33,     0,    1,         {1. ,1. ,1. ,1. ,1. ,1.8}, "e",    0,         0,       },
+//{ "DWH_M4L118130",      "D_{WH}",                         "Events / 0.05",  "#splitline{118 < m_{4#font[12]{l}} < 130 GeV}{N(jets) #geq 2}", 1,       0,   1,   20,   0,      1,      0,     nCat,  0,    0,         0,      1,     0,      NEWWPWH, MINFACTVH, 0,      33,     11,     0,    3,         {1. ,1. ,1. ,1. ,1. ,1. }, "e",    0,         0,       },
+//{ "DZH_M4L118130",      "D_{ZH}",                         "Events / 0.05",  "#splitline{118 < m_{4#font[12]{l}} < 130 GeV}{N(jets) #geq 2}", 1,       0,   1,   20,   0,      1,      0,     nCat,  0,    0,         0,      1,     0,      NEWWPZH, MINFACTVH, 0,      33,     11,     0,    3,         {1. ,1. ,1. ,1. ,1. ,1. }, "e",    0,         0,       },
+//{ "DVH_M4L118130",      "D_{VH}"/*"max(D_{WH},D_{ZH})"*/, "Events / 0.05",  "#splitline{118 < m_{4#font[12]{l}} < 130 GeV}{N(jets) #geq 2}", 1,       0,   1,   20,   0,      1,      0,     nCat,  0,    0,         0,      1,     0,      NEWWPVH, MINFACTVH, 0,      33,     11,     0,    1,         {1. ,1. ,1. ,1. ,1. ,1. }, "e",    0,         0,       },
+  { "Pt4l",               "p_{T}^{4#font[12]{l}} (GeV)",    "Events / 10 GeV","",                                                              3,       0,   400, 40,   0,      0,      0,     nCat,  0,    0,         0,      0,     0,      0.,      0.,        0,      33,     0,      0,    1,         {1. ,1. ,1. ,1. ,1. ,1. }, "h",    0,         0,       },
+  { "Pt4l_M4L118130",     "p_{T}^{4#font[12]{l}} (GeV)",    "Events / 10 GeV","118 < m_{4#font[12]{l}} < 130 GeV",                             3,       0,   400, 40,   0,      0,      0,     nCat,  0,    0,         0,      0,     0,      0.,      0.,        0,      33,     11,     0,    1,         {1. ,1. ,1. ,1. ,1. ,1. }, "h",    0,         0,       },
+  { "Eta4l",              "#eta^{4#font[12]{l}}",           "Events / 0.5",   "",                                                              3,       -8,  8,   32,   0,      0,      0,     nCat,  1,    0,         0,      0,     0,      0.,      0.,        0,      33,     0,      0,    1,         {1.4,1. ,1. ,1.5,1.5,1.2}, "h",    1,         0,       },
+  { "Eta4l_M4L118130",    "#eta^{4#font[12]{l}}",           "Events / 0.8",   "118 < m_{4#font[12]{l}} < 130 GeV",                             3,       -8,  8,   20,   0,      0,      0,     nCat,  1,    0,         0,      0,     0,      0.,      0.,        0,      33,     11,     0,    1,         {1. ,1. ,1. ,1. ,1. ,1.2}, "h",    0,         0,       },
+  { "Eta4l_M4L70110",     "#eta^{4#font[12]{l}}",           "Events / 0.8",   "70 < m_{4#font[12]{l}} < 110 GeV",                              3,       -8,  8,   20,   0,      0,      0,     nCat,  1,    0,         0,      0,     0,      0.,      0.,        0,      33,     11,     0,    1,         {1. ,1. ,1. ,1. ,1. ,1.2}, "h",    0,         0,       },
+  { "Eta4l_M4Labove180",  "#eta^{4#font[12]{l}}",           "Events / 0.5",   "m_{4#font[12]{l}} > 180 GeV",                                   3,       -8,  8,   32,   0,      0,      0,     nCat,  1,    0,         0,      0,     0,      0.,      0.,        0,      33,     11,     0,    1,         {1. ,1. ,1. ,1. ,1. ,1.2}, "h",    0,         0,       },
+  { "MET",                "E_{T}^{miss} (GeV)",             "Events / 10 GeV","",                                                              3,       0,   400, 40,   0,      0,      0,     nCat,  0,    0,         0,      0,     0,      0.,      0.,        0,      33,     0,      0,    1,         {1. ,1. ,1. ,1. ,1. ,1. }, "h",    0,         0,       },
+  { "MET_M4L118130",      "E_{T}^{miss} (GeV)",             "Events / 10 GeV","118 < m_{4#font[12]{l}} < 130 GeV",                             3,       0,   400, 40,   0,      0,      0,     nCat,  0,    0,         0,      0,     0,      0.,      0.,        0,      33,     11,     0,    1,         {1. ,1. ,1. ,1. ,1. ,1. }, "h",    0,         0,       },
+  { "NExtraLep",          "number of additional leptons",   "Events",         "",                                                              3,       0,   6,   6,    0,      1,      0,     nCat,  0,    2,         0,      0,     0,      0.,      20000.,    0,      33,     0,      0,    1,         {1. ,1. ,1. ,1. ,1. ,1. }, "h",    0,         0,       },
+  { "NExtraLep_M4L118130","number of additional leptons",   "Events",         "118 < m_{4#font[12]{l}} < 130 GeV",                             3,       0,   6,   6,    0,      1,      0,     nCat,  0,    2,         0,      0,     0,      0.,      20000.,    0,      33,     11,     0,    1,         {1. ,1. ,1. ,1. ,1. ,1. }, "h",    0,         0,       },
+  { "NJets",              "number of jets",                 "Events",         "",                                                              3,       0,   17,  17,   0,      1,      0,     nCat,  0,    4,         0,      0,     0,      0.,      200.,      0,      33,     0,      0,    1,         {1. ,1. ,10.,10.,10.,1. }, "h",    0,         0,       },
+  { "NJets_M4L118130",    "number of jets",                 "Events",         "118 < m_{4#font[12]{l}} < 130 GeV",                             3,       0,   17,  17,   0,      1,      0,     nCat,  0,    4,         0,      0,     0,      0.,      200.,      0,      33,     11,     0,    1,         {1. ,1. ,10.,10.,10.,1. }, "h",    0,         0,       },
+  { "NBtags",             "number of b-tagged jets",        "Events",         "",                                                              3,       0,   8,   8,    0,      1,      0,     nCat,  0,    2,         0,      0,     0,      0.,      5000.,     0,      33,     0,      0,    1,         {1. ,1. ,1. ,1. ,1. ,1. }, "h",    0,         0,       },
+  { "NBtags_M4L118130",   "number of b-tagged jets",        "Events",         "118 < m_{4#font[12]{l}} < 130 GeV",                             3,       0,   8,   8,    0,      1,      0,     nCat,  0,    2,         0,      0,     0,      0.,      5000.,     0,      33,     11,     0,    1,         {1. ,1. ,1. ,1. ,1. ,1. }, "h",    0,         0,       },
 };
 
 
@@ -316,26 +352,28 @@ struct Var2 {
   string exprWP;
   Int_t LegPos;
   Bool_t LegIsWhite;
-  string canvPrefix;
+  string prefix;
 };
 
-const int nVarPairs = 8;
+const int nVarPairs = 9;
 Var2 myV2[nVarPairs] = {
-//{ Name,                   XLabel,                    YLabel,          CutLabel,                            plotLvl, XMin, XMax, XNbin, YMin, YMax, YNbin, isLogx, isLogy, WithCateg, exprWP,                       LegPos, LegIsWhite, canvPrefix },
-//{ "M4lVsKD",              "m_{4#font[12]{l}} (GeV)", "D_{bkg}^{kin}", "",                                  3,       100,  1000, 180,   0,    1,    30,    1,      0,      0,         "",                           33,     1,          "d"        },
-//{ "M4lVsKD_M4L70110",     "m_{4#font[12]{l}} (GeV)", "D_{bkg}^{kin}", "",                                  3,       70,   110,  40,    0,    1,    30,    0,      0,      0,         "",                           33,     1,          "d"        },
-  { "M4lVsKD_M4L100170",    "m_{4#font[12]{l}} (GeV)", "D_{bkg}^{kin}", "",                                  1,       100,  170,  35,    0,    1,    30,    0,      0,      1,         "",                           33,     1,          "d"        },
-  { "M4lVsKD_M4L1701000",   "m_{4#font[12]{l}} (GeV)", "D_{bkg}^{kin}", "",                                  2,       170,  1000, 166,   0,    1,    30,    0,      0,      0,         "",                           33,     1,          "d"        },
-  { "M4lVsD2jet_M4L100170", "m_{4#font[12]{l}} (GeV)", "D_{2jet}",      "",                                  1,       100,  170,  35,    0,    1,    30,    0,      0,      1,         "1.043-460./(x+634.)",        33,     1,          "e"        },
-  { "M4lVsD1jet_M4L100170", "m_{4#font[12]{l}} (GeV)", "D_{1jet}",      "",                                  1,       100,  170,  35,    0,    1,    30,    0,      0,      1,         string(Form("%.3f",WP1J)),    33,     1,          "e"        },
-  { "M4lVsDWH_M4L100170",   "m_{4#font[12]{l}} (GeV)", "D_{WH}",        "",                                  1,       100,  170,  35,    0,    1,    30,    0,      0,      1,         string(Form("%.3f",NEWWPWH)), 33,     1,          "e"        },
-  { "M4lVsDZH_M4L100170",   "m_{4#font[12]{l}} (GeV)", "D_{ZH}",        "",                                  1,       100,  170,  35,    0,    1,    30,    0,      0,      1,         string(Form("%.3f",NEWWPZH)), 33,     1,          "e"        },
-  { "MZ1VsMZ2",             "m_{Z1} (GeV)",            "m_{Z2} (GeV)",  "",                                  2,       40,   120,  80,    12,   120,  108,   0,      0,      0,         "",                           11,     0,          "b"        },
-  { "MZ1VsMZ2_M4L118130",   "m_{Z1} (GeV)",            "m_{Z2} (GeV)",  "118 < m_{4#font[12]{l}} < 130 GeV", 1,       40,   120,  80,    12,   120,  108,   0,      0,      0,         "",                           11,     0,          "b"        },
-//{ "MZ1VsMZ2_alt1",        "m_{Z1} (GeV)",            "m_{Z2} (GeV)",  "",                                  3,       40,   120,  40,    12,   120,  54,    0,      0,      0,         "",                           11,     0,          "b"        },
-//{ "MZ1VsMZ2_alt2",        "m_{Z1} (GeV)",            "m_{Z2} (GeV)",  "",                                  3,       75,   105,  60,    75,   105,  60,    0,      0,      0,         "",                           11,     0,          "b"        },
-//{ "M4lVsM4lRefit",        "m_{4#font[12]{l}} (GeV)", "m_{4#font[12]{l}}^{refit} (GeV)", "",                3,       70,   1000, 310,   70,   1000, 310,   0,      0,      0,         "",                           33,     0,          "z"        },
-//{ "M4lVsM4lRefit_100180", "m_{4#font[12]{l}} (GeV)", "m_{4#font[12]{l}}^{refit} (GeV)", "",                3,       100,  180,  80,    100,  180,  80,    0,      0,      0,         "",                           11,     0,          "z"        },
+//{ Name,                   XLabel,                    YLabel,          CutLabel,                            plotLvl, XMin, XMax, XNbin, YMin, YMax, YNbin, isLogx, isLogy, WithCateg, exprWP,                       LegPos, LegIsWhite, prefix },
+//{ "M4lVsKD",              "m_{4#font[12]{l}} (GeV)", "D_{bkg}^{kin}", "",                                  3,       100,  1000, 180,   0,    1,    30,    1,      0,      0,         "",                           33,     1,          "d"    },
+//{ "M4lVsKD_M4L70110",     "m_{4#font[12]{l}} (GeV)", "D_{bkg}^{kin}", "",                                  3,       70,   110,  40,    0,    1,    30,    0,      0,      0,         "",                           33,     1,          "d"    },
+  { "M4lVsKD_M4L100170",    "m_{4#font[12]{l}} (GeV)", "D_{bkg}^{kin}", "",                                  1,       100,  170,  35,    0,    1,    30,    0,      0,      1,         "",                           33,     1,          "d"    },
+  { "M4lVsKD_M4L1701000",   "m_{4#font[12]{l}} (GeV)", "D_{bkg}^{kin}", "",                                  2,       170,  1000, 166,   0,    1,    30,    0,      0,      0,         "",                           33,     1,          "d"    },
+//{ "M4lVsD2jet_M4L100170", "m_{4#font[12]{l}} (GeV)", "D_{2jet}",      "",                                  1,       100,  170,  35,    0,    1,    30,    0,      0,      1,         "1.043-460./(x+634.)",        33,     1,          "e"    },
+  { "M4lVsD2jet_M4L100170", "m_{4#font[12]{l}} (GeV)", "D_{2jet}",      "",                                  2,       100,  170,  35,    0,    1,    30,    0,      0,      1,         string(Form("%.3f",NEWWP2J)), 33,     1,          "e"    },
+  { "M4lVsD1jet_M4L100170", "m_{4#font[12]{l}} (GeV)", "D_{1jet}",      "",                                  2,       100,  170,  35,    0,    1,    30,    0,      0,      1,         string(Form("%.3f",NEWWP1J)), 33,     1,          "e"    },
+  { "M4lVsDWH_M4L100170",   "m_{4#font[12]{l}} (GeV)", "D_{WH}",        "",                                  3,       100,  170,  35,    0,    1,    30,    0,      0,      1,         string(Form("%.3f",NEWWPWH)), 33,     1,          "e"    },
+  { "M4lVsDZH_M4L100170",   "m_{4#font[12]{l}} (GeV)", "D_{ZH}",        "",                                  3,       100,  170,  35,    0,    1,    30,    0,      0,      1,         string(Form("%.3f",NEWWPZH)), 33,     1,          "e"    },
+  { "M4lVsDVH_M4L100170",   "m_{4#font[12]{l}} (GeV)", "D_{VH}",        "",                                  2,       100,  170,  35,    0,    1,    30,    0,      0,      1,         string(Form("%.3f",NEWWPVH)), 33,     1,          "e"    },
+  { "MZ1VsMZ2",             "m_{Z1} (GeV)",            "m_{Z2} (GeV)",  "",                                  2,       40,   120,  80,    12,   120,  108,   0,      0,      0,         "",                           11,     0,          "b"    },
+  { "MZ1VsMZ2_M4L118130",   "m_{Z1} (GeV)",            "m_{Z2} (GeV)",  "118 < m_{4#font[12]{l}} < 130 GeV", 1,       40,   120,  80,    12,   120,  108,   0,      0,      0,         "",                           11,     0,          "b"    },
+//{ "MZ1VsMZ2_alt1",        "m_{Z1} (GeV)",            "m_{Z2} (GeV)",  "",                                  3,       40,   120,  40,    12,   120,  54,    0,      0,      0,         "",                           11,     0,          "b"    },
+//{ "MZ1VsMZ2_alt2",        "m_{Z1} (GeV)",            "m_{Z2} (GeV)",  "",                                  3,       75,   105,  60,    75,   105,  60,    0,      0,      0,         "",                           11,     0,          "b"    },
+//{ "M4lVsM4lRefit",        "m_{4#font[12]{l}} (GeV)", "m_{4#font[12]{l}}^{refit} (GeV)", "",                3,       70,   1000, 310,   70,   1000, 310,   0,      0,      0,         "",                           33,     0,          "z"    },
+//{ "M4lVsM4lRefit_100180", "m_{4#font[12]{l}} (GeV)", "m_{4#font[12]{l}}^{refit} (GeV)", "",                3,       100,  180,  80,    100,  180,  80,    0,      0,      0,         "",                           11,     0,          "z"    },
 };
 
 
@@ -419,8 +457,10 @@ void doHistograms(string inputPathMC, string inputPathData, double lumi)
   Short_t Z1Flav;
   Short_t Z2Flav;
   Float_t DiJetFisher;
+  vector<Float_t> *LepPt = 0;
   vector<Float_t> *LepEta = 0;
   vector<Float_t> *LepPhi = 0;
+  vector<Float_t> *LepLepId = 0;
   Short_t nExtraLep;
   vector<Float_t> *ExtraLepEta = 0;
   vector<Float_t> *ExtraLepPhi = 0;
@@ -456,11 +496,11 @@ void doHistograms(string inputPathMC, string inputPathData, double lumi)
   Float_t GenLep4Phi;
   Short_t GenLep4Id;
 
-  TH1F* h1[nVariables][nBlindings][nFinalStates+1][nCategories+1][nRS+1][nProcesses];
-  TH2F* h2[nVarPairs ][nBlindings][nFinalStates+1][nCategories+1][nRS+1][nProcesses];
+  TH1F* h1[nVariables][nBlindings][nFinalStates+1][nCat+1][nRS+1][nProcesses];
+  TH2F* h2[nVarPairs ][nBlindings][nFinalStates+1][nCat+1][nRS+1][nProcesses];
   for(int bl=0; bl<nBlindings; bl++){
     for(int fs=0; fs<nFinalStates+1; fs++){
-      for(int cat=0; cat<nCategories+1; cat++){
+      for(int cat=0; cat<nCat+1; cat++){
 	for(int rs=0; rs<nRS+1; rs++){
 	  for(int pr=0; pr<nProcesses; pr++){
 	    for(int v1=0; v1<nVariables; v1++){
@@ -482,11 +522,11 @@ void doHistograms(string inputPathMC, string inputPathData, double lumi)
     }
   }
 
-  vector<Float_t> g2DataX[nVarPairs][nBlindings][nFinalStates+1][nCategories+1][nRS+1];
-  vector<Float_t> g2DataY[nVarPairs][nBlindings][nFinalStates+1][nCategories+1][nRS+1];
-  vector<Float_t> g2DataEX[nVarPairs][nBlindings][nFinalStates+1][nCategories+1][nRS+1];
-  vector<Float_t> g2DataEY[nVarPairs][nBlindings][nFinalStates+1][nCategories+1][nRS+1];
-  TGraphErrors* g2Data[nVarPairs][nBlindings][nFinalStates+1][nCategories+1][nRS+1];
+  vector<Float_t> g2DataX[nVarPairs][nBlindings][nFinalStates+1][nCat+1][nRS+1];
+  vector<Float_t> g2DataY[nVarPairs][nBlindings][nFinalStates+1][nCat+1][nRS+1];
+  vector<Float_t> g2DataEX[nVarPairs][nBlindings][nFinalStates+1][nCat+1][nRS+1];
+  vector<Float_t> g2DataEY[nVarPairs][nBlindings][nFinalStates+1][nCat+1][nRS+1];
+  TGraphErrors* g2Data[nVarPairs][nBlindings][nFinalStates+1][nCat+1][nRS+1];
   
   int currentProcess;
   int currentFinalState;
@@ -498,16 +538,18 @@ void doHistograms(string inputPathMC, string inputPathData, double lumi)
 
   for(int d=0; d<nDatasets-2; d++){
 
+    if(datasets[d]=="bbH125" && !USEBBH) continue;
+
     //----- assign dataset to correct process
     currentProcess = -1;
     if(datasets[d]=="AllData") currentProcess = Data;
-    if(datasets[d]=="ggH125") currentProcess = H125NONVBFVH;
+    if(datasets[d]=="ggH125") currentProcess = H125NONVBFVHTTH;
     if(datasets[d]=="VBFH125") currentProcess = H125VBF;
     if(datasets[d]=="WplusH125") currentProcess = H125VH;
     if(datasets[d]=="WminusH125") currentProcess = H125VH;
     if(datasets[d]=="ZH125") currentProcess = H125VH;
-    if(datasets[d]=="ttH125") currentProcess = H125NONVBFVH;
-    if(datasets[d]=="bbH125") currentProcess = H125NONVBFVH;
+    if(datasets[d]=="ttH125") currentProcess = H125TTH;
+    if(datasets[d]=="bbH125") currentProcess = H125NONVBFVHTTH;
     if(datasets[d]=="ZZTo4l"||
        datasets[d]=="ZZTo4lamcatnlo") 
       currentProcess = qqZZ;
@@ -576,8 +618,10 @@ void doHistograms(string inputPathMC, string inputPathData, double lumi)
     inputTree[d]->SetBranchAddress("Z2Mass", &Z2Mass);
     inputTree[d]->SetBranchAddress("Z1Flav", &Z1Flav);
     inputTree[d]->SetBranchAddress("Z2Flav", &Z2Flav);
+    inputTree[d]->SetBranchAddress("LepPt", &LepPt);
     inputTree[d]->SetBranchAddress("LepEta", &LepEta);
     inputTree[d]->SetBranchAddress("LepPhi", &LepPhi);
+    inputTree[d]->SetBranchAddress("LepLepId", &LepLepId);
     inputTree[d]->SetBranchAddress("nExtraLep", &nExtraLep);
     inputTree[d]->SetBranchAddress("ExtraLepEta", &ExtraLepEta);
     inputTree[d]->SetBranchAddress("ExtraLepPhi", &ExtraLepPhi);
@@ -714,9 +758,20 @@ void doHistograms(string inputPathMC, string inputPathData, double lumi)
       Float_t D2jet = (nJets>=2) ? DVBF2j_ME(p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
       Float_t D1jet = (nJets==1) ? DVBF1j_ME(p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
       Float_t DWH = (nJets>=2) ? DWHh_ME(p_HadWH_SIG_ghw1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
-      DWH = 1/(CUSTOMCCONSTWH*(1/DWH-1)+1);
       Float_t DZH = (nJets>=2) ? DZHh_ME(p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
-      DZH = 1/(CUSTOMCCONSTZH*(1/DZH-1)+1);
+      Float_t oldCConstD2jet = getDVBF2jetsConstant(ZZMass);
+      Float_t oldCConstD1jet = getDVBF1jetConstant(ZZMass);
+      Float_t oldCConstDWH = getDWHhConstant(ZZMass);
+      Float_t oldCConstDZH = getDZHhConstant(ZZMass);
+      Float_t newCConstD2jet = getDVBF2jetsConstant_shiftWP(ZZMass,false,NEWWP2J);
+      Float_t newCConstD1jet = getDVBF1jetConstant_shiftWP(ZZMass,false,NEWWP1J);
+      Float_t newCConstDWH = getDWHhConstant_shiftWP(ZZMass,false,NEWWPWH);
+      Float_t newCConstDZH = getDZHhConstant_shiftWP(ZZMass,false,NEWWPZH);
+      D2jet = 1/(newCConstD2jet/oldCConstD2jet*(1/D2jet-1)+1);
+      D1jet = 1/(newCConstD1jet/oldCConstD1jet*(1/D1jet-1)+1);
+      DWH = 1/(newCConstDWH/oldCConstDWH*(1/DWH-1)+1);
+      DZH = 1/(newCConstDZH/oldCConstDZH*(1/DZH-1)+1);
+      Float_t DVH = fmax(DWH,DZH);
 
       Float_t varVal[nVariables];
       Bool_t varPassCut[nVariables];
@@ -730,15 +785,19 @@ void doHistograms(string inputPathMC, string inputPathData, double lumi)
 	else if(varStr=="D1jet") varVal[v1] = D1jet;
 	else if(varStr=="DWH") varVal[v1] = DWH;
 	else if(varStr=="DZH") varVal[v1] = DZH;
+	else if(varStr=="DVH") varVal[v1] = DVH;
 	else if(varStr=="MET") varVal[v1] = PFMET;
 	else if(varStr=="NExtraLep") varVal[v1] = (Float_t)nExtraLep;
 	else if(varStr=="NJets") varVal[v1] = (Float_t)nJets;
-	else if(varStr=="NJetsBTagged") varVal[v1] = (Float_t)nJetsBTagged;
+	else if(varStr=="NBtags") varVal[v1] = (Float_t)nJetsBTagged;
 	else if(varStr=="Pt4l") varVal[v1] = ZZPt;
 	else if(varStr=="Eta4l") varVal[v1] = ZZEta;
 	else if(varStr=="M4lrefit") varVal[v1] = ZZMassRefit;
 	varPassCut[v1] = true;
 	if(myV1[v1].Name.find("M4L118130")!=string::npos) varPassCut[v1] = varPassCut[v1] && 118<=ZZMass && ZZMass<=130; 
+	if(myV1[v1].Name.find("M4L70110")!=string::npos) varPassCut[v1] = varPassCut[v1] && 70<=ZZMass && ZZMass<=110; 
+	if(myV1[v1].Name.find("M4Labove100")!=string::npos) varPassCut[v1] = varPassCut[v1] && 100<=ZZMass; 
+	if(myV1[v1].Name.find("M4Labove180")!=string::npos) varPassCut[v1] = varPassCut[v1] && 180<=ZZMass; 
 	if(myV1[v1].Name.find("HighKD")!=string::npos) varPassCut[v1] = varPassCut[v1] && KD>0.5;
 	if(varStr=="D2jet" || varStr=="DWH" || varStr=="DZH") varPassCut[v1] = varPassCut[v1] && nJets>=2; 
 	else if(varStr=="D1jet") varPassCut[v1] = varPassCut[v1] && nJets==1; 
@@ -753,6 +812,7 @@ void doHistograms(string inputPathMC, string inputPathData, double lumi)
 	else if(varPairStr=="M4lVsD1jet") { varPairVal[v2][0] = ZZMass; varPairVal[v2][1] = D1jet; }
 	else if(varPairStr=="M4lVsDWH") { varPairVal[v2][0] = ZZMass; varPairVal[v2][1] = DWH; }
 	else if(varPairStr=="M4lVsDZH") { varPairVal[v2][0] = ZZMass; varPairVal[v2][1] = DZH; }
+	else if(varPairStr=="M4lVsDVH") { varPairVal[v2][0] = ZZMass; varPairVal[v2][1] = DVH; }
 	else if(varPairStr=="MZ1VsMZ2") { varPairVal[v2][0] = Z1Mass; varPairVal[v2][1] = Z2Mass; }
 	else if(varPairStr=="M4lVsM4lRefit") { varPairVal[v2][0] = ZZMass; varPairVal[v2][1] = ZZMassRefit; }
 	varPairPassCut[v2] = true;
@@ -802,7 +862,7 @@ void doHistograms(string inputPathMC, string inputPathData, double lumi)
 		g2DataY[v2][bl][currentFinalState][currentCategory][nRS].push_back(varPairVal[v2][1]);
 		g2DataEX[v2][bl][currentFinalState][currentCategory][nRS].push_back((myV2[v2].Name.find("M4l")==0)?m4lerr:0.);
 		g2DataEY[v2][bl][currentFinalState][currentCategory][nRS].push_back(0.);
-	      }	      
+	      }      
 	    }
 	  }
 	}
@@ -818,24 +878,26 @@ void doHistograms(string inputPathMC, string inputPathData, double lumi)
   for(int bl=0; bl<nBlindings; bl++){
     if(bl!=BLINDING) continue;
     for(int fs=0; fs<nFinalStates+1; fs++){
-      for(int cat=0; cat<nCategories+1; cat++){
+      for(int cat=0; cat<nCat+1; cat++){
 	//for(int rs=0; rs<nRS+1; rs++){
 	for(int v1=0; v1<nVariables; v1++){
 	  h1[v1][bl][fs][cat][nRS][H125]->Add(h1[v1][bl][fs][cat][nRS][H125VBF]);
 	  h1[v1][bl][fs][cat][nRS][H125]->Add(h1[v1][bl][fs][cat][nRS][H125VH]);
-	  h1[v1][bl][fs][cat][nRS][H125]->Add(h1[v1][bl][fs][cat][nRS][H125NONVBFVH]);
+	  h1[v1][bl][fs][cat][nRS][H125]->Add(h1[v1][bl][fs][cat][nRS][H125TTH]);
+	  h1[v1][bl][fs][cat][nRS][H125]->Add(h1[v1][bl][fs][cat][nRS][H125NONVBFVHTTH]);
 	}
 	for(int v2=0; v2<nVarPairs; v2++){
 	  h2[v2][bl][fs][cat][nRS][H125]->Add(h2[v2][bl][fs][cat][nRS][H125VBF]);
 	  h2[v2][bl][fs][cat][nRS][H125]->Add(h2[v2][bl][fs][cat][nRS][H125VH]);
-	  h2[v2][bl][fs][cat][nRS][H125]->Add(h2[v2][bl][fs][cat][nRS][H125NONVBFVH]);
+	  h2[v2][bl][fs][cat][nRS][H125]->Add(h2[v2][bl][fs][cat][nRS][H125TTH]);
+	  h2[v2][bl][fs][cat][nRS][H125]->Add(h2[v2][bl][fs][cat][nRS][H125NONVBFVHTTH]);
 	}
 	//}
       }
     }
     for(int pr=0; pr<nProcesses; pr++){
       for(int fs=0; fs<nFinalStates; fs++){
-	for(int cat=0; cat<nCategories; cat++){
+	for(int cat=0; cat<nCat; cat++){
 	  //for(int rs=0; rs<nRS; rs++){
 	  for(int v1=0; v1<nVariables; v1++){
 	    h1[v1][bl][nFinalStates][cat][nRS][pr]->Add(h1[v1][bl][fs][cat][nRS][pr]);
@@ -853,23 +915,23 @@ void doHistograms(string inputPathMC, string inputPathData, double lumi)
 	}
       }
       for(int fs=0; fs<nFinalStates+1; fs++){
-	for(int cat=0; cat<nCategories; cat++){
+	for(int cat=0; cat<nCat; cat++){
 	  //for(int rs=0; rs<nRS; rs++){
 	  for(int v1=0; v1<nVariables; v1++){
-	    h1[v1][bl][fs][nCategories][nRS][pr]->Add(h1[v1][bl][fs][cat][nRS][pr]);
+	    h1[v1][bl][fs][nCat][nRS][pr]->Add(h1[v1][bl][fs][cat][nRS][pr]);
 	  }
 	  for(int v2=0; v2<nVarPairs; v2++){
-	    h2[v2][bl][fs][nCategories][nRS][pr]->Add(h2[v2][bl][fs][cat][nRS][pr]);
+	    h2[v2][bl][fs][nCat][nRS][pr]->Add(h2[v2][bl][fs][cat][nRS][pr]);
 	    if(pr==Data){
-	      g2DataX[v2][bl][fs][nCategories][nRS].insert(g2DataX[v2][bl][fs][nCategories][nRS].end(), g2DataX[v2][bl][fs][cat][nRS].begin(), g2DataX[v2][bl][fs][cat][nRS].end());
-	      g2DataY[v2][bl][fs][nCategories][nRS].insert(g2DataY[v2][bl][fs][nCategories][nRS].end(), g2DataY[v2][bl][fs][cat][nRS].begin(), g2DataY[v2][bl][fs][cat][nRS].end());
-	      g2DataEX[v2][bl][fs][nCategories][nRS].insert(g2DataEX[v2][bl][fs][nCategories][nRS].end(), g2DataEX[v2][bl][fs][cat][nRS].begin(), g2DataEX[v2][bl][fs][cat][nRS].end());
-	      g2DataEY[v2][bl][fs][nCategories][nRS].insert(g2DataEY[v2][bl][fs][nCategories][nRS].end(), g2DataEY[v2][bl][fs][cat][nRS].begin(), g2DataEY[v2][bl][fs][cat][nRS].end());
+	      g2DataX[v2][bl][fs][nCat][nRS].insert(g2DataX[v2][bl][fs][nCat][nRS].end(), g2DataX[v2][bl][fs][cat][nRS].begin(), g2DataX[v2][bl][fs][cat][nRS].end());
+	      g2DataY[v2][bl][fs][nCat][nRS].insert(g2DataY[v2][bl][fs][nCat][nRS].end(), g2DataY[v2][bl][fs][cat][nRS].begin(), g2DataY[v2][bl][fs][cat][nRS].end());
+	      g2DataEX[v2][bl][fs][nCat][nRS].insert(g2DataEX[v2][bl][fs][nCat][nRS].end(), g2DataEX[v2][bl][fs][cat][nRS].begin(), g2DataEX[v2][bl][fs][cat][nRS].end());
+	      g2DataEY[v2][bl][fs][nCat][nRS].insert(g2DataEY[v2][bl][fs][nCat][nRS].end(), g2DataEY[v2][bl][fs][cat][nRS].begin(), g2DataEY[v2][bl][fs][cat][nRS].end());
 	    }
 	  }
 	  //}
 	}
-	//for(int cat=0; cat<nCategories+1; cat++){
+	//for(int cat=0; cat<nCat+1; cat++){
 	//  for(int rs=0; rs<nRS; rs++){
 	//    for(int v1=0; v1<nVariables; v1++){
 	//      h1[v1][bl][fs][cat][nRS][pr]->Add(h1[v1][bl][fs][cat][rs][pr]);
@@ -899,7 +961,7 @@ void doHistograms(string inputPathMC, string inputPathData, double lumi)
     if(bl!=BLINDING) continue;
     for(int fs=0; fs<nFinalStates+1; fs++){
       //cout<<" Writing FS "<<sFinalState[fs]<<endl;
-      for(int cat=0; cat<nCategories+1; cat++){
+      for(int cat=0; cat<nCat+1; cat++){
 	//cout<<" Writing cat. "<<sCategory[cat]<<endl;
 	for(int rs=0; rs<nRS+1; rs++){
 	  if(rs!=nRS) continue;
@@ -907,14 +969,14 @@ void doHistograms(string inputPathMC, string inputPathData, double lumi)
 	    for(int v1=0; v1<nVariables; v1++){
 	      if(myV1[v1].plotLvl>3) continue;
 	      if( (fs==nFinalStates || myV1[v1].InFS) &&
-		  (cat==nCategories || myV1[v1].InCateg) ){
+		  (cat==myV1[v1].Categ) ){
 		h1[v1][bl][fs][cat][rs][pr]->Write(h1[v1][bl][fs][cat][rs][pr]->GetName());
 		delete h1[v1][bl][fs][cat][rs][pr];
 	      }
 	    }
 	    for(int v2=0; v2<nVarPairs; v2++){
 	      if(myV2[v2].plotLvl>3) continue;
-	      if(fs==nFinalStates && cat==nCategories){	      
+	      if(fs==nFinalStates && cat==nCat){	      
 		h2[v2][bl][fs][cat][rs][pr]->Write(h2[v2][bl][fs][cat][rs][pr]->GetName());
 		delete h2[v2][bl][fs][cat][rs][pr];
 	      }
@@ -1073,10 +1135,10 @@ void doHistogramsZPlusXSS(string inputPathDataForCR, string inputFileFakeRates, 
   mytree->SetBranchAddress("JetPhi", &JetPhi);
   mytree->SetBranchAddress("JetQGLikelihood", &JetQGLikelihood);
 
-  TH1F* h1[nVariables][nBlindings][nFinalStates+1][nCategories+1];
+  TH1F* h1[nVariables][nBlindings][nFinalStates+1][nCat+1];
   for(int bl=0; bl<nBlindings; bl++){
     for(int fs=0; fs<nFinalStates+1; fs++){
-      for(int cat=0; cat<nCategories+1; cat++){
+      for(int cat=0; cat<nCat+1; cat++){
 	for(int v1=0; v1<nVariables; v1++){
 	  h1[v1][bl][fs][cat] = new TH1F(
 	     Form("h1_ZPlusXSS_%s_%s_%s_%s",myV1[v1].Name.c_str(),sBlinding[bl].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str()),
@@ -1087,10 +1149,10 @@ void doHistogramsZPlusXSS(string inputPathDataForCR, string inputFileFakeRates, 
     }
   }
 
-  Float_t expectedYieldSR[nFinalStates+1][nCategories+1];
-  Int_t NumberOfEventsCR[nFinalStates+1][nCategories+1];
+  Float_t expectedYieldSR[nFinalStates+1][nCat+1];
+  Int_t NumberOfEventsCR[nFinalStates+1][nCat+1];
   for(int fs=0; fs<nFinalStates+1; fs++){
-    for(int cat=0; cat<nCategories+1; cat++){
+    for(int cat=0; cat<nCat+1; cat++){
       expectedYieldSR[fs][cat] = 0.;
       NumberOfEventsCR[fs][cat] = 0.;
     }
@@ -1163,9 +1225,20 @@ void doHistogramsZPlusXSS(string inputPathDataForCR, string inputFileFakeRates, 
     Float_t D2jet = (nJets>=2) ? DVBF2j_ME(p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
     Float_t D1jet = (nJets==1) ? DVBF1j_ME(p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
     Float_t DWH = (nJets>=2) ? DWHh_ME(p_HadWH_SIG_ghw1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
-    DWH = 1/(CUSTOMCCONSTWH*(1/DWH-1)+1);
     Float_t DZH = (nJets>=2) ? DZHh_ME(p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
-    DZH = 1/(CUSTOMCCONSTZH*(1/DZH-1)+1);
+    Float_t oldCConstD2jet = getDVBF2jetsConstant(ZZMass);
+    Float_t oldCConstD1jet = getDVBF1jetConstant(ZZMass);
+    Float_t oldCConstDWH = getDWHhConstant(ZZMass);
+    Float_t oldCConstDZH = getDZHhConstant(ZZMass);
+    Float_t newCConstD2jet = getDVBF2jetsConstant_shiftWP(ZZMass,false,NEWWP2J);
+    Float_t newCConstD1jet = getDVBF1jetConstant_shiftWP(ZZMass,false,NEWWP1J);
+    Float_t newCConstDWH = getDWHhConstant_shiftWP(ZZMass,false,NEWWPWH);
+    Float_t newCConstDZH = getDZHhConstant_shiftWP(ZZMass,false,NEWWPZH);
+    D2jet = 1/(newCConstD2jet/oldCConstD2jet*(1/D2jet-1)+1);
+    D1jet = 1/(newCConstD1jet/oldCConstD1jet*(1/D1jet-1)+1);
+    DWH = 1/(newCConstDWH/oldCConstDWH*(1/DWH-1)+1);
+    DZH = 1/(newCConstDZH/oldCConstDZH*(1/DZH-1)+1);
+    Float_t DVH = fmax(DWH,DZH);
 
     Float_t varVal[nVariables];
     Bool_t varPassCut[nVariables];
@@ -1179,15 +1252,19 @@ void doHistogramsZPlusXSS(string inputPathDataForCR, string inputFileFakeRates, 
       else if(varStr=="D1jet") varVal[v1] = D1jet;
       else if(varStr=="DWH") varVal[v1] = DWH;
       else if(varStr=="DZH") varVal[v1] = DZH;
+      else if(varStr=="DVH") varVal[v1] = DVH;
       else if(varStr=="MET") varVal[v1] = PFMET;
       else if(varStr=="NExtraLep") varVal[v1] = (Float_t)nExtraLep;
       else if(varStr=="NJets") varVal[v1] = (Float_t)nJets;
-      else if(varStr=="NJetsBTagged") varVal[v1] = (Float_t)nJetsBTagged;
+      else if(varStr=="NBtags") varVal[v1] = (Float_t)nJetsBTagged;
       else if(varStr=="Pt4l") varVal[v1] = ZZPt;
       else if(varStr=="Eta4l") varVal[v1] = ZZEta;
       else if(varStr=="M4lrefit") varVal[v1] = ZZMassRefit;
       varPassCut[v1] = true;
       if(myV1[v1].Name.find("M4L118130")!=string::npos) varPassCut[v1] = varPassCut[v1] && 118<=ZZMass && ZZMass<=130; 
+      if(myV1[v1].Name.find("M4L70110")!=string::npos) varPassCut[v1] = varPassCut[v1] && 70<=ZZMass && ZZMass<=110; 
+      if(myV1[v1].Name.find("M4Labove100")!=string::npos) varPassCut[v1] = varPassCut[v1] && 100<=ZZMass; 
+      if(myV1[v1].Name.find("M4Labove180")!=string::npos) varPassCut[v1] = varPassCut[v1] && 180<=ZZMass; 
       if(myV1[v1].Name.find("HighKD")!=string::npos) varPassCut[v1] = varPassCut[v1] && KD>0.5;
       if(varStr=="D2jet" || varStr=="DWH" || varStr=="DZH") varPassCut[v1] = varPassCut[v1] && nJets>=2; 
       else if(varStr=="D1jet") varPassCut[v1] = varPassCut[v1] && nJets==1; 
@@ -1208,10 +1285,7 @@ void doHistogramsZPlusXSS(string inputPathDataForCR, string inputFileFakeRates, 
       for(int v1=0; v1<nVariables; v1++){
 	if( myV1[v1].Name.find("M4l")==0 || (myV1[v1].Name.find("M4l")!=0 && varPassBlindingCut[bl]) ){
 	  if(varPassCut[v1]){
-	    if(MERGE2E2MU && currentFinalState==fs2mu2e)
-	      h1[v1][bl][fs2e2mu][currentCategory]->Fill(varVal[v1], yieldSR);
-	    else
-	      h1[v1][bl][currentFinalState][currentCategory]->Fill(varVal[v1], yieldSR);
+	    h1[v1][bl][(MERGE2E2MU&&currentFinalState==fs2mu2e)?fs2e2mu:currentFinalState][currentCategory]->Fill(varVal[v1], yieldSR);
 	  }
 	}
       }
@@ -1226,27 +1300,27 @@ void doHistogramsZPlusXSS(string inputPathDataForCR, string inputFileFakeRates, 
   for(int v1=0; v1<nVariables; v1++){
     for(int bl=0; bl<nBlindings; bl++){
       for(int fs=0; fs<nFinalStates; fs++){
-	for(int cat=0; cat<nCategories; cat++){
+	for(int cat=0; cat<nCat; cat++){
 	  h1[v1][bl][nFinalStates][cat]->Add(h1[v1][bl][fs][cat]);
 	}
       }
       for(int fs=0; fs<nFinalStates+1; fs++){
-	for(int cat=0; cat<nCategories; cat++){
-	  h1[v1][bl][fs][nCategories]->Add(h1[v1][bl][fs][cat]);
+	for(int cat=0; cat<nCat; cat++){
+	  h1[v1][bl][fs][nCat]->Add(h1[v1][bl][fs][cat]);
 	}
       }
     }
   }
   for(int fs=0; fs<nFinalStates; fs++){
-    for(int cat=0; cat<nCategories; cat++){
+    for(int cat=0; cat<nCat; cat++){
       expectedYieldSR[nFinalStates][cat] += expectedYieldSR[fs][cat];
       NumberOfEventsCR[nFinalStates][cat] += NumberOfEventsCR[fs][cat];
     }
   }
   for(int fs=0; fs<nFinalStates+1; fs++){
-    for(int cat=0; cat<nCategories; cat++){
-      expectedYieldSR[fs][nCategories] += expectedYieldSR[fs][cat];
-      NumberOfEventsCR[fs][nCategories] += NumberOfEventsCR[fs][cat];
+    for(int cat=0; cat<nCat; cat++){
+      expectedYieldSR[fs][nCat] += expectedYieldSR[fs][cat];
+      NumberOfEventsCR[fs][nCat] += NumberOfEventsCR[fs][cat];
     }
   }
 
@@ -1254,44 +1328,46 @@ void doHistogramsZPlusXSS(string inputPathDataForCR, string inputFileFakeRates, 
   if(VERBOSE2){
     for(int fs=0; fs<nFinalStates; fs++){
       cout<<fsLabelForSS[fs]<<" : "
-	  <<expectedYieldSR[fs][nCategories]
-	  <<" +/- "<<expectedYieldSR[fs][nCategories]/sqrt(NumberOfEventsCR[fs][nCategories])
-	  <<" (stat., evt: "<<NumberOfEventsCR[fs][nCategories]<<")" 
+	  <<expectedYieldSR[fs][nCat]
+	  <<" +/- "<<expectedYieldSR[fs][nCat]/sqrt(NumberOfEventsCR[fs][nCat])
+	  <<" (stat., evt: "<<NumberOfEventsCR[fs][nCat]<<")" 
 	  <<endl;
     }
-    cout<<"Total: "<<expectedYieldSR[nFinalStates][nCategories]<<endl;
+    cout<<"Total: "<<expectedYieldSR[nFinalStates][nCat]<<endl;
   }
 
   //---------- Smooth histogram if requested
   if(SMOOTHZPLUSXHISTOFROMSSCR){
     Float_t integral = 0;
-    for(int bl=0; bl<nBlindings; bl++){
-      for(int fs=0; fs<nFinalStates+1; fs++){
-	for(int cat=0; cat<nCategories+1; cat++){
-	  for(int v1=0; v1<nVariables; v1++){
-	    integral = h1[v1][bl][fs][cat]->Integral();
-	    h1[v1][bl][fs][cat]->Smooth(1);
-	    h1[v1][bl][fs][cat]->Scale( integral / h1[v1][bl][fs][cat]->Integral() );
+    for(int v1=0; v1<nVariables; v1++){
+      if(myV1[v1].SmoothZpX){
+	for(int bl=0; bl<nBlindings; bl++){
+	  for(int fs=0; fs<nFinalStates+1; fs++){
+	    for(int cat=0; cat<nCat+1; cat++){
+	      integral = h1[v1][bl][fs][cat]->Integral();
+	      h1[v1][bl][fs][cat]->Smooth(1);
+	      h1[v1][bl][fs][cat]->Scale( integral / h1[v1][bl][fs][cat]->Integral() );
+	    }
 	  }
 	}
       }
     }
   }
-
+  
   if(MERGE2E2MU)
-    for(int cat=0; cat<nCategories+1; cat++)
+    for(int cat=0; cat<nCat+1; cat++)
       expectedYieldSR[fs2e2mu][cat] += expectedYieldSR[fs2mu2e][cat];
 
   if(! RENORMZPLUSXTOOFFICIALCATEG){
     // Refill global array
-    for(int cat=0; cat<nCategories+1; cat++){
+    for(int cat=0; cat<nCat+1; cat++){
       normSSFullRange4e[cat] = expectedYieldSR[fs4e][cat];
       normSSFullRange4mu[cat] = expectedYieldSR[fs4mu][cat];
       normSSFullRange2e2mu[cat] = expectedYieldSR[fs2e2mu][cat];
     }
   }
-  Float_t normSSFullRange[nFinalStates+1][nCategories+1];
-  for(int cat=0; cat<nCategories+1; cat++){
+  Float_t normSSFullRange[nFinalStates+1][nCat+1];
+  for(int cat=0; cat<nCat+1; cat++){
     normSSFullRange[fs4e][cat] = normSSFullRange4e[cat];
     normSSFullRange[fs4mu][cat] = normSSFullRange4mu[cat];
     normSSFullRange[fs2e2mu][cat] = normSSFullRange2e2mu[cat];
@@ -1303,7 +1379,7 @@ void doHistogramsZPlusXSS(string inputPathDataForCR, string inputFileFakeRates, 
       for(int bl=0; bl<nBlindings; bl++){
 	for(int fs=0; fs<nFinalStates+1; fs++){
 	  if(fs==fs2mu2e) continue;
-	  for(int cat=0; cat<nCategories+1; cat++){
+	  for(int cat=0; cat<nCat+1; cat++){
 	    for(int v1=0; v1<nVariables; v1++){
 	      h1[v1][bl][fs][cat]->Scale( normSSFullRange[fs][cat] / expectedYieldSR[fs][cat] );
 	    }
@@ -1325,9 +1401,9 @@ void doHistogramsZPlusXSS(string inputPathDataForCR, string inputFileFakeRates, 
       for(int bl=0; bl<nBlindings; bl++){
 	for(int fs=0; fs<nFinalStates+1; fs++){
 	  if(fs==fs2mu2e) continue;
-	  for(int cat=0; cat<nCategories+1; cat++){
+	  for(int cat=0; cat<nCat+1; cat++){
 	    for(int v1=0; v1<nVariables; v1++){
-	      h1[v1][bl][fs][cat]->Scale( normZPlusXFullSR[fs] / normSSFullRange[fs][nCategories] );
+	      h1[v1][bl][fs][cat]->Scale( normZPlusXFullSR[fs] / normSSFullRange[fs][nCat] );
 	    }
 	  }
 	}
@@ -1344,7 +1420,7 @@ void doHistogramsZPlusXSS(string inputPathDataForCR, string inputFileFakeRates, 
   fOutHistos->cd();
   for(int bl=0; bl<nBlindings; bl++){
     for(int fs=0; fs<nFinalStates+1; fs++){
-      for(int cat=0; cat<nCategories+1; cat++){
+      for(int cat=0; cat<nCat+1; cat++){
 	//if(fs==nFinalStates){
 	for(int v1=0; v1<nVariables; v1++){
 	  h1[v1][bl][fs][cat]->Write(h1[v1][bl][fs][cat]->GetName());
@@ -1380,7 +1456,7 @@ void getM4lZPlusXHistoFromAnalyticalShape_InCateg(TH1F** hZPX4mu, TH1F** hZPX4e,
 
   Int_t nentries = 1000000; //tried more entries but it takes too long
 
-  for(int cat=0; cat<nCategories+1; cat++){
+  for(int cat=0; cat<nCat+1; cat++){
 
     //----- compute normalization of the subrange of interest
     Float_t norm4mu   = normSSFullRange4mu  [cat] * f4muComb  ->Integral(xmin,xmax) / f4muComb  ->Integral(70,3000);
@@ -1390,9 +1466,9 @@ void getM4lZPlusXHistoFromAnalyticalShape_InCateg(TH1F** hZPX4mu, TH1F** hZPX4e,
     //---------- Normalize to SS/OS-combined inclusive Z+X yields from global variables
     if(RENORMZPLUSXTOOFFICIALINCL){
       if(MERGE2E2MU){
-	norm4mu   *= normZPlusXFullSR4mu   / normSSFullRange4mu  [nCategories] ;
-	norm4e    *= normZPlusXFullSR4e    / normSSFullRange4e   [nCategories] ;
-	norm2e2mu *= normZPlusXFullSR2e2mu / normSSFullRange2e2mu[nCategories] ;
+	norm4mu   *= normZPlusXFullSR4mu   / normSSFullRange4mu  [nCat] ;
+	norm4e    *= normZPlusXFullSR4e    / normSSFullRange4e   [nCat] ;
+	norm2e2mu *= normZPlusXFullSR2e2mu / normSSFullRange2e2mu[nCat] ;
       }else{
 	cout<<"WARNING: cannot renormalize Z+X histograms to official numbers when treating 2e2mu and 2mu2e separately"<<endl;
       }
@@ -1427,13 +1503,13 @@ void getM4lZPlusXHistoFromAnalyticalShape_InCateg(TH1F** hZPX4mu, TH1F** hZPX4e,
 ////////////////////////////////////////////////////////////////////////////////
 
 
-void DrawDataMC1D(TCanvas* c, TH1F** h, TH1F* hZPX, int v1, int bl, double lumi, string lumiText, Int_t category, Bool_t large, Bool_t logX = false, Bool_t logY = false) {
+void DrawDataMC1D(TCanvas* c, TH1F** h, TH1F* hZPX, int v1, int bl, double lumi, string lumiText, Int_t category, Bool_t logX = false, Bool_t logY = false) {
 
   bool drawData = !( (MASKDATAFORHIGHMASS && bl==blindbelow150) || bl==fullyblind );
   bool maskH125 = 
     ( MASKH125FORLOWMASS && bl==blindabove110 && (myV1[v1].Name.find("M4l")==string::npos || myV1[v1].Name.find("M4l_70110")==0 || myV1[v1].Name.find("M4l_70109")==0) ) ||
     ( MASKH125FORHIGHMASS && bl==blindbelow150 && (myV1[v1].Name.find("M4l")==string::npos || myV1[v1].Name.find("M4l_above150")==0) ) ;
-  bool withRatioPlot = DRAWDATAMCRATIO && drawData;
+  bool withRatioPlot = DRAWDATAMCRATIO && drawData && myV1[v1].WithRatio;
   bool doBlindingHisto = xHistoBlindLow[bl]<xHistoBlindUp[bl] && myV1[v1].Name.find("M4l")==0;
   bool doBlindingHisto2 = xHistoBlind2Low[bl]<xHistoBlind2Up[bl] && myV1[v1].Name.find("M4l")==0;
   bool withWP = DRAWWP1D && myV1[v1].ValWP!=0.;
@@ -1453,19 +1529,26 @@ void DrawDataMC1D(TCanvas* c, TH1F** h, TH1F* hZPX, int v1, int bl, double lumi,
   bool first = true;
   int previous = -1;
   for(int pr=nProcesses-1; pr>=1; pr--){
-    //if((useProcess[pr] && !((maskH125 || myV1[v1].sepVbf) && pr==H125)) || (myV1[v1].sepVbf && (pr==H125VBF || pr==H125NONVBF))){
-    if((useProcess[pr] && !((maskH125 || myV1[v1].sepVbf || myV1[v1].sepVh) && pr==H125)) || (myV1[v1].sepVbf && (pr==H125VBF || pr==H125NONVBFVH)) || (myV1[v1].sepVh && (pr==H125VH || pr==H125NONVBFVH))){
-      if(REBINDYANDTTBAR && (pr==DY || pr==ttbar)) h[pr] = Smooth(h[pr],myV1[v1].rebinningDYTTbar);
+    if((useProcess[pr] && !((maskH125 || myV1[v1].sepVbf || myV1[v1].sepVh || myV1[v1].sepTth) && pr==H125)) || (myV1[v1].sepVbf && (pr==H125VBF || pr==H125NONVBFVHTTH)) || (myV1[v1].sepVh && (pr==H125VH || pr==H125NONVBFVHTTH)) || (myV1[v1].sepTth && (pr==H125TTH || pr==H125NONVBFVHTTH))){
+      if(REBINDYANDTTBAR && (pr==DY || pr==ttbar)) h[pr] = Smooth(h[pr],myV1[v1].rebinDYTT);
       hStacks[pr] = (TH1F*)h[pr]->Clone();
-      if(myV1[v1].sepVbf && pr==H125NONVBFVH) hStacks[pr]->Add((TH1F*)h[H125VH]->Clone());
-      if(myV1[v1].sepVh && pr==H125NONVBFVH) hStacks[pr]->Add((TH1F*)h[H125VBF]->Clone());
+      if(myV1[v1].sepVbf && pr==H125NONVBFVHTTH){
+	hStacks[pr]->Add((TH1F*)h[H125VH]->Clone());
+	hStacks[pr]->Add((TH1F*)h[H125TTH]->Clone());
+      }else if(myV1[v1].sepVh && pr==H125NONVBFVHTTH){
+	hStacks[pr]->Add((TH1F*)h[H125VBF]->Clone());
+	hStacks[pr]->Add((TH1F*)h[H125TTH]->Clone());
+      }else if(myV1[v1].sepTth && pr==H125NONVBFVHTTH){
+	hStacks[pr]->Add((TH1F*)h[H125VBF]->Clone());
+	hStacks[pr]->Add((TH1F*)h[H125VH]->Clone());
+      }
       if(!first) hStacks[pr]->Add(hStacks[previous]);
       hStacks[pr]->SetFillColor(processFillColor[pr]);
       hStacks[pr]->SetLineColor(DRAWLINES?processLineColor[pr]:processFillColor[pr]);
       hStacks[pr]->SetLineWidth(LINEWIDTH);
       if(!DRAWLINES) hStacks[pr]->SetLineColorAlpha(processFillColor[pr],0.);
-      hStacks[pr]->GetXaxis()->SetTitleOffset(large?1.1:1.1);
-      hStacks[pr]->GetYaxis()->SetTitleOffset(large?1.:1.2);
+      hStacks[pr]->GetXaxis()->SetTitleOffset(myV1[v1].Large?1.1:1.1);
+      hStacks[pr]->GetYaxis()->SetTitleOffset(myV1[v1].Large?1.:1.2);
       hStacks[pr]->GetXaxis()->SetTitleSize(0.05);
       hStacks[pr]->GetYaxis()->SetTitleSize(0.05);
       hStacks[pr]->GetXaxis()->SetLabelFont(42);
@@ -1492,7 +1575,7 @@ void DrawDataMC1D(TCanvas* c, TH1F** h, TH1F* hZPX, int v1, int bl, double lumi,
     hZPlusX->SetLineColor(DRAWLINES?processLineColor[DY]:processFillColor[DY]);
     hZPlusX->SetLineWidth(LINEWIDTH);
     for(int pr=nProcesses-1; pr>=1; pr--)
-      if((useProcess[pr] && !((maskH125 || myV1[v1].sepVbf || myV1[v1].sepVh) && pr==H125)) || (myV1[v1].sepVbf && (pr==H125VBF || pr==H125NONVBFVH)) || (myV1[v1].sepVh && (pr==H125VH || pr==H125NONVBFVH)))
+      if((useProcess[pr] && !((maskH125 || myV1[v1].sepVbf || myV1[v1].sepVh || myV1[v1].sepTth) && pr==H125)) || (myV1[v1].sepVbf && (pr==H125VBF || pr==H125NONVBFVHTTH)) || (myV1[v1].sepVh && (pr==H125VH || pr==H125NONVBFVHTTH)) || (myV1[v1].sepTth && (pr==H125TTH || pr==H125NONVBFVHTTH)))
 	hStacks[pr]->Add(hZPlusX);
     //cout<<"full expected yield for variable "<<myV1[v1].Name<<": "<<hStacks[idxSumMC]->Integral()<<endl;
     //cout<<"Z+X yield for variable "<<myV1[v1].Name<<": "<<hZPlusX->Integral()<<endl;
@@ -1503,8 +1586,8 @@ void DrawDataMC1D(TCanvas* c, TH1F** h, TH1F* hZPX, int v1, int bl, double lumi,
   h[0]->SetMarkerColor(kBlack);
   h[0]->SetMarkerSize(1.);
   TGraphAsymmErrors* gData = getDataGraph(h[0]);
-  if(h[0]->GetNbinsX()>60)  gData->SetMarkerSize(0.8);
-  if(h[0]->GetNbinsX()>100) gData->SetMarkerSize(0.7);
+  if(h[0]->GetNbinsX()>39) gData->SetMarkerSize(0.8);
+  if(h[0]->GetNbinsX()>99) gData->SetMarkerSize(0.6);
 
   //----- adjust Y axis
   const int npoints = gData->GetN();
@@ -1547,14 +1630,14 @@ void DrawDataMC1D(TCanvas* c, TH1F** h, TH1F* hZPX, int v1, int bl, double lumi,
   float legLeft = (legPos==11) ? 0.20 : 0.68 ;
   float legWidth = 0.19;
   float legUp = 0.9;
-  if(!withRatioPlot && legPos==myV1[v1].CMSPos && !large) legUp -= 0.1;
+  if(!withRatioPlot && legPos==myV1[v1].CMSPos && !myV1[v1].Large) legUp -= 0.1;
   float legHeight = 0.16;
   if(!drawData) legHeight -= 0.04;
   if(maskH125) legHeight -= 0.04;
   if(useZPlusX) legHeight += 0.04;
-  if(myV1[v1].sepVbf||myV1[v1].sepVh) legHeight += 0.04;
-  if(withRatioPlot) legHeight /= 0.72;
-  if(large){ legWidth *= 1.15; legHeight *= 1.15; legTextSize *= 1.15; }
+  if(myV1[v1].sepVbf||myV1[v1].sepVh||myV1[v1].sepTth) legHeight += 0.04;
+  if(withRatioPlot){ legHeight *= 1.4; legUp = 0.95; }
+  if(myV1[v1].Large){ legWidth *= 1.15; legHeight *= 1.15; legTextSize *= 1.15; }
   TLegend* lgd = new TLegend(legLeft,legUp-legHeight,legLeft+legWidth,legUp);
   lgd->SetFillStyle(0);
   lgd->SetBorderSize(0);
@@ -1562,7 +1645,7 @@ void DrawDataMC1D(TCanvas* c, TH1F** h, TH1F* hZPX, int v1, int bl, double lumi,
   if(drawData)
     lgd->AddEntry(h[0],processLabel[0].c_str(),"p");
   for(int pr=1; pr<nProcesses; pr++)
-    if((useProcess[pr] && !((maskH125 || myV1[v1].sepVbf || myV1[v1].sepVh) && pr==H125)) || (myV1[v1].sepVbf && (pr==H125VBF || pr==H125NONVBFVH)) || (myV1[v1].sepVh && (pr==H125VH || pr==H125NONVBFVH)))
+    if((useProcess[pr] && !((maskH125 || myV1[v1].sepVbf || myV1[v1].sepVh || myV1[v1].sepTth) && pr==H125)) || (myV1[v1].sepVbf && (pr==H125VBF || pr==H125NONVBFVHTTH)) || (myV1[v1].sepVh && (pr==H125VH || pr==H125NONVBFVHTTH)) || (myV1[v1].sepTth && (pr==H125TTH || pr==H125NONVBFVHTTH)))
       lgd->AddEntry(hStacks[pr],processLabel[pr].c_str(),"f");
   if(useZPlusX)
     lgd->AddEntry(hZPlusX," Z+X","f");
@@ -1577,24 +1660,30 @@ void DrawDataMC1D(TCanvas* c, TH1F** h, TH1F* hZPX, int v1, int bl, double lumi,
     float pavWidth = 0.27;
     float pavUp = pavPos!=0 ? 0.93 : legUp-legHeight+0.05;
     float pavHeight = 0.06;
+    if(myV1[v1].Name.find("DVH")!=string::npos) pavLeft += 0.04;
     //pav = new TPaveText(legLeft-(legPos==11?0.02:0.02),legUp-legHeight-0.1,legLeft+legWidth+(legPos==11?0.06:0.06),legUp-legHeight+0.02,"brNDC");
     pav = new TPaveText(pavLeft,pavUp-legHeight,pavLeft+pavWidth,pavUp,"brNDC");
     pav->SetFillStyle(0);
     pav->SetBorderSize(0);
     pav->SetTextAlign(pavPos==11?11:pavPos==33?31:legPos==11?13:33);
     pav->SetTextSize(0.037);
+    if(myV1[v1].Large) pav->SetTextSize(0.04);
     pav->SetTextFont(42);
     pav->AddText((myV1[v1].CutLabel!="")?myV1[v1].CutLabel.c_str():blindingLabel[bl].c_str());
   }
 
   //----- prepare label for category
-  bool useLabelCat = category!=nCategories ; 
+  bool useLabelCat = category!=nCat ; 
   TPaveText* pavCat = 0;
   if(useLabelCat){
-    pavCat = new TPaveText(legLeft-(legPos==11?0.02:0.02),legUp-legHeight-0.1-0.05*useLabel,legLeft+legWidth+(legPos==11?0.06:0.06),legUp-legHeight+0.02-0.05*useLabel,"brNDC");
+    float pavCatLeft = (legPos==11) ? 0.66 : 0.18 ;
+    float pavCatWidth = 0.27;
+    float pavCatUp = legUp+0.02-0.05*useLabel;
+    float pavCatHeight = 0.12;
+    pavCat = new TPaveText(pavCatLeft,pavCatUp-pavCatHeight,pavCatLeft+pavCatWidth,pavCatUp,"brNDC");
     pavCat->SetFillStyle(0);
     pavCat->SetBorderSize(0);
-    pavCat->SetTextAlign(legPos==11?13:33);
+    pavCat->SetTextAlign(legPos==11?31:11);
     pavCat->SetTextSize(0.037);
     pavCat->SetTextFont(42);
     pavCat->AddText(categoryLabel[category].c_str());
@@ -1614,7 +1703,7 @@ void DrawDataMC1D(TCanvas* c, TH1F** h, TH1F* hZPX, int v1, int bl, double lumi,
 
     //--- no Data/MC graph -> draw on main pad
     for(int pr=1; pr<nProcesses; pr++)
-      if((useProcess[pr] && !((maskH125 || myV1[v1].sepVbf || myV1[v1].sepVh) && pr==H125)) || (myV1[v1].sepVbf && (pr==H125VBF || pr==H125NONVBFVH)) || (myV1[v1].sepVh && (pr==H125VH || pr==H125NONVBFVH)))
+      if((useProcess[pr] && !((maskH125 || myV1[v1].sepVbf || myV1[v1].sepVh || myV1[v1].sepTth) && pr==H125)) || (myV1[v1].sepVbf && (pr==H125VBF || pr==H125NONVBFVHTTH)) || (myV1[v1].sepVh && (pr==H125VH || pr==H125NONVBFVHTTH)) || (myV1[v1].sepTth && (pr==H125TTH || pr==H125NONVBFVHTTH)))
 	hStacks[pr]->Draw( pr==idxSumMC ? "HIST" : "HIST SAME" );
     if(useZPlusX) hZPlusX->Draw("HIST SAME");
     if(withWP) lineWP->Draw();
@@ -1648,7 +1737,7 @@ void DrawDataMC1D(TCanvas* c, TH1F** h, TH1F* hZPX, int v1, int bl, double lumi,
     //--- main pad
     pad1->cd();
     for(int pr=1; pr<nProcesses; pr++){
-      if((useProcess[pr] && !((maskH125 || myV1[v1].sepVbf || myV1[v1].sepVh) && pr==H125)) || (myV1[v1].sepVbf && (pr==H125VBF || pr==H125NONVBFVH)) || (myV1[v1].sepVh && (pr==H125VH || pr==H125NONVBFVH))){
+      if((useProcess[pr] && !((maskH125 || myV1[v1].sepVbf || myV1[v1].sepVh || myV1[v1].sepTth) && pr==H125)) || (myV1[v1].sepVbf && (pr==H125VBF || pr==H125NONVBFVHTTH)) || (myV1[v1].sepVh && (pr==H125VH || pr==H125NONVBFVHTTH)) || (myV1[v1].sepTth && (pr==H125TTH || pr==H125NONVBFVHTTH))){
 	hStacks[pr]->GetYaxis()->SetTitleOffset(1.);
 	hStacks[pr]->GetYaxis()->SetTitleSize(0.06);
 	hStacks[pr]->GetYaxis()->SetLabelSize(0.06);
@@ -1673,7 +1762,8 @@ void DrawDataMC1D(TCanvas* c, TH1F** h, TH1F* hZPX, int v1, int bl, double lumi,
     for(int i=1; i<=hOne->GetNbinsX(); i++) hOne->SetBinContent(i,1.);
     hOne->SetLineColor(kGray);
     hOne->Draw();
-    hOne->GetYaxis()->SetRangeUser(0.45,1.55);
+    //hOne->GetYaxis()->SetRangeUser(0.45,1.55);
+    hOne->GetYaxis()->SetRangeUser(0.4,1.85);
     hOne->GetYaxis()->SetNdivisions(206);
     hOne->GetYaxis()->SetTitle("Data/MC");
     hOne->GetYaxis()->SetTitleOffset(0.3);
@@ -1715,7 +1805,7 @@ void DrawDataMC1D(TCanvas* c, TH1F** h, TH1F* hZPX, int v1, int bl, double lumi,
   writeExtraText = true;
   extraText  = "Preliminary";
   lumi_sqrtS = lumiText + " (13 TeV)";
-  CMS_lumi( c, 0, (withRatioPlot || large) ? 0 : myV1[v1].CMSPos );
+  CMS_lumi( c, 0, (withRatioPlot || myV1[v1].Large) ? 0 : myV1[v1].CMSPos );
 
   //----- print yields
   if(VERBOSE2){
@@ -1732,7 +1822,7 @@ void DrawDataMC1D(TCanvas* c, TH1F** h, TH1F* hZPX, int v1, int bl, double lumi,
 }
 
 
-void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraphErrors* g2[nFinalStates+1][nCategories+1], int v2, int bl, string lumiText, int style2D, Bool_t logX = false, Bool_t logY = false) {
+void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraphErrors* g2[nFinalStates+1][nCat+1], int v2, int bl, string lumiText, int style2D, Bool_t logX = false, Bool_t logY = false) {
 
   bool maskH125 = 
     ( MASKH125FORLOWMASS  && bl==blindabove110 && (myV2[v2].Name.find("M4l")==string::npos || myV2[v2].Name.find("M4L70110")!=string::npos) ) ||
@@ -1783,7 +1873,7 @@ void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraphErrors* g2[nFinalStates+1][nCateg
   h2Stacked->GetXaxis()->SetTitleSize(0.05);
   h2Stacked->GetYaxis()->SetTitleSize(0.05);
   h2Stacked->GetXaxis()->SetTitleOffset(1.1);
-  h2Stacked->GetYaxis()->SetTitleOffset(1.15);
+  h2Stacked->GetYaxis()->SetTitleOffset(1.1);//1.17);
   h2Stacked->GetZaxis()->SetTitleOffset(1.);//1.15);
   h2Stacked->GetXaxis()->SetLabelFont(42);
   h2Stacked->GetYaxis()->SetLabelFont(42);
@@ -1808,7 +1898,7 @@ void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraphErrors* g2[nFinalStates+1][nCateg
   if(categMode){
     for(int fs=0; fs<nFinalStates; fs++){
       if(MERGE2E2MU && fs==fs2mu2e) continue;
-      for(int cat=0; cat<nCategories; cat++){
+      for(int cat=0; cat<nCat; cat++){
 	g2[fs][cat]->SetMarkerStyle(categMarkerStyle[cat]);
 	g2[fs][cat]->SetMarkerSize(0.9);
 	g2[fs][cat]->SetMarkerColor(fsMarkerColor[fs]);
@@ -1818,14 +1908,14 @@ void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraphErrors* g2[nFinalStates+1][nCateg
   }else{
     for(int fs=0; fs<nFinalStates; fs++){
       if(MERGE2E2MU && fs==fs2mu2e) continue;
-      g2[fs][nCategories]->SetMarkerStyle(MARKERSTYLE==1?fsMarkerStyleOpen[fs]:fsMarkerStyleFull[fs]);
-      g2[fs][nCategories]->SetMarkerSize(MARKERSTYLE==1?1.:0.7);
+      g2[fs][nCat]->SetMarkerStyle(MARKERSTYLE==1?fsMarkerStyleOpen[fs]:fsMarkerStyleFull[fs]);
+      g2[fs][nCat]->SetMarkerSize(MARKERSTYLE==1?1.:0.7);
       if(style2D==1){
-	g2[fs][nCategories]->SetMarkerColor(fsMarkerColor[fs]);
-	g2[fs][nCategories]->SetLineColor(fsMarkerColor[fs]);
+	g2[fs][nCat]->SetMarkerColor(fsMarkerColor[fs]);
+	g2[fs][nCat]->SetLineColor(fsMarkerColor[fs]);
       }else{
-	g2[fs][nCategories]->SetMarkerColor(kBlack);
-	g2[fs][nCategories]->SetLineColor(kBlack);
+	g2[fs][nCat]->SetMarkerColor(kBlack);
+	g2[fs][nCat]->SetLineColor(kBlack);
       }
     }
   }
@@ -1885,12 +1975,12 @@ void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraphErrors* g2[nFinalStates+1][nCateg
     TGraph* gLeg[nFinalStates];
     for(int fs=0; fs<nFinalStates; fs++){
       if(MERGE2E2MU && fs==fs2mu2e) continue;
-      gLeg[fs] = (TGraph*)g2[fs][nCategories]->Clone();
+      gLeg[fs] = (TGraph*)g2[fs][nCat]->Clone();
     }
-    lgd->AddEntry(gLeg[fs4e   ],((signalSeparately?"Data, ":"")+fsLabel[fs4e   ]).c_str(),withMassErrors?"lp":"p");
-    lgd->AddEntry(gLeg[fs4mu  ],((signalSeparately?"Data, ":"")+fsLabel[fs4mu  ]).c_str(),withMassErrors?"lp":"p");
-    lgd->AddEntry(gLeg[fs2e2mu],((signalSeparately?"Data, ":"")+fsLabel[fs2e2mu]).c_str(),withMassErrors?"lp":"p");
-    if(!MERGE2E2MU) lgd->AddEntry(gLeg[fs2mu2e],((signalSeparately?"Data, ":"")+fsLabel[fs2mu2e]).c_str(),withMassErrors?"lp":"p");
+    lgd->AddEntry(gLeg[fs4e   ],(string(signalSeparately?"Data, ":"")+" "+fsLabel[fs4e   ]).c_str(),withMassErrors?"lp":"p");
+    lgd->AddEntry(gLeg[fs4mu  ],(string(signalSeparately?"Data, ":"")+" "+fsLabel[fs4mu  ]).c_str(),withMassErrors?"lp":"p");
+    lgd->AddEntry(gLeg[fs2e2mu],(string(signalSeparately?"Data, ":"")+" "+fsLabel[fs2e2mu]).c_str(),withMassErrors?"lp":"p");
+    if(!MERGE2E2MU) lgd->AddEntry(gLeg[fs2mu2e],(string(signalSeparately?"Data, ":"")+" "+fsLabel[fs2mu2e]).c_str(),withMassErrors?"lp":"p");
   }
 
   //----- prepare label for cut/blinding
@@ -1952,12 +2042,12 @@ void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraphErrors* g2[nFinalStates+1][nCateg
       lgd1->SetTextSize(legTextSize);
       lgd2->SetTextSize(legTextSize);
       lgd3->SetTextSize(legTextSize);
-      lgd1->AddEntry(g2[fs4e   ][0],fsLabel[fs4e   ].c_str(),withMassErrors?"lp":"p");
-      lgd1->AddEntry(g2[fs4mu  ][0],fsLabel[fs4mu  ].c_str(),withMassErrors?"lp":"p");
-      lgd1->AddEntry(g2[fs2e2mu][0],fsLabel[fs2e2mu].c_str(),withMassErrors?"lp":"p");
-      if(!MERGE2E2MU) lgd1->AddEntry(g2[fs2mu2e][0],fsLabel[fs2mu2e].c_str(),withMassErrors?"lp":"p");
-      TGraph* gLegCat[nCategories];
-      for(int cat=0; cat<nCategories; cat++){ 
+      lgd1->AddEntry(g2[fs4e   ][0],(" "+fsLabel[fs4e   ]).c_str(),withMassErrors?"lp":"p");
+      lgd1->AddEntry(g2[fs4mu  ][0],(" "+fsLabel[fs4mu  ]).c_str(),withMassErrors?"lp":"p");
+      lgd1->AddEntry(g2[fs2e2mu][0],(" "+fsLabel[fs2e2mu]).c_str(),withMassErrors?"lp":"p");
+      if(!MERGE2E2MU) lgd1->AddEntry(g2[fs2mu2e][0],(" "+fsLabel[fs2mu2e]).c_str(),withMassErrors?"lp":"p");
+      TGraph* gLegCat[nCat];
+      for(int cat=0; cat<nCat; cat++){ 
 	gLegCat[cat] = (TGraph*)g2[fs4e][cat]->Clone();
 	gLegCat[cat]->SetMarkerColor(kBlack);
 	gLegCat[cat]->SetLineColor(kBlack);
@@ -1972,20 +2062,20 @@ void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraphErrors* g2[nFinalStates+1][nCateg
       lgd1->Draw();
       lgd2->Draw();
       lgd3->Draw();
-      for(int cat=0; cat<nCategories; cat++){
+      for(int cat=0; cat<nCat; cat++){
 	g2[fs2e2mu][cat]->Draw(withMassErrors?"P":"XP");
 	if(!MERGE2E2MU) g2[fs2mu2e][cat]->Draw(withMassErrors?"P":"XP");
 	g2[fs4mu][cat]->Draw(withMassErrors?"P":"XP");
 	g2[fs4e][cat]->Draw(withMassErrors?"P":"XP");
       }
       //h2Stacked->GetYaxis()->SetLimits(0.,1.199);
-      h2Stacked->GetYaxis()->SetTitle(Form("%s           ",h2Stacked->GetYaxis()->GetTitle()));
+      h2Stacked->GetYaxis()->SetTitle(Form("%s          ",h2Stacked->GetYaxis()->GetTitle()));
       h2Stacked->GetYaxis()->SetTitleOffset(1.);//1.2);
     }else{
-      g2[fs2e2mu][nCategories]->Draw(withMassErrors?"P":"XP");
-      if(!MERGE2E2MU) g2[fs2mu2e][nCategories]->Draw(withMassErrors?"P":"XP");
-      g2[fs4mu][nCategories]->Draw(withMassErrors?"P":"XP");
-      g2[fs4e][nCategories]->Draw(withMassErrors?"P":"XP");
+      g2[fs2e2mu][nCat]->Draw(withMassErrors?"P":"XP");
+      if(!MERGE2E2MU) g2[fs2mu2e][nCat]->Draw(withMassErrors?"P":"XP");
+      g2[fs4mu][nCat]->Draw(withMassErrors?"P":"XP");
+      g2[fs4e][nCat]->Draw(withMassErrors?"P":"XP");
     }
   }
   if(doBlindingArea) box->Draw();
@@ -2041,27 +2131,27 @@ void doPlots(string outputDirectory, double lumi, string lumiText, Int_t FINALST
   gStyle->SetGridColor(kGray);
 
   //---------- retrieve histograms from the main ROOT file
-  TH1F* h1[nVariables][nFinalStates+1][nCategories+1][nProcesses];
+  TH1F* h1[nVariables][nFinalStates+1][nCat+1][nProcesses];
   TH2F* h2[nVarPairs ][nProcesses];
-  TGraphErrors* g2Data[nVarPairs][nFinalStates+1][nCategories+1];
+  TGraphErrors* g2Data[nVarPairs][nFinalStates+1][nCat+1];
   string inFileName = string(Form("histos_plotDataVsMC_%.3ffb-1%s.root",lumi,(MERGE2E2MU?"_m":"")));
   cout<<"Retrieving MC histograms and data graphs from file "<<inFileName<<" ..."<<endl;
   TFile* fInHistos = TFile::Open(inFileName.c_str());
   for(int fs=0; fs<nFinalStates+1; fs++){
     if(MERGE2E2MU && fs==fs2mu2e) continue;
-    for(int cat=0; cat<nCategories+1; cat++){
+    for(int cat=0; cat<nCat+1; cat++){
       for(int pr=0; pr<nProcesses; pr++){
 	for(int v1=0; v1<nVariables; v1++){
 	  if(myV1[v1].plotLvl>PLOTLEVEL) continue;
 	  if(!( (fs==FINALSTATE || (FINALSTATE==nFinalStates && myV1[v1].InFS && cat==CATEGORY)) &&
-		(cat==CATEGORY || (CATEGORY==nCategories && myV1[v1].InCateg && fs==FINALSTATE)) )) continue;		
+		(cat==myV1[v1].Categ || (cat==CATEGORY && CATEGORY!=nCat && myV1[v1].Categ==nCat && fs==FINALSTATE)) )) continue;		
 	  h1[v1][fs][cat][pr] = (TH1F*)fInHistos->Get( Form("h1_%s_%s_%s_%s_%s_%s",myV1[v1].Name.c_str(),sBlinding[BLINDING].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[nRS].c_str(),sProcess[pr].c_str()) );
 	  h1[v1][fs][cat][pr]->GetXaxis()->SetTitle(ReplaceString(h1[v1][fs][cat][pr]->GetXaxis()->GetTitle(),"4#font[12]{l}",fsLabel[fs]).c_str());
-	  if(myV1[v1].restrCountVar) restrictXAxis(h1[v1][fs][cat][pr],myV1[v1].restrCountVar);
+	  if(myV1[v1].restrXmax) restrictXAxis(h1[v1][fs][cat][pr],myV1[v1].restrXmax);
 	}
 	for(int v2=0; v2<nVarPairs; v2++){
 	  if(myV2[v2].plotLvl>PLOTLEVEL) continue;
-	  if(!( fs==nFinalStates && cat==nCategories )) continue;	      
+	  if(!( fs==nFinalStates && cat==nCat )) continue;	      
 	  h2[v2][pr] = (TH2F*)fInHistos->Get( Form("h2_%s_%s_%s_%s_%s_%s",myV2[v2].Name.c_str(),sBlinding[BLINDING].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[nRS].c_str(),sProcess[pr].c_str()) );
 	  h2[v2][pr]->GetXaxis()->SetTitle(ReplaceString(h2[v2][pr]->GetXaxis()->GetTitle(),"4#font[12]{l}",fsLabel[fs]).c_str());
 	  h2[v2][pr]->GetYaxis()->SetTitle(ReplaceString(h2[v2][pr]->GetYaxis()->GetTitle(),"4#font[12]{l}",fsLabel[fs]).c_str());
@@ -2075,20 +2165,20 @@ void doPlots(string outputDirectory, double lumi, string lumiText, Int_t FINALST
   }
 
   //---------- get Z+X histograms
-  TH1F* h1_ZPlusX[nVariables][nFinalStates+1][nCategories+1];
+  TH1F* h1_ZPlusX[nVariables][nFinalStates+1][nCat+1];
   if(BUILDZPLUSXHISTOFROMSSCR){
     string inFileName_ZPlusXSS = string(Form("histos_plotDataVsMC_ZPlusXSS_%.3ffb-1%s.root",lumi,(MERGE2E2MU?"_m":"")));
     cout<<"Retrieving Z+X histograms from file "<<inFileName_ZPlusXSS<<" ..."<<endl;
     TFile*fInHistos_ZPlusXSS = TFile::Open(inFileName_ZPlusXSS.c_str());
     for(int fs=0; fs<nFinalStates+1; fs++){
       if(MERGE2E2MU && fs==fs2mu2e) continue;
-      for(int cat=0; cat<nCategories+1; cat++){
+      for(int cat=0; cat<nCat+1; cat++){
 	for(int v1=0; v1<nVariables; v1++){
 	  if(myV1[v1].plotLvl>PLOTLEVEL) continue;
 	  if(!( (fs==FINALSTATE || (FINALSTATE==nFinalStates && myV1[v1].InFS && cat==CATEGORY)) &&
-		(cat==CATEGORY || (CATEGORY==nCategories && myV1[v1].InCateg && fs==FINALSTATE)) )) continue;		
+		(cat==myV1[v1].Categ || (cat==CATEGORY && CATEGORY!=nCat && myV1[v1].Categ==nCat && fs==FINALSTATE)) )) continue;		
 	  h1_ZPlusX[v1][fs][cat] = (TH1F*)fInHistos_ZPlusXSS->Get( Form("h1_ZPlusXSS_%s_%s_%s_%s",myV1[v1].Name.c_str(),sBlinding[BLINDING].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str()) );
-	  if(myV1[v1].restrCountVar) restrictXAxis(h1_ZPlusX[v1][fs][cat],myV1[v1].restrCountVar);
+	  if(myV1[v1].restrXmax) restrictXAxis(h1_ZPlusX[v1][fs][cat],myV1[v1].restrXmax);
 	}
       }
     }
@@ -2114,17 +2204,16 @@ void doPlots(string outputDirectory, double lumi, string lumiText, Int_t FINALST
     cout<<"Doing 1D plots ..."<<endl;
     for(int fs=0; fs<nFinalStates+1; fs++){
       if(MERGE2E2MU && fs==fs2mu2e) continue;
-      for(int cat=0; cat<nCategories+1; cat++){
+      for(int cat=0; cat<nCat+1; cat++){
 	for(int v1=0; v1<nVariables; v1++){
 	  if(myV1[v1].plotLvl>PLOTLEVEL) continue;
 	  if(myV1[v1].Name.find("M4L118130")!=string::npos && BLINDING!=unblinded && BLINDING!=fullyblind) continue;
 	  if(!( (fs==FINALSTATE || (FINALSTATE==nFinalStates && myV1[v1].InFS && cat==CATEGORY)) &&
-		(cat==CATEGORY || (CATEGORY==nCategories && myV1[v1].InCateg && fs==FINALSTATE)) )) continue;		
-	  bool large = myV1[v1].Large;
-	  gStyle->SetFrameLineWidth(large?2:1);
-	  canvasName = string(Form("%s%s_%s_%s_%s",fs!=nFinalStates?"f":cat!=nCategories?"g":myV1[v1].canvPrefix.c_str(),(BLINDING==unblinded?"":"_"+sBlinding[BLINDING]).c_str(),myV1[v1].Name.c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str()));
-	  c1[v1] = new TCanvas(canvasName.c_str(),canvasName.c_str(),large?650:500,500);
-	  DrawDataMC1D(c1[v1],h1[v1][fs][cat],h1_ZPlusX[v1][fs][cat],v1,BLINDING,lumi,lumiText,cat,large,myV1[v1].isLogx,myV1[v1].isLogy);
+		(cat==myV1[v1].Categ || (cat==CATEGORY && CATEGORY!=nCat && myV1[v1].Categ==nCat && fs==FINALSTATE)) )) continue;
+	  //gStyle->SetFrameLineWidth(myV1[v1].Large?2:1);
+	  canvasName = string(Form("%s%s_%s_%s_%s",fs!=nFinalStates?"f":cat!=nCat?"g":myV1[v1].prefix.c_str(),(BLINDING==unblinded?"":"_"+sBlinding[BLINDING]).c_str(),myV1[v1].Name.c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str()));
+	  c1[v1] = new TCanvas(canvasName.c_str(),canvasName.c_str(),myV1[v1].Large?650:500,500);
+	  DrawDataMC1D(c1[v1],h1[v1][fs][cat],h1_ZPlusX[v1][fs][cat],v1,BLINDING,lumi,lumiText,cat,myV1[v1].isLogx,myV1[v1].isLogy);
 	  SaveCanvas(outputDirectory,c1[v1]);
 	}
       }
@@ -2132,12 +2221,12 @@ void doPlots(string outputDirectory, double lumi, string lumiText, Int_t FINALST
   }
   TCanvas* c2[nVarPairs];
   //TCanvas* c2[nVarPairs][NSTYLES2DPLOT]; //for style tests
-  if(DO2DPLOTS && FINALSTATE==nFinalStates && CATEGORY==nCategories){
+  if(DO2DPLOTS && FINALSTATE==nFinalStates && CATEGORY==nCat){
     cout<<"Doing 2D plots ..."<<endl;
     for(int v2=0; v2<nVarPairs; v2++){
       if(myV2[v2].plotLvl>PLOTLEVEL) continue;
       if(myV2[v2].Name.find("M4L118130")!=string::npos && BLINDING!=unblinded && BLINDING!=fullyblind) continue;
-      canvasName = string(Form("%s%s_2D_%s_%s",myV2[v2].canvPrefix.c_str(),(BLINDING==unblinded?"":"_"+sBlinding[BLINDING]).c_str(),myV2[v2].Name.c_str(),sFinalState[FINALSTATE].c_str()));
+      canvasName = string(Form("%s%s_2D_%s_%s",myV2[v2].prefix.c_str(),(BLINDING==unblinded?"":"_"+sBlinding[BLINDING]).c_str(),myV2[v2].Name.c_str(),sFinalState[FINALSTATE].c_str()));
       c2[v2] = new TCanvas(canvasName.c_str(),canvasName.c_str(),500,500);
       DrawDataMC2D(c2[v2],h2[v2],g2Data[v2],v2,BLINDING,lumiText,STYLE2DPLOT,myV2[v2].isLogx,myV2[v2].isLogy);
       SaveCanvas(outputDirectory,c2[v2]);
@@ -2166,7 +2255,7 @@ void doPlots(string outputDirectory, double lumi, string lumiText, Int_t FINALST
 ////////////////////////////////////////////////////////////////////////////////
 
 
-void plotDataVsMC(bool redoHistograms = true, Int_t FINALSTATE = nFinalStates, Int_t CATEGORY = nCategories) {
+void plotDataVsMC(bool redoHistograms = true, Int_t FINALSTATE = nFinalStates, Int_t CATEGORY = nCat) {
 
 
   // --------------- definitions ---------------

@@ -1,9 +1,11 @@
-/* 
- * usage: 
- * -at the end of the present file, specify input trees, luminosity and m4l window
- * -run with:
- *   root -q -l -b prepareYields.C++
- */
+///
+/// usage:
+/// -specify parameters (input/output location, luminosity, m4l window) at the end of this file
+/// -run with:
+///   root -q -l -b prepareYields.C++
+/// -later, once yields have been stored, use parameter 0 to not rerun over all MC:
+///   root -q -l -b prepareYields.C++(0)
+///
 
 #include <iostream>
 #include <fstream>
@@ -38,22 +40,25 @@ using namespace std;
 #define JUST125 0
 
 #define DEBUG 0
-#define MERGE2E2MU 1
-#define APPLYKFACTORS 1
-#define USEPUWEIGHT 1
-#define USEVHMETTAG 1
 #define UNBLINDSR 0
 #define PRINTLATEXTABLES 0
 #define SPLITVHHADLEP 1
 
-#define DOZPLUSXFROMRUN2COMBINEDSHAPE 1
-#define BUILDZPLUSXYIELDFROMSSCR 1 // Obtain Z+X yields in every category from rerunning over SS CR. Overwrites hardcoded global arrays.
-#define RESCALEZPLUSXTOCOMBINEDINCLUSIVE 0 // Renormalize all Z+X yields to the hardcoded SS/OS-combined numbers.
+#define APPLYKFACTORS 1
+#define USEPUWEIGHT 1
+#define USEVHMETTAG 1
+#define USEBBH 0
+#define MERGE2E2MU 1 // Don't change this unless you really know what you are doing.
 
-//Combined 0S+SS inclusive, numbers to be updated for the full 2016 data set.
-Float_t normCombFullRange4e    = 0.;
-Float_t normCombFullRange4mu   = 0.;
-Float_t normCombFullRange2e2mu = 0.;
+#define DOZPLUSXFROMRUN2COMBINEDSHAPE 1
+#define BUILDZPLUSXYIELDFROMSSCR 1 // Obtain Z+X yields in every category from rerunning over the SS CR. Overwrites hardcoded global arrays.
+#define RESCALEZPLUSXTOCOMBINEDINCLUSIVE 1 // Renormalize all Z+X yields to the hardcoded SS/OS-combined inclusive numbers.
+
+//Combined 0S+SS inclusive Z+X prediction
+//Here: numbers for the full 2016 data set, computed by Roberto on March 3rd 2017
+Float_t normCombFullRange4e    = 21.1;
+Float_t normCombFullRange4mu   = 34.4;
+Float_t normCombFullRange2e2mu = 59.9;
 
 //Normalization of Z+X in final states and categories. 
 //These numbers get overwritten if the BUILDZPLUSXYIELDFROMSSCR flag is on.
@@ -97,17 +102,18 @@ Float_t normSSFullRange2e2mu[8] = {
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-enum Process {ggH=0, qqH=1, WH=2, WH_lep=3, WH_had=4, ZH=5, ZH_lep=6, ZH_had=7, ttH=8, bbH=9, qqZZ=10, ggZZ=11};
-const int nProcesses = 12;
-string sProcess[nProcesses] = {"ggH", "qqH", "WH", "WH_lep", "WH_had", "ZH", "ZH_lep", "ZH_had", "ttH", "bbH", "qqZZ", "ggZZ"};
-bool isSignal[nProcesses] = {1,1,1,1,1,1,1,1,1,0,0,0,};
-bool includeInYaml[nProcesses] = {1,1,!SPLITVHHADLEP,SPLITVHHADLEP,SPLITVHHADLEP,!SPLITVHHADLEP,SPLITVHHADLEP,SPLITVHHADLEP,1,0,1,1,};
+enum Process {ggH=0, qqH=1, WH=2, WH_lep=3, WH_had=4, ZH=5, ZH_lep=6, ZH_had=7, ttH=8, bbH=9, qqZZ=10, ggZZ=11, ttZ=12, WWZ=13};
+const int nProcesses = 14;
+string sProcess[nProcesses] = {"ggH", "qqH", "WH", "WH_lep", "WH_had", "ZH", "ZH_lep", "ZH_had", "ttH", "bbH", "qqZZ", "ggZZ", "ttZ", "WWZ"};
+bool isSignal[nProcesses] = {1,1,1,1,1,1,1,1,1,1,0,0,0,0,};
+bool useProcess[nProcesses] = {1,1,!SPLITVHHADLEP,SPLITVHHADLEP,SPLITVHHADLEP,!SPLITVHHADLEP,SPLITVHHADLEP,SPLITVHHADLEP,1,USEBBH,1,1,0,0};
+bool useProcessInMeas[nProcesses] = {1,1,!SPLITVHHADLEP,SPLITVHHADLEP,SPLITVHHADLEP,!SPLITVHHADLEP,SPLITVHHADLEP,SPLITVHHADLEP,1,0,1,1,0,0};
 
 const int nMHPoints = 6;
 string  sMHPoint[nMHPoints] = {"","120","124","125","126","130",};
 Float_t fMHPoint[nMHPoints] = {0., 120., 124., 125., 126., 130.,};
 int indexOf125 = 3;
-Int_t nMHPointsProcess[nProcesses] = {5,5,5,5,5,5,5,5,5,0,0,0};
+Int_t nMHPointsProcess[nProcesses] = {5,5,5,5,5,5,5,5,5,0,0,0,0,0};
 bool hasMHPoint[nProcesses][nMHPoints] = {
   {0,1,1,1,1,1,},//ggH
   {0,1,1,1,1,1,},//qqH
@@ -118,11 +124,13 @@ bool hasMHPoint[nProcesses][nMHPoints] = {
   {0,1,1,1,1,1,},//ZH_lep
   {0,1,1,1,1,1,},//ZH_had
   {0,1,1,1,1,1,},//ttH
-  {1,0,0,0,0,0,},//bbH
+  {0,0,0,1,0,0,},//bbH
   {1,0,0,0,0,0,},//qqZZ
   {1,0,0,0,0,0,},//ggZZ
+  {1,0,0,0,0,0,},//ttZ
+  {1,0,0,0,0,0,},//WWZ
 };
-const int orderOfPolynomial[nProcesses] = {2,2,2,2,2,2,2,2,2,0,0,0};
+const int orderOfPolynomial[nProcesses] = {2,2,2,2,2,2,2,2,2,0,0,0,0,0};
 
 enum FinalState {fs4mu=0, fs4e=1, fs2e2mu=2, fs2mu2e=3};
 const int nFinalStates = 4;
@@ -130,6 +138,7 @@ string sFinalState[nFinalStates+1] = {"4mu", "4e", "2e2mu", "2mu2e", "4l"};
 Int_t fsMarkerStyle[nFinalStates+1] = {20,22,21,33,29};
 int fs2[nFinalStates] = {1,0,2,4};
 Float_t fsROSSS[nFinalStates] = { 1.22, 0.97, 1.30, 0.98 };
+Float_t bkgdCompUncZpX[nFinalStates] = { 0.35, 0.32, 0.34, 0.34 }; // Numbers sent by Pedja on July 26th 2016
 
 // Moriond 2017 categorization 
 const int nCategories = 7;
@@ -143,12 +152,22 @@ string sCategory[nCategories+1] = {
   "VHMETTagged",
   "inclusive",
 };
+string sCategoryForSyst[nCategories] = {
+  "UnTagged",
+  "OneJetTagged",
+  "VBFTagged", 
+  "VHLeptTagged",
+  "VHHadrTagged",
+  "ttHTagged",
+  "VHMETTagged",
+};
 string sCatLatex[nCategories] = {"Untagged","VBF-1j","VBF-2j","VH-lept.","VH-hadr.","ttH","VH-MET"};
+string sCatLatexLong[nCategories+1] = {"Untagged","VBF-1jet-tagged","VBF-2jet-tagged","VH-leptonic-tagged","VH-hadronic-tagged","ttH-tagged","VH-MET-tagged","Inclusive"};
 Color_t catColor[nCategories+1] = {kBlue-9, kCyan-6, kGreen-6, kRed-7, kOrange+6, kMagenta-6, kBlack, kGray };
 
 enum ResonantStatus {resonant=0, nonresonant=1};
-const int nResStatuses = 2;
-string sResonantStatus[nResStatuses+1] = {"resonant", "nonresonant", "allres"};
+const int nRS = 2;
+string sResonantStatus[nRS+1] = {"resonant", "nonresonant", "allres"};
 
 enum SystShift {nominal=0, jecUp=1, jecDn=2, btagUp=3, btagDn=4};
 const int nSystShifts = 5;
@@ -187,7 +206,7 @@ string fixWidth(string str, unsigned n, bool atBeginning) {
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string inputFilePathggZZ, double lumi, double sqrts, double m4lMin, double m4lMax)
+void computeYields(string inputPathSignal, string inputPathqqZZ, string inputPathggZZ, double lumi, double sqrts, double m4lMin, double m4lMax)
 {
 
   TH1::SetDefaultSumw2(true);
@@ -195,7 +214,7 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
   //TFile* ggZZKFactorFile = TFile::Open("../../data/kfactors/Kfactor_Collected_ggHZZ_2l2l_NNLO_NNPDF_NarrowWidth_13TeV.root");
   //TSpline3* sp = (TSpline3*)ggZZKFactorFile->Get("sp_kfactor_Nominal");
 
-  const int nDatasets = 14;
+  const int nDatasets = 16;
   string datasets[nDatasets] = {
     "ggH",
     "VBFH",
@@ -203,7 +222,7 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
     "WminusH",
     "ZH",
     "ttH",
-    "bbH125",
+    "bbH",
     "ZZTo4l",
     "ggTo4e_Contin_MCFM701",//"ggZZ4e",
     "ggTo4mu_Contin_MCFM701",//"ggZZ4mu",
@@ -211,6 +230,8 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
     "ggTo2e2mu_Contin_MCFM701",//"ggZZ2e2mu",
     "ggTo2e2tau_Contin_MCFM701",//"ggZZ2e2tau",
     "ggTo2mu2tau_Contin_MCFM701",//"ggZZ2mu2tau",
+    "TTZJets_M10_MLM",
+    "WWZ",
   };
 
   TFile* inputFile[nDatasets];
@@ -281,15 +302,15 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
   Short_t nCleanedJetsPt30BTagged_bTagSF_jecDn;
   Short_t nCleanedJetsPt30BTagged_bTagSFUp;
   Short_t nCleanedJetsPt30BTagged_bTagSFDn;
-  vector<Float_t> *JetPt = 0;
-  vector<Float_t> *JetEta = 0;
+  //vector<Float_t> *JetPt = 0;
+  //vector<Float_t> *JetEta = 0;
   vector<Float_t> *JetPhi = 0;
-  vector<Float_t> *JetMass = 0;
+  //vector<Float_t> *JetMass = 0;
   vector<Float_t> *JetQGLikelihood = 0;
-  Float_t jetPt[99];
-  Float_t jetEta[99];
+  //Float_t jetPt[99];
+  //Float_t jetEta[99];
   Float_t jetPhi[99];
-  Float_t jetMass[99];
+  //Float_t jetMass[99];
   Float_t jetQGL[99]; 
   Float_t GenHMass;
   Float_t GenZ1Phi;
@@ -309,13 +330,13 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
   Float_t GenLep4Phi;
   Short_t GenLep4Id;
 
-  TH1F* hYield[nProcesses][nMHPoints][nFinalStates+1][nCategories+1][nResStatuses+1][nSystShifts];
+  TH1F* hYield[nProcesses][nMHPoints][nFinalStates+1][nCategories+1][nRS+1][nSystShifts];
   for(int pr=0; pr<nProcesses; pr++)
     for(int mp=0; mp<nMHPoints; mp++)
       if(hasMHPoint[pr][mp])
 	for(int fs=0; fs<nFinalStates+1; fs++)
 	  for(int cat=0; cat<nCategories+1; cat++)
-	    for(int rs=0; rs<nResStatuses+1; rs++)
+	    for(int rs=0; rs<nRS+1; rs++)
 	      for(int sy=0; sy<nSystShifts; sy++){
 		hYield[pr][mp][fs][cat][rs][sy] = new TH1F(Form("hYield_%s%s_%s_%s_%s_%s",sProcess[pr].c_str(),sMHPoint[mp].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[rs].c_str(),sSystShift[sy].c_str()),"",1,0,1);
 		hYield[pr][mp][fs][cat][rs][sy]->Sumw2(true);
@@ -339,7 +360,7 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
     if(datasets[d]=="WminusH") currentProcess = WH;
     if(datasets[d]=="ZH") currentProcess = ZH;
     if(datasets[d]=="ttH") currentProcess = ttH;
-    if(datasets[d]=="bbH125") currentProcess = bbH;
+    if(datasets[d]=="bbH") currentProcess = bbH;
     if(datasets[d]=="ZZTo4l"||
        datasets[d]=="ZZTo4lamcatnlo") 
       currentProcess = qqZZ;
@@ -356,6 +377,8 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
        datasets[d]=="ggTo2e2tau_Contin_MCFM701"||
        datasets[d]=="ggTo2mu2tau_Contin_MCFM701") 
       currentProcess = ggZZ;
+    if(datasets[d]=="TTZJets_M10_MLM") currentProcess = ttZ;
+    if(datasets[d]=="WWZ") currentProcess = WWZ;
 
     int initialCurrentProcess = currentProcess;
 
@@ -363,7 +386,7 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
 
       if(!hasMHPoint[currentProcess][mp] || (JUST125&&sMHPoint[mp]!="125"&&sMHPoint[mp]!="")) continue;
       
-      string inputFileName = string(Form("%s%s%s/ZZ4lAnalysis.root",(currentProcess==ggZZ)?inputFilePathggZZ.c_str():(currentProcess==qqZZ)?inputFilePathqqZZ.c_str():inputFilePathSignal.c_str(),datasets[d].c_str(),sMHPoint[mp].c_str()));
+      string inputFileName = string(Form("%s%s%s/ZZ4lAnalysis.root",(currentProcess==ggZZ)?inputPathggZZ.c_str():(currentProcess==qqZZ)?inputPathqqZZ.c_str():inputPathSignal.c_str(),datasets[d].c_str(),sMHPoint[mp].c_str()));
       inputFile[d] = TFile::Open(inputFileName.c_str());
       
       hCounters[d] = (TH1F*)inputFile[d]->Get("ZZTree/Counters");
@@ -416,10 +439,10 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
       inputTree[d]->SetBranchAddress("nCleanedJetsPt30BTagged_bTagSF_jecDn", &nCleanedJetsPt30BTagged_bTagSF_jecDn);
       inputTree[d]->SetBranchAddress("nCleanedJetsPt30BTagged_bTagSFUp", &nCleanedJetsPt30BTagged_bTagSFUp);
       inputTree[d]->SetBranchAddress("nCleanedJetsPt30BTagged_bTagSFDn", &nCleanedJetsPt30BTagged_bTagSFDn);
-      inputTree[d]->SetBranchAddress("JetPt", &JetPt);
-      inputTree[d]->SetBranchAddress("JetEta", &JetEta);
+      //inputTree[d]->SetBranchAddress("JetPt", &JetPt);
+      //inputTree[d]->SetBranchAddress("JetEta", &JetEta);
       inputTree[d]->SetBranchAddress("JetPhi", &JetPhi);
-      inputTree[d]->SetBranchAddress("JetMass", &JetMass);
+      //inputTree[d]->SetBranchAddress("JetMass", &JetMass);
       inputTree[d]->SetBranchAddress("JetQGLikelihood", &JetQGLikelihood);
       inputTree[d]->SetBranchAddress("p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal", &p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal);
       inputTree[d]->SetBranchAddress("p_JJVBF_SIG_ghv1_1_JHUGen_JECUp", &p_JJVBF_SIG_ghv1_1_JHUGen_JECUp);
@@ -463,6 +486,11 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
 
       //---------- Process tree
 
+      Int_t nMCEvtInSR = 0; 
+      Int_t nMCEvtInSRInMassWindow = 0; 
+      float count01jet = 0.;
+      float countdijet = 0.;
+
       Long64_t entries = inputTree[d]->GetEntries();
       cout<<"Processing dataset "<<datasets[d]<<sMHPoint[mp]<<" ("<<entries<<" entries) ..."<<endl;
 
@@ -473,7 +501,9 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
 	inputTree[d]->GetEntry(z);
       
 	if( !(ZZsel>=90) ) continue;
+	nMCEvtInSR++;
 	if(ZZMass<m4lMin || ZZMass>m4lMax) continue;
+	nMCEvtInSRInMassWindow++;
 
 	Float_t kfactor = 1.;
 	if(APPLYKFACTORS){
@@ -523,10 +553,10 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
 	//----- find category
 
 	for(int j=0; j<nCleanedJets; j++){
-	  jetPt[j] = JetPt->at(j);
-	  jetEta[j] = JetEta->at(j);
+	  //jetPt[j] = JetPt->at(j);
+	  //jetEta[j] = JetEta->at(j);
 	  jetPhi[j] = JetPhi->at(j);
-	  jetMass[j] = JetMass->at(j);
+	  //jetMass[j] = JetMass->at(j);
 	  jetQGL[j] = JetQGLikelihood->at(j);
 	}
 	Short_t varied_nCleanedJetsPt30[nSystShifts] = {nCleanedJetsPt30,nCleanedJetsPt30_jecUp,nCleanedJetsPt30_jecDn,nCleanedJetsPt30,nCleanedJetsPt30};
@@ -560,9 +590,10 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
 	    false
 	    );
 	}
+	if(nCleanedJetsPt30>=2) countdijet += eventWeight; else count01jet += eventWeight;
 
 
-	//----- check if this is resonant signal (ie. H->4l with correct lepton choice)
+	/* //----- check if this is resonant signal (ie. H->4l with correct lepton choice)
 
 	Short_t GenHLepId[4] = {GenLep1Id,GenLep2Id,GenLep3Id,GenLep4Id};
 	Float_t GenHLepEta[4] = {GenLep1Eta,GenLep2Eta,GenLep3Eta,GenLep4Eta};
@@ -597,15 +628,22 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
 	  currentResStatus = resonant;
 	else 
 	  currentResStatus = nonresonant;
+	//*/
 
 
 	//----- fill yield histogram
 	for(int sy=0; sy<nSystShifts; sy++)
-	  hYield[currentProcess][mp][currentFinalState][currentCategory[sy]][currentResStatus][sy]->Fill(0.5,eventWeight);
+	  hYield[currentProcess][mp][currentFinalState][currentCategory[sy]][nRS][sy]->Fill(0.5,eventWeight);
+	//hYield[currentProcess][mp][currentFinalState][currentCategory[sy]][currentResStatus][sy]->Fill(0.5,eventWeight);
 
 
       } // end for entries
 
+      //cout<<"nb of MC events in SR : "<<nMCEvtInSR<<endl;
+      //cout<<"nb of MC events for requested m4l window : "<<nMCEvtInSRInMassWindow<<endl;
+      //cout<<"expected yield with <2jets :  "<<count01jet<<endl;
+      //cout<<"expected yield with >=2jets : "<<countdijet<<endl;
+    
     } // end for mHPoints
 
   } // end for datasets
@@ -617,28 +655,19 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
       if(hasMHPoint[pr][mp])
 	for(int fs=0; fs<nFinalStates; fs++)
 	  for(int cat=0; cat<nCategories; cat++)
-	    for(int rs=0; rs<nResStatuses; rs++)
+	    //for(int rs=0; rs<nRS; rs++)
 	      for(int sy=0; sy<nSystShifts; sy++)
-		hYield[pr][mp][nFinalStates][cat][rs][sy]->Add(hYield[pr][mp][fs][cat][rs][sy]);
+		hYield[pr][mp][nFinalStates][cat][nRS][sy]->Add(hYield[pr][mp][fs][cat][nRS][sy]);
   for(int pr=0; pr<nProcesses; pr++)
     for(int mp=0; mp<nMHPoints; mp++)
       if(hasMHPoint[pr][mp])
 	for(int fs=0; fs<nFinalStates+1; fs++)
 	  for(int cat=0; cat<nCategories; cat++)
-	    for(int rs=0; rs<nResStatuses; rs++)
+	    //for(int rs=0; rs<nRS; rs++)
 	      for(int sy=0; sy<nSystShifts; sy++)
-		hYield[pr][mp][fs][nCategories][rs][sy]->Add(hYield[pr][mp][fs][cat][rs][sy]);
-  for(int pr=0; pr<nProcesses; pr++)
-    for(int mp=0; mp<nMHPoints; mp++)
-      if(hasMHPoint[pr][mp])
-	for(int fs=0; fs<nFinalStates+1; fs++)
-	  for(int cat=0; cat<nCategories+1; cat++)
-	    for(int rs=0; rs<nResStatuses; rs++)
-	      for(int sy=0; sy<nSystShifts; sy++)
-		hYield[pr][mp][fs][cat][nResStatuses][sy]->Add(hYield[pr][mp][fs][cat][rs][sy]);
+		hYield[pr][mp][fs][nCategories][nRS][sy]->Add(hYield[pr][mp][fs][cat][nRS][sy]);
 
   //---------- Write yield arrays to a ROOT file
-
   TFile* fOutYields = new TFile(Form("yields_%iTeV_m4l%.1f-%.1f_%.3ffb-1%s.root",(int)sqrts,m4lMin,m4lMax,lumi,(MERGE2E2MU?"_m":"")),"recreate");
   fOutYields->cd();
   for(int pr=0; pr<nProcesses; pr++){
@@ -647,11 +676,10 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
       for(int fs=0; fs<nFinalStates+1; fs++){
 	if(MERGE2E2MU && fs==fs2mu2e) continue;
 	for(int cat=0; cat<nCategories+1; cat++){
-	  for(int rs=0; rs<nResStatuses+1; rs++){
-	    for(int sy=0; sy<nSystShifts; sy++){
-	      hYield[pr][mp][fs][cat][rs][sy]->Write(hYield[pr][mp][fs][cat][rs][sy]->GetName());
-	      delete hYield[pr][mp][fs][cat][rs][sy];
-	    }
+	  //for(int rs=0; rs<nRS+1; rs++)
+	  for(int sy=0; sy<nSystShifts; sy++){
+	    hYield[pr][mp][fs][cat][nRS][sy]->Write(hYield[pr][mp][fs][cat][nRS][sy]->GetName());
+	    delete hYield[pr][mp][fs][cat][nRS][sy];
 	  }
 	}
       }
@@ -663,12 +691,12 @@ void computeYields(string inputFilePathSignal, string inputFilePathqqZZ, string 
 }
 
 
-TGraph* gr_FRmu_EB = 0;
-TGraph* gr_FRmu_EE = 0;
-TGraph* gr_FRel_EB = 0;
-TGraph* gr_FRel_EE = 0;
+TGraphAsymmErrors* gr_FRmu_EB = 0;
+TGraphAsymmErrors* gr_FRmu_EE = 0;
+TGraphErrors* gr_FRel_EB = 0;
+TGraphErrors* gr_FRel_EE = 0;
 
-Float_t fakeRate13TeV(Float_t LepPt, Float_t LepEta, Int_t LepID) {
+Float_t fakeRate13TeV(Float_t LepPt, Float_t LepEta, Int_t LepID, string syst="nominal") {
   Float_t myLepPt = LepPt>=80. ? 79. : LepPt;
   Int_t   myLepID = abs(LepID);
 
@@ -684,14 +712,14 @@ Float_t fakeRate13TeV(Float_t LepPt, Float_t LepEta, Int_t LepID) {
 
   if(myLepID==11){
     if(fabs(LepEta)<1.479)
-      return (gr_FRel_EB->GetY())[bin];
+      return (gr_FRel_EB->GetY())[bin] + (syst=="up" ? (gr_FRel_EB->GetEY())[bin] : syst=="dn" ? -(gr_FRel_EB->GetEY())[bin] : 0.);
     else
-      return (gr_FRel_EE->GetY())[bin];
+      return (gr_FRel_EE->GetY())[bin] + (syst=="up" ? (gr_FRel_EE->GetEY())[bin] : syst=="dn" ? -(gr_FRel_EE->GetEY())[bin] : 0.);
   }else if(myLepID==13){
     if(fabs(LepEta)<1.2)
-      return (gr_FRmu_EB->GetY())[bin];
+      return (gr_FRmu_EB->GetY())[bin] + (syst=="up" ? (gr_FRmu_EB->GetEYhigh())[bin] : syst=="dn" ? -(gr_FRmu_EB->GetEYlow())[bin] : 0.);
     else
-      return (gr_FRmu_EE->GetY())[bin];
+      return (gr_FRmu_EE->GetY())[bin] + (syst=="up" ? (gr_FRmu_EE->GetEYhigh())[bin] : syst=="dn" ? -(gr_FRmu_EE->GetEYlow())[bin] : 0.);
   }else{
     cout<<"ERROR! wrong lepton ID : "<<myLepID<<endl;
     return 0.;
@@ -699,15 +727,16 @@ Float_t fakeRate13TeV(Float_t LepPt, Float_t LepEta, Int_t LepID) {
 }
 
 
-void computeYieldsZPlusXSS(string inputFileAllData, string inputFileFakeRates, double lumi)
+void computeYieldsZPlusXSS(string inputPathData, string inputFileFakeRates, string outputDirectory, double lumi)
 {
 
-  cout<<"Preparing Z+X yields (SS method) from "<<inputFileAllData<<endl;
+  cout<<"Preparing Z+X yields (SS method) from "<<inputPathData<<endl;
 
-  TFile* fFakeRates = TFile::Open(inputFileFakeRates.c_str());                                                                                                                  gr_FRmu_EB = (TGraph*)fFakeRates->Get("FR_SS_muon_EB");
-  gr_FRmu_EE = (TGraph*)fFakeRates->Get("FR_SS_muon_EE");
-  gr_FRel_EB = (TGraph*)fFakeRates->Get("FR_SS_electron_EB");
-  gr_FRel_EE = (TGraph*)fFakeRates->Get("FR_SS_electron_EE");
+  TFile* fFakeRates = TFile::Open(inputFileFakeRates.c_str());
+  gr_FRmu_EB = (TGraphAsymmErrors*)fFakeRates->Get("FR_SS_muon_EB");
+  gr_FRmu_EE = (TGraphAsymmErrors*)fFakeRates->Get("FR_SS_muon_EE");
+  gr_FRel_EB = (TGraphErrors*)fFakeRates->Get("FR_SS_electron_EB");
+  gr_FRel_EE = (TGraphErrors*)fFakeRates->Get("FR_SS_electron_EE");
 
   TH1::SetDefaultSumw2(true);
 
@@ -735,38 +764,28 @@ void computeYieldsZPlusXSS(string inputFileAllData, string inputFileFakeRates, d
   Short_t nExtraZ;
   Short_t nCleanedJetsPt30;
   Short_t nCleanedJetsPt30BTagged;
-  vector<Float_t> *JetPt = 0;
-  vector<Float_t> *JetEta = 0;
   vector<Float_t> *JetPhi = 0;
-  vector<Float_t> *JetMass = 0;
   vector<Float_t> *JetQGLikelihood = 0;
-  Float_t jetPt[99];
-  Float_t jetEta[99];
   Float_t jetPhi[99];
-  Float_t jetMass[99];
   Float_t jetQGL[99]; 
 
   Float_t expectedYieldSR[nFinalStates+1][nCategories+1];
+  Float_t expectedYieldSR_up[nFinalStates+1][nCategories+1];
+  Float_t expectedYieldSR_dn[nFinalStates+1][nCategories+1];
   Int_t NumberOfEventsCR[nFinalStates+1][nCategories+1];
   for(int fs=0; fs<nFinalStates+1; fs++){
     for(int cat=0; cat<nCategories+1; cat++){
       expectedYieldSR[fs][cat] = 0.;
+      expectedYieldSR_up[fs][cat] = 0.;
+      expectedYieldSR_dn[fs][cat] = 0.;
       NumberOfEventsCR[fs][cat] = 0.;
     }
   }
-  //*
-  TH1F* hYieldSR[nFinalStates+1][nCategories+1];
-  for(int fs=0; fs<nFinalStates+1; fs++)
-    for(int cat=0; cat<nCategories+1; cat++){
-      hYieldSR[fs][cat] = new TH1F(Form("hYield_ZPlusXSS_%s_%s",sFinalState[fs].c_str(),sCategory[cat].c_str()),"",1,0,1);
-      hYieldSR[fs][cat]->Sumw2(true);
-    }
-  //*/
 
   int currentFinalState;
   int currentCategory;
 
-  TFile* dataFile = TFile::Open(inputFileAllData.c_str());
+  TFile* dataFile = TFile::Open((inputPathData+"AllData/ZZ4lAnalysis.root").c_str());
   TTree* mytree = (TTree*)dataFile->Get("CRZLLTree/candTree");
 
   mytree->SetBranchAddress("RunNumber", &nRun);
@@ -786,10 +805,7 @@ void computeYieldsZPlusXSS(string inputFileAllData, string inputFileFakeRates, d
   mytree->SetBranchAddress("nExtraZ", &nExtraZ);
   mytree->SetBranchAddress("nCleanedJetsPt30", &nCleanedJetsPt30);
   mytree->SetBranchAddress("nCleanedJetsPt30BTagged", &nCleanedJetsPt30BTagged);
-  mytree->SetBranchAddress("JetPt", &JetPt);
-  mytree->SetBranchAddress("JetEta", &JetEta);
   mytree->SetBranchAddress("JetPhi", &JetPhi);
-  mytree->SetBranchAddress("JetMass", &JetMass);
   mytree->SetBranchAddress("JetQGLikelihood", &JetQGLikelihood);
   mytree->SetBranchAddress("p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal", &p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal);
   mytree->SetBranchAddress("p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal", &p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal);
@@ -832,10 +848,7 @@ void computeYieldsZPlusXSS(string inputFileAllData, string inputFileFakeRates, d
 
     //----- find category
     for(int j=0; j<nCleanedJetsPt30; j++){
-      jetPt[j] = JetPt->at(j);
-      jetEta[j] = JetEta->at(j);
       jetPhi[j] = JetPhi->at(j);
-      jetMass[j] = JetMass->at(j);
       jetQGL[j] = JetQGLikelihood->at(j);
     }
     currentCategory = categoryMor17(
@@ -858,61 +871,168 @@ void computeYieldsZPlusXSS(string inputFileAllData, string inputFileFakeRates, d
        false
     );
 
-    //----- fill yield histogram
-
+    //----- update counters
     Float_t yieldSR = fsROSSS[currentFinalState] * fakeRate13TeV(LepPt->at(2),LepEta->at(2),LepLepId->at(2)) * fakeRate13TeV(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
-
-    if(MERGE2E2MU && currentFinalState==fs2mu2e)
-      hYieldSR[fs2e2mu][currentCategory]->Fill(0.5,yieldSR);
-    else
-      hYieldSR[currentFinalState][currentCategory]->Fill(0.5,yieldSR);
-
+    Float_t yieldSR_up = fsROSSS[currentFinalState] * fakeRate13TeV(LepPt->at(2),LepEta->at(2),LepLepId->at(2),"up") * fakeRate13TeV(LepPt->at(3),LepEta->at(3),LepLepId->at(3),"up");
+    Float_t yieldSR_dn = fsROSSS[currentFinalState] * fakeRate13TeV(LepPt->at(2),LepEta->at(2),LepLepId->at(2),"dn") * fakeRate13TeV(LepPt->at(3),LepEta->at(3),LepLepId->at(3),"dn");
     expectedYieldSR[currentFinalState][currentCategory] += yieldSR;
+    expectedYieldSR_up[currentFinalState][currentCategory] += yieldSR_up;
+    expectedYieldSR_dn[currentFinalState][currentCategory] += yieldSR_dn;
     NumberOfEventsCR[currentFinalState][currentCategory]++;
 
   }
 
 
   //---------- Fill 'inclusive' counters
-  for(int fs=0; fs<nFinalStates; fs++)
-    for(int cat=0; cat<nCategories; cat++)
-      hYieldSR[nFinalStates][cat]->Add(hYieldSR[fs][cat]);
-  for(int fs=0; fs<nFinalStates+1; fs++)
-    for(int cat=0; cat<nCategories; cat++)
-      hYieldSR[fs][nCategories]->Add(hYieldSR[fs][cat]);
   for(int fs=0; fs<nFinalStates; fs++){
     for(int cat=0; cat<nCategories; cat++){
       expectedYieldSR[nFinalStates][cat] += expectedYieldSR[fs][cat];
+      expectedYieldSR_up[nFinalStates][cat] += expectedYieldSR_up[fs][cat];
+      expectedYieldSR_dn[nFinalStates][cat] += expectedYieldSR_dn[fs][cat];
       NumberOfEventsCR[nFinalStates][cat] += NumberOfEventsCR[fs][cat];
     }
   }
   for(int fs=0; fs<nFinalStates+1; fs++){
     for(int cat=0; cat<nCategories; cat++){
       expectedYieldSR[fs][nCategories] += expectedYieldSR[fs][cat];
+      expectedYieldSR_up[fs][nCategories] += expectedYieldSR_up[fs][cat];
+      expectedYieldSR_dn[fs][nCategories] += expectedYieldSR_dn[fs][cat];
       NumberOfEventsCR[fs][nCategories] += NumberOfEventsCR[fs][cat];
     }
   }
-  if(MERGE2E2MU)
-    for(int cat=0; cat<nCategories+1; cat++)
-      expectedYieldSR[fs2e2mu][cat] += expectedYieldSR[fs2mu2e][cat];
 
   //---------- Refill global array 
   for(int cat=0; cat<nCategories+1; cat++){
-    normSSFullRange4e[cat] = expectedYieldSR[fs4e][cat];//hYieldSR[fs4e][cat]->Integral();
-    normSSFullRange4mu[cat] = expectedYieldSR[fs4mu][cat];//hYieldSR[fs4mu][cat]->Integral();
-    normSSFullRange2e2mu[cat] = expectedYieldSR[fs2e2mu][cat];//hYieldSR[fs2e2mu][cat]->Integral();
+    normSSFullRange4e[cat] = expectedYieldSR[fs4e][cat];
+    normSSFullRange4mu[cat] = expectedYieldSR[fs4mu][cat];
+    normSSFullRange2e2mu[cat] = expectedYieldSR[fs2e2mu][cat]+expectedYieldSR[fs2mu2e][cat];
   }
 
-  //---------- Print Z+X expected yields
+  //---------- Compute uncertainties
+  Float_t StatUnc[nFinalStates+1][nCategories+1];
+  Float_t SystUnc_up[nFinalStates+1][nCategories+1]; // from propagation of uncertainties of fake rates
+  Float_t SystUnc_dn[nFinalStates+1][nCategories+1];
+  Float_t BkgdUnc[nFinalStates+1][nCategories+1]; // from bkgd composition variation in OS method
+  Float_t TotUnc_up[nFinalStates+1][nCategories+1]; // quadrature sum of the 3 components
+  Float_t TotUnc_dn[nFinalStates+1][nCategories+1];
+  for(int fs=0; fs<nFinalStates+1; fs++){
+    for(int cat=0; cat<nCategories+1; cat++){
+      StatUnc[fs][cat] = expectedYieldSR[fs][cat]/sqrt(NumberOfEventsCR[fs][cat]);
+      SystUnc_up[fs][cat] = expectedYieldSR_up[fs][cat]-expectedYieldSR[fs][cat];
+      SystUnc_dn[fs][cat] = expectedYieldSR[fs][cat]-expectedYieldSR_dn[fs][cat];
+      BkgdUnc[fs][cat] = expectedYieldSR[fs][cat]*bkgdCompUncZpX[fs];
+      TotUnc_up[fs][cat] = sqrt(StatUnc[fs][cat]*StatUnc[fs][cat] + SystUnc_up[fs][cat]*SystUnc_up[fs][cat] + BkgdUnc[fs][cat]*BkgdUnc[fs][cat]);
+      TotUnc_dn[fs][cat] = sqrt(StatUnc[fs][cat]*StatUnc[fs][cat] + SystUnc_dn[fs][cat]*SystUnc_dn[fs][cat] + BkgdUnc[fs][cat]*BkgdUnc[fs][cat]);
+    }
+  }
+  //properly combine 2e2mu and 2mu2e as TETM
+  Float_t expectedYieldSR_TETM[nCategories+1];
+  Float_t StatUnc_TETM[nCategories+1];
+  Float_t SystUnc_up_TETM[nCategories+1];
+  Float_t SystUnc_dn_TETM[nCategories+1];
+  Float_t BkgdUnc_TETM[nCategories+1];
+  Float_t TotUnc_up_TETM[nCategories+1];
+  Float_t TotUnc_dn_TETM[nCategories+1];
+  for(int cat=0; cat<nCategories+1; cat++){
+    expectedYieldSR_TETM[cat] = expectedYieldSR[fs2e2mu][cat] + expectedYieldSR[fs2mu2e][cat];
+    StatUnc_TETM[cat] = sqrt(StatUnc[fs2e2mu][cat]*StatUnc[fs2e2mu][cat] + StatUnc[fs2mu2e][cat]*StatUnc[fs2mu2e][cat]);
+    SystUnc_up_TETM[cat] = sqrt(SystUnc_up[fs2e2mu][cat]*SystUnc_up[fs2e2mu][cat] + SystUnc_up[fs2mu2e][cat]*SystUnc_up[fs2mu2e][cat]);
+    SystUnc_dn_TETM[cat] = sqrt(SystUnc_dn[fs2e2mu][cat]*SystUnc_dn[fs2e2mu][cat] + SystUnc_dn[fs2mu2e][cat]*SystUnc_dn[fs2mu2e][cat]);
+    BkgdUnc_TETM[cat] = BkgdUnc[fs2e2mu][cat] + BkgdUnc[fs2mu2e][cat];
+    TotUnc_up_TETM[cat] = sqrt(StatUnc_TETM[cat]*StatUnc_TETM[cat] + SystUnc_up_TETM[cat]*SystUnc_up_TETM[cat] + BkgdUnc_TETM[cat]*BkgdUnc_TETM[cat]);
+    TotUnc_dn_TETM[cat] = sqrt(StatUnc_TETM[cat]*StatUnc_TETM[cat] + SystUnc_dn_TETM[cat]*SystUnc_dn_TETM[cat] + BkgdUnc_TETM[cat]*BkgdUnc_TETM[cat]);
+  }
+
+  /* //---------- Print Z+X expected yields
   for(int fs=0; fs<nFinalStates; fs++){
     cout<<sFinalState[fs]<<" : "
         <<expectedYieldSR[fs][nCategories]
-        <<" +/- "<<expectedYieldSR[fs][nCategories]/sqrt(NumberOfEventsCR[fs][nCategories])<<" (stat., evt: "<<NumberOfEventsCR[fs][nCategories]<<")"
-        <<" +/- "<<expectedYieldSR[fs][nCategories]*0.50<< " (syst.)"
+        <<" +/- "<<expectedYieldSR[fs][nCategories]/sqrt(NumberOfEventsCR[fs][nCategories])
+	<<" (stat., evt: "<<NumberOfEventsCR[fs][nCategories]<<")"
         <<endl;
   }
   cout<<"Total: "<<expectedYieldSR[nFinalStates][nCategories]<<endl;
   cout<<endl;
+  //*/
+
+  if(PRINTLATEXTABLES){
+    //tables in LaTeX format for the Z+X chapter of the AN
+    int w1 = 18;
+    int w2 = 6;
+    int nD = 3;
+    for(int fs=0; fs<nFinalStates; fs++){
+      cout<<"Z+X table for final state "<<sFinalState[fs]<<endl<<endl;
+      cout<<"\\hline"<<endl<<"\\hline"<<endl;
+      cout<<"Category & events in CR & exp. $N^{\\rm Z+X}$ in SR & (stat.) & (syst.) & (bkgd. compo.) & Total unc.\\\\"<<endl;
+      cout<<"\\hline"<<endl<<"\\hline"<<endl;
+      for(int cat=0; cat<=nCategories; cat++){
+	if(cat==nCategories) cout<<"\\hline"<<endl;
+	cout<<fixWidth(sCatLatexLong[cat],w1,1)<<" & "
+	    <<fixWidth(string(Form("%i",NumberOfEventsCR[fs][cat])),w2,0)<<" & "
+	    <<fixWidth(sround(expectedYieldSR[fs][cat],nD),w2,0)<<" & "
+	    <<"$\\pm"<<fixWidth(sround(StatUnc[fs][cat],nD),w2,0)<<"$ & "
+	    <<"$^{+"<<fixWidth(sround(SystUnc_up[fs][cat],nD),w2,0)<<"}_{-"<<fixWidth(sround(SystUnc_dn[fs][cat],nD),w2,0)<<"}$ & "
+	    <<"$\\pm"<<fixWidth(sround(BkgdUnc[fs][cat],nD),w2,0)<<"$ & "
+	    <<"$^{+"<<fixWidth(sround(TotUnc_up[fs][cat],nD),w2,0)<<"}_{-"<<fixWidth(sround(TotUnc_dn[fs][cat],nD),w2,0)<<"}$ \\\\"
+	    <<endl<<"\\hline"<<endl;
+      }
+      cout<<"\\hline"<<endl;
+      cout<<endl;
+    }
+    { // table combining 2e2mu and 2mu2e
+      cout<<"Z+X table for sum of 2e2mu and 2mu2e"<<endl<<endl;
+      cout<<"\\hline"<<endl<<"\\hline"<<endl;
+      cout<<"Category & exp. $N^{\\rm Z+X}$ in SR & (stat.) & (syst.) & (bkgd. compo.) & Total unc.\\\\"<<endl;
+      cout<<"\\hline"<<endl<<"\\hline"<<endl;
+      for(int cat=0; cat<=nCategories; cat++){
+	if(cat==nCategories) cout<<"\\hline"<<endl;
+	cout<<fixWidth(sCatLatexLong[cat],w1,1)<<" & "
+	    <<fixWidth(sround(expectedYieldSR_TETM[cat],nD),w2,0)<<" & "
+	    <<"$\\pm"<<fixWidth(sround(StatUnc_TETM[cat],nD),w2,0)<<"$ & "
+	    <<"$^{+"<<fixWidth(sround(SystUnc_up_TETM[cat],nD),w2,0)<<"}_{-"<<fixWidth(sround(SystUnc_dn_TETM[cat],nD),w2,0)<<"}$ & "
+	    <<"$\\pm"<<fixWidth(sround(BkgdUnc_TETM[cat],nD),w2,0)<<"$ & "
+	    <<"$^{+"<<fixWidth(sround(TotUnc_up_TETM[cat],nD),w2,0)<<"}_{-"<<fixWidth(sround(TotUnc_dn_TETM[cat],nD),w2,0)<<"}$ \\\\"
+	    <<endl<<"\\hline"<<endl;
+      }
+      cout<<"\\hline"<<endl;
+      cout<<endl;
+    }
+  }
+
+  // Z+X systematic uncertainties for datacards
+  {
+    ofstream outFileSyst[nFinalStates];
+    
+    for(int fs=0; fs<nFinalStates; fs++){    
+      if(fs==fs2mu2e) continue;
+      
+      outFileSyst[fs].open((outputDirectory+"/partof_systematics_13TeV_"+sFinalState[fs]+".yaml").c_str());
+
+      outFileSyst[fs]<<"CMS_zjets_bkgdcompo:"<<endl
+		     <<"    UnTagged: &zjets_bkgdcompo_untagged"<<endl
+		     <<"        type : lnN"<<endl
+		     <<"        zjets: "<<1+bkgdCompUncZpX[fs]<<endl;
+      for(int cat=1; cat<nCategories; cat++)
+	outFileSyst[fs]<<"    "<<sCategoryForSyst[cat]<<":"<<endl<<"        <<: *zjets_bkgdcompo_untagged"<<endl;
+      outFileSyst[fs]<<endl;
+      
+      outFileSyst[fs]<<"CMS_zz"+sFinalState[fs]+"_zjets:"<<endl;
+      for(int cat=0; cat<nCategories; cat++){
+	outFileSyst[fs]<<"    "<<sCategoryForSyst[cat]<<":"<<endl
+		       <<"        type : lnN"<<endl
+		       <<"        zjets: ";
+	if(fs!=fs2e2mu){
+	  outFileSyst[fs]<<sround( 1. + sqrt( TotUnc_up[fs][cat]*TotUnc_up[fs][cat] - BkgdUnc[fs][cat]*BkgdUnc[fs][cat] ) / expectedYieldSR[fs][cat] ,3)<<"/"
+			 <<sround( 1. - sqrt( TotUnc_dn[fs][cat]*TotUnc_dn[fs][cat] - BkgdUnc[fs][cat]*BkgdUnc[fs][cat] ) / expectedYieldSR[fs][cat] ,3)<<endl;
+	}else{
+	  outFileSyst[fs]<<sround( 1. + sqrt( TotUnc_up_TETM[cat]*TotUnc_up_TETM[cat] - BkgdUnc_TETM[cat]*BkgdUnc_TETM[cat] ) / expectedYieldSR_TETM[cat] ,3)<<"/"
+			 <<sround( 1. - sqrt( TotUnc_dn_TETM[cat]*TotUnc_dn_TETM[cat] - BkgdUnc_TETM[cat]*BkgdUnc_TETM[cat] ) / expectedYieldSR_TETM[cat] ,3)<<endl;
+	}
+      }
+
+      outFileSyst[fs].close();
+    }
+  }
 
 }
 
@@ -948,10 +1068,10 @@ void getZPlusXYields_Run2CombinedShape_InCateg(Float_t* yieldZPX4mu, Float_t* yi
 }
 
 
-void dataEventCounts(string inputFileAllData, double m4lMin, double m4lMax)
+void dataEventCounts(string inputPathData, double m4lMin, double m4lMax)
 {
 
-  cout<<"Counting SR event in data in ["<<m4lMin<<","<<m4lMax<<"]GeV from "<<inputFileAllData<<endl;
+  cout<<"Counting SR event in data in ["<<m4lMin<<","<<m4lMax<<"]GeV from "<<inputPathData<<endl;
 
   Int_t nRun;
   Long64_t nEvent;
@@ -969,22 +1089,13 @@ void dataEventCounts(string inputFileAllData, double m4lMin, double m4lMax)
   Float_t p_JQCD_SIG_ghg2_1_JHUGen_JECNominal;
   Float_t p_HadWH_SIG_ghw1_1_JHUGen_JECNominal;
   Float_t p_HadZH_SIG_ghz1_1_JHUGen_JECNominal;
-  vector<Float_t> *LepPt = 0;
-  vector<Float_t> *LepEta = 0;
-  vector<Float_t> *LepLepId = 0;
   Short_t nExtraLep;
   Short_t nExtraZ;
   Short_t nCleanedJetsPt30;
   Short_t nCleanedJetsPt30BTagged;
-  vector<Float_t> *JetPt = 0;
-  vector<Float_t> *JetEta = 0;
   vector<Float_t> *JetPhi = 0;
-  vector<Float_t> *JetMass = 0;
   vector<Float_t> *JetQGLikelihood = 0;
-  Float_t jetPt[99];
-  Float_t jetEta[99];
   Float_t jetPhi[99];
-  Float_t jetMass[99];
   Float_t jetQGL[99]; 
 
   Int_t NumberOfEventsSR[nFinalStates+1][nCategories+1];
@@ -995,7 +1106,7 @@ void dataEventCounts(string inputFileAllData, double m4lMin, double m4lMax)
   int currentFinalState;
   int currentCategory;
 
-  TFile* dataFile = TFile::Open(inputFileAllData.c_str());
+  TFile* dataFile = TFile::Open((inputPathData+"AllData/ZZ4lAnalysis.root").c_str());
   TTree* mytree = (TTree*)dataFile->Get("ZZTree/candTree");
 
   mytree->SetBranchAddress("RunNumber", &nRun);
@@ -1007,17 +1118,11 @@ void dataEventCounts(string inputFileAllData, double m4lMin, double m4lMax)
   mytree->SetBranchAddress("ZZPt", &ZZPt);
   mytree->SetBranchAddress("Z1Flav", &Z1Flav);
   mytree->SetBranchAddress("Z2Flav", &Z2Flav);
-  mytree->SetBranchAddress("LepPt", &LepPt);
-  mytree->SetBranchAddress("LepEta", &LepEta);
-  mytree->SetBranchAddress("LepLepId", &LepLepId);
   mytree->SetBranchAddress("nExtraLep", &nExtraLep);
   mytree->SetBranchAddress("nExtraZ", &nExtraZ);
   mytree->SetBranchAddress("nCleanedJetsPt30", &nCleanedJetsPt30);
   mytree->SetBranchAddress("nCleanedJetsPt30BTagged", &nCleanedJetsPt30BTagged);
-  mytree->SetBranchAddress("JetPt", &JetPt);
-  mytree->SetBranchAddress("JetEta", &JetEta);
   mytree->SetBranchAddress("JetPhi", &JetPhi);
-  mytree->SetBranchAddress("JetMass", &JetMass);
   mytree->SetBranchAddress("JetQGLikelihood", &JetQGLikelihood);
   mytree->SetBranchAddress("p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal", &p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal);
   mytree->SetBranchAddress("p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal", &p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal);
@@ -1057,13 +1162,11 @@ void dataEventCounts(string inputFileAllData, double m4lMin, double m4lMax)
     }else{
       cerr<<"error in event "<<nRun<<":"<<nLumi<<":"<<nEvent<<", Z1Flav="<<Z1Flav<<endl;
     }
+    if(MERGE2E2MU && currentFinalState==fs2mu2e) currentFinalState=fs2e2mu;
 
     //----- find category
     for(int j=0; j<nCleanedJetsPt30; j++){
-      jetPt[j] = JetPt->at(j);
-      jetEta[j] = JetEta->at(j);
       jetPhi[j] = JetPhi->at(j);
-      jetMass[j] = JetMass->at(j);
       jetQGL[j] = JetQGLikelihood->at(j);
     }
     currentCategory = categoryMor17(
@@ -1087,8 +1190,6 @@ void dataEventCounts(string inputFileAllData, double m4lMin, double m4lMax)
     );
 
     //----- update counter
-
-    if(MERGE2E2MU && currentFinalState==fs2mu2e) currentFinalState=fs2e2mu;
     NumberOfEventsSR[currentFinalState][currentCategory]++;
 
   }
@@ -1136,7 +1237,7 @@ void DrawYieldFits(string outputDirectory, TGraphErrors* g[nProcesses][nFinalSta
   bool first;
 
   for(int pr=0; pr<nProcesses; pr++){
-    if(!includeInYaml[pr]) continue;
+    if(!useProcessInMeas[pr]) continue;
     if(!isSignal[pr]) continue;
     
     for(int cat=0; cat<nCategories; cat++){
@@ -1209,14 +1310,14 @@ void fitSignalYields(string outputDirectory, double lumi, double sqrts, double m
   Float_t yield[nProcesses][nMHPoints][nFinalStates][nCategories+1];
   Float_t yieldStatError[nProcesses][nMHPoints][nFinalStates][nCategories+1];
   for(int pr=0; pr<nProcesses; pr++){
-    if(!includeInYaml[pr]) continue;
+    if(!useProcessInMeas[pr]) continue;
     if(!isSignal[pr]) continue;
     for(int mp=0; mp<nMHPoints; mp++){
       if(hasMHPoint[pr][mp] && isSignal[pr]){
 	for(int fs=0; fs<nFinalStates; fs++){
 	  if(MERGE2E2MU && fs==fs2mu2e) continue;
 	  for(int cat=0; cat<nCategories+1; cat++){
-	    hTemp = (TH1F*)fInYields->Get(Form("hYield_%s%s_%s_%s_%s_%s",sProcess[pr].c_str(),sMHPoint[mp].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[nResStatuses].c_str(),sSystShift[nominal].c_str()));
+	    hTemp = (TH1F*)fInYields->Get(Form("hYield_%s%s_%s_%s_%s_%s",sProcess[pr].c_str(),sMHPoint[mp].c_str(),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[nRS].c_str(),sSystShift[nominal].c_str()));
 	    yield[pr][mp][fs][cat] = hTemp->GetBinContent(1);
 	    yieldStatError[pr][mp][fs][cat] = hTemp->GetBinError(1);//0.;//
 	  }
@@ -1232,7 +1333,7 @@ void fitSignalYields(string outputDirectory, double lumi, double sqrts, double m
   TF1* fYield[nProcesses][nFinalStates][nCategories+1];
 
   for(int pr=0; pr<nProcesses; pr++){
-    if(!includeInYaml[pr]) continue;
+    if(!useProcessInMeas[pr]) continue;
     if(!isSignal[pr]) continue;
 
     for(int fs=0; fs<nFinalStates; fs++){
@@ -1293,7 +1394,7 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
 {
 
   bool doSystStudy = (mHoption=="param"||mHoption=="125");
-  for(int pr=0; pr<nProcesses; pr++) if(isSignal[pr] && !hasMHPoint[pr][indexOf125]){ doSystStudy = false; break; }
+  for(int pr=0; pr<nProcesses; pr++) if(isSignal[pr] && useProcessInMeas[pr] && !hasMHPoint[pr][indexOf125]){ doSystStudy = false; break; }
 
   //---------- Retrieve yields and functions from the ROOT file
 
@@ -1307,7 +1408,7 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
     for(int fs=0; fs<nFinalStates+1; fs++){
       if(MERGE2E2MU && fs==fs2mu2e) continue;
       for(int cat=0; cat<nCategories+1; cat++){
-	hTemp = (TH1F*)fInYields->Get(Form("hYield_%s%s_%s_%s_%s_%s",sProcess[pr].c_str(),(isSignal[pr]?(mHoption!="param"?mHoption.c_str():"125"):""),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[nResStatuses].c_str(),sSystShift[nominal].c_str()));
+	hTemp = (TH1F*)fInYields->Get(Form("hYield_%s%s_%s_%s_%s_%s",sProcess[pr].c_str(),(isSignal[pr]?(mHoption!="param"?mHoption.c_str():"125"):""),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[nRS].c_str(),sSystShift[nominal].c_str()));
 	yield[pr][fs][cat] = hTemp->GetBinContent(1);
 	yieldStatError[pr][fs][cat] = hTemp->GetBinError(1);
       }
@@ -1315,7 +1416,7 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
     if(doSystStudy){
       for(int cat=0; cat<nCategories+1; cat++){
 	for(int sy=0; sy<nSystShifts; sy++){
-	  hTemp = (TH1F*)fInYields->Get(Form("hYield_%s%s_%s_%s_%s_%s",sProcess[pr].c_str(),(isSignal[pr]?"125":""),sFinalState[nFinalStates].c_str(),sCategory[cat].c_str(),sResonantStatus[nResStatuses].c_str(),sSystShift[sy].c_str()));
+	  hTemp = (TH1F*)fInYields->Get(Form("hYield_%s%s_%s_%s_%s_%s",sProcess[pr].c_str(),(isSignal[pr]?"125":""),sFinalState[nFinalStates].c_str(),sCategory[cat].c_str(),sResonantStatus[nRS].c_str(),sSystShift[sy].c_str()));
 	  yield_4l_forSyst[pr][cat][sy] = hTemp->GetBinContent(1);
 	}
       }
@@ -1327,7 +1428,7 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
   if(mHoption=="param"){
     fInYieldFunctions = TFile::Open(Form("yieldFunctions_%iTeV_m4l%.1f-%.1f_%.3ffb-1%s.root",(int)sqrts,m4lMin,m4lMax,lumi,(MERGE2E2MU?"_m":"")));
     for(int pr=0; pr<nProcesses; pr++){
-      if(!includeInYaml[pr]) continue;
+      if(!useProcessInMeas[pr]) continue;
       if(!isSignal[pr]) continue;
       for(int cat=0; cat<nCategories+1; cat++){
 	for(int fs=0; fs<nFinalStates; fs++){
@@ -1392,9 +1493,14 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
       outFile[fs]<<sCategory[cat]<<": "<<endl;
 
       for(int pr=0; pr<nProcesses; pr++){
-	if(!includeInYaml[pr]) continue;
+	if(!useProcess[pr]) continue;
 
-	if(isSignal[pr] && mHoption=="param"){
+	if(isSignal[pr]) totalYieldSgnl[fs][cat] += yield[pr][fs][cat];
+	else totalYieldBkgd[fs][cat] += yield[pr][fs][cat];
+	totalYield[fs][cat] += yield[pr][fs][cat];
+
+	if(!useProcessInMeas[pr]) continue;
+	if(isSignal[pr] && useProcessInMeas[pr] && mHoption=="param"){
 	  outFile[fs]<<"    "<<sProcess[pr]<<": ";
 	  for(int ord=0; ord<=orderOfPolynomial[pr]; ord++){
 	    Float_t param = fYield[pr][fs][cat]->GetParameter(ord);
@@ -1408,9 +1514,6 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
 	  outFile[fs]<<"    "<<sProcess[pr]<<": '"<<yield[pr][fs][cat]<<"'"<<endl;
 	}
 
-	if(isSignal[pr]) totalYieldSgnl[fs][cat] += yield[pr][fs][cat];
-	else totalYieldBkgd[fs][cat] += yield[pr][fs][cat];
-	totalYield[fs][cat] += yield[pr][fs][cat];
       }
 
       if(DOZPLUSXFROMRUN2COMBINEDSHAPE && MERGE2E2MU){
@@ -1451,7 +1554,7 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
       outFileSyst<<"    "<<sCategory[cat]<<": "<<endl;
       outFileSyst<<"        type: lnN"<<endl;
       for(int pr=0; pr<nProcesses; pr++){
-	if(!includeInYaml[pr]) continue;
+	if(!useProcessInMeas[pr]) continue;
 	jecUpFactor = fround( yield_4l_forSyst[pr][cat][jecUp] / yield_4l_forSyst[pr][cat][nominal], 4);
 	jecDnFactor = fround( yield_4l_forSyst[pr][cat][jecDn] / yield_4l_forSyst[pr][cat][nominal], 4);
 	if(jecUpFactor==1 && jecDnFactor==1) continue;
@@ -1466,7 +1569,7 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
       outFileSyst<<"    "<<sCategory[cat]<<": "<<endl;
       outFileSyst<<"        type: lnN"<<endl;
       for(int pr=0; pr<nProcesses; pr++){
-	if(!includeInYaml[pr]) continue;
+	if(!useProcessInMeas[pr]) continue;
 	btagUpFactor = fround( yield_4l_forSyst[pr][cat][btagUp] / yield_4l_forSyst[pr][cat][nominal], 4);
 	btagDnFactor = fround( yield_4l_forSyst[pr][cat][btagDn] / yield_4l_forSyst[pr][cat][nominal], 4);
 	if(btagUpFactor==1 && btagDnFactor==1) continue;
@@ -1507,7 +1610,7 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
 
   if(PRINTLATEXTABLES){
 
-    //* //per-FS table in LaTeX format for the PAS
+    //* //per-FS table in LaTeX format for the AN/PAS
     int w1 = 23;
     int w2 = 6;
     int ndec = 2; //1;
@@ -1545,24 +1648,27 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
     cout<<endl;
     //*/
 
-    //* //per-category table in LaTeX format for the PAS
+    //* //per-category table in LaTeX format for the AN/PAS
     int w3 = 9;
     int w4 = 5;
     cout<<fixWidth("category",w3,1)<<" & ";
-    for(int pr=0; pr<nProcesses; pr++) if(includeInYaml[pr]||pr==bbH) cout<<fixWidth(sProcess[pr],w4+2,0)<<" & ";
+    for(int pr=0; pr<nProcesses; pr++) if(useProcess[pr]) cout<<fixWidth(sProcess[pr],w4+2,0)<<" & ";
     cout<<fixWidth("Z+X",w4+2,0)<<" & ";
+    cout<<fixWidth("Signal",w4+2,0)<<" & ";
     cout<<fixWidth("Total",w4+2,0)<<" & Obs \\\\"<<endl;
     cout<<"\\hline"<<endl;
     for(int cat=0; cat<nCategories; cat++){
       cout<<fixWidth(sCatLatex[cat],w3,1)<<" & ";
-      for(int pr=0; pr<nProcesses; pr++) if(includeInYaml[pr]||pr==bbH) cout<<"$"<<fixWidth(sround(yield[pr][4][cat],2),w4,0)<<"$"<<" & ";
+      for(int pr=0; pr<nProcesses; pr++) if(useProcess[pr]) cout<<"$"<<fixWidth(sround(yield[pr][4][cat],2),w4,0)<<"$"<<" & ";
       cout<<"$"<<fixWidth(sround(yieldZPlusX[4][cat],2),w4,0)<<"$"<<" & ";
+      cout<<"$"<<fixWidth(sround(totalYieldSgnl[4][cat],2),w4,0)<<"$"<<" & ";
       cout<<"$"<<fixWidth(sround(totalYield[4][cat],2),w4,0)<<"$"<<" & XXX \\\\"<<endl;
     }
     cout<<"\\hline"<<endl;
     cout<<fixWidth("Total",w3,1)<<" & ";
-    for(int pr=0; pr<nProcesses; pr++) if(includeInYaml[pr]||pr==bbH) cout<<"$"<<fixWidth(sround(yield[pr][4][nCategories],2),w4,0)<<"$"<<" & ";
+    for(int pr=0; pr<nProcesses; pr++) if(useProcess[pr]) cout<<"$"<<fixWidth(sround(yield[pr][4][nCategories],2),w4,0)<<"$"<<" & ";
     cout<<"$"<<fixWidth(sround(yieldZPlusX[4][nCategories],2),w4,0)<<"$"<<" & ";
+    cout<<"$"<<fixWidth(sround(totalYieldSgnl[4][nCategories],2),w4,0)<<"$"<<" & ";
     cout<<"$"<<fixWidth(sround(totalYield[4][nCategories],2),w4,0)<<"$"<<" & XXX \\\\"<<endl;
     cout<<"\\hline \\hline"<<endl;
     cout<<endl;
@@ -1585,7 +1691,8 @@ void prepareYields(bool recomputeYields = true) {
 
   // --------------- definitions ---------------
 
-  // Define input/output location
+  // Specify input/output location
+
   string inputPathSignal = "";
   string inputFileData = "";
 
@@ -1602,20 +1709,20 @@ void prepareYields(bool recomputeYields = true) {
   // Define the luminosity
   float lumi = 35.86706;
 
-  // m4l window
-  //*
+  // Choose an m4l window
+  //* // for datacards
   float m4l_min = 105.;
   float m4l_max = 140.;
   //*/
-  /*
+  /* // for table in AN/PAS
   float m4l_min = 70.;
   float m4l_max = 3000.;
   //*/
-  /*
+  /* // for table in AN/PAS
   float m4l_min = 118.;
   float m4l_max = 130.;
   //*/
-  /*
+  /* // for sync
   float m4l_min = 110.;
   float m4l_max = 150.;
   //*/
@@ -1634,10 +1741,10 @@ void prepareYields(bool recomputeYields = true) {
 
   // Prepare Z+X yields from SS CR, but in the full range, to be then normalized thanks to the shape
   if(BUILDZPLUSXYIELDFROMSSCR)
-    computeYieldsZPlusXSS(inputFileData, inputFileFakeRates, lumi);
+    computeYieldsZPlusXSS(inputPathData, inputFileFakeRates, outputPath, lumi);
 
-  // /!\ Counting observed events
-  if(UNBLINDSR) dataEventCounts(inputFileData, m4l_min, m4l_max);
+  // /!\ Count observed events
+  if(UNBLINDSR) dataEventCounts(inputPathData, m4l_min, m4l_max);
 
   // Parameterize signal yields as a function of mH
   if(!JUST125) 
