@@ -89,11 +89,11 @@ string scategory;
 string ssample;
 string sselAna;
 
-void fitSignalContinumShapeSimul(int massBin[40], int maxMassBin, int selAna, int ch, int cat, int sample, double rangeLow[40], double rangeHigh[40],
+void fitSignalContinumShapeSimul(int massBin[40], int maxMassBin, int selAna, int ch, int cat, int sample, int split,  double rangeLow[40], double rangeHigh[40],
                           double bwSigma[40], double fitValues[7], double fitErrors[7], double covQual[1]);
 
 
-void all(int selAna =-10,  int channels=0, int categ =-10, int sample = 0 ){
+void all(int selAna =-10,  int channels=0, int categ =-10, int sample = 0, int split = 0 ){
 
   if (selAna == 0) sselAna = "Moriond";
   if (selAna == 1) sselAna = "ICHEP";
@@ -114,17 +114,21 @@ void all(int selAna =-10,  int channels=0, int categ =-10, int sample = 0 ){
   if (categ == 4 && selAna == 1 ) scategory = "VHLeptTagged";
   if (categ == 5 && selAna == 1 ) scategory = "ttHTagged";
 
-  if (categ == 0 && selAna == 2 ) scategory = "UntaggedMor17";
-  if (categ == 1 && selAna == 2 ) scategory = "VBF1JetTaggedMor17";
-  if (categ == 2 && selAna == 2 ) scategory = "VBF2JetTaggedMor17";
-  if (categ == 3 && selAna == 2 ) scategory = "VHLeptTaggedMor17";
-  if (categ == 4 && selAna == 2 ) scategory = "VHHadrTaggedMor17";
-  if (categ == 5 && selAna == 2 ) scategory = "ttHTaggedMor17";
-  if (categ == 6 && selAna == 2 ) scategory = "VHMETTaggedMor17";
+  if (categ == 0 && selAna == 2 ) scategory = "Untagged";
+  if (categ == 1 && selAna == 2 ) scategory = "VBF1JetTagged";
+  if (categ == 2 && selAna == 2 ) scategory = "VBF2JetTagged";
+  if (categ == 3 && selAna == 2 ) scategory = "VHLeptTagged";
+  if (categ == 4 && selAna == 2 ) scategory = "VHHadrTagged";
+  if (categ == 5 && selAna == 2 ) scategory = "ttHTagged";
+  if (categ == 6 && selAna == 2 ) scategory = "VHMETTagged";
 
-  if (sample ==3) ssample = "ZH";
-  if (sample ==4) ssample = "WH";
-  if (sample ==5) ssample = "ttH";
+  if (sample ==3 && split == 1) ssample = "ZH_lep";
+  if (sample ==3 && split == 2) ssample = "ZH_had";
+
+  if (sample ==4 && split == 1) ssample = "WH_lep";
+  if (sample ==4 && split == 2) ssample = "WH_had";
+
+  if (sample ==5 && split == 0 ) ssample = "ttH";
 
   double bwSigma[40];
   int mass[40]; int id[40]; double xLow[40]; double xHigh[40];
@@ -154,7 +158,6 @@ void all(int selAna =-10,  int channels=0, int categ =-10, int sample = 0 ){
   double n2Val[40],n2Err[40];
   double meanCBVal[40],meanCBErr[40];
   double sigmaCBVal[40],sigmaCBErr[40];
-//  double meanBWVal[40],meanBWErr[40];
   double covQualVal[40];
   double scale3[40];
   double fitValues[16];
@@ -162,8 +165,7 @@ void all(int selAna =-10,  int channels=0, int categ =-10, int sample = 0 ){
   double covQual[1];
 
 
-    fitSignalContinumShapeSimul(mass,maxMassBin,selAna,channels,categ,sample,xLow,xHigh,bwSigma,fitValues,fitErrors,covQual); 
-//    fitSignalContinumShapeSimul(mass,maxMassBin,selAna,channels,1,sample,xLow,xHigh,bwSigma,fitValues,fitErrors,covQual);
+    fitSignalContinumShapeSimul(mass,maxMassBin,selAna,channels,categ,sample,split,xLow,xHigh,bwSigma,fitValues,fitErrors,covQual); 
   
       cout << "meanCB_p0 value "  << fitValues[0] << " , " << "mean_p1 value:"  << fitValues[6] << endl;
       cout << "sigmaCB_p0 value " << fitValues[1] << " , " << "sigma_p1 value:" << fitValues[7] << endl;
@@ -192,7 +194,7 @@ void all(int selAna =-10,  int channels=0, int categ =-10, int sample = 0 ){
       outFile <<"    frac   : " <<"'"<<fitValues[14]<<"'"<<endl;
       outFile << endl;
   }
-void fitSignalContinumShapeSimul(int massBin[40],int maxMassBin, int selAna, int channels,int categ, int sample,double rangeLow[40], double rangeHigh[40],
+void fitSignalContinumShapeSimul(int massBin[40],int maxMassBin, int selAna, int channels,int categ, int sample, int split, double rangeLow[40], double rangeHigh[40],
 		          double bwSigma[40], double fitValues[7], double fitErrors[7], double covQual[1]){
  // ------ root settings ---------
   gROOT->Reset();  
@@ -221,7 +223,7 @@ void fitSignalContinumShapeSimul(int massBin[40],int maxMassBin, int selAna, int
   bool useVHMETTagged = true;
   Short_t nExtraLeptons;   
   Short_t ExtraZ;
-  Short_t nCleanedJets;
+  Short_t nCleanedJets, genExtInfo;
   float ZZPt, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, PHJ_VAJHU, p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU, PFMET;
   
   Short_t nJets;
@@ -299,6 +301,7 @@ void fitSignalContinumShapeSimul(int massBin[40],int maxMassBin, int selAna, int
     ggTree->SetBranchAddress("JetPhi",&jetphi);
     ggTree->SetBranchAddress("JetMass",&jetmass);
     ggTree->SetBranchAddress("ZZPt",&ZZPt);
+    ggTree->SetBranchAddress("genExtInfo",&genExtInfo);
 
     //--- rooFit part
     xInit = (double) massBin[i];
@@ -337,9 +340,13 @@ void fitSignalContinumShapeSimul(int massBin[40],int maxMassBin, int selAna, int
       
       if(channels==0 && z1flav*z2flav != 28561) continue;
       if(channels==1 && z1flav*z2flav != 14641) continue;
-      //if (weight <= 0 ) cout << "Warning! Negative weight events" << endl;
       if(channels==2 && z1flav*z2flav != 20449) continue;
-      
+     
+      if(sample == 3 && split == 1 && !(genExtInfo>10)) continue; // ZH_lep
+      if(sample == 3 && split == 2 && !(genExtInfo<7)) continue;  // ZH_had
+      if(sample == 4 && split == 1 && !(genExtInfo>10)) continue; // WH_lep
+      if(sample == 4 && split == 2 && !(genExtInfo<7)) continue;  // WH_had
+
       ntupleVarSet.setCatIndex("massrc",massBin[i]);
       ntupleVarSet.setRealValue("mass",m4l);
       ntupleVarSet.setRealValue("myW",weight);
