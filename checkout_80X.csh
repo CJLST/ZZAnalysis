@@ -37,6 +37,10 @@ git clone -n https://github.com/cms-analysis/EgammaAnalysis-ElectronTools EGamma
 #MuScleFit: probably tbf
 #git clone https://github.com/scasasso/usercode MuScleFit
 
+# Higgs Combination Package, Needed for the Double Crystall Ball function. 
+git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
+(cd HiggsAnalysis/CombinedLimit; git checkout 81x-root606-integration)
+
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
 (cd ZZMatrixElement; git checkout -b from-v204 v2.0.4)
