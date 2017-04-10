@@ -582,27 +582,33 @@ HZZ2l2qNtupleMaker::HZZ2l2qNtupleMaker(const edm::ParameterSet& pset) :
 
     TString filename;
 
-    filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_Moriond2017.root");
-    edm::FileInPath fipMu(filename.Data());
+    filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_Moriond2017_v2.root");
+    edm::FileInPath fipMu(filename.Data());    
     fipPath = fipMu.fullPath();
-    TFile *fMuWeight = TFile::Open(fipPath.data(),"READ");
-    hTH2D_Mu_All = (TH2D*)fMuWeight->Get("FINAL")->Clone();
-    fMuWeight->Close();
+    TFile *fMuWeight = TFile::Open(fipPath.data(),"READ");   
+    hTH2D_Mu_All = (TH2D*)fMuWeight->Get("FINAL")->Clone();  
+    fMuWeight->Close();    
 
-    TString filename2("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_2016_v4.root");
-    edm::FileInPath fipEleNotCracks(filename2.Data());
+    TString filename2("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_non_gap_ele_Moriond2017_v2.root");   
+    edm::FileInPath fipEleNotCracks(filename2.Data()); 
     fipPath = fipEleNotCracks.fullPath();
-    TFile *root_file = TFile::Open(fipPath.data(),"READ");
-    hTH2D_El_IdIsoSip_notCracks = (TH1*) root_file->Get("ele_scale_factors")->Clone();
-    hTH2D_El_IdIsoSip_Cracks = (TH1*) root_file->Get("ele_scale_factors_gap")->Clone();
-    root_file->Close();
+    TFile *root_file_non_gap = TFile::Open(fipPath.data(),"READ");  
+    hTH2D_El_IdIsoSip_notCracks = (TH1*) root_file_non_gap->Get("EGamma_SF2D")->Clone();
+    root_file_non_gap->Close(); 
+
+    TString filename3("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_gap_ele_Moriond2017_v2.root");
+    edm::FileInPath fipEleCracks(filename3.Data());
+    fipPath = fipEleCracks.fullPath();
+    TFile *root_file_gap = TFile::Open(fipPath.data(),"READ"); 
+    hTH2D_El_IdIsoSip_Cracks = (TH1*) root_file_gap->Get("EGamma_SF2D")->Clone();
+    root_file_gap->Close(); 
     
-    TString filenameEleReco("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi_EGM2D_Moriond2017.root");
+    TString filenameEleReco("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_RECO_ele_Moriond2017_v1.root");
     edm::FileInPath fipEleReco(filenameEleReco.Data());
     fipPath = fipEleReco.fullPath();
     TFile *root_file_reco = TFile::Open(fipPath.data(),"READ");
     hTH2F_El_Reco = (TH2F*) root_file_reco->Get("EGamma_SF2D")->Clone();
-    root_file_reco->Close();
+    root_file_reco->Close(); 
 
     /* year = 2015;
 
@@ -1669,10 +1675,10 @@ Float_t HZZ2l2qNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
 	  //return 1.;
       } else {
 	  if(year >= 2016) {
-	      if((bool)userdatahelpers::getUserFloat(Lep,"isCrack"))
-		  weight *= hTH2D_El_IdIsoSip_Cracks->GetBinContent(hTH2D_El_IdIsoSip_Cracks->FindFixBin(std::abs(myLepEta), std::min(myLepPt,199.f)));
-	      else
-		  weight *= hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->FindFixBin(SCeta, std::min(myLepPt,199.f)));
+	    if((bool)userdatahelpers::getUserFloat(Lep,"isCrack")) 
+	      weight *= hTH2D_El_IdIsoSip_Cracks->GetBinContent(hTH2D_El_IdIsoSip_Cracks->FindFixBin(std::abs(myLepEta), std::min(myLepPt,199.f)));
+	    else  
+	      weight *= hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->FindFixBin(SCeta, std::min(myLepPt,199.f)));
 	  } else {
 	      cout << "ele SFs for < 2016 no longer supported" << endl;
 	      abort();

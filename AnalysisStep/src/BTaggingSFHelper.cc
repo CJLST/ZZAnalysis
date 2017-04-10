@@ -14,9 +14,9 @@ BTaggingSFHelper::BTaggingSFHelper(std::string SFfilename, std::string effFileNa
  
   m_calib = new BTagCalibration("CSVv2", fip_sf.fullPath().c_str());
 
-  m_reader    = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "central");
-  m_reader_up = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "up");
-  m_reader_do = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "down");
+  m_reader    = new BTagCalibrationReader(BTagEntry::OP_LOOSE, "central");
+  m_reader_up = new BTagCalibrationReader(BTagEntry::OP_LOOSE, "up");
+  m_reader_do = new BTagCalibrationReader(BTagEntry::OP_LOOSE, "down");
 
   for (int i = 0 ; i < 3; i++) {
       m_readers[i][0] = m_reader;
@@ -48,7 +48,7 @@ BTaggingSFHelper::BTaggingSFHelper(std::string SFfilename, std::string effFileNa
 
   TString flavs[3] = {"b", "c", "udsg"};
   for(int flav=0; flav<3; flav++){
-    TString name = Form("eff_%s_M_ALL",flavs[flav].Data());
+    TString name = Form("efficiency_%s",flavs[flav].Data());
     m_hEff[flav] = (TH1F*)m_fileEff->Get(name.Data());
   }
 }

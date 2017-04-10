@@ -13,8 +13,8 @@ CRSync = False #add CR paths
 #KEEPLOOSECOMB = True # Do not skip loose lepton ZZ combinations (for debugging
 
 #For DATA: 
-#IsMC = False
-#PD = "DoubleEle"
+IsMC = False
+PD = "DoubleEle"
 
 # Get absolute path
 import os
@@ -91,7 +91,7 @@ if (CRSync) :
 
 # replace the paths in analyzer.py
 process.trees = cms.EndPath(process.ZZTree)
-process.ZZTree.skipEmptyEvents = False
+#process.ZZTree.skipEmptyEvents = False
 
 #Dump reconstructed variables
 #process.appendPhotons.debug = cms.untracked.bool(True)
