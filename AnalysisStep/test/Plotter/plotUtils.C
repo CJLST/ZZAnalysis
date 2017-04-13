@@ -103,7 +103,7 @@ TPaveText* printInfo(string info, Double_t x1, Double_t y1, Double_t x2, Double_
 void SaveCanvas(string directory, TCanvas* c, string tag = "") {
   string prefix = directory + string(c->GetName()) + "_" + tag;
   c->SaveAs((prefix+".root").c_str());
-  //c->SaveAs((prefix+".C").c_str()); //sometimes causes a segfault, apprently due to empty TGraphs
+  c->SaveAs((prefix+".C").c_str()); //sometimes causes a segfault, apprently due to empty TGraphs
   c->SaveAs((prefix+".pdf").c_str());
   //c->SaveAs((prefix+".png").c_str()); //gives bad quality, it's much better to produce a .png from the .eps by doing: convert -density 150 -quality 100 FILE.eps FILE.png
   c->SaveAs((prefix+".eps").c_str());

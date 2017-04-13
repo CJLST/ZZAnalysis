@@ -121,7 +121,7 @@ Float_t normSSFullRange2e2mu[8] = {
 #define NSTYLES2DPLOT 8
 #define STYLE2DPLOT 1 // 0:rainbow 1:gray 2:pink 3:orange 4:yellow 5:blue 6:teal 7:col+box 8:blue-yellow
 #define MARKERSTYLE 0 // 0:full(legacy) 1:open
-#define LEGENDOUTOF2DFRAME 1
+#define LEGENDOUTOF2DFRAME 0
 #define CATEGIN2D 1
 #define DRAWWP2D 1
 
@@ -294,7 +294,7 @@ Var1 myV1[nVariables] = {
   { "M4l_70170_5",        "m_{4#font[12]{l}} (GeV)",        "Events / 4 GeV", "",                                                              1,       70,  170, 25,   0,      0,      0,     5,     0,    0,         0,      0,     1,      0.,      0.,        0,      11,     0,      0,    1,         {1. ,1. ,1. ,1. ,1. ,1.1}, "g",    0,         0,       },
   { "M4l_70170_6",        "m_{4#font[12]{l}} (GeV)",        "Events / 4 GeV", "",                                                              1,       70,  170, 25,   0,      0,      0,     6,     0,    0,         0,      1,     0,      0.,      0.,        0,      11,     0,      0,    1,         {1. ,1. ,1. ,1. ,1. ,1.1}, "g",    0,         0,       },
   { "M4l_above170",       "m_{4#font[12]{l}} (GeV)",        "Events / 10 GeV","",                                                              1,       170, 1010,42,   0,      0,      0,     nCat,  0,    0,         0,      0,     0,      0.,      0.,        0,      33,     0,      0,    1,         {1. ,1. ,1. ,1. ,1. ,1. }, "a",    0,         0,       },
-  { "M4l_Full_HighKD",    "m_{4#font[12]{l}} (GeV)",        "Events / 4 GeV", "D_{bkg}^{kin} > 0.5            ",                               2,       70,  990, 230,  1,      0,      1,     nCat,  0,    0,         0,      0,     0,      0.,      0.,        0,      33,     0,      1,    1,         {1.1,1. ,1. ,1. ,1. ,1. }, "a",    0,         1,       },
+  { "M4l_Full_HighKD",    "m_{4#font[12]{l}} (GeV)",        "Events / 4 GeV", "D_{bkg}^{kin} > 0.5            ",                               3,       70,  990, 230,  1,      0,      1,     nCat,  0,    0,         0,      0,     0,      0.,      0.,        0,      33,     0,      1,    1,         {1.1,1. ,1. ,1. ,1. ,1. }, "a",    0,         1,       },
   { "M4l_70170_HighKD",   "m_{4#font[12]{l}} (GeV)",        "Events / 2 GeV", "D_{bkg}^{kin} > 0.5         ",                                  2,       70,  170, 50,   0,      0,      0,     nCat,  0,    0,         0,      0,     0,      0.,      0.,        0,      33,     0,      0,    1,         {1. ,1. ,1. ,1. ,1. ,1. }, "a",    0,         1,       },
   { "M4l_100170_HighKD",  "m_{4#font[12]{l}} (GeV)",        "Events / 2 GeV", "D_{bkg}^{kin} > 0.5",                                           3,       100, 170, 35,   0,      0,      0,     nCat,  0,    0,         0,      0,     0,      0.,      0.,        0,      33,     11,     0,    1,         {1. ,1. ,1. ,1.6,1.6,1. }, "a",    0,         1,       },
 //{ "M4lrefit_Full",      "m_{4#font[12]{l}}^{refit} (GeV)","Events / 4 GeV", "",                                                              3,       70,  990, 230,  1,      0,      1,     nCat,  0,    0,         0,      0,     0,      0.,      0.,        0,      33,     0,      1,    1,         {1.1,1. ,1. ,1. ,1. ,1. }, "a",    0,         0,       },
@@ -1944,9 +1944,9 @@ void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraphErrors* g2[nFinalStates+1][nCat+1
 
   //----- prepare legend
   int legPos = myV2[v2].LegPos;
-  float legLeft = legendOutMode ? 0.87 : (legPos==11) ? 0.20 : 0.7 ;
+  float legLeft = legendOutMode ? 0.87 : (legPos==11) ? 0.17 : 0.69 ;
   float legWidth = 0.12;
-  float legUp = legendOutMode ? 0.95 : 0.92;
+  float legUp = legendOutMode ? 0.95 : 0.90;
   float legHeight = 0.12;
   if(signalSeparately){
     legLeft = (legPos==11) ? 0.20 : 0.58 ;
@@ -1987,9 +1987,9 @@ void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraphErrors* g2[nFinalStates+1][nCat+1
   bool useLabel = (blindingLabel[bl]!="" && myV2[v2].Name.find("M4l")==string::npos) || myV2[v2].CutLabel!="";
   TPaveText* pav = 0;
   if(useLabel){
-    float pavLeft = legendOutMode ? 0.52 : legLeft-(legPos==11?0.02:0.18) ;
+    float pavLeft = legendOutMode ? 0.52 : 0.52; //legLeft-(legPos==11?0.02:0.18) ;
     float pavWidth = legWidth + 0.16 ;
-    float pavUp = legendOutMode ? 0.92 : legUp-legHeight-0.1 ;
+    float pavUp = legendOutMode ? 0.92 : 0.92; //legUp-legHeight-0.1 ;
     float pavHeight = 0.03 ;
     pav = new TPaveText(pavLeft,pavUp,pavLeft+pavWidth,pavUp-pavHeight,"brNDC");
     pav->SetFillStyle(0);
@@ -2063,19 +2063,19 @@ void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraphErrors* g2[nFinalStates+1][nCat+1
       lgd2->Draw();
       lgd3->Draw();
       for(int cat=0; cat<nCat; cat++){
-	g2[fs2e2mu][cat]->Draw(withMassErrors?"P":"XP");
-	if(!MERGE2E2MU) g2[fs2mu2e][cat]->Draw(withMassErrors?"P":"XP");
-	g2[fs4mu][cat]->Draw(withMassErrors?"P":"XP");
-	g2[fs4e][cat]->Draw(withMassErrors?"P":"XP");
+	if(g2[fs2e2mu][cat]->GetN()>0) g2[fs2e2mu][cat]->Draw(withMassErrors?"P":"XP");
+	if(!MERGE2E2MU) if(g2[fs2mu2e][cat]->GetN()>0) g2[fs2mu2e][cat]->Draw(withMassErrors?"P":"XP");
+	if(g2[fs4mu][cat]->GetN()>0) g2[fs4mu][cat]->Draw(withMassErrors?"P":"XP");
+	if(g2[fs4e][cat]->GetN()>0) g2[fs4e][cat]->Draw(withMassErrors?"P":"XP");
       }
       //h2Stacked->GetYaxis()->SetLimits(0.,1.199);
       h2Stacked->GetYaxis()->SetTitle(Form("%s          ",h2Stacked->GetYaxis()->GetTitle()));
       h2Stacked->GetYaxis()->SetTitleOffset(1.);//1.2);
     }else{
-      g2[fs2e2mu][nCat]->Draw(withMassErrors?"P":"XP");
-      if(!MERGE2E2MU) g2[fs2mu2e][nCat]->Draw(withMassErrors?"P":"XP");
-      g2[fs4mu][nCat]->Draw(withMassErrors?"P":"XP");
-      g2[fs4e][nCat]->Draw(withMassErrors?"P":"XP");
+      if(g2[fs2e2mu][nCat]->GetN()>0) g2[fs2e2mu][nCat]->Draw(withMassErrors?"P":"XP");
+      if(!MERGE2E2MU) if(g2[fs2mu2e][nCat]->GetN()>0) g2[fs2mu2e][nCat]->Draw(withMassErrors?"P":"XP");
+      if(g2[fs4mu][nCat]->GetN()>0) g2[fs4mu][nCat]->Draw(withMassErrors?"P":"XP");
+      if(g2[fs4e][nCat]->GetN()>0) g2[fs4e][nCat]->Draw(withMassErrors?"P":"XP");
     }
   }
   if(doBlindingArea) box->Draw();
