@@ -1502,9 +1502,12 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
 	if(!useProcessInMeas[pr]) continue;
 	if(isSignal[pr] && useProcessInMeas[pr] && mHoption=="param"){
 	  outFile[fs]<<"    "<<sProcess[pr]<<": ";
-	  for(int ord=0; ord<=orderOfPolynomial[pr]; ord++){
-	    Float_t param = fYield[pr][fs][cat]->GetParameter(ord);
-	    outFile[fs]<<"("<<(param!=param?0.:param); // if param is NaN, it means that a polynomial of lower order was used, so we put 0 for this coefficient
+          Int_t nPar = fYield[pr][fs][cat]->GetNpar();
+          for(int ord=0; ord<=orderOfPolynomial[pr]; ord++){
+            Float_t param;
+            if(ord<nPar) param = fYield[pr][fs][cat]->GetParameter(ord);
+	    else param = 0.;  // a polynomial of lower order was used, so we put 0 for this coefficient
+	    outFile[fs]<<"("<<param;
 	    for(int ord2=0; ord2<=ord-1; ord2++) outFile[fs]<<"*@0";
 	    outFile[fs]<<")";
 	    if(ord<orderOfPolynomial[pr]) outFile[fs]<<"+";
@@ -1566,13 +1569,17 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
     outFileSyst<<"bTagSF:"<<endl;
     for(int cat=0; cat<nCategories; cat++){
       if(!USEVHMETTAG && cat==6) continue;
-      outFileSyst<<"    "<<sCategory[cat]<<": "<<endl;
-      outFileSyst<<"        type: lnN"<<endl;
+      bool init = false;
       for(int pr=0; pr<nProcesses; pr++){
 	if(!useProcessInMeas[pr]) continue;
 	btagUpFactor = fround( yield_4l_forSyst[pr][cat][btagUp] / yield_4l_forSyst[pr][cat][nominal], 4);
 	btagDnFactor = fround( yield_4l_forSyst[pr][cat][btagDn] / yield_4l_forSyst[pr][cat][nominal], 4);
 	if(btagUpFactor==1 && btagDnFactor==1) continue;
+        if(init==false){
+          outFileSyst<<"    "<<sCategory[cat]<<": "<<endl;
+          outFileSyst<<"        type: lnN"<<endl;
+          init = true; 
+        }
 	outFileSyst<<"        "<<sProcess[pr]<<": "<<Form("%.4f",btagUpFactor)<<"/"<<Form("%.4f",btagDnFactor)<<endl;
       }
     }
