@@ -67,7 +67,7 @@ KalmanPATMuonCorrector::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   const vector<pat::Muon> *inputMuons = muonHandle.product();
 
   // Output collection
-  vector<pat::Muon> *outputMuons = new vector<pat::Muon>();
+  auto outputMuons = std::make_unique<vector<pat::Muon> >();
 
   TLorentzVector p4;
 
@@ -108,8 +108,7 @@ KalmanPATMuonCorrector::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     outputMuons->push_back(mu);
   }
 
-  std::auto_ptr<std::vector<pat::Muon> > ptr(outputMuons);
-  iEvent.put(ptr);
+  iEvent.put(std::move(outputMuons));
 
 }
 

@@ -82,7 +82,7 @@ ZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   using namespace std;
   using namespace reco;
   
-  std::auto_ptr<pat::CompositeCandidateCollection> result(new pat::CompositeCandidateCollection);
+  auto result = std::make_unique<pat::CompositeCandidateCollection>();
 
   //-- Get LL candidates
   Handle<View<reco::CompositeCandidate> > LLCands;
@@ -259,7 +259,7 @@ ZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
   }
   
-  iEvent.put(result);
+  iEvent.put(std::move(result));
 }
 
 

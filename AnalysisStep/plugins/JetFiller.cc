@@ -130,7 +130,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   resolution_sf = JME::JetResolutionScaleFactor::get(iSetup, jecType);
 
   //--- Output collection
-  auto_ptr<pat::JetCollection> result( new pat::JetCollection() );
+  auto result = std::make_unique<pat::JetCollection>();
 
   for(auto jet = jetHandle->begin(); jet != jetHandle->end(); ++jet){
 
@@ -321,7 +321,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   //--- Reorder jets by pT
   std::sort(result->begin(),result->end(), [](const Jet& j1, const Jet& j2){return j1.pt()>j2.pt();});
 
-  iEvent.put(result);
+  iEvent.put(std::move(result));
 }
 
 

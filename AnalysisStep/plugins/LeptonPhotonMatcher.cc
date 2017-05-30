@@ -159,10 +159,10 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByToken(pfCandToken, pfCands);
 
   // Output collections
-  auto_ptr<pat::MuonCollection> resultMu( new pat::MuonCollection() );
-  auto_ptr<pat::ElectronCollection> resultEle( new pat::ElectronCollection() );
-  auto_ptr<pat::ElectronCollection> resultLooseEle( new pat::ElectronCollection() );
-  auto_ptr<pat::PhotonCollection> resultTle( new pat::PhotonCollection() );
+  auto resultMu = std::make_unique<pat::MuonCollection>();
+  auto resultEle = std::make_unique<pat::ElectronCollection>();
+  auto resultLooseEle = std::make_unique<pat::ElectronCollection>();
+  auto resultTle = std::make_unique<pat::PhotonCollection>();
 
   // Associate a vector of Ptr<Photon> to lepton pointers
   typedef map<const reco::Candidate*, PhotonPtrVector> PhotonLepMap;
@@ -435,10 +435,10 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   }
   
   //Put the result in the event
-  iEvent.put(resultMu,"muons");
-  iEvent.put(resultEle,"electrons");
-  if(do_TLE) iEvent.put(resultTle,"electronstle");
-  if(do_RSE) iEvent.put(resultLooseEle,"looseElectrons");
+  iEvent.put(std::move(resultMu),"muons");
+  iEvent.put(std::move(resultEle),"electrons");
+  if(do_TLE) iEvent.put(std::move(resultTle),"electronstle");
+  if(do_RSE) iEvent.put(std::move(resultLooseEle),"looseElectrons");
 }
 
 PhotonPtr LeptonPhotonMatcher::selectFSR(const PhotonPtrVector& photons, const reco::LeafCandidate::Vector& lepMomentum){ 

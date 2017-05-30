@@ -98,7 +98,8 @@ PhotonFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByToken(pfCandToken, pfCands);
 
   // Output collections
-  std::auto_ptr<reco::PFCandidateCollection> result( new reco::PFCandidateCollection );
+  auto result = std::make_unique<reco::PFCandidateCollection>();
+
 
   if (selectionMode!=0) {
     //----------------------
@@ -160,7 +161,7 @@ PhotonFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   }
   
   //Put the result in the event
-  iEvent.put(result);
+  iEvent.put(std::move(result));
 }
 
 #include <FWCore/Framework/interface/MakerMacros.h>

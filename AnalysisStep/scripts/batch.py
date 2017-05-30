@@ -178,6 +178,7 @@ class MyBatchManager:
             outputDir = "PROD_" + csvfile.replace('.csv','') + "_"+gitrevision.rstrip()
             print 'output directory not specified, using %s' % outputDir
         self.outputDir_ = os.path.abspath(outputDir)
+        self.workingDir = str(self.outputDir_)
         if( os.path.isdir(self.outputDir_) == True ):
             input = ''
             if not self.options_.force:
@@ -203,8 +204,9 @@ class MyBatchManager:
        mkdir = 'mkdir -p %s' % dirname
        ret = os.system( mkdir )
        if( ret != 0 ):
-          print 'please remove or rename directory: ', dirname
-          sys.exit(4)
+         print 'please remove or rename directory: ', dirname
+         sys.exit(4)
+    
     
 
        
@@ -230,7 +232,7 @@ class MyBatchManager:
        
        calls PrepareJobUser, which should be overloaded by the user.
        '''
-       print 'PrepareJob : %s' % value 
+       print '---PrepareJob N: ', value,  ' name: ', dirname 
        dname = dirname
        if dname  is None:
            dname = 'Job_{value}'.format( value=value )
@@ -240,10 +242,37 @@ class MyBatchManager:
        self.listOfJobs_.append( jobDir )
        if not self.secondaryInputDir_ == None: self.inputPDFDir_ = '/'.join( [self.secondaryInputDir_, dname])
 
-       self.PrepareJobUser( jobDir, value )
-       
-         
-    def PrepareJobUser(self, jobDir, value ):
+#       print 'self.outputDir_=',self.outputDir_
+       if dirname.endswith('Chunk0'):
+           self.PrepareJobUserTemplate( jobDir, value )
+       self.PrepareJobUserFromTemplate(jobDir, value)
+
+    def PrepareJobUserFromTemplate(self, jobDir, value ):
+        scriptFileName = jobDir+'/batchScript.sh'
+        scriptFile = open(scriptFileName,'w')
+        scriptFile.write( batchScriptCERN( value ) )
+        scriptFile.close()
+        os.system('chmod +x %s' % scriptFileName)
+        template_name = splitComponents[value].samplename + 'run_template_cfg.py'
+
+#	working_dir = os.path.dirname(self.outputDir_)
+
+
+	template_file_name = '%s/%s'%(self.outputDir_, template_name) #splitComponents[value].samplename + '_run_template_cfg.py' 
+#        shutil.copyfile(template_file_name, '%s/run_cfg.py'%jobDir)  
+        new_job_path = '%s/run_cfg.py'%jobDir
+	files = splitComponents[value].files 
+	files = ["'%s'"%f for f in files]
+	files = ', '.join(files)
+	with open(new_job_path, 'w') as new_job_cfg :
+	    with open(template_file_name) as f:
+	        for line in f :
+		    if line.find('REPLACE')  > 1 :
+			actual_source_string = "fileNames = cms.untracked.vstring(%s),\n"%files 
+        	        line = actual_source_string
+		    new_job_cfg.write(line)
+ 
+    def PrepareJobUserTemplate(self, jobDir, value ):
        '''Prepare one job. This function is called by the base class.'''
 #       print value
 #       print splitComponents[value]
@@ -279,7 +308,7 @@ class MyBatchManager:
        
        process = variables.get('process') 
        process.source = splitComponents[value].source
-       process.source.fileNames = splitComponents[value].files
+       process.source.fileNames = cms.untracked.vstring('REPLACE_WITH_FILES') # splitComponents[value].files
 
        for fragment in pyFragments:
            execfile('pyFragments/{0:s}'.format(fragment),variables)  
@@ -295,7 +324,10 @@ class MyBatchManager:
            cfgSnippetPDFStep2.close()
 
 
-       cfgFile = open(jobDir+'/run_cfg.py','w')
+       template_name = variables['SAMPLENAME'] + 'run_template_cfg.py'
+       print 'Saving template as=', '%s/%s'%(self.outputDir_, template_name)
+       print 'jobDir=',jobDir
+       cfgFile = open('%s/%s'%(self.outputDir_, template_name),'w')
        cfgFile.write( process.dumpPython() )
        cfgFile.write( '\n' )
 

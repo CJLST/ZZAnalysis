@@ -189,7 +189,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   using namespace std;
   using namespace reco;
 
-  std::auto_ptr<pat::CompositeCandidateCollection> result(new pat::CompositeCandidateCollection);
+  auto result = std::make_unique<pat::CompositeCandidateCollection>();
 
   const float ZmassValue = PDGHelpers::Zmass;
 
@@ -872,7 +872,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     }
   }
 
-  iEvent.put(result);
+  iEvent.put(std::move(result));
 
 }
 

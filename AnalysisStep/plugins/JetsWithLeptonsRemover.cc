@@ -137,7 +137,8 @@ void JetsWithLeptonsRemover::produce(edm::Event & event, const edm::EventSetup &
   if(activateDebugPrintOuts_) std::cout << "\n\n----------- NEW EVENT ----------- number of jets: " << jets->size() << std::endl;
   int passPresel = 0;
   int numLepJets = 0;
-  auto_ptr<vector<pat::Jet> > out(new vector<pat::Jet>());
+  auto out = std::make_unique<vector<pat::Jet> >();
+
   foreach(const pat::Jet& jet, *jets){
 
     if(!preselectionJ_(jet)) continue;
@@ -156,7 +157,7 @@ void JetsWithLeptonsRemover::produce(edm::Event & event, const edm::EventSetup &
   if(activateDebugPrintOuts_) std::cout << "Pass Presel: " << passPresel << " pass cleaning: " << out->size()
 					<< "\n-------------------------------------------------------------------------" << std::endl;
   
-  event.put(out);
+  event.put(std::move(out));
 }
 
 

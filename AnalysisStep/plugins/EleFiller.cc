@@ -93,7 +93,7 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByToken(BDTValueMapToken, BDTValues);
 
   // Output collection
-  auto_ptr<pat::ElectronCollection> result( new pat::ElectronCollection() );
+  auto result = std::make_unique<pat::ElectronCollection>();
 
   for (unsigned int i = 0; i< electronHandle->size(); ++i){
 
@@ -224,7 +224,7 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     result->push_back(l);
   }
-  iEvent.put(result);
+  iEvent.put(std::move(result));
 }
 
 

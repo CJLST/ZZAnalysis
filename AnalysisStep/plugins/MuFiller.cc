@@ -83,7 +83,7 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByToken(vtxToken,vertices);
 
   // Output collection
-  auto_ptr<pat::MuonCollection> result( new pat::MuonCollection() );
+  auto result = std::make_unique<pat::MuonCollection>();
 
   for (unsigned int i = 0; i< muonHandle->size(); ++i){
     //---Clone the pat::Muon
@@ -184,7 +184,7 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     
     result->push_back(l);
   }
-  iEvent.put(result);
+  iEvent.put(std::move(result));
 }
 
 

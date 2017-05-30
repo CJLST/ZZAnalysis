@@ -104,7 +104,7 @@ Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 
   // Output collection
-  auto_ptr<pat::PhotonCollection> result( new pat::PhotonCollection() );
+  auto result = std::make_unique<pat::PhotonCollection>(); 
 
   for (unsigned int i = 0; i< photonHandle->size(); ++i){
 
@@ -278,7 +278,7 @@ Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     result->push_back(l);
   }
-  iEvent.put(result);
+  iEvent.put(std::move(result));
 }
 
 
