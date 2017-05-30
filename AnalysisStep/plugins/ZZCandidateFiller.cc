@@ -750,7 +750,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
           //                   << sqrt(allLeptonsCand->currentState().kinematicParametersError().matrix()(6,6) ) << endl;
 
           reco::Vertex constrainedVertex(reco::Vertex::Point(allLeptonsVertex->position()),
-                                         allLeptonsVertex->error().matrix_new(),
+                                         allLeptonsVertex->error().matrix(),
                                          allLeptonsVertex->chiSquared(),
                                          allLeptonsVertex->degreesOfFreedom(),0);
 

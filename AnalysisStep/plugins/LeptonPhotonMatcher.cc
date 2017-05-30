@@ -19,8 +19,6 @@
 #include <DataFormats/PatCandidates/interface/Photon.h>
 #include <DataFormats/PatCandidates/interface/PFParticle.h>
 #include <ZZAnalysis/AnalysisStep/interface/PhotonFwd.h>
-#include <Muon/MuonAnalysisTools/interface/MuonEffectiveArea.h>
-#include <EGamma/EGammaAnalysisTools/interface/ElectronEffectiveArea.h>
 #include <DataFormats/GeometryVector/interface/VectorUtil.h> 
 #include <DataFormats/VertexReco/interface/Vertex.h>
 #include <DataFormats/ParticleFlowCandidate/interface/PFCandidate.h>
