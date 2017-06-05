@@ -104,10 +104,10 @@ def checkTree(sample, treename,wantedEvents, files):
             if not line:              continue
             if '.root' not in line: continue
             if not line.startswith("'") and 'fileNames' not in line: continue
-            LFN = line.split("'")[1::2][0]
+            LFN = line.split("'")[1::2]
 
             if verifyEdmFile : 
-                edmRootFile = 'root://eoscms//eos/cms'+LFN
+                edmRootFile = 'root://eoscms//eos/cms'+LFN[0] #FIXME: must loop over all files...
                 events = Events(edmRootFile)
                 for event in events:
                     if event.eventAuxiliary().event() in wantedEvents:
@@ -115,7 +115,7 @@ def checkTree(sample, treename,wantedEvents, files):
                         LFNs.append(LFN)
             else:                
                 print Green(LFN)
-                LFNs.append(LFN)
+                LFNs+=LFN
             #   print Green("candidate{0:d}:{1:d}:{2:d} in edm file {1:s}".format(event.eventAuxiliary().run(), event.eventAuxiliary().lumi(), event.eventAuxiliary().event(), edmRootFile))
     if len(eventIds) == 0 :
         return 0
@@ -127,11 +127,14 @@ def checkTree(sample, treename,wantedEvents, files):
     PD = ''
     if   'MuonEG' in sample: PD = 'MuEG'
     elif 'DoubleEG' in sample: PD = 'DoubleEle'
-    elif 'DoubleMuon' in sample: PD = 'DoubleMu'
+    elif 'DoubleMu' in sample: PD = 'DoubleMuon'
     elif 'SingleEle' in sample: PD = 'SingleElectron'
     elif 'SingleMu' in sample: PD = 'SingleMuon'
-    
-    f.write(sample+',,-1,,,,source.fileNames,,999,PD='+PD+';PROCESS_CR=True;ADDLOOSEELE=True,json_2016.py;searchEvents_'+sample+'.py, # '+str(len(eventIds))+' events \n')
+
+    addVariables=';SKIP_EMPTY_EVENTS=False' # Add SKIP_EMPTY_EVENTS to avoid problems with changes in trigger requirements (events may have to be picked from different PDs...)
+    # addVariables+=';KINREFIT=True
+    if 'Hv2' in sample or 'Hv3' in sample : addVariables += ';DATA_TAG=PromptReco' # FIXME: needed at the time of Moriond17
+    f.write(sample+',,-1,,,,source.fileNames,,999,PD='+PD+';PROCESS_CR=True;ADDLOOSEELE=False'+addVariables+',json_2016.py;RecoProbabilities.py;searchEvents_'+sample+'.py, # '+str(len(eventIds))+' events \n')
     f.close()
     return len(eventIds)
 
