@@ -146,11 +146,13 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
   rolesZ1Z2 = {"Z1", "Z2"};
   rolesZ2Z1 = {"Z2", "Z1"};
 
-  edm::FileInPath fip("ZZAnalysis/AnalysisStep/data/ebeOverallCorrections.Legacy2013.v0.root");
-  std::string ebePath=fip.fullPath();
 
 
-  if (setup != 2015) {// FIXME:  EbE corrections to be updated for Run II
+  if (setup < 2015) {// FIXME:  EbE corrections to be updated for Run II
+    // Run I ebe corrections; obsolete
+    edm::FileInPath fip("ZZAnalysis/AnalysisStep/data/ebeOverallCorrections.Legacy2013.v0.root");
+    std::string ebePath=fip.fullPath();
+
     // EbE corrections
     TFile* fCorrSigma = new TFile(ebePath.data()); // FIXME: is leaked
     std::string sigmaCorrType = (isMC?"mc":"reco");
