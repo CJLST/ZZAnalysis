@@ -50,6 +50,8 @@ using namespace std;
 #define USEBBH 0
 #define MERGE2E2MU 1 // Don't change this unless you really know what you are doing.
 
+#define DOSYSTSTUDYEFF 1 // Compute systematic uncertainties on data/MC efficiency correction
+
 #define DOZPLUSXFROMRUN2COMBINEDSHAPE 1
 #define BUILDZPLUSXYIELDFROMSSCR 1 // Obtain Z+X yields in every category from rerunning over the SS CR. Overwrites hardcoded global arrays.
 #define RESCALEZPLUSXTOCOMBINEDINCLUSIVE 1 // Renormalize all Z+X yields to the hardcoded SS/OS-combined inclusive numbers.
@@ -93,6 +95,10 @@ Float_t normSSFullRange2e2mu[8] = {
   1.17629,
   55.4615,
 };
+
+//Luminosity systematic uncertainty
+//2.6% on all processes
+Float_t lumiSystUnc = 0.026; 
 
 
 
@@ -152,15 +158,7 @@ string sCategory[nCategories+1] = {
   "VHMETTagged",
   "inclusive",
 };
-string sCategoryForSyst[nCategories] = {
-  "UnTagged",
-  "OneJetTagged",
-  "VBFTagged", 
-  "VHLeptTagged",
-  "VHHadrTagged",
-  "ttHTagged",
-  "VHMETTagged",
-};
+
 string sCatLatex[nCategories] = {"Untagged","VBF-1j","VBF-2j","VH-lept.","VH-hadr.","ttH","VH-MET"};
 string sCatLatexLong[nCategories+1] = {"Untagged","VBF-1jet-tagged","VBF-2jet-tagged","VH-leptonic-tagged","VH-hadronic-tagged","ttH-tagged","VH-MET-tagged","Inclusive"};
 Color_t catColor[nCategories+1] = {kBlue-9, kCyan-6, kGreen-6, kRed-7, kOrange+6, kMagenta-6, kBlack, kGray };
@@ -169,9 +167,9 @@ enum ResonantStatus {resonant=0, nonresonant=1};
 const int nRS = 2;
 string sResonantStatus[nRS+1] = {"resonant", "nonresonant", "allres"};
 
-enum SystShift {nominal=0, jecUp=1, jecDn=2, btagUp=3, btagDn=4};
-const int nSystShifts = 5;
-string sSystShift[nSystShifts] = {"SystNominal","JecUp","JecDn","bTagUp","bTagDn"};
+enum SystShift {nominal=0, jecUp=1, jecDn=2, btagUp=3, btagDn=4, effmuUp=5, effmuDn=6, effeleUp=7, effeleDn=8};
+const int nSystShifts = 9;
+string sSystShift[nSystShifts] = {"SystNominal","JecUp","JecDn","bTagUp","bTagDn","effmuUp","effmuDn","effeleUp","effeleDn"};
 
 Double_t deltaR(Double_t e1, Double_t p1, Double_t e2, Double_t p2) {
   Double_t deltaPhi = acos(cos(p1-p2));
@@ -254,6 +252,8 @@ void computeYields(string inputPathSignal, string inputPathqqZZ, string inputPat
   Float_t genHEPMCweight;
   Float_t PUWeight;
   Float_t dataMCWeight;
+  Float_t muonSF_Unc;
+  Float_t eleSF_Unc; 
   Float_t overallEventWeight;
   Float_t KFactor_QCD_ggZZ_Nominal;
   Float_t KFactor_EW_qqZZ;
@@ -408,6 +408,8 @@ void computeYields(string inputPathSignal, string inputPathqqZZ, string inputPat
       inputTree[d]->SetBranchAddress("genHEPMCweight",&genHEPMCweight);
       inputTree[d]->SetBranchAddress("PUWeight",&PUWeight);
       inputTree[d]->SetBranchAddress("dataMCWeight",&dataMCWeight);
+      inputTree[d]->SetBranchAddress("muonSF_Unc",&muonSF_Unc);
+      inputTree[d]->SetBranchAddress("eleSF_Unc",&eleSF_Unc);
       inputTree[d]->SetBranchAddress("overallEventWeight", &overallEventWeight);
       if(currentProcess==ggZZ){
 	inputTree[d]->SetBranchAddress("KFactor_QCD_ggZZ_Nominal", &KFactor_QCD_ggZZ_Nominal);
@@ -559,16 +561,16 @@ void computeYields(string inputPathSignal, string inputPathqqZZ, string inputPat
 	  //jetMass[j] = JetMass->at(j);
 	  jetQGL[j] = JetQGLikelihood->at(j);
 	}
-	Short_t varied_nCleanedJetsPt30[nSystShifts] = {nCleanedJetsPt30,nCleanedJetsPt30_jecUp,nCleanedJetsPt30_jecDn,nCleanedJetsPt30,nCleanedJetsPt30};
-	Short_t varied_nCleanedJetsPt30BTagged[nSystShifts] = {nCleanedJetsPt30BTagged_bTagSF,nCleanedJetsPt30BTagged_bTagSF_jecUp,nCleanedJetsPt30BTagged_bTagSF_jecDn,nCleanedJetsPt30BTagged_bTagSFUp,nCleanedJetsPt30BTagged_bTagSFDn};
-	Float_t varied_p_JJQCD_SIG_ghg2_1_JHUGen  [nSystShifts] = {p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal  ,p_JJQCD_SIG_ghg2_1_JHUGen_JECUp  ,p_JJQCD_SIG_ghg2_1_JHUGen_JECDn  ,p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal  ,p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal  };
-	Float_t varied_p_JQCD_SIG_ghg2_1_JHUGen   [nSystShifts] = {p_JQCD_SIG_ghg2_1_JHUGen_JECNominal   ,p_JQCD_SIG_ghg2_1_JHUGen_JECUp   ,p_JQCD_SIG_ghg2_1_JHUGen_JECDn   ,p_JQCD_SIG_ghg2_1_JHUGen_JECNominal   ,p_JQCD_SIG_ghg2_1_JHUGen_JECNominal   };
-	Float_t varied_p_JJVBF_SIG_ghv1_1_JHUGen  [nSystShifts] = {p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal  ,p_JJVBF_SIG_ghv1_1_JHUGen_JECUp  ,p_JJVBF_SIG_ghv1_1_JHUGen_JECDn  ,p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal  ,p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal  };
-	Float_t varied_p_JVBF_SIG_ghv1_1_JHUGen   [nSystShifts] = {p_JVBF_SIG_ghv1_1_JHUGen_JECNominal   ,p_JVBF_SIG_ghv1_1_JHUGen_JECUp   ,p_JVBF_SIG_ghv1_1_JHUGen_JECDn   ,p_JVBF_SIG_ghv1_1_JHUGen_JECNominal   ,p_JVBF_SIG_ghv1_1_JHUGen_JECNominal   };
-	Float_t varied_pAux_JVBF_SIG_ghv1_1_JHUGen[nSystShifts] = {pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,pAux_JVBF_SIG_ghv1_1_JHUGen_JECUp,pAux_JVBF_SIG_ghv1_1_JHUGen_JECDn,pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal};
-	Float_t varied_p_HadWH_SIG_ghw1_1_JHUGen  [nSystShifts] = {p_HadWH_SIG_ghw1_1_JHUGen_JECNominal  ,p_HadWH_SIG_ghw1_1_JHUGen_JECUp  ,p_HadWH_SIG_ghw1_1_JHUGen_JECDn  ,p_HadWH_SIG_ghw1_1_JHUGen_JECNominal  ,p_HadWH_SIG_ghw1_1_JHUGen_JECNominal  };
-	Float_t varied_p_HadZH_SIG_ghz1_1_JHUGen  [nSystShifts] = {p_HadZH_SIG_ghz1_1_JHUGen_JECNominal  ,p_HadZH_SIG_ghz1_1_JHUGen_JECUp  ,p_HadZH_SIG_ghz1_1_JHUGen_JECDn  ,p_HadZH_SIG_ghz1_1_JHUGen_JECNominal  ,p_HadZH_SIG_ghz1_1_JHUGen_JECNominal  };
-	Float_t varied_PFMET[nSystShifts] = {PFMET,PFMET_jesUp,PFMET_jesDn,PFMET,PFMET};
+	Short_t varied_nCleanedJetsPt30[nSystShifts] = {nCleanedJetsPt30, nCleanedJetsPt30_jecUp, nCleanedJetsPt30_jecDn, nCleanedJetsPt30, nCleanedJetsPt30, nCleanedJetsPt30, nCleanedJetsPt30, nCleanedJetsPt30, nCleanedJetsPt30};
+	Short_t varied_nCleanedJetsPt30BTagged[nSystShifts] = {nCleanedJetsPt30BTagged_bTagSF, nCleanedJetsPt30BTagged_bTagSF_jecUp, nCleanedJetsPt30BTagged_bTagSF_jecDn, nCleanedJetsPt30BTagged_bTagSFUp, nCleanedJetsPt30BTagged_bTagSFDn, nCleanedJetsPt30BTagged_bTagSF, nCleanedJetsPt30BTagged_bTagSF, nCleanedJetsPt30BTagged_bTagSF, nCleanedJetsPt30BTagged_bTagSF};
+	Float_t varied_p_JJQCD_SIG_ghg2_1_JHUGen[nSystShifts] = {p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal  ,p_JJQCD_SIG_ghg2_1_JHUGen_JECUp  ,p_JJQCD_SIG_ghg2_1_JHUGen_JECDn  ,p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal  ,p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal };
+	Float_t varied_p_JQCD_SIG_ghg2_1_JHUGen[nSystShifts] = {p_JQCD_SIG_ghg2_1_JHUGen_JECNominal   ,p_JQCD_SIG_ghg2_1_JHUGen_JECUp   ,p_JQCD_SIG_ghg2_1_JHUGen_JECDn   ,p_JQCD_SIG_ghg2_1_JHUGen_JECNominal   ,p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal  };
+	Float_t varied_p_JJVBF_SIG_ghv1_1_JHUGen[nSystShifts] = {p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal  ,p_JJVBF_SIG_ghv1_1_JHUGen_JECUp  ,p_JJVBF_SIG_ghv1_1_JHUGen_JECDn  ,p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal  ,p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal };
+	Float_t varied_p_JVBF_SIG_ghv1_1_JHUGen[nSystShifts] = {p_JVBF_SIG_ghv1_1_JHUGen_JECNominal   ,p_JVBF_SIG_ghv1_1_JHUGen_JECUp   ,p_JVBF_SIG_ghv1_1_JHUGen_JECDn   ,p_JVBF_SIG_ghv1_1_JHUGen_JECNominal   ,p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JVBF_SIG_ghv1_1_JHUGen_JECNominal };
+	Float_t varied_pAux_JVBF_SIG_ghv1_1_JHUGen[nSystShifts] = {pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,pAux_JVBF_SIG_ghv1_1_JHUGen_JECUp,pAux_JVBF_SIG_ghv1_1_JHUGen_JECDn,pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal};
+	Float_t varied_p_HadWH_SIG_ghw1_1_JHUGen[nSystShifts] = {p_HadWH_SIG_ghw1_1_JHUGen_JECNominal  ,p_HadWH_SIG_ghw1_1_JHUGen_JECUp  ,p_HadWH_SIG_ghw1_1_JHUGen_JECDn  ,p_HadWH_SIG_ghw1_1_JHUGen_JECNominal  ,p_HadWH_SIG_ghw1_1_JHUGen_JECNominal, p_HadWH_SIG_ghw1_1_JHUGen_JECNominal, p_HadWH_SIG_ghw1_1_JHUGen_JECNominal, p_HadWH_SIG_ghw1_1_JHUGen_JECNominal, p_HadWH_SIG_ghw1_1_JHUGen_JECNominal };
+	Float_t varied_p_HadZH_SIG_ghz1_1_JHUGen[nSystShifts] = {p_HadZH_SIG_ghz1_1_JHUGen_JECNominal  ,p_HadZH_SIG_ghz1_1_JHUGen_JECUp  ,p_HadZH_SIG_ghz1_1_JHUGen_JECDn  ,p_HadZH_SIG_ghz1_1_JHUGen_JECNominal  ,p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, p_HadZH_SIG_ghz1_1_JHUGen_JECNominal };
+	Float_t varied_PFMET[nSystShifts] = {PFMET, PFMET_jesUp, PFMET_jesDn, PFMET, PFMET, PFMET, PFMET, PFMET, PFMET};
 	for(int sy=0; sy<nSystShifts; sy++){
 	  currentCategory[sy] = categoryMor17(
 	    nExtraLep,
@@ -632,10 +634,19 @@ void computeYields(string inputPathSignal, string inputPathqqZZ, string inputPat
 
 
 	//----- fill yield histogram
-	for(int sy=0; sy<nSystShifts; sy++)
-	  hYield[currentProcess][mp][currentFinalState][currentCategory[sy]][nRS][sy]->Fill(0.5,eventWeight);
-	//hYield[currentProcess][mp][currentFinalState][currentCategory[sy]][currentResStatus][sy]->Fill(0.5,eventWeight);
+	for(int sy=0; sy<nSystShifts; sy++){
+          
+          Float_t histWeight = 0.;
+          //----- different weights to estimate efficiency systematics 
+          if(sy == effmuUp)       histWeight = eventWeight*(dataMCWeight + muonSF_Unc)/dataMCWeight;
+          else if(sy == effmuDn)  histWeight = eventWeight*(dataMCWeight - muonSF_Unc)/dataMCWeight;
+          else if(sy == effeleUp) histWeight = eventWeight*(dataMCWeight + eleSF_Unc)/dataMCWeight;
+          else if(sy == effeleDn) histWeight = eventWeight*(dataMCWeight - eleSF_Unc)/dataMCWeight;
+          else                    histWeight = eventWeight; // nominal, jecUp, jecDn, btagUp, btagDn
+	  
 
+	  hYield[currentProcess][mp][currentFinalState][currentCategory[sy]][nRS][sy]->Fill(0.5,histWeight);
+        } 
 
       } // end for entries
 
@@ -999,26 +1010,26 @@ void computeYieldsZPlusXSS(string inputPathData, string inputFileFakeRates, stri
     }
   }
 
-  // Z+X systematic uncertainties for datacards
+  // Z+X systematic uncertainties for datacards (CMS_hzz4l_zjets_bkgdcompo, CMS_hzz4l_zz<FS>_zjets)
   {
     ofstream outFileSyst[nFinalStates];
     
     for(int fs=0; fs<nFinalStates; fs++){    
       if(fs==fs2mu2e) continue;
-      
-      outFileSyst[fs].open((outputDirectory+"/partof_systematics_13TeV_"+sFinalState[fs]+".yaml").c_str());
 
-      outFileSyst[fs]<<"CMS_zjets_bkgdcompo:"<<endl
+      outFileSyst[fs].open((outputDirectory+"/systematics_13TeV_ZPlusX_"+sFinalState[fs]+".yaml").c_str());
+
+      outFileSyst[fs]<<"CMS_hzz4l_zjets_bkgdcompo:"<<endl
 		     <<"    UnTagged: &zjets_bkgdcompo_untagged"<<endl
 		     <<"        type : lnN"<<endl
 		     <<"        zjets: "<<1+bkgdCompUncZpX[fs]<<endl;
       for(int cat=1; cat<nCategories; cat++)
-	outFileSyst[fs]<<"    "<<sCategoryForSyst[cat]<<":"<<endl<<"        <<: *zjets_bkgdcompo_untagged"<<endl;
+	outFileSyst[fs]<<"    "<<sCategory[cat]<<":"<<endl<<"        <<: *zjets_bkgdcompo_untagged"<<endl;
       outFileSyst[fs]<<endl;
       
-      outFileSyst[fs]<<"CMS_zz"+sFinalState[fs]+"_zjets:"<<endl;
+      outFileSyst[fs]<<"CMS_hzz4l_zz"+sFinalState[fs]+"_zjets:"<<endl;
       for(int cat=0; cat<nCategories; cat++){
-	outFileSyst[fs]<<"    "<<sCategoryForSyst[cat]<<":"<<endl
+	outFileSyst[fs]<<"    "<<sCategory[cat]<<":"<<endl
 		       <<"        type : lnN"<<endl
 		       <<"        zjets: ";
 	if(fs!=fs2e2mu){
@@ -1035,6 +1046,137 @@ void computeYieldsZPlusXSS(string inputPathData, string inputFileFakeRates, stri
   }
 
 }
+
+
+// systematic uncertainties on data/MC efficiency correction (CMS_eff_e, CMS_eff_m) for H125
+void computeYieldEffSyst(string outputDirectory, double lumi, double sqrts, double m4lMin, double m4lMax){
+
+    ofstream outFileSystEff[nFinalStates];
+    
+    TFile* fInYieldsEff = TFile::Open(Form("yields_%iTeV_m4l%.1f-%.1f_%.3ffb-1%s.root",(int)sqrts,m4lMin,m4lMax,lumi,(MERGE2E2MU?"_m":"")));
+    TH1F* hTemp;
+    Float_t yield_4l_forSyst_eff[nProcesses][nFinalStates][nCategories+1][nSystShifts]; 
+    Float_t effMuonUpFactor, effElectronUpFactor;
+    
+    for(int fs=0; fs<nFinalStates; fs++){    
+      if(fs==fs2mu2e) continue;
+
+      outFileSystEff[fs].open((outputDirectory+"/systematics_13TeV_Eff_"+sFinalState[fs]+".yaml").c_str());
+      
+      //efficiency systematic uncertainties 
+      for(int pr=0; pr<nProcesses; pr++){
+        for(int cat=0; cat<nCategories+1; cat++){
+          for(int sy=0; sy<nSystShifts; sy++){
+            hTemp = (TH1F*)fInYieldsEff->Get(Form("hYield_%s%s_%s_%s_%s_%s",sProcess[pr].c_str(),(isSignal[pr]?"125":""),sFinalState[fs].c_str(),sCategory[cat].c_str(),sResonantStatus[nRS].c_str(),sSystShift[sy].c_str()));
+            yield_4l_forSyst_eff[pr][fs][cat][sy] = hTemp->GetBinContent(1);
+          }
+        }
+      }
+
+      //CMS_eff_m: computed merging all signals, and separately for qqZZ and ggZZ; for all categories together.
+      if(fs==fs4mu || fs==fs2e2mu){
+        Float_t num_mu_Up[3]      = {0.,0.,0.};
+        Float_t den_mu_Nominal[3] = {0.,0.,0.};
+
+        for(int cat=0; cat<nCategories; cat++){
+          if(!USEVHMETTAG && cat==6) continue;
+          for(int pr=0; pr<nProcesses; pr++){
+            if(!useProcessInMeas[pr]) continue;
+	    int idx=-1;
+            if(isSignal[pr])  idx=0;
+	    else if(pr==qqZZ) idx=1;
+	    else if(pr==ggZZ) idx=2;
+	    if(idx<0) {
+	      cout<<"Error: unknown process!"<<endl;
+	      abort();
+	    }
+	    num_mu_Up[idx]      += yield_4l_forSyst_eff[pr][fs][cat][effmuUp];
+	    den_mu_Nominal[idx] += yield_4l_forSyst_eff[pr][fs][cat][nominal];
+          }
+        }
+        //print CMS_eff_m systematics
+        outFileSystEff[fs]<<"CMS_eff_m:"<<endl;
+        for(int cat=0; cat<nCategories; cat++){
+          if(!USEVHMETTAG && cat==6) continue;
+          if(cat == 0){
+            outFileSystEff[fs]<<"    UnTagged: &eff_m_untagged"<<endl;
+            outFileSystEff[fs]<<"        type : lnN"<<endl;
+            for(int pr=0; pr<nProcesses; pr++){
+              if(!useProcessInMeas[pr]) continue;
+              int idx=-1;
+              if(isSignal[pr])  idx=0;
+	      else if(pr==qqZZ) idx=1;
+	      else if(pr==ggZZ) idx=2;
+
+	      effMuonUpFactor = fround( num_mu_Up[idx] / den_mu_Nominal[idx], 3); 	 
+
+	      if(effMuonUpFactor==1) continue;
+              if(isnan(effMuonUpFactor)) continue;
+              outFileSystEff[fs]<<"        "<<sProcess[pr]<<": "<<Form("%.3f",effMuonUpFactor)<<endl;
+	    }
+          }else{ 
+            outFileSystEff[fs]<<"    "<<sCategory[cat]<<":"<<endl;
+            outFileSystEff[fs]<<"        <<: *eff_m_untagged"<<endl; 
+          }  
+        }
+        outFileSystEff[fs]<<endl;
+      }
+
+      //CMS_eff_e: computed merging all signals, and separately for qqZZ and ggZZ; for all categories together.
+      if(fs==fs4e || fs==fs2e2mu){
+        Float_t num_ele_Up[3]      = {0.,0.,0.};
+        Float_t den_ele_Nominal[3] = {0.,0.,0.};
+
+        for(int cat=0; cat<nCategories; cat++){
+          if(!USEVHMETTAG && cat==6) continue; 
+          for(int pr=0; pr<nProcesses; pr++){
+            if(!useProcessInMeas[pr]) continue;
+            int idx=-1;
+            if(isSignal[pr])  idx=0;
+            else if(pr==qqZZ) idx=1;
+            else if(pr==ggZZ) idx=2;
+	    if(idx<0) {
+	      cout<<"Error: unknown process!"<<endl;
+	      abort();
+	    }
+	    num_ele_Up[idx]      += yield_4l_forSyst_eff[pr][fs][cat][effeleUp];
+	    den_ele_Nominal[idx] += yield_4l_forSyst_eff[pr][fs][cat][nominal];
+          }
+        }
+        //print CMS_eff_e systematics
+        outFileSystEff[fs]<<"CMS_eff_e:"<<endl;
+        for(int cat=0; cat<nCategories; cat++){
+          if(!USEVHMETTAG && cat==6) continue;
+          if(cat == 0){
+            outFileSystEff[fs]<<"    UnTagged: &eff_e_untagged"<<endl;
+            outFileSystEff[fs]<<"        type : lnN"<<endl;
+            for(int pr=0; pr<nProcesses; pr++){
+              if(!useProcessInMeas[pr]) continue;
+              int idx=-1;
+              if(isSignal[pr])  idx=0;
+              else if(pr==qqZZ) idx=1;
+              else if(pr==ggZZ) idx=2;
+
+	      effElectronUpFactor = fround( num_ele_Up[idx] / den_ele_Nominal[idx], 3); 	 
+
+	      if(effElectronUpFactor==1) continue;
+              if(isnan(effElectronUpFactor)) continue;
+              outFileSystEff[fs]<<"        "<<sProcess[pr]<<": "<<Form("%.3f",effElectronUpFactor)<<endl;
+	    }
+          }else{ 
+            outFileSystEff[fs]<<"    "<<sCategory[cat]<<":"<<endl;
+            outFileSystEff[fs]<<"        <<: *eff_e_untagged"<<endl; 
+          }  
+        }
+        outFileSystEff[fs]<<endl;
+      }
+       
+      outFileSystEff[fs].close();
+    }//end for on final states
+
+}
+
+ 
 
 
 void getZPlusXYields_Run2CombinedShape_InCateg(Float_t* yieldZPX4mu, Float_t* yieldZPX4e, Float_t* yieldZPX2e2mu, Float_t* yieldZPX4l, Int_t m4lMin, Int_t m4lMax) {
@@ -1415,10 +1557,10 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
     }
     if(doSystStudy){
       for(int cat=0; cat<nCategories+1; cat++){
-	for(int sy=0; sy<nSystShifts; sy++){
-	  hTemp = (TH1F*)fInYields->Get(Form("hYield_%s%s_%s_%s_%s_%s",sProcess[pr].c_str(),(isSignal[pr]?"125":""),sFinalState[nFinalStates].c_str(),sCategory[cat].c_str(),sResonantStatus[nRS].c_str(),sSystShift[sy].c_str()));
-	  yield_4l_forSyst[pr][cat][sy] = hTemp->GetBinContent(1);
-	}
+        for(int sy=0; sy<nSystShifts; sy++){
+          hTemp = (TH1F*)fInYields->Get(Form("hYield_%s%s_%s_%s_%s_%s",sProcess[pr].c_str(),(isSignal[pr]?"125":""),sFinalState[nFinalStates].c_str(),sCategory[cat].c_str(),sResonantStatus[nRS].c_str(),sSystShift[sy].c_str()));
+          yield_4l_forSyst[pr][cat][sy] = hTemp->GetBinContent(1);
+        }
       }
     }
   }
@@ -1545,13 +1687,30 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
       totalYield[nFinalStates][cat] += totalYield[fs][cat];
     }
 
+  //This part generates the entire systematics_expt_13TeV.yaml file
   if(doSystStudy){
     float jecUpFactor, jecDnFactor, btagUpFactor, btagDnFactor;
     ofstream outFileSyst;
     
-    outFileSyst.open((outputDirectory+"/partof_systematics_expt_13TeV.yaml").c_str());
+    outFileSyst.open((outputDirectory+"/systematics_expt_13TeV.yaml").c_str());
 
-    outFileSyst<<"JES:"<<endl;
+    //Luminosity systematic uncertainty
+    outFileSyst<<"lumi_13TeV:"<<endl;
+    outFileSyst<<"    UnTagged: &lumi_untagged"<<endl;
+    outFileSyst<<"        type: lnN"<<endl;
+    for(int pr=0; pr<nProcesses; pr++){
+      if(!useProcessInMeas[pr]) continue;
+      outFileSyst<<"        "<<sProcess[pr]<<": "<<1+lumiSystUnc<<endl; //fixed value of lumiSystUnc: same uncertainty on all processes
+    }
+    for(int cat=1; cat<nCategories; cat++){
+      if(!USEVHMETTAG && cat==6) continue;
+      outFileSyst<<"    "<<sCategory[cat]<<":"<<endl;
+      outFileSyst<<"        <<: *lumi_untagged"<<endl;
+    }
+    outFileSyst<<endl;
+
+
+    outFileSyst<<"CMS_scale_j_13TeV:"<<endl;
     for(int cat=0; cat<nCategories; cat++){
       if(!USEVHMETTAG && cat==6) continue;
       outFileSyst<<"    "<<sCategory[cat]<<": "<<endl;
@@ -1561,12 +1720,12 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
 	jecUpFactor = fround( yield_4l_forSyst[pr][cat][jecUp] / yield_4l_forSyst[pr][cat][nominal], 4);
 	jecDnFactor = fround( yield_4l_forSyst[pr][cat][jecDn] / yield_4l_forSyst[pr][cat][nominal], 4);
 	if(jecUpFactor==1 && jecDnFactor==1) continue;
-	outFileSyst<<"        "<<sProcess[pr]<<": "<<Form("%.4f",jecUpFactor)<<"/"<<Form("%.4f",jecDnFactor)<<endl;
+	outFileSyst<<"        "<<sProcess[pr]<<": "<<Form("%.4f",jecDnFactor)<<"/"<<Form("%.4f",jecUpFactor)<<endl;//Convention: K_down/K_up
       }
     }
     outFileSyst<<endl;
 
-    outFileSyst<<"bTagSF:"<<endl;
+    outFileSyst<<"CMS_eff_b:"<<endl;
     for(int cat=0; cat<nCategories; cat++){
       if(!USEVHMETTAG && cat==6) continue;
       bool init = false;
@@ -1580,8 +1739,18 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
           outFileSyst<<"        type: lnN"<<endl;
           init = true; 
         }
-	outFileSyst<<"        "<<sProcess[pr]<<": "<<Form("%.4f",btagUpFactor)<<"/"<<Form("%.4f",btagDnFactor)<<endl;
+	outFileSyst<<"        "<<sProcess[pr]<<": "<<Form("%.4f",btagDnFactor)<<"/"<<Form("%.4f",btagUpFactor)<<endl;//Convention: K_down/K_up
       }
+    }
+    outFileSyst<<endl;
+
+    outFileSyst<<"CMS_hzz4l_bkg_kdShape:"<<endl;
+    outFileSyst<<"    UnTagged: &cms_zz4l_bkg_untagged"<<endl;
+    outFileSyst<<"        type : param 0.0 1 [-3,3]"<<endl;  //Parametric uncertainty on background shape; value added by hand.
+    for(int cat=1; cat<nCategories; cat++){
+      if(!USEVHMETTAG && cat==6) continue;
+      outFileSyst<<"    "<<sCategory[cat]<<":"<<endl;
+      outFileSyst<<"        <<: *cms_zz4l_bkg_untagged"<<endl;
     }
     outFileSyst<<endl;
 
@@ -1700,15 +1869,16 @@ void prepareYields(bool recomputeYields = true) {
 
   // Specify input/output location
 
-  string inputPathSignal = "";
-  string inputFileData = "";
+  //string inputPathSignal = "/data3/Higgs/170222/"; // Moriond17 official set
+  string inputPathSignal = "/data3/Higgs/170526_SystStudy/";
+  string inputPathData = "/data3/Higgs/170222/"; 
 
   string inputPathqqZZ = inputPathSignal;
   string inputPathggZZ = inputPathSignal;
   string inputFileFakeRates = "../../data/FakeRates/FakeRate_SS_Moriond368.root";
 
   string outputPath = "YieldFiles";
-  string outputPathPlots = "$pl";//"YieldFiles";
+  string outputPathPlots = "YieldPlots"; 
 
   // Define c.o.m. energy (13TeV only for the moment)
   float sqrts = 13.;
@@ -1746,9 +1916,13 @@ void prepareYields(bool recomputeYields = true) {
   if(recomputeYields)
     computeYields(inputPathSignal, inputPathqqZZ, inputPathggZZ, lumi, sqrts, m4l_min, m4l_max);
 
-  // Prepare Z+X yields from SS CR, but in the full range, to be then normalized thanks to the shape
+  // Prepare Z+X yields from SS CR, but in the full range, to be then normalized thanks to the shape; create Z+X systematic fragment
   if(BUILDZPLUSXYIELDFROMSSCR)
     computeYieldsZPlusXSS(inputPathData, inputFileFakeRates, outputPath, lumi);
+
+  // Create data/MC efficiency systematics for signal, in the m4l_min, m4l_max range
+  if(DOSYSTSTUDYEFF)
+    computeYieldEffSyst(outputPath, lumi, sqrts, m4l_min, m4l_max);
 
   // /!\ Count observed events
   if(UNBLINDSR) dataEventCounts(inputPathData, m4l_min, m4l_max);
