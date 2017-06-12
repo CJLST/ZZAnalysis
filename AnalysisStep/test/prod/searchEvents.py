@@ -22,7 +22,7 @@ prepareCSV = True          # Create a searchEvents.csv file in order to reproces
 verifyEdmFile = False      # open file to check that event is present (useful for jobs with many input files/job)
 debug = False
 
-unblind = False            # Unblinded (affects data only)
+unblind = True            # Unblinded (affects data only)
 range = 'low'              # full,low,high mass region (only for blinded data)
 
 
@@ -120,8 +120,9 @@ def checkTree(sample, treename,wantedEvents, files):
     if len(eventIds) == 0 :
         return 0
     f = open('pyFragments/searchEvents_'+sample+'.py', 'w')
-    f.write('process.source.fileNames = cms.untracked.vstring('+ ','.join('\'%s\'' % val for val in LFNs)+ ')\n')
-    f.write('process.source.eventsToProcess = cms.untracked.VEventRange('+ ','.join('\'%s\'' % val for val in eventIds)+')\n')
+    f.write('process.source.fileNames = cms.untracked.vstring()\n')
+    f.write('process.source.fileNames.extend(['+',\n'.join('\'%s\'' % val for val in LFNs)+ '])\n')
+    f.write('process.source.eventsToProcess = cms.untracked.VEventRange('+ ',\n'.join('\'%s\'' % val for val in eventIds)+')\n')
     f.close()
     f = open('searchEvents.csv', 'a')
     PD = ''
@@ -132,16 +133,16 @@ def checkTree(sample, treename,wantedEvents, files):
     elif 'SingleMu' in sample: PD = 'SingleMuon'
 
     addVariables=';SKIP_EMPTY_EVENTS=False' # Add SKIP_EMPTY_EVENTS to avoid problems with changes in trigger requirements (events may have to be picked from different PDs...)
-    # addVariables+=';KINREFIT=True
+    addVariables+=';KINREFIT=True'
     if 'Hv2' in sample or 'Hv3' in sample : addVariables += ';DATA_TAG=PromptReco' # FIXME: needed at the time of Moriond17
-    f.write(sample+',,-1,,,,source.fileNames,,999,PD='+PD+';PROCESS_CR=True;ADDLOOSEELE=False'+addVariables+',json_2016.py;RecoProbabilities.py;searchEvents_'+sample+'.py, # '+str(len(eventIds))+' events \n')
+    f.write(sample+',,-1,,,,source.fileNames,,20,PD='+PD+';PROCESS_CR=True;ADDLOOSEELE=False'+addVariables+',json_2016.py;RecoProbabilities.py;searchEvents_'+sample+'.py, # '+str(len(eventIds))+' events \n')
     f.close()
     return len(eventIds)
 
 
 if prepareCSV :
     f = open('searchEvents.csv', 'w')
-    f.write('identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments,comment')
+    f.write('identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments,comment\n')
     f.close()
 
 
