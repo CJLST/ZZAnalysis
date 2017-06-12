@@ -76,8 +76,8 @@ if SELSETUP=="Legacy" and not BESTCANDCOMPARATOR=="byBestZ1bestZ2":
 
 
 # The isolation cuts for electrons and muons. FIXME: there is an hardcoded instance of these values in src/LeptonIsoHelper.cc !!
-ELEISOCUT = "0.35"
-MUISOCUT = "0.35"
+ELEISOCUT = 0.35
+MUISOCUT = 0.35
 
 ### ----------------------------------------------------------------------
 ### Set the GT
@@ -130,7 +130,7 @@ elif (SAMPLE_TYPE == 2017): #FIXME
     if IsMC:
         process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
     else:
-        process.GlobalTag.globaltag = GlobalTag(process.GlobalTag, 'auto:run2_data', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_data', '')
 
 
 print '\t',process.GlobalTag.globaltag
@@ -364,7 +364,7 @@ process.goodPrimaryVertices = cms.EDFilter("VertexSelector",
 SIP =  "userFloat('SIP')<4"
 GOODLEPTON = "userFloat('ID') && " + SIP  # Lepton passing tight ID + SIP [ISO is asked AFTER FSR!!!]
 
-if ((LEPTON_SETUP >= 2016) : # Run II
+if (LEPTON_SETUP >= 2016) : # Run II
     TIGHTMUON = "userFloat('isPFMuon') || (userFloat('isTrackerHighPtMuon') && pt>200)"
 else:  
     TIGHTMUON = "userFloat('isPFMuon')" # Run I
@@ -460,7 +460,7 @@ process.softMuons = cms.EDProducer("MuFiller",
         ID = cms.string(TIGHTMUON), # tight muon ID
         isSIP = cms.string(SIP),
         isGood = cms.string(GOODLEPTON),
-        isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<" + MUISOCUT),
+        isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<" + str(MUISOCUT)),
 #       Note: passCombRelIsoPFFSRCorr is currently set in LeptonPhotonMatcher for new FSR strategy; in ZZCandidateFiller for the old one
     )
 )
@@ -575,13 +575,13 @@ process.softElectrons = cms.EDProducer("EleFiller",
         ID = cms.string("userFloat('isBDT')"),
         isSIP = cms.string(SIP),
         isGood = cms.string(GOODLEPTON),
-        isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<"+ELEISOCUT)
+        isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<"+str(ELEISOCUT))
 #       Note: passCombRelIsoPFFSRCorr is currently set in LeptonPhotonMatcher for new FSR strategy; in ZZCandidateFiller for the old one
         ),
    mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16HZZV1Values"), # (when running VID)
    )
 
-process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons) # (use this version when running VID)
+#process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons) # (use this version when running VID)
 #process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.bareSoftElectrons + process.softElectrons) # (use this version without VID)
 
 # Handle special cases
@@ -856,10 +856,10 @@ process.ZlCand = cms.EDProducer("PATCandViewShallowCloneCombiner",
 ### ----------------------------------------------------------------------
 
 FOURGOODLEPTONS    =  ("userFloat('d0.GoodLeptons') && userFloat('d1.GoodLeptons')" +
-                       "&& userFloat('d0.worstEleIso') <" + ELEISOCUT +
-                       "&& userFloat('d1.worstEleIso') <" + ELEISOCUT +
-                       "&& userFloat('d0.worstMuIso') <" + MUISOCUT +
-                       "&& userFloat('d1.worstMuIso') <" + MUISOCUT
+                       "&& userFloat('d0.worstEleIso') <" + str(ELEISOCUT) +
+                       "&& userFloat('d1.worstEleIso') <" + str(ELEISOCUT) +
+                       "&& userFloat('d0.worstMuIso') <" + str(MUISOCUT) +
+                       "&& userFloat('d1.worstMuIso') <" + str(MUISOCUT)
                        ) #ZZ made of 4 tight leptons passing SIP and ISO
 
 
@@ -1034,11 +1034,11 @@ CR_Z2MASS = "daughter(1).mass>4  && daughter(1).mass<120"                       
 
 
 # Define cuts for selection of the candidates among which the best one is chosen.
-CR_BESTCANDBASE = ("userFloat('d0.Z1Presel') && userFloat('d0.worstEleIso') <" + ELEISOCUT +
-                   "&& userFloat('d0.worstMuIso') <" + MUISOCUT ) # To be revised
+CR_BESTCANDBASE = ("userFloat('d0.Z1Presel') && userFloat('d0.worstEleIso') <" + str(ELEISOCUT) +
+                   "&& userFloat('d0.worstMuIso') <" + str(MUISOCUT) ) # To be revised
 
-CR_BESTCANDBASE_AA   = ("userFloat('d0.Z1Presel') && userFloat('d0.worstEleIso') <" + ELEISOCUT +
-                        "&& userFloat('d0.worstMuIso') <" + MUISOCUT + "&&" +
+CR_BESTCANDBASE_AA   = ("userFloat('d0.Z1Presel') && userFloat('d0.worstEleIso') <" + str(ELEISOCUT) +
+                        "&& userFloat('d0.worstMuIso') <" + str(MUISOCUT) + "&&" +
                         Z2SIP) # base for AA CR: # Z1 with tight leptons passing SIP and ISO, mass cuts; SIP on Z2
 
 

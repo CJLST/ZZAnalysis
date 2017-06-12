@@ -1044,8 +1044,14 @@ void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
    JetJERUp .push_back(jet.userFloat("pt_jerup"));
    JetJERDown .push_back(jet.userFloat("pt_jerdn"));
 
-   JetPUValue.push_back(jet.userFloat("pileupJetIdUpdated:fullDiscriminant"));
-   JetPUID.push_back(jet.userInt("pileupJetIdUpdated:fullId"));
+   if (jet.hasUserFloat("pileupJetIdUpdated:fullDiscriminant")) { // if JEC is reapplied, we set this
+     JetPUValue.push_back(jet.userFloat("pileupJetIdUpdated:fullDiscriminant"));
+     JetPUID.push_back(jet.userInt("pileupJetIdUpdated:fullId"));
+   } else {
+     JetPUValue.push_back(jet.userFloat("pileupJetId:fullDiscriminant"));
+     JetPUID.push_back(jet.userInt("pileupJetId:fullId"));
+   }
+   
 
    JetHadronFlavour .push_back(jet.hadronFlavour());
    JetPartonFlavour .push_back(jet.partonFlavour());
