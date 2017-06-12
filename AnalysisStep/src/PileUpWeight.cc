@@ -9,15 +9,14 @@ float PileUpWeight::weight(float input, PileUpWeight::PUvar var) {
   } else if (h_up != nullptr && var == PUvar::VARUP) {
     return h_up->GetBinContent(h_up->FindBin(input));
   } else {
-    edm::LogError("PU reweight") << "Did not find reweighting histogram to reweight variation=";// << var;
-    return -99.;
+    return -1.;
   }
 }
 
 
 PileUpWeight::PileUpWeight(int MC, int target) { 
 
- if (MC==2017&&target==2017) {
+ if (MC==2016&&target==2016) {
     edm::FileInPath fip("ZZAnalysis/AnalysisStep/data/PileUpWeights/puWeightsMoriond17_v2.root");
 
     TFile *fPUWeight = TFile::Open(fip.fullPath().data(),"READ");
