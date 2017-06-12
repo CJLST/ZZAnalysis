@@ -1,15 +1,13 @@
 
-#LEPTON_SETUP = 2017 # current default = 2017 = Moriond2017
+#DATA_TAG = "ReReco" # Change to PromptReco for Run2016 period H
+#LEPTON_SETUP = 2016 # current default = 2016 = Moriond2017
 #ELECORRTYPE = "None" # "None" to switch off
-#ELEREGRESSION = "None" # Not supported as of 2016
-#DATA_TAG = "ReReco" # Change to PromptReco for period H
+#ELEREGRESSION = "None" # "None" to switch off
 #APPLYMUCORR = False # Switch off muon scale corrections
-#BUNCH_SPACING = 25
-#FSRMODE = "RunII" # only Run II supported as of 2016
 #KINREFIT = False  # control KinZFitter (very slow)
 PROCESS_CR = False # Uncomment to run CR paths and trees
 #ADDLOOSEELE = True # Run paths for loose electrons
-#APPLYTRIG = False  # must set to False for all MC samples except MINIAODv2-reHLT
+#APPLYTRIG = False  # hack for samples missing correct triggers - use with caution
 #KEEPLOOSECOMB = True # Do not skip loose lepton ZZ combinations (for debugging)
 
 PD = ""

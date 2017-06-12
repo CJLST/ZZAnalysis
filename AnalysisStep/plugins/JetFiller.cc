@@ -84,7 +84,7 @@ JetFiller::JetFiller(const edm::ParameterSet& iConfig) :
   flags(iConfig.getParameter<edm::ParameterSet>("flags"))
 {
 
-  rhoToken = consumes<double>(LeptonIsoHelper::getMuRhoTag(sampleType, setup));
+  rhoToken = consumes<double>(LeptonIsoHelper::getEleRhoTag(sampleType, setup));
 
   qgToken = consumes<edm::ValueMap<float> >(edm::InputTag("QGTagger", "qgLikelihood"));
   axis2Token = consumes<edm::ValueMap<float> >(edm::InputTag("QGTagger", "axis2"));

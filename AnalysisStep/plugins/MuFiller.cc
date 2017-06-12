@@ -48,7 +48,7 @@ class MuFiller : public edm::EDProducer {
   int setup;
   const StringCutObjectSelector<pat::Muon, true> cut;
   const CutSet<pat::Muon> flags;
-  edm::EDGetTokenT<double> rhoToken;
+  //  edm::EDGetTokenT<double> rhoToken; // Rho correction currently not used.
   edm::EDGetTokenT<vector<Vertex> > vtxToken;
 
 };
@@ -61,7 +61,7 @@ MuFiller::MuFiller(const edm::ParameterSet& iConfig) :
   cut(iConfig.getParameter<std::string>("cut")),
   flags(iConfig.getParameter<edm::ParameterSet>("flags"))
 {
-  rhoToken = consumes<double>(LeptonIsoHelper::getMuRhoTag(sampleType, setup));
+  //  rhoToken = consumes<double>(LeptonIsoHelper::getMuRhoTag(sampleType, setup)); // Rho correction currently not used.
   vtxToken = consumes<vector<Vertex> >(edm::InputTag("goodPrimaryVertices"));
   produces<pat::MuonCollection>();
 }
@@ -75,9 +75,10 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::Handle<pat::MuonRefVector> muonHandle;
   iEvent.getByToken(muonToken, muonHandle);
 
-  edm::Handle<double> rhoHandle;
-  iEvent.getByToken(rhoToken, rhoHandle);
-  double rho = *rhoHandle;
+//   edm::Handle<double> rhoHandle;
+//   iEvent.getByToken(rhoToken, rhoHandle);
+//   double rho = *rhoHandle;
+  double rho = 0; // Rho correction currently not used.
 
   edm::Handle<vector<Vertex> > vertices;
   iEvent.getByToken(vtxToken,vertices);

@@ -26,22 +26,7 @@ int LeptonIsoHelper::defaultCorrTypeEle = 1;
 
 
 InputTag LeptonIsoHelper::getMuRhoTag(int sampleType, int setup) {
-  InputTag rhoTag;
-  if (setup==2011) {
-    rhoTag = InputTag("fixedGridRhoFastjetAll","");
-  } else if (setup==2012) { 
-    rhoTag = InputTag("fixedGridRhoFastjetAll","");
-  } else if (setup==2015) { 
-    rhoTag = InputTag("fixedGridRhoFastjetAll","");
-  } else if (setup==2016) {
-    rhoTag = InputTag("fixedGridRhoFastjetAll","");
-  } else if (setup==2017) {
-     rhoTag = InputTag("fixedGridRhoFastjetAll","");
-  } else {
-    cout << "LeptonIsoHelper: AIncorrect setup: " << setup << endl;
-    abort();
-  }
-  return rhoTag;
+  return InputTag("fixedGridRhoFastjetAll","");
 }
 
 InputTag LeptonIsoHelper::getEleRhoTag(int sampleType, int setup) {
@@ -78,25 +63,22 @@ float LeptonIsoHelper::combRelIsoPF(int sampleType, int setup, double rho, const
   float PFPhotonIso       = l.pfIsolationR03().sumPhotonEt;
   float PFPUChargedHadIso = l.pfIsolationR03().sumPUPt;
     
-  MuonEffectiveArea::MuonEffectiveAreaTarget EAsetup;
-  if (setup==2011) {
-    EAsetup = MuonEffectiveArea::kMuEAData2011;
-  } else if (setup==2012) { 
-    EAsetup = MuonEffectiveArea::kMuEAData2012;
-  } else if (setup==2015) { 
-    EAsetup = MuonEffectiveArea::kMuEAPhys14MC; //FIXME: replace with EAs from data when available
-  } else if (setup==2016) { 
-    EAsetup = MuonEffectiveArea::kMuEAPhys14MC; //FIXME: update to 2016!
-  } else if (setup==2017) {
-     EAsetup = MuonEffectiveArea::kMuEAPhys14MC; //FIXME: update to 2016!
-  } else {
-    cout << "LeptonIsoHelper: CIncorrect setup: " << setup << endl;
-    abort();
-  }
-
   if (correctionType==0) {
     return  (PFChargedHadIso + PFNeutralHadIso + PFPhotonIso - fsr)/l.pt();
   } else if (correctionType==1) {
+  
+    MuonEffectiveArea::MuonEffectiveAreaTarget EAsetup;
+    if (setup==2011) {
+      EAsetup = MuonEffectiveArea::kMuEAData2011;
+    } else if (setup==2012) { 
+      EAsetup = MuonEffectiveArea::kMuEAData2012;
+    } else if (setup==2015 || setup==2016) { 
+      EAsetup = MuonEffectiveArea::kMuEAPhys14MC; //FIXME: no longer updated since we switched to deltaBeta.     
+    } else {
+      cout << "LeptonIsoHelper: CIncorrect setup: " << setup << endl;
+      abort();
+    }
+
     float EA = MuonEffectiveArea::GetMuonEffectiveArea(MuonEffectiveArea::kMuGammaAndNeutralHadronIso04, 
 						       l.eta(), EAsetup);
     return  (PFChargedHadIso + max(0., PFNeutralHadIso + PFPhotonIso - fsr - rho * EA))/l.pt();
@@ -121,29 +103,27 @@ float LeptonIsoHelper::combRelIsoPF(int sampleType, int setup, double rho, const
   float PFPhotonIso       = l.pfIsolationVariables().sumPhotonEt;
   float PFPUChargedHadIso = l.pfIsolationVariables().sumPUPt;
 
-  ElectronEffectiveArea::ElectronEffectiveAreaTarget EAsetup;
-  if (setup==2011) {
-    EAsetup = ElectronEffectiveArea::kEleEAData2011;
-  } else if (setup==2012) { 
-    EAsetup = ElectronEffectiveArea::kEleEAData2012;
-  } else if (setup==2015) { 
-    //EAsetup = ElectronEffectiveArea::kEleEAPhys14MC; //This was from Phys14 MC, 72X
-    EAsetup = ElectronEffectiveArea::kEleEA25nsSpring15MC; // from Spring15 MC, 74X
-    //FIXME: are effective areas foreseen from Fall15 MC /76X or from RunII data ?
-  } else if (setup==2016) { 
-    EAsetup = ElectronEffectiveArea::kEleEA25nsSpring15MC; 
-    //FIXME: update to 2016!
-  } else if (setup==2017) {
-     EAsetup = ElectronEffectiveArea::kEleEA25nsSpring15MC;
-     //FIXME: update to 2017!
-  } else {
-    cout << "LeptonIsoHelper: DIncorrect setup: " << setup << endl;
-    abort();
-  }
-
   if (correctionType==0) {
     return  (PFChargedHadIso + PFNeutralHadIso + PFPhotonIso - fsr)/l.pt();
   } else if (correctionType==1) {
+    ElectronEffectiveArea::ElectronEffectiveAreaTarget EAsetup;
+    if (setup==2011) {
+      EAsetup = ElectronEffectiveArea::kEleEAData2011;
+    } else if (setup==2012) { 
+      EAsetup = ElectronEffectiveArea::kEleEAData2012;
+    } else if (setup==2015) { 
+      //EAsetup = ElectronEffectiveArea::kEleEAPhys14MC; //This was from Phys14 MC, 72X
+      EAsetup = ElectronEffectiveArea::kEleEA25nsSpring15MC; // from Spring15 MC, 74X
+      //FIXME: are effective areas foreseen from Fall15 MC /76X or from RunII data ?
+    } else if (setup==2016) { 
+      EAsetup = ElectronEffectiveArea::kEleEA25nsSpring15MC; //FIXME: update to 2016!
+    } else if (setup==2017) {
+      EAsetup = ElectronEffectiveArea::kEleEA25nsSpring15MC; //FIXME: update to 2017!
+    } else {
+      cout << "LeptonIsoHelper: DIncorrect setup: " << setup << endl;
+      abort();
+    }
+
     //float EA = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04,
     //			 				       l.eta(), // l.superCluster()->eta(), 
     //							       EAsetup);
@@ -172,29 +152,28 @@ float LeptonIsoHelper::combRelIsoPF(int sampleType, int setup, double rho, const
   //float PFPhotonIso       = l.pfIsolationVariables().sumPhotonEt;
   //float PFPUChargedHadIso = l.pfIsolationVariables().sumPUPt;
 
-  ElectronEffectiveArea::ElectronEffectiveAreaTarget EAsetup;
-  if (setup==2011) {
-    EAsetup = ElectronEffectiveArea::kEleEAData2011;
-  } else if (setup==2012) { 
-    EAsetup = ElectronEffectiveArea::kEleEAData2012;
-  } else if (setup==2015) { 
-    //EAsetup = ElectronEffectiveArea::kEleEAPhys14MC; //This was from Phys14 MC, 72X
-    EAsetup = ElectronEffectiveArea::kEleEA25nsSpring15MC; // from Spring15 MC, 74X
-    //FIXME: are effective areas foreseen from Fall15 MC /76X or from RunII data ?
-  } else if (setup==2016) {
-    EAsetup = ElectronEffectiveArea::kEleEA25nsSpring15MC;
-    //FIXME: update to 2016!
-  } else if (setup==2017) {
-     EAsetup = ElectronEffectiveArea::kEleEA25nsSpring15MC;
-     //FIXME: update to 2017!
-  } else {
-    cout << "LeptonIsoHelper: Incorrect setup: " << setup << endl;
-    abort();
-  }
 
   if (correctionType==0) {
     return  (PFChargedHadIso + PFNeutralHadIso + PFPhotonIso - fsr)/l.pt();
   } else if (correctionType==1) {
+    ElectronEffectiveArea::ElectronEffectiveAreaTarget EAsetup;
+    if (setup==2011) {
+      EAsetup = ElectronEffectiveArea::kEleEAData2011;
+    } else if (setup==2012) { 
+      EAsetup = ElectronEffectiveArea::kEleEAData2012;
+    } else if (setup==2015) { 
+      //EAsetup = ElectronEffectiveArea::kEleEAPhys14MC; //This was from Phys14 MC, 72X
+      EAsetup = ElectronEffectiveArea::kEleEA25nsSpring15MC; // from Spring15 MC, 74X
+      //FIXME: are effective areas foreseen from Fall15 MC /76X or from RunII data ?
+    } else if (setup==2016) {
+      EAsetup = ElectronEffectiveArea::kEleEA25nsSpring15MC; //FIXME: update to 2016!
+      
+    } else if (setup==2017) {
+      EAsetup = ElectronEffectiveArea::kEleEA25nsSpring15MC; //FIXME: update to 2016!
+    } else {
+      cout << "LeptonIsoHelper: Incorrect setup: " << setup << endl;
+      abort();
+    }
     //float EA = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04,
     //			 				       l.eta(), // l.superCluster()->eta(), 
     //							       EAsetup);
@@ -210,7 +189,6 @@ float LeptonIsoHelper::combRelIsoPF(int sampleType, int setup, double rho, const
 
 
 float LeptonIsoHelper::combRelIsoPF(int sampleType, int setup, double rho, const Candidate* lep, float fsr, int correctionType) {
-  // should check if lep->hasMasterClone()?  
   if (lep->isMuon()) {
     const pat::Muon* mu = dynamic_cast<const pat::Muon*>(lep->masterClone().get());
     return combRelIsoPF(sampleType, setup, rho, *mu, fsr, correctionType<0?defaultCorrTypeMu:correctionType);

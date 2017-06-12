@@ -12,13 +12,13 @@ process = cms.Process("ZZ")
 declareDefault("IsMC", True, globals())
 
 # Set of effective areas, rho corrections, etc. (can be 2011, 2012, 2015 or 2016)
-declareDefault("LEPTON_SETUP", 2017, globals())
+declareDefault("LEPTON_SETUP", 2016, globals())
 
 # Flag that reflects the actual sqrts of the sample (can be 2011, 2012, 2015 or 2016)
 # Can differ from SAMPLE_TYPE for samples that are rescaled to a different sqrts.
 declareDefault("SAMPLE_TYPE", LEPTON_SETUP, globals())
 
-# Flag that
+# Control global tag to be used (for data or rereco)
 declareDefault("DATA_TAG", "ReReco", globals())
 
 #Optional name of the sample/dataset being analyzed
@@ -27,7 +27,7 @@ declareDefault("SAMPLENAME", "", globals())
 #Type of electron scale correction/smearing: "None", "RunII"
 declareDefault("ELECORRTYPE", "RunII", globals())
 
-#Apply electron escale regression
+#Apply electron escale regression: "None", "Moriond17v1"
 declareDefault("ELEREGRESSION", "Moriond17v1", globals())
 
 #Apply muon scale correction
@@ -83,6 +83,8 @@ MUISOCUT = "0.35"
 ### Set the GT
 ### ----------------------------------------------------------------------
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+from Configuration.AlCa.GlobalTag import GlobalTag
+
 
 if (SAMPLE_TYPE == 2011) :
     if IsMC:
@@ -103,27 +105,33 @@ elif (SAMPLE_TYPE == 2012) :
         process.GlobalTag.globaltag = 'GR_70_V2_AN1::All'
 
 elif (SAMPLE_TYPE == 2015) :
-    from Configuration.AlCa.GlobalTag import GlobalTag
     if IsMC:
         process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
     else:
         process.GlobalTag.globaltag = '76X_dataRun2_v15'
 
-elif (SAMPLE_TYPE == 2016):
-    from Configuration.AlCa.GlobalTag import GlobalTag
-    if IsMC:
-        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_miniAODv2_v1', '')
-    else:
-        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_Prompt_ICHEP16JEC_v0', '')
+### ICHEP 2016, superseeded
+# elif (SAMPLE_TYPE == 2016): 
+#     from Configuration.AlCa.GlobalTag import GlobalTag
+#     if IsMC:
+#         process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_miniAODv2_v1', '')
+#     else:
+#         process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_Prompt_ICHEP16JEC_v0', '')
 
-elif (SAMPLE_TYPE == 2017):
-    from Configuration.AlCa.GlobalTag import GlobalTag
+elif (SAMPLE_TYPE == 2016):
     if IsMC:
         process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_TrancheIV_v8', '')
     elif (DATA_TAG == "ReReco"):
         process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_2016SeptRepro_v7', '')
     elif (DATA_TAG == "PromptReco"):
         process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_Prompt_v16', '')
+
+elif (SAMPLE_TYPE == 2017): #FIXME
+    if IsMC:
+        process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
+    else:
+        process.GlobalTag.globaltag = GlobalTag(process.GlobalTag, 'auto:run2_data', '')
+
 
 print '\t',process.GlobalTag.globaltag
 
@@ -224,44 +232,45 @@ elif (LEPTON_SETUP == 2015):
     process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
     process.triggerSingleEle = cms.Path(process.hltFilterSingleEle)
 
+### ICHEP 2016 version - superseeded
+# elif (LEPTON_SETUP == 2016): 
+#     if (IsMC and not APPLYTRIG):
+# 	#At the moment, the HLT paths are not present in the "tranche 1" background MC and MiniAODv1 signal MC. They will be added in "tranche 2"/"tranche 3" and MiniAODv2.
+#         process.hltFilterDiEle.HLTPaths = ["*"]
+#         process.hltFilterDiMu.HLTPaths = ["*"]
+#         process.hltFilterMuEle.HLTPaths = ["*"]
+#         process.hltFilterTriEle.HLTPaths = ["*"]
+#         process.hltFilterTriMu.HLTPaths = ["*"]
+#         process.hltFilterSingleEle.HLTPaths = ["*"]
+#         process.hltFilterSingleMu.HLTPaths = ["*"]
+
+#     else:
+#         if (IsMC): #re-miniAOD (APPLYTRIG=True) have TriggerResult labelled HLT2...
+#             process.hltFilterDiMu.TriggerResultsTag  = cms.InputTag("TriggerResults","","HLT2")
+#             process.hltFilterDiEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT2")
+#             process.hltFilterMuEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT2")
+#             process.hltFilterMuEle2.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT2")
+#             process.hltFilterMuEle3.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT2")
+#             process.hltFilterTriEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT2")
+#             process.hltFilterTriMu.TriggerResultsTag  = cms.InputTag("TriggerResults","","HLT2")
+#             process.hltFilterSingleEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT2")
+#             process.hltFilterSingleMu.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT2")
+
+#         process.hltFilterDiEle.HLTPaths = ["HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v*"]
+#         process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*"]
+#         process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"]
+#         process.hltFilterTriEle.HLTPaths = ["HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v*"]
+#         process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_12_10_5_v*"]
+#         process.hltFilterSingleEle.HLTPaths = ["HLT_Ele25_eta2p1_WPTight_Gsf_v*","HLT_Ele27_WPTight_Gsf_v*","HLT_Ele27_eta2p1_WPLoose_Gsf_v*"]
+#         process.hltFilterSingleMu.HLTPaths = ["HLT_IsoMu20_v*","HLT_IsoTkMu20_v*","HLT_IsoMu22_v*","HLT_IsoTkMu22_v*"]
+
+#     process.triggerTriEle = cms.Path(process.hltFilterTriEle)
+#     process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
+#     process.triggerSingleEle = cms.Path(process.hltFilterSingleEle)
+#     process.triggerSingleMu  = cms.Path(process.hltFilterSingleMu )
+
+### 2016 triggers - final
 elif (LEPTON_SETUP == 2016):
-    if (IsMC and not APPLYTRIG):
-	#At the moment, the HLT paths are not present in the "tranche 1" background MC and MiniAODv1 signal MC. They will be added in "tranche 2"/"tranche 3" and MiniAODv2.
-        process.hltFilterDiEle.HLTPaths = ["*"]
-        process.hltFilterDiMu.HLTPaths = ["*"]
-        process.hltFilterMuEle.HLTPaths = ["*"]
-        process.hltFilterTriEle.HLTPaths = ["*"]
-        process.hltFilterTriMu.HLTPaths = ["*"]
-        process.hltFilterSingleEle.HLTPaths = ["*"]
-        process.hltFilterSingleMu.HLTPaths = ["*"]
-
-    else:
-        if (IsMC): #re-miniAOD (APPLYTRIG=True) have TriggerResult labelled HLT2...
-            process.hltFilterDiMu.TriggerResultsTag  = cms.InputTag("TriggerResults","","HLT2")
-            process.hltFilterDiEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT2")
-            process.hltFilterMuEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT2")
-            process.hltFilterMuEle2.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT2")
-            process.hltFilterMuEle3.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT2")
-            process.hltFilterTriEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT2")
-            process.hltFilterTriMu.TriggerResultsTag  = cms.InputTag("TriggerResults","","HLT2")
-            process.hltFilterSingleEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT2")
-            process.hltFilterSingleMu.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT2")
-
-        process.hltFilterDiEle.HLTPaths = ["HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v*"]
-        process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*"]
-        process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"]
-        process.hltFilterTriEle.HLTPaths = ["HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v*"]
-        process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_12_10_5_v*"]
-        process.hltFilterSingleEle.HLTPaths = ["HLT_Ele25_eta2p1_WPTight_Gsf_v*","HLT_Ele27_WPTight_Gsf_v*","HLT_Ele27_eta2p1_WPLoose_Gsf_v*"]
-        process.hltFilterSingleMu.HLTPaths = ["HLT_IsoMu20_v*","HLT_IsoTkMu20_v*","HLT_IsoMu22_v*","HLT_IsoTkMu22_v*"]
-
-    process.triggerTriEle = cms.Path(process.hltFilterTriEle)
-    process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
-    process.triggerSingleEle = cms.Path(process.hltFilterSingleEle)
-    process.triggerSingleMu  = cms.Path(process.hltFilterSingleMu )
-
-elif (LEPTON_SETUP == 2017):
-
    process.hltFilterDiEle.HLTPaths = ["HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v*"]
    process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*"]
    process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"]
@@ -274,6 +283,23 @@ elif (LEPTON_SETUP == 2017):
    process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
    process.triggerSingleEle = cms.Path(process.hltFilterSingleEle)
    process.triggerSingleMu  = cms.Path(process.hltFilterSingleMu )
+
+### 2017 triggers, in progress
+elif (LEPTON_SETUP == 2017): 
+   process.hltFilterDiEle.HLTPaths = ["HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v*"]
+   process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*"]
+   process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"]
+   process.hltFilterTriEle.HLTPaths = ["HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v*"]
+   process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_12_10_5_v*"]
+   process.hltFilterSingleEle.HLTPaths = ["HLT_Ele25_eta2p1_WPTight_Gsf_v*","HLT_Ele27_WPTight_Gsf_v*","HLT_Ele27_eta2p1_WPLoose_Gsf_v*", "HLT_Ele32_eta2p1_WPTight_Gsf_v*"]
+   process.hltFilterSingleMu.HLTPaths = ["HLT_IsoMu20_v*","HLT_IsoTkMu20_v*","HLT_IsoMu22_v*","HLT_IsoTkMu22_v*","HLT_IsoMu24_v*","HLT_IsoTkMu24_v*"]
+
+   process.triggerTriEle = cms.Path(process.hltFilterTriEle)
+   process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
+   process.triggerSingleEle = cms.Path(process.hltFilterSingleEle)
+   process.triggerSingleMu  = cms.Path(process.hltFilterSingleMu )
+
+
 
 process.triggerDiMu   = cms.Path(process.hltFilterDiMu)
 process.triggerDiEle  = cms.Path(process.hltFilterDiEle)
@@ -338,10 +364,10 @@ process.goodPrimaryVertices = cms.EDFilter("VertexSelector",
 SIP =  "userFloat('SIP')<4"
 GOODLEPTON = "userFloat('ID') && " + SIP  # Lepton passing tight ID + SIP [ISO is asked AFTER FSR!!!]
 
-if ((LEPTON_SETUP == 2016) or (LEPTON_SETUP == 2017)) :
+if ((LEPTON_SETUP >= 2016) : # Run II
     TIGHTMUON = "userFloat('isPFMuon') || (userFloat('isTrackerHighPtMuon') && pt>200)"
-else:
-    TIGHTMUON = "userFloat('isPFMuon')"
+else:  
+    TIGHTMUON = "userFloat('isPFMuon')" # Run I
 
 
 
@@ -385,16 +411,11 @@ elif LEPTON_SETUP == 2015: # (KalmanMuonCalibrator, 2015)
         process.calibratedMuons.identifier = cms.string("MC_76X_13TeV")
     else:
         process.calibratedMuons.identifier = cms.string("DATA_76X_13TeV")
-elif LEPTON_SETUP == 2016: # (KalmanMuonCalibrator, 2016)
-    if IsMC:
-        process.calibratedMuons.identifier = cms.string("MC_80X_13TeV")
-    else:
-        process.calibratedMuons.identifier = cms.string("DATA_80X_13TeV")
-elif LEPTON_SETUP == 2017: # FIXME To be defined for 2017, atm keep 2016 corrections
-   if IsMC:
-      process.calibratedMuons.identifier = cms.string("MC_80X_13TeV")
-   else:
-      process.calibratedMuons.identifier = cms.string("DATA_80X_13TeV")
+elif LEPTON_SETUP == 2016: # (KalmanMuonCalibrator, ICHEP 2016) FIXME: still using the version from ICHEP16
+     if IsMC:
+         process.calibratedMuons.identifier = cms.string("MC_80X_13TeV")
+     else:
+         process.calibratedMuons.identifier = cms.string("DATA_80X_13TeV")
 else:
     if APPLYMUCORR:
         print "APPLYMUCORR not configured for LEPTON_SETUP =", LEPTON_SETUP
@@ -501,15 +522,16 @@ process.selectedSlimmedElectrons = cms.EDFilter("PATElectronSelector",
 )
 
 if (LEPTON_SETUP == 2016):
-   process.calibratedPatElectrons = cms.EDProducer("CalibratedPatElectronProducerRun2",
-       electrons = cms.InputTag('selectedSlimmedElectrons'),
-       gbrForestName = cms.string("gedelectron_p4combination_25ns"),
-       isMC = cms.bool(IsMC),
-       isSynchronization = cms.bool(False),
-       correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/80X_ichepV1_2016_ele")
-   )
+## ICHEP 16
+#    process.calibratedPatElectrons = cms.EDProducer("CalibratedPatElectronProducerRun2",
+#        electrons = cms.InputTag('selectedSlimmedElectrons'),
+#        gbrForestName = cms.string("gedelectron_p4combination_25ns"),
+#        isMC = cms.bool(IsMC),
+#        isSynchronization = cms.bool(False),
+#        correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/80X_ichepV1_2016_ele")
+#    )
 
-elif (LEPTON_SETUP == 2017):
+## Moriond 17
    process.calibratedPatElectrons = cms.EDProducer("CalibratedPatElectronProducerRun2",
        electrons = cms.InputTag('selectedSlimmedElectrons'),
        gbrForestName = cms.vstring('electron_eb_ECALTRK_lowpt', 'electron_eb_ECALTRK',

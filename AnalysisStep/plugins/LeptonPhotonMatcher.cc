@@ -64,7 +64,7 @@ class LeptonPhotonMatcher : public edm::EDProducer {
   int sampleType;
   int setup;
   bool debug;
-  edm::EDGetTokenT<double> rhoForMuToken;
+  //  edm::EDGetTokenT<double> rhoForMuToken;
   edm::EDGetTokenT<double> rhoForEleToken;
 
   float tleMinPt;
@@ -85,7 +85,7 @@ LeptonPhotonMatcher::LeptonPhotonMatcher(const edm::ParameterSet& iConfig) :
   tleMinPt(0.)
 {
   pfCandToken = consumes<edm::View<pat::PackedCandidate> >(edm::InputTag("packedPFCandidates"));
-  rhoForMuToken = consumes<double>(LeptonIsoHelper::getMuRhoTag(sampleType, setup));
+//   rhoForMuToken = consumes<double>(LeptonIsoHelper::getMuRhoTag(sampleType, setup)); // Rho correction currently not used for muons.
   rhoForEleToken = consumes<double>(LeptonIsoHelper::getEleRhoTag(sampleType, setup));
 
   do_RSE = false;
@@ -355,11 +355,11 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   //Recompute isolation of all leptons subtracting FSR from the cone (only for Run II strategy)
   if (selectionMode==3){
-    double rhoForMu, rhoForEle;
+    double rhoForMu=0., rhoForEle;
     {
       edm::Handle<double> rhoHandle;
-      iEvent.getByToken(rhoForMuToken, rhoHandle);
-      rhoForMu = *rhoHandle;
+//       iEvent.getByToken(rhoForMuToken, rhoHandle); // Rho correction currently not used for muons
+//       rhoForMu = *rhoHandle;
       iEvent.getByToken(rhoForEleToken, rhoHandle);
       rhoForEle = *rhoHandle;
     }
