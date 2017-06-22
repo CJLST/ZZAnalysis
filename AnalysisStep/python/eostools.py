@@ -14,10 +14,10 @@ import subprocess
 class cmsFileManip:
     """A class to interact with files/directories"""
     def runCommand( self, cmd ) :
-        print 'comamnd ', cmd
         myCommand = subprocess.Popen( cmd,
+                                      stdin=subprocess.PIPE,
                                       stdout=subprocess.PIPE,
-                                      stderr=subprocess.PIPE , shell=True)
+                                      stderr=subprocess.PIPE )
         ( out, err ) = myCommand.communicate()
         if myCommand.returncode != 0:
             print >> sys.stderr, "Command (%s) failed with return code: %d" % ( cmd, myCommand.returncode )
@@ -41,12 +41,9 @@ def runXRDCommand(path, cmd, *args):
     """
     
     lfn = eosToLFN(path)
-    #print "lfn:", lfn, cmd
-    tokens = cmsIO.splitPFN(lfnToPFN(lfn))
-    
-    command = ['xrd', tokens[1], cmd, tokens[2]]
+    command = ['xrd', 'eoscms', cmd, lfn]
     command.extend(args)
-    runner = cmsIO.cmsFileManip()
+    runner = cmsFileManip()
     # print ' '.join(command)
     return runner.runCommand(command)
 
@@ -110,7 +107,7 @@ def listFiles(sample, path, rec = False, full_info = False):
         return result
 
     # -- listing from dbs --
-    if path=="dbs" :
+    elif path=="dbs" :
         files, _, _ =runDBS(sample)
         for line in files.split('\n'):
 #            result.append("root://cms-xrd-global.cern.ch//"+line)
@@ -126,26 +123,28 @@ def listFiles(sample, path, rec = False, full_info = False):
         return result
 
 
-    # -- listing from path=local dir --
-    elif os.path.isdir( path ):
-        if not rec:
-            # not recursive
-            return [ '/'.join([path,file]) for file in os.listdir( path )]
-        else:
-            # recursive, directories are put in the list first,
-            # followed by the list of all files in the directory tree
-            allFiles = []
-            for root,dirs,files in os.walk(path):
-                result.extend( [ '/'.join([root,dir]) for dir in dirs] )
-                allFiles.extend( [ '/'.join([root,file]) for file in files] )
-            result.extend(allFiles)
-            return result
+    # -- listing from path=local dir -- interferes with reading from /eos (next case) - to be fixed
+    # elif os.path.isdir( path ):
+    #     if not rec:
+    #         # not recursive
+    #         return [ '/'.join([path,file]) for file in os.listdir( path )]
+    #     else:
+    #         # recursive, directories are put in the list first,
+    #         # followed by the list of all files in the directory tree
+    #         allFiles = []
+    #         for root,dirs,files in os.walk(path):
+    #             result.extend( [ '/'.join([root,dir]) for dir in dirs] )
+    #             allFiles.extend( [ '/'.join([root,file]) for file in files] )
+    #         result.extend(allFiles)
+    #         return result
 
     # -- listing from EOS (path = eos path prefix) --
     else  :
         cmd = 'dirlist'
         if rec:
             cmd = 'dirlistrec'
+
+        print path+sample, cmd
         files, _, _ = runXRDCommand(path+sample, cmd)
 
         for line in files.split('\n'):
