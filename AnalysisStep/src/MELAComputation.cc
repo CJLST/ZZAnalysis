@@ -130,7 +130,8 @@ void MELAComputation::Print(){
   cout << "\tAlias: " << opt->getAlias() << endl;
   if (!opt->isCopy()) cout << "\tCopy alias: " << opt->getCopyAlias() << endl;
   
-  cout << "\tComputes pm4l?: " << (opt->usePM4L() ? "True" : "False" ) << endl;
+  cout << "\tComputes pm4l?: " << (opt->usePM4L() ? "True" : "False") << endl;
+  cout << "\tComputes associated V pmjj?: " << (opt->usePMaVJJ() ? "True" : "False") << endl;
   cout << "\tCan update? " << (contUpdate ? "True" : "False") << endl;
 
   cout << "\tValue formula: ";

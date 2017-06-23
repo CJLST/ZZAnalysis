@@ -10,6 +10,7 @@ noBranching(false),
 includePAux(false),
 includePConst(false),
 isPM4L(false),
+isPMaVJJ(false),
 isProp(false),
 isGenProb(false),
 defME(0.),
@@ -32,6 +33,7 @@ void MELAOptionParser::analyze(const std::vector<std::string>& optcoll){
   }
   // Check options
   if (strName==""){ cerr << "MELAOptionParser::analyze: No name detected. Please put a name!" << endl; assert(0); }
+  if (isPM4L && isPMaVJJ){ cerr << "MELAOptionParser::analyze: Cannot be defined as both P(m4l) and P(mjj)! Choose only one" << endl; assert(0); }
   if (strAlias=="<Name>") strAlias=strName;
   if (isCopy()){
     if (DEBUG_MB){
@@ -89,6 +91,7 @@ void MELAOptionParser::interpretOption(string wish, string value){
 
   else if (wish=="isGen") isGenProb = Bool_t(((UShort_t)atoi(value.c_str()))>0);
   else if (wish=="isPM4L") isPM4L = Bool_t(((UShort_t)atoi(value.c_str()))>0);
+  else if (wish=="isPMaVJJ") isPMaVJJ = Bool_t(((UShort_t)atoi(value.c_str()))>0);
   else if (wish=="isProp") isProp = Bool_t(((UShort_t)atoi(value.c_str()))>0);
   else if (wish=="NoBranch") noBranching = Bool_t(((UShort_t)atoi(value.c_str()))>0);
 
@@ -593,6 +596,7 @@ void MELAOptionParser::pickOriginalOptions(MELAOptionParser* original_opt){
   includePAux = original_opt->includePAux;
   includePConst = original_opt->includePConst;
   isPM4L = original_opt->isPM4L;
+  isPMaVJJ = original_opt->isPMaVJJ;
   isProp = original_opt->isProp;
   isGenProb = original_opt->isGenProb;
   defME = original_opt->defME;

@@ -58,6 +58,14 @@ PM4L_SUPERMELA = [
    "Name:m4l_BKG Process:bkgZZ Production:ZZGG MatrixElement:JHUGen SuperMelaSyst:SMSyst_None isPM4L:1",
 ]
 
+### mJJ probabilities in associated production
+PMAVJJ_SUPERDIJETMELA_JECNominal = [
+   "Name:HadZH_mavjj_JECNominal Process:HSMHiggs Production:Had_ZH MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1 isPMaVJJ:1",
+   "Name:HadWH_mavjj_JECNominal Process:HSMHiggs Production:Had_WH MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1 isPMaVJJ:1",
+]
+PMAVJJ_SUPERDIJETMELA_JECUp = [theME.replace("JECNominal", "JECUp") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
+PMAVJJ_SUPERDIJETMELA_JECDn = [theME.replace("JECNominal", "JECDn") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
+
 
 # Construct the final list
 theRecoProbabilities = []
@@ -73,6 +81,9 @@ theRecoProbabilities.extend(AJetsProdDecProbabilities_MCFM_JECNominal)
 theRecoProbabilities.extend(AJetsProdDecProbabilities_MCFM_JECUp)
 theRecoProbabilities.extend(AJetsProdDecProbabilities_MCFM_JECDn)
 theRecoProbabilities.extend(PM4L_SUPERMELA)
+theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JECNominal)
+theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JECUp)
+theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JECDn)
 
 # Append final list
 for name in (

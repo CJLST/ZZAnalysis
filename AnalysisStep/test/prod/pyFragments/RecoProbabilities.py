@@ -240,8 +240,23 @@ AJetsProdDecProbabilities_MCFM_JECNominal = [
    "Name:JJEW_BSI_ghv1_1_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:JJEW MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
    "Name:JJEW_BSI_ghv1_i_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:JJEW MatrixElement:MCFM Couplings:ghz1=0,1 Cluster:J2JECNominal DefaultME:-1",
    "Name:JJEW_BKG_MCFM_JECNominal Process:bkgZZ Production:JJEW MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
-   "Name:JJVBF_BKG_MCFM_JECNominal Process:bkgZZ Production:JJVBF MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
-   "Name:JJQCD_BKG_MCFM_JECNominal Process:bkgZZ Production:JJQCD MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
+
+   "Name:JJVBF_SIG_ghv1_1_MCFM_JECNominal Process:HSMHiggs Production:JJVBF MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1 Options:AddPConst=1",
+   "Name:JJVBF_BSI_ghv1_1_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:JJVBF MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
+   "Name:JJVBF_BSI_ghv1_i_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:JJVBF MatrixElement:MCFM Couplings:ghz1=0,1 Cluster:J2JECNominal DefaultME:-1",
+   "Name:JJVBF_BKG_MCFM_JECNominal Process:bkgZZ Production:JJVBF MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1 Options:AddPConst=1",
+
+   "Name:HadZH_SIG_ghv1_1_MCFM_JECNominal Process:HSMHiggs Production:Had_ZH MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1 Options:AddPConst=1",
+   "Name:HadZH_BSI_ghv1_1_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:Had_ZH MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
+   "Name:HadZH_BSI_ghv1_i_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:Had_ZH MatrixElement:MCFM Couplings:ghz1=0,1 Cluster:J2JECNominal DefaultME:-1",
+   "Name:HadZH_BKG_MCFM_JECNominal Process:bkgZZ Production:Had_ZH MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1 Options:AddPConst=1",
+
+   "Name:Had_WH_SIG_ghv1_1_MCFM_JECNominal Process:HSMHiggs Production:Had_WH MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1 Options:AddPConst=1",
+   "Name:Had_WH_BSI_ghv1_1_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:Had_WH MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
+   "Name:Had_WH_BSI_ghv1_i_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:Had_WH MatrixElement:MCFM Couplings:ghz1=0,1 Cluster:J2JECNominal DefaultME:-1",
+   "Name:Had_WH_BKG_MCFM_JECNominal Process:bkgZZ Production:Had_WH MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1 Options:AddPConst=1",
+
+   "Name:JJQCD_BKG_MCFM_JECNominal Process:bkgZZ Production:JJQCD MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1 Options:AddPConst=1",
 ]
 AJetsProdDecProbabilities_MCFM_JECUp = [theME.replace("JECNominal", "JECUp") for theME in AJetsProdDecProbabilities_MCFM_JECNominal]
 AJetsProdDecProbabilities_MCFM_JECDn = [theME.replace("JECNominal", "JECDn") for theME in AJetsProdDecProbabilities_MCFM_JECNominal]
@@ -262,6 +277,14 @@ PM4L_SUPERMELA = [
    "Name:m4l_BKG_ResUp Process:bkgZZ Production:ZZGG MatrixElement:JHUGen SuperMelaSyst:SMSyst_ResUp isPM4L:1",
 ]
 
+### mJJ probabilities in associated production
+PMAVJJ_SUPERDIJETMELA_JECNominal = [
+   "Name:HadZH_mavjj_JECNominal Process:HSMHiggs Production:Had_ZH MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1 isPMaVJJ:1",
+   "Name:HadWH_mavjj_JECNominal Process:HSMHiggs Production:Had_WH MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1 isPMaVJJ:1",
+]
+PMAVJJ_SUPERDIJETMELA_JECUp = [theME.replace("JECNominal", "JECUp") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
+PMAVJJ_SUPERDIJETMELA_JECDn = [theME.replace("JECNominal", "JECDn") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
+
 
 # Construct the final list
 theRecoProbabilities = []
@@ -277,6 +300,9 @@ theRecoProbabilities.extend(AJetsProdDecProbabilities_MCFM_JECNominal)
 theRecoProbabilities.extend(AJetsProdDecProbabilities_MCFM_JECUp)
 theRecoProbabilities.extend(AJetsProdDecProbabilities_MCFM_JECDn)
 theRecoProbabilities.extend(PM4L_SUPERMELA)
+theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JECNominal)
+theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JECUp)
+theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JECDn)
 
 # Append final list
 for name in (

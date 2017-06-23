@@ -42,6 +42,7 @@ void MELAHypothesis::computeP(unsigned int index){
 }
 void MELAHypothesis::computeP(){
   if (opt->usePM4L()){ computePM4l(); return; }
+  else if (opt->usePMaVJJ()){ computePMAVJJ(); return; }
   else if (opt->usePropagator()){ computePropagator(); return; }
 
   if (isUpdated && !hasMaximizationClients) return; // Avoid further computations if there are no clients
@@ -127,8 +128,12 @@ void MELAHypothesis::computeP(){
     TVar::Production theProd = opt->prod;
     TVar::MatrixElement theME = opt->ME;
     // In case the VH ME has a mismatch with the event, switch the production.
+    unsigned int nactivejets=0;
+    unsigned int nactiveleps=0;
+    for (auto const& part : melaCand->getAssociatedLeptons()){ if (part->passSelection) nactiveleps++; }
+    for (auto const& part : melaCand->getAssociatedJets()){ if (part->passSelection) nactivejets++; }
     if (
-      isGen && melaCand->getNAssociatedJets()<2
+      isGen && nactivejets<2 && nactiveleps>=2
       ){
       if (theProd==TVar::Had_WH) theProd=TVar::Lep_WH;
       else if (theProd==TVar::Had_ZH) theProd=TVar::Lep_ZH;
@@ -136,9 +141,37 @@ void MELAHypothesis::computeP(){
       else if (theProd==TVar::Had_ZH_S) theProd=TVar::Lep_ZH_S;
       else if (theProd==TVar::Had_WH_TU) theProd=TVar::Lep_WH_TU;
       else if (theProd==TVar::Had_ZH_TU) theProd=TVar::Lep_ZH_TU;
+      else if (theProd==TVar::JJEW || theProd==TVar::JJEW_S || theProd==TVar::JJEW_TU){
+        MELAParticle* aV=0;
+        for (int iv=2; iv<melaCand->getNSortedVs(); iv++){
+          MELAParticle* tmp = melaCand->getSortedV(iv);
+          if (tmp!=0 && tmp->passSelection && (PDGHelpers::isAZBoson(tmp->id) || PDGHelpers::isAWBoson(tmp->id))){
+            if (tmp->getNDaughters()==2 &&
+              tmp->getDaughter(0)->passSelection && PDGHelpers::isALepton(tmp->getDaughter(0)->id)
+              &&
+              tmp->getDaughter(1)->passSelection && PDGHelpers::isALepton(tmp->getDaughter(1)->id)
+              ){
+              aV=tmp;
+              break;
+            }
+          }
+        }
+        if (aV!=0){
+          if (PDGHelpers::isAZBoson(aV->id)){
+            if (theProd==TVar::JJEW) theProd=TVar::Lep_ZH;
+            else if (theProd==TVar::JJEW_S) theProd=TVar::Lep_ZH_S;
+            else if (theProd==TVar::JJEW_TU) theProd=TVar::Lep_ZH_TU;
+          }
+          else if (PDGHelpers::isAWBoson(aV->id)){
+            if (theProd==TVar::JJEW) theProd=TVar::Lep_WH;
+            else if (theProd==TVar::JJEW_S) theProd=TVar::Lep_WH_S;
+            else if (theProd==TVar::JJEW_TU) theProd=TVar::Lep_WH_TU;
+          }
+        }
+      }
     }
     if (
-      isGen && melaCand->getNAssociatedLeptons()<2
+      isGen && nactiveleps<2 && nactivejets>=2
       ){
       if (theProd==TVar::Lep_WH) theProd=TVar::Had_WH;
       else if (theProd==TVar::Lep_ZH) theProd=TVar::Had_ZH;
@@ -184,6 +217,25 @@ void MELAHypothesis::computePM4l(){
     // Override the ME and the production
     mela->setProcess(opt->proc, TVar::JHUGen, TVar::ZZGG);
     mela->computePM4l(opt->superSyst, pME);
+    isUpdated = true;
+  }
+}
+
+void MELAHypothesis::computePMAVJJ(MELACandidate* cand){
+  if (cand!=0) mela->setCurrentCandidate(cand);
+  computePMAVJJ();
+}
+void MELAHypothesis::computePMAVJJ(unsigned int index){
+  mela->setCurrentCandidateFromIndex(index);
+  computePMAVJJ();
+}
+void MELAHypothesis::computePMAVJJ(){
+  if (isUpdated && !hasMaximizationClients) return; // Avoid further computations if there are no clients
+  reset(); // Note: Sets isUpdated=false.
+  if (mela->getCurrentCandidate()!=0){
+    // Override the ME and the production
+    mela->setProcess(opt->proc, TVar::JHUGen, TVar::ZZGG);
+    mela->computeDijetConvBW(pME);
     isUpdated = true;
   }
 }
