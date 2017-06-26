@@ -13,11 +13,11 @@ import subprocess
 
 class cmsFileManip:
     """A class to interact with files/directories"""
-    def runCommand( self, cmd ) :
+    def runCommand( self, cmd, setShell=True ) :
         myCommand = subprocess.Popen( cmd,
                                       stdin=subprocess.PIPE,
                                       stdout=subprocess.PIPE,
-                                      stderr=subprocess.PIPE )
+                                      stderr=subprocess.PIPE,shell=setShell )
         ( out, err ) = myCommand.communicate()
         if myCommand.returncode != 0:
             print >> sys.stderr, "Command (%s) failed with return code: %d" % ( cmd, myCommand.returncode )
@@ -45,7 +45,7 @@ def runXRDCommand(path, cmd, *args):
     command.extend(args)
     runner = cmsFileManip()
     # print ' '.join(command)
-    return runner.runCommand(command)
+    return runner.runCommand(command, False) # fails when shell=True
 
 
 
@@ -123,22 +123,23 @@ def listFiles(sample, path, rec = False, full_info = False):
         return result
 
 
-    # -- listing from path=local dir -- interferes with reading from /eos (next case) - to be fixed
-    # elif os.path.isdir( path ):
-    #     if not rec:
-    #         # not recursive
-    #         return [ '/'.join([path,file]) for file in os.listdir( path )]
-    #     else:
-    #         # recursive, directories are put in the list first,
-    #         # followed by the list of all files in the directory tree
-    #         allFiles = []
-    #         for root,dirs,files in os.walk(path):
-    #             result.extend( [ '/'.join([root,dir]) for dir in dirs] )
-    #             allFiles.extend( [ '/'.join([root,file]) for file in files] )
-    #         result.extend(allFiles)
-    #         return result
+    # -- listing from path=local dir -- untested!
+    elif path=="local" :    
+        if os.path.isdir(sample):
+           if not rec:
+             # not recursive
+             return [ '/'.join([path,file]) for file in os.listdir(sample)]
+           else:
+             # recursive, directories are put in the list first,
+             # followed by the list of all files in the directory tree
+             allFiles = []
+             for root,dirs,files in os.walk(sample):
+                 result.extend( [ '/'.join([root,dir]) for dir in dirs] )
+                 allFiles.extend( [ '/'.join([root,file]) for file in files] )
+             result.extend(allFiles)
+             return result
 
-    # -- listing from EOS (path = eos path prefix) --
+    # -- listing from EOS (path = eos path prefix, normally "/eos/cms/") 
     else  :
         cmd = 'dirlist'
         if rec:
