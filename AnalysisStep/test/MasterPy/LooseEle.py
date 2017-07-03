@@ -16,7 +16,7 @@ process.softLooseElectrons = cms.EDProducer("EleFiller",
         isSIP = cms.string(SIP_LOOSE),
         isGood = cms.string(GOODLEPTON_LOOSE),
         isGoodRegular = cms.string(GOODLEPTON), # the "regular" (tight) selection
-        isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<"+ELEISOCUT),
+        isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<"+str(ELEISOCUT)),
         isLoose = cms.string("abs(1)"), #FIXME: I'd set this to  (isGood&&!isGoodTight), that would be clearer I think.
 #       Note: passCombRelIsoPFFSRCorr is currently set in LeptonPhotonMatcher for new FSR strategy; in ZZCandidateFiller for the old one
         ),
@@ -176,8 +176,8 @@ Z2LL_OS_looseEle = "abs(1)"
 
 # Need to drop the SIP cut for teh Z2 candidate
 Z2SIP_looseEle = "userFloat('d1.d0.isSIP')< 4 && userFloat('d1.d1.isSIP')"  
-CR_BESTCANDBASE_AA_looseEle = ("userFloat('d0.Z1Presel') && userFloat('d0.worstEleIso') <" + ELEISOCUT +
-                               "&& userFloat('d0.worstMuIso') <" + MUISOCUT + "&&" +
+CR_BESTCANDBASE_AA_looseEle = ("userFloat('d0.Z1Presel') && userFloat('d0.worstEleIso') <" + str(ELEISOCUT) +
+                               "&& userFloat('d0.worstMuIso') <" + str(MUISOCUT) + "&&" +
                                 Z2SIP_looseEle) # base for AA CR: # Z1 with tight leptons passing SIP and ISO, mass cuts; SIP on Z2
 
 if SELSETUP == "allCutsAtOncePlusSmart" :
