@@ -4,10 +4,10 @@
 # wget -O /tmp/checkout_80X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_80X/checkout_80X.csh
 # cd $CMSSW_BASE/src
 # cmsenv
-# source /tmp/checkout_80X.csh
+# source /tmp/checkout_90X.csh
 
 
-############## For CMSSW_8_0_26_patch1
+############## For CMSSW_9_2_3_patch2
 git cms-init
 # Preliminary electron scale and smearing corrections according to https://twiki.cern.ch/twiki/bin/view/CMS/EGMSmearer
 #FIXME git cms-merge-topic rafaellopesdesa:EgammaAnalysis80_EGMSmearer_Moriond17_23Jan
