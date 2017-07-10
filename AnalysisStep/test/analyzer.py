@@ -145,7 +145,8 @@ TreeSetup = cms.EDAnalyzer("HZZ4lNtupleMaker",
                            PD = cms.string(PD),
                            MCFilterPath = cms.string(MCFILTER),
                            metSrc = metTag,
-                           applyTrigEff = cms.bool(not APPLYTRIG), #add trigger efficiency as a weight, for samples where the trigger cannot be applied.
+                           applyTrigger = cms.bool(APPLYTRIG), #Require proper trigger bits
+                           applyTrigEff = cms.bool(False), #Add trigger efficiency as a weight, for samples where the trigger cannot be applied (obsoltete)
                            skipEmptyEvents = cms.bool(SKIP_EMPTY_EVENTS),
                            failedTreeLevel = cms.int32(FAILED_TREE_LEVEL),
                            sampleName = cms.string(SAMPLENAME),
@@ -159,10 +160,10 @@ TreeSetup = cms.EDAnalyzer("HZZ4lNtupleMaker",
                            # LHE info. parameters
                            lheProbabilities = cms.vstring(),
                            xsec = cms.double(XSEC),
-                           VVMode = cms.int32(int(VVMODE)),
-                           VVDecayMode = cms.int32(int(VVDECAYMODE)),
+                           VVMode = cms.int32(VVMODE),
+                           VVDecayMode = cms.int32(VVDECAYMODE),
                            AddLHEKinematics = cms.bool(ADDLHEKINEMATICS),
-                           Apply_K_NNLOQCD_ZZGG = cms.int32(int(APPLY_K_NNLOQCD_ZZGG)),
+                           Apply_K_NNLOQCD_ZZGG = cms.int32(APPLY_K_NNLOQCD_ZZGG),
                            Apply_K_NNLOQCD_ZZQQB = cms.bool(APPLY_K_NNLOQCD_ZZQQB),
                            Apply_K_NLOEW_ZZQQB = cms.bool(APPLY_K_NLOEW_ZZQQB),
                            )

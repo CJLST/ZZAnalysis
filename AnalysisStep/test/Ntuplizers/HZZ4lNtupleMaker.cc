@@ -380,11 +380,11 @@ private:
 
   bool isMC;
   bool is_loose_ele_selection; // Collection includes candidates with loose electrons/TLEs
-  bool applyTrigger;    // Keep only events passing trigger (if skipEmptyEvents=true)
   bool applySkim;       //   "     "      "         skim (if skipEmptyEvents=true)
   bool skipEmptyEvents; // Skip events whith no selected candidate (otherwise, gen info is preserved for all events; candidates not passing trigger&&skim are flagged with negative ZZsel)
   FailedTreeLevel failedTreeLevel;  //if/how events with no selected candidate are written to a separate tree (see miscenums.h for details)
   edm::InputTag metTag;
+  bool applyTrigger;    // Keep only events passing trigger (overriden if skipEmptyEvents=False)
   bool applyTrigEffWeight;// apply trigger efficiency weight (concerns samples where trigger is not applied)
   Float_t xsec;
   int year;
@@ -480,10 +480,11 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   theChannel(myHelper.channel()), // Valid options: ZZ, ZLL, ZL
   theCandLabel(pset.getUntrackedParameter<string>("CandCollection")), // Name of input ZZ collection
   theFileName(pset.getUntrackedParameter<string>("fileName")),
-  skipEmptyEvents(pset.getParameter<bool>("skipEmptyEvents")), // Do not store
+  skipEmptyEvents(pset.getParameter<bool>("skipEmptyEvents")), // Do not store events with no selected candidate (normally: true)
   failedTreeLevel(FailedTreeLevel(pset.getParameter<int>("failedTreeLevel"))),
   metTag(pset.getParameter<edm::InputTag>("metSrc")),
-  applyTrigEffWeight(pset.getParameter<bool>("applyTrigEff")),
+  applyTrigger(pset.getParameter<bool>("applyTrigger")), // Reject events that do not pass trigger (normally: true)
+  applyTrigEffWeight(pset.getParameter<bool>("applyTrigEff")), //Apply an additional efficiency weights for MC samples where triggers are not present (normally: false)
   xsec(pset.getParameter<double>("xsec")),
   year(pset.getParameter<int>("setup")),
   sqrts(SetupToSqrts(year)),
@@ -531,12 +532,15 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   preSkimToken = consumes<edm::MergeableCounter,edm::InLumi>(edm::InputTag("preSkimCounter"));
 
   if (skipEmptyEvents) {
-    applyTrigger=true;
     applySkim=true;
   } else {
-    applyTrigger=false;
+    applyTrigger=false; // This overrides the card applyTrigger
     applySkim=false;
-    failedTreeLevel=noFailedTree; //failed events are in the main tree
+    failedTreeLevel=noFailedTree; // This overrides the card failedTreeLevel
+  }
+
+  if (applyTrigEffWeight&&applyTrigger) {
+    cout << "ERROR: cannot have applyTrigEffWeight == applyTrigger == true" << endl;
   }
 
   isMC = myHelper.isMC();

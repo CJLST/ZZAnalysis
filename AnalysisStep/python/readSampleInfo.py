@@ -57,12 +57,16 @@ def readSamplesInfo(infoFilePath = 'samples_8TeV.csv', indexBy = 'identifier'):
               bareelement = map(string.strip, v.split("="))
               if len(bareelement) == 2:
                 if isFloat(bareelement[1]):
-                  dictionary[bareelement[0]] = float(bareelement[1])
+                  if int(bareelement[1])==float(bareelement[1]) :
+                    dictionary[bareelement[0]] = int(bareelement[1]) # avoid turning integers to floats
+                  else: 
+                    dictionary[bareelement[0]] = float(bareelement[1]) 
                 else:
                   dictionary[bareelement[0]] = checkBool(bareelement[1])
               else:
                 dictionary[bareelement[0]] = bareelement[0]
 
+#          print "Variables dictionary: ", dictionary
           info[key]           = dictionary
         else:
           info[key]           = value.strip()

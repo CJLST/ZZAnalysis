@@ -288,7 +288,6 @@ class MyBatchManager:
 
        variables = splitComponents[value].variables
        pyFragments = splitComponents[value].pyFragments
-       setup = splitComponents[value].setup
        
        variables['IsMC'] = True
        if 'PD' in variables and not variables['PD'] == '': variables['IsMC'] = False
@@ -347,7 +346,7 @@ class MyBatchManager:
 
 class Component(object):
 
-    def __init__(self, name, prefix, dataset, pattern, splitFactor, variables, pyFragments, xsec, BR, setup, pdfstep, cfgFileName=""):
+    def __init__(self, name, prefix, dataset, pattern, splitFactor, variables, pyFragments, xsec, BR, pdfstep, cfgFileName=""):
         self.name = name
         self.samplename = name
         print "checking "+self.name
@@ -369,7 +368,6 @@ class Component(object):
         self.variables = variables
         self.pyFragments = pyFragments
         self.xsec = float(xsec)*float(BR)
-        self.setup = setup
         self.pdfstep = int(pdfstep)
         if self.pdfstep <0 or self.pdfstep>2:
             print "Unknown PDF step", pdfstep
@@ -381,21 +379,15 @@ if __name__ == '__main__':
     batchManager = MyBatchManager()
     
     cfgFileName = batchManager.options_.cfgFileName #"analyzer_2015.py" # This is the python job config. FIXME make it configurable.
-    sampleCSV  = batchManager.args_[0]            # This is the csv file with samples to be analyzed./    
-
-    handle = open(cfgFileName, 'r')
-    cfo = imp.load_source("pycfg", cfgFileName, handle)
-    setup = cfo.LEPTON_SETUP
+    sampleCSV  = batchManager.args_[0]            # This is the csv file with samples to be analyzed./
 
     components = []
     sampleDB = readSampleDB(sampleCSV)
     for sample, settings in sampleDB.iteritems():
         if settings['execute']:
             pdfstep = batchManager.options_.PDFstep
-            components.append(Component(sample, settings['prefix'], settings['dataset'], settings['pattern'], settings['splitLevel'], settings['::variables'],settings['::pyFragments'],settings['crossSection'], settings['BR'], setup, pdfstep,cfgFileName)) #FIXME-RB not bool(settings['pdf']))) #settings['pdf'] used here as full sel, without cuts.
+            components.append(Component(sample, settings['prefix'], settings['dataset'], settings['pattern'], settings['splitLevel'], settings['::variables'],settings['::pyFragments'],settings['crossSection'], settings['BR'], pdfstep,cfgFileName)) #FIXME-RB not bool(settings['pdf']))) #settings['pdf'] used here as full sel, without cuts.
     
-    handle.close()
-
 
     splitComponents = split( components )
 
