@@ -40,30 +40,37 @@ extern "C" float getDZHhConstant(float ZZMass){
   return DZHhSpline.eval(ZZMass);
 }
 
-//Heshy note: These WP's are no longer correct!
 extern "C" float getDVBF2jetsWP(float ZZMass, bool useQGTagging){
-  if (useQGTagging)
+  if (useQGTagging) {
+    assert(0);
     return 0.363;
+  }
   else
-    return 1.043-460./(ZZMass+634.);
+    return 0.475598;
 }
 extern "C" float getDVBF1jetWP(float ZZMass, bool useQGTagging){
-  if (useQGTagging)
+  if (useQGTagging) {
+    assert(0);
     return 0.716;
+  }
   else
-    return 0.697;
+    return 0.374228;
 }
 extern "C" float getDWHhWP(float ZZMass, bool useQGTagging){
-  if (useQGTagging)
+  if (useQGTagging) {
+    assert(0);
     return 0.965;
+  }
   else
-    return 0.951;
+    return 0.961587;
 }
 extern "C" float getDZHhWP(float ZZMass, bool useQGTagging){
-  if (useQGTagging)
+  if (useQGTagging) {
+    assert(0);
     return 0.9952;
+  }
   else
-    return 0.9937;
+    return 0.942319;
 }
 
 extern "C" float getDVBF2jetsConstant_shiftWP(float ZZMass, bool useQGTagging, float newWP) {
