@@ -1,8 +1,11 @@
 #ifndef CCONSTANTS_H
 #define CCONSTANTS_H
 
-#include "TSpline3.h"
+#include "TFile.h"
+#include "TSpline.h"
 #include "TString.h"
+
+#include <memory>
 
 class cConstantSpline {
   public:
@@ -11,7 +14,7 @@ class cConstantSpline {
     double eval(double ZZMass);
   private:
     const TString filename_;
-    unique_ptr<TFile> f_;
+    std::unique_ptr<TFile> f_;
     TSpline3* spline_;
 };
 

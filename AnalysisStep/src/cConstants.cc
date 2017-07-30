@@ -1,7 +1,8 @@
 #include <ZZAnalysis/AnalysisStep/interface/cConstants.h>
 
-#include <iostream>
+#include <cassert>
 #include <cmath>
+#include <iostream>
 
 cConstantSpline::cConstantSpline(const TString& filename) : filename_(filename), f_(nullptr), spline_(0) {}
 
