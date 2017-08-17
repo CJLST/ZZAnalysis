@@ -28,6 +28,9 @@ DecayProbabilities_SpinZero_JHUGen = [
    #"Name:GG_SIG_ghg2_1_ghz1_1_gha2_i_JHUGen Process:SelfDefine_spin0 Production:ZZGG MatrixElement:JHUGen Couplings:ghg2=1,0;ghz1=1,0;ghgsgs2=0,1 Options:SubtractP=GG_SIG_ghg2_1_ghz1_1_JHUGen,GG_SIG_ghg2_1_gha2_1_JHUGen",
    "Name:GG_SIG_ghg2_1_ghz1_1_gha4_1_JHUGen Process:SelfDefine_spin0 Production:ZZGG MatrixElement:JHUGen Couplings:ghg2=1,0;ghz1=1,0;ghgsgs4=1,0 Options:SubtractP=GG_SIG_ghg2_1_ghz1_1_JHUGen,GG_SIG_ghg2_1_gha4_1_JHUGen",
    #"Name:GG_SIG_ghg2_1_ghz1_1_gha4_i_JHUGen Process:SelfDefine_spin0 Production:ZZGG MatrixElement:JHUGen Couplings:ghg2=1,0;ghz1=1,0;ghgsgs4=0,1 Options:SubtractP=GG_SIG_ghg2_1_ghz1_1_JHUGen,GG_SIG_ghg2_1_gha4_1_JHUGen",
+
+   "Name:GG_SIG_ghg2_1_ghz1prime2_1E4_ghza1prime2_1E4_JHUGen Process:SelfDefine_spin0 Production:ZZGG MatrixElement:JHUGen Couplings:ghg2=1,0;ghz1_prime2=10000,0;ghzgs1_prime2=10000,0 Options:SubtractP=GG_SIG_ghg2_1_ghz1prime2_1E4_JHUGen,GG_SIG_ghg2_1_ghza1prime2_1E4_JHUGen",
+   #"Name:GG_SIG_ghg2_1_ghz1prime2_1E4_ghza1prime2_1E4i_JHUGen Process:SelfDefine_spin0 Production:ZZGG MatrixElement:JHUGen Couplings:ghg2=1,0;ghz1_prime2=10000,0;ghzgs1_prime2=0,10000 Options:SubtractP=GG_SIG_ghg2_1_ghz1prime2_1E4_JHUGen,GG_SIG_ghg2_1_ghza1prime2_1E4_JHUGen",
 ]
 ## Production probabilities with >=1 jet(s) ##
 AJetsProdProbabilities_SpinZero_JHUGen_JECNominal = [
