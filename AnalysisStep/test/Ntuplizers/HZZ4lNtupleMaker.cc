@@ -1433,9 +1433,11 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
         }
       }
     }
-    if (!(evtPass)) {sel = -sel;} // avoid confusion when we write events which do not pass trigger/skim
+  } else if(theChannel==ZLL) sel = 20; 
+  else if(theChannel==ZL) sel = 10;
+ 
 
-  }
+  if (!(evtPass)) {sel = -sel;} // avoid confusion when we write events which do not pass trigger/skim
 
   // Retrieve the userFloat of the leptons in vectors ordered in the same way.
   vector<float> SIP(4);
