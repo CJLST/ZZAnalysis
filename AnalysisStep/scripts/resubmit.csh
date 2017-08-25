@@ -3,7 +3,7 @@
 set QUEUE=$1
 if ($QUEUE == "") set QUEUE="8nh"
 
-if ($QUEUE != "8nh" && $QUEUE != "1nd" && $QUEUE != "2nd"  && $QUEUE != "cmscaf1nd") then
+if ($QUEUE != "8nh" && $QUEUE != "1nd" && $QUEUE != "2nd" && $QUEUE != "1nw" && $QUEUE != "cmscaf1nd") then
    echo "Invalid queue" $QUEUE
    exit
 endif
