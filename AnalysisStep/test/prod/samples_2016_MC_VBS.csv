@@ -42,7 +42,7 @@ ggTo2e2mu_Contin_MCFM701_DefaultShower,,   0.0031942,    ,,/GluGluToContinZZTo2e
 VBFTo2e2muJJ_0PMH125Contin_phantom128,,8.357E-04,,,/VBFToHiggs0PMContinToZZTo2e2muJJ_M125_GaSM_13TeV_phantom_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=True,RecoProbabilities_minimal.py,
 VBFTo4eJJ_0PMH125Contin_phantom128   ,,4.180E-04,,,/VBFToHiggs0PMContinToZZTo4eJJ_M125_GaSM_13TeV_phantom_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM   ,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=True,RecoProbabilities_minimal.py,
 VBFTo4muJJ_0PMH125Contin_phantom128  ,,4.180E-04,,,/VBFToHiggs0PMContinToZZTo4muJJ_M125_GaSM_13TeV_phantom_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM  ,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=True,RecoProbabilities_minimal.py,
-#
+
 ###,,,,,,,,,,,Xsec from https://twiki.cern.ch/twiki/bin/view/CMS/PhantomGeneratorCMS averaging grid and events with their errors
 #VBFTo2e2muJJ_0PMH125_phantom128,,2.4817E-04,,,/VBFToHiggs0PMToZZTo2e2muJJ_M125_GaSM_13TeV_phantom_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=False,RecoProbabilities_minimal.py,
 #VBFTo4eJJ_0PMH125_phantom128,,1.3339E-04,,,/VBFToHiggs0PMToZZTo4eJJ_M125_GaSM_13TeV_phantom_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=False,RecoProbabilities_minimal.py,
@@ -64,7 +64,7 @@ ZZjj_ewk,,0.4404E-03,,,/ZZJJTo4L_EWK_13TeV-madgraph-pythia8/RunIISummer16MiniAOD
 #VBFTo4muJJ_0PMH125Contin_phantom128,,4.180E-04,,,/VBFToHiggs0PMContinToZZTo4muJJ_M125_GaSM_13TeV_phantom_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM,dbs,,1,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;ADDLOOSEELE=False,,
 
 
-# Irreducible background
+#,,,,,,,,,,,Irreducible background
 TTZToLLNuNu_M10,,0.25271,,,/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM,dbs,,1,ADDLOOSEELE=True,RecoProbabilities_minimal.py,
 TTZToLL_M1to1O_MLM,,0.04695,,,/TTZToLL_M-1to10_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,1,ADDLOOSEELE=True,RecoProbabilities_minimal.py,
 TTZJets_M10_MLM,,6.624e-01,,,/ttZJets_13TeV_madgraphMLM/RunIISummer16MiniAODv2-80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,4,ADDLOOSEELE=True,RecoProbabilities_minimal.py,
