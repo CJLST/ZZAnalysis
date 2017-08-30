@@ -416,6 +416,12 @@ elif LEPTON_SETUP == 2016: # (KalmanMuonCalibrator, ICHEP 2016) FIXME: still usi
          process.calibratedMuons.identifier = cms.string("MC_80X_13TeV")
      else:
          process.calibratedMuons.identifier = cms.string("DATA_80X_13TeV")
+elif LEPTON_SETUP == 2017:
+     if IsMC:
+        print "APPLYMUCORR not configured for 2017 MC"
+        sys.exit()
+     else: 
+         process.calibratedMuons.identifier = cms.string("DATA_80X_13TeV") #FIXME: still same as 2016
 else:
     if APPLYMUCORR:
         print "APPLYMUCORR not configured for LEPTON_SETUP =", LEPTON_SETUP

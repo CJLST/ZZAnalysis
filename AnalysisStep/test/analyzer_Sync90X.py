@@ -61,8 +61,8 @@ process.source.fileNames = cms.untracked.vstring(
     ### 920 relval
 #    '/store/relval/CMSSW_9_2_0/DoubleMuon/MINIAOD/91X_dataRun2_relval_v6_RelVal_doubMu2016B-v1/10000/363F2659-453C-E711-8B1C-0CC47A7C345E.root'
 
-    ### Run2017A sample data file (921)
-    '/store/data/Run2017A/DoubleEG/MINIAOD/PromptReco-v2/000/296/168/00000/801DBC71-594C-E711-9E8E-02163E019E08.root'
+    ### Run2017C sample data file
+    '/store/data/Run2017C/MuonEG/MINIAOD/PromptReco-v3/000/300/742/00000/0A1C877F-617E-E711-A3F8-02163E01A332.root',
     )
 
 #process.calibratedPatElectrons.isSynchronization = cms.bool(True)

@@ -15,8 +15,8 @@
 #filename ='/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/DCSOnly/json_DCSONLY.txt' # DCS-only, updated regularly
 #filename = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/PromptReco/Cert_294927-297723_13TeV_PromptReco_Collisions17_JSON.txt' # Jul 11, 2017; 3.785/fb; https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/2863.html
 #filename = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/PromptReco/Cert_294927-299042_13TeV_PromptReco_Collisions17_JSON.txt' # Jul 21, 2017; 3.912/fb; https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/2873.html
-filename = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/PromptReco/Cert_294927-301141_13TeV_PromptReco_Collisions17_JSON.txt' # Aug 23, 2017; 10.090/fb;  
-
+#filename = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/PromptReco/Cert_294927-301141_13TeV_PromptReco_Collisions17_JSON.txt' # Aug 23, 2017; 10.090/fb;  
+filename = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/PromptReco/Cert_294927-301567_13TeV_PromptReco_Collisions17_JSON.txt' # Aug 30, 2017; 11.379/fb;
 
 # goodPhysics = [297047,297050,297056,297057,297099,297100,297101,297113,297114,297168,297169,297170,297171,297175,297176,297177,297178,297179,297180,297181,297211,297215,297218,297224,297225,297227,297281,297286,297292,297293,297296,297308,297046,297219,297359,297411,297424,297425,297426,297429,297430,297431,297432,297433,297434,297435,297467,297468,297469,297474,297483,297484,297485,297486,297488,297503,297504,297505,297557,297558,297559,297560,297562,297563,297598,297603,297606,297620,297659,297660,297664,297665,297666,297670,297671,297672,297674,297675,297678] # FIXME: temporary list from https://indico.cern.ch/event/651440/contributions/2651026/attachments/1489063/2313823/17-07-06_PPD_News.pdf;
 

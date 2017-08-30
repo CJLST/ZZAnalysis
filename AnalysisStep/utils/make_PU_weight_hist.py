@@ -1,6 +1,17 @@
+#!/usr/bin/env python
 # Spring2016MC_M17PUscenario taken from https://github.com/cms-sw/cmssw/blob/CMSSW_8_0_20_patchX/SimGeneral/MixingModule/python/mix_2016_25ns_Moriond17MC_PoissonOOTPU_cfi.py#L25
-# To obtain DataPileup root histogram run the command:
-# pileupCalc.py -i JSONfile.txt --inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/PileUp/pileup_latest.txt --calcMode true --minBiasXsec 63000 --maxPileupBin 200 --numPileupBins 200 2016MyDataPileupHistogram63000.root
+# To obtain DataPileup root histogram run pileupCalc.py:
+
+# For 2016 data (Moriond 2017 setup:)
+# pileupCalc.py -i JSONfile.txt --inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/PileUp/pileup_latest.txt --calcMode true --minBiasXsec 69200 --maxPileupBin 75 --numPileupBins 75 DataPileupHistogram2016.root
+
+#Up and down variation histograms are created varying the minBiasXsec by 4.6% (72383, 66017)
+
+# For 2017 data:
+#pileupCalc.py -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/PromptReco/Cert_294927-301141_13TeV_PromptReco_Collisions17_JSON.txt --inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/PileUp/pileup_latest.txt --calcMode true --minBiasXsec 69200 --maxPileupBin 75 --numPileupBins 75 DataPileupHistogram2017_69200_75bins.root
+
+
+
 # Afetrwards run this script to produce root file which contains PU weights
 
 
@@ -34,9 +45,15 @@ puMC = {
 puMCscenario = puMC['Spring2016MC_M17PUscenario']
 len_mc = len(puMCscenario)
 
-data_file_name = 'DataPileupHistogram69200_75bins.root'
-data_file_name_varUp = 'DataPileupHistogram72383_75bins.root'
-data_file_name_varDn = 'DataPileupHistogram66017_75bins.root'
+#data_file_name = 'DataPileupHistogram69200_75bins.root'
+#data_file_name_varUp = 'DataPileupHistogram72383_75bins.root'
+#data_file_name_varDn = 'DataPileupHistogram66017_75bins.root'
+
+data_file_name       = 'DataPileupHistogram2017_69200_75bins.root'
+data_file_name_varUp = 'DataPileupHistogram2017_72383_75bins.root'
+data_file_name_varDn = 'DataPileupHistogram2017_66017_75bins.root'
+
+rt.TH1.SetDefaultSumw2(True)
 
 h_d = rt.TH1F('Data', '', len_mc , 0, len_mc) 
 h_d_varUp = rt.TH1F('Data_varUp', '', len_mc , 0, len_mc) 
