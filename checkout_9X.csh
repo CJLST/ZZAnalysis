@@ -7,7 +7,7 @@
 # source /tmp/checkout_90X.csh
 
 
-############## For CMSSW_9_2_3_patch2
+############## For CMSSW_9_2_10
 git cms-init
 # Preliminary electron scale and smearing corrections according to https://twiki.cern.ch/twiki/bin/view/CMS/EGMSmearer
 #FIXME this includes some changes to EgammaAnalysis/ElectronTools; in particular, regressionWeights_cfi that is not present in cmssw proper (?)
@@ -45,7 +45,7 @@ git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsA
 
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
-(cd ZZMatrixElement; git checkout -b from-v206 v2.0.6)
+(cd ZZMatrixElement; git checkout -b from-v207b1 v2.0.7b1)
 # replace ZZMatrixElement/MELA/setup.sh -j 8)
 pushd ${CMSSW_BASE}/src/ZZMatrixElement/MELA/fortran/
 make all
