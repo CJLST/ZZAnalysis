@@ -3,7 +3,7 @@
 LEPTON_SETUP = 2017  # current default = 2017 = Moriond2017
 ELECORRTYPE = "None" # "None" to switch off
 ELEREGRESSION = "None" # "None" to switch off
-APPLYMUCORR = False  # Switch off muon scale corrections
+APPLYMUCORR = True  # Switch off muon scale corrections
 APPLYJEC = False     # 
 APPLYJER = False     #
 RECORRECTMET = False #

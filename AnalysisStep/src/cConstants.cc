@@ -1,17 +1,19 @@
 #include <ZZAnalysis/AnalysisStep/interface/cConstants.h>
+#include <TFile.h>
 
 #include <cassert>
 #include <cmath>
 #include <iostream>
-
-cConstantSpline::cConstantSpline(const TString& filename) : filename_(filename), f_(nullptr), spline_(0) {}
+ 
+cConstantSpline::cConstantSpline(const TString& filename) : filename_(filename), spline_(nullptr) {}
 
 void cConstantSpline::initspline() {
   if (!spline_) {
-    f_.reset(TFile::Open(filename_));
-    spline_ = (TSpline3*)f_->Get("sp_gr_varTrue_Constant_Smooth");
+    TFile* f_ =TFile::Open(filename_);
+    spline_.reset((TSpline3*)(f_->Get("sp_gr_varTrue_Constant_Smooth")->Clone()));
+    f_->Close();
   }
-  assert(spline_);
+  assert(spline_.get());
 }
 
 double cConstantSpline::eval(double ZZMass) {
@@ -19,13 +21,16 @@ double cConstantSpline::eval(double ZZMass) {
   return spline_->Eval(ZZMass);
 }
 
-cConstantSpline DbkgkinSpline2e2mu("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_Dbkgkin_2e2mu13TeV.root");
-cConstantSpline DbkgkinSpline4e("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_Dbkgkin_4e13TeV.root");
-cConstantSpline DbkgkinSpline4mu("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_Dbkgkin_4mu13TeV.root");
-cConstantSpline DVBF2jetsSpline("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_DjjVBF13TeV.root");
-cConstantSpline DVBF1jetSpline("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_DjVBF13TeV.root");
-cConstantSpline DZHhSpline("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_DjjZH13TeV.root");
-cConstantSpline DWHhSpline("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_DjjWH13TeV.root");
+namespace {
+  cConstantSpline DbkgkinSpline2e2mu("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_Dbkgkin_2e2mu13TeV.root");
+  cConstantSpline DbkgkinSpline4e("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_Dbkgkin_4e13TeV.root");
+  cConstantSpline DbkgkinSpline4mu("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_Dbkgkin_4mu13TeV.root");
+  cConstantSpline DVBF2jetsSpline("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_DjjVBF13TeV.root");
+  cConstantSpline DVBF1jetSpline("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_DjVBF13TeV.root");
+  cConstantSpline DZHhSpline("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_DjjZH13TeV.root");
+  cConstantSpline DWHhSpline("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_DjjWH13TeV.root");
+}
+
 
 extern "C" float getDVBF2jetsConstant(float ZZMass){
   return DVBF2jetsSpline.eval(ZZMass);

@@ -29,7 +29,6 @@
 #include "../Plotter/tdrstyle.C"
 #include "../Plotter/plotUtils.C"
 #include "ZZAnalysis/AnalysisStep/src/kFactors.C"
-#include "ZZAnalysis/AnalysisStep/src/cConstants.cc"
 #include "ZZAnalysis/AnalysisStep/src/Discriminants.cc"
 #include "ZZAnalysis/AnalysisStep/src/Category.cc"
 #include "ZZAnalysis/AnalysisStep/src/bitops.cc"

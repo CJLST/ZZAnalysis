@@ -22,7 +22,7 @@ def parseOptions():
     parser.add_option('-l', '--long', dest='longOutput', action='store_true', default=True,    help='long output')
     parser.add_option('-u', '--unblind', dest='unblind', action='store_true', default=False,    help='Unblinded (affects data only)')
     parser.add_option('-r', '--range', dest='range', type='string', default='full',    help='full,low,high mass region (only for blinded data)')
-    parser.add_option('-s', '--selection', dest='selection', type='string', default="REG",    help='select REG/TLE/RSE trees')
+    parser.add_option('-s', '--selection', dest='selection', type='string', default="REG",    help='select REG/TLE/RSE/CRZLL trees')
 
 
     # store options and arguments as global variables
@@ -52,6 +52,8 @@ def loop():
     elif selection == 'RSE' :
         tree_name = "ZZTreelooseEle/candTree"
         is_loose_ele = True
+    elif selection == 'CRZLL' :
+        tree_name = "CRZLLTree/candTree"
 
     print "Processing file: ",inFileName,"..."
 
@@ -72,62 +74,8 @@ def loop():
         if finalState!="all" and aChan!=finalState: continue
 
         isMC = False
-#        tree = ROOT.TChain("ZZ"+aChan+"Tree/candTree")
         tree = ROOT.TChain(tree_name)
         tree.Add(inFileName)
-        #tree.SetBranchStatus("*",0)
-
-        ## Variables we are interested in for the sync
-        #tree.SetBranchStatus("ZZsel",1)
-        #tree.SetBranchStatus("RunNumber",1)
-        #tree.SetBranchStatus("LumiNumber",1)
-        #tree.SetBranchStatus("EventNumber",1)
-        #if tree.GetBranch("genHEPMCweight") :
-        #    isMC = True
-        #    tree.SetBranchStatus("genHEPMCweight",1)
-        #    tree.SetBranchStatus("PUWeight",1)
-        #    tree.SetBranchStatus("dataMCWeight",1)
-        #tree.SetBranchStatus("ZZMass",1)
-        #tree.SetBranchStatus("Z1Mass",1)
-        #tree.SetBranchStatus("Z2Mass",1)
-        #tree.SetBranchStatus("Z1Flav",1)
-        #tree.SetBranchStatus("Z2Flav",1)
-        #tree.SetBranchStatus("ZZMassErr",1)
-        #tree.SetBranchStatus("ZZMassErrCorr",1)
-        #if opt.longOutput:
-        #    tree.SetBranchStatus("ZZMassRefit",1)
-        #    tree.SetBranchStatus("ZZMassRefitErr",1)
-        ##tree.SetBranchStatus("p_GG_SIG_ghg2_1_ghz1_1_JHUGen",1)
-        ##tree.SetBranchStatus("p_GG_SIG_ghg2_1_ghz4_1_JHUGen",1)
-        ##tree.SetBranchStatus("p_GG_SIG_ghg2_1_ghz2_1_JHUGen",1)
-        ##tree.SetBranchStatus("p_QQB_SIG_ZPqqLR_1_gZPz2_1_JHUGen",1)
-        ##tree.SetBranchStatus("p_QQB_SIG_ZPqqLR_1_gZPz1_1_JHUGen",1)
-        ##tree.SetBranchStatus("p_GG_SIG_gXg1_1_gXz1_1_gXz5_1_JHUGen",1)
-        ##tree.SetBranchStatus("p_QQB_SIG_XqqLR_1_gXz1_1_gXz5_1_JHUGen",1)
-        ##tree.SetBranchStatus("p_QQB_BKG_MCFM",1)
-        ##tree.SetBranchStatus("p_m4l_SIG",1)
-        ##tree.SetBranchStatus("p_m4l_BKG",1)
-        ##tree.SetBranchStatus("p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal",1)
-        ##tree.SetBranchStatus("p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal",1)
-        ##tree.SetBranchStatus("p_JQCD_SIG_ghg2_1_JHUGen_JECNominal",1)
-        ##tree.SetBranchStatus("p_JVBF_SIG_ghv1_1_JHUGen_JECNominal",1)
-        ##tree.SetBranchStatus("pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal",1)
-        ##tree.SetBranchStatus("p_HadWH_SIG_ghw1_1_JHUGen_JECNominal",1)
-        ##tree.SetBranchStatus("p_HadZH_SIG_ghz1_1_JHUGen_JECNominal",1)
-        #tree.SetBranchStatus("ZZPt",1)
-        #tree.SetBranchStatus("nExtraLep",1)
-        #tree.SetBranchStatus("nExtraZ",1)
-        #tree.SetBranchStatus("nCleanedJetsPt30",1)
-        #tree.SetBranchStatus("nCleanedJetsPt30BTagged",1)
-        #tree.SetBranchStatus("JetPt",1)
-        #tree.SetBranchStatus("JetEta",1)
-        #tree.SetBranchStatus("JetPhi",1)
-        #tree.SetBranchStatus("JetMass",1)
-        #tree.SetBranchStatus("JetQGLikelihood",1)
-        #tree.SetBranchStatus("DiJetMass",1)
-        #tree.SetBranchStatus("DiJetDEta",1)
-        #tree.SetBranchStatus("LepLepId",1)
-        #tree.SetBranchStatus("LepPt",1)
 
         iEntry=0
         while tree.GetEntry(iEntry):
@@ -147,9 +95,9 @@ def loop():
             if selection == 'REG' :
                 if ZZsel>=90 : pass_selection = True
 
-            if selection == 'RSE' :
+            elif selection == 'RSE' :
                 if ZZsel>=120 : pass_selection = True
-            if selection == 'TLE' :
+            elif selection == 'TLE' :
                 TLE_index = -1
 #                print tree.LepLepId[0]
                 for i, ID in enumerate(tree.LepLepId) :
@@ -159,6 +107,8 @@ def loop():
                     print 'Did not find TLE'
                     continue
                 if ZZsel>=120 and tree.TLE_dR_Z < 1.6 and tree.LepPt[TLE_index] >= 30. : pass_selection = True
+            else : # for CRs 
+                pass_selection = True
 
 	    if opt.synchMode == 'VBS' and ZZsel<120 : pass_selection = False
 

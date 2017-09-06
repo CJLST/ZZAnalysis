@@ -1,10 +1,8 @@
 #ifndef CCONSTANTS_H
 #define CCONSTANTS_H
 
-#include "TFile.h"
-#include "TSpline.h"
-#include "TString.h"
-
+#include <TSpline.h>
+#include <TString.h>
 #include <memory>
 
 class cConstantSpline {
@@ -14,8 +12,7 @@ class cConstantSpline {
     double eval(double ZZMass);
   private:
     const TString filename_;
-    std::unique_ptr<TFile> f_;
-    TSpline3* spline_;
+    std::unique_ptr<TSpline3> spline_;
 };
 
 extern "C" float getDVBF2jetsConstant(float ZZMass);
