@@ -12,6 +12,7 @@ declareDefault("PD", "", globals()) # "" for MC, "DoubleEle", "DoubleMu", or "Mu
 declareDefault("MCFILTER", "", globals())
 declareDefault("XSEC", 1, globals())
 declareDefault("PROCESS_CR", False, globals())
+declareDefault("ADDZTREE", False, globals())
 
 # LHE info
 #  VVDECAYMODE\VVMODE  / ZZ==1 / WW==0  / Yukawa==2 / Zgam=3 / gamgam=4 / Z+nj=5
@@ -227,6 +228,25 @@ process.CRZLTreelooseEle.CandCollection = 'ZlCandlooseEle'
 ##process.CRZLTreetle.CandCollection_regular = cms.untracked.string('ZlCand')
 
 
+### ----------------------------------------------------------------------
+### Z tree
+### ----------------------------------------------------------------------
+process.ZTree = cms.EDAnalyzer("ZNtupleMaker",
+                               channel = cms.untracked.string('ZZ'),
+                               CandCollection = cms.untracked.string('ZCand'),
+                               fileName = cms.untracked.string('candTree'),
+                               isMC = cms.untracked.bool(IsMC),
+                               sampleType = cms.int32(SAMPLE_TYPE),
+                               setup = cms.int32(LEPTON_SETUP),
+                               skimPaths = cms.vstring(SkimPaths),
+                               PD = cms.string(PD),
+                               MCFilterPath = cms.string(MCFILTER),
+                               skipEmptyEvents = cms.bool(True),
+                               sampleName = cms.string(SAMPLENAME),
+                               xsec = cms.double(XSEC)
+                               )
+
+
 
 # Debug
 #Define candidates to be dumped
@@ -290,3 +310,6 @@ if (ADDLOOSEELE) :
     else:
         process.trees += cms.Sequence(process.ZZTreelooseEle)
         #process.trees += cms.Sequence(process.ZZTreetle)
+
+if (ADDZTREE) :
+     process.trees += cms.Sequence(process.ZTree)
