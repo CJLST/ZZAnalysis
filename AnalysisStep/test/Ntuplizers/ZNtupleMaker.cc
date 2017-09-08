@@ -433,7 +433,7 @@ void ZNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool evtPa
 
   //Fill the info on the Z candidate
   ZMass = cand.p4().mass();
-  if (cand.numberOfDaughters()>4) ZMassPreFSR = cand.userFloat("mll");
+  if (cand.numberOfDaughters()>2) ZMassPreFSR = cand.userFloat("mll");
   ZPt  = cand.p4().pt();
   ZEta = cand.p4().eta();
   ZPhi = cand.p4().phi();
