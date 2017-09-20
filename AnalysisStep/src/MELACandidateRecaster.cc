@@ -706,6 +706,7 @@ void MELACandidateRecaster::copyCandidate(MELACandidate* cand, MELACandidate*& c
 
 void MELACandidateRecaster::reduceJJtoQuarks(MELACandidate*& cand){
   if (candScheme==TVar::nProductions) return;
+  if (cand==nullptr) return;
   unsigned int nQ = 2 + nAssociated; // Assume mothers are supposed to be quarks as well
   // If VH, find a V to protect.
   vector<MELAParticle*> protectedVs;
@@ -848,6 +849,7 @@ void MELACandidateRecaster::reduceJJtoQuarks(MELACandidate*& cand){
 
 void MELACandidateRecaster::deduceLOVHTopology(MELACandidate*& cand){
   if (candScheme==TVar::nProductions) return;
+  if (cand==nullptr) return;
   bool protectVStricttmp=protectVStrict;
   protectVStrict=true; // No need to modify the V in the intermediate candidate
   MELACandidate* candLookUp;

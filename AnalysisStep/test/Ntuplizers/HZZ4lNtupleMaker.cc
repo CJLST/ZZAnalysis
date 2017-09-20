@@ -60,6 +60,7 @@
 #include <ZZAnalysis/AnalysisStep/interface/miscenums.h>
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
+#include <ZZAnalysis/AnalysisStep/interface/MELACandidateRecaster.h>
 
 #include "ZZ4lConfigHelper.h"
 #include "HZZ4lNtupleFactory.h"
@@ -365,6 +366,8 @@ private:
   void updateMELAClusters_BestLOAssociatedZ(const string clustertype);
   void updateMELAClusters_BestLOAssociatedW(const string clustertype);
   void updateMELAClusters_BestLOAssociatedVBF(const string clustertype);
+  void updateMELAClusters_BestNLOVHApproximation(const string clustertype);
+  void updateMELAClusters_BestNLOVBFApproximation(const string clustertype);
   void pushRecoMELABranches(const pat::CompositeCandidate& cand);
   void pushLHEMELABranches();
   void clearMELABranches();
@@ -2325,11 +2328,17 @@ void HZZ4lNtupleMaker::computeMELABranches(MELACandidate* cand){
   updateMELAClusters_BestLOAssociatedZ("BestLOAssociatedZ");
   updateMELAClusters_BestLOAssociatedW("BestLOAssociatedW");
   updateMELAClusters_BestLOAssociatedVBF("BestLOAssociatedVBF");
+  updateMELAClusters_BestNLOVHApproximation("BestNLOZHApproximation");
+  updateMELAClusters_BestNLOVHApproximation("BestNLOWHApproximation");
+  updateMELAClusters_BestNLOVBFApproximation("BestNLOVBFApproximation");
   updateMELAClusters_NoAssociatedG("NoAssociatedG");
   updateMELAClusters_NoInitialGNoAssociatedG("NoInitialGNoAssociatedG");
   // Reverse sequence
   updateMELAClusters_NoInitialGNoAssociatedG("NoInitialGNoAssociatedGLast");
   updateMELAClusters_NoAssociatedG("NoAssociatedGLast");
+  updateMELAClusters_BestNLOVBFApproximation("BestNLOVBFApproximationLast");
+  updateMELAClusters_BestNLOVHApproximation("BestNLOWHApproximationLast");
+  updateMELAClusters_BestNLOVHApproximation("BestNLOZHApproximationLast");
   updateMELAClusters_BestLOAssociatedVBF("BestLOAssociatedVBFLast");
   updateMELAClusters_BestLOAssociatedW("BestLOAssociatedWLast");
   updateMELAClusters_BestLOAssociatedZ("BestLOAssociatedZLast");
@@ -2645,6 +2654,93 @@ void HZZ4lNtupleMaker::updateMELAClusters_BestLOAssociatedVBF(const string clust
   for (int imot=0; imot<melaCand->getNMothers(); imot++) melaCand->getMother(imot)->id = motherIds.at(imot); // Restore all mother ids
   for (int ijet=0; ijet<melaCand->getNAssociatedJets(); ijet++) melaCand->getAssociatedJet(ijet)->id = ajetIds.at(ijet); // Restore all jets
 }
+// ME computations that can approximate the NLO QCD (-/+ MiNLO extra jet) phase space to LO QCD in signal VBF or VH
+// Use these for POWHEG samples
+// MELACandidateRecaster has very specific use cases, so do not use these functions for other cases.
+void HZZ4lNtupleMaker::updateMELAClusters_BestNLOVHApproximation(const string clustertype){
+  MELACandidate* melaCand = mela.getCurrentCandidate();
+  if (melaCand==0) return;
+
+  // Check if any clusters request this computation
+  bool clustersRequest=false;
+  for (unsigned int ic=0; ic<lheme_clusters.size(); ic++){
+    MELACluster* theCluster = lheme_clusters.at(ic);
+    if (theCluster->getName()==clustertype){
+      clustersRequest=true;
+      break;
+    }
+  }
+  if (!clustersRequest) return;
+
+  // Need one recaster for each of ZH and WH, so distinguish by the cluster name
+  TVar::Production candScheme;
+  if (clustertype.find("BestNLOZHApproximation")!=string::npos) candScheme = TVar::Had_ZH;
+  else if (clustertype.find("BestNLOWHApproximation")!=string::npos) candScheme = TVar::Had_WH;
+  else return;
+
+  MELACandidateRecaster recaster(candScheme);
+  MELACandidate* candModified=nullptr;
+  MELAParticle* bestAV = MELACandidateRecaster::getBestAssociatedV(melaCand, candScheme);
+  if (bestAV){
+    recaster.copyCandidate(melaCand, candModified);
+    recaster.deduceLOVHTopology(candModified);
+    mela.setCurrentCandidate(candModified);
+  }
+  else return; // No associated Vs found. The algorithm won't work.
+
+  for (unsigned int ic=0; ic<lheme_clusters.size(); ic++){
+    MELACluster* theCluster = lheme_clusters.at(ic);
+    if (theCluster->getName()==clustertype){
+      // Re-compute all related hypotheses first...
+      theCluster->computeAll();
+      // ...then update the cluster
+      theCluster->update();
+    }
+  }
+
+  delete candModified;
+  mela.setCurrentCandidate(melaCand); // Go back to the original candidate
+}
+void HZZ4lNtupleMaker::updateMELAClusters_BestNLOVBFApproximation(const string clustertype){
+  MELACandidate* melaCand = mela.getCurrentCandidate();
+  if (melaCand==0) return;
+
+  // Check if any clusters request this computation
+  bool clustersRequest=false;
+  for (unsigned int ic=0; ic<lheme_clusters.size(); ic++){
+    MELACluster* theCluster = lheme_clusters.at(ic);
+    if (theCluster->getName()==clustertype){
+      clustersRequest=true;
+      break;
+    }
+  }
+  if (!clustersRequest) return;
+
+  // Need one recaster for VBF
+  TVar::Production candScheme;
+  if (clustertype.find("BestNLOVBFApproximation")!=string::npos) candScheme = TVar::JJVBF;
+  else return;
+
+  MELACandidateRecaster recaster(candScheme);
+  MELACandidate* candModified=nullptr;
+  recaster.copyCandidate(melaCand, candModified);
+  recaster.reduceJJtoQuarks(candModified);
+  mela.setCurrentCandidate(candModified);
+
+  for (unsigned int ic=0; ic<lheme_clusters.size(); ic++){
+    MELACluster* theCluster = lheme_clusters.at(ic);
+    if (theCluster->getName()==clustertype){
+      // Re-compute all related hypotheses first...
+      theCluster->computeAll();
+      // ...then update the cluster
+      theCluster->update();
+    }
+  }
+
+  delete candModified;
+  mela.setCurrentCandidate(melaCand); // Go back to the original candidate
+}
+
 
 void HZZ4lNtupleMaker::pushRecoMELABranches(const pat::CompositeCandidate& cand){
   std::vector<MELABranch*>* recome_branches = myTree->getRecoMELABranches();
