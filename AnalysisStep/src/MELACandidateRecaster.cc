@@ -97,8 +97,9 @@ void MELACandidateRecaster::readCandidate(
   }
 }
 
-MELAParticle* MELACandidateRecaster::getBestAssociatedV(MELACandidate* cand, TVar::Production production){
+MELAParticle* MELACandidateRecaster::getBestAssociatedV(MELACandidate* cand, TVar::Production production, double* bestScore){
   MELAParticle* protectV=nullptr;
+  if (bestScore!=nullptr) *bestScore=0;
   bool useZH=(production==TVar::Had_ZH || production==TVar::Lep_ZH);
   bool useWH=(production==TVar::Had_WH || production==TVar::Lep_WH);
   if (useZH || useWH){
@@ -110,9 +111,10 @@ MELAParticle* MELACandidateRecaster::getBestAssociatedV(MELACandidate* cand, TVa
     for (int iv=nsortedvsstart; iv<cand->getNSortedVs(); iv++){
       MELAParticle* sortedV = cand->getSortedV(iv);
       if (sortedV!=nullptr && ((PDGHelpers::isAZBoson(sortedV->id) && useZH) || (PDGHelpers::isAWBoson(sortedV->id) && useWH))){
-        if (sortedV->getNDaughters()==2){
-          const double GeVunit=1e-2;
-          const double GeVsqunit=1e-4;
+        //cout << "- Considering sorted V " << iv << endl;
+        //cout << sortedV->getDaughter(0)->id << " " << sortedV->getDaughter(0)->passSelection << endl;
+        //cout << sortedV->getDaughter(1)->id << " " << sortedV->getDaughter(1)->passSelection << endl;
+        if (sortedV->getNDaughters()==2 && sortedV->getDaughter(0)->passSelection && sortedV->getDaughter(1)->passSelection){
           double s = sortedV->p4.M2()*GeVsqunit;
           double m, ga;
           if (useZH) TUtil::GetMassWidth(23, m, ga); else TUtil::GetMassWidth(24, m, ga);
@@ -133,8 +135,14 @@ MELAParticle* MELACandidateRecaster::getBestAssociatedV(MELACandidate* cand, TVa
         }
       }
     }
-    if (bestAssociatedVLepindex>=0) protectV = cand->getSortedV(bestAssociatedVLepindex);
-    else if (bestAssociatedVHadindex>=0) protectV = cand->getSortedV(bestAssociatedVHadindex);
+    if (bestAssociatedVLepindex>=0){
+      protectV = cand->getSortedV(bestAssociatedVLepindex);
+      if (bestScore!=nullptr) *bestScore=bestVLepscore;
+    }
+    else if (bestAssociatedVHadindex>=0){
+      protectV = cand->getSortedV(bestAssociatedVHadindex);
+      if (bestScore!=nullptr) *bestScore=bestVHadscore;
+    }
   }
   return protectV;
 }
@@ -234,41 +242,72 @@ MELAParticle* MELACandidateRecaster::mergeTwoGluons(MELAParticle* glu1, MELAPart
 }
 
 bool MELACandidateRecaster::merge2Qto1G(
+  MELACandidate*& cand,
   std::vector<MELAParticle*>& gluons,
   std::vector<MELAParticle*>& quarks,
   MELAParticle*& protectV
   ){
   int ifound=-1; int jfound=-1; double minqsq=-1;
-  for (unsigned int i = 0; i<quarks.size(); i++){
-    MELAParticle* quark_i = quarks.at(i);
-    if (protectV && MELAParticle::checkParticleExists(quark_i, protectV->getDaughters())) continue;
+  std::vector<MELAParticle*> allquarks(quarks);
+  if (protectV){
+    for (auto& Vdau : protectV->getDaughters()){
+      if (PDGHelpers::isAQuark(Vdau->id) && !MELAParticle::checkParticleExists(Vdau, quarks)) allquarks.push_back(Vdau);
+    }
+  }
+  //cout << "quarks size = " << allquarks.size() << endl;
+  //for (auto& q:allquarks) cout << " - Quark id = " << q->id << " , E = " << q->t() << endl;
+  for (unsigned int i = 0; i<allquarks.size(); i++){
+    MELAParticle* quark_i = allquarks.at(i);
     double Qi = quark_i->charge();
     int id_i = quark_i->id;
     TLorentzVector p4_i=quark_i->p4;
     if (quark_i->genStatus==-1){ id_i *= -1; Qi *= -1.; p4_i = -p4_i; }
 
-    for (unsigned int j = i+1; j<quarks.size(); j++){
-      MELAParticle* quark_j = quarks.at(j);
-      if (protectV && MELAParticle::checkParticleExists(quark_j, protectV->getDaughters())) continue;
+    for (unsigned int j = i+1; j<allquarks.size(); j++){
+      MELAParticle* quark_j = allquarks.at(j);
       double Qj = quark_j->charge();
       int id_j = quark_j->id;
       TLorentzVector p4_j=quark_j->p4;
       if (quark_j->genStatus==-1){ id_j *= -1; Qj *= -1.; p4_j = -p4_j; }
+      //cout << "- Checking i, j = " << i << " , " << j << endl;
+      //cout << " - Qi, Qj = " << Qi << " , " << Qj << endl;
+      //cout << " - id_i, id_j = " << id_i << " , " << id_j << endl;
 
-      if (((Qi+Qj)==0 && (id_i+id_j)==0) || (PDGHelpers::isAnUnknownJet(id_i) || PDGHelpers::isAnUnknownJet(id_j))){
+      MELAParticle* tmpProtV = nullptr;
+      double tmpVpropagator=1;
+      if (protectV){
+        // Temporarily set selection=false to test whether there is another suitable V to be found
+        quark_i->setSelected(false);
+        quark_j->setSelected(false);
+        tmpProtV=getProtectedV(cand, &tmpVpropagator);
+        if (tmpVpropagator!=0.) tmpVpropagator = 1./tmpVpropagator; // Need to invert propagator to find minimum score
+        quark_i->setSelected(true);
+        quark_j->setSelected(true);
+      }
+      if (
+        ((tmpProtV && protectV) || !protectV)
+        &&
+        (((Qi+Qj)==0 && (id_i+id_j)==0) || (PDGHelpers::isAnUnknownJet(id_i) || PDGHelpers::isAnUnknownJet(id_j)))
+        ){
         TLorentzVector pTotal = p4_i+p4_j;
-        double qsq = fabs(pTotal.M2());
+        double qsq = fabs(pTotal.M2())*GeVsqunit;
+        // If a protectV exists, multiply by the propagator as well
+        if (protectV) qsq *= tmpVpropagator;
         if (minqsq<0. || minqsq>qsq){
           minqsq=qsq;
           ifound=i;
           jfound=j;
+          //cout << "tmpProtV 1 E = " << tmpProtV->getDaughter(0)->t() << endl;
+          //cout << "tmpProtV 2 E = " << tmpProtV->getDaughter(1)->t() << endl;
         }
       }
     }
   }
+  //cout << "ifound, jfound = " << ifound << " " << jfound << endl;
+  //cout << "protectV = " << (protectV ? protectV->id : -9000) << endl;
   if (ifound>=0 && jfound>=0){
-    MELAParticle* quark_i = quarks.at(ifound); quark_i->setSelected(false);
-    MELAParticle* quark_j = quarks.at(jfound); quark_j->setSelected(false);
+    MELAParticle* quark_i = allquarks.at(ifound); quark_i->setSelected(false);
+    MELAParticle* quark_j = allquarks.at(jfound); quark_j->setSelected(false);
     MELAParticle* newGluon = quark_i; quark_j->id=-9000;
     TLorentzVector newGluon_p4(0, 0, 0, 0);
     int newGluon_id=21;
@@ -280,10 +319,12 @@ bool MELACandidateRecaster::merge2Qto1G(
     newGluon->p4=newGluon_p4;
     newGluon->id=newGluon_id;
     newGluon->genStatus=newGluon_genStatus;
+    newGluon->setSelected(false);
     gluons.push_back(newGluon);
     // Remove the two merged quarks from the quarks list for permutations
-    quarks.erase(quarks.begin()+jfound);
-    quarks.erase(quarks.begin()+ifound);
+    allquarks.erase(allquarks.begin()+jfound);
+    allquarks.erase(allquarks.begin()+ifound);
+    std::swap(allquarks, quarks);
     return true;
   }
   return false;
@@ -535,9 +576,6 @@ double MELACandidateRecaster::getMergeOrder_GluonsIntoQuarks(
   bool doMergeGluons,
   std::vector<MELAParticle*>* VmassMonitor
   ){
-  // Divide |Q| by 100 GeV so that the factor is ~1 numerically. Overall normalization does not matter.
-  const double GeVunit=1e-2;
-  const double GeVsqunit=1e-4;
   double smallestKDP=-99;
   const int nQs = quarks.size();
   const int nGs = gluons.size();
@@ -750,15 +788,25 @@ void MELACandidateRecaster::reduceJJtoQuarks(MELACandidate*& cand){
 
   // Merge two quarks to create a gluon
   if (quarks.size()>nQ && !hasAtLeastOneGluon){
-    hasAtLeastOneGluon = merge2Qto1G(gluons, quarks, protectV);
+    //TUtil::PrintCandidateSummary(cand);
+    hasAtLeastOneGluon = merge2Qto1G(cand, gluons, quarks, protectV);
     // Recreate the intermediate Vs of the cand object, and re-assign protectV (although unchanged, the pointer is now invalid).
     if (hasAtLeastOneGluon){
       cand->recreateVs();
       protectV=getProtectedV(cand);
+      //TUtil::PrintCandidateSummary(cand);
+      //cout << "prptectV = " << (protectV ? protectV->id : -9000) << endl;
+      if (protectVStrict && protectV){
+        for (int iqq=quarks.size()-1; iqq>=0; iqq--){
+          MELAParticle*& quark = quarks.at(iqq);
+          if (MELAParticle::checkParticleExists(quark, protectV->getDaughters())) quarks.erase(quarks.begin()+iqq);
+        }
+      }
     }
     else{
       cerr << "Failed to merge gluons! Candidate summary:" << endl;
       TUtil::PrintCandidateSummary(cand);
+      exit(1);
     }
   }
 
@@ -856,9 +904,24 @@ void MELACandidateRecaster::deduceLOVHTopology(MELACandidate*& cand){
   copyCandidate(cand, candLookUp, false);
   reduceJJtoQuarks(candLookUp);
   protectVStrict=protectVStricttmp;
-  MELAParticle* protectV = getProtectedV(cand);
-  const bool hasProtectedV = (protectV!=nullptr);
+  MELAParticle* protectVLookUp = getProtectedV(candLookUp);
+  const bool hasProtectedV = (protectVLookUp!=nullptr);
   if (!hasProtectedV) cerr << "MELACandidateRecaster::deduceLOVHTopology ERROR: NO PROTECTED V!" << endl;
+
+  // Find the protected V manually
+  MELAParticle* protectV = nullptr;
+  {
+    const double mLookUp = protectVLookUp->m();
+    for (auto& part : cand->getSortedVs()){
+      const double mMatch = part->m();
+      if (fabs(mMatch-mLookUp)<1e-6 && protectVLookUp->id==part->id){
+        protectV=part;
+        break;
+      }
+    }
+    if (!protectV) cerr << "MELACandidateRecaster::deduceLOVHTopology ERROR: NO MATCHED PROTECTED V!" << endl;
+  }
+
   vector<pair<int, double>> mother_idpz;
   for (int im=0; im<candLookUp->getNMothers(); im++){
     mother_idpz.push_back(pair<int, double>(candLookUp->getMother(im)->id, candLookUp->getMother(im)->z()));

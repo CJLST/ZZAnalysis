@@ -20,7 +20,7 @@ public:
     SimpleParticleCollection_t& daughters,
     SimpleParticleCollection_t& associated
     );
-  static MELAParticle* getBestAssociatedV(MELACandidate* cand, TVar::Production production);
+  static MELAParticle* getBestAssociatedV(MELACandidate* cand, TVar::Production production, double* bestScore=nullptr);
   static void adjustForIncomingMomenta(
     SimpleParticleCollection_t& mothers,
     SimpleParticleCollection_t& daughters,
@@ -28,6 +28,9 @@ public:
     );
 
 protected:
+  constexpr static const double GeVunit=1e-2;
+  constexpr static const double GeVsqunit=1e-4;
+
   TVar::Production candScheme;
   bool doDotincomingParticles;
   bool protectVStrict;
@@ -38,6 +41,7 @@ protected:
   MELAParticle* mergeTwoGluons(MELAParticle* glu1, MELAParticle* glu2);
 
   bool merge2Qto1G(
+    MELACandidate*& cand,
     std::vector<MELAParticle*>& gluons,
     std::vector<MELAParticle*>& quarks,
     MELAParticle*& protectV
@@ -76,7 +80,7 @@ protected:
     std::vector<MELAParticle*>* VmassMonitor=nullptr
     );
 
-  MELAParticle* getProtectedV(MELACandidate* cand){ return getBestAssociatedV(cand, candScheme); }
+  MELAParticle* getProtectedV(MELACandidate* cand, double* bestScore=nullptr){ return getBestAssociatedV(cand, candScheme, bestScore); }
 
   void clearExtraParticles(){ for (auto& part:extraParticles) delete part; }
 
