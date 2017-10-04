@@ -60,6 +60,7 @@
 #include <ZZAnalysis/AnalysisStep/interface/miscenums.h>
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
+#include <ZZAnalysis/AnalysisStep/interface/MELACandidateRecaster.h>
 
 #include "ZZ4lConfigHelper.h"
 #include "HZZ4lNtupleFactory.h"
@@ -365,6 +366,8 @@ private:
   void updateMELAClusters_BestLOAssociatedZ(const string clustertype);
   void updateMELAClusters_BestLOAssociatedW(const string clustertype);
   void updateMELAClusters_BestLOAssociatedVBF(const string clustertype);
+  void updateMELAClusters_BestNLOVHApproximation(const string clustertype);
+  void updateMELAClusters_BestNLOVBFApproximation(const string clustertype);
   void pushRecoMELABranches(const pat::CompositeCandidate& cand);
   void pushLHEMELABranches();
   void clearMELABranches();
@@ -380,11 +383,11 @@ private:
 
   bool isMC;
   bool is_loose_ele_selection; // Collection includes candidates with loose electrons/TLEs
-  bool applyTrigger;    // Keep only events passing trigger (if skipEmptyEvents=true)
   bool applySkim;       //   "     "      "         skim (if skipEmptyEvents=true)
   bool skipEmptyEvents; // Skip events whith no selected candidate (otherwise, gen info is preserved for all events; candidates not passing trigger&&skim are flagged with negative ZZsel)
   FailedTreeLevel failedTreeLevel;  //if/how events with no selected candidate are written to a separate tree (see miscenums.h for details)
   edm::InputTag metTag;
+  bool applyTrigger;    // Keep only events passing trigger (overriden if skipEmptyEvents=False)
   bool applyTrigEffWeight;// apply trigger efficiency weight (concerns samples where trigger is not applied)
   Float_t xsec;
   int year;
@@ -480,10 +483,11 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   theChannel(myHelper.channel()), // Valid options: ZZ, ZLL, ZL
   theCandLabel(pset.getUntrackedParameter<string>("CandCollection")), // Name of input ZZ collection
   theFileName(pset.getUntrackedParameter<string>("fileName")),
-  skipEmptyEvents(pset.getParameter<bool>("skipEmptyEvents")), // Do not store
+  skipEmptyEvents(pset.getParameter<bool>("skipEmptyEvents")), // Do not store events with no selected candidate (normally: true)
   failedTreeLevel(FailedTreeLevel(pset.getParameter<int>("failedTreeLevel"))),
   metTag(pset.getParameter<edm::InputTag>("metSrc")),
-  applyTrigEffWeight(pset.getParameter<bool>("applyTrigEff")),
+  applyTrigger(pset.getParameter<bool>("applyTrigger")), // Reject events that do not pass trigger (normally: true)
+  applyTrigEffWeight(pset.getParameter<bool>("applyTrigEff")), //Apply an additional efficiency weights for MC samples where triggers are not present (normally: false)
   xsec(pset.getParameter<double>("xsec")),
   year(pset.getParameter<int>("setup")),
   sqrts(SetupToSqrts(year)),
@@ -531,12 +535,15 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   preSkimToken = consumes<edm::MergeableCounter,edm::InLumi>(edm::InputTag("preSkimCounter"));
 
   if (skipEmptyEvents) {
-    applyTrigger=true;
     applySkim=true;
   } else {
-    applyTrigger=false;
+    applyTrigger=false; // This overrides the card applyTrigger
     applySkim=false;
-    failedTreeLevel=noFailedTree; //failed events are in the main tree
+    failedTreeLevel=noFailedTree; // This overrides the card failedTreeLevel
+  }
+
+  if (applyTrigEffWeight&&applyTrigger) {
+    cout << "ERROR: cannot have applyTrigEffWeight == applyTrigger == true" << endl;
   }
 
   isMC = myHelper.isMC();
@@ -1429,9 +1436,11 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
         }
       }
     }
-    if (!(evtPass)) {sel = -sel;} // avoid confusion when we write events which do not pass trigger/skim
+  } else if(theChannel==ZLL) sel = 20; 
+  else if(theChannel==ZL) sel = 10;
+ 
 
-  }
+  if (!(evtPass)) {sel = -sel;} // avoid confusion when we write events which do not pass trigger/skim
 
   // Retrieve the userFloat of the leptons in vectors ordered in the same way.
   vector<float> SIP(4);
@@ -2319,11 +2328,17 @@ void HZZ4lNtupleMaker::computeMELABranches(MELACandidate* cand){
   updateMELAClusters_BestLOAssociatedZ("BestLOAssociatedZ");
   updateMELAClusters_BestLOAssociatedW("BestLOAssociatedW");
   updateMELAClusters_BestLOAssociatedVBF("BestLOAssociatedVBF");
+  updateMELAClusters_BestNLOVHApproximation("BestNLOZHApproximation");
+  updateMELAClusters_BestNLOVHApproximation("BestNLOWHApproximation");
+  updateMELAClusters_BestNLOVBFApproximation("BestNLOVBFApproximation");
   updateMELAClusters_NoAssociatedG("NoAssociatedG");
   updateMELAClusters_NoInitialGNoAssociatedG("NoInitialGNoAssociatedG");
   // Reverse sequence
   updateMELAClusters_NoInitialGNoAssociatedG("NoInitialGNoAssociatedGLast");
   updateMELAClusters_NoAssociatedG("NoAssociatedGLast");
+  updateMELAClusters_BestNLOVBFApproximation("BestNLOVBFApproximationLast");
+  updateMELAClusters_BestNLOVHApproximation("BestNLOWHApproximationLast");
+  updateMELAClusters_BestNLOVHApproximation("BestNLOZHApproximationLast");
   updateMELAClusters_BestLOAssociatedVBF("BestLOAssociatedVBFLast");
   updateMELAClusters_BestLOAssociatedW("BestLOAssociatedWLast");
   updateMELAClusters_BestLOAssociatedZ("BestLOAssociatedZLast");
@@ -2639,6 +2654,93 @@ void HZZ4lNtupleMaker::updateMELAClusters_BestLOAssociatedVBF(const string clust
   for (int imot=0; imot<melaCand->getNMothers(); imot++) melaCand->getMother(imot)->id = motherIds.at(imot); // Restore all mother ids
   for (int ijet=0; ijet<melaCand->getNAssociatedJets(); ijet++) melaCand->getAssociatedJet(ijet)->id = ajetIds.at(ijet); // Restore all jets
 }
+// ME computations that can approximate the NLO QCD (-/+ MiNLO extra jet) phase space to LO QCD in signal VBF or VH
+// Use these for POWHEG samples
+// MELACandidateRecaster has very specific use cases, so do not use these functions for other cases.
+void HZZ4lNtupleMaker::updateMELAClusters_BestNLOVHApproximation(const string clustertype){
+  MELACandidate* melaCand = mela.getCurrentCandidate();
+  if (melaCand==0) return;
+
+  // Check if any clusters request this computation
+  bool clustersRequest=false;
+  for (unsigned int ic=0; ic<lheme_clusters.size(); ic++){
+    MELACluster* theCluster = lheme_clusters.at(ic);
+    if (theCluster->getName()==clustertype){
+      clustersRequest=true;
+      break;
+    }
+  }
+  if (!clustersRequest) return;
+
+  // Need one recaster for each of ZH and WH, so distinguish by the cluster name
+  TVar::Production candScheme;
+  if (clustertype.find("BestNLOZHApproximation")!=string::npos) candScheme = TVar::Had_ZH;
+  else if (clustertype.find("BestNLOWHApproximation")!=string::npos) candScheme = TVar::Had_WH;
+  else return;
+
+  MELACandidateRecaster recaster(candScheme);
+  MELACandidate* candModified=nullptr;
+  MELAParticle* bestAV = MELACandidateRecaster::getBestAssociatedV(melaCand, candScheme);
+  if (bestAV){
+    recaster.copyCandidate(melaCand, candModified);
+    recaster.deduceLOVHTopology(candModified);
+    mela.setCurrentCandidate(candModified);
+  }
+  else return; // No associated Vs found. The algorithm won't work.
+
+  for (unsigned int ic=0; ic<lheme_clusters.size(); ic++){
+    MELACluster* theCluster = lheme_clusters.at(ic);
+    if (theCluster->getName()==clustertype){
+      // Re-compute all related hypotheses first...
+      theCluster->computeAll();
+      // ...then update the cluster
+      theCluster->update();
+    }
+  }
+
+  delete candModified;
+  mela.setCurrentCandidate(melaCand); // Go back to the original candidate
+}
+void HZZ4lNtupleMaker::updateMELAClusters_BestNLOVBFApproximation(const string clustertype){
+  MELACandidate* melaCand = mela.getCurrentCandidate();
+  if (melaCand==0) return;
+
+  // Check if any clusters request this computation
+  bool clustersRequest=false;
+  for (unsigned int ic=0; ic<lheme_clusters.size(); ic++){
+    MELACluster* theCluster = lheme_clusters.at(ic);
+    if (theCluster->getName()==clustertype){
+      clustersRequest=true;
+      break;
+    }
+  }
+  if (!clustersRequest) return;
+
+  // Need one recaster for VBF
+  TVar::Production candScheme;
+  if (clustertype.find("BestNLOVBFApproximation")!=string::npos) candScheme = TVar::JJVBF;
+  else return;
+
+  MELACandidateRecaster recaster(candScheme);
+  MELACandidate* candModified=nullptr;
+  recaster.copyCandidate(melaCand, candModified);
+  recaster.reduceJJtoQuarks(candModified);
+  mela.setCurrentCandidate(candModified);
+
+  for (unsigned int ic=0; ic<lheme_clusters.size(); ic++){
+    MELACluster* theCluster = lheme_clusters.at(ic);
+    if (theCluster->getName()==clustertype){
+      // Re-compute all related hypotheses first...
+      theCluster->computeAll();
+      // ...then update the cluster
+      theCluster->update();
+    }
+  }
+
+  delete candModified;
+  mela.setCurrentCandidate(melaCand); // Go back to the original candidate
+}
+
 
 void HZZ4lNtupleMaker::pushRecoMELABranches(const pat::CompositeCandidate& cand){
   std::vector<MELABranch*>* recome_branches = myTree->getRecoMELABranches();

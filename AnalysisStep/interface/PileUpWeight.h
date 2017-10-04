@@ -4,15 +4,13 @@
 /** \class PileUpWeight
  *
  *  Implement PU reweighting.
+ *  To prepare PU profile histograms, cf. utils/make_PU_weight_hist.py
  *
  */
 
 #include <TH1F.h>
 #include <TFile.h>
 #include <string>
-#include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/MessageLogger/interface/MessageLogger.h"
-#include "FWCore/ParameterSet/interface/FileInPath.h"
 
 class PileUpWeight {
 public:

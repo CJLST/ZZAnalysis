@@ -29,7 +29,6 @@
 #include "../Plotter/tdrstyle.C"
 #include "../Plotter/plotUtils.C"
 #include "ZZAnalysis/AnalysisStep/src/kFactors.C"
-#include "ZZAnalysis/AnalysisStep/src/cConstants.cc"
 #include "ZZAnalysis/AnalysisStep/src/Discriminants.cc"
 #include "ZZAnalysis/AnalysisStep/src/Category.cc"
 #include "ZZAnalysis/AnalysisStep/src/bitops.cc"
@@ -110,7 +109,7 @@ Float_t lumiSystUnc = 0.026;
 
 enum Process {ggH=0, qqH=1, WH=2, WH_lep=3, WH_had=4, ZH=5, ZH_lep=6, ZH_had=7, ttH=8, bbH=9, qqZZ=10, ggZZ=11, ttZ=12, WWZ=13};
 const int nProcesses = 14;
-string sProcess[nProcesses] = {"ggH", "qqH", "WH", "WH_lep", "WH_had", "ZH", "ZH_lep", "ZH_had", "ttH", "bbH", "qqZZ", "ggZZ", "ttZ", "WWZ"};
+string sProcess[nProcesses] = {"ggH_hzz", "qqH_hzz", "WH_hzz", "WH_lep_hzz", "WH_had_hzz", "ZH_hzz", "ZH_lep_hzz", "ZH_had_hzz", "ttH_hzz", "bbH_hzz", "qqZZ_hzz", "ggZZ_hzz", "ttZ_hzz", "WWZ_hzz"};
 bool isSignal[nProcesses] = {1,1,1,1,1,1,1,1,1,1,0,0,0,0,};
 bool useProcess[nProcesses] = {1,1,!SPLITVHHADLEP,SPLITVHHADLEP,SPLITVHHADLEP,!SPLITVHHADLEP,SPLITVHHADLEP,SPLITVHHADLEP,1,USEBBH,1,1,0,0};
 bool useProcessInMeas[nProcesses] = {1,1,!SPLITVHHADLEP,SPLITVHHADLEP,SPLITVHHADLEP,!SPLITVHHADLEP,SPLITVHHADLEP,SPLITVHHADLEP,1,0,1,1,0,0};
@@ -1022,7 +1021,7 @@ void computeYieldsZPlusXSS(string inputPathData, string inputFileFakeRates, stri
       outFileSyst[fs]<<"CMS_hzz4l_zjets_bkgdcompo:"<<endl
 		     <<"    UnTagged: &zjets_bkgdcompo_untagged"<<endl
 		     <<"        type : lnN"<<endl
-		     <<"        zjets: "<<1+bkgdCompUncZpX[fs]<<endl;
+		     <<"        zjets_hzz: "<<1+bkgdCompUncZpX[fs]<<endl;
       for(int cat=1; cat<nCategories; cat++)
 	outFileSyst[fs]<<"    "<<sCategory[cat]<<":"<<endl<<"        <<: *zjets_bkgdcompo_untagged"<<endl;
       outFileSyst[fs]<<endl;
@@ -1031,7 +1030,7 @@ void computeYieldsZPlusXSS(string inputPathData, string inputFileFakeRates, stri
       for(int cat=0; cat<nCategories; cat++){
 	outFileSyst[fs]<<"    "<<sCategory[cat]<<":"<<endl
 		       <<"        type : lnN"<<endl
-		       <<"        zjets: ";
+		       <<"        zjets_hzz: ";
 	if(fs!=fs2e2mu){
 	  outFileSyst[fs]<<sround( 1. + sqrt( TotUnc_up[fs][cat]*TotUnc_up[fs][cat] - BkgdUnc[fs][cat]*BkgdUnc[fs][cat] ) / expectedYieldSR[fs][cat] ,3)<<"/"
 			 <<sround( 1. - sqrt( TotUnc_dn[fs][cat]*TotUnc_dn[fs][cat] - BkgdUnc[fs][cat]*BkgdUnc[fs][cat] ) / expectedYieldSR[fs][cat] ,3)<<endl;
@@ -1662,7 +1661,7 @@ void generateFragments(string outputDirectory, double lumi, double sqrts, double
       }
 
       if(DOZPLUSXFROMRUN2COMBINEDSHAPE && MERGE2E2MU){
-	outFile[fs]<<"    zjets: '"<<yieldZPlusX[fs][cat]<<"'"<<endl;
+	outFile[fs]<<"    zjets_hzz: '"<<yieldZPlusX[fs][cat]<<"'"<<endl;
 	totalYieldBkgd[fs][cat] += yieldZPlusX[fs][cat];
 	totalYield[fs][cat] += yieldZPlusX[fs][cat];
       }

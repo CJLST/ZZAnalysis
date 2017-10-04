@@ -1,6 +1,20 @@
 #ifndef CCONSTANTS_H
 #define CCONSTANTS_H
 
+#include <TSpline.h>
+#include <TString.h>
+#include <memory>
+
+class cConstantSpline {
+  public:
+    cConstantSpline(const TString& filename);
+    void initspline();
+    double eval(double ZZMass);
+  private:
+    const TString filename_;
+    std::unique_ptr<TSpline3> spline_;
+};
+
 extern "C" float getDVBF2jetsConstant(float ZZMass);
 extern "C" float getDVBF1jetConstant(float ZZMass);
 extern "C" float getDWHhConstant(float ZZMass);

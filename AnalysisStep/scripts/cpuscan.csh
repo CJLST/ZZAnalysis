@@ -1,4 +1,4 @@
-#/bin/tcsh -f
+#!/bin/tcsh -f
 
 echo "NCU hours:"
 echo "Sample                       min    avg    max  njobs"

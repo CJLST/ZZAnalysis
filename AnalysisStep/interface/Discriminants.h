@@ -2,6 +2,28 @@
 #define DISCRIMINANTS_H
 
 
+
+extern "C" float D_bkg_kin(
+    float p_GG_SIG_ghg2_1_ghz1_1_JHUGen,
+    float p_QQB_BKG_MCFM,
+    int   ZZflav,
+    float ZZMass);
+
+extern "C" float D_bkg(
+    float p_GG_SIG_ghg2_1_ghz1_1_JHUGen,
+    float p_m4l_SIG,
+    float p_QQB_BKG_MCFM,
+    float p_m4l_BKG,
+    int   ZZflav,
+    float ZZMass);
+
+
+// D0-
+extern "C" float D_g4(
+    float p_GG_SIG_ghg2_1_ghz1_1_JHUGen,
+    float p_GG_SIG_ghg2_1_ghz4_1_JHUGen);
+
+
 // matrix-element only discriminants
 
 extern "C" float DVBF2j_ME(

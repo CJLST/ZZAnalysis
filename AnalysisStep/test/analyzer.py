@@ -12,6 +12,7 @@ declareDefault("PD", "", globals()) # "" for MC, "DoubleEle", "DoubleMu", or "Mu
 declareDefault("MCFILTER", "", globals())
 declareDefault("XSEC", 1, globals())
 declareDefault("PROCESS_CR", False, globals())
+declareDefault("ADDZTREE", False, globals())
 
 # LHE info
 #  VVDECAYMODE\VVMODE  / ZZ==1 / WW==0  / Yukawa==2 / Zgam=3 / gamgam=4 / Z+nj=5
@@ -145,7 +146,8 @@ TreeSetup = cms.EDAnalyzer("HZZ4lNtupleMaker",
                            PD = cms.string(PD),
                            MCFilterPath = cms.string(MCFILTER),
                            metSrc = metTag,
-                           applyTrigEff = cms.bool(not APPLYTRIG), #add trigger efficiency as a weight, for samples where the trigger cannot be applied.
+                           applyTrigger = cms.bool(APPLYTRIG), #Require proper trigger bits
+                           applyTrigEff = cms.bool(False), #Add trigger efficiency as a weight, for samples where the trigger cannot be applied (obsoltete)
                            skipEmptyEvents = cms.bool(SKIP_EMPTY_EVENTS),
                            failedTreeLevel = cms.int32(FAILED_TREE_LEVEL),
                            sampleName = cms.string(SAMPLENAME),
@@ -159,10 +161,10 @@ TreeSetup = cms.EDAnalyzer("HZZ4lNtupleMaker",
                            # LHE info. parameters
                            lheProbabilities = cms.vstring(),
                            xsec = cms.double(XSEC),
-                           VVMode = cms.int32(int(VVMODE)),
-                           VVDecayMode = cms.int32(int(VVDECAYMODE)),
+                           VVMode = cms.int32(VVMODE),
+                           VVDecayMode = cms.int32(VVDECAYMODE),
                            AddLHEKinematics = cms.bool(ADDLHEKINEMATICS),
-                           Apply_K_NNLOQCD_ZZGG = cms.int32(int(APPLY_K_NNLOQCD_ZZGG)),
+                           Apply_K_NNLOQCD_ZZGG = cms.int32(APPLY_K_NNLOQCD_ZZGG),
                            Apply_K_NNLOQCD_ZZQQB = cms.bool(APPLY_K_NNLOQCD_ZZQQB),
                            Apply_K_NLOEW_ZZQQB = cms.bool(APPLY_K_NLOEW_ZZQQB),
                            )
@@ -224,6 +226,25 @@ process.CRZLTreelooseEle.CandCollection = 'ZlCandlooseEle'
 #process.CRZLTreetle.CandCollection = 'ZlCandtle'
 ##process.CRZLTreetle.is_loose_ele_selection = cms.bool(True)
 ##process.CRZLTreetle.CandCollection_regular = cms.untracked.string('ZlCand')
+
+
+### ----------------------------------------------------------------------
+### Z tree
+### ----------------------------------------------------------------------
+process.ZTree = cms.EDAnalyzer("ZNtupleMaker",
+                               channel = cms.untracked.string('ZZ'),
+                               CandCollection = cms.untracked.string('ZCand'),
+                               fileName = cms.untracked.string('candTree'),
+                               isMC = cms.untracked.bool(IsMC),
+                               sampleType = cms.int32(SAMPLE_TYPE),
+                               setup = cms.int32(LEPTON_SETUP),
+                               skimPaths = cms.vstring(SkimPaths),
+                               PD = cms.string(PD),
+                               MCFilterPath = cms.string(MCFILTER),
+                               skipEmptyEvents = cms.bool(True),
+                               sampleName = cms.string(SAMPLENAME),
+                               xsec = cms.double(XSEC)
+                               )
 
 
 
@@ -289,3 +310,6 @@ if (ADDLOOSEELE) :
     else:
         process.trees += cms.Sequence(process.ZZTreelooseEle)
         #process.trees += cms.Sequence(process.ZZTreetle)
+
+if (ADDZTREE) :
+     process.trees += cms.Sequence(process.ZTree)

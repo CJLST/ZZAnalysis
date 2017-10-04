@@ -3,15 +3,16 @@
 LEPTON_SETUP = 2017  # current default = 2017 = Moriond2017
 ELECORRTYPE = "None" # "None" to switch off
 ELEREGRESSION = "None" # "None" to switch off
-APPLYMUCORR = False  # Switch off muon scale corrections
+APPLYMUCORR = True  # Switch off muon scale corrections
 APPLYJEC = False     # 
 APPLYJER = False     #
 RECORRECTMET = False #
 #KINREFIT = False    # control KinZFitter (very slow)
 PROCESS_CR = False   # Uncomment to run CR paths and trees
 #ADDLOOSEELE = True  # Run paths for loose electrons
-#APPLYTRIG = False   # hack for samples missing correct triggers - use with caution
+APPLYTRIG = False    # hack for samples missing correct triggers - use with caution
 #KEEPLOOSECOMB = True # Do not skip loose lepton ZZ combinations (for debugging)
+ADDZTREE = True      # Add tree for Z analysis
 
 PD = ""
 MCFILTER = ""
@@ -59,10 +60,10 @@ process.source.fileNames = cms.untracked.vstring(
 #    '/store/mc/RunIISummer16MiniAODv2/Graviton2PMToZZTo4L_M750_13TeV_JHUgenV6_pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/120000/9AA3CE64-F3CB-E611-BB50-0025907B5048.root'
 
     ### 920 relval
-    '/store/relval/CMSSW_9_2_0/DoubleMuon/MINIAOD/91X_dataRun2_relval_v6_RelVal_doubMu2016B-v1/10000/363F2659-453C-E711-8B1C-0CC47A7C345E.root'
+#    '/store/relval/CMSSW_9_2_0/DoubleMuon/MINIAOD/91X_dataRun2_relval_v6_RelVal_doubMu2016B-v1/10000/363F2659-453C-E711-8B1C-0CC47A7C345E.root'
 
-    ### Run2017A sample data file (921)
-    #'/store/data/Run2017A/DoubleEG/MINIAOD/PromptReco-v2/000/296/168/00000/801DBC71-594C-E711-9E8E-02163E019E08.root'
+    ### Run2017C sample data file
+    '/store/data/Run2017C/MuonEG/MINIAOD/PromptReco-v3/000/300/742/00000/0A1C877F-617E-E711-A3F8-02163E01A332.root',
     )
 
 #process.calibratedPatElectrons.isSynchronization = cms.bool(True)

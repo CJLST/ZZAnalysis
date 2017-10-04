@@ -1,6 +1,6 @@
 /** \class ZCandidateFiller
  *
- *  No description available.
+ *  Create a collection of Zs including FSR and additional variables stored as userFloats.
  *
  *  \author N. Amapane (Torino)
  *  \author S. Bolognesi (JHU)
@@ -204,7 +204,7 @@ ZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         }
       }
       
-      if (myCand.numberOfDaughters()>4) {
+      if (myCand.numberOfDaughters()>2) {
         myCand.addUserFloat("mll",mll);
       }
 

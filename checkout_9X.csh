@@ -4,16 +4,18 @@
 # wget -O /tmp/checkout_80X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_80X/checkout_80X.csh
 # cd $CMSSW_BASE/src
 # cmsenv
-# source /tmp/checkout_80X.csh
+# source /tmp/checkout_90X.csh
 
 
-############## For CMSSW_8_0_26_patch1
+############## For CMSSW_9_2_10
 git cms-init
 # Preliminary electron scale and smearing corrections according to https://twiki.cern.ch/twiki/bin/view/CMS/EGMSmearer
-#FIXME git cms-merge-topic rafaellopesdesa:EgammaAnalysis80_EGMSmearer_Moriond17_23Jan
+#FIXME this includes some changes to EgammaAnalysis/ElectronTools; in particular, regressionWeights_cfi that is not present in cmssw proper (?)
+#git cms-merge-topic rafaellopesdesa:EgammaAnalysis80_EGMSmearer_Moriond17_23Jan
 
-#git cms-addpkg EgammaAnalysis/ElectronTools
-#FIXME (cd EgammaAnalysis/ElectronTools/data ; git clone -b master https://github.com/ECALELFS/ScalesSmearings.git ; cd ScalesSmearings ; git checkout tags/Moriond17_23Jan_v1)
+git cms-addpkg EgammaAnalysis/ElectronTools
+#FIXME the following scale/smearing are for Moriond 2017, to be updated  
+#(cd EgammaAnalysis/ElectronTools/data ; git clone -b master https://github.com/ECALELFS/ScalesSmearings.git ; cd ScalesSmearings ; git checkout tags/Moriond17_23Jan_v1)
 
 #MET recipe according to https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription#Instructions_for_8_0_X_X_26_patc
 #FIXME git cms-merge-topic cms-met:METRecipe_8020 -u
@@ -43,7 +45,7 @@ git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsA
 
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
-(cd ZZMatrixElement; git checkout -b from-v206 v2.0.6)
+(cd ZZMatrixElement; git checkout -b from-v211b2 v2.1.1.b2)
 # replace ZZMatrixElement/MELA/setup.sh -j 8
 pushd ${CMSSW_BASE}/src/ZZMatrixElement/MELA/COLLIER/
   pkgname="collier-1.2"

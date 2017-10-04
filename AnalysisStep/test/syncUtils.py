@@ -17,6 +17,7 @@ def sign(x):
 class Candidate:
 
     def __init__(self, treeEntry, options) :
+        self.lib = CDLL('libZZAnalysisAnalysisStep.so')
 
 	isMC = False
         if treeEntry.GetBranch("genHEPMCweight") :
@@ -107,7 +108,7 @@ class Candidate:
 #	        )
 		
 	    # Moriond2017 categories
-	    self.category    = CDLL('libZZAnalysisAnalysisStep.so').categoryMor17(
+	    self.category    = self.lib.categoryMor17(
 	        c_int(self.nExtraLep),
 	        c_int(self.nExtraZ),
 	        c_int(self.njets30),
@@ -127,9 +128,14 @@ class Candidate:
 	        c_bool(False) #useQGTagging
 	        )
 
+    def D(self,sig,bg):
+        return sig/(sig+bg)
+
+
     def computeKDs(self, treeEntry):
 
         self.D_bkg_kin     = -1.
+        self.D_bkg         = -1.
         self.D_g4          = -1.
         self.Dbkg          = -1.
         self.KD_pseudo     = -1.
@@ -148,8 +154,10 @@ class Candidate:
         self.Dfull_VBF1j   = -1.
 
 
-        lib = CDLL('libZZAnalysisAnalysisStep.so')
-        lib.getDbkgkinConstant.restype = c_float
+        lib=self.lib
+        lib.D_bkg_kin.restype = c_float
+        lib.D_bkg.restype = c_float
+        lib.D_g4.restype = c_float
         lib.getDbkgConstant.restype = c_float
         lib.DVBF2j_ME.restype = c_float
         lib.DVBF1j_ME.restype = c_float
@@ -160,14 +168,20 @@ class Candidate:
         lib.DWHh_ME_QG.restype = c_float
         lib.DZHh_ME_QG.restype = c_float
 
-        self.D_bkg_kin  = treeEntry.p_GG_SIG_ghg2_1_ghz1_1_JHUGen/(treeEntry.p_GG_SIG_ghg2_1_ghz1_1_JHUGen + treeEntry.p_QQB_BKG_MCFM*lib.getDbkgkinConstant(c_int(int(self.ZZFlav)),c_float(self.ZZMass)))
-        self.D_bkg      = treeEntry.p_GG_SIG_ghg2_1_ghz1_1_JHUGen*treeEntry.p_m4l_SIG/(treeEntry.p_GG_SIG_ghg2_1_ghz1_1_JHUGen*treeEntry.p_m4l_SIG+treeEntry.p_QQB_BKG_MCFM*treeEntry.p_m4l_BKG*lib.getDbkgConstant(c_int(int(self.ZZFlav)),c_float(self.ZZMass)))
-        self.D_g4       = treeEntry.p_GG_SIG_ghg2_1_ghz1_1_JHUGen/(treeEntry.p_GG_SIG_ghg2_1_ghz1_1_JHUGen + pow(2.521, 2)*treeEntry.p_GG_SIG_ghg2_1_ghz4_1_JHUGen) # D_0-
-        self.KD_highdim = treeEntry.p_GG_SIG_ghg2_1_ghz1_1_JHUGen/(treeEntry.p_GG_SIG_ghg2_1_ghz1_1_JHUGen + treeEntry.p_GG_SIG_ghg2_1_ghz2_1_JHUGen)
-        self.KD_vec     = treeEntry.p_GG_SIG_ghg2_1_ghz1_1_JHUGen/(treeEntry.p_GG_SIG_ghg2_1_ghz1_1_JHUGen + treeEntry.p_QQB_SIG_ZPqqLR_1_gZPz2_1_JHUGen)
-        self.KD_psvec   = treeEntry.p_GG_SIG_ghg2_1_ghz1_1_JHUGen/(treeEntry.p_GG_SIG_ghg2_1_ghz1_1_JHUGen + treeEntry.p_QQB_SIG_ZPqqLR_1_gZPz1_1_JHUGen)
-        self.KD_gggrav  = treeEntry.p_GG_SIG_ghg2_1_ghz1_1_JHUGen/(treeEntry.p_GG_SIG_ghg2_1_ghz1_1_JHUGen + treeEntry.p_GG_SIG_gXg1_1_gXz1_1_gXz5_1_JHUGen)
-        self.KD_qqgrav  = treeEntry.p_GG_SIG_ghg2_1_ghz1_1_JHUGen/(treeEntry.p_GG_SIG_ghg2_1_ghz1_1_JHUGen + treeEntry.p_QQB_SIG_XqqLR_1_gXz1_1_gXz5_1_JHUGen)
+
+        
+        self.D_bkg_kin  = lib.D_bkg_kin(c_float(treeEntry.p_GG_SIG_ghg2_1_ghz1_1_JHUGen),
+                                        c_float(treeEntry.p_QQB_BKG_MCFM),
+                                        c_int(int(self.ZZFlav)),c_float(self.ZZMass))
+        self.D_bkg      = lib.D_bkg(c_float(treeEntry.p_GG_SIG_ghg2_1_ghz1_1_JHUGen), c_float(treeEntry.p_m4l_SIG),
+                                    c_float(treeEntry.p_QQB_BKG_MCFM), c_float(treeEntry.p_m4l_BKG),
+                                    c_int(int(self.ZZFlav)),c_float(self.ZZMass))
+        self.D_g4       = lib.D_g4(c_float(treeEntry.p_GG_SIG_ghg2_1_ghz1_1_JHUGen),c_float(treeEntry.p_GG_SIG_ghg2_1_ghz4_1_JHUGen)) # D_0-
+        self.KD_highdim = self.D(treeEntry.p_GG_SIG_ghg2_1_ghz1_1_JHUGen,treeEntry.p_GG_SIG_ghg2_1_ghz2_1_JHUGen)
+        self.KD_vec     = self.D(treeEntry.p_GG_SIG_ghg2_1_ghz1_1_JHUGen, treeEntry.p_QQB_SIG_ZPqqLR_1_gZPz2_1_JHUGen)
+        self.KD_psvec   = self.D(treeEntry.p_GG_SIG_ghg2_1_ghz1_1_JHUGen, treeEntry.p_QQB_SIG_ZPqqLR_1_gZPz1_1_JHUGen)
+        self.KD_gggrav  = self.D(treeEntry.p_GG_SIG_ghg2_1_ghz1_1_JHUGen, treeEntry.p_GG_SIG_gXg1_1_gXz1_1_gXz5_1_JHUGen)
+        self.KD_qqgrav  = self.D(treeEntry.p_GG_SIG_ghg2_1_ghz1_1_JHUGen, treeEntry.p_QQB_SIG_XqqLR_1_gXz1_1_gXz5_1_JHUGen)
         ##MELA-only production discriminants:
         if self.njets30 >= 2 :
             self.Djet_VAJHU = lib.DVBF2j_ME(

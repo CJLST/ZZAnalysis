@@ -754,6 +754,8 @@ void doHistograms(string inputPathMC, string inputPathData, double lumi)
 
       //----- fill histograms
 
+
+      //FIXME: Switch to functions in Discriminants.h
       Float_t KD = p_GG_SIG_ghg2_1_ghz1_1_JHUGen / ( p_GG_SIG_ghg2_1_ghz1_1_JHUGen + p_QQB_BKG_MCFM*getDbkgkinConstant(Z1Flav*Z2Flav,ZZMass) );
       Float_t D2jet = (nJets>=2) ? DVBF2j_ME(p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
       Float_t D1jet = (nJets==1) ? DVBF1j_ME(p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
@@ -767,6 +769,7 @@ void doHistograms(string inputPathMC, string inputPathData, double lumi)
       Float_t newCConstD1jet = getDVBF1jetConstant_shiftWP(ZZMass,false,NEWWP1J);
       Float_t newCConstDWH = getDWHhConstant_shiftWP(ZZMass,false,NEWWPWH);
       Float_t newCConstDZH = getDZHhConstant_shiftWP(ZZMass,false,NEWWPZH);
+      //FIXME: What is happening here??? seems some leftover from a temporary hack.
       D2jet = 1/(newCConstD2jet/oldCConstD2jet*(1/D2jet-1)+1);
       D1jet = 1/(newCConstD1jet/oldCConstD1jet*(1/D1jet-1)+1);
       DWH = 1/(newCConstDWH/oldCConstDWH*(1/DWH-1)+1);

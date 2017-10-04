@@ -49,7 +49,9 @@ using namespace edm;
 namespace {
   bool skipMuDataMCWeight = false; // skip computation of data/MC weight for mu
   bool skipEleDataMCWeight = false; // skip computation of data/MC weight for ele
-  bool addQGLInputs = true;
+  bool addJets = false;
+  bool addQGLInputs = false;
+  bool addAddLept = false;
 
   //List of variables with default values
   Int_t RunNumber = 0;
@@ -62,6 +64,7 @@ namespace {
   Short_t trigWord = 0;
   Short_t Zsel = 0;
   Float_t ZMass = 0;
+  Float_t ZMassPreFSR = 0;
   Float_t ZPt = 0;
   Float_t ZEta = 0;
   Float_t ZPhi = 0;
@@ -204,6 +207,8 @@ private:
   TH2F *hTH2F_El_Reco;
   TH1 *hTH2D_El_IdIsoSip_notCracks;
   TH1 *hTH2D_El_IdIsoSip_Cracks;
+  TH1 *hTH2F_El_RSE;
+
 };
 
 //
@@ -215,7 +220,8 @@ ZNtupleMaker::ZNtupleMaker(const edm::ParameterSet& pset) :
   hTH2D_Mu_All(0),
   hTH2F_El_Reco(0),
   hTH2D_El_IdIsoSip_notCracks(0),
-  hTH2D_El_IdIsoSip_Cracks(0)
+  hTH2D_El_IdIsoSip_Cracks(0),
+  hTH2F_El_RSE(0)
 {
   theCandLabel = pset.getUntrackedParameter<string>("CandCollection"); // Name of input Z collection
   theFileName = pset.getUntrackedParameter<string>("fileName"); 
@@ -260,12 +266,8 @@ ZNtupleMaker::ZNtupleMaker(const edm::ParameterSet& pset) :
   std::string fipPath;
 
   if (!skipMuDataMCWeight) {
-    TString filename;
-    //filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_%d.root",year);
-    filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_Moriond2017.root");//FIXME for 2017
-    edm::FileInPath fipMu(filename.Data());
-    fipPath = fipMu.fullPath();
-    TFile *fMuWeight = TFile::Open(fipPath.data(),"READ");
+    edm::FileInPath fipMu("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_Moriond2017_v2.root");
+    TFile *fMuWeight = TFile::Open(fipMu.fullPath().data(),"READ");
     hTH2D_Mu_All = (TH2D*)fMuWeight->Get("FINAL")->Clone();
     fMuWeight->Close();
   }
@@ -273,21 +275,25 @@ ZNtupleMaker::ZNtupleMaker(const edm::ParameterSet& pset) :
   if (!skipEleDataMCWeight) {
 
     if(year>=2016) {
-      TString filename("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_2016_v4.root");
-      //TString filename("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ele_scale_factors_2016_v1.root");  
-      edm::FileInPath fipEleNotCracks(filename.Data());
-      fipPath = fipEleNotCracks.fullPath();
-      TFile *root_file = TFile::Open(fipPath.data(),"READ");
-      hTH2D_El_IdIsoSip_notCracks = (TH1*) root_file->Get("ele_scale_factors")->Clone();
-      hTH2D_El_IdIsoSip_Cracks = (TH1*) root_file->Get("ele_scale_factors_gap")->Clone();
-      root_file->Close();
+        edm::FileInPath fipEleNotCracks("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_non_gap_ele_Moriond2017_v2.root");
+        TFile *root_file = TFile::Open(fipEleNotCracks.fullPath().data(),"READ");
+        hTH2D_El_IdIsoSip_notCracks = (TH1*) root_file->Get("EGamma_SF2D")->Clone();
+        root_file->Close();
+       
+        edm::FileInPath fipEleCracks("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_gap_ele_Moriond2017_v2.root");
+        root_file = TFile::Open(fipEleCracks.fullPath().data(),"READ");
+        hTH2D_El_IdIsoSip_Cracks = (TH1*) root_file->Get("EGamma_SF2D")->Clone();
+        root_file->Close();
+ 
+        edm::FileInPath fipEleReco("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_RECO_ele_Moriond2017_v1.root");
+        TFile *root_file_reco = TFile::Open(fipEleReco.fullPath().data(),"READ");
+        hTH2F_El_Reco = (TH2F*) root_file_reco->Get("EGamma_SF2D")->Clone();
+        root_file_reco->Close();
 
-      TString filenameEleReco("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi_EGM2D_Moriond2017.root");
-      edm::FileInPath fipEleReco(filenameEleReco.Data());
-      fipPath = fipEleReco.fullPath();
-      TFile *root_file_reco = TFile::Open(fipPath.data(),"READ");
-      hTH2F_El_Reco = (TH2F*) root_file_reco->Get("EGamma_SF2D")->Clone();
-      root_file_reco->Close();
+        edm::FileInPath fipEleRSE("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_RSE_ele_Moriond2017_v1.root");
+        root_file = TFile::Open(fipEleRSE.fullPath().data(),"READ");
+        hTH2F_El_RSE = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
+        root_file->Close();
 
     } else {
       TString filename;
@@ -391,7 +397,7 @@ void ZNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& eSetu
   for(edm::View<pat::Jet>::const_iterator jet = CleanedJets->begin(); jet != CleanedJets->end(); ++jet)
     if(jet->pt()>30){
       nCleanedJetsPt30++;
-      FillJet(*jet);
+      if (addJets) FillJet(*jet);
     }
 
   // all soft leptons
@@ -427,6 +433,7 @@ void ZNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool evtPa
 
   //Fill the info on the Z candidate
   ZMass = cand.p4().mass();
+  if (cand.numberOfDaughters()>2) ZMassPreFSR = cand.userFloat("mll");
   ZPt  = cand.p4().pt();
   ZEta = cand.p4().eta();
   ZPhi = cand.p4().phi();
@@ -521,18 +528,20 @@ void ZNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool evtPa
     pat::Electron lep = softElectrons->at(i);
     if(reco::deltaR(lep.p4(), leptons[0]->p4()) > 0.02 && reco::deltaR(lep.p4(), leptons[1]->p4()) > 0.02){
       nAddEle++;
-      AddElePt .push_back( lep.pt() );
-      AddEleEta.push_back( lep.eta() );
-      AddElePhi.push_back( lep.phi() );
-      AddEleLepId.push_back( lep.pdgId() );
-      AddEleSIP  .push_back( lep.userFloat("SIP") );
-      AddEleisID .push_back( lep.userFloat("ID") );
-      AddEleBDT  .push_back( lep.userFloat("BDT") );
-      AddEleMissingHit.push_back( lep.userFloat("missingHit") );
-      AddEleChargedHadIso.push_back( lep.userFloat("PFChargedHadIso") );
-      AddEleNeutralHadIso.push_back( lep.userFloat("PFNeutralHadIso") );
-      AddElePhotonIso    .push_back( lep.userFloat("PFPhotonIso") );
-      AddEleCombRelIsoPF .push_back( lep.userFloat("combRelIsoPF") );
+      if (addAddLept) {
+	AddElePt .push_back( lep.pt() );
+	AddEleEta.push_back( lep.eta() );
+	AddElePhi.push_back( lep.phi() );
+	AddEleLepId.push_back( lep.pdgId() );
+	AddEleSIP  .push_back( lep.userFloat("SIP") );
+	AddEleisID .push_back( lep.userFloat("ID") );
+	AddEleBDT  .push_back( lep.userFloat("BDT") );
+	AddEleMissingHit.push_back( lep.userFloat("missingHit") );
+	AddEleChargedHadIso.push_back( lep.userFloat("PFChargedHadIso") );
+	AddEleNeutralHadIso.push_back( lep.userFloat("PFNeutralHadIso") );
+	AddElePhotonIso    .push_back( lep.userFloat("PFPhotonIso") );
+	AddEleCombRelIsoPF .push_back( lep.userFloat("combRelIsoPF") );
+      }
     }
   }
   AddMuPt.clear();
@@ -550,17 +559,19 @@ void ZNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool evtPa
     pat::Muon lep = softMuons->at(i);
     if(reco::deltaR(lep.p4(), leptons[0]->p4()) > 0.02 && reco::deltaR(lep.p4(), leptons[1]->p4()) > 0.02){
       nAddMu++;
-      AddMuPt .push_back( lep.pt() );
-      AddMuEta.push_back( lep.eta() );
-      AddMuPhi.push_back( lep.phi() );
-      AddMuLepId.push_back( lep.pdgId() );
-      AddMuSIP  .push_back( lep.userFloat("SIP") );
-      AddMuTime .push_back( lep.userFloat("time") );
-      AddMuisID .push_back( lep.userFloat("ID") );
-      AddMuChargedHadIso.push_back( lep.userFloat("PFChargedHadIso") );
-      AddMuNeutralHadIso.push_back( lep.userFloat("PFNeutralHadIso") );
-      AddMuPhotonIso    .push_back( lep.userFloat("PFPhotonIso") );
-      AddMuCombRelIsoPF .push_back( lep.userFloat("combRelIsoPF") );
+      if (addAddLept) {
+	AddMuPt .push_back( lep.pt() );
+	AddMuEta.push_back( lep.eta() );
+	AddMuPhi.push_back( lep.phi() );
+	AddMuLepId.push_back( lep.pdgId() );
+	AddMuSIP  .push_back( lep.userFloat("SIP") );
+	AddMuTime .push_back( lep.userFloat("time") );
+	AddMuisID .push_back( lep.userFloat("ID") );
+	AddMuChargedHadIso.push_back( lep.userFloat("PFChargedHadIso") );
+	AddMuNeutralHadIso.push_back( lep.userFloat("PFNeutralHadIso") );
+	AddMuPhotonIso    .push_back( lep.userFloat("PFPhotonIso") );
+	AddMuCombRelIsoPF .push_back( lep.userFloat("combRelIsoPF") );
+      }
     }
   }
 
@@ -737,6 +748,7 @@ void ZNtupleMaker::BookAllBranches(){
   myTree->Book("trigWord",trigWord);
   myTree->Book("Zsel",Zsel);
   myTree->Book("ZMass",ZMass);
+  myTree->Book("ZMassPreFSR",ZMassPreFSR);
   myTree->Book("ZPt",ZPt);
   myTree->Book("ZEta",ZEta);
   myTree->Book("ZPhi",ZPhi);
@@ -762,53 +774,62 @@ void ZNtupleMaker::BookAllBranches(){
   myTree->Book("fsrDR",fsrDR);
   myTree->Book("fsrLeptId",fsrLeptID);
   myTree->Book("nAddEle",nAddEle);
-  myTree->Book("AddElePt",AddElePt);
-  myTree->Book("AddEleEta",AddEleEta);
-  myTree->Book("AddElePhi",AddElePhi);
-  myTree->Book("AddEleLepId",AddEleLepId);
-  myTree->Book("AddEleSIP",AddEleSIP);
-  myTree->Book("AddEleisID",AddEleisID);
-  myTree->Book("AddEleBDT",AddEleBDT);
-  myTree->Book("AddEleMissingHit",AddEleMissingHit);
-  myTree->Book("AddEleChargedHadIso",AddEleChargedHadIso);
-  myTree->Book("AddEleNeutralHadIso",AddEleNeutralHadIso);
-  myTree->Book("AddElePhotonIso",AddElePhotonIso);
-  myTree->Book("AddEleCombRelIsoPF",AddEleCombRelIsoPF);
   myTree->Book("nAddMu",nAddMu);
-  myTree->Book("AddMuPt",AddMuPt);
-  myTree->Book("AddMuEta",AddMuEta);
-  myTree->Book("AddMuPhi",AddMuPhi);
-  myTree->Book("AddMuLepId",AddMuLepId);
-  myTree->Book("AddMuSIP",AddMuSIP);
-  myTree->Book("AddMuTime",AddMuTime);
-  myTree->Book("AddMuisID",AddMuisID);
-  myTree->Book("AddMuChargedHadIso",AddMuChargedHadIso);
-  myTree->Book("AddMuNeutralHadIso",AddMuNeutralHadIso);
-  myTree->Book("AddMuPhotonIso",AddMuPhotonIso);
-  myTree->Book("AddMuCombRelIsoPF",AddMuCombRelIsoPF);
+  if (addAddLept) {
+    myTree->Book("AddElePt",AddElePt);
+    myTree->Book("AddEleEta",AddEleEta);
+    myTree->Book("AddElePhi",AddElePhi);
+    myTree->Book("AddEleLepId",AddEleLepId);
+    myTree->Book("AddEleSIP",AddEleSIP);
+    myTree->Book("AddEleisID",AddEleisID);
+    myTree->Book("AddEleBDT",AddEleBDT);
+    myTree->Book("AddEleMissingHit",AddEleMissingHit);
+    myTree->Book("AddEleChargedHadIso",AddEleChargedHadIso);
+    myTree->Book("AddEleNeutralHadIso",AddEleNeutralHadIso);
+    myTree->Book("AddElePhotonIso",AddElePhotonIso);
+    myTree->Book("AddEleCombRelIsoPF",AddEleCombRelIsoPF);
+    myTree->Book("AddMuPt",AddMuPt);
+    myTree->Book("AddMuEta",AddMuEta);
+    myTree->Book("AddMuPhi",AddMuPhi);
+    myTree->Book("AddMuLepId",AddMuLepId);
+    myTree->Book("AddMuSIP",AddMuSIP);
+    myTree->Book("AddMuTime",AddMuTime);
+    myTree->Book("AddMuisID",AddMuisID);
+    myTree->Book("AddMuChargedHadIso",AddMuChargedHadIso);
+    myTree->Book("AddMuNeutralHadIso",AddMuNeutralHadIso);
+    myTree->Book("AddMuPhotonIso",AddMuPhotonIso);
+    myTree->Book("AddMuCombRelIsoPF",AddMuCombRelIsoPF);
+  }
+  
   myTree->Book("nCleanedJetsPt30",nCleanedJetsPt30);
-  myTree->Book("JetPt",JetPt);
-  myTree->Book("JetEta",JetEta);
-  myTree->Book("JetPhi",JetPhi);
-  myTree->Book("JetMass",JetMass);
-  myTree->Book("JetBTagger",JetBTagger);
-  myTree->Book("JetIsBtagged",JetIsBtagged);
-  myTree->Book("JetIsBtaggedWithSF",JetIsBtaggedWithSF);
-  myTree->Book("JetIsBtaggedWithSFUp",JetIsBtaggedWithSFUp);
-  myTree->Book("JetIsBtaggedWithSFDn",JetIsBtaggedWithSFDn);
-  myTree->Book("JetQGLikelihood",JetQGLikelihood);
+
+  if (addJets) {
+    myTree->Book("JetPt",JetPt);
+    myTree->Book("JetEta",JetEta);
+    myTree->Book("JetPhi",JetPhi);
+    myTree->Book("JetMass",JetMass);
+    myTree->Book("JetBTagger",JetBTagger);
+    myTree->Book("JetIsBtagged",JetIsBtagged);
+    myTree->Book("JetIsBtaggedWithSF",JetIsBtaggedWithSF);
+    myTree->Book("JetIsBtaggedWithSFUp",JetIsBtaggedWithSFUp);
+    myTree->Book("JetIsBtaggedWithSFDn",JetIsBtaggedWithSFDn);
+    myTree->Book("JetQGLikelihood",JetQGLikelihood);
+    myTree->Book("JetSigma",JetSigma);
+    myTree->Book("JetHadronFlavour",JetHadronFlavour);
+    myTree->Book("JetPartonFlavour",JetPartonFlavour);
+  }
+  
   if(addQGLInputs){
     myTree->Book("JetAxis2",JetAxis2);
     myTree->Book("JetMult",JetMult);
     myTree->Book("JetPtD",JetPtD);
   }
-  myTree->Book("JetSigma",JetSigma);
-  myTree->Book("JetHadronFlavour",JetHadronFlavour);
-  myTree->Book("JetPartonFlavour",JetPartonFlavour);
-  myTree->Book("genHEPMCweight",genHEPMCweight);
-  myTree->Book("xsec",xsection);
-  myTree->Book("dataMCWeight",dataMCWeight);
-  myTree->Book("overallEventWeight",overallEventWeight);
+  if (isMC) {
+    myTree->Book("genHEPMCweight",genHEPMCweight);
+    myTree->Book("xsec",xsection);
+    myTree->Book("dataMCWeight",dataMCWeight);
+    myTree->Book("overallEventWeight",overallEventWeight);
+  }
 }
 
 //define this as a plug-in
