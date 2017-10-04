@@ -44,10 +44,26 @@ git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsA
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
 (cd ZZMatrixElement; git checkout -b from-v206 v2.0.6)
-# replace ZZMatrixElement/MELA/setup.sh -j 8)
+# replace ZZMatrixElement/MELA/setup.sh -j 8
+pushd ${CMSSW_BASE}/src/ZZMatrixElement/MELA/COLLIER/
+  pkgname="collier-1.2"
+  pkgdir="COLLIER-1.2"
+  tarname=$pkgname".tar.gz"
+  tarweb="https://www.hepforge.org/archive/collier/"$tarname
+  libname="libcollier.so"
+  tmpdir="colliertmp"
+  wget $tarweb
+  mkdir $tmpdir
+  tar -xvzf $tarname -C $tmpdir
+  rm $tarname
+  mv $tmpdir"/"$pkgdir"/src/"* ./
+  rm -rf $tmpdir
+  make
+  mv $libname "../data/"$SCRAM_ARCH"/"$libname
+popd
 pushd ${CMSSW_BASE}/src/ZZMatrixElement/MELA/fortran/
-make all
-mv libjhugenmela.so ../data/${SCRAM_ARCH}/
+  make all
+  mv libjhugenmela.so ../data/${SCRAM_ARCH}/
 popd
 
 #kinematic refitting
