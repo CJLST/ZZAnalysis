@@ -19,3 +19,4 @@ do
 done
 
 bash makeFragments_ACJHUGen.sh Couplings_ACJHUGen.lst
+bash makeFragments_ACMCFM.sh Couplings_ACMCFM.lst
