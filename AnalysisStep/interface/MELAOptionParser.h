@@ -67,6 +67,7 @@ protected:
   Bool_t includePConst;
   Bool_t isPM4L;
   Bool_t isPMaVJJ;
+  Bool_t isPMaVJJTrue;
   Bool_t isProp;
   Bool_t isGenProb;
   Float_t defME;
@@ -93,6 +94,7 @@ public:
 
   Bool_t usePM4L() const{ return isPM4L; }
   Bool_t usePMaVJJ() const{ return isPMaVJJ; }
+  Bool_t usePMaVJJTrue() const{ return isPMaVJJTrue; }
   Bool_t usePropagator() const{ return isProp; }
   Bool_t isGen() const{ return isGenProb; }
   Bool_t hasPAux() const{ return includePAux; }

@@ -235,7 +235,7 @@ void MELAHypothesis::computePMAVJJ(){
   if (mela->getCurrentCandidate()!=0){
     // Override the ME and the production
     mela->setProcess(opt->proc, opt->ME, opt->prod);
-    mela->computeDijetConvBW(pME);
+    mela->computeDijetConvBW(pME, opt->usePMaVJJTrue());
     isUpdated = true;
   }
 }

@@ -1,6 +1,6 @@
 ### Spin-0 decay probabilities from JHUGen ###
 DecayProbabilities_SpinZero_JHUGen = [
-   "Name:GG_SIG_ghg2_1_ghz1_1_JHUGen Alias:<Name> Process:HSMHiggs Production:ZZGG MatrixElement:JHUGen",
+   "Name:GG_SIG_ghg2_1_ghz1_1_JHUGen Alias:<Name> Process:HSMHiggs Production:ZZGG MatrixElement:JHUGen Options:AddPConst=1",
    "Name:GG_SIG_ghg2_1_ghz1prime2_1E4_JHUGen Alias:<Name> Process:SelfDefine_spin0 Production:ZZGG MatrixElement:JHUGen Couplings:ghg2=1,0;ghz1_prime2=10000,0",
    "Name:GG_SIG_ghg2_1_ghz2_1_JHUGen Alias:<Name> Process:H0hplus Production:ZZGG MatrixElement:JHUGen",
    "Name:GG_SIG_ghg2_1_ghz4_1_JHUGen Alias:<Name> Process:H0minus Production:ZZGG MatrixElement:JHUGen",
@@ -38,11 +38,11 @@ AJetsProdProbabilities_SpinZero_JHUGen_JECNominal = [
    "Name:JVBF_SIG_ghv1_1_JHUGen_JECNominal Process:HSMHiggs Production:JJVBF MatrixElement:JHUGen Cluster:J1JECNominal Options:AddPAux=1 DefaultME:-1",
 
    # JQCD
-   "Name:JQCD_SIG_ghg2_1_JHUGen_JECNominal Process:HSMHiggs Production:JQCD MatrixElement:JHUGen Cluster:J1JECNominal DefaultME:-1",
+   "Name:JQCD_SIG_ghg2_1_JHUGen_JECNominal Process:HSMHiggs Production:JQCD MatrixElement:JHUGen Cluster:J1JECNominal DefaultME:-1 Options:AddPConst=1",
    #"Name:JQCD_SIG_ghg4_1_JHUGen_JECNominal Process:H0minus Production:JQCD MatrixElement:JHUGen Cluster:J1JECNominal DefaultME:-1",
 
    # JJVBF
-   "Name:JJVBF_SIG_ghv1_1_JHUGen_JECNominal Alias:<Name> Process:HSMHiggs Production:JJVBF MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1",
+   "Name:JJVBF_SIG_ghv1_1_JHUGen_JECNominal Alias:<Name> Process:HSMHiggs Production:JJVBF MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1 Options:AddPConst=1",
    "Name:JJVBF_SIG_ghv1prime2_1E4_JHUGen_JECNominal Alias:<Name> Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Cluster:J2JECNominal Couplings:ghz1_prime2=10000,0 DefaultME:-1",
    "Name:JJVBF_SIG_ghv2_1_JHUGen_JECNominal Alias:<Name> Process:H0hplus Production:JJVBF MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1",
    "Name:JJVBF_SIG_ghv4_1_JHUGen_JECNominal Alias:<Name> Process:H0minus Production:JJVBF MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1",
@@ -72,7 +72,7 @@ AJetsProdProbabilities_SpinZero_JHUGen_JECNominal = [
    #"Name:JJVBF_SIG_ghv1_1_gha4_i_JHUGen_JECNominal Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Cluster:J2JECNominal Couplings:ghz1=1,0;ghgsgs4=0,1 Options:SubtractP=JJVBF_SIG_ghv1_1_JHUGen_JECNominal,JJVBF_SIG_gha4_1_JHUGen_JECNominal DefaultME:-1",
 
    # JJQCD
-   "Name:JJQCD_SIG_ghg2_1_JHUGen_JECNominal Alias:<Name> Process:HSMHiggs Production:JJQCD MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1",
+   "Name:JJQCD_SIG_ghg2_1_JHUGen_JECNominal Alias:<Name> Process:HSMHiggs Production:JJQCD MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1 Options:AddPConst=1",
    "Name:JJQCD_SIG_ghg4_1_JHUGen_JECNominal Alias:<Name> Process:H0minus Production:JJQCD MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1",
    "Name:JJQCD_SIG_ghg2_1_ghg4_1_JHUGen_JECNominal Process:SelfDefine_spin0 Production:JJQCD MatrixElement:JHUGen Cluster:J2JECNominal Couplings:ghg2=1,0;ghg4=1,0 Options:SubtractP=JJQCD_SIG_ghg2_1_JHUGen_JECNominal,JJQCD_SIG_ghg4_1_JHUGen_JECNominal DefaultME:-1",
    #"Name:JJQCD_SIG_ghg2_1_ghg4_i_JHUGen_JECNominal Process:SelfDefine_spin0 Production:JJQCD MatrixElement:JHUGen Cluster:J2JECNominal Couplings:ghg2=1,0;ghg4=0,1 Options:SubtractP=JJQCD_SIG_ghg2_1_JHUGen_JECNominal,JJQCD_SIG_ghg4_1_JHUGen_JECNominal DefaultME:-1",
@@ -82,7 +82,7 @@ AJetsProdProbabilities_SpinZero_JHUGen_JECNominal = [
    "Name:JJQCD_SIG_ghg2_1_JHUGen_JECNominal_BestDJJ Copy:JJQCD_SIG_ghg2_1_JHUGen_JECNominal Options:MaxNumerator=JJVBF_SIG_ghv1_1_JHUGen_JECNominal;MaxDenominator=JJQCD_SIG_ghg2_1_JHUGen_JECNominal",
 
    # Hadronic ZH
-   "Name:HadZH_SIG_ghz1_1_JHUGen_JECNominal Alias:<Name> Process:HSMHiggs Production:Had_ZH MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1",
+   "Name:HadZH_SIG_ghz1_1_JHUGen_JECNominal Alias:<Name> Process:HSMHiggs Production:Had_ZH MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1 Options:AddPConst=1",
    "Name:HadZH_SIG_ghz1prime2_1E4_JHUGen_JECNominal Alias:<Name> Process:SelfDefine_spin0 Production:Had_ZH MatrixElement:JHUGen Cluster:J2JECNominal Couplings:ghz1_prime2=10000,0 DefaultME:-1",
    "Name:HadZH_SIG_ghz2_1_JHUGen_JECNominal Alias:<Name> Process:H0hplus Production:Had_ZH MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1",
    "Name:HadZH_SIG_ghz4_1_JHUGen_JECNominal Alias:<Name> Process:H0minus Production:Had_ZH MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1",
@@ -112,7 +112,7 @@ AJetsProdProbabilities_SpinZero_JHUGen_JECNominal = [
    #"Name:HadZH_SIG_ghz1_1_gha4_i_JHUGen_JECNominal Process:SelfDefine_spin0 Production:Had_ZH MatrixElement:JHUGen Cluster:J2JECNominal Couplings:ghz1=1,0;ghgsgs4=0,1 Options:SubtractP=HadZH_SIG_ghz1_1_JHUGen_JECNominal,HadZH_SIG_gha4_1_JHUGen_JECNominal DefaultME:-1",
 
    # Hadronic WH
-   "Name:HadWH_SIG_ghw1_1_JHUGen_JECNominal Alias:<Name> Process:HSMHiggs Production:Had_WH MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1",
+   "Name:HadWH_SIG_ghw1_1_JHUGen_JECNominal Alias:<Name> Process:HSMHiggs Production:Had_WH MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1 Options:AddPConst=1",
    "Name:HadWH_SIG_ghw1prime2_1E4_JHUGen_JECNominal Alias:<Name> Process:SelfDefine_spin0 Production:Had_WH MatrixElement:JHUGen Cluster:J2JECNominal Couplings:ghz1_prime2=10000,0 DefaultME:-1",
    "Name:HadWH_SIG_ghw2_1_JHUGen_JECNominal Alias:<Name> Process:H0hplus Production:Had_WH MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1",
    "Name:HadWH_SIG_ghw4_1_JHUGen_JECNominal Alias:<Name> Process:H0minus Production:Had_WH MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1",
@@ -236,7 +236,7 @@ DecayProbabilities_MCFM = [
    "Name:GG_BKG_MCFM Process:bkgZZ Production:ZZGG MatrixElement:MCFM Options:AddPConst=1",
    "Name:QQB_BKG_MCFM Alias:<Name> Process:bkgZZ Production:ZZQQB MatrixElement:MCFM Options:AddPConst=1", # Aliased to construct Dbkgkin
    #"Name:INDEPENDENT_BKG_MCFM Process:bkgZZ Production:ZZINDEPENDENT MatrixElement:MCFM",
-   "Name:ZJJ_BKG_MCFM Process:bkgZJets Production:JJQCD MatrixElement:MCFM",
+   "Name:ZJJ_BKG_MCFM Process:bkgZJets Production:JJQCD MatrixElement:MCFM Options:AddPConst=1",
 ]
 AJetsProdDecProbabilities_MCFM_JECNominal = [
    "Name:JJEW_SIG_ghv1_1_MCFM_JECNominal Process:HSMHiggs Production:JJEW MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
@@ -247,26 +247,26 @@ AJetsProdDecProbabilities_MCFM_JECNominal = [
    "Name:JJVBF_S_SIG_ghv1_1_MCFM_JECNominal Process:HSMHiggs Production:JJVBF_S MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1 Options:AddPConst=1",
    "Name:JJVBF_S_BSI_ghv1_1_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:JJVBF_S MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
    "Name:JJVBF_S_BSI_ghv1_i_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:JJVBF_S MatrixElement:MCFM Couplings:ghz1=0,1 Cluster:J2JECNominal DefaultME:-1",
-   "Name:JJVBF_SIG_ghv1_1_MCFM_JECNominal Process:HSMHiggs Production:JJVBF MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1 Options:AddPConst=1",
+   "Name:JJVBF_SIG_ghv1_1_MCFM_JECNominal Process:HSMHiggs Production:JJVBF MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
    "Name:JJVBF_BSI_ghv1_1_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:JJVBF MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
    "Name:JJVBF_BSI_ghv1_i_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:JJVBF MatrixElement:MCFM Couplings:ghz1=0,1 Cluster:J2JECNominal DefaultME:-1",
    "Name:JJVBF_BKG_MCFM_JECNominal Process:bkgZZ Production:JJVBF MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1 Options:AddPConst=1",
 
-   "Name:HadZH_S_SIG_ghv1_1_MCFM_JECNominal Process:HSMHiggs Production:Had_ZH_S MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1 Options:AddPConst=1",
-   "Name:HadZH_S_BSI_ghv1_1_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:Had_ZH_S MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
-   "Name:HadZH_S_BSI_ghv1_i_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:Had_ZH_S MatrixElement:MCFM Couplings:ghz1=0,1 Cluster:J2JECNominal DefaultME:-1",
-   "Name:HadZH_SIG_ghv1_1_MCFM_JECNominal Process:HSMHiggs Production:Had_ZH MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1 Options:AddPConst=1",
-   "Name:HadZH_BSI_ghv1_1_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:Had_ZH MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
-   "Name:HadZH_BSI_ghv1_i_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:Had_ZH MatrixElement:MCFM Couplings:ghz1=0,1 Cluster:J2JECNominal DefaultME:-1",
+   "Name:HadZH_S_SIG_ghz1_1_MCFM_JECNominal Process:HSMHiggs Production:Had_ZH_S MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1 Options:AddPConst=1",
+   "Name:HadZH_S_BSI_ghz1_1_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:Had_ZH_S MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
+   "Name:HadZH_S_BSI_ghz1_i_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:Had_ZH_S MatrixElement:MCFM Couplings:ghz1=0,1 Cluster:J2JECNominal DefaultME:-1",
+   "Name:HadZH_SIG_ghz1_1_MCFM_JECNominal Process:HSMHiggs Production:Had_ZH MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
+   "Name:HadZH_BSI_ghz1_1_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:Had_ZH MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
+   "Name:HadZH_BSI_ghz1_i_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:Had_ZH MatrixElement:MCFM Couplings:ghz1=0,1 Cluster:J2JECNominal DefaultME:-1",
    "Name:HadZH_BKG_MCFM_JECNominal Process:bkgZZ Production:Had_ZH MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1 Options:AddPConst=1",
 
-   "Name:Had_WH_S_SIG_ghv1_1_MCFM_JECNominal Process:HSMHiggs Production:Had_WH_S MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1 Options:AddPConst=1",
-   "Name:Had_WH_S_BSI_ghv1_1_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:Had_WH_S MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
-   "Name:Had_WH_S_BSI_ghv1_i_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:Had_WH_S MatrixElement:MCFM Couplings:ghz1=0,1 Cluster:J2JECNominal DefaultME:-1",
-   "Name:Had_WH_SIG_ghv1_1_MCFM_JECNominal Process:HSMHiggs Production:Had_WH MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1 Options:AddPConst=1",
-   "Name:Had_WH_BSI_ghv1_1_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:Had_WH MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
-   "Name:Had_WH_BSI_ghv1_i_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:Had_WH MatrixElement:MCFM Couplings:ghz1=0,1 Cluster:J2JECNominal DefaultME:-1",
-   "Name:Had_WH_BKG_MCFM_JECNominal Process:bkgZZ Production:Had_WH MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1 Options:AddPConst=1",
+   "Name:HadWH_S_SIG_ghv1_1_MCFM_JECNominal Process:HSMHiggs Production:Had_WH_S MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1 Options:AddPConst=1",
+   "Name:HadWH_S_BSI_ghv1_1_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:Had_WH_S MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
+   "Name:HadWH_S_BSI_ghv1_i_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:Had_WH_S MatrixElement:MCFM Couplings:ghz1=0,1 Cluster:J2JECNominal DefaultME:-1",
+   "Name:HadWH_SIG_ghv1_1_MCFM_JECNominal Process:HSMHiggs Production:Had_WH MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
+   "Name:HadWH_BSI_ghv1_1_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:Had_WH MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
+   "Name:HadWH_BSI_ghv1_i_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:Had_WH MatrixElement:MCFM Couplings:ghz1=0,1 Cluster:J2JECNominal DefaultME:-1",
+   "Name:HadWH_BKG_MCFM_JECNominal Process:bkgZZ Production:Had_WH MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1 Options:AddPConst=1",
 
    "Name:JJQCD_BKG_MCFM_JECNominal Process:bkgZZ Production:JJQCD MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1 Options:AddPConst=1",
 ]
@@ -291,6 +291,8 @@ PM4L_SUPERMELA = [
 
 ### mJJ probabilities in associated production
 PMAVJJ_SUPERDIJETMELA_JECNominal = [
+   "Name:HadZH_mavjj_true_JECNominal Process:HSMHiggs Production:Had_ZH MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1 isPMaVJJTrue:1",
+   "Name:HadWH_mavjj_true_JECNominal Process:HSMHiggs Production:Had_WH MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1 isPMaVJJTrue:1",
    "Name:HadZH_mavjj_JECNominal Process:HSMHiggs Production:Had_ZH MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1 isPMaVJJ:1",
    "Name:HadWH_mavjj_JECNominal Process:HSMHiggs Production:Had_WH MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1 isPMaVJJ:1",
 ]

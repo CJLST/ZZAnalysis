@@ -11,6 +11,7 @@ includePAux(false),
 includePConst(false),
 isPM4L(false),
 isPMaVJJ(false),
+isPMaVJJTrue(false),
 isProp(false),
 isGenProb(false),
 defME(0.),
@@ -26,15 +27,16 @@ h2width(-99)
 void MELAOptionParser::analyze(){ analyze(rawOptions); }
 void MELAOptionParser::analyze(const std::vector<std::string>& optcoll){
   char rawdelimiter = ':';
-  for (unsigned int opt=0; opt<optcoll.size(); opt++){
+  for (std::string const& opt : optcoll){
     string wish, value;
-    splitOption(optcoll.at(opt), wish, value, rawdelimiter);
+    splitOption(opt, wish, value, rawdelimiter);
     interpretOption(wish, value);
   }
   // Check options
   if (strName==""){ cerr << "MELAOptionParser::analyze: No name detected. Please put a name!" << endl; assert(0); }
   if (isPM4L && isPMaVJJ){ cerr << "MELAOptionParser::analyze: Cannot be defined as both P(m4l) and P(mjj)! Choose only one" << endl; assert(0); }
   if (strAlias=="<Name>") strAlias=strName;
+  if (isPMaVJJTrue) isPMaVJJ = isPMaVJJTrue;
   if (isCopy()){
     if (DEBUG_MB){
       cout
@@ -48,7 +50,6 @@ void MELAOptionParser::analyze(const std::vector<std::string>& optcoll){
       strAlias = "";
     }
   }
-
 }
 void MELAOptionParser::splitOption(const string rawoption, string& wish, string& value, char delimiter)const{
   size_t posEq = rawoption.find(delimiter);
@@ -91,8 +92,9 @@ void MELAOptionParser::interpretOption(string wish, string value){
 
   else if (wish=="isGen") isGenProb = Bool_t(((UShort_t)atoi(value.c_str()))>0);
   else if (wish=="isPM4L") isPM4L = Bool_t(((UShort_t)atoi(value.c_str()))>0);
-  else if (wish=="isPMaVJJ") isPMaVJJ = Bool_t(((UShort_t)atoi(value.c_str()))>0);
-  else if (wish=="isProp") isProp = Bool_t(((UShort_t)atoi(value.c_str()))>0);
+  else if (wish=="isPMaVJJ") isPMaVJJ = Bool_t(((UShort_t) atoi(value.c_str()))>0);
+  else if (wish=="isPMaVJJTrue") isPMaVJJTrue = Bool_t(((UShort_t) atoi(value.c_str()))>0);
+  else if (wish=="isProp") isProp = Bool_t(((UShort_t) atoi(value.c_str()))>0);
   else if (wish=="NoBranch") noBranching = Bool_t(((UShort_t)atoi(value.c_str()))>0);
 
   else if (wish=="DefaultME") defME = (Float_t)atof(value.c_str());
@@ -597,6 +599,7 @@ void MELAOptionParser::pickOriginalOptions(MELAOptionParser* original_opt){
   includePConst = original_opt->includePConst;
   isPM4L = original_opt->isPM4L;
   isPMaVJJ = original_opt->isPMaVJJ;
+  isPMaVJJTrue = original_opt->isPMaVJJTrue;
   isProp = original_opt->isProp;
   isGenProb = original_opt->isGenProb;
   defME = original_opt->defME;
