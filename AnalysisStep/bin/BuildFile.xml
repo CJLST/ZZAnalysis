@@ -1,0 +1,17 @@
+<use name="ZZAnalysis/AnalysisStep"/>
+
+<use   name="root"/>
+<use   name="roottmva"/>
+<use name="rootrflx"/>
+<use name="roofitcore"/>
+
+<library   file="../test/Plotter_v2/src/*.cpp" name="ZZAnalysisAnalysisStepTestPlotter_v2Src">
+</library>
+
+<bin   name="run_plotter" file="../test/Plotter_v2/run_plotter.cpp">
+   <lib   name="ZZAnalysisAnalysisStepTestPlotter_v2Src"/>
+</bin>
+
+<bin   name="run_yields" file="../test/Plotter_v2/run_yields.cpp">
+   <lib   name="ZZAnalysisAnalysisStepTestPlotter_v2Src"/>
+</bin>
