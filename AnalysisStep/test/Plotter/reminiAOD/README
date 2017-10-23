@@ -1,0 +1,38 @@
+
+For 2016 full data 35.9 fb-1 analysis
+
+0. mZZ histograms
+
+root -l -b -q plotDataVsMC_2l2qTemplate.C+
+
+to generate rootfile including mZZ histograms
+
+root -l -b -q plotDataVsMC_2l2qTemplate_emu.C+
+
+to generate rootfile for emu final state mZZ hisgrams
+
+
+Template Maker - alphaMethodPlusTemplateMaker
+
+1.Scripts
+
+cd alphaMethodPlusTemplateMaker_reminiAOD_merged
+python alphaMethodZZ2lJGaussExpFit_reminiAOD_ExtPdfNjets.py -l -b -q
+
+cd alphaMethodPlusTemplateMaker_reminiAOD_merged_BtagVBF
+python alphaMethodZZ2lJGaussExpFit_reminiAOD_ExtPdfNjets.py -l -b -q
+
+similar for resolved category
+
+cd alphaMethodPlusTemplateMaker_reminiAOD_resolved
+
+alphaMethodZZ2l2qFit_reminiAOD_ExtPdfNzjets_highMassFit.py is for untagged category
+alphaMethodZZ2l2qFit_reminiAOD_ExtPdfNzjets_BtagVBF.py is for btag and VBF tag
+
+alphaMethodPlusTemplateMaker_reminiAOD_resolved_nloDY is to produce NLO alternative templates for resolved categories
+
+
+2.Input histograms
+
+all TMVA*.root are identical between different dirs
+except the ones in merged_BTagVBF, where the massZZ starts from 400GEV to have the fit converge better

@@ -1,0 +1,17 @@
+/store/caf/user/sudha/ZZ2l2q/Moriond2017/V3/eMu_CR/DY1Jets/ZZ2l2qAnalysis.root
+/store/caf/user/sudha/ZZ2l2q/Moriond2017/V3/eMu_CR/DY2Jets/ZZ2l2qAnalysis.root
+/store/caf/user/sudha/ZZ2l2q/Moriond2017/V3/eMu_CR/DY3Jets/ZZ2l2qAnalysis.root
+/store/caf/user/sudha/ZZ2l2q/Moriond2017/V3/eMu_CR/DY4Jets/ZZ2l2qAnalysis.root
+/store/caf/user/sudha/ZZ2l2q/Moriond2017/V3/eMu_CR/DYBFiltJets/ZZ2l2qAnalysis.root
+/store/caf/user/sudha/ZZ2l2q/Moriond2017/V3/eMu_CR/DYBJets/ZZ2l2qAnalysis.root
+/store/caf/user/sudha/ZZ2l2q/Moriond2017/V3/eMu_CR/TTBar/ZZ2l2qAnalysis.root
+/store/caf/user/sudha/ZZ2l2q/Moriond2017/V3/eMu_CR/WW/ZZ2l2qAnalysis.root
+/store/caf/user/sudha/ZZ2l2q/Moriond2017/V3/eMu_CR/MuEG2016Bv1/ZZ2l2qAnalysis.root
+/store/caf/user/sudha/ZZ2l2q/Moriond2017/V3/eMu_CR/MuEG2016Bv2/ZZ2l2qAnalysis.root
+/store/caf/user/sudha/ZZ2l2q/Moriond2017/V3/eMu_CR/MuEG2016C/ZZ2l2qAnalysis.root
+/store/caf/user/sudha/ZZ2l2q/Moriond2017/V3/eMu_CR/MuEG2016D/ZZ2l2qAnalysis.root
+/store/caf/user/sudha/ZZ2l2q/Moriond2017/V3/eMu_CR/MuEG2016E/ZZ2l2qAnalysis.root
+/store/caf/user/sudha/ZZ2l2q/Moriond2017/V3/eMu_CR/MuEG2016F/ZZ2l2qAnalysis.root
+/store/caf/user/sudha/ZZ2l2q/Moriond2017/V3/eMu_CR/MuEG2016G/ZZ2l2qAnalysis.root
+/store/caf/user/sudha/ZZ2l2q/Moriond2017/V3/eMu_CR/MuEG2016Hv2/ZZ2l2qAnalysis.root
+/store/caf/user/sudha/ZZ2l2q/Moriond2017/V3/eMu_CR/MuEG2016Hv3/ZZ2l2qAnalysis.root
