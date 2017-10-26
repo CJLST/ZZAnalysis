@@ -59,6 +59,7 @@
 #include <ZZAnalysis/AnalysisStep/interface/JetCleaner.h>
 #include <ZZAnalysis/AnalysisStep/interface/utils.h>
 #include <ZZAnalysis/AnalysisStep/interface/miscenums.h>
+#include <ZZAnalysis/AnalysisStep/plugins/ggF_qcd_uncertainty_2017.cc>
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
 #include <ZZAnalysis/AnalysisStep/interface/MELACandidateRecaster.h>
@@ -301,8 +302,10 @@ namespace {
   Float_t GenAssocLep2Eta  = 0;
   Float_t GenAssocLep2Phi  = 0;
   Short_t GenAssocLep2Id  = 0;
+	
   Int_t   htxsNJets = 0;
   Float_t htxsHPt = 0;
+  std::vector<float> qcd_ggF_uncertSF;
 
 
 //FIXME: temporary fix to the mismatch of charge() and sign(pdgId()) for muons with BTT=4
@@ -414,6 +417,7 @@ private:
   int apply_K_NNLOQCD_ZZGG; // 0: Do not; 1: NNLO/LO; 2: NNLO/NLO; 3: NLO/LO
   bool apply_K_NNLOQCD_ZZQQB;
   bool apply_K_NLOEW_ZZQQB;
+  bool apply_QCD_GGF_UNCERT;
 
   edm::EDGetTokenT<edm::View<reco::Candidate> > genParticleToken;
   edm::Handle<edm::View<reco::Candidate> > genParticles;
@@ -505,6 +509,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   apply_K_NNLOQCD_ZZGG(pset.getParameter<int>("Apply_K_NNLOQCD_ZZGG")),
   apply_K_NNLOQCD_ZZQQB(pset.getParameter<bool>("Apply_K_NNLOQCD_ZZQQB")),
   apply_K_NLOEW_ZZQQB(pset.getParameter<bool>("Apply_K_NLOEW_ZZQQB")),
+  apply_QCD_GGF_UNCERT(pset.getParameter<bool>("Apply_QCD_GGF_UNCERT")),
 
   pileUpReweight(myHelper.sampleType(), myHelper.setup()),
   sampleName(pset.getParameter<string>("sampleName")),
@@ -943,7 +948,16 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 	  event.getByToken(htxsToken,htxs);
 
 	  htxsNJets = htxs->jets30.size();
-	  htxsHPt = htxs->higgs.pt();
+	  htxsHPt = htxs->higgs.Pt();
+	  
+	  if(apply_QCD_GGF_UNCERT)
+	  {
+		  std::vector<double> qcd_ggF_uncertSF_tmp;
+		  qcd_ggF_uncertSF.clear();
+		  qcd_ggF_uncertSF_tmp = qcd_ggF_uncertSF_2017(htxsNJets, htxsHPt, htxs->stage1_cat_pTjet30GeV);
+		  qcd_ggF_uncertSF = std::vector<float>(qcd_ggF_uncertSF_tmp.begin(),qcd_ggF_uncertSF_tmp.end());
+	  }
+
   }
 
 
@@ -2184,6 +2198,10 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("GenAssocLep2Id", GenAssocLep2Id, failedTreeLevel >= fullFailedTree);
     myTree->Book("htxsNJets", htxsNJets, failedTreeLevel >= fullFailedTree);
     myTree->Book("htxsHPt", htxsHPt, failedTreeLevel >= fullFailedTree);
+    if(apply_QCD_GGF_UNCERT)
+	 {
+		 myTree->Book("qcd_ggF_uncertSF", qcd_ggF_uncertSF, failedTreeLevel >= fullFailedTree);
+	 }
 	  
 
     if (addLHEKinematics){

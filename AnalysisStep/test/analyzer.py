@@ -39,6 +39,9 @@ declareDefault("APPLY_K_NLOEW_ZZQQB", False, globals())
 declareDefault("SKIP_EMPTY_EVENTS", True, globals())
 declareDefault("FAILED_TREE_LEVEL", 0, globals())
 
+#ggF uncertainties for HTXS
+declareDefault("APPLY_QCD_GGF_UNCERT", False, globals() )
+
 if FAILED_TREE_LEVEL and not SKIP_EMPTY_EVENTS:
     raise ValueError(
                      "Inconsistent options: FAILED_TREE_LEVEL={}, SKIP_EMPTY_EVENTS={}\n"
@@ -167,6 +170,7 @@ TreeSetup = cms.EDAnalyzer("HZZ4lNtupleMaker",
                            Apply_K_NNLOQCD_ZZGG = cms.int32(APPLY_K_NNLOQCD_ZZGG),
                            Apply_K_NNLOQCD_ZZQQB = cms.bool(APPLY_K_NNLOQCD_ZZQQB),
                            Apply_K_NLOEW_ZZQQB = cms.bool(APPLY_K_NLOEW_ZZQQB),
+									Apply_QCD_GGF_UNCERT = cms.bool(APPLY_QCD_GGF_UNCERT),
                            )
 
 ### Signal region
