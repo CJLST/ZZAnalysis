@@ -2182,8 +2182,6 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("GenAssocLep2Eta", GenAssocLep2Eta, failedTreeLevel >= fullFailedTree);
     myTree->Book("GenAssocLep2Phi", GenAssocLep2Phi, failedTreeLevel >= fullFailedTree);
     myTree->Book("GenAssocLep2Id", GenAssocLep2Id, failedTreeLevel >= fullFailedTree);
-    myTree->Book("GenAssocLep2Id", GenAssocLep2Id, failedTreeLevel >= fullFailedTree);
-    myTree->Book("GenAssocLep2Id", GenAssocLep2Id, failedTreeLevel >= fullFailedTree);
     myTree->Book("htxsNJets", htxsNJets, failedTreeLevel >= fullFailedTree);
     myTree->Book("htxsHPt", htxsHPt, failedTreeLevel >= fullFailedTree);
 	  
