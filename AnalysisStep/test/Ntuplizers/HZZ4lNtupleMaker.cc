@@ -48,6 +48,7 @@
 #include <ZZAnalysis/AnalysisStep/interface/MCHistoryTools.h>
 //#include <ZZAnalysis/AnalysisStep/interface/PileUpWeight.h>
 #include <ZZAnalysis/AnalysisStep/interface/PileUpWeight.h>
+#include "SimDataFormats/HTXS/interface/HiggsTemplateCrossSections.h"
 
 #include "ZZAnalysis/AnalysisStep/interface/EwkCorrections.h"
 #include "ZZAnalysis/AnalysisStep/interface/LHEHandler.h"
@@ -300,6 +301,8 @@ namespace {
   Float_t GenAssocLep2Eta  = 0;
   Float_t GenAssocLep2Phi  = 0;
   Short_t GenAssocLep2Id  = 0;
+  Int_t   htxsNJets = 0;
+  Float_t htxsHPt = 0;
 
 
 //FIXME: temporary fix to the mismatch of charge() and sign(pdgId()) for muons with BTT=4
@@ -424,6 +427,7 @@ private:
   //edm::EDGetTokenT<pat::METCollection> metNoHFToken;
   edm::EDGetTokenT<pat::MuonCollection> muonToken;
   edm::EDGetTokenT<pat::ElectronCollection> electronToken;
+  edm::EDGetTokenT<HTXS::HiggsClassification> htxsToken;
 
   edm::EDGetTokenT<edm::MergeableCounter> preSkimToken;
 
@@ -531,7 +535,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   //metNoHFToken = consumes<pat::METCollection>(edm::InputTag("slimmedMETsNoHF"));
   muonToken = consumes<pat::MuonCollection>(edm::InputTag("slimmedMuons"));
   electronToken = consumes<pat::ElectronCollection>(edm::InputTag("slimmedElectrons"));
-
+  htxsToken = consumes<HTXS::HiggsClassification>(edm::InputTag("rivetProducerHTXS","HiggsClassification"));
   preSkimToken = consumes<edm::MergeableCounter,edm::InLumi>(edm::InputTag("preSkimCounter"));
 
   if (skipEmptyEvents) {
@@ -929,6 +933,17 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     const pat::Electron* e = &((*electronHandle)[i]);
     if(e->pt()>5) // this cut is implicit in miniAOD
       NRecoEle++;
+  }
+
+  if(isMC)
+  {
+	  edm::Handle<HTXS::HiggsClassification> htxs;
+	  edm::Handle<float> _htxsHPt;
+	  edm::Handle<int> _htxsNJets;
+	  event.getByToken(htxsToken,htxs);
+
+	  htxsNJets = htxs->jets30.size();
+	  htxsHPt = htxs->higgs.pt();
   }
 
 
@@ -2167,6 +2182,11 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("GenAssocLep2Eta", GenAssocLep2Eta, failedTreeLevel >= fullFailedTree);
     myTree->Book("GenAssocLep2Phi", GenAssocLep2Phi, failedTreeLevel >= fullFailedTree);
     myTree->Book("GenAssocLep2Id", GenAssocLep2Id, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenAssocLep2Id", GenAssocLep2Id, failedTreeLevel >= fullFailedTree);
+    myTree->Book("GenAssocLep2Id", GenAssocLep2Id, failedTreeLevel >= fullFailedTree);
+    myTree->Book("htxsNJets", htxsNJets, failedTreeLevel >= fullFailedTree);
+    myTree->Book("htxsHPt", htxsHPt, failedTreeLevel >= fullFailedTree);
+	  
 
     if (addLHEKinematics){
       myTree->Book("LHEMotherPz", LHEMotherPz, failedTreeLevel >= LHEFailedTree);

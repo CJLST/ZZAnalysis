@@ -354,6 +354,25 @@ process.goodPrimaryVertices = cms.EDFilter("VertexSelector",
 )
 
 
+### ----------------------------------------------------------------------
+### HTXS categorisation
+### ----------------------------------------------------------------------
+process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
+process.mergedGenParticles = cms.EDProducer("MergedGenParticleProducer",
+														  inputPruned = cms.InputTag("prunedGenParticles"),
+														  inputPacked = cms.InputTag("packedGenParticles"),
+														  )
+process.myGenerator = cms.EDProducer("GenParticles2HepMCConverterHTXS",
+												 genParticles = cms.InputTag("mergedGenParticles"),
+												 genEventInfo = cms.InputTag("generator"),
+												 )
+process.rivetProducerHTXS = cms.EDProducer('HTXSRivetProducer',
+														 HepMCCollection = cms.InputTag('myGenerator','unsmeared'),
+														 LHERunInfo = cms.InputTag('externalLHEProducer'),
+														 ProductionMode = cms.string('AUTO'),
+														 )
+process.htxs = cms.Path(process.mergedGenParticles*process.myGenerator*process.rivetProducerHTXS)
+
 
 ### ----------------------------------------------------------------------
 ### ----------------------------------------------------------------------

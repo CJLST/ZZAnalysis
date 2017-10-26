@@ -19,6 +19,9 @@ git cms-addpkg EgammaAnalysis/ElectronTools
 git cms-merge-topic cms-met:METRecipe_8020 -u
 git cms-merge-topic cms-met:METRecipe_80X_part2 -u
 
+#Simplified template cross section
+git cms-merge-topic -u perrozzi:HTXS_clean
+
 
 #### Please do not add any custom (non-CMSSW) package before this line ####
 
@@ -72,7 +75,7 @@ git clone https://github.com/mhl0116/KinZfitter-1.git KinZfitter
 (cd KinZfitter ; git checkout -b from-27daebb 27daebb)
 
 #muon momentum scale corrections (76X)
-git clone https://github.com/bachtis/Analysis.git -b KaMuCa_V4 KaMuCa 
+git clone https://github.com/bachtis/Analysis.git -b KaMuCa_V4 KaMuCa
 
 #Jet energy corrections (CMGTools)
 #(mkdir -p CMGTools/Common; cd CMGTools/Common ; wget https://raw.githubusercontent.com/CERN-PH-CMG/cmg-cmssw/a875832047532c5469aa9795751f0363cd5d9244/CMGTools/Common/plugins/JetEnergyCorrector.h)
