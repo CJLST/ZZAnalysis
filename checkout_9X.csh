@@ -21,6 +21,8 @@ git cms-addpkg EgammaAnalysis/ElectronTools
 #FIXME git cms-merge-topic cms-met:METRecipe_8020 -u
 #FIXME git cms-merge-topic cms-met:METRecipe_80X_part2 -u
 
+#Simplified template cross section
+#FIXME git cms-merge-topic -u perrozzi:HTXS_clean
 
 #### Please do not add any custom (non-CMSSW) package before this line ####
 
