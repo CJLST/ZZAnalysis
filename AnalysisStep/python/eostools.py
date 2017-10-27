@@ -89,7 +89,7 @@ def lfnToPFN( path, tfcProt = 'rfio'):
 def runDBS(dataset, instance = 'prod/global'):
     cmd = '"file dataset='+dataset +' instance=%s"'%instance
 
-    command = ['/afs/cern.ch/cms/common/das_client' , '--limit=0', '--query', cmd]
+    command = ['/cvmfs/cms.cern.ch/common/dasgoclient' , '--limit=0', '--query', cmd]
     runner = cmsFileManip()
     run_command = ' '.join(command)
     return runner.runCommand(run_command)
