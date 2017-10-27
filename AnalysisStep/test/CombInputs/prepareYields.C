@@ -286,6 +286,8 @@ void computeYields(string inputPathSignal, string inputPathqqZZ, string inputPat
   Float_t p_HadZH_SIG_ghz1_1_JHUGen_JECNominal;
   Float_t p_HadZH_SIG_ghz1_1_JHUGen_JECUp;
   Float_t p_HadZH_SIG_ghz1_1_JHUGen_JECDn;
+  Float_t p_HadWH_mavjj_JECNominal;
+  Float_t p_HadZH_mavjj_JECNominal;
   vector<Float_t> *LepEta = 0;
   vector<Float_t> *LepPhi = 0;
   Short_t nExtraLep;
@@ -466,6 +468,8 @@ void computeYields(string inputPathSignal, string inputPathqqZZ, string inputPat
       inputTree[d]->SetBranchAddress("p_HadZH_SIG_ghz1_1_JHUGen_JECNominal", &p_HadZH_SIG_ghz1_1_JHUGen_JECNominal);
       inputTree[d]->SetBranchAddress("p_HadZH_SIG_ghz1_1_JHUGen_JECUp", &p_HadZH_SIG_ghz1_1_JHUGen_JECUp);
       inputTree[d]->SetBranchAddress("p_HadZH_SIG_ghz1_1_JHUGen_JECDn", &p_HadZH_SIG_ghz1_1_JHUGen_JECDn);
+	   inputTree[d]->SetBranchAddress("p_HadWH_mavjj_JECNominal", &p_HadWH_mavjj_JECNominal);
+	   inputTree[d]->SetBranchAddress("p_HadZH_mavjj_JECNominal",&p_HadZH_mavjj_JECNominal);
       inputTree[d]->SetBranchAddress("GenHMass", &GenHMass);
       inputTree[d]->SetBranchAddress("GenZ1Phi", &GenZ1Phi);
       inputTree[d]->SetBranchAddress("GenZ2Phi", &GenZ2Phi);
@@ -584,6 +588,8 @@ void computeYields(string inputPathSignal, string inputPathqqZZ, string inputPat
 	    varied_pAux_JVBF_SIG_ghv1_1_JHUGen[sy],
 	    varied_p_HadWH_SIG_ghw1_1_JHUGen[sy],
 	    varied_p_HadZH_SIG_ghz1_1_JHUGen[sy],
+	    p_HadWH_mavjj_JECNominal,//FIXME:: Add systematic variation
+	    p_HadZH_mavjj_JECNominal,//FIXME:: Add systematic variation
 	    jetPhi,
 	    ZZMass,
 	    varied_PFMET[sy],
@@ -874,6 +880,8 @@ void computeYieldsZPlusXSS(string inputPathData, string inputFileFakeRates, stri
        pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
        p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
        p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
+		 p_HadWH_mavjj_JECNominal,
+		 p_HadZH_mavjj_JECNominal,
        jetPhi,
        ZZMass,
        PFMET,
@@ -1323,6 +1331,8 @@ void dataEventCounts(string inputPathData, double m4lMin, double m4lMax)
        pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
        p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
        p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
+		 p_HadWH_mavjj_JECNominal,
+		 p_HadZH_mavjj_JECNominal,
        jetPhi,
        ZZMass,
        PFMET,

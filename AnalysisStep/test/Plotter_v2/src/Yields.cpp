@@ -112,10 +112,25 @@ void Yields::MakeHistograms( TString input_file_name )
          jetPgOverPq[j] = 1./JetQGLikelihood->at(j) - 1.;
       }
 
-      _current_category = categoryMor17(nExtraLep, nExtraZ, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, jetQGL,
-                                        p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
-                                        p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
-                                        p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, jetPhi, ZZMass, PFMET, true, false);   
+		_current_category = categoryMor17(nExtraLep,
+													 nExtraZ,
+													 nCleanedJetsPt30,
+													 nCleanedJetsPt30BTagged_bTagSF,
+													 jetQGL,
+													 p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+													 p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
+													 p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
+													 p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+													 pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+													 p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
+													 p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
+													 p_HadWH_mavjj_JECNominal,
+													 p_HadZH_mavjj_JECNominal,
+													 jetPhi,
+													 ZZMass,
+													 PFMET,
+													 true,// Use VHMET category
+													 false);// Use QG tagging
       // K factors
       if ( APPLY_K_FACTORS ) _k_factor = calculate_K_factor(input_file_name);
 
@@ -162,10 +177,25 @@ void Yields::Calculate_SS_ZX_Yields( TString input_file_data_name, TString  inpu
       
       _current_final_state = FindFinalStateZX();
       
-      _current_category = categoryMor17(nExtraLep, nExtraZ, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, jetQGL,
-                                        p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
-                                        p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
-                                        p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, jetPhi, ZZMass, PFMET, true, false);
+		_current_category = categoryMor17(nExtraLep,
+													 nExtraZ,
+													 nCleanedJetsPt30,
+													 nCleanedJetsPt30BTagged_bTagSF,
+													 jetQGL,
+													 p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+													 p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
+													 p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
+													 p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+													 pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+													 p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
+													 p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
+													 p_HadWH_mavjj_JECNominal,
+													 p_HadZH_mavjj_JECNominal,
+													 jetPhi,
+													 ZZMass,
+													 PFMET,
+													 true,// Use VHMET category
+													 false);// Use QG tagging
       
       
       // Calculate yield

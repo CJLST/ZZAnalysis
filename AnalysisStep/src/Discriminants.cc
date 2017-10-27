@@ -63,21 +63,23 @@ extern "C" float DVBF1j_ME(
 extern "C" float DWHh_ME(
     float p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
     float p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+	 float p_HadWH_mavjj_JECNominal,
     float ZZMass
 			 )
 {
   float c_MelaWH = getDWHhConstant(ZZMass);
-  return 1./(1.+ c_MelaWH*p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal/p_HadWH_SIG_ghw1_1_JHUGen_JECNominal);  
+  return 1./(1.+ c_MelaWH*p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal/(p_HadWH_mavjj_JECNominal*p_HadWH_SIG_ghw1_1_JHUGen_JECNominal));
 }
 
 extern "C" float DZHh_ME(
     float p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
     float p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+	 float p_HadZH_mavjj_JECNominal,
     float ZZMass
 			 )
 {
   float c_MelaZH = getDZHhConstant(ZZMass);
-  return 1./(1.+ c_MelaZH*p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal/p_HadZH_SIG_ghz1_1_JHUGen_JECNominal);
+  return 1./(1.+ c_MelaZH*p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal/(p_HadZH_mavjj_JECNominal*p_HadZH_SIG_ghz1_1_JHUGen_JECNominal));
 }
 
 float jetPgOverPq(float jetQGLikelihood, float jetPhi)
@@ -121,12 +123,13 @@ extern "C" float DVBF1j_ME_QG(
 extern "C" float DWHh_ME_QG(
     float p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
     float p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+	 float p_HadWH_mavjj_JECNominal,
     float ZZMass,
     float* jetQGLikelihood,
     float* jetPhi
 			    )
 {
-  float DWHhME = DWHh_ME(p_HadWH_SIG_ghw1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass);
+  float DWHhME = DWHh_ME(p_HadWH_SIG_ghw1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_HadWH_mavjj_JECNominal, ZZMass);
   float GOverQ = TMath::Power( jetPgOverPq(jetQGLikelihood[0],jetPhi[0]) * jetPgOverPq(jetQGLikelihood[1],jetPhi[1]) , 1./3. );
   return 1./(1.+ (1./DWHhME - 1.) * GOverQ);
 }
@@ -134,12 +137,13 @@ extern "C" float DWHh_ME_QG(
 extern "C" float DZHh_ME_QG(
     float p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
     float p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+	 float p_HadZH_mavjj_JECNominal,
     float ZZMass,
     float* jetQGLikelihood,
     float* jetPhi
 			    )
 {
-  float DZHhME = DZHh_ME(p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass);
+  float DZHhME = DZHh_ME(p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_HadZH_mavjj_JECNominal, ZZMass);
   float GOverQ = TMath::Power( jetPgOverPq(jetQGLikelihood[0],jetPhi[0]) * jetPgOverPq(jetQGLikelihood[1],jetPhi[1]) , 1./3. );
   return 1./(1.+ (1./DZHhME - 1.) * GOverQ);
 }

@@ -452,6 +452,8 @@ void doHistograms(string inputPathMC, string inputPathData, double lumi)
   Float_t p_JQCD_SIG_ghg2_1_JHUGen_JECNominal;
   Float_t p_HadWH_SIG_ghw1_1_JHUGen_JECNominal;
   Float_t p_HadZH_SIG_ghz1_1_JHUGen_JECNominal;
+  Float_t p_HadWH_mavjj_JECNominal;
+  Float_t p_HadZH_mavjj_JECNominal;
   Float_t Z1Mass;
   Float_t Z2Mass;
   Short_t Z1Flav;
@@ -614,6 +616,8 @@ void doHistograms(string inputPathMC, string inputPathData, double lumi)
     inputTree[d]->SetBranchAddress("p_JQCD_SIG_ghg2_1_JHUGen_JECNominal", &p_JQCD_SIG_ghg2_1_JHUGen_JECNominal);
     inputTree[d]->SetBranchAddress("p_HadWH_SIG_ghw1_1_JHUGen_JECNominal", &p_HadWH_SIG_ghw1_1_JHUGen_JECNominal);
     inputTree[d]->SetBranchAddress("p_HadZH_SIG_ghz1_1_JHUGen_JECNominal", &p_HadZH_SIG_ghz1_1_JHUGen_JECNominal);
+    inputTree[d]->SetBranchAddress("p_HadWH_mavjj_JECNominal", &p_HadWH_mavjj_JECNominal);
+    inputTree[d]->SetBranchAddress("p_HadZH_mavjj_JECNominal",&p_HadZH_mavjj_JECNominal);
     inputTree[d]->SetBranchAddress("Z1Mass", &Z1Mass);
     inputTree[d]->SetBranchAddress("Z2Mass", &Z2Mass);
     inputTree[d]->SetBranchAddress("Z1Flav", &Z1Flav);
@@ -730,6 +734,8 @@ void doHistograms(string inputPathMC, string inputPathData, double lumi)
 	 pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
 	 p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
 	 p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
+    p_HadWH_mavjj_JECNominal,
+    p_HadZH_mavjj_JECNominal,
 	 jetPhi,
 	 ZZMass,
 	 PFMET,
@@ -759,8 +765,8 @@ void doHistograms(string inputPathMC, string inputPathData, double lumi)
       Float_t KD = p_GG_SIG_ghg2_1_ghz1_1_JHUGen / ( p_GG_SIG_ghg2_1_ghz1_1_JHUGen + p_QQB_BKG_MCFM*getDbkgkinConstant(Z1Flav*Z2Flav,ZZMass) );
       Float_t D2jet = (nJets>=2) ? DVBF2j_ME(p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
       Float_t D1jet = (nJets==1) ? DVBF1j_ME(p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
-      Float_t DWH = (nJets>=2) ? DWHh_ME(p_HadWH_SIG_ghw1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
-      Float_t DZH = (nJets>=2) ? DZHh_ME(p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
+      Float_t DWH = (nJets>=2) ? DWHh_ME(p_HadWH_SIG_ghw1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_HadWH_mavjj_JECNominal, ZZMass) : -2;
+      Float_t DZH = (nJets>=2) ? DZHh_ME(p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_HadZH_mavjj_JECNominal, ZZMass) : -2;
       Float_t oldCConstD2jet = getDVBF2jetsConstant(ZZMass);
       Float_t oldCConstD1jet = getDVBF1jetConstant(ZZMass);
       Float_t oldCConstDWH = getDWHhConstant(ZZMass);
@@ -1122,6 +1128,8 @@ void doHistogramsZPlusXSS(string inputPathDataForCR, string inputFileFakeRates, 
   mytree->SetBranchAddress("p_JQCD_SIG_ghg2_1_JHUGen_JECNominal", &p_JQCD_SIG_ghg2_1_JHUGen_JECNominal);
   mytree->SetBranchAddress("p_HadWH_SIG_ghw1_1_JHUGen_JECNominal", &p_HadWH_SIG_ghw1_1_JHUGen_JECNominal);
   mytree->SetBranchAddress("p_HadZH_SIG_ghz1_1_JHUGen_JECNominal", &p_HadZH_SIG_ghz1_1_JHUGen_JECNominal);
+  mytree->SetBranchAddress("p_HadWH_mavjj_JECNominal", &p_HadWH_mavjj_JECNominal);
+  mytree->SetBranchAddress("p_HadZH_mavjj_JECNominal",&p_HadZH_mavjj_JECNominal);
   mytree->SetBranchAddress("Z1Mass", &Z1Mass);
   mytree->SetBranchAddress("Z2Mass", &Z2Mass);
   mytree->SetBranchAddress("Z1Flav", &Z1Flav);
@@ -1214,6 +1222,8 @@ void doHistogramsZPlusXSS(string inputPathDataForCR, string inputFileFakeRates, 
        pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
        p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
        p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
+		 p_HadWH_mavjj_JECNominal,
+		 p_HadZH_mavjj_JECNominal,
        jetPhi,
        ZZMass,
        PFMET,
@@ -1227,8 +1237,8 @@ void doHistogramsZPlusXSS(string inputPathDataForCR, string inputFileFakeRates, 
     Float_t KD = p_GG_SIG_ghg2_1_ghz1_1_JHUGen / ( p_GG_SIG_ghg2_1_ghz1_1_JHUGen + p_QQB_BKG_MCFM*getDbkgkinConstant(Z1Flav*Z2Flav,ZZMass) );
     Float_t D2jet = (nJets>=2) ? DVBF2j_ME(p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
     Float_t D1jet = (nJets==1) ? DVBF1j_ME(p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
-    Float_t DWH = (nJets>=2) ? DWHh_ME(p_HadWH_SIG_ghw1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
-    Float_t DZH = (nJets>=2) ? DZHh_ME(p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
+    Float_t DWH = (nJets>=2) ? DWHh_ME(p_HadWH_SIG_ghw1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_HadWH_mavjj_JECNominal, ZZMass) : -2;
+    Float_t DZH = (nJets>=2) ? DZHh_ME(p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_HadZH_mavjj_JECNominal, ZZMass) : -2;
     Float_t oldCConstD2jet = getDVBF2jetsConstant(ZZMass);
     Float_t oldCConstD1jet = getDVBF1jetConstant(ZZMass);
     Float_t oldCConstDWH = getDWHhConstant(ZZMass);

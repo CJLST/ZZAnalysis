@@ -1843,6 +1843,8 @@ void run(
   Float_t p_LepWH_SIG_ghw1_1_JHUGen;
   Float_t p_HadZH_SIG_ghz1_1_JHUGen_JECNominal;
   Float_t p_LepZH_SIG_ghz1_1_JHUGen;
+  Float_t p_HadWH_mavjj_JECNominal;// FIXME:: has to be propagated in the code
+  Float_t p_HadZH_mavjj_JECNominal;// FIXME:: has to be propagated in the code
   Float_t Z1Mass;
   Float_t Z2Mass;
   Short_t Z1Flav;
@@ -2263,6 +2265,8 @@ void run(
     inputTree[d]->SetBranchAddress("p_LepWH_SIG_ghw1_1_JHUGen", &p_LepWH_SIG_ghw1_1_JHUGen);
     inputTree[d]->SetBranchAddress("p_HadZH_SIG_ghz1_1_JHUGen_JECNominal", &p_HadZH_SIG_ghz1_1_JHUGen_JECNominal);
     inputTree[d]->SetBranchAddress("p_LepZH_SIG_ghz1_1_JHUGen", &p_LepZH_SIG_ghz1_1_JHUGen);
+    inputTree[d]->SetBranchAddress("p_HadWH_mavjj_JECNominal", &p_HadWH_mavjj_JECNominal);
+    inputTree[d]->SetBranchAddress("p_HadZH_mavjj_JECNominal",&p_HadZH_mavjj_JECNominal);
     inputTree[d]->SetBranchAddress("GenHMass", &GenHMass);
     inputTree[d]->SetBranchAddress("GenHPt", &GenHPt);
     inputTree[d]->SetBranchAddress("GenHRapidity", &GenHRapidity);
@@ -3547,6 +3551,8 @@ void run(
 					       pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
 					       p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
 					       p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
+							 p_HadWH_mavjj_JECNominal;
+						    p_HadZH_mavjj_JECNominal;
 					       jetPhi,
 					       ZZMass,
 					       PFMET,

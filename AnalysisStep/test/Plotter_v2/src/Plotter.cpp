@@ -100,10 +100,25 @@ void Plotter::MakeHistograms( TString input_file_name )
          jetPgOverPq[j] = 1./JetQGLikelihood->at(j) - 1.;
       }
 
-      _current_category = categoryMor17(nExtraLep, nExtraZ, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, jetQGL,
-                                        p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
-                                        p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
-                                        p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, jetPhi, ZZMass, PFMET, true, false);
+      _current_category = categoryMor17(nExtraLep,
+													 nExtraZ,
+													 nCleanedJetsPt30,
+													 nCleanedJetsPt30BTagged_bTagSF,
+													 jetQGL,
+                                        p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+													 p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
+													 p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
+                                        p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+													 pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+													 p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
+                                        p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
+													 p_HadWH_mavjj_JECNominal,
+													 p_HadZH_mavjj_JECNominal,
+													 jetPhi,
+													 ZZMass,
+													 PFMET,
+													 true,// Use VHMET category
+													 false);// Use QG tagging
    
       // K factors
       if ( APPLY_K_FACTORS ) _k_factor = calculate_K_factor(input_file_name);
@@ -115,8 +130,8 @@ void Plotter::MakeHistograms( TString input_file_name )
       KD = p_GG_SIG_ghg2_1_ghz1_1_JHUGen / ( p_GG_SIG_ghg2_1_ghz1_1_JHUGen + p_QQB_BKG_MCFM*getDbkgkinConstant(Z1Flav*Z2Flav,ZZMass) );
       D2jet = ( nCleanedJetsPt30 >= 2)  ? DVBF2j_ME(p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
       D1jet = ( nCleanedJetsPt30 == 1 ) ? DVBF1j_ME(p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
-      DWH =   ( nCleanedJetsPt30 >= 2 ) ? DWHh_ME(p_HadWH_SIG_ghw1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
-      DZH =   ( nCleanedJetsPt30 >= 2 ) ? DZHh_ME(p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
+      DWH =   ( nCleanedJetsPt30 >= 2 ) ? DWHh_ME(p_HadWH_SIG_ghw1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_HadWH_mavjj_JECNominal, ZZMass) : -2;
+      DZH =   ( nCleanedJetsPt30 >= 2 ) ? DZHh_ME(p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_HadZH_mavjj_JECNominal, ZZMass) : -2;
       
       
       float oldCConstD2jet = getDVBF2jetsConstant(ZZMass);
@@ -281,10 +296,25 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
    
       _current_final_state = FindFinalStateZX();
    
-      _current_category = categoryMor17(nExtraLep, nExtraZ, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, jetQGL,
-                                        p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
-                                        p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
-                                        p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, jetPhi, ZZMass, PFMET, true, false);
+		_current_category = categoryMor17(nExtraLep,
+													 nExtraZ,
+													 nCleanedJetsPt30,
+													 nCleanedJetsPt30BTagged_bTagSF,
+													 jetQGL,
+													 p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+													 p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
+													 p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
+													 p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+													 pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+													 p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
+													 p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
+													 p_HadWH_mavjj_JECNominal,
+													 p_HadZH_mavjj_JECNominal,
+													 jetPhi,
+													 ZZMass,
+													 PFMET,
+													 true,// Use VHMET category
+													 false);// Use QG tagging
       
    
       // Calculate yield
@@ -299,8 +329,8 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
       KD = p_GG_SIG_ghg2_1_ghz1_1_JHUGen / ( p_GG_SIG_ghg2_1_ghz1_1_JHUGen + p_QQB_BKG_MCFM*getDbkgkinConstant(Z1Flav*Z2Flav,ZZMass) );
       D2jet = (nCleanedJetsPt30>=2) ? DVBF2j_ME(p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2 ;
       D1jet = (nCleanedJetsPt30==1) ? DVBF1j_ME(p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2 ;
-      DWH = (nCleanedJetsPt30>=2) ? DWHh_ME(p_HadWH_SIG_ghw1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2 ;
-      DZH = (nCleanedJetsPt30>=2) ? DZHh_ME(p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2 ;
+      DWH = (nCleanedJetsPt30>=2) ? DWHh_ME(p_HadWH_SIG_ghw1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_HadWH_mavjj_JECNominal, ZZMass) : -2 ;
+      DZH = (nCleanedJetsPt30>=2) ? DZHh_ME(p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_HadZH_mavjj_JECNominal, ZZMass) : -2 ;
       
       
       float oldCConstD2jet = getDVBF2jetsConstant(ZZMass);

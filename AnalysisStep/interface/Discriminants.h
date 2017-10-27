@@ -40,11 +40,13 @@ extern "C" float DVBF1j_ME(
 extern "C" float DWHh_ME(
     float p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
     float p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+	 float p_HadWH_mavjj_JECNominal,
     float ZZMass
 			 );
 extern "C" float DZHh_ME(
     float p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
     float p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+	 float p_HadZH_mavjj_JECNominal,
     float ZZMass
 			 );
 
@@ -71,6 +73,7 @@ extern "C" float DVBF1j_ME_QG(
 extern "C" float DWHh_ME_QG(
     float p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
     float p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+	 float p_HadWH_mavjj_JECNominal,
     float ZZMass,
     float* jetQGLikelihood,
     float* jetPhi
@@ -78,6 +81,7 @@ extern "C" float DWHh_ME_QG(
 extern "C" float DZHh_ME_QG(
     float p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
     float p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+	 float p_HadZH_mavjj_JECNominal,
     float ZZMass,
     float* jetQGLikelihood,
     float* jetPhi
