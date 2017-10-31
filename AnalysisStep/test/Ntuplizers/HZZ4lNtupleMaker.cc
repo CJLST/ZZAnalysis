@@ -59,7 +59,7 @@
 #include <ZZAnalysis/AnalysisStep/interface/JetCleaner.h>
 #include <ZZAnalysis/AnalysisStep/interface/utils.h>
 #include <ZZAnalysis/AnalysisStep/interface/miscenums.h>
-#include <ZZAnalysis/AnalysisStep/plugins/ggF_qcd_uncertainty_2017.cc>
+#include <ZZAnalysis/AnalysisStep/interface/ggF_qcd_uncertainty_2017.h>
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
 #include <ZZAnalysis/AnalysisStep/interface/MELACandidateRecaster.h>

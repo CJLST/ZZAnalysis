@@ -1,4 +1,4 @@
-#include <vector>
+#include <ZZAnalysis/AnalysisStep/interface/ggF_qcd_uncertainty_2017.h>
 
 typedef std::vector<double> NumV;
 //
@@ -18,24 +18,6 @@ typedef std::vector<double> NumV;
 //
 // Dag Gillberg, March 21, 2017
 
-//
-// Fractional uncertainty amplitudes of the "WG1 scheme", the "STXS scheme" and the merged "2017 scheme"
-// The six first numbers are the same from each method below, namely the uncertainty amplitude of the jet bins:
-// mu, res, mig01, mig12, vbf2j, vbf3j
-// The last numbers are pT dependent uncertainies
-NumV qcd_ggF_uncert_wg1(int Njets30, double pTH, int STXS);  // 7 nuisances, 5 x jetbin, pTH, qm_t
-NumV qcd_ggF_uncert_stxs(int Njets30, double pTH, int STXS); // 8 nuisances, 5 x jetbin, D60, D120, D200
-NumV qcd_ggF_uncert_2017(int Njets30, double pTH, int STXS); // 8 nuisances, 5 x jetbin, pT60, pT120, qm_t
-NumV qcd_ggF_uncert_jve(int Njets30, double pTH, int STXS);  // 7 nuisances, 4 x jetbin, pT60, pT120, qm_t
-
-//
-// Scale factors defined as "1+uncert", where uncert is the fractional uncertainty amplitude
-// This can be treated as an event weight to propagate the uncertainty to any observable/distribution.
-NumV qcd_ggF_uncertSF_wg1(int Njets30, double pTH, int STXS_Stage1, double Nsigma=1.0);
-NumV qcd_ggF_uncertSF_stxs(int Njets30, double pTH, int STXS_Stage1, double Nsigma=1.0);
-NumV qcd_ggF_uncertSF_2017(int Njets30, double pTH, int STXS_Stage1, double Nsigma=1.0);
-NumV qcd_ggF_uncertSF_jve(int Njets30, double pTH, int STXS_Stage1, double Nsigma=1.0);
-
 // Cross sections of ggF with =0, =1, and >=2 jets
 // Obtained from Powheg NNLOPS. Scaled to sigma(N3LO) @125.09 = 48.52 pb
 // set as global variables (sorry!) since used both by BLPTW and JVE
@@ -43,7 +25,6 @@ static double g_sig0=30.117, g_sig1=12.928, g_sig_ge2=5.475,
 g_sig_ge1 = g_sig1+g_sig_ge2, g_sig_tot=g_sig0+g_sig_ge1, g_sig_vbfTopo = 0.630,
 g_sig_ge2noVBF=g_sig_ge2-g_sig_vbfTopo, g_sig_ge1noVBF=g_sig_ge1-g_sig_vbfTopo;
 
-//
 // Jet bin uncertainties
 NumV blptw(int Njets30) {
 	
