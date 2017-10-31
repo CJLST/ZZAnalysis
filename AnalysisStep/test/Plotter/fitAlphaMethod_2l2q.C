@@ -44,7 +44,7 @@
 #include <ZZAnalysis/AnalysisStep/src/Category.cc>
 #include <ZZAnalysis/AnalysisStep/src/bitops.cc>
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
-#include <ZZAnalysis/AnalysisStep/test/Plotter/fit_functions.C>
+#include <ZZAnalysis/AnalysisStep/test/Plotter/fit_functions3.C>
 
 using namespace std;
 
@@ -270,8 +270,8 @@ void fitAlphaMethod_2l2q(string dirout = "fitAlphaExtended", string theNtuple = 
 
     sprintf(histoName,"ffit_%sSR%s",channelSPart1[tc].c_str(),channelSPart2[tc].c_str());
     // if (tc == 1) ffit[tc] = new TF1(histoName,myfunction2,minX[tc],maxX[tc],3); else
-    ffit[tc] = new TF1(histoName,myfunction,minX[tc],maxX[tc],4);
-    ffit[tc]->SetParNames("constant","slope","constant2","slope2");
+    ffit[tc] = new TF1(histoName,myfunction,minX[tc],maxX[tc],6);
+    ffit[tc]->SetParNames("constant","slope","constant2","slope2","constant3","slope3");
     ffit[tc]->SetLineColor(2);
     ffit[tc]->SetLineStyle(kDashed);
     ffit[tc]->SetLineWidth(3);
@@ -280,13 +280,24 @@ void fitAlphaMethod_2l2q(string dirout = "fitAlphaExtended", string theNtuple = 
     ffit[tc]->SetParameter(1,0.005);
     ffit[tc]->SetParameter(2,fitHist->Integral(bin1,bin2)/10.);
     ffit[tc]->SetParameter(3,0.01);
+    ffit[tc]->SetParameter(4,fitHist->Integral(bin1,bin2)/100.);
+    ffit[tc]->SetParameter(5,0.001);
     if (tc%2 != 0 || (!extended && tc==2) || (!extended && tc==4)) {
       ffit[tc]->FixParameter(2,0.);
       ffit[tc]->FixParameter(3,0.01);
+      ffit[tc]->FixParameter(4,0.);
+      ffit[tc]->FixParameter(5,0.1);
     }      
 
-    c1.cd();
-    //  pad1->cd();
+    TCanvas c2("c2","c2",10,10,600,850);
+    c2.cd();
+
+    TPad *pad1 = new TPad("pad1","This is pad1",0.05,0.35,0.95,0.97);
+    pad1->Draw();
+    TPad *pad2 = new TPad("pad2","This is pad2",0.05,0.02,0.95,0.35);
+    pad2->Draw();
+
+    pad1->cd();
 
     TFitResultPtr frp = fitHist->Fit(histoName,"S","",minX[tc],maxX[tc]);
     TMatrixD cov = frp->GetCovarianceMatrix();
@@ -301,23 +312,23 @@ void fitAlphaMethod_2l2q(string dirout = "fitAlphaExtended", string theNtuple = 
     out << "The integral of the function in [700-2500] is:" << endl;
     out << "   " << ffit[tc]->Integral(700,2500)/(50.*corrFactor[0]) << endl;
     out << "The parameters are: " << endl;
-    for (int j=0; j<4; j++) 
+    for (int j=0; j<6; j++) 
       out << ffit[tc]->GetParName(j) << "\t" << ffit[tc]->GetParameter(j) << endl;
     out << "The covariance matrix is: " << endl;
-    for (int i=0; i<16; i++) {
+    for (int i=0; i<36; i++) {
       out << covElem[i] << "\t";
-      if ((i+1)%4 == 0) out << endl;
+      if ((i+1)%6 == 0) out << endl;
     }      
     out << endl;  
     out.close();
 
     // Build upper and lower 1sigma function
     sprintf(histoName,"ffitup_%sSR%s",channelSPart1[tc].c_str(),channelSPart2[tc].c_str());
-    ffitup[tc] = new TF1(histoName,myfunctionErrUp,minX[tc],maxX[tc],20);
-    for (int j=0; j<4; j++) {
+    ffitup[tc] = new TF1(histoName,myfunctionErrUp,minX[tc],maxX[tc],42);
+    for (int j=0; j<6; j++) {
       ffitup[tc]->FixParameter(j,ffit[tc]->GetParameter(j));
-      for (int i=0; i<4; i++) {
-	ffitup[tc]->FixParameter(4+j+4*i,covElem[4*j+i]);   // array is filled per column
+      for (int i=0; i<6; i++) {
+	ffitup[tc]->FixParameter(6+j+6*i,covElem[6*j+i]);   // array is filled per column
                                                             // not per row
       }
     }
@@ -327,11 +338,11 @@ void fitAlphaMethod_2l2q(string dirout = "fitAlphaExtended", string theNtuple = 
     ffitup[tc]->Draw("same");
 
     sprintf(histoName,"ffitdown_%sSR%s",channelSPart1[tc].c_str(),channelSPart2[tc].c_str());
-    ffitdown[tc] = new TF1(histoName,myfunctionErrDown,minX[tc],maxX[tc],20);
-    for (int j=0; j<4; j++) {
+    ffitdown[tc] = new TF1(histoName,myfunctionErrDown,minX[tc],maxX[tc],42);
+    for (int j=0; j<6; j++) {
       ffitdown[tc]->FixParameter(j,ffit[tc]->GetParameter(j));
-      for (int i=0; i<4; i++) {
-	ffitdown[tc]->FixParameter(4+j+4*i,covElem[4*j+i]);   // array is filled per column
+      for (int i=0; i<6; i++) {
+	ffitdown[tc]->FixParameter(6+j+6*i,covElem[4*j+i]);   // array is filled per column
                                                               // not per row
       }
     }
@@ -343,12 +354,16 @@ void fitAlphaMethod_2l2q(string dirout = "fitAlphaExtended", string theNtuple = 
 
     sprintf(histoName,"ffit_%sSR%s",channelSPart1[tc].c_str(),channelSPart2[tc].c_str());
     TF1* ffit_temp = (TF1*)ffunc.Get(histoName);
-    ffit_temp->SetLineColor(kGreen+2);
-    ffit_temp->Draw("same");
+    if (ffit_temp) {
+      ffit_temp->SetLineColor(kGreen+2);
+      ffit_temp->Draw("same");
+    }
 
     TF1* ffit_temp2 = (TF1*)ffunc2.Get(histoName);
-    ffit_temp2->SetLineColor(kGreen-2);
-    ffit_temp2->Draw("same");
+    if (ffit_temp2) {
+      ffit_temp2->SetLineColor(kOrange-2);
+      ffit_temp2->Draw("same");
+    }
 
     TLegend *legend2 = new TLegend(0.55,0.55,0.9,0.9,NULL,"brNDC");
     legend2->SetBorderSize(     0);
@@ -363,7 +378,7 @@ void fitAlphaMethod_2l2q(string dirout = "fitAlphaExtended", string theNtuple = 
     legend2->AddEntry(ffit_temp, "alternative function" , "l");
     legend2->Draw("same");
     
-    /* pad2->cd();
+    pad2->cd();
     gPad->SetLogy(0);
     TH1F* funcHist = (TH1F*)ttWZZZHist->Clone();
     TH1F* errHist  = (TH1F*)ttWZZZHist->Clone();
@@ -386,15 +401,15 @@ void fitAlphaMethod_2l2q(string dirout = "fitAlphaExtended", string theNtuple = 
 		ratio2->GetXaxis()->GetBinUpEdge(ratio2->GetNbinsX()),0.);
     line2.SetLineColor(kRed);
     line2.SetLineStyle(kDashed);
-    line2.Draw("same");  */
+    line2.Draw("same");  
 
     sprintf(histoName,"~/www/graviton/%s/bkgshapeAlphaMethod_%s%s.png",dirout.c_str(),channelSPart1[tc].c_str(),channelSPart2[tc].c_str()); 
-    c1.SaveAs(histoName);
+    c2.SaveAs(histoName);
     if (tc == 0) {
-      // pad1->cd();
+      pad1->cd();
       gPad->SetLogy(1);
       sprintf(histoName,"~/www/graviton/%s/bkgshapeAlphaMethod_%s%s_log.png",dirout.c_str(),channelSPart1[tc].c_str(),channelSPart2[tc].c_str());
-      c1.SaveAs(histoName);
+      c2.SaveAs(histoName);
       gPad->SetLogy(0);
     }
   }
