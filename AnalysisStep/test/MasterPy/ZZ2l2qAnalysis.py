@@ -128,13 +128,10 @@ elif (SAMPLE_TYPE == 2012) :
 else: 
     from Configuration.AlCa.GlobalTag import GlobalTag
     if IsMC:
-        #process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_v3'
-        #process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_miniAODv2_v1', '')
-        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_TrancheIV_v7', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_TrancheIV_v8', '')
     else:
-        #process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_Prompt_ICHEP16JEC_v0', '')
-        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_2016SeptRepro_v6', '')
-        #process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_Prompt_v14', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_2016SeptRepro_v7', '')
+        #process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_Prompt_v16', '') # For RunH
         
 print '\t',process.GlobalTag.globaltag
 
@@ -169,7 +166,7 @@ import HLTrigger.HLTfilters.hltHighLevel_cfi
 
 process.hltFilterDiMu  = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 process.hltFilterDiEle = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
-# process.hltFilterMuEle = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+process.hltFilterMuEle = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 # process.hltFilterMuEle2 = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 # process.hltFilterMuEle3 = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 # process.hltFilterTriEle = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
@@ -178,7 +175,7 @@ process.hltFilterSingleEle = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.
 process.hltFilterSingleMu = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 process.hltFilterDiMu.TriggerResultsTag  = cms.InputTag("TriggerResults","","HLT")
 process.hltFilterDiEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-# process.hltFilterMuEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
+process.hltFilterMuEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
 # process.hltFilterMuEle2.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
 # process.hltFilterMuEle3.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
 # process.hltFilterTriEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
@@ -187,7 +184,7 @@ process.hltFilterSingleEle.TriggerResultsTag = cms.InputTag("TriggerResults","",
 process.hltFilterSingleMu.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
 process.hltFilterDiMu.throw  = cms.bool(False) #FIXME: beware of this!
 process.hltFilterDiEle.throw = cms.bool(False) #FIXME: beware of this!
-# process.hltFilterMuEle.throw = cms.bool(False) #FIXME: beware of this!
+process.hltFilterMuEle.throw = cms.bool(False) #FIXME: beware of this!
 # process.hltFilterMuEle2.throw = cms.bool(False) #FIXME: beware of this!
 # process.hltFilterMuEle3.throw = cms.bool(False) #FIXME: beware of this!
 # process.hltFilterTriEle.throw = cms.bool(False) #FIXME: beware of this!
@@ -222,19 +219,21 @@ elif (LEPTON_SETUP == 2012):
   #  process.triggerTriEle  = cms.Path(process.hltFilterTriEle)
 
 elif (LEPTON_SETUP == 2016):
-    process.hltFilterDiEle.HLTPaths = ["HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v*"]
-    process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*"]
-  #  process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"]
-    #process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"] #for 25ns,14e33 (not necessary in 2015 data)
-  #  process.hltFilterTriEle.HLTPaths = ["HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v*"]
-  #  process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_12_10_5_v*"]
-    process.hltFilterSingleEle.HLTPaths = ["HLT_Ele25_eta2p1_WPTight_Gsf_v*","HLT_Ele27_WPTight_Gsf_v*","HLT_Ele27_eta2p1_WPLoose_Gsf_v*"]
-    process.hltFilterSingleMu.HLTPaths = ["HLT_IsoMu20_v*","HLT_IsoTkMu20_v*","HLT_IsoMu22_v*","HLT_IsoTkMu22_v*","HLT_IsoMu24_v*","HLT_IsoTkMu24_v*"]
-   #  process.triggerTriEle = cms.Path(process.hltFilterTriEle)
-   #  process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
-    process.triggerSingleEle = cms.Path(process.hltFilterSingleEle)
-    process.triggerSingleMu = cms.Path(process.hltFilterSingleMu)
+    process.hltFilterDiEle.HLTPaths = ["HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*",
+                                       "HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v*"]
+    process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*",
+                                      "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*"]
+    process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*",
+                                       "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*",
+                                       "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v*",
+                                       "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v*"]
+    process.hltFilterSingleEle.HLTPaths = ["HLT_Ele25_eta2p1_WPTight_Gsf_v*",
+                                           "HLT_Ele27_WPTight_Gsf_v*"]
+    process.hltFilterSingleMu.HLTPaths = ["HLT_IsoMu24_v*","HLT_IsoTkMu24_v*"]
 
+process.triggerSingleEle = cms.Path(process.hltFilterSingleEle)
+process.triggerSingleMu = cms.Path(process.hltFilterSingleMu)
+process.triggerMuEle = cms.Path(process.hltFilterMuEle)
 process.triggerDiEle = cms.Path(process.hltFilterDiEle)
 process.triggerDiMu = cms.Path(process.hltFilterDiMu)
 
@@ -433,10 +432,16 @@ process.selectedSlimmedElectrons = cms.EDFilter("PATElectronSelector",
 
 process.calibratedPatElectrons = cms.EDProducer("CalibratedPatElectronProducerRun2",
     electrons = cms.InputTag('selectedSlimmedElectrons'),
-    gbrForestName = cms.string("gedelectron_p4combination_25ns"),
+    #gbrForestName = cms.string("gedelectron_p4combination_25ns"),
+    gbrForestName = cms.vstring('electron_eb_ECALTRK_lowpt', 'electron_eb_ECALTRK',
+                                    'electron_ee_ECALTRK_lowpt', 'electron_ee_ECALTRK',
+                                    'electron_eb_ECALTRK_lowpt_var', 'electron_eb_ECALTRK_var',
+                                    'electron_ee_ECALTRK_lowpt_var', 'electron_ee_ECALTRK_var'),
     isMC = cms.bool(IsMC),
     isSynchronization = cms.bool(False),
-    correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/80X_ichepV1_2016_ele")
+    #correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/80X_ichepV1_2016_ele")
+    #correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/Winter_2016_reReco_v1_ele")
+    correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/Moriond17_23Jan_ele")
 )
 
 if (BUNCH_SPACING == 50):
@@ -448,7 +453,8 @@ from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
 dataFormat = DataFormat.MiniAOD
 switchOnVIDElectronIdProducer(process, dataFormat)
 # define which IDs we want to produce
-my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_V1_cff']
+#my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_V1_cff']
+my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_HZZ_V1_cff']
 # add them to the VID producer
 for idmod in my_id_modules:
     setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
@@ -472,7 +478,8 @@ process.softElectrons = cms.EDProducer("EleFiller",
         isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<"+ELEISOCUT)
 #       Note: passCombRelIsoPFFSRCorr is currently set in LeptonPhotonMatcher for new FSR strategy; in ZZCandidateFiller for the old one
         ),
-   mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16V1Values"), # (when running VID)
+   #mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16V1Values"), # (when running VID)
+   mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16HZZV1Values"), # (when running VID)
    )
 
 if (LEPTON_SEL == "heep") :
@@ -687,8 +694,8 @@ FOURGOODLEPTONS    =  ("userFloat('d1.GoodLeptons')" +
 
 
 Z1MASS            = "daughter('Z1').mass>40 && daughter('Z1').mass<180 && daughter('Z1').pt>100"            # SR is 70-115
-JETMASS           = ("daughter('Z1').pt>170. && abs(daughter('Z1').eta)<2.4 &&" +                  " userFloat('d0.ak8PFJetsCHSCorrPrunedMass') > 40. && userFloat('d0.ak8PFJetsCHSCorrPrunedMass') <180. && " + 
-                   "userFloat('d0.NjettinessAK8:tau2')/userFloat('d0.NjettinessAK8:tau1') <0.6")            # SR is 65-105
+JETMASS           = ("daughter('Z1').pt>170. && abs(daughter('Z1').eta)<2.4 &&" + " userFloat('d0.ak8PFJetsCHSCorrPrunedMass') > 40. && userFloat('d0.ak8PFJetsCHSCorrPrunedMass') <180. ")
+#                   "userFloat('d0.NjettinessAK8:tau2')/userFloat('d0.NjettinessAK8:tau1') <0.6")
 Z2MASS            = "daughter('Z2').mass>55 && daughter('Z2').mass<120 && daughter('Z2').pt>100" 
 #MLL3On4_12        = "userFloat('mZa')>12" # mll>12 on 3/4 pairs; 
 #MLLALLCOMB        = "userFloat('mLL6')>4" # mll>4 on 6/6 AF/AS pairs;
@@ -829,6 +836,7 @@ process.ZZCandFat = cms.EDProducer("ZZjjCandidateFiller",
 ### Jets
 ### ----------------------------------------------------------------------
 
+BTAGGINGTHRESHOLD = 0.5426 #New value for Moriond2017, see https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco#Supported_Algorithms_and_Operati
 
 ### Load JEC
 process.load("CondCore.DBCommon.CondDBCommon_cfi")
@@ -845,16 +853,16 @@ if IsMC:
             toGet = cms.VPSet(
                 cms.PSet(
                     record = cms.string('JetCorrectionsRecord'),
-                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV6_MC_AK4PFchs'), #for 80X/ICHEP16
+                    tag    = cms.string('JetCorrectorParametersCollection_Summer16_23Sep2016V4_MC_AK4PFchs'), #for 80X/Moriond17
                     label  = cms.untracked.string('AK4PFchs')
                     ),
                 cms.PSet(
                     record = cms.string('JetCorrectionsRecord'),
-                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV6_MC_AK8PFchs'), #for 80X/ICHEP16
+                    tag    = cms.string('JetCorrectorParametersCollection_Summer16_23Sep2016V4_MC_AK8PFchs'), #for 80X/Moriond17
                     label  = cms.untracked.string('AK8PFchs')
                     ),
                 ),
-             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Spring16_25nsV6_MC.db'), #for 80X/ICHEP16          
+             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Summer16_23Sep2016V4_MC.db'), #for 80X/Moriond17
             )
 else:
    process.jec = cms.ESSource("PoolDBESSource",
@@ -865,16 +873,16 @@ else:
             toGet = cms.VPSet(
                 cms.PSet(
                     record = cms.string('JetCorrectionsRecord'),
-                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV6_DATA_AK4PFchs'), #for 80X/ICHEP16
+                    tag    = cms.string('JetCorrectorParametersCollection_Summer16_23Sep2016AllV4_DATA_AK4PFchs'), #for 80X/Moriond17
                     label  = cms.untracked.string('AK4PFchs')
                     ),
                 cms.PSet(
                     record = cms.string('JetCorrectionsRecord'),
-                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV6_DATA_AK8PFchs'), #for 80X/ICHEP16
+                    tag    = cms.string('JetCorrectorParametersCollection_Summer16_23Sep2016AllV4_DATA_AK8PFchs'), #for 80X/Moriond17
                     label  = cms.untracked.string('AK8PFchs')
                     ),
                 ), 
-            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Spring16_25nsV6_DATA.db'), #for 80X/ICHEP16
+            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Summer16_23Sep2016AllV4_DATA.db'), #for 80X/Moriond17
 )
 
 ## add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
@@ -921,12 +929,12 @@ process.dressedJets = cms.EDProducer("JetFiller",
     cut = cms.string("pt>30 && abs(eta)<4.7 && userFloat('looseJetID') && userFloat('PUjetID')"),
     isMC = cms.bool(IsMC),
     bTaggerName = cms.string("pfCombinedInclusiveSecondaryVertexV2BJetTags"),
-    bTaggerThreshold = cms.double(0.460),
+    bTaggerThreshold = cms.double(BTAGGINGTHRESHOLD),
     jecType = cms.string("AK4PFchs"),
     applyJER = cms.bool(True),
     jerType = cms.string("AK4PFchs"),
-    bTagSFFile = cms.string("ZZAnalysis/AnalysisStep/data/BTagging/CSVv2_ichep.csv"),
-    bTagMCEffFile = cms.string("ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_80X_ICHEP.root"),
+    bTagSFFile = cms.string("ZZAnalysis/AnalysisStep/data/BTagging/CSVv2_Moriond17_B_H.csv"),
+    bTagMCEffFile = cms.string("ZZAnalysis/AnalysisStep/data/BTagging/bTaggingLWPEffAnalyzerAK4PF_bTaggingEffMap.root"),
     flags = cms.PSet(
         )
 )
@@ -972,6 +980,7 @@ process.patJetsReapplyJECFat = updatedPatJets.clone(
                                     jetSource = cms.InputTag("slimmedJetsAK8"),
                                     jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJECFat") ))
 
+### FIXME: should we be dressing the fat jets as well?
 process.goodJetsFat = cms.EDFilter("PFJetIDSelectionFunctorFilter",
                          filterParams = pfJetIDSelector.clone(),
                          src = cms.InputTag("patJetsReapplyJECFat"),
@@ -1078,4 +1087,152 @@ SkimPaths = cms.vstring('PVfilter') #Do not apply skim
 # FIXME total kin filter?
 
 
+##fix from CJLST - dirty hack to avoid bug in egamma recipe
+
+process.GlobalTag.toGet = cms.VPSet( (cms.PSet(
+        connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+        label = cms.untracked.string('electron_eb_ECALonly'),
+        record = cms.string('GBRDWrapperRcd'),
+        tag = cms.string('GEDelectron_EBCorrection_80X_EGM_v4')
+    ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_eb_ECALonly_lowpt'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_lowpt_EBCorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_eb_ECALonly_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_EBUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_eb_ECALonly_lowpt_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_lowpt_EBUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_ee_ECALonly'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_EECorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_ee_ECALonly_lowpt'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_lowpt_EECorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_ee_ECALonly_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_EEUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_ee_ECALonly_lowpt_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_lowpt_EEUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_eb_ECALTRK'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_track_EBCorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_eb_ECALTRK_lowpt'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_track_lowpt_EBCorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_eb_ECALTRK_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_track_EBUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_eb_ECALTRK_lowpt_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_track_lowpt_EBUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_ee_ECALTRK'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_track_EECorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_ee_ECALTRK_lowpt'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_track_lowpt_EECorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_ee_ECALTRK_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_track_EEUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('electron_ee_ECALTRK_lowpt_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDelectron_track_lowpt_EEUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('photon_eb_ECALonly'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDphoton_EBCorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('photon_eb_ECALonly_lowpt'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDphoton_lowpt_EBCorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('photon_eb_ECALonly_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDphoton_EBUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('photon_eb_ECALonly_lowpt_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDphoton_lowpt_EBUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('photon_ee_ECALonly'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDphoton_EECorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('photon_ee_ECALonly_lowpt'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDphoton_lowpt_EECorrection_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('photon_ee_ECALonly_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDphoton_EEUncertainty_80X_EGM_v4')
+        ), 
+        cms.PSet(
+            connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+            label = cms.untracked.string('photon_ee_ECALonly_lowpt_var'),
+            record = cms.string('GBRDWrapperRcd'),
+            tag = cms.string('GEDphoton_lowpt_EEUncertainty_80X_EGM_v4')
+        ),
+    )
+)
 

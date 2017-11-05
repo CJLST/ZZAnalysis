@@ -13,8 +13,8 @@ CRSync = False #add CR paths
 #KEEPLOOSECOMB = True # Do not skip loose lepton ZZ combinations (for debugging
 
 #For DATA: 
-#IsMC = False
-#PD = "DoubleEle"
+IsMC = False
+PD = "DoubleEle"
 
 # Get absolute path
 import os
@@ -33,24 +33,21 @@ process.source.inputCommands = cms.untracked.vstring("keep *", "drop LHERunInfoP
 ### ----------------------------------------------------------------------
 
 process.source.fileNames = cms.untracked.vstring(
-
-     #'/store/mc/RunIIFall15MiniAODv1/BulkGravToZZToZlepZhad_narrow_M-800_13TeV-madgraph/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/20000/14E8B66A-E5B0-E511-8CDC-B083FED177B1.root'
-    '/store/mc/RunIISpring16MiniAODv1/Graviton2PBToZZTo2L2Q_width0_M-750_13TeV-JHUgenV6-pythia8/MINIAODSIM/PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_v3-v1/60000/E81C6E34-3022-E611-A82A-008CFA002ED8.root'
-
-  
-
+    '/store/mc/RunIISummer16MiniAODv2/GluGluHToZZTo2L2Q_M1000_13TeV_powheg2_JHUgenV698_pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/60000/0ECDBF89-22D5-E611-BFC1-90B11C27F101.root',
+    '/store/mc/RunIISummer16MiniAODv2/GluGluHToZZTo2L2Q_M1000_13TeV_powheg2_JHUgenV698_pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/60000/109961C9-17D6-E611-A8CA-0CC47A7C3636.root',
+    '/store/mc/RunIISummer16MiniAODv2/GluGluHToZZTo2L2Q_M1000_13TeV_powheg2_JHUgenV698_pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/60000/3665EE1D-17D6-E611-96D5-0025905A612E.root'
     )
 
 process.calibratedPatElectrons.isSynchronization = cms.bool(True)
 process.calibratedMuons.isSynchronization = cms.bool(True)
 # process.zJetsFilter.option = 1
 
-process.maxEvents.input = -1
+process.maxEvents.input = 3000
 #process.source.skipEvents = cms.untracked.uint32(5750)
 
 # Silence output
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
 
 ### ----------------------------------------------------------------------
@@ -62,24 +59,22 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 # Debug
 process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
-      dump = cms.untracked.bool(True),
-     dumpTrigger = cms.untracked.bool(True),
-#     muonSrc = cms.InputTag("slimmedMuons"),
-#     electronSrc = cms.InputTag("slimmedElectrons"),
-     muonSrc = cms.InputTag("appendPhotons:muons"), 
-     electronSrc = cms.InputTag("appendPhotons:electrons"),
-     candidateSrcs = cms.PSet(
-     
-   #       Zb     = cms.InputTag("bareZCand"),                                  
-   #     Zjjb  = cms.InputTag("bareZjjCand"),     
-        Z     = cms.InputTag("ZCand"),                                  
-        ZZ  = cms.InputTag("ZZCand"),
-       ZZfat  = cms.InputTag("ZZCandFat"),
-#         ZZb  = cms.InputTag("bareZZCand"),
-#        ZL  = cms.InputTag("ZlCand"),
-     ),
-  #   jetSrc = cms.InputTag("cleanJets"),
-)
+                                       dump = cms.untracked.bool(True),
+                                       dumpTrigger = cms.untracked.bool(True),
+                                       #     muonSrc = cms.InputTag("slimmedMuons"),
+                                       #     electronSrc = cms.InputTag("slimmedElectrons"),
+                                       muonSrc = cms.InputTag("appendPhotons:muons"), 
+                                       electronSrc = cms.InputTag("appendPhotons:electrons"),
+                                       candidateSrcs = cms.PSet(Z     = cms.InputTag("ZCand"),                                  
+                                                                ZZ  = cms.InputTag("ZZCand"),
+                                                                ZZfat  = cms.InputTag("ZZCandFat"),
+                                                                # Zb     = cms.InputTag("bareZCand"),
+                                                                # Zjjb  = cms.InputTag("bareZjjCand"),     
+                                                                # ZZb  = cms.InputTag("bareZZCand"),
+                                                                # ZL  = cms.InputTag("ZlCand"),
+                                                                ),
+                                       #   jetSrc = cms.InputTag("cleanJets"),
+                                       )
 
 # Create lepton sync file
 #process.PlotsZZ.dumpForSync = True;
@@ -96,6 +91,7 @@ if (CRSync) :
 
 # replace the paths in analyzer.py
 process.trees = cms.EndPath(process.ZZTree)
+#process.ZZTree.skipEmptyEvents = False
 
 #Dump reconstructed variables
 #process.appendPhotons.debug = cms.untracked.bool(True)

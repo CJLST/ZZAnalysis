@@ -7,6 +7,7 @@
 // system include files
 #include <memory>
 #include <cmath>
+#include <algorithm>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -45,7 +46,8 @@
 #include <ZZAnalysis/AnalysisStep/interface/DaughterDataHelpers.h>
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
 #include <ZZAnalysis/AnalysisStep/interface/MCHistoryTools.h>
-#include <ZZAnalysis/AnalysisStep/interface/PUReweight.h>
+//#include <ZZAnalysis/AnalysisStep/interface/PUReweight.h>
+#include <ZZAnalysis/AnalysisStep/interface/PileUpWeight.h>
 #include "ZZAnalysis/AnalysisStep/interface/EwkCorrections.h"
 #include <ZZAnalysis/AnalysisStep/interface/bitops.h>
 #include <ZZAnalysis/AnalysisStep/interface/Fisher.h>
@@ -81,6 +83,8 @@ namespace {
   Short_t NObsInt  = 0;
   Float_t NTrueInt  = 0;
   Float_t PUWeight  = 0;
+  Float_t PUWeight_Up  = 0;
+  Float_t PUWeight_Dn  = 0;
   Float_t KFactorggZZ = 0;
   Float_t KFactorEWKqqZZ = 0;
   Float_t KFactorQCDqqZZ_dPhi = 0;
@@ -353,14 +357,14 @@ namespace {
   Float_t GenLep2Eta  = 0;
   Float_t GenLep2Phi  = 0;
   Short_t GenLep2Id  = 0;
-  /*Float_t GenLep3Pt  = 0;
+  Float_t GenLep3Pt  = 0;
   Float_t GenLep3Eta  = 0;
   Float_t GenLep3Phi  = 0;
   Short_t GenLep3Id  = 0;
   Float_t GenLep4Pt  = 0;
   Float_t GenLep4Eta  = 0;
   Float_t GenLep4Phi  = 0;
-  Short_t GenLep4Id  = 0;*/
+  Short_t GenLep4Id  = 0;
   Float_t GenAssocLep1Pt  = 0;
   Float_t GenAssocLep1Eta  = 0;
   Float_t GenAssocLep1Phi  = 0;
@@ -440,8 +444,9 @@ private:
 
   edm::EDGetTokenT<edm::MergeableCounter> preSkimToken;
   
-  PUReweight reweight;
-
+  //PUReweight reweight;
+  PileUpWeight pileUpReweight;
+  
   //counters
   Float_t Nevt_Gen;
   Float_t Nevt_Gen_lumiBlock;
@@ -486,7 +491,8 @@ private:
 //
 HZZ2l2qNtupleMaker::HZZ2l2qNtupleMaker(const edm::ParameterSet& pset) :
   myHelper(pset),
-  reweight(),
+  //reweight(),
+  pileUpReweight(myHelper.sampleType(), myHelper.setup()),
   hTH2D_Mu_All(0),
   hTH2F_El_Reco(0),
   hTH2D_El_IdIsoSip_notCracks(0),
@@ -576,28 +582,33 @@ HZZ2l2qNtupleMaker::HZZ2l2qNtupleMaker(const edm::ParameterSet& pset) :
 
     TString filename;
 
-    filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_%d.root",year);
-    edm::FileInPath fipMu(filename.Data());
+    filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_Moriond2017_v2.root");
+    edm::FileInPath fipMu(filename.Data());    
     fipPath = fipMu.fullPath();
-    TFile *fMuWeight = TFile::Open(fipPath.data(),"READ");
-    hTH2D_Mu_All = (TH2D*)fMuWeight->Get("FINAL")->Clone();
-    fMuWeight->Close();
+    TFile *fMuWeight = TFile::Open(fipPath.data(),"READ");   
+    hTH2D_Mu_All = (TH2D*)fMuWeight->Get("FINAL")->Clone();  
+    fMuWeight->Close();    
 
-    TString filename2("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_2016_v3.root");
-    //TString filename("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ele_scale_factors_2016_v1.root");  
-    edm::FileInPath fipEleNotCracks(filename2.Data());
+    TString filename2("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_non_gap_ele_Moriond2017_v2.root");   
+    edm::FileInPath fipEleNotCracks(filename2.Data()); 
     fipPath = fipEleNotCracks.fullPath();
-    TFile *root_file = TFile::Open(fipPath.data(),"READ");
-    hTH2D_El_IdIsoSip_notCracks = (TH1*) root_file->Get("ele_scale_factors")->Clone();
-    hTH2D_El_IdIsoSip_Cracks = (TH1*) root_file->Get("ele_scale_factors_gap")->Clone();
-    root_file->Close();
+    TFile *root_file_non_gap = TFile::Open(fipPath.data(),"READ");  
+    hTH2D_El_IdIsoSip_notCracks = (TH1*) root_file_non_gap->Get("EGamma_SF2D")->Clone();
+    root_file_non_gap->Close(); 
+
+    TString filename3("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_gap_ele_Moriond2017_v2.root");
+    edm::FileInPath fipEleCracks(filename3.Data());
+    fipPath = fipEleCracks.fullPath();
+    TFile *root_file_gap = TFile::Open(fipPath.data(),"READ"); 
+    hTH2D_El_IdIsoSip_Cracks = (TH1*) root_file_gap->Get("EGamma_SF2D")->Clone();
+    root_file_gap->Close(); 
     
-    TString filenameEleReco("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi.txt_SF2D.root");
+    TString filenameEleReco("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_RECO_ele_Moriond2017_v1.root");
     edm::FileInPath fipEleReco(filenameEleReco.Data());
     fipPath = fipEleReco.fullPath();
     TFile *root_file_reco = TFile::Open(fipPath.data(),"READ");
     hTH2F_El_Reco = (TH2F*) root_file_reco->Get("EGamma_SF2D")->Clone();
-    root_file_reco->Close();
+    root_file_reco->Close(); 
 
     /* year = 2015;
 
@@ -699,8 +710,11 @@ void HZZ2l2qNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup&
     }
 
     // get PU weight
-    PUWeight = reweight.weight(myHelper.sampleType(), myHelper.setup(), NTrueInt);
-
+    //PUWeight = reweight.weight(myHelper.sampleType(), myHelper.setup(), NTrueInt);
+    PUWeight = pileUpReweight.weight(NTrueInt);
+    PUWeight_Up = pileUpReweight.weight(NTrueInt, PileUpWeight::PUvar::VARUP);
+    PUWeight_Dn = pileUpReweight.weight(NTrueInt, PileUpWeight::PUvar::VARDOWN);
+    
     event.getByToken(genParticleToken, genParticles);
     event.getByToken(genInfoToken, genInfo);
 
@@ -1640,44 +1654,43 @@ Float_t HZZ2l2qNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
   Float_t myLepPt = Lep->pt();
   Float_t myLepEta = Lep->eta();
   Int_t   myLepID = abs(Lep->pdgId());
-  
-  //avoid to go out of the TH boundary
-  if(myLepID == 13 && myLepPt > 79.) myLepPt = 79.;
-  if(myLepID == 11 && myLepPt > 199.) myLepPt = 199.;
-  if(myLepID == 11) myLepEta = fabs(myLepEta);
+  Float_t mySIP = userdatahelpers::getUserFloat(Lep, "SIP"); 
+ 
+  if(myLepID == 13){
+      if(myLepPt >= 5. ) { //FIXME assume this is the min value for SFs
+	  weight = hTH2D_Mu_All->GetBinContent(hTH2D_Mu_All->GetXaxis()->FindBin(myLepEta),
+					       hTH2D_Mu_All->GetYaxis()->FindBin(std::min(myLepPt,199.f))); //last bin contains the overflow
+      }
+  } else if(myLepID == 11){
+      
+      // electron reconstruction scale factor, as a function of supercluster eta
+      Float_t SCeta = userdatahelpers::getUserFloat(Lep,"SCeta");
 
-  if(myLepID == 13){  
-   
-    weight = hTH2D_Mu_All->GetBinContent(hTH2D_Mu_All->GetXaxis()->FindBin(myLepEta),hTH2D_Mu_All->GetYaxis()->FindBin(myLepPt));
+      Float_t lookup_pT = 50.;  // FIXME: the histogram contains 1 bin only, and overflows/underflows are intended to be included (?)
 
-  }else if(myLepID == 11){
+      weight *= hTH2F_El_Reco->GetBinContent(hTH2F_El_Reco->GetXaxis()->FindBin(SCeta),hTH2F_El_Reco->GetYaxis()->FindBin(lookup_pT));
 
-    if(myLepPt > 199.) myLepPt = 199.;
-    Float_t myLepAbsEta = fabs(myLepEta);
-    
-    if(year >= 2016) {
-      if((bool)userdatahelpers::getUserFloat(Lep,"isCrack"))
-	weight *= hTH2D_El_IdIsoSip_Cracks->GetBinContent(hTH2D_El_IdIsoSip_Cracks->FindFixBin(myLepAbsEta, myLepPt));
-      else
-	weight *= hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->FindFixBin(myLepAbsEta, myLepPt));
-    } else {
-      if((bool)userdatahelpers::getUserFloat(Lep,"isCrack"))
-	weight *= hTH2D_El_IdIsoSip_Cracks   ->GetBinContent(hTH2D_El_IdIsoSip_Cracks   ->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_Cracks   ->GetYaxis()->FindBin(myLepAbsEta));
-      else
-	weight *= hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->GetXaxis()->FindBin(myLepPt),hTH2D_El_IdIsoSip_notCracks->GetYaxis()->FindBin(myLepAbsEta));
-    }
-    
-    
-  }else{
+      if(mySIP >= 4.0 ) { // FIXME: use a better way to find RSE electrons!
+	  // No SF for RSE yet
+	  //return 1.;
+      } else {
+	  if(year >= 2016) {
+	    if((bool)userdatahelpers::getUserFloat(Lep,"isCrack")) 
+	      weight *= hTH2D_El_IdIsoSip_Cracks->GetBinContent(hTH2D_El_IdIsoSip_Cracks->FindFixBin(std::abs(myLepEta), std::min(myLepPt,199.f)));
+	    else  
+	      weight *= hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->FindFixBin(SCeta, std::min(myLepPt,199.f)));
+	  } else {
+	      cout << "ele SFs for < 2016 no longer supported" << endl;
+	      abort();
+	  }
+      }    
+  } else{
 
-    //cout<<"ERROR! wrong lepton ID "<<myLepID<<endl;
+    cout<<"ERROR! wrong lepton ID "<<myLepID<<endl;
     //abort();
     weight = 0.;
 
   }   
-
-  //FIXME
-  if(myLepPt < 5. && myLepID == 13) weight = 1.;
 
   if(weight < 0.001 || weight > 10.){
     //cout << "ERROR! LEP out of range! myLepPt = " << myLepPt << " myLepEta = " << myLepEta <<" myLepID "<<myLepID<< " weight = " << weight << endl;
@@ -1821,7 +1834,7 @@ void HZZ2l2qNtupleMaker::FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t 
   GenLep2Phi=Lep2.Phi();
   GenLep2Id=Lep2Id;
 
-  /* GenLep3Pt=Lep3.Pt();
+  GenLep3Pt=Lep3.Pt();
   GenLep3Eta=Lep3.Eta();
   GenLep3Phi=Lep3.Phi();
   GenLep3Id=Lep3Id;
@@ -1829,8 +1842,7 @@ void HZZ2l2qNtupleMaker::FillLepGenInfo(Short_t Lep1Id, Short_t Lep2Id, Short_t 
   GenLep4Pt=Lep4.Pt();
   GenLep4Eta=Lep4.Eta();
   GenLep4Phi=Lep4.Phi();
-  GenLep4Id=Lep4Id; */
-  
+  GenLep4Id=Lep4Id;  
   return;
 }
 
@@ -1876,6 +1888,8 @@ void HZZ2l2qNtupleMaker::BookAllBranches(){
   myTree->Book("NObsInt",NObsInt);
   myTree->Book("NTrueInt",NTrueInt);
   myTree->Book("PUWeight",PUWeight);
+  myTree->Book("PUWeight_Dn", PUWeight_Dn);
+  myTree->Book("PUWeight_Up", PUWeight_Up);
   myTree->Book("KFactorggZZ",KFactorggZZ);
   myTree->Book("KFactorEWKqqZZ",KFactorEWKqqZZ);
   myTree->Book("KFactorQCDqqZZ_dPhi",KFactorQCDqqZZ_dPhi);
@@ -2157,14 +2171,14 @@ void HZZ2l2qNtupleMaker::BookAllBranches(){
   myTree->Book("GenLep2Eta",GenLep2Eta);
   myTree->Book("GenLep2Phi",GenLep2Phi);
   myTree->Book("GenLep2Id",GenLep2Id);
-  /* myTree->Book("GenLep3Pt",GenLep3Pt);
+  myTree->Book("GenLep3Pt",GenLep3Pt);
   myTree->Book("GenLep3Eta",GenLep3Eta);
   myTree->Book("GenLep3Phi",GenLep3Phi);
   myTree->Book("GenLep3Id",GenLep3Id);
   myTree->Book("GenLep4Pt",GenLep4Pt);
   myTree->Book("GenLep4Eta",GenLep4Eta);
   myTree->Book("GenLep4Phi",GenLep4Phi);
-  myTree->Book("GenLep4Id",GenLep4Id); */
+  myTree->Book("GenLep4Id",GenLep4Id);
   myTree->Book("GenAssocLep1Pt",GenAssocLep1Pt);
   myTree->Book("GenAssocLep1Eta",GenAssocLep1Eta);
   myTree->Book("GenAssocLep1Phi",GenAssocLep1Phi);
