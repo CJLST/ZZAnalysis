@@ -22,7 +22,7 @@ git cms-merge-topic cms-met:METRecipe_80X_part2 -u
 #### Please do not add any custom (non-CMSSW) package before this line ####
 
 #ZZAnalysis
-git clone https://github.com/sudhaahuja/ZZAnalysis.git ZZAnalysis
+git clone -b 2l2q_80X https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
 (cd ZZAnalysis; git checkout 2l2q_80X)
 
 #effective areas (to be updated)
@@ -38,7 +38,7 @@ git clone -n https://github.com/cms-analysis/EgammaAnalysis-ElectronTools EGamma
 
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
-(cd ZZMatrixElement; git checkout -b from-v204 v2.0.4)
+(cd ZZMatrixElement; git checkout -b from-v210 v2.1.0.p1)
 pushd ${CMSSW_BASE}/src/ZZMatrixElement/MELA/fortran/
 make all
 mv libjhugenmela.so ../data/${SCRAM_ARCH}/
