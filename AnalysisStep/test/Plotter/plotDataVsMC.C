@@ -2,9 +2,9 @@
 /// usage: 
 /// -specify parameters (input/output location, luminosity) at the end of this file
 /// -run with:
-///   root -l plotDataVsMC.C++
+///   root -l -b -q plotDataVsMC.C++
 /// -later, once histograms have been stored, use parameter 0 to not rerun over all MC:
-///   root -l plotDataVsMC.C++(0)
+///   root -l -b -q "plotDataVsMC.C++(0)"
 ///
 
 #include <iostream>
@@ -235,12 +235,12 @@ const int nRS = 2;
 string sResonantStatus[nRS+1] = {"resonant", "nonresonant", "allres"};
 
 
-enum Blindings {fullyblind=0, blindabove110=1, blindbelow150=2, blind110150=3, blind110150andabove300=4, unblinded=5};
+enum Blindings {fullyblind=0, blindabove114=1, blindbelow130=2, blind114130=3, blind114130andabove300=4, unblinded=5};
 const int nBlindings = 6;
-string sBlinding[nBlindings] = {"fullyblind", "M4l70To110", "M4l150ToInf", "blind110150", "blind110150andabove300", "unblinded"};
-string blindingLabel[nBlindings] = {"", "70 < m_{4#font[12]{l}} < 110 GeV", "m_{4#font[12]{l}} > 150 GeV", "#splitline{m_{4#font[12]{l}} > 70 GeV}{m_{4#font[12]{l}} #notin [110, 150] GeV}", "#splitline{m_{4#font[12]{l}} #in [70, 300] GeV}{m_{4#font[12]{l}} #notin [110, 150] GeV}", ""}; // corresponding cut have to be defined within the loops
-Float_t xHistoBlindLow[nBlindings] = {  0.,  110.,   0., 110., 110.,  0. };
-Float_t xHistoBlindUp [nBlindings] = { -1., 3000., 150., 150., 150., -1. };
+string sBlinding[nBlindings] = {"fullyblind", "M4l70To114", "M4l130ToInf", "blind114130", "blind114130andabove300", "unblinded"};
+string blindingLabel[nBlindings] = {"", "70 < m_{4#font[12]{l}} < 114 GeV", "m_{4#font[12]{l}} > 130 GeV", "#splitline{m_{4#font[12]{l}} > 70 GeV}{m_{4#font[12]{l}} #notin [114, 130] GeV}", "#splitline{m_{4#font[12]{l}} #in [70, 300] GeV}{m_{4#font[12]{l}} #notin [114, 130] GeV}", ""}; // corresponding cut have to be defined within the loops
+Float_t xHistoBlindLow[nBlindings] = {  0.,  114.,   0., 114., 114.,  0. };
+Float_t xHistoBlindUp [nBlindings] = { -1., 3000., 130., 130., 130., -1. };
 Float_t xHistoBlind2Low[nBlindings] = {  0.,  0.,  0.,  0.,  300.,  0. };
 Float_t xHistoBlind2Up [nBlindings] = { -1., -1., -1., -1., 3000., -1. };
 
@@ -832,18 +832,18 @@ void doHistograms(string inputPathMC, string inputPathData, double lumi)
 
       bool fillM4l[nBlindings] = {
 	currentProcess!=Data,
-	(currentProcess!=Data || ZZMass<110),
-	(currentProcess!=Data || ZZMass>150),
-	(currentProcess!=Data || ZZMass<110 || ZZMass>150),
-	(currentProcess!=Data || ZZMass<110 || (ZZMass>150&&ZZMass<300)),
+	(currentProcess!=Data || ZZMass < xHistoBlindLow[1] ),
+	(currentProcess!=Data || ZZMass > xHistoBlindUp[2]  ),
+	(currentProcess!=Data || ZZMass < xHistoBlindLow[3] || ZZMass  > xHistoBlindUp[3] ),
+	(currentProcess!=Data || ZZMass < xHistoBlindLow[4] || (ZZMass > xHistoBlindUp[4]  && ZZMass < xHistoBlind2Low[4])),
 	true,
       };
       bool fillOtherThanM4l[nBlindings] = {
 	currentProcess!=Data,
-	ZZMass<110,
-	ZZMass>150,
-	ZZMass<110 || ZZMass>150,
-	ZZMass<110 || (ZZMass>150&&ZZMass<300),
+	ZZMass < xHistoBlindLow[1],
+	ZZMass > xHistoBlindUp[2] ,
+	ZZMass < xHistoBlindLow[3] || ZZMass  > xHistoBlindUp[3],
+	ZZMass < xHistoBlindLow[4] || (ZZMass > xHistoBlindUp[4] && ZZMass < xHistoBlind2Low[4]),
 	true,
       };
 
@@ -1285,10 +1285,10 @@ void doHistogramsZPlusXSS(string inputPathDataForCR, string inputFileFakeRates, 
     
     bool varPassBlindingCut[nBlindings] = {
       true,
-      ZZMass<110,
-      ZZMass>150,
-      ZZMass<110 || ZZMass>150,
-      ZZMass<110 || (ZZMass>150&&ZZMass<300),
+      ZZMass < xHistoBlindLow[1],
+      ZZMass > xHistoBlindUp[2],
+      ZZMass < xHistoBlindLow[3] || ZZMass  > xHistoBlindUp[3],
+      ZZMass < xHistoBlindLow[4] || (ZZMass > xHistoBlindUp[4] && ZZMass < xHistoBlind2Low[4]),
       true,
     };
 
@@ -1518,10 +1518,10 @@ void getM4lZPlusXHistoFromAnalyticalShape_InCateg(TH1F** hZPX4mu, TH1F** hZPX4e,
 
 void DrawDataMC1D(TCanvas* c, TH1F** h, TH1F* hZPX, int v1, int bl, double lumi, string lumiText, Int_t category, Bool_t logX = false, Bool_t logY = false) {
 
-  bool drawData = !( (MASKDATAFORHIGHMASS && bl==blindbelow150) || bl==fullyblind );
+  bool drawData = !( (MASKDATAFORHIGHMASS && bl==blindbelow130) || bl==fullyblind );
   bool maskH125 = 
-    ( MASKH125FORLOWMASS && bl==blindabove110 && (myV1[v1].Name.find("M4l")==string::npos || myV1[v1].Name.find("M4l_70110")==0 || myV1[v1].Name.find("M4l_70109")==0) ) ||
-    ( MASKH125FORHIGHMASS && bl==blindbelow150 && (myV1[v1].Name.find("M4l")==string::npos || myV1[v1].Name.find("M4l_above150")==0) ) ;
+    ( MASKH125FORLOWMASS && bl==blindabove114 && (myV1[v1].Name.find("M4l")==string::npos || myV1[v1].Name.find("M4l_70110")==0 || myV1[v1].Name.find("M4l_70109")==0) ) ||
+    ( MASKH125FORHIGHMASS && bl==blindbelow130 && (myV1[v1].Name.find("M4l")==string::npos || myV1[v1].Name.find("M4l_above150")==0) ) ;
   bool withRatioPlot = DRAWDATAMCRATIO && drawData && myV1[v1].WithRatio;
   bool doBlindingHisto = xHistoBlindLow[bl]<xHistoBlindUp[bl] && myV1[v1].Name.find("M4l")==0;
   bool doBlindingHisto2 = xHistoBlind2Low[bl]<xHistoBlind2Up[bl] && myV1[v1].Name.find("M4l")==0;
@@ -1639,7 +1639,7 @@ void DrawDataMC1D(TCanvas* c, TH1F** h, TH1F* hZPX, int v1, int bl, double lumi,
   bool useBlindingLabel = blindingLabel[bl]!="" && myV1[v1].Name.find("M4l")==string::npos;
   float legTextSize = 0.034;
   int legPos = myV1[v1].LegPos;
-  if(bl==blindabove110 && myV1[v1].Name.find("MZ")!=string::npos) legPos = 33;
+  if(bl==blindabove114 && myV1[v1].Name.find("MZ")!=string::npos) legPos = 33;
   float legLeft = (legPos==11) ? 0.20 : 0.68 ;
   float legWidth = 0.19;
   float legUp = 0.9;
@@ -1838,8 +1838,8 @@ void DrawDataMC1D(TCanvas* c, TH1F** h, TH1F* hZPX, int v1, int bl, double lumi,
 void DrawDataMC2D(TCanvas* c, TH2F** h2, TGraphErrors* g2[nFinalStates+1][nCat+1], int v2, int bl, string lumiText, int style2D, Bool_t logX = false, Bool_t logY = false) {
 
   bool maskH125 = 
-    ( MASKH125FORLOWMASS  && bl==blindabove110 && (myV2[v2].Name.find("M4l")==string::npos || myV2[v2].Name.find("M4L70110")!=string::npos) ) ||
-    ( MASKH125FORHIGHMASS && bl==blindbelow150 && (myV2[v2].Name.find("M4l")==string::npos || myV2[v2].Name.find("M4L180780")!=string::npos || myV2[v2].Name.find("M4L150700")!=string::npos) ) ;
+    ( MASKH125FORLOWMASS  && bl==blindabove114 && (myV2[v2].Name.find("M4l")==string::npos || myV2[v2].Name.find("M4L70110")!=string::npos) ) ||
+    ( MASKH125FORHIGHMASS && bl==blindbelow130 && (myV2[v2].Name.find("M4l")==string::npos || myV2[v2].Name.find("M4L180780")!=string::npos || myV2[v2].Name.find("M4L150700")!=string::npos) ) ;
   bool categMode = CATEGIN2D && myV2[v2].WithCateg;
   float factorHeight = 1.2;
   bool withWP = DRAWWP2D && myV2[v2].exprWP!="";
@@ -2284,8 +2284,11 @@ void plotDataVsMC(bool redoHistograms = true, Int_t FINALSTATE = nFinalStates, I
   string outputPath = "";
 
   // Define the luminosity
-  float lumi = 35.86706;
-  string lumiText = "35.9 fb^{-1}";
+  float lumi = ;
+  string lumiText = "";
+  // ***  full 2016 dataset  ***
+  // float lumi = 35.86706;
+  // string lumiText = "35.9 fb^{-1}";
 
 
   // --------------- processing ---------------
