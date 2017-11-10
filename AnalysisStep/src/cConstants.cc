@@ -51,7 +51,7 @@ extern "C" float getDVBF2jetsWP(float ZZMass, bool useQGTagging){
     return 0.363;
   }
   else
-    return 0.475598;
+    return 0.141022;
 }
 extern "C" float getDVBF1jetWP(float ZZMass, bool useQGTagging){
   if (useQGTagging) {
@@ -59,7 +59,7 @@ extern "C" float getDVBF1jetWP(float ZZMass, bool useQGTagging){
     return 0.716;
   }
   else
-    return 0.374228;
+    return 0.3743;
 }
 extern "C" float getDWHhWP(float ZZMass, bool useQGTagging){
   if (useQGTagging) {
@@ -67,8 +67,8 @@ extern "C" float getDWHhWP(float ZZMass, bool useQGTagging){
     return 0.965;
   }
   else
-    //return 0.961587;
-    return 0.941161;
+    //return 0.159785;
+    return 0.173612;
 }
 extern "C" float getDZHhWP(float ZZMass, bool useQGTagging){
   if (useQGTagging) {
@@ -76,8 +76,8 @@ extern "C" float getDZHhWP(float ZZMass, bool useQGTagging){
     return 0.9952;
   }
   else
-    //return 0.942319;
-    return 0.941161;
+    //return 0.185325;
+    return 0.173612;
 }
 
 extern "C" float getDVBF2jetsConstant_shiftWP(float ZZMass, bool useQGTagging, float newWP) {
