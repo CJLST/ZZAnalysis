@@ -1087,6 +1087,8 @@ void doHistogramsZPlusXSS(string inputPathDataForCR, string inputFileFakeRates, 
   Float_t p_JQCD_SIG_ghg2_1_JHUGen_JECNominal;
   Float_t p_HadWH_SIG_ghw1_1_JHUGen_JECNominal;
   Float_t p_HadZH_SIG_ghz1_1_JHUGen_JECNominal;
+  Float_t p_HadWH_mavjj_JECNominal;
+  Float_t p_HadZH_mavjj_JECNominal;
   Float_t Z1Mass;
   Float_t Z2Mass;
   Short_t Z1Flav;
