@@ -305,6 +305,8 @@ namespace {
 	
   Int_t   htxsNJets = 0;
   Float_t htxsHPt = 0;
+  Int_t   htxs_stage0_cat = 0;
+  Int_t   htxs_stage1_cat = 0;
   std::vector<float> qcd_ggF_uncertSF;
 
 
@@ -943,18 +945,18 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   if(isMC)
   {
 	  edm::Handle<HTXS::HiggsClassification> htxs;
-	  edm::Handle<float> _htxsHPt;
-	  edm::Handle<int> _htxsNJets;
 	  event.getByToken(htxsToken,htxs);
 
 	  htxsNJets = htxs->jets30.size();
 	  htxsHPt = htxs->higgs.Pt();
+	  htxs_stage0_cat = htxs->stage0_cat;
+	  htxs_stage1_cat = htxs->stage1_cat_pTjet30GeV;
 	  
 	  if(apply_QCD_GGF_UNCERT)
 	  {
 		  std::vector<double> qcd_ggF_uncertSF_tmp;
 		  qcd_ggF_uncertSF.clear();
-		  qcd_ggF_uncertSF_tmp = qcd_ggF_uncertSF_2017(htxsNJets, htxsHPt, htxs->stage1_cat_pTjet30GeV);
+		  qcd_ggF_uncertSF_tmp = qcd_ggF_uncertSF_2017(htxsNJets, htxsHPt, htxs_stage1_cat);
 		  qcd_ggF_uncertSF = std::vector<float>(qcd_ggF_uncertSF_tmp.begin(),qcd_ggF_uncertSF_tmp.end());
 	  }
 
@@ -2198,6 +2200,8 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("GenAssocLep2Id", GenAssocLep2Id, failedTreeLevel >= fullFailedTree);
     myTree->Book("htxsNJets", htxsNJets, failedTreeLevel >= fullFailedTree);
     myTree->Book("htxsHPt", htxsHPt, failedTreeLevel >= fullFailedTree);
+	 myTree->Book("htxs_stage0_cat", htxs_stage0_cat, failedTreeLevel >= fullFailedTree);
+	 myTree->Book("htxs_stage1_cat", htxs_stage1_cat, failedTreeLevel >= fullFailedTree);
     if(apply_QCD_GGF_UNCERT)
 	 {
 		 myTree->Book("qcd_ggF_uncertSF", qcd_ggF_uncertSF, failedTreeLevel >= fullFailedTree);
