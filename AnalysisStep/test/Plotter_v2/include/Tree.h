@@ -856,7 +856,7 @@ public :
 	TBranch        *b_htxsHPt;  //!
 	TBranch        *b_htxsNJets;  //!
 	TBranch			*b_htxs_stage0_cat; //!
-	TBranch			*b_htxs_stage0_cat; //!
+	TBranch			*b_htxs_stage1_cat; //!
    TBranch        *b_GenHMass;   //!
    TBranch        *b_GenHPt;   //!
    TBranch        *b_GenHRapidity;   //!
