@@ -11,6 +11,8 @@ from ZZAnalysis.AnalysisStep.miscenums import *
 declareDefault("PD", "", globals()) # "" for MC, "DoubleEle", "DoubleMu", or "MuEG" for data
 declareDefault("MCFILTER", "", globals())
 declareDefault("XSEC", 1, globals())
+declareDefault("GENXSEC", 1, globals())
+declareDefault("GENBR", 1, globals())
 declareDefault("PROCESS_CR", False, globals())
 declareDefault("ADDZTREE", False, globals())
 
@@ -154,7 +156,9 @@ TreeSetup = cms.EDAnalyzer("HZZ4lNtupleMaker",
                            skipEmptyEvents = cms.bool(SKIP_EMPTY_EVENTS),
                            failedTreeLevel = cms.int32(FAILED_TREE_LEVEL),
                            sampleName = cms.string(SAMPLENAME),
-
+									GenXSEC = cms.double(GENXSEC),
+									GenBR = cms.double(GENBR),
+									
                            # MELA parameters
                            superMelaMass = cms.double(SUPERMELA_MASS),
 

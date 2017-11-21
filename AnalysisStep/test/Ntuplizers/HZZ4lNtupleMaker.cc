@@ -258,6 +258,8 @@ namespace {
 
   Short_t genExtInfo  = 0;
   Float_t xsection  = 0;
+  Float_t genxsection = 0;
+  Float_t genbranchingratio = 0;
   Float_t dataMCWeight  = 0;
   Float_t muonSF_Unc = 0;
   Float_t eleSF_Unc = 0;
@@ -398,6 +400,8 @@ private:
   bool applyTrigger;    // Keep only events passing trigger (overriden if skipEmptyEvents=False)
   bool applyTrigEffWeight;// apply trigger efficiency weight (concerns samples where trigger is not applied)
   Float_t xsec;
+  Float_t genxsec;
+  Float_t genbr;
   int year;
   double sqrts;
   double Hmass;
@@ -499,6 +503,8 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   applyTrigger(pset.getParameter<bool>("applyTrigger")), // Reject events that do not pass trigger (normally: true)
   applyTrigEffWeight(pset.getParameter<bool>("applyTrigEff")), //Apply an additional efficiency weights for MC samples where triggers are not present (normally: false)
   xsec(pset.getParameter<double>("xsec")),
+  genxsec(pset.getParameter<double>("GenXSEC")),
+  genbr(pset.getParameter<double>("GenBR")),
   year(pset.getParameter<int>("setup")),
   sqrts(SetupToSqrts(year)),
   Hmass(pset.getParameter<double>("superMelaMass")),
@@ -892,7 +898,8 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   LumiNumber=event.luminosityBlock();
   EventNumber=event.id().event();
   xsection=xsec;
-
+  genxsection=genxsec;
+  genbranchingratio=genbr;
 
   // Primary vertices
   Handle<vector<reco::Vertex> > vertices;
@@ -2162,6 +2169,8 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("overallEventWeight", overallEventWeight, false);
     myTree->Book("HqTMCweight", HqTMCweight, failedTreeLevel >= minimalFailedTree);
     myTree->Book("xsec", xsection, failedTreeLevel >= minimalFailedTree);
+	 myTree->Book("genxsec", genxsection, failedTreeLevel >= minimalFailedTree);
+	 myTree->Book("genBR", genbranchingratio, failedTreeLevel >= minimalFailedTree);
     myTree->Book("genExtInfo", genExtInfo, failedTreeLevel >= minimalFailedTree);
     myTree->Book("GenHMass", GenHMass, failedTreeLevel >= minimalFailedTree);
     myTree->Book("GenHPt", GenHPt, failedTreeLevel >= minimalFailedTree);
