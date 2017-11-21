@@ -28,21 +28,23 @@ int main( int argc, char *argv[] )
    TString file_name = "/ZZ4lAnalysis.root";
    TString file_name_FR = "/FakeRate_SS_Moriond368.root";
    
-   TString Data        = path + "Data" + file_name;
-   TString ggH125      = path + "ggH125" + file_name;
-   TString VBFH125     = path + "VBFH125" + file_name;
-   TString WpH125      = path + "WplusH125" + file_name;
+   TString Data        = path + "AllData" + file_name;
+	TString FakeRates   = "../../data/FakeRates" + file_name_FR;
+	
+   TString ggH125      = path + "ggH125"     + file_name;
+   TString VBFH125     = path + "VBFH125"    + file_name;
+   TString WpH125      = path + "WplusH125"  + file_name;
    TString WmH125      = path + "WminusH125" + file_name;
-   TString ZH125       = path + "ZH125" + file_name;
-   TString ttH125      = path + "ttH125" + file_name;
-   TString ZZTo4l      = path + "ZZTo4l" + file_name;
-   TString ggZZ4e      = path + "ggTo4e" + file_name;
-   TString ggZZ4mu     = path + "ggTo4mu" + file_name;
-   TString ggZZ4tau    = path + "ggTo4tau" + file_name;
-   TString ggZZ2e2mu   = path + "ggTo2e2mu" + file_name;
-   TString ggZZ2e2tau  = path + "ggTo2e2tau" + file_name;
-   TString ggZZ2mu2tau = path + "ggTo2mu2tau" + file_name;
-   TString FakeRates   = "../../data/FakeRates" + file_name_FR;
+   TString ZH125       = path + "ZH125"      + file_name;
+   TString ttH125      = path + "ttH125"     + file_name;
+	
+   TString ZZTo4l      = path + "ZZTo4l"                     + file_name;
+   TString ggZZ4e      = path + "ggTo4e_Contin_MCFM701"      + file_name;
+   TString ggZZ4mu     = path + "ggTo4mu_Contin_MCFM701"     + file_name;
+   TString ggZZ4tau    = path + "ggTo4tau_Contin_MCFM701"    + file_name;
+   TString ggZZ2e2mu   = path + "ggTo2e2mu_Contin_MCFM701"   + file_name;
+   TString ggZZ2e2tau  = path + "ggTo2e2tau_Contin_MCFM701"  + file_name;
+   TString ggZZ2mu2tau = path + "ggTo2mu2tau_Contin_MCFM701" + file_name;
 
    Plotter *plotter = new Plotter( 35.86706 ); 
 

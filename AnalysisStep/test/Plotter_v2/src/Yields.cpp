@@ -65,7 +65,7 @@ Yields::~Yields()
 void Yields::MakeHistograms( TString input_file_name )
 {
 
-   input_file = new TFile("./" + input_file_name);
+   input_file = new TFile(input_file_name);
    
    hCounters = (TH1F*)input_file->Get("ZZTree/Counters");
    n_gen_events = (Long64_t)hCounters->GetBinContent(1);
@@ -153,7 +153,7 @@ void Yields::Calculate_SS_ZX_Yields( TString input_file_data_name, TString  inpu
    
    FakeRates *FR = new FakeRates( input_file_FR_name );
    
-   input_file_data = new TFile("./" + input_file_data_name);
+   input_file_data = new TFile(input_file_data_name);
    input_tree_data = (TTree*)input_file_data->Get("CRZLLTree/candTree");
    Init( input_tree_data, input_file_data_name );
    

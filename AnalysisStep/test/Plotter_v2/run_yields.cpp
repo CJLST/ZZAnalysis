@@ -23,13 +23,13 @@ using namespace std;
 int main( int argc, char *argv[] )
 {
    setTDRStyle();
-   
-   TString path = "";
+	
+	TString path = "";
    TString file_name = "/ZZ4lAnalysis.root";
    TString file_name_FR = "/FakeRate_SS_Moriond368.root";
    
    //Data
-   TString Data        = path + "Data" + file_name;
+   TString Data        = path + "AllData" + file_name;
    TString FakeRates   = "../../data/FakeRates" + file_name_FR;
    
    // Signal
@@ -72,12 +72,12 @@ int main( int argc, char *argv[] )
    
    // Backgrounds
    TString ZZTo4l      = path + "ZZTo4l" + file_name;
-   TString ggZZ4e      = path + "ggTo4e" + file_name;
-   TString ggZZ4mu     = path + "ggTo4mu" + file_name;
-   TString ggZZ4tau    = path + "ggTo4tau" + file_name;
-   TString ggZZ2e2mu   = path + "ggTo2e2mu" + file_name;
-   TString ggZZ2e2tau  = path + "ggTo2e2tau" + file_name;
-   TString ggZZ2mu2tau = path + "ggTo2mu2tau" + file_name;
+   TString ggZZ4e      = path + "ggTo4e_Contin_MCFM701" + file_name;
+   TString ggZZ4mu     = path + "ggTo4mu_Contin_MCFM701" + file_name;
+   TString ggZZ4tau    = path + "ggTo4tau_Contin_MCFM701" + file_name;
+   TString ggZZ2e2mu   = path + "ggTo2e2mu_Contin_MCFM701" + file_name;
+   TString ggZZ2e2tau  = path + "ggTo2e2tau_Contin_MCFM701" + file_name;
+   TString ggZZ2mu2tau = path + "ggTo2mu2tau_Contin_MCFM701" + file_name;
    
    Yields *yields = new Yields( 35.867);
    
@@ -134,7 +134,6 @@ int main( int argc, char *argv[] )
    yields->FillInclusive();
 
    yields->Save();
-
    
 //==============
 // Print Yields 

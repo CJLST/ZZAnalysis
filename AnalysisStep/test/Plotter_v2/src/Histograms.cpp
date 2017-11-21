@@ -3454,7 +3454,7 @@ void Histograms::PrepareYamlFiles( TString sqrt, float M4l_down, float M4l_up, v
 
          for ( int i_prod_mode = 0; i_prod_mode < num_of_production_modes; i_prod_mode++ )
          {
-            out_file[i_fs] << _s_production_mode.at(i_prod_mode) << ": ";
+            out_file[i_fs] << _s_production_mode.at(i_prod_mode) << "_hzz: ";
             
             _fit_funct_name = "f_" + _s_production_mode.at(i_prod_mode) + "_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
             fit_function = (TF1*)f_signal_fits->Get(_fit_funct_name);
@@ -3479,15 +3479,15 @@ void Histograms::PrepareYamlFiles( TString sqrt, float M4l_down, float M4l_up, v
             }
             out_file[i_fs] << endl;
          }
-         out_file[i_fs] << _s_process.at(Settings::yqqZZ) << ": '" << histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yqqZZ]->Integral(
+         out_file[i_fs] << _s_process.at(Settings::yqqZZ) << "_hzz: '" << histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yqqZZ]->Integral(
                                                                       histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yqqZZ]->FindBin(M4l_down),
                                                                       histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yqqZZ]->FindBin(M4l_up) - 1) << "'" << endl;
          
-         out_file[i_fs] << _s_process.at(Settings::yggZZ) << ": '" << histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yggZZ]->Integral(
+         out_file[i_fs] << _s_process.at(Settings::yggZZ) << "_hzz: '" << histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yggZZ]->Integral(
                                                                      histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yggZZ]->FindBin(M4l_down),
                                                                      histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yggZZ]->FindBin(M4l_up) - 1) << "'" << endl;
          
-         out_file[i_fs] << "zjets: '" << ZXYields->GetM4lZX_Yields(_expected_yield_SR, M4l_down, M4l_up, i_fs, i_cat) << endl;
+         out_file[i_fs] << "zjets_hzz: '" << ZXYields->GetM4lZX_Yields(_expected_yield_SR, M4l_down, M4l_up, i_fs, i_cat) << endl;
          out_file[i_fs] << endl;
       
       } // end i_cat

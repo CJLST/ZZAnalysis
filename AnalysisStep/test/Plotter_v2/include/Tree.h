@@ -413,6 +413,10 @@ public :
    Float_t         HqTMCweight;
    Float_t         xsec;
    Short_t         genExtInfo;
+	Float_t         htxsHPt;
+	Short_t         htxsNJets;
+	Short_t         htxs_stage0_cat;
+	Short_t			 htxs_stage1_cat;
    Float_t         GenHMass;
    Float_t         GenHPt;
    Float_t         GenHRapidity;
@@ -849,6 +853,10 @@ public :
    TBranch        *b_HqTMCweight;   //!
    TBranch        *b_xsec;   //!
    TBranch        *b_genExtInfo;   //!
+	TBranch        *b_htxsHPt;  //!
+	TBranch        *b_htxsNJets;  //!
+	TBranch			*b_htxs_stage0_cat; //!
+	TBranch			*b_htxs_stage0_cat; //!
    TBranch        *b_GenHMass;   //!
    TBranch        *b_GenHPt;   //!
    TBranch        *b_GenHRapidity;   //!
@@ -1388,6 +1396,10 @@ void Tree::Init(TTree *tree, TString input_file_name)
       fChain->SetBranchAddress("HqTMCweight", &HqTMCweight, &b_HqTMCweight);
       fChain->SetBranchAddress("xsec", &xsec, &b_xsec);
       fChain->SetBranchAddress("genExtInfo", &genExtInfo, &b_genExtInfo);
+		fChain->SetBranchAddress("htxsHPt", &htxsHPt, &b_htxsHPt);
+		fChain->SetBranchAddress("htxsNJets", &htxsNJets, &b_htxsNJets);
+		fChain->SetBranchAddress("htxs_stage0_cat", &htxs_stage0_cat, &b_htxs_stage0_cat);
+		fChain->SetBranchAddress("htxs_stage1_cat", &htxs_stage1_cat, &b_htxs_stage1_cat);
       fChain->SetBranchAddress("GenHMass", &GenHMass, &b_GenHMass);
       fChain->SetBranchAddress("GenHPt", &GenHPt, &b_GenHPt);
       fChain->SetBranchAddress("GenHRapidity", &GenHRapidity, &b_GenHRapidity);
