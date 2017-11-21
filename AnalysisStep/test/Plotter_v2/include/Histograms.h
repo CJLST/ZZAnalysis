@@ -111,7 +111,7 @@ public:
    void plot_2D_error_single( TString, TString, TString, int );
    void plot_2D_error_all_cat( TString , TString , TString );
    
-   void FillYieldGraphs( float, float );
+   void FillYieldGraphs( float, float, TString);
    void PrepareYamlFiles( TString , float , float, vector<vector<float>> );
    void PrintYields( vector<vector<float>> );
    void PrintYields( float, float, vector<vector<float>> );

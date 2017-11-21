@@ -96,7 +96,7 @@ void Yields::MakeHistograms( TString input_file_name )
       if ( !(ZZsel >= 90) ) continue;
 
       // Find current process
-      _current_process = find_current_process( input_file_name );
+      _current_process = find_current_process( input_file_name, genExtInfo );
       
       // Final states
       _current_final_state = FindFinalState();
@@ -297,9 +297,9 @@ void Yields::Delete()
 //==================
 
 //==================
-void Yields::FillGraphs( TString file_name, float M4l_down, float M4l_up )
+void Yields::FillGraphs( TString file_name, float M4l_down, float M4l_up , TString option )
 {
-   histo_map[file_name]->FillYieldGraphs( M4l_down, M4l_up );
+   histo_map[file_name]->FillYieldGraphs( M4l_down, M4l_up , option);
    
    cout << "[INFO] Yield vs mH graphs are filled." << endl;   
 }
@@ -345,7 +345,7 @@ void Yields::PrintLatexTables( TString file_name, float M4l_down, float M4l_up  
 
 
 //==========================================================
-int Yields::find_current_process( TString input_file_name )
+int Yields::find_current_process( TString input_file_name , int genExtInfo)
 {
 
    int current_process = -999;
@@ -365,23 +365,41 @@ int Yields::find_current_process( TString input_file_name )
    if ( input_file_name.Contains("VBFH126") )        current_process = Settings::yH126VBF;
    if ( input_file_name.Contains("VBFH130") )        current_process = Settings::yH130VBF;
    
-   if ( input_file_name.Contains("WplusH120") )      current_process = Settings::yH120WH;
-   if ( input_file_name.Contains("WplusH124") )      current_process = Settings::yH124WH;
-   if ( input_file_name.Contains("WplusH125") )      current_process = Settings::yH125WH;
-   if ( input_file_name.Contains("WplusH126") )      current_process = Settings::yH126WH;
-   if ( input_file_name.Contains("WplusH130") )      current_process = Settings::yH130WH;
+   if ( input_file_name.Contains("WplusH120") && genExtInfo > 10)      current_process = Settings::yH120WHlep;
+   if ( input_file_name.Contains("WplusH124") && genExtInfo > 10)      current_process = Settings::yH124WHlep;
+   if ( input_file_name.Contains("WplusH125") && genExtInfo > 10)      current_process = Settings::yH125WHlep;
+   if ( input_file_name.Contains("WplusH126") && genExtInfo > 10)      current_process = Settings::yH126WHlep;
+   if ( input_file_name.Contains("WplusH130") && genExtInfo > 10)      current_process = Settings::yH130WHlep;
    
-   if ( input_file_name.Contains("WminusH120") )     current_process = Settings::yH120WH;
-   if ( input_file_name.Contains("WminusH124") )     current_process = Settings::yH124WH;
-   if ( input_file_name.Contains("WminusH125") )     current_process = Settings::yH125WH;
-   if ( input_file_name.Contains("WminusH126") )     current_process = Settings::yH126WH;
-   if ( input_file_name.Contains("WminusH130") )     current_process = Settings::yH130WH;
+   if ( input_file_name.Contains("WminusH120") && genExtInfo > 10)     current_process = Settings::yH120WHlep;
+   if ( input_file_name.Contains("WminusH124") && genExtInfo > 10)     current_process = Settings::yH124WHlep;
+   if ( input_file_name.Contains("WminusH125") && genExtInfo > 10)     current_process = Settings::yH125WHlep;
+   if ( input_file_name.Contains("WminusH126") && genExtInfo > 10)     current_process = Settings::yH126WHlep;
+   if ( input_file_name.Contains("WminusH130") && genExtInfo > 10)     current_process = Settings::yH130WHlep;
       
-   if ( input_file_name.Contains("ZH120") )          current_process = Settings::yH120ZH;
-   if ( input_file_name.Contains("ZH124") )          current_process = Settings::yH124ZH;
-   if ( input_file_name.Contains("ZH125") )          current_process = Settings::yH125ZH;
-   if ( input_file_name.Contains("ZH126") )          current_process = Settings::yH126ZH;
-   if ( input_file_name.Contains("ZH130") )          current_process = Settings::yH130ZH;
+   if ( input_file_name.Contains("ZH120") && genExtInfo > 10)          current_process = Settings::yH120ZHlep;
+   if ( input_file_name.Contains("ZH124") && genExtInfo > 10)          current_process = Settings::yH124ZHlep;
+   if ( input_file_name.Contains("ZH125") && genExtInfo > 10)          current_process = Settings::yH125ZHlep;
+   if ( input_file_name.Contains("ZH126") && genExtInfo > 10)          current_process = Settings::yH126ZHlep;
+   if ( input_file_name.Contains("ZH130") && genExtInfo > 10)          current_process = Settings::yH130ZHlep;
+	
+	if ( input_file_name.Contains("WplusH120") && genExtInfo <= 10)      current_process = Settings::yH120WHhad;
+	if ( input_file_name.Contains("WplusH124") && genExtInfo <= 10)      current_process = Settings::yH124WHhad;
+	if ( input_file_name.Contains("WplusH125") && genExtInfo <= 10)      current_process = Settings::yH125WHhad;
+	if ( input_file_name.Contains("WplusH126") && genExtInfo <= 10)      current_process = Settings::yH126WHhad;
+	if ( input_file_name.Contains("WplusH130") && genExtInfo <= 10)      current_process = Settings::yH130WHhad;
+	
+	if ( input_file_name.Contains("WminusH120") && genExtInfo <= 10)     current_process = Settings::yH120WHhad;
+	if ( input_file_name.Contains("WminusH124") && genExtInfo <= 10)     current_process = Settings::yH124WHhad;
+	if ( input_file_name.Contains("WminusH125") && genExtInfo <= 10)     current_process = Settings::yH125WHhad;
+	if ( input_file_name.Contains("WminusH126") && genExtInfo <= 10)     current_process = Settings::yH126WHhad;
+	if ( input_file_name.Contains("WminusH130") && genExtInfo <= 10)     current_process = Settings::yH130WHhad;
+	
+	if ( input_file_name.Contains("ZH120") && genExtInfo <= 10)          current_process = Settings::yH120ZHhad;
+	if ( input_file_name.Contains("ZH124") && genExtInfo <= 10)          current_process = Settings::yH124ZHhad;
+	if ( input_file_name.Contains("ZH125") && genExtInfo <= 10)          current_process = Settings::yH125ZHhad;
+	if ( input_file_name.Contains("ZH126") && genExtInfo <= 10)          current_process = Settings::yH126ZHhad;
+	if ( input_file_name.Contains("ZH130") && genExtInfo <= 10)          current_process = Settings::yH130ZHhad;
    
    if ( input_file_name.Contains("ttH120") )         current_process = Settings::yH120ttH;
    if ( input_file_name.Contains("ttH124") )         current_process = Settings::yH124ttH;

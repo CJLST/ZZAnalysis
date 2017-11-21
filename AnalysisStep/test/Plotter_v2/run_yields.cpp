@@ -134,7 +134,7 @@ int main( int argc, char *argv[] )
    yields->FillInclusive();
 
    yields->Save();
-   
+	
 //==============
 // Print Yields 
 //==============
@@ -144,7 +144,7 @@ int main( int argc, char *argv[] )
    yields->Print("Yields");
    yields->Print("Yields", 118., 130.);
    yields->PrintLatexTables("Yields", 118., 130.);
-   yields->FillGraphs("Yields", 105., 140.);
+   yields->FillGraphs("Yields", 105., 140., "Q");
    yields->PrepareYamlFiles("Yields", "13", 105., 140.);
    
    delete yields;

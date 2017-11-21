@@ -84,7 +84,7 @@ void Plotter::MakeHistograms( TString input_file_name )
       if ( !(ZZsel >= 90) ) continue;
 
       // Find current process
-      _current_process = find_current_process( input_file_name );
+      _current_process = find_current_process( input_file_name, genExtInfo );
    
       // Final states
       _current_final_state = FindFinalState();
@@ -550,7 +550,7 @@ void Plotter::plot_2D_error_all_cat( TString file_name, TString variable_name, T
 
 
 //==========================================================
-int Plotter::find_current_process( TString input_file_name )
+int Plotter::find_current_process( TString input_file_name , int genExtInfo)
 {
    
    int current_process = -999;
@@ -559,9 +559,12 @@ int Plotter::find_current_process( TString input_file_name )
    if ( input_file_name.Contains("Data") )           current_process = Settings::Data;
    if ( input_file_name.Contains("ggH125") )         current_process = Settings::H125ggH;
    if ( input_file_name.Contains("VBFH125") )        current_process = Settings::H125VBF;
-   if ( input_file_name.Contains("WplusH125") )      current_process = Settings::H125VH;
-   if ( input_file_name.Contains("WminusH125") )     current_process = Settings::H125VH;
-   if ( input_file_name.Contains("ZH125") )          current_process = Settings::H125VH;
+   if ( input_file_name.Contains("WplusH125") && genExtInfo > 10)      current_process = Settings::H125VH; //prepare for splitting VH into VH_lep and VH_had
+   if ( input_file_name.Contains("WminusH125") && genExtInfo > 10)     current_process = Settings::H125VH;
+   if ( input_file_name.Contains("ZH125") && genExtInfo > 10)          current_process = Settings::H125VH;
+	if ( input_file_name.Contains("WplusH125") && genExtInfo <= 10)      current_process = Settings::H125VH; //prepare for splitting VH into VH_lep and VH_had
+	if ( input_file_name.Contains("WminusH125") && genExtInfo <= 10)     current_process = Settings::H125VH;
+	if ( input_file_name.Contains("ZH125") && genExtInfo <= 10)          current_process = Settings::H125VH;
    if ( input_file_name.Contains("ttH125") )         current_process = Settings::H125ttH;
    if ( input_file_name.Contains("ZZTo4l") )         current_process = Settings::qqZZ;
    if ( input_file_name.Contains("ggTo4e") )         current_process = Settings::ggZZ;

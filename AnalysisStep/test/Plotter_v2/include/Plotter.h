@@ -68,7 +68,7 @@ public:
    float calculate_K_factor( TString );
    int FindFinalState();
    int FindFinalStateZX();
-   int find_current_process( TString );
+   int find_current_process( TString , int);
    bool blind( float );
    void FillInclusive();
    void Save();

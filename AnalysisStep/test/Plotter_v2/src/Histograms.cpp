@@ -381,17 +381,29 @@ Histograms::Histograms( double lumi)
    _s_process.push_back("H126VBF");
    _s_process.push_back("H130VBF");
    
-   _s_process.push_back("H120WH");
-   _s_process.push_back("H124WH");
-   _s_process.push_back("H125WH");
-   _s_process.push_back("H126WH");
-   _s_process.push_back("H130WH");
+   _s_process.push_back("H120WHlep");
+   _s_process.push_back("H124WHlep");
+   _s_process.push_back("H125WHlep");
+   _s_process.push_back("H126WHlep");
+   _s_process.push_back("H130WHlep");
+	
+	_s_process.push_back("H120WHhad");
+	_s_process.push_back("H124WHhad");
+	_s_process.push_back("H125WHhad");
+	_s_process.push_back("H126WHhad");
+	_s_process.push_back("H130WHhad");
    
-   _s_process.push_back("H120ZH");
-   _s_process.push_back("H124ZH");
-   _s_process.push_back("H125ZH");
-   _s_process.push_back("H126ZH");
-   _s_process.push_back("H130ZH");
+   _s_process.push_back("H120ZHlep");
+   _s_process.push_back("H124ZHlep");
+   _s_process.push_back("H125ZHlep");
+   _s_process.push_back("H126ZHlep");
+   _s_process.push_back("H130ZHlep");
+	
+	_s_process.push_back("H120ZHhad");
+	_s_process.push_back("H124ZHhad");
+	_s_process.push_back("H125ZHhad");
+	_s_process.push_back("H126ZHhad");
+	_s_process.push_back("H130ZHhad");
    
    _s_process.push_back("H120ttH");
    _s_process.push_back("H124ttH");
@@ -421,8 +433,10 @@ Histograms::Histograms( double lumi)
       
    _s_production_mode.push_back("ggH");
    _s_production_mode.push_back("qqH");
-   _s_production_mode.push_back("WH");
-   _s_production_mode.push_back("ZH");
+   _s_production_mode.push_back("WH_lep");
+	_s_production_mode.push_back("WH_had");
+   _s_production_mode.push_back("ZH_lep");
+	_s_production_mode.push_back("ZH_had");
    _s_production_mode.push_back("ttH");
    
 
@@ -1373,32 +1387,42 @@ void Histograms::FillInclusiveYields()
       {
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120ggH]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120VBF]);
-         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120WH]);
-         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120ZH]);
+         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120WHlep]);
+			histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120WHhad]);
+         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120ZHlep]);
+			histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120ZHhad]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120ttH]);
          
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124ggH]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124VBF]);
-         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124WH]);
-         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124ZH]);
+         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124WHlep]);
+			histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124WHhad]);
+         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124ZHlep]);
+			histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124ZHhad]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124ttH]);
          
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125ggH]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125VBF]);
-         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125WH]);
-         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125ZH]);
+         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125WHlep]);
+			histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125WHhad]);
+         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125ZHlep]);
+			histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125ZHhad]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125ttH]);
          
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126ggH]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126VBF]);
-         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126WH]);
-         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126ZH]);
+         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126WHlep]);
+		   histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126WHhad]);
+         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126ZHlep]);
+			histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126ZHhad]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126ttH]);
          
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130ggH]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130VBF]);
-         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130WH]);
-         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130ZH]);
+         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130WHlep]);
+			histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130WHhad]);
+         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130ZHlep]);
+			histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130ZHhad]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130ttH]);
       }
    }
@@ -3276,12 +3300,14 @@ void Histograms::plot_2D_error_all_cat( TString filename, TString variable_name,
 
 
 //==============================================================
-void Histograms::FillYieldGraphs( float M4l_down, float M4l_up )
+void Histograms::FillYieldGraphs( float M4l_down, float M4l_up , TString fit_option = "")
 {
    system("mkdir -p ROOT_files");
    TFile *f_signal_fits = new TFile("ROOT_files/Signal_fits.root", "recreate");
    
    gStyle->SetOptFit(0);
+	
+	TCanvas *c = new TCanvas("", "", 1500, 1500);
    
    TPaveText* pav = new TPaveText(0.13,0.93,0.8,1.,"brNDC");
    pav->SetFillStyle(0);
@@ -3305,36 +3331,28 @@ void Histograms::FillYieldGraphs( float M4l_down, float M4l_up )
    Color_t catColor[num_of_categories] = {kBlue-9, kCyan-6, kGreen-6, kRed-7, kOrange+6, kMagenta-6, kYellow - 3 ,kBlack};
    
    for ( int i_prod_mode = 0; i_prod_mode < num_of_production_modes; i_prod_mode++ )
-   {      
+   {
       for ( int i_cat = 0; i_cat < num_of_categories - 1; i_cat++ )
       {
-         cout << endl;
-         
          for ( int i_fs = 0; i_fs < num_of_final_states - 1; i_fs++ )
          {
             if( i_fs == Settings::fs2mu2e ) continue;
-            
-            cout << _s_production_mode.at(i_prod_mode) << " " << _s_category.at(i_cat) << " " << _s_final_state.at(i_fs);
-               
+	
             for( int i_mass_point = 0; i_mass_point < 5; i_mass_point++)
             {
                process = SetProcess(i_mass_point, i_prod_mode);
-               
-               if ( process == Settings::yH124WH || process == Settings::yH124ttH ) continue;
                   
                temp_yield = histos_1D[Settings::M4lYields][i_fs][i_cat][process]->IntegralAndError(
                             histos_1D[Settings::M4lYields][i_fs][i_cat][process]->FindBin(M4l_down),
                             histos_1D[Settings::M4lYields][i_fs][i_cat][process]->FindBin(M4l_up) - 1, temp_error);
                
-               cout << " " << temp_yield;
+               //cout << " " << temp_yield;
                
                yield.push_back(temp_yield);
                error.push_back(temp_error);
                mass_points.push_back(SetMassPoint(i_mass_point));                  
             
             } // i_mass_point
-            
-            cout << endl;
             
             yields_graph[i_fs][i_cat][i_prod_mode] = new TGraphErrors(yield.size(), &(mass_points[0]), &(yield[0]), 0, &(error[0]));
             
@@ -3358,23 +3376,28 @@ void Histograms::FillYieldGraphs( float M4l_down, float M4l_up )
             // Set fit model
             TString fit_model;
             fit_model = "pol2";
-            if (i_cat == Settings::VH_lepton_tagged && i_prod_mode != Settings::WH) fit_model = "pol1";
+            if (i_prod_mode != Settings::WH_lep && i_cat == Settings::VH_lepton_tagged) fit_model = "pol1";
+				if (i_prod_mode != Settings::WH_had && i_cat == Settings::VH_lepton_tagged) fit_model = "pol1";
             if (i_cat == Settings::VH_hadron_tagged) fit_model = "pol1";
             if (i_cat == Settings::ttH_tagged) fit_model = "pol1";
             if (i_cat == Settings::VH_MET_tagged) fit_model = "pol1";
             if (i_prod_mode == Settings::ttH) fit_model = "pol1";
-            if (i_prod_mode == Settings::WH && i_cat == Settings::VBF_2j_tagged && i_fs == Settings::fs4e) fit_model = "pol1";
-            if (i_prod_mode == Settings::ZH && i_cat == Settings::VBF_1j_tagged && i_fs == Settings::fs4e) fit_model = "pol1";
-            if (i_prod_mode == Settings::ZH && i_cat == Settings::VBF_1j_tagged && i_fs == Settings::fs4mu) fit_model = "pol1";    
+            if (i_prod_mode == Settings::WH_lep && i_cat == Settings::VBF_2j_tagged && i_fs == Settings::fs4e) fit_model = "pol1";
+				if (i_prod_mode == Settings::WH_had && i_cat == Settings::VBF_2j_tagged && i_fs == Settings::fs4e) fit_model = "pol1";
+            if (i_prod_mode == Settings::ZH_lep && i_cat == Settings::VBF_1j_tagged && i_fs == Settings::fs4e) fit_model = "pol1";
+				if (i_prod_mode == Settings::ZH_had && i_cat == Settings::VBF_1j_tagged && i_fs == Settings::fs4e) fit_model = "pol1";
+            if (i_prod_mode == Settings::ZH_lep && i_cat == Settings::VBF_1j_tagged && i_fs == Settings::fs4mu) fit_model = "pol1";
+				if (i_prod_mode == Settings::ZH_had && i_cat == Settings::VBF_1j_tagged && i_fs == Settings::fs4mu) fit_model = "pol1";
             if (i_prod_mode == Settings::ttH && i_cat == Settings::untagged && i_fs == Settings::fs2e2mu) fit_model = "pol2";
             if (i_prod_mode == Settings::ttH && i_cat == Settings::ttH_tagged) fit_model = "pol2";
-            if (i_prod_mode == Settings::ZH && i_cat == Settings::VBF_2j_tagged) fit_model = "pol1";    
+            if (i_prod_mode == Settings::ZH_lep && i_cat == Settings::VBF_2j_tagged) fit_model = "pol1";
+				if (i_prod_mode == Settings::ZH_had && i_cat == Settings::VBF_2j_tagged) fit_model = "pol1";
                         
             TF1 *fit_function = new TF1("fit_function", fit_model, 119, 131);
             fit_function->SetLineColor(catColor[i_cat]);
             fit_function->SetLineWidth(2);
             
-            yields_graph[i_fs][i_cat][i_prod_mode]->Fit(fit_function, "R");
+            yields_graph[i_fs][i_cat][i_prod_mode]->Fit(fit_function, "R" + fit_option);
          
             _fit_funct_name = "f_" + _s_production_mode.at(i_prod_mode) + "_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
             fit_function->SetName(_fit_funct_name);
@@ -3387,24 +3410,24 @@ void Histograms::FillYieldGraphs( float M4l_down, float M4l_up )
             lgd->AddEntry(yields_graph[i_fs][i_cat][i_prod_mode],_s_final_state[i_fs],"P");
             
          } // i_fs 
-         
-            TCanvas *c = new TCanvas("", "", 1500, 1500);
-            
-            pav->AddText(_s_production_mode[i_prod_mode] + ", " + _s_category[i_cat]);
-            
-            yields_graph[Settings::fs2e2mu][i_cat][i_prod_mode]->Draw("AP");
-            yields_graph[Settings::fs4e][i_cat][i_prod_mode]->Draw("P");
-            yields_graph[Settings::fs4mu][i_cat][i_prod_mode]->Draw("P");
-            pav->Draw();
-            lgd->Draw();
-            
-            TString fit_name = _s_production_mode.at(i_prod_mode) + "_" + _s_category.at(i_cat);
-            
-             _out_file_name = "Fits/" + _s_production_mode.at(i_prod_mode) + "_" + _s_category.at(i_cat);
-             SavePlots(c, _out_file_name, "Fits");
-            
-            pav->Clear();    
-            lgd->Clear();
+			
+			c->cd();
+			pav->AddText(_s_production_mode[i_prod_mode] + ", " + _s_category[i_cat]);
+			
+			yields_graph[Settings::fs2e2mu][i_cat][i_prod_mode]->Draw("AP");
+			yields_graph[Settings::fs4e][i_cat][i_prod_mode]->Draw("P");
+			yields_graph[Settings::fs4mu][i_cat][i_prod_mode]->Draw("P");
+			pav->Draw();
+			lgd->Draw();
+			
+			TString fit_name = _s_production_mode.at(i_prod_mode) + "_" + _s_category.at(i_cat);
+			
+			 _out_file_name = "Fits/" + _s_production_mode.at(i_prod_mode) + "_" + _s_category.at(i_cat);
+			 SavePlots(c, _out_file_name, "Fits");
+			
+			pav->Clear();
+			lgd->Clear();
+			c->Clear();
             
       } // i_cat
    } // i_prod_mode
@@ -3454,7 +3477,7 @@ void Histograms::PrepareYamlFiles( TString sqrt, float M4l_down, float M4l_up, v
 
          for ( int i_prod_mode = 0; i_prod_mode < num_of_production_modes; i_prod_mode++ )
          {
-            out_file[i_fs] << _s_production_mode.at(i_prod_mode) << "_hzz: ";
+            out_file[i_fs] <<  "    " << _s_production_mode.at(i_prod_mode) << "_hzz: ";
             
             _fit_funct_name = "f_" + _s_production_mode.at(i_prod_mode) + "_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
             fit_function = (TF1*)f_signal_fits->Get(_fit_funct_name);
@@ -3479,15 +3502,15 @@ void Histograms::PrepareYamlFiles( TString sqrt, float M4l_down, float M4l_up, v
             }
             out_file[i_fs] << endl;
          }
-         out_file[i_fs] << _s_process.at(Settings::yqqZZ) << "_hzz: '" << histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yqqZZ]->Integral(
+         out_file[i_fs] <<  "    "  << _s_process.at(Settings::yqqZZ) << "_hzz: '" << histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yqqZZ]->Integral(
                                                                       histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yqqZZ]->FindBin(M4l_down),
                                                                       histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yqqZZ]->FindBin(M4l_up) - 1) << "'" << endl;
          
-         out_file[i_fs] << _s_process.at(Settings::yggZZ) << "_hzz: '" << histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yggZZ]->Integral(
+         out_file[i_fs] <<  "    "  << _s_process.at(Settings::yggZZ) << "_hzz: '" << histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yggZZ]->Integral(
                                                                      histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yggZZ]->FindBin(M4l_down),
                                                                      histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yggZZ]->FindBin(M4l_up) - 1) << "'" << endl;
          
-         out_file[i_fs] << "zjets_hzz: '" << ZXYields->GetM4lZX_Yields(_expected_yield_SR, M4l_down, M4l_up, i_fs, i_cat) << endl;
+         out_file[i_fs] <<  "    "  << "zjets_hzz: '" << ZXYields->GetM4lZX_Yields(_expected_yield_SR, M4l_down, M4l_up, i_fs, i_cat) << "'" << endl;
          out_file[i_fs] << endl;
       
       } // end i_cat
@@ -3846,7 +3869,7 @@ void Histograms::PrintLatexTables(float M4l_down, float M4l_up, vector< vector <
    {
       for ( int i_proc = 0; i_proc < num_of_processes_yields; i_proc++ )
       {
-         if (i_proc == Settings::yH125ggH || i_proc == Settings::yH125VBF || i_proc == Settings::yH125WH || i_proc == Settings::yH125ZH 
+         if (i_proc == Settings::yH125ggH || i_proc == Settings::yH125VBF || i_proc == Settings::yH125WHlep || i_proc == Settings::yH125WHhad || i_proc == Settings::yH125ZHlep || i_proc == Settings::yH125ZHhad
          || i_proc == Settings::yH125ttH || i_proc == Settings::yqqZZ || i_proc == Settings::yggZZ)
          {
             temp_yield = histos_1D[Settings::M4lYields][Settings::fs4l][i_cat][i_proc]->Integral(
@@ -3870,7 +3893,7 @@ void Histograms::PrintLatexTables(float M4l_down, float M4l_up, vector< vector <
    cout << "\\hline" << endl;
    cout << "\\hline" << endl;
    cout << "Event & \\multicolumn{5}{c|}{Signal} & \\multicolumn{3}{c|}{Background} & Total & Observed \\\\" << endl;
-   cout << "category & $\\ggH$ & VBF & WH & ZH & $\\ttH$ & \\qqZZ & \\ggZZ & \\cPZ\\ + X & expected & \\\\" << endl;
+   cout << "category & $\\ggH$ & VBF & WH_lep && WH_had & ZH_lep && ZH_had & $\\ttH$ & \\qqZZ & \\ggZZ & \\cPZ\\ + X & expected & \\\\" << endl;
    cout << "\\hline" << endl; 
    
    
@@ -4564,14 +4587,22 @@ int Histograms::SetProcess(int point, int production_mode)
             break;
             
          case 2:
-            return Settings::yH120WH;
+            return Settings::yH120WHlep;
             break;
             
          case 3:
-            return Settings::yH120ZH;
+            return Settings::yH120WHhad;
             break;
+				
+			case 4:
+				return Settings::yH120ZHlep;
+				break;
+				
+			case 5:
+				return Settings::yH120ZHhad;
+				break;
             
-         case 4:
+         case 6:
             return Settings::yH120ttH;
             break;
             
@@ -4585,25 +4616,33 @@ int Histograms::SetProcess(int point, int production_mode)
    else if (point == 1)
    {
       switch (production_mode) {
-         case 0:
-            return Settings::yH124ggH;
-            break;
-            
-         case 1:
-            return Settings::yH124VBF;
-            break;
-            
-         case 2:
-            return Settings::yH124WH;
-            break;
-            
-         case 3:
-            return Settings::yH124ZH;
-            break;
-            
-         case 4:
-            return Settings::yH124ttH;
-            break;
+			case 0:
+				return Settings::yH124ggH;
+				break;
+				
+			case 1:
+				return Settings::yH124VBF;
+				break;
+				
+			case 2:
+				return Settings::yH124WHlep;
+				break;
+				
+			case 3:
+				return Settings::yH124WHhad;
+				break;
+				
+			case 4:
+				return Settings::yH124ZHlep;
+				break;
+				
+			case 5:
+				return Settings::yH124ZHhad;
+				break;
+				
+			case 6:
+				return Settings::yH124ttH;
+				break;
             
          default:
             cout << "[ERROR] Mass point index out of range: " << production_mode << endl;
@@ -4616,25 +4655,33 @@ int Histograms::SetProcess(int point, int production_mode)
    else if (point == 2)
    {
       switch (production_mode) {
-         case 0:
-            return Settings::yH125ggH;
-            break;
-            
-         case 1:
-            return Settings::yH125VBF;
-            break;
-            
-         case 2:
-            return Settings::yH125WH;
-            break;
-            
-         case 3:
-            return Settings::yH125ZH;
-            break;
-            
-         case 4:
-            return Settings::yH125ttH;
-            break;
+			case 0:
+				return Settings::yH125ggH;
+				break;
+				
+			case 1:
+				return Settings::yH125VBF;
+				break;
+				
+			case 2:
+				return Settings::yH125WHlep;
+				break;
+				
+			case 3:
+				return Settings::yH125WHhad;
+				break;
+				
+			case 4:
+				return Settings::yH125ZHlep;
+				break;
+				
+			case 5:
+				return Settings::yH125ZHhad;
+				break;
+				
+			case 6:
+				return Settings::yH125ttH;
+				break;
             
          default:
             cout << "[ERROR] Mass point index out of range: " << production_mode << endl;
@@ -4647,25 +4694,33 @@ int Histograms::SetProcess(int point, int production_mode)
    else if (point == 3)
    {
       switch (production_mode) {
-         case 0:
-            return Settings::yH126ggH;
-            break;
-            
-         case 1:
-            return Settings::yH126VBF;
-            break;
-            
-         case 2:
-            return Settings::yH126WH;
-            break;
-            
-         case 3:
-            return Settings::yH126ZH;
-            break;
-            
-         case 4:
-            return Settings::yH126ttH;
-            break;
+			case 0:
+				return Settings::yH126ggH;
+				break;
+				
+			case 1:
+				return Settings::yH126VBF;
+				break;
+				
+			case 2:
+				return Settings::yH126WHlep;
+				break;
+				
+			case 3:
+				return Settings::yH126WHhad;
+				break;
+				
+			case 4:
+				return Settings::yH126ZHlep;
+				break;
+				
+			case 5:
+				return Settings::yH126ZHhad;
+				break;
+				
+			case 6:
+				return Settings::yH126ttH;
+				break;
             
          default:
             cout << "[ERROR] Mass point index out of range: " << production_mode << endl;
@@ -4678,25 +4733,33 @@ int Histograms::SetProcess(int point, int production_mode)
    else if (point == 4)
    {
       switch (production_mode) {
-         case 0:
-            return Settings::yH130ggH;
-            break;
-            
-         case 1:
-            return Settings::yH130VBF;
-            break;
-            
-         case 2:
-            return Settings::yH130WH;
-            break;
-            
-         case 3:
-            return Settings::yH130ZH;
-            break;
-            
-         case 4:
-            return Settings::yH130ttH;
-            break;
+			case 0:
+				return Settings::yH130ggH;
+				break;
+				
+			case 1:
+				return Settings::yH130VBF;
+				break;
+				
+			case 2:
+				return Settings::yH130WHlep;
+				break;
+				
+			case 3:
+				return Settings::yH130WHhad;
+				break;
+				
+			case 4:
+				return Settings::yH130ZHlep;
+				break;
+				
+			case 5:
+				return Settings::yH130ZHhad;
+				break;
+				
+			case 6:
+				return Settings::yH130ttH;
+				break;
             
          default:
             cout << "[ERROR] Mass point index out of range: " << production_mode << endl;

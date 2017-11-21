@@ -56,12 +56,12 @@ public:
    float calculate_K_factor( TString );
    int FindFinalState();
    int FindFinalStateZX();
-   int find_current_process( TString );
+   int find_current_process( TString, int);
    void FillInclusive();
    void Save();
    void Delete();
    void GetHistos( TString );
-   void FillGraphs( TString , float, float );
+   void FillGraphs( TString , float, float, TString );
    void PrepareYamlFiles( TString, TString , float , float );
    void Print( TString );
    void Print( TString, float, float );
