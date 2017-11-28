@@ -513,7 +513,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
 
   lheMElist(pset.getParameter<std::vector<std::string>>("lheProbabilities")),
   addLHEKinematics(pset.getParameter<bool>("AddLHEKinematics")),
-  lheHandler(0),
+  lheHandler(nullptr),
   apply_K_NNLOQCD_ZZGG(pset.getParameter<int>("Apply_K_NNLOQCD_ZZGG")),
   apply_K_NNLOQCD_ZZQQB(pset.getParameter<bool>("Apply_K_NNLOQCD_ZZQQB")),
   apply_K_NLOEW_ZZQQB(pset.getParameter<bool>("Apply_K_NLOEW_ZZQQB")),
@@ -702,7 +702,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
 HZZ4lNtupleMaker::~HZZ4lNtupleMaker()
 {
   clearMELABranches(); // Cleans LHE branches
-  if (lheHandler!=0) delete lheHandler;
+  delete lheHandler;
 }
 
 
@@ -757,7 +757,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     MCHistoryTools mch(event, sampleName, genParticles, genInfo);
     genFinalState = mch.genFinalState();
     genProcessId = mch.getProcessID();
-    genHEPMCweight = mch.gethepMCweight();
+    genHEPMCweight = mch.gethepMCweight(); // Overridden by LHEHandler if genHEPMCweight==1.
     genExtInfo = mch.genAssociatedFS();
 
     //Information on generated candidates, will be used later
@@ -810,7 +810,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
         lhe_evt = lhe_handles.front();
         lheHandler->setHandle(&lhe_evt);
         lheHandler->extract();
-        FillLHECandidate();
+        FillLHECandidate(); // Also writes weights
         lheHandler->clear();
       }
       //else cerr << "lhe_handles.size()==0" << endl;
@@ -1313,6 +1313,7 @@ void HZZ4lNtupleMaker::FillLHECandidate(){
   }
 
   LHEPDFScale = lheHandler->getPDFScale();
+  if (genHEPMCweight==1.) lheHandler->getLHEOriginalWeight();
   LHEweight_QCDscale_muR1_muF1 = lheHandler->getLHEWeight(0, 1.);
   LHEweight_QCDscale_muR1_muF2 = lheHandler->getLHEWeight(1, 1.);
   LHEweight_QCDscale_muR1_muF0p5 = lheHandler->getLHEWeight(2, 1.);

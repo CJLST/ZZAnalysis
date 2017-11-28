@@ -21,7 +21,7 @@ doKinematics(doKinematics_),
 genEvent(0),
 genCand(0)
 {
-  setHandle(lhe_evt_);
+  setHandle(lhe_evt_); // Also calls clear()
   extract();
 }
 LHEHandler::LHEHandler(int VVMode_, int VVDecayMode_, bool doKinematics_) :
@@ -54,24 +54,28 @@ void LHEHandler::clear(){
   LHEWeight_AsMZUpDn.clear();
   PDFid.clear();
   PDFScale=0;
+  LHEOriginalWeight=1;
 }
 
 MELACandidate* LHEHandler::getBestCandidate(){ return genCand; }
-float LHEHandler::getLHEWeight(unsigned int whichWeight, float defaultValue){
+float const& LHEHandler::getLHEOriginalWeight() const{
+  return this->LHEOriginalWeight;
+}
+float LHEHandler::getLHEWeight(unsigned int whichWeight, float defaultValue) const{
   if (whichWeight<LHEWeight.size()) return LHEWeight.at(whichWeight);
   else return defaultValue;
 }
-float LHEHandler::getLHEWeight_PDFVariationUpDn(int whichUpDn, float defaultValue){
+float LHEHandler::getLHEWeight_PDFVariationUpDn(int whichUpDn, float defaultValue) const{
   if (whichUpDn>0 && LHEWeight_PDFVariationUpDn.size()>1) return LHEWeight_PDFVariationUpDn.at(1);
   else if (whichUpDn<0 && LHEWeight_PDFVariationUpDn.size()>0) return LHEWeight_PDFVariationUpDn.at(0);
   else return defaultValue;
 }
-float LHEHandler::getLHEWeigh_AsMZUpDn(int whichUpDn, float defaultValue){
+float LHEHandler::getLHEWeigh_AsMZUpDn(int whichUpDn, float defaultValue) const{
   if (whichUpDn>0 && LHEWeight_AsMZUpDn.size()>1) return LHEWeight_AsMZUpDn.at(1);
   else if (whichUpDn<0 && LHEWeight_AsMZUpDn.size()>0) return LHEWeight_AsMZUpDn.at(0);
   else return defaultValue;
 }
-float LHEHandler::getPDFScale(){ return PDFScale; }
+float const& LHEHandler::getPDFScale() const{ return PDFScale; }
 
 
 
@@ -165,13 +169,13 @@ void LHEHandler::readEvent(){
   //
 
   // LHE weights (Maximum 9 or size of weights array for QCD variations, 2 for PDF variations and 2 for alphas(mZ) variations)
+  LHEOriginalWeight = (*lhe_evt)->originalXWGTUP();
   vector<float> tmpWgtArray;
   vector<float> LHEPDFVariationWgt;
   vector<float> LHEPDFAlphaSMZWgt;
   for (int iw=0; iw<(int)((*lhe_evt)->weights().size()); iw++){
     int wgtid=atoi((*lhe_evt)->weights().at(iw).id.c_str());
-    float wgtval=(*lhe_evt)->weights().at(iw).wgt / (*lhe_evt)->originalXWGTUP();
-
+    float wgtval=(*lhe_evt)->weights().at(iw).wgt / LHEOriginalWeight;
     //cout << "PDF id = " << PDFid.at(0) << " " << wgtid << " -> " << wgtval << endl;
 
     if (wgtid<2000) LHEWeight.push_back(wgtval);
@@ -183,7 +187,7 @@ void LHEHandler::readEvent(){
     for (int iw=0; iw<(int)((*lhe_evt)->weights().size()); iw++) {
       int wgtid=atoi((*lhe_evt)->weights().at(iw).id.c_str());
       if (wgtid>=10 && wgtid<=110) {
-        float wgtval=(*lhe_evt)->weights().at(iw).wgt / (*lhe_evt)->originalXWGTUP();
+        float wgtval=(*lhe_evt)->weights().at(iw).wgt / LHEOriginalWeight;
         tmpWgtArray.push_back(wgtval);
       }
     }
@@ -213,7 +217,7 @@ void LHEHandler::readEvent(){
 }
 
 
-MELACandidate* LHEHandler::matchAHiggsToParticle(LHE_Event& ev, MELAParticle* genH){
+MELACandidate* LHEHandler::matchAHiggsToParticle(LHE_Event& ev, MELAParticle const* genH){
   MELACandidate* cand=0;
   for (int t=0; t<ev.getNZZCandidates(); t++){
     MELACandidate* tmpCand = ev.getZZCandidate(t);
@@ -289,7 +293,7 @@ void LHEHandler::addByLowestInAbs(float val, std::vector<float>& valArray){
   if (!inserted) valArray.push_back(val);
 }
 
-float LHEHandler::findNearestOneSigma(float ref, int lowhigh, vector<float> wgt_array){
+float LHEHandler::findNearestOneSigma(float ref, int lowhigh, std::vector<float> const& wgt_array){
   int nrep = wgt_array.size();
   int pos_low=-1, pos_high=nrep;
   for (int irep=0; irep<nrep; irep++){ // Assume ordered from low to high

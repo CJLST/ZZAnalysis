@@ -43,10 +43,18 @@ public:
   void clear();
 
   MELACandidate* getBestCandidate();
-  float getLHEWeight(unsigned int whichWeight, float defaultValue=1);
-  float getLHEWeight_PDFVariationUpDn(int whichUpDn, float defaultValue=1);
-  float getLHEWeigh_AsMZUpDn(int whichUpDn, float defaultValue=1);
-  float getPDFScale();
+  float const& getLHEOriginalWeight() const; // Weight written in the <event> block, supposed to = genhepmcweight if no Pythia reweighting is done
+  float getLHEWeight(unsigned int whichWeight, float defaultValue=1) const; // = {Weights written in LHE weight variations} / getLHEOriginalWeight()
+  float getLHEWeight_PDFVariationUpDn(int whichUpDn, float defaultValue=1) const; // = {Weights written in LHE weight variations} / getLHEOriginalWeight()
+  float getLHEWeigh_AsMZUpDn(int whichUpDn, float defaultValue=1) const; // = {Weights written in LHE weight variations} / getLHEOriginalWeight()
+  float const& getPDFScale() const;
+
+  static MELACandidate* matchAHiggsToParticle(LHE_Event& ev, MELAParticle const* genH);
+  static MELACandidate* candidateSelector(LHE_Event& ev, int isZZ);
+  static MELACandidate* candComparator(MELACandidate* cand1, MELACandidate* cand2, int isZZ);
+
+  static void addByLowestInAbs(float val, std::vector<float>& valArray);
+  static float findNearestOneSigma(float ref, int lowhigh, std::vector<float> const& wgt_array);
 
 protected:
 
@@ -60,6 +68,7 @@ protected:
   LHE_Event* genEvent;
   MELACandidate* genCand;
 
+  float LHEOriginalWeight;
   vector<float> LHEWeight;
   vector<float> LHEWeight_PDFVariationUpDn;
   vector<float> LHEWeight_AsMZUpDn;
@@ -67,13 +76,6 @@ protected:
   float PDFScale;
 
   void readEvent();
-  //
-  MELACandidate* matchAHiggsToParticle(LHE_Event& ev, MELAParticle* genH);
-  MELACandidate* candidateSelector(LHE_Event& ev, int isZZ);
-  MELACandidate* candComparator(MELACandidate* cand1, MELACandidate* cand2, int isZZ);
-  //
-  void addByLowestInAbs(float val, std::vector<float>& valArray);
-  float findNearestOneSigma(float ref, int lowhigh, vector<float> wgt_array);
 
 };
 
