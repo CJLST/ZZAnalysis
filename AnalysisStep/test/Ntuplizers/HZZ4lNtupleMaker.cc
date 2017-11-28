@@ -1313,7 +1313,7 @@ void HZZ4lNtupleMaker::FillLHECandidate(){
   }
 
   LHEPDFScale = lheHandler->getPDFScale();
-  if (genHEPMCweight==1.) lheHandler->getLHEOriginalWeight();
+  if (genHEPMCweight==1.) genHEPMCweight = lheHandler->getLHEOriginalWeight();
   LHEweight_QCDscale_muR1_muF1 = lheHandler->getLHEWeight(0, 1.);
   LHEweight_QCDscale_muR1_muF2 = lheHandler->getLHEWeight(1, 1.);
   LHEweight_QCDscale_muR1_muF0p5 = lheHandler->getLHEWeight(2, 1.);
