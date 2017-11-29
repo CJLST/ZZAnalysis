@@ -487,6 +487,7 @@ private:
   //TH2F *h_ZXWeightEle;
   TH2D* h_ZXWeight[4];
 
+  bool printedLHEweightwarning;
 };
 
 //
@@ -528,7 +529,9 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   hTH2D_El_IdIsoSip_notCracks(0),
   hTH2D_El_IdIsoSip_Cracks(0),
   hTH2F_El_RSE(0),
-  h_weight(0)
+  h_weight(0),
+
+  printedLHEweightwarning(false)
 {
   //cout<< "Beginning Constructor\n\n\n" <<endl;
   consumesMany<std::vector< PileupSummaryInfo > >();
@@ -1313,7 +1316,13 @@ void HZZ4lNtupleMaker::FillLHECandidate(){
   }
 
   LHEPDFScale = lheHandler->getPDFScale();
-  if (genHEPMCweight==1.) genHEPMCweight = lheHandler->getLHEOriginalWeight();
+  if (genHEPMCweight==1.) {
+    genHEPMCweight = lheHandler->getLHEOriginalWeight();
+    if (!printedLHEweightwarning && genHEPMCweight!=1) {
+      printedLHEweightwarning = true;
+      edm::LogWarning("InconsistentWeights") << "Gen weight is 1, LHE weight is " << genHEPMCweight;
+    }
+  }
   LHEweight_QCDscale_muR1_muF1 = lheHandler->getLHEWeight(0, 1.);
   LHEweight_QCDscale_muR1_muF2 = lheHandler->getLHEWeight(1, 1.);
   LHEweight_QCDscale_muR1_muF0p5 = lheHandler->getLHEWeight(2, 1.);
