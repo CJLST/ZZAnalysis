@@ -3307,7 +3307,7 @@ void Histograms::FillYieldGraphs( float M4l_down, float M4l_up , TString fit_opt
    
    gStyle->SetOptFit(0);
 	
-	TCanvas *c = new TCanvas("", "", 1500, 1500);
+	TCanvas *c = new TCanvas("c1", "c1", 1500, 1500);
    
    TPaveText* pav = new TPaveText(0.13,0.93,0.8,1.,"brNDC");
    pav->SetFillStyle(0);
