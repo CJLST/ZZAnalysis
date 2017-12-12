@@ -122,7 +122,9 @@ class Candidate:
 	        c_float(treeEntry.p_HadWH_SIG_ghw1_1_JHUGen_JECNominal),
 	        c_float(treeEntry.p_HadZH_SIG_ghz1_1_JHUGen_JECNominal),
 			  c_float(treeEntry.p_HadWH_mavjj_JECNominal),
+			  c_float(treeEntry.p_HadWH_mavjj_true_JECNominal),
 			  c_float(treeEntry.p_HadZH_mavjj_JECNominal),
+			  c_float(treeEntry.p_HadZH_mavjj_true_JECNominal),
 	        (c_float * len(self.jets30phi))(*self.jets30phi),
 	        c_float(self.ZZMass),
 	        c_float(self.pfMet),
@@ -194,11 +196,13 @@ class Candidate:
                 c_float(treeEntry.p_HadWH_SIG_ghw1_1_JHUGen_JECNominal),
                 c_float(treeEntry.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal),
 					 c_float(treeEntry.p_HadWH_mavjj_JECNominal),
+					 c_float(treeEntry.p_HadWH_mavjj_true_JECNominal),
                 c_float(self.ZZMass))
             self.D_ZHh_VAJHU = lib.DZHh_ME(
                 c_float(treeEntry.p_HadZH_SIG_ghz1_1_JHUGen_JECNominal),
                 c_float(treeEntry.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal),
 				    c_float(treeEntry.p_HadZH_mavjj_JECNominal),
+					 c_float(treeEntry.p_HadZH_mavjj_true_JECNominal),
                 c_float(self.ZZMass))
         if self.njets30 == 1 :
             self.D_VBF1j_VAJHU = lib.DVBF1j_ME(
@@ -218,6 +222,7 @@ class Candidate:
                 c_float(treeEntry.p_HadWH_SIG_ghw1_1_JHUGen_JECNominal),
                 c_float(treeEntry.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal),
 				    c_float(treeEntry.p_HadWH_mavjj_JECNominal),
+					 c_float(treeEntry.p_HadWH_mavjj_true_JECNominal),
                 c_float(self.ZZMass),
                 (c_float * len(self.jets30QGLikelihood))(*self.jets30QGLikelihood),
                 (c_float * len(self.jets30phi))(*self.jets30phi))
@@ -225,6 +230,7 @@ class Candidate:
                 c_float(treeEntry.p_HadZH_SIG_ghz1_1_JHUGen_JECNominal),
                 c_float(treeEntry.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal),
 				    c_float(treeEntry.p_HadZH_mavjj_JECNominal),
+					 c_float(treeEntry.p_HadZH_mavjj_true_JECNominal),
                 c_float(self.ZZMass),
                 (c_float * len(self.jets30QGLikelihood))(*self.jets30QGLikelihood),
                 (c_float * len(self.jets30phi))(*self.jets30phi))

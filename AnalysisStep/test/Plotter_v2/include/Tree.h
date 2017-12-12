@@ -232,7 +232,9 @@ public :
    Float_t         p_JJQCD_SIG_ghg4_1_JHUGen_JECDn;
    Float_t         p_JJQCD_SIG_ghg2_1_ghg4_1_JHUGen_JECDn;
 	Float_t         p_HadZH_mavjj_JECNominal;
+	Float_t         p_HadZH_mavjj_true_JECNominal;
 	Float_t         p_HadWH_mavjj_JECNominal;
+	Float_t         p_HadWH_mavjj_true_JECNominal;
    Float_t         p_HadZH_SIG_ghz1_1_JHUGen_JECDn;
    Float_t         p_HadZH_SIG_ghz1prime2_1E4_JHUGen_JECDn;
    Float_t         p_HadZH_SIG_ghz2_1_JHUGen_JECDn;
@@ -672,7 +674,9 @@ public :
    TBranch        *b_p_JJQCD_SIG_ghg4_1_JHUGen_JECDn;   //!
    TBranch        *b_p_JJQCD_SIG_ghg2_1_ghg4_1_JHUGen_JECDn;   //!
 	TBranch        *b_p_HadZH_mavjj_JECNominal;
+	TBranch        *b_p_HadZH_mavjj_true_JECNominal;
 	TBranch        *b_p_HadWH_mavjj_JECNominal;
+	TBranch        *b_p_HadWH_mavjj_true_JECNominal;
    TBranch        *b_p_HadZH_SIG_ghz1_1_JHUGen_JECDn;   //!
    TBranch        *b_p_HadZH_SIG_ghz1prime2_1E4_JHUGen_JECDn;   //!
    TBranch        *b_p_HadZH_SIG_ghz2_1_JHUGen_JECDn;   //!
@@ -1205,7 +1209,9 @@ void Tree::Init(TTree *tree, TString input_file_name)
    fChain->SetBranchAddress("p_JJQCD_SIG_ghg4_1_JHUGen_JECDn", &p_JJQCD_SIG_ghg4_1_JHUGen_JECDn, &b_p_JJQCD_SIG_ghg4_1_JHUGen_JECDn);
    fChain->SetBranchAddress("p_JJQCD_SIG_ghg2_1_ghg4_1_JHUGen_JECDn", &p_JJQCD_SIG_ghg2_1_ghg4_1_JHUGen_JECDn, &b_p_JJQCD_SIG_ghg2_1_ghg4_1_JHUGen_JECDn);
 	fChain->SetBranchAddress("p_HadZH_mavjj_JECNominal", &p_HadZH_mavjj_JECNominal, &b_p_HadZH_mavjj_JECNominal);
+	fChain->SetBranchAddress("p_HadZH_mavjj_true_JECNominal", &p_HadZH_mavjj_true_JECNominal, &b_p_HadZH_mavjj_true_JECNominal);
 	fChain->SetBranchAddress("p_HadWH_mavjj_JECNominal", &p_HadWH_mavjj_JECNominal, &b_p_HadWH_mavjj_JECNominal);
+	fChain->SetBranchAddress("p_HadWH_mavjj_true_JECNominal", &p_HadWH_mavjj_true_JECNominal, &b_p_HadWH_mavjj_true_JECNominal);
    fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_JHUGen_JECDn", &p_HadZH_SIG_ghz1_1_JHUGen_JECDn, &b_p_HadZH_SIG_ghz1_1_JHUGen_JECDn);
    fChain->SetBranchAddress("p_HadZH_SIG_ghz1prime2_1E4_JHUGen_JECDn", &p_HadZH_SIG_ghz1prime2_1E4_JHUGen_JECDn, &b_p_HadZH_SIG_ghz1prime2_1E4_JHUGen_JECDn);
    fChain->SetBranchAddress("p_HadZH_SIG_ghz2_1_JHUGen_JECDn", &p_HadZH_SIG_ghz2_1_JHUGen_JECDn, &b_p_HadZH_SIG_ghz2_1_JHUGen_JECDn);
@@ -1396,10 +1402,10 @@ void Tree::Init(TTree *tree, TString input_file_name)
       fChain->SetBranchAddress("HqTMCweight", &HqTMCweight, &b_HqTMCweight);
       fChain->SetBranchAddress("xsec", &xsec, &b_xsec);
       fChain->SetBranchAddress("genExtInfo", &genExtInfo, &b_genExtInfo);
-		fChain->SetBranchAddress("htxsHPt", &htxsHPt, &b_htxsHPt);
-		fChain->SetBranchAddress("htxsNJets", &htxsNJets, &b_htxsNJets);
-		fChain->SetBranchAddress("htxs_stage0_cat", &htxs_stage0_cat, &b_htxs_stage0_cat);
-		fChain->SetBranchAddress("htxs_stage1_cat", &htxs_stage1_cat, &b_htxs_stage1_cat);
+//		fChain->SetBranchAddress("htxsHPt", &htxsHPt, &b_htxsHPt);
+//		fChain->SetBranchAddress("htxsNJets", &htxsNJets, &b_htxsNJets);
+//		fChain->SetBranchAddress("htxs_stage0_cat", &htxs_stage0_cat, &b_htxs_stage0_cat);
+//		fChain->SetBranchAddress("htxs_stage1_cat", &htxs_stage1_cat, &b_htxs_stage1_cat);
       fChain->SetBranchAddress("GenHMass", &GenHMass, &b_GenHMass);
       fChain->SetBranchAddress("GenHPt", &GenHPt, &b_GenHPt);
       fChain->SetBranchAddress("GenHRapidity", &GenHRapidity, &b_GenHRapidity);

@@ -8,8 +8,8 @@
 class cConstantSpline {
   public:
     cConstantSpline(const TString& filename);
-    void initspline();
-    double eval(double ZZMass);
+    void initspline(bool isDbkg);
+    double eval(double ZZMass, bool isDbkg);
   private:
     const TString filename_;
     std::unique_ptr<TSpline3> spline_;
