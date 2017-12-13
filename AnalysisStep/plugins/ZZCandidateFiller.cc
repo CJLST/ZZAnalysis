@@ -564,12 +564,12 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     //--- Compute angles, better done here
     float costheta1=0, costheta2=0, phi=0, costhetastar=0, phistar1=0;
     TUtil::computeAngles(
+      costhetastar, costheta1, costheta2, phi, phistar1,
       daughters.at(0).second, daughters.at(0).first,
       daughters.at(1).second, daughters.at(1).first,
       daughters.at(2).second, daughters.at(2).first,
-      daughters.at(3).second, daughters.at(3).first,
-      costhetastar, costheta1, costheta2, phi, phistar1
-      );
+      daughters.at(3).second, daughters.at(3).first
+    );
     //--- compute higgs azimuthal angles, xi
     TLorentzVector Z14vec = daughters.at(0).second + daughters.at(1).second;
     TLorentzVector higgs = Z14vec + daughters.at(2).second + daughters.at(3).second;
