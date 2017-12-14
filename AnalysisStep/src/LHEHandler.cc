@@ -94,35 +94,35 @@ void LHEHandler::extract(){
         genEvent = new LHE_Event();
         vectorInt hasGenHiggs;
 
-        for (unsigned int p=0; p<particleList.size(); p++){
-          MELAParticle* genPart = particleList.at(p); // Has mother info from LHE reading
-          if (isAHiggs(genPart->id)) hasGenHiggs.push_back(p);
-          if (genPart->genStatus==1){
-            if (isALepton(genPart->id)) genEvent->addLepton(genPart);
-            else if (isANeutrino(genPart->id)) genEvent->addNeutrino(genPart);
-            else if (isAPhoton(genPart->id)) genEvent->addPhoton(genPart);
-            else if (isAGluon(genPart->id) || isAQuark(genPart->id)) genEvent->addJet(genPart);
+        {
+          int p=0;
+          for (MELAParticle* genPart:particleList){
+            if (isAHiggs(genPart->id)) hasGenHiggs.push_back(p);
+            if (genPart->genStatus==1){
+              if (isALepton(genPart->id)) genEvent->addLepton(genPart);
+              else if (isANeutrino(genPart->id)) genEvent->addNeutrino(genPart);
+              else if (isAPhoton(genPart->id)) genEvent->addPhoton(genPart);
+              else if (isAGluon(genPart->id) || isAQuark(genPart->id)) genEvent->addJet(genPart);
+            }
           }
+          p++;
         }
 
         genEvent->constructVVCandidates(VVMode, VVDecayMode);
-        for (unsigned int p=0; p<particleList.size(); p++){
-          MELAParticle* genPart = particleList.at(p);
-          if (genPart->genStatus==-1) genEvent->addVVCandidateMother(genPart);
-        }
+        for (MELAParticle* genPart:particleList){ if (genPart->genStatus==-1) genEvent->addVVCandidateMother(genPart); }
         genEvent->addVVCandidateAppendages();
 
-        genCand=0;
+        genCand=nullptr;
         if (hasGenHiggs.size()>0){
-          for (unsigned int gk=0; gk<hasGenHiggs.size(); gk++){
-            MELACandidate* tmpCand = matchAHiggsToParticle(*genEvent, particleList.at(hasGenHiggs.at(gk)));
-            if (tmpCand!=0){
-              if (genCand==0) genCand=tmpCand;
+          for (int iH:hasGenHiggs){
+            MELACandidate* tmpCand = matchAHiggsToParticle(*genEvent, particleList.at(iH));
+            if (tmpCand){
+              if (!genCand) genCand=tmpCand;
               else genCand = candComparator(genCand, tmpCand, VVMode);
             }
           }
         }
-        if (genCand==0) genCand = candidateSelector(*genEvent, VVMode);
+        if (!genCand) genCand = candidateSelector(*genEvent, VVMode);
 
       }
       else{ genCand=0; genEvent=0; }
@@ -193,14 +193,14 @@ void LHEHandler::readEvent(){
     }
   }
 
-  if (tmpWgtArray.size()>0){
+  if (!tmpWgtArray.empty()){
     if (tmpWgtArray.size()>=100){
       for (unsigned int iwgt=0; iwgt<100; iwgt++) addByLowestInAbs(tmpWgtArray.at(iwgt), LHEPDFVariationWgt); // Since weights could be (-) or (+), use LowestInAbs
       if (tmpWgtArray.size()>100){ for (unsigned int iwgt=100; iwgt<tmpWgtArray.size(); iwgt++) LHEPDFAlphaSMZWgt.push_back(tmpWgtArray.at(iwgt)); } // Dn, Up
     }
   }
   // Find the proper PDF and alphas(mZ) variations
-  if (LHEWeight.size()>0){
+  if (!LHEWeight.empty()){
     float centralWeight=1;
     centralWeight = LHEWeight.at(0);
     LHEWeight_PDFVariationUpDn.push_back(findNearestOneSigma(centralWeight, 1, LHEPDFVariationWgt));

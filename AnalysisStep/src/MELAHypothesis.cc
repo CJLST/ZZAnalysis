@@ -1,6 +1,10 @@
 #include <ZZAnalysis/AnalysisStep/interface/MELAHypothesis.h>
 #include <iostream>
 
+
+#define CALL_CLASSMEMBER_OBJ(object,ptrToMember)  ((object).*(ptrToMember))
+#define CALL_CLASSMEMBER_REF(object,ptrToMember)  ((object)->*(ptrToMember))
+
 using namespace std;
 
 
@@ -27,7 +31,7 @@ MELAHypothesis::MELAHypothesis(
 
 void MELAHypothesis::reset(){
   isUpdated=false;
-  pME=0.; if (opt!=0) pME = opt->getDefaultME();
+  pME = (opt ? opt->getDefaultME() : 0);
   pAux=1.;
   cMEAvg=1.;
 }
@@ -142,9 +146,8 @@ void MELAHypothesis::computeP(){
       else if (theProd==TVar::Had_WH_TU) theProd=TVar::Lep_WH_TU;
       else if (theProd==TVar::Had_ZH_TU) theProd=TVar::Lep_ZH_TU;
       else if (theProd==TVar::JJEW || theProd==TVar::JJEW_S || theProd==TVar::JJEW_TU){
-        MELAParticle* aV=0;
-        for (int iv=2; iv<melaCand->getNSortedVs(); iv++){
-          MELAParticle* tmp = melaCand->getSortedV(iv);
+        MELAParticle* aV=nullptr;
+        for (MELAParticle* tmp:melaCand->getAssociatedSortedVs()){
           if (tmp!=0 && tmp->passSelection && (PDGHelpers::isAZBoson(tmp->id) || PDGHelpers::isAWBoson(tmp->id))){
             if (tmp->getNDaughters()==2 &&
               tmp->getDaughter(0)->passSelection && PDGHelpers::isALepton(tmp->getDaughter(0)->id)
@@ -156,7 +159,7 @@ void MELAHypothesis::computeP(){
             }
           }
         }
-        if (aV!=0){
+        if (aV){
           if (PDGHelpers::isAZBoson(aV->id)){
             if (theProd==TVar::JJEW) theProd=TVar::Lep_ZH;
             else if (theProd==TVar::JJEW_S) theProd=TVar::Lep_ZH_S;
@@ -181,6 +184,8 @@ void MELAHypothesis::computeP(){
       else if (theProd==TVar::Lep_ZH_TU) theProd=TVar::Had_ZH_TU;
     }
     mela->setProcess(theProc, theME, theProd);
+    typedef void (Mela::*MelaComputePFcn)(float&, bool);
+    MelaComputePFcn computePFcn=nullptr;
     if (
       theProd==TVar::Lep_WH || theProd==TVar::Had_WH || theProd==TVar::Lep_ZH || theProd==TVar::Had_ZH || theProd==TVar::JJVBF || theProd==TVar::JJEW || theProd==TVar::JJQCD
       || theProd==TVar::Lep_WH_S || theProd==TVar::Had_WH_S || theProd==TVar::Lep_ZH_S || theProd==TVar::Had_ZH_S || theProd==TVar::JJVBF_S || theProd==TVar::JJEW_S || theProd==TVar::JJQCD_S
@@ -189,10 +194,19 @@ void MELAHypothesis::computeP(){
       || theProd==TVar::JQCD
       || theProd==TVar::ttH || theProd==TVar::bbH
       ){
-      if (theME != TVar::MCFM) mela->computeProdP(pME, !isGen);
-      else mela->computeProdDecP(pME, !isGen);
+      if (theME != TVar::MCFM) computePFcn = &Mela::computeProdP;
+      else computePFcn = &Mela::computeProdDecP;
     }
-    else mela->computeP(pME, !isGen);
+    else computePFcn = &Mela::computeP;
+    float pMEprior=pME;
+    CALL_CLASSMEMBER_REF(mela, computePFcn)(pME, !isGen);
+    if (pME<0. && pME!=pMEprior){
+      TVar::VerbosityLevel bkpverbosity = mela->getVerbosity();
+      mela->setVerbosity(TVar::DEBUG_VERBOSE);
+      CALL_CLASSMEMBER_REF(mela, computePFcn)(pME, !isGen);
+      TUtil::PrintCandidateSummary(mela->getCurrentCandidate());
+      mela->setVerbosity(bkpverbosity);
+    }
     if (!isGen){
       mela->getPAux(pAux);
       mela->getConstant(cMEAvg);
