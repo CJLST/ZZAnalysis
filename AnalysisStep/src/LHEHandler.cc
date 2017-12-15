@@ -104,8 +104,8 @@ void LHEHandler::extract(){
               else if (isAPhoton(genPart->id)) genEvent->addPhoton(genPart);
               else if (isAGluon(genPart->id) || isAQuark(genPart->id)) genEvent->addJet(genPart);
             }
+            p++;
           }
-          p++;
         }
 
         genEvent->constructVVCandidates(VVMode, VVDecayMode);
