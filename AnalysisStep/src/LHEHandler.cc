@@ -113,7 +113,7 @@ void LHEHandler::extract(){
         genEvent->addVVCandidateAppendages();
 
         genCand=nullptr;
-        if (hasGenHiggs.size()>0){
+        if (!hasGenHiggs.empty()){
           for (int iH:hasGenHiggs){
             MELACandidate* tmpCand = matchAHiggsToParticle(*genEvent, particleList.at(iH));
             if (tmpCand){
@@ -226,9 +226,9 @@ MELACandidate* LHEHandler::matchAHiggsToParticle(LHE_Event& ev, MELAParticle con
     double genhdotproduct = sqrt(genH->p4.Vect().Dot(genH->p4.Vect()) + genH->t()*genH->t());
     double massdiff = fabs(genhdotproduct-dotproduct);
     double massratio = 0;
-    if (genhdotproduct>0) massratio = massdiff / genhdotproduct;
+    if (genhdotproduct>0.) massratio = massdiff / genhdotproduct;
     if (massratio<0.001){
-      if (cand==0) cand = tmpCand;
+      if (!cand) cand = tmpCand;
       else{
         TLorentzVector vGen = genH->p4;
         TLorentzVector vTmp = tmpCand->p4;
@@ -248,7 +248,7 @@ MELACandidate* LHEHandler::candidateSelector(LHE_Event& ev, int isZZ){
   for (int t=0; t<ev.getNZZCandidates(); t++){
     MELACandidate* tmpCand = ev.getZZCandidate(t);
     //if (!tmpCand->passSelection) continue;
-    if (cand==0) cand=tmpCand;
+    if (!cand) cand=tmpCand;
     else cand = candComparator(cand, tmpCand, isZZ);
   }
   return cand;
@@ -268,10 +268,10 @@ MELACandidate* LHEHandler::candComparator(MELACandidate* cand1, MELACandidate* c
   MELAParticle* c12 = cand1->getSortedV(1)->getDaughter(1);
   MELAParticle* c21 = cand2->getSortedV(1)->getDaughter(0);
   MELAParticle* c22 = cand2->getSortedV(1)->getDaughter(1);
-  if (c11!=0) Z2scsumpt_cand1 += c11->pt();
-  if (c12!=0) Z2scsumpt_cand1 += c12->pt();
-  if (c21!=0) Z2scsumpt_cand2 += c21->pt();
-  if (c22!=0) Z2scsumpt_cand2 += c22->pt();
+  if (c11) Z2scsumpt_cand1 += c11->pt();
+  if (c12) Z2scsumpt_cand1 += c12->pt();
+  if (c21) Z2scsumpt_cand2 += c21->pt();
+  if (c22) Z2scsumpt_cand2 += c22->pt();
   if (
     (diffmass1>diffmass2)
     ||
