@@ -30,8 +30,18 @@ LHE_DecayProbabilities_SpinZero_JHUGen = [
    "Name:GG_SIG_ghg2_1_ghz1_1_gha4_1_JHUGen Process:SelfDefine_spin0 Production:ZZGG MatrixElement:JHUGen Couplings:ghg2=1,0;ghz1=1,0;ghgsgs4=1,0 Options:DivideP=SampleHypothesisJHUGen Cluster:NoInitialQ isGen:1",
    "Name:GG_SIG_ghg2_1_ghz1_1_gha4_i_JHUGen Process:SelfDefine_spin0 Production:ZZGG MatrixElement:JHUGen Couplings:ghg2=1,0;ghz1=1,0;ghgsgs4=0,1 Options:DivideP=SampleHypothesisJHUGen Cluster:NoInitialQ isGen:1",
 
+   "Name:GG_SIG_ghg2_1_ghz1prime2_1E4_ghz2_1_JHUGen Process:SelfDefine_spin0 Production:ZZGG MatrixElement:JHUGen Couplings:ghg2=1,0;ghz1_prime2=10000,0;ghz2=1,0 Options:DivideP=SampleHypothesisJHUGen Cluster:NoInitialQ isGen:1",
+#   "Name:GG_SIG_ghg2_1_ghz1prime2_1E4_ghz2_i_JHUGen Process:SelfDefine_spin0 Production:ZZGG MatrixElement:JHUGen Couplings:ghg2=1,0;ghz1_prime2=10000,0;ghz2=0,1 Options:DivideP=SampleHypothesisJHUGen Cluster:NoInitialQ isGen:1",
+   "Name:GG_SIG_ghg2_1_ghz1prime2_1E4_ghz4_1_JHUGen Process:SelfDefine_spin0 Production:ZZGG MatrixElement:JHUGen Couplings:ghg2=1,0;ghz1_prime2=10000,0;ghz4=1,0 Options:DivideP=SampleHypothesisJHUGen Cluster:NoInitialQ isGen:1",
+#   "Name:GG_SIG_ghg2_1_ghz1prime2_1E4_ghz4_i_JHUGen Process:SelfDefine_spin0 Production:ZZGG MatrixElement:JHUGen Couplings:ghg2=1,0;ghz1_prime2=10000,0;ghz4=0,1 Options:DivideP=SampleHypothesisJHUGen Cluster:NoInitialQ isGen:1",
    "Name:GG_SIG_ghg2_1_ghz1prime2_1E4_ghza1prime2_1E4_JHUGen Process:SelfDefine_spin0 Production:ZZGG MatrixElement:JHUGen Couplings:ghg2=1,0;ghz1_prime2=10000,0;ghzgs1_prime2=10000,0 Options:DivideP=SampleHypothesisJHUGen Cluster:NoInitialQ isGen:1",
    "Name:GG_SIG_ghg2_1_ghz1prime2_1E4_ghza1prime2_1E4i_JHUGen Process:SelfDefine_spin0 Production:ZZGG MatrixElement:JHUGen Couplings:ghg2=1,0;ghz1_prime2=10000,0;ghzgs1_prime2=0,10000 Options:DivideP=SampleHypothesisJHUGen Cluster:NoInitialQ isGen:1",
+   "Name:GG_SIG_ghg2_1_ghz2_1_ghz4_1_JHUGen Process:SelfDefine_spin0 Production:ZZGG MatrixElement:JHUGen Couplings:ghg2=1,0;ghz2=1,0;ghz4=1,0 Options:DivideP=SampleHypothesisJHUGen Cluster:NoInitialQ isGen:1",
+#   "Name:GG_SIG_ghg2_1_ghz2_1_ghz4_i_JHUGen Process:SelfDefine_spin0 Production:ZZGG MatrixElement:JHUGen Couplings:ghg2=1,0;ghz2=1,0;ghz4=0,1 Options:DivideP=SampleHypothesisJHUGen Cluster:NoInitialQ isGen:1",
+   "Name:GG_SIG_ghg2_1_ghz2_1_ghza1prime2_1E4_JHUGen Process:SelfDefine_spin0 Production:ZZGG MatrixElement:JHUGen Couplings:ghg2=1,0;ghz2=1,0;ghzgs1_prime2=10000,0 Options:DivideP=SampleHypothesisJHUGen Cluster:NoInitialQ isGen:1",
+#   "Name:GG_SIG_ghg2_1_ghz2_1_ghza1prime2_1E4i_JHUGen Process:SelfDefine_spin0 Production:ZZGG MatrixElement:JHUGen Couplings:ghg2=1,0;ghz2=1,0;ghzgs1_prime2=0,10000 Options:DivideP=SampleHypothesisJHUGen Cluster:NoInitialQ isGen:1",
+   "Name:GG_SIG_ghg2_1_ghz4_1_ghza1prime2_1E4_JHUGen Process:SelfDefine_spin0 Production:ZZGG MatrixElement:JHUGen Couplings:ghg2=1,0;ghz4=1,0;ghzgs1_prime2=10000,0 Options:DivideP=SampleHypothesisJHUGen Cluster:NoInitialQ isGen:1",
+#   "Name:GG_SIG_ghg2_1_ghz4_1_ghza1prime2_1E4i_JHUGen Process:SelfDefine_spin0 Production:ZZGG MatrixElement:JHUGen Couplings:ghg2=1,0;ghz4=1,0;ghzgs1_prime2=0,10000 Options:DivideP=SampleHypothesisJHUGen Cluster:NoInitialQ isGen:1",
 ]
 ### Spin-2 decay probabilities from JHUGen ###
 LHE_Probabilities_SpinTwo_JHUGen = [
