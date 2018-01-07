@@ -14,11 +14,14 @@
 <use name="CLHEP"/>
 <use name="rootrflx"/>
 
+<use name="MelaAnalytics/CandidateLOCaster"/>
+<use name="MelaAnalytics/EventContainer"/>
+
 <!-- Damn syntax! -->
 <Flags CPPDEFINES="CMSSW_VERSION=$(shell echo ${CMSSW_VERSION}|sed -e s/CMSSW_// -e s/_//g -e s/patch\.//)"/>
+<flags CPPFLAGS="-I$(CMSSW_BASE)/src/ZZMatrixElement/MELA/interface/" />
+<!--Flags CXXFLAGS="-Wno-delete-non-virtual-dtor -Wno-error=unused-but-set-variable -Wno-error=unused-variable"/--> 
+
 <export>
   <lib   name="1"/>
 </export>
-<!--Flags CXXFLAGS="-Wno-delete-non-virtual-dtor -Wno-error=unused-but-set-variable -Wno-error=unused-variable"/--> 
-
-<use name="MelaAnalytics/CandidateLOCaster"/>

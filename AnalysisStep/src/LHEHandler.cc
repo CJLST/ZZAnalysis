@@ -1,4 +1,5 @@
 #include <ZZAnalysis/AnalysisStep/interface/LHEHandler.h>
+#include <MelaAnalytics/EventContainer/interface/HiggsComparators.h>
 #include <iomanip>
 #include <iostream>
 #include <cstdlib>
@@ -12,6 +13,7 @@ typedef std::vector<std::pair<int, int>> vectorIntPair;
 
 using namespace std;
 using namespace PDGHelpers;
+using namespace HiggsComparators;
 
 
 LHEHandler::LHEHandler(edm::Handle<LHEEventProduct>* lhe_evt_, int VVMode_, int VVDecayMode_, bool doKinematics_) :
@@ -91,7 +93,7 @@ void LHEHandler::extract(){
 
       if (doKinematics){
 
-        genEvent = new LHE_Event();
+        genEvent = new MELAEvent();
         vectorInt hasGenHiggs;
 
         {
@@ -121,11 +123,11 @@ void LHEHandler::extract(){
             MELACandidate* tmpCand = matchAHiggsToParticle(*genEvent, particleList.at(iH));
             if (tmpCand){
               if (!genCand) genCand=tmpCand;
-              else genCand = candComparator(genCand, tmpCand, VVMode);
+              else genCand = candComparator(genCand, tmpCand, HiggsComparators::BestZ1ThenZ2ScSumPt, VVMode);
             }
           }
         }
-        if (!genCand) genCand = candidateSelector(*genEvent, VVMode);
+        if (!genCand) genCand = candidateSelector(*genEvent, HiggsComparators::BestZ1ThenZ2ScSumPt, VVMode);
 
       }
       else{ genCand=0; genEvent=0; }
@@ -217,71 +219,6 @@ void LHEHandler::readEvent(){
     }
   }
   //
-}
-
-
-MELACandidate* LHEHandler::matchAHiggsToParticle(LHE_Event& ev, MELAParticle const* genH){
-  MELACandidate* cand=0;
-  for (int t=0; t<ev.getNZZCandidates(); t++){
-    MELACandidate* tmpCand = ev.getZZCandidate(t);
-
-    double dotproduct = sqrt(genH->p4.Vect().Dot(tmpCand->p4.Vect()) + genH->t()*tmpCand->t());
-    double genhdotproduct = sqrt(genH->p4.Vect().Dot(genH->p4.Vect()) + genH->t()*genH->t());
-    double massdiff = fabs(genhdotproduct-dotproduct);
-    double massratio = 0;
-    if (genhdotproduct>0.) massratio = massdiff / genhdotproduct;
-    if (massratio<0.001){
-      if (!cand) cand = tmpCand;
-      else{
-        TLorentzVector vGen = genH->p4;
-        TLorentzVector vTmp = tmpCand->p4;
-        TLorentzVector vCur = cand->p4;
-
-        double dot_tmp = vTmp.Dot(vGen);
-        double dot_curr = vCur.Dot(vGen);
-        if (fabs(dot_tmp-vGen.M2())<fabs(dot_curr - vGen.M2())) cand = tmpCand;
-      }
-    }
-  }
-  return cand;
-}
-
-MELACandidate* LHEHandler::candidateSelector(LHE_Event& ev, int isZZ){
-  MELACandidate* cand=0;
-  for (int t=0; t<ev.getNZZCandidates(); t++){
-    MELACandidate* tmpCand = ev.getZZCandidate(t);
-    //if (!tmpCand->passSelection) continue;
-    if (!cand) cand=tmpCand;
-    else cand = candComparator(cand, tmpCand, isZZ);
-  }
-  return cand;
-}
-
-MELACandidate* LHEHandler::candComparator(MELACandidate* cand1, MELACandidate* cand2, int isZZ){
-  MELACandidate* theChosenOne=0;
-
-  double HVVmass = PDGHelpers::Zeromass;
-  if (isZZ==0) HVVmass = PDGHelpers::Wmass;
-  else if (isZZ==1 || isZZ==3) HVVmass = PDGHelpers::Zmass;
-
-  double diffmass1 = fabs(cand1->getSortedV(0)->m()-HVVmass);
-  double diffmass2 = fabs(cand2->getSortedV(0)->m()-HVVmass);
-  double Z2scsumpt_cand1=0, Z2scsumpt_cand2=0;
-  MELAParticle* c11 = cand1->getSortedV(1)->getDaughter(0);
-  MELAParticle* c12 = cand1->getSortedV(1)->getDaughter(1);
-  MELAParticle* c21 = cand2->getSortedV(1)->getDaughter(0);
-  MELAParticle* c22 = cand2->getSortedV(1)->getDaughter(1);
-  if (c11) Z2scsumpt_cand1 += c11->pt();
-  if (c12) Z2scsumpt_cand1 += c12->pt();
-  if (c21) Z2scsumpt_cand2 += c21->pt();
-  if (c22) Z2scsumpt_cand2 += c22->pt();
-  if (
-    (diffmass1>diffmass2)
-    ||
-    (diffmass1==diffmass2 && Z2scsumpt_cand2>Z2scsumpt_cand1)
-    ) theChosenOne = cand2;
-  else theChosenOne = cand1;
-  return theChosenOne;
 }
 
 void LHEHandler::addByLowestInAbs(float val, std::vector<float>& valArray){

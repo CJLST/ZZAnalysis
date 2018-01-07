@@ -26,7 +26,7 @@
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
-#include <ZZAnalysis/AnalysisStep/interface/LHE_Event.h>
+#include <MelaAnalytics/EventContainer/interface/MELAEvent.h>
 
 #include <vector>
 
@@ -49,23 +49,19 @@ public:
   float getLHEWeigh_AsMZUpDn(int whichUpDn, float defaultValue=1) const; // = {Weights written in LHE weight variations} / getLHEOriginalWeight()
   float const& getPDFScale() const;
 
-  static MELACandidate* matchAHiggsToParticle(LHE_Event& ev, MELAParticle const* genH);
-  static MELACandidate* candidateSelector(LHE_Event& ev, int isZZ);
-  static MELACandidate* candComparator(MELACandidate* cand1, MELACandidate* cand2, int isZZ);
-
   static void addByLowestInAbs(float val, std::vector<float>& valArray);
   static float findNearestOneSigma(float ref, int lowhigh, std::vector<float> const& wgt_array);
 
 protected:
 
-  // VVMode and VVDecayMode: See comment lines within LHE_Event::constructVVCandidates
+  // VVMode and VVDecayMode: See comment lines within MELAEvent::constructVVCandidates
   int VVMode;
   int VVDecayMode;
   bool doKinematics;
 
   edm::Handle<LHEEventProduct>* lhe_evt;
   vector<MELAParticle*> particleList;
-  LHE_Event* genEvent;
+  MELAEvent* genEvent;
   MELACandidate* genCand;
 
   float LHEOriginalWeight;

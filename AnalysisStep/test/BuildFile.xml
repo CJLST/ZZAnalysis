@@ -15,12 +15,16 @@
 <use name="MagneticField/Records"/>
 <use name="ZZAnalysis/AnalysisStep"/>
 <use name="ZZMatrixElement/MELA"/>
+<use name="MelaAnalytics/CandidateLOCaster"/>
+<use name="MelaAnalytics/EventContainer"/>
 <!--use name="RecoEcal/EgammaCoreTools"/-->
 
 <use   name="root"/>
 <use   name="roottmva"/>
 <use name="rootrflx"/>
 <use name="roofitcore"/>
+
+<flags CPPFLAGS="-I$(CMSSW_BASE)/src/ZZMatrixElement/MELA/interface/" />
 
 <library   file="*.cc" name="ZZAnalysisAnalysisStepTest">
   <flags   EDM_PLUGIN="1"/>
