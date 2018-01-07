@@ -45,6 +45,9 @@ git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
 git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
 (cd HiggsAnalysis/CombinedLimit; git checkout 81x-root606-integration)
 
+#MELA Analytics
+git clone https://github.com/usarica/MelaAnalytics.git
+
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
 (cd ZZMatrixElement; git checkout -b from-v212 v2.1.2)

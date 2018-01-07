@@ -11,10 +11,7 @@
 <use name="CondFormats/BTauObjects"/>
 <use name="root"/>
 <use name="roofit"/>
-
-
 <use name="CLHEP"/>
-
 <use name="rootrflx"/>
 
 <!-- Damn syntax! -->
@@ -23,3 +20,5 @@
   <lib   name="1"/>
 </export>
 <!--Flags CXXFLAGS="-Wno-delete-non-virtual-dtor -Wno-error=unused-but-set-variable -Wno-error=unused-variable"/--> 
+
+<use name="MelaAnalytics/CandidateLOCaster"/>

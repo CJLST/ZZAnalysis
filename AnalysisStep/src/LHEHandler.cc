@@ -97,7 +97,10 @@ void LHEHandler::extract(){
         {
           int p=0;
           for (MELAParticle* genPart:particleList){
-            if (isAHiggs(genPart->id)) hasGenHiggs.push_back(p);
+            if (isAHiggs(genPart->id)){
+              hasGenHiggs.push_back(p);
+              if (VVMode==-1 && (genPart->genStatus==1 || genPart->genStatus==2)) genEvent->addIntermediate(genPart);
+            }
             if (genPart->genStatus==1){
               if (isALepton(genPart->id)) genEvent->addLepton(genPart);
               else if (isANeutrino(genPart->id)) genEvent->addNeutrino(genPart);

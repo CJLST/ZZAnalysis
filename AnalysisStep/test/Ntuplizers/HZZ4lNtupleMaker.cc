@@ -62,7 +62,7 @@
 #include <ZZAnalysis/AnalysisStep/interface/ggF_qcd_uncertainty_2017.h>
 
 #include <ZZMatrixElement/MELA/interface/Mela.h>
-#include <ZZAnalysis/AnalysisStep/interface/MELACandidateRecaster.h>
+#include <MelaAnalytics/CandidateLOCaster/interface/MELACandidateRecaster.h>
 
 #include "ZZ4lConfigHelper.h"
 #include "HZZ4lNtupleFactory.h"
