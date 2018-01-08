@@ -16,7 +16,9 @@ except ImportError:
   import yellowhiggs
 
 basemass = 300
-
+filterefficiencyZH = 0.15038
+filterefficiencyttH = 0.1544
+CJLSTproduction = "171217"
 
 @contextlib.contextmanager
 def cd(newdir):
@@ -54,14 +56,36 @@ def cache(function):
       return newfunction(*args, **kwargs)
   return newfunction
 
-def BR_YR3(mass):
+def BR_YR3(mass, productionmode, spreadsheet):
+  if spreadsheet and productionmode in ("ZH", "ttH") and mass < 300: return BR_fromspreadsheet(spreadsheet, productionmode, mass)
+  mass = int(str(mass))
   try:
-    return yellowhiggs.br(mass, "llll(e,mu,tau)")[0]
+    result = yellowhiggs.br(mass, "llll(e,mu,tau)")[0]
   except ValueError:
-    return .5*(yellowhiggs.br(mass+1, "llll(e,mu,tau)")[0]+yellowhiggs.br(mass-1, "llll(e,mu,tau)")[0])
+    print("===============\n", mass, "\n===============")
+    return .5*(BR_YR3(mass+1, productionmode, spreadsheet)+BR_YR3(mass-1, productionmode, spreadsheet))
 
-def GammaHZZ_YR3(mass):
-  return yellowhiggs.width(mass)[0] * yellowhiggs.br(mass, "llll(e,mu,tau)")[0]
+  if productionmode in ("ggH", "VBF", "WplusH", "WminusH"): return result
+
+  #need to get ZZ2l2x BR
+  #from the comment here: https://github.com/CJLST/ZZAnalysis/blob/454fffb5842f470e71e89348a6de7a8d30f4a813/AnalysisStep/test/prod/samples_2016_MC.csv#L5-L6
+  #it doesn't say how to get BR(H->ZZ*->2L2nu) or BR(H->WW*->2L2nu)
+  #llnunu  = ZZllnunu + WWlnulnu
+  #        = ZZllnunu + 9*WWemununu
+  #        = ZZllnunu + 9*emununu
+
+  result += yellowhiggs.br(mass, "llqq(e,mu,tau)")[0] + yellowhiggs.br(mass, "llnunu(e,mu,tau)")[0] - 9*yellowhiggs.br(mass, "enuemunumu")[0]
+  if productionmode == "ZH":
+    result *= filterefficiencyZH
+  elif productionmode == "ttH":
+    result *= filterefficiencyttH
+  else:
+    assert False, productionmode
+
+  return result
+
+def GammaHZZ_YR3(mass, productionmode, spreadsheet):
+  return yellowhiggs.width(mass)[0] * BR_YR3(mass, productionmode, spreadsheet)
 
 def sgn(number):
   return math.copysign(1, number)
@@ -125,10 +149,11 @@ def GammaH_YR2(mass):
   with cd("BigGamma"):
     return float(subprocess.check_output(["./BigGamma", str(mass)]))
 
-def averageBR(productionmode, mass):
-  production = "171217"
+def averageBR(productionmode, mass, spreadsheet=None):
+  production = CJLSTproduction
   if productionmode == "VBF":
     productionmode = "VBFH"
+    assert production == "171217" #if not, remove this and the next line
     production = "171005"
   folder = "{}{:d}".format(productionmode, mass)
 
@@ -147,9 +172,9 @@ def averageBR(productionmode, mass):
       _.SetBranchStatus("genHEPMCweight", 1)
       _.SetBranchStatus("p_Gen_CPStoBWPropRewgt", 1)
     t.GetEntry(0)
-    multiplyweight = GammaHZZ_YR3(basemass) * GammaHZZ_JHU(t.GenHMass) / (GammaHZZ_JHU(basemass) * abs(t.genHEPMCweight) * GammaH_YR2(t.GenHMass))
+    multiplyweight = GammaHZZ_YR3(basemass, p, spreadsheet) * GammaHZZ_JHU(t.GenHMass) / (GammaHZZ_JHU(basemass) * abs(t.genHEPMCweight) * GammaH_YR2(t.GenHMass))
     t.GetEntry(1)
-#    print("test should be equal:", multiplyweight, GammaHZZ_YR3(basemass) * GammaHZZ_JHU(t.GenHMass) / (GammaHZZ_JHU(basemass) * t.genHEPMCweight * GammaH_YR2(t.GenHMass)))
+#    print("test should be equal:", multiplyweight, GammaHZZ_YR3(basemass, p, spreadsheet) * GammaHZZ_JHU(t.GenHMass) / (GammaHZZ_JHU(basemass) * t.genHEPMCweight * GammaH_YR2(t.GenHMass)))
 
     bothtrees = itertools.chain(t, failedt)
 #    bothtrees = itertools.islice(bothtrees, 5)
@@ -172,7 +197,6 @@ def update_spreadsheet(filename, p, m, BR):
   elif m == 125: requirednmatches = 5
   else: requirednmatches = 1
   nmatches = 0
-  m = str(int(m))
   with tempfile.NamedTemporaryFile(bufsize=0) as newf:
     with open(filename) as f, open(filename) as f2:
       reader = csv.DictReader(f)
@@ -183,15 +207,17 @@ def update_spreadsheet(filename, p, m, BR):
         while not line.strip():
           newf.write("\n")
           line = next(f2)
-        if p+m in row["identifier"]:
-          if re.match("#*"+p+m+"[0-9]+", row["identifier"]):
+        if p+str(m) in row["identifier"]:
+          if re.match("#*"+p+str(m)+"[0-9]+", row["identifier"]):
             pass
-          elif re.match("#*"+p+m+"[_scaletuneupdownminloHJJNNLOPS]*", row["identifier"]):
+          elif re.match("#*"+p+str(m)+"[_scaletuneupdownminloHJJNNLOPS]*", row["identifier"]):
             nmatches += 1
             regex = "(GENBR=)[0-9.eE+-]+(;)"
             match = re.search(regex, row["::variables"])
             assert match, row["::variables"]
             row["::variables"] = re.sub(regex, r"\g<1>{:g}\g<2>".format(BR), row["::variables"])
+            if p in ("ZH", "ttH") and int(m) >= 300:
+              row["BR=1"] = BR_YR3(min(m, 1000), p, filename)
           else:
             assert False, row["identifier"]
         writer.writerow(row)
@@ -201,6 +227,12 @@ def update_spreadsheet(filename, p, m, BR):
     with open(filename, "w") as finalf, open(newf.name) as newf2:
       finalf.write(newf2.read().replace('\r\n', '\n'))
 
+def BR_fromspreadsheet(filename, p, m):
+  with open(filename) as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+      if re.match("#*"+p+str(m), row["identifier"]):
+        return float(row["BR=1"])
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
@@ -213,9 +245,9 @@ if __name__ == "__main__":
     if args.p and p not in args.p: continue
     for m in getmasses(p):
       if m < 300:
-        BR = BR_YR3(min(m, 1000))
+        BR = BR_YR3(m, p, args.update_spreadsheet)
       else:
-        BR = averageBR(p, m)[0]
+        BR = averageBR(p, m, args.update_spreadsheet)[0]
 
       print(line.format(p, m, BR))
       if numpy.isnan(BR): BR = 999
