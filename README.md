@@ -1,7 +1,7 @@
 ZZAnalysis
 ==========
 
-To install a complete CMSSW area (including this package)
+To install a complete CMSSW 8X area (including this package)
 ------------------------------
 Please use CMSSW_8_0_26_patch1.
 
@@ -11,6 +11,18 @@ wget -O ${TMPDIR}/checkout_80X.csh https://raw.githubusercontent.com/CJLST/ZZAna
 cd $CMSSW_BASE/src
 cmsenv
 source ${TMPDIR}/checkout_80X.csh
+```
+
+To install a complete CMSSW 9X area (including this package)
+------------------------------
+Please use CMSSW_9_4_2.
+
+Download and execute the setup script:
+```
+wget -O ${TMPDIR}/checkout_9X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_80X/checkout_9X.csh
+cd $CMSSW_BASE/src
+cmsenv
+source ${TMPDIR}/checkout_9X.csh
 ```
 
 To update this package from the release
