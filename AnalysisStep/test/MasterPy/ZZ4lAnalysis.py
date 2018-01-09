@@ -72,7 +72,7 @@ declareDefault("APPLYTRIG", True, globals())
 
 # CMSSW version 8X or 9X
 CMSSW_VERSION = os.environ['CMSSW_VERSION']
-CMSSWVERSION = CMSSW_VERSION.split("_")[1]
+CMSSWVERSION = int(CMSSW_VERSION.split("_")[1])
 
 if SELSETUP=="Legacy" and not BESTCANDCOMPARATOR=="byBestZ1bestZ2":
     print "WARNING: In ZZ4lAnalysis.py the SELSETUP=\"Legacy\" flag is meant to reproduce the Legacy results, ignoring the setting of the BESTCANDCOMPARATOR: ",BESTCANDCOMPARATOR
