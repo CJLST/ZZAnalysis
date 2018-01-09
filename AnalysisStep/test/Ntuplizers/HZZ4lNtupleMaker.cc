@@ -48,7 +48,10 @@
 #include <ZZAnalysis/AnalysisStep/interface/MCHistoryTools.h>
 //#include <ZZAnalysis/AnalysisStep/interface/PileUpWeight.h>
 #include <ZZAnalysis/AnalysisStep/interface/PileUpWeight.h>
+#if CMSSW_VERSION_MAJOR<9
 #include "SimDataFormats/HTXS/interface/HiggsTemplateCrossSections.h"
+#endif
+
 
 #include "ZZAnalysis/AnalysisStep/interface/EwkCorrections.h"
 #include "ZZAnalysis/AnalysisStep/interface/LHEHandler.h"
@@ -437,8 +440,9 @@ private:
   //edm::EDGetTokenT<pat::METCollection> metNoHFToken;
   edm::EDGetTokenT<pat::MuonCollection> muonToken;
   edm::EDGetTokenT<pat::ElectronCollection> electronToken;
+  #if CMSSW_VERSION_MAJOR<9
   edm::EDGetTokenT<HTXS::HiggsClassification> htxsToken;
-
+  #endif
   edm::EDGetTokenT<edm::MergeableCounter> preSkimToken;
 
   PileUpWeight pileUpReweight;
@@ -551,7 +555,9 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   //metNoHFToken = consumes<pat::METCollection>(edm::InputTag("slimmedMETsNoHF"));
   muonToken = consumes<pat::MuonCollection>(edm::InputTag("slimmedMuons"));
   electronToken = consumes<pat::ElectronCollection>(edm::InputTag("slimmedElectrons"));
+  #if CMSSW_VERSION_MAJOR<9
   htxsToken = consumes<HTXS::HiggsClassification>(edm::InputTag("rivetProducerHTXS","HiggsClassification"));
+  #endif
   preSkimToken = consumes<edm::MergeableCounter,edm::InLumi>(edm::InputTag("preSkimCounter"));
 
   if (skipEmptyEvents) {
@@ -952,6 +958,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       NRecoEle++;
   }
 
+  #if CMSSW_VERSION_MAJOR<9
   if(isMC)
   {
 	  edm::Handle<HTXS::HiggsClassification> htxs;
@@ -971,7 +978,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 	  }
 
   }
-
+  #endif
 
   //Loop on the candidates
   vector<Int_t> CRFLAG(cands->size());

@@ -183,7 +183,12 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 
     //-- Missing hit  
-    int missingHit = l.gsfTrack()->hitPattern().numberOfHits(HitPattern::MISSING_INNER_HITS);
+	 int missingHit;
+	 #if CMSSW_VERSION_MAJOR < 9
+	 missingHit = l.gsfTrack()->hitPattern().numberOfHits(HitPattern::MISSING_INNER_HITS);
+    #else
+	 missingHit = l.gsfTrack()->hitPattern().numberOfAllHits(HitPattern::MISSING_INNER_HITS);
+	 #endif
     //-- Flag for crack electrons (which use different efficiency SFs)
     bool isCrack = l.isGap(); 
     //--- Trigger matching
