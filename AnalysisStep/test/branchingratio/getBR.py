@@ -20,6 +20,22 @@ filterefficiencyZH = 0.15038
 filterefficiencyttH = 0.1544
 CJLSTproduction = "171217"
 
+YR4data_BR_4l = {
+  120: 0.0001659,
+  124: 0.0002502,
+  125: 0.0002745,
+  126: 0.0003001,
+  130: 0.0004124,
+}
+
+YR4data_BR_ZZ = {
+  120: 0.01572,
+  124: 0.02383,
+  125: 0.02619,
+  126: 0.02866,
+  130: 0.03955,
+}
+
 @contextlib.contextmanager
 def cd(newdir):
   """http://stackoverflow.com/a/24176022/5228524"""
@@ -56,16 +72,25 @@ def cache(function):
       return newfunction(*args, **kwargs)
   return newfunction
 
-def BR_YR3(mass, productionmode, spreadsheet):
-  if spreadsheet and productionmode in ("ZH", "ttH") and mass < 300: return BR_fromspreadsheet(spreadsheet, productionmode, mass)
+def BR_YR3(mass, productionmode):
+  if productionmode in ("ZH", "ttH") and mass < 300:
+    result = BR_fromspreadsheet(productionmode, mass)
+    if 120 <= m <= 130:
+      result *= YR4data_BR_ZZ[m] / yellowhiggs.br(m, "ZZ")[0]
+    return result
+
   mass = int(str(mass))
   try:
     result = yellowhiggs.br(mass, "llll(e,mu,tau)")[0]
   except ValueError:
-    print("===============\n", mass, "\n===============")
-    return .5*(BR_YR3(mass+1, productionmode, spreadsheet)+BR_YR3(mass-1, productionmode, spreadsheet))
+    return .5*(BR_YR3(mass+1, productionmode)+BR_YR3(mass-1, productionmode))
 
-  if productionmode in ("ggH", "VBF", "WplusH", "WminusH"): return result
+  if productionmode in ("ggH", "VBF", "WplusH", "WminusH"):
+    if 120 <= m <= 130:
+      result *= YR4data_BR_4l[m] / yellowhiggs.br(m, "llll(e,mu,tau)")[0]
+    return result
+
+  if 120 <= m <= 130: assert False
 
   #need to get ZZ2l2x BR
   #from the comment here: https://github.com/CJLST/ZZAnalysis/blob/454fffb5842f470e71e89348a6de7a8d30f4a813/AnalysisStep/test/prod/samples_2016_MC.csv#L5-L6
@@ -82,10 +107,12 @@ def BR_YR3(mass, productionmode, spreadsheet):
   else:
     assert False, productionmode
 
+  
+
   return result
 
-def GammaHZZ_YR3(mass, productionmode, spreadsheet):
-  return yellowhiggs.width(mass)[0] * BR_YR3(mass, productionmode, spreadsheet)
+def GammaHZZ_YR3(mass, productionmode):
+  return yellowhiggs.width(mass)[0] * BR_YR3(mass, productionmode)
 
 def sgn(number):
   return math.copysign(1, number)
@@ -172,9 +199,9 @@ def averageBR(productionmode, mass, spreadsheet=None):
       _.SetBranchStatus("genHEPMCweight", 1)
       _.SetBranchStatus("p_Gen_CPStoBWPropRewgt", 1)
     t.GetEntry(0)
-    multiplyweight = GammaHZZ_YR3(basemass, p, spreadsheet) * GammaHZZ_JHU(t.GenHMass) / (GammaHZZ_JHU(basemass) * abs(t.genHEPMCweight) * GammaH_YR2(t.GenHMass))
+    multiplyweight = GammaHZZ_YR3(basemass, p) * GammaHZZ_JHU(t.GenHMass) / (GammaHZZ_JHU(basemass) * abs(t.genHEPMCweight) * GammaH_YR2(t.GenHMass))
     t.GetEntry(1)
-#    print("test should be equal:", multiplyweight, GammaHZZ_YR3(basemass, p, spreadsheet) * GammaHZZ_JHU(t.GenHMass) / (GammaHZZ_JHU(basemass) * t.genHEPMCweight * GammaH_YR2(t.GenHMass)))
+#    print("test should be equal:", multiplyweight, GammaHZZ_YR3(basemass, p) * GammaHZZ_JHU(t.GenHMass) / (GammaHZZ_JHU(basemass) * t.genHEPMCweight * GammaH_YR2(t.GenHMass)))
 
     bothtrees = itertools.chain(t, failedt)
 #    bothtrees = itertools.islice(bothtrees, 5)
@@ -217,7 +244,11 @@ def update_spreadsheet(filename, p, m, BR):
             assert match, row["::variables"]
             row["::variables"] = re.sub(regex, r"\g<1>{:g}\g<2>".format(BR), row["::variables"])
             if p in ("ZH", "ttH") and int(m) >= 300:
-              row["BR=1"] = BR_YR3(min(m, 1000), p, filename)
+              row["BR=1"] = BR_YR3(min(m, 1000), p)
+            elif p in ("ZH", "ttH") and 120 <= m <= 130:
+              row["BR=1"] = BR
+            elif 120 <= m <= 130:
+              row["BR=1"] = YR4data_BR_4l[m]
           else:
             assert False, row["identifier"]
         writer.writerow(row)
@@ -227,8 +258,8 @@ def update_spreadsheet(filename, p, m, BR):
     with open(filename, "w") as finalf, open(newf.name) as newf2:
       finalf.write(newf2.read().replace('\r\n', '\n'))
 
-def BR_fromspreadsheet(filename, p, m):
-  with open(filename) as f:
+def BR_fromspreadsheet(p, m):
+  with contextlib.closing(urllib.urlopen("https://raw.githubusercontent.com/CJLST/ZZAnalysis/87bce99aa845936454ce302a70095797b81c194c/AnalysisStep/test/prod/samples_2016_MC.csv")) as f:
     reader = csv.DictReader(f)
     for row in reader:
       if re.match("#*"+p+str(m), row["identifier"]):
@@ -237,6 +268,8 @@ def BR_fromspreadsheet(filename, p, m):
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
   parser.add_argument("-p", action="append", choices="ggH VBF ZH WplusH WminusH ttH".split())
+  parser.add_argument("--minimum-mass", type=float, default=0)
+  parser.add_argument("--maximum-mass", type=float, default=float("inf"))
   parser.add_argument("--update-spreadsheet")
   args = parser.parse_args()
 
@@ -244,10 +277,11 @@ if __name__ == "__main__":
   for p in "ggH", "VBF", "ZH", "WplusH", "WminusH", "ttH":
     if args.p and p not in args.p: continue
     for m in getmasses(p):
+      if not args.minimum_mass <= m <= args.maximum_mass: continue
       if m < 300:
-        BR = BR_YR3(m, p, args.update_spreadsheet)
+        BR = BR_YR3(m, p)
       else:
-        BR = averageBR(p, m, args.update_spreadsheet)[0]
+        BR = averageBR(p, m)[0]
 
       print(line.format(p, m, BR))
       if numpy.isnan(BR): BR = 999
