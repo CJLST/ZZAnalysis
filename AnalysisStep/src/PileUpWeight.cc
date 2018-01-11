@@ -25,7 +25,8 @@ float PileUpWeight::weight(float input, PileUpWeight::PUvar var) {
 
 PileUpWeight::PileUpWeight(int MC, int target) { 
 
- if (MC==2016&&target==2016) {
+ if (MC==2016 && target==2016)
+ {
     edm::FileInPath fip("ZZAnalysis/AnalysisStep/data/PileUpWeights/puWeightsMoriond17_v2.root");
 
     TFile *fPUWeight = TFile::Open(fip.fullPath().data(),"READ");
@@ -36,7 +37,10 @@ PileUpWeight::PileUpWeight(int MC, int target) {
 
     fPUWeight->Close();
 
- } else if (MC==2016&&target==2017) {
+ }
+
+ else if (MC==2016 && target==2017)
+ {
     edm::FileInPath fip("ZZAnalysis/AnalysisStep/data/PileUpWeights/puWeight_Spring2016MC_to_2017Data_294927-301141.root");
 
     TFile *fPUWeight = TFile::Open(fip.fullPath().data(),"READ");
@@ -46,6 +50,19 @@ PileUpWeight::PileUpWeight(int MC, int target) {
     h_down.reset((TH1*)fPUWeight->Get("weights_varDn")->Clone());
 
     fPUWeight->Close();   
+ }
+	
+ else if (MC==2017 && target==2017)
+ {
+		edm::FileInPath fip("ZZAnalysis/AnalysisStep/data/PileUpWeights/puWeightsMoriond18.root");
+		
+		TFile *fPUWeight = TFile::Open(fip.fullPath().data(),"READ");
+		
+		h_nominal.reset((TH1*)fPUWeight->Get("weights")->Clone());
+		h_up.reset((TH1*)fPUWeight->Get("weights_varUp")->Clone());
+		h_down.reset((TH1*)fPUWeight->Get("weights_varDn")->Clone());
+		
+		fPUWeight->Close();
  }
  
  if(h_nominal == nullptr) {

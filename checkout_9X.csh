@@ -7,7 +7,7 @@
 # source /tmp/checkout_90X.csh
 
 
-############## For CMSSW_9_2_10
+############## For CMSSW_9_4_2
 git cms-init
 # Preliminary electron scale and smearing corrections according to https://twiki.cern.ch/twiki/bin/view/CMS/EGMSmearer
 #FIXME this includes some changes to EgammaAnalysis/ElectronTools; in particular, regressionWeights_cfi that is not present in cmssw proper (?)
@@ -42,8 +42,56 @@ git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
 #git clone https://github.com/scasasso/usercode MuScleFit
 
 # Higgs Combination Package, Needed for the Double Crystall Ball function. 
-git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
-(cd HiggsAnalysis/CombinedLimit; git checkout 81x-root606-integration)
+git clone -n https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
+(cd HiggsAnalysis/CombinedLimit; git checkout origin/81x-root606-integration -- interface/HZZ2L2QRooPdfs.h interface/HZZ4LRooPdfs.h src/HZZ2L2QRooPdfs.cc src/HZZ4LRooPdfs.cc BuildFile.xml)
+cat <<EOF > HiggsAnalysis/CombinedLimit/src/classes.h
+#include "HiggsAnalysis/CombinedLimit/interface/HZZ4LRooPdfs.h"
+#include "HiggsAnalysis/CombinedLimit/interface/HZZ2L2QRooPdfs.h"
+EOF
+cat <<EOF > HiggsAnalysis/CombinedLimit/src/classes_def.xml
+<lcgdict>
+        <class name="RooSigPlusInt" />
+        <class name="RooVBFZZPdf" />
+        <class name="RooVBFZZPdf_v2" />
+        <class name="RooaDoubleCBxBW" />
+        <class name="RooggZZPdf" />
+        <class name="RooggZZPdf_v2" />
+        <class name="RooqqZZPdf" />
+        <class name="RooqqZZPdf_v2" />
+        <class name="RooDoubleCB" />
+        <class name="RooCPSHighMassGGH" />
+        <class name="RooCPSHighMassGGHNoInterf" />
+        <class name="RooCPSHighMassVBF" />
+        <class name="RooCPSHighMassVBFNoInterf" />
+        <class name="RooBWHighMassGGH" />
+        <class name="RooTsallis" />
+        <class name="RooRelBW" />
+        <class name="RooRelBW1" />
+        <class name="RooRelBWHighMass" />
+        <class name="RooRelBWUF" />
+        <class name="RooRelBWUFParam" />
+        <class name="RooRelBWUFParamWidth" />
+        <class name="RooRelBWUF_SM4" />
+        <class name="RooTwoETwoMuMassRes" />
+        <class name="RooTwoETwoMuMassShapePdf2" />
+        <class name="RooFourEMassRes" />
+        <class name="RooFourEMassShapePdf2" />
+        <class name="RooFourMuMassRes" />
+        <class name="RooFourMuMassShapePdf2" />
+        <class name="Roo4lMasses2D" />
+        <class name="Roo4lMasses2D_Bkg" />
+        <class name="Roo4lMasses2D_BkgGGZZ" />
+        <class name="RooBetaFunc_v2" />
+        <class name="RooLevelledExp" />
+        <class name="Triangle" />
+        <class name="RooFermi" />
+        <class name="RooCB" />
+</lcgdict>
+EOF
+
+
+#MELA Analytics
+git clone https://github.com/usarica/MelaAnalytics.git
 
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement

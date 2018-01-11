@@ -1,5 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 from ZZAnalysis.AnalysisStep.defaults import *
+import os, sys
 
 process = cms.Process("ZZ")
 
@@ -69,6 +70,9 @@ declareDefault("ADDLOOSEELE", False, globals())
 # Activate trigger paths in MC; note that for 2016, only reHLT samples have the correct triggers!!!
 declareDefault("APPLYTRIG", True, globals())
 
+# CMSSW version 8X or 9X
+CMSSW_VERSION = os.environ['CMSSW_VERSION']
+CMSSWVERSION = int(CMSSW_VERSION.split("_")[1])
 
 if SELSETUP=="Legacy" and not BESTCANDCOMPARATOR=="byBestZ1bestZ2":
     print "WARNING: In ZZ4lAnalysis.py the SELSETUP=\"Legacy\" flag is meant to reproduce the Legacy results, ignoring the setting of the BESTCANDCOMPARATOR: ",BESTCANDCOMPARATOR
@@ -357,21 +361,22 @@ process.goodPrimaryVertices = cms.EDFilter("VertexSelector",
 ### ----------------------------------------------------------------------
 ### HTXS categorisation
 ### ----------------------------------------------------------------------
-process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
-process.mergedGenParticles = cms.EDProducer("MergedGenParticleProducer",
-														  inputPruned = cms.InputTag("prunedGenParticles"),
-														  inputPacked = cms.InputTag("packedGenParticles"),
-														  )
-process.myGenerator = cms.EDProducer("GenParticles2HepMCConverterHTXS",
-												 genParticles = cms.InputTag("mergedGenParticles"),
-												 genEventInfo = cms.InputTag("generator"),
-												 )
-process.rivetProducerHTXS = cms.EDProducer('HTXSRivetProducer',
-														 HepMCCollection = cms.InputTag('myGenerator','unsmeared'),
-														 LHERunInfo = cms.InputTag('externalLHEProducer'),
-														 ProductionMode = cms.string('AUTO'),
-														 )
-process.htxs = cms.Path(process.mergedGenParticles*process.myGenerator*process.rivetProducerHTXS)
+if(CMSSWVERSION < 9):
+   process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
+   process.mergedGenParticles = cms.EDProducer("MergedGenParticleProducer",
+															  inputPruned = cms.InputTag("prunedGenParticles"),
+															  inputPacked = cms.InputTag("packedGenParticles"),
+															  )
+   process.myGenerator = cms.EDProducer("GenParticles2HepMCConverterHTXS",
+													 genParticles = cms.InputTag("mergedGenParticles"),
+													 genEventInfo = cms.InputTag("generator"),
+													 )
+   process.rivetProducerHTXS = cms.EDProducer('HTXSRivetProducer',
+															 HepMCCollection = cms.InputTag('myGenerator','unsmeared'),
+															 LHERunInfo = cms.InputTag('externalLHEProducer'),
+															 ProductionMode = cms.string('AUTO'),
+															 )
+   process.htxs = cms.Path(process.mergedGenParticles*process.myGenerator*process.rivetProducerHTXS)
 
 
 ### ----------------------------------------------------------------------
@@ -437,8 +442,7 @@ elif LEPTON_SETUP == 2016: # (KalmanMuonCalibrator, ICHEP 2016) FIXME: still usi
          process.calibratedMuons.identifier = cms.string("DATA_80X_13TeV")
 elif LEPTON_SETUP == 2017:
      if IsMC:
-        print "APPLYMUCORR not configured for 2017 MC"
-        sys.exit()
+         process.calibratedMuons.identifier = cms.string("MC_80X_13TeV") #FIXME: still same as 2016
      else: 
          process.calibratedMuons.identifier = cms.string("DATA_80X_13TeV") #FIXME: still same as 2016
 else:

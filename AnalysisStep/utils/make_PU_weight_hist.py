@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # Spring2016MC_M17PUscenario taken from https://github.com/cms-sw/cmssw/blob/CMSSW_8_0_20_patchX/SimGeneral/MixingModule/python/mix_2016_25ns_Moriond17MC_PoissonOOTPU_cfi.py#L25
+# Fall2017MC_PUscenario taken from https://github.com/cms-sw/cmssw/blob/CMSSW_9_4_X/SimGeneral/MixingModule/python/mix_2017_25ns_WinterMC_PUScenarioV1_PoissonOOTPU_cfi.py#L13
 # To obtain DataPileup root histogram run pileupCalc.py:
 
 # For 2016 data (Moriond 2017 setup:)
@@ -8,9 +9,9 @@
 #Up and down variation histograms are created varying the minBiasXsec by 4.6% (72383, 66017)
 
 # For 2017 data:
-#pileupCalc.py -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/PromptReco/Cert_294927-305636_13TeV_PromptReco_Collisions17_JSON.txt --inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/PileUp/pileup_latest.txt --calcMode true --minBiasXsec 69200 --maxPileupBin 75 --numPileupBins 75 DataPileupHistogram2017_69200_75bins.root
-#pileupCalc.py -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/PromptReco/Cert_294927-305636_13TeV_PromptReco_Collisions17_JSON.txt --inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/PileUp/pileup_latest.txt --calcMode true --minBiasXsec 66017 --maxPileupBin 75 --numPileupBins 75 DataPileupHistogram2017_66017_75bins.root
-#pileupCalc.py -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/PromptReco/Cert_294927-305636_13TeV_PromptReco_Collisions17_JSON.txt --inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/PileUp/pileup_latest.txt --calcMode true --minBiasXsec 72383 --maxPileupBin 75 --numPileupBins 75 DataPileupHistogram2017_72383_75bins.root
+#pileupCalc.py -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/PromptReco/Cert_294927-305636_13TeV_PromptReco_Collisions17_JSON.txt --inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/PileUp/pileup_latest.txt --calcMode true --minBiasXsec 69200 --maxPileupBin 100 --numPileupBins 100 DataPileupHistogram2017_69200_100bins.root
+#pileupCalc.py -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/PromptReco/Cert_294927-305636_13TeV_PromptReco_Collisions17_JSON.txt --inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/PileUp/pileup_latest.txt --calcMode true --minBiasXsec 66017 --maxPileupBin 100 --numPileupBins 100 DataPileupHistogram2017_66017_100bins.root
+#pileupCalc.py -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/PromptReco/Cert_294927-305636_13TeV_PromptReco_Collisions17_JSON.txt --inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/PileUp/pileup_latest.txt --calcMode true --minBiasXsec 72383 --maxPileupBin 100 --numPileupBins 100 DataPileupHistogram2017_72383_100bins.root
 
 # Afetrwards run this script to produce root file which contains PU weights
 
@@ -39,19 +40,42 @@ puMC = {
                                     0.000243565 ,0.00015688 , 9.88128e-05 ,6.53783e-05 ,3.73924e-05 ,2.61382e-05 ,2.0307e-05 ,
                                     1.73032e-05 ,1.435e-05 ,  1.36486e-05 ,1.35555e-05 ,1.37491e-05 ,1.34255e-05 ,1.33987e-05 ,
                                     1.34061e-05 ,1.34211e-05 ,1.34177e-05 ,1.32959e-05 ,1.33287e-05],
+
+
+	 'Fall2017MC_PUscenario' : [3.39597497605e-05, 6.63688402133e-06, 1.39533611284e-05, 3.64963078209e-05, 6.00872171664e-05, 9.33932578027e-05,
+               				    0.000120591524486, 0.000128694546198, 0.000361697233219, 0.000361796847553, 0.000702474896113, 0.00133766053707,
+                               0.00237817050805, 0.00389825605651, 0.00594546732588, 0.00856825906255, 0.0116627396044, 0.0148793350787,
+                               0.0179897368379, 0.0208723871946, 0.0232564170641, 0.0249826433945, 0.0262245860346, 0.0272704617569,
+                               0.0283301107549, 0.0294006137386, 0.0303026836965, 0.0309692426278, 0.0308818046328, 0.0310566806228,
+                               0.0309692426278, 0.0310566806228, 0.0310566806228, 0.0310566806228, 0.0307696426944, 0.0300103336052,
+                               0.0288355370103, 0.0273233309106, 0.0264343533951, 0.0255453758796, 0.0235877272306, 0.0215627588047,
+                               0.0195825559393, 0.0177296309658, 0.0160560731931, 0.0146022004183, 0.0134080690078, 0.0129586991411,
+                               0.0125093292745, 0.0124360740539, 0.0123547104433, 0.0123953922486, 0.0124360740539, 0.0124360740539,
+                               0.0123547104433, 0.0124360740539, 0.0123387597772, 0.0122414455005, 0.011705203844, 0.0108187105305,
+                               0.00963985508986, 0.00827210065136, 0.00683770076341, 0.00545237697118, 0.00420456901556, 0.00367513566191,
+                               0.00314570230825, 0.0022917978982, 0.00163221454973, 0.00114065309494, 0.000784838366118, 0.000533204105387,
+                               0.000358474034915, 0.000238881117601, 0.0001984254989, 0.000157969880198, 0.00010375646169, 6.77366175538e-05,
+                               4.39850477645e-05, 2.84298066026e-05, 1.83041729561e-05, 1.17473542058e-05, 7.51982735129e-06, 6.16160108867e-06,
+                               4.80337482605e-06, 3.06235473369e-06, 1.94863396999e-06, 1.23726800704e-06, 7.83538083774e-07, 4.94602064224e-07,
+                               3.10989480331e-07, 1.94628487765e-07, 1.57888581037e-07, 1.2114867431e-07, 7.49518929908e-08, 4.6060444984e-08,
+                               2.81008884326e-08, 1.70121486128e-08, 1.02159894812e-08],
 }
 
 ### MC pu scenario to be used
-puMCscenario = puMC['Spring2016MC_M17PUscenario']
+puMCscenario = puMC['Fall2017MC_PUscenario']
 len_mc = len(puMCscenario)
 
 #data_file_name = 'DataPileupHistogram69200_75bins.root'
 #data_file_name_varUp = 'DataPileupHistogram72383_75bins.root'
 #data_file_name_varDn = 'DataPileupHistogram66017_75bins.root'
 
-data_file_name       = 'DataPileupHistogram2017_69200_75bins.root'
-data_file_name_varUp = 'DataPileupHistogram2017_72383_75bins.root'
-data_file_name_varDn = 'DataPileupHistogram2017_66017_75bins.root'
+#data_file_name       = 'DataPileupHistogram2017_69200_75bins.root'
+#data_file_name_varUp = 'DataPileupHistogram2017_72383_75bins.root'
+#data_file_name_varDn = 'DataPileupHistogram2017_66017_75bins.root'
+
+data_file_name       = 'DataPileupHistogram2017_69200_100bins.root'
+data_file_name_varUp = 'DataPileupHistogram2017_72383_100bins.root'
+data_file_name_varDn = 'DataPileupHistogram2017_66017_100bins.root'
 
 rt.TH1.SetDefaultSumw2(True)
 
@@ -82,7 +106,7 @@ h_d_varDn.Scale(1./h_d_varDn.Integral())
 fpu.Close()
 
 
-h_mc = rt.TH1F('MC out-of-the-box', ';true number of interactions;normalized to unity', len_mc , 0, len_mc)
+h_mc = rt.TH1F('MC_out_of_the_box', ';true number of interactions;normalized to unity', len_mc , 0, len_mc)
 for ipu in range(len(puMCscenario)) :
     puMCscenario[ipu]
     h_mc.SetBinContent(ipu + 1, puMCscenario[ipu])
@@ -99,10 +123,10 @@ h_w_varUp.Divide(h_mc)
 h_w_varDn = h_d_varDn.Clone('weights_varDn')
 h_w_varDn.Divide(h_mc)
 
-h_mc_rw = h_mc.Clone('MC reweighted')
+h_mc_rw = h_mc.Clone('MC_reweighted')
 h_mc_rw_varUp = h_mc.Clone('MC_up')
 h_mc_rw_varUp.SetTitle("MC reweighted +1#sigma")
-h_mc_rw_varDn = h_mc.Clone('MC reweighted')
+h_mc_rw_varDn = h_mc.Clone('MC_reweighted')
 h_mc_rw_varDn.SetTitle("MC reweighted -1#sigma")
 
 
