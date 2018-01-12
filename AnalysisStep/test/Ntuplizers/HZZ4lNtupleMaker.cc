@@ -337,6 +337,8 @@ public:
 
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
+  static float EvalSpline(TSpline3* const& sp, float xval);
+
 private:
   virtual void beginJob() ;
   virtual void beginRun(edm::Run const&, edm::EventSetup const&);
@@ -1112,6 +1114,23 @@ void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
    JetPartonFlavour .push_back(jet.partonFlavour());
 }
 
+float HZZ4lNtupleMaker::EvalSpline(TSpline3* const& sp, float xval){
+  double xmin = sp->GetXmin();
+  double xmax = sp->GetXmin();
+  double res=0;
+  if (xval<xmin){
+    res=sp->Eval(xmin);
+    double deriv=sp->Derivative(xmin);
+    res += deriv*(xval-xmin);
+  }
+  else if (xval>xmax){
+    res=sp->Eval(xmax);
+    double deriv=sp->Derivative(xmax);
+    res += deriv*(xval-xmax);
+  }
+  else res=sp->Eval(xval);
+  return res;
+}
 
 void HZZ4lNtupleMaker::FillKFactors(edm::Handle<GenEventInfoProduct>& genInfo, std::vector<const reco::Candidate *>& genZLeps){
   KFactor_QCD_ggZZ_Nominal=1;
@@ -1132,18 +1151,18 @@ void HZZ4lNtupleMaker::FillKFactors(edm::Handle<GenEventInfoProduct>& genInfo, s
   if (isMC){
     GenEventInfoProduct  genInfoP = *(genInfo.product());
     if (apply_K_NNLOQCD_ZZGG>0 && apply_K_NNLOQCD_ZZGG!=3){
-      if (spkfactor_ggzz_nnlo[0]!=0) KFactor_QCD_ggZZ_Nominal = (float)spkfactor_ggzz_nnlo[0]->Eval(GenHMass);
-      if (spkfactor_ggzz_nnlo[1]!=0) KFactor_QCD_ggZZ_PDFScaleDn = (float)spkfactor_ggzz_nnlo[1]->Eval(GenHMass);
-      if (spkfactor_ggzz_nnlo[2]!=0) KFactor_QCD_ggZZ_PDFScaleUp = (float)spkfactor_ggzz_nnlo[2]->Eval(GenHMass);
-      if (spkfactor_ggzz_nnlo[3]!=0) KFactor_QCD_ggZZ_QCDScaleDn = (float)spkfactor_ggzz_nnlo[3]->Eval(GenHMass);
-      if (spkfactor_ggzz_nnlo[4]!=0) KFactor_QCD_ggZZ_QCDScaleUp = (float)spkfactor_ggzz_nnlo[4]->Eval(GenHMass);
-      if (spkfactor_ggzz_nnlo[5]!=0) KFactor_QCD_ggZZ_AsDn = (float)spkfactor_ggzz_nnlo[5]->Eval(GenHMass);
-      if (spkfactor_ggzz_nnlo[6]!=0) KFactor_QCD_ggZZ_AsUp = (float)spkfactor_ggzz_nnlo[6]->Eval(GenHMass);
-      if (spkfactor_ggzz_nnlo[7]!=0) KFactor_QCD_ggZZ_PDFReplicaDn = (float)spkfactor_ggzz_nnlo[7]->Eval(GenHMass);
-      if (spkfactor_ggzz_nnlo[8]!=0) KFactor_QCD_ggZZ_PDFReplicaUp = (float)spkfactor_ggzz_nnlo[8]->Eval(GenHMass);
+      if (spkfactor_ggzz_nnlo[0]!=0) KFactor_QCD_ggZZ_Nominal = HZZ4lNtupleMaker::EvalSpline(spkfactor_ggzz_nnlo[0], GenHMass);
+      if (spkfactor_ggzz_nnlo[1]!=0) KFactor_QCD_ggZZ_PDFScaleDn = HZZ4lNtupleMaker::EvalSpline(spkfactor_ggzz_nnlo[1], GenHMass);
+      if (spkfactor_ggzz_nnlo[2]!=0) KFactor_QCD_ggZZ_PDFScaleUp = HZZ4lNtupleMaker::EvalSpline(spkfactor_ggzz_nnlo[2], GenHMass);
+      if (spkfactor_ggzz_nnlo[3]!=0) KFactor_QCD_ggZZ_QCDScaleDn = HZZ4lNtupleMaker::EvalSpline(spkfactor_ggzz_nnlo[3], GenHMass);
+      if (spkfactor_ggzz_nnlo[4]!=0) KFactor_QCD_ggZZ_QCDScaleUp = HZZ4lNtupleMaker::EvalSpline(spkfactor_ggzz_nnlo[4], GenHMass);
+      if (spkfactor_ggzz_nnlo[5]!=0) KFactor_QCD_ggZZ_AsDn = HZZ4lNtupleMaker::EvalSpline(spkfactor_ggzz_nnlo[5], GenHMass);
+      if (spkfactor_ggzz_nnlo[6]!=0) KFactor_QCD_ggZZ_AsUp = HZZ4lNtupleMaker::EvalSpline(spkfactor_ggzz_nnlo[6], GenHMass);
+      if (spkfactor_ggzz_nnlo[7]!=0) KFactor_QCD_ggZZ_PDFReplicaDn = HZZ4lNtupleMaker::EvalSpline(spkfactor_ggzz_nnlo[7], GenHMass);
+      if (spkfactor_ggzz_nnlo[8]!=0) KFactor_QCD_ggZZ_PDFReplicaUp = HZZ4lNtupleMaker::EvalSpline(spkfactor_ggzz_nnlo[8], GenHMass);
       if (apply_K_NNLOQCD_ZZGG==2){
         if (spkfactor_ggzz_nlo[0]!=0){
-          float divisor = (float)spkfactor_ggzz_nlo[0]->Eval(GenHMass);
+          float divisor = HZZ4lNtupleMaker::EvalSpline(spkfactor_ggzz_nlo[0], GenHMass);
           KFactor_QCD_ggZZ_Nominal /= divisor;
           KFactor_QCD_ggZZ_PDFScaleDn /= divisor;
           KFactor_QCD_ggZZ_PDFScaleUp /= divisor;
@@ -1168,15 +1187,15 @@ void HZZ4lNtupleMaker::FillKFactors(edm::Handle<GenEventInfoProduct>& genInfo, s
       }
     }
     else if (apply_K_NNLOQCD_ZZGG==3){
-      if (spkfactor_ggzz_nlo[0]!=0) KFactor_QCD_ggZZ_Nominal = (float)spkfactor_ggzz_nlo[0]->Eval(GenHMass);
-      if (spkfactor_ggzz_nlo[1]!=0) KFactor_QCD_ggZZ_PDFScaleDn = (float)spkfactor_ggzz_nlo[1]->Eval(GenHMass);
-      if (spkfactor_ggzz_nlo[2]!=0) KFactor_QCD_ggZZ_PDFScaleUp = (float)spkfactor_ggzz_nlo[2]->Eval(GenHMass);
-      if (spkfactor_ggzz_nlo[3]!=0) KFactor_QCD_ggZZ_QCDScaleDn = (float)spkfactor_ggzz_nlo[3]->Eval(GenHMass);
-      if (spkfactor_ggzz_nlo[4]!=0) KFactor_QCD_ggZZ_QCDScaleUp = (float)spkfactor_ggzz_nlo[4]->Eval(GenHMass);
-      if (spkfactor_ggzz_nlo[5]!=0) KFactor_QCD_ggZZ_AsDn = (float)spkfactor_ggzz_nlo[5]->Eval(GenHMass);
-      if (spkfactor_ggzz_nlo[6]!=0) KFactor_QCD_ggZZ_AsUp = (float)spkfactor_ggzz_nlo[6]->Eval(GenHMass);
-      if (spkfactor_ggzz_nlo[7]!=0) KFactor_QCD_ggZZ_PDFReplicaDn = (float)spkfactor_ggzz_nlo[7]->Eval(GenHMass);
-      if (spkfactor_ggzz_nlo[8]!=0) KFactor_QCD_ggZZ_PDFReplicaUp = (float)spkfactor_ggzz_nlo[8]->Eval(GenHMass);
+      if (spkfactor_ggzz_nlo[0]!=0) KFactor_QCD_ggZZ_Nominal = HZZ4lNtupleMaker::EvalSpline(spkfactor_ggzz_nlo[0], GenHMass);
+      if (spkfactor_ggzz_nlo[1]!=0) KFactor_QCD_ggZZ_PDFScaleDn = HZZ4lNtupleMaker::EvalSpline(spkfactor_ggzz_nlo[1], GenHMass);
+      if (spkfactor_ggzz_nlo[2]!=0) KFactor_QCD_ggZZ_PDFScaleUp = HZZ4lNtupleMaker::EvalSpline(spkfactor_ggzz_nlo[2], GenHMass);
+      if (spkfactor_ggzz_nlo[3]!=0) KFactor_QCD_ggZZ_QCDScaleDn = HZZ4lNtupleMaker::EvalSpline(spkfactor_ggzz_nlo[3], GenHMass);
+      if (spkfactor_ggzz_nlo[4]!=0) KFactor_QCD_ggZZ_QCDScaleUp = HZZ4lNtupleMaker::EvalSpline(spkfactor_ggzz_nlo[4], GenHMass);
+      if (spkfactor_ggzz_nlo[5]!=0) KFactor_QCD_ggZZ_AsDn = HZZ4lNtupleMaker::EvalSpline(spkfactor_ggzz_nlo[5], GenHMass);
+      if (spkfactor_ggzz_nlo[6]!=0) KFactor_QCD_ggZZ_AsUp = HZZ4lNtupleMaker::EvalSpline(spkfactor_ggzz_nlo[6], GenHMass);
+      if (spkfactor_ggzz_nlo[7]!=0) KFactor_QCD_ggZZ_PDFReplicaDn = HZZ4lNtupleMaker::EvalSpline(spkfactor_ggzz_nlo[7], GenHMass);
+      if (spkfactor_ggzz_nlo[8]!=0) KFactor_QCD_ggZZ_PDFReplicaUp = HZZ4lNtupleMaker::EvalSpline(spkfactor_ggzz_nlo[8], GenHMass);
     }
 
     if (genFinalState!=BUGGY){
