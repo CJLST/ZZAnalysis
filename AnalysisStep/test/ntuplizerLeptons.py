@@ -9,6 +9,16 @@ from ZZAnalysis.AnalysisStep.defaults import *
 # Set defaults for variables used in this file (in case they are not defined by a caller script)
 declareDefault("PD", "", globals()) # "" for MC, "DoubleEle", "DoubleMu", or "MuEG" for data 
 declareDefault("MCFILTER", "", globals())
+declareDefault("XSEC", 1, globals())
+declareDefault("GENXSEC", 1, globals())
+declareDefault("GENBR", 1, globals())
+LEPTON_SETUP = 2017  # current default = 2017 = Moriond2017
+ELECORRTYPE = "None" # "None" to switch off
+ELEREGRESSION = "None" # "None" to switch off
+APPLYMUCORR = True  # Switch off muon scale corrections
+APPLYJEC = False     # 
+APPLYJER = False     #
+RECORRECTMET = False #
 
 
 # Get absolute path
