@@ -557,9 +557,6 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   //metNoHFToken = consumes<pat::METCollection>(edm::InputTag("slimmedMETsNoHF"));
   muonToken = consumes<pat::MuonCollection>(edm::InputTag("slimmedMuons"));
   electronToken = consumes<pat::ElectronCollection>(edm::InputTag("slimmedElectrons"));
-  #if CMSSW_VERSION_MAJOR<9
-  htxsToken = consumes<HTXS::HiggsClassification>(edm::InputTag("rivetProducerHTXS","HiggsClassification"));
-  #endif
   preSkimToken = consumes<edm::MergeableCounter,edm::InLumi>(edm::InputTag("preSkimCounter"));
 
   if (skipEmptyEvents) {
@@ -577,7 +574,12 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   isMC = myHelper.isMC();
   addLHEKinematics = addLHEKinematics || lheMElist.size()>0;
   if (isMC) lheHandler = new LHEHandler(pset.getParameter<int>("VVMode"), pset.getParameter<int>("VVDecayMode"), addLHEKinematics);
-
+	if (isMC)
+	{
+		#if CMSSW_VERSION_MAJOR<9
+		htxsToken = consumes<HTXS::HiggsClassification>(edm::InputTag("rivetProducerHTXS","HiggsClassification"));
+		#endif
+	}
   Nevt_Gen = 0;
   Nevt_Gen_lumiBlock = 0;
 
