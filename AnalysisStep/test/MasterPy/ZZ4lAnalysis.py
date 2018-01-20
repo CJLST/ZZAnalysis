@@ -133,11 +133,11 @@ elif (SAMPLE_TYPE == 2016):
     elif (DATA_TAG == "PromptReco"):
         process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_Prompt_v16', '')
 
-elif (SAMPLE_TYPE == 2017): #FIXME
+elif (SAMPLE_TYPE == 2017): 
     if IsMC:
-        process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mc2017_realistic_v10', '')
     else:
-        process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_data', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '94X_dataRun2_ReReco_EOY17_v2', '')
 
 
 print '\t',process.GlobalTag.globaltag

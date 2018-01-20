@@ -64,7 +64,7 @@ process.source.fileNames = cms.untracked.vstring(
 #    '/store/relval/CMSSW_9_2_0/DoubleMuon/MINIAOD/91X_dataRun2_relval_v6_RelVal_doubMu2016B-v1/10000/363F2659-453C-E711-8B1C-0CC47A7C345E.root'
 
     ### Run2017C sample data file
-	 '/store/data/Run2017C/MuonEG/MINIAOD/PromptReco-v3/000/300/742/00000/0A1C877F-617E-E711-A3F8-02163E01A332.root',
+	 '/store/data/Run2017B/DoubleMuon/MINIAOD/17Nov2017-v1/30000/0852E0CB-E7D7-E711-B2DA-0025905C3DCE.root',
 							
 	 ### 2017MC sample file
 	 #'/store/mc/RunIIFall17MiniAOD/ZZTo4L_13TeV_powheg_pythia8/MINIAODSIM/94X_mc2017_realistic_v10-v2/60000/267F8236-BFDA-E711-B4BF-008CFAC9422C.root',
