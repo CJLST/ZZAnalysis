@@ -13,7 +13,10 @@ git cms-init
 #FIXME this includes some changes to EgammaAnalysis/ElectronTools; in particular, regressionWeights_cfi that is not present in cmssw proper (?)
 #git cms-merge-topic rafaellopesdesa:EgammaAnalysis80_EGMSmearer_Moriond17_23Jan
 
-git cms-addpkg EgammaAnalysis/ElectronTools
+#Electron MVA ID in 94X according to https://twiki.cern.ch/twiki/bin/viewauth/CMS/MultivariateElectronIdentificationRun2#Recipes_for_regular_users
+git cms-merge-topic guitargeek:ElectronID_MVA2017_940pre3
+rm -rf RecoEgamma/ElectronIdentification/data #Delete old BDT weights so we can clone new ones
+git clone https://github.com/lsoffi/RecoEgamma-ElectronIdentification.git RecoEgamma/ElectronIdentification/data
 #FIXME the following scale/smearing are for Moriond 2017, to be updated  
 #(cd EgammaAnalysis/ElectronTools/data ; git clone -b master https://github.com/ECALELFS/ScalesSmearings.git ; cd ScalesSmearings ; git checkout tags/Moriond17_23Jan_v1)
 

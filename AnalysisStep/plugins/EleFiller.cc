@@ -173,14 +173,26 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 //                                (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.286) ||
 //                                (fSCeta >= 1.479                 && BDT > -0.267)   ));
 
-    //WP for preliminary 8X ID BDT
-    bool isBDT = (pt<=10 && ((fSCeta<0.8                  && BDT > -0.211) ||
+	  
+    bool isBDT;
+	  
+	 #if CMSSW_VERSION_MAJOR < 9
+	 //WP for preliminary 8X ID BDT
+    isBDT         = (pt<=10 && ((fSCeta<0.8                  && BDT > -0.211) ||
                                 (fSCeta>=0.8 && fSCeta<1.479 && BDT > -0.396) ||
                                 (fSCeta>=1.479               && BDT > -0.215))) 
                  || (pt>10  && ((fSCeta<0.8                  && BDT > -0.870) ||
                                 (fSCeta>=0.8 && fSCeta<1.479 && BDT > -0.838) || 
                                 (fSCeta>=1.479               && BDT > -0.763)));
-
+	 #else
+	 //WP for 94X ID with isolation
+	 isBDT         = (pt<=10 && ((fSCeta<0.8                  && BDT >  0.6282314508618512) ||
+                                (fSCeta>=0.8 && fSCeta<1.479 && BDT >  0.5922759800216235) ||
+                                (fSCeta>=1.479               && BDT >  0.636928856343224)))
+                 || (pt>10  && ((fSCeta<0.8                  && BDT >  0.03554496382023676) ||
+                                (fSCeta>=0.8 && fSCeta<1.479 && BDT >  0.04342450751424789) ||
+                                (fSCeta>=1.479               && BDT > -0.2660000237162611)));
+	 #endif
 
     //-- Missing hit  
 	 int missingHit;
