@@ -10,7 +10,7 @@ RECORRECTMET = False #
 #KINREFIT = False    # control KinZFitter (very slow)
 PROCESS_CR = False   # Uncomment to run CR paths and trees
 #ADDLOOSEELE = True  # Run paths for loose electrons
-APPLYTRIG = False    # hack for samples missing correct triggers - use with caution
+#APPLYTRIG = False    # hack for samples missing correct triggers - use with caution
 #KEEPLOOSECOMB = True # Do not skip loose lepton ZZ combinations (for debugging)
 ADDZTREE = True      # Add tree for Z analysis
 

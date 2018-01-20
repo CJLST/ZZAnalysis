@@ -527,7 +527,7 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
   if(test_bit_16(trigworld,6)) ++Nevt_passSingleEle;
 
   // print a status 
-  if (!isMC) cout << irun << ":" << ils << ":" << ievt << " " << evtPassSkim << " " << evtPassTrigger << endl;
+  //if (!isMC) cout << irun << ":" << ils << ":" << ievt << " " << evtPassSkim << " " << evtPassTrigger << endl;
 
   if(!evtPassSkim) return;
   ++Nevt_Skim;
