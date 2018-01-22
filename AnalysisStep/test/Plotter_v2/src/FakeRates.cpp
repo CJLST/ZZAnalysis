@@ -8,7 +8,7 @@ using namespace std;
 FakeRates::FakeRates( TString input_file_FR_name )
 {
  
-   input_file_FR = new TFile("./" + input_file_FR_name);
+   input_file_FR = new TFile(input_file_FR_name);
 
    // for Christophe's FR files
    g_FR_mu_EB = (TGraph*)input_file_FR->Get("FR_SS_muon_EB");

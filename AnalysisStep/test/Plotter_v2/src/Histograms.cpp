@@ -2428,7 +2428,7 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
    histos_1D[plot_index][fs][cat][Settings::qqZZ]->SetLineColor(Cosmetics::qqZZ().line_color);
    histos_1D[plot_index][fs][cat][Settings::ggZZ]->SetLineColor(Cosmetics::ggZZ().line_color);
    
-   if ( variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
+   if ( false )//variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
    {
       histos_1D_ZX_shape[plot_index][fs][cat]->SetFillColor(Cosmetics::ZX().fill_color);
       histos_1D_ZX_shape[plot_index][fs][cat]->SetLineColor(Cosmetics::ZX().line_color);
@@ -2453,7 +2453,7 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
    // THStack
    THStack *stack = new THStack( "stack", "stack" );
    
-   if ( variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
+   if ( false)//variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
    {
       stack->Add(histos_1D_ZX_shape[plot_index][fs][cat]);
    }
@@ -2671,7 +2671,7 @@ void Histograms::plot_1D_all_cat( TString filename, TString variable_name , TStr
       histos_1D[plot_index][Settings::fs4l][i_cat][Settings::ggZZ]->SetLineColor(Cosmetics::ggZZ().line_color);
       
 
-      if ( variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
+      if ( false) //variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
       {
          histos_1D_ZX_shape[plot_index][Settings::fs4l][i_cat]->SetFillColor(Cosmetics::ZX().fill_color);
          histos_1D_ZX_shape[plot_index][Settings::fs4l][i_cat]->SetLineColor(Cosmetics::ZX().line_color);
@@ -2694,7 +2694,7 @@ void Histograms::plot_1D_all_cat( TString filename, TString variable_name , TStr
       
       THStack *stack = new THStack();
       
-      if ( variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
+      if ( false)//variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
       {
          stack->Add(histos_1D_ZX_shape[plot_index][Settings::fs4l][i_cat]);
       }
@@ -2885,7 +2885,7 @@ void Histograms::plot_1D_all_fs( TString filename, TString variable_name , TStri
       histos_1D[plot_index][i_fs][Settings::inclusive][Settings::qqZZ]->SetFillColor(Cosmetics::qqZZ().fill_color);
       histos_1D[plot_index][i_fs][Settings::inclusive][Settings::ggZZ]->SetFillColor(Cosmetics::ggZZ().fill_color);
       
-      if ( variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
+      if ( false) //variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
          histos_1D_ZX_shape[plot_index][i_fs][Settings::inclusive]->SetFillColor(Cosmetics::ZX().fill_color);
       else
          histos_1D_ZX[plot_index][i_fs][Settings::inclusive]->SetFillColor(Cosmetics::ZX().fill_color);
@@ -2894,7 +2894,7 @@ void Histograms::plot_1D_all_fs( TString filename, TString variable_name , TStri
       histos_1D[plot_index][i_fs][Settings::inclusive][Settings::qqZZ]->SetLineColor(Cosmetics::qqZZ().line_color);
       histos_1D[plot_index][i_fs][Settings::inclusive][Settings::ggZZ]->SetLineColor(Cosmetics::ggZZ().line_color);
       
-      if ( variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
+      if ( false ) //variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
          histos_1D_ZX_shape[plot_index][i_fs][Settings::inclusive]->SetLineColor(Cosmetics::ZX().line_color);
       else
          histos_1D_ZX[plot_index][i_fs][Settings::inclusive]->SetLineColor(Cosmetics::ZX().line_color);
@@ -2906,7 +2906,7 @@ void Histograms::plot_1D_all_fs( TString filename, TString variable_name , TStri
       // THStack
       THStack *stack = new THStack( "stack", "stack" );
       
-      if ( variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
+      if ( false) //variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
       {  
          stack->Add(histos_1D_ZX_shape[plot_index][i_fs][Settings::inclusive]);
       }
