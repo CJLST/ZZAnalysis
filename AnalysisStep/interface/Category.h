@@ -102,6 +102,44 @@ extern "C" int categoryMor17(
 			     bool useQGTagging = false
 			     );
 
+//---------- Moriond 2018 categorization
+
+enum CategoryMor18 {
+  UntaggedMor18      = 0,
+  VBF1jTaggedMor18   = 1,
+  VBF2jTaggedMor18   = 2,
+  VHLeptTaggedMor18  = 3,
+  VHHadrTaggedMor18  = 4,
+  ttHLeptTaggedMor18 = 5,
+  ttHHadrTaggedMor18 = 6,
+  VHMETTaggedMor18   = 7
+};
+
+//int category(
+extern "C" int categoryMor18(
+			     int nExtraLep,
+			     int nExtraZ,
+			     int nCleanedJetsPt30,
+			     int nCleanedJetsPt30BTagged_bTagSF,
+			     float* jetQGLikelihood,
+			     float p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+			     float p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
+			     float p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
+			     float p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+			     float pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+			     float p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
+			     float p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
+				  float p_HadWH_mavjj_JECNominal,
+				  float p_HadWH_mavjj_true_JECNominal,
+				  float p_HadZH_mavjj_JECNominal,
+				  float p_HadZH_mavjj_true_JECNominal,
+			     float* jetPhi,
+			     float ZZMass,
+			     float PFMET,
+			     bool useVHMETTagged = true,
+			     bool useQGTagging = false
+			     );
+
 
 
 #endif
