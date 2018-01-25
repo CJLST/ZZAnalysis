@@ -25,14 +25,15 @@ public:
    
    struct ZX4e
    {            
-      float norm_inclusive        = ratio_4e;
-      float norm_untagged         = ratio_4e;
-      float norm_VBF_1j_tagged    = ratio_4e;
-      float norm_VBF_2j_tagged    = ratio_4e;
-      float norm_VH_lepton_tagged = ratio_4e;
-      float norm_VH_hadron_tagged = ratio_4e;
-      float norm_ttH_tagged       = ratio_4e;
-      float norm_VH_MET_tagged    = ratio_4e;
+      float norm_inclusive         = ratio_4e;
+      float norm_untagged          = ratio_4e;
+      float norm_VBF_1j_tagged     = ratio_4e;
+      float norm_VBF_2j_tagged     = ratio_4e;
+      float norm_VH_lepton_tagged  = ratio_4e;
+      float norm_VH_hadron_tagged  = ratio_4e;
+      float norm_ttH_hadron_tagged = ratio_4e;
+      float norm_ttH_lepton_tagged = ratio_4e;
+      float norm_VH_MET_tagged     = ratio_4e;
        
       float par0 = 141.9;
       float par1 = 21.3;
@@ -40,14 +41,15 @@ public:
     
     struct ZX4mu
     {
-      float norm_inclusive        = ratio_4mu;
-      float norm_untagged         = ratio_4mu;
-      float norm_VBF_1j_tagged    = ratio_4mu;
-      float norm_VBF_2j_tagged    = ratio_4mu;
-      float norm_VH_lepton_tagged = ratio_4mu;
-      float norm_VH_hadron_tagged = ratio_4mu;
-      float norm_ttH_tagged       = ratio_4mu;
-      float norm_VH_MET_tagged    = ratio_4mu;
+      float norm_inclusive         = ratio_4mu;
+      float norm_untagged          = ratio_4mu;
+      float norm_VBF_1j_tagged     = ratio_4mu;
+      float norm_VBF_2j_tagged     = ratio_4mu;
+      float norm_VH_lepton_tagged  = ratio_4mu;
+      float norm_VH_hadron_tagged  = ratio_4mu;
+      float norm_ttH_hadron_tagged = ratio_4mu;
+      float norm_ttH_lepton_tagged = ratio_4mu;
+      float norm_VH_MET_tagged     = ratio_4mu;
        
       float par0 = 130.4;
       float par1 = 15.6;
@@ -55,14 +57,15 @@ public:
    
     struct ZX2e2mu
     {
-      float norm_inclusive        = ratio_2e2mu;
-      float norm_untagged         = ratio_2e2mu;
-      float norm_VBF_1j_tagged    = ratio_2e2mu;
-      float norm_VBF_2j_tagged    = ratio_2e2mu;
-      float norm_VH_lepton_tagged = ratio_2e2mu;
-      float norm_VH_hadron_tagged = ratio_2e2mu;
-      float norm_ttH_tagged       = ratio_2e2mu;
-      float norm_VH_MET_tagged    = ratio_2e2mu;
+      float norm_inclusive         = ratio_2e2mu;
+      float norm_untagged          = ratio_2e2mu;
+      float norm_VBF_1j_tagged     = ratio_2e2mu;
+      float norm_VBF_2j_tagged     = ratio_2e2mu;
+      float norm_VH_lepton_tagged  = ratio_2e2mu;
+      float norm_VH_hadron_tagged  = ratio_2e2mu;
+      float norm_ttH_hadron_tagged = ratio_2e2mu;
+      float norm_ttH_lepton_tagged = ratio_2e2mu;
+      float norm_VH_MET_tagged     = ratio_2e2mu;
         
       float par0 = 0.45;
       float par1 = 131.1;

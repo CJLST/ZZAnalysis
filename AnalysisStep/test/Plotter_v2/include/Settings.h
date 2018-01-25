@@ -16,14 +16,15 @@ public:
    
    enum _category
    {
-      untagged         = 0,
-      VBF_1j_tagged    = 1,
-      VBF_2j_tagged    = 2,
-      VH_lepton_tagged = 3,
-      VH_hadron_tagged = 4,
-      ttH_tagged       = 5,
-      VH_MET_tagged    = 6,
-      inclusive        = 7,
+      untagged          = 0,
+      VBF_1j_tagged     = 1,
+      VBF_2j_tagged     = 2,
+      VH_lepton_tagged  = 3,
+      VH_hadron_tagged  = 4,
+      ttH_lepton_tagged = 5,
+      ttH_hadron_tagged = 6,
+      VH_MET_tagged     = 7,
+      inclusive         = 8,
       MAX_NUM_OF_CATEGORIES
    };
    
@@ -74,13 +75,14 @@ public:
    
    enum _production_modes
 	{
-		ggH = 0,
-		VBF = 1,
-		WH_lep = 2,
-		WH_had = 3,
-		ZH_lep = 4,
-		ZH_had = 5,
-		ttH = 6,
+		ggH     = 0,
+		VBF     = 1,
+		WH_lep  = 2,
+		WH_had  = 3,
+		ZH_lep  = 4,
+		ZH_had  = 5,
+		ttH_lep = 6,
+		ttH_had = 7,
 		MAX_NUM_OF_PRODUCTION_MODES
 		
 	};
@@ -138,15 +140,20 @@ public:
 		yH125ZHhad = 33,
 		yH126ZHhad = 34,
 		yH130ZHhad = 35,
-      yH120ttH   = 36,
-      yH124ttH   = 37,
-      yH125ttH   = 38,
-      yH126ttH   = 39,
-      yH130ttH   = 40,
-      yqqZZ      = 41,
-      yggZZ      = 42,
-      yDY        = 43,
-      yttbar     = 44,
+      yH120ttHlep= 36,
+      yH124ttHlep= 37,
+      yH125ttHlep= 38,
+      yH126ttHlep= 39,
+      yH130ttHlep= 40,
+		yH120ttHhad= 41,
+      yH124ttHhad= 42,
+      yH125ttHhad= 43,
+      yH126ttHhad= 44,
+      yH130ttHhad= 45,
+      yqqZZ      = 46,
+      yggZZ      = 47,
+      yDY        = 48,
+      yttbar     = 49,
       MAX_NUM_OF_PROCESSES_YIELDS
    };
    

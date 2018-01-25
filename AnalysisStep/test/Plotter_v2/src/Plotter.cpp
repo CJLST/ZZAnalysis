@@ -18,7 +18,6 @@ Plotter::Plotter( double lumi ):Tree()
 
    
    // Z+X SS factors
-   // FIXME: recompute this for Run II, OS/SS ratio taken when computing fake rates in SS method
    _fs_ROS_SS.push_back(1.01005);//4e
    _fs_ROS_SS.push_back(1.05217);//4mu
    _fs_ROS_SS.push_back(1.0024);//2e2mu
@@ -84,7 +83,11 @@ void Plotter::MakeHistograms( TString input_file_name )
       if ( !(ZZsel >= 90) ) continue;
 
       // Find current process
-      _current_process = find_current_process( input_file_name, genExtInfo );
+      gen_assoc_lep_id_.push_back(GenAssocLep1Id);
+   	gen_assoc_lep_id_.push_back(GenAssocLep2Id);
+      _n_gen_assoc_lep = CountAssociatedLeptons();
+      _current_process = find_current_process( input_file_name, genExtInfo , _n_gen_assoc_lep);
+      gen_assoc_lep_id_.clear();
    
       // Final states
       _current_final_state = FindFinalState();
@@ -100,7 +103,7 @@ void Plotter::MakeHistograms( TString input_file_name )
          jetPgOverPq[j] = 1./JetQGLikelihood->at(j) - 1.;
       }
 
-      _current_category = categoryMor17(nExtraLep,
+      _current_category = categoryMor18(nExtraLep,
 													 nExtraZ,
 													 nCleanedJetsPt30,
 													 nCleanedJetsPt30BTagged_bTagSF,
@@ -298,7 +301,7 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
    
       _current_final_state = FindFinalStateZX();
    
-		_current_category = categoryMor17(nExtraLep,
+		_current_category = categoryMor18(nExtraLep,
 													 nExtraZ,
 													 nCleanedJetsPt30,
 													 nCleanedJetsPt30BTagged_bTagSF,
@@ -554,7 +557,7 @@ void Plotter::plot_2D_error_all_cat( TString file_name, TString variable_name, T
 
 
 //==========================================================
-int Plotter::find_current_process( TString input_file_name , int genExtInfo)
+int Plotter::find_current_process( TString input_file_name , int genExtInfo, int n_gen_assoc_lep)
 {
    
    int current_process = -999;
@@ -563,13 +566,14 @@ int Plotter::find_current_process( TString input_file_name , int genExtInfo)
    if ( input_file_name.Contains("Data") )           current_process = Settings::Data;
    if ( input_file_name.Contains("ggH125") )         current_process = Settings::H125ggH;
    if ( input_file_name.Contains("VBFH125") )        current_process = Settings::H125VBF;
-   if ( input_file_name.Contains("WplusH125") && genExtInfo > 10)      current_process = Settings::H125VH; //prepare for splitting VH into VH_lep and VH_had
-   if ( input_file_name.Contains("WminusH125") && genExtInfo > 10)     current_process = Settings::H125VH;
-   if ( input_file_name.Contains("ZH125") && genExtInfo > 10)          current_process = Settings::H125VH;
-	if ( input_file_name.Contains("WplusH125") && genExtInfo <= 10)      current_process = Settings::H125VH; //prepare for splitting VH into VH_lep and VH_had
-	if ( input_file_name.Contains("WminusH125") && genExtInfo <= 10)     current_process = Settings::H125VH;
-	if ( input_file_name.Contains("ZH125") && genExtInfo <= 10)          current_process = Settings::H125VH;
-   if ( input_file_name.Contains("ttH125") )         current_process = Settings::H125ttH;
+   if ( input_file_name.Contains("WplusH125")  && genExtInfo > 10)   current_process = Settings::H125VH; //prepare for splitting VH and ttH into lep and had
+   if ( input_file_name.Contains("WminusH125") && genExtInfo > 10)   current_process = Settings::H125VH;
+   if ( input_file_name.Contains("ZH125")      && genExtInfo > 10)   current_process = Settings::H125VH;
+   if ( input_file_name.Contains("ttH125")     && n_gen_assoc_lep > 0)   current_process = Settings::H125ttH;
+	if ( input_file_name.Contains("WplusH125")  && genExtInfo <= 10)  current_process = Settings::H125VH; //prepare for splitting VH and ttH into lep and had
+	if ( input_file_name.Contains("WminusH125") && genExtInfo <= 10)  current_process = Settings::H125VH;
+	if ( input_file_name.Contains("ZH125")      && genExtInfo <= 10)  current_process = Settings::H125VH;
+   if ( input_file_name.Contains("ttH125")     && n_gen_assoc_lep == 0)  current_process = Settings::H125ttH;
    if ( input_file_name.Contains("ZZTo4l") )         current_process = Settings::qqZZ;
    if ( input_file_name.Contains("ggTo4e") )         current_process = Settings::ggZZ;
    if ( input_file_name.Contains("ggTo4mu") )        current_process = Settings::ggZZ;
@@ -606,6 +610,21 @@ float Plotter::calculate_K_factor(TString input_file_name)
 }
 //=================================
 
+
+//=============================
+int Plotter::CountAssociatedLeptons()
+{
+	int n_gen_assoc_leptons = 0;
+	for ( int i_gen_assoc_lep = 0; i_gen_assoc_lep < 2; i_gen_assoc_lep++ )
+		{
+			if ( abs(gen_assoc_lep_id_.at(i_gen_assoc_lep)) == 11 || abs(gen_assoc_lep_id_.at(i_gen_assoc_lep)) == 13 )
+			{
+				n_gen_assoc_leptons++;
+			}
+		}
+	return n_gen_assoc_leptons;
+}
+//=============================
 
 
 //===========================

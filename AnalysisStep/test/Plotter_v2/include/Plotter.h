@@ -68,7 +68,8 @@ public:
    float calculate_K_factor( TString );
    int FindFinalState();
    int FindFinalStateZX();
-   int find_current_process( TString , int);
+   int find_current_process( TString , int, int);
+   int CountAssociatedLeptons();
    bool blind( float );
    void FillInclusive();
    void Save();
@@ -113,11 +114,12 @@ private:
    
    float _blinding_lower[2], _blinding_upper[2];
    
-   int _current_process, _current_final_state, _current_category;
+   int _current_process, _current_final_state, _current_category, _n_gen_assoc_lep;
    float _lumi, _k_factor, _SMP_signal_strength, _yield_SR, partial_sample_weight;
    double gen_sum_weights, _event_weight;
    
    vector< vector <float> > _expected_yield_SR, _number_of_events_CR;
+   vector<int>   gen_assoc_lep_id_;
    vector<float> _fs_ROS_SS;
 };
 #endif

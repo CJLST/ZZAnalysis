@@ -37,7 +37,8 @@ Histograms::Histograms( double lumi, string blinding )
    _s_category.push_back("VBF2jTagged");
    _s_category.push_back("VHLeptTagged");
    _s_category.push_back("VHHadrTagged");
-   _s_category.push_back("ttHTagged");
+   _s_category.push_back("ttHLeptTagged");
+   _s_category.push_back("ttHHadrTagged");
    _s_category.push_back("VHMETTagged");
    _s_category.push_back("Inclusive");
    
@@ -46,7 +47,8 @@ Histograms::Histograms( double lumi, string blinding )
    _s_category_label.push_back("VBF-2j tagged category");
    _s_category_label.push_back("VH-leptonic tagged category");
    _s_category_label.push_back("VH-hadronic tagged category");
-   _s_category_label.push_back("ttH tagged category");
+   _s_category_label.push_back("ttH-leptonic tagged category");
+   _s_category_label.push_back("ttH-hadronic tagged category");
    _s_category_label.push_back("VH-MET tagged category");
    _s_category_label.push_back("Inclusive category");
       
@@ -405,11 +407,17 @@ Histograms::Histograms( double lumi)
 	_s_process.push_back("H126ZHhad");
 	_s_process.push_back("H130ZHhad");
    
-   _s_process.push_back("H120ttH");
-   _s_process.push_back("H124ttH");
-   _s_process.push_back("H125ttH");
-   _s_process.push_back("H126ttH");
-   _s_process.push_back("H130ttH");
+   _s_process.push_back("H120ttHlep");
+   _s_process.push_back("H124ttHlep");
+   _s_process.push_back("H125ttHlep");
+   _s_process.push_back("H126ttHlep");
+   _s_process.push_back("H130ttHlep");
+	
+	_s_process.push_back("H120ttHhad");
+   _s_process.push_back("H124ttHhad");
+   _s_process.push_back("H125ttHhad");
+   _s_process.push_back("H126ttHhad");
+   _s_process.push_back("H130ttHhad");
       
    _s_process.push_back("qqZZ");
    _s_process.push_back("ggZZ");
@@ -427,7 +435,8 @@ Histograms::Histograms( double lumi)
    _s_category.push_back("VBF2jTagged");
    _s_category.push_back("VHLeptTagged");
    _s_category.push_back("VHHadrTagged");
-   _s_category.push_back("ttHTagged");
+   _s_category.push_back("ttHLeptTagged");
+   _s_category.push_back("ttHHadrTagged");
    _s_category.push_back("VHMETTagged");
    _s_category.push_back("Inclusive");
       
@@ -437,7 +446,8 @@ Histograms::Histograms( double lumi)
 	_s_production_mode.push_back("WH_had");
    _s_production_mode.push_back("ZH_lep");
 	_s_production_mode.push_back("ZH_had");
-   _s_production_mode.push_back("ttH");
+   _s_production_mode.push_back("ttH_lep");
+   _s_production_mode.push_back("ttH_had");
    
 
    for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
@@ -1391,7 +1401,8 @@ void Histograms::FillInclusiveYields()
 			histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120WHhad]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120ZHlep]);
 			histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120ZHhad]);
-         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120ttH]);
+         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120ttHhad]);
+         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120ttHlep]);
          
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124ggH]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124VBF]);
@@ -1399,7 +1410,8 @@ void Histograms::FillInclusiveYields()
 			histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124WHhad]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124ZHlep]);
 			histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124ZHhad]);
-         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124ttH]);
+         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124ttHhad]);
+         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124ttHlep]);
          
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125ggH]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125VBF]);
@@ -1407,7 +1419,8 @@ void Histograms::FillInclusiveYields()
 			histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125WHhad]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125ZHlep]);
 			histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125ZHhad]);
-         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125ttH]);
+         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125ttHhad]);
+         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125ttHlep]);
          
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126ggH]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126VBF]);
@@ -1415,7 +1428,8 @@ void Histograms::FillInclusiveYields()
 		   histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126WHhad]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126ZHlep]);
 			histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126ZHhad]);
-         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126ttH]);
+         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126ttHhad]);
+         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126ttHlep]);
          
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130ggH]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130VBF]);
@@ -1423,7 +1437,8 @@ void Histograms::FillInclusiveYields()
 			histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130WHhad]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130ZHlep]);
 			histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130ZHhad]);
-         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130ttH]);
+         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130ttHhad]);
+         histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130ttHlep]);
       }
    }
 
@@ -2636,7 +2651,7 @@ void Histograms::plot_1D_all_cat( TString filename, TString variable_name , TStr
    {
       is_VBF_tagged_ = i_cat == Settings::VBF_1j_tagged || i_cat == Settings::VBF_2j_tagged;
       is_VH_tagged_  = i_cat == Settings::VH_lepton_tagged || i_cat == Settings::VH_hadron_tagged || i_cat == Settings::VH_MET_tagged;
-      is_ttH_tagged_ = i_cat == Settings::ttH_tagged;
+      is_ttH_tagged_ = i_cat == Settings::ttH_hadron_tagged || Settings::ttH_lepton_tagged;
       
       if ( variable_name == "M4lMainZoomed" && is_VBF_tagged_ )
       {
@@ -2807,7 +2822,7 @@ void Histograms::plot_1D_all_cat( TString filename, TString variable_name , TStr
                                            histos_1D[plot_index][Settings::fs4l][i_cat][Settings::ggZZ],
                                            histos_1D_ZX_shape[plot_index][Settings::fs4l][i_cat]);
       }
-      else if ( variable_name == "M4lMainZoomed" && (i_cat == Settings::ttH_tagged) )
+      else if ( variable_name == "M4lMainZoomed" && (i_cat == Settings::ttH_lepton_tagged || i_cat == Settings::ttH_hadron_tagged) )
       {
          legend  = CreateLegendttH("right", histos_1D[plot_index][Settings::fs4l][i_cat][Settings::Data],
                                             histos_1D[plot_index][Settings::fs4l][i_cat][Settings::H125ttH],
@@ -3224,8 +3239,11 @@ void Histograms::plot_2D_error_all_cat( TString filename, TString variable_name,
       histos_2DError_data[plot_index][i_fs][Settings::VH_hadron_tagged]->SetMarkerStyle(27);
       histos_2DError_data[plot_index][i_fs][Settings::VH_hadron_tagged]->SetMarkerSize(0.7);
   
-      histos_2DError_data[plot_index][i_fs][Settings::ttH_tagged]->SetMarkerStyle(30);
-      histos_2DError_data[plot_index][i_fs][Settings::ttH_tagged]->SetMarkerSize(0.7);
+      histos_2DError_data[plot_index][i_fs][Settings::ttH_hadron_tagged]->SetMarkerStyle(30);
+      histos_2DError_data[plot_index][i_fs][Settings::ttH_hadron_tagged]->SetMarkerSize(0.7);
+		
+		histos_2DError_data[plot_index][i_fs][Settings::ttH_lepton_tagged]->SetMarkerStyle(29);
+      histos_2DError_data[plot_index][i_fs][Settings::ttH_lepton_tagged]->SetMarkerSize(0.7);
   
       histos_2DError_data[plot_index][i_fs][Settings::VH_MET_tagged]->SetMarkerStyle(25);
       histos_2DError_data[plot_index][i_fs][Settings::VH_MET_tagged]->SetMarkerSize(0.7);
@@ -3282,7 +3300,8 @@ void Histograms::plot_2D_error_all_cat( TString filename, TString variable_name,
                                          histos_2DError_data[plot_index][Settings::fs4l][Settings::VBF_2j_tagged],
                                          histos_2DError_data[plot_index][Settings::fs4l][Settings::VH_lepton_tagged],
                                          histos_2DError_data[plot_index][Settings::fs4l][Settings::VH_hadron_tagged],
-                                         histos_2DError_data[plot_index][Settings::fs4l][Settings::ttH_tagged],
+                                         histos_2DError_data[plot_index][Settings::fs4l][Settings::ttH_hadron_tagged],
+                                         histos_2DError_data[plot_index][Settings::fs4l][Settings::ttH_lepton_tagged],
                                          histos_2DError_data[plot_index][Settings::fs4l][Settings::VH_MET_tagged] );
    legend->Draw();
    
@@ -3375,24 +3394,10 @@ void Histograms::FillYieldGraphs( float M4l_down, float M4l_up , TString fit_opt
             
             // Set fit model
             TString fit_model;
-            fit_model = "pol2";
-            if (i_prod_mode != Settings::WH_lep && i_cat == Settings::VH_lepton_tagged) fit_model = "pol1";
-				if (i_prod_mode != Settings::WH_had && i_cat == Settings::VH_lepton_tagged) fit_model = "pol1";
-            if (i_cat == Settings::VH_hadron_tagged) fit_model = "pol1";
-            if (i_cat == Settings::ttH_tagged) fit_model = "pol1";
-            if (i_cat == Settings::VH_MET_tagged) fit_model = "pol1";
-            if (i_prod_mode == Settings::ttH) fit_model = "pol1";
-            if (i_prod_mode == Settings::WH_lep && i_cat == Settings::VBF_2j_tagged && i_fs == Settings::fs4e) fit_model = "pol1";
-				if (i_prod_mode == Settings::WH_had && i_cat == Settings::VBF_2j_tagged && i_fs == Settings::fs4e) fit_model = "pol1";
-            if (i_prod_mode == Settings::ZH_lep && i_cat == Settings::VBF_1j_tagged && i_fs == Settings::fs4e) fit_model = "pol1";
-				if (i_prod_mode == Settings::ZH_had && i_cat == Settings::VBF_1j_tagged && i_fs == Settings::fs4e) fit_model = "pol1";
-            if (i_prod_mode == Settings::ZH_lep && i_cat == Settings::VBF_1j_tagged && i_fs == Settings::fs4mu) fit_model = "pol1";
-				if (i_prod_mode == Settings::ZH_had && i_cat == Settings::VBF_1j_tagged && i_fs == Settings::fs4mu) fit_model = "pol1";
-            if (i_prod_mode == Settings::ttH && i_cat == Settings::untagged && i_fs == Settings::fs2e2mu) fit_model = "pol2";
-            if (i_prod_mode == Settings::ttH && i_cat == Settings::ttH_tagged) fit_model = "pol2";
-            if (i_prod_mode == Settings::ZH_lep && i_cat == Settings::VBF_2j_tagged) fit_model = "pol1";
-				if (i_prod_mode == Settings::ZH_had && i_cat == Settings::VBF_2j_tagged) fit_model = "pol1";
-                        
+            fit_model = "pol1";
+            if(i_prod_mode == Settings::ggH && (i_cat != Settings::VH_lepton_tagged && i_cat != Settings::VH_MET_tagged && i_cat != Settings::ttH_hadron_tagged && i_cat != Settings::ttH_lepton_tagged)) fit_model = "pol2";
+            if(i_prod_mode == Settings::WH_had && i_cat == Settings::VH_MET_tagged) fit_model = "pol0";
+				
             TF1 *fit_function = new TF1("fit_function", fit_model, 119, 131);
             fit_function->SetLineColor(catColor[i_cat]);
             fit_function->SetLineWidth(2);
@@ -3460,7 +3465,7 @@ void Histograms::PrepareYamlFiles( TString sqrt, float M4l_down, float M4l_up, v
    {
       if( i_fs == Settings::fs2mu2e ) continue;
       
-      out_file_name[i_fs] = folder_name + "/yields_per_tag_category_" + sqrt + "_TeV_" + _s_final_state.at(i_fs) + ".yaml";
+      out_file_name[i_fs] = folder_name + "/yields_per_tag_category_" + sqrt + "TeV_" + _s_final_state.at(i_fs) + ".yaml";
       out_file[i_fs].open(out_file_name[i_fs]);
     
       out_file[i_fs] << "---" << endl;
@@ -3704,14 +3709,14 @@ void Histograms::PrintLatexTables(float M4l_down, float M4l_up, vector< vector <
    cout << "\\ggZZ ";
    for (int i_fs = 0; i_fs < num_of_final_states - 1; i_fs++)          
    {
-      cout << "& $" << yields_map[Settings::yggZZ].at(i_fs) << "$^{+ y.y}_{- z.z} ";
+      cout << "& $" << yields_map[Settings::yggZZ].at(i_fs) << "^{+ y.y}_{- z.z}$ ";
    }   
    cout << "\\\\" << endl;
    
    cout << "\\cPZ\\ + X ";
    for (int i_fs = 0; i_fs < num_of_final_states - 1; i_fs++)          
    {
-      cout << "& $" << yields_ZX.at(i_fs) << "$^{+ y.y}_{- z.z} ";
+      cout << "& $" << yields_ZX.at(i_fs) << "^{+ y.y}_{- z.z}$ ";
    }   
    cout << "\\\\" << endl;
        
@@ -3720,7 +3725,7 @@ void Histograms::PrintLatexTables(float M4l_down, float M4l_up, vector< vector <
    cout << "Sum of backgrounds ";      
    for (int i_fs = 0; i_fs < num_of_final_states - 1; i_fs++)          
    {
-      cout << "& $" << yields_map[Settings::yqqZZ].at(i_fs) + yields_map[Settings::yggZZ].at(i_fs)+ yields_ZX.at(i_fs) << "$^{+ y.y}_{- z.z} ";
+      cout << "& $" << yields_map[Settings::yqqZZ].at(i_fs) + yields_map[Settings::yggZZ].at(i_fs)+ yields_ZX.at(i_fs) << "^{+ y.y}_{- z.z}$ ";
    }
    cout << "\\\\" << endl;
       
@@ -3729,7 +3734,7 @@ void Histograms::PrintLatexTables(float M4l_down, float M4l_up, vector< vector <
    cout << "Signal ($\\mH=125~\\GeV$) ";
    for (int i_fs = 0; i_fs < num_of_final_states - 1; i_fs++)          
    {
-      cout << "& $" << yields_map[Settings::yH125].at(i_fs) << "$^{+ y.y}_{- z.z} ";
+      cout << "& $" << yields_map[Settings::yH125].at(i_fs) << "^{+ y.y}_{- z.z}$ ";
    }   
    cout << "\\\\" << endl;   
    
@@ -3738,7 +3743,7 @@ void Histograms::PrintLatexTables(float M4l_down, float M4l_up, vector< vector <
    cout << "Total expected ";
    for (int i_fs = 0; i_fs < num_of_final_states - 1; i_fs++)          
    {
-      cout << "& $" << yields_map[Settings::yH125].at(i_fs) + yields_map[Settings::yqqZZ].at(i_fs) + yields_map[Settings::yggZZ].at(i_fs)+ yields_ZX.at(i_fs) << "$^{+ y.y}_{- z.z} ";
+      cout << "& $" << yields_map[Settings::yH125].at(i_fs) + yields_map[Settings::yqqZZ].at(i_fs) + yields_map[Settings::yggZZ].at(i_fs)+ yields_ZX.at(i_fs) << "^{+ y.y}_{- z.z}$ ";
    }
    cout << "\\\\" << endl;
    
@@ -3805,14 +3810,14 @@ void Histograms::PrintLatexTables(float M4l_down, float M4l_up, vector< vector <
    cout << "\\ggZZ ";
    for (int i_fs = 0; i_fs < num_of_final_states - 1; i_fs++)          
    {
-      cout << "& $" << yields_map[Settings::yggZZ].at(i_fs) << "$^{+ y.y}_{- z.z} ";
+      cout << "& $" << yields_map[Settings::yggZZ].at(i_fs) << "^{+ y.y}_{- z.z}$ ";
    }   
    cout << "\\\\" << endl;
    
    cout << "\\cPZ\\ + X ";
    for (int i_fs = 0; i_fs < num_of_final_states - 1; i_fs++)          
    {
-      cout << "& $" << yields_ZX.at(i_fs) << "$^{+ y.y}_{- z.z} ";
+      cout << "& $" << yields_ZX.at(i_fs) << "^{+ y.y}_{- z.z}$ ";
    }   
    cout << "\\\\" << endl;
        
@@ -3821,7 +3826,7 @@ void Histograms::PrintLatexTables(float M4l_down, float M4l_up, vector< vector <
    cout << "Sum of backgrounds ";      
    for (int i_fs = 0; i_fs < num_of_final_states - 1; i_fs++)          
    {
-      cout << "& $" << yields_map[Settings::yqqZZ].at(i_fs) + yields_map[Settings::yggZZ].at(i_fs)+ yields_ZX.at(i_fs) << "$^{+ y.y}_{- z.z} ";
+      cout << "& $" << yields_map[Settings::yqqZZ].at(i_fs) + yields_map[Settings::yggZZ].at(i_fs)+ yields_ZX.at(i_fs) << "^{+ y.y}_{- z.z}$ ";
    }
    cout << "\\\\" << endl;
       
@@ -3830,7 +3835,7 @@ void Histograms::PrintLatexTables(float M4l_down, float M4l_up, vector< vector <
    cout << "Signal ($\\mH=125~\\GeV$) ";
    for (int i_fs = 0; i_fs < num_of_final_states - 1; i_fs++)          
    {
-      cout << "& $" << yields_map[Settings::yH125].at(i_fs) << "$^{+ y.y}_{- z.z} ";
+      cout << "& $" << yields_map[Settings::yH125].at(i_fs) << "^{+ y.y}_{- z.z}$ ";
    }   
    cout << "\\\\" << endl;   
    
@@ -3839,7 +3844,7 @@ void Histograms::PrintLatexTables(float M4l_down, float M4l_up, vector< vector <
    cout << "Total expected ";
    for (int i_fs = 0; i_fs < num_of_final_states - 1; i_fs++)          
    {
-      cout << "& $" << yields_map[Settings::yH125].at(i_fs) + yields_map[Settings::yqqZZ].at(i_fs) + yields_map[Settings::yggZZ].at(i_fs)+ yields_ZX.at(i_fs) << "$^{+ y.y}_{- z.z} ";
+      cout << "& $" << yields_map[Settings::yH125].at(i_fs) + yields_map[Settings::yqqZZ].at(i_fs) + yields_map[Settings::yggZZ].at(i_fs)+ yields_ZX.at(i_fs) << "^{+ y.y}_{- z.z}$ ";
    }
    cout << "\\\\" << endl;
    
@@ -3870,7 +3875,7 @@ void Histograms::PrintLatexTables(float M4l_down, float M4l_up, vector< vector <
       for ( int i_proc = 0; i_proc < num_of_processes_yields; i_proc++ )
       {
          if (i_proc == Settings::yH125ggH || i_proc == Settings::yH125VBF || i_proc == Settings::yH125WHlep || i_proc == Settings::yH125WHhad || i_proc == Settings::yH125ZHlep || i_proc == Settings::yH125ZHhad
-         || i_proc == Settings::yH125ttH || i_proc == Settings::yqqZZ || i_proc == Settings::yggZZ)
+         || i_proc == Settings::yH125ttHlep || i_proc == Settings::yH125ttHhad || i_proc == Settings::yqqZZ || i_proc == Settings::yggZZ)
          {
             temp_yield = histos_1D[Settings::M4lYields][Settings::fs4l][i_cat][i_proc]->Integral(
                          histos_1D[Settings::M4lYields][Settings::fs4l][i_cat][i_proc]->FindBin(M4l_down),
@@ -3889,11 +3894,11 @@ void Histograms::PrintLatexTables(float M4l_down, float M4l_up, vector< vector <
    }
       
    
-   cout << "\\begin{tabular}{c|ccccc|ccc|c|c}" << endl;
+   cout << "\\begin{tabular}{c|cccccccc|ccc|c|c}" << endl;
    cout << "\\hline" << endl;
    cout << "\\hline" << endl;
-   cout << "Event & \\multicolumn{5}{c|}{Signal} & \\multicolumn{3}{c|}{Background} & Total & Observed \\\\" << endl;
-   cout << "category & $\\ggH$ & VBF & WH_lep && WH_had & ZH_lep && ZH_had & $\\ttH$ & \\qqZZ & \\ggZZ & \\cPZ\\ + X & expected & \\\\" << endl;
+   cout << "Event & \\multicolumn{8}{c|}{Signal} & \\multicolumn{3}{c|}{Background} & Total & Observed \\\\" << endl;
+   cout << "category & $\\ggH$ & VBF & WH-lep & WH-had & ZH-lep & ZH-had &  ttH-lep & ttH-had & \\qqZZ & \\ggZZ & \\cPZ\\ + X & expected & \\\\" << endl;
    cout << "\\hline" << endl; 
    
    
@@ -3904,7 +3909,7 @@ void Histograms::PrintLatexTables(float M4l_down, float M4l_up, vector< vector <
       cout << "& $" << yields_map[Settings::untagged].at(i_proc) << "$ ";
       total += yields_map[Settings::untagged].at(i_proc);
    }
-   cout << "& $" << yields_ZX.at(Settings::untagged) << "& $" << total + yields_ZX.at(Settings::untagged) << "$ & XXX \\\\" << endl;
+   cout << "& $" << yields_ZX.at(Settings::untagged) << "$ & $" << total + yields_ZX.at(Settings::untagged) << "$ & XXX \\\\" << endl;
    
    
    cout << "VBF-1j ";
@@ -3914,7 +3919,7 @@ void Histograms::PrintLatexTables(float M4l_down, float M4l_up, vector< vector <
       cout << "& $" << yields_map[Settings::VBF_1j_tagged].at(i_proc) << "$ ";
       total += yields_map[Settings::VBF_1j_tagged].at(i_proc);
    }
-   cout << "& $" << yields_ZX.at(Settings::VBF_1j_tagged) << "& $" << total + yields_ZX.at(Settings::VBF_1j_tagged) << "$ & XXX \\\\" << endl;
+   cout << "& $" << yields_ZX.at(Settings::VBF_1j_tagged) << "$ & $" << total + yields_ZX.at(Settings::VBF_1j_tagged) << "$ & XXX \\\\" << endl;
    
    
    cout << "VBF-2j ";
@@ -3924,7 +3929,7 @@ void Histograms::PrintLatexTables(float M4l_down, float M4l_up, vector< vector <
       cout << "& $" << yields_map[Settings::VBF_2j_tagged].at(i_proc) << "$ ";
       total += yields_map[Settings::VBF_2j_tagged].at(i_proc);
    }
-   cout << "& $" << yields_ZX.at(Settings::VBF_2j_tagged) << "& $" << total + yields_ZX.at(Settings::VBF_1j_tagged) << "$ & XXX \\\\" << endl;
+   cout << "& $" << yields_ZX.at(Settings::VBF_2j_tagged) << "$ & $" << total + yields_ZX.at(Settings::VBF_1j_tagged) << "$ & XXX \\\\" << endl;
    
    
    cout << "VH-lept. ";
@@ -3934,7 +3939,7 @@ void Histograms::PrintLatexTables(float M4l_down, float M4l_up, vector< vector <
       cout << "& $" << yields_map[Settings::VH_lepton_tagged].at(i_proc) << "$ ";
       total += yields_map[Settings::VH_lepton_tagged].at(i_proc);
    }
-   cout << "& $" << yields_ZX.at(Settings::VH_lepton_tagged) << "& $" << total + yields_ZX.at(Settings::VH_lepton_tagged) << "$ & XXX \\\\" << endl;
+   cout << "& $" << yields_ZX.at(Settings::VH_lepton_tagged) << "$ & $" << total + yields_ZX.at(Settings::VH_lepton_tagged) << "$ & XXX \\\\" << endl;
    
    
    cout << "VH-hadr. ";
@@ -3944,17 +3949,26 @@ void Histograms::PrintLatexTables(float M4l_down, float M4l_up, vector< vector <
       cout << "& $" << yields_map[Settings::VH_hadron_tagged].at(i_proc) << "$ ";
       total += yields_map[Settings::VH_hadron_tagged].at(i_proc);
    }
-   cout << "& $" << yields_ZX.at(Settings::VH_hadron_tagged) << "& $" << total + yields_ZX.at(Settings::VH_hadron_tagged) << "$ & XXX \\\\" << endl;
+   cout << "& $" << yields_ZX.at(Settings::VH_hadron_tagged) << "$ & $" << total + yields_ZX.at(Settings::VH_hadron_tagged) << "$ & XXX \\\\" << endl;
    
    
-   cout << "ttH ";
+   cout << "ttH-lept. ";
    total = 0;
-   for (unsigned int i_proc = 0; i_proc < yields_map[Settings::ttH_tagged].size(); i_proc++ )
+   for (unsigned int i_proc = 0; i_proc < yields_map[Settings::ttH_lepton_tagged].size(); i_proc++ )
    {
-      cout << "& $" << yields_map[Settings::ttH_tagged].at(i_proc) << "$ ";
-      total += yields_map[Settings::ttH_tagged].at(i_proc);
+      cout << "& $" << yields_map[Settings::ttH_lepton_tagged].at(i_proc) << "$ ";
+      total += yields_map[Settings::ttH_lepton_tagged].at(i_proc);
    }
-   cout << "& $" << yields_ZX.at(Settings::ttH_tagged) << "& $" << total + yields_ZX.at(Settings::ttH_tagged) << "$ & XXX \\\\" << endl;
+   cout << "& $" << yields_ZX.at(Settings::ttH_lepton_tagged) << "$ & $" << total + yields_ZX.at(Settings::ttH_lepton_tagged) << "$ & XXX \\\\" << endl;
+	
+	cout << "ttH-hadr. ";
+   total = 0;
+   for (unsigned int i_proc = 0; i_proc < yields_map[Settings::ttH_hadron_tagged].size(); i_proc++ )
+   {
+      cout << "& $" << yields_map[Settings::ttH_hadron_tagged].at(i_proc) << "$ ";
+      total += yields_map[Settings::ttH_hadron_tagged].at(i_proc);
+   }
+   cout << "& $" << yields_ZX.at(Settings::ttH_hadron_tagged) << "$ & $" << total + yields_ZX.at(Settings::ttH_hadron_tagged) << "$ & XXX \\\\" << endl;
    
   
    cout << "VH-MET ";
@@ -3964,7 +3978,7 @@ void Histograms::PrintLatexTables(float M4l_down, float M4l_up, vector< vector <
       cout << "& $" << yields_map[Settings::VH_MET_tagged].at(i_proc) << "$ ";
       total += yields_map[Settings::VH_MET_tagged].at(i_proc);
    }
-   cout << "& $" << yields_ZX.at(Settings::VH_MET_tagged) << "& $" << total + yields_ZX.at(Settings::VH_MET_tagged) << "$ & XXX \\\\" << endl;
+   cout << "& $" << yields_ZX.at(Settings::VH_MET_tagged) << "$ & $" << total + yields_ZX.at(Settings::VH_MET_tagged) << "$ & XXX \\\\" << endl;
    
    cout << "\\hline" << endl; 
    
@@ -3976,7 +3990,7 @@ void Histograms::PrintLatexTables(float M4l_down, float M4l_up, vector< vector <
       cout << "& $" << yields_map[Settings::inclusive].at(i_proc) << "$ ";
       total += yields_map[Settings::inclusive].at(i_proc);
    }
-   cout << "& $" << yields_ZX.at(Settings::inclusive) << "& $" << total + yields_ZX.at(Settings::inclusive) << "$ & XXX \\\\" << endl;
+   cout << "& $" << yields_ZX.at(Settings::inclusive) << "$ & $" << total + yields_ZX.at(Settings::inclusive) << "$ & XXX \\\\" << endl;
    
    cout << "\\hline" << endl;
    cout << "\\hline" << endl;
@@ -4352,7 +4366,7 @@ TLegend* Histograms::Create2DLegend( string position, TH2F *fs4e, TH2F *fs4mu, T
 
 //=======================================================================================================================================================================
 TLegend* Histograms::Create2DLegendAllCat( string position, TGraphErrors *fs4e, TGraphErrors *fs4mu, TGraphErrors *fs2e2mu, TGraphErrors *untagged, TGraphErrors *VBF1jet,
-                                                            TGraphErrors *VBF2jet, TGraphErrors *VHlep, TGraphErrors *VHhad, TGraphErrors *ttH, TGraphErrors *VHmet)
+                                                            TGraphErrors *VBF2jet, TGraphErrors *VHlep, TGraphErrors *VHhad, TGraphErrors *ttHhad, TGraphErrors *ttHlep, TGraphErrors *VHmet)
 {
    TLegend *leg;
    leg = new TLegend(0.00, 0.00, 1.00, 1.00);
@@ -4376,7 +4390,8 @@ TLegend* Histograms::Create2DLegendAllCat( string position, TGraphErrors *fs4e, 
    leg->AddEntry(VHmet,       "VH-E_{T}^{miss} tagged", "lp");
    leg->AddEntry((TObject*)0, "",                       "");
    leg->AddEntry((TObject*)0, "",                       "");
-   leg->AddEntry(ttH,         "ttH tagged",             "lp");
+   leg->AddEntry(ttHhad,         "ttH-hadr. tagged",             "lp");
+   leg->AddEntry(ttHlep,         "ttH-lept. tagged",             "lp");
    
    return leg;
 }
@@ -4603,7 +4618,11 @@ int Histograms::SetProcess(int point, int production_mode)
 				break;
             
          case 6:
-            return Settings::yH120ttH;
+            return Settings::yH120ttHlep;
+            break;
+			
+         case 7:
+            return Settings::yH120ttHhad;
             break;
             
          default:
@@ -4641,7 +4660,11 @@ int Histograms::SetProcess(int point, int production_mode)
 				break;
 				
 			case 6:
-				return Settings::yH124ttH;
+				return Settings::yH124ttHlep;
+				break;
+			
+			case 7:
+				return Settings::yH124ttHhad;
 				break;
             
          default:
@@ -4680,7 +4703,11 @@ int Histograms::SetProcess(int point, int production_mode)
 				break;
 				
 			case 6:
-				return Settings::yH125ttH;
+				return Settings::yH125ttHlep;
+				break;
+			
+			case 7:
+				return Settings::yH125ttHhad;
 				break;
             
          default:
@@ -4719,7 +4746,11 @@ int Histograms::SetProcess(int point, int production_mode)
 				break;
 				
 			case 6:
-				return Settings::yH126ttH;
+				return Settings::yH126ttHlep;
+				break;
+
+			case 7:
+				return Settings::yH126ttHhad;
 				break;
             
          default:
@@ -4758,7 +4789,11 @@ int Histograms::SetProcess(int point, int production_mode)
 				break;
 				
 			case 6:
-				return Settings::yH130ttH;
+				return Settings::yH130ttHlep;
+				break;
+			
+			case 7:
+				return Settings::yH130ttHhad;
 				break;
             
          default:

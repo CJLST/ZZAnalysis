@@ -31,11 +31,10 @@ Yields::Yields( double lumi ):Tree()
    _tclr->GetColor("#5f3f3f");
    
    // Z+X SS factors
-   // FIXME: recompute this for Run II, OS/SS ratio taken when computing fake rates in SS method
-   _fs_ROS_SS.push_back(0.97);//4e
-   _fs_ROS_SS.push_back(1.22);//4mu
-   _fs_ROS_SS.push_back(1.30);//2e2mu
-   _fs_ROS_SS.push_back(0.98);//2mu2e
+   _fs_ROS_SS.push_back(1.01005);//4e
+   _fs_ROS_SS.push_back(1.05217);//4mu
+   _fs_ROS_SS.push_back(1.0024);//2e2mu
+   _fs_ROS_SS.push_back(1.0052);//2mu2e
    
    vector<float> temp;
    for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
@@ -66,7 +65,7 @@ void Yields::MakeHistograms( TString input_file_name )
 {
 
    input_file = new TFile(input_file_name);
-   
+
    hCounters = (TH1F*)input_file->Get("ZZTree/Counters");
    n_gen_events = (Long64_t)hCounters->GetBinContent(1);
    gen_sum_weights = (Long64_t)hCounters->GetBinContent(40);
@@ -96,8 +95,12 @@ void Yields::MakeHistograms( TString input_file_name )
       if ( !(ZZsel >= 90) ) continue;
 
       // Find current process
-      _current_process = find_current_process( input_file_name, genExtInfo );
-      
+      gen_assoc_lep_id_.push_back(GenAssocLep1Id);
+   	gen_assoc_lep_id_.push_back(GenAssocLep2Id);
+      _n_gen_assoc_lep = CountAssociatedLeptons();
+		_current_process = find_current_process( input_file_name, genExtInfo , _n_gen_assoc_lep);
+      gen_assoc_lep_id_.clear();
+		
       // Final states
       _current_final_state = FindFinalState();
    
@@ -112,7 +115,7 @@ void Yields::MakeHistograms( TString input_file_name )
          jetPgOverPq[j] = 1./JetQGLikelihood->at(j) - 1.;
       }
 
-		_current_category = categoryMor17(nExtraLep,
+		_current_category = categoryMor18(nExtraLep,
 													 nExtraZ,
 													 nCleanedJetsPt30,
 													 nCleanedJetsPt30BTagged_bTagSF,
@@ -179,7 +182,7 @@ void Yields::Calculate_SS_ZX_Yields( TString input_file_data_name, TString  inpu
       
       _current_final_state = FindFinalStateZX();
       
-		_current_category = categoryMor17(nExtraLep,
+		_current_category = categoryMor18(nExtraLep,
 													 nExtraZ,
 													 nCleanedJetsPt30,
 													 nCleanedJetsPt30BTagged_bTagSF,
@@ -349,7 +352,7 @@ void Yields::PrintLatexTables( TString file_name, float M4l_down, float M4l_up  
 
 
 //==========================================================
-int Yields::find_current_process( TString input_file_name , int genExtInfo)
+int Yields::find_current_process( TString input_file_name , int genExtInfo, int n_gen_assoc_lep)
 {
 
    int current_process = -999;
@@ -369,23 +372,23 @@ int Yields::find_current_process( TString input_file_name , int genExtInfo)
    if ( input_file_name.Contains("VBFH126") )        current_process = Settings::yH126VBF;
    if ( input_file_name.Contains("VBFH130") )        current_process = Settings::yH130VBF;
    
-   if ( input_file_name.Contains("WplusH120") && genExtInfo > 10)      current_process = Settings::yH120WHlep;
-   if ( input_file_name.Contains("WplusH124") && genExtInfo > 10)      current_process = Settings::yH124WHlep;
-   if ( input_file_name.Contains("WplusH125") && genExtInfo > 10)      current_process = Settings::yH125WHlep;
-   if ( input_file_name.Contains("WplusH126") && genExtInfo > 10)      current_process = Settings::yH126WHlep;
-   if ( input_file_name.Contains("WplusH130") && genExtInfo > 10)      current_process = Settings::yH130WHlep;
+   if ( input_file_name.Contains("WplusH120") && genExtInfo > 10)       current_process = Settings::yH120WHlep;
+   if ( input_file_name.Contains("WplusH124") && genExtInfo > 10)       current_process = Settings::yH124WHlep;
+   if ( input_file_name.Contains("WplusH125") && genExtInfo > 10)       current_process = Settings::yH125WHlep;
+   if ( input_file_name.Contains("WplusH126") && genExtInfo > 10)       current_process = Settings::yH126WHlep;
+   if ( input_file_name.Contains("WplusH130") && genExtInfo > 10)       current_process = Settings::yH130WHlep;
    
-   if ( input_file_name.Contains("WminusH120") && genExtInfo > 10)     current_process = Settings::yH120WHlep;
-   if ( input_file_name.Contains("WminusH124") && genExtInfo > 10)     current_process = Settings::yH124WHlep;
-   if ( input_file_name.Contains("WminusH125") && genExtInfo > 10)     current_process = Settings::yH125WHlep;
-   if ( input_file_name.Contains("WminusH126") && genExtInfo > 10)     current_process = Settings::yH126WHlep;
-   if ( input_file_name.Contains("WminusH130") && genExtInfo > 10)     current_process = Settings::yH130WHlep;
+   if ( input_file_name.Contains("WminusH120") && genExtInfo > 10)      current_process = Settings::yH120WHlep;
+   if ( input_file_name.Contains("WminusH124") && genExtInfo > 10)      current_process = Settings::yH124WHlep;
+   if ( input_file_name.Contains("WminusH125") && genExtInfo > 10)      current_process = Settings::yH125WHlep;
+   if ( input_file_name.Contains("WminusH126") && genExtInfo > 10)      current_process = Settings::yH126WHlep;
+   if ( input_file_name.Contains("WminusH130") && genExtInfo > 10)      current_process = Settings::yH130WHlep;
       
-   if ( input_file_name.Contains("ZH120") && genExtInfo > 10)          current_process = Settings::yH120ZHlep;
-   if ( input_file_name.Contains("ZH124") && genExtInfo > 10)          current_process = Settings::yH124ZHlep;
-   if ( input_file_name.Contains("ZH125") && genExtInfo > 10)          current_process = Settings::yH125ZHlep;
-   if ( input_file_name.Contains("ZH126") && genExtInfo > 10)          current_process = Settings::yH126ZHlep;
-   if ( input_file_name.Contains("ZH130") && genExtInfo > 10)          current_process = Settings::yH130ZHlep;
+   if ( input_file_name.Contains("ZH120") && genExtInfo > 10)           current_process = Settings::yH120ZHlep;
+   if ( input_file_name.Contains("ZH124") && genExtInfo > 10)           current_process = Settings::yH124ZHlep;
+   if ( input_file_name.Contains("ZH125") && genExtInfo > 10)           current_process = Settings::yH125ZHlep;
+   if ( input_file_name.Contains("ZH126") && genExtInfo > 10)           current_process = Settings::yH126ZHlep;
+   if ( input_file_name.Contains("ZH130") && genExtInfo > 10)           current_process = Settings::yH130ZHlep;
 	
 	if ( input_file_name.Contains("WplusH120") && genExtInfo <= 10)      current_process = Settings::yH120WHhad;
 	if ( input_file_name.Contains("WplusH124") && genExtInfo <= 10)      current_process = Settings::yH124WHhad;
@@ -405,11 +408,17 @@ int Yields::find_current_process( TString input_file_name , int genExtInfo)
 	if ( input_file_name.Contains("ZH126") && genExtInfo <= 10)          current_process = Settings::yH126ZHhad;
 	if ( input_file_name.Contains("ZH130") && genExtInfo <= 10)          current_process = Settings::yH130ZHhad;
    
-   if ( input_file_name.Contains("ttH120") )         current_process = Settings::yH120ttH;
-   if ( input_file_name.Contains("ttH124") )         current_process = Settings::yH124ttH;
-   if ( input_file_name.Contains("ttH125") )         current_process = Settings::yH125ttH;
-   if ( input_file_name.Contains("ttH126") )         current_process = Settings::yH126ttH;
-   if ( input_file_name.Contains("ttH130") )         current_process = Settings::yH130ttH;
+   if ( input_file_name.Contains("ttH120") && n_gen_assoc_lep > 0)      current_process = Settings::yH120ttHlep;
+   if ( input_file_name.Contains("ttH124") && n_gen_assoc_lep > 0)      current_process = Settings::yH124ttHlep;
+   if ( input_file_name.Contains("ttH125") && n_gen_assoc_lep > 0)      current_process = Settings::yH125ttHlep;
+   if ( input_file_name.Contains("ttH126") && n_gen_assoc_lep > 0)      current_process = Settings::yH126ttHlep;
+   if ( input_file_name.Contains("ttH130") && n_gen_assoc_lep > 0)      current_process = Settings::yH130ttHlep;
+	
+	if ( input_file_name.Contains("ttH120") && n_gen_assoc_lep == 0)     current_process = Settings::yH120ttHhad;
+   if ( input_file_name.Contains("ttH124") && n_gen_assoc_lep == 0)     current_process = Settings::yH124ttHhad;
+   if ( input_file_name.Contains("ttH125") && n_gen_assoc_lep == 0)     current_process = Settings::yH125ttHhad;
+   if ( input_file_name.Contains("ttH126") && n_gen_assoc_lep == 0)     current_process = Settings::yH126ttHhad;
+   if ( input_file_name.Contains("ttH130") && n_gen_assoc_lep == 0)     current_process = Settings::yH130ttHhad;
       
    if ( input_file_name.Contains("ZZTo4l") )         current_process = Settings::yqqZZ;
    if ( input_file_name.Contains("ggTo4e") )         current_process = Settings::yggZZ;
@@ -514,3 +523,20 @@ int Yields::FindFinalStateZX()
    return final_state;
 }
 //=============================
+
+
+//=============================
+int Yields::CountAssociatedLeptons()
+{
+	int n_gen_assoc_leptons = 0;
+	for ( int i_gen_assoc_lep = 0; i_gen_assoc_lep < 2; i_gen_assoc_lep++ )
+		{
+			if ( abs(gen_assoc_lep_id_.at(i_gen_assoc_lep)) == 11 || abs(gen_assoc_lep_id_.at(i_gen_assoc_lep)) == 13 )
+			{
+				n_gen_assoc_leptons++;
+			}
+		}
+	return n_gen_assoc_leptons;
+}
+//=============================
+

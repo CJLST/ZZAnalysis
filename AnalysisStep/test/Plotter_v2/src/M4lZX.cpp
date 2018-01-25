@@ -138,10 +138,16 @@ void M4lZX::SetNormalization(int category)
         _norm_ZX_OS_SR_2e2mu = ZXVariables::ZX2e2mu().norm_VH_hadron_tagged;
         break;
         
-        case Settings::ttH_tagged:
-        _norm_ZX_OS_SR_4e    = ZXVariables::ZX4e().norm_ttH_tagged;
-        _norm_ZX_OS_SR_4mu   = ZXVariables::ZX4mu().norm_ttH_tagged;
-        _norm_ZX_OS_SR_2e2mu = ZXVariables::ZX2e2mu().norm_ttH_tagged;
+        case Settings::ttH_hadron_tagged:
+        _norm_ZX_OS_SR_4e    = ZXVariables::ZX4e().norm_ttH_hadron_tagged;
+        _norm_ZX_OS_SR_4mu   = ZXVariables::ZX4mu().norm_ttH_hadron_tagged;
+        _norm_ZX_OS_SR_2e2mu = ZXVariables::ZX2e2mu().norm_ttH_hadron_tagged;
+        break;
+		 
+		  case Settings::ttH_lepton_tagged:
+        _norm_ZX_OS_SR_4e    = ZXVariables::ZX4e().norm_ttH_lepton_tagged;
+        _norm_ZX_OS_SR_4mu   = ZXVariables::ZX4mu().norm_ttH_lepton_tagged;
+        _norm_ZX_OS_SR_2e2mu = ZXVariables::ZX2e2mu().norm_ttH_lepton_tagged;
         break;
           
         case Settings::VH_MET_tagged:
