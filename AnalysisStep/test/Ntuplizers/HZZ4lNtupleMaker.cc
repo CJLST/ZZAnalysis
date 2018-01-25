@@ -1118,7 +1118,7 @@ void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
 
 float HZZ4lNtupleMaker::EvalSpline(TSpline3* const& sp, float xval){
   double xmin = sp->GetXmin();
-  double xmax = sp->GetXmin();
+  double xmax = sp->GetXmax();
   double res=0;
   if (xval<xmin){
     res=sp->Eval(xmin);
