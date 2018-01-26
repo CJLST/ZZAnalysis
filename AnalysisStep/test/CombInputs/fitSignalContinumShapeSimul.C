@@ -188,7 +188,7 @@ void all(int selAna =-10,  int channels=0, int categ =-10, int sample = 0, int s
       cout << "frac value "       << fitValues[14]<< endl;
 
 
-      string filename = "signal_shape_parametrization_13TeV_" + ssample + "_" + schannel + "_" + sselAna + "_" + scategory + "." + "yaml" ;
+      string filename = "signal_shape_parametrization_13TeV_" + ssample + "_" + schannel + "_" + "_" + scategory + "." + "yaml" ;
       ofstream outFile;
       outFile.open(filename);
       if(channels == 2)outFile<<"shape : " <<"\"RooDCBall::"<<ssample<<"_mass(mean,sigma,alpha,n,alpha2,n2)*(frac)+(RooLandau::"<<ssample<<"_mass(p0,p1))*(1-frac)\""<< endl;
@@ -542,9 +542,9 @@ void fitSignalContinumShapeSimul(int massBin[40],int maxMassBin, int selAna, int
 
   c1->cd();
   stringstream nameFile, nameFileC, nameFilePng;
-  nameFile    << "PrefitM125" << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".pdf";
-  nameFileC   << "PrefitM125" << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".C";
-  nameFilePng << "PrefitM125" << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".png";
+  nameFile    << "PrefitM125" << "_" << "_" << ssample << "_" << schannel << "_"<< scategory << ".pdf";
+  nameFileC   << "PrefitM125" << "_" << "_" << ssample << "_" << schannel << "_"<< scategory << ".C";
+  nameFilePng << "PrefitM125" << "_" << "_" << ssample << "_" << schannel << "_"<< scategory << ".png";
   
   xframe->Draw(); 
   gPad->Update(); legend->Draw(); text->Draw(); sigmat->Draw(); titlet->Draw();
@@ -568,9 +568,9 @@ void fitSignalContinumShapeSimul(int massBin[40],int maxMassBin, int selAna, int
   line1->Draw();
 
   stringstream nameFilePull, nameFilePullC, nameFilePullPng;
-  nameFilePull    << "Pre_PullM"    << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".pdf";
-  nameFilePullC    << "Pre_PullM"   << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".C";
-  nameFilePullPng   << "Pre_PullM"  << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".png";
+  nameFilePull    << "Pre_PullM"    << "_" << "_" << ssample << "_" << schannel << "_"<< scategory << ".pdf";
+  nameFilePullC    << "Pre_PullM"   << "_" << "_" << ssample << "_" << schannel << "_"<< scategory << ".C";
+  nameFilePullPng   << "Pre_PullM"  << "_" << "_" << ssample << "_" << schannel << "_"<< scategory << ".png";
 
   c2->Print(nameFilePull.str().c_str());
   c2->SaveAs(nameFilePullC.str().c_str());
