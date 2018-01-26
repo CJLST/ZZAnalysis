@@ -1,3 +1,12 @@
+/* 
+*  *  * usage: 
+*   *   * -change the mass points, trees location in the macro.
+*    *    * -run with:
+*     *     *   root -l 
+*      *              .x lib.C
+*       *              .L fitSignalShapesSimultanous.C++
+*                       all(2,0,0,1) -> 2:Moriond2017, 0:Channels(4mu=0,4e=1,2e2mu=2), 0:Categories(See below), 1: samples(See below)   
+*                        *      */
 #include "TDirectory.h"
 #include "TPad.h"
 #include "TFile.h"
@@ -85,6 +94,7 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
   if (selAna == 0) sselAna = "Morinod";
   if (selAna == 1) sselAna = "ICHEP";
   if (selAna == 2) sselAna = "Mor17";
+  if (selAna == 3) sselAna = "Mor18";
 
   if (channels == 0) schannel = "4mu";
   if (channels == 1) schannel = "4e";
@@ -110,16 +120,26 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
   if (categ == 6 && selAna == 2 ) scategory = "VHMETTaggedMor17";
 
 
+  if (categ == 0 && selAna == 3 ) scategory = "UntaggedMor18";
+  if (categ == 1 && selAna == 3 ) scategory = "VBF1jTaggedMor18";
+  if (categ == 2 && selAna == 3 ) scategory = "VBF2jTaggedMor18";
+  if (categ == 3 && selAna == 3 ) scategory = "VHLeptTaggedMor18";
+  if (categ == 4 && selAna == 3 ) scategory = "VHHadrTaggedMor18";
+  if (categ == 5 && selAna == 3 ) scategory = "ttHLeptTaggedMor18";
+  if (categ == 6 && selAna == 3 ) scategory = "ttHHadrTaggedMor18";
+  if (categ == 7 && selAna == 3 ) scategory = "VHMETTaggedMor18";
+
+
   if (sample ==1) ssample = "ggH";
   if (sample ==2) ssample = "VBFH";
 
   double bwSigma[40];
   int mass[40]; int id[40]; double xLow[40]; double xHigh[40];
   int maxMassBin;
-  maxMassBin = 5; 
+  maxMassBin = 3; 
 
-  float masses[5] = {120,124,125,126,130};
-  for(int i=0;i<5;++i) {
+  float masses[3] = {120,125,130};
+  for(int i=0;i<3;++i) {
     mass[i] = masses[i]; 
     id[i]=masses[i]; 
     xLow[i] = 105.;  
@@ -156,7 +176,7 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
       cout << "n2_p0 value "      << fitValues[5] << " , " << "n2_p1 value:"    << fitValues[11]  << endl;
 
 
-      string filename = "signal_shape_parametrization_13TeV_" + ssample + "_" + schannel + "_" + sselAna + "_" + scategory + "." + "yaml" ;
+      string filename = "signal_shape_parametrization_13TeV_" + ssample + "_" + schannel + "_" + "_" + scategory + "." + "yaml" ;
       ofstream outFile;
       outFile.open(filename);
       if(channels == 2)outFile<<"shape : " <<"\"RooDCBall::"<<ssample<<"_mass(mean,sigma,alpha,n,alpha2,n2)\""<< endl;
@@ -195,7 +215,7 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
   Short_t nExtraLeptons;
   Short_t nCleanedJets;   
 
-  float ZZPt, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, PHJ_VAJHU, p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU,p_HadWH_mavjj_JECNominal, p_HadZH_mavjj_JECNominal,PFMET;
+  float ZZPt, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, p_HadWH_mavjj_JECNominal, p_HadZH_mavjj_JECNominal,PFMET, p_HadZH_mavjj_true_JECNominal, p_HadWH_mavjj_true_JECNominal;
   Short_t nJets;
   Short_t nBTaggedJets;
   std::vector<float> * JETQGLikeliHood = 0;
@@ -230,7 +250,7 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
 
   stringstream FileName[40];
   for (int i=0; i<maxMassBin; i++) {
-    if(sample==1)      FileName[i] << "root://lxcms03//data3/Higgs/170222/ggH" << massBin[i] << "/ZZ4lAnalysis.root";
+    if(sample==1)      FileName[i] << "root://lxcms03//data3/Higgs/180122/ggH" << massBin[i] << "/ZZ4lAnalysis.root";
     else if(sample==2) FileName[i] << "root://lxcms03//data3/Higgs/170222/VBFH" << massBin[i] << "/ZZ4lAnalysis.root";
     else {
       cout << "Wrong sample ." << endl;
@@ -258,20 +278,25 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
     ggTree->SetBranchAddress("nExtraZ",&ExtraZ);
     ggTree->SetBranchAddress("nCleanedJetsPt30",&nCleanedJets);
     ggTree->SetBranchAddress("JetQGLikelihood",&JETQGLikeliHood);
-    ggTree->SetBranchAddress("p_JQCD_SIG_ghg2_1_JHUGen_JECNominal",&PHJ_VAJHU);
+    ggTree->SetBranchAddress("p_JQCD_SIG_ghg2_1_JHUGen_JECNominal",&p_JQCD_SIG_ghg2_1_JHUGen_JECNominal);
     ggTree->SetBranchAddress("p_JVBF_SIG_ghv1_1_JHUGen_JECNominal", &p_JVBF_SIG_ghv1_1_JHUGen_JECNominal);
     ggTree->SetBranchAddress("pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal", &pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal);
-    ggTree->SetBranchAddress("p_HadWH_SIG_ghw1_1_JHUGen_JECNominal", &PWH_hadronic_VAJHU);
-    ggTree->SetBranchAddress("p_HadZH_SIG_ghz1_1_JHUGen_JECNominal",&PZH_hadronic_VAJHU);
+    ggTree->SetBranchAddress("p_HadWH_SIG_ghw1_1_JHUGen_JECNominal",&p_HadWH_SIG_ghw1_1_JHUGen_JECNominal);
+    ggTree->SetBranchAddress("p_HadZH_SIG_ghz1_1_JHUGen_JECNominal",&p_HadZH_SIG_ghz1_1_JHUGen_JECNominal);
     ggTree->SetBranchAddress("p_HadWH_mavjj_JECNominal", &p_HadWH_mavjj_JECNominal);
     ggTree->SetBranchAddress("p_HadZH_mavjj_JECNominal",&p_HadZH_mavjj_JECNominal);
-
+    ggTree->SetBranchAddress("p_HadZH_mavjj_true_JECNominal",&p_HadZH_mavjj_true_JECNominal);
+    ggTree->SetBranchAddress("p_HadWH_mavjj_true_JECNominal", &p_HadWH_mavjj_true_JECNominal);
     ggTree->SetBranchAddress("PFMET",&PFMET);
     ggTree->SetBranchAddress("JetPt",&jetpt);
     ggTree->SetBranchAddress("JetEta",&jeteta);
     ggTree->SetBranchAddress("JetPhi",&jetphi);
     ggTree->SetBranchAddress("JetMass",&jetmass);
     ggTree->SetBranchAddress("ZZPt",&ZZPt);
+
+//    ggTree->SetBranchAddress("useQGTagging",&useQGTagging);
+//    ggTree->SetBranchAddress("useVHMETTagged",&useVHMETTagged);
+
 
     //--- rooFit part
     xInit = (double) massBin[i];
@@ -302,15 +327,17 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
       }  
       int Cat = -10 ;
       if (selAna == 0) Cat = categoryMor16(nJets, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal );	    
-	   if (selAna == 1) Cat = categoryIchep16(nExtraLeptons, ExtraZ, nCleanedJets, nBTaggedJets, jetQGLL, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, PHJ_VAJHU, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU, p_HadWH_mavjj_JECNominal, p_HadZH_mavjj_JECNominal,jetPHI, m4l, useQGTagging);
-      if (selAna == 2) Cat = categoryMor17(nExtraLeptons, ExtraZ, nCleanedJets, nBTaggedJets, jetQGLL, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, PHJ_VAJHU, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, PWH_hadronic_VAJHU, PZH_hadronic_VAJHU, p_HadWH_mavjj_JECNominal, p_HadZH_mavjj_JECNominal,jetPHI, m4l, PFMET, useVHMETTagged, useQGTagging);
+	   if (selAna == 1) Cat = categoryIchep16(nExtraLeptons, ExtraZ, nCleanedJets, nBTaggedJets, jetQGLL, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,p_HadWH_SIG_ghw1_1_JHUGen_JECNominal, p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,p_HadWH_mavjj_JECNominal,p_HadWH_mavjj_true_JECNominal,p_HadZH_mavjj_JECNominal, p_HadZH_mavjj_true_JECNominal, jetPHI, m4l, useQGTagging);
 
-      if (categ >= 0 && categ != Cat ) continue;
+      if (selAna == 2) Cat = categoryMor17(nExtraLeptons, ExtraZ, nCleanedJets, nBTaggedJets, jetQGLL, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, p_HadWH_mavjj_JECNominal,p_HadWH_mavjj_true_JECNominal, p_HadZH_mavjj_JECNominal,p_HadZH_mavjj_true_JECNominal,jetPHI, m4l, PFMET, useVHMETTagged, useQGTagging);
+
+      if (selAna == 3) Cat = categoryMor18(nExtraLeptons, ExtraZ, nCleanedJets, nBTaggedJets, jetQGLL, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, p_HadWH_mavjj_JECNominal, p_HadWH_mavjj_true_JECNominal, p_HadZH_mavjj_JECNominal, p_HadZH_mavjj_true_JECNominal, jetPHI, m4l, PFMET, useVHMETTagged, useQGTagging);
+    
+  if (categ >= 0 && categ != Cat ) continue;
       
       if(channels==0 && z1flav*z2flav != 28561) continue;
       if(channels==1 && z1flav*z2flav != 14641) continue;
       if(channels==2 && z1flav*z2flav != 20449) continue;
-      if (weight <= 0 ) cout << "Warning! Negative weight events" << endl;
       
       ntupleVarSet.setCatIndex("massrc",massBin[i]);
       ntupleVarSet.setRealValue("mass",m4l);
@@ -448,9 +475,9 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
 
   c1->cd(); 
   stringstream nameFile, nameFileC, nameFilePng;
-  nameFile    << "PrefitM125" << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".pdf";
-  nameFileC   << "PrefitM125" << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".C";
-  nameFilePng << "PrefitM125" << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".png";
+  nameFile    << "PrefitM125" << "_" << "_" << ssample << "_" << schannel << "_"<< scategory << ".pdf";
+  nameFileC   << "PrefitM125" << "_" << "_" << ssample << "_" << schannel << "_"<< scategory << ".C";
+  nameFilePng << "PrefitM125" << "_" << "_" << ssample << "_" << schannel << "_"<< scategory << ".png";
   
   xframe->Draw();
   gPad->Update(); legend->Draw(); text->Draw(); titlet->Draw();
@@ -474,9 +501,9 @@ void all(int selAna =-10,  int channels=-1, int categ =-10, int sample = 0 ){
   line1->Draw();
 
   stringstream nameFilePull, nameFilePullC, nameFilePullPng;
-  nameFilePull    << "Pre_PullM"    << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".pdf";
-  nameFilePullC    << "Pre_PullM"   << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".C";
-  nameFilePullPng   << "Pre_PullM"  << "_" << sselAna << "_" << ssample << "_" << schannel << "_"<< scategory << ".png";
+  nameFilePull    << "Pre_PullM"    << "_" << "_" << ssample << "_" << schannel << "_"<< scategory << ".pdf";
+  nameFilePullC    << "Pre_PullM"   << "_" << "_" << ssample << "_" << schannel << "_"<< scategory << ".C";
+  nameFilePullPng   << "Pre_PullM"  << "_" << "_" << ssample << "_" << schannel << "_"<< scategory << ".png";
 
   c2->Print(nameFilePull.str().c_str());
   c2->SaveAs(nameFilePullC.str().c_str());
