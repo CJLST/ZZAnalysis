@@ -16,20 +16,22 @@ using namespace PDGHelpers;
 using namespace HiggsComparators;
 
 
-LHEHandler::LHEHandler(edm::Handle<LHEEventProduct>* lhe_evt_, int VVMode_, int VVDecayMode_, bool doKinematics_) :
+LHEHandler::LHEHandler(edm::Handle<LHEEventProduct>* lhe_evt_, int VVMode_, int VVDecayMode_, bool doKinematics_, int year_) :
 VVMode(VVMode_),
 VVDecayMode(VVDecayMode_),
 doKinematics(doKinematics_),
+year(year_),
 genEvent(0),
 genCand(0)
 {
   setHandle(lhe_evt_); // Also calls clear()
   extract();
 }
-LHEHandler::LHEHandler(int VVMode_, int VVDecayMode_, bool doKinematics_) :
+LHEHandler::LHEHandler(int VVMode_, int VVDecayMode_, bool doKinematics_, int year_) :
 VVMode(VVMode_),
 VVDecayMode(VVDecayMode_),
 doKinematics(doKinematics_),
+year(year_),
 genEvent(0),
 genCand(0)
 {
@@ -57,6 +59,7 @@ void LHEHandler::clear(){
   PDFid.clear();
   PDFScale=0;
   LHEOriginalWeight=1;
+  defaultNLOweight=1;
 }
 
 MELACandidate* LHEHandler::getBestCandidate(){ return genCand; }
@@ -78,6 +81,11 @@ float LHEHandler::getLHEWeigh_AsMZUpDn(int whichUpDn, float defaultValue) const{
   else return defaultValue;
 }
 float const& LHEHandler::getPDFScale() const{ return PDFScale; }
+float LHEHandler::reweightNNLOtoNLO() const{
+  if (year == 2017)
+    return defaultNLOweight / getLHEWeight(0, 1);
+  throw cms::Exception("LHEWeights") << "Shouldn't be calling this function for " << year;
+}
 
 
 
@@ -175,62 +183,110 @@ void LHEHandler::readEvent(){
 
   // LHE weights (Maximum 9 or size of weights array for QCD variations, 2 for PDF variations and 2 for alphas(mZ) variations)
   LHEOriginalWeight = (*lhe_evt)->originalXWGTUP();
-  vector<float> tmpWgtArray;
-  vector<float> LHEPDFVariationWgt;
   vector<float> LHEPDFAlphaSMZWgt;
-  for (int iw=0; iw<(int)((*lhe_evt)->weights().size()); iw++){
-    int wgtid=atoi((*lhe_evt)->weights().at(iw).id.c_str());
-    float wgtval=(*lhe_evt)->weights().at(iw).wgt / LHEOriginalWeight;
+  vector<float> LHEPDFVariationWgt;
+  bool foundanyweights = !(*lhe_evt)->weights().empty();
+  bool founddefaultNLOweight = false;
+  for (const auto& weight : (*lhe_evt)->weights()) {
+    int wgtid=atoi(weight.id.c_str());
+    float wgtval=weight.wgt / LHEOriginalWeight;
+    foundanyweights = true;
     //cout << "PDF id = " << PDFid.at(0) << " " << wgtid << " -> " << wgtval << endl;
+    if (year == 2016) {
+      if (wgtid<2000) LHEWeight.push_back(wgtval);
+      else if (wgtid<3000) LHEPDFVariationWgt.push_back(wgtval); // Add PDF replicas and alphas(mZ) variations from the same pdf
+    } else if (year == 2017) {
+      if (1001 <= wgtid && wgtid <= 1009) LHEWeight.push_back(wgtval);
+      else if (2000 <= wgtid && wgtid <= 2111) {/*do nothing, these are the NNLO variations*/}
+      else if (wgtid == 3000) {founddefaultNLOweight = true; defaultNLOweight = wgtval;}
+      else if (3001 <= wgtid && wgtid <= 3102) LHEPDFVariationWgt.push_back(wgtval);
+      else if (wgtid < 4000) throw cms::Exception("LHEWeights") << "Don't know what to do with alternate weight id = " << wgtid;
+    } else {
+      throw cms::Exception("LHEWeights") << "Unknown year " << year;
+    }
+  }
 
-    if (wgtid<2000) LHEWeight.push_back(wgtval);
-    else if (wgtid<3000) tmpWgtArray.push_back(wgtval); // Add PDF replicas and alphas(mZ) variations from the same pdf
+  if (year == 2017 && foundanyweights && !(founddefaultNLOweight && LHEWeight.size() == 9 && LHEPDFVariationWgt.size() == 102)) {
+    throw cms::Exception("LHEWeights")
+            << "For 2017 MC, expect to find either\n"
+            << " - no alternate LHE weights, or\n"
+            << " - all of the following:\n"
+            << "   - muR and muF variations (1001-1009, found " << LHEWeight.size() << " of them)\n"
+            << "   - the default NLO PDF weight (3000, " << (founddefaultNLOweight ? "found" : "didn't find") << " it)\n"
+            << "   - NLO PDF weight variations (3001-3102, found " << LHEPDFVariationWgt.size() << " of them)";
   }
 
   // Handle LO samples 
-  if (tmpWgtArray.size()==0) {
+  if (year == 2016 && LHEPDFVariationWgt.size()==0) {
     for (int iw=0; iw<(int)((*lhe_evt)->weights().size()); iw++) {
       int wgtid=atoi((*lhe_evt)->weights().at(iw).id.c_str());
       if (wgtid>=10 && wgtid<=110) {
         float wgtval=(*lhe_evt)->weights().at(iw).wgt / LHEOriginalWeight;
-        tmpWgtArray.push_back(wgtval);
+        LHEPDFVariationWgt.push_back(wgtval);
       }
     }
   }
 
-  if (!tmpWgtArray.empty()){
-    if (tmpWgtArray.size()>=100){
-      for (unsigned int iwgt=0; iwgt<100; iwgt++) addByLowestInAbs(tmpWgtArray.at(iwgt), LHEPDFVariationWgt); // Since weights could be (-) or (+), use LowestInAbs
-      if (tmpWgtArray.size()>100){ for (unsigned int iwgt=100; iwgt<tmpWgtArray.size(); iwgt++) LHEPDFAlphaSMZWgt.push_back(tmpWgtArray.at(iwgt)); } // Dn, Up
-    }
+  if (LHEPDFVariationWgt.size() > 100) {
+    auto firstalphasweight = LHEPDFVariationWgt.begin() + 99; //= iterator to LHEPDFVariationWgt[99] = 100th entry
+    LHEPDFAlphaSMZWgt.assign(firstalphasweight, LHEPDFVariationWgt.end());
+    LHEPDFVariationWgt.erase(firstalphasweight, LHEPDFVariationWgt.end());
   }
+
+  
   // Find the proper PDF and alphas(mZ) variations
   if (!LHEWeight.empty()){
-    float centralWeight=1;
-    centralWeight = LHEWeight.at(0);
-    LHEWeight_PDFVariationUpDn.push_back(findNearestOneSigma(centralWeight, 1, LHEPDFVariationWgt));
-    LHEWeight_PDFVariationUpDn.push_back(findNearestOneSigma(centralWeight, -1, LHEPDFVariationWgt));
-    if (LHEPDFAlphaSMZWgt.size()>1){
-      float asdn = LHEPDFAlphaSMZWgt.at(0);
-      float asup = LHEPDFAlphaSMZWgt.at(1);
-      // Rescale alphas(mZ) variations from 0.118+-0.001 to 0.118+-0.0015
-      LHEWeight_AsMZUpDn.push_back(centralWeight + (asup-centralWeight)*1.5);
-      LHEWeight_AsMZUpDn.push_back(centralWeight + (asdn-centralWeight)*1.5);
+    switch (year) {
+      case 2016: {
+        std::sort(LHEPDFVariationWgt.begin(), LHEPDFVariationWgt.end(), compareAbs);
+        float centralWeight = LHEWeight.at(0);
+        LHEWeight_PDFVariationUpDn.push_back(findNearestOneSigma(centralWeight, 1, LHEPDFVariationWgt));
+        LHEWeight_PDFVariationUpDn.push_back(findNearestOneSigma(centralWeight, -1, LHEPDFVariationWgt));
+        if (LHEPDFAlphaSMZWgt.size()>1){
+          float asdn = LHEPDFAlphaSMZWgt.at(0);
+          float asup = LHEPDFAlphaSMZWgt.at(1);
+          // Rescale alphas(mZ) variations from 0.118+-0.001 to 0.118+-0.0015
+          LHEWeight_AsMZUpDn.push_back(centralWeight + (asup-centralWeight)*1.5);
+          LHEWeight_AsMZUpDn.push_back(centralWeight + (asdn-centralWeight)*1.5);
+        }
+        break;
+      }
+      case 2017: {
+        //https://arxiv.org/pdf/1706.00428v2.pdf page 88
+        //we are working with NNPDF31_nlo_hessian_pdfas
+        //see the routine starting on line 101 of PDFSet.cc in LHAPDF-6.2.1
+        //based on NNPDF31_nlo_hessian_pdfas.info, which confirms that errorType() is symmhessian+as
+        float centralWeight = defaultNLOweight;
+
+        float errorsquared = 0;
+        for (auto wt : LHEPDFVariationWgt) {
+          float difference = wt - centralWeight;
+          errorsquared += difference*difference;
+        }
+        float error = sqrt(errorsquared);
+        LHEWeight_PDFVariationUpDn = {error, error};
+
+        if (LHEPDFAlphaSMZWgt.size()>1){
+          float asdn = LHEPDFAlphaSMZWgt.at(0);
+          float asup = LHEPDFAlphaSMZWgt.at(1);
+          // Rescale alphas(mZ) variations from 0.118+-0.002 to 0.118+-0.0015
+          //                           Note this number ^ is different than 2016!
+          LHEWeight_AsMZUpDn.push_back(centralWeight + (asup-centralWeight)*0.75);
+          LHEWeight_AsMZUpDn.push_back(centralWeight + (asdn-centralWeight)*0.75);
+        }
+        break;
+      }
+      default: {
+        throw cms::Exception("LHEWeights") << "Unknown year " << year;
+      }
     }
   }
   //
 }
 
-void LHEHandler::addByLowestInAbs(float val, std::vector<float>& valArray){
-  bool inserted = false;
-  for (std::vector<float>::iterator it = valArray.begin(); it<valArray.end(); it++){
-    if (fabs(*it)>=fabs(val)){
-      inserted=true;
-      valArray.insert(it, val);
-      break;
-    }
-  }
-  if (!inserted) valArray.push_back(val);
+
+bool LHEHandler::compareAbs(float val1, float val2) {
+  return std::abs(val1) < std::abs(val2);
 }
 
 float LHEHandler::findNearestOneSigma(float ref, int lowhigh, std::vector<float> const& wgt_array){
