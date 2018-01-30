@@ -197,6 +197,9 @@ void LHEHandler::readEvent(){
       else if (wgtid<3000) LHEPDFVariationWgt.push_back(wgtval); // Add PDF replicas and alphas(mZ) variations from the same pdf
     } else if (year == 2017) {
       if (1001 <= wgtid && wgtid <= 1009) LHEWeight.push_back(wgtval);
+      else if (1500 <= wgtid && wgtid <= 1602) {/*do nothing, these are the NLO pdf for NNPDF30 and variations*/}
+      else if (wgtid == 1700)                  {/*do nothing, this is the NNLO pdf for NNPDF30*/}
+      else if (wgtid == 1800 || wgtid == 1850 || wgtid == 1900 || wgtid == 1950) {/*do nothing, these are LO pdfs*/}
       else if (2000 <= wgtid && wgtid <= 2111) {/*do nothing, these are the NNLO variations*/}
       else if (wgtid == 3000) {founddefaultNLOweight = true; defaultNLOweight = wgtval;}
       else if (3001 <= wgtid && wgtid <= 3102) LHEPDFVariationWgt.push_back(wgtval);
