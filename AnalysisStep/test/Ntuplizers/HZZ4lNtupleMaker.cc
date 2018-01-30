@@ -1742,6 +1742,7 @@ void HZZ4lNtupleMaker::beginRun(edm::Run const& iRun, edm::EventSetup const&)
 // ------------ method called when ending the processing of a run  ------------
 void HZZ4lNtupleMaker::endRun(edm::Run const& iRun, edm::EventSetup const&)
 {
+/*
   // code that helps find the indices of LHE weights
   edm::Handle<LHERunInfoProduct> run;
   typedef std::vector<LHERunInfoProduct::Header>::const_iterator headers_const_iterator;
@@ -1754,6 +1755,7 @@ void HZZ4lNtupleMaker::endRun(edm::Run const& iRun, edm::EventSetup const&)
       std::cout << lines.at(iLine);
     }
   }
+*/
 }
 
 // ------------ method called when starting to processes a luminosity block  ------------
