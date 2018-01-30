@@ -66,7 +66,7 @@ protected:
   MELAEvent* genEvent;
   MELACandidate* genCand;
 
-  int defaultNLOweight;
+  float defaultNLOweight;
   float LHEOriginalWeight;
   vector<float> LHEWeight;
   vector<float> LHEWeight_PDFVariationUpDn;

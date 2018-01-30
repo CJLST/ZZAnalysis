@@ -185,12 +185,10 @@ void LHEHandler::readEvent(){
   LHEOriginalWeight = (*lhe_evt)->originalXWGTUP();
   vector<float> LHEPDFAlphaSMZWgt;
   vector<float> LHEPDFVariationWgt;
-  bool foundanyweights = !(*lhe_evt)->weights().empty();
   bool founddefaultNLOweight = false;
   for (const auto& weight : (*lhe_evt)->weights()) {
     int wgtid=atoi(weight.id.c_str());
     float wgtval=weight.wgt / LHEOriginalWeight;
-    foundanyweights = true;
     //cout << "PDF id = " << PDFid.at(0) << " " << wgtid << " -> " << wgtval << endl;
     if (year == 2016) {
       if (wgtid<2000) LHEWeight.push_back(wgtval);
@@ -209,7 +207,7 @@ void LHEHandler::readEvent(){
     }
   }
 
-  if (year == 2017 && foundanyweights && !(founddefaultNLOweight && LHEWeight.size() == 9 && LHEPDFVariationWgt.size() == 102)) {
+  if (year == 2017 && !(*lhe_evt)->weights().empty() && !(founddefaultNLOweight && LHEWeight.size() == 9 && LHEPDFVariationWgt.size() == 102)) {
     throw cms::Exception("LHEWeights")
             << "For 2017 MC, expect to find either\n"
             << " - no alternate LHE weights, or\n"
