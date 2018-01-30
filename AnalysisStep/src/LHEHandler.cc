@@ -228,7 +228,7 @@ void LHEHandler::readEvent(){
   }
 
   if (LHEPDFVariationWgt.size() > 100) {
-    auto firstalphasweight = LHEPDFVariationWgt.begin() + 99; //= iterator to LHEPDFVariationWgt[99] = 100th entry
+    auto firstalphasweight = LHEPDFVariationWgt.begin() + 100; //= iterator to LHEPDFVariationWgt[100] = 101st entry
     LHEPDFAlphaSMZWgt.assign(firstalphasweight, LHEPDFVariationWgt.end());
     LHEPDFVariationWgt.erase(firstalphasweight, LHEPDFVariationWgt.end());
   }
@@ -259,7 +259,7 @@ void LHEHandler::readEvent(){
         float centralWeight = defaultNLOweight;
 
         float errorsquared = 0;
-        for (auto wt : LHEPDFVariationWgt) {
+        for (const auto& wt : LHEPDFVariationWgt) {
           float difference = wt - centralWeight;
           errorsquared += difference*difference;
         }
