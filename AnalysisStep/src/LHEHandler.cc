@@ -264,15 +264,15 @@ void LHEHandler::readEvent(){
           errorsquared += difference*difference;
         }
         float error = sqrt(errorsquared);
-        LHEWeight_PDFVariationUpDn = {error, error};
+        LHEWeight_PDFVariationUpDn = {(centralWeight + error) / reweightNNLOtoNLO(), (centralWeight - error) / reweightNNLOtoNLO()};
 
         if (LHEPDFAlphaSMZWgt.size()>1){
           float asdn = LHEPDFAlphaSMZWgt.at(0);
           float asup = LHEPDFAlphaSMZWgt.at(1);
           // Rescale alphas(mZ) variations from 0.118+-0.002 to 0.118+-0.0015
           //                           Note this number ^ is different than 2016!
-          LHEWeight_AsMZUpDn.push_back(centralWeight + (asup-centralWeight)*0.75);
-          LHEWeight_AsMZUpDn.push_back(centralWeight + (asdn-centralWeight)*0.75);
+          LHEWeight_AsMZUpDn.push_back((centralWeight + (asup-centralWeight)*0.75) / reweightNNLOtoNLO());
+          LHEWeight_AsMZUpDn.push_back((centralWeight + (asdn-centralWeight)*0.75) / reweightNNLOtoNLO());
         }
         break;
       }
