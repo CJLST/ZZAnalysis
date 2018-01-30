@@ -1349,7 +1349,7 @@ void HZZ4lNtupleMaker::FillLHECandidate(){
 
   LHEPDFScale = lheHandler->getPDFScale();
   if (genHEPMCweight==1.) {
-    genHEPMCweight = lheHandler->getLHEOriginalWeight();
+    genHEPMCweight_NNLO = genHEPMCweight = lheHandler->getLHEOriginalWeight();
     if (!printedLHEweightwarning && genHEPMCweight!=1) {
       printedLHEweightwarning = true;
       edm::LogWarning("InconsistentWeights") << "Gen weight is 1, LHE weight is " << genHEPMCweight;
