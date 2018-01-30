@@ -187,7 +187,12 @@ void LHEHandler::readEvent(){
   vector<float> LHEPDFVariationWgt;
   bool founddefaultNLOweight = false;
   for (const auto& weight : (*lhe_evt)->weights()) {
-    int wgtid=atoi(weight.id.c_str());
+    int wgtid;
+    try {
+      wgtid = stoi(weight.id.c_str());
+    } catch (std::invalid_argument& e) {
+      continue;  //we don't use non-numerical indices, but they exist in some 2016 MC samples
+    }
     float wgtval=weight.wgt / LHEOriginalWeight;
     //cout << "PDF id = " << PDFid.at(0) << " " << wgtid << " -> " << wgtval << endl;
     if (year == 2016) {
