@@ -121,7 +121,8 @@ namespace BranchHelpers{
     }
     void createBranch(varType* defVal_){
       if (!isVector && defVal_!=0){
-        if (defVal!=0) delete defVal; defVal = new varType;
+        if (defVal!=0) delete defVal;
+        defVal = new varType;
         *defVal = *defVal_;
       }
       reset();

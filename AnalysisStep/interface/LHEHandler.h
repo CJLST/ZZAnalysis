@@ -34,8 +34,8 @@
 class LHEHandler{
 public:
 
-  LHEHandler(int VVMode_, int VVDecayMode_, bool doKinematics_);
-  LHEHandler(edm::Handle<LHEEventProduct>* lhe_evt_, int VVMode_, int VVDecayMode_, bool doKinematics_);
+  LHEHandler(int VVMode_, int VVDecayMode_, bool doKinematics_, int year_);
+  LHEHandler(edm::Handle<LHEEventProduct>* lhe_evt_, int VVMode_, int VVDecayMode_, bool doKinematics_, int year_);
   virtual ~LHEHandler();
   
   void setHandle(edm::Handle<LHEEventProduct>* lhe_evt_);
@@ -48,22 +48,25 @@ public:
   float getLHEWeight_PDFVariationUpDn(int whichUpDn, float defaultValue=1) const; // = {Weights written in LHE weight variations} / getLHEOriginalWeight()
   float getLHEWeigh_AsMZUpDn(int whichUpDn, float defaultValue=1) const; // = {Weights written in LHE weight variations} / getLHEOriginalWeight()
   float const& getPDFScale() const;
+  float reweightNNLOtoNLO() const;
 
-  static void addByLowestInAbs(float val, std::vector<float>& valArray);
+  static bool compareAbs(float val1, float val2);
   static float findNearestOneSigma(float ref, int lowhigh, std::vector<float> const& wgt_array);
 
 protected:
 
   // VVMode and VVDecayMode: See comment lines within MELAEvent::constructVVCandidates
-  int VVMode;
-  int VVDecayMode;
-  bool doKinematics;
+  const int VVMode;
+  const int VVDecayMode;
+  const bool doKinematics;
+  const int year;
 
   edm::Handle<LHEEventProduct>* lhe_evt;
   vector<MELAParticle*> particleList;
   MELAEvent* genEvent;
   MELACandidate* genCand;
 
+  float defaultNLOweight;
   float LHEOriginalWeight;
   vector<float> LHEWeight;
   vector<float> LHEWeight_PDFVariationUpDn;
