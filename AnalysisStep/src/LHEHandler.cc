@@ -266,12 +266,11 @@ void LHEHandler::readEvent(){
         if (centralWeight == 0) {
           LHEWeight_PDFVariationUpDn = {0, 0};
           LHEWeight_AsMZUpDn = {0, 0};
-          //can't do auto warning = edm::LogWarning("ZeroWeight") because https://github.com/cms-sw/cmssw/blob/beefd9848d9cf4d4ed373d420bacd91a265f8737/FWCore/MessageLogger/interface/MessageLogger.h#L161
-          auto warning = std::make_unique<edm::LogWarning>("ZeroWeight");
-          *warning << "default NLO PDF weight is 0\nIncoming particle id and pz:";
+          edm::LogWarning warning("ZeroWeight");
+          warning << "default NLO PDF weight is 0\nIncoming particle id and pz:";
           for (const auto& p : particleList)
             if (p->genStatus == -1)
-              *warning << "\n" << p->id << " " << p->z();
+              warning << "\n" << p->id << " " << p->z();
           break;
         }
 
