@@ -263,6 +263,17 @@ void LHEHandler::readEvent(){
         //see the routine starting on line 101 of PDFSet.cc in LHAPDF-6.2.1
         //based on NNPDF31_nlo_hessian_pdfas.info, which confirms that errorType() is symmhessian+as
         float centralWeight = defaultNLOweight;
+        if (centralWeight == 0) {
+          LHEWeight_PDFVariationUpDn = {0, 0};
+          LHEWeight_AsMZUpDn = {0, 0};
+          //can't do auto warning = edm::LogWarning("ZeroWeight") because https://github.com/cms-sw/cmssw/blob/beefd9848d9cf4d4ed373d420bacd91a265f8737/FWCore/MessageLogger/interface/MessageLogger.h#L161
+          auto warning = std::make_unique<edm::LogWarning>("ZeroWeight");
+          *warning << "default NLO PDF weight is 0\nIncoming particle id and pz:";
+          for (const auto& p : particleList)
+            if (p->genStatus == -1)
+              *warning << "\n" << p->id << " " << p->z();
+          break;
+        }
 
         float errorsquared = 0;
         for (const auto& wt : LHEPDFVariationWgt) {
