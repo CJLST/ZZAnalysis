@@ -44,6 +44,7 @@ public:
 
   MELACandidate* getBestCandidate();
   float const& getLHEOriginalWeight() const; // Weight written in the <event> block, supposed to = genhepmcweight if no Pythia reweighting is done
+  float const& getPowhegOriginalWeight() const; // Weight from POWHEG before JHUGen reweighting, taken from alternate weight 1001.  If there are no alternate weights this is the same as the LHEOriginalWeight
   float getLHEWeight(unsigned int whichWeight, float defaultValue=1) const; // = {Weights written in LHE weight variations} / getLHEOriginalWeight()
   float getLHEWeight_PDFVariationUpDn(int whichUpDn, float defaultValue=1) const; // = {Weights written in LHE weight variations} / getLHEOriginalWeight()
   float getLHEWeigh_AsMZUpDn(int whichUpDn, float defaultValue=1) const; // = {Weights written in LHE weight variations} / getLHEOriginalWeight()
@@ -68,6 +69,7 @@ protected:
 
   float defaultNLOweight;
   float LHEOriginalWeight;
+  float powhegOriginalWeight;
   vector<float> LHEWeight;
   vector<float> LHEWeight_PDFVariationUpDn;
   vector<float> LHEWeight_AsMZUpDn;

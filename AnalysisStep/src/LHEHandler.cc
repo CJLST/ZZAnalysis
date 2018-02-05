@@ -59,12 +59,16 @@ void LHEHandler::clear(){
   PDFid.clear();
   PDFScale=0;
   LHEOriginalWeight=1;
+  powhegOriginalWeight=1;
   defaultNLOweight=1;
 }
 
 MELACandidate* LHEHandler::getBestCandidate(){ return genCand; }
 float const& LHEHandler::getLHEOriginalWeight() const{
   return this->LHEOriginalWeight;
+}
+float const& LHEHandler::getPowhegOriginalWeight() const{
+  return this->powhegOriginalWeight;
 }
 float LHEHandler::getLHEWeight(unsigned int whichWeight, float defaultValue) const{
   if (whichWeight<LHEWeight.size()) return LHEWeight.at(whichWeight);
@@ -83,7 +87,7 @@ float LHEHandler::getLHEWeigh_AsMZUpDn(int whichUpDn, float defaultValue) const{
 float const& LHEHandler::getPDFScale() const{ return PDFScale; }
 float LHEHandler::reweightNNLOtoNLO() const{
   if (year == 2017)
-    return defaultNLOweight / getLHEWeight(0, 1);
+    return defaultNLOweight; //note this is already divided by originalPowhegWeight
   throw cms::Exception("LHEWeights") << "Shouldn't be calling this function for " << year;
 }
 
@@ -186,6 +190,17 @@ void LHEHandler::readEvent(){
   vector<float> LHEPDFAlphaSMZWgt;
   vector<float> LHEPDFVariationWgt;
   bool founddefaultNLOweight = false;
+  bool foundpowhegOriginalWeight = false;
+  powhegOriginalWeight = LHEOriginalWeight;
+  //first find the main powheg weight (should be one of the first)
+  for (const auto& weight : (*lhe_evt)->weights()) {
+    if (weight.id == "1001") {
+      powhegOriginalWeight = weight.wgt;
+      foundpowhegOriginalWeight = true;
+      break;
+    }
+  }
+
   for (const auto& weight : (*lhe_evt)->weights()) {
     int wgtid;
     try {
@@ -193,7 +208,7 @@ void LHEHandler::readEvent(){
     } catch (std::invalid_argument& e) {
       continue;  //we don't use non-numerical indices, but they exist in some 2016 MC samples
     }
-    float wgtval=weight.wgt / LHEOriginalWeight;
+    float wgtval=weight.wgt / powhegOriginalWeight;
     //cout << "PDF id = " << PDFid.at(0) << " " << wgtid << " -> " << wgtval << endl;
     if (year == 2016) {
       if (wgtid<2000) LHEWeight.push_back(wgtval);
@@ -212,12 +227,12 @@ void LHEHandler::readEvent(){
     }
   }
 
-  if (year == 2017 && !(*lhe_evt)->weights().empty() && !(founddefaultNLOweight && LHEWeight.size() == 9 && LHEPDFVariationWgt.size() == 102)) {
+  if (year == 2017 && !(*lhe_evt)->weights().empty() && !(foundpowhegOriginalWeight && founddefaultNLOweight && LHEWeight.size() == 9 && LHEPDFVariationWgt.size() == 102)) {
     throw cms::Exception("LHEWeights")
             << "For 2017 MC, expect to find either\n"
             << " - no alternate LHE weights, or\n"
             << " - all of the following:\n"
-            << "   - muR and muF variations (1001-1009, found " << LHEWeight.size() << " of them)\n"
+            << "   - muR and muF variations (1001-1009, found " << LHEWeight.size() << " of them, " << (foundpowhegOriginalWeight ? "" : "not ") << "including 1001)\n"
             << "   - the default NLO PDF weight (3000, " << (founddefaultNLOweight ? "found" : "didn't find") << " it)\n"
             << "   - NLO PDF weight variations (3001-3102, found " << LHEPDFVariationWgt.size() << " of them)";
   }
@@ -266,12 +281,11 @@ void LHEHandler::readEvent(){
         if (centralWeight == 0) {
           LHEWeight_PDFVariationUpDn = {0, 0};
           LHEWeight_AsMZUpDn = {0, 0};
-          //can't do auto warning = edm::LogWarning("ZeroWeight") because https://github.com/cms-sw/cmssw/blob/beefd9848d9cf4d4ed373d420bacd91a265f8737/FWCore/MessageLogger/interface/MessageLogger.h#L161
-          auto warning = std::make_unique<edm::LogWarning>("ZeroWeight");
-          *warning << "default NLO PDF weight is 0\nIncoming particle id and pz:";
+          edm::LogWarning warning("ZeroWeight");
+          warning << "default NLO PDF weight is 0\nIncoming particle id and pz:";
           for (const auto& p : particleList)
             if (p->genStatus == -1)
-              *warning << "\n" << p->id << " " << p->z();
+              warning << "\n" << p->id << " " << p->z();
           break;
         }
 
