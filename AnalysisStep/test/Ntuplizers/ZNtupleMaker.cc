@@ -23,6 +23,9 @@
 #include <DataFormats/PatCandidates/interface/Muon.h>
 #include <DataFormats/PatCandidates/interface/Electron.h>
 #include <DataFormats/PatCandidates/interface/Jet.h>
+#include <DataFormats/PatCandidates/interface/MET.h>
+#include <DataFormats/METReco/interface/PFMET.h>
+#include <DataFormats/METReco/interface/PFMETCollection.h>
 #include <DataFormats/Math/interface/LorentzVector.h>
 #include <CommonTools/UtilAlgos/interface/TFileService.h>
 #include <DataFormats/Common/interface/MergeableCounter.h>
@@ -49,7 +52,7 @@ using namespace edm;
 namespace {
   bool skipMuDataMCWeight = false; // skip computation of data/MC weight for mu
   bool skipEleDataMCWeight = false; // skip computation of data/MC weight for ele
-  bool addJets = false;
+  bool addJets = true;
   bool addQGLInputs = false;
   bool addAddLept = false;
 
@@ -131,6 +134,10 @@ namespace {
   std::vector<float> JetSigma;
   std::vector<short> JetHadronFlavour;
   std::vector<short> JetPartonFlavour;
+  Float_t PFMET  =  -99;
+  Float_t PFMET_jesUp  =  -99;
+  Float_t PFMET_jesDn  =  -99;
+  Float_t PFMETPhi  =  -99;
   Float_t genHEPMCweight = 0;
   Float_t xsection = 0;
   Float_t dataMCWeight = 0;
@@ -183,6 +190,7 @@ private:
   edm::EDGetTokenT<edm::TriggerResults> triggerResultToken;
   edm::EDGetTokenT<vector<reco::Vertex> > vtxToken;
   edm::EDGetTokenT<edm::View<pat::Jet> > jetToken;
+  edm::EDGetTokenT<pat::METCollection> metToken;
 
   edm::EDGetTokenT<edm::MergeableCounter> preSkimToken;
 
@@ -236,6 +244,7 @@ ZNtupleMaker::ZNtupleMaker(const edm::ParameterSet& pset) :
   triggerResultToken = consumes<edm::TriggerResults>(edm::InputTag("TriggerResults"));
   vtxToken = consumes<vector<reco::Vertex> >(edm::InputTag("goodPrimaryVertices"));
   jetToken = consumes<edm::View<pat::Jet> >(edm::InputTag("cleanJets"));
+  metToken = consumes<pat::METCollection>(edm::InputTag("slimmedMETs"));
 
   electronToken = consumes<vector<pat::Electron> >(edm::InputTag("softElectrons"));
   //softElectrons->clear();
@@ -400,6 +409,17 @@ void ZNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& eSetu
       if (addJets) FillJet(*jet);
     }
 
+  // MET
+  Handle<pat::METCollection> metHandle;
+  event.getByToken(metToken, metHandle);
+  if(metHandle.isValid()){
+    const pat::MET &met = metHandle->front();
+    PFMET = met.pt();
+    PFMET_jesUp = met.shiftedPt(pat::MET::JetEnUp);
+    PFMET_jesDn = met.shiftedPt(pat::MET::JetEnDown);
+    PFMETPhi = met.phi();
+  }
+	
   // all soft leptons
   edm::Handle<vector<pat::Electron> > electronHandle;
   event.getByToken(electronToken, electronHandle);
@@ -817,6 +837,10 @@ void ZNtupleMaker::BookAllBranches(){
     myTree->Book("JetSigma",JetSigma);
     myTree->Book("JetHadronFlavour",JetHadronFlavour);
     myTree->Book("JetPartonFlavour",JetPartonFlavour);
+	 myTree->Book("PFMET",PFMET);
+    myTree->Book("PFMET_jesUp",PFMET_jesUp);
+    myTree->Book("PFMET_jesDn",PFMET_jesDn);
+    myTree->Book("PFMETPhi",PFMETPhi);
   }
   
   if(addQGLInputs){
