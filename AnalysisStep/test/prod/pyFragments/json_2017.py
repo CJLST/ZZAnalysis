@@ -1,4 +1,4 @@
-# from /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/Final/Cert_294927-306462_13TeV_PromptReco_Collisions17_JSON.txt
+# from /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/ReReco/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt
 process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange( *(
     '297050:12-297050:137',
     '297050:193-297050:776',
@@ -203,7 +203,8 @@ process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange( *(
     '299477:82-299477:87',
     '299478:1-299478:175',
     '299479:1-299479:123',
-    '299480:1-299480:715',
+    '299480:1-299480:6',
+    '299480:8-299480:715',
     '299481:1-299481:196',
     '299481:199-299481:236',
     '299481:260-299481:479',
@@ -389,7 +390,8 @@ process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange( *(
     '301393:2-301393:18',
     '301396:1-301396:33',
     '301397:1-301397:228',
-    '301397:231-301397:728',
+    '301397:231-301397:517',
+    '301397:519-301397:728',
     '301398:1-301398:9',
     '301399:1-301399:108',
     '301417:50-301417:367',
