@@ -26,7 +26,7 @@ int main( int argc, char *argv[] )
 	
 	TString path = "";
    TString file_name = "/ZZ4lAnalysis.root";
-   TString file_name_FR = "/FakeRate_SS_Moriond368.root";
+   TString file_name_FR = "/FakeRates_SS_Moriond18.root";
    
    //Data
    TString Data        = path + "AllData" + file_name;
@@ -79,48 +79,48 @@ int main( int argc, char *argv[] )
    TString ggZZ2e2tau  = path + "ggTo2e2tau_Contin_MCFM701" + file_name;
    TString ggZZ2mu2tau = path + "ggTo2mu2tau_Contin_MCFM701" + file_name;
    
-   Yields *yields = new Yields( 35.867);
+   Yields *yields = new Yields( 41.79);
    
 //===============
 // Produce plots 
 //===============
    
    yields->MakeHistograms(Data);
-
+//
    yields->MakeHistograms(ggH120);
-   yields->MakeHistograms(ggH124);
+//   yields->MakeHistograms(ggH124);
    yields->MakeHistograms(ggH125);
-   yields->MakeHistograms(ggH126);
+//   yields->MakeHistograms(ggH126);
    yields->MakeHistograms(ggH130);
-
-   yields->MakeHistograms(VBFH120);
-   yields->MakeHistograms(VBFH124);
+//
+//   yields->MakeHistograms(VBFH120);
+//   yields->MakeHistograms(VBFH124);
    yields->MakeHistograms(VBFH125);
-   yields->MakeHistograms(VBFH126);
+//   yields->MakeHistograms(VBFH126);
    yields->MakeHistograms(VBFH130);
-
+//
    yields->MakeHistograms(ZH120);
-   yields->MakeHistograms(ZH124);
+//   yields->MakeHistograms(ZH124);
    yields->MakeHistograms(ZH125);
-   yields->MakeHistograms(ZH126);
+//   yields->MakeHistograms(ZH126);
    yields->MakeHistograms(ZH130);
-
+//
    yields->MakeHistograms(WpH120);
-   yields->MakeHistograms(WpH124);
+//   yields->MakeHistograms(WpH124);
    yields->MakeHistograms(WpH125);
-   yields->MakeHistograms(WpH126);
+//   yields->MakeHistograms(WpH126);
    yields->MakeHistograms(WpH130);
-
+//
    yields->MakeHistograms(WmH120);
-   yields->MakeHistograms(WmH124);
+//   yields->MakeHistograms(WmH124);
    yields->MakeHistograms(WmH125);
-   yields->MakeHistograms(WmH126);
+//   yields->MakeHistograms(WmH126);
    yields->MakeHistograms(WmH130);
-
-   yields->MakeHistograms(ttH120);
-   yields->MakeHistograms(ttH124);
+//
+//   yields->MakeHistograms(ttH120);
+//   yields->MakeHistograms(ttH124);
    yields->MakeHistograms(ttH125);
-   yields->MakeHistograms(ttH126);
+//   yields->MakeHistograms(ttH126);
    yields->MakeHistograms(ttH130);
 
    yields->MakeHistograms(ZZTo4l);
@@ -142,10 +142,11 @@ int main( int argc, char *argv[] )
    yields->GetHistos("Yields");
    yields->Calculate_SS_ZX_Yields( Data, FakeRates);
    yields->Print("Yields");
-   yields->Print("Yields", 118., 130.);
+   yields->Print("Yields",  70., 110.);
+   yields->Print("Yields", 150., 300.);
    yields->PrintLatexTables("Yields", 118., 130.);
    yields->FillGraphs("Yields", 105., 140., "Q");
    yields->PrepareYamlFiles("Yields", "13", 105., 140.);
-   
+	
    delete yields;
 }

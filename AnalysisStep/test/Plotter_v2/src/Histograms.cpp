@@ -3533,7 +3533,7 @@ void Histograms::PrepareYamlFiles( TString sqrt, float M4l_down, float M4l_up, v
 void Histograms::PrintYields( vector< vector <float> > _expected_yield_SR)
 {
    
-   //cout << std::setprecision(2) << fixed;
+   cout << std::setprecision(2) << fixed;
    
    cout << endl;
    cout << "=========================" << endl;
@@ -3578,6 +3578,22 @@ void Histograms::PrintYields( vector< vector <float> > _expected_yield_SR)
          if( i_fs == Settings::fs2mu2e ) continue;
          
           cout << ZXYields->GetM4lZX_Yields(_expected_yield_SR, 0, 3000, i_fs, i_cat) << "   ";
+      }
+      cout << endl;
+   }
+	
+	// Total MC
+   cout << endl;
+	
+   for ( int i_cat = 0; i_cat < num_of_categories; i_cat++ )
+   {
+      cout << "Total" << "   " << _s_category.at(i_cat) << "   ";
+		
+      for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
+      {
+         if( i_fs == Settings::fs2mu2e ) continue;
+			
+          cout << ZXYields->GetM4lZX_Yields(_expected_yield_SR, 0, 3000, i_fs, i_cat) + histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->Integral() + histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yqqZZ]->Integral() + histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yggZZ]->Integral() << "   ";
       }
       cout << endl;
    }
@@ -3638,6 +3654,26 @@ void Histograms::PrintYields(float M4l_down, float M4l_up, vector< vector <float
          if( i_fs == Settings::fs2mu2e ) continue;
          
          cout << ZXYields->GetM4lZX_Yields(_expected_yield_SR, M4l_down, M4l_up, i_fs, i_cat) << "   ";
+      }
+      cout << endl;
+   }
+	
+   	// Total MC
+   cout << endl;
+	
+   for ( int i_cat = 0; i_cat < num_of_categories; i_cat++ )
+   {
+      cout << "Total" << "   " << _s_category.at(i_cat) << "   ";
+		
+      for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
+      {
+         if( i_fs == Settings::fs2mu2e ) continue;
+			
+          cout << ZXYields->GetM4lZX_Yields(
+          _expected_yield_SR, M4l_down, M4l_up, i_fs, i_cat) +
+          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->Integral(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->FindBin(M4l_down),histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->FindBin(M4l_up) - 1) +
+          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yqqZZ]->Integral(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yqqZZ]->FindBin(M4l_down),histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yqqZZ]->FindBin(M4l_up) - 1) +
+          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yggZZ]->Integral(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yggZZ]->FindBin(M4l_down),histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yggZZ]->FindBin(M4l_up) - 1) << "   ";
       }
       cout << endl;
    }
@@ -4375,23 +4411,24 @@ TLegend* Histograms::Create2DLegendAllCat( string position, TGraphErrors *fs4e, 
    leg->SetBorderSize(1);
    leg->SetTextFont(42);
    leg->SetTextSize(0.18);
-   leg->SetNColumns(3);
+   leg->SetNColumns(4);
    
    leg->AddEntry(fs4e,     "4e",              "lp");
    leg->AddEntry(untagged, "untagged",        "lp");
    leg->AddEntry(VHlep,    "VH-lept. tagged", "lp");
-   
+   leg->AddEntry(ttHhad,   "ttH-hadr. tagged","lp");
+	
    leg->AddEntry(fs4mu,   "4mu",             "lp");
    leg->AddEntry(VBF1jet, "VBF-1j tagged",   "lp");
    leg->AddEntry(VHhad,   "VH-hadr. tagged", "lp");
+   leg->AddEntry(ttHlep,  "ttH-lept. tagged","lp");
    
    leg->AddEntry(fs2e2mu,     "2e2mu",                  "lp");
    leg->AddEntry(VBF2jet,     "VBF-2j tagged",          "lp");
    leg->AddEntry(VHmet,       "VH-E_{T}^{miss} tagged", "lp");
    leg->AddEntry((TObject*)0, "",                       "");
-   leg->AddEntry((TObject*)0, "",                       "");
-   leg->AddEntry(ttHhad,         "ttH-hadr. tagged",             "lp");
-   leg->AddEntry(ttHlep,         "ttH-lept. tagged",             "lp");
+	
+	
    
    return leg;
 }
