@@ -25,7 +25,10 @@ git clone https://github.com/lsoffi/RecoEgamma-ElectronIdentification.git RecoEg
 #FIXME git cms-merge-topic cms-met:METRecipe_80X_part2 -u
 
 #Simplified template cross section
-#FIXME git cms-merge-topic -u perrozzi:HTXS_clean
+git cms-addpkg GeneratorInterface/RivetInterface
+#The tool is currently broken so it needs this hack to work
+sed -i 's@#include "FWCore/Framework/interface/stream/EDProducer.h"@#include "FWCore/Framework/interface/EDProducer.h"@g' GeneratorInterface/RivetInterface/plugins/HTXSRivetProducer.cc
+sed -i 's@class HTXSRivetProducer : public edm::stream::EDProducer<> {@class HTXSRivetProducer : public edm::EDProducer {@g' GeneratorInterface/RivetInterface/plugins/HTXSRivetProducer.cc
 
 #### Please do not add any custom (non-CMSSW) package before this line ####
 

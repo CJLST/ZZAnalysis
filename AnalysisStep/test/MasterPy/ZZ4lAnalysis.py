@@ -364,7 +364,7 @@ process.goodPrimaryVertices = cms.EDFilter("VertexSelector",
 ### ----------------------------------------------------------------------
 ### HTXS categorisation
 ### ----------------------------------------------------------------------
-if(CMSSWVERSION < 9 and IsMC):
+if(IsMC and CMSSWVERSION < 9):
    process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
    process.mergedGenParticles = cms.EDProducer("MergedGenParticleProducer",
 															  inputPruned = cms.InputTag("prunedGenParticles"),
@@ -381,6 +381,24 @@ if(CMSSWVERSION < 9 and IsMC):
 															 )
    process.htxs = cms.Path(process.mergedGenParticles*process.myGenerator*process.rivetProducerHTXS)
 
+
+if(IsMC and CMSSWVERSION >= 9):
+   process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
+   process.mergedGenParticles = cms.EDProducer("MergedGenParticleProducer",
+															  inputPruned = cms.InputTag("prunedGenParticles"),
+															  inputPacked = cms.InputTag("packedGenParticles"),
+															  )
+   process.myGenerator = cms.EDProducer("GenParticles2HepMCConverter",
+													 genParticles = cms.InputTag("mergedGenParticles"),
+													 genEventInfo = cms.InputTag("generator"),
+													 signalParticlePdgIds = cms.vint32(25), ## for the Higgs analysis
+													 )
+   process.rivetProducerHTXS = cms.EDProducer('HTXSRivetProducer',
+															 HepMCCollection = cms.InputTag('myGenerator','unsmeared'),
+															 LHERunInfo = cms.InputTag('externalLHEProducer'),
+															 ProductionMode = cms.string('AUTO'),
+															 )
+   process.htxs = cms.Path(process.mergedGenParticles*process.myGenerator*process.rivetProducerHTXS)
 
 ### ----------------------------------------------------------------------
 ### ----------------------------------------------------------------------

@@ -48,9 +48,7 @@
 #include <ZZAnalysis/AnalysisStep/interface/MCHistoryTools.h>
 //#include <ZZAnalysis/AnalysisStep/interface/PileUpWeight.h>
 #include <ZZAnalysis/AnalysisStep/interface/PileUpWeight.h>
-#if CMSSW_VERSION_MAJOR<9
 #include "SimDataFormats/HTXS/interface/HiggsTemplateCrossSections.h"
-#endif
 
 
 #include "ZZAnalysis/AnalysisStep/interface/EwkCorrections.h"
@@ -444,9 +442,7 @@ private:
   //edm::EDGetTokenT<pat::METCollection> metNoHFToken;
   edm::EDGetTokenT<pat::MuonCollection> muonToken;
   edm::EDGetTokenT<pat::ElectronCollection> electronToken;
-  #if CMSSW_VERSION_MAJOR<9
   edm::EDGetTokenT<HTXS::HiggsClassification> htxsToken;
-  #endif
   edm::EDGetTokenT<edm::MergeableCounter> preSkimToken;
   edm::EDGetTokenT<LHERunInfoProduct> lheRunInfoToken;
 
@@ -578,12 +574,8 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   isMC = myHelper.isMC();
   addLHEKinematics = addLHEKinematics || lheMElist.size()>0;
   if (isMC) lheHandler = new LHEHandler(pset.getParameter<int>("VVMode"), pset.getParameter<int>("VVDecayMode"), addLHEKinematics, year);
-	if (isMC)
-	{
-		#if CMSSW_VERSION_MAJOR<9
-		htxsToken = consumes<HTXS::HiggsClassification>(edm::InputTag("rivetProducerHTXS","HiggsClassification"));
-		#endif
-	}
+  if (isMC) htxsToken = consumes<HTXS::HiggsClassification>(edm::InputTag("rivetProducerHTXS","HiggsClassification"));
+
   Nevt_Gen = 0;
   Nevt_Gen_lumiBlock = 0;
 
@@ -967,7 +959,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       NRecoEle++;
   }
 
-  #if CMSSW_VERSION_MAJOR<9
   if(isMC)
   {
 	  edm::Handle<HTXS::HiggsClassification> htxs;
@@ -987,7 +978,6 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 	  }
 
   }
-  #endif
 
   //Loop on the candidates
   vector<Int_t> CRFLAG(cands->size());
