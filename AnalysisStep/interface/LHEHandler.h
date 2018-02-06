@@ -78,6 +78,13 @@ protected:
 
   void readEvent();
 
+  enum AlternateWeightsType {
+    unknown,
+    powheg,
+    madgraph_0offset,
+    madgraph_1000offset
+  };
+
 };
 
 
