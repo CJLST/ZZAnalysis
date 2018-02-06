@@ -230,6 +230,7 @@ namespace {
   Int_t genProcessId  = 0;
   Float_t genHEPMCweight  = 0;
   Float_t genHEPMCweight_NNLO  = 0;
+  Float_t genHEPMCweight_POWHEGonly = 0;
 
   std::vector<float> LHEMotherPz;
   std::vector<float> LHEMotherE;
@@ -246,7 +247,6 @@ namespace {
   std::vector<short> LHEAssociatedParticleId;
 
   Float_t LHEPDFScale = 0;
-  Float_t LHEweight_POWHEGonly = 0;
   Float_t LHEweight_QCDscale_muR1_muF1  = 0;
   Float_t LHEweight_QCDscale_muR1_muF2  = 0;
   Float_t LHEweight_QCDscale_muR1_muF0p5  = 0;
@@ -1252,7 +1252,7 @@ void HZZ4lNtupleMaker::FillLHECandidate(){
   LHEAssociatedParticleId.clear();
 
   LHEPDFScale = 0;
-  LHEweight_POWHEGonly = 0;
+  genHEPMCweight_POWHEGonly = 0;
   LHEweight_QCDscale_muR1_muF1=0;
   LHEweight_QCDscale_muR1_muF2=0;
   LHEweight_QCDscale_muR1_muF0p5=0;
@@ -1361,7 +1361,7 @@ void HZZ4lNtupleMaker::FillLHECandidate(){
     genHEPMCweight *= lheHandler->reweightNNLOtoNLO();
   }
 
-  LHEweight_POWHEGonly = lheHandler->getPowhegOriginalWeight();
+  genHEPMCweight_POWHEGonly = lheHandler->getPowhegOriginalWeight();
   LHEweight_QCDscale_muR1_muF1 = lheHandler->getLHEWeight(0, 1.);
   LHEweight_QCDscale_muR1_muF2 = lheHandler->getLHEWeight(1, 1.);
   LHEweight_QCDscale_muR1_muF0p5 = lheHandler->getLHEWeight(2, 1.);
@@ -2210,6 +2210,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("genProcessId", genProcessId, failedTreeLevel >= minimalFailedTree);
     myTree->Book("genHEPMCweight", genHEPMCweight, failedTreeLevel >= minimalFailedTree);
     if (year == 2017) myTree->Book("genHEPMCweight_NNLO", genHEPMCweight_NNLO, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("genHEPMCweight_POWHEGonly", genHEPMCweight_POWHEGonly, failedTreeLevel >= minimalFailedTree);
     myTree->Book("PUWeight", PUWeight, failedTreeLevel >= minimalFailedTree);
     myTree->Book("PUWeight_Dn", PUWeight_Dn, failedTreeLevel >= minimalFailedTree);
     myTree->Book("PUWeight_Up", PUWeight_Up, failedTreeLevel >= minimalFailedTree);
@@ -2285,7 +2286,6 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     }
 
     myTree->Book("LHEPDFScale", LHEPDFScale, failedTreeLevel >= minimalFailedTree);
-    myTree->Book("LHEweight_POWHEGonly", LHEweight_POWHEGonly, failedTreeLevel >= minimalFailedTree);
     myTree->Book("LHEweight_QCDscale_muR1_muF1", LHEweight_QCDscale_muR1_muF1, failedTreeLevel >= minimalFailedTree);
     myTree->Book("LHEweight_QCDscale_muR1_muF2", LHEweight_QCDscale_muR1_muF2, failedTreeLevel >= minimalFailedTree);
     myTree->Book("LHEweight_QCDscale_muR1_muF0p5", LHEweight_QCDscale_muR1_muF0p5, failedTreeLevel >= minimalFailedTree);
