@@ -191,6 +191,7 @@ void LHEHandler::readEvent(){
   vector<float> LHEPDFVariationWgt;
   bool founddefaultNLOweight = false;
   bool foundpowhegOriginalWeight = false;
+  bool ismadgraph = false;
   powhegOriginalWeight = LHEOriginalWeight;
   //first find the main powheg weight (should be one of the first)
   for (const auto& weight : (*lhe_evt)->weights()) {
@@ -215,13 +216,21 @@ void LHEHandler::readEvent(){
       else if (wgtid<3000) LHEPDFVariationWgt.push_back(wgtval); // Add PDF replicas and alphas(mZ) variations from the same pdf
     } else if (year == 2017) {
       if (1001 <= wgtid && wgtid <= 1009) LHEWeight.push_back(wgtval);
-      else if (1500 <= wgtid && wgtid <= 1602) {/*do nothing, these are the NLO pdf for NNPDF30 and variations*/}
-      else if (wgtid == 1700)                  {/*do nothing, this is the NNLO pdf for NNPDF30*/}
-      else if (wgtid == 1800 || wgtid == 1850 || wgtid == 1900 || wgtid == 1950) {/*do nothing, these are LO pdfs*/}
-      else if (2000 <= wgtid && wgtid <= 2111) {/*do nothing, these are the NNLO variations*/}
-      else if (wgtid == 3000) {founddefaultNLOweight = true; defaultNLOweight = wgtval;}
-      else if (3001 <= wgtid && wgtid <= 3102) LHEPDFVariationWgt.push_back(wgtval);
-      else if (wgtid < 4000) throw cms::Exception("LHEWeights") << "Don't know what to do with alternate weight id = " << wgtid;
+      else if (wgtid == 1010) ismadgraph = true;
+
+      else if (ismadgraph && 1011 <= wgtid && wgtid <= 1120) {/*do nothing, these are the NNLO variations*/}
+      else if (ismadgraph && 1224 <= wgtid && wgtid <= 2080) {/*do nothing, these are other various weights*/}
+
+      else if (!ismadgraph && 1500 <= wgtid && wgtid <= 1602) {/*do nothing, these are the NLO pdf for NNPDF30 and variations*/}
+      else if (!ismadgraph && wgtid == 1700)                  {/*do nothing, this is the NNLO pdf for NNPDF30*/}
+      else if (!ismadgraph && (wgtid == 1800 || wgtid == 1850 || wgtid == 1900 || wgtid == 1950)) {/*do nothing, these are LO pdfs*/}
+      else if (!ismadgraph && 2000 <= wgtid && wgtid <= 2111) {/*do nothing, these are the NNLO variations*/}
+      else if (!ismadgraph && wgtid >= 4000)                  {/*do nothing, these are other various weights*/}
+
+      else if (wgtid == (ismadgraph ? 1121 : 3000)) {founddefaultNLOweight = true; defaultNLOweight = wgtval;}
+      else if ((ismadgraph ? 1122 : 3001) <= wgtid && wgtid <= (ismadgraph ? 1223 : 3102)) LHEPDFVariationWgt.push_back(wgtval);
+
+      else throw cms::Exception("LHEWeights") << "Don't know what to do with alternate weight id = " << wgtid;
     } else {
       throw cms::Exception("LHEWeights") << "Unknown year " << year;
     }
@@ -236,6 +245,12 @@ void LHEHandler::readEvent(){
             << "   - the default NLO PDF weight (3000, " << (founddefaultNLOweight ? "found" : "didn't find") << " it)\n"
             << "   - NLO PDF weight variations (3001-3102, found " << LHEPDFVariationWgt.size() << " of them)";
   }
+
+  if (year == 2017 && ismadgraph) {  //of COURSE madgraph does it in a different order!
+    LHEWeight = {LHEWeight[0], LHEWeight[3], LHEWeight[6],  //note LHEWeight[8] is always defined here,
+                 LHEWeight[1], LHEWeight[4], LHEWeight[7],  //because ismadgraph implies that there are weights present
+                 LHEWeight[2], LHEWeight[5], LHEWeight[8]}; //so if LHEweight.size() != 9 you already got an exception
+  }                                                         //in the previous block
 
   // Handle LO samples 
   if (year == 2016 && LHEPDFVariationWgt.size()==0) {
@@ -254,7 +269,7 @@ void LHEHandler::readEvent(){
     LHEPDFVariationWgt.erase(firstalphasweight, LHEPDFVariationWgt.end());
   }
 
-  
+
   // Find the proper PDF and alphas(mZ) variations
   if (!LHEWeight.empty()){
     switch (year) {
