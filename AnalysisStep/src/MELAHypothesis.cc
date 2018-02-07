@@ -151,7 +151,8 @@ void MELAHypothesis::computeP(){
           if (tmp!=0 && tmp->passSelection && (PDGHelpers::isAZBoson(tmp->id) || PDGHelpers::isAWBoson(tmp->id))){
             if (tmp->getNDaughters()==2
                 && tmp->getDaughter(0)->passSelection && tmp->getDaughter(1)->passSelection
-                && (PDGHelpers::isALepton(tmp->getDaughter(0)->id) || PDGHelpers::isALepton(tmp->getDaughter(1)->id))
+                && (PDGHelpers::isALepton(tmp->getDaughter(0)->id) || PDGHelpers::isANeutrino(tmp->getDaughter(0)->id))
+                && (PDGHelpers::isALepton(tmp->getDaughter(1)->id) || PDGHelpers::isANeutrino(tmp->getDaughter(1)->id))
               ){
               aV=tmp;
               break;
