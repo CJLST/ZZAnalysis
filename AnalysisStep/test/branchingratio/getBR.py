@@ -18,7 +18,7 @@ except ImportError:
 basemass = 300
 filterefficiencyZH = 0.15038
 filterefficiencyttH = 0.1544
-CJLSTproduction = "171217"
+CJLSTproduction = "180121"
 
 YR4data_BR_4l = {
   120: 0.0001659,
@@ -180,8 +180,6 @@ def averageBR(productionmode, mass, spreadsheet=None):
   production = CJLSTproduction
   if productionmode == "VBF":
     productionmode = "VBFH"
-    assert production == "171217" #if not, remove this and the next line
-    production = "171005"
   folder = "{}{:d}".format(productionmode, mass)
 
   if not os.path.exists("/data3/Higgs"): raise RuntimeError("Have to run this on lxcms03")
