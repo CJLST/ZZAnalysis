@@ -160,6 +160,8 @@ private:
 
   TH1F* hNvtxNoWeight;
   TH1F* hNvtxWeight;
+  TH1F* hNTrueIntNoWeight;
+  TH1F* hNTrueIntWeight;
   TH1F* hRhoNoWeight;
   TH1F* hRhoWeight;
 
@@ -234,6 +236,8 @@ void ZZ4lAnalyzer::beginJob(){
 
   hNvtxNoWeight = fileService->make<TH1F>("hNvtxNoWeight","hNvtxNoWeight",100,0,100);
   hNvtxWeight = fileService->make<TH1F>("hNvtxWeight","hNvtxWeight",100,0,100);
+  hNTrueIntNoWeight = fileService->make<TH1F>("hNTrueIntNoWeight","hNTrueIntNoWeight",100,0,100);
+  hNTrueIntWeight = fileService->make<TH1F>("hNTrueIntWeight","hNTrueIntWeight",100,0,100);
   hRhoNoWeight = fileService->make<TH1F>("hRhoNoWeight","hRhoNoWeight",100,0,50);
   hRhoWeight = fileService->make<TH1F>("hRhoWeight","hRhoWeight",100,0,50);
 
@@ -451,11 +455,13 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
     PUweight = reweight.weight(source,target,nTrueInt);
 
     hNvtxWeight->Fill(Nvtx,PUweight);
+    hNTrueIntWeight->Fill(nTrueInt,PUweight);
     hRhoWeight->Fill(*rhoHandle,PUweight);
 
   }
 
-  hNvtxNoWeight->Fill(Nvtx);    
+  hNvtxNoWeight->Fill(Nvtx);
+  hNTrueIntNoWeight->Fill(nTrueInt);
   hRhoNoWeight->Fill(*rhoHandle);
 
   // theChannel Candidates

@@ -959,7 +959,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       NRecoEle++;
   }
 
-  if(isMC)
+  if(isMC && apply_QCD_GGF_UNCERT)
   {
 	  edm::Handle<HTXS::HiggsClassification> htxs;
 	  event.getByToken(htxsToken,htxs);
@@ -968,14 +968,12 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 	  htxsHPt = htxs->higgs.Pt();
 	  htxs_stage0_cat = htxs->stage0_cat;
 	  htxs_stage1_cat = htxs->stage1_cat_pTjet30GeV;
-	  
-	  if(apply_QCD_GGF_UNCERT)
-	  {
-		  std::vector<double> qcd_ggF_uncertSF_tmp;
-		  qcd_ggF_uncertSF.clear();
-		  qcd_ggF_uncertSF_tmp = qcd_ggF_uncertSF_2017(htxsNJets, htxsHPt, htxs_stage1_cat);
-		  qcd_ggF_uncertSF = std::vector<float>(qcd_ggF_uncertSF_tmp.begin(),qcd_ggF_uncertSF_tmp.end());
-	  }
+
+	  std::vector<double> qcd_ggF_uncertSF_tmp;
+	  qcd_ggF_uncertSF.clear();
+	  qcd_ggF_uncertSF_tmp = qcd_ggF_uncertSF_2017(htxsNJets, htxsHPt, htxs_stage1_cat);
+	  qcd_ggF_uncertSF = std::vector<float>(qcd_ggF_uncertSF_tmp.begin(),qcd_ggF_uncertSF_tmp.end());
+
 
   }
 

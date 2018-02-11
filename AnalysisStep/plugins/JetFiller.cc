@@ -167,9 +167,46 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     int NumNeutralParticles = j.neutralMultiplicity();
     float CHM  = j.chargedMultiplicity();
 
-    bool looseJetID = ((NHF<0.99 && NEMF<0.99 && NumConst>1) && ((jabseta<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || jabseta>2.4) && jabseta<=2.7) || 
-      ( NHF<0.98 && NEMF>0.01 && NumNeutralParticles>2 && jabseta>2.7 && jabseta<=3.0 ) ||
-      ( NEMF<0.90 && NumNeutralParticles>10 && jabseta>3.0 );
+    bool looseJetID = true;
+	  
+	 if (setup <= 2016)
+	 {
+	 	looseJetID = ((NHF<0.99 && NEMF<0.99 && NumConst>1) && ((jabseta<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || jabseta>2.4) && jabseta<=2.7) ||
+      				 ( NHF<0.98 && NEMF>0.01 && NumNeutralParticles>2 && jabseta>2.7 && jabseta<=3.0 ) ||
+						 ( NEMF<0.90 && NumNeutralParticles>10 && jabseta>3.0 );
+	 }
+	 
+	 else if ( setup == 2017)
+	 {
+	   // Tight jet ID https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2017 , loose is not recommended anymore
+	 	looseJetID = ((NHF<0.90 && NEMF<0.90 && NumConst>1) && ((jabseta<=2.4 && CHF>0 && CHM>0) || jabseta>2.4) && jabseta<=2.7) ||
+      				 ( NEMF<0.99 && NEMF>0.02 && NumNeutralParticles>2 && jabseta>2.7 && jabseta<=3.0 ) ||
+      				 ( NEMF<0.90 && NHF>0.02 && NumNeutralParticles>10 && jabseta>3.0 );
+	 }
+	 
+	 else
+	 {
+	 	std::cerr << "[ERROR] Jet ID was not defined for given setup! " << std::endl;
+	 }
+	 
+
+	  
+    bool PUjetID = true;
+	  
+	 if (setup <= 2016)
+	 { //--- PU jet ID (deactivated for in 2016)
+	 	PUjetID = true;
+	 }
+	 
+	 else if ( setup == 2017)
+	 { //Recommended tight PU JET ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
+		PUjetID = bool(j.userInt("pileupJetId:fullId") & (1 << 0));
+	 }
+	 
+	 else
+	 {
+	 	std::cerr << "[ERROR] Jet PU ID was not defined for given setup! " << std::endl;
+	 }
 
     // cout << " NHF "  << NHF
     //      << " NEMF " << NEMF
@@ -181,27 +218,9 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     //      << " looseJetID " << looseJetID
     //      << endl;
 
-
-    //--- PU jet ID (deactivated for now)
-    bool PUjetID = true;
-
-    //   float jpumva=jet.userFloat("pileupJetId:fullDiscriminant");
-    //   if(jpt>20){
-    //     if(jabseta > 3.)       { if(jpumva <= -0.45) passPU=false;}
-    //     else if(jabseta > 2.75){ if(jpumva <= -0.55) passPU=false;}
-    //     else if(jabseta > 2.50){ if(jpumva <= -0.60) passPU=false;}
-    //     else                   { if(jpumva <= -0.63) passPU=false;}
-    //   }
-    //   else{
-    //     if(jabseta > 3.)       { if(jpumva <= -0.95) passPU=false;}
-    //     else if(jabseta > 2.75){ if(jpumva <= -0.94) passPU=false;}
-    //     else if(jabseta > 2.50){ if(jpumva <= -0.96) passPU=false;}
-    //     else                   { if(jpumva <= -0.95) passPU=false;}
-    //   }
-
-
     //--- b-tagging and scaling factors
     float bTagger = j.bDiscriminator(bTaggerName);
+    if(setup == 2017) bTagger = j.bDiscriminator(bTaggerName) + j.bDiscriminator((bTaggerName + "b")); //one should just sum for doing b tagging, the b and bb probabilities
     bool isBtagged = bTagger > bTaggerThreshold;
     bool isBtaggedWithSF   = isBtagged;
     bool isBtaggedWithSFUp = isBtagged;

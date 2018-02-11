@@ -364,7 +364,7 @@ process.goodPrimaryVertices = cms.EDFilter("VertexSelector",
 ### ----------------------------------------------------------------------
 ### HTXS categorisation
 ### ----------------------------------------------------------------------
-if(IsMC and CMSSWVERSION < 9):
+if(IsMC and CMSSWVERSION < 9 and APPLY_QCD_GGF_UNCERT):
    process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
    process.mergedGenParticles = cms.EDProducer("MergedGenParticleProducer",
 															  inputPruned = cms.InputTag("prunedGenParticles"),
@@ -382,7 +382,7 @@ if(IsMC and CMSSWVERSION < 9):
    process.htxs = cms.Path(process.mergedGenParticles*process.myGenerator*process.rivetProducerHTXS)
 
 
-if(IsMC and CMSSWVERSION >= 9):
+if(IsMC and CMSSWVERSION >= 9 and APPLY_QCD_GGF_UNCERT):
    process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
    process.mergedGenParticles = cms.EDProducer("MergedGenParticleProducer",
 															  inputPruned = cms.InputTag("prunedGenParticles"),
@@ -1240,6 +1240,10 @@ process.dressedJets = cms.EDProducer("JetFiller",
     bTagMCEffFile = cms.string("ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_80X_ICHEP.root"),
     flags = cms.PSet()
     )
+if (LEPTON_SETUP == 2017):
+    process.dressedJets.bTaggerName = cms.string("pfDeepCSVJetTags:probb") #Moving to Moriond18 new recommended DeepCSV btagger
+    process.dressedJets.bTaggerThreshold = cms.double(0.4941) #https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+
 
 ### Load JEC
 if APPLYJEC:
