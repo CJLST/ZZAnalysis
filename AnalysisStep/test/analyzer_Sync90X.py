@@ -4,9 +4,9 @@ LEPTON_SETUP = 2017  # current default = 2017 = Moriond2017
 ELECORRTYPE = "None" # "None" to switch off
 ELEREGRESSION = "None" # "None" to switch off
 APPLYMUCORR = True  # Switch off muon scale corrections
-APPLYJEC = False     # 
-APPLYJER = False     #
-RECORRECTMET = False #
+APPLYJEC = True     #
+APPLYJER = True     #
+RECORRECTMET = True #
 #KINREFIT = False    # control KinZFitter (very slow)
 PROCESS_CR = False   # Uncomment to run CR paths and trees
 #ADDLOOSEELE = True  # Run paths for loose electrons
@@ -67,7 +67,7 @@ process.source.fileNames = cms.untracked.vstring(
 	 '/store/data/Run2017B/DoubleMuon/MINIAOD/17Nov2017-v1/30000/0852E0CB-E7D7-E711-B2DA-0025905C3DCE.root',
 							
 	 ### 2017MC sample file
-	 #'/store/mc/RunIIFall17MiniAOD/ZZTo4L_13TeV_powheg_pythia8/MINIAODSIM/94X_mc2017_realistic_v10-v2/60000/267F8236-BFDA-E711-B4BF-008CFAC9422C.root',
+#	 '/store/mc/RunIIFall17MiniAOD/ZZTo4L_13TeV_powheg_pythia8/MINIAODSIM/94X_mc2017_realistic_v10-v2/60000/267F8236-BFDA-E711-B4BF-008CFAC9422C.root',
     )
 
 #process.calibratedPatElectrons.isSynchronization = cms.bool(True)
