@@ -14,9 +14,10 @@ git cms-init
 #git cms-merge-topic rafaellopesdesa:EgammaAnalysis80_EGMSmearer_Moriond17_23Jan
 
 #Electron MVA ID in 94X according to https://twiki.cern.ch/twiki/bin/viewauth/CMS/MultivariateElectronIdentificationRun2#Recipes_for_regular_users
-git cms-merge-topic guitargeek:ElectronID_MVA2017_940pre3
+# MVA ID V2 now, not yet available as part of official recepie
+git cms-merge-topic guitargeek:ElectronID_MVA2017_V2_HZZ_940pre3
 rm -rf RecoEgamma/ElectronIdentification/data #Delete old BDT weights so we can clone new ones
-git clone https://github.com/lsoffi/RecoEgamma-ElectronIdentification.git RecoEgamma/ElectronIdentification/data
+git clone -b ElectronID_MVA2017_V2 https://github.com/guitargeek/RecoEgamma-ElectronIdentification RecoEgamma/ElectronIdentification/data/
 #FIXME the following scale/smearing are for Moriond 2017, to be updated  
 #(cd EgammaAnalysis/ElectronTools/data ; git clone -b master https://github.com/ECALELFS/ScalesSmearings.git ; cd ScalesSmearings ; git checkout tags/Moriond17_23Jan_v1)
 

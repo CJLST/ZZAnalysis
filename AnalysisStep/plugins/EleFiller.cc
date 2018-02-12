@@ -186,12 +186,20 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
                                 (fSCeta>=1.479               && BDT > -0.763)));
 	 #else
 	 //WP for 94X ID with isolation
-	 isBDT         = (pt<=10 && ((fSCeta<0.8                  && BDT >  0.6282314508618512) ||
-                                (fSCeta>=0.8 && fSCeta<1.479 && BDT >  0.5922759800216235) ||
-                                (fSCeta>=1.479               && BDT >  0.636928856343224)))
-                 || (pt>10  && ((fSCeta<0.8                  && BDT >  0.03554496382023676) ||
-                                (fSCeta>=0.8 && fSCeta<1.479 && BDT >  0.04342450751424789) ||
-                                (fSCeta>=1.479               && BDT > -0.2660000237162611)));
+//	 isBDT         = (pt<=10 && ((fSCeta<0.8                  && BDT >  0.6282314508618512) ||
+//                                (fSCeta>=0.8 && fSCeta<1.479 && BDT >  0.5922759800216235) ||
+//                                (fSCeta>=1.479               && BDT >  0.636928856343224)))
+//                 || (pt>10  && ((fSCeta<0.8                  && BDT >  0.03554496382023676) ||
+//                                (fSCeta>=0.8 && fSCeta<1.479 && BDT >  0.04342450751424789) ||
+//                                (fSCeta>=1.479               && BDT > -0.2660000237162611)));
+
+	//WP for 94X ID V2 with isolation
+	 isBDT         = (pt<=10 && ((fSCeta<0.8                  && BDT >  0.5739521065342641) ||
+                                (fSCeta>=0.8 && fSCeta<1.479 && BDT >  0.5504628790992929) ||
+                                (fSCeta>=1.479               && BDT >  0.5924627534389098)))
+                 || (pt>10  && ((fSCeta<0.8                  && BDT > -0.03391387993354392) ||
+                                (fSCeta>=0.8 && fSCeta<1.479 && BDT > -0.018451958064666783) ||
+                                (fSCeta>=1.479               && BDT > -0.38565459150737535)));
 	 #endif
 
     //-- Missing hit  
