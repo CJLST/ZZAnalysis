@@ -455,7 +455,7 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
     PUweight = reweight.weight(source,target,nTrueInt);
 
     hNvtxWeight->Fill(Nvtx,PUweight);
-    hNTrueIntWeight->Fill(nTrueInt,PUweight);
+    hNTrueIntWeight->Fill(nTrueInt,genHEPMCweight);
     hRhoWeight->Fill(*rhoHandle,PUweight);
 
   }
