@@ -72,6 +72,7 @@
 #include <TH2D.h>
 #include "TLorentzVector.h"
 #include "TSpline.h"
+#include "TGraphErrors.h"
 
 #include <string>
 
@@ -229,6 +230,7 @@ namespace {
   Float_t genHEPMCweight  = 0;
   Float_t genHEPMCweight_NNLO  = 0;
   Float_t genHEPMCweight_POWHEGonly = 0;
+	
 
   std::vector<float> LHEMotherPz;
   std::vector<float> LHEMotherE;
@@ -312,6 +314,8 @@ namespace {
   Float_t htxsHPt = 0;
   Int_t   htxs_stage0_cat = 0;
   Int_t   htxs_stage1_cat = 0;
+  Float_t ggH_NNLOPS_weight = 0;
+  Float_t ggH_NNLOPS_weight_unc = 0;
   std::vector<float> qcd_ggF_uncertSF;
 
 
@@ -365,6 +369,7 @@ private:
   Float_t getAllWeight(const vector<const reco::Candidate*>& leptons, Float_t& muonSFUncert, Float_t& eleSFUncert) const;
   Float_t getHqTWeight(double mH, double genPt) const;
   Float_t getFakeWeight(Float_t LepPt, Float_t LepEta, Int_t LepID, Int_t LepZ1ID);
+  Int_t FindBinValue(TGraphErrors *tgraph, double value);
 
   void addweight(float &weight, float weighttoadd);
 
@@ -386,6 +391,8 @@ private:
   void pushRecoMELABranches(const pat::CompositeCandidate& cand);
   void pushLHEMELABranches();
   void clearMELABranches();
+	
+	
 
   // ----------member data ---------------------------
   ZZ4lConfigHelper myHelper;
@@ -491,6 +498,11 @@ private:
   //TH2F *h_ZXWeightMuo;
   //TH2F *h_ZXWeightEle;
   TH2D* h_ZXWeight[4];
+	
+  TGraphErrors *gr_NNLOPSratio_pt_powheg_0jet;
+  TGraphErrors *gr_NNLOPSratio_pt_powheg_1jet;
+  TGraphErrors *gr_NNLOPSratio_pt_powheg_2jet;
+  TGraphErrors *gr_NNLOPSratio_pt_powheg_3jet;
 
   bool printedLHEweightwarning;
 };
@@ -620,6 +632,14 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   ggZZKFactorFile = TFile::Open(fipPath.data());
   for (unsigned int ikf=0; ikf<9; ikf++) spkfactor_ggzz_nlo[ikf] = (TSpline3*)ggZZKFactorFile->Get(Form("sp_kfactor_%s", strZZGGKFVar[ikf].Data()))->Clone(Form("sp_kfactor_%s_NLO", strZZGGKFVar[ikf].Data()));
   ggZZKFactorFile->Close();
+	
+  edm::FileInPath NNLOPS_weight_path("ZZAnalysis/AnalysisStep/data/ggH_NNLOPS_Weights/NNLOPS_reweight.root");
+  fipPath=NNLOPS_weight_path.fullPath();
+  TFile* NNLOPS_weight_file = TFile::Open(fipPath.data());
+  gr_NNLOPSratio_pt_powheg_0jet = (TGraphErrors*)NNLOPS_weight_file->Get("gr_NNLOPSratio_pt_powheg_0jet");
+  gr_NNLOPSratio_pt_powheg_1jet = (TGraphErrors*)NNLOPS_weight_file->Get("gr_NNLOPSratio_pt_powheg_1jet");
+  gr_NNLOPSratio_pt_powheg_2jet = (TGraphErrors*)NNLOPS_weight_file->Get("gr_NNLOPSratio_pt_powheg_2jet");
+  gr_NNLOPSratio_pt_powheg_3jet = (TGraphErrors*)NNLOPS_weight_file->Get("gr_NNLOPSratio_pt_powheg_3jet");
 
   //Scale factors for data/MC efficiency
   if (!skipMuDataMCWeight) {
@@ -968,6 +988,35 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 	  htxsHPt = htxs->higgs.Pt();
 	  htxs_stage0_cat = htxs->stage0_cat;
 	  htxs_stage1_cat = htxs->stage1_cat_pTjet30GeV;
+	  
+
+	  if (htxsNJets==0)
+	  {
+	     ggH_NNLOPS_weight = gr_NNLOPSratio_pt_powheg_0jet->Eval(min((double)htxsHPt,125.0));
+		  ggH_NNLOPS_weight_unc=(gr_NNLOPSratio_pt_powheg_0jet->GetErrorY(FindBinValue(gr_NNLOPSratio_pt_powheg_0jet,min((double)htxsHPt,125.0))))/ggH_NNLOPS_weight;
+			
+	  }
+	  else if (htxsNJets==1)
+	  {
+		  ggH_NNLOPS_weight = gr_NNLOPSratio_pt_powheg_1jet->Eval(min((double)htxsHPt,625.0));
+		  ggH_NNLOPS_weight_unc=(gr_NNLOPSratio_pt_powheg_1jet->GetErrorY(FindBinValue(gr_NNLOPSratio_pt_powheg_1jet,min((double)htxsHPt,125.0))))/ggH_NNLOPS_weight;
+	  }
+	  else if (htxsNJets==2)
+	  {
+		  ggH_NNLOPS_weight = gr_NNLOPSratio_pt_powheg_2jet->Eval(min((double)htxsHPt,800.0));
+		  ggH_NNLOPS_weight_unc=(gr_NNLOPSratio_pt_powheg_2jet->GetErrorY(FindBinValue(gr_NNLOPSratio_pt_powheg_2jet,min((double)htxsHPt,125.0))))/ggH_NNLOPS_weight;
+	  }
+	  else if (htxsNJets>=3)
+	  {
+		  ggH_NNLOPS_weight = gr_NNLOPSratio_pt_powheg_3jet->Eval(min((double)htxsHPt,925.0));
+		  ggH_NNLOPS_weight_unc=(gr_NNLOPSratio_pt_powheg_3jet->GetErrorY(FindBinValue(gr_NNLOPSratio_pt_powheg_3jet,min((double)htxsHPt,125.0))))/ggH_NNLOPS_weight;
+	  }
+	  else
+	  {
+		  ggH_NNLOPS_weight = 1.0;
+		  ggH_NNLOPS_weight_unc = 0.0;
+	  }
+
 
 	  std::vector<double> qcd_ggF_uncertSF_tmp;
 	  qcd_ggF_uncertSF.clear();
@@ -2247,12 +2296,14 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("GenAssocLep2Eta", GenAssocLep2Eta, failedTreeLevel >= fullFailedTree);
     myTree->Book("GenAssocLep2Phi", GenAssocLep2Phi, failedTreeLevel >= fullFailedTree);
     myTree->Book("GenAssocLep2Id", GenAssocLep2Id, failedTreeLevel >= fullFailedTree);
-    myTree->Book("htxsNJets", htxsNJets, failedTreeLevel >= fullFailedTree);
-    myTree->Book("htxsHPt", htxsHPt, failedTreeLevel >= fullFailedTree);
-	 myTree->Book("htxs_stage0_cat", htxs_stage0_cat, failedTreeLevel >= fullFailedTree);
-	 myTree->Book("htxs_stage1_cat", htxs_stage1_cat, failedTreeLevel >= fullFailedTree);
     if(apply_QCD_GGF_UNCERT)
 	 {
+		 myTree->Book("htxsNJets", htxsNJets, failedTreeLevel >= fullFailedTree);
+       myTree->Book("htxsHPt", htxsHPt, failedTreeLevel >= fullFailedTree);
+	    myTree->Book("htxs_stage0_cat", htxs_stage0_cat, failedTreeLevel >= fullFailedTree);
+	    myTree->Book("htxs_stage1_cat", htxs_stage1_cat, failedTreeLevel >= fullFailedTree);
+	    myTree->Book("ggH_NNLOPS_weight", ggH_NNLOPS_weight, failedTreeLevel >= fullFailedTree);
+	    myTree->Book("ggH_NNLOPS_weight_unc", ggH_NNLOPS_weight_unc, failedTreeLevel >= fullFailedTree);
 		 myTree->Book("qcd_ggF_uncertSF", qcd_ggF_uncertSF, failedTreeLevel >= fullFailedTree);
 	 }
 	  
@@ -2856,6 +2907,23 @@ void HZZ4lNtupleMaker::clearMELABranches(){
 
   for (unsigned int it=0; it<recome_copyopts.size(); it++) delete recome_copyopts.at(it);
   for (unsigned int it=0; it<recome_originalopts.size(); it++) delete recome_originalopts.at(it);
+}
+
+Int_t HZZ4lNtupleMaker::FindBinValue(TGraphErrors *tgraph, double value)
+{
+   Double_t x_prev,x,y;
+   Int_t bin = 0;
+   x_prev = 0.;
+   for(int i=0;i<tgraph->GetN();i++){
+      tgraph->GetPoint(i,x,y);
+      if(value > x_prev && value < x){
+         bin = i;
+         break;
+      }
+      else x_prev = x;
+   }
+   if (bin == 0) bin = 1;
+   return bin-1;
 }
 
 //define this as a plug-in
