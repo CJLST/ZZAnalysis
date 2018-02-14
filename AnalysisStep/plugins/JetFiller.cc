@@ -240,21 +240,24 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       if(SF  >1 && !isBtagged && R<(1.-SF  )/(1.-1./bTagMCEff)) isBtaggedWithSF   = true;
       if(SFUp>1 && !isBtagged && R<(1.-SFUp)/(1.-1./bTagMCEff)) isBtaggedWithSFUp = true;
       if(SFDn>1 && !isBtagged && R<(1.-SFDn)/(1.-1./bTagMCEff)) isBtaggedWithSFDn = true;
-      /* //for debug
-      if(jpt>30 && jabseta<2.4){
-	cout<<"jet pT="<<jpt<<", eta="<<jeta<<endl;
-	cout<<" flav = "<<flav<<endl;
-	cout<<" SF   = "<<SF  <<endl;
-	cout<<" SFUp = "<<SFUp<<endl;
-	cout<<" SFDn = "<<SFDn<<endl;
-	cout<<" bTagMCEff = "<<bTagMCEff<<endl;
-	cout<<" R = "<<R<<endl;
-	cout<<" isBtagged         = "<<isBtagged        <<endl;
-	cout<<" isBtaggedWithSF   = "<<isBtaggedWithSF  <<endl;
-	cout<<" isBtaggedWithSFUp = "<<isBtaggedWithSFUp<<endl;
-	cout<<" isBtaggedWithSFDn = "<<isBtaggedWithSFDn<<endl;
-      }
-      //*/
+       //for debug
+//      if(jpt>30 && isBtagged)
+//      {
+//			cout<<"jet pT="<<jpt<<", eta="<<jeta<<endl;
+//			cout<<"bTag name="<<bTaggerName<<endl;
+//			cout<<"bTag score="<<bTagger<<endl;
+//			cout<<" flav = "<<flav<<endl;
+//			cout<<" SF   = "<<SF  <<endl;
+//			cout<<" SFUp = "<<SFUp<<endl;
+//			cout<<" SFDn = "<<SFDn<<endl;
+//			cout<<" bTagMCEff = "<<bTagMCEff<<endl;
+//			cout<<" R = "<<R<<endl;
+//			cout<<" isBtagged         = "<<isBtagged        <<endl;
+//			cout<<" isBtaggedWithSF   = "<<isBtaggedWithSF  <<endl;
+//			cout<<" isBtaggedWithSFUp = "<<isBtaggedWithSFUp<<endl;
+//			cout<<" isBtaggedWithSFDn = "<<isBtaggedWithSFDn<<endl;
+//      }
+		 
     }
 
 
