@@ -296,7 +296,7 @@ elif (LEPTON_SETUP == 2016):
 elif (LEPTON_SETUP == 2017): 
    process.hltFilterDiEle.HLTPaths = ["HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_DoubleEle33_CaloIdL_MW_v*"]
    process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*"]
-   process.hltFilterMuEle.HLTPaths = ["HLT_Mu23_TrkIsoVVL_ Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_ Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu12_TrkIsoVVL_ Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_ Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ_v*"]
+   process.hltFilterMuEle.HLTPaths = ["HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ_v*"]
    process.hltFilterTriEle.HLTPaths = ["HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v*"]
    process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_10_5_5_DZ_v*","HLT_TripleMu_12_10_5_v*"]
    process.hltFilterSingleEle.HLTPaths = ["HLT_Ele35_WPTight_Gsf_v*","HLT_Ele38_WPTight_Gsf_v*","HLT_Ele40_WPTight_Gsf_v*"]
@@ -594,6 +594,21 @@ if (LEPTON_SETUP == 2016):
        correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/Moriond17_23Jan_ele")
    )
 
+## Preliminary Moriond 18 corrections
+if (LEPTON_SETUP == 2017):
+	process.calibratedPatElectrons = cms.EDProducer("CalibratedPatElectronProducerRun2",
+		 electrons = cms.InputTag('selectedSlimmedElectrons'),
+		 gbrForestName = cms.vstring('electron_eb_ECALTRK_lowpt', 'electron_eb_ECALTRK',
+											  'electron_ee_ECALTRK_lowpt', 'electron_ee_ECALTRK',
+											  'electron_eb_ECALTRK_lowpt_var', 'electron_eb_ECALTRK_var',
+											  'electron_ee_ECALTRK_lowpt_var', 'electron_ee_ECALTRK_var'),
+		 isMC = cms.bool(IsMC),
+		 isSynchronization = cms.bool(False),
+		 correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/Run2017_17Nov2017_v1_ele_unc"),
+       recHitCollectionEB = cms.InputTag('reducedEgamma:reducedEBRecHits'),
+       recHitCollectionEE = cms.InputTag('reducedEgamma:reducedEERecHits')
+	)
+
 
 if (BUNCH_SPACING == 50):
     process.calibratedPatElectrons.grbForestName = cms.string("gedelectron_p4combination_50ns")
@@ -646,13 +661,17 @@ if ELEREGRESSION == "None" and (ELECORRTYPE == "None" or BUNCH_SPACING == 50) : 
 elif ELECORRTYPE == "RunII" :
     process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag("calibratedPatElectrons")
     process.electronMVAValueMapProducer.srcMiniAOD=cms.InputTag("calibratedPatElectrons")
-if ELEREGRESSION == "Moriond17v1" :
+if (ELEREGRESSION == "Moriond17v1") and (LEPTON_SETUP == 2016) :
    from EgammaAnalysis.ElectronTools.regressionWeights_cfi import regressionWeights
    process = regressionWeights(process)
    process.load('EgammaAnalysis.ElectronTools.regressionApplication_cff')
 
    process.selectedSlimmedElectrons.src = cms.InputTag("slimmedElectrons")
    process.electrons = cms.Sequence(process.regressionApplication + process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
+
+if (LEPTON_SETUP == 2017): #For the moment regresion is applied on RECO level so no additional procedure is needed https://twiki.cern.ch/twiki/bin/view/CMS/Egamma2017DataRecommendations#Overview_of_E_gamma_Energy_Corre
+	process.selectedSlimmedElectrons.src = cms.InputTag("slimmedElectrons")
+	process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
 
 #elif ELEREGRESSION == "None" and ELECORRTYPE == "RunII" :
 #    process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('calibratedPatElectrons') # (when running VID)

@@ -1,8 +1,8 @@
 
 #DATA_TAG = "ReReco" # Change to PromptReco for Run2016 period H
 LEPTON_SETUP = 2017  # current default = 2017 = Moriond2017
-ELECORRTYPE = "None" # "None" to switch off
-ELEREGRESSION = "None" # "None" to switch off
+#ELECORRTYPE = "None" # "None" to switch off
+#ELEREGRESSION = "None" # "None" to switch off
 APPLYMUCORR = True  # Switch off muon scale corrections
 APPLYJEC = True     #
 APPLYJER = True     #
