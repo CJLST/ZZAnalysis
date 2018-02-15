@@ -261,6 +261,19 @@ namespace {
   Float_t LHEweight_AsMZ_Up = 0;
   Float_t LHEweight_AsMZ_Dn = 0;
 
+  Float_t PythiaWeight_isr_muRoneoversqrt2 = 0;
+  Float_t PythiaWeight_fsr_muRoneoversqrt2 = 0;
+  Float_t PythiaWeight_isr_muRsqrt2 = 0;
+  Float_t PythiaWeight_fsr_muRsqrt2 = 0;
+  Float_t PythiaWeight_isr_muR0p5 = 0;
+  Float_t PythiaWeight_fsr_muR0p5 = 0;
+  Float_t PythiaWeight_isr_muR2 = 0;
+  Float_t PythiaWeight_fsr_muR2 = 0;
+  Float_t PythiaWeight_isr_muR0p25 = 0;
+  Float_t PythiaWeight_fsr_muR0p25 = 0;
+  Float_t PythiaWeight_isr_muR4 = 0;
+  Float_t PythiaWeight_fsr_muR4 = 0;
+
   Short_t genExtInfo  = 0;
   Float_t xsection  = 0;
   Float_t genxsection = 0;
@@ -824,6 +837,36 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     genProcessId = mch.getProcessID();
     genHEPMCweight_NNLO = genHEPMCweight = mch.gethepMCweight(); // Overridden by LHEHandler if genHEPMCweight==1.
                                                                  // For 2017 MC, genHEPMCweight is reweighted later from NNLO to NLO
+    const auto& genweights = genInfo->weights();
+    if (genweights.size() > 1) {
+      if (genweights.size() != 14 || genweights[0] != genweights[1]) {
+        cms::Exception e("GenWeights");
+        e << "Expected to find 1 gen weight, or 14 with the first two the same, found " << genweights.size() << ":\n";
+        for (auto w : genweights) e << w;
+        throw e;
+      }
+      PythiaWeight_isr_muRoneoversqrt2 = genweights[2];
+      PythiaWeight_fsr_muRoneoversqrt2 = genweights[3];
+      PythiaWeight_isr_muRsqrt2 = genweights[4];
+      PythiaWeight_fsr_muRsqrt2 = genweights[5];
+
+      PythiaWeight_isr_muR0p5 = genweights[6];
+      PythiaWeight_fsr_muR0p5 = genweights[7];
+      PythiaWeight_isr_muR2 = genweights[8];
+      PythiaWeight_fsr_muR2 = genweights[9];
+
+      PythiaWeight_isr_muR0p25 = genweights[10];
+      PythiaWeight_fsr_muR0p25 = genweights[11];
+      PythiaWeight_isr_muR4 = genweights[12];
+      PythiaWeight_fsr_muR4 = genweights[13];
+    } else {
+      PythiaWeight_isr_muRsqrt2 = PythiaWeight_isr_muRoneoversqrt2 = PythiaWeight_isr_muR2 =
+      PythiaWeight_isr_muR0p5 = PythiaWeight_isr_muR4 = PythiaWeight_isr_muR0p25 =
+      PythiaWeight_fsr_muRsqrt2 = PythiaWeight_fsr_muRoneoversqrt2 = PythiaWeight_fsr_muR2 =
+      PythiaWeight_fsr_muR0p5 = PythiaWeight_fsr_muR4 = PythiaWeight_fsr_muR0p25 = 1;
+    }
+
+
     genExtInfo = mch.genAssociatedFS();
 
     //Information on generated candidates, will be used later
@@ -2455,6 +2498,18 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("LHEweight_PDFVariation_Dn", LHEweight_PDFVariation_Dn, failedTreeLevel >= minimalFailedTree);
     myTree->Book("LHEweight_AsMZ_Up", LHEweight_AsMZ_Up, failedTreeLevel >= minimalFailedTree);
     myTree->Book("LHEweight_AsMZ_Dn", LHEweight_AsMZ_Dn, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("PythiaWeight_isr_muRoneoversqrt2", PythiaWeight_isr_muRoneoversqrt2, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("PythiaWeight_fsr_muRoneoversqrt2", PythiaWeight_fsr_muRoneoversqrt2, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("PythiaWeight_isr_muRsqrt2", PythiaWeight_isr_muRsqrt2, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("PythiaWeight_fsr_muRsqrt2", PythiaWeight_fsr_muRsqrt2, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("PythiaWeight_isr_muR0p5", PythiaWeight_isr_muR0p5, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("PythiaWeight_fsr_muR0p5", PythiaWeight_fsr_muR0p5, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("PythiaWeight_isr_muR2", PythiaWeight_isr_muR2, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("PythiaWeight_fsr_muR2", PythiaWeight_fsr_muR2, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("PythiaWeight_isr_muR0p25", PythiaWeight_isr_muR0p25, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("PythiaWeight_fsr_muR0p25", PythiaWeight_fsr_muR0p25, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("PythiaWeight_isr_muR4", PythiaWeight_isr_muR4, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("PythiaWeight_fsr_muR4", PythiaWeight_fsr_muR4, failedTreeLevel >= minimalFailedTree);
   }
 
   // MELA branches are booked under buildMELA
