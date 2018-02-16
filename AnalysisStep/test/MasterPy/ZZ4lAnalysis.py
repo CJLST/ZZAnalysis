@@ -655,27 +655,24 @@ if (LEPTON_SETUP == 2017):
 #process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.bareSoftElectrons + process.softElectrons) # (use this version without VID)
 
 # Handle special cases
-if(LEPTON_SETUP == 2016):
-	if ELEREGRESSION == "None" and (ELECORRTYPE == "None" or BUNCH_SPACING == 50) :   # No correction at all. Skip correction modules.
-		 process.bareSoftElectrons.src = cms.InputTag('slimmedElectrons')
-		 process.electrons = cms.Sequence(process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
-	elif ELECORRTYPE == "RunII" :
-		 process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag("calibratedPatElectrons")
-		 process.electronMVAValueMapProducer.srcMiniAOD=cms.InputTag("calibratedPatElectrons")
-	if (ELEREGRESSION == "Moriond17v1"):
-		from EgammaAnalysis.ElectronTools.regressionWeights_cfi import regressionWeights
-		process = regressionWeights(process)
-		process.load('EgammaAnalysis.ElectronTools.regressionApplication_cff')
-
-		process.selectedSlimmedElectrons.src = cms.InputTag("slimmedElectrons")
-		process.electrons = cms.Sequence(process.regressionApplication + process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
-
-if (LEPTON_SETUP == 2017 and ELECORRTYPE == "RunII"): #For the moment regresion is applied on RECO level so no additional procedure is needed https://twiki.cern.ch/twiki/bin/view/CMS/Egamma2017DataRecommendations#Overview_of_E_gamma_Energy_Corre
-	process.selectedSlimmedElectrons.src = cms.InputTag("slimmedElectrons")
-	process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
-elif (LEPTON_SETUP == 2017 and ELECORRTYPE == "None"):
+if ELEREGRESSION == "None" and (ELECORRTYPE == "None" or BUNCH_SPACING == 50) :   # No correction at all. Skip correction modules.
 	 process.bareSoftElectrons.src = cms.InputTag('slimmedElectrons')
 	 process.electrons = cms.Sequence(process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
+elif ELECORRTYPE == "RunII" :
+	 process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag("calibratedPatElectrons")
+	 process.electronMVAValueMapProducer.srcMiniAOD=cms.InputTag("calibratedPatElectrons")
+if (ELEREGRESSION == "Moriond17v1" and LEPTON_SETUP == 2016):
+	from EgammaAnalysis.ElectronTools.regressionWeights_cfi import regressionWeights
+	process = regressionWeights(process)
+	process.load('EgammaAnalysis.ElectronTools.regressionApplication_cff')
+
+	process.selectedSlimmedElectrons.src = cms.InputTag("slimmedElectrons")
+	process.electrons = cms.Sequence(process.regressionApplication + process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
+
+if (LEPTON_SETUP == 2017): #For the moment regresion is applied on RECO level so no additional procedure is needed https://twiki.cern.ch/twiki/bin/view/CMS/Egamma2017DataRecommendations#Overview_of_E_gamma_Energy_Corre
+	process.selectedSlimmedElectrons.src = cms.InputTag("slimmedElectrons")
+	process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
+
 
 #elif ELEREGRESSION == "None" and ELECORRTYPE == "RunII" :
 #    process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('calibratedPatElectrons') # (when running VID)
