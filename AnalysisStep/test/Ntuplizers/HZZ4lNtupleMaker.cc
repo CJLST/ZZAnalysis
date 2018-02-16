@@ -845,7 +845,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
         for (auto w : genweights) e << w;
         throw e;
       }
-      auto nominal = genweights[0]
+      auto nominal = genweights[0];
       PythiaWeight_isr_muRoneoversqrt2 = genweights[2] / nominal;
       PythiaWeight_fsr_muRoneoversqrt2 = genweights[3] / nominal;
       PythiaWeight_isr_muRsqrt2 = genweights[4] / nominal;
