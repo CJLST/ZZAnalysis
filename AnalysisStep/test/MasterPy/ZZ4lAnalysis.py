@@ -655,23 +655,27 @@ if (LEPTON_SETUP == 2017):
 #process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.bareSoftElectrons + process.softElectrons) # (use this version without VID)
 
 # Handle special cases
-if ELEREGRESSION == "None" and (ELECORRTYPE == "None" or BUNCH_SPACING == 50) :   # No correction at all. Skip correction modules.
-    process.bareSoftElectrons.src = cms.InputTag('slimmedElectrons')
-    process.electrons = cms.Sequence(process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
-elif ELECORRTYPE == "RunII" :
-    process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag("calibratedPatElectrons")
-    process.electronMVAValueMapProducer.srcMiniAOD=cms.InputTag("calibratedPatElectrons")
-if (ELEREGRESSION == "Moriond17v1") and (LEPTON_SETUP == 2016) :
-   from EgammaAnalysis.ElectronTools.regressionWeights_cfi import regressionWeights
-   process = regressionWeights(process)
-   process.load('EgammaAnalysis.ElectronTools.regressionApplication_cff')
+if(LEPTON_SETUP == 2016):
+	if ELEREGRESSION == "None" and (ELECORRTYPE == "None" or BUNCH_SPACING == 50) :   # No correction at all. Skip correction modules.
+		 process.bareSoftElectrons.src = cms.InputTag('slimmedElectrons')
+		 process.electrons = cms.Sequence(process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
+	elif ELECORRTYPE == "RunII" :
+		 process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag("calibratedPatElectrons")
+		 process.electronMVAValueMapProducer.srcMiniAOD=cms.InputTag("calibratedPatElectrons")
+	if (ELEREGRESSION == "Moriond17v1"):
+		from EgammaAnalysis.ElectronTools.regressionWeights_cfi import regressionWeights
+		process = regressionWeights(process)
+		process.load('EgammaAnalysis.ElectronTools.regressionApplication_cff')
 
-   process.selectedSlimmedElectrons.src = cms.InputTag("slimmedElectrons")
-   process.electrons = cms.Sequence(process.regressionApplication + process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
+		process.selectedSlimmedElectrons.src = cms.InputTag("slimmedElectrons")
+		process.electrons = cms.Sequence(process.regressionApplication + process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
 
-if (LEPTON_SETUP == 2017): #For the moment regresion is applied on RECO level so no additional procedure is needed https://twiki.cern.ch/twiki/bin/view/CMS/Egamma2017DataRecommendations#Overview_of_E_gamma_Energy_Corre
+if (LEPTON_SETUP == 2017 and ELECORRTYPE == "RunII"): #For the moment regresion is applied on RECO level so no additional procedure is needed https://twiki.cern.ch/twiki/bin/view/CMS/Egamma2017DataRecommendations#Overview_of_E_gamma_Energy_Corre
 	process.selectedSlimmedElectrons.src = cms.InputTag("slimmedElectrons")
 	process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
+elif (LEPTON_SETUP == 2017 and ELECORRTYPE == "None"):
+	 process.bareSoftElectrons.src = cms.InputTag('slimmedElectrons')
+	 process.electrons = cms.Sequence(process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
 
 #elif ELEREGRESSION == "None" and ELECORRTYPE == "RunII" :
 #    process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('calibratedPatElectrons') # (when running VID)
@@ -1264,8 +1268,8 @@ process.dressedJets = cms.EDProducer("JetFiller",
 if (LEPTON_SETUP == 2017):
     process.dressedJets.bTaggerName = cms.string("pfDeepCSVJetTags:probb") #Moving to Moriond18 new recommended DeepCSV btagger
     process.dressedJets.bTaggerThreshold = cms.double(0.4941) #https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
-    process.dressedJets.bTagSFFile =  cms.string("ZZAnalysis/AnalysisStep/data/BTagging/CSVv2Moriond17_2017_1_26_BtoH.csv") #FIXME!!! Update to Moriond18 file
-    process.dressedJets.bTagMCEffFile  = cms.string("ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_80X_ICHEP.root") #FIXME!!! Update to Moriond18 file
+    process.dressedJets.bTagSFFile =  cms.string("ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_94XSF_V1_B_F.csv")
+    process.dressedJets.bTagMCEffFile  = cms.string("ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_94X_Moriond18_v1.root") #FIXME!!! Update to Moriond18 file
 
 
 ### Load JEC
