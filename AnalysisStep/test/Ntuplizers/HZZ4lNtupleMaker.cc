@@ -730,7 +730,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
     }
 	 else if (year == 2017)
 	 {
-		  edm::FileInPath fipMu("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_Moriond2017_v2.root");// FIXME UPDATE TO Moriond2018
+		  edm::FileInPath fipMu("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_Moriond2018_v1.root");
         TFile *fMuWeight = TFile::Open(fipMu.fullPath().data(),"READ");
         hTH2D_Mu_All = (TH2D*)fMuWeight->Get("FINAL")->Clone();
         hTH2D_Mu_Unc = (TH2D*)fMuWeight->Get("ERROR")->Clone();

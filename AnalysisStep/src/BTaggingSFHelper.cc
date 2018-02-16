@@ -81,6 +81,8 @@ float BTaggingSFHelper::getSF(SFsyst syst, int jetFlavor, float pt, float eta)
     
     float myPt = pt;
     float MaxBJetPt = 669.9, MaxLJetPt = 999.9;  // value must be below the boundary
+    float MaxJetEta = 2.5; // https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+	
     bool DoubleUncertainty = false;
     if((myFlavIndex==0 || myFlavIndex==1) && pt>MaxBJetPt){
         myPt = MaxBJetPt;
@@ -97,7 +99,8 @@ float BTaggingSFHelper::getSF(SFsyst syst, int jetFlavor, float pt, float eta)
         float SFcentral = m_readers[myFlavIndex][central]->eval(flav, eta, myPt);
         SF = 2*(SF - SFcentral) + SFcentral;
     }
-    
+	
+    if ( abs(eta) > MaxJetEta) SF = 1.; // Do not apply SF for jets with eta higher than the treshold
     return SF;
 }
 
