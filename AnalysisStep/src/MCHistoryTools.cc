@@ -89,9 +89,9 @@ MCHistoryTools::MCHistoryTools(const edm::Event & event, std::string sampleName,
     if (processID == 5 || processID == 6) {
       if (boost::starts_with(sampleName,"TTZJets")) processID=900103;      
     }
-
     // for TTZ (without jets sample)
-    if (boost::starts_with(sampleName,"TTZ")) processID=900104;      
+    if (boost::starts_with(sampleName,"TTZ")) processID=900104;
+    if (boost::starts_with(sampleName,"TTTo2L2Nu")) processID=900104;
     // for WWZ
     if (boost::starts_with(sampleName,"WWZ")) processID=900105;      
     
