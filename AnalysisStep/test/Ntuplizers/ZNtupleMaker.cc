@@ -234,7 +234,10 @@ ZNtupleMaker::ZNtupleMaker(const edm::ParameterSet& pset) :
   myHelper(pset),
   pileUpReweight(myHelper.sampleType(), myHelper.setup()),
   hTH2D_Mu_All(0),
+  hTH2D_Mu_Unc(0),
   hTH2F_El_Reco(0),
+  hTH2F_El_Reco_lowPT(0),
+  hTH2F_El_Reco_highPT(0),
   hTH2D_El_IdIsoSip_notCracks(0),
   hTH2D_El_IdIsoSip_Cracks(0),
   hTH2F_El_RSE(0)
@@ -750,62 +753,152 @@ void ZNtupleMaker::fillDescriptions(edm::ConfigurationDescriptions& descriptions
 
 Float_t ZNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
 {
-  Int_t   myLepID = abs(Lep->pdgId());
-  if (skipMuDataMCWeight&& myLepID==13) return 1.;
-  if (skipEleDataMCWeight&& myLepID==11) return 1.;
-  if (myLepID==22) return 1.; // FIXME - what SFs should be used for TLEs?
+ Int_t   myLepID = abs(Lep->pdgId());
+ if (skipMuDataMCWeight&& myLepID==13) return 1.;
+ if (skipEleDataMCWeight&& myLepID==11) return 1.;
+ if (myLepID==22) return 1.; // FIXME - what SFs should be used for TLEs?
 
-  Float_t weight  = 1.;
-  //Float_t errCorr = 0.;
-  //Float_t errCorrSyst = 0.;
+ Float_t weight  = 1.;
+ //Float_t errCorr = 0.;
+ //Float_t errCorrSyst = 0.;
 
-  Float_t myLepPt = Lep->pt();
-  Float_t myLepEta = Lep->eta();
-  Float_t mySIP = userdatahelpers::getUserFloat(Lep, "SIP"); 
+ Float_t myLepPt = Lep->pt();
+ Float_t myLepEta = Lep->eta();
+ Float_t mySIP = userdatahelpers::getUserFloat(Lep, "SIP");
 
-  if(myLepID == 13 ){
-    if(myLepPt >= 5. ) { //FIXME assume this is the min value for SFs
-      weight = hTH2D_Mu_All->GetBinContent(hTH2D_Mu_All->GetXaxis()->FindBin(myLepEta),hTH2D_Mu_All->GetYaxis()->FindBin(std::min(myLepPt,199.f))); //last bin contains the overflow
-    }
-  } else if(myLepID == 11) {
+ Float_t RecoSF = 0.;
+ //Float_t RecoSF_Unc = 0.;
 
-    // electron reconstruction scale factor, as a function of supercluster eta
-    Float_t SCeta = userdatahelpers::getUserFloat(Lep,"SCeta");
-    
-    Float_t lookup_pT = 50.;  // FIXME: the histogram contains 1 bin only, and overflows/underflows are intended to be included (?)
+ Float_t SelSF = 0.;
+ //Float_t SelSF_Unc = 0.;
 
-    Float_t RecoSF = hTH2F_El_Reco->GetBinContent(hTH2F_El_Reco->GetXaxis()->FindBin(SCeta),hTH2F_El_Reco->GetYaxis()->FindBin(lookup_pT));
-    //RecoSF_Unc = = hTH2F_El_Reco->GetBinError(hTH2F_El_Reco->GetXaxis()->FindBin(SCeta),hTH2F_El_Reco->GetYaxis()->FindBin(lookup_pT));
 
-    //LepRecoSF.push_back(RecoSF)
-    weight *= RecoSF;
+//MUONS
+ if(myLepID == 13 )
+ {
+	if(year == 2016)
+	{
+	  RecoSF = 1.; // The scale factor combines all afficiecnies
+	  //RecoSF_Unc = 0.;
+	  SelSF = hTH2D_Mu_All->GetBinContent(hTH2D_Mu_All->GetXaxis()->FindBin(myLepEta),hTH2D_Mu_All->GetYaxis()->FindBin(std::min(myLepPt,199.f))); //last bin contains the overflow
+	  //SelSF_Unc = hTH2D_Mu_Unc->GetBinContent(hTH2D_Mu_Unc->GetXaxis()->FindBin(myLepEta),hTH2D_Mu_Unc->GetYaxis()->FindBin(std::min(myLepPt,199.f))); //last bin contains the overflow
 
-    if(mySIP >= 4.0 ) { // FIXME: use a better way to find RSE electrons!
-      // No SF for RSE yet
-      //return 1.;
-    } else {
+	  weight = RecoSF*SelSF;
+	}
+	else if(year == 2017)
+	{
+	  RecoSF = 1.; // The scale factor combines all afficiecnies
+	  //RecoSF_Unc = 0.;
+	  SelSF = hTH2D_Mu_All->GetBinContent(hTH2D_Mu_All->GetXaxis()->FindBin(myLepEta),hTH2D_Mu_All->GetYaxis()->FindBin(std::min(myLepPt,199.f))); //last bin contains the overflow
+	  //SelSF_Unc = hTH2D_Mu_Unc->GetBinContent(hTH2D_Mu_Unc->GetXaxis()->FindBin(myLepEta),hTH2D_Mu_Unc->GetYaxis()->FindBin(std::min(myLepPt,199.f))); //last bin contains the overflow
 
-      if(year >= 2016) {
-	if((bool)userdatahelpers::getUserFloat(Lep,"isCrack"))
-	  weight *= hTH2D_El_IdIsoSip_Cracks->GetBinContent(hTH2D_El_IdIsoSip_Cracks->FindFixBin(std::abs(myLepEta), std::min(myLepPt,199.f))); //FIXME will move to SCeta as well?
-	else
-	  weight *= hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->FindFixBin(SCeta, std::min(myLepPt,199.f)));
-      } else {
-	cout << "ele SFs for < 2016 no longer supported" << endl;
-	abort();
-      }
-    }
-  } else {
+	  weight = RecoSF*SelSF;
+	}
+ }
 
-    cout<<"ERROR! wrong lepton ID "<<myLepID<<endl;
-    //abort();
-    weight = 0.;
-  }
+ else if(myLepID == 11) {
 
-  if(weight < 0.001 || weight > 10.){
-    cout << "ERROR! LEP out of range! myLepPt = " << myLepPt << " myLepEta = " << myLepEta <<" myLepID "<<myLepID<< " weight = " << weight << endl;
-    //abort();  //no correction should be zero, if you find one, stop
-  }
+	// electron reconstruction scale factor, as a function of supercluster eta
+	Float_t SCeta = userdatahelpers::getUserFloat(Lep,"SCeta");
+	Float_t mySCeta;
+	 
+	// Deal with very rare cases when SCeta is out of 2.5 bonds
+	if ( myLepEta <= 2.5 && SCeta >= 2.5) mySCeta = 2.49;
+	else if ( myLepEta >= -2.5 && SCeta <= -2.5) mySCeta = -2.49;
+	else mySCeta = SCeta;
+	 
+	if(year == 2016)
+	{
+		Float_t lookup_pT = 50.;  // FIXME: the histogram contains 1 bin only, and overflows/underflows are intended to be included (?)
+
+		RecoSF = hTH2F_El_Reco->GetBinContent(hTH2F_El_Reco->GetXaxis()->FindBin(mySCeta),hTH2F_El_Reco->GetYaxis()->FindBin(lookup_pT));
+		//RecoSF_Unc = hTH2F_El_Reco->GetBinError(hTH2F_El_Reco->GetXaxis()->FindBin(mySCeta),hTH2F_El_Reco->GetYaxis()->FindBin(lookup_pT));
+
+		// POG recommendation to add 1% systematics for pT<20 or >80 GeV
+		// see https://twiki.cern.ch/twiki/bin/view/CMS/EgammaIDRecipesRun2#
+		//if(myLepPt < 20. || myLepPt > 80.) RecoSF_Unc += 0.01;
+	}
+	 else if(year == 2017)
+	{
+		if(myLepPt < 20.)
+		{
+			RecoSF = hTH2F_El_Reco_lowPT->GetBinContent(hTH2F_El_Reco_lowPT->GetXaxis()->FindBin(mySCeta),hTH2F_El_Reco_lowPT->GetYaxis()->FindBin(15.));// FIXME: the histogram contains 1 pt bin only
+			//RecoSF_Unc = hTH2F_El_Reco_lowPT->GetBinError(hTH2F_El_Reco_lowPT->GetXaxis()->FindBin(mySCeta),hTH2F_El_Reco_lowPT->GetYaxis()->FindBin(15.));// FIXME: the histogram contains 1 pt bin only
+		}
+		else
+		{
+			RecoSF = hTH2F_El_Reco_highPT->GetBinContent(hTH2F_El_Reco_highPT->GetXaxis()->FindBin(mySCeta),hTH2F_El_Reco_highPT->GetYaxis()->FindBin(std::min(myLepPt,499.f)));
+			//RecoSF_Unc = hTH2F_El_Reco_highPT->GetBinError(hTH2F_El_Reco_highPT->GetXaxis()->FindBin(mySCeta),hTH2F_El_Reco_highPT->GetYaxis()->FindBin(std::min(myLepPt,499.f)));
+		}
+	}
+	else {
+			edm::LogError("MC scale factor") << "ele SFs for < 2016 no longer supported";
+			abort();
+		 }
+	 
+
+	if(year == 2016)
+	{
+		if(mySIP >= 4.0 )
+		{ // FIXME: use a better way to find RSE electrons!
+			 // This is also the case for the loose lepton in Z+l
+			SelSF = hTH2F_El_RSE->GetBinContent(hTH2F_El_RSE->FindFixBin(mySCeta, std::min(myLepPt,199.f)));
+			//SelSF_Unc = hTH2F_El_RSE->GetBinError(hTH2F_El_RSE->FindFixBin(mySCeta, std::min(myLepPt,199.f)));
+		}
+		
+		else
+		{
+			if((bool)userdatahelpers::getUserFloat(Lep,"isCrack"))
+			{
+			 SelSF = hTH2D_El_IdIsoSip_Cracks->GetBinContent(hTH2D_El_IdIsoSip_Cracks->FindFixBin(mySCeta, std::min(myLepPt,199.f)));
+			 //SelSF_Unc = hTH2D_El_IdIsoSip_Cracks->GetBinError(hTH2D_El_IdIsoSip_Cracks->FindFixBin(mySCeta, std::min(myLepPt,199.f)));
+			}
+			else
+			{
+			 SelSF = hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->FindFixBin(mySCeta, std::min(myLepPt,199.f)));
+			 //SelSF_Unc = hTH2D_El_IdIsoSip_notCracks->GetBinError(hTH2D_El_IdIsoSip_notCracks->FindFixBin(mySCeta, std::min(myLepPt,199.f)));
+			}
+		}
+	
+	}
+ 
+ else if(year == 2017)
+	{
+		if(mySIP >= 4.0 )
+		{ // FIXME: use a better way to find RSE electrons!
+			 // This is also the case for the loose lepton in Z+l
+			SelSF = hTH2F_El_RSE->GetBinContent(hTH2F_El_RSE->FindFixBin(mySCeta, std::min(myLepPt,199.f)));
+			//SelSF_Unc = hTH2F_El_RSE->GetBinError(hTH2F_El_RSE->FindFixBin(mySCeta, std::min(myLepPt,199.f)));
+		}
+		
+		else
+		{
+			if((bool)userdatahelpers::getUserFloat(Lep,"isCrack"))
+			{
+			 SelSF = hTH2D_El_IdIsoSip_Cracks->GetBinContent(hTH2D_El_IdIsoSip_Cracks->FindFixBin(mySCeta, std::min(myLepPt,499.f)));
+			 //SelSF_Unc = hTH2D_El_IdIsoSip_Cracks->GetBinError(hTH2D_El_IdIsoSip_Cracks->FindFixBin(mySCeta, std::min(myLepPt,499.f)));
+			}
+			else
+			{
+			 SelSF = hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->FindFixBin(mySCeta, std::min(myLepPt,499.f)));
+			 //SelSF_Unc = hTH2D_El_IdIsoSip_notCracks->GetBinError(hTH2D_El_IdIsoSip_notCracks->FindFixBin(mySCeta, std::min(myLepPt,499.f)));
+			}
+		}
+	
+	}
+	 
+	else {
+			edm::LogError("MC scale factor") << "ele SFs for < 2016 no longer supported";
+			abort();
+		 }
+	 
+	weight = RecoSF*SelSF;
+ }
+
+ else {
+	edm::LogError("MC scale factor") << "ERROR! wrong lepton ID "<<myLepID;
+	weight = 0.;
+ }
 
   return weight;
 }
