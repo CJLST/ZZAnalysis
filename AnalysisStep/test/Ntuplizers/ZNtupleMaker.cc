@@ -217,7 +217,10 @@ private:
   string sampleName;
 
   TH2D *hTH2D_Mu_All;
+  TH2D *hTH2D_Mu_Unc;
   TH2F *hTH2F_El_Reco;
+  TH2F *hTH2F_El_Reco_lowPT;
+  TH2F *hTH2F_El_Reco_highPT;
   TH1 *hTH2D_El_IdIsoSip_notCracks;
   TH1 *hTH2D_El_IdIsoSip_Cracks;
   TH1 *hTH2F_El_RSE;
@@ -275,25 +278,16 @@ ZNtupleMaker::ZNtupleMaker(const edm::ParameterSet& pset) :
   gen_sumGenMCWeight = 0.f;
   gen_sumWeights =0.f;
 
-  //Scale factors for data/MC efficiency
-
-  std::string fipPath;
-
-  if (!skipMuDataMCWeight) {
-    edm::FileInPath fipMu("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_Moriond2017_v2.root");
-    TFile *fMuWeight = TFile::Open(fipMu.fullPath().data(),"READ");
-    hTH2D_Mu_All = (TH2D*)fMuWeight->Get("FINAL")->Clone();
-    fMuWeight->Close();
-  }
-
+   //Scale factors for data/MC efficiency
   if (!skipEleDataMCWeight) {
 
-    if(year>=2016) {
+    if(year == 2016)
+    {
         edm::FileInPath fipEleNotCracks("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_non_gap_ele_Moriond2017_v2.root");
         TFile *root_file = TFile::Open(fipEleNotCracks.fullPath().data(),"READ");
         hTH2D_El_IdIsoSip_notCracks = (TH1*) root_file->Get("EGamma_SF2D")->Clone();
         root_file->Close();
-       
+		 
         edm::FileInPath fipEleCracks("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_gap_ele_Moriond2017_v2.root");
         root_file = TFile::Open(fipEleCracks.fullPath().data(),"READ");
         hTH2D_El_IdIsoSip_Cracks = (TH1*) root_file->Get("EGamma_SF2D")->Clone();
@@ -309,23 +303,67 @@ ZNtupleMaker::ZNtupleMaker(const edm::ParameterSet& pset) :
         hTH2F_El_RSE = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
         root_file->Close();
 
-    } else {
-      TString filename;
-      filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_%d_IdIsoSip.root",year);
-      edm::FileInPath fipEleNotCracks(filename.Data());
-      fipPath = fipEleNotCracks.fullPath();
-      TFile *fEleWeightNotCracks = TFile::Open(fipPath.data(),"READ");
-      hTH2D_El_IdIsoSip_notCracks = (TH2D*)fEleWeightNotCracks->Get("hScaleFactors_IdIsoSip")->Clone();
-      fEleWeightNotCracks->Close();
-
-
-      filename.Form("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_ele_%d_IdIsoSip_Cracks.root",year);
-      edm::FileInPath fipEleCracks(filename.Data());
-      fipPath = fipEleCracks.fullPath();
-      TFile *fEleWeightCracks = TFile::Open(fipPath.data(),"READ");
-      hTH2D_El_IdIsoSip_Cracks = (TH2D*)fEleWeightCracks->Get("hScaleFactors_IdIsoSip_Cracks")->Clone();
-      fEleWeightCracks->Close();
     }
+	 else if (year == 2017)
+	 {
+	 
+		  edm::FileInPath fipEleNotCracks("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi.txt_EGM2D_Moriond2018v1.root");
+        TFile *root_file = TFile::Open(fipEleNotCracks.fullPath().data(),"READ");
+        hTH2D_El_IdIsoSip_notCracks = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
+        root_file->Close();
+		 
+        edm::FileInPath fipEleCracks("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi.txt_EGM2D_Moriond2018v1_gap.root");
+        root_file = TFile::Open(fipEleCracks.fullPath().data(),"READ");
+        hTH2D_El_IdIsoSip_Cracks = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
+        root_file->Close();
+ 
+        edm::FileInPath fipEleReco_highPt("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi.txt_EGM2D_Moriond2018v1_runBCDEF_passingRECO.root");
+        TFile *root_file_reco_highPT = TFile::Open(fipEleReco_highPt.fullPath().data(),"READ");
+        hTH2F_El_Reco_highPT = (TH2F*) root_file_reco_highPT->Get("EGamma_SF2D")->Clone();
+        root_file_reco_highPT->Close();
+		 
+		  edm::FileInPath fipEleReco_lowPt("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi.txt_EGM2D_Moriond2018v1_runBCDEF_passingRECO_lowEt.root");
+        TFile *root_file_reco_lowPT = TFile::Open(fipEleReco_lowPt.fullPath().data(),"READ");
+        hTH2F_El_Reco_lowPT = (TH2F*) root_file_reco_lowPT->Get("EGamma_SF2D")->Clone();
+        root_file_reco_lowPT->Close();
+
+        edm::FileInPath fipEleRSE("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_RSE_ele_Moriond2017_v1.root");// FIXME UPDATE TO Moriond2018
+        root_file = TFile::Open(fipEleRSE.fullPath().data(),"READ");
+        hTH2F_El_RSE = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
+        root_file->Close();
+
+    }
+    else
+    {
+    	 cout<<"[ERROR] Electron SFs not supported for " << year << " year!!!" << endl;
+    	 abort();
+	 }
+ }
+	 if (!skipMuDataMCWeight) {
+
+    if(year == 2016)
+    {
+		  edm::FileInPath fipMu("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_Moriond2017_v2.root");
+        TFile *fMuWeight = TFile::Open(fipMu.fullPath().data(),"READ");
+        hTH2D_Mu_All = (TH2D*)fMuWeight->Get("FINAL")->Clone();
+        hTH2D_Mu_Unc = (TH2D*)fMuWeight->Get("ERROR")->Clone();
+		  fMuWeight->Close();
+
+    }
+	 else if (year == 2017)
+	 {
+		  edm::FileInPath fipMu("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_Moriond2018_v1.root");
+        TFile *fMuWeight = TFile::Open(fipMu.fullPath().data(),"READ");
+        hTH2D_Mu_All = (TH2D*)fMuWeight->Get("FINAL")->Clone();
+        hTH2D_Mu_Unc = (TH2D*)fMuWeight->Get("ERROR")->Clone();
+		  fMuWeight->Close();
+
+    }
+    else
+    {
+    	 cout<<"[ERROR] Muon SFs not supported for " << year << " year!!!" << endl;
+    	 abort();
+	 }
   }
   
 }
