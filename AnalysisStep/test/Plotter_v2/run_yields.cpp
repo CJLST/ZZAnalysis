@@ -79,7 +79,7 @@ int main( int argc, char *argv[] )
    TString ggZZ2e2tau  = path + "ggTo2e2tau_Contin_MCFM701" + file_name;
    TString ggZZ2mu2tau = path + "ggTo2mu2tau_Contin_MCFM701" + file_name;
    
-   Yields *yields = new Yields( 41.79);
+   Yields *yields = new Yields( 41.37 );
    
 //===============
 // Produce plots 

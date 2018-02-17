@@ -46,7 +46,7 @@ int main( int argc, char *argv[] )
    TString ggZZ2e2tau  = path + "ggTo2e2tau_Contin_MCFM701"  + file_name;
    TString ggZZ2mu2tau = path + "ggTo2mu2tau_Contin_MCFM701" + file_name;
 
-   Plotter *plotter = new Plotter( 41.79 );
+   Plotter *plotter = new Plotter( 41.37 );
 
    plotter->SetBlinding(110, 150, 300, 1200);
 
