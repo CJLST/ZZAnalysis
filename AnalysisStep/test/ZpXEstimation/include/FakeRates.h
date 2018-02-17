@@ -20,6 +20,8 @@ public:
 	FakeRates( TString );
 	~FakeRates();
    float GetFakeRate( float, float, int );
+   float GetFakeRate_Up( float, float, int );
+   float GetFakeRate_Dn( float, float, int );
    
    private:
    

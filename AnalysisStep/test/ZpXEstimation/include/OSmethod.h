@@ -45,6 +45,7 @@ const int num_of_categories        = Settings::num_of_categories;
 const int num_of_regions_os        = Settings::num_of_regions_os;
 const int num_of_eta_bins          = Settings::num_of_eta_bins;
 const int num_of_fake_rates        = Settings::num_of_fake_rates;
+const int num_of_fr_variations     = Settings::num_of_fr_variations;
 
 class OSmethod: public Tree
 {
@@ -64,6 +65,7 @@ public:
    void GetFRHistos( TString );
    void GetDataMCHistos( TString );
    void GetZXHistos( TString );
+   void PrintZXYields();
    void PlotDataMC_2P2F( TString, TString );
    void PlotDataMC_3P1F( TString, TString );
    void PlotDataMC( TString, TString );
@@ -103,7 +105,7 @@ private:
    
    Long64_t n_gen_events;
    
-   vector<string> _s_process, _s_flavour, _s_final_state, _s_category, _s_region;
+   vector<string> _s_process, _s_flavour, _s_final_state, _s_category, _s_region, _s_variation;
    TString _histo_name, _histo_labels;
    
    float jetPt[99];
@@ -117,17 +119,17 @@ private:
    
    int _current_process, _current_final_state, _current_category, _n_pT_bins;
    float _lumi, _yield_SR, _k_factor;
-   double gen_sum_weights, _event_weight, _f3, _f4;
+   double gen_sum_weights, _event_weight, _f3, _f4, _f3_Up, _f3_Dn, _f4_Up, _f4_Dn;
    vector< vector <float> > _expected_yield_SR, _number_of_events_CR;
 
    TH1F *histos_1D[num_of_regions_os][num_of_processes][num_of_final_states][num_of_categories];
    
-   TH1F *histos_ZX[num_of_final_states][num_of_categories];
-   TH1F *h_from2P2F_SR[num_of_final_states][num_of_categories];
-   TH1F *h_from2P2F_3P1F[num_of_final_states][num_of_categories];
-   TH1F *h_from3P1F_SR_final[num_of_final_states][num_of_categories];
-   TH1F *h_from3P1F_SR[num_of_final_states][num_of_categories];
-   TH1F *h_from3P1F_SR_ZZonly[num_of_final_states][num_of_categories];
+   TH1F *histos_ZX[num_of_fr_variations][num_of_final_states][num_of_categories];
+   TH1F *h_from2P2F_SR[num_of_fr_variations][num_of_final_states][num_of_categories];
+   TH1F *h_from2P2F_3P1F[num_of_fr_variations][num_of_final_states][num_of_categories];
+   TH1F *h_from3P1F_SR_final[num_of_fr_variations][num_of_final_states][num_of_categories];
+   TH1F *h_from3P1F_SR[num_of_fr_variations][num_of_final_states][num_of_categories];
+   TH1F *h_from3P1F_SR_ZZonly[num_of_fr_variations][num_of_final_states][num_of_categories];
    
    TH2F *passing[num_of_processes][num_of_flavours], *failing[num_of_processes][num_of_flavours];
    

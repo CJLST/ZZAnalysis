@@ -76,6 +76,7 @@ int main( int argc, char *argv[] )
    // Plot control plots            //
    ///////////////////////////////////
    os->GetZXHistos("ZXHistos_OS_Moriond18.root");
+   os->PrintZXYields();
    os->GetDataMCHistos("DataMC_OS_Moriond18.root");
    os->PlotDataMC("M4l", "Plots");
    os->PlotDataMC_2P2F( "M4l", "Plots" );

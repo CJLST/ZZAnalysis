@@ -525,8 +525,8 @@ void SSmethod::MakeHistogramsZX( TString input_file_data_name, TString  input_fi
       
       // Calculate yield
       _yield_SR = _fs_ROS_SS.at(_current_final_state)*FR->GetFakeRate(LepPt->at(2),LepEta->at(2),LepLepId->at(2))*FR->GetFakeRate(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
-      _yield_SR_up = _fs_ROS_SS.at(_current_final_state)*FR->GetFakeRate(LepPt->at(2),LepEta->at(2),LepLepId->at(2))*FR->GetFakeRate(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
-      _yield_SR_dn = _fs_ROS_SS.at(_current_final_state)*FR->GetFakeRate(LepPt->at(2),LepEta->at(2),LepLepId->at(2))*FR->GetFakeRate(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
+      _yield_SR_up = _fs_ROS_SS.at(_current_final_state)*FR->GetFakeRate_Up(LepPt->at(2),LepEta->at(2),LepLepId->at(2))*FR->GetFakeRate_Up(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
+      _yield_SR_dn = _fs_ROS_SS.at(_current_final_state)*FR->GetFakeRate_Dn(LepPt->at(2),LepEta->at(2),LepLepId->at(2))*FR->GetFakeRate_Dn(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
       
       
       _expected_yield_SR[_current_final_state][_current_category] += _yield_SR;
@@ -582,10 +582,13 @@ void SSmethod::MakeHistogramsZX( TString input_file_data_name, TString  input_fi
       if (false) continue;//( MERGE_2E2MU && i_fs == Settings::fs2mu2e) continue;
       for ( int i_cat = 0; i_cat < num_of_categories - 1; i_cat++)
       {
+        float stat = _expected_yield_SR[i_fs][i_cat]/sqrt(_number_of_events_CR[i_fs][i_cat]);
+        float syst = _expected_yield_SR[i_fs][i_cat]*((_expected_yield_SR_up[i_fs][i_cat]/_expected_yield_SR[i_fs][i_cat]) - 1.);
+        float comb = sqrt(stat*stat + syst*syst);
+			
 			cout << "Category: " << _s_category.at(i_cat) << "   Final state: " << _s_final_state.at(i_fs) << endl;
-         cout << _expected_yield_SR[i_fs][i_cat] << " +/- " <<
-         _expected_yield_SR[i_fs][i_cat]/sqrt(_number_of_events_CR[i_fs][i_cat]) << " (stat., evt: " <<
-         _number_of_events_CR[i_fs][i_cat] << ")" << " +/- " << _expected_yield_SR[i_fs][i_cat]*0.50 << " (syst.)" << endl;
+         cout << _expected_yield_SR[i_fs][i_cat] << " +/- " << comb << "(total):" << "  - " << stat << " (stat., evt: " <<
+         _number_of_events_CR[i_fs][i_cat] << ")" << "   - " << syst << " (syst.)" << endl;
 		}
 	cout << "==================================================================================================================================" << endl;
    }

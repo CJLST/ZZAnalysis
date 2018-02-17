@@ -37,6 +37,10 @@ OSmethod::OSmethod():Tree()
    _s_region.push_back("2P2F");
    _s_region.push_back("3P1F");
    _s_region.push_back("OS");
+	
+   _s_variation.push_back("nominal");
+   _s_variation.push_back("Up");
+   _s_variation.push_back("Dn");
    
    DeclareFRHistos();
    DeclareDataMCHistos();
@@ -293,21 +297,47 @@ void OSmethod::MakeHistogramsZX( TString input_file_data_name, TString  input_fi
 
       if ( test_bit(CRflag, CRZLLos_2P2F) )
       {
-         _f3 = FR->GetFakeRate(LepPt->at(2),LepEta->at(2),LepLepId->at(2));
-         _f4 = FR->GetFakeRate(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
+         _f3    = FR->GetFakeRate(LepPt->at(2),LepEta->at(2),LepLepId->at(2));
+         _f3_Up = FR->GetFakeRate_Up(LepPt->at(2),LepEta->at(2),LepLepId->at(2));
+         _f3_Dn = FR->GetFakeRate_Dn(LepPt->at(2),LepEta->at(2),LepLepId->at(2));
+         _f4    = FR->GetFakeRate(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
+         _f4_Up = FR->GetFakeRate_Up(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
+         _f4_Dn = FR->GetFakeRate_Dn(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
+			
 //         cout << "===============" << endl;
 //         cout << "f3 = " << _f3 << endl;
 //         cout << "f4 = " << _f4 << endl;
 //         cout << "weight = " << (_f3/(1-_f3))*(_f4/(1-_f4)) << endl;
-         h_from2P2F_SR[_current_final_state][_current_category]->Fill(ZZMass, (_f3/(1-_f3))*(_f4/(1-_f4)) );
-         h_from2P2F_3P1F[_current_final_state][_current_category]->Fill(ZZMass, (_f3/(1-_f3))+(_f4/(1-_f4)) );
+//         cout << "weight_up = " << (_f3_Up/(1-_f3_Up))*(_f4_Up/(1-_f4_Up)) << endl;
+//         cout << "weight_dn = " << (_f3_Dn/(1-_f3_Dn))*(_f4_Dn/(1-_f4_Dn)) << endl;
+			
+         h_from2P2F_SR[Settings::nominal][_current_final_state][_current_category]->Fill(ZZMass, (_f3/(1-_f3))*(_f4/(1-_f4)) );
+         h_from2P2F_3P1F[Settings::nominal][_current_final_state][_current_category]->Fill(ZZMass, (_f3/(1-_f3))+(_f4/(1-_f4)) );
+			
+         h_from2P2F_SR[Settings::Up][_current_final_state][_current_category]->Fill(ZZMass, (_f3_Up/(1-_f3_Up))*(_f4_Up/(1-_f4_Up)) );
+         h_from2P2F_3P1F[Settings::Up][_current_final_state][_current_category]->Fill(ZZMass, (_f3_Up/(1-_f3_Up))+(_f4_Up/(1-_f4_Up)) );
+			
+         h_from2P2F_SR[Settings::Dn][_current_final_state][_current_category]->Fill(ZZMass, (_f3_Dn/(1-_f3_Dn))*(_f4_Dn/(1-_f4_Dn)) );
+         h_from2P2F_3P1F[Settings::Dn][_current_final_state][_current_category]->Fill(ZZMass, (_f3_Dn/(1-_f3_Dn))+(_f4_Dn/(1-_f4_Dn)) );
       }
       if ( test_bit(CRflag, CRZLLos_3P1F) )
       {
-         if(LepisID->at(3) && ((fabs(LepLepId->at(2)) == 11) ? LepCombRelIsoPF->at(3) < 999999. : LepCombRelIsoPF->at(3) < 0.35)) _f4 = FR->GetFakeRate(LepPt->at(2),LepEta->at(2),LepLepId->at(2));
-         else _f4 = FR->GetFakeRate(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
+         if(LepisID->at(3) && ((fabs(LepLepId->at(2)) == 11) ? LepCombRelIsoPF->at(3) < 999999. : LepCombRelIsoPF->at(3) < 0.35))
+         {
+         	_f4    = FR->GetFakeRate(LepPt->at(2),LepEta->at(2),LepLepId->at(2));
+         	_f4_Up = FR->GetFakeRate_Up(LepPt->at(2),LepEta->at(2),LepLepId->at(2));
+         	_f4_Dn = FR->GetFakeRate_Dn(LepPt->at(2),LepEta->at(2),LepLepId->at(2));
+         }
+         else
+         {
+				_f4    = FR->GetFakeRate(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
+				_f4_Up = FR->GetFakeRate_Up(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
+				_f4_Dn = FR->GetFakeRate_Dn(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
+         }
          
-         h_from3P1F_SR[_current_final_state][_current_category]->Fill(ZZMass, (_f4/(1-_f4)) );
+         h_from3P1F_SR[Settings::nominal][_current_final_state][_current_category]->Fill(ZZMass, (_f4/(1-_f4)) );
+         h_from3P1F_SR[Settings::Up][_current_final_state][_current_category]->Fill(ZZMass, (_f4_Up/(1-_f4_Up)) );
+         h_from3P1F_SR[Settings::Dn][_current_final_state][_current_category]->Fill(ZZMass, (_f4_Dn/(1-_f4_Dn)) );
       }
       
    }
@@ -383,10 +413,22 @@ void OSmethod::MakeZXMCContribution( TString input_file_data_name, TString  inpu
       _k_factor = calculate_K_factor(input_file_data_name);
       _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight) / gen_sum_weights;
       
-      if(LepisID->at(3) && ((fabs(LepLepId->at(3)) == 11) ? LepCombRelIsoPF->at(3) < 999999. : LepCombRelIsoPF->at(3) < 0.35)) _f4 = FR->GetFakeRate(LepPt->at(2),LepEta->at(2),LepLepId->at(2));
-      else _f4 = FR->GetFakeRate(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
+      if(LepisID->at(3) && ((fabs(LepLepId->at(3)) == 11) ? LepCombRelIsoPF->at(3) < 999999. : LepCombRelIsoPF->at(3) < 0.35))
+      {
+			_f4    = FR->GetFakeRate(LepPt->at(2),LepEta->at(2),LepLepId->at(2));
+			_f4_Up = FR->GetFakeRate_Up(LepPt->at(2),LepEta->at(2),LepLepId->at(2));
+			_f4_Dn = FR->GetFakeRate_Dn(LepPt->at(2),LepEta->at(2),LepLepId->at(2));
+      }
+      else
+      {
+			_f4    = FR->GetFakeRate(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
+			_f4_Up = FR->GetFakeRate_Up(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
+			_f4_Dn = FR->GetFakeRate_Dn(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
+		}
 
-      h_from3P1F_SR_ZZonly[_current_final_state][_current_category]->Fill(ZZMass, _event_weight * (_f4/(1-_f4)) );
+      h_from3P1F_SR_ZZonly[Settings::nominal][_current_final_state][_current_category]->Fill(ZZMass, _event_weight * (_f4/(1-_f4)) );
+      h_from3P1F_SR_ZZonly[Settings::Up][_current_final_state][_current_category]->Fill(ZZMass, _event_weight * (_f4_Up/(1-_f4_Up)) );
+      h_from3P1F_SR_ZZonly[Settings::Dn][_current_final_state][_current_category]->Fill(ZZMass, _event_weight * (_f4_Dn/(1-_f4_Dn)) );
       
    }
    
@@ -451,29 +493,34 @@ void OSmethod::DeclareZXHistos()
    {
       for (int i_cat = 0; i_cat < num_of_categories; i_cat++)
       {
-         _histo_name = "h_from2P2F_SR_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
-         _histo_labels = ";" + Plots::M4l().var_X_label + ";" + Plots::M4l().var_Y_label;
-         h_from2P2F_SR[i_fs][i_cat] = new TH1F(_histo_name, _histo_labels, Plots::M4l().var_N_bin, Plots::M4l().var_min, Plots::M4l().var_max);
-         
-         _histo_name = "h_from2P2F_3P1F_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
-         _histo_labels = ";" + Plots::M4l().var_X_label + ";" + Plots::M4l().var_Y_label;
-         h_from2P2F_3P1F[i_fs][i_cat] = new TH1F(_histo_name, _histo_labels, Plots::M4l().var_N_bin, Plots::M4l().var_min, Plots::M4l().var_max);
-         
-         _histo_name = "h_from3P1F_SR_final_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
-         _histo_labels = ";" + Plots::M4l().var_X_label + ";" + Plots::M4l().var_Y_label;
-         h_from3P1F_SR_final[i_fs][i_cat] = new TH1F(_histo_name, _histo_labels, Plots::M4l().var_N_bin, Plots::M4l().var_min, Plots::M4l().var_max);
-         
-         _histo_name = "h_from3P1F_SR_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
-         _histo_labels = ";" + Plots::M4l().var_X_label + ";" + Plots::M4l().var_Y_label;
-         h_from3P1F_SR[i_fs][i_cat] = new TH1F(_histo_name, _histo_labels, Plots::M4l().var_N_bin, Plots::M4l().var_min, Plots::M4l().var_max);
-         
-         _histo_name = "h_from3P1F_SR_ZZonly_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
-         _histo_labels = ";" + Plots::M4l().var_X_label + ";" + Plots::M4l().var_Y_label;
-         h_from3P1F_SR_ZZonly[i_fs][i_cat] = new TH1F(_histo_name, _histo_labels, Plots::M4l().var_N_bin, Plots::M4l().var_min, Plots::M4l().var_max);
-         
-         _histo_name = "ZX_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
-         _histo_labels = ";" + Plots::M4l().var_X_label + ";" + Plots::M4l().var_Y_label;
-         histos_ZX[i_fs][i_cat] = new TH1F(_histo_name, _histo_labels, Plots::M4l().var_N_bin, Plots::M4l().var_min, Plots::M4l().var_max);
+      	for(int i_var = 0; i_var < num_of_fr_variations; i_var++)
+      	{
+				_histo_name = "h_from2P2F_SR_" + _s_variation.at(i_var) + "_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
+				_histo_labels = ";" + Plots::M4l().var_X_label + ";" + Plots::M4l().var_Y_label;
+				h_from2P2F_SR[i_var][i_fs][i_cat] = new TH1F(_histo_name, _histo_labels, Plots::M4l().var_N_bin, Plots::M4l().var_min, Plots::M4l().var_max);
+				
+				_histo_name = "h_from2P2F_3P1F_" + _s_variation.at(i_var) + "_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
+				_histo_labels = ";" + Plots::M4l().var_X_label + ";" + Plots::M4l().var_Y_label;
+				h_from2P2F_3P1F[i_var][i_fs][i_cat] = new TH1F(_histo_name, _histo_labels, Plots::M4l().var_N_bin, Plots::M4l().var_min, Plots::M4l().var_max);
+				
+				_histo_name = "h_from3P1F_SR_final_" + _s_variation.at(i_var) + "_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
+				_histo_labels = ";" + Plots::M4l().var_X_label + ";" + Plots::M4l().var_Y_label;
+				h_from3P1F_SR_final[i_var][i_fs][i_cat] = new TH1F(_histo_name, _histo_labels, Plots::M4l().var_N_bin, Plots::M4l().var_min, Plots::M4l().var_max);
+				
+				_histo_name = "h_from3P1F_SR_" + _s_variation.at(i_var) + "_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
+				_histo_labels = ";" + Plots::M4l().var_X_label + ";" + Plots::M4l().var_Y_label;
+				h_from3P1F_SR[i_var][i_fs][i_cat] = new TH1F(_histo_name, _histo_labels, Plots::M4l().var_N_bin, Plots::M4l().var_min, Plots::M4l().var_max);
+				
+				_histo_name = "h_from3P1F_SR_ZZonly_" + _s_variation.at(i_var) + "_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
+				_histo_labels = ";" + Plots::M4l().var_X_label + ";" + Plots::M4l().var_Y_label;
+				h_from3P1F_SR_ZZonly[i_var][i_fs][i_cat] = new TH1F(_histo_name, _histo_labels, Plots::M4l().var_N_bin, Plots::M4l().var_min, Plots::M4l().var_max);
+				
+				_histo_name = "ZX_" + _s_variation.at(i_var) + "_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
+				_histo_labels = ";" + Plots::M4l().var_X_label + ";" + Plots::M4l().var_Y_label;
+				histos_ZX[i_var][i_fs][i_cat] = new TH1F(_histo_name, _histo_labels, Plots::M4l().var_N_bin, Plots::M4l().var_min, Plots::M4l().var_max);
+				
+			}
+			
       }
    }
 }
@@ -598,12 +645,16 @@ void OSmethod::SaveZXHistos( TString file_name , bool remove_negative_bins)
    {
       for (int i_cat = 0; i_cat < num_of_categories; i_cat++)
       {
-         h_from2P2F_SR[i_fs][i_cat]->Write();
-         h_from2P2F_3P1F[i_fs][i_cat]->Write();
-         h_from3P1F_SR_final[i_fs][i_cat]->Write();
-         h_from3P1F_SR[i_fs][i_cat]->Write();
-         h_from3P1F_SR_ZZonly[i_fs][i_cat]->Write();
-         histos_ZX[i_fs][i_cat]->Write();
+			for(int i_var = 0; i_var < num_of_fr_variations; i_var++)
+      	{
+				h_from2P2F_SR[i_var][i_fs][i_cat]->Write();
+         	h_from2P2F_3P1F[i_var][i_fs][i_cat]->Write();
+         	h_from3P1F_SR_final[i_var][i_fs][i_cat]->Write();
+         	h_from3P1F_SR[i_var][i_fs][i_cat]->Write();
+				h_from3P1F_SR_ZZonly[i_var][i_fs][i_cat]->Write();
+         	histos_ZX[i_var][i_fs][i_cat]->Write();
+      	}
+
       }
    }
    
@@ -617,24 +668,46 @@ void OSmethod::SaveZXHistos( TString file_name , bool remove_negative_bins)
 //===============================================================
 void OSmethod::FillZXInclusive( bool remove_negative_bins )
 {
+	if ( remove_negative_bins )
+	{
+		for (int i_fs = 0; i_fs <= Settings::fs4l; i_fs++)
+		{
+			for (int i_cat = 0; i_cat <= Settings::inclusive; i_cat++)
+			{
+				for(int i_var = 0; i_var < num_of_fr_variations; i_var++)
+      		{
+					RemoveNegativeBins1D(h_from2P2F_SR[i_var][i_fs][i_cat]);
+					RemoveNegativeBins1D(h_from2P2F_3P1F[i_var][i_fs][i_cat]);
+					RemoveNegativeBins1D(h_from3P1F_SR_final[i_var][i_fs][i_cat]);
+					RemoveNegativeBins1D(h_from3P1F_SR[i_var][i_fs][i_cat]);
+					RemoveNegativeBins1D(h_from3P1F_SR_ZZonly[i_var][i_fs][i_cat]);
+					
+				}
+			}
+		}
+	}
+	
    for (int i_fs = 0; i_fs < Settings::fs4l; i_fs++)
    {
       for (int i_cat = 0; i_cat < Settings::inclusive; i_cat++)
       {
-         h_from2P2F_SR[i_fs][Settings::inclusive]->Add(h_from2P2F_SR[i_fs][i_cat]);
-         h_from2P2F_SR[Settings::fs4l][i_cat]    ->Add(h_from2P2F_SR[i_fs][i_cat]);
-         
-         h_from2P2F_3P1F[i_fs][Settings::inclusive]->Add(h_from2P2F_3P1F[i_fs][i_cat]);
-         h_from2P2F_3P1F[Settings::fs4l][i_cat]    ->Add(h_from2P2F_3P1F[i_fs][i_cat]);
-         
-         h_from3P1F_SR_final[i_fs][Settings::inclusive]->Add(h_from3P1F_SR_final[i_fs][i_cat]);
-         h_from3P1F_SR_final[Settings::fs4l][i_cat]    ->Add(h_from3P1F_SR_final[i_fs][i_cat]);
-         
-         h_from3P1F_SR[i_fs][Settings::inclusive]->Add(h_from3P1F_SR[i_fs][i_cat]);
-         h_from3P1F_SR[Settings::fs4l][i_cat]    ->Add(h_from3P1F_SR[i_fs][i_cat]);
-         
-         h_from3P1F_SR_ZZonly[i_fs][Settings::inclusive]->Add(h_from3P1F_SR_ZZonly[i_fs][i_cat]);
-         h_from3P1F_SR_ZZonly[Settings::fs4l][i_cat]    ->Add(h_from3P1F_SR_ZZonly[i_fs][i_cat]);
+			for(int i_var = 0; i_var < num_of_fr_variations; i_var++)
+      	{
+				h_from2P2F_SR[i_var][i_fs][Settings::inclusive]->Add(h_from2P2F_SR[i_var][i_fs][i_cat]);
+				h_from2P2F_SR[i_var][Settings::fs4l][i_cat]    ->Add(h_from2P2F_SR[i_var][i_fs][i_cat]);
+				
+				h_from2P2F_3P1F[i_var][i_fs][Settings::inclusive]->Add(h_from2P2F_3P1F[i_var][i_fs][i_cat]);
+				h_from2P2F_3P1F[i_var][Settings::fs4l][i_cat]    ->Add(h_from2P2F_3P1F[i_var][i_fs][i_cat]);
+				
+				h_from3P1F_SR_final[i_var][i_fs][Settings::inclusive]->Add(h_from3P1F_SR_final[i_var][i_fs][i_cat]);
+				h_from3P1F_SR_final[i_var][Settings::fs4l][i_cat]    ->Add(h_from3P1F_SR_final[i_var][i_fs][i_cat]);
+				
+				h_from3P1F_SR[i_var][i_fs][Settings::inclusive]->Add(h_from3P1F_SR[i_var][i_fs][i_cat]);
+				h_from3P1F_SR[i_var][Settings::fs4l][i_cat]    ->Add(h_from3P1F_SR[i_var][i_fs][i_cat]);
+				
+				h_from3P1F_SR_ZZonly[i_var][i_fs][Settings::inclusive]->Add(h_from3P1F_SR_ZZonly[i_var][i_fs][i_cat]);
+				h_from3P1F_SR_ZZonly[i_var][Settings::fs4l][i_cat]    ->Add(h_from3P1F_SR_ZZonly[i_var][i_fs][i_cat]);
+         }
       }
    }
 	
@@ -642,9 +715,12 @@ void OSmethod::FillZXInclusive( bool remove_negative_bins )
    {
       for (int i_cat = 0; i_cat <= Settings::inclusive; i_cat++)
       {
-         h_from3P1F_SR_final[i_fs][i_cat]->Add(h_from3P1F_SR[i_fs][i_cat], 1.);
-         h_from3P1F_SR_final[i_fs][i_cat]->Add(h_from3P1F_SR_ZZonly[i_fs][i_cat], -1.);
-         h_from3P1F_SR_final[i_fs][i_cat]->Add(h_from2P2F_SR[i_fs][i_cat], -2.);
+			for(int i_var = 0; i_var < num_of_fr_variations; i_var++)
+      	{
+				h_from3P1F_SR_final[i_var][i_fs][i_cat]->Add(h_from3P1F_SR[i_var][i_fs][i_cat], 1.);
+				h_from3P1F_SR_final[i_var][i_fs][i_cat]->Add(h_from3P1F_SR_ZZonly[i_var][i_fs][i_cat], -1.);
+				h_from3P1F_SR_final[i_var][i_fs][i_cat]->Add(h_from2P2F_SR[i_var][i_fs][i_cat], -2.);
+         }
       }
    }
 	
@@ -654,18 +730,24 @@ void OSmethod::FillZXInclusive( bool remove_negative_bins )
 		{
 			for (int i_cat = 0; i_cat <= Settings::inclusive; i_cat++)
 			{
-				RemoveNegativeBins1D(h_from3P1F_SR_final[i_fs][i_cat]);
+				for(int i_var = 0; i_var < num_of_fr_variations; i_var++)
+      		{
+					RemoveNegativeBins1D(h_from3P1F_SR_final[i_var][i_fs][i_cat]);
+				}
 			}
 		}
 	}
 	
 	for (int i_fs = 0; i_fs < Settings::fs4l; i_fs++)
 	{
-		h_from2P2F_SR[Settings::fs4l][Settings::inclusive]->Add(h_from2P2F_SR[i_fs][Settings::inclusive]);
-		h_from2P2F_3P1F[Settings::fs4l][Settings::inclusive]->Add(h_from2P2F_3P1F[i_fs][Settings::inclusive]);
-		h_from3P1F_SR_final[Settings::fs4l][Settings::inclusive]->Add(h_from3P1F_SR_final[i_fs][Settings::inclusive]);
-		h_from3P1F_SR[Settings::fs4l][Settings::inclusive]->Add(h_from3P1F_SR[i_fs][Settings::inclusive]);
-		h_from3P1F_SR_ZZonly[Settings::fs4l][Settings::inclusive]->Add(h_from3P1F_SR_ZZonly[i_fs][Settings::inclusive]);
+		for(int i_var = 0; i_var < num_of_fr_variations; i_var++)
+		{
+			h_from2P2F_SR[i_var][Settings::fs4l][Settings::inclusive]->Add(h_from2P2F_SR[i_var][i_fs][Settings::inclusive]);
+			h_from2P2F_3P1F[i_var][Settings::fs4l][Settings::inclusive]->Add(h_from2P2F_3P1F[i_var][i_fs][Settings::inclusive]);
+			h_from3P1F_SR_final[i_var][Settings::fs4l][Settings::inclusive]->Add(h_from3P1F_SR_final[i_var][i_fs][Settings::inclusive]);
+			h_from3P1F_SR[i_var][Settings::fs4l][Settings::inclusive]->Add(h_from3P1F_SR[i_var][i_fs][Settings::inclusive]);
+			h_from3P1F_SR_ZZonly[i_var][Settings::fs4l][Settings::inclusive]->Add(h_from3P1F_SR_ZZonly[i_var][i_fs][Settings::inclusive]);
+		}
 		
 	}
 	
@@ -673,8 +755,11 @@ void OSmethod::FillZXInclusive( bool remove_negative_bins )
    {
       for (int i_cat = 0; i_cat <= Settings::inclusive; i_cat++)
       {
-         histos_ZX[i_fs][i_cat]->Add(h_from3P1F_SR_final[i_fs][i_cat], 1.);
-         histos_ZX[i_fs][i_cat]->Add(h_from2P2F_SR[i_fs][i_cat], 1.);
+			for(int i_var = 0; i_var < num_of_fr_variations; i_var++)
+      	{
+				histos_ZX[i_var][i_fs][i_cat]->Add(h_from3P1F_SR_final[i_var][i_fs][i_cat], 1.);
+				histos_ZX[i_var][i_fs][i_cat]->Add(h_from2P2F_SR[i_var][i_fs][i_cat], 1.);
+         }
       }
    }
 
@@ -745,23 +830,26 @@ void OSmethod::GetZXHistos( TString file_name)
    {
       for (int i_cat = 0; i_cat < num_of_categories; i_cat++)
       {
-         _histo_name = "h_from2P2F_SR_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
-         h_from2P2F_SR[i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name);
-         
-         _histo_name = "h_from2P2F_3P1F_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
-         h_from2P2F_3P1F[i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name);
-         
-         _histo_name = "h_from3P1F_SR_final_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
-         h_from3P1F_SR_final[i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name);
-         
-         _histo_name = "h_from3P1F_SR_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
-         h_from3P1F_SR[i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name);
-         
-         _histo_name = "h_from3P1F_SR_ZZonly_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
-         h_from3P1F_SR_ZZonly[i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name);
-         
-         _histo_name = "ZX_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
-         histos_ZX[i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name);
+			for(int i_var = 0; i_var < num_of_fr_variations; i_var++)
+      	{
+				_histo_name = "h_from2P2F_SR_" + _s_variation.at(i_var )+ "_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
+				h_from2P2F_SR[i_var][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name);
+				
+				_histo_name = "h_from2P2F_3P1F_" + _s_variation.at(i_var )+ "_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
+				h_from2P2F_3P1F[i_var][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name);
+				
+				_histo_name = "h_from3P1F_SR_final_" + _s_variation.at(i_var )+ "_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
+				h_from3P1F_SR_final[i_var][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name);
+				
+				_histo_name = "h_from3P1F_SR_" + _s_variation.at(i_var )+ "_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
+				h_from3P1F_SR[i_var][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name);
+				
+				_histo_name = "h_from3P1F_SR_ZZonly_" + _s_variation.at(i_var )+ "_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
+				h_from3P1F_SR_ZZonly[i_var][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name);
+				
+				_histo_name = "ZX_" + _s_variation.at(i_var )+ "_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
+				histos_ZX[i_var][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name);
+         }
       }
    }
    
@@ -769,6 +857,39 @@ void OSmethod::GetZXHistos( TString file_name)
 }
 
 //===============================================================
+
+
+
+void OSmethod::PrintZXYields()
+{
+	double stat;
+	double syst;
+	double comb;
+	double yield, yield_up;
+	
+	cout << endl;
+	cout << "==============================================================" << endl;
+	cout << "[INFO] Control printout for OS Z+X yields in final states "<< endl;
+	cout << "==============================================================" << endl;
+	for( int i_fs = 0; i_fs < Settings::fs4l ; i_fs++ )
+	{
+		for ( int i_cat = 0; i_cat < Settings::inclusive; i_cat++)
+		{
+
+		   yield = histos_ZX[Settings::nominal][i_fs][i_cat]->IntegralAndError(0,histos_ZX[Settings::nominal][i_fs][i_cat]->GetSize() - 2,stat);
+		   yield_up = histos_ZX[Settings::Up][i_fs][i_cat]->Integral();
+		   syst = ((yield_up/yield) - 1.) * yield;
+		   comb = sqrt(stat*stat + syst*syst);
+			
+		cout << "Category: " << _s_category.at(i_cat) << "   Final state: " << _s_final_state.at(i_fs) << endl;
+		cout << yield << " +/- " << comb << " (total.)   - " << stat << " (stat.)   - " << syst << " (syst.)" << endl;
+		}
+		
+		cout << "============================================================" << endl;
+	}
+}
+
+
 
 //========================================================================================================
 void OSmethod::PlotDataMC_2P2F( TString variable_name, TString folder )
@@ -865,7 +986,7 @@ void OSmethod::PlotDataMC_3P1F( TString variable_name, TString folder )
       histos_1D[Settings::reg3P1F][Settings::DY][i_fs][Settings::inclusive]   ->SetLineColor(kGreen-1);
       histos_1D[Settings::reg3P1F][Settings::ttbar][i_fs][Settings::inclusive]->SetLineColor(kBlue-2);
       
-      h_from2P2F_3P1F[i_fs][Settings::inclusive]->SetLineColor(kRed);
+      h_from2P2F_3P1F[Settings::nominal][i_fs][Settings::inclusive]->SetLineColor(kRed);
       
       histos_1D[Settings::reg3P1F][Settings::Data][i_fs][Settings::inclusive]->SetMarkerSize(0.8);
       histos_1D[Settings::reg3P1F][Settings::Data][i_fs][Settings::inclusive]->SetMarkerStyle(20);
@@ -880,7 +1001,7 @@ void OSmethod::PlotDataMC_3P1F( TString variable_name, TString folder )
 		
       stack->Draw("HIST");
       
-      h_from2P2F_3P1F[i_fs][Settings::inclusive]->Draw("HIST SAME");
+      h_from2P2F_3P1F[Settings::nominal][i_fs][Settings::inclusive]->Draw("HIST SAME");
       
       float data_max = histos_1D[Settings::reg3P1F][Settings::Data][i_fs][Settings::inclusive]->GetBinContent(histos_1D[Settings::reg3P1F][Settings::Data][i_fs][Settings::inclusive]->GetMaximumBin());
       float data_max_error = histos_1D[Settings::reg3P1F][Settings::Data][i_fs][Settings::inclusive]->GetBinErrorUp(histos_1D[Settings::reg3P1F][Settings::Data][i_fs][Settings::inclusive]->GetMaximumBin());
@@ -906,7 +1027,7 @@ void OSmethod::PlotDataMC_3P1F( TString variable_name, TString folder )
       histos_1D[Settings::reg3P1F][Settings::Data][i_fs][Settings::inclusive]->Draw("SAME p E1 X0");
       
       TLegend *legend;
-      legend  = CreateLegend_3P1F("right",histos_1D[Settings::reg3P1F][Settings::Data][i_fs][Settings::inclusive],h_from2P2F_3P1F[i_fs][Settings::inclusive],histos_1D[Settings::reg3P1F][Settings::WZ][i_fs][Settings::inclusive],histos_1D[Settings::reg3P1F][Settings::qqZZ][i_fs][Settings::inclusive],histos_1D[Settings::reg3P1F][Settings::DY][i_fs][Settings::inclusive],histos_1D[Settings::reg3P1F][Settings::ttbar][i_fs][Settings::inclusive]);
+      legend  = CreateLegend_3P1F("right",histos_1D[Settings::reg3P1F][Settings::Data][i_fs][Settings::inclusive],h_from2P2F_3P1F[Settings::nominal][i_fs][Settings::inclusive],histos_1D[Settings::reg3P1F][Settings::WZ][i_fs][Settings::inclusive],histos_1D[Settings::reg3P1F][Settings::qqZZ][i_fs][Settings::inclusive],histos_1D[Settings::reg3P1F][Settings::DY][i_fs][Settings::inclusive],histos_1D[Settings::reg3P1F][Settings::ttbar][i_fs][Settings::inclusive]);
       legend->Draw();
       
       // Draw lumi
@@ -1001,8 +1122,7 @@ void OSmethod::PlotZXContributions( TString folder )
    TCanvas *c, *c_zx;
    TString _out_file_name;
    CMS_lumi *lumi = new CMS_lumi;
-	double yield;
-	double int_error;
+
    c    = new TCanvas("c", "c", 600, 600);
    c_zx = new TCanvas("c_zx", "c_zx", 600, 600);
 	
@@ -1012,19 +1132,19 @@ void OSmethod::PlotZXContributions( TString folder )
       {
 			c->cd();
 			
-			h_from3P1F_SR[i_fs][i_cat]       ->SetLineColor(kBlue);
-			h_from2P2F_SR[i_fs][i_cat]       ->SetLineColor(kYellow);
-			h_from3P1F_SR_final[i_fs][i_cat] ->SetLineColor(kBlack);
-			h_from3P1F_SR_ZZonly[i_fs][i_cat]->SetLineColor(kRed);
-			histos_ZX[i_fs][i_cat]           ->SetLineColor(kGreen);
+			h_from3P1F_SR[Settings::nominal][i_fs][i_cat]       ->SetLineColor(kBlue);
+			h_from2P2F_SR[Settings::nominal][i_fs][i_cat]       ->SetLineColor(kYellow);
+			h_from3P1F_SR_final[Settings::nominal][i_fs][i_cat] ->SetLineColor(kBlack);
+			h_from3P1F_SR_ZZonly[Settings::nominal][i_fs][i_cat]->SetLineColor(kRed);
+			histos_ZX[Settings::nominal][i_fs][i_cat]           ->SetLineColor(kGreen);
 			
-			h_from3P1F_SR[i_fs][i_cat]->SetMinimum(0.0);
+			h_from3P1F_SR[Settings::nominal][i_fs][i_cat]->SetMinimum(0.0);
 			
-			h_from3P1F_SR[i_fs][i_cat]       ->Draw("HIST");
-			h_from2P2F_SR[i_fs][i_cat]       ->Draw("HIST SAME");
-			h_from3P1F_SR_final[i_fs][i_cat] ->Draw("HIST SAME");
-			h_from3P1F_SR_ZZonly[i_fs][i_cat]->Draw("HIST SAME");
-			histos_ZX[i_fs][i_cat]           ->Draw("HIST SAME");
+			h_from3P1F_SR[Settings::nominal][i_fs][i_cat]       ->Draw("HIST");
+			h_from2P2F_SR[Settings::nominal][i_fs][i_cat]       ->Draw("HIST SAME");
+			h_from3P1F_SR_final[Settings::nominal][i_fs][i_cat] ->Draw("HIST SAME");
+			h_from3P1F_SR_ZZonly[Settings::nominal][i_fs][i_cat]->Draw("HIST SAME");
+			histos_ZX[Settings::nominal][i_fs][i_cat]           ->Draw("HIST SAME");
 			
 			TString _fs_label;
 			if ( i_fs == Settings::fs4e)    _fs_label = "m_{4#font[12]{e}} (GeV)";
@@ -1032,18 +1152,18 @@ void OSmethod::PlotZXContributions( TString folder )
 			if ( i_fs == Settings::fs2e2mu) _fs_label = "m_{2#font[12]{e}2#font[12]{#mu}} (GeV)";
 			if ( i_fs == Settings::fs2mu2e) _fs_label = "m_{2#font[12]{#mu}2#font[12]{e}} (GeV)";
 			if ( i_fs == Settings::fs4l)    _fs_label = "m_{4#font[12]{l}} (GeV)";
-			h_from3P1F_SR[i_fs][i_cat]->GetXaxis()->SetTitle(_fs_label);
-			h_from3P1F_SR[i_fs][i_cat]->GetXaxis()->SetTitleSize(0.04);
-			h_from3P1F_SR[i_fs][i_cat]->GetXaxis()->SetLabelSize(0.04);
-			h_from3P1F_SR[i_fs][i_cat]->GetYaxis()->SetTitle(h_from2P2F_SR[i_fs][i_cat]->GetYaxis()->GetTitle());
-			h_from3P1F_SR[i_fs][i_cat]->GetYaxis()->SetTitleSize(0.04);
-			h_from3P1F_SR[i_fs][i_cat]->GetYaxis()->SetLabelSize(0.04);
+			h_from3P1F_SR[Settings::nominal][i_fs][i_cat]->GetXaxis()->SetTitle(_fs_label);
+			h_from3P1F_SR[Settings::nominal][i_fs][i_cat]->GetXaxis()->SetTitleSize(0.04);
+			h_from3P1F_SR[Settings::nominal][i_fs][i_cat]->GetXaxis()->SetLabelSize(0.04);
+			h_from3P1F_SR[Settings::nominal][i_fs][i_cat]->GetYaxis()->SetTitle(h_from2P2F_SR[Settings::nominal][i_fs][i_cat]->GetYaxis()->GetTitle());
+			h_from3P1F_SR[Settings::nominal][i_fs][i_cat]->GetYaxis()->SetTitleSize(0.04);
+			h_from3P1F_SR[Settings::nominal][i_fs][i_cat]->GetYaxis()->SetLabelSize(0.04);
 			
-			h_from3P1F_SR[i_fs][i_cat]->GetXaxis()->SetTitleOffset(1.2);
-			h_from3P1F_SR[i_fs][i_cat]->GetYaxis()->SetTitleOffset(1.25);
+			h_from3P1F_SR[Settings::nominal][i_fs][i_cat]->GetXaxis()->SetTitleOffset(1.2);
+			h_from3P1F_SR[Settings::nominal][i_fs][i_cat]->GetYaxis()->SetTitleOffset(1.25);
 			
 			TLegend *legend;
-			legend  = CreateLegend_ZXcontr( "right", h_from2P2F_SR[i_fs][i_cat], h_from3P1F_SR[i_fs][i_cat],h_from3P1F_SR_ZZonly[i_fs][i_cat],h_from3P1F_SR_final[i_fs][i_cat],histos_ZX[i_fs][i_cat] );
+			legend  = CreateLegend_ZXcontr( "right", h_from2P2F_SR[Settings::nominal][i_fs][i_cat], h_from3P1F_SR[Settings::nominal][i_fs][i_cat],h_from3P1F_SR_ZZonly[Settings::nominal][i_fs][i_cat],h_from3P1F_SR_final[Settings::nominal][i_fs][i_cat],histos_ZX[Settings::nominal][i_fs][i_cat] );
 			legend->Draw();
 			
 			// Draw lumi
@@ -1054,9 +1174,9 @@ void OSmethod::PlotZXContributions( TString folder )
 			
 			c_zx->cd();
 			
-			histos_ZX[i_fs][i_cat]->SetLineColor(kGreen-1);
-			histos_ZX[i_fs][i_cat]->SetFillColor(kGreen-1);
-			histos_ZX[i_fs][i_cat]->Draw("HIST");
+			histos_ZX[Settings::nominal][i_fs][i_cat]->SetLineColor(kGreen-1);
+			histos_ZX[Settings::nominal][i_fs][i_cat]->SetFillColor(kGreen-1);
+			histos_ZX[Settings::nominal][i_fs][i_cat]->Draw("HIST");
 			lumi->set_lumi(c_zx, _lumi, 0);
 			
 			_out_file_name = folder + "/" + "ZX_OS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
@@ -1064,16 +1184,7 @@ void OSmethod::PlotZXContributions( TString folder )
       }
    }
 	
-	cout << endl;
-	cout << "==============================================================" << endl;
-	cout << "[INFO] Control printout for OS Z+X yields in final states "<< endl;
-	cout << "==============================================================" << endl;
-	for( int i_fs = 0; i_fs <= Settings::fs4l ; i_fs++ )
-	{
-		yield = histos_ZX[i_fs][Settings::inclusive]->IntegralAndError(0,histos_ZX[i_fs][Settings::inclusive]->GetSize() - 2,int_error);
-		cout << "Category: " << _s_category.at(Settings::inclusive) << "   Final state: " << _s_final_state.at(i_fs) << endl;
-		cout << yield << " +/- " << int_error << " (stat.) " << endl;
-	}
+	
 }
 //========================================================================================================
 
@@ -1108,8 +1219,8 @@ void OSmethod::FitZX( TString folder )
 			fit_function->SetParameter(4,100.);
 			fit_function->SetParameter(5,10.);
 			
-			histos_ZX[i_fs][i_cat]->Fit("fit_function");
-			histos_ZX[i_fs][i_cat]->Draw("");
+			histos_ZX[Settings::nominal][i_fs][i_cat]->Fit("fit_function");
+			histos_ZX[Settings::nominal][i_fs][i_cat]->Draw("");
 			
 			// Draw lumi
 			lumi->set_lumi(c_zx, _lumi, 0);

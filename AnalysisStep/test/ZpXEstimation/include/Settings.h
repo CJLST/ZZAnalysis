@@ -83,6 +83,14 @@ public:
 		
 	};
 	
+	enum _FR_variations
+	{
+		nominal = 0,
+		Up      = 1,
+		Dn      = 2,
+		MAX_NUM_OF_FR_VARIATIONS
+	};
+	
 	enum _Z_mass_windows
 	{
 		_40_MZ1_120 = 0 ,
@@ -99,6 +107,7 @@ public:
    static const int num_of_regions_os        = MAX_NUM_OF_REGIONS_OS;
    static const int num_of_regions_ss        = MAX_NUM_OF_REGIONS_SS;
    static const int num_of_fake_rates        = MAX_NUM_OF_FAKE_RATES;
+   static const int num_of_fr_variations     = MAX_NUM_OF_FR_VARIATIONS;
 	static const int num_of_z_mass_windows    = MAX_NUM_OF_Z_MASS_WINDOWS;
 
    private:
