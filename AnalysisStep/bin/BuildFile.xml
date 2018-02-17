@@ -15,3 +15,14 @@
 <bin   name="run_yields" file="../test/Plotter_v2/run_yields.cpp">
    <lib   name="ZZAnalysisAnalysisStepTestPlotter_v2Src"/>
 </bin>
+
+<library   file="../test/ZpXEstimation/src/*.cpp" name="ZZAnalysisAnalysisStepTestZpXEstimationSrc">
+</library>
+
+<bin   name="run_OS" file="../test/ZpXEstimation/run_OS.cpp">
+   <lib   name="ZZAnalysisAnalysisStepTestZpXEstimationSrc"/>
+</bin>
+
+<bin   name="run_SS" file="../test/ZpXEstimation/run_SS.cpp">
+   <lib   name="ZZAnalysisAnalysisStepTestZpXEstimationSrc"/>
+</bin>
