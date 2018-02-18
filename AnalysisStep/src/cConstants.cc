@@ -10,8 +10,7 @@ cConstantSpline::cConstantSpline(const TString& filename) : filename_(filename),
 void cConstantSpline::initspline(bool isDbkg) {
   if (!spline_) {
     TFile* f_ =TFile::Open(filename_);
-    if(isDbkg) spline_.reset((TSpline3*)(f_->Get("sp_gr_varTrue_Constant_Smooth")->Clone()));
-	 else spline_.reset((TSpline3*)(f_->Get("sp_gr_varReco_Constant_Smooth")->Clone()));
+    spline_.reset((TSpline3*)(f_->Get("sp_gr_varReco_Constant_Smooth")->Clone()));
     f_->Close();
   }
   assert(spline_.get());
