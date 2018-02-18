@@ -113,8 +113,12 @@ def main(options):
 #			if (z%100000 == 0):
 #				percent = z/float(entries)*100
 #				print "%.2f %% processed..." %percent
-			PUWeight[0] = PUweights[int(tree.NTrueInt)]
-			overallEventWeight[0] = PUWeight[0]*tree.genHEPMCweight*tree.dataMCWeight
+			if (tree.NTrueInt > 99. or tree.NTrueInt < 0.):#protect agains crazy values of NTrueInt
+				PUWeight[0] = 0.
+				overallEventWeight[0] = 0.
+			else:
+				PUWeight[0] = PUweights[int(tree.NTrueInt)]
+				overallEventWeight[0] = PUWeight[0]*tree.genHEPMCweight*tree.dataMCWeight
 			gen_sumWeights += overallEventWeight[0]
 			gen_sumGenMCWeight += tree.genHEPMCweight
 			gen_sumPUWeight += PUWeight[0]
@@ -134,12 +138,23 @@ def main(options):
 		tree_new.GetCurrentFile().Write("",ROOT.TObject.kOverwrite)
 		hCounter_new.Write("",ROOT.TObject.kOverwrite)
 
+		if (directory != "ZZTree" or (not options.failedTree)):
+			continue
+		print directory + "/candTree_failed"
+		ftree = f.Get(directory+"/candTree_failed")
+		ftree.SetBranchStatus("*", 1);
+		#--- Write to new file
+		directory_new.cd()
+		ftree_new = ftree.CloneTree()
+		ftree_new.GetCurrentFile().Write("",ROOT.TObject.kOverwrite)
+
 
 
 
 if __name__ == "__main__":  
     parser = OptionParser()
     parser.add_option("-i", "--input",     default="~/Moriond2016/CMSSW_7_6_3/src/PhysicsTools/TagAndProbe/test/TnPTree_data.root",           help="Input filename")
+    parser.add_option("--failedTree", action="store_true", default=False, dest="failedTree")
 
     (options, arg) = parser.parse_args()
      
