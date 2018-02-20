@@ -450,8 +450,8 @@ void ZNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& eSetu
   Handle<edm::View<pat::Jet> > CleanedJets;
   event.getByToken(jetToken, CleanedJets);
   for(edm::View<pat::Jet>::const_iterator jet = CleanedJets->begin(); jet != CleanedJets->end(); ++jet)
-    if(jet->pt()>30){
-      nCleanedJetsPt30++;
+    {
+      if(jet->pt()>30) nCleanedJetsPt30++;
       if (addJets) FillJet(*jet);
     }
 
