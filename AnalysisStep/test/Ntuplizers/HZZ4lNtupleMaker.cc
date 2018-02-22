@@ -180,6 +180,8 @@ namespace {
   std::vector<float> LepRecoSF_Unc;
   std::vector<float> LepSelSF;
   std::vector<float> LepSelSF_Unc;
+  std::vector<float> LepScale_Unc;
+  std::vector<float> LepSmear_Unc;
 
 
   std::vector<float> fsrPt;
@@ -1519,6 +1521,9 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   LepRecoSF_Unc.clear();
   LepSelSF.clear();
   LepSelSF_Unc.clear();
+	
+  LepScale_Unc.clear();
+  LepSmear_Unc.clear();
 
   TLE_dR_Z = -1;
   fsrPt.clear();
@@ -1682,6 +1687,8 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     LepisID .push_back( userdatahelpers::getUserFloat(leptons[i],"ID") );
     LepBDT  .push_back( lepFlav==11 ||lepFlav==22 ? userdatahelpers::getUserFloat(leptons[i],"BDT") : 0. );
     LepMissingHit.push_back( lepFlav==11 ? userdatahelpers::getUserFloat(leptons[i],"missingHit") : 0 );
+    LepScale_Unc.push_back( userdatahelpers::getUserFloat(leptons[i],"scale_unc") );
+    LepSmear_Unc.push_back( userdatahelpers::getUserFloat(leptons[i],"smear_unc") );
     //LepChargedHadIso[i].push_back( userdatahelpers::getUserFloat(leptons[i],"PFChargedHadIso") );
     //LepNeutralHadIso[i].push_back( userdatahelpers::getUserFloat(leptons[i],"PFNeutralHadIso") );
     //LepPhotonIso[i].push_back( userdatahelpers::getUserFloat(leptons[i],"PFPhotonIso") );
@@ -2329,7 +2336,8 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("LepRecoSF_Unc",LepRecoSF_Unc, false);
   myTree->Book("LepSelSF",LepSelSF, false);
   myTree->Book("LepSelSF_Unc",LepSelSF_Unc, false);
-
+  myTree->Book("LepScale_Unc",LepScale_Unc, false);
+  myTree->Book("LepSmear_Unc",LepSmear_Unc, false);
 
   myTree->Book("fsrPt",fsrPt, false);
   myTree->Book("fsrEta",fsrEta, false);

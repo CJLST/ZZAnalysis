@@ -507,6 +507,7 @@ process.softMuons = cms.EDProducer("MuFiller",
     sampleType = cms.int32(SAMPLE_TYPE),
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
     cut = cms.string("userFloat('dxy')<0.5 && userFloat('dz')<1."),
+    correctionFile = process.calibratedMuons.identifier,
     flags = cms.PSet(
         ID = cms.string(TIGHTMUON), # tight muon ID
         isSIP = cms.string(SIP),
@@ -645,6 +646,7 @@ process.softElectrons = cms.EDProducer("EleFiller",
 #       Note: passCombRelIsoPFFSRCorr is currently set in LeptonPhotonMatcher for new FSR strategy; in ZZCandidateFiller for the old one
         ),
    	mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16HZZV1Values"), # (when running VID)
+   	correctionFile = process.calibratedPatElectrons.correctionFile,
    )
 #94X BDT with ID and Isolation
 if (LEPTON_SETUP == 2017):
