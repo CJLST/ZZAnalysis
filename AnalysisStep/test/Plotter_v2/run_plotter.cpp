@@ -29,7 +29,7 @@ int main( int argc, char *argv[] )
    TString file_name_FR = "/FakeRates_SS_Moriond18.root";
    
    TString Data        = path + "AllData" + file_name;
-	TString FakeRates   = "./../data/FakeRates" + file_name_FR;
+	TString FakeRates   = "../../data/FakeRates" + file_name_FR;
 	
    TString ggH125      = path + "ggH125"     + file_name;
    TString VBFH125     = path + "VBFH125"    + file_name;
@@ -37,6 +37,8 @@ int main( int argc, char *argv[] )
    TString WmH125      = path + "WminusH125" + file_name;
    TString ZH125       = path + "ZH125"      + file_name;
    TString ttH125      = path + "ttH125"     + file_name;
+   TString bbH125      = path + "bbH125"     + file_name;
+   TString tqH125      = path + "tqH125"     + file_name;
 	
    TString ZZTo4l      = path + "ZZTo4l"                     + file_name;
    TString ggZZ4e      = path + "ggTo4e_Contin_MCFM701"      + file_name;
@@ -55,6 +57,8 @@ int main( int argc, char *argv[] )
    plotter->MakeHistograms(VBFH125);
    plotter->MakeHistograms(ZH125);
    plotter->MakeHistograms(ttH125);
+   plotter->MakeHistograms(bbH125);
+   plotter->MakeHistograms(tqH125);
    plotter->MakeHistograms(WpH125);
    plotter->MakeHistograms(WmH125);
    plotter->MakeHistograms(ZZTo4l);

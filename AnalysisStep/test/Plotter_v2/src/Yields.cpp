@@ -141,6 +141,7 @@ void Yields::MakeHistograms( TString input_file_name )
 
       // Final event weight
       _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight) / gen_sum_weights;
+      if ( input_file_name.Contains("ggH") ) _event_weight *= ggH_NNLOPS_weight; // reweight POWHEG ggH to NNLOPS
    
       // Fill M4l histograms
        yields_histos->FillYields( ZZMass, _event_weight, _current_final_state, _current_category, _current_process );
@@ -419,6 +420,18 @@ int Yields::find_current_process( TString input_file_name , int genExtInfo, int 
    if ( input_file_name.Contains("ttH125") && n_gen_assoc_lep == 0)     current_process = Settings::yH125ttHhad;
    if ( input_file_name.Contains("ttH126") && n_gen_assoc_lep == 0)     current_process = Settings::yH126ttHhad;
    if ( input_file_name.Contains("ttH130") && n_gen_assoc_lep == 0)     current_process = Settings::yH130ttHhad;
+	
+	if ( input_file_name.Contains("bbH120") )     current_process = Settings::yH120bbH;
+   if ( input_file_name.Contains("bbH124") )     current_process = Settings::yH124bbH;
+   if ( input_file_name.Contains("bbH125") )     current_process = Settings::yH125bbH;
+   if ( input_file_name.Contains("bbH126") )     current_process = Settings::yH126bbH;
+   if ( input_file_name.Contains("bbH130") )     current_process = Settings::yH130bbH;
+	
+	if ( input_file_name.Contains("tqH120") )     current_process = Settings::yH120tqH;
+   if ( input_file_name.Contains("tqH124") )     current_process = Settings::yH124tqH;
+   if ( input_file_name.Contains("tqH125") )     current_process = Settings::yH125tqH;
+   if ( input_file_name.Contains("tqH126") )     current_process = Settings::yH126tqH;
+   if ( input_file_name.Contains("tqH130") )     current_process = Settings::yH130tqH;
       
    if ( input_file_name.Contains("ZZTo4l") )         current_process = Settings::yqqZZ;
    if ( input_file_name.Contains("ggTo4e") )         current_process = Settings::yggZZ;

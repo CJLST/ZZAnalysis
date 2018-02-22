@@ -407,6 +407,8 @@ public :
    Float_t         KFactor_QCD_qqZZ_Pt;
    Short_t         genFinalState;
    Int_t           genProcessId;
+   Float_t         ggH_NNLOPS_weight;
+   Float_t			 ggH_NNLOPS_weight_unc;
    Float_t         genHEPMCweight;
    Float_t         PUWeight;
    Float_t         dataMCWeight;
@@ -849,6 +851,8 @@ public :
    TBranch        *b_KFactor_QCD_qqZZ_Pt;   //!
    TBranch        *b_genFinalState;   //!
    TBranch        *b_genProcessId;   //!
+	TBranch        *b_ggH_NNLOPS_weight;
+   TBranch			*b_ggH_NNLOPS_weight_unc;
    TBranch        *b_genHEPMCweight;   //!
    TBranch        *b_PUWeight;   //!
    TBranch        *b_dataMCWeight;   //!
@@ -1391,7 +1395,12 @@ void Tree::Init(TTree *tree, TString input_file_name)
          fChain->SetBranchAddress("KFactor_QCD_qqZZ_M", &KFactor_QCD_qqZZ_M, &b_KFactor_QCD_qqZZ_M);
          fChain->SetBranchAddress("KFactor_QCD_qqZZ_Pt", &KFactor_QCD_qqZZ_Pt, &b_KFactor_QCD_qqZZ_Pt);
       }
-      
+		
+      if ( input_file_name.Contains("ggH") )
+      {
+      	fChain->SetBranchAddress("ggH_NNLOPS_weight", &ggH_NNLOPS_weight, &b_ggH_NNLOPS_weight);
+      	fChain->SetBranchAddress("ggH_NNLOPS_weight_unc", &ggH_NNLOPS_weight_unc, &b_ggH_NNLOPS_weight_unc);
+		}
       fChain->SetBranchAddress("genFinalState", &genFinalState, &b_genFinalState);
       fChain->SetBranchAddress("genProcessId", &genProcessId, &b_genProcessId);
       fChain->SetBranchAddress("genHEPMCweight", &genHEPMCweight, &b_genHEPMCweight);

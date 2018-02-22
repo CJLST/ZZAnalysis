@@ -130,6 +130,7 @@ void Plotter::MakeHistograms( TString input_file_name )
    
       // Final event weight
       _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight) / gen_sum_weights;
+      if ( input_file_name.Contains("ggH") ) _event_weight *= ggH_NNLOPS_weight; // reweight POWHEG ggH to NNLOPS
       
       // Calculate kinematic discriminants
       KD = p_GG_SIG_ghg2_1_ghz1_1_JHUGen / ( p_GG_SIG_ghg2_1_ghz1_1_JHUGen + p_QQB_BKG_MCFM*getDbkgkinConstant(Z1Flav*Z2Flav,ZZMass) );
@@ -574,6 +575,8 @@ int Plotter::find_current_process( TString input_file_name , int genExtInfo, int
 	if ( input_file_name.Contains("WminusH125") && genExtInfo <= 10)  current_process = Settings::H125VH;
 	if ( input_file_name.Contains("ZH125")      && genExtInfo <= 10)  current_process = Settings::H125VH;
    if ( input_file_name.Contains("ttH125")     && n_gen_assoc_lep == 0)  current_process = Settings::H125ttH;
+   if ( input_file_name.Contains("bbH125") )         current_process = Settings::H125bbH;
+   if ( input_file_name.Contains("tqH125") )         current_process = Settings::H125tqH;
    if ( input_file_name.Contains("ZZTo4l") )         current_process = Settings::qqZZ;
    if ( input_file_name.Contains("ggTo4e") )         current_process = Settings::ggZZ;
    if ( input_file_name.Contains("ggTo4mu") )        current_process = Settings::ggZZ;

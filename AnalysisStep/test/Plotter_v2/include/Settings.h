@@ -83,6 +83,8 @@ public:
 		ZH_had  = 5,
 		ttH_lep = 6,
 		ttH_had = 7,
+		bbH     = 8,
+		tqH     = 9,
 		MAX_NUM_OF_PRODUCTION_MODES
 		
 	};
@@ -95,10 +97,12 @@ public:
       H125VBF = 3,
       H125VH  = 4,
       H125ttH = 5,
-      qqZZ    = 6,
-      ggZZ    = 7,
-      DY      = 8,
-      ttbar   = 9,
+      H125bbH = 6,
+      H125tqH = 7,
+      qqZZ    = 8,
+      ggZZ    = 9,
+      DY      = 10,
+      ttbar   = 11,
       MAX_NUM_OF_PROCESSES
    };
    
@@ -150,10 +154,20 @@ public:
       yH125ttHhad= 43,
       yH126ttHhad= 44,
       yH130ttHhad= 45,
-      yqqZZ      = 46,
-      yggZZ      = 47,
-      yDY        = 48,
-      yttbar     = 49,
+		yH120bbH   = 46,
+      yH124bbH   = 47,
+      yH125bbH   = 48,
+      yH126bbH   = 49,
+      yH130bbH   = 50,
+		yH120tqH   = 51,
+      yH124tqH   = 52,
+      yH125tqH   = 53,
+      yH126tqH   = 54,
+      yH130tqH   = 55,
+      yqqZZ      = 56,
+      yggZZ      = 57,
+      yDY        = 58,
+      yttbar     = 59,
       MAX_NUM_OF_PROCESSES_YIELDS
    };
    
