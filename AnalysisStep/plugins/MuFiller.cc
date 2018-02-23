@@ -53,7 +53,7 @@ class MuFiller : public edm::EDProducer {
   const CutSet<pat::Muon> flags;
   //  edm::EDGetTokenT<double> rhoToken; // Rho correction currently not used.
   edm::EDGetTokenT<vector<Vertex> > vtxToken;
-
+  KalmanMuonCalibrator *mu_calibrator;
 };
 
 
@@ -68,6 +68,7 @@ MuFiller::MuFiller(const edm::ParameterSet& iConfig) :
   //  rhoToken = consumes<double>(LeptonIsoHelper::getMuRhoTag(sampleType, setup)); // Rho correction currently not used.
   vtxToken = consumes<vector<Vertex> >(edm::InputTag("goodPrimaryVertices"));
   produces<pat::MuonCollection>();
+  mu_calibrator = new KalmanMuonCalibrator(correctionFile);
 }
 
 
@@ -86,8 +87,6 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   edm::Handle<vector<Vertex> > vertices;
   iEvent.getByToken(vtxToken,vertices);
-	
-  KalmanMuonCalibrator mu_calibrator(correctionFile);
 
   // Output collection
   auto result = std::make_unique<pat::MuonCollection>();
@@ -139,8 +138,8 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  
 
 	 // https://twiki.cern.ch/twiki/bin/view/CMS/MuonScaleResolKalman
-    float pt_up = mu_calibrator.getCorrectedPt(l.pt(),l.eta(),l.phi(),(l.pdgId()/abs(l.pdgId())));
-    float pt_smear = mu_calibrator.smearForSync(l.pt(),l.eta());
+    float pt_up = mu_calibrator->getCorrectedPt(l.pt(),l.eta(),l.phi(),(l.pdgId()/abs(l.pdgId())));
+    float pt_smear = mu_calibrator->smearForSync(l.pt(),l.eta());
 	 float scale_unc = pt_up/l.pt();
 	 float smear_unc = pt_smear/l.pt();
     
