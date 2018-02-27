@@ -1353,7 +1353,7 @@ if (APPLYJEC and SAMPLE_TYPE == 2017):
 #                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV1_MC_AK4PFchs'), #for 80X/Moriond16
 #                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV6_MC_AK4PFchs'), #for 80X/ICHEP16
 #                    tag    = cms.string('JetCorrectorParametersCollection_Summer16_23Sep2016V4_MC_AK4PFchs'), #for 80X/Moriond17
-						  tag    = cms.string('JetCorrectorParametersCollection_Fall17_17Nov2017_V4_MC_AK4PFchs'), #for 94X/Moriond18
+						  tag    = cms.string('JetCorrectorParametersCollection_Fall17_17Nov2017_V6_MC_AK4PFchs'), #for 94X/Moriond18
                     label  = cms.untracked.string('AK4PFchs')
                     ),
                 ),
@@ -1361,7 +1361,7 @@ if (APPLYJEC and SAMPLE_TYPE == 2017):
 #             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Spring16_25nsV1_MC.db'), #for 80X/Moriond16
 #             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Spring16_25nsV6_MC.db'), #for 80X/ICHEP16
 #             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Summer16_23Sep2016V4_MC.db'), #for 80X/Moriond17
-             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall17_17Nov2017_V4_MC.db'), #for 94X/Moriond18
+             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall17_17Nov2017_V6_MC.db'), #for 94X/Moriond18
             )
     else:
         process.jec = cms.ESSource("PoolDBESSource",
@@ -1375,13 +1375,13 @@ if (APPLYJEC and SAMPLE_TYPE == 2017):
 #                    tag    = cms.string('JetCorrectorParametersCollection_Fall15_25nsV2_DATA_AK4PFchs'), #for 76X
 #                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV6_DATA_AK4PFchs'), #for 80X/ICHEP16
 #                    tag    = cms.string('JetCorrectorParametersCollection_Summer16_23Sep2016AllV4_DATA_AK4PFchs'), #for 80X/Moriond17
-                    tag    = cms.string('JetCorrectorParametersCollection_Fall17_17Nov2017_V4_MC_AK4PFchs'), #for 94X/Moriond18
+                    tag    = cms.string('JetCorrectorParametersCollection_Fall17_17Nov2017BCDEF_V6_DATA_AK4PFchs'), #for 94X/Moriond18
                     label  = cms.untracked.string('AK4PFchs')
                     ),
                 ),
 #            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall15_25nsV2_DATA.db'), #for 76X
 #            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Summer16_23Sep2016AllV4_DATA.db'), #for 80X/ICHEP16
-            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall17_17Nov2017_V4_MC.db'), #for 94X/Moriond18 FIXME!!!! Use MC corrections before Data arrives
+            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall17_17Nov2017BCDEF_V6_DATA.db'),
             )
 
     ## add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
