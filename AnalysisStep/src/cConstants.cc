@@ -51,7 +51,7 @@ extern "C" float getDVBF2jetsWP(float ZZMass, bool useQGTagging){
     return 0.363;
   }
   else
-    return 0.4894;
+    return 0.46386;
 }
 extern "C" float getDVBF1jetWP(float ZZMass, bool useQGTagging){
   if (useQGTagging) {
