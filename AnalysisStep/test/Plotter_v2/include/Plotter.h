@@ -103,6 +103,9 @@ private:
    float jetMass[99];
    float jetQGL[99];
    float jetPgOverPq[99];
+	
+   float SIP_leading, SIP_trailing;
+   float ISO_leading, ISO_trailing;
    
    Float_t KD;
    Float_t D2jet;

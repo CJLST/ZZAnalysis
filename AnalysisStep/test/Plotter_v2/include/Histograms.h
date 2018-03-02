@@ -88,6 +88,9 @@ public:
    void FillDvsM4l( float, float, int, float, float, float, float, float, float, int, int, int );
    
    void FillYields( float, float, int, int, int );
+	
+   void FillOthers( float, float, float, float, float, float, float, float, int, int, int, float, float, int, int, int );
+   void FillOthersZX( float, float, float, float, float, float, float, float, int, int, int, float, float, int, int );
    
    void SaveHistos( string );
    void SaveYieldHistos( string );

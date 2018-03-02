@@ -27,7 +27,7 @@ int main( int argc, char *argv[] )
    TString path = "";
    TString file_name = "/ZZ4lAnalysis.root";
    TString file_name_FR = "/FakeRates_SS_Moriond18.root";
-   
+	
    TString Data        = path + "AllData" + file_name;
 	TString FakeRates   = "../../data/FakeRates" + file_name_FR;
 	
@@ -82,7 +82,7 @@ int main( int argc, char *argv[] )
 // Plotting of blinded plots
 //===========================
    plotter->GetHistos( "Blinded" );
-   
+
    plotter->plot_1D_all_cat("Blinded", "M4lMain",       "Plots/Blinded");
    plotter->plot_1D_all_cat("Blinded", "M4lMainZoomed", "Plots/Blinded");
 
@@ -98,15 +98,15 @@ int main( int argc, char *argv[] )
    plotter->plot_1D_single("Blinded", "MZ2",             "Plots/Blinded", Settings::fs4mu, Settings::inclusive);
 	plotter->plot_1D_single("Blinded", "MZ1",             "Plots/Blinded", Settings::fs2e2mu, Settings::inclusive);
    plotter->plot_1D_single("Blinded", "MZ2",             "Plots/Blinded", Settings::fs2e2mu, Settings::inclusive);
-   
+
    plotter->plot_1D_single("Blinded", "KD", "Plots/Blinded", Settings::fs4l, Settings::inclusive);
    plotter->plot_1D_single("Blinded", "KD", "Plots/Blinded", Settings::fs4e, Settings::inclusive);
    plotter->plot_1D_single("Blinded", "KD", "Plots/Blinded", Settings::fs4mu, Settings::inclusive);
    plotter->plot_1D_single("Blinded", "KD", "Plots/Blinded", Settings::fs2e2mu, Settings::inclusive);
-   
-   
+
+
    plotter->plot_2D_single("Blinded", "MZ1vsMZ2", "Plots/Blinded", Settings::inclusive);
-   
+
    plotter->plot_2D_error_single("Blinded", "KDvsM4l",          "Plots/Blinded", Settings::inclusive);
    plotter->plot_2D_error_single("Blinded", "KDvsM4lZoomed",    "Plots/Blinded", Settings::inclusive);
    plotter->plot_2D_error_single("Blinded", "KDvsM4lHighMass",  "Plots/Blinded", Settings::inclusive);
@@ -128,23 +128,35 @@ int main( int argc, char *argv[] )
 //=============================
 // Plotting of unblinded plots
 //=============================
-
+//
 //   setTDRStyle(); // Needed to reset margins set by 2D histograms
 //
 //   plotter->GetHistos("Unblinded");
-//   
+//
 //   plotter->plot_1D_all_cat("Unblinded", "M4lMain",       "Plots/Unblinded");
 //   plotter->plot_1D_all_cat("Unblinded", "M4lMainZoomed", "Plots/Unblinded");
-//      
+//
 //   plotter->plot_1D_all_fs("Unblinded", "M4lMain",       "Plots/Unblinded");
 //   plotter->plot_1D_all_fs("Unblinded", "M4lMainZoomed", "Plots/Unblinded");
+//
+//   plotter->plot_1D_all_fs("Unblinded", "PFMET",             "Plots/Unblinded");
+//   plotter->plot_1D_all_fs("Unblinded", "Pt4l",              "Plots/Unblinded");
+//   plotter->plot_1D_all_fs("Unblinded", "Eta4l",             "Plots/Unblinded");
+//   plotter->plot_1D_all_fs("Unblinded", "SIP_leading",       "Plots/Unblinded");
+//   plotter->plot_1D_all_fs("Unblinded", "SIP_trailing",      "Plots/Unblinded");
+//   plotter->plot_1D_all_fs("Unblinded", "ISO_leading",       "Plots/Unblinded");
+//   plotter->plot_1D_all_fs("Unblinded", "ISO_trailing",      "Plots/Unblinded");
+//   plotter->plot_1D_all_fs("Unblinded", "NExtraLep",         "Plots/Unblinded");
+//   plotter->plot_1D_all_fs("Unblinded", "NJets",             "Plots/Unblinded");
+//   plotter->plot_1D_all_fs("Unblinded", "NJetsBTagged",      "Plots/Unblinded");
+//   plotter->plot_1D_all_fs("Unblinded", "M4l_110150_HighKD", "Plots/Unblinded");
 //
 //   plotter->plot_1D_single("Unblinded", "M4lMainHighMass", "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
 //   plotter->plot_1D_single("Unblinded", "MZ1",             "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
 //   plotter->plot_1D_single("Unblinded", "MZ2",             "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
 //   plotter->plot_1D_single("Unblinded", "MZ1_M4L118130",   "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
 //   plotter->plot_1D_single("Unblinded", "MZ2_M4L118130",   "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-//  
+//
 //   plotter->plot_1D_single("Unblinded", "KD",              "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
 //   plotter->plot_1D_single("Unblinded", "KD_M4L118130",    "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
 //   plotter->plot_1D_single("Unblinded", "D1jet_M4L118130", "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
@@ -153,10 +165,9 @@ int main( int argc, char *argv[] )
 //   plotter->plot_1D_single("Unblinded", "DZH_M4L118130",   "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
 //   plotter->plot_1D_single("Unblinded", "DVH_M4L118130",   "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
 //
-//   
 //   plotter->plot_2D_single("Unblinded", "MZ1vsMZ2",           "Plots/Unblinded", Settings::inclusive);
 //   plotter->plot_2D_single("Unblinded", "MZ1vsMZ2_M4L118130", "Plots/Unblinded", Settings::inclusive);
-//   
+//
 //   plotter->plot_2D_error_single("Unblinded", "KDvsM4l",          "Plots/Unblinded", Settings::inclusive);
 //   plotter->plot_2D_error_single("Unblinded", "KDvsM4lZoomed",    "Plots/Unblinded", Settings::inclusive);
 //   plotter->plot_2D_error_single("Unblinded", "KDvsM4lHighMass",  "Plots/Unblinded", Settings::inclusive);
@@ -165,13 +176,13 @@ int main( int argc, char *argv[] )
 //   plotter->plot_2D_error_single("Unblinded", "DWHvsM4lZoomed",   "Plots/Unblinded", Settings::inclusive);
 //   plotter->plot_2D_error_single("Unblinded", "DZHvsM4lZoomed",   "Plots/Unblinded", Settings::inclusive);
 //   plotter->plot_2D_error_single("Unblinded", "DVHvsM4lZoomed",   "Plots/Unblinded", Settings::inclusive);
-//   
+//
 //   plotter->plot_2D_error_all_cat("Unblinded", "KDvsM4lZoomed",    "Plots/Unblinded");
 //   plotter->plot_2D_error_all_cat("Unblinded", "D1jetvsM4lZoomed", "Plots/Unblinded");
 //   plotter->plot_2D_error_all_cat("Unblinded", "D2jetvsM4lZoomed", "Plots/Unblinded");
 //   plotter->plot_2D_error_all_cat("Unblinded", "DWHvsM4lZoomed",   "Plots/Unblinded");
 //   plotter->plot_2D_error_all_cat("Unblinded", "DZHvsM4lZoomed",   "Plots/Unblinded");
 //   plotter->plot_2D_error_all_cat("Unblinded", "DVHvsM4lZoomed",   "Plots/Unblinded");
-   
+	
    delete plotter;
 }
