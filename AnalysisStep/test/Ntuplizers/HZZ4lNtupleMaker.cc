@@ -532,6 +532,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   theChannel(myHelper.channel()), // Valid options: ZZ, ZLL, ZL
   theCandLabel(pset.getUntrackedParameter<string>("CandCollection")), // Name of input ZZ collection
   theFileName(pset.getUntrackedParameter<string>("fileName")),
+  myTree(nullptr),
   skipEmptyEvents(pset.getParameter<bool>("skipEmptyEvents")), // Do not store events with no selected candidate (normally: true)
   failedTreeLevel(FailedTreeLevel(pset.getParameter<int>("failedTreeLevel"))),
   metTag(pset.getParameter<edm::InputTag>("metSrc")),
@@ -1857,6 +1858,8 @@ void HZZ4lNtupleMaker::endJob()
     h[i]->GetXaxis()->SetBinLabel(41,"gen_sumGenMCWeight");
     h[i]->GetXaxis()->SetBinLabel(42,"gen_sumPUWeight");
   }
+
+  delete myTree;
 
   return;
 }

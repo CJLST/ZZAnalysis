@@ -38,7 +38,7 @@ class MuFiller : public edm::EDProducer {
   explicit MuFiller(const edm::ParameterSet&);
     
   /// Destructor
-  ~MuFiller(){};  
+  ~MuFiller();
 
  private:
   virtual void beginJob(){};  
@@ -69,6 +69,9 @@ MuFiller::MuFiller(const edm::ParameterSet& iConfig) :
   vtxToken = consumes<vector<Vertex> >(edm::InputTag("goodPrimaryVertices"));
   produces<pat::MuonCollection>();
   mu_calibrator = new KalmanMuonCalibrator(correctionFile);
+}
+MuFiller::~MuFiller(){
+  delete mu_calibrator;
 }
 
 

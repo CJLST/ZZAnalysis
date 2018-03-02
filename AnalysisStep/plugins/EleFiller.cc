@@ -39,9 +39,7 @@ class EleFiller : public edm::EDProducer {
   explicit EleFiller(const edm::ParameterSet&);
     
   /// Destructor
-  ~EleFiller(){
-    //delete myMVATrig;
-  };  
+  ~EleFiller();
 
  private:
   virtual void beginJob(){};  
@@ -59,7 +57,7 @@ class EleFiller : public edm::EDProducer {
   EDGetTokenT<ValueMap<float> > BDTValueMapToken;
   string correctionFile;
   EnergyScaleCorrection_class *eScaler;
-  TRandom3 *rgen_;
+  TRandom3 rgen_;
 };
 
 
@@ -71,7 +69,8 @@ EleFiller::EleFiller(const edm::ParameterSet& iConfig) :
   flags(iConfig.getParameter<ParameterSet>("flags")),
   //myMVATrig(0),
   BDTValueMapToken(consumes<ValueMap<float> >(iConfig.getParameter<InputTag>("mvaValuesMap"))),
-  correctionFile(iConfig.getParameter<std::string>("correctionFile"))
+  correctionFile(iConfig.getParameter<std::string>("correctionFile")),
+  rgen_(0)
 {
   rhoToken = consumes<double>(LeptonIsoHelper::getEleRhoTag(sampleType, setup));
   vtxToken = consumes<vector<Vertex> >(edm::InputTag("goodPrimaryVertices"));
@@ -79,8 +78,10 @@ EleFiller::EleFiller(const edm::ParameterSet& iConfig) :
 	
  // Initialize scale correction class
   eScaler = new EnergyScaleCorrection_class(correctionFile);
-  rgen_ = new TRandom3(0);
 
+}
+EleFiller::~EleFiller(){
+  delete eScaler;
 }
 
 
@@ -234,8 +235,8 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 //0, -1 for 1 "sigma" down in phi
 	 //float sigma_up= eScaler.getSmearingSigma(iEvent.id().run(), l.isEB(), l.full5x5_r9(), l.superCluster()->eta(), l.correctedEcalEnergy() / cosh(l.superCluster()->eta()), 12,  1.,  0.);
 	 float sigma_dn= eScaler->getSmearingSigma(iEvent.id().run(), l.isEB(), l.full5x5_r9(), l.superCluster()->eta(), l.correctedEcalEnergy() / cosh(l.superCluster()->eta()), 12, -1., -1.);
-	 //float smear_err_up = rgen_->Gaus(1, sigma_up);
-	 float smear_err_dn = rgen_->Gaus(1, sigma_dn);
+	 //float smear_err_up = rgen_.Gaus(1, sigma_up);
+	 float smear_err_dn = rgen_.Gaus(1, sigma_dn);
 
 	  
     //--- Embed user variables
