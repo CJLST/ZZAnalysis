@@ -76,8 +76,7 @@ int main( int argc, char *argv[] )
    TString bbH130      = path + "bbH130" + file_name;
 	
    TString tqH125      = path + "tqH125" + file_name;
-   
-   
+
    // Backgrounds
    TString ZZTo4l      = path + "ZZTo4l" + file_name;
    TString ggZZ4e      = path + "ggTo4e_Contin_MCFM701" + file_name;
@@ -108,21 +107,21 @@ int main( int argc, char *argv[] )
    yields->MakeHistograms(VBFH130);
 
    yields->MakeHistograms(ZH120);
-//   yields->MakeHistograms(ZH124);
+   yields->MakeHistograms(ZH124);
    yields->MakeHistograms(ZH125);
 //   yields->MakeHistograms(ZH126);
    yields->MakeHistograms(ZH130);
 
    yields->MakeHistograms(WpH120);
-//   yields->MakeHistograms(WpH124);
+   yields->MakeHistograms(WpH124);
    yields->MakeHistograms(WpH125);
-//   yields->MakeHistograms(WpH126);
+   yields->MakeHistograms(WpH126);
    yields->MakeHistograms(WpH130);
-//
+
    yields->MakeHistograms(WmH120);
-//   yields->MakeHistograms(WmH124);
+   yields->MakeHistograms(WmH124);
    yields->MakeHistograms(WmH125);
-//   yields->MakeHistograms(WmH126);
+   yields->MakeHistograms(WmH126);
    yields->MakeHistograms(WmH130);
 
    yields->MakeHistograms(ttH120);
@@ -142,7 +141,7 @@ int main( int argc, char *argv[] )
    yields->MakeHistograms(ZZTo4l);
    yields->MakeHistograms(ggZZ4e);
    yields->MakeHistograms(ggZZ4mu);
-   yields->MakeHistograms(ggZZ4tau);
+//   yields->MakeHistograms(ggZZ4tau);
    yields->MakeHistograms(ggZZ2e2mu);
    yields->MakeHistograms(ggZZ2e2tau);
    yields->MakeHistograms(ggZZ2mu2tau);

@@ -224,6 +224,9 @@ void Plotter::MakeHistograms( TString input_file_name )
       }
 		
       unblinded_histos->FillDvsM4l( ZZMass, KD, nCleanedJetsPt30, D1jet, D2jet, DWH, DZH, DVH, _event_weight, _current_final_state, _current_category, _current_process );
+
+		Pt_leading  = max(max(LepPt->at(0),LepPt->at(1)),max(LepPt->at(2),LepPt->at(3)));
+		Pt_trailing = min(min(LepPt->at(0),LepPt->at(1)),min(LepPt->at(2),LepPt->at(3)));
 		
 		SIP_leading  = max(max(LepSIP->at(0),LepSIP->at(1)),max(LepSIP->at(2),LepSIP->at(3)));
 		SIP_trailing = min(min(LepSIP->at(0),LepSIP->at(1)),min(LepSIP->at(2),LepSIP->at(3)));
@@ -233,10 +236,10 @@ void Plotter::MakeHistograms( TString input_file_name )
 		// Fill other histograms
       if ( blind(ZZMass) )
       {
-         blinded_histos->FillOthers( ZZMass, ZZPt, ZZEta, PFMET, SIP_leading, SIP_trailing, ISO_leading, ISO_trailing, nExtraLep, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, KD, _event_weight, _current_final_state, _current_category, _current_process );
+         blinded_histos->FillOthers( ZZMass, ZZPt, ZZEta, PFMET, Pt_leading, Pt_trailing, SIP_leading, SIP_trailing, ISO_leading, ISO_trailing, nExtraLep, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, KD, _event_weight, _current_final_state, _current_category, _current_process );
       }
 		
-      unblinded_histos->FillOthers( ZZMass, ZZPt, ZZEta, PFMET, SIP_leading, SIP_trailing, ISO_leading, ISO_trailing, nExtraLep, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, KD, _event_weight, _current_final_state, _current_category, _current_process );
+      unblinded_histos->FillOthers( ZZMass, ZZPt, ZZEta, PFMET, Pt_leading, Pt_trailing, SIP_leading, SIP_trailing, ISO_leading, ISO_trailing, nExtraLep, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, KD, _event_weight, _current_final_state, _current_category, _current_process );
 		
       
    } // end for loop
@@ -410,6 +413,9 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
          if ( nCleanedJetsPt30 >= 2 ) blinded_histos->FillDVHZX( ZZMass, DVH, _yield_SR, _current_final_state, _current_category );
       }
 		
+		Pt_leading  = max(max(LepPt->at(0),LepPt->at(1)),max(LepPt->at(2),LepPt->at(3)));
+		Pt_trailing = min(min(LepPt->at(0),LepPt->at(1)),min(LepPt->at(2),LepPt->at(3)));
+		
 		SIP_leading  = max(max(LepSIP->at(0),LepSIP->at(1)),max(LepSIP->at(2),LepSIP->at(3)));
 		SIP_trailing = min(min(LepSIP->at(0),LepSIP->at(1)),min(LepSIP->at(2),LepSIP->at(3)));
 		
@@ -418,10 +424,10 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
 		// Fill other histograms
       if ( blind(ZZMass) )
       {
-         blinded_histos->FillOthersZX( ZZMass, ZZPt, ZZEta, PFMET, SIP_leading, SIP_trailing, ISO_leading, ISO_trailing, nExtraLep, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, KD, _event_weight, _current_final_state, _current_category );
+         blinded_histos->FillOthersZX( ZZMass, ZZPt, ZZEta, PFMET, Pt_leading, Pt_trailing, SIP_leading, SIP_trailing, ISO_leading, ISO_trailing, nExtraLep, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, KD, _event_weight, _current_final_state, _current_category );
       }
 		
-      unblinded_histos->FillOthersZX( ZZMass, ZZPt, ZZEta, PFMET, SIP_leading, SIP_trailing, ISO_leading, ISO_trailing, nExtraLep, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, KD, _event_weight, _current_final_state, _current_category );
+      unblinded_histos->FillOthersZX( ZZMass, ZZPt, ZZEta, PFMET, Pt_leading, Pt_trailing, SIP_leading, SIP_trailing, ISO_leading, ISO_trailing, nExtraLep, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, KD, _event_weight, _current_final_state, _current_category );
    } // End events loop
    
    for (  int i_cat = 0; i_cat < num_of_categories - 1; i_cat++  )

@@ -253,6 +253,16 @@ Histograms::Histograms( double lumi, string blinding )
             histos_1D[Settings::PFMET][i_fs][i_cat][i_proc] = new TH1F(_histo_name.c_str(), _histo_labels.c_str(), Variables::PFMET().var_N_bin,
                                                                                         Variables::PFMET().var_min, Variables::PFMET().var_max);
 				
+				_histo_name = "Pt_leading" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
+            _histo_labels = ";" + Variables::Pt_leading().var_X_label + ";" + Variables::Pt_leading().var_Y_label;
+            histos_1D[Settings::Pt_leading][i_fs][i_cat][i_proc] = new TH1F(_histo_name.c_str(), _histo_labels.c_str(), Variables::Pt_leading().var_N_bin,
+                                                                                        Variables::Pt_leading().var_min, Variables::Pt_leading().var_max);
+
+            _histo_name = "Pt_trailing" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
+            _histo_labels = ";" + Variables::Pt_trailing().var_X_label + ";" + Variables::Pt_trailing().var_Y_label;
+            histos_1D[Settings::Pt_trailing][i_fs][i_cat][i_proc] = new TH1F(_histo_name.c_str(), _histo_labels.c_str(), Variables::Pt_trailing().var_N_bin,
+                                                                                        Variables::Pt_trailing().var_min, Variables::Pt_trailing().var_max);
+				
             _histo_name = "SIP_leading" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
             _histo_labels = ";" + Variables::SIP_leading().var_X_label + ";" + Variables::SIP_leading().var_Y_label;
             histos_1D[Settings::SIP_leading][i_fs][i_cat][i_proc] = new TH1F(_histo_name.c_str(), _histo_labels.c_str(), Variables::SIP_leading().var_N_bin,
@@ -416,6 +426,14 @@ Histograms::Histograms( double lumi, string blinding )
 			histos_1D_ZX[Settings::PFMET][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::PFMET().var_N_bin,
 																								Variables::PFMET().var_min, Variables::PFMET().var_max);
 		
+			_histo_name = "Pt_leading_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+			histos_1D_ZX[Settings::Pt_leading][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::Pt_leading().var_N_bin,
+																								Variables::Pt_leading().var_min, Variables::Pt_leading().var_max);
+
+			_histo_name = "Pt_trailing_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+			histos_1D_ZX[Settings::Pt_trailing][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::Pt_trailing().var_N_bin,
+																								Variables::Pt_trailing().var_min, Variables::Pt_trailing().var_max);
+			
 			_histo_name = "SIP_leading_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
 			histos_1D_ZX[Settings::SIP_leading][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::SIP_leading().var_N_bin,
 																								Variables::SIP_leading().var_min, Variables::SIP_leading().var_max);
@@ -941,11 +959,13 @@ void Histograms::FillYields( float M4l, float weight, int fs, int cat, int proc 
 //========
 // Others
 //====================================================================================
-void Histograms::FillOthers( float M4l, float ZZPt, float ZZEta, float PFMET, float SIP_leading, float SIP_trailing, float ISO_leading, float ISO_trailing, int NExtraLep, int NJets, int NJetsBTagged, float KD, float weight, int fs, int cat, int proc )
+void Histograms::FillOthers( float M4l, float ZZPt, float ZZEta, float PFMET, float Pt_leading, float Pt_trailing, float SIP_leading, float SIP_trailing, float ISO_leading, float ISO_trailing, int NExtraLep, int NJets, int NJetsBTagged, float KD, float weight, int fs, int cat, int proc )
 {
    histos_1D[Settings::PFMET][fs][cat][proc]       ->Fill(PFMET, (proc == Settings::Data) ? 1. : weight);
    histos_1D[Settings::Pt4l][fs][cat][proc]        ->Fill(ZZPt, (proc == Settings::Data) ? 1. : weight);
    histos_1D[Settings::Eta4l][fs][cat][proc]       ->Fill(ZZEta, (proc == Settings::Data) ? 1. : weight);
+   histos_1D[Settings::Pt_leading][fs][cat][proc]  ->Fill(Pt_leading, (proc == Settings::Data) ? 1. : weight);
+   histos_1D[Settings::Pt_trailing][fs][cat][proc] ->Fill(Pt_trailing, (proc == Settings::Data) ? 1. : weight);
    histos_1D[Settings::SIP_leading][fs][cat][proc] ->Fill(SIP_leading, (proc == Settings::Data) ? 1. : weight);
    histos_1D[Settings::SIP_trailing][fs][cat][proc]->Fill(SIP_trailing, (proc == Settings::Data) ? 1. : weight);
    histos_1D[Settings::ISO_leading][fs][cat][proc] ->Fill(ISO_leading, (proc == Settings::Data) ? 1. : weight);
@@ -958,11 +978,13 @@ void Histograms::FillOthers( float M4l, float ZZPt, float ZZEta, float PFMET, fl
 //====================================================================================
 
 //====================================================================
-void Histograms::FillOthersZX( float M4l, float ZZPt, float ZZEta, float PFMET, float SIP_leading, float SIP_trailing, float ISO_leading, float ISO_trailing, int NExtraLep, int NJets, int NJetsBTagged, float KD, float weight, int fs, int cat )
+void Histograms::FillOthersZX( float M4l, float ZZPt, float ZZEta, float PFMET, float Pt_leading, float Pt_trailing, float SIP_leading, float SIP_trailing, float ISO_leading, float ISO_trailing, int NExtraLep, int NJets, int NJetsBTagged, float KD, float weight, int fs, int cat )
 {
    histos_1D_ZX[Settings::PFMET][fs][cat]       ->Fill(PFMET, weight);
 	histos_1D_ZX[Settings::Pt4l][fs][cat]        ->Fill(ZZPt, weight);
    histos_1D_ZX[Settings::Eta4l][fs][cat]       ->Fill(ZZEta, weight);
+   histos_1D_ZX[Settings::Pt_leading][fs][cat]  ->Fill(Pt_leading, weight);
+   histos_1D_ZX[Settings::Pt_trailing][fs][cat] ->Fill(Pt_trailing, weight);
    histos_1D_ZX[Settings::SIP_leading][fs][cat] ->Fill(SIP_leading, weight);
    histos_1D_ZX[Settings::SIP_trailing][fs][cat]->Fill(SIP_trailing, weight);
    histos_1D_ZX[Settings::ISO_leading][fs][cat] ->Fill(ISO_leading, weight);
@@ -2038,6 +2060,12 @@ void Histograms::GetHistos( TString file_name )
             _histo_name = "PFMET" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
             histos_1D[Settings::PFMET][i_fs][i_cat][i_proc] = (TH1F*)histo_file->Get(_histo_name.c_str());
 				
+            _histo_name = "Pt_leading" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
+            histos_1D[Settings::Pt_leading][i_fs][i_cat][i_proc] = (TH1F*)histo_file->Get(_histo_name.c_str());
+
+            _histo_name = "Pt_trailing" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
+            histos_1D[Settings::Pt_trailing][i_fs][i_cat][i_proc] = (TH1F*)histo_file->Get(_histo_name.c_str());
+				
             _histo_name = "SIP_leading" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
             histos_1D[Settings::SIP_leading][i_fs][i_cat][i_proc] = (TH1F*)histo_file->Get(_histo_name.c_str());
 
@@ -2188,6 +2216,12 @@ void Histograms::GetHistos( TString file_name )
 			_histo_name = "PFMET_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
 			histos_1D_ZX[Settings::PFMET][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
 		
+			_histo_name = "Pt_leading_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+			histos_1D_ZX[Settings::Pt_leading][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
+
+			_histo_name = "Pt_trailing_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+			histos_1D_ZX[Settings::Pt_trailing][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
+			
 			_histo_name = "SIP_leading_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
 			histos_1D_ZX[Settings::SIP_leading][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
 
@@ -4000,6 +4034,8 @@ int Histograms::SetPlotName( TString variable_name )
    else if ( variable_name == "PFMET" )              return Settings::PFMET;
    else if ( variable_name == "Pt4l" )               return Settings::Pt4l;
    else if ( variable_name == "Eta4l" )              return Settings::Eta4l;
+   else if ( variable_name == "Pt_leading" )         return Settings::Pt_leading;
+   else if ( variable_name == "Pt_trailing" )        return Settings::Pt_trailing;
    else if ( variable_name == "SIP_leading" )        return Settings::SIP_leading;
    else if ( variable_name == "SIP_trailing" )       return Settings::SIP_trailing;
    else if ( variable_name == "ISO_leading" )        return Settings::ISO_leading;
@@ -4082,6 +4118,8 @@ bool Histograms::GetVarLogX ( TString variable_name )
    else if ( variable_name == "PFMET" )              return bool(Variables::PFMET().var_log_x);
    else if ( variable_name == "Pt4l" )               return bool(Variables::Pt4l().var_log_x);
    else if ( variable_name == "Eta4l" )              return bool(Variables::Eta4l().var_log_x);
+   else if ( variable_name == "Pt_leading" )         return bool(Variables::Pt_leading().var_log_x);
+   else if ( variable_name == "Pt_trailing" )        return bool(Variables::Pt_trailing().var_log_x);
    else if ( variable_name == "SIP_leading" )        return bool(Variables::SIP_leading().var_log_x);
    else if ( variable_name == "SIP_trailing" )       return bool(Variables::SIP_trailing().var_log_x);
    else if ( variable_name == "ISO_leading" )        return bool(Variables::ISO_leading().var_log_x);
@@ -4164,6 +4202,8 @@ bool Histograms::GetVarLogY ( TString variable_name )
    else if ( variable_name == "PFMET" )              return bool(Variables::PFMET().var_log_y);
    else if ( variable_name == "Pt4l" )               return bool(Variables::Pt4l().var_log_y);
    else if ( variable_name == "Eta4l" )              return bool(Variables::Eta4l().var_log_y);
+   else if ( variable_name == "Pt_leading" )         return bool(Variables::Pt_leading().var_log_y);
+   else if ( variable_name == "Pt_trailing" )        return bool(Variables::Pt_trailing().var_log_y);
    else if ( variable_name == "SIP_leading" )        return bool(Variables::SIP_leading().var_log_y);
    else if ( variable_name == "SIP_trailing" )       return bool(Variables::SIP_trailing().var_log_y);
    else if ( variable_name == "ISO_leading" )        return bool(Variables::ISO_leading().var_log_y);

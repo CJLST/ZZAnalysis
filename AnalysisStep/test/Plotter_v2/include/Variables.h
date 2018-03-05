@@ -640,9 +640,43 @@ public:
       Int_t rebinningDYTTbar = 2;
    };
 	
+	struct Pt_leading
+   {
+      TString var_X_label = "p_{T}^{Leading}";
+      TString var_Y_label = "Events / 4 (GeV)";
+      TString var_cut_label = "";
+      Int_t var_N_bin = 25;
+      Float_t var_min = 10;
+      Float_t var_max = 110;
+      Bool_t var_log_x = 0;
+      Bool_t var_log_y = 0;
+      Int_t restrict_count_var = 0;
+      Float_t var_min_factor = 0;
+      Int_t var_CMS_pos = 33;
+      Int_t varLegPos = 33;
+      Int_t rebinningDYTTbar = 2;
+   };
+	
+	struct Pt_trailing
+   {
+      TString var_X_label = "p_{T}^{Trailing}";
+      TString var_Y_label = "Events / 4 (GeV)";
+      TString var_cut_label = "";
+      Int_t var_N_bin = 25;
+      Float_t var_min = 5;
+      Float_t var_max = 105;
+      Bool_t var_log_x = 0;
+      Bool_t var_log_y = 0;
+      Int_t restrict_count_var = 0;
+      Float_t var_min_factor = 0;
+      Int_t var_CMS_pos = 33;
+      Int_t varLegPos = 33;
+      Int_t rebinningDYTTbar = 2;
+   };
+	
 	struct SIP_leading
    {
-      TString var_X_label = "SIP_{3D}^{Leading}";
+      TString var_X_label = "SIP_{3D}^{Maximum}";
       TString var_Y_label = "Events / 0.1";
       TString var_cut_label = "";
       Int_t var_N_bin = 40;
@@ -659,7 +693,7 @@ public:
 	
 	struct SIP_trailing
    {
-      TString var_X_label = "SIP_{3D}^{Trailing}";
+      TString var_X_label = "SIP_{3D}^{Minimum}";
       TString var_Y_label = "Events / 0.1";
       TString var_cut_label = "";
       Int_t var_N_bin = 40;
@@ -676,7 +710,7 @@ public:
 	
 	struct ISO_leading
    {
-      TString var_X_label = "RelIso_{Leading}";
+      TString var_X_label = "RelIso_{Maximum}";
       TString var_Y_label = "Events / 0.1";
       TString var_cut_label = "";
       Int_t var_N_bin = 35;
@@ -693,7 +727,7 @@ public:
 	
 	struct ISO_trailing
    {
-      TString var_X_label = "RelIso_{Trailing}";
+      TString var_X_label = "RelIso_{Minimum}";
       TString var_Y_label = "Events / 0.1";
       TString var_cut_label = "";
       Int_t var_N_bin = 35;

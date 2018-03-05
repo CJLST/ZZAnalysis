@@ -128,7 +128,7 @@ int main( int argc, char *argv[] )
 //=============================
 // Plotting of unblinded plots
 //=============================
-//
+
 //   setTDRStyle(); // Needed to reset margins set by 2D histograms
 //
 //   plotter->GetHistos("Unblinded");
@@ -142,6 +142,8 @@ int main( int argc, char *argv[] )
 //   plotter->plot_1D_all_fs("Unblinded", "PFMET",             "Plots/Unblinded");
 //   plotter->plot_1D_all_fs("Unblinded", "Pt4l",              "Plots/Unblinded");
 //   plotter->plot_1D_all_fs("Unblinded", "Eta4l",             "Plots/Unblinded");
+//   plotter->plot_1D_all_fs("Unblinded", "Pt_leading",        "Plots/Unblinded");
+//   plotter->plot_1D_all_fs("Unblinded", "Pt_trailing",       "Plots/Unblinded");
 //   plotter->plot_1D_all_fs("Unblinded", "SIP_leading",       "Plots/Unblinded");
 //   plotter->plot_1D_all_fs("Unblinded", "SIP_trailing",      "Plots/Unblinded");
 //   plotter->plot_1D_all_fs("Unblinded", "ISO_leading",       "Plots/Unblinded");

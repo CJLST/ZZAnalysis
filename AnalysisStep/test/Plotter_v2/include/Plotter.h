@@ -104,6 +104,7 @@ private:
    float jetQGL[99];
    float jetPgOverPq[99];
 	
+	float Pt_leading , Pt_trailing;
    float SIP_leading, SIP_trailing;
    float ISO_leading, ISO_trailing;
    
