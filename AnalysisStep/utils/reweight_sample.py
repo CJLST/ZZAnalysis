@@ -86,9 +86,6 @@ def main(options):
 		if (not f.GetListOfKeys().Contains(directory)):
 			continue
 		print directory
-		gen_sumWeights = 0.
-		gen_sumGenMCWeight = 0.
-		gen_sumPUWeight = 0.
 		tree = f.Get(directory+"/candTree")
 		tree.SetBranchStatus("*", 1);
 		tree.SetBranchStatus("PUWeight", 0);
@@ -119,21 +116,8 @@ def main(options):
 			else:
 				PUWeight[0] = PUweights[int(tree.NTrueInt)]
 				overallEventWeight[0] = PUWeight[0]*tree.genHEPMCweight*tree.dataMCWeight
-			gen_sumWeights += overallEventWeight[0]
-			gen_sumGenMCWeight += tree.genHEPMCweight
-			gen_sumPUWeight += PUWeight[0]
 			tree_new.Fill()
 
-		if(directory == "ZTree"):
-			hCounter_new.SetBinContent(0,gen_sumWeights);
-			hCounter_new.SetBinContent(1,gen_sumWeights);
-			hCounter_new.SetBinContent(2,gen_sumGenMCWeight);
-			hCounter_new.SetBinContent(3,gen_sumPUWeight);
-		else:
-			hCounter_new.SetBinContent(0,gen_sumWeights);
-			hCounter_new.SetBinContent(40,gen_sumWeights);
-			hCounter_new.SetBinContent(41,gen_sumGenMCWeight);
-			hCounter_new.SetBinContent(42,gen_sumPUWeight);
 
 		tree_new.GetCurrentFile().Write("",ROOT.TObject.kOverwrite)
 		hCounter_new.Write("",ROOT.TObject.kOverwrite)
