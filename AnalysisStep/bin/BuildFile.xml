@@ -16,6 +16,10 @@
    <lib   name="ZZAnalysisAnalysisStepTestPlotter_v2Src"/>
 </bin>
 
+<bin   name="run_systematics" file="../test/Plotter_v2/run_systematics.cpp">
+   <lib   name="ZZAnalysisAnalysisStepTestPlotter_v2Src"/>
+</bin>
+
 <library   file="../test/ZpXEstimation/src/*.cpp" name="ZZAnalysisAnalysisStepTestZpXEstimationSrc">
 </library>
 
