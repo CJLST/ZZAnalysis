@@ -1454,7 +1454,7 @@ if FSRMODE=="Legacy" :
 ### Missing ET
 ### ----------------------------------------------------------------------
 
-metTag = cms.InputTag("slimmedMETs")
+metTag = cms.InputTag("slimmedMETsMuEGClean")
 
 ### Recorrect MET, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription#Instructions_for_8_0_X_X_26_patc
 if RECORRECTMET:
@@ -1504,7 +1504,6 @@ if RECORRECTMET:
             process.patPFMetT1MuonEnDownMuEGClean+process.patPFMetT1TauEnDownMuEGClean+
             process.patPFMetT1UnclusteredEnDownMuEGClean+process.slimmedMETsMuEGClean)
 
-    if (not IsMC):
         metTag = cms.InputTag("slimmedMETsMuEGClean","","ZZ")
 
     ### somehow MET recorrection gets this lost again...
