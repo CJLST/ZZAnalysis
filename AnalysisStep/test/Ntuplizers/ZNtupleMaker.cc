@@ -435,6 +435,10 @@ void ZNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& eSetu
   // Apply trigger request (skip event)
   bool evtPassTrigger = myHelper.passTrigger(event,triggerResults,trigWord);
   if (applyTrigger && !evtPassTrigger) return;
+	
+  // Apply MET trigger request (skip event)
+  bool evtPassMETTrigger = myHelper.passMETTrigger(event,triggerResults);
+  if (year >= 2017 && !evtPassMETTrigger) return;
 
 
   // General event information

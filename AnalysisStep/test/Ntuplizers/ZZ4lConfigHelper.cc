@@ -139,6 +139,18 @@ ZZ4lConfigHelper::passTrigger(const edm::Event & event, edm::Handle<edm::Trigger
 }
 
 bool
+ZZ4lConfigHelper::passMETTrigger(const edm::Event & event, edm::Handle<edm::TriggerResults> & trigRes){
+
+  bool passMETFilter  = true;
+	
+  if (theSetup >= 2017) {
+    passMETFilter = passFilter(event, trigRes, "triggerMETFilters");
+  }
+  return passMETFilter;
+}
+
+
+bool
 ZZ4lConfigHelper::passFilter(const edm::Event & event, edm::Handle<edm::TriggerResults> & trigRes, const string& filterPath) {
 
   //if (event.id()==cachedEvtId) return;

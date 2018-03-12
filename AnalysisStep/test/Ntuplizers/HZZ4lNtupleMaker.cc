@@ -1001,6 +1001,10 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   // Apply trigger request (skip event)
   bool evtPassTrigger = myHelper.passTrigger(event,triggerResults,trigWord);
   if (applyTrigger && !evtPassTrigger) failed = true; //but gen information will still be recorded if failedTreeLevel != 0
+	
+  // Apply MET trigger request (skip event)
+  bool evtPassMETTrigger = myHelper.passMETTrigger(event,triggerResults);
+  if (year >= 2017 && !evtPassMETTrigger) failed = true; //but gen information will still be recorded if failedTreeLevel != 0
 
   if (skipEmptyEvents && !failedTreeLevel && (cands->size() == 0 || failed)) return; // Skip events with no candidate, unless skipEmptyEvents = false or failedTreeLevel != 0
 

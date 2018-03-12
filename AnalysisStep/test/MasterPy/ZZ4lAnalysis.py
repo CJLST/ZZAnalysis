@@ -315,6 +315,22 @@ process.triggerMuEle  = cms.Path(process.hltFilterMuEle)
 
 
 ### ----------------------------------------------------------------------
+### MET FILTERS
+### ----------------------------------------------------------------------
+process.METFilters  = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+process.METFilters.TriggerResultsTag  = cms.InputTag("TriggerResults","","RECO")
+if (IsMC):
+	process.METFilters.TriggerResultsTag  = cms.InputTag("TriggerResults","","PAT")
+
+if (LEPTON_SETUP == 2017):#MET Filters available in miniAOD as described here https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2
+	if (IsMC):
+		process.METFilters.HLTPaths = ["Flag_goodVertices","Flag_globalSuperTightHalo2016Filter","Flag_HBHENoiseFilter","Flag_HBHENoiseIsoFilter","Flag_EcalDeadCellTriggerPrimitiveFilter","Flag_BadPFMuonFilter","Flag_BadChargedCandidateFilter"]
+	else:
+		process.METFilters.HLTPaths = ["Flag_goodVertices","Flag_globalSuperTightHalo2016Filter","Flag_HBHENoiseFilter","Flag_HBHENoiseIsoFilter","Flag_EcalDeadCellTriggerPrimitiveFilter","Flag_BadPFMuonFilter","Flag_BadChargedCandidateFilter","Flag_eeBadScFilter"]
+
+process.triggerMETFilters = cms.Path(process.METFilters)
+
+### ----------------------------------------------------------------------
 ### MC Filters and tools
 ### ----------------------------------------------------------------------
 
@@ -1488,6 +1504,7 @@ if RECORRECTMET:
             process.patPFMetT1MuonEnDownMuEGClean+process.patPFMetT1TauEnDownMuEGClean+
             process.patPFMetT1UnclusteredEnDownMuEGClean+process.slimmedMETsMuEGClean)
 
+    if (not IsMC):
         metTag = cms.InputTag("slimmedMETsMuEGClean","","ZZ")
 
     ### somehow MET recorrection gets this lost again...
