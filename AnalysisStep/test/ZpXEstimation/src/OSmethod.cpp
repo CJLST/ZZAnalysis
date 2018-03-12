@@ -873,7 +873,7 @@ void OSmethod::PrintZXYields()
 	cout << "==============================================================" << endl;
 	for( int i_fs = 0; i_fs < Settings::fs4l ; i_fs++ )
 	{
-		for ( int i_cat = 0; i_cat < Settings::inclusive; i_cat++)
+		for ( int i_cat = 0; i_cat <= Settings::inclusive; i_cat++)
 		{
 
 		   yield = histos_ZX[Settings::nominal][i_fs][i_cat]->IntegralAndError(0,histos_ZX[Settings::nominal][i_fs][i_cat]->GetSize() - 2,stat);

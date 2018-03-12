@@ -580,7 +580,7 @@ void SSmethod::MakeHistogramsZX( TString input_file_data_name, TString  input_fi
    for ( int i_fs = 0; i_fs < num_of_final_states - 1; i_fs++ )
    {
       if (false) continue;//( MERGE_2E2MU && i_fs == Settings::fs2mu2e) continue;
-      for ( int i_cat = 0; i_cat < num_of_categories - 1; i_cat++)
+      for ( int i_cat = 0; i_cat < num_of_categories; i_cat++)
       {
         float stat = _expected_yield_SR[i_fs][i_cat]/sqrt(_number_of_events_CR[i_fs][i_cat]);
         float syst = _expected_yield_SR[i_fs][i_cat]*((_expected_yield_SR_up[i_fs][i_cat]/_expected_yield_SR[i_fs][i_cat]) - 1.);
