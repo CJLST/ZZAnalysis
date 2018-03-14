@@ -45,6 +45,8 @@ public :
    Short_t         nCleanedJetsPt30_jecDn;
    Short_t         nCleanedJetsPt30BTagged;
    Short_t         nCleanedJetsPt30BTagged_bTagSF;
+   Short_t         nCleanedJetsPt30BTagged_bTagSFUp;
+   Short_t         nCleanedJetsPt30BTagged_bTagSFDn;
    Short_t         nCleanedJetsPt30BTagged_bTagSF_jecUp;
    Short_t         nCleanedJetsPt30BTagged_bTagSF_jecDn;
    Short_t         trigWord;
@@ -236,9 +238,17 @@ public :
    Float_t         p_JJQCD_SIG_ghg4_1_JHUGen_JECDn;
    Float_t         p_JJQCD_SIG_ghg2_1_ghg4_1_JHUGen_JECDn;
 	Float_t         p_HadZH_mavjj_JECNominal;
+	Float_t         p_HadZH_mavjj_JECUp;
+	Float_t         p_HadZH_mavjj_JECDn;
 	Float_t         p_HadZH_mavjj_true_JECNominal;
+	Float_t         p_HadZH_mavjj_true_JECUp;
+	Float_t         p_HadZH_mavjj_true_JECDn;
 	Float_t         p_HadWH_mavjj_JECNominal;
+	Float_t         p_HadWH_mavjj_JECUp;
+	Float_t         p_HadWH_mavjj_JECDn;
 	Float_t         p_HadWH_mavjj_true_JECNominal;
+	Float_t         p_HadWH_mavjj_true_JECUp;
+	Float_t         p_HadWH_mavjj_true_JECDn;
    Float_t         p_HadZH_SIG_ghz1_1_JHUGen_JECDn;
    Float_t         p_HadZH_SIG_ghz1prime2_1E4_JHUGen_JECDn;
    Float_t         p_HadZH_SIG_ghz2_1_JHUGen_JECDn;
@@ -493,6 +503,8 @@ public :
    TBranch        *b_nCleanedJetsPt30_jecDn;   //!
    TBranch        *b_nCleanedJetsPt30BTagged;   //!
    TBranch        *b_nCleanedJetsPt30BTagged_bTagSF;   //!
+   TBranch        *b_nCleanedJetsPt30BTagged_bTagSFUp;   //!
+   TBranch        *b_nCleanedJetsPt30BTagged_bTagSFDn;   //!
    TBranch        *b_nCleanedJetsPt30BTagged_bTagSF_jecUp;   //!
    TBranch        *b_nCleanedJetsPt30BTagged_bTagSF_jecDn;   //!
    TBranch        *b_trigWord;   //!
@@ -684,9 +696,17 @@ public :
    TBranch        *b_p_JJQCD_SIG_ghg4_1_JHUGen_JECDn;   //!
    TBranch        *b_p_JJQCD_SIG_ghg2_1_ghg4_1_JHUGen_JECDn;   //!
 	TBranch        *b_p_HadZH_mavjj_JECNominal;
+	TBranch        *b_p_HadZH_mavjj_JECUp;
+	TBranch        *b_p_HadZH_mavjj_JECDn;
 	TBranch        *b_p_HadZH_mavjj_true_JECNominal;
+	TBranch        *b_p_HadZH_mavjj_true_JECUp;
+	TBranch        *b_p_HadZH_mavjj_true_JECDn;
 	TBranch        *b_p_HadWH_mavjj_JECNominal;
+	TBranch        *b_p_HadWH_mavjj_JECUp;
+	TBranch        *b_p_HadWH_mavjj_JECDn;
 	TBranch        *b_p_HadWH_mavjj_true_JECNominal;
+	TBranch        *b_p_HadWH_mavjj_true_JECUp;
+	TBranch        *b_p_HadWH_mavjj_true_JECDn;
    TBranch        *b_p_HadZH_SIG_ghz1_1_JHUGen_JECDn;   //!
    TBranch        *b_p_HadZH_SIG_ghz1prime2_1E4_JHUGen_JECDn;   //!
    TBranch        *b_p_HadZH_SIG_ghz2_1_JHUGen_JECDn;   //!
@@ -1034,6 +1054,8 @@ void Tree::Init(TTree *tree, TString input_file_name)
    fChain->SetBranchAddress("nCleanedJetsPt30_jecDn", &nCleanedJetsPt30_jecDn, &b_nCleanedJetsPt30_jecDn);
    fChain->SetBranchAddress("nCleanedJetsPt30BTagged", &nCleanedJetsPt30BTagged, &b_nCleanedJetsPt30BTagged);
    fChain->SetBranchAddress("nCleanedJetsPt30BTagged_bTagSF", &nCleanedJetsPt30BTagged_bTagSF, &b_nCleanedJetsPt30BTagged_bTagSF);
+   fChain->SetBranchAddress("nCleanedJetsPt30BTagged_bTagSFUp", &nCleanedJetsPt30BTagged_bTagSFUp, &b_nCleanedJetsPt30BTagged_bTagSFUp);
+   fChain->SetBranchAddress("nCleanedJetsPt30BTagged_bTagSFDn", &nCleanedJetsPt30BTagged_bTagSFDn, &b_nCleanedJetsPt30BTagged_bTagSFDn);
    fChain->SetBranchAddress("nCleanedJetsPt30BTagged_bTagSF_jecUp", &nCleanedJetsPt30BTagged_bTagSF_jecUp, &b_nCleanedJetsPt30BTagged_bTagSF_jecUp);
    fChain->SetBranchAddress("nCleanedJetsPt30BTagged_bTagSF_jecDn", &nCleanedJetsPt30BTagged_bTagSF_jecDn, &b_nCleanedJetsPt30BTagged_bTagSF_jecDn);
    fChain->SetBranchAddress("trigWord", &trigWord, &b_trigWord);
@@ -1225,9 +1247,17 @@ void Tree::Init(TTree *tree, TString input_file_name)
    fChain->SetBranchAddress("p_JJQCD_SIG_ghg4_1_JHUGen_JECDn", &p_JJQCD_SIG_ghg4_1_JHUGen_JECDn, &b_p_JJQCD_SIG_ghg4_1_JHUGen_JECDn);
    fChain->SetBranchAddress("p_JJQCD_SIG_ghg2_1_ghg4_1_JHUGen_JECDn", &p_JJQCD_SIG_ghg2_1_ghg4_1_JHUGen_JECDn, &b_p_JJQCD_SIG_ghg2_1_ghg4_1_JHUGen_JECDn);
 	fChain->SetBranchAddress("p_HadZH_mavjj_JECNominal", &p_HadZH_mavjj_JECNominal, &b_p_HadZH_mavjj_JECNominal);
+	fChain->SetBranchAddress("p_HadZH_mavjj_JECUp", &p_HadZH_mavjj_JECUp, &b_p_HadZH_mavjj_JECUp);
+	fChain->SetBranchAddress("p_HadZH_mavjj_JECDn", &p_HadZH_mavjj_JECDn, &b_p_HadZH_mavjj_JECDn);
 	fChain->SetBranchAddress("p_HadZH_mavjj_true_JECNominal", &p_HadZH_mavjj_true_JECNominal, &b_p_HadZH_mavjj_true_JECNominal);
+	fChain->SetBranchAddress("p_HadZH_mavjj_true_JECUp", &p_HadZH_mavjj_true_JECUp, &b_p_HadZH_mavjj_true_JECUp);
+	fChain->SetBranchAddress("p_HadZH_mavjj_true_JECDn", &p_HadZH_mavjj_true_JECDn, &b_p_HadZH_mavjj_true_JECDn);
 	fChain->SetBranchAddress("p_HadWH_mavjj_JECNominal", &p_HadWH_mavjj_JECNominal, &b_p_HadWH_mavjj_JECNominal);
+	fChain->SetBranchAddress("p_HadWH_mavjj_JECUp", &p_HadWH_mavjj_JECUp, &b_p_HadWH_mavjj_JECUp);
+	fChain->SetBranchAddress("p_HadWH_mavjj_JECDn", &p_HadWH_mavjj_JECDn, &b_p_HadWH_mavjj_JECDn);
 	fChain->SetBranchAddress("p_HadWH_mavjj_true_JECNominal", &p_HadWH_mavjj_true_JECNominal, &b_p_HadWH_mavjj_true_JECNominal);
+	fChain->SetBranchAddress("p_HadWH_mavjj_true_JECUp", &p_HadWH_mavjj_true_JECUp, &b_p_HadWH_mavjj_true_JECUp);
+	fChain->SetBranchAddress("p_HadWH_mavjj_true_JECDn", &p_HadWH_mavjj_true_JECDn, &b_p_HadWH_mavjj_true_JECDn);
    fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_JHUGen_JECDn", &p_HadZH_SIG_ghz1_1_JHUGen_JECDn, &b_p_HadZH_SIG_ghz1_1_JHUGen_JECDn);
    fChain->SetBranchAddress("p_HadZH_SIG_ghz1prime2_1E4_JHUGen_JECDn", &p_HadZH_SIG_ghz1prime2_1E4_JHUGen_JECDn, &b_p_HadZH_SIG_ghz1prime2_1E4_JHUGen_JECDn);
    fChain->SetBranchAddress("p_HadZH_SIG_ghz2_1_JHUGen_JECDn", &p_HadZH_SIG_ghz2_1_JHUGen_JECDn, &b_p_HadZH_SIG_ghz2_1_JHUGen_JECDn);

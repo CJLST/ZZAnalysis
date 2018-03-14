@@ -17,9 +17,13 @@ Systematics::Systematics():Tree()
       {
          temp.push_back(0);
       }
-      _expected_yield.push_back(temp);
-      _expected_yield_UP.push_back(temp);
-      _expected_yield_DN.push_back(temp);
+      _expected_yield_JEC.push_back(temp);
+      _expected_yield_JEC_UP.push_back(temp);
+      _expected_yield_JEC_DN.push_back(temp);
+		
+		_expected_yield_BTag.push_back(temp);
+      _expected_yield_BTag_UP.push_back(temp);
+      _expected_yield_BTag_DN.push_back(temp);
    }
 	
 	_s_category.push_back("UnTagged");
@@ -33,15 +37,17 @@ Systematics::Systematics():Tree()
    _s_category.push_back("Inclusive");
 	
    _s_production_mode.push_back("ggH");
-   _s_production_mode.push_back("VBF");
+   _s_production_mode.push_back("qqH");
    _s_production_mode.push_back("WH_lep");
-   _s_production_mode.push_back("WH_had");
+	_s_production_mode.push_back("WH_had");
    _s_production_mode.push_back("ZH_lep");
-   _s_production_mode.push_back("ZH_had");
+	_s_production_mode.push_back("ZH_had");
    _s_production_mode.push_back("ttH_lep");
    _s_production_mode.push_back("ttH_had");
    _s_production_mode.push_back("bbH");
    _s_production_mode.push_back("tqH");
+   _s_production_mode.push_back("ggZZ");
+   _s_production_mode.push_back("qqZZ");
 }
 //============================================================
 
@@ -57,7 +63,7 @@ Systematics::~Systematics()
 
 
 //==========================================================
-void Systematics::PrintSystematics_JEC( TString input_file_name)
+void Systematics::FillSystematics( TString input_file_name)
 {
 	input_file = new TFile(input_file_name);
 
@@ -132,44 +138,48 @@ void Systematics::PrintSystematics_JEC( TString input_file_name)
 													 true,// Use VHMET category
 													 false);// Use QG tagging
 		
-		_current_category_UP = categoryMor18(nExtraLep,
-											 nExtraZ,
-											 nCleanedJetsPt30_jecUp,
-											 nCleanedJetsPt30BTagged_bTagSF_jecUp,
-											 jetQGL,
-											 p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
-											 p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
-											 p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
-											 p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
-											 pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
-											 p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
-											 p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
-											 p_HadWH_mavjj_JECNominal,
-											 p_HadWH_mavjj_true_JECNominal,
-											 p_HadZH_mavjj_JECNominal,
-											 p_HadZH_mavjj_true_JECNominal,
-											 jetPhi,
-											 ZZMass,
-											 PFMET_jesUp,
-											 true,// Use VHMET category
-											 false);// Use QG tagging
+		//============================================================
+		// JEC
+		//============================================================
 		
-		_current_category_DN = categoryMor18(nExtraLep,
+		_current_category_JEC_UP = categoryMor18(nExtraLep,
+													 nExtraZ,
+													 nCleanedJetsPt30_jecUp,
+													 nCleanedJetsPt30BTagged_bTagSF_jecUp,
+													 jetQGL,
+													 p_JJQCD_SIG_ghg2_1_JHUGen_JECUp,
+													 p_JQCD_SIG_ghg2_1_JHUGen_JECUp,
+													 p_JJVBF_SIG_ghv1_1_JHUGen_JECUp,
+													 p_JVBF_SIG_ghv1_1_JHUGen_JECUp,
+													 pAux_JVBF_SIG_ghv1_1_JHUGen_JECUp,
+													 p_HadWH_SIG_ghw1_1_JHUGen_JECUp,
+													 p_HadZH_SIG_ghz1_1_JHUGen_JECUp,
+													 p_HadWH_mavjj_JECUp,
+													 p_HadWH_mavjj_true_JECUp,
+													 p_HadZH_mavjj_JECUp,
+													 p_HadZH_mavjj_true_JECUp,
+													 jetPhi,
+													 ZZMass,
+													 PFMET_jesUp,
+													 true,// Use VHMET category
+													 false);// Use QG tagging
+		
+		_current_category_JEC_DN = categoryMor18(nExtraLep,
 													 nExtraZ,
 													 nCleanedJetsPt30_jecDn,
 													 nCleanedJetsPt30BTagged_bTagSF_jecDn,
 													 jetQGL,
-													 p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
-													 p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
-													 p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
-													 p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
-													 pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
-													 p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
-													 p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
-													 p_HadWH_mavjj_JECNominal,
-													 p_HadWH_mavjj_true_JECNominal,
-													 p_HadZH_mavjj_JECNominal,
-													 p_HadZH_mavjj_true_JECNominal,
+													 p_JJQCD_SIG_ghg2_1_JHUGen_JECDn,
+													 p_JQCD_SIG_ghg2_1_JHUGen_JECDn,
+													 p_JJVBF_SIG_ghv1_1_JHUGen_JECDn,
+													 p_JVBF_SIG_ghv1_1_JHUGen_JECDn,
+													 pAux_JVBF_SIG_ghv1_1_JHUGen_JECDn,
+													 p_HadWH_SIG_ghw1_1_JHUGen_JECDn,
+													 p_HadZH_SIG_ghz1_1_JHUGen_JECDn,
+													 p_HadWH_mavjj_JECDn,
+													 p_HadWH_mavjj_true_JECDn,
+													 p_HadZH_mavjj_JECDn,
+													 p_HadZH_mavjj_true_JECDn,
 													 jetPhi,
 													 ZZMass,
 													 PFMET_jesDn,
@@ -184,44 +194,168 @@ void Systematics::PrintSystematics_JEC( TString input_file_name)
       _event_weight_DN = ( xsec * _k_factor * overallEventWeight) / gen_sum_weights;
       //if ( input_file_name.Contains("ggH") ) _event_weight *= ggH_NNLOPS_weight; // reweight POWHEG ggH to NNLOPS
 
-      // Fill M4l histograms
-       _expected_yield[_current_production_mode][_current_category]       += _event_weight;
-       _expected_yield_UP[_current_production_mode][_current_category_UP] += _event_weight_UP;
-       _expected_yield_DN[_current_production_mode][_current_category_DN] += _event_weight_DN;
+      // Sum yields
+       _expected_yield_JEC[_current_production_mode][_current_category]           += _event_weight;
+       _expected_yield_JEC_UP[_current_production_mode][_current_category_JEC_UP] += _event_weight_UP;
+       _expected_yield_JEC_DN[_current_production_mode][_current_category_JEC_DN] += _event_weight_DN;
+		
+		//============================================================
+		// BTag
+		//============================================================
+		
+		_current_category_BTag_UP = categoryMor18(nExtraLep,
+													 nExtraZ,
+													 nCleanedJetsPt30,
+													 nCleanedJetsPt30BTagged_bTagSFUp,
+													 jetQGL,
+													 p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+													 p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
+													 p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
+													 p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+													 pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+													 p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
+													 p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
+													 p_HadWH_mavjj_JECNominal,
+													 p_HadWH_mavjj_true_JECNominal,
+													 p_HadZH_mavjj_JECNominal,
+													 p_HadZH_mavjj_true_JECNominal,
+													 jetPhi,
+													 ZZMass,
+													 PFMET,
+													 true,// Use VHMET category
+													 false);// Use QG tagging
+		
+		_current_category_BTag_DN = categoryMor18(nExtraLep,
+													 nExtraZ,
+													 nCleanedJetsPt30,
+													 nCleanedJetsPt30BTagged_bTagSFDn,
+													 jetQGL,
+													 p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+													 p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
+													 p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
+													 p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+													 pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+													 p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
+													 p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
+													 p_HadWH_mavjj_JECNominal,
+													 p_HadWH_mavjj_true_JECNominal,
+													 p_HadZH_mavjj_JECNominal,
+													 p_HadZH_mavjj_true_JECNominal,
+													 jetPhi,
+													 ZZMass,
+													 PFMET,
+													 true,// Use VHMET category
+													 false);// Use QG tagging
+      // K factors
+      _k_factor = calculate_K_factor(input_file_name);
+
+      // Final event weight
+      _event_weight    = ( xsec * _k_factor * overallEventWeight) / gen_sum_weights;
+      _event_weight_UP = ( xsec * _k_factor * overallEventWeight) / gen_sum_weights;
+      _event_weight_DN = ( xsec * _k_factor * overallEventWeight) / gen_sum_weights;
+      //if ( input_file_name.Contains("ggH") ) _event_weight *= ggH_NNLOPS_weight; // reweight POWHEG ggH to NNLOPS
+
+      // Sum yields
+       _expected_yield_BTag[_current_production_mode][_current_category]           += _event_weight;
+       _expected_yield_BTag_UP[_current_production_mode][_current_category_BTag_UP] += _event_weight_UP;
+       _expected_yield_BTag_DN[_current_production_mode][_current_category_BTag_DN] += _event_weight_DN;
    } // end for loop
 	
-	SumInclusive();
-   cout << "[INFO] Systematics for " << _s_production_mode.at(_current_production_mode) << endl;
-	
-	
-//	for ( int i_cat = 0; i_cat < num_of_categories - 1; i_cat++ )
-//	{
-//		cout << "Nominal = " << _expected_yield[_current_production_mode][i_cat]/_expected_yield[_current_production_mode][Settings::inclusive] << endl;
-//		cout << "Up = " << _expected_yield_UP[_current_production_mode][i_cat]/_expected_yield_UP[_current_production_mode][Settings::inclusive] << endl;
-//		cout << "Down = " << _expected_yield_DN[_current_production_mode][i_cat]/_expected_yield_DN[_current_production_mode][Settings::inclusive] << endl;
-//		cout << endl;
-//	}
-	
-	for ( int i_cat = 0; i_cat < num_of_categories - 1; i_cat++ )
-	{
-		cout << _s_category.at(i_cat) << " : " << (_expected_yield_DN[_current_production_mode][i_cat]/_expected_yield_DN[_current_production_mode][Settings::inclusive])/(_expected_yield[_current_production_mode][i_cat]/_expected_yield[_current_production_mode][Settings::inclusive]) << " / " <<
-		   (_expected_yield_UP[_current_production_mode][i_cat]/_expected_yield_UP[_current_production_mode][Settings::inclusive])/(_expected_yield[_current_production_mode][i_cat]/_expected_yield[_current_production_mode][Settings::inclusive]) << endl;
-	}
-	
+cout << "[INFO] Systematics for " << input_file_name << " filled." << endl;
 }
 //==========================================================
 
+//========================================
+void Systematics::PrintSystematics_JEC( )
+{
+
+	SumInclusive_JEC();
+	
+//	for ( int i_prod = 0; i_prod < num_of_production_modes; i_prod++ )
+//   {
+//   	for ( int i_cat = 0; i_cat < num_of_categories ; i_cat++ )
+//		{
+//			cout << _s_category.at(i_cat) << endl;
+//			cout << "Nominal = " << _expected_yield_JEC[i_prod][i_cat] << endl;
+//			cout << "Up = " << _expected_yield_JEC_UP[i_prod][i_cat] << endl;
+//			cout << "Down = " << _expected_yield_JEC_DN[i_prod][i_cat] << endl;
+//			cout << endl;
+//		}
+//   }
+	
+	for ( int i_prod = 0; i_prod < num_of_production_modes; i_prod++ )
+   {
+   	cout << "[INFO] JEC systematics for " << _s_production_mode.at(i_prod) << endl;
+		for ( int i_cat = 0; i_cat < num_of_categories - 1; i_cat++ )
+		{
+			cout << _s_category.at(i_cat) << " : " << (_expected_yield_JEC_DN[i_prod][i_cat]/_expected_yield_JEC_DN[i_prod][Settings::inclusive])/(_expected_yield_JEC[i_prod][i_cat]/_expected_yield_JEC[i_prod][Settings::inclusive]) << " / " <<
+		   (_expected_yield_JEC_UP[i_prod][i_cat]/_expected_yield_JEC_UP[i_prod][Settings::inclusive])/(_expected_yield_JEC[i_prod][i_cat]/_expected_yield_JEC[i_prod][Settings::inclusive]) << endl;
+		}
+   }
+
+	
+}
+//========================================
+
+//========================================
+void Systematics::PrintSystematics_BTag( )
+{
+
+	SumInclusive_BTag();
+	
+//	for ( int i_prod = 0; i_prod < num_of_production_modes; i_prod++ )
+//   {
+//   	for ( int i_cat = 0; i_cat < num_of_categories ; i_cat++ )
+//		{
+//			cout << _s_category.at(i_cat) << endl;
+//			cout << "Nominal = " << _expected_yield_BTag[i_prod][i_cat] << endl;
+//			cout << "Up = " << _expected_yield_BTag_UP[i_prod][i_cat] << endl;
+//			cout << "Down = " << _expected_yield_BTag_DN[i_prod][i_cat] << endl;
+//			cout << endl;
+//		}
+//   }
+	
+	for ( int i_prod = 0; i_prod < num_of_production_modes; i_prod++ )
+   {
+   	cout << "[INFO] BTag systematics for " << _s_production_mode.at(i_prod) << endl;
+		for ( int i_cat = 0; i_cat < num_of_categories - 1; i_cat++ )
+		{
+			cout << _s_category.at(i_cat) << " : " << (_expected_yield_BTag_DN[i_prod][i_cat]/_expected_yield_BTag_DN[i_prod][Settings::inclusive])/(_expected_yield_BTag[i_prod][i_cat]/_expected_yield_BTag[i_prod][Settings::inclusive]) << " / " <<
+		   (_expected_yield_BTag_UP[i_prod][i_cat]/_expected_yield_BTag_UP[i_prod][Settings::inclusive])/(_expected_yield_BTag[i_prod][i_cat]/_expected_yield_BTag[i_prod][Settings::inclusive]) << endl;
+		}
+   }
+
+	
+}
+//========================================
+
+
 
 //=================================
-void Systematics::SumInclusive()
+void Systematics::SumInclusive_BTag()
 {
 	for ( int i_prod = 0; i_prod < num_of_production_modes; i_prod++ )
    {
       for ( int i_cat = 0; i_cat < num_of_categories - 1; i_cat++ )
       {
-		 _expected_yield[i_prod][Settings::inclusive]    += _expected_yield[i_prod][i_cat];
-       _expected_yield_UP[i_prod][Settings::inclusive] += _expected_yield_UP[i_prod][i_cat];
-       _expected_yield_DN[i_prod][Settings::inclusive] += _expected_yield_DN[i_prod][i_cat];
+		 _expected_yield_BTag[i_prod][Settings::inclusive]    += _expected_yield_BTag[i_prod][i_cat];
+       _expected_yield_BTag_UP[i_prod][Settings::inclusive] += _expected_yield_BTag_UP[i_prod][i_cat];
+       _expected_yield_BTag_DN[i_prod][Settings::inclusive] += _expected_yield_BTag_DN[i_prod][i_cat];
+      }
+   }
+}
+//=================================
+
+//=================================
+void Systematics::SumInclusive_JEC()
+{
+	for ( int i_prod = 0; i_prod < num_of_production_modes; i_prod++ )
+   {
+      for ( int i_cat = 0; i_cat < num_of_categories - 1; i_cat++ )
+      {
+		 _expected_yield_JEC[i_prod][Settings::inclusive]    += _expected_yield_JEC[i_prod][i_cat];
+       _expected_yield_JEC_UP[i_prod][Settings::inclusive] += _expected_yield_JEC_UP[i_prod][i_cat];
+       _expected_yield_JEC_DN[i_prod][Settings::inclusive] += _expected_yield_JEC_DN[i_prod][i_cat];
       }
    }
 }
@@ -247,6 +381,8 @@ int Systematics::find_current_production_mode( TString input_file_name , int gen
    if ( input_file_name.Contains("ttH125")     && n_gen_assoc_lep == 0) current_production_mode = Settings::ttH_had;
    if ( input_file_name.Contains("bbH125") )         							current_production_mode = Settings::bbH;
    if ( input_file_name.Contains("tqH125") )         							current_production_mode = Settings::tqH;
+   if ( input_file_name.Contains("ggTo") )          							current_production_mode = Settings::ggToZZ;
+   if ( input_file_name.Contains("ZZTo") )         							current_production_mode = Settings::qqToZZ;
 
    // End assign dataset to correct process
 	

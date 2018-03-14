@@ -27,37 +27,49 @@ int main( int argc, char *argv[] )
    TString file_name = "/ZZ4lAnalysis.root";
 	
    // Signal
-   TString ggH125         = path + "ggH125ext"       + file_name;
+   TString ggH125         = path + "ggH125"          + file_name;
+   TString ggH125ext      = path + "ggH125ext"       + file_name;
    TString ggH125_TU      = path + "ggH125_tuneup"   + file_name;
    TString ggH125_TD      = path + "ggH125_tunedown" + file_name;
 	
-   TString VBFH125        = path + "VBFH125ext"       + file_name;
+	TString VBFH125        = path + "VBFH125"          + file_name;
+   TString VBFH125ext     = path + "VBFH125ext"       + file_name;
    TString VBFH125_TU     = path + "VBFH125_tuneup"   + file_name;
    TString VBFH125_TD     = path + "VBFH125_tunedown" + file_name;
 	
-   TString WpH125         = path + "WplusH125ext" + file_name;
-   TString WpH125_TU      = path + "WplusH125_tuneup" + file_name;
+	TString WpH125         = path + "WplusH125"          + file_name;
+   TString WpH125ext      = path + "WplusH125ext"       + file_name;
+   TString WpH125_TU      = path + "WplusH125_tuneup"   + file_name;
    TString WpH125_TD      = path + "WplusH125_tunedown" + file_name;
 	
-   TString WmH125         = path + "WminusH125ext" + file_name;
-   TString WmH125_TU      = path + "WminusH125_tuneup" + file_name;
+	TString WmH125         = path + "WminusH125ext"       + file_name;
+   TString WmH125ext      = path + "WminusH125ext"       + file_name;
+   TString WmH125_TU      = path + "WminusH125_tuneup"   + file_name;
    TString WmH125_TD      = path + "WminusH125_tunedown" + file_name;
 	
-   TString ZH125          = path + "ZH125ext" + file_name;
-   TString ZH125_TU       = path + "ZH125_tuneup" + file_name;
+	TString ZH125          = path + "ZH125"          + file_name;
+   TString ZH125ext       = path + "ZH125ext"       + file_name;
+   TString ZH125_TU       = path + "ZH125_tuneup"   + file_name;
    TString ZH125_TD       = path + "ZH125_tunedown" + file_name;
 	
-   TString ttH125         = path + "ttH125ext" + file_name;
-   TString ttH125_TU      = path + "ttH125_tuneup" + file_name;
+	TString ttH125         = path + "ttH125"          + file_name;
+   TString ttH125ext      = path + "ttH125ext"       + file_name;
+   TString ttH125_TU      = path + "ttH125_tuneup"   + file_name;
    TString ttH125_TD      = path + "ttH125_tunedown" + file_name;
 	
-   TString bbH125         = path + "bbH125ext" + file_name;
-   TString bbH125_TU      = path + "bbH125_tuneup" + file_name;
-   TString bbH125_TD      = path + "bbH125_tunedown" + file_name;
+   TString bbH125         = path + "bbH125" + file_name;
+
+   TString tqH125         = path + "tqH125" + file_name;
+
 	
-   TString tqH125         = path + "tqH125ext" + file_name;
-   TString tqH125_TU      = path + "tqH125_tuneup" + file_name;
-   TString tqH125_TD      = path + "tqH125_tunedown" + file_name;
+   // Backgrounds
+   TString ZZTo4l      = path + "ZZTo4l"                     + file_name;
+   TString ggZZ4e      = path + "ggTo4e_Contin_MCFM701"      + file_name;
+   TString ggZZ4mu     = path + "ggTo4mu_Contin_MCFM701"     + file_name;
+   TString ggZZ4tau    = path + "ggTo4tau_Contin_MCFM701"    + file_name;
+   TString ggZZ2e2mu   = path + "ggTo2e2mu_Contin_MCFM701"   + file_name;
+   TString ggZZ2e2tau  = path + "ggTo2e2tau_Contin_MCFM701"  + file_name;
+   TString ggZZ2mu2tau = path + "ggTo2mu2tau_Contin_MCFM701" + file_name;
 	
    Systematics *systematics = new Systematics();
 	
@@ -66,7 +78,25 @@ int main( int argc, char *argv[] )
 // Print Systematics
 //====================
 
-	systematics->PrintSystematics_JEC(ggH125);
+	systematics->FillSystematics(ggH125);
+	systematics->FillSystematics(VBFH125);
+	systematics->FillSystematics(WpH125);
+	systematics->FillSystematics(WmH125);
+	systematics->FillSystematics(ZH125);
+	systematics->FillSystematics(ttH125);
+	systematics->FillSystematics(bbH125);
+	systematics->FillSystematics(tqH125);
+	systematics->FillSystematics(ZZTo4l);
+	systematics->FillSystematics(ggZZ4e);
+	systematics->FillSystematics(ggZZ4mu);
+//	systematics->FillSystematics(ggZZ4tau);
+	systematics->FillSystematics(ggZZ2e2mu);
+	systematics->FillSystematics(ggZZ2e2tau);
+	systematics->FillSystematics(ggZZ2mu2tau);
+
+	
+	systematics->PrintSystematics_JEC();
+	systematics->PrintSystematics_BTag();
 	
    delete systematics;
 }

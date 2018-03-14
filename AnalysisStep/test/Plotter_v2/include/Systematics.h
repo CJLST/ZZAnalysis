@@ -38,14 +38,17 @@ public:
 	Systematics();
 	~Systematics();
 	
-	void PrintSystematics_JEC( TString );
+	void FillSystematics( TString );
+	void PrintSystematics_JEC( );
+	void PrintSystematics_BTag( );
 	
 private:
 
 	float calculate_K_factor( TString );
    int FindFinalState();
    int find_current_production_mode( TString , int, int);
-   void SumInclusive();
+   void SumInclusive_JEC();
+   void SumInclusive_BTag();
    int CountAssociatedLeptons();
 	
    TFile *input_file, *input_file_data;
@@ -63,14 +66,18 @@ private:
    float jetPgOverPq[99];
 	
    int _current_process, _current_production_mode , _current_final_state;
-   int _current_category, _current_category_UP, _current_category_DN;
+   int _current_category, _current_category_JEC_UP, _current_category_JEC_DN;
+   int _current_category_BTag_UP, _current_category_BTag_DN;
    int _n_gen_assoc_lep;
    float _k_factor, _yield_SR;
    double gen_sum_weights, _event_weight, _event_weight_UP, _event_weight_DN;
 	
 	vector<TString> _s_category, _s_production_mode;
-   vector< vector <float> > _expected_yield, _expected_yield_UP, _expected_yield_DN;
-   vector<int>   gen_assoc_lep_id_;
+	vector<int>   gen_assoc_lep_id_;
+	
+   vector< vector <float> > _expected_yield_JEC, _expected_yield_JEC_UP, _expected_yield_JEC_DN;
+   vector< vector <float> > _expected_yield_BTag, _expected_yield_BTag_UP, _expected_yield_BTag_DN;
+	
 };
 #endif
 

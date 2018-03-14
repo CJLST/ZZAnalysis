@@ -585,6 +585,8 @@ Histograms::Histograms( double lumi)
    _s_production_mode.push_back("ttH_had");
    _s_production_mode.push_back("bbH");
    _s_production_mode.push_back("tqH");
+   _s_production_mode.push_back("ggZZ");
+   _s_production_mode.push_back("qqZZ");
    
 
    for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
@@ -3256,7 +3258,7 @@ void Histograms::FillYieldGraphs( float M4l_down, float M4l_up , TString fit_opt
    int fs_marker[num_of_final_states] = {20, 22, 21, 33, 29};
    Color_t catColor[num_of_categories] = {kBlue-9, kCyan-6, kGreen-6, kRed-7, kOrange+6, kMagenta-6, kYellow - 3 ,kBlack};
    
-   for ( int i_prod_mode = 0; i_prod_mode < num_of_production_modes; i_prod_mode++ )
+   for ( int i_prod_mode = 0; i_prod_mode < num_of_production_modes - 2; i_prod_mode++ ) // -2 because we want only signal
    {
       for ( int i_cat = 0; i_cat < num_of_categories - 1; i_cat++ )
       {
@@ -3399,7 +3401,7 @@ void Histograms::PrepareYamlFiles( TString sqrt, float M4l_down, float M4l_up, v
       {
          out_file[i_fs] << _s_category.at(i_cat) << ":" << endl;
 
-         for ( int i_prod_mode = 0; i_prod_mode < num_of_production_modes; i_prod_mode++ )
+         for ( int i_prod_mode = 0; i_prod_mode < num_of_production_modes - 2; i_prod_mode++ )
          {
             out_file[i_fs] <<  "    " << _s_production_mode.at(i_prod_mode) << "_hzz: ";
             
