@@ -425,6 +425,8 @@ public :
    Float_t			 ggH_NNLOPS_weight_unc;
    Float_t         genHEPMCweight;
    Float_t         PUWeight;
+   Float_t         PUWeight_Up;
+   Float_t         PUWeight_Dn;
    Float_t         dataMCWeight;
    Float_t         trigEffWeight;
    Float_t         overallEventWeight;
@@ -481,6 +483,22 @@ public :
    Float_t         LHEweight_QCDscale_muR0p5_muF1;
    Float_t         LHEweight_QCDscale_muR0p5_muF2;
    Float_t         LHEweight_QCDscale_muR0p5_muF0p5;
+   Float_t			 LHEweight_PDFVariation_Up;
+   Float_t			 LHEweight_PDFVariation_Dn;
+   Float_t			 LHEweight_AsMZ_Up;
+   Float_t			 LHEweight_AsMZ_Dn;
+   Float_t			 PythiaWeight_isr_muRoneoversqrt2;
+   Float_t			 PythiaWeight_fsr_muRoneoversqrt2;
+   Float_t			 PythiaWeight_isr_muRsqrt2;
+   Float_t			 PythiaWeight_fsr_muRsqrt2;
+   Float_t			 PythiaWeight_isr_muR0p5;
+   Float_t			 PythiaWeight_fsr_muR0p5;
+   Float_t			 PythiaWeight_isr_muR2;
+   Float_t			 PythiaWeight_fsr_muR2;
+   Float_t			 PythiaWeight_isr_muR0p25;
+	Float_t			 PythiaWeight_fsr_muR0p25;
+	Float_t			 PythiaWeight_isr_muR4;
+	Float_t			 PythiaWeight_fsr_muR4;
 
    // List of branches
    TBranch        *b_RunNumber;   //!
@@ -883,6 +901,8 @@ public :
    TBranch			*b_ggH_NNLOPS_weight_unc;
    TBranch        *b_genHEPMCweight;   //!
    TBranch        *b_PUWeight;   //!
+   TBranch        *b_PUWeight_Up;   //!
+   TBranch        *b_PUWeight_Dn;   //!
    TBranch        *b_dataMCWeight;   //!
    TBranch        *b_trigEffWeight;   //!
    TBranch        *b_overallEventWeight;   //!
@@ -939,6 +959,22 @@ public :
    TBranch        *b_LHEweight_QCDscale_muR0p5_muF1;   //!
    TBranch        *b_LHEweight_QCDscale_muR0p5_muF2;   //!
    TBranch        *b_LHEweight_QCDscale_muR0p5_muF0p5;   //!
+	TBranch			*b_LHEweight_PDFVariation_Up;
+   TBranch			*b_LHEweight_PDFVariation_Dn;
+   TBranch			*b_LHEweight_AsMZ_Up;
+   TBranch			*b_LHEweight_AsMZ_Dn;
+   TBranch			*b_PythiaWeight_isr_muRoneoversqrt2;
+   TBranch			*b_PythiaWeight_fsr_muRoneoversqrt2;
+   TBranch			*b_PythiaWeight_isr_muRsqrt2;
+   TBranch			*b_PythiaWeight_fsr_muRsqrt2;
+   TBranch			*b_PythiaWeight_isr_muR0p5;
+   TBranch			*b_PythiaWeight_fsr_muR0p5;
+   TBranch			*b_PythiaWeight_isr_muR2;
+   TBranch			*b_PythiaWeight_fsr_muR2;
+   TBranch			*b_PythiaWeight_isr_muR0p25;
+	TBranch			*b_PythiaWeight_fsr_muR0p25;
+	TBranch			*b_PythiaWeight_isr_muR4;
+	TBranch			*b_PythiaWeight_fsr_muR4;
 
    Tree(TTree *tree=0);
    virtual ~Tree();
@@ -1447,6 +1483,8 @@ void Tree::Init(TTree *tree, TString input_file_name)
       fChain->SetBranchAddress("genProcessId", &genProcessId, &b_genProcessId);
       fChain->SetBranchAddress("genHEPMCweight", &genHEPMCweight, &b_genHEPMCweight);
       fChain->SetBranchAddress("PUWeight", &PUWeight, &b_PUWeight);
+      fChain->SetBranchAddress("PUWeight_Up", &PUWeight_Up, &b_PUWeight_Up);
+      fChain->SetBranchAddress("PUWeight_Dn", &PUWeight_Dn, &b_PUWeight_Dn);
       fChain->SetBranchAddress("dataMCWeight", &dataMCWeight, &b_dataMCWeight);
       fChain->SetBranchAddress("trigEffWeight", &trigEffWeight, &b_trigEffWeight);
       fChain->SetBranchAddress("overallEventWeight", &overallEventWeight, &b_overallEventWeight);
@@ -1502,7 +1540,23 @@ void Tree::Init(TTree *tree, TString input_file_name)
       fChain->SetBranchAddress("LHEweight_QCDscale_muR2_muF0p5", &LHEweight_QCDscale_muR2_muF0p5, &b_LHEweight_QCDscale_muR2_muF0p5);
       fChain->SetBranchAddress("LHEweight_QCDscale_muR0p5_muF1", &LHEweight_QCDscale_muR0p5_muF1, &b_LHEweight_QCDscale_muR0p5_muF1);
       fChain->SetBranchAddress("LHEweight_QCDscale_muR0p5_muF2", &LHEweight_QCDscale_muR0p5_muF2, &b_LHEweight_QCDscale_muR0p5_muF2);
-      fChain->SetBranchAddress("LHEweight_QCDscale_muR0p5_muF0p5", &LHEweight_QCDscale_muR0p5_muF0p5, &b_LHEweight_QCDscale_muR0p5_muF0p5);
+      fChain->SetBranchAddress("LHEweight_QCDscale_muR0p5_muF0p5", &LHEweight_QCDscale_muR0p5_muF0p5, &b_LHEweight_QCDscale_muR0p5_muF0p5);		
+      fChain->SetBranchAddress("LHEweight_PDFVariation_Up", &LHEweight_PDFVariation_Up, &b_LHEweight_PDFVariation_Up);
+      fChain->SetBranchAddress("LHEweight_PDFVariation_Dn", &LHEweight_PDFVariation_Dn, &b_LHEweight_PDFVariation_Dn);
+      fChain->SetBranchAddress("LHEweight_AsMZ_Up", &LHEweight_AsMZ_Up, &b_LHEweight_AsMZ_Up);
+      fChain->SetBranchAddress("LHEweight_AsMZ_Dn", &LHEweight_AsMZ_Dn, &b_LHEweight_AsMZ_Dn);
+      fChain->SetBranchAddress("PythiaWeight_isr_muRoneoversqrt2", &PythiaWeight_isr_muRoneoversqrt2, &b_PythiaWeight_isr_muRoneoversqrt2);
+      fChain->SetBranchAddress("PythiaWeight_fsr_muRoneoversqrt2", &PythiaWeight_fsr_muRoneoversqrt2, &b_PythiaWeight_fsr_muRoneoversqrt2);
+      fChain->SetBranchAddress("PythiaWeight_isr_muRsqrt2", &PythiaWeight_isr_muRsqrt2, &b_PythiaWeight_isr_muRsqrt2);
+      fChain->SetBranchAddress("PythiaWeight_fsr_muRsqrt2", &PythiaWeight_fsr_muRsqrt2, &b_PythiaWeight_fsr_muRsqrt2);
+      fChain->SetBranchAddress("PythiaWeight_isr_muR0p5", &PythiaWeight_isr_muR0p5, &b_PythiaWeight_isr_muR0p5);
+      fChain->SetBranchAddress("PythiaWeight_fsr_muR0p5", &PythiaWeight_fsr_muR0p5, &b_PythiaWeight_fsr_muR0p5);
+      fChain->SetBranchAddress("PythiaWeight_isr_muR2", &PythiaWeight_isr_muR2, &b_PythiaWeight_isr_muR2);
+      fChain->SetBranchAddress("PythiaWeight_fsr_muR2", &PythiaWeight_fsr_muR2, &b_PythiaWeight_fsr_muR2);
+      fChain->SetBranchAddress("PythiaWeight_isr_muR0p25", &PythiaWeight_isr_muR0p25, &b_PythiaWeight_isr_muR0p25);
+      fChain->SetBranchAddress("PythiaWeight_fsr_muR0p25", &PythiaWeight_fsr_muR0p25, &b_PythiaWeight_fsr_muR0p25);
+      fChain->SetBranchAddress("PythiaWeight_isr_muR4", &PythiaWeight_isr_muR4, &b_PythiaWeight_isr_muR4);
+      fChain->SetBranchAddress("PythiaWeight_fsr_muR4", &PythiaWeight_fsr_muR4, &b_PythiaWeight_fsr_muR4);
    }
    
    Notify();

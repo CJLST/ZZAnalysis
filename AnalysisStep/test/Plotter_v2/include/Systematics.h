@@ -39,16 +39,21 @@ public:
 	~Systematics();
 	
 	void FillSystematics( TString );
+	void FillSystematics_tuneUpDn( TString );
+	void PrintSystematics_PU( );
 	void PrintSystematics_JEC( );
 	void PrintSystematics_BTag( );
+	void PrintSystematics_QCDScale( );
+	void PrintSystematics_PDFScale( );
+	void PrintSystematics_EWCorr( );
+	void PrintSystematics_PythiaScale( );
+	void PrintSystematics_PythiaTune( );
 	
 private:
 
 	float calculate_K_factor( TString );
    int FindFinalState();
    int find_current_production_mode( TString , int, int);
-   void SumInclusive_JEC();
-   void SumInclusive_BTag();
    int CountAssociatedLeptons();
 	
    TFile *input_file, *input_file_data;
@@ -66,8 +71,7 @@ private:
    float jetPgOverPq[99];
 	
    int _current_process, _current_production_mode , _current_final_state;
-   int _current_category, _current_category_JEC_UP, _current_category_JEC_DN;
-   int _current_category_BTag_UP, _current_category_BTag_DN;
+   int _current_category;
    int _n_gen_assoc_lep;
    float _k_factor, _yield_SR;
    double gen_sum_weights, _event_weight, _event_weight_UP, _event_weight_DN;
@@ -75,8 +79,20 @@ private:
 	vector<TString> _s_category, _s_production_mode;
 	vector<int>   gen_assoc_lep_id_;
 	
+	int _current_category_JEC_UP, _current_category_JEC_DN;
+   int _current_category_BTag_UP, _current_category_BTag_DN;
+   float _k_factor_EWCorr_UP, _k_factor_EWCorr_DN;
+	
+	vector< vector <float> > _expected_yield_PU, _expected_yield_PU_UP, _expected_yield_PU_DN;
    vector< vector <float> > _expected_yield_JEC, _expected_yield_JEC_UP, _expected_yield_JEC_DN;
    vector< vector <float> > _expected_yield_BTag, _expected_yield_BTag_UP, _expected_yield_BTag_DN;
+   vector< vector <float> > _expected_yield_muR, _expected_yield_muR_UP, _expected_yield_muR_DN;
+   vector< vector <float> > _expected_yield_muF, _expected_yield_muF_UP, _expected_yield_muF_DN;
+   vector< vector <float> > _expected_yield_As, _expected_yield_As_UP, _expected_yield_As_DN;
+   vector< vector <float> > _expected_yield_PDF, _expected_yield_PDF_UP, _expected_yield_PDF_DN;
+   vector< vector <float> > _expected_yield_EWCorr, _expected_yield_EWCorr_UP, _expected_yield_EWCorr_DN;
+   vector< vector <float> > _expected_yield_PythiaScale, _expected_yield_PythiaScale_UP, _expected_yield_PythiaScale_DN;
+   vector< vector <float> > _expected_yield_PythiaTune, _expected_yield_PythiaTune_UP, _expected_yield_PythiaTune_DN;
 	
 };
 #endif

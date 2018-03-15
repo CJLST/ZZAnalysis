@@ -17,6 +17,10 @@ Systematics::Systematics():Tree()
       {
          temp.push_back(0);
       }
+      _expected_yield_PU.push_back(temp);
+      _expected_yield_PU_UP.push_back(temp);
+      _expected_yield_PU_DN.push_back(temp);
+		
       _expected_yield_JEC.push_back(temp);
       _expected_yield_JEC_UP.push_back(temp);
       _expected_yield_JEC_DN.push_back(temp);
@@ -24,6 +28,34 @@ Systematics::Systematics():Tree()
 		_expected_yield_BTag.push_back(temp);
       _expected_yield_BTag_UP.push_back(temp);
       _expected_yield_BTag_DN.push_back(temp);
+		
+		_expected_yield_muR.push_back(temp);
+      _expected_yield_muR_UP.push_back(temp);
+      _expected_yield_muR_DN.push_back(temp);
+		
+		_expected_yield_muF.push_back(temp);
+      _expected_yield_muF_UP.push_back(temp);
+      _expected_yield_muF_DN.push_back(temp);
+		
+		_expected_yield_As.push_back(temp);
+      _expected_yield_As_UP.push_back(temp);
+      _expected_yield_As_DN.push_back(temp);
+		
+		_expected_yield_PDF.push_back(temp);
+      _expected_yield_PDF_UP.push_back(temp);
+      _expected_yield_PDF_DN.push_back(temp);
+		
+		_expected_yield_EWCorr.push_back(temp);
+      _expected_yield_EWCorr_UP.push_back(temp);
+      _expected_yield_EWCorr_DN.push_back(temp);
+		
+		_expected_yield_PythiaScale.push_back(temp);
+      _expected_yield_PythiaScale_UP.push_back(temp);
+      _expected_yield_PythiaScale_DN.push_back(temp);
+		
+		_expected_yield_PythiaTune.push_back(temp);
+      _expected_yield_PythiaTune_UP.push_back(temp);
+      _expected_yield_PythiaTune_DN.push_back(temp);
    }
 	
 	_s_category.push_back("UnTagged");
@@ -94,6 +126,7 @@ void Systematics::FillSystematics( TString input_file_name)
       }
 
       if ( !(ZZsel >= 90) ) continue;
+      if ( ZZMass < 105. || ZZMass > 140. ) continue;
 
       // Find current production mode
       gen_assoc_lep_id_.push_back(GenAssocLep1Id);
@@ -137,6 +170,28 @@ void Systematics::FillSystematics( TString input_file_name)
 													 PFMET,
 													 true,// Use VHMET category
 													 false);// Use QG tagging
+		
+		//============================================================
+		// PileUp
+		//============================================================
+		
+		// K factors
+      _k_factor 			    = calculate_K_factor(input_file_name);
+		
+      // Final event weight
+      _event_weight    = ( xsec * _k_factor * overallEventWeight * ( 1. )                  						     ) / gen_sum_weights;
+      _event_weight_UP = ( xsec * _k_factor * overallEventWeight * (PUWeight == 0. ? 0. : PUWeight_Up/PUWeight)  ) / gen_sum_weights;
+      _event_weight_DN = ( xsec * _k_factor * overallEventWeight * (PUWeight == 0. ? 0. : PUWeight_Dn/PUWeight)  ) / gen_sum_weights;
+      //if ( input_file_name.Contains("ggH") ) _event_weight *= ggH_NNLOPS_weight; // reweight POWHEG ggH to NNLOPS
+
+      // Sum yields
+       _expected_yield_PU[_current_production_mode][_current_category]           += _event_weight;
+       _expected_yield_PU_UP[_current_production_mode][_current_category]        += _event_weight_UP;
+       _expected_yield_PU_DN[_current_production_mode][_current_category]        += _event_weight_DN;
+		
+       _expected_yield_PU[_current_production_mode][Settings::inclusive]         += _event_weight;
+       _expected_yield_PU_UP[_current_production_mode][Settings::inclusive]      += _event_weight_UP;
+       _expected_yield_PU_DN[_current_production_mode][Settings::inclusive]      += _event_weight_DN;
 		
 		//============================================================
 		// JEC
@@ -199,6 +254,10 @@ void Systematics::FillSystematics( TString input_file_name)
        _expected_yield_JEC_UP[_current_production_mode][_current_category_JEC_UP] += _event_weight_UP;
        _expected_yield_JEC_DN[_current_production_mode][_current_category_JEC_DN] += _event_weight_DN;
 		
+       _expected_yield_JEC[_current_production_mode][Settings::inclusive]    += _event_weight;
+       _expected_yield_JEC_UP[_current_production_mode][Settings::inclusive] += _event_weight_UP;
+       _expected_yield_JEC_DN[_current_production_mode][Settings::inclusive] += _event_weight_DN;
+		
 		//============================================================
 		// BTag
 		//============================================================
@@ -259,17 +318,317 @@ void Systematics::FillSystematics( TString input_file_name)
        _expected_yield_BTag[_current_production_mode][_current_category]           += _event_weight;
        _expected_yield_BTag_UP[_current_production_mode][_current_category_BTag_UP] += _event_weight_UP;
        _expected_yield_BTag_DN[_current_production_mode][_current_category_BTag_DN] += _event_weight_DN;
+		
+		 _expected_yield_BTag[_current_production_mode][Settings::inclusive]           += _event_weight;
+       _expected_yield_BTag_UP[_current_production_mode][Settings::inclusive] += _event_weight_UP;
+       _expected_yield_BTag_DN[_current_production_mode][Settings::inclusive] += _event_weight_DN;
+		
+		
+		//============================================================
+		// muR Scale
+		//============================================================
+		
+		// K factors
+      _k_factor 			    = calculate_K_factor(input_file_name);
+		
+      // Final event weight
+      _event_weight    = ( xsec * _k_factor * overallEventWeight * ( 1. )                      											  ) / gen_sum_weights;
+      _event_weight_UP = ( xsec * _k_factor * overallEventWeight * (LHEweight_QCDscale_muR2_muF1/LHEweight_QCDscale_muR1_muF1)  ) / gen_sum_weights;
+      _event_weight_DN = ( xsec * _k_factor * overallEventWeight * (LHEweight_QCDscale_muR0p5_muF1/LHEweight_QCDscale_muR1_muF1)) / gen_sum_weights;
+      //if ( input_file_name.Contains("ggH") ) _event_weight *= ggH_NNLOPS_weight; // reweight POWHEG ggH to NNLOPS
+
+      // Sum yields
+       _expected_yield_muR[_current_production_mode][_current_category]           += _event_weight;
+       _expected_yield_muR_UP[_current_production_mode][_current_category]        += _event_weight_UP;
+       _expected_yield_muR_DN[_current_production_mode][_current_category]        += _event_weight_DN;
+		
+       _expected_yield_muR[_current_production_mode][Settings::inclusive]           += _event_weight;
+       _expected_yield_muR_UP[_current_production_mode][Settings::inclusive]        += _event_weight_UP;
+       _expected_yield_muR_DN[_current_production_mode][Settings::inclusive]        += _event_weight_DN;
+		
+		//============================================================
+		// muF Scale
+		//============================================================
+		
+		// K factors
+      _k_factor 			    = calculate_K_factor(input_file_name);
+		
+      // Final event weight
+      _event_weight    = ( xsec * _k_factor * overallEventWeight * ( 1. )                      											  ) / gen_sum_weights;
+      _event_weight_UP = ( xsec * _k_factor * overallEventWeight * (LHEweight_QCDscale_muR1_muF2/LHEweight_QCDscale_muR1_muF1)  ) / gen_sum_weights;
+      _event_weight_DN = ( xsec * _k_factor * overallEventWeight * (LHEweight_QCDscale_muR1_muF0p5/LHEweight_QCDscale_muR1_muF1)) / gen_sum_weights;
+      //if ( input_file_name.Contains("ggH") ) _event_weight *= ggH_NNLOPS_weight; // reweight POWHEG ggH to NNLOPS
+
+      // Sum yields
+       _expected_yield_muF[_current_production_mode][_current_category]           += _event_weight;
+       _expected_yield_muF_UP[_current_production_mode][_current_category]        += _event_weight_UP;
+       _expected_yield_muF_DN[_current_production_mode][_current_category]        += _event_weight_DN;
+		
+       _expected_yield_muF[_current_production_mode][Settings::inclusive]           += _event_weight;
+       _expected_yield_muF_UP[_current_production_mode][Settings::inclusive]        += _event_weight_UP;
+       _expected_yield_muF_DN[_current_production_mode][Settings::inclusive]        += _event_weight_DN;
+		
+		//============================================================
+		// Alpha strong
+		//============================================================
+		
+		// K factors
+      _k_factor 			    = calculate_K_factor(input_file_name);
+		
+      // Final event weight
+      _event_weight    = ( xsec * _k_factor * overallEventWeight * ( 1. )              ) / gen_sum_weights;
+      _event_weight_UP = ( xsec * _k_factor * overallEventWeight * (LHEweight_AsMZ_Up) ) / gen_sum_weights;
+      _event_weight_DN = ( xsec * _k_factor * overallEventWeight * (LHEweight_AsMZ_Dn) ) / gen_sum_weights;
+      //if ( input_file_name.Contains("ggH") ) _event_weight *= ggH_NNLOPS_weight; // reweight POWHEG ggH to NNLOPS
+
+      // Sum yields
+       _expected_yield_As[_current_production_mode][_current_category]           += _event_weight;
+       _expected_yield_As_UP[_current_production_mode][_current_category]        += _event_weight_UP;
+       _expected_yield_As_DN[_current_production_mode][_current_category]        += _event_weight_DN;
+		
+       _expected_yield_As[_current_production_mode][Settings::inclusive]         += _event_weight;
+       _expected_yield_As_UP[_current_production_mode][Settings::inclusive]      += _event_weight_UP;
+       _expected_yield_As_DN[_current_production_mode][Settings::inclusive]      += _event_weight_DN;
+		
+		//============================================================
+		// PDF Variation
+		//============================================================
+		
+		// K factors
+      _k_factor 			    = calculate_K_factor(input_file_name);
+		
+      // Final event weight
+      _event_weight    = ( xsec * _k_factor * overallEventWeight * ( 1. )                      ) / gen_sum_weights;
+      _event_weight_UP = ( xsec * _k_factor * overallEventWeight * (LHEweight_PDFVariation_Up) ) / gen_sum_weights;
+      _event_weight_DN = ( xsec * _k_factor * overallEventWeight * (LHEweight_PDFVariation_Dn) ) / gen_sum_weights;
+      //if ( input_file_name.Contains("ggH") ) _event_weight *= ggH_NNLOPS_weight; // reweight POWHEG ggH to NNLOPS
+
+      // Sum yields
+       _expected_yield_PDF[_current_production_mode][_current_category]           += _event_weight;
+       _expected_yield_PDF_UP[_current_production_mode][_current_category]        += _event_weight_UP;
+       _expected_yield_PDF_DN[_current_production_mode][_current_category]        += _event_weight_DN;
+		
+       _expected_yield_PDF[_current_production_mode][Settings::inclusive]         += _event_weight;
+       _expected_yield_PDF_UP[_current_production_mode][Settings::inclusive]      += _event_weight_UP;
+       _expected_yield_PDF_DN[_current_production_mode][Settings::inclusive]      += _event_weight_DN;
+		
+		//============================================================
+		// EW corrections
+		//============================================================
+		
+		// K factors
+      _k_factor 			    = calculate_K_factor(input_file_name);
+      if(input_file_name.Contains("ZZTo4l"))
+      {
+			_k_factor_EWCorr_UP = KFactor_EW_qqZZ * ( 1. + KFactor_EW_qqZZ_unc ) * KFactor_QCD_qqZZ_M;
+			_k_factor_EWCorr_DN = KFactor_EW_qqZZ * ( 1. - KFactor_EW_qqZZ_unc ) * KFactor_QCD_qqZZ_M;
+		}
+		
+      // Final event weight
+      _event_weight    = ( xsec * _k_factor           * overallEventWeight ) / gen_sum_weights;
+      _event_weight_UP = ( xsec * _k_factor_EWCorr_UP * overallEventWeight ) / gen_sum_weights;
+      _event_weight_DN = ( xsec * _k_factor_EWCorr_DN * overallEventWeight ) / gen_sum_weights;
+      //if ( input_file_name.Contains("ggH") ) _event_weight *= ggH_NNLOPS_weight; // reweight POWHEG ggH to NNLOPS
+
+      // Sum yields
+       _expected_yield_EWCorr[_current_production_mode][_current_category]           += _event_weight;
+       _expected_yield_EWCorr_UP[_current_production_mode][_current_category]        += _event_weight_UP;
+       _expected_yield_EWCorr_DN[_current_production_mode][_current_category]        += _event_weight_DN;
+		
+       _expected_yield_EWCorr[_current_production_mode][Settings::inclusive]         += _event_weight;
+       _expected_yield_EWCorr_UP[_current_production_mode][Settings::inclusive]      += _event_weight_UP;
+       _expected_yield_EWCorr_DN[_current_production_mode][Settings::inclusive]      += _event_weight_DN;
+		
+		
+		//============================================================
+		// Pythia Scale
+		//============================================================
+		
+		// K factors
+      _k_factor 			    = calculate_K_factor(input_file_name);
+		
+      // Final event weight
+      _event_weight    = ( xsec * _k_factor * overallEventWeight * ( 1. )                                                ) / gen_sum_weights;
+      _event_weight_UP = ( xsec * _k_factor * overallEventWeight * (PythiaWeight_isr_muR4    * PythiaWeight_fsr_muR4   ) ) / gen_sum_weights;
+      _event_weight_DN = ( xsec * _k_factor * overallEventWeight * (PythiaWeight_isr_muR0p25 * PythiaWeight_fsr_muR0p25) ) / gen_sum_weights;
+      //if ( input_file_name.Contains("ggH") ) _event_weight *= ggH_NNLOPS_weight; // reweight POWHEG ggH to NNLOPS
+
+      // Sum yields
+       _expected_yield_PythiaScale[_current_production_mode][_current_category]           += _event_weight;
+       _expected_yield_PythiaScale_UP[_current_production_mode][_current_category]        += _event_weight_UP;
+       _expected_yield_PythiaScale_DN[_current_production_mode][_current_category]        += _event_weight_DN;
+		
+       _expected_yield_PythiaScale[_current_production_mode][Settings::inclusive]         += _event_weight;
+       _expected_yield_PythiaScale_UP[_current_production_mode][Settings::inclusive]      += _event_weight_UP;
+       _expected_yield_PythiaScale_DN[_current_production_mode][Settings::inclusive]      += _event_weight_DN;
+		
+		//============================================================
+		// Pythia Tune
+		//============================================================
+		
+		// K factors
+      _k_factor 			    = calculate_K_factor(input_file_name);
+		
+      // Final event weight
+      _event_weight    = ( xsec * _k_factor * overallEventWeight * ( 1. )                                                ) / gen_sum_weights;
+      //if ( input_file_name.Contains("ggH") ) _event_weight *= ggH_NNLOPS_weight; // reweight POWHEG ggH to NNLOPS
+
+      // Sum yields
+       _expected_yield_PythiaTune[_current_production_mode][_current_category]           += _event_weight;
+       _expected_yield_PythiaTune[_current_production_mode][Settings::inclusive]         += _event_weight;
+		//Up/Dn variations have dedicated samples and are filled in FillSystematics_tuneUpDn() function
+
+		
    } // end for loop
 	
 cout << "[INFO] Systematics for " << input_file_name << " filled." << endl;
 }
 //==========================================================
 
+
+//==========================================================
+void Systematics::FillSystematics_tuneUpDn( TString input_file_name)
+{
+	input_file = new TFile(input_file_name);
+
+   hCounters = (TH1F*)input_file->Get("ZZTree/Counters");
+   n_gen_events = (Long64_t)hCounters->GetBinContent(1);
+   gen_sum_weights = (Long64_t)hCounters->GetBinContent(40);
+	
+   input_tree = (TTree*)input_file->Get("ZZTree/candTree");
+   Init( input_tree, input_file_name );
+	
+   if (fChain == 0) return;
+
+   Long64_t nentries = fChain->GetEntriesFast();
+
+   Long64_t nbytes = 0, nb = 0;
+	
+   for (Long64_t jentry=0; jentry<nentries;jentry++)
+   {
+      Long64_t ientry = LoadTree(jentry);
+      if (ientry < 0) break;
+      nb = fChain->GetEntry(jentry);
+      nbytes += nb;
+		
+      if ( LepEta->size() != 4 )
+      {
+         cout << "[ERROR] in event " << RunNumber << ":" << LumiNumber << ":" << EventNumber << ", stored " << LepEta->size() << " leptons instead of 4" << endl;
+         continue;
+      }
+
+      if ( !(ZZsel >= 90) ) continue;
+      if ( ZZMass < 105. || ZZMass > 140. ) continue;
+
+      // Find current production mode
+      gen_assoc_lep_id_.push_back(GenAssocLep1Id);
+   	gen_assoc_lep_id_.push_back(GenAssocLep2Id);
+      _n_gen_assoc_lep = CountAssociatedLeptons();
+		_current_production_mode = find_current_production_mode( input_file_name, genExtInfo , _n_gen_assoc_lep);
+      gen_assoc_lep_id_.clear();
+		
+      // Final states
+      _current_final_state = FindFinalState();
+		
+      // Categories
+      for ( int j = 0; j < nCleanedJetsPt30; j++)
+      {
+         jetPt[j] = JetPt->at(j);
+         jetEta[j] = JetEta->at(j);
+         jetPhi[j] = JetPhi->at(j);
+         jetMass[j] = JetMass->at(j);
+         jetQGL[j] = JetQGLikelihood->at(j);
+         jetPgOverPq[j] = 1./JetQGLikelihood->at(j) - 1.;
+      }
+
+		_current_category = categoryMor18(nExtraLep,
+													 nExtraZ,
+													 nCleanedJetsPt30,
+													 nCleanedJetsPt30BTagged_bTagSF,
+													 jetQGL,
+													 p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+													 p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
+													 p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
+													 p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+													 pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+													 p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
+													 p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
+													 p_HadWH_mavjj_JECNominal,
+													 p_HadWH_mavjj_true_JECNominal,
+													 p_HadZH_mavjj_JECNominal,
+													 p_HadZH_mavjj_true_JECNominal,
+													 jetPhi,
+													 ZZMass,
+													 PFMET,
+													 true,// Use VHMET category
+													 false);// Use QG tagging
+		
+		//============================================================
+		// Pythia Tune
+		//============================================================
+		
+		// K factors
+      _k_factor 			    = calculate_K_factor(input_file_name);
+		
+      // Final event weight
+      _event_weight    = ( xsec * _k_factor * overallEventWeight * ( 1. )                                                ) / gen_sum_weights;
+      //if ( input_file_name.Contains("ggH") ) _event_weight *= ggH_NNLOPS_weight; // reweight POWHEG ggH to NNLOPS
+
+      // Sum yields
+       if(input_file_name.Contains("tuneup"))   _expected_yield_PythiaTune_UP[_current_production_mode][_current_category]        += _event_weight;
+       if(input_file_name.Contains("tunedown")) _expected_yield_PythiaTune_DN[_current_production_mode][_current_category]        += _event_weight;
+		
+       if(input_file_name.Contains("tuneup"))   _expected_yield_PythiaTune_UP[_current_production_mode][Settings::inclusive]      += _event_weight;
+       if(input_file_name.Contains("tunedown")) _expected_yield_PythiaTune_DN[_current_production_mode][Settings::inclusive]      += _event_weight;
+		
+   } // end for loop
+	
+cout << "[INFO] Systematics for " << input_file_name << " filled." << endl;
+}
+//==========================================================
+
+
+
+//========================================
+void Systematics::PrintSystematics_PU( )
+{
+	
+	for ( int i_prod = 0; i_prod < num_of_production_modes; i_prod++ )
+   {
+   	for ( int i_cat = 0; i_cat < num_of_categories ; i_cat++ )
+		{
+			cout << _s_category.at(i_cat) << endl;
+			cout << "Nominal = " << _expected_yield_PU[i_prod][i_cat] << endl;
+			cout << "Up = " << _expected_yield_PU_UP[i_prod][i_cat] << endl;
+			cout << "Down = " << _expected_yield_PU_DN[i_prod][i_cat] << endl;
+			cout << endl;
+		}
+   }
+	
+	for ( int i_cat = 0; i_cat < num_of_categories - 1; i_cat++ )
+   {
+   	cout << "[INFO] PileUp systematics for " << _s_category.at(i_cat) << endl;
+		for ( int i_prod = 0; i_prod < num_of_production_modes; i_prod++ )
+		{
+			cout << _s_production_mode.at(i_prod)  << " : " << (_expected_yield_PU_DN[i_prod][i_cat]/_expected_yield_PU_DN[i_prod][Settings::inclusive])/(_expected_yield_PU[i_prod][i_cat]/_expected_yield_PU[i_prod][Settings::inclusive]) << " / " <<
+		   (_expected_yield_PU_UP[i_prod][i_cat]/_expected_yield_PU_UP[i_prod][Settings::inclusive])/(_expected_yield_PU[i_prod][i_cat]/_expected_yield_PU[i_prod][Settings::inclusive]) << endl;
+		}
+   }
+
+	cout << "[INFO] PileUp systematics for inclusive: " << endl;
+	for ( int i_prod = 0; i_prod < num_of_production_modes; i_prod++ )
+	{
+		cout << _s_production_mode.at(i_prod)  << " : " << (_expected_yield_PU_DN[i_prod][Settings::inclusive]/_expected_yield_PU[i_prod][Settings::inclusive]) << " / " <<
+		(_expected_yield_PU_UP[i_prod][Settings::inclusive]/_expected_yield_PU[i_prod][Settings::inclusive]) << endl;
+	}
+}
+//========================================
+
+
+
 //========================================
 void Systematics::PrintSystematics_JEC( )
 {
-
-	SumInclusive_JEC();
 	
 //	for ( int i_prod = 0; i_prod < num_of_production_modes; i_prod++ )
 //   {
@@ -283,12 +642,12 @@ void Systematics::PrintSystematics_JEC( )
 //		}
 //   }
 	
-	for ( int i_prod = 0; i_prod < num_of_production_modes; i_prod++ )
+	for ( int i_cat = 0; i_cat < num_of_categories - 1; i_cat++ )
    {
-   	cout << "[INFO] JEC systematics for " << _s_production_mode.at(i_prod) << endl;
-		for ( int i_cat = 0; i_cat < num_of_categories - 1; i_cat++ )
+   	cout << "[INFO] JEC systematics for " << _s_category.at(i_cat) << endl;
+		for ( int i_prod = 0; i_prod < num_of_production_modes; i_prod++ )
 		{
-			cout << _s_category.at(i_cat) << " : " << (_expected_yield_JEC_DN[i_prod][i_cat]/_expected_yield_JEC_DN[i_prod][Settings::inclusive])/(_expected_yield_JEC[i_prod][i_cat]/_expected_yield_JEC[i_prod][Settings::inclusive]) << " / " <<
+			cout << _s_production_mode.at(i_prod)  << " : " << (_expected_yield_JEC_DN[i_prod][i_cat]/_expected_yield_JEC_DN[i_prod][Settings::inclusive])/(_expected_yield_JEC[i_prod][i_cat]/_expected_yield_JEC[i_prod][Settings::inclusive]) << " / " <<
 		   (_expected_yield_JEC_UP[i_prod][i_cat]/_expected_yield_JEC_UP[i_prod][Settings::inclusive])/(_expected_yield_JEC[i_prod][i_cat]/_expected_yield_JEC[i_prod][Settings::inclusive]) << endl;
 		}
    }
@@ -300,8 +659,6 @@ void Systematics::PrintSystematics_JEC( )
 //========================================
 void Systematics::PrintSystematics_BTag( )
 {
-
-	SumInclusive_BTag();
 	
 //	for ( int i_prod = 0; i_prod < num_of_production_modes; i_prod++ )
 //   {
@@ -315,12 +672,12 @@ void Systematics::PrintSystematics_BTag( )
 //		}
 //   }
 	
-	for ( int i_prod = 0; i_prod < num_of_production_modes; i_prod++ )
+	for ( int i_cat = 0; i_cat < num_of_categories - 1; i_cat++ )
    {
-   	cout << "[INFO] BTag systematics for " << _s_production_mode.at(i_prod) << endl;
-		for ( int i_cat = 0; i_cat < num_of_categories - 1; i_cat++ )
+   	cout << "[INFO] BTag systematics for " << _s_category.at(i_cat) << endl;
+		for ( int i_prod = 0; i_prod < num_of_production_modes; i_prod++ )
 		{
-			cout << _s_category.at(i_cat) << " : " << (_expected_yield_BTag_DN[i_prod][i_cat]/_expected_yield_BTag_DN[i_prod][Settings::inclusive])/(_expected_yield_BTag[i_prod][i_cat]/_expected_yield_BTag[i_prod][Settings::inclusive]) << " / " <<
+			cout << _s_production_mode.at(i_prod)  << " : " << (_expected_yield_BTag_DN[i_prod][i_cat]/_expected_yield_BTag_DN[i_prod][Settings::inclusive])/(_expected_yield_BTag[i_prod][i_cat]/_expected_yield_BTag[i_prod][Settings::inclusive]) << " / " <<
 		   (_expected_yield_BTag_UP[i_prod][i_cat]/_expected_yield_BTag_UP[i_prod][Settings::inclusive])/(_expected_yield_BTag[i_prod][i_cat]/_expected_yield_BTag[i_prod][Settings::inclusive]) << endl;
 		}
    }
@@ -329,37 +686,289 @@ void Systematics::PrintSystematics_BTag( )
 }
 //========================================
 
-
-
-//=================================
-void Systematics::SumInclusive_BTag()
+//========================================
+void Systematics::PrintSystematics_QCDScale( )
 {
-	for ( int i_prod = 0; i_prod < num_of_production_modes; i_prod++ )
+	
+//	for ( int i_prod = 0; i_prod < num_of_production_modes; i_prod++ )
+//   {
+//   	if ( i_prod != Settings::ggH ) continue;
+//   	cout << "===========================" << endl;
+//   	cout << _s_production_mode.at(i_prod) << endl;
+//   	cout << "===========================" << endl;
+//
+//   	for ( int i_cat = 0; i_cat < num_of_categories ; i_cat++ )
+//		{
+//			cout << _s_category.at(i_cat) << endl;
+//			cout << "muR Nominal = " << _expected_yield_muR[i_prod][i_cat] << endl;
+//			cout << "muR Up = " << _expected_yield_muR_UP[i_prod][i_cat] << endl;
+//			cout << "muR Down = " << _expected_yield_muR_DN[i_prod][i_cat] << endl;
+//			cout << endl;
+//
+//			cout << _s_category.at(i_cat) << endl;
+//			cout << "muF Nominal = " << _expected_yield_muF[i_prod][i_cat] << endl;
+//			cout << "muF Up = " << _expected_yield_muF_UP[i_prod][i_cat] << endl;
+//			cout << "muF Down = " << _expected_yield_muF_DN[i_prod][i_cat] << endl;
+//			cout << endl;
+//
+//		}
+//   }
+	
+	float muR_Up = 1.;
+	float muF_Up = 1.;
+	
+	float muR_Dn = 1.;
+	float muF_Dn = 1.;
+	
+	int combination = 0;
+	
+	for ( int i_cat = 0; i_cat < num_of_categories - 1; i_cat++ )
    {
-      for ( int i_cat = 0; i_cat < num_of_categories - 1; i_cat++ )
-      {
-		 _expected_yield_BTag[i_prod][Settings::inclusive]    += _expected_yield_BTag[i_prod][i_cat];
-       _expected_yield_BTag_UP[i_prod][Settings::inclusive] += _expected_yield_BTag_UP[i_prod][i_cat];
-       _expected_yield_BTag_DN[i_prod][Settings::inclusive] += _expected_yield_BTag_DN[i_prod][i_cat];
-      }
+   	cout << "[INFO] QCD scale systematics for " << _s_category.at(i_cat) << endl;
+		for ( int i_prod = 0; i_prod < num_of_production_modes; i_prod++ )
+		{
+			muR_Up = (_expected_yield_muR_UP[i_prod][i_cat]/_expected_yield_muR_UP[i_prod][Settings::inclusive])/(_expected_yield_muR[i_prod][i_cat]/_expected_yield_muR[i_prod][Settings::inclusive]);
+			muR_Dn = (_expected_yield_muR_DN[i_prod][i_cat]/_expected_yield_muR_DN[i_prod][Settings::inclusive])/(_expected_yield_muR[i_prod][i_cat]/_expected_yield_muR[i_prod][Settings::inclusive]);
+			
+			muF_Up = (_expected_yield_muF_UP[i_prod][i_cat]/_expected_yield_muF_UP[i_prod][Settings::inclusive])/(_expected_yield_muF[i_prod][i_cat]/_expected_yield_muF[i_prod][Settings::inclusive]);
+			muF_Dn = (_expected_yield_muF_DN[i_prod][i_cat]/_expected_yield_muF_DN[i_prod][Settings::inclusive])/(_expected_yield_muF[i_prod][i_cat]/_expected_yield_muF[i_prod][Settings::inclusive]);
+			
+			if( i_cat == Settings::untagged && muR_Up > 1. && muF_Up > 1.) combination = 0;
+			if( i_cat == Settings::untagged && muR_Up > 1. && muF_Up < 1.) combination = 1;
+			if( i_cat == Settings::untagged && muR_Up < 1. && muF_Up > 1.) combination = 2;
+			if( i_cat == Settings::untagged && muR_Up < 1. && muF_Up < 1.) combination = 3;
+			
+//			cout << muR_Up << " " << muR_Dn << endl;
+//			cout << muF_Up << " " << muF_Dn << endl;
+//			cout << combination << endl;
+			
+			if(combination == 0) cout << _s_production_mode.at(i_prod)  << " : " << 1. - sqrt(pow(1. - muR_Dn,2)+pow(1. - muF_Dn,2)) << " / " << 1. + sqrt(pow(muR_Up - 1.,2)+pow(muF_Up - 1.,2)) << endl;
+			if(combination == 1) cout << _s_production_mode.at(i_prod)  << " : " << 1. - sqrt(pow(1. - muR_Dn,2)+pow(1. - muF_Up,2)) << " / " << 1. + sqrt(pow(muR_Up - 1.,2)+pow(muF_Dn - 1.,2)) << endl;
+			if(combination == 2) cout << _s_production_mode.at(i_prod)  << " : " << 1. - sqrt(pow(1. - muR_Up,2)+pow(1. - muF_Dn,2)) << " / " << 1. + sqrt(pow(muR_Dn - 1.,2)+pow(muF_Up - 1.,2)) << endl;
+			if(combination == 3) cout << _s_production_mode.at(i_prod)  << " : " << 1. - sqrt(pow(1. - muR_Up,2)+pow(1. - muF_Up,2)) << " / " << 1. + sqrt(pow(muR_Dn - 1.,2)+pow(muF_Dn - 1.,2)) << endl;
+		}
    }
-}
-//=================================
 
-//=================================
-void Systematics::SumInclusive_JEC()
-{
+
+	cout << "[INFO] QCD scale systematics for inclusive:"<< endl;
 	for ( int i_prod = 0; i_prod < num_of_production_modes; i_prod++ )
-   {
-      for ( int i_cat = 0; i_cat < num_of_categories - 1; i_cat++ )
-      {
-		 _expected_yield_JEC[i_prod][Settings::inclusive]    += _expected_yield_JEC[i_prod][i_cat];
-       _expected_yield_JEC_UP[i_prod][Settings::inclusive] += _expected_yield_JEC_UP[i_prod][i_cat];
-       _expected_yield_JEC_DN[i_prod][Settings::inclusive] += _expected_yield_JEC_DN[i_prod][i_cat];
-      }
-   }
+	{
+		muR_Up = (_expected_yield_muR_UP[i_prod][Settings::inclusive]/_expected_yield_muR[i_prod][Settings::inclusive]);
+		muR_Dn = (_expected_yield_muR_DN[i_prod][Settings::inclusive]/_expected_yield_muR[i_prod][Settings::inclusive]);
+		
+		muF_Up = (_expected_yield_muF_UP[i_prod][Settings::inclusive]/_expected_yield_muF[i_prod][Settings::inclusive]);
+		muF_Dn = (_expected_yield_muF_DN[i_prod][Settings::inclusive]/_expected_yield_muF[i_prod][Settings::inclusive]);
+		
+		if( muR_Up > 1. && muF_Up > 1.) combination = 0;
+		if( muR_Up > 1. && muF_Up < 1.) combination = 1;
+		if( muR_Up < 1. && muF_Up > 1.) combination = 2;
+		if( muR_Up < 1. && muF_Up < 1.) combination = 3;
+		
+		if(combination == 0) cout << _s_production_mode.at(i_prod)  << " : " << 1. - sqrt(pow(1. - muR_Dn,2)+pow(1. - muF_Dn,2)) << " / " << 1. + sqrt(pow(muR_Up - 1.,2)+pow(muF_Up - 1.,2)) << endl;
+		if(combination == 1) cout << _s_production_mode.at(i_prod)  << " : " << 1. - sqrt(pow(1. - muR_Dn,2)+pow(1. - muF_Up,2)) << " / " << 1. + sqrt(pow(muR_Up - 1.,2)+pow(muF_Dn - 1.,2)) << endl;
+		if(combination == 2) cout << _s_production_mode.at(i_prod)  << " : " << 1. - sqrt(pow(1. - muR_Up,2)+pow(1. - muF_Dn,2)) << " / " << 1. + sqrt(pow(muR_Dn - 1.,2)+pow(muF_Up - 1.,2)) << endl;
+		if(combination == 3) cout << _s_production_mode.at(i_prod)  << " : " << 1. - sqrt(pow(1. - muR_Up,2)+pow(1. - muF_Up,2)) << " / " << 1. + sqrt(pow(muR_Dn - 1.,2)+pow(muF_Dn - 1.,2)) << endl;
+	}
+
+	
+	
 }
-//=================================
+//========================================
+
+
+//========================================
+void Systematics::PrintSystematics_PDFScale( )
+{
+	
+//	for ( int i_prod = 0; i_prod < num_of_production_modes; i_prod++ )
+//   {
+//   	if ( i_prod != Settings::ggH ) continue;
+//   	cout << "===========================" << endl;
+//   	cout << _s_production_mode.at(i_prod) << endl;
+//   	cout << "===========================" << endl;
+//
+//   	for ( int i_cat = 0; i_cat < num_of_categories ; i_cat++ )
+//		{
+//			cout << _s_category.at(i_cat) << endl;
+//			cout << "muR Nominal = " << _expected_yield_muR[i_prod][i_cat] << endl;
+//			cout << "muR Up = " << _expected_yield_As_Up[i_prod][i_cat] << endl;
+//			cout << "muR Down = " << _expected_yield_As_Dn[i_prod][i_cat] << endl;
+//			cout << endl;
+//
+//			cout << _s_category.at(i_cat) << endl;
+//			cout << "muF Nominal = " << _expected_yield_muF[i_prod][i_cat] << endl;
+//			cout << "muF Up = " << _expected_yield_PDF_Up[i_prod][i_cat] << endl;
+//			cout << "muF Down = " << _expected_yield_PDF_Dn[i_prod][i_cat] << endl;
+//			cout << endl;
+//
+//		}
+//   }
+	
+	float As_Up = 1.;
+	float PDF_Up = 1.;
+	
+	float As_Dn = 1.;
+	float PDF_Dn = 1.;
+	
+	int combination = 0;
+	
+	for ( int i_cat = 0; i_cat < num_of_categories - 1; i_cat++ )
+   {
+   	cout << "[INFO] PDF scale systematics for " << _s_category.at(i_cat) << endl;
+		for ( int i_prod = 0; i_prod < num_of_production_modes; i_prod++ )
+		{
+			As_Up = (_expected_yield_As_UP[i_prod][i_cat]/_expected_yield_As_UP[i_prod][Settings::inclusive])/(_expected_yield_As[i_prod][i_cat]/_expected_yield_As[i_prod][Settings::inclusive]);
+			As_Dn = (_expected_yield_As_DN[i_prod][i_cat]/_expected_yield_As_DN[i_prod][Settings::inclusive])/(_expected_yield_As[i_prod][i_cat]/_expected_yield_As[i_prod][Settings::inclusive]);
+			
+			PDF_Up = (_expected_yield_PDF_UP[i_prod][i_cat]/_expected_yield_PDF_UP[i_prod][Settings::inclusive])/(_expected_yield_PDF[i_prod][i_cat]/_expected_yield_PDF[i_prod][Settings::inclusive]);
+			PDF_Dn = (_expected_yield_PDF_DN[i_prod][i_cat]/_expected_yield_PDF_DN[i_prod][Settings::inclusive])/(_expected_yield_PDF[i_prod][i_cat]/_expected_yield_PDF[i_prod][Settings::inclusive]);
+			
+			if( i_cat == Settings::untagged && As_Up > 1. && PDF_Up > 1.) combination = 0;
+			if( i_cat == Settings::untagged && As_Up > 1. && PDF_Up < 1.) combination = 1;
+			if( i_cat == Settings::untagged && As_Up < 1. && PDF_Up > 1.) combination = 2;
+			if( i_cat == Settings::untagged && As_Up < 1. && PDF_Up < 1.) combination = 3;
+			
+//			cout << As_Up << " " << As_Dn << endl;
+//			cout << PDF_Up << " " << PDF_Dn << endl;
+//			cout << combination << endl;
+			
+			if(combination == 0) cout << _s_production_mode.at(i_prod)  << " : " << 1. - sqrt(pow(1. - As_Dn,2)+pow(1. - PDF_Dn,2)) << " / " << 1. + sqrt(pow(As_Up - 1.,2)+pow(PDF_Up - 1.,2)) << endl;
+			if(combination == 1) cout << _s_production_mode.at(i_prod)  << " : " << 1. - sqrt(pow(1. - As_Dn,2)+pow(1. - PDF_Up,2)) << " / " << 1. + sqrt(pow(As_Up - 1.,2)+pow(PDF_Dn - 1.,2)) << endl;
+			if(combination == 2) cout << _s_production_mode.at(i_prod)  << " : " << 1. - sqrt(pow(1. - As_Up,2)+pow(1. - PDF_Dn,2)) << " / " << 1. + sqrt(pow(As_Dn - 1.,2)+pow(PDF_Up - 1.,2)) << endl;
+			if(combination == 3) cout << _s_production_mode.at(i_prod)  << " : " << 1. - sqrt(pow(1. - As_Up,2)+pow(1. - PDF_Up,2)) << " / " << 1. + sqrt(pow(As_Dn - 1.,2)+pow(PDF_Dn - 1.,2)) << endl;
+		}
+   }
+
+
+	cout << "[INFO] PDF scale systematics for inclusive:"<< endl;
+	for ( int i_prod = 0; i_prod < num_of_production_modes; i_prod++ )
+	{
+		As_Up = (_expected_yield_As_UP[i_prod][Settings::inclusive]/_expected_yield_As[i_prod][Settings::inclusive]);
+		As_Dn = (_expected_yield_As_DN[i_prod][Settings::inclusive]/_expected_yield_As[i_prod][Settings::inclusive]);
+		
+		PDF_Up = (_expected_yield_PDF_UP[i_prod][Settings::inclusive]/_expected_yield_PDF[i_prod][Settings::inclusive]);
+		PDF_Dn = (_expected_yield_PDF_DN[i_prod][Settings::inclusive]/_expected_yield_PDF[i_prod][Settings::inclusive]);
+		
+		if( As_Up > 1. && PDF_Up > 1.) combination = 0;
+		if( As_Up > 1. && PDF_Up < 1.) combination = 1;
+		if( As_Up < 1. && PDF_Up > 1.) combination = 2;
+		if( As_Up < 1. && PDF_Up < 1.) combination = 3;
+		
+		if(combination == 0) cout << _s_production_mode.at(i_prod)  << " : " << 1. - sqrt(pow(1. - As_Dn,2)+pow(1. - PDF_Dn,2)) << " / " << 1. + sqrt(pow(As_Up - 1.,2)+pow(PDF_Up - 1.,2)) << endl;
+		if(combination == 1) cout << _s_production_mode.at(i_prod)  << " : " << 1. - sqrt(pow(1. - As_Dn,2)+pow(1. - PDF_Up,2)) << " / " << 1. + sqrt(pow(As_Up - 1.,2)+pow(PDF_Dn - 1.,2)) << endl;
+		if(combination == 2) cout << _s_production_mode.at(i_prod)  << " : " << 1. - sqrt(pow(1. - As_Up,2)+pow(1. - PDF_Dn,2)) << " / " << 1. + sqrt(pow(As_Dn - 1.,2)+pow(PDF_Up - 1.,2)) << endl;
+		if(combination == 3) cout << _s_production_mode.at(i_prod)  << " : " << 1. - sqrt(pow(1. - As_Up,2)+pow(1. - PDF_Up,2)) << " / " << 1. + sqrt(pow(As_Dn - 1.,2)+pow(PDF_Dn - 1.,2)) << endl;
+	}
+
+	
+	
+}
+//========================================
+
+//========================================
+void Systematics::PrintSystematics_EWCorr( )
+{
+	
+//	for ( int i_prod = 0; i_prod < num_of_production_modes; i_prod++ )
+//   {
+//   	for ( int i_cat = 0; i_cat < num_of_categories ; i_cat++ )
+//		{
+//			cout << _s_category.at(i_cat) << endl;
+//			cout << "Nominal = " << _expected_yield_BTag[i_prod][i_cat] << endl;
+//			cout << "Up = " << _expected_yield_BTag_UP[i_prod][i_cat] << endl;
+//			cout << "Down = " << _expected_yield_BTag_DN[i_prod][i_cat] << endl;
+//			cout << endl;
+//		}
+//   }
+	
+	for ( int i_cat = 0; i_cat < num_of_categories - 1; i_cat++ )
+   {
+   	cout << "[INFO] EWCorr systematics for " << _s_category.at(i_cat) << endl;
+		cout << _s_production_mode.at(Settings::qqToZZ)  << " : " << (_expected_yield_EWCorr_DN[Settings::qqToZZ][i_cat]/_expected_yield_EWCorr_DN[Settings::qqToZZ][Settings::inclusive])/(_expected_yield_EWCorr[Settings::qqToZZ][i_cat]/_expected_yield_EWCorr[Settings::qqToZZ][Settings::inclusive]) << " / " <<
+		   (_expected_yield_EWCorr_UP[Settings::qqToZZ][i_cat]/_expected_yield_EWCorr_UP[Settings::qqToZZ][Settings::inclusive])/(_expected_yield_EWCorr[Settings::qqToZZ][i_cat]/_expected_yield_EWCorr[Settings::qqToZZ][Settings::inclusive]) << endl;
+   }
+
+	cout << "[INFO] EWCorr systematics for inclusive " << endl;
+		cout << _s_production_mode.at(Settings::qqToZZ)  << " : " << (_expected_yield_EWCorr_DN[Settings::qqToZZ][Settings::inclusive]/_expected_yield_EWCorr[Settings::qqToZZ][Settings::inclusive]) << " / " <<
+		   (_expected_yield_EWCorr_UP[Settings::qqToZZ][Settings::inclusive]/_expected_yield_EWCorr[Settings::qqToZZ][Settings::inclusive]) << endl;
+	
+}
+//========================================
+
+//========================================
+void Systematics::PrintSystematics_PythiaScale( )
+{
+	
+//	for ( int i_prod = 0; i_prod < num_of_production_modes; i_prod++ )
+//   {
+//   	for ( int i_cat = 0; i_cat < num_of_categories ; i_cat++ )
+//		{
+//			cout << _s_category.at(i_cat) << endl;
+//			cout << "Nominal = " << _expected_yield_PythiaScale[i_prod][i_cat] << endl;
+//			cout << "Up = " << _expected_yield_PythiaScale_UP[i_prod][i_cat] << endl;
+//			cout << "Down = " << _expected_yield_PythiaScale_DN[i_prod][i_cat] << endl;
+//			cout << endl;
+//		}
+//   }
+	
+	for ( int i_cat = 0; i_cat < num_of_categories - 1; i_cat++ )
+   {
+   	cout << "[INFO] Pythia Scale systematics for " << _s_category.at(i_cat) << endl;
+		for ( int i_prod = 0; i_prod < num_of_production_modes; i_prod++ )
+		{
+			cout << _s_production_mode.at(i_prod)  << " : " << (_expected_yield_PythiaScale_DN[i_prod][i_cat]/_expected_yield_PythiaScale_DN[i_prod][Settings::inclusive])/(_expected_yield_PythiaScale[i_prod][i_cat]/_expected_yield_PythiaScale[i_prod][Settings::inclusive]) << " / " <<
+		   (_expected_yield_PythiaScale_UP[i_prod][i_cat]/_expected_yield_PythiaScale_UP[i_prod][Settings::inclusive])/(_expected_yield_PythiaScale[i_prod][i_cat]/_expected_yield_PythiaScale[i_prod][Settings::inclusive]) << endl;
+		}
+   }
+
+	cout << "[INFO] Pythia Scale systematics for inclusive: " << endl;
+	for ( int i_prod = 0; i_prod < num_of_production_modes; i_prod++ )
+	{
+		cout << _s_production_mode.at(i_prod)  << " : " << (_expected_yield_PythiaScale_DN[i_prod][Settings::inclusive]/_expected_yield_PythiaScale[i_prod][Settings::inclusive]) << " / " <<
+		(_expected_yield_PythiaScale_UP[i_prod][Settings::inclusive]/_expected_yield_PythiaScale[i_prod][Settings::inclusive]) << endl;
+	}
+}
+//========================================
+
+//========================================
+void Systematics::PrintSystematics_PythiaTune( )
+{
+	
+//	for ( int i_prod = 0; i_prod < num_of_production_modes; i_prod++ )
+//   {
+//   	for ( int i_cat = 0; i_cat < num_of_categories ; i_cat++ )
+//		{
+//			cout << _s_category.at(i_cat) << endl;
+//			cout << "Nominal = " << _expected_yield_PythiaTune[i_prod][i_cat] << endl;
+//			cout << "Up = " << _expected_yield_PythiaTune_UP[i_prod][i_cat] << endl;
+//			cout << "Down = " << _expected_yield_PythiaTune_DN[i_prod][i_cat] << endl;
+//			cout << endl;
+//		}
+//   }
+	float Dn_ratio = 1.;
+	float Up_ratio = 1.;
+	float Nominal_ratio = 1.;
+	
+	for ( int i_cat = 0; i_cat < num_of_categories - 1; i_cat++ )
+   {
+   	cout << "[INFO] Pythia Tune systematics for " << _s_category.at(i_cat) << endl;
+		for ( int i_prod = 0; i_prod < num_of_production_modes; i_prod++ )
+		{
+			//Deal with low statistics in tuneup/tunedown samples
+			if( _expected_yield_PythiaTune_DN[i_prod][i_cat] == 0 ) Dn_ratio = 0.;
+			else Dn_ratio = _expected_yield_PythiaTune_DN[i_prod][i_cat]/_expected_yield_PythiaTune_DN[i_prod][Settings::inclusive];
+			if( _expected_yield_PythiaTune_UP[i_prod][i_cat] == 0 ) Up_ratio = 0.;
+			else Up_ratio = _expected_yield_PythiaTune_UP[i_prod][i_cat]/_expected_yield_PythiaTune_UP[i_prod][Settings::inclusive];
+			Nominal_ratio = _expected_yield_PythiaTune[i_prod][i_cat]/_expected_yield_PythiaTune[i_prod][Settings::inclusive];
+			
+			
+			cout << _s_production_mode.at(i_prod)  << " : " << (Dn_ratio)/(Nominal_ratio) << " / " << (Up_ratio)/(Nominal_ratio) << endl;
+		}
+   }
+
+}
+//========================================
+
 
 
 //==========================================================

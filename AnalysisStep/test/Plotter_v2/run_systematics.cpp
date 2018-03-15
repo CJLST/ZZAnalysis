@@ -64,6 +64,7 @@ int main( int argc, char *argv[] )
 	
    // Backgrounds
    TString ZZTo4l      = path + "ZZTo4l"                     + file_name;
+   TString ZZTo4lext   = path + "ZZTo4lext"                  + file_name;
    TString ggZZ4e      = path + "ggTo4e_Contin_MCFM701"      + file_name;
    TString ggZZ4mu     = path + "ggTo4mu_Contin_MCFM701"     + file_name;
    TString ggZZ4tau    = path + "ggTo4tau_Contin_MCFM701"    + file_name;
@@ -78,12 +79,12 @@ int main( int argc, char *argv[] )
 // Print Systematics
 //====================
 
-	systematics->FillSystematics(ggH125);
-	systematics->FillSystematics(VBFH125);
-	systematics->FillSystematics(WpH125);
-	systematics->FillSystematics(WmH125);
-	systematics->FillSystematics(ZH125);
-	systematics->FillSystematics(ttH125);
+	systematics->FillSystematics(ggH125ext);
+	systematics->FillSystematics(VBFH125ext);
+	systematics->FillSystematics(WpH125ext);
+	systematics->FillSystematics(WmH125ext);
+	systematics->FillSystematics(ZH125ext);
+	systematics->FillSystematics(ttH125ext);
 	systematics->FillSystematics(bbH125);
 	systematics->FillSystematics(tqH125);
 	systematics->FillSystematics(ZZTo4l);
@@ -94,9 +95,28 @@ int main( int argc, char *argv[] )
 	systematics->FillSystematics(ggZZ2e2tau);
 	systematics->FillSystematics(ggZZ2mu2tau);
 
-	
+	systematics->FillSystematics_tuneUpDn(ggH125_TU);
+	systematics->FillSystematics_tuneUpDn(ggH125_TD);
+	systematics->FillSystematics_tuneUpDn(VBFH125_TU);
+	systematics->FillSystematics_tuneUpDn(VBFH125_TD);
+	systematics->FillSystematics_tuneUpDn(WpH125_TU);
+	systematics->FillSystematics_tuneUpDn(WpH125_TD);
+	systematics->FillSystematics_tuneUpDn(WmH125_TU);
+	systematics->FillSystematics_tuneUpDn(WmH125_TD);
+//	systematics->FillSystematics_tuneUpDn(ZH125_TU);
+//	systematics->FillSystematics_tuneUpDn(ZH125_TD);
+	systematics->FillSystematics_tuneUpDn(ttH125_TU);
+	systematics->FillSystematics_tuneUpDn(ttH125_TD);
+
+	systematics->PrintSystematics_PU();
 	systematics->PrintSystematics_JEC();
 	systematics->PrintSystematics_BTag();
+	systematics->PrintSystematics_QCDScale();
+	systematics->PrintSystematics_PDFScale();
+	systematics->PrintSystematics_EWCorr();
+	systematics->PrintSystematics_PythiaScale();
+	systematics->PrintSystematics_PythiaTune();
+	
 	
    delete systematics;
 }
