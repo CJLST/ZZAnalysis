@@ -161,6 +161,7 @@ namespace {
   Float_t xistar  = 0;
   Float_t TLE_dR_Z = -1; // Delta-R between a TLE and the Z it does not belong to.
   Float_t TLE_min_dR_3l = 999; // Minimum DR between a TLE and any of the other leptons
+  Short_t evtPassMETTrigger = 0;
 
   std::vector<float> LepPt;
   std::vector<float> LepEta;
@@ -1003,8 +1004,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   if (applyTrigger && !evtPassTrigger) failed = true; //but gen information will still be recorded if failedTreeLevel != 0
 	
   // Apply MET trigger request (skip event)
-  bool evtPassMETTrigger = myHelper.passMETTrigger(event,triggerResults);
-  if (year >= 2017 && !evtPassMETTrigger) failed = true; //but gen information will still be recorded if failedTreeLevel != 0
+  evtPassMETTrigger = myHelper.passMETTrigger(event,triggerResults);
 
   if (skipEmptyEvents && !failedTreeLevel && (cands->size() == 0 || failed)) return; // Skip events with no candidate, unless skipEmptyEvents = false or failedTreeLevel != 0
 
@@ -2286,6 +2286,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("nCleanedJetsPt30BTagged_bTagSFUp",nCleanedJetsPt30BTagged_bTagSFUp, failedTreeLevel >= fullFailedTree);
   myTree->Book("nCleanedJetsPt30BTagged_bTagSFDn",nCleanedJetsPt30BTagged_bTagSFDn, failedTreeLevel >= fullFailedTree);
   myTree->Book("trigWord",trigWord, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("evtPassMETFilter",evtPassMETTrigger, failedTreeLevel >= minimalFailedTree);
   myTree->Book("ZZMass",ZZMass, false);
   myTree->Book("ZZMassErr",ZZMassErr, false);
   myTree->Book("ZZMassErrCorr",ZZMassErrCorr, false);
