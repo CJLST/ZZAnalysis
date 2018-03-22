@@ -123,7 +123,7 @@ void Plotter::MakeHistograms( TString input_file_name )
 													 jetPhi,
 													 ZZMass,
 													 PFMET,
-													 true,// Use VHMET category
+													 false,// Use VHMET category
 													 false);// Use QG tagging
    
       // K factors
@@ -339,7 +339,7 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
 													 jetPhi,
 													 ZZMass,
 													 PFMET,
-													 true,// Use VHMET category
+													 false,// Use VHMET category
 													 false);// Use QG tagging
       
    

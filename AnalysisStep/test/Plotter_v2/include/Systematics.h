@@ -43,11 +43,14 @@ public:
 	void PrintSystematics_PU( );
 	void PrintSystematics_JEC( );
 	void PrintSystematics_BTag( );
+	void PrintSystematics_muRmuFScale( );
+	void PrintSystematics_PythiaScale( );
+	void PrintSystematics_PythiaTune( );
 	void PrintSystematics_QCDScale( );
 	void PrintSystematics_PDFScale( );
 	void PrintSystematics_EWCorr( );
-	void PrintSystematics_PythiaScale( );
-	void PrintSystematics_PythiaTune( );
+	void PrintSystematics_THU_ggH( );
+
 	
 private:
 
@@ -93,6 +96,16 @@ private:
    vector< vector <float> > _expected_yield_EWCorr, _expected_yield_EWCorr_UP, _expected_yield_EWCorr_DN;
    vector< vector <float> > _expected_yield_PythiaScale, _expected_yield_PythiaScale_UP, _expected_yield_PythiaScale_DN;
    vector< vector <float> > _expected_yield_PythiaTune, _expected_yield_PythiaTune_UP, _expected_yield_PythiaTune_DN;
+	
+   vector< vector <float> > _expected_yield_THU_ggH_Mu, _expected_yield_THU_ggH_Mu_UP, _expected_yield_THU_ggH_Mu_DN;
+   vector< vector <float> > _expected_yield_THU_ggH_Res, _expected_yield_THU_ggH_Res_UP, _expected_yield_THU_ggH_Res_DN;
+   vector< vector <float> > _expected_yield_THU_ggH_Mig01, _expected_yield_THU_ggH_Mig01_UP, _expected_yield_THU_ggH_Mig01_DN;
+   vector< vector <float> > _expected_yield_THU_ggH_Mig12, _expected_yield_THU_ggH_Mig12_UP, _expected_yield_THU_ggH_Mig12_DN;
+   vector< vector <float> > _expected_yield_THU_ggH_VBF2j, _expected_yield_THU_ggH_VBF2j_UP, _expected_yield_THU_ggH_VBF2j_DN;
+   vector< vector <float> > _expected_yield_THU_ggH_VBF3j, _expected_yield_THU_ggH_VBF3j_UP, _expected_yield_THU_ggH_VBF3j_DN;
+   vector< vector <float> > _expected_yield_THU_ggH_PT60, _expected_yield_THU_ggH_PT60_UP, _expected_yield_THU_ggH_PT60_DN;
+   vector< vector <float> > _expected_yield_THU_ggH_PT120, _expected_yield_THU_ggH_PT120_UP, _expected_yield_THU_ggH_PT120_DN;
+   vector< vector <float> > _expected_yield_THU_ggH_qmtop, _expected_yield_THU_ggH_qmtop_UP, _expected_yield_THU_ggH_qmtop_DN;
 	
 };
 #endif

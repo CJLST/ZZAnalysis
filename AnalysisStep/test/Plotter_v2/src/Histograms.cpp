@@ -583,10 +583,10 @@ Histograms::Histograms( double lumi)
 	_s_production_mode.push_back("ZH_had");
    _s_production_mode.push_back("ttH_lep");
    _s_production_mode.push_back("ttH_had");
-   _s_production_mode.push_back("bbH");
    _s_production_mode.push_back("tqH");
-   _s_production_mode.push_back("ggZZ");
+   _s_production_mode.push_back("bbH");
    _s_production_mode.push_back("qqZZ");
+   _s_production_mode.push_back("ggZZ");
    
 
    for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )

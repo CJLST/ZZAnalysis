@@ -91,6 +91,7 @@ public :
    vector<float>   *fsrEta;
    vector<float>   *fsrPhi;
    vector<short>   *fsrLept;
+   vector<float>   *qcd_ggF_uncertSF;
    Bool_t          passIsoPreFSR;
    Float_t         p_GG_SIG_ghg2_1_ghz1_1_JHUGen;
    Float_t         p_GG_SIG_ghg2_1_ghz1prime2_1E4_JHUGen;
@@ -568,6 +569,7 @@ public :
    TBranch        *b_fsrPhi;   //!
    TBranch        *b_fsrLept;   //!
    TBranch        *b_passIsoPreFSR;   //!
+   TBranch		   *b_qcd_ggF_uncertSF;   //!
    TBranch        *b_p_GG_SIG_ghg2_1_ghz1_1_JHUGen;   //!
    TBranch        *b_p_GG_SIG_ghg2_1_ghz1prime2_1E4_JHUGen;   //!
    TBranch        *b_p_GG_SIG_ghg2_1_ghz2_1_JHUGen;   //!
@@ -1064,6 +1066,7 @@ void Tree::Init(TTree *tree, TString input_file_name)
    ExtraLepPhi = 0;
    ExtraLepLepId = 0;
    reweightingweights = 0;
+   qcd_ggF_uncertSF = 0;
    // Set branch addresses and branch pointers
    if (!tree) return;
    fChain = tree;
@@ -1474,10 +1477,11 @@ void Tree::Init(TTree *tree, TString input_file_name)
          fChain->SetBranchAddress("KFactor_QCD_qqZZ_Pt", &KFactor_QCD_qqZZ_Pt, &b_KFactor_QCD_qqZZ_Pt);
       }
 		
-      if ( input_file_name.Contains("ggH") )
+      if ( input_file_name.Contains("ggH") && !input_file_name.Contains("tune"))
       {
       	fChain->SetBranchAddress("ggH_NNLOPS_weight", &ggH_NNLOPS_weight, &b_ggH_NNLOPS_weight);
       	fChain->SetBranchAddress("ggH_NNLOPS_weight_unc", &ggH_NNLOPS_weight_unc, &b_ggH_NNLOPS_weight_unc);
+      	fChain->SetBranchAddress("qcd_ggF_uncertSF", &qcd_ggF_uncertSF, &b_qcd_ggF_uncertSF);
 		}
       fChain->SetBranchAddress("genFinalState", &genFinalState, &b_genFinalState);
       fChain->SetBranchAddress("genProcessId", &genProcessId, &b_genProcessId);

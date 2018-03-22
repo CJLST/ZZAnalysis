@@ -134,7 +134,7 @@ void Yields::MakeHistograms( TString input_file_name )
 													 jetPhi,
 													 ZZMass,
 													 PFMET,
-													 true,// Use VHMET category
+													 false,// Use VHMET category
 													 false);// Use QG tagging
       // K factors
       if ( APPLY_K_FACTORS ) _k_factor = calculate_K_factor(input_file_name);
@@ -202,7 +202,7 @@ void Yields::Calculate_SS_ZX_Yields( TString input_file_data_name, TString  inpu
 													 jetPhi,
 													 ZZMass,
 													 PFMET,
-													 true,// Use VHMET category
+													 false,// Use VHMET category
 													 false);// Use QG tagging
       
       

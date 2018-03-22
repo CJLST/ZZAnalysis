@@ -96,10 +96,10 @@ public:
 		ZH_had  = 5,
 		ttH_lep = 6,
 		ttH_had = 7,
-		bbH     = 8,
-		tqH     = 9,
-		ggToZZ  = 10,
-		qqToZZ  = 11,
+		tqH     = 8,
+		bbH     = 9,
+		qqToZZ  = 10,
+		ggToZZ  = 11,
 		MAX_NUM_OF_PRODUCTION_MODES
 		
 	};

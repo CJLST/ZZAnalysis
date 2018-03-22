@@ -111,11 +111,13 @@ int main( int argc, char *argv[] )
 	systematics->PrintSystematics_PU();
 	systematics->PrintSystematics_JEC();
 	systematics->PrintSystematics_BTag();
+	systematics->PrintSystematics_muRmuFScale();
+	systematics->PrintSystematics_PythiaScale();
+	systematics->PrintSystematics_PythiaTune();
 	systematics->PrintSystematics_QCDScale();
 	systematics->PrintSystematics_PDFScale();
 	systematics->PrintSystematics_EWCorr();
-	systematics->PrintSystematics_PythiaScale();
-	systematics->PrintSystematics_PythiaTune();
+	systematics->PrintSystematics_THU_ggH();
 	
 	
    delete systematics;
