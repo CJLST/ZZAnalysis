@@ -572,7 +572,7 @@ void SSmethod::MakeHistogramsZX( TString input_file_data_name, TString  input_fi
       _expected_yield_SR_up[Settings::fs4l][Settings::inclusive] += _expected_yield_SR_dn[i_fs][Settings::inclusive];
    }
    
-   // Print Z + X expected yields for inclusive category
+   // Print Z + X expected yields and uncertainties
    cout << endl;
    cout << "===================================================================================================================================" << endl;
    cout << "[INFO] Control printout for Z+X yields in final states derived with this fake rate file: " << input_file_FR_name << endl;
@@ -582,13 +582,16 @@ void SSmethod::MakeHistogramsZX( TString input_file_data_name, TString  input_fi
       if (false) continue;//( MERGE_2E2MU && i_fs == Settings::fs2mu2e) continue;
       for ( int i_cat = 0; i_cat < num_of_categories; i_cat++)
       {
-        float stat = _expected_yield_SR[i_fs][i_cat]/sqrt(_number_of_events_CR[i_fs][i_cat]);
-        float syst = _expected_yield_SR[i_fs][i_cat]*((_expected_yield_SR_up[i_fs][i_cat]/_expected_yield_SR[i_fs][i_cat]) - 1.);
-        float comb = sqrt(stat*stat + syst*syst);
+        float stat    = _expected_yield_SR[i_fs][i_cat]/sqrt(_number_of_events_CR[i_fs][i_cat]);
+        float syst_up = _expected_yield_SR[i_fs][i_cat]*((_expected_yield_SR_up[i_fs][i_cat]/_expected_yield_SR[i_fs][i_cat]) - 1.);
+        float syst_dn = _expected_yield_SR[i_fs][i_cat]*(1. - (_expected_yield_SR_dn[i_fs][i_cat]/_expected_yield_SR[i_fs][i_cat]));
+        float comb_up = sqrt(stat*stat + syst_up*syst_up);
+        float comb_dn = sqrt(stat*stat + syst_dn*syst_dn);
+			
 			
 			cout << "Category: " << _s_category.at(i_cat) << "   Final state: " << _s_final_state.at(i_fs) << endl;
-         cout << _expected_yield_SR[i_fs][i_cat] << " +/- " << comb << "(total):" << "  - " << stat << " (stat., evt: " <<
-         _number_of_events_CR[i_fs][i_cat] << ")" << "   - " << syst << " (syst.)" << endl;
+         cout << _expected_yield_SR[i_fs][i_cat] << " +/- " << comb_up << "(total):" << "  - " << stat << " (stat., evt: " <<
+         _number_of_events_CR[i_fs][i_cat] << ")" << "   - " << syst_up << " (syst.)" <<  "  " << (1. - comb_dn/_expected_yield_SR[i_fs][i_cat]) << "/" << (1. + comb_up/_expected_yield_SR[i_fs][i_cat]) << endl;
 		}
 	cout << "==================================================================================================================================" << endl;
    }
@@ -596,6 +599,7 @@ void SSmethod::MakeHistogramsZX( TString input_file_data_name, TString  input_fi
    cout << "[INFO] Total = " << _expected_yield_SR[Settings::fs4l][Settings::inclusive] << endl;
    cout << "==================================================================================================================================" << endl;
    cout << endl;
+	
    
    
    cout << "[INFO] Z+X histograms filled." << endl;
