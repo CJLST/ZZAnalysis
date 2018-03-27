@@ -136,9 +136,9 @@ elif (SAMPLE_TYPE == 2016):
 elif (SAMPLE_TYPE == 2017): 
     if IsMC:
         #process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mc2017_realistic_v10', '')
-        process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mc2017_realistic_v12', '') #For JEC
+        process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mc2017_realistic_v13', '') #For JEC
     else:
-        process.GlobalTag = GlobalTag(process.GlobalTag, '94X_dataRun2_ReReco_EOY17_v2', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '94X_dataRun2_v6', '')
 
 
 print '\t',process.GlobalTag.globaltag
