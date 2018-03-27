@@ -1281,7 +1281,7 @@ process.dressedJets = cms.EDProducer("JetFiller",
     flags = cms.PSet()
     )
 if (LEPTON_SETUP == 2017):
-    process.dressedJets.bTaggerName = cms.string("pfDeepCSVJetTags:probb") #Moving to Moriond18 new recommended DeepCSV btagger
+    process.dressedJets.bTaggerName = cms.string("pfDeepCSVDiscriminatorsJetTags:BvsAll") #Moving to Moriond18 new recommended DeepCSV btagger
     process.dressedJets.bTaggerThreshold = cms.double(0.4941) #https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
     process.dressedJets.bTagSFFile =  cms.string("ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_94XSF_V1_B_F.csv")
     process.dressedJets.bTagMCEffFile  = cms.string("ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_94X_Moriond18_v1.root") #FIXME!!! Update to Moriond18 file
