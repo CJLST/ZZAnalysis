@@ -108,7 +108,7 @@ class Candidate:
 #	        )
 		
 	    # Moriond2017 categories
-	    self.category    = self.lib.categoryMor17(
+	    self.category    = self.lib.categoryMor18(
 	        c_int(self.nExtraLep),
 	        c_int(self.nExtraZ),
 	        c_int(self.njets30),
@@ -148,7 +148,7 @@ class Candidate:
         self.KD_psvec      = -1.
         self.KD_gggrav     = -1.
         self.KD_qqgrav     = -1.
-        self.Djet_VAJHU    = -1.
+        self.D_VBF2j_VAJHU = -1.
         self.D_WHh_VAJHU   = -1.
         self.D_ZHh_VAJHU   = -1.
         self.D_VBF1j_VAJHU = -1.
@@ -188,7 +188,7 @@ class Candidate:
         self.KD_qqgrav  = self.D(treeEntry.p_GG_SIG_ghg2_1_ghz1_1_JHUGen, treeEntry.p_QQB_SIG_XqqLR_1_gXz1_1_gXz5_1_JHUGen)
         ##MELA-only production discriminants:
         if self.njets30 >= 2 :
-            self.Djet_VAJHU = lib.DVBF2j_ME(
+            self.D_VBF2j_VAJHU = lib.DVBF2j_ME(
                 c_float(treeEntry.p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal),
                 c_float(treeEntry.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal),
                 c_float(self.ZZMass))
@@ -275,7 +275,7 @@ class Candidate:
 #            line  += ":" + "{0:.2f}".format(self.massErrCorr)
             line  += ":" + "{0:.3f}".format(self.D_bkg_kin)
             line  += ":" + "{0:.3f}".format(self.D_bkg)
-            line  += ":" + "{0:.3f}".format(self.Djet_VAJHU)
+            line  += ":" + "{0:.3f}".format(self.D_VBF2j_VAJHU)
             line  += ":" + "{0:.3f}".format(self.D_g4)
             line  += ":" + "{0:.3f}".format(self.D_VBF1j_VAJHU)
             line  += ":" + "{0:.3f}".format(self.D_WHh_VAJHU)
