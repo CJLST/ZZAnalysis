@@ -241,18 +241,19 @@ def update_spreadsheet(filename, p, m, BR):
           if re.match("#*"+p+str(m)+"[0-9]+", row["identifier"]):
             pass
           elif re.match("#*"+p+str(m)+"[_scaletuneupdownminloHJJNNLOPS]*", row["identifier"]):
+            BRforthisrow = BR
+            if "_scale" in row["identifier"] or "_tune" in row["identifier"]:
+              if p == "ZH": BRforthisrow /= filterefficiencyZH
+              if p == "ttH": BRforthisrow /= filterefficiencyttH
             nmatches += 1
             regex = "(GENBR=)[0-9.eE+-]+(;)"
             match = re.search(regex, row["::variables"])
             assert match, row["::variables"]
-            row["::variables"] = re.sub(regex, r"\g<1>{:g}\g<2>".format(BR), row["::variables"])
+            row["::variables"] = re.sub(regex, r"\g<1>{:g}\g<2>".format(BRforthisrow), row["::variables"])
             if p in ("ZH", "ttH") and int(m) >= 300:
               row["BR=1"] = BR_YR3(min(m, 1000), p)
             elif p in ("ZH", "ttH"):
-              row["BR=1"] = BR
-              if "_scale" in row["identifier"] or "_tune" in row["identifier"]:
-                if p == "ZH": row["BR=1"] /= filterefficiencyZH
-                if p == "ttH": row["BR=1"] /= filterefficiencyttH
+              row["BR=1"] = BRforthisrow
             elif 120 <= m <= 130:
               row["BR=1"] = YR4data_BR_4l[m]
           else:
