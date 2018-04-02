@@ -7,16 +7,19 @@ At 300 GeV and above, it's taken from the weights that JHUGen writes to the LHE 
 """
 
 from __future__ import print_function
-from utilities import cache, cd, TFile
 import argparse, contextlib, csv, functools, itertools, math, numpy, os, re, subprocess, tempfile, urllib
 try:
   import yellowhiggs
 except ImportError:
   subprocess.check_call("pip install --user -e git+git://github.com/hroskes/yellowhiggs.git@master#egg=yellowhiggs".split())
   import yellowhiggs
+if os.path.exists("src") and not os.path.exists("src/.gitignore"):
+  with open("src/.gitignore", "w") as f:
+    f.write("yellowhiggs\n.gitignore\npip-delete-this-directory.txt")
 
 basemass = 300
-filterefficiencyZH = 0.15038
+oldfilterefficiencyZH = 0.15038
+filterefficiencyZH = 0.1483
 filterefficiencyttH = 0.1544
 CJLSTproduction = "180121"
 
@@ -77,6 +80,8 @@ def BR_YR3(mass, productionmode):
     result = BR_fromspreadsheet(productionmode, mass)
     if 120 <= m <= 130:
       result *= YR4data_BR_ZZ[m] / yellowhiggs.br(m, "ZZ")[0]
+    if productionmode == "ZH":
+      result *= filterefficiencyZH / oldfilterefficiencyZH
     return result
 
   mass = int(str(mass))
@@ -243,8 +248,11 @@ def update_spreadsheet(filename, p, m, BR):
             row["::variables"] = re.sub(regex, r"\g<1>{:g}\g<2>".format(BR), row["::variables"])
             if p in ("ZH", "ttH") and int(m) >= 300:
               row["BR=1"] = BR_YR3(min(m, 1000), p)
-            elif p in ("ZH", "ttH") and 120 <= m <= 130:
+            elif p in ("ZH", "ttH"):
               row["BR=1"] = BR
+              if "_scale" in row["identifier"] or "_tune" in row["identifier"]:
+                if p == "ZH": row["BR=1"] /= filterefficiencyZH
+                if p == "ttH": row["BR=1"] /= filterefficiencyttH
             elif 120 <= m <= 130:
               row["BR=1"] = YR4data_BR_4l[m]
           else:
