@@ -1457,7 +1457,7 @@ if FSRMODE=="Legacy" :
 metTag = cms.InputTag("slimmedMETsMuEGClean")
 
 ### Recorrect MET, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription#Instructions_for_8_0_X_X_26_patc
-if RECORRECTMET:
+if (RECORRECTMET and SAMPLE_TYPE == 2016):
 
     from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
     runMetCorAndUncFromMiniAOD(process,
@@ -1465,7 +1465,7 @@ if RECORRECTMET:
                                )
     metTag = cms.InputTag("slimmedMETs","","ZZ")
 
-    if (not IsMC and SAMPLE_TYPE == 2016): 
+    if (not IsMC):
         ### recorrect MET based on e/gamma gain switch correction on the fly for Re-Miniaod Data
         ### cf. https://twiki.cern.ch/twiki/bin/view/CMSPublic/ReMiniAOD03Feb2017Notes#MET_Recipes 
 
@@ -1511,6 +1511,28 @@ if RECORRECTMET:
     process.patJetsReapplyJEC.userData.userInts.src += ['pileupJetIdUpdated:fullId']
 
 
+### Recorrect MET, cf. https://indico.cern.ch/event/718013/contributions/2953032/attachments/1625419/2588212/met-ppd-20180329-LG.pdf slide 19
+if (RECORRECTMET and SAMPLE_TYPE == 2017):
+
+    from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
+    process.testCands = cms.EDFilter("CandPtrSelector",
+												 src=cms.InputTag("packedPFCandidates"),
+												 cut=cms.string("abs(pdgId)!=1 && abs(pdgId)!=2 && abs(eta)<3.0")
+												 )
+		
+    runMetCorAndUncFromMiniAOD(process,
+                               isData=(not IsMC),
+                               pfCandColl=cms.InputTag("testCands"),
+                               reclusterJets=True,
+                               recoMetFromPFCs=True,
+                               postfix="Test",
+                               )
+
+    ### somehow MET recorrection gets this lost again...
+    process.patJetsReapplyJEC.userData.userFloats.src += ['pileupJetIdUpdated:fullDiscriminant']
+    process.patJetsReapplyJEC.userData.userInts.src += ['pileupJetIdUpdated:fullId']
+
+
 ### ----------------------------------------------------------------------
 ### Paths
 ### ----------------------------------------------------------------------
@@ -1531,9 +1553,9 @@ if (RECORRECTMET and SAMPLE_TYPE == 2016):
 
 if (RECORRECTMET and SAMPLE_TYPE == 2017):
     if IsMC:
-        process.MET = cms.Path(process.fullPatMetSequence)
+        process.MET = cms.Path(process.testCands + process.fullPatMetSequenceTest)
     else:
-        process.MET = cms.Path(process.fullPatMetSequence)
+        process.MET = cms.Path(process.testCands + process.fullPatMetSequenceTest)
 
 
 ### ----------------------------------------------------------------------

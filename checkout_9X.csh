@@ -29,6 +29,10 @@ sed -i "s@float('Inf')@999999.@g" RecoEgamma/ElectronIdentification/python/Ident
 sed -i "s@-float('Inf')@-999999.@g" RecoEgamma/ElectronIdentification/python/Identification/mvaElectronID_Fall17_noIso_V2_cff.py
 sed -i "s@float('Inf')@999999.@g" RecoEgamma/ElectronIdentification/python/Identification/mvaElectronID_Fall17_noIso_V2_cff.py
 
+
+#MET corrections according to https://twiki.cern.ch/twiki/bin/view/CMS/MissingETUncertaintyPrescription#Instructions_for_9_4_X_X_0_for_M
+git cms-merge-topic cms-met:METRecipe94x
+
 #Simplified template cross section
 git cms-addpkg GeneratorInterface/RivetInterface
 #The tool is currently broken so it needs this hack to work
