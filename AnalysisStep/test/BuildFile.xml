@@ -17,6 +17,7 @@
 <use name="ZZMatrixElement/MELA"/>
 <use name="MelaAnalytics/CandidateLOCaster"/>
 <use name="MelaAnalytics/EventContainer"/>
+<use name="MelaAnalytics/GenericMEComputer"/>
 <!--use name="RecoEcal/EgammaCoreTools"/-->
 
 <use   name="root"/>

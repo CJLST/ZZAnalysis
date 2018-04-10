@@ -41,8 +41,8 @@
 #include <ZZAnalysis/AnalysisStep/interface/utils.h>
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
 #include <ZZAnalysis/AnalysisStep/interface/JetCleaner.h>
-#include <ZZAnalysis/AnalysisStep/interface/MELABranch.h>
-#include <ZZAnalysis/AnalysisStep/interface/MELACluster.h>
+#include <MelaAnalytics/GenericMEComputer/interface/MELABranch.h>
+#include <MelaAnalytics/GenericMEComputer/interface/MELACluster.h>
 #include <KinZfitter/KinZfitter/interface/KinZfitter.h>
 
 #include "TH2F.h"
