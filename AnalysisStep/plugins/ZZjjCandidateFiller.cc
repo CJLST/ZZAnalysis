@@ -598,11 +598,11 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     float pvbf_VAJHU_highestPTJets_dn=-1;
     float phjj_VAJHU_highestPTJets_dn=-1;
     float pvbs_VAMCFM_highestPTJets=-1;
-    float pzzjj_VAMFCM_highestPTJets=-1;
+    float pzzjj_VAMCFM_highestPTJets=-1;
     float pvbs_VAMCFM_highestPTJets_up=-1;
-    float pzzjj_VAMFCM_highestPTJets_up=-1;
+    float pzzjj_VAMCFM_highestPTJets_up=-1;
     float pvbs_VAMCFM_highestPTJets_dn=-1;
-    float pzzjj_VAMFCM_highestPTJets_dn=-1;
+    float pzzjj_VAMCFM_highestPTJets_dn=-1;
     float pqqZJJ_VAMCFM=-1;
     float p0plus_VAJHU=-1;
     float pqqZJJ_VAMCFM_up=-1;
@@ -641,7 +641,7 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
         if (hasAtLeastOneJet){
           float phjj_VAJHU_highestPTJets_temp = -1;
           float pvbf_VAJHU_highestPTJets_temp = -1;
-          float pzzjj_VAMFCM_highestPTJets_temp = -1;
+          float pzzjj_VAMCFM_highestPTJets_temp = -1;
           float pvbs_VAMCFM_highestPTJets_temp = -1;
       
           for (unsigned int firstjet = 0; firstjet < nGoodJets; firstjet++){
@@ -669,7 +669,7 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
               if (firstjet == 0 && secondjet == 1){
                 phjj_VAJHU_highestPTJets_temp = phjj_temp;
                 pvbf_VAJHU_highestPTJets_temp = pvbf_temp;
-                pzzjj_VAMFCM_highestPTJets_temp = pzzjj_temp;
+                pzzjj_VAMCFM_highestPTJets_temp = pzzjj_temp;
                 pvbs_VAMCFM_highestPTJets_temp = pvbs_temp;
               
               }
@@ -682,19 +682,19 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
           if (jecnum == 0){
             phjj_VAJHU_highestPTJets = phjj_VAJHU_highestPTJets_temp;
             pvbf_VAJHU_highestPTJets = pvbf_VAJHU_highestPTJets_temp;
-            pzzjj_VAMFCM_highestPTJets = pzzjj_VAMFCM_highestPTJets_temp;
+            pzzjj_VAMCFM_highestPTJets = pzzjj_VAMCFM_highestPTJets_temp;
             pvbs_VAMCFM_highestPTJets = pvbs_VAMCFM_highestPTJets_temp;
           }
           else if (jecnum == 1){
             phjj_VAJHU_highestPTJets_up = phjj_VAJHU_highestPTJets_temp;
             pvbf_VAJHU_highestPTJets_up = pvbf_VAJHU_highestPTJets_temp;
-            pzzjj_VAMFCM_highestPTJets_up = pzzjj_VAMFCM_highestPTJets_temp;
+            pzzjj_VAMCFM_highestPTJets_up = pzzjj_VAMCFM_highestPTJets_temp;
             pvbs_VAMCFM_highestPTJets_up = pvbs_VAMCFM_highestPTJets_temp;
           }
           else if (jecnum == 2){
             phjj_VAJHU_highestPTJets_dn = phjj_VAJHU_highestPTJets_temp;
             pvbf_VAJHU_highestPTJets_dn = pvbf_VAJHU_highestPTJets_temp;
-            pzzjj_VAMFCM_highestPTJets_dn = pzzjj_VAMFCM_highestPTJets_temp;
+            pzzjj_VAMCFM_highestPTJets_dn = pzzjj_VAMCFM_highestPTJets_temp;
             pvbs_VAMCFM_highestPTJets_dn = pvbs_VAMCFM_highestPTJets_temp;
           }
         } // if hasAtLeastOneJet
@@ -896,9 +896,9 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     myCand.addUserFloat("phjj_VAJHU_highestPTJets", phjj_VAJHU_highestPTJets);
     myCand.addUserFloat("pvbf_VAJHU_highestPTJets", pvbf_VAJHU_highestPTJets);
     myCand.addUserFloat("phjj_VAJHU_highestPTJets_up", phjj_VAJHU_highestPTJets_up);
-    myCand.addUserFloat("pzzjj_VAMFCM_highestPTJets", pzzjj_VAMFCM_highestPTJets);
+    myCand.addUserFloat("pzzjj_VAMCFM_highestPTJets", pzzjj_VAMCFM_highestPTJets);
     myCand.addUserFloat("pvbs_VAMCFM_highestPTJets", pvbs_VAMCFM_highestPTJets);
-    myCand.addUserFloat("pzzjj_VAMFCM_highestPTJets_up", pzzjj_VAMFCM_highestPTJets_up);
+    myCand.addUserFloat("pzzjj_VAMCFM_highestPTJets_up", pzzjj_VAMCFM_highestPTJets_up);
     myCand.addUserFloat("p0plus_VAJHU_up", p0plus_VAJHU_up);
     myCand.addUserFloat("p0plus_VAMCFM_up", p0plus_VAMCFM_up);
     myCand.addUserFloat("p2bplus_VAJHU_up", p2bplus_VAJHU_up);
@@ -906,7 +906,7 @@ void ZZjjCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     myCand.addUserFloat("pvbf_VAJHU_highestPTJets_up", pvbf_VAJHU_highestPTJets_up);
     myCand.addUserFloat("phjj_VAJHU_highestPTJets_dn", phjj_VAJHU_highestPTJets_dn);
     myCand.addUserFloat("pvbs_VAMCFM_highestPTJets_up", pvbs_VAMCFM_highestPTJets_up);
-    myCand.addUserFloat("pzzjj_VAMFCM_highestPTJets_dn", pzzjj_VAMFCM_highestPTJets_dn);
+    myCand.addUserFloat("pzzjj_VAMCFM_highestPTJets_dn", pzzjj_VAMCFM_highestPTJets_dn);
     myCand.addUserFloat("p0plus_VAJHU_dn", p0plus_VAJHU_dn);
     myCand.addUserFloat("p0plus_VAMCFM_dn", p0plus_VAMCFM_dn);
     myCand.addUserFloat("p2bplus_VAJHU_dn", p2bplus_VAJHU_dn);
