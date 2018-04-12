@@ -171,6 +171,12 @@ namespace {
   std::vector<float> pvbf_VAJHU_highestPTJets_up;
   std::vector<float> phjj_VAJHU_highestPTJets_dn;
   std::vector<float> pvbf_VAJHU_highestPTJets_dn;
+  std::vector<float> pzzjj_VAMCFM_highestPTJets;
+  std::vector<float> pvbs_VAMCFM_highestPTJets;
+  std::vector<float> pzzjj_VAMCFM_highestPTJets_up;
+  std::vector<float> pvbs_VAMCFM_highestPTJets_up;
+  std::vector<float> pzzjj_VAMCFM_highestPTJets_dn;
+  std::vector<float> pvbs_VAMCFM_highestPTJets_dn;
 
   // MCFM MEs
   std::vector<float> pqqZJJ_VAMCFM;
@@ -1130,12 +1136,18 @@ void HZZ2l2qNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool
     phjj_VAJHU_highestPTJets.push_back(cand.userFloat("phjj_VAJHU_highestPTJets"));
     pvbf_VAJHU_highestPTJets_up.push_back(cand.userFloat("pvbf_VAJHU_highestPTJets_up"));
     phjj_VAJHU_highestPTJets_up.push_back(cand.userFloat("phjj_VAJHU_highestPTJets_up"));
+    pvbs_VAMCFM_highestPTJets.push_back(cand.userFloat("pvbs_VAMCFM_highestPTJets"));
+    pzzjj_VAMCFM_highestPTJets.push_back(cand.userFloat("pzzjj_VAMCFM_highestPTJets"));
+    pvbs_VAMCFM_highestPTJets_up.push_back(cand.userFloat("pvbs_VAMCFM_highestPTJets_up"));
+    pzzjj_VAMCFM_highestPTJets_up.push_back(cand.userFloat("pzzjj_VAMCFM_highestPTJets_up"));
     p0plus_VAJHU_up.push_back(cand.userFloat("p0plus_VAJHU_up"));
     p0plus_VAMCFM_up.push_back(cand.userFloat("p0plus_VAMCFM_up"));
     p2bplus_VAJHU_up.push_back(cand.userFloat("p2bplus_VAJHU_up"));
     pqqZJJ_VAMCFM_up.push_back(cand.userFloat("pqqZJJ_VAMCFM_up"));
     pvbf_VAJHU_highestPTJets_dn.push_back(cand.userFloat("pvbf_VAJHU_highestPTJets_dn"));
     phjj_VAJHU_highestPTJets_dn.push_back(cand.userFloat("phjj_VAJHU_highestPTJets_dn"));
+    pvbs_VAMCFM_highestPTJets_dn.push_back(cand.userFloat("pvbs_VAMCFM_highestPTJets_dn"));
+    pzzjj_VAMCFM_highestPTJets_dn.push_back(cand.userFloat("pzzjj_VAMCFM_highestPTJets_dn"));
     p0plus_VAJHU_dn.push_back(cand.userFloat("p0plus_VAJHU_dn"));
     p0plus_VAMCFM_dn.push_back(cand.userFloat("p0plus_VAMCFM_dn"));
     p2bplus_VAJHU_dn.push_back(cand.userFloat("p2bplus_VAJHU_dn"));
@@ -1984,6 +1996,12 @@ void HZZ2l2qNtupleMaker::BookAllBranches(){
   myTree->Book("pvbf_VAJHU_highestPTJets_up", pvbf_VAJHU_highestPTJets_up);
   myTree->Book("phjj_VAJHU_highestPTJets_dn", phjj_VAJHU_highestPTJets_dn);
   myTree->Book("pvbf_VAJHU_highestPTJets_dn", pvbf_VAJHU_highestPTJets_dn);
+  myTree->Book("pzzjj_VAMCFM_highestPTJets", pzzjj_VAMCFM_highestPTJets);
+  myTree->Book("pvbs_VAMCFM_highestPTJets", pvbs_VAMCFM_highestPTJets);
+  myTree->Book("pzzjj_VAMCFM_highestPTJets_up", pzzjj_VAMCFM_highestPTJets_up);
+  myTree->Book("pvbs_VAMCFM_highestPTJets_up", pvbs_VAMCFM_highestPTJets_up);
+  myTree->Book("pzzjj_VAMCFM_highestPTJets_dn", pzzjj_VAMCFM_highestPTJets_dn);
+  myTree->Book("pvbf_VAMCFM_highestPTJets_dn", pvbs_VAMCFM_highestPTJets_dn);
   myTree->Book("p0plus_VAJHU_up", p0plus_VAJHU_up);
   myTree->Book("p0plus_VAMCFM_up", p0plus_VAMCFM_up);
   myTree->Book("p2bplus_VAJHU_up", p2bplus_VAJHU_up);
