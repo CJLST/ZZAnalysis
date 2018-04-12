@@ -164,7 +164,7 @@ void HZZ4lNtupleFactory::BookMELABranches(MELAOptionParser* me_opt, bool isGen, 
   if (isGen) trees.push_back(_failedTree);
 
   if (me_opt->doBranch()){
-    for (auto tree : trees) {
+    for (auto tree:trees){
       string basename = me_opt->getName();
       if (me_opt->isGen()) basename = string("Gen_") + basename;
       MELABranch* tmpbranch;

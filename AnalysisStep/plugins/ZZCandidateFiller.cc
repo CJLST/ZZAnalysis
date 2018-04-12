@@ -41,8 +41,7 @@
 #include <ZZAnalysis/AnalysisStep/interface/utils.h>
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
 #include <ZZAnalysis/AnalysisStep/interface/JetCleaner.h>
-#include <MelaAnalytics/GenericMEComputer/interface/MELABranch.h>
-#include <MelaAnalytics/GenericMEComputer/interface/MELACluster.h>
+#include <MelaAnalytics/GenericMEComputer/interface/GMECHelperFunctions.h>
 #include <KinZfitter/KinZfitter/interface/KinZfitter.h>
 
 #include "TH2F.h"
@@ -74,7 +73,6 @@ private:
 
   void getPairMass(const reco::Candidate* lp, const reco::Candidate* lm, FSRToLepMap& photons, float& mass, int& ID);
   void buildMELA();
-  void addToMELACluster(MELAComputation* me_computer);
   void computeMELABranches();
   void updateMELAClusters_Common();
   void updateMELAClusters_J1JEC();
@@ -916,7 +914,7 @@ void ZZCandidateFiller::buildMELA(){
     me_computers.push_back(me_computer);
 
     // Add the computation to a named cluster to keep track of JECUp/JECDn, or for best-pWH_SM Lep_WH computations
-    addToMELACluster(me_computer);
+    GMECHelperFunctions::addToMELACluster(me_computer, me_clusters);
 
     // Create the necessary branches for each computation
     // Notice that no tree is passed, so no TBranches are created.
@@ -967,7 +965,7 @@ void ZZCandidateFiller::buildMELA(){
 
     // The rest is the same story...
     // Add the computation to a named cluster to keep track of JECUp/JECDn, or for best-pWH_SM Lep_WH computations
-    addToMELACluster(me_computer);
+    GMECHelperFunctions::addToMELACluster(me_computer, me_clusters);
 
     // Create the necessary branches for each computation
     // Notice that no tree is passed, so no TBranches are created.
@@ -1002,15 +1000,6 @@ void ZZCandidateFiller::buildMELA(){
   if (DEBUG_MB){
     for (unsigned int ib=0; ib<me_branches.size(); ib++) me_branches.at(ib)->Print();
     for (unsigned int icl=0; icl<me_clusters.size(); icl++) cout << "Reco ME cluster " << me_clusters.at(icl)->getName() << " is present in " << me_clusters.size() << " clusters with #Computations = " << me_clusters.at(icl)->getComputations()->size() << endl;
-  }
-}
-void ZZCandidateFiller::addToMELACluster(MELAComputation* me_computer){
-  bool isAdded=false;
-  for (unsigned int it=0; it<me_clusters.size(); it++){ if (me_clusters.at(it)->getName()==me_computer->getCluster()){ me_clusters.at(it)->addComputation(me_computer); isAdded=true; } }
-  if (!isAdded){
-    MELACluster* tmpcluster = new MELACluster(me_computer->getCluster());
-    tmpcluster->addComputation(me_computer);
-    me_clusters.push_back(tmpcluster);
   }
 }
 void ZZCandidateFiller::computeMELABranches(){

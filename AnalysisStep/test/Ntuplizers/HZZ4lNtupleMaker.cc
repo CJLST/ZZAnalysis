@@ -62,7 +62,6 @@
 #include <ZZAnalysis/AnalysisStep/interface/miscenums.h>
 #include <ZZAnalysis/AnalysisStep/interface/ggF_qcd_uncertainty_2017.h>
 
-#include <ZZMatrixElement/MELA/interface/Mela.h>
 #include <MelaAnalytics/CandidateLOCaster/interface/MELACandidateRecaster.h>
 
 #include "ZZ4lConfigHelper.h"
@@ -393,7 +392,6 @@ private:
   void getCheckedUserFloat(const pat::CompositeCandidate& cand, const std::string& strval, Float_t& setval, Float_t defaultval=0);
 
   void buildMELABranches();
-  void addToMELACluster(MELAComputation* me_computer, std::vector<MELACluster*>& me_clusters);
   void computeMELABranches(MELACandidate* cand);
   void updateMELAClusters_Common(const string clustertype);
   void updateMELAClusters_NoInitialQ(const string clustertype);
@@ -2600,7 +2598,7 @@ void HZZ4lNtupleMaker::buildMELABranches(){
     lheme_computers.push_back(lheme_computer);
 
     // Add the computation to a named cluster to keep track of JECUp/JECDn, or for best-pWH_SM Lep_WH computations
-    addToMELACluster(lheme_computer, lheme_clusters);
+    GMECHelperFunctions::addToMELACluster(lheme_computer, lheme_clusters);
 
     // Create the necessary branches for each computation
     myTree->BookMELABranches(lheme_opt, true, lheme_computer);
@@ -2627,7 +2625,7 @@ void HZZ4lNtupleMaker::buildMELABranches(){
 
     // The rest is the same story...
     // Add the computation to a named cluster to keep track of JECUp/JECDn, or for best-pWH_SM Lep_WH computations
-    addToMELACluster(lheme_computer, lheme_clusters);
+    GMECHelperFunctions::addToMELACluster(lheme_computer, lheme_clusters);
 
     // Create the necessary branches for each computation
     myTree->BookMELABranches(lheme_opt, true, lheme_computer);
@@ -2639,16 +2637,6 @@ void HZZ4lNtupleMaker::buildMELABranches(){
     std::vector<MELABranch*>* lheme_branches = myTree->getLHEMELABranches();
     for (unsigned int ib=0; ib<lheme_branches->size(); ib++) lheme_branches->at(ib)->Print();
     for (unsigned int icl=0; icl<lheme_clusters.size(); icl++) cout << "LHE ME cluster " << lheme_clusters.at(icl)->getName() << " is present in " << lheme_clusters.size() << " clusters with #Computations = " << lheme_clusters.at(icl)->getComputations()->size() << endl;
-  }
-}
-
-void HZZ4lNtupleMaker::addToMELACluster(MELAComputation* me_computer, std::vector<MELACluster*>& me_clusters){
-  bool isAdded=false;
-  for (unsigned int it=0; it<me_clusters.size(); it++){ if (me_clusters.at(it)->getName()==me_computer->getCluster()){ me_clusters.at(it)->addComputation(me_computer); isAdded=true; } }
-  if (!isAdded){
-    MELACluster* tmpcluster = new MELACluster(me_computer->getCluster());
-    tmpcluster->addComputation(me_computer);
-    me_clusters.push_back(tmpcluster);
   }
 }
 
