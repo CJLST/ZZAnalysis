@@ -192,6 +192,7 @@ private:
   bool skipEmptyEvents; // Skip events whith no selected candidate (otherwise, gen info is preserved for all events)
   Float_t xsec;
   int year;
+  edm::InputTag metTag;
 
   edm::EDGetTokenT<GenEventInfoProduct> genInfoToken;
   edm::EDGetTokenT<edm::View<pat::CompositeCandidate> > candToken;
@@ -251,6 +252,7 @@ ZNtupleMaker::ZNtupleMaker(const edm::ParameterSet& pset) :
   sampleName = pset.getParameter<string>("sampleName");
   xsec = pset.getParameter<double>("xsec");
   year = pset.getParameter<int>("setup");
+  metTag = pset.getParameter<edm::InputTag>("metSrc");
 
   consumesMany<std::vector< PileupSummaryInfo > >();
   genInfoToken = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
@@ -258,7 +260,7 @@ ZNtupleMaker::ZNtupleMaker(const edm::ParameterSet& pset) :
   triggerResultToken = consumes<edm::TriggerResults>(edm::InputTag("TriggerResults"));
   vtxToken = consumes<vector<reco::Vertex> >(edm::InputTag("goodPrimaryVertices"));
   jetToken = consumes<edm::View<pat::Jet> >(edm::InputTag("cleanJets"));
-  metToken = consumes<pat::METCollection>(edm::InputTag("slimmedMETs"));
+  metToken = consumes<pat::METCollection>(metTag);
 
   electronToken = consumes<vector<pat::Electron> >(edm::InputTag("softElectrons"));
   //softElectrons->clear();

@@ -249,6 +249,7 @@ process.ZTree = cms.EDAnalyzer("ZNtupleMaker",
                                skimPaths = cms.vstring(SkimPaths),
                                PD = cms.string(PD),
                                MCFilterPath = cms.string(MCFILTER),
+                               metSrc = metTag,
                                skipEmptyEvents = cms.bool(True),
                                sampleName = cms.string(SAMPLENAME),
                                xsec = cms.double(XSEC)

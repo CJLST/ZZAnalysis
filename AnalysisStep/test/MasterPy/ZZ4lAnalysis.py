@@ -1517,7 +1517,7 @@ if (RECORRECTMET and SAMPLE_TYPE == 2017):
     from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
     process.testCands = cms.EDFilter("CandPtrSelector",
 												 src=cms.InputTag("packedPFCandidates"),
-												 cut=cms.string("abs(pdgId)!=1 && abs(pdgId)!=2 && abs(eta)<3.0")
+												 cut=cms.string("abs(eta)>2.5 && abs(eta)<3.0")
 												 )
 		
     runMetCorAndUncFromMiniAOD(process,
@@ -1527,7 +1527,8 @@ if (RECORRECTMET and SAMPLE_TYPE == 2017):
                                recoMetFromPFCs=True,
                                postfix="Test",
                                )
-
+    metTag = cms.InputTag("slimmedMETsTest","","ZZ")
+	 
     ### somehow MET recorrection gets this lost again...
     process.patJetsReapplyJEC.userData.userFloats.src += ['pileupJetIdUpdated:fullDiscriminant']
     process.patJetsReapplyJEC.userData.userInts.src += ['pileupJetIdUpdated:fullId']
