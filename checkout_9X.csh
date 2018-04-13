@@ -127,6 +127,7 @@ popd
 
 #kinematic refitting
 git clone https://github.com/mhl0116/KinZfitter-1.git KinZfitter
+(cd KinZfitter ; git checkout -b from-27daebb 27daebb)
 
 #muon momentum scale corrections (76X)
 git clone https://github.com/bachtis/Analysis.git -b KaMuCa_V4 KaMuCa 
