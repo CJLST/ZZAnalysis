@@ -260,12 +260,13 @@ AJetsProdDecProbabilities_MCFM_JECNominal = [
    "Name:HadZH_BSI_ghz1_i_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:Had_ZH MatrixElement:MCFM Couplings:ghz1=0,1 Cluster:J2JECNominal DefaultME:-1",
    "Name:HadZH_BKG_MCFM_JECNominal Process:bkgZZ Production:Had_ZH MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1 Options:AddPConst=1",
 
-   "Name:HadWH_S_SIG_ghv1_1_MCFM_JECNominal Process:HSMHiggs Production:Had_WH_S MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1 Options:AddPConst=1",
-   "Name:HadWH_S_BSI_ghv1_1_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:Had_WH_S MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
-   "Name:HadWH_S_BSI_ghv1_i_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:Had_WH_S MatrixElement:MCFM Couplings:ghz1=0,1 Cluster:J2JECNominal DefaultME:-1",
-   "Name:HadWH_SIG_ghv1_1_MCFM_JECNominal Process:HSMHiggs Production:Had_WH MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
-   "Name:HadWH_BSI_ghv1_1_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:Had_WH MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
-   "Name:HadWH_BSI_ghv1_i_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:Had_WH MatrixElement:MCFM Couplings:ghz1=0,1 Cluster:J2JECNominal DefaultME:-1",
+   "Name:HadWH_S_SIG_ghw1_1_MCFM_JECNominal Process:HSMHiggs Production:Had_WH_S MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1 Options:AddPConst=1",
+   "Name:HadWH_S_BSI_ghw1_1_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:Had_WH_S MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
+   "Name:HadWH_S_BSI_ghw1_i_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:Had_WH_S MatrixElement:MCFM Couplings:ghz1=0,1 Cluster:J2JECNominal DefaultME:-1",
+   # In ZZ4l, HadWH_*_S vs HadWH_* should be the same; there is no u/t channel diagram or a valid lepton exchange
+   #"Name:HadWH_SIG_ghw1_1_MCFM_JECNominal Process:HSMHiggs Production:Had_WH MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
+   #"Name:HadWH_BSI_ghw1_1_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:Had_WH MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1",
+   #"Name:HadWH_BSI_ghw1_i_MCFM_JECNominal Process:bkgZZ_SMHiggs Production:Had_WH MatrixElement:MCFM Couplings:ghz1=0,1 Cluster:J2JECNominal DefaultME:-1",
    "Name:HadWH_BKG_MCFM_JECNominal Process:bkgZZ Production:Had_WH MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1 Options:AddPConst=1",
 
    "Name:JJQCD_BKG_MCFM_JECNominal Process:bkgZZ Production:JJQCD MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1 Options:AddPConst=1",
