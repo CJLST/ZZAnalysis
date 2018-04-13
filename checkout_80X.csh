@@ -49,7 +49,7 @@ git clone https://github.com/usarica/MelaAnalytics.git
 
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
-(cd ZZMatrixElement; git checkout -b from-v215 v2.1.5)
+(cd ZZMatrixElement; git checkout -b from-v216 v2.1.6)
 # replace ZZMatrixElement/MELA/setup.sh -j 8
 pushd ${CMSSW_BASE}/src/ZZMatrixElement/MELA/COLLIER/
   pkgname="collier-1.2"
