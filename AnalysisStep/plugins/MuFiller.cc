@@ -49,11 +49,9 @@ class MuFiller : public edm::EDProducer {
   int sampleType;
   int setup;
   const StringCutObjectSelector<pat::Muon, true> cut;
-  string correctionFile;
   const CutSet<pat::Muon> flags;
   //  edm::EDGetTokenT<double> rhoToken; // Rho correction currently not used.
   edm::EDGetTokenT<vector<Vertex> > vtxToken;
-  KalmanMuonCalibrator *mu_calibrator;
 };
 
 
@@ -62,16 +60,13 @@ MuFiller::MuFiller(const edm::ParameterSet& iConfig) :
   sampleType(iConfig.getParameter<int>("sampleType")),
   setup(iConfig.getParameter<int>("setup")),
   cut(iConfig.getParameter<std::string>("cut")),
-  correctionFile(iConfig.getParameter<std::string>("correctionFile")),
   flags(iConfig.getParameter<edm::ParameterSet>("flags"))
 {
   //  rhoToken = consumes<double>(LeptonIsoHelper::getMuRhoTag(sampleType, setup)); // Rho correction currently not used.
   vtxToken = consumes<vector<Vertex> >(edm::InputTag("goodPrimaryVertices"));
   produces<pat::MuonCollection>();
-  mu_calibrator = new KalmanMuonCalibrator(correctionFile);
 }
 MuFiller::~MuFiller(){
-  delete mu_calibrator;
 }
 
 
@@ -139,13 +134,6 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     float muontime = 0;
     if (l.time().nDof>4) muontime= l.time().timeAtIpInOut;
 	  
-
-	 // https://twiki.cern.ch/twiki/bin/view/CMS/MuonScaleResolKalman
-    float pt_up = mu_calibrator->getCorrectedPt(l.pt(),l.eta(),l.phi(),(l.pdgId()/abs(l.pdgId())));
-    float pt_smear = mu_calibrator->smearForSync(l.pt(),l.eta());
-	 float scale_unc = pt_up/l.pt();
-	 float smear_unc = pt_smear/l.pt();
-    
     
 //--- Embed user variables
     l.addUserFloat("PFChargedHadIso",PFChargedHadIso);
@@ -162,8 +150,7 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     l.addUserFloat("HLTMatch", HLTMatch);
     // l.addUserCand("MCMatch",genMatch); // FIXME
     l.addUserFloat("time",muontime);
-    l.addUserFloat("scale_unc",scale_unc);
-    l.addUserFloat("smear_unc",smear_unc);
+
 
     //--- isPFMuon flag - in old samples, l.isPFMuon() is not functional, so this has to be filled
     //    beforehand with the module PATPFMuonEmbedder.

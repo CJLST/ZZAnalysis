@@ -478,11 +478,14 @@ elif LEPTON_SETUP == 2016: # (KalmanMuonCalibrator, ICHEP 2016) FIXME: still usi
          process.calibratedMuons.identifier = cms.string("MC_80X_13TeV")
      else:
          process.calibratedMuons.identifier = cms.string("DATA_80X_13TeV")
-elif LEPTON_SETUP == 2017:
-     if IsMC:
-         process.calibratedMuons.identifier = cms.string("MC_80X_13TeV") #FIXME: still same as 2016
-     else: 
-         process.calibratedMuons.identifier = cms.string("DATA_80X_13TeV") #FIXME: still same as 2016
+elif LEPTON_SETUP == 2017:# (Rochester corrections, Moriond 2018)
+     process.calibratedMuons = cms.EDProducer("RochesterPATMuonCorrector",
+                                         src = cms.InputTag("slimmedMuons"),
+                                         identifier = cms.string("RoccoR2017v0"),
+                                         isMC = cms.bool(IsMC),
+                                         isSynchronization = cms.bool(False),
+                                         )
+
 else:
     if APPLYMUCORR:
         print "APPLYMUCORR not configured for LEPTON_SETUP =", LEPTON_SETUP
@@ -523,7 +526,6 @@ process.softMuons = cms.EDProducer("MuFiller",
     sampleType = cms.int32(SAMPLE_TYPE),
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
     cut = cms.string("userFloat('dxy')<0.5 && userFloat('dz')<1."),
-    correctionFile = process.calibratedMuons.identifier,
     flags = cms.PSet(
         ID = cms.string(TIGHTMUON), # tight muon ID
         isSIP = cms.string(SIP),
