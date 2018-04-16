@@ -1519,7 +1519,7 @@ if (RECORRECTMET and SAMPLE_TYPE == 2017):
     from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
     process.testCands = cms.EDFilter("CandPtrSelector",
 												 src=cms.InputTag("packedPFCandidates"),
-												 cut=cms.string("abs(eta)>2.5 && abs(eta)<3.0")
+												 cut=cms.string("abs(eta)<2.5")
 												 )
 		
     runMetCorAndUncFromMiniAOD(process,
