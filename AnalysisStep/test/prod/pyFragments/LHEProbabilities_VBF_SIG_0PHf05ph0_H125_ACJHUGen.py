@@ -86,6 +86,30 @@ LHE_ProdProbabilities_SpinZero_JHUGen = [
 #   "Name:VBF_SIG_ghv4_1_ghza1prime2_1E4i_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz4=1,0;ghzgs1_prime2=0,10000 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
 ]
 
+#special treatement for pure L1Zg sample: it doesn't include WW flavor combinations, e.g. uubar --> ddbar
+#therefore we can't reweight to SM VBF.  The best we can do is reweight to ZZ only.
+assert "Name:SampleProductionHypothesisJHUGen" in LHE_ProdProbabilities_SpinZero_JHUGen[0]
+mycouplings = {_ for _ in LHE_ProdProbabilities_SpinZero_JHUGen[0].split() if _.startswith("Couplings:")}
+assert len(mycouplings) == 1; mycouplings = mycouplings.pop()
+mycouplings = mycouplings.replace("Couplings:", "").split(";")
+
+import re
+hasphoton = False
+hasZZ = False
+for coupling in mycouplings:
+  if re.match("^ghz[0-9](_prime[0-9])?=.*$", coupling):
+    hasZZ = True
+  elif re.match("^gh(z|gs)gs[0-9](_prime[0-9])?=.*$", coupling):
+    hasphoton = True
+  else:
+    raise ValueError("Don't know what {} is".format(coupling))
+
+if hasphoton and not hasZZ:
+  LHE_ProdProbabilities_SpinZero_JHUGen = [
+    _.replace("ghv", "ghz").replace("Couplings:", "Couplings:separateWWZZcouplings=1;")
+      for _ in LHE_ProdProbabilities_SpinZero_JHUGen
+  ]
+
 # Construct the final list
 theLHEProbabilities = []
 theLHEProbabilities.extend(LHE_DecayProbabilities_SpinZero_JHUGen)

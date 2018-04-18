@@ -1,6 +1,6 @@
 ### Spin-0 decay probabilities from JHUGen ###
 LHE_DecayProbabilities_SpinZero_JHUGen = [
-   "Name:SampleDecayHypothesisJHUGen Alias:<Name> Process:SelfDefine_spin0 Production:ZZINDEPENDENT MatrixElement:JHUGen Couplings:ghz1=1,0 isGen:1 NoBranch:1",
+   "Name:SampleDecayHypothesisJHUGen Alias:<Name> Process:SelfDefine_spin0 Production:ZZINDEPENDENT MatrixElement:JHUGen Couplings:ghzgs1_prime2=-4091.0,0 isGen:1 NoBranch:1",
 
    "Name:Dec_SIG_ghz1_1_JHUGen Process:SelfDefine_spin0 Production:ZZINDEPENDENT MatrixElement:JHUGen Couplings:ghz1=1,0 Options:DivideP=SampleDecayHypothesisJHUGen isGen:1",
    "Name:Dec_SIG_ghz1prime2_1E4_JHUGen Process:SelfDefine_spin0 Production:ZZINDEPENDENT MatrixElement:JHUGen Couplings:ghz1_prime2=10000,0 Options:DivideP=SampleDecayHypothesisJHUGen isGen:1",
@@ -43,7 +43,7 @@ LHE_DecayProbabilities_SpinZero_JHUGen = [
 #   "Name:Dec_SIG_ghz4_1_ghza1prime2_1E4i_JHUGen Process:SelfDefine_spin0 Production:ZZINDEPENDENT MatrixElement:JHUGen Couplings:ghz4=1,0;ghzgs1_prime2=0,10000 Options:DivideP=SampleDecayHypothesisJHUGen isGen:1",
 ]
 LHE_ProdProbabilities_SpinZero_JHUGen = [
-   "Name:SampleProductionHypothesisJHUGen Alias:<Name> Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz1=1,0 Cluster:BestLOAssociatedVBF isGen:1 NoBranch:1",
+   "Name:SampleProductionHypothesisJHUGen Alias:<Name> Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghzgs1_prime2=-4091.0,0 Cluster:BestLOAssociatedVBF isGen:1 NoBranch:1",
 
    "Name:VBF_SIG_ghv1_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz1=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
    "Name:VBF_SIG_ghv1prime2_1E4_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz1_prime2=10000,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
