@@ -4,10 +4,10 @@
 # wget -O ${TMPDIR}/checkout_9X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_80X/checkout_9X.csh
 # cd $CMSSW_BASE/src
 # cmsenv
-# source ${TMPDIR}/checkout_9X.csh
+# chmod u+x ${TMPDIR}/checkout_9X.csh
+# ${TMPDIR}/checkout_9X.csh
 
-
-############## For CMSSW_9_4_2
+############## For CMSSW_9_4_4
 git cms-init
 
 #Preliminary electron scale and smearing corrections according to https://twiki.cern.ch/twiki/bin/view/CMS/EGMSmearer
@@ -49,53 +49,7 @@ git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
 #git clone https://github.com/scasasso/usercode MuScleFit
 
 # Higgs Combination Package, Needed for the Double Crystall Ball function. 
-git clone -n https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
-(cd HiggsAnalysis/CombinedLimit; git checkout origin/81x-root606-integration -- interface/HZZ2L2QRooPdfs.h interface/HZZ4LRooPdfs.h src/HZZ2L2QRooPdfs.cc src/HZZ4LRooPdfs.cc BuildFile.xml)
-cat <<EOF > HiggsAnalysis/CombinedLimit/src/classes.h
-#include "HiggsAnalysis/CombinedLimit/interface/HZZ4LRooPdfs.h"
-#include "HiggsAnalysis/CombinedLimit/interface/HZZ2L2QRooPdfs.h"
-EOF
-cat <<EOF > HiggsAnalysis/CombinedLimit/src/classes_def.xml
-<lcgdict>
-        <class name="RooSigPlusInt" />
-        <class name="RooVBFZZPdf" />
-        <class name="RooVBFZZPdf_v2" />
-        <class name="RooaDoubleCBxBW" />
-        <class name="RooggZZPdf" />
-        <class name="RooggZZPdf_v2" />
-        <class name="RooqqZZPdf" />
-        <class name="RooqqZZPdf_v2" />
-        <class name="RooDoubleCB" />
-        <class name="RooCPSHighMassGGH" />
-        <class name="RooCPSHighMassGGHNoInterf" />
-        <class name="RooCPSHighMassVBF" />
-        <class name="RooCPSHighMassVBFNoInterf" />
-        <class name="RooBWHighMassGGH" />
-        <class name="RooTsallis" />
-        <class name="RooRelBW" />
-        <class name="RooRelBW1" />
-        <class name="RooRelBWHighMass" />
-        <class name="RooRelBWUF" />
-        <class name="RooRelBWUFParam" />
-        <class name="RooRelBWUFParamWidth" />
-        <class name="RooRelBWUF_SM4" />
-        <class name="RooTwoETwoMuMassRes" />
-        <class name="RooTwoETwoMuMassShapePdf2" />
-        <class name="RooFourEMassRes" />
-        <class name="RooFourEMassShapePdf2" />
-        <class name="RooFourMuMassRes" />
-        <class name="RooFourMuMassShapePdf2" />
-        <class name="Roo4lMasses2D" />
-        <class name="Roo4lMasses2D_Bkg" />
-        <class name="Roo4lMasses2D_BkgGGZZ" />
-        <class name="RooBetaFunc_v2" />
-        <class name="RooLevelledExp" />
-        <class name="Triangle" />
-        <class name="RooFermi" />
-        <class name="RooCB" />
-</lcgdict>
-EOF
-
+git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
 
 #MELA Analytics
 git clone https://github.com/usarica/MelaAnalytics.git
@@ -104,32 +58,34 @@ git clone https://github.com/usarica/MelaAnalytics.git
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
 (cd ZZMatrixElement; git checkout -b from-v216 v2.1.6)
 # replace ZZMatrixElement/MELA/setup.sh -j 8
-pushd ${CMSSW_BASE}/src/ZZMatrixElement/MELA/COLLIER/
-  pkgname="collier-1.2"
-  pkgdir="COLLIER-1.2"
-  tarname=$pkgname".tar.gz"
-  tarweb="https://www.hepforge.org/archive/collier/"$tarname
-  libname="libcollier.so"
-  tmpdir="colliertmp"
-  wget $tarweb
-  mkdir $tmpdir
-  tar -xvzf $tarname -C $tmpdir
-  rm $tarname
-  mv $tmpdir"/"$pkgdir"/src/"* ./
-  rm -rf $tmpdir
-  make
-  mv $libname "../data/"$SCRAM_ARCH"/"$libname
-popd
-pushd ${CMSSW_BASE}/src/ZZMatrixElement/MELA/fortran/
-  make all
-  mv libjhugenmela.so ../data/${SCRAM_ARCH}/
-popd
+(                                                                 \
+  cd ${CMSSW_BASE}/src/ZZMatrixElement/MELA/COLLIER/             ;\
+  set pkgname="collier-1.2"                                      ;\
+  set pkgdir="COLLIER-1.2"                                       ;\
+  set tarname=$pkgname".tar.gz"                                  ;\
+  set tarweb="https://www.hepforge.org/archive/collier/"$tarname ;\
+  set libname="libcollier.so"                                    ;\
+  set tmpdir="colliertmp"                                        ;\
+  wget $tarweb                                                   ;\
+  mkdir $tmpdir                                                  ;\
+  tar -xvzf $tarname -C $tmpdir                                  ;\
+  rm $tarname                                                    ;\
+  mv $tmpdir"/"$pkgdir"/src/"* ./                                ;\
+  rm -rf $tmpdir                                                 ;\
+  make                                                           ;\
+  mv $libname "../data/"$SCRAM_ARCH"/"$libname                   ;\
+)
+(                                                                 \
+  cd ${CMSSW_BASE}/src/ZZMatrixElement/MELA/fortran/             ;\
+  make all                                                       ;\
+  mv libjhugenmela.so ../data/${SCRAM_ARCH}/                     ;\
+)
 
 #kinematic refitting
 git clone https://github.com/mhl0116/KinZfitter-1.git KinZfitter
 (cd KinZfitter ; git checkout -b from-27daebb 27daebb)
 
 #muon momentum scale corrections (76X)
-git clone https://github.com/bachtis/Analysis.git -b KaMuCa_V4 KaMuCa 
+git clone https://github.com/bachtis/Analysis.git -b KaMuCa_V4 KaMuCa
 
 
