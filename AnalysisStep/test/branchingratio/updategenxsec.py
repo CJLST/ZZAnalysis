@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-import argparse, csv, itertools, os, tempfile
-from utilities import TFile
+import argparse, contextlib, csv, itertools, numpy, os, re, tempfile, urllib
+from utilities import CJLSTproduction, TFile
 
 def averageNLOweight(identifier, year):
   if year == 2016: return 1
@@ -52,7 +52,7 @@ def update_spreadsheet(year):
         if identifier.strip() and identifier.strip() != "See comment field":
           multiply = averageNLOweight(identifier, year)
           print identifier, multiply
-          if multiply != 1:
+          if multiply != 1 and multiply == multiply:
             genxsec = rawgenxsec(identifier, year) * multiply
             regex = "(GENXSEC=)[0-9.eE+-]+(;)"
             match = re.search(regex, row["::variables"])

@@ -38,5 +38,5 @@ def cache(function):
 
 CJLSTproduction = {
   2016: "180121",
-  2017: "180416",
+  2017: "180416/MC_main",
 }
