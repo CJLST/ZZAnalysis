@@ -21,7 +21,10 @@ basemass = 300
 oldfilterefficiencyZH = 0.15038
 filterefficiencyZH = 0.1483
 filterefficiencyttH = 0.1544
-CJLSTproduction = "180121"
+CJLSTproduction = {
+  2016: "180121",
+  2017: "180416",
+}
 
 YR4data_BR_4l = {
   120: 0.0001659,
@@ -75,9 +78,17 @@ def cache(function):
       return newfunction(*args, **kwargs)
   return newfunction
 
+def BR_fromoldspreadsheet(p, m):
+  with contextlib.closing(urllib.urlopen("https://raw.githubusercontent.com/CJLST/ZZAnalysis/87bce99aa845936454ce302a70095797b81c194c/AnalysisStep/test/prod/samples_2016_MC.csv")) as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+      if re.match("#*"+p+str(m)+"$", row["identifier"]):
+        return float(row["BR=1"])
+  assert False, (p, m)
+
 def BR_YR3(mass, productionmode):
   if productionmode in ("ZH", "ttH") and mass < 300:
-    result = BR_fromspreadsheet(productionmode, mass)
+    result = BR_fromoldspreadsheet(productionmode, mass)
     if 120 <= m <= 130:
       result *= YR4data_BR_ZZ[m] / yellowhiggs.br(m, "ZZ")[0]
     if productionmode == "ZH":
@@ -181,13 +192,27 @@ def GammaH_YR2(mass):
   with cd("BigGamma"):
     return float(subprocess.check_output(["./BigGamma", str(mass)]))
 
-def averageBR(productionmode, mass, spreadsheet=None):
-  production = CJLSTproduction
+def averageBR(productionmode, mass, year):
+  production = CJLSTproduction[year]
   if productionmode == "VBF":
     productionmode = "VBFH"
   folder = "{}{:d}".format(productionmode, mass)
 
   if not os.path.exists("/data3/Higgs"): raise RuntimeError("Have to run this on lxcms03")
+
+  """
+  for 2017 MC, genHEPMCweight is reweighted to the NLO PDF
+  when extracting the JHUGen weight from the sample, which is the ratio
+   of the final weight to the POWHEG-only weight, we have to use
+   the weight for the NNLO PDF, since otherwise this ratio will
+   also contain the reweighting factor.
+  However, when taking a weighted average over the sample, we have to use
+   the NLO weight.
+  """
+  genHEPMCweight = {
+    "2016": "genHEPMCweight",
+    "2017": "genHEPMCweight_NNLO",
+  }
 
   with TFile("/data3/Higgs/"+production+"/"+folder+"/ZZ4lAnalysis.root") as f:
     if not f: return float("nan"), float("nan")
@@ -199,6 +224,7 @@ def averageBR(productionmode, mass, spreadsheet=None):
       if not _: continue
       _.SetBranchStatus("*", 0)
       _.SetBranchStatus("GenHMass", 1)
+      _.SetBranchStatus(genHEPMCweight, 1)
       _.SetBranchStatus("genHEPMCweight", 1)
       _.SetBranchStatus("p_Gen_CPStoBWPropRewgt", 1)
     t.GetEntry(0)
@@ -222,17 +248,52 @@ def averageBR(productionmode, mass, spreadsheet=None):
     Here we want to use our best knowledge of the branching fraction above the 2mt threshold,
     which is from YR3 (YR4 only goes from 120-130 GeV).
     """
-    multiplyweight = GammaHZZ_YR3(basemass, p) * GammaHZZ_JHU(t.GenHMass) / (GammaHZZ_JHU(basemass) * abs(t.genHEPMCweight) * GammaH_YR2(t.GenHMass))
+    multiplyweight = GammaHZZ_YR3(basemass, p) * GammaHZZ_JHU(t.GenHMass) / (GammaHZZ_JHU(basemass) * abs(getattr(t, genHEPMCweight)) * GammaH_YR2(t.GenHMass))
     t.GetEntry(1)
-#    print("test should be equal:", multiplyweight, GammaHZZ_YR3(basemass, p) * GammaHZZ_JHU(t.GenHMass) / (GammaHZZ_JHU(basemass) * t.genHEPMCweight * GammaH_YR2(t.GenHMass)))
+#    print("test should be equal:", multiplyweight, GammaHZZ_YR3(basemass, p) * GammaHZZ_JHU(t.GenHMass) / (GammaHZZ_JHU(basemass) * getattr(t, genHEPMCweight) * GammaH_YR2(t.GenHMass)))
 
     bothtrees = itertools.chain(t, failedt)
 #    bothtrees = itertools.islice(bothtrees, 5)
 
     BR, weights, weights_rwttoBW = \
-      zip(*([multiplyweight * abs(entry.genHEPMCweight), sgn(entry.genHEPMCweight), sgn(entry.genHEPMCweight)*entry.p_Gen_CPStoBWPropRewgt if productionmode not in ("ZH", "WplusH", "WminusH") else float("nan")] for entry in bothtrees))
+      zip(*([multiplyweight * abs(getattr(entry, genHEPMCweight)), entry.genHEPMCweight, entry.genHEPMCweight*entry.p_Gen_CPStoBWPropRewgt if productionmode not in ("ZH", "WplusH", "WminusH") else float("nan")] for entry in bothtrees))
 
     return numpy.average(BR, weights=weights), numpy.average(BR, weights=weights_rwttoBW)
+
+def averageNLOweight(productionmode, mass, year):
+  if year == 2016: return 1
+  assert year == 2017
+
+  production = CJLSTproduction[year]
+  if productionmode == "VBF":
+    productionmode = "VBFH"
+  folder = "{}{:d}".format(productionmode, mass)
+
+  if not os.path.exists("/data3/Higgs"): raise RuntimeError("Have to run this on lxcms03")
+
+  with TFile("/data3/Higgs/"+production+"/"+folder+"/ZZ4lAnalysis.root") as f:
+    if not f: return float("nan")
+    t = f.ZZTree.Get("candTree")
+    failedt = f.ZZTree.Get("candTree_failed")
+    if not failedt: failedt = []
+    if not t and not failedt: return float("nan")
+    for _ in t, failedt:
+      if not _: continue
+      _.SetBranchStatus("*", 0)
+      _.SetBranchStatus("genHEPMCweight", 1)
+      _.SetBranchStatus("genHEPMCweight_NNLO", 1)
+
+    bothtrees = itertools.chain(t, failedt)
+
+    return numpy.average([entry.genHEPMCweight / entry.genHEPMCweight_NNLO for entry in bothtrees])
+
+def rawgenxsec(p, m, year)
+  with contextlib.closing(urllib.urlopen("https://raw.githubusercontent.com/CJLST/ZZAnalysis/0c7f32434c0c549d15955936570e16e29e95855d/AnalysisStep/test/prod/samples_{}_MC.csv".format(year))) as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+      if re.match("#*"+p+str(m)+"$", row["identifier"]):
+        variables = {_.split("=")[0]: _.split("=")[1] for _ in row["::variables"].split(_)}
+        return float(variables["GENXSEC"])
 
 def getmasses(productionmode):
   if productionmode in ("ggH", "VBF", "ZH", "WplusH", "WminusH"):
@@ -240,7 +301,7 @@ def getmasses(productionmode):
   if productionmode == "ttH":
     return 115, 120, 124, 125, 126, 130, 135, 140, 145
 
-def update_spreadsheet(filename, p, m, BR):
+def update_spreadsheet(filename, p, m, BR, genxsec):
   if p == "VBF": p = "VBFH"
   if (p, m) == ("ggH", 125): requirednmatches = 11
   elif (p, m) == ("ggH", 300): requirednmatches = 6
@@ -263,13 +324,23 @@ def update_spreadsheet(filename, p, m, BR):
           elif re.match("#*"+p+str(m)+"[_scaletuneupdownminloHJJNNLOPS]*", row["identifier"]):
             BRforthisrow = BR
             if "_scale" in row["identifier"] or "_tune" in row["identifier"]:
-              if p == "ZH": BRforthisrow /= filterefficiencyZH
-              if p == "ttH": BRforthisrow /= filterefficiencyttH
+              if year == 2016:
+                if p == "ZH": BRforthisrow /= filterefficiencyZH
+                if p == "ttH": BRforthisrow /= filterefficiencyttH
+              elif year == 2017:
+                pass
+              else:
+                assert False, year
             nmatches += 1
             regex = "(GENBR=)[0-9.eE+-]+(;)"
             match = re.search(regex, row["::variables"])
             assert match, row["::variables"]
             row["::variables"] = re.sub(regex, r"\g<1>{:g}\g<2>".format(BRforthisrow), row["::variables"])
+
+            regex = "(GENXSEC=)[0-9.eE+-]+(;)"
+            match = re.search(regex, row["::variables"])
+            row["::variables"] = re.sub(regex, r"\g<1>{:g}\g<2>".format(genxsec), row["::variables"])
+
             if p in ("ZH", "ttH") and int(m) >= 300:
               row["BR=1"] = BR_YR3(min(m, 1000), p)
             elif p in ("ZH", "ttH"):
@@ -285,19 +356,13 @@ def update_spreadsheet(filename, p, m, BR):
     with open(filename, "w") as finalf, open(newf.name) as newf2:
       finalf.write(newf2.read().replace('\r\n', '\n'))
 
-def BR_fromspreadsheet(p, m):
-  with contextlib.closing(urllib.urlopen("https://raw.githubusercontent.com/CJLST/ZZAnalysis/87bce99aa845936454ce302a70095797b81c194c/AnalysisStep/test/prod/samples_2016_MC.csv")) as f:
-    reader = csv.DictReader(f)
-    for row in reader:
-      if re.match("#*"+p+str(m), row["identifier"]):
-        return float(row["BR=1"])
-
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
   parser.add_argument("-p", action="append", choices="ggH VBF ZH WplusH WminusH ttH".split())
   parser.add_argument("--minimum-mass", type=float, default=0)
   parser.add_argument("--maximum-mass", type=float, default=float("inf"))
-  parser.add_argument("--update-spreadsheet")
+  parser.add_argument("--update-spreadsheet", action="store_true")
+  parser.add_argument("year", type=int)
   args = parser.parse_args()
 
   line = "{:3} {:4d} {:8.4%}"
@@ -308,9 +373,14 @@ if __name__ == "__main__":
       if m < 300:
         BR = BR_YR3(m, p)
       else:
-        BR = averageBR(p, m)[0]
+        BR = averageBR(p, m, args.year)[0]
+
+      genxsec = rawgenxsec(p, m, args.year) * averageNLOweight(p, m, args.year)
 
       print(line.format(p, m, BR))
       if numpy.isnan(BR): BR = 999
       if args.update_spreadsheet:
-        update_spreadsheet(args.update_spreadsheet, p, m, BR)
+        update_spreadsheet(
+          os.path.join(os.path.dirname(__file__), "../prod/samples_{}_MC.csv".format(args.year),
+          p, m, BR,
+        )
