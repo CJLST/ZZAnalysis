@@ -210,9 +210,9 @@ def averageBR(productionmode, mass, year):
    the NLO weight.
   """
   genHEPMCweight = {
-    "2016": "genHEPMCweight",
-    "2017": "genHEPMCweight_NNLO",
-  }
+    2016: "genHEPMCweight",
+    2017: "genHEPMCweight_NNLO",
+  }[year]
 
   with TFile("/data3/Higgs/"+production+"/"+folder+"/ZZ4lAnalysis.root") as f:
     if not f: return float("nan"), float("nan")
@@ -287,13 +287,15 @@ def averageNLOweight(productionmode, mass, year):
 
     return numpy.average([entry.genHEPMCweight / entry.genHEPMCweight_NNLO for entry in bothtrees])
 
-def rawgenxsec(p, m, year)
+def rawgenxsec(p, m, year):
+  if p == "VBF": p = "VBFH"
   with contextlib.closing(urllib.urlopen("https://raw.githubusercontent.com/CJLST/ZZAnalysis/0c7f32434c0c549d15955936570e16e29e95855d/AnalysisStep/test/prod/samples_{}_MC.csv".format(year))) as f:
     reader = csv.DictReader(f)
     for row in reader:
       if re.match("#*"+p+str(m)+"$", row["identifier"]):
-        variables = {_.split("=")[0]: _.split("=")[1] for _ in row["::variables"].split(_)}
+        variables = {_.split("=")[0]: _.split("=")[1] for _ in row["::variables"].split(";")}
         return float(variables["GENXSEC"])
+  assert False, (p, m, year)
 
 def getmasses(productionmode):
   if productionmode in ("ggH", "VBF", "ZH", "WplusH", "WminusH"):
@@ -301,7 +303,7 @@ def getmasses(productionmode):
   if productionmode == "ttH":
     return 115, 120, 124, 125, 126, 130, 135, 140, 145
 
-def update_spreadsheet(filename, p, m, BR, genxsec):
+def update_spreadsheet(filename, p, m, year, BR, genxsec):
   if p == "VBF": p = "VBFH"
   if (p, m) == ("ggH", 125): requirednmatches = 11
   elif (p, m) == ("ggH", 300): requirednmatches = 6
@@ -381,6 +383,6 @@ if __name__ == "__main__":
       if numpy.isnan(BR): BR = 999
       if args.update_spreadsheet:
         update_spreadsheet(
-          os.path.join(os.path.dirname(__file__), "../prod/samples_{}_MC.csv".format(args.year),
-          p, m, BR,
+          os.path.join(os.path.dirname(__file__), "../prod/samples_{}_MC.csv".format(args.year)),
+          p, m, args.year, BR, genxsec,
         )
