@@ -7,7 +7,7 @@ At 300 GeV and above, it's taken from the weights that JHUGen writes to the LHE 
 """
 
 from __future__ import print_function
-import argparse, contextlib, csv, functools, itertools, math, numpy, os, re, subprocess, tempfile, urllib
+import argparse, contextlib, csv, itertools, math, numpy, os, re, subprocess, tempfile, urllib
 try:
   import yellowhiggs
 except ImportError:
@@ -16,15 +16,12 @@ except ImportError:
 if os.path.exists("src") and not os.path.exists("src/.gitignore"):
   with open("src/.gitignore", "w") as f:
     f.write("yellowhiggs\n.gitignore\npip-delete-this-directory.txt")
+from utilities import cache, cd, CJLSTproduction, TFile
 
 basemass = 300
 oldfilterefficiencyZH = 0.15038
 filterefficiencyZH = 0.1483
 filterefficiencyttH = 0.1544
-CJLSTproduction = {
-  2016: "180121",
-  2017: "180416",
-}
 
 YR4data_BR_4l = {
   120: 0.0001659,
@@ -41,42 +38,6 @@ YR4data_BR_ZZ = {
   126: 0.02866,
   130: 0.03955,
 }
-
-@contextlib.contextmanager
-def cd(newdir):
-  """http://stackoverflow.com/a/24176022/5228524"""
-  prevdir = os.getcwd()
-  os.chdir(os.path.expanduser(newdir))
-  try:
-    yield
-  finally:
-    os.chdir(prevdir)
-
-class TFile(object):
-  def __init__(self, *args, **kwargs):
-    self.args, self.kwargs = args, kwargs
-  def __enter__(self):
-    import ROOT
-    self.__tfile = ROOT.TFile.Open(*self.args, **self.kwargs)
-    if not self.__tfile or self.__tfile.IsZombie(): return None
-    return self.__tfile
-  def __exit__(self, *err):
-    if self.__tfile:
-      self.__tfile.Close()
-
-def cache(function):
-  cache = {}
-  @functools.wraps(function)
-  def newfunction(*args, **kwargs):
-    try:
-      return cache[args, tuple(sorted(kwargs.iteritems()))]
-    except TypeError:
-      print(args, tuple(sorted(kwargs.iteritems())))
-      raise
-    except KeyError:
-      cache[args, tuple(sorted(kwargs.iteritems()))] = function(*args, **kwargs)
-      return newfunction(*args, **kwargs)
-  return newfunction
 
 def BR_fromoldspreadsheet(p, m):
   with contextlib.closing(urllib.urlopen("https://raw.githubusercontent.com/CJLST/ZZAnalysis/87bce99aa845936454ce302a70095797b81c194c/AnalysisStep/test/prod/samples_2016_MC.csv")) as f:
@@ -260,50 +221,13 @@ def averageBR(productionmode, mass, year):
 
     return numpy.average(BR, weights=weights), numpy.average(BR, weights=weights_rwttoBW)
 
-def averageNLOweight(productionmode, mass, year):
-  if year == 2016: return 1
-  assert year == 2017
-
-  production = CJLSTproduction[year]
-  if productionmode == "VBF":
-    productionmode = "VBFH"
-  folder = "{}{:d}".format(productionmode, mass)
-
-  if not os.path.exists("/data3/Higgs"): raise RuntimeError("Have to run this on lxcms03")
-
-  with TFile("/data3/Higgs/"+production+"/"+folder+"/ZZ4lAnalysis.root") as f:
-    if not f: return float("nan")
-    t = f.ZZTree.Get("candTree")
-    failedt = f.ZZTree.Get("candTree_failed")
-    if not failedt: failedt = []
-    if not t and not failedt: return float("nan")
-    for _ in t, failedt:
-      if not _: continue
-      _.SetBranchStatus("*", 0)
-      _.SetBranchStatus("genHEPMCweight", 1)
-      _.SetBranchStatus("genHEPMCweight_NNLO", 1)
-
-    bothtrees = itertools.chain(t, failedt)
-
-    return numpy.average([entry.genHEPMCweight / entry.genHEPMCweight_NNLO for entry in bothtrees])
-
-def rawgenxsec(p, m, year):
-  if p == "VBF": p = "VBFH"
-  with contextlib.closing(urllib.urlopen("https://raw.githubusercontent.com/CJLST/ZZAnalysis/0c7f32434c0c549d15955936570e16e29e95855d/AnalysisStep/test/prod/samples_{}_MC.csv".format(year))) as f:
-    reader = csv.DictReader(f)
-    for row in reader:
-      if re.match("#*"+p+str(m)+"$", row["identifier"]):
-        variables = {_.split("=")[0]: _.split("=")[1] for _ in row["::variables"].split(";")}
-        return float(variables["GENXSEC"])
-  assert False, (p, m, year)
-
 def getmasses(productionmode):
   if productionmode in ("ggH", "VBF", "ZH", "WplusH", "WminusH"):
     return 115, 120, 124, 125, 126, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 190, 200, 210, 230, 250, 270, 300, 350, 400, 450, 500, 550, 600, 700, 750, 800, 900, 1000, 1500, 2000, 2500, 3000
   if productionmode == "ttH":
     return 115, 120, 124, 125, 126, 130, 135, 140, 145
 
-def update_spreadsheet(filename, p, m, year, BR, genxsec):
+def update_spreadsheet(filename, p, m, year, BR):
   if p == "VBF": p = "VBFH"
   if (p, m) == ("ggH", 125): requirednmatches = 11
   elif (p, m) == ("ggH", 300): requirednmatches = 6
@@ -339,10 +263,6 @@ def update_spreadsheet(filename, p, m, year, BR, genxsec):
             assert match, row["::variables"]
             row["::variables"] = re.sub(regex, r"\g<1>{:g}\g<2>".format(BRforthisrow), row["::variables"])
 
-            regex = "(GENXSEC=)[0-9.eE+-]+(;)"
-            match = re.search(regex, row["::variables"])
-            row["::variables"] = re.sub(regex, r"\g<1>{:g}\g<2>".format(genxsec), row["::variables"])
-
             if p in ("ZH", "ttH") and int(m) >= 300:
               row["BR=1"] = BR_YR3(min(m, 1000), p)
             elif p in ("ZH", "ttH"):
@@ -377,12 +297,10 @@ if __name__ == "__main__":
       else:
         BR = averageBR(p, m, args.year)[0]
 
-      genxsec = rawgenxsec(p, m, args.year) * averageNLOweight(p, m, args.year)
-
       print(line.format(p, m, BR))
       if numpy.isnan(BR): BR = 999
       if args.update_spreadsheet:
         update_spreadsheet(
           os.path.join(os.path.dirname(__file__), "../prod/samples_{}_MC.csv".format(args.year)),
-          p, m, args.year, BR, genxsec,
+          p, m, args.year, BR
         )
