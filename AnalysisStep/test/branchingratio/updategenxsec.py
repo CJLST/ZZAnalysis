@@ -13,8 +13,11 @@ def averageNLOweight(identifier, year):
 
   with TFile("/data3/Higgs/"+production+"/"+identifier+"/ZZ4lAnalysis.root") as f:
     if not f: return float("nan")
-    t = f.ZZTree.Get("candTree")
-    failedt = f.ZZTree.Get("candTree_failed")
+    try:
+      t = f.ZZTree.Get("candTree")
+      failedt = f.ZZTree.Get("candTree_failed")
+    except AttributeError:
+      t = failedt = None
     if not failedt: failedt = []
     if not t and not failedt: return float("nan")
     for _ in t, failedt:

@@ -177,8 +177,11 @@ def averageBR(productionmode, mass, year):
 
   with TFile("/data3/Higgs/"+production+"/"+folder+"/ZZ4lAnalysis.root") as f:
     if not f: return float("nan"), float("nan")
-    t = f.ZZTree.Get("candTree")
-    failedt = f.ZZTree.Get("candTree_failed")
+    try:
+      t = f.ZZTree.Get("candTree")
+      failedt = f.ZZTree.Get("candTree_failed")
+    except AttributeError:
+      t = failedt = None
     if not failedt: failedt = []
     if not t and not failedt: return float("nan"), float("nan")
     for _ in t, failedt:
@@ -229,9 +232,9 @@ def getmasses(productionmode):
 
 def update_spreadsheet(filename, p, m, year, BR):
   if p == "VBF": p = "VBFH"
-  if (p, m) == ("ggH", 125): requirednmatches = 11
+  if (p, m) == ("ggH", 125): requirednmatches = 11 - (year == 2017)
   elif (p, m) == ("ggH", 300): requirednmatches = 6
-  elif m == 125: requirednmatches = 5
+  elif m == 125: requirednmatches = 5 - (year == 2017)
   else: requirednmatches = 1
   nmatches = 0
   with tempfile.NamedTemporaryFile(bufsize=0) as newf:
