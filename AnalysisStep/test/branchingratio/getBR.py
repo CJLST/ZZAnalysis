@@ -202,6 +202,26 @@ def averageBR(productionmode, mass, spreadsheet=None):
       _.SetBranchStatus("genHEPMCweight", 1)
       _.SetBranchStatus("p_Gen_CPStoBWPropRewgt", 1)
     t.GetEntry(0)
+    """
+    Explanation of this formula:
+    The weight of the event is the weight from POWHEG * the factor from JHUGen
+    The POWHEG weight is the same for each event, except sometimes it's negative
+    |w_i| = w_POWHEG * GammaJHU(m_i) / GammaYR2(m_i)
+    multiplyweight = GammaYR3(m_base) * GammaJHU(m_i) / (GammaJHU(m_base) * |w_i| * GammaYR2(m_i))
+                   = GammaYR3(m_base) / (GammaJHU(m_base) * w_POWHEG)
+    Note this doesn't depend on i, so we can just calculate it for any event.
+
+    Then, BR_i = multiplyweight * |w_i|
+               = (GammaJHU(m_i) / GammaYR2(m_i)) * (GammaYR3(m_base) / GammaJHU(m_base))
+
+    The first term is the branching fraction in arbitrary units.  This uses YR2, which is
+    exactly what we want.  That's because POWHEG, via Passarino's CPS code, uses YR2 for
+    the total Higgs width.
+
+    The second term is to normalize to the YR3 branching fraction at m_base, which is 300 GeV.
+    Here we want to use our best knowledge of the branching fraction above the 2mt threshold,
+    which is from YR3 (YR4 only goes from 120-130 GeV).
+    """
     multiplyweight = GammaHZZ_YR3(basemass, p) * GammaHZZ_JHU(t.GenHMass) / (GammaHZZ_JHU(basemass) * abs(t.genHEPMCweight) * GammaH_YR2(t.GenHMass))
     t.GetEntry(1)
 #    print("test should be equal:", multiplyweight, GammaHZZ_YR3(basemass, p) * GammaHZZ_JHU(t.GenHMass) / (GammaHZZ_JHU(basemass) * t.genHEPMCweight * GammaH_YR2(t.GenHMass)))
