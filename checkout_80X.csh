@@ -1,10 +1,11 @@
 #!/bin/tcsh -fe
 #
 # Instructions:
-# wget -O /tmp/checkout_80X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_80X/checkout_80X.csh
+# wget -O ${TMPDIR}/checkout_80X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_80X/checkout_80X.csh
 # cd $CMSSW_BASE/src
 # cmsenv
-# source /tmp/checkout_80X.csh
+# chmod u+x ${TMPDIR}/checkout_80X.csh
+# ${TMPDIR}/checkout_80X.csh
 
 
 ############## For CMSSW_8_0_26_patch1
@@ -42,7 +43,6 @@ git clone -n https://github.com/cms-analysis/EgammaAnalysis-ElectronTools EGamma
 
 # Higgs Combination Package, Needed for the Double Crystall Ball function. 
 git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
-(cd HiggsAnalysis/CombinedLimit; git checkout 81x-root606-integration)
 
 #MELA Analytics
 git clone https://github.com/usarica/MelaAnalytics.git
@@ -51,26 +51,28 @@ git clone https://github.com/usarica/MelaAnalytics.git
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
 (cd ZZMatrixElement; git checkout -b from-v216 v2.1.6)
 # replace ZZMatrixElement/MELA/setup.sh -j 8
-pushd ${CMSSW_BASE}/src/ZZMatrixElement/MELA/COLLIER/
-  pkgname="collier-1.2"
-  pkgdir="COLLIER-1.2"
-  tarname=$pkgname".tar.gz"
-  tarweb="https://www.hepforge.org/archive/collier/"$tarname
-  libname="libcollier.so"
-  tmpdir="colliertmp"
-  wget $tarweb
-  mkdir $tmpdir
-  tar -xvzf $tarname -C $tmpdir
-  rm $tarname
-  mv $tmpdir"/"$pkgdir"/src/"* ./
-  rm -rf $tmpdir
-  make
-  mv $libname "../data/"$SCRAM_ARCH"/"$libname
-popd
-pushd ${CMSSW_BASE}/src/ZZMatrixElement/MELA/fortran/
-  make all
-  mv libjhugenmela.so ../data/${SCRAM_ARCH}/
-popd
+(                                                                 \
+  cd ${CMSSW_BASE}/src/ZZMatrixElement/MELA/COLLIER/             ;\
+  set pkgname="collier-1.2"                                      ;\
+  set pkgdir="COLLIER-1.2"                                       ;\
+  set tarname=$pkgname".tar.gz"                                  ;\
+  set tarweb="https://www.hepforge.org/archive/collier/"$tarname ;\
+  set libname="libcollier.so"                                    ;\
+  set tmpdir="colliertmp"                                        ;\
+  wget $tarweb                                                   ;\
+  mkdir $tmpdir                                                  ;\
+  tar -xvzf $tarname -C $tmpdir                                  ;\
+  rm $tarname                                                    ;\
+  mv $tmpdir"/"$pkgdir"/src/"* ./                                ;\
+  rm -rf $tmpdir                                                 ;\
+  make                                                           ;\
+  mv $libname "../data/"$SCRAM_ARCH"/"$libname                   ;\
+)
+(                                                                 \
+  cd ${CMSSW_BASE}/src/ZZMatrixElement/MELA/fortran/             ;\
+  make all                                                       ;\
+  mv libjhugenmela.so ../data/${SCRAM_ARCH}/                     ;\
+)
 
 #kinematic refitting
 #git clone https://github.com/VBF-HZZ/KinZfitter.git

@@ -7,7 +7,7 @@ At 300 GeV and above, it's taken from the weights that JHUGen writes to the LHE 
 """
 
 from __future__ import print_function
-import argparse, contextlib, csv, functools, itertools, math, numpy, os, re, subprocess, tempfile, urllib
+import argparse, contextlib, csv, itertools, math, numpy, os, re, subprocess, tempfile, urllib
 try:
   import yellowhiggs
 except ImportError:
@@ -16,12 +16,12 @@ except ImportError:
 if os.path.exists("src") and not os.path.exists("src/.gitignore"):
   with open("src/.gitignore", "w") as f:
     f.write("yellowhiggs\n.gitignore\npip-delete-this-directory.txt")
+from utilities import cache, cd, CJLSTproduction, TFile
 
 basemass = 300
 oldfilterefficiencyZH = 0.15038
 filterefficiencyZH = 0.1483
 filterefficiencyttH = 0.1544
-CJLSTproduction = "180121"
 
 YR4data_BR_4l = {
   120: 0.0001659,
@@ -39,45 +39,17 @@ YR4data_BR_ZZ = {
   130: 0.03955,
 }
 
-@contextlib.contextmanager
-def cd(newdir):
-  """http://stackoverflow.com/a/24176022/5228524"""
-  prevdir = os.getcwd()
-  os.chdir(os.path.expanduser(newdir))
-  try:
-    yield
-  finally:
-    os.chdir(prevdir)
-
-class TFile(object):
-  def __init__(self, *args, **kwargs):
-    self.args, self.kwargs = args, kwargs
-  def __enter__(self):
-    import ROOT
-    self.__tfile = ROOT.TFile.Open(*self.args, **self.kwargs)
-    if not self.__tfile or self.__tfile.IsZombie(): return None
-    return self.__tfile
-  def __exit__(self, *err):
-    if self.__tfile:
-      self.__tfile.Close()
-
-def cache(function):
-  cache = {}
-  @functools.wraps(function)
-  def newfunction(*args, **kwargs):
-    try:
-      return cache[args, tuple(sorted(kwargs.iteritems()))]
-    except TypeError:
-      print(args, tuple(sorted(kwargs.iteritems())))
-      raise
-    except KeyError:
-      cache[args, tuple(sorted(kwargs.iteritems()))] = function(*args, **kwargs)
-      return newfunction(*args, **kwargs)
-  return newfunction
+def BR_fromoldspreadsheet(p, m):
+  with contextlib.closing(urllib.urlopen("https://raw.githubusercontent.com/CJLST/ZZAnalysis/87bce99aa845936454ce302a70095797b81c194c/AnalysisStep/test/prod/samples_2016_MC.csv")) as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+      if re.match("#*"+p+str(m)+"$", row["identifier"]):
+        return float(row["BR=1"])
+  assert False, (p, m)
 
 def BR_YR3(mass, productionmode):
   if productionmode in ("ZH", "ttH") and mass < 300:
-    result = BR_fromspreadsheet(productionmode, mass)
+    result = BR_fromoldspreadsheet(productionmode, mass)
     if 120 <= m <= 130:
       result *= YR4data_BR_ZZ[m] / yellowhiggs.br(m, "ZZ")[0]
     if productionmode == "ZH":
@@ -181,36 +153,74 @@ def GammaH_YR2(mass):
   with cd("BigGamma"):
     return float(subprocess.check_output(["./BigGamma", str(mass)]))
 
-def averageBR(productionmode, mass, spreadsheet=None):
-  production = CJLSTproduction
+def averageBR(productionmode, mass, year):
+  production = CJLSTproduction[year]
   if productionmode == "VBF":
     productionmode = "VBFH"
   folder = "{}{:d}".format(productionmode, mass)
 
   if not os.path.exists("/data3/Higgs"): raise RuntimeError("Have to run this on lxcms03")
 
+  """
+  for 2017 MC, genHEPMCweight is reweighted to the NLO PDF
+  when extracting the JHUGen weight from the sample, which is the ratio
+   of the final weight to the POWHEG-only weight, we have to use
+   the weight for the NNLO PDF, since otherwise this ratio will
+   also contain the reweighting factor.
+  However, when taking a weighted average over the sample, we have to use
+   the NLO weight.
+  """
+  genHEPMCweight = {
+    2016: "genHEPMCweight",
+    2017: "genHEPMCweight_NNLO",
+  }[year]
+
   with TFile("/data3/Higgs/"+production+"/"+folder+"/ZZ4lAnalysis.root") as f:
     if not f: return float("nan"), float("nan")
-    t = f.ZZTree.Get("candTree")
-    failedt = f.ZZTree.Get("candTree_failed")
+    try:
+      t = f.ZZTree.Get("candTree")
+      failedt = f.ZZTree.Get("candTree_failed")
+    except AttributeError:
+      t = failedt = None
     if not failedt: failedt = []
     if not t and not failedt: return float("nan"), float("nan")
     for _ in t, failedt:
       if not _: continue
       _.SetBranchStatus("*", 0)
       _.SetBranchStatus("GenHMass", 1)
+      _.SetBranchStatus(genHEPMCweight, 1)
       _.SetBranchStatus("genHEPMCweight", 1)
       _.SetBranchStatus("p_Gen_CPStoBWPropRewgt", 1)
     t.GetEntry(0)
-    multiplyweight = GammaHZZ_YR3(basemass, p) * GammaHZZ_JHU(t.GenHMass) / (GammaHZZ_JHU(basemass) * abs(t.genHEPMCweight) * GammaH_YR2(t.GenHMass))
+    """
+    Explanation of this formula:
+    The weight of the event is the weight from POWHEG * the factor from JHUGen
+    The POWHEG weight is the same for each event, except sometimes it's negative
+    |w_i| = w_POWHEG * GammaJHU(m_i) / GammaYR2(m_i)
+    multiplyweight = GammaYR3(m_base) * GammaJHU(m_i) / (GammaJHU(m_base) * |w_i| * GammaYR2(m_i))
+                   = GammaYR3(m_base) / (GammaJHU(m_base) * w_POWHEG)
+    Note this doesn't depend on i, so we can just calculate it for any event.
+
+    Then, BR_i = multiplyweight * |w_i|
+               = (GammaJHU(m_i) / GammaYR2(m_i)) * (GammaYR3(m_base) / GammaJHU(m_base))
+
+    The first term is the branching fraction in arbitrary units.  This uses YR2, which is
+    exactly what we want.  That's because POWHEG, via Passarino's CPS code, uses YR2 for
+    the total Higgs width.
+
+    The second term is to normalize to the YR3 branching fraction at m_base, which is 300 GeV.
+    Here we want to use our best knowledge of the branching fraction above the 2mt threshold,
+    which is from YR3 (YR4 only goes from 120-130 GeV).
+    """
+    multiplyweight = GammaHZZ_YR3(basemass, p) * GammaHZZ_JHU(t.GenHMass) / (GammaHZZ_JHU(basemass) * abs(getattr(t, genHEPMCweight)) * GammaH_YR2(t.GenHMass))
     t.GetEntry(1)
-#    print("test should be equal:", multiplyweight, GammaHZZ_YR3(basemass, p) * GammaHZZ_JHU(t.GenHMass) / (GammaHZZ_JHU(basemass) * t.genHEPMCweight * GammaH_YR2(t.GenHMass)))
+#    print("test should be equal:", multiplyweight, GammaHZZ_YR3(basemass, p) * GammaHZZ_JHU(t.GenHMass) / (GammaHZZ_JHU(basemass) * getattr(t, genHEPMCweight) * GammaH_YR2(t.GenHMass)))
 
     bothtrees = itertools.chain(t, failedt)
 #    bothtrees = itertools.islice(bothtrees, 5)
 
     BR, weights, weights_rwttoBW = \
-      zip(*([multiplyweight * abs(entry.genHEPMCweight), sgn(entry.genHEPMCweight), sgn(entry.genHEPMCweight)*entry.p_Gen_CPStoBWPropRewgt if productionmode not in ("ZH", "WplusH", "WminusH") else float("nan")] for entry in bothtrees))
+      zip(*([multiplyweight * abs(getattr(entry, genHEPMCweight)), entry.genHEPMCweight, entry.genHEPMCweight*entry.p_Gen_CPStoBWPropRewgt if productionmode not in ("ZH", "WplusH", "WminusH") else float("nan")] for entry in bothtrees))
 
     return numpy.average(BR, weights=weights), numpy.average(BR, weights=weights_rwttoBW)
 
@@ -220,11 +230,11 @@ def getmasses(productionmode):
   if productionmode == "ttH":
     return 115, 120, 124, 125, 126, 130, 135, 140, 145
 
-def update_spreadsheet(filename, p, m, BR):
+def update_spreadsheet(filename, p, m, year, BR):
   if p == "VBF": p = "VBFH"
-  if (p, m) == ("ggH", 125): requirednmatches = 11
+  if (p, m) == ("ggH", 125): requirednmatches = 11 - (year == 2017)
   elif (p, m) == ("ggH", 300): requirednmatches = 6
-  elif m == 125: requirednmatches = 5
+  elif m == 125: requirednmatches = 5 - (year == 2017)
   else: requirednmatches = 1
   nmatches = 0
   with tempfile.NamedTemporaryFile(bufsize=0) as newf:
@@ -243,13 +253,19 @@ def update_spreadsheet(filename, p, m, BR):
           elif re.match("#*"+p+str(m)+"[_scaletuneupdownminloHJJNNLOPS]*", row["identifier"]):
             BRforthisrow = BR
             if "_scale" in row["identifier"] or "_tune" in row["identifier"]:
-              if p == "ZH": BRforthisrow /= filterefficiencyZH
-              if p == "ttH": BRforthisrow /= filterefficiencyttH
+              if year == 2016:
+                if p == "ZH": BRforthisrow /= filterefficiencyZH
+                if p == "ttH": BRforthisrow /= filterefficiencyttH
+              elif year == 2017:
+                pass
+              else:
+                assert False, year
             nmatches += 1
             regex = "(GENBR=)[0-9.eE+-]+(;)"
             match = re.search(regex, row["::variables"])
             assert match, row["::variables"]
             row["::variables"] = re.sub(regex, r"\g<1>{:g}\g<2>".format(BRforthisrow), row["::variables"])
+
             if p in ("ZH", "ttH") and int(m) >= 300:
               row["BR=1"] = BR_YR3(min(m, 1000), p)
             elif p in ("ZH", "ttH"):
@@ -265,19 +281,13 @@ def update_spreadsheet(filename, p, m, BR):
     with open(filename, "w") as finalf, open(newf.name) as newf2:
       finalf.write(newf2.read().replace('\r\n', '\n'))
 
-def BR_fromspreadsheet(p, m):
-  with contextlib.closing(urllib.urlopen("https://raw.githubusercontent.com/CJLST/ZZAnalysis/87bce99aa845936454ce302a70095797b81c194c/AnalysisStep/test/prod/samples_2016_MC.csv")) as f:
-    reader = csv.DictReader(f)
-    for row in reader:
-      if re.match("#*"+p+str(m), row["identifier"]):
-        return float(row["BR=1"])
-
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
   parser.add_argument("-p", action="append", choices="ggH VBF ZH WplusH WminusH ttH".split())
   parser.add_argument("--minimum-mass", type=float, default=0)
   parser.add_argument("--maximum-mass", type=float, default=float("inf"))
-  parser.add_argument("--update-spreadsheet")
+  parser.add_argument("--update-spreadsheet", action="store_true")
+  parser.add_argument("year", type=int)
   args = parser.parse_args()
 
   line = "{:3} {:4d} {:8.4%}"
@@ -288,9 +298,12 @@ if __name__ == "__main__":
       if m < 300:
         BR = BR_YR3(m, p)
       else:
-        BR = averageBR(p, m)[0]
+        BR = averageBR(p, m, args.year)[0]
 
       print(line.format(p, m, BR))
       if numpy.isnan(BR): BR = 999
       if args.update_spreadsheet:
-        update_spreadsheet(args.update_spreadsheet, p, m, BR)
+        update_spreadsheet(
+          os.path.join(os.path.dirname(__file__), "../prod/samples_{}_MC.csv".format(args.year)),
+          p, m, args.year, BR
+        )
