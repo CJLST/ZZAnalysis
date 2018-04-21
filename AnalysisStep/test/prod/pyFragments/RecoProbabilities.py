@@ -81,6 +81,12 @@ AJetsProdProbabilities_SpinZero_JHUGen_JECNominal = [
    "Name:JJVBF_SIG_ghv1_1_JHUGen_JECNominal_BestDJJ Copy:JJVBF_SIG_ghv1_1_JHUGen_JECNominal Options:MaxNumerator=JJVBF_SIG_ghv1_1_JHUGen_JECNominal;MaxDenominator=JJQCD_SIG_ghg2_1_JHUGen_JECNominal",
    "Name:JJQCD_SIG_ghg2_1_JHUGen_JECNominal_BestDJJ Copy:JJQCD_SIG_ghg2_1_JHUGen_JECNominal Options:MaxNumerator=JJVBF_SIG_ghv1_1_JHUGen_JECNominal;MaxDenominator=JJQCD_SIG_ghg2_1_JHUGen_JECNominal",
 
+   # JJQCD with QQ initial state
+   "Name:JJQCD_InitialQQ_SIG_ghg2_1_JHUGen_JECNominal Alias:<Name> Process:HSMHiggs Production:JJQCD MatrixElement:JHUGen Cluster:J2JECNominal ForceIncomingFlavors:-21,-21 DefaultME:-1 Options:AddPConst=1",
+   "Name:JJQCD_InitialQQ_SIG_ghg4_1_JHUGen_JECNominal Alias:<Name> Process:H0minus Production:JJQCD MatrixElement:JHUGen Cluster:J2JECNominal ForceIncomingFlavors:-21,-21 DefaultME:-1",
+   "Name:JJQCD_InitialQQ_SIG_ghg2_1_ghg4_1_JHUGen_JECNominal Process:SelfDefine_spin0 Production:JJQCD MatrixElement:JHUGen Cluster:J2JECNominal ForceIncomingFlavors:-21,-21 Couplings:ghg2=1,0;ghg4=1,0 Options:SubtractP=JJQCD_SIG_ghg2_1_JHUGen_JECNominal,JJQCD_SIG_ghg4_1_JHUGen_JECNominal DefaultME:-1",
+   #"Name:JJQCD_InitialQQ_SIG_ghg2_1_ghg4_i_JHUGen_JECNominal Process:SelfDefine_spin0 Production:JJQCD MatrixElement:JHUGen Cluster:J2JECNominal ForceIncomingFlavors:-21,-21 Couplings:ghg2=1,0;ghg4=0,1 Options:SubtractP=JJQCD_SIG_ghg2_1_JHUGen_JECNominal,JJQCD_SIG_ghg4_1_JHUGen_JECNominal DefaultME:-1",
+
    # Hadronic ZH
    "Name:HadZH_SIG_ghz1_1_JHUGen_JECNominal Alias:<Name> Process:HSMHiggs Production:Had_ZH MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1 Options:AddPConst=1",
    "Name:HadZH_SIG_ghz1prime2_1E4_JHUGen_JECNominal Alias:<Name> Process:SelfDefine_spin0 Production:Had_ZH MatrixElement:JHUGen Cluster:J2JECNominal Couplings:ghz1_prime2=10000,0 DefaultME:-1",
