@@ -8,10 +8,13 @@ def averageNLOweight(identifier, year):
   assert year == 2017
 
   production = CJLSTproduction[year]
+  #production = "180416"
 
-  if not os.path.exists("/data3/Higgs"): raise RuntimeError("Have to run this on lxcms03")
+  datapath="/data3/Higgs/"
+  #datapath="/eos/user/u/usarica/CJLST/4l/"
+  if not os.path.exists(datapath): raise RuntimeError("Have to run this on lxcms03")
 
-  with TFile("/data3/Higgs/"+production+"/"+identifier+"/ZZ4lAnalysis.root") as f:
+  with TFile(datapath+production+"/"+identifier+"/ZZ4lAnalysis.root") as f:
     if not f: return float("nan")
     try:
       t = f.ZZTree.Get("candTree")
