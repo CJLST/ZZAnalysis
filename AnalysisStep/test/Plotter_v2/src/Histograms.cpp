@@ -117,6 +117,26 @@ Histograms::Histograms( double lumi, string blinding )
             _histo_labels = ";" + Variables::KD_M4L118130().var_X_label + ";" + Variables::KD_M4L118130().var_Y_label;
             histos_1D[Settings::KD_M4L118130][i_fs][i_cat][i_proc] = new TH1F(_histo_name.c_str(), _histo_labels.c_str(), Variables::KD_M4L118130().var_N_bin, 
                                                                                        Variables::KD_M4L118130().var_min, Variables::KD_M4L118130().var_max);
+				
+            _histo_name = "DVBFDEC" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
+            _histo_labels = ";" + Variables::DVBFDEC().var_X_label + ";" + Variables::DVBFDEC().var_Y_label;
+            histos_1D[Settings::DVBFDEC][i_fs][i_cat][i_proc] = new TH1F(_histo_name.c_str(), _histo_labels.c_str(), Variables::DVBFDEC().var_N_bin, Variables::DVBFDEC().var_min,
+                                                                             Variables::DVBFDEC().var_max);
+				
+            _histo_name = "DVBFDEC_M4L118130" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
+            _histo_labels = ";" + Variables::DVBFDEC_M4L118130().var_X_label + ";" + Variables::DVBFDEC_M4L118130().var_Y_label;
+            histos_1D[Settings::DVBFDEC_M4L118130][i_fs][i_cat][i_proc] = new TH1F(_histo_name.c_str(), _histo_labels.c_str(), Variables::DVBFDEC_M4L118130().var_N_bin,
+                                                                                       Variables::DVBFDEC_M4L118130().var_min, Variables::DVBFDEC_M4L118130().var_max);
+				
+            _histo_name = "DVHDEC" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
+            _histo_labels = ";" + Variables::DVHDEC().var_X_label + ";" + Variables::DVHDEC().var_Y_label;
+            histos_1D[Settings::DVHDEC][i_fs][i_cat][i_proc] = new TH1F(_histo_name.c_str(), _histo_labels.c_str(), Variables::DVHDEC().var_N_bin, Variables::DVHDEC().var_min,
+                                                                             Variables::DVHDEC().var_max);
+				
+            _histo_name = "DVHDEC_M4L118130" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
+            _histo_labels = ";" + Variables::DVHDEC_M4L118130().var_X_label + ";" + Variables::DVHDEC_M4L118130().var_Y_label;
+            histos_1D[Settings::DVHDEC_M4L118130][i_fs][i_cat][i_proc] = new TH1F(_histo_name.c_str(), _histo_labels.c_str(), Variables::DVHDEC_M4L118130().var_N_bin,
+                                                                                       Variables::DVHDEC_M4L118130().var_min, Variables::DVHDEC_M4L118130().var_max);
                
             _histo_name = "D1jet" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
             _histo_labels = ";" + Variables::D1jet().var_X_label + ";" + Variables::D1jet().var_Y_label;
@@ -378,6 +398,22 @@ Histograms::Histograms( double lumi, string blinding )
          _histo_name = "KD_M4L118130_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
          histos_1D_ZX[Settings::KD_M4L118130][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::KD_M4L118130().var_N_bin,
                                                                       Variables::KD_M4L118130().var_min, Variables::KD_M4L118130().var_max);
+			
+         _histo_name = "DVBFDEC_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+			histos_1D_ZX[Settings::DVBFDEC][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::DVBFDEC().var_N_bin, Variables::DVBFDEC().var_min,
+                                                                             Variables::DVBFDEC().var_max);
+			
+			_histo_name = "DVBFDEC_M4L118130_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+			histos_1D_ZX[Settings::DVBFDEC_M4L118130][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::DVBFDEC_M4L118130().var_N_bin,
+                                                                                       Variables::DVBFDEC_M4L118130().var_min, Variables::DVBFDEC_M4L118130().var_max);
+			
+			_histo_name = "DVHDEC_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+			histos_1D_ZX[Settings::DVHDEC][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::DVHDEC().var_N_bin, Variables::DVHDEC().var_min,
+                                                                             Variables::DVHDEC().var_max);
+			
+			_histo_name = "DVHDEC_M4L118130_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+			histos_1D_ZX[Settings::DVHDEC_M4L118130][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::DVHDEC_M4L118130().var_N_bin,
+                                                                                       Variables::DVHDEC_M4L118130().var_min, Variables::DVHDEC_M4L118130().var_max);
          
          _histo_name = "D1jet_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
          histos_1D_ZX[Settings::D1jet][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::D1jet().var_N_bin,
@@ -583,8 +619,8 @@ Histograms::Histograms( double lumi)
 	_s_production_mode.push_back("ZH_had");
    _s_production_mode.push_back("ttH_lep");
    _s_production_mode.push_back("ttH_had");
-   _s_production_mode.push_back("tqH");
    _s_production_mode.push_back("bbH");
+   _s_production_mode.push_back("tqH");
    _s_production_mode.push_back("qqZZ");
    _s_production_mode.push_back("ggZZ");
    
@@ -716,6 +752,54 @@ void Histograms::FillKDZX( float M4l, float KD, float weight, int fs, int cat )
    if( M4l >= Variables::KD_M4L118130().cut_d && M4l <= Variables::KD_M4L118130().cut_u)
    {
       histos_1D_ZX[Settings::KD_M4L118130][fs][cat]->Fill(KD, weight);
+   }
+}
+//====================================================================
+
+//====================================================================================
+void Histograms::FillDVBFDEC( float M4l, float DVBFDEC, float weight, int fs, int cat, int proc )
+{
+   histos_1D[Settings::DVBFDEC][fs][cat][proc]->Fill(DVBFDEC, (proc == Settings::Data) ? 1. : weight);
+	
+   if( M4l >= Variables::DVBFDEC_M4L118130().cut_d && M4l <= Variables::DVBFDEC_M4L118130().cut_u)
+   {
+      histos_1D[Settings::DVBFDEC_M4L118130][fs][cat][proc]->Fill(DVBFDEC, (proc == Settings::Data) ? 1. : weight);
+   }
+}
+//====================================================================================
+
+//====================================================================
+void Histograms::FillDVBFDECZX( float M4l, float DVBFDEC, float weight, int fs, int cat )
+{
+   histos_1D_ZX[Settings::DVBFDEC][fs][cat]->Fill(DVBFDEC, weight);
+	
+   if( M4l >= Variables::DVBFDEC_M4L118130().cut_d && M4l <= Variables::DVBFDEC_M4L118130().cut_u)
+   {
+      histos_1D_ZX[Settings::DVBFDEC_M4L118130][fs][cat]->Fill(DVBFDEC, weight);
+   }
+}
+//====================================================================
+
+//====================================================================================
+void Histograms::FillDVHDEC( float M4l, float DVHDEC, float weight, int fs, int cat, int proc )
+{
+   histos_1D[Settings::DVHDEC][fs][cat][proc]->Fill(DVHDEC, (proc == Settings::Data) ? 1. : weight);
+	
+   if( M4l >= Variables::DVHDEC_M4L118130().cut_d && M4l <= Variables::DVHDEC_M4L118130().cut_u)
+   {
+      histos_1D[Settings::DVHDEC_M4L118130][fs][cat][proc]->Fill(DVHDEC, (proc == Settings::Data) ? 1. : weight);
+   }
+}
+//====================================================================================
+
+//====================================================================
+void Histograms::FillDVHDECZX( float M4l, float DVHDEC, float weight, int fs, int cat )
+{
+   histos_1D_ZX[Settings::DVHDEC][fs][cat]->Fill(DVHDEC, weight);
+	
+   if( M4l >= Variables::DVHDEC_M4L118130().cut_d && M4l <= Variables::DVHDEC_M4L118130().cut_u)
+   {
+      histos_1D_ZX[Settings::DVHDEC_M4L118130][fs][cat]->Fill(DVHDEC, weight);
    }
 }
 //====================================================================
@@ -2478,7 +2562,7 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
    
    TPaveText *text;
    
-   if ( plot_index == Settings::D1jet_M4L118130 || plot_index == Settings::KD_M4L118130 || plot_index == Settings::MZ1_M4L118130 )
+   if ( plot_index == Settings::D1jet_M4L118130 || plot_index == Settings::KD_M4L118130 || plot_index == Settings::MZ1_M4L118130 || plot_index == Settings::DVBFDEC_M4L118130 || plot_index == Settings::DVHDEC_M4L118130 )
    {
       text = CreateCutText("right top", "118 < m_{4#font[12]{l}} < 130 GeV");
       text->Draw();
@@ -3998,18 +4082,22 @@ int Histograms::SetPlotName( TString variable_name )
    //=============
    // KD
    //=============
-   else if ( variable_name == "KD" )              return Settings::KD;
-   else if ( variable_name == "KD_M4L118130" )    return Settings::KD_M4L118130;
-   else if ( variable_name == "D1jet" )           return Settings::D1jet;
-   else if ( variable_name == "D1jet_M4L118130" ) return Settings::D1jet_M4L118130;
-   else if ( variable_name == "D2jet" )           return Settings::D2jet;
-   else if ( variable_name == "D2jet_M4L118130" ) return Settings::D2jet_M4L118130;
-   else if ( variable_name == "DWH" )             return Settings::DWH;
-   else if ( variable_name == "DWH_M4L118130" )   return Settings::DWH_M4L118130;
-   else if ( variable_name == "DZH" )             return Settings::DZH;
-   else if ( variable_name == "DZH_M4L118130" )   return Settings::DZH_M4L118130;
-   else if ( variable_name == "DVH" )             return Settings::DVH;
-   else if ( variable_name == "DVH_M4L118130" )   return Settings::DVH_M4L118130;
+   else if ( variable_name == "KD" )                return Settings::KD;
+   else if ( variable_name == "KD_M4L118130" )      return Settings::KD_M4L118130;
+   else if ( variable_name == "DVBFDEC" )           return Settings::DVBFDEC;
+   else if ( variable_name == "DVBFDEC_M4L118130" ) return Settings::DVBFDEC_M4L118130;
+   else if ( variable_name == "DVHDEC" )            return Settings::DVHDEC;
+   else if ( variable_name == "DVHDEC_M4L118130" )  return Settings::DVHDEC_M4L118130;
+   else if ( variable_name == "D1jet" )             return Settings::D1jet;
+   else if ( variable_name == "D1jet_M4L118130" )   return Settings::D1jet_M4L118130;
+   else if ( variable_name == "D2jet" )             return Settings::D2jet;
+   else if ( variable_name == "D2jet_M4L118130" )   return Settings::D2jet_M4L118130;
+   else if ( variable_name == "DWH" )               return Settings::DWH;
+   else if ( variable_name == "DWH_M4L118130" )     return Settings::DWH_M4L118130;
+   else if ( variable_name == "DZH" )               return Settings::DZH;
+   else if ( variable_name == "DZH_M4L118130" )     return Settings::DZH_M4L118130;
+   else if ( variable_name == "DVH" )               return Settings::DVH;
+   else if ( variable_name == "DVH_M4L118130" )     return Settings::DVH_M4L118130;
    
    //=============
    // MZ1vsMZ2
@@ -4085,6 +4173,10 @@ bool Histograms::GetVarLogX ( TString variable_name )
    //=============
    else if (variable_name == "KD")               return bool(Variables::KD().var_log_x);
    else if (variable_name == "KD_M4L118130")     return bool(Variables::KD_M4L118130().var_log_x);
+   else if (variable_name == "DVBFDEC")          return bool(Variables::DVBFDEC().var_log_x);
+   else if (variable_name == "DVBFDEC_M4L118130")return bool(Variables::DVBFDEC_M4L118130().var_log_x);
+   else if (variable_name == "DVHDEC")           return bool(Variables::DVHDEC().var_log_x);
+   else if (variable_name == "DVHDEC_M4L118130") return bool(Variables::DVHDEC_M4L118130().var_log_x);
    else if (variable_name == "D1jet")            return bool(Variables::D1jet().var_log_x);
    else if (variable_name == "D1jet_M4L118130")  return bool(Variables::D1jet_M4L118130().var_log_x);
    else if (variable_name == "D2jet")            return bool(Variables::D2jet().var_log_x);
@@ -4169,6 +4261,10 @@ bool Histograms::GetVarLogY ( TString variable_name )
    //=============
    else if (variable_name == "KD")               return bool(Variables::KD().var_log_y);
    else if (variable_name == "KD_M4L118130")     return bool(Variables::KD_M4L118130().var_log_y);
+   else if (variable_name == "DVBFDEC")          return bool(Variables::DVBFDEC().var_log_y);
+   else if (variable_name == "DVBFDEC_M4L118130")return bool(Variables::DVBFDEC_M4L118130().var_log_y);
+   else if (variable_name == "DVHDEC")           return bool(Variables::DVHDEC().var_log_y);
+   else if (variable_name == "DVHDEC_M4L118130") return bool(Variables::DVHDEC_M4L118130().var_log_y);
    else if (variable_name == "D1jet")            return bool(Variables::D1jet().var_log_y);
    else if (variable_name == "D1jet_M4L118130")  return bool(Variables::D1jet_M4L118130().var_log_y);
    else if (variable_name == "D2jet")            return bool(Variables::D2jet().var_log_y);

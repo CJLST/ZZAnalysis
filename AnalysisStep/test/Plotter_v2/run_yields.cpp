@@ -109,7 +109,7 @@ int main( int argc, char *argv[] )
    yields->MakeHistograms(ZH120);
    yields->MakeHistograms(ZH124);
    yields->MakeHistograms(ZH125);
-//   yields->MakeHistograms(ZH126);
+   yields->MakeHistograms(ZH126);
    yields->MakeHistograms(ZH130);
 
    yields->MakeHistograms(WpH120);
@@ -141,7 +141,7 @@ int main( int argc, char *argv[] )
    yields->MakeHistograms(ZZTo4l);
    yields->MakeHistograms(ggZZ4e);
    yields->MakeHistograms(ggZZ4mu);
-//   yields->MakeHistograms(ggZZ4tau);
+   yields->MakeHistograms(ggZZ4tau);
    yields->MakeHistograms(ggZZ2e2mu);
    yields->MakeHistograms(ggZZ2e2tau);
    yields->MakeHistograms(ggZZ2mu2tau);
@@ -156,11 +156,11 @@ int main( int argc, char *argv[] )
  
    yields->GetHistos("Yields");
    yields->Calculate_SS_ZX_Yields( Data, FakeRates);
-//   yields->Print("Yields");
+   yields->Print("Yields");
    yields->Print("Yields",  70., 110.);
 
    yields->Print("Yields", 150., 300.);
-	
+
    yields->PrintLatexTables("Yields", 118., 130.);
    yields->FillGraphs("Yields", 105., 140., "Q");
    yields->PrepareYamlFiles("Yields", "13", 105., 140.);

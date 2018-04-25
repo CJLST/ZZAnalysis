@@ -135,6 +135,49 @@ void Plotter::MakeHistograms( TString input_file_name )
       
       // Calculate kinematic discriminants
       KD = p_GG_SIG_ghg2_1_ghz1_1_JHUGen / ( p_GG_SIG_ghg2_1_ghz1_1_JHUGen + p_QQB_BKG_MCFM*getDbkgkinConstant(Z1Flav*Z2Flav,ZZMass) );
+		
+      DVBFDEC = (nCleanedJetsPt30>=2) ? D_bkg_VBFdec( p_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal,
+     																	p_HadZH_S_SIG_ghz1_1_MCFM_JECNominal,
+     																	p_HadWH_S_SIG_ghw1_1_MCFM_JECNominal,
+     																	p_JJVBF_BKG_MCFM_JECNominal,
+     																	p_HadZH_BKG_MCFM_JECNominal,
+																		p_HadWH_BKG_MCFM_JECNominal,
+     																	p_JJQCD_BKG_MCFM_JECNominal,
+																		p_HadZH_mavjj_JECNominal,
+     																	p_HadZH_mavjj_true_JECNominal,
+     																	p_HadWH_mavjj_JECNominal,
+     																	p_HadWH_mavjj_true_JECNominal,
+     																	pConst_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal,
+     																	pConst_HadZH_S_SIG_ghz1_1_MCFM_JECNominal,
+     																	pConst_HadWH_S_SIG_ghw1_1_MCFM_JECNominal,
+     																	pConst_JJVBF_BKG_MCFM_JECNominal,
+     																	pConst_HadZH_BKG_MCFM_JECNominal,
+     																	pConst_HadWH_BKG_MCFM_JECNominal,
+     																	pConst_JJQCD_BKG_MCFM_JECNominal,
+	    																Z1Flav*Z2Flav,
+     																	ZZMass) : -2;
+		
+      DVHDEC = (nCleanedJetsPt30>=2) ?   D_bkg_VHdec( p_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal,
+     																	p_HadZH_S_SIG_ghz1_1_MCFM_JECNominal,
+     																	p_HadWH_S_SIG_ghw1_1_MCFM_JECNominal,
+     																	p_JJVBF_BKG_MCFM_JECNominal,
+     																	p_HadZH_BKG_MCFM_JECNominal,
+																		p_HadWH_BKG_MCFM_JECNominal,
+     																	p_JJQCD_BKG_MCFM_JECNominal,
+																		p_HadZH_mavjj_JECNominal,
+     																	p_HadZH_mavjj_true_JECNominal,
+     																	p_HadWH_mavjj_JECNominal,
+     																	p_HadWH_mavjj_true_JECNominal,
+     																	pConst_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal,
+     																	pConst_HadZH_S_SIG_ghz1_1_MCFM_JECNominal,
+     																	pConst_HadWH_S_SIG_ghw1_1_MCFM_JECNominal,
+     																	pConst_JJVBF_BKG_MCFM_JECNominal,
+     																	pConst_HadZH_BKG_MCFM_JECNominal,
+     																	pConst_HadWH_BKG_MCFM_JECNominal,
+     																	pConst_JJQCD_BKG_MCFM_JECNominal,
+	    																Z1Flav*Z2Flav,
+     																	ZZMass) : -2;
+		
       D2jet = ( nCleanedJetsPt30 >= 2)  ? DVBF2j_ME(p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
       D1jet = ( nCleanedJetsPt30 == 1 ) ? DVBF1j_ME(p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
       DWH =   ( nCleanedJetsPt30 >= 2 ) ? DWHh_ME(p_HadWH_SIG_ghw1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_HadWH_mavjj_JECNominal, p_HadWH_mavjj_true_JECNominal, ZZMass) : -2;
@@ -184,6 +227,8 @@ void Plotter::MakeHistograms( TString input_file_name )
       if ( blind(ZZMass) )
       {
          blinded_histos->FillKD( ZZMass, KD, _event_weight, _current_final_state, _current_category, _current_process );
+         if ( nCleanedJetsPt30 >=2 ) blinded_histos->FillDVBFDEC( ZZMass, DVBFDEC, _event_weight, _current_final_state, _current_category, _current_process );
+         if ( nCleanedJetsPt30 >=2 ) blinded_histos->FillDVHDEC( ZZMass, DVHDEC, _event_weight, _current_final_state, _current_category, _current_process );
          if ( nCleanedJetsPt30 ==1 ) blinded_histos->FillD1jet( ZZMass, D1jet, _event_weight, _current_final_state, _current_category, _current_process );
          if ( nCleanedJetsPt30 >=2 ) blinded_histos->FillD2jet( ZZMass, D2jet, _event_weight, _current_final_state, _current_category, _current_process );
          if ( nCleanedJetsPt30 >=2 ) blinded_histos->FillDWH( ZZMass, DWH, _event_weight, _current_final_state, _current_category, _current_process );
@@ -192,7 +237,8 @@ void Plotter::MakeHistograms( TString input_file_name )
       }
       
       unblinded_histos->FillKD( ZZMass, KD, _event_weight, _current_final_state, _current_category, _current_process );
-      
+		if ( nCleanedJetsPt30 >=2 ) unblinded_histos->FillDVBFDEC( ZZMass, DVBFDEC, _event_weight, _current_final_state, _current_category, _current_process );
+		if ( nCleanedJetsPt30 >=2 ) unblinded_histos->FillDVHDEC( ZZMass, DVHDEC, _event_weight, _current_final_state, _current_category, _current_process );
       if ( nCleanedJetsPt30 ==1 ) unblinded_histos->FillD1jet( ZZMass, D1jet, _event_weight, _current_final_state, _current_category, _current_process );
       if ( nCleanedJetsPt30 >=2 ) unblinded_histos->FillD2jet( ZZMass, D2jet, _event_weight, _current_final_state, _current_category, _current_process );
       if ( nCleanedJetsPt30 >=2 ) unblinded_histos->FillDWH( ZZMass, DWH, _event_weight, _current_final_state, _current_category, _current_process );
@@ -353,6 +399,49 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
       
       // Calculate kinematic discriminants
       KD = p_GG_SIG_ghg2_1_ghz1_1_JHUGen / ( p_GG_SIG_ghg2_1_ghz1_1_JHUGen + p_QQB_BKG_MCFM*getDbkgkinConstant(Z1Flav*Z2Flav,ZZMass) );
+		
+      DVBFDEC = (nCleanedJetsPt30>=2) ? D_bkg_VBFdec( p_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal,
+     																	p_HadZH_S_SIG_ghz1_1_MCFM_JECNominal,
+     																	p_HadWH_S_SIG_ghw1_1_MCFM_JECNominal,
+     																	p_JJVBF_BKG_MCFM_JECNominal,
+     																	p_HadZH_BKG_MCFM_JECNominal,
+																		p_HadWH_BKG_MCFM_JECNominal,
+     																	p_JJQCD_BKG_MCFM_JECNominal,
+																		p_HadZH_mavjj_JECNominal,
+     																	p_HadZH_mavjj_true_JECNominal,
+     																	p_HadWH_mavjj_JECNominal,
+     																	p_HadWH_mavjj_true_JECNominal,
+     																	pConst_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal,
+     																	pConst_HadZH_S_SIG_ghz1_1_MCFM_JECNominal,
+     																	pConst_HadWH_S_SIG_ghw1_1_MCFM_JECNominal,
+     																	pConst_JJVBF_BKG_MCFM_JECNominal,
+     																	pConst_HadZH_BKG_MCFM_JECNominal,
+     																	pConst_HadWH_BKG_MCFM_JECNominal,
+     																	pConst_JJQCD_BKG_MCFM_JECNominal,
+	    																Z1Flav*Z2Flav,
+     																	ZZMass) : -2;
+		
+      DVHDEC = (nCleanedJetsPt30>=2) ?   D_bkg_VHdec( p_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal,
+     																	p_HadZH_S_SIG_ghz1_1_MCFM_JECNominal,
+     																	p_HadWH_S_SIG_ghw1_1_MCFM_JECNominal,
+     																	p_JJVBF_BKG_MCFM_JECNominal,
+     																	p_HadZH_BKG_MCFM_JECNominal,
+																		p_HadWH_BKG_MCFM_JECNominal,
+     																	p_JJQCD_BKG_MCFM_JECNominal,
+																		p_HadZH_mavjj_JECNominal,
+     																	p_HadZH_mavjj_true_JECNominal,
+     																	p_HadWH_mavjj_JECNominal,
+     																	p_HadWH_mavjj_true_JECNominal,
+     																	pConst_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal,
+     																	pConst_HadZH_S_SIG_ghz1_1_MCFM_JECNominal,
+     																	pConst_HadWH_S_SIG_ghw1_1_MCFM_JECNominal,
+     																	pConst_JJVBF_BKG_MCFM_JECNominal,
+     																	pConst_HadZH_BKG_MCFM_JECNominal,
+     																	pConst_HadWH_BKG_MCFM_JECNominal,
+     																	pConst_JJQCD_BKG_MCFM_JECNominal,
+	    																Z1Flav*Z2Flav,
+     																	ZZMass) : -2;
+		
       D2jet = (nCleanedJetsPt30>=2) ? DVBF2j_ME(p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2 ;
       D1jet = (nCleanedJetsPt30==1) ? DVBF1j_ME(p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2 ;
       DWH = (nCleanedJetsPt30>=2) ? DWHh_ME(p_HadWH_SIG_ghw1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_HadWH_mavjj_JECNominal, p_HadWH_mavjj_true_JECNominal, ZZMass) : -2 ;
@@ -396,7 +485,8 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
       
       // Fill KD Z+X histograms
       unblinded_histos->FillKDZX( ZZMass, KD, _yield_SR, _current_final_state, _current_category );
-      
+      if ( nCleanedJetsPt30 >= 2 ) unblinded_histos->FillDVBFDECZX( ZZMass, DVBFDEC, _yield_SR, _current_final_state, _current_category );
+      if ( nCleanedJetsPt30 >= 2 ) unblinded_histos->FillDVHDECZX( ZZMass, DVHDEC, _yield_SR, _current_final_state, _current_category );
       if ( nCleanedJetsPt30 == 1 ) unblinded_histos->FillD1jetZX( ZZMass, D1jet, _yield_SR, _current_final_state, _current_category );
       if ( nCleanedJetsPt30 >= 2 ) unblinded_histos->FillD2jetZX( ZZMass, D2jet, _yield_SR, _current_final_state, _current_category );
       if ( nCleanedJetsPt30 >= 2 ) unblinded_histos->FillDWHZX( ZZMass, DWH, _yield_SR, _current_final_state, _current_category );
@@ -406,6 +496,8 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
       if (blind(ZZMass))
       {
          blinded_histos->FillKDZX( ZZMass, KD, _yield_SR, _current_final_state, _current_category);
+			if ( nCleanedJetsPt30 >= 2 ) blinded_histos->FillDVBFDECZX( ZZMass, DVBFDEC, _yield_SR, _current_final_state, _current_category );
+         if ( nCleanedJetsPt30 >= 2 ) blinded_histos->FillDVHDECZX( ZZMass, DVHDEC, _yield_SR, _current_final_state, _current_category );
          if ( nCleanedJetsPt30 == 1 ) blinded_histos->FillD1jetZX( ZZMass, D1jet, _yield_SR, _current_final_state, _current_category);
          if ( nCleanedJetsPt30 >= 2 ) blinded_histos->FillD2jetZX( ZZMass, D2jet, _yield_SR, _current_final_state, _current_category);
          if ( nCleanedJetsPt30 >= 2 ) blinded_histos->FillDWHZX( ZZMass, DWH, _yield_SR, _current_final_state, _current_category);

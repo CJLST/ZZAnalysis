@@ -216,7 +216,7 @@ public:
       TString var_X_label = "D_{bkg}^{kin}";
       TString var_Y_label = "Events / 0.1";
       TString var_cut_label = "118 < m_{4#font[12]{l}} < 130 GeV";
-      Int_t var_N_bin = 20;
+      Int_t var_N_bin = 10;
       Float_t var_min = 0;
       Float_t var_max = 1;
       Bool_t var_log_x = 0;
@@ -227,6 +227,80 @@ public:
       Int_t varLegPos = 33;
       Int_t rebinningDYTTbar = 4;
       
+      Float_t cut_d = 118.;
+      Float_t cut_u = 130.;
+   };
+	
+	struct DVBFDEC
+   {
+      TString var_X_label = "D_{bkg}^{VBF+dec}";
+      TString var_Y_label = "Events / 0.05";
+      TString var_cut_label = "";
+      Int_t var_N_bin = 20;
+      Float_t var_min = 0;
+      Float_t var_max = 1;
+      Bool_t var_log_x = 0;
+      Bool_t var_log_y = 0;
+      Int_t restrict_count_var = 0;
+      Float_t var_min_factor = 0;
+      Int_t var_CMS_pos = 0;
+      Int_t varLegPos = 33;
+      Int_t rebinningDYTTbar = 4;
+   };
+	
+   struct DVBFDEC_M4L118130
+   {
+      TString var_X_label = "D_{bkg}^{VBF+dec}";
+      TString var_Y_label = "Events / 0.1";
+      TString var_cut_label = "118 < m_{4#font[12]{l}} < 130 GeV";
+      Int_t var_N_bin = 10;
+      Float_t var_min = 0;
+      Float_t var_max = 1;
+      Bool_t var_log_x = 0;
+      Bool_t var_log_y = 0;
+      Int_t restrict_count_var = 0;
+      Float_t var_min_factor = 0;
+      Int_t var_CMS_pos = 0;
+      Int_t varLegPos = 33;
+      Int_t rebinningDYTTbar = 4;
+		
+      Float_t cut_d = 118.;
+      Float_t cut_u = 130.;
+   };
+	
+	struct DVHDEC
+   {
+      TString var_X_label = "D_{bkg}^{VH+dec}";
+      TString var_Y_label = "Events / 0.05";
+      TString var_cut_label = "";
+      Int_t var_N_bin = 20;
+      Float_t var_min = 0;
+      Float_t var_max = 1;
+      Bool_t var_log_x = 0;
+      Bool_t var_log_y = 0;
+      Int_t restrict_count_var = 0;
+      Float_t var_min_factor = 0;
+      Int_t var_CMS_pos = 0;
+      Int_t varLegPos = 33;
+      Int_t rebinningDYTTbar = 4;
+   };
+	
+   struct DVHDEC_M4L118130
+   {
+      TString var_X_label = "D_{bkg}^{VH+dec}";
+      TString var_Y_label = "Events / 0.1";
+      TString var_cut_label = "118 < m_{4#font[12]{l}} < 130 GeV";
+      Int_t var_N_bin = 10;
+      Float_t var_min = 0;
+      Float_t var_max = 1;
+      Bool_t var_log_x = 0;
+      Bool_t var_log_y = 0;
+      Int_t restrict_count_var = 0;
+      Float_t var_min_factor = 0;
+      Int_t var_CMS_pos = 0;
+      Int_t varLegPos = 33;
+      Int_t rebinningDYTTbar = 4;
+		
       Float_t cut_d = 118.;
       Float_t cut_u = 130.;
    };

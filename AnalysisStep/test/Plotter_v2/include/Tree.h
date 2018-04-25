@@ -211,6 +211,18 @@ public :
    Float_t         p_HadWH_SIG_ghw1_1_ghw1prime2_1E4_JHUGen_JECUp;
    Float_t         p_HadWH_SIG_ghw1_1_ghw2_1_JHUGen_JECUp;
    Float_t         p_HadWH_SIG_ghw1_1_ghw4_1_JHUGen_JECUp;
+   Float_t			 p_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal;
+   Float_t			 p_HadZH_S_SIG_ghz1_1_MCFM_JECNominal;
+   Float_t			 p_HadWH_S_SIG_ghw1_1_MCFM_JECNominal;
+   Float_t			 p_HadZH_BKG_MCFM_JECNominal;
+   Float_t			 p_HadWH_BKG_MCFM_JECNominal;
+   Float_t			 pConst_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal;
+   Float_t			 pConst_HadZH_S_SIG_ghz1_1_MCFM_JECNominal;
+   Float_t			 pConst_HadWH_S_SIG_ghw1_1_MCFM_JECNominal;
+   Float_t			 pConst_JJVBF_BKG_MCFM_JECNominal;
+   Float_t			 pConst_HadZH_BKG_MCFM_JECNominal;
+   Float_t			 pConst_HadWH_BKG_MCFM_JECNominal;
+   Float_t			 pConst_JJQCD_BKG_MCFM_JECNominal;
    Float_t         p_ttHUndecayed_SIG_kappa_1_JHUGen_JECUp;
    Float_t         p_ttHUndecayed_SIG_kappatilde_1_JHUGen_JECUp;
    Float_t         p_ttHUndecayed_SIG_kappa_1_kappatilde_1_JHUGen_JECUp;
@@ -637,6 +649,18 @@ public :
    TBranch        *b_p_HadWH_SIG_ghw1_1_ghw1prime2_1E4_JHUGen_JECNominal;   //!
    TBranch        *b_p_HadWH_SIG_ghw1_1_ghw2_1_JHUGen_JECNominal;   //!
    TBranch        *b_p_HadWH_SIG_ghw1_1_ghw4_1_JHUGen_JECNominal;   //!
+	TBranch			*b_p_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal;  //!
+   TBranch			*b_p_HadZH_S_SIG_ghz1_1_MCFM_JECNominal;  //!
+   TBranch			*b_p_HadWH_S_SIG_ghw1_1_MCFM_JECNominal;  //!
+   TBranch			*b_p_HadZH_BKG_MCFM_JECNominal;  //!
+   TBranch			*b_p_HadWH_BKG_MCFM_JECNominal;  //!
+   TBranch			*b_pConst_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal;  //!
+   TBranch			*b_pConst_HadZH_S_SIG_ghz1_1_MCFM_JECNominal;  //!
+   TBranch			*b_pConst_HadWH_S_SIG_ghw1_1_MCFM_JECNominal;  //!
+   TBranch			*b_pConst_JJVBF_BKG_MCFM_JECNominal;  //!
+   TBranch			*b_pConst_HadZH_BKG_MCFM_JECNominal;  //!
+   TBranch			*b_pConst_HadWH_BKG_MCFM_JECNominal;  //!
+   TBranch			*b_pConst_JJQCD_BKG_MCFM_JECNominal;  //!
    TBranch        *b_p_ttHUndecayed_SIG_kappa_1_JHUGen_JECNominal;   //!
    TBranch        *b_p_ttHUndecayed_SIG_kappatilde_1_JHUGen_JECNominal;   //!
    TBranch        *b_p_ttHUndecayed_SIG_kappa_1_kappatilde_1_JHUGen_JECNominal;   //!
@@ -1207,6 +1231,18 @@ void Tree::Init(TTree *tree, TString input_file_name)
    fChain->SetBranchAddress("p_HadWH_SIG_ghw1_1_ghw1prime2_1E4_JHUGen_JECNominal", &p_HadWH_SIG_ghw1_1_ghw1prime2_1E4_JHUGen_JECNominal, &b_p_HadWH_SIG_ghw1_1_ghw1prime2_1E4_JHUGen_JECNominal);
    fChain->SetBranchAddress("p_HadWH_SIG_ghw1_1_ghw2_1_JHUGen_JECNominal", &p_HadWH_SIG_ghw1_1_ghw2_1_JHUGen_JECNominal, &b_p_HadWH_SIG_ghw1_1_ghw2_1_JHUGen_JECNominal);
    fChain->SetBranchAddress("p_HadWH_SIG_ghw1_1_ghw4_1_JHUGen_JECNominal", &p_HadWH_SIG_ghw1_1_ghw4_1_JHUGen_JECNominal, &b_p_HadWH_SIG_ghw1_1_ghw4_1_JHUGen_JECNominal);
+	fChain->SetBranchAddress("p_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal", &p_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal, &b_p_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal);
+   fChain->SetBranchAddress("p_HadZH_S_SIG_ghz1_1_MCFM_JECNominal", &p_HadZH_S_SIG_ghz1_1_MCFM_JECNominal, &b_p_HadZH_S_SIG_ghz1_1_MCFM_JECNominal);
+   fChain->SetBranchAddress("p_HadWH_S_SIG_ghw1_1_MCFM_JECNominal", &p_HadWH_S_SIG_ghw1_1_MCFM_JECNominal, &b_p_HadWH_S_SIG_ghw1_1_MCFM_JECNominal);
+   fChain->SetBranchAddress("p_HadZH_BKG_MCFM_JECNominal", &p_HadZH_BKG_MCFM_JECNominal, &b_p_HadZH_BKG_MCFM_JECNominal);
+   fChain->SetBranchAddress("p_HadWH_BKG_MCFM_JECNominal", &p_HadWH_BKG_MCFM_JECNominal, &b_p_HadWH_BKG_MCFM_JECNominal);
+   fChain->SetBranchAddress("pConst_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal", &pConst_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal, &b_pConst_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal);
+   fChain->SetBranchAddress("pConst_HadZH_S_SIG_ghz1_1_MCFM_JECNominal", &pConst_HadZH_S_SIG_ghz1_1_MCFM_JECNominal, &b_pConst_HadZH_S_SIG_ghz1_1_MCFM_JECNominal);
+   fChain->SetBranchAddress("pConst_HadWH_S_SIG_ghw1_1_MCFM_JECNominal", &pConst_HadWH_S_SIG_ghw1_1_MCFM_JECNominal, &b_pConst_HadWH_S_SIG_ghw1_1_MCFM_JECNominal);
+   fChain->SetBranchAddress("pConst_JJVBF_BKG_MCFM_JECNominal", &pConst_JJVBF_BKG_MCFM_JECNominal, &b_pConst_JJVBF_BKG_MCFM_JECNominal);
+   fChain->SetBranchAddress("pConst_HadZH_BKG_MCFM_JECNominal", &pConst_HadZH_BKG_MCFM_JECNominal, &b_pConst_HadZH_BKG_MCFM_JECNominal);
+   fChain->SetBranchAddress("pConst_HadWH_BKG_MCFM_JECNominal", &pConst_HadWH_BKG_MCFM_JECNominal, &b_pConst_HadWH_BKG_MCFM_JECNominal);
+   fChain->SetBranchAddress("pConst_JJQCD_BKG_MCFM_JECNominal", &pConst_JJQCD_BKG_MCFM_JECNominal, &b_pConst_JJQCD_BKG_MCFM_JECNominal);
    fChain->SetBranchAddress("p_ttHUndecayed_SIG_kappa_1_JHUGen_JECNominal", &p_ttHUndecayed_SIG_kappa_1_JHUGen_JECNominal, &b_p_ttHUndecayed_SIG_kappa_1_JHUGen_JECNominal);
    fChain->SetBranchAddress("p_ttHUndecayed_SIG_kappatilde_1_JHUGen_JECNominal", &p_ttHUndecayed_SIG_kappatilde_1_JHUGen_JECNominal, &b_p_ttHUndecayed_SIG_kappatilde_1_JHUGen_JECNominal);
    fChain->SetBranchAddress("p_ttHUndecayed_SIG_kappa_1_kappatilde_1_JHUGen_JECNominal", &p_ttHUndecayed_SIG_kappa_1_kappatilde_1_JHUGen_JECNominal, &b_p_ttHUndecayed_SIG_kappa_1_kappatilde_1_JHUGen_JECNominal);

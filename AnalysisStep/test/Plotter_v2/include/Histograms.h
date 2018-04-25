@@ -66,6 +66,12 @@ public:
    
    void FillKD( float, float, float, int, int, int );
    void FillKDZX( float, float, float, int, int );
+	
+   void FillDVBFDEC( float, float, float, int, int, int );
+   void FillDVBFDECZX( float, float, float, int, int );
+	
+   void FillDVHDEC( float, float, float, int, int, int );
+   void FillDVHDECZX( float, float, float, int, int );
    
    void FillD1jet( float, float, float, int, int, int );
    void FillD1jetZX( float, float, float, int, int );

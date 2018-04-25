@@ -109,6 +109,8 @@ private:
    float ISO_leading, ISO_trailing;
    
    Float_t KD;
+   Float_t DVBFDEC;
+   Float_t DVHDEC;
    Float_t D2jet;
    Float_t D1jet;
    Float_t DWH;

@@ -103,7 +103,13 @@ int main( int argc, char *argv[] )
    plotter->plot_1D_single("Blinded", "KD", "Plots/Blinded", Settings::fs4e, Settings::inclusive);
    plotter->plot_1D_single("Blinded", "KD", "Plots/Blinded", Settings::fs4mu, Settings::inclusive);
    plotter->plot_1D_single("Blinded", "KD", "Plots/Blinded", Settings::fs2e2mu, Settings::inclusive);
+	
+   plotter->plot_1D_single("Blinded", "DVBFDEC", "Plots/Blinded", Settings::fs4l, Settings::VBF_2j_tagged);
+   plotter->plot_1D_single("Blinded", "DVHDEC",  "Plots/Blinded", Settings::fs4l, Settings::VH_hadron_tagged);
 
+	plotter->plot_1D_single("Blinded", "D1jet", "Plots/Blinded", Settings::fs4l, Settings::inclusive);
+	plotter->plot_1D_single("Blinded", "D2jet", "Plots/Blinded", Settings::fs4l, Settings::inclusive);
+	plotter->plot_1D_single("Blinded", "DVH",   "Plots/Blinded", Settings::fs4l, Settings::inclusive);
 
    plotter->plot_2D_single("Blinded", "MZ1vsMZ2", "Plots/Blinded", Settings::inclusive);
 
@@ -159,13 +165,17 @@ int main( int argc, char *argv[] )
 //   plotter->plot_1D_single("Unblinded", "MZ1_M4L118130",   "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
 //   plotter->plot_1D_single("Unblinded", "MZ2_M4L118130",   "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
 //
-//   plotter->plot_1D_single("Unblinded", "KD",              "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-//   plotter->plot_1D_single("Unblinded", "KD_M4L118130",    "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-//   plotter->plot_1D_single("Unblinded", "D1jet_M4L118130", "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-//   plotter->plot_1D_single("Unblinded", "D2jet_M4L118130", "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-//   plotter->plot_1D_single("Unblinded", "DWH_M4L118130",   "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-//   plotter->plot_1D_single("Unblinded", "DZH_M4L118130",   "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-//   plotter->plot_1D_single("Unblinded", "DVH_M4L118130",   "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
+//   plotter->plot_1D_single("Unblinded", "KD",               "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
+//   plotter->plot_1D_single("Unblinded", "DVBFDEC",          "Plots/Unblinded", Settings::fs4l, Settings::VBF_2j_tagged);
+//   plotter->plot_1D_single("Unblinded", "DVHDEC",           "Plots/Unblinded", Settings::fs4l, Settings::VH_hadron_tagged);
+//   plotter->plot_1D_single("Unblinded", "KD_M4L118130",     "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
+//   plotter->plot_1D_single("Unblinded", "DVBFDEC_M4L118130","Plots/Unblinded", Settings::fs4l, Settings::VBF_2j_tagged);
+//   plotter->plot_1D_single("Unblinded", "DVHDEC_M4L118130", "Plots/Unblinded", Settings::fs4l, Settings::VH_hadron_tagged);
+//   plotter->plot_1D_single("Unblinded", "D1jet_M4L118130",  "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
+//   plotter->plot_1D_single("Unblinded", "D2jet_M4L118130",  "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
+//   plotter->plot_1D_single("Unblinded", "DWH_M4L118130",    "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
+//   plotter->plot_1D_single("Unblinded", "DZH_M4L118130",    "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
+//   plotter->plot_1D_single("Unblinded", "DVH_M4L118130",    "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
 //
 //   plotter->plot_2D_single("Unblinded", "MZ1vsMZ2",           "Plots/Unblinded", Settings::inclusive);
 //   plotter->plot_2D_single("Unblinded", "MZ1vsMZ2_M4L118130", "Plots/Unblinded", Settings::inclusive);
