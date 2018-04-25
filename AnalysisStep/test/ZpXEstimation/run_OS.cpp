@@ -24,10 +24,10 @@ int main( int argc, char *argv[] )
    TString path = "";
    TString file_name = "/ZZ4lAnalysis.root";
    
-   TString Data    = path + "AllData"        + file_name;
+   TString Data    = path + "AllDat"        + file_name;
    TString WZ      = path + "WZTo3LNu"       + file_name;
    TString ZZ      = path + "ZZTo4l"         + file_name;
-   TString ttbar   = path + "TTToLLNuNu"     + file_name;
+   TString ttbar   = path + "TTTo2L2Nu"     + file_name;
    TString DY      = path + "DYJetsToLL_M50" + file_name;
 	
    bool SubtractWZ = true;

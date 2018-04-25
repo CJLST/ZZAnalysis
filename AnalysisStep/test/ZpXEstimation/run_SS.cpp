@@ -26,7 +26,7 @@ int main( int argc, char *argv[] )
    TString Data    = path + "AllData"        + file_name;
    TString WZ      = path + "WZTo3LNu"       + file_name;
    TString ZZ      = path + "ZZTo4l"         + file_name;
-   TString ttbar   = path + "TTToLLNuNu"     + file_name;
+   TString ttbar   = path + "TTTo2L2Nu"     + file_name;
    TString DY      = path + "DYJetsToLL_M50" + file_name;
 	
    bool SubtractWZ = true;
@@ -70,7 +70,7 @@ int main( int argc, char *argv[] )
    ///////////////////////////////////
    // Fill ZX contributions histos  //
    ///////////////////////////////////
-   ss->MakeHistogramsZX(Data, "../../data/FakeRates/FakeRates_SS_Moriond18.root");
+   ss->MakeHistogramsZX(Data, "FakeRates_SS_Moriond18.root");
    ss->SaveZXHistos("ZXHistos_SS_Moriond18.root");
 
    ///////////////////////////////////
