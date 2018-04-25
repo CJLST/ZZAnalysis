@@ -30,6 +30,9 @@ extern "C" float getDVBF1jetConstant_shiftWP(float ZZMass, bool useQGTagging, fl
 extern "C" float getDWHhConstant_shiftWP(float ZZMass, bool useQGTagging, float newWP);
 extern "C" float getDZHhConstant_shiftWP(float ZZMass, bool useQGTagging, float newWP);
 
+extern "C" float getDbkgVBFdecConstant(int ZZflav, float ZZMass);
+extern "C" float getDbkgVHdecConstant(int ZZflav, float ZZMass);
+
 extern "C" float getDbkgkinConstant(int ZZflav, float ZZMass);
 extern "C" float getDbkgConstant(int ZZflav, float ZZMass);
 

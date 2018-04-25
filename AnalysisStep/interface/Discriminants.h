@@ -17,6 +17,50 @@ extern "C" float D_bkg(
     int   ZZflav,
     float ZZMass);
 
+extern "C" float D_bkg_VBFdec(
+    float p_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal,
+    float p_HadZH_S_SIG_ghz1_1_MCFM_JECNominal,
+    float p_HadWH_S_SIG_ghw1_1_MCFM_JECNominal,
+    float p_JJVBF_BKG_MCFM_JECNominal,
+    float p_HadZH_BKG_MCFM_JECNominal,
+    float p_HadWH_BKG_MCFM_JECNominal,
+    float p_JJQCD_BKG_MCFM_JECNominal,
+    float p_HadZH_mavjj_JECNominal,
+    float p_HadZH_mavjj_true_JECNominal,
+    float p_HadWH_mavjj_JECNominal,
+    float p_HadWH_mavjj_true_JECNominal,
+    float pConst_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal,
+    float pConst_HadZH_S_SIG_ghz1_1_MCFM_JECNominal,
+    float pConst_HadWH_S_SIG_ghw1_1_MCFM_JECNominal,
+    float pConst_JJVBF_BKG_MCFM_JECNominal,
+    float pConst_HadZH_BKG_MCFM_JECNominal,
+    float pConst_HadWH_BKG_MCFM_JECNominal,
+    float pConst_JJQCD_BKG_MCFM_JECNominal,
+	 int   ZZFlav,
+    float ZZMass);
+
+
+extern "C" float D_bkg_VHdec(
+    float p_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal,
+    float p_HadZH_S_SIG_ghz1_1_MCFM_JECNominal,
+    float p_HadWH_S_SIG_ghw1_1_MCFM_JECNominal,
+    float p_JJVBF_BKG_MCFM_JECNominal,
+    float p_HadZH_BKG_MCFM_JECNominal,
+    float p_HadWH_BKG_MCFM_JECNominal,
+    float p_JJQCD_BKG_MCFM_JECNominal,
+    float p_HadZH_mavjj_JECNominal,
+    float p_HadZH_mavjj_true_JECNominal,
+    float p_HadWH_mavjj_JECNominal,
+    float p_HadWH_mavjj_true_JECNominal,
+    float pConst_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal,
+    float pConst_HadZH_S_SIG_ghz1_1_MCFM_JECNominal,
+    float pConst_HadWH_S_SIG_ghw1_1_MCFM_JECNominal,
+    float pConst_JJVBF_BKG_MCFM_JECNominal,
+    float pConst_HadZH_BKG_MCFM_JECNominal,
+    float pConst_HadWH_BKG_MCFM_JECNominal,
+    float pConst_JJQCD_BKG_MCFM_JECNominal,
+	 int   ZZFlav,
+    float ZZMass);
 
 // D0-
 extern "C" float D_g4(

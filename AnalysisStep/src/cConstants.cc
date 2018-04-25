@@ -25,6 +25,10 @@ namespace {
   cConstantSpline DbkgkinSpline2e2mu("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_Dbkgkin_2e2mu13TeV.root");
   cConstantSpline DbkgkinSpline4e("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_Dbkgkin_4e13TeV.root");
   cConstantSpline DbkgkinSpline4mu("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_Dbkgkin_4mu13TeV.root");
+  cConstantSpline DbkgVBFdecSpline4l("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_DbkgjjEWQCD_4l_JJVBFTagged_13TeV.root");
+  cConstantSpline DbkgVBFdecSpline2l2l("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_DbkgjjEWQCD_2l2l_JJVBFTagged_13TeV.root");
+  cConstantSpline DbkgVHdecSpline4l("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_DbkgjjEWQCD_4l_HadVHTagged_13TeV.root");
+  cConstantSpline DbkgVHdecSpline2l2l("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_DbkgjjEWQCD_2l2l_HadVHTagged_13TeV.root");
   cConstantSpline DVBF2jetsSpline("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_DjjVBF13TeV.root");
   cConstantSpline DVBF1jetSpline("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_DjVBF13TeV.root");
   cConstantSpline DZHhSpline("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_DjjZH13TeV.root");
@@ -101,6 +105,19 @@ extern "C" float getDZHhConstant_shiftWP(float ZZMass, bool useQGTagging, float 
   return oldc * (oldWP/newWP) * ((1-newWP)/(1-oldWP));
 }
 
+extern "C" float getDbkgVBFdecConstant(int ZZflav, float ZZMass){// ZZflav==id1*id2*id3*id4
+  if (abs(ZZflav)==11*11*11*11 || abs(ZZflav)==2*11*11*11*11 || abs(ZZflav)==2*11*11*2*11*11) return DbkgVBFdecSpline4l.eval(ZZMass, true);
+  if (abs(ZZflav)==11*11*13*13 || abs(ZZflav)==2*11*11*13*13 || abs(ZZflav)==2*11*11*2*13*13) return DbkgVBFdecSpline2l2l.eval(ZZMass, true);
+  if (abs(ZZflav)==13*13*13*13 || abs(ZZflav)==2*13*13*13*13 || abs(ZZflav)==2*13*13*2*13*13) return DbkgVBFdecSpline4l.eval(ZZMass, true);
+  std::cout << "Invalid ZZflav " << ZZflav << std::endl; assert(0); return 0;
+}
+
+extern "C" float getDbkgVHdecConstant(int ZZflav, float ZZMass){// ZZflav==id1*id2*id3*id4
+  if (abs(ZZflav)==11*11*11*11 || abs(ZZflav)==2*11*11*11*11 || abs(ZZflav)==2*11*11*2*11*11) return DbkgVHdecSpline4l.eval(ZZMass, true);
+  if (abs(ZZflav)==11*11*13*13 || abs(ZZflav)==2*11*11*13*13 || abs(ZZflav)==2*11*11*2*13*13) return DbkgVHdecSpline2l2l.eval(ZZMass, true);
+  if (abs(ZZflav)==13*13*13*13 || abs(ZZflav)==2*13*13*13*13 || abs(ZZflav)==2*13*13*2*13*13) return DbkgVHdecSpline4l.eval(ZZMass, true);
+  std::cout << "Invalid ZZflav " << ZZflav << std::endl; assert(0); return 0;
+}
 
 extern "C" float getDbkgkinConstant(int ZZflav, float ZZMass){ // ZZflav==id1*id2*id3*id4
   if (abs(ZZflav)==11*11*11*11 || abs(ZZflav)==2*11*11*11*11 || abs(ZZflav)==2*11*11*2*11*11) return DbkgkinSpline4e.eval(ZZMass, true);
