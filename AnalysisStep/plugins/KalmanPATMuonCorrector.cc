@@ -79,6 +79,7 @@ KalmanPATMuonCorrector::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     double newpt=oldpt;
     double oldpterr=mu.muonBestTrack()->ptError();
     double newpterr=oldpterr;
+    double scale_factor_error = 0.;
 
     if (calibrator != 0 && mu.muonBestTrackType() == 1 && oldpt<=200.) { //skip correction for passthrough mode, or if muon pt does not come from InnerTrack, or for muons above 200 GeV
       if(isMC_){
@@ -89,12 +90,14 @@ KalmanPATMuonCorrector::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 	} else {
 	  newpt = calibrator->smearForSync(corrPt, mu.eta());
 	}
-	newpterr = newpt * calibrator->getCorrectedError(newpt, mu.eta(), oldpterr/newpt);
+	scale_factor_error = calibrator->getCorrectedError(newpt, mu.eta(), oldpterr/newpt);
+	newpterr = newpt * scale_factor_error;
       } else {
 	/// ====== ON DATA (correction only) =====
 	if(mu.pt()>2.0 && fabs(mu.eta())<2.4){
 	  newpt = calibrator->getCorrectedPt(oldpt, mu.eta(), mu.phi(), mu.charge());
-	  newpterr = newpt * calibrator->getCorrectedError(newpt, mu.eta(), oldpterr/newpt);
+	  scale_factor_error = calibrator->getCorrectedError(newpt, mu.eta(), oldpterr/newpt);
+	  newpterr = newpt * scale_factor_error;
 	} else {
 	  // keep old values
 	}
@@ -104,6 +107,8 @@ KalmanPATMuonCorrector::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     p4.SetPtEtaPhiM(newpt, mu.eta(), mu.phi(), mu.mass());
     mu.setP4(reco::Particle::PolarLorentzVector(p4.Pt(), p4.Eta(), p4.Phi(), mu.mass()));
     mu.addUserFloat("correctedPtError",newpterr);
+	 mu.addUserFloat("scale_unc",scale_factor_error);
+    mu.addUserFloat("smear_unc",0.);
     
     outputMuons->push_back(mu);
   }
