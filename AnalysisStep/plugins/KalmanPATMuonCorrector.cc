@@ -107,7 +107,7 @@ KalmanPATMuonCorrector::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     p4.SetPtEtaPhiM(newpt, mu.eta(), mu.phi(), mu.mass());
     mu.setP4(reco::Particle::PolarLorentzVector(p4.Pt(), p4.Eta(), p4.Phi(), mu.mass()));
     mu.addUserFloat("correctedPtError",newpterr);
-	 mu.addUserFloat("scale_unc",scale_factor_error);
+	 mu.addUserFloat("scale_unc",1. + scale_factor_error);
     mu.addUserFloat("smear_unc",0.);
     
     outputMuons->push_back(mu);
