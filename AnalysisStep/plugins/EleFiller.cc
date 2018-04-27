@@ -227,8 +227,8 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 
 	 
 	 float scaleErr;
-	 float sigma_dn;
-	 float smear_err_dn;
+	 float sigma_up;
+	 float smear_err_up;
 	 
 	 #if CMSSW_VERSION_MAJOR < 9
 	 // EGamma scale and resolution uncertainties https://twiki.cern.ch/twiki/bin/viewauth/CMS/Egamma2017DataRecommendations#Energy_Scale_Systematic
@@ -240,9 +240,9 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 //0, 1 for 1 "sigma" up in phi --> not to be used for the moment : phi=pi/2 with error=pi/2. phi + error would be equal to pi, while phi is defined from [0,pi/2]
 	 //0, -1 for 1 "sigma" down in phi
 	 //float sigma_up= eScaler.getSmearingSigma(iEvent.id().run(), l.isEB(), l.full5x5_r9(), l.superCluster()->eta(), l.correctedEcalEnergy() / cosh(l.superCluster()->eta()), 12,  1.,  0.);
-	 sigma_dn= eScaler->getSmearingSigma(iEvent.id().run(), l.isEB(), l.full5x5_r9(), l.superCluster()->eta(), l.correctedEcalEnergy() / cosh(l.superCluster()->eta()), -1., -1.);
+	 sigma_up= eScaler->getSmearingSigma(iEvent.id().run(), l.isEB(), l.full5x5_r9(), l.superCluster()->eta(), l.correctedEcalEnergy() / cosh(l.superCluster()->eta()), 1., 1.);
 	 //float smear_err_up = rgen_.Gaus(1, sigma_up);
-	 smear_err_dn = rgen_.Gaus(1, sigma_dn);
+	 smear_err_up = rgen_.Gaus(1, sigma_up);
 	 #else
 	 // EGamma scale and resolution uncertainties https://twiki.cern.ch/twiki/bin/viewauth/CMS/Egamma2017DataRecommendations#Energy_Scale_Systematic
 	 scaleErr=eScaler->ScaleCorrectionUncertainty(iEvent.id().run(), l.isEB(), l.full5x5_r9(), l.superCluster()->eta(), l.correctedEcalEnergy() / cosh(l.superCluster()->eta()), 12) + 1.;
@@ -253,9 +253,9 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 //0, 1 for 1 "sigma" up in phi --> not to be used for the moment : phi=pi/2 with error=pi/2. phi + error would be equal to pi, while phi is defined from [0,pi/2]
 	 //0, -1 for 1 "sigma" down in phi
 	 //float sigma_up= eScaler.getSmearingSigma(iEvent.id().run(), l.isEB(), l.full5x5_r9(), l.superCluster()->eta(), l.correctedEcalEnergy() / cosh(l.superCluster()->eta()), 12,  1.,  0.);
-	 sigma_dn= eScaler->getSmearingSigma(iEvent.id().run(), l.isEB(), l.full5x5_r9(), l.superCluster()->eta(), l.correctedEcalEnergy() / cosh(l.superCluster()->eta()), 12, -1., -1.);
+	 sigma_up= eScaler->getSmearingSigma(iEvent.id().run(), l.isEB(), l.full5x5_r9(), l.superCluster()->eta(), l.correctedEcalEnergy() / cosh(l.superCluster()->eta()), 12, 1., 1.);
 	 //float smear_err_up = rgen_.Gaus(1, sigma_up);
-	 smear_err_dn = rgen_.Gaus(1, sigma_dn);
+	 smear_err_up = rgen_.Gaus(1, sigma_up);
 	 #endif
 
 	  
@@ -275,7 +275,7 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     l.addUserFloat("HLTMatch", HLTMatch);
     l.addUserFloat("missingHit", missingHit);
     l.addUserFloat("scale_unc",scaleErr);
-    l.addUserFloat("smear_unc",smear_err_dn);
+    l.addUserFloat("smear_unc",smear_err_up);
 
     //--- MC parent code 
 //     MCHistoryTools mch(iEvent);
