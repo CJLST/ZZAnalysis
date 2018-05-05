@@ -92,11 +92,11 @@ int main( int argc, char *argv[] )
 //   plotter->plot_1D_single("Blinded", "M4lMainHighMass", "Plots/Blinded", Settings::fs4l, Settings::inclusive);
 //   plotter->plot_1D_single("Blinded", "MZ1",             "Plots/Blinded", Settings::fs4l, Settings::inclusive);
 //   plotter->plot_1D_single("Blinded", "MZ2",             "Plots/Blinded", Settings::fs4l, Settings::inclusive);
-//	plotter->plot_1D_single("Blinded", "MZ1",             "Plots/Blinded", Settings::fs4e, Settings::inclusive);
+//	  plotter->plot_1D_single("Blinded", "MZ1",             "Plots/Blinded", Settings::fs4e, Settings::inclusive);
 //   plotter->plot_1D_single("Blinded", "MZ2",             "Plots/Blinded", Settings::fs4e, Settings::inclusive);
-//	plotter->plot_1D_single("Blinded", "MZ1",             "Plots/Blinded", Settings::fs4mu, Settings::inclusive);
+//	  plotter->plot_1D_single("Blinded", "MZ1",             "Plots/Blinded", Settings::fs4mu, Settings::inclusive);
 //   plotter->plot_1D_single("Blinded", "MZ2",             "Plots/Blinded", Settings::fs4mu, Settings::inclusive);
-//	plotter->plot_1D_single("Blinded", "MZ1",             "Plots/Blinded", Settings::fs2e2mu, Settings::inclusive);
+//	  plotter->plot_1D_single("Blinded", "MZ1",             "Plots/Blinded", Settings::fs2e2mu, Settings::inclusive);
 //   plotter->plot_1D_single("Blinded", "MZ2",             "Plots/Blinded", Settings::fs2e2mu, Settings::inclusive);
 //
 //   plotter->plot_1D_single("Blinded", "KD", "Plots/Blinded", Settings::fs4l, Settings::inclusive);
@@ -107,9 +107,9 @@ int main( int argc, char *argv[] )
 //   plotter->plot_1D_single("Blinded", "DVBFDEC", "Plots/Blinded", Settings::fs4l, Settings::VBF_2j_tagged);
 //   plotter->plot_1D_single("Blinded", "DVHDEC",  "Plots/Blinded", Settings::fs4l, Settings::VH_hadron_tagged);
 //
-//	plotter->plot_1D_single("Blinded", "D1jet", "Plots/Blinded", Settings::fs4l, Settings::inclusive);
-//	plotter->plot_1D_single("Blinded", "D2jet", "Plots/Blinded", Settings::fs4l, Settings::inclusive);
-//	plotter->plot_1D_single("Blinded", "DVH",   "Plots/Blinded", Settings::fs4l, Settings::inclusive);
+//	  plotter->plot_1D_single("Blinded", "D1jet", "Plots/Blinded", Settings::fs4l, Settings::inclusive);
+//	  plotter->plot_1D_single("Blinded", "D2jet", "Plots/Blinded", Settings::fs4l, Settings::inclusive);
+//	  plotter->plot_1D_single("Blinded", "DVH",   "Plots/Blinded", Settings::fs4l, Settings::inclusive);
 //
 //   plotter->plot_2D_single("Blinded", "MZ1vsMZ2", "Plots/Blinded", Settings::inclusive);
 //
@@ -190,6 +190,8 @@ int main( int argc, char *argv[] )
    plotter->plot_2D_error_single("Unblinded", "DVHvsM4lZoomed",   "Plots/Unblinded", Settings::inclusive);
 
    plotter->plot_2D_error_all_cat("Unblinded", "KDvsM4lZoomed",    "Plots/Unblinded");
+   plotter->plot_2D_error_all_cat("Unblinded", "DVBFDECvsM4lZoomed",    "Plots/Unblinded");
+   plotter->plot_2D_error_all_cat("Unblinded", "DVHDECvsM4lZoomed",    "Plots/Unblinded");
    plotter->plot_2D_error_all_cat("Unblinded", "D1jetvsM4lZoomed", "Plots/Unblinded");
    plotter->plot_2D_error_all_cat("Unblinded", "D2jetvsM4lZoomed", "Plots/Unblinded");
    plotter->plot_2D_error_all_cat("Unblinded", "DWHvsM4lZoomed",   "Plots/Unblinded");

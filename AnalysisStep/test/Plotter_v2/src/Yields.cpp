@@ -9,6 +9,7 @@ Yields::Yields( double lumi ):Tree()
    histo_map["Yields"] = yields_histos;
 
    _lumi = lumi;
+   _merge_2e2mu = true;
    _current_process = -999;
    _k_factor = 1;
    _current_final_state = -999;
@@ -58,6 +59,14 @@ Yields::~Yields()
 }
 //====================
 
+
+//===================================================================
+void Yields::Split_2e2mu()
+{
+	_merge_2e2mu = false;
+	yields_histos->Split_2e2mu();
+}
+//===================================================================
 
 
 //=====================================================
@@ -137,7 +146,7 @@ void Yields::MakeHistograms( TString input_file_name )
 													 false,// Use VHMET category
 													 false);// Use QG tagging
       // K factors
-      if ( APPLY_K_FACTORS ) _k_factor = calculate_K_factor(input_file_name);
+		_k_factor = calculate_K_factor(input_file_name);
 
       // Final event weight
       _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight) / gen_sum_weights;
@@ -223,7 +232,7 @@ void Yields::Calculate_SS_ZX_Yields( TString input_file_data_name, TString  inpu
          _expected_yield_SR[i_fs][Settings::inclusive]   += _expected_yield_SR[i_fs][i_cat];   //calculate expected yield for inclusive category
          _number_of_events_CR[i_fs][Settings::inclusive] += _number_of_events_CR[i_fs][i_cat];
          
-         if ( MERGE_2E2MU )
+         if ( _merge_2e2mu )
          {
             _expected_yield_SR[Settings::fs2e2mu][i_cat]       += _expected_yield_SR[Settings::fs2mu2e][i_cat];   //merge 2e2mu and 2mu2e final state
             _number_of_events_CR[Settings::fs2e2mu][i_cat]     += _number_of_events_CR[Settings::fs2mu2e][i_cat];
@@ -244,7 +253,7 @@ void Yields::Calculate_SS_ZX_Yields( TString input_file_data_name, TString  inpu
    cout << "[INFO] Control printout." << endl << "!!! Numbers shoud be identical to yields from SS method !!!" << endl;
    for ( int i_fs = 0; i_fs < num_of_final_states - 1; i_fs++ )
    {
-      if ( MERGE_2E2MU && i_fs == Settings::fs2mu2e) continue;
+      if ( _merge_2e2mu && i_fs == Settings::fs2mu2e) continue;
       cout << "Category: " << Settings::inclusive << "   Final state: " << i_fs << endl;
       cout << _expected_yield_SR[i_fs][Settings::inclusive] << " +/- " <<
       _expected_yield_SR[i_fs][Settings::inclusive]/sqrt(_number_of_events_CR[i_fs][Settings::inclusive]) << " (stat., evt: " <<
@@ -499,7 +508,7 @@ int Yields::FindFinalState()
       cerr << "[ERROR] in event " << RunNumber << ":" << LumiNumber << ":" << EventNumber << ", Z1Flav = " << Z1Flav << endl;
    }
    
-   if ( MERGE_2E2MU && final_state == Settings::fs2mu2e ) final_state = Settings::fs2e2mu;
+   if ( _merge_2e2mu && final_state == Settings::fs2mu2e ) final_state = Settings::fs2e2mu;
 
    return final_state;
 }

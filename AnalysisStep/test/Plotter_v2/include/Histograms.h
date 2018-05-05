@@ -34,8 +34,6 @@
 #include <ZZAnalysis/AnalysisStep/test/Plotter_v2/include/Variables.h>
 #include <ZZAnalysis/AnalysisStep/test/Plotter_v2/include/Cosmetics.h>
 
-#define MERGE_2E2MU 0
-
 using namespace std;
 
 const int num_of_production_modes    = Settings::num_of_production_modes;
@@ -91,8 +89,8 @@ public:
    
    void FillMZ1vsMZ2( float, float, float, float, int, int, int );
    
-   void FillVectors( float, float, float, int, float, float, float, float, float, int, int) ;
-   void FillDvsM4l( float, float, int, float, float, float, float, float, float, int, int, int );
+   void FillVectors( float, float, float, float, float, int, float, float, float, float, float, int, int) ;
+   void FillDvsM4l( float, float, float, float, int, float, float, float, float, float, float, int, int, int );
    
    void FillYields( float, float, int, int, int );
 	
@@ -139,6 +137,10 @@ public:
    
    bool GetVarLogX( TString );
    bool GetVarLogY( TString );
+	
+   void Split_2e2mu();
+	
+   bool _merge_2e2mu;
    
    TLegend *CreateLegend( string, TH1F*, TH1F*, TH1F*, TH1F*, TH1F* );
    TLegend *CreateLegendVBF( string, TH1F*, TH1F*, TH1F*, TH1F*, TH1F* ,TH1F* );

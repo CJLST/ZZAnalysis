@@ -78,6 +78,7 @@ public:
    void plot_2D_error_all_cat( TString , TString , TString );
    void SetBlinding( float, float);
    void SetBlinding( float, float, float, float);
+   void Split_2e2mu();
    
 private:
 
@@ -114,6 +115,7 @@ private:
 	
    
    float _blinding_lower[2], _blinding_upper[2];
+   bool _merge_2e2mu;
    
    int _current_process, _current_final_state, _current_category, _n_gen_assoc_lep;
    float _lumi, _k_factor, _SMP_signal_strength, _yield_SR, partial_sample_weight;

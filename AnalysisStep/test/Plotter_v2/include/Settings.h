@@ -79,14 +79,16 @@ public:
    
    enum _2D_error_plot_name 
    {
-      KDvsM4l          = 0,
-      KDvsM4lZoomed    = 1,
-      KDvsM4lHighMass  = 2,
-      D1jetvsM4lZoomed = 3,
-      D2jetvsM4lZoomed = 4,
-      DWHvsM4lZoomed   = 5,
-      DZHvsM4lZoomed   = 6,
-      DVHvsM4lZoomed   = 7,
+      KDvsM4l            = 0,
+      KDvsM4lZoomed      = 1,
+      KDvsM4lHighMass    = 2,
+      D1jetvsM4lZoomed   = 3,
+      D2jetvsM4lZoomed   = 4,
+      DWHvsM4lZoomed     = 5,
+      DZHvsM4lZoomed     = 6,
+      DVHvsM4lZoomed     = 7,
+      DVBFDECvsM4lZoomed = 8,
+      DVHDECvsM4lZoomed  = 9,
       MAX_NUM_OF_2D_ERROR_PLOT_NAMES
    };
    

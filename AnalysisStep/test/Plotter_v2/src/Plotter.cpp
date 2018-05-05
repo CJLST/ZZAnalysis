@@ -11,6 +11,7 @@ Plotter::Plotter( double lumi ):Tree()
    histo_map["Blinded"] = blinded_histos;
       
    _lumi = lumi;
+   _merge_2e2mu = true;
    _current_process = -999;
    _k_factor = 1;
    _current_final_state = -999;
@@ -258,18 +259,18 @@ void Plotter::MakeHistograms( TString input_file_name )
       {
          if (_current_process == Settings::Data)
          {
-            blinded_histos->FillVectors( ZZMass, ZZMassErrCorr, KD, nCleanedJetsPt30, D1jet, D2jet, DWH, DZH, DVH, _current_final_state, _current_category);
+            blinded_histos->FillVectors( ZZMass, ZZMassErrCorr, KD, DVBFDEC, DVHDEC,nCleanedJetsPt30, D1jet, D2jet, DWH, DZH, DVH, _current_final_state, _current_category);
          }
       
-         blinded_histos->FillDvsM4l( ZZMass, KD, nCleanedJetsPt30, D1jet, D2jet, DWH, DZH, DVH, _event_weight, _current_final_state, _current_category, _current_process );
+         blinded_histos->FillDvsM4l( ZZMass, KD, DVBFDEC, DVHDEC, nCleanedJetsPt30, D1jet, D2jet, DWH, DZH, DVH, _event_weight, _current_final_state, _current_category, _current_process );
       }
       
       if (_current_process == Settings::Data)
       {
-         unblinded_histos->FillVectors( ZZMass, ZZMassErrCorr, KD, nCleanedJetsPt30, D1jet, D2jet, DWH, DZH, DVH, _current_final_state, _current_category );
+         unblinded_histos->FillVectors( ZZMass, ZZMassErrCorr, KD, DVBFDEC, DVHDEC, nCleanedJetsPt30, D1jet, D2jet, DWH, DZH, DVH, _current_final_state, _current_category );
       }
 		
-      unblinded_histos->FillDvsM4l( ZZMass, KD, nCleanedJetsPt30, D1jet, D2jet, DWH, DZH, DVH, _event_weight, _current_final_state, _current_category, _current_process );
+      unblinded_histos->FillDvsM4l( ZZMass, KD, DVBFDEC, DVHDEC, nCleanedJetsPt30, D1jet, D2jet, DWH, DZH, DVH, _event_weight, _current_final_state, _current_category, _current_process );
 
 		Pt_leading  = max(max(LepPt->at(0),LepPt->at(1)),max(LepPt->at(2),LepPt->at(3)));
 		Pt_trailing = min(min(LepPt->at(0),LepPt->at(1)),min(LepPt->at(2),LepPt->at(3)));
@@ -310,7 +311,14 @@ void Plotter::MakeM4lZX()
 }
 //=======================
 
-
+//===================================================================
+void Plotter::Split_2e2mu()
+{
+	_merge_2e2mu = false;
+	blinded_histos->Split_2e2mu();
+	unblinded_histos->Split_2e2mu();
+}
+//===================================================================
 
 //===================================================================
 void Plotter::SetBlinding(float blinding_lower, float blinding_upper)
@@ -395,7 +403,7 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
       _expected_yield_SR[_current_final_state][_current_category] += _yield_SR; // this number needs to be used when renormalizing histograms that have some cut/blinding
       _number_of_events_CR[_current_final_state][_current_category]++;
       
-      if ( MERGE_2E2MU && _current_final_state == Settings::fs2mu2e ) _current_final_state = Settings::fs2e2mu; //We can only do this after _yield_SR is calculated
+      if ( _merge_2e2mu && _current_final_state == Settings::fs2mu2e ) _current_final_state = Settings::fs2e2mu; //We can only do this after _yield_SR is calculated
       
       // Calculate kinematic discriminants
       KD = p_GG_SIG_ghg2_1_ghz1_1_JHUGen / ( p_GG_SIG_ghg2_1_ghz1_1_JHUGen + p_QQB_BKG_MCFM*getDbkgkinConstant(Z1Flav*Z2Flav,ZZMass) );
@@ -531,7 +539,7 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
          _expected_yield_SR[i_fs][Settings::inclusive]   += _expected_yield_SR[i_fs][i_cat];   //calculate expected yield for inclusive category
          _number_of_events_CR[i_fs][Settings::inclusive] += _number_of_events_CR[i_fs][i_cat];
          
-         if ( MERGE_2E2MU )
+         if ( _merge_2e2mu )
          {
             _expected_yield_SR[Settings::fs2e2mu][i_cat]       += _expected_yield_SR[Settings::fs2mu2e][i_cat];   //merge 2e2mu and 2mu2e final state
             _number_of_events_CR[Settings::fs2e2mu][i_cat]     += _number_of_events_CR[Settings::fs2mu2e][i_cat];
@@ -551,7 +559,7 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
    cout << "[INFO] Control printout." << endl << "!!! Numbers shoud be identical to yields from SS method !!!" << endl;
    for ( int i_fs = 0; i_fs < num_of_final_states - 1; i_fs++ )
    {
-      if ( MERGE_2E2MU && i_fs == Settings::fs2mu2e) continue;
+      if ( _merge_2e2mu && i_fs == Settings::fs2mu2e) continue;
       cout << "Category: " << Settings::inclusive << "   Final state: " << i_fs << endl;
       cout << _expected_yield_SR[i_fs][Settings::inclusive] << " +/- " <<
       _expected_yield_SR[i_fs][Settings::inclusive]/sqrt(_number_of_events_CR[i_fs][Settings::inclusive]) << " (stat., evt: " <<
@@ -784,7 +792,7 @@ int Plotter::FindFinalState()
       cerr << "[ERROR] in event " << RunNumber << ":" << LumiNumber << ":" << EventNumber << ", Z1Flav = " << Z1Flav << endl;
    }
    
-   if ( MERGE_2E2MU && final_state == Settings::fs2mu2e ) final_state = Settings::fs2e2mu;
+   if ( _merge_2e2mu && final_state == Settings::fs2mu2e ) final_state = Settings::fs2e2mu;
 
    return final_state;
 }

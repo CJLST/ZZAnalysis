@@ -37,10 +37,6 @@
 #include <ZZAnalysis/AnalysisStep/interface/cConstants.h>
 #include <ZZAnalysis/AnalysisStep/interface/Discriminants.h>
 
-// BOOLS
-#define APPLY_K_FACTORS 1
-#define MERGE_2E2MU 1
-
 using namespace std;
 
 class Yields: public Tree
@@ -67,6 +63,7 @@ public:
    void Print( TString );
    void Print( TString, float, float );
    void PrintLatexTables( TString, float, float );
+   void Split_2e2mu();
    
 private:
 
@@ -82,6 +79,8 @@ private:
    TH1F* hCounters;
    
    Long64_t n_gen_events;
+	
+   bool _merge_2e2mu;
    
    float jetPt[99];
    float jetEta[99];
