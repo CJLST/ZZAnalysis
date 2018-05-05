@@ -1803,6 +1803,9 @@ void Histograms::SaveHistos( string file_name )
 					histos_1D_ZX[i_1Dhistos][i_fs][i_cat]->Write();
 				}
 			
+			histos_1D_ZX_shape[Settings::M4lMain][i_fs][i_cat]->Write();
+			histos_1D_ZX_shape[Settings::M4lMainZoomed][i_fs][i_cat]->Write();
+			histos_1D_ZX_shape[Settings::M4lMainHighMass][i_fs][i_cat]->Write();
                                                                                                                                                                                     
          //==========================
          // 2D plots with mass error
@@ -2073,6 +2076,18 @@ void Histograms::GetHistos( TString file_name )
             
             _histo_name = "KD_M4L118130" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
             histos_1D[Settings::KD_M4L118130][i_fs][i_cat][i_proc] = (TH1F*)histo_file->Get(_histo_name.c_str());
+				
+            _histo_name = "DVBFDEC" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
+            histos_1D[Settings::DVBFDEC][i_fs][i_cat][i_proc] = (TH1F*)histo_file->Get(_histo_name.c_str());
+				
+            _histo_name = "DVBFDEC_M4L118130" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
+            histos_1D[Settings::DVBFDEC_M4L118130][i_fs][i_cat][i_proc] = (TH1F*)histo_file->Get(_histo_name.c_str());
+				
+            _histo_name = "DVHDEC" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
+            histos_1D[Settings::DVHDEC][i_fs][i_cat][i_proc] = (TH1F*)histo_file->Get(_histo_name.c_str());
+				
+            _histo_name = "DVHDEC_M4L118130" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
+            histos_1D[Settings::DVHDEC_M4L118130][i_fs][i_cat][i_proc] = (TH1F*)histo_file->Get(_histo_name.c_str());
             
             _histo_name = "D1jet" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
             histos_1D[Settings::D1jet][i_fs][i_cat][i_proc] = (TH1F*)histo_file->Get(_histo_name.c_str());
@@ -2238,6 +2253,18 @@ void Histograms::GetHistos( TString file_name )
          
          _histo_name = "KD_M4L118130_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
          histos_1D_ZX[Settings::KD_M4L118130][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
+			
+         _histo_name = "DVBFDEC_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+			histos_1D_ZX[Settings::DVBFDEC][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
+			
+			_histo_name = "DVBFDEC_M4L118130_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+			histos_1D_ZX[Settings::DVBFDEC_M4L118130][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
+			
+			_histo_name = "DVHDEC_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+			histos_1D_ZX[Settings::DVHDEC][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
+			
+			_histo_name = "DVHDEC_M4L118130_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+			histos_1D_ZX[Settings::DVHDEC_M4L118130][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
          
          _histo_name = "D1jet_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
          histos_1D_ZX[Settings::D1jet][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
@@ -2379,9 +2406,8 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
    if ( GetVarLogY( variable_name) ) c->SetLogy();
    
    
-   is_Djet_ = plot_index == Settings::D1jet_M4L118130 || plot_index == Settings::D2jet_M4L118130 || plot_index == Settings::D1jet || plot_index == Settings::D2jet;
-   is_DVH_  = plot_index == Settings::DWH_M4L118130 || plot_index == Settings::DWH || plot_index == Settings::DZH_M4L118130 || plot_index == Settings::DZH ||
-              plot_index == Settings::DVH_M4L118130 || plot_index == Settings::DVH;
+   is_Djet_ = plot_index == Settings::D1jet_M4L118130 || plot_index == Settings::D2jet_M4L118130 || plot_index == Settings::D1jet || plot_index == Settings::D2jet || plot_index == Settings::DVBFDEC || plot_index == Settings::DVBFDEC_M4L118130;
+   is_DVH_  = plot_index == Settings::DWH_M4L118130 || plot_index == Settings::DWH || plot_index == Settings::DZH_M4L118130 || plot_index == Settings::DZH || plot_index == Settings::DVH_M4L118130 || plot_index == Settings::DVH || plot_index == Settings::DVHDEC || plot_index == Settings::DVHDEC_M4L118130;
    
    if ( is_Djet_ )
    {
@@ -2407,7 +2433,7 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
    histos_1D[plot_index][fs][cat][Settings::qqZZ]->SetLineColor(Cosmetics::qqZZ().line_color);
    histos_1D[plot_index][fs][cat][Settings::ggZZ]->SetLineColor(Cosmetics::ggZZ().line_color);
    
-   if ( false )//variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
+   if ( variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
    {
       histos_1D_ZX_shape[plot_index][fs][cat]->SetFillColor(Cosmetics::ZX().fill_color);
       histos_1D_ZX_shape[plot_index][fs][cat]->SetLineColor(Cosmetics::ZX().line_color);
@@ -2432,7 +2458,7 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
    // THStack
    THStack *stack = new THStack( "stack", "stack" );
    
-   if ( false)//variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
+   if ( variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
    {
       stack->Add(histos_1D_ZX_shape[plot_index][fs][cat]);
    }
@@ -2526,7 +2552,7 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
                                         histos_1D[plot_index][fs][cat][Settings::ggZZ],
                                         histos_1D_ZX[plot_index][fs][cat]);
    }
-   else if ( plot_index == Settings::D2jet_M4L118130 || plot_index == Settings::D2jet )
+   else if ( plot_index == Settings::D2jet_M4L118130 || plot_index == Settings::D2jet  || plot_index == Settings::DVBFDEC || plot_index == Settings::DVBFDEC_M4L118130)
    {
       legend  = CreateLegendVBF("right", histos_1D[plot_index][fs][cat][Settings::Data],
                                          histos_1D[plot_index][fs][cat][Settings::H125VBF],
@@ -2535,7 +2561,7 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
                                          histos_1D[plot_index][fs][cat][Settings::ggZZ],
                                          histos_1D_ZX[plot_index][fs][cat]);
    }
-   else if ( is_DVH_ )
+   else if ( is_DVH_  || plot_index == Settings::DVHDEC || plot_index == Settings::DVHDEC_M4L118130)
    {
       legend  = CreateLegendVH("right", histos_1D[plot_index][fs][cat][Settings::Data],
                                         histos_1D[plot_index][fs][cat][Settings::H125VH],
@@ -2562,13 +2588,13 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
    
    TPaveText *text;
    
-   if ( plot_index == Settings::D1jet_M4L118130 || plot_index == Settings::KD_M4L118130 || plot_index == Settings::MZ1_M4L118130 || plot_index == Settings::DVBFDEC_M4L118130 || plot_index == Settings::DVHDEC_M4L118130 )
+   if ( plot_index == Settings::D1jet_M4L118130 || plot_index == Settings::KD_M4L118130 || plot_index == Settings::MZ1_M4L118130 )
    {
       text = CreateCutText("right top", "118 < m_{4#font[12]{l}} < 130 GeV");
       text->Draw();
    }
    else if ( plot_index == Settings::D2jet_M4L118130 || plot_index == Settings::DWH_M4L118130 || plot_index == Settings::DZH_M4L118130 ||
-             plot_index == Settings::DVH_M4L118130   || plot_index == Settings::MZ2_M4L118130)
+             plot_index == Settings::DVH_M4L118130   || plot_index == Settings::MZ2_M4L118130 || plot_index == Settings::DVBFDEC_M4L118130 || plot_index == Settings::DVHDEC_M4L118130)
    {
       text = CreateCutText("left top", "118 < m_{4#font[12]{l}} < 130 GeV");
       text->Draw();
@@ -2578,6 +2604,13 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
       text = CreateCutText("right top", "D_{bkg}^{kin} > 0.5");
       text->Draw();
    }
+
+	if ( plot_index == Settings::DVBFDEC_M4L118130 || plot_index == Settings::DVBFDEC || plot_index == Settings::DVHDEC_M4L118130 || plot_index == Settings::DVHDEC)
+	{
+		text = CreateCatText("left under cut text", _s_category_label.at(cat));
+		text->Draw();
+	}
+	
    
 //=================
 // CMS TEXT & LUMI
@@ -2660,7 +2693,7 @@ void Histograms::plot_1D_all_cat( TString filename, TString variable_name , TStr
       histos_1D[plot_index][Settings::fs4l][i_cat][Settings::ggZZ]->SetLineColor(Cosmetics::ggZZ().line_color);
       
 
-      if ( false) //variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
+      if ( variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
       {
          histos_1D_ZX_shape[plot_index][Settings::fs4l][i_cat]->SetFillColor(Cosmetics::ZX().fill_color);
          histos_1D_ZX_shape[plot_index][Settings::fs4l][i_cat]->SetLineColor(Cosmetics::ZX().line_color);
@@ -2683,7 +2716,7 @@ void Histograms::plot_1D_all_cat( TString filename, TString variable_name , TStr
       
       THStack *stack = new THStack();
       
-      if ( false)//variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
+      if ( variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
       {
          stack->Add(histos_1D_ZX_shape[plot_index][Settings::fs4l][i_cat]);
       }
@@ -2875,12 +2908,12 @@ void Histograms::plot_1D_all_fs( TString filename, TString variable_name , TStri
    
    for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
    {
-      if( i_fs == Settings::fs2mu2e) continue;
+      if( i_fs == Settings::fs2mu2e && MERGE_2E2MU) continue;
       histos_1D[plot_index][i_fs][Settings::inclusive][Settings::H125]->SetFillColor(Cosmetics::Higgs_all().fill_color);
       histos_1D[plot_index][i_fs][Settings::inclusive][Settings::qqZZ]->SetFillColor(Cosmetics::qqZZ().fill_color);
       histos_1D[plot_index][i_fs][Settings::inclusive][Settings::ggZZ]->SetFillColor(Cosmetics::ggZZ().fill_color);
       
-      if ( false) //variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
+      if ( (variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass") && MERGE_2E2MU )
          histos_1D_ZX_shape[plot_index][i_fs][Settings::inclusive]->SetFillColor(Cosmetics::ZX().fill_color);
       else
          histos_1D_ZX[plot_index][i_fs][Settings::inclusive]->SetFillColor(Cosmetics::ZX().fill_color);
@@ -2889,7 +2922,7 @@ void Histograms::plot_1D_all_fs( TString filename, TString variable_name , TStri
       histos_1D[plot_index][i_fs][Settings::inclusive][Settings::qqZZ]->SetLineColor(Cosmetics::qqZZ().line_color);
       histos_1D[plot_index][i_fs][Settings::inclusive][Settings::ggZZ]->SetLineColor(Cosmetics::ggZZ().line_color);
       
-      if ( false ) //variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
+      if ( (variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass") && MERGE_2E2MU )
          histos_1D_ZX_shape[plot_index][i_fs][Settings::inclusive]->SetLineColor(Cosmetics::ZX().line_color);
       else
          histos_1D_ZX[plot_index][i_fs][Settings::inclusive]->SetLineColor(Cosmetics::ZX().line_color);
@@ -2901,7 +2934,7 @@ void Histograms::plot_1D_all_fs( TString filename, TString variable_name , TStri
       // THStack
       THStack *stack = new THStack( "stack", "stack" );
       
-      if ( false) //variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
+      if ( (variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass") && MERGE_2E2MU )
       {  
          stack->Add(histos_1D_ZX_shape[plot_index][i_fs][Settings::inclusive]);
       }
@@ -2937,7 +2970,7 @@ void Histograms::plot_1D_all_fs( TString filename, TString variable_name , TStri
          if      ( i_fs == Settings::fs4e )    stack->GetXaxis()->SetTitle(Variables::M4lMain().var_X_label_4e);
          else if ( i_fs == Settings::fs4mu )   stack->GetXaxis()->SetTitle(Variables::M4lMain().var_X_label_4mu);
          else if ( i_fs == Settings::fs2e2mu ) stack->GetXaxis()->SetTitle(Variables::M4lMain().var_X_label_2e2mu);
-         else if ( i_fs == Settings::fs2e2mu ) stack->GetXaxis()->SetTitle(Variables::M4lMain().var_X_label_2mu2e);
+         else if ( i_fs == Settings::fs2mu2e ) stack->GetXaxis()->SetTitle(Variables::M4lMain().var_X_label_2mu2e);
          else                                  stack->GetXaxis()->SetTitle(Variables::M4lMain().var_X_label);;
       }
       else
@@ -3916,7 +3949,7 @@ void Histograms::PrintLatexTables(float M4l_down, float M4l_up, vector< vector <
       for ( int i_proc = 0; i_proc < num_of_processes_yields; i_proc++ )
       {
          if (i_proc == Settings::yH125ggH || i_proc == Settings::yH125VBF || i_proc == Settings::yH125WHlep || i_proc == Settings::yH125WHhad || i_proc == Settings::yH125ZHlep || i_proc == Settings::yH125ZHhad
-         || i_proc == Settings::yH125ttHlep || i_proc == Settings::yH125ttHhad || i_proc == Settings::yqqZZ || i_proc == Settings::yggZZ)
+         || i_proc == Settings::yH125ttHlep || i_proc == Settings::yH125ttHhad || i_proc == Settings::yH125tqH || i_proc == Settings::yH125bbH || i_proc == Settings::yqqZZ || i_proc == Settings::yggZZ)
          {
             temp_yield = histos_1D[Settings::M4lYields][Settings::fs4l][i_cat][i_proc]->Integral(
                          histos_1D[Settings::M4lYields][Settings::fs4l][i_cat][i_proc]->FindBin(M4l_down),
@@ -3935,11 +3968,11 @@ void Histograms::PrintLatexTables(float M4l_down, float M4l_up, vector< vector <
    }
       
    
-   cout << "\\begin{tabular}{c|cccccccc|ccc|c|c}" << endl;
+   cout << "\\begin{tabular}{c|cccccccccc|ccc|c|c}" << endl;
    cout << "\\hline" << endl;
    cout << "\\hline" << endl;
-   cout << "Event & \\multicolumn{8}{c|}{Signal} & \\multicolumn{3}{c|}{Background} & Total & Observed \\\\" << endl;
-   cout << "category & $\\ggH$ & VBF & WH-lep & WH-had & ZH-lep & ZH-had &  ttH-lep & ttH-had & \\qqZZ & \\ggZZ & \\cPZ\\ + X & expected & \\\\" << endl;
+   cout << "Event & \\multicolumn{10}{c|}{Signal} & \\multicolumn{3}{c|}{Background} & Total & Observed \\\\" << endl;
+   cout << "category & $\\ggH$ & VBF & WH-lep & WH-had & ZH-lep & ZH-had & ttH-lep & ttH-had & bbH & tqH & \\qqZZ & \\ggZZ & \\cPZ\\ + X & expected & \\\\" << endl;
    cout << "\\hline" << endl; 
    
    
@@ -4556,6 +4589,7 @@ TPaveText* Histograms::CreateCatText( string position, TString cat_label)
    TPaveText *pav;
    pav = new TPaveText(.21, .81, .51, .91,"brNDC");// Default initalisiation to avoid scram compilation error
    if (position == "top left")  pav = new TPaveText(.21, .81, .51, .91,"brNDC");
+   if (position == "left under cut text" )    pav = new TPaveText(.21, .71, .51, .81 ,"brNDC");
    pav->SetFillStyle(0);
    pav->SetBorderSize(0);
    pav->SetTextAlign(11);

@@ -127,7 +127,7 @@ void Plotter::MakeHistograms( TString input_file_name )
 													 false);// Use QG tagging
    
       // K factors
-      if ( APPLY_K_FACTORS ) _k_factor = calculate_K_factor(input_file_name);
+      _k_factor = calculate_K_factor(input_file_name);
    
       // Final event weight
       _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight) / gen_sum_weights;

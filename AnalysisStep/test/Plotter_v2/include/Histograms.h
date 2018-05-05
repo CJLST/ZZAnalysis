@@ -34,6 +34,7 @@
 #include <ZZAnalysis/AnalysisStep/test/Plotter_v2/include/Variables.h>
 #include <ZZAnalysis/AnalysisStep/test/Plotter_v2/include/Cosmetics.h>
 
+#define MERGE_2E2MU 0
 
 using namespace std;
 

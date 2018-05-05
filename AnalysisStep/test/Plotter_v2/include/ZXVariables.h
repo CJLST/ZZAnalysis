@@ -19,9 +19,9 @@ public:
    ZXVariables ();
    ~ZXVariables();
    
-   float yield_SS_4e    = 8.8;
-   float yield_SS_4mu   = 33.0;
-   float yield_SS_2e2mu = 37.4;
+   float yield_SS_4e    = 12.3937;
+   float yield_SS_4mu   = 36.392;
+   float yield_SS_2e2mu = 44.4516;
    
    struct ZX4e
    {            

@@ -38,11 +38,6 @@
 #include <ZZAnalysis/AnalysisStep/interface/Discriminants.h>
 
 // BOOLS
-#define APPLY_K_FACTORS 1
-#define MERGE_2E2MU 1
-#define USE_ZX_RUN2_COMBINED_SHAPE 0
-#define USE_ZX_FULL_RUN2_SS 1
-#define RENORMALIZE_ZX_FULL_RUN2_SS 1
 #define SMOOTH_ZX_FULL_RUN2_SS 0
 
 #define NEWWP2J 0.5

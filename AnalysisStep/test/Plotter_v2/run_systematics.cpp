@@ -90,7 +90,7 @@ int main( int argc, char *argv[] )
 	systematics->FillSystematics(ZZTo4l);
 	systematics->FillSystematics(ggZZ4e);
 	systematics->FillSystematics(ggZZ4mu);
-//	systematics->FillSystematics(ggZZ4tau);
+	systematics->FillSystematics(ggZZ4tau);
 	systematics->FillSystematics(ggZZ2e2mu);
 	systematics->FillSystematics(ggZZ2e2tau);
 	systematics->FillSystematics(ggZZ2mu2tau);

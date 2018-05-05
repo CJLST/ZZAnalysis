@@ -29,7 +29,7 @@ int main( int argc, char *argv[] )
    TString file_name_FR = "/FakeRates_SS_Moriond18.root";
    
    //Data
-   TString Data        = path + "AllData" + file_name;
+   TString Data    = "AllData"        + file_name;
    TString FakeRates   = "../../data/FakeRates" + file_name_FR;
    
    // Signal
@@ -157,9 +157,9 @@ int main( int argc, char *argv[] )
    yields->GetHistos("Yields");
    yields->Calculate_SS_ZX_Yields( Data, FakeRates);
    yields->Print("Yields");
-   yields->Print("Yields",  70., 110.);
-
-   yields->Print("Yields", 150., 300.);
+	
+   yields->Print("Yields", 118., 130.);
+   yields->Print("Yields", 105., 140.);
 
    yields->PrintLatexTables("Yields", 118., 130.);
    yields->FillGraphs("Yields", 105., 140., "Q");
