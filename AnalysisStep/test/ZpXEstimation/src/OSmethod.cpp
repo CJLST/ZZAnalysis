@@ -214,7 +214,7 @@ void OSmethod::FillDataMCPlots( TString input_file_data_name )
 														 jetPhi,
 														 ZZMass,
 														 PFMET,
-														 true,// Use VHMET category
+														 false,// Use VHMET category
 														 false);// Use QG tagging
       
       _k_factor = calculate_K_factor(input_file_data_name);
@@ -292,7 +292,7 @@ void OSmethod::MakeHistogramsZX( TString input_file_data_name, TString  input_fi
 														 jetPhi,
 														 ZZMass,
 														 PFMET,
-														 true,// Use VHMET category
+														 false,// Use VHMET category
 														 false);// Use QG tagging
 
       if ( test_bit(CRflag, CRZLLos_2P2F) )
@@ -407,7 +407,7 @@ void OSmethod::MakeZXMCContribution( TString input_file_data_name, TString  inpu
 														 jetPhi,
 														 ZZMass,
 														 PFMET,
-														 true,// Use VHMET category
+														 false,// Use VHMET category
 														 false);// Use QG tagging
       
       _k_factor = calculate_K_factor(input_file_data_name);

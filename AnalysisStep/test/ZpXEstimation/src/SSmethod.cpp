@@ -132,7 +132,7 @@ void SSmethod::Calculate_SSOS_Ratio( TString input_file_data_name, TString input
 														 jetPhi,
 														 ZZMass,
 														 PFMET,
-														 true,// Use VHMET category
+														 false,// Use VHMET category
 														 false);// Use QG tagging
       
       if ((test_bit(CRflag, CRZLLss))) _N_SS_events[_current_final_state][_current_category]+=1.0;
@@ -193,7 +193,7 @@ void SSmethod::Calculate_SSOS_Ratio( TString input_file_data_name, TString input
 														 jetPhi,
 														 ZZMass,
 														 PFMET,
-														 true,// Use VHMET category
+														 false,// Use VHMET category
 														 false);// Use QG tagging
          
          _k_factor = calculate_K_factor(input_file_data_name);
@@ -437,7 +437,7 @@ void SSmethod::FillDataMCPlots( TString input_file_data_name )
 														 jetPhi,
 														 ZZMass,
 														 PFMET,
-														 true,// Use VHMET category
+														 false,// Use VHMET category
 														 false);// Use QG tagging
 
       
@@ -516,7 +516,7 @@ void SSmethod::MakeHistogramsZX( TString input_file_data_name, TString  input_fi
 														 jetPhi,
 														 ZZMass,
 														 PFMET,
-														 true,// Use VHMET category
+														 false,// Use VHMET category
 														 false);// Use QG tagging
       
       
@@ -1458,6 +1458,7 @@ void SSmethod::PlotFR()
    mg_electrons->SetMaximum(0.35);
    leg_ele = CreateLegend_FR("left",FR_SS_electron_EB_unc,FR_SS_electron_EB,FR_SS_electron_EE_unc,FR_SS_electron_EE);
    leg_ele->Draw();
+   system("mkdir -p Plots");
    SavePlots(c_ele, "Plots/FR_SS_electrons");
    
    c_mu->cd();
