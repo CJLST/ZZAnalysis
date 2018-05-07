@@ -151,19 +151,25 @@ int main( int argc, char *argv[] )
    yields->Save();
 	
 //==============
-// Print Yields 
+// Print Yields
 //==============
- 
+	
    yields->GetHistos("Yields");
    yields->Calculate_SS_ZX_Yields( Data, FakeRates);
    yields->Print("Yields");
-	
+
    yields->Print("Yields", 118., 130.);
    yields->Print("Yields", 105., 140.);
 
    yields->PrintLatexTables("Yields", 118., 130.);
    yields->FillGraphs("Yields", 105., 140., "Q");
    yields->PrepareYamlFiles("Yields", "13", 105., 140.);
+	
+//==========================================
+// Produce data ROOT files for datacard maker
+//==========================================
+	yields->ProduceDataROOTFiles( Data, "DataROOTFiles" );
+	
 	
    delete yields;
 }

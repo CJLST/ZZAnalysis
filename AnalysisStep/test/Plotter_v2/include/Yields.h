@@ -64,6 +64,7 @@ public:
    void Print( TString, float, float );
    void PrintLatexTables( TString, float, float );
    void Split_2e2mu();
+   void ProduceDataROOTFiles( TString, TString );
    
 private:
 
@@ -100,8 +101,17 @@ private:
    double gen_sum_weights, _event_weight;
    
    vector< vector <float> > _expected_yield_SR, _number_of_events_CR;
+   vector<TString> _s_category, _s_final_state;
+	
    vector<int>   gen_assoc_lep_id_;
    vector<float> _fs_ROS_SS;
+	
+	TFile *data_root_file;
+	TTree *data_obs;
+	Double_t mass4l;
+	Double_t kd;
+   vector<float> _mass[num_of_final_states][num_of_categories];
+   vector<float> _kd[num_of_final_states][num_of_categories];
    
 };
 #endif
