@@ -415,7 +415,9 @@ void Yields::ProduceDataROOTFiles( TString input_file_name , TString output_fold
          data_root_file = new TFile(file_name, "recreate");
          data_obs = new TTree("data_obs","data_obs");
          data_obs->Branch("mass4l",&mass4l,"mass4l/D");
-         data_obs->Branch("kd",&kd,"kd/D");
+         if( i_cat == Settings::VBF_2j_tagged ) data_obs->Branch("kdCoarse",&kd,"kdCoarse/D");
+         else if( i_cat == Settings::VH_hadron_tagged ) data_obs->Branch("kdCoarse",&kd,"kdCoarse/D");
+         else data_obs->Branch("kd",&kd,"kd/D");
 			
          for (unsigned int i_event = 0; i_event < _mass[i_fs][i_cat].size(); i_event++ )
          {

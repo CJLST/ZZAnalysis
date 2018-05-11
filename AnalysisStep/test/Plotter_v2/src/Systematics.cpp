@@ -1168,11 +1168,11 @@ void Systematics::PrintSystematics_QCDScale( )
 			muF_Up = (_expected_yield_muF_UP[i_prod][i_cat]/_expected_yield_muF_UP[i_prod][Settings::inclusive])/(_expected_yield_muF[i_prod][i_cat]/_expected_yield_muF[i_prod][Settings::inclusive]);
 			muF_Dn = (_expected_yield_muF_DN[i_prod][i_cat]/_expected_yield_muF_DN[i_prod][Settings::inclusive])/(_expected_yield_muF[i_prod][i_cat]/_expected_yield_muF[i_prod][Settings::inclusive]);
 			
-			if( i_cat == Settings::untagged && muR_Up > 1. && muF_Up > 1.) combination_mu = 0;
-			if( i_cat == Settings::untagged && muR_Up > 1. && muF_Up < 1.) combination_mu = 1;
-			if( i_cat == Settings::untagged && muR_Up < 1. && muF_Up > 1.) combination_mu = 2;
-			if( i_cat == Settings::untagged && muR_Up < 1. && muF_Up < 1.) combination_mu = 3;
-			
+			if( muR_Up > 1. && muF_Up > 1.) combination_mu = 0;
+			if( muR_Up > 1. && muF_Up < 1.) combination_mu = 1;
+			if( muR_Up < 1. && muF_Up > 1.) combination_mu = 2;
+			if( muR_Up < 1. && muF_Up < 1.) combination_mu = 3;
+			cout << "combination_mu = " << combination_mu << endl;
 			if(combination_mu == 0) {mu_Dn = 1. - sqrt(pow(1. - muR_Dn,2)+pow(1. - muF_Dn,2));  mu_Up = 1. + sqrt(pow(muR_Up - 1.,2)+pow(muF_Up - 1.,2));}
 			if(combination_mu == 1) {mu_Dn = 1. - sqrt(pow(1. - muR_Dn,2)+pow(1. - muF_Up,2));  mu_Up = 1. + sqrt(pow(muR_Up - 1.,2)+pow(muF_Dn - 1.,2));}
 			if(combination_mu == 2) {mu_Dn = 1. - sqrt(pow(1. - muR_Up,2)+pow(1. - muF_Dn,2));  mu_Up = 1. + sqrt(pow(muR_Dn - 1.,2)+pow(muF_Up - 1.,2));}
@@ -1192,10 +1192,11 @@ void Systematics::PrintSystematics_QCDScale( )
 			if(PythiaTune_Dn== 0) PythiaTune_Dn = 1.;
 			if(PythiaTune_Dn > 2.0) PythiaTune_Dn = 1.5;
 			
-			if( i_cat == Settings::untagged && PythiaScale_Up > 1. && PythiaTune_Up > 1.) combination_Pythia = 0;
-			if( i_cat == Settings::untagged && PythiaScale_Up > 1. && PythiaTune_Up < 1.) combination_Pythia = 1;
-			if( i_cat == Settings::untagged && PythiaScale_Up < 1. && PythiaTune_Up > 1.) combination_Pythia = 2;
-			if( i_cat == Settings::untagged && PythiaScale_Up < 1. && PythiaTune_Up < 1.) combination_Pythia = 3;
+			if( PythiaScale_Up > 1. && PythiaTune_Up > 1.) combination_Pythia = 0;
+			if( PythiaScale_Up > 1. && PythiaTune_Up < 1.) combination_Pythia = 1;
+			if( PythiaScale_Up < 1. && PythiaTune_Up > 1.) combination_Pythia = 2;
+			if( PythiaScale_Up < 1. && PythiaTune_Up < 1.) combination_Pythia = 3;
+			cout << "combination_Pythia = " << combination_Pythia << endl;
 			
 			if(combination_Pythia == 0) {Pythia_Dn = 1. - sqrt(pow(1. - PythiaScale_Dn,2)+pow(1. - PythiaTune_Dn,2));  Pythia_Up = 1. + sqrt(pow(PythiaScale_Up - 1.,2)+pow(PythiaTune_Up - 1.,2));}
 			if(combination_Pythia == 1) {Pythia_Dn = 1. - sqrt(pow(1. - PythiaScale_Dn,2)+pow(1. - PythiaTune_Up,2));  Pythia_Up = 1. + sqrt(pow(PythiaScale_Up - 1.,2)+pow(PythiaTune_Dn - 1.,2));}
@@ -1206,6 +1207,12 @@ void Systematics::PrintSystematics_QCDScale( )
 			comb_Up = 1. + sqrt(pow(Pythia_Up - 1.,2)+pow(mu_Up - 1.,2));
 			comb_Dn = 1. - sqrt(pow(1. - Pythia_Dn,2)+pow(1. - mu_Dn,2));
 
+			cout << _s_production_mode.at(i_prod)  << " : " << muR_Dn << "/" << muR_Up << endl;
+			cout << _s_production_mode.at(i_prod)  << " : " << muF_Dn << "/" << muF_Up << endl;
+			cout << _s_production_mode.at(i_prod)  << " : " << mu_Dn << "/" << mu_Up << endl;
+			cout << _s_production_mode.at(i_prod)  << " : " << PythiaScale_Dn << "/" << PythiaScale_Up << endl;
+			cout << _s_production_mode.at(i_prod)  << " : " << PythiaTune_Dn << "/" << PythiaTune_Up << endl;
+			cout << _s_production_mode.at(i_prod)  << " : " << Pythia_Dn << "/" << Pythia_Up << endl;
 			cout << _s_production_mode.at(i_prod)  << " : " << comb_Dn << "/" << comb_Up << endl;
 			
 		}

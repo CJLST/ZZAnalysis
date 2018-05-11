@@ -24,7 +24,7 @@ int main( int argc, char *argv[] )
 {
    setTDRStyle();
 	
-	TString path = "";
+   TString path = "";
    TString file_name = "/ZZ4lAnalysis.root";
    TString file_name_FR = "/FakeRates_SS_Moriond18.root";
    
@@ -162,8 +162,8 @@ int main( int argc, char *argv[] )
    yields->Print("Yields", 105., 140.);
 
    yields->PrintLatexTables("Yields", 118., 130.);
-   yields->FillGraphs("Yields", 105., 140., "Q");
-   yields->PrepareYamlFiles("Yields", "13", 105., 140.);
+   yields->FillGraphs("Yields", 118., 130., "Q");
+   yields->PrepareYamlFiles("Yields", "13", 118., 130.);
 	
 //==========================================
 // Produce data ROOT files for datacard maker

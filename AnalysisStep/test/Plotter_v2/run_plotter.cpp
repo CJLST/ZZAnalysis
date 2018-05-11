@@ -158,6 +158,7 @@ int main( int argc, char *argv[] )
    plotter->plot_1D_all_fs("Unblinded", "NJets",             "Plots/Unblinded");
    plotter->plot_1D_all_fs("Unblinded", "NJetsBTagged",      "Plots/Unblinded");
    plotter->plot_1D_all_fs("Unblinded", "M4l_110150_HighKD", "Plots/Unblinded");
+   plotter->plot_1D_all_cat("Unblinded", "M4l_110150_HighKD", "Plots/Unblinded");
 
    plotter->plot_1D_single("Unblinded", "M4lMainHighMass", "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
    plotter->plot_1D_single("Unblinded", "MZ1",             "Plots/Unblinded", Settings::fs4l, Settings::inclusive);

@@ -1089,7 +1089,7 @@ void Histograms::FillYields( float M4l, float weight, int fs, int cat, int proc 
 //========
 // Others
 //====================================================================================
-void Histograms::FillOthers( float M4l, float ZZPt, float ZZEta, float PFMET, float Pt_leading, float Pt_trailing, float SIP_leading, float SIP_trailing, float ISO_leading, float ISO_trailing, int NExtraLep, int NJets, int NJetsBTagged, float KD, float weight, int fs, int cat, int proc )
+void Histograms::FillOthers( float M4l, float ZZPt, float ZZEta, float PFMET, float Pt_leading, float Pt_trailing, float SIP_leading, float SIP_trailing, float ISO_leading, float ISO_trailing, int NExtraLep, int NJets, int NJetsBTagged, float KD, float DVBFDEC, float DVHDEC, float weight, int fs, int cat, int proc )
 {
    histos_1D[Settings::PFMET][fs][cat][proc]       ->Fill(PFMET, (proc == Settings::Data) ? 1. : weight);
    histos_1D[Settings::Pt4l][fs][cat][proc]        ->Fill(ZZPt, (proc == Settings::Data) ? 1. : weight);
@@ -1103,12 +1103,14 @@ void Histograms::FillOthers( float M4l, float ZZPt, float ZZEta, float PFMET, fl
    histos_1D[Settings::NExtraLep][fs][cat][proc]   ->Fill(NExtraLep, (proc == Settings::Data) ? 1. : weight);
    histos_1D[Settings::NJets][fs][cat][proc]       ->Fill(NJets, (proc == Settings::Data) ? 1. : weight);
    histos_1D[Settings::NJetsBTagged][fs][cat][proc]->Fill(NJetsBTagged, (proc == Settings::Data) ? 1. : weight);
-   if (KD > 0.5) histos_1D[Settings::M4l_110150_HighKD][fs][cat][proc]->Fill(M4l, (proc == Settings::Data) ? 1. : weight);
+   if (DVBFDEC > 0.5 && cat == Settings::VBF_2j_tagged) histos_1D[Settings::M4l_110150_HighKD][fs][cat][proc]->Fill(M4l, (proc == Settings::Data) ? 1. : weight);
+   else if (DVHDEC > 0.5 && cat == Settings::VH_hadron_tagged) histos_1D[Settings::M4l_110150_HighKD][fs][cat][proc]->Fill(M4l, (proc == Settings::Data) ? 1. : weight);
+   else if (KD > 0.5) histos_1D[Settings::M4l_110150_HighKD][fs][cat][proc]->Fill(M4l, (proc == Settings::Data) ? 1. : weight);
 }
 //====================================================================================
 
 //====================================================================
-void Histograms::FillOthersZX( float M4l, float ZZPt, float ZZEta, float PFMET, float Pt_leading, float Pt_trailing, float SIP_leading, float SIP_trailing, float ISO_leading, float ISO_trailing, int NExtraLep, int NJets, int NJetsBTagged, float KD, float weight, int fs, int cat )
+void Histograms::FillOthersZX( float M4l, float ZZPt, float ZZEta, float PFMET, float Pt_leading, float Pt_trailing, float SIP_leading, float SIP_trailing, float ISO_leading, float ISO_trailing, int NExtraLep, int NJets, int NJetsBTagged, float KD, float DVBFDEC, float DVHDEC, float weight, int fs, int cat )
 {
    histos_1D_ZX[Settings::PFMET][fs][cat]       ->Fill(PFMET, weight);
 	histos_1D_ZX[Settings::Pt4l][fs][cat]        ->Fill(ZZPt, weight);
@@ -1122,7 +1124,9 @@ void Histograms::FillOthersZX( float M4l, float ZZPt, float ZZEta, float PFMET, 
    histos_1D_ZX[Settings::NExtraLep][fs][cat]   ->Fill(NExtraLep, weight);
    histos_1D_ZX[Settings::NJets][fs][cat]       ->Fill(NJets, weight);
    histos_1D_ZX[Settings::NJetsBTagged][fs][cat]->Fill(NJetsBTagged, weight);
-   if (KD > 0.5) histos_1D_ZX[Settings::M4l_110150_HighKD][fs][cat]->Fill(M4l, weight);
+   if (DVBFDEC > 0.5 && cat == Settings::VBF_2j_tagged) histos_1D_ZX[Settings::M4l_110150_HighKD][fs][cat]->Fill(M4l, weight);
+   else if (DVHDEC > 0.5 && cat == Settings::VH_hadron_tagged) histos_1D_ZX[Settings::M4l_110150_HighKD][fs][cat]->Fill(M4l, weight);
+   else if (KD > 0.5) histos_1D_ZX[Settings::M4l_110150_HighKD][fs][cat]->Fill(M4l, weight);
 
 }
 //====================================================================
@@ -2679,7 +2683,9 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
    }
 	else if ( plot_index == Settings::M4l_110150_HighKD)
    {
-      text = CreateCutText("right top", "D_{bkg}^{kin} > 0.5");
+      if (cat == Settings::VBF_2j_tagged ) text = CreateCutText("right top", "D_{bkg}^{VBF+dec} > 0.5");
+      else if (cat == Settings::VH_hadron_tagged ) text = CreateCutText("right top", "D_{bkg}^{VH+dec} > 0.5");
+      else text = CreateCutText("right top", "D_{bkg}^{kin} > 0.5");
       text->Draw();
    }
 
@@ -2944,6 +2950,14 @@ void Histograms::plot_1D_all_cat( TString filename, TString variable_name , TStr
          text = CreateCatText("top left", _s_category_label.at(i_cat));
          text->Draw();
       }
+	
+		if ( plot_index == Settings::M4l_110150_HighKD)
+		{
+			if (i_cat == Settings::VBF_2j_tagged ) text = CreateCutText("left top", "D_{bkg}^{VBF+dec} > 0.5");
+      	else if (i_cat == Settings::VH_hadron_tagged ) text = CreateCutText("left top", "D_{bkg}^{VH+dec} > 0.5");
+      	else text = CreateCutText("left top", "D_{bkg}^{kin} > 0.5");
+			text->Draw();
+		}
       
 //=================
 // CMS TEXT & LUMI
@@ -3514,7 +3528,17 @@ void Histograms::FillYieldGraphs( float M4l_down, float M4l_up , TString fit_opt
 				
             if( i_prod_mode == Settings::tqH
             || (i_prod_mode == Settings::WH_had && i_cat == Settings::ttH_lepton_tagged)
+//            || (i_prod_mode == Settings::WH_had && i_cat == Settings::ttH_hadron_tagged)
+//            || (i_prod_mode == Settings::WH_had && i_cat == Settings::VH_lepton_tagged)
             || (i_prod_mode == Settings::ZH_had && i_cat == Settings::ttH_lepton_tagged) ) fit_model = "pol0";
+//            || (i_prod_mode == Settings::ZH_had && i_cat == Settings::ttH_hadron_tagged)
+//            || (i_prod_mode == Settings::ZH_had && i_cat == Settings::VH_lepton_tagged)
+//				|| (i_prod_mode == Settings::WH_lep && i_cat == Settings::ttH_lepton_tagged)
+//            || (i_prod_mode == Settings::WH_lep && i_cat == Settings::ttH_hadron_tagged)
+//            || (i_prod_mode == Settings::WH_lep && i_cat == Settings::VH_hadron_tagged)
+//            || (i_prod_mode == Settings::ZH_lep && i_cat == Settings::ttH_lepton_tagged)
+//            || (i_prod_mode == Settings::ZH_lep && i_cat == Settings::ttH_hadron_tagged)
+//            || (i_prod_mode == Settings::ZH_lep && i_cat == Settings::VH_hadron_tagged)
 				
             TF1 *fit_function = new TF1("fit_function", fit_model, 119, 131);
             fit_function->SetLineColor(catColor[i_cat]);
@@ -3605,7 +3629,7 @@ void Histograms::PrepareYamlFiles( TString sqrt, float M4l_down, float M4l_up, v
             _fit_funct_name = "f_" + _s_production_mode.at(i_prod_mode) + "_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
             fit_function = (TF1*)f_signal_fits->Get(_fit_funct_name);
             num_of_parameters = fit_function->GetNpar();
-            
+            out_file[i_fs] << "TMath::Max(0,";
             for ( int i_par = 0; i_par <= 2; i_par++ )
             {
                double parameter = 0;
@@ -3623,6 +3647,7 @@ void Histograms::PrepareYamlFiles( TString sqrt, float M4l_down, float M4l_up, v
                   out_file[i_fs] << "+";
                }
             }
+            out_file[i_fs] << ")";
             out_file[i_fs] << endl;
          }
          out_file[i_fs] <<  "    "  << _s_process.at(Settings::yqqZZ) << "_hzz: '" << histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yqqZZ]->Integral(

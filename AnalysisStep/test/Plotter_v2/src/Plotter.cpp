@@ -283,10 +283,10 @@ void Plotter::MakeHistograms( TString input_file_name )
 		// Fill other histograms
       if ( blind(ZZMass) )
       {
-         blinded_histos->FillOthers( ZZMass, ZZPt, ZZEta, PFMET, Pt_leading, Pt_trailing, SIP_leading, SIP_trailing, ISO_leading, ISO_trailing, nExtraLep, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, KD, _event_weight, _current_final_state, _current_category, _current_process );
+         blinded_histos->FillOthers( ZZMass, ZZPt, ZZEta, PFMET, Pt_leading, Pt_trailing, SIP_leading, SIP_trailing, ISO_leading, ISO_trailing, nExtraLep, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, KD, DVBFDEC, DVHDEC, _event_weight, _current_final_state, _current_category, _current_process );
       }
 		
-      unblinded_histos->FillOthers( ZZMass, ZZPt, ZZEta, PFMET, Pt_leading, Pt_trailing, SIP_leading, SIP_trailing, ISO_leading, ISO_trailing, nExtraLep, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, KD, _event_weight, _current_final_state, _current_category, _current_process );
+      unblinded_histos->FillOthers( ZZMass, ZZPt, ZZEta, PFMET, Pt_leading, Pt_trailing, SIP_leading, SIP_trailing, ISO_leading, ISO_trailing, nExtraLep, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, KD, DVBFDEC, DVHDEC, _event_weight, _current_final_state, _current_category, _current_process );
 		
       
    } // end for loop
@@ -524,10 +524,10 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
 		// Fill other histograms
       if ( blind(ZZMass) )
       {
-         blinded_histos->FillOthersZX( ZZMass, ZZPt, ZZEta, PFMET, Pt_leading, Pt_trailing, SIP_leading, SIP_trailing, ISO_leading, ISO_trailing, nExtraLep, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, KD, _event_weight, _current_final_state, _current_category );
+         blinded_histos->FillOthersZX( ZZMass, ZZPt, ZZEta, PFMET, Pt_leading, Pt_trailing, SIP_leading, SIP_trailing, ISO_leading, ISO_trailing, nExtraLep, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, KD, DVBFDEC, DVHDEC, _event_weight, _current_final_state, _current_category );
       }
 		
-      unblinded_histos->FillOthersZX( ZZMass, ZZPt, ZZEta, PFMET, Pt_leading, Pt_trailing, SIP_leading, SIP_trailing, ISO_leading, ISO_trailing, nExtraLep, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, KD, _event_weight, _current_final_state, _current_category );
+      unblinded_histos->FillOthersZX( ZZMass, ZZPt, ZZEta, PFMET, Pt_leading, Pt_trailing, SIP_leading, SIP_trailing, ISO_leading, ISO_trailing, nExtraLep, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, KD, DVBFDEC, DVHDEC, _event_weight, _current_final_state, _current_category );
    } // End events loop
    
    for (  int i_cat = 0; i_cat < num_of_categories - 1; i_cat++  )
