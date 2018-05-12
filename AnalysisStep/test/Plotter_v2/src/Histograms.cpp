@@ -530,6 +530,44 @@ Histograms::Histograms( double lumi, string blinding )
 //======================================
 
 
+Histograms::Histograms( string blinding )
+{
+
+	_s_process.push_back("Data");
+   _s_process.push_back("H125");
+   _s_process.push_back("H125ggH");
+   _s_process.push_back("H125VBF");
+   _s_process.push_back("H125VH");
+   _s_process.push_back("H125ttH");
+   _s_process.push_back("H125bbH");
+   _s_process.push_back("H125tqH");
+   _s_process.push_back("qqZZ");
+   _s_process.push_back("ggZZ");
+   
+	
+	for ( int i_proc = 0; i_proc < num_of_processes - 2; i_proc++ )
+	{
+		//=====
+		// M4l
+		//=====
+		_histo_name = "M4l_" + _s_process.at(i_proc) + "_" + _blinding;
+		_histo_labels = ";" + Variables::M4lMain().var_X_label + ";" + Variables::M4lMain().var_Y_label;
+		histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][i_proc] = new TH1F(_histo_name.c_str(), _histo_labels.c_str(), Variables::M4lMain().var_N_bin,Variables::M4lMain().var_min, Variables::M4lMain().var_max);
+	}
+
+	
+	
+   // Z+X
+
+		_histo_name = "M4l_ZX_shape_" + _blinding;
+		histos_1D_ZX_shape[Settings::M4lMain][Settings::fs4l][Settings::inclusive] = new TH1F(_histo_name.c_str(), "Z+X", Variables::M4lMain().var_N_bin,
+                                                                       Variables::M4lMain().var_min, Variables::M4lMain().var_max);
+
+	  M4lZX *ZXShapeCombination = new M4lZX();
+	
+   ZXShapeCombination->GetM4lZXCombination(histos_1D_ZX_shape[Settings::M4lMain][Settings::fs4l][Settings::inclusive]);
+}
+//======================================
 
 //Constructor
 //==================================
@@ -672,9 +710,16 @@ Histograms::~Histograms()
 //====================================================================================
 void Histograms::FillM4l( float M4l, float weight, int fs, int cat, int proc )
 {
-   histos_1D[Settings::M4lMain][fs][cat][proc]->Fill(M4l, (proc == Settings::Data) ? 1. : weight);
+	histos_1D[Settings::M4lMain][fs][cat][proc]->Fill(M4l, (proc == Settings::Data) ? 1. : weight);
    histos_1D[Settings::M4lMainZoomed][fs][cat][proc]->Fill(M4l, (proc == Settings::Data) ? 1. : weight);
    histos_1D[Settings::M4lMainHighMass][fs][cat][proc]->Fill(M4l, (proc == Settings::Data) ? 1. : weight);
+}
+//====================================================================================
+
+//====================================================================================
+void Histograms::FillM4lCombination( float M4l, float weight, int proc )
+{
+	histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][proc]->Fill(M4l, (proc == Settings::Data) ? 1. : weight);
 }
 //====================================================================================
 
@@ -1105,7 +1150,7 @@ void Histograms::FillOthers( float M4l, float ZZPt, float ZZEta, float PFMET, fl
    histos_1D[Settings::NJetsBTagged][fs][cat][proc]->Fill(NJetsBTagged, (proc == Settings::Data) ? 1. : weight);
    if (DVBFDEC > 0.5 && cat == Settings::VBF_2j_tagged) histos_1D[Settings::M4l_110150_HighKD][fs][cat][proc]->Fill(M4l, (proc == Settings::Data) ? 1. : weight);
    else if (DVHDEC > 0.5 && cat == Settings::VH_hadron_tagged) histos_1D[Settings::M4l_110150_HighKD][fs][cat][proc]->Fill(M4l, (proc == Settings::Data) ? 1. : weight);
-   else if (KD > 0.5) histos_1D[Settings::M4l_110150_HighKD][fs][cat][proc]->Fill(M4l, (proc == Settings::Data) ? 1. : weight);
+   else if (KD > 0.5 && (cat != Settings::VBF_2j_tagged && cat != Settings::VH_hadron_tagged)) histos_1D[Settings::M4l_110150_HighKD][fs][cat][proc]->Fill(M4l, (proc == Settings::Data) ? 1. : weight);
 }
 //====================================================================================
 
@@ -1126,7 +1171,7 @@ void Histograms::FillOthersZX( float M4l, float ZZPt, float ZZEta, float PFMET, 
    histos_1D_ZX[Settings::NJetsBTagged][fs][cat]->Fill(NJetsBTagged, weight);
    if (DVBFDEC > 0.5 && cat == Settings::VBF_2j_tagged) histos_1D_ZX[Settings::M4l_110150_HighKD][fs][cat]->Fill(M4l, weight);
    else if (DVHDEC > 0.5 && cat == Settings::VH_hadron_tagged) histos_1D_ZX[Settings::M4l_110150_HighKD][fs][cat]->Fill(M4l, weight);
-   else if (KD > 0.5) histos_1D_ZX[Settings::M4l_110150_HighKD][fs][cat]->Fill(M4l, weight);
+   else if (KD > 0.5 && (cat != Settings::VBF_2j_tagged && cat != Settings::VH_hadron_tagged)) histos_1D_ZX[Settings::M4l_110150_HighKD][fs][cat]->Fill(M4l, weight);
 
 }
 //====================================================================
@@ -1428,7 +1473,15 @@ void Histograms::FillInclusive()
 }
 //==============================
 
-   
+void Histograms::FillInclusiveCombination()
+{
+	histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125]->Add(histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125ggH]);
+	histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125]->Add(histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125VBF]);
+	histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125]->Add(histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125VH]);
+	histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125]->Add(histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125ttH]);
+	histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125]->Add(histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125bbH]);
+	histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125]->Add(histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125tqH]);
+}
 
 
 //==============================
@@ -2632,25 +2685,43 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
                                         histos_1D[plot_index][fs][cat][Settings::H125ggH], // ggH = ggH + VH + ttH
                                         histos_1D[plot_index][fs][cat][Settings::qqZZ],
                                         histos_1D[plot_index][fs][cat][Settings::ggZZ],
-                                        histos_1D_ZX[plot_index][fs][cat]);
+                                        histos_1D_ZX[plot_index][fs][cat], false);
    }
-   else if ( plot_index == Settings::D2jet_M4L118130 || plot_index == Settings::D2jet  || plot_index == Settings::DVBFDEC || plot_index == Settings::DVBFDEC_M4L118130)
+   else if ( plot_index == Settings::D2jet_M4L118130 || plot_index == Settings::D2jet  || plot_index == Settings::DVBFDEC )
    {
       legend  = CreateLegendVBF("right", histos_1D[plot_index][fs][cat][Settings::Data],
                                          histos_1D[plot_index][fs][cat][Settings::H125VBF],
                                          histos_1D[plot_index][fs][cat][Settings::H125ggH], // ggH = ggH + VH + ttH
                                          histos_1D[plot_index][fs][cat][Settings::qqZZ],
                                          histos_1D[plot_index][fs][cat][Settings::ggZZ],
-                                         histos_1D_ZX[plot_index][fs][cat]);
+                                         histos_1D_ZX[plot_index][fs][cat], false);
    }
-   else if ( is_DVH_  || plot_index == Settings::DVHDEC || plot_index == Settings::DVHDEC_M4L118130)
+	else if ( plot_index == Settings::DVBFDEC_M4L118130)
+   {
+      legend  = CreateLegendVBF("right", histos_1D[plot_index][fs][cat][Settings::Data],
+                                         histos_1D[plot_index][fs][cat][Settings::H125VBF],
+                                         histos_1D[plot_index][fs][cat][Settings::H125ggH], // ggH = ggH + VH + ttH
+                                         histos_1D[plot_index][fs][cat][Settings::qqZZ],
+                                         histos_1D[plot_index][fs][cat][Settings::ggZZ],
+                                         histos_1D_ZX[plot_index][fs][cat], true);
+   }
+   else if ( plot_index == Settings::DWH_M4L118130 || plot_index == Settings::DWH || plot_index == Settings::DZH_M4L118130 || plot_index == Settings::DZH || plot_index == Settings::DVH_M4L118130 || plot_index == Settings::DVH || plot_index == Settings::DVHDEC )
    {
       legend  = CreateLegendVH("right", histos_1D[plot_index][fs][cat][Settings::Data],
                                         histos_1D[plot_index][fs][cat][Settings::H125VH],
                                         histos_1D[plot_index][fs][cat][Settings::H125ggH], // ggH = ggH + VBF + ttH
                                         histos_1D[plot_index][fs][cat][Settings::qqZZ],
                                         histos_1D[plot_index][fs][cat][Settings::ggZZ],
-                                        histos_1D_ZX[plot_index][fs][cat]);
+                                        histos_1D_ZX[plot_index][fs][cat], false);
+   }
+   else if ( plot_index == Settings::DVHDEC_M4L118130)
+   {
+      legend  = CreateLegendVH("right", histos_1D[plot_index][fs][cat][Settings::Data],
+                                        histos_1D[plot_index][fs][cat][Settings::H125VH],
+                                        histos_1D[plot_index][fs][cat][Settings::H125ggH], // ggH = ggH + VBF + ttH
+                                        histos_1D[plot_index][fs][cat][Settings::qqZZ],
+                                        histos_1D[plot_index][fs][cat][Settings::ggZZ],
+                                        histos_1D_ZX[plot_index][fs][cat], true);
    }
    else
    {
@@ -2695,7 +2766,15 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
 		text->Draw();
 	}
 	
-   
+	
+   if ( plot_index == Settings::D1jet_M4L118130 || plot_index == Settings::D2jet_M4L118130 || plot_index == Settings::D1jet || plot_index == Settings::D2jet || plot_index == Settings::DWH_M4L118130 || plot_index == Settings::DWH || plot_index == Settings::DZH_M4L118130 || plot_index == Settings::DZH || plot_index == Settings::DVH_M4L118130 || plot_index == Settings::DVH || plot_index == Settings::DVHDEC)
+   {
+      TLine *wp_line;
+      wp_line = CreateDashedLine(0.5, 0.0, 0.5, (data_max + data_max_error)*1.1);
+      wp_line->Draw();
+   }
+	
+	
 //=================
 // CMS TEXT & LUMI
 //=================   
@@ -2712,6 +2791,86 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
    }
 
    _out_file_name = folder + "/" + variable_name + "_" + filename + "_" + _s_final_state.at(fs) + "_" + _s_category.at(cat);
+   SavePlots(c, _out_file_name, folder);
+}
+//=========================================================================================================
+
+
+
+//=========================================================================================================
+void Histograms::plot_Combination( TString folder )
+{
+   TCanvas *c;
+   c = new TCanvas("c", "c", 650, 500);
+	
+   c->SetLogx();
+
+	histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125]->SetFillColor(Cosmetics::Higgs_all().fill_color);
+	
+   histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::qqZZ]->SetFillColor(Cosmetics::qqZZ().fill_color);
+   histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::ggZZ]->SetFillColor(Cosmetics::ggZZ().fill_color);
+   histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::qqZZ]->SetLineColor(Cosmetics::qqZZ().line_color);
+   histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::ggZZ]->SetLineColor(Cosmetics::ggZZ().line_color);
+	
+	histos_1D_ZX_shape[Settings::M4lMain][Settings::fs4l][Settings::inclusive]->SetFillColor(Cosmetics::ZX().fill_color);
+	histos_1D_ZX_shape[Settings::M4lMain][Settings::fs4l][Settings::inclusive]->SetLineColor(Cosmetics::ZX().line_color);
+
+   histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125]->SetLineColor(Cosmetics::Higgs_all().line_color);
+	
+   histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::Data]->SetBinErrorOption(TH1::kPoisson);
+   histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::Data]->SetLineColor(kBlack);
+	
+   // THStack
+   THStack *stack = new THStack( "stack", "stack" );
+	
+	stack->Add(histos_1D_ZX_shape[Settings::M4lMain][Settings::fs4l][Settings::inclusive]);
+
+   stack->Add(histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::ggZZ]);
+   stack->Add(histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::qqZZ]);
+	
+	
+	stack->Add(histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125]);
+	
+   stack->Draw("HIST");
+	
+   float data_max = histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::Data]->GetBinContent(histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::Data]->GetMaximumBin());
+   float data_max_error = histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::Data]->GetBinErrorUp(histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::Data]->GetMaximumBin());
+	
+
+	stack->SetMinimum(1e-5);
+	stack->SetMaximum((data_max + data_max_error)*1.1);
+	
+	stack->GetXaxis()->SetTitle(Variables::M4lMain().var_X_label);
+   stack->GetYaxis()->SetTitle(histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::Data]->GetYaxis()->GetTitle());
+
+   histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::Data]->Draw("SAME p E1 X0");
+	
+	
+//=============
+// L E G E N D
+//=============
+
+	TLegend *legend  = CreateLegend("right", histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::Data],
+                                      histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125],
+                                      histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::qqZZ],
+                                      histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::ggZZ],
+                                      histos_1D_ZX_shape[Settings::M4lMain][Settings::fs4l][Settings::inclusive]);
+	
+	legend->Draw();
+//=================
+// CMS TEXT & LUMI
+//=================
+
+   CMS_lumi *lumi = new CMS_lumi;
+   lumi->set_lumi_combination(c);
+	
+
+	stack->GetXaxis()->SetNdivisions(10);
+	stack->GetXaxis()->SetLabelSize(0);
+	DrawLogX(c, Settings::inclusive, Settings::fs4l);
+	
+
+   _out_file_name = "Combination";
    SavePlots(c, _out_file_name, folder);
 }
 //=========================================================================================================
@@ -2908,7 +3067,7 @@ void Histograms::plot_1D_all_cat( TString filename, TString variable_name , TStr
                                             histos_1D[plot_index][Settings::fs4l][i_cat][Settings::H125ggH],
                                             histos_1D[plot_index][Settings::fs4l][i_cat][Settings::qqZZ],
                                             histos_1D[plot_index][Settings::fs4l][i_cat][Settings::ggZZ],
-                                            histos_1D_ZX_shape[plot_index][Settings::fs4l][i_cat]);
+                                            histos_1D_ZX_shape[plot_index][Settings::fs4l][i_cat], false);
       }
       else if ( variable_name == "M4lMainZoomed" && (i_cat == Settings::VH_lepton_tagged || i_cat == Settings::VH_hadron_tagged || i_cat == Settings::VH_MET_tagged) )
       {
@@ -2917,7 +3076,7 @@ void Histograms::plot_1D_all_cat( TString filename, TString variable_name , TStr
                                            histos_1D[plot_index][Settings::fs4l][i_cat][Settings::H125ggH],
                                            histos_1D[plot_index][Settings::fs4l][i_cat][Settings::qqZZ],
                                            histos_1D[plot_index][Settings::fs4l][i_cat][Settings::ggZZ],
-                                           histos_1D_ZX_shape[plot_index][Settings::fs4l][i_cat]);
+                                           histos_1D_ZX_shape[plot_index][Settings::fs4l][i_cat], false);
       }
       else if ( variable_name == "M4lMainZoomed" && (i_cat == Settings::ttH_lepton_tagged || i_cat == Settings::ttH_hadron_tagged) )
       {
@@ -3360,7 +3519,7 @@ void Histograms::plot_2D_error_all_cat( TString filename, TString variable_name,
       histos_2DError_data[plot_index][i_fs][Settings::ttH_hadron_tagged]->SetMarkerStyle(30);
       histos_2DError_data[plot_index][i_fs][Settings::ttH_hadron_tagged]->SetMarkerSize(0.7);
 		
-		histos_2DError_data[plot_index][i_fs][Settings::ttH_lepton_tagged]->SetMarkerStyle(29);
+		histos_2DError_data[plot_index][i_fs][Settings::ttH_lepton_tagged]->SetMarkerStyle(25);
       histos_2DError_data[plot_index][i_fs][Settings::ttH_lepton_tagged]->SetMarkerSize(0.7);
   
       histos_2DError_data[plot_index][i_fs][Settings::VH_MET_tagged]->SetMarkerStyle(25);
@@ -3405,24 +3564,30 @@ void Histograms::plot_2D_error_all_cat( TString filename, TString variable_name,
         plot_index == Settings::D1jetvsM4lZoomed || plot_index == Settings::D2jetvsM4lZoomed )
    {
       TLine *wp_line;
-      wp_line = CreateDashedLine(plot_index);
+      wp_line = CreateDashedLine(100., 0.5, 170., 0.5);
       wp_line->Draw();
    }
    
    //Draw legend
    legend_pad->cd();
-   TLegend *legend;
-   legend = Create2DLegendAllCat( "top", histos_2DError_data[plot_index][Settings::fs4e][Settings::untagged],
+   TLegend *legend = new TLegend(0.,0.,0.,0.);
+   if ( plot_index == Settings::KDvsM4lZoomed) legend = Create2DLegendAllCat_KD( "top", histos_2DError_data[plot_index][Settings::fs4e][Settings::untagged],
                                          histos_2DError_data[plot_index][Settings::fs4mu][Settings::untagged],
                                          histos_2DError_data[plot_index][Settings::fs2e2mu][Settings::untagged],
                                          histos_2DError_data[plot_index][Settings::fs4l][Settings::untagged],
                                          histos_2DError_data[plot_index][Settings::fs4l][Settings::VBF_1j_tagged],
-                                         histos_2DError_data[plot_index][Settings::fs4l][Settings::VBF_2j_tagged],
                                          histos_2DError_data[plot_index][Settings::fs4l][Settings::VH_lepton_tagged],
-                                         histos_2DError_data[plot_index][Settings::fs4l][Settings::VH_hadron_tagged],
                                          histos_2DError_data[plot_index][Settings::fs4l][Settings::ttH_hadron_tagged],
-                                         histos_2DError_data[plot_index][Settings::fs4l][Settings::ttH_lepton_tagged],
-                                         histos_2DError_data[plot_index][Settings::fs4l][Settings::VH_MET_tagged] );
+                                         histos_2DError_data[plot_index][Settings::fs4l][Settings::ttH_lepton_tagged]);
+	
+	if ( plot_index == Settings::DVBFDECvsM4lZoomed) legend = Create2DLegendAllCat_DVBFDEC( "top", histos_2DError_data[plot_index][Settings::fs4e][Settings::untagged],
+                                         histos_2DError_data[plot_index][Settings::fs4mu][Settings::untagged],
+                                         histos_2DError_data[plot_index][Settings::fs2e2mu][Settings::untagged],
+                                         histos_2DError_data[plot_index][Settings::fs4l][Settings::VBF_2j_tagged]);
+   if ( plot_index == Settings::DVHDECvsM4lZoomed) legend = Create2DLegendAllCat_DVHDEC( "top", histos_2DError_data[plot_index][Settings::fs4e][Settings::untagged],
+                                         histos_2DError_data[plot_index][Settings::fs4mu][Settings::untagged],
+                                         histos_2DError_data[plot_index][Settings::fs2e2mu][Settings::untagged],
+                                         histos_2DError_data[plot_index][Settings::fs4l][Settings::VH_hadron_tagged]);
    legend->Draw();
    
    // Draw lumi
@@ -4497,7 +4662,7 @@ TLegend* Histograms::CreateLegend( string position, TH1F *data, TH1F *h125, TH1F
 
 
 //==============================================================================================================================
-TLegend* Histograms::CreateLegendVBF( string position, TH1F *data, TH1F *h125VBF, TH1F *h125_other, TH1F *qqZZ, TH1F *ggZZ, TH1F *ZX )
+TLegend* Histograms::CreateLegendVBF( string position, TH1F *data, TH1F *h125VBF, TH1F *h125_other, TH1F *qqZZ, TH1F *ggZZ, TH1F *ZX , bool mask)
 {
    TLegend *leg;
    
@@ -4510,9 +4675,12 @@ TLegend* Histograms::CreateLegendVBF( string position, TH1F *data, TH1F *h125VBF
       leg = new TLegend(.21, .67, .41, .91);
    }
    
-   leg->SetFillColor(0);
-   leg->SetBorderSize(0);
-   leg->SetFillStyle(0);
+   if(!mask)
+   {
+      leg->SetFillColor(0);
+		leg->SetFillStyle(0);
+	}
+	leg->SetBorderSize(0);
    
    leg->AddEntry( data, "Data", "p E" );
    leg->AddEntry( h125VBF,"H(125), VBF","f");
@@ -4528,7 +4696,7 @@ TLegend* Histograms::CreateLegendVBF( string position, TH1F *data, TH1F *h125VBF
 
 
 //==============================================================================================================================
-TLegend* Histograms::CreateLegendVH( string position, TH1F *data, TH1F *h125VH, TH1F *h125_other, TH1F *qqZZ, TH1F *ggZZ, TH1F *ZX )
+TLegend* Histograms::CreateLegendVH( string position, TH1F *data, TH1F *h125VH, TH1F *h125_other, TH1F *qqZZ, TH1F *ggZZ, TH1F *ZX, bool mask )
 {
    TLegend *leg;
  
@@ -4540,10 +4708,13 @@ TLegend* Histograms::CreateLegendVH( string position, TH1F *data, TH1F *h125VH, 
    {
       leg = new TLegend(.21, .67, .41, .91);
    }
-   
-   leg->SetFillColor(0);
-   leg->SetBorderSize(0);
-   leg->SetFillStyle(0);
+	
+   if(!mask)
+   {
+      leg->SetFillColor(0);
+		leg->SetFillStyle(0);
+	}
+	leg->SetBorderSize(0);
    
    leg->AddEntry( data, "Data", "p E" );
    leg->AddEntry( h125VH,"H(125), VH","f");
@@ -4614,8 +4785,7 @@ TLegend* Histograms::Create2DLegend( string position, TH2F *fs4e, TH2F *fs4mu, T
 
 
 //=======================================================================================================================================================================
-TLegend* Histograms::Create2DLegendAllCat( string position, TGraphErrors *fs4e, TGraphErrors *fs4mu, TGraphErrors *fs2e2mu, TGraphErrors *untagged, TGraphErrors *VBF1jet,
-                                                            TGraphErrors *VBF2jet, TGraphErrors *VHlep, TGraphErrors *VHhad, TGraphErrors *ttHhad, TGraphErrors *ttHlep, TGraphErrors *VHmet)
+TLegend* Histograms::Create2DLegendAllCat_KD( string position, TGraphErrors *fs4e, TGraphErrors *fs4mu, TGraphErrors *fs2e2mu, TGraphErrors *untagged, TGraphErrors *VBF1jet, TGraphErrors *VHlep, TGraphErrors *ttHhad, TGraphErrors *ttHlep)
 {
    TLegend *leg;
    leg = new TLegend(0.00, 0.00, 1.00, 1.00);
@@ -4633,16 +4803,80 @@ TLegend* Histograms::Create2DLegendAllCat( string position, TGraphErrors *fs4e, 
 	
    leg->AddEntry(fs4mu,   "4mu",             "lp");
    leg->AddEntry(VBF1jet, "VBF-1j tagged",   "lp");
-   leg->AddEntry(VHhad,   "VH-hadr. tagged", "lp");
-   leg->AddEntry(ttHlep,  "ttH-lept. tagged","lp");
+   leg->AddEntry(ttHlep,  "ttH-lept. tagged", "lp");
+   leg->AddEntry((TObject*)0, "",                       "");
    
    leg->AddEntry(fs2e2mu,     "2e2mu",                  "lp");
-   leg->AddEntry(VBF2jet,     "VBF-2j tagged",          "lp");
-   leg->AddEntry(VHmet,       "VH-E_{T}^{miss} tagged", "lp");
    leg->AddEntry((TObject*)0, "",                       "");
 	
 	
    
+   return leg;
+}
+//=======================================================================================================================================================================
+
+//=======================================================================================================================================================================
+TLegend* Histograms::Create2DLegendAllCat_DVBFDEC( string position, TGraphErrors *fs4e, TGraphErrors *fs4mu, TGraphErrors *fs2e2mu, TGraphErrors *VBF2jet)
+{
+   TLegend *leg;
+   leg = new TLegend(0.00, 0.00, 1.00, 1.00);
+	
+   leg->SetFillStyle(0);
+   leg->SetBorderSize(1);
+   leg->SetTextFont(42);
+   leg->SetTextSize(0.18);
+   leg->SetNColumns(4);
+	
+   leg->AddEntry(fs4e,     "4e",              "lp");
+   leg->AddEntry((TObject*)0, "",                       "");
+   leg->AddEntry((TObject*)0, "",                       "");
+   leg->AddEntry((TObject*)0, "",                       "");
+	
+   leg->AddEntry(fs4mu,   "4mu",             "lp");
+   leg->AddEntry((TObject*)0, "",                       "");
+   leg->AddEntry(VBF2jet,   "VBF-2j tagged", "lp");
+   leg->AddEntry((TObject*)0, "",                       "");
+	
+   leg->AddEntry(fs2e2mu,     "2e2mu",                  "lp");
+   leg->AddEntry((TObject*)0, "",                       "");
+   leg->AddEntry((TObject*)0, "",                       "");
+   leg->AddEntry((TObject*)0, "",                       "");
+	
+	
+	
+   return leg;
+}
+//=======================================================================================================================================================================
+
+//=======================================================================================================================================================================
+TLegend* Histograms::Create2DLegendAllCat_DVHDEC( string position, TGraphErrors *fs4e, TGraphErrors *fs4mu, TGraphErrors *fs2e2mu, TGraphErrors *VHhad)
+{
+   TLegend *leg;
+   leg = new TLegend(0.00, 0.00, 1.00, 1.00);
+	
+   leg->SetFillStyle(0);
+   leg->SetBorderSize(1);
+   leg->SetTextFont(42);
+   leg->SetTextSize(0.18);
+   leg->SetNColumns(4);
+	
+   leg->AddEntry(fs4e,     "4e",              "lp");
+   leg->AddEntry((TObject*)0, "",                       "");
+   leg->AddEntry((TObject*)0, "",                       "");
+   leg->AddEntry((TObject*)0, "",                       "");
+	
+   leg->AddEntry(fs4mu,   "4mu",             "lp");
+   leg->AddEntry((TObject*)0, "",                       "");
+   leg->AddEntry(VHhad,   "VH-hadr. tagged", "lp");
+   leg->AddEntry((TObject*)0, "",                       "");
+	
+   leg->AddEntry(fs2e2mu,     "2e2mu",                  "lp");
+   leg->AddEntry((TObject*)0, "",                       "");
+   leg->AddEntry((TObject*)0, "",                       "");
+   leg->AddEntry((TObject*)0, "",                       "");
+	
+	
+	
    return leg;
 }
 //=======================================================================================================================================================================
@@ -4715,17 +4949,11 @@ TPaveText* Histograms::CreateCatText( string position, TString cat_label)
 
 
 //=======================================================================================================================
-TLine* Histograms::CreateDashedLine( int plot_index)
+TLine* Histograms::CreateDashedLine(float x1, float y1, float x2, float y2)
 {
    TLine *line;
-   line = new TLine(100., 0.5, 170., 0.5);// Default initalisiation to avoid scram compilation error
-   
-   if ( plot_index == Settings::DWHvsM4lZoomed )   line = new TLine(100., 0.5, 170., 0.5);
-   if ( plot_index == Settings::DZHvsM4lZoomed )   line = new TLine(100., 0.5, 170., 0.5);
-   if ( plot_index == Settings::DVHvsM4lZoomed )   line = new TLine(100., 0.5, 170., 0.5);
-   if ( plot_index == Settings::D1jetvsM4lZoomed ) line = new TLine(100., 0.5, 170., 0.5);
-   if ( plot_index == Settings::D2jetvsM4lZoomed ) line = new TLine(100., 0.5, 170., 0.5);
-      
+   line = new TLine(x1, y1, x2, y2);
+
    line->SetLineStyle(9);
    line->SetLineWidth(2);
    line->SetLineColor(kBlack);

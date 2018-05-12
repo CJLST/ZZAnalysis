@@ -54,10 +54,12 @@ class Plotter: public Tree
 
 public:
 	
+	Plotter( );
 	Plotter( double );
 	~Plotter();
    
    void MakeHistograms( TString );
+   void FillHistograms( TString , int );
    void MakeHistogramsZX( TString, TString );
    void MakeM4lZX();
    float calculate_K_factor( TString );
@@ -67,9 +69,11 @@ public:
    int CountAssociatedLeptons();
    bool blind( float );
    void FillInclusive();
+   void FillInclusiveCombination();
    void Save();
    void Delete();
    void GetHistos( TString );
+   void Plot();
    void plot_1D_single( TString, TString, TString, int, int );
    void plot_1D_all_cat( TString, TString, TString);
    void plot_1D_all_fs( TString, TString, TString);
@@ -85,7 +89,7 @@ private:
    TFile *input_file, *input_file_data;
    TTree *input_tree, *input_tree_data;
 
-   Histograms *blinded_histos, *unblinded_histos;
+   Histograms *blinded_histos, *unblinded_histos, *combination_histos;
    
    map<TString, Histograms*> histo_map;
    

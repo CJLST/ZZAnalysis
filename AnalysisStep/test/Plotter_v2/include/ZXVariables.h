@@ -7,9 +7,9 @@
 using namespace std;
 
 
-static float ratio_4e    = 1.;
-static float ratio_4mu   = 1.;
-static float ratio_2e2mu = 1.;
+static float ratio_4e    = 1.38;
+static float ratio_4mu   = 1.01;
+static float ratio_2e2mu = 1.11;
 
 
 class ZXVariables
@@ -19,9 +19,9 @@ public:
    ZXVariables ();
    ~ZXVariables();
    
-   float yield_SS_4e    = 12.3937;
-   float yield_SS_4mu   = 36.392;
-   float yield_SS_2e2mu = 44.4516;
+   float yield_SS_4e    = 12.4;
+   float yield_SS_4mu   = 33.0;
+   float yield_SS_2e2mu = 42.3;
    
    struct ZX4e
    {            

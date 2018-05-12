@@ -37,6 +37,16 @@ Plotter::Plotter( double lumi ):Tree()
 }
 //============================================================
 
+// Constructor
+//============================================================
+Plotter::Plotter():Tree()
+{
+   combination_histos = new Histograms("Combination");
+	
+}
+//============================================================
+
+
 
 
 // Destructor
@@ -295,6 +305,63 @@ void Plotter::MakeHistograms( TString input_file_name )
 }
 //=====================================================
 
+
+//=====================================================
+void Plotter::FillHistograms( TString input_file_name , int year)
+{
+
+   input_file = new TFile(input_file_name);
+	
+   _current_process = find_current_process( input_file_name, 0 , 0);
+	
+   if(year == 2017) _lumi = 41.37;
+   if(year == 2016) _lumi = 35.86706;
+	
+   hCounters = (TH1F*)input_file->Get("ZZTree/Counters");
+   n_gen_events = (Long64_t)hCounters->GetBinContent(1);
+   gen_sum_weights = (Long64_t)hCounters->GetBinContent(40);
+	
+   input_tree = (TTree*)input_file->Get("ZZTree/candTree");
+   Init( input_tree, input_file_name );
+	
+   if (fChain == 0) return;
+
+   Long64_t nentries = fChain->GetEntriesFast();
+
+   Long64_t nbytes = 0, nb = 0;
+	
+   for (Long64_t jentry=0; jentry<nentries;jentry++)
+   {
+      Long64_t ientry = LoadTree(jentry);
+      if (ientry < 0) break;
+      nb = fChain->GetEntry(jentry);
+      nbytes += nb;
+		
+      // Check number of leptons in event
+      if ( LepEta->size() != 4 )
+      {
+         cout << "[ERROR] in event " << RunNumber << ":" << LumiNumber << ":" << EventNumber << ", stored " << LepEta->size() << " leptons instead of 4" << endl;
+         continue;
+      }
+
+      if ( !(ZZsel >= 90) ) continue;
+		
+		
+      // K factors
+      _k_factor = calculate_K_factor(input_file_name);
+		
+      // Final event weight
+      _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight) / gen_sum_weights;
+      if ( input_file_name.Contains("ggH") && year == 2017) _event_weight *= ggH_NNLOPS_weight; // reweight POWHEG ggH to NNLOPS
+
+		combination_histos->FillM4lCombination(ZZMass, _event_weight, _current_process);
+		
+		
+   } // end for loop
+	
+   cout << "[INFO] Combination histograms for " << input_file_name << " filled." << endl;
+}
+//=====================================================
 
 
 //=======================
@@ -608,6 +675,13 @@ void Plotter::FillInclusive()
 }
 //===========================
 
+//===========================
+void Plotter::FillInclusiveCombination()
+{
+   combination_histos->FillInclusiveCombination();
+   cout << "[INFO] Summing of histograms finished." << endl;
+}
+//===========================
 
 
 //==================
@@ -640,6 +714,14 @@ void Plotter::plot_1D_single( TString file_name, TString variable_name, TString 
 {
    histo_map[file_name]->plot_1D_single( file_name, variable_name, folder, fs, cat );
    
+}
+//==================
+
+//==================
+void Plotter::Plot()
+{
+   combination_histos->plot_Combination( "Combination" );
+	
 }
 //==================
 
@@ -736,7 +818,7 @@ float Plotter::calculate_K_factor(TString input_file_name)
    float k_factor = 1;
    
    if ( input_file_name.Contains("ZZTo4l"))
-   {
+   {  
       k_factor = KFactor_EW_qqZZ * KFactor_QCD_qqZZ_M; // As of Moriond2016
    }
    else if ( input_file_name.Contains("ggTo"))

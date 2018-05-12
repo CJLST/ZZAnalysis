@@ -52,11 +52,14 @@ class Histograms
 public:
    Histograms( double );
    Histograms( double, string );
+   Histograms( string );
    ~Histograms();
    
    void FillM4l( float, float, int, int, int );
    void FillM4lZX( float, float, int, int );
-   
+	
+   void FillM4lCombination( float, float, int );
+	
    void FillMZ1( float, float, float, int, int, int );
    void FillMZ1ZX( float, float, float, int, int );
    
@@ -104,6 +107,7 @@ public:
    void DeleteYieldsHistos();
    
    void FillInclusive();
+   void FillInclusiveCombination();
    void FillInclusiveYields();
    
    void SmoothHistograms();
@@ -111,7 +115,8 @@ public:
    
    void GetHistos( TString );
    void GetYieldsHistos( TString );
-   
+	
+   void plot_Combination( TString );
    void plot_1D_single( TString, TString, TString, int, int );
    void plot_1D_all_cat( TString, TString, TString );
    void plot_1D_all_fs( TString, TString, TString );
@@ -143,17 +148,19 @@ public:
    bool _merge_2e2mu;
    
    TLegend *CreateLegend( string, TH1F*, TH1F*, TH1F*, TH1F*, TH1F* );
-   TLegend *CreateLegendVBF( string, TH1F*, TH1F*, TH1F*, TH1F*, TH1F* ,TH1F* );
-   TLegend *CreateLegendVH( string, TH1F*, TH1F*, TH1F*, TH1F*, TH1F* ,TH1F* );
+   TLegend *CreateLegendVBF( string, TH1F*, TH1F*, TH1F*, TH1F*, TH1F* ,TH1F*, bool );
+   TLegend *CreateLegendVH( string, TH1F*, TH1F*, TH1F*, TH1F*, TH1F* ,TH1F*, bool);
    TLegend *CreateLegendttH( string, TH1F*, TH1F*, TH1F*, TH1F*, TH1F* ,TH1F* );
    TLegend *Create2DLegend( string, TH2F*, TH2F*, TH2F* );
    TLegend *Create2DErrorLegend( string, TGraphErrors*, TGraphErrors*, TGraphErrors* );
-   TLegend *Create2DLegendAllCat( string, TGraphErrors*, TGraphErrors*, TGraphErrors*, TGraphErrors*, TGraphErrors*, TGraphErrors*, TGraphErrors*, TGraphErrors*, TGraphErrors*, TGraphErrors*, TGraphErrors* );
+   TLegend *Create2DLegendAllCat_KD( string, TGraphErrors*, TGraphErrors*, TGraphErrors*, TGraphErrors*, TGraphErrors*, TGraphErrors*, TGraphErrors*, TGraphErrors* );
+   TLegend *Create2DLegendAllCat_DVBFDEC( string, TGraphErrors*, TGraphErrors*, TGraphErrors*, TGraphErrors*);
+   TLegend *Create2DLegendAllCat_DVHDEC( string, TGraphErrors*, TGraphErrors*, TGraphErrors*, TGraphErrors*);
    
    TPaveText *CreateCutText( string, TString);
    TPaveText *CreateCatText( string, TString);
    
-   TLine *CreateDashedLine( int );
+   TLine *CreateDashedLine(float, float, float, float);
    
 
 private:
