@@ -610,7 +610,9 @@ if (LEPTON_SETUP == 2016):
                                    'electron_ee_ECALTRK_lowpt_var', 'electron_ee_ECALTRK_var'),
        isMC = cms.bool(IsMC),
        isSynchronization = cms.bool(False),
-       correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/Moriond17_23Jan_ele")
+       correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/Moriond17_23Jan_ele"),
+       recHitCollectionEB = cms.InputTag('reducedEgamma:reducedEBRecHits'),
+       recHitCollectionEE = cms.InputTag('reducedEgamma:reducedEERecHits')
    )
 
 ## Preliminary Moriond 18 corrections
