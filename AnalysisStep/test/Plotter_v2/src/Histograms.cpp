@@ -2579,7 +2579,8 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
       histos_1D_ZX[plot_index][fs][cat]->SetLineColor(Cosmetics::ZX().line_color);
    }
    
-   
+   if ( plot_index == Settings::M4l_110150_HighKD) histos_1D[plot_index][fs][cat][Settings::H125]->Scale(1.1); // Scale to mu = 1.1 post-fit
+	
    histos_1D[plot_index][fs][cat][Settings::H125]->SetLineColor(Cosmetics::Higgs_all().line_color);
    histos_1D[plot_index][fs][cat][Settings::H125ggH]->SetLineColor(Cosmetics::Higgs_all().line_color);
    histos_1D[plot_index][fs][cat][Settings::H125VBF]->SetLineColor(Cosmetics::Higgs_all().line_color);
@@ -2756,7 +2757,7 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
    {
       if (cat == Settings::VBF_2j_tagged ) text = CreateCutText("right top", "D_{bkg}^{VBF+dec} > 0.5");
       else if (cat == Settings::VH_hadron_tagged ) text = CreateCutText("right top", "D_{bkg}^{VH+dec} > 0.5");
-      else text = CreateCutText("right top", "D_{bkg}^{kin} > 0.5");
+      else text = CreateCutText("left top", "#splitline{Post fit}{D_{bkg}^{kin} > 0.5}");
       text->Draw();
    }
 
@@ -2773,7 +2774,6 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
       wp_line = CreateDashedLine(0.5, 0.0, 0.5, (data_max + data_max_error)*1.1);
       wp_line->Draw();
    }
-	
 	
 //=================
 // CMS TEXT & LUMI
