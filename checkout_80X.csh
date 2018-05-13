@@ -11,10 +11,9 @@
 ############## For CMSSW_8_0_26_patch1
 git cms-init
 # Preliminary electron scale and smearing corrections according to https://twiki.cern.ch/twiki/bin/view/CMS/EGMSmearer
-git cms-merge-topic rafaellopesdesa:EgammaAnalysis80_EGMSmearer_Moriond17_23Jan
-
-git cms-addpkg EgammaAnalysis/ElectronTools
-(cd EgammaAnalysis/ElectronTools/data ; git clone -b master https://github.com/ECALELFS/ScalesSmearings.git ; cd ScalesSmearings ; git checkout tags/Moriond17_23Jan_v1)
+#add the repository with the updated Egamma package
+git cms-merge-topic cms-egamma:EGM_gain_v1
+(cd EgammaAnalysis/ElectronTools/data ; git clone https://github.com/ECALELFS/ScalesSmearings.git ; git checkout Moriond17_23Jan_v2)
 
 #MET recipe according to https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription#Instructions_for_8_0_X_X_26_patc
 git cms-merge-topic cms-met:METRecipe_8020 -u
