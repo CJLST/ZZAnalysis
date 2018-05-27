@@ -161,8 +161,8 @@ RochesterPATMuonCorrector::produce(edm::Event& iEvent, const edm::EventSetup& iS
     p4.SetPtEtaPhiM(newpt, mu.eta(), mu.phi(), mu.mass());
     mu.setP4(reco::Particle::PolarLorentzVector(p4.Pt(), p4.Eta(), p4.Phi(), mu.mass()));
     mu.addUserFloat("correctedPtError",newpterr);
-	 mu.addUserFloat("scale_unc", scale_error);
-    mu.addUserFloat("smear_unc", smear_error);
+	 mu.addUserFloat("scale_unc", 1. + scale_error);
+    mu.addUserFloat("smear_unc", 1. + smear_error);
 	  
     outputMuons->push_back(mu);
   }
