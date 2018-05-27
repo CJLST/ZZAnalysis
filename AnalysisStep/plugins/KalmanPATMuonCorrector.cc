@@ -101,7 +101,7 @@ KalmanPATMuonCorrector::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 	  newpt = calibrator->getCorrectedPt(oldpt, mu.eta(), mu.phi(), mu.charge());
 	  calibrator->varyClosure(+1);
 	  scale_error = (calibrator->getCorrectedPt(oldpt, mu.eta(), mu.phi(), mu.charge())) / newpt  ;
-	  smear_error = 1.;
+	  smear_error = (calibrator->smear(newpt, mu.eta())) / newpt;;
 	  calibrator->reset();
 	} else {
 	  // keep old values
