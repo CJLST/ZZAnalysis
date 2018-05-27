@@ -100,7 +100,8 @@ RochesterPATMuonCorrector::produce(edm::Event& iEvent, const edm::EventSetup& iS
     int nl;
     auto gen_particle = mu.genParticle();
     double scale_factor;
-    double scale_factor_error = 0.;
+    double scale_error = 0.;
+    double smear_error = 0.;
     double u1 = rgen_->Rndm();
     double u2 = rgen_->Rndm();
 	
@@ -119,18 +120,20 @@ RochesterPATMuonCorrector::produce(edm::Event& iEvent, const edm::EventSetup& iS
 			if ( gen_particle != 0)
 			{
 				scale_factor = calibrator->kScaleFromGenMC(mu.charge(), oldpt, mu.eta(), mu.phi(), nl, gen_particle->pt(), u1);
-				scale_factor_error = calibrator->kScaleFromGenMCerror(mu.charge(), oldpt, mu.eta(), mu.phi(), nl, gen_particle->pt(), u1);
+				smear_error = calibrator->kScaleFromGenMCerror(mu.charge(), oldpt, mu.eta(), mu.phi(), nl, gen_particle->pt(), u1);
 				
 			}
 			else
 			{
 				scale_factor = calibrator->kScaleAndSmearMC(mu.charge(), oldpt, mu.eta(), mu.phi(), nl, u1, u2);
-				scale_factor_error = calibrator->kScaleAndSmearMCerror(mu.charge(), oldpt, mu.eta(), mu.phi(), nl, u1, u2);
+				smear_error = calibrator->kScaleAndSmearMCerror(mu.charge(), oldpt, mu.eta(), mu.phi(), nl, u1, u2);
 				
 			}
 			
+			scale_error = calibrator->kScaleDTerror(mu.charge(), oldpt, mu.eta(), mu.phi());
+			
 			newpt = oldpt*scale_factor;
-			newpterr = newpt*scale_factor_error;
+			newpterr = oldpterr*scale_factor;
       }
 		 
       else if(!isMC_ && nl > 5)
@@ -139,25 +142,27 @@ RochesterPATMuonCorrector::produce(edm::Event& iEvent, const edm::EventSetup& iS
 			if(mu.pt()>2.0 && fabs(mu.eta())<2.4)
 			{
 			  scale_factor = calibrator->kScaleDT(mu.charge(), oldpt, mu.eta(), mu.phi());
-			  scale_factor_error = calibrator->kScaleDTerror(mu.charge(), oldpt, mu.eta(), mu.phi());
+			  scale_error = calibrator->kScaleDTerror(mu.charge(), oldpt, mu.eta(), mu.phi());
+			  smear_error = calibrator->kScaleAndSmearMCerror(mu.charge(), oldpt, mu.eta(), mu.phi(), nl, u1, u2);
 			}
 			else
 			{
 			  // keep old values
 			  scale_factor = 1.;
-			  scale_factor_error = 0.;
+			  scale_error = 0.;
+			  smear_error = 0.;
 			}
 			
 			newpt = oldpt*scale_factor;
-			newpterr = newpt*scale_factor_error;
+			newpterr = oldpterr*scale_factor;
       }
     }
 
     p4.SetPtEtaPhiM(newpt, mu.eta(), mu.phi(), mu.mass());
     mu.setP4(reco::Particle::PolarLorentzVector(p4.Pt(), p4.Eta(), p4.Phi(), mu.mass()));
     mu.addUserFloat("correctedPtError",newpterr);
-	 mu.addUserFloat("scale_unc",1. + scale_factor_error);
-    mu.addUserFloat("smear_unc",0.);
+	 mu.addUserFloat("scale_unc", scale_error);
+    mu.addUserFloat("smear_unc", smear_error);
 	  
     outputMuons->push_back(mu);
   }
