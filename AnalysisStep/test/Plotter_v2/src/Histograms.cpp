@@ -46,12 +46,12 @@ Histograms::Histograms( double lumi, string blinding )
    _s_category.push_back("Inclusive");
    
    _s_category_label.push_back("Untagged category");
-   _s_category_label.push_back("VBF-1j tagged category");
-   _s_category_label.push_back("VBF-2j tagged category");
+   _s_category_label.push_back("VBF-1jet tagged category");
+   _s_category_label.push_back("VBF-2jet tagged category");
    _s_category_label.push_back("VH-leptonic tagged category");
    _s_category_label.push_back("VH-hadronic tagged category");
-   _s_category_label.push_back("ttH-leptonic tagged category");
-   _s_category_label.push_back("ttH-hadronic tagged category");
+   _s_category_label.push_back("t#bar{t}H-leptonic tagged category");
+   _s_category_label.push_back("t#bar{t}H-hadronic tagged category");
    _s_category_label.push_back("VH-MET tagged category");
    _s_category_label.push_back("Inclusive category");
       
@@ -298,6 +298,16 @@ Histograms::Histograms( double lumi, string blinding )
             histos_1D[Settings::Pt_trailing][i_fs][i_cat][i_proc] = new TH1F(_histo_name.c_str(), _histo_labels.c_str(), Variables::Pt_trailing().var_N_bin,
                                                                                         Variables::Pt_trailing().var_min, Variables::Pt_trailing().var_max);
 				
+				_histo_name = "Eta_leading" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
+            _histo_labels = ";" + Variables::Eta_leading().var_X_label + ";" + Variables::Eta_leading().var_Y_label;
+            histos_1D[Settings::Eta_leading][i_fs][i_cat][i_proc] = new TH1F(_histo_name.c_str(), _histo_labels.c_str(), Variables::Eta_leading().var_N_bin,
+                                                                                        Variables::Eta_leading().var_min, Variables::Eta_leading().var_max);
+
+            _histo_name = "Eta_trailing" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
+            _histo_labels = ";" + Variables::Eta_trailing().var_X_label + ";" + Variables::Eta_trailing().var_Y_label;
+            histos_1D[Settings::Eta_trailing][i_fs][i_cat][i_proc] = new TH1F(_histo_name.c_str(), _histo_labels.c_str(), Variables::Eta_trailing().var_N_bin,
+                                                                                        Variables::Eta_trailing().var_min, Variables::Eta_trailing().var_max);
+				
             _histo_name = "SIP_leading" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
             _histo_labels = ";" + Variables::SIP_leading().var_X_label + ";" + Variables::SIP_leading().var_Y_label;
             histos_1D[Settings::SIP_leading][i_fs][i_cat][i_proc] = new TH1F(_histo_name.c_str(), _histo_labels.c_str(), Variables::SIP_leading().var_N_bin,
@@ -469,6 +479,30 @@ Histograms::Histograms( double lumi, string blinding )
          _histo_name = "DVH_M4L118130_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
          histos_1D_ZX[Settings::DVH_M4L118130][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::DVH_M4L118130().var_N_bin,
                                                                        Variables::DVH_M4L118130().var_min, Variables::DVH_M4L118130().var_max);
+			
+			//===========
+			// KD vs M4l
+			//===========
+			_histo_name = "KDvsM4lZoomed_ZX" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _blinding;
+			_histo_labels = ";" + Variables::KDvsM4lZoomed().var_X_label + ";" + Variables::KDvsM4lZoomed().var_Y_label;
+			histos_2DError_ZX[Settings::KDvsM4lZoomed][i_fs][i_cat] = new TH2F(_histo_name.c_str(), _histo_labels.c_str(), Variables::KDvsM4lZoomed().var_X_N_bin,
+																											Variables::KDvsM4lZoomed().var_X_min, Variables::KDvsM4lZoomed().var_X_max,
+																											Variables::KDvsM4lZoomed().var_Y_N_bin, Variables::KDvsM4lZoomed().var_Y_min,
+																											Variables::KDvsM4lZoomed().var_Y_max);
+		
+			_histo_name = "DVBFDECvsM4lZoomed_ZX" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _blinding;
+			_histo_labels = ";" + Variables::DVBFDECvsM4lZoomed().var_X_label + ";" + Variables::DVBFDECvsM4lZoomed().var_Y_label;
+			histos_2DError_ZX[Settings::DVBFDECvsM4lZoomed][i_fs][i_cat] = new TH2F(_histo_name.c_str(), _histo_labels.c_str(), Variables::DVBFDECvsM4lZoomed().var_X_N_bin,
+																											Variables::DVBFDECvsM4lZoomed().var_X_min, Variables::DVBFDECvsM4lZoomed().var_X_max,
+																											Variables::DVBFDECvsM4lZoomed().var_Y_N_bin, Variables::DVBFDECvsM4lZoomed().var_Y_min,
+																											Variables::DVBFDECvsM4lZoomed().var_Y_max);
+		
+			_histo_name = "DVHDECvsM4lZoomed_ZX" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _blinding;
+			_histo_labels = ";" + Variables::DVHDECvsM4lZoomed().var_X_label + ";" + Variables::DVHDECvsM4lZoomed().var_Y_label;
+			histos_2DError_ZX[Settings::DVHDECvsM4lZoomed][i_fs][i_cat] = new TH2F(_histo_name.c_str(), _histo_labels.c_str(), Variables::DVHDECvsM4lZoomed().var_X_N_bin,
+																											Variables::DVHDECvsM4lZoomed().var_X_min, Variables::DVHDECvsM4lZoomed().var_X_max,
+																											Variables::DVHDECvsM4lZoomed().var_Y_N_bin, Variables::DVHDECvsM4lZoomed().var_Y_min,
+																											Variables::DVHDECvsM4lZoomed().var_Y_max);
          
 			//===========
 			// Others
@@ -484,6 +518,14 @@ Histograms::Histograms( double lumi, string blinding )
 			_histo_name = "Pt_trailing_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
 			histos_1D_ZX[Settings::Pt_trailing][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::Pt_trailing().var_N_bin,
 																								Variables::Pt_trailing().var_min, Variables::Pt_trailing().var_max);
+			
+			_histo_name = "Eta_leading_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+			histos_1D_ZX[Settings::Eta_leading][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::Eta_leading().var_N_bin,
+																								Variables::Eta_leading().var_min, Variables::Eta_leading().var_max);
+
+			_histo_name = "Eta_trailing_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+			histos_1D_ZX[Settings::Eta_trailing][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::Eta_trailing().var_N_bin,
+																								Variables::Eta_trailing().var_min, Variables::Eta_trailing().var_max);
 			
 			_histo_name = "SIP_leading_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
 			histos_1D_ZX[Settings::SIP_leading][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::SIP_leading().var_N_bin,
@@ -1122,6 +1164,25 @@ void Histograms::FillDvsM4l( float M4l, float KD, float DVBFDEC, float DVHDEC, i
 //====================================================================================
 
 
+//====================================================================================
+void Histograms::FillDvsM4l_ZX( float M4l, float KD, float DVBFDEC, float DVHDEC, int nCleanedJetsPt30, float weight, int fs, int cat )
+{
+	if ( cat == Settings::VBF_2j_tagged)
+	{
+		histos_2DError_ZX[Settings::DVBFDECvsM4lZoomed][fs][cat]->Fill(M4l, DVBFDEC, weight);
+	}
+	else if ( cat  == Settings::VH_hadron_tagged )
+	{
+		histos_2DError_ZX[Settings::DVHDECvsM4lZoomed][fs][cat]->Fill(M4l, DVHDEC, weight);
+	}
+	else
+	{
+		//histos_2DError_ZX[Settings::KDvsM4l][fs][cat]      ->Fill(M4l, KD, weight);
+		histos_2DError_ZX[Settings::KDvsM4lZoomed][fs][cat]  ->Fill(M4l, KD, weight);
+		//histos_2DError_ZX[Settings::KDvsM4lHighMass][fs][cat]->Fill(M4l, KD, weight);
+	}
+}
+//====================================================================================
 
 //====================================================================================
 void Histograms::FillYields( float M4l, float weight, int fs, int cat, int proc )
@@ -1134,13 +1195,15 @@ void Histograms::FillYields( float M4l, float weight, int fs, int cat, int proc 
 //========
 // Others
 //====================================================================================
-void Histograms::FillOthers( float M4l, float ZZPt, float ZZEta, float PFMET, float Pt_leading, float Pt_trailing, float SIP_leading, float SIP_trailing, float ISO_leading, float ISO_trailing, int NExtraLep, int NJets, int NJetsBTagged, float KD, float DVBFDEC, float DVHDEC, float weight, int fs, int cat, int proc )
+void Histograms::FillOthers( float M4l, float ZZPt, float ZZEta, float PFMET, float Pt_leading, float Pt_trailing, float Eta_leading, float Eta_trailing, float SIP_leading, float SIP_trailing, float ISO_leading, float ISO_trailing, int NExtraLep, int NJets, int NJetsBTagged, float KD, float DVBFDEC, float DVHDEC, float weight, int fs, int cat, int proc )
 {
    histos_1D[Settings::PFMET][fs][cat][proc]       ->Fill(PFMET, (proc == Settings::Data) ? 1. : weight);
    histos_1D[Settings::Pt4l][fs][cat][proc]        ->Fill(ZZPt, (proc == Settings::Data) ? 1. : weight);
    histos_1D[Settings::Eta4l][fs][cat][proc]       ->Fill(ZZEta, (proc == Settings::Data) ? 1. : weight);
    histos_1D[Settings::Pt_leading][fs][cat][proc]  ->Fill(Pt_leading, (proc == Settings::Data) ? 1. : weight);
    histos_1D[Settings::Pt_trailing][fs][cat][proc] ->Fill(Pt_trailing, (proc == Settings::Data) ? 1. : weight);
+	histos_1D[Settings::Eta_leading][fs][cat][proc]  ->Fill(Eta_leading, (proc == Settings::Data) ? 1. : weight);
+   histos_1D[Settings::Eta_trailing][fs][cat][proc] ->Fill(Eta_trailing, (proc == Settings::Data) ? 1. : weight);
    histos_1D[Settings::SIP_leading][fs][cat][proc] ->Fill(SIP_leading, (proc == Settings::Data) ? 1. : weight);
    histos_1D[Settings::SIP_trailing][fs][cat][proc]->Fill(SIP_trailing, (proc == Settings::Data) ? 1. : weight);
    histos_1D[Settings::ISO_leading][fs][cat][proc] ->Fill(ISO_leading, (proc == Settings::Data) ? 1. : weight);
@@ -1155,13 +1218,15 @@ void Histograms::FillOthers( float M4l, float ZZPt, float ZZEta, float PFMET, fl
 //====================================================================================
 
 //====================================================================
-void Histograms::FillOthersZX( float M4l, float ZZPt, float ZZEta, float PFMET, float Pt_leading, float Pt_trailing, float SIP_leading, float SIP_trailing, float ISO_leading, float ISO_trailing, int NExtraLep, int NJets, int NJetsBTagged, float KD, float DVBFDEC, float DVHDEC, float weight, int fs, int cat )
+void Histograms::FillOthersZX( float M4l, float ZZPt, float ZZEta, float PFMET, float Pt_leading, float Pt_trailing, float Eta_leading, float Eta_trailing, float SIP_leading, float SIP_trailing, float ISO_leading, float ISO_trailing, int NExtraLep, int NJets, int NJetsBTagged, float KD, float DVBFDEC, float DVHDEC, float weight, int fs, int cat )
 {
    histos_1D_ZX[Settings::PFMET][fs][cat]       ->Fill(PFMET, weight);
 	histos_1D_ZX[Settings::Pt4l][fs][cat]        ->Fill(ZZPt, weight);
    histos_1D_ZX[Settings::Eta4l][fs][cat]       ->Fill(ZZEta, weight);
    histos_1D_ZX[Settings::Pt_leading][fs][cat]  ->Fill(Pt_leading, weight);
    histos_1D_ZX[Settings::Pt_trailing][fs][cat] ->Fill(Pt_trailing, weight);
+   histos_1D_ZX[Settings::Eta_leading][fs][cat]  ->Fill(Eta_leading, weight);
+   histos_1D_ZX[Settings::Eta_trailing][fs][cat] ->Fill(Eta_trailing, weight);
    histos_1D_ZX[Settings::SIP_leading][fs][cat] ->Fill(SIP_leading, weight);
    histos_1D_ZX[Settings::SIP_trailing][fs][cat]->Fill(SIP_trailing, weight);
    histos_1D_ZX[Settings::ISO_leading][fs][cat] ->Fill(ISO_leading, weight);
@@ -1287,6 +1352,18 @@ void Histograms::FillInclusive()
          }
       }
    }
+   
+	for ( int i_fs = 0; i_fs < num_of_final_states - 1; i_fs++ )
+   {
+      for ( int i_cat = 0; i_cat < num_of_categories - 1; i_cat++ )
+      {
+
+			histos_2DError_ZX[Settings::KDvsM4lZoomed][Settings::fs4l][i_cat]->Add(histos_2DError_ZX[Settings::KDvsM4lZoomed][i_fs][i_cat]);
+			histos_2DError_ZX[Settings::DVBFDECvsM4lZoomed][Settings::fs4l][i_cat]->Add(histos_2DError_ZX[Settings::DVBFDECvsM4lZoomed][i_fs][i_cat]);
+			histos_2DError_ZX[Settings::DVHDECvsM4lZoomed][Settings::fs4l][i_cat]->Add(histos_2DError_ZX[Settings::DVHDECvsM4lZoomed][i_fs][i_cat]);
+		
+      }
+   }
       
       
    for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
@@ -1315,6 +1392,18 @@ void Histograms::FillInclusive()
 				}
 
          }
+      }
+   }
+   
+	for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
+   {
+      for ( int i_cat = 0; i_cat < num_of_categories - 1; i_cat++ )
+      {
+				
+			histos_2DError_ZX[Settings::KDvsM4lZoomed][i_fs][Settings::inclusive]->Add(histos_2DError_ZX[Settings::KDvsM4lZoomed][i_fs][i_cat]);
+			histos_2DError_ZX[Settings::DVBFDECvsM4lZoomed][i_fs][Settings::inclusive]->Add(histos_2DError_ZX[Settings::DVBFDECvsM4lZoomed][i_fs][i_cat]);
+			histos_2DError_ZX[Settings::DVHDECvsM4lZoomed][i_fs][Settings::inclusive]->Add(histos_2DError_ZX[Settings::DVHDECvsM4lZoomed][i_fs][i_cat]);
+			
       }
    }
 
@@ -1393,6 +1482,7 @@ void Histograms::FillInclusive()
          //==========================
          // 2D plots with mass error
          //==========================
+         
          vector_X[Settings::KDvsM4l][i_fs][Settings::inclusive].insert(vector_X[Settings::KDvsM4l][i_fs][Settings::inclusive].end(),vector_X[Settings::KDvsM4l][i_fs][i_cat].begin(),vector_X[Settings::KDvsM4l][i_fs][i_cat].end());
          vector_Y[Settings::KDvsM4l][i_fs][Settings::inclusive].insert(vector_Y[Settings::KDvsM4l][i_fs][Settings::inclusive].end(),vector_Y[Settings::KDvsM4l][i_fs][i_cat].begin(),vector_Y[Settings::KDvsM4l][i_fs][i_cat].end());
          vector_EX[Settings::KDvsM4l][i_fs][Settings::inclusive].insert(vector_EX[Settings::KDvsM4l][i_fs][Settings::inclusive].end(),vector_EX[Settings::KDvsM4l][i_fs][i_cat].begin(),vector_EX[Settings::KDvsM4l][i_fs][i_cat].end());
@@ -2010,7 +2100,11 @@ void Histograms::SaveHistos( string file_name )
          histos_2DError_data[Settings::DVHvsM4lZoomed][i_fs][i_cat]->SetName( _histo_name.c_str() );
          histos_2DError_data[Settings::DVHvsM4lZoomed][i_fs][i_cat]->Write();
          
-         
+			
+         histos_2DError_ZX[Settings::KDvsM4lZoomed][i_fs][i_cat]->Write();
+         histos_2DError_ZX[Settings::DVBFDECvsM4lZoomed][i_fs][i_cat]->Write();
+         histos_2DError_ZX[Settings::DVHDECvsM4lZoomed][i_fs][i_cat]->Write();
+			
          for ( int i_proc = 0; i_proc < num_of_processes; i_proc++ )
          {
             for ( int i_1Dhistos = 0; i_1Dhistos < num_of_1D_plot_names; i_1Dhistos++ )
@@ -2100,6 +2194,9 @@ void Histograms::DeleteHistos()
          delete histos_2DError_data[Settings::DWHvsM4lZoomed][i_fs][i_cat];
          delete histos_2DError_data[Settings::DZHvsM4lZoomed][i_fs][i_cat];
          delete histos_2DError_data[Settings::DVHvsM4lZoomed][i_fs][i_cat];
+         delete histos_2DError_ZX[Settings::KDvsM4lZoomed][i_fs][i_cat];
+         delete histos_2DError_ZX[Settings::DVBFDECvsM4lZoomed][i_fs][i_cat];
+         delete histos_2DError_ZX[Settings::DVHDECvsM4lZoomed][i_fs][i_cat];
          
          for ( int i_proc = 0; i_proc < num_of_processes; i_proc++ )
          {
@@ -2296,6 +2393,12 @@ void Histograms::GetHistos( TString file_name )
             _histo_name = "Pt_trailing" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
             histos_1D[Settings::Pt_trailing][i_fs][i_cat][i_proc] = (TH1F*)histo_file->Get(_histo_name.c_str());
 				
+            _histo_name = "Eta_leading" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
+            histos_1D[Settings::Eta_leading][i_fs][i_cat][i_proc] = (TH1F*)histo_file->Get(_histo_name.c_str());
+
+            _histo_name = "Eta_trailing" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
+            histos_1D[Settings::Eta_trailing][i_fs][i_cat][i_proc] = (TH1F*)histo_file->Get(_histo_name.c_str());
+				
             _histo_name = "SIP_leading" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
             histos_1D[Settings::SIP_leading][i_fs][i_cat][i_proc] = (TH1F*)histo_file->Get(_histo_name.c_str());
 
@@ -2458,6 +2561,15 @@ void Histograms::GetHistos( TString file_name )
          _histo_name = "DVHvsM4lZoomed" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
          histos_2DError_data[Settings::DVHvsM4lZoomed][i_fs][i_cat] = (TGraphErrors*)histo_file->Get(_histo_name.c_str());
 			
+         _histo_name = "KDvsM4lZoomed_ZX" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _blinding;
+         histos_2DError_ZX[Settings::KDvsM4lZoomed][i_fs][i_cat] = (TH2F*)histo_file->Get(_histo_name.c_str());
+			
+         _histo_name = "DVBFDECvsM4lZoomed_ZX" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _blinding;
+         histos_2DError_ZX[Settings::DVBFDECvsM4lZoomed][i_fs][i_cat] = (TH2F*)histo_file->Get(_histo_name.c_str());
+			
+         _histo_name = "DVHDECvsM4lZoomed_ZX" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _blinding;
+         histos_2DError_ZX[Settings::DVHDECvsM4lZoomed][i_fs][i_cat] = (TH2F*)histo_file->Get(_histo_name.c_str());
+			
 			//===========
 			// Others
 			//===========
@@ -2469,6 +2581,12 @@ void Histograms::GetHistos( TString file_name )
 
 			_histo_name = "Pt_trailing_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
 			histos_1D_ZX[Settings::Pt_trailing][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
+			
+			_histo_name = "Eta_leading_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+			histos_1D_ZX[Settings::Eta_leading][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
+
+			_histo_name = "Eta_trailing_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+			histos_1D_ZX[Settings::Eta_trailing][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
 			
 			_histo_name = "SIP_leading_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
 			histos_1D_ZX[Settings::SIP_leading][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
@@ -2639,8 +2757,13 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
       stack->SetMinimum(0.2);
       stack->SetMaximum((data_max + data_max_error)*100);
    }
-   else
+   else if ( plot_index == Settings::D1jet_M4L118130 || plot_index == Settings::D2jet_M4L118130  || plot_index == Settings::DVH_M4L118130 || plot_index == Settings::DVBFDEC_M4L118130 || plot_index == Settings::DVBFDEC || plot_index == Settings::DVHDEC_M4L118130 || plot_index == Settings::DVHDEC)
    {
+      stack->SetMinimum(1e-5);
+      stack->SetMaximum((data_max + data_max_error)*1.3);
+   }
+   else
+	{
       stack->SetMinimum(1e-5);
       stack->SetMaximum((data_max + data_max_error)*1.1);
    }
@@ -2661,7 +2784,8 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
    stack->GetYaxis()->SetTitle(histos_1D[plot_index][fs][cat][Settings::Data]->GetYaxis()->GetTitle());
    
    if ( (plot_index == Settings::M4lMainZoomed) || (plot_index == Settings::M4lMainHighMass) ) stack->GetXaxis()->SetNdivisions(1005);
-   
+	
+   histos_1D[plot_index][fs][cat][Settings::Data]->SetMarkerSize(0.9);
    histos_1D[plot_index][fs][cat][Settings::Data]->Draw("SAME p E1 X0");
    
    
@@ -2742,15 +2866,25 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
    
    TPaveText *text;
    
-   if ( plot_index == Settings::D1jet_M4L118130 || plot_index == Settings::KD_M4L118130 || plot_index == Settings::MZ1_M4L118130 )
+   if (  plot_index == Settings::KD_M4L118130 || plot_index == Settings::MZ1_M4L118130 )
    {
       text = CreateCutText("right top", "118 < m_{4#font[12]{l}} < 130 GeV");
       text->Draw();
    }
-   else if ( plot_index == Settings::D2jet_M4L118130 || plot_index == Settings::DWH_M4L118130 || plot_index == Settings::DZH_M4L118130 ||
-             plot_index == Settings::DVH_M4L118130   || plot_index == Settings::MZ2_M4L118130 || plot_index == Settings::DVBFDEC_M4L118130 || plot_index == Settings::DVHDEC_M4L118130)
+	else if ( plot_index == Settings::D1jet_M4L118130 )
+   {
+      text = CreateCutText("right top", "#splitline{118 < m_{4#font[12]{l}} < 130 GeV}{N(jets) = 1}");
+      text->Draw();
+   }
+   else if ( plot_index == Settings::MZ2_M4L118130 || plot_index == Settings::DVBFDEC_M4L118130 || plot_index == Settings::DVHDEC_M4L118130)
    {
       text = CreateCutText("left top", "118 < m_{4#font[12]{l}} < 130 GeV");
+      text->Draw();
+   }
+   	else if ( plot_index == Settings::D2jet_M4L118130 ||  plot_index == Settings::DWH_M4L118130 || plot_index == Settings::DZH_M4L118130 ||
+             plot_index == Settings::DVH_M4L118130 )
+   {
+      text = CreateCutText("left top", "#splitline{118 < m_{4#font[12]{l}} < 130 GeV}{N(jets) #geq 2}");
       text->Draw();
    }
 	else if ( plot_index == Settings::M4l_110150_HighKD)
@@ -2771,7 +2905,7 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
    if ( plot_index == Settings::D1jet_M4L118130 || plot_index == Settings::D2jet_M4L118130 || plot_index == Settings::D1jet || plot_index == Settings::D2jet || plot_index == Settings::DWH_M4L118130 || plot_index == Settings::DWH || plot_index == Settings::DZH_M4L118130 || plot_index == Settings::DZH || plot_index == Settings::DVH_M4L118130 || plot_index == Settings::DVH || plot_index == Settings::DVHDEC)
    {
       TLine *wp_line;
-      wp_line = CreateDashedLine(0.5, 0.0, 0.5, (data_max + data_max_error)*1.1);
+      wp_line = CreateDashedLine(0.5, 0.0, 0.5, (data_max + data_max_error)*1.3);
       wp_line->Draw();
    }
 	
@@ -2843,6 +2977,7 @@ void Histograms::plot_Combination( TString folder )
 	stack->GetXaxis()->SetTitle(Variables::M4lMain().var_X_label);
    stack->GetYaxis()->SetTitle(histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::Data]->GetYaxis()->GetTitle());
 
+	histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::Data]->SetMarkerSize(0.9);
    histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::Data]->Draw("SAME p E1 X0");
 	
 	
@@ -2870,7 +3005,7 @@ void Histograms::plot_Combination( TString folder )
 	DrawLogX(c, Settings::inclusive, Settings::fs4l);
 	
 
-   _out_file_name = "Combination";
+   _out_file_name = folder + "/Combination";
    SavePlots(c, _out_file_name, folder);
 }
 //=========================================================================================================
@@ -3014,21 +3149,6 @@ void Histograms::plot_1D_all_cat( TString filename, TString variable_name , TStr
       }
       
       stack->Draw("HIST");
-      
-      float data_max = histos_1D[plot_index][Settings::fs4l][i_cat][Settings::Data]->GetBinContent(histos_1D[plot_index][Settings::fs4l][i_cat][Settings::Data]->GetMaximumBin());
-      float data_max_error = histos_1D[plot_index][Settings::fs4l][i_cat][Settings::Data]->GetBinErrorUp(histos_1D[plot_index][Settings::fs4l][i_cat][Settings::Data]->GetMaximumBin());
-      
-      if ( GetVarLogY( variable_name) )
-      {
-         stack->SetMinimum(0.5);
-         stack->SetMaximum((data_max + data_max_error)*200);
-      }
-      
-      else
-      {
-         stack->SetMinimum(1e-5);
-         stack->SetMaximum((data_max + data_max_error)*1.6);
-      }
 
       // Axis title
       stack->GetXaxis()->SetTitle(histos_1D[plot_index][Settings::fs4l][i_cat][Settings::Data]->GetXaxis()->GetTitle());
@@ -3042,7 +3162,23 @@ void Histograms::plot_1D_all_cat( TString filename, TString variable_name , TStr
          histos_1D[plot_index][Settings::fs4l][i_cat][Settings::Data]->Rebin(2);
          ChangeYaxisTitle(stack);
       }
-      
+		
+		float data_max = histos_1D[plot_index][Settings::fs4l][i_cat][Settings::Data]->GetBinContent(histos_1D[plot_index][Settings::fs4l][i_cat][Settings::Data]->GetMaximumBin());
+      float data_max_error = histos_1D[plot_index][Settings::fs4l][i_cat][Settings::Data]->GetBinErrorUp(histos_1D[plot_index][Settings::fs4l][i_cat][Settings::Data]->GetMaximumBin());
+		
+      if ( GetVarLogY( variable_name) )
+      {
+         stack->SetMinimum(0.5);
+         stack->SetMaximum((data_max + data_max_error)*200);
+      }
+		
+      else
+      {
+         stack->SetMinimum(1e-5);
+         stack->SetMaximum((data_max + data_max_error)*1.6);
+      }
+		
+      histos_1D[plot_index][Settings::fs4l][i_cat][Settings::Data]->SetMarkerSize(0.9);
       histos_1D[plot_index][Settings::fs4l][i_cat][Settings::Data]->Draw("SAME p E1 X0");
 
 
@@ -3234,6 +3370,7 @@ void Histograms::plot_1D_all_fs( TString filename, TString variable_name , TStri
       
       if ( (plot_index == Settings::M4lMainZoomed) ||  (plot_index == Settings::M4lMainHighMass)) stack->GetXaxis()->SetNdivisions(1005);
       
+		histos_1D[plot_index][i_fs][Settings::inclusive][Settings::Data]->SetMarkerSize(0.9);
       histos_1D[plot_index][i_fs][Settings::inclusive][Settings::Data]->Draw("SAME p E1 X0");
       
       TLegend *legend;
@@ -3322,21 +3459,21 @@ void Histograms::plot_2D_single( TString filename, TString variable_name, TStrin
 
    //Plot data histograms
    histos_2D[plot_index][Settings::fs2e2mu][cat][Settings::Data]->SetMarkerStyle(21);
-   histos_2D[plot_index][Settings::fs2e2mu][cat][Settings::Data]->SetMarkerSize(0.7);
+   histos_2D[plot_index][Settings::fs2e2mu][cat][Settings::Data]->SetMarkerSize(0.9);
    histos_2D[plot_index][Settings::fs2e2mu][cat][Settings::Data]->SetMarkerColor(kBlue);
    histos_2D[plot_index][Settings::fs2e2mu][cat][Settings::Data]->SetLineColor(kBlue);
    
    histos_2D[plot_index][Settings::fs2e2mu][cat][Settings::Data]->Draw("SAME XP");
    
    histos_2D[plot_index][Settings::fs4mu][cat][Settings::Data]->SetMarkerStyle(20);
-   histos_2D[plot_index][Settings::fs4mu][cat][Settings::Data]->SetMarkerSize(0.7);
+   histos_2D[plot_index][Settings::fs4mu][cat][Settings::Data]->SetMarkerSize(0.9);
    histos_2D[plot_index][Settings::fs4mu][cat][Settings::Data]->SetMarkerColor(kRed+1);
    histos_2D[plot_index][Settings::fs4mu][cat][Settings::Data]->SetLineColor(kRed+1);
    
    histos_2D[plot_index][Settings::fs4mu][cat][Settings::Data]->Draw("SAME XP");
    
    histos_2D[plot_index][Settings::fs4e][cat][Settings::Data]->SetMarkerStyle(22);
-   histos_2D[plot_index][Settings::fs4e][cat][Settings::Data]->SetMarkerSize(0.7);
+   histos_2D[plot_index][Settings::fs4e][cat][Settings::Data]->SetMarkerSize(0.9);
    histos_2D[plot_index][Settings::fs4e][cat][Settings::Data]->SetMarkerColor(kGreen+2);
    histos_2D[plot_index][Settings::fs4e][cat][Settings::Data]->SetLineColor(kGreen+2);
    
@@ -3409,21 +3546,21 @@ void Histograms::plot_2D_error_single( TString filename, TString variable_name, 
    
    // Plot data histograms
    histos_2DError_data[plot_index][Settings::fs2e2mu][cat]->SetMarkerStyle(21);
-   histos_2DError_data[plot_index][Settings::fs2e2mu][cat]->SetMarkerSize(0.7);
+   histos_2DError_data[plot_index][Settings::fs2e2mu][cat]->SetMarkerSize(0.9);
    histos_2DError_data[plot_index][Settings::fs2e2mu][cat]->SetMarkerColor(kBlue);
    histos_2DError_data[plot_index][Settings::fs2e2mu][cat]->SetLineColor(kBlue);
    
    histos_2DError_data[plot_index][Settings::fs2e2mu][cat]->Draw("SAME P");
    
    histos_2DError_data[plot_index][Settings::fs4mu][cat]->SetMarkerStyle(20);
-   histos_2DError_data[plot_index][Settings::fs4mu][cat]->SetMarkerSize(0.7);
+   histos_2DError_data[plot_index][Settings::fs4mu][cat]->SetMarkerSize(0.9);
    histos_2DError_data[plot_index][Settings::fs4mu][cat]->SetMarkerColor(kRed+1);
    histos_2DError_data[plot_index][Settings::fs4mu][cat]->SetLineColor(kRed+1);
    
    histos_2DError_data[plot_index][Settings::fs4mu][cat]->Draw("SAME P");
    
    histos_2DError_data[plot_index][Settings::fs4e][cat]->SetMarkerStyle(22);
-   histos_2DError_data[plot_index][Settings::fs4e][cat]->SetMarkerSize(0.7);
+   histos_2DError_data[plot_index][Settings::fs4e][cat]->SetMarkerSize(0.9);
    histos_2DError_data[plot_index][Settings::fs4e][cat]->SetMarkerColor(kGreen+2);
    histos_2DError_data[plot_index][Settings::fs4e][cat]->SetLineColor(kGreen+2);
    
@@ -3485,6 +3622,8 @@ void Histograms::plot_2D_error_all_cat( TString filename, TString variable_name,
    stack = (TH2F*)histos_2DError[plot_index][Settings::fs4l][Settings::inclusive][Settings::H125]->Clone();
    stack->Add(histos_2DError[plot_index][Settings::fs4l][Settings::inclusive][Settings::qqZZ]);
    stack->Add(histos_2DError[plot_index][Settings::fs4l][Settings::inclusive][Settings::ggZZ]);
+   histos_2DError_ZX[plot_index][Settings::fs4l][Settings::inclusive]->Smooth();
+   stack->Add(histos_2DError_ZX[plot_index][Settings::fs4l][Settings::inclusive]);
    
    stack->SetTitleOffset(1.00, "X");
    stack->SetTitleOffset(1.25, "YZ");
@@ -3502,28 +3641,28 @@ void Histograms::plot_2D_error_all_cat( TString filename, TString variable_name,
    for (int i_fs = 0; i_fs <= Settings::fs4l; i_fs++)
    {
       histos_2DError_data[plot_index][i_fs][Settings::untagged]->SetMarkerStyle(20);
-      histos_2DError_data[plot_index][i_fs][Settings::untagged]->SetMarkerSize(0.7);
+      histos_2DError_data[plot_index][i_fs][Settings::untagged]->SetMarkerSize(0.9);
       
       histos_2DError_data[plot_index][i_fs][Settings::VBF_1j_tagged]->SetMarkerStyle(26);
-      histos_2DError_data[plot_index][i_fs][Settings::VBF_1j_tagged]->SetMarkerSize(0.7);
+      histos_2DError_data[plot_index][i_fs][Settings::VBF_1j_tagged]->SetMarkerSize(0.9);
   
       histos_2DError_data[plot_index][i_fs][Settings::VBF_2j_tagged]->SetMarkerStyle(32);
-      histos_2DError_data[plot_index][i_fs][Settings::VBF_2j_tagged]->SetMarkerSize(0.7);
+      histos_2DError_data[plot_index][i_fs][Settings::VBF_2j_tagged]->SetMarkerSize(0.9);
         
       histos_2DError_data[plot_index][i_fs][Settings::VH_lepton_tagged]->SetMarkerStyle(28);
-      histos_2DError_data[plot_index][i_fs][Settings::VH_lepton_tagged]->SetMarkerSize(0.7);
+      histos_2DError_data[plot_index][i_fs][Settings::VH_lepton_tagged]->SetMarkerSize(0.9);
               
       histos_2DError_data[plot_index][i_fs][Settings::VH_hadron_tagged]->SetMarkerStyle(27);
-      histos_2DError_data[plot_index][i_fs][Settings::VH_hadron_tagged]->SetMarkerSize(0.7);
+      histos_2DError_data[plot_index][i_fs][Settings::VH_hadron_tagged]->SetMarkerSize(0.9);
   
       histos_2DError_data[plot_index][i_fs][Settings::ttH_hadron_tagged]->SetMarkerStyle(30);
-      histos_2DError_data[plot_index][i_fs][Settings::ttH_hadron_tagged]->SetMarkerSize(0.7);
+      histos_2DError_data[plot_index][i_fs][Settings::ttH_hadron_tagged]->SetMarkerSize(0.9);
 		
 		histos_2DError_data[plot_index][i_fs][Settings::ttH_lepton_tagged]->SetMarkerStyle(25);
-      histos_2DError_data[plot_index][i_fs][Settings::ttH_lepton_tagged]->SetMarkerSize(0.7);
+      histos_2DError_data[plot_index][i_fs][Settings::ttH_lepton_tagged]->SetMarkerSize(0.9);
   
       histos_2DError_data[plot_index][i_fs][Settings::VH_MET_tagged]->SetMarkerStyle(25);
-      histos_2DError_data[plot_index][i_fs][Settings::VH_MET_tagged]->SetMarkerSize(0.7);
+      histos_2DError_data[plot_index][i_fs][Settings::VH_MET_tagged]->SetMarkerSize(0.9);
    }
    
    for (int i_cat = 0; i_cat < Settings::inclusive; i_cat++)
@@ -3863,7 +4002,7 @@ void Histograms::PrintYields( vector< vector <float> > _expected_yield_SR)
          
          for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
          {
-            if( i_fs == Settings::fs2mu2e ) continue;
+            if( _merge_2e2mu && i_fs == Settings::fs2mu2e ) continue;
       
             cout << histos_1D[Settings::M4lYields][i_fs][i_cat][i_proc]->Integral() << "   ";
          }
@@ -3883,7 +4022,7 @@ void Histograms::PrintYields( vector< vector <float> > _expected_yield_SR)
                
       for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
       {
-         if( i_fs == Settings::fs2mu2e ) continue;
+         if( _merge_2e2mu && i_fs == Settings::fs2mu2e ) continue;
          
           cout << ZXYields->GetM4lZX_Yields(_expected_yield_SR, 0, 3000, i_fs, i_cat) << "   ";
       }
@@ -3899,7 +4038,7 @@ void Histograms::PrintYields( vector< vector <float> > _expected_yield_SR)
 		
       for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
       {
-         if( i_fs == Settings::fs2mu2e ) continue;
+         if( _merge_2e2mu && i_fs == Settings::fs2mu2e ) continue;
 			
           cout << ZXYields->GetM4lZX_Yields(_expected_yield_SR, 0, 3000, i_fs, i_cat) + histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->Integral() + histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yqqZZ]->Integral() + histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yggZZ]->Integral() << "   ";
       }
@@ -3937,7 +4076,7 @@ void Histograms::PrintYields(float M4l_down, float M4l_up, vector< vector <float
                   
          for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
          {
-            if( i_fs == Settings::fs2mu2e ) continue;
+            if( _merge_2e2mu && i_fs == Settings::fs2mu2e ) continue;
       
             cout << histos_1D[Settings::M4lYields][i_fs][i_cat][i_proc]->Integral(
                     histos_1D[Settings::M4lYields][i_fs][i_cat][i_proc]->FindBin(M4l_down),
@@ -3959,7 +4098,7 @@ void Histograms::PrintYields(float M4l_down, float M4l_up, vector< vector <float
             
       for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
       {
-         if( i_fs == Settings::fs2mu2e ) continue;
+         if( _merge_2e2mu && i_fs == Settings::fs2mu2e ) continue;
          
          cout << ZXYields->GetM4lZX_Yields(_expected_yield_SR, M4l_down, M4l_up, i_fs, i_cat) << "   ";
       }
@@ -3975,7 +4114,7 @@ void Histograms::PrintYields(float M4l_down, float M4l_up, vector< vector <float
 		
       for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
       {
-         if( i_fs == Settings::fs2mu2e ) continue;
+         if( _merge_2e2mu && i_fs == Settings::fs2mu2e ) continue;
 			
           cout << ZXYields->GetM4lZX_Yields(
           _expected_yield_SR, M4l_down, M4l_up, i_fs, i_cat) +
@@ -4020,7 +4159,7 @@ void Histograms::PrintLatexTables(float M4l_down, float M4l_up, vector< vector <
       {
          for (int i_fs = 0; i_fs < num_of_final_states; i_fs++)
          {
-            if ( i_fs == Settings::fs2mu2e) continue;
+            if ( _merge_2e2mu && i_fs == Settings::fs2mu2e) continue;
             temp_yield = histos_1D[Settings::M4lYields][i_fs][Settings::inclusive][i_proc]->Integral();
             yields_map[i_proc].push_back(temp_yield);
          }
@@ -4030,7 +4169,7 @@ void Histograms::PrintLatexTables(float M4l_down, float M4l_up, vector< vector <
    // Z+X
    for (int i_fs = 0; i_fs < num_of_final_states; i_fs++)
    {
-      if ( i_fs == Settings::fs2mu2e) continue;
+      if ( _merge_2e2mu && i_fs == Settings::fs2mu2e) continue;
       temp_yield = ZXYields->GetM4lZX_Yields(_expected_yield_SR, 30., 3000., i_fs, Settings::inclusive);
       yields_ZX.push_back(temp_yield);
    }
@@ -4119,7 +4258,7 @@ void Histograms::PrintLatexTables(float M4l_down, float M4l_up, vector< vector <
       {
          for (int i_fs = 0; i_fs < num_of_final_states; i_fs++)
          {
-            if ( i_fs == Settings::fs2mu2e) continue;
+            if ( _merge_2e2mu && i_fs == Settings::fs2mu2e) continue;
             temp_yield = histos_1D[Settings::M4lYields][i_fs][Settings::inclusive][i_proc]->Integral(
                          histos_1D[Settings::M4lYields][i_fs][Settings::inclusive][i_proc]->FindBin(M4l_down),
                          histos_1D[Settings::M4lYields][i_fs][Settings::inclusive][i_proc]->FindBin(M4l_up)-1);
@@ -4131,7 +4270,7 @@ void Histograms::PrintLatexTables(float M4l_down, float M4l_up, vector< vector <
    // Z+X
    for (int i_fs = 0; i_fs < num_of_final_states; i_fs++)
    {
-      if ( i_fs == Settings::fs2mu2e) continue;
+      if ( _merge_2e2mu && i_fs == Settings::fs2mu2e) continue;
       temp_yield = ZXYields->GetM4lZX_Yields(_expected_yield_SR, M4l_down, M4l_up, i_fs, Settings::inclusive);
       yields_ZX.push_back(temp_yield);
    }
@@ -4431,6 +4570,8 @@ int Histograms::SetPlotName( TString variable_name )
    else if ( variable_name == "Eta4l" )              return Settings::Eta4l;
    else if ( variable_name == "Pt_leading" )         return Settings::Pt_leading;
    else if ( variable_name == "Pt_trailing" )        return Settings::Pt_trailing;
+   else if ( variable_name == "Eta_leading" )         return Settings::Eta_leading;
+   else if ( variable_name == "Eta_trailing" )        return Settings::Eta_trailing;
    else if ( variable_name == "SIP_leading" )        return Settings::SIP_leading;
    else if ( variable_name == "SIP_trailing" )       return Settings::SIP_trailing;
    else if ( variable_name == "ISO_leading" )        return Settings::ISO_leading;
@@ -4521,6 +4662,8 @@ bool Histograms::GetVarLogX ( TString variable_name )
    else if ( variable_name == "Eta4l" )              return bool(Variables::Eta4l().var_log_x);
    else if ( variable_name == "Pt_leading" )         return bool(Variables::Pt_leading().var_log_x);
    else if ( variable_name == "Pt_trailing" )        return bool(Variables::Pt_trailing().var_log_x);
+   else if ( variable_name == "Eta_leading" )         return bool(Variables::Eta_leading().var_log_x);
+   else if ( variable_name == "Eta_trailing" )        return bool(Variables::Eta_trailing().var_log_x);
    else if ( variable_name == "SIP_leading" )        return bool(Variables::SIP_leading().var_log_x);
    else if ( variable_name == "SIP_trailing" )       return bool(Variables::SIP_trailing().var_log_x);
    else if ( variable_name == "ISO_leading" )        return bool(Variables::ISO_leading().var_log_x);
@@ -4611,6 +4754,8 @@ bool Histograms::GetVarLogY ( TString variable_name )
    else if ( variable_name == "Eta4l" )              return bool(Variables::Eta4l().var_log_y);
    else if ( variable_name == "Pt_leading" )         return bool(Variables::Pt_leading().var_log_y);
    else if ( variable_name == "Pt_trailing" )        return bool(Variables::Pt_trailing().var_log_y);
+   else if ( variable_name == "Eta_leading" )         return bool(Variables::Eta_leading().var_log_y);
+   else if ( variable_name == "Eta_trailing" )        return bool(Variables::Eta_trailing().var_log_y);
    else if ( variable_name == "SIP_leading" )        return bool(Variables::SIP_leading().var_log_y);
    else if ( variable_name == "SIP_trailing" )       return bool(Variables::SIP_trailing().var_log_y);
    else if ( variable_name == "ISO_leading" )        return bool(Variables::ISO_leading().var_log_y);
@@ -4773,8 +4918,8 @@ TLegend* Histograms::Create2DLegend( string position, TH2F *fs4e, TH2F *fs4mu, T
    leg->SetTextSize(0.032);
    
    leg->AddEntry(fs4e,   "4e",    "p");
-   leg->AddEntry(fs4mu,  "4mu",   "p");
-   leg->AddEntry(fs2e2mu,"2e2mu", "p");
+   leg->AddEntry(fs4mu,  "4#mu",   "p");
+   leg->AddEntry(fs2e2mu,"2e2#mu", "p");
    
 //   leg->Draw();
 
@@ -4794,21 +4939,17 @@ TLegend* Histograms::Create2DLegendAllCat_KD( string position, TGraphErrors *fs4
    leg->SetBorderSize(1);
    leg->SetTextFont(42);
    leg->SetTextSize(0.18);
-   leg->SetNColumns(4);
+   leg->SetNColumns(3);
    
-   leg->AddEntry(fs4e,     "4e",              "lp");
+   leg->AddEntry(fs4e,    "4e",              "lp");
+   leg->AddEntry(fs4mu,   "4#mu",            "lp");
+   leg->AddEntry(fs2e2mu, "2e2#mu",          "lp");
    leg->AddEntry(untagged, "untagged",        "lp");
    leg->AddEntry(VHlep,    "VH-lept. tagged", "lp");
-   leg->AddEntry(ttHhad,   "ttH-hadr. tagged","lp");
-	
-   leg->AddEntry(fs4mu,   "4mu",             "lp");
-   leg->AddEntry(VBF1jet, "VBF-1j tagged",   "lp");
-   leg->AddEntry(ttHlep,  "ttH-lept. tagged", "lp");
+   leg->AddEntry(ttHhad,   "t#bar{t}H-hadr. tagged","lp");
+   leg->AddEntry(VBF1jet, "VBF-1jet tagged",   "lp");
+   leg->AddEntry(ttHlep,  "t#bar{t}H-lept. tagged", "lp");
    leg->AddEntry((TObject*)0, "",                       "");
-   
-   leg->AddEntry(fs2e2mu,     "2e2mu",                  "lp");
-   leg->AddEntry((TObject*)0, "",                       "");
-	
 	
    
    return leg;
@@ -4824,23 +4965,15 @@ TLegend* Histograms::Create2DLegendAllCat_DVBFDEC( string position, TGraphErrors
    leg->SetFillStyle(0);
    leg->SetBorderSize(1);
    leg->SetTextFont(42);
-   leg->SetTextSize(0.18);
-   leg->SetNColumns(4);
+   leg->SetTextSize(0.20);
+   leg->SetNColumns(3);
 	
-   leg->AddEntry(fs4e,     "4e",              "lp");
-   leg->AddEntry((TObject*)0, "",                       "");
-   leg->AddEntry((TObject*)0, "",                       "");
-   leg->AddEntry((TObject*)0, "",                       "");
-	
-   leg->AddEntry(fs4mu,   "4mu",             "lp");
-   leg->AddEntry((TObject*)0, "",                       "");
-   leg->AddEntry(VBF2jet,   "VBF-2j tagged", "lp");
-   leg->AddEntry((TObject*)0, "",                       "");
-	
-   leg->AddEntry(fs2e2mu,     "2e2mu",                  "lp");
-   leg->AddEntry((TObject*)0, "",                       "");
-   leg->AddEntry((TObject*)0, "",                       "");
-   leg->AddEntry((TObject*)0, "",                       "");
+   leg->AddEntry(fs4e,    "4e                   ",  "lp");
+   leg->AddEntry(fs4mu,   "4#mu                 ",  "lp");
+   leg->AddEntry(fs2e2mu, "2e2#mu        ",  "lp");
+   leg->AddEntry((TObject*)0, "",    "");
+   leg->AddEntry(VBF2jet,   "VBF-2jet tagged", "lp");
+   leg->AddEntry((TObject*)0, "",    "");
 	
 	
 	
@@ -4857,25 +4990,16 @@ TLegend* Histograms::Create2DLegendAllCat_DVHDEC( string position, TGraphErrors 
    leg->SetFillStyle(0);
    leg->SetBorderSize(1);
    leg->SetTextFont(42);
-   leg->SetTextSize(0.18);
-   leg->SetNColumns(4);
+   leg->SetTextSize(0.20);
+   leg->SetNColumns(3);
 	
-   leg->AddEntry(fs4e,     "4e",              "lp");
-   leg->AddEntry((TObject*)0, "",                       "");
-   leg->AddEntry((TObject*)0, "",                       "");
-   leg->AddEntry((TObject*)0, "",                       "");
-	
-   leg->AddEntry(fs4mu,   "4mu",             "lp");
-   leg->AddEntry((TObject*)0, "",                       "");
+   leg->AddEntry(fs4e,    "4e                   ",  "lp");
+   leg->AddEntry(fs4mu,   "4#mu                 ",  "lp");
+   leg->AddEntry(fs2e2mu, "2e2#mu     ",  "lp");
+   leg->AddEntry((TObject*)0, "",    "");
    leg->AddEntry(VHhad,   "VH-hadr. tagged", "lp");
-   leg->AddEntry((TObject*)0, "",                       "");
-	
-   leg->AddEntry(fs2e2mu,     "2e2mu",                  "lp");
-   leg->AddEntry((TObject*)0, "",                       "");
-   leg->AddEntry((TObject*)0, "",                       "");
-   leg->AddEntry((TObject*)0, "",                       "");
-	
-	
+   leg->AddEntry((TObject*)0, "",     "");
+
 	
    return leg;
 }
@@ -4896,8 +5020,8 @@ TLegend* Histograms::Create2DErrorLegend( string position, TGraphErrors *fs4e, T
    leg->SetTextSize(0.032);
    
    leg->AddEntry(fs4e,    "4e",    "lp");
-   leg->AddEntry(fs4mu,   "4mu",   "lp");
-   leg->AddEntry(fs2e2mu, "2e2mu", "lp");
+   leg->AddEntry(fs4mu,   "4#mu",   "lp");
+   leg->AddEntry(fs2e2mu, "2e2#mu", "lp");
    
    return leg;
 }
@@ -4934,7 +5058,7 @@ TPaveText* Histograms::CreateCatText( string position, TString cat_label)
    TPaveText *pav;
    pav = new TPaveText(.21, .81, .51, .91,"brNDC");// Default initalisiation to avoid scram compilation error
    if (position == "top left")  pav = new TPaveText(.21, .81, .51, .91,"brNDC");
-   if (position == "left under cut text" )    pav = new TPaveText(.21, .71, .51, .81 ,"brNDC");
+   if (position == "left under cut text" )    pav = new TPaveText(.21, .76, .51, .86 ,"brNDC");
    pav->SetFillStyle(0);
    pav->SetBorderSize(0);
    pav->SetTextAlign(11);
@@ -4970,20 +5094,10 @@ void Histograms::DrawLogX( TCanvas *c, int cat, int fs )
    int x_low = 100;
    int x_up  = 1000;
    int step  = 100;
-   
-   float b = c->GetBottomMargin();
-      
-   float u_y_max = c->GetUymax();
-   
-   if ( cat == Settings::inclusive && fs == Settings::fs4l ) _y_max = u_y_max;
-   
-   float factor = u_y_max/_y_max;
-   
-   float y_latex = b - 0.4;
-       
-//   cout << "Factor = " << factor << endl;
-   
-   TLatex *latex_80 = new TLatex(80, y_latex*factor, "80");  
+	
+   float label_margin = -1.0; //Change this if you want to move X-axis numbers up/dn
+	
+   TLatex *latex_80 = new TLatex(80, label_margin , "80");
    latex_80->SetTextAlign(23);
    latex_80->SetTextFont (42);
    latex_80->SetTextSize (0.04);
@@ -4994,7 +5108,7 @@ void Histograms::DrawLogX( TCanvas *c, int cat, int fs )
       if (i == 600 || i == 800) continue;
       float i_x = i;
       
-      TLatex *latex = new TLatex(i, y_latex*factor, Form("%.0f", i_x));
+      TLatex *latex = new TLatex(i, label_margin , Form("%.0f", i_x));
       
       latex->SetTextAlign(23);
       latex->SetTextFont (42);

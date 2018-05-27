@@ -19,10 +19,10 @@ Plotter::Plotter( double lumi ):Tree()
 
    
    // Z+X SS factors
-   _fs_ROS_SS.push_back(1.01005);//4e
-   _fs_ROS_SS.push_back(1.05217);//4mu
-   _fs_ROS_SS.push_back(1.0024);//2e2mu
-   _fs_ROS_SS.push_back(1.0052);//2mu2e
+   _fs_ROS_SS.push_back(1.00868);//4e
+   _fs_ROS_SS.push_back(1.04015);//4mu
+   _fs_ROS_SS.push_back(1.00823);//2e2mu
+   _fs_ROS_SS.push_back(1.0049);//2mu2e
    
    vector<float> temp;
    for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
@@ -92,7 +92,7 @@ void Plotter::MakeHistograms( TString input_file_name )
       }
 
       if ( !(ZZsel >= 90) ) continue;
-      
+		
 
       // Find current process
       gen_assoc_lep_id_.push_back(GenAssocLep1Id);
@@ -282,21 +282,42 @@ void Plotter::MakeHistograms( TString input_file_name )
 		
       unblinded_histos->FillDvsM4l( ZZMass, KD, DVBFDEC, DVHDEC, nCleanedJetsPt30, D1jet, D2jet, DWH, DZH, DVH, _event_weight, _current_final_state, _current_category, _current_process );
 
-		Pt_leading  = max(max(LepPt->at(0),LepPt->at(1)),max(LepPt->at(2),LepPt->at(3)));
-		Pt_trailing = min(min(LepPt->at(0),LepPt->at(1)),min(LepPt->at(2),LepPt->at(3)));
+		int leading_id = -9;
+		int trailing_id = -9;
+
+		if(LepPt->at(0) > LepPt->at(1) && LepPt->at(0) > LepPt->at(2) && LepPt->at(0) > LepPt->at(3)) leading_id=0;
+		if(LepPt->at(1) > LepPt->at(0) && LepPt->at(1) > LepPt->at(2) && LepPt->at(1) > LepPt->at(3)) leading_id=1;
+		if(LepPt->at(2) > LepPt->at(0) && LepPt->at(2) > LepPt->at(1) && LepPt->at(2) > LepPt->at(3)) leading_id=2;
+		if(LepPt->at(3) > LepPt->at(0) && LepPt->at(3) > LepPt->at(1) && LepPt->at(3) > LepPt->at(2)) leading_id=3;
+
+		if(LepPt->at(0) < LepPt->at(1) && LepPt->at(0) < LepPt->at(2) && LepPt->at(0) < LepPt->at(3)) trailing_id=0;
+		if(LepPt->at(1) < LepPt->at(0) && LepPt->at(1) < LepPt->at(2) && LepPt->at(1) < LepPt->at(3)) trailing_id=1;
+		if(LepPt->at(2) < LepPt->at(0) && LepPt->at(2) < LepPt->at(1) && LepPt->at(2) < LepPt->at(3)) trailing_id=2;
+		if(LepPt->at(3) < LepPt->at(0) && LepPt->at(3) < LepPt->at(1) && LepPt->at(3) < LepPt->at(2)) trailing_id=3;
+
+		if(LepPt->at(2) > LepPt->at(3)) {leading_id=2;trailing_id=3;}
+		if(LepPt->at(3) > LepPt->at(2)) {leading_id=3;trailing_id=2;}
+
+		Pt_leading  = LepPt->at(leading_id);
+		Pt_trailing = LepPt->at(trailing_id);
+
+		Eta_leading  = LepEta->at(leading_id);
+		Eta_trailing = LepEta->at(trailing_id);
+
+		SIP_leading  = LepSIP->at(leading_id);
+		SIP_trailing = LepSIP->at(trailing_id);
+
+		ISO_leading  = LepCombRelIsoPF->at(leading_id);
+		ISO_trailing = LepCombRelIsoPF->at(trailing_id);
 		
-		SIP_leading  = max(max(LepSIP->at(0),LepSIP->at(1)),max(LepSIP->at(2),LepSIP->at(3)));
-		SIP_trailing = min(min(LepSIP->at(0),LepSIP->at(1)),min(LepSIP->at(2),LepSIP->at(3)));
-		
-		ISO_leading  = max(max(LepCombRelIsoPF->at(0),LepCombRelIsoPF->at(1)),max(LepCombRelIsoPF->at(2),LepCombRelIsoPF->at(3)));
-		ISO_trailing = min(min(LepCombRelIsoPF->at(0),LepCombRelIsoPF->at(1)),min(LepCombRelIsoPF->at(2),LepCombRelIsoPF->at(3)));
 		// Fill other histograms
       if ( blind(ZZMass) )
       {
-         blinded_histos->FillOthers( ZZMass, ZZPt, ZZEta, PFMET, Pt_leading, Pt_trailing, SIP_leading, SIP_trailing, ISO_leading, ISO_trailing, nExtraLep, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, KD, DVBFDEC, DVHDEC, _event_weight, _current_final_state, _current_category, _current_process );
+         blinded_histos->FillOthers( ZZMass, ZZPt, ZZEta, PFMET, Pt_leading, Pt_trailing, Eta_leading, Eta_trailing, SIP_leading, SIP_trailing, ISO_leading, ISO_trailing, nExtraLep, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, KD, DVBFDEC, DVHDEC, _event_weight, _current_final_state, _current_category, _current_process );
       }
 		
-      unblinded_histos->FillOthers( ZZMass, ZZPt, ZZEta, PFMET, Pt_leading, Pt_trailing, SIP_leading, SIP_trailing, ISO_leading, ISO_trailing, nExtraLep, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, KD, DVBFDEC, DVHDEC, _event_weight, _current_final_state, _current_category, _current_process );
+          unblinded_histos->FillOthers( ZZMass, ZZPt, ZZEta, PFMET, Pt_leading, Pt_trailing, Eta_leading, Eta_trailing, SIP_leading, SIP_trailing, ISO_leading, ISO_trailing, nExtraLep, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, KD, DVBFDEC, DVHDEC, _event_weight, _current_final_state, _current_category, _current_process );
+	
 		
       
    } // end for loop
@@ -440,7 +461,7 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
       if ( !test_bit(CRflag, CRZLLss) ) continue;
    
       _current_final_state = FindFinalStateZX();
-   
+		
 		_current_category = categoryMor18(nExtraLep,
 													 nExtraZ,
 													 nCleanedJetsPt30,
@@ -580,21 +601,46 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
          if ( nCleanedJetsPt30 >= 2 ) blinded_histos->FillDVHZX( ZZMass, DVH, _yield_SR, _current_final_state, _current_category );
       }
 		
-		Pt_leading  = max(max(LepPt->at(0),LepPt->at(1)),max(LepPt->at(2),LepPt->at(3)));
-		Pt_trailing = min(min(LepPt->at(0),LepPt->at(1)),min(LepPt->at(2),LepPt->at(3)));
+		int leading_id = -9;
+		int trailing_id = -9;
+
+		if(LepPt->at(0) > LepPt->at(1) && LepPt->at(0) > LepPt->at(2) && LepPt->at(0) > LepPt->at(3)) leading_id=0;
+		if(LepPt->at(1) > LepPt->at(0) && LepPt->at(1) > LepPt->at(2) && LepPt->at(1) > LepPt->at(3)) leading_id=1;
+		if(LepPt->at(2) > LepPt->at(0) && LepPt->at(2) > LepPt->at(1) && LepPt->at(2) > LepPt->at(3)) leading_id=2;
+		if(LepPt->at(3) > LepPt->at(0) && LepPt->at(3) > LepPt->at(1) && LepPt->at(3) > LepPt->at(2)) leading_id=3;
+
+		if(LepPt->at(0) < LepPt->at(1) && LepPt->at(0) < LepPt->at(2) && LepPt->at(0) < LepPt->at(3)) trailing_id=0;
+		if(LepPt->at(1) < LepPt->at(0) && LepPt->at(1) < LepPt->at(2) && LepPt->at(1) < LepPt->at(3)) trailing_id=1;
+		if(LepPt->at(2) < LepPt->at(0) && LepPt->at(2) < LepPt->at(1) && LepPt->at(2) < LepPt->at(3)) trailing_id=2;
+		if(LepPt->at(3) < LepPt->at(0) && LepPt->at(3) < LepPt->at(1) && LepPt->at(3) < LepPt->at(2)) trailing_id=3;
 		
-		SIP_leading  = max(max(LepSIP->at(0),LepSIP->at(1)),max(LepSIP->at(2),LepSIP->at(3)));
-		SIP_trailing = min(min(LepSIP->at(0),LepSIP->at(1)),min(LepSIP->at(2),LepSIP->at(3)));
+		if(LepPt->at(2) > LepPt->at(3)) {leading_id=2;trailing_id=3;}
+		if(LepPt->at(3) > LepPt->at(2)) {leading_id=3;trailing_id=2;}
+
+		Pt_leading  = LepPt->at(leading_id);
+		Pt_trailing = LepPt->at(trailing_id);
+
+		Eta_leading  = LepEta->at(leading_id);
+		Eta_trailing = LepEta->at(trailing_id);
+
+		SIP_leading  = LepSIP->at(leading_id);
+		SIP_trailing = LepSIP->at(trailing_id);
+
+		ISO_leading  = LepCombRelIsoPF->at(leading_id);
+		ISO_trailing = LepCombRelIsoPF->at(trailing_id);
 		
-		ISO_leading  = max(max(LepCombRelIsoPF->at(0),LepCombRelIsoPF->at(1)),max(LepCombRelIsoPF->at(2),LepCombRelIsoPF->at(3)));
-		ISO_trailing = min(min(LepCombRelIsoPF->at(0),LepCombRelIsoPF->at(1)),min(LepCombRelIsoPF->at(2),LepCombRelIsoPF->at(3)));
 		// Fill other histograms
       if ( blind(ZZMass) )
       {
-         blinded_histos->FillOthersZX( ZZMass, ZZPt, ZZEta, PFMET, Pt_leading, Pt_trailing, SIP_leading, SIP_trailing, ISO_leading, ISO_trailing, nExtraLep, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, KD, DVBFDEC, DVHDEC, _event_weight, _current_final_state, _current_category );
+         blinded_histos->FillOthersZX( ZZMass, ZZPt, ZZEta, PFMET, Pt_leading, Pt_trailing, Eta_leading, Eta_trailing, SIP_leading, SIP_trailing, ISO_leading, ISO_trailing, nExtraLep, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, KD, DVBFDEC, DVHDEC, _yield_SR, _current_final_state, _current_category );
+			
+         blinded_histos->FillDvsM4l_ZX( ZZMass, KD, DVBFDEC, DVHDEC, nCleanedJetsPt30, _yield_SR, _current_final_state, _current_category );
       }
 		
-      unblinded_histos->FillOthersZX( ZZMass, ZZPt, ZZEta, PFMET, Pt_leading, Pt_trailing, SIP_leading, SIP_trailing, ISO_leading, ISO_trailing, nExtraLep, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, KD, DVBFDEC, DVHDEC, _event_weight, _current_final_state, _current_category );
+          unblinded_histos->FillOthersZX( ZZMass, ZZPt, ZZEta, PFMET, Pt_leading, Pt_trailing, Eta_leading, Eta_trailing, SIP_leading, SIP_trailing, ISO_leading, ISO_trailing, nExtraLep, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, KD, DVBFDEC, DVHDEC, _yield_SR, _current_final_state, _current_category );
+		
+          unblinded_histos->FillDvsM4l_ZX( ZZMass, KD, DVBFDEC, DVHDEC, nCleanedJetsPt30, _yield_SR, _current_final_state, _current_category );
+		
    } // End events loop
    
    for (  int i_cat = 0; i_cat < num_of_categories - 1; i_cat++  )

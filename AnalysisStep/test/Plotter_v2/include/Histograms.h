@@ -94,11 +94,12 @@ public:
    
    void FillVectors( float, float, float, float, float, int, float, float, float, float, float, int, int) ;
    void FillDvsM4l( float, float, float, float, int, float, float, float, float, float, float, int, int, int );
+   void FillDvsM4l_ZX( float, float, float, float, int, float, int, int );
    
    void FillYields( float, float, int, int, int );
 	
-   void FillOthers( float, float, float, float, float, float, float, float, float, float, int, int, int, float, float, float, float, int, int, int );
-   void FillOthersZX( float, float, float, float, float, float, float, float, float, float, int, int, int, float, float, float, float, int, int );
+   void FillOthers( float, float, float, float, float, float, float, float, float, float, float, float, int, int, int, float, float, float, float, int, int, int );
+   void FillOthersZX( float, float, float, float, float, float, float, float, float, float, float, float, int, int, int, float, float, float, float, int, int );
    
    void SaveHistos( string );
    void SaveYieldHistos( string );
@@ -203,6 +204,7 @@ private:
    
    // MC
    TH2F *histos_2DError[num_of_2D_error_plot_names][num_of_final_states][num_of_categories][num_of_processes];
+   TH2F *histos_2DError_ZX[num_of_2D_error_plot_names][num_of_final_states][num_of_categories];
    
 //==========================
 // Graphs for yields vs mH

@@ -36,7 +36,7 @@ int main( int argc, char *argv[] )
    float pT_bins[] = {5, 7, 10, 20, 30, 40, 50, 80};
 
    SSmethod *ss = new SSmethod();
-   ss->SetLumi(41.37);
+   ss->SetLumi(41.53);
 
    ///////////////////////////////////
    // Fill control histos           //

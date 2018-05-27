@@ -39,7 +39,7 @@ int main( int argc, char *argv[] )
    
    OSmethod *os = new OSmethod();
 
-   os->SetLumi(41.37);
+   os->SetLumi(41.53);
 
    ///////////////////////////////////
    // Fill control histos           //

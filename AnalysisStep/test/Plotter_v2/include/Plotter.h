@@ -105,6 +105,7 @@ private:
    float jetPgOverPq[99];
 	
 	float Pt_leading , Pt_trailing;
+	float Eta_leading , Eta_trailing;
    float SIP_leading, SIP_trailing;
    float ISO_leading, ISO_trailing;
    
@@ -116,6 +117,12 @@ private:
    Float_t DWH;
    Float_t DZH;
    Float_t CUSTOMCCONST, NEWWP, OLDWP;
+	
+   TH1F *VBF_nom;
+   TH1F *VBF_tup;
+   TH1F *VBF_tdn;
+   TH1F *VBF_sup;
+   TH1F *VBF_sdn; 
 	
    
    float _blinding_lower[2], _blinding_upper[2];

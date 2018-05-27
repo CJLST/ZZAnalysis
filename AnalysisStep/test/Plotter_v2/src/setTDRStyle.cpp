@@ -58,7 +58,7 @@ void setTDRStyle()
 // tdrStyle->SetErrorMarker(20);
 // tdrStyle->SetErrorX(0.);
    tdrStyle->SetMarkerStyle(20);
-   tdrStyle->SetMarkerSize(0.7);
+   tdrStyle->SetMarkerSize(0.9);
 
 
 //=========  

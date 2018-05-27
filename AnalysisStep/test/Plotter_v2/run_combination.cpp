@@ -28,8 +28,8 @@ int main( int argc, char *argv[] )
    TString path_2016 = "";
    TString file_name = "/ZZ4lAnalysis.root";
 	
-   TString Data_2017    = ""        + file_name;
-   TString Data_2016    = ""        + file_name;
+   TString Data_2017    = "AllData"        + file_name;
+   TString Data_2016    = "AllData"        + file_name;
 	
    TString ggH125_2017      = path_2017 + "ggH125"     + file_name;
    TString VBFH125_2017     = path_2017 + "VBFH125"    + file_name;

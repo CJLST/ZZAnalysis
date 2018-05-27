@@ -80,7 +80,7 @@ void CMS_lumi::set_lumi_combination( TPad* pad )
 // LUMI
 //======
 	
-   lumi_text = "(35.9 + 41.4)" + lumi_sqrt;
+   lumi_text = "77.4" + lumi_sqrt;
 	
    TLatex latex;
    latex.SetNDC();

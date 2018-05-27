@@ -103,6 +103,7 @@ double M4lZX::GetM4lZX_Yields(vector< vector <float> > _norm_ZX_SS_SR, int x_min
    if      ( final_state == Settings::fs4mu )   return _norm_4mu;
    else if ( final_state == Settings::fs4e )    return _norm_4e;
    else if ( final_state == Settings::fs2e2mu ) return _norm_2e2mu;
+   else if ( final_state == Settings::fs2mu2e ) return _norm_2e2mu;
    else if ( final_state == Settings::fs4l )    return _norm_4e + _norm_4mu + _norm_2e2mu;
    else
    {

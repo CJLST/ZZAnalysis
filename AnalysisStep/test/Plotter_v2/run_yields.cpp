@@ -86,7 +86,7 @@ int main( int argc, char *argv[] )
    TString ggZZ2e2tau  = path + "ggTo2e2tau_Contin_MCFM701" + file_name;
    TString ggZZ2mu2tau = path + "ggTo2mu2tau_Contin_MCFM701" + file_name;
    
-   Yields *yields = new Yields( 41.37 );
+   Yields *yields = new Yields( 41.53 );
    
 //===============
 // Produce plots 
@@ -162,8 +162,8 @@ int main( int argc, char *argv[] )
    yields->Print("Yields", 105., 140.);
 
    yields->PrintLatexTables("Yields", 118., 130.);
-   yields->FillGraphs("Yields", 118., 130., "Q");
-   yields->PrepareYamlFiles("Yields", "13", 118., 130.);
+   yields->FillGraphs("Yields", 105., 140., "Q");
+   yields->PrepareYamlFiles("Yields", "13", 105., 140.);
 	
 //==========================================
 // Produce data ROOT files for datacard maker
