@@ -5095,7 +5095,7 @@ void Histograms::DrawLogX( TCanvas *c, int cat, int fs )
    int x_up  = 1000;
    int step  = 100;
 	
-   float label_margin = -1.0; //Change this if you want to move X-axis numbers up/dn
+   float label_margin = -1.8; //Change this if you want to move X-axis numbers up/dn
 	
    TLatex *latex_80 = new TLatex(80, label_margin , "80");
    latex_80->SetTextAlign(23);
