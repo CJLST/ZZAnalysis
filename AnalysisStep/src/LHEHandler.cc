@@ -15,6 +15,7 @@ using namespace std;
 using namespace PDGHelpers;
 using namespace HiggsComparators;
 
+const static bool useNNPDF30 = true;
 
 LHEHandler::LHEHandler(edm::Handle<LHEEventProduct>* lhe_evt_, int VVMode_, int VVDecayMode_, bool doKinematics_, int year_) :
 VVMode(VVMode_),
@@ -235,11 +236,16 @@ void LHEHandler::readEvent(){
 
       //powheg
       else if (weightstype == unknown && wgtid == 2000) {weightstype = powheg; /*but do nothing, this is an NNLO variation*/}
+      else if (weightstype == powheg && 1500 <= wgtid && wgtid <= 1602 && useNNPDF30) {
+        if (wgtid == 1500) {founddefaultNLOweight = true; defaultNLOweight = wgtval;}
+        else LHEPDFVariationWgt.push_back(wgtval);
+      }
       else if (weightstype == powheg && 1500 <= wgtid && wgtid <= 1602) {/*do nothing, these are the NLO pdf for NNPDF30 and variations*/}
       else if (weightstype == powheg && wgtid == 1700)                  {/*do nothing, this is the NNLO pdf for NNPDF30*/}
       else if (weightstype == powheg && (wgtid == 1800 || wgtid == 1850 || wgtid == 1900 || wgtid == 1950)) {/*do nothing, these are LO pdfs*/}
       else if (weightstype == powheg && 2001 <= wgtid && wgtid <= 2111) {/*do nothing, these are more NNLO variations*/}
       else if (weightstype == powheg && wgtid >= 4000)                  {/*do nothing, these are other various weights*/}
+      else if (weightstype == powheg && 3000 <= wgtid && wgtid <= 3102 && useNNPDF30) {/*do nothing, these are the NLO pdf for NNPDF31 and variations*/}
       else if (weightstype == powheg && wgtid == 3000) {founddefaultNLOweight = true; defaultNLOweight = wgtval;}
       else if (weightstype == powheg && 3001 <= wgtid && wgtid <= 3102) LHEPDFVariationWgt.push_back(wgtval);
 
