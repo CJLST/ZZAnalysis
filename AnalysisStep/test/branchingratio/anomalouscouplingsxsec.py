@@ -16,11 +16,40 @@ with cd("anomalouscouplingsconstants"):
 
 import anomalouscouplingsconstants
 
+from uncertainties import nominal_value, ufloat
+
 def genxsecfromrow(row):
   return float(row["::variables"].split("GENXSEC=")[1].split(";")[0])
+def genBRfromrow(row):
+  return float(row["::variables"].split("GENBR=")[1].split(";")[0])
+
+"""
+These numbers are from 2017.
+However, they only depend on the Z branching fractions
+and lepton interference, neither of which depend on the PDF
+or anything like that.
+"""
+filterefficiencyZHpowheg = ufloat(0.14836, 0.00018)
+filterefficienciesZH = {
+  "0L1":            ufloat(0.1490, 0.0011),
+  "0L1Zg":          ufloat(0.1877, 0.0012),
+  "0L1Zgf05ph0":    ufloat(0.1502, 0.0011),
+  "0L1f05ph0":      ufloat(0.1520, 0.0012),
+  "0PM":            ufloat(0.1520, 0.0011),
+  "0PH":            ufloat(0.1472, 0.0011),
+  "0PHf05ph0":      ufloat(0.1529, 0.0011),
+  "0M":             ufloat(0.1483, 0.0011),
+  "0Mf05ph0":       ufloat(0.1502, 0.0011),
+}
+filterefficiencyttHpowheg = ufloat(0.1541, 0.0004)
+filterefficienciesttH = {
+  "0M":             ufloat(0.1320, 0.0011),
+  "0Mf05ph0":       ufloat(0.1338, 0.0011),
+  "0PM":            ufloat(0.1339, 0.0011),
+}
 
 @cache
-def SMgenxsec(year, process):
+def SMgenxsecBR(year, process):
   if process == "WH": return SMgenxsec(year, "WplusH") + SMgenxsec(year, "WminusH")
   if process == "HJJ": process = "ggH"
   if process == "VBF": process += "H"
@@ -29,8 +58,17 @@ def SMgenxsec(year, process):
   SMfilename =  os.path.join(os.path.dirname(__file__), "../prod/samples_{}_MC.csv".format(year))
   with open(SMfilename) as f:
     for row in csv.DictReader(f):
-      if row["identifier"] == process: return genxsecfromrow(row)
+      if row["identifier"] == process: return genxsecfromrow(row), genBRfromrow(row)
   raise ValueError("Didn't find " + process)
+
+def SMgenxsec(year, process):
+  if process == "WH": return SMgenxsec(year, "WplusH") + SMgenxsec(year, "WminusH")
+  return SMgenxsecBR(year, process)[0]
+def SMgenBR(year, process):
+  if process == "WH":
+    assert SMgenBR(year, "WplusH") == SMgenBR(year, "WminusH")
+    return SMgenBR(year, "WplusH")
+  return SMgenxsecBR(year, process)[1]
 
 def JHUxsec(year, process, coupling):
   if process == "VBFH": process = "VBF"
@@ -107,12 +145,25 @@ def update_spreadsheet(year):
         identifier = row["identifier"].lstrip("#")
         if identifier.strip() and not identifier.strip().startswith("ggGrav"):
           process, coupling = re.match("(.*H|HJJ)(0.*)_M125", identifier).groups()
-          genxsec = SMgenxsec(year, process) * JHUxsec(year, process, coupling).nominal_value
+          genxsec = SMgenxsec(year, process) * JHUxsec(year, process, coupling)
           regex = "(GENXSEC=)[0-9.eE+-]+(;)"
           match = re.search(regex, row["::variables"])
           assert match, row["::variables"]
-          row["::variables"] = re.sub(regex, r"\g<1>{:g}\g<2>".format(genxsec), row["::variables"])
-          print process, coupling, genxsec
+          row["::variables"] = re.sub(regex, r"\g<1>{:g}\g<2>".format(genxsec.nominal_value), row["::variables"])
+
+          genBR = SMgenBR(year, process)
+          if process == "ZH":
+            genBR *= filterefficienciesZH[coupling] / filterefficiencyZHpowheg
+          if process == "ttH":
+            genBR *= filterefficienciesttH[coupling] / filterefficiencyttHpowheg
+
+          regex = "(GENBR=)[0-9.eE+-]+(;)"
+          match = re.search(regex, row["::variables"])
+          assert match, row["::variables"]
+          row["::variables"] = re.sub(regex, r"\g<1>{:g}\g<2>".format(nominal_value(genBR)), row["::variables"])
+
+          print "{:4} {:13} {:10.3g} {:10.3g}".format(process, coupling, genxsec, genBR)
+
         writer.writerow(row)
 
     with open(filename, "w") as finalf, open(newf.name) as newf2:
