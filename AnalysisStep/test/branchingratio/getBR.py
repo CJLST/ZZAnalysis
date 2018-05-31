@@ -17,11 +17,68 @@ if os.path.exists("src") and not os.path.exists("src/.gitignore"):
   with open("src/.gitignore", "w") as f:
     f.write("yellowhiggs\n.gitignore\npip-delete-this-directory.txt")
 from utilities import cache, cd, CJLSTproduction, TFile
+from uncertainties import ufloat
 
 basemass = 300
 oldfilterefficiencyZH = 0.15038
-filterefficiencyZH = 0.1483
-filterefficiencyttH = 0.1544
+
+def fractionofevents(k, n):
+  """https://indico.cern.ch/event/66256/contributions/2071577/attachments/1017176/1447814/EfficiencyErrors.pdf"""
+  k = 1.0 * k
+  n = 1.0 * n
+  return ufloat(k/n, sqrt((k+1)*(k+2)/((n+2)*(n+3)) - (k+1)**2/(n+2)**2))
+
+filterefficiencyZH = {
+   115: ufloat(0.151500269022, 0.000317064542205),
+   120: ufloat(0.150882730885, 0.000316547042032),
+   124: ufloat(0.150238679931, 0.000199972318324),
+   125: ufloat(0.150301533517, 0.000198361407366),
+   126: ufloat(0.149949160647, 0.000195846329258),
+   130: ufloat(0.149730397214, 0.000313067204368),
+   135: ufloat(0.149101620862, 0.000307244711546),
+   140: ufloat(0.148835749184, 0.000314138563982),
+   145: ufloat(0.149343603958, 0.000313105598547),
+   150: ufloat(0.148952618917, 0.000313051550898),
+   155: ufloat(0.148893383823, 0.000305192270228),
+   160: ufloat(0.148609068856, 0.000307309106588),
+   165: ufloat(0.14874807231, 0.000311224104232),
+   170: ufloat(0.148699054776, 4.79851663246e-05),
+   175: ufloat(0.148699054776, 4.79851663246e-05),
+   180: ufloat(0.148699054776, 4.79851663246e-05),
+   190: ufloat(0.148699054776, 4.79851663246e-05),
+   200: ufloat(0.148699054776, 4.79851663246e-05),
+   210: ufloat(0.148699054776, 4.79851663246e-05),
+   230: ufloat(0.148699054776, 4.79851663246e-05),
+   250: ufloat(0.148699054776, 4.79851663246e-05),
+   270: ufloat(0.148699054776, 4.79851663246e-05),
+   300: ufloat(0.148699054776, 4.79851663246e-05),
+   350: ufloat(0.148699054776, 4.79851663246e-05),
+   400: ufloat(0.148699054776, 4.79851663246e-05),
+   450: ufloat(0.148699054776, 4.79851663246e-05),
+   500: ufloat(0.148699054776, 4.79851663246e-05),
+   550: ufloat(0.148699054776, 4.79851663246e-05),
+   600: ufloat(0.148699054776, 4.79851663246e-05),
+   700: ufloat(0.148699054776, 4.79851663246e-05),
+   750: ufloat(0.148699054776, 4.79851663246e-05),
+   800: ufloat(0.148699054776, 4.79851663246e-05),
+   900: ufloat(0.148699054776, 4.79851663246e-05),
+  1000: ufloat(0.148699054776, 4.79851663246e-05),
+  1500: ufloat(0.148699054776, 4.79851663246e-05),
+  2000: ufloat(0.148699054776, 4.79851663246e-05),
+  2500: ufloat(0.148699054776, 4.79851663246e-05),
+  3000: ufloat(0.148699054776, 4.79851663246e-05),
+}
+filterefficiencyttH = {
+   115: ufloat(0.156154458507, 0.000503363081236),
+   120: ufloat(0.15436065317, 0.000326320718877),
+   124: ufloat(0.154360966586, 0.000200543095323),
+   125: ufloat(0.154289847279, 0.000202214809929),
+   126: ufloat(0.154519233122, 0.00020117290656),
+   130: ufloat(0.15355776319, 0.000318423458146),
+   135: ufloat(0.153328436188, 0.000318002294109),
+   140: ufloat(0.154013895423, 0.000316743049026),
+   145: ufloat(0.153150725225, 0.000316015307614),
+}
 
 YR4data_BR_4l = {
   120: 0.0001659,
@@ -50,10 +107,10 @@ def BR_fromoldspreadsheet(p, m):
 def BR_YR3(mass, productionmode):
   if productionmode in ("ZH", "ttH") and mass < 300:
     result = BR_fromoldspreadsheet(productionmode, mass)
-    if 120 <= m <= 130:
-      result *= YR4data_BR_ZZ[m] / yellowhiggs.br(m, "ZZ")[0]
+    if 120 <= mass <= 130:
+      result *= YR4data_BR_ZZ[mass] / yellowhiggs.br(mass, "ZZ")[0]
     if productionmode == "ZH":
-      result *= filterefficiencyZH / oldfilterefficiencyZH
+      result *= filterefficiencyZH[mass].nominal_value / oldfilterefficiencyZH
     return result
 
   mass = int(str(mass))
@@ -63,11 +120,11 @@ def BR_YR3(mass, productionmode):
     return .5*(BR_YR3(mass+1, productionmode)+BR_YR3(mass-1, productionmode))
 
   if productionmode in ("ggH", "VBF", "WplusH", "WminusH"):
-    if 120 <= m <= 130:
-      result *= YR4data_BR_4l[m] / yellowhiggs.br(m, "llll(e,mu,tau)")[0]
+    if 120 <= mass <= 130:
+      result *= YR4data_BR_4l[mass] / yellowhiggs.br(mass, "llll(e,mu,tau)")[0]
     return result
 
-  if 120 <= m <= 130: assert False
+  if 120 <= mass <= 130: assert False
 
   #need to get ZZ2l2x BR
   #from the comment here: https://github.com/CJLST/ZZAnalysis/blob/454fffb5842f470e71e89348a6de7a8d30f4a813/AnalysisStep/test/prod/samples_2016_MC.csv#L5-L6
@@ -78,9 +135,9 @@ def BR_YR3(mass, productionmode):
 
   result += yellowhiggs.br(mass, "llqq(e,mu,tau)")[0] + yellowhiggs.br(mass, "llnunu(e,mu,tau)")[0] - 9*yellowhiggs.br(mass, "enuemunumu")[0]
   if productionmode == "ZH":
-    result *= filterefficiencyZH
+    result *= filterefficiencyZH[mass].nominal_value
   elif productionmode == "ttH":
-    result *= filterefficiencyttH
+    result *= filterefficiencyttH[mass].nominal_value
   else:
     assert False, productionmode
 
@@ -254,8 +311,8 @@ def update_spreadsheet(filename, p, m, year, BR):
             BRforthisrow = BR
             if "_scale" in row["identifier"] or "_tune" in row["identifier"]:
               if year == 2016:
-                if p == "ZH": BRforthisrow /= filterefficiencyZH
-                if p == "ttH": BRforthisrow /= filterefficiencyttH
+                if p == "ZH": BRforthisrow /= filterefficiencyZH[m].nominal_value
+                if p == "ttH": BRforthisrow /= filterefficiencyttH[m].nominal_value
               elif year == 2017:
                 pass
               else:
