@@ -15,7 +15,11 @@ using namespace std;
 using namespace PDGHelpers;
 using namespace HiggsComparators;
 
-const static bool useNNPDF30 = true;
+//if this is false, for 2017 MC, reweight from the default PDF, NNPDF31_nnlo_hessian_pdfas, to NNPDF31_nlo_hessian_pdfas and its variations.
+//if this is true,               reweight                                                   to NNPDF30_nlo_nf_5_pdfas    and its variations.
+//FIXME: only applies to POWHEG samples, not to madgraph.  Madgraph is always reweighted to NNPDF31_nlo_hessian_pdfas.
+//(LO samples like JHUGen and MCFM only have one pdf, NNPDF31_lo_as_0130.  Phantom only has NNPDF31_nlo_hessian_pdfas.)
+const constexpr static bool useNNPDF30 = true;
 
 LHEHandler::LHEHandler(edm::Handle<LHEEventProduct>* lhe_evt_, int VVMode_, int VVDecayMode_, bool doKinematics_, int year_) :
 VVMode(VVMode_),
