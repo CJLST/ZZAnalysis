@@ -1,4 +1,4 @@
-LHE_DecayProbabilities_MCFM = [
+LHE_Probabilities_MCFM = [
    "Name:SampleHypothesisMCFM Alias:<Name> Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz1=1,0;ghzgs1_prime2=-7613.351,0 hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1 NoBranch:1", # Hide this branch
 
    "Name:GG_SIG_kappaTopBot_1_ghz1_1_MCFM Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz1=1,0 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
