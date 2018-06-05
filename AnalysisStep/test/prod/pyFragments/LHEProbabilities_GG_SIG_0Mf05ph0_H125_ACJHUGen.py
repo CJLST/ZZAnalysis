@@ -1,3 +1,55 @@
+LHE_DecayProbabilities_MCFM = [
+   "Name:SampleHypothesisMCFM Alias:<Name> Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz1=1,0;ghz4=2.55052,0 hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1 NoBranch:1", # Hide this branch
+
+   "Name:GG_SIG_kappaTopBot_1_ghz1_1_MCFM Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz1=1,0 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   "Name:GG_SIG_kappaTopBot_1_ghz1prime2_1E4_MCFM Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz1_prime2=10000,0 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   "Name:GG_SIG_kappaTopBot_1_ghz2_1_MCFM Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz2=1,0 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   "Name:GG_SIG_kappaTopBot_1_ghz4_1_MCFM Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz4=1,0 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   "Name:GG_SIG_kappaTopBot_1_ghza1prime2_1E4_MCFM Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghzgs1_prime2=10000,0 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   "Name:GG_SIG_kappaTopBot_1_ghza2_1_MCFM Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghzgs2=1,0 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   "Name:GG_SIG_kappaTopBot_1_ghza4_1_MCFM Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghzgs4=1,0 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   "Name:GG_SIG_kappaTopBot_1_gha2_1_MCFM Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghgsgs2=1,0 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   "Name:GG_SIG_kappaTopBot_1_gha4_1_MCFM Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghgsgs4=1,0 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+
+   "Name:GG_SIG_kappaTopBot_1_ghz1_1_ghz1prime2_1E4_MCFM Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz1=1,0;ghz1_prime2=10000,0 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   #"Name:GG_SIG_kappaTopBot_1_ghz1_1_ghz1prime2_1E4i_MCFM Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz1=1,0;ghz1_prime2=0,10000 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   "Name:GG_SIG_kappaTopBot_1_ghz1_1_ghz2_1_MCFM Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz1=1,0;ghz2=1,0 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   #"Name:GG_SIG_kappaTopBot_1_ghz1_1_ghz2_i_MCFM Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz1=1,0;ghz2=0,1 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   "Name:GG_SIG_kappaTopBot_1_ghz1_1_ghz4_1_MCFM Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz1=1,0;ghz4=1,0 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   #"Name:GG_SIG_kappaTopBot_1_ghz1_1_ghz4_i_MCFM Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz1=1,0;ghz4=0,1 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   "Name:GG_SIG_kappaTopBot_1_ghz1_1_ghza1prime2_1E4_MCFM Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz1=1,0;ghzgs1_prime2=10000,0 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   #"Name:GG_SIG_kappaTopBot_1_ghz1_1_ghza1prime2_1E4i_MCFM Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz1=1,0;ghzgs1_prime2=0,10000 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   "Name:GG_SIG_kappaTopBot_1_ghz1_1_ghza2_1_MCFM Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz1=1,0;ghzgs2=1,0 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   #"Name:GG_SIG_kappaTopBot_1_ghz1_1_ghza2_i_MCFM Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz1=1,0;ghzgs2=0,1 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   "Name:GG_SIG_kappaTopBot_1_ghz1_1_ghza4_1_MCFM Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz1=1,0;ghzgs4=1,0 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   #"Name:GG_SIG_kappaTopBot_1_ghz1_1_ghza4_i_MCFM Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz1=1,0;ghzgs4=0,1 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   "Name:GG_SIG_kappaTopBot_1_ghz1_1_gha2_1_MCFM Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz1=1,0;ghgsgs2=1,0 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   #"Name:GG_SIG_kappaTopBot_1_ghz1_1_gha2_i_MCFM Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz1=1,0;ghgsgs2=0,1 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   "Name:GG_SIG_kappaTopBot_1_ghz1_1_gha4_1_MCFM Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz1=1,0;ghgsgs4=1,0 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   #"Name:GG_SIG_kappaTopBot_1_ghz1_1_gha4_i_MCFM Process:HSMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz1=1,0;ghgsgs4=0,1 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+
+   "Name:GG_BSI_kappaTopBot_1_ghz1_1_MCFM Process:bkgZZ_SMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz1=1,0 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   #"Name:GG_BSI_kappaTopBot_1_ghz1_i_MCFM Process:bkgZZ_SMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz1=0,1 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   "Name:GG_BSI_kappaTopBot_1_ghz1prime2_1E4_MCFM Process:bkgZZ_SMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz1_prime2=10000,0 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   #"Name:GG_BSI_kappaTopBot_1_ghz1prime2_1E4i_MCFM Process:bkgZZ_SMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz1_prime2=0,10000 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   "Name:GG_BSI_kappaTopBot_1_ghz2_1_MCFM Process:bkgZZ_SMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz2=1,0 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   #"Name:GG_BSI_kappaTopBot_1_ghz2_i_MCFM Process:bkgZZ_SMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz2=0,1 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   "Name:GG_BSI_kappaTopBot_1_ghz4_1_MCFM Process:bkgZZ_SMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz4=1,0 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   #"Name:GG_BSI_kappaTopBot_1_ghz4_i_MCFM Process:bkgZZ_SMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghz4=0,1 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   "Name:GG_BSI_kappaTopBot_1_ghza1prime2_1E4_MCFM Process:bkgZZ_SMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghzgs1_prime2=10000,0 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   #"Name:GG_BSI_kappaTopBot_1_ghza1prime2_1E4i_MCFM Process:bkgZZ_SMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghzgs1_prime2=0,10000 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   "Name:GG_BSI_kappaTopBot_1_ghza2_1_MCFM Process:bkgZZ_SMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghzgs2=1,0 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   #"Name:GG_BSI_kappaTopBot_1_ghza2_i_MCFM Process:bkgZZ_SMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghzgs2=0,1 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   "Name:GG_BSI_kappaTopBot_1_ghza4_1_MCFM Process:bkgZZ_SMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghzgs4=1,0 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   #"Name:GG_BSI_kappaTopBot_1_ghza4_i_MCFM Process:bkgZZ_SMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghzgs4=0,1 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   "Name:GG_BSI_kappaTopBot_1_gha2_1_MCFM Process:bkgZZ_SMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghgsgs2=1,0 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   #"Name:GG_BSI_kappaTopBot_1_gha2_i_MCFM Process:bkgZZ_SMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghgsgs2=0,1 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   "Name:GG_BSI_kappaTopBot_1_gha4_1_MCFM Process:bkgZZ_SMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghgsgs4=1,0 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+   #"Name:GG_BSI_kappaTopBot_1_gha4_i_MCFM Process:bkgZZ_SMHiggs Production:ZZGG MatrixElement:MCFM Couplings:kappa_top=1,0;kappa_bot=1,0;ghgsgs4=0,1 Options:DivideP=SampleHypothesisMCFM hmass:125 hwidth:0.00407 Cluster:NoInitialQ isGen:1",
+
+   "Name:GG_BKG_MCFM Process:bkgZZ Production:ZZGG MatrixElement:MCFM Options:DivideP=SampleHypothesisMCFM Cluster:NoInitialQ isGen:1",
+   "Name:QQB_BKG_MCFM Process:bkgZZ Production:ZZQQB MatrixElement:MCFM Options:DivideP=SampleHypothesisMCFM Cluster:NoInitialG isGen:1",
+]
 ### Spin-0 decay probabilities from JHUGen ###
 LHE_DecayProbabilities_SpinZero_JHUGen = [
    # The corresponding MCFM branch is present, and one can still compute the VA reweighting as (a1/bkg)_MCFM * (VA/a1)_JHUGen for the time being. No need for DivideP when NoBranch:1
@@ -60,8 +112,9 @@ LHE_Probabilities_SpinTwo_JHUGen = [
 
 # Construct the final list
 theLHEProbabilities = []
+theLHEProbabilities.extend(LHE_Probabilities_MCFM)
 theLHEProbabilities.extend(LHE_DecayProbabilities_SpinZero_JHUGen)
-theLHEProbabilities.extend(LHE_Probabilities_SpinTwo_JHUGen)
+#theLHEProbabilities.extend(LHE_Probabilities_SpinTwo_JHUGen)
 
 # Append final list
 for name in (

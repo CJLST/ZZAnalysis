@@ -28,31 +28,24 @@ class TPLtoPY:
                                 help="Template fragment file",
                                 default=None)
 
-      self.parser.add_option("--indicators", dest="indicators", type="string",
-                                 help="Comma-separated indicators to pick. Format: tplkey:replacevalue,tplkey:replacevalue",
+      self.parser.add_option("--indicators", dest="indicators", type="string", action="append",
+                                 help="Indicators to pick; can specify multiple indicators. Format: tplkey:replacevalue",
                                  default=None)
 
 
       (self.opt,self.args) = self.parser.parse_args()
       self.mkdir(self.opt.outdir)
-      self.tplarray = self.split(self.opt.indicators)
       self.outfile = "{}/{}".format(self.opt.outdir,self.opt.outname)
       self.replaceStrings()
 
    def replaceStrings(self):
       os.system("cp {} {}".format(self.opt.tplFragment,self.outfile))
-      for pair in self.tplarray:
+      for indicator in self.opt.indicators:
+         pair = indicator.split(':')
+         if len(pair)!=2:
+            sys.exit("Pair size is not 2, original indicator was {}".format(indicator))
+         #print "Replacing {} with {}".format(pair[0],pair[1])
          os.system("sed -i \'s/{}/{}/g\' {}".format(pair[0],pair[1],self.outfile))
-
-   def split(self,string):
-      if string is None:
-         sys.exit("TPLtoPY::split: No string provided")
-      theList=[]
-      x = string.split('|')
-      for y in x:
-         yy = y.split(':')
-         theList.append(yy)
-      return theList
 
    def mkdir(self,dirname):
       if( os.system('mkdir -p {}'.format(dirname)) != 0 ):

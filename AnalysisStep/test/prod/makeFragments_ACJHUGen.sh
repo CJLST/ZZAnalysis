@@ -45,7 +45,15 @@ do
 			outfile=${outfile/"-HYPO-"/$hypo}
 			outfile=${outfile/"tpl"/"py"}
 			echo $outfile" <COUPLINGS> -> "$coupling
-			tplToFragment.py --outdir=pyFragments --outname=$outfile --template="pyFragments/"$tplfile --indicators="<COUPLINGS>:"$coupling
+			if [[ "$prod" == "GG" ]];then
+				deccoupling=$coupling
+				deccoupling=${deccoupling#*"ghg2=1,0;"}
+				deccoupling=${deccoupling#*"ghg4=1,0;"}
+				echo $outfile" <DEC_COUPLINGS> -> "$deccoupling
+				tplToFragment.py --outdir=pyFragments --outname=$outfile --template="pyFragments/"$tplfile --indicators="<COUPLINGS>:"$coupling --indicators="<DEC_COUPLINGS>:"$deccoupling
+			else
+				tplToFragment.py --outdir=pyFragments --outname=$outfile --template="pyFragments/"$tplfile --indicators="<COUPLINGS>:"$coupling
+			fi
 		else
 			echo $tplfile" does not exist. tplToFragment.py will not proceed."
 		fi
