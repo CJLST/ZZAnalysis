@@ -82,14 +82,14 @@ def JHUxsec(year, process, coupling):
 
   if process in ("ggH", "VBF", "ZH", "WH"):
     decaycoupling = {
-      "0PM":         {"a1": 0},
-      "0M":          {"a3": 0},
-      "0Mf05ph0":    {"a1": 0, "a1a3": 1, "a3": 2},
-      "0PH":         {"a2": 0},
-      "0PHf05ph0":   {"a1": 0, "a1a2": 1, "a2": 2},
-      "0L1":         {"L1": 0},
-      "0L1f05ph0":   {"a1": 0, "a1L1": 1, "L1": 2},
-      "0L1Zg":       {"L1Zg": 0},
+      "0PM":         {"a1": 0                        },
+      "0M":          {                      "a3":   2},
+      "0Mf05ph0":    {"a1": 0, "a1a3":   1, "a3":   2},
+      "0PH":         {                      "a2":   2},
+      "0PHf05ph0":   {"a1": 0, "a1a2":   1, "a2":   2},
+      "0L1":         {                      "L1":   2},
+      "0L1f05ph0":   {"a1": 0, "a1L1":   1, "L1":   2},
+      "0L1Zg":       {                      "L1Zg": 2},
       "0L1Zgf05ph0": {"a1": 0, "a1L1Zg": 1, "L1Zg": 2},
     }[coupling]
   else:
@@ -104,16 +104,16 @@ def JHUxsec(year, process, coupling):
   elif process == "HJJ":
     prodSMcoupling = "a2"
     prodcoupling = {
-      "0PM":         {"a2": 0},
-      "0M":          {"a3": 0},
+      "0PM":         {"a2": 0                    },
+      "0M":          {                    "a3": 2},
       "0Mf05ph0":    {"a2": 0, "a2a3": 1, "a3": 2},
     }[coupling]
     gprodname = "ghg4"
   elif process == "ttH":
     prodSMcoupling = "kappa"
     prodcoupling = {
-      "0PM":         {"kappa": 0},
-      "0M":          {"kappatilde": 0},
+      "0PM":         {"kappa": 0                                       },
+      "0M":          {                                  "kappatilde": 2},
       "0Mf05ph0":    {"kappa": 0, "kappakappatilde": 1, "kappatilde": 2},
     }[coupling]
     gprodname = "kappa_tilde_"
@@ -121,7 +121,10 @@ def JHUxsec(year, process, coupling):
   gdecay = getattr(anomalouscouplingsconstants, gdecayname+"HZZ")
   decaypart = sum(gdecay**power * getattr(anomalouscouplingsconstants, "JHUXSHZZ4l"+xs) for xs, power in decaycoupling.iteritems()) / anomalouscouplingsconstants.JHUXSHZZ4la1
   if process == "ggH":
-    prodpart = 1
+    if year == 2016:
+      prodpart = 0.9901
+    else:
+      prodpart = 1
   else:
     pdf = {2016: "NNPDF30_lo_as_0130", 2017: "NNPDF31_lo_as_0130"}[year]
     pdfmodule = getattr(anomalouscouplingsconstants, pdf)

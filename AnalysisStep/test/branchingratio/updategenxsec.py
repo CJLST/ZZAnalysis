@@ -8,13 +8,10 @@ def averageNLOweight(identifier, year):
   assert year == 2017
 
   production = CJLSTproduction[year]
-  #production = "180416"
 
-  datapath="/data3/Higgs/"
-  #datapath="/eos/user/u/usarica/CJLST/4l/"
-  if not os.path.exists(datapath): raise RuntimeError("Have to run this on lxcms03")
+  if not os.path.exists(production): raise RuntimeError("Have to run this on lxcms03")
 
-  with TFile(datapath+production+"/"+identifier+"/ZZ4lAnalysis.root") as f:
+  with TFile(production+"/"+identifier+"/ZZ4lAnalysis.root") as f:
     if not f: return float("nan")
     try:
       t = f.ZZTree.Get("candTree")
@@ -34,10 +31,10 @@ def averageNLOweight(identifier, year):
     return numpy.average([entry.genHEPMCweight / entry.genHEPMCweight_NNLO for entry in bothtrees])
 
 def rawgenxsec(identifier, year):
-  with contextlib.closing(urllib.urlopen("https://raw.githubusercontent.com/CJLST/ZZAnalysis/0c7f32434c0c549d15955936570e16e29e95855d/AnalysisStep/test/prod/samples_{}_MC.csv".format(year))) as f:
+  with contextlib.closing(urllib.urlopen("https://raw.githubusercontent.com/CJLST/ZZAnalysis/6dc3fc8aa7dccd1952645c9aac8320d20b6e8137/AnalysisStep/test/prod/samples_{}_MC.csv".format(year))) as f:
     reader = csv.DictReader(f)
     for row in reader:
-      if re.match("#*"+identifier+"$", row["identifier"]):
+      if re.match("#*"+identifier+"\s*$", row["identifier"]):
         variables = {_.split("=")[0]: _.split("=")[1] for _ in row["::variables"].split(";")}
         return float(variables["GENXSEC"])
   assert False, (identifier, year)
@@ -54,8 +51,8 @@ def update_spreadsheet(year):
         while not line.strip():
           newf.write("\n")
           line = next(f2)
-        identifier = row["identifier"].lstrip("#")
-        if identifier.strip() and identifier.strip() != "See comment field":
+        identifier = row["identifier"].lstrip("#").strip()
+        if identifier and identifier != "See comment field":
           multiply = averageNLOweight(identifier, year)
           print identifier, multiply
           if multiply != 1 and multiply == multiply:

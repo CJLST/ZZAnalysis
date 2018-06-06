@@ -37,6 +37,6 @@ def cache(function):
   return newfunction
 
 CJLSTproduction = {
-  2016: "180121",
-  2017: "180416/MC_main",
+  2016: "/eos/user/u/usarica/CJLST/4l/180531_2016/MC_Chunks",
+  2017: "/data3/Higgs/180531/MC_main",
 }

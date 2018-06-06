@@ -216,7 +216,7 @@ def averageBR(productionmode, mass, year):
     productionmode = "VBFH"
   folder = "{}{:d}".format(productionmode, mass)
 
-  if not os.path.exists("/data3/Higgs"): raise RuntimeError("Have to run this on lxcms03")
+  if not os.path.exists(production): raise RuntimeError("Have to run this on lxcms03")
 
   """
   for 2017 MC, genHEPMCweight is reweighted to the NLO PDF
@@ -232,7 +232,7 @@ def averageBR(productionmode, mass, year):
     2017: "genHEPMCweight_NNLO",
   }[year]
 
-  with TFile("/data3/Higgs/"+production+"/"+folder+"/ZZ4lAnalysis.root") as f:
+  with TFile(production+"/"+folder+"/ZZ4lAnalysis.root") as f:
     if not f: return float("nan"), float("nan")
     try:
       t = f.ZZTree.Get("candTree")
@@ -343,7 +343,6 @@ if __name__ == "__main__":
   parser.add_argument("-p", action="append", choices="ggH VBF ZH WplusH WminusH ttH".split())
   parser.add_argument("--minimum-mass", type=float, default=0)
   parser.add_argument("--maximum-mass", type=float, default=float("inf"))
-  parser.add_argument("--update-spreadsheet", action="store_true")
   parser.add_argument("year", type=int)
   args = parser.parse_args()
 
@@ -359,8 +358,7 @@ if __name__ == "__main__":
 
       print(line.format(p, m, BR))
       if numpy.isnan(BR): BR = 999
-      if args.update_spreadsheet:
-        update_spreadsheet(
-          os.path.join(os.path.dirname(__file__), "../prod/samples_{}_MC.csv".format(args.year)),
-          p, m, args.year, BR
-        )
+      update_spreadsheet(
+        os.path.join(os.path.dirname(__file__), "../prod/samples_{}_MC.csv".format(args.year)),
+        p, m, args.year, BR
+      )
