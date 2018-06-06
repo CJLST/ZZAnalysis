@@ -34,7 +34,7 @@ def rawgenxsec(identifier, year):
   with contextlib.closing(urllib.urlopen("https://raw.githubusercontent.com/CJLST/ZZAnalysis/6dc3fc8aa7dccd1952645c9aac8320d20b6e8137/AnalysisStep/test/prod/samples_{}_MC.csv".format(year))) as f:
     reader = csv.DictReader(f)
     for row in reader:
-      if re.match("#*"+identifier+"\s*$", row["identifier"]):
+      if re.match("#*"+identifier+r"\s*$", row["identifier"]):
         variables = {_.split("=")[0]: _.split("=")[1] for _ in row["::variables"].split(";")}
         return float(variables["GENXSEC"])
   assert False, (identifier, year)
