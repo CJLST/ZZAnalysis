@@ -276,8 +276,30 @@ def averageBR(productionmode, mass, year):
     bothtrees = itertools.chain(t, failedt)
 #    bothtrees = itertools.islice(bothtrees, 5)
 
+    """
+    Now we're going to take a weighted average of the per-event BR.
+    The weights for the average are the weight of the event, WITHOUT
+    the JHUGen corrections.
+
+    Reason for excluding them: imagine a mass shape with 2 peaks, both
+    having a cross section of 1.  Now imagine that the first one decays
+    decays only to ZZ, and the second one only to bbbar.  This procedure
+    gives a branching fraction of 0.5.  If we included JHUGen in the
+    weight, we would end up with a branching fraction of 1, which is
+    obviously wrong.
+
+    For 2016 MC, all we need is the sign of the weight, because the
+    absolute value of the POWHEG part is the same for all events.
+    For 2017 MC, we need the PDF reweighting part as well as the sign.
+    Either possibility is taken care of by this formula:
+    entry.genHEPMCweight / abs(getattr(entry, genHEPMCweight))
+    """
     BR, weights, weights_rwttoBW = \
-      zip(*([multiplyweight * abs(getattr(entry, genHEPMCweight)), entry.genHEPMCweight, entry.genHEPMCweight*entry.p_Gen_CPStoBWPropRewgt if productionmode not in ("ZH", "WplusH", "WminusH") else float("nan")] for entry in bothtrees))
+      zip(*([
+        multiplyweight * abs(getattr(entry, genHEPMCweight)),
+        entry.genHEPMCweight / abs(getattr(entry, genHEPMCweight)),
+        entry.genHEPMCweight / abs(getattr(entry, genHEPMCweight))*entry.p_Gen_CPStoBWPropRewgt if productionmode not in ("ZH", "WplusH", "WminusH") else float("nan")
+      ] for entry in bothtrees))
 
     return numpy.average(BR, weights=weights), numpy.average(BR, weights=weights_rwttoBW)
 
