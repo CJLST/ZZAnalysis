@@ -126,8 +126,9 @@ def JHUxsec(year, process, coupling):
   if process in ("ggH", "ttH", "HJJ"):
     gdecay = getattr(anomalouscouplingsconstants, gdecayname+"HZZ")
     if process in ("ttH", "HJJ"):
-      gprod = getattr(anomalouscouplingsconstants, gname+process)
+      gprod = getattr(anomalouscouplingsconstants, gprodname+process)
   else:
+    assert gprodname == gdecayname
     gprod = gdecay = getattr(anomalouscouplingsconstants, gdecayname+process)
   decaypart = sum(gdecay**power * getattr(anomalouscouplingsconstants, "JHUXSHZZ4l"+xs) for xs, power in decaycoupling.iteritems()) / anomalouscouplingsconstants.JHUXSHZZ4la1
   if process == "ggH":
