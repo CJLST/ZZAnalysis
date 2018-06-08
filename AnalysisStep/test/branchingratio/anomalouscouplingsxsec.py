@@ -123,7 +123,12 @@ def JHUxsec(year, process, coupling):
     }[coupling]
     gprodname = "kappa_tilde_"
 
-  gdecay = getattr(anomalouscouplingsconstants, gdecayname+"HZZ")
+  if process in ("ggH", "ttH", "HJJ"):
+    gdecay = getattr(anomalouscouplingsconstants, gdecayname+"HZZ")
+    if process in ("ttH", "HJJ"):
+      gprod = getattr(anomalouscouplingsconstants, gname+process)
+  else:
+    gprod = gdecay = getattr(anomalouscouplingsconstants, gdecayname+process)
   decaypart = sum(gdecay**power * getattr(anomalouscouplingsconstants, "JHUXSHZZ4l"+xs) for xs, power in decaycoupling.iteritems()) / anomalouscouplingsconstants.JHUXSHZZ4la1
   if process == "ggH":
     if year == 2016:
@@ -133,7 +138,6 @@ def JHUxsec(year, process, coupling):
   else:
     pdf = {2016: "NNPDF30_lo_as_0130", 2017: "NNPDF31_lo_as_0130"}[year]
     pdfmodule = getattr(anomalouscouplingsconstants, pdf)
-    gprod = getattr(anomalouscouplingsconstants, gprodname+process)
     prodpart = sum(gprod**power * getattr(pdfmodule, "JHUXS"+process+xs) for xs, power in prodcoupling.iteritems()) / getattr(pdfmodule, "JHUXS"+process+prodSMcoupling)
 
   return prodpart * decaypart
