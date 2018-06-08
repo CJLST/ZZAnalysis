@@ -39,7 +39,7 @@ def rawgenxsec(identifier, year):
         return float(variables["GENXSEC"])
   assert False, (identifier, year)
 
-def update_spreadsheet(year):
+def update_spreadsheet(year, rowregex=None):
   filename =  os.path.join(os.path.dirname(__file__), "../prod/samples_{}_MC.csv".format(year))
   with tempfile.NamedTemporaryFile(bufsize=0) as newf:
     with open(filename) as f, open(filename) as f2:
@@ -52,7 +52,7 @@ def update_spreadsheet(year):
           newf.write("\n")
           line = next(f2)
         identifier = row["identifier"].lstrip("#").strip()
-        if identifier and identifier != "See comment field":
+        if identifier and identifier != "See comment field" and (rowregex is None or rowregex.match(identifier)):
           multiply = averageNLOweight(identifier, year)
           print identifier, multiply
           if multiply != 1 and multiply == multiply:
@@ -69,5 +69,6 @@ def update_spreadsheet(year):
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
   parser.add_argument("year", type=int)
+  parser.add_argument("--rowregex", type=re.compile)
   args = parser.parse_args()
-  update_spreadsheet(args.year)
+  update_spreadsheet(args.year, args.rowregex)

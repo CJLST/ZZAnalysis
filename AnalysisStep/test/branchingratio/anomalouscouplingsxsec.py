@@ -74,11 +74,16 @@ def JHUxsec(year, process, coupling):
   if process == "VBFH": process = "VBF"
 
   gdecayname = {
+    "0M": "g4",
     "0Mf05ph0": "g4",
+    "0PH": "g2",
     "0PHf05ph0": "g2",
+    "0L1": "g1prime2",
     "0L1f05ph0": "g1prime2",
+    "0L1Zg": "ghzgs1prime2",
     "0L1Zgf05ph0": "ghzgs1prime2",
-  }.get(coupling, "g4")
+    "0PM": "g4",  #doesn't actually matter but have to set it to something
+  }[coupling]
 
   if process in ("ggH", "VBF", "ZH", "WH"):
     decaycoupling = {
