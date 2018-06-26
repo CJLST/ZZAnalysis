@@ -13,6 +13,12 @@
 #pileupCalc.py -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/ReReco/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt --inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/PileUp/pileup_latest.txt --calcMode true --minBiasXsec 66017 --maxPileupBin 100 --numPileupBins 100 DataPileupHistogram2017_66017_100bins.root
 #pileupCalc.py -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/ReReco/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt --inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/PileUp/pileup_latest.txt --calcMode true --minBiasXsec 72383 --maxPileupBin 100 --numPileupBins 100 DataPileupHistogram2017_72383_100bins.root
 
+# For 2018 data: 
+#pileupCalc.py -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/PromptReco/Cert_314472-317591_13TeV_PromptReco_Collisions18_JSON.txt --inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/PileUp/pileup_latest.txt --calcMode true --minBiasXsec 69200 --maxPileupBin 100 --numPileupBins 100 DataPileupHistogram2018_69200_100bins.root
+#pileupCalc.py -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/PromptReco/Cert_314472-317591_13TeV_PromptReco_Collisions18_JSON.txt --inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/PileUp/pileup_latest.txt --calcMode true --minBiasXsec 66017 --maxPileupBin 100 --numPileupBins 100 DataPileupHistogram2018_66017_100bins.root
+#pileupCalc.py -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/PromptReco/Cert_314472-317591_13TeV_PromptReco_Collisions18_JSON.txt --inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/PileUp/pileup_latest.txt --calcMode true --minBiasXsec 72383 --maxPileupBin 100 --numPileupBins 100 DataPileupHistogram2018_72383_100bins.root
+
+
 # Afetrwards run this script to produce root file which contains PU weights
 
 
@@ -69,13 +75,20 @@ len_mc = len(puMCscenario)
 #data_file_name_varUp = 'DataPileupHistogram72383_75bins.root'
 #data_file_name_varDn = 'DataPileupHistogram66017_75bins.root'
 
+#--- 2017 data
 #data_file_name       = 'DataPileupHistogram2017_69200_75bins.root'
 #data_file_name_varUp = 'DataPileupHistogram2017_72383_75bins.root'
 #data_file_name_varDn = 'DataPileupHistogram2017_66017_75bins.root'
 
-data_file_name       = 'DataPileupHistogram2017_69200_100bins.root'
-data_file_name_varUp = 'DataPileupHistogram2017_72383_100bins.root'
-data_file_name_varDn = 'DataPileupHistogram2017_66017_100bins.root'
+#data_file_name       = 'DataPileupHistogram2017_69200_100bins.root'
+#data_file_name_varUp = 'DataPileupHistogram2017_72383_100bins.root'
+#data_file_name_varDn = 'DataPileupHistogram2017_66017_100bins.root'
+
+#--- 2018 data
+data_file_name       = 'DataPileupHistogram2018_69200_100bins.root'
+data_file_name_varUp = 'DataPileupHistogram2018_72383_100bins.root'
+data_file_name_varDn = 'DataPileupHistogram2018_66017_100bins.root'
+
 
 rt.TH1.SetDefaultSumw2(True)
 

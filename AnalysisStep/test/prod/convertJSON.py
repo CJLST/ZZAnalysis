@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 # Running: set the correct flename (below) and run:
-# ./convertJSON.py > pyFragments/json_2017.py 
+# ./convertJSON.py > pyFragments/json_2018.py 
 
 
 #filename = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-273730_13TeV_PromptReco_Collisions16_JSON.txt'
@@ -22,7 +22,9 @@
 #filename = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/PromptReco/Cert_294927-305364_13TeV_PromptReco_Collisions17_JSON.txt' # Nov 2, 2017; 32.501/fb;
 #filename = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/PromptReco/Cert_294927-305636_13TeV_PromptReco_Collisions17_JSON.txt' # Nov 10, 2017; 35.88/fb; https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/2963.html
 #filename = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/Final/Cert_294927-306462_13TeV_PromptReco_Collisions17_JSON.txt' # Dec 15, 2017; 41.86/fb; https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/2989/1/1/1.html
-filename = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/ReReco/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt' # Feb 02, 2018; 41.37 fb; https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/3009.html
+#filename = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/ReReco/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt' # Feb 02, 2018; 41.37 fb; https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/3009.html
+
+filename = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/PromptReco/Cert_314472-317591_13TeV_PromptReco_Collisions18_JSON.txt' #June 22, 2018 
 
 json = eval( open(filename).read() )
 

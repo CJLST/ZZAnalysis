@@ -140,6 +140,13 @@ elif (SAMPLE_TYPE == 2017):
     else:
         process.GlobalTag = GlobalTag(process.GlobalTag, '94X_dataRun2_v6', '')
 
+elif (SAMPLE_TYPE == 2018):
+    if IsMC:
+        process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '') 
+    else:
+        process.GlobalTag = GlobalTag(process.GlobalTag, '101X_dataRun2_Prompt_v9', '')
+        #process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_data', '')
+
 
 print '\t',process.GlobalTag.globaltag
 
@@ -294,6 +301,21 @@ elif (LEPTON_SETUP == 2016):
 
 ### 2017 triggers - final
 elif (LEPTON_SETUP == 2017): 
+   process.hltFilterDiEle.HLTPaths = ["HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_DoubleEle33_CaloIdL_MW_v*"]
+   process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v*"]
+   process.hltFilterMuEle.HLTPaths = ["HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ_v*"]
+   process.hltFilterTriEle.HLTPaths = ["HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v*"]
+   process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_10_5_5_DZ_v*","HLT_TripleMu_12_10_5_v*"]
+   process.hltFilterSingleEle.HLTPaths = ["HLT_Ele35_WPTight_Gsf_v*","HLT_Ele38_WPTight_Gsf_v*","HLT_Ele40_WPTight_Gsf_v*"]
+   process.hltFilterSingleMu.HLTPaths = ["HLT_IsoMu27_v*"]
+
+   process.triggerTriEle = cms.Path(process.hltFilterTriEle)
+   process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
+   process.triggerSingleEle = cms.Path(process.hltFilterSingleEle)
+   process.triggerSingleMu  = cms.Path(process.hltFilterSingleMu )
+
+### 2018 triggers - FIXME: to be updated (26/6/18)
+elif (LEPTON_SETUP == 2018): 
    process.hltFilterDiEle.HLTPaths = ["HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_DoubleEle33_CaloIdL_MW_v*"]
    process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v*"]
    process.hltFilterMuEle.HLTPaths = ["HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ_v*"]
@@ -485,6 +507,13 @@ elif LEPTON_SETUP == 2017:# (Rochester corrections, Moriond 2018)
                                          isMC = cms.bool(IsMC),
                                          isSynchronization = cms.bool(False),
                                          )
+elif LEPTON_SETUP == 2018:# FIXME: still 2017 version
+     process.calibratedMuons = cms.EDProducer("RochesterPATMuonCorrector",
+                                         src = cms.InputTag("slimmedMuons"),
+                                         identifier = cms.string("RoccoR2017v0"),
+                                         isMC = cms.bool(IsMC),
+                                         isSynchronization = cms.bool(False),
+                                         )
 
 else:
     if APPLYMUCORR:
@@ -666,12 +695,16 @@ process.softElectrons = cms.EDProducer("EleFiller",
 #       Note: passCombRelIsoPFFSRCorr is currently set in LeptonPhotonMatcher for new FSR strategy; in ZZCandidateFiller for the old one
         ),
    	mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16HZZV1Values"), # (when running VID)
-   	correctionFile = process.calibratedPatElectrons.correctionFile,
+   	correctionFile = cms.string(""),
    )
 #94X BDT with ID and Isolation
 if (LEPTON_SETUP == 2017):
 #	process.softElectrons.mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Fall17IsoV1Values")
    process.softElectrons.mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Fall17IsoV2Values")
+
+if (LEPTON_SETUP < 2018):
+   correctionFile = process.calibratedPatElectrons.correctionFile
+
 
 #process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons) # (use this version when running VID)
 #process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.bareSoftElectrons + process.softElectrons) # (use this version without VID)

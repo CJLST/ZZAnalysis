@@ -19,8 +19,8 @@ ZZ4lConfigHelper::ZZ4lConfigHelper(const ParameterSet& pset) :
   theChannel = finalState(channel);
   
   // Check for inconsistent configurations
-  if ( ( theSampleType!=2011 && theSampleType!=2012 && theSampleType!=2015 && theSampleType!=2016 && theSampleType!=2017) ||
-       ( theSetup!=2011 && theSetup!=2012 && theSetup!=2015 && theSetup!=2016 && theSetup!=2017) ||
+  if ( ( theSampleType!=2011 && theSampleType!=2012 && theSampleType!=2015 && theSampleType!=2016 && theSampleType!=2017 && theSampleType!=2018) ||
+       ( theSetup!=2011 && theSetup!=2012 && theSetup!=2015 && theSetup!=2016 && theSetup!=2017 && theSetup!=2018) ||
        ( theSampleType!=theSetup ) // No sample rescaling supported as of now.
        // We may add exception for MC only when needed.
        ) {
@@ -29,7 +29,7 @@ ZZ4lConfigHelper::ZZ4lConfigHelper(const ParameterSet& pset) :
   }
   
   
-  if ((isMC_&&PD!="") || (!isMC_ && (PD!="DoubleEle" && PD!="DoubleMu" && PD!="MuEG" && PD!="DoubleEG" && PD!="DoubleMuon" && PD!="MuonEG" && PD!="SingleElectron" && PD!="SingleMuon"))) {
+  if ((isMC_&&PD!="") || (!isMC_ && (PD!="DoubleEle" && PD!="DoubleMu" && PD!="MuEG" && PD!="DoubleEG" && PD!="DoubleMuon" && PD!="MuonEG" && PD!="SingleElectron" && PD!="SingleMuon" && PD!="EGamma"))) {
     cout << "ERROR: ZZ4lConfigHelper: isMC: " << isMC_ << " PD: " << PD << endl;
     abort();
   }    
@@ -100,7 +100,7 @@ ZZ4lConfigHelper::passTrigger(const edm::Event & event, edm::Handle<edm::Trigger
   // Check all triggers together if anyTrigger is specified (or for CRs)
   if (anyTrigger || theChannel==ZLL || theChannel==ZL || theChannel==ZZ) {
       if ((PD=="" && (passDiEle || passDiMu || passMuEle || passTriEle || passTriMu || passSingleEle || passSingleMu)) ||
-	  ((PD=="DoubleEle"||PD=="DoubleEG"  ) && (passDiEle || passTriEle)) ||
+	  ((PD=="DoubleEle"||PD=="DoubleEG" ||PD=="EGamma" ) && (passDiEle || passTriEle)) ||
 	  ((PD=="DoubleMu" ||PD=="DoubleMuon") && (passDiMu || passTriMu) && !passDiEle && !passTriEle) ||
 	  ((PD=="MuEG"     ||PD=="MuonEG"    ) && passMuEle && !passDiMu && !passTriMu && !passDiEle && !passTriEle) ||
 	  (PD=="SingleElectron" && passSingleEle && !passMuEle && !passDiMu && !passTriMu && !passDiEle && !passTriEle) ||
@@ -110,18 +110,9 @@ ZZ4lConfigHelper::passTrigger(const edm::Event & event, edm::Handle<edm::Trigger
       } 
   }
   
-  // final-state specific triggers. FIXME: this is assuming that we do not pick EEEE or MMMM from "DoubleOr" files as there is no protection for accidental triggers
-  else if ((theChannel==EEEE && (passDiEle || passTriEle || passSingleEle)) ||
-	   (theChannel==MMMM && (passDiMu || passTriMu || passSingleMu))) {
-    evtPassTrigger = true;
-  }
-  else if (theChannel==EEMM) {
-    if ((PD=="" && (passDiEle || passDiMu || passMuEle)) ||
-	((PD=="DoubleEle"||PD=="DoubleEG"  ) && passDiEle) ||
-	((PD=="DoubleMu" ||PD=="DoubleMuon") && passDiMu && !passDiEle) ||
-	((PD=="MuEG"     ||PD=="MuonEG"    ) && passMuEle && !passDiMu && !passDiEle) ) {
-      evtPassTrigger = true;
-    }
+  else {
+    cout << "[ERROR]: ZZ4lConfigHelper: unexpected config " << theChannel << endl;
+    abort();
   }
 
   

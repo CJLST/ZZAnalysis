@@ -176,7 +176,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 						 ( NEMF<0.90 && NumNeutralParticles>10 && jabseta>3.0 );
 	 }
 	 
-	 else if ( setup == 2017)
+	 else if ( setup >= 2017)
 	 {
 	   // Tight jet ID https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2017 , loose is not recommended anymore
 	 	looseJetID = ((NHF<0.90 && NEMF<0.90 && NumConst>1) && ((jabseta<=2.4 && CHF>0 && CHM>0) || jabseta>2.4) && jabseta<=2.7) ||
@@ -186,7 +186,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 
 	 else
 	 {
-	 	std::cerr << "[ERROR] Jet ID was not defined for given setup! " << std::endl;
+	 	std::cerr << "[ERROR] JetFIller: Jet ID was not defined for given setup! " << std::endl;
 	 }
 	 
 
@@ -198,14 +198,14 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 	PUjetID = true;
 	 }
 	 
-	 else if ( setup == 2017)
+	 else if ( setup >= 2017)
 	 { //Recommended tight PU JET ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
 		PUjetID = bool(j.userInt("pileupJetId:fullId") & (1 << 0));
 	 }
 	 
 	 else
 	 {
-	 	std::cerr << "[ERROR] Jet PU ID was not defined for given setup! " << std::endl;
+	 	std::cerr << "[ERROR] JetFiller: Jet PU ID was not defined for given setup! " << std::endl;
 	 }
 
     // cout << " NHF "  << NHF

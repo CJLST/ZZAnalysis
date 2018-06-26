@@ -81,7 +81,7 @@ namespace {
   bool addVtxFit = false;
   bool addFSRDetails = false;
   bool addQGLInputs = true;
-  bool skipMuDataMCWeight = false; // skip computation of data/MC weight for mu
+  bool skipMuDataMCWeight = false; // skip computation of data/MC weight for mu 
   bool skipEleDataMCWeight = false; // skip computation of data/MC weight for ele
   bool skipFakeWeight = true;   // skip computation of fake rate weight for CRs
   bool skipHqTWeight = true;    // skip computation of hQT weight
@@ -468,7 +468,7 @@ private:
   edm::EDGetTokenT<edm::MergeableCounter> preSkimToken;
   edm::EDGetTokenT<LHERunInfoProduct> lheRunInfoToken;
 
-  PileUpWeight pileUpReweight;
+  PileUpWeight* pileUpReweight;
 
   //counters
   Float_t Nevt_Gen;
@@ -555,7 +555,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   apply_K_NLOEW_ZZQQB(pset.getParameter<bool>("Apply_K_NLOEW_ZZQQB")),
   apply_QCD_GGF_UNCERT(pset.getParameter<bool>("Apply_QCD_GGF_UNCERT")),
 
-  pileUpReweight(myHelper.sampleType(), myHelper.setup()),
+  pileUpReweight(nullptr),
   sampleName(pset.getParameter<string>("sampleName")),
   hTH2D_Mu_All(0),
   hTH2D_Mu_Unc(0),
@@ -603,8 +603,11 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
 
   isMC = myHelper.isMC();
   addLHEKinematics = addLHEKinematics || lheMElist.size()>0;
-  if (isMC) lheHandler = new LHEHandler(pset.getParameter<int>("VVMode"), pset.getParameter<int>("VVDecayMode"), addLHEKinematics, year);
-  if (isMC) htxsToken = consumes<HTXS::HiggsClassification>(edm::InputTag("rivetProducerHTXS","HiggsClassification"));
+  if (isMC){
+    lheHandler = new LHEHandler(pset.getParameter<int>("VVMode"), pset.getParameter<int>("VVDecayMode"), addLHEKinematics, year);
+    htxsToken = consumes<HTXS::HiggsClassification>(edm::InputTag("rivetProducerHTXS","HiggsClassification"));
+    pileUpReweight = new PileUpWeight(myHelper.sampleType(), myHelper.setup());
+  }
 
   Nevt_Gen = 0;
   Nevt_Gen_lumiBlock = 0;
@@ -660,7 +663,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   gr_NNLOPSratio_pt_powheg_3jet = (TGraphErrors*)NNLOPS_weight_file->Get("gr_NNLOPSratio_pt_powheg_3jet");
 
   //Scale factors for data/MC efficiency
-  if (!skipEleDataMCWeight) {
+  if (!skipEleDataMCWeight && isMC) {
 
     if(year == 2016)
     {
@@ -685,10 +688,10 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
         root_file->Close();
 
     }
-	 else if (year == 2017)
-	 {
-	 
-		  edm::FileInPath fipEleNotCracks("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi.txt_EGM2D_Moriond2018v1.root");
+    else if (year == 2017)
+      {
+
+        edm::FileInPath fipEleNotCracks("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi.txt_EGM2D_Moriond2018v1.root");
         TFile *root_file = TFile::Open(fipEleNotCracks.fullPath().data(),"READ");
         hTH2D_El_IdIsoSip_notCracks = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
         root_file->Close();
@@ -703,7 +706,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
         hTH2F_El_Reco_highPT = (TH2F*) root_file_reco_highPT->Get("EGamma_SF2D")->Clone();
         root_file_reco_highPT->Close();
 		 
-		  edm::FileInPath fipEleReco_lowPt("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi.txt_EGM2D_Moriond2018v1_runBCDEF_passingRECO_lowEt.root");
+        edm::FileInPath fipEleReco_lowPt("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi.txt_EGM2D_Moriond2018v1_runBCDEF_passingRECO_lowEt.root");
         TFile *root_file_reco_lowPT = TFile::Open(fipEleReco_lowPt.fullPath().data(),"READ");
         hTH2F_El_Reco_lowPT = (TH2F*) root_file_reco_lowPT->Get("EGamma_SF2D")->Clone();
         root_file_reco_lowPT->Close();
@@ -716,11 +719,11 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
     }
     else
     {
-    	 cout<<"[ERROR] Electron SFs not supported for " << year << " year!!!" << endl;
+    	 cout<<"[ERROR] HZZ4lNtupleMaker: Electron SFs not supported for " << year << " year!!!" << endl;
     	 abort();
 	 }
  }
-	 if (!skipMuDataMCWeight) {
+	 if (!skipMuDataMCWeight && isMC) {
 
     if(year == 2016)
     {
@@ -731,9 +734,9 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
 		  fMuWeight->Close();
 
     }
-	 else if (year == 2017)
-	 {
-		  edm::FileInPath fipMu("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_Moriond2018_final.root");
+    else if (year == 2017)
+      {
+	edm::FileInPath fipMu("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_Moriond2018_final.root");
         TFile *fMuWeight = TFile::Open(fipMu.fullPath().data(),"READ");
         hTH2D_Mu_All = (TH2D*)fMuWeight->Get("FINAL")->Clone();
         hTH2D_Mu_Unc = (TH2D*)fMuWeight->Get("ERROR")->Clone();
@@ -742,7 +745,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
     }
     else
     {
-    	 cout<<"[ERROR] Muon SFs not supported for " << year << " year!!!" << endl;
+    	 cout<<"[ERROR] HZZ4lNtupleMaker: Muon SFs not supported for " << year << " year!!!" << endl;
     	 abort();
 	 }
   }
@@ -784,6 +787,7 @@ HZZ4lNtupleMaker::~HZZ4lNtupleMaker()
 {
   clearMELABranches(); // Cleans LHE branches
   delete lheHandler;
+  delete pileUpReweight;
 }
 
 
@@ -828,9 +832,9 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     }
 
     // get PU weight
-    PUWeight = pileUpReweight.weight(NTrueInt);
-    PUWeight_Up = pileUpReweight.weight(NTrueInt, PileUpWeight::PUvar::VARUP);
-    PUWeight_Dn = pileUpReweight.weight(NTrueInt, PileUpWeight::PUvar::VARDOWN);
+    PUWeight = pileUpReweight->weight(NTrueInt);
+    PUWeight_Up = pileUpReweight->weight(NTrueInt, PileUpWeight::PUvar::VARUP);
+    PUWeight_Dn = pileUpReweight->weight(NTrueInt, PileUpWeight::PUvar::VARDOWN);
 
     event.getByToken(genParticleToken, genParticles);
     event.getByToken(genInfoToken, genInfo);
@@ -2437,8 +2441,8 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("overallEventWeight", overallEventWeight, false);
     myTree->Book("HqTMCweight", HqTMCweight, failedTreeLevel >= minimalFailedTree);
     myTree->Book("xsec", xsection, failedTreeLevel >= minimalFailedTree);
-	 myTree->Book("genxsec", genxsection, failedTreeLevel >= minimalFailedTree);
-	 myTree->Book("genBR", genbranchingratio, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("genxsec", genxsection, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("genBR", genbranchingratio, failedTreeLevel >= minimalFailedTree);
     myTree->Book("genExtInfo", genExtInfo, failedTreeLevel >= minimalFailedTree);
     myTree->Book("GenHMass", GenHMass, failedTreeLevel >= minimalFailedTree);
     myTree->Book("GenHPt", GenHPt, failedTreeLevel >= minimalFailedTree);
@@ -2476,15 +2480,15 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("GenAssocLep2Phi", GenAssocLep2Phi, failedTreeLevel >= fullFailedTree);
     myTree->Book("GenAssocLep2Id", GenAssocLep2Id, failedTreeLevel >= fullFailedTree);
     if(apply_QCD_GGF_UNCERT)
-	 {
-		 myTree->Book("htxsNJets", htxsNJets, failedTreeLevel >= fullFailedTree);
-       myTree->Book("htxsHPt", htxsHPt, failedTreeLevel >= fullFailedTree);
-	    myTree->Book("htxs_stage0_cat", htxs_stage0_cat, failedTreeLevel >= fullFailedTree);
-	    myTree->Book("htxs_stage1_cat", htxs_stage1_cat, failedTreeLevel >= fullFailedTree);
-	    myTree->Book("ggH_NNLOPS_weight", ggH_NNLOPS_weight, failedTreeLevel >= fullFailedTree);
-	    myTree->Book("ggH_NNLOPS_weight_unc", ggH_NNLOPS_weight_unc, failedTreeLevel >= fullFailedTree);
-		 myTree->Book("qcd_ggF_uncertSF", qcd_ggF_uncertSF, failedTreeLevel >= fullFailedTree);
-	 }
+      {
+	myTree->Book("htxsNJets", htxsNJets, failedTreeLevel >= fullFailedTree);
+	myTree->Book("htxsHPt", htxsHPt, failedTreeLevel >= fullFailedTree);
+	myTree->Book("htxs_stage0_cat", htxs_stage0_cat, failedTreeLevel >= fullFailedTree);
+	myTree->Book("htxs_stage1_cat", htxs_stage1_cat, failedTreeLevel >= fullFailedTree);
+	myTree->Book("ggH_NNLOPS_weight", ggH_NNLOPS_weight, failedTreeLevel >= fullFailedTree);
+	myTree->Book("ggH_NNLOPS_weight_unc", ggH_NNLOPS_weight_unc, failedTreeLevel >= fullFailedTree);
+	myTree->Book("qcd_ggF_uncertSF", qcd_ggF_uncertSF, failedTreeLevel >= fullFailedTree);
+      }
 	  
 
     if (addLHEKinematics){

@@ -287,7 +287,7 @@ ZNtupleMaker::ZNtupleMaker(const edm::ParameterSet& pset) :
   gen_sumWeights =0.f;
 
    //Scale factors for data/MC efficiency
-  if (!skipEleDataMCWeight) {
+  if (!skipEleDataMCWeight && isMC) {
 
     if(year == 2016)
     {
@@ -343,11 +343,11 @@ ZNtupleMaker::ZNtupleMaker(const edm::ParameterSet& pset) :
     }
     else
     {
-    	 cout<<"[ERROR] Electron SFs not supported for " << year << " year!!!" << endl;
+    	 cout<<"[ERROR] ZNtupleMaker: Electron SFs not supported for " << year << " year!!!" << endl;
     	 abort();
 	 }
  }
-	 if (!skipMuDataMCWeight) {
+	 if (!skipMuDataMCWeight && isMC) {
 
     if(year == 2016)
     {
@@ -369,7 +369,7 @@ ZNtupleMaker::ZNtupleMaker(const edm::ParameterSet& pset) :
     }
     else
     {
-    	 cout<<"[ERROR] Muon SFs not supported for " << year << " year!!!" << endl;
+    	 cout<<"[ERROR] ZNtupleMaker: Muon SFs not supported for " << year << " year!!!" << endl;
     	 abort();
 	 }
   }
@@ -655,8 +655,10 @@ void ZNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool evtPa
 
   //Compute the data/MC weight and overall event weight
   dataMCWeight = 1.;
-  for(unsigned int i=0; i<leptons.size(); ++i){
-    dataMCWeight *= getAllWeight(leptons[i]);
+  if(isMC){
+    for(unsigned int i=0; i<leptons.size(); ++i){
+      dataMCWeight *= getAllWeight(leptons[i]);
+    }
   }
   overallEventWeight = PUWeight * genHEPMCweight * dataMCWeight;
 
@@ -763,7 +765,7 @@ void ZNtupleMaker::fillDescriptions(edm::ConfigurationDescriptions& descriptions
 }
 
 
-Float_t ZNtupleMaker::getAllWeight(const reco::Candidate* Lep) const
+Float_t ZNtupleMaker::getAllWeight(const reco::Candidate* Lep) const //FIXME: synchronize with HZZ4lNtupleMaker
 {
  Int_t   myLepID = abs(Lep->pdgId());
  if (skipMuDataMCWeight&& myLepID==13) return 1.;
