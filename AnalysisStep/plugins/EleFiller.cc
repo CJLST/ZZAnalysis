@@ -31,7 +31,6 @@ using namespace std;
 using namespace reco;
 
 
-bool recomputeBDT = true; // true = pick BDT from VID; false = from existing userfloat
 
 class EleFiller : public edm::EDProducer {
  public:
@@ -58,6 +57,7 @@ class EleFiller : public edm::EDProducer {
   string correctionFile;
   EnergyScaleCorrection_class *eScaler;
   TRandom3 rgen_;
+  bool recomputeBDT; //true = pick BDT from VID; false = from existing userfloat
 };
 
 
@@ -68,12 +68,18 @@ EleFiller::EleFiller(const edm::ParameterSet& iConfig) :
   cut(iConfig.getParameter<std::string>("cut")),
   flags(iConfig.getParameter<ParameterSet>("flags")),
   //myMVATrig(0),
-  BDTValueMapToken(consumes<ValueMap<float> >(iConfig.getParameter<InputTag>("mvaValuesMap"))),
   correctionFile(iConfig.getParameter<std::string>("correctionFile")),
-  rgen_(0)
+  rgen_(0),
+  recomputeBDT(true)
 {
   rhoToken = consumes<double>(LeptonIsoHelper::getEleRhoTag(sampleType, setup));
   vtxToken = consumes<vector<Vertex> >(edm::InputTag("goodPrimaryVertices"));
+
+  if (setup==2018) recomputeBDT=false;
+
+  if (recomputeBDT) {
+    BDTValueMapToken = consumes<ValueMap<float> >(iConfig.getParameter<InputTag>("mvaValuesMap"));
+  }
   produces<pat::ElectronCollection>();
 	
  // Initialize scale correction class
@@ -101,7 +107,9 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByToken(vtxToken,vertices);
 
   Handle<ValueMap<float> > BDTValues;
-  iEvent.getByToken(BDTValueMapToken, BDTValues);
+  if (recomputeBDT) {
+    iEvent.getByToken(BDTValueMapToken, BDTValues);
+  }
 
   // Output collection
   auto result = std::make_unique<pat::ElectronCollection>();
@@ -150,8 +158,12 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     } else {
 
-      //Spring15 BDT taking the userfloat (possible as of MiniAODv2 of 74X)
-      BDT = l.userFloat("ElectronMVAEstimatorRun2Spring15NonTrig25nsV1Values");
+      if (setup==2018) {
+	BDT = l.userFloat("ElectronMVAEstimatorRun2Fall17IsoV1Values");
+      } else {
+	//Spring15 BDT taking the userfloat (possible as of MiniAODv2 of 74X)
+	BDT = l.userFloat("ElectronMVAEstimatorRun2Spring15NonTrig25nsV1Values");
+      }
 
     }
     

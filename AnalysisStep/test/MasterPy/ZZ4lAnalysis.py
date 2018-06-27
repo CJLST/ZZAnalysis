@@ -664,17 +664,18 @@ if (BUNCH_SPACING == 50):
     process.calibratedPatElectrons.grbForestName = cms.string("gedelectron_p4combination_50ns")
 
 
-#--- Set up electron ID (VID framework)
-from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
-# turn on VID producer, indicate data format to be DataFormat.MiniAOD, as appropriate
-dataFormat = DataFormat.MiniAOD
-switchOnVIDElectronIdProducer(process, dataFormat)
-# define which IDs we want to produce
-my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_HZZ_V1_cff']
-# add them to the VID producer
-for idmod in my_id_modules:
-    setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
-# and don't forget to add the producer 'process.egmGsfElectronIDSequence' to the path, i.e. process.electrons
+if (LEPTON_SETUP <= 2017) :
+    #--- Set up electron ID (VID framework)
+    from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
+    # turn on VID producer, indicate data format to be DataFormat.MiniAOD, as appropriate
+    dataFormat = DataFormat.MiniAOD
+    switchOnVIDElectronIdProducer(process, dataFormat)
+    # define which IDs we want to produce
+    my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_HZZ_V1_cff']
+    # add them to the VID producer
+    for idmod in my_id_modules:
+        setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
+    # and don't forget to add the producer 'process.egmGsfElectronIDSequence' to the path, i.e. process.electrons
 
 
 process.bareSoftElectrons = cms.EDFilter("PATElectronRefSelector",
@@ -694,9 +695,12 @@ process.softElectrons = cms.EDProducer("EleFiller",
         isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<"+str(ELEISOCUT))
 #       Note: passCombRelIsoPFFSRCorr is currently set in LeptonPhotonMatcher for new FSR strategy; in ZZCandidateFiller for the old one
         ),
-   	mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16HZZV1Values"), # (when running VID)
+        mvaValuesMap = cms.InputTag(""),
    	correctionFile = cms.string(""),
    )
+
+if (LEPTON_SETUP < 2017):
+   process.softElectrons.mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16HZZV1Values")
 #94X BDT with ID and Isolation
 if (LEPTON_SETUP == 2017):
 #	process.softElectrons.mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Fall17IsoV1Values")
@@ -711,8 +715,10 @@ if (LEPTON_SETUP < 2018):
 
 # Handle special cases
 if ELEREGRESSION == "None" and (ELECORRTYPE == "None" or BUNCH_SPACING == 50) :   # No correction at all. Skip correction modules.
-	 process.bareSoftElectrons.src = cms.InputTag('slimmedElectrons')
-	 process.electrons = cms.Sequence(process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
+#	 process.bareSoftElectrons.src = cms.InputTag('slimmedElectrons')
+#	 process.electrons = cms.Sequence(process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
+    process.bareSoftElectrons.src = cms.InputTag('selectedSlimmedElectrons')
+    process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.bareSoftElectrons + process.softElectrons)
 elif ELECORRTYPE == "RunII" :
 	 process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag("calibratedPatElectrons")
 	 process.electronMVAValueMapProducer.srcMiniAOD=cms.InputTag("calibratedPatElectrons")
