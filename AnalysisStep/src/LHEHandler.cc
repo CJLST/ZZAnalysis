@@ -80,13 +80,13 @@ float LHEHandler::getLHEWeight(unsigned int whichWeight, float defaultValue) con
   else return defaultValue;
 }
 float LHEHandler::getLHEWeight_PDFVariationUpDn(int whichUpDn, float defaultValue) const{
-  if (whichUpDn>0 && LHEWeight_PDFVariationUpDn.size()>1) return LHEWeight_PDFVariationUpDn.at(1);
-  else if (whichUpDn<0 && LHEWeight_PDFVariationUpDn.size()>0) return LHEWeight_PDFVariationUpDn.at(0);
+  if (whichUpDn<0 && LHEWeight_PDFVariationUpDn.size()>1) return LHEWeight_PDFVariationUpDn.at(1);
+  else if (whichUpDn>0 && LHEWeight_PDFVariationUpDn.size()>0) return LHEWeight_PDFVariationUpDn.at(0);
   else return defaultValue;
 }
 float LHEHandler::getLHEWeigh_AsMZUpDn(int whichUpDn, float defaultValue) const{
-  if (whichUpDn>0 && LHEWeight_AsMZUpDn.size()>1) return LHEWeight_AsMZUpDn.at(1);
-  else if (whichUpDn<0 && LHEWeight_AsMZUpDn.size()>0) return LHEWeight_AsMZUpDn.at(0);
+  if (whichUpDn<0 && LHEWeight_AsMZUpDn.size()>1) return LHEWeight_AsMZUpDn.at(1);
+  else if (whichUpDn>0 && LHEWeight_AsMZUpDn.size()>0) return LHEWeight_AsMZUpDn.at(0);
   else return defaultValue;
 }
 float const& LHEHandler::getPDFScale() const{ return PDFScale; }
