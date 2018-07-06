@@ -297,17 +297,27 @@ void LHEHandler::readEvent(){
 
   // Find the proper PDF and alphas(mZ) variations
   if (!LHEWeight.empty()){
-    if (year == 2016 || year == 2017 && useNNPDF30) {
+    if (year == 2016 || (year == 2017 && useNNPDF30)) {
+      float centralWeight, divideby;
+      if (year == 2016) {
+        centralWeight = LHEWeight.at(0);
+        divideby = 1;
+      } else if (year == 2017) {
+        centralWeight = defaultNLOweight;
+        divideby = reweightNNLOtoNLO();
+      } else {
+        throw cms::Exception("LHEWeights") << "Unknown year " << year;
+      }
       std::sort(LHEPDFVariationWgt.begin(), LHEPDFVariationWgt.end(), compareAbs);
-      float centralWeight = LHEWeight.at(0);
-      LHEWeight_PDFVariationUpDn.push_back(findNearestOneSigma(centralWeight, 1, LHEPDFVariationWgt));
-      LHEWeight_PDFVariationUpDn.push_back(findNearestOneSigma(centralWeight, -1, LHEPDFVariationWgt));
+      LHEWeight_PDFVariationUpDn.push_back(findNearestOneSigma(centralWeight, 1, LHEPDFVariationWgt) / divideby);
+      LHEWeight_PDFVariationUpDn.push_back(findNearestOneSigma(centralWeight, -1, LHEPDFVariationWgt) / divideby);
       if (LHEPDFAlphaSMZWgt.size()>1){
         float asdn = LHEPDFAlphaSMZWgt.at(0);
         float asup = LHEPDFAlphaSMZWgt.at(1);
         // Rescale alphas(mZ) variations from 0.118+-0.001 to 0.118+-0.0015
-        LHEWeight_AsMZUpDn.push_back(centralWeight + (asup-centralWeight)*1.5);
-        LHEWeight_AsMZUpDn.push_back(centralWeight + (asdn-centralWeight)*1.5);
+        // 0.001 is valid both for the alternates used in 2016 and for NNPDF30_nlo_nf_5_pdfas in 2017
+        LHEWeight_AsMZUpDn.push_back((centralWeight + (asup-centralWeight)*1.5) / divideby);
+        LHEWeight_AsMZUpDn.push_back((centralWeight + (asdn-centralWeight)*1.5) / divideby);
       }
     } else if (year == 2017 && !useNNPDF30) {
       //https://arxiv.org/pdf/1706.00428v2.pdf page 88
