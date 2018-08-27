@@ -77,8 +77,8 @@ SSmethod::~SSmethod()
 //================================================================================================
 void SSmethod::Calculate_SSOS_Ratio( TString input_file_data_name, TString input_file_MC_name , bool subtractMC )
 {
-   input_file_data = new TFile( input_file_data_name);
-   input_file_MC   = new TFile( input_file_MC_name);
+   input_file_data = TFile::Open( input_file_data_name);
+   input_file_MC   = TFile::Open( input_file_MC_name);
    
    hCounters = (TH1F*)input_file_MC->Get("CRZLLTree/Counters");
    gen_sum_weights = (Long64_t)hCounters->GetBinContent(40);
@@ -265,7 +265,7 @@ void SSmethod::Calculate_SSOS_Ratio( TString input_file_data_name, TString input
 //===============================================================================
 void SSmethod::FillFRHistos( TString input_file_data_name )
 {
-   input_file_data = new TFile( input_file_data_name);
+   input_file_data = TFile::Open( input_file_data_name);
    
    hCounters = (TH1F*)input_file_data->Get("CRZLTree/Counters");
    gen_sum_weights = (Long64_t)hCounters->GetBinContent(40);
@@ -380,7 +380,7 @@ void SSmethod::FillFRHistos( TString input_file_data_name )
 //===============================================================================
 void SSmethod::FillDataMCPlots( TString input_file_data_name )
 {
-   input_file_data = new TFile( input_file_data_name);
+   input_file_data = TFile::Open( input_file_data_name);
    
    hCounters = (TH1F*)input_file_data->Get("CRZLLTree/Counters");
    gen_sum_weights = (Long64_t)hCounters->GetBinContent(40);
@@ -460,7 +460,7 @@ void SSmethod::MakeHistogramsZX( TString input_file_data_name, TString  input_fi
    
    FakeRates *FR = new FakeRates( input_file_FR_name );
    
-   input_file_data = new TFile( input_file_data_name);
+   input_file_data = TFile::Open( input_file_data_name);
    input_tree_data = (TTree*)input_file_data->Get("CRZLLTree/candTree");
    Init( input_tree_data, input_file_data_name , true);
    
@@ -680,7 +680,7 @@ void SSmethod::DeclareZXHistos()
 //===============================================================
 void SSmethod::SaveFRHistos( TString file_name, bool subtractWZ, bool remove_negative_bins)
 {
-   TFile* fOutHistos = new TFile(file_name, "recreate");
+   TFile* fOutHistos = TFile::Open(file_name, "recreate");
    fOutHistos->cd();
     
    // Copy data histos to total histos, if there is no WZ subtraction this is the final histo for fake rate calculation
@@ -727,7 +727,7 @@ void SSmethod::SaveDataMCHistos( TString file_name )
 {
    FillDataMCInclusive();
    
-   TFile* fOutHistos = new TFile(file_name, "recreate");
+   TFile* fOutHistos = TFile::Open(file_name, "recreate");
    fOutHistos->cd();
    
    for (int i_reg = 0; i_reg < num_of_regions_ss; i_reg ++)
@@ -789,7 +789,7 @@ void SSmethod::SaveZXHistos( TString file_name )
 {
    FillZXInclusive();
    
-   TFile* fOutHistos = new TFile(file_name, "recreate");
+   TFile* fOutHistos = TFile::Open(file_name, "recreate");
    fOutHistos->cd();
    
    for (int i_reg = 0; i_reg < num_of_regions_ss; i_reg ++)
@@ -1066,7 +1066,7 @@ void SSmethod::ProduceFakeRates( TString file_name , TString input_file_data_nam
    
    PlotFR();
    
-   TFile* fOutHistos = new TFile(file_name, "recreate");
+   TFile* fOutHistos = TFile::Open(file_name, "recreate");
    fOutHistos->cd();
    
    FR_SS_electron_EB->Write();
@@ -1104,7 +1104,7 @@ void SSmethod::CorrectElectronFakeRate( TString input_file_data_name )
 //========================================================================
 void SSmethod::Calculate_FR_nMissingHits( TString input_file_data_name, TGraphErrors *FR_MissingHits_graph[99][99] )
 {
-	input_file_data = new TFile( input_file_data_name);
+	input_file_data = TFile::Open( input_file_data_name);
 	
 	hCounters = (TH1F*)input_file_data->Get("CRZLTree/Counters");
 	gen_sum_weights = (Long64_t)hCounters->GetBinContent(40);
@@ -1273,7 +1273,7 @@ void SSmethod::Fit_FRnMH_graphs(TGraphErrors *FR_MissingHits_graph[99][99])
 //=============================================================
 void SSmethod::Correct_Final_FR( TString input_file_data_name)
 {
-	input_file_data = new TFile( input_file_data_name);
+	input_file_data = TFile::Open( input_file_data_name);
 	
 	hCounters = (TH1F*)input_file_data->Get("CRZLLTree/Counters");
 	gen_sum_weights = (Long64_t)hCounters->GetBinContent(40);

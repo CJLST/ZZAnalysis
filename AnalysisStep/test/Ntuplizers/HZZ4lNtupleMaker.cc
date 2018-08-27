@@ -845,8 +845,8 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     genHEPMCweight_NNLO = genHEPMCweight = mch.gethepMCweight(); // Overridden by LHEHandler if genHEPMCweight==1.
                                                                  // For 2017 MC, genHEPMCweight is reweighted later from NNLO to NLO
     const auto& genweights = genInfo->weights();
-    if (genweights.size() > 1) {
-      if (genweights.size() != 14 || genweights[0] != genweights[1]) {
+    if (genweights.size() > 1){
+      if (genweights.size() != 14 || genweights[0] != genweights[1]){
         cms::Exception e("GenWeights");
         e << "Expected to find 1 gen weight, or 14 with the first two the same, found " << genweights.size() << ":\n";
         for (auto w : genweights) e << w;
@@ -923,7 +923,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       edm::Handle<LHEEventProduct> lhe_evt;
       vector<edm::Handle<LHEEventProduct> > lhe_handles;
       event.getManyByType(lhe_handles);
-      if (lhe_handles.size()>0){
+      if (!lhe_handles.empty()){
         lhe_evt = lhe_handles.front();
         lheHandler->setHandle(&lhe_evt);
         lheHandler->extract();
@@ -1477,14 +1477,14 @@ void HZZ4lNtupleMaker::FillLHECandidate(){
   }
 
   LHEPDFScale = lheHandler->getPDFScale();
-  if (genHEPMCweight==1.) {
+  if (genHEPMCweight==1.){
     genHEPMCweight_NNLO = genHEPMCweight = lheHandler->getLHEOriginalWeight();
     if (!printedLHEweightwarning && genHEPMCweight!=1) {
       printedLHEweightwarning = true;
       edm::LogWarning("InconsistentWeights") << "Gen weight is 1, LHE weight is " << genHEPMCweight;
     }
   }
-  if (year == 2017) {
+  if (year == 2017){
     genHEPMCweight *= lheHandler->reweightNNLOtoNLO();
   }
 

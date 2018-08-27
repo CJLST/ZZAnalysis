@@ -61,7 +61,7 @@ OSmethod::~OSmethod()
 //===============================================================================
 void OSmethod::FillFRHistos( TString input_file_data_name )
 {
-   input_file_data = new TFile( input_file_data_name);
+   input_file_data = TFile::Open( input_file_data_name);
    
    hCounters = (TH1F*)input_file_data->Get("CRZLTree/Counters");
    gen_sum_weights = (Long64_t)hCounters->GetBinContent(40);
@@ -158,7 +158,7 @@ void OSmethod::FillFRHistos( TString input_file_data_name )
 //===============================================================================
 void OSmethod::FillDataMCPlots( TString input_file_data_name )
 {
-   input_file_data = new TFile( input_file_data_name);
+   input_file_data = TFile::Open( input_file_data_name);
    
    hCounters = (TH1F*)input_file_data->Get("CRZLLTree/Counters");
    gen_sum_weights = (Long64_t)hCounters->GetBinContent(40);
@@ -238,7 +238,7 @@ void OSmethod::MakeHistogramsZX( TString input_file_data_name, TString  input_fi
    
    FakeRates *FR = new FakeRates( input_file_FR_name );
    
-   input_file_data = new TFile( input_file_data_name);
+   input_file_data = TFile::Open( input_file_data_name);
    input_tree_data = (TTree*)input_file_data->Get("CRZLLTree/candTree");
    Init( input_tree_data, input_file_data_name , true);
    
@@ -351,7 +351,7 @@ void OSmethod::MakeZXMCContribution( TString input_file_data_name, TString  inpu
 {
    
    FakeRates *FR = new FakeRates( input_file_FR_name );
-   input_file_data = new TFile( input_file_data_name);
+   input_file_data = TFile::Open( input_file_data_name);
    
    hCounters = (TH1F*)input_file_data->Get("CRZLLTree/Counters");
    gen_sum_weights = (Long64_t)hCounters->GetBinContent(40);
@@ -529,7 +529,7 @@ void OSmethod::DeclareZXHistos()
 //===============================================================
 void OSmethod::SaveFRHistos( TString file_name,  bool subtractWZ, bool remove_negative_bins)
 {
-   TFile* fOutHistos = new TFile(file_name, "recreate");
+   TFile* fOutHistos = TFile::Open(file_name, "recreate");
    fOutHistos->cd();
    
    // Copy data histos to total histos, if there is no WZ subtraction this is the final histo for fake rate calculation
@@ -576,7 +576,7 @@ void OSmethod::SaveDataMCHistos( TString file_name )
 {
    FillDataMCInclusive();
    
-   TFile* fOutHistos = new TFile(file_name, "recreate");
+   TFile* fOutHistos = TFile::Open(file_name, "recreate");
    fOutHistos->cd();
    
    for (int i_reg = 0; i_reg < num_of_regions_os; i_reg ++)
@@ -638,7 +638,7 @@ void OSmethod::SaveZXHistos( TString file_name , bool remove_negative_bins)
 {
    FillZXInclusive(remove_negative_bins);
    
-   TFile* fOutHistos = new TFile(file_name, "recreate");
+   TFile* fOutHistos = TFile::Open(file_name, "recreate");
    fOutHistos->cd();
    
    for (int i_fs = 0; i_fs < num_of_final_states; i_fs++)
@@ -1385,7 +1385,7 @@ void OSmethod::ProduceFakeRates( TString file_name )
    
    PlotFR();
    
-   TFile* fOutHistos = new TFile(file_name, "recreate");
+   TFile* fOutHistos = TFile::Open(file_name, "recreate");
    fOutHistos->cd();
    
    FR_OS_electron_EB->Write();

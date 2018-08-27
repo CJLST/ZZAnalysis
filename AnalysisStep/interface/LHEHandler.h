@@ -51,7 +51,7 @@ public:
   float const& getPDFScale() const;
   float reweightNNLOtoNLO() const;
 
-  static bool compareAbs(float val1, float val2);
+  static bool compareAbsIsLess(float val1, float val2);
   static float findNearestOneSigma(float ref, int lowhigh, std::vector<float> const& wgt_array);
 
 protected:

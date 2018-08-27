@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Some tools to handle accesing datasets information on dbs and files on eos 
+Some tools to handle accesing datasets information on dbs and files on eos
 stolen from https://github.com/CERN-PH-CMG/cmg-cmssw/blob/CMGTools-from-CMSSW_7_4_0/CMGTools/Production/python/eostools.py
 and from CMGTools.Production.datasetToSource
 """
@@ -39,7 +39,7 @@ setCAFPath()
 def runXRDCommand(path, cmd, *args):
     """Run an xrd command.
     """
-    
+
     lfn = eosToLFN(path)
     command = ['xrd', 'eoscms', cmd, lfn]
     command.extend(args)
@@ -65,7 +65,7 @@ def lfnToPFN( path, tfcProt = 'rfio'):
     root://eoscms//eos/cms/store/cmst3/user/cbern/CMG/TauPlusX/Run2011A-03Oct2011-v1/AOD/V2/PAT_CMG_V2_4_0/H2TAUTAU_Nov21?svcClass=cmst3&stageHost=castorcms
     This function only checks path, and does not access the storage system.
     If the path is in /store/cmst3, it assumes that the CMST3 svcClass is to be used.
-    Otherwise, is uses the default one. 
+    Otherwise, is uses the default one.
     """
 
     if path.startswith("/store/"):
@@ -76,7 +76,7 @@ def lfnToPFN( path, tfcProt = 'rfio'):
     entity = cmsIO.cmsFile( path, tfcProt )
 #    tokens = cmsIO.splitPFN(entity.pfn)
     pfn = '%s://%s//%s/' % (entity.protocol,entity.host,entity.path)
-    
+
     pfn = entity.pfn
     if tfcProt == 'rfio' and \
         entity.path.startswith("/eos/cms/") and \
@@ -98,8 +98,8 @@ def runDBS(dataset, instance = 'prod/global'):
 def listFiles(sample, path, rec = False, full_info = False):
     """Provides a list of files with different methods according to path. Valid paths: 'list', 'dbs', 'dbs-USER', a local filesystem path, an eos path
     """
-    result = []    
-   
+    result = []
+
     # -- list from a local file --
     if path=="list" :
         with open(sample) as f:
@@ -110,10 +110,11 @@ def listFiles(sample, path, rec = False, full_info = False):
     elif path=="dbs" :
         files, _, _ =runDBS(sample)
         for line in files.split('\n'):
+#            print line
 #            result.append("root://cms-xrd-global.cern.ch//"+line)
             result.append(line)
         return result
-    
+
     # -- listing from user dbs --
     elif path=="dbs-USER" :
 	print 'Querying USER db'
@@ -124,7 +125,7 @@ def listFiles(sample, path, rec = False, full_info = False):
 
 
     # -- listing from path=local dir -- untested!
-    elif path=="local" :    
+    elif path=="local" :
         if os.path.isdir(sample):
            if not rec:
              # not recursive
@@ -139,7 +140,7 @@ def listFiles(sample, path, rec = False, full_info = False):
              result.extend(allFiles)
              return result
 
-    # -- listing from EOS (path = eos path prefix, normally "/eos/cms/") 
+    # -- listing from EOS (path = eos path prefix, normally "/eos/cms/")
     else  :
         cmd = 'dirlist'
         if rec:
@@ -168,9 +169,9 @@ def datasetToSource( prefix, dataset, pattern='', readCache=False):
 
     rootre = re.compile('.*root')
     files = [f for f in data if rootre.match(f)]
-    
+
 #    print files
-    
+
     source = cms.Source(
 	"PoolSource",
 	noEventSort = cms.untracked.bool(True),
@@ -178,7 +179,7 @@ def datasetToSource( prefix, dataset, pattern='', readCache=False):
 	fileNames = cms.untracked.vstring(),
         secondaryFileNames = cms.untracked.vstring(),
         )
-    
+
     source.fileNames.extend( files )
 
     return source
