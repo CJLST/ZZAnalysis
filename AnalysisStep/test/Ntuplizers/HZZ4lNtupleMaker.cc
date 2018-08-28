@@ -359,6 +359,8 @@ public:
 
   static float EvalSpline(TSpline3* const& sp, float xval);
 
+  static void addweight(float &weight, float weighttoadd);
+
 private:
   virtual void beginJob() ;
   virtual void beginRun(edm::Run const&, edm::EventSetup const&);
@@ -386,8 +388,6 @@ private:
   Float_t getHqTWeight(double mH, double genPt) const;
   Float_t getFakeWeight(Float_t LepPt, Float_t LepEta, Int_t LepID, Int_t LepZ1ID);
   Int_t FindBinValue(TGraphErrors *tgraph, double value);
-
-  void addweight(float &weight, float weighttoadd);
 
   void getCheckedUserFloat(const pat::CompositeCandidate& cand, const std::string& strval, Float_t& setval, Float_t defaultval=0);
 
@@ -931,16 +931,17 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
         lheHandler->clear();
       }
       //else cerr << "lhe_handles.size()==0" << endl;
+
+      // keep track of sum of weights
+      gen_sumPUWeight += PUWeight;
+      addweight(gen_sumGenMCWeight, genHEPMCweight);
+      addweight(gen_sumWeights, PUWeight*genHEPMCweight);
+
+      mch.genAcceptance(gen_ZZ4lInEtaAcceptance, gen_ZZ4lInEtaPtAcceptance);
+
+      addweight(Nevt_Gen_lumiBlock, 1);
     }
 
-    // keep track of sum of weights
-    gen_sumPUWeight += PUWeight;
-    addweight(gen_sumGenMCWeight, genHEPMCweight);
-    addweight(gen_sumWeights, PUWeight*genHEPMCweight);
-
-    mch.genAcceptance(gen_ZZ4lInEtaAcceptance, gen_ZZ4lInEtaPtAcceptance);
-
-    addweight(Nevt_Gen_lumiBlock, 1);
     if (genFinalState == EEEE) {
       addweight(gen_ZZ4e, 1);
       if (gen_ZZ4lInEtaAcceptance) addweight(gen_ZZ4e_EtaAcceptance, 1);
@@ -1080,12 +1081,12 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 	  htxs_stage1_cat = htxs->stage1_cat_pTjet30GeV;
 	  
 
-	  if (htxsNJets==0)
-	  {
-	     ggH_NNLOPS_weight = gr_NNLOPSratio_pt_powheg_0jet->Eval(min((double)htxsHPt,125.0));
-		  ggH_NNLOPS_weight_unc=(gr_NNLOPSratio_pt_powheg_0jet->GetErrorY(FindBinValue(gr_NNLOPSratio_pt_powheg_0jet,min((double)htxsHPt,125.0))))/ggH_NNLOPS_weight;
-			
-	  }
+    if (htxsNJets==0)
+    {
+      ggH_NNLOPS_weight = gr_NNLOPSratio_pt_powheg_0jet->Eval(min((double) htxsHPt, 125.0));
+      ggH_NNLOPS_weight_unc=(gr_NNLOPSratio_pt_powheg_0jet->GetErrorY(FindBinValue(gr_NNLOPSratio_pt_powheg_0jet, min((double) htxsHPt, 125.0))))/ggH_NNLOPS_weight;
+
+    }
 	  else if (htxsNJets==1)
 	  {
 		  ggH_NNLOPS_weight = gr_NNLOPSratio_pt_powheg_1jet->Eval(min((double)htxsHPt,625.0));
