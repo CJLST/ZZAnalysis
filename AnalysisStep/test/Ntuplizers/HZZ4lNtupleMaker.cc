@@ -933,27 +933,27 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       //else cerr << "lhe_handles.size()==0" << endl;
 
       // keep track of sum of weights
-      gen_sumPUWeight += PUWeight;
+      addweight(gen_sumPUWeight, PUWeight);
       addweight(gen_sumGenMCWeight, genHEPMCweight);
       addweight(gen_sumWeights, PUWeight*genHEPMCweight);
 
       mch.genAcceptance(gen_ZZ4lInEtaAcceptance, gen_ZZ4lInEtaPtAcceptance);
-
-      addweight(Nevt_Gen_lumiBlock, 1);
     }
+
+    addweight(Nevt_Gen_lumiBlock, 1); // Needs to be outside the if-block
 
     if (genFinalState == EEEE) {
       addweight(gen_ZZ4e, 1);
       if (gen_ZZ4lInEtaAcceptance) addweight(gen_ZZ4e_EtaAcceptance, 1);
-      if (gen_ZZ4lInEtaPtAcceptance) addweight(gen_ZZ4e_LeptonAcceptance, 1);;
+      if (gen_ZZ4lInEtaPtAcceptance) addweight(gen_ZZ4e_LeptonAcceptance, 1);
     } else if (genFinalState == MMMM) {
       addweight(gen_ZZ4mu, 1);
       if (gen_ZZ4lInEtaAcceptance) addweight(gen_ZZ4mu_EtaAcceptance, 1);
-      if (gen_ZZ4lInEtaPtAcceptance) addweight(gen_ZZ4mu_LeptonAcceptance, 1);;
+      if (gen_ZZ4lInEtaPtAcceptance) addweight(gen_ZZ4mu_LeptonAcceptance, 1);
     } else if (genFinalState == EEMM) {
       addweight(gen_ZZ2mu2e, 1);
       if (gen_ZZ4lInEtaAcceptance) addweight(gen_ZZ2mu2e_EtaAcceptance, 1);
-      if (gen_ZZ4lInEtaPtAcceptance) addweight(gen_ZZ2mu2e_LeptonAcceptance, 1);;
+      if (gen_ZZ4lInEtaPtAcceptance) addweight(gen_ZZ2mu2e_LeptonAcceptance, 1);
     } else if (genFinalState == llTT){
       addweight(gen_ZZ2emu2tau, 1);
       addweight(gen_ZZ2l2tau, 1);
@@ -1436,7 +1436,7 @@ void HZZ4lNtupleMaker::FillLHECandidate(){
       MELAParticle* apart = cand->getAssociatedNeutrino(aa);
       tmpAssociatedParticle.push_back(apart);
     }
-    while (tmpAssociatedParticle.size()>0){ // Re-sort all associated particles by leading pT (categories are individually sorted, but mixing categories loses this sorting)
+    while (!tmpAssociatedParticle.empty()){ // Re-sort all associated particles by leading pT (categories are individually sorted, but mixing categories loses this sorting)
       MELAParticle* tmpPart=0;
       int pos=0;
       for (unsigned int el=0; el<tmpAssociatedParticle.size(); el++){
@@ -1702,7 +1702,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     LepChargedHadIso.push_back( userdatahelpers::getUserFloat(leptons[i],"PFChargedHadIso") );
     LepNeutralHadIso.push_back( userdatahelpers::getUserFloat(leptons[i],"PFNeutralHadIso") );
     LepPhotonIso.push_back( userdatahelpers::getUserFloat(leptons[i],"PFPhotonIso") );
-	 LepPUIsoComponent.push_back( lepFlav==13 ? userdatahelpers::getUserFloat(leptons[i],"PFPUChargedHadIso") : 0. );
+	  LepPUIsoComponent.push_back( lepFlav==13 ? userdatahelpers::getUserFloat(leptons[i],"PFPUChargedHadIso") : 0. );
     LepCombRelIsoPF.push_back( combRelIsoPF[i] );
     LepisLoose.push_back(userdatahelpers::hasUserFloat(leptons[i],"isLoose") == 1 ? userdatahelpers::getUserFloat(leptons[i],"isLoose") : -2);
 
@@ -1793,7 +1793,7 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   for(unsigned int i=0; i<leptons.size(); ++i)
     cout<<"   lepton ID="<<leptons[i]->pdgId()<<", pT="<<leptons[i]->pt()<<", weight="<<getAllWeight(leptons[i])<<endl;
   cout<<" trigger eff. weight =   "<<trigEffWeight<<endl;
-  cout<<"product of all =         "<<overallEventWeight/fabs(genHEPMCweight)<<endl;;
+  cout<<"product of all =         "<<overallEventWeight/fabs(genHEPMCweight)<<endl;
   cout<<endl;
   //*/
 
