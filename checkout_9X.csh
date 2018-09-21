@@ -49,7 +49,7 @@ git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
 #git clone https://github.com/scasasso/usercode MuScleFit
 
 # Higgs Combination Package, Needed for the Double Crystall Ball function. 
-git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
+git clone -b 94x https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
 
 #MELA Analytics
 git clone https://github.com/usarica/MelaAnalytics.git
