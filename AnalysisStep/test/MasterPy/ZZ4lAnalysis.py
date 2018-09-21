@@ -403,7 +403,8 @@ process.goodPrimaryVertices = cms.EDFilter("VertexSelector",
 ### ----------------------------------------------------------------------
 ### HTXS categorisation
 ### ----------------------------------------------------------------------
-if(IsMC and CMSSWVERSION < 9 and APPLY_QCD_GGF_UNCERT):
+#if(IsMC and CMSSWVERSION < 9 and APPLY_QCD_GGF_UNCERT):
+if(IsMC and CMSSWVERSION < 9):
    process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
    process.mergedGenParticles = cms.EDProducer("MergedGenParticleProducer",
 															  inputPruned = cms.InputTag("prunedGenParticles"),
@@ -421,7 +422,8 @@ if(IsMC and CMSSWVERSION < 9 and APPLY_QCD_GGF_UNCERT):
    process.htxs = cms.Path(process.mergedGenParticles*process.myGenerator*process.rivetProducerHTXS)
 
 
-if(IsMC and CMSSWVERSION >= 9 and APPLY_QCD_GGF_UNCERT):
+#if(IsMC and CMSSWVERSION >= 9 and APPLY_QCD_GGF_UNCERT):
+if(IsMC and CMSSWVERSION >= 9):
    process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
    process.mergedGenParticles = cms.EDProducer("MergedGenParticleProducer",
 															  inputPruned = cms.InputTag("prunedGenParticles"),

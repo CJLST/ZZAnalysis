@@ -277,6 +277,7 @@ namespace {
   Float_t PythiaWeight_isr_muR4 = 0;
   Float_t PythiaWeight_fsr_muR4 = 0;
 
+
   Short_t genExtInfo  = 0;
   Float_t xsection  = 0;
   Float_t genxsection = 0;
@@ -326,10 +327,12 @@ namespace {
   Float_t GenAssocLep2Phi  = 0;
   Short_t GenAssocLep2Id  = 0;
 	
-  Int_t   htxsNJets = 0;
+  Int_t   htxsNJets = -1;
   Float_t htxsHPt = 0;
-  Int_t   htxs_stage0_cat = 0;
-  Int_t   htxs_stage1_cat = 0;
+  Int_t   htxs_errorCode=-1;
+  Int_t   htxs_prodMode=-1;
+  Int_t   htxs_stage0_cat = -1;
+  Int_t   htxs_stage1_cat = -1;
   Float_t ggH_NNLOPS_weight = 0;
   Float_t ggH_NNLOPS_weight_unc = 0;
   std::vector<float> qcd_ggF_uncertSF;
@@ -839,6 +842,9 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     event.getByToken(genParticleToken, genParticles);
     event.getByToken(genInfoToken, genInfo);
 
+    edm::Handle<HTXS::HiggsClassification> htxs;
+    event.getByToken(htxsToken,htxs);
+
     MCHistoryTools mch(event, sampleName, genParticles, genInfo);
     genFinalState = mch.genFinalState();
     genProcessId = mch.getProcessID();
@@ -874,6 +880,12 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       PythiaWeight_fsr_muR0p5 = PythiaWeight_fsr_muR4 = PythiaWeight_fsr_muR0p25 = 1;
     }
 
+   htxsNJets = htxs->jets30.size();
+   htxsHPt = htxs->higgs.Pt();
+   htxs_stage0_cat = htxs->stage0_cat;
+   htxs_stage1_cat = htxs->stage1_cat_pTjet30GeV;
+   htxs_errorCode=htxs->errorCode;
+   htxs_prodMode= htxs->prodMode;
 
     genExtInfo = mch.genAssociatedFS();
 
@@ -882,6 +894,8 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     genZLeps     = mch.sortedGenZZLeps();
     genAssocLeps = mch.genAssociatedLeps();
     genFSR       = mch.genFSR();
+
+
 
     if(genH != 0){
       FillHGenInfo(genH->p4(),getHqTWeight(genH->p4().M(),genH->p4().Pt()));
@@ -1072,13 +1086,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
   if(isMC && apply_QCD_GGF_UNCERT)
   {
-	  edm::Handle<HTXS::HiggsClassification> htxs;
-	  event.getByToken(htxsToken,htxs);
 
-	  htxsNJets = htxs->jets30.size();
-	  htxsHPt = htxs->higgs.Pt();
-	  htxs_stage0_cat = htxs->stage0_cat;
-	  htxs_stage1_cat = htxs->stage1_cat_pTjet30GeV;
 	  
 
     if (htxsNJets==0)
@@ -2480,12 +2488,14 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("GenAssocLep2Eta", GenAssocLep2Eta, failedTreeLevel >= fullFailedTree);
     myTree->Book("GenAssocLep2Phi", GenAssocLep2Phi, failedTreeLevel >= fullFailedTree);
     myTree->Book("GenAssocLep2Id", GenAssocLep2Id, failedTreeLevel >= fullFailedTree);
+    myTree->Book("htxs_errorCode", htxs_errorCode, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("htxs_prodMode", htxs_prodMode, failedTreeLevel >= minimalFailedTree);
+myTree->Book("htxsNJets", htxsNJets, failedTreeLevel >= fullFailedTree);
+myTree->Book("htxsHPt", htxsHPt, failedTreeLevel >= fullFailedTree);
+myTree->Book("htxs_stage0_cat", htxs_stage0_cat, failedTreeLevel >= fullFailedTree);
+myTree->Book("htxs_stage1_cat", htxs_stage1_cat, failedTreeLevel >= fullFailedTree);
     if(apply_QCD_GGF_UNCERT)
       {
-	myTree->Book("htxsNJets", htxsNJets, failedTreeLevel >= fullFailedTree);
-	myTree->Book("htxsHPt", htxsHPt, failedTreeLevel >= fullFailedTree);
-	myTree->Book("htxs_stage0_cat", htxs_stage0_cat, failedTreeLevel >= fullFailedTree);
-	myTree->Book("htxs_stage1_cat", htxs_stage1_cat, failedTreeLevel >= fullFailedTree);
 	myTree->Book("ggH_NNLOPS_weight", ggH_NNLOPS_weight, failedTreeLevel >= fullFailedTree);
 	myTree->Book("ggH_NNLOPS_weight_unc", ggH_NNLOPS_weight_unc, failedTreeLevel >= fullFailedTree);
 	myTree->Book("qcd_ggF_uncertSF", qcd_ggF_uncertSF, failedTreeLevel >= fullFailedTree);
