@@ -16,7 +16,7 @@ ${TMPDIR}/checkout_80X.csh
 
 To install a complete CMSSW 9X area (including this package)
 ------------------------------
-Please use CMSSW_9_4_4.
+Please use CMSSW_9_4_9.
 
 Download and execute the setup script:
 ```
