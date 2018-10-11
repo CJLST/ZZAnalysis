@@ -30,8 +30,8 @@ sed -i "s@-float('Inf')@-999999.@g" RecoEgamma/ElectronIdentification/python/Ide
 sed -i "s@float('Inf')@999999.@g" RecoEgamma/ElectronIdentification/python/Identification/mvaElectronID_Fall17_noIso_V2_cff.py
 
 
-#MET corrections according to https://twiki.cern.ch/twiki/bin/view/CMS/MissingETUncertaintyPrescription#Instructions_for_9_4_X_X_0_for_M
-git cms-merge-topic cms-met:METRecipe94x
+#MET corrections according to https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription#Instructions_for_9_4_X_X_9_for_2
+git cms-merge-topic cms-met:METFixEE2017_949_v2
 
 #Simplified template cross section
 git cms-addpkg GeneratorInterface/RivetInterface

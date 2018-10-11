@@ -136,7 +136,7 @@ elif (SAMPLE_TYPE == 2016):
 elif (SAMPLE_TYPE == 2017): 
     if IsMC:
         #process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mc2017_realistic_v10', '')
-        process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mc2017_realistic_v13', '') #For JEC
+        process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mc2017_realistic_v14', '') #For JEC
     else:
         process.GlobalTag = GlobalTag(process.GlobalTag, '94X_dataRun2_v6', '')
 
@@ -1414,7 +1414,8 @@ if (APPLYJEC and SAMPLE_TYPE == 2017):
 #                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV1_MC_AK4PFchs'), #for 80X/Moriond16
 #                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV6_MC_AK4PFchs'), #for 80X/ICHEP16
 #                    tag    = cms.string('JetCorrectorParametersCollection_Summer16_23Sep2016V4_MC_AK4PFchs'), #for 80X/Moriond17
-						  tag    = cms.string('JetCorrectorParametersCollection_Fall17_17Nov2017_V6_MC_AK4PFchs'), #for 94X/Moriond18
+#                    tag    = cms.string('JetCorrectorParametersCollection_Fall17_17Nov2017_V6_MC_AK4PFchs'), #for 94X/Moriond18
+                     tag    = cms.string('JetCorrectorParametersCollection_Fall17_17Nov2017_V8_MC_AK4PFchs'), #for 94X/MET fix 
                     label  = cms.untracked.string('AK4PFchs')
                     ),
                 ),
@@ -1422,7 +1423,8 @@ if (APPLYJEC and SAMPLE_TYPE == 2017):
 #             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Spring16_25nsV1_MC.db'), #for 80X/Moriond16
 #             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Spring16_25nsV6_MC.db'), #for 80X/ICHEP16
 #             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Summer16_23Sep2016V4_MC.db'), #for 80X/Moriond17
-             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall17_17Nov2017_V6_MC.db'), #for 94X/Moriond18
+#             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall17_17Nov2017_V6_MC.db'), #for 94X/Moriond18
+              connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall17_17Nov2017_V8_MC.db'), #for 94X/MET fix
             )
     else:
         process.jec = cms.ESSource("PoolDBESSource",
@@ -1556,23 +1558,19 @@ if (RECORRECTMET and SAMPLE_TYPE == 2016):
     process.patJetsReapplyJEC.userData.userInts.src += ['pileupJetIdUpdated:fullId']
 
 
-### Recorrect MET, cf. https://indico.cern.ch/event/718013/contributions/2953032/attachments/1625419/2588212/met-ppd-20180329-LG.pdf slide 19
+### Recorrect MET, cf. https://indico.cern.ch/event/759372/contributions/3149378/attachments/1721436/2779341/metreport.pdf slide 10
+###                and https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription#Instructions_for_9_4_X_X_9_for_2
 if (RECORRECTMET and SAMPLE_TYPE == 2017):
 
     from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
-    process.testCands = cms.EDFilter("CandPtrSelector",
-												 src=cms.InputTag("packedPFCandidates"),
-												 cut=cms.string("abs(eta)<2.5")
-												 )
-		
+   		
     runMetCorAndUncFromMiniAOD(process,
                                isData=(not IsMC),
-                               pfCandColl=cms.InputTag("testCands"),
-                               reclusterJets=True,
-                               recoMetFromPFCs=True,
-                               postfix="Test",
+                               fixEE2017 = True,
+                               fixEE2017Params = {'userawPt': True, 'PtThreshold':50.0, 'MinEtaThreshold':2.65, 'MaxEtaThreshold': 3.139} ,
+                               postfix = "ModifiedMET"
                                )
-    metTag = cms.InputTag("slimmedMETsTest","","ZZ")
+    metTag = cms.InputTag("slimmedMETsModifiedMET","","ZZ")
 	 
     ### somehow MET recorrection gets this lost again...
     process.patJetsReapplyJEC.userData.userFloats.src += ['pileupJetIdUpdated:fullDiscriminant']
@@ -1599,9 +1597,9 @@ if (RECORRECTMET and SAMPLE_TYPE == 2016):
 
 if (RECORRECTMET and SAMPLE_TYPE == 2017):
     if IsMC:
-        process.MET = cms.Path(process.testCands + process.fullPatMetSequenceTest)
+        process.MET = cms.Path(process.fullPatMetSequenceModifiedMET)
     else:
-        process.MET = cms.Path(process.testCands + process.fullPatMetSequenceTest)
+        process.MET = cms.Path(process.fullPatMetSequenceModifiedMET)
 
 
 ### ----------------------------------------------------------------------
