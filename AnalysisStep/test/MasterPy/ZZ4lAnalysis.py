@@ -709,7 +709,7 @@ if (LEPTON_SETUP == 2017):
    process.softElectrons.mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Fall17IsoV2Values")
 
 if (LEPTON_SETUP < 2018):
-   correctionFile = process.calibratedPatElectrons.correctionFile
+   process.softElectrons.correctionFile = process.calibratedPatElectrons.correctionFile
 
 
 #process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons) # (use this version when running VID)
