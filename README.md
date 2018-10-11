@@ -3,7 +3,9 @@ ZZAnalysis
 
 To install a complete CMSSW 8X area (including this package)
 ------------------------------
-Please use CMSSW_8_0_26_patch1.
+2016 data analysis
+
+Please use CMSSW_8_0_26_patch1. 
 
 Download and execute the setup script:
 ```
@@ -16,6 +18,8 @@ ${TMPDIR}/checkout_80X.csh
 
 To install a complete CMSSW 9X area (including this package)
 ------------------------------
+2017 data analysis
+
 Please use CMSSW_9_4_9.
 
 Download and execute the setup script:
@@ -29,7 +33,9 @@ ${TMPDIR}/checkout_9X.csh
 
 To install a complete CMSSW 10X area (including this package)
 ------------------------------
-Please use CMSSW_10_1_6.
+2018 data analysis
+
+Please use CMSSW_10_1_6. 
 
 Download and execute the setup script:
 ```
