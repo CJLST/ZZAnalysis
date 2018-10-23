@@ -52,17 +52,19 @@ def batchScript( index, remoteDir=''):
    script = """#!/bin/bash
 set -euo pipefail
 
-set SUBMIT_DIR=`$PWD`
-
-cd $SUBMIT_DIR
-eval $(scram ru -sh)
 if [ -z ${_CONDOR_SCRATCH_DIR+x} ]; then
   #running locally
   runninglocally=true
   _CONDOR_SCRATCH_DIR=$(mktemp -d)
+  SUBMIT_DIR=$(pwd)
 else
   runninglocally=false
+  SUBMIT_DIR=$1
 fi
+
+cd $SUBMIT_DIR
+eval $(scram ru -sh)
+
 cp run_cfg.py $_CONDOR_SCRATCH_DIR
 cd $_CONDOR_SCRATCH_DIR
 
@@ -100,23 +102,23 @@ def condorSubScript( index, remoteDir=''):
    '''prepare the Condor submition script'''
    script = """executable              = batchScript.sh
 arguments               = $(ClusterId)$(ProcId)
-output                  = output/ex_02.$(ClusterId).$(ProcId).out
-error                   = error/ex_02.$(ClusterId).$(ProcId).err
-log                     = log/ex_02.$(ClusterId).log
+output                  = output/$(ClusterId).$(ProcId).out
+error                   = error/$(ClusterId).$(ProcId).err
+log                     = log/$(ClusterId).log
 
 request_memory          = 4000M
 +JobFlavour             = tomorrow
 
 transfer_output_files   = ZZ4lAnalysis.root
 
-x509userproxy           = /afs/cern.ch/user/t/tsculac/x509up_u80289
+x509userproxy           = {home}/x509up_u{uid}
 
 #https://www-auth.cs.wisc.edu/lists/htcondor-users/2010-September/msg00009.shtml
 periodic_remove         = JobStatus == 5
 
 queue
 """
-   return script
+   return script.format(home=os.path.expanduser("~"), uid=os.getuid())
 
             
 class MyBatchManager:
