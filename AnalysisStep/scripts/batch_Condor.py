@@ -72,9 +72,6 @@ pwd
 
 echo 'Running at:' $(date)
 
-#cp everything back, even if something fails
-trap "shopt -s nullglob; cp *.txt *.gz ZZ4lAnalysis.root* $SUBMIT_DIR/" EXIT
-
 cmsRunStatus=   #default for successful completion is an empty file
 cmsRun run_cfg.py |& grep -v -e 'MINUIT WARNING' -e 'Second derivative zero' -e 'Negative diagonal element' -e 'added to diagonal of error matrix' > log.txt || cmsRunStatus=$?
 
@@ -90,10 +87,14 @@ else
  mv ZZ4lAnalysis.root ZZ4lAnalysis.root.empty
 fi
 
+#delete mela stuff and $USER.cc
+#I have no idea what $USER.cc is
+rm -f br.sm1 br.sm2 ffwarn.dat input.DAT process.DAT "$USER.cc"
+
 echo '...done at' $(date)
 exit $cmsRunStatus
 
-#note cping back is handled above in the trap
+#note cping back is handled automatically by condor
 """ 
    return script
 
