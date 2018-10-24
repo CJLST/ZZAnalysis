@@ -32,6 +32,8 @@ foreach chunk ( *Chunk* )
  if ( -es ${chunk}/exitStatus.txt ) then
    set exitStatus=`cat ${chunk}/exitStatus.txt`
    set fail="true"
+ else if ( ! -e ${chunk}/exitStatus.txt ) then
+   set fail="true"
  endif
  # Check for CPU time exceeded (this can also be reported explicitly with exit status 152, which is then catched above)
 
