@@ -99,13 +99,14 @@ exit $cmsRunStatus
    return script
 
 
-def condorSubScript( index, jobDir ):
+def condorSubScript( index, mainDir ):
    '''prepare the Condor submition script'''
    script = """executable              = batchScript.sh
-arguments               = {directory} $(ClusterId)$(ProcId)
+arguments               = {mainDir}/$(directory) $(ClusterId)$(ProcId)
 output                  = output/$(ClusterId).$(ProcId).out
 error                   = error/$(ClusterId).$(ProcId).err
 log                     = log/$(ClusterId).log
+Initialdir              = $(directory)
 
 request_memory          = 4000M
 +JobFlavour             = tomorrow
@@ -116,10 +117,8 @@ x509userproxy           = {home}/x509up_u{uid}
 periodic_remove         = JobStatus == 5
 
 WhenToTransferOutput    = ON_EXIT_OR_EVICT
-
-queue
 """
-   return script.format(home=os.path.expanduser("~"), uid=os.getuid(), directory=jobDir)
+   return script.format(home=os.path.expanduser("~"), uid=os.getuid(), directory=mainDir)
 
             
 class MyBatchManager:
@@ -230,7 +229,9 @@ class MyBatchManager:
             pp = pprint.PrettyPrinter(indent=4)
             pp.pprint( self.listOfJobs_)
 
-
+        condorscriptFileName = 'condor.sub'
+        with open(condorscriptFileName,'w') as condorscriptFile:
+            condorscriptFile.write(condorSubScript(value, os.getcwd()))
 
     def PrepareJob( self, value, dirname=None):
        '''Prepare a job for a given value.
@@ -261,11 +262,6 @@ class MyBatchManager:
         scriptFile.write( batchScript( value ) )
         scriptFile.close()
         os.system('chmod +x %s' % scriptFileName)
-        condorscriptFileName = jobDir + '/condor.sub'
-        condorscriptFile = open (condorscriptFileName,'w')
-        condorscriptFile.write( condorSubScript ( value, os.path.abspath(jobDir) ) )
-        condorscriptFile.close()
-        os.system('chmod +x %s' % condorscriptFileName)
         template_name = splitComponents[value].samplename + 'run_template_cfg.py'
 
 #	working_dir = os.path.dirname(self.outputDir_)

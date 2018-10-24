@@ -26,8 +26,10 @@ endif
 
 set JOBNAME=`basename $PWD`
 
+set queue=' -queue directory in'
+
 foreach x (*Chunk*) 
- cd $x
- condor_submit condor.sub
- cd -
+ set queue="$queue $x"
 end
+
+condor_submit condor.sub $queue
