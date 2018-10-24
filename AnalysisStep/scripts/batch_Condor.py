@@ -78,7 +78,7 @@ trap "shopt -s nullglob; cp *.txt *.gz ZZ4lAnalysis.root* $SUBMIT_DIR/" EXIT
 cmsRunStatus=   #default for successful completion is an empty file
 cmsRun run_cfg.py |& grep -v -e 'MINUIT WARNING' -e 'Second derivative zero' -e 'Negative diagonal element' -e 'added to diagonal of error matrix' > log.txt || cmsRunStatus=$?
 
-echo $cmsRunStatus > exitStatus.txt
+echo -n $cmsRunStatus > exitStatus.txt
 echo 'cmsRun done at: ' $(date) with exit status: ${cmsRunStatus+0}
 gzip log.txt
 
@@ -109,12 +109,12 @@ log                     = log/$(ClusterId).log
 request_memory          = 4000M
 +JobFlavour             = tomorrow
 
-transfer_output_files   = ZZ4lAnalysis.root
-
 x509userproxy           = {home}/x509up_u{uid}
 
 #https://www-auth.cs.wisc.edu/lists/htcondor-users/2010-September/msg00009.shtml
 periodic_remove         = JobStatus == 5
+
+WhenToTransferOutput    = ON_EXIT_OR_EVICT
 
 queue
 """
