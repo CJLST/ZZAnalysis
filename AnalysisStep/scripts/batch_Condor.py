@@ -98,10 +98,10 @@ exit $cmsRunStatus
    return script
 
 
-def condorSubScript( index, remoteDir=''):
+def condorSubScript( index, jobDir ):
    '''prepare the Condor submition script'''
    script = """executable              = batchScript.sh
-arguments               = $(ClusterId)$(ProcId)
+arguments               = {directory} $(ClusterId)$(ProcId)
 output                  = output/$(ClusterId).$(ProcId).out
 error                   = error/$(ClusterId).$(ProcId).err
 log                     = log/$(ClusterId).log
@@ -118,7 +118,7 @@ periodic_remove         = JobStatus == 5
 
 queue
 """
-   return script.format(home=os.path.expanduser("~"), uid=os.getuid())
+   return script.format(home=os.path.expanduser("~"), uid=os.getuid(), directory=jobDir)
 
             
 class MyBatchManager:
@@ -262,7 +262,7 @@ class MyBatchManager:
         os.system('chmod +x %s' % scriptFileName)
         condorscriptFileName = jobDir + '/condor.sub'
         condorscriptFile = open (condorscriptFileName,'w')
-        condorscriptFile.write( condorSubScript ( value ) )
+        condorscriptFile.write( condorSubScript ( value, os.path.abspath(jobDir) ) )
         condorscriptFile.close()
         os.system('chmod +x %s' % condorscriptFileName)
         template_name = splitComponents[value].samplename + 'run_template_cfg.py'
