@@ -14,6 +14,10 @@ from optparse import OptionParser
 from ZZAnalysis.AnalysisStep.eostools import *
 from ZZAnalysis.AnalysisStep.readSampleInfo import *
 
+print "================================================================"
+print "WARNING: LSF is really slow.  Your jobs probably won't run."
+print "You should use batch_Condor.py and resubmit_Condor.csh instead."
+print "================================================================"
 
 def chunks(l, n):
     return [l[i:i+n] for i in range(0, len(l), n)]

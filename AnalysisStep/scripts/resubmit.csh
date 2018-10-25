@@ -1,5 +1,11 @@
 #!/bin/tcsh -f
 
+if ( -e condor.sub ) then
+   echo "This production was set up with batch_Condor.py"
+   echo "You should use resubmit_Condor.csh to submit jobs"
+   exit 1
+endif
+
 set QUEUE=$1
 if ($QUEUE == "") set QUEUE="8nh"
 
