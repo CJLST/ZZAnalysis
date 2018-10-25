@@ -95,13 +95,16 @@ echo '...done at' $(date)
 exit $cmsRunStatus
 
 #note cping back is handled automatically by condor
+if $runninglocally; then
+  cp ZZ4lAnalysis.root* *.txt *.gz $SUBMIT_DIR
+fi
 """ 
    return script
 
 
 def condorSubScript( index, mainDir ):
    '''prepare the Condor submition script'''
-   script = """executable              = batchScript.sh
+   script = """executable              = $(directory)/batchScript.sh
 arguments               = {mainDir}/$(directory) $(ClusterId)$(ProcId)
 output                  = output/$(ClusterId).$(ProcId).out
 error                   = error/$(ClusterId).$(ProcId).err
@@ -109,7 +112,7 @@ log                     = log/$(ClusterId).log
 Initialdir              = $(directory)
 
 request_memory          = 4000M
-+JobFlavour             = tomorrow
++JobFlavour             = "tomorrow"
 
 x509userproxy           = {home}/x509up_u{uid}
 
@@ -118,7 +121,7 @@ periodic_remove         = JobStatus == 5
 
 WhenToTransferOutput    = ON_EXIT_OR_EVICT
 """
-   return script.format(home=os.path.expanduser("~"), uid=os.getuid(), directory=mainDir)
+   return script.format(home=os.path.expanduser("~"), uid=os.getuid(), mainDir=mainDir)
 
             
 class MyBatchManager:
@@ -229,9 +232,9 @@ class MyBatchManager:
             pp = pprint.PrettyPrinter(indent=4)
             pp.pprint( self.listOfJobs_)
 
-        condorscriptFileName = 'condor.sub'
+        condorscriptFileName = os.path.join(self.outputDir_, 'condor.sub')
         with open(condorscriptFileName,'w') as condorscriptFile:
-            condorscriptFile.write(condorSubScript(value, os.getcwd()))
+            condorscriptFile.write(condorSubScript(value, self.outputDir_))
 
     def PrepareJob( self, value, dirname=None):
        '''Prepare a job for a given value.
