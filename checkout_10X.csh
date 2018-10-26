@@ -7,7 +7,7 @@
 # chmod u+x ${TMPDIR}/checkout_10X.csh
 # ${TMPDIR}/checkout_10X.csh
 
-############## For CMSSW_10_1_6
+############## For CMSSW_10_2_5_patch1
 git cms-init
 
 #Preliminary electron scale and smearing corrections according to https://twiki.cern.ch/twiki/bin/view/CMS/EGMSmearer
