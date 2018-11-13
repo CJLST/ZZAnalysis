@@ -1,0 +1,9 @@
+33a34,41
+> from ZZAnalysis.Identification.mvaElectronID_Fall17_noIso_V1_94X_cff \
+>     import mvaEleID_Fall17_noIso_V1_94X_producer_config
+> mvaConfigsForEleProducer.append( mvaEleID_Fall17_noIso_V1_94X_producer_config )
+> 
+> from ZZAnalysis.Identification.mvaElectronID_Fall17_iso_V1_94X_cff \
+>     import mvaEleID_Fall17_iso_V1_94X_producer_config
+> mvaConfigsForEleProducer.append( mvaEleID_Fall17_iso_V1_94X_producer_config )
+> 

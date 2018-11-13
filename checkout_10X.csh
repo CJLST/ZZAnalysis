@@ -23,8 +23,7 @@ git cms-init
 #### Please do not add any custom (non-CMSSW) package before this line ####
 
 #ZZAnalysis
-git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
-(cd ZZAnalysis; git checkout miniAOD_80X)
+git clone -b miniAOD_80X https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
 
 #MELA Analytics
 git clone https://github.com/usarica/MelaAnalytics.git

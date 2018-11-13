@@ -14,22 +14,6 @@ git cms-init
 git cms-merge-topic cms-egamma:EGM_94X_v1
 (cd EgammaAnalysis/ElectronTools/data ; git clone https://github.com/ECALELFS/ScalesSmearings.git ; cd ScalesSmearings ; git checkout Run2017_17Nov2017_v1)
 
-#Electron MVA ID in 94X according to https://twiki.cern.ch/twiki/bin/viewauth/CMS/MultivariateElectronIdentificationRun2#Recipes_for_regular_users
-# MVA ID V2 now, not yet available as part of official recepie
-git cms-merge-topic guitargeek:ElectronID_MVA2017_V2_HZZ_940pre3
-rm -rf RecoEgamma/ElectronIdentification/data #Delete old BDT weights so we can clone new ones
-git clone -b ElectronID_MVA2017_V2 https://github.com/guitargeek/RecoEgamma-ElectronIdentification RecoEgamma/ElectronIdentification/data/
-#Hack to make our run_cfg.py job script work with new implementation of ID
-sed -i "s@-float('Inf')@-999999.@g" RecoEgamma/ElectronIdentification/python/Identification/mvaElectronID_Fall17_iso_V1_cff.py
-sed -i "s@float('Inf')@999999.@g" RecoEgamma/ElectronIdentification/python/Identification/mvaElectronID_Fall17_iso_V1_cff.py
-sed -i "s@-float('Inf')@-999999.@g" RecoEgamma/ElectronIdentification/python/Identification/mvaElectronID_Fall17_iso_V2_cff.py
-sed -i "s@float('Inf')@999999.@g" RecoEgamma/ElectronIdentification/python/Identification/mvaElectronID_Fall17_iso_V2_cff.py
-sed -i "s@-float('Inf')@-999999.@g" RecoEgamma/ElectronIdentification/python/Identification/mvaElectronID_Fall17_noIso_V1_cff.py
-sed -i "s@float('Inf')@999999.@g" RecoEgamma/ElectronIdentification/python/Identification/mvaElectronID_Fall17_noIso_V1_cff.py
-sed -i "s@-float('Inf')@-999999.@g" RecoEgamma/ElectronIdentification/python/Identification/mvaElectronID_Fall17_noIso_V2_cff.py
-sed -i "s@float('Inf')@999999.@g" RecoEgamma/ElectronIdentification/python/Identification/mvaElectronID_Fall17_noIso_V2_cff.py
-
-
 #MET corrections according to https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription#Instructions_for_9_4_X_X_9_for_2
 git cms-merge-topic cms-met:METFixEE2017_949_v2
 
@@ -42,8 +26,16 @@ sed -i 's@class HTXSRivetProducer : public edm::stream::EDProducer<> {@class HTX
 #### Please do not add any custom (non-CMSSW) package before this line ####
 
 #ZZAnalysis
-git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
-(cd ZZAnalysis; git checkout miniAOD_80X)
+git clone -b miniAOD_80X https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
+
+# Electron MVA
+git cms-addpkg RecoEgamma/ElectronIdentification
+(
+  MVA_CFI_FILE=RecoEgamma/ElectronIdentification/python/ElectronMVAValueMapProducer_cfi.py
+  patch $MVA_CFI_FILE -i ZZAnalysis/Identification/python/ElectronMVAValueMapProducer_cfi_py.patch -o cfi_py.tmp
+  mv cfi_py.tmp $MVA_CFI_FILE
+)
+
 
 #MuScleFit: probably tbf
 #git clone https://github.com/scasasso/usercode MuScleFit
