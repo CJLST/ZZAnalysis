@@ -605,9 +605,9 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   }
 
   isMC = myHelper.isMC();
-  addLHEKinematics = addLHEKinematics || lheMElist.size()>0;
+  addLHEKinematics = addLHEKinematics || !lheMElist.empty();
   if (isMC){
-    lheHandler = new LHEHandler(pset.getParameter<int>("VVMode"), pset.getParameter<int>("VVDecayMode"), addLHEKinematics, year);
+    lheHandler = new LHEHandler(pset.getParameter<int>("VVMode"), pset.getParameter<int>("VVDecayMode"), (addLHEKinematics ? LHEHandler::doHiggsKinematics : LHEHandler::noKinematics), year);
     htxsToken = consumes<HTXS::HiggsClassification>(edm::InputTag("rivetProducerHTXS","HiggsClassification"));
     pileUpReweight = new PileUpWeight(myHelper.sampleType(), myHelper.setup());
   }
