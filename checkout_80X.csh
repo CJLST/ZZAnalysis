@@ -46,6 +46,9 @@ git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsA
 #MELA Analytics
 git clone https://github.com/usarica/MelaAnalytics.git
 
+#Common LHE tools
+git clone https://github.com/usarica/CommonLHETools.git
+
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
 (cd ZZMatrixElement; git checkout -b from-v216 v2.1.6)

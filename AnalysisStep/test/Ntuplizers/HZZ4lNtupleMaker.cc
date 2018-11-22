@@ -52,7 +52,6 @@
 
 
 #include "ZZAnalysis/AnalysisStep/interface/EwkCorrections.h"
-#include "ZZAnalysis/AnalysisStep/interface/LHEHandler.h"
 #include "ZZAnalysis/AnalysisStep/src/kFactors.C"
 #include <ZZAnalysis/AnalysisStep/interface/bitops.h>
 #include <ZZAnalysis/AnalysisStep/interface/Fisher.h>
@@ -63,6 +62,7 @@
 #include <ZZAnalysis/AnalysisStep/interface/ggF_qcd_uncertainty_2017.h>
 
 #include <MelaAnalytics/CandidateLOCaster/interface/MELACandidateRecaster.h>
+#include <CommonLHETools/LHEHandler/interface/LHEHandler.h>
 
 #include "ZZ4lConfigHelper.h"
 #include "HZZ4lNtupleFactory.h"

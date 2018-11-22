@@ -29,6 +29,9 @@ git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
 #MELA Analytics
 git clone https://github.com/usarica/MelaAnalytics.git
 
+#Common LHE tools
+git clone https://github.com/usarica/CommonLHETools.git
+
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
 (cd ZZMatrixElement; git checkout -b from-c5515cf c5515cf2b244b26f6bd6cafa1592f9130c639a13)
