@@ -557,6 +557,7 @@ process.softMuons = cms.EDProducer("MuFiller",
     sampleType = cms.int32(SAMPLE_TYPE),
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
     cut = cms.string("userFloat('dxy')<0.5 && userFloat('dz')<1."),
+    TriggerResults = cms.InputTag('TriggerResults','','HLT'),
     flags = cms.PSet(
         ID = cms.string(TIGHTMUON), # tight muon ID
         isSIP = cms.string(SIP),
