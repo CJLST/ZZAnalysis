@@ -607,7 +607,12 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   isMC = myHelper.isMC();
   addLHEKinematics = addLHEKinematics || !lheMElist.empty();
   if (isMC){
-    lheHandler = new LHEHandler(pset.getParameter<int>("VVMode"), pset.getParameter<int>("VVDecayMode"), (addLHEKinematics ? LHEHandler::doHiggsKinematics : LHEHandler::noKinematics), year);
+    lheHandler = new LHEHandler(
+      pset.getParameter<int>("VVMode"),
+      pset.getParameter<int>("VVDecayMode"),
+      (addLHEKinematics ? LHEHandler::doHiggsKinematics : LHEHandler::noKinematics),
+      year, LHEHandler::tryNNPDF30, LHEHandler::tryNLO
+    );
     htxsToken = consumes<HTXS::HiggsClassification>(edm::InputTag("rivetProducerHTXS","HiggsClassification"));
     pileUpReweight = new PileUpWeight(myHelper.sampleType(), myHelper.setup());
   }
@@ -1493,11 +1498,9 @@ void HZZ4lNtupleMaker::FillLHECandidate(){
       edm::LogWarning("InconsistentWeights") << "Gen weight is 1, LHE weight is " << genHEPMCweight;
     }
   }
-  if (year == 2017){
-    genHEPMCweight *= lheHandler->reweightNNLOtoNLO();
-  }
+  genHEPMCweight *= lheHandler->getWeightRescale();
 
-  genHEPMCweight_POWHEGonly = lheHandler->getPowhegOriginalWeight();
+  genHEPMCweight_POWHEGonly = lheHandler->getMemberZeroWeight();
   LHEweight_QCDscale_muR1_muF1 = lheHandler->getLHEWeight(0, 1.);
   LHEweight_QCDscale_muR1_muF2 = lheHandler->getLHEWeight(1, 1.);
   LHEweight_QCDscale_muR1_muF0p5 = lheHandler->getLHEWeight(2, 1.);
@@ -2438,7 +2441,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("genFinalState", genFinalState, failedTreeLevel >= minimalFailedTree);
     myTree->Book("genProcessId", genProcessId, failedTreeLevel >= minimalFailedTree);
     myTree->Book("genHEPMCweight", genHEPMCweight, failedTreeLevel >= minimalFailedTree);
-    if (year == 2017) myTree->Book("genHEPMCweight_NNLO", genHEPMCweight_NNLO, failedTreeLevel >= minimalFailedTree);
+    if (year == 2017 || year == 2018) myTree->Book("genHEPMCweight_NNLO", genHEPMCweight_NNLO, failedTreeLevel >= minimalFailedTree);
     myTree->Book("genHEPMCweight_POWHEGonly", genHEPMCweight_POWHEGonly, failedTreeLevel >= minimalFailedTree);
     myTree->Book("PUWeight", PUWeight, failedTreeLevel >= minimalFailedTree);
     myTree->Book("PUWeight_Dn", PUWeight_Dn, failedTreeLevel >= minimalFailedTree);
