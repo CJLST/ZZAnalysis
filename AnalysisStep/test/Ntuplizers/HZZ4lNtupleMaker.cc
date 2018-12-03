@@ -15,6 +15,7 @@
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/Run.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include <FWCore/Framework/interface/ESHandle.h>
 #include <FWCore/Framework/interface/LuminosityBlock.h>
@@ -1493,7 +1494,7 @@ void HZZ4lNtupleMaker::FillLHECandidate(){
   LHEPDFScale = lheHandler->getPDFScale();
   if (genHEPMCweight==1.){
     genHEPMCweight_NNLO = genHEPMCweight = lheHandler->getLHEOriginalWeight();
-    if (!printedLHEweightwarning && genHEPMCweight!=1) {
+    if (!printedLHEweightwarning && genHEPMCweight!=1.) {
       printedLHEweightwarning = true;
       edm::LogWarning("InconsistentWeights") << "Gen weight is 1, LHE weight is " << genHEPMCweight;
     }
@@ -1888,25 +1889,20 @@ void HZZ4lNtupleMaker::endJob()
 // ------------ method called when starting to processes a run  ------------
 void HZZ4lNtupleMaker::beginRun(edm::Run const& iRun, edm::EventSetup const&)
 {
+  static bool firstRun=true;
+  if (firstRun){
+    if (lheHandler){
+      edm::Handle<LHERunInfoProduct> lhe_runinfo;
+      iRun.getByLabel(edm::InputTag("externalLHEProducer"), lhe_runinfo);
+      lheHandler->setHeaderFromRunInfo(&lhe_runinfo);
+    }
+    firstRun=false;
+  }
 }
 
 // ------------ method called when ending the processing of a run  ------------
 void HZZ4lNtupleMaker::endRun(edm::Run const& iRun, edm::EventSetup const&)
 {
-/*
-  // code that helps find the indices of LHE weights
-  edm::Handle<LHERunInfoProduct> run;
-  typedef std::vector<LHERunInfoProduct::Header>::const_iterator headers_const_iterator;
-  iRun.getByToken(lheRunInfoToken, run);
-  LHERunInfoProduct myLHERunInfoProduct = *(run.product());
-  for (headers_const_iterator iter=myLHERunInfoProduct.headers_begin(); iter!=myLHERunInfoProduct.headers_end(); iter++){
-    std::cout << iter->tag() << std::endl;
-    std::vector<std::string> lines = iter->lines();
-    for (unsigned int iLine = 0; iLine<lines.size(); iLine++) {
-      std::cout << lines.at(iLine);
-    }
-  }
-*/
 }
 
 // ------------ method called when starting to processes a luminosity block  ------------
