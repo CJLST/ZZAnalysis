@@ -36,7 +36,7 @@ git clone https://github.com/usarica/CommonLHETools.git
 
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
-(cd ZZMatrixElement; git checkout -b from-c5515cf c5515cf2b244b26f6bd6cafa1592f9130c639a13)
+(cd ZZMatrixElement; git checkout -b from-v217b2 v2.1.7b2)
 # replace ZZMatrixElement/MELA/setup.sh -j 8
 (                                                                 \
   cd ${CMSSW_BASE}/src/ZZMatrixElement/MELA/COLLIER/             ;\
