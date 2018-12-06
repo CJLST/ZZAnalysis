@@ -15,6 +15,7 @@
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/Run.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include <FWCore/Framework/interface/ESHandle.h>
 #include <FWCore/Framework/interface/LuminosityBlock.h>
@@ -52,7 +53,6 @@
 
 
 #include "ZZAnalysis/AnalysisStep/interface/EwkCorrections.h"
-#include "ZZAnalysis/AnalysisStep/interface/LHEHandler.h"
 #include "ZZAnalysis/AnalysisStep/src/kFactors.C"
 #include <ZZAnalysis/AnalysisStep/interface/bitops.h>
 #include <ZZAnalysis/AnalysisStep/interface/Fisher.h>
@@ -63,6 +63,7 @@
 #include <ZZAnalysis/AnalysisStep/interface/ggF_qcd_uncertainty_2017.h>
 
 #include <MelaAnalytics/CandidateLOCaster/interface/MELACandidateRecaster.h>
+#include <CommonLHETools/LHEHandler/interface/LHEHandler.h>
 
 #include "ZZ4lConfigHelper.h"
 #include "HZZ4lNtupleFactory.h"
@@ -605,9 +606,14 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   }
 
   isMC = myHelper.isMC();
-  addLHEKinematics = addLHEKinematics || lheMElist.size()>0;
+  addLHEKinematics = addLHEKinematics || !lheMElist.empty();
   if (isMC){
-    lheHandler = new LHEHandler(pset.getParameter<int>("VVMode"), pset.getParameter<int>("VVDecayMode"), addLHEKinematics, year);
+    lheHandler = new LHEHandler(
+      pset.getParameter<int>("VVMode"),
+      pset.getParameter<int>("VVDecayMode"),
+      (addLHEKinematics ? LHEHandler::doHiggsKinematics : LHEHandler::noKinematics),
+      year, LHEHandler::tryNNPDF30, LHEHandler::tryNLO
+    );
     htxsToken = consumes<HTXS::HiggsClassification>(edm::InputTag("rivetProducerHTXS","HiggsClassification"));
     pileUpReweight = new PileUpWeight(myHelper.sampleType(), myHelper.setup());
   }
@@ -1488,16 +1494,14 @@ void HZZ4lNtupleMaker::FillLHECandidate(){
   LHEPDFScale = lheHandler->getPDFScale();
   if (genHEPMCweight==1.){
     genHEPMCweight_NNLO = genHEPMCweight = lheHandler->getLHEOriginalWeight();
-    if (!printedLHEweightwarning && genHEPMCweight!=1) {
+    if (!printedLHEweightwarning && genHEPMCweight!=1.) {
       printedLHEweightwarning = true;
       edm::LogWarning("InconsistentWeights") << "Gen weight is 1, LHE weight is " << genHEPMCweight;
     }
   }
-  if (year == 2017){
-    genHEPMCweight *= lheHandler->reweightNNLOtoNLO();
-  }
+  genHEPMCweight *= lheHandler->getWeightRescale();
 
-  genHEPMCweight_POWHEGonly = lheHandler->getPowhegOriginalWeight();
+  genHEPMCweight_POWHEGonly = lheHandler->getMemberZeroWeight();
   LHEweight_QCDscale_muR1_muF1 = lheHandler->getLHEWeight(0, 1.);
   LHEweight_QCDscale_muR1_muF2 = lheHandler->getLHEWeight(1, 1.);
   LHEweight_QCDscale_muR1_muF0p5 = lheHandler->getLHEWeight(2, 1.);
@@ -1885,25 +1889,20 @@ void HZZ4lNtupleMaker::endJob()
 // ------------ method called when starting to processes a run  ------------
 void HZZ4lNtupleMaker::beginRun(edm::Run const& iRun, edm::EventSetup const&)
 {
+  static bool firstRun=true;
+  if (firstRun){
+    if (lheHandler){
+      edm::Handle<LHERunInfoProduct> lhe_runinfo;
+      iRun.getByLabel(edm::InputTag("externalLHEProducer"), lhe_runinfo);
+      lheHandler->setHeaderFromRunInfo(&lhe_runinfo);
+    }
+    firstRun=false;
+  }
 }
 
 // ------------ method called when ending the processing of a run  ------------
 void HZZ4lNtupleMaker::endRun(edm::Run const& iRun, edm::EventSetup const&)
 {
-/*
-  // code that helps find the indices of LHE weights
-  edm::Handle<LHERunInfoProduct> run;
-  typedef std::vector<LHERunInfoProduct::Header>::const_iterator headers_const_iterator;
-  iRun.getByToken(lheRunInfoToken, run);
-  LHERunInfoProduct myLHERunInfoProduct = *(run.product());
-  for (headers_const_iterator iter=myLHERunInfoProduct.headers_begin(); iter!=myLHERunInfoProduct.headers_end(); iter++){
-    std::cout << iter->tag() << std::endl;
-    std::vector<std::string> lines = iter->lines();
-    for (unsigned int iLine = 0; iLine<lines.size(); iLine++) {
-      std::cout << lines.at(iLine);
-    }
-  }
-*/
 }
 
 // ------------ method called when starting to processes a luminosity block  ------------
@@ -2438,7 +2437,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("genFinalState", genFinalState, failedTreeLevel >= minimalFailedTree);
     myTree->Book("genProcessId", genProcessId, failedTreeLevel >= minimalFailedTree);
     myTree->Book("genHEPMCweight", genHEPMCweight, failedTreeLevel >= minimalFailedTree);
-    if (year == 2017) myTree->Book("genHEPMCweight_NNLO", genHEPMCweight_NNLO, failedTreeLevel >= minimalFailedTree);
+    if (year == 2017 || year == 2018) myTree->Book("genHEPMCweight_NNLO", genHEPMCweight_NNLO, failedTreeLevel >= minimalFailedTree);
     myTree->Book("genHEPMCweight_POWHEGonly", genHEPMCweight_POWHEGonly, failedTreeLevel >= minimalFailedTree);
     myTree->Book("PUWeight", PUWeight, failedTreeLevel >= minimalFailedTree);
     myTree->Book("PUWeight_Dn", PUWeight_Dn, failedTreeLevel >= minimalFailedTree);

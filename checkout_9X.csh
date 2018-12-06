@@ -53,6 +53,11 @@ git clone -b 94x https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git
 
 #MELA Analytics
 git clone https://github.com/usarica/MelaAnalytics.git
+(cd MelaAnalytics; git checkout -b from-v11 v1.1)
+
+#Common LHE tools
+git clone https://github.com/usarica/CommonLHETools.git
+(cd CommonLHETools; git checkout -b from-v121 v1.2.1)
 
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement

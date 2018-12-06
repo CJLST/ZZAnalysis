@@ -18,6 +18,7 @@
 <use name="MelaAnalytics/CandidateLOCaster"/>
 <use name="MelaAnalytics/EventContainer"/>
 <use name="MelaAnalytics/GenericMEComputer"/>
+<use name="CommonLHETools/LHEHandler"/>
 <!--use name="RecoEcal/EgammaCoreTools"/-->
 
 <use   name="root"/>
