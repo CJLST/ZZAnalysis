@@ -1,41 +1,41 @@
 identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments,comment
 
 
-###,,,,,,,,,,,Run2017B-17Nov2017-v1 - runs 297046-299329
-DoubleMu2017B,,  -1, ,, /DoubleMuon/Run2017B-17Nov2017-v1/MINIAOD,dbs,,    2,PD=DoubleMu;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
-DoubleEG2017B,,  -1, ,, /DoubleEG/Run2017B-17Nov2017-v1/MINIAOD,dbs,,      2,PD=DoubleEle;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
-MuonEG2017B,,    -1, ,, /MuonEG/Run2017B-17Nov2017-v1/MINIAOD,dbs,,        2,PD=MuEG;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
-SingleEle2017B,, -1, ,, /SingleElectron/Run2017B-17Nov2017-v1/MINIAOD,dbs,,5,PD=SingleElectron;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
-SingleMuon2017B,,-1, ,, /SingleMuon/Run2017B-17Nov2017-v1/MINIAOD,dbs,,    5,PD=SingleMuon;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
+###,,,,,,,,,,,Run2017B-31Mar2018-v1 - runs 297046-299329
+DoubleMu2017B,,  -1, ,, /DoubleMuon/Run2017B-31Mar2018-v1/MINIAOD,dbs,,    2,PD=DoubleMu;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
+DoubleEG2017B,,  -1, ,, /DoubleEG/Run2017B-31Mar2018-v1/MINIAOD,dbs,,      2,PD=DoubleEle;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
+MuonEG2017B,,    -1, ,, /MuonEG/Run2017B-31Mar2018-v1/MINIAOD,dbs,,        2,PD=MuEG;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
+SingleEle2017B,, -1, ,, /SingleElectron/Run2017B-31Mar2018-v1/MINIAOD,dbs,,5,PD=SingleElectron;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
+SingleMuon2017B,,-1, ,, /SingleMuon/Run2017B-31Mar2018-v1/MINIAOD,dbs,,    5,PD=SingleMuon;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
 
 
-###,,,,,,,,,,,Run2017C-17Nov2017-v1 - runs 299368-302029
-DoubleMu2017C,,  -1, ,, /DoubleMuon/Run2017C-17Nov2017-v1/MINIAOD,dbs,,    2,PD=DoubleMu;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
-DoubleEG2017C,,  -1, ,, /DoubleEG/Run2017C-17Nov2017-v1/MINIAOD,dbs,,      2,PD=DoubleEle;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
-MuonEG2017C,,    -1, ,, /MuonEG/Run2017C-17Nov2017-v1/MINIAOD,dbs,,        2,PD=MuEG;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
-SingleEle2017C,, -1, ,, /SingleElectron/Run2017C-17Nov2017-v1/MINIAOD,dbs,,5,PD=SingleElectron;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
-SingleMuon2017C,,-1, ,, /SingleMuon/Run2017C-17Nov2017-v1/MINIAOD,dbs,,    5,PD=SingleMuon;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
+###,,,,,,,,,,,Run2017C-31Mar2018-v1 - runs 299368-302029
+DoubleMu2017C,,  -1, ,, /DoubleMuon/Run2017C-31Mar2018-v1/MINIAOD,dbs,,    2,PD=DoubleMu;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
+DoubleEG2017C,,  -1, ,, /DoubleEG/Run2017C-31Mar2018-v1/MINIAOD,dbs,,      2,PD=DoubleEle;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
+MuonEG2017C,,    -1, ,, /MuonEG/Run2017C-31Mar2018-v1/MINIAOD,dbs,,        2,PD=MuEG;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
+SingleEle2017C,, -1, ,, /SingleElectron/Run2017C-31Mar2018-v1/MINIAOD,dbs,,5,PD=SingleElectron;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
+SingleMuon2017C,,-1, ,, /SingleMuon/Run2017C-31Mar2018-v1/MINIAOD,dbs,,    5,PD=SingleMuon;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
 
 
-###,,,,,,,,,,,Run2017D-17Nov2017-v1 - runs 302030 - 303434
-DoubleMu2017D,,  -1, ,, /DoubleMuon/Run2017D-17Nov2017-v1/MINIAOD,dbs,,    2,PD=DoubleMu;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
-DoubleEG2017D,,  -1, ,, /DoubleEG/Run2017D-17Nov2017-v1/MINIAOD,dbs,,      2,PD=DoubleEle;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
-MuonEG2017D,,    -1, ,, /MuonEG/Run2017D-17Nov2017-v1/MINIAOD,dbs,,        2,PD=MuEG;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
-SingleEle2017D,, -1, ,, /SingleElectron/Run2017D-17Nov2017-v1/MINIAOD,dbs,,5,PD=SingleElectron;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
-SingleMuon2017D,,-1, ,, /SingleMuon/Run2017D-17Nov2017-v1/MINIAOD,dbs,,    5,PD=SingleMuon;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
+###,,,,,,,,,,,Run2017D-31Mar2018-v1 - runs 302030 - 303434
+DoubleMu2017D,,  -1, ,, /DoubleMuon/Run2017D-31Mar2018-v1/MINIAOD,dbs,,    2,PD=DoubleMu;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
+DoubleEG2017D,,  -1, ,, /DoubleEG/Run2017D-31Mar2018-v1/MINIAOD,dbs,,      2,PD=DoubleEle;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
+MuonEG2017D,,    -1, ,, /MuonEG/Run2017D-31Mar2018-v1/MINIAOD,dbs,,        2,PD=MuEG;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
+SingleEle2017D,, -1, ,, /SingleElectron/Run2017D-31Mar2018-v1/MINIAOD,dbs,,5,PD=SingleElectron;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
+SingleMuon2017D,,-1, ,, /SingleMuon/Run2017D-31Mar2018-v1/MINIAOD,dbs,,    5,PD=SingleMuon;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
 
 
-###,,,,,,,,,,,Run2017E-17Nov2017-v1 - runs 303824 - 304797
-DoubleMu2017E,,  -1, ,, /DoubleMuon/Run2017E-17Nov2017-v1/MINIAOD,dbs,,    2,PD=DoubleMu;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
-DoubleEG2017E,,  -1, ,, /DoubleEG/Run2017E-17Nov2017-v1/MINIAOD,dbs,,      2,PD=DoubleEle;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
-MuonEG2017E,,    -1, ,, /MuonEG/Run2017E-17Nov2017-v1/MINIAOD,dbs,,        2,PD=MuEG;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
-SingleEle2017E,, -1, ,, /SingleElectron/Run2017E-17Nov2017-v1/MINIAOD,dbs,,5,PD=SingleElectron;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
-SingleMuon2017E,,-1, ,, /SingleMuon/Run2017E-17Nov2017-v1/MINIAOD,dbs,,    5,PD=SingleMuon;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
+###,,,,,,,,,,,Run2017E-31Mar2018-v1 - runs 303824 - 304797
+DoubleMu2017E,,  -1, ,, /DoubleMuon/Run2017E-31Mar2018-v1/MINIAOD,dbs,,    2,PD=DoubleMu;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
+DoubleEG2017E,,  -1, ,, /DoubleEG/Run2017E-31Mar2018-v1/MINIAOD,dbs,,      2,PD=DoubleEle;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
+MuonEG2017E,,    -1, ,, /MuonEG/Run2017E-31Mar2018-v1/MINIAOD,dbs,,        2,PD=MuEG;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
+SingleEle2017E,, -1, ,, /SingleElectron/Run2017E-31Mar2018-v1/MINIAOD,dbs,,5,PD=SingleElectron;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
+SingleMuon2017E,,-1, ,, /SingleMuon/Run2017E-31Mar2018-v1/MINIAOD,dbs,,    5,PD=SingleMuon;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
 
 
-###,,,,,,,,,,,Run2017F-17Nov2017-v1 - runs 305040 - 306462
-DoubleMu2017F,,  -1, ,, /DoubleMuon/Run2017F-17Nov2017-v1/MINIAOD,dbs,,    2,PD=DoubleMu;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
-DoubleEG2017F,,  -1, ,, /DoubleEG/Run2017F-17Nov2017-v1/MINIAOD,dbs,,      2,PD=DoubleEle;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
-MuonEG2017F,,    -1, ,, /MuonEG/Run2017F-17Nov2017-v1/MINIAOD,dbs,,        2,PD=MuEG;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
-SingleEle2017F,, -1, ,, /SingleElectron/Run2017F-17Nov2017-v1/MINIAOD,dbs,,5,PD=SingleElectron;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
-SingleMuon2017F,,-1, ,, /SingleMuon/Run2017F-17Nov2017-v1/MINIAOD,dbs,,    5,PD=SingleMuon;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
+###,,,,,,,,,,,Run2017F-31Mar2018-v1 - runs 305040 - 306462
+DoubleMu2017F,,  -1, ,, /DoubleMuon/Run2017F-31Mar2018-v1/MINIAOD,dbs,,    2,PD=DoubleMu;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
+DoubleEG2017F,,  -1, ,, /DoubleEG/Run2017F-31Mar2018-v1/MINIAOD,dbs,,      2,PD=DoubleEle;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
+MuonEG2017F,,    -1, ,, /MuonEG/Run2017F-31Mar2018-v1/MINIAOD,dbs,,        2,PD=MuEG;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
+SingleEle2017F,, -1, ,, /SingleElectron/Run2017F-31Mar2018-v1/MINIAOD,dbs,,5,PD=SingleElectron;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
+SingleMuon2017F,,-1, ,, /SingleMuon/Run2017F-31Mar2018-v1/MINIAOD,dbs,,    5,PD=SingleMuon;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2017;ADDZTREE=True,json_2017.py;RecoProbabilities.py,
