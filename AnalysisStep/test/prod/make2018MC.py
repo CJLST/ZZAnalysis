@@ -74,6 +74,9 @@ for filename in "samples_{year}_MC.csv", "samples_{year}_MC_anomalous.csv":
         line = next(f2)
 
       if row["dataset"]:
+        row["::variables"] = row["::variables"].replace("LEPTON_SETUP=2017", "LEPTON_SETUP=2018")
+        assert "LEPTON_SETUP=2018" in row["::variables"]
+
         row["identifier"] = row["identifier"].lstrip("#")
         identifier = row["identifier"].replace("ext", "")
         datasetparts = list(row["dataset"].split("/"))
