@@ -2,6 +2,7 @@
 
 #include "../interface/BTaggingSFHelper.h"
 
+#include <cmath>
 #include "TString.h"
 #include "TMath.h"
 
@@ -12,39 +13,17 @@ BTaggingSFHelper::BTaggingSFHelper(std::string SFfilename, std::string effFileNa
     // Allow relative paths in python config file to be found in C++
     edm::FileInPath fip_sf(SFfilename);
     
-    m_calib = new BTagCalibration("CSVv2", fip_sf.fullPath().c_str());
-    
-    m_reader    = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "central");
-    m_reader_up = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "up"     );
-    m_reader_do = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "down"   );
-    
-    for(int i=0 ; i < 3; i++ ){
-    m_readers[i][0] = m_reader;
-    m_readers[i][1] = m_reader_up;
-    m_readers[i][2] = m_reader_do;
+    m_calib  = new BTagCalibration("CSVv2", fip_sf.fullPath().c_str()); // The CSVv2 designation doesn't matter if you are only reading, so don't bother to change it...
+    BTagCalibrationReader* m_reader = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "central");
+    BTagCalibrationReader* m_reader_up = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "up");
+    BTagCalibrationReader* m_reader_down = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "down");
+    m_readers = std::vector<BTagCalibrationReader*>{ m_reader, m_reader_up, m_reader_down };
+    for (BTagCalibrationReader*& mr:m_readers){
+      mr->load(*m_calib, BTagEntry::FLAV_B, "comb");
+      mr->load(*m_calib, BTagEntry::FLAV_C, "comb");
+      mr->load(*m_calib, BTagEntry::FLAV_UDSG, "incl");
     }
-    
-    for(int i=0 ; i < 3; i++ ){
-        m_readers[i][0] = m_reader;
-        m_readers[i][1] = m_reader_up;
-        m_readers[i][2] = m_reader_do;
-        if(i == 0){
-            m_readers[i][0]->load(*m_calib, BTagEntry::FLAV_B, "comb");
-            m_readers[i][1]->load(*m_calib, BTagEntry::FLAV_B, "comb");
-            m_readers[i][2]->load(*m_calib, BTagEntry::FLAV_B, "comb");
-        }
-        else if(i == 1){
-            m_readers[i][0]->load(*m_calib, BTagEntry::FLAV_C, "comb");
-            m_readers[i][1]->load(*m_calib, BTagEntry::FLAV_C, "comb");
-            m_readers[i][2]->load(*m_calib, BTagEntry::FLAV_C, "comb");
-        }
-        else if(i == 2){
-            m_readers[i][0]->load(*m_calib, BTagEntry::FLAV_UDSG, "incl");
-            m_readers[i][1]->load(*m_calib, BTagEntry::FLAV_UDSG, "incl");
-            m_readers[i][2]->load(*m_calib, BTagEntry::FLAV_UDSG, "incl");
-        }
-    }
-    
+
     edm::FileInPath fip_eff(effFileName);
     m_fileEff = new TFile(fip_eff.fullPath().c_str());
     
@@ -66,17 +45,13 @@ float BTaggingSFHelper::getSF(SFsyst syst, int jetFlavor, float pt, float eta)
     
     BTagEntry::JetFlavor flav;
     int myFlavIndex = -1; // indexes in the m_readers array
-    int mySystIndex = (int) syst;
     
     if(abs(jetFlavor)==5){
         flav = BTagEntry::FLAV_B;
-        myFlavIndex = 0;
     }else if(abs(jetFlavor)==4){
         flav = BTagEntry::FLAV_C;
-        myFlavIndex = 1;
     }else{
         flav = BTagEntry::FLAV_UDSG;
-        myFlavIndex = 2;
     }
     
     float myPt = pt;
@@ -84,23 +59,23 @@ float BTaggingSFHelper::getSF(SFsyst syst, int jetFlavor, float pt, float eta)
     float MaxJetEta = 2.5; // https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
 	
     bool DoubleUncertainty = false;
-    if((myFlavIndex==0 || myFlavIndex==1) && pt>MaxBJetPt){
+    if((flav == BTagEntry::FLAV_B || flav == BTagEntry::FLAV_C) && pt>MaxBJetPt){
         myPt = MaxBJetPt;
         DoubleUncertainty = true;
     }
-    if(myFlavIndex==2 && pt>MaxLJetPt){
+    if(flav == BTagEntry::FLAV_UDSG && pt>MaxLJetPt){
         myPt = MaxLJetPt;
         DoubleUncertainty = true;
     }
 
-    SF = m_readers[myFlavIndex][mySystIndex]->eval(flav, eta, myPt);
+    SF = m_readers[syst]->eval(flav, eta, myPt);
     
     if(DoubleUncertainty && syst!=central){
-        float SFcentral = m_readers[myFlavIndex][central]->eval(flav, eta, myPt);
-        SF = 2*(SF - SFcentral) + SFcentral;
+        float SFcentral = m_readers[central]->eval(flav, eta, myPt);
+        SF = 2.f*(SF - SFcentral) + SFcentral;
     }
 	
-    if ( abs(eta) > MaxJetEta) SF = 1.; // Do not apply SF for jets with eta higher than the treshold
+    if (std::abs(eta) > MaxJetEta) SF = 1.; // Do not apply SF for jets with eta higher than the threshold
     return SF;
 }
 

@@ -28,10 +28,7 @@ class BTaggingSFHelper
 
   // related to scale factors
   BTagCalibration* m_calib;
-  BTagCalibrationReader* m_reader;
-  BTagCalibrationReader* m_reader_up;
-  BTagCalibrationReader* m_reader_do;
-  BTagCalibrationReader* m_readers [3][3]; // [b, c, udsg] [central, up, down]
+  std::vector<BTagCalibrationReader*> m_readers; // Loads all of [central, up, down](b, c, udsg)
 
   // related to b tag efficiency
   TFile* m_fileEff;
