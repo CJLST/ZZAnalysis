@@ -5,6 +5,7 @@
 #include <cmath>
 #include "TString.h"
 #include "TMath.h"
+#include "TDirectory.h"
 
 using namespace std;
 
@@ -12,6 +13,7 @@ BTaggingSFHelper::BTaggingSFHelper(std::string SFfilename, std::string effFileNa
 {
     // Allow relative paths in python config file to be found in C++
     edm::FileInPath fip_sf(SFfilename);
+    TDirectory* curdir = gDirectory;
     
     m_calib  = new BTagCalibration("CSVv2", fip_sf.fullPath().c_str()); // The CSVv2 designation doesn't matter if you are only reading, so don't bother to change it...
     BTagCalibrationReader* m_reader = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "central");
@@ -25,18 +27,22 @@ BTaggingSFHelper::BTaggingSFHelper(std::string SFfilename, std::string effFileNa
     }
 
     edm::FileInPath fip_eff(effFileName);
-    m_fileEff = new TFile(fip_eff.fullPath().c_str());
+    m_fileEff = TFile::Open(fip_eff.fullPath().c_str(), "read");
     
     TString flavs[3] = {"b", "c", "udsg"};
     for(int flav=0; flav<3; flav++){
         TString name = Form("eff_%s_M_ALL",flavs[flav].Data());
         m_hEff[flav] = (TH1F*)m_fileEff->Get(name.Data());
     }
+    curdir->cd(); // When m_fileEff is open, the current directory changes to m_fileEff in ROOT. Avoid this...
 }
 
 BTaggingSFHelper::~BTaggingSFHelper()
 {
-    if (m_fileEff) delete m_fileEff;
+    if (m_fileEff && m_fileEff->IsOpen()) m_fileEff->Close(); // m_hEff[] are now invalid pointers!
+    else if (m_fileEff) delete m_fileEff;
+    for (BTagCalibrationReader*& mr:m_readers) delete mr;
+    delete m_calib;
 }
 
 float BTaggingSFHelper::getSF(SFsyst syst, int jetFlavor, float pt, float eta)
@@ -44,8 +50,6 @@ float BTaggingSFHelper::getSF(SFsyst syst, int jetFlavor, float pt, float eta)
     float SF = 1.0;
     
     BTagEntry::JetFlavor flav;
-    int myFlavIndex = -1; // indexes in the m_readers array
-    
     if(abs(jetFlavor)==5){
         flav = BTagEntry::FLAV_B;
     }else if(abs(jetFlavor)==4){
