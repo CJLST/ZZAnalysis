@@ -57,12 +57,26 @@ float BTaggingSFHelper::getSF(SFsyst syst, int jetFlavor, float pt, float eta)
     }else{
         flav = BTagEntry::FLAV_UDSG;
     }
-    
+
+    constexpr float epsilon=1e-5;
     float myPt = pt;
+    /*
+    // Old code
     float MaxBJetPt = 669.9, MaxLJetPt = 999.9;  // value must be below the boundary
     float MaxJetEta = 2.5; // https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+    */
 	
+    std::pair<float, float> eta_bounds = m_readers[central]->min_max_eta(flav, 0);
+    if (eta_bounds.first==0.f) eta_bounds.first = -eta_bounds.second;
+    if (eta_bounds.first>eta || eta>eta_bounds.second) return 1.;
+
     bool DoubleUncertainty = false;
+    std::pair<float, float> pt_bounds = m_readers[central]->min_max_pt(flav, eta, 0); // Since this function uses eta, first determine eta bounds as above
+    if (pt_bounds.first >= myPt){ myPt = pt_bounds.first+epsilon; DoubleUncertainty = true; }
+    if (pt_bounds.second <= myPt){ myPt = pt_bounds.second-epsilon; DoubleUncertainty = true; }
+
+    /*
+    // Old code
     if((flav == BTagEntry::FLAV_B || flav == BTagEntry::FLAV_C) && pt>MaxBJetPt){
         myPt = MaxBJetPt;
         DoubleUncertainty = true;
@@ -71,6 +85,7 @@ float BTaggingSFHelper::getSF(SFsyst syst, int jetFlavor, float pt, float eta)
         myPt = MaxLJetPt;
         DoubleUncertainty = true;
     }
+    */
 
     SF = m_readers[syst]->eval(flav, eta, myPt);
     
@@ -78,8 +93,9 @@ float BTaggingSFHelper::getSF(SFsyst syst, int jetFlavor, float pt, float eta)
         float SFcentral = m_readers[central]->eval(flav, eta, myPt);
         SF = 2.f*(SF - SFcentral) + SFcentral;
     }
-	
-    if (std::abs(eta) > MaxJetEta) SF = 1.; // Do not apply SF for jets with eta higher than the threshold
+
+    // Old code
+    //if (std::abs(eta) > MaxJetEta) SF = 1.; // Do not apply SF for jets with eta higher than the threshold
     return SF;
 }
 
