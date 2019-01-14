@@ -896,10 +896,10 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
                                                                  // For 2017 MC, genHEPMCweight is reweighted later from NNLO to NLO
     const auto& genweights = genInfo->weights();
     if (genweights.size() > 1){
-      if (genweights.size() != 14 || genweights[0] != genweights[1]){
+      if ((genweights.size() != 14 && genweights.size() != 46) || genweights[0] != genweights[1]){
         cms::Exception e("GenWeights");
-        e << "Expected to find 1 gen weight, or 14 with the first two the same, found " << genweights.size() << ":\n";
-        for (auto w : genweights) e << w;
+        e << "Expected to find 1 gen weight, or 14 or 46 with the first two the same, found " << genweights.size() << ":\n";
+        for (auto w : genweights) e << w << " ";
         throw e;
       }
       auto nominal = genweights[0];
