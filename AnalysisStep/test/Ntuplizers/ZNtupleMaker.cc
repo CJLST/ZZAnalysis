@@ -341,6 +341,35 @@ ZNtupleMaker::ZNtupleMaker(const edm::ParameterSet& pset) :
         root_file->Close();
 
     }
+	 else if (year == 2018)//[FIXME] Use 2017 SFs for now
+	 {
+	 
+		  edm::FileInPath fipEleNotCracks("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi.txt_EGM2D_Moriond2018v1.root");
+        TFile *root_file = TFile::Open(fipEleNotCracks.fullPath().data(),"READ");
+        hTH2D_El_IdIsoSip_notCracks = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
+        root_file->Close();
+		 
+        edm::FileInPath fipEleCracks("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi.txt_EGM2D_Moriond2018v1_gap.root");
+        root_file = TFile::Open(fipEleCracks.fullPath().data(),"READ");
+        hTH2D_El_IdIsoSip_Cracks = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
+        root_file->Close();
+ 
+        edm::FileInPath fipEleReco_highPt("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi.txt_EGM2D_Moriond2018v1_runBCDEF_passingRECO.root");
+        TFile *root_file_reco_highPT = TFile::Open(fipEleReco_highPt.fullPath().data(),"READ");
+        hTH2F_El_Reco_highPT = (TH2F*) root_file_reco_highPT->Get("EGamma_SF2D")->Clone();
+        root_file_reco_highPT->Close();
+		 
+		  edm::FileInPath fipEleReco_lowPt("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi.txt_EGM2D_Moriond2018v1_runBCDEF_passingRECO_lowEt.root");
+        TFile *root_file_reco_lowPT = TFile::Open(fipEleReco_lowPt.fullPath().data(),"READ");
+        hTH2F_El_Reco_lowPT = (TH2F*) root_file_reco_lowPT->Get("EGamma_SF2D")->Clone();
+        root_file_reco_lowPT->Close();
+
+        edm::FileInPath fipEleRSE("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_RSE_ele_Moriond2017_v1.root");// FIXME UPDATE TO Moriond2018
+        root_file = TFile::Open(fipEleRSE.fullPath().data(),"READ");
+        hTH2F_El_RSE = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
+        root_file->Close();
+
+    }
     else
     {
     	 cout<<"[ERROR] ZNtupleMaker: Electron SFs not supported for " << year << " year!!!" << endl;
@@ -359,6 +388,15 @@ ZNtupleMaker::ZNtupleMaker(const edm::ParameterSet& pset) :
 
     }
 	 else if (year == 2017)
+	 {
+		  edm::FileInPath fipMu("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_Moriond2018_final.root");
+        TFile *fMuWeight = TFile::Open(fipMu.fullPath().data(),"READ");
+        hTH2D_Mu_All = (TH2D*)fMuWeight->Get("FINAL")->Clone();
+        hTH2D_Mu_Unc = (TH2D*)fMuWeight->Get("ERROR")->Clone();
+		  fMuWeight->Close();
+
+    }
+	 else if (year == 2018)//[FIXME] Use 2017 SFs for now
 	 {
 		  edm::FileInPath fipMu("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_Moriond2018_final.root");
         TFile *fMuWeight = TFile::Open(fipMu.fullPath().data(),"READ");

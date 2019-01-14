@@ -22,7 +22,9 @@ float PUReweight::weight(int MC, int target, float input) {
       h = hTPuToIchep16;
     } else if (MC==2017&&target==2017) {
       h = hTPuToMoriond17;
-    } else{
+    } else if (MC==2018&&target==2018) { //[FIXME] Using 2017 weights for now!
+      h = hTPuToMoriond17;
+    }	else{
       std::cout << "ERROR: PUReweight: " << MC << " " << target << std::endl;
       abort();
     }
