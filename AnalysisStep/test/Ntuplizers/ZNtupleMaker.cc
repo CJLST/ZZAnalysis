@@ -846,6 +846,11 @@ Float_t ZNtupleMaker::getAllWeight(const reco::Candidate* Lep) const //FIXME: sy
 
 	  weight = RecoSF*SelSF;
 	}
+	else if(year == 2018) //[FIXME] Update when 2018 available
+		{
+		  RecoSF = 1.; // The scale factor combines all afficiecnies
+		  SelSF = 1.; //last bin contains the overflow
+		}
  }
 
  else if(myLepID == 11) {
@@ -883,6 +888,17 @@ Float_t ZNtupleMaker::getAllWeight(const reco::Candidate* Lep) const //FIXME: sy
 			//RecoSF_Unc = hTH2F_El_Reco_highPT->GetBinError(hTH2F_El_Reco_highPT->GetXaxis()->FindBin(mySCeta),hTH2F_El_Reco_highPT->GetYaxis()->FindBin(std::min(myLepPt,499.f)));
 		}
 	}
+	else if(year == 2018) //[FIXME] Update when 2018 available
+      {
+			if(myLepPt < 20.)
+			{
+				RecoSF = 1.;
+			}
+			else
+			{
+				RecoSF = 1.;
+			}
+		}
 	else {
 			edm::LogError("MC scale factor") << "ele SFs for < 2016 no longer supported";
 			abort();
@@ -938,6 +954,28 @@ Float_t ZNtupleMaker::getAllWeight(const reco::Candidate* Lep) const //FIXME: sy
 		}
 	
 	}
+	
+	else if(year == 2018) //[FIXME] Update when 2018 available
+		{
+			if(mySIP >= 4.0 )
+			{ // FIXME: use a better way to find RSE electrons!
+				 // This is also the case for the loose lepton in Z+l
+				SelSF = 1.;
+			}
+			
+			else
+			{
+				if((bool)userdatahelpers::getUserFloat(Lep,"isCrack"))
+				{
+				 SelSF = 1.;
+				}
+				else
+				{
+				 SelSF = 1.;
+				}
+			}
+		
+		}
 	 
 	else {
 			edm::LogError("MC scale factor") << "ele SFs for < 2016 no longer supported";

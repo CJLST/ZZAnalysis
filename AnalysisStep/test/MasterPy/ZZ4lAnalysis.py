@@ -83,7 +83,7 @@ if SELSETUP=="Legacy" and not BESTCANDCOMPARATOR=="byBestZ1bestZ2":
 ELEISOCUT = 0.35
 MUISOCUT = 0.35
 # In 2017 we move to electron BDT that includes isolation. For now this is implemented in the framework by hacking ELEISOCUT value to a large number because we are maintaining the code for 2016 in paralel. In the future this should be handeled smarter.
-if (LEPTON_SETUP == 2017):
+if (LEPTON_SETUP == 2017 or LEPTON_SETUP == 2018):
 	ELEISOCUT = 99999.
 
 ### ----------------------------------------------------------------------
@@ -662,12 +662,11 @@ if (LEPTON_SETUP == 2017):
        recHitCollectionEE = cms.InputTag('reducedEgamma:reducedEERecHits')
 	)
 
-
 if (BUNCH_SPACING == 50):
     process.calibratedPatElectrons.grbForestName = cms.string("gedelectron_p4combination_50ns")
 
 
-if (LEPTON_SETUP <= 2017) :
+if (LEPTON_SETUP <= 2018) :
     #--- Set up electron ID (VID framework)
     from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
     # turn on VID producer, indicate data format to be DataFormat.MiniAOD, as appropriate
@@ -707,6 +706,10 @@ if (LEPTON_SETUP < 2017):
 #94X BDT with ID and Isolation
 if (LEPTON_SETUP == 2017):
 #	process.softElectrons.mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Fall17IsoV1Values")
+   process.softElectrons.mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Fall17IsoV2Values")
+
+#[FIXME] 2018 version of BDT with ID and Isolation
+if (LEPTON_SETUP == 2018):
    process.softElectrons.mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Fall17IsoV2Values")
 
 if (LEPTON_SETUP < 2018):
@@ -1330,7 +1333,13 @@ if (LEPTON_SETUP == 2017):
     process.dressedJets.bTaggerName = cms.string("pfDeepCSVJetTags:probb") #Moving to Moriond18 new recommended DeepCSV btagger
     process.dressedJets.bTaggerThreshold = cms.double(0.4941) #https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
     process.dressedJets.bTagSFFile =  cms.string("ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_94XSF_V1_B_F.csv")
-    process.dressedJets.bTagMCEffFile  = cms.string("ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_94X_Moriond18_v1.root") #FIXME!!! Update to Moriond18 file
+    process.dressedJets.bTagMCEffFile  = cms.string("ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_94X_Moriond18_v1.root")
+
+if (LEPTON_SETUP == 2018): #[FIXME] Update to 2018 when available
+    process.dressedJets.bTaggerName = cms.string("pfDeepCSVJetTags:probb") #Moving to Moriond18 new recommended DeepCSV btagger
+    process.dressedJets.bTaggerThreshold = cms.double(0.4941) #https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+    process.dressedJets.bTagSFFile =  cms.string("ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_94XSF_V1_B_F.csv")
+    process.dressedJets.bTagMCEffFile  = cms.string("ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_94X_Moriond18_v1.root")
 
 
 ### Load JEC

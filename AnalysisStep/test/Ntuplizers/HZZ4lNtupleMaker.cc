@@ -2022,6 +2022,16 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const vector<const reco::Candidate*>& lep
 		  muonSF *= RecoSF*SelSF;
 		  muon_Unc_rel += sqrt( RecoSF_Unc*RecoSF_Unc/(RecoSF*RecoSF) + SelSF_Unc*SelSF_Unc/(SelSF*SelSF) ); // assume full correlation between different muons (and uncorrelated reco and sel uncertainties)
 		}
+		else if(year == 2018) //[FIXME] Update when 2018 available
+		{
+		  RecoSF = 1.; // The scale factor combines all afficiecnies
+		  RecoSF_Unc = 0.;
+		  SelSF = 1.; //last bin contains the overflow
+		  SelSF_Unc = 1.; //last bin contains the overflow
+
+		  muonSF *= RecoSF*SelSF;
+		  muon_Unc_rel += sqrt( RecoSF_Unc*RecoSF_Unc/(RecoSF*RecoSF) + SelSF_Unc*SelSF_Unc/(SelSF*SelSF) ); // assume full correlation between different muons (and uncorrelated reco and sel uncertainties)
+		}
     }
 	  
 	 else if(myLepID == 11) {
@@ -2057,6 +2067,19 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const vector<const reco::Candidate*>& lep
 			{
 				RecoSF = hTH2F_El_Reco_highPT->GetBinContent(hTH2F_El_Reco_highPT->GetXaxis()->FindBin(mySCeta),hTH2F_El_Reco_highPT->GetYaxis()->FindBin(std::min(myLepPt,499.f)));
 				RecoSF_Unc = hTH2F_El_Reco_highPT->GetBinError(hTH2F_El_Reco_highPT->GetXaxis()->FindBin(mySCeta),hTH2F_El_Reco_highPT->GetYaxis()->FindBin(std::min(myLepPt,499.f)));
+			}
+		}
+		else if(year == 2018) //[FIXME] Update when 2018 available
+      {
+			if(myLepPt < 20.)
+			{
+				RecoSF = 1.;
+				RecoSF_Unc = 1.;
+			}
+			else
+			{
+				RecoSF = 1.;
+				RecoSF_Unc = 1.;
 			}
 		}
 		else {
@@ -2110,6 +2133,31 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const vector<const reco::Candidate*>& lep
 				{
 				 SelSF = hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->FindFixBin(mySCeta, std::min(myLepPt,499.f)));
 				 SelSF_Unc = hTH2D_El_IdIsoSip_notCracks->GetBinError(hTH2D_El_IdIsoSip_notCracks->FindFixBin(mySCeta, std::min(myLepPt,499.f)));
+				}
+			}
+		
+		}
+		
+	else if(year == 2018) //[FIXME] Update when 2018 available
+		{
+			if(mySIP >= 4.0 )
+			{ // FIXME: use a better way to find RSE electrons!
+				 // This is also the case for the loose lepton in Z+l
+				SelSF = 1.;
+				SelSF_Unc = 1.;
+			}
+			
+			else
+			{
+				if((bool)userdatahelpers::getUserFloat(leptons[i],"isCrack"))
+				{
+				 SelSF = 1.;
+				 SelSF_Unc = 1.;
+				}
+				else
+				{
+				 SelSF = 1.;
+				 SelSF_Unc = 1.;
 				}
 			}
 		
