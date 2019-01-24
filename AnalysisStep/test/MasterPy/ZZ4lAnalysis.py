@@ -133,17 +133,16 @@ elif (SAMPLE_TYPE == 2016):
 
 elif (SAMPLE_TYPE == 2017): 
     if IsMC:
-        #process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mc2017_realistic_v10', '')
-        process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mc2017_realistic_v14', '') #For JEC
+        process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mc2017_realistic_v14', '')
     else:
-        process.GlobalTag = GlobalTag(process.GlobalTag, '94X_dataRun2_ReReco_EOY17_v6', '') #For 31Mar2018 ReReco
+        process.GlobalTag = GlobalTag(process.GlobalTag, '94X_dataRun2_ReReco_EOY17_v6', '')
 
 elif (SAMPLE_TYPE == 2018):
     if IsMC:
-        process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '') 
+        process.GlobalTag = GlobalTag(process.GlobalTag, '102X_mcRun2_asymptotic_v3', '')
     else:
-        process.GlobalTag = GlobalTag(process.GlobalTag, '101X_dataRun2_Prompt_v9', '')
-        #process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_data', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '102X_dataRun2_v4', '')
+
 
 
 print '\t',process.GlobalTag.globaltag
