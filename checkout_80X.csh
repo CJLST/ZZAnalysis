@@ -8,7 +8,7 @@
 # ${TMPDIR}/checkout_80X.csh
 
 
-############## For CMSSW_8_0_26_patch1
+############## For CMSSW_8_0_29
 git cms-init
 # Preliminary electron scale and smearing corrections according to https://twiki.cern.ch/twiki/bin/view/CMS/EGMSmearer
 #add the repository with the updated Egamma package
