@@ -39,7 +39,6 @@
 #include <ZZAnalysis/AnalysisStep/interface/PileUpWeight.h>
 #include <ZZAnalysis/AnalysisStep/interface/bitops.h>
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
-#include <ZZAnalysis/AnalysisStep/interface/PUReweight.h>
 #include "ZZ4lConfigHelper.h"
 #include "HZZ4lNtupleFactory.h"
 

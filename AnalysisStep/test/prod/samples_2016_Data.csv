@@ -38,10 +38,10 @@ MuonEG2016G,,   -1, ,, /MuonEG/Run2016G-18Apr2017-v1/MINIAOD,dbs,,2,PD=MuEG;PROC
 SingleEle2016G,,-1, ,, /SingleElectron/Run2016G-18Apr2017-v1/MINIAOD,dbs,,5,PD=SingleElectron;PROCESS_CR=True;KINREFIT=True;ADDZTREE=True,json_2016.py;RecoProbabilities.py,
 SingleMuon2016G,,-1,,, /SingleMuon/Run2016G-18Apr2017-v1/MINIAOD,dbs,,5,PD=SingleMuon;PROCESS_CR=True;KINREFIT=True;ADDZTREE=True,json_2016.py;RecoProbabilities.py,
 
-DoubleMu2016H,, -1, ,, /DoubleMuon/Run2016H-18Apr2017-v1/MINIAOD,dbs,,2,PD=DoubleMu;PROCESS_CR=True;KINREFIT=True;DATA_TAG=PromptReco;ADDZTREE=True,json_2016.py;RecoProbabilities.py,
-DoubleEG2016H,, -1, ,, /DoubleEG/Run2016H-18Apr2017-v1/MINIAOD,dbs,,2,PD=DoubleEle;PROCESS_CR=True;KINREFIT=True;DATA_TAG=PromptReco;ADDZTREE=True,json_2016.py;RecoProbabilities.py,
-MuonEG2016H,,   -1, ,, /MuonEG/Run2016H-18Apr2017-v1/MINIAOD,dbs,,2,PD=MuEG;PROCESS_CR=True;KINREFIT=True;DATA_TAG=PromptReco;ADDZTREE=True,json_2016.py;RecoProbabilities.py,
-SingleEle2016H,,-1, ,, /SingleElectron/Run2016H-18Apr2017-v1/MINIAOD,dbs,,5,PD=SingleElectron;PROCESS_CR=True;KINREFIT=True;DATA_TAG=PromptReco;ADDZTREE=True,json_2016.py;RecoProbabilities.py,
-SingleMuon2016H,,-1,,, /SingleMuon/Run2016H-18Apr2017-v1/MINIAOD,dbs,,5,PD=SingleMuon;PROCESS_CR=True;KINREFIT=True;DATA_TAG=PromptReco;ADDZTREE=True,json_2016.py;RecoProbabilities.py,
+DoubleMu2016H,, -1, ,, /DoubleMuon/Run2016H-18Apr2017-v1/MINIAOD,dbs,,2,PD=DoubleMu;PROCESS_CR=True;KINREFIT=True;ADDZTREE=True,json_2016.py;RecoProbabilities.py,
+DoubleEG2016H,, -1, ,, /DoubleEG/Run2016H-18Apr2017-v1/MINIAOD,dbs,,2,PD=DoubleEle;PROCESS_CR=True;KINREFIT=True;ADDZTREE=True,json_2016.py;RecoProbabilities.py,
+MuonEG2016H,,   -1, ,, /MuonEG/Run2016H-18Apr2017-v1/MINIAOD,dbs,,2,PD=MuEG;PROCESS_CR=True;KINREFIT=True;ADDZTREE=True,json_2016.py;RecoProbabilities.py,
+SingleEle2016H,,-1, ,, /SingleElectron/Run2016H-18Apr2017-v1/MINIAOD,dbs,,5,PD=SingleElectron;PROCESS_CR=True;KINREFIT=True;ADDZTREE=True,json_2016.py;RecoProbabilities.py,
+SingleMuon2016H,,-1,,, /SingleMuon/Run2016H-18Apr2017-v1/MINIAOD,dbs,,5,PD=SingleMuon;PROCESS_CR=True;KINREFIT=True;ADDZTREE=True,json_2016.py;RecoProbabilities.py,
 
 

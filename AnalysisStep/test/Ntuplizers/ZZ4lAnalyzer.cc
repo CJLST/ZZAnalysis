@@ -37,7 +37,7 @@
 #include <ZZAnalysis/AnalysisStep/interface/DaughterDataHelpers.h>
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
 #include <ZZAnalysis/AnalysisStep/interface/MCHistoryTools.h>
-#include <ZZAnalysis/AnalysisStep/interface/PUReweight.h>
+#include <ZZAnalysis/AnalysisStep/interface/PileUpWeight.h>
 #include <ZZAnalysis/AnalysisStep/interface/Fisher.h>
 #include "ZZ4lConfigHelper.h"
 #include <boost/lexical_cast.hpp>
@@ -75,7 +75,8 @@ namespace {
 class ZZ4lAnalyzer: public edm::EDAnalyzer {
 public:
 
-  ZZ4lAnalyzer(const edm::ParameterSet& pset);
+  explicit ZZ4lAnalyzer(const edm::ParameterSet& pset);
+  ~ZZ4lAnalyzer();
   
   void analyze(const edm::Event & event, const edm::EventSetup& eventSetup);
   void endLuminosityBlock(const edm::LuminosityBlock &, const edm::EventSetup&);
@@ -92,7 +93,7 @@ private:
   bool dumpMC;
   Float_t GenZZMass;
   Float_t genHEPMCweight;
-  PUReweight reweight;
+  PileUpWeight* pileUpReweight;
 
   TH2F* corrSigmaMu;
   TH2F* corrSigmaEle;
@@ -194,7 +195,7 @@ ZZ4lAnalyzer::ZZ4lAnalyzer(const ParameterSet& pset) :
   dumpMC(pset.getUntrackedParameter<bool>("dumpMC",false)),
   GenZZMass(0.),
   genHEPMCweight(0.),
-  reweight(),
+  pileUpReweight(nullptr),
   Nevt_Gen(0),
   gen_ZZ4e(0),
   gen_ZZ4mu(0),
@@ -227,8 +228,13 @@ ZZ4lAnalyzer::ZZ4lAnalyzer(const ParameterSet& pset) :
   preSkimToken = consumes<edm::MergeableCounter,edm::InLumi>(edm::InputTag("preSkimCounter"));
 
   isMC = myHelper.isMC();
+  if (isMC) pileUpReweight = new PileUpWeight(myHelper.sampleType(), myHelper.setup());
 }
 
+ZZ4lAnalyzer::~ZZ4lAnalyzer()
+{
+  delete pileUpReweight;
+}
 
 void ZZ4lAnalyzer::beginJob(){
   // Book some control histograms
@@ -450,9 +456,7 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
       } 
     }
 
-    int source = myHelper.sampleType();
-    int target = myHelper.setup();
-    PUweight = reweight.weight(source,target,nTrueInt);
+    PUweight = pileUpReweight->weight(nTrueInt);
 
     hNvtxWeight->Fill(Nvtx,PUweight);
     hNTrueIntWeight->Fill(nTrueInt,genHEPMCweight);

@@ -128,10 +128,8 @@ elif (SAMPLE_TYPE == 2015) :
 elif (SAMPLE_TYPE == 2016):
     if IsMC:
         process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_TrancheIV_v8', '')
-    elif (DATA_TAG == "ReReco"):
+    else:
         process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_2016SeptRepro_v7', '')
-    elif (DATA_TAG == "PromptReco"):
-        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_Prompt_v16', '')
 
 elif (SAMPLE_TYPE == 2017): 
     if IsMC:
