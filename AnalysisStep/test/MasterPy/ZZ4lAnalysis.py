@@ -1340,7 +1340,7 @@ if (LEPTON_SETUP == 2017):
 
 if (LEPTON_SETUP == 2018): #[FIXME] Update to 2018 when available
     process.dressedJets.bTaggerName = cms.string("pfDeepCSVJetTags:probb") #Moving to Moriond18 new recommended DeepCSV btagger
-    process.dressedJets.bTaggerThreshold = cms.double(0.4941) #https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+    process.dressedJets.bTaggerThreshold = cms.double(0.4184) #https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X
     process.dressedJets.bTagSFFile =  cms.string("ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_94XSF_V1_B_F.csv")
     process.dressedJets.bTagMCEffFile  = cms.string("ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_94X_Moriond18_v1.root")
 
