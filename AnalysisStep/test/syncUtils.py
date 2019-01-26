@@ -19,7 +19,7 @@ class Candidate:
     def __init__(self, treeEntry, options) :
         self.lib = CDLL('libZZAnalysisAnalysisStep.so')
 
-	isMC = False
+        isMC = False
         if treeEntry.GetBranch("genHEPMCweight") :
             isMC = True
 
@@ -85,8 +85,8 @@ class Candidate:
         self.jet2qgl     = -1.
         self.fillJetInfo()
 
-	if options.synchMode == 'HZZ' :
-	    self.computeKDs(treeEntry)
+        if options.synchMode == 'HZZ' :
+            self.computeKDs(treeEntry)
 		
 #	    # ICHEP2016 categories
 #	    self.category    = CDLL('libZZAnalysisAnalysisStep.so').categoryIchep16(
@@ -107,30 +107,33 @@ class Candidate:
 #	        c_bool(False)
 #	        )
 		
-	    # Moriond2017 categories
-	    self.category    = self.lib.categoryMor18(
-	        c_int(self.nExtraLep),
-	        c_int(self.nExtraZ),
-	        c_int(self.njets30),
-	        c_int(self.njets30Btag),
-	        (c_float * len(self.jets30QGLikelihood))(*self.jets30QGLikelihood),
-	        c_float(treeEntry.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal),
-	        c_float(treeEntry.p_JQCD_SIG_ghg2_1_JHUGen_JECNominal),
-	        c_float(treeEntry.p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal),
-	        c_float(treeEntry.p_JVBF_SIG_ghv1_1_JHUGen_JECNominal),
-	        c_float(treeEntry.pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal),
-	        c_float(treeEntry.p_HadWH_SIG_ghw1_1_JHUGen_JECNominal),
-	        c_float(treeEntry.p_HadZH_SIG_ghz1_1_JHUGen_JECNominal),
-			  c_float(treeEntry.p_HadWH_mavjj_JECNominal),
-			  c_float(treeEntry.p_HadWH_mavjj_true_JECNominal),
-			  c_float(treeEntry.p_HadZH_mavjj_JECNominal),
-			  c_float(treeEntry.p_HadZH_mavjj_true_JECNominal),
-	        (c_float * len(self.jets30phi))(*self.jets30phi),
-	        c_float(self.ZZMass),
-	        c_float(self.pfMet),
-	        c_bool(True), #useVHMETTagged
-	        c_bool(False) #useQGTagging
-	        )
+#       # Moriond2017 categories
+#       self.category    = self.lib.categoryMor18(
+#           c_int(self.nExtraLep),
+#           c_int(self.nExtraZ),
+#           c_int(self.njets30),
+#           c_int(self.njets30Btag),
+#           (c_float * len(self.jets30QGLikelihood))(*self.jets30QGLikelihood),
+#           c_float(treeEntry.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal),
+#           c_float(treeEntry.p_JQCD_SIG_ghg2_1_JHUGen_JECNominal),
+#           c_float(treeEntry.p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal),
+#           c_float(treeEntry.p_JVBF_SIG_ghv1_1_JHUGen_JECNominal),
+#           c_float(treeEntry.pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal),
+#           c_float(treeEntry.p_HadWH_SIG_ghw1_1_JHUGen_JECNominal),
+#           c_float(treeEntry.p_HadZH_SIG_ghz1_1_JHUGen_JECNominal),
+#           c_float(treeEntry.p_HadWH_mavjj_JECNominal),
+#           c_float(treeEntry.p_HadWH_mavjj_true_JECNominal),
+#           c_float(treeEntry.p_HadZH_mavjj_JECNominal),
+#           c_float(treeEntry.p_HadZH_mavjj_true_JECNominal),
+#           (c_float * len(self.jets30phi))(*self.jets30phi),
+#           c_float(self.ZZMass),
+#           c_float(self.pfMet),
+#           c_bool(True), #useVHMETTagged
+#           c_bool(False) #useQGTagging
+#           )
+
+     # RunIILegacy categories
+        self.category = 0
 
     def D(self,sig,bg):
         return sig/(sig+bg)
@@ -140,6 +143,8 @@ class Candidate:
 
         self.D_bkg_kin     = -1.
         self.D_bkg         = -1.
+        self.D_bkg_VBFdec  = -1.
+        self.D_bkg_VHdec   = -1.
         self.D_g4          = -1.
         self.Dbkg          = -1.
         self.KD_pseudo     = -1.
@@ -148,10 +153,10 @@ class Candidate:
         self.KD_psvec      = -1.
         self.KD_gggrav     = -1.
         self.KD_qqgrav     = -1.
-        self.D_VBF2j_VAJHU = -1.
-        self.D_WHh_VAJHU   = -1.
-        self.D_ZHh_VAJHU   = -1.
-        self.D_VBF1j_VAJHU = -1.
+        self.D_VBF2j       = -1.
+        self.D_WHh         = -1.
+        self.D_ZHh         = -1.
+        self.D_VBF1j       = -1.
         self.Dfull_VBF2j   = -1.
         self.Dfull_WHh     = -1.
         self.Dfull_ZHh     = -1.
@@ -161,6 +166,8 @@ class Candidate:
         lib=self.lib
         lib.D_bkg_kin.restype = c_float
         lib.D_bkg.restype = c_float
+        lib.D_bkg_VBFdec.restype = c_float
+        lib.D_bkg_VHdec.restype = c_float
         lib.D_g4.restype = c_float
         lib.getDbkgConstant.restype = c_float
         lib.DVBF2j_ME.restype = c_float
@@ -188,24 +195,28 @@ class Candidate:
         self.KD_qqgrav  = self.D(treeEntry.p_GG_SIG_ghg2_1_ghz1_1_JHUGen, treeEntry.p_QQB_SIG_XqqLR_1_gXz1_1_gXz5_1_JHUGen)
         ##MELA-only production discriminants:
         if self.njets30 >= 2 :
-            self.D_VBF2j_VAJHU = lib.DVBF2j_ME(
+            self.D_VBF2j = lib.DVBF2j_ME(
                 c_float(treeEntry.p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal),
                 c_float(treeEntry.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal),
                 c_float(self.ZZMass))
-            self.D_WHh_VAJHU = lib.DWHh_ME(
+            self.D_WHh = lib.DWHh_ME(
                 c_float(treeEntry.p_HadWH_SIG_ghw1_1_JHUGen_JECNominal),
                 c_float(treeEntry.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal),
 					 c_float(treeEntry.p_HadWH_mavjj_JECNominal),
 					 c_float(treeEntry.p_HadWH_mavjj_true_JECNominal),
                 c_float(self.ZZMass))
-            self.D_ZHh_VAJHU = lib.DZHh_ME(
+            self.D_ZHh = lib.DZHh_ME(
                 c_float(treeEntry.p_HadZH_SIG_ghz1_1_JHUGen_JECNominal),
                 c_float(treeEntry.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal),
 				    c_float(treeEntry.p_HadZH_mavjj_JECNominal),
 					 c_float(treeEntry.p_HadZH_mavjj_true_JECNominal),
                 c_float(self.ZZMass))
+
+            self.D_bkg_VBFdec = lib.D_bkg_VBFdec(c_float(treeEntry.p_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal),c_float(treeEntry.p_HadZH_S_SIG_ghz1_1_MCFM_JECNominal),c_float(treeEntry.p_HadWH_S_SIG_ghw1_1_MCFM_JECNominal),c_float(treeEntry.p_JJVBF_BKG_MCFM_JECNominal),c_float(treeEntry.p_HadZH_BKG_MCFM_JECNominal),c_float(treeEntry.p_HadWH_BKG_MCFM_JECNominal),c_float(treeEntry.p_JJQCD_BKG_MCFM_JECNominal),c_float(treeEntry.p_HadZH_mavjj_JECNominal),c_float(treeEntry.p_HadZH_mavjj_true_JECNominal),c_float(treeEntry.p_HadWH_mavjj_JECNominal),c_float(treeEntry.p_HadWH_mavjj_true_JECNominal),c_float(treeEntry.pConst_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal),c_float(treeEntry.pConst_HadZH_S_SIG_ghz1_1_MCFM_JECNominal),c_float(treeEntry.pConst_HadWH_S_SIG_ghw1_1_MCFM_JECNominal),c_float(treeEntry.pConst_JJVBF_BKG_MCFM_JECNominal),c_float(treeEntry.pConst_HadZH_BKG_MCFM_JECNominal),c_float(treeEntry.pConst_HadWH_BKG_MCFM_JECNominal),c_float(treeEntry.pConst_JJQCD_BKG_MCFM_JECNominal),c_int(int(self.ZZFlav)),c_float(self.ZZMass))
+
+            self.D_bkg_VHdec = lib.D_bkg_VBFdec(c_float(treeEntry.p_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal),c_float(treeEntry.p_HadZH_S_SIG_ghz1_1_MCFM_JECNominal),c_float(treeEntry.p_HadWH_S_SIG_ghw1_1_MCFM_JECNominal),c_float(treeEntry.p_JJVBF_BKG_MCFM_JECNominal),c_float(treeEntry.p_HadZH_BKG_MCFM_JECNominal),c_float(treeEntry.p_HadWH_BKG_MCFM_JECNominal),c_float(treeEntry.p_JJQCD_BKG_MCFM_JECNominal),c_float(treeEntry.p_HadZH_mavjj_JECNominal),c_float(treeEntry.p_HadZH_mavjj_true_JECNominal),c_float(treeEntry.p_HadWH_mavjj_JECNominal),c_float(treeEntry.p_HadWH_mavjj_true_JECNominal),c_float(treeEntry.pConst_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal),c_float(treeEntry.pConst_HadZH_S_SIG_ghz1_1_MCFM_JECNominal),c_float(treeEntry.pConst_HadWH_S_SIG_ghw1_1_MCFM_JECNominal),c_float(treeEntry.pConst_JJVBF_BKG_MCFM_JECNominal),c_float(treeEntry.pConst_HadZH_BKG_MCFM_JECNominal),c_float(treeEntry.pConst_HadWH_BKG_MCFM_JECNominal),c_float(treeEntry.pConst_JJQCD_BKG_MCFM_JECNominal),c_int(int(self.ZZFlav)),c_float(self.ZZMass))
         if self.njets30 == 1 :
-            self.D_VBF1j_VAJHU = lib.DVBF1j_ME(
+            self.D_VBF1j = lib.DVBF1j_ME(
                 c_float(treeEntry.p_JVBF_SIG_ghv1_1_JHUGen_JECNominal),
                 c_float(treeEntry.pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal),
                 c_float(treeEntry.p_JQCD_SIG_ghg2_1_JHUGen_JECNominal),
@@ -264,7 +275,7 @@ class Candidate:
 
     def printOut(self, options):
         line = ""
-	if options.synchMode == 'HZZ' :
+        if options.synchMode == 'HZZ' :
             line  += str(int(self.run))
             line  += ":" + str(int(self.lumi))
             line  += ":" + str(int(self.event))
@@ -275,21 +286,23 @@ class Candidate:
 #            line  += ":" + "{0:.2f}".format(self.massErrCorr)
             line  += ":" + "{0:.3f}".format(self.D_bkg_kin)
             line  += ":" + "{0:.3f}".format(self.D_bkg)
-            line  += ":" + "{0:.3f}".format(self.D_VBF2j_VAJHU)
-            line  += ":" + "{0:.3f}".format(self.D_g4)
-            line  += ":" + "{0:.3f}".format(self.D_VBF1j_VAJHU)
-            line  += ":" + "{0:.3f}".format(self.D_WHh_VAJHU)
-            line  += ":" + "{0:.3f}".format(self.D_ZHh_VAJHU)
+#            line  += ":" + "{0:.3f}".format(self.D_g4)
 #            line  += ":" + "{0:.2f}".format(self.pt4l)
             line  += ":" + "{0:d}".format(self.njets30)
             line  += ":" + "{0:.2f}".format(self.jet1pt)
             line  += ":" + "{0:.2f}".format(self.jet2pt)
-            line  += ":" + "{0:.3f}".format(self.jet1qgl)
-            line  += ":" + "{0:.3f}".format(self.jet2qgl)
-            line  += ":" + "{0:.3f}".format(self.Dfull_VBF2j)
-            line  += ":" + "{0:.3f}".format(self.Dfull_VBF1j)
-            line  += ":" + "{0:.3f}".format(self.Dfull_WHh)
-            line  += ":" + "{0:.3f}".format(self.Dfull_ZHh)
+#            line  += ":" + "{0:.3f}".format(self.jet1qgl)
+#            line  += ":" + "{0:.3f}".format(self.jet2qgl)
+            line  += ":" + "{0:.3f}".format(self.D_bkg_VBFdec)
+            line  += ":" + "{0:.3f}".format(self.D_bkg_VHdec)
+            line  += ":" + "{0:.3f}".format(self.D_VBF2j)
+            line  += ":" + "{0:.3f}".format(self.D_VBF1j)
+            line  += ":" + "{0:.3f}".format(self.D_WHh)
+            line  += ":" + "{0:.3f}".format(self.D_ZHh)
+#            line  += ":" + "{0:.3f}".format(self.Dfull_VBF2j)
+#            line  += ":" + "{0:.3f}".format(self.Dfull_VBF1j)
+#            line  += ":" + "{0:.3f}".format(self.Dfull_WHh)
+#            line  += ":" + "{0:.3f}".format(self.Dfull_ZHh)
 #            line  += ":" + "{0:.2f}".format(self.mjj)
 #            line  += ":" + "{0:.3f}".format(self.detajj)
 #            line  += ":" + "{0:.3f}".format(self.fishjj)
@@ -305,15 +318,15 @@ class Candidate:
                 line  += ":" + "{0:.2f}".format(self.m4lRefitErr)
                 line  += ":" + "{0:.3f}".format(self.weight)
 
-	if options.synchMode == 'VBS' :
+        if options.synchMode == 'VBS' :
             line  += str(int(self.run))
             line  += ":" + str(int(self.lumi))
             line  += ":" + str(int(self.event))
-	    channel = ''
-	    if self.ZZFlav == 11**4 : channel = 'eeee'
-	    if self.ZZFlav == 11**2*13**2 : channel = 'eemm'
-	    if self.ZZFlav == 13**4 : channel = 'mmmm'
-	    line  += ":%s"%channel
+            channel = ''
+            if self.ZZFlav == 11**4 : channel = 'eeee'
+            if self.ZZFlav == 11**2*13**2 : channel = 'eemm'
+            if self.ZZFlav == 13**4 : channel = 'mmmm'
+            line  += ":%s"%channel
             line  += ":{0:.2f}".format(self.ZZMass)
             line  += ":" + "{0:.2f}".format(self.Z1Mass)
             line  += ":" + "{0:.2f}".format(self.Z2Mass)

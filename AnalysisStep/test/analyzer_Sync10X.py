@@ -8,7 +8,7 @@ APPLYJEC = False     #
 APPLYJER = False     #
 RECORRECTMET = False #
 KINREFIT = False    # control KinZFitter (very slow)
-PROCESS_CR = False   # Uncomment to run CR paths and trees
+PROCESS_CR = True   # Uncomment to run CR paths and trees
 #ADDLOOSEELE = True  # Run paths for loose electrons
 APPLYTRIG = False    # Skip events failing required triggers. They are stored with sel<0 if set to False 
 #KEEPLOOSECOMB = True # Do not skip loose lepton ZZ combinations (for debugging)
@@ -92,8 +92,8 @@ process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
         ZZ  = cms.InputTag("ZZCand"),
 #        ZZRSE     = cms.InputTag("ZZCandlooseEle"),
 #        ZZTLE     = cms.InputTag("ZZCandtle"),
-#        ZLL  = cms.InputTag("ZLLCand"),
-#        ZL  = cms.InputTag("ZlCand"),
+        ZLL  = cms.InputTag("ZLLCand"),
+        ZL  = cms.InputTag("ZlCand"),
      ),
      jetSrc = cms.InputTag("cleanJets"),
 )
