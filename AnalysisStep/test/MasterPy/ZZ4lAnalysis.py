@@ -1514,7 +1514,7 @@ if FSRMODE=="Legacy" :
 ### Missing ET
 ### ----------------------------------------------------------------------
 
-metTag = cms.InputTag("slimmedMETsMuEGClean")
+metTag = cms.InputTag("slimmedMETs")
 
 ### Recorrect MET, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription#Instructions_for_8_0_X_X_26_patc
 if (RECORRECTMET and SAMPLE_TYPE == 2016):
@@ -1613,6 +1613,7 @@ if (RECORRECTMET and SAMPLE_TYPE == 2017):
         process.MET = cms.Path(process.fullPatMetSequenceModifiedMET)
     else:
         process.MET = cms.Path(process.fullPatMetSequenceModifiedMET)
+
 
 
 ### ----------------------------------------------------------------------
