@@ -19,7 +19,6 @@
 #include <ZZAnalysis/AnalysisStep/interface/CutSet.h>
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
 
-#include "EgammaAnalysis/ElectronTools/interface/EGammaMvaEleEstimatorCSA14.h"
 #include "EgammaAnalysis/ElectronTools/interface/EnergyScaleCorrection_class.h"
 
 #include <vector>
@@ -52,12 +51,10 @@ class EleFiller : public edm::EDProducer {
   const CutSet<pat::Electron> flags;
   edm::EDGetTokenT<double> rhoToken;
   edm::EDGetTokenT<vector<Vertex> > vtxToken;
-  //EGammaMvaEleEstimatorCSA14* myMVATrig;
   EDGetTokenT<ValueMap<float> > BDTValueMapToken;
   string correctionFile;
   EnergyScaleCorrection_class *eScaler;
   TRandom3 rgen_;
-  bool recomputeBDT; //true = pick BDT from VID; false = from existing userfloat
 };
 
 
@@ -67,19 +64,14 @@ EleFiller::EleFiller(const edm::ParameterSet& iConfig) :
   setup(iConfig.getParameter<int>("setup")),
   cut(iConfig.getParameter<std::string>("cut")),
   flags(iConfig.getParameter<ParameterSet>("flags")),
-  //myMVATrig(0),
   correctionFile(iConfig.getParameter<std::string>("correctionFile")),
-  rgen_(0),
-  recomputeBDT(true)
+  rgen_(0)
 {
   rhoToken = consumes<double>(LeptonIsoHelper::getEleRhoTag(sampleType, setup));
   vtxToken = consumes<vector<Vertex> >(edm::InputTag("goodPrimaryVertices"));
 
-  if (setup==2018) recomputeBDT=false;
+  BDTValueMapToken = consumes<ValueMap<float> >(iConfig.getParameter<InputTag>("mvaValuesMap"));
 
-  if (recomputeBDT) {
-    BDTValueMapToken = consumes<ValueMap<float> >(iConfig.getParameter<InputTag>("mvaValuesMap"));
-  }
   produces<pat::ElectronCollection>();
 	
  // Initialize scale correction class
@@ -107,9 +99,7 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByToken(vtxToken,vertices);
 
   Handle<ValueMap<float> > BDTValues;
-  if (recomputeBDT) {
-    iEvent.getByToken(BDTValueMapToken, BDTValues);
-  }
+  iEvent.getByToken(BDTValueMapToken, BDTValues);
 
   // Output collection
   auto result = std::make_unique<pat::ElectronCollection>();
@@ -148,24 +138,13 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       dz  = fabs(l.gsfTrack()->dz(vertex->position()));
     } 
 
-    
+	  
     // RunII BDT ID
     float BDT = 0.;
-    if (recomputeBDT) {
-
-      //BDT running VID
-      BDT = (*BDTValues)[(*electronHandle)[i]];
-
-    } else {
-
-      if (setup==2018) {
-	BDT = l.userFloat("ElectronMVAEstimatorRun2Fall17IsoV1Values");
-      } else {
-	//Spring15 BDT taking the userfloat (possible as of MiniAODv2 of 74X)
-	BDT = l.userFloat("ElectronMVAEstimatorRun2Spring15NonTrig25nsV1Values");
-      }
-
-    }
+	
+	//BDT running VID
+	 BDT = (*BDTValues)[(*electronHandle)[i]];
+	//cout << "BDT = " << (*BDTValues)[(*electronHandle)[i]] << endl;
     
     float pt = l.pt();
 
@@ -199,31 +178,30 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  
     bool isBDT;
 	  
-	 #if CMSSW_VERSION_MAJOR < 9
+	 if (setup==2016){
 	 //WP for preliminary 8X ID BDT
-    isBDT         = (pt<=10 && ((fSCeta<0.8                  && BDT > -0.211) ||
-                                (fSCeta>=0.8 && fSCeta<1.479 && BDT > -0.396) ||
-                                (fSCeta>=1.479               && BDT > -0.215))) 
-                 || (pt>10  && ((fSCeta<0.8                  && BDT > -0.870) ||
-                                (fSCeta>=0.8 && fSCeta<1.479 && BDT > -0.838) || 
-                                (fSCeta>=1.479               && BDT > -0.763)));
-	 #else
-	 //WP for 94X ID with isolation
-//	 isBDT         = (pt<=10 && ((fSCeta<0.8                  && BDT >  0.6282314508618512) ||
-//                                (fSCeta>=0.8 && fSCeta<1.479 && BDT >  0.5922759800216235) ||
-//                                (fSCeta>=1.479               && BDT >  0.636928856343224)))
-//                 || (pt>10  && ((fSCeta<0.8                  && BDT >  0.03554496382023676) ||
-//                                (fSCeta>=0.8 && fSCeta<1.479 && BDT >  0.04342450751424789) ||
-//                                (fSCeta>=1.479               && BDT > -0.2660000237162611)));
+    	isBDT         = (pt<=10 && ((fSCeta<0.8                  && BDT > -0.211) ||
+                                  (fSCeta>=0.8 && fSCeta<1.479 && BDT > -0.396) ||
+                                  (fSCeta>=1.479               && BDT > -0.215)))
+                 	 || (pt>10  && ((fSCeta<0.8                  && BDT > -0.870) ||
+                                  (fSCeta>=0.8 && fSCeta<1.479 && BDT > -0.838) ||
+                                  (fSCeta>=1.479               && BDT > -0.763)));
+	}
 
-	//WP for 94X ID V2 with isolation
-	 isBDT         = (pt<=10 && ((fSCeta<0.8                  && BDT >  0.5739521065342641) ||
-                                (fSCeta>=0.8 && fSCeta<1.479 && BDT >  0.5504628790992929) ||
-                                (fSCeta>=1.479               && BDT >  0.5924627534389098)))
-                 || (pt>10  && ((fSCeta<0.8                  && BDT > -0.03391387993354392) ||
-                                (fSCeta>=0.8 && fSCeta<1.479 && BDT > -0.018451958064666783) ||
-                                (fSCeta>=1.479               && BDT > -0.38565459150737535)));
-	 #endif
+	else if (setup==2017 || setup==2018)
+	{
+	  //WP taken from https://github.com/cms-sw/cmssw/blob/master/RecoEgamma/ElectronIdentification/python/Identification/mvaElectronID_Fall17_iso_V2_cff.py#L21 
+	 	isBDT         = (pt<=10 && ((fSCeta<0.8                  && BDT >  1.26402092475) ||
+                                  (fSCeta>=0.8 && fSCeta<1.479 && BDT >  1.17808089508) ||
+                                  (fSCeta>=1.479               && BDT >  1.33051972806)))
+                 	 || (pt>10  && ((fSCeta<0.8                  && BDT >  2.36464785939) ||
+                                  (fSCeta>=0.8 && fSCeta<1.479 && BDT >  2.07880614597) ||
+                                  (fSCeta>=1.479               && BDT >  1.08080644615)));
+	}
+	else
+	{
+		std::cerr << "[ERROR] EleFiller: no BDT setup for: " << setup << " year!" << std::endl;
+	}
 
     //-- Missing hit  
 	 int missingHit;
@@ -269,8 +247,8 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 sigma_phi_up= eScaler->getSmearingSigma(iEvent.id().run(), l.isEB(), l.full5x5_r9(), l.superCluster()->eta(), l.correctedEcalEnergy() / cosh(l.superCluster()->eta()), 12, 0., 1.);
 	 
 	 smear_err_up = 1. + sqrt( pow(( 1. - rgen_.Gaus(1, sigma_rho_up)),2) + pow(( 1. - rgen_.Gaus(1, sigma_phi_up)),2));
-         #else
-         scaleErr= ( 1. );
+	 #else
+	 scaleErr= ( 1. );
 	 //You have to vary nSigma rho and nSigma phi to get the modified sigma (the quoted sigma has 2 independent components: rho and phi)
 	 //0,0 for the nominal sigma
 	 //1, 0 for 1 "sigma" up in rho

@@ -168,11 +168,11 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     int NumNeutralParticles = j.neutralMultiplicity();
     float CHM  = j.chargedMultiplicity();
 
-    bool looseJetID = true;
+    bool JetID = true;
 	  
-	 if (setup <= 2016)
+	 if (setup == 2016)
 	 {
-	 	looseJetID = ((NHF<0.99 && NEMF<0.99 && NumConst>1) && ((jabseta<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || jabseta>2.4) && jabseta<=2.7) ||
+	 	JetID      = ((NHF<0.99 && NEMF<0.99 && NumConst>1) && ((jabseta<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || jabseta>2.4) && jabseta<=2.7) ||
       				 ( NHF<0.98 && NEMF>0.01 && NumNeutralParticles>2 && jabseta>2.7 && jabseta<=3.0 ) ||
 						 ( NEMF<0.90 && NumNeutralParticles>10 && jabseta>3.0 );
 	 }
@@ -180,7 +180,15 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 else if (setup == 2017 || setup == 2018)
 	 {
 	   // Tight jet ID https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2017 , loose is not recommended anymore
-	 	looseJetID = ((NHF<0.90 && NEMF<0.90 && NumConst>1) && ((jabseta<=2.4 && CHF>0 && CHM>0) || jabseta>2.4) && jabseta<=2.7) ||
+	 	JetID      = ((NHF<0.90 && NEMF<0.90 && NumConst>1) && ((jabseta<=2.4 && CHF>0 && CHM>0) || jabseta>2.4) && jabseta<=2.7) ||
+      				 ( NEMF<0.99 && NEMF>0.02 && NumNeutralParticles>2 && jabseta>2.7 && jabseta<=3.0 ) ||
+      				 ( NEMF<0.90 && NHF>0.02 && NumNeutralParticles>10 && jabseta>3.0 );
+	 }
+	 
+	 else if ( setup == 2018) //[FIXME] Update to 2018 recommendations when available
+	 {
+	   // Tight jet ID https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2017 , loose is not recommended anymore
+	 	JetID      = ((NHF<0.90 && NEMF<0.90 && NumConst>1) && ((jabseta<=2.4 && CHF>0 && CHM>0) || jabseta>2.4) && jabseta<=2.7) ||
       				 ( NEMF<0.99 && NEMF>0.02 && NumNeutralParticles>2 && jabseta>2.7 && jabseta<=3.0 ) ||
       				 ( NEMF<0.90 && NHF>0.02 && NumNeutralParticles>10 && jabseta>3.0 );
 	 }
@@ -194,12 +202,12 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  
    bool PUjetID = true;
 	  
-	 if (setup <= 2016)
+	 if (setup == 2016)
 	 { //--- PU jet ID (deactivated for in 2016)
 	 	PUjetID = true;
 	 }
 	 
-	 else if (setup == 2017 || setup == 2018)
+	 else if (setup == 2017 || setup == 2018)//[FIXME] Update to 2018 recommendations when available
 	 { //Recommended tight PU JET ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
 		PUjetID = bool(j.userInt("pileupJetId:fullId") & (1 << 0));
 	 }
@@ -216,7 +224,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     //      << " NumConst " << NumConst
     //      << " NumNeutralParticles " << NumNeutralParticles
     //      << " CHM " << CHM
-    //      << " looseJetID " << looseJetID
+    //      << " JetID " << JetID
     //      << endl;
 
     //--- b-tagging and scaling factors
@@ -321,7 +329,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     j.addUserFloat("jec_unc", jec_unc);
     j.addUserFloat("pt_jerup", pt_jerup);
     j.addUserFloat("pt_jerdn", pt_jerdn);
-    j.addUserFloat("looseJetID",looseJetID);
+    j.addUserFloat("looseJetID",JetID);
     j.addUserFloat("PUjetID",PUjetID);
     j.addUserFloat("bTagger",bTagger);
     j.addUserFloat("isBtagged",isBtagged);

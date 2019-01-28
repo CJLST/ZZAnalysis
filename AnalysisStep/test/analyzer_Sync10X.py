@@ -3,12 +3,12 @@
 LEPTON_SETUP = 2018  # current default = 2018 
 ELECORRTYPE = "None" # "None" to switch off
 ELEREGRESSION = "None" # "None" to switch off
-APPLYMUCORR = True  # Switch off muon scale corrections
+APPLYMUCORR = False  # Switch off muon scale corrections
 APPLYJEC = False     #
 APPLYJER = False     #
 RECORRECTMET = False #
 KINREFIT = False    # control KinZFitter (very slow)
-PROCESS_CR = False   # Uncomment to run CR paths and trees
+PROCESS_CR = True   # Uncomment to run CR paths and trees
 #ADDLOOSEELE = True  # Run paths for loose electrons
 APPLYTRIG = False    # Skip events failing required triggers. They are stored with sel<0 if set to False 
 #KEEPLOOSECOMB = True # Do not skip loose lepton ZZ combinations (for debugging)
@@ -18,8 +18,8 @@ PD = ""
 MCFILTER = ""
 
 #For DATA: 
-IsMC = False
-PD = "DoubleMu"
+#IsMC = False
+#PD = "DoubleMu"
 
 # Get absolute path
 import os
@@ -42,15 +42,16 @@ if not IsMC:
 process.source.fileNames = cms.untracked.vstring(
 
 
-### Moriond 18 sync files
+### Moriond 19 sync files
     ## Low mass
-#    '/store/mc/RunIIFall17MiniAOD/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/MINIAODSIM/94X_mc2017_realistic_v10-v1/40000/205E2EB6-2600-E811-A8D9-A0369FC5E090.root',
-#    '/store/mc/RunIIFall17MiniAOD/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/MINIAODSIM/94X_mc2017_realistic_v10-v2/00000/E8505BB6-5F07-E811-B009-002590DE6E88.root',
-#    '/store/mc/RunIIFall17MiniAOD/WminusH_HToZZTo4L_M125_13TeV_powheg2-minlo-HWJ_JHUGenV7011_pythia8/MINIAODSIM/94X_mc2017_realistic_v10-v1/10000/80B92986-8501-E811-99BB-002590200900.root'
+    '/store/mc/RunIIAutumn18MiniAOD/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/MINIAODSIM/102X_upgrade2018_realistic_v15-v2/270000/E5E2F122-AA57-5248-8177-594EC87DD494.root',
+    '/store/mc/RunIIAutumn18MiniAOD/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/MINIAODSIM/102X_upgrade2018_realistic_v15-v2/90000/96A5F68D-DCB8-3D4E-8615-919D86D1534F.root',
+    '/store/mc/RunIIAutumn18MiniAOD/ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8/MINIAODSIM/102X_upgrade2018_realistic_v15-v2/60000/19B6ADC2-4F62-AA4D-9488-F53CE2936856.root'
+
 
 
 ###Run2018A-v3 
-     '/store/data/Run2018A/DoubleMuon/MINIAOD/PromptReco-v3/000/316/569/00000/0CBC961D-6264-E811-B36E-FA163E4C1970.root'
+#     '/store/data/Run2018A/DoubleMuon/MINIAOD/PromptReco-v3/000/316/569/00000/0CBC961D-6264-E811-B36E-FA163E4C1970.root'
     )
 
 #process.calibratedPatElectrons.isSynchronization = cms.bool(True)
@@ -91,8 +92,8 @@ process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
         ZZ  = cms.InputTag("ZZCand"),
 #        ZZRSE     = cms.InputTag("ZZCandlooseEle"),
 #        ZZTLE     = cms.InputTag("ZZCandtle"),
-#        ZLL  = cms.InputTag("ZLLCand"),
-#        ZL  = cms.InputTag("ZlCand"),
+        ZLL  = cms.InputTag("ZLLCand"),
+        ZL  = cms.InputTag("ZlCand"),
      ),
      jetSrc = cms.InputTag("cleanJets"),
 )

@@ -100,7 +100,7 @@ for filename in "samples_{year}_MC.csv", "samples_{year}_MC_anomalous.csv":
         if not dasoutput:
           isok = False
 
-          if datetime.date.today() < datetime.date(2019, 1, 1):
+          if datetime.date.today() < datetime.date(2019, 2, 1):
             #GEN approved but not submitted yet
             match = re.match("GluGluHToZZTo4L_M([0-9]+)_13TeV_powheg2_JHUGenV7011_pythia8", datasetparts[1])
             if match and int(match.group(1)) >= 145: isok = True
@@ -113,12 +113,9 @@ for filename in "samples_{year}_MC.csv", "samples_{year}_MC_anomalous.csv":
             if datasetparts[1] in (
               "ttH_HToZZ_4LFilter_M145_13TeV_powheg2_JHUGenV7011_pythia8",
               "ttH_HToZZ_4LFilter_M125_13TeV_tunedown_powheg2_JHUGenV7011_pythia8",
-              "WminusH_HToZZTo4L_M125_13TeV_tunedown_powheg2-minlo-HWJ_JHUGenV7011_pythia8",
               "WminusH_HToZZTo4L_M125_13TeV_tuneup_powheg2-minlo-HWJ_JHUGenV7011_pythia8",
               "ZZJJTo4L_EWK_TuneCP5_13TeV-madgraph-pythia8",
               "ZZJJTo4L_QCD_TuneCP5_13TeV-madgraph-pythia8",
-              "GluGluToContinToZZTo2e2tau_13TeV_MCFM701_pythia8",
-              "ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8",
               "Higgs0PMToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8",
             ): isok = True
 
@@ -149,6 +146,7 @@ for filename in "samples_{year}_MC.csv", "samples_{year}_MC_anomalous.csv":
 
           newdatasetparts = newdataset.split("/")
           if "FlatPU" in newdatasetparts[2]: continue
+          if "ForMUOVal" in newdatasetparts[2]: continue
 
           match = re.match(r"RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15(?:_(ext[0-9]+))?-v[0-9]+$", newdatasetparts[2])
           if not match:

@@ -83,7 +83,7 @@ if SELSETUP=="Legacy" and not BESTCANDCOMPARATOR=="byBestZ1bestZ2":
 ELEISOCUT = 0.35
 MUISOCUT = 0.35
 # In 2017 we move to electron BDT that includes isolation. For now this is implemented in the framework by hacking ELEISOCUT value to a large number because we are maintaining the code for 2016 in paralel. In the future this should be handeled smarter.
-if (LEPTON_SETUP == 2017):
+if (LEPTON_SETUP == 2017 or LEPTON_SETUP == 2018):
 	ELEISOCUT = 99999.
 
 ### ----------------------------------------------------------------------
@@ -128,24 +128,21 @@ elif (SAMPLE_TYPE == 2015) :
 elif (SAMPLE_TYPE == 2016):
     if IsMC:
         process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_TrancheIV_v8', '')
-    elif (DATA_TAG == "ReReco"):
-        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_2016SeptRepro_v7', '')
-    elif (DATA_TAG == "PromptReco"):
-        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_Prompt_v16', '')
+    else:
+        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_2016LegacyRepro_v4', '')
 
 elif (SAMPLE_TYPE == 2017):
     if IsMC:
-        #process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mc2017_realistic_v10', '')
-        process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mc2017_realistic_v14', '') #For JEC
+        process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mc2017_realistic_v14', '')
     else:
-        process.GlobalTag = GlobalTag(process.GlobalTag, '94X_dataRun2_ReReco_EOY17_v6', '') #For 31Mar2018 ReReco
+        process.GlobalTag = GlobalTag(process.GlobalTag, '94X_dataRun2_ReReco_EOY17_v6', '')
 
 elif (SAMPLE_TYPE == 2018):
     if IsMC:
-        process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '102X_mcRun2_asymptotic_v3', '')
     else:
-        process.GlobalTag = GlobalTag(process.GlobalTag, '101X_dataRun2_Prompt_v9', '')
-        #process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_data', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '102X_dataRun2_v4', '')
+
 
 
 print '\t',process.GlobalTag.globaltag
@@ -315,14 +312,13 @@ elif (LEPTON_SETUP == 2017):
    process.triggerSingleMu  = cms.Path(process.hltFilterSingleMu )
 
 ### 2018 triggers - FIXME: to be updated (26/6/18)
-elif (LEPTON_SETUP == 2018):
-   process.hltFilterDiEle.HLTPaths = ["HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_DoubleEle33_CaloIdL_MW_v*"]
-   process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v*"]
-   process.hltFilterMuEle.HLTPaths = ["HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ_v*"]
-   process.hltFilterTriEle.HLTPaths = ["HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v*"]
+   process.hltFilterDiEle.HLTPaths = ["HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_DoubleEle25_CaloIdL_MW_v*"]
+   process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*"]
+   process.hltFilterMuEle.HLTPaths = ["HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ_v*"]
+   process.hltFilterTriEle.HLTPaths = [""]
    process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_10_5_5_DZ_v*","HLT_TripleMu_12_10_5_v*"]
-   process.hltFilterSingleEle.HLTPaths = ["HLT_Ele35_WPTight_Gsf_v*","HLT_Ele38_WPTight_Gsf_v*","HLT_Ele40_WPTight_Gsf_v*"]
-   process.hltFilterSingleMu.HLTPaths = ["HLT_IsoMu27_v*"]
+   process.hltFilterSingleEle.HLTPaths = ["HLT_Ele32_WPTight_Gsf_v*"]
+   process.hltFilterSingleMu.HLTPaths = ["HLT_IsoMu24_v*"]
 
    process.triggerTriEle = cms.Path(process.hltFilterTriEle)
    process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
@@ -662,23 +658,20 @@ if (LEPTON_SETUP == 2017):
        recHitCollectionEE = cms.InputTag('reducedEgamma:reducedEERecHits')
 	)
 
-
 if (BUNCH_SPACING == 50):
     process.calibratedPatElectrons.grbForestName = cms.string("gedelectron_p4combination_50ns")
 
-
-if (LEPTON_SETUP <= 2017) :
-    #--- Set up electron ID (VID framework)
-    from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
-    # turn on VID producer, indicate data format to be DataFormat.MiniAOD, as appropriate
-    dataFormat = DataFormat.MiniAOD
-    switchOnVIDElectronIdProducer(process, dataFormat)
-    # define which IDs we want to produce
-    my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_HZZ_V1_cff']
-    # add them to the VID producer
-    for idmod in my_id_modules:
-        setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
-    # and don't forget to add the producer 'process.egmGsfElectronIDSequence' to the path, i.e. process.electrons
+#--- Set up electron ID (VID framework)
+from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
+# turn on VID producer, indicate data format to be DataFormat.MiniAOD, as appropriate
+dataFormat = DataFormat.MiniAOD
+switchOnVIDElectronIdProducer(process, dataFormat)
+# define which IDs we want to produce
+my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_HZZ_V1_cff','RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_iso_V2_cff']
+# add them to the VID producer
+for idmod in my_id_modules:
+	setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
+# and don't forget to add the producer 'process.egmGsfElectronIDSequence' to the path, i.e. process.electrons
 
 
 process.bareSoftElectrons = cms.EDFilter("PATElectronRefSelector",
@@ -707,7 +700,11 @@ if (LEPTON_SETUP < 2017):
 #94X BDT with ID and Isolation
 if (LEPTON_SETUP == 2017):
 #	process.softElectrons.mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Fall17IsoV1Values")
-   process.softElectrons.mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Fall17IsoV2Values")
+   process.softElectrons.mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Fall17IsoV2RawValues")
+
+#[FIXME] 2018 version of BDT with ID and Isolation
+if (LEPTON_SETUP == 2018):
+   process.softElectrons.mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Fall17IsoV2RawValues")
 
 if (LEPTON_SETUP < 2018):
    process.softElectrons.correctionFile = process.calibratedPatElectrons.correctionFile
@@ -717,14 +714,18 @@ if (LEPTON_SETUP < 2018):
 #process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.bareSoftElectrons + process.softElectrons) # (use this version without VID)
 
 # Handle special cases
-if ELEREGRESSION == "None" and (ELECORRTYPE == "None" or BUNCH_SPACING == 50) :   # No correction at all. Skip correction modules.
-#	 process.bareSoftElectrons.src = cms.InputTag('slimmedElectrons')
-#	 process.electrons = cms.Sequence(process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
+if (ELEREGRESSION == "None" and ELECORRTYPE == "None" ):   # No correction at all. Skip correction modules.
     process.bareSoftElectrons.src = cms.InputTag('selectedSlimmedElectrons')
-    process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.bareSoftElectrons + process.softElectrons)
+    process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('selectedSlimmedElectrons')
+    process.electronMVAVariableHelper.srcMiniAOD =  cms.InputTag('selectedSlimmedElectrons')
+    process.electronMVAValueMapProducer.srcMiniAOD =  cms.InputTag('selectedSlimmedElectrons')
+
+    process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons) # (use this version when running VID)
+
 elif ELECORRTYPE == "RunII" :
-	 process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag("calibratedPatElectrons")
-	 process.electronMVAValueMapProducer.srcMiniAOD=cms.InputTag("calibratedPatElectrons")
+    process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('calibratedPatElectrons')
+    process.electronMVAVariableHelper.srcMiniAOD = cms.InputTag('calibratedPatElectrons')
+    process.electronMVAValueMapProducer.srcMiniAOD= cms.InputTag('calibratedPatElectrons')
 if (ELEREGRESSION == "Moriond17v1" and LEPTON_SETUP == 2016):
 	from EgammaAnalysis.ElectronTools.regressionWeights_cfi import regressionWeights
 	process = regressionWeights(process)
@@ -736,6 +737,10 @@ if (ELEREGRESSION == "Moriond17v1" and LEPTON_SETUP == 2016):
 if (LEPTON_SETUP == 2017): #For the moment regresion is applied on RECO level so no additional procedure is needed https://twiki.cern.ch/twiki/bin/view/CMS/Egamma2017DataRecommendations#Overview_of_E_gamma_Energy_Corre
 	process.selectedSlimmedElectrons.src = cms.InputTag("slimmedElectrons")
 	process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
+
+#if (LEPTON_SETUP == 2018): #Uncomment once 2018 ele corrections become available
+#	process.selectedSlimmedElectrons.src = cms.InputTag("slimmedElectrons")
+#	process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
 
 
 #elif ELEREGRESSION == "None" and ELECORRTYPE == "RunII" :
@@ -1345,6 +1350,17 @@ process.dressedJets = cms.EDProducer("JetFiller",
     bTagMCEffFile = cms.string(theBTagMCEffFile),
     flags = cms.PSet()
     )
+if (LEPTON_SETUP == 2017):
+    process.dressedJets.bTaggerName = cms.string("pfDeepCSVJetTags:probb") #Moving to Moriond18 new recommended DeepCSV btagger
+    process.dressedJets.bTaggerThreshold = cms.double(0.4941) #https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+    process.dressedJets.bTagSFFile =  cms.string("ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_94XSF_V1_B_F.csv")
+    process.dressedJets.bTagMCEffFile  = cms.string("ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_94X_Moriond18_v1.root")
+
+if (LEPTON_SETUP == 2018): #[FIXME] Update to 2018 when available
+    process.dressedJets.bTaggerName = cms.string("pfDeepCSVJetTags:probb") #Moving to Moriond18 new recommended DeepCSV btagger
+    process.dressedJets.bTaggerThreshold = cms.double(0.4184) #https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X
+    process.dressedJets.bTagSFFile =  cms.string("ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_94XSF_V1_B_F.csv")
+    process.dressedJets.bTagMCEffFile  = cms.string("ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_94X_Moriond18_v1.root")
 
 
 ### Load JEC
@@ -1516,7 +1532,7 @@ if FSRMODE=="Legacy" :
 ### Missing ET
 ### ----------------------------------------------------------------------
 
-metTag = cms.InputTag("slimmedMETsMuEGClean")
+metTag = cms.InputTag("slimmedMETs")
 
 ### Recorrect MET, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription#Instructions_for_8_0_X_X_26_patc
 if (RECORRECTMET and SAMPLE_TYPE == 2016):
@@ -1615,6 +1631,7 @@ if (RECORRECTMET and SAMPLE_TYPE == 2017):
         process.MET = cms.Path(process.fullPatMetSequenceModifiedMET)
     else:
         process.MET = cms.Path(process.fullPatMetSequenceModifiedMET)
+
 
 
 ### ----------------------------------------------------------------------

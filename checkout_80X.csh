@@ -8,7 +8,7 @@
 # ${TMPDIR}/checkout_80X.csh
 
 
-############## For CMSSW_8_0_26_patch1
+############## For CMSSW_8_0_29
 git cms-init
 # Preliminary electron scale and smearing corrections according to https://twiki.cern.ch/twiki/bin/view/CMS/EGMSmearer
 #add the repository with the updated Egamma package
@@ -53,7 +53,7 @@ git clone https://github.com/usarica/CommonLHETools.git
 
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
-(cd ZZMatrixElement; git checkout -b from-v217b2 v2.1.7b2)
+(cd ZZMatrixElement; git checkout -b from-v218 v2.1.8)
 # replace ZZMatrixElement/MELA/setup.sh -j 8
 (                                                                 \
   cd ${CMSSW_BASE}/src/ZZMatrixElement/MELA/COLLIER/             ;\

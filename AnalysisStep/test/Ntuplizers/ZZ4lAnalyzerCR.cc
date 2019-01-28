@@ -32,7 +32,7 @@
 
 #include <ZZAnalysis/AnalysisStep/interface/DaughterDataHelpers.h>
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
-#include <ZZAnalysis/AnalysisStep/interface/PUReweight.h>
+#include <ZZAnalysis/AnalysisStep/interface/PileUpWeight.h>
 #include "ZZ4lConfigHelper.h"
 
 
@@ -56,7 +56,8 @@ using namespace reco;
 class ZZ4lAnalyzerCR: public edm::EDAnalyzer {
 public:
 
-  ZZ4lAnalyzerCR(const edm::ParameterSet& pset);
+  explicit ZZ4lAnalyzerCR(const edm::ParameterSet& pset);
+  ~ZZ4lAnalyzerCR();
   
   void analyze(const edm::Event & event, const edm::EventSetup& eventSetup);
   virtual void beginJob();
@@ -69,7 +70,7 @@ private:
   ZZ4lConfigHelper myHelper;
   Channel theChannel;
   bool isMC;
-  PUReweight reweight;
+  PileUpWeight* pileUpReweight;
 
   double weight;
 
@@ -87,7 +88,7 @@ private:
 // Constructor
 ZZ4lAnalyzerCR::ZZ4lAnalyzerCR(const ParameterSet& pset) :
   myHelper(pset),
-  reweight(),
+  pileUpReweight(nullptr),
   weight(1.),
   candToken(consumes<edm::View<pat::CompositeCandidate> >(pset.getUntrackedParameter<edm::InputTag>("candCollection")))
 {
@@ -100,6 +101,12 @@ ZZ4lAnalyzerCR::ZZ4lAnalyzerCR(const ParameterSet& pset) :
 
   triggerResultToken = consumes<edm::TriggerResults>(edm::InputTag("TriggerResults"));
   PupInfoToken = consumes<std::vector<PileupSummaryInfo> >(edm::InputTag("addPileupInfo"));
+  if (isMC) pileUpReweight = new PileUpWeight(myHelper.sampleType(), myHelper.setup());
+}
+
+ZZ4lAnalyzerCR::~ZZ4lAnalyzerCR()
+{
+  delete pileUpReweight;
 }
 
 
@@ -151,9 +158,7 @@ void ZZ4lAnalyzerCR::analyze(const Event & event, const EventSetup& eventSetup){
 	break;
       } 
     }
-    int source = myHelper.sampleType();
-    int target = myHelper.setup();
-    PUweight = reweight.weight(source,target,nTrueInt);
+    PUweight = pileUpReweight->weight(nTrueInt);
   }
   
 

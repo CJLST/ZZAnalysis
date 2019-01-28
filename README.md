@@ -5,7 +5,7 @@ To install a complete CMSSW 8X area (including this package)
 ------------------------------
 2016 data analysis
 
-Please use CMSSW_8_0_26_patch1. 
+Please use CMSSW_8_0_29. 
 
 Download and execute the setup script:
 ```
