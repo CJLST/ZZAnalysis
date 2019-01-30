@@ -7,12 +7,15 @@
 
 #include "TMath.h"
 #include "TRandom3.h"
+#include "TH1F.h"
 
 using namespace std;
 
 #define VERBOSE 1
 
 
+float bins_hpt4[]={0,60,120,200};
+TH1F *hpt_bin=new TH1F("hpt_bin","",3, bins_hpt4);
 
 extern "C" int categoryLegacy( int nCleanedJetsPt30 )
 {
@@ -301,3 +304,113 @@ extern "C" int categoryMor18(
   }
 
 }
+// inputs: Njets, mjj, H_pt, category number returned from categoryMor18 without MET, pt_Hjj, pass a string argument in the last so that it returns you the name of the category 
+extern "C" int stage1_reco_1p1_sync(int Njets, float mjj, float H_pt, int category, float pt_hjj,string &reco_catName){
+	int vbfTopo=0;
+	if (Njets<2) vbfTopo=0; 
+	vbfTopo = mjj > 350.0; 
+	if(category>4 ){
+		switch (category){
+			case 6: reco_catName = "TTH_Had"; break; 
+			case 5: reco_catName = "TTH_Lep"; break; 
+		}
+		return  15+category; 
+	}
+	else if(category==3){
+		if(H_pt<150 ){reco_catName = "VH_Lep_0_150"; return 18;}
+		else {reco_catName = "VH_Lep_GT150"; return 19;}
+	}
+	else if (category ==1){
+		reco_catName = "VBF_1j"; return 10;
+	}
+	else if(category==2){
+		if(vbfTopo){
+			if (H_pt>200 )   {
+				reco_catName = "VBF_GT200_2J"; return 15;
+			}
+			else{
+				if (pt_hjj>25)
+				{reco_catName = "VBF_3j"; return 14;}
+				else{
+					if (mjj > 350 && mjj < 700 ){
+						reco_catName = "VBF_2j_mjj_350_700_2j"; return 12;
+					}
+					else if (mjj > 700 ){
+						reco_catName = "VBF_2j_mjj_GT700_2j"; return 13;
+					}
+				}
+			}
+		}
+		else {
+			reco_catName = "VBF_2j"; return 11;
+		}
+	}
+	else if (category == 4){
+		if ( 60 < mjj && mjj < 120)
+		{reco_catName = "VH_Had"; return 16;}
+		else
+		{reco_catName = "VBF_rest_VH"; return 17;}
+	}
+	else {
+		if (H_pt>200 )   {
+			reco_catName = "ggH_PTH_200"; return 8;
+		}
+		else{
+			if (Njets==0)        {
+				if(H_pt<10)
+				{reco_catName = "ggH_0j_0_10"; return 0;}
+				else
+				{reco_catName = "ggH_0j_10_200"; return 1;}
+			}
+			else if (Njets==1)   {
+				int binpt = hpt_bin->FindBin(H_pt);
+				switch(binpt){
+					case 1: reco_catName = "ggH_1j_0_60"; break;
+					case 2: reco_catName = "ggH_1j_60_120"; break;
+					case 3: reco_catName = "ggH_1j_120_200"; break;
+				}
+				return binpt+1;
+			} 
+			else if ( Njets>=2) {
+				if(vbfTopo) {
+					reco_catName = "ggH_VBF";return 9;
+				}
+				int binpt = hpt_bin->FindBin(H_pt);
+				switch(binpt){
+					case 1: reco_catName = "ggH_2j_0_60"; break;
+					case 2: reco_catName = "ggH_2j_60_120"; break;
+					case 3: reco_catName = "ggH_2j_120_200"; break;
+				}
+				return binpt+4;
+			}
+		}
+	}
+	return -1;
+}
+// stage1p1_reco:
+// ggH_0J_PTH_0_10 =0
+// ggH_0J_PTH_10_200 =1
+// ggH_1J_PTH_0_60 =2
+// ggH_1J_PTH_60_120 =3
+// ggH_1J_PTH_120_200=4
+// ggH_2J_PTH_0_60 =5
+// ggH_2J_PTH_60_120 =6
+// ggH_2J_PTH_120_200=7
+// ggH_PTH_200=8
+// ggH_VBF=9
+
+// VBF_1j = 10;
+// VBF_2j= 11;
+// VBF_2j_mjj_350_700_2j = 12;
+// VBF_2j_mjj_GT700_2j = 13;
+// VBF_2j_mjj_GT350_3j = 14;
+// VBF_GT200_2J = 15;
+
+// VH_Had = 16;
+// VBF_rest_VH =17;
+
+// VH_lep_0_150 =18;
+// VH_Lep_GT150=19;
+
+// ttH_Lep = 20 ;
+// ttH_Hap = 21;
