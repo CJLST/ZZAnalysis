@@ -7,7 +7,7 @@ from utilities import cache, cd
 if not os.path.exists("anomalouscouplingsconstants"):
   subprocess.check_call(["git", "clone", "git@github.com:hroskes/anomalouscouplingsconstants"])
 
-commit = "36d952846228fc7bb555ed935c7b2954eb634fe8"
+commit = "f7b1311913ced69cfdfdc4ebae6179674872b63b"
 
 with cd("anomalouscouplingsconstants"):
   if subprocess.check_output(["git", "rev-parse", "HEAD"]).strip() != commit:
@@ -71,75 +71,73 @@ def SMgenBR(year, process):
   return SMgenxsecBR(year, process)[1]
 
 def JHUxsec(year, process, coupling):
+  with open("../prod/Couplings_ACJHUGen.lst") as f:
+    for line in f:
+      split = line.split("|")
+      if split[0] == process+coupling+"_M125":
+        couplingsfromlst = split[1].split(";")
+        break
+    else:
+      raise ValueError("Didn't find "+process+coupling+"_M125 in ../prod/Couplings_ACJHUGen.lst")
+
   if process == "VBFH": process = "VBF"
 
-  gdecayname = {
-    "0M": "g4",
-    "0Mf05ph0": "g4",
-    "0PH": "g2",
-    "0PHf05ph0": "g2",
-    "0L1": "g1prime2",
-    "0L1f05ph0": "g1prime2",
-    "0L1Zg": "ghzgs1prime2",
-    "0L1Zgf05ph0": "ghzgs1prime2",
-    "0PM": "g4",  #doesn't actually matter but have to set it to something
-  }[coupling]
+  couplingsbrokendown = gglist, ttlist, VVlist = [[], [], []]
+  for coupling in couplingsfromlst:
+    couplingname, couplingval = coupling.split("=")
+    couplingval = complex(*(float(_) for _ in couplingval.split(",")))
+    assert couplingval.imag == 0
+    couplingval = couplingval.real
+    coupling = couplingname, couplingval
+    if couplingname.startswith("ghz"): VVlist.append(coupling)
+    elif couplingname.startswith("ghg"): gglist.append(coupling)
+    elif couplingname.startswith("kappa"): ttlist.append(coupling)
+    else: assert 0, coupling
 
-  if process in ("ggH", "VBF", "ZH", "WH"):
-    decaycoupling = {
-      "0PM":         {"a1": 0                        },
-      "0M":          {                      "a3":   2},
-      "0Mf05ph0":    {"a1": 0, "a1a3":   1, "a3":   2},
-      "0PH":         {                      "a2":   2},
-      "0PHf05ph0":   {"a1": 0, "a1a2":   1, "a2":   2},
-      "0L1":         {                      "L1":   2},
-      "0L1f05ph0":   {"a1": 0, "a1L1":   1, "L1":   2},
-      "0L1Zg":       {                      "L1Zg": 2},
-      "0L1Zgf05ph0": {"a1": 0, "a1L1Zg": 1, "L1Zg": 2},
-    }[coupling]
-  else:
-    decaycoupling = {"a1": 0}
+  decaypart = 0
+  for (coupling1name, coupling1val), (coupling2name, coupling2val) in itertools.combinations_with_replacement(VVlist, 2):
+    if coupling1name == coupling2name:
+      xs = coupling1name
+    else:
+      xs = coupling1name + coupling2name
+    xs = xs.replace("ghz1_prime2", "L1").replace("ghzgs1_prime2", "L1Zg").replace("ghz1", "a1").replace("ghz2", "a2").replace("ghz4", "a3")
+    decaypart += coupling1val * coupling2val * getattr(anomalouscouplingsconstants, "JHUXSHZZ4l"+xs)
+  decaypart /= anomalouscouplingsconstants.JHUXSHZZ4la1
 
-  if process == "ggH":
-    prodcoupling = None
-  elif process in ("VBF", "ZH", "WH"):
-    prodSMcoupling = "a1"
-    prodcoupling = decaycoupling
-    gprodname = gdecayname
-  elif process == "HJJ":
-    prodSMcoupling = "a2"
-    prodcoupling = {
-      "0PM":         {"a2": 0                    },
-      "0M":          {                    "a3": 2},
-      "0Mf05ph0":    {"a2": 0, "a2a3": 1, "a3": 2},
-    }[coupling]
-    gprodname = "ghg4"
-  elif process == "ttH":
-    prodSMcoupling = "kappa"
-    prodcoupling = {
-      "0PM":         {"kappa": 0                                       },
-      "0M":          {                                  "kappatilde": 2},
-      "0Mf05ph0":    {"kappa": 0, "kappakappatilde": 1, "kappatilde": 2},
-    }[coupling]
-    gprodname = "kappa_tilde_"
-
-  if process in ("ggH", "ttH", "HJJ"):
-    gdecay = getattr(anomalouscouplingsconstants, gdecayname+"HZZ")
-    if process in ("ttH", "HJJ"):
-      gprod = getattr(anomalouscouplingsconstants, gprodname+process)
-  else:
-    assert gprodname == gdecayname
-    gprod = gdecay = getattr(anomalouscouplingsconstants, gdecayname+process)
-  decaypart = sum(gdecay**power * getattr(anomalouscouplingsconstants, "JHUXSHZZ4l"+xs) for xs, power in decaycoupling.iteritems()) / anomalouscouplingsconstants.JHUXSHZZ4la1
   if process == "ggH":
     if year == 2016:
       prodpart = 0.9901
     else:
       prodpart = 1
   else:
-    pdf = {2016: "NNPDF30_lo_as_0130", 2017: "NNPDF31_lo_as_0130"}[year]
+    pdf = {2016: "NNPDF30_lo_as_0130", 2017: "NNPDF31_lo_as_0130", 2018: "NNPDF31_lo_as_0130"}[year]
     pdfmodule = getattr(anomalouscouplingsconstants, pdf)
-    prodpart = sum(gprod**power * getattr(pdfmodule, "JHUXS"+process+xs) for xs, power in prodcoupling.iteritems()) / getattr(pdfmodule, "JHUXS"+process+prodSMcoupling)
+
+    if process == "ttH":
+      lst = ttlist
+      assert not gglist
+    elif process == "HJJ":
+      lst = gglist
+      assert not ttlist
+    else:
+      lst = VVlist
+      assert not gglist and not ttlist
+
+    prodpart = 0
+    for (coupling1name, coupling1val), (coupling2name, coupling2val) in itertools.combinations_with_replacement(lst, 2):
+      if coupling1name == coupling2name:
+        xs = coupling1name
+      else:
+        xs = coupling1name + coupling2name
+      xs = xs.replace("ghz1_prime2", "L1").replace("ghzgs1_prime2", "L1Zg").replace("ghz1", "a1").replace("ghz2", "a2").replace("ghz4", "a3").replace("ghg2", "a2").replace("ghg4", "a3").replace("kappa_tilde", "kappatilde")
+      prodpart += coupling1val * coupling2val * getattr(pdfmodule, "JHUXS"+process+xs)
+
+    if process == "ttH":
+      prodpart /= getattr(pdfmodule, "JHUXS"+process+"kappa")
+    elif process == "HJJ":
+      prodpart /= getattr(pdfmodule, "JHUXS"+process+"a2")
+    else:
+      prodpart /= getattr(pdfmodule, "JHUXS"+process+"a1")
 
   return prodpart * decaypart
 
