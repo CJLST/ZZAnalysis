@@ -139,6 +139,7 @@ namespace {
   Float_t ZZPt  = 0;
   Float_t ZZEta  = 0;
   Float_t ZZPhi  = 0;
+  Float_t ZZjjPt = 0;
   Int_t CRflag  = 0;
   Float_t Z1Mass  = 0;
   Float_t Z1Pt  = 0;
@@ -1615,6 +1616,8 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     ZZPt  = cand.p4().pt();
     ZZEta = cand.p4().eta();
     ZZPhi = cand.p4().phi();
+    
+    ZZjjPt = cand.userFloat("ZZjjPt");
 
     if(addKinRefit){
       if (cand.hasUserFloat("ZZMassRefit")) {
@@ -2398,6 +2401,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("ZZPt",ZZPt, false);
   myTree->Book("ZZEta",ZZEta, false);
   myTree->Book("ZZPhi",ZZPhi, false);
+  myTree->Book("ZZjjPt",ZZjjPt, false);
   myTree->Book("CRflag",CRflag, false);
   myTree->Book("Z1Mass",Z1Mass, false);
   myTree->Book("Z1Pt",Z1Pt, false);
