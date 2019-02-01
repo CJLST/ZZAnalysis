@@ -58,7 +58,7 @@ class Candidate:
         self.detajj        = treeEntry.DiJetDEta
         self.pfMet         = treeEntry.PFMET
         self.weight        = 1.
-        if (isMC) : self.weight = sign(treeEntry.genHEPMCweight) * treeEntry.PUWeight * treeEntry.dataMCWeight
+        if (isMC) : self.weight = sign(treeEntry.genHEPMCweight) * treeEntry.PUWeight# * treeEntry.dataMCWeight leave it out for now
 
         self.jets30pt = []
         self.jets30eta = []
@@ -243,7 +243,7 @@ class Candidate:
 
             self.D_bkg_VBFdec = lib.D_bkg_VBFdec(c_float(treeEntry.p_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal),c_float(treeEntry.p_HadZH_S_SIG_ghz1_1_MCFM_JECNominal),c_float(treeEntry.p_HadWH_S_SIG_ghw1_1_MCFM_JECNominal),c_float(treeEntry.p_JJVBF_BKG_MCFM_JECNominal),c_float(treeEntry.p_HadZH_BKG_MCFM_JECNominal),c_float(treeEntry.p_HadWH_BKG_MCFM_JECNominal),c_float(treeEntry.p_JJQCD_BKG_MCFM_JECNominal),c_float(treeEntry.p_HadZH_mavjj_JECNominal),c_float(treeEntry.p_HadZH_mavjj_true_JECNominal),c_float(treeEntry.p_HadWH_mavjj_JECNominal),c_float(treeEntry.p_HadWH_mavjj_true_JECNominal),c_float(treeEntry.pConst_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal),c_float(treeEntry.pConst_HadZH_S_SIG_ghz1_1_MCFM_JECNominal),c_float(treeEntry.pConst_HadWH_S_SIG_ghw1_1_MCFM_JECNominal),c_float(treeEntry.pConst_JJVBF_BKG_MCFM_JECNominal),c_float(treeEntry.pConst_HadZH_BKG_MCFM_JECNominal),c_float(treeEntry.pConst_HadWH_BKG_MCFM_JECNominal),c_float(treeEntry.pConst_JJQCD_BKG_MCFM_JECNominal),c_int(int(self.ZZFlav)),c_float(self.ZZMass))
 
-            self.D_bkg_VHdec = lib.D_bkg_VBFdec(c_float(treeEntry.p_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal),c_float(treeEntry.p_HadZH_S_SIG_ghz1_1_MCFM_JECNominal),c_float(treeEntry.p_HadWH_S_SIG_ghw1_1_MCFM_JECNominal),c_float(treeEntry.p_JJVBF_BKG_MCFM_JECNominal),c_float(treeEntry.p_HadZH_BKG_MCFM_JECNominal),c_float(treeEntry.p_HadWH_BKG_MCFM_JECNominal),c_float(treeEntry.p_JJQCD_BKG_MCFM_JECNominal),c_float(treeEntry.p_HadZH_mavjj_JECNominal),c_float(treeEntry.p_HadZH_mavjj_true_JECNominal),c_float(treeEntry.p_HadWH_mavjj_JECNominal),c_float(treeEntry.p_HadWH_mavjj_true_JECNominal),c_float(treeEntry.pConst_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal),c_float(treeEntry.pConst_HadZH_S_SIG_ghz1_1_MCFM_JECNominal),c_float(treeEntry.pConst_HadWH_S_SIG_ghw1_1_MCFM_JECNominal),c_float(treeEntry.pConst_JJVBF_BKG_MCFM_JECNominal),c_float(treeEntry.pConst_HadZH_BKG_MCFM_JECNominal),c_float(treeEntry.pConst_HadWH_BKG_MCFM_JECNominal),c_float(treeEntry.pConst_JJQCD_BKG_MCFM_JECNominal),c_int(int(self.ZZFlav)),c_float(self.ZZMass))
+            self.D_bkg_VHdec = lib.D_bkg_VHdec(c_float(treeEntry.p_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal),c_float(treeEntry.p_HadZH_S_SIG_ghz1_1_MCFM_JECNominal),c_float(treeEntry.p_HadWH_S_SIG_ghw1_1_MCFM_JECNominal),c_float(treeEntry.p_JJVBF_BKG_MCFM_JECNominal),c_float(treeEntry.p_HadZH_BKG_MCFM_JECNominal),c_float(treeEntry.p_HadWH_BKG_MCFM_JECNominal),c_float(treeEntry.p_JJQCD_BKG_MCFM_JECNominal),c_float(treeEntry.p_HadZH_mavjj_JECNominal),c_float(treeEntry.p_HadZH_mavjj_true_JECNominal),c_float(treeEntry.p_HadWH_mavjj_JECNominal),c_float(treeEntry.p_HadWH_mavjj_true_JECNominal),c_float(treeEntry.pConst_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal),c_float(treeEntry.pConst_HadZH_S_SIG_ghz1_1_MCFM_JECNominal),c_float(treeEntry.pConst_HadWH_S_SIG_ghw1_1_MCFM_JECNominal),c_float(treeEntry.pConst_JJVBF_BKG_MCFM_JECNominal),c_float(treeEntry.pConst_HadZH_BKG_MCFM_JECNominal),c_float(treeEntry.pConst_HadWH_BKG_MCFM_JECNominal),c_float(treeEntry.pConst_JJQCD_BKG_MCFM_JECNominal),c_int(int(self.ZZFlav)),c_float(self.ZZMass))
         if self.njets30 == 1 :
             self.D_VBF1j = lib.DVBF1j_ME(
                 c_float(treeEntry.p_JVBF_SIG_ghv1_1_JHUGen_JECNominal),
@@ -341,10 +341,10 @@ class Candidate:
 #            line  += ":" + "{0:.3f}".format(self.kds.KD_gggrav)
 #            line  += ":" + "{0:.3f}".format(self.kds.KD_qqgrav)
             line  += ":" + "{0:.3f}".format(self.pfMet)
-            line  += ":" + "{0:d}".format(self.category_stage1)
+            line  += ":" + "{0:d}".format(0)
             if self.m4lRefit>=0:
-                line  += ":" + "{0:.2f}".format(self.m4lRefit)
-                line  += ":" + "{0:.2f}".format(self.m4lRefitErr)
+#                line  += ":" + "{0:.2f}".format(self.m4lRefit)
+#                line  += ":" + "{0:.2f}".format(self.m4lRefitErr)
                 line  += ":" + "{0:.3f}".format(self.weight)
 
         if options.synchMode == 'VBS' :
