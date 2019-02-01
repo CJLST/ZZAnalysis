@@ -141,4 +141,40 @@ extern "C" int categoryMor18(
 			     );
 
 
+//---------- Run II Legacy categorization
+
+enum CategoryLegacyRunII {
+  ggH_0J_PTH_0_10     = 0,
+  ggH_0J_PTH_10_200   = 1,
+  ggH_1J_PTH_0_60     = 2,
+  ggH_1J_PTH_60_120   = 3,
+  ggH_1J_PTH_120_200  = 4,
+  ggH_2J_PTH_0_60     = 5,
+  ggH_2J_PTH_60_120   = 6,
+  ggH_2J_PTH_120_200  = 7,
+  ggH_PTH_200         = 8,
+  ggH_VBF             = 9,
+  VBF_1j              = 10,
+  VBF_2j              = 11,
+  VBF_2j_mjj_350_700_2j = 12,
+  VBF_2j_mjj_GT700_2j   = 13,
+  VBF_2j_mjj_GT350_3j   = 14,
+  VBF_GT200_2J          = 15,
+  VH_Had                = 16,
+  VBF_rest_VH           = 17,
+  VH_lep_0_150          = 18,
+  VH_Lep_GT150          = 19,
+  ttH_Lep               = 20,
+  ttH_Had               = 21
+};
+
+
+
+extern "C" int stage1_reco_1p1(
+                     int Njets,
+                     float mjj,
+                     float H_pt,
+                     int category,
+                     float pt_hjj
+                     );
 #endif

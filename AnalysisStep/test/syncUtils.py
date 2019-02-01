@@ -133,7 +133,36 @@ class Candidate:
 #           )
 
      # RunIILegacy categories
-        self.category = 0
+        self.category_stage0    = self.lib.categoryMor18(
+             c_int(self.nExtraLep),
+             c_int(self.nExtraZ),
+             c_int(self.njets30),
+             c_int(self.njets30Btag),
+             (c_float * len(self.jets30QGLikelihood))(*self.jets30QGLikelihood),
+             c_float(treeEntry.p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal),
+             c_float(treeEntry.p_JQCD_SIG_ghg2_1_JHUGen_JECNominal),
+             c_float(treeEntry.p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal),
+             c_float(treeEntry.p_JVBF_SIG_ghv1_1_JHUGen_JECNominal),
+             c_float(treeEntry.pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal),
+             c_float(treeEntry.p_HadWH_SIG_ghw1_1_JHUGen_JECNominal),
+             c_float(treeEntry.p_HadZH_SIG_ghz1_1_JHUGen_JECNominal),
+             c_float(treeEntry.p_HadWH_mavjj_JECNominal),
+             c_float(treeEntry.p_HadWH_mavjj_true_JECNominal),
+             c_float(treeEntry.p_HadZH_mavjj_JECNominal),
+             c_float(treeEntry.p_HadZH_mavjj_true_JECNominal),
+             (c_float * len(self.jets30phi))(*self.jets30phi),
+             c_float(self.ZZMass),
+             c_float(self.pfMet),
+             c_bool(False), #useVHMETTagged
+             c_bool(False) #useQGTagging
+             )
+        self.category_stage1 = self.lib.stage1_reco_1p1_name(
+             c_int(self.njets30),
+             c_float(self.mjj),
+             c_float(self.pt4l),
+             c_int(self.category_stage0),
+             c_float(self.pt4l)#FIXME NEEDS PT of H+jj
+             )
 
     def D(self,sig,bg):
         return sig/(sig+bg)
@@ -312,7 +341,7 @@ class Candidate:
 #            line  += ":" + "{0:.3f}".format(self.kds.KD_gggrav)
 #            line  += ":" + "{0:.3f}".format(self.kds.KD_qqgrav)
             line  += ":" + "{0:.3f}".format(self.pfMet)
-            line  += ":" + "{0:d}".format(self.category)
+            line  += ":" + "{0:d}".format(self.category_stage1)
             if self.m4lRefit>=0:
                 line  += ":" + "{0:.2f}".format(self.m4lRefit)
                 line  += ":" + "{0:.2f}".format(self.m4lRefitErr)
