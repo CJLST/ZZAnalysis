@@ -335,6 +335,7 @@ void Plotter::FillHistograms( TString input_file_name , int year)
 	
    _current_process = find_current_process( input_file_name, 0 , 0);
 	
+   if(year == 2018) _lumi = 58.83;
    if(year == 2017) _lumi = 41.37;
    if(year == 2016) _lumi = 35.86706;
 	
@@ -459,6 +460,8 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
    
       if ( !CRflag ) continue;
       if ( !test_bit(CRflag, CRZLLss) ) continue;
+      
+      if ( !(ZZsel >= 20) ) continue; // Remove events that do not pass selection
    
       _current_final_state = FindFinalStateZX();
 		
