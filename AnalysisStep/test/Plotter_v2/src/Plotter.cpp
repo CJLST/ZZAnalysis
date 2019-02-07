@@ -368,13 +368,13 @@ void Plotter::FillHistograms( TString input_file_name , int year)
 
       if ( !(ZZsel >= 90) ) continue;
 		
-		
       // K factors
       _k_factor = calculate_K_factor(input_file_name);
 		
       // Final event weight
       _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight) / gen_sum_weights;
       if ( input_file_name.Contains("ggH") && year == 2017) _event_weight *= ggH_NNLOPS_weight; // reweight POWHEG ggH to NNLOPS
+      if ( input_file_name.Contains("ggH") && year == 2018) _event_weight *= ggH_NNLOPS_weight; // reweight POWHEG ggH to NNLOPS
 
 		combination_histos->FillM4lCombination(ZZMass, _event_weight, _current_process);
 		
