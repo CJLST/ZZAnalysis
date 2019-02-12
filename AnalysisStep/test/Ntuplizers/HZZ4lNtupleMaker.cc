@@ -1,5 +1,6 @@
 // -*- C++ -*-
 //
+//
 // Fill a tree for selected candidates.
 //
 
@@ -933,7 +934,8 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
    htxsNJets = htxs->jets30.size();
    htxsHPt = htxs->higgs.Pt();
    htxs_stage0_cat = htxs->stage0_cat;
-   htxs_stage1_cat = htxs->stage1_cat_pTjet30GeV;
+//   htxs_stage1_cat = htxs->stage1_cat_pTjet30GeV;
+   htxs_stage1_cat = htxs->stage1p1_cat;
    htxs_errorCode=htxs->errorCode;
    htxs_prodMode= htxs->prodMode;
 

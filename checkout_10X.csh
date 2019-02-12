@@ -21,6 +21,12 @@ git cms-init
 # git cms-addpkg GeneratorInterface/RivetInterface
 
 #### Please do not add any custom (non-CMSSW) package before this line ####
+git cms-addpkg GeneratorInterface/RivetInterface
+git cms-addpkg SimDataFormats/HTXS
+git remote add amarini https://github.com/amarini/cmssw.git
+git fetch amarini 
+git checkout amarini/htxs_stage1p1_cmssw949_v2 GeneratorInterface/RivetInterface
+git checkout amarini/htxs_stage1p1_cmssw949_v2 SimDataFormats/HTXS
 
 #ZZAnalysis
 git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
