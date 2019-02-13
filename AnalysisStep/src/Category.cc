@@ -305,7 +305,7 @@ extern "C" int categoryMor18(
 
 }
 
-extern "C" int stage1_reco_1p1_name(
+extern "C" int stage1_reco_1p1(
                            int Njets,
                            float mjj,
                            float H_pt,

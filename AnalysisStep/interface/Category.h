@@ -169,7 +169,6 @@ enum CategoryLegacyRunII {
 };
 
 
-
 extern "C" int stage1_reco_1p1(
                      int Njets,
                      float mjj,

@@ -50,6 +50,7 @@ public :
    Float_t         ZZMassPreFSR;
    Short_t         ZZsel;
    Float_t         ZZPt;
+   Float_t         ZZjjPt;
    Float_t         ZZEta;
    Float_t         ZZPhi;
    Int_t           CRflag;
@@ -488,6 +489,7 @@ public :
    TBranch        *b_ZZMassPreFSR;   //!
    TBranch        *b_ZZsel;   //!
    TBranch        *b_ZZPt;   //!
+   TBranch        *b_ZZjjPt;  //!
    TBranch        *b_ZZEta;   //!
    TBranch        *b_ZZPhi;   //!
    TBranch        *b_CRflag;   //!
@@ -1019,6 +1021,7 @@ void Tree::Init(TTree *tree, TString input_file_name, bool notZLregion)
    fChain->SetBranchAddress("ZZMassPreFSR", &ZZMassPreFSR, &b_ZZMassPreFSR);
    fChain->SetBranchAddress("ZZsel", &ZZsel, &b_ZZsel);
    fChain->SetBranchAddress("ZZPt", &ZZPt, &b_ZZPt);
+   fChain->SetBranchAddress("ZZjjPt", &ZZjjPt, &b_ZZjjPt);
    fChain->SetBranchAddress("ZZEta", &ZZEta, &b_ZZEta);
    fChain->SetBranchAddress("ZZPhi", &ZZPhi, &b_ZZPhi);
    fChain->SetBranchAddress("CRflag", &CRflag, &b_CRflag);
