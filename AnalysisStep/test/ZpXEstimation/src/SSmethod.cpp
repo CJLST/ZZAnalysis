@@ -1499,7 +1499,6 @@ void SSmethod::PlotFR()
    gStyle->SetEndErrorSize(0);
    
    TLegend *leg_ele,*leg_mu;
-   
    CMS_lumi *lumi = new CMS_lumi;
    
    c_ele->cd();

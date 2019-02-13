@@ -85,7 +85,7 @@ int main( int argc, char *argv[] )
    ///////////////////////////////////
    // Plot Z+X plots                //
    ///////////////////////////////////
-   os->GetZXHistos("ZXHistos_OS_Moriond18.root");
+   os->GetZXHistos("ZXHistos_OS_Moriond19.root");
    os->PlotZXContributions("Plots");
    os->FitZX("Plots");
 	

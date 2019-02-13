@@ -1499,10 +1499,14 @@ void OSmethod::PlotFR()
    gStyle->SetEndErrorSize(0);
    
    TLegend *leg_ele,*leg_mu;
+   CMS_lumi *lumi = new CMS_lumi;
 
    c_ele->cd();
    lumi->set_lumi(c_ele, _lumi, 0);
    mg_electrons->Draw("AP");
+   mg_electrons->GetXaxis()->SetTitle("p_{T} [GeV]");
+   mg_electrons->GetYaxis()->SetTitle("Fake Rate");
+   mg_electrons->SetTitle("Electron fake rate");
    mg_electrons->SetMaximum(0.35);
    leg_ele = CreateLegend_FR("left",FR_OS_electron_EB_unc,FR_OS_electron_EB,FR_OS_electron_EE_unc,FR_OS_electron_EE);
    leg_ele->Draw();
@@ -1511,6 +1515,9 @@ void OSmethod::PlotFR()
    c_mu->cd();
    lumi->set_lumi(c_mu, _lumi, 0);
    mg_muons->Draw("AP");
+   mg_muons->GetXaxis()->SetTitle("p_{T} [GeV]");
+   mg_muons->GetYaxis()->SetTitle("Fake Rate");
+   mg_muons->SetTitle("Muon fake rate");
    mg_muons->SetMaximum(0.35);
    leg_mu = CreateLegend_FR("left",FR_OS_muon_EB_unc,FR_OS_muon_EB,FR_OS_muon_EE_unc,FR_OS_muon_EE);
    leg_mu->Draw();
