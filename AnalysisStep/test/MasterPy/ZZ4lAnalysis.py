@@ -1324,12 +1324,17 @@ if (LEPTON_SETUP == 2016): #CSVv2M, from https://twiki.cern.ch/twiki/bin/viewaut
    theBTaggerThr=0.8484
    theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/CSVv2Moriond17_2017_1_26_BtoH.csv" #Preliminary Moriond17 SF, from https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco
    theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_80X_ICHEP.root"
-elif (LEPTON_SETUP == 2017 or LEPTON_SETUP == 2018): #DeepCSV, from https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+elif (LEPTON_SETUP == 2017): #DeepCSV, from https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
    #FIXME: Add 2018 correctly!
    theBTagger="pfDeepCSVJetTags:probb"
    theBTaggerThr=0.4941
-   theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_94XSF_V1_B_F.csv"
-   theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_94X_Moriond18_v1.root" #FIXME!!! Update to Moriond18 file
+   theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_94XSF_V3_B_F.csv"
+   theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_94X_Moriond18_v1.root" #FIXME!!! Update the efficiency file to the latest one corresponding to the SF file V3
+elif (LEPTON_SETUP == 2018): #DeepCSV, from https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X
+   theBTagger="pfDeepCSVJetTags:probb"
+   theBTaggerThr=0.4184
+   theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_94XSF_V3_B_F.csv" # FIXME: To be updated for the 2018 btag SFs
+   theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_94X_Moriond18_v1.root" #FIXME: To be updated together with the SF
 else:
    sys.exit("ZZ4lAnalysis.py: Need to define the btagging for the new setup!")
 
@@ -1348,17 +1353,6 @@ process.dressedJets = cms.EDProducer("JetFiller",
     bTagMCEffFile = cms.string(theBTagMCEffFile),
     flags = cms.PSet()
     )
-if (LEPTON_SETUP == 2017):
-    process.dressedJets.bTaggerName = cms.string("pfDeepCSVJetTags:probb") #Moving to Moriond18 new recommended DeepCSV btagger
-    process.dressedJets.bTaggerThreshold = cms.double(0.4941) #https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
-    process.dressedJets.bTagSFFile =  cms.string("ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_94XSF_V1_B_F.csv")
-    process.dressedJets.bTagMCEffFile  = cms.string("ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_94X_Moriond18_v1.root")
-
-if (LEPTON_SETUP == 2018): #[FIXME] Update to 2018 when available
-    process.dressedJets.bTaggerName = cms.string("pfDeepCSVJetTags:probb") #Moving to Moriond18 new recommended DeepCSV btagger
-    process.dressedJets.bTaggerThreshold = cms.double(0.4184) #https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X
-    process.dressedJets.bTagSFFile =  cms.string("ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_94XSF_V1_B_F.csv")
-    process.dressedJets.bTagMCEffFile  = cms.string("ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_94X_Moriond18_v1.root")
 
 
 ### Load JEC
