@@ -57,7 +57,7 @@ git clone https://github.com/usarica/MelaAnalytics.git
 
 #Common LHE tools
 git clone https://github.com/usarica/CommonLHETools.git
-(cd CommonLHETools; git checkout -b from-v122 v1.2.2)
+(cd CommonLHETools; git checkout -b from-v124 v1.2.4)
 
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
