@@ -2,8 +2,10 @@
 
 #include "../interface/BTaggingSFHelper.h"
 
+#include <cmath>
 #include "TString.h"
 #include "TMath.h"
+#include "TDirectory.h"
 
 using namespace std;
 
@@ -11,53 +13,36 @@ BTaggingSFHelper::BTaggingSFHelper(std::string SFfilename, std::string effFileNa
 {
     // Allow relative paths in python config file to be found in C++
     edm::FileInPath fip_sf(SFfilename);
+    TDirectory* curdir = gDirectory;
     
-    m_calib = new BTagCalibration("CSVv2", fip_sf.fullPath().c_str());
-    
-    m_reader    = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "central");
-    m_reader_up = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "up"     );
-    m_reader_do = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "down"   );
-    
-    for(int i=0 ; i < 3; i++ ){
-    m_readers[i][0] = m_reader;
-    m_readers[i][1] = m_reader_up;
-    m_readers[i][2] = m_reader_do;
+    m_calib  = new BTagCalibration("CSVv2", fip_sf.fullPath().c_str()); // The CSVv2 designation doesn't matter if you are only reading, so don't bother to change it...
+    BTagCalibrationReader* m_reader = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "central");
+    BTagCalibrationReader* m_reader_up = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "up");
+    BTagCalibrationReader* m_reader_down = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "down");
+    m_readers = std::vector<BTagCalibrationReader*>{ m_reader, m_reader_up, m_reader_down };
+    for (BTagCalibrationReader*& mr:m_readers){
+      mr->load(*m_calib, BTagEntry::FLAV_B, "comb");
+      mr->load(*m_calib, BTagEntry::FLAV_C, "comb");
+      mr->load(*m_calib, BTagEntry::FLAV_UDSG, "incl");
     }
-    
-    for(int i=0 ; i < 3; i++ ){
-        m_readers[i][0] = m_reader;
-        m_readers[i][1] = m_reader_up;
-        m_readers[i][2] = m_reader_do;
-        if(i == 0){
-            m_readers[i][0]->load(*m_calib, BTagEntry::FLAV_B, "comb");
-            m_readers[i][1]->load(*m_calib, BTagEntry::FLAV_B, "comb");
-            m_readers[i][2]->load(*m_calib, BTagEntry::FLAV_B, "comb");
-        }
-        else if(i == 1){
-            m_readers[i][0]->load(*m_calib, BTagEntry::FLAV_C, "comb");
-            m_readers[i][1]->load(*m_calib, BTagEntry::FLAV_C, "comb");
-            m_readers[i][2]->load(*m_calib, BTagEntry::FLAV_C, "comb");
-        }
-        else if(i == 2){
-            m_readers[i][0]->load(*m_calib, BTagEntry::FLAV_UDSG, "incl");
-            m_readers[i][1]->load(*m_calib, BTagEntry::FLAV_UDSG, "incl");
-            m_readers[i][2]->load(*m_calib, BTagEntry::FLAV_UDSG, "incl");
-        }
-    }
-    
+
     edm::FileInPath fip_eff(effFileName);
-    m_fileEff = new TFile(fip_eff.fullPath().c_str());
+    m_fileEff = TFile::Open(fip_eff.fullPath().c_str(), "read");
     
     TString flavs[3] = {"b", "c", "udsg"};
     for(int flav=0; flav<3; flav++){
         TString name = Form("eff_%s_M_ALL",flavs[flav].Data());
         m_hEff[flav] = (TH1F*)m_fileEff->Get(name.Data());
     }
+    curdir->cd(); // When m_fileEff is open, the current directory changes to m_fileEff in ROOT. Avoid this...
 }
 
 BTaggingSFHelper::~BTaggingSFHelper()
 {
-    if (m_fileEff) delete m_fileEff;
+    if (m_fileEff && m_fileEff->IsOpen()) m_fileEff->Close(); // m_hEff[] are now invalid pointers!
+    else if (m_fileEff) delete m_fileEff;
+    for (BTagCalibrationReader*& mr:m_readers) delete mr;
+    delete m_calib;
 }
 
 float BTaggingSFHelper::getSF(SFsyst syst, int jetFlavor, float pt, float eta)
@@ -65,42 +50,52 @@ float BTaggingSFHelper::getSF(SFsyst syst, int jetFlavor, float pt, float eta)
     float SF = 1.0;
     
     BTagEntry::JetFlavor flav;
-    int myFlavIndex = -1; // indexes in the m_readers array
-    int mySystIndex = (int) syst;
-    
     if(abs(jetFlavor)==5){
         flav = BTagEntry::FLAV_B;
-        myFlavIndex = 0;
     }else if(abs(jetFlavor)==4){
         flav = BTagEntry::FLAV_C;
-        myFlavIndex = 1;
     }else{
         flav = BTagEntry::FLAV_UDSG;
-        myFlavIndex = 2;
     }
-    
+
+    constexpr float epsilon=1e-5;
     float myPt = pt;
+    /*
+    // Old code
     float MaxBJetPt = 669.9, MaxLJetPt = 999.9;  // value must be below the boundary
     float MaxJetEta = 2.5; // https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+    */
 	
+    std::pair<float, float> eta_bounds = m_readers[central]->min_max_eta(flav, 0);
+    if (eta_bounds.first==0.f) eta_bounds.first = -eta_bounds.second;
+    if (eta_bounds.first>eta || eta>eta_bounds.second) return 1.;
+
     bool DoubleUncertainty = false;
-    if((myFlavIndex==0 || myFlavIndex==1) && pt>MaxBJetPt){
+    std::pair<float, float> pt_bounds = m_readers[central]->min_max_pt(flav, eta, 0); // Since this function uses eta, first determine eta bounds as above
+    if (pt_bounds.first >= myPt){ myPt = pt_bounds.first+epsilon; DoubleUncertainty = true; }
+    if (pt_bounds.second <= myPt){ myPt = pt_bounds.second-epsilon; DoubleUncertainty = true; }
+
+    /*
+    // Old code
+    if((flav == BTagEntry::FLAV_B || flav == BTagEntry::FLAV_C) && pt>MaxBJetPt){
         myPt = MaxBJetPt;
         DoubleUncertainty = true;
     }
-    if(myFlavIndex==2 && pt>MaxLJetPt){
+    if(flav == BTagEntry::FLAV_UDSG && pt>MaxLJetPt){
         myPt = MaxLJetPt;
         DoubleUncertainty = true;
     }
+    */
 
-    SF = m_readers[myFlavIndex][mySystIndex]->eval(flav, eta, myPt);
+    SF = m_readers[syst]->eval(flav, eta, myPt);
     
     if(DoubleUncertainty && syst!=central){
-        float SFcentral = m_readers[myFlavIndex][central]->eval(flav, eta, myPt);
-        SF = 2*(SF - SFcentral) + SFcentral;
+        float SFcentral = m_readers[central]->eval(flav, eta, myPt);
+        SF = 2.f*(SF - SFcentral) + SFcentral;
     }
-	
-    if ( abs(eta) > MaxJetEta) SF = 1.; // Do not apply SF for jets with eta higher than the treshold
+
+    // Old code
+    //if (std::abs(eta) > MaxJetEta) SF = 1.; // Do not apply SF for jets with eta higher than the threshold
     return SF;
 }
 

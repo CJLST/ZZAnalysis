@@ -4,6 +4,7 @@
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 #include <FWCore/Framework/interface/ESHandle.h>
 #include <FWCore/Framework/interface/EventSetup.h>
+#include <FWCore/Utilities/interface/EDMException.h>
 
 #include <DataFormats/PatCandidates/interface/Jet.h>
 #include <CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h>
@@ -177,7 +178,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 						 ( NEMF<0.90 && NumNeutralParticles>10 && jabseta>3.0 );
 	 }
 	 
-	 else if ( setup == 2017)
+	 else if (setup == 2017 || setup == 2018)
 	 {
 	   // Tight jet ID https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2017 , loose is not recommended anymore
 	 	JetID      = ((NHF<0.90 && NEMF<0.90 && NumConst>1) && ((jabseta<=2.4 && CHF>0 && CHM>0) || jabseta>2.4) && jabseta<=2.7) ||
@@ -196,31 +197,26 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 
 	 else
 	 {
-	 	std::cerr << "[ERROR] JetFIller: Jet ID was not defined for given setup! " << std::endl;
+     throw cms::Exception("JetID") << "Jet ID is not defined for the given setup (" << setup << ")!";
 	 }
 	 
 
 	  
-    bool PUjetID = true;
+   bool PUjetID = true;
 	  
 	 if (setup == 2016)
 	 { //--- PU jet ID (deactivated for in 2016)
 	 	PUjetID = true;
 	 }
 	 
-	 else if ( setup == 2017)
-	 { //Recommended tight PU JET ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
-		PUjetID = bool(j.userInt("pileupJetId:fullId") & (1 << 0));
-	 }
-	 
-	 else if ( setup == 2018) //[FIXME] Update to 2018 recommendations when available
+	 else if (setup == 2017 || setup == 2018)//[FIXME] Update to 2018 recommendations when available
 	 { //Recommended tight PU JET ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
 		PUjetID = bool(j.userInt("pileupJetId:fullId") & (1 << 0));
 	 }
 	 
 	 else
 	 {
-	 	std::cerr << "[ERROR] JetFiller: Jet PU ID was not defined for given setup! " << std::endl;
+     throw cms::Exception("JetPUID") << "Jet PU ID is not defined for the given setup (" << setup << ")!";
 	 }
 
     // cout << " NHF "  << NHF
@@ -234,9 +230,10 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     //      << endl;
 
     //--- b-tagging and scaling factors
-    float bTagger = j.bDiscriminator(bTaggerName);
-    if(setup == 2017) bTagger = j.bDiscriminator(bTaggerName) + j.bDiscriminator((bTaggerName + "b")); //one should just sum for doing b tagging, the b and bb probabilities
-    else if(setup == 2018) bTagger = j.bDiscriminator(bTaggerName) + j.bDiscriminator((bTaggerName + "b")); //one should just sum for doing b tagging, the b and bb probabilities
+    float bTagger;
+    if (setup <= 2016) bTagger = j.bDiscriminator(bTaggerName);
+    else if (setup == 2017 || setup == 2018) bTagger = j.bDiscriminator(bTaggerName) + j.bDiscriminator((bTaggerName + "b")); //one should just sum for doing b tagging, the b and bb probabilities
+    else throw cms::Exception("JetBtag") << "Jet btag discriminator computation is not defined for the given setup (" << setup << ")!";
     bool isBtagged = bTagger > bTaggerThreshold;
     bool isBtaggedWithSF   = isBtagged;
     bool isBtaggedWithSFUp = isBtagged;

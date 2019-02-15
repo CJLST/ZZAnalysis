@@ -665,6 +665,12 @@ double BTagCalibrationReader::eval_auto_bounds(const std::string & sys,
   return pimpl->eval_auto_bounds(sys, jf, eta, pt, discr);
 }
 
+std::pair<float, float> BTagCalibrationReader::min_max_eta(BTagEntry::JetFlavor jf,
+                                                          float discr) const
+{
+  return pimpl->min_max_eta(jf, discr);
+}
+
 std::pair<float, float> BTagCalibrationReader::min_max_pt(BTagEntry::JetFlavor jf,
                                                           float eta,
                                                           float discr) const
