@@ -24,12 +24,31 @@ int main( int argc, char *argv[] )
 {
    setTDRStyle();
 	
+   TString path_2018 = "";
    TString path_2017 = "";
    TString path_2016 = "";
    TString file_name = "/ZZ4lAnalysis.root";
 	
-   TString Data_2017    = "AllData"        + file_name;
-   TString Data_2016    = "AllData"        + file_name;
+   TString Data_2018    = path_2018 + "AllData"        + file_name;
+   TString Data_2017    = path_2017 + "AllData"        + file_name;
+   TString Data_2016    = path_2016 + "AllData"        + file_name;
+   
+   TString ggH125_2018      = path_2018 + "ggH125"     + file_name;
+   TString VBFH125_2018     = path_2018 + "VBFH125"    + file_name;
+   TString WpH125_2018      = path_2018 + "WplusH125"  + file_name;
+   TString WmH125_2018      = path_2018 + "WminusH125" + file_name;
+   TString ZH125_2018       = path_2018 + "ZH125"      + file_name;
+   TString ttH125_2018      = path_2018 + "ttH125"     + file_name;
+   TString bbH125_2018      = path_2018 + "bbH125"     + file_name;
+   TString tqH125_2018      = path_2018 + "tqH125"     + file_name;
+   
+   TString ZZTo4l_2018      = path_2018 + "ZZTo4lext1"                 + file_name;
+   TString ggZZ4e_2018      = path_2018 + "ggTo4e_Contin_MCFM701"      + file_name;
+   TString ggZZ4mu_2018     = path_2018 + "ggTo4mu_Contin_MCFM701"     + file_name;
+   TString ggZZ4tau_2018    = path_2018 + "ggTo4tau_Contin_MCFM701"    + file_name;
+   TString ggZZ2e2mu_2018   = path_2018 + "ggTo2e2mu_Contin_MCFM701"   + file_name;
+   TString ggZZ2e2tau_2018  = path_2018 + "ggTo2e2tau_Contin_MCFM701"  + file_name;
+   TString ggZZ2mu2tau_2018 = path_2018 + "ggTo2mu2tau_Contin_MCFM701" + file_name;
 	
    TString ggH125_2017      = path_2017 + "ggH125"     + file_name;
    TString VBFH125_2017     = path_2017 + "VBFH125"    + file_name;
@@ -67,6 +86,23 @@ int main( int argc, char *argv[] )
 
    Plotter *combination = new Plotter( );
 	
+   combination->FillHistograms(Data_2018,2018);
+   combination->FillHistograms(ggH125_2018,2018);
+   combination->FillHistograms(VBFH125_2018,2018);
+   combination->FillHistograms(ZH125_2018,2018);
+   combination->FillHistograms(ttH125_2018,2018);
+   combination->FillHistograms(bbH125_2018,2018);
+   combination->FillHistograms(tqH125_2018,2018);
+   combination->FillHistograms(WpH125_2018,2018);
+   combination->FillHistograms(WmH125_2018,2018);
+   combination->FillHistograms(ZZTo4l_2018,2018);
+   combination->FillHistograms(ggZZ4e_2018,2018);
+   combination->FillHistograms(ggZZ4mu_2018,2018);
+   combination->FillHistograms(ggZZ4tau_2018,2018);
+   combination->FillHistograms(ggZZ2e2mu_2018,2018);
+   combination->FillHistograms(ggZZ2e2tau_2018,2018);
+   combination->FillHistograms(ggZZ2mu2tau_2018,2018);
+   
 	combination->FillHistograms(Data_2017,2017);
    combination->FillHistograms(ggH125_2017,2017);
    combination->FillHistograms(VBFH125_2017,2017);

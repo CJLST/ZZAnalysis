@@ -167,6 +167,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     int NumConst = j.chargedMultiplicity()+j.neutralMultiplicity();
     int NumNeutralParticles = j.neutralMultiplicity();
     float CHM  = j.chargedMultiplicity();
+    float MUF  = j.muonEnergyFraction();
 
     bool JetID = true;
 	  
@@ -185,12 +186,13 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       				 ( NEMF<0.90 && NHF>0.02 && NumNeutralParticles>10 && jabseta>3.0 );
 	 }
 	 
-	 else if ( setup == 2018) //[FIXME] Update to 2018 recommendations when available
+	 else if ( setup == 2018) 
 	 {
-	   // Tight jet ID https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2017 , loose is not recommended anymore
-	 	JetID      = ((NHF<0.90 && NEMF<0.90 && NumConst>1) && ((jabseta<=2.4 && CHF>0 && CHM>0) || jabseta>2.4) && jabseta<=2.7) ||
-      				 ( NEMF<0.99 && NEMF>0.02 && NumNeutralParticles>2 && jabseta>2.7 && jabseta<=3.0 ) ||
-      				 ( NEMF<0.90 && NHF>0.02 && NumNeutralParticles>10 && jabseta>3.0 );
+	   // Tight jet ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID13TeVRun2018 , loose is not recommended anymore
+	 	JetID      =   ( CEMF<0.8 && CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && MUF <0.8 && NHF < 0.9 && jabseta<=2.6) ||
+                     ( CEMF<0.8 && CHM>0 && NEMF<0.99 && MUF <0.8 && NHF < 0.9 && jabseta>2.6 && jabseta<=2.7) ||
+                     ( NEMF>0.02 && NEMF<0.99 && NumNeutralParticles>2 && jabseta>2.7 && jabseta<=3.0 ) ||
+                     ( NEMF<0.90 && NHF>0.2 && NumNeutralParticles>10 && jabseta>3.0 );
 	 }
 	 
 	 else

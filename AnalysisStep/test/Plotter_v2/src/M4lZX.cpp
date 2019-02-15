@@ -75,9 +75,9 @@ void M4lZX::GetM4lZXCombination( TH1F* h_4l )
    h_4e   ->FillRandom("f_4e_comb"   , _n_entries);
    h_2e2mu->FillRandom("f_2e2mu_comb", _n_entries);
 	
-   h_4mu  ->Scale((33.3 + 34.4)*ratio_4mu   / h_4mu->Integral());
-   h_4e   ->Scale((17.1 + 21.1)*ratio_4e    / h_4e->Integral());
-   h_2e2mu->Scale((46.9 + 59.9)*ratio_2e2mu / h_2e2mu->Integral());
+   h_4mu  ->Scale((33.3 + 34.4 + 57.6)*ratio_4mu   / h_4mu->Integral());
+   h_4e   ->Scale((17.1 + 21.1 + 18.8)*ratio_4e    / h_4e->Integral());
+   h_2e2mu->Scale((46.9 + 59.9 + 67.6)*ratio_2e2mu / h_2e2mu->Integral());
 	
    h_4l->Add(h_4mu);
    h_4l->Add(h_4e);

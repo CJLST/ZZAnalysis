@@ -8,6 +8,7 @@ SSmethod::SSmethod():Tree()
    _current_process = -999;
    _current_final_state = -999;
    _current_category = -999;
+   _current_category_stxs = -999;
 	
    _s_process.push_back("Data");
    _s_process.push_back("WZ");
@@ -34,6 +35,31 @@ SSmethod::SSmethod():Tree()
    _s_category.push_back("VHMETTagged");
    _s_category.push_back("Inclusive");
    
+   _s_category_stxs.push_back("ggH_0J_PTH_0_10");
+   _s_category_stxs.push_back("ggH_0J_PTH_10_200");
+   _s_category_stxs.push_back("ggH_1J_PTH_0_60");
+   _s_category_stxs.push_back("ggH_1J_PTH_60_120");
+   _s_category_stxs.push_back("ggH_1J_PTH_120_200");
+   _s_category_stxs.push_back("ggH_2J_PTH_0_60");
+   _s_category_stxs.push_back("ggH_2J_PTH_60_120");
+   _s_category_stxs.push_back("ggH_2J_PTH_120_200");
+   _s_category_stxs.push_back("ggH_PTH_200");
+   _s_category_stxs.push_back("ggH_VBF");
+   _s_category_stxs.push_back("VBF_1j");
+   _s_category_stxs.push_back("VBF_2j");
+   _s_category_stxs.push_back("VBF_2j_mjj_350_700_2j");
+   _s_category_stxs.push_back("VBF_2j_mjj_GT700_2j");
+   _s_category_stxs.push_back("VBF_2j_mjj_GT350_3j");
+   _s_category_stxs.push_back("VBF_GT200_2J");
+   _s_category_stxs.push_back("VH_Had");
+   _s_category_stxs.push_back("VBF_rest_VH");
+   _s_category_stxs.push_back("VH_lep_0_150");
+   _s_category_stxs.push_back("VH_Lep_GT150");
+   _s_category_stxs.push_back("ttH_Lep");
+   _s_category_stxs.push_back("ttH_Had");
+   _s_category_stxs.push_back("Inclusive");
+   
+   
    _s_region.push_back("ZLL");
    
    // Z+X SS factors
@@ -46,7 +72,7 @@ SSmethod::SSmethod():Tree()
    vector<float> temp;
    for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
    {
-      for ( int i_cat = 0; i_cat < num_of_categories; i_cat++ )
+      for ( int i_cat = 0; i_cat < num_of_categories_stxs; i_cat++ )
       {
          temp.push_back(0);
          _N_OS_events[i_fs][i_cat] = 0.;
@@ -135,8 +161,14 @@ void SSmethod::Calculate_SSOS_Ratio( TString input_file_data_name, TString input
 														 false,// Use VHMET category
 														 false);// Use QG tagging
       
-      if ((test_bit(CRflag, CRZLLss))) _N_SS_events[_current_final_state][_current_category]+=1.0;
-      if ((test_bit(CRflag, CRZLLos_2P2F)) || (test_bit(CRflag, CRZLLos_3P1F))) _N_OS_events[_current_final_state][_current_category]+=1.0;
+      _current_category_stxs = stage1_reco_1p1 ( nCleanedJetsPt30,
+                                                 DiJetMass,
+                                                 ZZPt,
+                                                 _current_category,
+                                                 ZZjjPt);
+      
+      if ((test_bit(CRflag, CRZLLss))) _N_SS_events[_current_final_state][_current_category_stxs]+=1.0;
+      if ((test_bit(CRflag, CRZLLos_2P2F)) || (test_bit(CRflag, CRZLLos_3P1F))) _N_OS_events[_current_final_state][_current_category_stxs]+=1.0;
 
       _k_factor = calculate_K_factor(input_file_data_name);
       _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight) / gen_sum_weights;
@@ -196,23 +228,29 @@ void SSmethod::Calculate_SSOS_Ratio( TString input_file_data_name, TString input
 														 false,// Use VHMET category
 														 false);// Use QG tagging
          
+      _current_category_stxs = stage1_reco_1p1 ( nCleanedJetsPt30,
+                                                 DiJetMass,
+                                                 ZZPt,
+                                                 _current_category,
+                                                 ZZjjPt);
+         
          _k_factor = calculate_K_factor(input_file_data_name);
          _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight) / gen_sum_weights;
          
-         if ((test_bit(CRflag, CRZLLos_2P2F)) || (test_bit(CRflag, CRZLLos_3P1F))) _N_OS_events[_current_final_state][_current_category]-=_event_weight;
+         if ((test_bit(CRflag, CRZLLos_2P2F)) || (test_bit(CRflag, CRZLLos_3P1F))) _N_OS_events[_current_final_state][_current_category_stxs]-=_event_weight;
       
       }
    }
    
    //Calculate inclusive numbers
-   for (  int i_cat = 0; i_cat < num_of_categories - 1; i_cat++  )
+   for (  int i_cat = 0; i_cat < num_of_categories_stxs - 1; i_cat++  )
    {
       for ( int i_fs = 0; i_fs < num_of_final_states - 1; i_fs++  )
       {
          _N_SS_events[Settings::fs4l][i_cat]     += _N_SS_events[i_fs][i_cat];   //calculate N events for inclusive 4l final state
          _N_OS_events[Settings::fs4l][i_cat]     += _N_OS_events[i_fs][i_cat];
-         _N_SS_events[i_fs][Settings::inclusive] += _N_SS_events[i_fs][i_cat];   //calculate N events for inclusive category
-         _N_OS_events[i_fs][Settings::inclusive] += _N_OS_events[i_fs][i_cat];
+         _N_SS_events[i_fs][Settings::inclusive_stxs] += _N_SS_events[i_fs][i_cat];   //calculate N events for inclusive category
+         _N_OS_events[i_fs][Settings::inclusive_stxs] += _N_OS_events[i_fs][i_cat];
          
          if (false)//( MERGE_2E2MU )
          {
@@ -225,8 +263,8 @@ void SSmethod::Calculate_SSOS_Ratio( TString input_file_data_name, TString input
    }
    for ( int i_fs = 0; i_fs < num_of_final_states - 1; i_fs++  )
    {
-      _N_SS_events[Settings::fs4l][Settings::inclusive] += _N_SS_events[i_fs][Settings::inclusive];
-      _N_OS_events[Settings::fs4l][Settings::inclusive] += _N_OS_events[i_fs][Settings::inclusive];
+      _N_SS_events[Settings::fs4l][Settings::inclusive_stxs] += _N_SS_events[i_fs][Settings::inclusive_stxs];
+      _N_OS_events[Settings::fs4l][Settings::inclusive_stxs] += _N_OS_events[i_fs][Settings::inclusive_stxs];
    }
    
    // Print Z + X expected yields for inclusive category
@@ -237,22 +275,22 @@ void SSmethod::Calculate_SSOS_Ratio( TString input_file_data_name, TString input
    for ( int i_fs = 0; i_fs < num_of_final_states - 1; i_fs++ )
    {
       if (false) continue;//( MERGE_2E2MU && i_fs == Settings::fs2mu2e) continue;
-      cout << "Category: " << _s_category.at(Settings::inclusive) << "   Final state: " << _s_final_state.at(i_fs) << endl;
-      cout << _N_OS_events[i_fs][Settings::inclusive]/_N_SS_events[i_fs][Settings::inclusive] << " +/- " << sqrt(1./_N_OS_events[i_fs][Settings::inclusive]
-      + 1./_N_SS_events[i_fs][Settings::inclusive]) << endl;
+      cout << "Category: " << _s_category_stxs.at(Settings::inclusive_stxs) << "   Final state: " << _s_final_state.at(i_fs) << endl;
+      cout << _N_OS_events[i_fs][Settings::inclusive_stxs]/_N_SS_events[i_fs][Settings::inclusive_stxs] << " +/- " << sqrt(1./_N_OS_events[i_fs][Settings::inclusive_stxs]
+      + 1./_N_SS_events[i_fs][Settings::inclusive_stxs]) << endl;
    }
    
-   cout << "[INFO] Total = " << _N_OS_events[Settings::fs4l][Settings::inclusive]/_N_SS_events[Settings::fs4l][Settings::inclusive] << " +/- " <<
-   sqrt(1./_N_OS_events[Settings::fs4l][Settings::inclusive] + 1./_N_SS_events[Settings::fs4l][Settings::inclusive]) << endl;
+   cout << "[INFO] Total = " << _N_OS_events[Settings::fs4l][Settings::inclusive_stxs]/_N_SS_events[Settings::fs4l][Settings::inclusive_stxs] << " +/- " <<
+   sqrt(1./_N_OS_events[Settings::fs4l][Settings::inclusive_stxs] + 1./_N_SS_events[Settings::fs4l][Settings::inclusive_stxs]) << endl;
    cout << "========================================================================================" << endl;
    cout << endl;
    
    if(true)
 	{
-		_fs_ROS_SS[Settings::fs4mu]   = _N_OS_events[Settings::fs4mu][Settings::inclusive]/_N_SS_events[Settings::fs4mu][Settings::inclusive];//4mu
-		_fs_ROS_SS[Settings::fs4e]    = _N_OS_events[Settings::fs4e][Settings::inclusive]/_N_SS_events[Settings::fs4e][Settings::inclusive];//4e
-		_fs_ROS_SS[Settings::fs2e2mu] = _N_OS_events[Settings::fs2e2mu][Settings::inclusive]/_N_SS_events[Settings::fs2e2mu][Settings::inclusive];//2e2mu
-		_fs_ROS_SS[Settings::fs2mu2e] = _N_OS_events[Settings::fs2mu2e][Settings::inclusive]/_N_SS_events[Settings::fs2mu2e][Settings::inclusive];//2mu2e
+		_fs_ROS_SS[Settings::fs4mu]   = _N_OS_events[Settings::fs4mu][Settings::inclusive_stxs]/_N_SS_events[Settings::fs4mu][Settings::inclusive_stxs];//4mu
+		_fs_ROS_SS[Settings::fs4e]    = _N_OS_events[Settings::fs4e][Settings::inclusive_stxs]/_N_SS_events[Settings::fs4e][Settings::inclusive_stxs];//4e
+		_fs_ROS_SS[Settings::fs2e2mu] = _N_OS_events[Settings::fs2e2mu][Settings::inclusive_stxs]/_N_SS_events[Settings::fs2e2mu][Settings::inclusive_stxs];//2e2mu
+		_fs_ROS_SS[Settings::fs2mu2e] = _N_OS_events[Settings::fs2mu2e][Settings::inclusive_stxs]/_N_SS_events[Settings::fs2mu2e][Settings::inclusive_stxs];//2mu2e
 	}
 
 	
@@ -439,12 +477,18 @@ void SSmethod::FillDataMCPlots( TString input_file_data_name )
 														 PFMET,
 														 false,// Use VHMET category
 														 false);// Use QG tagging
+      
+      _current_category_stxs = stage1_reco_1p1 ( nCleanedJetsPt30,
+                                                 DiJetMass,
+                                                 ZZPt,
+                                                 _current_category,
+                                                 ZZjjPt);
 
       
       _k_factor = calculate_K_factor(input_file_data_name);
       _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight) / gen_sum_weights;
    
-      histos_1D[Settings::regZLL][_current_process][_current_final_state][_current_category]->Fill(ZZMass,(_current_process == Settings::Data) ? 1 :  _event_weight);
+      histos_1D[Settings::regZLL][_current_process][_current_final_state][_current_category_stxs]->Fill(ZZMass,(_current_process == Settings::Data) ? 1 :  _event_weight);
 
    } // END events loop
    
@@ -519,6 +563,12 @@ void SSmethod::MakeHistogramsZX( TString input_file_data_name, TString  input_fi
 														 false,// Use VHMET category
 														 false);// Use QG tagging
       
+      _current_category_stxs = stage1_reco_1p1 ( nCleanedJetsPt30,
+                                                 DiJetMass,
+                                                 ZZPt,
+                                                 _current_category,
+                                                 ZZjjPt);
+      
       
       _k_factor = calculate_K_factor(input_file_data_name);
       _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight) / gen_sum_weights;
@@ -529,28 +579,28 @@ void SSmethod::MakeHistogramsZX( TString input_file_data_name, TString  input_fi
       _yield_SR_dn = _fs_ROS_SS.at(_current_final_state)*FR->GetFakeRate_Dn(LepPt->at(2),LepEta->at(2),LepLepId->at(2))*FR->GetFakeRate_Dn(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
       
       
-      _expected_yield_SR[_current_final_state][_current_category] += _yield_SR;
-      _expected_yield_SR_up[_current_final_state][_current_category] += _yield_SR_up;
-      _expected_yield_SR_dn[_current_final_state][_current_category] += _yield_SR_dn;
-      _number_of_events_CR[_current_final_state][_current_category]++;
+      _expected_yield_SR[_current_final_state][_current_category_stxs] += _yield_SR;
+      _expected_yield_SR_up[_current_final_state][_current_category_stxs] += _yield_SR_up;
+      _expected_yield_SR_dn[_current_final_state][_current_category_stxs] += _yield_SR_dn;
+      _number_of_events_CR[_current_final_state][_current_category_stxs]++;
       //cout << _current_process << " " <<  _current_final_state << " " << _current_category << endl;
 		
       // Fill m4l Z+X histograms
-      histos_ZX[Settings::regZLL][_current_process][_current_final_state][_current_category]->Fill(ZZMass,(_current_process == Settings::Data) ? _yield_SR :  _yield_SR*_event_weight);
+      histos_ZX[Settings::regZLL][_current_process][_current_final_state][_current_category_stxs]->Fill(ZZMass,(_current_process == Settings::Data) ? _yield_SR :  _yield_SR*_event_weight);
       
 
    } // End events loop
    
-   for (  int i_cat = 0; i_cat < num_of_categories - 1; i_cat++  )
+   for (  int i_cat = 0; i_cat < num_of_categories_stxs - 1; i_cat++  )
    {
       for ( int i_fs = 0; i_fs < num_of_final_states - 1; i_fs++  )
       {
          _expected_yield_SR[Settings::fs4l][i_cat]       += _expected_yield_SR[i_fs][i_cat];   //calculate expected yield for inclusive 4l final state
          _number_of_events_CR[Settings::fs4l][i_cat]     += _number_of_events_CR[i_fs][i_cat];
-         _expected_yield_SR[i_fs][Settings::inclusive]   += _expected_yield_SR[i_fs][i_cat];   //calculate expected yield for inclusive category
-         _expected_yield_SR_up[i_fs][Settings::inclusive]   += _expected_yield_SR_up[i_fs][i_cat];
-         _expected_yield_SR_dn[i_fs][Settings::inclusive]   += _expected_yield_SR_dn[i_fs][i_cat];
-         _number_of_events_CR[i_fs][Settings::inclusive] += _number_of_events_CR[i_fs][i_cat];
+         _expected_yield_SR[i_fs][Settings::inclusive_stxs]   += _expected_yield_SR[i_fs][i_cat];   //calculate expected yield for inclusive category
+         _expected_yield_SR_up[i_fs][Settings::inclusive_stxs]   += _expected_yield_SR_up[i_fs][i_cat];
+         _expected_yield_SR_dn[i_fs][Settings::inclusive_stxs]   += _expected_yield_SR_dn[i_fs][i_cat];
+         _number_of_events_CR[i_fs][Settings::inclusive_stxs] += _number_of_events_CR[i_fs][i_cat];
          
          if (false)//( MERGE_2E2MU )
          {
@@ -567,9 +617,9 @@ void SSmethod::MakeHistogramsZX( TString input_file_data_name, TString  input_fi
    }
    for ( int i_fs = 0; i_fs < num_of_final_states - 1; i_fs++  )
    {
-      _expected_yield_SR[Settings::fs4l][Settings::inclusive] += _expected_yield_SR[i_fs][Settings::inclusive];
-      _expected_yield_SR_up[Settings::fs4l][Settings::inclusive] += _expected_yield_SR_dn[i_fs][Settings::inclusive];
-      _expected_yield_SR_up[Settings::fs4l][Settings::inclusive] += _expected_yield_SR_dn[i_fs][Settings::inclusive];
+      _expected_yield_SR[Settings::fs4l][Settings::inclusive_stxs] += _expected_yield_SR[i_fs][Settings::inclusive_stxs];
+      _expected_yield_SR_up[Settings::fs4l][Settings::inclusive_stxs] += _expected_yield_SR_dn[i_fs][Settings::inclusive_stxs];
+      _expected_yield_SR_up[Settings::fs4l][Settings::inclusive_stxs] += _expected_yield_SR_dn[i_fs][Settings::inclusive_stxs];
    }
    
    // Print Z + X expected yields and uncertainties
@@ -580,7 +630,7 @@ void SSmethod::MakeHistogramsZX( TString input_file_data_name, TString  input_fi
    for ( int i_fs = 0; i_fs < num_of_final_states - 1; i_fs++ )
    {
       if (false) continue;//( MERGE_2E2MU && i_fs == Settings::fs2mu2e) continue;
-      for ( int i_cat = 0; i_cat < num_of_categories; i_cat++)
+      for ( int i_cat = 0; i_cat < num_of_categories_stxs; i_cat++)
       {
         float stat    = _expected_yield_SR[i_fs][i_cat]/sqrt(_number_of_events_CR[i_fs][i_cat]);
         float syst_up = _expected_yield_SR[i_fs][i_cat]*((_expected_yield_SR_up[i_fs][i_cat]/_expected_yield_SR[i_fs][i_cat]) - 1.);
@@ -589,14 +639,14 @@ void SSmethod::MakeHistogramsZX( TString input_file_data_name, TString  input_fi
         float comb_dn = sqrt(stat*stat + syst_dn*syst_dn);
 			
 			
-			cout << "Category: " << _s_category.at(i_cat) << "   Final state: " << _s_final_state.at(i_fs) << endl;
+			cout << "Category: " << _s_category_stxs.at(i_cat) << "   Final state: " << _s_final_state.at(i_fs) << endl;
          cout << _expected_yield_SR[i_fs][i_cat] << " +/- " << comb_up << "(total):" << "  - " << stat << " (stat., evt: " <<
          _number_of_events_CR[i_fs][i_cat] << ")" << "   - " << syst_up << " (syst.)" <<  "  " << (1. - comb_dn/_expected_yield_SR[i_fs][i_cat]) << "/" << (1. + comb_up/_expected_yield_SR[i_fs][i_cat]) << endl;
 		}
 	cout << "==================================================================================================================================" << endl;
    }
    
-   cout << "[INFO] Total = " << _expected_yield_SR[Settings::fs4l][Settings::inclusive] << endl;
+   cout << "[INFO] Total = " << _expected_yield_SR[Settings::fs4l][Settings::inclusive_stxs] << endl;
    cout << "==================================================================================================================================" << endl;
    cout << endl;
 	
@@ -643,9 +693,9 @@ void SSmethod::DeclareDataMCHistos()
       {
          for (int i_fs = 0; i_fs < num_of_final_states; i_fs++)
          {
-            for (int i_cat = 0; i_cat < num_of_categories; i_cat++)
+            for (int i_cat = 0; i_cat < num_of_categories_stxs; i_cat++)
             {
-               _histo_name = "M4l_" + _s_region.at(i_reg) + "_" + _s_process.at(i_proc) + "_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
+               _histo_name = "M4l_" + _s_region.at(i_reg) + "_" + _s_process.at(i_proc) + "_" + _s_final_state.at(i_fs) + "_" + _s_category_stxs.at(i_cat);
                _histo_labels = ";" + Plots::M4l().var_X_label + ";" + Plots::M4l().var_Y_label;
                histos_1D[i_reg][i_proc][i_fs][i_cat] = new TH1F(_histo_name, _histo_labels, Plots::M4l().var_N_bin, Plots::M4l().var_min, Plots::M4l().var_max);
             }
@@ -665,9 +715,9 @@ void SSmethod::DeclareZXHistos()
       {
          for (int i_fs = 0; i_fs < num_of_final_states; i_fs++)
          {
-            for (int i_cat = 0; i_cat < num_of_categories; i_cat++)
+            for (int i_cat = 0; i_cat < num_of_categories_stxs; i_cat++)
             {
-               _histo_name = "ZX_M4l_" + _s_region.at(i_reg) + "_" + _s_process.at(i_proc) + "_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
+               _histo_name = "ZX_M4l_" + _s_region.at(i_reg) + "_" + _s_process.at(i_proc) + "_" + _s_final_state.at(i_fs) + "_" + _s_category_stxs.at(i_cat);
                _histo_labels = ";" + Plots::M4l().var_X_label + ";" + Plots::M4l().var_Y_label;
                histos_ZX[i_reg][i_proc][i_fs][i_cat] = new TH1F(_histo_name, _histo_labels, Plots::M4l().var_N_bin, Plots::M4l().var_min, Plots::M4l().var_max);
             }
@@ -736,7 +786,7 @@ void SSmethod::SaveDataMCHistos( TString file_name )
       {
          for (int i_fs = 0; i_fs < num_of_final_states; i_fs++)
          {
-            for (int i_cat = 0; i_cat < num_of_categories; i_cat++)
+            for (int i_cat = 0; i_cat < num_of_categories_stxs; i_cat++)
             {
                histos_1D[i_reg][i_proc][i_fs][i_cat]->Write();
             }
@@ -760,9 +810,9 @@ void SSmethod::FillDataMCInclusive( )
       {
          for (int i_fs = 0; i_fs < Settings::fs4l; i_fs++)
          {
-            for (int i_cat = 0; i_cat < Settings::inclusive; i_cat++)
+            for (int i_cat = 0; i_cat < Settings::inclusive_stxs; i_cat++)
             {
-               histos_1D[i_reg][i_proc][i_fs][Settings::inclusive]->Add(histos_1D[i_reg][i_proc][i_fs][i_cat]);
+               histos_1D[i_reg][i_proc][i_fs][Settings::inclusive_stxs]->Add(histos_1D[i_reg][i_proc][i_fs][i_cat]);
                histos_1D[i_reg][i_proc][Settings::fs4l][i_cat]    ->Add(histos_1D[i_reg][i_proc][i_fs][i_cat]);
             }
          }
@@ -775,7 +825,7 @@ void SSmethod::FillDataMCInclusive( )
       {
          for (int i_fs = 0; i_fs < Settings::fs4l; i_fs++)
          {
-            histos_1D[i_reg][i_proc][Settings::fs4l][Settings::inclusive]->Add(histos_1D[i_reg][i_proc][i_fs][Settings::inclusive]);
+            histos_1D[i_reg][i_proc][Settings::fs4l][Settings::inclusive_stxs]->Add(histos_1D[i_reg][i_proc][i_fs][Settings::inclusive_stxs]);
          }
       }
    }
@@ -798,7 +848,7 @@ void SSmethod::SaveZXHistos( TString file_name )
       {
          for (int i_fs = 0; i_fs < num_of_final_states; i_fs++)
          {
-            for (int i_cat = 0; i_cat < num_of_categories; i_cat++)
+            for (int i_cat = 0; i_cat < num_of_categories_stxs; i_cat++)
             {
                histos_ZX[i_reg][i_proc][i_fs][i_cat]->Write();
             }
@@ -822,9 +872,9 @@ void SSmethod::FillZXInclusive( )
       {
          for (int i_fs = 0; i_fs < Settings::fs4l; i_fs++)
          {
-            for (int i_cat = 0; i_cat < Settings::inclusive; i_cat++)
+            for (int i_cat = 0; i_cat < Settings::inclusive_stxs; i_cat++)
             {
-               histos_ZX[i_reg][i_proc][i_fs][Settings::inclusive]->Add(histos_ZX[i_reg][i_proc][i_fs][i_cat]);
+               histos_ZX[i_reg][i_proc][i_fs][Settings::inclusive_stxs]->Add(histos_ZX[i_reg][i_proc][i_fs][i_cat]);
                histos_ZX[i_reg][i_proc][Settings::fs4l][i_cat]    ->Add(histos_ZX[i_reg][i_proc][i_fs][i_cat]);
             }
          }
@@ -837,7 +887,7 @@ void SSmethod::FillZXInclusive( )
       {
          for (int i_fs = 0; i_fs < Settings::fs4l; i_fs++)
          {
-            histos_ZX[i_reg][i_proc][Settings::fs4l][Settings::inclusive]->Add(histos_ZX[i_reg][i_proc][i_fs][Settings::inclusive]);
+            histos_ZX[i_reg][i_proc][Settings::fs4l][Settings::inclusive_stxs]->Add(histos_ZX[i_reg][i_proc][i_fs][Settings::inclusive_stxs]);
          }
       }
    }
@@ -885,9 +935,9 @@ void SSmethod::GetDataMCHistos( TString file_name)
       {
          for (int i_fs = 0; i_fs < num_of_final_states; i_fs++)
          {
-            for (int i_cat = 0; i_cat < num_of_categories; i_cat++)
+            for (int i_cat = 0; i_cat < num_of_categories_stxs; i_cat++)
             {
-               _histo_name = "M4l_" + _s_region.at(i_reg) + "_" + _s_process.at(i_proc) + "_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
+               _histo_name = "M4l_" + _s_region.at(i_reg) + "_" + _s_process.at(i_proc) + "_" + _s_final_state.at(i_fs) + "_" + _s_category_stxs.at(i_cat);
                histos_1D[i_reg][i_proc][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name);
             }
          }
@@ -910,9 +960,9 @@ void SSmethod::GetZXHistos( TString file_name)
       {
          for (int i_fs = 0; i_fs < num_of_final_states; i_fs++)
          {
-            for (int i_cat = 0; i_cat < num_of_categories; i_cat++)
+            for (int i_cat = 0; i_cat < num_of_categories_stxs; i_cat++)
             {
-               _histo_name = "ZX_M4l_" + _s_region.at(i_reg) + "_" + _s_process.at(i_proc) + "_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
+               _histo_name = "ZX_M4l_" + _s_region.at(i_reg) + "_" + _s_process.at(i_proc) + "_" + _s_final_state.at(i_fs) + "_" + _s_category_stxs.at(i_cat);
                histos_ZX[i_reg][i_proc][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name);
             }
          }
@@ -1449,8 +1499,10 @@ void SSmethod::PlotFR()
    gStyle->SetEndErrorSize(0);
    
    TLegend *leg_ele,*leg_mu;
+   CMS_lumi *lumi = new CMS_lumi;
    
    c_ele->cd();
+   lumi->set_lumi(c_ele, _lumi, 0);
    mg_electrons->Draw("AP");
 	mg_electrons->GetXaxis()->SetTitle("p_{T} [GeV]");
 	mg_electrons->GetYaxis()->SetTitle("Fake Rate");
@@ -1462,6 +1514,7 @@ void SSmethod::PlotFR()
    SavePlots(c_ele, "Plots/FR_SS_electrons");
    
    c_mu->cd();
+   lumi->set_lumi(c_mu, _lumi, 0);
    mg_muons->Draw("AP");
 	mg_muons->GetXaxis()->SetTitle("p_{T} [GeV]");
 	mg_muons->GetYaxis()->SetTitle("Fake Rate");
@@ -1485,7 +1538,7 @@ void SSmethod::PlotDataMC( TString variable_name, TString folder )
    
    for( int i_fs = 0; i_fs <= Settings::fs4l ; i_fs++ )
    {
-      for ( int i_cat = 0; i_cat <= Settings::inclusive; i_cat++ )
+      for ( int i_cat = 0; i_cat <= Settings::inclusive_stxs; i_cat++ )
       {
          histos_1D[Settings::regZLL][Settings::WZ][i_fs][i_cat]   ->SetFillColor(kMagenta);
          histos_1D[Settings::regZLL][Settings::qqZZ][i_fs][i_cat] ->SetFillColor(kCyan+1);
@@ -1544,7 +1597,7 @@ void SSmethod::PlotDataMC( TString variable_name, TString folder )
          lumi->set_lumi(c, _lumi, 0);
          
          TString _out_file_name;
-         _out_file_name = folder + "/" + variable_name + "_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
+         _out_file_name = folder + "/" + variable_name + "_SS_" + _s_final_state.at(i_fs) + "_" + _s_category_stxs.at(i_cat);
          SavePlots(c, _out_file_name);
          
       }
@@ -1565,7 +1618,7 @@ void SSmethod::PlotZX( TString variable_name, TString folder )
    
    for( int i_fs = 0; i_fs <= Settings::fs4l ; i_fs++ )
    {
-      for ( int i_cat = 0; i_cat <= Settings::inclusive; i_cat++ )
+      for ( int i_cat = 0; i_cat <= Settings::inclusive_stxs; i_cat++ )
       {
          histos_ZX[Settings::regZLL][Settings::Data][i_fs][i_cat]->SetFillColor(kGreen-1);
          histos_ZX[Settings::regZLL][Settings::Data][i_fs][i_cat]->SetLineColor(kGreen-1);
@@ -1593,7 +1646,7 @@ void SSmethod::PlotZX( TString variable_name, TString folder )
          lumi->set_lumi(c, _lumi, 0);
          
          TString _out_file_name;
-         _out_file_name = folder + "/" + variable_name + "_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
+         _out_file_name = folder + "/" + variable_name + "_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category_stxs.at(i_cat);
          SavePlots(c, _out_file_name);
          
       }
@@ -1617,7 +1670,7 @@ void SSmethod::FitZX( TString variable_name, TString folder )
 	
    for( int i_fs = 0; i_fs <= Settings::fs4l ; i_fs++ )
    {
-      for ( int i_cat = 0; i_cat <= Settings::inclusive; i_cat++ )
+      for ( int i_cat = 0; i_cat <= Settings::inclusive_stxs; i_cat++ )
       {
          TString _fs_label;
          if ( i_fs == Settings::fs4e)    _fs_label = "m_{4#font[12]{e}} (GeV)";
@@ -1654,7 +1707,7 @@ void SSmethod::FitZX( TString variable_name, TString folder )
          lumi->set_lumi(c, _lumi, 0);
 			
          TString _out_file_name;
-         _out_file_name = folder + "/" + variable_name + "_ZX_SS_fit_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat);
+         _out_file_name = folder + "/" + variable_name + "_ZX_SS_fit_" + _s_final_state.at(i_fs) + "_" + _s_category_stxs.at(i_cat);
          SavePlots(c, _out_file_name);
       }
 	}

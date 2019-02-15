@@ -582,6 +582,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     float DiJetMass  = -99;
     float DiJetDEta  = -99;
     float DiJetFisher  = -99;
+    float ZZjjPt     = -99;
 
     unsigned int nCandidates=0; // Should equal 3 after the loop below
     for (int jecnum = 0; jecnum < 3; jecnum++){
@@ -615,6 +616,19 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
         DiJetMass = (jet1.p4()+jet2.p4()).M();
         DiJetFisher = fisher(DiJetMass, DiJetDEta);
       }
+      
+      vector<const pat::Jet*> cleanedJetsPt30;
+      for (edm::View<pat::Jet>::const_iterator jet = CleanJets->begin(); jet != CleanJets->end(); ++jet){
+        if (jet->pt() > 30.) cleanedJetsPt30.push_back(&*jet);
+      }
+      
+      if(cleanedJetsPt30.size() > 1)
+      {
+        const pat::Jet& jet1 = *(cleanedJetsPt30.at(0));
+        const pat::Jet& jet2 = *(cleanedJetsPt30.at(1));
+        ZZjjPt = (Z1Lm->p4()+Z1Lp->p4()+Z2Lm->p4()+Z2Lp->p4()+jet1.p4()+jet2.p4()).pt();
+      }
+      
       for (unsigned int ijet = 0; ijet<cleanedJetsPt30Jec.size(); ijet++){
         TLorentzVector jet(
           cleanedJetsPt30Jec[ijet]->p4().x()*jec_ratio.at(ijet),
@@ -809,6 +823,8 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     myCand.addUserFloat("DiJetMass", DiJetMass);
     myCand.addUserFloat("DiJetDEta", DiJetDEta);
     myCand.addUserFloat("DiJetFisher", DiJetFisher);
+    
+    myCand.addUserFloat("ZZjjPt", ZZjjPt);
 
     // MELA branches
     pushMELABranches(myCand);

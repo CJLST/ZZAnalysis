@@ -41,7 +41,7 @@
 #define SMOOTH_ZX_FULL_RUN2_SS 0
 
 #define NEWWP2J 0.5
-#define NEWWP1J 0.5
+#define NEWWP1J 0.7 //0.5
 #define COMWPVH 0.5
 #define NEWWPWH COMWPVH
 #define NEWWPZH COMWPVH

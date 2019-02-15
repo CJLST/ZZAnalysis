@@ -7,12 +7,15 @@
 
 #include "TMath.h"
 #include "TRandom3.h"
+#include "TH1F.h"
 
 using namespace std;
 
 #define VERBOSE 1
 
 
+float bins_hpt4[]={0,60,120,200};
+TH1F *hpt_bin=new TH1F("hpt_bin","",3, bins_hpt4);
 
 extern "C" int categoryLegacy( int nCleanedJetsPt30 )
 {
@@ -301,3 +304,73 @@ extern "C" int categoryMor18(
   }
 
 }
+
+extern "C" int stage1_reco_1p1(
+                           int Njets,
+                           float mjj,
+                           float H_pt,
+                           int categoryMor18,
+                           float pt_hjj
+                           )
+{
+	int vbfTopo=0;
+	if (Njets<2) vbfTopo=0; 
+	vbfTopo = mjj > 350.0; 
+	if(categoryMor18 == 5 ){ return ttH_Lep;}
+	else if(categoryMor18 == 6 ){ return ttH_Had;}
+	else if(categoryMor18==3){
+		if(H_pt<150 ){return VH_lep_0_150;}
+		else {return VH_Lep_GT150;}
+	}
+	else if (categoryMor18 ==1){return VBF_1j;}
+	else if(categoryMor18==2)
+   {
+		if(vbfTopo)
+      {
+			if (H_pt>200 )   {return VBF_GT200_2J;}
+			else{
+				if (pt_hjj>25)
+				{return VBF_2j_mjj_GT350_3j;}
+				else{
+					if (mjj > 350 && mjj < 700 ){return VBF_2j_mjj_350_700_2j;}
+					else if (mjj > 700 ){return VBF_2j_mjj_GT700_2j;}
+				    }
+			    }
+      }
+		else {return VBF_2j;}
+	}
+   
+	else if (categoryMor18 == 4)
+   {
+		if ( 60 < mjj && mjj < 120){return VH_Had;}
+		else{return VBF_rest_VH;}
+	}
+	else
+   {
+		if (H_pt>200 ){return ggH_PTH_200;}
+		else
+      {
+			if (Njets==0)
+         {
+				if(H_pt<10){return ggH_0J_PTH_0_10;}
+				else{return ggH_0J_PTH_10_200;}
+			}
+			else if (Njets==1)   {
+				int binpt = hpt_bin->FindBin(H_pt);
+				if (binpt == 1){return ggH_1J_PTH_0_60; }
+				else if (binpt == 2){return ggH_1J_PTH_60_120; }
+				else if (binpt == 3){return ggH_1J_PTH_120_200; }
+
+			} 
+			else if ( Njets>=2) {
+				if(vbfTopo) {return ggH_VBF;}
+            int binpt = hpt_bin->FindBin(H_pt);
+            if (binpt == 1){return ggH_2J_PTH_0_60; }
+            else if (binpt == 2){return ggH_2J_PTH_60_120; }
+            else if (binpt == 3){return ggH_2J_PTH_120_200; }
+			}
+		}
+	}
+	return -1;
+}
+

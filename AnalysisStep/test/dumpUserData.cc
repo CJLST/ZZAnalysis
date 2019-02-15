@@ -21,6 +21,7 @@
 #include <ZZAnalysis/AnalysisStep/interface/PhotonFwd.h>
 #include <DataFormats/Common/interface/TriggerResults.h>
 #include <FWCore/Common/interface/TriggerNames.h>
+#include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
 
 #include <iostream>
 #include <iterator>
@@ -64,7 +65,7 @@ dumpUserData::dumpUserData(const ParameterSet& pset):
   listTriggers(pset.getUntrackedParameter<bool>("dumpTrigger",false))
 {
 
-  vtxToken = consumes<vector<reco::Vertex> >(edm::InputTag("offlinePrimaryVertices"));
+  vtxToken = consumes<vector<reco::Vertex> >(edm::InputTag("goodPrimaryVertices"));
 
   ParameterSet muCollps = pset.getParameter<ParameterSet>("muonSrcs");
   ParameterSet eleCollps = pset.getParameter<ParameterSet>("electronSrcs");
@@ -139,7 +140,29 @@ void dumpUserData::analyze(const Event & event, const EventSetup& eventSetup){
 	genPT=gp->pt();
       }
 
-      cout << "#" << i << " mu"  << ((lep->charge()>0)?"+ ":"- ") << " pt= " << lep->pt() << " eta= " << lep->eta() << " phi= " << lep->phi() << " GLB= " << lep->isGlobalMuon() << " TK= " << lep->isTrackerMuon() << " matches= " << lep->numberOfMatches() << " BTT= " << lep->muonBestTrackType() << " t0_nDof: " << lep->time().nDof << " t0(ns): " << lep->time().timeAtIpInOut << " genID= " << genID <<  " genPT= " << genPT;
+//   float PFChargedHadIso   = lep->pfIsolationR03().sumChargedHadronPt;
+//   float PFNeutralHadIso   = lep->pfIsolationR03().sumNeutralHadronEt;
+//   float PFPhotonIso       = lep->pfIsolationR03().sumPhotonEt;
+//   float PFPUChargedHadIso = lep->pfIsolationR03().sumPUPt;
+
+   float combRelIsoPF = LeptonIsoHelper::combRelIsoPF(2018, 2018, 0, *lep);
+
+      //--- SIP, dxy, dz
+      float IP      = std::abs(lep->dB(pat::Muon::PV3D));
+      float IPError = lep->edB(pat::Muon::PV3D);
+      float SIP     = IP/IPError;
+
+      float dxy = 999.;
+      float dz  = 999.;
+      const Vertex* vertex = 0;
+      edm::Handle<vector<reco::Vertex> > vtxs;
+      event.getByToken(vtxToken, vtxs);
+      if (vtxs->size()>0) {
+         vertex = &(vtxs->front());
+         dxy = fabs(lep->muonBestTrack()->dxy(vertex->position()));
+         dz  = fabs(lep->muonBestTrack()->dz(vertex->position()));
+      }
+      cout << "#" << i << " mu"  << ((lep->charge()>0)?"+ ":"- ") << " pt= " << lep->pt() << " eta= " << lep->eta() << " phi= " << lep->phi() << " GLB= " << lep->isGlobalMuon() << " TK= " << lep->isTrackerMuon() << " matches= " << lep->numberOfMatches() << " BTT= " << lep->muonBestTrackType() << " t0_nDof: " << lep->time().nDof << " t0(ns): " << lep->time().timeAtIpInOut << " genID= " << genID <<  " genPT= " << genPT << " combRelIsoPF=" << combRelIsoPF << " SIP=" << SIP << " dxy=" << dxy << " dz=" << dz << " isPFMuon= " << lep->isPFMuon() << " muonBestTrackType= " << lep->muonBestTrackType();
 
 //	 << " BTPT: " <<  lep->muonBestTrack()->pt() << " " << lep->innerTrack()->pt() << " " <<  lep->innerTrack()->eta() << " " << lep->innerTrack()->phi();
       dumpUserVal(*lep);

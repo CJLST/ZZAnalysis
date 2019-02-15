@@ -335,6 +335,7 @@ void Plotter::FillHistograms( TString input_file_name , int year)
 	
    _current_process = find_current_process( input_file_name, 0 , 0);
 	
+   if(year == 2018) _lumi = 58.83;
    if(year == 2017) _lumi = 41.37;
    if(year == 2016) _lumi = 35.86706;
 	
@@ -367,13 +368,13 @@ void Plotter::FillHistograms( TString input_file_name , int year)
 
       if ( !(ZZsel >= 90) ) continue;
 		
-		
       // K factors
       _k_factor = calculate_K_factor(input_file_name);
 		
       // Final event weight
       _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight) / gen_sum_weights;
       if ( input_file_name.Contains("ggH") && year == 2017) _event_weight *= ggH_NNLOPS_weight; // reweight POWHEG ggH to NNLOPS
+      if ( input_file_name.Contains("ggH") && year == 2018) _event_weight *= ggH_NNLOPS_weight; // reweight POWHEG ggH to NNLOPS
 
 		combination_histos->FillM4lCombination(ZZMass, _event_weight, _current_process);
 		
@@ -459,6 +460,8 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
    
       if ( !CRflag ) continue;
       if ( !test_bit(CRflag, CRZLLss) ) continue;
+      
+      if ( !(ZZsel >= 20) ) continue; // Remove events that do not pass selection
    
       _current_final_state = FindFinalStateZX();
 		

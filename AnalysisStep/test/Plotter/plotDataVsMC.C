@@ -132,7 +132,7 @@ Float_t normSSFullRange2e2mu[8] = {
 #define WPZH 0.9937
 // To change the c-constants for visualization purposes:
 #define NEWWP2J 0.5
-#define NEWWP1J 0.5
+#define NEWWP1J 0.7 //0.5
 #define COMWPVH 0.5 //0.8
 #define NEWWPWH COMWPVH
 #define NEWWPZH COMWPVH
