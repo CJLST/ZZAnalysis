@@ -1356,6 +1356,8 @@ process.dressedJets = cms.EDProducer("JetFiller",
 
 
 ### Load JEC
+#Taken from https://twiki.cern.ch/twiki/bin/view/CMS/JECDataMC#Recommended_for_MC
+
 if (APPLYJEC and SAMPLE_TYPE == 2016):
     if IsMC:
         process.jec = cms.ESSource("PoolDBESSource",
@@ -1366,16 +1368,10 @@ if (APPLYJEC and SAMPLE_TYPE == 2016):
             toGet = cms.VPSet(
                 cms.PSet(
                     record = cms.string('JetCorrectionsRecord'),
-#                    tag    = cms.string('JetCorrectorParametersCollection_Fall15_25nsV2_MC_AK4PFchs'), #for 76X
-#                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV1_MC_AK4PFchs'), #for 80X/Moriond16
-#                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV6_MC_AK4PFchs'), #for 80X/ICHEP16
                     tag    = cms.string('JetCorrectorParametersCollection_Summer16_23Sep2016V4_MC_AK4PFchs'), #for 80X/Moriond17
                     label  = cms.untracked.string('AK4PFchs')
                     ),
                 ),
-#            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall15_25nsV2_MC.db'), #for 76X
-#             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Spring16_25nsV1_MC.db'), #for 80X/Moriond16
-#             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Spring16_25nsV6_MC.db'), #for 80X/ICHEP16
              connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Summer16_23Sep2016V4_MC.db'), #for 80X/Moriond17
             )
     else:
@@ -1387,13 +1383,10 @@ if (APPLYJEC and SAMPLE_TYPE == 2016):
             toGet = cms.VPSet(
                 cms.PSet(
                     record = cms.string('JetCorrectionsRecord'),
-#                    tag    = cms.string('JetCorrectorParametersCollection_Fall15_25nsV2_DATA_AK4PFchs'), #for 76X
-#                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV6_DATA_AK4PFchs'), #for 80X/ICHEP16
                     tag    = cms.string('JetCorrectorParametersCollection_Summer16_23Sep2016AllV4_DATA_AK4PFchs'), #for 80X/Moriond17
                     label  = cms.untracked.string('AK4PFchs')
                     ),
                 ),
-#            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall15_25nsV2_DATA.db'), #for 76X
             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Summer16_23Sep2016AllV4_DATA.db'), #for 80X/ICHEP16
             )
 
@@ -1433,19 +1426,11 @@ if (APPLYJEC and SAMPLE_TYPE == 2017):
             toGet = cms.VPSet(
                 cms.PSet(
                     record = cms.string('JetCorrectionsRecord'),
-#                    tag    = cms.string('JetCorrectorParametersCollection_Fall15_25nsV2_MC_AK4PFchs'), #for 76X
-#                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV1_MC_AK4PFchs'), #for 80X/Moriond16
-#                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV6_MC_AK4PFchs'), #for 80X/ICHEP16
-#                    tag    = cms.string('JetCorrectorParametersCollection_Summer16_23Sep2016V4_MC_AK4PFchs'), #for 80X/Moriond17
 #                    tag    = cms.string('JetCorrectorParametersCollection_Fall17_17Nov2017_V6_MC_AK4PFchs'), #for 94X/Moriond18
                      tag    = cms.string('JetCorrectorParametersCollection_Fall17_17Nov2017_V8_MC_AK4PFchs'), #for 94X/MET fix
                     label  = cms.untracked.string('AK4PFchs')
                     ),
                 ),
-#            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall15_25nsV2_MC.db'), #for 76X
-#             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Spring16_25nsV1_MC.db'), #for 80X/Moriond16
-#             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Spring16_25nsV6_MC.db'), #for 80X/ICHEP16
-#             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Summer16_23Sep2016V4_MC.db'), #for 80X/Moriond17
 #             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall17_17Nov2017_V6_MC.db'), #for 94X/Moriond18
               connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall17_17Nov2017_V8_MC.db'), #for 94X/MET fix
             )
@@ -1458,17 +1443,71 @@ if (APPLYJEC and SAMPLE_TYPE == 2017):
             toGet = cms.VPSet(
                 cms.PSet(
                     record = cms.string('JetCorrectionsRecord'),
-#                    tag    = cms.string('JetCorrectorParametersCollection_Fall15_25nsV2_DATA_AK4PFchs'), #for 76X
-#                    tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsV6_DATA_AK4PFchs'), #for 80X/ICHEP16
-#                    tag    = cms.string('JetCorrectorParametersCollection_Summer16_23Sep2016AllV4_DATA_AK4PFchs'), #for 80X/Moriond17
                     tag    = cms.string('JetCorrectorParametersCollection_Fall17_17Nov2017BCDEF_V6_DATA_AK4PFchs'), #for 94X/Moriond18
                     label  = cms.untracked.string('AK4PFchs')
                     ),
                 ),
-#            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall15_25nsV2_DATA.db'), #for 76X
-#            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Summer16_23Sep2016AllV4_DATA.db'), #for 80X/ICHEP16
             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall17_17Nov2017BCDEF_V6_DATA.db'),
             )
+
+    ## add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
+    process.es_prefer_jec = cms.ESPrefer('PoolDBESSource','jec')
+
+    ### reapply JEC
+    from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import updatedPatJetCorrFactors
+    process.patJetCorrFactorsReapplyJEC = updatedPatJetCorrFactors.clone(
+        src = cms.InputTag("slimmedJets"),
+        levels = ['L1FastJet','L2Relative','L3Absolute'],
+        payload = 'AK4PFchs' )
+    if not IsMC:
+        process.patJetCorrFactorsReapplyJEC.levels = ['L1FastJet','L2Relative','L3Absolute','L2L3Residual']
+
+    from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import updatedPatJets
+    process.patJetsReapplyJEC = updatedPatJets.clone(
+        jetSource = cms.InputTag("slimmedJets"),
+        jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
+        )
+
+    ### add pileup id and discriminant to patJetsReapplyJEC
+    process.patJetsReapplyJEC.userData.userFloats.src += ['pileupJetIdUpdated:fullDiscriminant']
+    process.patJetsReapplyJEC.userData.userInts.src += ['pileupJetIdUpdated:fullId']
+
+    ### Replace inputs in QGTagger and dressedJets
+    process.QGTagger.srcJets = cms.InputTag( 'patJetsReapplyJEC')
+    process.dressedJets.src = cms.InputTag('patJetsReapplyJEC')
+
+
+if (APPLYJEC and SAMPLE_TYPE == 2018):
+    if IsMC:
+        process.jec = cms.ESSource("PoolDBESSource",
+            DBParameters = cms.PSet(
+                messageLevel = cms.untracked.int32(1)
+                ),
+            timetype = cms.string('runnumber'),
+            toGet = cms.VPSet(
+                cms.PSet(
+                    record = cms.string('JetCorrectionsRecord'),
+                     tag    = cms.string('JetCorrectorParametersCollection_Autumn18_V3_MC_AK4PFchs'), #for 10_2_X MC
+                    label  = cms.untracked.string('AK4PFchs')
+                    ),
+                ),
+              connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Autumn18_V3_MC.db'), #for 10_2_X MC
+            )
+#    else: # [FIXME] Preliminary recommendation is to use no JEC for data, change this once it is available
+#        process.jec = cms.ESSource("PoolDBESSource",
+#            DBParameters = cms.PSet(
+#                messageLevel = cms.untracked.int32(1)
+#                ),
+#            timetype = cms.string('runnumber'),
+#            toGet = cms.VPSet(
+#                cms.PSet(
+#                    record = cms.string('JetCorrectionsRecord'),
+#                    tag    = cms.string('JetCorrectorParametersCollection_Fall17_17Nov2017BCDEF_V6_DATA_AK4PFchs'), #for 94X/Moriond18
+#                    label  = cms.untracked.string('AK4PFchs')
+#                    ),
+#                ),
+#            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall17_17Nov2017BCDEF_V6_DATA.db'),
+#            )
 
     ## add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
     process.es_prefer_jec = cms.ESPrefer('PoolDBESSource','jec')
@@ -1607,7 +1646,7 @@ if (RECORRECTMET and SAMPLE_TYPE == 2017):
 process.preSkimCounter = cms.EDProducer("EventCountProducer")
 process.PVfilter =  cms.Path(process.preSkimCounter+process.goodPrimaryVertices)
 
-if APPLYJEC:
+if (APPLYJEC and (SAMPLE_TYPE == 2016 or SAMPLE_TYPE == 2017)) or (APPLYJEC and SAMPLE_TYPE == 2018 and IsMC): ## [FIXME] Preliminary recommendation for 2018 is to apply JEC only on MC!
     process.Jets = cms.Path(process.pileupJetIdUpdated + process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.QGTagger + process.dressedJets )
 else:
     process.Jets = cms.Path( process.QGTagger + process.dressedJets )

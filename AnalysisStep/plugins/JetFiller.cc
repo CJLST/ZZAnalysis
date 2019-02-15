@@ -322,7 +322,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       j.setP4(reco::Particle::PolarLorentzVector(pt_jer, jeta, jphi, (pt_jer/jpt)*j.mass()));
     }
 
-    
+    //cout<<"jet pT="<<jpt<<", eta="<<jeta<<endl;
     //--- Embed user variables
     j.addUserFloat("qgLikelihood",qgLikelihood);
     j.addUserFloat("axis2",axis2);
