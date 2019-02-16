@@ -312,9 +312,10 @@ elif (LEPTON_SETUP == 2017):
    process.triggerSingleMu  = cms.Path(process.hltFilterSingleMu )
 
 ### 2018 triggers - FIXME: to be updated (26/6/18)
+elif (LEPTON_SETUP == 2018):
    process.hltFilterDiEle.HLTPaths = ["HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_DoubleEle25_CaloIdL_MW_v*"]
    process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*"]
-   process.hltFilterMuEle.HLTPaths = ["HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ_v*"]
+   process.hltFilterMuEle.HLTPaths = ["HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ_v*"]
    process.hltFilterTriEle.HLTPaths = [""]
    process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_10_5_5_DZ_v*","HLT_TripleMu_12_10_5_v*"]
    process.hltFilterSingleEle.HLTPaths = ["HLT_Ele32_WPTight_Gsf_v*"]

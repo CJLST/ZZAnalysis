@@ -4,8 +4,8 @@ LEPTON_SETUP = 2018  # current default = 2018
 ELECORRTYPE = "None" # "None" to switch off
 ELEREGRESSION = "None" # "None" to switch off
 APPLYMUCORR = False  # Switch off muon scale corrections
-APPLYJEC = False     #
-APPLYJER = False     #
+APPLYJEC = True     #
+APPLYJER = True     #
 RECORRECTMET = False #
 KINREFIT = False    # control KinZFitter (very slow)
 PROCESS_CR = False   # Uncomment to run CR paths and trees
