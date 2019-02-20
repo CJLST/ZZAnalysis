@@ -788,9 +788,9 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
 		  fMuWeight->Close();
 
     }
-	else if (year == 2018)//[FIXME] Use 2017 SFs for now!
+	else if (year == 2018)
       {
-	edm::FileInPath fipMu("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_Moriond2018_final.root");
+	edm::FileInPath fipMu("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/final_HZZ_muon_SF_2018RunA2D_ER_1802.root");
         TFile *fMuWeight = TFile::Open(fipMu.fullPath().data(),"READ");
         hTH2D_Mu_All = (TH2D*)fMuWeight->Get("FINAL")->Clone();
         hTH2D_Mu_Unc = (TH2D*)fMuWeight->Get("ERROR")->Clone();
@@ -2032,12 +2032,12 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const vector<const reco::Candidate*>& lep
 		  muonSF *= RecoSF*SelSF;
 		  muon_Unc_rel += sqrt( RecoSF_Unc*RecoSF_Unc/(RecoSF*RecoSF) + SelSF_Unc*SelSF_Unc/(SelSF*SelSF) ); // assume full correlation between different muons (and uncorrelated reco and sel uncertainties)
 		}
-		else if(year == 2018) //[FIXME] Update when 2018 available
+		else if(year == 2018) 
 		{
 		  RecoSF = 1.; // The scale factor combines all afficiecnies
 		  RecoSF_Unc = 0.;
-		  SelSF = 1.; //last bin contains the overflow
-		  SelSF_Unc = 1.; //last bin contains the overflow
+          SelSF = hTH2D_Mu_All->GetBinContent(hTH2D_Mu_All->GetXaxis()->FindBin(myLepEta),hTH2D_Mu_All->GetYaxis()->FindBin(std::min(myLepPt,199.f))); //last bin contains the overflow
+          SelSF_Unc = hTH2D_Mu_Unc->GetBinContent(hTH2D_Mu_Unc->GetXaxis()->FindBin(myLepEta),hTH2D_Mu_Unc->GetYaxis()->FindBin(std::min(myLepPt,199.f))); //last bin contains the overflow
 
 		  muonSF *= RecoSF*SelSF;
 		  muon_Unc_rel += sqrt( RecoSF_Unc*RecoSF_Unc/(RecoSF*RecoSF) + SelSF_Unc*SelSF_Unc/(SelSF*SelSF) ); // assume full correlation between different muons (and uncorrelated reco and sel uncertainties)
