@@ -26,7 +26,7 @@ void measureBTagEff()
 {
     // read MC sample
     vector<TString> samples;
-    samples.push_back("/eos/user/t/tsculac/BigStuff/bTag/AAAOK/DYJetsToLL_M50/ZZ4lAnalysis.root");
+    samples.push_back("");
 	
 
     // -------------------------------------------------------------------------------------------
@@ -36,7 +36,9 @@ void measureBTagEff()
     int nPtBins  = sizeof(PtBins)/sizeof(float) - 1;
     int nEtaBins = sizeof(EtaBins)/sizeof(float) - 1;
 
-    float WPtag[3] = {0.1522, 0.4941, 0.8001}; // L, M, T -- 90X DeepCSV for Moriond 2018, https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+    //float WPtag[3] = {0.1522, 0.4941, 0.8001}; // L, M, T -- 90X DeepCSV for Moriond 2018, https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+    
+    float WPtag[3] = {0.1241, 0.4184, 0.7527};// L, M, T -- 90X DeepCSV for Moriond 2019, https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X
     string WPname[3] = {"L", "M", "T"};
 
 
@@ -48,7 +50,7 @@ void measureBTagEff()
     vector<TH2F*> h2_BTaggingEff_Num_c(3);
     vector<TH2F*> h2_BTaggingEff_Num_udsg(3);
 
-    string outputFile = "bTagEfficiencies_94X_Moriond18_v1.root";
+    string outputFile = "bTagEfficiencies_102X_Moriond19.root";
     cout << "Saving efficiency weights into: " << outputFile << endl;
     TFile* fOut = new TFile (outputFile.c_str(), "recreate");
     fOut->cd();
