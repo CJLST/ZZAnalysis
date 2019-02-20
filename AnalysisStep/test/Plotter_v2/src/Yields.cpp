@@ -32,10 +32,10 @@ Yields::Yields( double lumi ):Tree()
    _tclr->GetColor("#5f3f3f");
    
    // Z+X SS factors
-   _fs_ROS_SS.push_back(1.00868);//4e
-   _fs_ROS_SS.push_back(1.04015);//4mu
-   _fs_ROS_SS.push_back(1.00823);//2e2mu
-   _fs_ROS_SS.push_back(1.0049);//2mu2e
+   _fs_ROS_SS.push_back(0.99995);//4e
+   _fs_ROS_SS.push_back(1.02639);//4mu
+   _fs_ROS_SS.push_back(1.0308);//2e2mu
+   _fs_ROS_SS.push_back(1.00326);//2mu2e
    
    vector<float> temp;
    for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )

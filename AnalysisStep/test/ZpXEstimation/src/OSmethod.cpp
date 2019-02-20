@@ -908,6 +908,7 @@ void OSmethod::PrintZXYields()
 	double stat;
 	double syst;
 	double comb;
+   double syst_comp;
 	double yield, yield_up;
 	
 	cout << endl;
@@ -919,10 +920,11 @@ void OSmethod::PrintZXYields()
 		for ( int i_cat = 0; i_cat <= Settings::inclusive_stxs; i_cat++)
 		{
 
-		   yield = histos_ZX[Settings::nominal][i_fs][i_cat]->IntegralAndError(0,histos_ZX[Settings::nominal][i_fs][i_cat]->GetSize() - 2,stat);
+		   yield = histos_ZX[Settings::nominal][i_fs][i_cat]->IntegralAndError(0,histos_ZX[Settings::nominal][i_fs][i_cat]->GetSize() - 2,stat); //statistical uncertainty
 		   yield_up = histos_ZX[Settings::Up][i_fs][i_cat]->Integral();
-		   syst = ((yield_up/yield) - 1.) * yield;
-		   comb = sqrt(stat*stat + syst*syst);
+		   syst = ((yield_up/yield) - 1.) * yield; //systematical uncertainty due to fake rate variation
+         syst_comp = yield*0.3; //background composition uncertainty of 30% measured in Run I
+		   comb = sqrt(stat*stat + syst*syst + syst_comp*syst_comp);
 			
 		cout << "Category: " << _s_category_stxs.at(i_cat) << "   Final state: " << _s_final_state.at(i_fs) << endl;
 		cout << yield << " +/- " << comb << " (total.)   - " << stat << " (stat.)   - " << syst << " (syst.)" << endl;

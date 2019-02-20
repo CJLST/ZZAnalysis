@@ -632,11 +632,13 @@ void SSmethod::MakeHistogramsZX( TString input_file_data_name, TString  input_fi
       if (false) continue;//( MERGE_2E2MU && i_fs == Settings::fs2mu2e) continue;
       for ( int i_cat = 0; i_cat < num_of_categories_stxs; i_cat++)
       {
-        float stat    = _expected_yield_SR[i_fs][i_cat]/sqrt(_number_of_events_CR[i_fs][i_cat]);
-        float syst_up = _expected_yield_SR[i_fs][i_cat]*((_expected_yield_SR_up[i_fs][i_cat]/_expected_yield_SR[i_fs][i_cat]) - 1.);
+        float stat    = _expected_yield_SR[i_fs][i_cat]/sqrt(_number_of_events_CR[i_fs][i_cat]); //statistical uncertainty
+        float syst_up = _expected_yield_SR[i_fs][i_cat]*((_expected_yield_SR_up[i_fs][i_cat]/_expected_yield_SR[i_fs][i_cat]) - 1.); //systematical uncertainty due to fake rate variation
         float syst_dn = _expected_yield_SR[i_fs][i_cat]*(1. - (_expected_yield_SR_dn[i_fs][i_cat]/_expected_yield_SR[i_fs][i_cat]));
-        float comb_up = sqrt(stat*stat + syst_up*syst_up);
-        float comb_dn = sqrt(stat*stat + syst_dn*syst_dn);
+        float syst_comp = _expected_yield_SR[i_fs][i_cat]*0.3; //background composition uncertainty of 30% measured in Run I
+
+        float comb_up = sqrt(stat*stat + syst_up*syst_up + syst_comp*syst_comp);
+        float comb_dn = sqrt(stat*stat + syst_dn*syst_dn + syst_comp*syst_comp);
 			
 			
 			cout << "Category: " << _s_category_stxs.at(i_cat) << "   Final state: " << _s_final_state.at(i_fs) << endl;
