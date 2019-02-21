@@ -48,6 +48,7 @@ class JetFiller : public edm::EDProducer {
   bool isMC_;
   const std::string bTaggerName;
   float bTaggerThreshold;
+  bool applyJEC_;
   const std::string jecType;
   bool applyJER_;
   const std::string jerType;
@@ -76,6 +77,7 @@ JetFiller::JetFiller(const edm::ParameterSet& iConfig) :
   isMC_(iConfig.getParameter<bool>("isMC")),
   bTaggerName(iConfig.getParameter<std::string>("bTaggerName")),
   bTaggerThreshold(iConfig.getParameter<double>("bTaggerThreshold")),
+  applyJEC_(iConfig.getParameter<bool>("applyJEC")),
   jecType(iConfig.getParameter<std::string>("jecType")),
   applyJER_(iConfig.getParameter<bool>("applyJER")),
   jerType(iConfig.getParameter<std::string>("jerType")),
@@ -211,7 +213,8 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 
 	 else if (setup == 2017 || setup == 2018)//[FIXME] Update to 2018 recommendations when available
 	 { //Recommended tight PU JET ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
-		PUjetID = bool(j.userInt("pileupJetId:fullId") & (1 << 0));
+		if (applyJEC_) PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0));
+        else PUjetID = bool(j.userInt("pileupJetId:fullId") & (1 << 0));
 	 }
 	 
 	 else
@@ -331,7 +334,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     j.addUserFloat("jec_unc", jec_unc);
     j.addUserFloat("pt_jerup", pt_jerup);
     j.addUserFloat("pt_jerdn", pt_jerdn);
-    j.addUserFloat("looseJetID",JetID);
+    j.addUserFloat("JetID",JetID);
     j.addUserFloat("PUjetID",PUjetID);
     j.addUserFloat("bTagger",bTagger);
     j.addUserFloat("isBtagged",isBtagged);

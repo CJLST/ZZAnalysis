@@ -138,6 +138,7 @@ namespace {
   std::vector<short> JetPartonFlavour;
   std::vector<float> JetPUValue;
   std::vector<short> JetPUID;
+  std::vector<short> JetID;
   std::vector<float> JetJERUp;
   std::vector<float> JetJERDown;
 	
@@ -730,13 +731,14 @@ void ZNtupleMaker::FillJet(const pat::Jet& jet)
 	
   JetJERUp .push_back(jet.userFloat("pt_jerup"));
   JetJERDown .push_back(jet.userFloat("pt_jerdn"));
-
+    
+  JetID.push_back(jet.userFloat("JetID"));
+  JetPUID.push_back(jet.userFloat("PUjetID"));
+    
   if (jet.hasUserFloat("pileupJetIdUpdated:fullDiscriminant")) { // if JEC is reapplied, we set this
 	  JetPUValue.push_back(jet.userFloat("pileupJetIdUpdated:fullDiscriminant"));
-     JetPUID.push_back(jet.userInt("pileupJetIdUpdated:fullId"));
    } else {
      JetPUValue.push_back(jet.userFloat("pileupJetId:fullDiscriminant"));
-     JetPUID.push_back(jet.userInt("pileupJetId:fullId"));
    }
 }
 
@@ -1085,11 +1087,12 @@ void ZNtupleMaker::BookAllBranches(){
     myTree->Book("JetSigma",JetSigma);
     myTree->Book("JetHadronFlavour",JetHadronFlavour);
     myTree->Book("JetPartonFlavour",JetPartonFlavour);
-	 myTree->Book("JetJERUp",JetJERUp);
+    myTree->Book("JetJERUp",JetJERUp);
     myTree->Book("JetJERDown",JetJERDown);
     myTree->Book("JetPUID", JetPUID);
+    myTree->Book("JetID", JetID);
     myTree->Book("JetPUValue", JetPUValue);
-	 myTree->Book("PFMET",PFMET);
+    myTree->Book("PFMET",PFMET);
     myTree->Book("PFMET_jesUp",PFMET_jesUp);
     myTree->Book("PFMET_jesDn",PFMET_jesDn);
     myTree->Book("PFMETPhi",PFMETPhi);
