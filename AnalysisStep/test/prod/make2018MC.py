@@ -74,7 +74,7 @@ for filename in "samples_{year}_MC.csv", "samples_{year}_MC_anomalous.csv":
         line = next(f2)
 
       if row["dataset"]:
-        row["::variables"] = row["::variables"].replace("LEPTON_SETUP=2017", "LEPTON_SETUP=2018")
+        row["::variables"] = row["::variables"].replace("LEPTON_SETUP=2017", "LEPTON_SETUP=2018;ELECORRTYPE=None;ELEREGRESSION=None;APPLYMUCORR=True;RECORRECTMET=False")
         assert "LEPTON_SETUP=2018" in row["::variables"]
 
         row["identifier"] = row["identifier"].lstrip("#")
@@ -97,10 +97,11 @@ for filename in "samples_{year}_MC.csv", "samples_{year}_MC_anomalous.csv":
 
         seenPDs.add(datasetparts[1])
         dasoutput = das("dataset dataset="+("/".join(datasetparts)) + " status=*")
+        dasoutput = [result for result in dasoutput if result["dataset"][0]["status"] != "INVALID"]
         if not dasoutput:
           isok = False
 
-          if datetime.date.today() < datetime.date(2019, 2, 1):
+          if datetime.date.today() < datetime.date(2019, 3, 1):
             #GEN approved but not submitted yet
             match = re.match("GluGluHToZZTo4L_M([0-9]+)_13TeV_powheg2_JHUGenV7011_pythia8", datasetparts[1])
             if match and int(match.group(1)) >= 145: isok = True
