@@ -346,15 +346,15 @@ ZNtupleMaker::ZNtupleMaker(const edm::ParameterSet& pset) :
         root_file->Close();
 
     }
-	 else if (year == 2018)//[FIXME] Use 2017 SFs for now
+	 else if (year == 2018)
 	 {
 	 
-		  edm::FileInPath fipEleNotCracks("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi.txt_EGM2D_Moriond2018v1.root");
+		  edm::FileInPath fipEleNotCracks("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi.txt_EGM2D_Moriond2019v1.root");
         TFile *root_file = TFile::Open(fipEleNotCracks.fullPath().data(),"READ");
         hTH2D_El_IdIsoSip_notCracks = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
         root_file->Close();
 		 
-        edm::FileInPath fipEleCracks("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi.txt_EGM2D_Moriond2018v1_gap.root");
+        edm::FileInPath fipEleCracks("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi.txt_EGM2D_Moriond2019v1_gap.root");
         root_file = TFile::Open(fipEleCracks.fullPath().data(),"READ");
         hTH2D_El_IdIsoSip_Cracks = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
         root_file->Close();
@@ -965,7 +965,7 @@ Float_t ZNtupleMaker::getAllWeight(const reco::Candidate* Lep) const //FIXME: sy
 	
 	}
 	
-	else if(year == 2018) //[FIXME] Update when 2018 available
+	else if(year == 2018) 
 		{
 			if(mySIP >= 4.0 )
 			{ // FIXME: use a better way to find RSE electrons!
@@ -973,17 +973,18 @@ Float_t ZNtupleMaker::getAllWeight(const reco::Candidate* Lep) const //FIXME: sy
 				SelSF = 1.;
 			}
 			
-			else
-			{
-				if((bool)userdatahelpers::getUserFloat(Lep,"isCrack"))
-				{
-				 SelSF = 1.;
-				}
-				else
-				{
-				 SelSF = 1.;
-				}
-			}
+            else
+            {
+                if((bool)userdatahelpers::getUserFloat(Lep,"isCrack"))
+                {
+                    SelSF = hTH2D_El_IdIsoSip_Cracks->GetBinContent(hTH2D_El_IdIsoSip_Cracks->FindFixBin(mySCeta, std::min(myLepPt,499.f)));
+                    //SelSF_Unc = hTH2D_El_IdIsoSip_Cracks->GetBinError(hTH2D_El_IdIsoSip_Cracks->FindFixBin(mySCeta, std::min(myLepPt,499.f)));
+                }
+                else
+                {
+                    SelSF = hTH2D_El_IdIsoSip_notCracks->GetBinContent(hTH2D_El_IdIsoSip_notCracks->FindFixBin(mySCeta, std::min(myLepPt,499.f)));
+                    //SelSF_Unc = hTH2D_El_IdIsoSip_notCracks->GetBinError(hTH2D_El_IdIsoSip_notCracks->FindFixBin(mySCeta, std::min(myLepPt,499.f)));
+                }
 		
 		}
 	 

@@ -1334,7 +1334,7 @@ elif (LEPTON_SETUP == 2017): #DeepCSV, from https://twiki.cern.ch/twiki/bin/view
 elif (LEPTON_SETUP == 2018): #DeepCSV, from https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X
    theBTagger="pfDeepCSVJetTags:probb"
    theBTaggerThr=0.4184
-   theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_94XSF_V3_B_F.csv" # FIXME: To be updated for the 2018 btag SFs
+   theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_102XSF_V1.csv"
    theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_102X_Moriond19.root" 
 else:
    sys.exit("ZZ4lAnalysis.py: Need to define the btagging for the new setup!")
