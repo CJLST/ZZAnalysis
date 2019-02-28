@@ -11,16 +11,16 @@
 git cms-init
 
 #Preliminary electron scale and smearing corrections according to https://twiki.cern.ch/twiki/bin/view/CMS/EGMSmearer
-# git cms-merge-topic cms-egamma:EGM_94X_v1
-# (cd EgammaAnalysis/ElectronTools/data ; git clone https://github.com/ECALELFS/ScalesSmearings.git ; cd ScalesSmearings ; git checkout Run2017_17Nov2017_v1)
+git cms-merge-topic cms-egamma:EgammaID_1023
+git cms-merge-topic cms-egamma:EgammaPostRecoTools
+git clone git@github.com:cms-egamma/EgammaAnalysis-ElectronTools.git EgammaAnalysis/ElectronTools/data
+(cd EgammaAnalysis/ElectronTools/data ; git checkout ScalesSmearing2018_Dev)
+git cms-merge-topic cms-egamma:EgammaPostRecoTools_dev
 
 #MET corrections according to https://twiki.cern.ch/twiki/bin/view/CMS/MissingETUncertaintyPrescription#Instructions_for_9_4_X_X_0_for_M
 # git cms-merge-topic cms-met:METRecipe94x
 
 #Simplified template cross section
-# git cms-addpkg GeneratorInterface/RivetInterface
-
-#### Please do not add any custom (non-CMSSW) package before this line ####
 git cms-addpkg GeneratorInterface/RivetInterface
 git cms-addpkg SimDataFormats/HTXS
 git remote add amarini https://github.com/amarini/cmssw.git
@@ -28,6 +28,7 @@ git fetch amarini
 git checkout amarini/htxs_stage1p1_cmssw949_v2 GeneratorInterface/RivetInterface
 git checkout amarini/htxs_stage1p1_cmssw949_v2 SimDataFormats/HTXS
 
+#### Please do not add any custom (non-CMSSW) package before this line ####
 #ZZAnalysis
 git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
 (cd ZZAnalysis; git checkout miniAOD_80X)

@@ -619,15 +619,6 @@ process.selectedSlimmedElectrons = cms.EDFilter("PATElectronSelector",
 )
 
 if (LEPTON_SETUP == 2016):
-## ICHEP 16
-#    process.calibratedPatElectrons = cms.EDProducer("CalibratedPatElectronProducerRun2",
-#        electrons = cms.InputTag('selectedSlimmedElectrons'),
-#        gbrForestName = cms.string("gedelectron_p4combination_25ns"),
-#        isMC = cms.bool(IsMC),
-#        isSynchronization = cms.bool(False),
-#        correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/80X_ichepV1_2016_ele")
-#    )
-
 ## Moriond 17
    process.calibratedPatElectrons = cms.EDProducer("CalibratedPatElectronProducerRun2",
        electrons = cms.InputTag('selectedSlimmedElectrons'),
@@ -653,6 +644,21 @@ if (LEPTON_SETUP == 2017):
 		 isMC = cms.bool(IsMC),
 		 isSynchronization = cms.bool(False),
 		 correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/Run2017_17Nov2017_v1_ele_unc"),
+       recHitCollectionEB = cms.InputTag('reducedEgamma:reducedEBRecHits'),
+       recHitCollectionEE = cms.InputTag('reducedEgamma:reducedEERecHits')
+	)
+
+## Preliminary Moriond 19 corrections from https://twiki.cern.ch/twiki/bin/view/CMS/EgammaPostRecoRecipes#2018_Preliminary_Energy_Correcti
+if (LEPTON_SETUP == 2018):
+	process.calibratedPatElectrons = cms.EDProducer("CalibratedPatElectronProducerRun2",
+		 electrons = cms.InputTag('selectedSlimmedElectrons'),
+		 gbrForestName = cms.vstring('electron_eb_ECALTRK_lowpt', 'electron_eb_ECALTRK',
+											  'electron_ee_ECALTRK_lowpt', 'electron_ee_ECALTRK',
+											  'electron_eb_ECALTRK_lowpt_var', 'electron_eb_ECALTRK_var',
+											  'electron_ee_ECALTRK_lowpt_var', 'electron_ee_ECALTRK_var'),
+		 isMC = cms.bool(IsMC),
+		 isSynchronization = cms.bool(False),
+		 correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/Run2018_Step2Closure_CoarseEtaR9Gain"),
        recHitCollectionEB = cms.InputTag('reducedEgamma:reducedEBRecHits'),
        recHitCollectionEE = cms.InputTag('reducedEgamma:reducedEERecHits')
 	)
@@ -694,7 +700,9 @@ process.softElectrons = cms.EDProducer("EleFiller",
    	correctionFile = cms.string(""),
    )
 
-if (LEPTON_SETUP < 2017):
+process.softElectrons.correctionFile = process.calibratedPatElectrons.correctionFile
+
+if (LEPTON_SETUP == 2016):
    process.softElectrons.mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16HZZV1Values")
 #94X BDT with ID and Isolation
 if (LEPTON_SETUP == 2017):
@@ -703,10 +711,6 @@ if (LEPTON_SETUP == 2017):
 #2018 version of BDT with ID and Isolation
 if (LEPTON_SETUP == 2018):
    process.softElectrons.mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Fall17IsoV2RawValues")
-
-if (LEPTON_SETUP < 2018):
-   process.softElectrons.correctionFile = process.calibratedPatElectrons.correctionFile
-
 
 #process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons) # (use this version when running VID)
 #process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.bareSoftElectrons + process.softElectrons) # (use this version without VID)
@@ -733,6 +737,10 @@ if (ELEREGRESSION == "Moriond17v1" and LEPTON_SETUP == 2016):
 	process.electrons = cms.Sequence(process.regressionApplication + process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
 
 if (LEPTON_SETUP == 2017): #For the moment regresion is applied on RECO level so no additional procedure is needed https://twiki.cern.ch/twiki/bin/view/CMS/Egamma2017DataRecommendations#Overview_of_E_gamma_Energy_Corre
+	process.selectedSlimmedElectrons.src = cms.InputTag("slimmedElectrons")
+	process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
+
+if (LEPTON_SETUP == 2018):
 	process.selectedSlimmedElectrons.src = cms.InputTag("slimmedElectrons")
 	process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
 
