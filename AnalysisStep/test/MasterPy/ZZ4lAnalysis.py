@@ -698,10 +698,9 @@ if (LEPTON_SETUP < 2017):
    process.softElectrons.mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16HZZV1Values")
 #94X BDT with ID and Isolation
 if (LEPTON_SETUP == 2017):
-#	process.softElectrons.mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Fall17IsoV1Values")
    process.softElectrons.mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Fall17IsoV2RawValues")
 
-#[FIXME] 2018 version of BDT with ID and Isolation
+#2018 version of BDT with ID and Isolation
 if (LEPTON_SETUP == 2018):
    process.softElectrons.mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Fall17IsoV2RawValues")
 
@@ -1495,21 +1494,21 @@ if (APPLYJEC and SAMPLE_TYPE == 2018):
                 ),
               connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Autumn18_V3_MC.db'), #for 10_2_X MC
             )
-#    else: # [FIXME] Preliminary recommendation is to use no JEC for data, change this once it is available
-#        process.jec = cms.ESSource("PoolDBESSource",
-#            DBParameters = cms.PSet(
-#                messageLevel = cms.untracked.int32(1)
-#                ),
-#            timetype = cms.string('runnumber'),
-#            toGet = cms.VPSet(
-#                cms.PSet(
-#                    record = cms.string('JetCorrectionsRecord'),
-#                    tag    = cms.string('JetCorrectorParametersCollection_Fall17_17Nov2017BCDEF_V6_DATA_AK4PFchs'), #for 94X/Moriond18
-#                    label  = cms.untracked.string('AK4PFchs')
-#                    ),
-#                ),
-#            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall17_17Nov2017BCDEF_V6_DATA.db'),
-#            )
+    else: # [FIXME] Preliminary recommendation is to use no JEC for data, change this once it is available
+        process.jec = cms.ESSource("PoolDBESSource",
+            DBParameters = cms.PSet(
+                messageLevel = cms.untracked.int32(1)
+                ),
+            timetype = cms.string('runnumber'),
+            toGet = cms.VPSet(
+                cms.PSet(
+                    record = cms.string('JetCorrectionsRecord'),
+                    tag    = cms.string('JetCorrectorParametersCollection_Autumn18_V3_DATA_AK4PFchs'),
+                    label  = cms.untracked.string('AK4PFchs')
+                    ),
+                ),
+            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Autumn18_V3_DATA.db'),
+            )
 
     ## add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
     process.es_prefer_jec = cms.ESPrefer('PoolDBESSource','jec')
@@ -1648,7 +1647,7 @@ if (RECORRECTMET and SAMPLE_TYPE == 2017):
 process.preSkimCounter = cms.EDProducer("EventCountProducer")
 process.PVfilter =  cms.Path(process.preSkimCounter+process.goodPrimaryVertices)
 
-if (APPLYJEC and (SAMPLE_TYPE == 2016 or SAMPLE_TYPE == 2017)) or (APPLYJEC and SAMPLE_TYPE == 2018 and IsMC): ## [FIXME] Preliminary recommendation for 2018 is to apply JEC only on MC!
+if APPLYJEC:
     process.Jets = cms.Path(process.pileupJetIdUpdated + process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.QGTagger + process.dressedJets )
 else:
     process.Jets = cms.Path( process.QGTagger + process.dressedJets )
