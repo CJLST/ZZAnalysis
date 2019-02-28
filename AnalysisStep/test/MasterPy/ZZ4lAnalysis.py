@@ -509,7 +509,7 @@ elif LEPTON_SETUP == 2017:# Rochester corrections for 2017 data
 elif LEPTON_SETUP == 2018:# Rochester corrections for 2018 data
      process.calibratedMuons = cms.EDProducer("RochesterPATMuonCorrector",
                                          src = cms.InputTag("slimmedMuons"),
-                                         identifier = cms.string("RoccoR2017"),#[FIXME] 2018 Rochester correction file seems to be broken at the moment
+                                         identifier = cms.string("RoccoR2018"),
                                          isMC = cms.bool(IsMC),
                                          isSynchronization = cms.bool(False),
                                          )

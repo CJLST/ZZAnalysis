@@ -103,8 +103,9 @@ RochesterPATMuonCorrector::produce(edm::Event& iEvent, const edm::EventSetup& iS
     double scale_error = 0.;
     double smear_error = 0.;
     double u = rgen_->Rndm();
-	
-    if(isSync_) {u = 1.;}
+      
+    if (u < 0.001) u= 0.001;//protection against crash in 2018
+    if(isSync_) u = 1.;
 	 
 	  
 
