@@ -102,10 +102,9 @@ RochesterPATMuonCorrector::produce(edm::Event& iEvent, const edm::EventSetup& iS
     double scale_factor;
     double scale_error = 0.;
     double smear_error = 0.;
-    double u1 = rgen_->Rndm();
-    double u2 = rgen_->Rndm();
+    double u = rgen_->Rndm();
 	
-	 if(isSync_) {u1 = 1.; u2 = 1.;}
+    if(isSync_) {u = 1.;}
 	 
 	  
 
@@ -119,18 +118,18 @@ RochesterPATMuonCorrector::produce(edm::Event& iEvent, const edm::EventSetup& iS
 			/// ====== ON MC (correction plus smearing) =====
 			if ( gen_particle != 0)
 			{
-				scale_factor = calibrator->kScaleFromGenMC(mu.charge(), oldpt, mu.eta(), mu.phi(), nl, gen_particle->pt(), u1);
-				smear_error = calibrator->kScaleFromGenMCerror(mu.charge(), oldpt, mu.eta(), mu.phi(), nl, gen_particle->pt(), u1);
+				scale_factor = calibrator->kSpreadMC(mu.charge(), oldpt, mu.eta(), mu.phi(), gen_particle->pt());
+				smear_error = calibrator->kSpreadMCerror(mu.charge(), oldpt, mu.eta(), mu.phi(), gen_particle->pt());
 				
 			}
 			else
 			{
-				scale_factor = calibrator->kScaleAndSmearMC(mu.charge(), oldpt, mu.eta(), mu.phi(), nl, u1, u2);
-				smear_error = calibrator->kScaleAndSmearMCerror(mu.charge(), oldpt, mu.eta(), mu.phi(), nl, u1, u2);
+				scale_factor = calibrator->kSmearMC(mu.charge(), oldpt, mu.eta(), mu.phi(), nl, u);
+				smear_error = calibrator->kSmearMCerror(mu.charge(), oldpt, mu.eta(), mu.phi(), nl, u);
 				
 			}
 			
-			scale_error = calibrator->kScaleDTerror(mu.charge(), oldpt, mu.eta(), mu.phi());
+			scale_error = calibrator->kScaleDTerror(mu.charge(), oldpt, mu.eta(), mu.phi());//there is no scale for MC so calculate it pretending it is data
 			
 			newpt = oldpt*scale_factor;
 			newpterr = oldpterr*scale_factor;
@@ -139,11 +138,11 @@ RochesterPATMuonCorrector::produce(edm::Event& iEvent, const edm::EventSetup& iS
       else if(!isMC_ && nl > 5)
       {
 			/// ====== ON DATA (correction only) =====
-			if(mu.pt()>2.0 && fabs(mu.eta())<2.4)
+			if(mu.pt()>2.0 && fabs(mu.eta())<2.4)//protection, we don't use these muons anyway
 			{
 			  scale_factor = calibrator->kScaleDT(mu.charge(), oldpt, mu.eta(), mu.phi());
 			  scale_error = calibrator->kScaleDTerror(mu.charge(), oldpt, mu.eta(), mu.phi());
-			  smear_error = calibrator->kScaleAndSmearMCerror(mu.charge(), oldpt, mu.eta(), mu.phi(), nl, u1, u2);
+			  smear_error = calibrator->kSmearMCerror(mu.charge(), oldpt, mu.eta(), mu.phi(), nl, u);//there is no smear in data so calculate it pretending it is mc
 			}
 			else
 			{

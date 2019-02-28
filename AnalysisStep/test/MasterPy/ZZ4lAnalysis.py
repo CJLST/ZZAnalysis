@@ -499,17 +499,17 @@ elif LEPTON_SETUP == 2016: # (KalmanMuonCalibrator, ICHEP 2016) FIXME: still usi
          process.calibratedMuons.identifier = cms.string("MC_80X_13TeV")
      else:
          process.calibratedMuons.identifier = cms.string("DATA_80X_13TeV")
-elif LEPTON_SETUP == 2017:# (Rochester corrections, Moriond 2018)
+elif LEPTON_SETUP == 2017:# Rochester corrections for 2017 data
      process.calibratedMuons = cms.EDProducer("RochesterPATMuonCorrector",
                                          src = cms.InputTag("slimmedMuons"),
-                                         identifier = cms.string("RoccoR2017v0"),
+                                         identifier = cms.string("RoccoR2017"),
                                          isMC = cms.bool(IsMC),
                                          isSynchronization = cms.bool(False),
                                          )
-elif LEPTON_SETUP == 2018:# FIXME: still 2017 version
+elif LEPTON_SETUP == 2018:# Rochester corrections for 2018 data
      process.calibratedMuons = cms.EDProducer("RochesterPATMuonCorrector",
                                          src = cms.InputTag("slimmedMuons"),
-                                         identifier = cms.string("RoccoR2017v0"),
+                                         identifier = cms.string("RoccoR2017"),#[FIXME] 2018 Rochester correction file seems to be broken at the moment
                                          isMC = cms.bool(IsMC),
                                          isSynchronization = cms.bool(False),
                                          )

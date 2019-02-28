@@ -606,8 +606,8 @@ void ZNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool evtPa
     LepisID .push_back( userdatahelpers::getUserFloat(leptons[i],"ID") );
     LepBDT  .push_back( lepFlav==11 ? userdatahelpers::getUserFloat(leptons[i],"BDT") : 0. );
     LepMissingHit.push_back( lepFlav==11 ? userdatahelpers::getUserFloat(leptons[i],"missingHit") : 0 );
-    LepScale_Unc.push_back( lepFlav==13 && year == 2018? 0. : userdatahelpers::getUserFloat(leptons[i],"scale_unc"));//[FIXME] Temporary hack so it does not crash in 2018 without MUON CORRECTIONS turned on
-    LepSmear_Unc.push_back( lepFlav==13 && year == 2018? 0. : userdatahelpers::getUserFloat(leptons[i],"smear_unc"));//[FIXME] Temporary hack so it does not crash in 2018 without MUON CORRECTIONS turned on
+    LepScale_Unc.push_back( userdatahelpers::getUserFloat(leptons[i],"scale_unc"));
+    LepSmear_Unc.push_back( userdatahelpers::getUserFloat(leptons[i],"smear_unc"));
     LepChargedHadIso.push_back( userdatahelpers::getUserFloat(leptons[i],"PFChargedHadIso") );
     LepNeutralHadIso.push_back( userdatahelpers::getUserFloat(leptons[i],"PFNeutralHadIso") );
     LepPhotonIso    .push_back( userdatahelpers::getUserFloat(leptons[i],"PFPhotonIso") );
