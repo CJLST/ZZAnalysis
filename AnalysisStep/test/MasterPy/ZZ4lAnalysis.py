@@ -509,7 +509,7 @@ elif LEPTON_SETUP == 2017:# Rochester corrections for 2017 data
 elif LEPTON_SETUP == 2018:# Rochester corrections for 2018 data
      process.calibratedMuons = cms.EDProducer("RochesterPATMuonCorrector",
                                          src = cms.InputTag("slimmedMuons"),
-                                         identifier = cms.string("RoccoR2018"),
+                                         identifier = cms.string("RoccoR2017"),
                                          isMC = cms.bool(IsMC),
                                          isSynchronization = cms.bool(False),
                                          )
@@ -650,18 +650,8 @@ if (LEPTON_SETUP == 2017):
 
 ## Preliminary Moriond 19 corrections from https://twiki.cern.ch/twiki/bin/view/CMS/EgammaPostRecoRecipes#2018_Preliminary_Energy_Correcti
 if (LEPTON_SETUP == 2018):
-	process.calibratedPatElectrons = cms.EDProducer("CalibratedPatElectronProducerRun2",
-		 electrons = cms.InputTag('selectedSlimmedElectrons'),
-		 gbrForestName = cms.vstring('electron_eb_ECALTRK_lowpt', 'electron_eb_ECALTRK',
-											  'electron_ee_ECALTRK_lowpt', 'electron_ee_ECALTRK',
-											  'electron_eb_ECALTRK_lowpt_var', 'electron_eb_ECALTRK_var',
-											  'electron_ee_ECALTRK_lowpt_var', 'electron_ee_ECALTRK_var'),
-		 isMC = cms.bool(IsMC),
-		 isSynchronization = cms.bool(False),
-		 correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/Run2018_Step2Closure_CoarseEtaR9Gain"),
-       recHitCollectionEB = cms.InputTag('reducedEgamma:reducedEBRecHits'),
-       recHitCollectionEE = cms.InputTag('reducedEgamma:reducedEERecHits')
-	)
+    process.load("RecoEgamma.EgammaTools.calibratedEgammas_cff")
+    process.calibratedPatElectrons.correctionFile = "EgammaAnalysis/ElectronTools/data/ScalesSmearings/Run2018_Step2Closure_CoarseEtaR9Gain"
 
 if (BUNCH_SPACING == 50):
     process.calibratedPatElectrons.grbForestName = cms.string("gedelectron_p4combination_50ns")

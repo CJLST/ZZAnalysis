@@ -74,9 +74,10 @@ EleFiller::EleFiller(const edm::ParameterSet& iConfig) :
 
   produces<pat::ElectronCollection>();
 	
+ #if CMSSW_VERSION_MAJOR < 10
  // Initialize scale correction class
   eScaler = new EnergyScaleCorrection_class(correctionFile);
-
+ #endif
 }
 EleFiller::~EleFiller(){
   delete eScaler;

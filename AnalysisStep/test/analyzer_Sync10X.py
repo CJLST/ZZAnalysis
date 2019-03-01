@@ -55,7 +55,7 @@ process.source.fileNames = cms.untracked.vstring(
 #     '/store/data/Run2018A/DoubleMuon/MINIAOD/PromptReco-v3/000/316/569/00000/0CBC961D-6264-E811-B36E-FA163E4C1970.root'
     )
 
-#process.calibratedPatElectrons.isSynchronization = cms.bool(True)
+#process.calibratedPatElectrons.isSynchronization = cms.bool(True) #not needed anymore since new EGamma smearing is event deterministic
 process.calibratedMuons.isSynchronization = cms.bool(True)
 
 process.maxEvents.input = -1
