@@ -104,10 +104,7 @@ RochesterPATMuonCorrector::produce(edm::Event& iEvent, const edm::EventSetup& iS
     double smear_error = 0.;
     double u = rgen_->Rndm();
       
-    if (u < 0.001) u= 0.001;//protection against crash in 2018
-    if(isSync_) u = 1.;
-	 
-	  
+    if(isSync_) u = 0.5;
 
     if (calibrator != 0  && mu.muonBestTrackType() == 1 && oldpt <= 200.)
     {
@@ -116,6 +113,7 @@ RochesterPATMuonCorrector::produce(edm::Event& iEvent, const edm::EventSetup& iS
       if(isMC_ && nl > 5)//Protection against muons with low number of layers, they are not used in the analysis anyway as we apply thight muon ID
       {
 			
+            //cout << "pt = " << mu.pt() << " eta = " << mu.eta() << " phi = " << mu.phi() << "u = " << u << endl;
 			/// ====== ON MC (correction plus smearing) =====
 			if ( gen_particle != 0)
 			{
