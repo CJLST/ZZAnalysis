@@ -2696,8 +2696,6 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
       histos_1D_ZX[plot_index][fs][cat]->SetFillColor(Cosmetics::ZX().fill_color);
       histos_1D_ZX[plot_index][fs][cat]->SetLineColor(Cosmetics::ZX().line_color);
    }
-   
-   if ( plot_index == Settings::M4l_110150_HighKD) histos_1D[plot_index][fs][cat][Settings::H125]->Scale(1.1); // Scale to mu = 1.1 post-fit
 	
    histos_1D[plot_index][fs][cat][Settings::H125]->SetLineColor(Cosmetics::Higgs_all().line_color);
    histos_1D[plot_index][fs][cat][Settings::H125ggH]->SetLineColor(Cosmetics::Higgs_all().line_color);
@@ -2902,12 +2900,19 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
 	}
 	
 	
-   if ( plot_index == Settings::D1jet_M4L118130 || plot_index == Settings::D2jet_M4L118130 || plot_index == Settings::D1jet || plot_index == Settings::D2jet || plot_index == Settings::DWH_M4L118130 || plot_index == Settings::DWH || plot_index == Settings::DZH_M4L118130 || plot_index == Settings::DZH || plot_index == Settings::DVH_M4L118130 || plot_index == Settings::DVH || plot_index == Settings::DVHDEC)
+   if ( plot_index == Settings::D2jet_M4L118130  || plot_index == Settings::D2jet || plot_index == Settings::DWH_M4L118130 || plot_index == Settings::DWH || plot_index == Settings::DZH_M4L118130 || plot_index == Settings::DZH || plot_index == Settings::DVH_M4L118130 || plot_index == Settings::DVH)
    {
       TLine *wp_line;
       wp_line = CreateDashedLine(0.5, 0.0, 0.5, (data_max + data_max_error)*1.3);
       wp_line->Draw();
    }
+    
+   if ( plot_index == Settings::D1jet_M4L118130  || plot_index == Settings::D1jet )
+    {
+        TLine *wp_line;
+        wp_line = CreateDashedLine(0.7, 0.0, 0.7, (data_max + data_max_error)*1.3);
+        wp_line->Draw();
+    }
 	
 //=================
 // CMS TEXT & LUMI
