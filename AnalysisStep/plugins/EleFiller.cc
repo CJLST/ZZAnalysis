@@ -53,7 +53,9 @@ class EleFiller : public edm::EDProducer {
   edm::EDGetTokenT<vector<Vertex> > vtxToken;
   EDGetTokenT<ValueMap<float> > BDTValueMapToken;
   string correctionFile;
+  #if CMSSW_VERSION_MAJOR < 10
   EnergyScaleCorrection_class *eScaler;
+  #endif
   TRandom3 rgen_;
 };
 
@@ -80,7 +82,9 @@ EleFiller::EleFiller(const edm::ParameterSet& iConfig) :
  #endif
 }
 EleFiller::~EleFiller(){
+  #if CMSSW_VERSION_MAJOR < 10
   delete eScaler;
+  #endif
 }
 
 
