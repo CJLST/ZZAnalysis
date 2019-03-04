@@ -45,6 +45,7 @@ class Candidate:
         self.ZZMass      = treeEntry.ZZMass
 
         self.pt4l          = treeEntry.ZZPt
+        self.pt4ljj        = treeEntry.ZZjjPt
         self.nExtraLep     = treeEntry.nExtraLep
         self.nExtraZ       = treeEntry.nExtraZ
         self.jetpt         = treeEntry.JetPt
@@ -58,7 +59,7 @@ class Candidate:
         self.detajj        = treeEntry.DiJetDEta
         self.pfMet         = treeEntry.PFMET
         self.weight        = 1.
-        if (isMC) : self.weight = sign(treeEntry.genHEPMCweight) * treeEntry.PUWeight# * treeEntry.dataMCWeight leave it out for now
+        if (isMC) : self.weight = sign(treeEntry.genHEPMCweight) * treeEntry.PUWeight * treeEntry.dataMCWeight
 
         self.jets30pt = []
         self.jets30eta = []
@@ -156,12 +157,12 @@ class Candidate:
              c_bool(False), #useVHMETTagged
              c_bool(False) #useQGTagging
              )
-        self.category_stage1 = self.lib.stage1_reco_1p1_name(
+        self.category_stage1 = self.lib.stage1_reco_1p1(
              c_int(self.njets30),
              c_float(self.mjj),
              c_float(self.pt4l),
              c_int(self.category_stage0),
-             c_float(self.pt4l)#FIXME NEEDS PT of H+jj
+             c_float(self.pt4ljj)
              )
 
     def D(self,sig,bg):
