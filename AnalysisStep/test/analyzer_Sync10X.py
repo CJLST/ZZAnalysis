@@ -6,7 +6,7 @@ LEPTON_SETUP = 2018  # current default = 2018
 #APPLYMUCORR = False  # Switch off muon scale corrections
 #APPLYJEC = False     #
 APPLYJER = False     #
-RECORRECTMET = False #
+#RECORRECTMET = False #
 KINREFIT = False    # control KinZFitter (very slow)
 PROCESS_CR = False   # Uncomment to run CR paths and trees
 #ADDLOOSEELE = True  # Run paths for loose electrons

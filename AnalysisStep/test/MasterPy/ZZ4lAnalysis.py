@@ -1637,6 +1637,18 @@ if (RECORRECTMET and SAMPLE_TYPE == 2017):
     process.patJetsReapplyJEC.userData.userFloats.src += ['pileupJetIdUpdated:fullDiscriminant']
     process.patJetsReapplyJEC.userData.userInts.src += ['pileupJetIdUpdated:fullId']
 
+if (RECORRECTMET and SAMPLE_TYPE == 2018):
+    
+    from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
+    runMetCorAndUncFromMiniAOD(process,
+                               isData=(not IsMC),
+                               )
+    metTag = cms.InputTag("slimmedMETs","","ZZ")
+
+    ### somehow MET recorrection gets this lost again...
+    process.patJetsReapplyJEC.userData.userFloats.src += ['pileupJetIdUpdated:fullDiscriminant']
+    process.patJetsReapplyJEC.userData.userInts.src += ['pileupJetIdUpdated:fullId']
+
 
 ### ----------------------------------------------------------------------
 ### Paths
@@ -1661,6 +1673,12 @@ if (RECORRECTMET and SAMPLE_TYPE == 2017):
         process.MET = cms.Path(process.fullPatMetSequenceModifiedMET)
     else:
         process.MET = cms.Path(process.fullPatMetSequenceModifiedMET)
+
+if (RECORRECTMET and SAMPLE_TYPE == 2018):
+    if IsMC:
+        process.MET = cms.Path(process.fullPatMetSequence)
+    else:
+        process.MET = cms.Path(process.fullPatMetSequence)
 
 
 
