@@ -137,6 +137,11 @@ void Plotter::MakeHistograms( TString input_file_name )
 													 false,// Use VHMET category
 													 false);// Use QG tagging
    
+     _current_category_stxs = stage1_reco_1p1 ( nCleanedJetsPt30,
+                                                 DiJetMass,
+                                                 ZZPt,
+                                                 _current_category,
+                                                 ZZPt);//FIXME
       // K factors
       _k_factor = calculate_K_factor(input_file_name);
    
@@ -217,6 +222,14 @@ void Plotter::MakeHistograms( TString input_file_name )
       }
        
        unblinded_histos->FillM4l( ZZMass, _event_weight, _current_final_state, _current_category, _current_process );
+       
+       // Fill STXS yield histograms
+       if ( (_current_process == Settings::Data && blind(ZZMass)) || _current_process != Settings::Data )
+       {
+           blinded_histos->FillSTXS( ZZMass, _event_weight, _current_category_stxs ,_current_process );
+       }
+       
+       unblinded_histos->FillSTXS( ZZMass, _event_weight, _current_category_stxs, _current_process );
       
       // Fill MZ1 histograms
       if ( blind(ZZMass) )
@@ -486,7 +499,13 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
 													 PFMET,
 													 false,// Use VHMET category
 													 false);// Use QG tagging
-      
+       
+       
+       _current_category_stxs = stage1_reco_1p1 ( nCleanedJetsPt30,
+                                                 DiJetMass,
+                                                 ZZPt,
+                                                 _current_category,
+                                                 ZZPt);//FIXME
    
       // Calculate yield
       _yield_SR = _fs_ROS_SS.at(_current_final_state)*FR->GetFakeRate(LepPt->at(2),LepEta->at(2),LepLepId->at(2))*FR->GetFakeRate(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
@@ -565,6 +584,10 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
       // Fill m4l Z+X histograms
       unblinded_histos->FillM4lZX( ZZMass, _yield_SR, _current_final_state, _current_category );
       blinded_histos->FillM4lZX( ZZMass, _yield_SR, _current_final_state, _current_category);
+       
+       // Fill STXS Z+X histograms
+       unblinded_histos->FillSTXSZX( ZZMass, _yield_SR, _current_category_stxs);
+       blinded_histos->FillSTXSZX( ZZMass, _yield_SR, _current_category_stxs);
       
       // Fill mZ1 Z+X histograms
       unblinded_histos->FillMZ1ZX( ZZMass, Z1Mass, _yield_SR, _current_final_state, _current_category );
@@ -767,6 +790,14 @@ void Plotter::plot_1D_single( TString file_name, TString variable_name, TString 
 //==================
 
 //==================
+void Plotter::plot_STXS( TString file_name, TString folder )
+{
+    histo_map[file_name]->plot_STXS( folder );
+    
+}
+//==================
+
+//==================
 void Plotter::Plot()
 {
    combination_histos->plot_Combination( "Combination" );
@@ -836,9 +867,9 @@ int Plotter::find_current_process( TString input_file_name , int genExtInfo, int
    if ( input_file_name.Contains("WminusH125") && genExtInfo > 10)   current_process = Settings::H125VH;
    if ( input_file_name.Contains("ZH125")      && genExtInfo > 10)   current_process = Settings::H125VH;
    if ( input_file_name.Contains("ttH125")     && n_gen_assoc_lep > 0)   current_process = Settings::H125ttH;
-	if ( input_file_name.Contains("WplusH125")  && genExtInfo <= 10)  current_process = Settings::H125VH; //prepare for splitting VH and ttH into lep and had
-	if ( input_file_name.Contains("WminusH125") && genExtInfo <= 10)  current_process = Settings::H125VH;
-	if ( input_file_name.Contains("ZH125")      && genExtInfo <= 10)  current_process = Settings::H125VH;
+   if ( input_file_name.Contains("WplusH125")  && genExtInfo <= 10)  current_process = Settings::H125VH; //prepare for splitting VH and ttH into lep and had
+   if ( input_file_name.Contains("WminusH125") && genExtInfo <= 10)  current_process = Settings::H125VH;
+   if ( input_file_name.Contains("ZH125")      && genExtInfo <= 10)  current_process = Settings::H125VH;
    if ( input_file_name.Contains("ttH125")     && n_gen_assoc_lep == 0)  current_process = Settings::H125ttH;
    if ( input_file_name.Contains("bbH125") )         current_process = Settings::H125bbH;
    if ( input_file_name.Contains("tqH125") )         current_process = Settings::H125tqH;
@@ -849,9 +880,9 @@ int Plotter::find_current_process( TString input_file_name , int genExtInfo, int
    if ( input_file_name.Contains("ggTo2e2mu") )      current_process = Settings::ggZZ;
    if ( input_file_name.Contains("ggTo2e2tau") )     current_process = Settings::ggZZ;
    if ( input_file_name.Contains("ggTo2mu2tau") )    current_process = Settings::ggZZ;
-   if ( input_file_name.Contains("DYJetsToLL_M50") ) current_process = Settings::DY;
-   if ( input_file_name.Contains("TTJets") )         current_process = Settings::ttbar;
-   if ( input_file_name.Contains("TTTo2L2Nu") )      current_process = Settings::ttbar;
+   if ( input_file_name.Contains("DYJetsToLL_M50") ) current_process = Settings::other;
+   if ( input_file_name.Contains("TTJets") )         current_process = Settings::other;
+   if ( input_file_name.Contains("TTTo2L2Nu") )      current_process = Settings::other;
    // End assign dataset to correct process
    
    return current_process;

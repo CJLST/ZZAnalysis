@@ -74,6 +74,7 @@ public:
    void Delete();
    void GetHistos( TString );
    void Plot();
+   void plot_STXS ( TString, TString);
    void plot_1D_single( TString, TString, TString, int, int );
    void plot_1D_all_cat( TString, TString, TString);
    void plot_1D_all_fs( TString, TString, TString);
@@ -128,7 +129,7 @@ private:
    float _blinding_lower[2], _blinding_upper[2];
    bool _merge_2e2mu;
    
-   int _current_process, _current_final_state, _current_category, _n_gen_assoc_lep;
+   int _current_process, _current_final_state, _current_category, _current_category_stxs, _n_gen_assoc_lep;
    float _lumi, _k_factor, _SMP_signal_strength, _yield_SR, partial_sample_weight;
    double gen_sum_weights, _event_weight;
    

@@ -139,6 +139,8 @@ int main( int argc, char *argv[] )
    setTDRStyle(); // Needed to reset margins set by 2D histograms
 
    plotter->GetHistos("Unblinded");
+    
+   plotter->plot_STXS("Unblinded", "Plots/Unblinded");
 	
    plotter->plot_1D_all_cat("Unblinded", "M4lMain",       "Plots/Unblinded");
    plotter->plot_1D_all_cat("Unblinded", "M4lMainZoomed", "Plots/Unblinded");
@@ -161,7 +163,7 @@ int main( int argc, char *argv[] )
    plotter->plot_1D_single("Unblinded", "KD_M4L118130",     "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
    plotter->plot_1D_single("Unblinded", "DVBFDEC_M4L118130","Plots/Unblinded", Settings::fs4l, Settings::VBF_2j_tagged);
    plotter->plot_1D_single("Unblinded", "DVHDEC_M4L118130", "Plots/Unblinded", Settings::fs4l, Settings::VH_hadron_tagged);
-    
+
    plotter->plot_1D_single("Unblinded", "D1jet",  "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
    plotter->plot_1D_single("Unblinded", "D2jet",  "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
    plotter->plot_1D_single("Unblinded", "DWH",    "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
@@ -173,7 +175,7 @@ int main( int argc, char *argv[] )
    plotter->plot_1D_single("Unblinded", "DZH_M4L118130",    "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
    plotter->plot_1D_single("Unblinded", "DVH_M4L118130",    "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
 
-   
+
 
    plotter->plot_2D_error_single("Unblinded", "KDvsM4l",          "Plots/Unblinded", Settings::inclusive);
    plotter->plot_2D_error_single("Unblinded", "KDvsM4lZoomed",    "Plots/Unblinded", Settings::inclusive);
@@ -183,8 +185,8 @@ int main( int argc, char *argv[] )
    plotter->plot_2D_error_single("Unblinded", "DWHvsM4lZoomed",   "Plots/Unblinded", Settings::inclusive);
    plotter->plot_2D_error_single("Unblinded", "DZHvsM4lZoomed",   "Plots/Unblinded", Settings::inclusive);
    plotter->plot_2D_error_single("Unblinded", "DVHvsM4lZoomed",   "Plots/Unblinded", Settings::inclusive);
-    
-    
+
+
    plotter->plot_2D_error_all_cat("Unblinded", "KDvsM4lZoomed",    "Plots/Unblinded");
    plotter->plot_2D_error_all_cat("Unblinded", "DVBFDECvsM4lZoomed",    "Plots/Unblinded");
    plotter->plot_2D_error_all_cat("Unblinded", "DVHDECvsM4lZoomed",    "Plots/Unblinded");

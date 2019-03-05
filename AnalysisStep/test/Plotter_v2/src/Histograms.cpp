@@ -26,8 +26,8 @@ Histograms::Histograms( double lumi, string blinding )
    _s_process.push_back("H125tqH");
    _s_process.push_back("qqZZ");
    _s_process.push_back("ggZZ");
-   _s_process.push_back("DY");
-   _s_process.push_back("ttbar");
+   _s_process.push_back("Zjets");
+   _s_process.push_back("other");
    
    _s_final_state.push_back("4e");
    _s_final_state.push_back("4mu");
@@ -44,6 +44,29 @@ Histograms::Histograms( double lumi, string blinding )
    _s_category.push_back("ttHHadrTagged");
    _s_category.push_back("VHMETTagged");
    _s_category.push_back("Inclusive");
+    
+   _s_STXS_category.push_back("ggH,pT>200");
+   _s_STXS_category.push_back("ggH-0j,pT[0,10]");
+   _s_STXS_category.push_back("ggH-0j,pT[10-200]");
+   _s_STXS_category.push_back("ggH-1j,pT[0-60]");
+   _s_STXS_category.push_back("ggH-1j,pT[60-120]");
+   _s_STXS_category.push_back("ggH-1j,pT[120-200]");
+   _s_STXS_category.push_back("ggH-2j,mJJ>350");
+   _s_STXS_category.push_back("ggH-2j,pT[0-60]");
+   _s_STXS_category.push_back("ggH-2j,pT[60-120]");
+   _s_STXS_category.push_back("ggH-2j,pT[120-200]");
+   _s_STXS_category.push_back("VBF-1j");
+   _s_STXS_category.push_back("VBF-2j,pT>200");
+   _s_STXS_category.push_back("VBF-2j,mJJ[350,700]");
+   _s_STXS_category.push_back("VBF-2j,mJJ>700 ");
+   _s_STXS_category.push_back("VBF-3j,mJJ>350 ");
+   _s_STXS_category.push_back("VBF-rest");
+   _s_STXS_category.push_back("VH-had,mJJ[60-120]");
+   _s_STXS_category.push_back("VH-rest");
+   _s_STXS_category.push_back("VH-lep,pTV[0-150]");
+   _s_STXS_category.push_back("VH-lep,pTV>150");
+   _s_STXS_category.push_back("ttH-had");
+   _s_STXS_category.push_back("ttH-lep");
    
    _s_category_label.push_back("Untagged category");
    _s_category_label.push_back("VBF-1jet tagged category");
@@ -280,7 +303,7 @@ Histograms::Histograms( double lumi, string blinding )
                                                                                      Variables::DVHvsM4lZoomed().var_Y_N_bin, Variables::DVHvsM4lZoomed().var_Y_min,
                                                                                      Variables::DVHvsM4lZoomed().var_Y_max);
 				
-				//===========
+            //===========
             // Others
             //===========
             _histo_name = "PFMET" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
@@ -568,6 +591,28 @@ Histograms::Histograms( double lumi, string blinding )
 																								Variables::M4l_110150_HighKD().var_min, Variables::M4l_110150_HighKD().var_max);
       }
    }
+    
+    for ( int i_proc = 0; i_proc < num_of_processes; i_proc++ )
+    {
+        _histo_name = "STXS_Categories_" + _s_process.at(i_proc) + "_" + _blinding;
+        _histo_labels = ";" + Variables::STXS_Categories().var_X_label + ";" + Variables::STXS_Categories().var_Y_label;
+        STXS_Categories[i_proc] = new TH1F(_histo_name.c_str(), _histo_labels.c_str(), Variables::STXS_Categories().var_N_bin,Variables::STXS_Categories().var_min, Variables::STXS_Categories().var_max);
+        for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ ) STXS_Categories[i_proc]->GetXaxis()->SetBinLabel(i_cat + 1,_s_STXS_category.at(i_cat));
+    }
+    
+    for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ )
+    {
+        for ( int i_proc = 0; i_proc < num_of_processes; i_proc++ )
+        {
+            _histo_name = "Yields_" + _s_process.at(i_proc) + "_" + _s_STXS_category.at(i_cat) + "_" + _blinding;
+            STXS_Yields[i_cat][i_proc] = new TH1F(_histo_name.c_str(),_histo_name.c_str(), Variables::STXS_Categories().M4lBins,Variables::STXS_Categories().M4lMin, Variables::STXS_Categories().M4lMax);
+        }
+        
+        _histo_name = "YieldsZX_" + _s_STXS_category.at(i_cat) + "_" + _blinding;
+        STXS_Yields_ZX[i_cat] = new TH1F(_histo_name.c_str(),_histo_name.c_str(), Variables::STXS_Categories().M4lBins,Variables::STXS_Categories().M4lMin, Variables::STXS_Categories().M4lMax);
+    }
+                                           
+    
 }
 //======================================
 
@@ -773,6 +818,23 @@ void Histograms::FillM4lZX( float M4l, float weight, int fs, int cat )
    histos_1D_ZX[Settings::M4lMainHighMass][fs][cat]->Fill(M4l, weight);
 }
 //====================================================================
+
+//====
+// STXS
+//====================================================================================
+void Histograms::FillSTXS( float M4l, float weight, int cat_stxs, int proc )
+{
+    STXS_Yields[cat_stxs][proc]->Fill(M4l, (proc == Settings::Data) ? 1. : weight);
+}
+//====================================================================================
+
+//====================================================================================
+void Histograms::FillSTXSZX( float M4l, float weight, int cat_stxs )
+{
+    STXS_Yields_ZX[cat_stxs]->Fill(M4l, weight);
+}
+//====================================================================================
+
 
 
 
@@ -1560,6 +1622,15 @@ void Histograms::FillInclusive()
                                                                                vector_EY[Settings::DVHvsM4lZoomed][i_fs][i_cat].end());
       }
    }
+    
+    for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ )
+    {
+        STXS_Categories[Settings::Zjets]->SetBinContent(i_cat + 1,STXS_Yields_ZX[i_cat]->Integral());
+        for ( int i_proc = 0; i_proc < num_of_processes; i_proc++ )
+        {
+            STXS_Categories[i_proc]->SetBinContent(i_cat + 1,STXS_Yields[i_cat][i_proc]->Integral());
+        }
+    }
 }
 //==============================
 
@@ -2128,6 +2199,11 @@ void Histograms::SaveHistos( string file_name )
          }
       }
    }
+    
+    for ( int i_proc = 0; i_proc < num_of_processes; i_proc++ )
+    {
+        STXS_Categories[i_proc]->Write();
+    }
    
    fOutHistos->Close();
    delete fOutHistos;
@@ -2619,6 +2695,12 @@ void Histograms::GetHistos( TString file_name )
 			histos_1D_ZX[Settings::M4l_110150_HighKD][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
       }
    }
+    
+    for ( int i_proc = 0; i_proc < num_of_processes; i_proc++ )
+    {
+            _histo_name = "STXS_Categories_" + _s_process.at(i_proc) + "_" + _blinding;
+            STXS_Categories[i_proc] = (TH1F*)histo_file->Get(_histo_name.c_str());
+    }
 }
 //=============================================
 
@@ -3012,6 +3094,70 @@ void Histograms::plot_Combination( TString folder )
 
    _out_file_name = folder + "/Combination";
    SavePlots(c, _out_file_name, folder);
+}
+//=========================================================================================================
+
+
+//=========================================================================================================
+void Histograms::plot_STXS( TString folder )
+{
+    gStyle->SetPadBottomMargin(0.30);
+    
+    TCanvas *c;
+    c = new TCanvas("c", "c", 650, 500);
+    
+    c->SetLogy();
+    
+    STXS_Categories[Settings::H125ggH]->SetFillColor(kBlue);
+    STXS_Categories[Settings::H125VBF]->SetFillColor(kGreen+3);
+    STXS_Categories[Settings::H125VH]->SetFillColor(kRed+2);
+    STXS_Categories[Settings::H125ttH]->SetFillColor(kOrange-2);
+    STXS_Categories[Settings::H125bbH]->SetFillColor(kCyan-3);
+    STXS_Categories[Settings::H125tqH]->SetFillColor(kOrange-5);
+    STXS_Categories[Settings::qqZZ]->SetFillColor(kGray+3);
+    STXS_Categories[Settings::ggZZ]->SetFillColor(kOrange+3);
+    STXS_Categories[Settings::Zjets]->SetFillColor(kGray);
+    
+    STXS_Categories[Settings::Data]->SetBinErrorOption(TH1::kPoisson);
+    STXS_Categories[Settings::Data]->SetLineColor(kBlack);
+
+    // THStack
+    THStack *stack = new THStack( "stack", "stack" );
+    
+    stack->Add(STXS_Categories[Settings::Zjets]);
+    stack->Add(STXS_Categories[Settings::ggZZ]);
+    stack->Add(STXS_Categories[Settings::qqZZ]);
+    stack->Add(STXS_Categories[Settings::H125tqH]);
+    stack->Add(STXS_Categories[Settings::H125bbH]);
+    stack->Add(STXS_Categories[Settings::H125ttH]);
+    stack->Add(STXS_Categories[Settings::H125VH]);
+    stack->Add(STXS_Categories[Settings::H125VBF]);
+    stack->Add(STXS_Categories[Settings::H125ggH]);
+  
+    stack->Draw("HIST");
+    
+    stack->GetYaxis()->SetTitle(STXS_Categories[Settings::Data]->GetYaxis()->GetTitle());
+    stack->GetXaxis()->SetLabelSize(.05);
+    stack->GetXaxis()->LabelsOption("v");
+    
+    STXS_Categories[Settings::Data]->SetMarkerSize(0.9);
+    STXS_Categories[Settings::Data]->Draw("SAME p E1 X0");
+    
+    
+    //=============
+    // L E G E N D
+    //=============
+    
+
+    //=================
+    // CMS TEXT & LUMI
+    //=================
+    
+    CMS_lumi *lumi = new CMS_lumi;
+    lumi->set_lumi(c, _lumi);
+    
+    _out_file_name = folder + "/STXS_Categorization";
+    SavePlots(c, _out_file_name, folder);
 }
 //=========================================================================================================
 
