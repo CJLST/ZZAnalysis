@@ -1288,7 +1288,7 @@ process.load("CondCore.CondDB.CondDB_cfi")
 process.load("RecoJets.JetProducers.PileupJetID_cfi")
 process.pileupJetIdUpdated = process.pileupJetId.clone(
     jets=cms.InputTag("slimmedJets"),
-    inputIsCorrected=True,
+    inputIsCorrected=False,
     applyJec=True,
     vertexes=cms.InputTag("offlineSlimmedPrimaryVertices")
     )
