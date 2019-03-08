@@ -43,7 +43,6 @@ MCHistoryTools::MCHistoryTools(const edm::Event & event, std::string sampleName,
     ismc=true;
     
     processID = gen->signalProcessID();
-
 //   Process IDs for current samples (Fall11/Summer12) 
 //   Generally corresopond to MSUB for Pythia samples, cf. for example: http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/Configuration/GenProduction/python/EightTeV/WH_ZH_TTH_HToZZTo4L_M_115_TuneZ2star_8TeV_pythia6_tauola_cff.py?view=markup
 //   
@@ -93,8 +92,11 @@ MCHistoryTools::MCHistoryTools(const edm::Event & event, std::string sampleName,
     if (boost::starts_with(sampleName,"TTZ")) processID=900104;
     if (boost::starts_with(sampleName,"TTTo2L2Nu")) processID=900104;
     // for WWZ
-    if (boost::starts_with(sampleName,"WWZ")) processID=900105;      
-    
+    if (boost::starts_with(sampleName,"WWZ")) processID=900105;
+    // for tHW
+    if (boost::starts_with(sampleName,"THW")) processID=900106;
+    //for ttWW
+    if (boost::starts_with(sampleName,"TTWW")) processID=900106;
 
     // take the MC weight
     GenEventInfoProduct  genInfo = *(gen.product());
@@ -318,7 +320,8 @@ MCHistoryTools::init() {
     }
 
     bool do_SF_OS_check = true;
-    if (processID == 900104 || processID == 900105) do_SF_OS_check = false;
+    
+    if (processID == 900104 || processID == 900105 || processID == 900106) do_SF_OS_check = false;
     if ( do_SF_OS_check && (iZ22==-1 || theGenLeps[iZ21]->pdgId()+theGenLeps[iZ22]->pdgId()!=0) ) {  //Test remaining conditions: Z2 is found and SF, OS
       cout << "MCHistoryTools: Cannot sort leptons ";
       for (int i=0; i<4; ++i) cout << theGenLeps[i]->pdgId() << " ";

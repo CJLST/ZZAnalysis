@@ -1534,10 +1534,13 @@ void Tree::Init(TTree *tree, TString input_file_name)
       fChain->SetBranchAddress("HqTMCweight", &HqTMCweight, &b_HqTMCweight);
       fChain->SetBranchAddress("xsec", &xsec, &b_xsec);
       fChain->SetBranchAddress("genExtInfo", &genExtInfo, &b_genExtInfo);
-//		fChain->SetBranchAddress("htxsHPt", &htxsHPt, &b_htxsHPt);
-//		fChain->SetBranchAddress("htxsNJets", &htxsNJets, &b_htxsNJets);
-//		fChain->SetBranchAddress("htxs_stage0_cat", &htxs_stage0_cat, &b_htxs_stage0_cat);
-//		fChain->SetBranchAddress("htxs_stage1_cat", &htxs_stage1_cat, &b_htxs_stage1_cat);
+       if ( input_file_name.Contains("125") )
+       {
+           fChain->SetBranchAddress("htxsHPt", &htxsHPt, &b_htxsHPt);
+           fChain->SetBranchAddress("htxsNJets", &htxsNJets, &b_htxsNJets);
+           fChain->SetBranchAddress("htxs_stage0_cat", &htxs_stage0_cat, &b_htxs_stage0_cat);
+           fChain->SetBranchAddress("htxs_stage1_cat", &htxs_stage1_cat, &b_htxs_stage1_cat);
+       }
       fChain->SetBranchAddress("GenHMass", &GenHMass, &b_GenHMass);
       fChain->SetBranchAddress("GenHPt", &GenHPt, &b_GenHPt);
       fChain->SetBranchAddress("GenHRapidity", &GenHRapidity, &b_GenHRapidity);

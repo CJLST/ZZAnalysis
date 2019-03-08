@@ -155,6 +155,37 @@ public:
       other   = 11,
       MAX_NUM_OF_PROCESSES
    };
+    
+    enum _process_STXS_stage1p1
+    {
+      bin_ggH_0J_PTH_0_10       = 0,
+      bin_ggH_0J_PTH_10_200     = 1,
+      bin_ggH_1J_PTH_0_60       = 2,
+      bin_ggH_1J_PTH_60_120     = 3,
+      bin_ggH_1J_PTH_120_200    = 4,
+      bin_ggH_2J_PTH_0_60       = 5,
+      bin_ggH_2J_PTH_60_120     = 6,
+      bin_ggH_2J_PTH_120_200    = 7,
+      bin_ggH_PTH_200           = 8,
+        
+      bin_ggH_VBF               = 9,
+      bin_VH_had                = 10,
+      bin_VBF_GT200             = 11,
+      bin_VBF_2j_mjj_350_700_2j = 12,
+      bin_VBF_2j_mjj_GT700_2j   = 13,
+      bin_VBF_2j_mjj_GT350_3j   = 14,
+      bin_VBF_Rest              = 15,
+    
+      bin_VH_Lep_0_150          = 16,
+      bin_VH_Lep_GT150          = 17,
+        
+      bin_bbH                   = 18,
+      bin_ttH                   = 19,
+      bin_tH                    = 20,
+        
+      MAX_NUM_OF_STXS_BINS
+    };
+
    
    enum _process_yields
    {
@@ -223,6 +254,7 @@ public:
    
    static const int num_of_production_modes    = MAX_NUM_OF_PRODUCTION_MODES;
    static const int num_of_processes           = MAX_NUM_OF_PROCESSES;
+   static const int num_of_STXS_bins           = MAX_NUM_OF_STXS_BINS;
    static const int num_of_processes_yields    = MAX_NUM_OF_PROCESSES_YIELDS;
    static const int num_of_final_states        = MAX_NUM_OF_FINAL_STATES;
    static const int num_of_categories          = MAX_NUM_OF_CATEGORIES;

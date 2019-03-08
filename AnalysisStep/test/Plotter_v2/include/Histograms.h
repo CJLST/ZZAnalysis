@@ -34,6 +34,7 @@
 #include <ZZAnalysis/AnalysisStep/test/Plotter_v2/include/Variables.h>
 #include <ZZAnalysis/AnalysisStep/test/Plotter_v2/include/Cosmetics.h>
 
+
 using namespace std;
 
 const int num_of_production_modes    = Settings::num_of_production_modes;
@@ -42,6 +43,7 @@ const int num_of_processes_yields    = Settings::num_of_processes_yields;
 const int num_of_final_states        = Settings::num_of_final_states;
 const int num_of_categories          = Settings::num_of_categories;
 const int num_of_STXS_categories     = Settings::num_of_STXS_categories;
+const int num_of_STXS_bins           = Settings::num_of_STXS_bins;
 const int num_of_1D_plot_names       = Settings::num_of_1D_plot_names;
 const int num_of_2D_plot_names       = Settings::num_of_2D_plot_names;
 const int num_of_2D_error_plot_names = Settings::num_of_2D_error_plot_names;
@@ -62,6 +64,8 @@ public:
    void FillSTXS( float, float, int, int );
    void FillSTXSZX( float, float, int );
 	
+   void FillSTXSPurity( float, float, int, int );
+    
    void FillM4lCombination( float, float, int );
 	
    void FillMZ1( float, float, float, int, int, int );
@@ -157,6 +161,7 @@ public:
    TLegend *CreateLegendVBF( string, TH1F*, TH1F*, TH1F*, TH1F*, TH1F* ,TH1F*, bool );
    TLegend *CreateLegendVH( string, TH1F*, TH1F*, TH1F*, TH1F*, TH1F* ,TH1F*, bool);
    TLegend *CreateLegendttH( string, TH1F*, TH1F*, TH1F*, TH1F*, TH1F* ,TH1F* );
+   TLegend *CreateLegendSTXS( string , TH1F*, TH1F*, TH1F*, TH1F*, TH1F*, TH1F*, TH1F*, TH1F*, TH1F*, TH1F*, bool);
    TLegend *Create2DLegend( string, TH2F*, TH2F*, TH2F* );
    TLegend *Create2DErrorLegend( string, TGraphErrors*, TGraphErrors*, TGraphErrors* );
    TLegend *Create2DLegendAllCat_KD( string, TGraphErrors*, TGraphErrors*, TGraphErrors*, TGraphErrors*, TGraphErrors*, TGraphErrors*, TGraphErrors*, TGraphErrors* );
@@ -176,7 +181,7 @@ private:
 
    vector<double> mass_points;
 
-   vector<TString> _s_category, _s_STXS_category, _s_category_label, _s_final_state, _s_process, _s_production_mode;
+   vector<TString> _s_category, _s_STXS_category, _s_STXS_bins, _s_category_label, _s_final_state, _s_process, _s_production_mode;
    string _histo_name, _histo_labels, _blinding;
    
    TString _graph_name, _fit_funct_name, _fs_label, _out_file_name;
@@ -189,6 +194,9 @@ private:
    TH1F *STXS_Categories[num_of_processes];
    TH1F *STXS_Yields[num_of_STXS_categories][num_of_processes];
    TH1F *STXS_Yields_ZX[num_of_STXS_categories];
+    
+   TH1F *Purity_Categories[num_of_STXS_bins];
+   TH1F *Purity_Yields[num_of_STXS_categories][num_of_STXS_bins];
    
    // Z+X
    TH1F *histos_1D_ZX[num_of_1D_plot_names][num_of_final_states][num_of_categories];

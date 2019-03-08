@@ -45,28 +45,50 @@ Histograms::Histograms( double lumi, string blinding )
    _s_category.push_back("VHMETTagged");
    _s_category.push_back("Inclusive");
     
-   _s_STXS_category.push_back("ggH,pT>200");
-   _s_STXS_category.push_back("ggH-0j,pT[0,10]");
-   _s_STXS_category.push_back("ggH-0j,pT[10-200]");
-   _s_STXS_category.push_back("ggH-1j,pT[0-60]");
-   _s_STXS_category.push_back("ggH-1j,pT[60-120]");
-   _s_STXS_category.push_back("ggH-1j,pT[120-200]");
-   _s_STXS_category.push_back("ggH-2j,mJJ>350");
-   _s_STXS_category.push_back("ggH-2j,pT[0-60]");
-   _s_STXS_category.push_back("ggH-2j,pT[60-120]");
-   _s_STXS_category.push_back("ggH-2j,pT[120-200]");
+   _s_STXS_category.push_back("ggH-0j/pT[0,10]");
+   _s_STXS_category.push_back("ggH-0j/pT[10-200]");
+   _s_STXS_category.push_back("ggH-1j/pT[0-60]");
+   _s_STXS_category.push_back("ggH-1j/pT[60-120]");
+   _s_STXS_category.push_back("ggH-1j/pT[120-200]");
+   _s_STXS_category.push_back("ggH-2j/pT[0-60]");
+   _s_STXS_category.push_back("ggH-2j/pT[60-120]");
+   _s_STXS_category.push_back("ggH-2j/pT[120-200]");
+   _s_STXS_category.push_back("ggH/pT>200");
+   _s_STXS_category.push_back("ggH-2j/mJJ>350");
    _s_STXS_category.push_back("VBF-1j");
-   _s_STXS_category.push_back("VBF-2j,pT>200");
-   _s_STXS_category.push_back("VBF-2j,mJJ[350,700]");
-   _s_STXS_category.push_back("VBF-2j,mJJ>700 ");
-   _s_STXS_category.push_back("VBF-3j,mJJ>350 ");
    _s_STXS_category.push_back("VBF-rest");
-   _s_STXS_category.push_back("VH-had,mJJ[60-120]");
+   _s_STXS_category.push_back("VBF-2j/mJJ[350,700]");
+   _s_STXS_category.push_back("VBF-2j/mJJ>700 ");
+   _s_STXS_category.push_back("VBF-3j/mJJ>350 ");
+   _s_STXS_category.push_back("VBF-2j/pT>200");
+   _s_STXS_category.push_back("VH-had/mJJ[60-120]");
    _s_STXS_category.push_back("VH-rest");
-   _s_STXS_category.push_back("VH-lep,pTV[0-150]");
-   _s_STXS_category.push_back("VH-lep,pTV>150");
-   _s_STXS_category.push_back("ttH-had");
+   _s_STXS_category.push_back("VH-lep/pTV[0-150]");
+   _s_STXS_category.push_back("VH-lep/pTV>150");
    _s_STXS_category.push_back("ttH-lep");
+   _s_STXS_category.push_back("ttH-had");
+    
+   _s_STXS_bins.push_back("ggH-0j/pT[0,10]");
+   _s_STXS_bins.push_back("ggH-0j/pT[10-200]");
+   _s_STXS_bins.push_back("ggH-1j/pT[0-60]");
+   _s_STXS_bins.push_back("ggH-1j/pT[60-120]");
+   _s_STXS_bins.push_back("ggH-1j/pT[120-200]");
+   _s_STXS_bins.push_back("ggH-2j/pT[0-60]");
+   _s_STXS_bins.push_back("ggH-2j/pT[60-120]");
+   _s_STXS_bins.push_back("ggH-2j/pT[120-200]");
+   _s_STXS_bins.push_back("ggH/pT>200");
+   _s_STXS_bins.push_back("ggH-2j/mJJ>350");
+   _s_STXS_bins.push_back("qqH-2j/mJJ[60-120]");
+   _s_STXS_bins.push_back("qqH-2j/pT>200 ");
+   _s_STXS_bins.push_back("qqH-2j/mJJ[350,700]");
+   _s_STXS_bins.push_back("qqH-2j/mJJ>700");
+   _s_STXS_bins.push_back("qqH-3j/mJJ>350");
+   _s_STXS_bins.push_back("qqH-rest");
+   _s_STXS_bins.push_back("VH/pTV[0-150]");
+   _s_STXS_bins.push_back("VH/pTV>150");
+   _s_STXS_bins.push_back("bbH");
+   _s_STXS_bins.push_back("ttH");
+   _s_STXS_bins.push_back("tH");
    
    _s_category_label.push_back("Untagged category");
    _s_category_label.push_back("VBF-1jet tagged category");
@@ -592,12 +614,14 @@ Histograms::Histograms( double lumi, string blinding )
       }
    }
     
+    // STXS category data vs MC
     for ( int i_proc = 0; i_proc < num_of_processes; i_proc++ )
     {
         _histo_name = "STXS_Categories_" + _s_process.at(i_proc) + "_" + _blinding;
         _histo_labels = ";" + Variables::STXS_Categories().var_X_label + ";" + Variables::STXS_Categories().var_Y_label;
         STXS_Categories[i_proc] = new TH1F(_histo_name.c_str(), _histo_labels.c_str(), Variables::STXS_Categories().var_N_bin,Variables::STXS_Categories().var_min, Variables::STXS_Categories().var_max);
         for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ ) STXS_Categories[i_proc]->GetXaxis()->SetBinLabel(i_cat + 1,_s_STXS_category.at(i_cat));
+        
     }
     
     for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ )
@@ -611,6 +635,25 @@ Histograms::Histograms( double lumi, string blinding )
         _histo_name = "YieldsZX_" + _s_STXS_category.at(i_cat) + "_" + _blinding;
         STXS_Yields_ZX[i_cat] = new TH1F(_histo_name.c_str(),_histo_name.c_str(), Variables::STXS_Categories().M4lBins,Variables::STXS_Categories().M4lMin, Variables::STXS_Categories().M4lMax);
     }
+    
+    // STXS purity
+    for ( int i_proc = 0; i_proc < num_of_STXS_bins; i_proc++ )
+    {
+        _histo_name = "STXS_Purity_" + _s_STXS_bins.at(i_proc) + "_" + _blinding;
+        _histo_labels = ";" + Variables::STXS_Categories().var_X_label + ";" + Variables::STXS_Categories().var_Y_label;
+        Purity_Categories[i_proc] = new TH1F(_histo_name.c_str(), _histo_labels.c_str(), Variables::STXS_Categories().var_N_bin,Variables::STXS_Categories().var_min, Variables::STXS_Categories().var_max);
+        for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ ) Purity_Categories[i_proc]->GetXaxis()->SetBinLabel(i_cat + 1,_s_STXS_category.at(i_cat));
+        
+    }
+    
+    for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ )
+    {
+        for ( int i_proc = 0; i_proc < num_of_STXS_bins; i_proc++ )
+        {
+            _histo_name = "Purity_Yields_" + _s_STXS_bins.at(i_proc) + "_" + _s_STXS_category.at(i_cat) + "_" + _blinding;
+            Purity_Yields[i_cat][i_proc] = new TH1F(_histo_name.c_str(),_histo_name.c_str(), Variables::STXS_Categories().M4lBins,Variables::STXS_Categories().M4lMin, Variables::STXS_Categories().M4lMax);
+        }
+    }
                                            
     
 }
@@ -620,7 +663,7 @@ Histograms::Histograms( double lumi, string blinding )
 Histograms::Histograms( string blinding )
 {
 
-	_s_process.push_back("Data");
+   _s_process.push_back("Data");
    _s_process.push_back("H125");
    _s_process.push_back("H125ggH");
    _s_process.push_back("H125VBF");
@@ -630,7 +673,53 @@ Histograms::Histograms( string blinding )
    _s_process.push_back("H125tqH");
    _s_process.push_back("qqZZ");
    _s_process.push_back("ggZZ");
-   
+   _s_process.push_back("Zjets");
+   _s_process.push_back("other");
+    
+   _s_STXS_category.push_back("ggH-0j/pT[0,10]");
+   _s_STXS_category.push_back("ggH-0j/pT[10-200]");
+   _s_STXS_category.push_back("ggH-1j/pT[0-60]");
+   _s_STXS_category.push_back("ggH-1j/pT[60-120]");
+   _s_STXS_category.push_back("ggH-1j/pT[120-200]");
+   _s_STXS_category.push_back("ggH-2j/pT[0-60]");
+   _s_STXS_category.push_back("ggH-2j/pT[60-120]");
+   _s_STXS_category.push_back("ggH-2j/pT[120-200]");
+   _s_STXS_category.push_back("ggH/pT>200");
+   _s_STXS_category.push_back("ggH-2j/mJJ>350");
+   _s_STXS_category.push_back("VBF-1j");
+   _s_STXS_category.push_back("VBF-rest");
+   _s_STXS_category.push_back("VBF-2j/mJJ[350,700]");
+   _s_STXS_category.push_back("VBF-2j/mJJ>700 ");
+   _s_STXS_category.push_back("VBF-3j/mJJ>350 ");
+   _s_STXS_category.push_back("VBF-2j/pT>200");
+   _s_STXS_category.push_back("VH-had/mJJ[60-120]");
+   _s_STXS_category.push_back("VH-rest");
+   _s_STXS_category.push_back("VH-lep/pTV[0-150]");
+   _s_STXS_category.push_back("VH-lep/pTV>150");
+   _s_STXS_category.push_back("ttH-lep");
+   _s_STXS_category.push_back("ttH-had");
+    
+   _s_STXS_bins.push_back("ggH-0j/pT[0,10]");
+   _s_STXS_bins.push_back("ggH-0j/pT[10-200]");
+   _s_STXS_bins.push_back("ggH-1j/pT[0-60]");
+   _s_STXS_bins.push_back("ggH-1j/pT[60-120]");
+   _s_STXS_bins.push_back("ggH-1j/pT[120-200]");
+   _s_STXS_bins.push_back("ggH-2j/pT[0-60]");
+   _s_STXS_bins.push_back("ggH-2j/pT[60-120]");
+   _s_STXS_bins.push_back("ggH-2j/pT[120-200]");
+   _s_STXS_bins.push_back("ggH/pT>200");
+   _s_STXS_bins.push_back("ggH-2j/mJJ>350");
+   _s_STXS_bins.push_back("qqH-2j/mJJ[60-120]");
+   _s_STXS_bins.push_back("qqH-2j/pT>200");
+   _s_STXS_bins.push_back("qqH-2j/mJJ[350,700]");
+   _s_STXS_bins.push_back("qqH-2j/mJJ>700");
+   _s_STXS_bins.push_back("qqH-3j/mJJ>350");
+   _s_STXS_bins.push_back("qqH-rest");
+   _s_STXS_bins.push_back("VH/pTV[0-150]");
+   _s_STXS_bins.push_back("VH/pTV>150");
+   _s_STXS_bins.push_back("bbH");
+   _s_STXS_bins.push_back("ttH");
+   _s_STXS_bins.push_back("tH");
 	
 	for ( int i_proc = 0; i_proc < num_of_processes - 2; i_proc++ )
 	{
@@ -653,6 +742,48 @@ Histograms::Histograms( string blinding )
 	  M4lZX *ZXShapeCombination = new M4lZX();
 	
    ZXShapeCombination->GetM4lZXCombination(histos_1D_ZX_shape[Settings::M4lMain][Settings::fs4l][Settings::inclusive]);
+    
+    
+    // STXS category data vs MC
+    for ( int i_proc = 0; i_proc < num_of_processes; i_proc++ )
+    {
+        _histo_name = "STXS_Categories_" + _s_process.at(i_proc) + "_" + _blinding;
+        _histo_labels = ";" + Variables::STXS_Categories().var_X_label + ";" + Variables::STXS_Categories().var_Y_label;
+        STXS_Categories[i_proc] = new TH1F(_histo_name.c_str(), _histo_labels.c_str(), Variables::STXS_Categories().var_N_bin,Variables::STXS_Categories().var_min, Variables::STXS_Categories().var_max);
+        for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ ) STXS_Categories[i_proc]->GetXaxis()->SetBinLabel(i_cat + 1,_s_STXS_category.at(i_cat));
+        
+    }
+    
+    for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ )
+    {
+        for ( int i_proc = 0; i_proc < num_of_processes; i_proc++ )
+        {
+            _histo_name = "Yields_" + _s_process.at(i_proc) + "_" + _s_STXS_category.at(i_cat) + "_" + _blinding;
+            STXS_Yields[i_cat][i_proc] = new TH1F(_histo_name.c_str(),_histo_name.c_str(), Variables::STXS_Categories().M4lBins,Variables::STXS_Categories().M4lMin, Variables::STXS_Categories().M4lMax);
+        }
+        
+        _histo_name = "YieldsZX_" + _s_STXS_category.at(i_cat) + "_" + _blinding;
+        STXS_Yields_ZX[i_cat] = new TH1F(_histo_name.c_str(),_histo_name.c_str(), Variables::STXS_Categories().M4lBins,Variables::STXS_Categories().M4lMin, Variables::STXS_Categories().M4lMax);
+    }
+    
+    // STXS purity
+    for ( int i_proc = 0; i_proc < num_of_STXS_bins; i_proc++ )
+    {
+        _histo_name = "STXS_Purity_" + _s_STXS_bins.at(i_proc) + "_" + _blinding;
+        _histo_labels = ";" + Variables::STXS_Categories().var_X_label + ";" + Variables::STXS_Categories().var_Y_label;
+        Purity_Categories[i_proc] = new TH1F(_histo_name.c_str(), _histo_labels.c_str(), Variables::STXS_Categories().var_N_bin,Variables::STXS_Categories().var_min, Variables::STXS_Categories().var_max);
+        for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ ) Purity_Categories[i_proc]->GetXaxis()->SetBinLabel(i_cat + 1,_s_STXS_category.at(i_cat));
+        
+    }
+    
+    for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ )
+    {
+        for ( int i_proc = 0; i_proc < num_of_STXS_bins; i_proc++ )
+        {
+            _histo_name = "Purity_Yields_" + _s_STXS_bins.at(i_proc) + "_" + _s_STXS_category.at(i_cat) + "_" + _blinding;
+            Purity_Yields[i_cat][i_proc] = new TH1F(_histo_name.c_str(),_histo_name.c_str(), Variables::STXS_Categories().M4lBins,Variables::STXS_Categories().M4lMin, Variables::STXS_Categories().M4lMax);
+        }
+    }
 }
 //======================================
 
@@ -828,12 +959,21 @@ void Histograms::FillSTXS( float M4l, float weight, int cat_stxs, int proc )
 }
 //====================================================================================
 
+
 //====================================================================================
 void Histograms::FillSTXSZX( float M4l, float weight, int cat_stxs )
 {
     STXS_Yields_ZX[cat_stxs]->Fill(M4l, weight);
 }
 //====================================================================================
+
+//====================================================================================
+void Histograms::FillSTXSPurity( float M4l, float weight, int cat_stxs, int bin_stxs )
+{
+    Purity_Yields[cat_stxs][bin_stxs]->Fill(M4l, weight);
+}
+//====================================================================================
+
 
 
 
@@ -1625,10 +1765,21 @@ void Histograms::FillInclusive()
     
     for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ )
     {
+        
         STXS_Categories[Settings::Zjets]->SetBinContent(i_cat + 1,STXS_Yields_ZX[i_cat]->Integral());
+        
         for ( int i_proc = 0; i_proc < num_of_processes; i_proc++ )
         {
+            if(i_proc == Settings::Zjets) continue;
             STXS_Categories[i_proc]->SetBinContent(i_cat + 1,STXS_Yields[i_cat][i_proc]->Integral());
+        }
+    }
+    
+    for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ )
+    {
+        for ( int i_proc = 0; i_proc < num_of_STXS_bins; i_proc++ )
+        {
+            Purity_Categories[i_proc]->SetBinContent(i_cat + 1,Purity_Yields[i_cat][i_proc]->Integral());
         }
     }
 }
@@ -1642,6 +1793,26 @@ void Histograms::FillInclusiveCombination()
 	histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125]->Add(histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125ttH]);
 	histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125]->Add(histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125bbH]);
 	histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125]->Add(histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125tqH]);
+    
+    for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ )
+    {
+        
+        STXS_Categories[Settings::Zjets]->SetBinContent(i_cat + 1,STXS_Yields_ZX[i_cat]->Integral());
+        
+        for ( int i_proc = 0; i_proc < num_of_processes; i_proc++ )
+        {
+            if(i_proc == Settings::Zjets) continue;
+            STXS_Categories[i_proc]->SetBinContent(i_cat + 1,STXS_Yields[i_cat][i_proc]->Integral());
+        }
+    }
+    
+    for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ )
+    {
+        for ( int i_proc = 0; i_proc < num_of_STXS_bins; i_proc++ )
+        {
+            Purity_Categories[i_proc]->SetBinContent(i_cat + 1,Purity_Yields[i_cat][i_proc]->Integral());
+        }
+    }
 }
 
 
@@ -2204,6 +2375,11 @@ void Histograms::SaveHistos( string file_name )
     {
         STXS_Categories[i_proc]->Write();
     }
+    
+    for ( int i_proc = 0; i_proc < num_of_STXS_bins; i_proc++ )
+    {
+        Purity_Categories[i_proc]->Write();
+    }
    
    fOutHistos->Close();
    delete fOutHistos;
@@ -2701,6 +2877,12 @@ void Histograms::GetHistos( TString file_name )
             _histo_name = "STXS_Categories_" + _s_process.at(i_proc) + "_" + _blinding;
             STXS_Categories[i_proc] = (TH1F*)histo_file->Get(_histo_name.c_str());
     }
+    
+    for ( int i_proc = 0; i_proc < num_of_STXS_bins; i_proc++ )
+    {
+        _histo_name = "STXS_Purity_" + _s_STXS_bins.at(i_proc) + "_" + _blinding;
+        Purity_Categories[i_proc] = (TH1F*)histo_file->Get(_histo_name.c_str());
+    }
 }
 //=============================================
 
@@ -3101,22 +3283,22 @@ void Histograms::plot_Combination( TString folder )
 //=========================================================================================================
 void Histograms::plot_STXS( TString folder )
 {
-    gStyle->SetPadBottomMargin(0.30);
+    gStyle->SetPadBottomMargin(0.35);
     
     TCanvas *c;
     c = new TCanvas("c", "c", 650, 500);
     
     c->SetLogy();
     
-    STXS_Categories[Settings::H125ggH]->SetFillColor(kBlue);
-    STXS_Categories[Settings::H125VBF]->SetFillColor(kGreen+3);
-    STXS_Categories[Settings::H125VH]->SetFillColor(kRed+2);
-    STXS_Categories[Settings::H125ttH]->SetFillColor(kOrange-2);
-    STXS_Categories[Settings::H125bbH]->SetFillColor(kCyan-3);
-    STXS_Categories[Settings::H125tqH]->SetFillColor(kOrange-5);
-    STXS_Categories[Settings::qqZZ]->SetFillColor(kGray+3);
-    STXS_Categories[Settings::ggZZ]->SetFillColor(kOrange+3);
-    STXS_Categories[Settings::Zjets]->SetFillColor(kGray);
+    STXS_Categories[Settings::H125ggH]->SetFillColor(kRed-7);
+    STXS_Categories[Settings::H125bbH]->SetFillColor(kRed-10);
+    STXS_Categories[Settings::H125VBF]->SetFillColor(kMagenta+1);
+    STXS_Categories[Settings::H125VH]->SetFillColor(kYellow-7);
+    STXS_Categories[Settings::H125ttH]->SetFillColor(kOrange+7);
+    STXS_Categories[Settings::H125tqH]->SetFillColor(kOrange-3);
+    STXS_Categories[Settings::qqZZ]->SetFillColor(Cosmetics::qqZZ().fill_color);
+    STXS_Categories[Settings::ggZZ]->SetFillColor(Cosmetics::ggZZ().fill_color);
+    STXS_Categories[Settings::Zjets]->SetFillColor(Cosmetics::ZX().fill_color);
     
     STXS_Categories[Settings::Data]->SetBinErrorOption(TH1::kPoisson);
     STXS_Categories[Settings::Data]->SetLineColor(kBlack);
@@ -3127,18 +3309,20 @@ void Histograms::plot_STXS( TString folder )
     stack->Add(STXS_Categories[Settings::Zjets]);
     stack->Add(STXS_Categories[Settings::ggZZ]);
     stack->Add(STXS_Categories[Settings::qqZZ]);
-    stack->Add(STXS_Categories[Settings::H125tqH]);
-    stack->Add(STXS_Categories[Settings::H125bbH]);
-    stack->Add(STXS_Categories[Settings::H125ttH]);
-    stack->Add(STXS_Categories[Settings::H125VH]);
-    stack->Add(STXS_Categories[Settings::H125VBF]);
     stack->Add(STXS_Categories[Settings::H125ggH]);
-  
+    stack->Add(STXS_Categories[Settings::H125bbH]);
+    stack->Add(STXS_Categories[Settings::H125VBF]);
+    stack->Add(STXS_Categories[Settings::H125VH]);
+    stack->Add(STXS_Categories[Settings::H125ttH]);
+    stack->Add(STXS_Categories[Settings::H125tqH]);
+    
     stack->Draw("HIST");
     
     stack->GetYaxis()->SetTitle(STXS_Categories[Settings::Data]->GetYaxis()->GetTitle());
     stack->GetXaxis()->SetLabelSize(.05);
     stack->GetXaxis()->LabelsOption("v");
+    
+    stack->SetMaximum(1e+4);
     
     STXS_Categories[Settings::Data]->SetMarkerSize(0.9);
     STXS_Categories[Settings::Data]->Draw("SAME p E1 X0");
@@ -3148,13 +3332,28 @@ void Histograms::plot_STXS( TString folder )
     // L E G E N D
     //=============
     
+    TLegend *legend  = CreateLegendSTXS("right", STXS_Categories[Settings::Data],
+                                                 STXS_Categories[Settings::H125ggH],
+                                                 STXS_Categories[Settings::H125bbH],
+                                                 STXS_Categories[Settings::H125VBF],
+                                                 STXS_Categories[Settings::H125VH],
+                                                 STXS_Categories[Settings::H125ttH],
+                                                 STXS_Categories[Settings::H125tqH],
+                                                 STXS_Categories[Settings::qqZZ],
+                                                 STXS_Categories[Settings::ggZZ],
+                                                 STXS_Categories[Settings::Zjets],
+                                                 false);
+    
+    legend->Draw();
+    
 
     //=================
     // CMS TEXT & LUMI
     //=================
     
     CMS_lumi *lumi = new CMS_lumi;
-    lumi->set_lumi(c, _lumi);
+    if(folder == "Combination") lumi->set_lumi_combination(c);
+    else lumi->set_lumi(c, _lumi);
     
     _out_file_name = folder + "/STXS_Categorization";
     SavePlots(c, _out_file_name, folder);
@@ -5054,6 +5253,43 @@ TLegend* Histograms::CreateLegendttH( string position, TH1F *data, TH1F *h125ttH
 }
 //==============================================================================================================================
 
+
+//==============================================================================================================================
+TLegend* Histograms::CreateLegendSTXS( string position, TH1F *data, TH1F *h125ggH, TH1F *h125bbH, TH1F *h125VBF, TH1F *h125VH, TH1F *h125ttH, TH1F *h125tqH, TH1F *qqZZ, TH1F *ggZZ, TH1F *ZX , bool mask)
+{
+    TLegend *leg;
+    
+    if ( position == "right" )
+    {
+        leg = new TLegend(.61, .77, .97, .91);
+    }
+    else
+    {
+        leg = new TLegend(.21, .67, .41, .91);
+    }
+    
+    if(!mask)
+    {
+        leg->SetFillColor(0);
+        leg->SetFillStyle(0);
+    }
+    leg->SetBorderSize(0);
+    leg->SetNColumns(2);
+    
+    leg->AddEntry( data, "Data", "p E" );
+    leg->AddEntry( h125ttH,"H(125), ttH","f");
+    leg->AddEntry( h125ggH,"H(125), ggH","f");
+    leg->AddEntry( h125tqH,"H(125), tHq","f");
+    leg->AddEntry( h125bbH,"H(125), bbH","f");
+    leg->AddEntry( qqZZ, "q#bar{q}#rightarrowZZ, Z#gamma*", "f" );
+    leg->AddEntry( h125VBF,"H(125), VBF","f");
+    leg->AddEntry( ggZZ, "gg#rightarrowZZ, Z#gamma*", "f" );
+    leg->AddEntry( h125VH,"H(125), VH","f");
+    leg->AddEntry( ZX, "Z+X", "f" );
+    
+    return leg;
+}
+//==============================================================================================================================
 
 
 //===========================================================================================

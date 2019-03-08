@@ -41,6 +41,12 @@ Plotter::Plotter( double lumi ):Tree()
 //============================================================
 Plotter::Plotter():Tree()
 {
+    // Z+X SS factors
+    _fs_ROS_SS.push_back(1.00868);//4e
+    _fs_ROS_SS.push_back(1.04015);//4mu
+    _fs_ROS_SS.push_back(1.00823);//2e2mu
+    _fs_ROS_SS.push_back(1.0049);//2mu2e
+    
    combination_histos = new Histograms("Combination");
 	
 }
@@ -141,7 +147,7 @@ void Plotter::MakeHistograms( TString input_file_name )
                                                  DiJetMass,
                                                  ZZPt,
                                                  _current_category,
-                                                 ZZPt);//FIXME
+                                                 ZZjjPt);
       // K factors
       _k_factor = calculate_K_factor(input_file_name);
    
@@ -230,6 +236,12 @@ void Plotter::MakeHistograms( TString input_file_name )
        }
        
        unblinded_histos->FillSTXS( ZZMass, _event_weight, _current_category_stxs, _current_process );
+       
+       if(_current_process > Settings::Data && _current_process < Settings::qqZZ)//fill purity yields for signals
+       {
+           _STXS_bin = FindSTXSBin();
+           combination_histos->FillSTXSPurity(ZZMass, _event_weight, _current_category_stxs, _STXS_bin);
+       }
       
       // Fill MZ1 histograms
       if ( blind(ZZMass) )
@@ -348,9 +360,9 @@ void Plotter::FillHistograms( TString input_file_name , int year)
 	
    _current_process = find_current_process( input_file_name, 0 , 0);
 	
-   if(year == 2018) _lumi = 58.83;
-   if(year == 2017) _lumi = 41.37;
-   if(year == 2016) _lumi = 35.86706;
+   if(year == 2018) _lumi = 59.6;
+   if(year == 2017) _lumi = 41.5;
+   if(year == 2016) _lumi = 35.9;
 	
    hCounters = (TH1F*)input_file->Get("ZZTree/Counters");
    n_gen_events = (Long64_t)hCounters->GetBinContent(1);
@@ -383,13 +395,72 @@ void Plotter::FillHistograms( TString input_file_name , int year)
 		
       // K factors
       _k_factor = calculate_K_factor(input_file_name);
+       
+       // Find current category
+       for ( int j = 0; j < nCleanedJetsPt30; j++)
+       {
+           jetPt[j] = JetPt->at(j);
+           jetEta[j] = JetEta->at(j);
+           jetPhi[j] = JetPhi->at(j);
+           jetMass[j] = JetMass->at(j);
+           jetQGL[j] = JetQGLikelihood->at(j);
+           jetPgOverPq[j] = 1./JetQGLikelihood->at(j) - 1.;
+       }
+       
+       _current_category = categoryMor18(nExtraLep,
+                                         nExtraZ,
+                                         nCleanedJetsPt30,
+                                         nCleanedJetsPt30BTagged_bTagSF,
+                                         jetQGL,
+                                         p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+                                         p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
+                                         p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
+                                         p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+                                         pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+                                         p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
+                                         p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
+                                         p_HadWH_mavjj_JECNominal,
+                                         p_HadWH_mavjj_true_JECNominal,
+                                         p_HadZH_mavjj_JECNominal,
+                                         p_HadZH_mavjj_true_JECNominal,
+                                         jetPhi,
+                                         ZZMass,
+                                         PFMET,
+                                         false,// Use VHMET category
+                                         false);// Use QG tagging
+       
+       if(nCleanedJetsPt30 < 2) _ZZjjPt = ZZPt;
+       else
+       {
+           TLorentzVector ZZ,j1,j2;
+           
+           ZZ.SetPtEtaPhiM(ZZPt,ZZEta,ZZPhi,ZZMass);
+           j1.SetPtEtaPhiM(JetPt->at(0),JetEta->at(0),JetPhi->at(0),JetMass->at(0));
+           j2.SetPtEtaPhiM(JetPt->at(1),JetEta->at(1),JetPhi->at(1),JetMass->at(1));
+           
+           _ZZjjPt = (ZZ + j1 + j2).Pt();
+           
+       }
+       
+       _current_category_stxs = stage1_reco_1p1 ( nCleanedJetsPt30,
+                                                 DiJetMass,
+                                                 ZZPt,
+                                                 _current_category,
+                                                 _ZZjjPt);
 		
       // Final event weight
       _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight) / gen_sum_weights;
       if ( input_file_name.Contains("ggH") && year == 2017) _event_weight *= ggH_NNLOPS_weight; // reweight POWHEG ggH to NNLOPS
       if ( input_file_name.Contains("ggH") && year == 2018) _event_weight *= ggH_NNLOPS_weight; // reweight POWHEG ggH to NNLOPS
 
-		combination_histos->FillM4lCombination(ZZMass, _event_weight, _current_process);
+      combination_histos->FillM4lCombination(ZZMass, _event_weight, _current_process);
+      combination_histos->FillSTXS(ZZMass, _event_weight, _current_category_stxs, _current_process);
+       
+       if(_current_process > Settings::Data && _current_process < Settings::qqZZ)//fill purity yields for signals
+       {
+           _STXS_bin = FindSTXSBin();
+           combination_histos->FillSTXSPurity(ZZMass, _event_weight, _current_category_stxs, _STXS_bin);
+       }
 		
 		
    } // end for loop
@@ -505,7 +576,7 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
                                                  DiJetMass,
                                                  ZZPt,
                                                  _current_category,
-                                                 ZZPt);//FIXME
+                                                 ZZjjPt);
    
       // Calculate yield
       _yield_SR = _fs_ROS_SS.at(_current_final_state)*FR->GetFakeRate(LepPt->at(2),LepEta->at(2),LepLepId->at(2))*FR->GetFakeRate(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
@@ -725,6 +796,88 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
 //===============================================================================
 
 
+//===============================================================================
+void Plotter::FillZXHistograms( TString input_file_data_name, TString  input_file_FR_name )
+{
+    
+    FakeRates *FR = new FakeRates( input_file_FR_name );
+    
+    input_file_data = new TFile(input_file_data_name);
+    input_tree_data = (TTree*)input_file_data->Get("CRZLLTree/candTree");
+    Init( input_tree_data, input_file_data_name );
+    
+    
+    if (fChain == 0) return;
+    
+    Long64_t nentries = fChain->GetEntriesFast();
+    
+    Long64_t nbytes = 0, nb = 0;
+    
+    for (Long64_t jentry=0; jentry<nentries;jentry++)
+    {
+        
+        Long64_t ientry = LoadTree(jentry);
+        if (ientry < 0) break;
+        nb = fChain->GetEntry(jentry);
+        nbytes += nb;
+        
+        if ( !CRflag ) continue;
+        if ( !test_bit(CRflag, CRZLLss) ) continue;
+        
+        if ( !(ZZsel >= 20) ) continue; // Remove events that do not pass selection
+        
+        _current_final_state = FindFinalStateZX();
+
+        _current_category = categoryMor18(nExtraLep,
+                                          nExtraZ,
+                                          nCleanedJetsPt30,
+                                          nCleanedJetsPt30BTagged_bTagSF,
+                                          jetQGL,
+                                          p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+                                          p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
+                                          p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
+                                          p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+                                          pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+                                          p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
+                                          p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
+                                          p_HadWH_mavjj_JECNominal,
+                                          p_HadWH_mavjj_true_JECNominal,
+                                          p_HadZH_mavjj_JECNominal,
+                                          p_HadZH_mavjj_true_JECNominal,
+                                          jetPhi,
+                                          ZZMass,
+                                          PFMET,
+                                          false,// Use VHMET category
+                                          false);// Use QG tagging
+
+        if(nCleanedJetsPt30 < 2) _ZZjjPt = ZZPt;
+        else
+        {
+            TLorentzVector ZZ,j1,j2;
+            
+            ZZ.SetPtEtaPhiM(ZZPt,ZZEta,ZZPhi,ZZMass);
+            j1.SetPtEtaPhiM(JetPt->at(0),JetEta->at(0),JetPhi->at(0),JetMass->at(0));
+            j2.SetPtEtaPhiM(JetPt->at(1),JetEta->at(1),JetPhi->at(1),JetMass->at(1));
+            
+            _ZZjjPt = (ZZ + j1 + j2).Pt();
+            
+        }
+        _current_category_stxs = stage1_reco_1p1 ( nCleanedJetsPt30,
+                                                  DiJetMass,
+                                                  ZZPt,
+                                                  _current_category,
+                                                  _ZZjjPt);
+
+        // Calculate yield
+        _yield_SR = _fs_ROS_SS.at(_current_final_state)*FR->GetFakeRate(LepPt->at(2),LepEta->at(2),LepLepId->at(2))*FR->GetFakeRate(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
+
+        // Fill STXS Z+X histograms
+        combination_histos->FillSTXSZX( ZZMass, _yield_SR, _current_category_stxs);
+    }
+    
+    cout << "[INFO] Z+X histograms with " << input_file_FR_name << " fake rate file are filled." << endl;
+}
+//===============================================================================
 
 //=========================================
 void Plotter::GetHistos( TString file_name )
@@ -801,6 +954,7 @@ void Plotter::plot_STXS( TString file_name, TString folder )
 void Plotter::Plot()
 {
    combination_histos->plot_Combination( "Combination" );
+   combination_histos->plot_STXS( "Combination" );
 	
 }
 //==================
@@ -994,6 +1148,59 @@ int Plotter::FindFinalStateZX()
 }
 //=============================
 
+int Plotter::FindSTXSBin()
+{
+    int bin = -999;
+    
+    //ggH
+    if (htxs_stage1_cat == 102) bin = Settings::bin_ggH_0J_PTH_0_10;
+    if (htxs_stage1_cat == 103) bin = Settings::bin_ggH_0J_PTH_10_200;
+    if (htxs_stage1_cat == 111) bin = Settings::bin_ggH_1J_PTH_0_60;
+    if (htxs_stage1_cat == 112) bin = Settings::bin_ggH_1J_PTH_60_120;
+    if (htxs_stage1_cat == 113) bin = Settings::bin_ggH_1J_PTH_120_200;
+    if (htxs_stage1_cat == 121) bin = Settings::bin_ggH_2J_PTH_0_60;
+    if (htxs_stage1_cat == 122) bin = Settings::bin_ggH_2J_PTH_60_120;
+    if (htxs_stage1_cat == 123) bin = Settings::bin_ggH_2J_PTH_120_200;
+    if (htxs_stage1_cat == 131) bin = Settings::bin_ggH_VBF;
+    if (htxs_stage1_cat == 132) bin = Settings::bin_ggH_VBF;
+    if (htxs_stage1_cat == 141) bin = Settings::bin_ggH_VBF;
+    if (htxs_stage1_cat == 142) bin = Settings::bin_ggH_VBF;
+    if (htxs_stage1_cat == 150) bin = Settings::bin_ggH_PTH_200;
+    
+
+    //VBF
+    if (htxs_stage1_cat == 201) bin = Settings::bin_VBF_Rest;
+    if (htxs_stage1_cat == 202) bin = Settings::bin_VBF_Rest;
+    if (htxs_stage1_cat == 211) bin = Settings::bin_VBF_Rest;
+    if (htxs_stage1_cat == 212) bin = Settings::bin_VH_had;
+    if (htxs_stage1_cat == 213) bin = Settings::bin_VBF_Rest;
+    if (htxs_stage1_cat == 251) bin = Settings::bin_VBF_2j_mjj_350_700_2j;
+    if (htxs_stage1_cat == 261) bin = Settings::bin_VBF_2j_mjj_GT350_3j;
+    if (htxs_stage1_cat == 252) bin = Settings::bin_VBF_2j_mjj_GT700_2j;
+    if (htxs_stage1_cat == 262) bin = Settings::bin_VBF_2j_mjj_GT350_3j;
+    if (htxs_stage1_cat == 271) bin = Settings::bin_VBF_GT200;
+    
+    //VH
+    if (htxs_stage1_cat == 301) bin = Settings::bin_VH_Lep_0_150;
+    if (htxs_stage1_cat == 302) bin = Settings::bin_VH_Lep_0_150;
+    if (htxs_stage1_cat == 303) bin = Settings::bin_VH_Lep_GT150;
+    if (htxs_stage1_cat == 304) bin = Settings::bin_VH_Lep_GT150;
+    if (htxs_stage1_cat == 305) bin = Settings::bin_VH_Lep_GT150;
+    if (htxs_stage1_cat == 401) bin = Settings::bin_VH_Lep_0_150;
+    if (htxs_stage1_cat == 402) bin = Settings::bin_VH_Lep_0_150;
+    if (htxs_stage1_cat == 403) bin = Settings::bin_VH_Lep_GT150;
+    if (htxs_stage1_cat == 404) bin = Settings::bin_VH_Lep_GT150;
+    if (htxs_stage1_cat == 405) bin = Settings::bin_VH_Lep_GT150;
+    
+    //others
+    if (htxs_stage1_cat == 601) bin = Settings::bin_ttH;
+    if (htxs_stage1_cat == 701) bin = Settings::bin_bbH;
+    if (htxs_stage1_cat == 801) bin = Settings::bin_tH;
+    
+
+
+    return bin;
+}
 
 
 //=================================
