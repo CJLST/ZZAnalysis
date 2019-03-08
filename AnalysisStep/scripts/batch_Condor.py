@@ -119,7 +119,7 @@ x509userproxy           = {home}/x509up_u{uid}
 #https://www-auth.cs.wisc.edu/lists/htcondor-users/2010-September/msg00009.shtml
 periodic_remove         = JobStatus == 5
 
-WhenToTransferOutput    = ON_EXIT_OR_EVICT
+ShouldTransferFiles     = NO
 """
    return script.format(home=os.path.expanduser("~"), uid=os.getuid(), mainDir=mainDir)
 
