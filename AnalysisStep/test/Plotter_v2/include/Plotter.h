@@ -22,6 +22,7 @@
 #include "TLegend.h"
 #include "TLatex.h"
 #include "TGraphAsymmErrors.h"
+#include "TLorentzVector.h"
 #include "TMultiGraph.h"
 #include "TROOT.h"
 #include "TSystem.h"
@@ -61,10 +62,12 @@ public:
    void MakeHistograms( TString );
    void FillHistograms( TString , int );
    void MakeHistogramsZX( TString, TString );
+   void FillZXHistograms( TString, TString );
    void MakeM4lZX();
    float calculate_K_factor( TString );
    int FindFinalState();
    int FindFinalStateZX();
+   int FindSTXSBin();
    int find_current_process( TString , int, int);
    int CountAssociatedLeptons();
    bool blind( float );
@@ -104,9 +107,11 @@ private:
    float jetMass[99];
    float jetQGL[99];
    float jetPgOverPq[99];
+    
+   float _ZZjjPt;
 	
-	float Pt_leading , Pt_trailing;
-	float Eta_leading , Eta_trailing;
+   float Pt_leading , Pt_trailing;
+   float Eta_leading , Eta_trailing;
    float SIP_leading, SIP_trailing;
    float ISO_leading, ISO_trailing;
    
@@ -129,7 +134,7 @@ private:
    float _blinding_lower[2], _blinding_upper[2];
    bool _merge_2e2mu;
    
-   int _current_process, _current_final_state, _current_category, _current_category_stxs, _n_gen_assoc_lep;
+   int _current_process, _current_final_state, _current_category, _current_category_stxs, _STXS_bin, _n_gen_assoc_lep;
    float _lumi, _k_factor, _SMP_signal_strength, _yield_SR, partial_sample_weight;
    double gen_sum_weights, _event_weight;
    
