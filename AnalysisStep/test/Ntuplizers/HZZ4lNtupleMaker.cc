@@ -338,6 +338,7 @@ namespace {
   Int_t   htxs_prodMode=-1;
   Int_t   htxs_stage0_cat = -1;
   Int_t   htxs_stage1_cat = -1;
+  Int_t   htxs_stage1_cat_old = -1;
   Float_t ggH_NNLOPS_weight = 0;
   Float_t ggH_NNLOPS_weight_unc = 0;
   std::vector<float> qcd_ggF_uncertSF;
@@ -936,7 +937,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
    htxsNJets = htxs->jets30.size();
    htxsHPt = htxs->higgs.Pt();
    htxs_stage0_cat = htxs->stage0_cat;
-//   htxs_stage1_cat = htxs->stage1_cat_pTjet30GeV;
+   htxs_stage1_cat_old = htxs->stage1_cat_pTjet30GeV;
    htxs_stage1_cat = htxs->stage1p1_cat;
    htxs_errorCode=htxs->errorCode;
    htxs_prodMode= htxs->prodMode;
@@ -1173,7 +1174,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
 	  std::vector<double> qcd_ggF_uncertSF_tmp;
 	  qcd_ggF_uncertSF.clear();
-	  qcd_ggF_uncertSF_tmp = qcd_ggF_uncertSF_2017(htxsNJets, htxsHPt, htxs_stage1_cat);
+	  qcd_ggF_uncertSF_tmp = qcd_ggF_uncertSF_2017(htxsNJets, htxsHPt, htxs_stage1_cat_old);
 	  qcd_ggF_uncertSF = std::vector<float>(qcd_ggF_uncertSF_tmp.begin(),qcd_ggF_uncertSF_tmp.end());
 
 
@@ -2592,15 +2593,15 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("GenAssocLep2Id", GenAssocLep2Id, failedTreeLevel >= fullFailedTree);
     myTree->Book("htxs_errorCode", htxs_errorCode, failedTreeLevel >= minimalFailedTree);
     myTree->Book("htxs_prodMode", htxs_prodMode, failedTreeLevel >= minimalFailedTree);
-myTree->Book("htxsNJets", htxsNJets, failedTreeLevel >= fullFailedTree);
-myTree->Book("htxsHPt", htxsHPt, failedTreeLevel >= fullFailedTree);
-myTree->Book("htxs_stage0_cat", htxs_stage0_cat, failedTreeLevel >= fullFailedTree);
-myTree->Book("htxs_stage1_cat", htxs_stage1_cat, failedTreeLevel >= fullFailedTree);
+myTree->Book("htxsNJets", htxsNJets, failedTreeLevel >= minimalFailedTree);
+myTree->Book("htxsHPt", htxsHPt, failedTreeLevel >= minimalFailedTree);
+myTree->Book("htxs_stage0_cat", htxs_stage0_cat, failedTreeLevel >= minimalFailedTree);
+myTree->Book("htxs_stage1_cat", htxs_stage1_cat, failedTreeLevel >= minimalFailedTree);
     if(apply_QCD_GGF_UNCERT)
       {
-	myTree->Book("ggH_NNLOPS_weight", ggH_NNLOPS_weight, failedTreeLevel >= fullFailedTree);
-	myTree->Book("ggH_NNLOPS_weight_unc", ggH_NNLOPS_weight_unc, failedTreeLevel >= fullFailedTree);
-	myTree->Book("qcd_ggF_uncertSF", qcd_ggF_uncertSF, failedTreeLevel >= fullFailedTree);
+	myTree->Book("ggH_NNLOPS_weight", ggH_NNLOPS_weight, failedTreeLevel >= minimalFailedTree);
+	myTree->Book("ggH_NNLOPS_weight_unc", ggH_NNLOPS_weight_unc, failedTreeLevel >= minimalFailedTree);
+	myTree->Book("qcd_ggF_uncertSF", qcd_ggF_uncertSF, failedTreeLevel >= minimalFailedTree);
       }
 	  
 
