@@ -89,6 +89,28 @@ Histograms::Histograms( double lumi, string blinding )
    _s_STXS_bins.push_back("bbH");
    _s_STXS_bins.push_back("ttH");
    _s_STXS_bins.push_back("tH");
+    
+    _s_STXS_bins_histoName.push_back("ggH_0j_pT_0_10");
+    _s_STXS_bins_histoName.push_back("ggH_0j_pT_10_200");
+    _s_STXS_bins_histoName.push_back("ggH_1j_pT_0_60");
+    _s_STXS_bins_histoName.push_back("ggH_1j_pT_60_120");
+    _s_STXS_bins_histoName.push_back("ggH_1j_pT_120_200");
+    _s_STXS_bins_histoName.push_back("ggH_2j_pT_0_60");
+    _s_STXS_bins_histoName.push_back("ggH_2j_pT_60_120");
+    _s_STXS_bins_histoName.push_back("ggH_2j_pT_120_200");
+    _s_STXS_bins_histoName.push_back("ggH_pT_200");
+    _s_STXS_bins_histoName.push_back("ggH_2j_mJJ_350");
+    _s_STXS_bins_histoName.push_back("qqH_2j_mJJ_60_120");
+    _s_STXS_bins_histoName.push_back("qqH_2j_pT_200 ");
+    _s_STXS_bins_histoName.push_back("qqH_2j_mJJ_350_700");
+    _s_STXS_bins_histoName.push_back("qqH_2j_mJJ_700");
+    _s_STXS_bins_histoName.push_back("qqH_3j_mJJ_350");
+    _s_STXS_bins_histoName.push_back("qqH_rest");
+    _s_STXS_bins_histoName.push_back("VH_pTV_0_150");
+    _s_STXS_bins_histoName.push_back("VH_pTV_150");
+    _s_STXS_bins_histoName.push_back("bbH");
+    _s_STXS_bins_histoName.push_back("ttH");
+    _s_STXS_bins_histoName.push_back("tH");
    
    _s_category_label.push_back("Untagged category");
    _s_category_label.push_back("VBF-1jet tagged category");
@@ -639,10 +661,9 @@ Histograms::Histograms( double lumi, string blinding )
     // STXS purity
     for ( int i_proc = 0; i_proc < num_of_STXS_bins; i_proc++ )
     {
-        _histo_name = "STXS_Purity_" + _s_STXS_bins.at(i_proc) + "_" + _blinding;
+        _histo_name = "STXS_Purity_" + _s_STXS_bins_histoName.at(i_proc) + "_" + _blinding;
         _histo_labels = ";" + Variables::STXS_Categories().var_X_label + ";" + Variables::STXS_Categories().var_Y_label;
         Purity_Categories[i_proc] = new TH1F(_histo_name.c_str(), _histo_labels.c_str(), Variables::STXS_Categories().var_N_bin,Variables::STXS_Categories().var_min, Variables::STXS_Categories().var_max);
-        for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ ) Purity_Categories[i_proc]->GetXaxis()->SetBinLabel(i_cat + 1,_s_STXS_category.at(i_cat));
         
     }
     
@@ -653,8 +674,10 @@ Histograms::Histograms( double lumi, string blinding )
             _histo_name = "Purity_Yields_" + _s_STXS_bins.at(i_proc) + "_" + _s_STXS_category.at(i_cat) + "_" + _blinding;
             Purity_Yields[i_cat][i_proc] = new TH1F(_histo_name.c_str(),_histo_name.c_str(), Variables::STXS_Categories().M4lBins,Variables::STXS_Categories().M4lMin, Variables::STXS_Categories().M4lMax);
         }
+        
+        Purity_Normalization[i_cat] = 0.;
     }
-                                           
+    
     
 }
 //======================================
@@ -720,6 +743,28 @@ Histograms::Histograms( string blinding )
    _s_STXS_bins.push_back("bbH");
    _s_STXS_bins.push_back("ttH");
    _s_STXS_bins.push_back("tH");
+    
+    _s_STXS_bins_histoName.push_back("ggH_0j_pT_0_10");
+    _s_STXS_bins_histoName.push_back("ggH_0j_pT_10_200");
+    _s_STXS_bins_histoName.push_back("ggH_1j_pT_0_60");
+    _s_STXS_bins_histoName.push_back("ggH_1j_pT_60_120");
+    _s_STXS_bins_histoName.push_back("ggH_1j_pT_120_200");
+    _s_STXS_bins_histoName.push_back("ggH_2j_pT_0_60");
+    _s_STXS_bins_histoName.push_back("ggH_2j_pT_60_120");
+    _s_STXS_bins_histoName.push_back("ggH_2j_pT_120_200");
+    _s_STXS_bins_histoName.push_back("ggH_pT_200");
+    _s_STXS_bins_histoName.push_back("ggH_2j_mJJ_350");
+    _s_STXS_bins_histoName.push_back("qqH_2j_mJJ_60_120");
+    _s_STXS_bins_histoName.push_back("qqH_2j_pT_200 ");
+    _s_STXS_bins_histoName.push_back("qqH_2j_mJJ_350_700");
+    _s_STXS_bins_histoName.push_back("qqH_2j_mJJ_700");
+    _s_STXS_bins_histoName.push_back("qqH_3j_mJJ_350");
+    _s_STXS_bins_histoName.push_back("qqH_rest");
+    _s_STXS_bins_histoName.push_back("VH_pTV_0_150");
+    _s_STXS_bins_histoName.push_back("VH_pTV_150");
+    _s_STXS_bins_histoName.push_back("bbH");
+    _s_STXS_bins_histoName.push_back("ttH");
+    _s_STXS_bins_histoName.push_back("tH");
 	
 	for ( int i_proc = 0; i_proc < num_of_processes - 2; i_proc++ )
 	{
@@ -769,10 +814,9 @@ Histograms::Histograms( string blinding )
     // STXS purity
     for ( int i_proc = 0; i_proc < num_of_STXS_bins; i_proc++ )
     {
-        _histo_name = "STXS_Purity_" + _s_STXS_bins.at(i_proc) + "_" + _blinding;
+        _histo_name = "STXS_Purity_" + _s_STXS_bins_histoName.at(i_proc) + "_" + _blinding;
         _histo_labels = ";" + Variables::STXS_Categories().var_X_label + ";" + Variables::STXS_Categories().var_Y_label;
         Purity_Categories[i_proc] = new TH1F(_histo_name.c_str(), _histo_labels.c_str(), Variables::STXS_Categories().var_N_bin,Variables::STXS_Categories().var_min, Variables::STXS_Categories().var_max);
-        for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ ) Purity_Categories[i_proc]->GetXaxis()->SetBinLabel(i_cat + 1,_s_STXS_category.at(i_cat));
         
     }
     
@@ -783,6 +827,8 @@ Histograms::Histograms( string blinding )
             _histo_name = "Purity_Yields_" + _s_STXS_bins.at(i_proc) + "_" + _s_STXS_category.at(i_cat) + "_" + _blinding;
             Purity_Yields[i_cat][i_proc] = new TH1F(_histo_name.c_str(),_histo_name.c_str(), Variables::STXS_Categories().M4lBins,Variables::STXS_Categories().M4lMin, Variables::STXS_Categories().M4lMax);
         }
+        
+        Purity_Normalization[i_cat] = 0.;
     }
 }
 //======================================
@@ -1775,11 +1821,19 @@ void Histograms::FillInclusive()
         }
     }
     
+    for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ )// first calculate total yield in each bin so you can normalize each bin to 1
+    {
+        for ( int i_proc = 0; i_proc < num_of_STXS_bins; i_proc++ )
+        {
+            Purity_Normalization[i_cat] += Purity_Yields[i_cat][i_proc]->Integral();
+        }
+    }
+    
     for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ )
     {
         for ( int i_proc = 0; i_proc < num_of_STXS_bins; i_proc++ )
         {
-            Purity_Categories[i_proc]->SetBinContent(i_cat + 1,Purity_Yields[i_cat][i_proc]->Integral());
+            Purity_Categories[i_proc]->SetBinContent(num_of_STXS_categories - i_cat,Purity_Yields[i_cat][i_proc]->Integral()/Purity_Normalization[i_cat]);
         }
     }
 }
@@ -1806,11 +1860,19 @@ void Histograms::FillInclusiveCombination()
         }
     }
     
+    for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ )// first calculate total yield in each bin so you can normalize each bin to 1
+    {
+        for ( int i_proc = 0; i_proc < num_of_STXS_bins; i_proc++ )
+        {
+            Purity_Normalization[i_cat] += Purity_Yields[i_cat][i_proc]->Integral();
+        }
+    }
+    
     for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ )
     {
         for ( int i_proc = 0; i_proc < num_of_STXS_bins; i_proc++ )
         {
-            Purity_Categories[i_proc]->SetBinContent(i_cat + 1,Purity_Yields[i_cat][i_proc]->Integral());
+            Purity_Categories[i_proc]->SetBinContent(num_of_STXS_categories - i_cat,Purity_Yields[i_cat][i_proc]->Integral()/Purity_Normalization[i_cat]);
         }
     }
 }
@@ -2880,7 +2942,7 @@ void Histograms::GetHistos( TString file_name )
     
     for ( int i_proc = 0; i_proc < num_of_STXS_bins; i_proc++ )
     {
-        _histo_name = "STXS_Purity_" + _s_STXS_bins.at(i_proc) + "_" + _blinding;
+        _histo_name = "STXS_Purity_" + _s_STXS_bins_histoName.at(i_proc) + "_" + _blinding;
         Purity_Categories[i_proc] = (TH1F*)histo_file->Get(_histo_name.c_str());
     }
 }
@@ -3022,7 +3084,7 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
    else if ( plot_index == Settings::D1jet_M4L118130 || plot_index == Settings::D2jet_M4L118130  || plot_index == Settings::DVH_M4L118130 || plot_index == Settings::DVBFDEC_M4L118130 || plot_index == Settings::DVBFDEC || plot_index == Settings::DVHDEC_M4L118130 || plot_index == Settings::DVHDEC)
    {
       stack->SetMinimum(1e-5);
-      stack->SetMaximum((data_max + data_max_error)*1.3);
+      stack->SetMaximum((data_max + data_max_error)*1.5);
    }
    else
 	{
@@ -3325,7 +3387,7 @@ void Histograms::plot_STXS( TString folder )
     stack->SetMaximum(1e+4);
     
     STXS_Categories[Settings::Data]->SetMarkerSize(0.9);
-    STXS_Categories[Settings::Data]->Draw("SAME p E1 X0");
+    STXS_Categories[Settings::Data]->Draw("SAME p E0 X0");
     
     
     //=============
@@ -3359,6 +3421,110 @@ void Histograms::plot_STXS( TString folder )
     SavePlots(c, _out_file_name, folder);
 }
 //=========================================================================================================
+
+
+//=========================================================================================================
+void Histograms::plot_Purity( TString folder )
+{
+    gStyle->SetPadLeftMargin(0.20);
+    gStyle->SetPadTopMargin(0.25);
+    
+    TCanvas *c;
+    c = new TCanvas("c", "c", 650, 500);
+    
+    Purity_Categories[Settings::bin_ggH_0J_PTH_0_10]->SetFillColor(kRed-7);
+    Purity_Categories[Settings::bin_ggH_0J_PTH_10_200]->SetFillColor(kRed-6);
+    Purity_Categories[Settings::bin_ggH_1J_PTH_0_60]->SetFillColor(kRed-5);
+    Purity_Categories[Settings::bin_ggH_1J_PTH_60_120]->SetFillColor(kRed-4);
+    Purity_Categories[Settings::bin_ggH_1J_PTH_120_200]->SetFillColor(kRed-3);
+    Purity_Categories[Settings::bin_ggH_2J_PTH_0_60]->SetFillColor(kRed-2);
+    Purity_Categories[Settings::bin_ggH_2J_PTH_60_120]->SetFillColor(kRed-1);
+    Purity_Categories[Settings::bin_ggH_2J_PTH_120_200]->SetFillColor(kRed);
+    Purity_Categories[Settings::bin_ggH_PTH_200]->SetFillColor(kRed+1);
+    
+    Purity_Categories[Settings::bin_ggH_VBF]->SetFillColor(kMagenta-5);
+    Purity_Categories[Settings::bin_VH_had]->SetFillColor(kMagenta-4);
+    Purity_Categories[Settings::bin_VBF_GT200]->SetFillColor(kMagenta-3);
+    Purity_Categories[Settings::bin_VBF_2j_mjj_350_700_2j]->SetFillColor(kMagenta-2);
+    Purity_Categories[Settings::bin_VBF_2j_mjj_GT700_2j]->SetFillColor(kMagenta-1);
+    Purity_Categories[Settings::bin_VBF_2j_mjj_GT350_3j]->SetFillColor(kMagenta);
+    Purity_Categories[Settings::bin_VBF_Rest]->SetFillColor(kMagenta+1);
+    
+    Purity_Categories[Settings::bin_VH_Lep_0_150]->SetFillColor(kYellow-7);
+    Purity_Categories[Settings::bin_VH_Lep_GT150]->SetFillColor(kYellow-6);
+    
+    Purity_Categories[Settings::bin_bbH]->SetFillColor(kRed-10);
+    Purity_Categories[Settings::bin_ttH]->SetFillColor(kOrange+7);
+    Purity_Categories[Settings::bin_tH]->SetFillColor(kOrange-3);
+    
+    
+    // THStack
+    THStack *stack = new THStack( "stack", "stack" );
+    
+    for ( int i_proc = 0; i_proc < num_of_STXS_bins; i_proc++ )
+    {
+        Purity_Categories[i_proc]->SetBarWidth(0.8);
+        Purity_Categories[i_proc]->SetBarOffset(0.1);
+        Purity_Categories[i_proc]->SetMaximum(1.0);
+        for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ ) Purity_Categories[i_proc]->GetXaxis()->SetBinLabel(num_of_STXS_categories - i_cat,_s_STXS_category.at(i_cat));
+        stack->Add(Purity_Categories[i_proc]);
+    }
+    
+    stack->Draw("hbar");
+    
+    stack->GetYaxis()->SetTickLength(0.01);
+    stack->SetMaximum(1.0);
+    
+    //=============
+    // L E G E N D
+    //=============
+    
+    TLegend *leg;
+    
+    leg = new TLegend(.20, .78, .95, .90);
+
+    leg->SetBorderSize(0);
+    leg->SetNColumns(4);
+    
+    leg->AddEntry( Purity_Categories[Settings::bin_ggH_0J_PTH_0_10], _s_STXS_bins.at(Settings::bin_ggH_0J_PTH_0_10), "f" );//column 1
+    leg->AddEntry( Purity_Categories[Settings::bin_ggH_2J_PTH_60_120], _s_STXS_bins.at(Settings::bin_ggH_2J_PTH_60_120), "f" );//column 2
+    leg->AddEntry( Purity_Categories[Settings::bin_VBF_GT200], _s_STXS_bins.at(Settings::bin_VBF_GT200), "f" );//column 3
+    leg->AddEntry( Purity_Categories[Settings::bin_VH_Lep_0_150], _s_STXS_bins.at(Settings::bin_VH_Lep_0_150), "f" );//column 4
+    leg->AddEntry( Purity_Categories[Settings::bin_ggH_0J_PTH_10_200], _s_STXS_bins.at(Settings::bin_ggH_0J_PTH_10_200), "f" );//column 1
+    leg->AddEntry( Purity_Categories[Settings::bin_ggH_2J_PTH_120_200], _s_STXS_bins.at(Settings::bin_ggH_2J_PTH_120_200), "f" );//column 2
+    leg->AddEntry( Purity_Categories[Settings::bin_VBF_2j_mjj_350_700_2j], _s_STXS_bins.at(Settings::bin_VBF_2j_mjj_350_700_2j), "f" );//column 3
+    leg->AddEntry( Purity_Categories[Settings::bin_VH_Lep_GT150], _s_STXS_bins.at(Settings::bin_VH_Lep_GT150), "f" );//column 4
+    leg->AddEntry( Purity_Categories[Settings::bin_ggH_1J_PTH_0_60], _s_STXS_bins.at(Settings::bin_ggH_1J_PTH_0_60), "f" );//column 1
+    leg->AddEntry( Purity_Categories[Settings::bin_ggH_PTH_200], _s_STXS_bins.at(Settings::bin_ggH_PTH_200), "f" );//column 2
+    leg->AddEntry( Purity_Categories[Settings::bin_VBF_2j_mjj_GT700_2j], _s_STXS_bins.at(Settings::bin_VBF_2j_mjj_GT700_2j), "f" );//column 3
+    leg->AddEntry( Purity_Categories[Settings::bin_bbH], _s_STXS_bins.at(Settings::bin_bbH), "f" );//column 4
+    leg->AddEntry( Purity_Categories[Settings::bin_ggH_1J_PTH_60_120], _s_STXS_bins.at(Settings::bin_ggH_1J_PTH_60_120), "f" );//column 1
+    leg->AddEntry( Purity_Categories[Settings::bin_ggH_VBF], _s_STXS_bins.at(Settings::bin_ggH_VBF), "f" );//column 2
+    leg->AddEntry( Purity_Categories[Settings::bin_VBF_2j_mjj_GT350_3j], _s_STXS_bins.at(Settings::bin_VBF_2j_mjj_GT350_3j), "f" );//column 3
+    leg->AddEntry( Purity_Categories[Settings::bin_ttH], _s_STXS_bins.at(Settings::bin_ttH), "f" );//column 4
+    leg->AddEntry( Purity_Categories[Settings::bin_ggH_1J_PTH_120_200], _s_STXS_bins.at(Settings::bin_ggH_1J_PTH_120_200), "f" );//column 1
+    leg->AddEntry( Purity_Categories[Settings::bin_VH_had], _s_STXS_bins.at(Settings::bin_VH_had), "f" );//column 2
+    leg->AddEntry( Purity_Categories[Settings::bin_VBF_Rest], _s_STXS_bins.at(Settings::bin_VBF_Rest), "f" );//column 3
+    leg->AddEntry( Purity_Categories[Settings::bin_tH], _s_STXS_bins.at(Settings::bin_tH), "f" );//column 4
+    leg->AddEntry( Purity_Categories[Settings::bin_ggH_2J_PTH_0_60], _s_STXS_bins.at(Settings::bin_ggH_2J_PTH_0_60), "f" );//column 1
+    
+
+    leg->Draw();
+    
+    
+    //=================
+    // CMS TEXT & LUMI
+    //=================
+    
+//    CMS_lumi *lumi = new CMS_lumi;
+//    if(folder == "Combination") lumi->set_lumi_combination(c);
+//    else lumi->set_lumi(c, _lumi);
+    
+    _out_file_name = folder + "/STXS_Purity";
+    SavePlots(c, _out_file_name, folder);
+}
+//=========================================================================================================
+
 
 
 
@@ -5424,6 +5590,7 @@ TPaveText* Histograms::CreateCutText( string position, TString cut_label )
    
    if ( position == "left top" )    pav = new TPaveText(.21, .81, .51, .91 ,"brNDC");
    if ( position == "right top" )   pav = new TPaveText(.61, .81, .91, .91 ,"brNDC");
+   if ( position == "middle top" )  pav = new TPaveText(.41, .81, .71, .91 ,"brNDC");
    if ( position == "left under 2D legend" ) pav = new TPaveText(.18, .72, .31, .78 ,"brNDC");
    
    pav->SetFillStyle(0);
@@ -5479,7 +5646,7 @@ TLine* Histograms::CreateDashedLine(float x1, float y1, float x2, float y2)
 void Histograms::DrawLogX( TCanvas *c, int cat, int fs )
 {
    int x_low = 100;
-   int x_up  = 1000;
+   int x_up  = 1100;
    int step  = 100;
 	
    float label_margin = -1.8; //Change this if you want to move X-axis numbers up/dn
@@ -5492,7 +5659,7 @@ void Histograms::DrawLogX( TCanvas *c, int cat, int fs )
    
    for ( int i = x_low; i < x_up; i += step )
    {
-      if (i == 600 || i == 800) continue;
+      if (i == 600 || i == 800 || i == 900) continue;
       float i_x = i;
       
       TLatex *latex = new TLatex(i, label_margin , Form("%.0f", i_x));

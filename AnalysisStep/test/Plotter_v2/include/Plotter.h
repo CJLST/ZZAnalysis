@@ -62,11 +62,12 @@ public:
    void MakeHistograms( TString );
    void FillHistograms( TString , int );
    void MakeHistogramsZX( TString, TString );
-   void FillZXHistograms( TString, TString );
+   void FillZXHistograms( TString, TString , int);
    void MakeM4lZX();
    float calculate_K_factor( TString );
    int FindFinalState();
    int FindFinalStateZX();
+   float ScaleToOSSSComb( int );
    int FindSTXSBin();
    int find_current_process( TString , int, int);
    int CountAssociatedLeptons();
@@ -78,6 +79,7 @@ public:
    void GetHistos( TString );
    void Plot();
    void plot_STXS ( TString, TString);
+   void plot_Purity ( TString, TString);
    void plot_1D_single( TString, TString, TString, int, int );
    void plot_1D_all_cat( TString, TString, TString);
    void plot_1D_all_fs( TString, TString, TString);
@@ -136,7 +138,7 @@ private:
    
    int _current_process, _current_final_state, _current_category, _current_category_stxs, _STXS_bin, _n_gen_assoc_lep;
    float _lumi, _k_factor, _SMP_signal_strength, _yield_SR, partial_sample_weight;
-   double gen_sum_weights, _event_weight;
+   double gen_sum_weights, _event_weight, _scaleToCombFactor;
    
    vector< vector <float> > _expected_yield_SR, _number_of_events_CR;
    vector<int>   gen_assoc_lep_id_;

@@ -127,6 +127,7 @@ public:
 	
    void plot_Combination( TString );
    void plot_STXS( TString );
+   void plot_Purity( TString );
    void plot_1D_single( TString, TString, TString, int, int );
    void plot_1D_all_cat( TString, TString, TString );
    void plot_1D_all_fs( TString, TString, TString );
@@ -181,7 +182,7 @@ private:
 
    vector<double> mass_points;
 
-   vector<TString> _s_category, _s_STXS_category, _s_STXS_bins, _s_category_label, _s_final_state, _s_process, _s_production_mode;
+   vector<TString> _s_category, _s_STXS_category, _s_STXS_bins, _s_STXS_bins_histoName, _s_category_label, _s_final_state, _s_process, _s_production_mode;
    string _histo_name, _histo_labels, _blinding;
    
    TString _graph_name, _fit_funct_name, _fs_label, _out_file_name;
@@ -197,6 +198,7 @@ private:
     
    TH1F *Purity_Categories[num_of_STXS_bins];
    TH1F *Purity_Yields[num_of_STXS_categories][num_of_STXS_bins];
+   float Purity_Normalization[num_of_STXS_categories];
    
    // Z+X
    TH1F *histos_1D_ZX[num_of_1D_plot_names][num_of_final_states][num_of_categories];

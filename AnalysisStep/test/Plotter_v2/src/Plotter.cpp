@@ -98,11 +98,10 @@ void Plotter::MakeHistograms( TString input_file_name )
       }
 
       if ( !(ZZsel >= 90) ) continue;
-		
 
       // Find current process
       gen_assoc_lep_id_.push_back(GenAssocLep1Id);
-   	gen_assoc_lep_id_.push_back(GenAssocLep2Id);
+   	  gen_assoc_lep_id_.push_back(GenAssocLep2Id);
       _n_gen_assoc_lep = CountAssociatedLeptons();
       _current_process = find_current_process( input_file_name, genExtInfo , _n_gen_assoc_lep);
       gen_assoc_lep_id_.clear();
@@ -239,8 +238,11 @@ void Plotter::MakeHistograms( TString input_file_name )
        
        if(_current_process > Settings::Data && _current_process < Settings::qqZZ)//fill purity yields for signals
        {
+           if (htxs_stage1_cat % 100 == 0) continue; //Skip very rare case when y(H) > 2.5 passes our selection
            _STXS_bin = FindSTXSBin();
-           combination_histos->FillSTXSPurity(ZZMass, _event_weight, _current_category_stxs, _STXS_bin);
+//           cout << "htxs_stage1_cat = " << htxs_stage1_cat <<  " bin = " << _STXS_bin << endl;
+           blinded_histos->FillSTXSPurity(ZZMass, _event_weight, _current_category_stxs, _STXS_bin);
+           unblinded_histos->FillSTXSPurity(ZZMass, _event_weight, _current_category_stxs, _STXS_bin);
        }
       
       // Fill MZ1 histograms
@@ -450,14 +452,14 @@ void Plotter::FillHistograms( TString input_file_name , int year)
 		
       // Final event weight
       _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight) / gen_sum_weights;
-      if ( input_file_name.Contains("ggH") && year == 2017) _event_weight *= ggH_NNLOPS_weight; // reweight POWHEG ggH to NNLOPS
-      if ( input_file_name.Contains("ggH") && year == 2018) _event_weight *= ggH_NNLOPS_weight; // reweight POWHEG ggH to NNLOPS
+      if ( input_file_name.Contains("ggH") ) _event_weight *= ggH_NNLOPS_weight; // reweight POWHEG ggH to NNLOPS
 
       combination_histos->FillM4lCombination(ZZMass, _event_weight, _current_process);
       combination_histos->FillSTXS(ZZMass, _event_weight, _current_category_stxs, _current_process);
        
        if(_current_process > Settings::Data && _current_process < Settings::qqZZ)//fill purity yields for signals
        {
+           if (htxs_stage1_cat % 100 == 0) continue; //Skip very rare case when y(H) > 2.5 passes our selection
            _STXS_bin = FindSTXSBin();
            combination_histos->FillSTXSPurity(ZZMass, _event_weight, _current_category_stxs, _STXS_bin);
        }
@@ -797,7 +799,7 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
 
 
 //===============================================================================
-void Plotter::FillZXHistograms( TString input_file_data_name, TString  input_file_FR_name )
+void Plotter::FillZXHistograms( TString input_file_data_name, TString  input_file_FR_name , int year)
 {
     
     FakeRates *FR = new FakeRates( input_file_FR_name );
@@ -806,6 +808,7 @@ void Plotter::FillZXHistograms( TString input_file_data_name, TString  input_fil
     input_tree_data = (TTree*)input_file_data->Get("CRZLLTree/candTree");
     Init( input_tree_data, input_file_data_name );
     
+    _scaleToCombFactor = 1.0;
     
     if (fChain == 0) return;
     
@@ -871,6 +874,8 @@ void Plotter::FillZXHistograms( TString input_file_data_name, TString  input_fil
         // Calculate yield
         _yield_SR = _fs_ROS_SS.at(_current_final_state)*FR->GetFakeRate(LepPt->at(2),LepEta->at(2),LepLepId->at(2))*FR->GetFakeRate(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
 
+        _scaleToCombFactor = ScaleToOSSSComb(year);
+        _yield_SR *= _scaleToCombFactor;
         // Fill STXS Z+X histograms
         combination_histos->FillSTXSZX( ZZMass, _yield_SR, _current_category_stxs);
     }
@@ -951,10 +956,19 @@ void Plotter::plot_STXS( TString file_name, TString folder )
 //==================
 
 //==================
+void Plotter::plot_Purity( TString file_name, TString folder )
+{
+    histo_map[file_name]->plot_Purity( folder );
+    
+}
+//==================
+
+//==================
 void Plotter::Plot()
 {
    combination_histos->plot_Combination( "Combination" );
    combination_histos->plot_STXS( "Combination" );
+   combination_histos->plot_Purity( "Combination" );
 	
 }
 //==================
@@ -1145,6 +1159,43 @@ int Plotter::FindFinalStateZX()
    }
    
    return final_state;
+}
+//=============================
+
+
+//=============================
+float Plotter::ScaleToOSSSComb( int year)
+{
+    int scale_factor = 1.0;
+    
+    if ( Z1Flav == -121 )
+    {
+        if ( Z2Flav == +121  && year == 2016) scale_factor = 1.082;
+        else if ( Z2Flav == +121  && year == 2017) scale_factor = 1.379;
+        else if ( Z2Flav == +121  && year == 2018) scale_factor = 1.206;
+        else if ( Z2Flav == +169 && year == 2016) scale_factor = 1.0792;
+        else if ( Z2Flav == +169 && year == 2017) scale_factor = 1.1087;
+        else if ( Z2Flav == +169 && year == 2018) scale_factor = 1.0677;
+        else
+        cerr << "[ERROR] in event " << RunNumber << ":" << LumiNumber << ":" << EventNumber << ", Z2Flav = " << Z2Flav << endl;
+    }
+    else if ( Z1Flav == -169 )
+    {
+        if ( Z2Flav == +121  && year == 2016) scale_factor = 1.0792;
+        else if ( Z2Flav == +121  && year == 2017) scale_factor = 1.1087;
+        else if ( Z2Flav == +121  && year == 2018) scale_factor = 1.0677;
+        else if ( Z2Flav == +169 && year == 2016) scale_factor = 0.9555;
+        else if ( Z2Flav == +169 && year == 2017) scale_factor = 1.009;
+        else if ( Z2Flav == +169 && year == 2018) scale_factor = 0.9807;
+        else
+        cerr << "[ERROR] in event " << RunNumber << ":" << LumiNumber << ":" << EventNumber << ", Z2Flav = " << Z2Flav << endl;
+    }
+    else
+    {
+        cerr << "[ERROR] in event " << RunNumber << ":" << LumiNumber << ":" << EventNumber << ", Z1Flav = " << Z1Flav << endl;
+    }
+    
+    return scale_factor;
 }
 //=============================
 

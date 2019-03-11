@@ -63,13 +63,13 @@ void M4lZX::GetM4lZX(int n_bins, int x_min, int x_max, int category, vector< vec
 //===================================================================================
 void M4lZX::GetM4lZXCombination( TH1F* h_4l )
 {
-	TH1F *h_4mu   = new TH1F("h_4mu","h_4mu",283,70,1202);
-	TH1F *h_4e    = new TH1F("h_4e","h_4e",283,70,1202);
-	TH1F *h_2e2mu = new TH1F("h_2e2mu","h_2e2mu",283,70,1202);
+   TH1F *h_4mu   = new TH1F("h_4mu","h_4mu",308,70,1302);
+   TH1F *h_4e    = new TH1F("h_4e","h_4e",308,70,1302);
+   TH1F *h_2e2mu = new TH1F("h_2e2mu","h_2e2mu",308,70,1302);
 	
-	float ratio_4mu   = f_4mu_comb->Integral(70, 1202)/f_4mu_comb->Integral(_bin_down, _bin_up);
-   float ratio_4e    = f_4e_comb->Integral(70, 1202)/f_4e_comb->Integral(_bin_down, _bin_up);
-   float ratio_2e2mu = f_2e2mu_comb->Integral(70, 1202)/f_2e2mu_comb->Integral(_bin_down, _bin_up);
+   float ratio_4mu   = f_4mu_comb->Integral(70, 1302)/f_4mu_comb->Integral(_bin_down, _bin_up);
+   float ratio_4e    = f_4e_comb->Integral(70, 1302)/f_4e_comb->Integral(_bin_down, _bin_up);
+   float ratio_2e2mu = f_2e2mu_comb->Integral(70, 1302)/f_2e2mu_comb->Integral(_bin_down, _bin_up);
 	
    h_4mu  ->FillRandom("f_4mu_comb"  , _n_entries);
    h_4e   ->FillRandom("f_4e_comb"   , _n_entries);
