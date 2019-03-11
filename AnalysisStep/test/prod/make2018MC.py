@@ -101,7 +101,7 @@ for filename in "samples_{year}_MC.csv", "samples_{year}_MC_anomalous.csv":
         if not dasoutput:
           isok = False
 
-          if datetime.date.today() < datetime.date(2019, 3, 1):
+          if datetime.date.today() < datetime.date(2019, 3, 15):
             #GEN approved but not submitted yet
             match = re.match("GluGluHToZZTo4L_M([0-9]+)_13TeV_powheg2_JHUGenV7011_pythia8", datasetparts[1])
             if match and int(match.group(1)) >= 145: isok = True
