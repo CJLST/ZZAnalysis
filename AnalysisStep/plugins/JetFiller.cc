@@ -62,8 +62,7 @@ class JetFiller : public edm::EDProducer {
   edm::EDGetTokenT<edm::ValueMap<int> > multToken;
   edm::EDGetTokenT<edm::ValueMap<float> > ptDToken;
 
-  JME::JetResolution resolution_pt; 
-  JME::JetResolution resolution_phi;
+  JME::JetResolution resolution;
   JME::JetResolutionScaleFactor resolution_sf;
 
 };
@@ -126,11 +125,6 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iSetup.get<JetCorrectionsRecord>().get(jecType,JetCorParColl);
   JetCorrectorParameters const & JetCorPar = (*JetCorParColl)["Uncertainty"];
   JetCorrectionUncertainty jecUnc(JetCorPar);
-
-  //--- JER
-  resolution_pt = JME::JetResolution::get(iSetup, jerType+"_pt");
-  resolution_phi = JME::JetResolution::get(iSetup, jecType+"_phi");
-  resolution_sf = JME::JetResolutionScaleFactor::get(iSetup, jecType);
 
   //--- Output collection
   auto result = std::make_unique<pat::JetCollection>();
@@ -285,10 +279,32 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     float pt_jerdn = -1.;
 
     if(isMC_ && applyJER_){
+      if (setup == 2016 || setup == 2017) //Load JER from GT
+      {
+          resolution = JME::JetResolution::get(iSetup, jerType+"_pt");
+          resolution_sf = JME::JetResolutionScaleFactor::get(iSetup, jerType);
+      }
+      else if (setup == 2018) //Load JER from txt file
+      {  TRandom3 rand;
+         rand.SetSeed(abs(static_cast<int>(sin(jphi)*100000)));
+         if (rand.Rndm() < 0.54) // 54% of 2018 data is from period D
+          {
+              edm::FileInPath JER_FIP("ZZAnalysis/AnalysisStep/data/JER/Autumn18_RunD_V1_MC_PtResolution_AK4PFchs.txt");
+              std::string JER_Path=JER_FIP.fullPath();
+              resolution = JME::JetResolution(JER_Path.data());
+              resolution_sf = JME::JetResolutionScaleFactor(JER_Path.data());
+          }
+         else
+          {
+              edm::FileInPath JER_FIP("ZZAnalysis/AnalysisStep/data/JER/Autumn18_RunABC_V1_MC_PtResolution_AK4PFchs.txt");
+              std::string JER_Path=JER_FIP.fullPath();
+              resolution = JME::JetResolution(JER_Path.data());
+              resolution_sf = JME::JetResolutionScaleFactor(JER_Path.data());
+          }
+      }
 
       JME::JetParameters res_parameters = {{JME::Binning::JetPt, jpt}, {JME::Binning::JetEta, jeta}, {JME::Binning::Rho, rho}};
-      float res_pt  = resolution_pt .getResolution(res_parameters);
-      //float res_phi = resolution_phi.getResolution(res_parameters); //not used
+      float res_pt  = resolution.getResolution(res_parameters);
 
       JME::JetParameters sf_parameters = {{JME::Binning::JetEta, jeta}, {JME::Binning::Rho, rho}};
       float sf    = resolution_sf.getScaleFactor(sf_parameters);
