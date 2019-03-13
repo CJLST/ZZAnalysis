@@ -3547,6 +3547,12 @@ void Histograms::plot_Purity( TString folder )
     stack->GetYaxis()->SetTickLength(0.01);
     stack->SetMaximum(1.0);
     
+    stack->GetXaxis()->SetTitle("Reconstructed category");
+    stack->GetXaxis()->SetTitleOffset(2.1);
+    stack->GetYaxis()->SetTitle("Signal fraction");
+    
+    gPad->RedrawAxis();
+    
     
     //=============
     // L E G E N D
