@@ -685,6 +685,7 @@ Histograms::Histograms( double lumi, string blinding )
 
 Histograms::Histograms( string blinding )
 {
+    _blinding = blinding;
 
    _s_process.push_back("Data");
    _s_process.push_back("H125");
@@ -2449,7 +2450,37 @@ void Histograms::SaveHistos( string file_name )
 //=============================================
 
 
-
+//=============================================
+void Histograms::SaveCombHistos( string file_name )
+{
+    TFile *fOutHistos = new TFile(file_name.c_str(), "recreate");
+    fOutHistos->cd();
+    
+    for ( int i_proc = 0; i_proc < num_of_processes - 2; i_proc++ )
+    {
+        histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][i_proc]->Write();
+    }
+    
+    histos_1D_ZX_shape[Settings::M4lMain][Settings::fs4l][Settings::inclusive]->Write();
+    
+    
+    // STXS category data vs MC
+    for ( int i_proc = 0; i_proc < num_of_processes; i_proc++ )
+    {
+        STXS_Categories[i_proc]->Write();
+    }
+    
+    // STXS purity
+    for ( int i_proc = 0; i_proc < num_of_STXS_bins; i_proc++ )
+    {
+        Purity_Categories[i_proc]->Write();
+        
+    }
+    
+    fOutHistos->Close();
+    delete fOutHistos;
+    
+}
 
 //=============================================
 void Histograms::SaveYieldHistos( string file_name )
@@ -2949,6 +2980,40 @@ void Histograms::GetHistos( TString file_name )
 //=============================================
 
 
+//=============================================
+void Histograms::GetCombHistos( TString file_name )
+{
+    TFile* histo_file = TFile::Open(file_name);
+    
+    for ( int i_proc = 0; i_proc < num_of_processes - 2; i_proc++ )
+    {
+        //=====
+        // M4l
+        //=====
+        _histo_name = "M4l_" + _s_process.at(i_proc) + "_" + _blinding;
+        histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][i_proc] = (TH1F*)histo_file->Get(_histo_name.c_str());
+    }
+    
+    // Z+X
+    
+    _histo_name = "M4l_ZX_shape_" + _blinding;
+    histos_1D_ZX_shape[Settings::M4lMain][Settings::fs4l][Settings::inclusive] = (TH1F*)histo_file->Get(_histo_name.c_str());
+    
+    for ( int i_proc = 0; i_proc < num_of_processes; i_proc++ )
+    {
+        _histo_name = "STXS_Categories_" + _s_process.at(i_proc) + "_" + _blinding;
+        STXS_Categories[i_proc] = (TH1F*)histo_file->Get(_histo_name.c_str());
+    }
+    
+    for ( int i_proc = 0; i_proc < num_of_STXS_bins; i_proc++ )
+    {
+        _histo_name = "STXS_Purity_" + _s_STXS_bins_histoName.at(i_proc) + "_" + _blinding;
+        Purity_Categories[i_proc] = (TH1F*)histo_file->Get(_histo_name.c_str());
+    }
+}
+//=============================================
+
+
 
 //===================================================
 void Histograms::GetYieldsHistos( TString file_name )
@@ -3427,10 +3492,18 @@ void Histograms::plot_STXS( TString folder )
 void Histograms::plot_Purity( TString folder )
 {
     gStyle->SetPadLeftMargin(0.20);
-    gStyle->SetPadTopMargin(0.25);
+    gStyle->SetHistTopMargin(0.);
     
     TCanvas *c;
     c = new TCanvas("c", "c", 650, 500);
+    
+    TPad* plot_pad = new TPad("plot_pad", "plot_pad", 0.0, 0.05, 1.0, 0.85);
+    TPad* legend_pad = new TPad("legend_pad", "legend_pad", gStyle->GetPadLeftMargin(), 0.81, 1 - gStyle->GetPadRightMargin(), 0.95);
+
+    plot_pad->Draw();
+    legend_pad->Draw();
+    
+    plot_pad->cd();
     
     Purity_Categories[Settings::bin_ggH_0J_PTH_0_10]->SetFillColor(kRed-7);
     Purity_Categories[Settings::bin_ggH_0J_PTH_10_200]->SetFillColor(kRed-6);
@@ -3465,8 +3538,7 @@ void Histograms::plot_Purity( TString folder )
     {
         Purity_Categories[i_proc]->SetBarWidth(0.8);
         Purity_Categories[i_proc]->SetBarOffset(0.1);
-        Purity_Categories[i_proc]->SetMaximum(1.0);
-        for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ ) Purity_Categories[i_proc]->GetXaxis()->SetBinLabel(num_of_STXS_categories - i_cat,_s_STXS_category.at(i_cat));
+        for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ ) Purity_Categories[i_proc]->GetXaxis()->SetBinLabel(i_cat + 1,_s_STXS_category.at(i_cat));
         stack->Add(Purity_Categories[i_proc]);
     }
     
@@ -3475,37 +3547,45 @@ void Histograms::plot_Purity( TString folder )
     stack->GetYaxis()->SetTickLength(0.01);
     stack->SetMaximum(1.0);
     
+    
     //=============
     // L E G E N D
     //=============
     
     TLegend *leg;
     
-    leg = new TLegend(.20, .78, .95, .90);
+    legend_pad->cd();
+    
+    leg = new TLegend(0., 0., 1.0, 1.0);
 
-    leg->SetBorderSize(0);
+    leg->SetBorderSize(1.);
     leg->SetNColumns(4);
     
     leg->AddEntry( Purity_Categories[Settings::bin_ggH_0J_PTH_0_10], _s_STXS_bins.at(Settings::bin_ggH_0J_PTH_0_10), "f" );//column 1
     leg->AddEntry( Purity_Categories[Settings::bin_ggH_2J_PTH_60_120], _s_STXS_bins.at(Settings::bin_ggH_2J_PTH_60_120), "f" );//column 2
     leg->AddEntry( Purity_Categories[Settings::bin_VBF_GT200], _s_STXS_bins.at(Settings::bin_VBF_GT200), "f" );//column 3
     leg->AddEntry( Purity_Categories[Settings::bin_VH_Lep_0_150], _s_STXS_bins.at(Settings::bin_VH_Lep_0_150), "f" );//column 4
+    
     leg->AddEntry( Purity_Categories[Settings::bin_ggH_0J_PTH_10_200], _s_STXS_bins.at(Settings::bin_ggH_0J_PTH_10_200), "f" );//column 1
     leg->AddEntry( Purity_Categories[Settings::bin_ggH_2J_PTH_120_200], _s_STXS_bins.at(Settings::bin_ggH_2J_PTH_120_200), "f" );//column 2
     leg->AddEntry( Purity_Categories[Settings::bin_VBF_2j_mjj_350_700_2j], _s_STXS_bins.at(Settings::bin_VBF_2j_mjj_350_700_2j), "f" );//column 3
     leg->AddEntry( Purity_Categories[Settings::bin_VH_Lep_GT150], _s_STXS_bins.at(Settings::bin_VH_Lep_GT150), "f" );//column 4
+    
     leg->AddEntry( Purity_Categories[Settings::bin_ggH_1J_PTH_0_60], _s_STXS_bins.at(Settings::bin_ggH_1J_PTH_0_60), "f" );//column 1
     leg->AddEntry( Purity_Categories[Settings::bin_ggH_PTH_200], _s_STXS_bins.at(Settings::bin_ggH_PTH_200), "f" );//column 2
     leg->AddEntry( Purity_Categories[Settings::bin_VBF_2j_mjj_GT700_2j], _s_STXS_bins.at(Settings::bin_VBF_2j_mjj_GT700_2j), "f" );//column 3
     leg->AddEntry( Purity_Categories[Settings::bin_bbH], _s_STXS_bins.at(Settings::bin_bbH), "f" );//column 4
+    
     leg->AddEntry( Purity_Categories[Settings::bin_ggH_1J_PTH_60_120], _s_STXS_bins.at(Settings::bin_ggH_1J_PTH_60_120), "f" );//column 1
     leg->AddEntry( Purity_Categories[Settings::bin_ggH_VBF], _s_STXS_bins.at(Settings::bin_ggH_VBF), "f" );//column 2
     leg->AddEntry( Purity_Categories[Settings::bin_VBF_2j_mjj_GT350_3j], _s_STXS_bins.at(Settings::bin_VBF_2j_mjj_GT350_3j), "f" );//column 3
     leg->AddEntry( Purity_Categories[Settings::bin_ttH], _s_STXS_bins.at(Settings::bin_ttH), "f" );//column 4
+    
     leg->AddEntry( Purity_Categories[Settings::bin_ggH_1J_PTH_120_200], _s_STXS_bins.at(Settings::bin_ggH_1J_PTH_120_200), "f" );//column 1
     leg->AddEntry( Purity_Categories[Settings::bin_VH_had], _s_STXS_bins.at(Settings::bin_VH_had), "f" );//column 2
     leg->AddEntry( Purity_Categories[Settings::bin_VBF_Rest], _s_STXS_bins.at(Settings::bin_VBF_Rest), "f" );//column 3
     leg->AddEntry( Purity_Categories[Settings::bin_tH], _s_STXS_bins.at(Settings::bin_tH), "f" );//column 4
+    
     leg->AddEntry( Purity_Categories[Settings::bin_ggH_2J_PTH_0_60], _s_STXS_bins.at(Settings::bin_ggH_2J_PTH_0_60), "f" );//column 1
     
 
@@ -3516,9 +3596,9 @@ void Histograms::plot_Purity( TString folder )
     // CMS TEXT & LUMI
     //=================
     
-//    CMS_lumi *lumi = new CMS_lumi;
-//    if(folder == "Combination") lumi->set_lumi_combination(c);
-//    else lumi->set_lumi(c, _lumi);
+    // Draw lumi
+    CMS_lumi *lumi = new CMS_lumi;
+    lumi->set_simulation(c);
     
     _out_file_name = folder + "/STXS_Purity";
     SavePlots(c, _out_file_name, folder);

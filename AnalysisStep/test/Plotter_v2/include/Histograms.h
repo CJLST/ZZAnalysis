@@ -110,6 +110,7 @@ public:
    void FillOthersZX( float, float, float, float, float, float, float, float, float, float, float, float, int, int, int, float, float, float, float, int, int );
    
    void SaveHistos( string );
+   void SaveCombHistos( string );
    void SaveYieldHistos( string );
    
    void DeleteHistos();
@@ -123,6 +124,7 @@ public:
    void RenormalizeZX( vector<vector<float>> );
    
    void GetHistos( TString );
+   void GetCombHistos( TString );
    void GetYieldsHistos( TString );
 	
    void plot_Combination( TString );

@@ -925,6 +925,25 @@ void Plotter::Save()
 }
 //==================
 
+//==================
+void Plotter::SaveComb()
+{
+    system("mkdir -p ROOT_files");
+    combination_histos->SaveCombHistos("ROOT_files/Combination.root");
+    
+    cout << "[INFO] All histograms are saved in a root file." << endl;
+}
+//==================
+
+//=========================================
+void Plotter::GetComb( )
+{
+    combination_histos->GetCombHistos("ROOT_files/Combination.root");
+    
+    cout << "[INFO] Got all histograms." << endl;
+}
+//=========================================
+
 
 
 //==================

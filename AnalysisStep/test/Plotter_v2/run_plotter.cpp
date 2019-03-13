@@ -30,7 +30,7 @@ int main( int argc, char *argv[] )
 	
 
    TString Data        = path + "AllData"    + file_name;
-	TString FakeRates   = "../../data/FakeRates" + file_name_FR;
+   TString FakeRates   = "../../data/FakeRates" + file_name_FR;
 	
    TString ggH125      = path + "ggH125"     + file_name;
    TString VBFH125     = path + "VBFH125"    + file_name;
@@ -41,7 +41,7 @@ int main( int argc, char *argv[] )
    TString bbH125      = path + "bbH125"     + file_name;
    TString tqH125      = path + "tqH125"     + file_name;
 	
-   TString ZZTo4l      = path + "ZZTo4lext1"                 + file_name;
+   TString ZZTo4l      = path + "ZZTo4lext2"                 + file_name;
    TString ggZZ4e      = path + "ggTo4e_Contin_MCFM701"      + file_name;
    TString ggZZ4mu     = path + "ggTo4mu_Contin_MCFM701"     + file_name;
    TString ggZZ4tau    = path + "ggTo4tau_Contin_MCFM701"    + file_name;
@@ -49,7 +49,7 @@ int main( int argc, char *argv[] )
    TString ggZZ2e2tau  = path + "ggTo2e2tau_Contin_MCFM701"  + file_name;
    TString ggZZ2mu2tau = path + "ggTo2mu2tau_Contin_MCFM701" + file_name;
 
-   Plotter *plotter = new Plotter( 58.83 );
+   Plotter *plotter = new Plotter( 59.71 );
 
    plotter->SetBlinding(110, 138, 300, 1200);
 
@@ -139,9 +139,11 @@ int main( int argc, char *argv[] )
    setTDRStyle(); // Needed to reset margins set by 2D histograms
 
    plotter->GetHistos("Unblinded");
-    
-   plotter->plot_STXS("Unblinded", "Plots/Unblinded");
-	
+
+   plotter->plot_Purity("Unblinded", "Plots/Unblinded");setTDRStyle();
+
+   plotter->plot_STXS("Unblinded", "Plots/Unblinded");setTDRStyle();
+
    plotter->plot_1D_all_cat("Unblinded", "M4lMain",       "Plots/Unblinded");
    plotter->plot_1D_all_cat("Unblinded", "M4lMainZoomed", "Plots/Unblinded");
 
@@ -154,7 +156,9 @@ int main( int argc, char *argv[] )
    plotter->plot_1D_single("Unblinded", "MZ1_M4L118130",   "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
    plotter->plot_1D_single("Unblinded", "MZ2_M4L118130",   "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
    plotter->plot_2D_single("Unblinded", "MZ1vsMZ2",           "Plots/Unblinded", Settings::inclusive);
-   plotter->plot_2D_single("Unblinded", "MZ1vsMZ2_M4L118130", "Plots/Unblinded", Settings::inclusive);
+   plotter->plot_2D_single("Unblinded", "MZ1vsMZ2_M4L118130", "Plots/Unblinded", Settings::inclusive);setTDRStyle();
+
+
 
 
    plotter->plot_1D_single("Unblinded", "KD",               "Plots/Unblinded", Settings::fs4l, Settings::inclusive);

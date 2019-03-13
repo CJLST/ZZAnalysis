@@ -75,8 +75,10 @@ public:
    void FillInclusive();
    void FillInclusiveCombination();
    void Save();
+   void SaveComb();
    void Delete();
    void GetHistos( TString );
+   void GetComb();
    void Plot();
    void plot_STXS ( TString, TString);
    void plot_Purity ( TString, TString);

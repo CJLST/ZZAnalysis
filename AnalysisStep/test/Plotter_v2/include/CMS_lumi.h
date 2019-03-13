@@ -17,6 +17,7 @@ public:
    ~CMS_lumi();
    void set_lumi( TPad* pad, float lumi );
    void set_lumi_combination( TPad* pad);
+    void set_simulation( TPad* pad);
       
 private:
       
