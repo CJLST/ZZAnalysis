@@ -1535,6 +1535,33 @@ if (APPLYJEC and SAMPLE_TYPE == 2018):
     process.dressedJets.src = cms.InputTag('patJetsReapplyJEC')
 
 
+# JER from https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyResolution#Accessing_factors_from_database 
+if (APPLYJER and SAMPLE_TYPE == 2018):
+    process.load('Configuration.StandardSequences.Services_cff')
+    process.load("JetMETCorrections.Modules.JetResolutionESProducer_cfi")
+    from CondCore.DBCommon.CondDBSetup_cfi import *
+    process.jer = cms.ESSource("PoolDBESSource",
+                               CondDBSetup,
+                               connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JER/Autumn18_V1_MC.db'),
+                               toGet = cms.VPSet(
+                                                 cms.PSet(
+                                                          record = cms.string('JetResolutionRcd'),
+                                                          tag    = cms.string('JR_Autumn18_V1_MC_PtResolution_AK4PFchs'),
+                                                          label  = cms.untracked.string('AK4PFchs_pt')
+                                                          ),
+                                                 cms.PSet(
+                                                          record = cms.string('JetResolutionRcd'),
+                                                          tag    = cms.string('JR_Autumn18_V1_MC_PhiResolution_AK4PFchs'),
+                                                          label  = cms.untracked.string('AK4PFchs_phi')
+                                                          ),
+                                                 cms.PSet(
+                                                          record = cms.string('JetResolutionScaleFactorRcd'),
+                                                          tag    = cms.string('JR_Autumn18_V1_MC_SF_AK4PFchs'),
+                                                          label  = cms.untracked.string('AK4PFchs')
+                                                          )
+                                                 )
+                               )
+    process.es_prefer_jer = cms.ESPrefer('PoolDBESSource', 'jer')
 
 ### Clean jets wrt. good (preFSR-)isolated leptons
 process.cleanJets = cms.EDProducer("JetsWithLeptonsRemover",
