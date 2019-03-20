@@ -108,7 +108,7 @@ int main( int argc, char *argv[] )
    combination->FillHistograms(ggZZ2e2tau_2018,2018);
    combination->FillHistograms(ggZZ2mu2tau_2018,2018);
    combination->FillZXHistograms(Data_2018, FR_2018, 2018);
-   
+
    combination->FillHistograms(Data_2017,2017);
    combination->FillHistograms(ggH125_2017,2017);
    combination->FillHistograms(VBFH125_2017,2017);
@@ -126,7 +126,7 @@ int main( int argc, char *argv[] )
    combination->FillHistograms(ggZZ2e2tau_2017,2017);
    combination->FillHistograms(ggZZ2mu2tau_2017,2017);
    combination->FillZXHistograms(Data_2017, FR_2017, 2017);
-	
+
    combination->FillHistograms(Data_2016,2016);
    combination->FillHistograms(ggH125_2016,2016);
    combination->FillHistograms(VBFH125_2016,2016);
@@ -144,15 +144,17 @@ int main( int argc, char *argv[] )
    combination->FillHistograms(ggZZ2e2tau_2016,2016);
    combination->FillHistograms(ggZZ2mu2tau_2016,2016);
    combination->FillZXHistograms(Data_2016, FR_2016, 2016);
-    
-	
+
+
    combination->FillInclusiveCombination();
-    
+
    combination->SaveComb();
-    
-   combination->GetComb();
    
-   combination->Plot();
+   combination->GetComb();
+
+   combination->PlotM4l();setTDRStyle();
+   combination->PlotSTXS();setTDRStyle();
+   combination->PlotPurity();setTDRStyle();
 	
    delete combination;
 }

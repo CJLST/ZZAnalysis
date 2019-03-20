@@ -362,7 +362,7 @@ void Plotter::FillHistograms( TString input_file_name , int year)
 	
    _current_process = find_current_process( input_file_name, 0 , 0);
 	
-   if(year == 2018) _lumi = 59.6;
+   if(year == 2018) _lumi = 59.7;
    if(year == 2017) _lumi = 41.5;
    if(year == 2016) _lumi = 35.9;
 	
@@ -983,12 +983,24 @@ void Plotter::plot_Purity( TString file_name, TString folder )
 //==================
 
 //==================
-void Plotter::Plot()
+void Plotter::PlotM4l()
 {
-   combination_histos->plot_Combination( "Combination" );
+   combination_histos->plot_Combination( "Combination" , true);
+   combination_histos->plot_Combination( "Combination" , false);
+}
+//==================
+
+//==================
+void Plotter::PlotSTXS()
+{
    combination_histos->plot_STXS( "Combination" );
+}
+//==================
+
+//==================
+void Plotter::PlotPurity()
+{
    combination_histos->plot_Purity( "Combination" );
-	
 }
 //==================
 

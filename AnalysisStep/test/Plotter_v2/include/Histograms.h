@@ -127,7 +127,7 @@ public:
    void GetCombHistos( TString );
    void GetYieldsHistos( TString );
 	
-   void plot_Combination( TString );
+   void plot_Combination( TString, bool );
    void plot_STXS( TString );
    void plot_Purity( TString );
    void plot_1D_single( TString, TString, TString, int, int );

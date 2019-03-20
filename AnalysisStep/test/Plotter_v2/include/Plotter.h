@@ -79,7 +79,9 @@ public:
    void Delete();
    void GetHistos( TString );
    void GetComb();
-   void Plot();
+   void PlotM4l();
+   void PlotSTXS();
+   void PlotPurity();
    void plot_STXS ( TString, TString);
    void plot_Purity ( TString, TString);
    void plot_1D_single( TString, TString, TString, int, int );
