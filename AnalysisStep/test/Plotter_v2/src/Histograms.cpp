@@ -3138,6 +3138,8 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
    
    stack->Draw("HIST");
    
+   if ( plot_index == Settings::M4lMain ) stack->GetXaxis()->SetRangeUser(70.,500.);
+   
    float data_max = histos_1D[plot_index][fs][cat][Settings::Data]->GetBinContent(histos_1D[plot_index][fs][cat][Settings::Data]->GetMaximumBin());
    float data_max_error = histos_1D[plot_index][fs][cat][Settings::Data]->GetBinErrorUp(histos_1D[plot_index][fs][cat][Settings::Data]->GetMaximumBin());
    
@@ -3331,7 +3333,8 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
 void Histograms::plot_Combination( TString folder , bool zoomed)
 {
    TCanvas *c;
-   c = new TCanvas("c", "c", 650, 500);
+   if(zoomed) c = new TCanvas("c", "c", 600, 600);
+   else c = new TCanvas("c", "c", 650, 500);
 	
    if(!zoomed)
    {
@@ -3371,7 +3374,7 @@ void Histograms::plot_Combination( TString folder , bool zoomed)
 	
    stack->Draw("HIST");
     
-   if (zoomed) stack->GetXaxis()->SetRangeUser(70.,180.);
+   if (zoomed) stack->GetXaxis()->SetRangeUser(70.,170.);
 	else stack->GetXaxis()->SetRangeUser(70.,500.);
    
    float data_max = histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::Data]->GetBinContent(histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::Data]->GetMaximumBin());
@@ -3383,7 +3386,7 @@ void Histograms::plot_Combination( TString folder , bool zoomed)
 	
 	stack->GetXaxis()->SetTitle(Variables::M4lMain().var_X_label);
    
-   if (zoomed) {stack->GetYaxis()->SetTitle("Events / 2GeV");}
+   if (zoomed) {stack->GetYaxis()->SetTitle("Events / 2GeV"); stack->GetXaxis()->SetNdivisions(1005);}
    else {stack->GetYaxis()->SetTitle("Events / 4GeV");}
 
 	histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::Data]->SetMarkerSize(0.9);
