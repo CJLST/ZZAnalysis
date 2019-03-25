@@ -4,15 +4,16 @@
 import FWCore.ParameterSet.Config as cms
 from FWCore.ParameterSet.VarParsing import VarParsing
 
-from ZZAnalysis.AnalysisStep.eostools import get_XRD_files_DAS
+from ZZAnalysis.AnalysisStep.eostools import listFiles
 
 def get_max_files(DAS_name, max_files) :
   result = []
-  file_names = get_XRD_files_DAS(DAS_name)
+  file_names = listFiles(DAS_name, "dbs")
   xrd_prefix = 'root://cms-xrd-global.cern.ch/'
 #  xrd_prefix = 'root://xrootd-cms.infn.it/'
 
   for i in range(min(len(file_names), max_files)) :
+     if file_names[i]:
         result.append(file_names[i])
 
   return result
