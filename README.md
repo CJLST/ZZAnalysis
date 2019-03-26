@@ -1,24 +1,11 @@
 ZZAnalysis
 ==========
 
-To install a complete CMSSW 8X area (including this package)
+This is the CJLST framework for analysis of full Run 2 data for Legacy paper.
+
+To install a complete CMSSW 9X area (including this package) 
 ------------------------------
-2016 data analysis
-
-Please use CMSSW_8_0_29. 
-
-Download and execute the setup script:
-```
-wget -O ${TMPDIR}/checkout_80X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_80X/checkout_80X.csh
-cd $CMSSW_BASE/src
-cmsenv
-chmod u+x ${TMPDIR}/checkout_80X.csh
-${TMPDIR}/checkout_80X.csh
-```
-
-To install a complete CMSSW 9X area (including this package)
-------------------------------
-2017 data analysis
+Used for analysis of 2016 and 2017 data
 
 Please use CMSSW_9_4_9.
 
@@ -33,7 +20,7 @@ ${TMPDIR}/checkout_9X.csh
 
 To install a complete CMSSW 10X area (including this package)
 ------------------------------
-2018 data analysis
+Used for analysis of 2018 data
 
 Please use CMSSW_10_2_5_patch1. 
 
