@@ -19,8 +19,6 @@
 #include <ZZAnalysis/AnalysisStep/interface/CutSet.h>
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
 
-#include "EgammaAnalysis/ElectronTools/interface/EnergyScaleCorrection_class.h"
-
 #include <vector>
 #include <string>
 #include "TRandom3.h"
@@ -53,9 +51,6 @@ class EleFiller : public edm::EDProducer {
   edm::EDGetTokenT<vector<Vertex> > vtxToken;
   EDGetTokenT<ValueMap<float> > BDTValueMapToken;
   string correctionFile;
-  #if CMSSW_VERSION_MAJOR < 10
-  EnergyScaleCorrection_class *eScaler;
-  #endif
   TRandom3 rgen_;
 };
 
@@ -76,15 +71,8 @@ EleFiller::EleFiller(const edm::ParameterSet& iConfig) :
 
   produces<pat::ElectronCollection>();
 	
- #if CMSSW_VERSION_MAJOR < 10
- // Initialize scale correction class
-  eScaler = new EnergyScaleCorrection_class(correctionFile);
- #endif
 }
 EleFiller::~EleFiller(){
-  #if CMSSW_VERSION_MAJOR < 10
-  delete eScaler;
-  #endif
 }
 
 
@@ -153,47 +141,10 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     
     float pt = l.pt();
 
-//     //Legacy cuts
-//     bool isBDT = (pt <= 10 && (( fSCeta < 0.8 && BDT > 0.47)  ||
-// 			       (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > 0.004) ||
-// 			       (fSCeta >= 1.479               && BDT > 0.295))) ||
-//                  //Moriond13 eID cuts updated for the paper
-// 		 //(pt >  10 && ((fSCeta < 0.8 && BDT > 0.5)  ||
-// 		 //	       (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > 0.12) ||
-//                  (pt >  10 && ((fSCeta < 0.8 && BDT > -0.34)  ||
-// 			       (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.65) ||
-// 			       (fSCeta >= 1.479               && BDT > 0.6)));
-
-//    //WP for fixed Phys14-based BDT
-//    bool isBDT = (pt <= 10 && ((fSCeta < 0.8                    && BDT > -0.586) ||
-//                               (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.712) ||
-//                               (fSCeta >= 1.479                 && BDT > -0.662)   )) ||
-//                 (pt >  10 && ((fSCeta < 0.8                    && BDT > -0.652) ||
-//                               (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.701) ||
-//                               (fSCeta >= 1.479                 && BDT > -0.350)   ));
-
-    // WP for Spring15-based BDT as proposed in https://indico.cern.ch/event/439325/session/1/contribution/21/attachments/1156760/1663207/slides_20150918.pdf
-//     bool isBDT = (pt <= 10 && ((fSCeta < 0.8                    && BDT > -0.265) ||
-//                                (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.556) ||
-//                                (fSCeta >= 1.479                 && BDT > -0.551)   )) ||
-//                  (pt >  10 && ((fSCeta < 0.8                    && BDT > -0.072) ||
-//                                (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.286) ||
-//                                (fSCeta >= 1.479                 && BDT > -0.267)   ));
-
 	  
-    bool isBDT;
-	  
-	 if (setup==2016){
-	 //WP for preliminary 8X ID BDT
-    	isBDT         = (pt<=10 && ((fSCeta<0.8                  && BDT > -0.211) ||
-                                  (fSCeta>=0.8 && fSCeta<1.479 && BDT > -0.396) ||
-                                  (fSCeta>=1.479               && BDT > -0.215)))
-                 	 || (pt>10  && ((fSCeta<0.8                  && BDT > -0.870) ||
-                                  (fSCeta>=0.8 && fSCeta<1.479 && BDT > -0.838) ||
-                                  (fSCeta>=1.479               && BDT > -0.763)));
-	}
+    bool isBDT = false;
 
-	else if (setup==2017 || setup==2018)
+	if (setup==2016 || setup==2017 || setup==2018) 
 	{
 	  //WP taken from https://github.com/cms-sw/cmssw/blob/master/RecoEgamma/ElectronIdentification/python/Identification/mvaElectronID_Fall17_iso_V2_cff.py#L21 
 	 	isBDT         = (pt<=10 && ((fSCeta<0.8                  && BDT >  1.26402092475) ||
@@ -210,11 +161,8 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     //-- Missing hit  
 	 int missingHit;
-	 #if CMSSW_VERSION_MAJOR < 9
-	 missingHit = l.gsfTrack()->hitPattern().numberOfHits(HitPattern::MISSING_INNER_HITS);
-    #else
 	 missingHit = l.gsfTrack()->hitPattern().numberOfAllHits(HitPattern::MISSING_INNER_HITS);
-	 #endif
+	 
     //-- Flag for crack electrons (which use different efficiency SFs)
     bool isCrack = l.isGap(); 
     //--- Trigger matching
@@ -222,50 +170,10 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 
 	 
 	 float scaleErr;
-	 float sigma_rho_up;
-	 float sigma_phi_up;
 	 float smear_err_up;
 	 
-	 #if CMSSW_VERSION_MAJOR < 9
-	 // EGamma scale and resolution uncertainties https://twiki.cern.ch/twiki/bin/view/CMS/EGMSmearer#ECAL_scale_and_resolution_co_AN2
-	 scaleErr=sqrt(1. +
-	 	pow(eScaler->ScaleCorrectionUncertainty(iEvent.id().run(), l.isEB(), l.full5x5_r9(), l.superCluster()->eta(), l.correctedEcalEnergy() / cosh(l.superCluster()->eta()), 12, 1),2) +
-	 	pow(eScaler->ScaleCorrectionUncertainty(iEvent.id().run(), l.isEB(), l.full5x5_r9(), l.superCluster()->eta(), l.correctedEcalEnergy() / cosh(l.superCluster()->eta()), 12, 2),2) +
-	 	pow(eScaler->ScaleCorrectionUncertainty(iEvent.id().run(), l.isEB(), l.full5x5_r9(), l.superCluster()->eta(), l.correctedEcalEnergy() / cosh(l.superCluster()->eta()), 12, 4),2) );
-	 
-	 sigma_rho_up= eScaler->getSmearingSigma(iEvent.id().run(), l.isEB(), l.full5x5_r9(), l.superCluster()->eta(), l.correctedEcalEnergy() / cosh(l.superCluster()->eta()), 12, 1., 0.);
-	 sigma_phi_up= eScaler->getSmearingSigma(iEvent.id().run(), l.isEB(), l.full5x5_r9(), l.superCluster()->eta(), l.correctedEcalEnergy() / cosh(l.superCluster()->eta()), 12, 0., 1.);
-	 smear_err_up = 1. + sqrt( pow(( 1. - rgen_.Gaus(1, sigma_rho_up)),2) + pow(( 1. - rgen_.Gaus(1, sigma_phi_up)),2));
-	 #elif CMSSW_VERSION_MAJOR == 9
-	 // EGamma scale and resolution uncertainties https://twiki.cern.ch/twiki/bin/viewauth/CMS/Egamma2017DataRecommendations#Energy_Scale_Systematic
-	 scaleErr= ( 1. +
-	 	eScaler->ScaleCorrectionUncertainty(iEvent.id().run(), l.isEB(), l.full5x5_r9(), l.superCluster()->eta(), l.correctedEcalEnergy() / cosh(l.superCluster()->eta()), 12)
-				  );
-	 //You have to vary nSigma rho and nSigma phi to get the modified sigma (the quoted sigma has 2 independent components: rho and phi)
-	 //0,0 for the nominal sigma
-	 //1, 0 for 1 "sigma" up in rho
-	 //-1,0 for 1 "sigma" down in rho
-	 //0, 1 for 1 "sigma" up in phi --> not to be used for the moment : phi=pi/2 with error=pi/2. phi + error would be equal to pi, while phi is defined from [0,pi/2]
-	 //0, -1 for 1 "sigma" down in phi
-	 //float sigma_up= eScaler.getSmearingSigma(iEvent.id().run(), l.isEB(), l.full5x5_r9(), l.superCluster()->eta(), l.correctedEcalEnergy() / cosh(l.superCluster()->eta()), 12,  1.,  0.);
-	 sigma_rho_up= eScaler->getSmearingSigma(iEvent.id().run(), l.isEB(), l.full5x5_r9(), l.superCluster()->eta(), l.correctedEcalEnergy() / cosh(l.superCluster()->eta()), 12, 1., 0.);
-	 sigma_phi_up= eScaler->getSmearingSigma(iEvent.id().run(), l.isEB(), l.full5x5_r9(), l.superCluster()->eta(), l.correctedEcalEnergy() / cosh(l.superCluster()->eta()), 12, 0., 1.);
-	 
-	 smear_err_up = 1. + sqrt( pow(( 1. - rgen_.Gaus(1, sigma_rho_up)),2) + pow(( 1. - rgen_.Gaus(1, sigma_phi_up)),2));
-	 #else
-	 scaleErr= ( 1. );
-	 //You have to vary nSigma rho and nSigma phi to get the modified sigma (the quoted sigma has 2 independent components: rho and phi)
-	 //0,0 for the nominal sigma
-	 //1, 0 for 1 "sigma" up in rho
-	 //-1,0 for 1 "sigma" down in rho
-	 //0, 1 for 1 "sigma" up in phi --> not to be used for the moment : phi=pi/2 with error=pi/2. phi + error would be equal to pi, while phi is defined from [0,pi/2]
-	 //0, -1 for 1 "sigma" down in phi
-	 //float sigma_up= eScaler.getSmearingSigma(iEvent.id().run(), l.isEB(), l.full5x5_r9(), l.superCluster()->eta(), l.correctedEcalEnergy() / cosh(l.superCluster()->eta()), 12,  1.,  0.);
-
-	 sigma_rho_up= 1.;
-	 sigma_phi_up= 1.;
-	 smear_err_up = 1. + sqrt( pow(( 1. - rgen_.Gaus(1, sigma_rho_up)),2) + pow(( 1. - rgen_.Gaus(1, sigma_phi_up)),2));
-	 #endif
+	 scaleErr= 1.;
+	 smear_err_up = 1.;
 
 	  
     //--- Embed user variables

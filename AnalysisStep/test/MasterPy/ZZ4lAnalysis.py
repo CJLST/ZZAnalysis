@@ -80,11 +80,8 @@ if SELSETUP=="Legacy" and not BESTCANDCOMPARATOR=="byBestZ1bestZ2":
 
 
 # The isolation cuts for electrons and muons. FIXME: there is an hardcoded instance of these values in src/LeptonIsoHelper.cc !!
-ELEISOCUT = 0.35
+ELEISOCUT = 99999. # [FIXME] Remove isolation cuts from the code completely
 MUISOCUT = 0.35
-# In 2017 we move to electron BDT that includes isolation. For now this is implemented in the framework by hacking ELEISOCUT value to a large number because we are maintaining the code for 2016 in paralel. In the future this should be handeled smarter.
-if (LEPTON_SETUP == 2017 or LEPTON_SETUP == 2018):
-	ELEISOCUT = 99999.
 
 ### ----------------------------------------------------------------------
 ### Set the GT
@@ -127,19 +124,19 @@ elif (SAMPLE_TYPE == 2015) :
 
 elif (SAMPLE_TYPE == 2016):
     if IsMC:
-        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_TrancheIV_v8', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mcRun2_asymptotic_v3', '')
     else:
-        process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_2016LegacyRepro_v4', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '94X_dataRun2_v10', '')
 
 elif (SAMPLE_TYPE == 2017):
     if IsMC:
-        process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mc2017_realistic_v14', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mc2017_realistic_v17', '')
     else:
-        process.GlobalTag = GlobalTag(process.GlobalTag, '94X_dataRun2_ReReco_EOY17_v6', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '94X_dataRun2_v11', '')
 
 elif (SAMPLE_TYPE == 2018):
     if IsMC:
-        process.GlobalTag = GlobalTag(process.GlobalTag, '102X_mcRun2_asymptotic_v3', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '102X_upgrade2018_realistic_v18', '')
     else:
         process.GlobalTag = GlobalTag(process.GlobalTag, '102X_dataRun2_v4', '')
 
@@ -204,83 +201,6 @@ process.hltFilterTriMu.throw  = cms.bool(False) #FIXME: beware of this!
 process.hltFilterSingleEle.throw = cms.bool(False) #FIXME: beware of this!
 process.hltFilterSingleMu.throw  = cms.bool(False) #FIXME: beware of this!
 
-# MuEG
-
-if (LEPTON_SETUP == 2011):
-    # DoubleEle
-    process.hltFilterDiEle.HLTPaths = ["HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v*","HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*","HLT_TripleEle10_CaloIdL_TrkIdVL_v*"] # to run on DATA/MC 2011
-    if (IsMC):
-        # DoubleMu
-        process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_Mu8_v*"] # to run on MC 2011
-        process.hltFilterMuEle.HLTPaths = ["HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v*","HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v*"] # to run on MC 2011
-
-    else :
-        process.hltFilterDiMu.HLTPaths = ["HLT_DoubleMu7_v*", "HLT_Mu13_Mu8_v*", "HLT_Mu17_Mu8_v*"] # to run on DATA 2011 NB: Emulation is needed [FIXME]
-        process.hltFilterMuEle.HLTPaths = ["HLT_Mu17_Ele8_CaloIdL_v*", "HLT_Mu8_Ele17_CaloIdL_v*"] # For run 1-167913
-        process.hltFilterMuEle2.HLTPaths = ["HLT_Mu17_Ele8_CaloIdL_v*", "HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v*"] # run 167914-175972
-        process.hltFilterMuEle3.HLTPaths = ["HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v*","HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v*"] # : run 175973-180252
-        process.triggerMuEle2  = cms.Path(process.hltFilterMuEle2)
-        process.triggerMuEle3  = cms.Path(process.hltFilterMuEle3)
-
-elif (LEPTON_SETUP == 2012):
-    # DoubleEle
-    process.hltFilterDiEle.HLTPaths = ["HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v*","HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*"] # to run on DATA/MC 2012
-    process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_Mu8_v*", "HLT_Mu17_TkMu8_v*"] # to run on DATA/MC 2012
-    process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*","HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*"] # to run on DATA/MC 2012
-    process.hltFilterTriEle.HLTPaths = ["HLT_Ele15_Ele8_Ele5_CaloIdL_TrkIdVL_v*"]
-    process.triggerTriEle  = cms.Path(process.hltFilterTriEle)
-
-elif (LEPTON_SETUP == 2015):
-    #FIXME: For now, the MC paths are the ones used in the RunIISpring15DR74 MC samples for 25ns,7e33 conditions.
-    process.hltFilterDiEle.HLTPaths = ["HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*"]
-    #process.hltFilterDiEle.HLTPaths = ["HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*"] #for 25ns,14e33 (not necessary in 2015 data)
-    process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*"]
-    process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"]
-    #process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"] #for 25ns,14e33 (not necessary in 2015 data)
-    process.hltFilterTriEle.HLTPaths = ["HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v*"]
-    process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_12_10_5_v*"]
-    process.hltFilterSingleEle.HLTPaths = ["HLT_Ele23_WPLoose_Gsf_v*"]
-    process.triggerTriEle = cms.Path(process.hltFilterTriEle)
-    process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
-    process.triggerSingleEle = cms.Path(process.hltFilterSingleEle)
-
-### ICHEP 2016 version - superseeded
-# elif (LEPTON_SETUP == 2016):
-#     if (IsMC and not APPLYTRIG):
-# 	#At the moment, the HLT paths are not present in the "tranche 1" background MC and MiniAODv1 signal MC. They will be added in "tranche 2"/"tranche 3" and MiniAODv2.
-#         process.hltFilterDiEle.HLTPaths = ["*"]
-#         process.hltFilterDiMu.HLTPaths = ["*"]
-#         process.hltFilterMuEle.HLTPaths = ["*"]
-#         process.hltFilterTriEle.HLTPaths = ["*"]
-#         process.hltFilterTriMu.HLTPaths = ["*"]
-#         process.hltFilterSingleEle.HLTPaths = ["*"]
-#         process.hltFilterSingleMu.HLTPaths = ["*"]
-
-#     else:
-#         if (IsMC): #re-miniAOD (APPLYTRIG=True) have TriggerResult labelled HLT2...
-#             process.hltFilterDiMu.TriggerResultsTag  = cms.InputTag("TriggerResults","","HLT2")
-#             process.hltFilterDiEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT2")
-#             process.hltFilterMuEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT2")
-#             process.hltFilterMuEle2.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT2")
-#             process.hltFilterMuEle3.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT2")
-#             process.hltFilterTriEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT2")
-#             process.hltFilterTriMu.TriggerResultsTag  = cms.InputTag("TriggerResults","","HLT2")
-#             process.hltFilterSingleEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT2")
-#             process.hltFilterSingleMu.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT2")
-
-#         process.hltFilterDiEle.HLTPaths = ["HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v*"]
-#         process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*"]
-#         process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"]
-#         process.hltFilterTriEle.HLTPaths = ["HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v*"]
-#         process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_12_10_5_v*"]
-#         process.hltFilterSingleEle.HLTPaths = ["HLT_Ele25_eta2p1_WPTight_Gsf_v*","HLT_Ele27_WPTight_Gsf_v*","HLT_Ele27_eta2p1_WPLoose_Gsf_v*"]
-#         process.hltFilterSingleMu.HLTPaths = ["HLT_IsoMu20_v*","HLT_IsoTkMu20_v*","HLT_IsoMu22_v*","HLT_IsoTkMu22_v*"]
-
-#     process.triggerTriEle = cms.Path(process.hltFilterTriEle)
-#     process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
-#     process.triggerSingleEle = cms.Path(process.hltFilterSingleEle)
-#     process.triggerSingleMu  = cms.Path(process.hltFilterSingleMu )
-
 ### 2016 triggers - final
 elif (LEPTON_SETUP == 2016):
    process.hltFilterDiEle.HLTPaths = ["HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v*"]
@@ -336,18 +256,18 @@ process.triggerMuEle  = cms.Path(process.hltFilterMuEle)
 ### ----------------------------------------------------------------------
 ### MET FILTERS
 ### ----------------------------------------------------------------------
-process.METFilters  = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
-process.METFilters.TriggerResultsTag  = cms.InputTag("TriggerResults","","RECO")
-if (IsMC):
-	process.METFilters.TriggerResultsTag  = cms.InputTag("TriggerResults","","PAT")
-
-if (LEPTON_SETUP == 2017):#MET Filters available in miniAOD as described here https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2
-	if (IsMC):
-		process.METFilters.HLTPaths = ["Flag_goodVertices","Flag_globalSuperTightHalo2016Filter","Flag_HBHENoiseFilter","Flag_HBHENoiseIsoFilter","Flag_EcalDeadCellTriggerPrimitiveFilter","Flag_BadPFMuonFilter","Flag_BadChargedCandidateFilter"]
-	else:
-		process.METFilters.HLTPaths = ["Flag_goodVertices","Flag_globalSuperTightHalo2016Filter","Flag_HBHENoiseFilter","Flag_HBHENoiseIsoFilter","Flag_EcalDeadCellTriggerPrimitiveFilter","Flag_BadPFMuonFilter","Flag_BadChargedCandidateFilter","Flag_eeBadScFilter"]
-
-process.triggerMETFilters = cms.Path(process.METFilters)
+#process.METFilters  = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+#process.METFilters.TriggerResultsTag  = cms.InputTag("TriggerResults","","RECO")
+#if (IsMC):
+#   process.METFilters.TriggerResultsTag  = cms.InputTag("TriggerResults","","PAT")
+#
+#if (LEPTON_SETUP == 2017):#MET Filters available in miniAOD as described here https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2
+#   if (IsMC):
+#      process.METFilters.HLTPaths = ["Flag_goodVertices","Flag_globalSuperTightHalo2016Filter","Flag_HBHENoiseFilter","Flag_HBHENoiseIsoFilter","Flag_EcalDeadCellTriggerPrimitiveFilter","Flag_BadPFMuonFilter","Flag_BadChargedCandidateFilter"]
+#   else:
+#      process.METFilters.HLTPaths = ["Flag_goodVertices","Flag_globalSuperTightHalo2016Filter","Flag_HBHENoiseFilter","Flag_HBHENoiseIsoFilter","Flag_EcalDeadCellTriggerPrimitiveFilter","Flag_BadPFMuonFilter","Flag_BadChargedCandidateFilter","Flag_eeBadScFilter"]
+#
+#process.triggerMETFilters = cms.Path(process.METFilters)
 
 ### ----------------------------------------------------------------------
 ### MC Filters and tools
@@ -400,27 +320,7 @@ process.goodPrimaryVertices = cms.EDFilter("VertexSelector",
 ### ----------------------------------------------------------------------
 ### HTXS categorisation
 ### ----------------------------------------------------------------------
-#if(IsMC and CMSSWVERSION < 9 and APPLY_QCD_GGF_UNCERT):
-if(IsMC and CMSSWVERSION < 9):
-   process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
-   process.mergedGenParticles = cms.EDProducer("MergedGenParticleProducer",
-															  inputPruned = cms.InputTag("prunedGenParticles"),
-															  inputPacked = cms.InputTag("packedGenParticles"),
-															  )
-   process.myGenerator = cms.EDProducer("GenParticles2HepMCConverterHTXS",
-													 genParticles = cms.InputTag("mergedGenParticles"),
-													 genEventInfo = cms.InputTag("generator"),
-													 )
-   process.rivetProducerHTXS = cms.EDProducer('HTXSRivetProducer',
-															 HepMCCollection = cms.InputTag('myGenerator','unsmeared'),
-															 LHERunInfo = cms.InputTag('externalLHEProducer'),
-															 ProductionMode = cms.string('AUTO'),
-															 )
-   process.htxs = cms.Path(process.mergedGenParticles*process.myGenerator*process.rivetProducerHTXS)
-
-
-#if(IsMC and CMSSWVERSION >= 9 and APPLY_QCD_GGF_UNCERT):
-if(IsMC and CMSSWVERSION >= 9):
+if(IsMC):
    process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
    process.mergedGenParticles = cms.EDProducer("MergedGenParticleProducer",
 															  inputPruned = cms.InputTag("prunedGenParticles"),
@@ -479,26 +379,13 @@ process.calibratedMuons = cms.EDProducer("KalmanPATMuonCorrector",
                                          )
 
 #--- Set correct identifier for muon corrections
-if LEPTON_SETUP == 2011: # (MuScleFit)
-    if IsMC:
-        process.calibratedMuons.identifier = cms.string("Fall11_START42")
-    else:
-        process.calibratedMuons.identifier = cms.string("Data2011_42X")
-elif LEPTON_SETUP == 2012: # (MuScleFit)
-    if IsMC:
-        process.calibratedMuons.identifier = cms.string("Summer12_DR53X_smearReReco")
-    else:
-        process.calibratedMuons.identifier = cms.string("Data2012_53X_ReReco")
-elif LEPTON_SETUP == 2015: # (KalmanMuonCalibrator, 2015)
-    if IsMC:
-        process.calibratedMuons.identifier = cms.string("MC_76X_13TeV")
-    else:
-        process.calibratedMuons.identifier = cms.string("DATA_76X_13TeV")
-elif LEPTON_SETUP == 2016: # (KalmanMuonCalibrator, ICHEP 2016) FIXME: still using the version from ICHEP16
-     if IsMC:
-         process.calibratedMuons.identifier = cms.string("MC_80X_13TeV")
-     else:
-         process.calibratedMuons.identifier = cms.string("DATA_80X_13TeV")
+elif LEPTON_SETUP == 2016: # Rochester corrections for 2016 data
+      process.calibratedMuons = cms.EDProducer("RochesterPATMuonCorrector",
+                                            src = cms.InputTag("slimmedMuons"),
+                                            identifier = cms.string("RoccoR2016"),
+                                            isMC = cms.bool(IsMC),
+                                            isSynchronization = cms.bool(False),
+                                            )
 elif LEPTON_SETUP == 2017:# Rochester corrections for 2017 data
      process.calibratedMuons = cms.EDProducer("RochesterPATMuonCorrector",
                                          src = cms.InputTag("slimmedMuons"),
@@ -693,7 +580,7 @@ process.softElectrons = cms.EDProducer("EleFiller",
 process.softElectrons.correctionFile = process.calibratedPatElectrons.correctionFile
 
 if (LEPTON_SETUP == 2016):
-   process.softElectrons.mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16HZZV1Values")
+   process.softElectrons.mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Fall17IsoV2RawValues")
 #94X BDT with ID and Isolation
 if (LEPTON_SETUP == 2017):
    process.softElectrons.mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Fall17IsoV2RawValues")
@@ -718,13 +605,10 @@ elif ELECORRTYPE == "RunII" :
     process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('calibratedPatElectrons')
     process.electronMVAVariableHelper.srcMiniAOD = cms.InputTag('calibratedPatElectrons')
     process.electronMVAValueMapProducer.srcMiniAOD= cms.InputTag('calibratedPatElectrons')
-if (ELEREGRESSION == "Moriond17v1" and LEPTON_SETUP == 2016):
-	from EgammaAnalysis.ElectronTools.regressionWeights_cfi import regressionWeights
-	process = regressionWeights(process)
-	process.load('EgammaAnalysis.ElectronTools.regressionApplication_cff')
 
-	process.selectedSlimmedElectrons.src = cms.InputTag("slimmedElectrons")
-	process.electrons = cms.Sequence(process.regressionApplication + process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
+if (LEPTON_SETUP == 2016): #For the moment regresion is applied on RECO level so no additional procedure is needed https://twiki.cern.ch/twiki/bin/view/CMS/Egamma2017DataRecommendations#Overview_of_E_gamma_Energy_Corre
+   process.selectedSlimmedElectrons.src = cms.InputTag("slimmedElectrons")
+   process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
 
 if (LEPTON_SETUP == 2017): #For the moment regresion is applied on RECO level so no additional procedure is needed https://twiki.cern.ch/twiki/bin/view/CMS/Egamma2017DataRecommendations#Overview_of_E_gamma_Energy_Corre
 	process.selectedSlimmedElectrons.src = cms.InputTag("slimmedElectrons")
@@ -733,37 +617,6 @@ if (LEPTON_SETUP == 2017): #For the moment regresion is applied on RECO level so
 if (LEPTON_SETUP == 2018):
 	process.selectedSlimmedElectrons.src = cms.InputTag("slimmedElectrons")
 	process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
-
-#if (LEPTON_SETUP == 2018): #Uncomment once 2018 ele corrections become available
-#	process.selectedSlimmedElectrons.src = cms.InputTag("slimmedElectrons")
-#	process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
-
-
-#elif ELEREGRESSION == "None" and ELECORRTYPE == "RunII" :
-#    process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('calibratedPatElectrons') # (when running VID)
-#    process.electronMVAValueMapProducer.srcMiniAOD = cms.InputTag('calibratedPatElectrons') # (when running VID)
-
-#elif ELEREGRESSION == "Moriond" and ELECORRTYPE == "Moriond" : # Moriond corrections: OLD ECAL regression + OLD calibration + OLD combination
-#    process.electrons = cms.Sequence(process.eleRegressionEnergy + process.calibratedPatElectrons + process.bareSoftElectrons + process.softElectrons)
-#    if (LEPTON_SETUP == 2011):
-#        process.eleRegressionEnergy.regressionInputFile = cms.string("EgammaAnalysis/ElectronTools/data/eleEnergyReg2011Weights_V1.root")
-#    else :
-#        process.eleRegressionEnergy.regressionInputFile = cms.string("EgammaAnalysis/ElectronTools/data/eleEnergyReg2012Weights_V1.root")
-#    process.eleRegressionEnergy.energyRegressionType = 1
-#    process.calibratedPatElectrons.correctionsType   = 1
-#    process.calibratedPatElectrons.combinationType   = 1
-#
-#elif ELEREGRESSION == "Paper" and ELECORRTYPE == "None" : # NEW ECAL regression + NO calibration + NO combination
-#    process.electrons = cms.Sequence(process.eleRegressionEnergy + process.calibratedPatElectrons + process.bareSoftElectrons + process.softElectrons)
-#    process.eleRegressionEnergy.energyRegressionType = 2
-#    process.calibratedPatElectrons.correctionsType   = 0
-#    process.calibratedPatElectrons.combinationType   = 0
-#
-#elif ELEREGRESSION == "Paper" and ELECORRTYPE == "PaperNoComb" : # NEW ECAL regression + NEW calibration + NO combination
-#    process.electrons = cms.Sequence(process.eleRegressionEnergy + process.calibratedPatElectrons + process.bareSoftElectrons + process.softElectrons)
-#    process.eleRegressionEnergy.energyRegressionType = 2
-#    process.calibratedPatElectrons.correctionsType   = 1
-#    process.calibratedPatElectrons.combinationType   = 0
 
 
 #--- TrackLess Electrons
@@ -1535,7 +1388,62 @@ if (APPLYJEC and SAMPLE_TYPE == 2018):
     process.dressedJets.src = cms.InputTag('patJetsReapplyJEC')
 
 
-# JER from https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyResolution#Accessing_factors_from_database 
+# JER from https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyResolution#Accessing_factors_from_database
+if (APPLYJER and SAMPLE_TYPE == 2017):
+   process.load('Configuration.StandardSequences.Services_cff')
+   process.load("JetMETCorrections.Modules.JetResolutionESProducer_cfi")
+   from CondCore.DBCommon.CondDBSetup_cfi import *
+      process.jer = cms.ESSource("PoolDBESSource",
+                                 CondDBSetup,
+                                 connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JER/Autumn18_V1_MC.db'),#[FIXME] Include correct file
+                                 toGet = cms.VPSet(
+                                                   cms.PSet(
+                                                            record = cms.string('JetResolutionRcd'),
+                                                            tag    = cms.string('JR_Autumn18_V1_MC_PtResolution_AK4PFchs'),
+                                                            label  = cms.untracked.string('AK4PFchs_pt')
+                                                            ),
+                                                   cms.PSet(
+                                                            record = cms.string('JetResolutionRcd'),
+                                                            tag    = cms.string('JR_Autumn18_V1_MC_PhiResolution_AK4PFchs'),
+                                                            label  = cms.untracked.string('AK4PFchs_phi')
+                                                            ),
+                                                   cms.PSet(
+                                                            record = cms.string('JetResolutionScaleFactorRcd'),
+                                                            tag    = cms.string('JR_Autumn18_V1_MC_SF_AK4PFchs'),
+                                                            label  = cms.untracked.string('AK4PFchs')
+                                                            )
+                                                   )
+                                 )
+      process.es_prefer_jer = cms.ESPrefer('PoolDBESSource', 'jer')
+
+if (APPLYJER and SAMPLE_TYPE == 2017):
+   process.load('Configuration.StandardSequences.Services_cff')
+   process.load("JetMETCorrections.Modules.JetResolutionESProducer_cfi")
+   from CondCore.DBCommon.CondDBSetup_cfi import *
+      process.jer = cms.ESSource("PoolDBESSource",
+                                 CondDBSetup,
+                                 connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JER/Autumn18_V1_MC.db'),#[FIXME] Include correct file
+                                 toGet = cms.VPSet(
+                                                   cms.PSet(
+                                                            record = cms.string('JetResolutionRcd'),
+                                                            tag    = cms.string('JR_Autumn18_V1_MC_PtResolution_AK4PFchs'),
+                                                            label  = cms.untracked.string('AK4PFchs_pt')
+                                                            ),
+                                                   cms.PSet(
+                                                            record = cms.string('JetResolutionRcd'),
+                                                            tag    = cms.string('JR_Autumn18_V1_MC_PhiResolution_AK4PFchs'),
+                                                            label  = cms.untracked.string('AK4PFchs_phi')
+                                                            ),
+                                                   cms.PSet(
+                                                            record = cms.string('JetResolutionScaleFactorRcd'),
+                                                            tag    = cms.string('JR_Autumn18_V1_MC_SF_AK4PFchs'),
+                                                            label  = cms.untracked.string('AK4PFchs')
+                                                            )
+                                                   )
+                                 )
+      process.es_prefer_jer = cms.ESPrefer('PoolDBESSource', 'jer')
+
+
 if (APPLYJER and SAMPLE_TYPE == 2018):
     process.load('Configuration.StandardSequences.Services_cff')
     process.load("JetMETCorrections.Modules.JetResolutionESProducer_cfi")
@@ -1591,60 +1499,17 @@ if FSRMODE=="Legacy" :
 
 metTag = cms.InputTag("slimmedMETs")
 
-### Recorrect MET, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription#Instructions_for_8_0_X_X_26_patc
 if (RECORRECTMET and SAMPLE_TYPE == 2016):
-
+   
     from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
     runMetCorAndUncFromMiniAOD(process,
                                isData=(not IsMC),
                                )
     metTag = cms.InputTag("slimmedMETs","","ZZ")
 
-    if (not IsMC):
-        ### recorrect MET based on e/gamma gain switch correction on the fly for Re-Miniaod Data
-        ### cf. https://twiki.cern.ch/twiki/bin/view/CMSPublic/ReMiniAOD03Feb2017Notes#MET_Recipes
-
-        from PhysicsTools.PatUtils.tools.corMETFromMuonAndEG import corMETFromMuonAndEG
-        corMETFromMuonAndEG(process,
-                            pfCandCollection="",
-                            electronCollection="slimmedElectronsBeforeGSFix",
-                            photonCollection="slimmedPhotonsBeforeGSFix",
-                            corElectronCollection="slimmedElectrons",
-                            corPhotonCollection="slimmedPhotons",
-                            allMETEGCorrected=True,
-                            muCorrection=False,
-                            eGCorrection=True,
-                            runOnMiniAOD=True,
-                            postfix="MuEGClean"
-                            )
-        process.slimmedMETsMuEGClean = process.slimmedMETs.clone()
-        process.slimmedMETsMuEGClean.src = cms.InputTag("patPFMetT1MuEGClean")
-        process.slimmedMETsMuEGClean.rawVariation =  cms.InputTag("patPFMetRawMuEGClean")
-        process.slimmedMETsMuEGClean.t1Uncertainties = cms.InputTag("patPFMetT1%sMuEGClean")
-        del process.slimmedMETsMuEGClean.caloMET
-
-        process.egcorrMET = cms.Sequence(
-            process.cleanedPhotonsMuEGClean+process.cleanedCorPhotonsMuEGClean+
-            process.matchedPhotonsMuEGClean + process.matchedElectronsMuEGClean +
-            process.corMETPhotonMuEGClean+process.corMETElectronMuEGClean+
-            process.patPFMetT1MuEGClean+process.patPFMetRawMuEGClean+
-            process.patPFMetT1SmearMuEGClean+process.patPFMetT1TxyMuEGClean+
-            process.patPFMetTxyMuEGClean+process.patPFMetT1JetEnUpMuEGClean+
-            process.patPFMetT1JetResUpMuEGClean+process.patPFMetT1SmearJetResUpMuEGClean+
-            process.patPFMetT1ElectronEnUpMuEGClean+process.patPFMetT1PhotonEnUpMuEGClean+
-            process.patPFMetT1MuonEnUpMuEGClean+process.patPFMetT1TauEnUpMuEGClean+
-            process.patPFMetT1UnclusteredEnUpMuEGClean+process.patPFMetT1JetEnDownMuEGClean+
-            process.patPFMetT1JetResDownMuEGClean+process.patPFMetT1SmearJetResDownMuEGClean+
-            process.patPFMetT1ElectronEnDownMuEGClean+process.patPFMetT1PhotonEnDownMuEGClean+
-            process.patPFMetT1MuonEnDownMuEGClean+process.patPFMetT1TauEnDownMuEGClean+
-            process.patPFMetT1UnclusteredEnDownMuEGClean+process.slimmedMETsMuEGClean)
-
-        metTag = cms.InputTag("slimmedMETsMuEGClean","","ZZ")
-
     ### somehow MET recorrection gets this lost again...
     process.patJetsReapplyJEC.userData.userFloats.src += ['pileupJetIdUpdated:fullDiscriminant']
     process.patJetsReapplyJEC.userData.userInts.src += ['pileupJetIdUpdated:fullId']
-
 
 ### Recorrect MET, cf. https://indico.cern.ch/event/759372/contributions/3149378/attachments/1721436/2779341/metreport.pdf slide 10
 ###                and https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription#Instructions_for_9_4_X_X_9_for_2
@@ -1693,7 +1558,7 @@ if (RECORRECTMET and SAMPLE_TYPE == 2016):
     if IsMC:
         process.MET = cms.Path(process.fullPatMetSequence)
     else:
-        process.MET = cms.Path(process.fullPatMetSequence + process.egcorrMET)
+        process.MET = cms.Path(process.fullPatMetSequence)
 
 if (RECORRECTMET and SAMPLE_TYPE == 2017):
     if IsMC:

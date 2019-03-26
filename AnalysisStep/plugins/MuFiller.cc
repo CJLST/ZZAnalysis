@@ -22,8 +22,6 @@
 #include <ZZAnalysis/AnalysisStep/interface/CutSet.h>
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
 
-#include <KaMuCa/Calibration/interface/KalmanMuonCalibrator.h>
-
 #include <vector>
 #include <string>
 
