@@ -202,7 +202,7 @@ process.hltFilterSingleEle.throw = cms.bool(False) #FIXME: beware of this!
 process.hltFilterSingleMu.throw  = cms.bool(False) #FIXME: beware of this!
 
 ### 2016 triggers - final
-elif (LEPTON_SETUP == 2016):
+if (LEPTON_SETUP == 2016):
    process.hltFilterDiEle.HLTPaths = ["HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v*"]
    process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*"]
    process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"]
@@ -379,7 +379,7 @@ process.calibratedMuons = cms.EDProducer("KalmanPATMuonCorrector",
                                          )
 
 #--- Set correct identifier for muon corrections
-elif LEPTON_SETUP == 2016: # Rochester corrections for 2016 data
+if LEPTON_SETUP == 2016: # Rochester corrections for 2016 data
       process.calibratedMuons = cms.EDProducer("RochesterPATMuonCorrector",
                                             src = cms.InputTag("slimmedMuons"),
                                             identifier = cms.string("RoccoR2016"),
@@ -463,41 +463,6 @@ else:
 
 #------- ELECTRONS -------
 
-#--- Run1 types of corrections below here, just as a reference
-#
-##--- Electron regression+calibrarion must be applied after BDT is recomputed
-## NOTE patElectronsWithRegression->eleRegressionEnergy;  calibratedElectrons-> calibratedPatElectrons
-## Default: NEW ECAL regression + NEW calibration + NEW combination
-#process.load('EgammaAnalysis.ElectronTools.electronRegressionEnergyProducer_cfi')
-#process.eleRegressionEnergy.inputElectronsTag = cms.InputTag('slimmedElectrons')
-#process.eleRegressionEnergy.energyRegressionType = 2 ## 1: ECAL regression w/o subclusters 2 (default): ECAL regression w/ subclusters)
-##process.eleRegressionEnergy.vertexCollection = cms.InputTag('goodPrimaryVertices')
-
-#process.load("EgammaAnalysis.ElectronTools.calibratedPatElectrons_cfi")
-#process.calibratedPatElectrons.correctionsType = 2 # 1 = old regression, 2 = new regression, 3 = no regression, 0 = nothing
-#process.calibratedPatElectrons.combinationType = 3
-#process.calibratedPatElectrons.lumiRatio = cms.double(1.0)
-#process.calibratedPatElectrons.isMC    = IsMC
-#process.calibratedPatElectrons.synchronization = cms.bool(False)
-
-#if (LEPTON_SETUP == 2011):
-#   process.eleRegressionEnergy.rhoCollection = cms.InputTag('kt6PFJetsForIso:rho')
-#   if (IsMC):
-#       process.calibratedPatElectrons.inputDataset = "Fall11"
-#   else :
-#       process.calibratedPatElectrons.inputDataset = "Jan16ReReco"
-#elif (LEPTON_SETUP == 2012) :
-#   if (IsMC):
-#       process.calibratedPatElectrons.inputDataset = "Summer12_LegacyPaper"
-#   else :
-#       process.calibratedPatElectrons.inputDataset = "22Jan2013ReReco"
-#else :
-#   if (IsMC):
-#       process.calibratedPatElectrons.inputDataset = ""
-#   else :
-#       process.calibratedPatElectrons.inputDataset = ""
-
-
 #--- Run2 electron momentum scale and resolution corrections
 
 process.selectedSlimmedElectrons = cms.EDFilter("PATElectronSelector",
@@ -506,42 +471,21 @@ process.selectedSlimmedElectrons = cms.EDFilter("PATElectronSelector",
 )
 
 if (LEPTON_SETUP == 2016):
-## Moriond 17
-   process.calibratedPatElectrons = cms.EDProducer("CalibratedPatElectronProducerRun2",
-       electrons = cms.InputTag('selectedSlimmedElectrons'),
-       gbrForestName = cms.vstring('electron_eb_ECALTRK_lowpt', 'electron_eb_ECALTRK',
-                                   'electron_ee_ECALTRK_lowpt', 'electron_ee_ECALTRK',
-                                   'electron_eb_ECALTRK_lowpt_var', 'electron_eb_ECALTRK_var',
-                                   'electron_ee_ECALTRK_lowpt_var', 'electron_ee_ECALTRK_var'),
-       isMC = cms.bool(IsMC),
-       isSynchronization = cms.bool(False),
-       correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/Moriond17_23Jan_ele"),
-       recHitCollectionEB = cms.InputTag('reducedEgamma:reducedEBRecHits'),
-       recHitCollectionEE = cms.InputTag('reducedEgamma:reducedEERecHits')
-   )
+   from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
+   setupEgammaPostRecoSeq(process,
+                          runEnergyCorrections=True, #corrections by default are fine so no need to re-run
+                          era='2016-Legacy'')
 
-## Preliminary Moriond 18 corrections
 if (LEPTON_SETUP == 2017):
-	process.calibratedPatElectrons = cms.EDProducer("CalibratedPatElectronProducerRun2",
-		 electrons = cms.InputTag('selectedSlimmedElectrons'),
-		 gbrForestName = cms.vstring('electron_eb_ECALTRK_lowpt', 'electron_eb_ECALTRK',
-											  'electron_ee_ECALTRK_lowpt', 'electron_ee_ECALTRK',
-											  'electron_eb_ECALTRK_lowpt_var', 'electron_eb_ECALTRK_var',
-											  'electron_ee_ECALTRK_lowpt_var', 'electron_ee_ECALTRK_var'),
-		 isMC = cms.bool(IsMC),
-		 isSynchronization = cms.bool(False),
-		 correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/Run2017_17Nov2017_v1_ele_unc"),
-       recHitCollectionEB = cms.InputTag('reducedEgamma:reducedEBRecHits'),
-       recHitCollectionEE = cms.InputTag('reducedEgamma:reducedEERecHits')
-	)
+   from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
+   setupEgammaPostRecoSeq(process,
+                       runEnergyCorrections=True, #corrections by default are fine so no need to re-run
+                       era='2017-Nov17ReReco')
 
 ## Preliminary Moriond 19 corrections from https://twiki.cern.ch/twiki/bin/view/CMS/EgammaPostRecoRecipes#2018_Preliminary_Energy_Correcti
 if (LEPTON_SETUP == 2018):
     process.load("RecoEgamma.EgammaTools.calibratedEgammas_cff")
     process.calibratedPatElectrons.correctionFile = "EgammaAnalysis/ElectronTools/data/ScalesSmearings/Run2018_Step2Closure_CoarseEtaR9Gain"
-
-if (BUNCH_SPACING == 50):
-    process.calibratedPatElectrons.grbForestName = cms.string("gedelectron_p4combination_50ns")
 
 #--- Set up electron ID (VID framework)
 from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
@@ -596,14 +540,12 @@ if (LEPTON_SETUP == 2018):
 if (ELEREGRESSION == "None" and ELECORRTYPE == "None" ):   # No correction at all. Skip correction modules.
     process.bareSoftElectrons.src = cms.InputTag('selectedSlimmedElectrons')
     process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('selectedSlimmedElectrons')
-    process.electronMVAVariableHelper.srcMiniAOD =  cms.InputTag('selectedSlimmedElectrons')
     process.electronMVAValueMapProducer.srcMiniAOD =  cms.InputTag('selectedSlimmedElectrons')
 
     process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons) # (use this version when running VID)
 
 elif ELECORRTYPE == "RunII" :
     process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('calibratedPatElectrons')
-    process.electronMVAVariableHelper.srcMiniAOD = cms.InputTag('calibratedPatElectrons')
     process.electronMVAValueMapProducer.srcMiniAOD= cms.InputTag('calibratedPatElectrons')
 
 if (LEPTON_SETUP == 2016): #For the moment regresion is applied on RECO level so no additional procedure is needed https://twiki.cern.ch/twiki/bin/view/CMS/Egamma2017DataRecommendations#Overview_of_E_gamma_Energy_Corre
@@ -1393,7 +1335,7 @@ if (APPLYJER and SAMPLE_TYPE == 2017):
    process.load('Configuration.StandardSequences.Services_cff')
    process.load("JetMETCorrections.Modules.JetResolutionESProducer_cfi")
    from CondCore.DBCommon.CondDBSetup_cfi import *
-      process.jer = cms.ESSource("PoolDBESSource",
+   process.jer = cms.ESSource("PoolDBESSource",
                                  CondDBSetup,
                                  connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JER/Autumn18_V1_MC.db'),#[FIXME] Include correct file
                                  toGet = cms.VPSet(
@@ -1414,13 +1356,13 @@ if (APPLYJER and SAMPLE_TYPE == 2017):
                                                             )
                                                    )
                                  )
-      process.es_prefer_jer = cms.ESPrefer('PoolDBESSource', 'jer')
+   process.es_prefer_jer = cms.ESPrefer('PoolDBESSource', 'jer')
 
 if (APPLYJER and SAMPLE_TYPE == 2017):
    process.load('Configuration.StandardSequences.Services_cff')
    process.load("JetMETCorrections.Modules.JetResolutionESProducer_cfi")
    from CondCore.DBCommon.CondDBSetup_cfi import *
-      process.jer = cms.ESSource("PoolDBESSource",
+   process.jer = cms.ESSource("PoolDBESSource",
                                  CondDBSetup,
                                  connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JER/Autumn18_V1_MC.db'),#[FIXME] Include correct file
                                  toGet = cms.VPSet(
@@ -1441,7 +1383,7 @@ if (APPLYJER and SAMPLE_TYPE == 2017):
                                                             )
                                                    )
                                  )
-      process.es_prefer_jer = cms.ESPrefer('PoolDBESSource', 'jer')
+   process.es_prefer_jer = cms.ESPrefer('PoolDBESSource', 'jer')
 
 
 if (APPLYJER and SAMPLE_TYPE == 2018):

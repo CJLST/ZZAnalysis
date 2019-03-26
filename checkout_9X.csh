@@ -10,6 +10,9 @@
 ############## For 9_4_13
 git cms-init
 
+#EGamma scale and smearing according to https://twiki.cern.ch/twiki/bin/view/CMS/EgammaMiniAODV2#2017_MiniAOD_V2
+git cms-merge-topic cms-egamma:EgammaPostRecoTools
+
 #MET corrections according to https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription#Instructions_for_9_4_X_X_9_for_2
 git cms-merge-topic cms-met:METFixEE2017_949_v2
 
