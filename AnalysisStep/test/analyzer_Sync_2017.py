@@ -7,7 +7,7 @@ APPLYMUCORR = True  # Switch off muon scale corrections
 APPLYJEC = True     #
 APPLYJER = True     #
 RECORRECTMET = True #
-KINREFIT = True    # control KinZFitter (very slow)
+#KINREFIT = True    # control KinZFitter (very slow)
 PROCESS_CR = True   # Uncomment to run CR paths and trees
 #ADDLOOSEELE = True  # Run paths for loose electrons
 #APPLYTRIG = False    # hack for samples missing correct triggers - use with caution
@@ -44,13 +44,11 @@ process.source.fileNames = cms.untracked.vstring(
 
 ### Moriond 18 sync files
     ## Low mass
-    '/store/mc/RunIIFall17MiniAOD/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/MINIAODSIM/94X_mc2017_realistic_v10-v1/40000/205E2EB6-2600-E811-A8D9-A0369FC5E090.root',
-    '/store/mc/RunIIFall17MiniAOD/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/MINIAODSIM/94X_mc2017_realistic_v10-v2/00000/E8505BB6-5F07-E811-B009-002590DE6E88.root',
-    '/store/mc/RunIIFall17MiniAOD/WminusH_HToZZTo4L_M125_13TeV_powheg2-minlo-HWJ_JHUGenV7011_pythia8/MINIAODSIM/94X_mc2017_realistic_v10-v1/10000/80B92986-8501-E811-99BB-002590200900.root'
+    '/store/mc/RunIIFall17MiniAODv2/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/10000/54B0F730-A142-E811-BB8F-901B0E6459CA.root'
     )
 
-process.calibratedPatElectrons.isSynchronization = cms.bool(True)
-process.calibratedMuons.isSynchronization = cms.bool(True)
+#process.calibratedPatElectrons.isSynchronization = cms.bool(True)
+#process.calibratedMuons.isSynchronization = cms.bool(True)
 
 process.maxEvents.input = -1
 #process.source.skipEvents = cms.untracked.uint32(5750)
