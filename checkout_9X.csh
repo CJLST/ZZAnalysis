@@ -13,6 +13,14 @@ git cms-init
 #MET corrections according to https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription#Instructions_for_9_4_X_X_9_for_2
 git cms-merge-topic cms-met:METFixEE2017_949_v2
 
+#Simplified template cross section
+git cms-addpkg GeneratorInterface/RivetInterface
+git cms-addpkg SimDataFormats/HTXS
+git remote add amarini https://github.com/amarini/cmssw.git
+git fetch amarini 
+git checkout amarini/htxs_stage1p1_cmssw949_v2 GeneratorInterface/RivetInterface
+git checkout amarini/htxs_stage1p1_cmssw949_v2 SimDataFormats/HTXS
+
 #### Please do not add any custom (non-CMSSW) package before this line ####
 
 #ZZAnalysis
