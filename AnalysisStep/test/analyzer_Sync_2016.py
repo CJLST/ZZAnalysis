@@ -45,8 +45,8 @@ process.source.fileNames = cms.untracked.vstring(
    '/store/mc/RunIISummer16MiniAODv3/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3-v1/40000/D6C4EDC9-5620-E911-83B2-1866DA87D585.root'
     )
 
-process.calibratedPatElectrons.isSynchronization = cms.bool(True)
-process.calibratedMuons.isSynchronization = cms.bool(True)
+#process.calibratedPatElectrons.isSynchronization = cms.bool(True)
+#process.calibratedMuons.isSynchronization = cms.bool(True)
 
 process.maxEvents.input = -1
 #process.source.skipEvents = cms.untracked.uint32(5750)
