@@ -29,7 +29,7 @@ git checkout amarini/htxs_stage1p1_cmssw949_v2 SimDataFormats/HTXS
 #### Please do not add any custom (non-CMSSW) package before this line ####
 #ZZAnalysis
 git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
-(cd ZZAnalysis; git checkout miniAOD_80X)
+(cd ZZAnalysis; git checkout Run2Legacy)
 
 #MELA Analytics
 git clone https://github.com/usarica/MelaAnalytics.git
@@ -70,8 +70,6 @@ git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMa
 git clone https://github.com/mhl0116/KinZfitter-1.git KinZfitter
 (cd KinZfitter ; git checkout -b from-27daebb 27daebb)
 
-#muon momentum scale corrections (76X)
-git clone https://github.com/bachtis/Analysis.git -b KaMuCa_V4 KaMuCa
 
 
 
