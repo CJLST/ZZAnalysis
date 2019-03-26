@@ -7,7 +7,7 @@ To install a complete CMSSW 9X area (including this package)
 ------------------------------
 Used for analysis of 2016 and 2017 data
 
-Please use CMSSW_9_4_9.
+Please use CMSSW_9_4_13.
 
 Download and execute the setup script:
 ```
