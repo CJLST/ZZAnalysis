@@ -22,7 +22,7 @@ SingleMuon2016D,,-1,,, /SingleMuon/Run2016D-17Jul2018-v1/MINIAOD,dbs,,5,PD=Singl
 
 DoubleMu2016E,, -1, ,, /DoubleMuon/Run2016E-17Jul2018-v1/MINIAOD,dbs,,2,PD=DoubleMu;PROCESS_CR=True;KINREFIT=True;ADDZTREE=True,json_2016.py;RecoProbabilities.py,
 DoubleEG2016E,, -1, ,, /DoubleEG/Run2016E-17Jul2018-v1/MINIAOD,dbs,,2,PD=DoubleEle;PROCESS_CR=True;KINREFIT=True;ADDZTREE=True,json_2016.py;RecoProbabilities.py,
-MuonEG2016E,,   -1, ,, /MuonEG/Run2016E-17Jul2018-v1/MINIAOD,dbs,,2,PD=MuEG;PROCESS_CR=True;KINREFIT=True;ADDZTREE=True,json_2016.py;RecoProbabilities.py,
+MuonEG2016E,,   -1, ,, /MuonEG/Run2016E-17Jul2018-v2/MINIAOD,dbs,,2,PD=MuEG;PROCESS_CR=True;KINREFIT=True;ADDZTREE=True,json_2016.py;RecoProbabilities.py,
 SingleEle2016E,,-1, ,, /SingleElectron/Run2016E-17Jul2018-v1/MINIAOD,dbs,,5,PD=SingleElectron;PROCESS_CR=True;KINREFIT=True;ADDZTREE=True,json_2016.py;RecoProbabilities.py,
 SingleMuon2016E,,-1,,, /SingleMuon/Run2016E-17Jul2018-v1/MINIAOD,dbs,,5,PD=SingleMuon;PROCESS_CR=True;KINREFIT=True;ADDZTREE=True,json_2016.py;RecoProbabilities.py,
 
@@ -30,7 +30,7 @@ DoubleMu2016F,, -1, ,, /DoubleMuon/Run2016F-17Jul2018-v1/MINIAOD,dbs,,2,PD=Doubl
 DoubleEG2016F,, -1, ,, /DoubleEG/Run2016F-17Jul2018-v1/MINIAOD,dbs,,2,PD=DoubleEle;PROCESS_CR=True;KINREFIT=True;ADDZTREE=True,json_2016.py;RecoProbabilities.py,
 MuonEG2016F,,   -1, ,, /MuonEG/Run2016F-17Jul2018-v1/MINIAOD,dbs,,2,PD=MuEG;PROCESS_CR=True;KINREFIT=True;ADDZTREE=True,json_2016.py;RecoProbabilities.py,
 SingleEle2016F,,-1, ,, /SingleElectron/Run2016F-17Jul2018-v1/MINIAOD,dbs,,5,PD=SingleElectron;PROCESS_CR=True;KINREFIT=True;ADDZTREE=True,json_2016.py;RecoProbabilities.py,
-SingleMuon2016F,,-1,,, /SingleMuon/Run2016F-17Jul2018-v2/MINIAOD,dbs,,5,PD=SingleMuon;PROCESS_CR=True;KINREFIT=True;ADDZTREE=True,json_2016.py;RecoProbabilities.py,
+SingleMuon2016F,,-1,,, /SingleMuon/Run2016F-17Jul2018-v1/MINIAOD,dbs,,5,PD=SingleMuon;PROCESS_CR=True;KINREFIT=True;ADDZTREE=True,json_2016.py;RecoProbabilities.py,
 
 DoubleMu2016G,, -1, ,, /DoubleMuon/Run2016G-17Jul2018-v1/MINIAOD,dbs,,2,PD=DoubleMu;PROCESS_CR=True;KINREFIT=True;ADDZTREE=True,json_2016.py;RecoProbabilities.py,
 DoubleEG2016G,, -1, ,, /DoubleEG/Run2016G-17Jul2018-v1/MINIAOD,dbs,,2,PD=DoubleEle;PROCESS_CR=True;KINREFIT=True;ADDZTREE=True,json_2016.py;RecoProbabilities.py,
