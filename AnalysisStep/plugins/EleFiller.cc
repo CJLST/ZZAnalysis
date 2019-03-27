@@ -50,7 +50,6 @@ class EleFiller : public edm::EDProducer {
   edm::EDGetTokenT<double> rhoToken;
   edm::EDGetTokenT<vector<Vertex> > vtxToken;
   EDGetTokenT<ValueMap<float> > BDTValueMapToken;
-  string correctionFile;
   TRandom3 rgen_;
 };
 
@@ -61,14 +60,11 @@ EleFiller::EleFiller(const edm::ParameterSet& iConfig) :
   setup(iConfig.getParameter<int>("setup")),
   cut(iConfig.getParameter<std::string>("cut")),
   flags(iConfig.getParameter<ParameterSet>("flags")),
-  correctionFile(iConfig.getParameter<std::string>("correctionFile")),
   rgen_(0)
 {
   rhoToken = consumes<double>(LeptonIsoHelper::getEleRhoTag(sampleType, setup));
   vtxToken = consumes<vector<Vertex> >(edm::InputTag("goodPrimaryVertices"));
-
   BDTValueMapToken = consumes<ValueMap<float> >(iConfig.getParameter<InputTag>("mvaValuesMap"));
-
   produces<pat::ElectronCollection>();
 	
 }
@@ -103,10 +99,6 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     pat::Electron l(*((*electronHandle)[i].get()));
 
     //--- PF ISO
-    // for cone size R=0.4 :
-    //float PFChargedHadIso   = l.chargedHadronIso();
-    //float PFNeutralHadIso   = l.neutralHadronIso();
-    //float PFPhotonIso       = l.photonIso();
     // for cone size R=0.3 :
     float PFChargedHadIso   = l.pfIsolationVariables().sumChargedHadronPt;
     float PFNeutralHadIso   = l.pfIsolationVariables().sumNeutralHadronEt;
@@ -133,7 +125,7 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 	  
     // RunII BDT ID
-    float BDT = 0.;
+    float BDT = -999.;
 	
 	//BDT running VID
 	 BDT = (*BDTValues)[(*electronHandle)[i]];
@@ -144,36 +136,56 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  
     bool isBDT = false;
 
-	if (setup==2016 || setup==2017 || setup==2018) 
-	{
-	  //WP taken from https://github.com/cms-sw/cmssw/blob/master/RecoEgamma/ElectronIdentification/python/Identification/mvaElectronID_Fall17_iso_V2_cff.py#L21 
-	 	isBDT         = (pt<=10 && ((fSCeta<0.8                  && BDT >  1.26402092475) ||
-                                  (fSCeta>=0.8 && fSCeta<1.479 && BDT >  1.17808089508) ||
-                                  (fSCeta>=1.479               && BDT >  1.33051972806)))
-                 	 || (pt>10  && ((fSCeta<0.8                  && BDT >  2.36464785939) ||
-                                  (fSCeta>=0.8 && fSCeta<1.479 && BDT >  2.07880614597) ||
-                                  (fSCeta>=1.479               && BDT >  1.08080644615)));
-	}
-	else
-	{
-		std::cerr << "[ERROR] EleFiller: no BDT setup for: " << setup << " year!" << std::endl;
-	}
+	 if (setup==2016 || setup==2017 || setup==2018)
+	 {
+	   //WP taken from https://github.com/cms-sw/cmssw/blob/master/RecoEgamma/ElectronIdentification/python/Identification/mvaElectronID_Fall17_iso_V2_cff.py#L21
+	 	 isBDT         = (pt<=10 && ((fSCeta<0.8                  && BDT >  1.26402092475) ||
+                                   (fSCeta>=0.8 && fSCeta<1.479 && BDT >  1.17808089508) ||
+                                   (fSCeta>=1.479               && BDT >  1.33051972806)))
+                     || (pt>10  && ((fSCeta<0.8                  && BDT >  2.36464785939) ||
+                                   (fSCeta>=0.8 && fSCeta<1.479 && BDT >  2.07880614597) ||
+                                   (fSCeta>=1.479               && BDT >  1.08080644615)));
+	 }
+	 else
+	 {
+	  	 std::cerr << "[ERROR] EleFiller: no BDT setup for: " << setup << " year!" << std::endl;
+	 }
 
     //-- Missing hit  
 	 int missingHit;
 	 missingHit = l.gsfTrack()->hitPattern().numberOfAllHits(HitPattern::MISSING_INNER_HITS);
 	 
     //-- Flag for crack electrons (which use different efficiency SFs)
-    bool isCrack = l.isGap(); 
+    bool isCrack = l.isGap();
+     
     //--- Trigger matching
     int HLTMatch = 0; //FIXME
 	 
-	 
-	 float scaleErr;
-	 float smear_err_up;
-	 
-	 scaleErr= 1.;
-	 smear_err_up = 1.;
+     
+    //-- Scale and smearing corrections are now stored in the miniAOD https://twiki.cern.ch/twiki/bin/view/CMS/EgammaMiniAODV2#Energy_Scale_and_Smearing
+    float uncorrected_pt = l.pt();
+    float corr_factor = l.userFloat("ecalTrkEnergyPostCorr") / l.energy();//get scale/smear correction factor directly from miniAOD
+     
+    //scale and smsear electron
+    l.setP4(reco::Particle::PolarLorentzVector(l.pt()*corr_factor, l.eta(), l.phi(), l.mass()*corr_factor));
+     
+    //get all scale uncertainties and their breakdown
+    float scale_total_up = l.userFloat("energyScaleUp") / l.energy();
+    float scale_stat_up = l.userFloat("energyScaleStatUp") / l.energy();
+    float scale_syst_up = l.userFloat("energyScaleSystUp") / l.energy();
+    float scale_gain_up = l.userFloat("energyScaleGainUp") / l.energy();
+    float scale_total_dn = l.userFloat("energyScaleDown") / l.energy();
+    float scale_stat_dn = l.userFloat("energyScaleStatDown") / l.energy();
+    float scale_syst_dn = l.userFloat("energyScaleSystDown") / l.energy();
+    float scale_gain_dn = l.userFloat("energyScaleGainDown") / l.energy();
+     
+    //get all smearing uncertainties and their breakdown
+    float sigma_total_up = l.userFloat("energySigmaUp") / l.energy();
+    float sigma_rho_up = l.userFloat("energySigmaRhoUp") / l.energy();
+    float sigma_phi_up = l.userFloat("energySigmaPhiUp") / l.energy();
+    float sigma_total_dn = l.userFloat("energySigmaDown") / l.energy();
+    float sigma_rho_dn = l.userFloat("energySigmaRhoDown") / l.energy();
+    float sigma_phi_dn = l.userFloat("energySigmaPhiDown") / l.energy();
 
 	  
     //--- Embed user variables
@@ -191,8 +203,21 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     l.addUserFloat("isCrack",isCrack);
     l.addUserFloat("HLTMatch", HLTMatch);
     l.addUserFloat("missingHit", missingHit);
-    l.addUserFloat("scale_unc",scaleErr);
-    l.addUserFloat("smear_unc",smear_err_up);
+    l.addUserFloat("uncorrected_pt",uncorrected_pt);
+    l.addUserFloat("scale_total_up",scale_total_up);
+    l.addUserFloat("scale_stat_up",scale_stat_up);
+    l.addUserFloat("scale_syst_up",scale_syst_up);
+    l.addUserFloat("scale_gain_up",scale_gain_up);
+    l.addUserFloat("scale_total_dn",scale_total_dn);
+    l.addUserFloat("scale_stat_dn",scale_stat_dn);
+    l.addUserFloat("scale_syst_dn",scale_syst_dn);
+    l.addUserFloat("scale_gain_dn",scale_gain_dn);
+    l.addUserFloat("sigma_total_up",sigma_total_up);
+    l.addUserFloat("sigma_total_dn",sigma_total_dn);
+    l.addUserFloat("sigma_rho_up",sigma_rho_up);
+    l.addUserFloat("sigma_rho_dn",sigma_rho_dn);
+    l.addUserFloat("sigma_phi_up",sigma_phi_up);
+    l.addUserFloat("sigma_phi_dn",sigma_phi_dn);
 
     //--- MC parent code 
 //     MCHistoryTools mch(iEvent);
