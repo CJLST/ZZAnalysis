@@ -1,4 +1,4 @@
-# from /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Final/Cert_271036-284044_13TeV_PromptReco_Collisions16_JSON.txt
+# from /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt
 process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange( *(
     '273158:1-273158:1279',
     '273302:1-273302:459',
@@ -40,6 +40,7 @@ process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange( *(
     '273730:1820-273730:2126',
     '274094:108-274094:332',
     '274146:1-274146:67',
+    '274157:105-274157:534',
     '274159:1-274159:43',
     '274160:1-274160:207',
     '274161:1-274161:516',
