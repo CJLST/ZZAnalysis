@@ -49,7 +49,6 @@ class EleFiller : public edm::EDProducer {
   const CutSet<pat::Electron> flags;
   edm::EDGetTokenT<double> rhoToken;
   edm::EDGetTokenT<vector<Vertex> > vtxToken;
-  EDGetTokenT<ValueMap<float> > BDTValueMapToken;
   TRandom3 rgen_;
 };
 
@@ -64,7 +63,6 @@ EleFiller::EleFiller(const edm::ParameterSet& iConfig) :
 {
   rhoToken = consumes<double>(LeptonIsoHelper::getEleRhoTag(sampleType, setup));
   vtxToken = consumes<vector<Vertex> >(edm::InputTag("goodPrimaryVertices"));
-  BDTValueMapToken = consumes<ValueMap<float> >(iConfig.getParameter<InputTag>("mvaValuesMap"));
   produces<pat::ElectronCollection>();
 	
 }
@@ -86,9 +84,6 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   edm::Handle<vector<Vertex> > vertices;
   iEvent.getByToken(vtxToken,vertices);
-
-  Handle<ValueMap<float> > BDTValues;
-  iEvent.getByToken(BDTValueMapToken, BDTValues);
 
   // Output collection
   auto result = std::make_unique<pat::ElectronCollection>();
@@ -125,11 +120,8 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 	  
     // RunII BDT ID
-    float BDT = -999.;
-	
-	//BDT running VID
-	 BDT = (*BDTValues)[(*electronHandle)[i]];
-	//cout << "BDT = " << (*BDTValues)[(*electronHandle)[i]] << endl;
+    float BDT = l.userFloat("ElectronMVAEstimatorRun2Fall17IsoV2Values");
+    //cout << "BDT = " << BDT << endl;
     
     float pt = l.pt();
 
@@ -138,13 +130,13 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 	 if (setup==2016 || setup==2017 || setup==2018)
 	 {
-	   //WP taken from https://github.com/cms-sw/cmssw/blob/master/RecoEgamma/ElectronIdentification/python/Identification/mvaElectronID_Fall17_iso_V2_cff.py#L21
-	 	 isBDT         = (pt<=10 && ((fSCeta<0.8                  && BDT >  1.26402092475) ||
-                                   (fSCeta>=0.8 && fSCeta<1.479 && BDT >  1.17808089508) ||
-                                   (fSCeta>=1.479               && BDT >  1.33051972806)))
-                     || (pt>10  && ((fSCeta<0.8                  && BDT >  2.36464785939) ||
-                                   (fSCeta>=0.8 && fSCeta<1.479 && BDT >  2.07880614597) ||
-                                   (fSCeta>=1.479               && BDT >  1.08080644615)));
+	   //WP taken from https://github.com/cms-sw/cmssw/blob/master/RecoEgamma/ElectronIdentification/python/Identification/mvaElectronID_Fall17_iso_V2_cff.py#L21 and transfered with https://github.com/cms-sw/cmssw/blob/CMSSW_9_4_X/RecoEgamma/EgammaTools/interface/MVAValueMapProducer.h#L145 so that they are between -1 and 1
+	 	 isBDT         = (pt<=10 && ((fSCeta<0.8                  && BDT >  0.85216885148) ||
+                                   (fSCeta>=0.8 && fSCeta<1.479 && BDT >  0.82684550976) ||
+                                   (fSCeta>=1.479               && BDT >  0.86937630022)))
+                    || (pt>10  && ((fSCeta<0.8                  && BDT >  0.98248928759) ||
+                                   (fSCeta>=0.8 && fSCeta<1.479 && BDT >  0.96919224579) ||
+                                   (fSCeta>=1.479               && BDT >  0.79349796445)));
 	 }
 	 else
 	 {

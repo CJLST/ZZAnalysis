@@ -25,9 +25,6 @@ declareDefault("DATA_TAG", "ReReco", globals())
 #Optional name of the sample/dataset being analyzed
 declareDefault("SAMPLENAME", "", globals())
 
-#Type of electron scale correction/smearing: "None", "RunII"
-declareDefault("ELECORRTYPE", "RunII", globals())
-
 #Apply muon scale correction
 declareDefault("APPLYMUCORR", True, globals())
 
@@ -410,35 +407,27 @@ process.selectedSlimmedElectrons = cms.EDFilter("PATElectronSelector",
 if (LEPTON_SETUP == 2016):
    from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
    setupEgammaPostRecoSeq(process,
-                          runEnergyCorrections=True, #corrections by default are fine so no need to re-run
+                          runEnergyCorrections=True,
+                          runVID=True,
                           era='2016-Legacy')
 
 if (LEPTON_SETUP == 2017):
    from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
    setupEgammaPostRecoSeq(process,
-                       runEnergyCorrections=True, #corrections by default are fine so no need to re-run
-                       era='2017-Nov17ReReco')
+                          runEnergyCorrections=True,
+                          runVID=True,
+                          era='2017-Nov17ReReco')
 
-## Preliminary Moriond 19 corrections from https://twiki.cern.ch/twiki/bin/view/CMS/EgammaPostRecoRecipes#2018_Preliminary_Energy_Correcti
 if (LEPTON_SETUP == 2018):
-    process.load("RecoEgamma.EgammaTools.calibratedEgammas_cff")
-    process.calibratedPatElectrons.correctionFile = "EgammaAnalysis/ElectronTools/data/ScalesSmearings/Run2018_Step2Closure_CoarseEtaR9Gain"
-
-#--- Set up electron ID (VID framework)
-from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
-# turn on VID producer, indicate data format to be DataFormat.MiniAOD, as appropriate
-dataFormat = DataFormat.MiniAOD
-switchOnVIDElectronIdProducer(process, dataFormat)
-# define which IDs we want to produce
-my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_HZZ_V1_cff','RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_iso_V2_cff']
-# add them to the VID producer
-for idmod in my_id_modules:
-	setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
-# and don't forget to add the producer 'process.egmGsfElectronIDSequence' to the path, i.e. process.electrons
+   from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
+   setupEgammaPostRecoSeq(process,
+                          runEnergyCorrections=True,
+                          runVID=True,
+                          era='2018-Prompt')
 
 
 process.bareSoftElectrons = cms.EDFilter("PATElectronRefSelector",
-   src = cms.InputTag("calibratedPatElectrons"),
+   src = cms.InputTag("selectedSlimmedElectrons"),
    cut = cms.string("") #move pt>7 && abs(eta)<2.5 cut to softElectrons so that smear/scale corrections are done before the pT cut
    )
 
@@ -454,49 +443,11 @@ process.softElectrons = cms.EDProducer("EleFiller",
         isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<"+str(ELEISOCUT))
 #       Note: passCombRelIsoPFFSRCorr is currently set in LeptonPhotonMatcher for new FSR strategy; in ZZCandidateFiller for the old one
         ),
-        mvaValuesMap = cms.InputTag(""),
    )
 
-if (LEPTON_SETUP == 2016):
-   process.softElectrons.mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Fall17IsoV2RawValues")
-#94X BDT with ID and Isolation
-if (LEPTON_SETUP == 2017):
-   process.softElectrons.mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Fall17IsoV2RawValues")
 
-#2018 version of BDT with ID and Isolation
-if (LEPTON_SETUP == 2018):
-   process.softElectrons.mvaValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Fall17IsoV2RawValues")
+process.electrons = cms.Sequence(process.egammaPostRecoSeq + process.selectedSlimmedElectrons + process.bareSoftElectrons + process.softElectrons)
 
-#process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons) # (use this version when running VID)
-#process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.bareSoftElectrons + process.softElectrons) # (use this version without VID)
-
-# Handle special cases
-if (ELECORRTYPE == "None" ):   # No correction at all. Skip correction modules.
-   process.bareSoftElectrons.src = cms.InputTag('selectedSlimmedElectrons')
-   process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('selectedSlimmedElectrons')
-   process.electronMVAValueMapProducer.srcMiniAOD =  cms.InputTag('selectedSlimmedElectrons')
-
-   process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons) # (use this version when running VID)
-
-elif ELECORRTYPE == "RunII" :
-   process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('calibratedPatElectrons')
-   process.electronMVAValueMapProducer.srcMiniAOD= cms.InputTag('calibratedPatElectrons')
-
-if (LEPTON_SETUP == 2016):
-   process.bareSoftElectrons.src = cms.InputTag('selectedSlimmedElectrons')
-   process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('selectedSlimmedElectrons')
-   process.electronMVAValueMapProducer.srcMiniAOD =  cms.InputTag('selectedSlimmedElectrons')
-   process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons) # (use this version when running VID)
-
-if (LEPTON_SETUP == 2017):
-   process.bareSoftElectrons.src = cms.InputTag('selectedSlimmedElectrons')
-   process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('selectedSlimmedElectrons')
-   process.electronMVAValueMapProducer.srcMiniAOD =  cms.InputTag('selectedSlimmedElectrons')
-   process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons) # (use this version when running VID)
-
-if (LEPTON_SETUP == 2018):
-	process.selectedSlimmedElectrons.src = cms.InputTag("slimmedElectrons")
-	process.electrons = cms.Sequence(process.selectedSlimmedElectrons + process.calibratedPatElectrons + process.egmGsfElectronIDSequence + process.bareSoftElectrons + process.softElectrons)
 
 
 #--- TrackLess Electrons
