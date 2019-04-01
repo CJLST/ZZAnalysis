@@ -228,9 +228,8 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     //--- b-tagging and scaling factors
     float bTagger;
-    if (setup <= 2016) bTagger = j.bDiscriminator(bTaggerName);
-    else if (setup == 2017 || setup == 2018) bTagger = j.bDiscriminator(bTaggerName) + j.bDiscriminator((bTaggerName + "b")); //one should just sum for doing b tagging, the b and bb probabilities
-    else throw cms::Exception("JetBtag") << "Jet btag discriminator computation is not defined for the given setup (" << setup << ")!";
+    bTagger = j.bDiscriminator(bTaggerName) + j.bDiscriminator((bTaggerName + "b")); //one should just sum for doing b tagging, the b and bb probabilities
+    
     bool isBtagged = bTagger > bTaggerThreshold;
     bool isBtaggedWithSF   = isBtagged;
     bool isBtaggedWithSFUp = isBtagged;
