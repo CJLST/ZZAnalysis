@@ -167,16 +167,16 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     bool JetID = true;
 	  
-	 if (setup == 2016)
-	 {
-	 	JetID      = ((NHF<0.99 && NEMF<0.99 && NumConst>1) && ((jabseta<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || jabseta>2.4) && jabseta<=2.7) ||
+	 if ( setup == 2016 )
+	 { // Tight jet ID https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2016
+	 	JetID      = ((NHF<0.90 && NEMF<0.90 && NumConst>1) && ((jabseta<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || jabseta>2.4) && jabseta<=2.7 ||
       				 ( NHF<0.98 && NEMF>0.01 && NumNeutralParticles>2 && jabseta>2.7 && jabseta<=3.0 ) ||
-						 ( NEMF<0.90 && NumNeutralParticles>10 && jabseta>3.0 );
+						 ( NEMF<0.90 && NumNeutralParticles>10 && jabseta >3.0 );
 	 }
 	 
-	 else if (setup == 2017 || setup == 2018)
+	 else if ( setup == 2017 )
 	 {
-	   // Tight jet ID https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2017 , loose is not recommended anymore
+	   // Tight jet ID https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2017 without JetIDLepVeto
 	 	JetID      = ((NHF<0.90 && NEMF<0.90 && NumConst>1) && ((jabseta<=2.4 && CHF>0 && CHM>0) || jabseta>2.4) && jabseta<=2.7) ||
       				 ( NEMF<0.99 && NEMF>0.02 && NumNeutralParticles>2 && jabseta>2.7 && jabseta<=3.0 ) ||
       				 ( NEMF<0.90 && NHF>0.02 && NumNeutralParticles>10 && jabseta>3.0 );
@@ -198,33 +198,11 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 
 
 	  
-   bool PUjetID = true;
-	  
-	 if (setup == 2016)
-	 { //--- PU jet ID (deactivated for in 2016)
-	 	PUjetID = true;
-	 }
-	 
-	 else if (setup == 2017 || setup == 2018)//[FIXME] Update to 2018 recommendations when available
-	 { //Recommended tight PU JET ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
-		if (applyJEC_) PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0));
-        else PUjetID = bool(j.userInt("pileupJetId:fullId") & (1 << 0));
-	 }
-	 
-	 else
-	 {
-     throw cms::Exception("JetPUID") << "Jet PU ID is not defined for the given setup (" << setup << ")!";
-	 }
-
-    // cout << " NHF "  << NHF
-    //      << " NEMF " << NEMF
-    //      << " CHF "  << CHF
-    //      << " CEMF " << CEMF
-    //      << " NumConst " << NumConst
-    //      << " NumNeutralParticles " << NumNeutralParticles
-    //      << " CHM " << CHM
-    //      << " JetID " << JetID
-    //      << endl;
+    bool PUjetID = true;
+   
+    //Recommended tight PU JET ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
+    if (applyJEC_) PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0));
+    else PUjetID = bool(j.userInt("pileupJetId:fullId") & (1 << 0));
 
     //--- b-tagging and scaling factors
     float bTagger;

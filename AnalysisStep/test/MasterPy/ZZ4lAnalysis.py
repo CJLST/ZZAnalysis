@@ -1051,12 +1051,12 @@ if (APPLYJEC and SAMPLE_TYPE == 2016):
             toGet = cms.VPSet(
                 cms.PSet(
                     record = cms.string('JetCorrectionsRecord'),
-                    tag    = cms.string('JetCorrectorParametersCollection_Summer16_23Sep2016V4_MC_AK4PFchs'), #for 80X/Moriond17
+                    tag    = cms.string('JetCorrectorParametersCollection_Summer16_07Aug2017_V11_MC_AK4PFchs'),
+                         
                     label  = cms.untracked.string('AK4PFchs')
                     ),
                 ),
-             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Summer16_23Sep2016V4_MC.db'), #for 80X/Moriond17
-            )
+             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Summer16_07Aug2017_V11_MC.db'),             )
     else:
         process.jec = cms.ESSource("PoolDBESSource",
             DBParameters = cms.PSet(
@@ -1066,11 +1066,11 @@ if (APPLYJEC and SAMPLE_TYPE == 2016):
             toGet = cms.VPSet(
                 cms.PSet(
                     record = cms.string('JetCorrectionsRecord'),
-                    tag    = cms.string('JetCorrectorParametersCollection_Summer16_23Sep2016AllV4_DATA_AK4PFchs'), #for 80X/Moriond17
+                    tag    = cms.string('JetCorrectorParametersCollection_Summer16_07Aug2017All_V11_DATA_AK4PFchs'),
                     label  = cms.untracked.string('AK4PFchs')
                     ),
                 ),
-            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Summer16_23Sep2016AllV4_DATA.db'), #for 80X/ICHEP16
+            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Summer16_07Aug2017All_V11_DATA.db'),
             )
 
     ## add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
@@ -1109,13 +1109,11 @@ if (APPLYJEC and SAMPLE_TYPE == 2017):
             toGet = cms.VPSet(
                 cms.PSet(
                     record = cms.string('JetCorrectionsRecord'),
-#                    tag    = cms.string('JetCorrectorParametersCollection_Fall17_17Nov2017_V6_MC_AK4PFchs'), #for 94X/Moriond18
-                     tag    = cms.string('JetCorrectorParametersCollection_Fall17_17Nov2017_V8_MC_AK4PFchs'), #for 94X/MET fix
+                     tag    = cms.string('JetCorrectorParametersCollection_Fall17_17Nov2017_V32_94X_MC_AK4PFchs'),
                     label  = cms.untracked.string('AK4PFchs')
                     ),
                 ),
-#             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall17_17Nov2017_V6_MC.db'), #for 94X/Moriond18
-              connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall17_17Nov2017_V8_MC.db'), #for 94X/MET fix
+              connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall17_17Nov2017_V32_94X_MC.db'),
             )
     else:
         process.jec = cms.ESSource("PoolDBESSource",
@@ -1126,11 +1124,11 @@ if (APPLYJEC and SAMPLE_TYPE == 2017):
             toGet = cms.VPSet(
                 cms.PSet(
                     record = cms.string('JetCorrectionsRecord'),
-                    tag    = cms.string('JetCorrectorParametersCollection_Fall17_17Nov2017BCDEF_V6_DATA_AK4PFchs'), #for 94X/Moriond18
+                    tag    = cms.string('JetCorrectorParametersCollection_Fall17_17Nov2017_V32_94X_DATA_AK4PFchs'),
                     label  = cms.untracked.string('AK4PFchs')
                     ),
                 ),
-            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall17_17Nov2017BCDEF_V6_DATA.db'),
+            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall17_17Nov2017_V32_94X_DATA.db'),
             )
 
     ## add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
@@ -1219,28 +1217,28 @@ if (APPLYJEC and SAMPLE_TYPE == 2018):
     process.dressedJets.src = cms.InputTag('patJetsReapplyJEC')
 
 
-# JER from https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyResolution#Accessing_factors_from_database
-if (APPLYJER and SAMPLE_TYPE == 2017):
+# JER from https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#Smearing_procedures
+if (APPLYJER and SAMPLE_TYPE == 2016):
    process.load('Configuration.StandardSequences.Services_cff')
    process.load("JetMETCorrections.Modules.JetResolutionESProducer_cfi")
    from CondCore.DBCommon.CondDBSetup_cfi import *
    process.jer = cms.ESSource("PoolDBESSource",
                                  CondDBSetup,
-                                 connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JER/Autumn18_V1_MC.db'),#[FIXME] Include correct file
+                                 connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JER/Summer16_25nsV1_MC.db'),
                                  toGet = cms.VPSet(
                                                    cms.PSet(
                                                             record = cms.string('JetResolutionRcd'),
-                                                            tag    = cms.string('JR_Autumn18_V1_MC_PtResolution_AK4PFchs'),
+                                                            tag    = cms.string('JR_Summer16_25nsV1_MC_PtResolution_AK4PFchs'),
                                                             label  = cms.untracked.string('AK4PFchs_pt')
                                                             ),
                                                    cms.PSet(
                                                             record = cms.string('JetResolutionRcd'),
-                                                            tag    = cms.string('JR_Autumn18_V1_MC_PhiResolution_AK4PFchs'),
+                                                            tag    = cms.string('JR_Summer16_25nsV1_MC_PhiResolution_AK4PFchs'),
                                                             label  = cms.untracked.string('AK4PFchs_phi')
                                                             ),
                                                    cms.PSet(
                                                             record = cms.string('JetResolutionScaleFactorRcd'),
-                                                            tag    = cms.string('JR_Autumn18_V1_MC_SF_AK4PFchs'),
+                                                            tag    = cms.string('JR_Summer16_25nsV1_MC_SF_AK4PFchs'),
                                                             label  = cms.untracked.string('AK4PFchs')
                                                             )
                                                    )
@@ -1253,21 +1251,21 @@ if (APPLYJER and SAMPLE_TYPE == 2017):
    from CondCore.DBCommon.CondDBSetup_cfi import *
    process.jer = cms.ESSource("PoolDBESSource",
                                  CondDBSetup,
-                                 connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JER/Autumn18_V1_MC.db'),#[FIXME] Include correct file
+                                 connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JER/Fall17_V3_94X_MC.db'),
                                  toGet = cms.VPSet(
                                                    cms.PSet(
                                                             record = cms.string('JetResolutionRcd'),
-                                                            tag    = cms.string('JR_Autumn18_V1_MC_PtResolution_AK4PFchs'),
+                                                            tag    = cms.string('JR_Fall17_V3_94X_MC_PtResolution_AK4PFchs'),
                                                             label  = cms.untracked.string('AK4PFchs_pt')
                                                             ),
                                                    cms.PSet(
                                                             record = cms.string('JetResolutionRcd'),
-                                                            tag    = cms.string('JR_Autumn18_V1_MC_PhiResolution_AK4PFchs'),
+                                                            tag    = cms.string('JR_Fall17_V3_94X_MC_PhiResolution_AK4PFchs'),
                                                             label  = cms.untracked.string('AK4PFchs_phi')
                                                             ),
                                                    cms.PSet(
                                                             record = cms.string('JetResolutionScaleFactorRcd'),
-                                                            tag    = cms.string('JR_Autumn18_V1_MC_SF_AK4PFchs'),
+                                                            tag    = cms.string('JR_Fall17_V3_94X_MC_SF_AK4PFchs'),
                                                             label  = cms.untracked.string('AK4PFchs')
                                                             )
                                                    )
