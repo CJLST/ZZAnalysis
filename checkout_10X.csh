@@ -7,13 +7,14 @@
 # chmod u+x ${TMPDIR}/checkout_10X.csh
 # ${TMPDIR}/checkout_10X.csh
 
-############## For CMSSW_10_2_5_patch1
+############## For CMSSW_10_2_10
 git cms-init
 
 #Preliminary electron scale and smearing corrections according to https://twiki.cern.ch/twiki/bin/view/CMS/EgammaPostRecoRecipes#2018_Preliminary_Energy_Correcti
 #We need the ElectronTools package to calculate smear and scale uncertainties so just download the ScaleAndSmearing files manualy 
+git cms-merge-topic cms-egamma:EgammaPostRecoTools
 git cms-addpkg EgammaAnalysis/ElectronTools
-(cd EgammaAnalysis/ElectronTools/data/; mkdir ScalesSmearings; cd ScalesSmearings/; wget https://raw.githubusercontent.com/cms-egamma/EgammaAnalysis-ElectronTools/ScalesSmearing2018_Dev/ScalesSmearings/Run2017_17Nov2017_v1_ele_unc_scales.dat; wget https://raw.githubusercontent.com/cms-egamma/EgammaAnalysis-ElectronTools/ScalesSmearing2018_Dev/ScalesSmearings/Run2017_17Nov2017_v1_ele_unc_smearings.dat; wget https://raw.githubusercontent.com/cms-egamma/EgammaAnalysis-ElectronTools/ScalesSmearing2018_Dev/ScalesSmearings/Run2018_Step2Closure_CoarseEtaR9Gain_scales.dat; wget https://raw.githubusercontent.com/cms-egamma/EgammaAnalysis-ElectronTools/ScalesSmearing2018_Dev/ScalesSmearings/Run2018_Step2Closure_CoarseEtaR9Gain_smearings.dat;)
+(rm -rf EgammaAnalysis/ElectronTools/data;git clone git@github.com:cms-egamma/EgammaAnalysis-ElectronTools.git EgammaAnalysis/ElectronTools/data;cd EgammaAnalysis/ElectronTools/data;git checkout ScalesSmearing2018_Dev;cd -;git cms-merge-topic cms-egamma:EgammaPostRecoTools_dev;)
 
 #MET corrections according to https://twiki.cern.ch/twiki/bin/view/CMS/MissingETUncertaintyPrescription#Instructions_for_9_4_X_X_0_for_M
 # git cms-merge-topic cms-met:METRecipe94x
