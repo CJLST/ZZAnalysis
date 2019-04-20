@@ -33,15 +33,15 @@ git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
 
 #MELA Analytics
 git clone https://github.com/usarica/MelaAnalytics.git
-(cd MelaAnalytics; git checkout -b from-v11 v1.1)
+(cd MelaAnalytics; git checkout -b from-v14 v1.4)
 
 #Common LHE tools
 git clone https://github.com/usarica/CommonLHETools.git
-(cd CommonLHETools; git checkout -b from-v124 v1.2.4)
+(cd CommonLHETools; git checkout -b from-v125 v1.2.5)
 
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
-(cd ZZMatrixElement; git checkout -b from-v218 v2.1.8)
+(cd ZZMatrixElement; git checkout -b from-v220 v2.2.0)
 # replace ZZMatrixElement/MELA/setup.sh -j 8
 (                                                                 \
   cd ${CMSSW_BASE}/src/ZZMatrixElement/MELA/COLLIER/             ;\
