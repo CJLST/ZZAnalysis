@@ -1,0 +1,89 @@
+****************************
+Final fitted parameters for systematic Nominal in data:
+	- Nevents: 532999
+	- Mean 1: 0
+	- Sigma 1: 20 +- 0.258662
+	- Frac 1: 0.454448 +- 0.0429187
+	- Mean 2: 0
+	- Sigma 2: 31.608 +- 0.700908
+	- Frac 2: 0.97594 +- 0.00329417
+	- Mean 3: 0
+	- Sigma 3: 71.1165 +- 3.12591
+****************************
+****************************
+Final fitted parameters for systematic Nominal in MC:
+	- Mean 1: 0
+	- Sigma 1: 20 +- 1.30046e-05
+	- Frac 1: 0.454448 +- 0.0429187
+	- Mean 2: 0
+	- Sigma 2: 33.0091 +- 0.193349
+	- Frac 2: 0.97594 +- 0.00329417
+	- Mean 3: 0
+	- Sigma 3: 62.5216 +- 4.18055
+****************************
+****************************
+Final fitted parameters for systematic JECup in MC:
+	- Mean 1: 0
+	- Sigma 1: 20 +- 1.64304e-07
+	- Frac 1: 0.454448 +- 0.0429187
+	- Mean 2: 0
+	- Sigma 2: 33.8485 +- 0.362089
+	- Frac 2: 0.97594 +- 0.00329417
+	- Mean 3: 0
+	- Sigma 3: 62.8759 +- 7.42107
+****************************
+****************************
+Final fitted parameters for systematic JECdn in MC:
+	- Mean 1: 0
+	- Sigma 1: 19.9882 +- 0.0514373
+	- Frac 1: 0.454448 +- 0.0429187
+	- Mean 2: 0
+	- Sigma 2: 32.324 +- 0.563362
+	- Frac 2: 0.97594 +- 0.00329417
+	- Mean 3: 0
+	- Sigma 3: 62.3478 +- 10.3353
+****************************
+****************************
+Final fitted parameters for systematic JERup in MC:
+	- Mean 1: 0
+	- Sigma 1: 20 +- 2.39392e-06
+	- Frac 1: 0.454448 +- 0.0429187
+	- Mean 2: 0
+	- Sigma 2: 32.9059 +- 0.201643
+	- Frac 2: 0.97594 +- 0.00329417
+	- Mean 3: 0
+	- Sigma 3: 62.063 +- 4.23531
+****************************
+****************************
+Final fitted parameters for systematic JERdn in MC:
+	- Mean 1: 0
+	- Sigma 1: 20 +- 6.06143e-06
+	- Frac 1: 0.454448 +- 0.0429187
+	- Mean 2: 0
+	- Sigma 2: 33.1302 +- 0.415828
+	- Frac 2: 0.97594 +- 0.00329417
+	- Mean 3: 0
+	- Sigma 3: 62.4058 +- 8.2138
+****************************
+****************************
+Final fitted parameters for systematic PUup in MC:
+	- Mean 1: 0
+	- Sigma 1: 20 +- 2.86284e-07
+	- Frac 1: 0.454448 +- 0.0429187
+	- Mean 2: 0
+	- Sigma 2: 33.9321 +- 0.324119
+	- Frac 2: 0.97594 +- 0.00329417
+	- Mean 3: 0
+	- Sigma 3: 62.2895 +- 6.10337
+****************************
+****************************
+Final fitted parameters for systematic PUdn in MC:
+	- Mean 1: 0
+	- Sigma 1: 19.7544 +- 0.41245
+	- Frac 1: 0.454448 +- 0.0429187
+	- Mean 2: 0
+	- Sigma 2: 32.1587 +- 0.841616
+	- Frac 2: 0.97594 +- 0.00329417
+	- Mean 3: 0
+	- Sigma 3: 61.9526 +- 14.6895
+****************************
