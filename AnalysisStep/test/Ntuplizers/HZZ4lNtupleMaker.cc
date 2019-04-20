@@ -6,6 +6,7 @@
 
 
 // system include files
+#include <cassert>
 #include <memory>
 #include <cmath>
 #include <algorithm>
@@ -34,6 +35,7 @@
 #include <DataFormats/PatCandidates/interface/MET.h>
 #include <DataFormats/METReco/interface/PFMET.h>
 #include <DataFormats/METReco/interface/PFMETCollection.h>
+#include <ZZAnalysis/AnalysisStep/interface/METCorrectionHandler.h>
 #include <DataFormats/JetReco/interface/PFJet.h>
 #include <DataFormats/JetReco/interface/PFJetCollection.h>
 #include <DataFormats/Math/interface/LorentzVector.h>
@@ -115,10 +117,12 @@ namespace {
   Float_t KFactor_QCD_qqZZ_dPhi = 0;
   Float_t KFactor_QCD_qqZZ_M = 0;
   Float_t KFactor_QCD_qqZZ_Pt = 0;
-  Float_t PFMET  =  -99;
-  Float_t PFMET_jesUp  =  -99;
-  Float_t PFMET_jesDn  =  -99;
-  Float_t PFMETPhi  =  -99;
+  // Generic MET object
+  METObject metobj;
+  METObject metobj_corrected;
+  Float_t GenMET = -99;
+  Float_t GenMETPhi = -99;
+  // MET with no HF
   //Float_t PFMETNoHF  =  -99;
   //Float_t PFMETNoHFPhi  =  -99;
   Short_t nCleanedJets  =  0;
@@ -456,6 +460,7 @@ private:
 
   bool addLHEKinematics;
   LHEHandler* lheHandler;
+  METCorrectionHandler* metCorrHandler;
   int apply_K_NNLOQCD_ZZGG; // 0: Do not; 1: NNLO/LO; 2: NNLO/NLO; 3: NLO/LO
   bool apply_K_NNLOQCD_ZZQQB;
   bool apply_K_NLOEW_ZZQQB;
@@ -559,6 +564,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   lheMElist(pset.getParameter<std::vector<std::string>>("lheProbabilities")),
   addLHEKinematics(pset.getParameter<bool>("AddLHEKinematics")),
   lheHandler(nullptr),
+  metCorrHandler(nullptr),
   apply_K_NNLOQCD_ZZGG(pset.getParameter<int>("Apply_K_NNLOQCD_ZZGG")),
   apply_K_NNLOQCD_ZZQQB(pset.getParameter<bool>("Apply_K_NNLOQCD_ZZQQB")),
   apply_K_NLOEW_ZZQQB(pset.getParameter<bool>("Apply_K_NLOEW_ZZQQB")),
@@ -619,6 +625,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
       (addLHEKinematics ? LHEHandler::doHiggsKinematics : LHEHandler::noKinematics),
       year, LHEHandler::tryNNPDF30, LHEHandler::tryNLO
     );
+    metCorrHandler = new METCorrectionHandler(Form("%i", year));
     htxsToken = consumes<HTXS::HiggsClassification>(edm::InputTag("rivetProducerHTXS","HiggsClassification"));
     pileUpReweight = new PileUpWeight(myHelper.sampleType(), myHelper.setup());
   }
@@ -845,6 +852,7 @@ HZZ4lNtupleMaker::~HZZ4lNtupleMaker()
   clearMELABranches(); // Cleans LHE branches
   delete lheHandler;
   delete pileUpReweight;
+  delete metCorrHandler;
 }
 
 
@@ -1108,12 +1116,78 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   // MET
   Handle<pat::METCollection> metHandle;
   event.getByToken(metToken, metHandle);
-  if(metHandle.isValid()){
+
+  GenMET=GenMETPhi=-99;
+  if (metHandle.isValid()){
     const pat::MET &met = metHandle->front();
-    PFMET = met.pt();
-    PFMET_jesUp = met.shiftedPt(pat::MET::JetEnUp);
-    PFMET_jesDn = met.shiftedPt(pat::MET::JetEnDown);
-    PFMETPhi = met.phi();
+
+    metobj.extras.met = metobj.extras.met_original = metobj.extras.met_raw
+      = metobj.extras.met_METup = metobj.extras.met_METdn
+      = metobj.extras.met_JERup = metobj.extras.met_JERdn
+      = metobj.extras.met_PUup = metobj.extras.met_PUdn
+
+      = metobj_corrected.extras.met = metobj_corrected.extras.met_original = metobj_corrected.extras.met_raw
+      = metobj_corrected.extras.met_METup = metobj_corrected.extras.met_METdn
+      = metobj_corrected.extras.met_JERup = metobj_corrected.extras.met_JERdn
+      = metobj_corrected.extras.met_PUup = metobj_corrected.extras.met_PUdn
+
+      = met.pt();
+    metobj.extras.phi = metobj.extras.phi_original = metobj.extras.phi_raw
+      = metobj.extras.phi_METup = metobj.extras.phi_METdn
+      = metobj.extras.phi_JECup = metobj.extras.phi_JECdn
+      = metobj.extras.phi_JERup = metobj.extras.phi_JERdn
+      = metobj.extras.phi_PUup = metobj.extras.phi_PUdn
+
+      = metobj_corrected.extras.phi = metobj_corrected.extras.phi_original = metobj_corrected.extras.phi_raw
+      = metobj_corrected.extras.phi_METup = metobj_corrected.extras.phi_METdn
+      = metobj_corrected.extras.phi_JECup = metobj_corrected.extras.phi_JECdn
+      = metobj_corrected.extras.phi_JERup = metobj_corrected.extras.phi_JERdn
+      = metobj_corrected.extras.phi_PUup = metobj_corrected.extras.phi_PUdn
+
+      = met.phi();
+
+    metobj.extras.met_JECup = metobj_corrected.extras.met_JECup = met.shiftedPt(pat::MET::JetEnUp);
+    metobj.extras.met_JECdn = metobj_corrected.extras.met_JECdn = met.shiftedPt(pat::MET::JetEnDown);
+    metobj.extras.phi_JECup = metobj_corrected.extras.phi_JECup = met.shiftedPhi(pat::MET::JetEnUp);
+    metobj.extras.phi_JECdn = metobj_corrected.extras.phi_JECdn = met.shiftedPhi(pat::MET::JetEnDown);
+
+    if (isMC && metCorrHandler && met.genMET()){
+      GenMET = met.genMET()->pt();
+      GenMETPhi = met.genMET()->phi();
+      metCorrHandler->correctMET(GenMET, GenMETPhi, &metobj_corrected, false); // FIXME: Last argument should be for isFastSim, but we don't have it yet
+    }
+    else if (isMC){
+      cms::Exception e("METCorrectionHandler");
+      e << "Either no met.genMET or metCorrHandler!";
+      throw e;
+    }
+  }
+  else{
+    metobj.extras.met = metobj.extras.met_original = metobj.extras.met_raw
+      = metobj.extras.met_METup = metobj.extras.met_METdn
+      = metobj.extras.met_JECup = metobj.extras.met_JECdn
+      = metobj.extras.met_JERup = metobj.extras.met_JERdn
+      = metobj.extras.met_PUup = metobj.extras.met_PUdn
+
+      = metobj_corrected.extras.met = metobj_corrected.extras.met_original = metobj_corrected.extras.met_raw
+      = metobj_corrected.extras.met_METup = metobj_corrected.extras.met_METdn
+      = metobj_corrected.extras.met_JECup = metobj_corrected.extras.met_JECdn
+      = metobj_corrected.extras.met_JERup = metobj_corrected.extras.met_JERdn
+      = metobj_corrected.extras.met_PUup = metobj_corrected.extras.met_PUdn
+
+      = metobj.extras.phi = metobj.extras.phi_original = metobj.extras.phi_raw
+      = metobj.extras.phi_METup = metobj.extras.phi_METdn
+      = metobj.extras.phi_JECup = metobj.extras.phi_JECdn
+      = metobj.extras.phi_JERup = metobj.extras.phi_JERdn
+      = metobj.extras.phi_PUup = metobj.extras.phi_PUdn
+
+      = metobj_corrected.extras.phi = metobj_corrected.extras.phi_original = metobj_corrected.extras.phi_raw
+      = metobj_corrected.extras.phi_METup = metobj_corrected.extras.phi_METdn
+      = metobj_corrected.extras.phi_JECup = metobj_corrected.extras.phi_JECdn
+      = metobj_corrected.extras.phi_JERup = metobj_corrected.extras.phi_JERdn
+      = metobj_corrected.extras.phi_PUup = metobj_corrected.extras.phi_PUdn
+
+      = -99;
   }
   //Handle<pat::METCollection> metNoHFHandle;
   //event.getByToken(metNoHFToken, metNoHFHandle);
@@ -2381,12 +2455,35 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("NObsInt",NObsInt, failedTreeLevel >= fullFailedTree);
   myTree->Book("NTrueInt",NTrueInt, failedTreeLevel >= fullFailedTree);
 
-  myTree->Book("PFMET",PFMET, failedTreeLevel >= fullFailedTree);
-  myTree->Book("PFMET_jesUp",PFMET_jesUp, failedTreeLevel >= fullFailedTree);
-  myTree->Book("PFMET_jesDn",PFMET_jesDn, failedTreeLevel >= fullFailedTree);
-  myTree->Book("PFMETPhi",PFMETPhi, failedTreeLevel >= fullFailedTree);
+  myTree->Book("GenMET", GenMET, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("GenMETPhi", GenMETPhi, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("PFMET", metobj.extras.met, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMET_jesUp", metobj.extras.met_JECup, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMET_jesDn", metobj.extras.met_JECdn, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMETPhi", metobj.extras.phi, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMETPhi_jesUp", metobj.extras.phi_JECup, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMETPhi_jesDn", metobj.extras.phi_JECdn, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMET_corrected", metobj_corrected.extras.met, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMET_corrected_jesUp", metobj_corrected.extras.met_JECup, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMET_corrected_jesDn", metobj_corrected.extras.met_JECdn, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMET_corrected_jerUp", metobj_corrected.extras.met_JERup, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMET_corrected_jerDn", metobj_corrected.extras.met_JERdn, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMET_corrected_puUp", metobj_corrected.extras.met_PUup, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMET_corrected_puDn", metobj_corrected.extras.met_PUdn, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMET_corrected_metUp", metobj_corrected.extras.met_METup, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMET_corrected_metDn", metobj_corrected.extras.met_METdn, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMETPhi_corrected", metobj_corrected.extras.phi, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMETPhi_corrected_jesUp", metobj_corrected.extras.phi_JECup, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMETPhi_corrected_jesDn", metobj_corrected.extras.phi_JECdn, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMETPhi_corrected_jerUp", metobj_corrected.extras.phi_JERup, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMETPhi_corrected_jerDn", metobj_corrected.extras.phi_JERdn, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMETPhi_corrected_puUp", metobj_corrected.extras.phi_PUup, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMETPhi_corrected_puDn", metobj_corrected.extras.phi_PUdn, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMETPhi_corrected_metUp", metobj_corrected.extras.phi_METup, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PFMETPhi_corrected_metDn", metobj_corrected.extras.phi_METdn, failedTreeLevel >= fullFailedTree);
   //myTree->Book("PFMETNoHF",PFMETNoHF, failedTreeLevel >= fullFailedTree);
   //myTree->Book("PFMETNoHFPhi",PFMETNoHFPhi, failedTreeLevel >= fullFailedTree);
+
   myTree->Book("nCleanedJets",nCleanedJets, failedTreeLevel >= fullFailedTree);
   myTree->Book("nCleanedJetsPt30",nCleanedJetsPt30, failedTreeLevel >= fullFailedTree);
   myTree->Book("nCleanedJetsPt30_jecUp",nCleanedJetsPt30_jecUp, failedTreeLevel >= fullFailedTree);
