@@ -169,7 +169,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  
 	 if ( setup == 2016 )
 	 { // Tight jet ID https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2016
-	 	JetID      = ((NHF<0.90 && NEMF<0.90 && NumConst>1) && ((jabseta<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || jabseta>2.4) && jabseta<=2.7 ||
+	 	JetID      = ((NHF<0.90 && NEMF<0.90 && NumConst>1) && ((jabseta<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || jabseta>2.4) && jabseta<=2.7) ||
       				 ( NHF<0.98 && NEMF>0.01 && NumNeutralParticles>2 && jabseta>2.7 && jabseta<=3.0 ) ||
 						 ( NEMF<0.90 && NumNeutralParticles>10 && jabseta >3.0 );
 	 }
