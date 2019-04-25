@@ -3,26 +3,11 @@ ZZAnalysis
 
 This is the CJLST framework for analysis of full Run 2 data for Legacy paper.
 
-To install a complete CMSSW 9X area (including this package) 
-------------------------------
-Used for analysis of 2016 and 2017 data
-
-Please use CMSSW_9_4_13.
-
-Download and execute the setup script:
-```
-wget -O ${TMPDIR}/checkout_9X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/Run2Legacy/checkout_9X.csh
-cd $CMSSW_BASE/src
-cmsenv
-chmod u+x ${TMPDIR}/checkout_9X.csh
-${TMPDIR}/checkout_9X.csh
-```
-
 To install a complete CMSSW 10X area (including this package)
 ------------------------------
-Used for analysis of 2018 data
+Used for analysis of 2016, 2017, and 2018 data
 
-Please use CMSSW_10_2_10. 
+Please use CMSSW_10_3_1. 
 
 Download and execute the setup script:
 ```
