@@ -36,6 +36,7 @@
 #include <DataFormats/PatCandidates/interface/MET.h>
 #include <DataFormats/METReco/interface/PFMET.h>
 #include <DataFormats/METReco/interface/PFMETCollection.h>
+#include <ZZAnalysis/AnalysisStep/interface/METCorrectionHandler.h>
 #include <ZZAnalysis/AnalysisStep/interface/Fisher.h>
 #include <ZZAnalysis/AnalysisStep/interface/Comparators.h>
 #include <ZZAnalysis/AnalysisStep/interface/utils.h>
@@ -210,6 +211,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     PFMET = metHandle->front().pt();
     PFMETPhi = metHandle->front().phi();
   }
+  // FIXME: May need to correct MET in the MC and use the corrected MET to calculate the VH MEs
 
   // Get leptons (in order to store extra leptons)
   Handle<View<reco::Candidate> > softleptoncoll;
