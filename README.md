@@ -1,30 +1,17 @@
 ZZAnalysis
 ==========
 
-To install a complete CMSSW 8X area (including this package)
-------------------------------
-2016 data analysis
+This is the CJLST framework for analysis of full Run 2 data for Legacy paper.
 
-Please use CMSSW_8_0_29. 
+To install a complete CMSSW 9X area (including this package) 
+------------------------------
+Used for analysis of 2016 and 2017 data
+
+Please use CMSSW_9_4_13.
 
 Download and execute the setup script:
 ```
-wget -O ${TMPDIR}/checkout_80X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_80X/checkout_80X.csh
-cd $CMSSW_BASE/src
-cmsenv
-chmod u+x ${TMPDIR}/checkout_80X.csh
-${TMPDIR}/checkout_80X.csh
-```
-
-To install a complete CMSSW 9X area (including this package)
-------------------------------
-2017 data analysis
-
-Please use CMSSW_9_4_9.
-
-Download and execute the setup script:
-```
-wget -O ${TMPDIR}/checkout_9X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_80X/checkout_9X.csh
+wget -O ${TMPDIR}/checkout_9X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/Run2Legacy/checkout_9X.csh
 cd $CMSSW_BASE/src
 cmsenv
 chmod u+x ${TMPDIR}/checkout_9X.csh
@@ -33,13 +20,13 @@ ${TMPDIR}/checkout_9X.csh
 
 To install a complete CMSSW 10X area (including this package)
 ------------------------------
-2018 data analysis
+Used for analysis of 2018 data
 
-Please use CMSSW_10_2_5_patch1. 
+Please use CMSSW_10_2_10. 
 
 Download and execute the setup script:
 ```
-wget -O ${TMPDIR}/checkout_10X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_80X/checkout_10X.csh
+wget -O ${TMPDIR}/checkout_10X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/Run2Legacy/checkout_10X.csh
 cd $CMSSW_BASE/src
 cmsenv
 chmod u+x ${TMPDIR}/checkout_10X.csh
@@ -65,7 +52,7 @@ Once you are ready to commit
 git pull
 git add [files to be added]
 git commit -m ["commit message"] [files to be added]
-git push origin miniAOD_80X
+git push origin Run2Legacy
 ```
 
 Otherwise you can make a fork of the repository, develop therein, and make a pull request in the same way as for CMSSW.

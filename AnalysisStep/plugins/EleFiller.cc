@@ -19,8 +19,6 @@
 #include <ZZAnalysis/AnalysisStep/interface/CutSet.h>
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
 
-#include "EgammaAnalysis/ElectronTools/interface/EnergyScaleCorrection_class.h"
-
 #include <vector>
 #include <string>
 #include "TRandom3.h"
@@ -51,11 +49,6 @@ class EleFiller : public edm::EDProducer {
   const CutSet<pat::Electron> flags;
   edm::EDGetTokenT<double> rhoToken;
   edm::EDGetTokenT<vector<Vertex> > vtxToken;
-  EDGetTokenT<ValueMap<float> > BDTValueMapToken;
-  string correctionFile;
-  #if CMSSW_VERSION_MAJOR < 10
-  EnergyScaleCorrection_class *eScaler;
-  #endif
   TRandom3 rgen_;
 };
 
@@ -66,25 +59,14 @@ EleFiller::EleFiller(const edm::ParameterSet& iConfig) :
   setup(iConfig.getParameter<int>("setup")),
   cut(iConfig.getParameter<std::string>("cut")),
   flags(iConfig.getParameter<ParameterSet>("flags")),
-  correctionFile(iConfig.getParameter<std::string>("correctionFile")),
   rgen_(0)
 {
   rhoToken = consumes<double>(LeptonIsoHelper::getEleRhoTag(sampleType, setup));
   vtxToken = consumes<vector<Vertex> >(edm::InputTag("goodPrimaryVertices"));
-
-  BDTValueMapToken = consumes<ValueMap<float> >(iConfig.getParameter<InputTag>("mvaValuesMap"));
-
   produces<pat::ElectronCollection>();
 	
- #if CMSSW_VERSION_MAJOR < 10
- // Initialize scale correction class
-  eScaler = new EnergyScaleCorrection_class(correctionFile);
- #endif
 }
 EleFiller::~EleFiller(){
-  #if CMSSW_VERSION_MAJOR < 10
-  delete eScaler;
-  #endif
 }
 
 
@@ -103,9 +85,6 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::Handle<vector<Vertex> > vertices;
   iEvent.getByToken(vtxToken,vertices);
 
-  Handle<ValueMap<float> > BDTValues;
-  iEvent.getByToken(BDTValueMapToken, BDTValues);
-
   // Output collection
   auto result = std::make_unique<pat::ElectronCollection>();
 
@@ -115,10 +94,6 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     pat::Electron l(*((*electronHandle)[i].get()));
 
     //--- PF ISO
-    // for cone size R=0.4 :
-    //float PFChargedHadIso   = l.chargedHadronIso();
-    //float PFNeutralHadIso   = l.neutralHadronIso();
-    //float PFPhotonIso       = l.photonIso();
     // for cone size R=0.3 :
     float PFChargedHadIso   = l.pfIsolationVariables().sumChargedHadronPt;
     float PFNeutralHadIso   = l.pfIsolationVariables().sumNeutralHadronEt;
@@ -145,127 +120,64 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 	  
     // RunII BDT ID
-    float BDT = 0.;
-	
-	//BDT running VID
-	 BDT = (*BDTValues)[(*electronHandle)[i]];
-	//cout << "BDT = " << (*BDTValues)[(*electronHandle)[i]] << endl;
+    float BDT = l.userFloat("ElectronMVAEstimatorRun2Fall17IsoV2Values");
+    //cout << "BDT = " << BDT << endl;
     
     float pt = l.pt();
 
-//     //Legacy cuts
-//     bool isBDT = (pt <= 10 && (( fSCeta < 0.8 && BDT > 0.47)  ||
-// 			       (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > 0.004) ||
-// 			       (fSCeta >= 1.479               && BDT > 0.295))) ||
-//                  //Moriond13 eID cuts updated for the paper
-// 		 //(pt >  10 && ((fSCeta < 0.8 && BDT > 0.5)  ||
-// 		 //	       (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > 0.12) ||
-//                  (pt >  10 && ((fSCeta < 0.8 && BDT > -0.34)  ||
-// 			       (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.65) ||
-// 			       (fSCeta >= 1.479               && BDT > 0.6)));
-
-//    //WP for fixed Phys14-based BDT
-//    bool isBDT = (pt <= 10 && ((fSCeta < 0.8                    && BDT > -0.586) ||
-//                               (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.712) ||
-//                               (fSCeta >= 1.479                 && BDT > -0.662)   )) ||
-//                 (pt >  10 && ((fSCeta < 0.8                    && BDT > -0.652) ||
-//                               (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.701) ||
-//                               (fSCeta >= 1.479                 && BDT > -0.350)   ));
-
-    // WP for Spring15-based BDT as proposed in https://indico.cern.ch/event/439325/session/1/contribution/21/attachments/1156760/1663207/slides_20150918.pdf
-//     bool isBDT = (pt <= 10 && ((fSCeta < 0.8                    && BDT > -0.265) ||
-//                                (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.556) ||
-//                                (fSCeta >= 1.479                 && BDT > -0.551)   )) ||
-//                  (pt >  10 && ((fSCeta < 0.8                    && BDT > -0.072) ||
-//                                (fSCeta >= 0.8 && fSCeta < 1.479 && BDT > -0.286) ||
-//                                (fSCeta >= 1.479                 && BDT > -0.267)   ));
-
 	  
-    bool isBDT;
-	  
-	 if (setup==2016){
-	 //WP for preliminary 8X ID BDT
-    	isBDT         = (pt<=10 && ((fSCeta<0.8                  && BDT > -0.211) ||
-                                  (fSCeta>=0.8 && fSCeta<1.479 && BDT > -0.396) ||
-                                  (fSCeta>=1.479               && BDT > -0.215)))
-                 	 || (pt>10  && ((fSCeta<0.8                  && BDT > -0.870) ||
-                                  (fSCeta>=0.8 && fSCeta<1.479 && BDT > -0.838) ||
-                                  (fSCeta>=1.479               && BDT > -0.763)));
-	}
+    bool isBDT = false;
 
-	else if (setup==2017 || setup==2018)
-	{
-	  //WP taken from https://github.com/cms-sw/cmssw/blob/master/RecoEgamma/ElectronIdentification/python/Identification/mvaElectronID_Fall17_iso_V2_cff.py#L21 
-	 	isBDT         = (pt<=10 && ((fSCeta<0.8                  && BDT >  1.26402092475) ||
-                                  (fSCeta>=0.8 && fSCeta<1.479 && BDT >  1.17808089508) ||
-                                  (fSCeta>=1.479               && BDT >  1.33051972806)))
-                 	 || (pt>10  && ((fSCeta<0.8                  && BDT >  2.36464785939) ||
-                                  (fSCeta>=0.8 && fSCeta<1.479 && BDT >  2.07880614597) ||
-                                  (fSCeta>=1.479               && BDT >  1.08080644615)));
-	}
-	else
-	{
-		std::cerr << "[ERROR] EleFiller: no BDT setup for: " << setup << " year!" << std::endl;
-	}
+	 if (setup==2016 || setup==2017 || setup==2018)
+	 {
+	   //WP taken from https://github.com/cms-sw/cmssw/blob/master/RecoEgamma/ElectronIdentification/python/Identification/mvaElectronID_Fall17_iso_V2_cff.py#L21 and transfered with https://github.com/cms-sw/cmssw/blob/CMSSW_9_4_X/RecoEgamma/EgammaTools/interface/MVAValueMapProducer.h#L145 so that they are between -1 and 1
+	 	 isBDT         = (pt<=10 && ((fSCeta<0.8                  && BDT >  0.85216885148) ||
+                                   (fSCeta>=0.8 && fSCeta<1.479 && BDT >  0.82684550976) ||
+                                   (fSCeta>=1.479               && BDT >  0.86937630022)))
+                    || (pt>10  && ((fSCeta<0.8                  && BDT >  0.98248928759) ||
+                                   (fSCeta>=0.8 && fSCeta<1.479 && BDT >  0.96919224579) ||
+                                   (fSCeta>=1.479               && BDT >  0.79349796445)));
+	 }
+	 else
+	 {
+	  	 std::cerr << "[ERROR] EleFiller: no BDT setup for: " << setup << " year!" << std::endl;
+	 }
 
     //-- Missing hit  
 	 int missingHit;
-	 #if CMSSW_VERSION_MAJOR < 9
-	 missingHit = l.gsfTrack()->hitPattern().numberOfHits(HitPattern::MISSING_INNER_HITS);
-    #else
 	 missingHit = l.gsfTrack()->hitPattern().numberOfAllHits(HitPattern::MISSING_INNER_HITS);
-	 #endif
+	 
     //-- Flag for crack electrons (which use different efficiency SFs)
-    bool isCrack = l.isGap(); 
+    bool isCrack = l.isGap();
+     
     //--- Trigger matching
     int HLTMatch = 0; //FIXME
 	 
-	 
-	 float scaleErr;
-	 float sigma_rho_up;
-	 float sigma_phi_up;
-	 float smear_err_up;
-	 
-	 #if CMSSW_VERSION_MAJOR < 9
-	 // EGamma scale and resolution uncertainties https://twiki.cern.ch/twiki/bin/view/CMS/EGMSmearer#ECAL_scale_and_resolution_co_AN2
-	 scaleErr=sqrt(1. +
-	 	pow(eScaler->ScaleCorrectionUncertainty(iEvent.id().run(), l.isEB(), l.full5x5_r9(), l.superCluster()->eta(), l.correctedEcalEnergy() / cosh(l.superCluster()->eta()), 12, 1),2) +
-	 	pow(eScaler->ScaleCorrectionUncertainty(iEvent.id().run(), l.isEB(), l.full5x5_r9(), l.superCluster()->eta(), l.correctedEcalEnergy() / cosh(l.superCluster()->eta()), 12, 2),2) +
-	 	pow(eScaler->ScaleCorrectionUncertainty(iEvent.id().run(), l.isEB(), l.full5x5_r9(), l.superCluster()->eta(), l.correctedEcalEnergy() / cosh(l.superCluster()->eta()), 12, 4),2) );
-	 
-	 sigma_rho_up= eScaler->getSmearingSigma(iEvent.id().run(), l.isEB(), l.full5x5_r9(), l.superCluster()->eta(), l.correctedEcalEnergy() / cosh(l.superCluster()->eta()), 12, 1., 0.);
-	 sigma_phi_up= eScaler->getSmearingSigma(iEvent.id().run(), l.isEB(), l.full5x5_r9(), l.superCluster()->eta(), l.correctedEcalEnergy() / cosh(l.superCluster()->eta()), 12, 0., 1.);
-	 smear_err_up = 1. + sqrt( pow(( 1. - rgen_.Gaus(1, sigma_rho_up)),2) + pow(( 1. - rgen_.Gaus(1, sigma_phi_up)),2));
-	 #elif CMSSW_VERSION_MAJOR == 9
-	 // EGamma scale and resolution uncertainties https://twiki.cern.ch/twiki/bin/viewauth/CMS/Egamma2017DataRecommendations#Energy_Scale_Systematic
-	 scaleErr= ( 1. +
-	 	eScaler->ScaleCorrectionUncertainty(iEvent.id().run(), l.isEB(), l.full5x5_r9(), l.superCluster()->eta(), l.correctedEcalEnergy() / cosh(l.superCluster()->eta()), 12)
-				  );
-	 //You have to vary nSigma rho and nSigma phi to get the modified sigma (the quoted sigma has 2 independent components: rho and phi)
-	 //0,0 for the nominal sigma
-	 //1, 0 for 1 "sigma" up in rho
-	 //-1,0 for 1 "sigma" down in rho
-	 //0, 1 for 1 "sigma" up in phi --> not to be used for the moment : phi=pi/2 with error=pi/2. phi + error would be equal to pi, while phi is defined from [0,pi/2]
-	 //0, -1 for 1 "sigma" down in phi
-	 //float sigma_up= eScaler.getSmearingSigma(iEvent.id().run(), l.isEB(), l.full5x5_r9(), l.superCluster()->eta(), l.correctedEcalEnergy() / cosh(l.superCluster()->eta()), 12,  1.,  0.);
-	 sigma_rho_up= eScaler->getSmearingSigma(iEvent.id().run(), l.isEB(), l.full5x5_r9(), l.superCluster()->eta(), l.correctedEcalEnergy() / cosh(l.superCluster()->eta()), 12, 1., 0.);
-	 sigma_phi_up= eScaler->getSmearingSigma(iEvent.id().run(), l.isEB(), l.full5x5_r9(), l.superCluster()->eta(), l.correctedEcalEnergy() / cosh(l.superCluster()->eta()), 12, 0., 1.);
-	 
-	 smear_err_up = 1. + sqrt( pow(( 1. - rgen_.Gaus(1, sigma_rho_up)),2) + pow(( 1. - rgen_.Gaus(1, sigma_phi_up)),2));
-	 #else
-	 scaleErr= ( 1. );
-	 //You have to vary nSigma rho and nSigma phi to get the modified sigma (the quoted sigma has 2 independent components: rho and phi)
-	 //0,0 for the nominal sigma
-	 //1, 0 for 1 "sigma" up in rho
-	 //-1,0 for 1 "sigma" down in rho
-	 //0, 1 for 1 "sigma" up in phi --> not to be used for the moment : phi=pi/2 with error=pi/2. phi + error would be equal to pi, while phi is defined from [0,pi/2]
-	 //0, -1 for 1 "sigma" down in phi
-	 //float sigma_up= eScaler.getSmearingSigma(iEvent.id().run(), l.isEB(), l.full5x5_r9(), l.superCluster()->eta(), l.correctedEcalEnergy() / cosh(l.superCluster()->eta()), 12,  1.,  0.);
-
-	 sigma_rho_up= 1.;
-	 sigma_phi_up= 1.;
-	 smear_err_up = 1. + sqrt( pow(( 1. - rgen_.Gaus(1, sigma_rho_up)),2) + pow(( 1. - rgen_.Gaus(1, sigma_phi_up)),2));
-	 #endif
+     
+    //-- Scale and smearing corrections are now stored in the miniAOD https://twiki.cern.ch/twiki/bin/view/CMS/EgammaMiniAODV2#Energy_Scale_and_Smearing
+    float uncorrected_pt = l.pt();
+    float corr_factor = l.userFloat("ecalTrkEnergyPostCorr") / l.energy();//get scale/smear correction factor directly from miniAOD
+     
+    //scale and smsear electron
+    l.setP4(reco::Particle::PolarLorentzVector(l.pt()*corr_factor, l.eta(), l.phi(), l.mass()*corr_factor));
+     
+    //get all scale uncertainties and their breakdown
+    float scale_total_up = l.userFloat("energyScaleUp") / l.energy();
+    float scale_stat_up = l.userFloat("energyScaleStatUp") / l.energy();
+    float scale_syst_up = l.userFloat("energyScaleSystUp") / l.energy();
+    float scale_gain_up = l.userFloat("energyScaleGainUp") / l.energy();
+    float scale_total_dn = l.userFloat("energyScaleDown") / l.energy();
+    float scale_stat_dn = l.userFloat("energyScaleStatDown") / l.energy();
+    float scale_syst_dn = l.userFloat("energyScaleSystDown") / l.energy();
+    float scale_gain_dn = l.userFloat("energyScaleGainDown") / l.energy();
+     
+    //get all smearing uncertainties and their breakdown
+    float sigma_total_up = l.userFloat("energySigmaUp") / l.energy();
+    float sigma_rho_up = l.userFloat("energySigmaRhoUp") / l.energy();
+    float sigma_phi_up = l.userFloat("energySigmaPhiUp") / l.energy();
+    float sigma_total_dn = l.userFloat("energySigmaDown") / l.energy();
+    float sigma_rho_dn = l.userFloat("energySigmaRhoDown") / l.energy();
+    float sigma_phi_dn = l.userFloat("energySigmaPhiDown") / l.energy();
 
 	  
     //--- Embed user variables
@@ -283,8 +195,21 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     l.addUserFloat("isCrack",isCrack);
     l.addUserFloat("HLTMatch", HLTMatch);
     l.addUserFloat("missingHit", missingHit);
-    l.addUserFloat("scale_unc",scaleErr);
-    l.addUserFloat("smear_unc",smear_err_up);
+    l.addUserFloat("uncorrected_pt",uncorrected_pt);
+    l.addUserFloat("scale_total_up",scale_total_up);
+    l.addUserFloat("scale_stat_up",scale_stat_up);
+    l.addUserFloat("scale_syst_up",scale_syst_up);
+    l.addUserFloat("scale_gain_up",scale_gain_up);
+    l.addUserFloat("scale_total_dn",scale_total_dn);
+    l.addUserFloat("scale_stat_dn",scale_stat_dn);
+    l.addUserFloat("scale_syst_dn",scale_syst_dn);
+    l.addUserFloat("scale_gain_dn",scale_gain_dn);
+    l.addUserFloat("sigma_total_up",sigma_total_up);
+    l.addUserFloat("sigma_total_dn",sigma_total_dn);
+    l.addUserFloat("sigma_rho_up",sigma_rho_up);
+    l.addUserFloat("sigma_rho_dn",sigma_rho_dn);
+    l.addUserFloat("sigma_phi_up",sigma_phi_up);
+    l.addUserFloat("sigma_phi_dn",sigma_phi_dn);
 
     //--- MC parent code 
 //     MCHistoryTools mch(iEvent);

@@ -22,8 +22,6 @@
 #include <ZZAnalysis/AnalysisStep/interface/CutSet.h>
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
 
-#include <KaMuCa/Calibration/interface/KalmanMuonCalibrator.h>
-
 #include <vector>
 #include <string>
 
@@ -101,11 +99,6 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		pat::Muon l(*((*muonHandle)[i].get()));
 
 		//--- PF ISO
-		// for cone size R=0.4 :
-		//float PFChargedHadIso   = l.chargedHadronIso();
-		//float PFNeutralHadIso   = l.neutralHadronIso();
-		//float PFPhotonIso       = l.photonIso();
-		//float PFPUChargedHadIso = l.puChargedHadronIso();
 		// for cone size R=0.3 :
 		float PFChargedHadIso   = l.pfIsolationR03().sumChargedHadronPt;
 		float PFNeutralHadIso   = l.pfIsolationR03().sumNeutralHadronEt;

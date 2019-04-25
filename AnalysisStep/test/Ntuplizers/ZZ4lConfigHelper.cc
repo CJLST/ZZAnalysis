@@ -134,9 +134,9 @@ ZZ4lConfigHelper::passMETTrigger(const edm::Event & event, edm::Handle<edm::Trig
 
   bool passMETFilter  = true;
 	
-  if (theSetup >= 2017) {
-    passMETFilter = passFilter(event, trigRes, "triggerMETFilters");
-  }
+//  if (theSetup >= 2017) {
+//    passMETFilter = passFilter(event, trigRes, "triggerMETFilters");
+//  }
   return passMETFilter;
 }
 

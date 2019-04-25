@@ -188,8 +188,20 @@ namespace {
   std::vector<float> LepRecoSF_Unc;
   std::vector<float> LepSelSF;
   std::vector<float> LepSelSF_Unc;
-  std::vector<float> LepScale_Unc;
-  std::vector<float> LepSmear_Unc;
+  std::vector<float> LepScale_Total_Up;
+  std::vector<float> LepScale_Total_Dn;
+  std::vector<float> LepScale_Stat_Up;
+  std::vector<float> LepScale_Stat_Dn;
+  std::vector<float> LepScale_Syst_Up;
+  std::vector<float> LepScale_Syst_Dn;
+  std::vector<float> LepScale_Gain_Up;
+  std::vector<float> LepScale_Gain_Dn;
+  std::vector<float> LepSigma_Total_Up;
+  std::vector<float> LepSigma_Total_Dn;
+  std::vector<float> LepSigma_Rho_Up;
+  std::vector<float> LepSigma_Rho_Dn;
+  std::vector<float> LepSigma_Phi_Up;
+  std::vector<float> LepSigma_Phi_Dn;
 
 
   std::vector<float> fsrPt;
@@ -1668,8 +1680,20 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   LepSelSF.clear();
   LepSelSF_Unc.clear();
 	
-  LepScale_Unc.clear();
-  LepSmear_Unc.clear();
+  LepScale_Total_Up.clear();
+  LepScale_Total_Dn.clear();
+  LepScale_Stat_Up.clear();
+  LepScale_Stat_Dn.clear();
+  LepScale_Syst_Up.clear();
+  LepScale_Syst_Dn.clear();
+  LepScale_Gain_Up.clear();
+  LepScale_Gain_Dn.clear();
+  LepSigma_Total_Up.clear();
+  LepSigma_Total_Dn.clear();
+  LepSigma_Rho_Up.clear();
+  LepSigma_Rho_Dn.clear();
+  LepSigma_Phi_Up.clear();
+  LepSigma_Phi_Dn.clear();
 
   TLE_dR_Z = -1;
   fsrPt.clear();
@@ -1835,8 +1859,20 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     LepisID .push_back( userdatahelpers::getUserFloat(leptons[i],"ID") );
     LepBDT  .push_back( lepFlav==11 ||lepFlav==22 ? userdatahelpers::getUserFloat(leptons[i],"BDT") : 0. );
     LepMissingHit.push_back( lepFlav==11 ? userdatahelpers::getUserFloat(leptons[i],"missingHit") : 0 );
-    LepScale_Unc.push_back( userdatahelpers::getUserFloat(leptons[i],"scale_unc") );
-    LepSmear_Unc.push_back( userdatahelpers::getUserFloat(leptons[i],"smear_unc") );
+    LepScale_Total_Up.push_back( userdatahelpers::getUserFloat(leptons[i],"scale_total_up") );
+    LepScale_Total_Dn.push_back( userdatahelpers::getUserFloat(leptons[i],"scale_total_dn") );
+    LepScale_Stat_Up.push_back( lepFlav==11 ? userdatahelpers::getUserFloat(leptons[i],"scale_stat_up") : -99. );
+    LepScale_Stat_Dn.push_back( lepFlav==11 ? userdatahelpers::getUserFloat(leptons[i],"scale_stat_dn") : -99. );
+    LepScale_Syst_Up.push_back( lepFlav==11 ? userdatahelpers::getUserFloat(leptons[i],"scale_syst_up") : -99. );
+    LepScale_Syst_Dn.push_back( lepFlav==11 ? userdatahelpers::getUserFloat(leptons[i],"scale_syst_dn") : -99. );
+    LepScale_Gain_Up.push_back( lepFlav==11 ? userdatahelpers::getUserFloat(leptons[i],"scale_gain_up") : -99. );
+    LepScale_Gain_Dn.push_back( lepFlav==11 ? userdatahelpers::getUserFloat(leptons[i],"scale_gain_dn") : -99. );
+    LepSigma_Total_Up.push_back( userdatahelpers::getUserFloat(leptons[i],"sigma_total_up") );
+    LepSigma_Total_Dn.push_back( userdatahelpers::getUserFloat(leptons[i],"sigma_total_dn") );
+    LepSigma_Rho_Up.push_back( lepFlav==11 ? userdatahelpers::getUserFloat(leptons[i],"sigma_rho_up") : -99. );
+    LepSigma_Rho_Dn.push_back( lepFlav==11 ? userdatahelpers::getUserFloat(leptons[i],"sigma_rho_dn") : -99. );
+    LepSigma_Phi_Up.push_back( lepFlav==11 ? userdatahelpers::getUserFloat(leptons[i],"sigma_phi_up") : -99. );
+    LepSigma_Phi_Dn.push_back( lepFlav==11 ? userdatahelpers::getUserFloat(leptons[i],"sigma_phi_dn") : -99. );
     LepChargedHadIso.push_back( userdatahelpers::getUserFloat(leptons[i],"PFChargedHadIso") );
     LepNeutralHadIso.push_back( userdatahelpers::getUserFloat(leptons[i],"PFNeutralHadIso") );
     LepPhotonIso.push_back( userdatahelpers::getUserFloat(leptons[i],"PFPhotonIso") );
@@ -2558,8 +2594,20 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("LepRecoSF_Unc",LepRecoSF_Unc, false);
   myTree->Book("LepSelSF",LepSelSF, false);
   myTree->Book("LepSelSF_Unc",LepSelSF_Unc, false);
-  myTree->Book("LepScale_Unc",LepScale_Unc, false);
-  myTree->Book("LepSmear_Unc",LepSmear_Unc, false);
+  myTree->Book("LepScale_Total_Up",LepScale_Total_Up, false);
+  myTree->Book("LepScale_Total_Dn",LepScale_Total_Dn, false);
+  myTree->Book("LepScale_Stat_Up",LepScale_Stat_Up, false);
+  myTree->Book("LepScale_Stat_Dn",LepScale_Stat_Dn, false);
+  myTree->Book("LepScale_Syst_Up",LepScale_Syst_Up, false);
+  myTree->Book("LepScale_Syst_Dn",LepScale_Syst_Dn, false);
+  myTree->Book("LepScale_Gain_Up",LepScale_Gain_Up, false);
+  myTree->Book("LepScale_Gain_Dn",LepScale_Gain_Dn, false);
+  myTree->Book("LepSigma_Total_Up",LepSigma_Total_Up, false);
+  myTree->Book("LepSigma_Total_Dn",LepSigma_Total_Dn, false);
+  myTree->Book("LepSigma_Rho_Up",LepSigma_Rho_Up, false);
+  myTree->Book("LepSigma_Rho_Dn",LepSigma_Rho_Dn, false);
+  myTree->Book("LepSigma_Phi_Up",LepSigma_Phi_Up, false);
+  myTree->Book("LepSigma_Phi_Dn",LepSigma_Phi_Up, false);
 
   myTree->Book("fsrPt",fsrPt, false);
   myTree->Book("fsrEta",fsrEta, false);

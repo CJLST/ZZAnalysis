@@ -1,4 +1,4 @@
-// A utility script to measure the b tag efficiency / mistag rate for MC to be used with a dedicated csv file to applu b-tagg scale factor
+// A utility script to measure the b tag efficiency / mistag rate for MC to be used with a dedicated csv file to apply b-tagg scale factor
 // To run just do root measureBTagEff.cpp++()
 
 #include <iostream>
@@ -26,8 +26,7 @@ void measureBTagEff()
 {
     // read MC sample
     vector<TString> samples;
-    samples.push_back("");
-	
+    samples.push_back("");//path to the CJLST NTuple
 
     // -------------------------------------------------------------------------------------------
     // histos
@@ -35,10 +34,12 @@ void measureBTagEff()
     float EtaBins[] =  {0, 0.6, 1.2, 2.1, 2.5} ;
     int nPtBins  = sizeof(PtBins)/sizeof(float) - 1;
     int nEtaBins = sizeof(EtaBins)/sizeof(float) - 1;
+   
+    float WPtag[3] = {0.2217, 0.6321, 0.8953};// L, M, T -- Deep CSV Legacy 2016 from https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation2016Legacy
 
     //float WPtag[3] = {0.1522, 0.4941, 0.8001}; // L, M, T -- 90X DeepCSV for Moriond 2018, https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
     
-    float WPtag[3] = {0.1241, 0.4184, 0.7527};// L, M, T -- 90X DeepCSV for Moriond 2019, https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X
+    //float WPtag[3] = {0.1241, 0.4184, 0.7527};// L, M, T -- 90X DeepCSV for Moriond 2019, https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X
     string WPname[3] = {"L", "M", "T"};
 
 
@@ -50,7 +51,10 @@ void measureBTagEff()
     vector<TH2F*> h2_BTaggingEff_Num_c(3);
     vector<TH2F*> h2_BTaggingEff_Num_udsg(3);
 
-    string outputFile = "bTagEfficiencies_102X_Moriond19.root";
+    string outputFile = "bTagEfficiencies_2016.root";
+    //string outputFile = "bTagEfficiencies_2017.root";
+    //string outputFile = "bTagEfficiencies_2018.root";
+   
     cout << "Saving efficiency weights into: " << outputFile << endl;
     TFile* fOut = new TFile (outputFile.c_str(), "recreate");
     fOut->cd();
