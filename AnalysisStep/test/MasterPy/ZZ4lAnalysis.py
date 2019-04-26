@@ -409,6 +409,7 @@ if (LEPTON_SETUP == 2016):
    setupEgammaPostRecoSeq(process,
                           runEnergyCorrections=True,
                           runVID=True,
+                          eleIDModules=['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Summer16_ID_ISO_cff','RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff'],
                           era='2016-Legacy')
 
 if (LEPTON_SETUP == 2017):

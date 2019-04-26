@@ -16,7 +16,8 @@ git cms-merge-topic cms-egamma:EgammaPostRecoTools
 git cms-addpkg EgammaAnalysis/ElectronTools
 (rm -rf EgammaAnalysis/ElectronTools/data;git clone git@github.com:cms-egamma/EgammaAnalysis-ElectronTools.git EgammaAnalysis/ElectronTools/data;cd EgammaAnalysis/ElectronTools/data;git checkout ScalesSmearing2018_Dev;cd -;git cms-merge-topic cms-egamma:EgammaPostRecoTools_dev;)
 
-git cms-merge-topic mkovac:Electron_XGBoost_MVA_2018_CMSSW_10_3_1
+# 2016 and 2018 retraining for electron BDT
+git cms-merge-topic mkovac:Electron_XGBoost_MVA_2016_and_2018_CMSSW_10_3_1
 
 #MET corrections according to https://twiki.cern.ch/twiki/bin/view/CMS/MissingETUncertaintyPrescription#Instructions_for_9_4_X_X_0_for_M
 #git cms-merge-topic cms-met:METFixEE2017_949_v2_backport_to_102X
