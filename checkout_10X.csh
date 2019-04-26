@@ -13,7 +13,7 @@ git cms-init
 #Preliminary electron scale and smearing corrections according to https://twiki.cern.ch/twiki/bin/view/CMS/EgammaPostRecoRecipes#2018_Preliminary_Energy_Correcti
 #We need the ElectronTools package to calculate smear and scale uncertainties so just download the ScaleAndSmearing files manualy 
 git cms-merge-topic cms-egamma:EgammaPostRecoTools
-git cms-merge-topic cms-egamma:slava77-btvDictFix_10210
+#git cms-merge-topic cms-egamma:slava77-btvDictFix_10210
 git cms-addpkg EgammaAnalysis/ElectronTools
 (rm -rf EgammaAnalysis/ElectronTools/data;git clone git@github.com:cms-egamma/EgammaAnalysis-ElectronTools.git EgammaAnalysis/ElectronTools/data;cd EgammaAnalysis/ElectronTools/data;git checkout ScalesSmearing2018_Dev;cd -;git cms-merge-topic cms-egamma:EgammaPostRecoTools_dev;)
 
