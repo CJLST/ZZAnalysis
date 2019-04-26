@@ -423,6 +423,7 @@ if (LEPTON_SETUP == 2018):
    setupEgammaPostRecoSeq(process,
                           runEnergyCorrections=True,
                           runVID=True,
+                          eleIDModules=['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Autumn18_ID_ISO_cff','RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff'],
                           era='2018-Prompt')
 
 
@@ -1340,19 +1341,32 @@ if (RECORRECTMET and SAMPLE_TYPE == 2016):
     process.patJetsReapplyJEC.userData.userFloats.src += ['pileupJetIdUpdated:fullDiscriminant']
     process.patJetsReapplyJEC.userData.userInts.src += ['pileupJetIdUpdated:fullId']
 
+#[FIXME] Does not work in CMSSW_10_3_1 currently
 ### Recorrect MET, cf. https://indico.cern.ch/event/759372/contributions/3149378/attachments/1721436/2779341/metreport.pdf slide 10
 ###                and https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription#Instructions_for_9_4_X_X_9_for_2
+#if (RECORRECTMET and SAMPLE_TYPE == 2017):
+#
+#    from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
+#
+#    runMetCorAndUncFromMiniAOD(process,
+#                               isData=(not IsMC),
+#                               fixEE2017 = True,
+#                               fixEE2017Params = {'userawPt': True, 'ptThreshold':50.0, 'minEtaThreshold':2.65, 'maxEtaThreshold': 3.139} ,
+#                               postfix = "ModifiedMET"
+#                               )
+#    metTag = cms.InputTag("slimmedMETsModifiedMET","","ZZ")
+#
+#    ### somehow MET recorrection gets this lost again...
+#    process.patJetsReapplyJEC.userData.userFloats.src += ['pileupJetIdUpdated:fullDiscriminant']
+#    process.patJetsReapplyJEC.userData.userInts.src += ['pileupJetIdUpdated:fullId']
+
 if (RECORRECTMET and SAMPLE_TYPE == 2017):
-
+   
     from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
-
     runMetCorAndUncFromMiniAOD(process,
                                isData=(not IsMC),
-                               fixEE2017 = True,
-                               fixEE2017Params = {'userawPt': True, 'ptThreshold':50.0, 'minEtaThreshold':2.65, 'maxEtaThreshold': 3.139} ,
-                               postfix = "ModifiedMET"
                                )
-    metTag = cms.InputTag("slimmedMETsModifiedMET","","ZZ")
+    metTag = cms.InputTag("slimmedMETs","","ZZ")
 
     ### somehow MET recorrection gets this lost again...
     process.patJetsReapplyJEC.userData.userFloats.src += ['pileupJetIdUpdated:fullDiscriminant']
@@ -1389,11 +1403,18 @@ if (RECORRECTMET and SAMPLE_TYPE == 2016):
     else:
         process.MET = cms.Path(process.fullPatMetSequence)
 
+#[FIXME] Does not work in CMSSW_10_3_1 currently
+#if (RECORRECTMET and SAMPLE_TYPE == 2017):
+#    if IsMC:
+#        process.MET = cms.Path(process.fullPatMetSequenceModifiedMET)
+#    else:
+#        process.MET = cms.Path(process.fullPatMetSequenceModifiedMET)
+
 if (RECORRECTMET and SAMPLE_TYPE == 2017):
     if IsMC:
-        process.MET = cms.Path(process.fullPatMetSequenceModifiedMET)
+        process.MET = cms.Path(process.fullPatMetSequence)
     else:
-        process.MET = cms.Path(process.fullPatMetSequenceModifiedMET)
+        process.MET = cms.Path(process.fullPatMetSequence)
 
 if (RECORRECTMET and SAMPLE_TYPE == 2018):
     if IsMC:

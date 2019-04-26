@@ -119,16 +119,29 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     } 
 
 	  
-    // RunII BDT ID
-    float BDT = l.userFloat("ElectronMVAEstimatorRun2Fall17IsoV2Values");
-    //cout << "BDT = " << BDT << endl;
+    // Load correct RunII BDT ID+iso
+    float BDT = -99;
+    if      ( setup == 2016 ) BDT = l.userFloat("ElectronMVAEstimatorRun2Fall17IsoV2Values");
+    else if ( setup == 2017 ) BDT = l.userFloat("ElectronMVAEstimatorRun2Fall17IsoV2Values");
+    else if ( setup == 2018 ) BDT = l.userFloat("ElectronMVAEstimatorRun2Autumn18IdIsoValues");
+//    cout << "BDT = " << BDT << endl;
     
     float pt = l.pt();
 
 	  
     bool isBDT = false;
 
-	 if (setup==2016 || setup==2017 || setup==2018)
+//    if ( setup==2016 )
+//    {
+//       //WP taken from https://github.com/mkovac/cmssw/blob/Electron_XGBoost_MVA_2016_CMSSW_10_3_1/RecoEgamma/ElectronIdentification/python/Identification/mvaElectronID_Summer16_ID_ISO_cff.py#L27-L34 and transfered with https://github.com/cms-sw/cmssw/blob/CMSSW_9_4_X/RecoEgamma/EgammaTools/interface/MVAValueMapProducer.h#L145 so that they are between -1 and 1
+//       isBDT         = (pt<=10 && ((fSCeta<0.8                  && BDT >  0.95034841889) ||
+//                                   (fSCeta>=0.8 && fSCeta<1.479 && BDT >  0.94606270058) ||
+//                                   (fSCeta>=1.479               && BDT >  0.93872558098)))
+//                    || (pt>10  && ((fSCeta<0.8                  && BDT >  0.3782357877) ||
+//                                   (fSCeta>=0.8 && fSCeta<1.479 && BDT >  0.35871320305) ||
+//                                   (fSCeta>=1.479               && BDT >  -0.57451499543)));
+//    }
+	 if (setup==2016 || setup==2017)
 	 {
 	   //WP taken from https://github.com/cms-sw/cmssw/blob/master/RecoEgamma/ElectronIdentification/python/Identification/mvaElectronID_Fall17_iso_V2_cff.py#L21 and transfered with https://github.com/cms-sw/cmssw/blob/CMSSW_9_4_X/RecoEgamma/EgammaTools/interface/MVAValueMapProducer.h#L145 so that they are between -1 and 1
 	 	 isBDT         = (pt<=10 && ((fSCeta<0.8                  && BDT >  0.85216885148) ||
@@ -138,6 +151,16 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
                                    (fSCeta>=0.8 && fSCeta<1.479 && BDT >  0.96919224579) ||
                                    (fSCeta>=1.479               && BDT >  0.79349796445)));
 	 }
+    else if ( setup==2018 )
+    {
+       //WP taken from https://github.com/mkovac/cmssw/blob/Electron_XGBoost_MVA_2018_CMSSW_10_3_1/RecoEgamma/ElectronIdentification/python/Identification/mvaElectronID_Autumn18_ID_ISO_cff.py#L27-L35 and transfered with https://github.com/cms-sw/cmssw/blob/CMSSW_9_4_X/RecoEgamma/EgammaTools/interface/MVAValueMapProducer.h#L145 so that they are between -1 and 1
+       isBDT         = (pt<=10 && ((fSCeta<0.8                  && BDT >  0.8955937602) ||
+                                   (fSCeta>=0.8 && fSCeta<1.479 && BDT >  0.91106464032) ||
+                                   (fSCeta>=1.479               && BDT >  0.94067753025)))
+                    || (pt>10  && ((fSCeta<0.8                  && BDT >  0.04240620843) ||
+                                   (fSCeta>=0.8 && fSCeta<1.479 && BDT >  0.0047338429) ||
+                                   (fSCeta>=1.479               && BDT >  -0.60423293572)));
+     }
 	 else
 	 {
 	  	 std::cerr << "[ERROR] EleFiller: no BDT setup for: " << setup << " year!" << std::endl;
