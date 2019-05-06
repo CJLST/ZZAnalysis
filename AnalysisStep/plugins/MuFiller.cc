@@ -22,6 +22,8 @@
 #include <ZZAnalysis/AnalysisStep/interface/CutSet.h>
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
 
+#include <MuonMVAReader/Reader/interface/MuonMVAReader.hpp>
+
 #include <vector>
 #include <string>
 
@@ -49,8 +51,11 @@ class MuFiller : public edm::EDProducer {
 		const StringCutObjectSelector<pat::Muon, true> cut;
 		const edm::EDGetTokenT< edm::TriggerResults > triggerResultsToken_;
 		const CutSet<pat::Muon> flags;
-		//  edm::EDGetTokenT<double> rhoToken; // Rho correction currently not used.
+      edm::EDGetTokenT<double> rhoToken;
 		edm::EDGetTokenT<vector<Vertex> > vtxToken;
+   
+      // MVA Reader
+      MuonMVAReader *r;
 };
 
 
@@ -62,9 +67,30 @@ MuFiller::MuFiller(const edm::ParameterSet& iConfig) :
 	triggerResultsToken_( consumes< edm::TriggerResults >( iConfig.getParameter< edm::InputTag >( "TriggerResults" ) ) ),
 	flags(iConfig.getParameter<edm::ParameterSet>("flags"))
 {
-	//  rhoToken = consumes<double>(LeptonIsoHelper::getMuRhoTag(sampleType, setup)); // Rho correction currently not used.
+	rhoToken = consumes<double>(LeptonIsoHelper::getMuRhoTag(sampleType, setup));
 	vtxToken = consumes<vector<Vertex> >(edm::InputTag("goodPrimaryVertices"));
 	produces<pat::MuonCollection>();
+   
+   // MVA Reader
+   if (setup == 2016)
+   {
+      r = new MuonMVAReader("../../../MuonMVAReader/Reader/data/MVAWeightFiles/Summer_16_ID_ISO_SIP/");
+      r->Initialize();
+   }
+   else if (setup == 2017)
+   {
+      r = new MuonMVAReader("../../../MuonMVAReader/Reader/data/MVAWeightFiles/Summer_16_ID_ISO_SIP/");
+      r->Initialize();
+   }
+   else if (setup == 2018)
+   {
+      r = new MuonMVAReader("../../../MuonMVAReader/Reader/data/MVAWeightFiles/Summer_16_ID_ISO_SIP/");
+      r->Initialize();
+   }
+   else
+   {
+      throw cms::Exception("MuonMVA") << "Muon MVA is not defined for the given setup (" << setup << ")!";
+   }
 
 }
 MuFiller::~MuFiller(){
@@ -82,10 +108,9 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	edm::Handle< edm::TriggerResults > triggerResults;
 	iEvent.getByToken( triggerResultsToken_, triggerResults );
 
-	//   edm::Handle<double> rhoHandle;
-	//   iEvent.getByToken(rhoToken, rhoHandle);
-	//   double rho = *rhoHandle;
-	double rho = 0; // Rho correction currently not used.
+	edm::Handle<double> rhoHandle;
+	iEvent.getByToken(rhoToken, rhoHandle);
+	double rho = *rhoHandle;
 
 	edm::Handle<vector<Vertex> > vertices;
 	iEvent.getByToken(vtxToken,vertices);
@@ -121,7 +146,57 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 			dz  = fabs(l.muonBestTrack()->dz(vertex->position()));
 		}
 
-		//--- Trigger matching
+      
+      // MVA Reader begin
+      float mu_N_hits_, mu_chi_square_, mu_N_pixel_hits_, mu_N_tracker_hits_;
+      
+      bool is_global_mu_  = l.isGlobalMuon();
+      if ( is_global_mu_ )
+      {
+         // Number of muon chamber hits included in the the global muon track fit
+         mu_N_hits_ = (l.globalTrack()->hitPattern().numberOfValidMuonHits());
+         
+         // Chi2 of the global track fit
+         mu_chi_square_ = (l.globalTrack()->normalizedChi2());
+      }
+      else
+      {
+         mu_N_hits_     = -1;
+         mu_chi_square_ = -1;
+      }
+      
+      
+      // Number of hits in the pixel detector
+      bool valid_KF = false;
+      reco::TrackRef myTrackRef = l.innerTrack();
+      valid_KF = (myTrackRef.isAvailable());
+      valid_KF = (myTrackRef.isNonnull());
+      
+      
+      if ( valid_KF )
+      {
+         // Number of pixel hits
+         mu_N_pixel_hits_ = l.innerTrack()->hitPattern().numberOfValidPixelHits();
+         
+         // Number of hits in the tracker layers
+         mu_N_tracker_hits_ = l.innerTrack()->hitPattern().trackerLayersWithMeasurement();
+      }
+      else
+      {
+         mu_N_pixel_hits_ = -1;
+         mu_N_tracker_hits_ = -1;
+      }
+      
+      float BDT = -99;
+      BDT = r->Get_MVA_value(l.pt(), l.eta(), mu_N_hits_, mu_N_pixel_hits_, mu_N_tracker_hits_, mu_chi_square_, PFPhotonIso, PFChargedHadIso, PFNeutralHadIso, rho, SIP, dxy, dz);
+      
+      cout << BDT << endl;
+      
+      bool isBDT = false;
+      // MVA Reader end
+      
+      
+      //--- Trigger matching
 		bool HLTMatch = false;
 		pat::TriggerObjectStandAloneCollection obj= l.triggerObjectMatches();
 		for ( size_t iTrigObj = 0; iTrigObj < obj.size(); ++iTrigObj ) {
@@ -150,11 +225,11 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		l.addUserFloat("PFPUChargedHadIso",PFPUChargedHadIso);
 		l.addUserFloat("combRelIsoPF",combRelIsoPF);
 		l.addUserFloat("rho",rho);
-
 		l.addUserFloat("SIP",SIP);
-
 		l.addUserFloat("dxy",dxy);
 		l.addUserFloat("dz",dz);
+      l.addUserFloat("BDT",BDT);
+      l.addUserFloat("isBDT",isBDT);
 		l.addUserFloat("HLTMatch", HLTMatch);
 		// l.addUserCand("MCMatch",genMatch); // FIXME
 		l.addUserFloat("time",muontime);

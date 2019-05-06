@@ -75,7 +75,7 @@ if SELSETUP=="Legacy" and not BESTCANDCOMPARATOR=="byBestZ1bestZ2":
 
 # The isolation cuts for electrons and muons. FIXME: there is an hardcoded instance of these values in src/LeptonIsoHelper.cc !!
 ELEISOCUT = 99999. # [FIXME] Remove isolation cuts from the code completely
-MUISOCUT = 0.35
+MUISOCUT  = 99999. # [FIXME] Remove isolation cuts from the code completely
 
 ### ----------------------------------------------------------------------
 ### Set the GT
@@ -377,7 +377,7 @@ process.softMuons = cms.EDProducer("MuFiller",
     cut = cms.string("userFloat('dxy')<0.5 && userFloat('dz')<1."),
     TriggerResults = cms.InputTag('TriggerResults','','HLT'),
     flags = cms.PSet(
-        ID = cms.string(TIGHTMUON), # tight muon ID
+        ID = cms.string("userFloat('isBDT')"), # muonMVA ID
         isSIP = cms.string(SIP),
         isGood = cms.string(GOODLEPTON),
         isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<" + str(MUISOCUT)),

@@ -249,13 +249,9 @@ void LeptonIsoHelper::fsrIso(const reco::PFCandidate* photon, edm::Handle<edm::V
 float LeptonIsoHelper::isoCut(const reco::Candidate* d) { 
   // FIXME: cut is hardcoded here
   float ele_iso_cut,mu_iso_cut;
-  mu_iso_cut = 0.35;
-  // Electron isolation cut for 2016 and earlier analysis is 0.35, but in 2017 is included in the BDT so we hack value to 99999
-  #if CMSSW_VERSION_MAJOR < 9
-  ele_iso_cut = 0.35;
-  #else
+  mu_iso_cut  = 99999.;
   ele_iso_cut = 99999.;
-  #endif
+
   return (d->isMuon()?mu_iso_cut:ele_iso_cut);
 }
 
