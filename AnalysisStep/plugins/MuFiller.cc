@@ -72,25 +72,8 @@ flags(iConfig.getParameter<edm::ParameterSet>("flags"))
    produces<pat::MuonCollection>();
    
    // MVA Reader
-   if (setup == 2016)
-   {
-      r = new MuonMVAReader("../../../MuonMVAReader/Reader/data/MVAWeightFiles/Summer_16_ID_ISO_SIP/");
-      r->Initialize();
-   }
-   else if (setup == 2017)
-   {
-      r = new MuonMVAReader("../../../MuonMVAReader/Reader/data/MVAWeightFiles/Summer_16_ID_ISO_SIP/");
-      r->Initialize();
-   }
-   else if (setup == 2018)
-   {
-      r = new MuonMVAReader("../../../MuonMVAReader/Reader/data/MVAWeightFiles/Summer_16_ID_ISO_SIP/");
-      r->Initialize();
-   }
-   else
-   {
-      throw cms::Exception("MuonMVA") << "Muon MVA is not defined for the given setup (" << setup << ")!";
-   }
+   r = new MuonMVAReader(setup);
+   r->Initialize();
    
 }
 MuFiller::~MuFiller(){
