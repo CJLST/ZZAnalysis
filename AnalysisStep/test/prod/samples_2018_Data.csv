@@ -24,7 +24,7 @@ EGamma2018C,,    -1, ,, /EGamma/Run2018C-17Sep2018-v1/MINIAOD,dbs,,        5,PD=
 DoubleMu2018D,,  -1, ,, /DoubleMuon/Run2018D-PromptReco-v2/MINIAOD,dbs,,    2,PD=DoubleMu;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
 MuonEG2018D,,    -1, ,, /MuonEG/Run2018D-PromptReco-v2/MINIAOD,dbs,,        2,PD=MuEG;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
 SingleMuon2018D,,-1, ,, /SingleMuon/Run2018D-PromptReco-v2/MINIAOD,dbs,,    5,PD=SingleMuon;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
-EGamma2018D,,    -1, ,, /EGamma/Run2018D-PromptReco-v2/MINIAOD,dbs,,        5,PD=EGamma;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
+EGamma2018D,,    -1, ,, /EGamma/Run2018D-22Jan2019-v2/MINIAOD ,dbs,,        5,PD=EGamma;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
 
 
 
