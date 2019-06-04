@@ -182,8 +182,8 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       if ( setup==2016 )
       {
          //WP taken from
-         isBDT         = ((pt<=10 && BDT > 0.83359185133) || //[FIXME] These are wrong WPs
-                          (pt>10  && BDT > 0.98506446662));
+         isBDT         = ((pt<=10 && BDT > 0.97167361552) || 
+                          (pt>10  && BDT > 0.82649534191));
       }
       else if (setup==2017)
       {
