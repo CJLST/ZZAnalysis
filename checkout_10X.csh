@@ -38,6 +38,7 @@ git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
 
 #Muon BDT
 git clone https://github.com/mkovac/MuonMVAReader.git MuonMVAReader
+(cd MuonMVAReader; git checkout 830febcd98873208c5e4814eef9e2eb0faca1c71)
 
 #MELA Analytics
 git clone https://github.com/usarica/MelaAnalytics.git
