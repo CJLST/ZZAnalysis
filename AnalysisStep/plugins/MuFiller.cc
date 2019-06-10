@@ -22,7 +22,7 @@
 #include <ZZAnalysis/AnalysisStep/interface/CutSet.h>
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
 
-#include <MuonMVAReader/Reader/interface/MuonMVAReader.hpp>
+#include "MuonMVAReader/Reader/interface/MuonGBRForestReader.hpp"
 
 #include <vector>
 #include <string>
@@ -55,7 +55,7 @@ class MuFiller : public edm::EDProducer {
    edm::EDGetTokenT<vector<Vertex> > vtxToken;
    
    // MVA Reader
-   MuonMVAReader *r;
+   MuonGBRForestReader *r;
 };
 
 
@@ -72,12 +72,11 @@ flags(iConfig.getParameter<edm::ParameterSet>("flags"))
    produces<pat::MuonCollection>();
    
    // MVA Reader
-   r = new MuonMVAReader(setup);
-   r->Initialize();
+   r = new MuonGBRForestReader(setup);
    
 }
-MuFiller::~MuFiller(){
-}
+
+MuFiller::~MuFiller(){}
 
 
 void
@@ -171,37 +170,32 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
       
       float BDT = -99;
-      BDT = r->Get_MVA_value(l.pt(), l.eta(), mu_N_hits_, mu_N_pixel_hits_, mu_N_tracker_hits_, mu_chi_square_, PFPhotonIso, PFChargedHadIso, PFNeutralHadIso, rho, SIP, dxy, dz);
+      float pt  = l.pt();
+      float eta = l.eta();
+
       
-      //cout << BDT << endl;
+      BDT = r->Get_MVA_value(pt, eta, mu_N_hits_, mu_N_pixel_hits_, mu_N_tracker_hits_, mu_chi_square_, PFPhotonIso, PFChargedHadIso, PFNeutralHadIso, rho, SIP, dxy, dz);
+//      cout << BDT << endl;
       
-      float pt = l.pt();
       
       bool isBDT = false;
       
-      if ( setup==2016 )
+      if ( setup == 2016 )
       {
-         //WP taken from
-         isBDT         = ((pt<=10 && BDT > 0.97167361552) || 
-                          (pt>10  && BDT > 0.82649534191));
+         isBDT = ((pt <= 10 && BDT > 2.1081259567775534) || (pt > 10  && BDT > 1.3359052488630339));
       }
-      else if (setup==2017)
+      else if ( setup == 2017 )
       {
-         //WP taken from
-         isBDT         = ((pt<=10 && BDT > 0.83359185133) || //[FIXME] These are wrong WPs
-                          (pt>10  && BDT > 0.98506446662));
+         isBDT = ((pt <= 10 && BDT > 2.2993430596975) || (pt > 10  && BDT > 1.4943015903718289));
       }
-      else if ( setup==2018 )
+      else if ( setup == 2018 )
       {
-         //WP taken from
-         isBDT         = ((pt<=10 && BDT > 0.83359185133) || //[FIXME] These are wrong WPs
-                          (pt>10  && BDT > 0.98506446662));
+         isBDT = ((pt <= 10 && BDT > 2.5212153674837317) || (pt > 10  && BDT > 1.496530520574132));
       }
       else
       {
-         std::cerr << "[ERROR] MuFiller: no BDT setup for: " << setup << " year!" << std::endl;
+         std::cerr << "[ERROR] MuFiller: no MVA setup for: " << setup << " year!" << std::endl;
       }
-      
       // MVA Reader end
       
       
