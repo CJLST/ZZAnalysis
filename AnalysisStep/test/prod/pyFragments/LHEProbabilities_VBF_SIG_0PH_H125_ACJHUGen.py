@@ -158,44 +158,53 @@ LHE_ProdProbabilities_SpinZero_JHUGen = [
    "Name:SampleProductionHypothesisJHUGen Alias:<Name> Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz2=0.27196,0 Cluster:BestLOAssociatedVBF isGen:1 NoBranch:1",
 
    "Name:VBF_SIG_ghv1_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz1=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-   "Name:VBF_SIG_ghv1prime2_1E4_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz1_prime2=10000,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-   "Name:VBF_SIG_ghv2_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz2=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-   "Name:VBF_SIG_ghv4_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz4=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+   "Name:VBF_SIG_ghz1prime2_1E4_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:separateWWZZcouplings=1;ghz1_prime2=10000,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+   "Name:VBF_SIG_ghw1prime2_1E4_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:separateWWZZcouplings=1;ghw1_prime2=10000,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+   "Name:VBF_SIG_ghz2_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:separateWWZZcouplings=1;ghz2=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+   "Name:VBF_SIG_ghw2_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:separateWWZZcouplings=1;ghw2=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+   "Name:VBF_SIG_ghz4_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:separateWWZZcouplings=1;ghz4=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+   "Name:VBF_SIG_ghw4_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:separateWWZZcouplings=1;ghw4=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
    "Name:VBF_SIG_ghza1prime2_1E4_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghzgs1_prime2=10000,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-   "Name:VBF_SIG_ghza2_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghzgs2=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-   "Name:VBF_SIG_ghza4_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghzgs4=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-   "Name:VBF_SIG_gha2_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghgsgs2=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-   "Name:VBF_SIG_gha4_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghgsgs4=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-
-   "Name:VBF_SIG_ghv1_1_ghv1prime2_1E4_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz1=1,0;ghz1_prime2=10000,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-   "Name:VBF_SIG_ghv1_1_ghv1prime2_1E4i_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz1=1,0;ghz1_prime2=0,10000 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-   "Name:VBF_SIG_ghv1_1_ghv2_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz1=1,0;ghz2=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-   "Name:VBF_SIG_ghv1_1_ghv2_i_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz1=1,0;ghz2=0,1 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-   "Name:VBF_SIG_ghv1_1_ghv4_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz1=1,0;ghz4=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-   "Name:VBF_SIG_ghv1_1_ghv4_i_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz1=1,0;ghz4=0,1 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+  
+   "Name:VBF_SIG_ghv1_1_ghz1prime2_1E4_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:separateWWZZcouplings=1;ghz1=1,0;ghw1=1,0;ghz1_prime2=10000,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+   "Name:VBF_SIG_ghv1_1_ghw1prime2_1E4_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:separateWWZZcouplings=1;ghz1=1,0;ghw1=1,0;ghw1_prime2=10000,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+   "Name:VBF_SIG_ghv1_1_ghz2_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:separateWWZZcouplings=1;ghz1=1,0;ghw1=1,0;ghz2=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+   "Name:VBF_SIG_ghv1_1_ghw2_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:separateWWZZcouplings=1;ghz1=1,0;ghw1=1,0;ghw2=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+   "Name:VBF_SIG_ghv1_1_ghz4_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:separateWWZZcouplings=1;ghz1=1,0;ghw1=1,0;ghz4=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+   "Name:VBF_SIG_ghv1_1_ghw4_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:separateWWZZcouplings=1;ghz1=1,0;ghw1=1,0;ghw4=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
    "Name:VBF_SIG_ghv1_1_ghza1prime2_1E4_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz1=1,0;ghzgs1_prime2=10000,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-   "Name:VBF_SIG_ghv1_1_ghza1prime2_1E4i_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz1=1,0;ghzgs1_prime2=0,10000 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-   "Name:VBF_SIG_ghv1_1_ghza2_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz1=1,0;ghzgs2=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-   "Name:VBF_SIG_ghv1_1_ghza2_i_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz1=1,0;ghzgs2=0,1 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-   "Name:VBF_SIG_ghv1_1_ghza4_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz1=1,0;ghzgs4=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-   "Name:VBF_SIG_ghv1_1_ghza4_i_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz1=1,0;ghzgs4=0,1 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-   "Name:VBF_SIG_ghv1_1_gha2_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz1=1,0;ghgsgs2=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-   "Name:VBF_SIG_ghv1_1_gha2_i_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz1=1,0;ghgsgs2=0,1 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-   "Name:VBF_SIG_ghv1_1_gha4_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz1=1,0;ghgsgs4=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-   "Name:VBF_SIG_ghv1_1_gha4_i_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz1=1,0;ghgsgs4=0,1 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+  
+  
 
-   "Name:VBF_SIG_ghv1prime2_1E4_ghv2_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz1_prime2=10000,0;ghz2=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-#   "Name:VBF_SIG_ghv1prime2_1E4_ghv2_i_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz1_prime2=10000,0;ghz2=0,1 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-   "Name:VBF_SIG_ghv1prime2_1E4_ghv4_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz1_prime2=10000,0;ghz4=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-#   "Name:VBF_SIG_ghv1prime2_1E4_ghv4_i_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz1_prime2=10000,0;ghz4=0,1 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-   "Name:VBF_SIG_ghv1prime2_1E4_ghza1prime2_1E4_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz1_prime2=10000,0;ghzgs1_prime2=10000,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-#   "Name:VBF_SIG_ghv1prime2_1E4_ghza1prime2_1E4i_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz1_prime2=10000,0;ghzgs1_prime2=0,10000 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-   "Name:VBF_SIG_ghv2_1_ghv4_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz2=1,0;ghz4=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-#   "Name:VBF_SIG_ghv2_1_ghv4_i_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz2=1,0;ghz4=0,1 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-   "Name:VBF_SIG_ghv2_1_ghza1prime2_1E4_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz2=1,0;ghzgs1_prime2=10000,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-#   "Name:VBF_SIG_ghv2_1_ghza1prime2_1E4i_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz2=1,0;ghzgs1_prime2=0,10000 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-   "Name:VBF_SIG_ghv4_1_ghza1prime2_1E4_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz4=1,0;ghzgs1_prime2=10000,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
-#   "Name:VBF_SIG_ghv4_1_ghza1prime2_1E4i_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:ghz4=1,0;ghzgs1_prime2=0,10000 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+   "Name:VBF_SIG_ghz1prime2_1E4_ghz2_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:separateWWZZcouplings=1;ghz1_prime2=10000,0;ghz2=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+   "Name:VBF_SIG_ghz1prime2_1E4_ghw2_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:separateWWZZcouplings=1;ghz1_prime2=10000,0;ghw2=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+
+   "Name:VBF_SIG_ghw1prime2_1E4_ghz2_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:separateWWZZcouplings=1;ghw1_prime2=10000,0;ghz2=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+   "Name:VBF_SIG_ghw1prime2_1E4_ghw2_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:separateWWZZcouplings=1;ghw1_prime2=10000,0;ghw2=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+  
+   "Name:VBF_SIG_ghz1prime2_1E4_ghz4_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:separateWWZZcouplings=1;ghz1_prime2=10000,0;ghz4=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+   "Name:VBF_SIG_ghz1prime2_1E4_ghw4_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:separateWWZZcouplings=1;ghz1_prime2=10000,0;ghw4=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+
+   "Name:VBF_SIG_ghw1prime2_1E4_ghz4_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:separateWWZZcouplings=1;ghw1_prime2=10000,0;ghz4=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+   "Name:VBF_SIG_ghw1prime2_1E4_ghw4_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:separateWWZZcouplings=1;ghw1_prime2=10000,0;ghw4=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+  
+
+
+   "Name:VBF_SIG_ghz1prime2_1E4_ghza1prime2_1E4_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:separateWWZZcouplings=1;ghz1_prime2=10000,0;ghzgs1_prime2=10000,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+   "Name:VBF_SIG_ghw1prime2_1E4_ghza1prime2_1E4_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:separateWWZZcouplings=1;ghw1_prime2=10000,0;ghzgs1_prime2=10000,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+
+   "Name:VBF_SIG_ghz2_1_ghz4_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:separateWWZZcouplings=1;ghz2=1,0;ghz4=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+   "Name:VBF_SIG_ghz2_1_ghw4_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:separateWWZZcouplings=1;ghz2=1,0;ghw4=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+   "Name:VBF_SIG_ghw2_1_ghz4_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:separateWWZZcouplings=1;ghw2=1,0;ghz4=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+   "Name:VBF_SIG_ghw2_1_ghw4_1_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:separateWWZZcouplings=1;ghw2=1,0;ghw4=1,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+
+   "Name:VBF_SIG_ghz2_1_ghza1prime2_1E4_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:separateWWZZcouplings=1;ghz2=1,0;ghzgs1_prime2=10000,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+   "Name:VBF_SIG_ghw2_1_ghza1prime2_1E4_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:separateWWZZcouplings=1;ghw2=1,0;ghzgs1_prime2=10000,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+
+   "Name:VBF_SIG_ghz4_1_ghza1prime2_1E4_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:separateWWZZcouplings=1;ghz4=1,0;ghzgs1_prime2=10000,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+   "Name:VBF_SIG_ghw4_1_ghza1prime2_1E4_JHUGen Process:SelfDefine_spin0 Production:JJVBF MatrixElement:JHUGen Couplings:separateWWZZcouplings=1;ghw4=1,0;ghzgs1_prime2=10000,0 Options:DivideP=SampleProductionHypothesisJHUGen Cluster:BestLOAssociatedVBF isGen:1",
+
+
 ]
 
 #special treatment for pure L1Zg sample: it doesn't include WW flavor combinations, e.g. uubar --> ddbar
@@ -218,8 +227,9 @@ for coupling in mycouplings:
 
 if hasphoton and not hasZZ:
   LHE_ProdProbabilities_SpinZero_JHUGen = [
-    _.replace("ghv", "ghz").replace("Couplings:", "Couplings:separateWWZZcouplings=1;")
+    _.replace("ghv", "ghz").replace("Couplings:g", "Couplings:separateWWZZcouplings=1;g").replace("ghw1=1,0", "")
       for _ in LHE_ProdProbabilities_SpinZero_JHUGen
+      if "ghw" not in _.replace("ghw1=1,0", "")
   ]
   LHE_Probabilities_MCFM = [
     _.replace("ghv", "ghz").replace("Couplings:", "Couplings:separateWWZZcouplings=1;")
