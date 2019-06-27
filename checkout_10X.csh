@@ -15,7 +15,7 @@ git cms-init
 git cms-merge-topic cms-egamma:EgammaPostRecoTools
 #git cms-merge-topic cms-egamma:slava77-btvDictFix_10210
 git cms-addpkg EgammaAnalysis/ElectronTools
-(rm -rf EgammaAnalysis/ElectronTools/data;git clone git@github.com:cms-egamma/EgammaAnalysis-ElectronTools.git EgammaAnalysis/ElectronTools/data;cd EgammaAnalysis/ElectronTools/data;git checkout ScalesSmearing2018_Dev;cd -;git cms-merge-topic cms-egamma:EgammaPostRecoTools_dev;)
+(rm -rf EgammaAnalysis/ElectronTools/data;git clone git@github.com:cms-data/EgammaAnalysis-ElectronTools.git EgammaAnalysis/ElectronTools/data;)
 
 # 2016 and 2018 retraining for electron BDT
 git cms-merge-topic mkovac:Electron_XGBoost_MVA_2016_and_2018_CMSSW_10_3_1
