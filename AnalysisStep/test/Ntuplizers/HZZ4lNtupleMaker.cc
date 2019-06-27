@@ -174,6 +174,8 @@ namespace {
   std::vector<float> LepPhi;
   std::vector<short> LepLepId;
   std::vector<float> LepSIP;
+  std::vector<float> Lepdxy;
+  std::vector<float> Lepdz;
   std::vector<float> LepTime;
   std::vector<bool> LepisID;
   std::vector<float> LepBDT;
@@ -1665,6 +1667,8 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   LepPhi.clear();
   LepLepId.clear();
   LepSIP.clear();
+  Lepdxy.clear();
+  Lepdz.clear();
   LepTime.clear();
   LepisID.clear();
   LepBDT.clear();
@@ -1855,6 +1859,8 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     if(id == 22 && (i == 1 || i == 3)) id=-22; //FIXME this assumes a standard ordering of leptons.
     LepLepId.push_back( id );
     LepSIP  .push_back( SIP[i] );
+    Lepdxy  .push_back( userdatahelpers::getUserFloat(leptons[i],"dxy") );
+    Lepdz   .push_back( userdatahelpers::getUserFloat(leptons[i],"dz") );
     LepTime .push_back( lepFlav==13 ? userdatahelpers::getUserFloat(leptons[i],"time") : 0. );
     LepisID .push_back( userdatahelpers::getUserFloat(leptons[i],"ID") );
     LepBDT  .push_back( userdatahelpers::getUserFloat(leptons[i],"BDT") );
@@ -2580,6 +2586,8 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("LepPhi",LepPhi, false);
   myTree->Book("LepLepId",LepLepId, false);
   myTree->Book("LepSIP",LepSIP, false);
+  myTree->Book("Lepdxy",Lepdxy, false);
+  myTree->Book("Lepdz",Lepdz, false);
   myTree->Book("LepTime",LepTime, false);
   myTree->Book("LepisID",LepisID, false);
   myTree->Book("LepisLoose",LepisLoose, false);

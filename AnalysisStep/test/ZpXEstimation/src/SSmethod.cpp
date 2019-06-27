@@ -352,7 +352,7 @@ void SSmethod::FillFRHistos( TString input_file_data_name )
 	   if ( Z1Mass > 120. ) {(fabs(LepLepId->at(2)) == 11) ? _failZ1MassCut[Settings::ele]++ : _failZ1MassCut[Settings::mu]++; continue;}
 	   if ( (LepPt->at(0) > LepPt->at(1)) && (LepPt->at(0) < 20. || LepPt->at(1) < 10.) ) {(fabs(LepLepId->at(2)) == 11) ? _failLepPtCut[Settings::ele]++ : _failLepPtCut[Settings::mu]++; continue;}
 	   if ( (LepPt->at(1) > LepPt->at(0)) && (LepPt->at(1) < 20. || LepPt->at(0) < 10.) ) {(fabs(LepLepId->at(2)) == 11) ? _failLepPtCut[Settings::ele]++ : _failLepPtCut[Settings::mu]++; continue;}
-	   if ( LepSIP->at(2) > 4.) {(fabs(LepLepId->at(2)) == 11) ? _failSIPCut[Settings::ele]++ : _failSIPCut[Settings::mu]++; continue;}
+	   if ( LepSIP->at(2) > 4. && (fabs(LepLepId->at(2)) == 11)) { _failSIPCut[Settings::ele]++; continue;} // [FIXME] Include dxy dz cuts here
 	   if ( PFMET > 25. ) {(fabs(LepLepId->at(2)) == 11) ? _failMETCut[Settings::ele]++ : _failMETCut[Settings::mu]++; continue;}
       else
 	   {
@@ -360,7 +360,7 @@ void SSmethod::FillFRHistos( TString input_file_data_name )
          _k_factor = calculate_K_factor(input_file_data_name);
          _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight) / gen_sum_weights;
 
-         if(LepisID->at(2) && ((fabs(LepLepId->at(2)) == 11) ? LepCombRelIsoPF->at(2) < 999999. : LepCombRelIsoPF->at(2) < 0.35))
+         if(LepisID->at(2)) //&& ((fabs(LepLepId->at(2)) == 11) ? LepCombRelIsoPF->at(2) < 999999. : LepCombRelIsoPF->at(2) < 0.35))
          {
 				(fabs(LepLepId->at(2)) == 11) ? _passingSelection[Settings::ele]++ : _passingSelection[Settings::mu]++;
             if(fabs(LepLepId->at(2)) == 11 ) passing[_current_process][Settings::ele]->Fill(LepPt->at(2), (abs(LepEta->at(2)) < 1.479) ? 0.5 : 1.5 , (_current_process == Settings::Data) ? 1 :  _event_weight);
@@ -400,8 +400,8 @@ void SSmethod::FillFRHistos( TString input_file_data_name )
 		cout << "[INFO] Total number of events in Z+L control region = " << _total_events[Settings::mu] << endl;
 		cout << "[INFO] Events after 40 < Z1 < 120 GeV cut  = " << _total_events[Settings::mu] - _failZ1MassCut[Settings::mu] << endl;
 		cout << "[INFO] Events after LepPt > 20,10 GeV cut  = " << _total_events[Settings::mu] - _failZ1MassCut[Settings::mu] - _failLepPtCut[Settings::mu] << endl;
-		cout << "[INFO] Events after SIP < 4 cut  = " << _total_events[Settings::mu] - _failZ1MassCut[Settings::mu] - _failLepPtCut[Settings::mu] - _failSIPCut[Settings::mu] << endl;
-		cout << "[INFO] Events after MET < 25 cut  = " << _total_events[Settings::mu] - _failZ1MassCut[Settings::mu] - _failLepPtCut[Settings::mu] - _failSIPCut[Settings::mu] - _failMETCut[Settings::mu] << endl;
+		//cout << "[INFO] Events after SIP < 4 cut  = " << _total_events[Settings::mu] - _failZ1MassCut[Settings::mu] - _failLepPtCut[Settings::mu] - _failSIPCut[Settings::mu] << endl;
+		cout << "[INFO] Events after MET < 25 cut  = " << _total_events[Settings::mu] - _failZ1MassCut[Settings::mu] - _failLepPtCut[Settings::mu] - _failMETCut[Settings::mu] << endl;
 		cout << "[INFO] Total events left = " << _passingSelection[Settings::mu] + _faillingSelection[Settings::mu] << endl;
 		cout << "[INFO] Passing selection = " << _passingSelection[Settings::mu]  << endl;
 		cout << "[INFO] Failling selection = " << _faillingSelection[Settings::mu] << endl;
@@ -419,13 +419,14 @@ void SSmethod::FillFRHistos( TString input_file_data_name )
 void SSmethod::FillDataMCPlots( TString input_file_data_name )
 {
    input_file_data = TFile::Open( input_file_data_name);
-   
+   cout << "overallEventWeight=" << overallEventWeight << endl;
+   cout << "dataMCWeight=" << dataMCWeight << endl;
    hCounters = (TH1F*)input_file_data->Get("CRZLLTree/Counters");
    gen_sum_weights = (Long64_t)hCounters->GetBinContent(40);
    
    input_tree_data = (TTree*)input_file_data->Get("CRZLLTree/candTree");
    Init( input_tree_data, input_file_data_name , true);
-   
+   cout << "overallEventWeight=" << overallEventWeight << endl;
    _current_process = find_current_process(input_file_data_name);
    
    if (fChain == 0) return;
@@ -443,7 +444,8 @@ void SSmethod::FillDataMCPlots( TString input_file_data_name )
       
       if (!(test_bit(CRflag, CRZLLss))) continue;
       
-      
+      cout << "overallEventWeight=" << overallEventWeight << endl;
+      cout << "dataMCWeight=" << dataMCWeight << endl;
       _current_final_state = FindFinalState();
       
       for ( int j = 0; j < nCleanedJetsPt30; j++)
@@ -486,7 +488,10 @@ void SSmethod::FillDataMCPlots( TString input_file_data_name )
 
       
       _k_factor = calculate_K_factor(input_file_data_name);
+      cout << "overallEventWeight=" << overallEventWeight << endl;
+      cout << "dataMCWeight=" << dataMCWeight << endl;
       _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight) / gen_sum_weights;
+      cout << "lumi = " << _lumi << " xsec = " << xsec << " k_factor = " << _k_factor << " SF+PU+GenWeight = " << overallEventWeight << " Sum_Weight = " << gen_sum_weights << endl;
    
       histos_1D[Settings::regZLL][_current_process][_current_final_state][_current_category_stxs]->Fill(ZZMass,(_current_process == Settings::Data) ? 1 :  _event_weight);
 
@@ -1205,21 +1210,21 @@ void SSmethod::Calculate_FR_nMissingHits( TString input_file_data_name, TGraphEr
 			if ( (Z1Mass > 40.) && (Z1Mass < 120.) )
 			{
 				_N_MissingHits[Settings::_40_MZ1_120][_current_eta_bin][_current_pT_bin] += LepMissingHit->at(2);
-				if(LepisID->at(2) && ((fabs(LepLepId->at(2)) == 11) ? LepCombRelIsoPF->at(2) < 999999. : LepCombRelIsoPF->at(2) < 0.35)) _N_Passing[Settings::_40_MZ1_120][_current_eta_bin][_current_pT_bin] += 1.;
+				if(LepisID->at(2) ) _N_Passing[Settings::_40_MZ1_120][_current_eta_bin][_current_pT_bin] += 1.;
 				else _N_Failling[Settings::_40_MZ1_120][_current_eta_bin][_current_pT_bin] += 1.;
 			}
 			
 			if ( abs( Z1Mass - 91.2 ) < 7. )
 			{
 				_N_MissingHits[Settings::_MZ1mMZtrue_7][_current_eta_bin][_current_pT_bin] += LepMissingHit->at(2);
-				if(LepisID->at(2) && ((fabs(LepLepId->at(2)) == 11) ? LepCombRelIsoPF->at(2) < 999999. : LepCombRelIsoPF->at(2) < 0.35)) _N_Passing[Settings::_MZ1mMZtrue_7][_current_eta_bin][_current_pT_bin] += 1.;
+				if(LepisID->at(2) ) _N_Passing[Settings::_MZ1mMZtrue_7][_current_eta_bin][_current_pT_bin] += 1.;
 				else _N_Failling[Settings::_MZ1mMZtrue_7][_current_eta_bin][_current_pT_bin] += 1.;
 			}
 			
 			if ( (Z1Mass > 60.) && (Z1Mass < 120.) )
 			{
 				_N_MissingHits[Settings::_60_MZ1_120][_current_eta_bin][_current_pT_bin] += LepMissingHit->at(2);
-				if(LepisID->at(2) && ((fabs(LepLepId->at(2)) == 11) ? LepCombRelIsoPF->at(2) < 999999. : LepCombRelIsoPF->at(2) < 0.35)) _N_Passing[Settings::_60_MZ1_120][_current_eta_bin][_current_pT_bin] += 1.;
+				if(LepisID->at(2) ) _N_Passing[Settings::_60_MZ1_120][_current_eta_bin][_current_pT_bin] += 1.;
 				else _N_Failling[Settings::_60_MZ1_120][_current_eta_bin][_current_pT_bin] += 1.;
 			}
 			
@@ -1231,7 +1236,7 @@ void SSmethod::Calculate_FR_nMissingHits( TString input_file_data_name, TGraphEr
 			if ( abs( ((p1+p2)+p3).M() - 91.2 ) < 5. )//3 lepton mass
 			{
 				_N_MissingHits[Settings::_MZ1EmMZtrue_5][_current_eta_bin][_current_pT_bin] += LepMissingHit->at(2);
-				if(LepisID->at(2) && ((fabs(LepLepId->at(2)) == 11) ? LepCombRelIsoPF->at(2) < 999999. : LepCombRelIsoPF->at(2) < 0.35)) _N_Passing[Settings::_MZ1EmMZtrue_5][_current_eta_bin][_current_pT_bin] += 1.;
+				if(LepisID->at(2) ) _N_Passing[Settings::_MZ1EmMZtrue_5][_current_eta_bin][_current_pT_bin] += 1.;
 				else _N_Failling[Settings::_MZ1EmMZtrue_5][_current_eta_bin][_current_pT_bin] += 1.;
 			}
 		}
@@ -1376,14 +1381,14 @@ void SSmethod::Correct_Final_FR( TString input_file_data_name)
 			_current_eta_bin = Find_Ele_eta_bin ( LepEta->at(2));
 
 			_N_MissingHits_ZLL[_current_eta_bin][_current_pT_bin] += LepMissingHit->at(2);
-			if(LepisID->at(2) && ((fabs(LepLepId->at(2)) == 11) ? LepCombRelIsoPF->at(2) < 999999. : LepCombRelIsoPF->at(2) < 0.35)) _N_Passing_ZLL[_current_eta_bin][_current_pT_bin] += 1.;
+			if(LepisID->at(2) ) _N_Passing_ZLL[_current_eta_bin][_current_pT_bin] += 1.;
 			else _N_Failling_ZLL[_current_eta_bin][_current_pT_bin] += 1.;
 			
 			_current_pT_bin = Find_Ele_pT_bin ( LepPt->at(3) );
 			_current_eta_bin = Find_Ele_eta_bin ( LepEta->at(3));
 			
 			_N_MissingHits_ZLL[_current_eta_bin][_current_pT_bin] += LepMissingHit->at(3);
-			if(LepisID->at(3) && ((fabs(LepLepId->at(3)) == 11) ? LepCombRelIsoPF->at(3) < 999999. : LepCombRelIsoPF->at(3) < 0.35)) _N_Passing_ZLL[_current_eta_bin][_current_pT_bin] += 1.;
+			if(LepisID->at(3) ) _N_Passing_ZLL[_current_eta_bin][_current_pT_bin] += 1.;
 			else _N_Failling_ZLL[_current_eta_bin][_current_pT_bin] += 1.;
 		}
 		
@@ -1944,7 +1949,8 @@ void SSmethod::SavePlots( TCanvas *c, TString name)
    c->SaveAs(name + ".pdf");
    c->SaveAs(name + ".root");
    c->SaveAs(name + ".eps");
-   gSystem->Exec("convert -density 300 -quality 100 " + name + ".eps " + name + ".png");
+   c->SaveAs(name + ".png");
+   //gSystem->Exec("convert -density 300 -quality 100 " + name + ".eps " + name + ".png");
 }
 //=======================================
 

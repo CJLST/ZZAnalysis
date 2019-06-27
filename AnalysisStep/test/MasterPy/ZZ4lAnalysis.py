@@ -306,7 +306,9 @@ if(IsMC):
 ### ----------------------------------------------------------------------
 
 SIP =  "userFloat('SIP')<4"
-GOODLEPTON = "userFloat('ID') && " + SIP  # Lepton passing tight ID + SIP [ISO is asked AFTER FSR!!!]
+#GOODLEPTON = "userFloat('ID') && " + SIP  # Lepton passing tight ID + SIP [ISO is asked AFTER FSR!!!]
+GOODMUON = "userFloat('ID')" #Muon selection no longer includes a cut on SIP since it is included in the Muon BDT
+GOODELECTRON = "userFloat('ID') && " + SIP
 TIGHTMUON = "userFloat('isPFMuon') || (userFloat('isTrackerHighPtMuon') && pt>200)"
 
 
@@ -379,7 +381,7 @@ process.softMuons = cms.EDProducer("MuFiller",
     flags = cms.PSet(
         ID = cms.string("userFloat('isBDT')"), # muonMVA ID
         isSIP = cms.string(SIP),
-        isGood = cms.string(GOODLEPTON),
+        isGood = cms.string(GOODMUON),
         isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<" + str(MUISOCUT)),
 #       Note: passCombRelIsoPFFSRCorr is currently set in LeptonPhotonMatcher for new FSR strategy; in ZZCandidateFiller for the old one
     )
@@ -441,7 +443,7 @@ process.softElectrons = cms.EDProducer("EleFiller",
    flags = cms.PSet(
         ID = cms.string("userFloat('isBDT')"),
         isSIP = cms.string(SIP),
-        isGood = cms.string(GOODLEPTON),
+        isGood = cms.string(GOODELECTRON),
         isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<"+str(ELEISOCUT))
 #       Note: passCombRelIsoPFFSRCorr is currently set in LeptonPhotonMatcher for new FSR strategy; in ZZCandidateFiller for the old one
         ),
@@ -469,7 +471,7 @@ process.softPhotons = cms.EDProducer("Philler",
    flags = cms.PSet(
         ID = cms.string("userFloat('isBDT')"),
         isSIP = cms.string(SIP),
-        isGood = cms.string(GOODLEPTON),
+        isGood = cms.string(GOODELECTRON),
         pass_lepton_ID = cms.string("userFloat('isBDT')"),
         pass_lepton_SIP = cms.string(SIP),
 #        isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<"+ELEISOCUT), #TLE isolation is not corrected for FSR gammas.

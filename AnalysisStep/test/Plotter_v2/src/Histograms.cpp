@@ -5140,9 +5140,9 @@ void Histograms::SavePlots( TCanvas *c, TString name, TString folder)
    system("mkdir -p " + folder);
    c->SaveAs(name + ".pdf");
    c->SaveAs(name + ".root");
-//   c->SaveAs(name + ".C");
    c->SaveAs(name + ".eps");
-   gSystem->Exec("convert -density 150 -quality 100 " + name + ".eps " + name + ".png");
+   c->SaveAs(name + ".png");
+   //gSystem->Exec("convert -density 150 -quality 100 " + name + ".eps " + name + ".png");
 }
 //=======================================
 
