@@ -129,7 +129,7 @@ void OSmethod::FillFRHistos( TString input_file_data_name )
       if ( abs(Z1Mass - 91.2) > 7. ) {_failZ1MassCut++; continue;}
       if ( (LepPt->at(0) > LepPt->at(1)) && (LepPt->at(0) < 20. || LepPt->at(1) < 10.) ) {_failLepPtCut++; continue;}
       if ( (LepPt->at(1) > LepPt->at(0)) && (LepPt->at(1) < 20. || LepPt->at(0) < 10.) ) {_failLepPtCut++; continue;}
-      if ( LepSIP->at(2) > 4.) {_failSIPCut++; continue;}
+      if ( LepSIP->at(2) > 4. && abs(LepLepId->at(2) == 11) ) {_failSIPCut++; continue;} //Add dxy and dz cuts
       if ( PFMET > 25. ) {_failMETCut++; continue;}
 		if ( (LepLepId->at(2) < 0 && LepLepId->at(0) > 0 && (p1+p3).M() < 4.) || (LepLepId->at(2) < 0 && LepLepId->at(1) > 0 && (p2+p3).M() < 4.) ) {_faillingJPsiMassCut++; continue;}
 		if ( (LepLepId->at(2) > 0 && LepLepId->at(0) < 0 && (p1+p3).M() < 4.) || (LepLepId->at(2) > 0 && LepLepId->at(1) < 0 && (p2+p3).M() < 4.) ) {_faillingJPsiMassCut++; continue;}
@@ -139,7 +139,7 @@ void OSmethod::FillFRHistos( TString input_file_data_name )
          _k_factor = calculate_K_factor(input_file_data_name);
          _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight) / gen_sum_weights;
 
-         if(LepisID->at(2) && ((fabs(LepLepId->at(2)) == 11) ? LepCombRelIsoPF->at(2) < 999999. : LepCombRelIsoPF->at(2) < 0.35))
+         if( LepisID->at(2) )
          {
 		    _passingSelection++;
             if(fabs(LepLepId->at(2)) == 11 ) passing[_current_process][Settings::ele]->Fill(LepPt->at(2), (abs(LepEta->at(2)) < 1.479) ? 0.5 : 1.5 , (_current_process == Settings::Data) ? 1 :  _event_weight);
@@ -359,7 +359,7 @@ void OSmethod::MakeHistogramsZX( TString input_file_data_name, TString  input_fi
       }
       if ( test_bit(CRflag, CRZLLos_3P1F) )
       {
-         if(LepisID->at(3) && ((fabs(LepLepId->at(2)) == 11) ? LepCombRelIsoPF->at(3) < 999999. : LepCombRelIsoPF->at(3) < 0.35))
+         if(LepisID->at(3))
          {
          	_f4    = FR->GetFakeRate(LepPt->at(2),LepEta->at(2),LepLepId->at(2));
          	_f4_Up = FR->GetFakeRate_Up(LepPt->at(2),LepEta->at(2),LepLepId->at(2));
@@ -456,7 +456,7 @@ void OSmethod::MakeZXMCContribution( TString input_file_data_name, TString  inpu
       _k_factor = calculate_K_factor(input_file_data_name);
       _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight) / gen_sum_weights;
       
-      if(LepisID->at(3) && ((fabs(LepLepId->at(3)) == 11) ? LepCombRelIsoPF->at(3) < 999999. : LepCombRelIsoPF->at(3) < 0.35))
+      if( LepisID->at(3) )
       {
 			_f4    = FR->GetFakeRate(LepPt->at(2),LepEta->at(2),LepLepId->at(2));
 			_f4_Up = FR->GetFakeRate_Up(LepPt->at(2),LepEta->at(2),LepLepId->at(2));
@@ -1766,7 +1766,8 @@ void OSmethod::SavePlots( TCanvas *c, TString name)
    c->SaveAs(name + ".pdf");
    c->SaveAs(name + ".root");
    c->SaveAs(name + ".eps");
-   gSystem->Exec("convert -density 300 -quality 100 " + name + ".eps " + name + ".png");
+   c->SaveAs(name + ".png");
+   //gSystem->Exec("convert -density 300 -quality 100 " + name + ".eps " + name + ".png");
 }
 //=======================================
 
