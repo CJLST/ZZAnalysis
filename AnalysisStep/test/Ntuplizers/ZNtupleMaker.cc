@@ -2,6 +2,7 @@
 #include <memory>
 #include <cmath>
 #include <string>
+#include <cassert>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -26,6 +27,7 @@
 #include <DataFormats/PatCandidates/interface/MET.h>
 #include <DataFormats/METReco/interface/PFMET.h>
 #include <DataFormats/METReco/interface/PFMETCollection.h>
+#include <ZZAnalysis/AnalysisStep/interface/METCorrectionHandler.h>
 #include <DataFormats/Math/interface/LorentzVector.h>
 #include <CommonTools/UtilAlgos/interface/TFileService.h>
 #include <DataFormats/Common/interface/MergeableCounter.h>
@@ -77,6 +79,8 @@ namespace {
   std::vector<float> LepPhi;
   std::vector<short> LepLepId;
   std::vector<float> LepSIP;
+  std::vector<float> Lepdxy;
+  std::vector<float> Lepdz;
   std::vector<float> LepTime;
   std::vector<bool> LepisID;
   std::vector<float> LepBDT;
@@ -154,10 +158,12 @@ namespace {
   std::vector<float> JetJERUp;
   std::vector<float> JetJERDown;
 	
-  Float_t PFMET  =  -99;
-  Float_t PFMET_jesUp  =  -99;
-  Float_t PFMET_jesDn  =  -99;
-  Float_t PFMETPhi  =  -99;
+  // Generic MET object
+  METObject metobj;
+  METObject metobj_corrected;
+  Float_t GenMET = -99;
+  Float_t GenMETPhi = -99;
+
   Float_t genHEPMCweight = 0;
   Float_t xsection = 0;
   Float_t dataMCWeight = 0;
@@ -205,6 +211,8 @@ private:
   Float_t xsec;
   int year;
   edm::InputTag metTag;
+   
+  METCorrectionHandler* metCorrHandler;
 
   edm::EDGetTokenT<GenEventInfoProduct> genInfoToken;
   edm::EDGetTokenT<edm::View<pat::CompositeCandidate> > candToken;
@@ -272,7 +280,9 @@ ZNtupleMaker::ZNtupleMaker(const edm::ParameterSet& pset) :
   triggerResultToken = consumes<edm::TriggerResults>(edm::InputTag("TriggerResults"));
   vtxToken = consumes<vector<reco::Vertex> >(edm::InputTag("goodPrimaryVertices"));
   jetToken = consumes<edm::View<pat::Jet> >(edm::InputTag("cleanJets"));
+  
   metToken = consumes<pat::METCollection>(metTag);
+  metCorrHandler = new METCorrectionHandler(Form("%i", year));
 
   electronToken = consumes<vector<pat::Electron> >(edm::InputTag("softElectrons"));
   //softElectrons->clear();
@@ -434,6 +444,7 @@ ZNtupleMaker::ZNtupleMaker(const edm::ParameterSet& pset) :
 
 ZNtupleMaker::~ZNtupleMaker()
 {
+   delete metCorrHandler;
 }
 
 
@@ -521,12 +532,77 @@ void ZNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& eSetu
   // MET
   Handle<pat::METCollection> metHandle;
   event.getByToken(metToken, metHandle);
-  if(metHandle.isValid()){
-    const pat::MET &met = metHandle->front();
-    PFMET = met.pt();
-    PFMET_jesUp = met.shiftedPt(pat::MET::JetEnUp);
-    PFMET_jesDn = met.shiftedPt(pat::MET::JetEnDown);
-    PFMETPhi = met.phi();
+  GenMET=GenMETPhi=-99;
+  if (metHandle.isValid()){
+     const pat::MET &met = metHandle->front();
+     
+     metobj.extras.met = metobj.extras.met_original = metobj.extras.met_raw
+     = metobj.extras.met_METup = metobj.extras.met_METdn
+     = metobj.extras.met_JERup = metobj.extras.met_JERdn
+     = metobj.extras.met_PUup = metobj.extras.met_PUdn
+     
+     = metobj_corrected.extras.met = metobj_corrected.extras.met_original = metobj_corrected.extras.met_raw
+     = metobj_corrected.extras.met_METup = metobj_corrected.extras.met_METdn
+     = metobj_corrected.extras.met_JERup = metobj_corrected.extras.met_JERdn
+     = metobj_corrected.extras.met_PUup = metobj_corrected.extras.met_PUdn
+     
+     = met.pt();
+     metobj.extras.phi = metobj.extras.phi_original = metobj.extras.phi_raw
+     = metobj.extras.phi_METup = metobj.extras.phi_METdn
+     = metobj.extras.phi_JECup = metobj.extras.phi_JECdn
+     = metobj.extras.phi_JERup = metobj.extras.phi_JERdn
+     = metobj.extras.phi_PUup = metobj.extras.phi_PUdn
+     
+     = metobj_corrected.extras.phi = metobj_corrected.extras.phi_original = metobj_corrected.extras.phi_raw
+     = metobj_corrected.extras.phi_METup = metobj_corrected.extras.phi_METdn
+     = metobj_corrected.extras.phi_JECup = metobj_corrected.extras.phi_JECdn
+     = metobj_corrected.extras.phi_JERup = metobj_corrected.extras.phi_JERdn
+     = metobj_corrected.extras.phi_PUup = metobj_corrected.extras.phi_PUdn
+     
+     = met.phi();
+     
+     metobj.extras.met_JECup = metobj_corrected.extras.met_JECup = met.shiftedPt(pat::MET::JetEnUp);
+     metobj.extras.met_JECdn = metobj_corrected.extras.met_JECdn = met.shiftedPt(pat::MET::JetEnDown);
+     metobj.extras.phi_JECup = metobj_corrected.extras.phi_JECup = met.shiftedPhi(pat::MET::JetEnUp);
+     metobj.extras.phi_JECdn = metobj_corrected.extras.phi_JECdn = met.shiftedPhi(pat::MET::JetEnDown);
+     
+     if (isMC && metCorrHandler && met.genMET()){
+        GenMET = met.genMET()->pt();
+        GenMETPhi = met.genMET()->phi();
+        metCorrHandler->correctMET(GenMET, GenMETPhi, &metobj_corrected, false); // FIXME: Last argument should be for isFastSim, but we don't have it yet
+     }
+     else if (isMC){
+        cms::Exception e("METCorrectionHandler");
+        e << "Either no met.genMET or metCorrHandler!";
+        throw e;
+     }
+  }
+  else{
+     metobj.extras.met = metobj.extras.met_original = metobj.extras.met_raw
+     = metobj.extras.met_METup = metobj.extras.met_METdn
+     = metobj.extras.met_JECup = metobj.extras.met_JECdn
+     = metobj.extras.met_JERup = metobj.extras.met_JERdn
+     = metobj.extras.met_PUup = metobj.extras.met_PUdn
+     
+     = metobj_corrected.extras.met = metobj_corrected.extras.met_original = metobj_corrected.extras.met_raw
+     = metobj_corrected.extras.met_METup = metobj_corrected.extras.met_METdn
+     = metobj_corrected.extras.met_JECup = metobj_corrected.extras.met_JECdn
+     = metobj_corrected.extras.met_JERup = metobj_corrected.extras.met_JERdn
+     = metobj_corrected.extras.met_PUup = metobj_corrected.extras.met_PUdn
+     
+     = metobj.extras.phi = metobj.extras.phi_original = metobj.extras.phi_raw
+     = metobj.extras.phi_METup = metobj.extras.phi_METdn
+     = metobj.extras.phi_JECup = metobj.extras.phi_JECdn
+     = metobj.extras.phi_JERup = metobj.extras.phi_JERdn
+     = metobj.extras.phi_PUup = metobj.extras.phi_PUdn
+     
+     = metobj_corrected.extras.phi = metobj_corrected.extras.phi_original = metobj_corrected.extras.phi_raw
+     = metobj_corrected.extras.phi_METup = metobj_corrected.extras.phi_METdn
+     = metobj_corrected.extras.phi_JECup = metobj_corrected.extras.phi_JECdn
+     = metobj_corrected.extras.phi_JERup = metobj_corrected.extras.phi_JERdn
+     = metobj_corrected.extras.phi_PUup = metobj_corrected.extras.phi_PUdn
+     
+     = -99;
   }
 	
   // all soft leptons
@@ -590,6 +666,8 @@ void ZNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool evtPa
   LepPhi.clear();
   LepLepId.clear();
   LepSIP.clear();
+  Lepdxy.clear();
+  Lepdz.clear();
   LepTime.clear();
   LepisID.clear();
   LepBDT.clear();
@@ -626,6 +704,8 @@ void ZNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool evtPa
     LepPhi.push_back( leptons[i]->phi() );
     LepLepId.push_back( leptons[i]->pdgId() );
     LepSIP  .push_back( userdatahelpers::getUserFloat(leptons[i],"SIP") );
+    Lepdxy  .push_back( userdatahelpers::getUserFloat(leptons[i],"dxy") );
+    Lepdz   .push_back( userdatahelpers::getUserFloat(leptons[i],"dz") );
     LepTime .push_back( lepFlav==13 ? userdatahelpers::getUserFloat(leptons[i],"time") : 0. );
     LepisID .push_back( userdatahelpers::getUserFloat(leptons[i],"ID") );
     LepBDT  .push_back( userdatahelpers::getUserFloat(leptons[i],"BDT"));
@@ -1064,6 +1144,8 @@ void ZNtupleMaker::BookAllBranches(){
   myTree->Book("LepPhi",LepPhi);
   myTree->Book("LepLepId",LepLepId);
   myTree->Book("LepSIP",LepSIP);
+  myTree->Book("Lepdxy",Lepdxy);
+  myTree->Book("Lepdz",Lepdz);
   myTree->Book("LepTime",LepTime);
   myTree->Book("LepisID",LepisID);
   myTree->Book("LepBDT",LepBDT);
@@ -1142,10 +1224,32 @@ void ZNtupleMaker::BookAllBranches(){
     myTree->Book("JetPUID", JetPUID);
     myTree->Book("JetID", JetID);
     myTree->Book("JetPUValue", JetPUValue);
-    myTree->Book("PFMET",PFMET);
-    myTree->Book("PFMET_jesUp",PFMET_jesUp);
-    myTree->Book("PFMET_jesDn",PFMET_jesDn);
-    myTree->Book("PFMETPhi",PFMETPhi);
+    myTree->Book("GenMET", GenMET);
+    myTree->Book("GenMETPhi", GenMETPhi);
+    myTree->Book("PFMET", metobj.extras.met);
+    myTree->Book("PFMET_jesUp", metobj.extras.met_JECup);
+    myTree->Book("PFMET_jesDn", metobj.extras.met_JECdn);
+    myTree->Book("PFMETPhi", metobj.extras.phi);
+    myTree->Book("PFMETPhi_jesUp", metobj.extras.phi_JECup);
+    myTree->Book("PFMETPhi_jesDn", metobj.extras.phi_JECdn);
+    myTree->Book("PFMET_corrected", metobj_corrected.extras.met);
+    myTree->Book("PFMET_corrected_jesUp", metobj_corrected.extras.met_JECup);
+    myTree->Book("PFMET_corrected_jesDn", metobj_corrected.extras.met_JECdn);
+    myTree->Book("PFMET_corrected_jerUp", metobj_corrected.extras.met_JERup);
+    myTree->Book("PFMET_corrected_jerDn", metobj_corrected.extras.met_JERdn);
+    myTree->Book("PFMET_corrected_puUp", metobj_corrected.extras.met_PUup);
+    myTree->Book("PFMET_corrected_puDn", metobj_corrected.extras.met_PUdn);
+    myTree->Book("PFMET_corrected_metUp", metobj_corrected.extras.met_METup);
+    myTree->Book("PFMET_corrected_metDn", metobj_corrected.extras.met_METdn);
+    myTree->Book("PFMETPhi_corrected", metobj_corrected.extras.phi);
+    myTree->Book("PFMETPhi_corrected_jesUp", metobj_corrected.extras.phi_JECup);
+    myTree->Book("PFMETPhi_corrected_jesDn", metobj_corrected.extras.phi_JECdn);
+    myTree->Book("PFMETPhi_corrected_jerUp", metobj_corrected.extras.phi_JERup);
+    myTree->Book("PFMETPhi_corrected_jerDn", metobj_corrected.extras.phi_JERdn);
+    myTree->Book("PFMETPhi_corrected_puUp", metobj_corrected.extras.phi_PUup);
+    myTree->Book("PFMETPhi_corrected_puDn", metobj_corrected.extras.phi_PUdn);
+    myTree->Book("PFMETPhi_corrected_metUp", metobj_corrected.extras.phi_METup);
+    myTree->Book("PFMETPhi_corrected_metDn", metobj_corrected.extras.phi_METdn);
   }
 	
   if(addQGLInputs){
