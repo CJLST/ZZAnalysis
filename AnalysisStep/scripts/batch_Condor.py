@@ -92,12 +92,13 @@ fi
 rm -f br.sm1 br.sm2 ffwarn.dat input.DAT process.DAT "$USER.cc"
 
 echo '...done at' $(date)
-exit $cmsRunStatus
 
 #note cping back is handled automatically by condor
 if $runninglocally; then
   cp ZZ4lAnalysis.root* *.txt *.gz $SUBMIT_DIR
 fi
+
+exit $cmsRunStatus
 """ 
    return script
 
