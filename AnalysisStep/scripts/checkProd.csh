@@ -1,10 +1,23 @@
 #!/bin/tcsh
 # Search for missing root files
 # parameter to be specified: mf = move failed jobs
+#                            lf = link failed jobs (then you can run cleanup.csh; resubmit_Condor.csh in AAAFAIL)
 
-#set echo 
+#set echo
 
 set opt=$1
+
+if ( $#argv >= 2 ) then
+  set gooddir=$2
+else
+  set gooddir=AAAOK
+endif
+
+if ( $#argv >= 3 ) then
+  set baddir=$3
+else
+  set baddir=AAAFAIL
+endif
 
 foreach chunk ( *Chunk* )
  set fail="false"
@@ -19,7 +32,7 @@ foreach chunk ( *Chunk* )
 #   echo "Empty file: " $filename
    set fail="true"
  endif
- 
+
 # if ( $fail == "true" ) then
 #   if ( -e ${filename}.recovered ) echo "   found: " ${filename}.recovered
 #   if ( -e ${filename}.corrupted ) echo "   found: " ${filename}.corrupted
@@ -40,8 +53,8 @@ foreach chunk ( *Chunk* )
  set nonomatch
  set jobRep = ( ${chunk}/job_*.txt )
  if ( -e $jobRep[1] ) then
-   if ( `grep -c -e "Exited with exit code 1" -e "CPU time limit exceeded" $jobRep[$#jobRep]` != 0 ) then 
-      set exitStatus=152 
+   if ( `grep -c -e "Exited with exit code 1" -e "CPU time limit exceeded" $jobRep[$#jobRep]` != 0 ) then
+      set exitStatus=152
       set fail="true"
    endif
  endif
@@ -49,23 +62,25 @@ foreach chunk ( *Chunk* )
 
  # Archive succesful jobs, or report failure
  if ( $fail == "false" ) then
-  mkdir -p AAAOK
-  mv $chunk AAAOK/
- else 
+  mkdir -p $gooddir
+  mv $chunk $gooddir/
+ else
   set description=""
-   if ( $exitStatus == 0 ) then 
+   if ( $exitStatus == 0 ) then
      echo $chunk ": still running (or unknown failure)"
-   else 
+   else
      if ( $exitStatus == 84 ) set description="(missing input file)"
      if ( $exitStatus == 134 ) set description="(Crashed)"
      if ( $exitStatus == 152 ) set description="(Exceeded CPU time)"
     echo $chunk ": failed, exit status = " $exitStatus $description
    endif
    if ( $opt == "mf" && $exitStatus != 0 ) then
-     mkdir -p AAAFAIL
-     mv $chunk AAAFAIL/ 
+     mkdir -p $baddir
+     mv $chunk $baddir/
+   else if ( $opt == "lf" && $exitStatus != 0 ) then
+     mkdir -p $baddir
+     ln -s ../$chunk $baddir/
+     ln -sf ../condor.sub $baddir
    endif
  endif
 end
-# cd -
-#end

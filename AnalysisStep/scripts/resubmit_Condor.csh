@@ -20,7 +20,7 @@ else # Last attempt: Try to see if a valid proxy already exists in ~
 
    if ($proxy_valid < 10 ) then
       echo "Error: no valid GRID proxy found."
-      exit
+      exit 1
    endif
 endif
 
