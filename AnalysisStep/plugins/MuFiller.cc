@@ -186,11 +186,11 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
       else if ( setup == 2017 )
       {
-         isBDT = ((pt <= 10 && BDT > 0.8847169876098633) || (pt > 10  && BDT > -0.19389629721641488));
+         isBDT = ((pt <= 10 && BDT > 0.883555161952972) || (pt > 10  && BDT > -0.3830992293357821));
       }
       else if ( setup == 2018 )
       {
-         isBDT = ((pt <= 10 && BDT > 0.8847169876098633) || (pt > 10  && BDT > -0.19389629721641488));
+         isBDT = ((pt <= 10 && BDT > 0.9506129026412962) || (pt > 10  && BDT > -0.3629065185785282));
       }
       else
       {
