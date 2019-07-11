@@ -48,6 +48,7 @@ class Candidate:
         self.pt4ljj        = treeEntry.ZZjjPt
         self.nExtraLep     = treeEntry.nExtraLep
         self.nExtraZ       = treeEntry.nExtraZ
+        self.lepBDT        = treeEntry.LepBDT
         self.jetpt         = treeEntry.JetPt
         self.jeteta        = treeEntry.JetEta
         self.jetphi        = treeEntry.JetPhi
@@ -74,7 +75,11 @@ class Candidate:
                 self.jets30phi.append(treeEntry.JetPhi[i])
                 self.jets30mass.append(treeEntry.JetMass[i])
                 self.jets30QGLikelihood.append(treeEntry.JetQGLikelihood[i])
-
+    
+        self.LepBDT = []
+        
+        for i in range(len(treeEntry.LepBDT)):
+            self.LepBDT.append(treeEntry.LepBDT[i])
 
 
         self.kds         = None
@@ -312,6 +317,10 @@ class Candidate:
             line  += ":{0:.2f}".format(self.ZZMass)
             line  += ":" + "{0:.2f}".format(self.Z1Mass)
             line  += ":" + "{0:.2f}".format(self.Z2Mass)
+            line  += ":" + "{0:.6f}".format(self.LepBDT[0])
+            line  += ":" + "{0:.6f}".format(self.LepBDT[1])
+            line  += ":" + "{0:.6f}".format(self.LepBDT[2])
+            line  += ":" + "{0:.6f}".format(self.LepBDT[3])
 #            line  += ":" + "{0:.2f}".format(self.massErrRaw)
 #            line  += ":" + "{0:.2f}".format(self.massErrCorr)
             line  += ":" + "{0:.3f}".format(self.D_bkg_kin)

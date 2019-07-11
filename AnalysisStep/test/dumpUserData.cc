@@ -242,18 +242,18 @@ void dumpUserData::analyze(const Event & event, const EventSetup& eventSetup){
 
 
   // Print passing triggers
-  if (listTriggers) {
-    Handle<TriggerResults> triggerResults;
-    if (event.getByToken(triggerResultToken, triggerResults)) {
-      edm::TriggerNames const* trigNames_;  
-      trigNames_ = &event.triggerNames(*triggerResults);
-      cout << "Trigger bits:" << endl;
-      for (unsigned int i=0; i<triggerResults->size(); i++) {
-	if (triggerResults->accept(i)) cout << "   " <<
-	  trigNames_->triggerName(i) << endl;
-      }
-    }
-  }
+//  if (listTriggers) {
+//    Handle<TriggerResults> triggerResults;
+//    if (event.getByToken(triggerResultToken, triggerResults)) {
+//      edm::TriggerNames const* trigNames_;  
+//      trigNames_ = &event.triggerNames(*triggerResults);
+//      cout << "Trigger bits:" << endl;
+//      for (unsigned int i=0; i<triggerResults->size(); i++) {
+//   if (triggerResults->accept(i)) cout << "   " <<
+//     trigNames_->triggerName(i) << endl;
+//      }
+//    }
+//  }
  
 
 }
