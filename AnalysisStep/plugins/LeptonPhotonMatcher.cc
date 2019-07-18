@@ -185,8 +185,9 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       for (unsigned int j = 0; j< muonHandle->size(); ++j){
         //      const pat::Muon* m = ((*muonHandle)[j]).get();
         const pat::Muon* m = &((*muonHandle)[j]);
-        if (! m->userFloat("isSIP")) continue; 
+        //if (! m->userFloat("isSIP")) continue;
         double dR = ROOT::Math::VectorUtil::DeltaR(m->momentum(),g->momentum());
+        if(debug) cout << "muon pt = " << m->pt() << " photon pt = " << g->pt() << " dR = " << dR << endl;
         if (dR>0.5) continue;
         if (dR<dRMin) {
           dRMin = dR;
@@ -202,6 +203,7 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         const pat::Electron* e = &((*electronHandle)[j]);
         if ( ! e->userFloat("isSIP")) continue;
         double dR = ROOT::Math::VectorUtil::DeltaR(e->momentum(),g->momentum());
+        if(debug) cout << "ele pt = " << e->pt() << " photon pt = " << g->pt() << " dR = " << dR << endl;
         if (dR>0.5) continue;
         if (dR<dRMin) {
           dRMin = dR;
