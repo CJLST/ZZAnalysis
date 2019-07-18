@@ -81,6 +81,7 @@
 
 namespace {
   bool writeJets = true;     // Write jets in the tree. FIXME: make this configurable
+  bool writePhotons = true; // Write photons in the tree. FIXME: make this configurable
   bool addKinRefit = true;
   bool addVtxFit = false;
   bool addFSRDetails = false;
@@ -251,6 +252,13 @@ namespace {
   std::vector<float> ExtraLepEta;
   std::vector<float> ExtraLepPhi ;
   std::vector<short> ExtraLepLepId;
+  
+  // Photon info
+  std::vector<float> PhotonPt ;
+  std::vector<float> PhotonEta ;
+  std::vector<float> PhotonPhi ;
+   
+   
   Short_t genFinalState  = 0;
   Int_t genProcessId  = 0;
   Float_t genHEPMCweight  = 0;
@@ -401,6 +409,7 @@ private:
   virtual void FillLHECandidate();
   virtual void FillCandidate(const pat::CompositeCandidate& higgs, bool evtPass, const edm::Event&, const Int_t CRflag);
   virtual void FillJet(const pat::Jet& jet);
+  virtual void FillPhoton(const pat::PackedCandidate& photon);
   virtual void endJob() ;
 
   void FillHGenInfo(const math::XYZTLorentzVector Hp, float w);
@@ -488,6 +497,7 @@ private:
   edm::EDGetTokenT<edm::TriggerResults> triggerResultToken;
   edm::EDGetTokenT<vector<reco::Vertex> > vtxToken;
   edm::EDGetTokenT<edm::View<pat::Jet> > jetToken;
+  edm::EDGetTokenT<edm::View<pat::PackedCandidate> > pfCandToken;
   edm::EDGetTokenT<pat::METCollection> metToken;
   //edm::EDGetTokenT<pat::METCollection> metNoHFToken;
   edm::EDGetTokenT<pat::MuonCollection> muonToken;
@@ -611,6 +621,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   triggerResultToken = consumes<edm::TriggerResults>(edm::InputTag("TriggerResults"));
   vtxToken = consumes<vector<reco::Vertex> >(edm::InputTag("goodPrimaryVertices"));
   jetToken = consumes<edm::View<pat::Jet> >(edm::InputTag("cleanJets"));
+  pfCandToken = consumes<edm::View<pat::PackedCandidate> >(edm::InputTag("packedPFCandidates"));
   metToken = consumes<pat::METCollection>(metTag);
   //metNoHFToken = consumes<pat::METCollection>(edm::InputTag("slimmedMETsNoHF"));
   muonToken = consumes<pat::MuonCollection>(edm::InputTag("slimmedMuons"));
@@ -1126,7 +1137,24 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   for(edm::View<pat::Jet>::const_iterator jet = CleanedJets->begin(); jet != CleanedJets->end(); ++jet){
     cleanedJets.push_back(&*jet);
   }
+   
+   // Photons
+   Handle<edm::View<pat::PackedCandidate> > pfCands;
+   event.getByToken(pfCandToken, pfCands);
+   vector<const pat::PackedCandidate*> photons;
+   for(edm::View<pat::PackedCandidate>::const_iterator pfCand = pfCands->begin(); pfCand != pfCands->end(); ++pfCand){
+      // We only want photons
+      if (pfCand->pdgId()!=22 || !(pfCand->pt()>2. && fabs(pfCand->eta())<2.4)) continue;
 
+      photons.push_back(&*pfCand);
+   }
+   
+   if (writePhotons){
+      for (unsigned i=0; i<photons.size(); ++i) {
+            FillPhoton(*(photons.at(i)));
+         }
+   }
+      
   // MET
   Handle<pat::METCollection> metHandle;
   event.getByToken(metToken, metHandle);
@@ -1399,6 +1427,13 @@ void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
 
    JetHadronFlavour .push_back(jet.hadronFlavour());
    JetPartonFlavour .push_back(jet.partonFlavour());
+}
+
+void HZZ4lNtupleMaker::FillPhoton(const pat::PackedCandidate& photon)
+{
+   PhotonPt  .push_back( photon.pt());
+   PhotonEta .push_back( photon.eta());
+   PhotonPhi .push_back( photon.phi());
 }
 
 float HZZ4lNtupleMaker::EvalSpline(TSpline3* const& sp, float xval){
@@ -2660,6 +2695,12 @@ void HZZ4lNtupleMaker::BookAllBranches(){
 //   myTree->Book("DiJetMassMinus",DiJetMassMinus, false);
   myTree->Book("DiJetDEta",DiJetDEta, false);
   myTree->Book("DiJetFisher",DiJetFisher, false);
+  
+  //Photon variables
+  myTree->Book("PhotonPt",PhotonPt, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PhotonEta",PhotonEta, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PhotonPhi",PhotonPhi, failedTreeLevel >= fullFailedTree);
+   
   myTree->Book("nExtraLep",nExtraLep, false);
   myTree->Book("nExtraZ",nExtraZ, false);
   myTree->Book("ExtraLepPt",ExtraLepPt, false);

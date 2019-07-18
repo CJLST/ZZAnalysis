@@ -54,6 +54,7 @@ namespace {
   bool skipMuDataMCWeight = false; // skip computation of data/MC weight for mu
   bool skipEleDataMCWeight = false; // skip computation of data/MC weight for ele
   bool addJets = true;
+  bool addPhotons = true;
   bool addQGLInputs = false;
   bool addAddLept = false;
 
@@ -157,6 +158,11 @@ namespace {
   std::vector<short> JetID;
   std::vector<float> JetJERUp;
   std::vector<float> JetJERDown;
+   
+  std::vector<float> PhotonPt;
+  std::vector<float> PhotonEta;
+  std::vector<float> PhotonPhi;
+
 	
   // Generic MET object
   METObject metobj;
@@ -191,6 +197,7 @@ private:
   void BookAllBranches();
   virtual void FillCandidate(const pat::CompositeCandidate& higgs, bool evtPass, const edm::Event&);
   virtual void FillJet(const pat::Jet& jet);
+  virtual void FillPhoton(const pat::PackedCandidate& photon);
   virtual void endJob();
 
   Float_t getAllWeight(const reco::Candidate* Lep) const;
@@ -220,6 +227,7 @@ private:
   edm::EDGetTokenT<vector<reco::Vertex> > vtxToken;
   edm::EDGetTokenT<edm::View<pat::Jet> > jetToken;
   edm::EDGetTokenT<pat::METCollection> metToken;
+  edm::EDGetTokenT<edm::View<pat::PackedCandidate> > pfCandToken;
 
   edm::EDGetTokenT<edm::MergeableCounter> preSkimToken;
 
@@ -283,6 +291,7 @@ ZNtupleMaker::ZNtupleMaker(const edm::ParameterSet& pset) :
   
   metToken = consumes<pat::METCollection>(metTag);
   metCorrHandler = new METCorrectionHandler(Form("%i", year));
+  pfCandToken = consumes<edm::View<pat::PackedCandidate> >(edm::InputTag("packedPFCandidates"));
 
   electronToken = consumes<vector<pat::Electron> >(edm::InputTag("softElectrons"));
   //softElectrons->clear();
@@ -604,6 +613,23 @@ void ZNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& eSetu
      
      = -99;
   }
+   
+  // Photons
+  Handle<edm::View<pat::PackedCandidate> > pfCands;
+  event.getByToken(pfCandToken, pfCands);
+  vector<const pat::PackedCandidate*> photons;
+  for(edm::View<pat::PackedCandidate>::const_iterator pfCand = pfCands->begin(); pfCand != pfCands->end(); ++pfCand){
+     // We only want photons
+     if (pfCand->pdgId()!=22 || !(pfCand->pt()>2. && fabs(pfCand->eta())<2.4)) continue;
+      
+     photons.push_back(&*pfCand);
+  }
+   
+  if (addPhotons){
+     for (unsigned i=0; i<photons.size(); ++i) {
+        FillPhoton(*(photons.at(i)));
+     }
+   }
 	
   // all soft leptons
   edm::Handle<vector<pat::Electron> > electronHandle;
@@ -858,6 +884,12 @@ void ZNtupleMaker::FillJet(const pat::Jet& jet)
    }
 }
 
+void ZNtupleMaker::FillPhoton(const pat::PackedCandidate& photon)
+{
+   PhotonPt  .push_back( photon.pt());
+   PhotonEta .push_back( photon.eta());
+   PhotonPhi .push_back( photon.phi());
+}
 
 // ------------ method called once each job just before starting event loop  ------------
 void ZNtupleMaker::beginJob()
@@ -1250,6 +1282,12 @@ void ZNtupleMaker::BookAllBranches(){
     myTree->Book("PFMETPhi_corrected_puDn", metobj_corrected.extras.phi_PUdn);
     myTree->Book("PFMETPhi_corrected_metUp", metobj_corrected.extras.phi_METup);
     myTree->Book("PFMETPhi_corrected_metDn", metobj_corrected.extras.phi_METdn);
+  }
+   
+  if(addPhotons){
+    myTree->Book("PhotonPt",PhotonPt);
+    myTree->Book("PhotonEta",PhotonEta);
+    myTree->Book("PhotonPhi",PhotonPhi);
   }
 	
   if(addQGLInputs){
