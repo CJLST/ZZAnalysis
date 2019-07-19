@@ -116,7 +116,7 @@ TTZJets_M10_MLM,,0.259,,,/ttZJets_13TeV_madgraphMLM/RunIISummer16MiniAODv3-94X_m
 
 
 ###,,,,,,,,,,,background samples for Z+X studies
-DYJetsToLL_M50,,     6025.2,    ,,/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM,dbs,,4,GENXSEC=6025.2;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2016,RecoProbabilities.py,
+DYJetsToLL_M50,,     6025.2,    ,,/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM,dbs,,4,GENXSEC=6025.2;GENBR=1;PROCESS_CR=True;ADDZTREE=True;LEPTON_SETUP=2016,RecoProbabilities.py,
 DYJetsToLL_M50_LO,,5765.4,    ,,/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/MINIAODSIM,dbs,,4,GENXSEC=5765.4;GENBR=1;PROCESS_CR=True;ADDZTREE=True;LEPTON_SETUP=2016,RecoProbabilities.py,#this does not work because the weight indices are different.  It would have to be implemented in LHEHandler.cc to pick up the LO (not NLO) PDF weights.  If you need this sample ask Heshy.
 WWZ,,0.163215,,,/WWZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,1,GENXSEC=0.163215;GENBR=1;LEPTON_SETUP=2016,RecoProbabilities.py,
 TTTo2L2Nu,,87.3,,,/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM,dbs,,1,GENXSEC=91.7701;GENBR=1;PROCESS_CR=True;ADDZTREE=True;LEPTON_SETUP=2016,RecoProbabilities.py,

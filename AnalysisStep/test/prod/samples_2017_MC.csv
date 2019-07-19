@@ -113,7 +113,7 @@ TTZJets_M10_MLM,,0.259,,,/ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8/RunIIFall17M
 
 
 ###,,,,,,,,,,,background samples for Z+X studies
-DYJetsToLL_M50,,     6025.2,    ,,/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM,dbs,,4,GENXSEC=6025.2;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2017,RecoProbabilities.py,
+DYJetsToLL_M50,,     6025.2,    ,,/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM,dbs,,4,GENXSEC=6025.2;GENBR=1;PROCESS_CR=True;ADDZTREE=True;LEPTON_SETUP=2017,RecoProbabilities.py,
 DYJetsToLL_M50_LO,,5765.4,    ,,/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017RECOSIMstep_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM,dbs,,4,GENXSEC=5765.4;GENBR=1;PROCESS_CR=True;ADDZTREE=True;LEPTON_SETUP=2017,RecoProbabilities.py,#this does not work because the weight indices are different.  It would have to be implemented in LHEHandler.cc to pick up the LO (not NLO) PDF weights.  If you need this sample ask Heshy.
 WWZ,,0.163215,,,/WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM,dbs,,1,GENXSEC=0.163215;GENBR=1;LEPTON_SETUP=2017,RecoProbabilities.py,
 TTTo2L2Nu,,87.3,,,/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM,dbs,,1,GENXSEC=91.7701;GENBR=1;PROCESS_CR=True;ADDZTREE=True;LEPTON_SETUP=2017,RecoProbabilities.py,
