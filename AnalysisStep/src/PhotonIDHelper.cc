@@ -19,7 +19,7 @@ bool PhotonIDHelper::isCutBasedID_Loose(int year, const pat::Photon& photon){
    
    if (year == 2016) isID = photon.photonID("cutBasedPhotonID-Fall17-94X-V1-loose");
    if (year == 2017) isID = photon.photonID("cutBasedPhotonID-Fall17-94X-V1-loose");
-   if (year == 2018) isID = photon.photonID("cutBasedPhotonID-Fall17-94X-V1-loose");
+   if (year == 2018) isID = photon.photonID("cutBasedPhotonID_Fall17_94X_V1_loose");
    
    return isID;
 }
