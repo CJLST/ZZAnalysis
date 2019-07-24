@@ -517,6 +517,31 @@ process.cleanSoftElectrons = cms.EDProducer("PATElectronCleaner",
 )
 
 
+### ----------------------------------------------------------------------
+### L1 Prefiring issue for 2016 and 2017 data
+### ----------------------------------------------------------------------
+
+# Recipe taken from https://twiki.cern.ch/twiki/bin/viewauth/CMS/L1ECALPrefiringWeightRecipe#Recipe_details_10_2_X_X_10_or_9
+
+#if(IsMC and LEPTON_SETUP == 2016):
+#   from PhysicsTools.PatUtils.l1ECALPrefiringWeightProducer_cfi import l1ECALPrefiringWeightProducer
+#   process.prefiringweight = l1ECALPrefiringWeightProducer.clone(
+#                                                                 DataEra = cms.string("2016BtoF"),
+#                                                                 UseJetEMPt = cms.bool(False),
+#                                                                 PrefiringRateSystematicUncty = cms.double(0.2),
+#                                                                 SkipWarnings = False)
+#
+#if(IsMC and LEPTON_SETUP == 2017):
+#   from PhysicsTools.PatUtils.l1ECALPrefiringWeightProducer_cfi import l1ECALPrefiringWeightProducer
+#   process.prefiringweight = l1ECALPrefiringWeightProducer.clone(
+#                                                                 DataEra = cms.string("2017BtoF"),
+#                                                                 UseJetEMPt = cms.bool(False),
+#                                                                 PrefiringRateSystematicUncty = cms.double(0.2),
+#                                                                 SkipWarnings = False)
+#
+#if(IsMC and (LEPTON_SETUP == 2016 or LEPTON_SETUP == 2017)):
+#   process.Prefiring = cms.Path(process.prefiringweight)
+
 
 ### ----------------------------------------------------------------------
 ### Search for FSR candidates
@@ -1310,8 +1335,8 @@ process.cleanJets = cms.EDProducer("JetsWithLeptonsRemover",
                                    Electrons = cms.InputTag("appendPhotons:electrons"),
                                    Diboson   = cms.InputTag(""),
                                    JetPreselection      = cms.string(""),
-                                   MuonPreselection     = cms.string("userFloat('isGood') && userFloat('passCombRelIsoPFFSRCorr')"),
-                                   ElectronPreselection = cms.string("userFloat('isGood') && userFloat('passCombRelIsoPFFSRCorr')"),
+                                   MuonPreselection     = cms.string("userFloat('isGood')"),
+                                   ElectronPreselection = cms.string("userFloat('isGood')"),
                                    DiBosonPreselection  = cms.string(""),
                                    MatchingType = cms.string("byDeltaR"),
                                    cleanFSRFromLeptons = cms.bool(True),
@@ -1320,8 +1345,6 @@ process.cleanJets = cms.EDProducer("JetsWithLeptonsRemover",
                                    )
 
 if FSRMODE=="Legacy" :
-    process.cleanJets.MuonPreselection     = "userFloat('isGood') && userFloat('isIsoFSRUncorr')"
-    process.cleanJets.ElectronPreselection = "userFloat('isGood') && userFloat('isIsoFSRUncorr')"
     process.cleanJets.cleanFSRFromLeptons = False
 
 
@@ -1423,7 +1446,6 @@ if (RECORRECTMET and SAMPLE_TYPE == 2018):
         process.MET = cms.Path(process.fullPatMetSequence)
     else:
         process.MET = cms.Path(process.fullPatMetSequence)
-
 
 
 ### ----------------------------------------------------------------------

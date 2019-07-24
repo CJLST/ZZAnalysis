@@ -158,6 +158,8 @@ namespace {
   std::vector<short> JetID;
   std::vector<float> JetJERUp;
   std::vector<float> JetJERDown;
+  std::vector<float> JetPtJEC_noJER;
+  std::vector<float> JetRawPt;
    
   std::vector<float> PhotonPt;
   std::vector<float> PhotonEta;
@@ -873,6 +875,9 @@ void ZNtupleMaker::FillJet(const pat::Jet& jet)
 	
   JetJERUp .push_back(jet.userFloat("pt_jerup"));
   JetJERDown .push_back(jet.userFloat("pt_jerdn"));
+   
+  JetRawPt  .push_back( jet.userFloat("RawPt"));
+  JetPtJEC_noJER .push_back( jet.userFloat("pt_JEC_noJER"));
     
   JetID.push_back(jet.userFloat("JetID"));
   JetPUID.push_back(jet.userFloat("PUjetID"));
@@ -1253,6 +1258,8 @@ void ZNtupleMaker::BookAllBranches(){
     myTree->Book("JetPartonFlavour",JetPartonFlavour);
     myTree->Book("JetJERUp",JetJERUp);
     myTree->Book("JetJERDown",JetJERDown);
+    myTree->Book("JetRawPt",JetRawPt);
+    myTree->Book("JetPtJEC_noJER",JetPtJEC_noJER);
     myTree->Book("JetPUID", JetPUID);
     myTree->Book("JetID", JetID);
     myTree->Book("JetPUValue", JetPUValue);

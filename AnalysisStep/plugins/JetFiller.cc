@@ -42,6 +42,7 @@ class JetFiller : public edm::EDProducer {
   virtual void endJob(){};
 
   edm::EDGetTokenT<edm::View<pat::Jet> > jetToken;
+  edm::EDGetTokenT<edm::View<pat::Jet> > rawJetToken;
   int sampleType;
   int setup;
   const StringCutObjectSelector<pat::Jet, true> cut;
@@ -92,6 +93,8 @@ JetFiller::JetFiller(const edm::ParameterSet& iConfig) :
   axis2Token = consumes<edm::ValueMap<float> >(edm::InputTag("QGTagger", "axis2"));
   multToken = consumes<edm::ValueMap<int> >(edm::InputTag("QGTagger", "mult"));
   ptDToken = consumes<edm::ValueMap<float> >(edm::InputTag("QGTagger", "ptD"));
+   
+  rawJetToken = consumes<edm::View<pat::Jet> >(edm::InputTag("slimmedJets"));
 
   produces<pat::JetCollection>();
 }
@@ -101,6 +104,11 @@ void
 JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 
+  //--- Get raw jets without any corrections applied
+  Handle<edm::View<pat::Jet> > rawJetHandle;
+  iEvent.getByToken(rawJetToken, rawJetHandle);
+   
+   
   //--- Get jets
   Handle<edm::View<pat::Jet> > jetHandle;
   iEvent.getByToken(jetToken, jetHandle);
@@ -135,6 +143,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     double jpt = j.pt();
     double jeta = j.eta();
     double jabseta = fabs(jeta);
+    double raw_jpt = j.correctedJet("Uncorrected").pt();
 
     // 20170220: using a flaot instead of adouble  changes of the JER seed from 99494 to 99495, and changes post JER jet pT.
     // Note that while PAT::Candidate has this fucntion as double, we only save float accuracy in miniAOD anyway.
@@ -250,7 +259,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     //--- JER
 
-    j.addUserFloat("pt_nojer", jpt);
+    j.addUserFloat("pt_JEC_noJER", jpt);
     float pt_jer   = -1.;
     float pt_jerup = -1.;
     float pt_jerdn = -1.;
@@ -307,6 +316,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     j.addUserFloat("jec_unc", jec_unc);
     j.addUserFloat("pt_jerup", pt_jerup);
     j.addUserFloat("pt_jerdn", pt_jerdn);
+    j.addUserFloat("RawPt", raw_jpt);
     j.addUserFloat("JetID",JetID);
     j.addUserFloat("PUjetID",PUjetID);
     j.addUserFloat("bTagger",bTagger);

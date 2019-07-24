@@ -232,6 +232,9 @@ namespace {
   std::vector<float> JetSigma ;
   std::vector<short> JetHadronFlavour;
   std::vector<short> JetPartonFlavour;
+   
+  std::vector<float> JetPtJEC_noJER;
+  std::vector<float> JetRawPt;
 
   std::vector<float> JetPUValue;
   std::vector<short> JetPUID;
@@ -1411,6 +1414,9 @@ void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
      JetPtD .push_back( jet.userFloat("ptD"));
    }
    JetSigma .push_back(jet.userFloat("jec_unc"));
+   
+   JetRawPt  .push_back( jet.userFloat("RawPt"));
+   JetPtJEC_noJER .push_back( jet.userFloat("pt_JEC_noJER"));
 
    JetJERUp .push_back(jet.userFloat("pt_jerup"));
    JetJERDown .push_back(jet.userFloat("pt_jerdn"));
@@ -1434,6 +1440,8 @@ void HZZ4lNtupleMaker::FillPhoton(const pat::PackedCandidate& photon)
    PhotonPt  .push_back( photon.pt());
    PhotonEta .push_back( photon.eta());
    PhotonPhi .push_back( photon.phi());
+   
+   //Cut based photon ID taken from
 }
 
 float HZZ4lNtupleMaker::EvalSpline(TSpline3* const& sp, float xval){
@@ -2683,6 +2691,9 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("JetHadronFlavour",JetHadronFlavour, failedTreeLevel >= fullFailedTree);
   myTree->Book("JetPartonFlavour",JetPartonFlavour, failedTreeLevel >= fullFailedTree);
 
+  myTree->Book("JetRawPt",JetRawPt, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPtJEC_noJER",JetPtJEC_noJER, failedTreeLevel >= fullFailedTree);
+   
   myTree->Book("JetJERUp",JetJERUp, failedTreeLevel >= fullFailedTree);
   myTree->Book("JetJERDown",JetJERDown, failedTreeLevel >= fullFailedTree);
 
