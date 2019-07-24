@@ -42,7 +42,6 @@ class JetFiller : public edm::EDProducer {
   virtual void endJob(){};
 
   edm::EDGetTokenT<edm::View<pat::Jet> > jetToken;
-  edm::EDGetTokenT<edm::View<pat::Jet> > rawJetToken;
   int sampleType;
   int setup;
   const StringCutObjectSelector<pat::Jet, true> cut;
@@ -93,8 +92,6 @@ JetFiller::JetFiller(const edm::ParameterSet& iConfig) :
   axis2Token = consumes<edm::ValueMap<float> >(edm::InputTag("QGTagger", "axis2"));
   multToken = consumes<edm::ValueMap<int> >(edm::InputTag("QGTagger", "mult"));
   ptDToken = consumes<edm::ValueMap<float> >(edm::InputTag("QGTagger", "ptD"));
-   
-  rawJetToken = consumes<edm::View<pat::Jet> >(edm::InputTag("slimmedJets"));
 
   produces<pat::JetCollection>();
 }
@@ -103,12 +100,6 @@ JetFiller::JetFiller(const edm::ParameterSet& iConfig) :
 void
 JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-
-  //--- Get raw jets without any corrections applied
-  Handle<edm::View<pat::Jet> > rawJetHandle;
-  iEvent.getByToken(rawJetToken, rawJetHandle);
-   
-   
   //--- Get jets
   Handle<edm::View<pat::Jet> > jetHandle;
   iEvent.getByToken(jetToken, jetHandle);
