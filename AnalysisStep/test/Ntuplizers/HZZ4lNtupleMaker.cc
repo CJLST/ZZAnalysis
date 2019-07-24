@@ -31,6 +31,7 @@
 #include <DataFormats/PatCandidates/interface/CompositeCandidate.h>
 #include <DataFormats/PatCandidates/interface/Muon.h>
 #include <DataFormats/PatCandidates/interface/Electron.h>
+#include <DataFormats/PatCandidates/interface/Photon.h>
 #include <DataFormats/PatCandidates/interface/Jet.h>
 #include <DataFormats/PatCandidates/interface/MET.h>
 #include <DataFormats/METReco/interface/PFMET.h>
@@ -60,6 +61,7 @@
 #include <ZZAnalysis/AnalysisStep/interface/bitops.h>
 #include <ZZAnalysis/AnalysisStep/interface/Fisher.h>
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
+#include <ZZAnalysis/AnalysisStep/interface/PhotonIDHelper.h>
 #include <ZZAnalysis/AnalysisStep/interface/JetCleaner.h>
 #include <ZZAnalysis/AnalysisStep/interface/utils.h>
 #include <ZZAnalysis/AnalysisStep/interface/miscenums.h>
@@ -260,6 +262,7 @@ namespace {
   std::vector<float> PhotonPt ;
   std::vector<float> PhotonEta ;
   std::vector<float> PhotonPhi ;
+  std::vector<bool> PhotonIsCutBasedLooseID;
    
    
   Short_t genFinalState  = 0;
@@ -412,7 +415,7 @@ private:
   virtual void FillLHECandidate();
   virtual void FillCandidate(const pat::CompositeCandidate& higgs, bool evtPass, const edm::Event&, const Int_t CRflag);
   virtual void FillJet(const pat::Jet& jet);
-  virtual void FillPhoton(const pat::PackedCandidate& photon);
+  virtual void FillPhoton(int year, const pat::Photon& photon);
   virtual void endJob() ;
 
   void FillHGenInfo(const math::XYZTLorentzVector Hp, float w);
@@ -500,7 +503,7 @@ private:
   edm::EDGetTokenT<edm::TriggerResults> triggerResultToken;
   edm::EDGetTokenT<vector<reco::Vertex> > vtxToken;
   edm::EDGetTokenT<edm::View<pat::Jet> > jetToken;
-  edm::EDGetTokenT<edm::View<pat::PackedCandidate> > pfCandToken;
+  edm::EDGetTokenT<pat::PhotonCollection> photonToken;
   edm::EDGetTokenT<pat::METCollection> metToken;
   //edm::EDGetTokenT<pat::METCollection> metNoHFToken;
   edm::EDGetTokenT<pat::MuonCollection> muonToken;
@@ -624,7 +627,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   triggerResultToken = consumes<edm::TriggerResults>(edm::InputTag("TriggerResults"));
   vtxToken = consumes<vector<reco::Vertex> >(edm::InputTag("goodPrimaryVertices"));
   jetToken = consumes<edm::View<pat::Jet> >(edm::InputTag("cleanJets"));
-  pfCandToken = consumes<edm::View<pat::PackedCandidate> >(edm::InputTag("packedPFCandidates"));
+  photonToken = consumes<pat::PhotonCollection>(edm::InputTag("slimmedPhotons"));
   metToken = consumes<pat::METCollection>(metTag);
   //metNoHFToken = consumes<pat::METCollection>(edm::InputTag("slimmedMETsNoHF"));
   muonToken = consumes<pat::MuonCollection>(edm::InputTag("slimmedMuons"));
@@ -1142,19 +1145,19 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   }
    
    // Photons
-   Handle<edm::View<pat::PackedCandidate> > pfCands;
-   event.getByToken(pfCandToken, pfCands);
-   vector<const pat::PackedCandidate*> photons;
-   for(edm::View<pat::PackedCandidate>::const_iterator pfCand = pfCands->begin(); pfCand != pfCands->end(); ++pfCand){
-      // We only want photons
-      if (pfCand->pdgId()!=22 || !(pfCand->pt()>2. && fabs(pfCand->eta())<2.4)) continue;
-
-      photons.push_back(&*pfCand);
+   Handle<pat::PhotonCollection> photonCands;
+   event.getByToken(photonToken, photonCands);
+   vector<const pat::Photon*> photons;
+   
+   for(unsigned int i = 0; i< photonCands->size(); ++i){
+      const pat::Photon* photon = &((*photonCands)[i]);
+      photons.push_back(&*photon);
    }
+
    
    if (writePhotons){
       for (unsigned i=0; i<photons.size(); ++i) {
-            FillPhoton(*(photons.at(i)));
+            FillPhoton(year, *(photons.at(i)));
          }
    }
       
@@ -1435,13 +1438,13 @@ void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
    JetPartonFlavour .push_back(jet.partonFlavour());
 }
 
-void HZZ4lNtupleMaker::FillPhoton(const pat::PackedCandidate& photon)
+void HZZ4lNtupleMaker::FillPhoton(int year, const pat::Photon& photon)
 {
    PhotonPt  .push_back( photon.pt());
    PhotonEta .push_back( photon.eta());
    PhotonPhi .push_back( photon.phi());
    
-   //Cut based photon ID taken from
+   PhotonIsCutBasedLooseID .push_back( PhotonIDHelper::isCutBasedID_Loose(year, photon) );
 }
 
 float HZZ4lNtupleMaker::EvalSpline(TSpline3* const& sp, float xval){
@@ -2711,6 +2714,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("PhotonPt",PhotonPt, failedTreeLevel >= fullFailedTree);
   myTree->Book("PhotonEta",PhotonEta, failedTreeLevel >= fullFailedTree);
   myTree->Book("PhotonPhi",PhotonPhi, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PhotonIsCutBasedLooseID",PhotonIsCutBasedLooseID, failedTreeLevel >= fullFailedTree);
    
   myTree->Book("nExtraLep",nExtraLep, false);
   myTree->Book("nExtraZ",nExtraZ, false);

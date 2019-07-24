@@ -28,6 +28,7 @@
 #include <DataFormats/METReco/interface/PFMET.h>
 #include <DataFormats/METReco/interface/PFMETCollection.h>
 #include <ZZAnalysis/AnalysisStep/interface/METCorrectionHandler.h>
+#include <ZZAnalysis/AnalysisStep/interface/PhotonIDHelper.h>
 #include <DataFormats/Math/interface/LorentzVector.h>
 #include <CommonTools/UtilAlgos/interface/TFileService.h>
 #include <DataFormats/Common/interface/MergeableCounter.h>
@@ -164,6 +165,7 @@ namespace {
   std::vector<float> PhotonPt;
   std::vector<float> PhotonEta;
   std::vector<float> PhotonPhi;
+  std::vector<bool> PhotonIsCutBasedLooseID;
 
 	
   // Generic MET object
@@ -199,7 +201,7 @@ private:
   void BookAllBranches();
   virtual void FillCandidate(const pat::CompositeCandidate& higgs, bool evtPass, const edm::Event&);
   virtual void FillJet(const pat::Jet& jet);
-  virtual void FillPhoton(const pat::PackedCandidate& photon);
+  virtual void FillPhoton(int year, const pat::Photon& photon);
   virtual void endJob();
 
   Float_t getAllWeight(const reco::Candidate* Lep) const;
@@ -229,7 +231,7 @@ private:
   edm::EDGetTokenT<vector<reco::Vertex> > vtxToken;
   edm::EDGetTokenT<edm::View<pat::Jet> > jetToken;
   edm::EDGetTokenT<pat::METCollection> metToken;
-  edm::EDGetTokenT<edm::View<pat::PackedCandidate> > pfCandToken;
+  edm::EDGetTokenT<pat::PhotonCollection> photonToken;
 
   edm::EDGetTokenT<edm::MergeableCounter> preSkimToken;
 
@@ -293,7 +295,7 @@ ZNtupleMaker::ZNtupleMaker(const edm::ParameterSet& pset) :
   
   metToken = consumes<pat::METCollection>(metTag);
   metCorrHandler = new METCorrectionHandler(Form("%i", year));
-  pfCandToken = consumes<edm::View<pat::PackedCandidate> >(edm::InputTag("packedPFCandidates"));
+  photonToken = consumes<pat::PhotonCollection>(edm::InputTag("slimmedPhotons"));
 
   electronToken = consumes<vector<pat::Electron> >(edm::InputTag("softElectrons"));
   //softElectrons->clear();
@@ -617,21 +619,21 @@ void ZNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& eSetu
   }
    
   // Photons
-  Handle<edm::View<pat::PackedCandidate> > pfCands;
-  event.getByToken(pfCandToken, pfCands);
-  vector<const pat::PackedCandidate*> photons;
-  for(edm::View<pat::PackedCandidate>::const_iterator pfCand = pfCands->begin(); pfCand != pfCands->end(); ++pfCand){
-     // We only want photons
-     if (pfCand->pdgId()!=22 || !(pfCand->pt()>2. && fabs(pfCand->eta())<2.4)) continue;
-      
-     photons.push_back(&*pfCand);
+  Handle<pat::PhotonCollection> photonCands;
+  event.getByToken(photonToken, photonCands);
+  vector<const pat::Photon*> photons;
+   
+  for(unsigned int i = 0; i< photonCands->size(); ++i){
+     const pat::Photon* photon = &((*photonCands)[i]);
+     photons.push_back(&*photon);
   }
+   
    
   if (addPhotons){
      for (unsigned i=0; i<photons.size(); ++i) {
-        FillPhoton(*(photons.at(i)));
+        FillPhoton(year, *(photons.at(i)));
      }
-   }
+  }
 	
   // all soft leptons
   edm::Handle<vector<pat::Electron> > electronHandle;
@@ -889,11 +891,13 @@ void ZNtupleMaker::FillJet(const pat::Jet& jet)
    }
 }
 
-void ZNtupleMaker::FillPhoton(const pat::PackedCandidate& photon)
+void ZNtupleMaker::FillPhoton(int year, const pat::Photon& photon)
 {
    PhotonPt  .push_back( photon.pt());
    PhotonEta .push_back( photon.eta());
    PhotonPhi .push_back( photon.phi());
+   
+   PhotonIsCutBasedLooseID .push_back( PhotonIDHelper::isCutBasedID_Loose(year, photon) );
 }
 
 // ------------ method called once each job just before starting event loop  ------------
@@ -1295,6 +1299,7 @@ void ZNtupleMaker::BookAllBranches(){
     myTree->Book("PhotonPt",PhotonPt);
     myTree->Book("PhotonEta",PhotonEta);
     myTree->Book("PhotonPhi",PhotonPhi);
+    myTree->Book("PhotonIsCutBasedLooseID",PhotonIsCutBasedLooseID);
   }
 	
   if(addQGLInputs){
