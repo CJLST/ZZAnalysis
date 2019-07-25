@@ -326,6 +326,9 @@ namespace {
   Float_t HqTMCweight  = 0;
   Float_t ZXFakeweight  = 0;
   Float_t overallEventWeight  = 0;
+  Float_t L1prefiringWeight = 0;
+  Float_t L1prefiringWeightUp = 0;
+  Float_t L1prefiringWeightDn = 0;
   Float_t GenHMass  = 0;
   Float_t GenHPt  = 0;
   Float_t GenHRapidity  = 0;
@@ -511,6 +514,10 @@ private:
   edm::EDGetTokenT<HTXS::HiggsClassification> htxsToken;
   edm::EDGetTokenT<edm::MergeableCounter> preSkimToken;
   edm::EDGetTokenT<LHERunInfoProduct> lheRunInfoToken;
+   
+  edm::EDGetTokenT< double > prefweight_token;
+  edm::EDGetTokenT< double > prefweightup_token;
+  edm::EDGetTokenT< double > prefweightdown_token;
 
   PileUpWeight* pileUpReweight;
 
@@ -634,7 +641,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   electronToken = consumes<pat::ElectronCollection>(edm::InputTag("slimmedElectrons"));
   preSkimToken = consumes<edm::MergeableCounter,edm::InLumi>(edm::InputTag("preSkimCounter"));
   lheRunInfoToken = consumes<LHERunInfoProduct,edm::InRun>(edm::InputTag("externalLHEProducer"));
-
+   
   if (skipEmptyEvents) {
     applySkim=true;
   } else {
@@ -648,6 +655,15 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   }
 
   isMC = myHelper.isMC();
+   
+  if( isMC && (year == 2016 || year == 2017))
+  {
+     prefweight_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProb"));
+     prefweightup_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProbUp"));
+     prefweightdown_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProbDown"));
+  }
+   
+   
   addLHEKinematics = addLHEKinematics || !lheMElist.empty();
   if (isMC){
     lheHandler = new LHEHandler(
@@ -931,6 +947,28 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     PUWeight = pileUpReweight->weight(NTrueInt);
     PUWeight_Up = pileUpReweight->weight(NTrueInt, PileUpWeight::PUvar::VARUP);
     PUWeight_Dn = pileUpReweight->weight(NTrueInt, PileUpWeight::PUvar::VARDOWN);
+     
+    // L1 prefiring weights
+    if( year == 2016 || year == 2017 )
+    {
+       edm::Handle< double > theprefweight;
+       event.getByToken(prefweight_token, theprefweight ) ;
+       L1prefiringWeight =(*theprefweight);
+        
+       edm::Handle< double > theprefweightup;
+       event.getByToken(prefweightup_token, theprefweightup ) ;
+       L1prefiringWeightUp =(*theprefweightup);
+        
+       edm::Handle< double > theprefweightdown;
+       event.getByToken(prefweightdown_token, theprefweightdown ) ;
+       L1prefiringWeightDn =(*theprefweightdown);
+    }
+    else if ( year == 2018 )
+    {
+       L1prefiringWeight   = 1.;
+       L1prefiringWeightUp = 1.;
+       L1prefiringWeightDn = 1.;
+    }
 
     event.getByToken(genParticleToken, genParticles);
     event.getByToken(genInfoToken, genInfo);
@@ -981,13 +1019,13 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
    htxs_errorCode=htxs->errorCode;
    htxs_prodMode= htxs->prodMode;
 
-    genExtInfo = mch.genAssociatedFS();
+   genExtInfo = mch.genAssociatedFS();
 
-    //Information on generated candidates, will be used later
-    genH = mch.genH();
-    genZLeps     = mch.sortedGenZZLeps();
-    genAssocLeps = mch.genAssociatedLeps();
-    genFSR       = mch.genFSR();
+   //Information on generated candidates, will be used later
+   genH = mch.genH();
+   genZLeps     = mch.sortedGenZZLeps();
+   genAssocLeps = mch.genAssociatedLeps();
+   genFSR       = mch.genFSR();
 
 
 
@@ -1301,7 +1339,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
 
   }
-
+   
   //Loop on the candidates
   vector<Int_t> CRFLAG(cands->size());
   for( edm::View<pat::CompositeCandidate>::const_iterator cand = cands->begin(); cand != cands->end(); ++cand) {
@@ -2760,6 +2798,9 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("eleSF_Unc", eleSF_Unc, false);
     myTree->Book("trigEffWeight", trigEffWeight, false);
     myTree->Book("overallEventWeight", overallEventWeight, false);
+    myTree->Book("L1prefiringWeight", L1prefiringWeight, false);
+    myTree->Book("L1prefiringWeightUp", L1prefiringWeightUp, false);
+    myTree->Book("L1prefiringWeightDn", L1prefiringWeightDn, false);
     myTree->Book("HqTMCweight", HqTMCweight, failedTreeLevel >= minimalFailedTree);
     myTree->Book("xsec", xsection, failedTreeLevel >= minimalFailedTree);
     myTree->Book("genxsec", genxsection, failedTreeLevel >= minimalFailedTree);
@@ -2802,10 +2843,10 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("GenAssocLep2Id", GenAssocLep2Id, failedTreeLevel >= fullFailedTree);
     myTree->Book("htxs_errorCode", htxs_errorCode, failedTreeLevel >= minimalFailedTree);
     myTree->Book("htxs_prodMode", htxs_prodMode, failedTreeLevel >= minimalFailedTree);
-myTree->Book("htxsNJets", htxsNJets, failedTreeLevel >= minimalFailedTree);
-myTree->Book("htxsHPt", htxsHPt, failedTreeLevel >= minimalFailedTree);
-myTree->Book("htxs_stage0_cat", htxs_stage0_cat, failedTreeLevel >= minimalFailedTree);
-myTree->Book("htxs_stage1_cat", htxs_stage1_cat, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("htxsNJets", htxsNJets, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("htxsHPt", htxsHPt, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("htxs_stage0_cat", htxs_stage0_cat, failedTreeLevel >= minimalFailedTree);
+    myTree->Book("htxs_stage1_cat", htxs_stage1_cat, failedTreeLevel >= minimalFailedTree);
     if(apply_QCD_GGF_UNCERT)
       {
 	myTree->Book("ggH_NNLOPS_weight", ggH_NNLOPS_weight, failedTreeLevel >= minimalFailedTree);

@@ -523,24 +523,24 @@ process.cleanSoftElectrons = cms.EDProducer("PATElectronCleaner",
 
 # Recipe taken from https://twiki.cern.ch/twiki/bin/viewauth/CMS/L1ECALPrefiringWeightRecipe#Recipe_details_10_2_X_X_10_or_9
 
-#if(IsMC and LEPTON_SETUP == 2016):
-#   from PhysicsTools.PatUtils.l1ECALPrefiringWeightProducer_cfi import l1ECALPrefiringWeightProducer
-#   process.prefiringweight = l1ECALPrefiringWeightProducer.clone(
-#                                                                 DataEra = cms.string("2016BtoF"),
-#                                                                 UseJetEMPt = cms.bool(False),
-#                                                                 PrefiringRateSystematicUncty = cms.double(0.2),
-#                                                                 SkipWarnings = False)
-#
-#if(IsMC and LEPTON_SETUP == 2017):
-#   from PhysicsTools.PatUtils.l1ECALPrefiringWeightProducer_cfi import l1ECALPrefiringWeightProducer
-#   process.prefiringweight = l1ECALPrefiringWeightProducer.clone(
-#                                                                 DataEra = cms.string("2017BtoF"),
-#                                                                 UseJetEMPt = cms.bool(False),
-#                                                                 PrefiringRateSystematicUncty = cms.double(0.2),
-#                                                                 SkipWarnings = False)
-#
-#if(IsMC and (LEPTON_SETUP == 2016 or LEPTON_SETUP == 2017)):
-#   process.Prefiring = cms.Path(process.prefiringweight)
+if(IsMC and LEPTON_SETUP == 2016):
+   from PhysicsTools.PatUtils.l1ECALPrefiringWeightProducer_cfi import l1ECALPrefiringWeightProducer
+   process.prefiringweight = l1ECALPrefiringWeightProducer.clone(
+                                                                 DataEra = cms.string("2016BtoF"),
+                                                                 UseJetEMPt = cms.bool(False),
+                                                                 PrefiringRateSystematicUncty = cms.double(0.2),
+                                                                 SkipWarnings = False)
+
+if(IsMC and LEPTON_SETUP == 2017):
+   from PhysicsTools.PatUtils.l1ECALPrefiringWeightProducer_cfi import l1ECALPrefiringWeightProducer
+   process.prefiringweight = l1ECALPrefiringWeightProducer.clone(
+                                                                 DataEra = cms.string("2017BtoF"),
+                                                                 UseJetEMPt = cms.bool(False),
+                                                                 PrefiringRateSystematicUncty = cms.double(0.2),
+                                                                 SkipWarnings = False)
+
+if(IsMC and (LEPTON_SETUP == 2016 or LEPTON_SETUP == 2017)):
+   process.Prefiring = cms.Path(process.prefiringweight)
 
 
 ### ----------------------------------------------------------------------

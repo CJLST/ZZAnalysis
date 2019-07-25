@@ -178,6 +178,10 @@ namespace {
   Float_t xsection = 0;
   Float_t dataMCWeight = 0;
   Float_t overallEventWeight = 0;
+   
+  Float_t L1prefiringWeight = 0;
+  Float_t L1prefiringWeightUp = 0;
+  Float_t L1prefiringWeightDn = 0;
 }
 
 //
@@ -239,6 +243,10 @@ private:
   const vector<pat::Electron>* softElectrons;
   edm::EDGetTokenT<vector<pat::Muon> > muonToken;
   const vector<pat::Muon>* softMuons;
+   
+  edm::EDGetTokenT< double > prefweight_token;
+  edm::EDGetTokenT< double > prefweightup_token;
+  edm::EDGetTokenT< double > prefweightdown_token;
 
   PileUpWeight pileUpReweight;
 
@@ -313,6 +321,13 @@ ZNtupleMaker::ZNtupleMaker(const edm::ParameterSet& pset) :
   }
 
   isMC = myHelper.isMC();
+   
+  if( isMC && (year == 2016 || year == 2017))
+  {
+     prefweight_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProb"));
+     prefweightup_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProbUp"));
+     prefweightdown_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProbDown"));
+  }
 
   Nevt_Gen = 0;
   Nevt_Gen_lumiBlock = 0;
@@ -494,6 +509,28 @@ void ZNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& eSetu
     gen_sumPUWeight    += PUWeight;
     gen_sumGenMCWeight += genHEPMCweight;
     gen_sumWeights     += PUWeight*genHEPMCweight;
+     
+    // L1 prefiring weights
+    if( year == 2016 || year == 2017 )
+    {
+       edm::Handle< double > theprefweight;
+       event.getByToken(prefweight_token, theprefweight ) ;
+       L1prefiringWeight =(*theprefweight);
+        
+       edm::Handle< double > theprefweightup;
+       event.getByToken(prefweightup_token, theprefweightup ) ;
+       L1prefiringWeightUp =(*theprefweightup);
+        
+       edm::Handle< double > theprefweightdown;
+       event.getByToken(prefweightdown_token, theprefweightdown ) ;
+       L1prefiringWeightDn =(*theprefweightdown);
+    }
+    else if ( year == 2018 )
+    {
+       L1prefiringWeight   = 1.;
+       L1prefiringWeightUp = 1.;
+       L1prefiringWeightDn = 1.;
+    }
 
   }
 
@@ -1312,6 +1349,9 @@ void ZNtupleMaker::BookAllBranches(){
     myTree->Book("xsec",xsection);
     myTree->Book("dataMCWeight",dataMCWeight);
     myTree->Book("overallEventWeight",overallEventWeight);
+    myTree->Book("L1prefiringWeight", L1prefiringWeight);
+    myTree->Book("L1prefiringWeightUp", L1prefiringWeightUp);
+    myTree->Book("L1prefiringWeightDn", L1prefiringWeightDn);
   }
 }
 
