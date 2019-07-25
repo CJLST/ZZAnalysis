@@ -104,6 +104,13 @@ ggTo2e2mu_Contin_MCFM701,,0.0031942,    ,,/GluGluToContinToZZTo2e2mu_13TeV_MCFM7
 ggTo2e2tau_Contin_MCFM701,,0.0031942,    ,,/GluGluToContinToZZTo2e2tau_13TeV_MCFM701_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v2/MINIAODSIM,dbs,,2,GENXSEC=0.00319142;GENBR=1;PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;LEPTON_SETUP=2017,RecoProbabilities.py;LHEProbabilities_GG_BKG_MCFM.py,
 ggTo2mu2tau_Contin_MCFM701,,0.0031942,    ,,/GluGluToContinToZZTo2mu2tau_13TeV_MCFM701_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v2/MINIAODSIM,dbs,,4,GENXSEC=0.00319142;GENBR=1;PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;LEPTON_SETUP=2017,RecoProbabilities.py;LHEProbabilities_GG_BKG_MCFM.py,
 
+
+###,,,,,,,,,,,VVV backgrounds
+ZZZ,,0.01398,      ,,/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM,dbs,,1,GENXSEC=1;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2017,RecoProbabilities.py,
+WZZ,,0.05565,      ,,/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM,dbs,,1,GENXSEC=1;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2017,RecoProbabilities.py,
+WWZ,,0.1651,      ,,/WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM,dbs,,1,GENXSEC=1;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2017,RecoProbabilities.py,
+
+
 ###,,,,,,,,,,,rare backgrounds targeting ttH categories
 TTZZ,,0.001572,      ,,/TTZZ_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM,dbs,,1,GENXSEC=1.256;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2017,RecoProbabilities.py,
 TTWW,,0.007883,      ,,/TTWW_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM ,dbs,,1,GENXSEC=1.256;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2017,RecoProbabilities.py,
@@ -113,8 +120,8 @@ TTZJets_M10_MLM,,0.259,,,/ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8/RunIIFall17M
 
 
 ###,,,,,,,,,,,background samples for Z+X studies
-DYJetsToLL_M50,,     6025.2,    ,,/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM,dbs,,4,GENXSEC=6025.2;GENBR=1;PROCESS_CR=True;ADDZTREE=True;LEPTON_SETUP=2017,RecoProbabilities.py,
-DYJetsToLL_M50_LO,,5765.4,    ,,/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017RECOSIMstep_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM,dbs,,4,GENXSEC=5765.4;GENBR=1;PROCESS_CR=True;ADDZTREE=True;LEPTON_SETUP=2017,RecoProbabilities.py,#this does not work because the weight indices are different.  It would have to be implemented in LHEHandler.cc to pick up the LO (not NLO) PDF weights.  If you need this sample ask Heshy.
+DYJetsToLL_M50,,     6225.4,    ,,/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM,dbs,,4,GENXSEC=6025.2;GENBR=1;PROCESS_CR=True;ADDZTREE=True;LEPTON_SETUP=2017,RecoProbabilities.py,
+DYJetsToLL_M50_LO,,6225.4,    ,,/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017RECOSIMstep_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM,dbs,,4,GENXSEC=5765.4;GENBR=1;PROCESS_CR=True;ADDZTREE=True;LEPTON_SETUP=2017,RecoProbabilities.py,#this does not work because the weight indices are different.  It would have to be implemented in LHEHandler.cc to pick up the LO (not NLO) PDF weights.  If you need this sample ask Heshy.
 WWZ,,0.163215,,,/WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM,dbs,,1,GENXSEC=0.163215;GENBR=1;LEPTON_SETUP=2017,RecoProbabilities.py,
 TTTo2L2Nu,,87.3,,,/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM,dbs,,1,GENXSEC=91.7701;GENBR=1;PROCESS_CR=True;ADDZTREE=True;LEPTON_SETUP=2017,RecoProbabilities.py,
 WZTo3LNu,,           4.670,   ,,/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM,dbs,,4,GENXSEC=4.67;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2017,RecoProbabilities.py,
