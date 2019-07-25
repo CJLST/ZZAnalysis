@@ -7,21 +7,22 @@
 # chmod u+x ${TMPDIR}/checkout_10X.csh
 # ${TMPDIR}/checkout_10X.csh
 
-############## For CMSSW_10_2_10
+############## For CMSSW_10_2_15
 git cms-init
 
 #Preliminary electron scale and smearing corrections according to https://twiki.cern.ch/twiki/bin/view/CMS/EgammaPostRecoRecipes#2018_Preliminary_Energy_Correcti
 #We need the ElectronTools package to calculate smear and scale uncertainties so just download the ScaleAndSmearing files manualy 
 git cms-merge-topic cms-egamma:EgammaPostRecoTools
-#git cms-merge-topic cms-egamma:slava77-btvDictFix_10210
+git cms-merge-topic cms-egamma:PhotonIDValueMapSpeedup1029
+git cms-merge-topic cms-egamma:slava77-btvDictFix_10210
 git cms-addpkg EgammaAnalysis/ElectronTools
 (rm -rf EgammaAnalysis/ElectronTools/data;git clone git@github.com:cms-data/EgammaAnalysis-ElectronTools.git EgammaAnalysis/ElectronTools/data;)
 
 # 2016 and 2018 retraining for electron BDT
-git cms-merge-topic mkovac:Electron_XGBoost_MVA_2016_and_2018_CMSSW_10_3_1
+git cms-merge-topic mkovac:Electron_XGBoost_MVA_2016_and_2018_CMSSW_10_2_15
 
 #MET corrections according to https://twiki.cern.ch/twiki/bin/view/CMS/MissingETUncertaintyPrescription#Instructions_for_9_4_X_X_0_for_M
-#git cms-merge-topic cms-met:METFixEE2017_949_v2_backport_to_102X
+git cms-merge-topic cms-met:METFixEE2017_949_v2_backport_to_102X
 
 #Simplified template cross section
 git cms-addpkg GeneratorInterface/RivetInterface
