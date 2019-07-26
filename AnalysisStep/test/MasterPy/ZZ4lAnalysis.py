@@ -526,7 +526,7 @@ process.cleanSoftElectrons = cms.EDProducer("PATElectronCleaner",
 if(IsMC and LEPTON_SETUP == 2016):
    from PhysicsTools.PatUtils.l1ECALPrefiringWeightProducer_cfi import l1ECALPrefiringWeightProducer
    process.prefiringweight = l1ECALPrefiringWeightProducer.clone(
-                                                                 DataEra = cms.string("2016BtoF"),
+                                                                 DataEra = cms.string("2016BtoH"),
                                                                  UseJetEMPt = cms.bool(False),
                                                                  PrefiringRateSystematicUncty = cms.double(0.2),
                                                                  SkipWarnings = False)
