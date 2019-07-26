@@ -13,6 +13,7 @@ PROCESS_CR = True   # Uncomment to run CR paths and trees
 #APPLYTRIG = False    # hack for samples missing correct triggers - use with caution
 #KEEPLOOSECOMB = True # Do not skip loose lepton ZZ combinations (for debugging)
 ADDZTREE = True      # Add tree for Z analysis
+#SAMPLENAME = "THW" # For running locally, some samples needs this to be specified (TTZ, THW, WWZ,...) See MCHistoryTools for all samples
 
 PD = ""
 MCFILTER = ""
