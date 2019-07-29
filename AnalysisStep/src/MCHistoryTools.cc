@@ -328,19 +328,20 @@ MCHistoryTools::init() {
       cout << iZ11 << " " << iZ12 << " " << iZ21 << " " << iZ22 << endl;
       abort();
     }    
-
-    // Sort leptons by sign
-    if (theGenLeps[iZ11]->pdgId() < 0 ) {
-      swap(iZ11,iZ12);
+    if( (iZ11 != iZ12 && iZ21 != iZ22) || do_SF_OS_check) {// if do_SF_OS_check and same indexes something has gone bad, let's crash and check
+       // Sort leptons by sign
+       if (theGenLeps[iZ11]->pdgId() < 0 ) {
+         swap(iZ11,iZ12);
+       }
+       if (theGenLeps[iZ21]->pdgId() < 0 ) {
+         swap(iZ21,iZ22);
+       }
     }
-    if (theGenLeps[iZ21]->pdgId() < 0 ) {
-      swap(iZ21,iZ22);
-    }
-
-    theSortedGenLepts.push_back(theGenLeps[iZ11]);
-    theSortedGenLepts.push_back(theGenLeps[iZ12]);
-    theSortedGenLepts.push_back(theGenLeps[iZ21]);
-    theSortedGenLepts.push_back(theGenLeps[iZ22]);
+    
+    if(iZ11>=0) theSortedGenLepts.push_back(theGenLeps[iZ11]);
+    if(iZ12>=0) theSortedGenLepts.push_back(theGenLeps[iZ12]);
+    if(iZ21>=0) theSortedGenLepts.push_back(theGenLeps[iZ21]);
+    if(iZ22>=0) theSortedGenLepts.push_back(theGenLeps[iZ22]);
 
 //     cout << " Gen Lepton sorting: " << sampleName << " " 
 // 	 << (theSortedGenLepts[0]->p4()+theSortedGenLepts[1]->p4()).mass() << " " 
