@@ -411,6 +411,7 @@ if (LEPTON_SETUP == 2016):
                           runEnergyCorrections=True,
                           runVID=True,
                           eleIDModules=['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Summer16_ID_ISO_cff','RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff'],
+                          phoIDModules=['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V2_cff'],
                           era='2016-Legacy')
 
 if (LEPTON_SETUP == 2017):
@@ -418,6 +419,7 @@ if (LEPTON_SETUP == 2017):
    setupEgammaPostRecoSeq(process,
                           runEnergyCorrections=True,
                           runVID=True,
+                          phoIDModules=['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V2_cff'],
                           era='2017-Nov17ReReco')
 
 if (LEPTON_SETUP == 2018):
@@ -426,6 +428,7 @@ if (LEPTON_SETUP == 2018):
                           runEnergyCorrections=True,
                           runVID=True,
                           eleIDModules=['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Autumn18_ID_ISO_cff','RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff'],
+                             phoIDModules=['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V2_cff'],
                           era='2018-Prompt')
 
 
@@ -1052,7 +1055,7 @@ process.dressedJets = cms.EDProducer("JetFiller",
     src = cms.InputTag("slimmedJets"),
     sampleType = cms.int32(SAMPLE_TYPE),
     setup = cms.int32(LEPTON_SETUP),
-    cut = cms.string("pt>20 && abs(eta)<4.7 && userFloat('JetID') && userFloat('PUjetID')"),
+    cut = cms.string("pt>20 && abs(eta)<4.7"),
     isMC = cms.bool(IsMC),
     bTaggerName = cms.string(theBTagger),
     bTaggerThreshold = cms.double(theBTaggerThr),
