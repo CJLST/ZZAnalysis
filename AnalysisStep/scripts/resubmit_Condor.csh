@@ -1,10 +1,10 @@
 #!/bin/tcsh -f
 
-# Make the grid proxy available in ~, if existing and valid
+ Make the grid proxy available in ~, if existing and valid
 set proxy_valid=`voms-proxy-info --timeleft`
 if ($proxy_valid > 10 ) then
    echo "GRID proxy found, validity: $proxy_valid s"
-   if ($?X509_USER_PROXY) then 
+   if ($?X509_USER_PROXY) then
     if ($X509_USER_PROXY != ~/x509up_u${uid}) cp $X509_USER_PROXY ~/x509up_u${uid}
    else if (-e /tmp/x509up_u${uid} ) then
      cp /tmp/x509up_u${uid} ~
@@ -16,7 +16,7 @@ else # Last attempt: Try to see if a valid proxy already exists in ~
       if ($proxy_valid > 10 ) then
          echo "GRID proxy found in ~, validity: $proxy_valid s"
       endif
-   endif 
+   endif
 
    if ($proxy_valid < 10 ) then
       echo "Error: no valid GRID proxy found."
@@ -28,8 +28,13 @@ set JOBNAME=`basename $PWD`
 
 set queue=' -queue directory in'
 
-foreach x (*Chunk*) 
+foreach x (*Chunk*)
  set queue="$queue $x"
 end
+
+if (! ($1 == "") ) then
+   setenv _CONDOR_SCHEDD_HOST bigbird$1.cern.ch
+   setenv _CONDOR_CREDD_HOST bigbird$1.cern.ch
+endif
 
 condor_submit condor.sub $queue
