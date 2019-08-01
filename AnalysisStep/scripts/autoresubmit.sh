@@ -4,7 +4,7 @@ set -euo pipefail
 
 startnumber=0
 
-for filename in AAAFAIL*; do
+for filename in $(shopt -s nullglob; echo AAAFAIL*); do
   if [[ $filename =~ ^AAAFAIL[0-9]+$ ]]; then
     newnumber=${filename/AAAFAIL/}
     if [ $newnumber -gt $startnumber ]; then
@@ -22,7 +22,7 @@ for i in {1..192}; do
   #the jobs that have finished are now moved to AAAOK
   #that means those symlinks are now broken
   #so we can delete them
-  for folder in AAAFAIL*; do
+  for folder in $(shopt -s nullglob; echo AAAFAIL*); do
     find $folder -xtype l -delete
     if not ls $folder/*Chunk* >& /dev/null; then
       rm -r $folder
