@@ -2,6 +2,7 @@
 #include <ZZAnalysis/AnalysisStep/interface/Discriminants.h>
 #include <ZZAnalysis/AnalysisStep/interface/cConstants.h>
 
+#include <cassert>
 #include <cmath>
 #include <iostream>
 
@@ -421,7 +422,8 @@ extern "C" int categoryAC19(
     useVHMETTagged,
     useQGTagging
   );
-  if (c==VBF2jTaggedMor18 || c==VHHadrTaggedMor18) return c;
+  if (c==VBF2jTaggedMor18 || c==VHHadrTaggedMor18 || c==VBF1jTaggedMor18 || c==VHLeptTaggedMor18 || c==ttHLeptTaggedMor18 || c==ttHHadrTaggedMor18) return c; //ttH categories are not actually used (they are put into untagged), but their selection is excluded from boosted
+  assert(c==UntaggedMor18 || c==VHMETTaggedMor18);
   if (ZZPt > 120) return BoostedAC19;
   return c;
 }
