@@ -38,7 +38,7 @@ for i in {1..192}; do
       echo "resubmitting $(ls -d *Chunk* 2>/dev/null | wc -l) failed chunks"
       if ls -d *Chunk* >& /dev/null; then
         cleanup.csh
-        resubmit_Condor.csh
+        resubmit_Condor.csh "$@"
       fi
     )
   fi
