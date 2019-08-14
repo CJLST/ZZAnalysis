@@ -667,7 +667,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   addLHEKinematics = addLHEKinematics || !lheMElist.empty();
   if (isMC){
     lheHandler = new LHEHandler(
-      pset.getParameter<int>("VVMode"),
+      ((MELAEvent::CandidateVVMode)(pset.getParameter<int>("VVMode")+1)), // FIXME: Need to pass strings and interpret them instead!
       pset.getParameter<int>("VVDecayMode"),
       (addLHEKinematics ? LHEHandler::doHiggsKinematics : LHEHandler::noKinematics),
       year, LHEHandler::tryNNPDF30, LHEHandler::tryNLO
