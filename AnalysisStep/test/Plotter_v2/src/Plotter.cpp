@@ -17,6 +17,7 @@ Plotter::Plotter( double lumi ):Tree()
    _current_final_state = -999;
    _current_category = -999;
 
+   lepSFHelper = new LeptonSFHelper();
    
    // Z+X SS factors
    _fs_ROS_SS.push_back(1.00868);//4e
@@ -65,7 +66,7 @@ Plotter::~Plotter()
 
 
 //=====================================================
-void Plotter::MakeHistograms( TString input_file_name )
+void Plotter::MakeHistograms( TString input_file_name , int year)
 {
 
    input_file = new TFile(input_file_name);
@@ -151,8 +152,19 @@ void Plotter::MakeHistograms( TString input_file_name )
       _k_factor = calculate_K_factor(input_file_name);
    
       // Final event weight
-      _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight) / gen_sum_weights;
+      _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight * L1prefiringWeight ) / gen_sum_weights;
       if ( input_file_name.Contains("ggH") ) _event_weight *= ggH_NNLOPS_weight; // reweight POWHEG ggH to NNLOPS
+      
+      // Rescale to updated version of SFs
+      _updatedSF = ( lepSFHelper->getSF(year,LepLepId->at(0),LepPt->at(0),LepEta->at(0), LepEta->at(0), false) *
+                     lepSFHelper->getSF(year,LepLepId->at(1),LepPt->at(1),LepEta->at(1), LepEta->at(1), false) *
+                     lepSFHelper->getSF(year,LepLepId->at(2),LepPt->at(2),LepEta->at(2), LepEta->at(2), false) *
+                     lepSFHelper->getSF(year,LepLepId->at(3),LepPt->at(3),LepEta->at(3), LepEta->at(3), false) );
+      
+      cout << "Weight before = " << _event_weight << " Updated SF = " << _updatedSF << endl;
+      _event_weight *= _updatedSF/dataMCWeight;
+      cout << "Updated weight = " << _event_weight << endl;
+      
       
       // Calculate kinematic discriminants
       KD = p_GG_SIG_ghg2_1_ghz1_1_JHUGen / ( p_GG_SIG_ghg2_1_ghz1_1_JHUGen + p_QQB_BKG_MCFM*getDbkgkinConstant(Z1Flav*Z2Flav,ZZMass) );
@@ -451,8 +463,18 @@ void Plotter::FillHistograms( TString input_file_name , int year)
                                                  _ZZjjPt);
 		
       // Final event weight
-      _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight) / gen_sum_weights;
+      _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight * L1prefiringWeight) / gen_sum_weights;
       if ( input_file_name.Contains("ggH") ) _event_weight *= ggH_NNLOPS_weight; // reweight POWHEG ggH to NNLOPS
+      
+      // Rescale to updated version of SFs
+      _updatedSF = ( lepSFHelper->getSF(year,LepLepId->at(0),LepPt->at(0),LepEta->at(0), LepEta->at(0), false) *
+                     lepSFHelper->getSF(year,LepLepId->at(1),LepPt->at(1),LepEta->at(1), LepEta->at(1), false) *
+                     lepSFHelper->getSF(year,LepLepId->at(2),LepPt->at(2),LepEta->at(2), LepEta->at(2), false) *
+                     lepSFHelper->getSF(year,LepLepId->at(3),LepPt->at(3),LepEta->at(3), LepEta->at(3), false) );
+      
+      //cout << "Weight before = " << _event_weight << " Updated SF = " << _updatedSF << endl;
+      _event_weight *= _updatedSF/dataMCWeight;
+      //cout << "Updated weight = " << _event_weight << endl;
 
       combination_histos->FillM4lCombination(ZZMass, _event_weight, _current_process);
       combination_histos->FillSTXS(ZZMass, _event_weight, _current_category_stxs, _current_process);

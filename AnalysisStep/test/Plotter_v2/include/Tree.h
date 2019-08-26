@@ -444,6 +444,9 @@ public :
    Float_t         dataMCWeight;
    Float_t         trigEffWeight;
    Float_t         overallEventWeight;
+   Float_t         L1prefiringWeight;
+   Float_t         L1prefiringWeightUp;
+   Float_t         L1prefiringWeightDn;
    Float_t         HqTMCweight;
    Float_t         xsec;
    Short_t         genExtInfo;
@@ -934,6 +937,9 @@ public :
    TBranch        *b_dataMCWeight;   //!
    TBranch        *b_trigEffWeight;   //!
    TBranch        *b_overallEventWeight;   //!
+   TBranch        *b_L1prefiringWeight;   //!
+   TBranch        *b_L1prefiringWeightUp;   //!
+   TBranch        *b_L1prefiringWeightDn;   //!
    TBranch        *b_HqTMCweight;   //!
    TBranch        *b_xsec;   //!
    TBranch        *b_genExtInfo;   //!
@@ -1531,6 +1537,9 @@ void Tree::Init(TTree *tree, TString input_file_name)
       fChain->SetBranchAddress("dataMCWeight", &dataMCWeight, &b_dataMCWeight);
       fChain->SetBranchAddress("trigEffWeight", &trigEffWeight, &b_trigEffWeight);
       fChain->SetBranchAddress("overallEventWeight", &overallEventWeight, &b_overallEventWeight);
+      fChain->SetBranchAddress("L1prefiringWeight", &L1prefiringWeight, &b_L1prefiringWeight);
+      fChain->SetBranchAddress("L1prefiringWeightUp", &L1prefiringWeightUp, &b_L1prefiringWeightUp);
+      fChain->SetBranchAddress("L1prefiringWeightDn", &L1prefiringWeightDn, &b_L1prefiringWeightDn);
       fChain->SetBranchAddress("HqTMCweight", &HqTMCweight, &b_HqTMCweight);
       fChain->SetBranchAddress("xsec", &xsec, &b_xsec);
       fChain->SetBranchAddress("genExtInfo", &genExtInfo, &b_genExtInfo);
