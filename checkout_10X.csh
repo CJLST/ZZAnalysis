@@ -42,15 +42,15 @@ git clone https://github.com/mkovac/MuonMVAReader.git MuonMVAReader
 
 #MELA Analytics
 git clone https://github.com/usarica/MelaAnalytics.git
-(cd MelaAnalytics; git checkout -b from-v14 v1.4)
+(cd MelaAnalytics; git checkout -b from-v19 v1.9)
 
 #Common LHE tools
 git clone https://github.com/usarica/CommonLHETools.git
-(cd CommonLHETools; git checkout -b from-v125 v1.2.5)
+(cd CommonLHETools; git checkout -b from-v131 v1.3.1)
 
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
-(cd ZZMatrixElement; git checkout -b from-v220 v2.2.0)
+(cd ZZMatrixElement; git checkout -b from-v222 v2.2.2)
 # replace ZZMatrixElement/MELA/setup.sh -j 8
 (                                                                 \
   cd ${CMSSW_BASE}/src/ZZMatrixElement/MELA/COLLIER/             ;\
