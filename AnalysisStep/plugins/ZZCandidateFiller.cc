@@ -1125,7 +1125,7 @@ void ZZCandidateFiller::updateMELAClusters_J2JEC(){
         for (unsigned int disableJet=0; disableJet<nGoodJets; disableJet++) melaCand->getAssociatedJet(disableJet)->setSelected((disableJet==firstjet || disableJet==secondjet)); // Disable the other jets
         unsigned int nDisabledStableTops=0;
         for (int itop=0; itop<melaCand->getNAssociatedTops(); itop++){
-          MELATopCandidate* einTop = melaCand->getAssociatedTop(itop);
+          MELATopCandidate_t* einTop = melaCand->getAssociatedTop(itop);
           if (einTop->getNDaughters()==3) einTop->setSelected(false); // All unstable tops are disabled in the loop for jets (where "jet"=="stable top") since we are looping over jecnum
           else{
             einTop->setSelected((nDisabledStableTops==firstjet || nDisabledStableTops==secondjet)); // Disable the other stable tops

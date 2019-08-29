@@ -37,6 +37,7 @@
 #include <ZZAnalysis/AnalysisStep/test/Plotter_v2/include/FakeRates.h>
 #include <ZZAnalysis/AnalysisStep/interface/cConstants.h>
 #include <ZZAnalysis/AnalysisStep/interface/Discriminants.h>
+#include <ZZAnalysis/AnalysisStep/interface/LeptonSFHelper.h>
 
 // BOOLS
 #define SMOOTH_ZX_FULL_RUN2_SS 0
@@ -59,7 +60,7 @@ public:
 	Plotter( double );
 	~Plotter();
    
-   void MakeHistograms( TString );
+   void MakeHistograms( TString , int );
    void FillHistograms( TString , int );
    void MakeHistogramsZX( TString, TString );
    void FillZXHistograms( TString, TString , int);
@@ -98,6 +99,9 @@ private:
 
    TFile *input_file, *input_file_data;
    TTree *input_tree, *input_tree_data;
+   
+   LeptonSFHelper *lepSFHelper;
+   float _updatedSF;
 
    Histograms *blinded_histos, *unblinded_histos, *combination_histos;
    
