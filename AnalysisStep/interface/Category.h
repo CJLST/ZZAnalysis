@@ -40,7 +40,6 @@ enum CategoryIchep16 {
   ttHTaggedIchep16    = 5
 };
 
-//int category(
 extern "C" int categoryIchep16(
 			       int nExtraLep,
 			       int nExtraZ,
@@ -77,7 +76,6 @@ enum CategoryMor17 {
   VHMETTaggedMor17  = 6
 };
 
-//int category(
 extern "C" int categoryMor17(
 			     int nExtraLep,
 			     int nExtraZ,
@@ -115,7 +113,6 @@ enum CategoryMor18 {
   VHMETTaggedMor18   = 7
 };
 
-//int category(
 extern "C" int categoryMor18(
 			     int nExtraLep,
 			     int nExtraZ,
@@ -176,4 +173,48 @@ extern "C" int stage1_reco_1p1(
                      int category,
                      float pt_hjj
                      );
+
+
+//---------- Anomalous couplings 2019 categorization
+//VBF1j, VH Lep and MET and ttH are merged into untagged or boosted,
+//but keep the numbers for compatibility with Mor18
+
+enum CategoryAC19 {
+  UntaggedAC19      = UntaggedMor18,
+  VBF1jTaggedAC19   = VBF1jTaggedMor18,
+  VBF2jTaggedAC19   = VBF2jTaggedMor18,
+  VHLeptTaggedAC19  = VHLeptTaggedMor18,
+  VHHadrTaggedAC19  = VHHadrTaggedMor18,
+  ttHLeptTaggedAC19 = ttHLeptTaggedMor18,
+  ttHHadrTaggedAC19 = ttHHadrTaggedMor18,
+  VHMETTaggedAC19   = VHMETTaggedMor18,
+  BoostedAC19       = 8
+};
+
+extern "C" int categoryAC19(
+			     int nExtraLep,
+			     int nExtraZ,
+			     int nCleanedJetsPt30,
+			     int nCleanedJetsPt30BTagged_bTagSF,
+			     float* jetQGLikelihood,
+			     float p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+			     float p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
+			     float p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
+			     float p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+			     float pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+			     float p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
+			     float p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
+				  float p_HadWH_mavjj_JECNominal,
+				  float p_HadWH_mavjj_true_JECNominal,
+				  float p_HadZH_mavjj_JECNominal,
+				  float p_HadZH_mavjj_true_JECNominal,
+			     float* jetPhi,
+			     float ZZMass,
+			     float ZZPt,
+			     float PFMET,
+			     bool useVHMETTagged = true,
+			     bool useQGTagging = false
+			     );
+
+
 #endif

@@ -8,7 +8,7 @@ using namespace std;
 FakeRates::FakeRates( TString input_file_FR_name )
 {
  
-   input_file_FR = new TFile("./" + input_file_FR_name);
+   input_file_FR = new TFile(input_file_FR_name);
 
    // for OS FR files
    if (input_file_FR_name.Contains("OS"))

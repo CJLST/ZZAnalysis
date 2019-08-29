@@ -33,13 +33,6 @@ foreach chunk ( *Chunk* )
    set fail="true"
  endif
 
-# if ( $fail == "true" ) then
-#   if ( -e ${filename}.recovered ) echo "   found: " ${filename}.recovered
-#   if ( -e ${filename}.corrupted ) echo "   found: " ${filename}.corrupted
-# else
-#   set exitstatus=`grep "2012 with exit status" ${chunk}/*.txt | awk '{print $NF}'`
-#   if ( $exitstatus != 0 ) then
-
  # Check job exit status
  set exitStatus = 0
  if ( -es ${chunk}/exitStatus.txt ) then
@@ -58,6 +51,17 @@ foreach chunk ( *Chunk* )
       set fail="true"
    endif
  endif
+
+ set logFile = ( ${chunk}/log/*.log )
+ if ( -e $logFile[1] ) then
+   if ( `grep -c -e "The job attribute PeriodicRemove expression.*evaluated to TRUE" $logFile[$#logFile]` != 0 ) then
+      set exitStatus=153
+      set fail="true"
+   else if ( `grep -c -e "Job was aborted by the user" $logFile[$#logFile]` != 0 ) then
+      set exitStatus=154
+      set fail="true"
+   endif
+ endif
  unset nonomatch
 
  # Archive succesful jobs, or report failure
@@ -72,6 +76,8 @@ foreach chunk ( *Chunk* )
      if ( $exitStatus == 84 ) set description="(missing input file)"
      if ( $exitStatus == 134 ) set description="(Crashed)"
      if ( $exitStatus == 152 ) set description="(Exceeded CPU time)"
+     if ( $exitStatus == 153 ) set description="(Condor crashed, see log file)"
+     if ( $exitStatus == 154 ) set description="(You cancelled the job)"
     echo $chunk ": failed, exit status = " $exitStatus $description
    endif
    if ( $opt == "mf" && $exitStatus != 0 ) then

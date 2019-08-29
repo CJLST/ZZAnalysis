@@ -2,6 +2,7 @@
 #include <ZZAnalysis/AnalysisStep/interface/Discriminants.h>
 #include <ZZAnalysis/AnalysisStep/interface/cConstants.h>
 
+#include <cassert>
 #include <cmath>
 #include <iostream>
 
@@ -374,3 +375,55 @@ extern "C" int stage1_reco_1p1(
 	return -1;
 }
 
+extern "C" int categoryAC19(
+                             int nExtraLep,
+                             int nExtraZ,
+                             int nCleanedJetsPt30,
+                             int nCleanedJetsPt30BTagged_bTagSF,
+                             float* jetQGLikelihood,
+                             float p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+                             float p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
+                             float p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
+                             float p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+                             float pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+                             float p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
+                             float p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
+                             float p_HadWH_mavjj_JECNominal,
+                             float p_HadWH_mavjj_true_JECNominal,
+                             float p_HadZH_mavjj_JECNominal,
+                             float p_HadZH_mavjj_true_JECNominal,
+                             float* jetPhi,
+                             float ZZMass,
+                             float ZZPt,
+                             float PFMET,
+                             bool useVHMETTagged,
+                             bool useQGTagging
+                             ) {
+  int c = categoryMor18(
+    nExtraLep,
+    nExtraZ,
+    nCleanedJetsPt30,
+    nCleanedJetsPt30BTagged_bTagSF,
+    jetQGLikelihood,
+    p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+    p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
+    p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
+    p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+    pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+    p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
+    p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
+    p_HadWH_mavjj_JECNominal,
+    p_HadWH_mavjj_true_JECNominal,
+    p_HadZH_mavjj_JECNominal,
+    p_HadZH_mavjj_true_JECNominal,
+    jetPhi,
+    ZZMass,
+    PFMET,
+    useVHMETTagged,
+    useQGTagging
+  );
+  if (c==VBF2jTaggedMor18 || c==VHHadrTaggedMor18 || c==VBF1jTaggedMor18 || c==VHLeptTaggedMor18 || c==ttHLeptTaggedMor18 || c==ttHHadrTaggedMor18) return c; //ttH categories are not actually used (they are put into untagged), but their selection is excluded from boosted
+  assert(c==UntaggedMor18 || c==VHMETTaggedMor18);
+  if (ZZPt > 120) return BoostedAC19;
+  return c;
+}
