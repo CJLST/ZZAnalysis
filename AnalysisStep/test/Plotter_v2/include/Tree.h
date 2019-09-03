@@ -409,6 +409,8 @@ public :
    vector<float>   *JetMult;
    vector<float>   *JetPtD;
    vector<float>   *JetSigma;
+   vector<short>   *JetPUID;
+   vector<short>   *JetID;
    Float_t         DiJetMass;
    Float_t         DiJetDEta;
    Float_t         DiJetFisher;
@@ -902,6 +904,8 @@ public :
    TBranch        *b_JetMult;   //!
    TBranch        *b_JetPtD;   //!
    TBranch        *b_JetSigma;   //!
+   TBranch        *b_JetID;   //!
+   TBranch        *b_JetPUID;   //!
    TBranch        *b_DiJetMass;   //!
    TBranch        *b_DiJetDEta;   //!
    TBranch        *b_DiJetFisher;   //!
@@ -1093,6 +1097,8 @@ void Tree::Init(TTree *tree, TString input_file_name)
    JetMult = 0;
    JetPtD = 0;
    JetSigma = 0;
+   JetID = 0;
+   JetPUID = 0;
    ExtraLepPt = 0;
    ExtraLepEta = 0;
    ExtraLepPhi = 0;
@@ -1488,6 +1494,8 @@ void Tree::Init(TTree *tree, TString input_file_name)
    fChain->SetBranchAddress("JetMult", &JetMult, &b_JetMult);
    fChain->SetBranchAddress("JetPtD", &JetPtD, &b_JetPtD);
    fChain->SetBranchAddress("JetSigma", &JetSigma, &b_JetSigma);
+   fChain->SetBranchAddress("JetID", &JetID, &b_JetID);
+   fChain->SetBranchAddress("JetPUID", &JetPUID, &b_JetPUID);
    fChain->SetBranchAddress("DiJetMass", &DiJetMass, &b_DiJetMass);
    fChain->SetBranchAddress("DiJetDEta", &DiJetDEta, &b_DiJetDEta);
    fChain->SetBranchAddress("DiJetFisher", &DiJetFisher, &b_DiJetFisher);

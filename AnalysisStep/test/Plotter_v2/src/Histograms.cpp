@@ -699,6 +699,12 @@ Histograms::Histograms( string blinding )
    _s_process.push_back("ggZZ");
    _s_process.push_back("Zjets");
    _s_process.push_back("other");
+   
+   _s_final_state.push_back("4e");
+   _s_final_state.push_back("4mu");
+   _s_final_state.push_back("2e2mu");
+   _s_final_state.push_back("2mu2e");
+   _s_final_state.push_back("4l");
     
    _s_STXS_category.push_back("ggH-0j/pT[0,10]");
    _s_STXS_category.push_back("ggH-0j/pT[10-200]");
@@ -772,22 +778,27 @@ Histograms::Histograms( string blinding )
 		//=====
 		// M4l
 		//=====
-		_histo_name = "M4l_" + _s_process.at(i_proc) + "_" + _blinding;
-		_histo_labels = ";" + Variables::M4lMain().var_X_label + ";" + Variables::M4lMain().var_Y_label;
-		histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][i_proc] = new TH1F(_histo_name.c_str(), _histo_labels.c_str(), Variables::M4lMain().var_N_bin*2,Variables::M4lMain().var_min, Variables::M4lMain().var_max);
+      for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
+      {
+         _histo_name = "M4l_" + _s_process.at(i_proc) + "_" + _s_final_state.at(i_fs) + "_" + _blinding;
+         _histo_labels = ";" + Variables::M4lMain().var_X_label + ";" + Variables::M4lMain().var_Y_label;
+         histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][i_proc] = new TH1F(_histo_name.c_str(), _histo_labels.c_str(), Variables::M4lMain().var_N_bin*2,Variables::M4lMain().var_min, Variables::M4lMain().var_max);
+      }
+		
 	}
 
 	
 	
    // Z+X
 
-		_histo_name = "M4l_ZX_shape_" + _blinding;
-		histos_1D_ZX_shape[Settings::M4lMain][Settings::fs4l][Settings::inclusive] = new TH1F(_histo_name.c_str(), "Z+X", Variables::M4lMain().var_N_bin*2,
-                                                                       Variables::M4lMain().var_min, Variables::M4lMain().var_max);
+   for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
+   {
+		_histo_name = "M4l_ZX_shape_" + _s_final_state.at(i_fs) + "_" + _blinding;
+		histos_1D_ZX_shape[Settings::M4lMain][i_fs][Settings::inclusive] = new TH1F(_histo_name.c_str(), "Z+X", Variables::M4lMain().var_N_bin*2, Variables::M4lMain().var_min,Variables::M4lMain().var_max);
+   }
 
-	  M4lZX *ZXShapeCombination = new M4lZX();
-	
-   ZXShapeCombination->GetM4lZXCombination(histos_1D_ZX_shape[Settings::M4lMain][Settings::fs4l][Settings::inclusive]);
+	   M4lZX *ZXShapeCombination = new M4lZX();
+   ZXShapeCombination->GetM4lZXCombination(histos_1D_ZX_shape[Settings::M4lMain][Settings::fs4e][Settings::inclusive],histos_1D_ZX_shape[Settings::M4lMain][Settings::fs4mu][Settings::inclusive],histos_1D_ZX_shape[Settings::M4lMain][Settings::fs2e2mu][Settings::inclusive],histos_1D_ZX_shape[Settings::M4lMain][Settings::fs4l][Settings::inclusive]);
     
     
     // STXS category data vs MC
@@ -982,9 +993,9 @@ void Histograms::FillM4l( float M4l, float weight, int fs, int cat, int proc )
 //====================================================================================
 
 //====================================================================================
-void Histograms::FillM4lCombination( float M4l, float weight, int proc )
+void Histograms::FillM4lCombination( float M4l, float weight, int proc, int fs )
 {
-	histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][proc]->Fill(M4l, (proc == Settings::Data) ? 1. : weight);
+	histos_1D[Settings::M4lMain][fs][Settings::inclusive][proc]->Fill(M4l, (proc == Settings::Data) ? 1. : weight);
 }
 //====================================================================================
 
@@ -1492,7 +1503,7 @@ void Histograms::FillOthersZX( float M4l, float ZZPt, float ZZEta, float PFMET, 
 
 
 //=======================================================================================
-void Histograms::MakeZXShape( vector< vector <float> > _expected_yield_SR, int current_category)
+void Histograms::MakeZXShape( int current_category , vector< vector <float> > _expected_yield_SR)
 {
    
    M4lZX *ZXShape = new M4lZX();
@@ -1842,13 +1853,24 @@ void Histograms::FillInclusive()
 
 void Histograms::FillInclusiveCombination()
 {
-	histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125]->Add(histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125ggH]);
-	histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125]->Add(histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125VBF]);
-	histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125]->Add(histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125VH]);
-	histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125]->Add(histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125ttH]);
-	histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125]->Add(histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125bbH]);
-	histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125]->Add(histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125tqH]);
-    
+   for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
+   {
+      histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][Settings::H125]->Add(histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][Settings::H125ggH]);
+      histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][Settings::H125]->Add(histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][Settings::H125VBF]);
+      histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][Settings::H125]->Add(histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][Settings::H125VH]);
+      histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][Settings::H125]->Add(histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][Settings::H125ttH]);
+      histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][Settings::H125]->Add(histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][Settings::H125bbH]);
+      histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][Settings::H125]->Add(histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][Settings::H125tqH]);
+   }
+   
+   for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
+   {
+      for ( int i_proc = 0; i_proc < num_of_processes - 2; i_proc++ )
+      {
+         histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][i_proc]->Add(histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][i_proc]);
+      }
+   }
+
     for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ )
     {
         
@@ -1860,7 +1882,7 @@ void Histograms::FillInclusiveCombination()
             STXS_Categories[i_proc]->SetBinContent(i_cat + 1,STXS_Yields[i_cat][i_proc]->Integral());
         }
     }
-    
+   
     for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ )// first calculate total yield in each bin so you can normalize each bin to 1
     {
         for ( int i_proc = 0; i_proc < num_of_STXS_bins; i_proc++ )
@@ -2170,110 +2192,23 @@ void Histograms::SmoothHistograms()
 
 
 //==============================
-void Histograms::RenormalizeZX( vector< vector <float> > _expected_yield_SR )
+void Histograms::RenormalizeZX( int year )
 {
    M4lZX *ZX = new M4lZX();
-   
+
    for ( int i_cat = 0; i_cat < num_of_categories; i_cat++ )
    {
-      // M4l
-      ZX->RenormalizeZX(i_cat, _expected_yield_SR,
-                        histos_1D_ZX[Settings::M4lMain][Settings::fs4e][i_cat],
-                        histos_1D_ZX[Settings::M4lMain][Settings::fs4mu][i_cat],
-                        histos_1D_ZX[Settings::M4lMain][Settings::fs2e2mu][i_cat]);
-                        
-      ZX->RenormalizeZX(i_cat, _expected_yield_SR,
-                        histos_1D_ZX[Settings::M4lMainZoomed][Settings::fs4e][i_cat],
-                        histos_1D_ZX[Settings::M4lMainZoomed][Settings::fs4mu][i_cat],
-                        histos_1D_ZX[Settings::M4lMainZoomed][Settings::fs2e2mu][i_cat]);
-                        
-      ZX->RenormalizeZX(i_cat, _expected_yield_SR,
-                        histos_1D_ZX[Settings::M4lMainHighMass][Settings::fs4e][i_cat],
-                        histos_1D_ZX[Settings::M4lMainHighMass][Settings::fs4mu][i_cat],
-                        histos_1D_ZX[Settings::M4lMainHighMass][Settings::fs2e2mu][i_cat]);
+      for ( int i_1Dhistos = 0; i_1Dhistos < num_of_1D_plot_names; i_1Dhistos++ )
          
-      // MZ1
-      ZX->RenormalizeZX(i_cat, _expected_yield_SR,
-                        histos_1D_ZX[Settings::MZ1][Settings::fs4e][i_cat],
-                        histos_1D_ZX[Settings::MZ1][Settings::fs4mu][i_cat],
-                        histos_1D_ZX[Settings::MZ1][Settings::fs2e2mu][i_cat]);
-                        
-      ZX->RenormalizeZX(i_cat, _expected_yield_SR,
-                        histos_1D_ZX[Settings::MZ1_M4L118130][Settings::fs4e][i_cat],
-                        histos_1D_ZX[Settings::MZ1_M4L118130][Settings::fs4mu][i_cat],
-                        histos_1D_ZX[Settings::MZ1_M4L118130][Settings::fs2e2mu][i_cat]);
-
-      // MZ2
-      ZX->RenormalizeZX(i_cat, _expected_yield_SR,
-                        histos_1D_ZX[Settings::MZ2][Settings::fs4e][i_cat],
-                        histos_1D_ZX[Settings::MZ2][Settings::fs4mu][i_cat],
-                        histos_1D_ZX[Settings::MZ2][Settings::fs2e2mu][i_cat]);
-                        
-      ZX->RenormalizeZX(i_cat, _expected_yield_SR,
-                        histos_1D_ZX[Settings::MZ2_M4L118130][Settings::fs4e][i_cat],
-                        histos_1D_ZX[Settings::MZ2_M4L118130][Settings::fs4mu][i_cat],
-                        histos_1D_ZX[Settings::MZ2_M4L118130][Settings::fs2e2mu][i_cat]);
+      {
+         if ( i_1Dhistos == Settings::M4lYields ) continue;
          
-      // KD
-      ZX->RenormalizeZX(i_cat, _expected_yield_SR,
-                        histos_1D_ZX[Settings::KD][Settings::fs4e][i_cat],
-                        histos_1D_ZX[Settings::KD][Settings::fs4mu][i_cat],
-                        histos_1D_ZX[Settings::KD][Settings::fs2e2mu][i_cat]);
-                        
-      ZX->RenormalizeZX(i_cat, _expected_yield_SR,
-                        histos_1D_ZX[Settings::KD_M4L118130][Settings::fs4e][i_cat],
-                        histos_1D_ZX[Settings::KD_M4L118130][Settings::fs4mu][i_cat],
-                        histos_1D_ZX[Settings::KD_M4L118130][Settings::fs2e2mu][i_cat]);
-         
-      ZX->RenormalizeZX(i_cat, _expected_yield_SR,
-                        histos_1D_ZX[Settings::D1jet][Settings::fs4e][i_cat],
-                        histos_1D_ZX[Settings::D1jet][Settings::fs4mu][i_cat],
-                        histos_1D_ZX[Settings::D1jet][Settings::fs2e2mu][i_cat]);
-                        
-      ZX->RenormalizeZX(i_cat, _expected_yield_SR,
-                        histos_1D_ZX[Settings::D1jet_M4L118130][Settings::fs4e][i_cat],
-                        histos_1D_ZX[Settings::D1jet_M4L118130][Settings::fs4mu][i_cat],
-                        histos_1D_ZX[Settings::D1jet_M4L118130][Settings::fs2e2mu][i_cat]);
-         
-      ZX->RenormalizeZX(i_cat, _expected_yield_SR,
-                        histos_1D_ZX[Settings::D2jet][Settings::fs4e][i_cat],
-                        histos_1D_ZX[Settings::D2jet][Settings::fs4mu][i_cat],
-                        histos_1D_ZX[Settings::D2jet][Settings::fs2e2mu][i_cat]);
-                        
-      ZX->RenormalizeZX(i_cat, _expected_yield_SR,
-                        histos_1D_ZX[Settings::D2jet_M4L118130][Settings::fs4e][i_cat],
-                        histos_1D_ZX[Settings::D2jet_M4L118130][Settings::fs4mu][i_cat],
-                        histos_1D_ZX[Settings::D2jet_M4L118130][Settings::fs2e2mu][i_cat]);
-         
-      ZX->RenormalizeZX(i_cat, _expected_yield_SR,
-                        histos_1D_ZX[Settings::DWH][Settings::fs4e][i_cat],
-                        histos_1D_ZX[Settings::DWH][Settings::fs4mu][i_cat],
-                        histos_1D_ZX[Settings::DWH][Settings::fs2e2mu][i_cat]);
-                        
-      ZX->RenormalizeZX(i_cat, _expected_yield_SR,
-                        histos_1D_ZX[Settings::DWH_M4L118130][Settings::fs4e][i_cat],
-                        histos_1D_ZX[Settings::DWH_M4L118130][Settings::fs4mu][i_cat],
-                        histos_1D_ZX[Settings::DWH_M4L118130][Settings::fs2e2mu][i_cat]);
-         
-      ZX->RenormalizeZX(i_cat, _expected_yield_SR,
-                        histos_1D_ZX[Settings::DZH][Settings::fs4e][i_cat],
-                        histos_1D_ZX[Settings::DZH][Settings::fs4mu][i_cat],
-                        histos_1D_ZX[Settings::DZH][Settings::fs2e2mu][i_cat]);
-                        
-      ZX->RenormalizeZX(i_cat, _expected_yield_SR,
-                        histos_1D_ZX[Settings::DZH_M4L118130][Settings::fs4e][i_cat],
-                        histos_1D_ZX[Settings::DZH_M4L118130][Settings::fs4mu][i_cat],
-                        histos_1D_ZX[Settings::DZH_M4L118130][Settings::fs2e2mu][i_cat]);
-      
-      ZX->RenormalizeZX(i_cat, _expected_yield_SR,
-                        histos_1D_ZX[Settings::DVH][Settings::fs4e][i_cat],
-                        histos_1D_ZX[Settings::DVH][Settings::fs4mu][i_cat],
-                        histos_1D_ZX[Settings::DVH][Settings::fs2e2mu][i_cat]);
-                        
-      ZX->RenormalizeZX(i_cat, _expected_yield_SR,
-                        histos_1D_ZX[Settings::DVH_M4L118130][Settings::fs4e][i_cat],
-                        histos_1D_ZX[Settings::DVH_M4L118130][Settings::fs4mu][i_cat],
-                        histos_1D_ZX[Settings::DVH_M4L118130][Settings::fs2e2mu][i_cat]);
+         ZX->RenormalizeZX(i_cat, year,
+                           histos_1D_ZX[i_1Dhistos][Settings::fs4e][i_cat],
+                           histos_1D_ZX[i_1Dhistos][Settings::fs4mu][i_cat],
+                           histos_1D_ZX[i_1Dhistos][Settings::fs2e2mu][i_cat]);
+      }
+     
    }  
    ZX->~M4lZX();   
 }
@@ -2458,11 +2393,17 @@ void Histograms::SaveCombHistos( string file_name )
     
     for ( int i_proc = 0; i_proc < num_of_processes - 2; i_proc++ )
     {
-        histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][i_proc]->Write();
+       for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
+       {
+          histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][i_proc]->Write();
+       }
+       
     }
-    
-    histos_1D_ZX_shape[Settings::M4lMain][Settings::fs4l][Settings::inclusive]->Write();
-    
+   
+    for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
+    {
+        histos_1D_ZX_shape[Settings::M4lMain][i_fs][Settings::inclusive]->Write();
+    }
     
     // STXS category data vs MC
     for ( int i_proc = 0; i_proc < num_of_processes; i_proc++ )
@@ -2990,14 +2931,21 @@ void Histograms::GetCombHistos( TString file_name )
         //=====
         // M4l
         //=====
-        _histo_name = "M4l_" + _s_process.at(i_proc) + "_" + _blinding;
-        histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][i_proc] = (TH1F*)histo_file->Get(_histo_name.c_str());
+       for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
+       {
+          _histo_name = "M4l_" + _s_process.at(i_proc) + "_" + _s_final_state.at(i_fs) + "_" + _blinding;
+          histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][i_proc] = (TH1F*)histo_file->Get(_histo_name.c_str());
+       }
     }
     
     // Z+X
-    
-    _histo_name = "M4l_ZX_shape_" + _blinding;
-    histos_1D_ZX_shape[Settings::M4lMain][Settings::fs4l][Settings::inclusive] = (TH1F*)histo_file->Get(_histo_name.c_str());
+   
+   for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
+   {
+      _histo_name = "M4l_ZX_shape_" + _s_final_state.at(i_fs) + "_" + _blinding;
+      histos_1D_ZX_shape[Settings::M4lMain][i_fs][Settings::inclusive] = (TH1F*)histo_file->Get(_histo_name.c_str());
+   }
+   
     
     for ( int i_proc = 0; i_proc < num_of_processes; i_proc++ )
     {
@@ -3165,7 +3113,7 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
       else if ( fs == Settings::fs4mu )   stack->GetXaxis()->SetTitle(Variables::M4lMain().var_X_label_4mu);
       else if ( fs == Settings::fs2e2mu ) stack->GetXaxis()->SetTitle(Variables::M4lMain().var_X_label_2e2mu);
       else if ( fs == Settings::fs2mu2e ) stack->GetXaxis()->SetTitle(Variables::M4lMain().var_X_label_2mu2e);
-      else                                stack->GetXaxis()->SetTitle(Variables::M4lMain().var_X_label);;
+      else                                stack->GetXaxis()->SetTitle(Variables::M4lMain().var_X_label);
    }
    else
    {
@@ -3312,7 +3260,7 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
 //=================   
 
    CMS_lumi *lumi = new CMS_lumi;
-   lumi->set_lumi(c, _lumi);
+   lumi->set_lumi_combination(c);
    
    // Draw X-axis log scale
    if ( plot_index == Settings::M4lMain )
@@ -3330,78 +3278,82 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
 
 
 //=========================================================================================================
-void Histograms::plot_Combination( TString folder , bool zoomed)
+void Histograms::plot_Combination( TString folder , bool zoomed, int fs)
 {
    TCanvas *c;
    if(zoomed) c = new TCanvas("c", "c", 600, 600);
    else c = new TCanvas("c", "c", 650, 500);
-	
+   
    if(!zoomed)
    {
       c->SetLogx();
       for ( int i_proc = 0; i_proc < num_of_processes - 2; i_proc++ )
       {
-         histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][i_proc]->Rebin(2);
+         histos_1D[Settings::M4lMain][fs][Settings::inclusive][i_proc]->Rebin(2);
       }
-      histos_1D_ZX_shape[Settings::M4lMain][Settings::fs4l][Settings::inclusive]->Rebin(2);
+      histos_1D_ZX_shape[Settings::M4lMain][fs][Settings::inclusive]->Rebin(2);
    }
 
-   histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125]->SetFillColor(Cosmetics::Higgs_all().fill_color);
+   histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::H125]->SetFillColor(Cosmetics::Higgs_all().fill_color);
 	
-   histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::qqZZ]->SetFillColor(Cosmetics::qqZZ().fill_color);
-   histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::ggZZ]->SetFillColor(Cosmetics::ggZZ().fill_color);
-   histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::qqZZ]->SetLineColor(Cosmetics::qqZZ().line_color);
-   histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::ggZZ]->SetLineColor(Cosmetics::ggZZ().line_color);
+   histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::qqZZ]->SetFillColor(Cosmetics::qqZZ().fill_color);
+   histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::ggZZ]->SetFillColor(Cosmetics::ggZZ().fill_color);
+   histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::qqZZ]->SetLineColor(Cosmetics::qqZZ().line_color);
+   histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::ggZZ]->SetLineColor(Cosmetics::ggZZ().line_color);
 	
-	histos_1D_ZX_shape[Settings::M4lMain][Settings::fs4l][Settings::inclusive]->SetFillColor(Cosmetics::ZX().fill_color);
-	histos_1D_ZX_shape[Settings::M4lMain][Settings::fs4l][Settings::inclusive]->SetLineColor(Cosmetics::ZX().line_color);
+	histos_1D_ZX_shape[Settings::M4lMain][fs][Settings::inclusive]->SetFillColor(Cosmetics::ZX().fill_color);
+	histos_1D_ZX_shape[Settings::M4lMain][fs][Settings::inclusive]->SetLineColor(Cosmetics::ZX().line_color);
 
-   histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125]->SetLineColor(Cosmetics::Higgs_all().line_color);
+   histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::H125]->SetLineColor(Cosmetics::Higgs_all().line_color);
 	
-   histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::Data]->SetBinErrorOption(TH1::kPoisson);
-   histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::Data]->SetLineColor(kBlack);
+   histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::Data]->SetBinErrorOption(TH1::kPoisson);
+   histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::Data]->SetLineColor(kBlack);
 	
    // THStack
    THStack *stack = new THStack( "stack", "stack" );
 	
-	stack->Add(histos_1D_ZX_shape[Settings::M4lMain][Settings::fs4l][Settings::inclusive]);
+	stack->Add(histos_1D_ZX_shape[Settings::M4lMain][fs][Settings::inclusive]);
 
-   stack->Add(histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::ggZZ]);
-   stack->Add(histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::qqZZ]);
+   stack->Add(histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::ggZZ]);
+   stack->Add(histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::qqZZ]);
 	
 	
-	stack->Add(histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125]);
+	stack->Add(histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::H125]);
 	
    stack->Draw("HIST");
     
    if (zoomed) stack->GetXaxis()->SetRangeUser(70.,170.);
 	else stack->GetXaxis()->SetRangeUser(70.,500.);
    
-   float data_max = histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::Data]->GetBinContent(histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::Data]->GetMaximumBin());
-   float data_max_error = histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::Data]->GetBinErrorUp(histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::Data]->GetMaximumBin());
+   float data_max = histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::Data]->GetBinContent(histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::Data]->GetMaximumBin());
+   float data_max_error = histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::Data]->GetBinErrorUp(histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::Data]->GetMaximumBin());
 	
 
 	stack->SetMinimum(1e-5);
 	stack->SetMaximum((data_max + data_max_error)*1.1);
 	
-	stack->GetXaxis()->SetTitle(Variables::M4lMain().var_X_label);
+   if      ( fs == Settings::fs4e )    stack->GetXaxis()->SetTitle(Variables::M4lMain().var_X_label_4e);
+   else if ( fs == Settings::fs4mu )   stack->GetXaxis()->SetTitle(Variables::M4lMain().var_X_label_4mu);
+   else if ( fs == Settings::fs2e2mu ) stack->GetXaxis()->SetTitle(Variables::M4lMain().var_X_label_2e2mu);
+   else if ( fs == Settings::fs2mu2e ) stack->GetXaxis()->SetTitle(Variables::M4lMain().var_X_label_2mu2e);
+   else                                stack->GetXaxis()->SetTitle(Variables::M4lMain().var_X_label);
    
    if (zoomed) {stack->GetYaxis()->SetTitle("Events / 2GeV"); stack->GetXaxis()->SetNdivisions(1005);}
    else {stack->GetYaxis()->SetTitle("Events / 4GeV");}
 
-	histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::Data]->SetMarkerSize(0.9);
-   histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::Data]->Draw("SAME p E1 X0");
+	histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::Data]->SetMarkerSize(0.9);
+   histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::Data]->Draw("SAME p E1 X0");
 	
 	
 //=============
 // L E G E N D
 //=============
 
-	TLegend *legend  = CreateLegend("right", histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::Data],
-                                      histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::H125],
-                                      histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::qqZZ],
-                                      histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][Settings::ggZZ],
-                                      histos_1D_ZX_shape[Settings::M4lMain][Settings::fs4l][Settings::inclusive]);
+	TLegend *legend  = CreateLegend("right", histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::Data],
+                                      histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::H125],
+                                      histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::qqZZ],
+                                      histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::ggZZ],
+                                      histos_1D_ZX_shape[Settings::M4lMain][fs][Settings::inclusive]);
 	
 	legend->Draw();
 //=================
@@ -3419,8 +3371,8 @@ void Histograms::plot_Combination( TString folder , bool zoomed)
    }
 	
 
-   if(zoomed) _out_file_name = folder + "/Combination_Zoomed";
-   else _out_file_name = folder + "/Combination";
+   if(zoomed) _out_file_name = folder + "/Combination_" + _s_final_state.at(fs) + "_Zoomed";
+   else _out_file_name = folder + "/Combination_" + _s_final_state.at(fs);
    SavePlots(c, _out_file_name, folder);
 }
 //=========================================================================================================
@@ -3498,8 +3450,7 @@ void Histograms::plot_STXS( TString folder )
     //=================
     
     CMS_lumi *lumi = new CMS_lumi;
-    if(folder == "Combination") lumi->set_lumi_combination(c);
-    else lumi->set_lumi(c, _lumi);
+    lumi->set_lumi_combination(c);
     
     _out_file_name = folder + "/STXS_Categorization";
     SavePlots(c, _out_file_name, folder);
@@ -3908,7 +3859,7 @@ void Histograms::plot_1D_all_cat( TString filename, TString variable_name , TStr
 //================= 
 
       CMS_lumi *lumi = new CMS_lumi;
-      lumi->set_lumi(c, _lumi);
+      lumi->set_lumi_combination(c);
       
       // Draw X-axis log scale
       if ( plot_index == Settings::M4lMain )
@@ -4056,7 +4007,7 @@ void Histograms::plot_1D_all_fs( TString filename, TString variable_name , TStri
       
       // Draw lumi
       CMS_lumi *lumi = new CMS_lumi;
-      lumi->set_lumi(c, _lumi);
+      lumi->set_lumi_combination(c);
       
       // Draw X-axis log scale
       if ( plot_index == Settings::M4lMain )
@@ -4153,7 +4104,7 @@ void Histograms::plot_2D_single( TString filename, TString variable_name, TStrin
    
    // Draw lumi
    CMS_lumi *lumi = new CMS_lumi;
-   lumi->set_lumi(c, _lumi);
+   lumi->set_lumi_combination(c);
      
    _out_file_name = folder + "/" + variable_name + "_" + filename + "_" + _s_category.at(cat);
    SavePlots(c, _out_file_name, folder);
@@ -4233,7 +4184,7 @@ void Histograms::plot_2D_error_single( TString filename, TString variable_name, 
    
    // Draw lumi
    CMS_lumi *lumi = new CMS_lumi;
-   lumi->set_lumi(c, _lumi);
+   lumi->set_lumi_combination(c);
       
    _out_file_name = folder + "/" + variable_name + "_" + filename + "_" + _s_category.at(cat);
    SavePlots(c, _out_file_name, folder);
@@ -4380,7 +4331,7 @@ void Histograms::plot_2D_error_all_cat( TString filename, TString variable_name,
    
    // Draw lumi
    CMS_lumi *lumi = new CMS_lumi;
-   lumi->set_lumi(c, _lumi);
+   lumi->set_lumi_combination(c);
    
    _out_file_name = folder + "/" + variable_name + "_" + filename + "_" + "all_categories";
    SavePlots(c, _out_file_name, folder);

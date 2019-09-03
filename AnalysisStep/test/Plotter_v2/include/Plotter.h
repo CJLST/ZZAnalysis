@@ -62,7 +62,7 @@ public:
    
    void MakeHistograms( TString , int );
    void FillHistograms( TString , int );
-   void MakeHistogramsZX( TString, TString );
+   void MakeHistogramsZX( TString, TString , int);
    void FillZXHistograms( TString, TString , int);
    void MakeM4lZX();
    float calculate_K_factor( TString );
@@ -80,7 +80,7 @@ public:
    void Delete();
    void GetHistos( TString );
    void GetComb();
-   void PlotM4l();
+   void PlotM4l( int );
    void PlotSTXS();
    void PlotPurity();
    void plot_STXS ( TString, TString);

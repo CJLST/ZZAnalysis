@@ -24,59 +24,150 @@ int main( int argc, char *argv[] )
 {
    setTDRStyle();
    
-   TString path = "";
+   TString eos_path  = "";
+   
+   TString path_2018 = eos_path + "MC_2018/";
+   TString path_2017 = eos_path + "MC_2017/";
+   TString path_2016 = eos_path + "MC_2016/";
    TString file_name = "/ZZ4lAnalysis.root";
-   TString file_name_FR = "/FakeRates_SS_Moriond19.root";
-	
-
-   TString Data        = path + "AllData"    + file_name;
-   TString FakeRates   = "../../data/FakeRates" + file_name_FR;
-	
-   TString ggH125      = path + "ggH125"     + file_name;
-   TString VBFH125     = path + "VBFH125"    + file_name;
-   TString WpH125      = path + "WplusH125"  + file_name;
-   TString WmH125      = path + "WminusH125" + file_name;
-   TString ZH125       = path + "ZH125"      + file_name;
-   TString ttH125      = path + "ttH125"     + file_name;
-   TString bbH125      = path + "bbH125"     + file_name;
-   TString tqH125      = path + "tqH125"     + file_name;
-	
-   TString ZZTo4l      = path + "ZZTo4lext2"                 + file_name;
-   TString ggZZ4e      = path + "ggTo4e_Contin_MCFM701"      + file_name;
-   TString ggZZ4mu     = path + "ggTo4mu_Contin_MCFM701"     + file_name;
-   TString ggZZ4tau    = path + "ggTo4tau_Contin_MCFM701"    + file_name;
-   TString ggZZ2e2mu   = path + "ggTo2e2mu_Contin_MCFM701"   + file_name;
-   TString ggZZ2e2tau  = path + "ggTo2e2tau_Contin_MCFM701"  + file_name;
-   TString ggZZ2mu2tau = path + "ggTo2mu2tau_Contin_MCFM701" + file_name;
+   
+   TString Data_2018    = eos_path + "Data_2018/AllData"        + file_name;
+   TString Data_2017    = eos_path + "Data_2017/AllData"        + file_name;
+   TString Data_2016    = eos_path + "Data_2016/AllData"        + file_name;
+   
+   TString FR_2018      = "../../data/FakeRates/FakeRates_SS_2018_Legacy.root";
+   TString FR_2017      = "../../data/FakeRates/FakeRates_SS_2017_Legacy.root";
+   TString FR_2016      = "../../data/FakeRates/FakeRates_SS_2016_Legacy.root";
+   
+   TString ggH125_2018      = path_2018 + "ggH125"     + file_name;
+   TString VBFH125_2018     = path_2018 + "VBFH125"    + file_name;
+   TString WpH125_2018      = path_2018 + "WplusH125"  + file_name;
+   TString WmH125_2018      = path_2018 + "WminusH125" + file_name;
+   TString ZH125_2018       = path_2018 + "ZH125"      + file_name;
+   TString ttH125_2018      = path_2018 + "ttH125"     + file_name;
+   TString bbH125_2018      = path_2018 + "bbH125"     + file_name;
+   TString tqH125_2018      = path_2018 + "tqH125"     + file_name;
+   
+   TString ZZTo4l_2018      = path_2018 + "ZZTo4lext1"                 + file_name;
+   TString ggZZ4e_2018      = path_2018 + "ggTo4e_Contin_MCFM701"      + file_name;
+   TString ggZZ4mu_2018     = path_2018 + "ggTo4mu_Contin_MCFM701"     + file_name;
+   TString ggZZ4tau_2018    = path_2018 + "ggTo4tau_Contin_MCFM701"    + file_name;
+   TString ggZZ2e2mu_2018   = path_2018 + "ggTo2e2mu_Contin_MCFM701"   + file_name;
+   TString ggZZ2e2tau_2018  = path_2018 + "ggTo2e2tau_Contin_MCFM701"  + file_name;
+   TString ggZZ2mu2tau_2018 = path_2018 + "ggTo2mu2tau_Contin_MCFM701" + file_name;
+   
+   TString ggH125_2017      = path_2017 + "ggH125"     + file_name;
+   TString VBFH125_2017     = path_2017 + "VBFH125"    + file_name;
+   TString WpH125_2017      = path_2017 + "WplusH125"  + file_name;
+   TString WmH125_2017      = path_2017 + "WminusH125" + file_name;
+   TString ZH125_2017       = path_2017 + "ZH125"      + file_name;
+   TString ttH125_2017      = path_2017 + "ttH125"     + file_name;
+   TString bbH125_2017      = path_2017 + "bbH125"     + file_name;
+   TString tqH125_2017      = path_2017 + "tqH125"     + file_name;
+   
+   TString ZZTo4l_2017      = path_2017 + "ZZTo4l"                     + file_name;
+   TString ggZZ4e_2017      = path_2017 + "ggTo4e_Contin_MCFM701"      + file_name;
+   TString ggZZ4mu_2017     = path_2017 + "ggTo4mu_Contin_MCFM701"     + file_name;
+   TString ggZZ4tau_2017    = path_2017 + "ggTo4tau_Contin_MCFM701"    + file_name;
+   TString ggZZ2e2mu_2017   = path_2017 + "ggTo2e2mu_Contin_MCFM701"   + file_name;
+   TString ggZZ2e2tau_2017  = path_2017 + "ggTo2e2tau_Contin_MCFM701"  + file_name;
+   TString ggZZ2mu2tau_2017 = path_2017 + "ggTo2mu2tau_Contin_MCFM701" + file_name;
+   
+   TString ggH125_2016      = path_2016 + "ggH125"     + file_name;
+   TString VBFH125_2016     = path_2016 + "VBFH125"    + file_name;
+   TString WpH125_2016      = path_2016 + "WplusH125"  + file_name;
+   TString WmH125_2016      = path_2016 + "WminusH125" + file_name;
+   TString ZH125_2016       = path_2016 + "ZH125"      + file_name;
+   TString ttH125_2016      = path_2016 + "ttH125"     + file_name;
+   TString bbH125_2016      = path_2016 + "bbH125"     + file_name;
+   TString tqH125_2016      = path_2016 + "tqH125"     + file_name;
+   
+   TString ZZTo4l_2016      = path_2016 + "ZZTo4l"                     + file_name;
+   TString ggZZ4e_2016      = path_2016 + "ggTo4e_Contin_MCFM701"      + file_name;
+   TString ggZZ4mu_2016     = path_2016 + "ggTo4mu_Contin_MCFM701"     + file_name;
+   TString ggZZ4tau_2016    = path_2016 + "ggTo4tau_Contin_MCFM701"    + file_name;
+   TString ggZZ2e2mu_2016   = path_2016 + "ggTo2e2mu_Contin_MCFM701"   + file_name;
+   TString ggZZ2e2tau_2016  = path_2016 + "ggTo2e2tau_Contin_MCFM701"  + file_name;
+   TString ggZZ2mu2tau_2016 = path_2016 + "ggTo2mu2tau_Contin_MCFM701" + file_name;
 
    Plotter *plotter = new Plotter( 59.71 );
 
    plotter->SetBlinding(110, 138, 300, 1200);
 
-//   plotter->MakeHistograms(Data);
-//   plotter->MakeHistograms(ggH125);
-//   plotter->MakeHistograms(VBFH125);
-//   plotter->MakeHistograms(ZH125);
-//   plotter->MakeHistograms(ttH125);
-//   plotter->MakeHistograms(bbH125);
-//   plotter->MakeHistograms(tqH125);
-//   plotter->MakeHistograms(WpH125);
-//   plotter->MakeHistograms(WmH125);
-//   plotter->MakeHistograms(ZZTo4l);
-//   plotter->MakeHistograms(ggZZ4e);
-//   plotter->MakeHistograms(ggZZ4mu);
-//   plotter->MakeHistograms(ggZZ4tau);
-//   plotter->MakeHistograms(ggZZ2e2mu);
-//   plotter->MakeHistograms(ggZZ2e2tau);
-//   plotter->MakeHistograms(ggZZ2mu2tau);
-//
-//
-//   plotter->MakeHistogramsZX(Data, FakeRates);
-//   plotter->MakeM4lZX();
-//
-//   plotter->FillInclusive();
-//
-//   plotter->Save();
+   plotter->MakeHistograms(Data_2016,2016);
+   plotter->MakeHistograms(Data_2017,2017);
+   plotter->MakeHistograms(Data_2018,2018);
+
+   plotter->MakeHistograms(ggH125_2016,2016);
+   plotter->MakeHistograms(ggH125_2017,2017);
+   plotter->MakeHistograms(ggH125_2018,2018);
+
+   plotter->MakeHistograms(VBFH125_2016,2016);
+   plotter->MakeHistograms(VBFH125_2017,2017);
+   plotter->MakeHistograms(VBFH125_2018,2018);
+
+   plotter->MakeHistograms(ZH125_2016,2016);
+   plotter->MakeHistograms(ZH125_2017,2017);
+   plotter->MakeHistograms(ZH125_2018,2018);
+
+   plotter->MakeHistograms(ttH125_2016,2016);
+   plotter->MakeHistograms(ttH125_2017,2017);
+   plotter->MakeHistograms(ttH125_2018,2018);
+
+   plotter->MakeHistograms(bbH125_2016,2016);
+   plotter->MakeHistograms(bbH125_2017,2017);
+   plotter->MakeHistograms(bbH125_2018,2018);
+
+   plotter->MakeHistograms(tqH125_2016,2016);
+   plotter->MakeHistograms(tqH125_2017,2017);
+   plotter->MakeHistograms(tqH125_2018,2018);
+
+   plotter->MakeHistograms(WpH125_2016,2016);
+   plotter->MakeHistograms(WpH125_2017,2017);
+   plotter->MakeHistograms(WpH125_2018,2018);
+
+   plotter->MakeHistograms(WmH125_2016,2016);
+   plotter->MakeHistograms(WmH125_2017,2017);
+   plotter->MakeHistograms(WmH125_2018,2018);
+
+   plotter->MakeHistograms(ZZTo4l_2016,2016);
+   plotter->MakeHistograms(ZZTo4l_2017,2017);
+   plotter->MakeHistograms(ZZTo4l_2018,2018);
+
+   plotter->MakeHistograms(ggZZ4e_2016,2016);
+   plotter->MakeHistograms(ggZZ4e_2017,2017);
+   plotter->MakeHistograms(ggZZ4e_2018,2018);
+
+   plotter->MakeHistograms(ggZZ4mu_2016,2016);
+   plotter->MakeHistograms(ggZZ4mu_2017,2017);
+   plotter->MakeHistograms(ggZZ4mu_2018,2018);
+
+   plotter->MakeHistograms(ggZZ4tau_2016,2016);
+   plotter->MakeHistograms(ggZZ4tau_2017,2017);
+   plotter->MakeHistograms(ggZZ4tau_2018,2018);
+
+   plotter->MakeHistograms(ggZZ2e2mu_2016,2016);
+   plotter->MakeHistograms(ggZZ2e2mu_2017,2017);
+   plotter->MakeHistograms(ggZZ2e2mu_2018,2018);
+
+   plotter->MakeHistograms(ggZZ2e2tau_2016,2016);
+   plotter->MakeHistograms(ggZZ2e2tau_2017,2017);
+   plotter->MakeHistograms(ggZZ2e2tau_2018,2018);
+
+   plotter->MakeHistograms(ggZZ2mu2tau_2016,2016);
+   plotter->MakeHistograms(ggZZ2mu2tau_2017,2017);
+//   plotter->MakeHistograms(ggZZ2mu2tau_2018,2018);
+
+
+   plotter->MakeHistogramsZX(Data_2016, FR_2016, 2016);
+   plotter->MakeHistogramsZX(Data_2017, FR_2017, 2017);
+   plotter->MakeHistogramsZX(Data_2018, FR_2018, 2018);
+   
+   plotter->MakeM4lZX();
+
+   plotter->FillInclusive();
+
+   plotter->Save();
 
 
 //===========================
@@ -158,15 +249,21 @@ int main( int argc, char *argv[] )
    plotter->plot_2D_single("Unblinded", "MZ1vsMZ2",           "Plots/Unblinded", Settings::inclusive);
    plotter->plot_2D_single("Unblinded", "MZ1vsMZ2_M4L118130", "Plots/Unblinded", Settings::inclusive);setTDRStyle();
 
-
-
-
    plotter->plot_1D_single("Unblinded", "KD",               "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
    plotter->plot_1D_single("Unblinded", "DVBFDEC",          "Plots/Unblinded", Settings::fs4l, Settings::VBF_2j_tagged);
    plotter->plot_1D_single("Unblinded", "DVHDEC",           "Plots/Unblinded", Settings::fs4l, Settings::VH_hadron_tagged);
    plotter->plot_1D_single("Unblinded", "KD_M4L118130",     "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
    plotter->plot_1D_single("Unblinded", "DVBFDEC_M4L118130","Plots/Unblinded", Settings::fs4l, Settings::VBF_2j_tagged);
    plotter->plot_1D_single("Unblinded", "DVHDEC_M4L118130", "Plots/Unblinded", Settings::fs4l, Settings::VH_hadron_tagged);
+
+   plotter->plot_1D_single("Unblinded", "PFMET",              "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
+   plotter->plot_1D_single("Unblinded", "Pt4l",               "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
+   plotter->plot_1D_single("Unblinded", "Eta4l",              "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
+   plotter->plot_1D_single("Unblinded", "Pt_leading",         "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
+   plotter->plot_1D_single("Unblinded", "NExtraLep",          "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
+   plotter->plot_1D_single("Unblinded", "NJets",              "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
+   plotter->plot_1D_single("Unblinded", "NJetsBTagged",       "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
+   plotter->plot_1D_single("Unblinded", "M4l_110150_HighKD",  "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
 
    plotter->plot_1D_single("Unblinded", "D1jet",  "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
    plotter->plot_1D_single("Unblinded", "D2jet",  "Plots/Unblinded", Settings::fs4l, Settings::inclusive);

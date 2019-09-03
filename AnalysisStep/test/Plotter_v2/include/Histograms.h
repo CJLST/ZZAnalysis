@@ -66,7 +66,7 @@ public:
 	
    void FillSTXSPurity( float, float, int, int );
     
-   void FillM4lCombination( float, float, int );
+   void FillM4lCombination( float, float, int, int );
 	
    void FillMZ1( float, float, float, int, int, int );
    void FillMZ1ZX( float, float, float, int, int );
@@ -121,13 +121,13 @@ public:
    void FillInclusiveYields();
    
    void SmoothHistograms();
-   void RenormalizeZX( vector<vector<float>> );
+   void RenormalizeZX( int );
    
    void GetHistos( TString );
    void GetCombHistos( TString );
    void GetYieldsHistos( TString );
 	
-   void plot_Combination( TString, bool );
+   void plot_Combination( TString, bool, int );
    void plot_STXS( TString );
    void plot_Purity( TString );
    void plot_1D_single( TString, TString, TString, int, int );
@@ -143,7 +143,7 @@ public:
    void PrintYields( float, float, vector<vector<float>> );
    void PrintLatexTables( float, float, vector<vector<float>> );
    void setColZGradient_OneColor( int , bool );
-   void MakeZXShape( vector<vector<float>>, int );
+   void MakeZXShape( int, vector<vector<float>> );
    void DrawLogX( TCanvas *, int, int );
    void MakeCOLZGrey( bool );
    void SavePlots( TCanvas *, TString , TString);

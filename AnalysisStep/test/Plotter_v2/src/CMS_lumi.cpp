@@ -81,7 +81,7 @@ void CMS_lumi::set_lumi_combination( TPad* pad )
 // LUMI
 //======
 	
-   lumi_text = "137.1" + lumi_sqrt;
+   lumi_text = "137" + lumi_sqrt;
 	
    TLatex latex;
    latex.SetNDC();
