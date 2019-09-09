@@ -3,14 +3,13 @@
 
 // Constructor
 //============================================================
-Plotter::Plotter( double lumi ):Tree()
+Plotter::Plotter():Tree()
 {
-   unblinded_histos = new Histograms(lumi, "Unblinded");
-   blinded_histos = new Histograms(lumi, "Blinded");
+   unblinded_histos = new Histograms("Unblinded");
+   blinded_histos = new Histograms("Blinded");
    histo_map["Unblinded"] = unblinded_histos;
    histo_map["Blinded"] = blinded_histos;
    
-   _lumi = lumi;
    _merge_2e2mu = true;
    _current_process = -999;
    _k_factor = 1;
@@ -37,24 +36,6 @@ Plotter::Plotter( double lumi ):Tree()
    }
 }
 //============================================================
-
-// Constructor
-//============================================================
-Plotter::Plotter():Tree()
-{
-   // Z+X SS factors
-   _fs_ROS_SS.push_back(1.00868);//4e
-   _fs_ROS_SS.push_back(1.04015);//4mu
-   _fs_ROS_SS.push_back(1.00823);//2e2mu
-   _fs_ROS_SS.push_back(1.0049);//2mu2e
-   
-   combination_histos = new Histograms("Combination");
-   
-}
-//============================================================
-
-
-
 
 // Destructor
 //====================
@@ -103,7 +84,7 @@ void Plotter::MakeHistograms( TString input_file_name , int year)
       }
       
       if ( !(ZZsel >= 90) ) continue;
-      
+      if ( LepSIP->at(0) > 8. || LepSIP->at(1) > 8. || LepSIP->at(2) > 8. || LepSIP->at(3) > 8.) continue;//SIP Sanity check
       // Find current process
       gen_assoc_lep_id_.push_back(GenAssocLep1Id);
       gen_assoc_lep_id_.push_back(GenAssocLep2Id);
@@ -370,124 +351,6 @@ void Plotter::MakeHistograms( TString input_file_name , int year)
 //=====================================================
 
 
-//=====================================================
-void Plotter::FillHistograms( TString input_file_name , int year)
-{
-   
-   input_file = new TFile(input_file_name);
-   
-   _current_process = find_current_process( input_file_name, 0 , 0);
-   
-   if(year == 2018) _lumi = 59.7;
-   if(year == 2017) _lumi = 41.5;
-   if(year == 2016) _lumi = 35.9;
-   
-   hCounters = (TH1F*)input_file->Get("ZZTree/Counters");
-   n_gen_events = (Long64_t)hCounters->GetBinContent(1);
-   gen_sum_weights = (Long64_t)hCounters->GetBinContent(40);
-   
-   input_tree = (TTree*)input_file->Get("ZZTree/candTree");
-   Init( input_tree, input_file_name );
-   
-   if (fChain == 0) return;
-   
-   Long64_t nentries = fChain->GetEntriesFast();
-   
-   Long64_t nbytes = 0, nb = 0;
-   
-   for (Long64_t jentry=0; jentry<nentries;jentry++)
-   {
-      Long64_t ientry = LoadTree(jentry);
-      if (ientry < 0) break;
-      nb = fChain->GetEntry(jentry);
-      nbytes += nb;
-      
-      // Check number of leptons in event
-      if ( LepEta->size() != 4 )
-      {
-         cout << "[ERROR] in event " << RunNumber << ":" << LumiNumber << ":" << EventNumber << ", stored " << LepEta->size() << " leptons instead of 4" << endl;
-         continue;
-      }
-      
-      if ( !(ZZsel >= 90) ) continue;
-      
-      // Final states
-      _current_final_state = FindFinalState();
-      
-      // K factors
-      _k_factor = calculate_K_factor(input_file_name);
-      
-      // Find current category
-      for ( int j = 0; j < nCleanedJetsPt30; j++)
-      {
-         jetPt[j] = JetPt->at(j);
-         jetEta[j] = JetEta->at(j);
-         jetPhi[j] = JetPhi->at(j);
-         jetMass[j] = JetMass->at(j);
-         jetQGL[j] = JetQGLikelihood->at(j);
-         jetPgOverPq[j] = 1./JetQGLikelihood->at(j) - 1.;
-      }
-      
-      _current_category = categoryMor18(nExtraLep,
-                                        nExtraZ,
-                                        nCleanedJetsPt30,
-                                        nCleanedJetsPt30BTagged_bTagSF,
-                                        jetQGL,
-                                        p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
-                                        p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
-                                        p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
-                                        p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
-                                        pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
-                                        p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
-                                        p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
-                                        p_HadWH_mavjj_JECNominal,
-                                        p_HadWH_mavjj_true_JECNominal,
-                                        p_HadZH_mavjj_JECNominal,
-                                        p_HadZH_mavjj_true_JECNominal,
-                                        jetPhi,
-                                        ZZMass,
-                                        PFMET,
-                                        false,// Use VHMET category
-                                        false);// Use QG tagging
-      
-      _current_category_stxs = stage1_reco_1p1 ( nCleanedJetsPt30,
-                                                DiJetMass,
-                                                ZZPt,
-                                                _current_category,
-                                                ZZjjPt);
-      
-      // Final event weight
-      _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight * L1prefiringWeight) / gen_sum_weights;
-      if ( input_file_name.Contains("ggH") ) _event_weight *= ggH_NNLOPS_weight; // reweight POWHEG ggH to NNLOPS
-      
-      // Rescale to updated version of SFs
-      //      _updatedSF = ( lepSFHelper->getSF(year,LepLepId->at(0),LepPt->at(0),LepEta->at(0), LepEta->at(0), false) *
-      //                     lepSFHelper->getSF(year,LepLepId->at(1),LepPt->at(1),LepEta->at(1), LepEta->at(1), false) *
-      //                     lepSFHelper->getSF(year,LepLepId->at(2),LepPt->at(2),LepEta->at(2), LepEta->at(2), false) *
-      //                     lepSFHelper->getSF(year,LepLepId->at(3),LepPt->at(3),LepEta->at(3), LepEta->at(3), false) );
-      //
-      //      //cout << "Weight before = " << _event_weight << " Updated SF = " << _updatedSF << endl;
-      //      _event_weight *= _updatedSF/dataMCWeight;
-      //      //cout << "Updated weight = " << _event_weight << endl;
-      
-
-      combination_histos->FillM4lCombination(ZZMass, _event_weight, _current_process, _current_final_state);
-      combination_histos->FillSTXS(ZZMass, _event_weight, _current_category_stxs, _current_process);
-      
-      if(_current_process > Settings::Data && _current_process < Settings::qqZZ)//fill purity yields for signals
-      {
-         if (htxs_stage1_cat % 100 == 0) continue; //Skip very rare case when y(H) > 2.5 passes our selection
-         _STXS_bin = FindSTXSBin();
-         combination_histos->FillSTXSPurity(ZZMass, _event_weight, _current_category_stxs, _STXS_bin);
-      }
-      
-      
-   } // end for loop
-   
-   cout << "[INFO] Combination histograms for " << input_file_name << " filled." << endl;
-}
-//=====================================================
-
 
 //=======================
 void Plotter::MakeM4lZX()
@@ -604,7 +467,7 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
       if ( !test_bit(CRflag, CRZLLss) ) continue;
       
       if ( !(ZZsel >= 20) ) continue; // Remove events that do not pass selection
-      
+      if ( LepSIP->at(0) > 8. || LepSIP->at(1) > 8. || LepSIP->at(2) > 8. || LepSIP->at(3) > 8.) continue;//SIP Sanity check
       _current_final_state = FindFinalStateZX();
 
       // Find current category
@@ -833,82 +696,6 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
 //===============================================================================
 
 
-//===============================================================================
-void Plotter::FillZXHistograms( TString input_file_data_name, TString  input_file_FR_name , int year)
-{
-   
-   FakeRates *FR = new FakeRates( input_file_FR_name );
-   
-   input_file_data = new TFile(input_file_data_name);
-   input_tree_data = (TTree*)input_file_data->Get("CRZLLTree/candTree");
-   Init( input_tree_data, input_file_data_name );
-   
-   _scaleToCombFactor = 1.0;
-   
-   if (fChain == 0) return;
-   
-   Long64_t nentries = fChain->GetEntriesFast();
-   
-   Long64_t nbytes = 0, nb = 0;
-   
-   for (Long64_t jentry=0; jentry<nentries;jentry++)
-   {
-      
-      Long64_t ientry = LoadTree(jentry);
-      if (ientry < 0) break;
-      nb = fChain->GetEntry(jentry);
-      nbytes += nb;
-      
-      if ( !CRflag ) continue;
-      if ( !test_bit(CRflag, CRZLLss) ) continue;
-      
-      if ( !(ZZsel >= 20) ) continue; // Remove events that do not pass selection
-      
-      _current_final_state = FindFinalStateZX();
-      
-      // Find current category
-      
-      _current_category = categoryMor18(nExtraLep,
-                                        nExtraZ,
-                                        nCleanedJetsPt30,
-                                        nCleanedJetsPt30BTagged_bTagSF,
-                                        jetQGL,
-                                        p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
-                                        p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
-                                        p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
-                                        p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
-                                        pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
-                                        p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
-                                        p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
-                                        p_HadWH_mavjj_JECNominal,
-                                        p_HadWH_mavjj_true_JECNominal,
-                                        p_HadZH_mavjj_JECNominal,
-                                        p_HadZH_mavjj_true_JECNominal,
-                                        jetPhi,
-                                        ZZMass,
-                                        PFMET,
-                                        false,// Use VHMET category
-                                        false);// Use QG tagging
-      
-      _current_category_stxs = stage1_reco_1p1 ( nCleanedJetsPt30,
-                                                DiJetMass,
-                                                ZZPt,
-                                                _current_category,
-                                                ZZjjPt);
-      
-      // Calculate yield
-      _yield_SR = _fs_ROS_SS.at(_current_final_state)*FR->GetFakeRate(LepPt->at(2),LepEta->at(2),LepLepId->at(2))*FR->GetFakeRate(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
-      
-      _scaleToCombFactor = ScaleToOSSSComb(year);
-      _yield_SR *= _scaleToCombFactor;
-      // Fill STXS Z+X histograms
-      combination_histos->FillSTXSZX( ZZMass, _yield_SR, _current_category_stxs);
-   }
-   
-   cout << "[INFO] Z+X histograms with " << input_file_FR_name << " fake rate file are filled." << endl;
-}
-//===============================================================================
-
 //=========================================
 void Plotter::GetHistos( TString file_name )
 {
@@ -930,14 +717,6 @@ void Plotter::FillInclusive()
 }
 //===========================
 
-//===========================
-void Plotter::FillInclusiveCombination()
-{
-   combination_histos->FillInclusiveCombination();
-   cout << "[INFO] Summing of histograms finished." << endl;
-}
-//===========================
-
 
 //==================
 void Plotter::Save()
@@ -949,25 +728,6 @@ void Plotter::Save()
    cout << "[INFO] All histograms are saved in a root file." << endl;
 }
 //==================
-
-//==================
-void Plotter::SaveComb()
-{
-   system("mkdir -p ROOT_files");
-   combination_histos->SaveCombHistos("ROOT_files/Combination.root");
-   
-   cout << "[INFO] All histograms are saved in a root file." << endl;
-}
-//==================
-
-//=========================================
-void Plotter::GetComb( )
-{
-   combination_histos->GetCombHistos("ROOT_files/Combination.root");
-   
-   cout << "[INFO] Got all histograms." << endl;
-}
-//=========================================
 
 
 
@@ -1007,27 +767,6 @@ void Plotter::plot_Purity( TString file_name, TString folder )
 }
 //==================
 
-//==================
-void Plotter::PlotM4l( int fs)
-{
-   combination_histos->plot_Combination( "Combination" , true, fs);
-   combination_histos->plot_Combination( "Combination" , false, fs);
-}
-//==================
-
-//==================
-void Plotter::PlotSTXS()
-{
-   combination_histos->plot_STXS( "Combination" );
-}
-//==================
-
-//==================
-void Plotter::PlotPurity()
-{
-   combination_histos->plot_Purity( "Combination" );
-}
-//==================
 
 
 

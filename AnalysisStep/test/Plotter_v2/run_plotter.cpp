@@ -90,7 +90,7 @@ int main( int argc, char *argv[] )
    TString ggZZ2e2tau_2016  = path_2016 + "ggTo2e2tau_Contin_MCFM701"  + file_name;
    TString ggZZ2mu2tau_2016 = path_2016 + "ggTo2mu2tau_Contin_MCFM701" + file_name;
 
-   Plotter *plotter = new Plotter( 59.71 );
+   Plotter *plotter = new Plotter( );
 
    plotter->SetBlinding(110, 138, 300, 1200);
 
@@ -260,6 +260,13 @@ int main( int argc, char *argv[] )
    plotter->plot_1D_single("Unblinded", "Pt4l",               "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
    plotter->plot_1D_single("Unblinded", "Eta4l",              "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
    plotter->plot_1D_single("Unblinded", "Pt_leading",         "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
+   plotter->plot_1D_single("Unblinded", "Pt_trailing",        "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
+   plotter->plot_1D_single("Unblinded", "Eta_leading",        "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
+   plotter->plot_1D_single("Unblinded", "Eta_trailing",       "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
+   plotter->plot_1D_single("Unblinded", "SIP_leading",        "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
+   plotter->plot_1D_single("Unblinded", "SIP_trailing",       "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
+   plotter->plot_1D_single("Unblinded", "ISO_leading",        "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
+   plotter->plot_1D_single("Unblinded", "ISO_trailing",       "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
    plotter->plot_1D_single("Unblinded", "NExtraLep",          "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
    plotter->plot_1D_single("Unblinded", "NJets",              "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
    plotter->plot_1D_single("Unblinded", "NJetsBTagged",       "Plots/Unblinded", Settings::fs4l, Settings::inclusive);

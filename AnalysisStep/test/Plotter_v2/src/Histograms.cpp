@@ -10,9 +10,8 @@ using namespace std;
 
 // Constructor
 //====================================================
-Histograms::Histograms( double lumi, string blinding )
+Histograms::Histograms( string blinding )
 {
-   _lumi = lumi;
    _blinding = blinding;
    _merge_2e2mu = true;
    
@@ -680,171 +679,10 @@ Histograms::Histograms( double lumi, string blinding )
     
     
 }
-//======================================
+//==================================
 
 
-Histograms::Histograms( string blinding )
-{
-    _blinding = blinding;
-
-   _s_process.push_back("Data");
-   _s_process.push_back("H125");
-   _s_process.push_back("H125ggH");
-   _s_process.push_back("H125VBF");
-   _s_process.push_back("H125VH");
-   _s_process.push_back("H125ttH");
-   _s_process.push_back("H125bbH");
-   _s_process.push_back("H125tqH");
-   _s_process.push_back("qqZZ");
-   _s_process.push_back("ggZZ");
-   _s_process.push_back("Zjets");
-   _s_process.push_back("other");
-   
-   _s_final_state.push_back("4e");
-   _s_final_state.push_back("4mu");
-   _s_final_state.push_back("2e2mu");
-   _s_final_state.push_back("2mu2e");
-   _s_final_state.push_back("4l");
-    
-   _s_STXS_category.push_back("ggH-0j/pT[0,10]");
-   _s_STXS_category.push_back("ggH-0j/pT[10-200]");
-   _s_STXS_category.push_back("ggH-1j/pT[0-60]");
-   _s_STXS_category.push_back("ggH-1j/pT[60-120]");
-   _s_STXS_category.push_back("ggH-1j/pT[120-200]");
-   _s_STXS_category.push_back("ggH-2j/pT[0-60]");
-   _s_STXS_category.push_back("ggH-2j/pT[60-120]");
-   _s_STXS_category.push_back("ggH-2j/pT[120-200]");
-   _s_STXS_category.push_back("ggH/pT>200");
-   _s_STXS_category.push_back("ggH-2j/mJJ>350");
-   _s_STXS_category.push_back("VBF-1j");
-   _s_STXS_category.push_back("VBF-rest");
-   _s_STXS_category.push_back("VBF-2j/mJJ[350,700]");
-   _s_STXS_category.push_back("VBF-2j/mJJ>700 ");
-   _s_STXS_category.push_back("VBF-3j/mJJ>350 ");
-   _s_STXS_category.push_back("VBF-2j/pT>200");
-   _s_STXS_category.push_back("VH-had/mJJ[60-120]");
-   _s_STXS_category.push_back("VH-rest");
-   _s_STXS_category.push_back("VH-lep/pTV[0-150]");
-   _s_STXS_category.push_back("VH-lep/pTV>150");
-   _s_STXS_category.push_back("ttH-lep");
-   _s_STXS_category.push_back("ttH-had");
-    
-   _s_STXS_bins.push_back("ggH-0j/pT[0,10]");
-   _s_STXS_bins.push_back("ggH-0j/pT[10-200]");
-   _s_STXS_bins.push_back("ggH-1j/pT[0-60]");
-   _s_STXS_bins.push_back("ggH-1j/pT[60-120]");
-   _s_STXS_bins.push_back("ggH-1j/pT[120-200]");
-   _s_STXS_bins.push_back("ggH-2j/pT[0-60]");
-   _s_STXS_bins.push_back("ggH-2j/pT[60-120]");
-   _s_STXS_bins.push_back("ggH-2j/pT[120-200]");
-   _s_STXS_bins.push_back("ggH/pT>200");
-   _s_STXS_bins.push_back("ggH-2j/mJJ>350");
-   _s_STXS_bins.push_back("qqH-2j/mJJ[60-120]");
-   _s_STXS_bins.push_back("qqH-2j/pT>200");
-   _s_STXS_bins.push_back("qqH-2j/mJJ[350,700]");
-   _s_STXS_bins.push_back("qqH-2j/mJJ>700");
-   _s_STXS_bins.push_back("qqH-3j/mJJ>350");
-   _s_STXS_bins.push_back("qqH-rest");
-   _s_STXS_bins.push_back("VH/pTV[0-150]");
-   _s_STXS_bins.push_back("VH/pTV>150");
-   _s_STXS_bins.push_back("bbH");
-   _s_STXS_bins.push_back("ttH");
-   _s_STXS_bins.push_back("tH");
-    
-    _s_STXS_bins_histoName.push_back("ggH_0j_pT_0_10");
-    _s_STXS_bins_histoName.push_back("ggH_0j_pT_10_200");
-    _s_STXS_bins_histoName.push_back("ggH_1j_pT_0_60");
-    _s_STXS_bins_histoName.push_back("ggH_1j_pT_60_120");
-    _s_STXS_bins_histoName.push_back("ggH_1j_pT_120_200");
-    _s_STXS_bins_histoName.push_back("ggH_2j_pT_0_60");
-    _s_STXS_bins_histoName.push_back("ggH_2j_pT_60_120");
-    _s_STXS_bins_histoName.push_back("ggH_2j_pT_120_200");
-    _s_STXS_bins_histoName.push_back("ggH_pT_200");
-    _s_STXS_bins_histoName.push_back("ggH_2j_mJJ_350");
-    _s_STXS_bins_histoName.push_back("qqH_2j_mJJ_60_120");
-    _s_STXS_bins_histoName.push_back("qqH_2j_pT_200 ");
-    _s_STXS_bins_histoName.push_back("qqH_2j_mJJ_350_700");
-    _s_STXS_bins_histoName.push_back("qqH_2j_mJJ_700");
-    _s_STXS_bins_histoName.push_back("qqH_3j_mJJ_350");
-    _s_STXS_bins_histoName.push_back("qqH_rest");
-    _s_STXS_bins_histoName.push_back("VH_pTV_0_150");
-    _s_STXS_bins_histoName.push_back("VH_pTV_150");
-    _s_STXS_bins_histoName.push_back("bbH");
-    _s_STXS_bins_histoName.push_back("ttH");
-    _s_STXS_bins_histoName.push_back("tH");
-	
-	for ( int i_proc = 0; i_proc < num_of_processes - 2; i_proc++ )
-	{
-		//=====
-		// M4l
-		//=====
-      for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
-      {
-         _histo_name = "M4l_" + _s_process.at(i_proc) + "_" + _s_final_state.at(i_fs) + "_" + _blinding;
-         _histo_labels = ";" + Variables::M4lMain().var_X_label + ";" + Variables::M4lMain().var_Y_label;
-         histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][i_proc] = new TH1F(_histo_name.c_str(), _histo_labels.c_str(), Variables::M4lMain().var_N_bin*2,Variables::M4lMain().var_min, Variables::M4lMain().var_max);
-      }
-		
-	}
-
-	
-	
-   // Z+X
-
-   for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
-   {
-		_histo_name = "M4l_ZX_shape_" + _s_final_state.at(i_fs) + "_" + _blinding;
-		histos_1D_ZX_shape[Settings::M4lMain][i_fs][Settings::inclusive] = new TH1F(_histo_name.c_str(), "Z+X", Variables::M4lMain().var_N_bin*2, Variables::M4lMain().var_min,Variables::M4lMain().var_max);
-   }
-
-	   M4lZX *ZXShapeCombination = new M4lZX();
-   ZXShapeCombination->GetM4lZXCombination(histos_1D_ZX_shape[Settings::M4lMain][Settings::fs4e][Settings::inclusive],histos_1D_ZX_shape[Settings::M4lMain][Settings::fs4mu][Settings::inclusive],histos_1D_ZX_shape[Settings::M4lMain][Settings::fs2e2mu][Settings::inclusive],histos_1D_ZX_shape[Settings::M4lMain][Settings::fs4l][Settings::inclusive]);
-    
-    
-    // STXS category data vs MC
-    for ( int i_proc = 0; i_proc < num_of_processes; i_proc++ )
-    {
-        _histo_name = "STXS_Categories_" + _s_process.at(i_proc) + "_" + _blinding;
-        _histo_labels = ";" + Variables::STXS_Categories().var_X_label + ";" + Variables::STXS_Categories().var_Y_label;
-        STXS_Categories[i_proc] = new TH1F(_histo_name.c_str(), _histo_labels.c_str(), Variables::STXS_Categories().var_N_bin,Variables::STXS_Categories().var_min, Variables::STXS_Categories().var_max);
-        for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ ) STXS_Categories[i_proc]->GetXaxis()->SetBinLabel(i_cat + 1,_s_STXS_category.at(i_cat));
-        
-    }
-    
-    for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ )
-    {
-        for ( int i_proc = 0; i_proc < num_of_processes; i_proc++ )
-        {
-            _histo_name = "Yields_" + _s_process.at(i_proc) + "_" + _s_STXS_category.at(i_cat) + "_" + _blinding;
-            STXS_Yields[i_cat][i_proc] = new TH1F(_histo_name.c_str(),_histo_name.c_str(), Variables::STXS_Categories().M4lBins,Variables::STXS_Categories().M4lMin, Variables::STXS_Categories().M4lMax);
-        }
-        
-        _histo_name = "YieldsZX_" + _s_STXS_category.at(i_cat) + "_" + _blinding;
-        STXS_Yields_ZX[i_cat] = new TH1F(_histo_name.c_str(),_histo_name.c_str(), Variables::STXS_Categories().M4lBins,Variables::STXS_Categories().M4lMin, Variables::STXS_Categories().M4lMax);
-    }
-    
-    // STXS purity
-    for ( int i_proc = 0; i_proc < num_of_STXS_bins; i_proc++ )
-    {
-        _histo_name = "STXS_Purity_" + _s_STXS_bins_histoName.at(i_proc) + "_" + _blinding;
-        _histo_labels = ";" + Variables::STXS_Categories().var_X_label + ";" + Variables::STXS_Categories().var_Y_label;
-        Purity_Categories[i_proc] = new TH1F(_histo_name.c_str(), _histo_labels.c_str(), Variables::STXS_Categories().var_N_bin,Variables::STXS_Categories().var_min, Variables::STXS_Categories().var_max);
-        
-    }
-    
-    for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ )
-    {
-        for ( int i_proc = 0; i_proc < num_of_STXS_bins; i_proc++ )
-        {
-            _histo_name = "Purity_Yields_" + _s_STXS_bins.at(i_proc) + "_" + _s_STXS_category.at(i_cat) + "_" + _blinding;
-            Purity_Yields[i_cat][i_proc] = new TH1F(_histo_name.c_str(),_histo_name.c_str(), Variables::STXS_Categories().M4lBins,Variables::STXS_Categories().M4lMin, Variables::STXS_Categories().M4lMax);
-        }
-        
-        Purity_Normalization[i_cat] = 0.;
-    }
-}
-//======================================
-
+//==================================
 //Constructor
 //==================================
 Histograms::Histograms( double lumi)
@@ -992,12 +830,6 @@ void Histograms::FillM4l( float M4l, float weight, int fs, int cat, int proc )
 }
 //====================================================================================
 
-//====================================================================================
-void Histograms::FillM4lCombination( float M4l, float weight, int proc, int fs )
-{
-	histos_1D[Settings::M4lMain][fs][Settings::inclusive][proc]->Fill(M4l, (proc == Settings::Data) ? 1. : weight);
-}
-//====================================================================================
 
 //====================================================================
 void Histograms::FillM4lZX( float M4l, float weight, int fs, int cat )
@@ -1851,55 +1683,6 @@ void Histograms::FillInclusive()
 }
 //==============================
 
-void Histograms::FillInclusiveCombination()
-{
-   for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
-   {
-      histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][Settings::H125]->Add(histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][Settings::H125ggH]);
-      histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][Settings::H125]->Add(histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][Settings::H125VBF]);
-      histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][Settings::H125]->Add(histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][Settings::H125VH]);
-      histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][Settings::H125]->Add(histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][Settings::H125ttH]);
-      histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][Settings::H125]->Add(histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][Settings::H125bbH]);
-      histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][Settings::H125]->Add(histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][Settings::H125tqH]);
-   }
-   
-   for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
-   {
-      for ( int i_proc = 0; i_proc < num_of_processes - 2; i_proc++ )
-      {
-         histos_1D[Settings::M4lMain][Settings::fs4l][Settings::inclusive][i_proc]->Add(histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][i_proc]);
-      }
-   }
-
-    for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ )
-    {
-        
-        STXS_Categories[Settings::Zjets]->SetBinContent(i_cat + 1,STXS_Yields_ZX[i_cat]->Integral());
-        
-        for ( int i_proc = 0; i_proc < num_of_processes; i_proc++ )
-        {
-            if(i_proc == Settings::Zjets) continue;
-            STXS_Categories[i_proc]->SetBinContent(i_cat + 1,STXS_Yields[i_cat][i_proc]->Integral());
-        }
-    }
-   
-    for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ )// first calculate total yield in each bin so you can normalize each bin to 1
-    {
-        for ( int i_proc = 0; i_proc < num_of_STXS_bins; i_proc++ )
-        {
-            Purity_Normalization[i_cat] += Purity_Yields[i_cat][i_proc]->Integral();
-        }
-    }
-    
-    for ( int i_cat = 0; i_cat < num_of_STXS_categories; i_cat++ )
-    {
-        for ( int i_proc = 0; i_proc < num_of_STXS_bins; i_proc++ )
-        {
-            Purity_Categories[i_proc]->SetBinContent(num_of_STXS_categories - i_cat,Purity_Yields[i_cat][i_proc]->Integral()/Purity_Normalization[i_cat]);
-        }
-    }
-}
-
 
 //==============================
 void Histograms::FillInclusiveYields()
@@ -2385,43 +2168,6 @@ void Histograms::SaveHistos( string file_name )
 //=============================================
 
 
-//=============================================
-void Histograms::SaveCombHistos( string file_name )
-{
-    TFile *fOutHistos = new TFile(file_name.c_str(), "recreate");
-    fOutHistos->cd();
-    
-    for ( int i_proc = 0; i_proc < num_of_processes - 2; i_proc++ )
-    {
-       for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
-       {
-          histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][i_proc]->Write();
-       }
-       
-    }
-   
-    for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
-    {
-        histos_1D_ZX_shape[Settings::M4lMain][i_fs][Settings::inclusive]->Write();
-    }
-    
-    // STXS category data vs MC
-    for ( int i_proc = 0; i_proc < num_of_processes; i_proc++ )
-    {
-        STXS_Categories[i_proc]->Write();
-    }
-    
-    // STXS purity
-    for ( int i_proc = 0; i_proc < num_of_STXS_bins; i_proc++ )
-    {
-        Purity_Categories[i_proc]->Write();
-        
-    }
-    
-    fOutHistos->Close();
-    delete fOutHistos;
-    
-}
 
 //=============================================
 void Histograms::SaveYieldHistos( string file_name )
@@ -2920,54 +2666,11 @@ void Histograms::GetHistos( TString file_name )
 }
 //=============================================
 
-
-//=============================================
-void Histograms::GetCombHistos( TString file_name )
-{
-    TFile* histo_file = TFile::Open(file_name);
-    
-    for ( int i_proc = 0; i_proc < num_of_processes - 2; i_proc++ )
-    {
-        //=====
-        // M4l
-        //=====
-       for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
-       {
-          _histo_name = "M4l_" + _s_process.at(i_proc) + "_" + _s_final_state.at(i_fs) + "_" + _blinding;
-          histos_1D[Settings::M4lMain][i_fs][Settings::inclusive][i_proc] = (TH1F*)histo_file->Get(_histo_name.c_str());
-       }
-    }
-    
-    // Z+X
-   
-   for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
-   {
-      _histo_name = "M4l_ZX_shape_" + _s_final_state.at(i_fs) + "_" + _blinding;
-      histos_1D_ZX_shape[Settings::M4lMain][i_fs][Settings::inclusive] = (TH1F*)histo_file->Get(_histo_name.c_str());
-   }
-   
-    
-    for ( int i_proc = 0; i_proc < num_of_processes; i_proc++ )
-    {
-        _histo_name = "STXS_Categories_" + _s_process.at(i_proc) + "_" + _blinding;
-        STXS_Categories[i_proc] = (TH1F*)histo_file->Get(_histo_name.c_str());
-    }
-    
-    for ( int i_proc = 0; i_proc < num_of_STXS_bins; i_proc++ )
-    {
-        _histo_name = "STXS_Purity_" + _s_STXS_bins_histoName.at(i_proc) + "_" + _blinding;
-        Purity_Categories[i_proc] = (TH1F*)histo_file->Get(_histo_name.c_str());
-    }
-}
-//=============================================
-
-
-
 //===================================================
 void Histograms::GetYieldsHistos( TString file_name )
 {
    TFile* histo_file = TFile::Open(file_name);
-
+   
    for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
    {
       for ( int i_cat = 0; i_cat < num_of_categories; i_cat++ )
@@ -2979,7 +2682,7 @@ void Histograms::GetYieldsHistos( TString file_name )
          }
       }
    }
-      
+   
 }
 //===================================================
 
@@ -3277,105 +2980,6 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
 
 
 
-//=========================================================================================================
-void Histograms::plot_Combination( TString folder , bool zoomed, int fs)
-{
-   TCanvas *c;
-   if(zoomed) c = new TCanvas("c", "c", 600, 600);
-   else c = new TCanvas("c", "c", 650, 500);
-   
-   if(!zoomed)
-   {
-      c->SetLogx();
-      for ( int i_proc = 0; i_proc < num_of_processes - 2; i_proc++ )
-      {
-         histos_1D[Settings::M4lMain][fs][Settings::inclusive][i_proc]->Rebin(2);
-      }
-      histos_1D_ZX_shape[Settings::M4lMain][fs][Settings::inclusive]->Rebin(2);
-   }
-
-   histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::H125]->SetFillColor(Cosmetics::Higgs_all().fill_color);
-	
-   histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::qqZZ]->SetFillColor(Cosmetics::qqZZ().fill_color);
-   histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::ggZZ]->SetFillColor(Cosmetics::ggZZ().fill_color);
-   histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::qqZZ]->SetLineColor(Cosmetics::qqZZ().line_color);
-   histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::ggZZ]->SetLineColor(Cosmetics::ggZZ().line_color);
-	
-	histos_1D_ZX_shape[Settings::M4lMain][fs][Settings::inclusive]->SetFillColor(Cosmetics::ZX().fill_color);
-	histos_1D_ZX_shape[Settings::M4lMain][fs][Settings::inclusive]->SetLineColor(Cosmetics::ZX().line_color);
-
-   histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::H125]->SetLineColor(Cosmetics::Higgs_all().line_color);
-	
-   histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::Data]->SetBinErrorOption(TH1::kPoisson);
-   histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::Data]->SetLineColor(kBlack);
-	
-   // THStack
-   THStack *stack = new THStack( "stack", "stack" );
-	
-	stack->Add(histos_1D_ZX_shape[Settings::M4lMain][fs][Settings::inclusive]);
-
-   stack->Add(histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::ggZZ]);
-   stack->Add(histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::qqZZ]);
-	
-	
-	stack->Add(histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::H125]);
-	
-   stack->Draw("HIST");
-    
-   if (zoomed) stack->GetXaxis()->SetRangeUser(70.,170.);
-	else stack->GetXaxis()->SetRangeUser(70.,500.);
-   
-   float data_max = histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::Data]->GetBinContent(histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::Data]->GetMaximumBin());
-   float data_max_error = histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::Data]->GetBinErrorUp(histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::Data]->GetMaximumBin());
-	
-
-	stack->SetMinimum(1e-5);
-	stack->SetMaximum((data_max + data_max_error)*1.1);
-	
-   if      ( fs == Settings::fs4e )    stack->GetXaxis()->SetTitle(Variables::M4lMain().var_X_label_4e);
-   else if ( fs == Settings::fs4mu )   stack->GetXaxis()->SetTitle(Variables::M4lMain().var_X_label_4mu);
-   else if ( fs == Settings::fs2e2mu ) stack->GetXaxis()->SetTitle(Variables::M4lMain().var_X_label_2e2mu);
-   else if ( fs == Settings::fs2mu2e ) stack->GetXaxis()->SetTitle(Variables::M4lMain().var_X_label_2mu2e);
-   else                                stack->GetXaxis()->SetTitle(Variables::M4lMain().var_X_label);
-   
-   if (zoomed) {stack->GetYaxis()->SetTitle("Events / 2GeV"); stack->GetXaxis()->SetNdivisions(1005);}
-   else {stack->GetYaxis()->SetTitle("Events / 4GeV");}
-
-	histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::Data]->SetMarkerSize(0.9);
-   histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::Data]->Draw("SAME p E1 X0");
-	
-	
-//=============
-// L E G E N D
-//=============
-
-	TLegend *legend  = CreateLegend("right", histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::Data],
-                                      histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::H125],
-                                      histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::qqZZ],
-                                      histos_1D[Settings::M4lMain][fs][Settings::inclusive][Settings::ggZZ],
-                                      histos_1D_ZX_shape[Settings::M4lMain][fs][Settings::inclusive]);
-	
-	legend->Draw();
-//=================
-// CMS TEXT & LUMI
-//=================
-
-   CMS_lumi *lumi = new CMS_lumi;
-   lumi->set_lumi_combination(c);
-	
-   if(!zoomed)
-   {
-      stack->GetXaxis()->SetNdivisions(10);
-      stack->GetXaxis()->SetLabelSize(0);
-      DrawLogX(c, Settings::inclusive, Settings::fs4l);
-   }
-	
-
-   if(zoomed) _out_file_name = folder + "/Combination_" + _s_final_state.at(fs) + "_Zoomed";
-   else _out_file_name = folder + "/Combination_" + _s_final_state.at(fs);
-   SavePlots(c, _out_file_name, folder);
-}
-//=========================================================================================================
 
 
 //=========================================================================================================

@@ -54,7 +54,6 @@ class Histograms
    
 public:
    Histograms( double );
-   Histograms( double, string );
    Histograms( string );
    ~Histograms();
    
@@ -65,8 +64,6 @@ public:
    void FillSTXSZX( float, float, int );
 	
    void FillSTXSPurity( float, float, int, int );
-    
-   void FillM4lCombination( float, float, int, int );
 	
    void FillMZ1( float, float, float, int, int, int );
    void FillMZ1ZX( float, float, float, int, int );
@@ -110,21 +107,18 @@ public:
    void FillOthersZX( float, float, float, float, float, float, float, float, float, float, float, float, int, int, int, float, float, float, float, int, int );
    
    void SaveHistos( string );
-   void SaveCombHistos( string );
    void SaveYieldHistos( string );
    
    void DeleteHistos();
    void DeleteYieldsHistos();
    
    void FillInclusive();
-   void FillInclusiveCombination();
    void FillInclusiveYields();
    
    void SmoothHistograms();
    void RenormalizeZX( int );
    
    void GetHistos( TString );
-   void GetCombHistos( TString );
    void GetYieldsHistos( TString );
 	
    void plot_Combination( TString, bool, int );

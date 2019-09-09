@@ -56,14 +56,11 @@ class Plotter: public Tree
 
 public:
 	
-	Plotter( );
-	Plotter( double );
+	Plotter();
 	~Plotter();
    
    void MakeHistograms( TString , int );
-   void FillHistograms( TString , int );
    void MakeHistogramsZX( TString, TString , int);
-   void FillZXHistograms( TString, TString , int);
    void MakeM4lZX();
    float calculate_K_factor( TString );
    int FindFinalState();
@@ -74,12 +71,9 @@ public:
    int CountAssociatedLeptons();
    bool blind( float );
    void FillInclusive();
-   void FillInclusiveCombination();
    void Save();
-   void SaveComb();
    void Delete();
    void GetHistos( TString );
-   void GetComb();
    void PlotM4l( int );
    void PlotSTXS();
    void PlotPurity();

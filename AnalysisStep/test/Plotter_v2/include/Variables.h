@@ -753,7 +753,7 @@ public:
 	
 	struct Pt_leading
    {
-      TString var_X_label = "p_{T}^{Muons}";
+      TString var_X_label = "p_{T}^{Leading}";
       TString var_Y_label = "Events / 4 (GeV)";
       TString var_cut_label = "";
       Int_t var_N_bin = 25;
@@ -787,7 +787,7 @@ public:
 	
 		struct Eta_leading
    {
-      TString var_X_label = "#eta^{Muons}";
+      TString var_X_label = "#eta^{Leading}";
       TString var_Y_label = "Events / 0.2";
       TString var_cut_label = "";
       Int_t var_N_bin = 25;
@@ -821,12 +821,12 @@ public:
 	
 	struct SIP_leading
    {
-      TString var_X_label = "SIP_{3D}^{Muons}";
+      TString var_X_label = "SIP_{3D}^{Leading}";
       TString var_Y_label = "Events / 0.1";
       TString var_cut_label = "";
-      Int_t var_N_bin = 40;
+      Int_t var_N_bin = 150;
       Float_t var_min = 0;
-      Float_t var_max = 4;
+      Float_t var_max = 15;
       Bool_t var_log_x = 0;
       Bool_t var_log_y = 1;
       Int_t restrict_count_var = 0;
@@ -838,12 +838,12 @@ public:
 	
 	struct SIP_trailing
    {
-      TString var_X_label = "SIP_{3D}^{Minimum}";
+      TString var_X_label = "SIP_{3D}^{Trailing}";
       TString var_Y_label = "Events / 0.1";
       TString var_cut_label = "";
-      Int_t var_N_bin = 40;
+      Int_t var_N_bin = 150;
       Float_t var_min = 0;
-      Float_t var_max = 4;
+      Float_t var_max = 15;
       Bool_t var_log_x = 0;
       Bool_t var_log_y = 1;
       Int_t restrict_count_var = 0;
@@ -855,7 +855,7 @@ public:
 	
 	struct ISO_leading
    {
-      TString var_X_label = "RelIso_{Muons}";
+      TString var_X_label = "RelIso_{Leading}";
       TString var_Y_label = "Events / 0.1";
       TString var_cut_label = "";
       Int_t var_N_bin = 35;
@@ -872,7 +872,7 @@ public:
 	
 	struct ISO_trailing
    {
-      TString var_X_label = "RelIso_{Minimum}";
+      TString var_X_label = "RelIso_{Trailing}";
       TString var_Y_label = "Events / 0.1";
       TString var_cut_label = "";
       Int_t var_N_bin = 35;
