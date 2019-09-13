@@ -131,12 +131,16 @@ namespace {
   //Float_t PFMETNoHFPhi  =  -99;
   Short_t nCleanedJets  =  0;
   Short_t nCleanedJetsPt30  = 0;
-  Short_t nCleanedJetsPt30_jecUp  = 0;
-  Short_t nCleanedJetsPt30_jecDn  = 0;
+  Short_t nCleanedJetsPt30_jesUp  = 0;
+  Short_t nCleanedJetsPt30_jesDn  = 0;
+  Short_t nCleanedJetsPt30_jerUp  = 0;
+  Short_t nCleanedJetsPt30_jerDn  = 0;
   Short_t nCleanedJetsPt30BTagged  = 0;
   Short_t nCleanedJetsPt30BTagged_bTagSF  = 0;
-  Short_t nCleanedJetsPt30BTagged_bTagSF_jecUp  = 0;
-  Short_t nCleanedJetsPt30BTagged_bTagSF_jecDn  = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp  = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn  = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jerUp  = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jerDn  = 0;
   Short_t nCleanedJetsPt30BTagged_bTagSFUp  = 0;
   Short_t nCleanedJetsPt30BTagged_bTagSFDn  = 0;
   Short_t trigWord  = 0;
@@ -243,7 +247,10 @@ namespace {
   std::vector<short> JetPUID;
     
   std::vector<short> JetID;
-
+   
+  std::vector<float> JetJESUp ;
+  std::vector<float> JetJESDown ;
+   
   std::vector<float> JetJERUp ;
   std::vector<float> JetJERDown ;
 
@@ -1236,12 +1243,12 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
     ++nCleanedJets;
 
-    // count jec up/down njets pt30
-    float jec_unc = cleanedJets[i]->userFloat("jec_unc");
+    // count jes up/down njets pt30
+    float jes_unc = cleanedJets[i]->userFloat("jes_unc");
 
     float pt_nominal = cleanedJets[i]->pt();
-    float pt_up = pt_nominal * (1.0 + jec_unc);
-    float pt_dn = pt_nominal * (1.0 - jec_unc);
+    float pt_jes_up = pt_nominal * (1.0 + jes_unc);
+    float pt_jes_dn = pt_nominal * (1.0 - jes_unc);
 
     if(pt_nominal>30){
       ++nCleanedJetsPt30;
@@ -1250,16 +1257,29 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       if(cleanedJets[i]->userFloat("isBtaggedWithSF_Up")) ++nCleanedJetsPt30BTagged_bTagSFUp;
       if(cleanedJets[i]->userFloat("isBtaggedWithSF_Dn")) ++nCleanedJetsPt30BTagged_bTagSFDn;
     }
-    if(pt_up>30){
-      ++nCleanedJetsPt30_jecUp;
-      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jecUp;
+    if(pt_jes_up>30){
+      ++nCleanedJetsPt30_jesUp;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp;
     }
-    if(pt_dn>30){
-      ++nCleanedJetsPt30_jecDn;
-      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jecDn;
+    if(pt_jes_dn>30){
+      ++nCleanedJetsPt30_jesDn;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn;
     }
 
-    if (writeJets && theChannel!=ZL) FillJet(*(cleanedJets.at(i))); // No additional pT cut (for JEC studies)
+    // count jer up/down njets pt30
+    float pt_jer_up = cleanedJets[i]->userFloat("pt_jerup");
+    float pt_jer_dn = cleanedJets[i]->userFloat("pt_jerdn");
+     
+    if(pt_jer_up>30){
+       ++nCleanedJetsPt30_jerUp;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jerUp;
+    }
+    if(pt_jer_dn>30){
+       ++nCleanedJetsPt30_jerDn;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jerDn;
+    }
+     
+    if (writeJets) FillJet(*(cleanedJets.at(i))); // No additional pT cut (for JEC studies)
   }
 
   // Now we can write the variables for candidates
@@ -1310,10 +1330,13 @@ void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
      JetMult .push_back( jet.userFloat("mult"));
      JetPtD .push_back( jet.userFloat("ptD"));
    }
-   JetSigma .push_back(jet.userFloat("jec_unc"));
+   JetSigma .push_back(jet.userFloat("jes_unc"));
    
    JetRawPt  .push_back( jet.userFloat("RawPt"));
    JetPtJEC_noJER .push_back( jet.userFloat("pt_JEC_noJER"));
+   
+   JetJESUp .push_back(jet.userFloat("pt_jesup"));
+   JetJESDown .push_back(jet.userFloat("pt_jesdn"));
 
    JetJERUp .push_back(jet.userFloat("pt_jerup"));
    JetJERDown .push_back(jet.userFloat("pt_jerdn"));
@@ -2279,12 +2302,16 @@ void HZZ4lNtupleMaker::BookAllBranches(){
 
   myTree->Book("nCleanedJets",nCleanedJets, failedTreeLevel >= fullFailedTree);
   myTree->Book("nCleanedJetsPt30",nCleanedJetsPt30, failedTreeLevel >= fullFailedTree);
-  myTree->Book("nCleanedJetsPt30_jecUp",nCleanedJetsPt30_jecUp, failedTreeLevel >= fullFailedTree);
-  myTree->Book("nCleanedJetsPt30_jecDn",nCleanedJetsPt30_jecDn, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30_jesUp",nCleanedJetsPt30_jesUp, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30_jesDn",nCleanedJetsPt30_jesDn, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30_jerUp",nCleanedJetsPt30_jerUp, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30_jerDn",nCleanedJetsPt30_jerDn, failedTreeLevel >= fullFailedTree);
   myTree->Book("nCleanedJetsPt30BTagged",nCleanedJetsPt30BTagged, failedTreeLevel >= fullFailedTree);
   myTree->Book("nCleanedJetsPt30BTagged_bTagSF",nCleanedJetsPt30BTagged_bTagSF, failedTreeLevel >= fullFailedTree);
-  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jecUp",nCleanedJetsPt30BTagged_bTagSF_jecUp, failedTreeLevel >= fullFailedTree);
-  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jecDn",nCleanedJetsPt30BTagged_bTagSF_jecDn, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp",nCleanedJetsPt30BTagged_bTagSF_jesUp, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn",nCleanedJetsPt30BTagged_bTagSF_jesDn, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jerUp",nCleanedJetsPt30BTagged_bTagSF_jerUp, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jerDn",nCleanedJetsPt30BTagged_bTagSF_jerDn, failedTreeLevel >= fullFailedTree);
   myTree->Book("nCleanedJetsPt30BTagged_bTagSFUp",nCleanedJetsPt30BTagged_bTagSFUp, failedTreeLevel >= fullFailedTree);
   myTree->Book("nCleanedJetsPt30BTagged_bTagSFDn",nCleanedJetsPt30BTagged_bTagSFDn, failedTreeLevel >= fullFailedTree);
   myTree->Book("trigWord",trigWord, failedTreeLevel >= minimalFailedTree);
@@ -2401,9 +2428,12 @@ void HZZ4lNtupleMaker::BookAllBranches(){
 
   myTree->Book("JetRawPt",JetRawPt, failedTreeLevel >= fullFailedTree);
   myTree->Book("JetPtJEC_noJER",JetPtJEC_noJER, failedTreeLevel >= fullFailedTree);
+  
+  myTree->Book("JetPt_JESUp",JetJESUp, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPt_JESDown",JetJESDown, failedTreeLevel >= fullFailedTree);
    
-  myTree->Book("JetJERUp",JetJERUp, failedTreeLevel >= fullFailedTree);
-  myTree->Book("JetJERDown",JetJERDown, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPt_JERUp",JetJERUp, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPt_JERDown",JetJERDown, failedTreeLevel >= fullFailedTree);
 
   myTree->Book("JetID", JetID, failedTreeLevel >= fullFailedTree);
   myTree->Book("JetPUID", JetPUID, failedTreeLevel >= fullFailedTree);

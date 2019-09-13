@@ -599,7 +599,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
       vector<float> jec_ratio;
       for (edm::View<pat::Jet>::const_iterator jet = CleanJets->begin(); jet != CleanJets->end(); ++jet){
         // calculate JEC uncertainty up/down
-        float jec_unc = jet->userFloat("jec_unc");
+        float jec_unc = jet->userFloat("jes_unc");
         float ratio = 1. + jecnum_multiplier * jec_unc;
         float newPt = jet->pt() * ratio;
         // apply pt>30GeV cut

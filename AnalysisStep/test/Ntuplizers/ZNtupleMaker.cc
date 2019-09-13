@@ -141,6 +141,18 @@ namespace {
   std::vector<float> AddMuPhotonIso;
   std::vector<float> AddMuCombRelIsoPF;
   Short_t nCleanedJetsPt30 = 0;
+  Short_t nCleanedJetsPt30_jesUp = 0;
+  Short_t nCleanedJetsPt30_jesDn = 0;
+  Short_t nCleanedJetsPt30_jerUp = 0;
+  Short_t nCleanedJetsPt30_jerDn = 0;
+  Short_t nCleanedJetsPt30BTagged  = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF  = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp  = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn  = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jerUp  = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jerDn  = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSFUp  = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSFDn  = 0;
   std::vector<float> JetPt;
   std::vector<float> JetEta;
   std::vector<float> JetPhi;
@@ -160,8 +172,10 @@ namespace {
   std::vector<float> JetPUValue;
   std::vector<short> JetPUID;
   std::vector<short> JetID;
-  std::vector<float> JetJERUp;
-  std::vector<float> JetJERDown;
+  std::vector<float> JetPt_JESUp;
+  std::vector<float> JetPt_JESDown;
+  std::vector<float> JetPt_JERUp;
+  std::vector<float> JetPt_JERDown;
   std::vector<float> JetPtJEC_noJER;
   std::vector<float> JetRawPt;
    
@@ -430,13 +444,53 @@ void ZNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& eSetu
   event.getByToken(vtxToken,vertices);
   Nvtx = vertices->size();
 
-  // Jets
-  Handle<edm::View<pat::Jet> > CleanedJets;
-  event.getByToken(jetToken, CleanedJets);
-  for(edm::View<pat::Jet>::const_iterator jet = CleanedJets->begin(); jet != CleanedJets->end(); ++jet)
-    {
-      if(jet->pt()>30) nCleanedJetsPt30++;
-      if (addJets) FillJet(*jet);
+   // Jets (cleaned wrt all tight isolated leptons)
+   Handle<edm::View<pat::Jet> > CleanedJets;
+   event.getByToken(jetToken, CleanedJets);
+   vector<const pat::Jet*> cleanedJets;
+   for(edm::View<pat::Jet>::const_iterator jet = CleanedJets->begin(); jet != CleanedJets->end(); ++jet){
+      cleanedJets.push_back(&*jet);
+   }
+   
+   // Count and store jets, after additional cleaning for CRs...
+   for (unsigned i=0; i<cleanedJets.size(); ++i) {
+       
+       // count jes up/down njets pt30
+       float jes_unc = cleanedJets[i]->userFloat("jes_unc");
+       
+       float pt_nominal = cleanedJets[i]->pt();
+       float pt_jes_up = pt_nominal * (1.0 + jes_unc);
+       float pt_jes_dn = pt_nominal * (1.0 - jes_unc);
+       
+       if(pt_nominal>30){
+          ++nCleanedJetsPt30;
+          if(cleanedJets[i]->userFloat("isBtagged")) ++nCleanedJetsPt30BTagged;
+          if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF;
+          if(cleanedJets[i]->userFloat("isBtaggedWithSF_Up")) ++nCleanedJetsPt30BTagged_bTagSFUp;
+          if(cleanedJets[i]->userFloat("isBtaggedWithSF_Dn")) ++nCleanedJetsPt30BTagged_bTagSFDn;
+       }
+       if(pt_jes_up>30){
+          ++nCleanedJetsPt30_jesUp;
+          if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp;
+       }
+       if(pt_jes_dn>30){
+          ++nCleanedJetsPt30_jesDn;
+          if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn;
+       }
+       
+       // count jer up/down njets pt30
+       float pt_jer_up = cleanedJets[i]->userFloat("pt_jerup");
+       float pt_jer_dn = cleanedJets[i]->userFloat("pt_jerdn");
+       
+       if(pt_jer_up>30){
+          ++nCleanedJetsPt30_jerUp;
+          if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jerUp;
+       }
+       if(pt_jer_dn>30){
+          ++nCleanedJetsPt30_jerDn;
+          if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jerDn;
+       }
+      if (addJets) FillJet(*(cleanedJets.at(i)));
     }
 
   // MET
@@ -772,12 +826,15 @@ void ZNtupleMaker::FillJet(const pat::Jet& jet)
     JetMult .push_back( jet.userFloat("mult"));
     JetPtD .push_back( jet.userFloat("ptD"));
   }
-  JetSigma .push_back(jet.userFloat("jec_unc"));
+  JetSigma .push_back(jet.userFloat("jes_unc"));
   JetHadronFlavour .push_back(jet.hadronFlavour());
   JetPartonFlavour .push_back(jet.partonFlavour());
 	
-  JetJERUp .push_back(jet.userFloat("pt_jerup"));
-  JetJERDown .push_back(jet.userFloat("pt_jerdn"));
+  JetPt_JESUp .push_back(jet.userFloat("pt_jesup"));
+  JetPt_JESDown .push_back(jet.userFloat("pt_jesdn"));
+  
+  JetPt_JERUp .push_back(jet.userFloat("pt_jerup"));
+  JetPt_JERDown .push_back(jet.userFloat("pt_jerdn"));
    
   JetRawPt  .push_back( jet.userFloat("RawPt"));
   JetPtJEC_noJER .push_back( jet.userFloat("pt_JEC_noJER"));
@@ -986,7 +1043,19 @@ void ZNtupleMaker::BookAllBranches(){
     myTree->Book("AddMuCombRelIsoPF",AddMuCombRelIsoPF);
   }
 	
-  myTree->Book("nCleanedJetsPt30",nCleanedJetsPt30);
+   myTree->Book("nCleanedJetsPt30",nCleanedJetsPt30);
+   myTree->Book("nCleanedJetsPt30_jesUp",nCleanedJetsPt30_jesUp);
+   myTree->Book("nCleanedJetsPt30_jesDn",nCleanedJetsPt30_jesDn);
+   myTree->Book("nCleanedJetsPt30_jerUp",nCleanedJetsPt30_jerUp);
+   myTree->Book("nCleanedJetsPt30_jerDn",nCleanedJetsPt30_jerDn);
+   myTree->Book("nCleanedJetsPt30BTagged",nCleanedJetsPt30BTagged);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF",nCleanedJetsPt30BTagged_bTagSF);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp",nCleanedJetsPt30BTagged_bTagSF_jesUp);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn",nCleanedJetsPt30BTagged_bTagSF_jesDn);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jerUp",nCleanedJetsPt30BTagged_bTagSF_jerUp);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jerDn",nCleanedJetsPt30BTagged_bTagSF_jerDn);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSFUp",nCleanedJetsPt30BTagged_bTagSFUp);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSFDn",nCleanedJetsPt30BTagged_bTagSFDn);
 
   if (addJets) {
     myTree->Book("JetPt",JetPt);
@@ -1002,8 +1071,10 @@ void ZNtupleMaker::BookAllBranches(){
     myTree->Book("JetSigma",JetSigma);
     myTree->Book("JetHadronFlavour",JetHadronFlavour);
     myTree->Book("JetPartonFlavour",JetPartonFlavour);
-    myTree->Book("JetJERUp",JetJERUp);
-    myTree->Book("JetJERDown",JetJERDown);
+    myTree->Book("JetPt_JESUp",JetPt_JESUp);
+    myTree->Book("JetPt_JESDown",JetPt_JESDown);
+    myTree->Book("JetPt_JERUp",JetPt_JERUp);
+    myTree->Book("JetPt_JERDown",JetPt_JERDown);
     myTree->Book("JetRawPt",JetRawPt);
     myTree->Book("JetPtJEC_noJER",JetPtJEC_noJER);
     myTree->Book("JetPUID", JetPUID);
