@@ -6,11 +6,11 @@ using namespace edm;
 LeptonSFHelper::LeptonSFHelper()
 {
    // 2016 Electrons
-   edm::FileInPath fipEleNotCracks_2016("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_non_gap_ele_Moriond2017_v2.root");
+   edm::FileInPath fipEleNotCracks_2016("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ElectronSF_Legacy_2016_NoGap.root");
    root_file = TFile::Open(fipEleNotCracks_2016.fullPath().data(),"READ");
    h_Ele_notCracks_2016 = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
       
-   edm::FileInPath fipEleCracks_2016("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_gap_ele_Moriond2017_v2.root");
+   edm::FileInPath fipEleCracks_2016("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ElectronSF_Legacy_2016_Gap.root");
    root_file = TFile::Open(fipEleCracks_2016.fullPath().data(),"READ");
    h_Ele_Cracks_2016 = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
    
@@ -23,11 +23,11 @@ LeptonSFHelper::LeptonSFHelper()
    h_Ele_Reco_lowPT_2016 = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
    
    // 2017 Electrons
-   edm::FileInPath fipEleNotCracks_2017("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi.txt_EGM2D_Moriond2018v1.root");
+   edm::FileInPath fipEleNotCracks_2017("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ElectronSF_Legacy_2017_NoGap.root");
    root_file = TFile::Open(fipEleNotCracks_2017.fullPath().data(),"READ");
    h_Ele_notCracks_2017 = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
    
-   edm::FileInPath fipEleCracks_2017("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi.txt_EGM2D_Moriond2018v1_gap.root");
+   edm::FileInPath fipEleCracks_2017("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ElectronSF_Legacy_2017_Gap.root");
    root_file = TFile::Open(fipEleCracks_2017.fullPath().data(),"READ");
    h_Ele_Cracks_2017 = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
    
@@ -41,11 +41,11 @@ LeptonSFHelper::LeptonSFHelper()
       
 
    // 2018 Electrons
-   edm::FileInPath fipEleNotCracks_2018("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi.txt_EGM2D_Moriond2019_v1.root");
+   edm::FileInPath fipEleNotCracks_2018("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ElectronSF_Legacy_2018_NoGap.root");
    root_file = TFile::Open(fipEleNotCracks_2018.fullPath().data(),"READ");
    h_Ele_notCracks_2018 = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
    
-   edm::FileInPath fipEleCracks_2018("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi.txt_EGM2D_Moriond2019_v1_gap.root");
+   edm::FileInPath fipEleCracks_2018("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ElectronSF_Legacy_2018_Gap.root");
    root_file = TFile::Open(fipEleCracks_2018.fullPath().data(),"READ");
    h_Ele_Cracks_2018 = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
    
