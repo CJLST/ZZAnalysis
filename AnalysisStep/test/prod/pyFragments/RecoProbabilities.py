@@ -140,8 +140,10 @@ AJetsProdProbabilities_SpinZero_JHUGen_JECNominal = [
    # Not adding kappa_tilde since it was shown bbH has close to no sensitivity any time soon
    "Name:bbH_SIG_kappa_1_JHUGen_JECNominal Process:HSMHiggs Production:bbH MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1",
 ]
-AJetsProdProbabilities_SpinZero_JHUGen_JECUp = [theME.replace("JECNominal", "JECUp") for theME in AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
-AJetsProdProbabilities_SpinZero_JHUGen_JECDn = [theME.replace("JECNominal", "JECDn") for theME in AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
+AJetsProdProbabilities_SpinZero_JHUGen_JESUp = [theME.replace("JECNominal", "JESUp") for theME in AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
+AJetsProdProbabilities_SpinZero_JHUGen_JESDn = [theME.replace("JECNominal", "JESDn") for theME in AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
+AJetsProdProbabilities_SpinZero_JHUGen_JERUp = [theME.replace("JECNominal", "JERUp") for theME in AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
+AJetsProdProbabilities_SpinZero_JHUGen_JERDn = [theME.replace("JECNominal", "JERDn") for theME in AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
 ## Production probabilities with >=1 lepton(s) ##
 ALepsProdProbabilities_SpinZero_JHUGen = [
    # Leptonic ZH
@@ -277,8 +279,10 @@ AJetsProdDecProbabilities_MCFM_JECNominal = [
 
    "Name:JJQCD_BKG_MCFM_JECNominal Process:bkgZZ Production:JJQCD MatrixElement:MCFM Cluster:J2JECNominal DefaultME:-1 Options:AddPConst=1",
 ]
-AJetsProdDecProbabilities_MCFM_JECUp = [theME.replace("JECNominal", "JECUp") for theME in AJetsProdDecProbabilities_MCFM_JECNominal]
-AJetsProdDecProbabilities_MCFM_JECDn = [theME.replace("JECNominal", "JECDn") for theME in AJetsProdDecProbabilities_MCFM_JECNominal]
+AJetsProdDecProbabilities_MCFM_JESUp = [theME.replace("JECNominal", "JESUp") for theME in AJetsProdDecProbabilities_MCFM_JECNominal]
+AJetsProdDecProbabilities_MCFM_JESDn = [theME.replace("JECNominal", "JESDn") for theME in AJetsProdDecProbabilities_MCFM_JECNominal]
+AJetsProdDecProbabilities_MCFM_JERUp = [theME.replace("JECNominal", "JERUp") for theME in AJetsProdDecProbabilities_MCFM_JECNominal]
+AJetsProdDecProbabilities_MCFM_JERDn = [theME.replace("JECNominal", "JERDn") for theME in AJetsProdDecProbabilities_MCFM_JECNominal]
 
 ### m4l probabilities from SuperMELA ###
 PM4L_SUPERMELA = [
@@ -303,27 +307,36 @@ PMAVJJ_SUPERDIJETMELA_JECNominal = [
    "Name:HadZH_mavjj_JECNominal Process:HSMHiggs Production:Had_ZH MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1 isPMaVJJ:1",
    "Name:HadWH_mavjj_JECNominal Process:HSMHiggs Production:Had_WH MatrixElement:JHUGen Cluster:J2JECNominal DefaultME:-1 isPMaVJJ:1",
 ]
-PMAVJJ_SUPERDIJETMELA_JECUp = [theME.replace("JECNominal", "JECUp") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
-PMAVJJ_SUPERDIJETMELA_JECDn = [theME.replace("JECNominal", "JECDn") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
+PMAVJJ_SUPERDIJETMELA_JESUp = [theME.replace("JECNominal", "JESUp") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
+PMAVJJ_SUPERDIJETMELA_JESDn = [theME.replace("JECNominal", "JESDn") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
+PMAVJJ_SUPERDIJETMELA_JERUp = [theME.replace("JECNominal", "JERUp") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
+PMAVJJ_SUPERDIJETMELA_JERDn = [theME.replace("JECNominal", "JERDn") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
 
 
 # Construct the final list
 theRecoProbabilities = []
 theRecoProbabilities.extend(DecayProbabilities_SpinZero_JHUGen)
 theRecoProbabilities.extend(AJetsProdProbabilities_SpinZero_JHUGen_JECNominal)
-theRecoProbabilities.extend(AJetsProdProbabilities_SpinZero_JHUGen_JECUp)
-theRecoProbabilities.extend(AJetsProdProbabilities_SpinZero_JHUGen_JECDn)
+theRecoProbabilities.extend(AJetsProdProbabilities_SpinZero_JHUGen_JESUp)
+theRecoProbabilities.extend(AJetsProdProbabilities_SpinZero_JHUGen_JESDn)
+theRecoProbabilities.extend(AJetsProdProbabilities_SpinZero_JHUGen_JERUp)
+theRecoProbabilities.extend(AJetsProdProbabilities_SpinZero_JHUGen_JERDn)
 theRecoProbabilities.extend(ALepsProdProbabilities_SpinZero_JHUGen)
 theRecoProbabilities.extend(Probabilities_SpinOne_JHUGen)
 theRecoProbabilities.extend(Probabilities_SpinTwo_JHUGen)
 theRecoProbabilities.extend(DecayProbabilities_MCFM)
 theRecoProbabilities.extend(AJetsProdDecProbabilities_MCFM_JECNominal)
-theRecoProbabilities.extend(AJetsProdDecProbabilities_MCFM_JECUp)
-theRecoProbabilities.extend(AJetsProdDecProbabilities_MCFM_JECDn)
+theRecoProbabilities.extend(AJetsProdDecProbabilities_MCFM_JESUp)
+theRecoProbabilities.extend(AJetsProdDecProbabilities_MCFM_JESDn)
+theRecoProbabilities.extend(AJetsProdDecProbabilities_MCFM_JERUp)
+theRecoProbabilities.extend(AJetsProdDecProbabilities_MCFM_JERDn)
 theRecoProbabilities.extend(PM4L_SUPERMELA)
 theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JECNominal)
-theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JECUp)
-theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JECDn)
+theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESUp)
+theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESDn)
+theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JERUp)
+theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JERDn)
+
 
 # Append final list
 for name in (
