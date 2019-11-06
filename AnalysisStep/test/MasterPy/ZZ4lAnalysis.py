@@ -1055,7 +1055,7 @@ process.dressedJets = cms.EDProducer("JetFiller",
     src = cms.InputTag("slimmedJets"),
     sampleType = cms.int32(SAMPLE_TYPE),
     setup = cms.int32(LEPTON_SETUP),
-    cut = cms.string("pt>20 && abs(eta)<4.7 && userFloat('JetID') && userFloat('PUjetID')"),
+    cut = cms.string("pt>20 && abs(eta)<4.7 && userFloat('JetID') && (userFloat('PUjetID') || pt>50)"),
     isMC = cms.bool(IsMC),
     bTaggerName = cms.string(theBTagger),
     bTaggerThreshold = cms.double(theBTaggerThr),
@@ -1199,11 +1199,11 @@ if (APPLYJEC and SAMPLE_TYPE == 2018):
             toGet = cms.VPSet(
                 cms.PSet(
                     record = cms.string('JetCorrectionsRecord'),
-                     tag    = cms.string('JetCorrectorParametersCollection_Autumn18_V8_MC_AK4PFchs'), #for 10_2_X MC
+                     tag    = cms.string('JetCorrectorParametersCollection_Autumn18_V19_MC_AK4PFchs'), #for 10_2_X MC
                     label  = cms.untracked.string('AK4PFchs')
                     ),
                 ),
-              connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Autumn18_V8_MC.db'), #for 10_2_X MC
+              connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Autumn18_V19_MC.db'), #for 10_2_X MC
             )
     else: # [FIXME] Preliminary recommendation is to use no JEC for data, change this once it is available
         process.jec = cms.ESSource("PoolDBESSource",
@@ -1214,11 +1214,11 @@ if (APPLYJEC and SAMPLE_TYPE == 2018):
             toGet = cms.VPSet(
                 cms.PSet(
                     record = cms.string('JetCorrectionsRecord'),
-                    tag    = cms.string('JetCorrectorParametersCollection_Autumn18_RunABCD_V8_DATA_AK4PFchs'),
+                    tag    = cms.string('JetCorrectorParametersCollection_Autumn18_RunABCD_V19_DATA_AK4PFchs'),
                     label  = cms.untracked.string('AK4PFchs')
                     ),
                 ),
-            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Autumn18_RunABCD_V8_DATA.db'),
+            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Autumn18_RunABCD_V19_DATA.db'),
             )
 
     ## add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
