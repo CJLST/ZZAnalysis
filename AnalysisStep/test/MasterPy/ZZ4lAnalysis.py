@@ -1310,21 +1310,22 @@ if (APPLYJER and SAMPLE_TYPE == 2018):
     from CondCore.DBCommon.CondDBSetup_cfi import *
     process.jer = cms.ESSource("PoolDBESSource",
                                CondDBSetup,
-                               connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JER/Autumn18_V1_MC.db'),
+                               #connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JER/Autumn18_V1_MC.db'),
+                               connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JER/Autumn18_V7_MC.db'),
                                toGet = cms.VPSet(
                                                  cms.PSet(
                                                           record = cms.string('JetResolutionRcd'),
-                                                          tag    = cms.string('JR_Autumn18_V1_MC_PtResolution_AK4PFchs'),
+                                                          tag    = cms.string('JR_Autumn18_V7_MC_PtResolution_AK4PFchs'),
                                                           label  = cms.untracked.string('AK4PFchs_pt')
                                                           ),
                                                  cms.PSet(
                                                           record = cms.string('JetResolutionRcd'),
-                                                          tag    = cms.string('JR_Autumn18_V1_MC_PhiResolution_AK4PFchs'),
+                                                          tag    = cms.string('JR_Autumn18_V7_MC_PhiResolution_AK4PFchs'),
                                                           label  = cms.untracked.string('AK4PFchs_phi')
                                                           ),
                                                  cms.PSet(
                                                           record = cms.string('JetResolutionScaleFactorRcd'),
-                                                          tag    = cms.string('JR_Autumn18_V1_MC_SF_AK4PFchs'),
+                                                          tag    = cms.string('JR_Autumn18_V7_MC_SF_AK4PFchs'),
                                                           label  = cms.untracked.string('AK4PFchs')
                                                           )
                                                  )
