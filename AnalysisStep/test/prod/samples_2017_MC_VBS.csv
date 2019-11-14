@@ -1,0 +1,15 @@
+identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments,comment
+
+### See comment field,,,,,,,,,,,Unless otherwise stated; signal x-sections are taken from https://hypernews.cern.ch/HyperNews/CMS/get/higgs/1738.html
+
+### EWK signal alternative (Phantom) ---> N.B. 2e2mu sample no more available!!??
+VBFTo4eJJ_0PMH125Contin_phantom128_2017   ,,4.18E-04,,,/VBFToHiggs0PMContinToZZTo4eJJ_M125_GaSM_13TeV_phantom_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM   ,dbs,,1,GENXSEC=4.180E-04;GENBR=1;PROCESS_CR=False;LEPTON_SETUP=2017,RecoProbabilities.py;LHEProbabilities_VBF_BSI_0PM_H125_PhantomMCFM.py,
+VBFTo4muJJ_0PMH125Contin_phantom128_2017  ,,4.18E-04,,,/VBFToHiggs0PMContinToZZTo4muJJ_M125_GaSM_13TeV_phantom_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM  ,dbs,,1,GENXSEC=4.180E-04;GENBR=1;PROCESS_CR=False;LEPTON_SETUP=2017,RecoProbabilities.py;LHEProbabilities_VBF_BSI_0PM_H125_PhantomMCFM.py,
+#VBFTo2e2muJJ_0PMH125Contin_phantom128_2017,,8.357E-04,,,/VBFToHiggs0PMContinToZZTo2e2muJJ_M125_GaSM_13TeV_phantom_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM,dbs,,1,GENXSEC=8.357E-04;GENBR=1;PROCESS_CR=False;LEPTON_SETUP=2017,RecoProbabilities.py;LHEProbabilities_VBF_BSI_0PM_H125_PhantomMCFM.py,
+
+### QCD ZZ
+ZZTo4lamcatnlo_2017,,1.256,      ,,/ZZTo4L_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM,dbs,,6,GENXSEC=1.256;GENBR=1;APPLY_K_NNLOQCD_ZZQQB=True;APPLY_K_NLOEW_ZZQQB=True;PROCESS_CR=True;LEPTON_SETUP=2017,RecoProbabilities.py, # Xsection from the gen: 1.218
+
+### EWK signal
+VBFTo4lJJ_0PMH125Contin_madgraph_2017   ,,4.27E-04,,,/ZZJJTo4L_EWK_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM  ,dbs,,3,GENXSEC=4.27E-04;GENBR=1;PROCESS_CR=False;LEPTON_SETUP=2017,RecoProbabilities.py;LHEProbabilities_VBF_BSI_0PM_H125_PhantomMCFM.py,
+

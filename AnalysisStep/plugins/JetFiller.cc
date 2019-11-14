@@ -266,7 +266,8 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       JME::JetParameters res_parameters = {{JME::Binning::JetPt, jpt}, {JME::Binning::JetEta, jeta}, {JME::Binning::Rho, rho}};
       float res_pt  = resolution.getResolution(res_parameters);
 
-      JME::JetParameters sf_parameters = {{JME::Binning::JetEta, jeta}, {JME::Binning::Rho, rho}};
+      //JME::JetParameters sf_parameters = {{JME::Binning::JetEta, jeta}, {JME::Binning::Rho, rho}};
+      JME::JetParameters sf_parameters = {{JME::Binning::JetPt, jpt}, {JME::Binning::JetEta, jeta}, {JME::Binning::Rho, rho}};
       float sf    = resolution_sf.getScaleFactor(sf_parameters);
       float sf_up = resolution_sf.getScaleFactor(sf_parameters, Variation::UP);
       float sf_dn = resolution_sf.getScaleFactor(sf_parameters, Variation::DOWN);
