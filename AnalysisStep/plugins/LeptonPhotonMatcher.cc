@@ -185,7 +185,7 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       for (unsigned int j = 0; j< muonHandle->size(); ++j){
         //      const pat::Muon* m = ((*muonHandle)[j]).get();
         const pat::Muon* m = &((*muonHandle)[j]);
-        //if (! m->userFloat("isSIP")) continue;
+        if (! m->userFloat("isSIP")) continue;
         double dR = ROOT::Math::VectorUtil::DeltaR(m->momentum(),g->momentum());
         if(debug) cout << "muon pt = " << m->pt() << " photon pt = " << g->pt() << " dR = " << dR << endl;
         if (dR>0.5) continue;

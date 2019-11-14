@@ -72,7 +72,7 @@ flags(iConfig.getParameter<edm::ParameterSet>("flags"))
    produces<pat::MuonCollection>();
    
    // MVA Reader
-   r = new MuonGBRForestReader(setup);
+   r = new MuonGBRForestReader(setup, 2);
    
 }
 
@@ -129,60 +129,71 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
       
       
-      // MVA Reader begin
-      float mu_N_hits_, mu_chi_square_, mu_N_pixel_hits_, mu_N_tracker_hits_;
+//=================
+// Begin MVA reader
+//=================
+
+      float glb_valid_mu_hits_, glb_chi2_, tk_valid_pixel_hits_, tk_valid_hits_;
+//      float glb_pT_error_, tk_tracker_lay_, tk_pixel_lay_, tk_chi2_, tk_pT_error_;
       
-      bool is_global_mu_  = l.isGlobalMuon();
-      if ( is_global_mu_ )
+//      bool is_global_mu_  = l.isGlobalMuon();
+      
+      // GlobalTrackQualityVariables
+      if ( l.globalTrack().isNonnull() )
       {
-         // Number of muon chamber hits included in the the global muon track fit
-         mu_N_hits_ = (l.globalTrack()->hitPattern().numberOfValidMuonHits());
-         
-         // Chi2 of the global track fit
-         mu_chi_square_ = (l.globalTrack()->normalizedChi2());
+         glb_valid_mu_hits_ = (l.globalTrack()->hitPattern().numberOfValidMuonHits());
+         glb_chi2_          = (l.globalTrack()->normalizedChi2());
+//         glb_pT_error_      = (l.globalTrack()->ptError()); 
       }
       else
       {
-         mu_N_hits_     = -1;
-         mu_chi_square_ = -1;
+         glb_valid_mu_hits_ = -1;
+         glb_chi2_          = -1;
+//         glb_pT_error_      = -1;
       }
       
       
-      // Number of hits in the pixel detector
-      bool valid_KF = false;
-      reco::TrackRef myTrackRef = l.innerTrack();
-      valid_KF = (myTrackRef.isAvailable());
-      valid_KF = (myTrackRef.isNonnull());
-      
-      
-      if ( valid_KF )
+      // TrackQualityVariables
+      reco::TrackRef track = l.innerTrack();
+//      valid_KF = (myTrackRef.isAvailable());
+//      valid_KF = (myTrackRef.isNonnull());
+
+
+      if ( track.isNonnull() )
       {
-         // Number of pixel hits
-         mu_N_pixel_hits_ = l.innerTrack()->hitPattern().numberOfValidPixelHits();
-         
-         // Number of hits in the tracker layers
-         mu_N_tracker_hits_ = l.innerTrack()->hitPattern().trackerLayersWithMeasurement();
+         tk_valid_hits_       = l.innerTrack()->hitPattern().numberOfValidHits();
+         tk_valid_pixel_hits_ = l.innerTrack()->hitPattern().numberOfValidPixelHits();
+//         tk_tracker_lay_      = l.innerTrack()->hitPattern().trackerLayersWithMeasurement();
+//         tk_pixel_lay_        = l.innerTrack()->hitPattern().pixelLayersWithMeasurement();
+//         tk_chi2_             = l.innerTrack()->normalizedChi2();
+//         tk_pT_error_         = l.innerTrack()->ptError();
       }
       else
       {
-         mu_N_pixel_hits_ = -1;
-         mu_N_tracker_hits_ = -1;
+         tk_valid_hits_       = -1;
+         tk_valid_pixel_hits_ = -1;
+//         tk_tracker_lay_      = -1;
+//         tk_pixel_lay_        = -1;
+//         tk_chi2_             = -1;
+//         tk_pT_error_         = -1;
       }
+
       
       float BDT = -99;
       float pt  = l.pt();
       float eta = l.eta();
 
       
-      BDT = r->Get_MVA_value(pt, eta, mu_N_hits_, mu_N_pixel_hits_, mu_N_tracker_hits_, mu_chi_square_, PFPhotonIso, PFChargedHadIso, PFNeutralHadIso, rho, SIP, dxy, dz);
-//      cout << BDT << endl;
+      BDT = r->Get_MVA_value_two_eta_bins(pt, eta, glb_valid_mu_hits_, tk_valid_pixel_hits_, tk_valid_hits_, glb_chi2_, PFPhotonIso, PFChargedHadIso, PFNeutralHadIso, rho);
+      cout << BDT << endl;
       
       
       bool isBDT = false;
       
       if ( setup == 2016 )
-      {
-         isBDT = ((pt <= 10 && BDT > 0.8847169876098633) || (pt > 10  && BDT > -0.19389629721641488));
+      {  
+         isBDT = ((pt < 10 && abs(eta) < 1.2 && BDT > -0.4623236134648287 ) || (pt < 10 && abs(eta) >= 1.2 && BDT > 0.5210796594619753)
+              || (pt >= 10 && abs(eta) < 1.2 && BDT > -2.0780179500579834) || (pt >= 10 && abs(eta) >= 1.2 && BDT > -1.6563756227493285));
       }
       else if ( setup == 2017 )
       {
@@ -196,7 +207,10 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       {
          std::cerr << "[ERROR] MuFiller: no MVA setup for: " << setup << " year!" << std::endl;
       }
-      // MVA Reader end
+
+//=================
+// End MVA reader
+//================= 
       
       
       //--- Trigger matching

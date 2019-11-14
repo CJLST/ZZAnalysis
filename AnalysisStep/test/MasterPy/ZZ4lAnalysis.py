@@ -305,8 +305,9 @@ if(IsMC):
 ### ----------------------------------------------------------------------
 ### ----------------------------------------------------------------------
 
-SIP =  "userFloat('SIP')<4"
-GOODMUON = "userFloat('ID') || (userFloat('isTrackerHighPtMuon') && pt>200)" #Muon selection no longer includes a cut on SIP since it is included in the Muon BDT
+SIP =  "userFloat('SIP') < 4"
+#GOODMUON = "userFloat('ID') && " + SIP + "|| (userFloat('isTrackerHighPtMuon') && pt>200)" #Muon selection no longer includes a cut on SIP since it is included in the Muon BDT
+GOODMUON = "(userFloat('ID') || (userFloat('isTrackerHighPtMuon') && pt>200)) && " + SIP
 GOODELECTRON = "userFloat('ID') && " + SIP
 #TIGHTMUON = "userFloat('isPFMuon') || (userFloat('isTrackerHighPtMuon') && pt>200)"
 
