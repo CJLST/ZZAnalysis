@@ -185,7 +185,7 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       
       BDT = r->Get_MVA_value_two_eta_bins(pt, eta, glb_valid_mu_hits_, tk_valid_pixel_hits_, tk_valid_hits_, glb_chi2_, PFPhotonIso, PFChargedHadIso, PFNeutralHadIso, rho);
-      cout << BDT << endl;
+//       cout << BDT << endl;
       
       
       bool isBDT = false;
