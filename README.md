@@ -7,7 +7,7 @@ To install a complete CMSSW 10X area (including this package)
 ------------------------------
 Used for analysis of 2016, 2017, and 2018 data
 
-Please use CMSSW_10_2_18. 
+Please use **CMSSW_10_2_18**. 
 
 Download and execute the setup script:
 ```
