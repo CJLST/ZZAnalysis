@@ -7,7 +7,7 @@
 # chmod u+x ${TMPDIR}/checkout_10X.csh
 # ${TMPDIR}/checkout_10X.csh
 
-############## For CMSSW_10_2_15
+############## For CMSSW_10_2_18
 git cms-init
 
 #Preliminary electron scale and smearing corrections according to https://twiki.cern.ch/twiki/bin/view/CMS/EgammaPostRecoRecipes#2018_Preliminary_Energy_Correcti
