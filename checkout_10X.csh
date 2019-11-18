@@ -25,12 +25,12 @@ git cms-merge-topic mkovac:Electron_XGBoost_MVA_2016_and_2018_CMSSW_10_2_15
 git cms-merge-topic cms-met:METFixEE2017_949_v2_backport_to_102X
 
 #Simplified template cross section
-git cms-addpkg GeneratorInterface/RivetInterface
-git cms-addpkg SimDataFormats/HTXS
-git remote add amarini https://github.com/amarini/cmssw.git
-git fetch amarini 
-git checkout amarini/htxs_stage1p1_cmssw949_v2 GeneratorInterface/RivetInterface
-git checkout amarini/htxs_stage1p1_cmssw949_v2 SimDataFormats/HTXS
+#git cms-addpkg GeneratorInterface/RivetInterface
+#git cms-addpkg SimDataFormats/HTXS
+#git remote add amarini https://github.com/amarini/cmssw.git
+#git fetch amarini 
+#git checkout amarini/htxs_stage1p1_cmssw949_v2 GeneratorInterface/RivetInterface
+#git checkout amarini/htxs_stage1p1_cmssw949_v2 SimDataFormats/HTXS
 
 #### Please do not add any custom (non-CMSSW) package before this line ####
 #ZZAnalysis
