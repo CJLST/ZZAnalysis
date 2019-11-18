@@ -28,10 +28,10 @@ git cms-merge-topic cms-met:METFixEE2017_949_v2_backport_to_102X
 ## need at least the first two lines
 git cms-addpkg GeneratorInterface/RivetInterface
 git cms-addpkg SimDataFormats/HTXS
-#git remote add amarini https://github.com/amarini/cmssw.git
-#git fetch amarini 
-#git checkout amarini/htxs_stage1p1_cmssw949_v2 GeneratorInterface/RivetInterface
-#git checkout amarini/htxs_stage1p1_cmssw949_v2 SimDataFormats/HTXS
+git remote add bonanomi https://github.com/bonanomi/cmssw.git
+git fetch bonanomi 
+git checkout bonanomi/hstxs1p2_CMSSW_10_2_X GeneratorInterface/RivetInterface
+git checkout bonanomi/hstxs1p2_CMSSW_10_2_X SimDataFormats/HTXS
 
 #### Please do not add any custom (non-CMSSW) package before this line ####
 #ZZAnalysis
