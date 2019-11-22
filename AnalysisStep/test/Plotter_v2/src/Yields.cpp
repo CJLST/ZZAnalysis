@@ -63,18 +63,18 @@ Yields::~Yields()
 //===================================================================
 void Yields::Split_2e2mu()
 {
-	_merge_2e2mu = false;
-	yields_histos->Split_2e2mu();
+   _merge_2e2mu = false;
+   yields_histos->Split_2e2mu();
 }
 //===================================================================
 
 
 //=====================================================
-void Yields::MakeHistograms( TString input_file_name )
+void Yields::MakeHistograms( TString input_file_name , int year)
 {
-
+   
    input_file = new TFile(input_file_name);
-
+   
    hCounters = (TH1F*)input_file->Get("ZZTree/Counters");
    n_gen_events = (Long64_t)hCounters->GetBinContent(1);
    gen_sum_weights = (Long64_t)hCounters->GetBinContent(40);
@@ -82,10 +82,14 @@ void Yields::MakeHistograms( TString input_file_name )
    input_tree = (TTree*)input_file->Get("ZZTree/candTree");
    Init( input_tree, input_file_name );
    
+   if(year == 2018) _lumi = 59.7;
+   if(year == 2017) _lumi = 41.5;
+   if(year == 2016) _lumi = 35.9;
+   
    if (fChain == 0) return;
-
+   
    Long64_t nentries = fChain->GetEntriesFast();
-
+   
    Long64_t nbytes = 0, nb = 0;
    
    for (Long64_t jentry=0; jentry<nentries;jentry++)
@@ -94,26 +98,27 @@ void Yields::MakeHistograms( TString input_file_name )
       if (ientry < 0) break;
       nb = fChain->GetEntry(jentry);
       nbytes += nb;
-   
+      
+      // Check number of leptons in event
       if ( LepEta->size() != 4 )
       {
          cout << "[ERROR] in event " << RunNumber << ":" << LumiNumber << ":" << EventNumber << ", stored " << LepEta->size() << " leptons instead of 4" << endl;
          continue;
       }
-
+      
       if ( !(ZZsel >= 90) ) continue;
-
+      if ( LepSIP->at(0) > 8. || LepSIP->at(1) > 8. || LepSIP->at(2) > 8. || LepSIP->at(3) > 8.) continue;//SIP Sanity check
       // Find current process
       gen_assoc_lep_id_.push_back(GenAssocLep1Id);
-   	gen_assoc_lep_id_.push_back(GenAssocLep2Id);
+      gen_assoc_lep_id_.push_back(GenAssocLep2Id);
       _n_gen_assoc_lep = CountAssociatedLeptons();
-		_current_process = find_current_process( input_file_name, genExtInfo , _n_gen_assoc_lep);
+      _current_process = find_current_process( input_file_name, genExtInfo , _n_gen_assoc_lep);
       gen_assoc_lep_id_.clear();
-		
+      
       // Final states
       _current_final_state = FindFinalState();
-   
-      // Categories
+      
+      // Find current category
       for ( int j = 0; j < nCleanedJetsPt30; j++)
       {
          jetPt[j] = JetPt->at(j);
@@ -123,33 +128,34 @@ void Yields::MakeHistograms( TString input_file_name )
          jetQGL[j] = JetQGLikelihood->at(j);
          jetPgOverPq[j] = 1./JetQGLikelihood->at(j) - 1.;
       }
-
-		_current_category = categoryMor18(nExtraLep,
-													 nExtraZ,
-													 nCleanedJetsPt30,
-													 nCleanedJetsPt30BTagged_bTagSF,
-													 jetQGL,
-													 p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
-													 p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
-													 p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
-													 p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
-													 pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
-													 p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
-													 p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
-													 p_HadWH_mavjj_JECNominal,
-													 p_HadWH_mavjj_true_JECNominal,
-													 p_HadZH_mavjj_JECNominal,
-													 p_HadZH_mavjj_true_JECNominal,
-													 jetPhi,
-													 ZZMass,
-													 PFMET,
-													 false,// Use VHMET category
-													 false);// Use QG tagging
+      
+      _current_category = categoryMor18(nExtraLep,
+                                        nExtraZ,
+                                        nCleanedJetsPt30,
+                                        nCleanedJetsPt30BTagged_bTagSF,
+                                        jetQGL,
+                                        p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+                                        p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
+                                        p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
+                                        p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+                                        pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+                                        p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
+                                        p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
+                                        p_HadWH_mavjj_JECNominal,
+                                        p_HadWH_mavjj_true_JECNominal,
+                                        p_HadZH_mavjj_JECNominal,
+                                        p_HadZH_mavjj_true_JECNominal,
+                                        jetPhi,
+                                        ZZMass,
+                                        PFMET,
+                                        false,// Use VHMET category
+                                        false);// Use QG tagging
+      
       // K factors
-		_k_factor = calculate_K_factor(input_file_name);
+      _k_factor = calculate_K_factor(input_file_name);
 
       // Final event weight
-      _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight) / gen_sum_weights;
+      _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight * L1prefiringWeight) / gen_sum_weights;
       if ( input_file_name.Contains("ggH") ) _event_weight *= ggH_NNLOPS_weight; // reweight POWHEG ggH to NNLOPS
    
       // Fill M4l histograms
@@ -192,27 +198,27 @@ void Yields::Calculate_SS_ZX_Yields( TString input_file_data_name, TString  inpu
       
       _current_final_state = FindFinalStateZX();
       
-		_current_category = categoryMor18(nExtraLep,
-													 nExtraZ,
-													 nCleanedJetsPt30,
-													 nCleanedJetsPt30BTagged_bTagSF,
-													 jetQGL,
-													 p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
-													 p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
-													 p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
-													 p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
-													 pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
-													 p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
-													 p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
-													 p_HadWH_mavjj_JECNominal,
-													 p_HadWH_mavjj_true_JECNominal,
-													 p_HadZH_mavjj_JECNominal,
-													 p_HadZH_mavjj_true_JECNominal,
-													 jetPhi,
-													 ZZMass,
-													 PFMET,
-													 false,// Use VHMET category
-													 false);// Use QG tagging
+      _current_category = categoryMor18(nExtraLep,
+                                        nExtraZ,
+                                        nCleanedJetsPt30,
+                                        nCleanedJetsPt30BTagged_bTagSF,
+                                        jetQGL,
+                                        p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+                                        p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
+                                        p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
+                                        p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+                                        pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+                                        p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
+                                        p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
+                                        p_HadWH_mavjj_JECNominal,
+                                        p_HadWH_mavjj_true_JECNominal,
+                                        p_HadZH_mavjj_JECNominal,
+                                        p_HadZH_mavjj_true_JECNominal,
+                                        jetPhi,
+                                        ZZMass,
+                                        PFMET,
+                                        false,// Use VHMET category
+                                        false);// Use QG tagging
       
       
       // Calculate yield
@@ -276,37 +282,37 @@ void Yields::ProduceDataROOTFiles( TString input_file_name , TString output_fold
    input_file = new TFile(input_file_name);
 
    hCounters = (TH1F*)input_file->Get("ZZTree/Counters");
-	
+   
    input_tree = (TTree*)input_file->Get("ZZTree/candTree");
    Init( input_tree, input_file_name );
-	
+   
    if (fChain == 0) return;
 
    Long64_t nentries = fChain->GetEntriesFast();
 
    Long64_t nbytes = 0, nb = 0;
-	
-	_s_final_state.push_back("4e");
+   
+   _s_final_state.push_back("4e");
    _s_final_state.push_back("4mu");
    _s_final_state.push_back("2e2mu");
-	
-	_s_category.push_back("UntaggedMor18");
+   
+   _s_category.push_back("UntaggedMor18");
    _s_category.push_back("VBF1JetTaggedMor18");
    _s_category.push_back("VBF2JetTaggedMor18");
    _s_category.push_back("VHLeptTaggedMor18");
    _s_category.push_back("VHHadrTaggedMor18");
    _s_category.push_back("ttHLeptTaggedMor18");
    _s_category.push_back("ttHHadrTaggedMor18");
-	
-	TString file_name;
-	
+   
+   TString file_name;
+   
    for (Long64_t jentry=0; jentry<nentries;jentry++)
    {
       Long64_t ientry = LoadTree(jentry);
       if (ientry < 0) break;
       nb = fChain->GetEntry(jentry);
       nbytes += nb;
-		
+      
       if ( LepEta->size() != 4 )
       {
          cout << "[ERROR] in event " << RunNumber << ":" << LumiNumber << ":" << EventNumber << ", stored " << LepEta->size() << " leptons instead of 4" << endl;
@@ -314,10 +320,10 @@ void Yields::ProduceDataROOTFiles( TString input_file_name , TString output_fold
       }
 
       if ( !(ZZsel >= 90) ) continue;
-		
+      
       // Final states
       _current_final_state = FindFinalState();
-		
+      
       // Categories
       for ( int j = 0; j < nCleanedJetsPt30; j++)
       {
@@ -329,108 +335,108 @@ void Yields::ProduceDataROOTFiles( TString input_file_name , TString output_fold
          jetPgOverPq[j] = 1./JetQGLikelihood->at(j) - 1.;
       }
 
-		_current_category = categoryMor18(nExtraLep,
-													 nExtraZ,
-													 nCleanedJetsPt30,
-													 nCleanedJetsPt30BTagged_bTagSF,
-													 jetQGL,
-													 p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
-													 p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
-													 p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
-													 p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
-													 pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
-													 p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
-													 p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
-													 p_HadWH_mavjj_JECNominal,
-													 p_HadWH_mavjj_true_JECNominal,
-													 p_HadZH_mavjj_JECNominal,
-													 p_HadZH_mavjj_true_JECNominal,
-													 jetPhi,
-													 ZZMass,
-													 PFMET,
-													 false,// Use VHMET category
-													 false);// Use QG tagging
-		
-	   // Calculate kinematic discriminants
+      _current_category = categoryMor18(nExtraLep,
+                                        nExtraZ,
+                                        nCleanedJetsPt30,
+                                        nCleanedJetsPt30BTagged_bTagSF,
+                                        jetQGL,
+                                        p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+                                        p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
+                                        p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
+                                        p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+                                        pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+                                        p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
+                                        p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
+                                        p_HadWH_mavjj_JECNominal,
+                                        p_HadWH_mavjj_true_JECNominal,
+                                        p_HadZH_mavjj_JECNominal,
+                                        p_HadZH_mavjj_true_JECNominal,
+                                        jetPhi,
+                                        ZZMass,
+                                        PFMET,
+                                        false,// Use VHMET category
+                                        false);// Use QG tagging
+      
+      // Calculate kinematic discriminants
       if(_current_category == Settings::VBF_2j_tagged)
       {
-		    _kd[_current_final_state][_current_category].push_back(D_bkg_VBFdec(  p_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal,
-										p_HadZH_S_SIG_ghz1_1_MCFM_JECNominal,
-										p_HadWH_S_SIG_ghw1_1_MCFM_JECNominal,
-										p_JJVBF_BKG_MCFM_JECNominal,
-										p_HadZH_BKG_MCFM_JECNominal,
-										p_HadWH_BKG_MCFM_JECNominal,
-										p_JJQCD_BKG_MCFM_JECNominal,
-										p_HadZH_mavjj_JECNominal,
-										p_HadZH_mavjj_true_JECNominal,
-										p_HadWH_mavjj_JECNominal,
-										p_HadWH_mavjj_true_JECNominal,
-										pConst_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal,
-										pConst_HadZH_S_SIG_ghz1_1_MCFM_JECNominal,
-										pConst_HadWH_S_SIG_ghw1_1_MCFM_JECNominal,
-										pConst_JJVBF_BKG_MCFM_JECNominal,
-										pConst_HadZH_BKG_MCFM_JECNominal,
-										pConst_HadWH_BKG_MCFM_JECNominal,
-										pConst_JJQCD_BKG_MCFM_JECNominal,
-										Z1Flav*Z2Flav,
-										ZZMass));
-		}
-		
-		else if(_current_category == Settings::VH_hadron_tagged)
-		{
-			 _kd[_current_final_state][_current_category].push_back(D_bkg_VHdec(   p_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal,
-										p_HadZH_S_SIG_ghz1_1_MCFM_JECNominal,
-										p_HadWH_S_SIG_ghw1_1_MCFM_JECNominal,
-										p_JJVBF_BKG_MCFM_JECNominal,
-										p_HadZH_BKG_MCFM_JECNominal,
-										p_HadWH_BKG_MCFM_JECNominal,
-										p_JJQCD_BKG_MCFM_JECNominal,
-										p_HadZH_mavjj_JECNominal,
-										p_HadZH_mavjj_true_JECNominal,
-										p_HadWH_mavjj_JECNominal,
-										p_HadWH_mavjj_true_JECNominal,
-										pConst_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal,
-										pConst_HadZH_S_SIG_ghz1_1_MCFM_JECNominal,
-										pConst_HadWH_S_SIG_ghw1_1_MCFM_JECNominal,
-										pConst_JJVBF_BKG_MCFM_JECNominal,
-										pConst_HadZH_BKG_MCFM_JECNominal,
-										pConst_HadWH_BKG_MCFM_JECNominal,
-										pConst_JJQCD_BKG_MCFM_JECNominal,
-										Z1Flav*Z2Flav,
-										ZZMass));
-		}
+          _kd[_current_final_state][_current_category].push_back(D_bkg_VBFdec(  p_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal,
+                              p_HadZH_S_SIG_ghz1_1_MCFM_JECNominal,
+                              p_HadWH_S_SIG_ghw1_1_MCFM_JECNominal,
+                              p_JJVBF_BKG_MCFM_JECNominal,
+                              p_HadZH_BKG_MCFM_JECNominal,
+                              p_HadWH_BKG_MCFM_JECNominal,
+                              p_JJQCD_BKG_MCFM_JECNominal,
+                              p_HadZH_mavjj_JECNominal,
+                              p_HadZH_mavjj_true_JECNominal,
+                              p_HadWH_mavjj_JECNominal,
+                              p_HadWH_mavjj_true_JECNominal,
+                              pConst_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal,
+                              pConst_HadZH_S_SIG_ghz1_1_MCFM_JECNominal,
+                              pConst_HadWH_S_SIG_ghw1_1_MCFM_JECNominal,
+                              pConst_JJVBF_BKG_MCFM_JECNominal,
+                              pConst_HadZH_BKG_MCFM_JECNominal,
+                              pConst_HadWH_BKG_MCFM_JECNominal,
+                              pConst_JJQCD_BKG_MCFM_JECNominal,
+                              Z1Flav*Z2Flav,
+                              ZZMass));
+      }
+      
+      else if(_current_category == Settings::VH_hadron_tagged)
+      {
+          _kd[_current_final_state][_current_category].push_back(D_bkg_VHdec(   p_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal,
+                              p_HadZH_S_SIG_ghz1_1_MCFM_JECNominal,
+                              p_HadWH_S_SIG_ghw1_1_MCFM_JECNominal,
+                              p_JJVBF_BKG_MCFM_JECNominal,
+                              p_HadZH_BKG_MCFM_JECNominal,
+                              p_HadWH_BKG_MCFM_JECNominal,
+                              p_JJQCD_BKG_MCFM_JECNominal,
+                              p_HadZH_mavjj_JECNominal,
+                              p_HadZH_mavjj_true_JECNominal,
+                              p_HadWH_mavjj_JECNominal,
+                              p_HadWH_mavjj_true_JECNominal,
+                              pConst_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal,
+                              pConst_HadZH_S_SIG_ghz1_1_MCFM_JECNominal,
+                              pConst_HadWH_S_SIG_ghw1_1_MCFM_JECNominal,
+                              pConst_JJVBF_BKG_MCFM_JECNominal,
+                              pConst_HadZH_BKG_MCFM_JECNominal,
+                              pConst_HadWH_BKG_MCFM_JECNominal,
+                              pConst_JJQCD_BKG_MCFM_JECNominal,
+                              Z1Flav*Z2Flav,
+                              ZZMass));
+      }
       else _kd[_current_final_state][_current_category].push_back(p_GG_SIG_ghg2_1_ghz1_1_JHUGen / ( p_GG_SIG_ghg2_1_ghz1_1_JHUGen + p_QQB_BKG_MCFM*getDbkgkinConstant(Z1Flav*Z2Flav,ZZMass) ));
-		
+      
       _mass[_current_final_state][_current_category].push_back(ZZMass);
-		
+      
    } // end for loop
-	
-	system("mkdir -p " + output_folder_name);
-	
-	for ( int i_fs = 0; i_fs < num_of_final_states - 2; i_fs++ )
+   
+   system("mkdir -p " + output_folder_name);
+   
+   for ( int i_fs = 0; i_fs < num_of_final_states - 2; i_fs++ )
    {
       for ( int i_cat = 0; i_cat < num_of_categories - 2; i_cat++ )
       {
-      	file_name = output_folder_name + "/data_obs_" + _s_category.at(i_cat) + "_" + _s_final_state.at(i_fs) + ".root";
+         file_name = output_folder_name + "/data_obs_" + _s_category.at(i_cat) + "_" + _s_final_state.at(i_fs) + ".root";
          data_root_file = new TFile(file_name, "recreate");
          data_obs = new TTree("data_obs","data_obs");
          data_obs->Branch("mass4l",&mass4l,"mass4l/D");
          if( i_cat == Settings::VBF_2j_tagged ) data_obs->Branch("kdCoarse",&kd,"kdCoarse/D");
          else if( i_cat == Settings::VH_hadron_tagged ) data_obs->Branch("kdCoarse",&kd,"kdCoarse/D");
          else data_obs->Branch("kd",&kd,"kd/D");
-			
+         
          for (unsigned int i_event = 0; i_event < _mass[i_fs][i_cat].size(); i_event++ )
          {
-         	mass4l = _mass[i_fs][i_cat].at(i_event);
-         	kd = _kd[i_fs][i_cat].at(i_event);
-         	data_obs->Fill();
-			}
-			
-			data_obs->Write();
-			data_root_file->Close();
+            mass4l = _mass[i_fs][i_cat].at(i_event);
+            kd = _kd[i_fs][i_cat].at(i_event);
+            data_obs->Fill();
+         }
+         
+         data_obs->Write();
+         data_root_file->Close();
       }
    }
-	
+   
    cout << "[INFO] Histograms for " << input_file_name << " filled." << endl;
 }
 //=====================================================
@@ -566,44 +572,44 @@ int Yields::find_current_process( TString input_file_name , int genExtInfo, int 
    if ( input_file_name.Contains("ZH125") && genExtInfo > 10)           current_process = Settings::yH125ZHlep;
    if ( input_file_name.Contains("ZH126") && genExtInfo > 10)           current_process = Settings::yH126ZHlep;
    if ( input_file_name.Contains("ZH130") && genExtInfo > 10)           current_process = Settings::yH130ZHlep;
-	
-	if ( input_file_name.Contains("WplusH120") && genExtInfo <= 10)      current_process = Settings::yH120WHhad;
-	if ( input_file_name.Contains("WplusH124") && genExtInfo <= 10)      current_process = Settings::yH124WHhad;
-	if ( input_file_name.Contains("WplusH125") && genExtInfo <= 10)      current_process = Settings::yH125WHhad;
-	if ( input_file_name.Contains("WplusH126") && genExtInfo <= 10)      current_process = Settings::yH126WHhad;
-	if ( input_file_name.Contains("WplusH130") && genExtInfo <= 10)      current_process = Settings::yH130WHhad;
-	
-	if ( input_file_name.Contains("WminusH120") && genExtInfo <= 10)     current_process = Settings::yH120WHhad;
-	if ( input_file_name.Contains("WminusH124") && genExtInfo <= 10)     current_process = Settings::yH124WHhad;
-	if ( input_file_name.Contains("WminusH125") && genExtInfo <= 10)     current_process = Settings::yH125WHhad;
-	if ( input_file_name.Contains("WminusH126") && genExtInfo <= 10)     current_process = Settings::yH126WHhad;
-	if ( input_file_name.Contains("WminusH130") && genExtInfo <= 10)     current_process = Settings::yH130WHhad;
-	
-	if ( input_file_name.Contains("ZH120") && genExtInfo <= 10)          current_process = Settings::yH120ZHhad;
-	if ( input_file_name.Contains("ZH124") && genExtInfo <= 10)          current_process = Settings::yH124ZHhad;
-	if ( input_file_name.Contains("ZH125") && genExtInfo <= 10)          current_process = Settings::yH125ZHhad;
-	if ( input_file_name.Contains("ZH126") && genExtInfo <= 10)          current_process = Settings::yH126ZHhad;
-	if ( input_file_name.Contains("ZH130") && genExtInfo <= 10)          current_process = Settings::yH130ZHhad;
+   
+   if ( input_file_name.Contains("WplusH120") && genExtInfo <= 10)      current_process = Settings::yH120WHhad;
+   if ( input_file_name.Contains("WplusH124") && genExtInfo <= 10)      current_process = Settings::yH124WHhad;
+   if ( input_file_name.Contains("WplusH125") && genExtInfo <= 10)      current_process = Settings::yH125WHhad;
+   if ( input_file_name.Contains("WplusH126") && genExtInfo <= 10)      current_process = Settings::yH126WHhad;
+   if ( input_file_name.Contains("WplusH130") && genExtInfo <= 10)      current_process = Settings::yH130WHhad;
+   
+   if ( input_file_name.Contains("WminusH120") && genExtInfo <= 10)     current_process = Settings::yH120WHhad;
+   if ( input_file_name.Contains("WminusH124") && genExtInfo <= 10)     current_process = Settings::yH124WHhad;
+   if ( input_file_name.Contains("WminusH125") && genExtInfo <= 10)     current_process = Settings::yH125WHhad;
+   if ( input_file_name.Contains("WminusH126") && genExtInfo <= 10)     current_process = Settings::yH126WHhad;
+   if ( input_file_name.Contains("WminusH130") && genExtInfo <= 10)     current_process = Settings::yH130WHhad;
+   
+   if ( input_file_name.Contains("ZH120") && genExtInfo <= 10)          current_process = Settings::yH120ZHhad;
+   if ( input_file_name.Contains("ZH124") && genExtInfo <= 10)          current_process = Settings::yH124ZHhad;
+   if ( input_file_name.Contains("ZH125") && genExtInfo <= 10)          current_process = Settings::yH125ZHhad;
+   if ( input_file_name.Contains("ZH126") && genExtInfo <= 10)          current_process = Settings::yH126ZHhad;
+   if ( input_file_name.Contains("ZH130") && genExtInfo <= 10)          current_process = Settings::yH130ZHhad;
    
    if ( input_file_name.Contains("ttH120") && n_gen_assoc_lep > 0)      current_process = Settings::yH120ttHlep;
    if ( input_file_name.Contains("ttH124") && n_gen_assoc_lep > 0)      current_process = Settings::yH124ttHlep;
    if ( input_file_name.Contains("ttH125") && n_gen_assoc_lep > 0)      current_process = Settings::yH125ttHlep;
    if ( input_file_name.Contains("ttH126") && n_gen_assoc_lep > 0)      current_process = Settings::yH126ttHlep;
    if ( input_file_name.Contains("ttH130") && n_gen_assoc_lep > 0)      current_process = Settings::yH130ttHlep;
-	
-	if ( input_file_name.Contains("ttH120") && n_gen_assoc_lep == 0)     current_process = Settings::yH120ttHhad;
+   
+   if ( input_file_name.Contains("ttH120") && n_gen_assoc_lep == 0)     current_process = Settings::yH120ttHhad;
    if ( input_file_name.Contains("ttH124") && n_gen_assoc_lep == 0)     current_process = Settings::yH124ttHhad;
    if ( input_file_name.Contains("ttH125") && n_gen_assoc_lep == 0)     current_process = Settings::yH125ttHhad;
    if ( input_file_name.Contains("ttH126") && n_gen_assoc_lep == 0)     current_process = Settings::yH126ttHhad;
    if ( input_file_name.Contains("ttH130") && n_gen_assoc_lep == 0)     current_process = Settings::yH130ttHhad;
-	
-	if ( input_file_name.Contains("bbH120") )     current_process = Settings::yH120bbH;
+   
+   if ( input_file_name.Contains("bbH120") )     current_process = Settings::yH120bbH;
    if ( input_file_name.Contains("bbH124") )     current_process = Settings::yH124bbH;
    if ( input_file_name.Contains("bbH125") )     current_process = Settings::yH125bbH;
    if ( input_file_name.Contains("bbH126") )     current_process = Settings::yH126bbH;
    if ( input_file_name.Contains("bbH130") )     current_process = Settings::yH130bbH;
-	
-	if ( input_file_name.Contains("tqH120") )     current_process = Settings::yH120tqH;
+   
+   if ( input_file_name.Contains("tqH120") )     current_process = Settings::yH120tqH;
    if ( input_file_name.Contains("tqH124") )     current_process = Settings::yH124tqH;
    if ( input_file_name.Contains("tqH125") )     current_process = Settings::yH125tqH;
    if ( input_file_name.Contains("tqH126") )     current_process = Settings::yH126tqH;
@@ -717,15 +723,15 @@ int Yields::FindFinalStateZX()
 //=============================
 int Yields::CountAssociatedLeptons()
 {
-	int n_gen_assoc_leptons = 0;
-	for ( int i_gen_assoc_lep = 0; i_gen_assoc_lep < 2; i_gen_assoc_lep++ )
-		{
-			if ( abs(gen_assoc_lep_id_.at(i_gen_assoc_lep)) == 11 || abs(gen_assoc_lep_id_.at(i_gen_assoc_lep)) == 13 )
-			{
-				n_gen_assoc_leptons++;
-			}
-		}
-	return n_gen_assoc_leptons;
+   int n_gen_assoc_leptons = 0;
+   for ( int i_gen_assoc_lep = 0; i_gen_assoc_lep < 2; i_gen_assoc_lep++ )
+      {
+         if ( abs(gen_assoc_lep_id_.at(i_gen_assoc_lep)) == 11 || abs(gen_assoc_lep_id_.at(i_gen_assoc_lep)) == 13 )
+         {
+            n_gen_assoc_leptons++;
+         }
+      }
+   return n_gen_assoc_leptons;
 }
 //=============================
 
