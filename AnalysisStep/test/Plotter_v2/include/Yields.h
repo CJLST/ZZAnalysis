@@ -47,7 +47,7 @@ public:
    Yields( double );
    ~Yields();
    
-   void MakeHistograms( TString );
+   void MakeHistograms( TString, int );
    void Calculate_SS_ZX_Yields( TString, TString );
    float calculate_K_factor( TString );
    int FindFinalState();
@@ -80,7 +80,7 @@ private:
    TH1F* hCounters;
    
    Long64_t n_gen_events;
-	
+   
    bool _merge_2e2mu;
    
    float jetPt[99];
@@ -102,14 +102,14 @@ private:
    
    vector< vector <float> > _expected_yield_SR, _number_of_events_CR;
    vector<TString> _s_category, _s_final_state;
-	
+   
    vector<int>   gen_assoc_lep_id_;
    vector<float> _fs_ROS_SS;
-	
-	TFile *data_root_file;
-	TTree *data_obs;
-	Double_t mass4l;
-	Double_t kd;
+   
+   TFile *data_root_file;
+   TTree *data_obs;
+   Double_t mass4l;
+   Double_t kd;
    vector<float> _mass[num_of_final_states][num_of_categories];
    vector<float> _kd[num_of_final_states][num_of_categories];
    
