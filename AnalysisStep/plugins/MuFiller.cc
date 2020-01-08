@@ -189,21 +189,21 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       
       
       bool isBDT = false;
-      
+      // New WPs at 96-99.7% of efficiency in low-high pT respectively 
       if ( setup == 2016 )
       {  
-         isBDT = ((pt < 10 && abs(eta) < 1.2 && BDT > -0.4623236134648287) || (pt < 10 && abs(eta) >= 1.2 && BDT > 0.5210796594619753)
-              || (pt >= 10 && abs(eta) < 1.2 && BDT > -2.0780179500579834) || (pt >= 10 && abs(eta) >= 1.2 && BDT > -1.6563756227493285));
+         isBDT = ((pt < 10 && abs(eta) < 1.2 && BDT > -0.798) || (pt < 10 && abs(eta) >= 1.2 && BDT > 0.226)
+              || (pt >= 10 && abs(eta) < 1.2 && BDT > -3.743) || (pt >= 10 && abs(eta) >= 1.2 && BDT > -3.522));
       }
       else if ( setup == 2017 )
       {
-         isBDT = ((pt < 10 && abs(eta) < 1.2 && BDT > -0.24714545309543354) || (pt < 10 && abs(eta) >= 1.2 && BDT > 0.5500491559505479)
-              || (pt >= 10 && abs(eta) < 1.2 && BDT > -1.9556792140006989)  || (pt >= 10 && abs(eta) >= 1.2 && BDT > -1.7306864261627197));
+         isBDT = ((pt < 10 && abs(eta) < 1.2 && BDT > -0.578) || (pt < 10 && abs(eta) >= 1.2 && BDT > 0.252)
+              || (pt >= 10 && abs(eta) < 1.2 && BDT > -3.688)  || (pt >= 10 && abs(eta) >= 1.2 && BDT > -3.970));
       }
       else if ( setup == 2018 )
       {
-         isBDT = ((pt < 10 && abs(eta) < 1.2 && BDT > -0.2726156651973717)  || (pt < 10 && abs(eta) >= 1.2 && BDT > 0.47778107523918223)
-              || (pt >= 10 && abs(eta) < 1.2 && BDT > -1.93384020328521387) || (pt >= 10 && abs(eta) >= 1.2 && BDT > -1.438372507095334));
+         isBDT = ((pt < 10 && abs(eta) < 1.2 && BDT > -0.643)  || (pt < 10 && abs(eta) >= 1.2 && BDT > 0.197)
+              || (pt >= 10 && abs(eta) < 1.2 && BDT > -2.737) || (pt >= 10 && abs(eta) >= 1.2 && BDT > -3.804));
       }
       else
       {
