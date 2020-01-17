@@ -94,7 +94,7 @@ MCHistoryTools::MCHistoryTools(const edm::Event & event, std::string sampleName,
     // for WWZ
     if (boost::starts_with(sampleName,"WWZ")) processID=900105;
     // for tHW
-    if (boost::starts_with(sampleName,"THW")) processID=900106;
+    if (boost::starts_with(sampleName,"THW") || boost::starts_with(sampleName,"tHW")) processID=900106;
     //for ttWW
     if (boost::starts_with(sampleName,"TTWW")) processID=900106;
 
