@@ -75,7 +75,7 @@ if SELSETUP=="Legacy" and not BESTCANDCOMPARATOR=="byBestZ1bestZ2":
 
 # The isolation cuts for electrons and muons. FIXME: there is an hardcoded instance of these values in src/LeptonIsoHelper.cc !!
 ELEISOCUT = 99999. # [FIXME] Remove isolation cuts from the code completely
-MUISOCUT  = 99999. # [FIXME] Remove isolation cuts from the code completely
+MUISOCUT  = 0.35 # [FIXME] Remove isolation cuts from the code completely
 
 ### ----------------------------------------------------------------------
 ### Set the GT
@@ -306,8 +306,8 @@ if(IsMC):
 ### ----------------------------------------------------------------------
 
 SIP =  "userFloat('SIP') < 4"
-#GOODMUON = "userFloat('ID') && " + SIP + "|| (userFloat('isTrackerHighPtMuon') && pt>200)" #Muon selection no longer includes a cut on SIP since it is included in the Muon BDT
-GOODMUON = "(userFloat('ID') || (userFloat('isTrackerHighPtMuon') && pt>200)) && " + SIP
+GOODMUON = "userFloat('isPFMuon') || (userFloat('isTrackerHighPtMuon') && pt>200) &&" + SIP
+#GOODMUON = "(userFloat('ID') || (userFloat('isTrackerHighPtMuon') && pt>200)) && " + SIP
 GOODELECTRON = "userFloat('ID') && " + SIP
 #TIGHTMUON = "userFloat('isPFMuon') || (userFloat('isTrackerHighPtMuon') && pt>200)"
 
