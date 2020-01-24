@@ -128,7 +128,7 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
          dz  = fabs(l.muonBestTrack()->dz(vertex->position()));
       }
       
-/*
+
 //=================
 // Begin MVA reader
 //=================
@@ -213,7 +213,7 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 //=================
 // End MVA reader
 //================= 
-*/
+
       
       //--- Trigger matching
       bool HLTMatch = false;
@@ -247,8 +247,8 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       l.addUserFloat("SIP",SIP);
       l.addUserFloat("dxy",dxy);
       l.addUserFloat("dz",dz);
-//      l.addUserFloat("BDT",BDT);
-//      l.addUserFloat("isBDT",isBDT);
+      l.addUserFloat("BDT",BDT);
+      l.addUserFloat("isBDT",isBDT);
       l.addUserFloat("HLTMatch", HLTMatch);
       // l.addUserCand("MCMatch",genMatch); // FIXME
       l.addUserFloat("time",muontime);

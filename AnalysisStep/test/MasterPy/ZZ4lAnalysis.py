@@ -306,11 +306,10 @@ if(IsMC):
 ### ----------------------------------------------------------------------
 
 SIP =  "userFloat('SIP') < 4"
-GOODMUON = "userFloat('isPFMuon') || (userFloat('isTrackerHighPtMuon') && pt>200) &&" + SIP
-#GOODMUON = "(userFloat('ID') || (userFloat('isTrackerHighPtMuon') && pt>200)) && " + SIP
+#GOODMUON = "(userFloat('ID') || (userFloat('isTrackerHighPtMuon') && pt>200)) && " + SIP //used when MVA is applied
 GOODELECTRON = "userFloat('ID') && " + SIP
-#TIGHTMUON = "userFloat('isPFMuon') || (userFloat('isTrackerHighPtMuon') && pt>200)"
-
+GOODMUON     = "userFloat('ID') && " + SIP
+TIGHTMUON    = "userFloat('isPFMuon') || (userFloat('isTrackerHighPtMuon') && pt>200)"
 
 #------- MUONS -------
 
@@ -379,7 +378,7 @@ process.softMuons = cms.EDProducer("MuFiller",
     cut = cms.string("userFloat('dxy')<0.5 && userFloat('dz')<1."),
     TriggerResults = cms.InputTag('TriggerResults','','HLT'),
     flags = cms.PSet(
-        ID = cms.string(GOODMUON), #"userFloat('isBDT')"), # muonMVA ID
+        ID = cms.string(TIGHTMUON), #"userFloat('isBDT')"), # muonMVA ID
         isSIP = cms.string(SIP),
         isGood = cms.string(GOODMUON),
         isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<" + str(MUISOCUT)),
