@@ -39,7 +39,7 @@ git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
 (cd ZZAnalysis; git checkout Run2_CutBased)
 
 # Muon MVA
-git clone https://github.com/mkovac/MuonMVAReader.git MuonMVAReader
+git clone https://github.com/bonanomi/MuonMVAReader.git MuonMVAReader
 
 #MELA Analytics
 git clone https://github.com/usarica/MelaAnalytics.git

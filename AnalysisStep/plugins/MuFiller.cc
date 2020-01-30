@@ -184,12 +184,13 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       float eta = l.eta();
 
       
-      BDT = r->Get_MVA_value_two_eta_bins(pt, eta, glb_valid_mu_hits_, tk_valid_pixel_hits_, tk_valid_hits_, glb_chi2_, PFPhotonIso, PFChargedHadIso, PFNeutralHadIso, rho);
+      BDT = r->Get_MVA_value_two_eta_bins(pt, eta, glb_valid_mu_hits_, glb_chi2_, tk_valid_pixel_hits_, tk_valid_hits_, PFPhotonIso, PFChargedHadIso, PFNeutralHadIso, rho);
 //       cout << BDT << endl;
       
       
-      bool isBDT = false;
-      // New WPs at 96-99.7% of efficiency in low-high pT respectively 
+      bool isBDT = true;
+      // Save also BDT distributions, without any cut
+      /*
       if ( setup == 2016 )
       {  
          isBDT = ((pt < 10 && abs(eta) < 1.2 && BDT > -0.798) || (pt < 10 && abs(eta) >= 1.2 && BDT > 0.226)
@@ -209,7 +210,7 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       {
          std::cerr << "[ERROR] MuFiller: no MVA setup for: " << setup << " year!" << std::endl;
       }
-
+      */
 //=================
 // End MVA reader
 //================= 
