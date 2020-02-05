@@ -129,14 +129,14 @@ def listFiles(sample, path, rec = False, full_info = False):
         if os.path.isdir(sample):
            if not rec:
              # not recursive
-             return [ '/'.join([path,file]) for file in os.listdir(sample)]
+             return [ 'file:'+'/'.join([path,file]) for file in os.listdir(sample)]
            else:
              # recursive, directories are put in the list first,
              # followed by the list of all files in the directory tree
              allFiles = []
              for root,dirs,files in os.walk(sample):
                  result.extend( [ '/'.join([root,dir]) for dir in dirs] )
-                 allFiles.extend( [ '/'.join([root,file]) for file in files] )
+                 allFiles.extend( [ 'file:'+'/'.join([root,file]) for file in files] )
              result.extend(allFiles)
              return result
 

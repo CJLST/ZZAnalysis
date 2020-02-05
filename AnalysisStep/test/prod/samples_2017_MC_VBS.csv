@@ -13,3 +13,5 @@ ZZTo4lamcatnlo_2017,,1.256,      ,,/ZZTo4L_TuneCP5_13TeV-amcatnloFXFX-pythia8/Ru
 ### EWK signal
 VBFTo4lJJ_0PMH125Contin_madgraph_2017   ,,4.27E-04,,,/ZZJJTo4L_EWK_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM  ,dbs,,3,GENXSEC=4.27E-04;GENBR=1;PROCESS_CR=False;LEPTON_SETUP=2017,RecoProbabilities.py;LHEProbabilities_VBF_BSI_0PM_H125_PhantomMCFM.py,
 
+### ggZZ012jet new 
+ggZZnew_012jet_2017,,0.00356,      ,,/eos/user/c/coli/crab_output/nobornWW/crab_AllMid_ggZZ012j_MiniAODv2_v3/191221_161151/0000/,local,,1,GENXSEC=0.00356;GENBR=1;PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;LEPTON_SETUP=2017,RecoProbabilities.py, 
