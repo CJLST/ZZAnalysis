@@ -3,7 +3,7 @@
 
 // Constructor
 //============================================================
-Plotter::Plotter():Tree()
+Plotter::Plotter(int year):Tree()
 {
    unblinded_histos = new Histograms("Unblinded");
    blinded_histos = new Histograms("Blinded");
@@ -19,11 +19,42 @@ Plotter::Plotter():Tree()
    lepSFHelper = new LeptonSFHelper();
    
    // Z+X SS factors
-   _fs_ROS_SS.push_back(1.00868);//4e
-   _fs_ROS_SS.push_back(1.04015);//4mu
-   _fs_ROS_SS.push_back(1.00823);//2e2mu
-   _fs_ROS_SS.push_back(1.0049);//2mu2e
-   
+   /*****************************************
+ *        4e,    4mu,       2e2mu,    2mu2e
+ * 2016: 1.00245, 0.998863, 1.03338, 0.998852
+ *
+ * 2017: 1.01198, 1.03949, 1.013128, 1.00257
+ *
+ * 2018: 1.00568, 1.02926, 1.03226, 1.00432
+ * *******************************************/
+   _fs_ROS_SS.push_back(1.00245);//4e
+   _fs_ROS_SS.push_back(0.998863);//4mu
+   _fs_ROS_SS.push_back(1.03338);//2e2mu
+   _fs_ROS_SS.push_back(0.998852);//2mu2e
+
+// Place holder. At some point we might want to 
+// have a more general constructor that takes the
+// year as input.
+/*
+   if(year == 2016) {
+       _fs_ROS_SS.push_back(1.00245);//4e
+       _fs_ROS_SS.push_back(0.998863);//4mu
+       _fs_ROS_SS.push_back(1.03338);//2e2mu
+       _fs_ROS_SS.push_back(0.998852);//2mu2e
+   }
+   else if (year == 2017) {
+       _fs_ROS_SS.push_back(1.01198);//4e
+       _fs_ROS_SS.push_back(1.03949);//4mu
+       _fs_ROS_SS.push_back(1.013128);//2e2mu
+       _fs_ROS_SS.push_back(1.00257);//2mu2e
+   }
+   else {
+       _fs_ROS_SS.push_back(1.00568);//4e
+       _fs_ROS_SS.push_back(1.02926);//4mu
+       _fs_ROS_SS.push_back(1.03226);//2e2mu
+       _fs_ROS_SS.push_back(1.00432);//2mu2e
+   }
+*/   
    vector<float> temp;
    for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
    {
@@ -235,9 +266,9 @@ void Plotter::MakeHistograms( TString input_file_name , int year)
       
       if(_current_process > Settings::Data && _current_process < Settings::qqZZ)//fill purity yields for signals
       {
-         if (htxs_stage1_cat % 100 == 0) continue; //Skip very rare case when y(H) > 2.5 passes our selection
+         if (htxs_stage1p1_cat % 100 == 0) continue; //Skip very rare case when y(H) > 2.5 passes our selection
          _STXS_bin = FindSTXSBin();
-         //           cout << "htxs_stage1_cat = " << htxs_stage1_cat <<  " bin = " << _STXS_bin << endl;
+         //           cout << "htxs_stage1p1_cat = " << htxs_stage1p1_cat <<  " bin = " << _STXS_bin << endl;
          blinded_histos->FillSTXSPurity(ZZMass, _event_weight, _current_category_stxs, _STXS_bin);
          unblinded_histos->FillSTXSPurity(ZZMass, _event_weight, _current_category_stxs, _STXS_bin);
       }
@@ -999,49 +1030,49 @@ int Plotter::FindSTXSBin()
    int bin = -999;
    
    //ggH
-   if (htxs_stage1_cat == 102) bin = Settings::bin_ggH_0J_PTH_0_10;
-   if (htxs_stage1_cat == 103) bin = Settings::bin_ggH_0J_PTH_10_200;
-   if (htxs_stage1_cat == 111) bin = Settings::bin_ggH_1J_PTH_0_60;
-   if (htxs_stage1_cat == 112) bin = Settings::bin_ggH_1J_PTH_60_120;
-   if (htxs_stage1_cat == 113) bin = Settings::bin_ggH_1J_PTH_120_200;
-   if (htxs_stage1_cat == 121) bin = Settings::bin_ggH_2J_PTH_0_60;
-   if (htxs_stage1_cat == 122) bin = Settings::bin_ggH_2J_PTH_60_120;
-   if (htxs_stage1_cat == 123) bin = Settings::bin_ggH_2J_PTH_120_200;
-   if (htxs_stage1_cat == 131) bin = Settings::bin_ggH_VBF;
-   if (htxs_stage1_cat == 132) bin = Settings::bin_ggH_VBF;
-   if (htxs_stage1_cat == 141) bin = Settings::bin_ggH_VBF;
-   if (htxs_stage1_cat == 142) bin = Settings::bin_ggH_VBF;
-   if (htxs_stage1_cat == 150) bin = Settings::bin_ggH_PTH_200;
+   if (htxs_stage1p1_cat == 102) bin = Settings::bin_ggH_0J_PTH_0_10;
+   if (htxs_stage1p1_cat == 103) bin = Settings::bin_ggH_0J_PTH_10_200;
+   if (htxs_stage1p1_cat == 104) bin = Settings::bin_ggH_1J_PTH_0_60;
+   if (htxs_stage1p1_cat == 105) bin = Settings::bin_ggH_1J_PTH_60_120;
+   if (htxs_stage1p1_cat == 106) bin = Settings::bin_ggH_1J_PTH_120_200;
+   if (htxs_stage1p1_cat == 107) bin = Settings::bin_ggH_2J_PTH_0_60;
+   if (htxs_stage1p1_cat == 108) bin = Settings::bin_ggH_2J_PTH_60_120;
+   if (htxs_stage1p1_cat == 109) bin = Settings::bin_ggH_2J_PTH_120_200;
+   if (htxs_stage1p1_cat == 110) bin = Settings::bin_ggH_VBF;
+   if (htxs_stage1p1_cat == 111) bin = Settings::bin_ggH_VBF;
+   if (htxs_stage1p1_cat == 112) bin = Settings::bin_ggH_VBF;
+   if (htxs_stage1p1_cat == 113) bin = Settings::bin_ggH_VBF;
+   if (htxs_stage1p1_cat == 101) bin = Settings::bin_ggH_PTH_200;
    
    
    //VBF
-   if (htxs_stage1_cat == 201) bin = Settings::bin_VBF_Rest;
-   if (htxs_stage1_cat == 202) bin = Settings::bin_VBF_Rest;
-   if (htxs_stage1_cat == 211) bin = Settings::bin_VBF_Rest;
-   if (htxs_stage1_cat == 212) bin = Settings::bin_VH_had;
-   if (htxs_stage1_cat == 213) bin = Settings::bin_VBF_Rest;
-   if (htxs_stage1_cat == 251) bin = Settings::bin_VBF_2j_mjj_350_700_2j;
-   if (htxs_stage1_cat == 261) bin = Settings::bin_VBF_2j_mjj_GT350_3j;
-   if (htxs_stage1_cat == 252) bin = Settings::bin_VBF_2j_mjj_GT700_2j;
-   if (htxs_stage1_cat == 262) bin = Settings::bin_VBF_2j_mjj_GT350_3j;
-   if (htxs_stage1_cat == 271) bin = Settings::bin_VBF_GT200;
+   if (htxs_stage1p1_cat == 201) bin = Settings::bin_VBF_Rest;
+   if (htxs_stage1p1_cat == 202) bin = Settings::bin_VBF_Rest;
+   if (htxs_stage1p1_cat == 203) bin = Settings::bin_VBF_Rest;
+   if (htxs_stage1p1_cat == 204) bin = Settings::bin_VH_had;
+   if (htxs_stage1p1_cat == 205) bin = Settings::bin_VBF_Rest;
+   if (htxs_stage1p1_cat == 206) bin = Settings::bin_VBF_2j_mjj_350_700_2j;
+   if (htxs_stage1p1_cat == 207) bin = Settings::bin_VBF_2j_mjj_GT350_3j;
+   if (htxs_stage1p1_cat == 208) bin = Settings::bin_VBF_2j_mjj_GT700_2j;
+   if (htxs_stage1p1_cat == 209) bin = Settings::bin_VBF_2j_mjj_GT350_3j;
+   if (htxs_stage1p1_cat == 210) bin = Settings::bin_VBF_GT200;
    
    //VH
-   if (htxs_stage1_cat == 301) bin = Settings::bin_VH_Lep_0_150;
-   if (htxs_stage1_cat == 302) bin = Settings::bin_VH_Lep_0_150;
-   if (htxs_stage1_cat == 303) bin = Settings::bin_VH_Lep_GT150;
-   if (htxs_stage1_cat == 304) bin = Settings::bin_VH_Lep_GT150;
-   if (htxs_stage1_cat == 305) bin = Settings::bin_VH_Lep_GT150;
-   if (htxs_stage1_cat == 401) bin = Settings::bin_VH_Lep_0_150;
-   if (htxs_stage1_cat == 402) bin = Settings::bin_VH_Lep_0_150;
-   if (htxs_stage1_cat == 403) bin = Settings::bin_VH_Lep_GT150;
-   if (htxs_stage1_cat == 404) bin = Settings::bin_VH_Lep_GT150;
-   if (htxs_stage1_cat == 405) bin = Settings::bin_VH_Lep_GT150;
+   if (htxs_stage1p1_cat == 301) bin = Settings::bin_VH_Lep_0_150;
+   if (htxs_stage1p1_cat == 302) bin = Settings::bin_VH_Lep_0_150;
+   if (htxs_stage1p1_cat == 303) bin = Settings::bin_VH_Lep_GT150;
+   if (htxs_stage1p1_cat == 304) bin = Settings::bin_VH_Lep_GT150;
+   if (htxs_stage1p1_cat == 305) bin = Settings::bin_VH_Lep_GT150;
+   if (htxs_stage1p1_cat == 401) bin = Settings::bin_VH_Lep_0_150;
+   if (htxs_stage1p1_cat == 402) bin = Settings::bin_VH_Lep_0_150;
+   if (htxs_stage1p1_cat == 403) bin = Settings::bin_VH_Lep_GT150;
+   if (htxs_stage1p1_cat == 404) bin = Settings::bin_VH_Lep_GT150;
+   if (htxs_stage1p1_cat == 405) bin = Settings::bin_VH_Lep_GT150;
    
    //others
-   if (htxs_stage1_cat == 601) bin = Settings::bin_ttH;
-   if (htxs_stage1_cat == 701) bin = Settings::bin_bbH;
-   if (htxs_stage1_cat == 801) bin = Settings::bin_tH;
+   if (htxs_stage1p1_cat == 601) bin = Settings::bin_ttH;
+   if (htxs_stage1p1_cat == 701) bin = Settings::bin_bbH;
+   if (htxs_stage1p1_cat == 801) bin = Settings::bin_tH;
    
    
    

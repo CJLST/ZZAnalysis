@@ -455,7 +455,8 @@ public :
 	Float_t         htxsHPt;
 	Short_t         htxsNJets;
 	Short_t         htxs_stage0_cat;
-	Short_t			 htxs_stage1_cat;
+	Short_t			 htxs_stage1p1_cat;
+   // Short_t         htxs_stage1p2_cat; //STXS 1.2 already there, can be used
    Float_t         GenHMass;
    Float_t         GenHPt;
    Float_t         GenHRapidity;
@@ -950,7 +951,8 @@ public :
 	TBranch        *b_htxsHPt;  //!
 	TBranch        *b_htxsNJets;  //!
 	TBranch			*b_htxs_stage0_cat; //!
-	TBranch			*b_htxs_stage1_cat; //!
+	TBranch			*b_htxs_stage1p1_cat; //!
+   // TBranch        *b_htxs_stage1p1_cat; //! STXS 1.2 already there, can be used
    TBranch        *b_GenHMass;   //!
    TBranch        *b_GenHPt;   //!
    TBranch        *b_GenHRapidity;   //!
@@ -1556,7 +1558,8 @@ void Tree::Init(TTree *tree, TString input_file_name)
            fChain->SetBranchAddress("htxsHPt", &htxsHPt, &b_htxsHPt);
            fChain->SetBranchAddress("htxsNJets", &htxsNJets, &b_htxsNJets);
            fChain->SetBranchAddress("htxs_stage0_cat", &htxs_stage0_cat, &b_htxs_stage0_cat);
-           fChain->SetBranchAddress("htxs_stage1_cat", &htxs_stage1_cat, &b_htxs_stage1_cat);
+           fChain->SetBranchAddress("htxs_stage1p1_cat", &htxs_stage1p1_cat, &b_htxs_stage1p1_cat);
+           // fChain->SetBranchAddress("htxs_stage1p2_cat", &htxs_stage1p2_cat, &b_htxs_stage1p2_cat); // STXS 1.2 already there, can be used
        }
       fChain->SetBranchAddress("GenHMass", &GenHMass, &b_GenHMass);
       fChain->SetBranchAddress("GenHPt", &GenHPt, &b_GenHPt);

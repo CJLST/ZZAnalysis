@@ -32,11 +32,42 @@ Yields::Yields( double lumi ):Tree()
    _tclr->GetColor("#5f3f3f");
    
    // Z+X SS factors
-   _fs_ROS_SS.push_back(0.99995);//4e
-   _fs_ROS_SS.push_back(1.02639);//4mu
-   _fs_ROS_SS.push_back(1.0308);//2e2mu
-   _fs_ROS_SS.push_back(1.00326);//2mu2e
-   
+   /*****************************************
+ *        4e,    4mu,       2e2mu,    2mu2e
+ * 2016: 1.00245, 0.998863, 1.03338, 0.998852
+ *
+ * 2017: 1.01198, 1.03949, 1.013128, 1.00257
+ *
+ * 2018: 1.00568, 1.02926, 1.03226, 1.00432
+ * *******************************************/
+   _fs_ROS_SS.push_back(1.00245);//4e
+   _fs_ROS_SS.push_back(0.998863);//4mu
+   _fs_ROS_SS.push_back(1.03338);//2e2mu
+   _fs_ROS_SS.push_back(0.998852);//2mu2e
+
+// Place holder. At some point we might want to 
+// have a more general constructor that takes the
+// year as input.
+/*
+   if(year == 2016) {
+       _fs_ROS_SS.push_back(1.00245);//4e
+       _fs_ROS_SS.push_back(0.998863);//4mu
+       _fs_ROS_SS.push_back(1.03338);//2e2mu
+       _fs_ROS_SS.push_back(0.998852);//2mu2e
+   }
+   else if (year == 2017) {
+       _fs_ROS_SS.push_back(1.01198);//4e
+       _fs_ROS_SS.push_back(1.03949);//4mu
+       _fs_ROS_SS.push_back(1.013128);//2e2mu
+       _fs_ROS_SS.push_back(1.00257);//2mu2e
+   }
+   else {
+       _fs_ROS_SS.push_back(1.00568);//4e
+       _fs_ROS_SS.push_back(1.02926);//4mu
+       _fs_ROS_SS.push_back(1.03226);//2e2mu
+       _fs_ROS_SS.push_back(1.00432);//2mu2e
+   }
+*/   
    vector<float> temp;
    for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
    {
