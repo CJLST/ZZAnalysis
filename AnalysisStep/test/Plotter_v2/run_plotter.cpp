@@ -98,7 +98,7 @@ int main( int argc, char *argv[] )
    // int year = 2016;
    // Plotter *plotter = new Plotter(year);
 
-   Plotter *plotter = new Plotter();
+   Plotter *plotter = new Plotter( );
 
    plotter->SetBlinding(110, 138, 300, 1200);
 

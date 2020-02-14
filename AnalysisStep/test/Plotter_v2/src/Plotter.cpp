@@ -3,7 +3,7 @@
 
 // Constructor
 //============================================================
-Plotter::Plotter(int year):Tree()
+Plotter::Plotter():Tree()
 {
    unblinded_histos = new Histograms("Unblinded");
    blinded_histos = new Histograms("Blinded");
@@ -17,7 +17,7 @@ Plotter::Plotter(int year):Tree()
    _current_category = -999;
    
    lepSFHelper = new LeptonSFHelper();
-   
+
    // Z+X SS factors
    /*****************************************
  *        4e,    4mu,       2e2mu,    2mu2e
