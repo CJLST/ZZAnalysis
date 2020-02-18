@@ -86,8 +86,8 @@ int main( int argc, char *argv[] )
    TString ggZZ2e2tau  = path + "MC_2016/"+ "ggTo2e2tau_Contin_MCFM701" + file_name;
    TString ggZZ2mu2tau = path + "MC_2016/"+ "ggTo2mu2tau_Contin_MCFM701" + file_name;
    
-   double lumi = 39.5;
-   // int year = 2016;
+   double lumi = 35.9;
+   int year = 2016;
    Yields *yields = new Yields(lumi);
    
 //===============
