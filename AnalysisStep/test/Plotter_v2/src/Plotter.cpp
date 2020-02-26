@@ -9,13 +9,13 @@ Plotter::Plotter():Tree()
    blinded_histos = new Histograms("Blinded");
    histo_map["Unblinded"] = unblinded_histos;
    histo_map["Blinded"] = blinded_histos;
-   
+
    _merge_2e2mu = true;
    _current_process = -999;
    _k_factor = 1;
    _current_final_state = -999;
    _current_category = -999;
-   
+
    lepSFHelper = new LeptonSFHelper();
 
    // Z+X SS factors
@@ -32,7 +32,7 @@ Plotter::Plotter():Tree()
    _fs_ROS_SS.push_back(1.03338);//2e2mu
    _fs_ROS_SS.push_back(0.998852);//2mu2e
 
-// Place holder. At some point we might want to 
+// Place holder. At some point we might want to
 // have a more general constructor that takes the
 // year as input.
 /*
@@ -54,7 +54,7 @@ Plotter::Plotter():Tree()
        _fs_ROS_SS.push_back(1.03226);//2e2mu
        _fs_ROS_SS.push_back(1.00432);//2mu2e
    }
-*/   
+*/
    vector<float> temp;
    for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
    {
@@ -80,40 +80,40 @@ Plotter::~Plotter()
 //=====================================================
 void Plotter::MakeHistograms( TString input_file_name , int year)
 {
-   
+
    input_file = new TFile(input_file_name);
-   
+
    hCounters = (TH1F*)input_file->Get("ZZTree/Counters");
-   n_gen_events = (Long64_t)hCounters->GetBinContent(1);
-   gen_sum_weights = (Long64_t)hCounters->GetBinContent(40);
-   
+   n_gen_events = hCounters->GetBinContent(1);
+   gen_sum_weights = hCounters->GetBinContent(40);
+
    input_tree = (TTree*)input_file->Get("ZZTree/candTree");
    Init( input_tree, input_file_name );
-   
+
    if(year == 2018) _lumi = 59.7;
    if(year == 2017) _lumi = 41.5;
    if(year == 2016) _lumi = 35.9;
-   
+
    if (fChain == 0) return;
-   
+
    Long64_t nentries = fChain->GetEntriesFast();
-   
+
    Long64_t nbytes = 0, nb = 0;
-   
+
    for (Long64_t jentry=0; jentry<nentries;jentry++)
    {
       Long64_t ientry = LoadTree(jentry);
       if (ientry < 0) break;
       nb = fChain->GetEntry(jentry);
       nbytes += nb;
-      
+
       // Check number of leptons in event
       if ( LepEta->size() != 4 )
       {
          cout << "[ERROR] in event " << RunNumber << ":" << LumiNumber << ":" << EventNumber << ", stored " << LepEta->size() << " leptons instead of 4" << endl;
          continue;
       }
-      
+
       if ( !(ZZsel >= 90) ) continue;
       if ( LepSIP->at(0) > 8. || LepSIP->at(1) > 8. || LepSIP->at(2) > 8. || LepSIP->at(3) > 8.) continue;//SIP Sanity check
       // Find current process
@@ -122,10 +122,10 @@ void Plotter::MakeHistograms( TString input_file_name , int year)
       _n_gen_assoc_lep = CountAssociatedLeptons();
       _current_process = find_current_process( input_file_name, genExtInfo , _n_gen_assoc_lep);
       gen_assoc_lep_id_.clear();
-      
+
       // Final states
       _current_final_state = FindFinalState();
-      
+
       // Find current category
       for ( int j = 0; j < nCleanedJetsPt30; j++)
       {
@@ -136,7 +136,7 @@ void Plotter::MakeHistograms( TString input_file_name , int year)
          jetQGL[j] = JetQGLikelihood->at(j);
          jetPgOverPq[j] = 1./JetQGLikelihood->at(j) - 1.;
       }
-      
+
       _current_category = categoryMor18(nExtraLep,
                                         nExtraZ,
                                         nCleanedJetsPt30,
@@ -158,7 +158,7 @@ void Plotter::MakeHistograms( TString input_file_name , int year)
                                         PFMET,
                                         false,// Use VHMET category
                                         false);// Use QG tagging
-      
+
       _current_category_stxs = stage1_reco_1p1 ( nCleanedJetsPt30,
                                                 DiJetMass,
                                                 ZZPt,
@@ -166,11 +166,11 @@ void Plotter::MakeHistograms( TString input_file_name , int year)
                                                 ZZjjPt);
       // K factors
       _k_factor = calculate_K_factor(input_file_name);
-      
+
       // Final event weight
       _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight * L1prefiringWeight ) / gen_sum_weights;
       if ( input_file_name.Contains("ggH") ) _event_weight *= ggH_NNLOPS_weight; // reweight POWHEG ggH to NNLOPS
-      
+
       // Rescale to updated version of SFs
       //      _updatedSF = ( lepSFHelper->getSF(year,LepLepId->at(0),LepPt->at(0),LepEta->at(0), LepEta->at(0), false) *
       //                     lepSFHelper->getSF(year,LepLepId->at(1),LepPt->at(1),LepEta->at(1), LepEta->at(1), false) *
@@ -180,11 +180,11 @@ void Plotter::MakeHistograms( TString input_file_name , int year)
       //      //cout << "Weight before = " << _event_weight << " Updated SF = " << _updatedSF << endl;
       //      _event_weight *= _updatedSF/dataMCWeight;
       //      //cout << "Updated weight = " << _event_weight << endl;
-      
-      
+
+
       // Calculate kinematic discriminants
       KD = p_GG_SIG_ghg2_1_ghz1_1_JHUGen / ( p_GG_SIG_ghg2_1_ghz1_1_JHUGen + p_QQB_BKG_MCFM*getDbkgkinConstant(Z1Flav*Z2Flav,ZZMass) );
-      
+
       DVBFDEC = (nCleanedJetsPt30>=2) ? D_bkg_VBFdec( p_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal,
                                                       p_HadZH_S_SIG_ghz1_1_MCFM_JECNominal,
                                                       p_HadWH_S_SIG_ghw1_1_MCFM_JECNominal,
@@ -205,7 +205,7 @@ void Plotter::MakeHistograms( TString input_file_name , int year)
                                                       pConst_JJQCD_BKG_MCFM_JECNominal,
                                                       Z1Flav*Z2Flav,
                                                       ZZMass) : -2;
-      
+
       DVHDEC = (nCleanedJetsPt30>=2) ?   D_bkg_VHdec( p_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal,
                                                       p_HadZH_S_SIG_ghz1_1_MCFM_JECNominal,
                                                       p_HadWH_S_SIG_ghw1_1_MCFM_JECNominal,
@@ -226,13 +226,13 @@ void Plotter::MakeHistograms( TString input_file_name , int year)
                                                       pConst_JJQCD_BKG_MCFM_JECNominal,
                                                       Z1Flav*Z2Flav,
                                                       ZZMass) : -2;
-      
+
       D2jet = ( nCleanedJetsPt30 >= 2)  ? DVBF2j_ME(p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
       D1jet = ( nCleanedJetsPt30 == 1 ) ? DVBF1j_ME(p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2;
       DWH =   ( nCleanedJetsPt30 >= 2 ) ? DWHh_ME(p_HadWH_SIG_ghw1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_HadWH_mavjj_JECNominal, p_HadWH_mavjj_true_JECNominal, ZZMass) : -2;
       DZH =   ( nCleanedJetsPt30 >= 2 ) ? DZHh_ME(p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_HadZH_mavjj_JECNominal, p_HadWH_mavjj_true_JECNominal, ZZMass) : -2;
-      
-      
+
+
       float oldCConstD2jet = getDVBF2jetsConstant(ZZMass);
       float oldCConstD1jet = getDVBF1jetConstant(ZZMass);
       float oldCConstDWH = getDWHhConstant(ZZMass);
@@ -246,24 +246,24 @@ void Plotter::MakeHistograms( TString input_file_name , int year)
       DWH = 1/(newCConstDWH/oldCConstDWH*(1/DWH-1)+1);
       DZH = 1/(newCConstDZH/oldCConstDZH*(1/DZH-1)+1);
       float DVH = max(DWH,DZH);
-      
-      
+
+
       // Fill M4l histograms
       if ( (_current_process == Settings::Data && blind(ZZMass)) || _current_process != Settings::Data )
       {
          blinded_histos->FillM4l( ZZMass, _event_weight, _current_final_state, _current_category, _current_process );
       }
-      
+
       unblinded_histos->FillM4l( ZZMass, _event_weight, _current_final_state, _current_category, _current_process );
-      
+
       // Fill STXS yield histograms
       if ( (_current_process == Settings::Data && blind(ZZMass)) || _current_process != Settings::Data )
       {
          blinded_histos->FillSTXS( ZZMass, _event_weight, _current_category_stxs ,_current_process );
       }
-      
+
       unblinded_histos->FillSTXS( ZZMass, _event_weight, _current_category_stxs, _current_process );
-      
+
       if(_current_process > Settings::Data && _current_process < Settings::qqZZ)//fill purity yields for signals
       {
          if (htxs_stage1p1_cat % 100 == 0) continue; //Skip very rare case when y(H) > 2.5 passes our selection
@@ -272,23 +272,23 @@ void Plotter::MakeHistograms( TString input_file_name , int year)
          blinded_histos->FillSTXSPurity(ZZMass, _event_weight, _current_category_stxs, _STXS_bin);
          unblinded_histos->FillSTXSPurity(ZZMass, _event_weight, _current_category_stxs, _STXS_bin);
       }
-      
+
       // Fill MZ1 histograms
       if ( blind(ZZMass) )
       {
          blinded_histos->FillMZ1( ZZMass, Z1Mass, _event_weight, _current_final_state, _current_category, _current_process );
       }
-      
+
       unblinded_histos->FillMZ1( ZZMass, Z1Mass, _event_weight, _current_final_state, _current_category, _current_process );
-      
+
       // Fill MZ2 histograms
       if ( blind(ZZMass) )
       {
          blinded_histos->FillMZ2( ZZMass, Z2Mass, _event_weight, _current_final_state, _current_category, _current_process );
       }
-      
+
       unblinded_histos->FillMZ2( ZZMass, Z2Mass, _event_weight, _current_final_state, _current_category, _current_process );
-      
+
       // Fill KD histograms
       if ( blind(ZZMass) )
       {
@@ -301,7 +301,7 @@ void Plotter::MakeHistograms( TString input_file_name , int year)
          if ( nCleanedJetsPt30 >=2 ) blinded_histos->FillDZH( ZZMass, DZH, _event_weight, _current_final_state, _current_category, _current_process );
          if ( nCleanedJetsPt30 >=2 ) blinded_histos->FillDVH( ZZMass, DVH, _event_weight, _current_final_state, _current_category, _current_process );
       }
-      
+
       unblinded_histos->FillKD( ZZMass, KD, _event_weight, _current_final_state, _current_category, _current_process );
       if ( nCleanedJetsPt30 >=2 ) unblinded_histos->FillDVBFDEC( ZZMass, DVBFDEC, _event_weight, _current_final_state, _current_category, _current_process );
       if ( nCleanedJetsPt30 >=2 ) unblinded_histos->FillDVHDEC( ZZMass, DVHDEC, _event_weight, _current_final_state, _current_category, _current_process );
@@ -310,15 +310,15 @@ void Plotter::MakeHistograms( TString input_file_name , int year)
       if ( nCleanedJetsPt30 >=2 ) unblinded_histos->FillDWH( ZZMass, DWH, _event_weight, _current_final_state, _current_category, _current_process );
       if ( nCleanedJetsPt30 >=2 ) unblinded_histos->FillDZH( ZZMass, DZH, _event_weight, _current_final_state, _current_category, _current_process );
       if ( nCleanedJetsPt30 >=2 ) unblinded_histos->FillDVH( ZZMass, DVH, _event_weight, _current_final_state, _current_category, _current_process );
-      
+
       // Fill MZ1 vs MZ2 histograms
       if ( blind(ZZMass) )
       {
          blinded_histos->FillMZ1vsMZ2( ZZMass, Z1Mass, Z2Mass, _event_weight, _current_final_state, _current_category, _current_process );
       }
-      
+
       unblinded_histos->FillMZ1vsMZ2( ZZMass, Z1Mass, Z2Mass, _event_weight, _current_final_state, _current_category, _current_process );
-      
+
       // Fill 2D histograms vs M4l with error
       if ( blind(ZZMass) || _current_process != Settings::Data )
       {
@@ -326,57 +326,57 @@ void Plotter::MakeHistograms( TString input_file_name , int year)
          {
             blinded_histos->FillVectors( ZZMass, ZZMassErrCorr, KD, DVBFDEC, DVHDEC,nCleanedJetsPt30, D1jet, D2jet, DWH, DZH, DVH, _current_final_state, _current_category);
          }
-         
+
          blinded_histos->FillDvsM4l( ZZMass, KD, DVBFDEC, DVHDEC, nCleanedJetsPt30, D1jet, D2jet, DWH, DZH, DVH, _event_weight, _current_final_state, _current_category, _current_process );
       }
-      
+
       if (_current_process == Settings::Data)
       {
          unblinded_histos->FillVectors( ZZMass, ZZMassErrCorr, KD, DVBFDEC, DVHDEC, nCleanedJetsPt30, D1jet, D2jet, DWH, DZH, DVH, _current_final_state, _current_category );
       }
-      
+
       unblinded_histos->FillDvsM4l( ZZMass, KD, DVBFDEC, DVHDEC, nCleanedJetsPt30, D1jet, D2jet, DWH, DZH, DVH, _event_weight, _current_final_state, _current_category, _current_process );
-      
+
       int leading_id = -9;
       int trailing_id = -9;
-      
+
       if(LepPt->at(0) > LepPt->at(1) && LepPt->at(0) > LepPt->at(2) && LepPt->at(0) > LepPt->at(3)) leading_id=0;
       if(LepPt->at(1) > LepPt->at(0) && LepPt->at(1) > LepPt->at(2) && LepPt->at(1) > LepPt->at(3)) leading_id=1;
       if(LepPt->at(2) > LepPt->at(0) && LepPt->at(2) > LepPt->at(1) && LepPt->at(2) > LepPt->at(3)) leading_id=2;
       if(LepPt->at(3) > LepPt->at(0) && LepPt->at(3) > LepPt->at(1) && LepPt->at(3) > LepPt->at(2)) leading_id=3;
-      
+
       if(LepPt->at(0) < LepPt->at(1) && LepPt->at(0) < LepPt->at(2) && LepPt->at(0) < LepPt->at(3)) trailing_id=0;
       if(LepPt->at(1) < LepPt->at(0) && LepPt->at(1) < LepPt->at(2) && LepPt->at(1) < LepPt->at(3)) trailing_id=1;
       if(LepPt->at(2) < LepPt->at(0) && LepPt->at(2) < LepPt->at(1) && LepPt->at(2) < LepPt->at(3)) trailing_id=2;
       if(LepPt->at(3) < LepPt->at(0) && LepPt->at(3) < LepPt->at(1) && LepPt->at(3) < LepPt->at(2)) trailing_id=3;
-      
+
       if(LepPt->at(2) > LepPt->at(3)) {leading_id=2;trailing_id=3;}
       if(LepPt->at(3) > LepPt->at(2)) {leading_id=3;trailing_id=2;}
-      
+
       Pt_leading  = LepPt->at(leading_id);
       Pt_trailing = LepPt->at(trailing_id);
-      
+
       Eta_leading  = LepEta->at(leading_id);
       Eta_trailing = LepEta->at(trailing_id);
-      
+
       SIP_leading  = LepSIP->at(leading_id);
       SIP_trailing = LepSIP->at(trailing_id);
-      
+
       ISO_leading  = LepCombRelIsoPF->at(leading_id);
       ISO_trailing = LepCombRelIsoPF->at(trailing_id);
-      
+
       // Fill other histograms
       if ( blind(ZZMass) )
       {
          blinded_histos->FillOthers( ZZMass, ZZPt, ZZEta, PFMET, Pt_leading, Pt_trailing, Eta_leading, Eta_trailing, SIP_leading, SIP_trailing, ISO_leading, ISO_trailing, nExtraLep, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, KD, DVBFDEC, DVHDEC, _event_weight, _current_final_state, _current_category, _current_process );
       }
-      
+
       unblinded_histos->FillOthers( ZZMass, ZZPt, ZZEta, PFMET, Pt_leading, Pt_trailing, Eta_leading, Eta_trailing, SIP_leading, SIP_trailing, ISO_leading, ISO_trailing, nExtraLep, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, KD, DVBFDEC, DVHDEC, _event_weight, _current_final_state, _current_category, _current_process );
-      
-      
-      
+
+
+
    } // end for loop
-   
+
    cout << "[INFO] Histograms for " << input_file_name << " filled." << endl;
 }
 //=====================================================
@@ -394,7 +394,7 @@ void Plotter::MakeM4lZX()
          _number_of_events_CR[Settings::fs4l][i_cat]     += _number_of_events_CR[i_fs][i_cat];
          _expected_yield_SR[i_fs][Settings::inclusive]   += _expected_yield_SR[i_fs][i_cat];   //calculate expected yield for inclusive category
          _number_of_events_CR[i_fs][Settings::inclusive] += _number_of_events_CR[i_fs][i_cat];
-         
+
          if ( _merge_2e2mu )
          {
             _expected_yield_SR[Settings::fs2e2mu][i_cat]       += _expected_yield_SR[Settings::fs2mu2e][i_cat];   //merge 2e2mu and 2mu2e final state
@@ -408,7 +408,7 @@ void Plotter::MakeM4lZX()
    {
       _expected_yield_SR[Settings::fs4l][Settings::inclusive] += _expected_yield_SR[i_fs][Settings::inclusive];
    }
-   
+
    // Print Z + X expected yields for inclusive category
    cout << endl;
    cout << "========================================================================================" << endl;
@@ -421,17 +421,17 @@ void Plotter::MakeM4lZX()
       _expected_yield_SR[i_fs][Settings::inclusive]/sqrt(_number_of_events_CR[i_fs][Settings::inclusive]) << " (stat., evt: " <<
       _number_of_events_CR[i_fs][Settings::inclusive] << ")" << " +/- " << _expected_yield_SR[i_fs][Settings::inclusive]*0.50 << " (syst.)" << endl;
    }
-   
+
    cout << "[INFO] Total = " << _expected_yield_SR[Settings::fs4l][Settings::inclusive] << endl;
    cout << "========================================================================================" << endl;
    cout << endl;
-   
+
    for (int i_cat = 0; i_cat < num_of_categories; i_cat++)
    {
       blinded_histos->MakeZXShape( i_cat, _expected_yield_SR);
       unblinded_histos->MakeZXShape( i_cat, _expected_yield_SR );
    }
-   
+
    cout << "[INFO] Z+X shape for M4l done." << endl;
 }
 //=======================
@@ -472,37 +472,37 @@ void Plotter::SetBlinding(float blinding_lower_0, float blinding_upper_0, float 
 //===============================================================================
 void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_file_FR_name , int year)
 {
-   
+
    FakeRates *FR = new FakeRates( input_file_FR_name );
-   
+
    input_file_data = new TFile(input_file_data_name);
    input_tree_data = (TTree*)input_file_data->Get("CRZLLTree/candTree");
    Init( input_tree_data, input_file_data_name );
-   
-   
+
+
    if (fChain == 0) return;
-   
+
    Long64_t nentries = fChain->GetEntriesFast();
-   
+
    Long64_t nbytes = 0, nb = 0;
-   
+
    for (Long64_t jentry=0; jentry<nentries;jentry++)
    {
-      
+
       Long64_t ientry = LoadTree(jentry);
       if (ientry < 0) break;
       nb = fChain->GetEntry(jentry);
       nbytes += nb;
-      
+
       if ( !CRflag ) continue;
       if ( !test_bit(CRflag, CRZLLss) ) continue;
-      
+
       if ( !(ZZsel >= 20) ) continue; // Remove events that do not pass selection
       if ( LepSIP->at(0) > 8. || LepSIP->at(1) > 8. || LepSIP->at(2) > 8. || LepSIP->at(3) > 8.) continue;//SIP Sanity check
       _current_final_state = FindFinalStateZX();
 
       // Find current category
-      
+
       _current_category = categoryMor18(nExtraLep,
                                         nExtraZ,
                                         nCleanedJetsPt30,
@@ -524,25 +524,25 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
                                         PFMET,
                                         false,// Use VHMET category
                                         false);// Use QG tagging
-      
-      
+
+
       _current_category_stxs = stage1_reco_1p1 ( nCleanedJetsPt30,
                                                 DiJetMass,
                                                 ZZPt,
                                                 _current_category,
                                                 ZZjjPt);
-      
+
       // Calculate yield
       _yield_SR = _fs_ROS_SS.at(_current_final_state)*FR->GetFakeRate(LepPt->at(2),LepEta->at(2),LepLepId->at(2))*FR->GetFakeRate(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
-      
+
       _expected_yield_SR[_current_final_state][_current_category] += _yield_SR; // this number needs to be used when renormalizing histograms that have some cut/blinding
       _number_of_events_CR[_current_final_state][_current_category]++;
-      
+
       if ( _merge_2e2mu && _current_final_state == Settings::fs2mu2e ) _current_final_state = Settings::fs2e2mu; //We can only do this after _yield_SR is calculated
-      
+
       // Calculate kinematic discriminants
       KD = p_GG_SIG_ghg2_1_ghz1_1_JHUGen / ( p_GG_SIG_ghg2_1_ghz1_1_JHUGen + p_QQB_BKG_MCFM*getDbkgkinConstant(Z1Flav*Z2Flav,ZZMass) );
-      
+
       DVBFDEC = (nCleanedJetsPt30>=2) ? D_bkg_VBFdec( p_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal,
                                                       p_HadZH_S_SIG_ghz1_1_MCFM_JECNominal,
                                                       p_HadWH_S_SIG_ghw1_1_MCFM_JECNominal,
@@ -563,7 +563,7 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
                                                       pConst_JJQCD_BKG_MCFM_JECNominal,
                                                       Z1Flav*Z2Flav,
                                                       ZZMass) : -2;
-      
+
       DVHDEC = (nCleanedJetsPt30>=2) ?   D_bkg_VHdec( p_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal,
                                                       p_HadZH_S_SIG_ghz1_1_MCFM_JECNominal,
                                                       p_HadWH_S_SIG_ghw1_1_MCFM_JECNominal,
@@ -584,13 +584,13 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
                                                       pConst_JJQCD_BKG_MCFM_JECNominal,
                                                       Z1Flav*Z2Flav,
                                                       ZZMass) : -2;
-      
+
       D2jet = (nCleanedJetsPt30>=2) ? DVBF2j_ME(p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2 ;
       D1jet = (nCleanedJetsPt30==1) ? DVBF1j_ME(p_JVBF_SIG_ghv1_1_JHUGen_JECNominal, pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal, p_JQCD_SIG_ghg2_1_JHUGen_JECNominal, ZZMass) : -2 ;
       DWH = (nCleanedJetsPt30>=2) ? DWHh_ME(p_HadWH_SIG_ghw1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_HadWH_mavjj_JECNominal, p_HadWH_mavjj_true_JECNominal, ZZMass) : -2 ;
       DZH = (nCleanedJetsPt30>=2) ? DZHh_ME(p_HadZH_SIG_ghz1_1_JHUGen_JECNominal, p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal, p_HadZH_mavjj_JECNominal, p_HadZH_mavjj_true_JECNominal, ZZMass) : -2 ;
-      
-      
+
+
       float oldCConstD2jet = getDVBF2jetsConstant(ZZMass);
       float oldCConstD1jet = getDVBF1jetConstant(ZZMass);
       float oldCConstDWH = getDWHhConstant(ZZMass);
@@ -604,32 +604,32 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
       DWH = 1/(newCConstDWH/oldCConstDWH*(1/DWH-1)+1);
       DZH = 1/(newCConstDZH/oldCConstDZH*(1/DZH-1)+1);
       float DVH = max(DWH,DZH);
-      
-      
+
+
       // Fill m4l Z+X histograms
       unblinded_histos->FillM4lZX( ZZMass, _yield_SR, _current_final_state, _current_category );
       blinded_histos->FillM4lZX( ZZMass, _yield_SR, _current_final_state, _current_category);
-      
+
       // Fill STXS Z+X histograms
       unblinded_histos->FillSTXSZX( ZZMass, _yield_SR, _current_category_stxs);
       blinded_histos->FillSTXSZX( ZZMass, _yield_SR, _current_category_stxs);
-      
+
       // Fill mZ1 Z+X histograms
       unblinded_histos->FillMZ1ZX( ZZMass, Z1Mass, _yield_SR, _current_final_state, _current_category );
-      
+
       if (blind(ZZMass))
       {
          blinded_histos->FillMZ1ZX( ZZMass, Z1Mass, _yield_SR, _current_final_state, _current_category);
       }
-      
+
       // Fill mZ2 Z+X histograms
       unblinded_histos->FillMZ2ZX( ZZMass, Z2Mass, _yield_SR, _current_final_state, _current_category );
-      
+
       if (blind(ZZMass))
       {
          blinded_histos->FillMZ2ZX( ZZMass, Z2Mass, _yield_SR, _current_final_state, _current_category);
       }
-      
+
       // Fill KD Z+X histograms
       unblinded_histos->FillKDZX( ZZMass, KD, _yield_SR, _current_final_state, _current_category );
       if ( nCleanedJetsPt30 >= 2 ) unblinded_histos->FillDVBFDECZX( ZZMass, DVBFDEC, _yield_SR, _current_final_state, _current_category );
@@ -639,7 +639,7 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
       if ( nCleanedJetsPt30 >= 2 ) unblinded_histos->FillDWHZX( ZZMass, DWH, _yield_SR, _current_final_state, _current_category );
       if ( nCleanedJetsPt30 >= 2 ) unblinded_histos->FillDZHZX( ZZMass, DZH, _yield_SR, _current_final_state, _current_category );
       if ( nCleanedJetsPt30 >= 2 ) unblinded_histos->FillDVHZX( ZZMass, DVH, _yield_SR, _current_final_state, _current_category );
-      
+
       if (blind(ZZMass))
       {
          blinded_histos->FillKDZX( ZZMass, KD, _yield_SR, _current_final_state, _current_category);
@@ -651,49 +651,49 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
          if ( nCleanedJetsPt30 >= 2 ) blinded_histos->FillDZHZX( ZZMass, DZH, _yield_SR, _current_final_state, _current_category);
          if ( nCleanedJetsPt30 >= 2 ) blinded_histos->FillDVHZX( ZZMass, DVH, _yield_SR, _current_final_state, _current_category );
       }
-      
+
       int leading_id = -9;
       int trailing_id = -9;
-      
+
       if(LepPt->at(0) > LepPt->at(1) && LepPt->at(0) > LepPt->at(2) && LepPt->at(0) > LepPt->at(3)) leading_id=0;
       if(LepPt->at(1) > LepPt->at(0) && LepPt->at(1) > LepPt->at(2) && LepPt->at(1) > LepPt->at(3)) leading_id=1;
       if(LepPt->at(2) > LepPt->at(0) && LepPt->at(2) > LepPt->at(1) && LepPt->at(2) > LepPt->at(3)) leading_id=2;
       if(LepPt->at(3) > LepPt->at(0) && LepPt->at(3) > LepPt->at(1) && LepPt->at(3) > LepPt->at(2)) leading_id=3;
-      
+
       if(LepPt->at(0) < LepPt->at(1) && LepPt->at(0) < LepPt->at(2) && LepPt->at(0) < LepPt->at(3)) trailing_id=0;
       if(LepPt->at(1) < LepPt->at(0) && LepPt->at(1) < LepPt->at(2) && LepPt->at(1) < LepPt->at(3)) trailing_id=1;
       if(LepPt->at(2) < LepPt->at(0) && LepPt->at(2) < LepPt->at(1) && LepPt->at(2) < LepPt->at(3)) trailing_id=2;
       if(LepPt->at(3) < LepPt->at(0) && LepPt->at(3) < LepPt->at(1) && LepPt->at(3) < LepPt->at(2)) trailing_id=3;
-      
+
       if(LepPt->at(2) > LepPt->at(3)) {leading_id=2;trailing_id=3;}
       if(LepPt->at(3) > LepPt->at(2)) {leading_id=3;trailing_id=2;}
-      
+
       Pt_leading  = LepPt->at(leading_id);
       Pt_trailing = LepPt->at(trailing_id);
-      
+
       Eta_leading  = LepEta->at(leading_id);
       Eta_trailing = LepEta->at(trailing_id);
-      
+
       SIP_leading  = LepSIP->at(leading_id);
       SIP_trailing = LepSIP->at(trailing_id);
-      
+
       ISO_leading  = LepCombRelIsoPF->at(leading_id);
       ISO_trailing = LepCombRelIsoPF->at(trailing_id);
-      
+
       // Fill other histograms
       if ( blind(ZZMass) )
       {
          blinded_histos->FillOthersZX( ZZMass, ZZPt, ZZEta, PFMET, Pt_leading, Pt_trailing, Eta_leading, Eta_trailing, SIP_leading, SIP_trailing, ISO_leading, ISO_trailing, nExtraLep, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, KD, DVBFDEC, DVHDEC, _yield_SR, _current_final_state, _current_category );
-         
+
          blinded_histos->FillDvsM4l_ZX( ZZMass, KD, DVBFDEC, DVHDEC, nCleanedJetsPt30, _yield_SR, _current_final_state, _current_category );
       }
-      
+
       unblinded_histos->FillOthersZX( ZZMass, ZZPt, ZZEta, PFMET, Pt_leading, Pt_trailing, Eta_leading, Eta_trailing, SIP_leading, SIP_trailing, ISO_leading, ISO_trailing, nExtraLep, nCleanedJetsPt30, nCleanedJetsPt30BTagged_bTagSF, KD, DVBFDEC, DVHDEC, _yield_SR, _current_final_state, _current_category );
-      
+
       unblinded_histos->FillDvsM4l_ZX( ZZMass, KD, DVBFDEC, DVHDEC, nCleanedJetsPt30, _yield_SR, _current_final_state, _current_category );
-      
+
    } // End events loop
-   
+
    // Print Z + X expected yields for inclusive category
 //   cout << endl;
 //   cout << "========================================================================================" << endl;
@@ -710,7 +710,7 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
 //   cout << "[INFO] Total = " << _expected_yield_SR[Settings::fs4l][Settings::inclusive] << endl;
 //   cout << "========================================================================================" << endl;
 //   cout << endl;
-   
+
    // Smooth histograms
    if ( SMOOTH_ZX_FULL_RUN2_SS )
    {
@@ -718,10 +718,10 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
       blinded_histos->SmoothHistograms();
       unblinded_histos->SmoothHistograms();
    }
-   
+
    unblinded_histos->RenormalizeZX(year);
    blinded_histos->RenormalizeZX(year);
-   
+
    cout << "[INFO] Z+X histograms filled." << endl;
 }
 //===============================================================================
@@ -731,7 +731,7 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
 void Plotter::GetHistos( TString file_name )
 {
    histo_map[file_name]->GetHistos("ROOT_files/" + file_name + ".root");
-   
+
    cout << "[INFO] Got all histograms." << endl;
 }
 //=========================================
@@ -743,7 +743,7 @@ void Plotter::FillInclusive()
 {
    unblinded_histos->FillInclusive();
    blinded_histos->FillInclusive();
-   
+
    cout << "[INFO] Summing of histograms finished." << endl;
 }
 //===========================
@@ -755,7 +755,7 @@ void Plotter::Save()
    system("mkdir -p ROOT_files");
    unblinded_histos->SaveHistos("ROOT_files/Unblinded.root");
    blinded_histos->SaveHistos("ROOT_files/Blinded.root");
-   
+
    cout << "[INFO] All histograms are saved in a root file." << endl;
 }
 //==================
@@ -767,7 +767,7 @@ void Plotter::Delete()
 {
    unblinded_histos->DeleteHistos();
    blinded_histos->DeleteHistos();
-   
+
    cout << "[INFO] Memory clean-up done." << endl;
 }
 //==================
@@ -778,7 +778,7 @@ void Plotter::Delete()
 void Plotter::plot_1D_single( TString file_name, TString variable_name, TString folder, int fs, int cat )
 {
    histo_map[file_name]->plot_1D_single( file_name, variable_name, folder, fs, cat );
-   
+
 }
 //==================
 
@@ -786,7 +786,7 @@ void Plotter::plot_1D_single( TString file_name, TString variable_name, TString 
 void Plotter::plot_STXS( TString file_name, TString folder )
 {
    histo_map[file_name]->plot_STXS( folder );
-   
+
 }
 //==================
 
@@ -794,7 +794,7 @@ void Plotter::plot_STXS( TString file_name, TString folder )
 void Plotter::plot_Purity( TString file_name, TString folder )
 {
    histo_map[file_name]->plot_Purity( folder );
-   
+
 }
 //==================
 
@@ -814,7 +814,7 @@ void Plotter::plot_1D_all_cat( TString file_name, TString variable_name, TString
 void Plotter::plot_1D_all_fs( TString file_name, TString variable_name, TString folder)
 {
    histo_map[file_name]->plot_1D_all_fs( file_name, variable_name, folder);
-   
+
 }
 //==================
 
@@ -850,9 +850,9 @@ void Plotter::plot_2D_error_all_cat( TString file_name, TString variable_name, T
 //==========================================================
 int Plotter::find_current_process( TString input_file_name , int genExtInfo, int n_gen_assoc_lep)
 {
-   
+
    int current_process = -999;
-   
+
    // Assign dataset to correct process
    if ( input_file_name.Contains("Data") )           current_process = Settings::Data;
    if ( input_file_name.Contains("ggH125") )         current_process = Settings::H125ggH;
@@ -874,11 +874,12 @@ int Plotter::find_current_process( TString input_file_name , int genExtInfo, int
    if ( input_file_name.Contains("ggTo2e2mu") )      current_process = Settings::ggZZ;
    if ( input_file_name.Contains("ggTo2e2tau") )     current_process = Settings::ggZZ;
    if ( input_file_name.Contains("ggTo2mu2tau") )    current_process = Settings::ggZZ;
+   if ( input_file_name.Contains("TTZZ") )           current_process = Settings::VVV;
    if ( input_file_name.Contains("DYJetsToLL_M50") ) current_process = Settings::other;
    if ( input_file_name.Contains("TTJets") )         current_process = Settings::other;
    if ( input_file_name.Contains("TTTo2L2Nu") )      current_process = Settings::other;
    // End assign dataset to correct process
-   
+
    return current_process;
 }
 //==========================================================
@@ -888,9 +889,9 @@ int Plotter::find_current_process( TString input_file_name , int genExtInfo, int
 //=================================
 float Plotter::calculate_K_factor(TString input_file_name)
 {
-   
+
    float k_factor = 1;
-   
+
    if ( input_file_name.Contains("ZZTo4l"))
    {
       k_factor = KFactor_EW_qqZZ * KFactor_QCD_qqZZ_M; // As of Moriond2016
@@ -924,7 +925,7 @@ int Plotter::CountAssociatedLeptons()
 int Plotter::FindFinalState()
 {
    int final_state = -999;
-   
+
    if ( Z1Flav == -121 )
    {
       if ( Z2Flav == -121 )
@@ -947,9 +948,9 @@ int Plotter::FindFinalState()
    {
       cerr << "[ERROR] in event " << RunNumber << ":" << LumiNumber << ":" << EventNumber << ", Z1Flav = " << Z1Flav << endl;
    }
-   
+
    if ( _merge_2e2mu && final_state == Settings::fs2mu2e ) final_state = Settings::fs2e2mu;
-   
+
    return final_state;
 }
 //===========================
@@ -960,7 +961,7 @@ int Plotter::FindFinalState()
 int Plotter::FindFinalStateZX()
 {
    int final_state = -999;
-   
+
    if ( Z1Flav == -121 )
    {
       if ( Z2Flav == +121 )
@@ -983,7 +984,7 @@ int Plotter::FindFinalStateZX()
    {
       cerr << "[ERROR] in event " << RunNumber << ":" << LumiNumber << ":" << EventNumber << ", Z1Flav = " << Z1Flav << endl;
    }
-   
+
    return final_state;
 }
 //=============================
@@ -993,7 +994,7 @@ int Plotter::FindFinalStateZX()
 float Plotter::ScaleToOSSSComb( int year)
 {
    int scale_factor = 1.0;
-   
+
    if ( Z1Flav == -121 )
    {
       if ( Z2Flav == +121  && year == 2016) scale_factor = 1.082;
@@ -1020,7 +1021,7 @@ float Plotter::ScaleToOSSSComb( int year)
    {
       cerr << "[ERROR] in event " << RunNumber << ":" << LumiNumber << ":" << EventNumber << ", Z1Flav = " << Z1Flav << endl;
    }
-   
+
    return scale_factor;
 }
 //=============================
@@ -1028,7 +1029,7 @@ float Plotter::ScaleToOSSSComb( int year)
 int Plotter::FindSTXSBin()
 {
    int bin = -999;
-   
+
    //ggH
    if (htxs_stage1p1_cat == 102) bin = Settings::bin_ggH_0J_PTH_0_10;
    if (htxs_stage1p1_cat == 103) bin = Settings::bin_ggH_0J_PTH_10_200;
@@ -1043,8 +1044,8 @@ int Plotter::FindSTXSBin()
    if (htxs_stage1p1_cat == 112) bin = Settings::bin_ggH_VBF;
    if (htxs_stage1p1_cat == 113) bin = Settings::bin_ggH_VBF;
    if (htxs_stage1p1_cat == 101) bin = Settings::bin_ggH_PTH_200;
-   
-   
+
+
    //VBF
    if (htxs_stage1p1_cat == 201) bin = Settings::bin_VBF_Rest;
    if (htxs_stage1p1_cat == 202) bin = Settings::bin_VBF_Rest;
@@ -1056,7 +1057,7 @@ int Plotter::FindSTXSBin()
    if (htxs_stage1p1_cat == 208) bin = Settings::bin_VBF_2j_mjj_GT700_2j;
    if (htxs_stage1p1_cat == 209) bin = Settings::bin_VBF_2j_mjj_GT350_3j;
    if (htxs_stage1p1_cat == 210) bin = Settings::bin_VBF_GT200;
-   
+
    //VH
    if (htxs_stage1p1_cat == 301) bin = Settings::bin_VH_Lep_0_150;
    if (htxs_stage1p1_cat == 302) bin = Settings::bin_VH_Lep_0_150;
@@ -1068,14 +1069,14 @@ int Plotter::FindSTXSBin()
    if (htxs_stage1p1_cat == 403) bin = Settings::bin_VH_Lep_GT150;
    if (htxs_stage1p1_cat == 404) bin = Settings::bin_VH_Lep_GT150;
    if (htxs_stage1p1_cat == 405) bin = Settings::bin_VH_Lep_GT150;
-   
+
    //others
    if (htxs_stage1p1_cat == 601) bin = Settings::bin_ttH;
    if (htxs_stage1p1_cat == 701) bin = Settings::bin_bbH;
    if (htxs_stage1p1_cat == 801) bin = Settings::bin_tH;
-   
-   
-   
+
+
+
    return bin;
 }
 
