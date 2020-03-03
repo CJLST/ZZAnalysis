@@ -95,6 +95,10 @@ int main( int argc, char *argv[] )
    TString ggZZ2e2tau_2016  = path_2016 + "ggTo2e2tau_Contin_MCFM701"  + file_name;
    TString ggZZ2mu2tau_2016 = path_2016 + "ggTo2mu2tau_Contin_MCFM701" + file_name;
    TString TTZZ_2016        = path_2016 + "TTZZ"                       + file_name;
+   TString TTWW_2016        = path_2016 + "TTWW"                       + file_name;
+   TString WWZ_2016         = path_2016 + "WWZ"                        + file_name;
+   TString WZZ_2016         = path_2016 + "WZZ"                        + file_name;
+   TString ZZZ_2016         = path_2016 + "ZZZ"                        + file_name;
 
    // int year = 2016;
    // Plotter *plotter = new Plotter(year);
@@ -169,6 +173,10 @@ int main( int argc, char *argv[] )
 
 
    plotter->MakeHistograms(TTZZ_2016,2016);
+   plotter->MakeHistograms(TTWW_2016,2016);
+   plotter->MakeHistograms(WWZ_2016,2016);
+   plotter->MakeHistograms(WZZ_2016,2016);
+   plotter->MakeHistograms(ZZZ_2016,2016);
 
 //   plotter->MakeHistogramsZX(Data_2016, FR_2016, 2016);
 //   plotter->MakeHistogramsZX(Data_2017, FR_2017, 2017);

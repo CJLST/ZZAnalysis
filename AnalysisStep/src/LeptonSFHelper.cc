@@ -58,19 +58,19 @@ LeptonSFHelper::LeptonSFHelper()
    h_Ele_Reco_lowPT_2018 = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
    
    // 2016 Muons
-   edm::FileInPath fipMu_2016("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_Moriond2017_v2.root");
+   edm::FileInPath fipMu_2016("/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased/MuonSF/final_HZZ_SF_2016_legacy_mupogsysts.root"); //"ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_Moriond2017_v2.root");
    root_file = TFile::Open(fipMu_2016.fullPath().data(),"READ");
    h_Mu_SF_2016  = (TH2D*)root_file->Get("FINAL")->Clone();
    h_Mu_Unc_2016 = (TH2D*)root_file->Get("ERROR")->Clone();
    
    // 2017 Muons
-   edm::FileInPath fipMu_2017("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_Moriond2018_final.root");
+   edm::FileInPath fipMu_2017("/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased/MuonSF/final_HZZ_SF_2017_rereco_mupogsysts_3010.root"); //"ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_Moriond2018_final.root");
    root_file = TFile::Open(fipMu_2017.fullPath().data(),"READ");
    h_Mu_SF_2017  = (TH2D*)root_file->Get("FINAL")->Clone();
    h_Mu_Unc_2017 = (TH2D*)root_file->Get("ERROR")->Clone();
       
    // 2018 Muons
-   edm::FileInPath fipMu_2018("ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/final_HZZ_muon_SF_2018RunA2D_ER_2702.root");
+   edm::FileInPath fipMu_2018("/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased/MuonSF/final_HZZ_SF_2018_rereco_mupogsysts_3010.root"); //"ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/final_HZZ_muon_SF_2018RunA2D_ER_2702.root");
    root_file = TFile::Open(fipMu_2018.fullPath().data(),"READ");
    h_Mu_SF_2018  = (TH2D*)root_file->Get("FINAL")->Clone();
    h_Mu_Unc_2018 = (TH2D*)root_file->Get("ERROR")->Clone();

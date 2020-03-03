@@ -8,8 +8,8 @@ class Settings
 
 public:
 
-	Settings();
-	~Settings();
+   Settings();
+   ~Settings();
 
    enum _blindings { fullyblind = 0, blindabove_110 = 1, blindbelow_150 = 2, blind_110_150 = 3, unblinded = 4 };
    enum _final_state { fs4e = 0, fs4mu = 1, fs2e2mu = 2, fs2mu2e = 3, fs4l = 4, MAX_NUM_OF_FINAL_STATES };
@@ -81,9 +81,9 @@ public:
       DVH               = 21,
       DVH_M4L118130     = 22,
       M4lYields         = 23,
-      PFMET			      = 24,
-      Pt4l			      = 25,
-      Eta4l		   	   = 26,
+      PFMET             = 24,
+      Pt4l              = 25,
+      Eta4l             = 26,
       Pt_leading        = 27,
       Pt_trailing       = 28,
       Eta_leading       = 29,
@@ -93,7 +93,7 @@ public:
       ISO_leading       = 33,
       ISO_trailing      = 34,
       NExtraLep         = 35,
-      NJets		       	= 36,
+      NJets             = 36,
       NJetsBTagged      = 37,
       M4l_110150_HighKD = 38,
       MAX_NUM_OF_1D_PLOT_NAMES
@@ -122,23 +122,27 @@ public:
    };
 
    enum _production_modes
-	{
-		ggH     = 0,
-		VBF     = 1,
-		WH_lep  = 2,
-		WH_had  = 3,
-		ZH_lep  = 4,
-		ZH_had  = 5,
-		ttH_lep = 6,
-		ttH_had = 7,
-		bbH     = 8,
-		tqH     = 9,
-		qqToZZ  = 10,
-		ggToZZ  = 11,
-		ttZZ    = 12,
-		MAX_NUM_OF_PRODUCTION_MODES
+   {
+      ggH     = 0,
+      VBF     = 1,
+      WH_lep  = 2,
+      WH_had  = 3,
+      ZH_lep  = 4,
+      ZH_had  = 5,
+      ttH_lep = 6,
+      ttH_had = 7,
+      bbH     = 8,
+      tqH     = 9,
+      qqToZZ  = 10,
+      ggToZZ  = 11,
+      ttZZ    = 12,
+      ttWW    = 13,
+      WWZ     = 14,
+      WZZ     = 15,
+      ZZZ     = 16,
+      MAX_NUM_OF_PRODUCTION_MODES
 
-	};
+   };
 
    enum _process
    {
@@ -152,7 +156,7 @@ public:
       H125tqH = 7,
       qqZZ    = 8,
       ggZZ    = 9,
-			VVV     = 10,
+      VVV     = 10,
       Zjets   = 11,
       other   = 12,
       MAX_NUM_OF_PROCESSES

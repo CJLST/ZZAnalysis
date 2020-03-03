@@ -298,14 +298,14 @@ Histograms::Histograms( string blinding )
                                                                                       Variables::KDvsM4lHighMass().var_Y_N_bin, Variables::KDvsM4lHighMass().var_Y_min,
                                                                                       Variables::KDvsM4l().var_Y_max);
 
-				_histo_name = "DVBFDECvsM4lZoomed" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
+            _histo_name = "DVBFDECvsM4lZoomed" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
             _histo_labels = ";" + Variables::DVBFDECvsM4lZoomed().var_X_label + ";" + Variables::DVBFDECvsM4lZoomed().var_Y_label;
             histos_2DError[Settings::DVBFDECvsM4lZoomed][i_fs][i_cat][i_proc] = new TH2F(_histo_name.c_str(), _histo_labels.c_str(), Variables::DVBFDECvsM4lZoomed().var_X_N_bin,
                                                                                     Variables::DVBFDECvsM4lZoomed().var_X_min, Variables::DVBFDECvsM4lZoomed().var_X_max,
                                                                                     Variables::DVBFDECvsM4lZoomed().var_Y_N_bin, Variables::DVBFDECvsM4lZoomed().var_Y_min,
                                                                                     Variables::DVBFDECvsM4lZoomed().var_Y_max);
 
-				_histo_name = "DVHDECvsM4lZoomed" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
+            _histo_name = "DVHDECvsM4lZoomed" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
             _histo_labels = ";" + Variables::DVHDECvsM4lZoomed().var_X_label + ";" + Variables::DVHDECvsM4lZoomed().var_Y_label;
             histos_2DError[Settings::DVHDECvsM4lZoomed][i_fs][i_cat][i_proc] = new TH2F(_histo_name.c_str(), _histo_labels.c_str(), Variables::DVHDECvsM4lZoomed().var_X_N_bin,
                                                                                     Variables::DVHDECvsM4lZoomed().var_X_min, Variables::DVHDECvsM4lZoomed().var_X_max,
@@ -355,7 +355,7 @@ Histograms::Histograms( string blinding )
             histos_1D[Settings::PFMET][i_fs][i_cat][i_proc] = new TH1F(_histo_name.c_str(), _histo_labels.c_str(), Variables::PFMET().var_N_bin,
                                                                                         Variables::PFMET().var_min, Variables::PFMET().var_max);
 
-				_histo_name = "Pt_leading" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
+            _histo_name = "Pt_leading" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
             _histo_labels = ";" + Variables::Pt_leading().var_X_label + ";" + Variables::Pt_leading().var_Y_label;
             histos_1D[Settings::Pt_leading][i_fs][i_cat][i_proc] = new TH1F(_histo_name.c_str(), _histo_labels.c_str(), Variables::Pt_leading().var_N_bin,
                                                                                         Variables::Pt_leading().var_min, Variables::Pt_leading().var_max);
@@ -365,7 +365,7 @@ Histograms::Histograms( string blinding )
             histos_1D[Settings::Pt_trailing][i_fs][i_cat][i_proc] = new TH1F(_histo_name.c_str(), _histo_labels.c_str(), Variables::Pt_trailing().var_N_bin,
                                                                                         Variables::Pt_trailing().var_min, Variables::Pt_trailing().var_max);
 
-				_histo_name = "Eta_leading" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
+            _histo_name = "Eta_leading" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _s_process.at(i_proc) + _blinding;
             _histo_labels = ";" + Variables::Eta_leading().var_X_label + ";" + Variables::Eta_leading().var_Y_label;
             histos_1D[Settings::Eta_leading][i_fs][i_cat][i_proc] = new TH1F(_histo_name.c_str(), _histo_labels.c_str(), Variables::Eta_leading().var_N_bin,
                                                                                         Variables::Eta_leading().var_min, Variables::Eta_leading().var_max);
@@ -492,19 +492,19 @@ Histograms::Histograms( string blinding )
                                                                       Variables::KD_M4L118130().var_min, Variables::KD_M4L118130().var_max);
 
          _histo_name = "DVBFDEC_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::DVBFDEC][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::DVBFDEC().var_N_bin, Variables::DVBFDEC().var_min,
+      histos_1D_ZX[Settings::DVBFDEC][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::DVBFDEC().var_N_bin, Variables::DVBFDEC().var_min,
                                                                              Variables::DVBFDEC().var_max);
 
-			_histo_name = "DVBFDEC_M4L118130_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::DVBFDEC_M4L118130][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::DVBFDEC_M4L118130().var_N_bin,
+      _histo_name = "DVBFDEC_M4L118130_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::DVBFDEC_M4L118130][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::DVBFDEC_M4L118130().var_N_bin,
                                                                                        Variables::DVBFDEC_M4L118130().var_min, Variables::DVBFDEC_M4L118130().var_max);
 
-			_histo_name = "DVHDEC_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::DVHDEC][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::DVHDEC().var_N_bin, Variables::DVHDEC().var_min,
+      _histo_name = "DVHDEC_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::DVHDEC][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::DVHDEC().var_N_bin, Variables::DVHDEC().var_min,
                                                                              Variables::DVHDEC().var_max);
 
-			_histo_name = "DVHDEC_M4L118130_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::DVHDEC_M4L118130][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::DVHDEC_M4L118130().var_N_bin,
+      _histo_name = "DVHDEC_M4L118130_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::DVHDEC_M4L118130][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::DVHDEC_M4L118130().var_N_bin,
                                                                                        Variables::DVHDEC_M4L118130().var_min, Variables::DVHDEC_M4L118130().var_max);
 
          _histo_name = "D1jet_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
@@ -547,92 +547,92 @@ Histograms::Histograms( string blinding )
          histos_1D_ZX[Settings::DVH_M4L118130][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::DVH_M4L118130().var_N_bin,
                                                                        Variables::DVH_M4L118130().var_min, Variables::DVH_M4L118130().var_max);
 
-			//===========
-			// KD vs M4l
-			//===========
-			_histo_name = "KDvsM4lZoomed_ZX" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _blinding;
-			_histo_labels = ";" + Variables::KDvsM4lZoomed().var_X_label + ";" + Variables::KDvsM4lZoomed().var_Y_label;
-			histos_2DError_ZX[Settings::KDvsM4lZoomed][i_fs][i_cat] = new TH2F(_histo_name.c_str(), _histo_labels.c_str(), Variables::KDvsM4lZoomed().var_X_N_bin,
-																											Variables::KDvsM4lZoomed().var_X_min, Variables::KDvsM4lZoomed().var_X_max,
-																											Variables::KDvsM4lZoomed().var_Y_N_bin, Variables::KDvsM4lZoomed().var_Y_min,
-																											Variables::KDvsM4lZoomed().var_Y_max);
+      //===========
+      // KD vs M4l
+      //===========
+      _histo_name = "KDvsM4lZoomed_ZX" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _blinding;
+      _histo_labels = ";" + Variables::KDvsM4lZoomed().var_X_label + ";" + Variables::KDvsM4lZoomed().var_Y_label;
+      histos_2DError_ZX[Settings::KDvsM4lZoomed][i_fs][i_cat] = new TH2F(_histo_name.c_str(), _histo_labels.c_str(), Variables::KDvsM4lZoomed().var_X_N_bin,
+                                                      Variables::KDvsM4lZoomed().var_X_min, Variables::KDvsM4lZoomed().var_X_max,
+                                                      Variables::KDvsM4lZoomed().var_Y_N_bin, Variables::KDvsM4lZoomed().var_Y_min,
+                                                      Variables::KDvsM4lZoomed().var_Y_max);
 
-			_histo_name = "DVBFDECvsM4lZoomed_ZX" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _blinding;
-			_histo_labels = ";" + Variables::DVBFDECvsM4lZoomed().var_X_label + ";" + Variables::DVBFDECvsM4lZoomed().var_Y_label;
-			histos_2DError_ZX[Settings::DVBFDECvsM4lZoomed][i_fs][i_cat] = new TH2F(_histo_name.c_str(), _histo_labels.c_str(), Variables::DVBFDECvsM4lZoomed().var_X_N_bin,
-																											Variables::DVBFDECvsM4lZoomed().var_X_min, Variables::DVBFDECvsM4lZoomed().var_X_max,
-																											Variables::DVBFDECvsM4lZoomed().var_Y_N_bin, Variables::DVBFDECvsM4lZoomed().var_Y_min,
-																											Variables::DVBFDECvsM4lZoomed().var_Y_max);
+      _histo_name = "DVBFDECvsM4lZoomed_ZX" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _blinding;
+      _histo_labels = ";" + Variables::DVBFDECvsM4lZoomed().var_X_label + ";" + Variables::DVBFDECvsM4lZoomed().var_Y_label;
+      histos_2DError_ZX[Settings::DVBFDECvsM4lZoomed][i_fs][i_cat] = new TH2F(_histo_name.c_str(), _histo_labels.c_str(), Variables::DVBFDECvsM4lZoomed().var_X_N_bin,
+                                                      Variables::DVBFDECvsM4lZoomed().var_X_min, Variables::DVBFDECvsM4lZoomed().var_X_max,
+                                                      Variables::DVBFDECvsM4lZoomed().var_Y_N_bin, Variables::DVBFDECvsM4lZoomed().var_Y_min,
+                                                      Variables::DVBFDECvsM4lZoomed().var_Y_max);
 
-			_histo_name = "DVHDECvsM4lZoomed_ZX" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _blinding;
-			_histo_labels = ";" + Variables::DVHDECvsM4lZoomed().var_X_label + ";" + Variables::DVHDECvsM4lZoomed().var_Y_label;
-			histos_2DError_ZX[Settings::DVHDECvsM4lZoomed][i_fs][i_cat] = new TH2F(_histo_name.c_str(), _histo_labels.c_str(), Variables::DVHDECvsM4lZoomed().var_X_N_bin,
-																											Variables::DVHDECvsM4lZoomed().var_X_min, Variables::DVHDECvsM4lZoomed().var_X_max,
-																											Variables::DVHDECvsM4lZoomed().var_Y_N_bin, Variables::DVHDECvsM4lZoomed().var_Y_min,
-																											Variables::DVHDECvsM4lZoomed().var_Y_max);
+      _histo_name = "DVHDECvsM4lZoomed_ZX" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _blinding;
+      _histo_labels = ";" + Variables::DVHDECvsM4lZoomed().var_X_label + ";" + Variables::DVHDECvsM4lZoomed().var_Y_label;
+      histos_2DError_ZX[Settings::DVHDECvsM4lZoomed][i_fs][i_cat] = new TH2F(_histo_name.c_str(), _histo_labels.c_str(), Variables::DVHDECvsM4lZoomed().var_X_N_bin,
+                                                      Variables::DVHDECvsM4lZoomed().var_X_min, Variables::DVHDECvsM4lZoomed().var_X_max,
+                                                      Variables::DVHDECvsM4lZoomed().var_Y_N_bin, Variables::DVHDECvsM4lZoomed().var_Y_min,
+                                                      Variables::DVHDECvsM4lZoomed().var_Y_max);
 
-			//===========
-			// Others
-			//===========
-			_histo_name = "PFMET_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::PFMET][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::PFMET().var_N_bin,
-																								Variables::PFMET().var_min, Variables::PFMET().var_max);
+      //===========
+      // Others
+      //===========
+      _histo_name = "PFMET_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::PFMET][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::PFMET().var_N_bin,
+                                                Variables::PFMET().var_min, Variables::PFMET().var_max);
 
-			_histo_name = "Pt_leading_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::Pt_leading][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::Pt_leading().var_N_bin,
-																								Variables::Pt_leading().var_min, Variables::Pt_leading().var_max);
+      _histo_name = "Pt_leading_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::Pt_leading][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::Pt_leading().var_N_bin,
+                                                Variables::Pt_leading().var_min, Variables::Pt_leading().var_max);
 
-			_histo_name = "Pt_trailing_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::Pt_trailing][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::Pt_trailing().var_N_bin,
-																								Variables::Pt_trailing().var_min, Variables::Pt_trailing().var_max);
+      _histo_name = "Pt_trailing_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::Pt_trailing][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::Pt_trailing().var_N_bin,
+                                                Variables::Pt_trailing().var_min, Variables::Pt_trailing().var_max);
 
-			_histo_name = "Eta_leading_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::Eta_leading][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::Eta_leading().var_N_bin,
-																								Variables::Eta_leading().var_min, Variables::Eta_leading().var_max);
+      _histo_name = "Eta_leading_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::Eta_leading][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::Eta_leading().var_N_bin,
+                                                Variables::Eta_leading().var_min, Variables::Eta_leading().var_max);
 
-			_histo_name = "Eta_trailing_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::Eta_trailing][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::Eta_trailing().var_N_bin,
-																								Variables::Eta_trailing().var_min, Variables::Eta_trailing().var_max);
+      _histo_name = "Eta_trailing_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::Eta_trailing][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::Eta_trailing().var_N_bin,
+                                                Variables::Eta_trailing().var_min, Variables::Eta_trailing().var_max);
 
-			_histo_name = "SIP_leading_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::SIP_leading][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::SIP_leading().var_N_bin,
-																								Variables::SIP_leading().var_min, Variables::SIP_leading().var_max);
+      _histo_name = "SIP_leading_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::SIP_leading][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::SIP_leading().var_N_bin,
+                                                Variables::SIP_leading().var_min, Variables::SIP_leading().var_max);
 
-			_histo_name = "SIP_trailing_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::SIP_trailing][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::SIP_trailing().var_N_bin,
-																								Variables::SIP_trailing().var_min, Variables::SIP_trailing().var_max);
+      _histo_name = "SIP_trailing_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::SIP_trailing][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::SIP_trailing().var_N_bin,
+                                                Variables::SIP_trailing().var_min, Variables::SIP_trailing().var_max);
 
-			_histo_name = "ISO_leading_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::ISO_leading][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::ISO_leading().var_N_bin,
-																								Variables::ISO_leading().var_min, Variables::ISO_leading().var_max);
+      _histo_name = "ISO_leading_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::ISO_leading][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::ISO_leading().var_N_bin,
+                                                Variables::ISO_leading().var_min, Variables::ISO_leading().var_max);
 
-			_histo_name = "ISO_trailing_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::ISO_trailing][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::ISO_trailing().var_N_bin,
-																								Variables::ISO_trailing().var_min, Variables::ISO_trailing().var_max);
+      _histo_name = "ISO_trailing_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::ISO_trailing][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::ISO_trailing().var_N_bin,
+                                                Variables::ISO_trailing().var_min, Variables::ISO_trailing().var_max);
 
-			_histo_name = "Pt4l_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::Pt4l][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::Pt4l().var_N_bin,
-																								Variables::Pt4l().var_min, Variables::Pt4l().var_max);
+      _histo_name = "Pt4l_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::Pt4l][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::Pt4l().var_N_bin,
+                                                Variables::Pt4l().var_min, Variables::Pt4l().var_max);
 
-			_histo_name = "NJetsBTagged_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::NJetsBTagged][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::NJetsBTagged().var_N_bin,
-																								Variables::NJetsBTagged().var_min, Variables::NJetsBTagged().var_max);
+      _histo_name = "NJetsBTagged_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::NJetsBTagged][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::NJetsBTagged().var_N_bin,
+                                                Variables::NJetsBTagged().var_min, Variables::NJetsBTagged().var_max);
 
-			_histo_name = "Eta4l_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::Eta4l][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::Eta4l().var_N_bin,
-																								Variables::Eta4l().var_min, Variables::Eta4l().var_max);
+      _histo_name = "Eta4l_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::Eta4l][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::Eta4l().var_N_bin,
+                                                Variables::Eta4l().var_min, Variables::Eta4l().var_max);
 
-			_histo_name = "NExtraLep_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::NExtraLep][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::NExtraLep().var_N_bin,
-																								Variables::NExtraLep().var_min, Variables::NExtraLep().var_max);
+      _histo_name = "NExtraLep_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::NExtraLep][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::NExtraLep().var_N_bin,
+                                                Variables::NExtraLep().var_min, Variables::NExtraLep().var_max);
 
-			_histo_name = "NJets_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::NJets][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::NJets().var_N_bin,
-																								Variables::NJets().var_min, Variables::NJets().var_max);
+      _histo_name = "NJets_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::NJets][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::NJets().var_N_bin,
+                                                Variables::NJets().var_min, Variables::NJets().var_max);
 
-			_histo_name = "M4l_110150_HighKD_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::M4l_110150_HighKD][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::M4l_110150_HighKD().var_N_bin,
-																								Variables::M4l_110150_HighKD().var_min, Variables::M4l_110150_HighKD().var_max);
+      _histo_name = "M4l_110150_HighKD_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::M4l_110150_HighKD][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::M4l_110150_HighKD().var_N_bin,
+                                                Variables::M4l_110150_HighKD().var_min, Variables::M4l_110150_HighKD().var_max);
       }
    }
 
@@ -717,11 +717,11 @@ Histograms::Histograms( double lumi)
    _s_process.push_back("H126WHlep");
    _s_process.push_back("H130WHlep");
 
-	_s_process.push_back("H120WHhad");
-	_s_process.push_back("H124WHhad");
-	_s_process.push_back("H125WHhad");
-	_s_process.push_back("H126WHhad");
-	_s_process.push_back("H130WHhad");
+  _s_process.push_back("H120WHhad");
+  _s_process.push_back("H124WHhad");
+  _s_process.push_back("H125WHhad");
+  _s_process.push_back("H126WHhad");
+  _s_process.push_back("H130WHhad");
 
    _s_process.push_back("H120ZHlep");
    _s_process.push_back("H124ZHlep");
@@ -729,11 +729,11 @@ Histograms::Histograms( double lumi)
    _s_process.push_back("H126ZHlep");
    _s_process.push_back("H130ZHlep");
 
-	_s_process.push_back("H120ZHhad");
-	_s_process.push_back("H124ZHhad");
-	_s_process.push_back("H125ZHhad");
-	_s_process.push_back("H126ZHhad");
-	_s_process.push_back("H130ZHhad");
+  _s_process.push_back("H120ZHhad");
+  _s_process.push_back("H124ZHhad");
+  _s_process.push_back("H125ZHhad");
+  _s_process.push_back("H126ZHhad");
+  _s_process.push_back("H130ZHhad");
 
    _s_process.push_back("H120ttHlep");
    _s_process.push_back("H124ttHlep");
@@ -741,19 +741,19 @@ Histograms::Histograms( double lumi)
    _s_process.push_back("H126ttHlep");
    _s_process.push_back("H130ttHlep");
 
-	_s_process.push_back("H120ttHhad");
+  _s_process.push_back("H120ttHhad");
    _s_process.push_back("H124ttHhad");
    _s_process.push_back("H125ttHhad");
    _s_process.push_back("H126ttHhad");
    _s_process.push_back("H130ttHhad");
 
-	_s_process.push_back("H120bbH");
+  _s_process.push_back("H120bbH");
    _s_process.push_back("H124bbH");
    _s_process.push_back("H125bbH");
    _s_process.push_back("H126bbH");
    _s_process.push_back("H130bbH");
 
-	_s_process.push_back("H120tqH");
+  _s_process.push_back("H120tqH");
    _s_process.push_back("H124tqH");
    _s_process.push_back("H125tqH");
    _s_process.push_back("H126tqH");
@@ -783,9 +783,9 @@ Histograms::Histograms( double lumi)
    _s_production_mode.push_back("ggH");
    _s_production_mode.push_back("qqH");
    _s_production_mode.push_back("WH_lep");
-	_s_production_mode.push_back("WH_had");
+   _s_production_mode.push_back("WH_had");
    _s_production_mode.push_back("ZH_lep");
-	_s_production_mode.push_back("ZH_had");
+   _s_production_mode.push_back("ZH_had");
    _s_production_mode.push_back("ttH_lep");
    _s_production_mode.push_back("ttH_had");
    _s_production_mode.push_back("bbH");
@@ -793,6 +793,10 @@ Histograms::Histograms( double lumi)
    _s_production_mode.push_back("qqZZ");
    _s_production_mode.push_back("ggZZ");
    _s_production_mode.push_back("ttZZ");
+   _s_production_mode.push_back("ttWW");
+   _s_production_mode.push_back("WWZ");
+   _s_production_mode.push_back("WZZ");
+   _s_production_mode.push_back("ZZZ");
 
 
    for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
@@ -826,7 +830,7 @@ Histograms::~Histograms()
 //====================================================================================
 void Histograms::FillM4l( float M4l, float weight, int fs, int cat, int proc )
 {
-	histos_1D[Settings::M4lMain][fs][cat][proc]->Fill(M4l, (proc == Settings::Data) ? 1. : weight);
+  histos_1D[Settings::M4lMain][fs][cat][proc]->Fill(M4l, (proc == Settings::Data) ? 1. : weight);
    histos_1D[Settings::M4lMainZoomed][fs][cat][proc]->Fill(M4l, (proc == Settings::Data) ? 1. : weight);
    histos_1D[Settings::M4lMainHighMass][fs][cat][proc]->Fill(M4l, (proc == Settings::Data) ? 1. : weight);
 }
@@ -1163,37 +1167,37 @@ void Histograms::FillMZ1vsMZ2( float M4l, float MZ1, float MZ2, float weight, in
 //====================================================================================
 void Histograms::FillVectors( float M4l, float ZZMassErrCorr, float KD, float DVBFDEC, float DVHDEC,int nCleanedJetsPt30, float D1jet, float D2jet, float DWH, float DZH, float DVH, int fs, int cat)
 {
-	if ( cat == Settings::VBF_2j_tagged )
-	{
-		vector_X[Settings::DVBFDECvsM4lZoomed][fs][cat].push_back(M4l);
-		vector_Y[Settings::DVBFDECvsM4lZoomed][fs][cat].push_back(DVBFDEC);
-		vector_EX[Settings::DVBFDECvsM4lZoomed][fs][cat].push_back(ZZMassErrCorr);
-		vector_EY[Settings::DVBFDECvsM4lZoomed][fs][cat].push_back(0.);
-	}
-	else if ( cat == Settings::VH_hadron_tagged )
-	{
-		vector_X[Settings::DVHDECvsM4lZoomed][fs][cat].push_back(M4l);
-		vector_Y[Settings::DVHDECvsM4lZoomed][fs][cat].push_back(DVHDEC);
-		vector_EX[Settings::DVHDECvsM4lZoomed][fs][cat].push_back(ZZMassErrCorr);
-		vector_EY[Settings::DVHDECvsM4lZoomed][fs][cat].push_back(0.);
-	}
-	else
-	{
-		vector_X[Settings::KDvsM4l][fs][cat].push_back(M4l);
-		vector_Y[Settings::KDvsM4l][fs][cat].push_back(KD);
-		vector_EX[Settings::KDvsM4l][fs][cat].push_back(ZZMassErrCorr);
-		vector_EY[Settings::KDvsM4l][fs][cat].push_back(0.);
+  if ( cat == Settings::VBF_2j_tagged )
+  {
+    vector_X[Settings::DVBFDECvsM4lZoomed][fs][cat].push_back(M4l);
+    vector_Y[Settings::DVBFDECvsM4lZoomed][fs][cat].push_back(DVBFDEC);
+    vector_EX[Settings::DVBFDECvsM4lZoomed][fs][cat].push_back(ZZMassErrCorr);
+    vector_EY[Settings::DVBFDECvsM4lZoomed][fs][cat].push_back(0.);
+  }
+  else if ( cat == Settings::VH_hadron_tagged )
+  {
+    vector_X[Settings::DVHDECvsM4lZoomed][fs][cat].push_back(M4l);
+    vector_Y[Settings::DVHDECvsM4lZoomed][fs][cat].push_back(DVHDEC);
+    vector_EX[Settings::DVHDECvsM4lZoomed][fs][cat].push_back(ZZMassErrCorr);
+    vector_EY[Settings::DVHDECvsM4lZoomed][fs][cat].push_back(0.);
+  }
+  else
+  {
+    vector_X[Settings::KDvsM4l][fs][cat].push_back(M4l);
+    vector_Y[Settings::KDvsM4l][fs][cat].push_back(KD);
+    vector_EX[Settings::KDvsM4l][fs][cat].push_back(ZZMassErrCorr);
+    vector_EY[Settings::KDvsM4l][fs][cat].push_back(0.);
 
-		vector_X[Settings::KDvsM4lZoomed][fs][cat].push_back(M4l);
-		vector_Y[Settings::KDvsM4lZoomed][fs][cat].push_back(KD);
-		vector_EX[Settings::KDvsM4lZoomed][fs][cat].push_back(ZZMassErrCorr);
-		vector_EY[Settings::KDvsM4lZoomed][fs][cat].push_back(0.);
+    vector_X[Settings::KDvsM4lZoomed][fs][cat].push_back(M4l);
+    vector_Y[Settings::KDvsM4lZoomed][fs][cat].push_back(KD);
+    vector_EX[Settings::KDvsM4lZoomed][fs][cat].push_back(ZZMassErrCorr);
+    vector_EY[Settings::KDvsM4lZoomed][fs][cat].push_back(0.);
 
-		vector_X[Settings::KDvsM4lHighMass][fs][cat].push_back(M4l);
-		vector_Y[Settings::KDvsM4lHighMass][fs][cat].push_back(KD);
-		vector_EX[Settings::KDvsM4lHighMass][fs][cat].push_back(ZZMassErrCorr);
-		vector_EY[Settings::KDvsM4lHighMass][fs][cat].push_back(0.);
-	}
+    vector_X[Settings::KDvsM4lHighMass][fs][cat].push_back(M4l);
+    vector_Y[Settings::KDvsM4lHighMass][fs][cat].push_back(KD);
+    vector_EX[Settings::KDvsM4lHighMass][fs][cat].push_back(ZZMassErrCorr);
+    vector_EY[Settings::KDvsM4lHighMass][fs][cat].push_back(0.);
+  }
 
 
 
@@ -1235,20 +1239,20 @@ void Histograms::FillVectors( float M4l, float ZZMassErrCorr, float KD, float DV
 //====================================================================================
 void Histograms::FillDvsM4l( float M4l, float KD, float DVBFDEC, float DVHDEC, int nCleanedJetsPt30, float D1jet, float D2jet, float DWH, float DZH, float DVH, float weight, int fs, int cat, int proc )
 {
-	if ( cat == Settings::VBF_2j_tagged)
-	{
-		histos_2DError[Settings::DVBFDECvsM4lZoomed][fs][cat][proc]  ->Fill(M4l, DVBFDEC, (proc == Settings::Data) ? 1. : weight);
-	}
-	else if ( cat  == Settings::VH_hadron_tagged )
-	{
-		histos_2DError[Settings::DVHDECvsM4lZoomed][fs][cat][proc]  ->Fill(M4l, DVHDEC, (proc == Settings::Data) ? 1. : weight);
-	}
-	else
-	{
-		histos_2DError[Settings::KDvsM4l][fs][cat][proc]        ->Fill(M4l, KD, (proc == Settings::Data) ? 1. : weight);
-		histos_2DError[Settings::KDvsM4lZoomed][fs][cat][proc]  ->Fill(M4l, KD, (proc == Settings::Data) ? 1. : weight);
-		histos_2DError[Settings::KDvsM4lHighMass][fs][cat][proc]->Fill(M4l, KD, (proc == Settings::Data) ? 1. : weight);
-	}
+  if ( cat == Settings::VBF_2j_tagged)
+  {
+    histos_2DError[Settings::DVBFDECvsM4lZoomed][fs][cat][proc]  ->Fill(M4l, DVBFDEC, (proc == Settings::Data) ? 1. : weight);
+  }
+  else if ( cat  == Settings::VH_hadron_tagged )
+  {
+    histos_2DError[Settings::DVHDECvsM4lZoomed][fs][cat][proc]  ->Fill(M4l, DVHDEC, (proc == Settings::Data) ? 1. : weight);
+  }
+  else
+  {
+    histos_2DError[Settings::KDvsM4l][fs][cat][proc]        ->Fill(M4l, KD, (proc == Settings::Data) ? 1. : weight);
+    histos_2DError[Settings::KDvsM4lZoomed][fs][cat][proc]  ->Fill(M4l, KD, (proc == Settings::Data) ? 1. : weight);
+    histos_2DError[Settings::KDvsM4lHighMass][fs][cat][proc]->Fill(M4l, KD, (proc == Settings::Data) ? 1. : weight);
+  }
    if (nCleanedJetsPt30 == 1) histos_2DError[Settings::D1jetvsM4lZoomed][fs][cat][proc]->Fill(M4l, D1jet, (proc == Settings::Data) ? 1. : weight);
    if (nCleanedJetsPt30 >= 2) histos_2DError[Settings::D2jetvsM4lZoomed][fs][cat][proc]->Fill(M4l, D2jet, (proc == Settings::Data) ? 1. : weight);
    if (nCleanedJetsPt30 >= 2) histos_2DError[Settings::DWHvsM4lZoomed][fs][cat][proc]  ->Fill(M4l, DWH,   (proc == Settings::Data) ? 1. : weight);
@@ -1261,20 +1265,20 @@ void Histograms::FillDvsM4l( float M4l, float KD, float DVBFDEC, float DVHDEC, i
 //====================================================================================
 void Histograms::FillDvsM4l_ZX( float M4l, float KD, float DVBFDEC, float DVHDEC, int nCleanedJetsPt30, float weight, int fs, int cat )
 {
-	if ( cat == Settings::VBF_2j_tagged)
-	{
-		histos_2DError_ZX[Settings::DVBFDECvsM4lZoomed][fs][cat]->Fill(M4l, DVBFDEC, weight);
-	}
-	else if ( cat  == Settings::VH_hadron_tagged )
-	{
-		histos_2DError_ZX[Settings::DVHDECvsM4lZoomed][fs][cat]->Fill(M4l, DVHDEC, weight);
-	}
-	else
-	{
-		//histos_2DError_ZX[Settings::KDvsM4l][fs][cat]      ->Fill(M4l, KD, weight);
-		histos_2DError_ZX[Settings::KDvsM4lZoomed][fs][cat]  ->Fill(M4l, KD, weight);
-		//histos_2DError_ZX[Settings::KDvsM4lHighMass][fs][cat]->Fill(M4l, KD, weight);
-	}
+  if ( cat == Settings::VBF_2j_tagged)
+  {
+    histos_2DError_ZX[Settings::DVBFDECvsM4lZoomed][fs][cat]->Fill(M4l, DVBFDEC, weight);
+  }
+  else if ( cat  == Settings::VH_hadron_tagged )
+  {
+    histos_2DError_ZX[Settings::DVHDECvsM4lZoomed][fs][cat]->Fill(M4l, DVHDEC, weight);
+  }
+  else
+  {
+    //histos_2DError_ZX[Settings::KDvsM4l][fs][cat]      ->Fill(M4l, KD, weight);
+    histos_2DError_ZX[Settings::KDvsM4lZoomed][fs][cat]  ->Fill(M4l, KD, weight);
+    //histos_2DError_ZX[Settings::KDvsM4lHighMass][fs][cat]->Fill(M4l, KD, weight);
+  }
 }
 //====================================================================================
 
@@ -1296,7 +1300,7 @@ void Histograms::FillOthers( float M4l, float ZZPt, float ZZEta, float PFMET, fl
    histos_1D[Settings::Eta4l][fs][cat][proc]       ->Fill(ZZEta, (proc == Settings::Data) ? 1. : weight);
    histos_1D[Settings::Pt_leading][fs][cat][proc]  ->Fill(Pt_leading, (proc == Settings::Data) ? 1. : weight);
    histos_1D[Settings::Pt_trailing][fs][cat][proc] ->Fill(Pt_trailing, (proc == Settings::Data) ? 1. : weight);
-	histos_1D[Settings::Eta_leading][fs][cat][proc]  ->Fill(Eta_leading, (proc == Settings::Data) ? 1. : weight);
+  histos_1D[Settings::Eta_leading][fs][cat][proc]  ->Fill(Eta_leading, (proc == Settings::Data) ? 1. : weight);
    histos_1D[Settings::Eta_trailing][fs][cat][proc] ->Fill(Eta_trailing, (proc == Settings::Data) ? 1. : weight);
    histos_1D[Settings::SIP_leading][fs][cat][proc] ->Fill(SIP_leading, (proc == Settings::Data) ? 1. : weight);
    histos_1D[Settings::SIP_trailing][fs][cat][proc]->Fill(SIP_trailing, (proc == Settings::Data) ? 1. : weight);
@@ -1315,7 +1319,7 @@ void Histograms::FillOthers( float M4l, float ZZPt, float ZZEta, float PFMET, fl
 void Histograms::FillOthersZX( float M4l, float ZZPt, float ZZEta, float PFMET, float Pt_leading, float Pt_trailing, float Eta_leading, float Eta_trailing, float SIP_leading, float SIP_trailing, float ISO_leading, float ISO_trailing, int NExtraLep, int NJets, int NJetsBTagged, float KD, float DVBFDEC, float DVHDEC, float weight, int fs, int cat )
 {
    histos_1D_ZX[Settings::PFMET][fs][cat]       ->Fill(PFMET, weight);
-	histos_1D_ZX[Settings::Pt4l][fs][cat]        ->Fill(ZZPt, weight);
+  histos_1D_ZX[Settings::Pt4l][fs][cat]        ->Fill(ZZPt, weight);
    histos_1D_ZX[Settings::Eta4l][fs][cat]       ->Fill(ZZEta, weight);
    histos_1D_ZX[Settings::Pt_leading][fs][cat]  ->Fill(Pt_leading, weight);
    histos_1D_ZX[Settings::Pt_trailing][fs][cat] ->Fill(Pt_trailing, weight);
@@ -1377,42 +1381,42 @@ void Histograms::FillInclusive()
       for ( int i_cat = 0; i_cat < num_of_categories; i_cat++ ) // Change to num_of_categories - 1
       {
 
-      	for ( int i_1Dhistos = 0; i_1Dhistos < num_of_1D_plot_names; i_1Dhistos++ )
+        for ( int i_1Dhistos = 0; i_1Dhistos < num_of_1D_plot_names; i_1Dhistos++ )
 
-      	{
-      		if ( i_1Dhistos == Settings::M4lYields ) continue;
-				  histos_1D[i_1Dhistos][i_fs][i_cat][Settings::H125]->Add(histos_1D[i_1Dhistos][i_fs][i_cat][Settings::H125ggH]);
-         	histos_1D[i_1Dhistos][i_fs][i_cat][Settings::H125]->Add(histos_1D[i_1Dhistos][i_fs][i_cat][Settings::H125VBF]);
-         	histos_1D[i_1Dhistos][i_fs][i_cat][Settings::H125]->Add(histos_1D[i_1Dhistos][i_fs][i_cat][Settings::H125VH]);
-         	histos_1D[i_1Dhistos][i_fs][i_cat][Settings::H125]->Add(histos_1D[i_1Dhistos][i_fs][i_cat][Settings::H125ttH]);
-         	histos_1D[i_1Dhistos][i_fs][i_cat][Settings::H125]->Add(histos_1D[i_1Dhistos][i_fs][i_cat][Settings::H125bbH]);
-         	histos_1D[i_1Dhistos][i_fs][i_cat][Settings::H125]->Add(histos_1D[i_1Dhistos][i_fs][i_cat][Settings::H125tqH]);
+        {
+          if ( i_1Dhistos == Settings::M4lYields ) continue;
+          histos_1D[i_1Dhistos][i_fs][i_cat][Settings::H125]->Add(histos_1D[i_1Dhistos][i_fs][i_cat][Settings::H125ggH]);
+          histos_1D[i_1Dhistos][i_fs][i_cat][Settings::H125]->Add(histos_1D[i_1Dhistos][i_fs][i_cat][Settings::H125VBF]);
+          histos_1D[i_1Dhistos][i_fs][i_cat][Settings::H125]->Add(histos_1D[i_1Dhistos][i_fs][i_cat][Settings::H125VH]);
+          histos_1D[i_1Dhistos][i_fs][i_cat][Settings::H125]->Add(histos_1D[i_1Dhistos][i_fs][i_cat][Settings::H125ttH]);
+          histos_1D[i_1Dhistos][i_fs][i_cat][Settings::H125]->Add(histos_1D[i_1Dhistos][i_fs][i_cat][Settings::H125bbH]);
+          histos_1D[i_1Dhistos][i_fs][i_cat][Settings::H125]->Add(histos_1D[i_1Dhistos][i_fs][i_cat][Settings::H125tqH]);
 
-			}
+      }
 
-			for ( int i_2Dhistos = 0; i_2Dhistos < num_of_2D_plot_names; i_2Dhistos++ )
+      for ( int i_2Dhistos = 0; i_2Dhistos < num_of_2D_plot_names; i_2Dhistos++ )
 
-      	{
-				  histos_2D[i_2Dhistos][i_fs][i_cat][Settings::H125]->Add(histos_2D[i_2Dhistos][i_fs][i_cat][Settings::H125ggH]);
-         	histos_2D[i_2Dhistos][i_fs][i_cat][Settings::H125]->Add(histos_2D[i_2Dhistos][i_fs][i_cat][Settings::H125VBF]);
-         	histos_2D[i_2Dhistos][i_fs][i_cat][Settings::H125]->Add(histos_2D[i_2Dhistos][i_fs][i_cat][Settings::H125VH]);
-         	histos_2D[i_2Dhistos][i_fs][i_cat][Settings::H125]->Add(histos_2D[i_2Dhistos][i_fs][i_cat][Settings::H125ttH]);
-         	histos_2D[i_2Dhistos][i_fs][i_cat][Settings::H125]->Add(histos_2D[i_2Dhistos][i_fs][i_cat][Settings::H125bbH]);
-         	histos_2D[i_2Dhistos][i_fs][i_cat][Settings::H125]->Add(histos_2D[i_2Dhistos][i_fs][i_cat][Settings::H125tqH]);
+        {
+          histos_2D[i_2Dhistos][i_fs][i_cat][Settings::H125]->Add(histos_2D[i_2Dhistos][i_fs][i_cat][Settings::H125ggH]);
+          histos_2D[i_2Dhistos][i_fs][i_cat][Settings::H125]->Add(histos_2D[i_2Dhistos][i_fs][i_cat][Settings::H125VBF]);
+          histos_2D[i_2Dhistos][i_fs][i_cat][Settings::H125]->Add(histos_2D[i_2Dhistos][i_fs][i_cat][Settings::H125VH]);
+          histos_2D[i_2Dhistos][i_fs][i_cat][Settings::H125]->Add(histos_2D[i_2Dhistos][i_fs][i_cat][Settings::H125ttH]);
+          histos_2D[i_2Dhistos][i_fs][i_cat][Settings::H125]->Add(histos_2D[i_2Dhistos][i_fs][i_cat][Settings::H125bbH]);
+          histos_2D[i_2Dhistos][i_fs][i_cat][Settings::H125]->Add(histos_2D[i_2Dhistos][i_fs][i_cat][Settings::H125tqH]);
 
-			}
+      }
 
-			for ( int i_2D_errorhistos = 0; i_2D_errorhistos < num_of_2D_error_plot_names; i_2D_errorhistos++ )
+      for ( int i_2D_errorhistos = 0; i_2D_errorhistos < num_of_2D_error_plot_names; i_2D_errorhistos++ )
 
-      	{
-				  histos_2DError[i_2D_errorhistos][i_fs][i_cat][Settings::H125]->Add(histos_2DError[i_2D_errorhistos][i_fs][i_cat][Settings::H125ggH]);
-         	histos_2DError[i_2D_errorhistos][i_fs][i_cat][Settings::H125]->Add(histos_2DError[i_2D_errorhistos][i_fs][i_cat][Settings::H125VBF]);
-         	histos_2DError[i_2D_errorhistos][i_fs][i_cat][Settings::H125]->Add(histos_2DError[i_2D_errorhistos][i_fs][i_cat][Settings::H125VH]);
-         	histos_2DError[i_2D_errorhistos][i_fs][i_cat][Settings::H125]->Add(histos_2DError[i_2D_errorhistos][i_fs][i_cat][Settings::H125ttH]);
-         	histos_2DError[i_2D_errorhistos][i_fs][i_cat][Settings::H125]->Add(histos_2DError[i_2D_errorhistos][i_fs][i_cat][Settings::H125bbH]);
-         	histos_2DError[i_2D_errorhistos][i_fs][i_cat][Settings::H125]->Add(histos_2DError[i_2D_errorhistos][i_fs][i_cat][Settings::H125tqH]);
+        {
+          histos_2DError[i_2D_errorhistos][i_fs][i_cat][Settings::H125]->Add(histos_2DError[i_2D_errorhistos][i_fs][i_cat][Settings::H125ggH]);
+          histos_2DError[i_2D_errorhistos][i_fs][i_cat][Settings::H125]->Add(histos_2DError[i_2D_errorhistos][i_fs][i_cat][Settings::H125VBF]);
+          histos_2DError[i_2D_errorhistos][i_fs][i_cat][Settings::H125]->Add(histos_2DError[i_2D_errorhistos][i_fs][i_cat][Settings::H125VH]);
+          histos_2DError[i_2D_errorhistos][i_fs][i_cat][Settings::H125]->Add(histos_2DError[i_2D_errorhistos][i_fs][i_cat][Settings::H125ttH]);
+          histos_2DError[i_2D_errorhistos][i_fs][i_cat][Settings::H125]->Add(histos_2DError[i_2D_errorhistos][i_fs][i_cat][Settings::H125bbH]);
+          histos_2DError[i_2D_errorhistos][i_fs][i_cat][Settings::H125]->Add(histos_2DError[i_2D_errorhistos][i_fs][i_cat][Settings::H125tqH]);
 
-			}
+      }
 
       }
    }
@@ -1424,37 +1428,37 @@ void Histograms::FillInclusive()
          for ( int i_proc = 0; i_proc < num_of_processes; i_proc++ )
          {
 
-				for ( int i_1Dhistos = 0; i_1Dhistos < num_of_1D_plot_names; i_1Dhistos++ )
+        for ( int i_1Dhistos = 0; i_1Dhistos < num_of_1D_plot_names; i_1Dhistos++ )
 
-				{
-					if ( i_1Dhistos == Settings::M4lYields ) continue;
-					histos_1D[i_1Dhistos][Settings::fs4l][i_cat][i_proc]->Add(histos_1D[i_1Dhistos][i_fs][i_cat][i_proc]);
-				}
+        {
+          if ( i_1Dhistos == Settings::M4lYields ) continue;
+          histos_1D[i_1Dhistos][Settings::fs4l][i_cat][i_proc]->Add(histos_1D[i_1Dhistos][i_fs][i_cat][i_proc]);
+        }
 
-				for ( int i_2Dhistos = 0; i_2Dhistos < num_of_2D_plot_names; i_2Dhistos++ )
+        for ( int i_2Dhistos = 0; i_2Dhistos < num_of_2D_plot_names; i_2Dhistos++ )
 
-				{
-					histos_2D[i_2Dhistos][Settings::fs4l][i_cat][i_proc]->Add(histos_2D[i_2Dhistos][i_fs][i_cat][i_proc]);
-				}
+        {
+          histos_2D[i_2Dhistos][Settings::fs4l][i_cat][i_proc]->Add(histos_2D[i_2Dhistos][i_fs][i_cat][i_proc]);
+        }
 
-				for ( int i_2D_errorhistos = 0; i_2D_errorhistos < num_of_2D_error_plot_names; i_2D_errorhistos++ )
+        for ( int i_2D_errorhistos = 0; i_2D_errorhistos < num_of_2D_error_plot_names; i_2D_errorhistos++ )
 
-				{
-					histos_2DError[i_2D_errorhistos][Settings::fs4l][i_cat][i_proc]->Add(histos_2DError[i_2D_errorhistos][i_fs][i_cat][i_proc]);
-				}
+        {
+          histos_2DError[i_2D_errorhistos][Settings::fs4l][i_cat][i_proc]->Add(histos_2DError[i_2D_errorhistos][i_fs][i_cat][i_proc]);
+        }
 
          }
       }
    }
 
-	for ( int i_fs = 0; i_fs < num_of_final_states - 1; i_fs++ )
+  for ( int i_fs = 0; i_fs < num_of_final_states - 1; i_fs++ )
    {
       for ( int i_cat = 0; i_cat < num_of_categories - 1; i_cat++ )
       {
 
-			histos_2DError_ZX[Settings::KDvsM4lZoomed][Settings::fs4l][i_cat]->Add(histos_2DError_ZX[Settings::KDvsM4lZoomed][i_fs][i_cat]);
-			histos_2DError_ZX[Settings::DVBFDECvsM4lZoomed][Settings::fs4l][i_cat]->Add(histos_2DError_ZX[Settings::DVBFDECvsM4lZoomed][i_fs][i_cat]);
-			histos_2DError_ZX[Settings::DVHDECvsM4lZoomed][Settings::fs4l][i_cat]->Add(histos_2DError_ZX[Settings::DVHDECvsM4lZoomed][i_fs][i_cat]);
+      histos_2DError_ZX[Settings::KDvsM4lZoomed][Settings::fs4l][i_cat]->Add(histos_2DError_ZX[Settings::KDvsM4lZoomed][i_fs][i_cat]);
+      histos_2DError_ZX[Settings::DVBFDECvsM4lZoomed][Settings::fs4l][i_cat]->Add(histos_2DError_ZX[Settings::DVBFDECvsM4lZoomed][i_fs][i_cat]);
+      histos_2DError_ZX[Settings::DVHDECvsM4lZoomed][Settings::fs4l][i_cat]->Add(histos_2DError_ZX[Settings::DVHDECvsM4lZoomed][i_fs][i_cat]);
 
       }
    }
@@ -1466,37 +1470,37 @@ void Histograms::FillInclusive()
       {
          for ( int i_proc = 0; i_proc < num_of_processes; i_proc++ )
          {
-				for ( int i_1Dhistos = 0; i_1Dhistos < num_of_1D_plot_names; i_1Dhistos++ )
+        for ( int i_1Dhistos = 0; i_1Dhistos < num_of_1D_plot_names; i_1Dhistos++ )
 
-				{
-					if ( i_1Dhistos == Settings::M4lYields ) continue;
-					histos_1D[i_1Dhistos][i_fs][Settings::inclusive][i_proc]->Add(histos_1D[i_1Dhistos][i_fs][i_cat][i_proc]);
-				}
+        {
+          if ( i_1Dhistos == Settings::M4lYields ) continue;
+          histos_1D[i_1Dhistos][i_fs][Settings::inclusive][i_proc]->Add(histos_1D[i_1Dhistos][i_fs][i_cat][i_proc]);
+        }
 
-				for ( int i_2Dhistos = 0; i_2Dhistos < num_of_2D_plot_names; i_2Dhistos++ )
+        for ( int i_2Dhistos = 0; i_2Dhistos < num_of_2D_plot_names; i_2Dhistos++ )
 
-				{
-					histos_2D[i_2Dhistos][i_fs][Settings::inclusive][i_proc]->Add(histos_2D[i_2Dhistos][i_fs][i_cat][i_proc]);
-				}
+        {
+          histos_2D[i_2Dhistos][i_fs][Settings::inclusive][i_proc]->Add(histos_2D[i_2Dhistos][i_fs][i_cat][i_proc]);
+        }
 
-				for ( int i_2D_errorhistos = 0; i_2D_errorhistos < num_of_2D_error_plot_names; i_2D_errorhistos++ )
+        for ( int i_2D_errorhistos = 0; i_2D_errorhistos < num_of_2D_error_plot_names; i_2D_errorhistos++ )
 
-				{
-					histos_2DError[i_2D_errorhistos][i_fs][Settings::inclusive][i_proc]->Add(histos_2DError[i_2D_errorhistos][i_fs][i_cat][i_proc]);
-				}
+        {
+          histos_2DError[i_2D_errorhistos][i_fs][Settings::inclusive][i_proc]->Add(histos_2DError[i_2D_errorhistos][i_fs][i_cat][i_proc]);
+        }
 
          }
       }
    }
 
-	for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
+  for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
    {
       for ( int i_cat = 0; i_cat < num_of_categories - 1; i_cat++ )
       {
 
-			histos_2DError_ZX[Settings::KDvsM4lZoomed][i_fs][Settings::inclusive]->Add(histos_2DError_ZX[Settings::KDvsM4lZoomed][i_fs][i_cat]);
-			histos_2DError_ZX[Settings::DVBFDECvsM4lZoomed][i_fs][Settings::inclusive]->Add(histos_2DError_ZX[Settings::DVBFDECvsM4lZoomed][i_fs][i_cat]);
-			histos_2DError_ZX[Settings::DVHDECvsM4lZoomed][i_fs][Settings::inclusive]->Add(histos_2DError_ZX[Settings::DVHDECvsM4lZoomed][i_fs][i_cat]);
+      histos_2DError_ZX[Settings::KDvsM4lZoomed][i_fs][Settings::inclusive]->Add(histos_2DError_ZX[Settings::KDvsM4lZoomed][i_fs][i_cat]);
+      histos_2DError_ZX[Settings::DVBFDECvsM4lZoomed][i_fs][Settings::inclusive]->Add(histos_2DError_ZX[Settings::DVBFDECvsM4lZoomed][i_fs][i_cat]);
+      histos_2DError_ZX[Settings::DVHDECvsM4lZoomed][i_fs][Settings::inclusive]->Add(histos_2DError_ZX[Settings::DVHDECvsM4lZoomed][i_fs][i_cat]);
 
       }
    }
@@ -1510,12 +1514,12 @@ void Histograms::FillInclusive()
       for ( int i_cat = 0; i_cat < num_of_categories - 1; i_cat++ )
       {
 
-			for ( int i_1Dhistos = 0; i_1Dhistos < num_of_1D_plot_names; i_1Dhistos++ )
+      for ( int i_1Dhistos = 0; i_1Dhistos < num_of_1D_plot_names; i_1Dhistos++ )
 
-				{
-					if ( i_1Dhistos == Settings::M4lYields ) continue;
-					histos_1D_ZX[i_1Dhistos][Settings::fs4l][i_cat]->Add(histos_1D_ZX[i_1Dhistos][i_fs][i_cat]);
-				}
+        {
+          if ( i_1Dhistos == Settings::M4lYields ) continue;
+          histos_1D_ZX[i_1Dhistos][Settings::fs4l][i_cat]->Add(histos_1D_ZX[i_1Dhistos][i_fs][i_cat]);
+        }
 
          //==========================
          // 2D plots with mass error
@@ -1566,12 +1570,12 @@ void Histograms::FillInclusive()
    {
       for ( int i_cat = 0; i_cat < num_of_categories - 1; i_cat++ )
       {
-			for ( int i_1Dhistos = 0; i_1Dhistos < num_of_1D_plot_names; i_1Dhistos++ )
+      for ( int i_1Dhistos = 0; i_1Dhistos < num_of_1D_plot_names; i_1Dhistos++ )
 
-				{
-					if ( i_1Dhistos == Settings::M4lYields ) continue;
-					histos_1D_ZX[i_1Dhistos][i_fs][Settings::inclusive]->Add(histos_1D_ZX[i_1Dhistos][i_fs][i_cat]);
-				}
+        {
+          if ( i_1Dhistos == Settings::M4lYields ) continue;
+          histos_1D_ZX[i_1Dhistos][i_fs][Settings::inclusive]->Add(histos_1D_ZX[i_1Dhistos][i_fs][i_cat]);
+        }
 
          //==========================
          // 2D plots with mass error
@@ -1696,9 +1700,9 @@ void Histograms::FillInclusiveYields()
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120ggH]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120VBF]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120WHlep]);
-			histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120WHhad]);
+      histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120WHhad]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120ZHlep]);
-			histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120ZHhad]);
+      histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120ZHhad]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120ttHhad]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120ttHlep]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH120bbH]);
@@ -1707,9 +1711,9 @@ void Histograms::FillInclusiveYields()
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124ggH]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124VBF]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124WHlep]);
-			histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124WHhad]);
+      histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124WHhad]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124ZHlep]);
-			histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124ZHhad]);
+      histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124ZHhad]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124ttHhad]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124ttHlep]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH124bbH]);
@@ -1718,9 +1722,9 @@ void Histograms::FillInclusiveYields()
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125ggH]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125VBF]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125WHlep]);
-			histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125WHhad]);
+      histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125WHhad]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125ZHlep]);
-			histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125ZHhad]);
+      histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125ZHhad]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125ttHhad]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125ttHlep]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH125bbH]);
@@ -1729,9 +1733,9 @@ void Histograms::FillInclusiveYields()
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126ggH]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126VBF]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126WHlep]);
-		   histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126WHhad]);
+       histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126WHhad]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126ZHlep]);
-			histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126ZHhad]);
+      histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126ZHhad]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126ttHhad]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126ttHlep]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH126bbH]);
@@ -1740,9 +1744,9 @@ void Histograms::FillInclusiveYields()
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130ggH]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130VBF]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130WHlep]);
-			histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130WHhad]);
+      histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130WHhad]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130ZHlep]);
-			histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130ZHhad]);
+      histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130ZHhad]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130ttHhad]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130ttHlep]);
          histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130]->Add(histos_1D[Settings::M4lYields][i_fs][i_cat][Settings::yH130bbH]);
@@ -2012,16 +2016,16 @@ void Histograms::SaveHistos( string file_name )
       for ( int i_cat = 0; i_cat < num_of_categories; i_cat++ )
       {
 
-			for ( int i_1Dhistos = 0; i_1Dhistos < num_of_1D_plot_names; i_1Dhistos++ )
+      for ( int i_1Dhistos = 0; i_1Dhistos < num_of_1D_plot_names; i_1Dhistos++ )
 
-				{
-					if ( i_1Dhistos == Settings::M4lYields ) continue;
-					histos_1D_ZX[i_1Dhistos][i_fs][i_cat]->Write();
-				}
+        {
+          if ( i_1Dhistos == Settings::M4lYields ) continue;
+          histos_1D_ZX[i_1Dhistos][i_fs][i_cat]->Write();
+        }
 
-			histos_1D_ZX_shape[Settings::M4lMain][i_fs][i_cat]->Write();
-			histos_1D_ZX_shape[Settings::M4lMainZoomed][i_fs][i_cat]->Write();
-			histos_1D_ZX_shape[Settings::M4lMainHighMass][i_fs][i_cat]->Write();
+      histos_1D_ZX_shape[Settings::M4lMain][i_fs][i_cat]->Write();
+      histos_1D_ZX_shape[Settings::M4lMainZoomed][i_fs][i_cat]->Write();
+      histos_1D_ZX_shape[Settings::M4lMainHighMass][i_fs][i_cat]->Write();
 
          //==========================
          // 2D plots with mass error
@@ -2046,7 +2050,7 @@ void Histograms::SaveHistos( string file_name )
          histos_2DError_data[Settings::KDvsM4lZoomed][i_fs][i_cat]->Write();
 
 
-			histos_2DError_data[Settings::DVBFDECvsM4lZoomed][i_fs][i_cat] = new TGraphErrors( vector_X[Settings::DVBFDECvsM4lZoomed][i_fs][i_cat].size(),
+      histos_2DError_data[Settings::DVBFDECvsM4lZoomed][i_fs][i_cat] = new TGraphErrors( vector_X[Settings::DVBFDECvsM4lZoomed][i_fs][i_cat].size(),
                                                                                        &(vector_X[Settings::DVBFDECvsM4lZoomed][i_fs][i_cat][0]),
                                                                                        &(vector_Y[Settings::DVBFDECvsM4lZoomed][i_fs][i_cat][0]),
                                                                                        &(vector_EX[Settings::DVBFDECvsM4lZoomed][i_fs][i_cat][0]),
@@ -2134,22 +2138,22 @@ void Histograms::SaveHistos( string file_name )
          {
             for ( int i_1Dhistos = 0; i_1Dhistos < num_of_1D_plot_names; i_1Dhistos++ )
 
-				{
-					if ( i_1Dhistos == Settings::M4lYields ) continue;
-					histos_1D[i_1Dhistos][i_fs][i_cat][i_proc]->Write();
-				}
+        {
+          if ( i_1Dhistos == Settings::M4lYields ) continue;
+          histos_1D[i_1Dhistos][i_fs][i_cat][i_proc]->Write();
+        }
 
-				for ( int i_2Dhistos = 0; i_2Dhistos < num_of_2D_plot_names; i_2Dhistos++ )
+        for ( int i_2Dhistos = 0; i_2Dhistos < num_of_2D_plot_names; i_2Dhistos++ )
 
-				{
-					histos_2D[i_2Dhistos][i_fs][i_cat][i_proc]->Write();
-				}
+        {
+          histos_2D[i_2Dhistos][i_fs][i_cat][i_proc]->Write();
+        }
 
-				for ( int i_2D_errorhistos = 0; i_2D_errorhistos < num_of_2D_error_plot_names; i_2D_errorhistos++ )
+        for ( int i_2D_errorhistos = 0; i_2D_errorhistos < num_of_2D_error_plot_names; i_2D_errorhistos++ )
 
-				{
-					histos_2DError[i_2D_errorhistos][i_fs][i_cat][i_proc]->Write();
-				}
+        {
+          histos_2DError[i_2D_errorhistos][i_fs][i_cat][i_proc]->Write();
+        }
          }
       }
    }
@@ -2207,12 +2211,12 @@ void Histograms::DeleteHistos()
    {
       for ( int i_cat = 0; i_cat < num_of_categories; i_cat++ )
       {
-			 for ( int i_1Dhistos = 0; i_1Dhistos < num_of_1D_plot_names; i_1Dhistos++ )
+       for ( int i_1Dhistos = 0; i_1Dhistos < num_of_1D_plot_names; i_1Dhistos++ )
 
-				{
-					if ( i_1Dhistos == Settings::M4lYields ) continue;
-					delete histos_1D_ZX[i_1Dhistos][i_fs][i_cat];
-				}
+        {
+          if ( i_1Dhistos == Settings::M4lYields ) continue;
+          delete histos_1D_ZX[i_1Dhistos][i_fs][i_cat];
+        }
 
 
          //==========================
@@ -2235,24 +2239,24 @@ void Histograms::DeleteHistos()
          for ( int i_proc = 0; i_proc < num_of_processes; i_proc++ )
          {
 
-				for ( int i_1Dhistos = 0; i_1Dhistos < num_of_1D_plot_names; i_1Dhistos++ )
+        for ( int i_1Dhistos = 0; i_1Dhistos < num_of_1D_plot_names; i_1Dhistos++ )
 
-					{
-						if ( i_1Dhistos == Settings::M4lYields ) continue;
-						delete histos_1D[i_1Dhistos][i_fs][i_cat][i_proc];
-					}
+          {
+            if ( i_1Dhistos == Settings::M4lYields ) continue;
+            delete histos_1D[i_1Dhistos][i_fs][i_cat][i_proc];
+          }
 
-					for ( int i_2Dhistos = 0; i_2Dhistos < num_of_2D_plot_names; i_2Dhistos++ )
+          for ( int i_2Dhistos = 0; i_2Dhistos < num_of_2D_plot_names; i_2Dhistos++ )
 
-					{
-						delete histos_2D[i_2Dhistos][i_fs][i_cat][i_proc];
-					}
+          {
+            delete histos_2D[i_2Dhistos][i_fs][i_cat][i_proc];
+          }
 
-					for ( int i_2D_errorhistos = 0; i_2D_errorhistos < num_of_2D_error_plot_names; i_2D_errorhistos++ )
+          for ( int i_2D_errorhistos = 0; i_2D_errorhistos < num_of_2D_error_plot_names; i_2D_errorhistos++ )
 
-					{
-						delete histos_2DError[i_2D_errorhistos][i_fs][i_cat][i_proc];
-					}
+          {
+            delete histos_2DError[i_2D_errorhistos][i_fs][i_cat][i_proc];
+          }
 
          }
       }
@@ -2521,16 +2525,16 @@ void Histograms::GetHistos( TString file_name )
          histos_1D_ZX[Settings::KD_M4L118130][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
 
          _histo_name = "DVBFDEC_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::DVBFDEC][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
+      histos_1D_ZX[Settings::DVBFDEC][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
 
-			_histo_name = "DVBFDEC_M4L118130_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::DVBFDEC_M4L118130][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
+      _histo_name = "DVBFDEC_M4L118130_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::DVBFDEC_M4L118130][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
 
-			_histo_name = "DVHDEC_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::DVHDEC][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
+      _histo_name = "DVHDEC_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::DVHDEC][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
 
-			_histo_name = "DVHDEC_M4L118130_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::DVHDEC_M4L118130][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
+      _histo_name = "DVHDEC_M4L118130_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::DVHDEC_M4L118130][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
 
          _histo_name = "D1jet_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
          histos_1D_ZX[Settings::D1jet][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
@@ -2604,53 +2608,53 @@ void Histograms::GetHistos( TString file_name )
          _histo_name = "DVHDECvsM4lZoomed_ZX" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + "_" + _blinding;
          histos_2DError_ZX[Settings::DVHDECvsM4lZoomed][i_fs][i_cat] = (TH2F*)histo_file->Get(_histo_name.c_str());
 
-			//===========
-			// Others
-			//===========
-			_histo_name = "PFMET_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::PFMET][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
+      //===========
+      // Others
+      //===========
+      _histo_name = "PFMET_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::PFMET][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
 
-			_histo_name = "Pt_leading_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::Pt_leading][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
+      _histo_name = "Pt_leading_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::Pt_leading][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
 
-			_histo_name = "Pt_trailing_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::Pt_trailing][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
+      _histo_name = "Pt_trailing_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::Pt_trailing][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
 
-			_histo_name = "Eta_leading_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::Eta_leading][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
+      _histo_name = "Eta_leading_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::Eta_leading][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
 
-			_histo_name = "Eta_trailing_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::Eta_trailing][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
+      _histo_name = "Eta_trailing_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::Eta_trailing][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
 
-			_histo_name = "SIP_leading_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::SIP_leading][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
+      _histo_name = "SIP_leading_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::SIP_leading][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
 
-			_histo_name = "SIP_trailing_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::SIP_trailing][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
+      _histo_name = "SIP_trailing_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::SIP_trailing][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
 
-			_histo_name = "ISO_leading_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::ISO_leading][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
+      _histo_name = "ISO_leading_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::ISO_leading][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
 
-			_histo_name = "ISO_trailing_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::ISO_trailing][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
+      _histo_name = "ISO_trailing_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::ISO_trailing][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
 
-			_histo_name = "Pt4l_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::Pt4l][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
+      _histo_name = "Pt4l_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::Pt4l][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
 
-			_histo_name = "NJetsBTagged_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::NJetsBTagged][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
+      _histo_name = "NJetsBTagged_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::NJetsBTagged][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
 
-			_histo_name = "Eta4l_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::Eta4l][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
+      _histo_name = "Eta4l_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::Eta4l][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
 
-			_histo_name = "NExtraLep_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::NExtraLep][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
+      _histo_name = "NExtraLep_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::NExtraLep][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
 
-			_histo_name = "NJets_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::NJets][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
+      _histo_name = "NJets_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::NJets][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
 
-			_histo_name = "M4l_110150_HighKD_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-			histos_1D_ZX[Settings::M4l_110150_HighKD][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
+      _histo_name = "M4l_110150_HighKD_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
+      histos_1D_ZX[Settings::M4l_110150_HighKD][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
       }
    }
 
@@ -2807,7 +2811,7 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
       stack->SetMaximum((data_max + data_max_error)*1.5);
    }
    else
-	{
+  {
       stack->SetMinimum(1e-5);
       stack->SetMaximum((data_max + data_max_error)*1.1);
    }
@@ -2865,7 +2869,7 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
                                          histos_1D[plot_index][fs][cat][Settings::ggZZ],
                                          histos_1D_ZX[plot_index][fs][cat], false);
    }
-	else if ( plot_index == Settings::DVBFDEC_M4L118130)
+  else if ( plot_index == Settings::DVBFDEC_M4L118130)
    {
       legend  = CreateLegendVBF("right", histos_1D[plot_index][fs][cat][Settings::Data],
                                          histos_1D[plot_index][fs][cat][Settings::H125VBF],
@@ -2915,7 +2919,7 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
       text = CreateCutText("right top", "118 < m_{4#font[12]{l}} < 130 GeV");
       text->Draw();
    }
-	else if ( plot_index == Settings::D1jet_M4L118130 )
+  else if ( plot_index == Settings::D1jet_M4L118130 )
    {
       text = CreateCutText("right top", "#splitline{118 < m_{4#font[12]{l}} < 130 GeV}{N(jets) = 1}");
       text->Draw();
@@ -2925,13 +2929,13 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
       text = CreateCutText("left top", "118 < m_{4#font[12]{l}} < 130 GeV");
       text->Draw();
    }
-   	else if ( plot_index == Settings::D2jet_M4L118130 ||  plot_index == Settings::DWH_M4L118130 || plot_index == Settings::DZH_M4L118130 ||
+    else if ( plot_index == Settings::D2jet_M4L118130 ||  plot_index == Settings::DWH_M4L118130 || plot_index == Settings::DZH_M4L118130 ||
              plot_index == Settings::DVH_M4L118130 )
    {
       text = CreateCutText("left top", "#splitline{118 < m_{4#font[12]{l}} < 130 GeV}{N(jets) #geq 2}");
       text->Draw();
    }
-	else if ( plot_index == Settings::M4l_110150_HighKD)
+  else if ( plot_index == Settings::M4l_110150_HighKD)
    {
       if (cat == Settings::VBF_2j_tagged ) text = CreateCutText("right top", "D_{bkg}^{VBF+dec} > 0.5");
       else if (cat == Settings::VH_hadron_tagged ) text = CreateCutText("right top", "D_{bkg}^{VH+dec} > 0.5");
@@ -2939,11 +2943,11 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
       text->Draw();
    }
 
-	if ( plot_index == Settings::DVBFDEC_M4L118130 || plot_index == Settings::DVBFDEC || plot_index == Settings::DVHDEC_M4L118130 || plot_index == Settings::DVHDEC)
-	{
-		text = CreateCatText("left under cut text", _s_category_label.at(cat));
-		text->Draw();
-	}
+  if ( plot_index == Settings::DVBFDEC_M4L118130 || plot_index == Settings::DVBFDEC || plot_index == Settings::DVHDEC_M4L118130 || plot_index == Settings::DVHDEC)
+  {
+    text = CreateCatText("left under cut text", _s_category_label.at(cat));
+    text->Draw();
+  }
 
 
    if ( plot_index == Settings::D2jet_M4L118130  || plot_index == Settings::D2jet || plot_index == Settings::DWH_M4L118130 || plot_index == Settings::DWH || plot_index == Settings::DZH_M4L118130 || plot_index == Settings::DZH || plot_index == Settings::DVH_M4L118130 || plot_index == Settings::DVH)
@@ -3369,7 +3373,7 @@ void Histograms::plot_1D_all_cat( TString filename, TString variable_name , TStr
          ChangeYaxisTitle(stack);
       }
 
-		float data_max = histos_1D[plot_index][Settings::fs4l][i_cat][Settings::Data]->GetBinContent(histos_1D[plot_index][Settings::fs4l][i_cat][Settings::Data]->GetMaximumBin());
+    float data_max = histos_1D[plot_index][Settings::fs4l][i_cat][Settings::Data]->GetBinContent(histos_1D[plot_index][Settings::fs4l][i_cat][Settings::Data]->GetMaximumBin());
       float data_max_error = histos_1D[plot_index][Settings::fs4l][i_cat][Settings::Data]->GetBinErrorUp(histos_1D[plot_index][Settings::fs4l][i_cat][Settings::Data]->GetMaximumBin());
 
       if ( GetVarLogY( variable_name) )
@@ -3452,13 +3456,13 @@ void Histograms::plot_1D_all_cat( TString filename, TString variable_name , TStr
          text->Draw();
       }
 
-		if ( plot_index == Settings::M4l_110150_HighKD)
-		{
-			if (i_cat == Settings::VBF_2j_tagged ) text = CreateCutText("left top", "D_{bkg}^{VBF+dec} > 0.5");
-      	else if (i_cat == Settings::VH_hadron_tagged ) text = CreateCutText("left top", "D_{bkg}^{VH+dec} > 0.5");
-      	else text = CreateCutText("left top", "D_{bkg}^{kin} > 0.5");
-			text->Draw();
-		}
+    if ( plot_index == Settings::M4l_110150_HighKD)
+    {
+      if (i_cat == Settings::VBF_2j_tagged ) text = CreateCutText("left top", "D_{bkg}^{VBF+dec} > 0.5");
+        else if (i_cat == Settings::VH_hadron_tagged ) text = CreateCutText("left top", "D_{bkg}^{VH+dec} > 0.5");
+        else text = CreateCutText("left top", "D_{bkg}^{kin} > 0.5");
+      text->Draw();
+    }
 
 //=================
 // CMS TEXT & LUMI
@@ -3579,7 +3583,7 @@ void Histograms::plot_1D_all_fs( TString filename, TString variable_name , TStri
 
       if ( (plot_index == Settings::M4lMainZoomed) ||  (plot_index == Settings::M4lMainHighMass)) stack->GetXaxis()->SetNdivisions(1005);
 
-		histos_1D[plot_index][i_fs][Settings::inclusive][Settings::Data]->SetMarkerSize(0.9);
+    histos_1D[plot_index][i_fs][Settings::inclusive][Settings::Data]->SetMarkerSize(0.9);
       histos_1D[plot_index][i_fs][Settings::inclusive][Settings::Data]->Draw("SAME p E1 X0");
 
       TLegend *legend;
@@ -3590,6 +3594,7 @@ void Histograms::plot_1D_all_fs( TString filename, TString variable_name , TStri
                                          histos_1D[plot_index][i_fs][Settings::inclusive][Settings::H125],
                                          histos_1D[plot_index][i_fs][Settings::inclusive][Settings::qqZZ],
                                          histos_1D[plot_index][i_fs][Settings::inclusive][Settings::ggZZ],
+                                         histos_1D[plot_index][i_fs][Settings::inclusive][Settings::VVV],
                                          histos_1D_ZX_shape[plot_index][i_fs][Settings::inclusive]);
       }
       else
@@ -3598,21 +3603,22 @@ void Histograms::plot_1D_all_fs( TString filename, TString variable_name , TStri
                                         histos_1D[plot_index][i_fs][Settings::inclusive][Settings::H125],
                                         histos_1D[plot_index][i_fs][Settings::inclusive][Settings::qqZZ],
                                         histos_1D[plot_index][i_fs][Settings::inclusive][Settings::ggZZ],
+                                        histos_1D[plot_index][i_fs][Settings::inclusive][Settings::VVV],
                                         histos_1D_ZX[plot_index][i_fs][Settings::inclusive]);
       }
       legend->Draw();
 
       //===========
-		// PLOT TEXT
-		//===========
+    // PLOT TEXT
+    //===========
 
-		TPaveText *text;
+    TPaveText *text;
 
-		if ( plot_index == Settings::M4l_110150_HighKD)
-		{
-			text = CreateCutText("left top", "D_{bkg}^{kin} > 0.5");
-			text->Draw();
-		}
+    if ( plot_index == Settings::M4l_110150_HighKD)
+    {
+      text = CreateCutText("left top", "D_{bkg}^{kin} > 0.5");
+      text->Draw();
+    }
 
       // Draw lumi
       CMS_lumi *lumi = new CMS_lumi;
@@ -3742,6 +3748,7 @@ void Histograms::plot_2D_error_single( TString filename, TString variable_name, 
    stack = (TH2F*)histos_2DError[plot_index][Settings::fs4l][cat][Settings::H125]->Clone();
    stack->Add(histos_2DError[plot_index][Settings::fs4l][cat][Settings::qqZZ]);
    stack->Add(histos_2DError[plot_index][Settings::fs4l][cat][Settings::ggZZ]);
+   stack->Add(histos_2DError[plot_index][Settings::fs4l][cat][Settings::VVV]);
 
    stack->SetTitleOffset(1.00, "X");
    stack->SetTitleOffset(1.25, "YZ");
@@ -3831,6 +3838,7 @@ void Histograms::plot_2D_error_all_cat( TString filename, TString variable_name,
    stack = (TH2F*)histos_2DError[plot_index][Settings::fs4l][Settings::inclusive][Settings::H125]->Clone();
    stack->Add(histos_2DError[plot_index][Settings::fs4l][Settings::inclusive][Settings::qqZZ]);
    stack->Add(histos_2DError[plot_index][Settings::fs4l][Settings::inclusive][Settings::ggZZ]);
+   stack->Add(histos_2DError[plot_index][Settings::fs4l][Settings::inclusive][Settings::VVV]);
    histos_2DError_ZX[plot_index][Settings::fs4l][Settings::inclusive]->Smooth();
    stack->Add(histos_2DError_ZX[plot_index][Settings::fs4l][Settings::inclusive]);
 
@@ -3867,7 +3875,7 @@ void Histograms::plot_2D_error_all_cat( TString filename, TString variable_name,
       histos_2DError_data[plot_index][i_fs][Settings::ttH_hadron_tagged]->SetMarkerStyle(30);
       histos_2DError_data[plot_index][i_fs][Settings::ttH_hadron_tagged]->SetMarkerSize(0.9);
 
-		histos_2DError_data[plot_index][i_fs][Settings::ttH_lepton_tagged]->SetMarkerStyle(25);
+      histos_2DError_data[plot_index][i_fs][Settings::ttH_lepton_tagged]->SetMarkerStyle(25);
       histos_2DError_data[plot_index][i_fs][Settings::ttH_lepton_tagged]->SetMarkerSize(0.9);
 
       histos_2DError_data[plot_index][i_fs][Settings::VH_MET_tagged]->SetMarkerStyle(25);
@@ -3895,8 +3903,8 @@ void Histograms::plot_2D_error_all_cat( TString filename, TString variable_name,
       for (int i_cat = 0; i_cat < Settings::inclusive; i_cat++)
       {
          if(plot_index == Settings::DVBFDECvsM4lZoomed && i_cat == Settings::VBF_2j_tagged) histos_2DError_data[plot_index][i_fs][i_cat]->Draw("SAME P");
-			else if(plot_index == Settings::DVHDECvsM4lZoomed && i_cat == Settings::VH_hadron_tagged) histos_2DError_data[plot_index][i_fs][i_cat]->Draw("SAME P");
-			else histos_2DError_data[plot_index][i_fs][i_cat]->Draw("SAME P");
+      else if(plot_index == Settings::DVHDECvsM4lZoomed && i_cat == Settings::VH_hadron_tagged) histos_2DError_data[plot_index][i_fs][i_cat]->Draw("SAME P");
+      else histos_2DError_data[plot_index][i_fs][i_cat]->Draw("SAME P");
       }
    }
 
@@ -3928,7 +3936,7 @@ void Histograms::plot_2D_error_all_cat( TString filename, TString variable_name,
                                          histos_2DError_data[plot_index][Settings::fs4l][Settings::ttH_hadron_tagged],
                                          histos_2DError_data[plot_index][Settings::fs4l][Settings::ttH_lepton_tagged]);
 
-	if ( plot_index == Settings::DVBFDECvsM4lZoomed) legend = Create2DLegendAllCat_DVBFDEC( "top", histos_2DError_data[plot_index][Settings::fs4e][Settings::untagged],
+  if ( plot_index == Settings::DVBFDECvsM4lZoomed) legend = Create2DLegendAllCat_DVBFDEC( "top", histos_2DError_data[plot_index][Settings::fs4e][Settings::untagged],
                                          histos_2DError_data[plot_index][Settings::fs4mu][Settings::untagged],
                                          histos_2DError_data[plot_index][Settings::fs2e2mu][Settings::untagged],
                                          histos_2DError_data[plot_index][Settings::fs4l][Settings::VBF_2j_tagged]);
@@ -3959,7 +3967,7 @@ void Histograms::FillYieldGraphs( float M4l_down, float M4l_up , TString fit_opt
 
    gStyle->SetOptFit(0);
 
-	TCanvas *c = new TCanvas("c1", "c1", 1500, 1500);
+  TCanvas *c = new TCanvas("c1", "c1", 1500, 1500);
 
    TPaveText* pav = new TPaveText(0.13,0.93,0.8,1.,"brNDC");
    pav->SetFillStyle(0);
@@ -4046,7 +4054,7 @@ void Histograms::FillYieldGraphs( float M4l_down, float M4l_up , TString fit_opt
             || (i_prod_mode == Settings::ZH_had && i_cat == Settings::ttH_lepton_tagged) ) fit_model = "pol0";
 //            || (i_prod_mode == Settings::ZH_had && i_cat == Settings::ttH_hadron_tagged)
 //            || (i_prod_mode == Settings::ZH_had && i_cat == Settings::VH_lepton_tagged)
-//				|| (i_prod_mode == Settings::WH_lep && i_cat == Settings::ttH_lepton_tagged)
+//        || (i_prod_mode == Settings::WH_lep && i_cat == Settings::ttH_lepton_tagged)
 //            || (i_prod_mode == Settings::WH_lep && i_cat == Settings::ttH_hadron_tagged)
 //            || (i_prod_mode == Settings::WH_lep && i_cat == Settings::VH_hadron_tagged)
 //            || (i_prod_mode == Settings::ZH_lep && i_cat == Settings::ttH_lepton_tagged)
@@ -4071,23 +4079,23 @@ void Histograms::FillYieldGraphs( float M4l_down, float M4l_up , TString fit_opt
 
          } // i_fs
 
-			c->cd();
-			pav->AddText(_s_production_mode[i_prod_mode] + ", " + _s_category[i_cat]);
+      c->cd();
+      pav->AddText(_s_production_mode[i_prod_mode] + ", " + _s_category[i_cat]);
 
-			yields_graph[Settings::fs2e2mu][i_cat][i_prod_mode]->Draw("AP");
-			yields_graph[Settings::fs4e][i_cat][i_prod_mode]->Draw("P");
-			yields_graph[Settings::fs4mu][i_cat][i_prod_mode]->Draw("P");
-			pav->Draw();
-			lgd->Draw();
+      yields_graph[Settings::fs2e2mu][i_cat][i_prod_mode]->Draw("AP");
+      yields_graph[Settings::fs4e][i_cat][i_prod_mode]->Draw("P");
+      yields_graph[Settings::fs4mu][i_cat][i_prod_mode]->Draw("P");
+      pav->Draw();
+      lgd->Draw();
 
-			TString fit_name = _s_production_mode.at(i_prod_mode) + "_" + _s_category.at(i_cat);
+      TString fit_name = _s_production_mode.at(i_prod_mode) + "_" + _s_category.at(i_cat);
 
-			 _out_file_name = "Fits/" + _s_production_mode.at(i_prod_mode) + "_" + _s_category.at(i_cat);
-			 SavePlots(c, _out_file_name, "Fits");
+       _out_file_name = "Fits/" + _s_production_mode.at(i_prod_mode) + "_" + _s_category.at(i_cat);
+       SavePlots(c, _out_file_name, "Fits");
 
-			pav->Clear();
-			lgd->Clear();
-			c->Clear();
+      pav->Clear();
+      lgd->Clear();
+      c->Clear();
 
       } // i_cat
    } // i_prod_mode
@@ -4238,7 +4246,7 @@ void Histograms::PrintYields( vector< vector <float> > _expected_yield_SR)
       cout << endl;
    }
 
-	// Total MC
+  // Total MC
    cout << endl;
 
    for ( int i_cat = 0; i_cat < num_of_categories; i_cat++ )
@@ -4314,7 +4322,7 @@ void Histograms::PrintYields(float M4l_down, float M4l_up, vector< vector <float
       cout << endl;
    }
 
-   	// Total MC
+    // Total MC
    cout << endl;
 
    for ( int i_cat = 0; i_cat < num_of_categories; i_cat++ )
@@ -4653,7 +4661,7 @@ void Histograms::PrintLatexTables(float M4l_down, float M4l_up, vector< vector <
    }
    cout << "& $" << yields_ZX.at(Settings::ttH_lepton_tagged) << "$ & $" << total + yields_ZX.at(Settings::ttH_lepton_tagged) << "$ & XXX \\\\" << endl;
 
-	cout << "ttH-hadr. ";
+  cout << "ttH-hadr. ";
    total = 0;
    for (unsigned int i_proc = 0; i_proc < yields_map[Settings::ttH_hadron_tagged].size(); i_proc++ )
    {
@@ -4771,7 +4779,7 @@ int Histograms::SetPlotName( TString variable_name )
    else if ( variable_name == "DVHvsM4lZoomed" )    return Settings::DVHvsM4lZoomed;
 
 
-	//=============
+  //=============
    // Others
    //=============
    else if ( variable_name == "PFMET" )              return Settings::PFMET;
@@ -4786,7 +4794,7 @@ int Histograms::SetPlotName( TString variable_name )
    else if ( variable_name == "ISO_leading" )        return Settings::ISO_leading;
    else if ( variable_name == "ISO_trailing" )       return Settings::ISO_trailing;
    else if ( variable_name == "NExtraLep" )          return Settings::NExtraLep;
-	else if ( variable_name == "NJets" )              return Settings::NJets;
+  else if ( variable_name == "NJets" )              return Settings::NJets;
    else if ( variable_name == "NJetsBTagged" )       return Settings::NJetsBTagged;
    else if ( variable_name == "M4l_110150_HighKD" )  return Settings::M4l_110150_HighKD;
 
@@ -4863,7 +4871,7 @@ bool Histograms::GetVarLogX ( TString variable_name )
    else if (variable_name == "DZHvsM4lZoomed")    return bool(Variables::DZHvsM4lZoomed().var_log_x);
    else if (variable_name == "DVHvsM4lZoomed")    return bool(Variables::DVHvsM4lZoomed().var_log_x);
 
-	//=============
+  //=============
    // Others
    //=============
    else if ( variable_name == "PFMET" )              return bool(Variables::PFMET().var_log_x);
@@ -4878,7 +4886,7 @@ bool Histograms::GetVarLogX ( TString variable_name )
    else if ( variable_name == "ISO_leading" )        return bool(Variables::ISO_leading().var_log_x);
    else if ( variable_name == "ISO_trailing" )       return bool(Variables::ISO_trailing().var_log_x);
    else if ( variable_name == "NExtraLep" )          return bool(Variables::NExtraLep().var_log_x);
-	else if ( variable_name == "NJets" )              return bool(Variables::NJets().var_log_x);
+  else if ( variable_name == "NJets" )              return bool(Variables::NJets().var_log_x);
    else if ( variable_name == "NJetsBTagged" )       return bool(Variables::NJetsBTagged().var_log_x);
    else if ( variable_name == "M4l_110150_HighKD" )  return bool(Variables::M4l_110150_HighKD().var_log_x);
 
@@ -4955,7 +4963,7 @@ bool Histograms::GetVarLogY ( TString variable_name )
    else if (variable_name == "DZHvsM4lZoomed")    return bool(Variables::DZHvsM4lZoomed().var_log_y);
    else if (variable_name == "DVHvsM4lZoomed")    return bool(Variables::DVHvsM4lZoomed().var_log_y);
 
-	//=============
+  //=============
    // Others
    //=============
    else if ( variable_name == "PFMET" )              return bool(Variables::PFMET().var_log_y);
@@ -4970,7 +4978,7 @@ bool Histograms::GetVarLogY ( TString variable_name )
    else if ( variable_name == "ISO_leading" )        return bool(Variables::ISO_leading().var_log_y);
    else if ( variable_name == "ISO_trailing" )       return bool(Variables::ISO_trailing().var_log_y);
    else if ( variable_name == "NExtraLep" )          return bool(Variables::NExtraLep().var_log_y);
-	else if ( variable_name == "NJets" )              return bool(Variables::NJets().var_log_y);
+  else if ( variable_name == "NJets" )              return bool(Variables::NJets().var_log_y);
    else if ( variable_name == "NJetsBTagged" )       return bool(Variables::NJetsBTagged().var_log_y);
    else if ( variable_name == "M4l_110150_HighKD" )  return bool(Variables::M4l_110150_HighKD().var_log_y);
 
@@ -5032,9 +5040,9 @@ TLegend* Histograms::CreateLegendVBF( string position, TH1F *data, TH1F *h125VBF
    if(!mask)
    {
       leg->SetFillColor(0);
-		leg->SetFillStyle(0);
-	}
-	leg->SetBorderSize(0);
+    leg->SetFillStyle(0);
+  }
+  leg->SetBorderSize(0);
 
    leg->AddEntry( data, "Data", "p E" );
    leg->AddEntry( h125VBF,"H(125), VBF","f");
@@ -5066,9 +5074,9 @@ TLegend* Histograms::CreateLegendVH( string position, TH1F *data, TH1F *h125VH, 
    if(!mask)
    {
       leg->SetFillColor(0);
-		leg->SetFillStyle(0);
-	}
-	leg->SetBorderSize(0);
+    leg->SetFillStyle(0);
+  }
+  leg->SetBorderSize(0);
 
    leg->AddEntry( data, "Data", "p E" );
    leg->AddEntry( h125VH,"H(125), VH","f");
@@ -5449,13 +5457,13 @@ int Histograms::SetProcess(int point, int production_mode)
             return Settings::yH120WHhad;
             break;
 
-			case 4:
-				return Settings::yH120ZHlep;
-				break;
+      case 4:
+        return Settings::yH120ZHlep;
+        break;
 
-			case 5:
-				return Settings::yH120ZHhad;
-				break;
+      case 5:
+        return Settings::yH120ZHhad;
+        break;
 
          case 6:
             return Settings::yH120ttHlep;
@@ -5483,37 +5491,37 @@ int Histograms::SetProcess(int point, int production_mode)
    else if (point == 1)
    {
       switch (production_mode) {
-			case 0:
-				return Settings::yH124ggH;
-				break;
+      case 0:
+        return Settings::yH124ggH;
+        break;
 
-			case 1:
-				return Settings::yH124VBF;
-				break;
+      case 1:
+        return Settings::yH124VBF;
+        break;
 
-			case 2:
-				return Settings::yH124WHlep;
-				break;
+      case 2:
+        return Settings::yH124WHlep;
+        break;
 
-			case 3:
-				return Settings::yH124WHhad;
-				break;
+      case 3:
+        return Settings::yH124WHhad;
+        break;
 
-			case 4:
-				return Settings::yH124ZHlep;
-				break;
+      case 4:
+        return Settings::yH124ZHlep;
+        break;
 
-			case 5:
-				return Settings::yH124ZHhad;
-				break;
+      case 5:
+        return Settings::yH124ZHhad;
+        break;
 
-			case 6:
-				return Settings::yH124ttHlep;
-				break;
+      case 6:
+        return Settings::yH124ttHlep;
+        break;
 
-			case 7:
-				return Settings::yH124ttHhad;
-				break;
+      case 7:
+        return Settings::yH124ttHhad;
+        break;
 
          case 8:
             return Settings::yH124bbH;
@@ -5534,37 +5542,37 @@ int Histograms::SetProcess(int point, int production_mode)
    else if (point == 2)
    {
       switch (production_mode) {
-			case 0:
-				return Settings::yH125ggH;
-				break;
+      case 0:
+        return Settings::yH125ggH;
+        break;
 
-			case 1:
-				return Settings::yH125VBF;
-				break;
+      case 1:
+        return Settings::yH125VBF;
+        break;
 
-			case 2:
-				return Settings::yH125WHlep;
-				break;
+      case 2:
+        return Settings::yH125WHlep;
+        break;
 
-			case 3:
-				return Settings::yH125WHhad;
-				break;
+      case 3:
+        return Settings::yH125WHhad;
+        break;
 
-			case 4:
-				return Settings::yH125ZHlep;
-				break;
+      case 4:
+        return Settings::yH125ZHlep;
+        break;
 
-			case 5:
-				return Settings::yH125ZHhad;
-				break;
+      case 5:
+        return Settings::yH125ZHhad;
+        break;
 
-			case 6:
-				return Settings::yH125ttHlep;
-				break;
+      case 6:
+        return Settings::yH125ttHlep;
+        break;
 
-			case 7:
-				return Settings::yH125ttHhad;
-				break;
+      case 7:
+        return Settings::yH125ttHhad;
+        break;
 
          case 8:
             return Settings::yH125bbH;
@@ -5585,37 +5593,37 @@ int Histograms::SetProcess(int point, int production_mode)
    else if (point == 3)
    {
       switch (production_mode) {
-			case 0:
-				return Settings::yH126ggH;
-				break;
+      case 0:
+        return Settings::yH126ggH;
+        break;
 
-			case 1:
-				return Settings::yH126VBF;
-				break;
+      case 1:
+        return Settings::yH126VBF;
+        break;
 
-			case 2:
-				return Settings::yH126WHlep;
-				break;
+      case 2:
+        return Settings::yH126WHlep;
+        break;
 
-			case 3:
-				return Settings::yH126WHhad;
-				break;
+      case 3:
+        return Settings::yH126WHhad;
+        break;
 
-			case 4:
-				return Settings::yH126ZHlep;
-				break;
+      case 4:
+        return Settings::yH126ZHlep;
+        break;
 
-			case 5:
-				return Settings::yH126ZHhad;
-				break;
+      case 5:
+        return Settings::yH126ZHhad;
+        break;
 
-			case 6:
-				return Settings::yH126ttHlep;
-				break;
+      case 6:
+        return Settings::yH126ttHlep;
+        break;
 
-			case 7:
-				return Settings::yH126ttHhad;
-				break;
+      case 7:
+        return Settings::yH126ttHhad;
+        break;
 
          case 8:
             return Settings::yH126bbH;
@@ -5636,37 +5644,37 @@ int Histograms::SetProcess(int point, int production_mode)
    else if (point == 4)
    {
       switch (production_mode) {
-			case 0:
-				return Settings::yH130ggH;
-				break;
+      case 0:
+        return Settings::yH130ggH;
+        break;
 
-			case 1:
-				return Settings::yH130VBF;
-				break;
+      case 1:
+        return Settings::yH130VBF;
+        break;
 
-			case 2:
-				return Settings::yH130WHlep;
-				break;
+      case 2:
+        return Settings::yH130WHlep;
+        break;
 
-			case 3:
-				return Settings::yH130WHhad;
-				break;
+      case 3:
+        return Settings::yH130WHhad;
+        break;
 
-			case 4:
-				return Settings::yH130ZHlep;
-				break;
+      case 4:
+        return Settings::yH130ZHlep;
+        break;
 
-			case 5:
-				return Settings::yH130ZHhad;
-				break;
+      case 5:
+        return Settings::yH130ZHhad;
+        break;
 
-			case 6:
-				return Settings::yH130ttHlep;
-				break;
+      case 6:
+        return Settings::yH130ttHlep;
+        break;
 
-			case 7:
-				return Settings::yH130ttHhad;
-				break;
+      case 7:
+        return Settings::yH130ttHhad;
+        break;
 
          case 8:
             return Settings::yH130bbH;
