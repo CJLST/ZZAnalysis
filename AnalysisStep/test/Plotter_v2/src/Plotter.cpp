@@ -172,14 +172,14 @@ void Plotter::MakeHistograms( TString input_file_name , int year)
       if ( input_file_name.Contains("ggH") ) _event_weight *= ggH_NNLOPS_weight; // reweight POWHEG ggH to NNLOPS
 
       // Rescale to updated version of SFs
-      //      _updatedSF = ( lepSFHelper->getSF(year,LepLepId->at(0),LepPt->at(0),LepEta->at(0), LepEta->at(0), false) *
-      //                     lepSFHelper->getSF(year,LepLepId->at(1),LepPt->at(1),LepEta->at(1), LepEta->at(1), false) *
-      //                     lepSFHelper->getSF(year,LepLepId->at(2),LepPt->at(2),LepEta->at(2), LepEta->at(2), false) *
-      //                     lepSFHelper->getSF(year,LepLepId->at(3),LepPt->at(3),LepEta->at(3), LepEta->at(3), false) );
+       _updatedSF = ( lepSFHelper->getSF(year,LepLepId->at(0),LepPt->at(0),LepEta->at(0), LepEta->at(0), false) *
+                      lepSFHelper->getSF(year,LepLepId->at(1),LepPt->at(1),LepEta->at(1), LepEta->at(1), false) *
+                      lepSFHelper->getSF(year,LepLepId->at(2),LepPt->at(2),LepEta->at(2), LepEta->at(2), false) *
+                      lepSFHelper->getSF(year,LepLepId->at(3),LepPt->at(3),LepEta->at(3), LepEta->at(3), false) );
       //
-      //      //cout << "Weight before = " << _event_weight << " Updated SF = " << _updatedSF << endl;
-      //      _event_weight *= _updatedSF/dataMCWeight;
-      //      //cout << "Updated weight = " << _event_weight << endl;
+      // cout << "Weight before = " << _event_weight << " Updated SF = " << _updatedSF << endl;
+      _event_weight *= _updatedSF/dataMCWeight;
+      // cout << "Updated weight = " << _event_weight << endl;
 
 
       // Calculate kinematic discriminants

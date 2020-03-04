@@ -107,7 +107,7 @@ int main( int argc, char *argv[] )
 
    plotter->SetBlinding(110, 138, 300, 1200);
 
-//   plotter->MakeHistograms(Data_2016,2016);
+   plotter->MakeHistograms(Data_2016,2016);
 //   plotter->MakeHistograms(Data_2017,2017);
 //   plotter->MakeHistograms(Data_2018,2018);
 
@@ -178,7 +178,7 @@ int main( int argc, char *argv[] )
    plotter->MakeHistograms(WZZ_2016,2016);
    plotter->MakeHistograms(ZZZ_2016,2016);
 
-//   plotter->MakeHistogramsZX(Data_2016, FR_2016, 2016);
+   plotter->MakeHistogramsZX(Data_2016, FR_2016, 2016);
 //   plotter->MakeHistogramsZX(Data_2017, FR_2017, 2017);
 //   plotter->MakeHistogramsZX(Data_2018, FR_2018, 2018);
 
