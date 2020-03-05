@@ -363,7 +363,7 @@ void Plotter::MakeHistograms( TString input_file_name , int year)
 
 
 //=======================
-void Plotter::MakeM4lZX(int year)
+void Plotter::MakeM4lZX()
 {
 
    for (  int i_cat = 0; i_cat < num_of_categories - 1; i_cat++  )

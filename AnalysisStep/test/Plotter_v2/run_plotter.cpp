@@ -231,7 +231,7 @@ int main( int argc, char *argv[] )
 
 */
 
-   plotter->MakeM4lZX( 2017 );
+   plotter->MakeM4lZX();
 
    plotter->FillInclusive();
 
