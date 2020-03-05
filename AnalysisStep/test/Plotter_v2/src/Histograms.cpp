@@ -798,6 +798,7 @@ Histograms::Histograms( double lumi)
    _s_production_mode.push_back("WWZ");
    _s_production_mode.push_back("WZZ");
    _s_production_mode.push_back("ZZZ");
+   _s_production_mode.push_back("TTZJets");   
 
 
    for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
@@ -5035,7 +5036,7 @@ TLegend* Histograms::CreateLegend( string position, TH1F *data, TH1F *h125, TH1F
    leg->AddEntry( qqZZ, "q#bar{q}#rightarrowZZ, Z#gamma*", "f" );
    leg->AddEntry( ggZZ, "gg#rightarrowZZ, Z#gamma*", "f" );
    leg->AddEntry( ZX,   "Z+X", "f" );
-   leg->AddEntry( VVV,   "VVV, ttWW, ttZZ", "f" );
+   leg->AddEntry( VVV,   "VVV, tt + (V)V", "f" );
 
    return leg;
 }
@@ -5070,7 +5071,7 @@ TLegend* Histograms::CreateLegendVBF( string position, TH1F *data, TH1F *h125VBF
    leg->AddEntry( qqZZ, "q#bar{q}#rightarrowZZ, Z#gamma*", "f" );
    leg->AddEntry( ggZZ, "gg#rightarrowZZ, Z#gamma*", "f" );
    leg->AddEntry( ZX, "Z+X", "f" );
-   leg->AddEntry( VVV,   "VVV, ttWW, ttZZ", "f" );
+   leg->AddEntry( VVV,   "VVV, tt + (V)V", "f" );
 
    return leg;
 }
@@ -5105,7 +5106,7 @@ TLegend* Histograms::CreateLegendVH( string position, TH1F *data, TH1F *h125VH, 
    leg->AddEntry( qqZZ, "q#bar{q}#rightarrowZZ, Z#gamma*", "f" );
    leg->AddEntry( ggZZ, "gg#rightarrowZZ, Z#gamma*", "f" );
    leg->AddEntry( ZX, "Z+X", "f" );
-   leg->AddEntry( VVV,   "VVV, ttWW, ttZZ", "f" );
+   leg->AddEntry( VVV,   "VVV, tt + (V)V", "f" );
 
    return leg;
 }
@@ -5137,7 +5138,7 @@ TLegend* Histograms::CreateLegendttH( string position, TH1F *data, TH1F *h125ttH
    leg->AddEntry( qqZZ, "q#bar{q}#rightarrowZZ, Z#gamma*", "f" );
    leg->AddEntry( ggZZ, "gg#rightarrowZZ, Z#gamma*", "f" );
    leg->AddEntry( ZX, "Z+X", "f" );
-   leg->AddEntry( VVV,   "VVV, ttWW, ttZZ", "f" );
+   leg->AddEntry( VVV,   "VVV, tt + (V)V", "f" );
    return leg;
 }
 //==============================================================================================================================

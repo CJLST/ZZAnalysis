@@ -226,6 +226,9 @@ void Yields::Calculate_SS_ZX_Yields( TString input_file_data_name, TString  inpu
       
       if ( !CRflag ) continue;
       if ( !test_bit(CRflag, CRZLLss) ) continue;
+
+      if ( !(ZZsel >= 20) ) continue; // Remove events that do not pass selection
+      if ( LepSIP->at(0) > 8. || LepSIP->at(1) > 8. || LepSIP->at(2) > 8. || LepSIP->at(3) > 8.) continue;//SIP Sanity check
       
       _current_final_state = FindFinalStateZX();
       
@@ -250,13 +253,21 @@ void Yields::Calculate_SS_ZX_Yields( TString input_file_data_name, TString  inpu
                                         PFMET,
                                         false,// Use VHMET category
                                         false);// Use QG tagging
-      
-      
-      // Calculate yield
+            
+      _current_category_stxs = stage1_reco_1p1 ( nCleanedJetsPt30,
+                                                DiJetMass,
+                                                ZZPt,
+                                                _current_category,
+                                                ZZjjPt);
+
+            // Calculate yield
       _yield_SR = _fs_ROS_SS.at(_current_final_state)*FR->GetFakeRate(LepPt->at(2),LepEta->at(2),LepLepId->at(2))*FR->GetFakeRate(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
-      
+
+
       _expected_yield_SR[_current_final_state][_current_category] += _yield_SR; // this number needs to be used when renormalizing histograms that have some cut/blinding
       _number_of_events_CR[_current_final_state][_current_category]++;
+      
+      if ( _merge_2e2mu && _current_final_state == Settings::fs2mu2e ) _current_final_state = Settings::fs2e2mu;
       
    } // END events loop
    

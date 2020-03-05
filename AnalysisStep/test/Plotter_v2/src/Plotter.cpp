@@ -27,34 +27,13 @@ Plotter::Plotter():Tree()
  *
  * 2018: 1.00568, 1.02926, 1.03226, 1.00432
  * *******************************************/
-   _fs_ROS_SS.push_back(1.00245);//4e
-   _fs_ROS_SS.push_back(0.998863);//4mu
-   _fs_ROS_SS.push_back(1.03338);//2e2mu
-   _fs_ROS_SS.push_back(0.998852);//2mu2e
 
-// Place holder. At some point we might want to
-// have a more general constructor that takes the
-// year as input.
-/*
-   if(year == 2016) {
-       _fs_ROS_SS.push_back(1.00245);//4e
-       _fs_ROS_SS.push_back(0.998863);//4mu
-       _fs_ROS_SS.push_back(1.03338);//2e2mu
-       _fs_ROS_SS.push_back(0.998852);//2mu2e
-   }
-   else if (year == 2017) {
-       _fs_ROS_SS.push_back(1.01198);//4e
-       _fs_ROS_SS.push_back(1.03949);//4mu
-       _fs_ROS_SS.push_back(1.013128);//2e2mu
-       _fs_ROS_SS.push_back(1.00257);//2mu2e
-   }
-   else {
-       _fs_ROS_SS.push_back(1.00568);//4e
-       _fs_ROS_SS.push_back(1.02926);//4mu
-       _fs_ROS_SS.push_back(1.03226);//2e2mu
-       _fs_ROS_SS.push_back(1.00432);//2mu2e
-   }
-*/
+   // Place holders, we fill the OS/SS in MakeHistogramsZX
+   _fs_ROS_SS.push_back(1.0);//4e
+   _fs_ROS_SS.push_back(1.0);//4mu
+   _fs_ROS_SS.push_back(1.0);//2e2mu
+   _fs_ROS_SS.push_back(1.0);//2mu2e
+
    vector<float> temp;
    for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
    {
@@ -384,20 +363,28 @@ void Plotter::MakeHistograms( TString input_file_name , int year)
 
 
 //=======================
-void Plotter::MakeM4lZX()
+void Plotter::MakeM4lZX(int year)
 {
+  // TOT/SS ratio, to get total ZX yield
+  // 4e, 4mu, 2e2mu
+  float cb_SS[3][4]={
+    {1.23628, 0.95433, 1.0726, 1.0726}, // 2016
+    {1.1934, 0.996698, 1.0569, 1.0569}, // 2017
+    {1.20872, 0.987495, 1.0552, 1.0552}  // 2018
+   };
+
    for (  int i_cat = 0; i_cat < num_of_categories - 1; i_cat++  )
    {
       for ( int i_fs = 0; i_fs < num_of_final_states - 1; i_fs++  )
       {
-         _expected_yield_SR[Settings::fs4l][i_cat]       += _expected_yield_SR[i_fs][i_cat];   //calculate expected yield for inclusive 4l final state
+         _expected_yield_SR[Settings::fs4l][i_cat]       += cb_SS[year-2016][i_fs]*_expected_yield_SR[i_fs][i_cat];   //calculate expected yield for inclusive 4l final state
          _number_of_events_CR[Settings::fs4l][i_cat]     += _number_of_events_CR[i_fs][i_cat];
-         _expected_yield_SR[i_fs][Settings::inclusive]   += _expected_yield_SR[i_fs][i_cat];   //calculate expected yield for inclusive category
+         _expected_yield_SR[i_fs][Settings::inclusive]   += cb_SS[year-2016][i_fs]*_expected_yield_SR[i_fs][i_cat];   //calculate expected yield for inclusive category
          _number_of_events_CR[i_fs][Settings::inclusive] += _number_of_events_CR[i_fs][i_cat];
 
          if ( _merge_2e2mu )
          {
-            _expected_yield_SR[Settings::fs2e2mu][i_cat]       += _expected_yield_SR[Settings::fs2mu2e][i_cat];   //merge 2e2mu and 2mu2e final state
+            _expected_yield_SR[Settings::fs2e2mu][i_cat]       += cb_SS[year-2016][Settings::fs2mu2e]*_expected_yield_SR[Settings::fs2mu2e][i_cat];   //merge 2e2mu and 2mu2e final state
             _number_of_events_CR[Settings::fs2e2mu][i_cat]     += _number_of_events_CR[Settings::fs2mu2e][i_cat];
             _expected_yield_SR[Settings::fs2mu2e][i_cat]        = 0.;
             _number_of_events_CR[Settings::fs2mu2e][i_cat]      = 0.;
@@ -473,6 +460,28 @@ void Plotter::SetBlinding(float blinding_lower_0, float blinding_upper_0, float 
 void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_file_FR_name , int year)
 {
 
+   if(year == 2016) {
+       _fs_ROS_SS.clear();
+       _fs_ROS_SS.push_back(1.00245);//4e
+       _fs_ROS_SS.push_back(0.998863);//4mu
+       _fs_ROS_SS.push_back(1.03338);//2e2mu
+       _fs_ROS_SS.push_back(0.998852);//2mu2e
+   }
+   else if (year == 2017) {
+       _fs_ROS_SS.clear();
+       _fs_ROS_SS.push_back(1.01198);//4e
+       _fs_ROS_SS.push_back(1.03949);//4mu
+       _fs_ROS_SS.push_back(1.013128);//2e2mu
+       _fs_ROS_SS.push_back(1.00257);//2mu2e
+   }
+   else {
+       _fs_ROS_SS.clear();
+       _fs_ROS_SS.push_back(1.00568);//4e
+       _fs_ROS_SS.push_back(1.02926);//4mu
+       _fs_ROS_SS.push_back(1.03226);//2e2mu
+       _fs_ROS_SS.push_back(1.00432);//2mu2e
+   }
+
    FakeRates *FR = new FakeRates( input_file_FR_name );
 
    input_file_data = new TFile(input_file_data_name);
@@ -497,8 +506,9 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
       if ( !CRflag ) continue;
       if ( !test_bit(CRflag, CRZLLss) ) continue;
 
-      if ( !(ZZsel >= 20) ) continue; // Remove events that do not pass selection
-      if ( LepSIP->at(0) > 8. || LepSIP->at(1) > 8. || LepSIP->at(2) > 8. || LepSIP->at(3) > 8.) continue;//SIP Sanity check
+      // if ( !(ZZsel >= 20) ) continue; // Remove events that do not pass selection
+      // if ( LepSIP->at(0) > 8. || LepSIP->at(1) > 8. || LepSIP->at(2) > 8. || LepSIP->at(3) > 8.) continue;//SIP Sanity check
+      if ( !(ZZMass > 70) ) continue;
       _current_final_state = FindFinalStateZX();
 
       // Find current category
@@ -879,6 +889,9 @@ int Plotter::find_current_process( TString input_file_name , int genExtInfo, int
    if ( input_file_name.Contains("WWZ") )            current_process = Settings::VVV;
    if ( input_file_name.Contains("WZZ") )            current_process = Settings::VVV;
    if ( input_file_name.Contains("ZZZ") )            current_process = Settings::VVV;
+   if ( input_file_name.Contains("TTZJets") )        current_process = Settings::VVV;
+   if ( input_file_name.Contains("TTZLL") )          current_process = Settings::VVV;
+   if ( input_file_name.Contains("TTZLLnunu") )      current_process = Settings::VVV;
    if ( input_file_name.Contains("DYJetsToLL_M50") ) current_process = Settings::other;
    if ( input_file_name.Contains("TTJets") )         current_process = Settings::other;
    if ( input_file_name.Contains("TTTo2L2Nu") )      current_process = Settings::other;

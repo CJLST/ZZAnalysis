@@ -140,6 +140,7 @@ public:
       WWZ     = 14,
       WZZ     = 15,
       ZZZ     = 16,
+      TTZJets = 17,
       MAX_NUM_OF_PRODUCTION_MODES
 
    };
