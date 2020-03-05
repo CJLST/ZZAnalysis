@@ -105,6 +105,7 @@ private:
    
    vector<int>   gen_assoc_lep_id_;
    vector<float> _fs_ROS_SS;
+   vector<float> cb_SS;
    
    TFile *data_root_file;
    TTree *data_obs;

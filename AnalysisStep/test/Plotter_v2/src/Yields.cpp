@@ -40,34 +40,11 @@ Yields::Yields( double lumi ):Tree()
  *
  * 2018: 1.00568, 1.02926, 1.03226, 1.00432
  * *******************************************/
-   _fs_ROS_SS.push_back(1.00245);//4e
-   _fs_ROS_SS.push_back(0.998863);//4mu
-   _fs_ROS_SS.push_back(1.03338);//2e2mu
-   _fs_ROS_SS.push_back(0.998852);//2mu2e
-
-// Place holder. At some point we might want to 
-// have a more general constructor that takes the
-// year as input.
-/*
-   if(year == 2016) {
-       _fs_ROS_SS.push_back(1.00245);//4e
-       _fs_ROS_SS.push_back(0.998863);//4mu
-       _fs_ROS_SS.push_back(1.03338);//2e2mu
-       _fs_ROS_SS.push_back(0.998852);//2mu2e
-   }
-   else if (year == 2017) {
-       _fs_ROS_SS.push_back(1.01198);//4e
-       _fs_ROS_SS.push_back(1.03949);//4mu
-       _fs_ROS_SS.push_back(1.013128);//2e2mu
-       _fs_ROS_SS.push_back(1.00257);//2mu2e
-   }
-   else {
-       _fs_ROS_SS.push_back(1.00568);//4e
-       _fs_ROS_SS.push_back(1.02926);//4mu
-       _fs_ROS_SS.push_back(1.03226);//2e2mu
-       _fs_ROS_SS.push_back(1.00432);//2mu2e
-   }
-*/   
+   _fs_ROS_SS.push_back(1.0); cb_SS.push_back(1.0); //4e
+   _fs_ROS_SS.push_back(1.0); cb_SS.push_back(1.0); //4mu
+   _fs_ROS_SS.push_back(1.0); cb_SS.push_back(1.0); //2e2mu
+   _fs_ROS_SS.push_back(1.0); cb_SS.push_back(1.0); //2mu2e
+ 
    vector<float> temp;
    for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
    {
@@ -202,6 +179,28 @@ void Yields::MakeHistograms( TString input_file_name , int year)
 //===============================================================================
 void Yields::Calculate_SS_ZX_Yields( TString input_file_data_name, TString  input_file_FR_name )
 {
+
+   if(year == 2016) {
+       _fs_ROS_SS.clear(); cb_SS.clear();
+       _fs_ROS_SS.push_back(1.00245); cb_SS.push_back(1.23628); //4e
+       _fs_ROS_SS.push_back(0.998863); cb_SS.push_back(0.95433); //4mu
+       _fs_ROS_SS.push_back(1.03338); cb_SS.push_back(1.0726); //2e2mu
+       _fs_ROS_SS.push_back(0.998852); cb_SS.push_back(1.0726); //2mu2e
+   }
+   else if (year == 2017) {
+       _fs_ROS_SS.clear(); cb_SS.clear();
+       _fs_ROS_SS.push_back(1.01198); cb_SS.push_back(1.1934); //4e
+       _fs_ROS_SS.push_back(1.03949); cb_SS.push_back(0.99669); //4mu
+       _fs_ROS_SS.push_back(1.013128); cb_SS.push_back(1.0569); //2e2mu
+       _fs_ROS_SS.push_back(1.00257); cb_SS.push_back(1.0569); //2mu2e
+   }
+   else {
+       _fs_ROS_SS.clear(); cb_SS.clear();
+       _fs_ROS_SS.push_back(1.00568); cb_SS.push_back(1.2087); //4e
+       _fs_ROS_SS.push_back(1.02926); cb_SS.push_back(0.9875); //4mu
+       _fs_ROS_SS.push_back(1.03226); cb_SS.push_back(1.0552); //2e2mu
+       _fs_ROS_SS.push_back(1.00432); cb_SS.push_back(1.0552); //2mu2e
+   }  
    
    FakeRates *FR = new FakeRates( input_file_FR_name );
    
@@ -254,14 +253,14 @@ void Yields::Calculate_SS_ZX_Yields( TString input_file_data_name, TString  inpu
                                         false,// Use VHMET category
                                         false);// Use QG tagging
             
-      _current_category_stxs = stage1_reco_1p1 ( nCleanedJetsPt30,
-                                                DiJetMass,
-                                                ZZPt,
-                                                _current_category,
-                                                ZZjjPt);
+      // _current_category_stxs = stage1_reco_1p1 ( nCleanedJetsPt30,
+      //                                           DiJetMass,
+      //                                           ZZPt,
+      //                                           _current_category,
+      //                                           ZZjjPt);
 
             // Calculate yield
-      _yield_SR = _fs_ROS_SS.at(_current_final_state)*FR->GetFakeRate(LepPt->at(2),LepEta->at(2),LepLepId->at(2))*FR->GetFakeRate(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
+      _yield_SR = cb_SS.at(_current_final_state)*_fs_ROS_SS.at(_current_final_state)*FR->GetFakeRate(LepPt->at(2),LepEta->at(2),LepLepId->at(2))*FR->GetFakeRate(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
 
 
       _expected_yield_SR[_current_final_state][_current_category] += _yield_SR; // this number needs to be used when renormalizing histograms that have some cut/blinding
