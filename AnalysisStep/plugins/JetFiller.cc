@@ -204,13 +204,21 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     bool PUjetID = true;
    
     //Recommended tight PU JET ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
-    if (applyJEC_) PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0));
-    else PUjetID = bool(j.userInt("pileupJetId:fullId") & (1 << 0));
+    //if (applyJEC_) PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0));
+    //else PUjetID = bool(j.userInt("pileupJetId:fullId") & (1 << 0));
 
     //--- b-tagging and scaling factors
     float bTagger;
     bTagger = j.bDiscriminator(bTaggerName) + j.bDiscriminator((bTaggerName + "b")); //one should just sum for doing b tagging, the b and bb probabilities
-    
+    cout << "bTag is = " << bTagger << endl;
+
+    // TAGGER LABELS stored in the MiniAOD and recognized by the bDiscriminator method                                                                                                 
+    auto& pd = j.getPairDiscri();
+    for (size_t io = 0; io < pd.size(); ++io)
+      {
+        cout << io << "  Discriminator: " << pd.at(io).first << " \t " << pd.at(io).second  << endl;
+      }
+
     bool isBtagged = bTagger > bTaggerThreshold;
     bool isBtaggedWithSF   = isBtagged;
     bool isBtaggedWithSFUp = isBtagged;
