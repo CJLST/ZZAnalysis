@@ -9,7 +9,6 @@ process = cms.Process("ZZ")
 ### ----------------------------------------------------------------------
 
 # Set defaults for variables used in this file (in case they are not defined by a caller script)
-
 declareDefault("IsMC", True, globals())
 
 # Set of effective areas, rho corrections, etc. (can be 2011, 2012, 2015 or 2016)
@@ -996,8 +995,8 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
 from RecoJets.JetProducers.PileupJetIDParams_cfi import full_80x_chs
 from RecoJets.JetProducers.PileupJetIDCutParams_cfi import full_80x_chs_wp
 from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
-from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import updatedPatJets
-from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import updatedPatJetCorrFactors
+#from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import updatedPatJets
+#from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import updatedPatJetCorrFactors
 
 process.load("CondCore.CondDB.CondDB_cfi")
 
@@ -1010,40 +1009,43 @@ if (SAMPLE_TYPE == 2017 or SAMPLE_TYPE == 2018):
         vertexes=cms.InputTag("offlineSlimmedPrimaryVertices")
     )
 
-# Update jet collection                                                                                                                                                                    
-btagVector = [
-    'pfDeepFlavourJetTags:probb',
-    'pfDeepFlavourJetTags:probbb',
-    'pfDeepFlavourJetTags:problepb',
-    'pfDeepFlavourJetTags:probc',
-    'pfDeepFlavourJetTags:probuds',
-    'pfDeepFlavourJetTags:probg',
-    'pfDeepCSVJetTags:probudsg',
-    'pfDeepCSVJetTags:probb',
-    'pfDeepCSVJetTags:probc',
-    'pfDeepCSVJetTags:probbb'
-]
+# Update jet collection in 2016 ntuples to include DeepCSV and DeepFlavour b tag algorithms                                                                                    
+if (SAMPLE_TYPE == 2016):
+    btagVector = [
+        'pfDeepFlavourJetTags:probb',
+        'pfDeepFlavourJetTags:probbb',
+        'pfDeepFlavourJetTags:problepb',
+        'pfDeepFlavourJetTags:probc',
+        'pfDeepFlavourJetTags:probuds',
+        'pfDeepFlavourJetTags:probg',
+        'pfDeepCSVJetTags:probudsg',
+        'pfDeepCSVJetTags:probb',
+        'pfDeepCSVJetTags:probc',
+        'pfDeepCSVJetTags:probbb'
+    ]
 
-updateJetCollection(
-    process,
-    jetSource = cms.InputTag('slimmedJets'),
-    pvSource = cms.InputTag('offlineSlimmedPrimaryVertices'),
-    svSource = cms.InputTag('slimmedSecondaryVertices'),
-    jetCorrections = ('AK4PFchs', [ 'L1FastJet', 'L2Relative', 'L3Absolute' ], 'None'),
-    btagDiscriminators = btagVector,
-    postfix = 'WithDeepInfo'
-)
+    updateJetCollection(
+        process,
+        jetSource = cms.InputTag('slimmedJets'),
+        pvSource = cms.InputTag('offlineSlimmedPrimaryVertices'),
+        svSource = cms.InputTag('slimmedSecondaryVertices'),
+        jetCorrections = ('AK4PFchs', [ 'L1FastJet', 'L2Relative', 'L3Absolute' ], 'None'),
+        btagDiscriminators = btagVector,
+        postfix = 'WithDeepInfo'
+    )
 
-process.jetSequence = cms.Sequence(process.patJetCorrFactorsWithDeepInfo 
-                                   *process.updatedPatJetsWithDeepInfo 
-                                   *process.patJetCorrFactorsTransientCorrectedWithDeepInfo 
-                                   *process.pfImpactParameterTagInfosWithDeepInfo 
-                                   *process.pfInclusiveSecondaryVertexFinderTagInfosWithDeepInfo 
-                                   *process.pfDeepCSVTagInfosWithDeepInfo
-                                   *process.pfDeepCSVJetTagsWithDeepInfo 
-                                   *process.pfDeepFlavourTagInfosWithDeepInfo
-                                   *process.pfDeepFlavourJetTagsWithDeepInfo 
-                                   *process.updatedPatJetsTransientCorrectedWithDeepInfo)
+    process.jetSequence = cms.Sequence(process.patJetCorrFactorsWithDeepInfo 
+                                       *process.updatedPatJetsWithDeepInfo 
+                                       *process.patJetCorrFactorsTransientCorrectedWithDeepInfo 
+                                       *process.pfImpactParameterTagInfosWithDeepInfo 
+                                       *process.pfInclusiveSecondaryVertexFinderTagInfosWithDeepInfo 
+                                       *process.pfDeepCSVTagInfosWithDeepInfo
+                                       *process.pfDeepCSVJetTagsWithDeepInfo 
+                                       *process.pfDeepFlavourTagInfosWithDeepInfo
+                                       *process.pfDeepFlavourJetTagsWithDeepInfo 
+                                       *process.updatedPatJetsTransientCorrectedWithDeepInfo
+    )
+
 
 theBTagger=""
 theBTaggerThr=0
@@ -1053,9 +1055,8 @@ if (LEPTON_SETUP == 2016): #DeepCSV, from https://twiki.cern.ch/twiki/bin/viewau
    theBTagger="pfDeepCSVJetTags:probb"
    theBTaggerThr=0.6321
    theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_2016LegacySF_V1.csv"
-   theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_94X_Moriond18_v1.root"#[FIXME] Update after first production is done
+   theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_94X_Moriond18_v1.root"  #[FIXME] Update after first production is done
 elif (LEPTON_SETUP == 2017): #DeepCSV, from https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
-   #FIXME: Add 2018 correctly!
    theBTagger="pfDeepCSVJetTags:probb"
    theBTaggerThr=0.4941
    theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_94XSF_V4_B_F.csv"
@@ -1106,6 +1107,7 @@ process.dressedJets = cms.EDProducer("JetFiller",
     flags = cms.PSet()
     )
 
+
 ### Load JEC
 #Taken from https://twiki.cern.ch/twiki/bin/view/CMS/JECDataMC#Recommended_for_MC
 
@@ -1140,10 +1142,10 @@ if (APPLYJEC and SAMPLE_TYPE == 2016):
             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Summer16_07Aug2017All_V11_DATA.db'),
             )
 
-    ## add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
+    ## Add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
     process.es_prefer_jec = cms.ESPrefer('PoolDBESSource','jec')
 
-    ### reapply JEC
+    ### REAPPLY JEC
     from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import updatedPatJetCorrFactors
     process.patJetCorrFactorsReapplyJEC = updatedPatJetCorrFactors.clone(
         # JEC applied on jets including also DeepCSV and DeepFlavour tagger
@@ -1158,16 +1160,15 @@ if (APPLYJEC and SAMPLE_TYPE == 2016):
         # JEC applied on jets including also DeepCSV and DeepFlavour tagger
         jetSource = cms.InputTag("updatedPatJetsTransientCorrectedWithDeepInfo"),
         jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC")),
-        # btag information
+        # b tag information
         addBTagInfo          = cms.bool(True),  ## master switch
         addDiscriminators    = cms.bool(True)   ## addition of btag discriminators
         )
 
-    ### add pileup id and discriminant to patJetsReapplyJEC
+    ### ADD PILEUP ID to updated jets (with JEC applied)
     process.load("RecoJets.JetProducers.PileupJetID_cfi")
     process.pileupJetIdUpdated = process.pileupJetId.clone(
         jets=cms.InputTag("patJetsReapplyJEC"),
-        #jets=cms.InputTag("slimmedJets"),
         inputIsCorrected=True,
         applyJec=False,
         vertexes=cms.InputTag("offlineSlimmedPrimaryVertices")
@@ -1212,10 +1213,10 @@ if (APPLYJEC and SAMPLE_TYPE == 2017):
             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall17_17Nov2017_V32_94X_DATA.db'),
             )
 
-    ## add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
+    ## Add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
     process.es_prefer_jec = cms.ESPrefer('PoolDBESSource','jec')
 
-    ### reapply JEC
+    ### REAPPLY JEC
     from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import updatedPatJetCorrFactors
     process.patJetCorrFactorsReapplyJEC = updatedPatJetCorrFactors.clone(
         src = cms.InputTag("slimmedJets"),
@@ -1230,7 +1231,7 @@ if (APPLYJEC and SAMPLE_TYPE == 2017):
         jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
         )
 
-    ### add pileup id and discriminant to patJetsReapplyJEC
+    ### Add pileup id and discriminant to patJetsReapplyJEC
     process.patJetsReapplyJEC.userData.userFloats.src += ['pileupJetIdUpdated:fullDiscriminant']
     process.patJetsReapplyJEC.userData.userInts.src += ['pileupJetIdUpdated:fullId']
 
@@ -1271,10 +1272,10 @@ if (APPLYJEC and SAMPLE_TYPE == 2018):
             connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Autumn18_RunABCD_V19_DATA.db'),
             )
 
-    ## add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
+    ## Add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
     process.es_prefer_jec = cms.ESPrefer('PoolDBESSource','jec')
 
-    ### reapply JEC
+    ### REAPPLY JEC
     from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import updatedPatJetCorrFactors
     process.patJetCorrFactorsReapplyJEC = updatedPatJetCorrFactors.clone(
         src = cms.InputTag("slimmedJets"),
@@ -1289,7 +1290,7 @@ if (APPLYJEC and SAMPLE_TYPE == 2018):
         jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
         )
 
-    ### add pileup id and discriminant to patJetsReapplyJEC
+    ### Add pileup id and discriminant to patJetsReapplyJEC
     process.patJetsReapplyJEC.userData.userFloats.src += ['pileupJetIdUpdated:fullDiscriminant']
     process.patJetsReapplyJEC.userData.userInts.src += ['pileupJetIdUpdated:fullId']
 
@@ -1408,7 +1409,7 @@ if FSRMODE=="Legacy" :
 
 metTag = cms.InputTag("slimmedMETs")
 
-# b TAG UPDATE DOES NOT WORK INCLUDING MET
+# NB: b tag UPDATE DOES NOT WORK including this part related to MET => Updated info in jets get lost
 #if (RECORRECTMET and SAMPLE_TYPE == 2016):
 
     #from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
@@ -1475,21 +1476,20 @@ process.PVfilter =  cms.Path(process.preSkimCounter+process.goodPrimaryVertices)
 
 if APPLYJEC:
     if (SAMPLE_TYPE == 2016):
-        #process.Jets = cms.Path(process.jetSequence + process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.QGTagger + process.dressedJets )
-        process.Jets = cms.Path(process.jetSequence + process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.pileupJetIdUpdated + process.QGTagger + process.dressedJets )
+        process.Jets = cms.Path(process.jetSequence + process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.QGTagger + process.dressedJets )
+        #process.Jets = cms.Path(process.jetSequence + process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.pileupJetIdUpdated + process.QGTagger + process.dressedJets )
     elif (SAMPLE_TYPE == 2017 or SAMPLE_TYPE == 2018):
         process.Jets = cms.Path(process.pileupJetIdUpdated + process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.QGTagger + process.dressedJets )
 else:
     process.Jets = cms.Path( process.QGTagger + process.dressedJets )
 
 
-# b TAG UPDATE DOES NOT WORK INCLUDING MET
+# NB: b tag UPDATE DOES NOT WORK including this part related to MET => Updated info in jets get lost
 #if (RECORRECTMET and SAMPLE_TYPE == 2016):
 #    if IsMC:
 #        process.MET = cms.Path(process.fullPatMetSequence)
 #    else:
 #        process.MET = cms.Path(process.fullPatMetSequence)
-
 
 #[FIXME] Does not work in CMSSW_10_3_1 currently                                                                                                         
 #if (RECORRECTMET and SAMPLE_TYPE == 2017):                                                                                                                       
