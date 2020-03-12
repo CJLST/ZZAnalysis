@@ -1011,6 +1011,13 @@ if (SAMPLE_TYPE == 2017 or SAMPLE_TYPE == 2018):
 
 # Update jet collection in 2016 ntuples to include DeepCSV and DeepFlavour b tag algorithms                                                                                    
 if (SAMPLE_TYPE == 2016):
+    # JEC corrections
+    jecLevels = None
+    if IsMC:
+        jecLevels = [ 'L1FastJet', 'L2Relative', 'L3Absolute' ]
+    else:
+        jecLevels = [ 'L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual' ]
+    
     btagVector = [
         'pfDeepFlavourJetTags:probb',
         'pfDeepFlavourJetTags:probbb',
@@ -1029,20 +1036,20 @@ if (SAMPLE_TYPE == 2016):
         jetSource = cms.InputTag('slimmedJets'),
         pvSource = cms.InputTag('offlineSlimmedPrimaryVertices'),
         svSource = cms.InputTag('slimmedSecondaryVertices'),
-        jetCorrections = ('AK4PFchs', [ 'L1FastJet', 'L2Relative', 'L3Absolute' ], 'None'),
+        jetCorrections = ('AK4PFchs', cms.vstring(jecLevels), 'None'),
         btagDiscriminators = btagVector,
         postfix = 'WithDeepInfo'
     )
 
     process.jetSequence = cms.Sequence(process.patJetCorrFactorsWithDeepInfo 
                                        *process.updatedPatJetsWithDeepInfo 
-                                       *process.patJetCorrFactorsTransientCorrectedWithDeepInfo 
                                        *process.pfImpactParameterTagInfosWithDeepInfo 
                                        *process.pfInclusiveSecondaryVertexFinderTagInfosWithDeepInfo 
                                        *process.pfDeepCSVTagInfosWithDeepInfo
                                        *process.pfDeepCSVJetTagsWithDeepInfo 
                                        *process.pfDeepFlavourTagInfosWithDeepInfo
                                        *process.pfDeepFlavourJetTagsWithDeepInfo 
+                                       *process.patJetCorrFactorsTransientCorrectedWithDeepInfo 
                                        *process.updatedPatJetsTransientCorrectedWithDeepInfo
     )
 
@@ -1164,17 +1171,6 @@ if (APPLYJEC and SAMPLE_TYPE == 2016):
         addBTagInfo          = cms.bool(True),  ## master switch
         addDiscriminators    = cms.bool(True)   ## addition of btag discriminators
         )
-
-    ### ADD PILEUP ID to updated jets (with JEC applied)
-    process.load("RecoJets.JetProducers.PileupJetID_cfi")
-    process.pileupJetIdUpdated = process.pileupJetId.clone(
-        jets=cms.InputTag("patJetsReapplyJEC"),
-        inputIsCorrected=True,
-        applyJec=False,
-        vertexes=cms.InputTag("offlineSlimmedPrimaryVertices")
-    )
-    #process.patJetsReapplyJEC.userData.userFloats.src += ['pileupJetIdUpdated:fullDiscriminant']
-    #process.patJetsReapplyJEC.userData.userInts.src += ['pileupJetIdUpdated:fullId']
 
     ### Replace inputs in QGTagger and dressedJets
     process.QGTagger.srcJets = cms.InputTag('patJetsReapplyJEC')
@@ -1476,8 +1472,8 @@ process.PVfilter =  cms.Path(process.preSkimCounter+process.goodPrimaryVertices)
 
 if APPLYJEC:
     if (SAMPLE_TYPE == 2016):
+        # Removed pileupJetId update in order to use updateJetColection
         process.Jets = cms.Path(process.jetSequence + process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.QGTagger + process.dressedJets )
-        #process.Jets = cms.Path(process.jetSequence + process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.pileupJetIdUpdated + process.QGTagger + process.dressedJets )
     elif (SAMPLE_TYPE == 2017 or SAMPLE_TYPE == 2018):
         process.Jets = cms.Path(process.pileupJetIdUpdated + process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.QGTagger + process.dressedJets )
 else:

@@ -206,23 +206,19 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     //Recommended tight PU JET ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
     if (applyJEC_ && ( setup == 2017 || setup == 2018)) PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0));
     else PUjetID = bool(j.userInt("pileupJetId:fullId") & (1 << 0));
-    //cout << "pu jet ID" << j.userInt("pileupJetId:fullId") << endl;
-    //cout << "pu jet ID discriminants" << j.userFloat("pileupJetId:fullDiscriminant") << endl;
-    //cout << "pu jet ID" << j.userInt("pileupJetIdUpdated:fullId") << endl;
-    //cout << "pu jet ID discriminants" << j.userFloat("pileupJetIdUpdated:fullDiscriminant") << endl;
 
     //--- b-tagging and scaling factors
     float bTagger;
     bTagger = j.bDiscriminator(bTaggerName) + j.bDiscriminator((bTaggerName + "b")); //one should just sum for doing b tagging, the b and bb probabilities
-    cout << "b tag is = " << bTagger << endl;
+    //cout << "b tag is = " << bTagger << endl;
 
     // Check of tagger labels stored in the MiniAOD and recognized by the bDiscriminator                                                                           
-    //const std::vector<std::pair<std::string, float> > & getPairDiscri() const;                                                                                                    
-    auto& pd = j.getPairDiscri();                                                                                                                                                       
-    for (size_t pd_obj = 0; pd_obj < pd.size(); ++pd_obj)                                                                                                                                          
-      {                                                                                                   
-	cout << pd_obj << "  Discriminator: " << pd.at(pd_obj).first << " \t " << pd.at(pd_obj).second  << endl;                                                      
-      }   
+    //#const std::vector<std::pair<std::string, float> > & getPairDiscri() const;                                                                                                    
+    //auto& pd = j.getPairDiscri();                                                                                                                                                       
+    //for (size_t pd_obj = 0; pd_obj < pd.size(); ++pd_obj)                                                                                                                                          
+    //  {                                                                                                   
+    //cout << pd_obj << "  Discriminator: " << pd.at(pd_obj).first << " \t " << pd.at(pd_obj).second  << endl;                                                      
+    // }   
 
     bool isBtagged = bTagger > bTaggerThreshold;
     bool isBtaggedWithSF   = isBtagged;
