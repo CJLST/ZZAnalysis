@@ -136,8 +136,8 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     double jabseta = fabs(jeta);
     double raw_jpt = j.correctedJet("Uncorrected").pt();
 
-    // 20170220: using a flaot instead of adouble  changes of the JER seed from 99494 to 99495, and changes post JER jet pT.
-    // Note that while PAT::Candidate has this fucntion as double, we only save float accuracy in miniAOD anyway.
+    // 20170220: using a float instead of adouble  changes of the JER seed from 99494 to 99495, and changes post JER jet pT.
+    // Note that while PAT::Candidate has this function as double, we only save float accuracy in miniAOD anyway.
     double jphi = j.phi();
 
 
@@ -204,13 +204,22 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     bool PUjetID = true;
    
     //Recommended tight PU JET ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
-    if (applyJEC_) PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0));
+    if (applyJEC_ && ( setup == 2017 || setup == 2018)) PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0));
     else PUjetID = bool(j.userInt("pileupJetId:fullId") & (1 << 0));
 
     //--- b-tagging and scaling factors
     float bTagger;
     bTagger = j.bDiscriminator(bTaggerName) + j.bDiscriminator((bTaggerName + "b")); //one should just sum for doing b tagging, the b and bb probabilities
-    
+    //cout << "b tag is = " << bTagger << endl;
+
+    // Check of tagger labels stored in the MiniAOD and recognized by the bDiscriminator                                                                           
+    //#const std::vector<std::pair<std::string, float> > & getPairDiscri() const;                                                                                                    
+    //auto& pd = j.getPairDiscri();                                                                                                                                                       
+    //for (size_t pd_obj = 0; pd_obj < pd.size(); ++pd_obj)                                                                                                                                          
+    //  {                                                                                                   
+    //cout << pd_obj << "  Discriminator: " << pd.at(pd_obj).first << " \t " << pd.at(pd_obj).second  << endl;                                                      
+    // }   
+
     bool isBtagged = bTagger > bTaggerThreshold;
     bool isBtaggedWithSF   = isBtagged;
     bool isBtaggedWithSFUp = isBtagged;
