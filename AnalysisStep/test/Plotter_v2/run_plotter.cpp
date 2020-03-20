@@ -67,7 +67,7 @@ int main( int argc, char *argv[] )
    TString WWZ_2018         = path_2018 + "WWZ"                        + file_name;
    TString WZZ_2018         = path_2018 + "WZZ"                        + file_name;
    TString ZZZ_2018         = path_2018 + "ZZZ"                        + file_name;
-   TString TTZJets_2018     = path_2018 + "TTZJets_M10_MLM"            + file_name;
+   TString TTZJets_2018     = path_2018 + "TTZJets_M10_MLMext1"            + file_name;
 
 */
    TString ggH125_2017      = path_2017 + "ggH125"     + file_name;
@@ -296,9 +296,9 @@ int main( int argc, char *argv[] )
 
    plotter->GetHistos("Unblinded");
 
-   // plotter->plot_Purity("Unblinded", "Plots/Unblinded");setTDRStyle();
+   plotter->plot_Purity("Unblinded", "Plots/Unblinded");setTDRStyle();
    //
-   // plotter->plot_STXS("Unblinded", "Plots/Unblinded");setTDRStyle();
+   plotter->plot_STXS("Unblinded", "Plots/Unblinded");setTDRStyle();
    //
    plotter->plot_1D_all_cat("Unblinded", "M4lMain",       "Plots/Unblinded");
    plotter->plot_1D_all_cat("Unblinded", "M4lMainZoomed", "Plots/Unblinded");

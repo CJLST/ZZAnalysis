@@ -3019,6 +3019,7 @@ void Histograms::plot_STXS( TString folder )
     STXS_Categories[Settings::qqZZ]->SetFillColor(Cosmetics::qqZZ().fill_color);
     STXS_Categories[Settings::ggZZ]->SetFillColor(Cosmetics::ggZZ().fill_color);
     STXS_Categories[Settings::Zjets]->SetFillColor(Cosmetics::ZX().fill_color);
+    STXS_Categories[Settings::VVV]->SetFillColor(Cosmetics::VVV().fill_color);
 
     STXS_Categories[Settings::Data]->SetBinErrorOption(TH1::kPoisson);
     STXS_Categories[Settings::Data]->SetLineColor(kBlack);
@@ -3026,6 +3027,7 @@ void Histograms::plot_STXS( TString folder )
     // THStack
     THStack *stack = new THStack( "stack", "stack" );
 
+    stack->Add(STXS_Categories[Settings::VVV]);
     stack->Add(STXS_Categories[Settings::Zjets]);
     stack->Add(STXS_Categories[Settings::ggZZ]);
     stack->Add(STXS_Categories[Settings::qqZZ]);
@@ -3062,6 +3064,7 @@ void Histograms::plot_STXS( TString folder )
                                                  STXS_Categories[Settings::qqZZ],
                                                  STXS_Categories[Settings::ggZZ],
                                                  STXS_Categories[Settings::Zjets],
+                                                 STXS_Categories[Settings::VVV],
                                                  false);
 
     legend->Draw();
@@ -5145,7 +5148,7 @@ TLegend* Histograms::CreateLegendttH( string position, TH1F *data, TH1F *h125ttH
 
 
 //==============================================================================================================================
-TLegend* Histograms::CreateLegendSTXS( string position, TH1F *data, TH1F *h125ggH, TH1F *h125bbH, TH1F *h125VBF, TH1F *h125VH, TH1F *h125ttH, TH1F *h125tqH, TH1F *qqZZ, TH1F *ggZZ, TH1F *ZX , bool mask)
+TLegend* Histograms::CreateLegendSTXS( string position, TH1F *data, TH1F *h125ggH, TH1F *h125bbH, TH1F *h125VBF, TH1F *h125VH, TH1F *h125ttH, TH1F *h125tqH, TH1F *qqZZ, TH1F *ggZZ, TH1F *ZX , TH1F *VVV , bool mask)
 {
     TLegend *leg;
 
@@ -5176,6 +5179,7 @@ TLegend* Histograms::CreateLegendSTXS( string position, TH1F *data, TH1F *h125gg
     leg->AddEntry( ggZZ, "gg#rightarrowZZ, Z#gamma*", "f" );
     leg->AddEntry( h125VH,"H(125), VH","f");
     leg->AddEntry( ZX, "Z+X", "f" );
+    leg->AddEntry( VVV, "EW bkg", "f" );
 
     return leg;
 }

@@ -26,68 +26,68 @@ int main( int argc, char *argv[] )
    
    TString path = "/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased/";
    TString file_name = "/ZZ4lAnalysis.root";
-   TString file_name_FR = "/FakeRates_SS_2016.root";
+   TString file_name_FR = "/FakeRates_SS_2018.root";
    
    //Data
-   TString Data    = path + "Data_2016/AllData"        + file_name;
+   TString Data    = path + "Data_2018/AllData"        + file_name;
    TString FakeRates   = "/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased/FRfiles" + file_name_FR;
    
    // Signal
    // TString ggH120      = path + "ggH120" + file_name;
    // TString ggH124      = path + "ggH124" + file_name;
-   TString ggH125      = path + "MC_2016/"+ "ggH125" + file_name;
-   // TString ggH126      = path + "MC_2016/"+ "ggH126" + file_name;
-   // TString ggH130      = path + "MC_2016/"+ "ggH130" + file_name;
+   TString ggH125      = path + "MC_2018/"+ "ggH125" + file_name;
+   // TString ggH126      = path + "MC_2018/"+ "ggH126" + file_name;
+   // TString ggH130      = path + "MC_2018/"+ "ggH130" + file_name;
                
-   // TString VBFH120     = path + "MC_2016/"+ "VBFH120" + file_name;
-   // TString VBFH124     = path + "MC_2016/"+ "VBFH124" + file_name;
-   TString VBFH125     = path + "MC_2016/"+ "VBFH125" + file_name;
-   // TString VBFH126     = path + "MC_2016/"+ "VBFH126" + file_name;
-   // TString VBFH130     = path + "MC_2016/"+ "VBFH130" + file_name;
+   // TString VBFH120     = path + "MC_2018/"+ "VBFH120" + file_name;
+   // TString VBFH124     = path + "MC_2018/"+ "VBFH124" + file_name;
+   TString VBFH125     = path + "MC_2018/"+ "VBFH125" + file_name;
+   // TString VBFH126     = path + "MC_2018/"+ "VBFH126" + file_name;
+   // TString VBFH130     = path + "MC_2018/"+ "VBFH130" + file_name;
    
-   // TString WpH120      = path + "MC_2016/"+ "WplusH120" + file_name;
-   // TString WpH124      = path + "MC_2016/"+ "WplusH124" + file_name;
-   TString WpH125      = path + "MC_2016/"+ "WplusH125" + file_name;
-   // TString WpH126      = path + "MC_2016/"+ "WplusH126" + file_name;
-   // TString WpH130      = path + "MC_2016/"+ "WplusH130" + file_name;
+   // TString WpH120      = path + "MC_2018/"+ "WplusH120" + file_name;
+   // TString WpH124      = path + "MC_2018/"+ "WplusH124" + file_name;
+   TString WpH125      = path + "MC_2018/"+ "WplusH125" + file_name;
+   // TString WpH126      = path + "MC_2018/"+ "WplusH126" + file_name;
+   // TString WpH130      = path + "MC_2018/"+ "WplusH130" + file_name;
     
-   // TString WmH120      = path + "MC_2016/"+ "WminusH120" + file_name;
-   // TString WmH124      = path + "MC_2016/"+ "WminusH124" + file_name;
-   TString WmH125      = path + "MC_2016/"+ "WminusH125" + file_name;
-   // TString WmH126      = path + "MC_2016/"+ "WminusH126" + file_name;
-   // TString WmH130      = path + "MC_2016/"+ "WminusH130" + file_name;
+   // TString WmH120      = path + "MC_2018/"+ "WminusH120" + file_name;
+   // TString WmH124      = path + "MC_2018/"+ "WminusH124" + file_name;
+   TString WmH125      = path + "MC_2018/"+ "WminusH125" + file_name;
+   // TString WmH126      = path + "MC_2018/"+ "WminusH126" + file_name;
+   // TString WmH130      = path + "MC_2018/"+ "WminusH130" + file_name;
       
-   // TString ZH120       = path + "MC_2016/"+ "ZH120" + file_name;
-   // TString ZH124       = path + "MC_2016/"+ "ZH124" + file_name;
-   TString ZH125       = path + "MC_2016/"+ "ZH125" + file_name;
-   // TString ZH126       = path + "MC_2016/"+ "ZH126" + file_name;
-   // TString ZH130       = path + "MC_2016/"+ "ZH130" + file_name;
+   // TString ZH120       = path + "MC_2018/"+ "ZH120" + file_name;
+   // TString ZH124       = path + "MC_2018/"+ "ZH124" + file_name;
+   TString ZH125       = path + "MC_2018/"+ "ZH125" + file_name;
+   // TString ZH126       = path + "MC_2018/"+ "ZH126" + file_name;
+   // TString ZH130       = path + "MC_2018/"+ "ZH130" + file_name;
    
-   // TString ttH120      = path + "MC_2016/"+ "ttH120" + file_name;
-   // TString ttH124      = path + "MC_2016/"+ "ttH124" + file_name;
-   TString ttH125      = path + "MC_2016/"+ "ttH125" + file_name;
-   // TString ttH126      = path + "MC_2016/"+ "ttH126" + file_name;
-   // TString ttH130      = path + "MC_2016/"+ "ttH130" + file_name;
+   // TString ttH120      = path + "MC_2018/"+ "ttH120" + file_name;
+   // TString ttH124      = path + "MC_2018/"+ "ttH124" + file_name;
+   TString ttH125      = path + "MC_2018/"+ "ttH125" + file_name;
+   // TString ttH126      = path + "MC_2018/"+ "ttH126" + file_name;
+   // TString ttH130      = path + "MC_2018/"+ "ttH130" + file_name;
    
-   // TString bbH120      = path + "MC_2016/"+ "bbH120" + file_name;
- //   TString bbH124      = path + "MC_2016/"+ "bbH124" + file_name;
-   TString bbH125      = path + "MC_2016/"+ "bbH125" + file_name;
-   // TString bbH126      = path + "MC_2016/"+ "bbH126" + file_name;
-   // TString bbH130      = path + "MC_2016/"+ "bbH130" + file_name;
+   // TString bbH120      = path + "MC_2018/"+ "bbH120" + file_name;
+ //   TString bbH124      = path + "MC_2018/"+ "bbH124" + file_name;
+   TString bbH125      = path + "MC_2018/"+ "bbH125" + file_name;
+   // TString bbH126      = path + "MC_2018/"+ "bbH126" + file_name;
+   // TString bbH130      = path + "MC_2018/"+ "bbH130" + file_name;
    
-   TString tqH125      = path + "MC_2016/"+ "tqH125" + file_name;
+   TString tqH125      = path + "MC_2018/"+ "tqH125" + file_name;
 
    // Backgrounds
-   TString ZZTo4l      = path + "MC_2016/"+ "ZZTo4l" + file_name;
-   TString ggZZ4e      = path + "MC_2016/"+ "ggTo4e_Contin_MCFM701" + file_name;
-   TString ggZZ4mu     = path + "MC_2016/"+ "ggTo4mu_Contin_MCFM701" + file_name;
-   TString ggZZ4tau    = path + "MC_2016/"+ "ggTo4tau_Contin_MCFM701" + file_name;
-   TString ggZZ2e2mu   = path + "MC_2016/"+ "ggTo2e2mu_Contin_MCFM701" + file_name;
-   TString ggZZ2e2tau  = path + "MC_2016/"+ "ggTo2e2tau_Contin_MCFM701" + file_name;
-   TString ggZZ2mu2tau = path + "MC_2016/"+ "ggTo2mu2tau_Contin_MCFM701" + file_name;
+   TString ZZTo4l      = path + "MC_2018/"+ "ZZTo4l" + file_name;
+   TString ggZZ4e      = path + "MC_2018/"+ "ggTo4e_Contin_MCFM701" + file_name;
+   TString ggZZ4mu     = path + "MC_2018/"+ "ggTo4mu_Contin_MCFM701" + file_name;
+   TString ggZZ4tau    = path + "MC_2018/"+ "ggTo4tau_Contin_MCFM701" + file_name;
+   TString ggZZ2e2mu   = path + "MC_2018/"+ "ggTo2e2mu_Contin_MCFM701" + file_name;
+   TString ggZZ2e2tau  = path + "MC_2018/"+ "ggTo2e2tau_Contin_MCFM701" + file_name;
+   TString ggZZ2mu2tau = path + "MC_2018/"+ "ggTo2mu2tau_Contin_MCFM701" + file_name;
    
    double lumi = 35.9;
-   int year = 2016;
+   int year = 2018;
    Yields *yields = new Yields(lumi);
    
 //===============
@@ -157,7 +157,7 @@ int main( int argc, char *argv[] )
 //==============
    
    yields->GetHistos("Yields");
-   yields->Calculate_SS_ZX_Yields( Data, FakeRates);
+   yields->Calculate_SS_ZX_Yields( Data, FakeRates, year);
    yields->Print("Yields");
 
    yields->Print("Yields", 118., 130.);

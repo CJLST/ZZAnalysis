@@ -48,7 +48,7 @@ public:
    ~Yields();
    
    void MakeHistograms( TString, int );
-   void Calculate_SS_ZX_Yields( TString, TString );
+   void Calculate_SS_ZX_Yields( TString, TString, int );
    float calculate_K_factor( TString );
    int FindFinalState();
    int FindFinalStateZX();

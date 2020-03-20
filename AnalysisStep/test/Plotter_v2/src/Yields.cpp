@@ -177,7 +177,7 @@ void Yields::MakeHistograms( TString input_file_name , int year)
 
 
 //===============================================================================
-void Yields::Calculate_SS_ZX_Yields( TString input_file_data_name, TString  input_file_FR_name )
+void Yields::Calculate_SS_ZX_Yields( TString input_file_data_name, TString  input_file_FR_name, int year )
 {
 
    if(year == 2016) {
