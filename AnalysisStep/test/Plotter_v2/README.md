@@ -18,5 +18,3 @@ Few important notes:
    precisely in the constructors, under `_s_process`, and define the production modes in
    `_s_production_mode`. Also rememeber to update the methods that create legends, otherwise 
    errors will be produced when the script is launched.
- * The script for the yields computation present in this repository is outdated. To compute yields
- see [the reduced trees repository](https://gitlab.cern.ch/HZZ4l/Datacards13TeV/tree/HIG-19-JES).
