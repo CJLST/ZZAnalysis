@@ -136,8 +136,8 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     double jabseta = fabs(jeta);
     double raw_jpt = j.correctedJet("Uncorrected").pt();
 
-    // 20170220: using a float instead of adouble  changes of the JER seed from 99494 to 99495, and changes post JER jet pT.
-    // Note that while PAT::Candidate has this function as double, we only save float accuracy in miniAOD anyway.
+    // 20170220: using a float instead of a double  changes of the JER seed from 99494 to 99495, and changes post JER jet pT.
+    // Note that while PAT::Candidate has this fucntion as double, we only save float accuracy in miniAOD anyway.
     double jphi = j.phi();
 
 
@@ -152,10 +152,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     //--- Get JEC uncertainties 
     jecUnc.setJetEta(jeta);
     jecUnc.setJetPt(jpt);
-    float jes_unc = jecUnc.getUncertainty(true);
-     
-    float pt_jesup = jpt * (1.0 + jes_unc);
-    float pt_jesdn = jpt * (1.0 - jes_unc);
+    float jec_unc = jecUnc.getUncertainty(true);
 
 
     //--- loose jet ID, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID13TeVRun2016 
@@ -166,7 +163,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     int NumConst = j.chargedMultiplicity()+j.neutralMultiplicity();
     int NumNeutralParticles = j.neutralMultiplicity();
     float CHM  = j.chargedMultiplicity();
- //   float MUF  = j.muonEnergyFraction();
+    //   float MUF  = j.muonEnergyFraction();
 
     bool JetID = true;
 	  
@@ -200,25 +197,15 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 }
 	 
 
-	  
     bool PUjetID = true;
    
     //Recommended tight PU JET ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
-    if (applyJEC_ && ( setup == 2017 || setup == 2018)) PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0));
+    if (applyJEC_) PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0));
     else PUjetID = bool(j.userInt("pileupJetId:fullId") & (1 << 0));
 
-    //--- b-tagging and scaling factors
+    //--- b tagging and scaling factors
     float bTagger;
     bTagger = j.bDiscriminator(bTaggerName) + j.bDiscriminator((bTaggerName + "b")); //one should just sum for doing b tagging, the b and bb probabilities
-    //cout << "b tag is = " << bTagger << endl;
-
-    // Check of tagger labels stored in the MiniAOD and recognized by the bDiscriminator                                                                           
-    //#const std::vector<std::pair<std::string, float> > & getPairDiscri() const;                                                                                                    
-    //auto& pd = j.getPairDiscri();                                                                                                                                                       
-    //for (size_t pd_obj = 0; pd_obj < pd.size(); ++pd_obj)                                                                                                                                          
-    //  {                                                                                                   
-    //cout << pd_obj << "  Discriminator: " << pd.at(pd_obj).first << " \t " << pd.at(pd_obj).second  << endl;                                                      
-    // }   
 
     bool isBtagged = bTagger > bTaggerThreshold;
     bool isBtaggedWithSF   = isBtagged;
@@ -275,8 +262,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       JME::JetParameters res_parameters = {{JME::Binning::JetPt, jpt}, {JME::Binning::JetEta, jeta}, {JME::Binning::Rho, rho}};
       float res_pt  = resolution.getResolution(res_parameters);
 
-      //JME::JetParameters sf_parameters = {{JME::Binning::JetEta, jeta}, {JME::Binning::Rho, rho}};
-      JME::JetParameters sf_parameters = {{JME::Binning::JetPt, jpt}, {JME::Binning::JetEta, jeta}, {JME::Binning::Rho, rho}};
+      JME::JetParameters sf_parameters = {{JME::Binning::JetEta, jeta}, {JME::Binning::Rho, rho}};
       float sf    = resolution_sf.getScaleFactor(sf_parameters);
       float sf_up = resolution_sf.getScaleFactor(sf_parameters, Variation::UP);
       float sf_dn = resolution_sf.getScaleFactor(sf_parameters, Variation::DOWN);
@@ -317,9 +303,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     j.addUserFloat("axis2",axis2);
     j.addUserFloat("mult",mult);
     j.addUserFloat("ptD",ptD);
-    j.addUserFloat("jes_unc", jes_unc);
-    j.addUserFloat("pt_jesup", pt_jesup);
-    j.addUserFloat("pt_jesdn", pt_jesdn);
+    j.addUserFloat("jec_unc", jec_unc);
     j.addUserFloat("pt_jerup", pt_jerup);
     j.addUserFloat("pt_jerdn", pt_jerdn);
     j.addUserFloat("RawPt", raw_jpt);
