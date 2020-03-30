@@ -152,7 +152,10 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     //--- Get JEC uncertainties 
     jecUnc.setJetEta(jeta);
     jecUnc.setJetPt(jpt);
-    float jec_unc = jecUnc.getUncertainty(true);
+    float jes_unc = jecUnc.getUncertainty(true);
+     
+    float pt_jesup = jpt * (1.0 + jes_unc);
+    float pt_jesdn = jpt * (1.0 - jes_unc);
 
 
     //--- loose jet ID, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID13TeVRun2016 
@@ -262,7 +265,8 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       JME::JetParameters res_parameters = {{JME::Binning::JetPt, jpt}, {JME::Binning::JetEta, jeta}, {JME::Binning::Rho, rho}};
       float res_pt  = resolution.getResolution(res_parameters);
 
-      JME::JetParameters sf_parameters = {{JME::Binning::JetEta, jeta}, {JME::Binning::Rho, rho}};
+      //JME::JetParameters sf_parameters = {{JME::Binning::JetEta, jeta}, {JME::Binning::Rho, rho}};
+      JME::JetParameters sf_parameters = {{JME::Binning::JetPt, jpt}, {JME::Binning::JetEta, jeta}, {JME::Binning::Rho, rho}};
       float sf    = resolution_sf.getScaleFactor(sf_parameters);
       float sf_up = resolution_sf.getScaleFactor(sf_parameters, Variation::UP);
       float sf_dn = resolution_sf.getScaleFactor(sf_parameters, Variation::DOWN);
@@ -303,7 +307,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     j.addUserFloat("axis2",axis2);
     j.addUserFloat("mult",mult);
     j.addUserFloat("ptD",ptD);
-    j.addUserFloat("jec_unc", jec_unc);
+    j.addUserFloat("jes_unc", jes_unc);
     j.addUserFloat("pt_jerup", pt_jerup);
     j.addUserFloat("pt_jerdn", pt_jerdn);
     j.addUserFloat("RawPt", raw_jpt);
