@@ -993,6 +993,9 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
 ### Jets
 ### ----------------------------------------------------------------------
 
+from RecoJets.JetProducers.PileupJetIDParams_cfi import full_80x_chs
+from RecoJets.JetProducers.PileupJetIDCutParams_cfi import full_80x_chs_wp
+
 process.load("CondCore.CondDB.CondDB_cfi")
 
 process.load("RecoJets.JetProducers.PileupJetID_cfi")
@@ -1002,6 +1005,26 @@ process.pileupJetIdUpdated = process.pileupJetId.clone(
     applyJec=True,
     vertexes=cms.InputTag("offlineSlimmedPrimaryVertices")
 )
+
+### q/g likelihood
+qgDatabaseVersion = 'cmssw8020_v2'
+process.QGPoolDBESSource = cms.ESSource("PoolDBESSource",
+      DBParameters = cms.PSet(messageLevel = cms.untracked.int32(1)),
+      timetype = cms.string('runnumber'),
+      toGet = cms.VPSet(
+        cms.PSet(
+            record = cms.string('QGLikelihoodRcd'),
+            tag    = cms.string('QGLikelihoodObject_'+qgDatabaseVersion+'_AK4PFchs'),
+            label  = cms.untracked.string('QGL_AK4PFchs')
+        ),
+      ),
+      connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/QGTagging/QGL_'+qgDatabaseVersion+'.db')
+)
+process.es_prefer_qg = cms.ESPrefer('PoolDBESSource','QGPoolDBESSource')
+process.load('RecoJets.JetProducers.QGTagger_cfi')
+process.QGTagger.srcJets = cms.InputTag( 'slimmedJets' )
+process.QGTagger.jetsLabel = cms.string('QGL_AK4PFchs')
+
 
 theBTagger=""
 theBTaggerThr=0
@@ -1025,27 +1048,6 @@ elif (LEPTON_SETUP == 2018): #DeepCSV, from https://twiki.cern.ch/twiki/bin/view
 else:
    sys.exit("ZZ4lAnalysis.py: Need to define the btagging for the new setup!")
 
-
-### q/g likelihood
-qgDatabaseVersion = 'cmssw8020_v2'
-process.QGPoolDBESSource = cms.ESSource("PoolDBESSource",
-      DBParameters = cms.PSet(messageLevel = cms.untracked.int32(1)),
-      timetype = cms.string('runnumber'),
-      toGet = cms.VPSet(
-        cms.PSet(
-            record = cms.string('QGLikelihoodRcd'),
-            tag    = cms.string('QGLikelihoodObject_'+qgDatabaseVersion+'_AK4PFchs'),
-            label  = cms.untracked.string('QGL_AK4PFchs')
-        ),
-      ),
-      connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/QGTagging/QGL_'+qgDatabaseVersion+'.db')
-)
-process.es_prefer_qg = cms.ESPrefer('PoolDBESSource','QGPoolDBESSource')
-process.load('RecoJets.JetProducers.QGTagger_cfi')
-process.QGTagger.srcJets = cms.InputTag( 'slimmedJets' )
-process.QGTagger.jetsLabel = cms.string('QGL_AK4PFchs')
-
-### DRESSED JETS: b tag applied
 process.dressedJets = cms.EDProducer("JetFiller",
     src = cms.InputTag("slimmedJets"),
     sampleType = cms.int32(SAMPLE_TYPE),
