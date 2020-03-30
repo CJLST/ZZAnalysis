@@ -308,6 +308,8 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     j.addUserFloat("mult",mult);
     j.addUserFloat("ptD",ptD);
     j.addUserFloat("jes_unc", jes_unc);
+    j.addUserFloat("pt_jesup", pt_jesup);
+    j.addUserFloat("pt_jesdn", pt_jesdn);
     j.addUserFloat("pt_jerup", pt_jerup);
     j.addUserFloat("pt_jerdn", pt_jerdn);
     j.addUserFloat("RawPt", raw_jpt);
