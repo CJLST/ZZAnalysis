@@ -21,6 +21,7 @@ MCFILTER = ""
 #For DATA: 
 #IsMC = False
 #PD = "DoubleMu"
+#DATA_TAG = "ReReco" # Change to "PromptReco" for Run2018 period D
 
 # Get absolute path
 import os
@@ -49,9 +50,10 @@ process.source.fileNames = cms.untracked.vstring(
     '/store/mc/RunIIAutumn18MiniAOD/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/MINIAODSIM/102X_upgrade2018_realistic_v15-v2/90000/96A5F68D-DCB8-3D4E-8615-919D86D1534F.root',
     '/store/mc/RunIIAutumn18MiniAOD/ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8/MINIAODSIM/102X_upgrade2018_realistic_v15-v2/60000/19B6ADC2-4F62-AA4D-9488-F53CE2936856.root'
                                                  
-
-###Run2018A-v3 
-#     '/store/data/Run2018A/DoubleMuon/MINIAOD/PromptReco-v3/000/316/569/00000/0CBC961D-6264-E811-B36E-FA163E4C1970.root'
+###Run2018A-ReReco-v2                                                                                                                 
+        '/store/data/Run2018A/DoubleMuon/MINIAOD/17Sep2018-v2/120000/39DE1F78-583A-1948-8E09-E47E33DCCBED.root'                                      
+###Run2018D-PromptReco-v2                                                                                                 
+        #'/store/data/Run2018D/DoubleMuon/MINIAOD/PromptReco-v2/000/325/172/00000/DB7F6A17-F4E1-B844-B8A4-7F53C1E17E8C.root'
     )
 
 #process.calibratedPatElectrons.isSynchronization = cms.bool(True) #not needed anymore since new EGamma smearing is event deterministic
