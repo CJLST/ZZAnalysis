@@ -36,7 +36,7 @@ git checkout bonanomi/hstxs1p2_CMSSW_10_2_X SimDataFormats/HTXS
 #### Please do not add any custom (non-CMSSW) package before this line ####
 #ZZAnalysis
 git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
-(cd ZZAnalysis; git checkout Run2_CutBased)
+(cd ZZAnalysis; git checkout Run2_CutBased_Plotter)
 
 # Muon MVA
 git clone https://github.com/bonanomi/MuonMVAReader.git MuonMVAReader
@@ -51,7 +51,7 @@ git clone https://github.com/usarica/CommonLHETools.git
 
 #MELA
 git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
-(cd ZZMatrixElement; git checkout -b from-v222 v2.2.2)
+(cd ZZMatrixElement; git checkout -b from-v223 v2.2.3)
 # replace ZZMatrixElement/MELA/setup.sh -j 8
 (                                                                 \
   cd ${CMSSW_BASE}/src/ZZMatrixElement/MELA/COLLIER/             ;\

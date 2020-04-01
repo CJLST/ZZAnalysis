@@ -27,34 +27,13 @@ Plotter::Plotter():Tree()
  *
  * 2018: 1.00568, 1.02926, 1.03226, 1.00432
  * *******************************************/
-   _fs_ROS_SS.push_back(1.00245);//4e
-   _fs_ROS_SS.push_back(0.998863);//4mu
-   _fs_ROS_SS.push_back(1.03338);//2e2mu
-   _fs_ROS_SS.push_back(0.998852);//2mu2e
 
-// Place holder. At some point we might want to
-// have a more general constructor that takes the
-// year as input.
-/*
-   if(year == 2016) {
-       _fs_ROS_SS.push_back(1.00245);//4e
-       _fs_ROS_SS.push_back(0.998863);//4mu
-       _fs_ROS_SS.push_back(1.03338);//2e2mu
-       _fs_ROS_SS.push_back(0.998852);//2mu2e
-   }
-   else if (year == 2017) {
-       _fs_ROS_SS.push_back(1.01198);//4e
-       _fs_ROS_SS.push_back(1.03949);//4mu
-       _fs_ROS_SS.push_back(1.013128);//2e2mu
-       _fs_ROS_SS.push_back(1.00257);//2mu2e
-   }
-   else {
-       _fs_ROS_SS.push_back(1.00568);//4e
-       _fs_ROS_SS.push_back(1.02926);//4mu
-       _fs_ROS_SS.push_back(1.03226);//2e2mu
-       _fs_ROS_SS.push_back(1.00432);//2mu2e
-   }
-*/
+   // Place holders, we fill the OS/SS in MakeHistogramsZX
+   _fs_ROS_SS.push_back(1.0); cb_SS.push_back(1.0); //4e
+   _fs_ROS_SS.push_back(1.0); cb_SS.push_back(1.0); //4mu
+   _fs_ROS_SS.push_back(1.0); cb_SS.push_back(1.0); //2e2mu
+   _fs_ROS_SS.push_back(1.0); cb_SS.push_back(1.0); //2mu2e
+
    vector<float> temp;
    for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
    {
@@ -172,14 +151,14 @@ void Plotter::MakeHistograms( TString input_file_name , int year)
       if ( input_file_name.Contains("ggH") ) _event_weight *= ggH_NNLOPS_weight; // reweight POWHEG ggH to NNLOPS
 
       // Rescale to updated version of SFs
-      //      _updatedSF = ( lepSFHelper->getSF(year,LepLepId->at(0),LepPt->at(0),LepEta->at(0), LepEta->at(0), false) *
-      //                     lepSFHelper->getSF(year,LepLepId->at(1),LepPt->at(1),LepEta->at(1), LepEta->at(1), false) *
-      //                     lepSFHelper->getSF(year,LepLepId->at(2),LepPt->at(2),LepEta->at(2), LepEta->at(2), false) *
-      //                     lepSFHelper->getSF(year,LepLepId->at(3),LepPt->at(3),LepEta->at(3), LepEta->at(3), false) );
+       _updatedSF = ( lepSFHelper->getSF(year,LepLepId->at(0),LepPt->at(0),LepEta->at(0), LepEta->at(0), false) *
+                      lepSFHelper->getSF(year,LepLepId->at(1),LepPt->at(1),LepEta->at(1), LepEta->at(1), false) *
+                      lepSFHelper->getSF(year,LepLepId->at(2),LepPt->at(2),LepEta->at(2), LepEta->at(2), false) *
+                      lepSFHelper->getSF(year,LepLepId->at(3),LepPt->at(3),LepEta->at(3), LepEta->at(3), false) );
       //
-      //      //cout << "Weight before = " << _event_weight << " Updated SF = " << _updatedSF << endl;
-      //      _event_weight *= _updatedSF/dataMCWeight;
-      //      //cout << "Updated weight = " << _event_weight << endl;
+      // cout << "Weight before = " << _event_weight << " Updated SF = " << _updatedSF << endl;
+      _event_weight *= _updatedSF/dataMCWeight;
+      // cout << "Updated weight = " << _event_weight << endl;
 
 
       // Calculate kinematic discriminants
@@ -386,6 +365,7 @@ void Plotter::MakeHistograms( TString input_file_name , int year)
 //=======================
 void Plotter::MakeM4lZX()
 {
+
    for (  int i_cat = 0; i_cat < num_of_categories - 1; i_cat++  )
    {
       for ( int i_fs = 0; i_fs < num_of_final_states - 1; i_fs++  )
@@ -473,6 +453,28 @@ void Plotter::SetBlinding(float blinding_lower_0, float blinding_upper_0, float 
 void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_file_FR_name , int year)
 {
 
+   if(year == 2016) {
+       _fs_ROS_SS.clear(); cb_SS.clear();
+       _fs_ROS_SS.push_back(1.00245); cb_SS.push_back(1.23628); //4e
+       _fs_ROS_SS.push_back(0.998863); cb_SS.push_back(0.95433); //4mu
+       _fs_ROS_SS.push_back(1.03338); cb_SS.push_back(1.0726); //2e2mu
+       _fs_ROS_SS.push_back(0.998852); cb_SS.push_back(1.0726); //2mu2e
+   }
+   else if (year == 2017) {
+       _fs_ROS_SS.clear(); cb_SS.clear();
+       _fs_ROS_SS.push_back(1.01198); cb_SS.push_back(1.1934); //4e
+       _fs_ROS_SS.push_back(1.03949); cb_SS.push_back(0.99669); //4mu
+       _fs_ROS_SS.push_back(1.013128); cb_SS.push_back(1.0569); //2e2mu
+       _fs_ROS_SS.push_back(1.00257); cb_SS.push_back(1.0569); //2mu2e
+   }
+   else {
+       _fs_ROS_SS.clear(); cb_SS.clear();
+       _fs_ROS_SS.push_back(1.00568); cb_SS.push_back(1.2087); //4e
+       _fs_ROS_SS.push_back(1.02926); cb_SS.push_back(0.9875); //4mu
+       _fs_ROS_SS.push_back(1.03226); cb_SS.push_back(1.0552); //2e2mu
+       _fs_ROS_SS.push_back(1.00432); cb_SS.push_back(1.0552); //2mu2e
+   }  
+
    FakeRates *FR = new FakeRates( input_file_FR_name );
 
    input_file_data = new TFile(input_file_data_name);
@@ -497,8 +499,9 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
       if ( !CRflag ) continue;
       if ( !test_bit(CRflag, CRZLLss) ) continue;
 
-      if ( !(ZZsel >= 20) ) continue; // Remove events that do not pass selection
-      if ( LepSIP->at(0) > 8. || LepSIP->at(1) > 8. || LepSIP->at(2) > 8. || LepSIP->at(3) > 8.) continue;//SIP Sanity check
+      // if ( !(ZZsel >= 20) ) continue; // Remove events that do not pass selection
+      // if ( LepSIP->at(0) > 8. || LepSIP->at(1) > 8. || LepSIP->at(2) > 8. || LepSIP->at(3) > 8.) continue;//SIP Sanity check
+      if ( !(ZZMass > 70) ) continue;
       _current_final_state = FindFinalStateZX();
 
       // Find current category
@@ -533,7 +536,7 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
                                                 ZZjjPt);
 
       // Calculate yield
-      _yield_SR = _fs_ROS_SS.at(_current_final_state)*FR->GetFakeRate(LepPt->at(2),LepEta->at(2),LepLepId->at(2))*FR->GetFakeRate(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
+      _yield_SR = cb_SS.at(_current_final_state)*_fs_ROS_SS.at(_current_final_state)*FR->GetFakeRate(LepPt->at(2),LepEta->at(2),LepLepId->at(2))*FR->GetFakeRate(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
 
       _expected_yield_SR[_current_final_state][_current_category] += _yield_SR; // this number needs to be used when renormalizing histograms that have some cut/blinding
       _number_of_events_CR[_current_final_state][_current_category]++;
@@ -875,6 +878,13 @@ int Plotter::find_current_process( TString input_file_name , int genExtInfo, int
    if ( input_file_name.Contains("ggTo2e2tau") )     current_process = Settings::ggZZ;
    if ( input_file_name.Contains("ggTo2mu2tau") )    current_process = Settings::ggZZ;
    if ( input_file_name.Contains("TTZZ") )           current_process = Settings::VVV;
+   if ( input_file_name.Contains("TTWW") )           current_process = Settings::VVV;
+   if ( input_file_name.Contains("WWZ") )            current_process = Settings::VVV;
+   if ( input_file_name.Contains("WZZ") )            current_process = Settings::VVV;
+   if ( input_file_name.Contains("ZZZ") )            current_process = Settings::VVV;
+   if ( input_file_name.Contains("TTZJets") )        current_process = Settings::VVV;
+   if ( input_file_name.Contains("TTZLL") )          current_process = Settings::VVV;
+   if ( input_file_name.Contains("TTZLLnunu") )      current_process = Settings::VVV;
    if ( input_file_name.Contains("DYJetsToLL_M50") ) current_process = Settings::other;
    if ( input_file_name.Contains("TTJets") )         current_process = Settings::other;
    if ( input_file_name.Contains("TTTo2L2Nu") )      current_process = Settings::other;

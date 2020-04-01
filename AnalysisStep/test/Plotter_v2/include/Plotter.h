@@ -145,5 +145,6 @@ private:
    vector< vector <float> > _expected_yield_SR, _number_of_events_CR;
    vector<int>   gen_assoc_lep_id_;
    vector<float> _fs_ROS_SS;
+   vector<float> cb_SS;
 };
 #endif
