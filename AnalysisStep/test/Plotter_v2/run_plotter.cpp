@@ -28,7 +28,7 @@ int main( int argc, char *argv[] )
 
    TString path_2018 = eos_path + "MC_2018/";
    TString path_2017 = eos_path + "MC_2017/";
-   TString path_2016 = eos_path + "MC_2016/";
+   TString path_2016 = eos_path + "MC_2016_CorrectBTag/";
    TString file_name = "/ZZ4lAnalysis.root";
 
    TString Data_2018    = eos_path + "Data_2018/AllData"        + file_name;
@@ -68,6 +68,8 @@ int main( int argc, char *argv[] )
    TString WZZ_2018         = path_2018 + "WZZ"                        + file_name;
    TString ZZZ_2018         = path_2018 + "ZZZ"                        + file_name;
    TString TTZJets_2018     = path_2018 + "TTZJets_M10_MLMext1"            + file_name;
+   TString TTLLNuNu_2018    = path_2018 + "TTZToLLNuNu_M10ext1"            + file_name;
+   TString TTLL_2018        = path_2018 + "TTZToLL_M1to10_MLM"         + file_name;
 
 */
    TString ggH125_2017      = path_2017 + "ggH125"     + file_name;
@@ -94,6 +96,8 @@ int main( int argc, char *argv[] )
    TString WZZ_2017         = path_2017 + "WZZ"                        + file_name;
    TString ZZZ_2017         = path_2017 + "ZZZ"                        + file_name;
    TString TTZJets_2017     = path_2017 + "TTZJets_M10_MLM"            + file_name;
+   TString TTLLNuNu_2017    = path_2017 + "TTZToLLNuNu_M10"            + file_name;
+   TString TTLL_2017        = path_2017 + "TTZToLL_M1to10_MLM"         + file_name;
 
 /*
    TString ggH125_2016      = path_2016 + "ggH125"     + file_name;
@@ -120,6 +124,8 @@ int main( int argc, char *argv[] )
    TString WZZ_2016         = path_2016 + "WZZ"                        + file_name;
    TString ZZZ_2016         = path_2016 + "ZZZ"                        + file_name;
    TString TTZJets_2016     = path_2016 + "TTZJets_M10_MLM"            + file_name;
+   TString TTLLNuNu_2016    = path_2016 + "TTZToLLNuNu_M10"            + file_name;
+   TString TTLL_2016        = path_2016 + "TTZToLL_M1to10_MLM"         + file_name;
 
 */
    // int year = 2016;
@@ -158,6 +164,8 @@ int main( int argc, char *argv[] )
    plotter->MakeHistograms(WZZ_2016,2016);
    plotter->MakeHistograms(ZZZ_2016,2016);
    plotter->MakeHistograms(TTZJets_2016, 2016);
+   plotter->MakeHistograms(TTLLNuNu_2016, 2016);
+   plotter->MakeHistograms(TTLL_2016, 2016);
 
 // // ZX Background
    plotter->MakeHistogramsZX(Data_2016, FR_2016, 2016);
@@ -191,6 +199,8 @@ int main( int argc, char *argv[] )
    plotter->MakeHistograms(WZZ_2017,2017);
    plotter->MakeHistograms(ZZZ_2017,2017);
    plotter->MakeHistograms(TTZJets_2017, 2017);
+   plotter->MakeHistograms(TTLLNuNu_2017, 2017);
+   plotter->MakeHistograms(TTLL_2017, 2017);
 
 // // ZX Background
    plotter->MakeHistogramsZX(Data_2017, FR_2017, 2017);
@@ -225,7 +235,9 @@ int main( int argc, char *argv[] )
    plotter->MakeHistograms(WZZ_2018,2018);
    plotter->MakeHistograms(ZZZ_2018,2018);
    plotter->MakeHistograms(TTZJets_2018, 2018);
-
+   plotter->MakeHistograms(TTLLNuNu_2018, 2018);
+   plotter->MakeHistograms(TTLL_2018, 2018);
+   
 // // ZX Background
    plotter->MakeHistogramsZX(Data_2018, FR_2018, 2018);
 
