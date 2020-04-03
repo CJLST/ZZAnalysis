@@ -883,8 +883,8 @@ int Plotter::find_current_process( TString input_file_name , int genExtInfo, int
    if ( input_file_name.Contains("WZZ") )            current_process = Settings::VVV;
    if ( input_file_name.Contains("ZZZ") )            current_process = Settings::VVV;
    if ( input_file_name.Contains("TTZJets") )        current_process = Settings::VVV;
-   if ( input_file_name.Contains("TTZLL") )          current_process = Settings::VVV;
-   if ( input_file_name.Contains("TTZLLnunu") )      current_process = Settings::VVV;
+   if ( input_file_name.Contains("TTZToLL_M1to1O_MLM") )          current_process = Settings::VVV;
+   if ( input_file_name.Contains("TTZToLLNuNu_M10") )      current_process = Settings::VVV;
    if ( input_file_name.Contains("DYJetsToLL_M50") ) current_process = Settings::other;
    if ( input_file_name.Contains("TTJets") )         current_process = Settings::other;
    if ( input_file_name.Contains("TTTo2L2Nu") )      current_process = Settings::other;
