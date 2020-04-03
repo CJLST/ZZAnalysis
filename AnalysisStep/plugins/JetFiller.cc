@@ -136,7 +136,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     double jabseta = fabs(jeta);
     double raw_jpt = j.correctedJet("Uncorrected").pt();
 
-    // 20170220: using a flaot instead of adouble  changes of the JER seed from 99494 to 99495, and changes post JER jet pT.
+    // 20170220: using a float instead of a double  changes of the JER seed from 99494 to 99495, and changes post JER jet pT.
     // Note that while PAT::Candidate has this fucntion as double, we only save float accuracy in miniAOD anyway.
     double jphi = j.phi();
 
@@ -166,7 +166,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     int NumConst = j.chargedMultiplicity()+j.neutralMultiplicity();
     int NumNeutralParticles = j.neutralMultiplicity();
     float CHM  = j.chargedMultiplicity();
- //   float MUF  = j.muonEnergyFraction();
+    //   float MUF  = j.muonEnergyFraction();
 
     bool JetID = true;
 	  
@@ -200,17 +200,16 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 }
 	 
 
-	  
     bool PUjetID = true;
    
     //Recommended tight PU JET ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
     if (applyJEC_) PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0));
     else PUjetID = bool(j.userInt("pileupJetId:fullId") & (1 << 0));
 
-    //--- b-tagging and scaling factors
+    //--- b tagging and scaling factors
     float bTagger;
     bTagger = j.bDiscriminator(bTaggerName) + j.bDiscriminator((bTaggerName + "b")); //one should just sum for doing b tagging, the b and bb probabilities
-    
+
     bool isBtagged = bTagger > bTaggerThreshold;
     bool isBtaggedWithSF   = isBtagged;
     bool isBtaggedWithSFUp = isBtagged;
