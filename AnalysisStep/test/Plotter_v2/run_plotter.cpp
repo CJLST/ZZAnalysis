@@ -43,7 +43,7 @@ int main( int argc, char *argv[] )
    TString FR_2018      = "/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased/FRfiles/FakeRates_SS_2016.root";
    TString FR_2017      = "/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased/FRfiles/FakeRates_SS_2017.root";
    TString FR_2016      = "/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased/FRfiles/FakeRates_SS_2018.root";
-/*
+
    TString ggH125_2018      = path_2018 + "ggH125"     + file_name;
    TString VBFH125_2018     = path_2018 + "VBFH125"    + file_name;
    TString WpH125_2018      = path_2018 + "WplusH125"  + file_name;
@@ -71,7 +71,7 @@ int main( int argc, char *argv[] )
    TString TTLLNuNu_2018    = path_2018 + "TTZToLLNuNu_M10ext1"            + file_name;
    TString TTLL_2018        = path_2018 + "TTZToLL_M1to10_MLM"         + file_name;
 
-*/
+
    TString ggH125_2017      = path_2017 + "ggH125"     + file_name;
    TString VBFH125_2017     = path_2017 + "VBFH125"    + file_name;
    TString WpH125_2017      = path_2017 + "WplusH125"  + file_name;
@@ -99,7 +99,7 @@ int main( int argc, char *argv[] )
    TString TTLLNuNu_2017    = path_2017 + "TTZToLLNuNu_M10"            + file_name;
    TString TTLL_2017        = path_2017 + "TTZToLL_M1to10_MLM"         + file_name;
 
-/*
+
    TString ggH125_2016      = path_2016 + "ggH125"     + file_name;
    TString VBFH125_2016     = path_2016 + "VBFH125"    + file_name;
    TString WpH125_2016      = path_2016 + "WplusH125"  + file_name;
@@ -127,7 +127,7 @@ int main( int argc, char *argv[] )
    TString TTLLNuNu_2016    = path_2016 + "TTZToLLNuNu_M10"            + file_name;
    TString TTLL_2016        = path_2016 + "TTZToLL_M1to10_MLM"         + file_name;
 
-*/
+
    // int year = 2016;
    // Plotter *plotter = new Plotter(year);
 
@@ -135,7 +135,7 @@ int main( int argc, char *argv[] )
 
    plotter->SetBlinding(110, 138, 300, 1200);
 
-/*
+
 ////// 2016
 // // Data
    plotter->MakeHistograms(Data_2016,2016);
@@ -169,7 +169,7 @@ int main( int argc, char *argv[] )
 
 // // ZX Background
    plotter->MakeHistogramsZX(Data_2016, FR_2016, 2016);
-*/
+
 
 ////// 2017
 // // Data
@@ -205,8 +205,6 @@ int main( int argc, char *argv[] )
 // // ZX Background
    plotter->MakeHistogramsZX(Data_2017, FR_2017, 2017);
 
-/*
-
 ////// 2018
 // // Data
    plotter->MakeHistograms(Data_2018,2018);
@@ -240,8 +238,6 @@ int main( int argc, char *argv[] )
    
 // // ZX Background
    plotter->MakeHistogramsZX(Data_2018, FR_2018, 2018);
-
-*/
 
    plotter->MakeM4lZX();
 

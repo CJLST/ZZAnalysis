@@ -1,5 +1,6 @@
 // Include classes
 #include <ZZAnalysis/AnalysisStep/test/Plotter_v2/include/Plotter.h>
+#include <ZZAnalysis/AnalysisStep/test/Plotter_v2/include/ZXVariables.h>
 
 // Constructor
 //============================================================
@@ -455,25 +456,25 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
 
    if(year == 2016) {
        _fs_ROS_SS.clear(); cb_SS.clear();
-       _fs_ROS_SS.push_back(1.00245); cb_SS.push_back(1.23628); //4e
-       _fs_ROS_SS.push_back(0.998863); cb_SS.push_back(0.95433); //4mu
-       _fs_ROS_SS.push_back(1.03338); cb_SS.push_back(1.0726); //2e2mu
-       _fs_ROS_SS.push_back(0.998852); cb_SS.push_back(1.0726); //2mu2e
+       _fs_ROS_SS.push_back(1.00245); cb_SS.push_back(ZXVariables::ZX4e().norm_2016); //1.23628); //4e
+       _fs_ROS_SS.push_back(0.998863); cb_SS.push_back(ZXVariables::ZX4mu().norm_2016); //0.95433); //4mu
+       _fs_ROS_SS.push_back(1.03338); cb_SS.push_back(ZXVariables::ZX2e2mu().norm_2016);//1.0726); //2e2mu
+       _fs_ROS_SS.push_back(0.998852); cb_SS.push_back(ZXVariables::ZX2e2mu().norm_2016); //1.0726); //2mu2e
    }
    else if (year == 2017) {
        _fs_ROS_SS.clear(); cb_SS.clear();
-       _fs_ROS_SS.push_back(1.01198); cb_SS.push_back(1.1934); //4e
-       _fs_ROS_SS.push_back(1.03949); cb_SS.push_back(0.99669); //4mu
-       _fs_ROS_SS.push_back(1.013128); cb_SS.push_back(1.0569); //2e2mu
-       _fs_ROS_SS.push_back(1.00257); cb_SS.push_back(1.0569); //2mu2e
+       _fs_ROS_SS.push_back(1.01198); cb_SS.push_back(ZXVariables::ZX4e().norm_2017); //1.1934); //4e
+       _fs_ROS_SS.push_back(1.03949); cb_SS.push_back(ZXVariables::ZX4mu().norm_2017); //0.99669); //4mu
+       _fs_ROS_SS.push_back(1.013128); cb_SS.push_back(ZXVariables::ZX2e2mu().norm_2017);//1.0569); //2e2mu
+       _fs_ROS_SS.push_back(1.00257); cb_SS.push_back(ZXVariables::ZX2e2mu().norm_2017);//1.0569); //2mu2e
    }
    else {
        _fs_ROS_SS.clear(); cb_SS.clear();
-       _fs_ROS_SS.push_back(1.00568); cb_SS.push_back(1.2087); //4e
-       _fs_ROS_SS.push_back(1.02926); cb_SS.push_back(0.9875); //4mu
-       _fs_ROS_SS.push_back(1.03226); cb_SS.push_back(1.0552); //2e2mu
-       _fs_ROS_SS.push_back(1.00432); cb_SS.push_back(1.0552); //2mu2e
-   }  
+       _fs_ROS_SS.push_back(1.00568); cb_SS.push_back(ZXVariables::ZX4e().norm_2018); //1.2087); //4e
+       _fs_ROS_SS.push_back(1.02926); cb_SS.push_back(ZXVariables::ZX4mu().norm_2018); //0.9875); //4mu
+       _fs_ROS_SS.push_back(1.03226); cb_SS.push_back(ZXVariables::ZX2e2mu().norm_2018);//1.0552); //2e2mu
+       _fs_ROS_SS.push_back(1.00432); cb_SS.push_back(ZXVariables::ZX2e2mu().norm_2018);//1.0552); //2mu2e
+   }
 
    FakeRates *FR = new FakeRates( input_file_FR_name );
 
@@ -697,23 +698,6 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
 
    } // End events loop
 
-   // Print Z + X expected yields for inclusive category
-//   cout << endl;
-//   cout << "========================================================================================" << endl;
-//   cout << "[INFO] Control printout." << endl << "!!! Numbers shoud be identical to yields from SS method in " << year << " !!!" << endl;
-//   for ( int i_fs = 0; i_fs < num_of_final_states - 1; i_fs++ )
-//   {
-//      if ( _merge_2e2mu && i_fs == Settings::fs2mu2e) continue;
-//      cout << "Category: " << Settings::inclusive << "   Final state: " << i_fs << endl;
-//      cout << _expected_yield_SR[i_fs][Settings::inclusive] << " +/- " <<
-//      _expected_yield_SR[i_fs][Settings::inclusive]/sqrt(_number_of_events_CR[i_fs][Settings::inclusive]) << " (stat., evt: " <<
-//      _number_of_events_CR[i_fs][Settings::inclusive] << ")" << " +/- " << _expected_yield_SR[i_fs][Settings::inclusive]*0.50 << " (syst.)" << endl;
-//   }
-//
-//   cout << "[INFO] Total = " << _expected_yield_SR[Settings::fs4l][Settings::inclusive] << endl;
-//   cout << "========================================================================================" << endl;
-//   cout << endl;
-
    // Smooth histograms
    if ( SMOOTH_ZX_FULL_RUN2_SS )
    {
@@ -722,8 +706,8 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
       unblinded_histos->SmoothHistograms();
    }
 
-   unblinded_histos->RenormalizeZX(year);
-   blinded_histos->RenormalizeZX(year);
+   // unblinded_histos->RenormalizeZX(year);
+   // blinded_histos->RenormalizeZX(year);
 
    cout << "[INFO] Z+X histograms filled." << endl;
 }
