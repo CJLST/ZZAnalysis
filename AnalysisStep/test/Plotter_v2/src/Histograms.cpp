@@ -3473,7 +3473,7 @@ void Histograms::plot_1D_all_cat( TString filename, TString variable_name , TStr
                                         histos_1D[plot_index][Settings::fs4l][i_cat][Settings::H125],
                                         histos_1D[plot_index][Settings::fs4l][i_cat][Settings::qqZZ],
                                         histos_1D[plot_index][Settings::fs4l][i_cat][Settings::ggZZ],
-                                        histos_1D[plot_index][Settings::fs4l][i_cat][Settings::VVV]
+                                        histos_1D[plot_index][Settings::fs4l][i_cat][Settings::VVV],
                                         histos_1D_ZX[plot_index][Settings::fs4l][i_cat]);
       }
 
