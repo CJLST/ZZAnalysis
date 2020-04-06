@@ -2740,8 +2740,8 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
 
    if ( variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
    {
-      histos_1D_ZX_shape[plot_index][fs][cat]->SetFillColor(Cosmetics::ZX().fill_color);
-      histos_1D_ZX_shape[plot_index][fs][cat]->SetLineColor(Cosmetics::ZX().line_color);
+      histos_1D_ZX[plot_index][fs][cat]->SetFillColor(Cosmetics::ZX().fill_color);
+      histos_1D_ZX[plot_index][fs][cat]->SetLineColor(Cosmetics::ZX().line_color);
    }
    else
    {
@@ -2764,7 +2764,7 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
 
    if ( variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
    {
-      stack->Add(histos_1D_ZX_shape[plot_index][fs][cat]);
+      stack->Add(histos_1D_ZX[plot_index][fs][cat]);
    }
    else
    {
@@ -2855,7 +2855,7 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
                                       histos_1D[plot_index][fs][cat][Settings::qqZZ],
                                       histos_1D[plot_index][fs][cat][Settings::ggZZ],
                                       histos_1D[plot_index][fs][cat][Settings::VVV],
-                                      histos_1D_ZX_shape[plot_index][fs][cat]);
+                                      histos_1D_ZX[plot_index][fs][cat]);
    }
    else if ( plot_index == Settings::D1jet_M4L118130 || plot_index == Settings::D1jet )
    {
@@ -3313,8 +3313,8 @@ void Histograms::plot_1D_all_cat( TString filename, TString variable_name , TStr
 
       if ( variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
       {
-         histos_1D_ZX_shape[plot_index][Settings::fs4l][i_cat]->SetFillColor(Cosmetics::ZX().fill_color);
-         histos_1D_ZX_shape[plot_index][Settings::fs4l][i_cat]->SetLineColor(Cosmetics::ZX().line_color);
+         histos_1D_ZX[plot_index][Settings::fs4l][i_cat]->SetFillColor(Cosmetics::ZX().fill_color);
+         histos_1D_ZX[plot_index][Settings::fs4l][i_cat]->SetLineColor(Cosmetics::ZX().line_color);
       }
       else
       {
@@ -3336,7 +3336,7 @@ void Histograms::plot_1D_all_cat( TString filename, TString variable_name , TStr
 
       if ( variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
       {
-         stack->Add(histos_1D_ZX_shape[plot_index][Settings::fs4l][i_cat]);
+         stack->Add(histos_1D_ZX[plot_index][Settings::fs4l][i_cat]);
       }
       else
       {
@@ -3435,7 +3435,7 @@ void Histograms::plot_1D_all_cat( TString filename, TString variable_name , TStr
                                          histos_1D[plot_index][Settings::fs4l][i_cat][Settings::qqZZ],
                                          histos_1D[plot_index][Settings::fs4l][i_cat][Settings::ggZZ],
                                          histos_1D[plot_index][Settings::fs4l][i_cat][Settings::VVV],
-                                         histos_1D_ZX_shape[plot_index][Settings::fs4l][i_cat]);
+                                         histos_1D_ZX[plot_index][Settings::fs4l][i_cat]);
       }
       else if ( variable_name == "M4lMainZoomed" && (i_cat == Settings::VBF_1j_tagged || i_cat == Settings::VBF_2j_tagged) )
       {
@@ -3445,7 +3445,7 @@ void Histograms::plot_1D_all_cat( TString filename, TString variable_name , TStr
                                             histos_1D[plot_index][Settings::fs4l][i_cat][Settings::qqZZ],
                                             histos_1D[plot_index][Settings::fs4l][i_cat][Settings::ggZZ],
                                             histos_1D[plot_index][Settings::fs4l][i_cat][Settings::VVV],
-                                            histos_1D_ZX_shape[plot_index][Settings::fs4l][i_cat], false);
+                                            histos_1D_ZX[plot_index][Settings::fs4l][i_cat], false);
       }
       else if ( variable_name == "M4lMainZoomed" && (i_cat == Settings::VH_lepton_tagged || i_cat == Settings::VH_hadron_tagged || i_cat == Settings::VH_MET_tagged) )
       {
@@ -3455,7 +3455,7 @@ void Histograms::plot_1D_all_cat( TString filename, TString variable_name , TStr
                                            histos_1D[plot_index][Settings::fs4l][i_cat][Settings::qqZZ],
                                            histos_1D[plot_index][Settings::fs4l][i_cat][Settings::ggZZ],
                                            histos_1D[plot_index][Settings::fs4l][i_cat][Settings::VVV],
-                                           histos_1D_ZX_shape[plot_index][Settings::fs4l][i_cat], false);
+                                           histos_1D_ZX[plot_index][Settings::fs4l][i_cat], false);
       }
       else if ( variable_name == "M4lMainZoomed" && (i_cat == Settings::ttH_lepton_tagged || i_cat == Settings::ttH_hadron_tagged) )
       {
@@ -3465,7 +3465,7 @@ void Histograms::plot_1D_all_cat( TString filename, TString variable_name , TStr
                                             histos_1D[plot_index][Settings::fs4l][i_cat][Settings::qqZZ],
                                             histos_1D[plot_index][Settings::fs4l][i_cat][Settings::ggZZ],
                                             histos_1D[plot_index][Settings::fs4l][i_cat][Settings::VVV],
-                                            histos_1D_ZX_shape[plot_index][Settings::fs4l][i_cat]);
+                                            histos_1D_ZX[plot_index][Settings::fs4l][i_cat]);
       }
       else
       {
@@ -3547,7 +3547,7 @@ void Histograms::plot_1D_all_fs( TString filename, TString variable_name , TStri
       histos_1D[plot_index][i_fs][Settings::inclusive][Settings::VVV]->SetFillColor(Cosmetics::VVV().fill_color);
 
       if ( (variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass") && _merge_2e2mu )
-         histos_1D_ZX_shape[plot_index][i_fs][Settings::inclusive]->SetFillColor(Cosmetics::ZX().fill_color);
+         histos_1D_ZX[plot_index][i_fs][Settings::inclusive]->SetFillColor(Cosmetics::ZX().fill_color);
       else
          histos_1D_ZX[plot_index][i_fs][Settings::inclusive]->SetFillColor(Cosmetics::ZX().fill_color);
 
@@ -3557,7 +3557,7 @@ void Histograms::plot_1D_all_fs( TString filename, TString variable_name , TStri
       histos_1D[plot_index][i_fs][Settings::inclusive][Settings::VVV]->SetLineColor(Cosmetics::VVV().line_color);
 
       if ( (variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass") && _merge_2e2mu )
-         histos_1D_ZX_shape[plot_index][i_fs][Settings::inclusive]->SetLineColor(Cosmetics::ZX().line_color);
+         histos_1D_ZX[plot_index][i_fs][Settings::inclusive]->SetLineColor(Cosmetics::ZX().line_color);
       else
          histos_1D_ZX[plot_index][i_fs][Settings::inclusive]->SetLineColor(Cosmetics::ZX().line_color);
 
@@ -3570,7 +3570,7 @@ void Histograms::plot_1D_all_fs( TString filename, TString variable_name , TStri
 
       if ( (variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass") && _merge_2e2mu )
       {
-         stack->Add(histos_1D_ZX_shape[plot_index][i_fs][Settings::inclusive]);
+         stack->Add(histos_1D_ZX[plot_index][i_fs][Settings::inclusive]);
       }
       else
       {
@@ -3630,7 +3630,7 @@ void Histograms::plot_1D_all_fs( TString filename, TString variable_name , TStri
                                          histos_1D[plot_index][i_fs][Settings::inclusive][Settings::qqZZ],
                                          histos_1D[plot_index][i_fs][Settings::inclusive][Settings::ggZZ],
                                          histos_1D[plot_index][i_fs][Settings::inclusive][Settings::VVV],
-                                         histos_1D_ZX_shape[plot_index][i_fs][Settings::inclusive]);
+                                         histos_1D_ZX[plot_index][i_fs][Settings::inclusive]);
       }
       else
       {
