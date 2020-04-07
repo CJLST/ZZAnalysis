@@ -62,13 +62,13 @@ public:
     struct ZX2e2mu
     {
       // 2016 Z+X Yields
-      float yield_SS_2e2mu_2016   = 24.73;
+      float yield_SS_2e2mu_2016   = 41.47;
       float yield_Comb_2e2mu_2016 = 44.48;
       // 2017 Z+X Yields
-      float yield_SS_2e2mu_2017   = 26.11;
+      float yield_SS_2e2mu_2017   = 40.75;
       float yield_Comb_2e2mu_2017 = 43.07;
       // 2018 Z+X Yields
-      float yield_SS_2e2mu_2018   = 37.44;
+      float yield_SS_2e2mu_2018   = 60.71;
       float yield_Comb_2e2mu_2018 = 64.06;
       
       float norm_2016         = yield_Comb_2e2mu_2016/yield_SS_2e2mu_2016;
