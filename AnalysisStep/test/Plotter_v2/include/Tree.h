@@ -165,53 +165,53 @@ public :
    Float_t         p_ttHUndecayed_SIG_kappatilde_1_JHUGen_JECNominal;
    Float_t         p_ttHUndecayed_SIG_kappa_1_kappatilde_1_JHUGen_JECNominal;
    Float_t         p_bbH_SIG_kappa_1_JHUGen_JECNominal;
-   Float_t         pAux_JVBF_SIG_ghv1_1_JHUGen_JECUp;
-   Float_t         p_JVBF_SIG_ghv1_1_JHUGen_JECUp;
-   Float_t         p_JQCD_SIG_ghg2_1_JHUGen_JECUp;
-   Float_t         p_JJVBF_SIG_ghv1_1_JHUGen_JECUp;
-   Float_t         p_JJVBF_SIG_ghv1prime2_1E4_JHUGen_JECUp;
-   Float_t         p_JJVBF_SIG_ghv2_1_JHUGen_JECUp;
-   Float_t         p_JJVBF_SIG_ghv4_1_JHUGen_JECUp;
-   Float_t         p_JJVBF_SIG_ghza1prime2_1E4_JHUGen_JECUp;
-   Float_t         p_JJVBF_SIG_ghza2_1_JHUGen_JECUp;
-   Float_t         p_JJVBF_SIG_ghza4_1_JHUGen_JECUp;
-   Float_t         p_JJVBF_SIG_gha2_1_JHUGen_JECUp;
-   Float_t         p_JJVBF_SIG_gha4_1_JHUGen_JECUp;
-   Float_t         p_JJVBF_SIG_ghv1_1_ghv1prime2_1E4_JHUGen_JECUp;
-   Float_t         p_JJVBF_SIG_ghv1_1_ghv2_1_JHUGen_JECUp;
-   Float_t         p_JJVBF_SIG_ghv1_1_ghv4_1_JHUGen_JECUp;
-   Float_t         p_JJVBF_SIG_ghv1_1_ghza1prime2_1E4_JHUGen_JECUp;
-   Float_t         p_JJVBF_SIG_ghv1_1_ghza2_1_JHUGen_JECUp;
-   Float_t         p_JJVBF_SIG_ghv1_1_ghza4_1_JHUGen_JECUp;
-   Float_t         p_JJVBF_SIG_ghv1_1_gha2_1_JHUGen_JECUp;
-   Float_t         p_JJVBF_SIG_ghv1_1_gha4_1_JHUGen_JECUp;
-   Float_t         p_JJQCD_SIG_ghg2_1_JHUGen_JECUp;
-   Float_t         p_JJQCD_SIG_ghg4_1_JHUGen_JECUp;
-   Float_t         p_JJQCD_SIG_ghg2_1_ghg4_1_JHUGen_JECUp;
-   Float_t         p_HadZH_SIG_ghz1_1_JHUGen_JECUp;
-   Float_t         p_HadZH_SIG_ghz1prime2_1E4_JHUGen_JECUp;
-   Float_t         p_HadZH_SIG_ghz2_1_JHUGen_JECUp;
-   Float_t         p_HadZH_SIG_ghz4_1_JHUGen_JECUp;
-   Float_t         p_HadZH_SIG_ghza1prime2_1E4_JHUGen_JECUp;
-   Float_t         p_HadZH_SIG_ghza2_1_JHUGen_JECUp;
-   Float_t         p_HadZH_SIG_ghza4_1_JHUGen_JECUp;
-   Float_t         p_HadZH_SIG_gha2_1_JHUGen_JECUp;
-   Float_t         p_HadZH_SIG_gha4_1_JHUGen_JECUp;
-   Float_t         p_HadZH_SIG_ghz1_1_ghz1prime2_1E4_JHUGen_JECUp;
-   Float_t         p_HadZH_SIG_ghz1_1_ghz2_1_JHUGen_JECUp;
-   Float_t         p_HadZH_SIG_ghz1_1_ghz4_1_JHUGen_JECUp;
-   Float_t         p_HadZH_SIG_ghz1_1_ghza1prime2_1E4_JHUGen_JECUp;
-   Float_t         p_HadZH_SIG_ghz1_1_ghza2_1_JHUGen_JECUp;
-   Float_t         p_HadZH_SIG_ghz1_1_ghza4_1_JHUGen_JECUp;
-   Float_t         p_HadZH_SIG_ghz1_1_gha2_1_JHUGen_JECUp;
-   Float_t         p_HadZH_SIG_ghz1_1_gha4_1_JHUGen_JECUp;
-   Float_t         p_HadWH_SIG_ghw1_1_JHUGen_JECUp;
-   Float_t         p_HadWH_SIG_ghw1prime2_1E4_JHUGen_JECUp;
-   Float_t         p_HadWH_SIG_ghw2_1_JHUGen_JECUp;
-   Float_t         p_HadWH_SIG_ghw4_1_JHUGen_JECUp;
-   Float_t         p_HadWH_SIG_ghw1_1_ghw1prime2_1E4_JHUGen_JECUp;
-   Float_t         p_HadWH_SIG_ghw1_1_ghw2_1_JHUGen_JECUp;
-   Float_t         p_HadWH_SIG_ghw1_1_ghw4_1_JHUGen_JECUp;
+   // Float_t         pAux_JVBF_SIG_ghv1_1_JHUGen_JECUp;
+   // Float_t         p_JVBF_SIG_ghv1_1_JHUGen_JECUp;
+   // Float_t         p_JQCD_SIG_ghg2_1_JHUGen_JECUp;
+   // Float_t         p_JJVBF_SIG_ghv1_1_JHUGen_JECUp;
+   // Float_t         p_JJVBF_SIG_ghv1prime2_1E4_JHUGen_JECUp;
+   // Float_t         p_JJVBF_SIG_ghv2_1_JHUGen_JECUp;
+   // Float_t         p_JJVBF_SIG_ghv4_1_JHUGen_JECUp;
+   // Float_t         p_JJVBF_SIG_ghza1prime2_1E4_JHUGen_JECUp;
+   // Float_t         p_JJVBF_SIG_ghza2_1_JHUGen_JECUp;
+   // Float_t         p_JJVBF_SIG_ghza4_1_JHUGen_JECUp;
+   // Float_t         p_JJVBF_SIG_gha2_1_JHUGen_JECUp;
+   // Float_t         p_JJVBF_SIG_gha4_1_JHUGen_JECUp;
+   // Float_t         p_JJVBF_SIG_ghv1_1_ghv1prime2_1E4_JHUGen_JECUp;
+   // Float_t         p_JJVBF_SIG_ghv1_1_ghv2_1_JHUGen_JECUp;
+   // Float_t         p_JJVBF_SIG_ghv1_1_ghv4_1_JHUGen_JECUp;
+   // Float_t         p_JJVBF_SIG_ghv1_1_ghza1prime2_1E4_JHUGen_JECUp;
+   // Float_t         p_JJVBF_SIG_ghv1_1_ghza2_1_JHUGen_JECUp;
+   // Float_t         p_JJVBF_SIG_ghv1_1_ghza4_1_JHUGen_JECUp;
+   // Float_t         p_JJVBF_SIG_ghv1_1_gha2_1_JHUGen_JECUp;
+   // Float_t         p_JJVBF_SIG_ghv1_1_gha4_1_JHUGen_JECUp;
+   // Float_t         p_JJQCD_SIG_ghg2_1_JHUGen_JECUp;
+   // Float_t         p_JJQCD_SIG_ghg4_1_JHUGen_JECUp;
+   // Float_t         p_JJQCD_SIG_ghg2_1_ghg4_1_JHUGen_JECUp;
+   // Float_t         p_HadZH_SIG_ghz1_1_JHUGen_JECUp;
+   // Float_t         p_HadZH_SIG_ghz1prime2_1E4_JHUGen_JECUp;
+   // Float_t         p_HadZH_SIG_ghz2_1_JHUGen_JECUp;
+   // Float_t         p_HadZH_SIG_ghz4_1_JHUGen_JECUp;
+   // Float_t         p_HadZH_SIG_ghza1prime2_1E4_JHUGen_JECUp;
+   // Float_t         p_HadZH_SIG_ghza2_1_JHUGen_JECUp;
+   // Float_t         p_HadZH_SIG_ghza4_1_JHUGen_JECUp;
+   // Float_t         p_HadZH_SIG_gha2_1_JHUGen_JECUp;
+   // Float_t         p_HadZH_SIG_gha4_1_JHUGen_JECUp;
+   // Float_t         p_HadZH_SIG_ghz1_1_ghz1prime2_1E4_JHUGen_JECUp;
+   // Float_t         p_HadZH_SIG_ghz1_1_ghz2_1_JHUGen_JECUp;
+   // Float_t         p_HadZH_SIG_ghz1_1_ghz4_1_JHUGen_JECUp;
+   // Float_t         p_HadZH_SIG_ghz1_1_ghza1prime2_1E4_JHUGen_JECUp;
+   // Float_t         p_HadZH_SIG_ghz1_1_ghza2_1_JHUGen_JECUp;
+   // Float_t         p_HadZH_SIG_ghz1_1_ghza4_1_JHUGen_JECUp;
+   // Float_t         p_HadZH_SIG_ghz1_1_gha2_1_JHUGen_JECUp;
+   // Float_t         p_HadZH_SIG_ghz1_1_gha4_1_JHUGen_JECUp;
+   // Float_t         p_HadWH_SIG_ghw1_1_JHUGen_JECUp;
+   // Float_t         p_HadWH_SIG_ghw1prime2_1E4_JHUGen_JECUp;
+   // Float_t         p_HadWH_SIG_ghw2_1_JHUGen_JECUp;
+   // Float_t         p_HadWH_SIG_ghw4_1_JHUGen_JECUp;
+   // Float_t         p_HadWH_SIG_ghw1_1_ghw1prime2_1E4_JHUGen_JECUp;
+   // Float_t         p_HadWH_SIG_ghw1_1_ghw2_1_JHUGen_JECUp;
+   // Float_t         p_HadWH_SIG_ghw1_1_ghw4_1_JHUGen_JECUp;
    Float_t			 p_JJVBF_S_SIG_ghv1_1_MCFM_JECNominal;
    Float_t			 p_HadZH_S_SIG_ghz1_1_MCFM_JECNominal;
    Float_t			 p_HadWH_S_SIG_ghw1_1_MCFM_JECNominal;
@@ -224,73 +224,73 @@ public :
    Float_t			 pConst_HadZH_BKG_MCFM_JECNominal;
    Float_t			 pConst_HadWH_BKG_MCFM_JECNominal;
    Float_t			 pConst_JJQCD_BKG_MCFM_JECNominal;
-   Float_t         p_ttHUndecayed_SIG_kappa_1_JHUGen_JECUp;
-   Float_t         p_ttHUndecayed_SIG_kappatilde_1_JHUGen_JECUp;
-   Float_t         p_ttHUndecayed_SIG_kappa_1_kappatilde_1_JHUGen_JECUp;
-   Float_t         p_bbH_SIG_kappa_1_JHUGen_JECUp;
-   Float_t         pAux_JVBF_SIG_ghv1_1_JHUGen_JECDn;
-   Float_t         p_JVBF_SIG_ghv1_1_JHUGen_JECDn;
-   Float_t         p_JQCD_SIG_ghg2_1_JHUGen_JECDn;
-   Float_t         p_JJVBF_SIG_ghv1_1_JHUGen_JECDn;
-   Float_t         p_JJVBF_SIG_ghv1prime2_1E4_JHUGen_JECDn;
-   Float_t         p_JJVBF_SIG_ghv2_1_JHUGen_JECDn;
-   Float_t         p_JJVBF_SIG_ghv4_1_JHUGen_JECDn;
-   Float_t         p_JJVBF_SIG_ghza1prime2_1E4_JHUGen_JECDn;
-   Float_t         p_JJVBF_SIG_ghza2_1_JHUGen_JECDn;
-   Float_t         p_JJVBF_SIG_ghza4_1_JHUGen_JECDn;
-   Float_t         p_JJVBF_SIG_gha2_1_JHUGen_JECDn;
-   Float_t         p_JJVBF_SIG_gha4_1_JHUGen_JECDn;
-   Float_t         p_JJVBF_SIG_ghv1_1_ghv1prime2_1E4_JHUGen_JECDn;
-   Float_t         p_JJVBF_SIG_ghv1_1_ghv2_1_JHUGen_JECDn;
-   Float_t         p_JJVBF_SIG_ghv1_1_ghv4_1_JHUGen_JECDn;
-   Float_t         p_JJVBF_SIG_ghv1_1_ghza1prime2_1E4_JHUGen_JECDn;
-   Float_t         p_JJVBF_SIG_ghv1_1_ghza2_1_JHUGen_JECDn;
-   Float_t         p_JJVBF_SIG_ghv1_1_ghza4_1_JHUGen_JECDn;
-   Float_t         p_JJVBF_SIG_ghv1_1_gha2_1_JHUGen_JECDn;
-   Float_t         p_JJVBF_SIG_ghv1_1_gha4_1_JHUGen_JECDn;
-   Float_t         p_JJQCD_SIG_ghg2_1_JHUGen_JECDn;
-   Float_t         p_JJQCD_SIG_ghg4_1_JHUGen_JECDn;
-   Float_t         p_JJQCD_SIG_ghg2_1_ghg4_1_JHUGen_JECDn;
+   // Float_t         p_ttHUndecayed_SIG_kappa_1_JHUGen_JECUp;
+   // Float_t         p_ttHUndecayed_SIG_kappatilde_1_JHUGen_JECUp;
+   // Float_t         p_ttHUndecayed_SIG_kappa_1_kappatilde_1_JHUGen_JECUp;
+   // Float_t         p_bbH_SIG_kappa_1_JHUGen_JECUp;
+   // Float_t         pAux_JVBF_SIG_ghv1_1_JHUGen_JECDn;
+   // Float_t         p_JVBF_SIG_ghv1_1_JHUGen_JECDn;
+   // Float_t         p_JQCD_SIG_ghg2_1_JHUGen_JECDn;
+   // Float_t         p_JJVBF_SIG_ghv1_1_JHUGen_JECDn;
+   // Float_t         p_JJVBF_SIG_ghv1prime2_1E4_JHUGen_JECDn;
+   // Float_t         p_JJVBF_SIG_ghv2_1_JHUGen_JECDn;
+   // Float_t         p_JJVBF_SIG_ghv4_1_JHUGen_JECDn;
+   // Float_t         p_JJVBF_SIG_ghza1prime2_1E4_JHUGen_JECDn;
+   // Float_t         p_JJVBF_SIG_ghza2_1_JHUGen_JECDn;
+   // Float_t         p_JJVBF_SIG_ghza4_1_JHUGen_JECDn;
+   // Float_t         p_JJVBF_SIG_gha2_1_JHUGen_JECDn;
+   // Float_t         p_JJVBF_SIG_gha4_1_JHUGen_JECDn;
+   // Float_t         p_JJVBF_SIG_ghv1_1_ghv1prime2_1E4_JHUGen_JECDn;
+   // Float_t         p_JJVBF_SIG_ghv1_1_ghv2_1_JHUGen_JECDn;
+   // Float_t         p_JJVBF_SIG_ghv1_1_ghv4_1_JHUGen_JECDn;
+   // Float_t         p_JJVBF_SIG_ghv1_1_ghza1prime2_1E4_JHUGen_JECDn;
+   // Float_t         p_JJVBF_SIG_ghv1_1_ghza2_1_JHUGen_JECDn;
+   // Float_t         p_JJVBF_SIG_ghv1_1_ghza4_1_JHUGen_JECDn;
+   // Float_t         p_JJVBF_SIG_ghv1_1_gha2_1_JHUGen_JECDn;
+   // Float_t         p_JJVBF_SIG_ghv1_1_gha4_1_JHUGen_JECDn;
+   // Float_t         p_JJQCD_SIG_ghg2_1_JHUGen_JECDn;
+   // Float_t         p_JJQCD_SIG_ghg4_1_JHUGen_JECDn;
+   // Float_t         p_JJQCD_SIG_ghg2_1_ghg4_1_JHUGen_JECDn;
 	Float_t         p_HadZH_mavjj_JECNominal;
-	Float_t         p_HadZH_mavjj_JECUp;
-	Float_t         p_HadZH_mavjj_JECDn;
+	// Float_t         p_HadZH_mavjj_JECUp;
+	// Float_t         p_HadZH_mavjj_JECDn;
 	Float_t         p_HadZH_mavjj_true_JECNominal;
-	Float_t         p_HadZH_mavjj_true_JECUp;
-	Float_t         p_HadZH_mavjj_true_JECDn;
+	// Float_t         p_HadZH_mavjj_true_JECUp;
+	// Float_t         p_HadZH_mavjj_true_JECDn;
 	Float_t         p_HadWH_mavjj_JECNominal;
-	Float_t         p_HadWH_mavjj_JECUp;
-	Float_t         p_HadWH_mavjj_JECDn;
+	// Float_t         p_HadWH_mavjj_JECUp;
+	// Float_t         p_HadWH_mavjj_JECDn;
 	Float_t         p_HadWH_mavjj_true_JECNominal;
-	Float_t         p_HadWH_mavjj_true_JECUp;
-	Float_t         p_HadWH_mavjj_true_JECDn;
-   Float_t         p_HadZH_SIG_ghz1_1_JHUGen_JECDn;
-   Float_t         p_HadZH_SIG_ghz1prime2_1E4_JHUGen_JECDn;
-   Float_t         p_HadZH_SIG_ghz2_1_JHUGen_JECDn;
-   Float_t         p_HadZH_SIG_ghz4_1_JHUGen_JECDn;
-   Float_t         p_HadZH_SIG_ghza1prime2_1E4_JHUGen_JECDn;
-   Float_t         p_HadZH_SIG_ghza2_1_JHUGen_JECDn;
-   Float_t         p_HadZH_SIG_ghza4_1_JHUGen_JECDn;
-   Float_t         p_HadZH_SIG_gha2_1_JHUGen_JECDn;
-   Float_t         p_HadZH_SIG_gha4_1_JHUGen_JECDn;
-   Float_t         p_HadZH_SIG_ghz1_1_ghz1prime2_1E4_JHUGen_JECDn;
-   Float_t         p_HadZH_SIG_ghz1_1_ghz2_1_JHUGen_JECDn;
-   Float_t         p_HadZH_SIG_ghz1_1_ghz4_1_JHUGen_JECDn;
-   Float_t         p_HadZH_SIG_ghz1_1_ghza1prime2_1E4_JHUGen_JECDn;
-   Float_t         p_HadZH_SIG_ghz1_1_ghza2_1_JHUGen_JECDn;
-   Float_t         p_HadZH_SIG_ghz1_1_ghza4_1_JHUGen_JECDn;
-   Float_t         p_HadZH_SIG_ghz1_1_gha2_1_JHUGen_JECDn;
-   Float_t         p_HadZH_SIG_ghz1_1_gha4_1_JHUGen_JECDn;
-   Float_t         p_HadWH_SIG_ghw1_1_JHUGen_JECDn;
-   Float_t         p_HadWH_SIG_ghw1prime2_1E4_JHUGen_JECDn;
-   Float_t         p_HadWH_SIG_ghw2_1_JHUGen_JECDn;
-   Float_t         p_HadWH_SIG_ghw4_1_JHUGen_JECDn;
-   Float_t         p_HadWH_SIG_ghw1_1_ghw1prime2_1E4_JHUGen_JECDn;
-   Float_t         p_HadWH_SIG_ghw1_1_ghw2_1_JHUGen_JECDn;
-   Float_t         p_HadWH_SIG_ghw1_1_ghw4_1_JHUGen_JECDn;
-   Float_t         p_ttHUndecayed_SIG_kappa_1_JHUGen_JECDn;
-   Float_t         p_ttHUndecayed_SIG_kappatilde_1_JHUGen_JECDn;
-   Float_t         p_ttHUndecayed_SIG_kappa_1_kappatilde_1_JHUGen_JECDn;
-   Float_t         p_bbH_SIG_kappa_1_JHUGen_JECDn;
+	// Float_t         p_HadWH_mavjj_true_JECUp;
+	// Float_t         p_HadWH_mavjj_true_JECDn;
+   // Float_t         p_HadZH_SIG_ghz1_1_JHUGen_JECDn;
+   // Float_t         p_HadZH_SIG_ghz1prime2_1E4_JHUGen_JECDn;
+   // Float_t         p_HadZH_SIG_ghz2_1_JHUGen_JECDn;
+   // Float_t         p_HadZH_SIG_ghz4_1_JHUGen_JECDn;
+   // Float_t         p_HadZH_SIG_ghza1prime2_1E4_JHUGen_JECDn;
+   // Float_t         p_HadZH_SIG_ghza2_1_JHUGen_JECDn;
+   // Float_t         p_HadZH_SIG_ghza4_1_JHUGen_JECDn;
+   // Float_t         p_HadZH_SIG_gha2_1_JHUGen_JECDn;
+   // Float_t         p_HadZH_SIG_gha4_1_JHUGen_JECDn;
+   // Float_t         p_HadZH_SIG_ghz1_1_ghz1prime2_1E4_JHUGen_JECDn;
+   // Float_t         p_HadZH_SIG_ghz1_1_ghz2_1_JHUGen_JECDn;
+   // Float_t         p_HadZH_SIG_ghz1_1_ghz4_1_JHUGen_JECDn;
+   // Float_t         p_HadZH_SIG_ghz1_1_ghza1prime2_1E4_JHUGen_JECDn;
+   // Float_t         p_HadZH_SIG_ghz1_1_ghza2_1_JHUGen_JECDn;
+   // Float_t         p_HadZH_SIG_ghz1_1_ghza4_1_JHUGen_JECDn;
+   // Float_t         p_HadZH_SIG_ghz1_1_gha2_1_JHUGen_JECDn;
+   // Float_t         p_HadZH_SIG_ghz1_1_gha4_1_JHUGen_JECDn;
+   // Float_t         p_HadWH_SIG_ghw1_1_JHUGen_JECDn;
+   // Float_t         p_HadWH_SIG_ghw1prime2_1E4_JHUGen_JECDn;
+   // Float_t         p_HadWH_SIG_ghw2_1_JHUGen_JECDn;
+   // Float_t         p_HadWH_SIG_ghw4_1_JHUGen_JECDn;
+   // Float_t         p_HadWH_SIG_ghw1_1_ghw1prime2_1E4_JHUGen_JECDn;
+   // Float_t         p_HadWH_SIG_ghw1_1_ghw2_1_JHUGen_JECDn;
+   // Float_t         p_HadWH_SIG_ghw1_1_ghw4_1_JHUGen_JECDn;
+   // Float_t         p_ttHUndecayed_SIG_kappa_1_JHUGen_JECDn;
+   // Float_t         p_ttHUndecayed_SIG_kappatilde_1_JHUGen_JECDn;
+   // Float_t         p_ttHUndecayed_SIG_kappa_1_kappatilde_1_JHUGen_JECDn;
+   // Float_t         p_bbH_SIG_kappa_1_JHUGen_JECDn;
    Float_t         p_LepZH_SIG_ghz1_1_JHUGen;
    Float_t         p_LepZH_SIG_ghz1prime2_1E4_JHUGen;
    Float_t         p_LepZH_SIG_ghz2_1_JHUGen;
@@ -367,18 +367,18 @@ public :
    Float_t         p_JJEW_BKG_MCFM_JECNominal;
    Float_t         p_JJVBF_BKG_MCFM_JECNominal;
    Float_t         p_JJQCD_BKG_MCFM_JECNominal;
-   Float_t         p_JJEW_SIG_ghv1_1_MCFM_JECUp;
-   Float_t         p_JJEW_BSI_ghv1_1_MCFM_JECUp;
-   Float_t         p_JJEW_BSI_ghv1_i_MCFM_JECUp;
-   Float_t         p_JJEW_BKG_MCFM_JECUp;
-   Float_t         p_JJVBF_BKG_MCFM_JECUp;
-   Float_t         p_JJQCD_BKG_MCFM_JECUp;
-   Float_t         p_JJEW_SIG_ghv1_1_MCFM_JECDn;
-   Float_t         p_JJEW_BSI_ghv1_1_MCFM_JECDn;
-   Float_t         p_JJEW_BSI_ghv1_i_MCFM_JECDn;
-   Float_t         p_JJEW_BKG_MCFM_JECDn;
-   Float_t         p_JJVBF_BKG_MCFM_JECDn;
-   Float_t         p_JJQCD_BKG_MCFM_JECDn;
+   // Float_t         p_JJEW_SIG_ghv1_1_MCFM_JECUp;
+   // Float_t         p_JJEW_BSI_ghv1_1_MCFM_JECUp;
+   // Float_t         p_JJEW_BSI_ghv1_i_MCFM_JECUp;
+   // Float_t         p_JJEW_BKG_MCFM_JECUp;
+   // Float_t         p_JJVBF_BKG_MCFM_JECUp;
+   // Float_t         p_JJQCD_BKG_MCFM_JECUp;
+   // Float_t         p_JJEW_SIG_ghv1_1_MCFM_JECDn;
+   // Float_t         p_JJEW_BSI_ghv1_1_MCFM_JECDn;
+   // Float_t         p_JJEW_BSI_ghv1_i_MCFM_JECDn;
+   // Float_t         p_JJEW_BKG_MCFM_JECDn;
+   // Float_t         p_JJVBF_BKG_MCFM_JECDn;
+   // Float_t         p_JJQCD_BKG_MCFM_JECDn;
    Float_t         p_m4l_SIG;
    Float_t         p_m4l_BKG;
    Float_t         p_m4l_SIG_ScaleDown;
@@ -391,10 +391,10 @@ public :
    Float_t         p_m4l_BKG_ResUp;
    Float_t         p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal_BestDJJ;
    Float_t         p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal_BestDJJ;
-   Float_t         p_JJVBF_SIG_ghv1_1_JHUGen_JECUp_BestDJJ;
-   Float_t         p_JJQCD_SIG_ghg2_1_JHUGen_JECUp_BestDJJ;
-   Float_t         p_JJVBF_SIG_ghv1_1_JHUGen_JECDn_BestDJJ;
-   Float_t         p_JJQCD_SIG_ghg2_1_JHUGen_JECDn_BestDJJ;
+   // Float_t         p_JJVBF_SIG_ghv1_1_JHUGen_JECUp_BestDJJ;
+   // Float_t         p_JJQCD_SIG_ghg2_1_JHUGen_JECUp_BestDJJ;
+   // Float_t         p_JJVBF_SIG_ghv1_1_JHUGen_JECDn_BestDJJ;
+   // Float_t         p_JJQCD_SIG_ghg2_1_JHUGen_JECDn_BestDJJ;
    vector<float>   *JetPt;
    vector<float>   *JetEta;
    vector<float>   *JetPhi;
@@ -455,7 +455,8 @@ public :
 	Float_t         htxsHPt;
 	Short_t         htxsNJets;
 	Short_t         htxs_stage0_cat;
-	Short_t			 htxs_stage1_cat;
+	Short_t			 htxs_stage1p1_cat;
+   // Short_t         htxs_stage1p2_cat; //STXS 1.2 already there, can be used
    Float_t         GenHMass;
    Float_t         GenHPt;
    Float_t         GenHRapidity;
@@ -536,14 +537,14 @@ public :
    TBranch        *b_PFMETNoHFPhi;   //!
    TBranch        *b_nCleanedJets;   //!
    TBranch        *b_nCleanedJetsPt30;   //!
-   TBranch        *b_nCleanedJetsPt30_jecUp;   //!
-   TBranch        *b_nCleanedJetsPt30_jecDn;   //!
+   // TBranch        *b_nCleanedJetsPt30_jecUp;   //!
+   // TBranch        *b_nCleanedJetsPt30_jecDn;   //!
    TBranch        *b_nCleanedJetsPt30BTagged;   //!
    TBranch        *b_nCleanedJetsPt30BTagged_bTagSF;   //!
    TBranch        *b_nCleanedJetsPt30BTagged_bTagSFUp;   //!
    TBranch        *b_nCleanedJetsPt30BTagged_bTagSFDn;   //!
-   TBranch        *b_nCleanedJetsPt30BTagged_bTagSF_jecUp;   //!
-   TBranch        *b_nCleanedJetsPt30BTagged_bTagSF_jecDn;   //!
+   // TBranch        *b_nCleanedJetsPt30BTagged_bTagSF_jecUp;   //!
+   // TBranch        *b_nCleanedJetsPt30BTagged_bTagSF_jecDn;   //!
    TBranch        *b_trigWord;   //!
    TBranch        *b_ZZMass;   //!
    TBranch        *b_ZZMassErr;   //!
@@ -672,120 +673,120 @@ public :
    TBranch        *b_p_ttHUndecayed_SIG_kappatilde_1_JHUGen_JECNominal;   //!
    TBranch        *b_p_ttHUndecayed_SIG_kappa_1_kappatilde_1_JHUGen_JECNominal;   //!
    TBranch        *b_p_bbH_SIG_kappa_1_JHUGen_JECNominal;   //!
-   TBranch        *b_pAux_JVBF_SIG_ghv1_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_JVBF_SIG_ghv1_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_JQCD_SIG_ghg2_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_JJVBF_SIG_ghv1_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_JJVBF_SIG_ghv1prime2_1E4_JHUGen_JECUp;   //!
-   TBranch        *b_p_JJVBF_SIG_ghv2_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_JJVBF_SIG_ghv4_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_JJVBF_SIG_ghza1prime2_1E4_JHUGen_JECUp;   //!
-   TBranch        *b_p_JJVBF_SIG_ghza2_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_JJVBF_SIG_ghza4_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_JJVBF_SIG_gha2_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_JJVBF_SIG_gha4_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_JJVBF_SIG_ghv1_1_ghv1prime2_1E4_JHUGen_JECUp;   //!
-   TBranch        *b_p_JJVBF_SIG_ghv1_1_ghv2_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_JJVBF_SIG_ghv1_1_ghv4_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_JJVBF_SIG_ghv1_1_ghza1prime2_1E4_JHUGen_JECUp;   //!
-   TBranch        *b_p_JJVBF_SIG_ghv1_1_ghza2_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_JJVBF_SIG_ghv1_1_ghza4_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_JJVBF_SIG_ghv1_1_gha2_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_JJVBF_SIG_ghv1_1_gha4_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_JJQCD_SIG_ghg2_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_JJQCD_SIG_ghg4_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_JJQCD_SIG_ghg2_1_ghg4_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_HadZH_SIG_ghz1_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_HadZH_SIG_ghz1prime2_1E4_JHUGen_JECUp;   //!
-   TBranch        *b_p_HadZH_SIG_ghz2_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_HadZH_SIG_ghz4_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_HadZH_SIG_ghza1prime2_1E4_JHUGen_JECUp;   //!
-   TBranch        *b_p_HadZH_SIG_ghza2_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_HadZH_SIG_ghza4_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_HadZH_SIG_gha2_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_HadZH_SIG_gha4_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_HadZH_SIG_ghz1_1_ghz1prime2_1E4_JHUGen_JECUp;   //!
-   TBranch        *b_p_HadZH_SIG_ghz1_1_ghz2_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_HadZH_SIG_ghz1_1_ghz4_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_HadZH_SIG_ghz1_1_ghza1prime2_1E4_JHUGen_JECUp;   //!
-   TBranch        *b_p_HadZH_SIG_ghz1_1_ghza2_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_HadZH_SIG_ghz1_1_ghza4_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_HadZH_SIG_ghz1_1_gha2_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_HadZH_SIG_ghz1_1_gha4_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_HadWH_SIG_ghw1_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_HadWH_SIG_ghw1prime2_1E4_JHUGen_JECUp;   //!
-   TBranch        *b_p_HadWH_SIG_ghw2_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_HadWH_SIG_ghw4_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_HadWH_SIG_ghw1_1_ghw1prime2_1E4_JHUGen_JECUp;   //!
-   TBranch        *b_p_HadWH_SIG_ghw1_1_ghw2_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_HadWH_SIG_ghw1_1_ghw4_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_ttHUndecayed_SIG_kappa_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_ttHUndecayed_SIG_kappatilde_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_ttHUndecayed_SIG_kappa_1_kappatilde_1_JHUGen_JECUp;   //!
-   TBranch        *b_p_bbH_SIG_kappa_1_JHUGen_JECUp;   //!
-   TBranch        *b_pAux_JVBF_SIG_ghv1_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_JVBF_SIG_ghv1_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_JQCD_SIG_ghg2_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_JJVBF_SIG_ghv1_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_JJVBF_SIG_ghv1prime2_1E4_JHUGen_JECDn;   //!
-   TBranch        *b_p_JJVBF_SIG_ghv2_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_JJVBF_SIG_ghv4_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_JJVBF_SIG_ghza1prime2_1E4_JHUGen_JECDn;   //!
-   TBranch        *b_p_JJVBF_SIG_ghza2_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_JJVBF_SIG_ghza4_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_JJVBF_SIG_gha2_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_JJVBF_SIG_gha4_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_JJVBF_SIG_ghv1_1_ghv1prime2_1E4_JHUGen_JECDn;   //!
-   TBranch        *b_p_JJVBF_SIG_ghv1_1_ghv2_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_JJVBF_SIG_ghv1_1_ghv4_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_JJVBF_SIG_ghv1_1_ghza1prime2_1E4_JHUGen_JECDn;   //!
-   TBranch        *b_p_JJVBF_SIG_ghv1_1_ghza2_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_JJVBF_SIG_ghv1_1_ghza4_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_JJVBF_SIG_ghv1_1_gha2_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_JJVBF_SIG_ghv1_1_gha4_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_JJQCD_SIG_ghg2_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_JJQCD_SIG_ghg4_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_JJQCD_SIG_ghg2_1_ghg4_1_JHUGen_JECDn;   //!
+   // TBranch        *b_pAux_JVBF_SIG_ghv1_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_JVBF_SIG_ghv1_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_JQCD_SIG_ghg2_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghv1_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghv1prime2_1E4_JHUGen_JECUp;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghv2_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghv4_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghza1prime2_1E4_JHUGen_JECUp;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghza2_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghza4_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_JJVBF_SIG_gha2_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_JJVBF_SIG_gha4_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghv1_1_ghv1prime2_1E4_JHUGen_JECUp;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghv1_1_ghv2_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghv1_1_ghv4_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghv1_1_ghza1prime2_1E4_JHUGen_JECUp;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghv1_1_ghza2_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghv1_1_ghza4_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghv1_1_gha2_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghv1_1_gha4_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_JJQCD_SIG_ghg2_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_JJQCD_SIG_ghg4_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_JJQCD_SIG_ghg2_1_ghg4_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_HadZH_SIG_ghz1_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_HadZH_SIG_ghz1prime2_1E4_JHUGen_JECUp;   //!
+   // TBranch        *b_p_HadZH_SIG_ghz2_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_HadZH_SIG_ghz4_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_HadZH_SIG_ghza1prime2_1E4_JHUGen_JECUp;   //!
+   // TBranch        *b_p_HadZH_SIG_ghza2_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_HadZH_SIG_ghza4_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_HadZH_SIG_gha2_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_HadZH_SIG_gha4_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_HadZH_SIG_ghz1_1_ghz1prime2_1E4_JHUGen_JECUp;   //!
+   // TBranch        *b_p_HadZH_SIG_ghz1_1_ghz2_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_HadZH_SIG_ghz1_1_ghz4_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_HadZH_SIG_ghz1_1_ghza1prime2_1E4_JHUGen_JECUp;   //!
+   // TBranch        *b_p_HadZH_SIG_ghz1_1_ghza2_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_HadZH_SIG_ghz1_1_ghza4_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_HadZH_SIG_ghz1_1_gha2_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_HadZH_SIG_ghz1_1_gha4_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_HadWH_SIG_ghw1_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_HadWH_SIG_ghw1prime2_1E4_JHUGen_JECUp;   //!
+   // TBranch        *b_p_HadWH_SIG_ghw2_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_HadWH_SIG_ghw4_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_HadWH_SIG_ghw1_1_ghw1prime2_1E4_JHUGen_JECUp;   //!
+   // TBranch        *b_p_HadWH_SIG_ghw1_1_ghw2_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_HadWH_SIG_ghw1_1_ghw4_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_ttHUndecayed_SIG_kappa_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_ttHUndecayed_SIG_kappatilde_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_ttHUndecayed_SIG_kappa_1_kappatilde_1_JHUGen_JECUp;   //!
+   // TBranch        *b_p_bbH_SIG_kappa_1_JHUGen_JECUp;   //!
+   // TBranch        *b_pAux_JVBF_SIG_ghv1_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_JVBF_SIG_ghv1_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_JQCD_SIG_ghg2_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghv1_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghv1prime2_1E4_JHUGen_JECDn;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghv2_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghv4_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghza1prime2_1E4_JHUGen_JECDn;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghza2_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghza4_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_JJVBF_SIG_gha2_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_JJVBF_SIG_gha4_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghv1_1_ghv1prime2_1E4_JHUGen_JECDn;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghv1_1_ghv2_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghv1_1_ghv4_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghv1_1_ghza1prime2_1E4_JHUGen_JECDn;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghv1_1_ghza2_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghv1_1_ghza4_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghv1_1_gha2_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghv1_1_gha4_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_JJQCD_SIG_ghg2_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_JJQCD_SIG_ghg4_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_JJQCD_SIG_ghg2_1_ghg4_1_JHUGen_JECDn;   //!
 	TBranch        *b_p_HadZH_mavjj_JECNominal;
-	TBranch        *b_p_HadZH_mavjj_JECUp;
-	TBranch        *b_p_HadZH_mavjj_JECDn;
+	// TBranch        *b_p_HadZH_mavjj_JECUp;
+	// TBranch        *b_p_HadZH_mavjj_JECDn;
 	TBranch        *b_p_HadZH_mavjj_true_JECNominal;
-	TBranch        *b_p_HadZH_mavjj_true_JECUp;
-	TBranch        *b_p_HadZH_mavjj_true_JECDn;
+	// TBranch        *b_p_HadZH_mavjj_true_JECUp;
+	// TBranch        *b_p_HadZH_mavjj_true_JECDn;
 	TBranch        *b_p_HadWH_mavjj_JECNominal;
-	TBranch        *b_p_HadWH_mavjj_JECUp;
-	TBranch        *b_p_HadWH_mavjj_JECDn;
+	// TBranch        *b_p_HadWH_mavjj_JECUp;
+	// TBranch        *b_p_HadWH_mavjj_JECDn;
 	TBranch        *b_p_HadWH_mavjj_true_JECNominal;
-	TBranch        *b_p_HadWH_mavjj_true_JECUp;
-	TBranch        *b_p_HadWH_mavjj_true_JECDn;
-   TBranch        *b_p_HadZH_SIG_ghz1_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_HadZH_SIG_ghz1prime2_1E4_JHUGen_JECDn;   //!
-   TBranch        *b_p_HadZH_SIG_ghz2_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_HadZH_SIG_ghz4_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_HadZH_SIG_ghza1prime2_1E4_JHUGen_JECDn;   //!
-   TBranch        *b_p_HadZH_SIG_ghza2_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_HadZH_SIG_ghza4_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_HadZH_SIG_gha2_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_HadZH_SIG_gha4_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_HadZH_SIG_ghz1_1_ghz1prime2_1E4_JHUGen_JECDn;   //!
-   TBranch        *b_p_HadZH_SIG_ghz1_1_ghz2_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_HadZH_SIG_ghz1_1_ghz4_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_HadZH_SIG_ghz1_1_ghza1prime2_1E4_JHUGen_JECDn;   //!
-   TBranch        *b_p_HadZH_SIG_ghz1_1_ghza2_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_HadZH_SIG_ghz1_1_ghza4_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_HadZH_SIG_ghz1_1_gha2_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_HadZH_SIG_ghz1_1_gha4_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_HadWH_SIG_ghw1_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_HadWH_SIG_ghw1prime2_1E4_JHUGen_JECDn;   //!
-   TBranch        *b_p_HadWH_SIG_ghw2_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_HadWH_SIG_ghw4_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_HadWH_SIG_ghw1_1_ghw1prime2_1E4_JHUGen_JECDn;   //!
-   TBranch        *b_p_HadWH_SIG_ghw1_1_ghw2_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_HadWH_SIG_ghw1_1_ghw4_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_ttHUndecayed_SIG_kappa_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_ttHUndecayed_SIG_kappatilde_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_ttHUndecayed_SIG_kappa_1_kappatilde_1_JHUGen_JECDn;   //!
-   TBranch        *b_p_bbH_SIG_kappa_1_JHUGen_JECDn;   //!
+	// TBranch        *b_p_HadWH_mavjj_true_JECUp;
+	// TBranch        *b_p_HadWH_mavjj_true_JECDn;
+   // TBranch        *b_p_HadZH_SIG_ghz1_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_HadZH_SIG_ghz1prime2_1E4_JHUGen_JECDn;   //!
+   // TBranch        *b_p_HadZH_SIG_ghz2_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_HadZH_SIG_ghz4_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_HadZH_SIG_ghza1prime2_1E4_JHUGen_JECDn;   //!
+   // TBranch        *b_p_HadZH_SIG_ghza2_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_HadZH_SIG_ghza4_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_HadZH_SIG_gha2_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_HadZH_SIG_gha4_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_HadZH_SIG_ghz1_1_ghz1prime2_1E4_JHUGen_JECDn;   //!
+   // TBranch        *b_p_HadZH_SIG_ghz1_1_ghz2_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_HadZH_SIG_ghz1_1_ghz4_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_HadZH_SIG_ghz1_1_ghza1prime2_1E4_JHUGen_JECDn;   //!
+   // TBranch        *b_p_HadZH_SIG_ghz1_1_ghza2_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_HadZH_SIG_ghz1_1_ghza4_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_HadZH_SIG_ghz1_1_gha2_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_HadZH_SIG_ghz1_1_gha4_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_HadWH_SIG_ghw1_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_HadWH_SIG_ghw1prime2_1E4_JHUGen_JECDn;   //!
+   // TBranch        *b_p_HadWH_SIG_ghw2_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_HadWH_SIG_ghw4_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_HadWH_SIG_ghw1_1_ghw1prime2_1E4_JHUGen_JECDn;   //!
+   // TBranch        *b_p_HadWH_SIG_ghw1_1_ghw2_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_HadWH_SIG_ghw1_1_ghw4_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_ttHUndecayed_SIG_kappa_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_ttHUndecayed_SIG_kappatilde_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_ttHUndecayed_SIG_kappa_1_kappatilde_1_JHUGen_JECDn;   //!
+   // TBranch        *b_p_bbH_SIG_kappa_1_JHUGen_JECDn;   //!
    TBranch        *b_p_LepZH_SIG_ghz1_1_JHUGen;   //!
    TBranch        *b_p_LepZH_SIG_ghz1prime2_1E4_JHUGen;   //!
    TBranch        *b_p_LepZH_SIG_ghz2_1_JHUGen;   //!
@@ -862,18 +863,18 @@ public :
    TBranch        *b_p_JJEW_BKG_MCFM_JECNominal;   //!
    TBranch        *b_p_JJVBF_BKG_MCFM_JECNominal;   //!
    TBranch        *b_p_JJQCD_BKG_MCFM_JECNominal;   //!
-   TBranch        *b_p_JJEW_SIG_ghv1_1_MCFM_JECUp;   //!
-   TBranch        *b_p_JJEW_BSI_ghv1_1_MCFM_JECUp;   //!
-   TBranch        *b_p_JJEW_BSI_ghv1_i_MCFM_JECUp;   //!
-   TBranch        *b_p_JJEW_BKG_MCFM_JECUp;   //!
-   TBranch        *b_p_JJVBF_BKG_MCFM_JECUp;   //!
-   TBranch        *b_p_JJQCD_BKG_MCFM_JECUp;   //!
-   TBranch        *b_p_JJEW_SIG_ghv1_1_MCFM_JECDn;   //!
-   TBranch        *b_p_JJEW_BSI_ghv1_1_MCFM_JECDn;   //!
-   TBranch        *b_p_JJEW_BSI_ghv1_i_MCFM_JECDn;   //!
-   TBranch        *b_p_JJEW_BKG_MCFM_JECDn;   //!
-   TBranch        *b_p_JJVBF_BKG_MCFM_JECDn;   //!
-   TBranch        *b_p_JJQCD_BKG_MCFM_JECDn;   //!
+   // TBranch        *b_p_JJEW_SIG_ghv1_1_MCFM_JECUp;   //!
+   // TBranch        *b_p_JJEW_BSI_ghv1_1_MCFM_JECUp;   //!
+   // TBranch        *b_p_JJEW_BSI_ghv1_i_MCFM_JECUp;   //!
+   // TBranch        *b_p_JJEW_BKG_MCFM_JECUp;   //!
+   // TBranch        *b_p_JJVBF_BKG_MCFM_JECUp;   //!
+   // TBranch        *b_p_JJQCD_BKG_MCFM_JECUp;   //!
+   // TBranch        *b_p_JJEW_SIG_ghv1_1_MCFM_JECDn;   //!
+   // TBranch        *b_p_JJEW_BSI_ghv1_1_MCFM_JECDn;   //!
+   // TBranch        *b_p_JJEW_BSI_ghv1_i_MCFM_JECDn;   //!
+   // TBranch        *b_p_JJEW_BKG_MCFM_JECDn;   //!
+   // TBranch        *b_p_JJVBF_BKG_MCFM_JECDn;   //!
+   // TBranch        *b_p_JJQCD_BKG_MCFM_JECDn;   //!
    TBranch        *b_p_m4l_SIG;   //!
    TBranch        *b_p_m4l_BKG;   //!
    TBranch        *b_p_m4l_SIG_ScaleDown;   //!
@@ -886,10 +887,10 @@ public :
    TBranch        *b_p_m4l_BKG_ResUp;   //!
    TBranch        *b_p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal_BestDJJ;   //!
    TBranch        *b_p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal_BestDJJ;   //!
-   TBranch        *b_p_JJVBF_SIG_ghv1_1_JHUGen_JECUp_BestDJJ;   //!
-   TBranch        *b_p_JJQCD_SIG_ghg2_1_JHUGen_JECUp_BestDJJ;   //!
-   TBranch        *b_p_JJVBF_SIG_ghv1_1_JHUGen_JECDn_BestDJJ;   //!
-   TBranch        *b_p_JJQCD_SIG_ghg2_1_JHUGen_JECDn_BestDJJ;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghv1_1_JHUGen_JECUp_BestDJJ;   //!
+   // TBranch        *b_p_JJQCD_SIG_ghg2_1_JHUGen_JECUp_BestDJJ;   //!
+   // TBranch        *b_p_JJVBF_SIG_ghv1_1_JHUGen_JECDn_BestDJJ;   //!
+   // TBranch        *b_p_JJQCD_SIG_ghg2_1_JHUGen_JECDn_BestDJJ;   //!
    TBranch        *b_JetPt;   //!
    TBranch        *b_JetEta;   //!
    TBranch        *b_JetPhi;   //!
@@ -950,7 +951,8 @@ public :
 	TBranch        *b_htxsHPt;  //!
 	TBranch        *b_htxsNJets;  //!
 	TBranch			*b_htxs_stage0_cat; //!
-	TBranch			*b_htxs_stage1_cat; //!
+	TBranch			*b_htxs_stage1p1_cat; //!
+   // TBranch        *b_htxs_stage1p1_cat; //! STXS 1.2 already there, can be used
    TBranch        *b_GenHMass;   //!
    TBranch        *b_GenHPt;   //!
    TBranch        *b_GenHRapidity;   //!
@@ -1028,7 +1030,7 @@ public :
 #endif
 
 #ifdef Tree_cxx
-Tree::Tree(TTree *tree) : fChain(0) 
+Tree::Tree(TTree *tree) : fChain(0)
 {
 }
 
@@ -1127,14 +1129,14 @@ void Tree::Init(TTree *tree, TString input_file_name)
 //   fChain->SetBranchAddress("PFMETNoHFPhi", &PFMETNoHFPhi, &b_PFMETNoHFPhi);
    fChain->SetBranchAddress("nCleanedJets", &nCleanedJets, &b_nCleanedJets);
    fChain->SetBranchAddress("nCleanedJetsPt30", &nCleanedJetsPt30, &b_nCleanedJetsPt30);
-   fChain->SetBranchAddress("nCleanedJetsPt30_jecUp", &nCleanedJetsPt30_jecUp, &b_nCleanedJetsPt30_jecUp);
-   fChain->SetBranchAddress("nCleanedJetsPt30_jecDn", &nCleanedJetsPt30_jecDn, &b_nCleanedJetsPt30_jecDn);
+   // fChain->SetBranchAddress("nCleanedJetsPt30_jecUp", &nCleanedJetsPt30_jecUp, &b_nCleanedJetsPt30_jecUp);
+   // fChain->SetBranchAddress("nCleanedJetsPt30_jecDn", &nCleanedJetsPt30_jecDn, &b_nCleanedJetsPt30_jecDn);
    fChain->SetBranchAddress("nCleanedJetsPt30BTagged", &nCleanedJetsPt30BTagged, &b_nCleanedJetsPt30BTagged);
    fChain->SetBranchAddress("nCleanedJetsPt30BTagged_bTagSF", &nCleanedJetsPt30BTagged_bTagSF, &b_nCleanedJetsPt30BTagged_bTagSF);
    fChain->SetBranchAddress("nCleanedJetsPt30BTagged_bTagSFUp", &nCleanedJetsPt30BTagged_bTagSFUp, &b_nCleanedJetsPt30BTagged_bTagSFUp);
    fChain->SetBranchAddress("nCleanedJetsPt30BTagged_bTagSFDn", &nCleanedJetsPt30BTagged_bTagSFDn, &b_nCleanedJetsPt30BTagged_bTagSFDn);
-   fChain->SetBranchAddress("nCleanedJetsPt30BTagged_bTagSF_jecUp", &nCleanedJetsPt30BTagged_bTagSF_jecUp, &b_nCleanedJetsPt30BTagged_bTagSF_jecUp);
-   fChain->SetBranchAddress("nCleanedJetsPt30BTagged_bTagSF_jecDn", &nCleanedJetsPt30BTagged_bTagSF_jecDn, &b_nCleanedJetsPt30BTagged_bTagSF_jecDn);
+   // fChain->SetBranchAddress("nCleanedJetsPt30BTagged_bTagSF_jecUp", &nCleanedJetsPt30BTagged_bTagSF_jecUp, &b_nCleanedJetsPt30BTagged_bTagSF_jecUp);
+   // fChain->SetBranchAddress("nCleanedJetsPt30BTagged_bTagSF_jecDn", &nCleanedJetsPt30BTagged_bTagSF_jecDn, &b_nCleanedJetsPt30BTagged_bTagSF_jecDn);
    fChain->SetBranchAddress("trigWord", &trigWord, &b_trigWord);
    fChain->SetBranchAddress("ZZMass", &ZZMass, &b_ZZMass);
    fChain->SetBranchAddress("ZZMassErr", &ZZMassErr, &b_ZZMassErr);
@@ -1262,120 +1264,120 @@ void Tree::Init(TTree *tree, TString input_file_name)
    fChain->SetBranchAddress("p_ttHUndecayed_SIG_kappatilde_1_JHUGen_JECNominal", &p_ttHUndecayed_SIG_kappatilde_1_JHUGen_JECNominal, &b_p_ttHUndecayed_SIG_kappatilde_1_JHUGen_JECNominal);
    fChain->SetBranchAddress("p_ttHUndecayed_SIG_kappa_1_kappatilde_1_JHUGen_JECNominal", &p_ttHUndecayed_SIG_kappa_1_kappatilde_1_JHUGen_JECNominal, &b_p_ttHUndecayed_SIG_kappa_1_kappatilde_1_JHUGen_JECNominal);
    fChain->SetBranchAddress("p_bbH_SIG_kappa_1_JHUGen_JECNominal", &p_bbH_SIG_kappa_1_JHUGen_JECNominal, &b_p_bbH_SIG_kappa_1_JHUGen_JECNominal);
-   fChain->SetBranchAddress("pAux_JVBF_SIG_ghv1_1_JHUGen_JECUp", &pAux_JVBF_SIG_ghv1_1_JHUGen_JECUp, &b_pAux_JVBF_SIG_ghv1_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_JVBF_SIG_ghv1_1_JHUGen_JECUp", &p_JVBF_SIG_ghv1_1_JHUGen_JECUp, &b_p_JVBF_SIG_ghv1_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_JQCD_SIG_ghg2_1_JHUGen_JECUp", &p_JQCD_SIG_ghg2_1_JHUGen_JECUp, &b_p_JQCD_SIG_ghg2_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_JHUGen_JECUp", &p_JJVBF_SIG_ghv1_1_JHUGen_JECUp, &b_p_JJVBF_SIG_ghv1_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghv1prime2_1E4_JHUGen_JECUp", &p_JJVBF_SIG_ghv1prime2_1E4_JHUGen_JECUp, &b_p_JJVBF_SIG_ghv1prime2_1E4_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghv2_1_JHUGen_JECUp", &p_JJVBF_SIG_ghv2_1_JHUGen_JECUp, &b_p_JJVBF_SIG_ghv2_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghv4_1_JHUGen_JECUp", &p_JJVBF_SIG_ghv4_1_JHUGen_JECUp, &b_p_JJVBF_SIG_ghv4_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghza1prime2_1E4_JHUGen_JECUp", &p_JJVBF_SIG_ghza1prime2_1E4_JHUGen_JECUp, &b_p_JJVBF_SIG_ghza1prime2_1E4_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghza2_1_JHUGen_JECUp", &p_JJVBF_SIG_ghza2_1_JHUGen_JECUp, &b_p_JJVBF_SIG_ghza2_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghza4_1_JHUGen_JECUp", &p_JJVBF_SIG_ghza4_1_JHUGen_JECUp, &b_p_JJVBF_SIG_ghza4_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_JJVBF_SIG_gha2_1_JHUGen_JECUp", &p_JJVBF_SIG_gha2_1_JHUGen_JECUp, &b_p_JJVBF_SIG_gha2_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_JJVBF_SIG_gha4_1_JHUGen_JECUp", &p_JJVBF_SIG_gha4_1_JHUGen_JECUp, &b_p_JJVBF_SIG_gha4_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_ghv1prime2_1E4_JHUGen_JECUp", &p_JJVBF_SIG_ghv1_1_ghv1prime2_1E4_JHUGen_JECUp, &b_p_JJVBF_SIG_ghv1_1_ghv1prime2_1E4_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_ghv2_1_JHUGen_JECUp", &p_JJVBF_SIG_ghv1_1_ghv2_1_JHUGen_JECUp, &b_p_JJVBF_SIG_ghv1_1_ghv2_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_ghv4_1_JHUGen_JECUp", &p_JJVBF_SIG_ghv1_1_ghv4_1_JHUGen_JECUp, &b_p_JJVBF_SIG_ghv1_1_ghv4_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_ghza1prime2_1E4_JHUGen_JECUp", &p_JJVBF_SIG_ghv1_1_ghza1prime2_1E4_JHUGen_JECUp, &b_p_JJVBF_SIG_ghv1_1_ghza1prime2_1E4_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_ghza2_1_JHUGen_JECUp", &p_JJVBF_SIG_ghv1_1_ghza2_1_JHUGen_JECUp, &b_p_JJVBF_SIG_ghv1_1_ghza2_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_ghza4_1_JHUGen_JECUp", &p_JJVBF_SIG_ghv1_1_ghza4_1_JHUGen_JECUp, &b_p_JJVBF_SIG_ghv1_1_ghza4_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_gha2_1_JHUGen_JECUp", &p_JJVBF_SIG_ghv1_1_gha2_1_JHUGen_JECUp, &b_p_JJVBF_SIG_ghv1_1_gha2_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_gha4_1_JHUGen_JECUp", &p_JJVBF_SIG_ghv1_1_gha4_1_JHUGen_JECUp, &b_p_JJVBF_SIG_ghv1_1_gha4_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_JJQCD_SIG_ghg2_1_JHUGen_JECUp", &p_JJQCD_SIG_ghg2_1_JHUGen_JECUp, &b_p_JJQCD_SIG_ghg2_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_JJQCD_SIG_ghg4_1_JHUGen_JECUp", &p_JJQCD_SIG_ghg4_1_JHUGen_JECUp, &b_p_JJQCD_SIG_ghg4_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_JJQCD_SIG_ghg2_1_ghg4_1_JHUGen_JECUp", &p_JJQCD_SIG_ghg2_1_ghg4_1_JHUGen_JECUp, &b_p_JJQCD_SIG_ghg2_1_ghg4_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_JHUGen_JECUp", &p_HadZH_SIG_ghz1_1_JHUGen_JECUp, &b_p_HadZH_SIG_ghz1_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_HadZH_SIG_ghz1prime2_1E4_JHUGen_JECUp", &p_HadZH_SIG_ghz1prime2_1E4_JHUGen_JECUp, &b_p_HadZH_SIG_ghz1prime2_1E4_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_HadZH_SIG_ghz2_1_JHUGen_JECUp", &p_HadZH_SIG_ghz2_1_JHUGen_JECUp, &b_p_HadZH_SIG_ghz2_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_HadZH_SIG_ghz4_1_JHUGen_JECUp", &p_HadZH_SIG_ghz4_1_JHUGen_JECUp, &b_p_HadZH_SIG_ghz4_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_HadZH_SIG_ghza1prime2_1E4_JHUGen_JECUp", &p_HadZH_SIG_ghza1prime2_1E4_JHUGen_JECUp, &b_p_HadZH_SIG_ghza1prime2_1E4_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_HadZH_SIG_ghza2_1_JHUGen_JECUp", &p_HadZH_SIG_ghza2_1_JHUGen_JECUp, &b_p_HadZH_SIG_ghza2_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_HadZH_SIG_ghza4_1_JHUGen_JECUp", &p_HadZH_SIG_ghza4_1_JHUGen_JECUp, &b_p_HadZH_SIG_ghza4_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_HadZH_SIG_gha2_1_JHUGen_JECUp", &p_HadZH_SIG_gha2_1_JHUGen_JECUp, &b_p_HadZH_SIG_gha2_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_HadZH_SIG_gha4_1_JHUGen_JECUp", &p_HadZH_SIG_gha4_1_JHUGen_JECUp, &b_p_HadZH_SIG_gha4_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_ghz1prime2_1E4_JHUGen_JECUp", &p_HadZH_SIG_ghz1_1_ghz1prime2_1E4_JHUGen_JECUp, &b_p_HadZH_SIG_ghz1_1_ghz1prime2_1E4_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_ghz2_1_JHUGen_JECUp", &p_HadZH_SIG_ghz1_1_ghz2_1_JHUGen_JECUp, &b_p_HadZH_SIG_ghz1_1_ghz2_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_ghz4_1_JHUGen_JECUp", &p_HadZH_SIG_ghz1_1_ghz4_1_JHUGen_JECUp, &b_p_HadZH_SIG_ghz1_1_ghz4_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_ghza1prime2_1E4_JHUGen_JECUp", &p_HadZH_SIG_ghz1_1_ghza1prime2_1E4_JHUGen_JECUp, &b_p_HadZH_SIG_ghz1_1_ghza1prime2_1E4_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_ghza2_1_JHUGen_JECUp", &p_HadZH_SIG_ghz1_1_ghza2_1_JHUGen_JECUp, &b_p_HadZH_SIG_ghz1_1_ghza2_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_ghza4_1_JHUGen_JECUp", &p_HadZH_SIG_ghz1_1_ghza4_1_JHUGen_JECUp, &b_p_HadZH_SIG_ghz1_1_ghza4_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_gha2_1_JHUGen_JECUp", &p_HadZH_SIG_ghz1_1_gha2_1_JHUGen_JECUp, &b_p_HadZH_SIG_ghz1_1_gha2_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_gha4_1_JHUGen_JECUp", &p_HadZH_SIG_ghz1_1_gha4_1_JHUGen_JECUp, &b_p_HadZH_SIG_ghz1_1_gha4_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_HadWH_SIG_ghw1_1_JHUGen_JECUp", &p_HadWH_SIG_ghw1_1_JHUGen_JECUp, &b_p_HadWH_SIG_ghw1_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_HadWH_SIG_ghw1prime2_1E4_JHUGen_JECUp", &p_HadWH_SIG_ghw1prime2_1E4_JHUGen_JECUp, &b_p_HadWH_SIG_ghw1prime2_1E4_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_HadWH_SIG_ghw2_1_JHUGen_JECUp", &p_HadWH_SIG_ghw2_1_JHUGen_JECUp, &b_p_HadWH_SIG_ghw2_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_HadWH_SIG_ghw4_1_JHUGen_JECUp", &p_HadWH_SIG_ghw4_1_JHUGen_JECUp, &b_p_HadWH_SIG_ghw4_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_HadWH_SIG_ghw1_1_ghw1prime2_1E4_JHUGen_JECUp", &p_HadWH_SIG_ghw1_1_ghw1prime2_1E4_JHUGen_JECUp, &b_p_HadWH_SIG_ghw1_1_ghw1prime2_1E4_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_HadWH_SIG_ghw1_1_ghw2_1_JHUGen_JECUp", &p_HadWH_SIG_ghw1_1_ghw2_1_JHUGen_JECUp, &b_p_HadWH_SIG_ghw1_1_ghw2_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_HadWH_SIG_ghw1_1_ghw4_1_JHUGen_JECUp", &p_HadWH_SIG_ghw1_1_ghw4_1_JHUGen_JECUp, &b_p_HadWH_SIG_ghw1_1_ghw4_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_ttHUndecayed_SIG_kappa_1_JHUGen_JECUp", &p_ttHUndecayed_SIG_kappa_1_JHUGen_JECUp, &b_p_ttHUndecayed_SIG_kappa_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_ttHUndecayed_SIG_kappatilde_1_JHUGen_JECUp", &p_ttHUndecayed_SIG_kappatilde_1_JHUGen_JECUp, &b_p_ttHUndecayed_SIG_kappatilde_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_ttHUndecayed_SIG_kappa_1_kappatilde_1_JHUGen_JECUp", &p_ttHUndecayed_SIG_kappa_1_kappatilde_1_JHUGen_JECUp, &b_p_ttHUndecayed_SIG_kappa_1_kappatilde_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("p_bbH_SIG_kappa_1_JHUGen_JECUp", &p_bbH_SIG_kappa_1_JHUGen_JECUp, &b_p_bbH_SIG_kappa_1_JHUGen_JECUp);
-   fChain->SetBranchAddress("pAux_JVBF_SIG_ghv1_1_JHUGen_JECDn", &pAux_JVBF_SIG_ghv1_1_JHUGen_JECDn, &b_pAux_JVBF_SIG_ghv1_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_JVBF_SIG_ghv1_1_JHUGen_JECDn", &p_JVBF_SIG_ghv1_1_JHUGen_JECDn, &b_p_JVBF_SIG_ghv1_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_JQCD_SIG_ghg2_1_JHUGen_JECDn", &p_JQCD_SIG_ghg2_1_JHUGen_JECDn, &b_p_JQCD_SIG_ghg2_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_JHUGen_JECDn", &p_JJVBF_SIG_ghv1_1_JHUGen_JECDn, &b_p_JJVBF_SIG_ghv1_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghv1prime2_1E4_JHUGen_JECDn", &p_JJVBF_SIG_ghv1prime2_1E4_JHUGen_JECDn, &b_p_JJVBF_SIG_ghv1prime2_1E4_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghv2_1_JHUGen_JECDn", &p_JJVBF_SIG_ghv2_1_JHUGen_JECDn, &b_p_JJVBF_SIG_ghv2_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghv4_1_JHUGen_JECDn", &p_JJVBF_SIG_ghv4_1_JHUGen_JECDn, &b_p_JJVBF_SIG_ghv4_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghza1prime2_1E4_JHUGen_JECDn", &p_JJVBF_SIG_ghza1prime2_1E4_JHUGen_JECDn, &b_p_JJVBF_SIG_ghza1prime2_1E4_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghza2_1_JHUGen_JECDn", &p_JJVBF_SIG_ghza2_1_JHUGen_JECDn, &b_p_JJVBF_SIG_ghza2_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghza4_1_JHUGen_JECDn", &p_JJVBF_SIG_ghza4_1_JHUGen_JECDn, &b_p_JJVBF_SIG_ghza4_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_JJVBF_SIG_gha2_1_JHUGen_JECDn", &p_JJVBF_SIG_gha2_1_JHUGen_JECDn, &b_p_JJVBF_SIG_gha2_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_JJVBF_SIG_gha4_1_JHUGen_JECDn", &p_JJVBF_SIG_gha4_1_JHUGen_JECDn, &b_p_JJVBF_SIG_gha4_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_ghv1prime2_1E4_JHUGen_JECDn", &p_JJVBF_SIG_ghv1_1_ghv1prime2_1E4_JHUGen_JECDn, &b_p_JJVBF_SIG_ghv1_1_ghv1prime2_1E4_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_ghv2_1_JHUGen_JECDn", &p_JJVBF_SIG_ghv1_1_ghv2_1_JHUGen_JECDn, &b_p_JJVBF_SIG_ghv1_1_ghv2_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_ghv4_1_JHUGen_JECDn", &p_JJVBF_SIG_ghv1_1_ghv4_1_JHUGen_JECDn, &b_p_JJVBF_SIG_ghv1_1_ghv4_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_ghza1prime2_1E4_JHUGen_JECDn", &p_JJVBF_SIG_ghv1_1_ghza1prime2_1E4_JHUGen_JECDn, &b_p_JJVBF_SIG_ghv1_1_ghza1prime2_1E4_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_ghza2_1_JHUGen_JECDn", &p_JJVBF_SIG_ghv1_1_ghza2_1_JHUGen_JECDn, &b_p_JJVBF_SIG_ghv1_1_ghza2_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_ghza4_1_JHUGen_JECDn", &p_JJVBF_SIG_ghv1_1_ghza4_1_JHUGen_JECDn, &b_p_JJVBF_SIG_ghv1_1_ghza4_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_gha2_1_JHUGen_JECDn", &p_JJVBF_SIG_ghv1_1_gha2_1_JHUGen_JECDn, &b_p_JJVBF_SIG_ghv1_1_gha2_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_gha4_1_JHUGen_JECDn", &p_JJVBF_SIG_ghv1_1_gha4_1_JHUGen_JECDn, &b_p_JJVBF_SIG_ghv1_1_gha4_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_JJQCD_SIG_ghg2_1_JHUGen_JECDn", &p_JJQCD_SIG_ghg2_1_JHUGen_JECDn, &b_p_JJQCD_SIG_ghg2_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_JJQCD_SIG_ghg4_1_JHUGen_JECDn", &p_JJQCD_SIG_ghg4_1_JHUGen_JECDn, &b_p_JJQCD_SIG_ghg4_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_JJQCD_SIG_ghg2_1_ghg4_1_JHUGen_JECDn", &p_JJQCD_SIG_ghg2_1_ghg4_1_JHUGen_JECDn, &b_p_JJQCD_SIG_ghg2_1_ghg4_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("pAux_JVBF_SIG_ghv1_1_JHUGen_JECUp", &pAux_JVBF_SIG_ghv1_1_JHUGen_JECUp, &b_pAux_JVBF_SIG_ghv1_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_JVBF_SIG_ghv1_1_JHUGen_JECUp", &p_JVBF_SIG_ghv1_1_JHUGen_JECUp, &b_p_JVBF_SIG_ghv1_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_JQCD_SIG_ghg2_1_JHUGen_JECUp", &p_JQCD_SIG_ghg2_1_JHUGen_JECUp, &b_p_JQCD_SIG_ghg2_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_JHUGen_JECUp", &p_JJVBF_SIG_ghv1_1_JHUGen_JECUp, &b_p_JJVBF_SIG_ghv1_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghv1prime2_1E4_JHUGen_JECUp", &p_JJVBF_SIG_ghv1prime2_1E4_JHUGen_JECUp, &b_p_JJVBF_SIG_ghv1prime2_1E4_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghv2_1_JHUGen_JECUp", &p_JJVBF_SIG_ghv2_1_JHUGen_JECUp, &b_p_JJVBF_SIG_ghv2_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghv4_1_JHUGen_JECUp", &p_JJVBF_SIG_ghv4_1_JHUGen_JECUp, &b_p_JJVBF_SIG_ghv4_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghza1prime2_1E4_JHUGen_JECUp", &p_JJVBF_SIG_ghza1prime2_1E4_JHUGen_JECUp, &b_p_JJVBF_SIG_ghza1prime2_1E4_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghza2_1_JHUGen_JECUp", &p_JJVBF_SIG_ghza2_1_JHUGen_JECUp, &b_p_JJVBF_SIG_ghza2_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghza4_1_JHUGen_JECUp", &p_JJVBF_SIG_ghza4_1_JHUGen_JECUp, &b_p_JJVBF_SIG_ghza4_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_gha2_1_JHUGen_JECUp", &p_JJVBF_SIG_gha2_1_JHUGen_JECUp, &b_p_JJVBF_SIG_gha2_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_gha4_1_JHUGen_JECUp", &p_JJVBF_SIG_gha4_1_JHUGen_JECUp, &b_p_JJVBF_SIG_gha4_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_ghv1prime2_1E4_JHUGen_JECUp", &p_JJVBF_SIG_ghv1_1_ghv1prime2_1E4_JHUGen_JECUp, &b_p_JJVBF_SIG_ghv1_1_ghv1prime2_1E4_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_ghv2_1_JHUGen_JECUp", &p_JJVBF_SIG_ghv1_1_ghv2_1_JHUGen_JECUp, &b_p_JJVBF_SIG_ghv1_1_ghv2_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_ghv4_1_JHUGen_JECUp", &p_JJVBF_SIG_ghv1_1_ghv4_1_JHUGen_JECUp, &b_p_JJVBF_SIG_ghv1_1_ghv4_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_ghza1prime2_1E4_JHUGen_JECUp", &p_JJVBF_SIG_ghv1_1_ghza1prime2_1E4_JHUGen_JECUp, &b_p_JJVBF_SIG_ghv1_1_ghza1prime2_1E4_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_ghza2_1_JHUGen_JECUp", &p_JJVBF_SIG_ghv1_1_ghza2_1_JHUGen_JECUp, &b_p_JJVBF_SIG_ghv1_1_ghza2_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_ghza4_1_JHUGen_JECUp", &p_JJVBF_SIG_ghv1_1_ghza4_1_JHUGen_JECUp, &b_p_JJVBF_SIG_ghv1_1_ghza4_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_gha2_1_JHUGen_JECUp", &p_JJVBF_SIG_ghv1_1_gha2_1_JHUGen_JECUp, &b_p_JJVBF_SIG_ghv1_1_gha2_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_gha4_1_JHUGen_JECUp", &p_JJVBF_SIG_ghv1_1_gha4_1_JHUGen_JECUp, &b_p_JJVBF_SIG_ghv1_1_gha4_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_JJQCD_SIG_ghg2_1_JHUGen_JECUp", &p_JJQCD_SIG_ghg2_1_JHUGen_JECUp, &b_p_JJQCD_SIG_ghg2_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_JJQCD_SIG_ghg4_1_JHUGen_JECUp", &p_JJQCD_SIG_ghg4_1_JHUGen_JECUp, &b_p_JJQCD_SIG_ghg4_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_JJQCD_SIG_ghg2_1_ghg4_1_JHUGen_JECUp", &p_JJQCD_SIG_ghg2_1_ghg4_1_JHUGen_JECUp, &b_p_JJQCD_SIG_ghg2_1_ghg4_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_JHUGen_JECUp", &p_HadZH_SIG_ghz1_1_JHUGen_JECUp, &b_p_HadZH_SIG_ghz1_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_HadZH_SIG_ghz1prime2_1E4_JHUGen_JECUp", &p_HadZH_SIG_ghz1prime2_1E4_JHUGen_JECUp, &b_p_HadZH_SIG_ghz1prime2_1E4_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_HadZH_SIG_ghz2_1_JHUGen_JECUp", &p_HadZH_SIG_ghz2_1_JHUGen_JECUp, &b_p_HadZH_SIG_ghz2_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_HadZH_SIG_ghz4_1_JHUGen_JECUp", &p_HadZH_SIG_ghz4_1_JHUGen_JECUp, &b_p_HadZH_SIG_ghz4_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_HadZH_SIG_ghza1prime2_1E4_JHUGen_JECUp", &p_HadZH_SIG_ghza1prime2_1E4_JHUGen_JECUp, &b_p_HadZH_SIG_ghza1prime2_1E4_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_HadZH_SIG_ghza2_1_JHUGen_JECUp", &p_HadZH_SIG_ghza2_1_JHUGen_JECUp, &b_p_HadZH_SIG_ghza2_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_HadZH_SIG_ghza4_1_JHUGen_JECUp", &p_HadZH_SIG_ghza4_1_JHUGen_JECUp, &b_p_HadZH_SIG_ghza4_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_HadZH_SIG_gha2_1_JHUGen_JECUp", &p_HadZH_SIG_gha2_1_JHUGen_JECUp, &b_p_HadZH_SIG_gha2_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_HadZH_SIG_gha4_1_JHUGen_JECUp", &p_HadZH_SIG_gha4_1_JHUGen_JECUp, &b_p_HadZH_SIG_gha4_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_ghz1prime2_1E4_JHUGen_JECUp", &p_HadZH_SIG_ghz1_1_ghz1prime2_1E4_JHUGen_JECUp, &b_p_HadZH_SIG_ghz1_1_ghz1prime2_1E4_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_ghz2_1_JHUGen_JECUp", &p_HadZH_SIG_ghz1_1_ghz2_1_JHUGen_JECUp, &b_p_HadZH_SIG_ghz1_1_ghz2_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_ghz4_1_JHUGen_JECUp", &p_HadZH_SIG_ghz1_1_ghz4_1_JHUGen_JECUp, &b_p_HadZH_SIG_ghz1_1_ghz4_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_ghza1prime2_1E4_JHUGen_JECUp", &p_HadZH_SIG_ghz1_1_ghza1prime2_1E4_JHUGen_JECUp, &b_p_HadZH_SIG_ghz1_1_ghza1prime2_1E4_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_ghza2_1_JHUGen_JECUp", &p_HadZH_SIG_ghz1_1_ghza2_1_JHUGen_JECUp, &b_p_HadZH_SIG_ghz1_1_ghza2_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_ghza4_1_JHUGen_JECUp", &p_HadZH_SIG_ghz1_1_ghza4_1_JHUGen_JECUp, &b_p_HadZH_SIG_ghz1_1_ghza4_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_gha2_1_JHUGen_JECUp", &p_HadZH_SIG_ghz1_1_gha2_1_JHUGen_JECUp, &b_p_HadZH_SIG_ghz1_1_gha2_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_gha4_1_JHUGen_JECUp", &p_HadZH_SIG_ghz1_1_gha4_1_JHUGen_JECUp, &b_p_HadZH_SIG_ghz1_1_gha4_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_HadWH_SIG_ghw1_1_JHUGen_JECUp", &p_HadWH_SIG_ghw1_1_JHUGen_JECUp, &b_p_HadWH_SIG_ghw1_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_HadWH_SIG_ghw1prime2_1E4_JHUGen_JECUp", &p_HadWH_SIG_ghw1prime2_1E4_JHUGen_JECUp, &b_p_HadWH_SIG_ghw1prime2_1E4_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_HadWH_SIG_ghw2_1_JHUGen_JECUp", &p_HadWH_SIG_ghw2_1_JHUGen_JECUp, &b_p_HadWH_SIG_ghw2_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_HadWH_SIG_ghw4_1_JHUGen_JECUp", &p_HadWH_SIG_ghw4_1_JHUGen_JECUp, &b_p_HadWH_SIG_ghw4_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_HadWH_SIG_ghw1_1_ghw1prime2_1E4_JHUGen_JECUp", &p_HadWH_SIG_ghw1_1_ghw1prime2_1E4_JHUGen_JECUp, &b_p_HadWH_SIG_ghw1_1_ghw1prime2_1E4_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_HadWH_SIG_ghw1_1_ghw2_1_JHUGen_JECUp", &p_HadWH_SIG_ghw1_1_ghw2_1_JHUGen_JECUp, &b_p_HadWH_SIG_ghw1_1_ghw2_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_HadWH_SIG_ghw1_1_ghw4_1_JHUGen_JECUp", &p_HadWH_SIG_ghw1_1_ghw4_1_JHUGen_JECUp, &b_p_HadWH_SIG_ghw1_1_ghw4_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_ttHUndecayed_SIG_kappa_1_JHUGen_JECUp", &p_ttHUndecayed_SIG_kappa_1_JHUGen_JECUp, &b_p_ttHUndecayed_SIG_kappa_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_ttHUndecayed_SIG_kappatilde_1_JHUGen_JECUp", &p_ttHUndecayed_SIG_kappatilde_1_JHUGen_JECUp, &b_p_ttHUndecayed_SIG_kappatilde_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_ttHUndecayed_SIG_kappa_1_kappatilde_1_JHUGen_JECUp", &p_ttHUndecayed_SIG_kappa_1_kappatilde_1_JHUGen_JECUp, &b_p_ttHUndecayed_SIG_kappa_1_kappatilde_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("p_bbH_SIG_kappa_1_JHUGen_JECUp", &p_bbH_SIG_kappa_1_JHUGen_JECUp, &b_p_bbH_SIG_kappa_1_JHUGen_JECUp);
+   // fChain->SetBranchAddress("pAux_JVBF_SIG_ghv1_1_JHUGen_JECDn", &pAux_JVBF_SIG_ghv1_1_JHUGen_JECDn, &b_pAux_JVBF_SIG_ghv1_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_JVBF_SIG_ghv1_1_JHUGen_JECDn", &p_JVBF_SIG_ghv1_1_JHUGen_JECDn, &b_p_JVBF_SIG_ghv1_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_JQCD_SIG_ghg2_1_JHUGen_JECDn", &p_JQCD_SIG_ghg2_1_JHUGen_JECDn, &b_p_JQCD_SIG_ghg2_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_JHUGen_JECDn", &p_JJVBF_SIG_ghv1_1_JHUGen_JECDn, &b_p_JJVBF_SIG_ghv1_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghv1prime2_1E4_JHUGen_JECDn", &p_JJVBF_SIG_ghv1prime2_1E4_JHUGen_JECDn, &b_p_JJVBF_SIG_ghv1prime2_1E4_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghv2_1_JHUGen_JECDn", &p_JJVBF_SIG_ghv2_1_JHUGen_JECDn, &b_p_JJVBF_SIG_ghv2_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghv4_1_JHUGen_JECDn", &p_JJVBF_SIG_ghv4_1_JHUGen_JECDn, &b_p_JJVBF_SIG_ghv4_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghza1prime2_1E4_JHUGen_JECDn", &p_JJVBF_SIG_ghza1prime2_1E4_JHUGen_JECDn, &b_p_JJVBF_SIG_ghza1prime2_1E4_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghza2_1_JHUGen_JECDn", &p_JJVBF_SIG_ghza2_1_JHUGen_JECDn, &b_p_JJVBF_SIG_ghza2_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghza4_1_JHUGen_JECDn", &p_JJVBF_SIG_ghza4_1_JHUGen_JECDn, &b_p_JJVBF_SIG_ghza4_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_gha2_1_JHUGen_JECDn", &p_JJVBF_SIG_gha2_1_JHUGen_JECDn, &b_p_JJVBF_SIG_gha2_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_gha4_1_JHUGen_JECDn", &p_JJVBF_SIG_gha4_1_JHUGen_JECDn, &b_p_JJVBF_SIG_gha4_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_ghv1prime2_1E4_JHUGen_JECDn", &p_JJVBF_SIG_ghv1_1_ghv1prime2_1E4_JHUGen_JECDn, &b_p_JJVBF_SIG_ghv1_1_ghv1prime2_1E4_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_ghv2_1_JHUGen_JECDn", &p_JJVBF_SIG_ghv1_1_ghv2_1_JHUGen_JECDn, &b_p_JJVBF_SIG_ghv1_1_ghv2_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_ghv4_1_JHUGen_JECDn", &p_JJVBF_SIG_ghv1_1_ghv4_1_JHUGen_JECDn, &b_p_JJVBF_SIG_ghv1_1_ghv4_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_ghza1prime2_1E4_JHUGen_JECDn", &p_JJVBF_SIG_ghv1_1_ghza1prime2_1E4_JHUGen_JECDn, &b_p_JJVBF_SIG_ghv1_1_ghza1prime2_1E4_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_ghza2_1_JHUGen_JECDn", &p_JJVBF_SIG_ghv1_1_ghza2_1_JHUGen_JECDn, &b_p_JJVBF_SIG_ghv1_1_ghza2_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_ghza4_1_JHUGen_JECDn", &p_JJVBF_SIG_ghv1_1_ghza4_1_JHUGen_JECDn, &b_p_JJVBF_SIG_ghv1_1_ghza4_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_gha2_1_JHUGen_JECDn", &p_JJVBF_SIG_ghv1_1_gha2_1_JHUGen_JECDn, &b_p_JJVBF_SIG_ghv1_1_gha2_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_gha4_1_JHUGen_JECDn", &p_JJVBF_SIG_ghv1_1_gha4_1_JHUGen_JECDn, &b_p_JJVBF_SIG_ghv1_1_gha4_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_JJQCD_SIG_ghg2_1_JHUGen_JECDn", &p_JJQCD_SIG_ghg2_1_JHUGen_JECDn, &b_p_JJQCD_SIG_ghg2_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_JJQCD_SIG_ghg4_1_JHUGen_JECDn", &p_JJQCD_SIG_ghg4_1_JHUGen_JECDn, &b_p_JJQCD_SIG_ghg4_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_JJQCD_SIG_ghg2_1_ghg4_1_JHUGen_JECDn", &p_JJQCD_SIG_ghg2_1_ghg4_1_JHUGen_JECDn, &b_p_JJQCD_SIG_ghg2_1_ghg4_1_JHUGen_JECDn);
 	fChain->SetBranchAddress("p_HadZH_mavjj_JECNominal", &p_HadZH_mavjj_JECNominal, &b_p_HadZH_mavjj_JECNominal);
-	fChain->SetBranchAddress("p_HadZH_mavjj_JECUp", &p_HadZH_mavjj_JECUp, &b_p_HadZH_mavjj_JECUp);
-	fChain->SetBranchAddress("p_HadZH_mavjj_JECDn", &p_HadZH_mavjj_JECDn, &b_p_HadZH_mavjj_JECDn);
+	// fChain->SetBranchAddress("p_HadZH_mavjj_JECUp", &p_HadZH_mavjj_JECUp, &b_p_HadZH_mavjj_JECUp);
+	// fChain->SetBranchAddress("p_HadZH_mavjj_JECDn", &p_HadZH_mavjj_JECDn, &b_p_HadZH_mavjj_JECDn);
 	fChain->SetBranchAddress("p_HadZH_mavjj_true_JECNominal", &p_HadZH_mavjj_true_JECNominal, &b_p_HadZH_mavjj_true_JECNominal);
-	fChain->SetBranchAddress("p_HadZH_mavjj_true_JECUp", &p_HadZH_mavjj_true_JECUp, &b_p_HadZH_mavjj_true_JECUp);
-	fChain->SetBranchAddress("p_HadZH_mavjj_true_JECDn", &p_HadZH_mavjj_true_JECDn, &b_p_HadZH_mavjj_true_JECDn);
+	// fChain->SetBranchAddress("p_HadZH_mavjj_true_JECUp", &p_HadZH_mavjj_true_JECUp, &b_p_HadZH_mavjj_true_JECUp);
+	// fChain->SetBranchAddress("p_HadZH_mavjj_true_JECDn", &p_HadZH_mavjj_true_JECDn, &b_p_HadZH_mavjj_true_JECDn);
 	fChain->SetBranchAddress("p_HadWH_mavjj_JECNominal", &p_HadWH_mavjj_JECNominal, &b_p_HadWH_mavjj_JECNominal);
-	fChain->SetBranchAddress("p_HadWH_mavjj_JECUp", &p_HadWH_mavjj_JECUp, &b_p_HadWH_mavjj_JECUp);
-	fChain->SetBranchAddress("p_HadWH_mavjj_JECDn", &p_HadWH_mavjj_JECDn, &b_p_HadWH_mavjj_JECDn);
+	// fChain->SetBranchAddress("p_HadWH_mavjj_JECUp", &p_HadWH_mavjj_JECUp, &b_p_HadWH_mavjj_JECUp);
+	// fChain->SetBranchAddress("p_HadWH_mavjj_JECDn", &p_HadWH_mavjj_JECDn, &b_p_HadWH_mavjj_JECDn);
 	fChain->SetBranchAddress("p_HadWH_mavjj_true_JECNominal", &p_HadWH_mavjj_true_JECNominal, &b_p_HadWH_mavjj_true_JECNominal);
-	fChain->SetBranchAddress("p_HadWH_mavjj_true_JECUp", &p_HadWH_mavjj_true_JECUp, &b_p_HadWH_mavjj_true_JECUp);
-	fChain->SetBranchAddress("p_HadWH_mavjj_true_JECDn", &p_HadWH_mavjj_true_JECDn, &b_p_HadWH_mavjj_true_JECDn);
-   fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_JHUGen_JECDn", &p_HadZH_SIG_ghz1_1_JHUGen_JECDn, &b_p_HadZH_SIG_ghz1_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_HadZH_SIG_ghz1prime2_1E4_JHUGen_JECDn", &p_HadZH_SIG_ghz1prime2_1E4_JHUGen_JECDn, &b_p_HadZH_SIG_ghz1prime2_1E4_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_HadZH_SIG_ghz2_1_JHUGen_JECDn", &p_HadZH_SIG_ghz2_1_JHUGen_JECDn, &b_p_HadZH_SIG_ghz2_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_HadZH_SIG_ghz4_1_JHUGen_JECDn", &p_HadZH_SIG_ghz4_1_JHUGen_JECDn, &b_p_HadZH_SIG_ghz4_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_HadZH_SIG_ghza1prime2_1E4_JHUGen_JECDn", &p_HadZH_SIG_ghza1prime2_1E4_JHUGen_JECDn, &b_p_HadZH_SIG_ghza1prime2_1E4_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_HadZH_SIG_ghza2_1_JHUGen_JECDn", &p_HadZH_SIG_ghza2_1_JHUGen_JECDn, &b_p_HadZH_SIG_ghza2_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_HadZH_SIG_ghza4_1_JHUGen_JECDn", &p_HadZH_SIG_ghza4_1_JHUGen_JECDn, &b_p_HadZH_SIG_ghza4_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_HadZH_SIG_gha2_1_JHUGen_JECDn", &p_HadZH_SIG_gha2_1_JHUGen_JECDn, &b_p_HadZH_SIG_gha2_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_HadZH_SIG_gha4_1_JHUGen_JECDn", &p_HadZH_SIG_gha4_1_JHUGen_JECDn, &b_p_HadZH_SIG_gha4_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_ghz1prime2_1E4_JHUGen_JECDn", &p_HadZH_SIG_ghz1_1_ghz1prime2_1E4_JHUGen_JECDn, &b_p_HadZH_SIG_ghz1_1_ghz1prime2_1E4_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_ghz2_1_JHUGen_JECDn", &p_HadZH_SIG_ghz1_1_ghz2_1_JHUGen_JECDn, &b_p_HadZH_SIG_ghz1_1_ghz2_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_ghz4_1_JHUGen_JECDn", &p_HadZH_SIG_ghz1_1_ghz4_1_JHUGen_JECDn, &b_p_HadZH_SIG_ghz1_1_ghz4_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_ghza1prime2_1E4_JHUGen_JECDn", &p_HadZH_SIG_ghz1_1_ghza1prime2_1E4_JHUGen_JECDn, &b_p_HadZH_SIG_ghz1_1_ghza1prime2_1E4_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_ghza2_1_JHUGen_JECDn", &p_HadZH_SIG_ghz1_1_ghza2_1_JHUGen_JECDn, &b_p_HadZH_SIG_ghz1_1_ghza2_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_ghza4_1_JHUGen_JECDn", &p_HadZH_SIG_ghz1_1_ghza4_1_JHUGen_JECDn, &b_p_HadZH_SIG_ghz1_1_ghza4_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_gha2_1_JHUGen_JECDn", &p_HadZH_SIG_ghz1_1_gha2_1_JHUGen_JECDn, &b_p_HadZH_SIG_ghz1_1_gha2_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_gha4_1_JHUGen_JECDn", &p_HadZH_SIG_ghz1_1_gha4_1_JHUGen_JECDn, &b_p_HadZH_SIG_ghz1_1_gha4_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_HadWH_SIG_ghw1_1_JHUGen_JECDn", &p_HadWH_SIG_ghw1_1_JHUGen_JECDn, &b_p_HadWH_SIG_ghw1_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_HadWH_SIG_ghw1prime2_1E4_JHUGen_JECDn", &p_HadWH_SIG_ghw1prime2_1E4_JHUGen_JECDn, &b_p_HadWH_SIG_ghw1prime2_1E4_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_HadWH_SIG_ghw2_1_JHUGen_JECDn", &p_HadWH_SIG_ghw2_1_JHUGen_JECDn, &b_p_HadWH_SIG_ghw2_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_HadWH_SIG_ghw4_1_JHUGen_JECDn", &p_HadWH_SIG_ghw4_1_JHUGen_JECDn, &b_p_HadWH_SIG_ghw4_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_HadWH_SIG_ghw1_1_ghw1prime2_1E4_JHUGen_JECDn", &p_HadWH_SIG_ghw1_1_ghw1prime2_1E4_JHUGen_JECDn, &b_p_HadWH_SIG_ghw1_1_ghw1prime2_1E4_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_HadWH_SIG_ghw1_1_ghw2_1_JHUGen_JECDn", &p_HadWH_SIG_ghw1_1_ghw2_1_JHUGen_JECDn, &b_p_HadWH_SIG_ghw1_1_ghw2_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_HadWH_SIG_ghw1_1_ghw4_1_JHUGen_JECDn", &p_HadWH_SIG_ghw1_1_ghw4_1_JHUGen_JECDn, &b_p_HadWH_SIG_ghw1_1_ghw4_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_ttHUndecayed_SIG_kappa_1_JHUGen_JECDn", &p_ttHUndecayed_SIG_kappa_1_JHUGen_JECDn, &b_p_ttHUndecayed_SIG_kappa_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_ttHUndecayed_SIG_kappatilde_1_JHUGen_JECDn", &p_ttHUndecayed_SIG_kappatilde_1_JHUGen_JECDn, &b_p_ttHUndecayed_SIG_kappatilde_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_ttHUndecayed_SIG_kappa_1_kappatilde_1_JHUGen_JECDn", &p_ttHUndecayed_SIG_kappa_1_kappatilde_1_JHUGen_JECDn, &b_p_ttHUndecayed_SIG_kappa_1_kappatilde_1_JHUGen_JECDn);
-   fChain->SetBranchAddress("p_bbH_SIG_kappa_1_JHUGen_JECDn", &p_bbH_SIG_kappa_1_JHUGen_JECDn, &b_p_bbH_SIG_kappa_1_JHUGen_JECDn);
+	// fChain->SetBranchAddress("p_HadWH_mavjj_true_JECUp", &p_HadWH_mavjj_true_JECUp, &b_p_HadWH_mavjj_true_JECUp);
+	// fChain->SetBranchAddress("p_HadWH_mavjj_true_JECDn", &p_HadWH_mavjj_true_JECDn, &b_p_HadWH_mavjj_true_JECDn);
+   // fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_JHUGen_JECDn", &p_HadZH_SIG_ghz1_1_JHUGen_JECDn, &b_p_HadZH_SIG_ghz1_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_HadZH_SIG_ghz1prime2_1E4_JHUGen_JECDn", &p_HadZH_SIG_ghz1prime2_1E4_JHUGen_JECDn, &b_p_HadZH_SIG_ghz1prime2_1E4_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_HadZH_SIG_ghz2_1_JHUGen_JECDn", &p_HadZH_SIG_ghz2_1_JHUGen_JECDn, &b_p_HadZH_SIG_ghz2_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_HadZH_SIG_ghz4_1_JHUGen_JECDn", &p_HadZH_SIG_ghz4_1_JHUGen_JECDn, &b_p_HadZH_SIG_ghz4_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_HadZH_SIG_ghza1prime2_1E4_JHUGen_JECDn", &p_HadZH_SIG_ghza1prime2_1E4_JHUGen_JECDn, &b_p_HadZH_SIG_ghza1prime2_1E4_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_HadZH_SIG_ghza2_1_JHUGen_JECDn", &p_HadZH_SIG_ghza2_1_JHUGen_JECDn, &b_p_HadZH_SIG_ghza2_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_HadZH_SIG_ghza4_1_JHUGen_JECDn", &p_HadZH_SIG_ghza4_1_JHUGen_JECDn, &b_p_HadZH_SIG_ghza4_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_HadZH_SIG_gha2_1_JHUGen_JECDn", &p_HadZH_SIG_gha2_1_JHUGen_JECDn, &b_p_HadZH_SIG_gha2_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_HadZH_SIG_gha4_1_JHUGen_JECDn", &p_HadZH_SIG_gha4_1_JHUGen_JECDn, &b_p_HadZH_SIG_gha4_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_ghz1prime2_1E4_JHUGen_JECDn", &p_HadZH_SIG_ghz1_1_ghz1prime2_1E4_JHUGen_JECDn, &b_p_HadZH_SIG_ghz1_1_ghz1prime2_1E4_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_ghz2_1_JHUGen_JECDn", &p_HadZH_SIG_ghz1_1_ghz2_1_JHUGen_JECDn, &b_p_HadZH_SIG_ghz1_1_ghz2_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_ghz4_1_JHUGen_JECDn", &p_HadZH_SIG_ghz1_1_ghz4_1_JHUGen_JECDn, &b_p_HadZH_SIG_ghz1_1_ghz4_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_ghza1prime2_1E4_JHUGen_JECDn", &p_HadZH_SIG_ghz1_1_ghza1prime2_1E4_JHUGen_JECDn, &b_p_HadZH_SIG_ghz1_1_ghza1prime2_1E4_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_ghza2_1_JHUGen_JECDn", &p_HadZH_SIG_ghz1_1_ghza2_1_JHUGen_JECDn, &b_p_HadZH_SIG_ghz1_1_ghza2_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_ghza4_1_JHUGen_JECDn", &p_HadZH_SIG_ghz1_1_ghza4_1_JHUGen_JECDn, &b_p_HadZH_SIG_ghz1_1_ghza4_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_gha2_1_JHUGen_JECDn", &p_HadZH_SIG_ghz1_1_gha2_1_JHUGen_JECDn, &b_p_HadZH_SIG_ghz1_1_gha2_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_HadZH_SIG_ghz1_1_gha4_1_JHUGen_JECDn", &p_HadZH_SIG_ghz1_1_gha4_1_JHUGen_JECDn, &b_p_HadZH_SIG_ghz1_1_gha4_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_HadWH_SIG_ghw1_1_JHUGen_JECDn", &p_HadWH_SIG_ghw1_1_JHUGen_JECDn, &b_p_HadWH_SIG_ghw1_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_HadWH_SIG_ghw1prime2_1E4_JHUGen_JECDn", &p_HadWH_SIG_ghw1prime2_1E4_JHUGen_JECDn, &b_p_HadWH_SIG_ghw1prime2_1E4_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_HadWH_SIG_ghw2_1_JHUGen_JECDn", &p_HadWH_SIG_ghw2_1_JHUGen_JECDn, &b_p_HadWH_SIG_ghw2_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_HadWH_SIG_ghw4_1_JHUGen_JECDn", &p_HadWH_SIG_ghw4_1_JHUGen_JECDn, &b_p_HadWH_SIG_ghw4_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_HadWH_SIG_ghw1_1_ghw1prime2_1E4_JHUGen_JECDn", &p_HadWH_SIG_ghw1_1_ghw1prime2_1E4_JHUGen_JECDn, &b_p_HadWH_SIG_ghw1_1_ghw1prime2_1E4_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_HadWH_SIG_ghw1_1_ghw2_1_JHUGen_JECDn", &p_HadWH_SIG_ghw1_1_ghw2_1_JHUGen_JECDn, &b_p_HadWH_SIG_ghw1_1_ghw2_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_HadWH_SIG_ghw1_1_ghw4_1_JHUGen_JECDn", &p_HadWH_SIG_ghw1_1_ghw4_1_JHUGen_JECDn, &b_p_HadWH_SIG_ghw1_1_ghw4_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_ttHUndecayed_SIG_kappa_1_JHUGen_JECDn", &p_ttHUndecayed_SIG_kappa_1_JHUGen_JECDn, &b_p_ttHUndecayed_SIG_kappa_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_ttHUndecayed_SIG_kappatilde_1_JHUGen_JECDn", &p_ttHUndecayed_SIG_kappatilde_1_JHUGen_JECDn, &b_p_ttHUndecayed_SIG_kappatilde_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_ttHUndecayed_SIG_kappa_1_kappatilde_1_JHUGen_JECDn", &p_ttHUndecayed_SIG_kappa_1_kappatilde_1_JHUGen_JECDn, &b_p_ttHUndecayed_SIG_kappa_1_kappatilde_1_JHUGen_JECDn);
+   // fChain->SetBranchAddress("p_bbH_SIG_kappa_1_JHUGen_JECDn", &p_bbH_SIG_kappa_1_JHUGen_JECDn, &b_p_bbH_SIG_kappa_1_JHUGen_JECDn);
    fChain->SetBranchAddress("p_LepZH_SIG_ghz1_1_JHUGen", &p_LepZH_SIG_ghz1_1_JHUGen, &b_p_LepZH_SIG_ghz1_1_JHUGen);
    fChain->SetBranchAddress("p_LepZH_SIG_ghz1prime2_1E4_JHUGen", &p_LepZH_SIG_ghz1prime2_1E4_JHUGen, &b_p_LepZH_SIG_ghz1prime2_1E4_JHUGen);
    fChain->SetBranchAddress("p_LepZH_SIG_ghz2_1_JHUGen", &p_LepZH_SIG_ghz2_1_JHUGen, &b_p_LepZH_SIG_ghz2_1_JHUGen);
@@ -1452,18 +1454,18 @@ void Tree::Init(TTree *tree, TString input_file_name)
    fChain->SetBranchAddress("p_JJEW_BKG_MCFM_JECNominal", &p_JJEW_BKG_MCFM_JECNominal, &b_p_JJEW_BKG_MCFM_JECNominal);
    fChain->SetBranchAddress("p_JJVBF_BKG_MCFM_JECNominal", &p_JJVBF_BKG_MCFM_JECNominal, &b_p_JJVBF_BKG_MCFM_JECNominal);
    fChain->SetBranchAddress("p_JJQCD_BKG_MCFM_JECNominal", &p_JJQCD_BKG_MCFM_JECNominal, &b_p_JJQCD_BKG_MCFM_JECNominal);
-   fChain->SetBranchAddress("p_JJEW_SIG_ghv1_1_MCFM_JECUp", &p_JJEW_SIG_ghv1_1_MCFM_JECUp, &b_p_JJEW_SIG_ghv1_1_MCFM_JECUp);
-   fChain->SetBranchAddress("p_JJEW_BSI_ghv1_1_MCFM_JECUp", &p_JJEW_BSI_ghv1_1_MCFM_JECUp, &b_p_JJEW_BSI_ghv1_1_MCFM_JECUp);
-   fChain->SetBranchAddress("p_JJEW_BSI_ghv1_i_MCFM_JECUp", &p_JJEW_BSI_ghv1_i_MCFM_JECUp, &b_p_JJEW_BSI_ghv1_i_MCFM_JECUp);
-   fChain->SetBranchAddress("p_JJEW_BKG_MCFM_JECUp", &p_JJEW_BKG_MCFM_JECUp, &b_p_JJEW_BKG_MCFM_JECUp);
-   fChain->SetBranchAddress("p_JJVBF_BKG_MCFM_JECUp", &p_JJVBF_BKG_MCFM_JECUp, &b_p_JJVBF_BKG_MCFM_JECUp);
-   fChain->SetBranchAddress("p_JJQCD_BKG_MCFM_JECUp", &p_JJQCD_BKG_MCFM_JECUp, &b_p_JJQCD_BKG_MCFM_JECUp);
-   fChain->SetBranchAddress("p_JJEW_SIG_ghv1_1_MCFM_JECDn", &p_JJEW_SIG_ghv1_1_MCFM_JECDn, &b_p_JJEW_SIG_ghv1_1_MCFM_JECDn);
-   fChain->SetBranchAddress("p_JJEW_BSI_ghv1_1_MCFM_JECDn", &p_JJEW_BSI_ghv1_1_MCFM_JECDn, &b_p_JJEW_BSI_ghv1_1_MCFM_JECDn);
-   fChain->SetBranchAddress("p_JJEW_BSI_ghv1_i_MCFM_JECDn", &p_JJEW_BSI_ghv1_i_MCFM_JECDn, &b_p_JJEW_BSI_ghv1_i_MCFM_JECDn);
-   fChain->SetBranchAddress("p_JJEW_BKG_MCFM_JECDn", &p_JJEW_BKG_MCFM_JECDn, &b_p_JJEW_BKG_MCFM_JECDn);
-   fChain->SetBranchAddress("p_JJVBF_BKG_MCFM_JECDn", &p_JJVBF_BKG_MCFM_JECDn, &b_p_JJVBF_BKG_MCFM_JECDn);
-   fChain->SetBranchAddress("p_JJQCD_BKG_MCFM_JECDn", &p_JJQCD_BKG_MCFM_JECDn, &b_p_JJQCD_BKG_MCFM_JECDn);
+   // fChain->SetBranchAddress("p_JJEW_SIG_ghv1_1_MCFM_JECUp", &p_JJEW_SIG_ghv1_1_MCFM_JECUp, &b_p_JJEW_SIG_ghv1_1_MCFM_JECUp);
+   // fChain->SetBranchAddress("p_JJEW_BSI_ghv1_1_MCFM_JECUp", &p_JJEW_BSI_ghv1_1_MCFM_JECUp, &b_p_JJEW_BSI_ghv1_1_MCFM_JECUp);
+   // fChain->SetBranchAddress("p_JJEW_BSI_ghv1_i_MCFM_JECUp", &p_JJEW_BSI_ghv1_i_MCFM_JECUp, &b_p_JJEW_BSI_ghv1_i_MCFM_JECUp);
+   // fChain->SetBranchAddress("p_JJEW_BKG_MCFM_JECUp", &p_JJEW_BKG_MCFM_JECUp, &b_p_JJEW_BKG_MCFM_JECUp);
+   // fChain->SetBranchAddress("p_JJVBF_BKG_MCFM_JECUp", &p_JJVBF_BKG_MCFM_JECUp, &b_p_JJVBF_BKG_MCFM_JECUp);
+   // fChain->SetBranchAddress("p_JJQCD_BKG_MCFM_JECUp", &p_JJQCD_BKG_MCFM_JECUp, &b_p_JJQCD_BKG_MCFM_JECUp);
+   // fChain->SetBranchAddress("p_JJEW_SIG_ghv1_1_MCFM_JECDn", &p_JJEW_SIG_ghv1_1_MCFM_JECDn, &b_p_JJEW_SIG_ghv1_1_MCFM_JECDn);
+   // fChain->SetBranchAddress("p_JJEW_BSI_ghv1_1_MCFM_JECDn", &p_JJEW_BSI_ghv1_1_MCFM_JECDn, &b_p_JJEW_BSI_ghv1_1_MCFM_JECDn);
+   // fChain->SetBranchAddress("p_JJEW_BSI_ghv1_i_MCFM_JECDn", &p_JJEW_BSI_ghv1_i_MCFM_JECDn, &b_p_JJEW_BSI_ghv1_i_MCFM_JECDn);
+   // fChain->SetBranchAddress("p_JJEW_BKG_MCFM_JECDn", &p_JJEW_BKG_MCFM_JECDn, &b_p_JJEW_BKG_MCFM_JECDn);
+   // fChain->SetBranchAddress("p_JJVBF_BKG_MCFM_JECDn", &p_JJVBF_BKG_MCFM_JECDn, &b_p_JJVBF_BKG_MCFM_JECDn);
+   // fChain->SetBranchAddress("p_JJQCD_BKG_MCFM_JECDn", &p_JJQCD_BKG_MCFM_JECDn, &b_p_JJQCD_BKG_MCFM_JECDn);
    fChain->SetBranchAddress("p_m4l_SIG", &p_m4l_SIG, &b_p_m4l_SIG);
    fChain->SetBranchAddress("p_m4l_BKG", &p_m4l_BKG, &b_p_m4l_BKG);
    fChain->SetBranchAddress("p_m4l_SIG_ScaleDown", &p_m4l_SIG_ScaleDown, &b_p_m4l_SIG_ScaleDown);
@@ -1476,10 +1478,10 @@ void Tree::Init(TTree *tree, TString input_file_name)
    fChain->SetBranchAddress("p_m4l_BKG_ResUp", &p_m4l_BKG_ResUp, &b_p_m4l_BKG_ResUp);
    fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal_BestDJJ", &p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal_BestDJJ, &b_p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal_BestDJJ);
    fChain->SetBranchAddress("p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal_BestDJJ", &p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal_BestDJJ, &b_p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal_BestDJJ);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_JHUGen_JECUp_BestDJJ", &p_JJVBF_SIG_ghv1_1_JHUGen_JECUp_BestDJJ, &b_p_JJVBF_SIG_ghv1_1_JHUGen_JECUp_BestDJJ);
-   fChain->SetBranchAddress("p_JJQCD_SIG_ghg2_1_JHUGen_JECUp_BestDJJ", &p_JJQCD_SIG_ghg2_1_JHUGen_JECUp_BestDJJ, &b_p_JJQCD_SIG_ghg2_1_JHUGen_JECUp_BestDJJ);
-   fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_JHUGen_JECDn_BestDJJ", &p_JJVBF_SIG_ghv1_1_JHUGen_JECDn_BestDJJ, &b_p_JJVBF_SIG_ghv1_1_JHUGen_JECDn_BestDJJ);
-   fChain->SetBranchAddress("p_JJQCD_SIG_ghg2_1_JHUGen_JECDn_BestDJJ", &p_JJQCD_SIG_ghg2_1_JHUGen_JECDn_BestDJJ, &b_p_JJQCD_SIG_ghg2_1_JHUGen_JECDn_BestDJJ);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_JHUGen_JECUp_BestDJJ", &p_JJVBF_SIG_ghv1_1_JHUGen_JECUp_BestDJJ, &b_p_JJVBF_SIG_ghv1_1_JHUGen_JECUp_BestDJJ);
+   // fChain->SetBranchAddress("p_JJQCD_SIG_ghg2_1_JHUGen_JECUp_BestDJJ", &p_JJQCD_SIG_ghg2_1_JHUGen_JECUp_BestDJJ, &b_p_JJQCD_SIG_ghg2_1_JHUGen_JECUp_BestDJJ);
+   // fChain->SetBranchAddress("p_JJVBF_SIG_ghv1_1_JHUGen_JECDn_BestDJJ", &p_JJVBF_SIG_ghv1_1_JHUGen_JECDn_BestDJJ, &b_p_JJVBF_SIG_ghv1_1_JHUGen_JECDn_BestDJJ);
+   // fChain->SetBranchAddress("p_JJQCD_SIG_ghg2_1_JHUGen_JECDn_BestDJJ", &p_JJQCD_SIG_ghg2_1_JHUGen_JECDn_BestDJJ, &b_p_JJQCD_SIG_ghg2_1_JHUGen_JECDn_BestDJJ);
    fChain->SetBranchAddress("JetPt", &JetPt, &b_JetPt);
    fChain->SetBranchAddress("JetEta", &JetEta, &b_JetEta);
    fChain->SetBranchAddress("JetPhi", &JetPhi, &b_JetPhi);
@@ -1520,7 +1522,7 @@ void Tree::Init(TTree *tree, TString input_file_name)
          fChain->SetBranchAddress("KFactor_QCD_ggZZ_PDFReplicaDn", &KFactor_QCD_ggZZ_PDFReplicaDn, &b_KFactor_QCD_ggZZ_PDFReplicaDn);
          fChain->SetBranchAddress("KFactor_QCD_ggZZ_PDFReplicaUp", &KFactor_QCD_ggZZ_PDFReplicaUp, &b_KFactor_QCD_ggZZ_PDFReplicaUp);
       }
-      
+
       if ( input_file_name.Contains("ZZTo4l") )
       {
          fChain->SetBranchAddress("KFactor_EW_qqZZ", &KFactor_EW_qqZZ, &b_KFactor_EW_qqZZ);
@@ -1529,7 +1531,7 @@ void Tree::Init(TTree *tree, TString input_file_name)
          fChain->SetBranchAddress("KFactor_QCD_qqZZ_M", &KFactor_QCD_qqZZ_M, &b_KFactor_QCD_qqZZ_M);
          fChain->SetBranchAddress("KFactor_QCD_qqZZ_Pt", &KFactor_QCD_qqZZ_Pt, &b_KFactor_QCD_qqZZ_Pt);
       }
-		
+
       if ( input_file_name.Contains("ggH") && !input_file_name.Contains("tune"))
       {
       	fChain->SetBranchAddress("ggH_NNLOPS_weight", &ggH_NNLOPS_weight, &b_ggH_NNLOPS_weight);
@@ -1556,7 +1558,8 @@ void Tree::Init(TTree *tree, TString input_file_name)
            fChain->SetBranchAddress("htxsHPt", &htxsHPt, &b_htxsHPt);
            fChain->SetBranchAddress("htxsNJets", &htxsNJets, &b_htxsNJets);
            fChain->SetBranchAddress("htxs_stage0_cat", &htxs_stage0_cat, &b_htxs_stage0_cat);
-           fChain->SetBranchAddress("htxs_stage1_cat", &htxs_stage1_cat, &b_htxs_stage1_cat);
+           fChain->SetBranchAddress("htxs_stage1p1_cat", &htxs_stage1p1_cat, &b_htxs_stage1p1_cat);
+           // fChain->SetBranchAddress("htxs_stage1p2_cat", &htxs_stage1p2_cat, &b_htxs_stage1p2_cat); // STXS 1.2 already there, can be used
        }
       fChain->SetBranchAddress("GenHMass", &GenHMass, &b_GenHMass);
       fChain->SetBranchAddress("GenHPt", &GenHPt, &b_GenHPt);
@@ -1603,7 +1606,7 @@ void Tree::Init(TTree *tree, TString input_file_name)
       fChain->SetBranchAddress("LHEweight_QCDscale_muR2_muF0p5", &LHEweight_QCDscale_muR2_muF0p5, &b_LHEweight_QCDscale_muR2_muF0p5);
       fChain->SetBranchAddress("LHEweight_QCDscale_muR0p5_muF1", &LHEweight_QCDscale_muR0p5_muF1, &b_LHEweight_QCDscale_muR0p5_muF1);
       fChain->SetBranchAddress("LHEweight_QCDscale_muR0p5_muF2", &LHEweight_QCDscale_muR0p5_muF2, &b_LHEweight_QCDscale_muR0p5_muF2);
-      fChain->SetBranchAddress("LHEweight_QCDscale_muR0p5_muF0p5", &LHEweight_QCDscale_muR0p5_muF0p5, &b_LHEweight_QCDscale_muR0p5_muF0p5);		
+      fChain->SetBranchAddress("LHEweight_QCDscale_muR0p5_muF0p5", &LHEweight_QCDscale_muR0p5_muF0p5, &b_LHEweight_QCDscale_muR0p5_muF0p5);
       fChain->SetBranchAddress("LHEweight_PDFVariation_Up", &LHEweight_PDFVariation_Up, &b_LHEweight_PDFVariation_Up);
       fChain->SetBranchAddress("LHEweight_PDFVariation_Dn", &LHEweight_PDFVariation_Dn, &b_LHEweight_PDFVariation_Dn);
       fChain->SetBranchAddress("LHEweight_AsMZ_Up", &LHEweight_AsMZ_Up, &b_LHEweight_AsMZ_Up);
@@ -1621,7 +1624,7 @@ void Tree::Init(TTree *tree, TString input_file_name)
       fChain->SetBranchAddress("PythiaWeight_isr_muR4", &PythiaWeight_isr_muR4, &b_PythiaWeight_isr_muR4);
       fChain->SetBranchAddress("PythiaWeight_fsr_muR4", &PythiaWeight_fsr_muR4, &b_PythiaWeight_fsr_muR4);
    }
-   
+
    Notify();
 }
 

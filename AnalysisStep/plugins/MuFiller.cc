@@ -128,7 +128,7 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
          dz  = fabs(l.muonBestTrack()->dz(vertex->position()));
       }
       
-      
+
 //=================
 // Begin MVA reader
 //=================
@@ -188,8 +188,9 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 //       cout << BDT << endl;
       
       
-      bool isBDT = false;
-      // New WPs at 96-99.7% of efficiency in low-high pT respectively 
+      bool isBDT = true;
+      // Save also BDT distributions, without any cut
+      /*
       if ( setup == 2016 )
       {  
          isBDT = ((pt < 10 && abs(eta) < 1.2 && BDT > -0.798) || (pt < 10 && abs(eta) >= 1.2 && BDT > 0.226)
@@ -209,11 +210,11 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       {
          std::cerr << "[ERROR] MuFiller: no MVA setup for: " << setup << " year!" << std::endl;
       }
-
+      */
 //=================
 // End MVA reader
 //================= 
-      
+
       
       //--- Trigger matching
       bool HLTMatch = false;

@@ -7,13 +7,13 @@ class Settings
 {
 
 public:
-	
+
 	Settings();
 	~Settings();
-   
+
    enum _blindings { fullyblind = 0, blindabove_110 = 1, blindbelow_150 = 2, blind_110_150 = 3, unblinded = 4 };
    enum _final_state { fs4e = 0, fs4mu = 1, fs2e2mu = 2, fs2mu2e = 3, fs4l = 4, MAX_NUM_OF_FINAL_STATES };
-   
+
    enum _category
    {
       untagged          = 0,
@@ -27,7 +27,7 @@ public:
       inclusive         = 8,
       MAX_NUM_OF_CATEGORIES
    };
-    
+
    enum _category_STXS
    {
       ggH_0J_PTH_0_10       = 0,
@@ -54,7 +54,7 @@ public:
       ttH_Had               = 21,
       MAX_NUM_OF_STXS_CATEGORIES
    };
-   
+
    enum _1D_plot_name
    {
       M4lMain           = 0,
@@ -98,15 +98,15 @@ public:
       M4l_110150_HighKD = 38,
       MAX_NUM_OF_1D_PLOT_NAMES
    };
-   
+
    enum _2D_plot_name
    {
       MZ1vsMZ2           = 0,
       MZ1vsMZ2_M4L118130 = 1,
       MAX_NUM_OF_2D_PLOT_NAMES
    };
-   
-   enum _2D_error_plot_name 
+
+   enum _2D_error_plot_name
    {
       KDvsM4l            = 0,
       KDvsM4lZoomed      = 1,
@@ -120,7 +120,7 @@ public:
       DVHDECvsM4lZoomed  = 9,
       MAX_NUM_OF_2D_ERROR_PLOT_NAMES
    };
-   
+
    enum _production_modes
 	{
 		ggH     = 0,
@@ -135,12 +135,13 @@ public:
 		tqH     = 9,
 		qqToZZ  = 10,
 		ggToZZ  = 11,
+		ttZZ    = 12,
 		MAX_NUM_OF_PRODUCTION_MODES
-		
+
 	};
-   
+
    enum _process
-   { 
+   {
       Data    = 0,
       H125    = 1,
       H125ggH = 2,
@@ -151,11 +152,12 @@ public:
       H125tqH = 7,
       qqZZ    = 8,
       ggZZ    = 9,
-      Zjets   = 10,
-      other   = 11,
+			VVV     = 10,
+      Zjets   = 11,
+      other   = 12,
       MAX_NUM_OF_PROCESSES
    };
-    
+
     enum _process_STXS_stage1p1
     {
       bin_ggH_0J_PTH_0_10       = 0,
@@ -167,7 +169,7 @@ public:
       bin_ggH_2J_PTH_60_120     = 6,
       bin_ggH_2J_PTH_120_200    = 7,
       bin_ggH_PTH_200           = 8,
-        
+
       bin_ggH_VBF               = 9,
       bin_VH_had                = 10,
       bin_VBF_GT200             = 11,
@@ -175,18 +177,18 @@ public:
       bin_VBF_2j_mjj_GT700_2j   = 13,
       bin_VBF_2j_mjj_GT350_3j   = 14,
       bin_VBF_Rest              = 15,
-    
+
       bin_VH_Lep_0_150          = 16,
       bin_VH_Lep_GT150          = 17,
-        
+
       bin_bbH                   = 18,
       bin_ttH                   = 19,
       bin_tH                    = 20,
-        
+
       MAX_NUM_OF_STXS_BINS
     };
 
-   
+
    enum _process_yields
    {
       yData      = 0,
@@ -251,7 +253,7 @@ public:
       yttbar     = 59,
       MAX_NUM_OF_PROCESSES_YIELDS
    };
-   
+
    static const int num_of_production_modes    = MAX_NUM_OF_PRODUCTION_MODES;
    static const int num_of_processes           = MAX_NUM_OF_PROCESSES;
    static const int num_of_STXS_bins           = MAX_NUM_OF_STXS_BINS;
@@ -262,8 +264,8 @@ public:
    static const int num_of_1D_plot_names       = MAX_NUM_OF_1D_PLOT_NAMES;
    static const int num_of_2D_plot_names       = MAX_NUM_OF_2D_PLOT_NAMES;
    static const int num_of_2D_error_plot_names = MAX_NUM_OF_2D_ERROR_PLOT_NAMES;
-   
+
    private:
-      
+
 };
 #endif

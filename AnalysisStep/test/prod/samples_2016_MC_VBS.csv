@@ -18,6 +18,7 @@ VBFTo2e2muJJ_0PMH125Contin_phantom128_2016,,8.357E-04,,,/VBFToHiggs0PMContinToZZ
 VBFTo4eJJ_0PMH125Contin_phantom128_2016   ,,4.180E-04,,,/VBFToHiggs0PMContinToZZTo4eJJ_M125_GaSM_13TeV_phantom_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM   ,dbs,,1,GENXSEC=4.180E-04;GENBR=1;PROCESS_CR=False;LEPTON_SETUP=2016,RecoProbabilities.py;LHEProbabilities_VBF_BSI_0PM_H125_PhantomMCFM.py,
 VBFTo4muJJ_0PMH125Contin_phantom128_2016  ,,4.180E-04,,,/VBFToHiggs0PMContinToZZTo4muJJ_M125_GaSM_13TeV_phantom_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM  ,dbs,,1,GENXSEC=4.180E-04;GENBR=1;PROCESS_CR=False;LEPTON_SETUP=2016,RecoProbabilities.py;LHEProbabilities_VBF_BSI_0PM_H125_PhantomMCFM.py,
 
-
+### ggZZ012jet new 
+ggZZnew_012jet_2016,,0.00356,      ,,/eos/user/c/coli/crab_output/nobornWW/crab_AllMid_ggZZ012j_MiniAODv2_Summer16_v2/200112_221140/0000/,local,,1,GENXSEC=0.00356;GENBR=1;PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;LEPTON_SETUP=2016,RecoProbabilities.py, 
 
 

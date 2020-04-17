@@ -249,7 +249,7 @@ void LeptonIsoHelper::fsrIso(const reco::PFCandidate* photon, edm::Handle<edm::V
 float LeptonIsoHelper::isoCut(const reco::Candidate* d) { 
   // FIXME: cut is hardcoded here
   float ele_iso_cut,mu_iso_cut;
-  mu_iso_cut  = 99999.;
+  mu_iso_cut  = 0.35;
   ele_iso_cut = 99999.;
 
   return (d->isMuon()?mu_iso_cut:ele_iso_cut);

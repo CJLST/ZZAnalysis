@@ -5,7 +5,7 @@
 
 // ROOT
 #include "TApplication.h"
-#include "TROOT.h"
+#include <TROOT.h>
 #include "TStyle.h"
 #include "TCanvas.h"
 #include "TChain.h"
@@ -14,8 +14,8 @@
 #include "TStyle.h"
 
 // My own files
-#include <ZZAnalysis/AnalysisStep/test/Plotter_v2/include/Plotter.h>
-#include <ZZAnalysis/AnalysisStep/test/Plotter_v2/include/Settings.h>
+#include <ZZAnalysis/AnalysisStep/test/Plotter_v2/include/Yields.h>
+#include <ZZAnalysis/AnalysisStep/test/Plotter_v2/include/Variables.h>
 #include <ZZAnalysis/AnalysisStep/test/Plotter_v2/src/setTDRStyle.cpp>
 
 using namespace std;
@@ -24,301 +24,154 @@ int main( int argc, char *argv[] )
 {
    setTDRStyle();
    
-   TString eos_path  = "/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/";
-   
-   // TString path_2018 = eos_path + "MC_2018/";
-   // TString path_2017 = eos_path + "MC_2017/";
-   TString path_2016 = eos_path + "MC_2016/";
+   TString path = "/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased/";
    TString file_name = "/ZZ4lAnalysis.root";
+   TString file_name_FR = "/FakeRates_SS_2016.root";
    
-   // TString Data_2018    = eos_path + "Data_2018/AllData"        + file_name;
-   // TString Data_2017    = eos_path + "Data_2017/AllData"        + file_name;
-   TString Data_2016    = eos_path + "Data_2016/AllData"        + file_name;
+   //Data
+   TString Data    = path + "Data_2016/AllData"        + file_name;
+   TString FakeRates   = "/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased/FRfiles" + file_name_FR;
    
-   // TString FR_2018      = "../../data/FakeRates/FakeRates_SS_2018_Legacy.root";
-   // TString FR_2017      = "../../data/FakeRates/FakeRates_SS_2017_Legacy.root";
-   TString FR_2016      = "../../data/FakeRates/FakeRates_SS_2016_Legacy.root";
+   // Signal
+   // TString ggH120      = path + "ggH120" + file_name;
+   // TString ggH124      = path + "ggH124" + file_name;
+   TString ggH125      = path + "MC_2016/"+ "ggH125" + file_name;
+   // TString ggH126      = path + "MC_2016/"+ "ggH126" + file_name;
+   // TString ggH130      = path + "MC_2016/"+ "ggH130" + file_name;
+               
+   // TString VBFH120     = path + "MC_2016/"+ "VBFH120" + file_name;
+   // TString VBFH124     = path + "MC_2016/"+ "VBFH124" + file_name;
+   TString VBFH125     = path + "MC_2016/"+ "VBFH125" + file_name;
+   // TString VBFH126     = path + "MC_2016/"+ "VBFH126" + file_name;
+   // TString VBFH130     = path + "MC_2016/"+ "VBFH130" + file_name;
    
-   // TString ggH125_2018      = path_2018 + "ggH125"     + file_name;
-   // TString VBFH125_2018     = path_2018 + "VBFH125"    + file_name;
-   // TString WpH125_2018      = path_2018 + "WplusH125"  + file_name;
-   // TString WmH125_2018      = path_2018 + "WminusH125" + file_name;
-   // TString ZH125_2018       = path_2018 + "ZH125"      + file_name;
-   // TString ttH125_2018      = path_2018 + "ttH125"     + file_name;
-   // TString bbH125_2018      = path_2018 + "bbH125"     + file_name;
-   // TString tqH125_2018      = path_2018 + "tqH125"     + file_name;
+   // TString WpH120      = path + "MC_2016/"+ "WplusH120" + file_name;
+   // TString WpH124      = path + "MC_2016/"+ "WplusH124" + file_name;
+   TString WpH125      = path + "MC_2016/"+ "WplusH125" + file_name;
+   // TString WpH126      = path + "MC_2016/"+ "WplusH126" + file_name;
+   // TString WpH130      = path + "MC_2016/"+ "WplusH130" + file_name;
+    
+   // TString WmH120      = path + "MC_2016/"+ "WminusH120" + file_name;
+   // TString WmH124      = path + "MC_2016/"+ "WminusH124" + file_name;
+   TString WmH125      = path + "MC_2016/"+ "WminusH125" + file_name;
+   // TString WmH126      = path + "MC_2016/"+ "WminusH126" + file_name;
+   // TString WmH130      = path + "MC_2016/"+ "WminusH130" + file_name;
+      
+   // TString ZH120       = path + "MC_2016/"+ "ZH120" + file_name;
+   // TString ZH124       = path + "MC_2016/"+ "ZH124" + file_name;
+   TString ZH125       = path + "MC_2016/"+ "ZH125" + file_name;
+   // TString ZH126       = path + "MC_2016/"+ "ZH126" + file_name;
+   // TString ZH130       = path + "MC_2016/"+ "ZH130" + file_name;
    
-   // TString ZZTo4l_2018      = path_2018 + "ZZTo4lext1"                 + file_name;
-   // TString ggZZ4e_2018      = path_2018 + "ggTo4e_Contin_MCFM701"      + file_name;
-   // TString ggZZ4mu_2018     = path_2018 + "ggTo4mu_Contin_MCFM701"     + file_name;
-   // TString ggZZ4tau_2018    = path_2018 + "ggTo4tau_Contin_MCFM701"    + file_name;
-   // TString ggZZ2e2mu_2018   = path_2018 + "ggTo2e2mu_Contin_MCFM701"   + file_name;
-   // TString ggZZ2e2tau_2018  = path_2018 + "ggTo2e2tau_Contin_MCFM701"  + file_name;
-   // TString ggZZ2mu2tau_2018 = path_2018 + "ggTo2mu2tau_Contin_MCFM701" + file_name;
+   // TString ttH120      = path + "MC_2016/"+ "ttH120" + file_name;
+   // TString ttH124      = path + "MC_2016/"+ "ttH124" + file_name;
+   TString ttH125      = path + "MC_2016/"+ "ttH125" + file_name;
+   // TString ttH126      = path + "MC_2016/"+ "ttH126" + file_name;
+   // TString ttH130      = path + "MC_2016/"+ "ttH130" + file_name;
    
-   // TString ggH125_2017      = path_2017 + "ggH125"     + file_name;
-   // TString VBFH125_2017     = path_2017 + "VBFH125"    + file_name;
-   // TString WpH125_2017      = path_2017 + "WplusH125"  + file_name;
-   // TString WmH125_2017      = path_2017 + "WminusH125" + file_name;
-   // TString ZH125_2017       = path_2017 + "ZH125"      + file_name;
-   // TString ttH125_2017      = path_2017 + "ttH125"     + file_name;
-   // TString bbH125_2017      = path_2017 + "bbH125"     + file_name;
-   // TString tqH125_2017      = path_2017 + "tqH125"     + file_name;
+   // TString bbH120      = path + "MC_2016/"+ "bbH120" + file_name;
+ //   TString bbH124      = path + "MC_2016/"+ "bbH124" + file_name;
+   TString bbH125      = path + "MC_2016/"+ "bbH125" + file_name;
+   // TString bbH126      = path + "MC_2016/"+ "bbH126" + file_name;
+   // TString bbH130      = path + "MC_2016/"+ "bbH130" + file_name;
    
-   // TString ZZTo4l_2017      = path_2017 + "ZZTo4l"                     + file_name;
-   // TString ggZZ4e_2017      = path_2017 + "ggTo4e_Contin_MCFM701"      + file_name;
-   // TString ggZZ4mu_2017     = path_2017 + "ggTo4mu_Contin_MCFM701"     + file_name;
-   // TString ggZZ4tau_2017    = path_2017 + "ggTo4tau_Contin_MCFM701"    + file_name;
-   // TString ggZZ2e2mu_2017   = path_2017 + "ggTo2e2mu_Contin_MCFM701"   + file_name;
-   // TString ggZZ2e2tau_2017  = path_2017 + "ggTo2e2tau_Contin_MCFM701"  + file_name;
-   // TString ggZZ2mu2tau_2017 = path_2017 + "ggTo2mu2tau_Contin_MCFM701" + file_name;
+   TString tqH125      = path + "MC_2016/"+ "tqH125" + file_name;
+
+   // Backgrounds
+   TString ZZTo4l      = path + "MC_2016/"+ "ZZTo4l" + file_name;
+   TString ggZZ4e      = path + "MC_2016/"+ "ggTo4e_Contin_MCFM701" + file_name;
+   TString ggZZ4mu     = path + "MC_2016/"+ "ggTo4mu_Contin_MCFM701" + file_name;
+   TString ggZZ4tau    = path + "MC_2016/"+ "ggTo4tau_Contin_MCFM701" + file_name;
+   TString ggZZ2e2mu   = path + "MC_2016/"+ "ggTo2e2mu_Contin_MCFM701" + file_name;
+   TString ggZZ2e2tau  = path + "MC_2016/"+ "ggTo2e2tau_Contin_MCFM701" + file_name;
+   TString ggZZ2mu2tau = path + "MC_2016/"+ "ggTo2mu2tau_Contin_MCFM701" + file_name;
    
-   TString ggH125_2016      = path_2016 + "ggH125"     + file_name;
-   TString VBFH125_2016     = path_2016 + "VBFH125"    + file_name;
-   TString WpH125_2016      = path_2016 + "WplusH125"  + file_name;
-   TString WmH125_2016      = path_2016 + "WminusH125" + file_name;
-   TString ZH125_2016       = path_2016 + "ZH125"      + file_name;
-   TString ttH125_2016      = path_2016 + "ttH125"     + file_name;
-   TString bbH125_2016      = path_2016 + "bbH125"     + file_name;
-   TString tqH125_2016      = path_2016 + "tqH125"     + file_name;
+   double lumi = 35.9;
+   int year = 2016;
+   Yields *yields = new Yields(lumi);
    
-   TString ZZTo4l_2016      = path_2016 + "ZZTo4l"                     + file_name;
-   TString ggZZ4e_2016      = path_2016 + "ggTo4e_Contin_MCFM701"      + file_name;
-   TString ggZZ4mu_2016     = path_2016 + "ggTo4mu_Contin_MCFM701"     + file_name;
-   TString ggZZ4tau_2016    = path_2016 + "ggTo4tau_Contin_MCFM701"    + file_name;
-   TString ggZZ2e2mu_2016   = path_2016 + "ggTo2e2mu_Contin_MCFM701"   + file_name;
-   TString ggZZ2e2tau_2016  = path_2016 + "ggTo2e2tau_Contin_MCFM701"  + file_name;
-   TString ggZZ2mu2tau_2016 = path_2016 + "ggTo2mu2tau_Contin_MCFM701" + file_name;
-
-   Plotter *plotter = new Plotter( );
-
-   plotter->SetBlinding(110, 138, 300, 1200);
-
-   plotter->MakeHistograms(Data_2016,2016);
-   // plotter->MakeHistograms(Data_2017,2017);
-   // plotter->MakeHistograms(Data_2018,2018);
-
-   plotter->MakeHistograms(ggH125_2016,2016);
-   // plotter->MakeHistograms(ggH125_2017,2017);
-   // plotter->MakeHistograms(ggH125_2018,2018);
-
-   plotter->MakeHistograms(VBFH125_2016,2016);
-   // plotter->MakeHistograms(VBFH125_2017,2017);
-   // plotter->MakeHistograms(VBFH125_2018,2018);
-
-   plotter->MakeHistograms(ZH125_2016,2016);
-   // plotter->MakeHistograms(ZH125_2017,2017);
-   // plotter->MakeHistograms(ZH125_2018,2018);
-
-   plotter->MakeHistograms(ttH125_2016,2016);
-   // plotter->MakeHistograms(ttH125_2017,2017);
-   // plotter->MakeHistograms(ttH125_2018,2018);
-
-   plotter->MakeHistograms(bbH125_2016,2016);
-   // plotter->MakeHistograms(bbH125_2017,2017);
-   // plotter->MakeHistograms(bbH125_2018,2018);
-
-   plotter->MakeHistograms(tqH125_2016,2016);
-   // plotter->MakeHistograms(tqH125_2017,2017);
-   // plotter->MakeHistograms(tqH125_2018,2018);
-
-   plotter->MakeHistograms(WpH125_2016,2016);
-   // plotter->MakeHistograms(WpH125_2017,2017);
-   // plotter->MakeHistograms(WpH125_2018,2018);
-
-   plotter->MakeHistograms(WmH125_2016,2016);
-   // plotter->MakeHistograms(WmH125_2017,2017);
-   // plotter->MakeHistograms(WmH125_2018,2018);
-
-   plotter->MakeHistograms(ZZTo4l_2016,2016);
-   // plotter->MakeHistograms(ZZTo4l_2017,2017);
-   // plotter->MakeHistograms(ZZTo4l_2018,2018);
-
-   plotter->MakeHistograms(ggZZ4e_2016,2016);
-   // plotter->MakeHistograms(ggZZ4e_2017,2017);
-   // plotter->MakeHistograms(ggZZ4e_2018,2018);
-
-   plotter->MakeHistograms(ggZZ4mu_2016,2016);
-   // plotter->MakeHistograms(ggZZ4mu_2017,2017);
-   // plotter->MakeHistograms(ggZZ4mu_2018,2018);
-
-   plotter->MakeHistograms(ggZZ4tau_2016,2016);
-   // plotter->MakeHistograms(ggZZ4tau_2017,2017);
-   // plotter->MakeHistograms(ggZZ4tau_2018,2018);
-
-   plotter->MakeHistograms(ggZZ2e2mu_2016,2016);
-   // plotter->MakeHistograms(ggZZ2e2mu_2017,2017);
-   // plotter->MakeHistograms(ggZZ2e2mu_2018,2018);
-
-   plotter->MakeHistograms(ggZZ2e2tau_2016,2016);
-   // plotter->MakeHistograms(ggZZ2e2tau_2017,2017);
-   // plotter->MakeHistograms(ggZZ2e2tau_2018,2018);
-
-   plotter->MakeHistograms(ggZZ2mu2tau_2016,2016);
-   // plotter->MakeHistograms(ggZZ2mu2tau_2017,2017);
-   // plotter->MakeHistograms(ggZZ2mu2tau_2018,2018);
-
-
-   plotter->MakeHistogramsZX(Data_2016, FR_2016, 2016);
-   // plotter->MakeHistogramsZX(Data_2017, FR_2017, 2017);
-   // plotter->MakeHistogramsZX(Data_2018, FR_2018, 2018);
+//===============
+// Produce plots 
+//===============
    
-   plotter->MakeM4lZX();
+   yields->MakeHistograms(Data, year);
 
-   plotter->FillInclusive();
+   // yields->MakeHistograms(ggH120, year);
+   // yields->MakeHistograms(ggH124, year);
+   yields->MakeHistograms(ggH125, year);
+   // yields->MakeHistograms(ggH126, year);
+   // yields->MakeHistograms(ggH130, year);
 
-   plotter->Save();
+   // yields->MakeHistograms(VBFH120, year);
+   // yields->MakeHistograms(VBFH124, year);
+   yields->MakeHistograms(VBFH125, year);
+   // yields->MakeHistograms(VBFH126, year);
+   // yields->MakeHistograms(VBFH130, year);
 
+   // yields->MakeHistograms(ZH120, year);
+   // yields->MakeHistograms(ZH124, year);
+   yields->MakeHistograms(ZH125, year);
+   // yields->MakeHistograms(ZH126, year);
+   // yields->MakeHistograms(ZH130, year);
 
-//===========================
-// Plotting of blinded plots
-//===========================
-//   plotter->GetHistos( "Blinded" );
-//
-//   plotter->plot_1D_all_cat("Blinded", "M4lMain",       "Plots/Blinded");
-//   plotter->plot_1D_all_cat("Blinded", "M4lMainZoomed", "Plots/Blinded");
-//
-//   plotter->plot_1D_all_fs("Blinded", "M4lMain",       "Plots/Blinded");
-//   plotter->plot_1D_all_fs("Blinded", "M4lMainZoomed", "Plots/Blinded");
-//
-//   plotter->plot_1D_single("Blinded", "M4lMainHighMass", "Plots/Blinded", Settings::fs4l, Settings::inclusive);
-//   plotter->plot_1D_single("Blinded", "MZ1",             "Plots/Blinded", Settings::fs4l, Settings::inclusive);
-//   plotter->plot_1D_single("Blinded", "MZ2",             "Plots/Blinded", Settings::fs4l, Settings::inclusive);
-//   plotter->plot_1D_single("Blinded", "MZ1",             "Plots/Blinded", Settings::fs4e, Settings::inclusive);
-//   plotter->plot_1D_single("Blinded", "MZ2",             "Plots/Blinded", Settings::fs4e, Settings::inclusive);
-//   plotter->plot_1D_single("Blinded", "MZ1",             "Plots/Blinded", Settings::fs4mu, Settings::inclusive);
-//   plotter->plot_1D_single("Blinded", "MZ2",             "Plots/Blinded", Settings::fs4mu, Settings::inclusive);
-//   plotter->plot_1D_single("Blinded", "MZ1",             "Plots/Blinded", Settings::fs2e2mu, Settings::inclusive);
-//   plotter->plot_1D_single("Blinded", "MZ2",             "Plots/Blinded", Settings::fs2e2mu, Settings::inclusive);
-//
-//   plotter->plot_1D_single("Blinded", "KD", "Plots/Blinded", Settings::fs4l, Settings::inclusive);
-//   plotter->plot_1D_single("Blinded", "KD", "Plots/Blinded", Settings::fs4e, Settings::inclusive);
-//   plotter->plot_1D_single("Blinded", "KD", "Plots/Blinded", Settings::fs4mu, Settings::inclusive);
-//   plotter->plot_1D_single("Blinded", "KD", "Plots/Blinded", Settings::fs2e2mu, Settings::inclusive);
-//
-//   plotter->plot_1D_single("Blinded", "DVBFDEC", "Plots/Blinded", Settings::fs4l, Settings::VBF_2j_tagged);
-//   plotter->plot_1D_single("Blinded", "DVHDEC",  "Plots/Blinded", Settings::fs4l, Settings::VH_hadron_tagged);
-//
-//   plotter->plot_1D_single("Blinded", "D1jet", "Plots/Blinded", Settings::fs4l, Settings::inclusive);
-//   plotter->plot_1D_single("Blinded", "D2jet", "Plots/Blinded", Settings::fs4l, Settings::inclusive);
-//   plotter->plot_1D_single("Blinded", "DVH",   "Plots/Blinded", Settings::fs4l, Settings::inclusive);
-//
-//   plotter->plot_2D_single("Blinded", "MZ1vsMZ2", "Plots/Blinded", Settings::inclusive);
-//
-//   plotter->plot_2D_error_single("Blinded", "KDvsM4l",          "Plots/Blinded", Settings::inclusive);
-//   plotter->plot_2D_error_single("Blinded", "KDvsM4lZoomed",    "Plots/Blinded", Settings::inclusive);
-//   plotter->plot_2D_error_single("Blinded", "KDvsM4lHighMass",  "Plots/Blinded", Settings::inclusive);
-//   plotter->plot_2D_error_single("Blinded", "D1jetvsM4lZoomed", "Plots/Blinded", Settings::inclusive);
-//   plotter->plot_2D_error_single("Blinded", "D2jetvsM4lZoomed", "Plots/Blinded", Settings::inclusive);
-//   plotter->plot_2D_error_single("Blinded", "DWHvsM4lZoomed",   "Plots/Blinded", Settings::inclusive);
-//   plotter->plot_2D_error_single("Blinded", "DZHvsM4lZoomed",   "Plots/Blinded", Settings::inclusive);
-//   plotter->plot_2D_error_single("Blinded", "DVHvsM4lZoomed",   "Plots/Blinded", Settings::inclusive);
+   // yields->MakeHistograms(WpH120, year);
+   // yields->MakeHistograms(WpH124, year);
+   yields->MakeHistograms(WpH125, year);
+   // yields->MakeHistograms(WpH126, year);
+   // yields->MakeHistograms(WpH130, year);
 
-//   plotter->plot_2D_error_all_cat("Blinded", "KDvsM4lZoomed",    "Plots/Blinded");
-//   plotter->plot_2D_error_all_cat("Blinded", "D1jetvsM4lZoomed", "Plots/Blinded");
-//   plotter->plot_2D_error_all_cat("Blinded", "D2jetvsM4lZoomed", "Plots/Blinded");
-//   plotter->plot_2D_error_all_cat("Blinded", "DWHvsM4lZoomed",   "Plots/Blinded");
-//   plotter->plot_2D_error_all_cat("Blinded", "DZHvsM4lZoomed",   "Plots/Blinded");
-//   plotter->plot_2D_error_all_cat("Blinded", "DVHvsM4lZoomed",   "Plots/Blinded");
+   // yields->MakeHistograms(WmH120, year);
+   // yields->MakeHistograms(WmH124, year);
+   yields->MakeHistograms(WmH125, year);
+   // yields->MakeHistograms(WmH126, year);
+   // yields->MakeHistograms(WmH130, year);
 
+   // yields->MakeHistograms(ttH120, year);
+   // yields->MakeHistograms(ttH124, year);
+   yields->MakeHistograms(ttH125, year);
+   // yields->MakeHistograms(ttH126, year);
+   // yields->MakeHistograms(ttH130, year);
+
+// yields->MakeHistograms(bbH120, year);
+   // yields->MakeHistograms(bbH124, year);
+   yields->MakeHistograms(bbH125, year);
+   // yields->MakeHistograms(bbH126, year);
+   // yields->MakeHistograms(bbH130, year);
+
+   yields->MakeHistograms(tqH125, year);
+
+   yields->MakeHistograms(ZZTo4l, year);
+   yields->MakeHistograms(ggZZ4e, year);
+   yields->MakeHistograms(ggZZ4mu, year);
+   yields->MakeHistograms(ggZZ4tau, year);
+   yields->MakeHistograms(ggZZ2e2mu, year);
+   yields->MakeHistograms(ggZZ2e2tau, year);
+   yields->MakeHistograms(ggZZ2mu2tau, year);
+
+   yields->FillInclusive();
+
+   yields->Save();
+   
+//==============
+// Print Yields
+//==============
+   
+   yields->GetHistos("Yields");
+   yields->Calculate_SS_ZX_Yields( Data, FakeRates);
+   yields->Print("Yields");
+
+   yields->Print("Yields", 118., 130.);
+   yields->Print("Yields", 105., 140.);
+
+   yields->PrintLatexTables("Yields", 118., 130.);
+   yields->FillGraphs("Yields", 105., 140., "Q");
+   yields->PrepareYamlFiles("Yields", "13", 105., 140.);
+   
+//==========================================
+// Produce data ROOT files for datacard maker
+//==========================================
+   yields->ProduceDataROOTFiles( Data, "DataROOTFiles" );
    
    
-//=============================
-// Plotting of unblinded plots
-//=============================
-
-   setTDRStyle(); // Needed to reset margins set by 2D histograms
-
-   plotter->GetHistos("Unblinded");
-
-   plotter->plot_Purity("Unblinded", "Plots/Unblinded");setTDRStyle();
-
-   plotter->plot_STXS("Unblinded", "Plots/Unblinded");setTDRStyle();
-
-   plotter->plot_1D_all_cat("Unblinded", "M4lMain",       "Plots/Unblinded");
-   plotter->plot_1D_all_cat("Unblinded", "M4lMainZoomed", "Plots/Unblinded");
-
-   plotter->plot_1D_all_fs("Unblinded", "M4lMain",       "Plots/Unblinded");
-   plotter->plot_1D_all_fs("Unblinded", "M4lMainZoomed", "Plots/Unblinded");
-
-   plotter->plot_1D_single("Unblinded", "M4lMainHighMass", "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-   plotter->plot_1D_single("Unblinded", "MZ1",             "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-   plotter->plot_1D_single("Unblinded", "MZ2",             "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-   plotter->plot_1D_single("Unblinded", "MZ1_M4L118130",   "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-   plotter->plot_1D_single("Unblinded", "MZ2_M4L118130",   "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-   plotter->plot_2D_single("Unblinded", "MZ1vsMZ2",           "Plots/Unblinded", Settings::inclusive);
-   plotter->plot_2D_single("Unblinded", "MZ1vsMZ2_M4L118130", "Plots/Unblinded", Settings::inclusive);setTDRStyle();
-
-   plotter->plot_1D_single("Unblinded", "KD",               "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-   plotter->plot_1D_single("Unblinded", "DVBFDEC",          "Plots/Unblinded", Settings::fs4l, Settings::VBF_2j_tagged);
-   plotter->plot_1D_single("Unblinded", "DVHDEC",           "Plots/Unblinded", Settings::fs4l, Settings::VH_hadron_tagged);
-   plotter->plot_1D_single("Unblinded", "KD_M4L118130",     "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-   plotter->plot_1D_single("Unblinded", "DVBFDEC_M4L118130","Plots/Unblinded", Settings::fs4l, Settings::VBF_2j_tagged);
-   plotter->plot_1D_single("Unblinded", "DVHDEC_M4L118130", "Plots/Unblinded", Settings::fs4l, Settings::VH_hadron_tagged);
-
-   plotter->plot_1D_single("Unblinded", "PFMET",              "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-   plotter->plot_1D_single("Unblinded", "Pt4l",               "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-   plotter->plot_1D_single("Unblinded", "Eta4l",              "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-   plotter->plot_1D_single("Unblinded", "Pt_leading",         "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-   plotter->plot_1D_single("Unblinded", "Pt_trailing",        "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-   plotter->plot_1D_single("Unblinded", "Eta_leading",        "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-   plotter->plot_1D_single("Unblinded", "Eta_trailing",       "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-   plotter->plot_1D_single("Unblinded", "SIP_leading",        "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-   plotter->plot_1D_single("Unblinded", "SIP_trailing",       "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-   plotter->plot_1D_single("Unblinded", "ISO_leading",        "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-   plotter->plot_1D_single("Unblinded", "ISO_trailing",       "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-   plotter->plot_1D_single("Unblinded", "NExtraLep",          "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-   plotter->plot_1D_single("Unblinded", "NJets",              "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-   plotter->plot_1D_single("Unblinded", "NJetsBTagged",       "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-   plotter->plot_1D_single("Unblinded", "M4l_110150_HighKD",  "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-
-   plotter->plot_1D_single("Unblinded", "D1jet",  "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-   plotter->plot_1D_single("Unblinded", "D2jet",  "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-   plotter->plot_1D_single("Unblinded", "DWH",    "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-   plotter->plot_1D_single("Unblinded", "DZH",    "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-   plotter->plot_1D_single("Unblinded", "DVH",    "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-   plotter->plot_1D_single("Unblinded", "D1jet_M4L118130",  "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-   plotter->plot_1D_single("Unblinded", "D2jet_M4L118130",  "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-   plotter->plot_1D_single("Unblinded", "DWH_M4L118130",    "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-   plotter->plot_1D_single("Unblinded", "DZH_M4L118130",    "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-   plotter->plot_1D_single("Unblinded", "DVH_M4L118130",    "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-
-
-
-   plotter->plot_2D_error_single("Unblinded", "KDvsM4l",          "Plots/Unblinded", Settings::inclusive);
-   plotter->plot_2D_error_single("Unblinded", "KDvsM4lZoomed",    "Plots/Unblinded", Settings::inclusive);
-   plotter->plot_2D_error_single("Unblinded", "KDvsM4lHighMass",  "Plots/Unblinded", Settings::inclusive);
-   plotter->plot_2D_error_single("Unblinded", "D1jetvsM4lZoomed", "Plots/Unblinded", Settings::inclusive);
-   plotter->plot_2D_error_single("Unblinded", "D2jetvsM4lZoomed", "Plots/Unblinded", Settings::inclusive);
-   plotter->plot_2D_error_single("Unblinded", "DWHvsM4lZoomed",   "Plots/Unblinded", Settings::inclusive);
-   plotter->plot_2D_error_single("Unblinded", "DZHvsM4lZoomed",   "Plots/Unblinded", Settings::inclusive);
-   plotter->plot_2D_error_single("Unblinded", "DVHvsM4lZoomed",   "Plots/Unblinded", Settings::inclusive);
-
-
-   plotter->plot_2D_error_all_cat("Unblinded", "KDvsM4lZoomed",    "Plots/Unblinded");
-   plotter->plot_2D_error_all_cat("Unblinded", "DVBFDECvsM4lZoomed",    "Plots/Unblinded");
-   plotter->plot_2D_error_all_cat("Unblinded", "DVHDECvsM4lZoomed",    "Plots/Unblinded");
-
-
-//=============================
-// PAS HIG-18-001 figures
-//=============================
-//
-//   plotter->plot_1D_single("Unblinded", "M4lMain", "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-//   plotter->plot_1D_single("Unblinded", "M4lMainZoomed", "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-//   plotter->plot_1D_all_cat("Unblinded", "M4lMainZoomed", "Plots/Unblinded");
-//   plotter->plot_1D_single("Unblinded", "MZ1_M4L118130",   "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-//   plotter->plot_1D_single("Unblinded", "MZ2_M4L118130",   "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-//   plotter->plot_1D_single("Unblinded", "KD_M4L118130",     "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-//   plotter->plot_1D_single("Unblinded", "DVBFDEC_M4L118130","Plots/Unblinded", Settings::fs4l, Settings::VBF_2j_tagged);
-//   plotter->plot_1D_single("Unblinded", "DVHDEC_M4L118130", "Plots/Unblinded", Settings::fs4l, Settings::VH_hadron_tagged);
-//   plotter->plot_1D_single("Unblinded", "D1jet_M4L118130",  "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-//   plotter->plot_1D_single("Unblinded", "D2jet_M4L118130",  "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-//   plotter->plot_1D_single("Unblinded", "DVH_M4L118130",    "Plots/Unblinded", Settings::fs4l, Settings::inclusive);
-//   plotter->plot_2D_single("Unblinded", "MZ1vsMZ2_M4L118130", "Plots/Unblinded", Settings::inclusive);
-//   plotter->plot_2D_error_all_cat("Unblinded", "KDvsM4lZoomed",    "Plots/Unblinded");
-//   plotter->plot_2D_error_all_cat("Unblinded", "DVBFDECvsM4lZoomed",    "Plots/Unblinded");
-//   plotter->plot_2D_error_all_cat("Unblinded", "DVHDECvsM4lZoomed",    "Plots/Unblinded");
-   
-   delete plotter;
+   delete yields;
 }
