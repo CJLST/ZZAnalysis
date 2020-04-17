@@ -135,11 +135,11 @@ float LeptonSFHelper::getSF(int year, int flav, float pt, float eta, float SCeta
       {
          if(isCrack)
             {
-               SelSF = h_Ele_Cracks_2016->GetBinContent(h_Ele_Cracks_2016->FindFixBin(SCeta, std::min(pt,199.f)));
+               SelSF = h_Ele_Cracks_2016->GetBinContent(h_Ele_Cracks_2016->FindFixBin(SCeta, std::min(pt,499.f)));
             }
             else
             {
-               SelSF = h_Ele_notCracks_2016->GetBinContent(h_Ele_notCracks_2016->FindFixBin(SCeta, std::min(pt,199.f)));
+               SelSF = h_Ele_notCracks_2016->GetBinContent(h_Ele_notCracks_2016->FindFixBin(SCeta, std::min(pt,499.f)));
             }
          
       }
