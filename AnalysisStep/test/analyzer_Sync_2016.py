@@ -38,13 +38,14 @@ if not IsMC:
 ### ----------------------------------------------------------------------
 
 process.source.fileNames = cms.untracked.vstring(
-### Moriond 18 sync files
-    ## Low mass
-   '/store/mc/RunIISummer16MiniAODv2/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV709_pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/20000/2637D760-16D4-E711-8612-0026B9277A4C.root'
-    )
+### LEGACY PAPER - 2016 sync files
+'/store/mc/RunIISummer16MiniAODv2/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV709_pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/20000/8A6DC1B7-D1D3-E711-8D88-002590DE6E32.root',
+'/store/mc/RunIISummer16MiniAODv2/ttH_HtoZZ_4LFilter_M125_13TeV_powheg2_JHUGenV709_pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/30000/D06A30FF-5AD8-E711-9228-0026B927869F.root',
+'/store/mc/RunIISummer16MiniAODv3/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUGenV709_pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/00000/624CEAF0-050D-E911-AB2B-0242AC130002.root'
+)
 
-#process.calibratedPatElectrons.isSynchronization = cms.bool(True)
-#process.calibratedMuons.isSynchronization = cms.bool(True)
+process.calibratedPatElectrons.isSynchronization = cms.bool(True)
+process.calibratedMuons.isSynchronization = cms.bool(True)
 
 process.maxEvents.input = -1
 #process.source.skipEvents = cms.untracked.uint32(5750)

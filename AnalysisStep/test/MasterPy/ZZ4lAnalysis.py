@@ -18,7 +18,7 @@ declareDefault("LEPTON_SETUP", 2016, globals())
 # Can differ from SAMPLE_TYPE for samples that are rescaled to a different sqrts.
 declareDefault("SAMPLE_TYPE", LEPTON_SETUP, globals())
 
-# Control global tag to be used (for data or rereco)
+# Control global tag to be used for 2018 data to distinguish between ReReco (period A, B, C) and PromptReco (period D)
 declareDefault("DATA_TAG", "ReReco", globals())
 
 #Optional name of the sample/dataset being analyzed
@@ -71,7 +71,6 @@ if SELSETUP=="Legacy" and not BESTCANDCOMPARATOR=="byBestZ1bestZ2":
     print "WARNING: In ZZ4lAnalysis.py the SELSETUP=\"Legacy\" flag is meant to reproduce the Legacy results, ignoring the setting of the BESTCANDCOMPARATOR: ",BESTCANDCOMPARATOR
     BESTCANDCOMPARATOR = "byBestZ1bestZ2"
 
-
 # The isolation cuts for electrons and muons. FIXME: there is an hardcoded instance of these values in src/LeptonIsoHelper.cc !!
 ELEISOCUT = 99999. # [FIXME] Remove isolation cuts from the code completely
 MUISOCUT  = 0.35 # [FIXME] Remove isolation cuts from the code completely
@@ -96,10 +95,12 @@ elif (SAMPLE_TYPE == 2017):
 
 elif (SAMPLE_TYPE == 2018):
     if IsMC:
-        process.GlobalTag = GlobalTag(process.GlobalTag, '102X_upgrade2018_realistic_v18', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '102X_upgrade2018_realistic_v20', '')
     else:
-        process.GlobalTag = GlobalTag(process.GlobalTag, '102X_dataRun2_v4', '')
-
+        if (DATA_TAG == "PromptReco"):
+            process.GlobalTag = GlobalTag(process.GlobalTag, '102X_dataRun2_Prompt_v15', '')
+        else:
+            process.GlobalTag = GlobalTag(process.GlobalTag, '102X_dataRun2_v12', '')
 
 
 print '\t',process.GlobalTag.globaltag
@@ -1062,17 +1063,17 @@ if (LEPTON_SETUP == 2016): #DeepCSV, from https://twiki.cern.ch/twiki/bin/viewau
    theBTagger="pfDeepCSVJetTags:probb"
    theBTaggerThr=0.6321
    theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_2016LegacySF_V1.csv"
-   theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_94X_Moriond18_v1.root"  #[FIXME] Update after first production is done
+   theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_2016_LegacyPaper.root"
 elif (LEPTON_SETUP == 2017): #DeepCSV, from https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
    theBTagger="pfDeepCSVJetTags:probb"
    theBTaggerThr=0.4941
    theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_94XSF_V4_B_F.csv"
-   theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_94X_Moriond18_v1.root"
+   theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_2017_LegacyPaper.root"
 elif (LEPTON_SETUP == 2018): #DeepCSV, from https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X
    theBTagger="pfDeepCSVJetTags:probb"
    theBTaggerThr=0.4184
    theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_102XSF_V1.csv"
-   theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_102X_Moriond19.root" 
+   theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_2018_LegacyPaper.root" 
 else:
    sys.exit("ZZ4lAnalysis.py: Need to define the btagging for the new setup!")
 
@@ -1386,7 +1387,7 @@ process.cleanJets = cms.EDProducer("JetsWithLeptonsRemover",
                                    Electrons = cms.InputTag("appendPhotons:electrons"),
                                    Diboson   = cms.InputTag(""),
                                    JetPreselection      = cms.string(""),
-                                   MuonPreselection     = cms.string("userFloat('isGood')"),
+                                   MuonPreselection = cms.string("userFloat('isGood') && userFloat('passCombRelIsoPFFSRCorr')"),
                                    ElectronPreselection = cms.string("userFloat('isGood')"),
                                    DiBosonPreselection  = cms.string(""),
                                    MatchingType = cms.string("byDeltaR"),
