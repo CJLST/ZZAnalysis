@@ -243,13 +243,13 @@ float LeptonSFHelper::getSFError(int year, int flav, float pt, float eta, float 
       {
          if(pt < 20.)
          {
-            RecoSF = h_Ele_Reco_lowPT_2017->GetBinContent(h_Ele_Reco_lowPT_2017->GetXaxis()->FindBin(SCeta),h_Ele_Reco_lowPT_2017->GetYaxis()->FindBin(15.));// FIXME: the histogram contains 1 pt bin only
-            RecoSF_Unc = h_Ele_Reco_lowPT_2017->GetBinError(h_Ele_Reco_lowPT_2017->GetXaxis()->FindBin(SCeta),h_Ele_Reco_lowPT_2017->GetYaxis()->FindBin(15.));// FIXME: the histogram contains 1 pt bin only
+            RecoSF = h_Ele_Reco_lowPT_2018->GetBinContent(h_Ele_Reco_lowPT_2018->GetXaxis()->FindBin(SCeta),h_Ele_Reco_lowPT_2018->GetYaxis()->FindBin(15.));// FIXME: the histogram contains 1 pt bin only
+            RecoSF_Unc = h_Ele_Reco_lowPT_2018->GetBinError(h_Ele_Reco_lowPT_2018->GetXaxis()->FindBin(SCeta),h_Ele_Reco_lowPT_2018->GetYaxis()->FindBin(15.));// FIXME: the histogram contains 1 pt bin only
          }
          else
          {
-            RecoSF = h_Ele_Reco_highPT_2017->GetBinContent(h_Ele_Reco_highPT_2017->GetXaxis()->FindBin(SCeta),h_Ele_Reco_highPT_2017->GetYaxis()->FindBin(std::min(pt,499.f)));
-            RecoSF_Unc = h_Ele_Reco_highPT_2017->GetBinError(h_Ele_Reco_highPT_2017->GetXaxis()->FindBin(SCeta),h_Ele_Reco_highPT_2017->GetYaxis()->FindBin(std::min(pt,499.f)));
+            RecoSF = h_Ele_Reco_highPT_2018->GetBinContent(h_Ele_Reco_highPT_2018->GetXaxis()->FindBin(SCeta),h_Ele_Reco_highPT_2018->GetYaxis()->FindBin(std::min(pt,499.f)));
+            RecoSF_Unc = h_Ele_Reco_highPT_2018->GetBinError(h_Ele_Reco_highPT_2018->GetXaxis()->FindBin(SCeta),h_Ele_Reco_highPT_2018->GetYaxis()->FindBin(std::min(pt,499.f)));
          }
       }
       else {
