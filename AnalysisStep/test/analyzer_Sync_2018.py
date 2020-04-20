@@ -56,7 +56,7 @@ process.source.fileNames = cms.untracked.vstring(
     )
 
 #process.calibratedPatElectrons.isSynchronization = cms.bool(True) #not needed anymore since new EGamma smearing is event deterministic
-process.calibratedMuons.isSynchronization = cms.bool(True)
+#process.calibratedMuons.isSynchronization = cms.bool(True)
 
 process.maxEvents.input = 50
 #process.source.skipEvents = cms.untracked.uint32(5750)
