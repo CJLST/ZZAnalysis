@@ -44,8 +44,8 @@ process.source.fileNames = cms.untracked.vstring(
 '/store/mc/RunIISummer16MiniAODv3/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUGenV709_pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/00000/624CEAF0-050D-E911-AB2B-0242AC130002.root'
 )
 
-process.calibratedPatElectrons.isSynchronization = cms.bool(True)
-process.calibratedMuons.isSynchronization = cms.bool(True)
+#process.calibratedPatElectrons.isSynchronization = cms.bool(True) #process.calibratedPatElectrons.isSynchronization = cms.bool(True) # Not needed anymore since new EGamma smearing is event deterministic
+#process.calibratedMuons.isSynchronization = cms.bool(True)
 
 process.maxEvents.input = -1
 #process.source.skipEvents = cms.untracked.uint32(5750)
