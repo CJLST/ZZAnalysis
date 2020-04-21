@@ -91,6 +91,8 @@ process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
      jetSrc = cms.InputTag("cleanJets"),
 )
 
+#process.source.eventsToProcess = cms.untracked.VEventRange("1:6991:641744")
+
 # Create lepton sync file
 #process.PlotsZZ.dumpForSync = True;
 #process.p = cms.EndPath( process.PlotsZZ)
