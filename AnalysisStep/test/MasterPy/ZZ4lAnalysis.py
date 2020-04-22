@@ -1406,15 +1406,15 @@ if FSRMODE=="Legacy" :
 
 metTag = cms.InputTag("slimmedMETs")
 
-# NB: b tag UPDATE DOES NOT WORK including this part related to MET => Updated info in jets get lost
-#if (RECORRECTMET and SAMPLE_TYPE == 2016):
+if (RECORRECTMET and SAMPLE_TYPE == 2016):
 
-    #from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
-    #runMetCorAndUncFromMiniAOD(process,
-    #                           isData=(not IsMC),
-    #                           )
-    #metTag = cms.InputTag("slimmedMETs","","ZZ")
+    from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
+    runMetCorAndUncFromMiniAOD(process,
+                               isData=(not IsMC),
+                               )
+    metTag = cms.InputTag("slimmedMETs","","ZZ")
 
+    # NB: removed to use properly update jet collection to include DeepCSV in 2016 ntuples
     ### somehow MET recorrection gets this lost again...                                                                                                                             
     #process.patJetsReapplyJEC.userData.userFloats.src += ['pileupJetIdUpdated:fullDiscriminant']
     #process.patJetsReapplyJEC.userData.userInts.src += ['pileupJetIdUpdated:fullId']
@@ -1481,12 +1481,11 @@ else:
     process.Jets = cms.Path( process.QGTagger + process.dressedJets )
 
 
-# NB: b tag UPDATE DOES NOT WORK including this part related to MET => Updated info in jets get lost
-#if (RECORRECTMET and SAMPLE_TYPE == 2016):
-#    if IsMC:
-#        process.MET = cms.Path(process.fullPatMetSequence)
-#    else:
-#        process.MET = cms.Path(process.fullPatMetSequence)
+if (RECORRECTMET and SAMPLE_TYPE == 2016):
+    if IsMC:
+        process.MET = cms.Path(process.fullPatMetSequence)
+    else:
+        process.MET = cms.Path(process.fullPatMetSequence)
 
 #[FIXME] Does not work in CMSSW_10_3_1 currently                                                                                                         
 #if (RECORRECTMET and SAMPLE_TYPE == 2017):                                                                                                                       
