@@ -1155,27 +1155,27 @@ if (APPLYJEC and SAMPLE_TYPE == 2016):
 
     ### REAPPLY JEC
     from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import updatedPatJetCorrFactors
-    process.patJetCorrFactorsReapplyJEC = updatedPatJetCorrFactors.clone(
+    process.jetCorrFactors = updatedPatJetCorrFactors.clone(
         # JEC applied on jets including also DeepCSV and DeepFlavour tagger
         src = cms.InputTag("updatedPatJetsTransientCorrectedWithDeepInfo"),
         levels = ['L1FastJet','L2Relative','L3Absolute'],
         payload = 'AK4PFchs' )
     if not IsMC:
-        process.patJetCorrFactorsReapplyJEC.levels = ['L1FastJet','L2Relative','L3Absolute','L2L3Residual']
+        process.jetCorrFactors.levels = ['L1FastJet','L2Relative','L3Absolute','L2L3Residual']
 
     from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import updatedPatJets
-    process.patJetsReapplyJEC = updatedPatJets.clone(
+    process.jetsWithJEC = updatedPatJets.clone(
         # JEC applied on jets including also DeepCSV and DeepFlavour tagger
         jetSource = cms.InputTag("updatedPatJetsTransientCorrectedWithDeepInfo"),
-        jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC")),
+        jetCorrFactorsSource = cms.VInputTag(cms.InputTag("jetCorrFactors")),
         # b tag information
         addBTagInfo          = cms.bool(True),  ## master switch
         addDiscriminators    = cms.bool(True)   ## addition of btag discriminators
         )
 
     ### Replace inputs in QGTagger and dressedJets
-    process.QGTagger.srcJets = cms.InputTag('patJetsReapplyJEC')
-    process.dressedJets.src = cms.InputTag('patJetsReapplyJEC')
+    process.QGTagger.srcJets = cms.InputTag('jetsWithJEC')
+    process.dressedJets.src = cms.InputTag('jetsWithJEC')
 
 
 if (APPLYJEC and SAMPLE_TYPE == 2017):
@@ -1473,8 +1473,8 @@ process.PVfilter =  cms.Path(process.preSkimCounter+process.goodPrimaryVertices)
 
 if APPLYJEC:
     if (SAMPLE_TYPE == 2016):
-        # Removed pileupJetId update in order to use updateJetColection
-        process.Jets = cms.Path(process.jetSequence + process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.QGTagger + process.dressedJets )
+        # Removed pileupJetId update in order to use updateJetCollection
+        process.Jets = cms.Path(process.jetSequence + process.jetCorrFactors + process.jetsWithJEC + process.QGTagger + process.dressedJets )
     elif (SAMPLE_TYPE == 2017 or SAMPLE_TYPE == 2018):
         process.Jets = cms.Path(process.pileupJetIdUpdated + process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.QGTagger + process.dressedJets )
 else:
