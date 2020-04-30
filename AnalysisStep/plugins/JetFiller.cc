@@ -204,7 +204,9 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     bool PUjetID = true;
    
     //Recommended tight PU JET ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
-    if (applyJEC_ && ( setup == 2017 || setup == 2018)) PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0));
+    //if ( applyJEC_ && setup == 2016 && isMC_ ) PUjetID = bool(j.userInt("pileupJetId:fullId") & (1 << 0));
+    //else if ( applyJEC_ && ( setup == 2017 || setup == 2018 || setup == 2016 )) PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0));
+    if ( applyJEC_ && ( setup == 2017 || setup == 2018 || (setup == 2016 && (!(isMC_)) ))) PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0));
     else PUjetID = bool(j.userInt("pileupJetId:fullId") & (1 << 0));
 
     //--- b-tagging and scaling factors
@@ -240,11 +242,11 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       if(SFUp>1 && !isBtagged && R<(1.-SFUp)/(1.-1./bTagMCEff)) isBtaggedWithSFUp = true;
       if(SFDn>1 && !isBtagged && R<(1.-SFDn)/(1.-1./bTagMCEff)) isBtaggedWithSFDn = true;
        //for debug
-//      if(jpt>30 && isBtagged)
-//      {
-//			cout<<"jet pT="<<jpt<<", eta="<<jeta<<endl;
-//			cout<<"bTag name="<<bTaggerName<<endl;
-//			cout<<"bTag score="<<bTagger<<endl;
+      if(jpt>30 && isBtagged)
+      {
+			cout<<"jet pT="<<jpt<<", eta="<<jeta<<endl;
+			cout<<"bTag name="<<bTaggerName<<endl;
+			cout<<"bTag score="<<bTagger<<endl;
 //			cout<<" flav = "<<flav<<endl;
 //			cout<<" SF   = "<<SF  <<endl;
 //			cout<<" SFUp = "<<SFUp<<endl;
@@ -255,7 +257,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 //			cout<<" isBtaggedWithSF   = "<<isBtaggedWithSF  <<endl;
 //			cout<<" isBtaggedWithSFUp = "<<isBtaggedWithSFUp<<endl;
 //			cout<<" isBtaggedWithSFDn = "<<isBtaggedWithSFDn<<endl;
-//      }
+      }
 		 
     }
 
