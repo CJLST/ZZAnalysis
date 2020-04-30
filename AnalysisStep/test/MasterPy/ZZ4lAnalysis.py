@@ -1043,7 +1043,6 @@ if (SAMPLE_TYPE == 2016 and IsMC):
                                        *process.updatedPatJetsTransientCorrectedWithDeepInfo
     )
 
-#if (SAMPLE_TYPE == 2017 or SAMPLE_TYPE == 2018):
 else:
     process.load("RecoJets.JetProducers.PileupJetID_cfi")
     process.pileupJetIdUpdated = process.pileupJetId.clone(
