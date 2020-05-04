@@ -48,7 +48,6 @@ class Candidate:
         self.pt4ljj        = treeEntry.ZZjjPt
         self.nExtraLep     = treeEntry.nExtraLep
         self.nExtraZ       = treeEntry.nExtraZ
-        self.lepBDT        = treeEntry.LepBDT
         self.jetpt         = treeEntry.JetPt
         self.jeteta        = treeEntry.JetEta
         self.jetphi        = treeEntry.JetPhi
@@ -60,13 +59,19 @@ class Candidate:
         self.detajj        = treeEntry.DiJetDEta
         self.pfMet         = treeEntry.PFMET
         self.weight        = 1.
-        if (isMC) : self.weight = sign(treeEntry.genHEPMCweight) * treeEntry.PUWeight * treeEntry.dataMCWeight
+        self.genHEPMC      = treeEntry.genHEPMCweight
+        self.PUweight      = treeEntry.PUWeight
+        self.dataMC        = treeEntry.dataMCWeight
+        self.L1pref        = treeEntry.L1prefiringWeight
+        if (isMC) : 
+            self.weight = sign(treeEntry.genHEPMCweight) * treeEntry.PUWeight * treeEntry.dataMCWeight * treeEntry.L1prefiringWeight
 
         self.jets30pt = []
         self.jets30eta = []
         self.jets30phi = []
         self.jets30mass = []
         self.jets30QGLikelihood = []
+        self.jets30bTag = []
 
         for i in range(len(treeEntry.JetPt)):
             if treeEntry.JetPt[i]>30.:
@@ -75,11 +80,15 @@ class Candidate:
                 self.jets30phi.append(treeEntry.JetPhi[i])
                 self.jets30mass.append(treeEntry.JetMass[i])
                 self.jets30QGLikelihood.append(treeEntry.JetQGLikelihood[i])
+                self.jets30bTag.append(treeEntry.JetBTagger[i])
     
-        self.LepBDT = []
+        self.lepBDT = []
         
         for i in range(len(treeEntry.LepBDT)):
-            self.LepBDT.append(treeEntry.LepBDT[i])
+            if (treeEntry.LepLepId[i] == 13 or treeEntry.LepLepId[i] == -13):
+                self.lepBDT.append(-1.)
+            else:
+                self.lepBDT.append(treeEntry.LepBDT[i])
 
 
         self.kds         = None
@@ -89,6 +98,8 @@ class Candidate:
         self.jet2pt      = -1.
         self.jet1qgl     = -1.
         self.jet2qgl     = -1.
+        self.jet1bTag    = -2000.
+        self.jet2bTag    = -2000.
         self.fillJetInfo()
 
         if options.synchMode == 'HZZ' :
@@ -294,6 +305,7 @@ class Candidate:
 
         if self.njets30==1:
             self.jet1pt = self.jets30pt[0]
+            self.jet1bTag = self.jets30bTag[0]
             self.jet1qgl = self.jets30QGLikelihood[0]
             self.mjj = -1.
             self.detajj = -1.
@@ -303,6 +315,8 @@ class Candidate:
             self.jet1qgl = self.jets30QGLikelihood[0]
             self.jet2qgl = self.jets30QGLikelihood[1]
             self.fishjj = 0.18*abs(self.detajj) + 1.92e-04*self.mjj
+            self.jet1bTag = self.jets30bTag[0]
+            self.jet2bTag = self.jets30bTag[1]
         else:
             self.mjj = -1.
             self.detajj = -1.
@@ -317,45 +331,51 @@ class Candidate:
             line  += ":{0:.2f}".format(self.ZZMass)
             line  += ":" + "{0:.2f}".format(self.Z1Mass)
             line  += ":" + "{0:.2f}".format(self.Z2Mass)
-            line  += ":" + "{0:.6f}".format(self.LepBDT[0])
-            line  += ":" + "{0:.6f}".format(self.LepBDT[1])
-            line  += ":" + "{0:.6f}".format(self.LepBDT[2])
-            line  += ":" + "{0:.6f}".format(self.LepBDT[3])
-#            line  += ":" + "{0:.2f}".format(self.massErrRaw)
-#            line  += ":" + "{0:.2f}".format(self.massErrCorr)
+            line  += ":" + "{0:.6f}".format(self.lepBDT[0])
+            line  += ":" + "{0:.6f}".format(self.lepBDT[1])
+            line  += ":" + "{0:.6f}".format(self.lepBDT[2])
+            line  += ":" + "{0:.6f}".format(self.lepBDT[3])
+            #            line  += ":" + "{0:.2f}".format(self.massErrRaw)
+            #            line  += ":" + "{0:.2f}".format(self.massErrCorr)
             line  += ":" + "{0:.3f}".format(self.D_bkg_kin)
             line  += ":" + "{0:.3f}".format(self.D_bkg)
-#            line  += ":" + "{0:.3f}".format(self.D_g4)
-#            line  += ":" + "{0:.2f}".format(self.pt4l)
+            #            line  += ":" + "{0:.3f}".format(self.D_g4)
+            #            line  += ":" + "{0:.2f}".format(self.pt4l)
             line  += ":" + "{0:d}".format(self.njets30)
             line  += ":" + "{0:.2f}".format(self.jet1pt)
             line  += ":" + "{0:.2f}".format(self.jet2pt)
-#            line  += ":" + "{0:.3f}".format(self.jet1qgl)
-#            line  += ":" + "{0:.3f}".format(self.jet2qgl)
+            line  += ":" + "{0:.3f}".format(self.jet1bTag)
+            line  += ":" + "{0:.3f}".format(self.jet2bTag)
+            #            line  += ":" + "{0:.3f}".format(self.jet1qgl)
+            #            line  += ":" + "{0:.3f}".format(self.jet2qgl)
             line  += ":" + "{0:.3f}".format(self.D_bkg_VBFdec)
             line  += ":" + "{0:.3f}".format(self.D_bkg_VHdec)
             line  += ":" + "{0:.3f}".format(self.D_VBF2j)
             line  += ":" + "{0:.3f}".format(self.D_VBF1j)
             line  += ":" + "{0:.3f}".format(self.D_WHh)
             line  += ":" + "{0:.3f}".format(self.D_ZHh)
-#            line  += ":" + "{0:.3f}".format(self.Dfull_VBF2j)
-#            line  += ":" + "{0:.3f}".format(self.Dfull_VBF1j)
-#            line  += ":" + "{0:.3f}".format(self.Dfull_WHh)
-#            line  += ":" + "{0:.3f}".format(self.Dfull_ZHh)
-#            line  += ":" + "{0:.2f}".format(self.mjj)
-#            line  += ":" + "{0:.3f}".format(self.detajj)
-#            line  += ":" + "{0:.3f}".format(self.fishjj)
-#            line  += ":" + "{0:.3f}".format(self.kds.KD_highdim)
-#            line  += ":" + "{0:.3f}".format(self.kds.KD_vec)
-#            line  += ":" + "{0:.3f}".format(self.kds.KD_psvec)
-#            line  += ":" + "{0:.3f}".format(self.kds.KD_gggrav)
-#            line  += ":" + "{0:.3f}".format(self.kds.KD_qqgrav)
+            #            line  += ":" + "{0:.3f}".format(self.Dfull_VBF2j)
+            #            line  += ":" + "{0:.3f}".format(self.Dfull_VBF1j)
+            #            line  += ":" + "{0:.3f}".format(self.Dfull_WHh)
+            #            line  += ":" + "{0:.3f}".format(self.Dfull_ZHh)
+            #            line  += ":" + "{0:.2f}".format(self.mjj)
+            #            line  += ":" + "{0:.3f}".format(self.detajj)
+            #            line  += ":" + "{0:.3f}".format(self.fishjj)
+            #            line  += ":" + "{0:.3f}".format(self.kds.KD_highdim)
+            #            line  += ":" + "{0:.3f}".format(self.kds.KD_vec)
+            #            line  += ":" + "{0:.3f}".format(self.kds.KD_psvec)
+            #            line  += ":" + "{0:.3f}".format(self.kds.KD_gggrav)
+            #            line  += ":" + "{0:.3f}".format(self.kds.KD_qqgrav)
             line  += ":" + "{0:.3f}".format(self.pfMet)
             line  += ":" + "{0:d}".format(0)
-            if self.m4lRefit>=0:
-#                line  += ":" + "{0:.2f}".format(self.m4lRefit)
-#                line  += ":" + "{0:.2f}".format(self.m4lRefitErr)
-                line  += ":" + "{0:.3f}".format(self.weight)
+            #if self.m4lRefit>=0:
+            #                line  += ":" + "{0:.2f}".format(self.m4lRefit)
+            #                line  += ":" + "{0:.2f}".format(self.m4lRefitErr)
+            line  += ":" + "{0:.3f}".format(self.weight)
+            #line  += ":" + "{0:.3f}".format(sign(self.genHEPMC))
+            #line  += ":" + "{0:.3f}".format(self.PUweight)
+            #line  += ":" + "{0:.3f}".format(self.dataMC)
+            #line  += ":" + "{0:.3f}".format(self.L1pref)
 
         if options.synchMode == 'VBS' :
             line  += str(int(self.run))

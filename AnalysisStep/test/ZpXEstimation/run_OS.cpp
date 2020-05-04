@@ -21,14 +21,14 @@ int main( int argc, char *argv[] )
 {
    setTDRStyle();
    
-   TString path = "";
+   TString path = "/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased/MC_2017/";
    TString file_name = "/ZZ4lAnalysis.root";
    
-	TString Data    = path + "AllData"           + file_name;
-   TString WZ      = path + "WZTo3LNuext1"      + file_name;
-   TString ZZ      = path + "ZZTo4lext1"        + file_name;
+   TString Data    = "/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased/Data_2017/AllData" + file_name;
+   TString WZ      = path + "WZTo3LNu"      + file_name;
+   TString ZZ      = path + "ZZTo4lext"        + file_name;
    TString ttbar   = path + "TTTo2L2Nu"         + file_name;
-   TString DY      = path + "DYJetsToLL_M50_LO" + file_name;
+   TString DY      = path + "DYJetsToLL_M50" + file_name;
 	
    bool SubtractWZ = true;
    bool Remove_NegBins_FR = true;
@@ -39,7 +39,7 @@ int main( int argc, char *argv[] )
    
    OSmethod *os = new OSmethod();
 
-   os->SetLumi(58.83);
+   os->SetLumi(41.53);
 
    ///////////////////////////////////
    // Fill control histos           //

@@ -63,12 +63,13 @@ SSmethod::SSmethod():Tree()
    _s_region.push_back("ZLL");
    
    // Z+X SS factors
-   // FIXME: recompute this for Run II, OS/SS ratio taken when computing fake rates in SS method
+   // Default: ORIGINAL OS/SS ratios evaluated on MC (never recomputed for Run II) 
+   // OS/SS ratios evaluated on data and taken when computing FR in SS method
    _fs_ROS_SS.push_back(1.22);//4mu
    _fs_ROS_SS.push_back(0.97);//4e
    _fs_ROS_SS.push_back(1.30);//2e2mu
    _fs_ROS_SS.push_back(0.98);//2mu2e
-   
+
    vector<float> temp;
    for ( int i_fs = 0; i_fs < num_of_final_states; i_fs++ )
    {
@@ -139,27 +140,27 @@ void SSmethod::Calculate_SSOS_Ratio( TString input_file_data_name, TString input
          jetPgOverPq[j] = 1./JetQGLikelihood->at(j) - 1.;
       }
       
-		_current_category = categoryMor18(  nExtraLep,
-														 nExtraZ,
-														 nCleanedJetsPt30,
-														 nCleanedJetsPt30BTagged_bTagSF,
-														 jetQGL,
-														 p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
-														 p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
-														 p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
-														 p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
-														 pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
-														 p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
-														 p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
-														 p_HadWH_mavjj_JECNominal,
-														 p_HadWH_mavjj_true_JECNominal,
-														 p_HadZH_mavjj_JECNominal,
-														 p_HadZH_mavjj_true_JECNominal,
-														 jetPhi,
-														 ZZMass,
-														 PFMET,
-														 false,// Use VHMET category
-														 false);// Use QG tagging
+      _current_category = categoryMor18(  nExtraLep,
+					  nExtraZ,
+					  nCleanedJetsPt30,
+					  nCleanedJetsPt30BTagged_bTagSF,
+					  jetQGL,
+					  p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+					  p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
+					  p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
+					  p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+					  pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+					  p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
+					  p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
+					  p_HadWH_mavjj_JECNominal,
+					  p_HadWH_mavjj_true_JECNominal,
+					  p_HadZH_mavjj_JECNominal,
+					  p_HadZH_mavjj_true_JECNominal,
+					  jetPhi,
+					  ZZMass,
+					  PFMET,
+					  false,// Use VHMET category
+					  false);// Use QG tagging
       
       _current_category_stxs = stage1_reco_1p1 ( nCleanedJetsPt30,
                                                  DiJetMass,
@@ -171,7 +172,7 @@ void SSmethod::Calculate_SSOS_Ratio( TString input_file_data_name, TString input
       if ((test_bit(CRflag, CRZLLos_2P2F)) || (test_bit(CRflag, CRZLLos_3P1F))) _N_OS_events[_current_final_state][_current_category_stxs]+=1.0;
 
       _k_factor = calculate_K_factor(input_file_data_name);
-      _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight) / gen_sum_weights;
+      _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight * L1prefiringWeight) / gen_sum_weights;
    }
    
    //Loop over MC to estimate ZZTo4L events in OS
@@ -205,59 +206,58 @@ void SSmethod::Calculate_SSOS_Ratio( TString input_file_data_name, TString input
             jetQGL[j] = JetQGLikelihood->at(j);
             jetPgOverPq[j] = 1./JetQGLikelihood->at(j) - 1.;
          }
+	 
+	 _current_category = categoryMor18(  nExtraLep,
+					     nExtraZ,
+					     nCleanedJetsPt30,
+					     nCleanedJetsPt30BTagged_bTagSF,
+					     jetQGL,
+					     p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+					     p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
+					     p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
+					     p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+					     pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+					     p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
+					     p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
+					     p_HadWH_mavjj_JECNominal,
+					     p_HadWH_mavjj_true_JECNominal,
+					     p_HadZH_mavjj_JECNominal,
+					     p_HadZH_mavjj_true_JECNominal,
+					     jetPhi,
+					     ZZMass,
+					     PFMET,
+					     false,// Use VHMET category
+					     false);// Use QG tagging
          
-		_current_category = categoryMor18(  nExtraLep,
-														 nExtraZ,
-														 nCleanedJetsPt30,
-														 nCleanedJetsPt30BTagged_bTagSF,
-														 jetQGL,
-														 p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
-														 p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
-														 p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
-														 p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
-														 pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
-														 p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
-														 p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
-														 p_HadWH_mavjj_JECNominal,
-														 p_HadWH_mavjj_true_JECNominal,
-														 p_HadZH_mavjj_JECNominal,
-														 p_HadZH_mavjj_true_JECNominal,
-														 jetPhi,
-														 ZZMass,
-														 PFMET,
-														 false,// Use VHMET category
-														 false);// Use QG tagging
-         
-      _current_category_stxs = stage1_reco_1p1 ( nCleanedJetsPt30,
-                                                 DiJetMass,
-                                                 ZZPt,
-                                                 _current_category,
-                                                 ZZjjPt);
+	 _current_category_stxs = stage1_reco_1p1 ( nCleanedJetsPt30,
+						    DiJetMass,
+						    ZZPt,
+						    _current_category,
+						    ZZjjPt);
          
          _k_factor = calculate_K_factor(input_file_data_name);
-         _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight) / gen_sum_weights;
+         _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight * L1prefiringWeight) / gen_sum_weights;
          
          if ((test_bit(CRflag, CRZLLos_2P2F)) || (test_bit(CRflag, CRZLLos_3P1F))) _N_OS_events[_current_final_state][_current_category_stxs]-=_event_weight;
-      
       }
    }
    
    //Calculate inclusive numbers
-   for (  int i_cat = 0; i_cat < num_of_categories_stxs - 1; i_cat++  )
+   for ( int i_cat = 0; i_cat < num_of_categories_stxs - 1; i_cat++ )
    {
-      for ( int i_fs = 0; i_fs < num_of_final_states - 1; i_fs++  )
+      for ( int i_fs = 0; i_fs < num_of_final_states - 1; i_fs++ )
       {
-         _N_SS_events[Settings::fs4l][i_cat]     += _N_SS_events[i_fs][i_cat];   //calculate N events for inclusive 4l final state
-         _N_OS_events[Settings::fs4l][i_cat]     += _N_OS_events[i_fs][i_cat];
+         _N_SS_events[Settings::fs4l][i_cat]          += _N_SS_events[i_fs][i_cat];   //calculate N events for inclusive 4l final state
+         _N_OS_events[Settings::fs4l][i_cat]          += _N_OS_events[i_fs][i_cat];
          _N_SS_events[i_fs][Settings::inclusive_stxs] += _N_SS_events[i_fs][i_cat];   //calculate N events for inclusive category
          _N_OS_events[i_fs][Settings::inclusive_stxs] += _N_OS_events[i_fs][i_cat];
          
          if (false)//( MERGE_2E2MU )
          {
-            _N_SS_events[Settings::fs2e2mu][i_cat]     += _N_SS_events[Settings::fs2mu2e][i_cat];   //merge 2e2mu and 2mu2e final state
-            _N_OS_events[Settings::fs2e2mu][i_cat]     += _N_OS_events[Settings::fs2mu2e][i_cat];
-            _N_SS_events[Settings::fs2mu2e][i_cat]      = 0.;
-            _N_OS_events[Settings::fs2mu2e][i_cat]      = 0.;
+            _N_SS_events[Settings::fs2e2mu][i_cat]    += _N_SS_events[Settings::fs2mu2e][i_cat];   //merge 2e2mu and 2mu2e final states
+            _N_OS_events[Settings::fs2e2mu][i_cat]    += _N_OS_events[Settings::fs2mu2e][i_cat];
+            _N_SS_events[Settings::fs2mu2e][i_cat]    = 0.;
+            _N_OS_events[Settings::fs2mu2e][i_cat]    = 0.;
          }
       }
    }
@@ -287,23 +287,21 @@ void SSmethod::Calculate_SSOS_Ratio( TString input_file_data_name, TString input
    
    if(true)
 	{
-		_fs_ROS_SS[Settings::fs4mu]   = _N_OS_events[Settings::fs4mu][Settings::inclusive_stxs]/_N_SS_events[Settings::fs4mu][Settings::inclusive_stxs];//4mu
-		_fs_ROS_SS[Settings::fs4e]    = _N_OS_events[Settings::fs4e][Settings::inclusive_stxs]/_N_SS_events[Settings::fs4e][Settings::inclusive_stxs];//4e
-		_fs_ROS_SS[Settings::fs2e2mu] = _N_OS_events[Settings::fs2e2mu][Settings::inclusive_stxs]/_N_SS_events[Settings::fs2e2mu][Settings::inclusive_stxs];//2e2mu
-		_fs_ROS_SS[Settings::fs2mu2e] = _N_OS_events[Settings::fs2mu2e][Settings::inclusive_stxs]/_N_SS_events[Settings::fs2mu2e][Settings::inclusive_stxs];//2mu2e
+	  _fs_ROS_SS[Settings::fs4mu]   = _N_OS_events[Settings::fs4mu][Settings::inclusive_stxs]/_N_SS_events[Settings::fs4mu][Settings::inclusive_stxs];//4mu
+	  _fs_ROS_SS[Settings::fs4e]    = _N_OS_events[Settings::fs4e][Settings::inclusive_stxs]/_N_SS_events[Settings::fs4e][Settings::inclusive_stxs];//4e
+	  _fs_ROS_SS[Settings::fs2e2mu] = _N_OS_events[Settings::fs2e2mu][Settings::inclusive_stxs]/_N_SS_events[Settings::fs2e2mu][Settings::inclusive_stxs];//2e2mu
+	  _fs_ROS_SS[Settings::fs2mu2e] = _N_OS_events[Settings::fs2mu2e][Settings::inclusive_stxs]/_N_SS_events[Settings::fs2mu2e][Settings::inclusive_stxs];//2mu2e
 	}
 
-	
    cout << "[INFO] OS/SS ratios calculated." << endl;
-   
-   
+      
 }
 //================================================================================================
 
 //===============================================================================
 void SSmethod::FillFRHistos( TString input_file_data_name )
 {
-   input_file_data = TFile::Open( input_file_data_name);
+   input_file_data = TFile::Open(input_file_data_name);
    
    hCounters = (TH1F*)input_file_data->Get("CRZLTree/Counters");
    gen_sum_weights = (Long64_t)hCounters->GetBinContent(40);
@@ -320,20 +318,24 @@ void SSmethod::FillFRHistos( TString input_file_data_name )
    Long64_t nbytes = 0, nb = 0;
 
    // Define some counters for control print out
-	Int_t _total_events[num_of_final_states];
-	Int_t _failZ1MassCut[num_of_final_states];
-	Int_t _failLepPtCut[num_of_final_states];
-	Int_t _failSIPCut[num_of_final_states];
-	Int_t _failMETCut[num_of_final_states];
-	Int_t _passingSelection[num_of_final_states];
-	Int_t _faillingSelection[num_of_final_states];
+   Int_t _total_events[num_of_final_states];
+   Int_t _afterSel_events[num_of_final_states];
+   Int_t _failZ1MassCut[num_of_final_states];
+   Int_t _failLepPtCut[num_of_final_states];
+   Int_t _failEtaCut[num_of_final_states];
+   Int_t _failSipVtxCut[num_of_final_states];
+   Int_t _failMETCut[num_of_final_states];
+   Int_t _passingSelection[num_of_final_states];
+   Int_t _faillingSelection[num_of_final_states];
 	
 	for (int i_fs = 0; i_fs < num_of_final_states; i_fs++)
 	{
 		_total_events[i_fs] = 0.;
+		_afterSel_events[i_fs] = 0.;
 		_failZ1MassCut[i_fs] = 0.;
 		_failLepPtCut[i_fs] = 0.;
-		_failSIPCut[i_fs] = 0.;
+		_failEtaCut[i_fs] = 0.;
+		_failSipVtxCut[i_fs] = 0.;
 		_failMETCut[i_fs] = 0.;
 		_passingSelection[i_fs] = 0.;
 		_faillingSelection[i_fs] = 0.;
@@ -345,37 +347,42 @@ void SSmethod::FillFRHistos( TString input_file_data_name )
       if (ientry < 0) break;
       nb = fChain->GetEntry(jentry);
       nbytes += nb;
+            
+      (fabs(LepLepId->at(2)) == 11) ? _total_events[Settings::ele]++ : _total_events[Settings::mu]++;
+      
+      if ( Z1Mass < 40. ) {(fabs(LepLepId->at(2)) == 11) ? _failZ1MassCut[Settings::ele]++ : _failZ1MassCut[Settings::mu]++; continue;}
+      else if ( Z1Mass > 120. ) {(fabs(LepLepId->at(2)) == 11) ? _failZ1MassCut[Settings::ele]++ : _failZ1MassCut[Settings::mu]++; continue;}
+      else if ( (LepPt->at(0) > LepPt->at(1)) && (LepPt->at(0) < 20. || LepPt->at(1) < 10.) ) {(fabs(LepLepId->at(2)) == 11) ? _failLepPtCut[Settings::ele]++ : _failLepPtCut[Settings::mu]++; continue;}
+      else if ( (LepPt->at(1) > LepPt->at(0)) && (LepPt->at(1) < 20. || LepPt->at(0) < 10.) ) {(fabs(LepLepId->at(2)) == 11) ? _failLepPtCut[Settings::ele]++ : _failLepPtCut[Settings::mu]++; continue;}
+      else if ( (fabs(LepEta->at(2)) > 2.5 )) {(fabs(LepLepId->at(2)) == 11) ? _failEtaCut[Settings::ele]++ : _failEtaCut[Settings::mu]++; continue;}
+      else if ( (LepSIP->at(2) > 4. || Lepdxy->at(2) > 0.5 || Lepdz->at(2) > 1.0) && (fabs(LepLepId->at(2)) == 11)) { _failSipVtxCut[Settings::ele]++; continue;} // Included dxy/dz cuts for ele
+      else if ( (LepSIP->at(2) > 4. || Lepdxy->at(2) > 0.5 || Lepdz->at(2) > 1.0) && (fabs(LepLepId->at(2)) == 13)) { _failSipVtxCut[Settings::mu]++; continue;}  // Included dxy/dz cuts for mu
+      // NB: Included SIP cut on muons that was removed when it was included in the muon BDT                                                        
+      else if ( PFMET > 25. ) {(fabs(LepLepId->at(2)) == 11) ? _failMETCut[Settings::ele]++ : _failMETCut[Settings::mu]++; continue;}
 
-		(fabs(LepLepId->at(2)) == 11) ? _total_events[Settings::ele]++ : _total_events[Settings::mu]++;
-	   
-		if ( Z1Mass < 40. ) {(fabs(LepLepId->at(2)) == 11) ? _failZ1MassCut[Settings::ele]++ : _failZ1MassCut[Settings::mu]++; continue;}
-	   if ( Z1Mass > 120. ) {(fabs(LepLepId->at(2)) == 11) ? _failZ1MassCut[Settings::ele]++ : _failZ1MassCut[Settings::mu]++; continue;}
-	   if ( (LepPt->at(0) > LepPt->at(1)) && (LepPt->at(0) < 20. || LepPt->at(1) < 10.) ) {(fabs(LepLepId->at(2)) == 11) ? _failLepPtCut[Settings::ele]++ : _failLepPtCut[Settings::mu]++; continue;}
-	   if ( (LepPt->at(1) > LepPt->at(0)) && (LepPt->at(1) < 20. || LepPt->at(0) < 10.) ) {(fabs(LepLepId->at(2)) == 11) ? _failLepPtCut[Settings::ele]++ : _failLepPtCut[Settings::mu]++; continue;}
-	   if ( LepSIP->at(2) > 4. && (fabs(LepLepId->at(2)) == 11)) { _failSIPCut[Settings::ele]++; continue;} // [FIXME] Include dxy dz cuts here
-	   if ( PFMET > 25. ) {(fabs(LepLepId->at(2)) == 11) ? _failMETCut[Settings::ele]++ : _failMETCut[Settings::mu]++; continue;}
       else
-	   {
-         // Final event weight
-         _k_factor = calculate_K_factor(input_file_data_name);
-         _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight) / gen_sum_weights;
-
-         if(LepisID->at(2)) //&& ((fabs(LepLepId->at(2)) == 11) ? LepCombRelIsoPF->at(2) < 999999. : LepCombRelIsoPF->at(2) < 0.35))
-         {
-				(fabs(LepLepId->at(2)) == 11) ? _passingSelection[Settings::ele]++ : _passingSelection[Settings::mu]++;
-            if(fabs(LepLepId->at(2)) == 11 ) passing[_current_process][Settings::ele]->Fill(LepPt->at(2), (abs(LepEta->at(2)) < 1.479) ? 0.5 : 1.5 , (_current_process == Settings::Data) ? 1 :  _event_weight);
-            else if(fabs(LepLepId->at(2)) == 13 ) passing[_current_process][Settings::mu]->Fill(LepPt->at(2), (abs(LepEta->at(2)) < 1.2) ? 0.5 : 1.5 , (_current_process == Settings::Data) ? 1 :  _event_weight);
-         }
-         else
-         {
-				(fabs(LepLepId->at(2)) == 11) ? _faillingSelection[Settings::ele]++ : _faillingSelection[Settings::mu]++;
-            if(fabs(LepLepId->at(2)) == 11 ) failing[_current_process][Settings::ele]->Fill(LepPt->at(2), (abs(LepEta->at(2)) < 1.479) ? 0.5 : 1.5 , (_current_process == Settings::Data) ? 1 :  _event_weight);
-            else if(fabs(LepLepId->at(2)) == 13 ) failing[_current_process][Settings::mu]->Fill(LepPt->at(2), (abs(LepEta->at(2)) < 1.2) ? 0.5 : 1.5 , (_current_process == Settings::Data) ? 1 :  _event_weight);
-         }
-      }
-   } // END events loop
+	{
+	  (fabs(LepLepId->at(2)) == 11) ? _afterSel_events[Settings::ele]++ : _afterSel_events[Settings::mu]++;
+	  // Final event weight
+	  _k_factor = calculate_K_factor(input_file_data_name);
+	  _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight * L1prefiringWeight) / gen_sum_weights;
+	  
+          if(LepisID->at(2) && ((fabs(LepLepId->at(2)) == 11) ? LepCombRelIsoPF->at(2) < 999999. : LepCombRelIsoPF->at(2) < 0.35))
+            {
+              (fabs(LepLepId->at(2)) == 11) ? _passingSelection[Settings::ele]++ : _passingSelection[Settings::mu]++;
+              if(fabs(LepLepId->at(2)) == 11 ) passing[_current_process][Settings::ele]->Fill(LepPt->at(2), (abs(LepEta->at(2)) < 1.479) ? 0.5 : 1.5 , (_current_process == Settings::Data) ? 1 :  _event_weight);
+              else if(fabs(LepLepId->at(2)) == 13 ) passing[_current_process][Settings::mu]->Fill(LepPt->at(2), (abs(LepEta->at(2)) < 1.2) ? 0.5 : 1.5 , (_current_process == Settings::Data) ? 1 :  _event_weight);
+            }
+          else
+            {
+              (fabs(LepLepId->at(2)) == 11) ? _faillingSelection[Settings::ele]++ : _faillingSelection[Settings::mu]++;
+              if(fabs(LepLepId->at(2)) == 11 ) failing[_current_process][Settings::ele]->Fill(LepPt->at(2), (abs(LepEta->at(2)) < 1.479) ? 0.5 : 1.5 , (_current_process == Settings::Data) ? 1 :  _event_weight);
+              else if(fabs(LepLepId->at(2)) == 13 ) failing[_current_process][Settings::mu]->Fill(LepPt->at(2), (abs(LepEta->at(2)) < 1.2) ? 0.5 : 1.5 , (_current_process == Settings::Data) ? 1 :  _event_weight);
+            }
+        }
+   } // END events loop          
 	
-	// Print Z + X expected yields for inclusive category
+	// SS method: control printout for ele/mu in Z+L CR
 	if( _current_process == Settings::Data)
 	{
 		cout << endl;
@@ -385,8 +392,9 @@ void SSmethod::FillFRHistos( TString input_file_data_name )
 		cout << "[INFO] Total number of events in Z+L control region = " << _total_events[Settings::ele] << endl;
 		cout << "[INFO] Events after 40 < Z1 < 120 GeV cut  = " << _total_events[Settings::ele] - _failZ1MassCut[Settings::ele] << endl;
 		cout << "[INFO] Events after LepPt > 20,10 GeV cut  = " << _total_events[Settings::ele] - _failZ1MassCut[Settings::ele] - _failLepPtCut[Settings::ele] << endl;
-		cout << "[INFO] Events after SIP < 4 cut  = " << _total_events[Settings::ele] - _failZ1MassCut[Settings::ele] - _failLepPtCut[Settings::ele] - _failSIPCut[Settings::ele] << endl;
-		cout << "[INFO] Events after MET < 25 cut  = " << _total_events[Settings::ele] - _failZ1MassCut[Settings::ele] - _failLepPtCut[Settings::ele] - _failSIPCut[Settings::ele] - _failMETCut[Settings::ele] << endl;
+		cout << "[INFO] Events after LepEta cut  = " << _total_events[Settings::ele] - _failZ1MassCut[Settings::ele] - _failLepPtCut[Settings::ele] - _failEtaCut[Settings::ele] << endl;
+		cout << "[INFO] Events after SIP < 4 cut + dxy/dz cuts  = " << _total_events[Settings::ele] - _failZ1MassCut[Settings::ele] - _failLepPtCut[Settings::ele] - _failEtaCut[Settings::ele] - _failSipVtxCut[Settings::ele] << endl;
+		cout << "[INFO] Events after MET < 25 cut  = " << _total_events[Settings::ele] - _failZ1MassCut[Settings::ele] - _failLepPtCut[Settings::ele] - _failEtaCut[Settings::ele] - _failSipVtxCut[Settings::ele] - _failMETCut[Settings::ele] << endl;
 		cout << "[INFO] Total events left = " << _passingSelection[Settings::ele] + _faillingSelection[Settings::ele] << endl;
 		cout << "[INFO] Passing selection = " << _passingSelection[Settings::ele]  << endl;
 		cout << "[INFO] Failling selection = " << _faillingSelection[Settings::ele] << endl;
@@ -400,8 +408,9 @@ void SSmethod::FillFRHistos( TString input_file_data_name )
 		cout << "[INFO] Total number of events in Z+L control region = " << _total_events[Settings::mu] << endl;
 		cout << "[INFO] Events after 40 < Z1 < 120 GeV cut  = " << _total_events[Settings::mu] - _failZ1MassCut[Settings::mu] << endl;
 		cout << "[INFO] Events after LepPt > 20,10 GeV cut  = " << _total_events[Settings::mu] - _failZ1MassCut[Settings::mu] - _failLepPtCut[Settings::mu] << endl;
-		//cout << "[INFO] Events after SIP < 4 cut  = " << _total_events[Settings::mu] - _failZ1MassCut[Settings::mu] - _failLepPtCut[Settings::mu] - _failSIPCut[Settings::mu] << endl;
-		cout << "[INFO] Events after MET < 25 cut  = " << _total_events[Settings::mu] - _failZ1MassCut[Settings::mu] - _failLepPtCut[Settings::mu] - _failMETCut[Settings::mu] << endl;
+		cout << "[INFO] Events after LepEta cut  = " << _total_events[Settings::mu] - _failZ1MassCut[Settings::mu] - _failLepPtCut[Settings::mu] - _failEtaCut[Settings::mu] << endl;
+		cout << "[INFO] Events after SIP < 4 cut + dxy/dz cuts  = " << _total_events[Settings::mu] - _failZ1MassCut[Settings::mu] - _failLepPtCut[Settings::mu] - _failEtaCut[Settings::mu] - _failSipVtxCut[Settings::mu] << endl;
+                cout << "[INFO] Events after MET < 25 cut  = " << _total_events[Settings::mu] - _failZ1MassCut[Settings::mu] - _failLepPtCut[Settings::mu] - _failEtaCut[Settings::mu] - _failSipVtxCut[Settings::mu] - _failMETCut[Settings::mu] << endl;
 		cout << "[INFO] Total events left = " << _passingSelection[Settings::mu] + _faillingSelection[Settings::mu] << endl;
 		cout << "[INFO] Passing selection = " << _passingSelection[Settings::mu]  << endl;
 		cout << "[INFO] Failling selection = " << _faillingSelection[Settings::mu] << endl;
@@ -419,14 +428,11 @@ void SSmethod::FillFRHistos( TString input_file_data_name )
 void SSmethod::FillDataMCPlots( TString input_file_data_name )
 {
    input_file_data = TFile::Open( input_file_data_name);
-   cout << "overallEventWeight=" << overallEventWeight << endl;
-   cout << "dataMCWeight=" << dataMCWeight << endl;
    hCounters = (TH1F*)input_file_data->Get("CRZLLTree/Counters");
    gen_sum_weights = (Long64_t)hCounters->GetBinContent(40);
    
    input_tree_data = (TTree*)input_file_data->Get("CRZLLTree/candTree");
    Init( input_tree_data, input_file_data_name , true);
-   cout << "overallEventWeight=" << overallEventWeight << endl;
    _current_process = find_current_process(input_file_data_name);
    
    if (fChain == 0) return;
@@ -458,27 +464,27 @@ void SSmethod::FillDataMCPlots( TString input_file_data_name )
          jetPgOverPq[j] = 1./JetQGLikelihood->at(j) - 1.;
       }
       
-		_current_category = categoryMor18(  nExtraLep,
-														 nExtraZ,
-														 nCleanedJetsPt30,
-														 nCleanedJetsPt30BTagged_bTagSF,
-														 jetQGL,
-														 p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
-														 p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
-														 p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
-														 p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
-														 pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
-														 p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
-														 p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
-														 p_HadWH_mavjj_JECNominal,
-														 p_HadWH_mavjj_true_JECNominal,
-														 p_HadZH_mavjj_JECNominal,
-														 p_HadZH_mavjj_true_JECNominal,
-														 jetPhi,
-														 ZZMass,
-														 PFMET,
-														 false,// Use VHMET category
-														 false);// Use QG tagging
+      _current_category = categoryMor18(  nExtraLep,
+					  nExtraZ,
+					  nCleanedJetsPt30,
+					  nCleanedJetsPt30BTagged_bTagSF,
+					  jetQGL,
+					  p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+					  p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
+					  p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
+					  p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+					  pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+					  p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
+					  p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
+					  p_HadWH_mavjj_JECNominal,
+					  p_HadWH_mavjj_true_JECNominal,
+					  p_HadZH_mavjj_JECNominal,
+					  p_HadZH_mavjj_true_JECNominal,
+					  jetPhi,
+					  ZZMass,
+					  PFMET,
+					  false,// Use VHMET category
+					  false);// Use QG tagging
       
       _current_category_stxs = stage1_reco_1p1 ( nCleanedJetsPt30,
                                                  DiJetMass,
@@ -488,9 +494,7 @@ void SSmethod::FillDataMCPlots( TString input_file_data_name )
 
       
       _k_factor = calculate_K_factor(input_file_data_name);
-      cout << "overallEventWeight=" << overallEventWeight << endl;
-      cout << "dataMCWeight=" << dataMCWeight << endl;
-      _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight) / gen_sum_weights;
+      _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight * L1prefiringWeight) / gen_sum_weights;
       cout << "lumi = " << _lumi << " xsec = " << xsec << " k_factor = " << _k_factor << " SF+PU+GenWeight = " << overallEventWeight << " Sum_Weight = " << gen_sum_weights << endl;
    
       histos_1D[Settings::regZLL][_current_process][_current_final_state][_current_category_stxs]->Fill(ZZMass,(_current_process == Settings::Data) ? 1 :  _event_weight);
@@ -520,8 +524,9 @@ void SSmethod::MakeHistogramsZX( TString input_file_data_name, TString  input_fi
    
    Long64_t nentries = fChain->GetEntriesFast();
    
-   Long64_t nbytes = 0, nb = 0;
-   
+   Long64_t nbytes = 0, nb = 0;   
+   //Int_t nevents_CRLLSS = 0;
+
    for (Long64_t jentry=0; jentry<nentries;jentry++)
    {
       
@@ -532,8 +537,15 @@ void SSmethod::MakeHistogramsZX( TString input_file_data_name, TString  input_fi
       
       if ( !CRflag ) continue;
       if ( !test_bit(CRflag, CRZLLss) ) continue;
-		if ( ZZMass < 70. ) continue;
-      
+      //nevents_CRLLSS += 1;
+
+      // Included SIP and dxy/dz cuts for 3rd and 4th lepton                
+      if ( fabs(LepEta->at(2)) > 2.5 || fabs(LepEta->at(3)) > 2.5) {continue;}
+      if ( (LepSIP->at(2) > 4. || Lepdxy->at(2) > 0.5 || Lepdz->at(2) > 1.0) ) {continue;} // Included dxy/dz cuts for 3rd LEPTON (ele and mu)             
+      if ( (LepSIP->at(3) > 4. || Lepdxy->at(3) > 0.5 || Lepdz->at(3) > 1.0) ) {continue;} // Included dxy/dz cuts for 4th LEPTON (ele and mu)                     
+
+      if ( ZZMass < 70. ) continue;
+
       _current_final_state = FindFinalState();
       
       for ( int j = 0; j < nCleanedJetsPt30; j++)
@@ -546,27 +558,27 @@ void SSmethod::MakeHistogramsZX( TString input_file_data_name, TString  input_fi
          jetPgOverPq[j] = 1./JetQGLikelihood->at(j) - 1.;
       }
       
-		_current_category = categoryMor18(  nExtraLep,
-														 nExtraZ,
-														 nCleanedJetsPt30,
-														 nCleanedJetsPt30BTagged_bTagSF,
-														 jetQGL,
-														 p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
-														 p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
-														 p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
-														 p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
-														 pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
-														 p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
-														 p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
-														 p_HadWH_mavjj_JECNominal,
-														 p_HadWH_mavjj_true_JECNominal,
-														 p_HadZH_mavjj_JECNominal,
-														 p_HadZH_mavjj_true_JECNominal,
-														 jetPhi,
-														 ZZMass,
-														 PFMET,
-														 false,// Use VHMET category
-														 false);// Use QG tagging
+      _current_category = categoryMor18(  nExtraLep,
+					  nExtraZ,
+					  nCleanedJetsPt30,
+					  nCleanedJetsPt30BTagged_bTagSF,
+					  jetQGL,
+					  p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal,
+					  p_JQCD_SIG_ghg2_1_JHUGen_JECNominal,
+					  p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal,
+					  p_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+					  pAux_JVBF_SIG_ghv1_1_JHUGen_JECNominal,
+					  p_HadWH_SIG_ghw1_1_JHUGen_JECNominal,
+					  p_HadZH_SIG_ghz1_1_JHUGen_JECNominal,
+					  p_HadWH_mavjj_JECNominal,
+					  p_HadWH_mavjj_true_JECNominal,
+					  p_HadZH_mavjj_JECNominal,
+					  p_HadZH_mavjj_true_JECNominal,
+					  jetPhi,
+					  ZZMass,
+					  PFMET,
+					  false,// Use VHMET category
+					  false);// Use QG tagging
       
       _current_category_stxs = stage1_reco_1p1 ( nCleanedJetsPt30,
                                                  DiJetMass,
@@ -576,55 +588,59 @@ void SSmethod::MakeHistogramsZX( TString input_file_data_name, TString  input_fi
       
       
       _k_factor = calculate_K_factor(input_file_data_name);
-      _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight) / gen_sum_weights;
+      _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight * L1prefiringWeight) / gen_sum_weights;
       
       // Calculate yield
-      _yield_SR = _fs_ROS_SS.at(_current_final_state)*FR->GetFakeRate(LepPt->at(2),LepEta->at(2),LepLepId->at(2))*FR->GetFakeRate(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
+      _yield_SR    = _fs_ROS_SS.at(_current_final_state)*FR->GetFakeRate(LepPt->at(2),LepEta->at(2),LepLepId->at(2))*FR->GetFakeRate(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
       _yield_SR_up = _fs_ROS_SS.at(_current_final_state)*FR->GetFakeRate_Up(LepPt->at(2),LepEta->at(2),LepLepId->at(2))*FR->GetFakeRate_Up(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
       _yield_SR_dn = _fs_ROS_SS.at(_current_final_state)*FR->GetFakeRate_Dn(LepPt->at(2),LepEta->at(2),LepLepId->at(2))*FR->GetFakeRate_Dn(LepPt->at(3),LepEta->at(3),LepLepId->at(3));
       
       
-      _expected_yield_SR[_current_final_state][_current_category_stxs] += _yield_SR;
+      _expected_yield_SR[_current_final_state][_current_category_stxs]    += _yield_SR;
       _expected_yield_SR_up[_current_final_state][_current_category_stxs] += _yield_SR_up;
       _expected_yield_SR_dn[_current_final_state][_current_category_stxs] += _yield_SR_dn;
       _number_of_events_CR[_current_final_state][_current_category_stxs]++;
-      //cout << _current_process << " " <<  _current_final_state << " " << _current_category << endl;
 		
       // Fill m4l Z+X histograms
       histos_ZX[Settings::regZLL][_current_process][_current_final_state][_current_category_stxs]->Fill(ZZMass,(_current_process == Settings::Data) ? _yield_SR :  _yield_SR*_event_weight);
       
 
    } // End events loop
-   
+
+   //std::cout << "###################################################\n";
+   //std::cout << "# events CRLLSS = " << nevents_CRLLSS << '\n';   
+   //std::cout << "###################################################\n";
+
+
    for (  int i_cat = 0; i_cat < num_of_categories_stxs - 1; i_cat++  )
    {
       for ( int i_fs = 0; i_fs < num_of_final_states - 1; i_fs++  )
       {
-         _expected_yield_SR[Settings::fs4l][i_cat]       += _expected_yield_SR[i_fs][i_cat];   //calculate expected yield for inclusive 4l final state
-         _number_of_events_CR[Settings::fs4l][i_cat]     += _number_of_events_CR[i_fs][i_cat];
-         _expected_yield_SR[i_fs][Settings::inclusive_stxs]   += _expected_yield_SR[i_fs][i_cat];   //calculate expected yield for inclusive category
-         _expected_yield_SR_up[i_fs][Settings::inclusive_stxs]   += _expected_yield_SR_up[i_fs][i_cat];
-         _expected_yield_SR_dn[i_fs][Settings::inclusive_stxs]   += _expected_yield_SR_dn[i_fs][i_cat];
-         _number_of_events_CR[i_fs][Settings::inclusive_stxs] += _number_of_events_CR[i_fs][i_cat];
+         _expected_yield_SR[Settings::fs4l][i_cat]             += _expected_yield_SR[i_fs][i_cat];   //calculate expected yield for inclusive 4l final state
+         _number_of_events_CR[Settings::fs4l][i_cat]           += _number_of_events_CR[i_fs][i_cat];
+         _expected_yield_SR[i_fs][Settings::inclusive_stxs]    += _expected_yield_SR[i_fs][i_cat];   //calculate expected yield for inclusive category
+         _expected_yield_SR_up[i_fs][Settings::inclusive_stxs] += _expected_yield_SR_up[i_fs][i_cat];
+         _expected_yield_SR_dn[i_fs][Settings::inclusive_stxs] += _expected_yield_SR_dn[i_fs][i_cat];
+         _number_of_events_CR[i_fs][Settings::inclusive_stxs]  += _number_of_events_CR[i_fs][i_cat];
          
          if (false)//( MERGE_2E2MU )
          {
-            _expected_yield_SR[Settings::fs2e2mu][i_cat]       += _expected_yield_SR[Settings::fs2mu2e][i_cat];   //merge 2e2mu and 2mu2e final state
-            _expected_yield_SR_up[Settings::fs2e2mu][i_cat]       += _expected_yield_SR_up[Settings::fs2mu2e][i_cat];
-            _expected_yield_SR_dn[Settings::fs2e2mu][i_cat]       += _expected_yield_SR_dn[Settings::fs2mu2e][i_cat];
+            _expected_yield_SR[Settings::fs2e2mu][i_cat]       += _expected_yield_SR[Settings::fs2mu2e][i_cat];   //merge 2e2mu and 2mu2e final states
+            _expected_yield_SR_up[Settings::fs2e2mu][i_cat]    += _expected_yield_SR_up[Settings::fs2mu2e][i_cat];
+            _expected_yield_SR_dn[Settings::fs2e2mu][i_cat]    += _expected_yield_SR_dn[Settings::fs2mu2e][i_cat];
             _number_of_events_CR[Settings::fs2e2mu][i_cat]     += _number_of_events_CR[Settings::fs2mu2e][i_cat];
-            _expected_yield_SR[Settings::fs2mu2e][i_cat]        = 0.;
-            _expected_yield_SR_up[Settings::fs2mu2e][i_cat]        = 0.;
-            _expected_yield_SR_dn[Settings::fs2mu2e][i_cat]        = 0.;
-            _number_of_events_CR[Settings::fs2mu2e][i_cat]      = 0.;
+            _expected_yield_SR[Settings::fs2mu2e][i_cat]       = 0.;
+            _expected_yield_SR_up[Settings::fs2mu2e][i_cat]    = 0.;
+            _expected_yield_SR_dn[Settings::fs2mu2e][i_cat]    = 0.;
+            _number_of_events_CR[Settings::fs2mu2e][i_cat]     = 0.;
          }
       }
    }
    for ( int i_fs = 0; i_fs < num_of_final_states - 1; i_fs++  )
    {
-      _expected_yield_SR[Settings::fs4l][Settings::inclusive_stxs] += _expected_yield_SR[i_fs][Settings::inclusive_stxs];
-      _expected_yield_SR_up[Settings::fs4l][Settings::inclusive_stxs] += _expected_yield_SR_dn[i_fs][Settings::inclusive_stxs];
-      _expected_yield_SR_up[Settings::fs4l][Settings::inclusive_stxs] += _expected_yield_SR_dn[i_fs][Settings::inclusive_stxs];
+      _expected_yield_SR[Settings::fs4l][Settings::inclusive_stxs]    += _expected_yield_SR[i_fs][Settings::inclusive_stxs];
+      _expected_yield_SR_up[Settings::fs4l][Settings::inclusive_stxs] += _expected_yield_SR_up[i_fs][Settings::inclusive_stxs];
+      _expected_yield_SR_dn[Settings::fs4l][Settings::inclusive_stxs] += _expected_yield_SR_dn[i_fs][Settings::inclusive_stxs];
    }
    
    // Print Z + X expected yields and uncertainties
@@ -638,7 +654,7 @@ void SSmethod::MakeHistogramsZX( TString input_file_data_name, TString  input_fi
       for ( int i_cat = 0; i_cat < num_of_categories_stxs; i_cat++)
       {
         float stat    = _expected_yield_SR[i_fs][i_cat]/sqrt(_number_of_events_CR[i_fs][i_cat]); //statistical uncertainty
-        float syst_up = _expected_yield_SR[i_fs][i_cat]*((_expected_yield_SR_up[i_fs][i_cat]/_expected_yield_SR[i_fs][i_cat]) - 1.); //systematical uncertainty due to fake rate variation
+        float syst_up = _expected_yield_SR[i_fs][i_cat]*((_expected_yield_SR_up[i_fs][i_cat]/_expected_yield_SR[i_fs][i_cat]) - 1.); //systematic uncertainty due to fake rate variation
         float syst_dn = _expected_yield_SR[i_fs][i_cat]*(1. - (_expected_yield_SR_dn[i_fs][i_cat]/_expected_yield_SR[i_fs][i_cat]));
         float syst_comp = _expected_yield_SR[i_fs][i_cat]*0.3; //background composition uncertainty of 30% measured in Run I
 
@@ -646,18 +662,16 @@ void SSmethod::MakeHistogramsZX( TString input_file_data_name, TString  input_fi
         float comb_dn = sqrt(stat*stat + syst_dn*syst_dn + syst_comp*syst_comp);
 			
 			
-			cout << "Category: " << _s_category_stxs.at(i_cat) << "   Final state: " << _s_final_state.at(i_fs) << endl;
-         cout << _expected_yield_SR[i_fs][i_cat] << " +/- " << comb_up << "(total):" << "  - " << stat << " (stat., evt: " <<
-         _number_of_events_CR[i_fs][i_cat] << ")" << "   - " << syst_up << " (syst.)" <<  "  " << (1. - comb_dn/_expected_yield_SR[i_fs][i_cat]) << "/" << (1. + comb_up/_expected_yield_SR[i_fs][i_cat]) << endl;
-		}
-	cout << "==================================================================================================================================" << endl;
+	cout << "Category: " << _s_category_stxs.at(i_cat) << "   Final state: " << _s_final_state.at(i_fs) << endl;
+	cout << _expected_yield_SR[i_fs][i_cat] << " +/- " << comb_dn << "/" << comb_up << "(total):" << "  - " << stat << " (stat., evt: " <<_number_of_events_CR[i_fs][i_cat] << ")" 
+             << "   - " << syst_dn << "/" << syst_up << " (syst.)" <<  "   Relative uncertainty = " << (1. - comb_dn/_expected_yield_SR[i_fs][i_cat]) << "/" << (1. + comb_up/_expected_yield_SR[i_fs][i_cat]) << endl;
+      }
+      cout << "==================================================================================================================================" << endl;
    }
    
    cout << "[INFO] Total = " << _expected_yield_SR[Settings::fs4l][Settings::inclusive_stxs] << endl;
    cout << "==================================================================================================================================" << endl;
-   cout << endl;
-	
-   
+   cout << endl;	
    
    cout << "[INFO] Z+X histograms filled." << endl;
 }
@@ -1059,17 +1073,17 @@ void SSmethod::ProduceFakeRates( TString file_name , TString input_file_data_nam
    }
 	
    FR_SS_electron_EB_unc = new TGraphErrors (vector_X[Settings::uncorrected][Settings::EB][Settings::ele].size(),
-															&(vector_X[Settings::uncorrected][Settings::EB][Settings::ele][0]),
-															&(vector_Y[Settings::uncorrected][Settings::EB][Settings::ele][0]),
-															&(vector_EX[Settings::uncorrected][Settings::EB][Settings::ele][0]),
-															&(vector_EY[Settings::uncorrected][Settings::EB][Settings::ele][0]));
+					                                                                  &(vector_X[Settings::uncorrected][Settings::EB][Settings::ele][0]),
+					                                                                  &(vector_Y[Settings::uncorrected][Settings::EB][Settings::ele][0]),
+													  &(vector_EX[Settings::uncorrected][Settings::EB][Settings::ele][0]),
+													  &(vector_EY[Settings::uncorrected][Settings::EB][Settings::ele][0]));
    FR_SS_electron_EB_unc->SetName("FR_SS_electron_EB_unc");
 	
    FR_SS_electron_EE_unc = new TGraphErrors (vector_X[Settings::uncorrected][Settings::EE][Settings::ele].size(),
-															&(vector_X[Settings::uncorrected][Settings::EE][Settings::ele][0]),
-															&(vector_Y[Settings::uncorrected][Settings::EE][Settings::ele][0]),
-															&(vector_EX[Settings::uncorrected][Settings::EE][Settings::ele][0]),
-															&(vector_EY[Settings::uncorrected][Settings::EE][Settings::ele][0]));
+													  &(vector_X[Settings::uncorrected][Settings::EE][Settings::ele][0]),
+													  &(vector_Y[Settings::uncorrected][Settings::EE][Settings::ele][0]),
+													  &(vector_EX[Settings::uncorrected][Settings::EE][Settings::ele][0]),
+													  &(vector_EY[Settings::uncorrected][Settings::EE][Settings::ele][0]));
    FR_SS_electron_EE_unc->SetName("FR_SS_electron_EE_unc");
 	
    FR_SS_muon_EB_unc = new TGraphErrors (vector_X[Settings::uncorrected][Settings::EB][Settings::mu].size(),
@@ -1102,7 +1116,7 @@ void SSmethod::ProduceFakeRates( TString file_name , TString input_file_data_nam
    FR_SS_muon_EE->SetName("FR_SS_muon_EE");
 	
    // Electron fake rates must be corrected using average number of missing hits
-	if ( input_file_data_name != "DONT_CORRECT" ) CorrectElectronFakeRate(input_file_data_name);
+   if ( input_file_data_name != "DONT_CORRECT" ) CorrectElectronFakeRate(input_file_data_name);
 	
    FR_SS_electron_EB = new TGraphErrors (vector_X[Settings::corrected][Settings::EB][Settings::ele].size(),
 													  &(vector_X[Settings::corrected][Settings::EB][Settings::ele][0]),
@@ -1118,9 +1132,7 @@ void SSmethod::ProduceFakeRates( TString file_name , TString input_file_data_nam
 													  &(vector_EY[Settings::corrected][Settings::EE][Settings::ele][0]));
    FR_SS_electron_EE->SetName("FR_SS_electron_EE");
 
-   
 
-   
    PlotFR();
    
    TFile* fOutHistos = TFile::Open(file_name, "recreate");
@@ -1200,7 +1212,7 @@ void SSmethod::Calculate_FR_nMissingHits( TString input_file_data_name, TGraphEr
 		if ( abs(LepLepId->at(2)) != 11 ) continue; // only electrons
 		if ( (LepPt->at(0) > LepPt->at(1)) && (LepPt->at(0) < 20. || LepPt->at(1) < 10.) ) continue;
 		if ( (LepPt->at(1) > LepPt->at(0)) && (LepPt->at(1) < 20. || LepPt->at(0) < 10.) ) continue;
-		if ( LepSIP->at(2) > 4.) continue;
+		if ( LepSIP->at(2) > 4. || Lepdxy->at(2) > 0.5 || Lepdz->at(2) > 1.0) continue;
 		if ( PFMET > 25. ) continue;
 		else
 		{
@@ -1373,8 +1385,7 @@ void SSmethod::Correct_Final_FR( TString input_file_data_name)
 		
 		if ( abs(Z2Flav) != 121) continue; // only electrons
 		if ( abs(Z1Flav) != 121) continue; // only 4e
-//		if ( (LepPt->at(0) > LepPt->at(1)) && (LepPt->at(0) < 20. || LepPt->at(1) < 10.) ) continue;
-//		if ( (LepPt->at(1) > LepPt->at(0)) && (LepPt->at(1) < 20. || LepPt->at(0) < 10.) ) continue;
+
 		else
 		{
 			_current_pT_bin = Find_Ele_pT_bin ( LepPt->at(2) );
@@ -1465,7 +1476,7 @@ void SSmethod::PlotFR()
    FR_SS_electron_EB->SetLineColor(kBlue);
    FR_SS_electron_EB->SetLineStyle(2);
    FR_SS_electron_EB->SetMarkerSize(0);
-   FR_SS_electron_EB->SetTitle("barel corrected");
+   FR_SS_electron_EB->SetTitle("barrel corrected");
    mg_electrons->Add(FR_SS_electron_EE);
    FR_SS_electron_EE->SetLineColor(kRed);
    FR_SS_electron_EE->SetLineStyle(2);
@@ -1475,7 +1486,7 @@ void SSmethod::PlotFR()
    FR_SS_electron_EB_unc->SetLineColor(kBlue);
    FR_SS_electron_EB_unc->SetLineStyle(1);
    FR_SS_electron_EB_unc->SetMarkerSize(0);
-   FR_SS_electron_EB_unc->SetTitle("barel uncorrected");
+   FR_SS_electron_EB_unc->SetTitle("barrel uncorrected");
    mg_electrons->Add(FR_SS_electron_EE_unc);
    FR_SS_electron_EE_unc->SetLineColor(kRed);
    FR_SS_electron_EE_unc->SetLineStyle(1);
@@ -1486,7 +1497,7 @@ void SSmethod::PlotFR()
    FR_SS_muon_EB->SetLineColor(kBlue);
    FR_SS_muon_EB->SetLineStyle(2);
    FR_SS_muon_EB->SetMarkerSize(0);
-   FR_SS_muon_EB->SetTitle("barel corrected");
+   FR_SS_muon_EB->SetTitle("barrel corrected");
    mg_muons->Add(FR_SS_muon_EE);
    FR_SS_muon_EE->SetLineColor(kRed);
    FR_SS_muon_EE->SetLineStyle(2);
@@ -1496,7 +1507,7 @@ void SSmethod::PlotFR()
    FR_SS_muon_EB_unc->SetLineColor(kBlue);
    FR_SS_muon_EB_unc->SetLineStyle(1);
    FR_SS_muon_EB_unc->SetMarkerSize(0);
-   FR_SS_muon_EB_unc->SetTitle("barel uncorrected");
+   FR_SS_muon_EB_unc->SetTitle("barrel uncorrected");
    mg_muons->Add(FR_SS_muon_EE_unc);
    FR_SS_muon_EE_unc->SetLineColor(kRed);
    FR_SS_muon_EE_unc->SetLineStyle(1);
@@ -1547,15 +1558,15 @@ void SSmethod::PlotDataMC( TString variable_name, TString folder )
    {
       for ( int i_cat = 0; i_cat <= Settings::inclusive_stxs; i_cat++ )
       {
-         histos_1D[Settings::regZLL][Settings::WZ][i_fs][i_cat]   ->SetFillColor(kMagenta);
+         histos_1D[Settings::regZLL][Settings::WZ][i_fs][i_cat]   ->SetFillColor(kMagenta-7);
          histos_1D[Settings::regZLL][Settings::qqZZ][i_fs][i_cat] ->SetFillColor(kCyan+1);
-         histos_1D[Settings::regZLL][Settings::DY][i_fs][i_cat]   ->SetFillColor(kGreen-1);
-         histos_1D[Settings::regZLL][Settings::ttbar][i_fs][i_cat]->SetFillColor(kBlue-2);
+         histos_1D[Settings::regZLL][Settings::DY][i_fs][i_cat]   ->SetFillColor(kGreen+2);
+         histos_1D[Settings::regZLL][Settings::ttbar][i_fs][i_cat]->SetFillColor(kBlue-4);
          
-         histos_1D[Settings::regZLL][Settings::WZ][i_fs][i_cat]   ->SetLineColor(kMagenta);
+         histos_1D[Settings::regZLL][Settings::WZ][i_fs][i_cat]   ->SetLineColor(kMagenta-7);
          histos_1D[Settings::regZLL][Settings::qqZZ][i_fs][i_cat] ->SetLineColor(kCyan+1);
-         histos_1D[Settings::regZLL][Settings::DY][i_fs][i_cat]   ->SetLineColor(kGreen-1);
-         histos_1D[Settings::regZLL][Settings::ttbar][i_fs][i_cat]->SetLineColor(kBlue-2);
+         histos_1D[Settings::regZLL][Settings::DY][i_fs][i_cat]   ->SetLineColor(kGreen+2);
+         histos_1D[Settings::regZLL][Settings::ttbar][i_fs][i_cat]->SetLineColor(kBlue-4);
          
          histos_1D[Settings::regZLL][Settings::Data][i_fs][i_cat]->SetMarkerSize(0.8);
          histos_1D[Settings::regZLL][Settings::Data][i_fs][i_cat]->SetMarkerStyle(20);
@@ -1627,8 +1638,8 @@ void SSmethod::PlotZX( TString variable_name, TString folder )
    {
       for ( int i_cat = 0; i_cat <= Settings::inclusive_stxs; i_cat++ )
       {
-         histos_ZX[Settings::regZLL][Settings::Data][i_fs][i_cat]->SetFillColor(kGreen-1);
-         histos_ZX[Settings::regZLL][Settings::Data][i_fs][i_cat]->SetLineColor(kGreen-1);
+         histos_ZX[Settings::regZLL][Settings::Data][i_fs][i_cat]->SetFillColor(kGreen+2);
+         histos_ZX[Settings::regZLL][Settings::Data][i_fs][i_cat]->SetLineColor(kGreen+2);
          
          histos_ZX[Settings::regZLL][Settings::Data][i_fs][i_cat]->Draw("HIST");
          
@@ -1670,7 +1681,7 @@ void SSmethod::FitZX( TString variable_name, TString folder )
    TF1  *fit_function;
    CMS_lumi *lumi = new CMS_lumi;
 	
-	c = new TCanvas("Fits_ZLLss", variable_name, 600, 600);
+   c = new TCanvas("Fits_ZLLss", variable_name, 600, 600);
 	
    if ( GetVarLogX( variable_name) ) c->SetLogx();
    if ( GetVarLogY( variable_name) ) c->SetLogy();
@@ -1701,7 +1712,7 @@ void SSmethod::FitZX( TString variable_name, TString folder )
 			gStyle->SetStatW(0.2);
 			gStyle->SetStatH(0.1);
 			
-			fit_function = new TF1("fit_function","[0]*TMath::Landau(x, [1], [2])",70,1000);
+			fit_function = new TF1("fit_function","[0]*TMath::Landau(x, [1], [2])",70,800);
 			fit_function->SetParNames("Constant","MPV","#sigma");
 			fit_function->SetParameter(0,1.);
 			fit_function->SetParameter(1,100.);
@@ -1953,8 +1964,3 @@ void SSmethod::SavePlots( TCanvas *c, TString name)
    //gSystem->Exec("convert -density 300 -quality 100 " + name + ".eps " + name + ".png");
 }
 //=======================================
-
-
-
-
-
