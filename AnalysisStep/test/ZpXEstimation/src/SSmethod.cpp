@@ -663,7 +663,7 @@ void SSmethod::MakeHistogramsZX( TString input_file_data_name, TString  input_fi
 			
 			
 	cout << "Category: " << _s_category_stxs.at(i_cat) << "   Final state: " << _s_final_state.at(i_fs) << endl;
-	cout << _expected_yield_SR[i_fs][i_cat] << " +/- " comb_dn << "/" << comb_up << "(total):" << "  - " << stat << " (stat., evt: " <<_number_of_events_CR[i_fs][i_cat] << ")" 
+	cout << _expected_yield_SR[i_fs][i_cat] << " +/- " << comb_dn << "/" << comb_up << "(total):" << "  - " << stat << " (stat., evt: " <<_number_of_events_CR[i_fs][i_cat] << ")" 
              << "   - " << syst_dn << "/" << syst_up << " (syst.)" <<  "   Relative uncertainty = " << (1. - comb_dn/_expected_yield_SR[i_fs][i_cat]) << "/" << (1. + comb_up/_expected_yield_SR[i_fs][i_cat]) << endl;
       }
       cout << "==================================================================================================================================" << endl;
