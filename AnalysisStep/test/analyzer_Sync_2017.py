@@ -41,7 +41,7 @@ if not IsMC:
 ### ----------------------------------------------------------------------
 
 process.source.fileNames = cms.untracked.vstring(
-### LEGACY PAPER - 2017 sync files                                                                                                                                                                          
+### LEGACY PAPER - 2017 sync files                                                                                                                         
 '/store/mc/RunIIFall17MiniAODv2/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/10000/F0ABD15B-AF42-E811-B204-00144F45BD0E.root',
 '/store/mc/RunIIFall17MiniAODv2/ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/110000/E852BBDD-1EB4-E811-81D5-FA163EE7A24E.root',
 '/store/mc/RunIIFall17MiniAODv2/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14_ext2-v2/260000/1E7BEDB3-5859-E911-8751-FA163E5522F8.root'
