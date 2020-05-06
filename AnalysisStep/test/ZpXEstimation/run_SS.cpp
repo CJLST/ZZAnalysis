@@ -20,20 +20,14 @@ int main( int argc, char *argv[] )
 {
    setTDRStyle();
    
-   //TString path = "/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased/MC_2016_CorrectBTag/";
-   //TString path = "/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased/MC_2017/";
-   TString path = "/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased/MC_2018/";
+   TString path = "";
    TString file_name = "/ZZ4lAnalysis.root";
      	
-   TString Data    = "/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased/Data_2018/AllData" + file_name;
-   //TString WZ      = path + "WZTo3LNu"       + file_name;
-   TString WZ      = path + "WZTo3LNuext1"       + file_name; //2018
-   //TString ZZ      = path + "ZZTo4lext"      + file_name;
-   TString ZZ      = path + "ZZTo4lext2"      + file_name; //2018
+   TString WZ      = path + "WZTo3LNu"       + file_name;
+   TString ZZ      = path + "ZZTo4lext"      + file_name;
    TString ttbar   = path + "TTTo2L2Nu"      + file_name;
-   //TString DY      = path + "DYJetsToLL_M50" + file_name;
-   TString DY      = path + "DYJetsToLL_M50_LO" + file_name; //2018
-	
+   TString DY      = path + "DYJetsToLL_M50" + file_name;
+   	
    bool SubtractWZ = true;
    bool Remove_NegBins_FR = true;
    bool SubtractMCContribution = true;
@@ -42,8 +36,8 @@ int main( int argc, char *argv[] )
 
    SSmethod *ss = new SSmethod();
    //ss->SetLumi(35.92); // 2016 lumi
-   //ss->SetLumi(41.53); // 2017 lumi
-   ss->SetLumi(59.74); // 2018 lumi
+   ss->SetLumi(41.53); // 2017 lumi
+   //ss->SetLumi(59.74); // 2018 lumi
 
    ///////////////////////////////////
    // Fill control histos           //
@@ -77,7 +71,6 @@ int main( int argc, char *argv[] )
    ///////////////////////////////////
    // Fill ZX contributions histos  //
    ///////////////////////////////////
-   //ss->MakeHistogramsZX(Data, "/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased/FRfiles/FakeRates_SS_2018.root");
    ss->MakeHistogramsZX(Data, "FakeRates_SS_Moriond19.root");
    ss->SaveZXHistos("ZXHistos_SS_Moriond19.root");
 
