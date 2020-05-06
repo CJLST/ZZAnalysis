@@ -22,12 +22,12 @@ int main( int argc, char *argv[] )
    
    TString path = "";
    TString file_name = "/ZZ4lAnalysis.root";
-	
-   TString Data    = path + "AllData"           + file_name;
-   TString WZ      = path + "WZTo3LNuext1"      + file_name;
-   TString ZZ      = path + "ZZTo4lext1"        + file_name;
-   TString ttbar   = path + "TTTo2L2Nu"         + file_name;
-   TString DY      = path + "DYJetsToLL_M50_LO" + file_name;
+     	
+   TString Data    = path + "AllData"        + file_name;
+   TString WZ      = path + "WZTo3LNu"       + file_name;
+   TString ZZ      = path + "ZZTo4lext"      + file_name;
+   TString ttbar   = path + "TTTo2L2Nu"      + file_name;
+   TString DY      = path + "DYJetsToLL_M50" + file_name;
 	
    bool SubtractWZ = true;
    bool Remove_NegBins_FR = true;
@@ -36,7 +36,9 @@ int main( int argc, char *argv[] )
    float pT_bins[] = {5, 7, 10, 20, 30, 40, 50, 80};
 
    SSmethod *ss = new SSmethod();
-   ss->SetLumi(58.83);
+   //ss->SetLumi(35.92); // 2016 lumi
+   ss->SetLumi(41.53); // 2017 lumi
+   //ss->SetLumi(59.74); // 2018 lumi
 
    ///////////////////////////////////
    // Fill control histos           //
@@ -47,7 +49,7 @@ int main( int argc, char *argv[] )
    ss->FillDataMCPlots(ttbar);
    ss->FillDataMCPlots(DY);
    ss->SaveDataMCHistos("DataMC_SS_Moriond19.root");
-
+   
    ///////////////////////////////////
    // Fill passing/failling histos  //
    ///////////////////////////////////
