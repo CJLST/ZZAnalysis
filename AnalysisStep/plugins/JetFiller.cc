@@ -230,7 +230,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	pt_jesup_split.push_back( jpt * (1.0 + singleContr_jes_unc));	
 	pt_jesdn_split.push_back( jpt * (1.0 - singleContr_jes_unc));	
       }
-    
+    /*
     cout << "=============================" << endl; 
     cout << "Previous total JES UNCERTAINTY = " << jes_unc << endl;     
     cout << "----- NUMBER of CONSIDERED UNCERTAINTIES = " << uncSources.size() << " -----" << endl;
@@ -249,6 +249,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	cout << s_unc << " pT JesPt_DN SPLIT = " << pt_jesdn_split[s_unc] << endl; 
 	cout << "------------------------------------------------" << endl;
       }
+    */
 
     //--- loose jet ID, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID13TeVRun2016 
     float NHF  = j.neutralHadronEnergyFraction();
@@ -404,6 +405,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
 
     //cout<<"jet pT="<<jpt<<", eta="<<jeta<<endl;
+
     //--- Embed user variables
     j.addUserFloat("qgLikelihood",qgLikelihood);
     j.addUserFloat("axis2",axis2);
@@ -412,6 +414,46 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     j.addUserFloat("jes_unc", jes_unc);
     j.addUserFloat("pt_jesup", pt_jesup);
     j.addUserFloat("pt_jesdn", pt_jesdn);
+    // Adding variables to take into account single contributions to the total JEC uncertainty:
+    // UNCERTAINTY...
+    j.addUserFloat("jes_unc_split_Total", jes_unc_split[0]);
+    j.addUserFloat("jes_unc_split_Abs", jes_unc_split[1]);
+    j.addUserFloat("jes_unc_split_Abs_corr", jes_unc_split[2]);
+    j.addUserFloat("jes_unc_split_BBEC1", jes_unc_split[3]);
+    j.addUserFloat("jes_unc_split_BBEC1_corr", jes_unc_split[4]);
+    j.addUserFloat("jes_unc_split_EC2", jes_unc_split[5]);
+    j.addUserFloat("jes_unc_split_EC2_corr", jes_unc_split[6]);
+    j.addUserFloat("jes_unc_split_FlavQCD", jes_unc_split[7]);
+    j.addUserFloat("jes_unc_split_HF", jes_unc_split[8]);
+    j.addUserFloat("jes_unc_split_HF_corr", jes_unc_split[9]);
+    j.addUserFloat("jes_unc_split_RelBal", jes_unc_split[10]);
+    j.addUserFloat("jes_unc_split_RelSample_corr", jes_unc_split[11]);
+    // ... and pT UP/DN VARIATIONS 
+    j.addUserFloat("pt_jesup_split_Total", pt_jesup_split[0]);
+    j.addUserFloat("pt_jesdn_split_Total", pt_jesdn_split[0]);
+    j.addUserFloat("pt_jesup_split_Abs", pt_jesup_split[1]);
+    j.addUserFloat("pt_jesdn_split_Abs", pt_jesdn_split[1]);
+    j.addUserFloat("pt_jesup_split_Abs_corr", pt_jesup_split[2]);
+    j.addUserFloat("pt_jesdn_split_Abs_corr", pt_jesdn_split[2]);
+    j.addUserFloat("pt_jesup_split_BBEC1", pt_jesup_split[3]);
+    j.addUserFloat("pt_jesdn_split_BBEC1", pt_jesdn_split[3]);
+    j.addUserFloat("pt_jesup_split_BBEC1_corr", pt_jesup_split[4]);
+    j.addUserFloat("pt_jesdn_split_BBEC1_corr", pt_jesdn_split[4]);
+    j.addUserFloat("pt_jesup_split_EC2", pt_jesup_split[5]);
+    j.addUserFloat("pt_jesdn_split_EC2", pt_jesdn_split[5]);
+    j.addUserFloat("pt_jesup_split_EC2_corr", pt_jesup_split[6]);
+    j.addUserFloat("pt_jesdn_split_EC2_corr", pt_jesdn_split[6]);
+    j.addUserFloat("pt_jesup_split_FlavQCD", pt_jesup_split[7]);
+    j.addUserFloat("pt_jesdn_split_FlavQCD", pt_jesdn_split[7]);
+    j.addUserFloat("pt_jesup_split_HF", pt_jesup_split[8]);
+    j.addUserFloat("pt_jesdn_split_HF", pt_jesdn_split[8]);
+    j.addUserFloat("pt_jesup_split_HF_corr", pt_jesup_split[9]);
+    j.addUserFloat("pt_jesdn_split_HF_corr", pt_jesdn_split[9]);
+    j.addUserFloat("pt_jesup_split_RelBal", pt_jesup_split[10]);
+    j.addUserFloat("pt_jesdn_split_RelBal", pt_jesdn_split[10]);
+    j.addUserFloat("pt_jesup_split_RelSample_corr", pt_jesup_split[11]);
+    j.addUserFloat("pt_jesdn_split_RelSample_corr", pt_jesdn_split[11]);
+    //////////////////////////////////////////////////////////////////////////////////////////////
     j.addUserFloat("pt_jerup", pt_jerup);
     j.addUserFloat("pt_jerdn", pt_jerdn);
     j.addUserFloat("RawPt", raw_jpt);
