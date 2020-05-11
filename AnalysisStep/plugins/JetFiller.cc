@@ -230,7 +230,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	pt_jesup_split.push_back( jpt * (1.0 + singleContr_jes_unc));	
 	pt_jesdn_split.push_back( jpt * (1.0 - singleContr_jes_unc));	
       }
-    /*
+    /*// For DEBUG: JEC splitting
     cout << "=============================" << endl; 
     cout << "Previous total JES UNCERTAINTY = " << jes_unc << endl;     
     cout << "----- NUMBER of CONSIDERED UNCERTAINTIES = " << uncSources.size() << " -----" << endl;

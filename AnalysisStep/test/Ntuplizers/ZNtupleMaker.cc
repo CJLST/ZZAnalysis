@@ -142,13 +142,61 @@ namespace {
   std::vector<float> AddMuCombRelIsoPF;
   Short_t nCleanedJetsPt30 = 0;
   Short_t nCleanedJetsPt30_jesUp = 0;
+  Short_t nCleanedJetsPt30_jesUp_Total = 0;
+  Short_t nCleanedJetsPt30_jesUp_Abs = 0;
+  Short_t nCleanedJetsPt30_jesUp_Abs_corr = 0;
+  Short_t nCleanedJetsPt30_jesUp_BBEC1 = 0;
+  Short_t nCleanedJetsPt30_jesUp_BBEC1_corr = 0;
+  Short_t nCleanedJetsPt30_jesUp_EC2 = 0;
+  Short_t nCleanedJetsPt30_jesUp_EC2_corr = 0;
+  Short_t nCleanedJetsPt30_jesUp_FlavQCD = 0;
+  Short_t nCleanedJetsPt30_jesUp_HF = 0;
+  Short_t nCleanedJetsPt30_jesUp_HF_corr = 0;
+  Short_t nCleanedJetsPt30_jesUp_RelBal = 0;
+  Short_t nCleanedJetsPt30_jesUp_RelSample_corr = 0;
   Short_t nCleanedJetsPt30_jesDn = 0;
+  Short_t nCleanedJetsPt30_jesDn_Total = 0;
+  Short_t nCleanedJetsPt30_jesDn_Abs = 0;
+  Short_t nCleanedJetsPt30_jesDn_Abs_corr = 0;
+  Short_t nCleanedJetsPt30_jesDn_BBEC1 = 0;
+  Short_t nCleanedJetsPt30_jesDn_BBEC1_corr = 0;
+  Short_t nCleanedJetsPt30_jesDn_EC2 = 0;
+  Short_t nCleanedJetsPt30_jesDn_EC2_corr = 0;
+  Short_t nCleanedJetsPt30_jesDn_FlavQCD = 0;
+  Short_t nCleanedJetsPt30_jesDn_HF = 0;
+  Short_t nCleanedJetsPt30_jesDn_HF_corr = 0;
+  Short_t nCleanedJetsPt30_jesDn_RelBal = 0;
+  Short_t nCleanedJetsPt30_jesDn_RelSample_corr = 0;
   Short_t nCleanedJetsPt30_jerUp = 0;
   Short_t nCleanedJetsPt30_jerDn = 0;
   Short_t nCleanedJetsPt30BTagged  = 0;
   Short_t nCleanedJetsPt30BTagged_bTagSF  = 0;
   Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp  = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_Total = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_Abs = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_Abs_corr = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_BBEC1 = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_BBEC1_corr = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_EC2 = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_EC2_corr = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_FlavQCD = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_HF = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_HF_corr = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_RelBal = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_RelSample_corr = 0;
   Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn  = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_Total = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_Abs = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_Abs_corr = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_BBEC1 = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_BBEC1_corr = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_EC2 = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_EC2_corr = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_FlavQCD = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_HF = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_HF_corr = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_RelBal = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_RelSample_corr = 0;
   Short_t nCleanedJetsPt30BTagged_bTagSF_jerUp  = 0;
   Short_t nCleanedJetsPt30BTagged_bTagSF_jerDn  = 0;
   Short_t nCleanedJetsPt30BTagged_bTagSFUp  = 0;
@@ -167,13 +215,49 @@ namespace {
   std::vector<float> JetMult;
   std::vector<float> JetPtD;
   std::vector<float> JetSigma;
+  std::vector<float> JetSigma_Total ;
+  std::vector<float> JetSigma_Abs ;
+  std::vector<float> JetSigma_Abs_corr ;
+  std::vector<float> JetSigma_BBEC1 ;
+  std::vector<float> JetSigma_BBEC1_corr ;
+  std::vector<float> JetSigma_EC2 ;
+  std::vector<float> JetSigma_EC2_corr ;
+  std::vector<float> JetSigma_FlavQCD ;
+  std::vector<float> JetSigma_HF ;
+  std::vector<float> JetSigma_HF_corr ;
+  std::vector<float> JetSigma_RelBal ;
+  std::vector<float> JetSigma_RelSample_corr ;
   std::vector<short> JetHadronFlavour;
   std::vector<short> JetPartonFlavour;
   std::vector<float> JetPUValue;
   std::vector<short> JetPUID;
   std::vector<short> JetID;
-  std::vector<float> JetPt_JESUp;
-  std::vector<float> JetPt_JESDown;
+  std::vector<float> JetJESUp ;
+  std::vector<float> JetJESUp_Total ;
+  std::vector<float> JetJESUp_Abs ;
+  std::vector<float> JetJESUp_Abs_corr ;
+  std::vector<float> JetJESUp_BBEC1 ;
+  std::vector<float> JetJESUp_BBEC1_corr ;
+  std::vector<float> JetJESUp_EC2 ;
+  std::vector<float> JetJESUp_EC2_corr ;
+  std::vector<float> JetJESUp_FlavQCD ;
+  std::vector<float> JetJESUp_HF ;
+  std::vector<float> JetJESUp_HF_corr ;
+  std::vector<float> JetJESUp_RelBal ;
+  std::vector<float> JetJESUp_RelSample_corr ;
+  std::vector<float> JetJESDown ;
+  std::vector<float> JetJESDown_Total ;
+  std::vector<float> JetJESDown_Abs ;
+  std::vector<float> JetJESDown_Abs_corr ;
+  std::vector<float> JetJESDown_BBEC1 ;
+  std::vector<float> JetJESDown_BBEC1_corr ;
+  std::vector<float> JetJESDown_EC2 ;
+  std::vector<float> JetJESDown_EC2_corr ;
+  std::vector<float> JetJESDown_FlavQCD ;
+  std::vector<float> JetJESDown_HF ;
+  std::vector<float> JetJESDown_HF_corr ;
+  std::vector<float> JetJESDown_RelBal ;
+  std::vector<float> JetJESDown_RelSample_corr ;
   std::vector<float> JetPt_JERUp;
   std::vector<float> JetPt_JERDown;
   std::vector<float> JetPtJEC_noJER;
@@ -455,44 +539,178 @@ void ZNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& eSetu
    // Count and store jets, after additional cleaning for CRs...
    for (unsigned i=0; i<cleanedJets.size(); ++i) {
        
-       // count jes up/down njets pt30
-       float jes_unc = cleanedJets[i]->userFloat("jes_unc");
-       
-       float pt_nominal = cleanedJets[i]->pt();
-       float pt_jes_up = pt_nominal * (1.0 + jes_unc);
-       float pt_jes_dn = pt_nominal * (1.0 - jes_unc);
-       
-       if(pt_nominal>30){
-          ++nCleanedJetsPt30;
-          if(cleanedJets[i]->userFloat("isBtagged")) ++nCleanedJetsPt30BTagged;
-          if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF;
-          if(cleanedJets[i]->userFloat("isBtaggedWithSF_Up")) ++nCleanedJetsPt30BTagged_bTagSFUp;
-          if(cleanedJets[i]->userFloat("isBtaggedWithSF_Dn")) ++nCleanedJetsPt30BTagged_bTagSFDn;
-       }
-       if(pt_jes_up>30){
-          ++nCleanedJetsPt30_jesUp;
-          if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp;
-       }
-       if(pt_jes_dn>30){
-          ++nCleanedJetsPt30_jesDn;
-          if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn;
-       }
-       
-       // count jer up/down njets pt30
-       float pt_jer_up = cleanedJets[i]->userFloat("pt_jerup");
-       float pt_jer_dn = cleanedJets[i]->userFloat("pt_jerdn");
-       
-       if(pt_jer_up>30){
-          ++nCleanedJetsPt30_jerUp;
-          if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jerUp;
-       }
-       if(pt_jer_dn>30){
-          ++nCleanedJetsPt30_jerDn;
-          if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jerDn;
-       }
-      if (addJets) FillJet(*(cleanedJets.at(i)));
-    }
+     // count jes up/down njets pt30
+     float jes_unc = cleanedJets[i]->userFloat("jes_unc");
+     float jes_unc_Total = cleanedJets[i]->userFloat("jes_unc_split_Total");
+     float jes_unc_Abs = cleanedJets[i]->userFloat("jes_unc_split_Abs");
+     float jes_unc_Abs_corr = cleanedJets[i]->userFloat("jes_unc_split_Abs_corr");
+     float jes_unc_BBEC1 = cleanedJets[i]->userFloat("jes_unc_split_BBEC1");
+     float jes_unc_BBEC1_corr = cleanedJets[i]->userFloat("jes_unc_split_BBEC1_corr");
+     float jes_unc_EC2 = cleanedJets[i]->userFloat("jes_unc_split_EC2");
+     float jes_unc_EC2_corr = cleanedJets[i]->userFloat("jes_unc_split_EC2_corr");
+     float jes_unc_FlavQCD = cleanedJets[i]->userFloat("jes_unc_split_FlavQCD");
+     float jes_unc_HF = cleanedJets[i]->userFloat("jes_unc_split_HF");
+     float jes_unc_HF_corr = cleanedJets[i]->userFloat("jes_unc_split_HF_corr");
+     float jes_unc_RelBal = cleanedJets[i]->userFloat("jes_unc_split_RelBal");
+     float jes_unc_RelSample_corr = cleanedJets[i]->userFloat("jes_unc_split_RelSample_corr");
 
+     float pt_nominal = cleanedJets[i]->pt();
+     float pt_jes_up = pt_nominal * (1.0 + jes_unc);
+     float pt_jes_up_Total = pt_nominal * (1.0 + jes_unc_Total);
+     float pt_jes_up_Abs = pt_nominal * (1.0 + jes_unc_Abs);
+     float pt_jes_up_Abs_corr = pt_nominal * (1.0 + jes_unc_Abs_corr);
+     float pt_jes_up_BBEC1 = pt_nominal * (1.0 + jes_unc_BBEC1);
+     float pt_jes_up_BBEC1_corr = pt_nominal * (1.0 + jes_unc_BBEC1_corr);
+     float pt_jes_up_EC2 = pt_nominal * (1.0 + jes_unc_EC2);
+     float pt_jes_up_EC2_corr = pt_nominal * (1.0 + jes_unc_EC2_corr);
+     float pt_jes_up_FlavQCD = pt_nominal * (1.0 + jes_unc_FlavQCD);
+     float pt_jes_up_HF = pt_nominal * (1.0 + jes_unc_HF);
+     float pt_jes_up_HF_corr = pt_nominal * (1.0 + jes_unc_HF_corr);
+     float pt_jes_up_RelBal = pt_nominal * (1.0 + jes_unc_RelBal);
+     float pt_jes_up_RelSample_corr = pt_nominal * (1.0 + jes_unc_RelSample_corr);
+     float pt_jes_dn = pt_nominal * (1.0 - jes_unc);
+     float pt_jes_dn_Total = pt_nominal * (1.0 - jes_unc_Total);
+     float pt_jes_dn_Abs = pt_nominal * (1.0 - jes_unc_Abs);
+     float pt_jes_dn_Abs_corr = pt_nominal * (1.0 - jes_unc_Abs_corr);
+     float pt_jes_dn_BBEC1 = pt_nominal * (1.0 - jes_unc_BBEC1);
+     float pt_jes_dn_BBEC1_corr = pt_nominal * (1.0 - jes_unc_BBEC1_corr);
+     float pt_jes_dn_EC2 = pt_nominal * (1.0 - jes_unc_EC2);
+     float pt_jes_dn_EC2_corr = pt_nominal * (1.0 - jes_unc_EC2_corr);
+     float pt_jes_dn_FlavQCD = pt_nominal * (1.0 - jes_unc_FlavQCD);
+     float pt_jes_dn_HF = pt_nominal * (1.0 - jes_unc_HF);
+     float pt_jes_dn_HF_corr = pt_nominal * (1.0 - jes_unc_HF_corr);
+     float pt_jes_dn_RelBal = pt_nominal * (1.0 - jes_unc_RelBal);
+     float pt_jes_dn_RelSample_corr = pt_nominal * (1.0 - jes_unc_RelSample_corr);
+
+     if(pt_nominal>30){
+       ++nCleanedJetsPt30;
+       if(cleanedJets[i]->userFloat("isBtagged")) ++nCleanedJetsPt30BTagged;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF_Up")) ++nCleanedJetsPt30BTagged_bTagSFUp;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF_Dn")) ++nCleanedJetsPt30BTagged_bTagSFDn;
+     }
+     if(pt_jes_up>30){
+       ++nCleanedJetsPt30_jesUp;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp;
+     }
+     if(pt_jes_up_Total>30){
+       ++nCleanedJetsPt30_jesUp_Total;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_Total;
+     }
+     if(pt_jes_up_Abs>30){
+       ++nCleanedJetsPt30_jesUp_Abs;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_Abs;
+     }
+     if(pt_jes_up_Abs_corr>30){
+       ++nCleanedJetsPt30_jesUp_Abs_corr;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_Abs_corr;
+     }
+     if(pt_jes_up_BBEC1>30){
+       ++nCleanedJetsPt30_jesUp_BBEC1;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_BBEC1;
+     }
+     if(pt_jes_up_BBEC1_corr>30){
+       ++nCleanedJetsPt30_jesUp_BBEC1_corr;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_BBEC1_corr;
+     }
+     if(pt_jes_up_EC2>30){
+       ++nCleanedJetsPt30_jesUp_EC2;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_EC2;
+     }
+     if(pt_jes_up_EC2_corr>30){
+       ++nCleanedJetsPt30_jesUp_EC2_corr;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_EC2_corr;
+     }
+     if(pt_jes_up_FlavQCD>30){
+       ++nCleanedJetsPt30_jesUp_FlavQCD;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_FlavQCD;
+     }
+     if(pt_jes_up_HF>30){
+       ++nCleanedJetsPt30_jesUp_HF;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_HF;
+     }
+     if(pt_jes_up_HF_corr>30){
+       ++nCleanedJetsPt30_jesUp_HF_corr;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_HF_corr;
+     }
+     if(pt_jes_up_RelBal>30){
+       ++nCleanedJetsPt30_jesUp_RelBal;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_RelBal;
+     }
+     if(pt_jes_up_RelSample_corr>30){
+       ++nCleanedJetsPt30_jesUp_RelSample_corr;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_RelSample_corr;
+     }
+
+     if(pt_jes_dn>30){
+       ++nCleanedJetsPt30_jesDn;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn;
+     }
+     if(pt_jes_dn_Total>30){
+       ++nCleanedJetsPt30_jesDn_Total;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_Total;
+     }
+     if(pt_jes_dn_Abs>30){
+       ++nCleanedJetsPt30_jesDn_Abs;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_Abs;
+     }
+     if(pt_jes_dn_Abs_corr>30){
+       ++nCleanedJetsPt30_jesDn_Abs_corr;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_Abs_corr;
+     }
+     if(pt_jes_dn_BBEC1>30){
+       ++nCleanedJetsPt30_jesDn_BBEC1;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_BBEC1;
+     }
+     if(pt_jes_dn_BBEC1_corr>30){
+       ++nCleanedJetsPt30_jesDn_BBEC1_corr;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_BBEC1_corr;
+     }
+     if(pt_jes_dn_EC2>30){
+       ++nCleanedJetsPt30_jesDn_EC2;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_EC2;
+     }
+     if(pt_jes_dn_EC2_corr>30){
+       ++nCleanedJetsPt30_jesDn_EC2_corr;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_EC2_corr;
+     }
+     if(pt_jes_dn_FlavQCD>30){
+       ++nCleanedJetsPt30_jesDn_FlavQCD;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_FlavQCD;
+     }
+     if(pt_jes_dn_HF>30){
+       ++nCleanedJetsPt30_jesDn_HF;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_HF;
+     }
+     if(pt_jes_dn_HF_corr>30){
+       ++nCleanedJetsPt30_jesDn_HF_corr;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_HF_corr;
+     }
+     if(pt_jes_dn_RelBal>30){
+       ++nCleanedJetsPt30_jesDn_RelBal;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_RelBal;
+     }
+     if(pt_jes_dn_RelSample_corr>30){
+       ++nCleanedJetsPt30_jesDn_RelSample_corr;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_RelSample_corr;
+     }
+
+     
+     // count jer up/down njets pt30
+     float pt_jer_up = cleanedJets[i]->userFloat("pt_jerup");
+     float pt_jer_dn = cleanedJets[i]->userFloat("pt_jerdn");
+     
+     if(pt_jer_up>30){
+       ++nCleanedJetsPt30_jerUp;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jerUp;
+     }
+     if(pt_jer_dn>30){
+       ++nCleanedJetsPt30_jerDn;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jerDn;
+     }
+     if (addJets) FillJet(*(cleanedJets.at(i)));
+   }
+   
   // MET
   Handle<pat::METCollection> metHandle;
   event.getByToken(metToken, metHandle);
@@ -830,8 +1048,32 @@ void ZNtupleMaker::FillJet(const pat::Jet& jet)
   JetHadronFlavour .push_back(jet.hadronFlavour());
   JetPartonFlavour .push_back(jet.partonFlavour());
 	
-  JetPt_JESUp .push_back(jet.userFloat("pt_jesup"));
-  JetPt_JESDown .push_back(jet.userFloat("pt_jesdn"));
+  JetJESUp .push_back(jet.userFloat("pt_jesup"));
+  JetJESUp_Total .push_back(jet.userFloat("pt_jesup_split_Total"));
+  JetJESUp_Abs .push_back(jet.userFloat("pt_jesup_split_Abs"));
+  JetJESUp_Abs_corr .push_back(jet.userFloat("pt_jesup_split_Abs_corr"));
+  JetJESUp_BBEC1 .push_back(jet.userFloat("pt_jesup_split_BBEC1"));
+  JetJESUp_BBEC1_corr .push_back(jet.userFloat("pt_jesup_split_BBEC1_corr"));
+  JetJESUp_EC2 .push_back(jet.userFloat("pt_jesup_split_EC2"));
+  JetJESUp_EC2_corr .push_back(jet.userFloat("pt_jesup_split_EC2_corr"));
+  JetJESUp_FlavQCD .push_back(jet.userFloat("pt_jesup_split_FlavQCD"));
+  JetJESUp_HF .push_back(jet.userFloat("pt_jesup_split_HF"));
+  JetJESUp_HF_corr .push_back(jet.userFloat("pt_jesup_split_HF_corr"));
+  JetJESUp_RelBal .push_back(jet.userFloat("pt_jesup_split_RelBal"));
+  JetJESUp_RelSample_corr .push_back(jet.userFloat("pt_jesup_split_RelSample_corr"));
+  JetJESDown .push_back(jet.userFloat("pt_jesdn"));
+  JetJESDown_Total .push_back(jet.userFloat("pt_jesdn_split_Total"));
+  JetJESDown_Abs .push_back(jet.userFloat("pt_jesdn_split_Abs"));
+  JetJESDown_Abs_corr .push_back(jet.userFloat("pt_jesdn_split_Abs_corr"));
+  JetJESDown_BBEC1 .push_back(jet.userFloat("pt_jesdn_split_BBEC1"));
+  JetJESDown_BBEC1_corr .push_back(jet.userFloat("pt_jesdn_split_BBEC1_corr"));
+  JetJESDown_EC2 .push_back(jet.userFloat("pt_jesdn_split_EC2"));
+  JetJESDown_EC2_corr .push_back(jet.userFloat("pt_jesdn_split_EC2_corr"));
+  JetJESDown_FlavQCD .push_back(jet.userFloat("pt_jesdn_split_FlavQCD"));
+  JetJESDown_HF .push_back(jet.userFloat("pt_jesdn_split_HF"));
+  JetJESDown_HF_corr .push_back(jet.userFloat("pt_jesdn_split_HF_corr"));
+  JetJESDown_RelBal .push_back(jet.userFloat("pt_jesdn_split_RelBal"));
+  JetJESDown_RelSample_corr .push_back(jet.userFloat("pt_jesdn_split_RelSample_corr"));
   
   JetPt_JERUp .push_back(jet.userFloat("pt_jerup"));
   JetPt_JERDown .push_back(jet.userFloat("pt_jerdn"));
@@ -1045,13 +1287,61 @@ void ZNtupleMaker::BookAllBranches(){
 	
    myTree->Book("nCleanedJetsPt30",nCleanedJetsPt30);
    myTree->Book("nCleanedJetsPt30_jesUp",nCleanedJetsPt30_jesUp);
+   myTree->Book("nCleanedJetsPt30_jesUp_Total",nCleanedJetsPt30_jesUp_Total);
+   myTree->Book("nCleanedJetsPt30_jesUp_Abs",nCleanedJetsPt30_jesUp_Abs);
+   myTree->Book("nCleanedJetsPt30_jesUp_Abs_corr",nCleanedJetsPt30_jesUp_Abs_corr);
+   myTree->Book("nCleanedJetsPt30_jesUp_BBEC1",nCleanedJetsPt30_jesUp_BBEC1);
+   myTree->Book("nCleanedJetsPt30_jesUp_BBEC1_corr",nCleanedJetsPt30_jesUp_BBEC1_corr);
+   myTree->Book("nCleanedJetsPt30_jesUp_EC2",nCleanedJetsPt30_jesUp_EC2);
+   myTree->Book("nCleanedJetsPt30_jesUp_EC2_corr",nCleanedJetsPt30_jesUp_EC2_corr);
+   myTree->Book("nCleanedJetsPt30_jesUp_FlavQCD",nCleanedJetsPt30_jesUp_FlavQCD);
+   myTree->Book("nCleanedJetsPt30_jesUp_HF",nCleanedJetsPt30_jesUp_HF);
+   myTree->Book("nCleanedJetsPt30_jesUp_HF_corr",nCleanedJetsPt30_jesUp_HF_corr);
+   myTree->Book("nCleanedJetsPt30_jesUp_RelBal",nCleanedJetsPt30_jesUp_RelBal);
+   myTree->Book("nCleanedJetsPt30_jesUp_RelSample_corr",nCleanedJetsPt30_jesUp_RelSample_corr);
    myTree->Book("nCleanedJetsPt30_jesDn",nCleanedJetsPt30_jesDn);
+   myTree->Book("nCleanedJetsPt30_jesDn_Total",nCleanedJetsPt30_jesDn_Total);
+   myTree->Book("nCleanedJetsPt30_jesDn_Abs",nCleanedJetsPt30_jesDn_Abs);
+   myTree->Book("nCleanedJetsPt30_jesDn_Abs_corr",nCleanedJetsPt30_jesDn_Abs_corr);
+   myTree->Book("nCleanedJetsPt30_jesDn_BBEC1",nCleanedJetsPt30_jesDn_BBEC1);
+   myTree->Book("nCleanedJetsPt30_jesDn_BBEC1_corr",nCleanedJetsPt30_jesDn_BBEC1_corr);
+   myTree->Book("nCleanedJetsPt30_jesDn_EC2",nCleanedJetsPt30_jesDn_EC2);
+   myTree->Book("nCleanedJetsPt30_jesDn_EC2_corr",nCleanedJetsPt30_jesDn_EC2_corr);
+   myTree->Book("nCleanedJetsPt30_jesDn_FlavQCD",nCleanedJetsPt30_jesDn_FlavQCD);
+   myTree->Book("nCleanedJetsPt30_jesDn_HF",nCleanedJetsPt30_jesDn_HF);
+   myTree->Book("nCleanedJetsPt30_jesDn_HF_corr",nCleanedJetsPt30_jesDn_HF_corr);
+   myTree->Book("nCleanedJetsPt30_jesDn_RelBal",nCleanedJetsPt30_jesDn_RelBal);
+   myTree->Book("nCleanedJetsPt30_jesDn_RelSample_corr",nCleanedJetsPt30_jesDn_RelSample_corr);
    myTree->Book("nCleanedJetsPt30_jerUp",nCleanedJetsPt30_jerUp);
    myTree->Book("nCleanedJetsPt30_jerDn",nCleanedJetsPt30_jerDn);
    myTree->Book("nCleanedJetsPt30BTagged",nCleanedJetsPt30BTagged);
    myTree->Book("nCleanedJetsPt30BTagged_bTagSF",nCleanedJetsPt30BTagged_bTagSF);
    myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp",nCleanedJetsPt30BTagged_bTagSF_jesUp);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_Total",nCleanedJetsPt30BTagged_bTagSF_jesUp_Total);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_Abs",nCleanedJetsPt30BTagged_bTagSF_jesUp_Abs);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_Abs_corr",nCleanedJetsPt30BTagged_bTagSF_jesUp_Abs_corr);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_BBEC1",nCleanedJetsPt30BTagged_bTagSF_jesUp_BBEC1);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_BBEC1_corr",nCleanedJetsPt30BTagged_bTagSF_jesUp_BBEC1_corr);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_EC2",nCleanedJetsPt30BTagged_bTagSF_jesUp_EC2);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_EC2_corr",nCleanedJetsPt30BTagged_bTagSF_jesUp_EC2_corr);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_FlavQCD",nCleanedJetsPt30BTagged_bTagSF_jesUp_FlavQCD);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_HF",nCleanedJetsPt30BTagged_bTagSF_jesUp_HF);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_HF_corr",nCleanedJetsPt30BTagged_bTagSF_jesUp_HF_corr);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_RelBal",nCleanedJetsPt30BTagged_bTagSF_jesUp_RelBal);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_RelSample_corr",nCleanedJetsPt30BTagged_bTagSF_jesUp_RelSample_corr);
    myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn",nCleanedJetsPt30BTagged_bTagSF_jesDn);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_Total",nCleanedJetsPt30BTagged_bTagSF_jesDn_Total);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_Abs",nCleanedJetsPt30BTagged_bTagSF_jesDn_Abs);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_Abs_corr",nCleanedJetsPt30BTagged_bTagSF_jesDn_Abs_corr);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_BBEC1",nCleanedJetsPt30BTagged_bTagSF_jesDn_BBEC1);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_BBEC1_corr",nCleanedJetsPt30BTagged_bTagSF_jesDn_BBEC1_corr);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_EC2",nCleanedJetsPt30BTagged_bTagSF_jesDn_EC2);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_EC2_corr",nCleanedJetsPt30BTagged_bTagSF_jesDn_EC2_corr);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_FlavQCD",nCleanedJetsPt30BTagged_bTagSF_jesDn_FlavQCD);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_HF",nCleanedJetsPt30BTagged_bTagSF_jesDn_HF);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_HF_corr",nCleanedJetsPt30BTagged_bTagSF_jesDn_HF_corr);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_RelBal",nCleanedJetsPt30BTagged_bTagSF_jesDn_RelBal);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_RelSample_corr",nCleanedJetsPt30BTagged_bTagSF_jesDn_RelSample_corr);
    myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jerUp",nCleanedJetsPt30BTagged_bTagSF_jerUp);
    myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jerDn",nCleanedJetsPt30BTagged_bTagSF_jerDn);
    myTree->Book("nCleanedJetsPt30BTagged_bTagSFUp",nCleanedJetsPt30BTagged_bTagSFUp);
@@ -1071,8 +1361,32 @@ void ZNtupleMaker::BookAllBranches(){
     myTree->Book("JetSigma",JetSigma);
     myTree->Book("JetHadronFlavour",JetHadronFlavour);
     myTree->Book("JetPartonFlavour",JetPartonFlavour);
-    myTree->Book("JetPt_JESUp",JetPt_JESUp);
-    myTree->Book("JetPt_JESDown",JetPt_JESDown);
+    myTree->Book("JetPt_JESUp",JetJESUp);
+    myTree->Book("JetPt_JESUp_Total",JetJESUp_Total);
+    myTree->Book("JetPt_JESUp_Abs",JetJESUp_Abs);
+    myTree->Book("JetPt_JESUp_Abs_corr",JetJESUp_Abs_corr);
+    myTree->Book("JetPt_JESUp_BBEC1",JetJESUp_BBEC1);
+    myTree->Book("JetPt_JESUp_BBEC1_corr",JetJESUp_BBEC1_corr);
+    myTree->Book("JetPt_JESUp_EC2",JetJESUp_EC2);
+    myTree->Book("JetPt_JESUp_EC2_corr",JetJESUp_EC2_corr);
+    myTree->Book("JetPt_JESUp_FlavQCD",JetJESUp_FlavQCD);
+    myTree->Book("JetPt_JESUp_HF",JetJESUp_HF);
+    myTree->Book("JetPt_JESUp_HF_corr",JetJESUp_HF_corr);
+    myTree->Book("JetPt_JESUp_RelBal",JetJESUp_RelBal);
+    myTree->Book("JetPt_JESUp_RelSample_corr",JetJESUp_RelSample_corr);
+    myTree->Book("JetPt_JESDown",JetJESDown);
+    myTree->Book("JetPt_JESDown_Total",JetJESDown_Total);
+    myTree->Book("JetPt_JESDown_Abs",JetJESDown_Abs);
+    myTree->Book("JetPt_JESDown_Abs_corr",JetJESDown_Abs_corr);
+    myTree->Book("JetPt_JESDown_BBEC1",JetJESDown_BBEC1);
+    myTree->Book("JetPt_JESDown_BBEC1_corr",JetJESDown_BBEC1_corr);
+    myTree->Book("JetPt_JESDown_EC2",JetJESDown_EC2);
+    myTree->Book("JetPt_JESDown_EC2_corr",JetJESDown_EC2_corr);
+    myTree->Book("JetPt_JESDown_FlavQCD",JetJESDown_FlavQCD);
+    myTree->Book("JetPt_JESDown_HF",JetJESDown_HF);
+    myTree->Book("JetPt_JESDown_HF_corr",JetJESDown_HF_corr);
+    myTree->Book("JetPt_JESDown_RelBal",JetJESDown_RelBal);
+    myTree->Book("JetPt_JESDown_RelSample_corr",JetJESDown_RelSample_corr);
     myTree->Book("JetPt_JERUp",JetPt_JERUp);
     myTree->Book("JetPt_JERDown",JetPt_JERDown);
     myTree->Book("JetRawPt",JetRawPt);
