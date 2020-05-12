@@ -147,7 +147,7 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
   rolesZ1Z2 = {"Z1", "Z2"};
   rolesZ2Z1 = {"Z2", "Z1"};
 
-  _num_of_JEC_variations = 5; // Define number of total JEC variations 4 (JESUp, JESDn, JERUp, JERDn) + 1 for Nominal
+  _num_of_JEC_variations = 7; // Define number of total JEC variations 4 (JESUp, JESDn, JERUp, JERDn) + 1 for Nominal
 
   if (setup < 2015) {// FIXME:  EbE corrections to be updated for Run II
     // Run I ebe corrections; obsolete
@@ -606,26 +606,36 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
         
         // calculate all JEC uncertainty up/down
         
-        //JES Up uncertainty
+        //JES Up uncertainty - COMBINED
         if (jecnum == 1 )      {
            ratio = 1. + jet->userFloat("jes_unc");
            newPt = jet->pt() * ratio;
+        }        
+        //JES Up uncertainty - TOTAL
+        else if (jecnum == 2 )      {
+           ratio = 1. + jet->userFloat("jes_unc_Total");
+           newPt = jet->pt() * ratio;
         }
         
-        //JES Down uncertainty
-        else if (jecnum == 2 ) {
+        //JES Down uncertainty - COMBINED
+        else if (jecnum == 3 ) {
            ratio = 1. - jet->userFloat("jes_unc");
+           newPt = jet->pt() * ratio;
+        }
+        //JES Down uncertainty - TOTAL
+        else if (jecnum == 4 ) {
+           ratio = 1. - jet->userFloat("jes_unc_Total");
            newPt = jet->pt() * ratio;
         }
          
         //JER Up uncertainty
-        else if (jecnum == 3 ) {
+        else if (jecnum == 5 ) {
            ratio = jet->userFloat("pt_jerup") / jet->pt();
            newPt = jet->userFloat("pt_jerup");
         }
          
         //JER Down uncertainty
-        else if (jecnum == 4 ) {
+        else if (jecnum == 6 ) {
            ratio = jet->userFloat("pt_jerdn") / jet->pt();
            newPt = jet->userFloat("pt_jerdn");
         }
@@ -1172,9 +1182,11 @@ void ZZCandidateFiller::updateMELAClusters_J2JEC(){
           if (
             (theCluster->getName()=="J2JECNominal" && jecnum==0) ||
             (theCluster->getName()=="J2JESUp" && jecnum==1) ||
-            (theCluster->getName()=="J2JESDn" && jecnum==2) ||
-            (theCluster->getName()=="J2JERUp" && jecnum==3) ||
-            (theCluster->getName()=="J2JERDn" && jecnum==4)
+            (theCluster->getName()=="J2JESUp_Total" && jecnum==2) ||
+            (theCluster->getName()=="J2JESDn" && jecnum==3) ||
+            (theCluster->getName()=="J2JESDn_Total" && jecnum==4) ||
+            (theCluster->getName()=="J2JERUp" && jecnum==5) ||
+            (theCluster->getName()=="J2JERDn" && jecnum==6)
             ){
             // Re-compute all related hypotheses first...
             theCluster->computeAll();
@@ -1219,9 +1231,11 @@ void ZZCandidateFiller::updateMELAClusters_J1JEC(){
         if (
           (theCluster->getName()=="J1JECNominal" && jecnum==0) ||
           (theCluster->getName()=="J1JESUp" && jecnum==1) ||
-          (theCluster->getName()=="J1JESDn" && jecnum==2) ||
-          (theCluster->getName()=="J1JERUp" && jecnum==3) ||
-          (theCluster->getName()=="J1JERDn" && jecnum==4)
+          (theCluster->getName()=="J1JESUp_Total" && jecnum==2) ||
+          (theCluster->getName()=="J1JESDn" && jecnum==3) ||
+          (theCluster->getName()=="J1JESDn_Total" && jecnum==4) ||
+          (theCluster->getName()=="J1JERUp" && jecnum==5) ||
+          (theCluster->getName()=="J1JERDn" && jecnum==6)
           ){
           // Re-compute all related hypotheses first...
           theCluster->computeAll();
