@@ -298,6 +298,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    
     //Recommended tight PU JET ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
     if ( applyJEC_ && ( setup == 2017 || setup == 2018 || (setup == 2016 && (!(isMC_)) ))) PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0));
+    //if (applyJEC_) PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0)); // MODIFIED according to update jet collection for 2016 MC (needed to include DeepCSV)
     else PUjetID = bool(j.userInt("pileupJetId:fullId") & (1 << 0));
 
     //--- b-tagging and scaling factors
