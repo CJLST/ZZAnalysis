@@ -367,6 +367,7 @@ void SSmethod::FillFRHistos( TString input_file_data_name )
 	  _k_factor = calculate_K_factor(input_file_data_name);
 	  _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight * L1prefiringWeight) / gen_sum_weights;
 	  
+	  //if( LepisID->at(2) ) // Changed because we are not using BDT-based muon ID but PF+ISO            
           if(LepisID->at(2) && ((fabs(LepLepId->at(2)) == 11) ? LepCombRelIsoPF->at(2) < 999999. : LepCombRelIsoPF->at(2) < 0.35))
             {
               (fabs(LepLepId->at(2)) == 11) ? _passingSelection[Settings::ele]++ : _passingSelection[Settings::mu]++;
