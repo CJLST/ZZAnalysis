@@ -275,6 +275,7 @@ namespace {
   std::vector<float> JetEta ;
   std::vector<float> JetPhi ;
   std::vector<float> JetMass ;
+  std::vector<float> JetEnergy ;
   std::vector<float> JetBTagger ;
   std::vector<float> JetIsBtagged;
   std::vector<float> JetIsBtaggedWithSF;
@@ -1545,6 +1546,7 @@ void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
    JetEta .push_back( jet.eta());
    JetPhi .push_back( jet.phi());
    JetMass .push_back( jet.p4().M());
+   JetEnergy .push_back( jet.p4().energy());
    JetBTagger .push_back( jet.userFloat("bTagger"));
    JetIsBtagged .push_back( jet.userFloat("isBtagged"));
    JetIsBtaggedWithSF .push_back( jet.userFloat("isBtaggedWithSF"));
@@ -2721,6 +2723,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("JetEta",JetEta, failedTreeLevel >= fullFailedTree);
   myTree->Book("JetPhi",JetPhi, failedTreeLevel >= fullFailedTree);
   myTree->Book("JetMass",JetMass, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetEnergy",JetEnergy, failedTreeLevel >= fullFailedTree);
   myTree->Book("JetBTagger",JetBTagger, failedTreeLevel >= fullFailedTree);
   myTree->Book("JetIsBtagged",JetIsBtagged, failedTreeLevel >= fullFailedTree);
   myTree->Book("JetIsBtaggedWithSF",JetIsBtaggedWithSF, failedTreeLevel >= fullFailedTree);

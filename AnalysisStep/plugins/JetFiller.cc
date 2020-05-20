@@ -127,7 +127,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   JetCorrectorParameters const & JetCorPar = (*JetCorParColl)["Uncertainty"];
   JetCorrectionUncertainty jecUnc(JetCorPar);
   
-  // JEC uncertainty (Part 2) - Splitting
+  // JEC uncertainty (Part 2) - Splitting (May 2020)
   // Run 2 reduced set of uncertainties from here: https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECUncertaintySources#Run_2_reduced_set_of_uncertainty
   // List of uncertainties: ['Absolute', 'Absolute_201*', 'BBEC1', 'BBEC1_201*', 'EC2', 'EC2_201*', 'FlavorQCD', 'HF', 'HF_201*', 'RelativeBal', 'RelativeSample_201*'] + 'Total'
   std::string jecUncFile_;
@@ -194,11 +194,9 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     double jeta = j.eta();
     double jabseta = fabs(jeta);
     double raw_jpt = j.correctedJet("Uncorrected").pt();
-
     // 20170220: using a float instead of a double changes of the JER seed from 99494 to 99495, and changes post JER jet pT.
     // Note that while PAT::Candidate has this function as double, we only save float accuracy in miniAOD anyway.
     double jphi = j.phi();
-
 
     //--- Retrieve the q/g likelihood
     edm::RefToBase<pat::Jet> jetRef(edm::Ref<edm::View<pat::Jet> >(jetHandle, jet - jetHandle->begin()));
@@ -212,8 +210,9 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     jecUnc.setJetEta(jeta);
     jecUnc.setJetPt(jpt);
     float jes_unc = jecUnc.getUncertainty(true); //It takes as argument "bool fDirection": true = up, false = dn; symmetric values
-    float pt_jesup = jpt * (1.0 + jes_unc); // set the shifted pT 
-    float pt_jesdn = jpt * (1.0 - jes_unc); // set the shifted pT 
+    float pt_jesup = jpt * (1.0 + jes_unc); // set the shifted pT up
+    float pt_jesdn = jpt * (1.0 - jes_unc); // set the shifted pT dn
+    //j.setP4(j.p4() * (1 + jes_unc)); // Checked that only pt and energy/mass are affected by JEC variations considering the p4() components, not eta/phi
 
     vector<float> jes_unc_split {};
     vector<float> pt_jesup_split {};
@@ -230,6 +229,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	pt_jesup_split.push_back( jpt * (1.0 + singleContr_jes_unc));	
 	pt_jesdn_split.push_back( jpt * (1.0 - singleContr_jes_unc));	
       }
+
     /*// For DEBUG: JEC splitting
     cout << "=============================" << endl; 
     cout << "Previous total JES UNCERTAINTY = " << jes_unc << endl;     
@@ -243,6 +243,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     cout << "----- JET NUMERO " << jet_number << " -----" << endl;
     cout << "pT JesPt_UP = " << pt_jesup << endl; 
     cout << "pT JesPt_DN = " << pt_jesdn << endl; 
+
     for (unsigned s_unc = 0; s_unc < uncSources.size(); s_unc++)
       {
 	cout << s_unc << " pT JesPt_UP SPLIT = " << pt_jesup_split[s_unc] << endl; 
@@ -251,7 +252,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
     */
 
-    //--- loose jet ID, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID13TeVRun2016 
+    //--- Loose jet ID, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID13TeVRun2016 
     float NHF  = j.neutralHadronEnergyFraction();
     float NEMF = j.neutralEmEnergyFraction();
     float CHF  = j.chargedHadronEnergyFraction();
@@ -478,6 +479,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     
     result->push_back(j);}
+  
 
   //--- Reorder jets by pT
   std::sort(result->begin(),result->end(), [](const Jet& j1, const Jet& j2){return j1.pt()>j2.pt();});

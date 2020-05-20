@@ -205,6 +205,7 @@ namespace {
   std::vector<float> JetEta;
   std::vector<float> JetPhi;
   std::vector<float> JetMass;
+  std::vector<float> JetEnergy;
   std::vector<float> JetBTagger;
   std::vector<float> JetIsBtagged;
   std::vector<float> JetIsBtaggedWithSF;
@@ -1033,6 +1034,7 @@ void ZNtupleMaker::FillJet(const pat::Jet& jet)
   JetEta .push_back( jet.eta());
   JetPhi .push_back( jet.phi());
   JetMass .push_back( jet.p4().M());
+  JetEnergy .push_back( jet.p4().energy());
   JetBTagger .push_back( jet.userFloat("bTagger"));
   JetIsBtagged .push_back( jet.userFloat("isBtagged"));
   JetIsBtaggedWithSF .push_back( jet.userFloat("isBtaggedWithSF"));
@@ -1352,6 +1354,7 @@ void ZNtupleMaker::BookAllBranches(){
     myTree->Book("JetEta",JetEta);
     myTree->Book("JetPhi",JetPhi);
     myTree->Book("JetMass",JetMass);
+    myTree->Book("JetEnergy",JetEnergy);
     myTree->Book("JetBTagger",JetBTagger);
     myTree->Book("JetIsBtagged",JetIsBtagged);
     myTree->Book("JetIsBtaggedWithSF",JetIsBtaggedWithSF);
