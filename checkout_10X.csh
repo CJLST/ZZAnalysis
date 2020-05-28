@@ -36,7 +36,7 @@ git checkout bonanomi/hstxs1p2_CMSSW_10_2_X SimDataFormats/HTXS
 #### Please do not add any custom (non-CMSSW) package before this line ####
 #ZZAnalysis
 git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
-(cd ZZAnalysis; git checkout Run2_CutBased_Plotter)
+(cd ZZAnalysis; git checkout Run2_CutBased_BTag16)
 
 # Muon MVA
 git clone https://github.com/bonanomi/MuonMVAReader.git MuonMVAReader

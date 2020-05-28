@@ -54,6 +54,7 @@ public :
    Float_t         ZZEta;
    Float_t         ZZPhi;
    Int_t           CRflag;
+   Int_t           isPFMuon;
    Float_t         Z1Mass;
    Float_t         Z1Pt;
    Short_t         Z1Flav;
@@ -76,6 +77,8 @@ public :
    vector<float>   *LepPhi;
    vector<short>   *LepLepId;
    vector<float>   *LepSIP;
+   vector<float>   *Lepdxy;
+   vector<float>   *Lepdz;
    vector<float>   *LepTime;
    vector<bool>    *LepisID;
    vector<short>   *LepisLoose;
@@ -413,6 +416,7 @@ public :
    Float_t         dataMCWeight;
    Float_t         trigEffWeight;
    Float_t         overallEventWeight;
+   Float_t         L1prefiringWeight;
    Float_t         HqTMCweight;
    Float_t         xsec;
    Short_t         genExtInfo;
@@ -493,6 +497,7 @@ public :
    TBranch        *b_ZZEta;   //!
    TBranch        *b_ZZPhi;   //!
    TBranch        *b_CRflag;   //!
+   TBranch        *b_isPFMuon;   //!
    TBranch        *b_Z1Mass;   //!
    TBranch        *b_Z1Pt;   //!
    TBranch        *b_Z1Flav;   //!
@@ -515,6 +520,8 @@ public :
    TBranch        *b_LepPhi;   //!
    TBranch        *b_LepLepId;   //!
    TBranch        *b_LepSIP;   //!
+   TBranch        *b_Lepdxy;   //!
+   TBranch        *b_Lepdz;   //!
    TBranch        *b_LepTime;   //!
    TBranch        *b_LepisID;   //!
    TBranch        *b_LepisLoose;   //!
@@ -852,6 +859,7 @@ public :
    TBranch        *b_dataMCWeight;   //!
    TBranch        *b_trigEffWeight;   //!
    TBranch        *b_overallEventWeight;   //!
+   TBranch        *b_L1prefiringWeight;   //!
    TBranch        *b_HqTMCweight;   //!
    TBranch        *b_xsec;   //!
    TBranch        *b_genExtInfo;   //!
@@ -961,6 +969,8 @@ void Tree::Init(TTree *tree, TString input_file_name, bool notZLregion)
    LepPhi = 0;
    LepLepId = 0;
    LepSIP = 0;
+   Lepdxy = 0;
+   Lepdz = 0;
    LepTime = 0;
    LepisID = 0;
    LepisLoose = 0;
@@ -1025,6 +1035,7 @@ void Tree::Init(TTree *tree, TString input_file_name, bool notZLregion)
    fChain->SetBranchAddress("ZZEta", &ZZEta, &b_ZZEta);
    fChain->SetBranchAddress("ZZPhi", &ZZPhi, &b_ZZPhi);
    fChain->SetBranchAddress("CRflag", &CRflag, &b_CRflag);
+   fChain->SetBranchAddress("isPFMuon", &isPFMuon, &b_isPFMuon);
    fChain->SetBranchAddress("Z1Mass", &Z1Mass, &b_Z1Mass);
    fChain->SetBranchAddress("Z1Pt", &Z1Pt, &b_Z1Pt);
    fChain->SetBranchAddress("Z1Flav", &Z1Flav, &b_Z1Flav);
@@ -1047,6 +1058,8 @@ void Tree::Init(TTree *tree, TString input_file_name, bool notZLregion)
    fChain->SetBranchAddress("LepPhi", &LepPhi, &b_LepPhi);
    fChain->SetBranchAddress("LepLepId", &LepLepId, &b_LepLepId);
    fChain->SetBranchAddress("LepSIP", &LepSIP, &b_LepSIP);
+   fChain->SetBranchAddress("Lepdxy", &Lepdxy, &b_Lepdxy);
+   fChain->SetBranchAddress("Lepdz", &Lepdz, &b_Lepdz);
    fChain->SetBranchAddress("LepTime", &LepTime, &b_LepTime);
    fChain->SetBranchAddress("LepisID", &LepisID, &b_LepisID);
    fChain->SetBranchAddress("LepisLoose", &LepisLoose, &b_LepisLoose);
@@ -1397,6 +1410,7 @@ void Tree::Init(TTree *tree, TString input_file_name, bool notZLregion)
       fChain->SetBranchAddress("dataMCWeight", &dataMCWeight, &b_dataMCWeight);
       fChain->SetBranchAddress("trigEffWeight", &trigEffWeight, &b_trigEffWeight);
       fChain->SetBranchAddress("overallEventWeight", &overallEventWeight, &b_overallEventWeight);
+      fChain->SetBranchAddress("L1prefiringWeight", &L1prefiringWeight, &b_L1prefiringWeight);
       fChain->SetBranchAddress("HqTMCweight", &HqTMCweight, &b_HqTMCweight);
       fChain->SetBranchAddress("xsec", &xsec, &b_xsec);
       fChain->SetBranchAddress("genExtInfo", &genExtInfo, &b_genExtInfo);
