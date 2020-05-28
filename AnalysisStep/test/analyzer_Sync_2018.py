@@ -51,6 +51,7 @@ process.source.fileNames = cms.untracked.vstring(
         
 ###Run2018A-ReReco-v2                                                                                                                 
         #'/store/data/Run2018A/DoubleMuon/MINIAOD/17Sep2018-v2/120000/39DE1F78-583A-1948-8E09-E47E33DCCBED.root'                                      
+
 ###Run2018D-PromptReco-v2                                                                                                 
         #'/store/data/Run2018D/DoubleMuon/MINIAOD/PromptReco-v2/000/325/172/00000/DB7F6A17-F4E1-B844-B8A4-7F53C1E17E8C.root'
     )

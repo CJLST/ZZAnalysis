@@ -61,7 +61,7 @@ public:
 
    struct VVV
    {
-      int fill_color = TColor::GetColor("#4b78ff");
+      int fill_color = TColor::GetColor("#0532b9");
       int line_color = TColor::GetColor("#000099");
    };
 

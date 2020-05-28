@@ -102,8 +102,8 @@ elif (SAMPLE_TYPE == 2018):
         else:
             process.GlobalTag = GlobalTag(process.GlobalTag, '102X_dataRun2_v12', '')
 
-
 print '\t',process.GlobalTag.globaltag
+
 
 ### ----------------------------------------------------------------------
 ### Standard stuff
@@ -1042,7 +1042,7 @@ if (SAMPLE_TYPE == 2016 and IsMC):
                                        *process.patJetCorrFactorsTransientCorrectedWithDeepInfo 
                                        *process.updatedPatJetsTransientCorrectedWithDeepInfo
     )
-
+    
 else:
     process.load("RecoJets.JetProducers.PileupJetID_cfi")
     process.pileupJetIdUpdated = process.pileupJetId.clone(
@@ -1170,7 +1170,7 @@ if (APPLYJEC and SAMPLE_TYPE == 2016):
             addBTagInfo          = cms.bool(True),  ## master switch
             addDiscriminators    = cms.bool(True)   ## addition of btag discriminators
         )
-
+        
         ### Replace inputs in QGTagger and dressedJets
         process.QGTagger.srcJets = cms.InputTag('jetsWithJEC')
         process.dressedJets.src = cms.InputTag('jetsWithJEC')
@@ -1424,12 +1424,13 @@ if FSRMODE=="Legacy" :
 
 metTag = cms.InputTag("slimmedMETs")
 
+# NB: b tag UPDATE DOES NOT WORK including this part related to MET => Updated info in jets get lost
 if (RECORRECTMET and SAMPLE_TYPE == 2016):
 
     from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
     runMetCorAndUncFromMiniAOD(process,
                                isData=(not IsMC),
-                               )
+    )
     metTag = cms.InputTag("slimmedMETs","","ZZ")
 
     # NB: removed to use properly update jet collection to include DeepCSV in 2016 ntuples
