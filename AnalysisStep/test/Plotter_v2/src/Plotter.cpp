@@ -1047,6 +1047,8 @@ int Plotter::FindSTXSBin()
    int bin = -999;
 
    //ggH
+   if (htxs_stage1p2_cat == 105) bin = Settings::bin_ggH_0J_PTH_0_10;
+   if (htxs_stage1p2_cat == 106) bin = Settings::bin_ggH_0J_PTH_10_200;
    if (htxs_stage1p2_cat == 107) bin = Settings::bin_ggH_1J_PTH_0_60;
    if (htxs_stage1p2_cat == 108) bin = Settings::bin_ggH_1J_PTH_60_120;
    if (htxs_stage1p2_cat == 109) bin = Settings::bin_ggH_1J_PTH_120_200;

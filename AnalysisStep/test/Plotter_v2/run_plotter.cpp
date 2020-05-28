@@ -40,7 +40,6 @@ int main( int argc, char *argv[] )
    TString FR_2017      = "../../data/FakeRates/newData_FakeRates_SS_2017.root";
    TString FR_2016      = "../../data/FakeRates/newData_FakeRates_SS_2016.root";
 
-/*
    TString ggH125_2018      = path_2018 + "ggH125"     + file_name;
    TString VBFH125_2018     = path_2018 + "VBFH125"    + file_name;
    TString WpH125_2018      = path_2018 + "WplusH125"  + file_name;
@@ -70,7 +69,6 @@ int main( int argc, char *argv[] )
    // VBF off-shell sample
    TString VBFoff_2018      = path_2018 + "VBFToContinToZZ4l"          + file_name;
 
-*/
    TString ggH125_2017      = path_2017 + "ggH125"     + file_name;
    TString VBFH125_2017     = path_2017 + "VBFH125"    + file_name;
    TString WpH125_2017      = path_2017 + "WplusH125"  + file_name;
@@ -100,7 +98,6 @@ int main( int argc, char *argv[] )
    // VBF off-shell sample
    TString VBFoff_2017      = path_2017 + "VBFToContinToZZ4l"          + file_name;
 
-/*
    TString ggH125_2016      = path_2016 + "ggH125"     + file_name;
    TString VBFH125_2016     = path_2016 + "VBFH125"    + file_name;
    TString WpH125_2016      = path_2016 + "WplusH125"  + file_name;
@@ -130,9 +127,6 @@ int main( int argc, char *argv[] )
    // VBF off-shell sample
    TString VBFoff_2016      = path_2016 + "VBFToContinToZZ4l"          + file_name;
  
-*/
-   // int year = 2016;
-   // Plotter *plotter = new Plotter(year);
 
    Plotter *plotter = new Plotter( );
 
@@ -205,7 +199,7 @@ int main( int argc, char *argv[] )
    plotter->MakeHistograms(TTZJets_2017, 2017);
    plotter->MakeHistograms(TTLLNuNu_2017, 2017);
    plotter->MakeHistograms(TTLL_2017, 2017);
-   plotter->MakeHistograms(VBFoff_2017, 2017)
+   plotter->MakeHistograms(VBFoff_2017, 2017);
 
 // // ZX Background
    plotter->MakeHistogramsZX(Data_2017, FR_2017, 2017);
@@ -242,7 +236,7 @@ int main( int argc, char *argv[] )
    plotter->MakeHistograms(TTZJets_2018, 2018);
    plotter->MakeHistograms(TTLLNuNu_2018, 2018);
    plotter->MakeHistograms(TTLL_2018, 2018);
-   plotter->MakeHistograms(VBFoff_2018, 2018)
+   plotter->MakeHistograms(VBFoff_2018, 2018);
 
 // // ZX Background
    plotter->MakeHistogramsZX(Data_2018, FR_2018, 2018);
