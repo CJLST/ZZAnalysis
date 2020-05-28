@@ -727,8 +727,9 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
       unblinded_histos->SmoothHistograms();
    }
 
-   unblinded_histos->RenormalizeZX(year);
-   blinded_histos->RenormalizeZX(year);
+   // Not needed as we take into account Comb/SS ratio already in _yield_SR
+   // unblinded_histos->RenormalizeZX(year);
+   // blinded_histos->RenormalizeZX(year);
 
    cout << "[INFO] Z+X histograms filled." << endl;
 }
