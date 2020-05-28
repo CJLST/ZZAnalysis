@@ -31,18 +31,15 @@ int main( int argc, char *argv[] )
    TString path_2016 = eos_path + "MC_2016_CorrectBTag/";
    TString file_name = "/ZZ4lAnalysis.root";
 
-   TString Data_2018    = eos_path + "Data_2018/AllData"        + file_name;
-   TString Data_2017    = eos_path + "Data_2017/AllData"        + file_name;
-   TString Data_2016    = eos_path + "Data_2016/AllData"        + file_name;
+   TString eos_data_path  = "/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200430_LegacyRun2/";
+   TString Data_2018    = eos_data_path + "Data_2018/AllData"        + file_name;
+   TString Data_2017    = eos_data_path + "Data_2017/AllData"        + file_name;
+   TString Data_2016    = eos_data_path + "Data_2016/AllData"        + file_name;
 
-// We might want to keep FR in the framework folder at some point
-   // TString FR_2018      = "../../data/FakeRates/FakeRates_SS_2018_Legacy.root";
-   // TString FR_2017      = "../../data/FakeRates/FakeRates_SS_2017_Legacy.root";
-   // TString FR_2016      = "../../data/FakeRates/FakeRates_SS_2016_Legacy.root";
+   TString FR_2018      = "../../data/FakeRates/newData_FakeRates_SS_2018.root";
+   TString FR_2017      = "../../data/FakeRates/newData_FakeRates_SS_2017.root";
+   TString FR_2016      = "../../data/FakeRates/newData_FakeRates_SS_2016.root";
 
-   TString FR_2018      = "/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased/FRfiles/FakeRates_SS_2016.root";
-   TString FR_2017      = "/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased/FRfiles/FakeRates_SS_2017.root";
-   TString FR_2016      = "/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased/FRfiles/FakeRates_SS_2018.root";
 /*
    TString ggH125_2018      = path_2018 + "ggH125"     + file_name;
    TString VBFH125_2018     = path_2018 + "VBFH125"    + file_name;
@@ -70,6 +67,8 @@ int main( int argc, char *argv[] )
    TString TTZJets_2018     = path_2018 + "TTZJets_M10_MLMext1"            + file_name;
    TString TTLLNuNu_2018    = path_2018 + "TTZToLLNuNu_M10ext1"            + file_name;
    TString TTLL_2018        = path_2018 + "TTZToLL_M1to10_MLM"         + file_name;
+   // VBF off-shell sample
+   TString VBFoff_2018      = path_2018 + "VBFToContinToZZ4l"          + file_name;
 
 */
    TString ggH125_2017      = path_2017 + "ggH125"     + file_name;
@@ -98,6 +97,8 @@ int main( int argc, char *argv[] )
    TString TTZJets_2017     = path_2017 + "TTZJets_M10_MLM"            + file_name;
    TString TTLLNuNu_2017    = path_2017 + "TTZToLLNuNu_M10"            + file_name;
    TString TTLL_2017        = path_2017 + "TTZToLL_M1to10_MLM"         + file_name;
+   // VBF off-shell sample
+   TString VBFoff_2017      = path_2017 + "VBFToContinToZZ4l"          + file_name;
 
 /*
    TString ggH125_2016      = path_2016 + "ggH125"     + file_name;
@@ -126,7 +127,9 @@ int main( int argc, char *argv[] )
    TString TTZJets_2016     = path_2016 + "TTZJets_M10_MLM"            + file_name;
    TString TTLLNuNu_2016    = path_2016 + "TTZToLLNuNu_M10"            + file_name;
    TString TTLL_2016        = path_2016 + "TTZToLL_M1to10_MLM"         + file_name;
-
+   // VBF off-shell sample
+   TString VBFoff_2016      = path_2016 + "VBFToContinToZZ4l"          + file_name;
+ 
 */
    // int year = 2016;
    // Plotter *plotter = new Plotter(year);
@@ -166,6 +169,7 @@ int main( int argc, char *argv[] )
    plotter->MakeHistograms(TTZJets_2016, 2016);
    plotter->MakeHistograms(TTLLNuNu_2016, 2016);
    plotter->MakeHistograms(TTLL_2016, 2016);
+   plotter->MakeHistograms(VBFoff_2016, 2016);
 
 // // ZX Background
    plotter->MakeHistogramsZX(Data_2016, FR_2016, 2016);
@@ -201,6 +205,7 @@ int main( int argc, char *argv[] )
    plotter->MakeHistograms(TTZJets_2017, 2017);
    plotter->MakeHistograms(TTLLNuNu_2017, 2017);
    plotter->MakeHistograms(TTLL_2017, 2017);
+   plotter->MakeHistograms(VBFoff_2017, 2017)
 
 // // ZX Background
    plotter->MakeHistogramsZX(Data_2017, FR_2017, 2017);
@@ -237,7 +242,8 @@ int main( int argc, char *argv[] )
    plotter->MakeHistograms(TTZJets_2018, 2018);
    plotter->MakeHistograms(TTLLNuNu_2018, 2018);
    plotter->MakeHistograms(TTLL_2018, 2018);
-   
+   plotter->MakeHistograms(VBFoff_2018, 2018)
+
 // // ZX Background
    plotter->MakeHistogramsZX(Data_2018, FR_2018, 2018);
 

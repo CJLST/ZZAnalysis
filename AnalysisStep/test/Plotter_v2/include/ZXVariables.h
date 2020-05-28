@@ -12,20 +12,20 @@ class ZXVariables
 public:
    ZXVariables ();
    ~ZXVariables();
-   
+
    struct ZX4e
    {
-      // Updated 14/02/2020 with new yields from Elisa
+      // Updated 28/05/2020 with new yields from Elisa
       
       // 2016 Z+X Yields
-      float yield_SS_4e_2016      = 13.12;
-      float yield_Comb_4e_2016    = 16.22;
+      float yield_SS_4e_2016      = 13.03;
+      float yield_Comb_4e_2016    = 16.13;
       // 2017 Z+X Yields
       float yield_SS_4e_2017      = 10.91;
-      float yield_Comb_4e_2017    = 13.02;
+      float yield_Comb_4e_2017    = 12.95;
       // 2018 Z+X Yields
-      float yield_SS_4e_2018      = 16.05;
-      float yield_Comb_4e_2018    = 19.4;
+      float yield_SS_4e_2018      = 15.99;
+      float yield_Comb_4e_2018    = 19.42;
       
       float norm_2016         = yield_Comb_4e_2016/yield_SS_4e_2016;
       float norm_2017         = yield_Comb_4e_2017/yield_SS_4e_2017;
@@ -40,14 +40,14 @@ public:
     struct ZX4mu
     {
       // 2016 Z+X Yields
-      float yield_SS_4mu_2016     = 29.56;
-      float yield_Comb_4mu_2016   = 28.21;
+      float yield_SS_4mu_2016     = 29.66;
+      float yield_Comb_4mu_2016   = 28.19;
       // 2017 Z+X Yields
-      float yield_SS_4mu_2017     = 33.31;
-      float yield_Comb_4mu_2017   = 33.20;
+      float yield_SS_4mu_2017     = 33.55;
+      float yield_Comb_4mu_2017   = 33.13;
       // 2018 Z+X Yields
-      float yield_SS_4mu_2018     = 51.98;
-      float yield_Comb_4mu_2018   = 51.33;
+      float yield_SS_4mu_2018     = 52.17;
+      float yield_Comb_4mu_2018   = 50.72;
        
       float norm_2016         = yield_Comb_4mu_2016/yield_SS_4mu_2016;
       float norm_2017         = yield_Comb_4mu_2017/yield_SS_4mu_2017;
@@ -62,14 +62,14 @@ public:
     struct ZX2e2mu
     {
       // 2016 Z+X Yields
-      float yield_SS_2e2mu_2016   = 24.73;
-      float yield_Comb_2e2mu_2016 = 44.48;
+      float yield_SS_2e2mu_2016   = 41.45;
+      float yield_Comb_2e2mu_2016 = 44.39;
       // 2017 Z+X Yields
-      float yield_SS_2e2mu_2017   = 26.11;
-      float yield_Comb_2e2mu_2017 = 43.07;
+      float yield_SS_2e2mu_2017   = 40.96;
+      float yield_Comb_2e2mu_2017 = 43.05;
       // 2018 Z+X Yields
-      float yield_SS_2e2mu_2018   = 37.44;
-      float yield_Comb_2e2mu_2018 = 64.06;
+      float yield_SS_2e2mu_2018   = 60.78;
+      float yield_Comb_2e2mu_2018 = 63.87;
       
       float norm_2016         = yield_Comb_2e2mu_2016/yield_SS_2e2mu_2016;
       float norm_2017         = yield_Comb_2e2mu_2017/yield_SS_2e2mu_2017;
