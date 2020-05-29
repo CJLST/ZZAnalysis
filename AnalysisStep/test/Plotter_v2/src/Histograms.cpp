@@ -449,15 +449,15 @@ Histograms::Histograms( string blinding )
                                                                          Variables::M4lMainHighMass().var_min, Variables::M4lMainHighMass().var_max);
 
          _histo_name = "M4l_ZX_shape_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-         histos_1D_ZX[Settings::M4lMain][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::M4lMain().var_N_bin,
+         histos_1D_ZX_shape[Settings::M4lMain][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::M4lMain().var_N_bin,
                                                                        Variables::M4lMain().var_min, Variables::M4lMain().var_max);
 
          _histo_name = "M4l_zoomed_ZX_shape_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-         histos_1D_ZX[Settings::M4lMainZoomed][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::M4lMainZoomed().var_N_bin,
+         histos_1D_ZX_shape[Settings::M4lMainZoomed][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::M4lMainZoomed().var_N_bin,
                                                                              Variables::M4lMainZoomed().var_min, Variables::M4lMainZoomed().var_max);
 
          _histo_name = "M4l_HighMass_ZX_shape_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-         histos_1D_ZX[Settings::M4lMainHighMass][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::M4lMainHighMass().var_N_bin,
+         histos_1D_ZX_shape[Settings::M4lMainHighMass][i_fs][i_cat] = new TH1F(_histo_name.c_str(), "Z+X", Variables::M4lMainHighMass().var_N_bin,
                                                                                Variables::M4lMainHighMass().var_min, Variables::M4lMainHighMass().var_max);
 
 
@@ -1349,28 +1349,28 @@ void Histograms::MakeZXShape( int current_category , vector< vector <float> > _e
    M4lZX *ZXShape = new M4lZX();
 
    ZXShape->GetM4lZX(Variables::M4lMain().var_N_bin, Variables::M4lMain().var_min, Variables::M4lMain().var_max, current_category, _expected_yield_SR,
-                     histos_1D_ZX[Settings::M4lMain][Settings::fs4e][current_category],
-                     histos_1D_ZX[Settings::M4lMain][Settings::fs4mu][current_category],
-                     histos_1D_ZX[Settings::M4lMain][Settings::fs2e2mu][current_category],
-                     histos_1D_ZX[Settings::M4lMain][Settings::fs4l][current_category]);
+                     histos_1D_ZX_shape[Settings::M4lMain][Settings::fs4e][current_category],
+                     histos_1D_ZX_shape[Settings::M4lMain][Settings::fs4mu][current_category],
+                     histos_1D_ZX_shape[Settings::M4lMain][Settings::fs2e2mu][current_category],
+                     histos_1D_ZX_shape[Settings::M4lMain][Settings::fs4l][current_category]);
 
 
    M4lZX *ZXShape_zoomed = new M4lZX();
 
    ZXShape_zoomed->GetM4lZX(Variables::M4lMainZoomed().var_N_bin, Variables::M4lMainZoomed().var_min, Variables::M4lMainZoomed().var_max, current_category, _expected_yield_SR,
-                            histos_1D_ZX[Settings::M4lMainZoomed][Settings::fs4e][current_category],
-                            histos_1D_ZX[Settings::M4lMainZoomed][Settings::fs4mu][current_category],
-                            histos_1D_ZX[Settings::M4lMainZoomed][Settings::fs2e2mu][current_category],
-                            histos_1D_ZX[Settings::M4lMainZoomed][Settings::fs4l][current_category]);
+                            histos_1D_ZX_shape[Settings::M4lMainZoomed][Settings::fs4e][current_category],
+                            histos_1D_ZX_shape[Settings::M4lMainZoomed][Settings::fs4mu][current_category],
+                            histos_1D_ZX_shape[Settings::M4lMainZoomed][Settings::fs2e2mu][current_category],
+                            histos_1D_ZX_shape[Settings::M4lMainZoomed][Settings::fs4l][current_category]);
 
 
    M4lZX *ZXShape_HighMass = new M4lZX();
 
    ZXShape_HighMass->GetM4lZX(Variables::M4lMainHighMass().var_N_bin, Variables::M4lMainHighMass().var_min, Variables::M4lMainHighMass().var_max, current_category, _expected_yield_SR,
-                              histos_1D_ZX[Settings::M4lMainHighMass][Settings::fs4e][current_category],
-                              histos_1D_ZX[Settings::M4lMainHighMass][Settings::fs4mu][current_category],
-                              histos_1D_ZX[Settings::M4lMainHighMass][Settings::fs2e2mu][current_category],
-                              histos_1D_ZX[Settings::M4lMainHighMass][Settings::fs4l][current_category]);
+                              histos_1D_ZX_shape[Settings::M4lMainHighMass][Settings::fs4e][current_category],
+                              histos_1D_ZX_shape[Settings::M4lMainHighMass][Settings::fs4mu][current_category],
+                              histos_1D_ZX_shape[Settings::M4lMainHighMass][Settings::fs2e2mu][current_category],
+                              histos_1D_ZX_shape[Settings::M4lMainHighMass][Settings::fs4l][current_category]);
 
 }
 //=======================================================================================
@@ -2025,9 +2025,9 @@ void Histograms::SaveHistos( string file_name )
           histos_1D_ZX[i_1Dhistos][i_fs][i_cat]->Write();
         }
 
-      histos_1D_ZX[Settings::M4lMain][i_fs][i_cat]->Write();
-      histos_1D_ZX[Settings::M4lMainZoomed][i_fs][i_cat]->Write();
-      histos_1D_ZX[Settings::M4lMainHighMass][i_fs][i_cat]->Write();
+      histos_1D_ZX_shape[Settings::M4lMain][i_fs][i_cat]->Write();
+      histos_1D_ZX_shape[Settings::M4lMainZoomed][i_fs][i_cat]->Write();
+      histos_1D_ZX_shape[Settings::M4lMainHighMass][i_fs][i_cat]->Write();
 
          //==========================
          // 2D plots with mass error
@@ -2484,19 +2484,19 @@ void Histograms::GetHistos( TString file_name )
          histos_1D_ZX[Settings::M4lMain][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
 
          _histo_name = "M4l_ZX_shape_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-         histos_1D_ZX[Settings::M4lMain][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
+         histos_1D_ZX_shape[Settings::M4lMain][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
 
          _histo_name = "M4l_zoomed_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
          histos_1D_ZX[Settings::M4lMainZoomed][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
 
          _histo_name = "M4l_zoomed_ZX_shape_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-         histos_1D_ZX[Settings::M4lMainZoomed][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
+         histos_1D_ZX_shape[Settings::M4lMainZoomed][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
 
          _histo_name = "M4l_HighMass_ZX_SS_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
          histos_1D_ZX[Settings::M4lMainHighMass][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
 
          _histo_name = "M4l_HighMass_ZX_shape_" + _s_final_state.at(i_fs) + "_" + _s_category.at(i_cat) + _blinding;
-         histos_1D_ZX[Settings::M4lMainHighMass][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
+         histos_1D_ZX_shape[Settings::M4lMainHighMass][i_fs][i_cat] = (TH1F*)histo_file->Get(_histo_name.c_str());
 
 
          //=============

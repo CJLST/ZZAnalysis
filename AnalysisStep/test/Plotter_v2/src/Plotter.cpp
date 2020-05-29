@@ -460,24 +460,24 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
 
    if(year == 2016) {
       _fs_ROS_SS.clear(); cb_SS.clear();
-      _fs_ROS_SS.push_back(1.00229); cb_SS.push_back(1.2379125095932464); // 4e
-      _fs_ROS_SS.push_back(1.00008); cb_SS.push_back(0.9504383007417397); // 4mu
-      _fs_ROS_SS.push_back(1.03601); cb_SS.push_back(1.0709288299155608); // 2e2mu
-      _fs_ROS_SS.push_back(0.99873); cb_SS.push_back(1.0709288299155608); // 2mu2e
+      _fs_ROS_SS.push_back(1.00229); cb_SS.push_back(ZXVariables::ZX4e().norm_2016); // 4e
+      _fs_ROS_SS.push_back(1.00008); cb_SS.push_back(ZXVariables::ZX4mu().norm_2016); // 4mu
+      _fs_ROS_SS.push_back(1.03601); cb_SS.push_back(ZXVariables::ZX2e2mu().norm_2016); // 2e2mu
+      _fs_ROS_SS.push_back(0.99873); cb_SS.push_back(ZXVariables::ZX2e2mu().norm_2016); // 2mu2e
    }
    else if (year == 2017) {
       _fs_ROS_SS.clear(); cb_SS.clear();
-      _fs_ROS_SS.push_back(1.01168); cb_SS.push_back(1.1869844179651694); // 4e
-      _fs_ROS_SS.push_back(1.03961); cb_SS.push_back(0.9874813710879287); // 4mu
-      _fs_ROS_SS.push_back(1.01307); cb_SS.push_back(1.051025390625); // 2e2mu
-      _fs_ROS_SS.push_back(1.00266); cb_SS.push_back(1.051025390625); // 2mu2e
+      _fs_ROS_SS.push_back(1.01168); cb_SS.push_back(ZXVariables::ZX4e().norm_2017); // 4e
+      _fs_ROS_SS.push_back(1.03961); cb_SS.push_back(ZXVariables::ZX4mu().norm_2017); // 4mu
+      _fs_ROS_SS.push_back(1.01307); cb_SS.push_back(ZXVariables::ZX2e2mu().norm_2017); // 2e2mu
+      _fs_ROS_SS.push_back(1.00266); cb_SS.push_back(ZXVariables::ZX2e2mu().norm_2017); // 2mu2e
    }
    else {
       _fs_ROS_SS.clear(); cb_SS.clear();
-      _fs_ROS_SS.push_back(1.00635); cb_SS.push_back(1.2145090681676047); // 4e
-      _fs_ROS_SS.push_back(1.02763); cb_SS.push_back(0.9722062488019935); // 4mu
-      _fs_ROS_SS.push_back(1.03170); cb_SS.push_back(1.0508390918065151); // 2e2mu
-      _fs_ROS_SS.push_back(1.00492); cb_SS.push_back(1.0508390918065151); // 2mu2e
+      _fs_ROS_SS.push_back(1.00635); cb_SS.push_back(ZXVariables::ZX4e().norm_2018); // 4e
+      _fs_ROS_SS.push_back(1.02763); cb_SS.push_back(ZXVariables::ZX4mu().norm_2018); // 4mu
+      _fs_ROS_SS.push_back(1.03170); cb_SS.push_back(ZXVariables::ZX2e2mu().norm_2018); // 2e2mu
+      _fs_ROS_SS.push_back(1.00492); cb_SS.push_back(ZXVariables::ZX2e2mu().norm_2018); // 2mu2e
    }  
 
    FakeRates *FR = new FakeRates( input_file_FR_name );
