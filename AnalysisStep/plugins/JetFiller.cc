@@ -201,13 +201,67 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 }
 	 
 
-    bool PUjetID = true;
-   
-    //Recommended tight PU JET ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
-    if ( applyJEC_ && ( setup == 2017 || setup == 2018 || (setup == 2016 && (!(isMC_)) ))) PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0));
-    else PUjetID = bool(j.userInt("pileupJetId:fullId") & (1 << 0));
+    bool PUjetID = false;
+    float PUjetID_score = 0;
 
-    //--- b tagging and scaling factors
+    //Recommended tight PU JET ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
+    //Recommended tight WP for jet pileup ID taken from https://github.com/alefisico/cmssw/blob/PUID_102X/RecoJets/JetProducers/python/PileupJetIDCutParams_cfi.py
+    // Computed using 2016 81X training and used for all three years
+    //4 Eta Categories  0-2.5   2.5-2.75   2.75-3.0   3.0-5.0
+    //Tight Id
+    //Pt010_Tight    = cms.vdouble( 0.69, -0.35, -0.26, -0.21),
+    //Pt1020_Tight   = cms.vdouble( 0.69, -0.35, -0.26, -0.21),
+    //Pt2030_Tight   = cms.vdouble( 0.69, -0.35, -0.26, -0.21),
+    //Pt3050_Tight   = cms.vdouble( 0.86, -0.10, -0.05, -0.01),
+
+    if ( applyJEC_ && ( setup == 2017 || setup == 2018 || (setup == 2016 && (!(isMC_)) )))
+      {
+	PUjetID_score = j.userFloat("pileupJetIdUpdated:fullDiscriminant");
+      }
+    else
+      {
+	PUjetID_score = j.userFloat("pileupJetId:fullDiscriminant");
+      }
+
+    // WP applied explicitely
+    //cout << "PU ID score = " << PUjetID_score << " PT = " << jpt << " ETA = " << jabseta << endl;
+    PUjetID       = ( 
+		     (jpt > 0 && jpt <= 10 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.69  ||
+		     (jpt > 10 && jpt <= 20 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.69 ||
+		     (jpt > 20 && jpt <= 30 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.69 ||
+		     (jpt > 30 && jpt <= 50 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.86 ||
+
+		     (jpt > 0 && jpt <= 10 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.35  ||
+		     (jpt > 10 && jpt <= 20 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.35 ||
+		     (jpt > 20 && jpt <= 30 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.35 ||
+		     (jpt > 30 && jpt <= 50 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.10 ||
+
+		     (jpt > 0 && jpt <= 10 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.26  ||
+		     (jpt > 10 && jpt <= 20 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.26 ||
+		     (jpt > 20 && jpt <= 30 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.26 ||
+		     (jpt > 30 && jpt <= 50 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.05 ||
+
+		     (jpt > 0 && jpt <= 10 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21  ||
+		     (jpt > 10 && jpt <= 20 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21 ||
+		     (jpt > 20 && jpt <= 30 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21 ||
+		     (jpt > 30 && jpt <= 50 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.01 
+		    );
+    //if (PUjetID) cout << "PUjetID!" << endl;
+    
+    /*if ( applyJEC_ && ( setup == 2017 || setup == 2018 || (setup == 2016 && (!(isMC_)) )))
+      {
+	PUjetID_score = j.userFloat("pileupJetIdUpdated:fullDiscriminant"); 
+        PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0));
+      }
+    //if (applyJEC_) PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0)); // MODIFIED according to update jet collection for 2016 MC (needed to include DeepCSV)                  
+    else
+      {
+	PUjetID_score = j.userFloat("pileupJetId:fullDiscriminant"); 
+        PUjetID = bool(j.userInt("pileupJetId:fullId") & (1 << 0));
+      }
+    */
+
+//--- b tagging and scaling factors
     float bTagger;
     bTagger = j.bDiscriminator(bTaggerName) + j.bDiscriminator((bTaggerName + "b")); //one should just sum for doing b tagging, the b and bb probabilities
     //cout << "b tag is = " << bTagger << endl;
@@ -325,6 +379,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     j.addUserFloat("RawPt", raw_jpt);
     j.addUserFloat("JetID",JetID);
     j.addUserFloat("PUjetID",PUjetID);
+    j.addUserFloat("PUjetID_score",PUjetID_score);
     j.addUserFloat("bTagger",bTagger);
     j.addUserFloat("isBtagged",isBtagged);
     j.addUserFloat("isBtaggedWithSF",isBtaggedWithSF);

@@ -245,6 +245,7 @@ namespace {
 
   std::vector<float> JetPUValue;
   std::vector<short> JetPUID;
+  std::vector<float> JetPUID_score;
     
   std::vector<short> JetID;
    
@@ -1352,6 +1353,7 @@ void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
     
    JetID.push_back(jet.userFloat("JetID"));
    JetPUID.push_back(jet.userFloat("PUjetID"));
+   JetPUID_score.push_back(jet.userFloat("PUjetID_score"));
 
    if (jet.hasUserFloat("pileupJetIdUpdated:fullDiscriminant")) { // if JEC is reapplied, we set this
      JetPUValue.push_back(jet.userFloat("pileupJetIdUpdated:fullDiscriminant"));
@@ -2446,6 +2448,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
 
   myTree->Book("JetID", JetID, failedTreeLevel >= fullFailedTree);
   myTree->Book("JetPUID", JetPUID, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPUID_score", JetPUID_score, failedTreeLevel >= fullFailedTree);
   myTree->Book("JetPUValue", JetPUValue, failedTreeLevel >= fullFailedTree);
 
   myTree->Book("DiJetMass",DiJetMass, false);

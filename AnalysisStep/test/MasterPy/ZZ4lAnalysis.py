@@ -993,11 +993,11 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
 ### Jets
 ### ----------------------------------------------------------------------
 
-from RecoJets.JetProducers.PileupJetIDParams_cfi import full_80x_chs
-from RecoJets.JetProducers.PileupJetIDCutParams_cfi import full_80x_chs_wp
+# DEFAULT 2016 jet pileup ID training: _chsalgos_81x
+# 2017-2018: jet pileup ID trainings to be updated
+from RecoJets.JetProducers.PileupJetID_cfi import _chsalgos_94x, _chsalgos_102x
+from RecoJets.JetProducers.PileupJetIDCutParams_cfi import full_81x_chs_wp
 from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
-#from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import updatedPatJets
-#from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import updatedPatJetCorrFactors
 
 process.load("CondCore.CondDB.CondDB_cfi")
 
@@ -1043,13 +1043,31 @@ if (SAMPLE_TYPE == 2016 and IsMC):
                                        *process.updatedPatJetsTransientCorrectedWithDeepInfo
     )
     
+elif (SAMPLE_TYPE == 2017):
+    process.load("RecoJets.JetProducers.PileupJetID_cfi")
+    process.pileupJetIdUpdated = process.pileupJetId.clone(
+        jets=cms.InputTag("slimmedJets"),
+        inputIsCorrected=False,
+        applyJec=True,
+        vertexes=cms.InputTag("offlineSlimmedPrimaryVertices"),
+        algos=cms.VPSet(_chsalgos_94x)
+    )
+elif (SAMPLE_TYPE == 2018):
+    process.load("RecoJets.JetProducers.PileupJetID_cfi")
+    process.pileupJetIdUpdated = process.pileupJetId.clone(
+        jets=cms.InputTag("slimmedJets"),
+        inputIsCorrected=False,
+        applyJec=True,
+        vertexes=cms.InputTag("offlineSlimmedPrimaryVertices"),
+        algos=cms.VPSet(_chsalgos_102x)
+    )
 else:
     process.load("RecoJets.JetProducers.PileupJetID_cfi")
     process.pileupJetIdUpdated = process.pileupJetId.clone(
         jets=cms.InputTag("slimmedJets"),
         inputIsCorrected=False,
         applyJec=True,
-        vertexes=cms.InputTag("offlineSlimmedPrimaryVertices")
+        vertexes=cms.InputTag("offlineSlimmedPrimaryVertices"),
     )
 
 

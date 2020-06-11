@@ -171,6 +171,7 @@ namespace {
   std::vector<short> JetPartonFlavour;
   std::vector<float> JetPUValue;
   std::vector<short> JetPUID;
+  std::vector<float> JetPUID_score;
   std::vector<short> JetID;
   std::vector<float> JetPt_JESUp;
   std::vector<float> JetPt_JESDown;
@@ -841,6 +842,7 @@ void ZNtupleMaker::FillJet(const pat::Jet& jet)
     
   JetID.push_back(jet.userFloat("JetID"));
   JetPUID.push_back(jet.userFloat("PUjetID"));
+  JetPUID_score.push_back(jet.userFloat("PUjetID_score"));
     
   if (jet.hasUserFloat("pileupJetIdUpdated:fullDiscriminant")) { // if JEC is reapplied, we set this
 	  JetPUValue.push_back(jet.userFloat("pileupJetIdUpdated:fullDiscriminant"));
@@ -1078,6 +1080,7 @@ void ZNtupleMaker::BookAllBranches(){
     myTree->Book("JetRawPt",JetRawPt);
     myTree->Book("JetPtJEC_noJER",JetPtJEC_noJER);
     myTree->Book("JetPUID", JetPUID);
+    myTree->Book("JetPUID_score", JetPUID_score);
     myTree->Book("JetID", JetID);
     myTree->Book("JetPUValue", JetPUValue);
     myTree->Book("GenMET", GenMET);
