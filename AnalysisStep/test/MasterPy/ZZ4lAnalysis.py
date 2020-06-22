@@ -95,12 +95,12 @@ elif (SAMPLE_TYPE == 2017):
 
 elif (SAMPLE_TYPE == 2018):
     if IsMC:
-        process.GlobalTag = GlobalTag(process.GlobalTag, '102X_upgrade2018_realistic_v20', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '102X_upgrade2018_realistic_v21', '')
     else:
         if (DATA_TAG == "PromptReco"):
-            process.GlobalTag = GlobalTag(process.GlobalTag, '102X_dataRun2_Prompt_v15', '')
+            process.GlobalTag = GlobalTag(process.GlobalTag, '102X_dataRun2_Prompt_v16', '')
         else:
-            process.GlobalTag = GlobalTag(process.GlobalTag, '102X_dataRun2_v12', '')
+            process.GlobalTag = GlobalTag(process.GlobalTag, '102X_dataRun2_v13', '')
 
 print '\t',process.GlobalTag.globaltag
 
