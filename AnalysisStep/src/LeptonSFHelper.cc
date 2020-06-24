@@ -65,7 +65,8 @@ LeptonSFHelper::LeptonSFHelper()
    h_Mu_Unc_2016 = (TH2D*)root_file->Get("ERROR")->Clone();
    
    // 2017 Muons
-   TString fipMu_2017 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/final_HZZ_SF_2017_rereco_mupogsysts_3010.root"); //"$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_Moriond2018_final.root");
+   TString fipMu_2017 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/final_HZZ_muon_SF_2017_newLooseIso_mupogSysts_paper.root"); 
+   //final_HZZ_SF_2017_rereco_mupogsysts_3010.root"); //"$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_Moriond2018_final.root");
    root_file = TFile::Open(fipMu_2017.Data(),"READ");
    h_Mu_SF_2017  = (TH2D*)root_file->Get("FINAL")->Clone();
    h_Mu_Unc_2017 = (TH2D*)root_file->Get("ERROR")->Clone();
