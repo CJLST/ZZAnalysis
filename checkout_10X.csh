@@ -18,6 +18,13 @@ git cms-merge-topic cms-egamma:slava77-btvDictFix_10210
 git cms-addpkg EgammaAnalysis/ElectronTools
 (rm -rf EgammaAnalysis/ElectronTools/data;git clone https://github.com/cms-data/EgammaAnalysis-ElectronTools.git EgammaAnalysis/ElectronTools/data;)
 
+# New Jet PU ID: dedicated training for each year
+git cms-addpkg  RecoJets/JetProducers
+
+# STXS Categorisation: now directly implemented in CMSSW
+git cms-addpkg GeneratorInterface/RivetInterface
+git cms-addpkg SimDataFormats/HTXS
+
 # 2016 and 2018 retraining for electron BDT
 git cms-merge-topic mkovac:Electron_XGBoost_MVA_2016_and_2018_CMSSW_10_2_15
 
@@ -26,12 +33,12 @@ git cms-merge-topic cms-met:METFixEE2017_949_v2_backport_to_102X
 
 #Simplified template cross section
 ## need at least the first two lines
-git cms-addpkg GeneratorInterface/RivetInterface
-git cms-addpkg SimDataFormats/HTXS
-git remote add bonanomi https://github.com/bonanomi/cmssw.git
-git fetch bonanomi 
-git checkout bonanomi/hstxs1p2_CMSSW_10_2_X GeneratorInterface/RivetInterface
-git checkout bonanomi/hstxs1p2_CMSSW_10_2_X SimDataFormats/HTXS
+# git cms-addpkg GeneratorInterface/RivetInterface
+# git cms-addpkg SimDataFormats/HTXS
+# git remote add bonanomi https://github.com/bonanomi/cmssw.git
+# git fetch bonanomi 
+# git checkout bonanomi/hstxs1p2_CMSSW_10_2_X GeneratorInterface/RivetInterface
+# git checkout bonanomi/hstxs1p2_CMSSW_10_2_X SimDataFormats/HTXS
 
 #### Please do not add any custom (non-CMSSW) package before this line ####
 #ZZAnalysis
