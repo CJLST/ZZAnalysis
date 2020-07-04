@@ -79,6 +79,8 @@ public :
    Float_t         xistar;
    vector<float>   *LepPt;
    vector<float>   *LepEta;
+   vector<float>   *LepSCEta;
+   vector<bool>    *LepisCrack;
    vector<float>   *LepPhi;
    vector<short>   *LepLepId;
    vector<float>   *LepSIP;
@@ -456,7 +458,7 @@ public :
 	Short_t         htxsNJets;
 	Short_t         htxs_stage0_cat;
 	Short_t			 htxs_stage1p1_cat;
-   // Short_t         htxs_stage1p2_cat; //STXS 1.2 already there, can be used
+   Short_t         htxs_stage1p2_cat;
    Float_t         GenHMass;
    Float_t         GenHPt;
    Float_t         GenHRapidity;
@@ -575,6 +577,8 @@ public :
    TBranch        *b_xistar;   //!
    TBranch        *b_LepPt;   //!
    TBranch        *b_LepEta;   //!
+   TBranch        *b_LepSCEta; //!
+   TBranch        *b_LepisCrack; //!
    TBranch        *b_LepPhi;   //!
    TBranch        *b_LepLepId;   //!
    TBranch        *b_LepSIP;   //!
@@ -952,7 +956,7 @@ public :
 	TBranch        *b_htxsNJets;  //!
 	TBranch			*b_htxs_stage0_cat; //!
 	TBranch			*b_htxs_stage1p1_cat; //!
-   // TBranch        *b_htxs_stage1p1_cat; //! STXS 1.2 already there, can be used
+   TBranch        *b_htxs_stage1p2_cat; //! 
    TBranch        *b_GenHMass;   //!
    TBranch        *b_GenHPt;   //!
    TBranch        *b_GenHRapidity;   //!
@@ -1072,6 +1076,8 @@ void Tree::Init(TTree *tree, TString input_file_name)
    // Set object pointer
    LepPt = 0;
    LepEta = 0;
+   LepSCEta = 0;
+   LepisCrack = 0;
    LepPhi = 0;
    LepLepId = 0;
    LepSIP = 0;
@@ -1167,6 +1173,8 @@ void Tree::Init(TTree *tree, TString input_file_name)
    fChain->SetBranchAddress("xistar", &xistar, &b_xistar);
    fChain->SetBranchAddress("LepPt", &LepPt, &b_LepPt);
    fChain->SetBranchAddress("LepEta", &LepEta, &b_LepEta);
+   fChain->SetBranchAddress("LepisCrack", &LepisCrack, &b_LepisCrack);
+   fChain->SetBranchAddress("LepSCEta", &LepSCEta, &b_LepSCEta);
    fChain->SetBranchAddress("LepPhi", &LepPhi, &b_LepPhi);
    fChain->SetBranchAddress("LepLepId", &LepLepId, &b_LepLepId);
    fChain->SetBranchAddress("LepSIP", &LepSIP, &b_LepSIP);
@@ -1559,7 +1567,7 @@ void Tree::Init(TTree *tree, TString input_file_name)
            fChain->SetBranchAddress("htxsNJets", &htxsNJets, &b_htxsNJets);
            fChain->SetBranchAddress("htxs_stage0_cat", &htxs_stage0_cat, &b_htxs_stage0_cat);
            fChain->SetBranchAddress("htxs_stage1p1_cat", &htxs_stage1p1_cat, &b_htxs_stage1p1_cat);
-           // fChain->SetBranchAddress("htxs_stage1p2_cat", &htxs_stage1p2_cat, &b_htxs_stage1p2_cat); // STXS 1.2 already there, can be used
+           fChain->SetBranchAddress("htxs_stage1p2_cat", &htxs_stage1p2_cat, &b_htxs_stage1p2_cat);
        }
       fChain->SetBranchAddress("GenHMass", &GenHMass, &b_GenHMass);
       fChain->SetBranchAddress("GenHPt", &GenHPt, &b_GenHPt);

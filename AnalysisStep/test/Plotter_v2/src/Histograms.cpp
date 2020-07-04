@@ -2740,8 +2740,8 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
 
    if ( variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
    {
-      histos_1D_ZX_shape[plot_index][fs][cat]->SetFillColor(Cosmetics::ZX().fill_color);
-      histos_1D_ZX_shape[plot_index][fs][cat]->SetLineColor(Cosmetics::ZX().line_color);
+      histos_1D_ZX[plot_index][fs][cat]->SetFillColor(Cosmetics::ZX().fill_color);
+      histos_1D_ZX[plot_index][fs][cat]->SetLineColor(Cosmetics::ZX().line_color);
    }
    else
    {
@@ -2764,16 +2764,16 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
 
    if ( variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
    {
-      stack->Add(histos_1D_ZX_shape[plot_index][fs][cat]);
+      stack->Add(histos_1D_ZX[plot_index][fs][cat]);
    }
    else
    {
       stack->Add(histos_1D_ZX[plot_index][fs][cat]);
    }
 
+   stack->Add(histos_1D[plot_index][fs][cat][Settings::VVV]);
    stack->Add(histos_1D[plot_index][fs][cat][Settings::ggZZ]);
    stack->Add(histos_1D[plot_index][fs][cat][Settings::qqZZ]);
-   stack->Add(histos_1D[plot_index][fs][cat][Settings::VVV]);
 
    if ( is_Djet_ )
    {
@@ -2854,8 +2854,8 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
                                       histos_1D[plot_index][fs][cat][Settings::H125],
                                       histos_1D[plot_index][fs][cat][Settings::qqZZ],
                                       histos_1D[plot_index][fs][cat][Settings::ggZZ],
-                                      histos_1D_ZX_shape[plot_index][fs][cat],
-                                      histos_1D[plot_index][fs][cat][Settings::VVV]);
+                                      histos_1D[plot_index][fs][cat][Settings::VVV],
+                                      histos_1D_ZX[plot_index][fs][cat]);
    }
    else if ( plot_index == Settings::D1jet_M4L118130 || plot_index == Settings::D1jet )
    {
@@ -2864,8 +2864,8 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
                                         histos_1D[plot_index][fs][cat][Settings::H125ggH], // ggH = ggH + VH + ttH
                                         histos_1D[plot_index][fs][cat][Settings::qqZZ],
                                         histos_1D[plot_index][fs][cat][Settings::ggZZ],
-                                        histos_1D_ZX[plot_index][fs][cat], 
-                                        histos_1D[plot_index][fs][cat][Settings::VVV], false);
+                                        histos_1D[plot_index][fs][cat][Settings::VVV],
+                                        histos_1D_ZX[plot_index][fs][cat], false);
    }
    else if ( plot_index == Settings::D2jet_M4L118130 || plot_index == Settings::D2jet  || plot_index == Settings::DVBFDEC )
    {
@@ -2874,8 +2874,8 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
                                          histos_1D[plot_index][fs][cat][Settings::H125ggH], // ggH = ggH + VH + ttH
                                          histos_1D[plot_index][fs][cat][Settings::qqZZ],
                                          histos_1D[plot_index][fs][cat][Settings::ggZZ],
-                                         histos_1D_ZX[plot_index][fs][cat], 
-                                         histos_1D[plot_index][fs][cat][Settings::VVV], false);
+                                         histos_1D[plot_index][fs][cat][Settings::VVV],
+                                         histos_1D_ZX[plot_index][fs][cat], false);
    }
   else if ( plot_index == Settings::DVBFDEC_M4L118130)
    {
@@ -2884,8 +2884,8 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
                                          histos_1D[plot_index][fs][cat][Settings::H125ggH], // ggH = ggH + VH + ttH
                                          histos_1D[plot_index][fs][cat][Settings::qqZZ],
                                          histos_1D[plot_index][fs][cat][Settings::ggZZ],
-                                         histos_1D_ZX[plot_index][fs][cat], 
-                                         histos_1D[plot_index][fs][cat][Settings::VVV], true);
+                                         histos_1D[plot_index][fs][cat][Settings::VVV],
+                                         histos_1D_ZX[plot_index][fs][cat], true);
    }
    else if ( plot_index == Settings::DWH_M4L118130 || plot_index == Settings::DWH || plot_index == Settings::DZH_M4L118130 || plot_index == Settings::DZH || plot_index == Settings::DVH_M4L118130 || plot_index == Settings::DVH || plot_index == Settings::DVHDEC )
    {
@@ -2894,8 +2894,8 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
                                         histos_1D[plot_index][fs][cat][Settings::H125ggH], // ggH = ggH + VBF + ttH
                                         histos_1D[plot_index][fs][cat][Settings::qqZZ],
                                         histos_1D[plot_index][fs][cat][Settings::ggZZ],
-                                        histos_1D_ZX[plot_index][fs][cat], 
-                                        histos_1D[plot_index][fs][cat][Settings::VVV], false);
+                                        histos_1D[plot_index][fs][cat][Settings::VVV],
+                                        histos_1D_ZX[plot_index][fs][cat], false);
    }
    else if ( plot_index == Settings::DVHDEC_M4L118130)
    {
@@ -2904,8 +2904,8 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
                                         histos_1D[plot_index][fs][cat][Settings::H125ggH], // ggH = ggH + VBF + ttH
                                         histos_1D[plot_index][fs][cat][Settings::qqZZ],
                                         histos_1D[plot_index][fs][cat][Settings::ggZZ],
-                                        histos_1D_ZX[plot_index][fs][cat], 
-                                        histos_1D[plot_index][fs][cat][Settings::VVV], true);
+                                        histos_1D[plot_index][fs][cat][Settings::VVV],
+                                        histos_1D_ZX[plot_index][fs][cat], true);
    }
    else
    {
@@ -2914,8 +2914,8 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
                              histos_1D[plot_index][fs][cat][Settings::H125],
                              histos_1D[plot_index][fs][cat][Settings::qqZZ],
                              histos_1D[plot_index][fs][cat][Settings::ggZZ],
-                             histos_1D_ZX[plot_index][fs][cat],
-                             histos_1D[plot_index][fs][cat][Settings::VVV]);
+                             histos_1D[plot_index][fs][cat][Settings::VVV],
+                             histos_1D_ZX[plot_index][fs][cat]);
    }
 
    legend->Draw();
@@ -3027,8 +3027,8 @@ void Histograms::plot_STXS( TString folder )
     // THStack
     THStack *stack = new THStack( "stack", "stack" );
 
-    stack->Add(STXS_Categories[Settings::VVV]);
     stack->Add(STXS_Categories[Settings::Zjets]);
+    stack->Add(STXS_Categories[Settings::VVV]);
     stack->Add(STXS_Categories[Settings::ggZZ]);
     stack->Add(STXS_Categories[Settings::qqZZ]);
     stack->Add(STXS_Categories[Settings::H125tqH]);
@@ -3063,8 +3063,8 @@ void Histograms::plot_STXS( TString folder )
                                                  STXS_Categories[Settings::H125tqH],
                                                  STXS_Categories[Settings::qqZZ],
                                                  STXS_Categories[Settings::ggZZ],
-                                                 STXS_Categories[Settings::Zjets],
                                                  STXS_Categories[Settings::VVV],
+                                                 STXS_Categories[Settings::Zjets],
                                                  false);
 
     legend->Draw();
@@ -3313,8 +3313,8 @@ void Histograms::plot_1D_all_cat( TString filename, TString variable_name , TStr
 
       if ( variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
       {
-         histos_1D_ZX_shape[plot_index][Settings::fs4l][i_cat]->SetFillColor(Cosmetics::ZX().fill_color);
-         histos_1D_ZX_shape[plot_index][Settings::fs4l][i_cat]->SetLineColor(Cosmetics::ZX().line_color);
+         histos_1D_ZX[plot_index][Settings::fs4l][i_cat]->SetFillColor(Cosmetics::ZX().fill_color);
+         histos_1D_ZX[plot_index][Settings::fs4l][i_cat]->SetLineColor(Cosmetics::ZX().line_color);
       }
       else
       {
@@ -3336,16 +3336,16 @@ void Histograms::plot_1D_all_cat( TString filename, TString variable_name , TStr
 
       if ( variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass" )
       {
-         stack->Add(histos_1D_ZX_shape[plot_index][Settings::fs4l][i_cat]);
+         stack->Add(histos_1D_ZX[plot_index][Settings::fs4l][i_cat]);
       }
       else
       {
          stack->Add(histos_1D_ZX[plot_index][Settings::fs4l][i_cat]);
       }
 
+      stack->Add(histos_1D[plot_index][Settings::fs4l][i_cat][Settings::VVV]);
       stack->Add(histos_1D[plot_index][Settings::fs4l][i_cat][Settings::ggZZ]);
       stack->Add(histos_1D[plot_index][Settings::fs4l][i_cat][Settings::qqZZ]);
-      stack->Add(histos_1D[plot_index][Settings::fs4l][i_cat][Settings::VVV]);
 
       if ( variable_name == "M4lMainZoomed" && is_VBF_tagged_ )
       {
@@ -3434,8 +3434,8 @@ void Histograms::plot_1D_all_cat( TString filename, TString variable_name , TStr
                                          histos_1D[plot_index][Settings::fs4l][i_cat][Settings::H125],
                                          histos_1D[plot_index][Settings::fs4l][i_cat][Settings::qqZZ],
                                          histos_1D[plot_index][Settings::fs4l][i_cat][Settings::ggZZ],
-                                         histos_1D_ZX_shape[plot_index][Settings::fs4l][i_cat],
-                                         histos_1D[plot_index][Settings::fs4l][i_cat][Settings::VVV]);
+                                         histos_1D[plot_index][Settings::fs4l][i_cat][Settings::VVV],
+                                         histos_1D_ZX[plot_index][Settings::fs4l][i_cat]);
       }
       else if ( variable_name == "M4lMainZoomed" && (i_cat == Settings::VBF_1j_tagged || i_cat == Settings::VBF_2j_tagged) )
       {
@@ -3444,8 +3444,8 @@ void Histograms::plot_1D_all_cat( TString filename, TString variable_name , TStr
                                             histos_1D[plot_index][Settings::fs4l][i_cat][Settings::H125ggH],
                                             histos_1D[plot_index][Settings::fs4l][i_cat][Settings::qqZZ],
                                             histos_1D[plot_index][Settings::fs4l][i_cat][Settings::ggZZ],
-                                            histos_1D_ZX_shape[plot_index][Settings::fs4l][i_cat], 
-                                            histos_1D[plot_index][Settings::fs4l][i_cat][Settings::VVV], false);
+                                            histos_1D[plot_index][Settings::fs4l][i_cat][Settings::VVV],
+                                            histos_1D_ZX[plot_index][Settings::fs4l][i_cat], false);
       }
       else if ( variable_name == "M4lMainZoomed" && (i_cat == Settings::VH_lepton_tagged || i_cat == Settings::VH_hadron_tagged || i_cat == Settings::VH_MET_tagged) )
       {
@@ -3454,8 +3454,8 @@ void Histograms::plot_1D_all_cat( TString filename, TString variable_name , TStr
                                            histos_1D[plot_index][Settings::fs4l][i_cat][Settings::H125ggH],
                                            histos_1D[plot_index][Settings::fs4l][i_cat][Settings::qqZZ],
                                            histos_1D[plot_index][Settings::fs4l][i_cat][Settings::ggZZ],
-                                           histos_1D_ZX_shape[plot_index][Settings::fs4l][i_cat], 
-                                           histos_1D[plot_index][Settings::fs4l][i_cat][Settings::VVV], false);
+                                           histos_1D[plot_index][Settings::fs4l][i_cat][Settings::VVV],
+                                           histos_1D_ZX[plot_index][Settings::fs4l][i_cat], false);
       }
       else if ( variable_name == "M4lMainZoomed" && (i_cat == Settings::ttH_lepton_tagged || i_cat == Settings::ttH_hadron_tagged) )
       {
@@ -3464,8 +3464,8 @@ void Histograms::plot_1D_all_cat( TString filename, TString variable_name , TStr
                                             histos_1D[plot_index][Settings::fs4l][i_cat][Settings::H125ggH],
                                             histos_1D[plot_index][Settings::fs4l][i_cat][Settings::qqZZ],
                                             histos_1D[plot_index][Settings::fs4l][i_cat][Settings::ggZZ],
-                                            histos_1D_ZX_shape[plot_index][Settings::fs4l][i_cat],
-                                            histos_1D[plot_index][Settings::fs4l][i_cat][Settings::VVV]);
+                                            histos_1D[plot_index][Settings::fs4l][i_cat][Settings::VVV],
+                                            histos_1D_ZX[plot_index][Settings::fs4l][i_cat]);
       }
       else
       {
@@ -3473,8 +3473,8 @@ void Histograms::plot_1D_all_cat( TString filename, TString variable_name , TStr
                                         histos_1D[plot_index][Settings::fs4l][i_cat][Settings::H125],
                                         histos_1D[plot_index][Settings::fs4l][i_cat][Settings::qqZZ],
                                         histos_1D[plot_index][Settings::fs4l][i_cat][Settings::ggZZ],
-                                        histos_1D_ZX[plot_index][Settings::fs4l][i_cat],
-                                        histos_1D[plot_index][Settings::fs4l][i_cat][Settings::VVV]);
+                                        histos_1D[plot_index][Settings::fs4l][i_cat][Settings::VVV],
+                                        histos_1D_ZX[plot_index][Settings::fs4l][i_cat]);
       }
 
       legend->Draw();
@@ -3547,7 +3547,7 @@ void Histograms::plot_1D_all_fs( TString filename, TString variable_name , TStri
       histos_1D[plot_index][i_fs][Settings::inclusive][Settings::VVV]->SetFillColor(Cosmetics::VVV().fill_color);
 
       if ( (variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass") && _merge_2e2mu )
-         histos_1D_ZX_shape[plot_index][i_fs][Settings::inclusive]->SetFillColor(Cosmetics::ZX().fill_color);
+         histos_1D_ZX[plot_index][i_fs][Settings::inclusive]->SetFillColor(Cosmetics::ZX().fill_color);
       else
          histos_1D_ZX[plot_index][i_fs][Settings::inclusive]->SetFillColor(Cosmetics::ZX().fill_color);
 
@@ -3557,7 +3557,7 @@ void Histograms::plot_1D_all_fs( TString filename, TString variable_name , TStri
       histos_1D[plot_index][i_fs][Settings::inclusive][Settings::VVV]->SetLineColor(Cosmetics::VVV().line_color);
 
       if ( (variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass") && _merge_2e2mu )
-         histos_1D_ZX_shape[plot_index][i_fs][Settings::inclusive]->SetLineColor(Cosmetics::ZX().line_color);
+         histos_1D_ZX[plot_index][i_fs][Settings::inclusive]->SetLineColor(Cosmetics::ZX().line_color);
       else
          histos_1D_ZX[plot_index][i_fs][Settings::inclusive]->SetLineColor(Cosmetics::ZX().line_color);
 
@@ -3570,7 +3570,7 @@ void Histograms::plot_1D_all_fs( TString filename, TString variable_name , TStri
 
       if ( (variable_name == "M4lMain" || variable_name == "M4lMainZoomed" || variable_name == "M4lMainHighMass") && _merge_2e2mu )
       {
-         stack->Add(histos_1D_ZX_shape[plot_index][i_fs][Settings::inclusive]);
+         stack->Add(histos_1D_ZX[plot_index][i_fs][Settings::inclusive]);
       }
       else
       {
@@ -3629,8 +3629,8 @@ void Histograms::plot_1D_all_fs( TString filename, TString variable_name , TStri
                                          histos_1D[plot_index][i_fs][Settings::inclusive][Settings::H125],
                                          histos_1D[plot_index][i_fs][Settings::inclusive][Settings::qqZZ],
                                          histos_1D[plot_index][i_fs][Settings::inclusive][Settings::ggZZ],
-                                         histos_1D_ZX_shape[plot_index][i_fs][Settings::inclusive],
-                                         histos_1D[plot_index][i_fs][Settings::inclusive][Settings::VVV]);
+                                         histos_1D[plot_index][i_fs][Settings::inclusive][Settings::VVV],
+                                         histos_1D_ZX[plot_index][i_fs][Settings::inclusive]);
       }
       else
       {
@@ -3638,8 +3638,8 @@ void Histograms::plot_1D_all_fs( TString filename, TString variable_name , TStri
                                         histos_1D[plot_index][i_fs][Settings::inclusive][Settings::H125],
                                         histos_1D[plot_index][i_fs][Settings::inclusive][Settings::qqZZ],
                                         histos_1D[plot_index][i_fs][Settings::inclusive][Settings::ggZZ],
-                                        histos_1D_ZX[plot_index][i_fs][Settings::inclusive],
-                                        histos_1D[plot_index][i_fs][Settings::inclusive][Settings::VVV]);
+                                        histos_1D[plot_index][i_fs][Settings::inclusive][Settings::VVV],
+                                        histos_1D_ZX[plot_index][i_fs][Settings::inclusive]);
       }
       legend->Draw();
 
@@ -5030,7 +5030,7 @@ bool Histograms::GetVarLogY ( TString variable_name )
 
 
 //============================================================================================================
-TLegend* Histograms::CreateLegend( string position, TH1F *data, TH1F *h125, TH1F *qqZZ, TH1F *ggZZ, TH1F *ZX, TH1F *VVV )
+TLegend* Histograms::CreateLegend( string position, TH1F *data, TH1F *h125, TH1F *qqZZ, TH1F *ggZZ, TH1F *VVV, TH1F *ZX )
 {
    TLegend *leg;
 
@@ -5051,8 +5051,8 @@ TLegend* Histograms::CreateLegend( string position, TH1F *data, TH1F *h125, TH1F
    leg->AddEntry( h125, "H(125)","f");
    leg->AddEntry( qqZZ, "q#bar{q}#rightarrowZZ, Z#gamma*", "f" );
    leg->AddEntry( ggZZ, "gg#rightarrowZZ, Z#gamma*", "f" );
+   leg->AddEntry( VVV,  "EW", "f" );
    leg->AddEntry( ZX,   "Z+X", "f" );
-   leg->AddEntry( VVV,   "VVV, tt + (V)V", "f" );
 
    return leg;
 }
@@ -5061,7 +5061,7 @@ TLegend* Histograms::CreateLegend( string position, TH1F *data, TH1F *h125, TH1F
 
 
 //==============================================================================================================================
-TLegend* Histograms::CreateLegendVBF( string position, TH1F *data, TH1F *h125VBF, TH1F *h125_other, TH1F *qqZZ, TH1F *ggZZ, TH1F *ZX , TH1F* VVV, bool mask)
+TLegend* Histograms::CreateLegendVBF( string position, TH1F *data, TH1F *h125VBF, TH1F *h125_other, TH1F *qqZZ, TH1F *ggZZ, TH1F* VVV, TH1F *ZX , bool mask)
 {
    TLegend *leg;
 
@@ -5086,8 +5086,8 @@ TLegend* Histograms::CreateLegendVBF( string position, TH1F *data, TH1F *h125VBF
    leg->AddEntry( h125_other,"H(125), other","f");
    leg->AddEntry( qqZZ, "q#bar{q}#rightarrowZZ, Z#gamma*", "f" );
    leg->AddEntry( ggZZ, "gg#rightarrowZZ, Z#gamma*", "f" );
+   leg->AddEntry( VVV,   "EW", "f" );
    leg->AddEntry( ZX, "Z+X", "f" );
-   leg->AddEntry( VVV,   "VVV, tt + (V)V", "f" );
 
    return leg;
 }
@@ -5096,7 +5096,7 @@ TLegend* Histograms::CreateLegendVBF( string position, TH1F *data, TH1F *h125VBF
 
 
 //==============================================================================================================================
-TLegend* Histograms::CreateLegendVH( string position, TH1F *data, TH1F *h125VH, TH1F *h125_other, TH1F *qqZZ, TH1F *ggZZ, TH1F *ZX, TH1F* VVV, bool mask )
+TLegend* Histograms::CreateLegendVH( string position, TH1F *data, TH1F *h125VH, TH1F *h125_other, TH1F *qqZZ, TH1F *ggZZ, TH1F* VVV, TH1F *ZX, bool mask )
 {
    TLegend *leg;
 
@@ -5121,8 +5121,8 @@ TLegend* Histograms::CreateLegendVH( string position, TH1F *data, TH1F *h125VH, 
    leg->AddEntry( h125_other,"H(125), other","f");
    leg->AddEntry( qqZZ, "q#bar{q}#rightarrowZZ, Z#gamma*", "f" );
    leg->AddEntry( ggZZ, "gg#rightarrowZZ, Z#gamma*", "f" );
+   leg->AddEntry( VVV,   "EW", "f" );
    leg->AddEntry( ZX, "Z+X", "f" );
-   leg->AddEntry( VVV,   "VVV, tt + (V)V", "f" );
 
    return leg;
 }
@@ -5131,7 +5131,7 @@ TLegend* Histograms::CreateLegendVH( string position, TH1F *data, TH1F *h125VH, 
 
 
 //==============================================================================================================================
-TLegend* Histograms::CreateLegendttH( string position, TH1F *data, TH1F *h125ttH, TH1F *h125_other, TH1F *qqZZ, TH1F *ggZZ, TH1F *ZX, TH1F* VVV )
+TLegend* Histograms::CreateLegendttH( string position, TH1F *data, TH1F *h125ttH, TH1F *h125_other, TH1F *qqZZ, TH1F *ggZZ, TH1F* VVV, TH1F *ZX )
 {
    TLegend *leg;
 
@@ -5153,15 +5153,16 @@ TLegend* Histograms::CreateLegendttH( string position, TH1F *data, TH1F *h125ttH
    leg->AddEntry( h125_other,"H(125), other","f");
    leg->AddEntry( qqZZ, "q#bar{q}#rightarrowZZ, Z#gamma*", "f" );
    leg->AddEntry( ggZZ, "gg#rightarrowZZ, Z#gamma*", "f" );
+   leg->AddEntry( VVV,   "EW", "f" );
    leg->AddEntry( ZX, "Z+X", "f" );
-   leg->AddEntry( VVV,   "VVV, tt + (V)V", "f" );
+
    return leg;
 }
 //==============================================================================================================================
 
 
 //==============================================================================================================================
-TLegend* Histograms::CreateLegendSTXS( string position, TH1F *data, TH1F *h125ggH, TH1F *h125bbH, TH1F *h125VBF, TH1F *h125VH, TH1F *h125ttH, TH1F *h125tqH, TH1F *qqZZ, TH1F *ggZZ, TH1F *ZX , TH1F *VVV , bool mask)
+TLegend* Histograms::CreateLegendSTXS( string position, TH1F *data, TH1F *h125ggH, TH1F *h125bbH, TH1F *h125VBF, TH1F *h125VH, TH1F *h125ttH, TH1F *h125tqH, TH1F *qqZZ, TH1F *ggZZ, TH1F *VVV , TH1F *ZX , bool mask)
 {
     TLegend *leg;
 
@@ -5182,17 +5183,17 @@ TLegend* Histograms::CreateLegendSTXS( string position, TH1F *data, TH1F *h125gg
     leg->SetBorderSize(0);
     leg->SetNColumns(2);
 
-    leg->AddEntry( data, "Data", "p E" );
-    leg->AddEntry( h125ttH,"H(125), ttH","f");
     leg->AddEntry( h125ggH,"H(125), ggH","f");
-    leg->AddEntry( h125tqH,"H(125), tH","f");
-    leg->AddEntry( h125bbH,"H(125), bbH","f");
     leg->AddEntry( qqZZ, "q#bar{q}#rightarrowZZ, Z#gamma*", "f" );
     leg->AddEntry( h125VBF,"H(125), VBF","f");
     leg->AddEntry( ggZZ, "gg#rightarrowZZ, Z#gamma*", "f" );
     leg->AddEntry( h125VH,"H(125), VH","f");
+    leg->AddEntry( VVV, "EW", "f" );
+    leg->AddEntry( h125ttH,"H(125), ttH","f");
     leg->AddEntry( ZX, "Z+X", "f" );
-    leg->AddEntry( VVV, "EW bkg", "f" );
+    leg->AddEntry( h125tqH,"H(125), tH","f");
+    leg->AddEntry( data, "Data", "p E" );
+    leg->AddEntry( h125bbH,"H(125), bbH","f");
 
     return leg;
 }
