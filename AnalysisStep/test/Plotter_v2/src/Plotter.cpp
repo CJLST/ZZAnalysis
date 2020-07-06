@@ -173,6 +173,8 @@ void Plotter::MakeHistograms( TString input_file_name , int year)
               bool isCrack = LepisCrack->at(lepl);
               _updatedSF *= lepSFHelper->getSF(year, lid, lpt, leta, leta, isCrack);
       }
+      // check very rare cases in which _updatedSF = 0 and use the old one
+      if(_updatedSF == 0) _updatedSF = dataMCWeight;
       //
       // cout << "Weight before = " << _event_weight << " Updated SF = " << _updatedSF << endl;
       _event_weight *= _updatedSF/dataMCWeight;
