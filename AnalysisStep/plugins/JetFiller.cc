@@ -201,9 +201,20 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 }
 	 
 
-    bool PUjetID = false;
+    bool PUjetID = true;
     float PUjetID_score = 0;
-
+    if ( applyJEC_ && ( setup == 2017 || setup == 2018 || (setup == 2016 && (!(isMC_)) )))
+      {
+	PUjetID_score = j.userFloat("pileupJetIdUpdated:fullDiscriminant"); 
+        PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0));
+      }
+    //if (applyJEC_) PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0)); // MODIFIED according to update jet collection for 2016 MC (needed to include DeepCSV)                  
+    else
+      {
+	PUjetID_score = j.userFloat("pileupJetId:fullDiscriminant"); 
+        PUjetID = bool(j.userInt("pileupJetId:fullId") & (1 << 0));
+      }
+    
     //Recommended tight PU JET ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
     //Recommended tight WP for jet pileup ID taken from https://github.com/alefisico/cmssw/blob/PUID_102X/RecoJets/JetProducers/python/PileupJetIDCutParams_cfi.py
     // Computed using 2016 81X training and used for all three years
@@ -213,7 +224,9 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     //Pt1020_Tight   = cms.vdouble( 0.69, -0.35, -0.26, -0.21),
     //Pt2030_Tight   = cms.vdouble( 0.69, -0.35, -0.26, -0.21),
     //Pt3050_Tight   = cms.vdouble( 0.86, -0.10, -0.05, -0.01),
-
+    /*
+    bool PUjetID = false;
+    float PUjetID_score = 0;
     if ( applyJEC_ && ( setup == 2017 || setup == 2018 || (setup == 2016 && (!(isMC_)) )))
       {
 	PUjetID_score = j.userFloat("pileupJetIdUpdated:fullDiscriminant");
@@ -247,18 +260,6 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		     (jpt > 30 && jpt <= 50 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.01 
 		    );
     //if (PUjetID) cout << "PUjetID!" << endl;
-    
-    /*if ( applyJEC_ && ( setup == 2017 || setup == 2018 || (setup == 2016 && (!(isMC_)) )))
-      {
-	PUjetID_score = j.userFloat("pileupJetIdUpdated:fullDiscriminant"); 
-        PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0));
-      }
-    //if (applyJEC_) PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0)); // MODIFIED according to update jet collection for 2016 MC (needed to include DeepCSV)                  
-    else
-      {
-	PUjetID_score = j.userFloat("pileupJetId:fullDiscriminant"); 
-        PUjetID = bool(j.userInt("pileupJetId:fullId") & (1 << 0));
-      }
     */
 
 //--- b tagging and scaling factors

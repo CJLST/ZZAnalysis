@@ -95,12 +95,12 @@ elif (SAMPLE_TYPE == 2017):
 
 elif (SAMPLE_TYPE == 2018):
     if IsMC:
-        process.GlobalTag = GlobalTag(process.GlobalTag, '102X_upgrade2018_realistic_v21', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '102X_upgrade2018_realistic_v20', '')
     else:
         if (DATA_TAG == "PromptReco"):
-            process.GlobalTag = GlobalTag(process.GlobalTag, '102X_dataRun2_Prompt_v16', '')
+            process.GlobalTag = GlobalTag(process.GlobalTag, '102X_dataRun2_Prompt_v15', '')
         else:
-            process.GlobalTag = GlobalTag(process.GlobalTag, '102X_dataRun2_v13', '')
+            process.GlobalTag = GlobalTag(process.GlobalTag, '102X_dataRun2_v12', '')
 
 print '\t',process.GlobalTag.globaltag
 
@@ -992,12 +992,13 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
 ### ----------------------------------------------------------------------
 ### Jets
 ### ----------------------------------------------------------------------
-
+from RecoJets.JetProducers.PileupJetIDParams_cfi import full_80x_chs
+from RecoJets.JetProducers.PileupJetIDCutParams_cfi import full_80x_chs_wp
+from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
 # DEFAULT 2016 jet pileup ID training: _chsalgos_81x
 # 2017-2018: jet pileup ID trainings to be updated
-from RecoJets.JetProducers.PileupJetID_cfi import _chsalgos_94x, _chsalgos_102x
-from RecoJets.JetProducers.PileupJetIDCutParams_cfi import full_81x_chs_wp
-from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
+#from RecoJets.JetProducers.PileupJetID_cfi import _chsalgos_81x, _chsalgos_94x, _chsalgos_102x
+#from RecoJets.JetProducers.PileupJetIDCutParams_cfi import full_81x_chs_wp
 
 process.load("CondCore.CondDB.CondDB_cfi")
 
@@ -1043,31 +1044,32 @@ if (SAMPLE_TYPE == 2016 and IsMC):
                                        *process.updatedPatJetsTransientCorrectedWithDeepInfo
     )
     
-elif (SAMPLE_TYPE == 2017):
-    process.load("RecoJets.JetProducers.PileupJetID_cfi")
-    process.pileupJetIdUpdated = process.pileupJetId.clone(
-        jets=cms.InputTag("slimmedJets"),
-        inputIsCorrected=False,
-        applyJec=True,
-        vertexes=cms.InputTag("offlineSlimmedPrimaryVertices"),
-        algos=cms.VPSet(_chsalgos_94x)
-    )
-elif (SAMPLE_TYPE == 2018):
-    process.load("RecoJets.JetProducers.PileupJetID_cfi")
-    process.pileupJetIdUpdated = process.pileupJetId.clone(
-        jets=cms.InputTag("slimmedJets"),
-        inputIsCorrected=False,
-        applyJec=True,
-        vertexes=cms.InputTag("offlineSlimmedPrimaryVertices"),
-        algos=cms.VPSet(_chsalgos_102x)
-    )
+#elif (SAMPLE_TYPE == 2017):
+#    process.load("RecoJets.JetProducers.PileupJetID_cfi")
+#    process.pileupJetIdUpdated = process.pileupJetId.clone(
+#        jets=cms.InputTag("slimmedJets"),
+#        inputIsCorrected=False,
+#        applyJec=True,
+#        vertexes=cms.InputTag("offlineSlimmedPrimaryVertices"),
+#        algos=cms.VPSet(_chsalgos_94x)
+#    )
+#elif (SAMPLE_TYPE == 2018):
+#    process.load("RecoJets.JetProducers.PileupJetID_cfi")
+#    process.pileupJetIdUpdated = process.pileupJetId.clone(
+#        jets=cms.InputTag("slimmedJets"),
+#        inputIsCorrected=False,
+#        applyJec=True,
+#        vertexes=cms.InputTag("offlineSlimmedPrimaryVertices"),
+#        algos=cms.VPSet(_chsalgos_102x)
+#    )
 else:
     process.load("RecoJets.JetProducers.PileupJetID_cfi")
     process.pileupJetIdUpdated = process.pileupJetId.clone(
         jets=cms.InputTag("slimmedJets"),
         inputIsCorrected=False,
         applyJec=True,
-        vertexes=cms.InputTag("offlineSlimmedPrimaryVertices"),
+        vertexes=cms.InputTag("offlineSlimmedPrimaryVertices")
+        #algos=cms.VPSet(_chsalgos_81x)
     )
 
 
