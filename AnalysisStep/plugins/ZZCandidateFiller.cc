@@ -644,7 +644,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
         }
         //JES Up uncertainty - SPLITTED in 11 sources
         else if (jecnum == 3 )      {
-           ratio = 1. + jet->userFloat("jes_unc_split_Abs_corr");
+           ratio = 1. + jet->userFloat("jes_unc_split_Abs_year");
            newPt = jet->pt() * ratio;
         }
         //JES Up uncertainty - SPLITTED in 11 sources
@@ -654,7 +654,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
         }
         //JES Up uncertainty - SPLITTED in 11 sources
         else if (jecnum == 5 )      {
-           ratio = 1. + jet->userFloat("jes_unc_split_BBEC1_corr");
+           ratio = 1. + jet->userFloat("jes_unc_split_BBEC1_year");
            newPt = jet->pt() * ratio;
         }
         //JES Up uncertainty - SPLITTED in 11 sources
@@ -664,7 +664,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
         }
         //JES Up uncertainty - SPLITTED in 11 sources
         else if (jecnum == 7 )      {
-           ratio = 1. + jet->userFloat("jes_unc_split_EC2_corr");
+           ratio = 1. + jet->userFloat("jes_unc_split_EC2_year");
            newPt = jet->pt() * ratio;
         }
         //JES Up uncertainty - SPLITTED in 11 sources
@@ -679,7 +679,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
         }
         //JES Up uncertainty - SPLITTED in 11 sources
         else if (jecnum == 10 )      {
-           ratio = 1. + jet->userFloat("jes_unc_split_HF_corr");
+           ratio = 1. + jet->userFloat("jes_unc_split_HF_year");
            newPt = jet->pt() * ratio;
         }
         //JES Up uncertainty - SPLITTED in 11 sources
@@ -689,7 +689,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
         }
         //JES Up uncertainty - SPLITTED in 11 sources
         else if (jecnum == 12 )      {
-           ratio = 1. + jet->userFloat("jes_unc_split_RelSample_corr");
+           ratio = 1. + jet->userFloat("jes_unc_split_RelSample_year");
            newPt = jet->pt() * ratio;
         }
         
@@ -705,7 +705,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
         }
         //JES Down uncertainty - SPLITTED in 11 sources
         else if (jecnum == 15 )      {
-           ratio = 1. - jet->userFloat("jes_unc_split_Abs_corr");
+           ratio = 1. - jet->userFloat("jes_unc_split_Abs_year");
            newPt = jet->pt() * ratio;
         }
         //JES Down uncertainty - SPLITTED in 11 sources
@@ -715,7 +715,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
         }
         //JES Down uncertainty - SPLITTED in 11 sources
         else if (jecnum == 17 )      {
-           ratio = 1. - jet->userFloat("jes_unc_split_BBEC1_corr");
+           ratio = 1. - jet->userFloat("jes_unc_split_BBEC1_year");
            newPt = jet->pt() * ratio;
         }
         //JES Down uncertainty - SPLITTED in 11 sources
@@ -725,7 +725,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
         }
         //JES Down uncertainty - SPLITTED in 11 sources
         else if (jecnum == 19 )      {
-           ratio = 1. - jet->userFloat("jes_unc_split_EC2_corr");
+           ratio = 1. - jet->userFloat("jes_unc_split_EC2_year");
            newPt = jet->pt() * ratio;
         }
         //JES Down uncertainty - SPLITTED in 11 sources
@@ -740,7 +740,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
         }
         //JES Down uncertainty - SPLITTED in 11 sources
         else if (jecnum == 22 )      {
-           ratio = 1. - jet->userFloat("jes_unc_split_HF_corr");
+           ratio = 1. - jet->userFloat("jes_unc_split_HF_year");
            newPt = jet->pt() * ratio;
         }
         //JES Down uncertainty - SPLITTED in 11 sources
@@ -750,7 +750,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
         }
         //JES Down uncertainty - SPLITTED in 11 sources
         else if (jecnum == 24 )      {
-           ratio = 1. - jet->userFloat("jes_unc_split_RelSample_corr");
+           ratio = 1. - jet->userFloat("jes_unc_split_RelSample_year");
            newPt = jet->pt() * ratio;
         }
          
@@ -1315,28 +1315,28 @@ void ZZCandidateFiller::updateMELAClusters_J2JEC(){
 	      (theCluster->getName()=="J2JECNominal"           && jecnum==0) ||
 	      (theCluster->getName()=="J2JESUp"                && jecnum==1) ||
 	      (theCluster->getName()=="J2JESUp_Abs"            && jecnum==2) ||
-	      (theCluster->getName()=="J2JESUp_Abs_corr"       && jecnum==3) ||
+	      (theCluster->getName()=="J2JESUp_Abs_year"       && jecnum==3) ||
 	      (theCluster->getName()=="J2JESUp_BBEC1"          && jecnum==4) ||
-	      (theCluster->getName()=="J2JESUp_BBEC1_corr"     && jecnum==5) ||
+	      (theCluster->getName()=="J2JESUp_BBEC1_year"     && jecnum==5) ||
 	      (theCluster->getName()=="J2JESUp_EC2"            && jecnum==6) ||
-	      (theCluster->getName()=="J2JESUp_EC2_corr"       && jecnum==7) ||
+	      (theCluster->getName()=="J2JESUp_EC2_year"       && jecnum==7) ||
 	      (theCluster->getName()=="J2JESUp_FlavQCD"        && jecnum==8) ||
 	      (theCluster->getName()=="J2JESUp_HF"             && jecnum==9) ||
-	      (theCluster->getName()=="J2JESUp_HF_corr"        && jecnum==10) ||
+	      (theCluster->getName()=="J2JESUp_HF_year"        && jecnum==10) ||
 	      (theCluster->getName()=="J2JESUp_RelBal"         && jecnum==11) ||
-	      (theCluster->getName()=="J2JESUp_RelSample_corr" && jecnum==12) ||
+	      (theCluster->getName()=="J2JESUp_RelSample_year" && jecnum==12) ||
 	      (theCluster->getName()=="J2JESDn"                && jecnum==13) ||
 	      (theCluster->getName()=="J2JESDn_Abs"            && jecnum==14) ||
-	      (theCluster->getName()=="J2JESDn_Abs_corr"       && jecnum==15) ||
+	      (theCluster->getName()=="J2JESDn_Abs_year"       && jecnum==15) ||
 	      (theCluster->getName()=="J2JESDn_BBEC1"          && jecnum==16) ||
-	      (theCluster->getName()=="J2JESDn_BBEC1_corr"     && jecnum==17) ||
+	      (theCluster->getName()=="J2JESDn_BBEC1_year"     && jecnum==17) ||
 	      (theCluster->getName()=="J2JESDn_EC2"            && jecnum==18) ||
-	      (theCluster->getName()=="J2JESDn_EC2_corr"       && jecnum==19) ||
+	      (theCluster->getName()=="J2JESDn_EC2_year"       && jecnum==19) ||
 	      (theCluster->getName()=="J2JESDn_FlavQCD"        && jecnum==20) ||
 	      (theCluster->getName()=="J2JESDn_HF"             && jecnum==21) ||
-	      (theCluster->getName()=="J2JESDn_HF_corr"        && jecnum==22) ||
+	      (theCluster->getName()=="J2JESDn_HF_year"        && jecnum==22) ||
 	      (theCluster->getName()=="J2JESDn_RelBal"         && jecnum==23) ||
-	      (theCluster->getName()=="J2JESDn_RelSample_corr" && jecnum==24) ||
+	      (theCluster->getName()=="J2JESDn_RelSample_year" && jecnum==24) ||
 	      (theCluster->getName()=="J2JERUp"                && jecnum==25) ||
 	      (theCluster->getName()=="J2JERDn"                && jecnum==26)
             ){
@@ -1393,28 +1393,28 @@ void ZZCandidateFiller::updateMELAClusters_J1JEC(){
 	      (theCluster->getName()=="J1JECNominal"           && jecnum==0) ||
 	      (theCluster->getName()=="J1JESUp"                && jecnum==1) ||
 	      (theCluster->getName()=="J1JESUp_Abs"            && jecnum==2) ||
-	      (theCluster->getName()=="J1JESUp_Abs_corr"       && jecnum==3) ||
+	      (theCluster->getName()=="J1JESUp_Abs_year"       && jecnum==3) ||
 	      (theCluster->getName()=="J1JESUp_BBEC1"          && jecnum==4) ||
-	      (theCluster->getName()=="J1JESUp_BBEC1_corr"     && jecnum==5) ||
+	      (theCluster->getName()=="J1JESUp_BBEC1_year"     && jecnum==5) ||
 	      (theCluster->getName()=="J1JESUp_EC2"            && jecnum==6) ||
-	      (theCluster->getName()=="J1JESUp_EC2_corr"       && jecnum==7) ||
+	      (theCluster->getName()=="J1JESUp_EC2_year"       && jecnum==7) ||
 	      (theCluster->getName()=="J1JESUp_FlavQCD"        && jecnum==8) ||
 	      (theCluster->getName()=="J1JESUp_HF"             && jecnum==9) ||
-	      (theCluster->getName()=="J1JESUp_HF_corr"        && jecnum==10) ||
+	      (theCluster->getName()=="J1JESUp_HF_year"        && jecnum==10) ||
 	      (theCluster->getName()=="J1JESUp_RelBal"         && jecnum==11) ||
-	      (theCluster->getName()=="J1JESUp_RelSample_corr" && jecnum==12) ||
+	      (theCluster->getName()=="J1JESUp_RelSample_year" && jecnum==12) ||
 	      (theCluster->getName()=="J1JESDn"                && jecnum==13) ||
 	      (theCluster->getName()=="J1JESDn_Abs"            && jecnum==14) ||
-	      (theCluster->getName()=="J1JESDn_Abs_corr"       && jecnum==15) ||
+	      (theCluster->getName()=="J1JESDn_Abs_year"       && jecnum==15) ||
 	      (theCluster->getName()=="J1JESDn_BBEC1"          && jecnum==16) ||
-	      (theCluster->getName()=="J1JESDn_BBEC1_corr"     && jecnum==17) ||
+	      (theCluster->getName()=="J1JESDn_BBEC1_year"     && jecnum==17) ||
 	      (theCluster->getName()=="J1JESDn_EC2"            && jecnum==18) ||
-	      (theCluster->getName()=="J1JESDn_EC2_corr"       && jecnum==19) ||
+	      (theCluster->getName()=="J1JESDn_EC2_year"       && jecnum==19) ||
 	      (theCluster->getName()=="J1JESDn_FlavQCD"        && jecnum==20) ||
 	      (theCluster->getName()=="J1JESDn_HF"             && jecnum==21) ||
-	      (theCluster->getName()=="J1JESDn_HF_corr"        && jecnum==22) ||
+	      (theCluster->getName()=="J1JESDn_HF_year"        && jecnum==22) ||
 	      (theCluster->getName()=="J1JESDn_RelBal"         && jecnum==23) ||
-	      (theCluster->getName()=="J1JESDn_RelSample_corr" && jecnum==24) ||
+	      (theCluster->getName()=="J1JESDn_RelSample_year" && jecnum==24) ||
 	      (theCluster->getName()=="J1JERUp"                && jecnum==25) ||
 	      (theCluster->getName()=="J1JERDn"                && jecnum==26)
 

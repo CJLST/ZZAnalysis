@@ -173,29 +173,29 @@ CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal = [
 
 AJetsProdProbabilities_SpinZero_JHUGen_JESUp = [theME.replace("JECNominal", "JESUp") for theME in AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
 CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_Abs = [theME.replace("JECNominal", "JESUp_Abs") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
-CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_Abs_corr = [theME.replace("JECNominal", "JESUp_Abs_corr") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
+CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_Abs_year = [theME.replace("JECNominal", "JESUp_Abs_year") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
 CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_BBEC1 = [theME.replace("JECNominal", "JESUp_BBEC1") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
-CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_BBEC1_corr = [theME.replace("JECNominal", "JESUp_BBEC1_corr") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
+CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_BBEC1_year = [theME.replace("JECNominal", "JESUp_BBEC1_year") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
 CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_EC2 = [theME.replace("JECNominal", "JESUp_EC2") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
-CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_EC2_corr = [theME.replace("JECNominal", "JESUp_EC2_corr") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
+CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_EC2_year = [theME.replace("JECNominal", "JESUp_EC2_year") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
 CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_FlavQCD = [theME.replace("JECNominal", "JESUp_FlavQCD") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
 CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_HF = [theME.replace("JECNominal", "JESUp_HF") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
-CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_HF_corr = [theME.replace("JECNominal", "JESUp_HF_corr") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
+CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_HF_year = [theME.replace("JECNominal", "JESUp_HF_year") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
 CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_RelBal = [theME.replace("JECNominal", "JESUp_RelBal") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
-CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_RelSample_corr = [theME.replace("JECNominal", "JESUp_RelSample_corr") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
+CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_RelSample_year = [theME.replace("JECNominal", "JESUp_RelSample_year") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
 
 AJetsProdProbabilities_SpinZero_JHUGen_JESDn = [theME.replace("JECNominal", "JESDn") for theME in AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
 CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_Abs = [theME.replace("JECNominal", "JESDn_Abs") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
-CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_Abs_corr = [theME.replace("JECNominal", "JESDn_Abs_corr") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
+CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_Abs_year = [theME.replace("JECNominal", "JESDn_Abs_year") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
 CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_BBEC1 = [theME.replace("JECNominal", "JESDn_BBEC1") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
-CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_BBEC1_corr = [theME.replace("JECNominal", "JESDn_BBEC1_corr") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
+CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_BBEC1_year = [theME.replace("JECNominal", "JESDn_BBEC1_year") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
 CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_EC2 = [theME.replace("JECNominal", "JESDn_EC2") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
-CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_EC2_corr = [theME.replace("JECNominal", "JESDn_EC2_corr") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
+CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_EC2_year = [theME.replace("JECNominal", "JESDn_EC2_year") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
 CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_FlavQCD = [theME.replace("JECNominal", "JESDn_FlavQCD") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
 CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_HF = [theME.replace("JECNominal", "JESDn_HF") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
-CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_HF_corr = [theME.replace("JECNominal", "JESDn_HF_corr") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
+CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_HF_year = [theME.replace("JECNominal", "JESDn_HF_year") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
 CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_RelBal = [theME.replace("JECNominal", "JESDn_RelBal") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
-CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_RelSample_corr = [theME.replace("JECNominal", "JESDn_RelSample_corr") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
+CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_RelSample_year = [theME.replace("JECNominal", "JESDn_RelSample_year") for theME in CAT_AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
 
 AJetsProdProbabilities_SpinZero_JHUGen_JERUp = [theME.replace("JECNominal", "JERUp") for theME in AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
 AJetsProdProbabilities_SpinZero_JHUGen_JERDn = [theME.replace("JECNominal", "JERDn") for theME in AJetsProdProbabilities_SpinZero_JHUGen_JECNominal]
@@ -365,28 +365,28 @@ PMAVJJ_SUPERDIJETMELA_JECNominal = [
 ]
 PMAVJJ_SUPERDIJETMELA_JESUp = [theME.replace("JECNominal", "JESUp") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
 PMAVJJ_SUPERDIJETMELA_JESUp_Abs = [theME.replace("JECNominal", "JESUp_Abs") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
-PMAVJJ_SUPERDIJETMELA_JESUp_Abs_corr = [theME.replace("JECNominal", "JESUp_Abs_corr") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
+PMAVJJ_SUPERDIJETMELA_JESUp_Abs_year = [theME.replace("JECNominal", "JESUp_Abs_year") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
 PMAVJJ_SUPERDIJETMELA_JESUp_BBEC1 = [theME.replace("JECNominal", "JESUp_BBEC1") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
-PMAVJJ_SUPERDIJETMELA_JESUp_BBEC1_corr = [theME.replace("JECNominal", "JESUp_BBEC1_corr") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
+PMAVJJ_SUPERDIJETMELA_JESUp_BBEC1_year = [theME.replace("JECNominal", "JESUp_BBEC1_year") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
 PMAVJJ_SUPERDIJETMELA_JESUp_EC2 = [theME.replace("JECNominal", "JESUp_EC2") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
-PMAVJJ_SUPERDIJETMELA_JESUp_EC2_corr = [theME.replace("JECNominal", "JESUp_EC2_corr") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
+PMAVJJ_SUPERDIJETMELA_JESUp_EC2_year = [theME.replace("JECNominal", "JESUp_EC2_year") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
 PMAVJJ_SUPERDIJETMELA_JESUp_FlavQCD = [theME.replace("JECNominal", "JESUp_FlavQCD") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
 PMAVJJ_SUPERDIJETMELA_JESUp_HF = [theME.replace("JECNominal", "JESUp_HF") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
-PMAVJJ_SUPERDIJETMELA_JESUp_HF_corr = [theME.replace("JECNominal", "JESUp_HF_corr") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
+PMAVJJ_SUPERDIJETMELA_JESUp_HF_year = [theME.replace("JECNominal", "JESUp_HF_year") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
 PMAVJJ_SUPERDIJETMELA_JESUp_RelBal = [theME.replace("JECNominal", "JESUp_RelBal") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
-PMAVJJ_SUPERDIJETMELA_JESUp_RelSample_corr = [theME.replace("JECNominal", "JESUp_RelSample_corr") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
+PMAVJJ_SUPERDIJETMELA_JESUp_RelSample_year = [theME.replace("JECNominal", "JESUp_RelSample_year") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
 PMAVJJ_SUPERDIJETMELA_JESDn = [theME.replace("JECNominal", "JESDn") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
 PMAVJJ_SUPERDIJETMELA_JESDn_Abs = [theME.replace("JECNominal", "JESDn_Abs") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
-PMAVJJ_SUPERDIJETMELA_JESDn_Abs_corr = [theME.replace("JECNominal", "JESDn_Abs_corr") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
+PMAVJJ_SUPERDIJETMELA_JESDn_Abs_year = [theME.replace("JECNominal", "JESDn_Abs_year") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
 PMAVJJ_SUPERDIJETMELA_JESDn_BBEC1 = [theME.replace("JECNominal", "JESDn_BBEC1") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
-PMAVJJ_SUPERDIJETMELA_JESDn_BBEC1_corr = [theME.replace("JECNominal", "JESDn_BBEC1_corr") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
+PMAVJJ_SUPERDIJETMELA_JESDn_BBEC1_year = [theME.replace("JECNominal", "JESDn_BBEC1_year") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
 PMAVJJ_SUPERDIJETMELA_JESDn_EC2 = [theME.replace("JECNominal", "JESDn_EC2") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
-PMAVJJ_SUPERDIJETMELA_JESDn_EC2_corr = [theME.replace("JECNominal", "JESDn_EC2_corr") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
+PMAVJJ_SUPERDIJETMELA_JESDn_EC2_year = [theME.replace("JECNominal", "JESDn_EC2_year") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
 PMAVJJ_SUPERDIJETMELA_JESDn_FlavQCD = [theME.replace("JECNominal", "JESDn_FlavQCD") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
 PMAVJJ_SUPERDIJETMELA_JESDn_HF = [theME.replace("JECNominal", "JESDn_HF") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
-PMAVJJ_SUPERDIJETMELA_JESDn_HF_corr = [theME.replace("JECNominal", "JESDn_HF_corr") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
+PMAVJJ_SUPERDIJETMELA_JESDn_HF_year = [theME.replace("JECNominal", "JESDn_HF_year") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
 PMAVJJ_SUPERDIJETMELA_JESDn_RelBal = [theME.replace("JECNominal", "JESDn_RelBal") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
-PMAVJJ_SUPERDIJETMELA_JESDn_RelSample_corr = [theME.replace("JECNominal", "JESDn_RelSample_corr") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
+PMAVJJ_SUPERDIJETMELA_JESDn_RelSample_year = [theME.replace("JECNominal", "JESDn_RelSample_year") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
 PMAVJJ_SUPERDIJETMELA_JERUp = [theME.replace("JECNominal", "JERUp") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
 PMAVJJ_SUPERDIJETMELA_JERDn = [theME.replace("JECNominal", "JERDn") for theME in PMAVJJ_SUPERDIJETMELA_JECNominal]
 
@@ -397,28 +397,28 @@ theRecoProbabilities.extend(DecayProbabilities_SpinZero_JHUGen)
 theRecoProbabilities.extend(AJetsProdProbabilities_SpinZero_JHUGen_JECNominal)
 theRecoProbabilities.extend(AJetsProdProbabilities_SpinZero_JHUGen_JESUp)
 theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_Abs)
-theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_Abs_corr)
+theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_Abs_year)
 theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_BBEC1)
-theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_BBEC1_corr)
+theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_BBEC1_year)
 theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_EC2)
-theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_EC2_corr)
+theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_EC2_year)
 theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_FlavQCD)
 theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_HF)
-theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_HF_corr)
+theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_HF_year)
 theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_RelBal)
-theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_RelSample_corr)
+theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESUp_RelSample_year)
 theRecoProbabilities.extend(AJetsProdProbabilities_SpinZero_JHUGen_JESDn)
 theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_Abs)
-theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_Abs_corr)
+theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_Abs_year)
 theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_BBEC1)
-theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_BBEC1_corr)
+theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_BBEC1_year)
 theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_EC2)
-theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_EC2_corr)
+theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_EC2_year)
 theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_FlavQCD)
 theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_HF)
-theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_HF_corr)
+theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_HF_year)
 theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_RelBal)
-theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_RelSample_corr)
+theRecoProbabilities.extend(CAT_AJetsProdProbabilities_SpinZero_JHUGen_JESDn_RelSample_year)
 theRecoProbabilities.extend(AJetsProdProbabilities_SpinZero_JHUGen_JERUp)
 theRecoProbabilities.extend(AJetsProdProbabilities_SpinZero_JHUGen_JERDn)
 theRecoProbabilities.extend(ALepsProdProbabilities_SpinZero_JHUGen)
@@ -434,28 +434,28 @@ theRecoProbabilities.extend(PM4L_SUPERMELA)
 theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JECNominal)
 theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESUp)
 theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESUp_Abs)
-theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESUp_Abs_corr)
+theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESUp_Abs_year)
 theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESUp_BBEC1)
-theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESUp_BBEC1_corr)
+theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESUp_BBEC1_year)
 theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESUp_EC2)
-theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESUp_EC2_corr)
+theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESUp_EC2_year)
 theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESUp_FlavQCD)
 theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESUp_HF)
-theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESUp_HF_corr)
+theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESUp_HF_year)
 theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESUp_RelBal)
-theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESUp_RelSample_corr)
+theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESUp_RelSample_year)
 theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESDn)
 theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESDn_Abs)
-theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESDn_Abs_corr)
+theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESDn_Abs_year)
 theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESDn_BBEC1)
-theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESDn_BBEC1_corr)
+theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESDn_BBEC1_year)
 theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESDn_EC2)
-theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESDn_EC2_corr)
+theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESDn_EC2_year)
 theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESDn_FlavQCD)
 theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESDn_HF)
-theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESDn_HF_corr)
+theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESDn_HF_year)
 theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESDn_RelBal)
-theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESDn_RelSample_corr)
+theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JESDn_RelSample_year)
 theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JERUp)
 theRecoProbabilities.extend(PMAVJJ_SUPERDIJETMELA_JERDn)
 
