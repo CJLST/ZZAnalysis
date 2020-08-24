@@ -5,16 +5,22 @@ See README for instructions on how to install the framework.
 
 ## Samples corresponding to this tag
 ### Data
-Data samples can be found at
+Data samples can be found at (lxplus)
 
 	/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200430_LegacyRun2
+and (MARCC)
+
+	/work-zfs/CJLSTtrees/DATA_200430_LegacyRun2     
 
 These samples are in full sync with BBF group. 
 
 ### Simulation
-MC samples can be found at
+MC samples can be found at (lxplus)
 
 	/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased
+and (MARCC) 	
+
+	/work-zfs/CJLSTtrees/Cutbased_Moriond2020_ecdaf558        
 
 Recall that for 2016 MC, you should use the samples under `MC_2016_CorrectBTag`.
 
