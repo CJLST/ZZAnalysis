@@ -5,6 +5,7 @@
 #include <FWCore/Framework/interface/ESHandle.h>
 #include <FWCore/Framework/interface/EventSetup.h>
 #include <FWCore/Utilities/interface/EDMException.h>
+#include "FWCore/ParameterSet/interface/FileInPath.h"
 
 #include <DataFormats/PatCandidates/interface/Jet.h>
 #include <CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h>
@@ -19,7 +20,6 @@
 #include <ZZAnalysis/AnalysisStep/interface/BTaggingSFHelper.h>
 
 #include "TRandom3.h"
-
 #include <vector>
 #include <string>
 
@@ -32,9 +32,9 @@ class JetFiller : public edm::EDProducer {
  public:
   /// Constructor
   explicit JetFiller(const edm::ParameterSet&);
-    
+
   /// Destructor
-  ~JetFiller(){};  
+  ~JetFiller(){};
 
  private:
   virtual void beginJob(){};  
@@ -65,6 +65,9 @@ class JetFiller : public edm::EDProducer {
   JME::JetResolution resolution;
   JME::JetResolutionScaleFactor resolution_sf;
 
+  std::string jecUncFile_;
+  std::vector<string> uncSources {};
+  std::vector<JetCorrectionUncertainty*> splittedUncerts_;  
 };
 
 
@@ -94,6 +97,47 @@ JetFiller::JetFiller(const edm::ParameterSet& iConfig) :
   ptDToken = consumes<edm::ValueMap<float> >(edm::InputTag("QGTagger", "ptD"));
 
   produces<pat::JetCollection>();
+
+  if (setup == 2016) 
+    {
+      edm::FileInPath jecUncFile("ZZAnalysis/AnalysisStep/data/JEC/Regrouped_Summer16_07Aug2017_V11_MC_UncertaintySources_AK4PFchs.txt");
+      jecUncFile_ = jecUncFile.fullPath();
+      uncSources.push_back("Total"); 
+      uncSources.push_back("Absolute"); uncSources.push_back("Absolute_2016");
+      uncSources.push_back("BBEC1"); uncSources.push_back("BBEC1_2016");
+      uncSources.push_back("EC2"); uncSources.push_back("EC2_2016");
+      uncSources.push_back("FlavorQCD");
+      uncSources.push_back("HF"); uncSources.push_back("HF_2016");
+      uncSources.push_back("RelativeBal");
+      uncSources.push_back("RelativeSample_2016");
+    }
+  else if (setup == 2017) 
+    {      
+      edm::FileInPath jecUncFile("ZZAnalysis/AnalysisStep/data/JEC/Regrouped_Fall17_17Nov2017_V32_MC_UncertaintySources_AK4PFchs.txt");
+      jecUncFile_ = jecUncFile.fullPath();	    
+      uncSources.push_back("Total"); 
+      uncSources.push_back("Absolute"); uncSources.push_back("Absolute_2017");
+      uncSources.push_back("BBEC1"); uncSources.push_back("BBEC1_2017");
+      uncSources.push_back("EC2"); uncSources.push_back("EC2_2017");
+      uncSources.push_back("FlavorQCD");
+      uncSources.push_back("HF"); uncSources.push_back("HF_2017");
+      uncSources.push_back("RelativeBal");
+      uncSources.push_back("RelativeSample_2017");
+    }
+  else if (setup == 2018)
+    { 
+      edm::FileInPath jecUncFile("ZZAnalysis/AnalysisStep/data/JEC/Regrouped_Autumn18_V19_MC_UncertaintySources_AK4PFchs.txt");
+      jecUncFile_ = jecUncFile.fullPath();
+      uncSources.push_back("Total"); 
+      uncSources.push_back("Absolute"); uncSources.push_back("Absolute_2018");
+      uncSources.push_back("BBEC1"); uncSources.push_back("BBEC1_2018");
+      uncSources.push_back("EC2"); uncSources.push_back("EC2_2018");
+      uncSources.push_back("FlavorQCD");
+      uncSources.push_back("HF"); uncSources.push_back("HF_2018");
+      uncSources.push_back("RelativeBal");
+      uncSources.push_back("RelativeSample_2018");
+    }
+  else cout << "jecUncFile NOT FOUND!";
 }
 
 
@@ -119,16 +163,31 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   Handle<edm::ValueMap<float> > ptDHandle; 
   iEvent.getByToken(ptDToken, ptDHandle);
 
-  //--- JEC uncertanties 
+
+  // JEC uncertainty (part 1) - No splitting
+  // JetCorrectorParametersCollection refers to the JEC file read from db in MasterPy/ZZ4lAnalysis.py
   ESHandle<JetCorrectorParametersCollection> JetCorParColl;
-  iSetup.get<JetCorrectionsRecord>().get(jecType,JetCorParColl);
+  iSetup.get<JetCorrectionsRecord>().get(jecType,JetCorParColl);  
   JetCorrectorParameters const & JetCorPar = (*JetCorParColl)["Uncertainty"];
   JetCorrectionUncertainty jecUnc(JetCorPar);
+  
+  // JEC uncertainty (Part 2) - Splitting (May 2020)
+  // Run 2 reduced set of uncertainties from here: https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECUncertaintySources#Run_2_reduced_set_of_uncertainty
+  // List of uncertainties: ['Absolute', 'Absolute_201*', 'BBEC1', 'BBEC1_201*', 'EC2', 'EC2_201*', 'FlavorQCD', 'HF', 'HF_201*', 'RelativeBal', 'RelativeSample_201*'] + 'Total'
+  if(applyJEC_ && isMC_)
+    {
+      for (unsigned s_unc = 0; s_unc < uncSources.size(); s_unc++)
+	{
+	  JetCorrectorParameters corrParams = JetCorrectorParameters(jecUncFile_, uncSources[s_unc]); 
+	  splittedUncerts_.push_back(new JetCorrectionUncertainty(corrParams));
+	}
+    }
 
   //--- Output collection
   auto result = std::make_unique<pat::JetCollection>();
-
+  int jet_number = 0;
   for(auto jet = jetHandle->begin(); jet != jetHandle->end(); ++jet){
+    jet_number++;
 
     pat::Jet j(*jet);
     double jpt = j.pt();
@@ -136,11 +195,10 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     double jabseta = fabs(jeta);
     double raw_jpt = j.correctedJet("Uncorrected").pt();
 
-    // 20170220: using a float instead of a double  changes of the JER seed from 99494 to 99495, and changes post JER jet pT.
-    // Note that while PAT::Candidate has this fucntion as double, we only save float accuracy in miniAOD anyway.
+    // 20170220: using a float instead of a double changes of the JER seed from 99494 to 99495, and changes post JER jet pT.
+    // Note that while PAT::Candidate has this function as double, we only save float accuracy in miniAOD anyway.
 
     double jphi = j.phi();
-
 
     //--- Retrieve the q/g likelihood
     edm::RefToBase<pat::Jet> jetRef(edm::Ref<edm::View<pat::Jet> >(jetHandle, jet - jetHandle->begin()));
@@ -153,13 +211,61 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     //--- Get JEC uncertainties 
     jecUnc.setJetEta(jeta);
     jecUnc.setJetPt(jpt);
-    float jes_unc = jecUnc.getUncertainty(true);
-     
-    float pt_jesup = jpt * (1.0 + jes_unc);
-    float pt_jesdn = jpt * (1.0 - jes_unc);
+    float jes_unc = jecUnc.getUncertainty(true); //It takes as argument "bool fDirection": true = up, false = dn; symmetric values
+    float pt_jesup = jpt * (1.0 + jes_unc); // set the shifted pT up
+    float pt_jesdn = jpt * (1.0 - jes_unc); // set the shifted pT dn
+    //j.setP4(j.p4() * (1 + jes_unc)); // Checked that only pt and energy/mass are affected by JEC variations considering the p4() components, not eta/phi
 
+    vector<float> jes_unc_split {};
+    vector<float> pt_jesup_split {};
+    vector<float> pt_jesdn_split {};
+    float singleContr_jes_unc = 0;
 
-    //--- loose jet ID, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID13TeVRun2016 
+    if(applyJEC_ && isMC_)
+      {
+	for (unsigned s_unc = 0; s_unc < uncSources.size(); s_unc++)
+	  {
+	    singleContr_jes_unc = 0;
+	    splittedUncerts_[s_unc]->setJetEta(jeta);
+	    splittedUncerts_[s_unc]->setJetPt(jpt);
+	    singleContr_jes_unc = splittedUncerts_[s_unc]->getUncertainty(true); //It takes as argument "bool fDirection": true = up, false = dn; symmetric values
+	    jes_unc_split.push_back(singleContr_jes_unc);
+	    pt_jesup_split.push_back( jpt * (1.0 + singleContr_jes_unc));	
+	    pt_jesdn_split.push_back( jpt * (1.0 - singleContr_jes_unc));	
+	  }
+      }
+    else
+      {
+	for(unsigned s_unc = 0; s_unc < uncSources.size(); s_unc++)
+	  {
+	    jes_unc_split.push_back(-999.);
+	    pt_jesup_split.push_back(-999.);
+	    pt_jesdn_split.push_back(-999.);
+	  }
+      }
+    // For DEBUG: JEC splitting
+    cout << "=============================" << endl; 
+    cout << "Previous total JES UNCERTAINTY = " << jes_unc << endl;     
+    cout << "----- NUMBER of CONSIDERED UNCERTAINTIES = " << uncSources.size() << " -----" << endl;
+    cout << "JEC unc sources considered:\n";
+    for (unsigned s_unc = 0; s_unc < uncSources.size(); s_unc++)
+      {
+	cout << s_unc << " " << uncSources[s_unc] << '\t' << jes_unc_split[s_unc] << "," << endl; 
+      }
+
+    cout << "----- JET NUMERO " << jet_number << " -----" << endl;
+    cout << "pT JesPt_UP = " << pt_jesup << endl; 
+    cout << "pT JesPt_DN = " << pt_jesdn << endl; 
+
+    for (unsigned s_unc = 0; s_unc < uncSources.size(); s_unc++)
+      {
+	cout << s_unc << " pT JesPt_UP SPLIT = " << pt_jesup_split[s_unc] << endl; 
+	cout << s_unc << " pT JesPt_DN SPLIT = " << pt_jesdn_split[s_unc] << endl; 
+	cout << "------------------------------------------------" << endl;
+      }
+   
+
+    //--- Loose jet ID, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID13TeVRun2016 
     float NHF  = j.neutralHadronEnergyFraction();
     float NEMF = j.neutralEmEnergyFraction();
     float CHF  = j.chargedHadronEnergyFraction();
@@ -171,7 +277,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     bool JetID = true;
 	  
-	 if ( setup == 2016 )
+         if ( setup == 2016 )
 	 { // Tight jet ID https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2016
 	 	JetID      = ((NHF<0.90 && NEMF<0.90 && NumConst>1) && ((jabseta<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || jabseta>2.4) && jabseta<=2.7) ||
       				 ( NHF<0.98 && NEMF>0.01 && NumNeutralParticles>2 && jabseta>2.7 && jabseta<=3.0 ) ||
@@ -197,71 +303,69 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 
 	 else
 	 {
-     throw cms::Exception("JetID") << "Jet ID is not defined for the given setup (" << setup << ")!";
+	   throw cms::Exception("JetID") << "Jet ID is not defined for the given setup (" << setup << ")!";
 	 }
-	 
-
-    bool PUjetID = false;
-    float PUjetID_score = 0;
-
-    //Recommended tight PU JET ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
-    //Recommended tight WP for jet pileup ID taken from https://github.com/alefisico/cmssw/blob/PUID_102X/RecoJets/JetProducers/python/PileupJetIDCutParams_cfi.py
-    // Computed using 2016 81X training and used for all three years
-    //4 Eta Categories  0-2.5   2.5-2.75   2.75-3.0   3.0-5.0
-    //Tight Id
-    //Pt010_Tight    = cms.vdouble( 0.69, -0.35, -0.26, -0.21),
-    //Pt1020_Tight   = cms.vdouble( 0.69, -0.35, -0.26, -0.21),
-    //Pt2030_Tight   = cms.vdouble( 0.69, -0.35, -0.26, -0.21),
-    //Pt3050_Tight   = cms.vdouble( 0.86, -0.10, -0.05, -0.01),
-
-    if ( applyJEC_ && ( setup == 2017 || setup == 2018 || (setup == 2016 && (!(isMC_)) )))
-      {
-	PUjetID_score = j.userFloat("pileupJetIdUpdated:fullDiscriminant");
-      }
-    else
-      {
-	PUjetID_score = j.userFloat("pileupJetId:fullDiscriminant");
-      }
-
-    // WP applied explicitely
-    //cout << "PU ID score = " << PUjetID_score << " PT = " << jpt << " ETA = " << jabseta << endl;
-    PUjetID       = ( 
-		     (jpt > 0 && jpt <= 10 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.69  ||
-		     (jpt > 10 && jpt <= 20 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.69 ||
-		     (jpt > 20 && jpt <= 30 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.69 ||
-		     (jpt > 30 && jpt <= 50 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.86 ||
-
-		     (jpt > 0 && jpt <= 10 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.35  ||
-		     (jpt > 10 && jpt <= 20 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.35 ||
-		     (jpt > 20 && jpt <= 30 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.35 ||
-		     (jpt > 30 && jpt <= 50 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.10 ||
-
-		     (jpt > 0 && jpt <= 10 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.26  ||
-		     (jpt > 10 && jpt <= 20 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.26 ||
-		     (jpt > 20 && jpt <= 30 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.26 ||
-		     (jpt > 30 && jpt <= 50 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.05 ||
-
-		     (jpt > 0 && jpt <= 10 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21  ||
-		     (jpt > 10 && jpt <= 20 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21 ||
-		     (jpt > 20 && jpt <= 30 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21 ||
-		     (jpt > 30 && jpt <= 50 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.01 
-		    );
-    //if (PUjetID) cout << "PUjetID!" << endl;
     
-    /*if ( applyJEC_ && ( setup == 2017 || setup == 2018 || (setup == 2016 && (!(isMC_)) )))
-      {
-	PUjetID_score = j.userFloat("pileupJetIdUpdated:fullDiscriminant"); 
-        PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0));
-      }
-    //if (applyJEC_) PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0)); // MODIFIED according to update jet collection for 2016 MC (needed to include DeepCSV)                  
-    else
-      {
-	PUjetID_score = j.userFloat("pileupJetId:fullDiscriminant"); 
-        PUjetID = bool(j.userInt("pileupJetId:fullId") & (1 << 0));
-      }
-    */
+      bool PUjetID = true;
+      float PUjetID_score = 0;
 
-//--- b tagging and scaling factors
+      if ( applyJEC_ && ( setup == 2017 || setup == 2018 || (setup == 2016 && (!(isMC_)) )))
+	{
+	  PUjetID_score = j.userFloat("pileupJetIdUpdated:fullDiscriminant"); 
+	  PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0));
+	}
+      //if (applyJEC_) PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0)); // MODIFIED according to update jet collection for 2016 MC (needed to include DeepCSV)                  
+      else
+	{
+	  PUjetID_score = j.userFloat("pileupJetId:fullDiscriminant"); 
+	  PUjetID = bool(j.userInt("pileupJetId:fullId") & (1 << 0));
+	}
+      
+      //Recommended tight PU JET ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
+      //Recommended tight WP for jet pileup ID taken from https://github.com/alefisico/cmssw/blob/PUID_102X/RecoJets/JetProducers/python/PileupJetIDCutParams_cfi.py
+      // Computed using 2016 81X training and used for all three years
+      //4 Eta Categories  0-2.5   2.5-2.75   2.75-3.0   3.0-5.0
+      //Tight Id
+      //Pt010_Tight    = cms.vdouble( 0.69, -0.35, -0.26, -0.21),
+      //Pt1020_Tight   = cms.vdouble( 0.69, -0.35, -0.26, -0.21),
+      //Pt2030_Tight   = cms.vdouble( 0.69, -0.35, -0.26, -0.21),
+      //Pt3050_Tight   = cms.vdouble( 0.86, -0.10, -0.05, -0.01),
+      /*
+	bool PUjetID = false;
+	float PUjetID_score = 0;
+	if ( applyJEC_ && ( setup == 2017 || setup == 2018 || (setup == 2016 && (!(isMC_)) )))
+	{
+	PUjetID_score = j.userFloat("pileupJetIdUpdated:fullDiscriminant");
+	}
+	else
+	{
+	PUjetID_score = j.userFloat("pileupJetId:fullDiscriminant");
+	}
+	// WP applied explicitely
+	//cout << "PU ID score = " << PUjetID_score << " PT = " << jpt << " ETA = " << jabseta << endl;
+	PUjetID       = ( 
+	(jpt > 0 && jpt <= 10 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.69  ||
+	(jpt > 10 && jpt <= 20 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.69 ||
+	(jpt > 20 && jpt <= 30 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.69 ||
+	(jpt > 30 && jpt <= 50 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.86 ||
+	(jpt > 0 && jpt <= 10 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.35  ||
+	(jpt > 10 && jpt <= 20 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.35 ||
+	(jpt > 20 && jpt <= 30 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.35 ||
+	(jpt > 30 && jpt <= 50 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.10 ||
+	(jpt > 0 && jpt <= 10 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.26  ||
+	(jpt > 10 && jpt <= 20 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.26 ||
+	(jpt > 20 && jpt <= 30 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.26 ||
+	(jpt > 30 && jpt <= 50 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.05 ||
+	(jpt > 0 && jpt <= 10 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21  ||
+	(jpt > 10 && jpt <= 20 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21 ||
+	(jpt > 20 && jpt <= 30 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21 ||
+	(jpt > 30 && jpt <= 50 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.01 
+	);
+	//if (PUjetID) cout << "PUjetID!" << endl;
+	*/
+      
+    //--- b-tagging and scaling factors
+
     float bTagger;
     bTagger = j.bDiscriminator(bTaggerName) + j.bDiscriminator((bTaggerName + "b")); //one should just sum for doing b tagging, the b and bb probabilities
     //cout << "b tag is = " << bTagger << endl;
@@ -273,7 +377,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     //  {                                                                                                   
     //cout << pd_obj << "  Discriminator: " << pd.at(pd_obj).first << " \t " << pd.at(pd_obj).second  << endl;                                                      
     // }   
-    
+
     bool isBtagged = bTagger > bTaggerThreshold;
     bool isBtaggedWithSF   = isBtagged;
     bool isBtaggedWithSFUp = isBtagged;
@@ -366,6 +470,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
 
     //cout<<"jet pT="<<jpt<<", eta="<<jeta<<endl;
+
     //--- Embed user variables
     j.addUserFloat("qgLikelihood",qgLikelihood);
     j.addUserFloat("axis2",axis2);
@@ -374,6 +479,46 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     j.addUserFloat("jes_unc", jes_unc);
     j.addUserFloat("pt_jesup", pt_jesup);
     j.addUserFloat("pt_jesdn", pt_jesdn);
+    // Adding variables to take into account single contributions to the total JEC uncertainty:
+    // UNCERTAINTY...
+    j.addUserFloat("jes_unc_split_Total", jes_unc_split[0]);
+    j.addUserFloat("jes_unc_split_Abs", jes_unc_split[1]);
+    j.addUserFloat("jes_unc_split_Abs_year", jes_unc_split[2]);
+    j.addUserFloat("jes_unc_split_BBEC1", jes_unc_split[3]);
+    j.addUserFloat("jes_unc_split_BBEC1_year", jes_unc_split[4]);
+    j.addUserFloat("jes_unc_split_EC2", jes_unc_split[5]);
+    j.addUserFloat("jes_unc_split_EC2_year", jes_unc_split[6]);
+    j.addUserFloat("jes_unc_split_FlavQCD", jes_unc_split[7]);
+    j.addUserFloat("jes_unc_split_HF", jes_unc_split[8]);
+    j.addUserFloat("jes_unc_split_HF_year", jes_unc_split[9]);
+    j.addUserFloat("jes_unc_split_RelBal", jes_unc_split[10]);
+    j.addUserFloat("jes_unc_split_RelSample_year", jes_unc_split[11]);
+    // ... and pT UP/DN VARIATIONS 
+    j.addUserFloat("pt_jesup_split_Total", pt_jesup_split[0]);
+    j.addUserFloat("pt_jesdn_split_Total", pt_jesdn_split[0]);
+    j.addUserFloat("pt_jesup_split_Abs", pt_jesup_split[1]);
+    j.addUserFloat("pt_jesdn_split_Abs", pt_jesdn_split[1]);
+    j.addUserFloat("pt_jesup_split_Abs_year", pt_jesup_split[2]);
+    j.addUserFloat("pt_jesdn_split_Abs_year", pt_jesdn_split[2]);
+    j.addUserFloat("pt_jesup_split_BBEC1", pt_jesup_split[3]);
+    j.addUserFloat("pt_jesdn_split_BBEC1", pt_jesdn_split[3]);
+    j.addUserFloat("pt_jesup_split_BBEC1_year", pt_jesup_split[4]);
+    j.addUserFloat("pt_jesdn_split_BBEC1_year", pt_jesdn_split[4]);
+    j.addUserFloat("pt_jesup_split_EC2", pt_jesup_split[5]);
+    j.addUserFloat("pt_jesdn_split_EC2", pt_jesdn_split[5]);
+    j.addUserFloat("pt_jesup_split_EC2_year", pt_jesup_split[6]);
+    j.addUserFloat("pt_jesdn_split_EC2_year", pt_jesdn_split[6]);
+    j.addUserFloat("pt_jesup_split_FlavQCD", pt_jesup_split[7]);
+    j.addUserFloat("pt_jesdn_split_FlavQCD", pt_jesdn_split[7]);
+    j.addUserFloat("pt_jesup_split_HF", pt_jesup_split[8]);
+    j.addUserFloat("pt_jesdn_split_HF", pt_jesdn_split[8]);
+    j.addUserFloat("pt_jesup_split_HF_year", pt_jesup_split[9]);
+    j.addUserFloat("pt_jesdn_split_HF_year", pt_jesdn_split[9]);
+    j.addUserFloat("pt_jesup_split_RelBal", pt_jesup_split[10]);
+    j.addUserFloat("pt_jesdn_split_RelBal", pt_jesdn_split[10]);
+    j.addUserFloat("pt_jesup_split_RelSample_year", pt_jesup_split[11]);
+    j.addUserFloat("pt_jesdn_split_RelSample_year", pt_jesdn_split[11]);
+    //////////////////////////////////////////////////////////////////////////////////////////////
     j.addUserFloat("pt_jerup", pt_jerup);
     j.addUserFloat("pt_jerdn", pt_jerdn);
     j.addUserFloat("RawPt", raw_jpt);
@@ -397,8 +542,8 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
 
     
-    result->push_back(j);
-  }
+    result->push_back(j);}
+  
 
   //--- Reorder jets by pT
   std::sort(result->begin(),result->end(), [](const Jet& j1, const Jet& j2){return j1.pt()>j2.pt();});
@@ -406,7 +551,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put(std::move(result));
 }
 
-
+ 
 #include <FWCore/Framework/interface/MakerMacros.h>
 DEFINE_FWK_MODULE(JetFiller);
 

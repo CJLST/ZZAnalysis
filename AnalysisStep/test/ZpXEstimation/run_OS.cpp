@@ -33,8 +33,7 @@ int main( int argc, char *argv[] )
    bool SubtractWZ = true;
    bool Remove_NegBins_FR = true;
    bool Remove_NegBins_ZX = true;
-	
-   
+	   
    float pT_bins[] = {5, 7, 10, 20, 30, 40, 50, 80};
    
    OSmethod *os = new OSmethod();

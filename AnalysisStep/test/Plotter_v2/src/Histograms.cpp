@@ -2774,6 +2774,7 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
    stack->Add(histos_1D[plot_index][fs][cat][Settings::VVV]);
    stack->Add(histos_1D[plot_index][fs][cat][Settings::ggZZ]);
    stack->Add(histos_1D[plot_index][fs][cat][Settings::qqZZ]);
+   stack->Add(histos_1D[plot_index][fs][cat][Settings::VVV]);
 
    if ( is_Djet_ )
    {
@@ -3027,6 +3028,7 @@ void Histograms::plot_STXS( TString folder )
     // THStack
     THStack *stack = new THStack( "stack", "stack" );
 
+    stack->Add(STXS_Categories[Settings::VVV]);
     stack->Add(STXS_Categories[Settings::Zjets]);
     stack->Add(STXS_Categories[Settings::VVV]);
     stack->Add(STXS_Categories[Settings::ggZZ]);

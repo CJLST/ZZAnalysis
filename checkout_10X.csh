@@ -43,7 +43,7 @@ git cms-merge-topic cms-met:METFixEE2017_949_v2_backport_to_102X
 #### Please do not add any custom (non-CMSSW) package before this line ####
 #ZZAnalysis
 git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
-(cd ZZAnalysis; git checkout Run2_CutBased_BTag16)
+(cd ZZAnalysis; git checkout jes-prod-test)
 
 # Muon MVA
 git clone https://github.com/bonanomi/MuonMVAReader.git MuonMVAReader

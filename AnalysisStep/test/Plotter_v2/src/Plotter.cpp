@@ -717,23 +717,6 @@ void Plotter::MakeHistogramsZX( TString input_file_data_name, TString  input_fil
 
    } // End events loop
 
-   // Print Z + X expected yields for inclusive category
-//   cout << endl;
-//   cout << "========================================================================================" << endl;
-//   cout << "[INFO] Control printout." << endl << "!!! Numbers shoud be identical to yields from SS method in " << year << " !!!" << endl;
-//   for ( int i_fs = 0; i_fs < num_of_final_states - 1; i_fs++ )
-//   {
-//      if ( _merge_2e2mu && i_fs == Settings::fs2mu2e) continue;
-//      cout << "Category: " << Settings::inclusive << "   Final state: " << i_fs << endl;
-//      cout << _expected_yield_SR[i_fs][Settings::inclusive] << " +/- " <<
-//      _expected_yield_SR[i_fs][Settings::inclusive]/sqrt(_number_of_events_CR[i_fs][Settings::inclusive]) << " (stat., evt: " <<
-//      _number_of_events_CR[i_fs][Settings::inclusive] << ")" << " +/- " << _expected_yield_SR[i_fs][Settings::inclusive]*0.50 << " (syst.)" << endl;
-//   }
-//
-//   cout << "[INFO] Total = " << _expected_yield_SR[Settings::fs4l][Settings::inclusive] << endl;
-//   cout << "========================================================================================" << endl;
-//   cout << endl;
-
    // Smooth histograms
    if ( SMOOTH_ZX_FULL_RUN2_SS )
    {

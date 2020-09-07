@@ -1042,32 +1042,32 @@ if (SAMPLE_TYPE == 2016 and IsMC):
                                        *process.patJetCorrFactorsTransientCorrectedWithDeepInfo 
                                        *process.updatedPatJetsTransientCorrectedWithDeepInfo
     )
-    
-elif (SAMPLE_TYPE == 2017):
-    process.load("RecoJets.JetProducers.PileupJetID_cfi")
-    process.pileupJetIdUpdated = process.pileupJetId.clone(
-        jets=cms.InputTag("slimmedJets"),
-        inputIsCorrected=False,
-        applyJec=True,
-        vertexes=cms.InputTag("offlineSlimmedPrimaryVertices"),
-        algos=cms.VPSet(_chsalgos_94x)
-    )
-elif (SAMPLE_TYPE == 2018):
-    process.load("RecoJets.JetProducers.PileupJetID_cfi")
-    process.pileupJetIdUpdated = process.pileupJetId.clone(
-        jets=cms.InputTag("slimmedJets"),
-        inputIsCorrected=False,
-        applyJec=True,
-        vertexes=cms.InputTag("offlineSlimmedPrimaryVertices"),
-        algos=cms.VPSet(_chsalgos_102x)
-    )
+
+#elif (SAMPLE_TYPE == 2017):
+#    process.load("RecoJets.JetProducers.PileupJetID_cfi")
+#    process.pileupJetIdUpdated = process.pileupJetId.clone(
+#        jets=cms.InputTag("slimmedJets"),
+#        inputIsCorrected=False,
+#        applyJec=True,
+#        vertexes=cms.InputTag("offlineSlimmedPrimaryVertices"),
+#        algos=cms.VPSet(_chsalgos_94x)
+#    )
+#elif (SAMPLE_TYPE == 2018):
+#    process.load("RecoJets.JetProducers.PileupJetID_cfi")
+#    process.pileupJetIdUpdated = process.pileupJetId.clone(
+#        jets=cms.InputTag("slimmedJets"),
+#        inputIsCorrected=False,
+#        applyJec=True,
+#        vertexes=cms.InputTag("offlineSlimmedPrimaryVertices"),
+#        algos=cms.VPSet(_chsalgos_102x)
+
 else:
     process.load("RecoJets.JetProducers.PileupJetID_cfi")
     process.pileupJetIdUpdated = process.pileupJetId.clone(
         jets=cms.InputTag("slimmedJets"),
         inputIsCorrected=False,
         applyJec=True,
-        vertexes=cms.InputTag("offlineSlimmedPrimaryVertices"),
+        vertexes=cms.InputTag("offlineSlimmedPrimaryVertices")
     )
 
 
@@ -1188,7 +1188,7 @@ if (APPLYJEC and SAMPLE_TYPE == 2016):
             addBTagInfo          = cms.bool(True),  ## master switch
             addDiscriminators    = cms.bool(True)   ## addition of btag discriminators
         )
-        
+
         ### Replace inputs in QGTagger and dressedJets
         process.QGTagger.srcJets = cms.InputTag('jetsWithJEC')
         process.dressedJets.src = cms.InputTag('jetsWithJEC')

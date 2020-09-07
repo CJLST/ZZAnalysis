@@ -67,7 +67,6 @@ int main( int argc, char *argv[] )
    TString TTZJets_2018     = path_2018 + "TTZJets_M10_MLMext1"            + file_name;
    TString TTLLNuNu_2018    = path_2018 + "TTZToLLNuNu_M10ext1"            + file_name;
    TString TTLL_2018        = path_2018 + "TTZToLL_M1to10_MLM"         + file_name;
-   // VBF off-shell sample
    TString VBFoff_2018      = path_2018 + "VBFToContinToZZ4l"          + file_name;
 
    TString ggH125_2017      = path_2017 + "ggH125"     + file_name;
@@ -117,6 +116,15 @@ int main( int argc, char *argv[] )
    TString ggZZ2e2mu_2016   = path_2016 + "ggTo2e2mu_Contin_MCFM701"   + file_name;
    TString ggZZ2e2tau_2016  = path_2016 + "ggTo2e2tau_Contin_MCFM701"  + file_name;
    TString ggZZ2mu2tau_2016 = path_2016 + "ggTo2mu2tau_Contin_MCFM701" + file_name;
+   // Triboson and TT-triboson like samples
+   TString TTZZ_2016        = path_2016 + "TTZZ"                       + file_name;
+   TString TTWW_2016        = path_2016 + "TTWW"                       + file_name;
+   TString WWZ_2016         = path_2016 + "WWZ"                        + file_name;
+   TString WZZ_2016         = path_2016 + "WZZ"                        + file_name;
+   TString ZZZ_2016         = path_2016 + "ZZZ"                        + file_name;
+   TString TTZJets_2016     = path_2016 + "TTZJets_M10_MLM"            + file_name;
+   TString TTLLNuNu_2016    = path_2016 + "TTZToLLNuNu_M10"            + file_name;
+   TString TTLL_2016        = path_2016 + "TTZToLL_M1to10_MLM"         + file_name;
 
    // Triboson and TT-triboson like samples
    TString TTZZ_2016        = path_2016 + "TTZZ"                       + file_name;
@@ -168,7 +176,6 @@ int main( int argc, char *argv[] )
    plotter->MakeHistograms(TTLLNuNu_2016, 2016);
    plotter->MakeHistograms(TTLL_2016, 2016);
    plotter->MakeHistograms(VBFoff_2016, 2016);
-
 // // ZX Background
    plotter->MakeHistogramsZX(Data_2016, FR_2016, 2016);
 
@@ -209,8 +216,6 @@ int main( int argc, char *argv[] )
 // // ZX Background
    plotter->MakeHistogramsZX(Data_2017, FR_2017, 2017);
 
-
-
 ////// 2018
 // // Data
    plotter->MakeHistograms(Data_2018,2018);
@@ -246,9 +251,7 @@ int main( int argc, char *argv[] )
 
 // // ZX Background
    plotter->MakeHistogramsZX(Data_2018, FR_2018, 2018);
-
-
-
+  
    plotter->MakeM4lZX();
 
    plotter->FillInclusive();
