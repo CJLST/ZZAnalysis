@@ -2771,6 +2771,7 @@ void Histograms::plot_1D_single( TString filename, TString variable_name, TStrin
       stack->Add(histos_1D_ZX[plot_index][fs][cat]);
    }
 
+   stack->Add(histos_1D[plot_index][fs][cat][Settings::VVV]);
    stack->Add(histos_1D[plot_index][fs][cat][Settings::ggZZ]);
    stack->Add(histos_1D[plot_index][fs][cat][Settings::qqZZ]);
    stack->Add(histos_1D[plot_index][fs][cat][Settings::VVV]);
@@ -3029,6 +3030,7 @@ void Histograms::plot_STXS( TString folder )
 
     stack->Add(STXS_Categories[Settings::VVV]);
     stack->Add(STXS_Categories[Settings::Zjets]);
+    stack->Add(STXS_Categories[Settings::VVV]);
     stack->Add(STXS_Categories[Settings::ggZZ]);
     stack->Add(STXS_Categories[Settings::qqZZ]);
     stack->Add(STXS_Categories[Settings::H125tqH]);
@@ -3343,9 +3345,9 @@ void Histograms::plot_1D_all_cat( TString filename, TString variable_name , TStr
          stack->Add(histos_1D_ZX[plot_index][Settings::fs4l][i_cat]);
       }
 
+      stack->Add(histos_1D[plot_index][Settings::fs4l][i_cat][Settings::VVV]);
       stack->Add(histos_1D[plot_index][Settings::fs4l][i_cat][Settings::ggZZ]);
       stack->Add(histos_1D[plot_index][Settings::fs4l][i_cat][Settings::qqZZ]);
-      stack->Add(histos_1D[plot_index][Settings::fs4l][i_cat][Settings::VVV]);
 
       if ( variable_name == "M4lMainZoomed" && is_VBF_tagged_ )
       {
@@ -5051,7 +5053,7 @@ TLegend* Histograms::CreateLegend( string position, TH1F *data, TH1F *h125, TH1F
    leg->AddEntry( h125, "H(125)","f");
    leg->AddEntry( qqZZ, "q#bar{q}#rightarrowZZ, Z#gamma*", "f" );
    leg->AddEntry( ggZZ, "gg#rightarrowZZ, Z#gamma*", "f" );
-   leg->AddEntry( VVV,   "VVV, tt + (V)V", "f" );
+   leg->AddEntry( VVV,  "EW", "f" );
    leg->AddEntry( ZX,   "Z+X", "f" );
 
    return leg;
@@ -5086,7 +5088,7 @@ TLegend* Histograms::CreateLegendVBF( string position, TH1F *data, TH1F *h125VBF
    leg->AddEntry( h125_other,"H(125), other","f");
    leg->AddEntry( qqZZ, "q#bar{q}#rightarrowZZ, Z#gamma*", "f" );
    leg->AddEntry( ggZZ, "gg#rightarrowZZ, Z#gamma*", "f" );
-   leg->AddEntry( VVV,   "VVV, tt + (V)V", "f" );
+   leg->AddEntry( VVV,   "EW", "f" );
    leg->AddEntry( ZX, "Z+X", "f" );
 
    return leg;
@@ -5121,7 +5123,7 @@ TLegend* Histograms::CreateLegendVH( string position, TH1F *data, TH1F *h125VH, 
    leg->AddEntry( h125_other,"H(125), other","f");
    leg->AddEntry( qqZZ, "q#bar{q}#rightarrowZZ, Z#gamma*", "f" );
    leg->AddEntry( ggZZ, "gg#rightarrowZZ, Z#gamma*", "f" );
-   leg->AddEntry( VVV,   "VVV, tt + (V)V", "f" );
+   leg->AddEntry( VVV,   "EW", "f" );
    leg->AddEntry( ZX, "Z+X", "f" );
 
    return leg;
@@ -5153,7 +5155,7 @@ TLegend* Histograms::CreateLegendttH( string position, TH1F *data, TH1F *h125ttH
    leg->AddEntry( h125_other,"H(125), other","f");
    leg->AddEntry( qqZZ, "q#bar{q}#rightarrowZZ, Z#gamma*", "f" );
    leg->AddEntry( ggZZ, "gg#rightarrowZZ, Z#gamma*", "f" );
-   leg->AddEntry( VVV,   "VVV, tt + (V)V", "f" );
+   leg->AddEntry( VVV,   "EW", "f" );
    leg->AddEntry( ZX, "Z+X", "f" );
 
    return leg;
@@ -5162,7 +5164,7 @@ TLegend* Histograms::CreateLegendttH( string position, TH1F *data, TH1F *h125ttH
 
 
 //==============================================================================================================================
-TLegend* Histograms::CreateLegendSTXS( string position, TH1F *data, TH1F *h125ggH, TH1F *h125bbH, TH1F *h125VBF, TH1F *h125VH, TH1F *h125ttH, TH1F *h125tqH, TH1F *qqZZ, TH1F *ggZZ, TH1F *VVV, TH1F *ZX, bool mask)
+TLegend* Histograms::CreateLegendSTXS( string position, TH1F *data, TH1F *h125ggH, TH1F *h125bbH, TH1F *h125VBF, TH1F *h125VH, TH1F *h125ttH, TH1F *h125tqH, TH1F *qqZZ, TH1F *ggZZ, TH1F *VVV , TH1F *ZX , bool mask)
 {
     TLegend *leg;
 
@@ -5183,17 +5185,17 @@ TLegend* Histograms::CreateLegendSTXS( string position, TH1F *data, TH1F *h125gg
     leg->SetBorderSize(0);
     leg->SetNColumns(2);
 
-    leg->AddEntry( data, "Data", "p E" );
-    leg->AddEntry( h125ttH,"H(125), ttH","f");
     leg->AddEntry( h125ggH,"H(125), ggH","f");
-    leg->AddEntry( h125tqH,"H(125), tH","f");
-    leg->AddEntry( h125bbH,"H(125), bbH","f");
     leg->AddEntry( qqZZ, "q#bar{q}#rightarrowZZ, Z#gamma*", "f" );
     leg->AddEntry( h125VBF,"H(125), VBF","f");
     leg->AddEntry( ggZZ, "gg#rightarrowZZ, Z#gamma*", "f" );
     leg->AddEntry( h125VH,"H(125), VH","f");
-    leg->AddEntry( VVV, "VVV, tt + (V)V", "f" );
+    leg->AddEntry( VVV, "EW", "f" );
+    leg->AddEntry( h125ttH,"H(125), ttH","f");
     leg->AddEntry( ZX, "Z+X", "f" );
+    leg->AddEntry( h125tqH,"H(125), tH","f");
+    leg->AddEntry( data, "Data", "p E" );
+    leg->AddEntry( h125bbH,"H(125), bbH","f");
 
     return leg;
 }

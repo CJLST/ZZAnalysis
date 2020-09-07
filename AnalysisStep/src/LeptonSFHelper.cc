@@ -58,19 +58,22 @@ LeptonSFHelper::LeptonSFHelper()
    h_Ele_Reco_lowPT_2018 = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
    
    // 2016 Muons
-   TString fipMu_2016 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/final_HZZ_SF_2016_legacy_mupogsysts.root"); //"$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_Moriond2017_v2.root");
+  TString fipMu_2016 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/final_HZZ_muon_SF_2016RunB2H_legacy_newLoose_newIso_paper.root"); 
+   //final_HZZ_SF_2016_legacy_mupogsysts.root"); //"$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_Moriond2017_v2.root");
    root_file = TFile::Open(fipMu_2016.Data(),"READ");
    h_Mu_SF_2016  = (TH2D*)root_file->Get("FINAL")->Clone();
    h_Mu_Unc_2016 = (TH2D*)root_file->Get("ERROR")->Clone();
    
    // 2017 Muons
-   TString fipMu_2017 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/final_HZZ_SF_2017_rereco_mupogsysts_3010.root"); //"$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_Moriond2018_final.root");
+   TString fipMu_2017 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/final_HZZ_muon_SF_2017_newLooseIso_mupogSysts_paper.root"); 
+   //final_HZZ_SF_2017_rereco_mupogsysts_3010.root"); //"$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ScaleFactors_mu_Moriond2018_final.root");
    root_file = TFile::Open(fipMu_2017.Data(),"READ");
    h_Mu_SF_2017  = (TH2D*)root_file->Get("FINAL")->Clone();
    h_Mu_Unc_2017 = (TH2D*)root_file->Get("ERROR")->Clone();
       
    // 2018 Muons
-   TString fipMu_2018 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/final_HZZ_SF_2018_rereco_mupogsysts_3010.root"); //"$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/final_HZZ_muon_SF_2018RunA2D_ER_2702.root");
+   TString fipMu_2018 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/final_HZZ_muon_SF_2018RunA2D_ER_newLoose_newIso_paper.root"); 
+   //final_HZZ_SF_2018_rereco_mupogsysts_3010.root"); //"$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/final_HZZ_muon_SF_2018RunA2D_ER_2702.root");
    root_file = TFile::Open(fipMu_2018.Data(),"READ");
    h_Mu_SF_2018  = (TH2D*)root_file->Get("FINAL")->Clone();
    h_Mu_Unc_2018 = (TH2D*)root_file->Get("ERROR")->Clone();

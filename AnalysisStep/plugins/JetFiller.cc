@@ -194,8 +194,10 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     double jeta = j.eta();
     double jabseta = fabs(jeta);
     double raw_jpt = j.correctedJet("Uncorrected").pt();
+
     // 20170220: using a float instead of a double changes of the JER seed from 99494 to 99495, and changes post JER jet pT.
     // Note that while PAT::Candidate has this function as double, we only save float accuracy in miniAOD anyway.
+
     double jphi = j.phi();
 
     //--- Retrieve the q/g likelihood
@@ -271,7 +273,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     int NumConst = j.chargedMultiplicity()+j.neutralMultiplicity();
     int NumNeutralParticles = j.neutralMultiplicity();
     float CHM  = j.chargedMultiplicity();
- //   float MUF  = j.muonEnergyFraction();
+    //   float MUF  = j.muonEnergyFraction();
 
     bool JetID = true;
 	  
@@ -303,7 +305,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 {
 	   throw cms::Exception("JetID") << "Jet ID is not defined for the given setup (" << setup << ")!";
 	 }
-     
+    
       bool PUjetID = true;
       float PUjetID_score = 0;
 
@@ -363,6 +365,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	*/
       
     //--- b-tagging and scaling factors
+
     float bTagger;
     bTagger = j.bDiscriminator(bTaggerName) + j.bDiscriminator((bTaggerName + "b")); //one should just sum for doing b tagging, the b and bb probabilities
     //cout << "b tag is = " << bTagger << endl;

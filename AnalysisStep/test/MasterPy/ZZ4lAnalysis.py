@@ -95,15 +95,15 @@ elif (SAMPLE_TYPE == 2017):
 
 elif (SAMPLE_TYPE == 2018):
     if IsMC:
-        process.GlobalTag = GlobalTag(process.GlobalTag, '102X_upgrade2018_realistic_v20', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '102X_upgrade2018_realistic_v21', '')
     else:
         if (DATA_TAG == "PromptReco"):
-            process.GlobalTag = GlobalTag(process.GlobalTag, '102X_dataRun2_Prompt_v15', '')
+            process.GlobalTag = GlobalTag(process.GlobalTag, '102X_dataRun2_Prompt_v16', '')
         else:
-            process.GlobalTag = GlobalTag(process.GlobalTag, '102X_dataRun2_v12', '')
-
+            process.GlobalTag = GlobalTag(process.GlobalTag, '102X_dataRun2_v13', '')
 
 print '\t',process.GlobalTag.globaltag
+
 
 ### ----------------------------------------------------------------------
 ### Standard stuff
@@ -993,13 +993,11 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
 ### Jets
 ### ----------------------------------------------------------------------
 
-from RecoJets.JetProducers.PileupJetIDParams_cfi import full_80x_chs
-from RecoJets.JetProducers.PileupJetIDCutParams_cfi import full_80x_chs_wp
-from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
 # DEFAULT 2016 jet pileup ID training: _chsalgos_81x
 # 2017-2018: jet pileup ID trainings to be updated
-#from RecoJets.JetProducers.PileupJetID_cfi import _chsalgos_81x, _chsalgos_94x, _chsalgos_102x
-#from RecoJets.JetProducers.PileupJetIDCutParams_cfi import full_81x_chs_wp
+from RecoJets.JetProducers.PileupJetID_cfi import _chsalgos_94x, _chsalgos_102x
+from RecoJets.JetProducers.PileupJetIDCutParams_cfi import full_81x_chs_wp
+from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
 
 process.load("CondCore.CondDB.CondDB_cfi")
 
@@ -1062,6 +1060,7 @@ if (SAMPLE_TYPE == 2016 and IsMC):
 #        applyJec=True,
 #        vertexes=cms.InputTag("offlineSlimmedPrimaryVertices"),
 #        algos=cms.VPSet(_chsalgos_102x)
+
 else:
     process.load("RecoJets.JetProducers.PileupJetID_cfi")
     process.pileupJetIdUpdated = process.pileupJetId.clone(
@@ -1069,7 +1068,6 @@ else:
         inputIsCorrected=False,
         applyJec=True,
         vertexes=cms.InputTag("offlineSlimmedPrimaryVertices")
-#       algos=cms.VPSet(_chsalgos_81x)
     )
 
 
@@ -1444,12 +1442,13 @@ if FSRMODE=="Legacy" :
 
 metTag = cms.InputTag("slimmedMETs")
 
+# NB: b tag UPDATE DOES NOT WORK including this part related to MET => Updated info in jets get lost
 if (RECORRECTMET and SAMPLE_TYPE == 2016):
 
     from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
     runMetCorAndUncFromMiniAOD(process,
                                isData=(not IsMC),
-                               )
+    )
     metTag = cms.InputTag("slimmedMETs","","ZZ")
 
     # NB: removed to use properly update jet collection to include DeepCSV in 2016 ntuples

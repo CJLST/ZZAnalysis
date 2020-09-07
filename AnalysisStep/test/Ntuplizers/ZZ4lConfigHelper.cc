@@ -103,7 +103,7 @@ ZZ4lConfigHelper::passTrigger(const edm::Event & event, edm::Handle<edm::Trigger
 	  ((PD=="DoubleEle"||PD=="DoubleEG" ||PD=="EGamma" ) && (passDiEle || passTriEle)) ||
 	  ((PD=="DoubleMu" ||PD=="DoubleMuon") && (passDiMu || passTriMu) && !passDiEle && !passTriEle) ||
 	  ((PD=="MuEG"     ||PD=="MuonEG"    ) && passMuEle && !passDiMu && !passTriMu && !passDiEle && !passTriEle) ||
-	  (PD=="SingleElectron" && passSingleEle && !passMuEle && !passDiMu && !passTriMu && !passDiEle && !passTriEle) ||
+	  ((PD=="SingleElectron" || PD=="EGamma") && passSingleEle && !passMuEle && !passDiMu && !passTriMu && !passDiEle && !passTriEle) ||
 	  (PD=="SingleMuon" && passSingleMu && !passSingleEle && !passMuEle && !passDiMu && !passTriMu && !passDiEle && !passTriEle)
 	  ) {
 	evtPassTrigger = true;
