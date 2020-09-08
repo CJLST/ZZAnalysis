@@ -232,7 +232,7 @@ namespace {
   std::vector<short> JetPartonFlavour;
   std::vector<float> JetPUValue;
   std::vector<short> JetPUID;
-  std::vector<short> JetPUID_score;
+  std::vector<float> JetPUID_score;
   std::vector<short> JetID;
   std::vector<float> JetJESUp ;
   std::vector<float> JetJESUp_Total ;
