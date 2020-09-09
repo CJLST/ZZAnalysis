@@ -125,16 +125,6 @@ int main( int argc, char *argv[] )
    TString TTZJets_2016     = path_2016 + "TTZJets_M10_MLM"            + file_name;
    TString TTLLNuNu_2016    = path_2016 + "TTZToLLNuNu_M10"            + file_name;
    TString TTLL_2016        = path_2016 + "TTZToLL_M1to10_MLM"         + file_name;
-
-   // Triboson and TT-triboson like samples
-   TString TTZZ_2016        = path_2016 + "TTZZ"                       + file_name;
-   TString TTWW_2016        = path_2016 + "TTWW"                       + file_name;
-   TString WWZ_2016         = path_2016 + "WWZ"                        + file_name;
-   TString WZZ_2016         = path_2016 + "WZZ"                        + file_name;
-   TString ZZZ_2016         = path_2016 + "ZZZ"                        + file_name;
-   TString TTZJets_2016     = path_2016 + "TTZJets_M10_MLM"            + file_name;
-   TString TTLLNuNu_2016    = path_2016 + "TTZToLLNuNu_M10"            + file_name;
-   TString TTLL_2016        = path_2016 + "TTZToLL_M1to10_MLM"         + file_name;
    // VBF off-shell sample
    TString VBFoff_2016      = path_2016 + "VBFToContinToZZ4l"          + file_name;
  
@@ -176,6 +166,7 @@ int main( int argc, char *argv[] )
    plotter->MakeHistograms(TTLLNuNu_2016, 2016);
    plotter->MakeHistograms(TTLL_2016, 2016);
    plotter->MakeHistograms(VBFoff_2016, 2016);
+   
 // // ZX Background
    plotter->MakeHistogramsZX(Data_2016, FR_2016, 2016);
 
