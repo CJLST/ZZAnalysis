@@ -25,9 +25,9 @@ class MCHistoryTools {
 
   /// Destructor
   virtual ~MCHistoryTools();
-  
+
   bool isMC() {return ismc;}
-  
+
   int genFinalState();
 
   // flavour of the associated V decay (0 if n/a)
@@ -45,18 +45,21 @@ class MCHistoryTools {
   /// Z1 is defined as the Z closest to nominal mass.
 //   const reco::Candidate * genZ1() {init(); return theGenZ1;}
 //   const reco::Candidate * genZ2() {init(); return theGenZ2;}
-  
-  /// The leptons coming from Zs (in no specific order) 
+
+  /// The leptons coming from Zs (in no specific order)
   const std::vector<const reco::Candidate *>& genZLeps() {init(); return theGenLeps;}
-    
+
   /// The leptons coming from ZZ or HZZ, sorted according to the reco-level criteria. Equals to genZLeps() if there are !=4 leptons from ZZ.
   const std::vector<const reco::Candidate *>& sortedGenZZLeps() {init(); return theSortedGenLepts;}
-  
+
   /// The leptons coming from associated W, Z, or ttbar
   const std::vector<const reco::Candidate *>& genAssociatedLeps() {init(); return theAssociatedLeps;}
 
   /// The FSR photons
   const std::vector<const reco::Candidate *>& genFSR() {init(); return theGenFSR;}
+
+  // AT Isolation
+  const std::vector<float> genIso() {init(); return isolation;}
 
   /// Find the actual lepton parent (first parent in MC history with a different pdgID)
   const reco::GenParticle* getParent(const reco::GenParticle* genLep);
@@ -66,9 +69,9 @@ class MCHistoryTools {
   /// The recovery consists in matching between a selected list of genleptons, cf. getMatch().
   const reco::GenParticle* getParent(const pat::Electron* lep, const std::vector<const reco::Candidate *>& gen4lep);
 
-  /// Manual matching with closest same-flavour gen lepton (of any status). 
+  /// Manual matching with closest same-flavour gen lepton (of any status).
   /// This was tested to work great when the provided candidates are e.g. only the signal ones.
-  const reco::GenParticle* getMatch(const pat::Electron* lep, const std::vector<const reco::Candidate *>& gen4lep);  
+  const reco::GenParticle* getMatch(const pat::Electron* lep, const std::vector<const reco::Candidate *>& gen4lep);
 
   /// Return the code of the particle's parent: 25 for H->Z->l; 23 for Z->l; +-15 for tau->l if genlep is e,mu.
   int getParentCode(const reco::GenParticle* genLep);
@@ -82,7 +85,7 @@ class MCHistoryTools {
 
   unsigned int getProcessID() {return processID;}
   float gethepMCweight() {return hepMCweight;}
-    
+
 
   static int fsrMatch(const reco::Candidate* recoFSR, const std::vector<const reco::Candidate*>& genFSRs);
 
@@ -91,18 +94,18 @@ class MCHistoryTools {
   bool ismc;
   unsigned int processID;
   float hepMCweight;
-  
+
   bool isInit;
-  const reco::Candidate * theGenH; 
+  const reco::Candidate * theGenH;
   std::vector<const reco::Candidate *> theGenZ;
   std::vector<const reco::Candidate *> theAssociatedV;
   std::vector<const reco::Candidate *> theGenLeps;
   std::vector<const reco::Candidate *> theSortedGenLepts;
   std::vector<const reco::Candidate *> theAssociatedLeps;
   std::vector<const reco::Candidate *> theGenFSR;
-  
+  std::vector<float> isolation; //AT Isolation variable
+
   void init();
 
 };
 #endif
-
