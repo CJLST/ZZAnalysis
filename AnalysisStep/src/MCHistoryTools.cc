@@ -387,7 +387,7 @@ MCHistoryTools::init() {
   }
 
   for(View<reco::GenJet>::const_iterator genjet = jets->begin(); genjet != jets->end(); genjet++){
-    cout << "GenJet!" << endl;
+    // cout << "GenJet!" << endl;
     theGenJets.push_back(&* genjet);
   } //ATjets
 

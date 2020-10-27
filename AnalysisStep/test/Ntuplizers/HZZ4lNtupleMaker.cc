@@ -455,6 +455,7 @@ private:
     const math::XYZTLorentzVector Lep1, const math::XYZTLorentzVector Lep2, const math::XYZTLorentzVector Lep3, const math::XYZTLorentzVector Lep4);
   void FillAssocLepGenInfo(std::vector<const reco::Candidate *>& AssocLeps);
   void FillLepGenIso(float_t Lep1Iso, float_t Lep2Iso, float_t Lep3Iso, float_t Lep4Iso); //AT
+  // void FillJetGen(float_t Lep1Iso, float_t Lep2Iso, float_t Lep3Iso, float_t Lep4Iso); //AT
 
 
 
@@ -640,7 +641,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   consumesMany<std::vector< PileupSummaryInfo > >();
   genParticleToken = consumes<edm::View<reco::Candidate> >(edm::InputTag("prunedGenParticles"));
   genInfoToken = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
-  genJetsToken = consumes<edm::View<reco::GenJet> >(edm::InputTag("genJetsSrc")); //AT jets (Word between "" not so sure, BBF puts "genJetsSrc")
+  genJetsToken = consumes<edm::View<reco::GenJet> >(edm::InputTag("slimmedGenJets")); //AT jets (Word between "" not so sure, BBF puts "genJetsSrc")
   consumesMany<LHEEventProduct>();
   candToken = consumes<edm::View<pat::CompositeCandidate> >(edm::InputTag(theCandLabel));
 
@@ -933,6 +934,8 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
     // ATjets
     for (unsigned int i = 0; i<genJet.size(); ++i){
+      // cout << genJet[i]->pt() << endl; //Stampa! Ci sono cose ma non le mette nel tree
+      // cout << endl;
       GenJetPt.push_back(genJet[i]->pt());
       GenJetMass.push_back(genJet[i]->mass());
     }

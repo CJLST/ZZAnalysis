@@ -65,7 +65,7 @@ FSRAnalyzer::FSRAnalyzer(const edm::ParameterSet& pset)
   vtxToken = consumes<std::vector<reco::Vertex> >(edm::InputTag("goodPrimaryVertices"));
   genParticleToken = consumes<edm::View<reco::Candidate> >( edm::InputTag("prunedGenParticles"));
   genInfoToken = consumes<GenEventInfoProduct>( edm::InputTag("generator"));
-  genJetsToken = consumes<edm::View<reco::GenJet> >(edm::InputTag("genJetsSrc")); //AT jets (Word between "" not so sure, BBF puts "genJetsSrc")
+  genJetsToken = consumes<edm::View<reco::GenJet> >(edm::InputTag("slimmedGenJets")); //AT jets (Word between "" not so sure, BBF puts "genJetsSrc")
 }
 
 FSRAnalyzer::~FSRAnalyzer(){}

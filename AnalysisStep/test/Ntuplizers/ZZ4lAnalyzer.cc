@@ -228,7 +228,7 @@ ZZ4lAnalyzer::ZZ4lAnalyzer(const ParameterSet& pset) :
   rhoToken = consumes<double>(edm::InputTag("fixedGridRhoFastjetAll",""));
   genParticleToken = consumes<edm::View<reco::Candidate> >( edm::InputTag("prunedGenParticles"));
   genInfoToken = consumes<GenEventInfoProduct>( edm::InputTag("generator"));
-  genJetsToken = consumes<edm::View<reco::GenJet> >(edm::InputTag("genJetsSrc")); //AT jets (Word between "" not so sure, BBF puts "genJetsSrc")
+  genJetsToken = consumes<edm::View<reco::GenJet> >(edm::InputTag("slimmedGenJets")); //AT jets (Word between "" not so sure, BBF puts "genJetsSrc")
   consumesMany<std::vector< PileupSummaryInfo > >();
   //jetToken = consumes<edm::View<pat::Jet> >(edm::InputTag("cleanJets"));
   triggerResultToken = consumes<edm::TriggerResults>(edm::InputTag("TriggerResults"));
