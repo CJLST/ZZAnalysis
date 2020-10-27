@@ -16,6 +16,13 @@
 #include <DataFormats/HepMCCandidate/interface/GenParticle.h>
 #include <SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h>
 
+// AT Additional libraries for GenJet variables
+#include <DataFormats/PatCandidates/interface/Jet.h>
+#include <CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h>
+#include <CondFormats/JetMETObjects/interface/JetCorrectorParameters.h>
+#include <JetMETCorrections/Objects/interface/JetCorrectionsRecord.h>
+#include <JetMETCorrections/Modules/interface/JetResolution.h>
+
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
 
 #include <boost/algorithm/string/predicate.hpp>
@@ -29,7 +36,7 @@ namespace {
 }
 
 
-MCHistoryTools::MCHistoryTools(const edm::Event & event, std::string sampleName, edm::Handle<edm::View<reco::Candidate> > & genParticles, edm::Handle<GenEventInfoProduct> & gen) :
+MCHistoryTools::MCHistoryTools(const edm::Event & event, std::string sampleName, edm::Handle<edm::View<reco::Candidate> > & genParticles, edm::Handle<GenEventInfoProduct> & gen, edm::Handle<edm::View<reco::GenJet> > & genJets) :
   ismc(false),
   processID(0),
   hepMCweight(1),
@@ -37,6 +44,7 @@ MCHistoryTools::MCHistoryTools(const edm::Event & event, std::string sampleName,
   theGenH(0)
 {
 
+  jets = genJets; //ATjets
   particles = genParticles;
   if(particles.isValid()){
 
@@ -377,6 +385,11 @@ MCHistoryTools::init() {
     iso = iso / theSortedGenLepts[j]->pt();
     isolation.push_back(iso);
   }
+
+  for(View<reco::GenJet>::const_iterator genjet = jets->begin(); genjet != jets->end(); genjet++){
+    cout << "GenJet!" << endl;
+    theGenJets.push_back(&* genjet);
+  } //ATjets
 
 
   isInit = true;

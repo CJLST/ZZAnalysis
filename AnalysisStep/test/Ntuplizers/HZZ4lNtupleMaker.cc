@@ -55,6 +55,13 @@
 #include <ZZAnalysis/AnalysisStep/interface/PileUpWeight.h>
 #include "SimDataFormats/HTXS/interface/HiggsTemplateCrossSections.h"
 
+//ATjets Additional libraries for GenJet variables
+#include <DataFormats/PatCandidates/interface/Jet.h>
+#include <CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h>
+#include <CondFormats/JetMETObjects/interface/JetCorrectorParameters.h>
+#include <JetMETCorrections/Objects/interface/JetCorrectionsRecord.h>
+#include <JetMETCorrections/Modules/interface/JetResolution.h>
+
 
 #include "ZZAnalysis/AnalysisStep/interface/EwkCorrections.h"
 #include "ZZAnalysis/AnalysisStep/src/kFactors.C"
@@ -382,6 +389,9 @@ namespace {
   Float_t GenhelcosthetaZ2  = 0; //AT
   Float_t Genhelphi  = 0; //AT
   Float_t GenphistarZ1 = 0; //AT
+  std::vector<float> GenJetPt; //ATjets
+  std::vector<float> GenJetMass; //ATjets
+
 
   Int_t   htxsNJets = -1;
   Float_t htxsHPt = 0;
@@ -445,6 +455,7 @@ private:
     const math::XYZTLorentzVector Lep1, const math::XYZTLorentzVector Lep2, const math::XYZTLorentzVector Lep3, const math::XYZTLorentzVector Lep4);
   void FillAssocLepGenInfo(std::vector<const reco::Candidate *>& AssocLeps);
   void FillLepGenIso(float_t Lep1Iso, float_t Lep2Iso, float_t Lep3Iso, float_t Lep4Iso); //AT
+
 
 
   Float_t getAllWeight(const vector<const reco::Candidate*>& leptons);
@@ -518,6 +529,8 @@ private:
 
   edm::EDGetTokenT<edm::View<reco::Candidate> > genParticleToken;
   edm::Handle<edm::View<reco::Candidate> > genParticles;
+  edm::Handle<edm::View<reco::GenJet> > genJets; //ATjets
+  edm::EDGetTokenT<edm::View<reco::GenJet> > genJetsToken; //ATjets
   edm::EDGetTokenT<GenEventInfoProduct> genInfoToken;
   edm::EDGetTokenT<edm::View<pat::CompositeCandidate> > candToken;
   edm::EDGetTokenT<edm::View<pat::CompositeCandidate> > lhecandToken;
@@ -627,6 +640,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   consumesMany<std::vector< PileupSummaryInfo > >();
   genParticleToken = consumes<edm::View<reco::Candidate> >(edm::InputTag("prunedGenParticles"));
   genInfoToken = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
+  genJetsToken = consumes<edm::View<reco::GenJet> >(edm::InputTag("genJetsSrc")); //AT jets (Word between "" not so sure, BBF puts "genJetsSrc")
   consumesMany<LHEEventProduct>();
   candToken = consumes<edm::View<pat::CompositeCandidate> >(edm::InputTag(theCandLabel));
 
@@ -794,6 +808,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   std::vector<const reco::Candidate *> genZLeps;
   std::vector<const reco::Candidate *> genAssocLeps;
   std::vector<float> genIso; //AT
+  std::vector<const reco::GenJet *> genJet; //ATjets
 
   edm::Handle<GenEventInfoProduct> genInfo;
 
@@ -848,11 +863,12 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
     event.getByToken(genParticleToken, genParticles);
     event.getByToken(genInfoToken, genInfo);
+    event.getByToken(genJetsToken, genJets); //ATjets
 
     edm::Handle<HTXS::HiggsClassification> htxs;
     event.getByToken(htxsToken,htxs);
 
-    MCHistoryTools mch(event, sampleName, genParticles, genInfo);
+    MCHistoryTools mch(event, sampleName, genParticles, genInfo, genJets);
     genFinalState = mch.genFinalState();
     genProcessId = mch.getProcessID();
     genHEPMCweight_NNLO = genHEPMCweight = mch.gethepMCweight(); // Overridden by LHEHandler if genHEPMCweight==1.
@@ -904,6 +920,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
    genAssocLeps = mch.genAssociatedLeps();
    genFSR       = mch.genFSR();
    genIso       = mch.genIso(); //AT
+   genJet      = mch.GenJets(); //ATjets
 
 
 
@@ -912,6 +929,12 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     }
     else if(genZLeps.size()==4){ // for 4l events take the mass of the ZZ(4l) system
       FillHGenInfo((genZLeps.at(0)->p4()+genZLeps.at(1)->p4()+genZLeps.at(2)->p4()+genZLeps.at(3)->p4()),0);
+    }
+
+    // ATjets
+    for (unsigned int i = 0; i<genJet.size(); ++i){
+      GenJetPt.push_back(genJet[i]->pt());
+      GenJetMass.push_back(genJet[i]->mass());
     }
 
     if (genFinalState!=BUGGY) {
@@ -1712,6 +1735,9 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   ExtraLepEta.clear();
   ExtraLepPhi.clear();
   ExtraLepLepId.clear();
+
+  GenJetPt.clear(); //ATjets
+  GenJetMass.clear(); //ATjets
 
   CRflag = CRFLAG;
 
@@ -2597,6 +2623,8 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("GenhelcosthetaZ2", GenhelcosthetaZ2, failedTreeLevel >= minimalFailedTree); //AT
     myTree->Book("Genhelphi", Genhelphi, failedTreeLevel >= minimalFailedTree); //AT
     myTree->Book("GenphistarZ1", Genhelphi, failedTreeLevel >= minimalFailedTree); //AT
+    myTree->Book("GenJetPt", GenJetPt, failedTreeLevel >= minimalFailedTree); //ATjets
+    myTree->Book("GenJetMass", GenJetMass, failedTreeLevel >= minimalFailedTree); //ATjets
     myTree->Book("htxs_errorCode", htxs_errorCode, failedTreeLevel >= minimalFailedTree);
     myTree->Book("htxs_prodMode", htxs_prodMode, failedTreeLevel >= minimalFailedTree);
     myTree->Book("htxsNJets", htxsNJets, failedTreeLevel >= minimalFailedTree);

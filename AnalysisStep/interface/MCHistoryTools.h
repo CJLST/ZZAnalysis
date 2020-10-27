@@ -15,13 +15,20 @@
 #include <DataFormats/HepMCCandidate/interface/GenParticleFwd.h>
 #include <SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h>
 
+//ATjets Additional libraries for GenJet variables
+#include <DataFormats/PatCandidates/interface/Jet.h>
+#include <CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h>
+#include <CondFormats/JetMETObjects/interface/JetCorrectorParameters.h>
+#include <JetMETCorrections/Objects/interface/JetCorrectionsRecord.h>
+#include <JetMETCorrections/Modules/interface/JetResolution.h>
+
 #include <vector>
 #include <string>
 
 class MCHistoryTools {
  public:
   /// Constructor
-  MCHistoryTools(const edm::Event & event, std::string sampleName, edm::Handle<edm::View<reco::Candidate> > & genParticles, edm::Handle<GenEventInfoProduct> & genInfo);
+  MCHistoryTools(const edm::Event & event, std::string sampleName, edm::Handle<edm::View<reco::Candidate> > & genParticles, edm::Handle<GenEventInfoProduct> & genInfo, edm::Handle<edm::View<reco::GenJet> > & genJets);
 
   /// Destructor
   virtual ~MCHistoryTools();
@@ -61,6 +68,9 @@ class MCHistoryTools {
   // AT Isolation
   const std::vector<float> genIso() {init(); return isolation;}
 
+  // ATjets GenJet
+  const std::vector<const reco::GenJet *>& GenJets() {init(); return theGenJets;}
+
   /// Find the actual lepton parent (first parent in MC history with a different pdgID)
   const reco::GenParticle* getParent(const reco::GenParticle* genLep);
 
@@ -91,6 +101,7 @@ class MCHistoryTools {
 
  private:
   edm::Handle<edm::View<reco::Candidate> > particles;
+  edm::Handle<edm::View<reco::GenJet> > jets; //ATjets
   bool ismc;
   unsigned int processID;
   float hepMCweight;
@@ -104,6 +115,7 @@ class MCHistoryTools {
   std::vector<const reco::Candidate *> theAssociatedLeps;
   std::vector<const reco::Candidate *> theGenFSR;
   std::vector<float> isolation; //AT Isolation variable
+  std::vector<const reco::GenJet *> theGenJets; //ATjets
 
   void init();
 
