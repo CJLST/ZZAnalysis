@@ -21,6 +21,9 @@
 #include <CondFormats/JetMETObjects/interface/JetCorrectorParameters.h>
 #include <JetMETCorrections/Objects/interface/JetCorrectionsRecord.h>
 #include <JetMETCorrections/Modules/interface/JetResolution.h>
+#include "DataFormats/JetReco/interface/GenJet.h"
+#include "PhysicsTools/JetMCUtils/interface/JetMCTag.h"
+#include "PhysicsTools/JetMCUtils/interface/CandMCTag.h"
 
 #include <vector>
 #include <string>
@@ -71,6 +74,9 @@ class MCHistoryTools {
   // ATjets GenJet
   const std::vector<const reco::GenJet *>& GenJets() {init(); return theGenJets;}
 
+  // ATjets GenJet
+  const std::vector<const reco::GenJet *>& GenCleanedJets() {init(); return theCleanedGenJets;}
+
   /// Find the actual lepton parent (first parent in MC history with a different pdgID)
   const reco::GenParticle* getParent(const reco::GenParticle* genLep);
 
@@ -116,6 +122,7 @@ class MCHistoryTools {
   std::vector<const reco::Candidate *> theGenFSR;
   std::vector<float> isolation; //AT Isolation variable
   std::vector<const reco::GenJet *> theGenJets; //ATjets
+  std::vector<const reco::GenJet *> theCleanedGenJets; //ATjets
 
   void init();
 

@@ -22,6 +22,10 @@
 #include <CondFormats/JetMETObjects/interface/JetCorrectorParameters.h>
 #include <JetMETCorrections/Objects/interface/JetCorrectionsRecord.h>
 #include <JetMETCorrections/Modules/interface/JetResolution.h>
+#include "DataFormats/JetReco/interface/GenJet.h"
+#include "PhysicsTools/JetMCUtils/interface/JetMCTag.h"
+#include "PhysicsTools/JetMCUtils/interface/CandMCTag.h"
+
 
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
 
@@ -30,6 +34,9 @@
 using namespace std;
 using namespace reco;
 using namespace edm;
+// using namespace JetMCTagUtils; //ATjets
+// using namespace CandMCTagUtils; //Atjets
+
 
 namespace {
   bool dbg = false;
@@ -368,17 +375,21 @@ MCHistoryTools::init() {
   //AT Isolation
   for (unsigned int j=0; j<theSortedGenLepts.size(); ++j) {
     float iso = 0; //AT Supporting varibale to sum the different components in the isolation (ISO) variable
+    std::vector<int> id;
+    std::vector<float> pt;
     for( View<Candidate>::const_iterator p_iso = particles->begin(); p_iso != particles->end(); ++ p_iso) {
       if(theSortedGenLepts[j] != &*p_iso){ //The lepton for which I am calculating the isolation is not included in the isolation itself
         // cout << "Work in progress: isolation" << endl; //AT Uncomment just to check if the you actually enter in the loop
         if(p_iso->status() != 1) continue; //Stable particles only (To check!)
-        if((p_iso->pdgId() == 12) || (p_iso->pdgId() == 14) || (p_iso->pdgId() == 16)) continue; //Exclude neutrinos
-        if((p_iso->pdgId() == 11) || (p_iso->pdgId() == 13)) continue; //Exclude leptons
+        if((abs(p_iso->pdgId()) == 12) || (abs(p_iso->pdgId()) == 14) || (abs(p_iso->pdgId()) == 16)) continue; //Exclude neutrinos
+        if((abs(p_iso->pdgId()) == 11) || (abs(p_iso->pdgId()) == 13)) continue; //Exclude leptons
         if(std::find(theGenFSR.begin(), theGenFSR.end(), &*p_iso) != theGenFSR.end()) continue; //Exclude FSR photons
         // if(std::find(theSortedGenLepts.begin(), theSortedGenLepts.end(), &*p_iso) != theSortedGenLepts.end()) continue; //Exclude prompt leptons
         float dR = deltaR(*theSortedGenLepts[j], *p_iso);
         if(dR < 0.3){ //AT Isolation cut for DR<0.3
           iso += p_iso->pt();
+          id.push_back(p_iso->pdgId());
+          pt.push_back(p_iso->pt());
         }
       }
     }
@@ -387,10 +398,17 @@ MCHistoryTools::init() {
   }
 
   for(View<reco::GenJet>::const_iterator genjet = jets->begin(); genjet != jets->end(); genjet++){
-    // cout << "GenJet!" << endl;
     theGenJets.push_back(&* genjet);
+    std::vector<bool> dR_clean;
+    for(unsigned i = 0; i < theSortedGenLepts.size(); ++i){
+      float dR = deltaR(*theSortedGenLepts[i], *genjet);
+      if(dR<0.4) dR_clean.push_back(false);
+      else dR_clean.push_back(true);
+    }
+    if (!(std::find(dR_clean.begin(), dR_clean.end(), false)!=dR_clean.end())){
+      theCleanedGenJets.push_back(&* genjet);
+    }
   } //ATjets
-
 
   isInit = true;
 

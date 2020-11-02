@@ -391,6 +391,17 @@ namespace {
   Float_t GenphistarZ1 = 0; //AT
   std::vector<float> GenJetPt; //ATjets
   std::vector<float> GenJetMass; //ATjets
+  std::vector<float> GenJetEta; //ATjets
+  std::vector<float> GenJetPhi; //ATjets
+  std::vector<float> GenJetRapidity; //ATjets
+  Int_t nGenJet = 0; //ATjets
+  std::vector<float> GenCleanedJetPt; //ATjets
+  std::vector<float> GenCleanedJetMass; //ATjets
+  std::vector<float> GenCleanedJetEta; //ATjets
+  std::vector<float> GenCleanedJetPhi; //ATjets
+  std::vector<float> GenCleanedJetRapidity; //ATjets
+  std::vector<float> GenCleanedJetHadronFlavour; //ATjets
+  Int_t nCleanedGenJet = 0; //ATjets
 
 
   Int_t   htxsNJets = -1;
@@ -810,6 +821,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   std::vector<const reco::Candidate *> genAssocLeps;
   std::vector<float> genIso; //AT
   std::vector<const reco::GenJet *> genJet; //ATjets
+  std::vector<const reco::GenJet *> genCleanedJet; //ATjets
 
   edm::Handle<GenEventInfoProduct> genInfo;
 
@@ -922,6 +934,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
    genFSR       = mch.genFSR();
    genIso       = mch.genIso(); //AT
    genJet      = mch.GenJets(); //ATjets
+   genCleanedJet = mch.GenCleanedJets(); //ATjets
 
 
 
@@ -933,11 +946,25 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     }
 
     // ATjets
-    for (unsigned int i = 0; i<genJet.size(); ++i){
-      // cout << genJet[i]->pt() << endl; //Stampa! Ci sono cose ma non le mette nel tree
-      // cout << endl;
-      GenJetPt.push_back(genJet[i]->pt());
-      GenJetMass.push_back(genJet[i]->mass());
+    if (genJet.size() != 0) {
+      for (unsigned int i = 0; i<genJet.size(); ++i){
+        GenJetPt.push_back(genJet[i]->pt());
+        GenJetMass.push_back(genJet[i]->mass());
+        GenJetEta.push_back(genJet[i]->eta());
+        GenJetPhi.push_back(genJet[i]->phi());
+        GenJetRapidity.push_back(genJet[i]->rapidity());
+      }
+      nGenJet = genJet.size();
+
+      for (unsigned int i = 0; i<genCleanedJet.size(); ++i){
+        GenCleanedJetPt.push_back(genCleanedJet[i]->pt());
+        GenCleanedJetMass.push_back(genCleanedJet[i]->mass());
+        GenCleanedJetEta.push_back(genCleanedJet[i]->eta());
+        GenCleanedJetPhi.push_back(genCleanedJet[i]->phi());
+        GenCleanedJetRapidity.push_back(genCleanedJet[i]->rapidity());
+      }
+      nCleanedGenJet = genCleanedJet.size();
+
     }
 
     if (genFinalState!=BUGGY) {
@@ -1739,9 +1766,6 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   ExtraLepPhi.clear();
   ExtraLepLepId.clear();
 
-  GenJetPt.clear(); //ATjets
-  GenJetMass.clear(); //ATjets
-
   CRflag = CRFLAG;
 
   if(theChannel!=ZL){
@@ -2380,20 +2404,20 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   //myTree->Book("PFMETNoHF",PFMETNoHF, failedTreeLevel >= fullFailedTree);
   //myTree->Book("PFMETNoHFPhi",PFMETNoHFPhi, failedTreeLevel >= fullFailedTree);
 
-  myTree->Book("nCleanedJets",nCleanedJets, failedTreeLevel >= fullFailedTree);
-  myTree->Book("nCleanedJetsPt30",nCleanedJetsPt30, failedTreeLevel >= fullFailedTree);
-  myTree->Book("nCleanedJetsPt30_jesUp",nCleanedJetsPt30_jesUp, failedTreeLevel >= fullFailedTree);
-  myTree->Book("nCleanedJetsPt30_jesDn",nCleanedJetsPt30_jesDn, failedTreeLevel >= fullFailedTree);
-  myTree->Book("nCleanedJetsPt30_jerUp",nCleanedJetsPt30_jerUp, failedTreeLevel >= fullFailedTree);
-  myTree->Book("nCleanedJetsPt30_jerDn",nCleanedJetsPt30_jerDn, failedTreeLevel >= fullFailedTree);
-  myTree->Book("nCleanedJetsPt30BTagged",nCleanedJetsPt30BTagged, failedTreeLevel >= fullFailedTree);
-  myTree->Book("nCleanedJetsPt30BTagged_bTagSF",nCleanedJetsPt30BTagged_bTagSF, failedTreeLevel >= fullFailedTree);
-  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp",nCleanedJetsPt30BTagged_bTagSF_jesUp, failedTreeLevel >= fullFailedTree);
-  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn",nCleanedJetsPt30BTagged_bTagSF_jesDn, failedTreeLevel >= fullFailedTree);
-  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jerUp",nCleanedJetsPt30BTagged_bTagSF_jerUp, failedTreeLevel >= fullFailedTree);
-  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jerDn",nCleanedJetsPt30BTagged_bTagSF_jerDn, failedTreeLevel >= fullFailedTree);
-  myTree->Book("nCleanedJetsPt30BTagged_bTagSFUp",nCleanedJetsPt30BTagged_bTagSFUp, failedTreeLevel >= fullFailedTree);
-  myTree->Book("nCleanedJetsPt30BTagged_bTagSFDn",nCleanedJetsPt30BTagged_bTagSFDn, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJets",nCleanedJets, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("nCleanedJetsPt30",nCleanedJetsPt30, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("nCleanedJetsPt30_jesUp",nCleanedJetsPt30_jesUp, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("nCleanedJetsPt30_jesDn",nCleanedJetsPt30_jesDn, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("nCleanedJetsPt30_jerUp",nCleanedJetsPt30_jerUp, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("nCleanedJetsPt30_jerDn",nCleanedJetsPt30_jerDn, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged",nCleanedJetsPt30BTagged, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF",nCleanedJetsPt30BTagged_bTagSF, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp",nCleanedJetsPt30BTagged_bTagSF_jesUp, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn",nCleanedJetsPt30BTagged_bTagSF_jesDn, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jerUp",nCleanedJetsPt30BTagged_bTagSF_jerUp, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jerDn",nCleanedJetsPt30BTagged_bTagSF_jerDn, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSFUp",nCleanedJetsPt30BTagged_bTagSFUp, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSFDn",nCleanedJetsPt30BTagged_bTagSFDn, failedTreeLevel >= minimalFailedTree);
   myTree->Book("trigWord",trigWord, failedTreeLevel >= minimalFailedTree);
   myTree->Book("evtPassMETFilter",evtPassMETTrigger, failedTreeLevel >= minimalFailedTree);
   myTree->Book("ZZMass",ZZMass, false);
@@ -2487,10 +2511,10 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   }
 
   //Jet variables
-  myTree->Book("JetPt",JetPt, failedTreeLevel >= fullFailedTree);
-  myTree->Book("JetEta",JetEta, failedTreeLevel >= fullFailedTree);
-  myTree->Book("JetPhi",JetPhi, failedTreeLevel >= fullFailedTree);
-  myTree->Book("JetMass",JetMass, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPt",JetPt, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("JetEta",JetEta, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("JetPhi",JetPhi, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("JetMass",JetMass, failedTreeLevel >= minimalFailedTree);
   myTree->Book("JetBTagger",JetBTagger, failedTreeLevel >= fullFailedTree);
   myTree->Book("JetIsBtagged",JetIsBtagged, failedTreeLevel >= fullFailedTree);
   myTree->Book("JetIsBtaggedWithSF",JetIsBtaggedWithSF, failedTreeLevel >= fullFailedTree);
@@ -2509,13 +2533,13 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("JetRawPt",JetRawPt, failedTreeLevel >= fullFailedTree);
   myTree->Book("JetPtJEC_noJER",JetPtJEC_noJER, failedTreeLevel >= fullFailedTree);
 
-  myTree->Book("JetPt_JESUp",JetJESUp, failedTreeLevel >= fullFailedTree);
-  myTree->Book("JetPt_JESDown",JetJESDown, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPt_JESUp",JetJESUp, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("JetPt_JESDown",JetJESDown, failedTreeLevel >= minimalFailedTree);
 
-  myTree->Book("JetPt_JERUp",JetJERUp, failedTreeLevel >= fullFailedTree);
-  myTree->Book("JetPt_JERDown",JetJERDown, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPt_JERUp",JetJERUp, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("JetPt_JERDown",JetJERDown, failedTreeLevel >= minimalFailedTree);
 
-  myTree->Book("JetID", JetID, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetID", JetID, failedTreeLevel >= minimalFailedTree);
   myTree->Book("JetPUID", JetPUID, failedTreeLevel >= fullFailedTree);
   myTree->Book("JetPUID_score", JetPUID_score, failedTreeLevel >= fullFailedTree);
   myTree->Book("JetPUValue", JetPUValue, failedTreeLevel >= fullFailedTree);
@@ -2628,6 +2652,17 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("GenphistarZ1", Genhelphi, failedTreeLevel >= minimalFailedTree); //AT
     myTree->Book("GenJetPt", GenJetPt, failedTreeLevel >= minimalFailedTree); //ATjets
     myTree->Book("GenJetMass", GenJetMass, failedTreeLevel >= minimalFailedTree); //ATjets
+    myTree->Book("GenJetEta", GenJetEta, failedTreeLevel >= minimalFailedTree); //ATjets
+    myTree->Book("GenJetPhi", GenJetPhi, failedTreeLevel >= minimalFailedTree); //ATjets
+    myTree->Book("GenJetRapidity", GenJetRapidity, failedTreeLevel >= minimalFailedTree); //ATjets
+    myTree->Book("nGenJet", nGenJet, failedTreeLevel >= minimalFailedTree); //ATjets
+    myTree->Book("GenCleanedJetPt", GenCleanedJetPt, failedTreeLevel >= minimalFailedTree); //ATjets
+    myTree->Book("GenCleanedJetMass", GenCleanedJetMass, failedTreeLevel >= minimalFailedTree); //ATjets
+    myTree->Book("GenCleanedJetEta", GenCleanedJetEta, failedTreeLevel >= minimalFailedTree); //ATjets
+    myTree->Book("GenCleanedJetPhi", GenCleanedJetPhi, failedTreeLevel >= minimalFailedTree); //ATjets
+    myTree->Book("GenCleanedJetRapidity", GenCleanedJetRapidity, failedTreeLevel >= minimalFailedTree); //ATjets
+    myTree->Book("GenCleanedJetHadronFlavour", GenCleanedJetHadronFlavour, failedTreeLevel >= minimalFailedTree); //ATjets
+    myTree->Book("nCleanedGenJet", nCleanedGenJet, failedTreeLevel >= minimalFailedTree); //ATjets
     myTree->Book("htxs_errorCode", htxs_errorCode, failedTreeLevel >= minimalFailedTree);
     myTree->Book("htxs_prodMode", htxs_prodMode, failedTreeLevel >= minimalFailedTree);
     myTree->Book("htxsNJets", htxsNJets, failedTreeLevel >= minimalFailedTree);
