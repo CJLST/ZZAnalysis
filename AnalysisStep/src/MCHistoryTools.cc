@@ -15,6 +15,8 @@
 
 #include <DataFormats/HepMCCandidate/interface/GenParticle.h>
 #include <SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h>
+#include "DataFormats/PatCandidates/interface/PackedGenParticle.h" //Atbbf
+
 
 // AT Additional libraries for GenJet variables
 #include <DataFormats/PatCandidates/interface/Jet.h>
@@ -379,7 +381,7 @@ MCHistoryTools::init() {
     float iso = 0; //AT Supporting varibale to sum the different components in the isolation (ISO) variable
     std::vector<int> id;
     std::vector<float> pt;
-    for(size_t k=0; k<packedgenParticles->size();k++){
+    for( View<Candidate>::const_iterator p_iso = particles->begin(); p_iso != particles->end(); ++ p_iso) {
       if(theSortedGenLepts[j] != &*p_iso){ //The lepton for which I am calculating the isolation is not included in the isolation itself
         // cout << "Work in progress: isolation" << endl; //AT Uncomment just to check if the you actually enter in the loop
         if(p_iso->status() != 1) continue; //Stable particles only (To check!)

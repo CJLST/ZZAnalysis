@@ -14,6 +14,7 @@
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include <DataFormats/HepMCCandidate/interface/GenParticleFwd.h>
 #include <SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h>
+#include "DataFormats/PatCandidates/interface/PackedGenParticle.h" //Atbbf
 
 //ATjets Additional libraries for GenJet variables
 #include <DataFormats/PatCandidates/interface/Jet.h>
@@ -107,6 +108,7 @@ class MCHistoryTools {
 
  private:
   edm::Handle<edm::View<reco::Candidate> > particles;
+  edm::Handle<edm::View<pat::PackedGenParticle> > packed; //ATbbf
   edm::Handle<edm::View<reco::GenJet> > jets; //ATjets
   bool ismc;
   unsigned int processID;

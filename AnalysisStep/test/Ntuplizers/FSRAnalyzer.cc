@@ -17,6 +17,8 @@
 #include <ZZAnalysis/AnalysisStep/interface/MCHistoryTools.h>
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
+#include "DataFormats/PatCandidates/interface/PackedGenParticle.h" //Atbbf
+
 
 //ATjets Additional libraries for GenJet variables
 #include <DataFormats/PatCandidates/interface/Jet.h>
@@ -54,6 +56,7 @@ class FSRAnalyzer : public edm::EDAnalyzer {
   edm::EDGetTokenT<edm::View<reco::Candidate> > genParticleToken;
   edm::EDGetTokenT<GenEventInfoProduct> genInfoToken;
   edm::EDGetTokenT<edm::View<reco::GenJet> > genJetsToken; //ATjets
+  edm::EDGetTokenT<edm::View<pat::PackedGenParticle> > packedgenParticlesToken; //ATbbf
 
 };
 
@@ -66,7 +69,9 @@ FSRAnalyzer::FSRAnalyzer(const edm::ParameterSet& pset)
   genParticleToken = consumes<edm::View<reco::Candidate> >( edm::InputTag("prunedGenParticles"));
   genInfoToken = consumes<GenEventInfoProduct>( edm::InputTag("generator"));
   genJetsToken = consumes<edm::View<reco::GenJet> >(edm::InputTag("slimmedGenJets")); //AT jets (Word between "" not so sure, BBF puts "genJetsSrc")
+  packedgenParticlesToken = consumes<edm::View<pat::PackedGenParticle> > (edm::InputTag("packedGenParticles")); //ATbbf
 }
+
 
 FSRAnalyzer::~FSRAnalyzer(){}
 
@@ -116,8 +121,10 @@ FSRAnalyzer::analyze(const edm::Event & event, const edm::EventSetup& eventSetup
   event.getByToken(genInfoToken, genInfo);
   edm::Handle<edm::View<reco::GenJet> > genJets; //ATjets
   event.getByToken(genJetsToken, genJets); //ATjets
+  edm::Handle<edm::View<pat::PackedGenParticle> > packedgenParticles; //ATbbf
+  event.getByToken(packedgenParticlesToken, packedgenParticles); //ATbbf
 
-  MCHistoryTools mch(event, "", genParticles, genInfo, genJets);
+  MCHistoryTools mch(event, "", genParticles, genInfo, genJets, packedgenParticles);
   // These are all gen FSR photons coming from leptons from the H
   vector<const reco::Candidate *> genFSR = mch.genFSR();
   //  vector<const reco::Candidate *> genLep = mch.genZLeps();

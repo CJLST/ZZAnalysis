@@ -184,6 +184,7 @@ private:
   edm::EDGetTokenT<edm::View<reco::Candidate> > genParticleToken;
   edm::EDGetTokenT<GenEventInfoProduct> genInfoToken;
   edm::EDGetTokenT<edm::View<reco::GenJet> > genJetsToken; //ATjets
+  edm::EDGetTokenT<edm::View<pat::PackedGenParticle> > packedgenParticlesToken; //ATbbf
   //edm::EDGetTokenT<edm::View<pat::Jet> > jetToken;
   edm::EDGetTokenT<edm::TriggerResults> triggerResultToken;
   edm::EDGetTokenT<edm::View<reco::Candidate> > softLeptonToken;
@@ -229,6 +230,7 @@ ZZ4lAnalyzer::ZZ4lAnalyzer(const ParameterSet& pset) :
   genParticleToken = consumes<edm::View<reco::Candidate> >( edm::InputTag("prunedGenParticles"));
   genInfoToken = consumes<GenEventInfoProduct>( edm::InputTag("generator"));
   genJetsToken = consumes<edm::View<reco::GenJet> >(edm::InputTag("slimmedGenJets")); //AT jets (Word between "" not so sure, BBF puts "genJetsSrc")
+  packedgenParticlesToken = consumes<edm::View<pat::PackedGenParticle> > (edm::InputTag("packedGenParticles")); //ATbbf
   consumesMany<std::vector< PileupSummaryInfo > >();
   //jetToken = consumes<edm::View<pat::Jet> >(edm::InputTag("cleanJets"));
   triggerResultToken = consumes<edm::TriggerResults>(edm::InputTag("TriggerResults"));
@@ -416,8 +418,10 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
     event.getByToken(genInfoToken, genInfo);
     edm::Handle<edm::View<reco::GenJet> > genJets; //ATjets
     event.getByToken(genJetsToken, genJets); //ATjets
+    edm::Handle<edm::View<pat::PackedGenParticle> > packedgenParticles; //ATbbf
+    event.getByToken(packedgenParticlesToken, packedgenParticles); //ATbbf
 
-    MCHistoryTools mch(event, sampleName, genParticles, genInfo, genJets);
+    MCHistoryTools mch(event, sampleName, genParticles, genInfo, genJets, packedgenParticles);
     genFinalState = mch.genFinalState();
 
     const reco::Candidate* genH = mch.genH();

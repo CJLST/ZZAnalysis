@@ -30,11 +30,11 @@ HZZ4lNtupleFactory::HZZ4lNtupleFactory(TTree* outTree_input, TTree *failedTree_i
   //std::vector<TString> nameVector[7];
 
   cout<<"end factory"<<endl;
-  
+
   for(int i=0;i<7;i++)nBranches[i]=0;
 */
   //InitializeVariables();
-  
+
   //_firstZStored = false;
   //_LeptonIndex = 1;
   //_LeptonIsoIndex = 1;
@@ -233,5 +233,3 @@ void HZZ4lNtupleFactory::createNewCandidate()
   return;
 }
 */
-
-
