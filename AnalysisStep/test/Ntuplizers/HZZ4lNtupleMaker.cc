@@ -541,8 +541,10 @@ private:
 
   edm::EDGetTokenT<edm::View<reco::Candidate> > genParticleToken;
   edm::Handle<edm::View<reco::Candidate> > genParticles;
+  edm::Handle<edm::View<pat::PackedGenParticle> > packedgenParticles; //ATbbf
   edm::Handle<edm::View<reco::GenJet> > genJets; //ATjets
   edm::EDGetTokenT<edm::View<reco::GenJet> > genJetsToken; //ATjets
+  edm::EDGetTokenT<edm::View<pat::PackedGenParticle> > packedgenParticlesToken; //ATbbf
   edm::EDGetTokenT<GenEventInfoProduct> genInfoToken;
   edm::EDGetTokenT<edm::View<pat::CompositeCandidate> > candToken;
   edm::EDGetTokenT<edm::View<pat::CompositeCandidate> > lhecandToken;
@@ -651,8 +653,9 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   //cout<< "Beginning Constructor\n\n\n" <<endl;
   consumesMany<std::vector< PileupSummaryInfo > >();
   genParticleToken = consumes<edm::View<reco::Candidate> >(edm::InputTag("prunedGenParticles"));
+  packedgenParticlesToken = consumes<edm::View<pat::PackedGenParticle> > (edm::InputTag("packedGenParticles")); //ATbbf
   genInfoToken = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
-  genJetsToken = consumes<edm::View<reco::GenJet> >(edm::InputTag("slimmedGenJets")); //AT jets (Word between "" not so sure, BBF puts "genJetsSrc")
+  genJetsToken = consumes<edm::View<reco::GenJet> >(edm::InputTag("slimmedGenJets")); //ATjets
   consumesMany<LHEEventProduct>();
   candToken = consumes<edm::View<pat::CompositeCandidate> >(edm::InputTag(theCandLabel));
 
@@ -877,11 +880,12 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     event.getByToken(genParticleToken, genParticles);
     event.getByToken(genInfoToken, genInfo);
     event.getByToken(genJetsToken, genJets); //ATjets
+    event.getByToken(packedgenParticlesToken, packedgenParticles); //ATbbf
 
     edm::Handle<HTXS::HiggsClassification> htxs;
     event.getByToken(htxsToken,htxs);
 
-    MCHistoryTools mch(event, sampleName, genParticles, genInfo, genJets);
+    MCHistoryTools mch(event, sampleName, genParticles, genInfo, genJets, packedgenParticles);
     genFinalState = mch.genFinalState();
     genProcessId = mch.getProcessID();
     genHEPMCweight_NNLO = genHEPMCweight = mch.gethepMCweight(); // Overridden by LHEHandler if genHEPMCweight==1.

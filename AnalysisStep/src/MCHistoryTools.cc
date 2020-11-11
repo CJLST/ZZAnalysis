@@ -43,7 +43,7 @@ namespace {
 }
 
 
-MCHistoryTools::MCHistoryTools(const edm::Event & event, std::string sampleName, edm::Handle<edm::View<reco::Candidate> > & genParticles, edm::Handle<GenEventInfoProduct> & gen, edm::Handle<edm::View<reco::GenJet> > & genJets) :
+MCHistoryTools::MCHistoryTools(const edm::Event & event, std::string sampleName, edm::Handle<edm::View<reco::Candidate> > & genParticles, edm::Handle<GenEventInfoProduct> & gen, edm::Handle<edm::View<reco::GenJet> > & genJets, edm::Handle<edm::View<pat::PackedGenParticle> > packedgenParticles) :
   ismc(false),
   processID(0),
   hepMCweight(1),
@@ -52,6 +52,7 @@ MCHistoryTools::MCHistoryTools(const edm::Event & event, std::string sampleName,
 {
 
   jets = genJets; //ATjets
+  packed = packedgenParticles; //ATbbf
   particles = genParticles;
   if(particles.isValid()){
 
@@ -129,7 +130,7 @@ const reco::GenParticle* MCHistoryTools::getParent(const reco::GenParticle* genL
   int flavor = genLep->pdgId();
 
   while (genLep->mother()!=0 && genLep->mother()->pdgId() == flavor) {
-    //cout  << " getparent " << genLep->mother()->pdgId();
+    // cout  << " getparent " << genLep->mother()->pdgId() << endl;
     genLep = (const GenParticle*) genLep->mother();
   }
   //cout  << " getparent:ret: " << genLep->mother()->pdgId() << endl;
@@ -175,7 +176,6 @@ int MCHistoryTools::getParentCode(const reco::GenParticle* genLep) {
 
   if (particle) {
     parentId = particle->pdgId();
-    //     cout << "getParentCode1 : " << parentId;
     if (parentId == 23 && particle->mother()!=0) {
       if (particle->mother()->pdgId() == 25) parentId = 25;
     }
@@ -234,6 +234,7 @@ MCHistoryTools::init() {
       int pid = abs(getParentCode((const GenParticle*)&*p));
       // Lepton from H->(Z->)ll; note that this is the first daughter in the H or Z line; ie pre-FSR
       if (mid == 25 || (mid == 23 && pid==25)) {
+  if(mid==25) cout << mid << endl;
 	theGenLeps.push_back(&*p);
       } else if ((mid==23&&pid==23)  // Leptons from Z, not from H->Z; note that this is the first daughter in the Z line; ie pre-FSR.
                                      // qqZZ and ggZZ will fall here so they have to be handled later.
@@ -369,6 +370,7 @@ MCHistoryTools::init() {
 // 	 << theSortedGenLepts[3]->pdgId() << " "
 // 	 << endl;
   } else {
+    cout << theGenLeps.size() << endl;
     theSortedGenLepts = theGenLeps;
   }
 
@@ -377,7 +379,7 @@ MCHistoryTools::init() {
     float iso = 0; //AT Supporting varibale to sum the different components in the isolation (ISO) variable
     std::vector<int> id;
     std::vector<float> pt;
-    for( View<Candidate>::const_iterator p_iso = particles->begin(); p_iso != particles->end(); ++ p_iso) {
+    for(size_t k=0; k<packedgenParticles->size();k++){
       if(theSortedGenLepts[j] != &*p_iso){ //The lepton for which I am calculating the isolation is not included in the isolation itself
         // cout << "Work in progress: isolation" << endl; //AT Uncomment just to check if the you actually enter in the loop
         if(p_iso->status() != 1) continue; //Stable particles only (To check!)

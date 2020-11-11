@@ -31,7 +31,7 @@
 class MCHistoryTools {
  public:
   /// Constructor
-  MCHistoryTools(const edm::Event & event, std::string sampleName, edm::Handle<edm::View<reco::Candidate> > & genParticles, edm::Handle<GenEventInfoProduct> & genInfo, edm::Handle<edm::View<reco::GenJet> > & genJets);
+  MCHistoryTools(const edm::Event & event, std::string sampleName, edm::Handle<edm::View<reco::Candidate> > & genParticles, edm::Handle<GenEventInfoProduct> & genInfo, edm::Handle<edm::View<reco::GenJet> > & genJets, edm::Handle<edm::View<pat::PackedGenParticle> > packedgenParticles);
 
   /// Destructor
   virtual ~MCHistoryTools();
