@@ -372,7 +372,6 @@ MCHistoryTools::init() {
 // 	 << theSortedGenLepts[3]->pdgId() << " "
 // 	 << endl;
   } else {
-    cout << theGenLeps.size() << endl;
     theSortedGenLepts = theGenLeps;
   }
 
