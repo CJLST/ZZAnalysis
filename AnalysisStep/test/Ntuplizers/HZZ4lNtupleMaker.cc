@@ -92,7 +92,7 @@
 
 #include <string>
 
-bool verbose = false;
+bool verbose = false; //ATbbf
 
 namespace {
   HZZ4LGENAna genAna; //ATbbf
@@ -3616,7 +3616,7 @@ void HZZ4lNtupleMaker::setGENVariables(edm::Handle<reco::GenParticleCollection> 
 
   /////// DO THE FIDUCIAL VOLUME CALCULATION //////////////
   if (verbose) cout<<"begin fiducial volume calculation"<<endl;
-  bool passedFiducialselection_bbf=false;
+  passedFiducialSelection_bbf=false;
   int nFiducialLeptons = 0;
   int nFiducialPtLead=0;
   int nFiducialPtSublead=0;
@@ -3643,12 +3643,12 @@ void HZZ4lNtupleMaker::setGENVariables(edm::Handle<reco::GenParticleCollection> 
       GENmass4l = -1.0; GENmass4e = -1.0; GENmass4mu = -1.0; GENmass2e2mu = -1.0;
       GENmassZ1 = -1.0; GENmassZ2 = -1.0; GENpT4l = -1.0; GENeta4l = 999.; GENrapidity4l = 999.;
       //cout<<"Run: "<<Run<<" LumiSect: "<<LumiSect<<" Event: "<<Event<<endl;
-      passedFiducialselection_bbf = mZ1_mZ2(L1, L2, L3, L4, true);
-      if (verbose) cout<<"passedFiducialselection_bbf? "<<passedFiducialselection_bbf<<endl;
+      passedFiducialSelection_bbf = mZ1_mZ2(L1, L2, L3, L4, true);
+      if (verbose) cout<<"passedFiducialSelection_bbf? "<<passedFiducialSelection_bbf<<endl;
 
       GENlep_Hindex[0] = L1; GENlep_Hindex[1] = L2; GENlep_Hindex[2] = L3; GENlep_Hindex[3] = L4;
 
-      if (passedFiducialselection_bbf) {
+      if (passedFiducialSelection_bbf) {
 
           TLorentzVector LS3_Z1_1, LS3_Z1_2, LS3_Z2_1, LS3_Z2_2;
           LS3_Z1_1.SetPtEtaPhiM(GENlep_pt[L1],GENlep_eta[L1],GENlep_phi[L1],GENlep_mass[L1]);
@@ -3716,11 +3716,11 @@ void HZZ4lNtupleMaker::setGENVariables(edm::Handle<reco::GenParticleCollection> 
           }
       }
 
-      if(passedMassOS==false || passedElMuDeltaR==false || passedDeltaR==false) passedFiducialselection_bbf=false;
+      if(passedMassOS==false || passedElMuDeltaR==false || passedDeltaR==false) passedFiducialSelection_bbf=false;
 
-      if (verbose) cout<<"passedFiducialselection_bbf after other cuts? "<<passedFiducialselection_bbf<<endl;
+      if (verbose) cout<<"passedFiducialSelection_bbf after other cuts? "<<passedFiducialSelection_bbf<<endl;
 
-      if (passedFiducialselection_bbf) {
+      if (passedFiducialSelection_bbf) {
 
           // DO GEN JETS
           if (verbose) cout<<"begin filling gen jets"<<endl;
@@ -3768,7 +3768,7 @@ void HZZ4lNtupleMaker::setGENVariables(edm::Handle<reco::GenParticleCollection> 
           if (GENnjets_pt30_eta4p7>0) GENabsdeltarapidity_hleadingjet_pt30_eta4p7 = fabs(GENrapidity4l-GENabsrapidity_leadingjet_pt30_eta4p7);
           if (GENnjets_pt30_eta4p7>0) GENabsrapidity_leadingjet_pt30_eta4p7 = fabs(GENabsrapidity_leadingjet_pt30_eta4p7);
 
-      } //passedFiducialselection_bbf
+      } //passedFiducialSelection_bbf
 
   } // 4 fiducial leptons
 
