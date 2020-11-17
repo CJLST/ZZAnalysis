@@ -56,7 +56,7 @@ void CMS_lumi::set_lumi( TPad* pad, float lumi )
    
    latex.SetTextAlign(11); 
    latex.SetTextSize(cms_text_size*t);
-   CMS_text = Form("#font[%i]{CMS} #scale[%.2f]{#font[%i]{Preliminary}}", CMS_text_font, extra_over_CMS_text_size, extra_text_font);
+   CMS_text = Form("#font[%i]{CMS}", CMS_text_font);
    latex.DrawLatex(l, 1-t+cms_text_offset*t, CMS_text);
 }
 
@@ -100,7 +100,7 @@ void CMS_lumi::set_lumi_combination( TPad* pad )
 	
    latex.SetTextAlign(11);
    latex.SetTextSize(cms_text_size*t);
-   CMS_text = Form("#font[%i]{CMS} #scale[%.2f]{#font[%i]{Preliminary 2016 + 2017 + 2018}}", CMS_text_font, extra_over_CMS_text_size, extra_text_font);
+   CMS_text = Form("#font[%i]{CMS} #scale[%.2f]{#font[%i]{2016 + 2017 + 2018}}", CMS_text_font, extra_over_CMS_text_size, extra_text_font);
    latex.DrawLatex(l, 1-t+cms_text_offset*t, CMS_text);
 }
 
@@ -125,7 +125,7 @@ void CMS_lumi::set_simulation( TPad* pad )
     // LUMI
     //======
     
-    lumi_text = "137.1" + lumi_sqrt;
+    lumi_text = "137" + lumi_sqrt;
     
     TLatex latex;
     latex.SetNDC();
@@ -144,6 +144,6 @@ void CMS_lumi::set_simulation( TPad* pad )
     
     latex.SetTextAlign(11);
     latex.SetTextSize(cms_text_size*t);
-    CMS_text = Form("#font[%i]{CMS} #scale[%.2f]{#font[%i]{Simulation Preliminary}}", CMS_text_font, extra_over_CMS_text_size, extra_text_font);
+    CMS_text = Form("#font[%i]{CMS} #scale[%.2f]{#font[%i]{Simulation}}", CMS_text_font, extra_over_CMS_text_size, extra_text_font);
     latex.DrawLatex(l - 0.02, 1-t+cms_text_offset*t, CMS_text);
 }

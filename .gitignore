@@ -17,3 +17,4 @@
 *.pcm
 *.pyc
 __init__.py
+*.DS_Store
