@@ -2851,6 +2851,16 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("GENdPhiZZ",GENdPhiZZ,failedTreeLevel >= minimalFailedTree);
     myTree->Book("GENmassZZ",GENmassZZ,failedTreeLevel >= minimalFailedTree);
     myTree->Book("GENpTZZ",GENpTZZ,failedTreeLevel >= minimalFailedTree);
+    // Jets
+    myTree->Book("GENjet_pt",GENjet_pt_float,failedTreeLevel >= minimalFailedTree);
+    myTree->Book("GENjet_eta",GENjet_eta_float,failedTreeLevel >= minimalFailedTree);
+    myTree->Book("GENjet_phi",GENjet_phi_float,failedTreeLevel >= minimalFailedTree);
+    myTree->Book("GENjet_mass",GENjet_mass_float,failedTreeLevel >= minimalFailedTree);
+    myTree->Book("GENnjets_pt30_eta4p7",GENnjets_pt30_eta4p7,failedTreeLevel >= minimalFailedTree);
+    myTree->Book("GENpt_leadingjet_pt30_eta4p7",GENpt_leadingjet_pt30_eta4p7,failedTreeLevel >= minimalFailedTree);
+    myTree->Book("GENabsrapidity_leadingjet_pt30_eta4p7",GENabsrapidity_leadingjet_pt30_eta4p7,failedTreeLevel >= minimalFailedTree);
+    myTree->Book("GENabsdeltarapidity_hleadingjet_pt30_eta4p7",GENabsdeltarapidity_hleadingjet_pt30_eta4p7,failedTreeLevel >= minimalFailedTree);
+
     if (verbose) cout<<"end book GENbbf"<<endl;
 
 
