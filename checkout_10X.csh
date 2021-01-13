@@ -15,7 +15,7 @@ git cms-merge-topic jainshilpi:ULV1_backport106X_forUsers
 git clone https://github.com/cms-egamma/EgammaPostRecoTools.git
 mv EgammaPostRecoTools/python/EgammaPostRecoTools.py RecoEgamma/EgammaTools/python/.
 git cms-addpkg EgammaAnalysis/ElectronTools
-git clone https://github.com/jainshilpi/EgammaAnalysis-ElectronTools.git -b UL2018 EgammaAnalysis/ElectronTools/data/
+(rm -rf EgammaAnalysis/ElectronTools/data;git clone https://github.com/jainshilpi/EgammaAnalysis-ElectronTools.git -b UL2018 EgammaAnalysis/ElectronTools/data;)
 
 # New Jet PU ID: dedicated training for each year
 git cms-addpkg  RecoJets/JetProducers
