@@ -10,13 +10,12 @@
 ############## For CMSSW_10_2_18
 git cms-init
 
-#Preliminary electron scale and smearing corrections according to https://twiki.cern.ch/twiki/bin/view/CMS/EgammaPostRecoRecipes#2018_Preliminary_Energy_Correcti
-#We need the ElectronTools package to calculate smear and scale uncertainties so just download the ScaleAndSmearing files manualy 
-git cms-merge-topic cms-egamma:EgammaPostRecoTools
-git cms-merge-topic cms-egamma:PhotonIDValueMapSpeedup1029
-git cms-merge-topic cms-egamma:slava77-btvDictFix_10210
+# Updated for UL. See: https://twiki.cern.ch/twiki/bin/view/CMS/EgammaUL2016To2018 
+git cms-merge-topic jainshilpi:ULV1_backport106X_forUsers 
+git clone https://github.com/cms-egamma/EgammaPostRecoTools.git
+mv EgammaPostRecoTools/python/EgammaPostRecoTools.py RecoEgamma/EgammaTools/python/.
 git cms-addpkg EgammaAnalysis/ElectronTools
-(rm -rf EgammaAnalysis/ElectronTools/data;git clone https://github.com/cms-data/EgammaAnalysis-ElectronTools.git EgammaAnalysis/ElectronTools/data;)
+git clone https://github.com/jainshilpi/EgammaAnalysis-ElectronTools.git -b UL2018 EgammaAnalysis/ElectronTools/data/
 
 # New Jet PU ID: dedicated training for each year
 git cms-addpkg  RecoJets/JetProducers
@@ -26,24 +25,12 @@ git cms-addpkg GeneratorInterface/RivetInterface
 git cms-addpkg SimDataFormats/HTXS
 
 # 2016 and 2018 retraining for electron BDT
-git cms-merge-topic mkovac:Electron_XGBoost_MVA_2016_and_2018_CMSSW_10_2_15
-
-#MET corrections according to https://twiki.cern.ch/twiki/bin/view/CMS/MissingETUncertaintyPrescription#Instructions_for_9_4_X_X_0_for_M
-git cms-merge-topic cms-met:METFixEE2017_949_v2_backport_to_102X
-
-#Simplified template cross section
-## need at least the first two lines
-# git cms-addpkg GeneratorInterface/RivetInterface
-# git cms-addpkg SimDataFormats/HTXS
-# git remote add bonanomi https://github.com/bonanomi/cmssw.git
-# git fetch bonanomi 
-# git checkout bonanomi/hstxs1p2_CMSSW_10_2_X GeneratorInterface/RivetInterface
-# git checkout bonanomi/hstxs1p2_CMSSW_10_2_X SimDataFormats/HTXS
+git cms-merge-topic bonanomi:Electron_XGBoost_MVA
 
 #### Please do not add any custom (non-CMSSW) package before this line ####
 #ZZAnalysis
-git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
-(cd ZZAnalysis; git checkout Run2_CutBased_BTag16)
+git clone https://github.com/bonanomi/ZZAnalysis.git ZZAnalysis
+(cd ZZAnalysis; git checkout UltraLegacy)
 
 # Muon MVA
 git clone https://github.com/bonanomi/MuonMVAReader.git MuonMVAReader
@@ -57,11 +44,11 @@ git clone https://github.com/usarica/CommonLHETools.git
 (cd CommonLHETools; git checkout -b from-v131 v1.3.1)
 
 #MELA
-git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
-(cd ZZMatrixElement; git checkout -b from-v223 v2.2.3)
-# replace ZZMatrixElement/MELA/setup.sh -j 8
+git clone https://github.com/JHUGen/JHUGenMELA.git JHUGenMELA
+(cd JHUGenMELA; git checkout -b from-v231 v2.3.1)
+# replace JHUGenMELA/MELA/setup.sh -j 8
 (                                                                 \
-  cd ${CMSSW_BASE}/src/ZZMatrixElement/MELA/COLLIER/             ;\
+  cd ${CMSSW_BASE}/src/JHUGenMELA/MELA/COLLIER/             ;\
   set pkgname="collier-1.2.0"                                    ;\
   set pkgdir="COLLIER-1.2"                                       ;\
   set tarname=$pkgname".tar.gz"                                  ;\
@@ -78,7 +65,7 @@ git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMa
   mv $libname "../data/"$SCRAM_ARCH"/"$libname                   ;\
 )
 (                                                                 \
-  cd ${CMSSW_BASE}/src/ZZMatrixElement/MELA/fortran/             ;\
+  cd ${CMSSW_BASE}/src/JHUGenMELA/MELA/fortran/             ;\
   make all                                                       ;\
   mv libjhugenmela.so ../data/${SCRAM_ARCH}/                     ;\
 )
