@@ -36,8 +36,8 @@ git clone https://github.com/bonanomi/ZZAnalysis.git ZZAnalysis
 git clone https://github.com/bonanomi/MuonMVAReader.git MuonMVAReader
 
 #MELA Analytics
-git clone https://github.com/usarica/MelaAnalytics.git
-(cd MelaAnalytics; git checkout -b from-v19 v1.9)
+git clone https://github.com/MELALabs/MelaAnalytics.git
+(cd MelaAnalytics; git checkout -b from-v21 v2.1)
 
 #Common LHE tools
 git clone https://github.com/usarica/CommonLHETools.git
@@ -68,6 +68,11 @@ git clone https://github.com/JHUGen/JHUGenMELA.git JHUGenMELA
   cd ${CMSSW_BASE}/src/JHUGenMELA/MELA/fortran/             ;\
   make all                                                       ;\
   mv libjhugenmela.so ../data/${SCRAM_ARCH}/                     ;\
+)
+(                                                                 \
+  cd ${CMSSW_BASE}/src/JHUGenMELA/MELA/             ;\
+  make                                                       ;\
+  mv libJHUGenMELAMELA.so ../data/${SCRAM_ARCH}/                     ;\
 )
 
 #kinematic refitting
