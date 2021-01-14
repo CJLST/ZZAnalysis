@@ -7,15 +7,8 @@
 # chmod u+x ${TMPDIR}/checkout_10X.csh
 # ${TMPDIR}/checkout_10X.csh
 
-############## For CMSSW_10_2_18
+############## For CMSSW_10_6_19
 git cms-init
-
-# Updated for UL. See: https://twiki.cern.ch/twiki/bin/view/CMS/EgammaUL2016To2018 
-git cms-merge-topic jainshilpi:ULV1_backport106X_forUsers 
-git clone https://github.com/cms-egamma/EgammaPostRecoTools.git
-mv EgammaPostRecoTools/python/EgammaPostRecoTools.py RecoEgamma/EgammaTools/python/.
-git cms-addpkg EgammaAnalysis/ElectronTools
-(rm -rf EgammaAnalysis/ElectronTools/data;git clone https://github.com/jainshilpi/EgammaAnalysis-ElectronTools.git -b UL2018 EgammaAnalysis/ElectronTools/data;)
 
 # New Jet PU ID: dedicated training for each year
 git cms-addpkg  RecoJets/JetProducers
@@ -23,6 +16,13 @@ git cms-addpkg  RecoJets/JetProducers
 # STXS Categorisation: now directly implemented in CMSSW
 git cms-addpkg GeneratorInterface/RivetInterface
 git cms-addpkg SimDataFormats/HTXS
+
+# Updated for UL. See: https://twiki.cern.ch/twiki/bin/view/CMS/EgammaUL2016To2018 
+git cms-addpkg RecoEgamma/EgammaTools
+git clone https://github.com/cms-egamma/EgammaPostRecoTools.git
+mv EgammaPostRecoTools/python/EgammaPostRecoTools.py RecoEgamma/EgammaTools/python/.
+git cms-addpkg EgammaAnalysis/ElectronTools
+(rm -rf EgammaAnalysis/ElectronTools/data;git clone https://github.com/jainshilpi/EgammaAnalysis-ElectronTools.git -b UL2018 EgammaAnalysis/ElectronTools/data;)
 
 # 2016 and 2018 retraining for electron BDT
 git cms-merge-topic bonanomi:Electron_XGBoost_MVA
@@ -46,11 +46,11 @@ git clone https://github.com/usarica/CommonLHETools.git
 (cd CommonLHETools; git checkout -b from-v131 v1.3.1)
 
 #MELA
-git clone https://github.com/JHUGen/JHUGenMELA.git ZZMatrixElement
-(cd ZZMatrixElement; git checkout -b from-v231 v2.3.1)
-# replace ZZMatrixElement/MELA/setup.sh -j 8
+git clone https://github.com/JHUGen/JHUGenMELA.git JHUGenMELA
+(cd JHUGenMELA; git checkout -b from-v231 v2.3.1)
+# replace JHUGenMELA/MELA/setup.sh -j 8
 (                                                                 \
-  cd ${CMSSW_BASE}/src/ZZMatrixElement/MELA/COLLIER/             ;\
+  cd ${CMSSW_BASE}/src/JHUGenMELA/MELA/COLLIER/             ;\
   set pkgname="collier-1.2.0"                                    ;\
   set pkgdir="COLLIER-1.2"                                       ;\
   set tarname=$pkgname".tar.gz"                                  ;\
@@ -67,7 +67,7 @@ git clone https://github.com/JHUGen/JHUGenMELA.git ZZMatrixElement
   mv $libname "../data/"$SCRAM_ARCH"/"$libname                   ;\
 )
 (                                                                 \
-  cd ${CMSSW_BASE}/src/ZZMatrixElement/MELA/fortran/             ;\
+  cd ${CMSSW_BASE}/src/JHUGenMELA/MELA/fortran/             ;\
   make all                                                       ;\
   mv libjhugenmela.so ../data/${SCRAM_ARCH}/                     ;\
 )

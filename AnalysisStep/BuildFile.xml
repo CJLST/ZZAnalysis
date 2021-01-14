@@ -6,7 +6,7 @@
 <use name="RecoParticleFlow/PFClusterTools" />
 <use name="PhysicsTools/KinFitter"/>
 <use name="TrackingTools/Records"/>
-<use name="ZZMatrixElement/MELA"/>
+<use name="JHUGenMELA/MELA"/>
 <use name="RecoVertex/KinematicFit"/>
 <use name="CondFormats/BTauObjects"/>
 <use name="root"/>
@@ -21,7 +21,7 @@
 <!-- Damn syntax! -->
 <Flags CPPDEFINES="CMSSW_VERSION=$(shell echo ${CMSSW_VERSION}|sed -e s/CMSSW_// -e s/_//g -e s/patch\.//)"/>
 <Flags CPPDEFINES="CMSSW_VERSION_MAJOR=$(shell echo ${CMSSW_VERSION}|sed -e s/CMSSW_// -e s/_.*//g)"/>
-<flags CPPFLAGS="-I$(CMSSW_BASE)/src/ZZMatrixElement/MELA/interface/" />
+<flags CPPFLAGS="-I$(CMSSW_BASE)/src/JHUGenMELA/MELA/interface/" />
 <!--Flags CXXFLAGS="-Wno-delete-non-virtual-dtor -Wno-error=unused-but-set-variable -Wno-error=unused-variable"/--> 
 
 <export>
