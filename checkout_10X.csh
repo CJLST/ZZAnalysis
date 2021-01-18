@@ -48,10 +48,9 @@ git clone https://github.com/usarica/CommonLHETools.git
 #MELA
 git clone https://github.com/JHUGen/JHUGenMELA.git JHUGenMELA
 (cd JHUGenMELA; git checkout -b from-v231 v2.3.1)
-./downloadNNPDF.sh
 # replace JHUGenMELA/MELA/setup.sh -j 8
 (                                                                 \
-  cd ${CMSSW_BASE}/src/JHUGenMELA/MELA/COLLIER/             ;\
+  cd ${CMSSW_BASE}/src/JHUGenMELA/MELA/COLLIER/                  ;\
   set pkgname="collier-1.2.0"                                    ;\
   set pkgdir="COLLIER-1.2"                                       ;\
   set tarname=$pkgname".tar.gz"                                  ;\
@@ -68,9 +67,13 @@ git clone https://github.com/JHUGen/JHUGenMELA.git JHUGenMELA
   mv $libname "../data/"$SCRAM_ARCH"/"$libname                   ;\
 )
 (                                                                 \
-  cd ${CMSSW_BASE}/src/JHUGenMELA/MELA/fortran/             ;\
+  cd ${CMSSW_BASE}/src/JHUGenMELA/MELA/fortran/                  ;\
   make all                                                       ;\
   mv libjhugenmela.so ../data/${SCRAM_ARCH}/                     ;\
+)
+(                                                                 \
+  cd ${CMSSW_BASE}/src/JHUGenMELA/MELA                           ;\
+  ./downloadNNPDF.sh                                             ;\
 )
 
 #kinematic refitting
