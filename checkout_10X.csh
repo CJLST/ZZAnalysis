@@ -83,7 +83,7 @@ git clone https://github.com/JHUGen/JHUGenMELA.git JHUGenMELA
 )
 (                                                                 \
   cd ${CMSSW_BASE}/src/JHUGenMELA/MELA/                          ;\
-  ./downloadNNPDF.sh
+  ./downloadNNPDF.sh                                             ;\
 )
 
 #kinematic refitting
