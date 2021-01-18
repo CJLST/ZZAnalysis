@@ -49,19 +49,18 @@ git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
 git clone https://github.com/bonanomi/MuonMVAReader.git MuonMVAReader
 
 #MELA Analytics
-git clone https://github.com/usarica/MelaAnalytics.git
-(cd MelaAnalytics; git checkout -b from-v19 v1.9)
+git clone https://github.com/MELALabs/MelaAnalytics.git
 
 #Common LHE tools
 git clone https://github.com/usarica/CommonLHETools.git
-(cd CommonLHETools; git checkout -b from-v131 v1.3.1)
+(cd CommonLHETools; git checkout -b from-v134 v1.3.4)
 
 #MELA
-git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
-(cd ZZMatrixElement; git checkout -b from-v223 v2.2.3)
-# replace ZZMatrixElement/MELA/setup.sh -j 8
+git clone https://github.com/JHUGen/JHUGenMELA.git JHUGenMELA
+(cd JHUGenMELA; git checkout -b from-v231 v2.3.1)
+# replace JHUGenMELA/MELA/setup.sh -j 8
 (                                                                 \
-  cd ${CMSSW_BASE}/src/ZZMatrixElement/MELA/COLLIER/             ;\
+  cd ${CMSSW_BASE}/src/JHUGenMELA/MELA/COLLIER/                  ;\
   set pkgname="collier-1.2.0"                                    ;\
   set pkgdir="COLLIER-1.2"                                       ;\
   set tarname=$pkgname".tar.gz"                                  ;\
@@ -78,7 +77,7 @@ git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMa
   mv $libname "../data/"$SCRAM_ARCH"/"$libname                   ;\
 )
 (                                                                 \
-  cd ${CMSSW_BASE}/src/ZZMatrixElement/MELA/fortran/             ;\
+  cd ${CMSSW_BASE}/src/JHUGenMELA/MELA/fortran/                  ;\
   make all                                                       ;\
   mv libjhugenmela.so ../data/${SCRAM_ARCH}/                     ;\
 )
