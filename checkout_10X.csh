@@ -58,6 +58,7 @@ git clone https://github.com/usarica/CommonLHETools.git
 #MELA
 git clone https://github.com/JHUGen/JHUGenMELA.git JHUGenMELA
 (cd JHUGenMELA; git checkout -b from-v231 v2.3.1)
+./downloadNNPDF.sh
 # replace JHUGenMELA/MELA/setup.sh -j 8
 (                                                                 \
   cd ${CMSSW_BASE}/src/JHUGenMELA/MELA/COLLIER/                  ;\
