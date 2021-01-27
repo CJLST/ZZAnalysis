@@ -21,6 +21,14 @@ MC samples can be found at (lxplus)
 and (MARCC) 	
 
 	/work-zfs/CJLSTtrees/Cutbased_Moriond2020_ecdaf558        
+	
+OffshellAC (MARCC)
+
+	/workzfs-lhc/CJLSTtrees/200205CutBased/MC_OffshellAC_201*
+
+POWHEG, PHANTOM, etc (MARCC)
+
+	/workzfs-lhc/CJLSTtrees/200205CutBased/MC_HighMass_201*
 
 Recall that for 2016 MC, you should use the samples under `MC_2016_CorrectBTag`.
 
