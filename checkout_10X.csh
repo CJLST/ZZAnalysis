@@ -52,9 +52,9 @@ git clone https://github.com/bonanomi/MuonMVAReader.git MuonMVAReader
 git clone https://github.com/MELALabs/MelaAnalytics.git
 
 #Common LHE tools
-git clone https://github.com/acappati/CommonLHETools.git
-# git clone https://github.com/usarica/CommonLHETools.git
-# (cd CommonLHETools; git checkout -b from-v134 v1.3.4)
+#git clone https://github.com/acappati/CommonLHETools.git
+git clone https://github.com/usarica/CommonLHETools.git
+(cd CommonLHETools; git checkout -b from-v134 v1.3.4)
 
 #MELA
 git clone https://github.com/JHUGen/JHUGenMELA.git JHUGenMELA
