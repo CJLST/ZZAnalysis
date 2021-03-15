@@ -590,7 +590,6 @@ process.softLeptons = cms.EDProducer("CandViewMerger",
 
 
 
-
 ### ----------------------------------------------------------------------
 ### ----------------------------------------------------------------------
 ### BUILD CANDIDATES
@@ -1572,6 +1571,7 @@ process.Candidates = cms.Path(
        process.bareZCand         + process.ZCand     +
        process.bareZZCand        + process.ZZCand
     )
+
 
 # Optional sequence to build control regions. To get it, add
 #process.CRPath = cms.Path(process.CRZl) # only trilepton

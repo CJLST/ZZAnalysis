@@ -14,12 +14,12 @@ void userdatahelpers::embedDaughterData(pat::CompositeCandidate& cand) {
     const reco::Candidate* d = cand.daughter(i);
 
     if(d->hasMasterClone()) d = d->masterClone().get();
-    
-    // We need the concrete object to access the method userFloat(). 
-    // (A more general solution would be to creat a StringObjectFunction on the fly for each 
+
+    // We need the concrete object to access the method userFloat().
+    // (A more general solution would be to creat a StringObjectFunction on the fly for each
     // entry in userFloatNames(). That's maybe too time consuming (to be checked))
     if (const pat::CompositeCandidate* cc = dynamic_cast<const pat::CompositeCandidate*>(d)) {
-      embedDaughterData(cand, i, cc);      
+      embedDaughterData(cand, i, cc);
     } else if (const pat::Muon* mu = dynamic_cast<const pat::Muon*>(d)) {
       embedDaughterData(cand, i, mu);
     } else if (const pat::Electron* ele = dynamic_cast<const pat::Electron*>(d)) {
@@ -65,7 +65,7 @@ int userdatahelpers::hasUserFloat(const reco::Candidate* c, const char* name){
   return -1;
 }
 
-const PhotonPtrVector*  
+const PhotonPtrVector*
 userdatahelpers::getUserPhotons(const reco::Candidate* c){
   if(c->hasMasterClone())  c = c->masterClone().get();
   if (abs(c->pdgId())==13) {
@@ -90,7 +90,7 @@ userdatahelpers::getUserPhotons(const reco::Candidate* c){
 }
 
 
-void 
+void
 userdatahelpers::getSortedLeptons(const pat::CompositeCandidate& cand, vector<const Candidate*>& leptons, vector<string>& labels, vector<const Candidate*>& fsrPhotons, std::vector<short>& fsrIndex, bool is4l) {
 
   if (is4l) { // Regular 4 lepton SR/CR
@@ -116,12 +116,12 @@ userdatahelpers::getSortedLeptons(const pat::CompositeCandidate& cand, vector<co
     if(abs(leptons[0]->pdgId()) == 22 || abs(leptons[1]->pdgId()) == 22) {
         int non_TLE_index = -1;
         if(abs(leptons[0]->pdgId()) != 22) non_TLE_index = 0;
-        if(abs(leptons[1]->pdgId()) != 22) non_TLE_index = 1;   
+        if(abs(leptons[1]->pdgId()) != 22) non_TLE_index = 1;
         if(non_TLE_index == -1) {
 	  edm::LogError("") << "Found a Z candidate made of two TLE, this should never happen!";
 	  abort();
 	}
-        if(leptons[non_TLE_index]->charge() < 0 && non_TLE_index == 0) need_swap = true; 
+        if(leptons[non_TLE_index]->charge() < 0 && non_TLE_index == 0) need_swap = true;
     } else {
       if (leptons[0]->charge() < 0 && leptons[0]->charge()*leptons[1]->charge()<0) {
         need_swap = true;
@@ -137,14 +137,14 @@ userdatahelpers::getSortedLeptons(const pat::CompositeCandidate& cand, vector<co
     if(abs(leptons[2]->pdgId()) == 22 || abs(leptons[3]->pdgId()) == 22) {
         int non_TLE_index = -1;
         if(abs(leptons[2]->pdgId()) != 22) non_TLE_index = 2;
-        if(abs(leptons[3]->pdgId()) != 22) non_TLE_index = 3;   
+        if(abs(leptons[3]->pdgId()) != 22) non_TLE_index = 3;
         if(non_TLE_index == -1) {
 	  edm::LogError("") << "Found a Z candidate made of two TLE, this should never happen!";
 	  abort();
 	}
-        if(leptons[non_TLE_index]->charge() < 0 && non_TLE_index == 2) need_swap = true; 
+        if(leptons[non_TLE_index]->charge() < 0 && non_TLE_index == 2) need_swap = true;
     } else {
-      if(leptons[2]->charge() < 0 && leptons[2]->charge()*leptons[3]->charge()<0) {        
+      if(leptons[2]->charge() < 0 && leptons[2]->charge()*leptons[3]->charge()<0) {
         need_swap = true;
       }
     }
@@ -165,7 +165,7 @@ userdatahelpers::getSortedLeptons(const pat::CompositeCandidate& cand, vector<co
     }
 
   } else { // Z+l
-    const Candidate* Z1 = cand.daughter(0); // the Z    
+    const Candidate* Z1 = cand.daughter(0); // the Z
     leptons = {Z1->daughter(0), Z1->daughter(1), cand.daughter(1)};
     labels = {"d0.d0.","d0.d1.","d1."};
     vector<unsigned> lOrder = {0,1,2};
@@ -186,7 +186,7 @@ userdatahelpers::getSortedLeptons(const pat::CompositeCandidate& cand, vector<co
 }
 
 
-void 
+void
 userdatahelpers::getSortedZLeptons(const pat::CompositeCandidate& cand, vector<const Candidate*>& leptons, vector<string>& labels, vector<const Candidate*>& fsrPhotons, std::vector<short>& fsrIndex) {
 
   // Pointer to leptons, to be sorted by charge, in order Lp, Ln
@@ -200,7 +200,7 @@ userdatahelpers::getSortedZLeptons(const pat::CompositeCandidate& cand, vector<c
     swap(labels[0],labels[1]);
     swap(lOrder[0],lOrder[1]);
   }
-     
+
   // Collect FSR
   for (unsigned ifsr=2; ifsr<cand.numberOfDaughters(); ++ifsr) {
     const pat::PFParticle* fsr = static_cast<const pat::PFParticle*>(cand.daughter(ifsr));
@@ -210,4 +210,3 @@ userdatahelpers::getSortedZLeptons(const pat::CompositeCandidate& cand, vector<c
   }
 
 }
-

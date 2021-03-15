@@ -28,6 +28,7 @@
  #include "FWCore/Framework/interface/MakerMacros.h"
 
  #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+ #include <DataFormats/PatCandidates/interface/CompositeCandidate.h>
 
  #include "FWCore/ParameterSet/interface/ParameterSet.h"
  #include "FWCore/ServiceRegistry/interface/Service.h"
@@ -99,7 +100,11 @@ class HZZ4LGENAna
   bool getMotherH(const reco::GenParticle* p);
 
   int MotherID(const reco::GenParticle* p);
+  int MotherID(const reco::CompositeCandidate* p);
+  int MotherID(const reco::Candidate* p);
   int MotherMotherID(const reco::GenParticle* p);
+  int MotherMotherID(const reco::CompositeCandidate* p);
+  int MotherMotherID(const reco::Candidate* p);
 
   void getStatusThree(const reco::GenParticle* p, TLorentzVector &pv, int pdgid, int &id);
 
@@ -280,7 +285,69 @@ int HZZ4LGENAna::MotherID(const reco::GenParticle* p){
     return ID;
 }
 
+int HZZ4LGENAna::MotherID(const reco::CompositeCandidate* p){
+    int ID = 0;
+    int nMo = p->numberOfMothers();
+    const reco::Candidate* g= (const reco::Candidate*)p;
+    while (nMo>0) {
+        //cout<<"id: "<<g->pdgId()<<" pt: "<<g->pt()<<" eta: "<<g->eta()<<" status: "<<g->status()<<" motherId: "<<g->mother()->pdgId()<<endl;
+        if(g->pdgId()!=g->mother()->pdgId()) { ID = g->mother()->pdgId(); return ID;  } // from Z W+ W-
+        else {
+            g = (g->mother());
+            nMo = g->numberOfMothers();
+        }
+    }
+    return ID;
+}
+
+int HZZ4LGENAna::MotherID(const reco::Candidate* p){
+    int ID = 0;
+    int nMo = p->numberOfMothers();
+    const reco::Candidate* g= (const reco::Candidate*)p;
+    while (nMo>0) {
+        //cout<<"id: "<<g->pdgId()<<" pt: "<<g->pt()<<" eta: "<<g->eta()<<" status: "<<g->status()<<" motherId: "<<g->mother()->pdgId()<<endl;
+        if(g->pdgId()!=g->mother()->pdgId()) { ID = g->mother()->pdgId(); return ID;  } // from Z W+ W-
+        else {
+            g = (g->mother());
+            nMo = g->numberOfMothers();
+        }
+    }
+    return ID;
+}
+
 int HZZ4LGENAna::MotherMotherID(const reco::GenParticle* p){
+    int ID = 0;
+    int nMo = p->numberOfMothers();
+    const reco::Candidate* g= (const reco::Candidate*)p;
+    while (nMo>0) {
+        int nMoMo = g->mother()->numberOfMothers();
+        if (nMoMo==0) return 0;
+        if(g->pdgId()!=g->mother()->pdgId() && g->pdgId()!=g->mother()->mother()->pdgId() && g->mother()->pdgId()!=g->mother()->mother()->pdgId()) { ID = g->mother()->mother()->pdgId(); return ID; } // from Z W+ W-
+        else {
+            g = (g->mother());
+            nMo = g->numberOfMothers();
+        }
+    }
+    return ID;
+}
+
+int HZZ4LGENAna::MotherMotherID(const reco::CompositeCandidate* p){
+    int ID = 0;
+    int nMo = p->numberOfMothers();
+    const reco::Candidate* g= (const reco::Candidate*)p;
+    while (nMo>0) {
+        int nMoMo = g->mother()->numberOfMothers();
+        if (nMoMo==0) return 0;
+        if(g->pdgId()!=g->mother()->pdgId() && g->pdgId()!=g->mother()->mother()->pdgId() && g->mother()->pdgId()!=g->mother()->mother()->pdgId()) { ID = g->mother()->mother()->pdgId(); return ID; } // from Z W+ W-
+        else {
+            g = (g->mother());
+            nMo = g->numberOfMothers();
+        }
+    }
+    return ID;
+}
+
+int HZZ4LGENAna::MotherMotherID(const reco::Candidate* p){
     int ID = 0;
     int nMo = p->numberOfMothers();
     const reco::Candidate* g= (const reco::Candidate*)p;

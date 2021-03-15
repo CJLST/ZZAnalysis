@@ -113,7 +113,7 @@ private:
   edm::EDGetTokenT<pat::METCollection> metToken;
   edm::EDGetTokenT<edm::View<reco::Candidate> > softLeptonToken;
   edm::EDGetTokenT<edm::View<reco::CompositeCandidate> > ZCandToken;
-   
+
   int _num_of_JEC_variations;
 };
 
@@ -195,6 +195,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   auto result = std::make_unique<pat::CompositeCandidateCollection>();
 
   const float ZmassValue = PDGHelpers::Zmass;
+  
 
   // Get LLLL candidates
   Handle<edm::View<CompositeCandidate> > LLLLCands;
@@ -589,7 +590,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     float ZZjjPt     = -99;
 
     unsigned int nCandidates=0; // Should equal jecnum after the loop below
-    
+
     // Loop over following JEC variations:
     // JES
     // JER
@@ -599,43 +600,43 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
       vector<const pat::Jet*> cleanedJetsPt30Jec;
       vector<float> jec_ratio;
       for (edm::View<pat::Jet>::const_iterator jet = CleanJets->begin(); jet != CleanJets->end(); ++jet){
-        
+
         // Nominal jet
         float ratio = 1.;
         float newPt = jet->pt();
-        
+
         // calculate all JEC uncertainty up/down
-        
+
         //JES Up uncertainty
         if (jecnum == 1 )      {
            ratio = 1. + jet->userFloat("jes_unc");
            newPt = jet->pt() * ratio;
         }
-        
+
         //JES Down uncertainty
         else if (jecnum == 2 ) {
            ratio = 1. - jet->userFloat("jes_unc");
            newPt = jet->pt() * ratio;
         }
-         
+
         //JER Up uncertainty
         else if (jecnum == 3 ) {
            ratio = jet->userFloat("pt_jerup") / jet->pt();
            newPt = jet->userFloat("pt_jerup");
         }
-         
+
         //JER Down uncertainty
         else if (jecnum == 4 ) {
            ratio = jet->userFloat("pt_jerdn") / jet->pt();
            newPt = jet->userFloat("pt_jerdn");
         }
-         
+
         // To add new uncertainties you have to:
         // 1) Update _num_of_JEC_variations
         // 2) Add their ration calculation here
         // 3) Update updateMELAClusters_J1JEC and updateMELAClusters_J2JEC functions with names for new variations
         // 4) Update RecoProbabilities.py and RecoProbabilities_minimal.py with those same names
-         
+
         // apply pt>30GeV cut
         if (newPt<=30.) continue;
         // additional jets cleaning for loose leptons belonging to this candidate (for CRs only;
@@ -652,19 +653,19 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
         DiJetMass = (jet1.p4()+jet2.p4()).M();
         DiJetFisher = fisher(DiJetMass, DiJetDEta);
       }
-      
+
       vector<const pat::Jet*> cleanedJetsPt30;
       for (edm::View<pat::Jet>::const_iterator jet = CleanJets->begin(); jet != CleanJets->end(); ++jet){
         if (jet->pt() > 30.) cleanedJetsPt30.push_back(&*jet);
       }
-      
+
       if(cleanedJetsPt30.size() > 1)
       {
         const pat::Jet& jet1 = *(cleanedJetsPt30.at(0));
         const pat::Jet& jet2 = *(cleanedJetsPt30.at(1));
         ZZjjPt = (Z1Lm->p4()+Z1Lp->p4()+Z2Lm->p4()+Z2Lp->p4()+jet1.p4()+jet2.p4()).pt();
       }
-      
+
       for (unsigned int ijet = 0; ijet<cleanedJetsPt30Jec.size(); ijet++){
         TLorentzVector jet(
           cleanedJetsPt30Jec[ijet]->p4().x()*jec_ratio.at(ijet),
@@ -859,7 +860,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     myCand.addUserFloat("DiJetMass", DiJetMass);
     myCand.addUserFloat("DiJetDEta", DiJetDEta);
     myCand.addUserFloat("DiJetFisher", DiJetFisher);
-    
+
     myCand.addUserFloat("ZZjjPt", ZZjjPt);
 
     // MELA branches
@@ -1258,4 +1259,3 @@ void ZZCandidateFiller::clearMELA(){
 
 #include <FWCore/Framework/interface/MakerMacros.h>
 DEFINE_FWK_MODULE(ZZCandidateFiller);
-
