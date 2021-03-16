@@ -949,7 +949,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
                                                                  // For 2017 MC, genHEPMCweight is reweighted later from NNLO to NLO
 
     //-------- AT GENlevel
-    GenTools gentool(genParticles_bbf,packedgenParticles,genJets);
+    GenTools gentool(genParticles_bbf,packedgenParticles,genJets,recoMElist);
     tie(passedFiducialSelection_bbf, GENlep_Hindex) = gentool.getInfo();
 
     // GEN Zs
@@ -1037,6 +1037,8 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
                            GENL11P4, tmpIdL1, GENL12P4, tmpIdL2,  \
                            GENL21P4, tmpIdL3, GENL22P4, tmpIdL4);
     }
+
+    gentool.makeMELA();
     //-------- AT End GENlevel
 
     const auto& genweights = genInfo->weights();

@@ -22,13 +22,19 @@
 
 #include "ZZAnalysis/AnalysisStep/interface/HZZ4LGENAna.h"
 
+#include <MelaAnalytics/CandidateLOCaster/interface/MELACandidateRecaster.h>
+#include <MelaAnalytics/GenericMEComputer/interface/GMECHelperFunctions.h>
+
+
 #include <vector>
 #include <string>
+
+using namespace BranchHelpers;
 
 class GenTools {
   public:
     /// Constructor
-    GenTools(edm::Handle<reco::GenParticleCollection> _pruned, edm::Handle<edm::View<pat::PackedGenParticle> > _packed, edm::Handle<edm::View<reco::GenJet> > _genJ);
+    GenTools(edm::Handle<reco::GenParticleCollection> _pruned, edm::Handle<edm::View<pat::PackedGenParticle> > _packed, edm::Handle<edm::View<reco::GenJet> > _genJ, std::vector<std::string> _recoMElist);
 
     /// Destructor
     virtual ~GenTools();
@@ -42,6 +48,7 @@ class GenTools {
     std::tuple<std::vector<TLorentzVector>, std::vector<TLorentzVector>> getTheJets() {init(); return std::make_tuple(theJets_pt30_eta4p7,theJets_pt30_eta2p5);}
     std::vector<TLorentzVector> getTheHiggs() {init(); return theHiggs;}
     std::tuple<std::vector<TLorentzVector>,std::vector<int>,std::vector<int>> getTheZs(){init(); return std::make_tuple(theZs,theZsMom,theZsDaughters);}
+    void makeMELA(){makeMELA_var = true; init();}
 
 
   private:
@@ -52,6 +59,8 @@ class GenTools {
 
     std::vector<TLorentzVector> theLepts;
     std::vector<int> theLeptsId;
+    std::vector<TLorentzVector> theExtraLepts;
+    std::vector<int> theExtraLeptsId;
 
     std::vector<TLorentzVector> Lepts;
     std::vector<int> LeptsStatus;
@@ -80,6 +89,26 @@ class GenTools {
 
     TLorentzVector v; //Supporting tetravector
 
+    bool makeMELA_var = false;
     void init();
+
+    //------------------------------------------------
+    //----------------------MELA----------------------
+    //------------------------------------------------
+    void buildMELA();
+    void computeMELABranches();
+    void updateMELAClusters_Common();
+    void clearMELA();
+
+    Mela* mela;
+    std::vector<std::string> recoMElist;
+    std::vector<MELAOptionParser*> me_copyopts;
+    std::vector<MELAHypothesis*> me_units;
+    std::vector<MELAHypothesis*> me_aliased_units;
+    std::vector<MELAComputation*> me_computers;
+    std::vector<MELACluster*> me_clusters;
+    std::vector<MELABranch*> me_branches;
+
+
  };
  #endif

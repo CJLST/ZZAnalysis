@@ -18,17 +18,28 @@
 #include <JetMETCorrections/Modules/interface/JetResolution.h>
 
 #include <MelaAnalytics/CandidateLOCaster/interface/MELACandidateRecaster.h>
+#include <MelaAnalytics/GenericMEComputer/interface/GMECHelperFunctions.h>
+
 
 #include <tuple>
 
+using namespace BranchHelpers;
 
-GenTools::GenTools(edm::Handle<reco::GenParticleCollection> _pruned, edm::Handle<edm::View<pat::PackedGenParticle> > _packed, edm::Handle<edm::View<reco::GenJet> > _genJ){
+
+GenTools::GenTools(edm::Handle<reco::GenParticleCollection> _pruned, edm::Handle<edm::View<pat::PackedGenParticle> > _packed, edm::Handle<edm::View<reco::GenJet> > _genJ, std::vector<std::string> _recoMElist):
+  mela(0)
+{
   pruned = _pruned;
   packed = _packed;
   genJ = _genJ;
+  recoMElist = _recoMElist;
+
+  buildMELA();
 }
 
-GenTools::~GenTools(){}
+GenTools::~GenTools(){
+  clearMELA();
+}
 
 
 void GenTools::init(){
@@ -38,6 +49,8 @@ void GenTools::init(){
 
   theLepts.clear();
   theLeptsId.clear();
+  theExtraLepts.clear();
+  theExtraLeptsId.clear();
   Lepts.clear();
   LeptsStatus.clear();
   LeptsId.clear();
@@ -208,6 +221,14 @@ void GenTools::init(){
 
           theLepts = {LS3_Z1_1,LS3_Z1_2,LS3_Z2_1,LS3_Z2_2};
           theLeptsId = {LeptsId[L1],LeptsId[L2],LeptsId[L3],LeptsId[L4]};
+
+          // Leptons that are not selected leptons
+          for(unsigned int i = 0; i<Lepts.size(); i++){
+            if(i!=L1 && i!=L2 && i!=L3 && i!=L4){
+              theExtraLepts.push_back(Lepts.at(i));
+              theExtraLeptsId.push_back(LeptsId.at(i));
+            }
+          }
       }
 
       bool passedMassOS = true; bool passedElMuDeltaR = true; bool passedDeltaR = true;
@@ -270,10 +291,57 @@ void GenTools::init(){
                       theJets_pt30_eta2p5.push_back(v);
                   }
               }
-
           }// loop over gen jets
       } //passedFiducial
   } // 4 fiducial leptons
+
+  /**********************/
+  /**********************/
+  /***** BEGIN MELA *****/
+  /**********************/
+  /**********************/
+  if (passedFiducial && makeMELA_var) {
+    // Lepton TLorentzVectors, including FSR
+    SimpleParticleCollection_t daughters;
+    daughters.push_back(SimpleParticle_t(theLeptsId.at(0), TLorentzVector(theLepts.at(0).Px(), theLepts.at(0).Py(), theLepts.at(0).Pz(), theLepts.at(0).E())));
+    daughters.push_back(SimpleParticle_t(theLeptsId.at(1), TLorentzVector(theLepts.at(1).Px(), theLepts.at(1).Py(), theLepts.at(1).Pz(), theLepts.at(1).E())));
+    daughters.push_back(SimpleParticle_t(theLeptsId.at(2), TLorentzVector(theLepts.at(2).Px(), theLepts.at(2).Py(), theLepts.at(2).Pz(), theLepts.at(2).E())));
+    daughters.push_back(SimpleParticle_t(theLeptsId.at(3), TLorentzVector(theLepts.at(3).Px(), theLepts.at(3).Py(), theLepts.at(3).Pz(), theLepts.at(3).E())));
+
+    SimpleParticleCollection_t associated;
+    if(theExtraLepts.size()!=0){
+      for(unsigned int i = 0; i<theExtraLepts.size(); i++){
+        associated.push_back(SimpleParticle_t(theExtraLeptsId.at(i), TLorentzVector(theExtraLepts.at(i).Px(), theExtraLepts.at(i).Py(), theExtraLepts.at(i).Pz(), theExtraLepts.at(i).E())));
+      }
+    }
+    if(theJets_pt30_eta4p7.size()!=0){
+      for(unsigned int i = 0; i<theJets_pt30_eta4p7.size(); i++){
+        associated.push_back(SimpleParticle_t(0, TLorentzVector(theJets_pt30_eta4p7.at(i).Px(), theJets_pt30_eta4p7.at(i).Py(), theJets_pt30_eta4p7.at(i).Pz(), theJets_pt30_eta4p7.at(i).E())));
+      }
+    }
+    mela->setInputEvent(&daughters, &associated, 0, 0);
+  computeMELABranches();
+  // IMPORTANT: Reset input events at the end all calculations!
+  mela->resetInputEvent();
+
+  for (unsigned int ib=0; ib<me_branches.size(); ib++){
+    // Pull...
+    me_branches.at(ib)->setVal();
+    // ...push...
+    // myCand.addUserFloat(string(me_branches.at(ib)->bname.Data()), (float)me_branches.at(ib)->getVal());
+    cout << string(me_branches.at(ib)->bname.Data()) << endl;
+    cout << (float)me_branches.at(ib)->getVal() << endl;
+    cout << "------" << endl;
+  }
+  cout << endl;
+  // ...then reset
+  for (unsigned int ic=0; ic<me_clusters.size(); ic++) me_clusters.at(ic)->reset();
+  /**********************/
+  /**********************/
+  /***** END MELA *******/
+  /**********************/
+  /**********************/
+  }
 }
 
 
@@ -368,4 +436,165 @@ bool GenTools::mZ1_mZ2_ext(unsigned int& L1, unsigned int& L2, unsigned int& L3,
 
     if(passZ1 && findZ2) return true;
     else return false;
+}
+
+
+
+//--------------------------------------------------------------
+//------------------------MELA_METHODS--------------------------
+//--------------------------------------------------------------
+
+void GenTools::buildMELA(){
+  mela = new Mela(13, 125, TVar::ERROR);
+  mela->setCandidateDecayMode(TVar::CandidateDecay_ZZ);
+
+  for (unsigned int it=0; it<recoMElist.size(); it++){
+    if(recoMElist.at(it).find("Name:GG_SIG_gh")!=string::npos){
+      MELAOptionParser* me_opt;
+      // First find out if the option has a copy specification
+      // These copy options will be evaulated in a separate loop
+      if (recoMElist.at(it).find("Copy")!=string::npos){
+        me_opt = new MELAOptionParser(recoMElist.at(it));
+        me_copyopts.push_back(me_opt);
+        continue;
+      }
+
+      // Create a hypothesis for each option
+      MELAHypothesis* me_hypo = new MELAHypothesis(mela, recoMElist.at(it));
+      me_units.push_back(me_hypo);
+
+      me_opt = me_hypo->getOption();
+      if (me_opt->isAliased()) me_aliased_units.push_back(me_hypo);
+
+      // Create a computation for each hypothesis
+      MELAComputation* me_computer = new MELAComputation(me_hypo);
+      me_computers.push_back(me_computer);
+
+      // Add the computation to a named cluster to keep track of JECUp/JECDn, or for best-pWH_SM Lep_WH computations
+      GMECHelperFunctions::addToMELACluster(me_computer, me_clusters);
+
+      // Create the necessary branches for each computation
+      // Notice that no tree is passed, so no TBranches are created.
+      if (me_opt->doBranch()){
+        string basename = me_opt->getName();
+        // if (me_opt->isGen()) basename = string("Gen_") + basename;
+        if (basename.find("GG_SIG_gh")!=string::npos) basename = string("GEN_") + basename; // ------- ATmela -------
+        MELABranch* tmpbranch;
+        if (me_opt->hasPAux()){
+          tmpbranch = new MELABranch(
+            (TTree*)0, TString((string("pAux_") + basename).c_str()),
+            me_computer->getVal(MELAHypothesis::UsePAux), me_computer
+            );
+          me_branches.push_back(tmpbranch);
+        }
+        if (me_opt->hasPConst()){
+          tmpbranch = new MELABranch(
+            (TTree*)0, TString((string("pConst_") + basename).c_str()),
+            me_computer->getVal(MELAHypothesis::UsePConstant), me_computer
+            );
+          me_branches.push_back(tmpbranch);
+        }
+        tmpbranch = new MELABranch(
+          (TTree*)0, TString((string("p_") + basename).c_str()),
+          me_computer->getVal(MELAHypothesis::UseME), me_computer
+          );
+        me_branches.push_back(tmpbranch);
+      }
+    }
+  }
+  // Resolve copy options
+  for (unsigned int it=0; it<me_copyopts.size(); it++){
+    MELAOptionParser* me_opt = me_copyopts.at(it);
+    MELAHypothesis* original_hypo=0;
+    MELAOptionParser* original_opt=0;
+    // Find the original options
+    for (unsigned int ih=0; ih<me_aliased_units.size(); ih++){
+      if (me_opt->testCopyAlias(me_aliased_units.at(ih)->getOption()->getAlias())){
+        original_hypo = me_aliased_units.at(ih);
+        original_opt = original_hypo->getOption();
+        break;
+      }
+    }
+    if (original_opt==0) continue;
+    else me_opt->pickOriginalOptions(original_opt);
+    // Create a new computation for the copy options
+    MELAComputation* me_computer = new MELAComputation(original_hypo);
+    me_computer->setOption(me_opt);
+    me_computers.push_back(me_computer);
+
+    // The rest is the same story...
+    // Add the computation to a named cluster to keep track of JECUp/JECDn, or for best-pWH_SM Lep_WH computations
+    GMECHelperFunctions::addToMELACluster(me_computer, me_clusters);
+
+    // Create the necessary branches for each computation
+    // Notice that no tree is passed, so no TBranches are created.
+    if (me_opt->doBranch()){
+      string basename = me_opt->getName();
+      // if (me_opt->isGen()) basename = string("Gen_") + basename;
+      if (basename.find("GG_SIG_gh")!=string::npos) basename = string("GEN_") + basename; // ------- ATmela -------
+      MELABranch* tmpbranch;
+      if (me_opt->hasPAux()){
+        tmpbranch = new MELABranch(
+          (TTree*)0, TString((string("pAux_") + basename).c_str()),
+          me_computer->getVal(MELAHypothesis::UsePAux), me_computer
+          );
+        me_branches.push_back(tmpbranch);
+      }
+      if (me_opt->hasPConst()){
+        tmpbranch = new MELABranch(
+          (TTree*)0, TString((string("pConst_") + basename).c_str()),
+          me_computer->getVal(MELAHypothesis::UsePConstant), me_computer
+          );
+        me_branches.push_back(tmpbranch);
+      }
+      tmpbranch = new MELABranch(
+        (TTree*)0, TString((string("p_") + basename).c_str()),
+        me_computer->getVal(MELAHypothesis::UseME), me_computer
+        );
+      me_branches.push_back(tmpbranch);
+    }
+  }
+  // Loop over the computations to add any contingencies to aliased hypotheses
+  for (unsigned int it=0; it<me_computers.size(); it++) me_computers.at(it)->addContingencies(me_aliased_units);
+
+  if (DEBUG_MB){
+    for (unsigned int ib=0; ib<me_branches.size(); ib++) me_branches.at(ib)->Print();
+    for (unsigned int icl=0; icl<me_clusters.size(); icl++) cout << "Reco ME cluster " << me_clusters.at(icl)->getName() << " is present in " << me_clusters.size() << " clusters with #Computations = " << me_clusters.at(icl)->getComputations()->size() << endl;
+  }
+}
+
+
+void GenTools::clearMELA(){
+  for (unsigned int it=0; it<me_branches.size(); it++) delete me_branches.at(it);
+  for (unsigned int it=0; it<me_clusters.size(); it++) delete me_clusters.at(it);
+  for (unsigned int it=0; it<me_computers.size(); it++) delete me_computers.at(it);
+  for (unsigned int it=0; it<me_copyopts.size(); it++) delete me_copyopts.at(it);
+  //for (unsigned int it=0; it<me_aliased_units.size(); it++) delete me_aliased_units.at(it); // DO NOT DELETE THIS, WILL BE DELETED WITH me_units!
+  for (unsigned int it=0; it<me_units.size(); it++) delete me_units.at(it);
+  delete mela;
+}
+
+void GenTools::computeMELABranches(){
+  updateMELAClusters_Common(); // "Common"
+  // updateMELAClusters_J1JEC(); // "J1JECNominal/Up/Dn"
+  // updateMELAClusters_J2JEC(); // "J2JECNominal/Up/Dn"
+  // updateMELAClusters_LepWH(); // "LepWH"
+  // updateMELAClusters_LepZH(); // "LepZH"
+}
+
+// Common ME computations with index=0
+void GenTools::updateMELAClusters_Common(){
+  mela->setCurrentCandidateFromIndex(0);
+  MELACandidate* melaCand = mela->getCurrentCandidate();
+  if (melaCand==0) return;
+
+  for (unsigned int ic=0; ic<me_clusters.size(); ic++){
+    MELACluster* theCluster = me_clusters.at(ic);
+    if (theCluster->getName()=="Common"){
+      // Re-compute all related hypotheses first...
+      theCluster->computeAll();
+      // ...then update the cluster
+      theCluster->update();
+    }
+  }
 }
