@@ -543,6 +543,7 @@ private:
   void updateMELAClusters_BestNLOVHApproximation(const string clustertype);
   void updateMELAClusters_BestNLOVBFApproximation(const string clustertype);
   void pushRecoMELABranches(const pat::CompositeCandidate& cand);
+  void pushGenMELABranches(const std::vector<string> _GENProbName, const std::vector<float> _GENProbValues);
   void pushLHEMELABranches();
   void clearMELABranches();
 
@@ -576,6 +577,8 @@ private:
   std::vector<std::string> recoMElist;
   std::vector<MELAOptionParser*> recome_originalopts;
   std::vector<MELAOptionParser*> recome_copyopts;
+  std::vector<MELAOptionParser*> genme_originalopts; //ATmela
+  std::vector<MELAOptionParser*> genme_copyopts; //ATmela
   std::vector<std::string> lheMElist;
   //std::vector<MELAOptionParser*> lheme_originalopts;
   std::vector<MELAOptionParser*> lheme_copyopts;
@@ -1038,7 +1041,8 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
                            GENL21P4, tmpIdL3, GENL22P4, tmpIdL4);
     }
 
-    gentool.makeMELA();
+    auto [GENProbName, GENProbValues] = gentool.makeMELA();
+    pushGenMELABranches(GENProbName, GENProbValues);
     //-------- AT End GENlevel
 
     const auto& genweights = genInfo->weights();
@@ -2979,7 +2983,7 @@ void HZZ4lNtupleMaker::buildMELABranches(){
   // Resolve original options
   for (unsigned int it=0; it<recome_originalopts.size(); it++){
     MELAOptionParser* me_opt = recome_originalopts.at(it);
-    myTree->BookMELABranches(me_opt, false, 0);
+    myTree->BookMELABranches(me_opt, false, false, 0);
   }
   // Resolve copy options
   for (unsigned int it=0; it<recome_copyopts.size(); it++){
@@ -2994,7 +2998,40 @@ void HZZ4lNtupleMaker::buildMELABranches(){
     }
     if (original_opt==0) continue;
     else me_opt->pickOriginalOptions(original_opt);
-    myTree->BookMELABranches(me_opt, false, 0);
+    myTree->BookMELABranches(me_opt, false, false, 0);
+  }
+
+  /***********************/
+  /***********************/
+  /**   GEN branches   **/
+  /***********************/
+  /***********************/
+  for (unsigned int it=0; it<recoMElist.size(); it++){
+    if(recoMElist.at(it).find("Name:GG_SIG_gh")!=string::npos){
+      MELAOptionParser* genme_opt = new MELAOptionParser(recoMElist.at(it));
+      if (recoMElist.at(it).find("Copy")!=string::npos) genme_copyopts.push_back(genme_opt);
+      else genme_originalopts.push_back(genme_opt);
+    }
+  }
+  // Resolve original options
+  for (unsigned int it=0; it<genme_originalopts.size(); it++){
+    MELAOptionParser* genme_opt = genme_originalopts.at(it);
+    myTree->BookMELABranches(genme_opt, false, true, 0);
+  }
+  // Resolve copy options
+  for (unsigned int it=0; it<genme_copyopts.size(); it++){
+    MELAOptionParser* genme_opt = genme_copyopts.at(it);
+    MELAOptionParser* original_opt=0;
+    // Find the original options
+    for (unsigned int ih=0; ih<genme_originalopts.size(); ih++){
+      if (genme_opt->testCopyAlias(genme_originalopts.at(ih)->getAlias())){
+        original_opt = genme_originalopts.at(ih);
+        break;
+      }
+    }
+    if (original_opt==0) continue;
+    else genme_opt->pickOriginalOptions(original_opt);
+    myTree->BookMELABranches(genme_opt, false, true, 0);
   }
 
   /**********************/
@@ -3027,7 +3064,7 @@ void HZZ4lNtupleMaker::buildMELABranches(){
     GMECHelperFunctions::addToMELACluster(lheme_computer, lheme_clusters);
 
     // Create the necessary branches for each computation
-    myTree->BookMELABranches(lheme_opt, true, lheme_computer);
+    myTree->BookMELABranches(lheme_opt, true, false, lheme_computer);
   }
   // Resolve copy options
   for (unsigned int it=0; it<lheme_copyopts.size(); it++){
@@ -3054,7 +3091,7 @@ void HZZ4lNtupleMaker::buildMELABranches(){
     GMECHelperFunctions::addToMELACluster(lheme_computer, lheme_clusters);
 
     // Create the necessary branches for each computation
-    myTree->BookMELABranches(lheme_opt, true, lheme_computer);
+    myTree->BookMELABranches(lheme_opt, true, false, lheme_computer);
   }
   // Loop over the computations to add any contingencies to aliased hypotheses
   for (unsigned int it=0; it<lheme_computers.size(); it++) lheme_computers.at(it)->addContingencies(lheme_aliased_units);
@@ -3498,6 +3535,30 @@ void HZZ4lNtupleMaker::pushRecoMELABranches(const pat::CompositeCandidate& cand)
     else cerr << "HZZ4lNtupleMaker::pushRecoMELABranches: Candidate does not contain the reco ME " << branchname << " it should have calculated!" << endl;
   }
 }
+void HZZ4lNtupleMaker::pushGenMELABranches(const std::vector<string> _GENProbName, const std::vector<float> _GENProbValues){
+  std::vector<MELABranch*>* genme_branches = myTree->getGenMELABranches();
+  // Pull + push...
+  // cout << genme_branches->size() << endl;
+  // for(unsigned int i = 0; i<genme_branches->size(); i++){
+  //   cout << genme_branches->at(i) << endl;
+  // }
+  // cout << _GENProbName.size() << endl;
+  // for(unsigned int i = 0; i<_GENProbName.size(); i++){
+  //   cout << _GENProbName.at(i) << endl;
+  // }
+
+  for (unsigned int ib=0; ib<genme_branches->size(); ib++){
+    std::string branchname = genme_branches->at(ib)->bname.Data();
+    auto it = std::find(_GENProbName.begin(), _GENProbName.end(), branchname);
+    if(it!=_GENProbName.end()){
+      int index = it - _GENProbName.begin();
+      genme_branches->at(ib)->setValue((Float_t)_GENProbValues.at(index));
+    }else{
+      cerr << "HZZ4lNtupleMaker::pushGenMELABranches: Candidate does not contain the gen ME " << branchname << " it should have calculated!" << endl;
+    }
+    // if (std::find(_GENProbName.begin(), _GENProbName.end(), branchname) != _GENProbName.end()) genme_branches->at(ib)->setValue((Float_t)_GENProbValues.at(ib));
+  }
+}
 void HZZ4lNtupleMaker::pushLHEMELABranches(){
   std::vector<MELABranch*>* lheme_branches = myTree->getLHEMELABranches();
   // Pull + push...
@@ -3514,6 +3575,9 @@ void HZZ4lNtupleMaker::clearMELABranches(){
 
   for (unsigned int it=0; it<recome_copyopts.size(); it++) delete recome_copyopts.at(it);
   for (unsigned int it=0; it<recome_originalopts.size(); it++) delete recome_originalopts.at(it);
+
+  for (unsigned int it=0; it<genme_copyopts.size(); it++) delete genme_copyopts.at(it);
+  for (unsigned int it=0; it<genme_originalopts.size(); it++) delete genme_originalopts.at(it);
 }
 
 Int_t HZZ4lNtupleMaker::FindBinValue(TGraphErrors *tgraph, double value)

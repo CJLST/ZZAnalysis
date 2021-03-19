@@ -66,10 +66,21 @@ void GenTools::init(){
   theZsDaughters.clear();
   theJets_pt30_eta4p7.clear();
   theJets_pt30_eta2p5.clear();
+  theProbName.clear();
+  theProbValues.clear();
+  nu.clear();
+  nuId.clear();
   for (int i=0; i<4; ++i) {Lep_Hindex_tmp[i]=-1;};//position of Higgs candidate leptons in lep_p4: 0 = Z1 lead, 1 = Z1 sub, 2 = Z2 lead, 3 = Z3 sub
 
   for(genPart = pruned->begin(); genPart != pruned->end(); genPart++) {
       j++;
+
+      //Collect neutrinos for MELA
+      if ((abs(genPart->pdgId())==12 ||abs(genPart->pdgId())==14||abs(genPart->pdgId())==16) && (genAna.MotherID(&pruned->at(j))==23||abs(genAna.MotherID(&pruned->at(j)))==24)) {
+        v.SetPtEtaPhiM(genPart->pt(), genPart->eta(), genPart->phi(), genPart->mass());
+        nu.push_back(v);
+        nuId.push_back(genPart->pdgId());
+      }
 
       if (abs(genPart->pdgId())==11  || abs(genPart->pdgId())==13 || abs(genPart->pdgId())==15) {
 
@@ -168,7 +179,7 @@ void GenTools::init(){
   if (Lepts.size()>=4) {
 
       unsigned int L1_nocuts=99; unsigned int L2_nocuts=99; unsigned int L3_nocuts=99; unsigned int L4_nocuts=99;
-      bool passedFiducialSelectionNoCuts = mZ1_mZ2_ext(L1_nocuts, L2_nocuts, L3_nocuts, L4_nocuts, false);
+      bool passedFiducialSelectionNoCuts = mZ1_mZ2(L1_nocuts, L2_nocuts, L3_nocuts, L4_nocuts, false);
       if (passedFiducialSelectionNoCuts) {
           TLorentzVector Z1_1, Z1_2, Z2_1, Z2_2;
           Z1_1.SetPtEtaPhiM(Lepts.at(L1_nocuts).Pt(),Lepts.at(L1_nocuts).Eta(),Lepts.at(L1_nocuts).Phi(),Lepts.at(L1_nocuts).M());
@@ -204,7 +215,7 @@ void GenTools::init(){
 
       // START FIDUCIAL EVENT TOPOLOGY CUTS
       unsigned int L1=99; unsigned int L2=99; unsigned int L3=99; unsigned int L4=99;
-      passedFiducial = mZ1_mZ2_ext(L1, L2, L3, L4, true);
+      passedFiducial = mZ1_mZ2(L1, L2, L3, L4, true);
 
       Lep_Hindex_tmp[0] = L1; Lep_Hindex_tmp[1] = L2; Lep_Hindex_tmp[2] = L3; Lep_Hindex_tmp[3] = L4;
       for(int i=0; i<4; i++){
@@ -309,33 +320,51 @@ void GenTools::init(){
     daughters.push_back(SimpleParticle_t(theLeptsId.at(3), TLorentzVector(theLepts.at(3).Px(), theLepts.at(3).Py(), theLepts.at(3).Pz(), theLepts.at(3).E())));
 
     SimpleParticleCollection_t associated;
+    //Other leptons
     if(theExtraLepts.size()!=0){
       for(unsigned int i = 0; i<theExtraLepts.size(); i++){
         associated.push_back(SimpleParticle_t(theExtraLeptsId.at(i), TLorentzVector(theExtraLepts.at(i).Px(), theExtraLepts.at(i).Py(), theExtraLepts.at(i).Pz(), theExtraLepts.at(i).E())));
       }
     }
+    //Jets
     if(theJets_pt30_eta4p7.size()!=0){
       for(unsigned int i = 0; i<theJets_pt30_eta4p7.size(); i++){
         associated.push_back(SimpleParticle_t(0, TLorentzVector(theJets_pt30_eta4p7.at(i).Px(), theJets_pt30_eta4p7.at(i).Py(), theJets_pt30_eta4p7.at(i).Pz(), theJets_pt30_eta4p7.at(i).E())));
       }
     }
+    //neutrino
+    if(nu.size()!=0){
+      for(unsigned int i = 0; i<nu.size(); i++){
+        associated.push_back(SimpleParticle_t(nuId.at(i), TLorentzVector(nu.at(i).Px(), nu.at(i).Py(), nu.at(i).Pz(), nu.at(i).E())));
+      }
+    }
     mela->setInputEvent(&daughters, &associated, 0, 0);
+
+    //Jets -> TopCandidate
+    if(theJets_pt30_eta4p7.size()!=0){
+      for(unsigned int i = 0; i<theJets_pt30_eta4p7.size(); i++){
+        SimpleParticleCollection_t stableTopDaughters;
+        stableTopDaughters.push_back(SimpleParticle_t(0, theJets_pt30_eta4p7.at(i)));
+        mela->appendTopCandidate(&stableTopDaughters);
+      }
+    }
+
   computeMELABranches();
   // IMPORTANT: Reset input events at the end all calculations!
   mela->resetInputEvent();
 
+  // Fill vectors for probabilities
   for (unsigned int ib=0; ib<me_branches.size(); ib++){
     // Pull...
     me_branches.at(ib)->setVal();
     // ...push...
     // myCand.addUserFloat(string(me_branches.at(ib)->bname.Data()), (float)me_branches.at(ib)->getVal());
-    cout << string(me_branches.at(ib)->bname.Data()) << endl;
-    cout << (float)me_branches.at(ib)->getVal() << endl;
-    cout << "------" << endl;
+    theProbName.push_back(string(me_branches.at(ib)->bname.Data()));
+    theProbValues.push_back((float)me_branches.at(ib)->getVal());
   }
-  cout << endl;
   // ...then reset
   for (unsigned int ic=0; ic<me_clusters.size(); ic++) me_clusters.at(ic)->reset();
+
   /**********************/
   /**********************/
   /***** END MELA *******/
@@ -345,7 +374,7 @@ void GenTools::init(){
 }
 
 
-bool GenTools::mZ1_mZ2_ext(unsigned int& L1, unsigned int& L2, unsigned int& L3, unsigned int& L4, bool makeCuts){
+bool GenTools::mZ1_mZ2(unsigned int& L1, unsigned int& L2, unsigned int& L3, unsigned int& L4, bool makeCuts){
 
     double offshell = 999.0; bool findZ1 = false; bool passZ1 = false;
 
@@ -478,7 +507,7 @@ void GenTools::buildMELA(){
       if (me_opt->doBranch()){
         string basename = me_opt->getName();
         // if (me_opt->isGen()) basename = string("Gen_") + basename;
-        if (basename.find("GG_SIG_gh")!=string::npos) basename = string("GEN_") + basename; // ------- ATmela -------
+        basename = string("GEN_") + basename; // ------- ATmela -------
         MELABranch* tmpbranch;
         if (me_opt->hasPAux()){
           tmpbranch = new MELABranch(
@@ -531,7 +560,7 @@ void GenTools::buildMELA(){
     if (me_opt->doBranch()){
       string basename = me_opt->getName();
       // if (me_opt->isGen()) basename = string("Gen_") + basename;
-      if (basename.find("GG_SIG_gh")!=string::npos) basename = string("GEN_") + basename; // ------- ATmela -------
+      basename = string("GEN_") + basename; // ------- ATmela -------
       MELABranch* tmpbranch;
       if (me_opt->hasPAux()){
         tmpbranch = new MELABranch(

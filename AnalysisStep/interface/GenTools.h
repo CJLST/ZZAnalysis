@@ -39,7 +39,7 @@ class GenTools {
     /// Destructor
     virtual ~GenTools();
 
-    bool mZ1_mZ2_ext(unsigned int& L1, unsigned int& L2, unsigned int& L3, unsigned int& L4, bool makeCuts);
+    bool mZ1_mZ2(unsigned int& L1, unsigned int& L2, unsigned int& L3, unsigned int& L4, bool makeCuts);
 
     // std::vector<TLorentzVector> getlepts(){init(); return std::make_tuple(theLeptsId,theLepts);}
     std::tuple<std::vector<int>, std::vector<TLorentzVector>> getTheLepts(){init(); return std::make_tuple(theLeptsId,theLepts);}
@@ -48,7 +48,7 @@ class GenTools {
     std::tuple<std::vector<TLorentzVector>, std::vector<TLorentzVector>> getTheJets() {init(); return std::make_tuple(theJets_pt30_eta4p7,theJets_pt30_eta2p5);}
     std::vector<TLorentzVector> getTheHiggs() {init(); return theHiggs;}
     std::tuple<std::vector<TLorentzVector>,std::vector<int>,std::vector<int>> getTheZs(){init(); return std::make_tuple(theZs,theZsMom,theZsDaughters);}
-    void makeMELA(){makeMELA_var = true; init();}
+    std::tuple<std::vector<string>,std::vector<float>> makeMELA(){makeMELA_var = true; init(); return std::make_tuple(theProbName,theProbValues);}
 
 
   private:
@@ -61,6 +61,8 @@ class GenTools {
     std::vector<int> theLeptsId;
     std::vector<TLorentzVector> theExtraLepts;
     std::vector<int> theExtraLeptsId;
+    std::vector<TLorentzVector> nu;
+    std::vector<int> nuId;
 
     std::vector<TLorentzVector> Lepts;
     std::vector<int> LeptsStatus;
@@ -78,6 +80,8 @@ class GenTools {
     std::vector<int> theZsMom;
     std::vector<int> theZsDaughters;
 
+    std::vector<string> theProbName;
+    std::vector<float> theProbValues;
 
 
     Short_t Lep_Hindex_tmp[4];//position of Higgs candidate leptons in lep_p4: 0 = Z1 lead, 1 = Z1 sub, 2 = Z2 lead, 3 = Z3 sub

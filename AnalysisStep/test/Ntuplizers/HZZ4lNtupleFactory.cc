@@ -46,6 +46,7 @@ HZZ4lNtupleFactory::~HZZ4lNtupleFactory()
 {
   // Delete MELA branches
   for (unsigned int ib=0; ib<recome_branches.size(); ib++) delete recome_branches.at(ib);
+  for (unsigned int ib=0; ib<genme_branches.size(); ib++) delete genme_branches.at(ib);
   for (unsigned int ib=0; ib<lheme_branches.size(); ib++) delete lheme_branches.at(ib);
 }
 
@@ -143,14 +144,11 @@ void HZZ4lNtupleFactory::Book(TString name, std::vector<bool> &value, bool putin
   if (putinfailedtree && _failedTree)
     _failedTree->Branch(name.Data(), &value);
 }
-void HZZ4lNtupleFactory::BookMELABranches(MELAOptionParser* me_opt, bool isGen, MELAComputation* computer_){
+void HZZ4lNtupleFactory::BookMELABranches(MELAOptionParser* me_opt, bool isGen, bool isGEN, MELAComputation* computer_){
   MELAComputation* computer;
   std::vector<MELABranch*>* me_branches;
-  if (!isGen){
-    me_branches = &recome_branches;
-    computer=(MELAComputation*)0; // No more computation for reco MEs
-  }
-  else{
+  if(isGen){
+    // cout << "LHE" << endl;
     me_branches = &lheme_branches;
     computer=computer_;
     if (computer==0){
@@ -158,15 +156,26 @@ void HZZ4lNtupleFactory::BookMELABranches(MELAOptionParser* me_opt, bool isGen, 
       assert(0);
     }
   }
+  else if (isGEN){
+    // cout << "GEN" << endl;
+    me_branches = &genme_branches;
+    computer=(MELAComputation*)0; // No more computation for gen MEs
+  }
+  else{
+    // cout << "reco" << endl;
+    me_branches = &recome_branches;
+    computer=(MELAComputation*)0; // No more computation for reco MEs
+  }
 
   vector<TTree*> trees;
   trees.push_back(_outTree);
-  if (isGen) trees.push_back(_failedTree);
+  if (isGen || isGEN) trees.push_back(_failedTree);
 
   if (me_opt->doBranch()){
     for (auto tree:trees){
       string basename = me_opt->getName();
       if (me_opt->isGen()) basename = string("Gen_") + basename;
+      if (isGEN) basename = string("GEN_") + basename; // ------- ATmela -------
       MELABranch* tmpbranch;
       Float_t defVal=1.;
       if (me_opt->hasPAux()){
@@ -193,6 +202,7 @@ void HZZ4lNtupleFactory::BookMELABranches(MELAOptionParser* me_opt, bool isGen, 
   }
 }
 std::vector<MELABranch*>* HZZ4lNtupleFactory::getRecoMELABranches(){ return &recome_branches; }
+std::vector<MELABranch*>* HZZ4lNtupleFactory::getGenMELABranches(){ return &genme_branches; } //ATmela
 std::vector<MELABranch*>* HZZ4lNtupleFactory::getLHEMELABranches(){ return &lheme_branches; }
 
 
@@ -210,6 +220,7 @@ void HZZ4lNtupleFactory::InitializeVariables()
  for (auto it = defaultsVectorBool.begin(); it != defaultsVectorBool.end(); ++it ) it->first->clear();
 
  for (unsigned int ib=0; ib<recome_branches.size(); ib++) recome_branches.at(ib)->reset();
+ for (unsigned int ib=0; ib<genme_branches.size(); ib++) genme_branches.at(ib)->reset();
  for (unsigned int ib=0; ib<lheme_branches.size(); ib++) lheme_branches.at(ib)->reset();
 
 /*
