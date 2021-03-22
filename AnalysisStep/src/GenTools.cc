@@ -35,6 +35,8 @@ GenTools::GenTools(edm::Handle<reco::GenParticleCollection> _pruned, edm::Handle
   recoMElist = _recoMElist;
 
   buildMELA();
+
+  init();
 }
 
 GenTools::~GenTools(){

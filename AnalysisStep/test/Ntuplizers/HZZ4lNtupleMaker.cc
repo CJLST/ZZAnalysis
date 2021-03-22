@@ -953,69 +953,87 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
     //-------- AT GENlevel
     GenTools gentool(genParticles_bbf,packedgenParticles,genJets,recoMElist);
-    tie(passedFiducialSelection_bbf, GENlep_Hindex) = gentool.getInfo();
+
+    passedFiducialSelection_bbf = gentool.passedFiducial;
+    auto Lep_Hindex = gentool.Lep_Hindex;
+
+    // tie(passedFiducialSelection_bbf, GENlep_Hindex) = gentool.getInfo();
+
+    // // GEN Zs
+    // auto [GENZs, GENZsMom, GENZsDaughters] = gentool.getTheZs();
+    // if(GENZs.size()!=0){
+    //   for(unsigned int i = 0; i<GENZs.size(); i++){
+    //     GENZ_MomId.push_back(GENZsMom.at(i));
+    //     GENZ_pt.push_back(GENZs.at(i).Pt());
+    //     GENZ_eta.push_back(GENZs.at(i).Eta());
+    //     GENZ_phi.push_back(GENZs.at(i).Phi());
+    //     GENZ_mass.push_back(GENZs.at(i).M());
+    //   }
+    // }
+    // if(GENZsDaughters.size()!=0){
+    //   for(unsigned int i = 0; i<GENZsDaughters.size(); i++){
+    //     GENZ_DaughtersId.push_back(GENZsDaughters.at(i));
+    //   }
+    // }
 
     // GEN Zs
-    auto [GENZs, GENZsMom, GENZsDaughters] = gentool.getTheZs();
-    if(GENZs.size()!=0){
-      for(unsigned int i = 0; i<GENZs.size(); i++){
-        GENZ_MomId.push_back(GENZsMom.at(i));
-        GENZ_pt.push_back(GENZs.at(i).Pt());
-        GENZ_eta.push_back(GENZs.at(i).Eta());
-        GENZ_phi.push_back(GENZs.at(i).Phi());
-        GENZ_mass.push_back(GENZs.at(i).M());
+    if(gentool.theZs.size()!=0){
+      for(unsigned int i = 0; i<gentool.theZs.size(); i++){
+        GENZ_MomId.push_back(gentool.theZsMom.at(i));
+        GENZ_pt.push_back(gentool.theZs.at(i).Pt());
+        GENZ_eta.push_back(gentool.theZs.at(i).Eta());
+        GENZ_phi.push_back(gentool.theZs.at(i).Phi());
+        GENZ_mass.push_back(gentool.theZs.at(i).M());
       }
     }
-    if(GENZsDaughters.size()!=0){
-      for(unsigned int i = 0; i<GENZsDaughters.size(); i++){
-        GENZ_DaughtersId.push_back(GENZsDaughters.at(i));
+    if(gentool.theZsDaughters.size()!=0){
+      for(unsigned int i = 0; i<gentool.theZsDaughters.size(); i++){
+        GENZ_DaughtersId.push_back(gentool.theZsDaughters.at(i));
       }
     }
 
     // GEN particled with pdgIdf==25
-    std::vector<TLorentzVector> GENHiggs = gentool.getTheHiggs();
-    if(GENHiggs.size()!=0){
-      for(unsigned int i = 0; i<GENHiggs.size(); i++){
-        GENH_pt.push_back(GENHiggs.at(i).Pt());
-        GENH_eta.push_back(GENHiggs.at(i).Eta());
-        GENH_phi.push_back(GENHiggs.at(i).Phi());
-        GENH_mass.push_back(GENHiggs.at(i).M());
+    if(gentool.theHiggs.size()!=0){
+      for(unsigned int i = 0; i<gentool.theHiggs.size(); i++){
+        GENH_pt.push_back(gentool.theHiggs.at(i).Pt());
+        GENH_eta.push_back(gentool.theHiggs.at(i).Eta());
+        GENH_phi.push_back(gentool.theHiggs.at(i).Phi());
+        GENH_mass.push_back(gentool.theHiggs.at(i).M());
       }
     }
 
     // GEN jets divided according the eta cut
-    auto [GENjets_pt30_eta4p7, GENjets_pt30_eta2p5] = gentool.getTheJets();
-    GENnjets_pt30_eta2p5 = GENjets_pt30_eta2p5.size();
-    for (unsigned int i = 0; i<GENjets_pt30_eta2p5.size(); i++){
-      GENjetsPt_pt30_eta2p5.push_back(GENjets_pt30_eta2p5.at(i).Pt());
-      GENjetsEta_pt30_eta2p5.push_back(GENjets_pt30_eta2p5.at(i).Eta());
-      GENjetsPhi_pt30_eta2p5.push_back(GENjets_pt30_eta2p5.at(i).Phi());
-      GENjetsMass_pt30_eta2p5.push_back(GENjets_pt30_eta2p5.at(i).M());
+    GENnjets_pt30_eta2p5 = gentool.theJets_pt30_eta2p5.size();
+    for (unsigned int i = 0; i<gentool.theJets_pt30_eta2p5.size(); i++){
+      GENjetsPt_pt30_eta2p5.push_back(gentool.theJets_pt30_eta2p5.at(i).Pt());
+      GENjetsEta_pt30_eta2p5.push_back(gentool.theJets_pt30_eta2p5.at(i).Eta());
+      GENjetsPhi_pt30_eta2p5.push_back(gentool.theJets_pt30_eta2p5.at(i).Phi());
+      GENjetsMass_pt30_eta2p5.push_back(gentool.theJets_pt30_eta2p5.at(i).M());
     }
-    GENnjets_pt30_eta4p7 = GENjets_pt30_eta4p7.size();
-    for (unsigned int i = 0; i<GENjets_pt30_eta4p7.size(); i++){
-      GENjetsPt_pt30_eta4p7.push_back(GENjets_pt30_eta4p7.at(i).Pt());
-      GENjetsEta_pt30_eta4p7.push_back(GENjets_pt30_eta4p7.at(i).Eta());
-      GENjetsPhi_pt30_eta4p7.push_back(GENjets_pt30_eta4p7.at(i).Phi());
-      GENjetsMass_pt30_eta4p7.push_back(GENjets_pt30_eta4p7.at(i).M());
+    GENnjets_pt30_eta4p7 = gentool.theJets_pt30_eta4p7.size();
+    for (unsigned int i = 0; i<gentool.theJets_pt30_eta4p7.size(); i++){
+      GENjetsPt_pt30_eta4p7.push_back(gentool.theJets_pt30_eta4p7.at(i).Pt());
+      GENjetsEta_pt30_eta4p7.push_back(gentool.theJets_pt30_eta4p7.at(i).Eta());
+      GENjetsPhi_pt30_eta4p7.push_back(gentool.theJets_pt30_eta4p7.at(i).Phi());
+      GENjetsMass_pt30_eta4p7.push_back(gentool.theJets_pt30_eta4p7.at(i).M());
     }
 
     // All the dressed GEN leptons
-    auto [GENLeptsId,GENLepts, GENLeptsMom, GENLeptsMomMom, GENLeptsStatus, GENLeptsRelIso] = gentool.getLepts();
-    for(unsigned int i = 0; i<GENLepts.size(); i++){
-      GENlep_pt.push_back(GENLepts.at(i).Pt());
-      GENlep_eta.push_back(GENLepts.at(i).Eta());
-      GENlep_phi.push_back(GENLepts.at(i).Phi());
-      GENlep_mass.push_back(GENLepts.at(i).M());
-      GENlep_id.push_back(GENLeptsId.at(i));
-      GENlep_status.push_back(GENLeptsStatus.at(i));
-      GENlep_MomId.push_back(GENLeptsMom.at(i));
-      GENlep_MomMomId.push_back(GENLeptsMomMom.at(i));
-      GENlep_RelIso.push_back(GENLeptsRelIso.at(i));
+    for(unsigned int i = 0; i<gentool.Lepts.size(); i++){
+      GENlep_pt.push_back(gentool.Lepts.at(i).Pt());
+      GENlep_eta.push_back(gentool.Lepts.at(i).Eta());
+      GENlep_phi.push_back(gentool.Lepts.at(i).Phi());
+      GENlep_mass.push_back(gentool.Lepts.at(i).M());
+      GENlep_id.push_back(gentool.LeptsId.at(i));
+      GENlep_status.push_back(gentool.LeptsStatus.at(i));
+      GENlep_MomId.push_back(gentool.LeptsMom.at(i));
+      GENlep_MomMomId.push_back(gentool.LeptsMomMom.at(i));
+      GENlep_RelIso.push_back(gentool.Lepts_RelIso.at(i));
     }
 
     // The selected four GEN leptons
-    auto [GENtheLeptsId, GENtheLepts]= gentool.getTheLepts();
+    auto GENtheLeptsId = gentool.theLeptsId;
+    auto GENtheLepts = gentool.theLepts;
     if (GENtheLepts.size()==4){
       GENmass4l = (GENtheLepts.at(0)+GENtheLepts.at(1)+GENtheLepts.at(2)+GENtheLepts.at(3)).M();
       GENpT4l = (GENtheLepts.at(0)+GENtheLepts.at(1)+GENtheLepts.at(2)+GENtheLepts.at(3)).Pt();
@@ -1041,8 +1059,8 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
                            GENL21P4, tmpIdL3, GENL22P4, tmpIdL4);
     }
 
-    auto [GENProbName, GENProbValues] = gentool.makeMELA();
-    pushGenMELABranches(GENProbName, GENProbValues);
+    // auto [GENProbName, GENProbValues] = gentool.makeMELA();
+    pushGenMELABranches(gentool.theProbName, gentool.theProbValues);
     //-------- AT End GENlevel
 
     const auto& genweights = genInfo->weights();
