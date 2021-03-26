@@ -1,13 +1,18 @@
-/** \file
+/** \class GenFiller
  *
  *
- *  \author A. Tarabini - LLR
+ *  \author A. Tarabini (LLR)
  */
 
-#include <ZZAnalysis/AnalysisStep/interface/GenTools.h>
+#include <FWCore/Framework/interface/Frameworkfwd.h>
+#include <FWCore/Framework/interface/EDProducer.h>
+#include <FWCore/Framework/interface/Event.h>
+#include <FWCore/ParameterSet/interface/ParameterSet.h>
+#include <FWCore/Framework/interface/ESHandle.h>
 #include <DataFormats/HepMCCandidate/interface/GenParticleFwd.h>
 #include <SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h>
 #include <DataFormats/PatCandidates/interface/PackedGenParticle.h>
+#include <DataFormats/PatCandidates/interface/CompositeCandidate.h>
 
 #include "ZZAnalysis/AnalysisStep/interface/HZZ4LGENAna.h"
 
@@ -20,32 +25,128 @@
 #include <MelaAnalytics/CandidateLOCaster/interface/MELACandidateRecaster.h>
 #include <MelaAnalytics/GenericMEComputer/interface/GMECHelperFunctions.h>
 
-
 #include <tuple>
+#include <string>
+#include <vector>
+#include <TLorentzVector.h>
+
 
 using namespace BranchHelpers;
+using namespace std;
+
+class GenFiller : public edm::EDProducer {
+  public:
+    /// Constructor
+    explicit GenFiller(const edm::ParameterSet&);
+
+    /// Destructor
+    ~GenFiller();
+
+  private:
+
+    virtual void beginJob(){};
+    virtual void produce(edm::Event&, const edm::EventSetup&);
+    virtual void endJob(){};
+
+    bool mZ1_mZ2(unsigned int& L1, unsigned int& L2, unsigned int& L3, unsigned int& L4, bool makeCuts);
+
+    std::vector<Short_t> Lep_Hindex;
+
+    bool passedFiducial;
+
+    std::vector<TLorentzVector> theZs;
+    std::vector<int> theZsMom;
+    std::vector<int> theZsDaughters;
+
+    std::vector<TLorentzVector> theHiggs;
+
+    std::vector<TLorentzVector> theJets_pt30_eta4p7;
+    std::vector<TLorentzVector> theJets_pt30_eta2p5;
+
+    std::vector<TLorentzVector> Lepts;
+    std::vector<int> LeptsId;
+    std::vector<float> Lepts_RelIso;
+
+    std::vector<TLorentzVector> theLepts;
+    std::vector<int> theLeptsId;
+
+    std::vector<string> theProbName;
+    std::vector<float> theProbValues;
+
+    // edm::Handle<reco::GenParticleCollection> genParticles;
+    // edm::Handle<edm::View<pat::PackedGenParticle> > packedgenParticles;
+    // edm::Handle<edm::View<reco::GenJet> > genJets;
+
+    std::vector<TLorentzVector> theExtraLepts;
+    std::vector<int> theExtraLeptsId;
+    std::vector<TLorentzVector> nu;
+    std::vector<int> nuId;
+
+    std::vector<const reco::Candidate *> LeptsReco;
+
+    Short_t Lep_Hindex_tmp[4];//position of Higgs candidate leptons in lep_p4: 0 = Z1 lead, 1 = Z1 sub, 2 = Z2 lead, 3 = Z3 sub
+
+    HZZ4LGENAna genAna;
+
+    TLorentzVector v; //Supporting tetravector
+
+    edm::EDGetTokenT<reco::GenParticleCollection> genParticleToken;
+    edm::EDGetTokenT<edm::View<reco::GenJet> > genJetsToken;
+    edm::EDGetTokenT<edm::View<pat::PackedGenParticle> > packedgenParticlesToken;
 
 
-GenTools::GenTools(edm::Handle<reco::GenParticleCollection> _pruned, edm::Handle<edm::View<pat::PackedGenParticle> > _packed, edm::Handle<edm::View<reco::GenJet> > _genJ, std::vector<std::string> _recoMElist):
-  mela(0)
+    //------------------------------------------------
+    //----------------------MELA----------------------
+    //------------------------------------------------
+    void buildMELA();
+    void computeMELABranches();
+    void updateMELAClusters_Common();
+    void clearMELA();
+    void pushMELABranches(pat::CompositeCandidate& myCand);
+
+    float superMelaMass;
+    Mela* mela;
+    std::vector<std::string> recoMElist;
+    std::vector<MELAOptionParser*> me_copyopts;
+    std::vector<MELAHypothesis*> me_units;
+    std::vector<MELAHypothesis*> me_aliased_units;
+    std::vector<MELAComputation*> me_computers;
+    std::vector<MELACluster*> me_clusters;
+    std::vector<MELABranch*> me_branches;
+};
+
+GenFiller::GenFiller(const edm::ParameterSet& iConfig):
+  superMelaMass(iConfig.getParameter<double>("superMelaMass")),
+  mela(0),
+  recoMElist(iConfig.getParameter<std::vector<std::string>>("recoProbabilities"))
 {
-  pruned = _pruned;
-  packed = _packed;
-  genJ = _genJ;
-  recoMElist = _recoMElist;
-
+  produces<pat::CompositeCandidateCollection>();
   buildMELA();
 
-  init();
+  genParticleToken = consumes<reco::GenParticleCollection>(edm::InputTag("prunedGenParticles"));
+  packedgenParticlesToken = consumes<edm::View<pat::PackedGenParticle> > (edm::InputTag("packedGenParticles")); //ATbbf
+  genJetsToken = consumes<edm::View<reco::GenJet> >(edm::InputTag("slimmedGenJets")); //ATjets
+
 }
 
-GenTools::~GenTools(){
+
+GenFiller::~GenFiller(){
   clearMELA();
 }
 
+void GenFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup){
 
-void GenTools::init(){
+  edm::Handle<reco::GenParticleCollection> genParticles;
+  iEvent.getByToken(genParticleToken, genParticles);
+  edm::Handle<edm::View<pat::PackedGenParticle> > packedgenParticles;
+  iEvent.getByToken(packedgenParticlesToken, packedgenParticles);
+  edm::Handle<edm::View<reco::GenJet> > genJets;
+  iEvent.getByToken(genJetsToken, genJets);
+
+  auto result = std::make_unique<pat::CompositeCandidateCollection>();
+
   reco::GenParticleCollection::const_iterator genPart;
+
   int j = -1;
   int nGENLeptons=0;
 
@@ -54,10 +155,7 @@ void GenTools::init(){
   theExtraLepts.clear();
   theExtraLeptsId.clear();
   Lepts.clear();
-  LeptsStatus.clear();
   LeptsId.clear();
-  LeptsMom.clear();
-  LeptsMomMom.clear();
   Lepts_RelIso.clear();
   theJets_pt30_eta4p7.clear();
   theJets_pt30_eta2p5.clear();
@@ -66,60 +164,70 @@ void GenTools::init(){
   theZs.clear();
   theZsMom.clear();
   theZsDaughters.clear();
-  theJets_pt30_eta4p7.clear();
-  theJets_pt30_eta2p5.clear();
   theProbName.clear();
   theProbValues.clear();
   nu.clear();
   nuId.clear();
+  LeptsReco.clear();
+
+  pat::CompositeCandidate compZ1;
+  pat::CompositeCandidate compZ2;
+  pat::CompositeCandidate compZZ;
   for (int i=0; i<4; ++i) {Lep_Hindex_tmp[i]=-1;};//position of Higgs candidate leptons in lep_p4: 0 = Z1 lead, 1 = Z1 sub, 2 = Z2 lead, 3 = Z3 sub
 
-  for(genPart = pruned->begin(); genPart != pruned->end(); genPart++) {
+  int nGENLepts = 0;
+  int nGENHiggs = 0;
+  int nGENJets2p5 = 0;
+  int nGENJets4p7 = 0;
+  for(genPart = genParticles->begin(); genPart != genParticles->end(); genPart++) {
       j++;
-
       //Collect neutrinos for MELA
-      if ((abs(genPart->pdgId())==12 ||abs(genPart->pdgId())==14||abs(genPart->pdgId())==16) && (genAna.MotherID(&pruned->at(j))==23||abs(genAna.MotherID(&pruned->at(j)))==24)) {
+      if ((abs(genPart->pdgId())==12 ||abs(genPart->pdgId())==14||abs(genPart->pdgId())==16) && (genAna.MotherID(&genParticles->at(j))==23||abs(genAna.MotherID(&genParticles->at(j)))==24)) {
         v.SetPtEtaPhiM(genPart->pt(), genPart->eta(), genPart->phi(), genPart->mass());
         nu.push_back(v);
         nuId.push_back(genPart->pdgId());
       }
-
       if (abs(genPart->pdgId())==11  || abs(genPart->pdgId())==13 || abs(genPart->pdgId())==15) {
 
           if (!(genPart->status()==1 || abs(genPart->pdgId())==15)) continue;
-          if (!(genAna.MotherID(&pruned->at(j))==23 || genAna.MotherID(&pruned->at(j))==443 || genAna.MotherID(&pruned->at(j))==553 || abs(genAna.MotherID(&pruned->at(j)))==24) ) continue;
+          if (!(genAna.MotherID(&genParticles->at(j))==23 || genAna.MotherID(&genParticles->at(j))==443 || genAna.MotherID(&genParticles->at(j))==553 || abs(genAna.MotherID(&genParticles->at(j)))==24) ) continue;
 
           nGENLeptons++;
           // Collect FSR photons
           TLorentzVector lep_dressed;
           lep_dressed.SetPtEtaPhiE(genPart->pt(),genPart->eta(),genPart->phi(),genPart->energy());
           set<int> gen_fsrset;
-          for(size_t k=0; k<packed->size();k++){
-              if( (*packed)[k].status() != 1) continue; // stable particles only
-              if( (*packed)[k].pdgId() != 22) continue; // only photons
-              double this_dR_lgamma = deltaR(genPart->eta(), genPart->phi(), (*packed)[k].eta(), (*packed)[k].phi());
+          for(size_t k=0; k<packedgenParticles->size();k++){
+              if( (*packedgenParticles)[k].status() != 1) continue; // stable particles only
+              if( (*packedgenParticles)[k].pdgId() != 22) continue; // only photons
+              double this_dR_lgamma = deltaR(genPart->eta(), genPart->phi(), (*packedgenParticles)[k].eta(), (*packedgenParticles)[k].phi());
               bool idmatch=false;
-              if ((*packed)[k].mother(0)->pdgId()==genPart->pdgId() ) idmatch=true;
-              const reco::Candidate * mother = (*packed)[k].mother(0);
+              if ((*packedgenParticles)[k].mother(0)->pdgId()==genPart->pdgId() ) idmatch=true;
+              const reco::Candidate * mother = (*packedgenParticles)[k].mother(0);
               for(size_t m=0;m<mother->numberOfMothers();m++) {
-                  if ( (*packed)[k].mother(m)->pdgId() == genPart->pdgId() ) idmatch=true;
+                  if ( (*packedgenParticles)[k].mother(m)->pdgId() == genPart->pdgId() ) idmatch=true;
               }
               if (!idmatch) continue;
               if(this_dR_lgamma<0.3) {
                   gen_fsrset.insert(k);
                   TLorentzVector gamma;
-                  gamma.SetPtEtaPhiE((*packed)[k].pt(),(*packed)[k].eta(),(*packed)[k].phi(),(*packed)[k].energy());
+                  gamma.SetPtEtaPhiE((*packedgenParticles)[k].pt(),(*packedgenParticles)[k].eta(),(*packedgenParticles)[k].phi(),(*packedgenParticles)[k].energy());
                   lep_dressed = lep_dressed+gamma;
               }
           } // Dressed leptons loop
 
+          nGENLepts++;
           Lepts.push_back(lep_dressed);
-          LeptsStatus.push_back(genPart->status());
           LeptsId.push_back(genPart->pdgId());
-          LeptsMom.push_back(genAna.MotherID(&pruned->at(j)));
-          LeptsMomMom.push_back(genAna.MotherMotherID(&pruned->at(j)));
-          // if(whereBreak == "lepts"){return;};
+          LeptsReco.push_back(&genParticles->at(j));
 
+          compZZ.addUserFloat("GENlep_pt_"+to_string(nGENLepts), lep_dressed.Pt());
+          compZZ.addUserFloat("GENlep_eta_"+to_string(nGENLepts), lep_dressed.Eta());
+          compZZ.addUserFloat("GENlep_phi_"+to_string(nGENLepts), lep_dressed.Phi());
+          compZZ.addUserFloat("GENlep_mass_"+to_string(nGENLepts), lep_dressed.M());
+          compZZ.addUserFloat("GENlep_id_"+to_string(nGENLepts), genPart->pdgId());
+          compZZ.addUserFloat("GENlep_mom_"+to_string(nGENLepts), genAna.MotherID(&genParticles->at(j)));
+          compZZ.addUserFloat("GENlep_mommom_"+to_string(nGENLepts), genAna.MotherMotherID(&genParticles->at(j)));
 
           TLorentzVector thisLep;
           thisLep.SetPtEtaPhiM(lep_dressed.Pt(),lep_dressed.Eta(),lep_dressed.Phi(),lep_dressed.M());
@@ -127,25 +235,30 @@ void GenTools::init(){
           double this_GENiso=0.0;
           double this_GENneutraliso=0.0;
           double this_GENchargediso=0.0;
-          for(size_t k=0; k<packed->size();k++){
-              if( (*packed)[k].status() != 1 ) continue; // stable particles only
-              if (abs((*packed)[k].pdgId())==12 || abs((*packed)[k].pdgId())==14 || abs((*packed)[k].pdgId())==16) continue; // exclude neutrinos
-              if ((abs((*packed)[k].pdgId())==11 || abs((*packed)[k].pdgId())==13)) continue; // exclude leptons
+          for(size_t k=0; k<packedgenParticles->size();k++){
+              if( (*packedgenParticles)[k].status() != 1 ) continue; // stable particles only
+              if (abs((*packedgenParticles)[k].pdgId())==12 || abs((*packedgenParticles)[k].pdgId())==14 || abs((*packedgenParticles)[k].pdgId())==16) continue; // exclude neutrinos
+              if ((abs((*packedgenParticles)[k].pdgId())==11 || abs((*packedgenParticles)[k].pdgId())==13)) continue; // exclude leptons
               if (gen_fsrset.find(k)!=gen_fsrset.end()) continue; // exclude particles which were selected as fsr photons
-              double this_dRvL = deltaR(thisLep.Eta(), thisLep.Phi(), (*packed)[k].eta(), (*packed)[k].phi());
+              double this_dRvL = deltaR(thisLep.Eta(), thisLep.Phi(), (*packedgenParticles)[k].eta(), (*packedgenParticles)[k].phi());
               if(this_dRvL<0.3) {
-                  this_GENiso = this_GENiso + (*packed)[k].pt();
-                  if ((*packed)[k].charge()==0) this_GENneutraliso = this_GENneutraliso + (*packed)[k].pt();
-                  if ((*packed)[k].charge()!=0) this_GENchargediso = this_GENchargediso + (*packed)[k].pt();
+                  this_GENiso = this_GENiso + (*packedgenParticles)[k].pt();
+                  if ((*packedgenParticles)[k].charge()==0) this_GENneutraliso = this_GENneutraliso + (*packedgenParticles)[k].pt();
+                  if ((*packedgenParticles)[k].charge()!=0) this_GENchargediso = this_GENchargediso + (*packedgenParticles)[k].pt();
               }
           } // GEN iso loop
-          this_GENiso = this_GENiso/thisLep.Pt();
+          this_GENiso = this_GENiso/thisLep.Pt(); // Relative isolation
           Lepts_RelIso.push_back(this_GENiso);
+          compZZ.addUserFloat("GENlep_reliso_"+to_string(nGENLepts), this_GENiso);
           // END GEN iso calculation
       } // leptons
       if (genPart->pdgId()==25) {
           v.SetPtEtaPhiM(genPart->pt(), genPart->eta(), genPart->phi(), genPart->mass());
-          theHiggs.push_back(v);
+          nGENHiggs++;
+          compZZ.addUserFloat("GENhiggs_pt_"+to_string(nGENHiggs), genPart->pt());
+          compZZ.addUserFloat("GENhiggs_eta_"+to_string(nGENHiggs), genPart->eta());
+          compZZ.addUserFloat("GENhiggs_phi_"+to_string(nGENHiggs), genPart->phi());
+          compZZ.addUserFloat("GENhiggs_mass_"+to_string(nGENHiggs), genPart->mass());
       }
       if ((genPart->pdgId()==23 || genPart->pdgId()==443 || genPart->pdgId()==553) && (genPart->status()>=20 && genPart->status()<30) ) {
           const reco::Candidate *Zdau0=genPart->daughter(0);
@@ -162,11 +275,11 @@ void GenTools::init(){
               }
           }
           if (Zdau0) theZsDaughters.push_back(ZdauId);
-          theZsMom.push_back(genAna.MotherID(&pruned->at(j)));
+          theZsMom.push_back(genAna.MotherID(&genParticles->at(j)));
           v.SetPtEtaPhiM(genPart->pt(), genPart->eta(), genPart->phi(), genPart->mass());
           theZs.push_back(v);
           // if (Zdau0) _GENZ_DaughtersId.push_back(ZdauId);
-          // _GENZ_MomId.push_back(genAna.MotherID(&pruned->at(j)));
+          // _GENZ_MomId.push_back(genAna.MotherID(&genParticles->at(j)));
           // _GENZ_pt.push_back(genPart->pt());
           // _GENZ_eta.push_back(genPart->eta());
           // _GENZ_phi.push_back(genPart->phi());
@@ -177,6 +290,8 @@ void GenTools::init(){
       //     _nGENStatus2bHad+=1;
       // }
   }
+  compZZ.addUserFloat("nLepts", (float)nGENLepts);
+  compZZ.addUserFloat("nHiggs", (float)nGENHiggs);
 
   if (Lepts.size()>=4) {
 
@@ -213,10 +328,12 @@ void GenTools::init(){
           if (thisLep.Pt()>10) nFiducialPtSublead++;
       }
   }
+
+  unsigned int L1=99; unsigned int L2=99; unsigned int L3=99; unsigned int L4=99;
   if (nFiducialLeptons>=4 && nFiducialPtLead>=1 && nFiducialPtSublead>=2) {
 
       // START FIDUCIAL EVENT TOPOLOGY CUTS
-      unsigned int L1=99; unsigned int L2=99; unsigned int L3=99; unsigned int L4=99;
+      // unsigned int L1=99; unsigned int L2=99; unsigned int L3=99; unsigned int L4=99;
       passedFiducial = mZ1_mZ2(L1, L2, L3, L4, true);
 
       Lep_Hindex_tmp[0] = L1; Lep_Hindex_tmp[1] = L2; Lep_Hindex_tmp[2] = L3; Lep_Hindex_tmp[3] = L4;
@@ -242,7 +359,17 @@ void GenTools::init(){
               theExtraLeptsId.push_back(LeptsId.at(i));
             }
           }
+          
+      compZ1.addDaughter(*LeptsReco.at(L1), "daughter1");
+      compZ1.addDaughter(*LeptsReco.at(L2), "daughter2");
+
+      compZ2.addDaughter(*LeptsReco.at(L3), "daughter1");
+      compZ2.addDaughter(*LeptsReco.at(L4), "daughter2");
+
+      compZZ.addDaughter(compZ1, "Z1");
+      compZZ.addDaughter(compZ2, "Z2");
       }
+
 
       bool passedMassOS = true; bool passedElMuDeltaR = true; bool passedDeltaR = true;
       unsigned int N=Lepts.size();
@@ -272,13 +399,12 @@ void GenTools::init(){
           }
       }
       if(passedMassOS==false || passedElMuDeltaR==false || passedDeltaR==false) passedFiducial=false;
-      // if(whereBreak == "fidsel") {return;}
 
       if (passedFiducial) {
 
           // DO GEN JETS
           edm::View<reco::GenJet>::const_iterator genjet;
-          for(genjet = genJ->begin(); genjet != genJ->end(); genjet++) {
+          for(genjet = genJets->begin(); genjet != genJets->end(); genjet++) {
 
               double pt = genjet->pt();  double eta = genjet->eta();
               if (pt<30.0 || abs(eta)>4.7) continue;
@@ -298,28 +424,44 @@ void GenTools::init(){
 
               // count number of gen jets which no gen leptons are inside its cone
               if (!inDR_pt30_eta4p7) {
-                  v.SetPtEtaPhiM(genjet->pt(), genjet->eta(), genjet->phi(), genjet->mass());
-                  theJets_pt30_eta4p7.push_back(v);
+                  nGENJets4p7++;
+                  compZZ.addUserFloat("GENjet4p7_pt_"+to_string(nGENJets4p7), genjet->pt());
+                  compZZ.addUserFloat("GENjet4p7_eta_"+to_string(nGENJets4p7), genjet->eta());
+                  compZZ.addUserFloat("GENjet4p7_phi_"+to_string(nGENJets4p7), genjet->phi());
+                  compZZ.addUserFloat("GENjet4p7_mass_"+to_string(nGENJets4p7), genjet->mass());
                   if (abs(genjet->eta())<2.5) {
-                      theJets_pt30_eta2p5.push_back(v);
+                      nGENJets2p5++;
+                      compZZ.addUserFloat("GENjet2p5_pt_"+to_string(nGENJets2p5), genjet->pt());
+                      compZZ.addUserFloat("GENjet2p5_eta_"+to_string(nGENJets2p5), genjet->eta());
+                      compZZ.addUserFloat("GENjet2p5_phi_"+to_string(nGENJets2p5), genjet->phi());
+                      compZZ.addUserFloat("GENjet2p5_mass_"+to_string(nGENJets2p5), genjet->mass());
                   }
               }
           }// loop over gen jets
       } //passedFiducial
   } // 4 fiducial leptons
+  compZZ.addUserFloat("nJets4p7", (float)nGENJets4p7);
+  compZZ.addUserFloat("nJets2p5", (float)nGENJets2p5);
+  compZZ.addUserFloat("L1", (float)L1);
+  compZZ.addUserFloat("L2", (float)L2);
+  compZZ.addUserFloat("L3", (float)L3);
+  compZZ.addUserFloat("L4", (float)L4);
+  bool * passo = &passedFiducial;
+  compZZ.addUserData("passedFiducial", *passo);
 
   /**********************/
   /**********************/
   /***** BEGIN MELA *****/
   /**********************/
   /**********************/
-  if (passedFiducial && makeMELA_var) {
+  if (passedFiducial) {
     // Lepton TLorentzVectors, including FSR
     SimpleParticleCollection_t daughters;
     daughters.push_back(SimpleParticle_t(theLeptsId.at(0), TLorentzVector(theLepts.at(0).Px(), theLepts.at(0).Py(), theLepts.at(0).Pz(), theLepts.at(0).E())));
     daughters.push_back(SimpleParticle_t(theLeptsId.at(1), TLorentzVector(theLepts.at(1).Px(), theLepts.at(1).Py(), theLepts.at(1).Pz(), theLepts.at(1).E())));
     daughters.push_back(SimpleParticle_t(theLeptsId.at(2), TLorentzVector(theLepts.at(2).Px(), theLepts.at(2).Py(), theLepts.at(2).Pz(), theLepts.at(2).E())));
     daughters.push_back(SimpleParticle_t(theLeptsId.at(3), TLorentzVector(theLepts.at(3).Px(), theLepts.at(3).Py(), theLepts.at(3).Pz(), theLepts.at(3).E())));
+
 
     SimpleParticleCollection_t associated;
     //Other leptons
@@ -350,22 +492,7 @@ void GenTools::init(){
         mela->appendTopCandidate(&stableTopDaughters);
       }
     }
-
   computeMELABranches();
-  // IMPORTANT: Reset input events at the end all calculations!
-  mela->resetInputEvent();
-
-  // Fill vectors for probabilities
-  for (unsigned int ib=0; ib<me_branches.size(); ib++){
-    // Pull...
-    me_branches.at(ib)->setVal();
-    // ...push...
-    // myCand.addUserFloat(string(me_branches.at(ib)->bname.Data()), (float)me_branches.at(ib)->getVal());
-    theProbName.push_back(string(me_branches.at(ib)->bname.Data()));
-    theProbValues.push_back((float)me_branches.at(ib)->getVal());
-  }
-  // ...then reset
-  for (unsigned int ic=0; ic<me_clusters.size(); ic++) me_clusters.at(ic)->reset();
 
   /**********************/
   /**********************/
@@ -373,10 +500,15 @@ void GenTools::init(){
   /**********************/
   /**********************/
   }
+  // IMPORTANT: Reset input events at the end all calculations!
+  mela->resetInputEvent();
+  pushMELABranches(compZZ);
+  result->push_back(compZZ);
+  iEvent.put(std::move(result));
 }
 
 
-bool GenTools::mZ1_mZ2(unsigned int& L1, unsigned int& L2, unsigned int& L3, unsigned int& L4, bool makeCuts){
+bool GenFiller::mZ1_mZ2(unsigned int& L1, unsigned int& L2, unsigned int& L3, unsigned int& L4, bool makeCuts){
 
     double offshell = 999.0; bool findZ1 = false; bool passZ1 = false;
 
@@ -469,13 +601,11 @@ bool GenTools::mZ1_mZ2(unsigned int& L1, unsigned int& L2, unsigned int& L3, uns
     else return false;
 }
 
-
-
 //--------------------------------------------------------------
 //------------------------MELA_METHODS--------------------------
 //--------------------------------------------------------------
 
-void GenTools::buildMELA(){
+void GenFiller::buildMELA(){
   mela = new Mela(13, 125, TVar::ERROR);
   mela->setCandidateDecayMode(TVar::CandidateDecay_ZZ);
 
@@ -594,8 +724,7 @@ void GenTools::buildMELA(){
   }
 }
 
-
-void GenTools::clearMELA(){
+void GenFiller::clearMELA(){
   for (unsigned int it=0; it<me_branches.size(); it++) delete me_branches.at(it);
   for (unsigned int it=0; it<me_clusters.size(); it++) delete me_clusters.at(it);
   for (unsigned int it=0; it<me_computers.size(); it++) delete me_computers.at(it);
@@ -605,7 +734,8 @@ void GenTools::clearMELA(){
   delete mela;
 }
 
-void GenTools::computeMELABranches(){
+
+void GenFiller::computeMELABranches(){
   updateMELAClusters_Common(); // "Common"
   // updateMELAClusters_J1JEC(); // "J1JECNominal/Up/Dn"
   // updateMELAClusters_J2JEC(); // "J2JECNominal/Up/Dn"
@@ -614,7 +744,7 @@ void GenTools::computeMELABranches(){
 }
 
 // Common ME computations with index=0
-void GenTools::updateMELAClusters_Common(){
+void GenFiller::updateMELAClusters_Common(){
   mela->setCurrentCandidateFromIndex(0);
   MELACandidate* melaCand = mela->getCurrentCandidate();
   if (melaCand==0) return;
@@ -629,3 +759,23 @@ void GenTools::updateMELAClusters_Common(){
     }
   }
 }
+
+void GenFiller::pushMELABranches(pat::CompositeCandidate& myCand){
+  for (unsigned int ib=0; ib<me_branches.size(); ib++){
+    // Pull...
+    me_branches.at(ib)->setVal();
+    // ...push...
+    // if(iEvent.id().event() == 91257) {
+    //   cout << string(me_branches.at(ib)->bname.Data()) << endl;
+    //   cout << (float)me_branches.at(ib)->getVal() << endl;
+    // }
+    myCand.addUserFloat(string(me_branches.at(ib)->bname.Data()), (float)me_branches.at(ib)->getVal());
+  }
+  // ...then reset
+  for (unsigned int ic=0; ic<me_clusters.size(); ic++) me_clusters.at(ic)->reset();
+}
+
+
+
+#include <FWCore/Framework/interface/MakerMacros.h>
+DEFINE_FWK_MODULE(GenFiller);

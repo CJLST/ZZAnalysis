@@ -36,8 +36,8 @@ DecayProbabilities_SpinZero_JHUGen = [
    "Name:GG_SIG_ghg2_1_ghz2_1_ghza1prime2_1E4_JHUGen Process:SelfDefine_spin0 Production:ZZGG MatrixElement:JHUGen Couplings:ghg2=1,0;ghz2=1,0;ghzgs1_prime2=10000,0 Options:SubtractP=GG_SIG_ghg2_1_ghz2_1_JHUGen,GG_SIG_ghg2_1_ghza1prime2_1E4_JHUGen",
    "Name:GG_SIG_ghg2_1_ghz4_1_ghza1prime2_1E4_JHUGen Process:SelfDefine_spin0 Production:ZZGG MatrixElement:JHUGen Couplings:ghg2=1,0;ghz4=1,0;ghzgs1_prime2=10000,0 Options:SubtractP=GG_SIG_ghg2_1_ghz4_1_JHUGen,GG_SIG_ghg2_1_ghza1prime2_1E4_JHUGen",
 
-   
-   
+
+
    #"Name:GG_SIG_ghg2_1_ghz1prime2_1E4_ghza1prime2_1E4i_JHUGen Process:SelfDefine_spin0 Production:ZZGG MatrixElement:JHUGen Couplings:ghg2=1,0;ghz1_prime2=10000,0;ghzgs1_prime2=0,10000 Options:SubtractP=GG_SIG_ghg2_1_ghz1prime2_1E4_JHUGen,GG_SIG_ghg2_1_ghza1prime2_1E4_JHUGen",
 ]
 ## Production probabilities with >=1 jet(s) ##
@@ -355,6 +355,7 @@ for name in (
              "ZLLCandZ1RSE",    "CRZLLTreeZ1RSE",
              "ZZCandtle",       "ZZTreetle",
              "ZLLCandtle",      "CRZLLTreetle",
+             "GENLevel",
             ):
     if hasattr(process, name):
         getattr(process, name).recoProbabilities.extend(theRecoProbabilities)

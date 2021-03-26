@@ -866,6 +866,15 @@ process.ZZCand = cms.EDProducer("ZZCandidateFiller",
 )
 
 
+### ----------------------------------------------------------------------
+### Gen-level (for fiducial measurements)
+### ----------------------------------------------------------------------
+
+process.GENLevel = cms.EDProducer("GenFiller",
+    superMelaMass = cms.double(SUPERMELA_MASS),
+    recoProbabilities = cms.vstring(),
+)
+
 
 ### ----------------------------------------------------------------------
 ### Z+LL Control regions.
@@ -1572,6 +1581,7 @@ process.Candidates = cms.Path(
        process.bareZZCand        + process.ZZCand
     )
 
+process.GENCandidates = cms.Path(process.GENLevel)
 
 # Optional sequence to build control regions. To get it, add
 #process.CRPath = cms.Path(process.CRZl) # only trilepton

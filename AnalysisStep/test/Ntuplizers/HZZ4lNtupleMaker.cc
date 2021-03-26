@@ -49,12 +49,9 @@
 #include <SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h>
 #include <SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h>
 
-#include "ZZAnalysis/AnalysisStep/interface/HZZ4LGENAna.h" //ATbbf
-
 #include <ZZAnalysis/AnalysisStep/interface/DaughterDataHelpers.h>
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
 #include <ZZAnalysis/AnalysisStep/interface/MCHistoryTools.h>
-#include <ZZAnalysis/AnalysisStep/interface/GenTools.h>
 //#include <ZZAnalysis/AnalysisStep/interface/PileUpWeight.h>
 #include <ZZAnalysis/AnalysisStep/interface/PileUpWeight.h>
 #include "SimDataFormats/HTXS/interface/HiggsTemplateCrossSections.h"
@@ -96,8 +93,6 @@
 bool verbose = false; //ATbbf
 
 namespace {
-  HZZ4LGENAna genAna; //ATbbf
-
   bool writeJets = true;     // Write jets in the tree. FIXME: make this configurable
   bool writePhotons = true; // Write photons in the tree. FIXME: make this configurable
   bool addKinRefit = true;
@@ -430,6 +425,7 @@ namespace {
   bool passedFiducialSelection_bbf;
   // lepton variables
   std::vector<float> GENlep_pt; std::vector<float> GENlep_eta; std::vector<float> GENlep_phi; std::vector<float> GENlep_mass;
+  std::vector<TLorentzVector> GENlep_tetra;
   std::vector<short> GENlep_id; std::vector<short> GENlep_status;
   std::vector<short> GENlep_MomId; std::vector<short> GENlep_MomMomId;
   // Short_t GENlep_Hindex[4];//position of Higgs candidate leptons in lep_p4: 0 = Z1 lead, 1 = Z1 sub, 2 = Z2 lead, 3 = Z3 sub
@@ -438,7 +434,7 @@ namespace {
   std::vector<float> GENlep_RelIso;
   // Higgs candidate variables (calculated using selected gen leptons)
   std::vector<float> GENH_pt; std::vector<float> GENH_eta; std::vector<float> GENH_phi; std::vector<float> GENH_mass;
-  float_t GENmass4l, GENpT4l, GENeta4l, GENrapidity4l;
+  float_t GENmass4l, GENpT4l, GENeta4l, GENphi4l, GENrapidity4l;
   // GENmass4e, GENmass4mu, GENmass2e2mu, GENpT4l, GENeta4l, GENrapidity4l;
   // float_t GENMH; //mass directly from gen particle with id==25
   float_t GENcosTheta1, GENcosTheta2, GENcosThetaStar, GENPhi, GENPhi1;
@@ -512,6 +508,8 @@ private:
   virtual void FillPhoton(int year, const pat::Photon& photon);
   virtual void endJob() ;
 
+  virtual void FillGENCandidate(const pat::CompositeCandidate& cand); //AT
+
   void FillHGenInfo(const math::XYZTLorentzVector Hp, float w);
   void FillZGenInfo(Short_t Z1Id, Short_t Z2Id,
                     const math::XYZTLorentzVector pZ1, const math::XYZTLorentzVector pZ2);
@@ -543,7 +541,7 @@ private:
   void updateMELAClusters_BestNLOVHApproximation(const string clustertype);
   void updateMELAClusters_BestNLOVBFApproximation(const string clustertype);
   void pushRecoMELABranches(const pat::CompositeCandidate& cand);
-  void pushGenMELABranches(const std::vector<string> _GENProbName, const std::vector<float> _GENProbValues);
+  void pushGenMELABranches(const pat::CompositeCandidate& cand);
   void pushLHEMELABranches();
   void clearMELABranches();
 
@@ -617,6 +615,9 @@ private:
   edm::EDGetTokenT<HTXS::HiggsClassification> htxsToken;
   edm::EDGetTokenT<edm::MergeableCounter> preSkimToken;
   edm::EDGetTokenT<LHERunInfoProduct> lheRunInfoToken;
+
+  edm::EDGetTokenT<edm::View<pat::CompositeCandidate>> GENCandidatesToken; //ATMELA
+  edm::Handle<edm::View<pat::CompositeCandidate> > GENCandidates; //ATMELA
 
   edm::EDGetTokenT< double > prefweight_token;
   edm::EDGetTokenT< double > prefweightup_token;
@@ -715,6 +716,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   packedgenParticlesToken = consumes<edm::View<pat::PackedGenParticle> > (edm::InputTag("packedGenParticles")); //ATbbf
   genInfoToken = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
   genJetsToken = consumes<edm::View<reco::GenJet> >(edm::InputTag("slimmedGenJets")); //ATjets
+  GENCandidatesToken = consumes<edm::View<pat::CompositeCandidate> >(edm::InputTag("GENLevel"));
   consumesMany<LHEEventProduct>();
   candToken = consumes<edm::View<pat::CompositeCandidate> >(edm::InputTag(theCandLabel));
 
@@ -941,6 +943,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     event.getByToken(genJetsToken, genJets); //ATjets
     event.getByToken(packedgenParticlesToken, packedgenParticles); //ATbbf
     event.getByToken(genParticleToken_bbf, genParticles_bbf); //ATbbf
+    event.getByToken(GENCandidatesToken, GENCandidates);//ATMELA
 
     edm::Handle<HTXS::HiggsClassification> htxs;
     event.getByToken(htxsToken,htxs);
@@ -951,116 +954,84 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     genHEPMCweight_NNLO = genHEPMCweight = mch.gethepMCweight(); // Overridden by LHEHandler if genHEPMCweight==1.
                                                                  // For 2017 MC, genHEPMCweight is reweighted later from NNLO to NLO
 
-    //-------- AT GENlevel
-    GenTools gentool(genParticles_bbf,packedgenParticles,genJets,recoMElist);
+    // //-------- AT GENlevel
+    TLorentzVector v_tmp;
+    for( edm::View<pat::CompositeCandidate>::const_iterator cand = GENCandidates->begin(); cand != GENCandidates->end(); ++cand) {
+      GENlep_tetra.clear();
 
-    passedFiducialSelection_bbf = gentool.passedFiducial;
-    auto Lep_Hindex = gentool.Lep_Hindex;
+      passedFiducialSelection_bbf = *((*cand).userData<bool>("passedFiducial"));
+      int nGENLeptons = (int)(*cand).userFloat("nLepts");
+      int nGENHiggs = (int)(*cand).userFloat("nHiggs");
+      int nGENJets4p7 = (int)(*cand).userFloat("nJets4p7");
+      int nGENJets2p5 = (int)(*cand).userFloat("nJets2p5");
 
-    // tie(passedFiducialSelection_bbf, GENlep_Hindex) = gentool.getInfo();
-
-    // // GEN Zs
-    // auto [GENZs, GENZsMom, GENZsDaughters] = gentool.getTheZs();
-    // if(GENZs.size()!=0){
-    //   for(unsigned int i = 0; i<GENZs.size(); i++){
-    //     GENZ_MomId.push_back(GENZsMom.at(i));
-    //     GENZ_pt.push_back(GENZs.at(i).Pt());
-    //     GENZ_eta.push_back(GENZs.at(i).Eta());
-    //     GENZ_phi.push_back(GENZs.at(i).Phi());
-    //     GENZ_mass.push_back(GENZs.at(i).M());
-    //   }
-    // }
-    // if(GENZsDaughters.size()!=0){
-    //   for(unsigned int i = 0; i<GENZsDaughters.size(); i++){
-    //     GENZ_DaughtersId.push_back(GENZsDaughters.at(i));
-    //   }
-    // }
-
-    // GEN Zs
-    if(gentool.theZs.size()!=0){
-      for(unsigned int i = 0; i<gentool.theZs.size(); i++){
-        GENZ_MomId.push_back(gentool.theZsMom.at(i));
-        GENZ_pt.push_back(gentool.theZs.at(i).Pt());
-        GENZ_eta.push_back(gentool.theZs.at(i).Eta());
-        GENZ_phi.push_back(gentool.theZs.at(i).Phi());
-        GENZ_mass.push_back(gentool.theZs.at(i).M());
+      for (int i=1; i<=nGENLeptons; i++){
+        GENlep_pt.push_back((*cand).userFloat("GENlep_pt_"+to_string(i)));
+        GENlep_eta.push_back((*cand).userFloat("GENlep_eta_"+to_string(i)));
+        GENlep_phi.push_back((*cand).userFloat("GENlep_phi_"+to_string(i)));
+        GENlep_mass.push_back((*cand).userFloat("GENlep_mass_"+to_string(i)));
+        v_tmp.SetPtEtaPhiM(GENlep_pt.at(i-1),GENlep_eta.at(i-1),GENlep_phi.at(i-1),GENlep_mass.at(i-1));
+        GENlep_tetra.push_back(v_tmp);
+        GENlep_id.push_back((short)(*cand).userFloat("GENlep_id_"+to_string(i)));
+        GENlep_MomId.push_back((short)(*cand).userFloat("GENlep_mom_"+to_string(i)));
+        GENlep_MomMomId.push_back((short)(*cand).userFloat("GENlep_mommom_"+to_string(i)));
+        GENlep_RelIso.push_back((*cand).userFloat("GENlep_reliso_"+to_string(i)));
       }
-    }
-    if(gentool.theZsDaughters.size()!=0){
-      for(unsigned int i = 0; i<gentool.theZsDaughters.size(); i++){
-        GENZ_DaughtersId.push_back(gentool.theZsDaughters.at(i));
+
+      for (int i=1; i<=nGENHiggs; i++){
+        GENH_pt.push_back((*cand).userFloat("GENhiggs_pt_"+to_string(i)));
+        GENH_eta.push_back((*cand).userFloat("GENhiggs_eta_"+to_string(i)));
+        GENH_phi.push_back((*cand).userFloat("GENhiggs_phi_"+to_string(i)));
+        GENH_mass.push_back((*cand).userFloat("GENhiggs_mass_"+to_string(i)));
       }
-    }
 
-    // GEN particled with pdgIdf==25
-    if(gentool.theHiggs.size()!=0){
-      for(unsigned int i = 0; i<gentool.theHiggs.size(); i++){
-        GENH_pt.push_back(gentool.theHiggs.at(i).Pt());
-        GENH_eta.push_back(gentool.theHiggs.at(i).Eta());
-        GENH_phi.push_back(gentool.theHiggs.at(i).Phi());
-        GENH_mass.push_back(gentool.theHiggs.at(i).M());
+      for (int i=1; i<=nGENJets4p7; i++){
+        GENjetsPt_pt30_eta4p7.push_back((*cand).userFloat("GENjet4p7_pt_"+to_string(i)));
+        GENjetsEta_pt30_eta4p7.push_back((*cand).userFloat("GENjet4p7_eta_"+to_string(i)));
+        GENjetsPhi_pt30_eta4p7.push_back((*cand).userFloat("GENjet4p7_phi_"+to_string(i)));
+        GENjetsMass_pt30_eta4p7.push_back((*cand).userFloat("GENjet4p7_mass_"+to_string(i)));
       }
+
+      for (int i=1; i<=nGENJets2p5; i++){
+        GENjetsPt_pt30_eta2p5.push_back((*cand).userFloat("GENjet2p5_pt_"+to_string(i)));
+        GENjetsEta_pt30_eta2p5.push_back((*cand).userFloat("GENjet2p5_eta_"+to_string(i)));
+        GENjetsPhi_pt30_eta2p5.push_back((*cand).userFloat("GENjet2p5_phi_"+to_string(i)));
+        GENjetsMass_pt30_eta2p5.push_back((*cand).userFloat("GENjet2p5_mass_"+to_string(i)));
+      }
+
+      int L1 = (int)(*cand).userFloat("L1");
+      int L2 = (int)(*cand).userFloat("L2");
+      int L3 = (int)(*cand).userFloat("L3");
+      int L4 = (int)(*cand).userFloat("L4");
+      // cout << L1 << " " << L2 << " " << L3 << " " << L4 << endl;
+      if(L1!=99 && L2!=99 && L3!=99 && L4!=99){
+        GENmass4l = (GENlep_tetra.at(L1)+GENlep_tetra.at(L2)+GENlep_tetra.at(L3)+GENlep_tetra.at(L4)).M();
+        GENpT4l = (GENlep_tetra.at(L1)+GENlep_tetra.at(L2)+GENlep_tetra.at(L3)+GENlep_tetra.at(L4)).Pt();
+        GENeta4l = (GENlep_tetra.at(L1)+GENlep_tetra.at(L2)+GENlep_tetra.at(L3)+GENlep_tetra.at(L4)).Eta();
+        GENphi4l = (GENlep_tetra.at(L1)+GENlep_tetra.at(L2)+GENlep_tetra.at(L3)+GENlep_tetra.at(L4)).Phi();
+        GENrapidity4l = (GENlep_tetra.at(L1)+GENlep_tetra.at(L2)+GENlep_tetra.at(L3)+GENlep_tetra.at(L4)).Rapidity();
+        GENmassZ1 = (GENlep_tetra.at(L1)+GENlep_tetra.at(L2)).M();
+        GENmassZ2 = (GENlep_tetra.at(L3)+GENlep_tetra.at(L4)).M();
+
+        // Decay angles
+        int tmpIdL1,tmpIdL2,tmpIdL3,tmpIdL4;
+        TLorentzVector GENL11P4, GENL12P4, GENL21P4, GENL22P4;
+        if(GENlep_id.at(L1) < L1){ GENL11P4.SetPxPyPzE(GENlep_tetra.at(L1).Px(),GENlep_tetra.at(L1).Py(),GENlep_tetra.at(L1).Pz(),GENlep_tetra.at(L1).E()); tmpIdL1 = GENlep_id.at(L1);}
+        else{ GENL11P4.SetPxPyPzE(GENlep_tetra.at(L2).Px(),GENlep_tetra.at(L2).Py(),GENlep_tetra.at(L2).Pz(),GENlep_tetra.at(L2).E()); tmpIdL1 = GENlep_id.at(L2);}
+        if(GENlep_id.at(L2) > L1){ GENL12P4.SetPxPyPzE(GENlep_tetra.at(L2).Px(),GENlep_tetra.at(L2).Py(),GENlep_tetra.at(L2).Pz(),GENlep_tetra.at(L2).E()); tmpIdL2 = GENlep_id.at(L2);}
+        else{ GENL12P4.SetPxPyPzE(GENlep_tetra.at(L1).Px(),GENlep_tetra.at(L1).Py(),GENlep_tetra.at(L1).Pz(),GENlep_tetra.at(L1).E()); tmpIdL2 = GENlep_id.at(L1);}
+        if(GENlep_id.at(L3) < L1){ GENL21P4.SetPxPyPzE(GENlep_tetra.at(L3).Px(),GENlep_tetra.at(L3).Py(),GENlep_tetra.at(L3).Pz(),GENlep_tetra.at(L3).E()); tmpIdL3 = GENlep_id.at(L3);}
+        else{ GENL21P4.SetPxPyPzE(GENlep_tetra.at(L4).Px(),GENlep_tetra.at(L4).Py(),GENlep_tetra.at(L4).Pz(),GENlep_tetra.at(L4).E()); tmpIdL3 = GENlep_id.at(L4);}
+        if(GENlep_id.at(L4) > L1) { GENL22P4.SetPxPyPzE(GENlep_tetra.at(L4).Px(),GENlep_tetra.at(L4).Py(),GENlep_tetra.at(L4).Pz(),GENlep_tetra.at(L4).E()); tmpIdL4 = GENlep_id.at(L4);}
+        else{ GENL22P4.SetPxPyPzE(GENlep_tetra.at(L3).Px(),GENlep_tetra.at(L3).Py(),GENlep_tetra.at(L3).Pz(),GENlep_tetra.at(L3).E()); tmpIdL4 = GENlep_id.at(L3);}
+
+        TUtil::computeAngles(GENcosThetaStar,GENcosTheta1,GENcosTheta2,GENPhi,GENPhi1,
+                             GENL11P4, tmpIdL1, GENL12P4, tmpIdL2,
+                             GENL21P4, tmpIdL3, GENL22P4, tmpIdL4);
+      }
+
+      pushGenMELABranches(*cand);
     }
-
-    // GEN jets divided according the eta cut
-    GENnjets_pt30_eta2p5 = gentool.theJets_pt30_eta2p5.size();
-    for (unsigned int i = 0; i<gentool.theJets_pt30_eta2p5.size(); i++){
-      GENjetsPt_pt30_eta2p5.push_back(gentool.theJets_pt30_eta2p5.at(i).Pt());
-      GENjetsEta_pt30_eta2p5.push_back(gentool.theJets_pt30_eta2p5.at(i).Eta());
-      GENjetsPhi_pt30_eta2p5.push_back(gentool.theJets_pt30_eta2p5.at(i).Phi());
-      GENjetsMass_pt30_eta2p5.push_back(gentool.theJets_pt30_eta2p5.at(i).M());
-    }
-    GENnjets_pt30_eta4p7 = gentool.theJets_pt30_eta4p7.size();
-    for (unsigned int i = 0; i<gentool.theJets_pt30_eta4p7.size(); i++){
-      GENjetsPt_pt30_eta4p7.push_back(gentool.theJets_pt30_eta4p7.at(i).Pt());
-      GENjetsEta_pt30_eta4p7.push_back(gentool.theJets_pt30_eta4p7.at(i).Eta());
-      GENjetsPhi_pt30_eta4p7.push_back(gentool.theJets_pt30_eta4p7.at(i).Phi());
-      GENjetsMass_pt30_eta4p7.push_back(gentool.theJets_pt30_eta4p7.at(i).M());
-    }
-
-    // All the dressed GEN leptons
-    for(unsigned int i = 0; i<gentool.Lepts.size(); i++){
-      GENlep_pt.push_back(gentool.Lepts.at(i).Pt());
-      GENlep_eta.push_back(gentool.Lepts.at(i).Eta());
-      GENlep_phi.push_back(gentool.Lepts.at(i).Phi());
-      GENlep_mass.push_back(gentool.Lepts.at(i).M());
-      GENlep_id.push_back(gentool.LeptsId.at(i));
-      GENlep_status.push_back(gentool.LeptsStatus.at(i));
-      GENlep_MomId.push_back(gentool.LeptsMom.at(i));
-      GENlep_MomMomId.push_back(gentool.LeptsMomMom.at(i));
-      GENlep_RelIso.push_back(gentool.Lepts_RelIso.at(i));
-    }
-
-    // The selected four GEN leptons
-    auto GENtheLeptsId = gentool.theLeptsId;
-    auto GENtheLepts = gentool.theLepts;
-    if (GENtheLepts.size()==4){
-      GENmass4l = (GENtheLepts.at(0)+GENtheLepts.at(1)+GENtheLepts.at(2)+GENtheLepts.at(3)).M();
-      GENpT4l = (GENtheLepts.at(0)+GENtheLepts.at(1)+GENtheLepts.at(2)+GENtheLepts.at(3)).Pt();
-      GENeta4l = (GENtheLepts.at(0)+GENtheLepts.at(1)+GENtheLepts.at(2)+GENtheLepts.at(3)).Eta();
-      GENrapidity4l = (GENtheLepts.at(0)+GENtheLepts.at(1)+GENtheLepts.at(2)+GENtheLepts.at(3)).Rapidity();
-      GENmassZ1 = (GENtheLepts.at(0)+GENtheLepts.at(1)).M();
-      GENmassZ2 = (GENtheLepts.at(2)+GENtheLepts.at(3)).M();
-
-      // Decay angles
-      int tmpIdL1,tmpIdL2,tmpIdL3,tmpIdL4;
-      TLorentzVector GENL11P4, GENL12P4, GENL21P4, GENL22P4;
-      if(GENtheLeptsId.at(0) < 0){ GENL11P4.SetPxPyPzE(GENtheLepts.at(0).Px(),GENtheLepts.at(0).Py(),GENtheLepts.at(0).Pz(),GENtheLepts.at(0).E()); tmpIdL1 = GENtheLeptsId.at(0);}
-      else{ GENL11P4.SetPxPyPzE(GENtheLepts.at(1).Px(),GENtheLepts.at(1).Py(),GENtheLepts.at(1).Pz(),GENtheLepts.at(1).E()); tmpIdL1 = GENtheLeptsId.at(1);}
-      if(GENtheLeptsId.at(1) > 0){ GENL12P4.SetPxPyPzE(GENtheLepts.at(1).Px(),GENtheLepts.at(1).Py(),GENtheLepts.at(1).Pz(),GENtheLepts.at(1).E()); tmpIdL2 = GENtheLeptsId.at(1);}
-      else{ GENL12P4.SetPxPyPzE(GENtheLepts.at(0).Px(),GENtheLepts.at(0).Py(),GENtheLepts.at(0).Pz(),GENtheLepts.at(0).E()); tmpIdL2 = GENtheLeptsId.at(0);}
-      if(GENtheLeptsId.at(2) < 0){ GENL21P4.SetPxPyPzE(GENtheLepts.at(2).Px(),GENtheLepts.at(2).Py(),GENtheLepts.at(2).Pz(),GENtheLepts.at(2).E()); tmpIdL3 = GENtheLeptsId.at(2);}
-      else{ GENL21P4.SetPxPyPzE(GENtheLepts.at(3).Px(),GENtheLepts.at(3).Py(),GENtheLepts.at(3).Pz(),GENtheLepts.at(3).E()); tmpIdL3 = GENtheLeptsId.at(3);}
-      if(GENtheLeptsId.at(3) > 0) { GENL22P4.SetPxPyPzE(GENtheLepts.at(3).Px(),GENtheLepts.at(3).Py(),GENtheLepts.at(3).Pz(),GENtheLepts.at(3).E()); tmpIdL4 = GENtheLeptsId.at(3);}
-      else{ GENL22P4.SetPxPyPzE(GENtheLepts.at(2).Px(),GENtheLepts.at(2).Py(),GENtheLepts.at(2).Pz(),GENtheLepts.at(2).E()); tmpIdL4 = GENtheLeptsId.at(2);}
-
-      TUtil::computeAngles(GENcosThetaStar,GENcosTheta1,GENcosTheta2,GENPhi,GENPhi1, \
-                           GENL11P4, tmpIdL1, GENL12P4, tmpIdL2,  \
-                           GENL21P4, tmpIdL3, GENL22P4, tmpIdL4);
-    }
-
-    // auto [GENProbName, GENProbValues] = gentool.makeMELA();
-    pushGenMELABranches(gentool.theProbName, gentool.theProbValues);
     //-------- AT End GENlevel
 
     const auto& genweights = genInfo->weights();
@@ -1593,6 +1564,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     else
       myTree->FillCurrentTree(false); //puts it in the failed tree if there is one
   }
+
 }
 
 
@@ -2227,6 +2199,14 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   //*/
 
 }
+
+void HZZ4lNtupleMaker::FillGENCandidate(const pat::CompositeCandidate& cand){ //AT
+  passedFiducialSelection_bbf = cand.userData<bool>("passedFiducial");
+  if(cand.userFloat("event") == 91257) {
+    cout << passedFiducialSelection_bbf << endl;
+  }
+}
+
 
 
 void HZZ4lNtupleMaker::getCheckedUserFloat(const pat::CompositeCandidate& cand, const std::string& strval, Float_t& setval, Float_t defaultval){
@@ -2900,6 +2880,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     // myTree->Book("GENmass2e2mu",GENmass2e2mu,failedTreeLevel >= minimalFailedTree);
     myTree->Book("GENpT4l",GENpT4l,failedTreeLevel >= minimalFailedTree);
     myTree->Book("GENeta4l",GENeta4l,failedTreeLevel >= minimalFailedTree);
+    myTree->Book("GENphi4l",GENphi4l,failedTreeLevel >= minimalFailedTree);
     myTree->Book("GENrapidity4l",GENrapidity4l,failedTreeLevel >= minimalFailedTree);
     myTree->Book("GENcosTheta1",GENcosTheta1,failedTreeLevel >= minimalFailedTree);
     myTree->Book("GENcosTheta2",GENcosTheta2,failedTreeLevel >= minimalFailedTree);
@@ -3553,30 +3534,39 @@ void HZZ4lNtupleMaker::pushRecoMELABranches(const pat::CompositeCandidate& cand)
     else cerr << "HZZ4lNtupleMaker::pushRecoMELABranches: Candidate does not contain the reco ME " << branchname << " it should have calculated!" << endl;
   }
 }
-void HZZ4lNtupleMaker::pushGenMELABranches(const std::vector<string> _GENProbName, const std::vector<float> _GENProbValues){
+void HZZ4lNtupleMaker::pushGenMELABranches(const pat::CompositeCandidate& cand){
   std::vector<MELABranch*>* genme_branches = myTree->getGenMELABranches();
   // Pull + push...
-  // cout << genme_branches->size() << endl;
-  // for(unsigned int i = 0; i<genme_branches->size(); i++){
-  //   cout << genme_branches->at(i) << endl;
-  // }
-  // cout << _GENProbName.size() << endl;
-  // for(unsigned int i = 0; i<_GENProbName.size(); i++){
-  //   cout << _GENProbName.at(i) << endl;
-  // }
-
   for (unsigned int ib=0; ib<genme_branches->size(); ib++){
     std::string branchname = genme_branches->at(ib)->bname.Data();
-    auto it = std::find(_GENProbName.begin(), _GENProbName.end(), branchname);
-    if(it!=_GENProbName.end()){
-      int index = it - _GENProbName.begin();
-      genme_branches->at(ib)->setValue((Float_t)_GENProbValues.at(index));
-    }else{
-      cerr << "HZZ4lNtupleMaker::pushGenMELABranches: Candidate does not contain the gen ME " << branchname << " it should have calculated!" << endl;
-    }
-    // if (std::find(_GENProbName.begin(), _GENProbName.end(), branchname) != _GENProbName.end()) genme_branches->at(ib)->setValue((Float_t)_GENProbValues.at(ib));
+    if (cand.hasUserFloat(branchname)) genme_branches->at(ib)->setValue((Float_t)cand.userFloat(branchname));
+    // else cerr << "HZZ4lNtupleMaker::pushRecoMELABranches: Candidate does not contain the reco ME " << branchname << " it should have calculated!" << endl;
   }
 }
+// void HZZ4lNtupleMaker::pushGenMELABranches(const std::vector<string> _GENProbName, const std::vector<float> _GENProbValues){
+//   std::vector<MELABranch*>* genme_branches = myTree->getGenMELABranches();
+//   // Pull + push...
+//   // cout << genme_branches->size() << endl;
+//   // for(unsigned int i = 0; i<genme_branches->size(); i++){
+//   //   cout << genme_branches->at(i) << endl;
+//   // }
+//   // cout << _GENProbName.size() << endl;
+//   // for(unsigned int i = 0; i<_GENProbName.size(); i++){
+//   //   cout << _GENProbName.at(i) << endl;
+//   // }
+//
+//   for (unsigned int ib=0; ib<genme_branches->size(); ib++){
+//     std::string branchname = genme_branches->at(ib)->bname.Data();
+//     auto it = std::find(_GENProbName.begin(), _GENProbName.end(), branchname);
+//     if(it!=_GENProbName.end()){
+//       int index = it - _GENProbName.begin();
+//       genme_branches->at(ib)->setValue((Float_t)_GENProbValues.at(index));
+//     }else{
+//       cerr << "HZZ4lNtupleMaker::pushGenMELABranches: Candidate does not contain the gen ME " << branchname << " it should have calculated!" << endl;
+//     }
+//     // if (std::find(_GENProbName.begin(), _GENProbName.end(), branchname) != _GENProbName.end()) genme_branches->at(ib)->setValue((Float_t)_GENProbValues.at(ib));
+//   }
+// }
 void HZZ4lNtupleMaker::pushLHEMELABranches(){
   std::vector<MELABranch*>* lheme_branches = myTree->getLHEMELABranches();
   // Pull + push...
