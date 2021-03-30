@@ -142,13 +142,61 @@ namespace {
   Short_t nCleanedJets  =  0;
   Short_t nCleanedJetsPt30  = 0;
   Short_t nCleanedJetsPt30_jesUp  = 0;
+  Short_t nCleanedJetsPt30_jesUp_Total           = 0;
+  Short_t nCleanedJetsPt30_jesUp_Abs             = 0;
+  Short_t nCleanedJetsPt30_jesUp_Abs_year        = 0;
+  Short_t nCleanedJetsPt30_jesUp_BBEC1           = 0;
+  Short_t nCleanedJetsPt30_jesUp_BBEC1_year      = 0;
+  Short_t nCleanedJetsPt30_jesUp_EC2             = 0;
+  Short_t nCleanedJetsPt30_jesUp_EC2_year        = 0;
+  Short_t nCleanedJetsPt30_jesUp_FlavQCD         = 0;
+  Short_t nCleanedJetsPt30_jesUp_HF              = 0;
+  Short_t nCleanedJetsPt30_jesUp_HF_year         = 0;
+  Short_t nCleanedJetsPt30_jesUp_RelBal          = 0;
+  Short_t nCleanedJetsPt30_jesUp_RelSample_year  = 0;
   Short_t nCleanedJetsPt30_jesDn  = 0;
+  Short_t nCleanedJetsPt30_jesDn_Total           = 0;
+  Short_t nCleanedJetsPt30_jesDn_Abs             = 0;
+  Short_t nCleanedJetsPt30_jesDn_Abs_year        = 0;
+  Short_t nCleanedJetsPt30_jesDn_BBEC1           = 0;
+  Short_t nCleanedJetsPt30_jesDn_BBEC1_year      = 0;
+  Short_t nCleanedJetsPt30_jesDn_EC2             = 0;
+  Short_t nCleanedJetsPt30_jesDn_EC2_year        = 0;
+  Short_t nCleanedJetsPt30_jesDn_FlavQCD         = 0;
+  Short_t nCleanedJetsPt30_jesDn_HF              = 0;
+  Short_t nCleanedJetsPt30_jesDn_HF_year         = 0;
+  Short_t nCleanedJetsPt30_jesDn_RelBal          = 0;
+  Short_t nCleanedJetsPt30_jesDn_RelSample_year  = 0;
   Short_t nCleanedJetsPt30_jerUp  = 0;
   Short_t nCleanedJetsPt30_jerDn  = 0;
   Short_t nCleanedJetsPt30BTagged  = 0;
   Short_t nCleanedJetsPt30BTagged_bTagSF  = 0;
   Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp  = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_Total           = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_Abs             = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_Abs_year        = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_BBEC1           = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_BBEC1_year      = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_EC2             = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_EC2_year        = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_FlavQCD         = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_HF              = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_HF_year         = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_RelBal          = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_RelSample_year  = 0;
   Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn  = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_Total           = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_Abs             = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_Abs_year        = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_BBEC1           = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_BBEC1_year      = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_EC2             = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_EC2_year        = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_FlavQCD         = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_HF              = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_HF_year         = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_RelBal          = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_RelSample_year  = 0;
   Short_t nCleanedJetsPt30BTagged_bTagSF_jerUp  = 0;
   Short_t nCleanedJetsPt30BTagged_bTagSF_jerDn  = 0;
   Short_t nCleanedJetsPt30BTagged_bTagSFUp  = 0;
@@ -238,6 +286,7 @@ namespace {
   std::vector<float> JetEta ;
   std::vector<float> JetPhi ;
   std::vector<float> JetMass ;
+  std::vector<float> JetEnergy ;
   std::vector<float> JetBTagger ;
   std::vector<float> JetIsBtagged;
   std::vector<float> JetIsBtaggedWithSF;
@@ -248,6 +297,18 @@ namespace {
   std::vector<float> JetMult;
   std::vector<float> JetPtD;
   std::vector<float> JetSigma ;
+  std::vector<float> JetSigma_Total ;
+  std::vector<float> JetSigma_Abs ;
+  std::vector<float> JetSigma_Abs_year ;
+  std::vector<float> JetSigma_BBEC1 ;
+  std::vector<float> JetSigma_BBEC1_year ;
+  std::vector<float> JetSigma_EC2 ;
+  std::vector<float> JetSigma_EC2_year ;
+  std::vector<float> JetSigma_FlavQCD ;
+  std::vector<float> JetSigma_HF ;
+  std::vector<float> JetSigma_HF_year ;
+  std::vector<float> JetSigma_RelBal ;
+  std::vector<float> JetSigma_RelSample_year ;
   std::vector<short> JetHadronFlavour;
   std::vector<short> JetPartonFlavour;
 
@@ -256,12 +317,36 @@ namespace {
 
   std::vector<float> JetPUValue;
   std::vector<short> JetPUID;
-  std::vector<float> JetPUID_score;
+  std::vector<short> JetPUID_score;
 
   std::vector<short> JetID;
 
   std::vector<float> JetJESUp ;
+  std::vector<float> JetJESUp_Total ;
+  std::vector<float> JetJESUp_Abs ;
+  std::vector<float> JetJESUp_Abs_year ;
+  std::vector<float> JetJESUp_BBEC1 ;
+  std::vector<float> JetJESUp_BBEC1_year ;
+  std::vector<float> JetJESUp_EC2 ;
+  std::vector<float> JetJESUp_EC2_year ;
+  std::vector<float> JetJESUp_FlavQCD ;
+  std::vector<float> JetJESUp_HF ;
+  std::vector<float> JetJESUp_HF_year ;
+  std::vector<float> JetJESUp_RelBal ;
+  std::vector<float> JetJESUp_RelSample_year ;
   std::vector<float> JetJESDown ;
+  std::vector<float> JetJESDown_Total ;
+  std::vector<float> JetJESDown_Abs ;
+  std::vector<float> JetJESDown_Abs_year ;
+  std::vector<float> JetJESDown_BBEC1 ;
+  std::vector<float> JetJESDown_BBEC1_year ;
+  std::vector<float> JetJESDown_EC2 ;
+  std::vector<float> JetJESDown_EC2_year ;
+  std::vector<float> JetJESDown_FlavQCD ;
+  std::vector<float> JetJESDown_HF ;
+  std::vector<float> JetJESDown_HF_year ;
+  std::vector<float> JetJESDown_RelBal ;
+  std::vector<float> JetJESDown_RelSample_year ;
 
   std::vector<float> JetJERUp ;
   std::vector<float> JetJERDown ;
@@ -1499,10 +1584,46 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
 
     // count jes up/down njets pt30
     float jes_unc = cleanedJets[i]->userFloat("jes_unc");
+    float jes_unc_Total = cleanedJets[i]->userFloat("jes_unc_split_Total");
+    float jes_unc_Abs = cleanedJets[i]->userFloat("jes_unc_split_Abs");
+    float jes_unc_Abs_year = cleanedJets[i]->userFloat("jes_unc_split_Abs_year");
+    float jes_unc_BBEC1 = cleanedJets[i]->userFloat("jes_unc_split_BBEC1");
+    float jes_unc_BBEC1_year = cleanedJets[i]->userFloat("jes_unc_split_BBEC1_year");
+    float jes_unc_EC2 = cleanedJets[i]->userFloat("jes_unc_split_EC2");
+    float jes_unc_EC2_year = cleanedJets[i]->userFloat("jes_unc_split_EC2_year");
+    float jes_unc_FlavQCD = cleanedJets[i]->userFloat("jes_unc_split_FlavQCD");
+    float jes_unc_HF = cleanedJets[i]->userFloat("jes_unc_split_HF");
+    float jes_unc_HF_year = cleanedJets[i]->userFloat("jes_unc_split_HF_year");
+    float jes_unc_RelBal = cleanedJets[i]->userFloat("jes_unc_split_RelBal");
+    float jes_unc_RelSample_year = cleanedJets[i]->userFloat("jes_unc_split_RelSample_year");
 
     float pt_nominal = cleanedJets[i]->pt();
     float pt_jes_up = pt_nominal * (1.0 + jes_unc);
+    float pt_jes_up_Total = pt_nominal * (1.0 + jes_unc_Total);
+    float pt_jes_up_Abs = pt_nominal * (1.0 + jes_unc_Abs);
+    float pt_jes_up_Abs_year = pt_nominal * (1.0 + jes_unc_Abs_year);
+    float pt_jes_up_BBEC1 = pt_nominal * (1.0 + jes_unc_BBEC1);
+    float pt_jes_up_BBEC1_year = pt_nominal * (1.0 + jes_unc_BBEC1_year);
+    float pt_jes_up_EC2 = pt_nominal * (1.0 + jes_unc_EC2);
+    float pt_jes_up_EC2_year = pt_nominal * (1.0 + jes_unc_EC2_year);
+    float pt_jes_up_FlavQCD = pt_nominal * (1.0 + jes_unc_FlavQCD);
+    float pt_jes_up_HF = pt_nominal * (1.0 + jes_unc_HF);
+    float pt_jes_up_HF_year = pt_nominal * (1.0 + jes_unc_HF_year);
+    float pt_jes_up_RelBal = pt_nominal * (1.0 + jes_unc_RelBal);
+    float pt_jes_up_RelSample_year = pt_nominal * (1.0 + jes_unc_RelSample_year);
     float pt_jes_dn = pt_nominal * (1.0 - jes_unc);
+    float pt_jes_dn_Total = pt_nominal * (1.0 - jes_unc_Total);
+    float pt_jes_dn_Abs = pt_nominal * (1.0 - jes_unc_Abs);
+    float pt_jes_dn_Abs_year = pt_nominal * (1.0 - jes_unc_Abs_year);
+    float pt_jes_dn_BBEC1 = pt_nominal * (1.0 - jes_unc_BBEC1);
+    float pt_jes_dn_BBEC1_year = pt_nominal * (1.0 - jes_unc_BBEC1_year);
+    float pt_jes_dn_EC2 = pt_nominal * (1.0 - jes_unc_EC2);
+    float pt_jes_dn_EC2_year = pt_nominal * (1.0 - jes_unc_EC2_year);
+    float pt_jes_dn_FlavQCD = pt_nominal * (1.0 - jes_unc_FlavQCD);
+    float pt_jes_dn_HF = pt_nominal * (1.0 - jes_unc_HF);
+    float pt_jes_dn_HF_year = pt_nominal * (1.0 - jes_unc_HF_year);
+    float pt_jes_dn_RelBal = pt_nominal * (1.0 - jes_unc_RelBal);
+    float pt_jes_dn_RelSample_year = pt_nominal * (1.0 - jes_unc_RelSample_year);
 
     if(pt_nominal>30){
       ++nCleanedJetsPt30;
@@ -1515,9 +1636,105 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       ++nCleanedJetsPt30_jesUp;
       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp;
     }
+    if(pt_jes_up_Total>30){
+      ++nCleanedJetsPt30_jesUp_Total;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_Total;
+    }
+    if(pt_jes_up_Abs>30){
+      ++nCleanedJetsPt30_jesUp_Abs;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_Abs;
+    }
+    if(pt_jes_up_Abs_year>30){
+      ++nCleanedJetsPt30_jesUp_Abs_year;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_Abs_year;
+    }
+    if(pt_jes_up_BBEC1>30){
+      ++nCleanedJetsPt30_jesUp_BBEC1;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_BBEC1;
+    }
+    if(pt_jes_up_BBEC1_year>30){
+      ++nCleanedJetsPt30_jesUp_BBEC1_year;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_BBEC1_year;
+    }
+    if(pt_jes_up_EC2>30){
+      ++nCleanedJetsPt30_jesUp_EC2;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_EC2;
+    }
+    if(pt_jes_up_EC2_year>30){
+      ++nCleanedJetsPt30_jesUp_EC2_year;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_EC2_year;
+    }
+    if(pt_jes_up_FlavQCD>30){
+      ++nCleanedJetsPt30_jesUp_FlavQCD;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_FlavQCD;
+    }
+    if(pt_jes_up_HF>30){
+      ++nCleanedJetsPt30_jesUp_HF;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_HF;
+    }
+    if(pt_jes_up_HF_year>30){
+      ++nCleanedJetsPt30_jesUp_HF_year;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_HF_year;
+    }
+    if(pt_jes_up_RelBal>30){
+      ++nCleanedJetsPt30_jesUp_RelBal;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_RelBal;
+    }
+    if(pt_jes_up_RelSample_year>30){
+      ++nCleanedJetsPt30_jesUp_RelSample_year;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_RelSample_year;
+    }
     if(pt_jes_dn>30){
       ++nCleanedJetsPt30_jesDn;
       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn;
+    }
+    if(pt_jes_dn_Total>30){
+      ++nCleanedJetsPt30_jesDn_Total;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_Total;
+    }
+    if(pt_jes_dn_Abs>30){
+      ++nCleanedJetsPt30_jesDn_Abs;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_Abs;
+    }
+    if(pt_jes_dn_Abs_year>30){
+      ++nCleanedJetsPt30_jesDn_Abs_year;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_Abs_year;
+    }
+    if(pt_jes_dn_BBEC1>30){
+      ++nCleanedJetsPt30_jesDn_BBEC1;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_BBEC1;
+    }
+    if(pt_jes_dn_BBEC1_year>30){
+      ++nCleanedJetsPt30_jesDn_BBEC1_year;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_BBEC1_year;
+    }
+    if(pt_jes_dn_EC2>30){
+      ++nCleanedJetsPt30_jesDn_EC2;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_EC2;
+    }
+    if(pt_jes_dn_EC2_year>30){
+      ++nCleanedJetsPt30_jesDn_EC2_year;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_EC2_year;
+    }
+    if(pt_jes_dn_FlavQCD>30){
+      ++nCleanedJetsPt30_jesDn_FlavQCD;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_FlavQCD;
+    }
+    if(pt_jes_dn_HF>30){
+      ++nCleanedJetsPt30_jesDn_HF;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_HF;
+    }
+    if(pt_jes_dn_HF_year>30){
+      ++nCleanedJetsPt30_jesDn_HF_year;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_HF_year;
+    }
+    if(pt_jes_dn_RelBal>30){
+      ++nCleanedJetsPt30_jesDn_RelBal;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_RelBal;
+    }
+    if(pt_jes_dn_RelSample_year>30){
+      ++nCleanedJetsPt30_jesDn_RelSample_year;
+      if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_RelSample_year;
     }
 
     // count jer up/down njets pt30
@@ -1574,6 +1791,7 @@ void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
    JetEta .push_back( jet.eta());
    JetPhi .push_back( jet.phi());
    JetMass .push_back( jet.p4().M());
+   JetEnergy .push_back( jet.p4().energy());
    JetBTagger .push_back( jet.userFloat("bTagger"));
    JetIsBtagged .push_back( jet.userFloat("isBtagged"));
    JetIsBtaggedWithSF .push_back( jet.userFloat("isBtaggedWithSF"));
@@ -1586,12 +1804,48 @@ void HZZ4lNtupleMaker::FillJet(const pat::Jet& jet)
      JetPtD .push_back( jet.userFloat("ptD"));
    }
    JetSigma .push_back(jet.userFloat("jes_unc"));
+   JetSigma_Total .push_back(jet.userFloat("jes_unc_split_Total"));
+    JetSigma_Abs .push_back(jet.userFloat("jes_unc_split_Abs"));
+    JetSigma_Abs_year .push_back(jet.userFloat("jes_unc_split_Abs_year"));
+    JetSigma_BBEC1 .push_back(jet.userFloat("jes_unc_split_BBEC1"));
+    JetSigma_BBEC1_year .push_back(jet.userFloat("jes_unc_split_BBEC1_year"));
+    JetSigma_EC2 .push_back(jet.userFloat("jes_unc_split_EC2"));
+    JetSigma_EC2_year .push_back(jet.userFloat("jes_unc_split_EC2_year"));
+    JetSigma_FlavQCD .push_back(jet.userFloat("jes_unc_split_FlavQCD"));
+    JetSigma_HF .push_back(jet.userFloat("jes_unc_split_HF"));
+    JetSigma_HF_year .push_back(jet.userFloat("jes_unc_split_HF_year"));
+    JetSigma_RelBal .push_back(jet.userFloat("jes_unc_split_RelBal"));
+    JetSigma_RelSample_year .push_back(jet.userFloat("jes_unc_split_RelSample_year"));
 
    JetRawPt  .push_back( jet.userFloat("RawPt"));
    JetPtJEC_noJER .push_back( jet.userFloat("pt_JEC_noJER"));
 
    JetJESUp .push_back(jet.userFloat("pt_jesup"));
+   JetJESUp_Total .push_back(jet.userFloat("pt_jesup_split_Total"));
+   JetJESUp_Abs .push_back(jet.userFloat("pt_jesup_split_Abs"));
+   JetJESUp_Abs_year .push_back(jet.userFloat("pt_jesup_split_Abs_year"));
+   JetJESUp_BBEC1 .push_back(jet.userFloat("pt_jesup_split_BBEC1"));
+   JetJESUp_BBEC1_year .push_back(jet.userFloat("pt_jesup_split_BBEC1_year"));
+   JetJESUp_EC2 .push_back(jet.userFloat("pt_jesup_split_EC2"));
+   JetJESUp_EC2_year .push_back(jet.userFloat("pt_jesup_split_EC2_year"));
+   JetJESUp_FlavQCD .push_back(jet.userFloat("pt_jesup_split_FlavQCD"));
+   JetJESUp_HF .push_back(jet.userFloat("pt_jesup_split_HF"));
+   JetJESUp_HF_year .push_back(jet.userFloat("pt_jesup_split_HF_year"));
+   JetJESUp_RelBal .push_back(jet.userFloat("pt_jesup_split_RelBal"));
+   JetJESUp_RelSample_year .push_back(jet.userFloat("pt_jesup_split_RelSample_year"));
    JetJESDown .push_back(jet.userFloat("pt_jesdn"));
+   JetJESDown_Total .push_back(jet.userFloat("pt_jesdn_split_Total"));
+   JetJESDown_Abs .push_back(jet.userFloat("pt_jesdn_split_Abs"));
+   JetJESDown_Abs_year .push_back(jet.userFloat("pt_jesdn_split_Abs_year"));
+   JetJESDown_BBEC1 .push_back(jet.userFloat("pt_jesdn_split_BBEC1"));
+   JetJESDown_BBEC1_year .push_back(jet.userFloat("pt_jesdn_split_BBEC1_year"));
+   JetJESDown_EC2 .push_back(jet.userFloat("pt_jesdn_split_EC2"));
+   JetJESDown_EC2_year .push_back(jet.userFloat("pt_jesdn_split_EC2_year"));
+   JetJESDown_FlavQCD .push_back(jet.userFloat("pt_jesdn_split_FlavQCD"));
+   JetJESDown_HF .push_back(jet.userFloat("pt_jesdn_split_HF"));
+   JetJESDown_HF_year .push_back(jet.userFloat("pt_jesdn_split_HF_year"));
+   JetJESDown_RelBal .push_back(jet.userFloat("pt_jesdn_split_RelBal"));
+   JetJESDown_RelSample_year .push_back(jet.userFloat("pt_jesdn_split_RelSample_year"));
 
    JetJERUp .push_back(jet.userFloat("pt_jerup"));
    JetJERDown .push_back(jet.userFloat("pt_jerdn"));
@@ -2580,13 +2834,61 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("nCleanedJets",nCleanedJets, failedTreeLevel >= minimalFailedTree);
   myTree->Book("nCleanedJetsPt30",nCleanedJetsPt30, failedTreeLevel >= minimalFailedTree);
   myTree->Book("nCleanedJetsPt30_jesUp",nCleanedJetsPt30_jesUp, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("nCleanedJetsPt30_jesUp_Total",nCleanedJetsPt30_jesUp_Total, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30_jesUp_Abs",nCleanedJetsPt30_jesUp_Abs, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30_jesUp_Abs_year",nCleanedJetsPt30_jesUp_Abs_year, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30_jesUp_BBEC1",nCleanedJetsPt30_jesUp_BBEC1, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30_jesUp_BBEC1_year",nCleanedJetsPt30_jesUp_BBEC1_year, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30_jesUp_EC2",nCleanedJetsPt30_jesUp_EC2, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30_jesUp_EC2_year",nCleanedJetsPt30_jesUp_EC2_year, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30_jesUp_FlavQCD",nCleanedJetsPt30_jesUp_FlavQCD, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30_jesUp_HF",nCleanedJetsPt30_jesUp_HF, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30_jesUp_HF_year",nCleanedJetsPt30_jesUp_HF_year, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30_jesUp_RelBal",nCleanedJetsPt30_jesUp_RelBal, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30_jesUp_RelSample_year",nCleanedJetsPt30_jesUp_RelSample_year, failedTreeLevel >= fullFailedTree);
   myTree->Book("nCleanedJetsPt30_jesDn",nCleanedJetsPt30_jesDn, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("nCleanedJetsPt30_jesDn_Total",nCleanedJetsPt30_jesDn_Total, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30_jesDn_Abs",nCleanedJetsPt30_jesDn_Abs, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30_jesDn_Abs_year",nCleanedJetsPt30_jesDn_Abs_year, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30_jesDn_BBEC1",nCleanedJetsPt30_jesDn_BBEC1, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30_jesDn_BBEC1_year",nCleanedJetsPt30_jesDn_BBEC1_year, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30_jesDn_EC2",nCleanedJetsPt30_jesDn_EC2, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30_jesDn_EC2_year",nCleanedJetsPt30_jesDn_EC2_year, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30_jesDn_FlavQCD",nCleanedJetsPt30_jesDn_FlavQCD, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30_jesDn_HF",nCleanedJetsPt30_jesDn_HF, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30_jesDn_HF_year",nCleanedJetsPt30_jesDn_HF_year, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30_jesDn_RelBal",nCleanedJetsPt30_jesDn_RelBal, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30_jesDn_RelSample_year",nCleanedJetsPt30_jesDn_RelSample_year, failedTreeLevel >= fullFailedTree);
   myTree->Book("nCleanedJetsPt30_jerUp",nCleanedJetsPt30_jerUp, failedTreeLevel >= minimalFailedTree);
   myTree->Book("nCleanedJetsPt30_jerDn",nCleanedJetsPt30_jerDn, failedTreeLevel >= minimalFailedTree);
   myTree->Book("nCleanedJetsPt30BTagged",nCleanedJetsPt30BTagged, failedTreeLevel >= minimalFailedTree);
   myTree->Book("nCleanedJetsPt30BTagged_bTagSF",nCleanedJetsPt30BTagged_bTagSF, failedTreeLevel >= minimalFailedTree);
   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp",nCleanedJetsPt30BTagged_bTagSF_jesUp, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_Total",nCleanedJetsPt30BTagged_bTagSF_jesUp_Total, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_Abs",nCleanedJetsPt30BTagged_bTagSF_jesUp_Abs, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_Abs_year",nCleanedJetsPt30BTagged_bTagSF_jesUp_Abs_year, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_BBEC1",nCleanedJetsPt30BTagged_bTagSF_jesUp_BBEC1, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_BBEC1_year",nCleanedJetsPt30BTagged_bTagSF_jesUp_BBEC1_year, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_EC2",nCleanedJetsPt30BTagged_bTagSF_jesUp_EC2, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_EC2_year",nCleanedJetsPt30BTagged_bTagSF_jesUp_EC2_year, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_FlavQCD",nCleanedJetsPt30BTagged_bTagSF_jesUp_FlavQCD, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_HF",nCleanedJetsPt30BTagged_bTagSF_jesUp_HF, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_HF_year",nCleanedJetsPt30BTagged_bTagSF_jesUp_HF_year, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_RelBal",nCleanedJetsPt30BTagged_bTagSF_jesUp_RelBal, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_RelSample_year",nCleanedJetsPt30BTagged_bTagSF_jesUp_RelSample_year, failedTreeLevel >= fullFailedTree);
   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn",nCleanedJetsPt30BTagged_bTagSF_jesDn, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_Total",nCleanedJetsPt30BTagged_bTagSF_jesDn_Total, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_Abs",nCleanedJetsPt30BTagged_bTagSF_jesDn_Abs, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_Abs_year",nCleanedJetsPt30BTagged_bTagSF_jesDn_Abs_year, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_BBEC1",nCleanedJetsPt30BTagged_bTagSF_jesDn_BBEC1, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_BBEC1_year",nCleanedJetsPt30BTagged_bTagSF_jesDn_BBEC1_year, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_EC2",nCleanedJetsPt30BTagged_bTagSF_jesDn_EC2, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_EC2_year",nCleanedJetsPt30BTagged_bTagSF_jesDn_EC2_year, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_FlavQCD",nCleanedJetsPt30BTagged_bTagSF_jesDn_FlavQCD, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_HF",nCleanedJetsPt30BTagged_bTagSF_jesDn_HF, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_HF_year",nCleanedJetsPt30BTagged_bTagSF_jesDn_HF_year, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_RelBal",nCleanedJetsPt30BTagged_bTagSF_jesDn_RelBal, failedTreeLevel >= fullFailedTree);
+  myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_RelSample_year",nCleanedJetsPt30BTagged_bTagSF_jesDn_RelSample_year, failedTreeLevel >= fullFailedTree);
   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jerUp",nCleanedJetsPt30BTagged_bTagSF_jerUp, failedTreeLevel >= minimalFailedTree);
   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jerDn",nCleanedJetsPt30BTagged_bTagSF_jerDn, failedTreeLevel >= minimalFailedTree);
   myTree->Book("nCleanedJetsPt30BTagged_bTagSFUp",nCleanedJetsPt30BTagged_bTagSFUp, failedTreeLevel >= minimalFailedTree);
@@ -2688,6 +2990,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("JetEta",JetEta, failedTreeLevel >= minimalFailedTree);
   myTree->Book("JetPhi",JetPhi, failedTreeLevel >= minimalFailedTree);
   myTree->Book("JetMass",JetMass, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("JetEnergy",JetEnergy, failedTreeLevel >= fullFailedTree);
   myTree->Book("JetBTagger",JetBTagger, failedTreeLevel >= fullFailedTree);
   myTree->Book("JetIsBtagged",JetIsBtagged, failedTreeLevel >= fullFailedTree);
   myTree->Book("JetIsBtaggedWithSF",JetIsBtaggedWithSF, failedTreeLevel >= fullFailedTree);
@@ -2700,6 +3003,18 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("JetPtD",JetPtD, failedTreeLevel >= fullFailedTree);
   }
   myTree->Book("JetSigma",JetSigma, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetSigma_Total",JetSigma_Total, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetSigma_Abs",JetSigma_Abs, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetSigma_Abs_year",JetSigma_Abs_year, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetSigma_BBEC1",JetSigma_BBEC1, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetSigma_BBEC1_year",JetSigma_BBEC1_year, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetSigma_EC2",JetSigma_EC2, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetSigma_EC2_year",JetSigma_EC2_year, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetSigma_FlavQCD",JetSigma_FlavQCD, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetSigma_HF",JetSigma_HF, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetSigma_HF_year",JetSigma_HF_year, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetSigma_RelBal",JetSigma_RelBal, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetSigma_RelSample_year",JetSigma_RelSample_year, failedTreeLevel >= fullFailedTree);
   myTree->Book("JetHadronFlavour",JetHadronFlavour, failedTreeLevel >= fullFailedTree);
   myTree->Book("JetPartonFlavour",JetPartonFlavour, failedTreeLevel >= fullFailedTree);
 
@@ -2707,7 +3022,31 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("JetPtJEC_noJER",JetPtJEC_noJER, failedTreeLevel >= fullFailedTree);
 
   myTree->Book("JetPt_JESUp",JetJESUp, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("JetPt_JESUp_Total",JetJESUp_Total, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPt_JESUp_Abs",JetJESUp_Abs, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPt_JESUp_Abs_year",JetJESUp_Abs_year, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPt_JESUp_BBEC1",JetJESUp_BBEC1, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPt_JESUp_BBEC1_year",JetJESUp_BBEC1_year, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPt_JESUp_EC2",JetJESUp_EC2, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPt_JESUp_EC2_year",JetJESUp_EC2_year, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPt_JESUp_FlavQCD",JetJESUp_FlavQCD, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPt_JESUp_HF",JetJESUp_HF, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPt_JESUp_HF_year",JetJESUp_HF_year, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPt_JESUp_RelBal",JetJESUp_RelBal, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPt_JESUp_RelSample_year",JetJESUp_RelSample_year, failedTreeLevel >= fullFailedTree);
   myTree->Book("JetPt_JESDown",JetJESDown, failedTreeLevel >= minimalFailedTree);
+  myTree->Book("JetPt_JESDown_Total",JetJESDown_Total, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPt_JESDown_Abs",JetJESDown_Abs, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPt_JESDown_Abs_year",JetJESDown_Abs_year, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPt_JESDown_BBEC1",JetJESDown_BBEC1, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPt_JESDown_BBEC1_year",JetJESDown_BBEC1_year, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPt_JESDown_EC2",JetJESDown_EC2, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPt_JESDown_EC2_year",JetJESDown_EC2_year, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPt_JESDown_FlavQCD",JetJESDown_FlavQCD, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPt_JESDown_HF",JetJESDown_HF, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPt_JESDown_HF_year",JetJESDown_HF_year, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPt_JESDown_RelBal",JetJESDown_RelBal, failedTreeLevel >= fullFailedTree);
+  myTree->Book("JetPt_JESDown_RelSample_year",JetJESDown_RelSample_year, failedTreeLevel >= fullFailedTree);
 
   myTree->Book("JetPt_JERUp",JetJERUp, failedTreeLevel >= minimalFailedTree);
   myTree->Book("JetPt_JERDown",JetJERDown, failedTreeLevel >= minimalFailedTree);
