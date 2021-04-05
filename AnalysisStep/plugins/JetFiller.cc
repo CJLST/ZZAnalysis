@@ -20,7 +20,6 @@
 #include <ZZAnalysis/AnalysisStep/interface/BTaggingSFHelper.h>
 
 #include "TRandom3.h"
-
 #include <vector>
 #include <string>
 
@@ -69,7 +68,6 @@ class JetFiller : public edm::EDProducer {
   std::string jecUncFile_;
   std::vector<string> uncSources {};
   std::vector<JetCorrectionUncertainty*> splittedUncerts_;
-
 };
 
 
@@ -165,6 +163,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   Handle<edm::ValueMap<float> > ptDHandle;
   iEvent.getByToken(ptDToken, ptDHandle);
 
+
   // JEC uncertainty (part 1) - No splitting
   // JetCorrectorParametersCollection refers to the JEC file read from db in MasterPy/ZZ4lAnalysis.py
   ESHandle<JetCorrectorParametersCollection> JetCorParColl;
@@ -175,17 +174,18 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   // JEC uncertainty (Part 2) - Splitting (May 2020)
   // Run 2 reduced set of uncertainties from here: https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECUncertaintySources#Run_2_reduced_set_of_uncertainty
   // List of uncertainties: ['Absolute', 'Absolute_201*', 'BBEC1', 'BBEC1_201*', 'EC2', 'EC2_201*', 'FlavorQCD', 'HF', 'HF_201*', 'RelativeBal', 'RelativeSample_201*'] + 'Total'
-  if(applyJEC_ && isMC_){
-    for (unsigned s_unc = 0; s_unc < uncSources.size(); s_unc++){
-      JetCorrectorParameters corrParams = JetCorrectorParameters(jecUncFile_, uncSources[s_unc]);
-      splittedUncerts_.push_back(new JetCorrectionUncertainty(corrParams));
+  if(applyJEC_ && isMC_)
+    {
+      for (unsigned s_unc = 0; s_unc < uncSources.size(); s_unc++)
+	{
+	  JetCorrectorParameters corrParams = JetCorrectorParameters(jecUncFile_, uncSources[s_unc]);
+	  splittedUncerts_.push_back(new JetCorrectionUncertainty(corrParams));
+	}
     }
-  }
 
   //--- Output collection
   auto result = std::make_unique<pat::JetCollection>();
   int jet_number = 0;
-
   for(auto jet = jetHandle->begin(); jet != jetHandle->end(); ++jet){
     jet_number++;
 
@@ -195,11 +195,10 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     double jabseta = fabs(jeta);
     double raw_jpt = j.correctedJet("Uncorrected").pt();
 
-    // 20170220: using a float instead of a double  changes of the JER seed from 99494 to 99495, and changes post JER jet pT.
+    // 20170220: using a float instead of a double changes of the JER seed from 99494 to 99495, and changes post JER jet pT.
     // Note that while PAT::Candidate has this function as double, we only save float accuracy in miniAOD anyway.
 
     double jphi = j.phi();
-
 
     //--- Retrieve the q/g likelihood
     edm::RefToBase<pat::Jet> jetRef(edm::Ref<edm::View<pat::Jet> >(jetHandle, jet - jetHandle->begin()));
@@ -224,48 +223,49 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     if(applyJEC_ && isMC_)
       {
-    for (unsigned s_unc = 0; s_unc < uncSources.size(); s_unc++)
-    {
-      singleContr_jes_unc = 0;
-      splittedUncerts_[s_unc]->setJetEta(jeta);
-      splittedUncerts_[s_unc]->setJetPt(jpt);
-      singleContr_jes_unc = splittedUncerts_[s_unc]->getUncertainty(true); //It takes as argument "bool fDirection": true = up, false = dn; symmetric values
-      jes_unc_split.push_back(singleContr_jes_unc);
-      pt_jesup_split.push_back( jpt * (1.0 + singleContr_jes_unc));
-      pt_jesdn_split.push_back( jpt * (1.0 - singleContr_jes_unc));
-    }
+	for (unsigned s_unc = 0; s_unc < uncSources.size(); s_unc++)
+	  {
+	    singleContr_jes_unc = 0;
+	    splittedUncerts_[s_unc]->setJetEta(jeta);
+	    splittedUncerts_[s_unc]->setJetPt(jpt);
+	    singleContr_jes_unc = splittedUncerts_[s_unc]->getUncertainty(true); //It takes as argument "bool fDirection": true = up, false = dn; symmetric values
+	    jes_unc_split.push_back(singleContr_jes_unc);
+	    pt_jesup_split.push_back( jpt * (1.0 + singleContr_jes_unc));
+	    pt_jesdn_split.push_back( jpt * (1.0 - singleContr_jes_unc));
+	  }
       }
     else
       {
-    for(unsigned s_unc = 0; s_unc < uncSources.size(); s_unc++)
-    {
-      jes_unc_split.push_back(-999.);
-      pt_jesup_split.push_back(-999.);
-      pt_jesdn_split.push_back(-999.);
-    }
+	for(unsigned s_unc = 0; s_unc < uncSources.size(); s_unc++)
+	  {
+	    jes_unc_split.push_back(-999.);
+	    pt_jesup_split.push_back(-999.);
+	    pt_jesdn_split.push_back(-999.);
+	  }
       }
     // For DEBUG: JEC splitting
-    // cout << "=============================" << endl;
-    // cout << "Previous total JES UNCERTAINTY = " << jes_unc << endl;
-    // cout << "----- NUMBER of CONSIDERED UNCERTAINTIES = " << uncSources.size() << " -----" << endl;
-    // cout << "JEC unc sources considered:\n";
-    // for (unsigned s_unc = 0; s_unc < uncSources.size(); s_unc++)
-    //   {
-    // cout << s_unc << " " << uncSources[s_unc] << '\t' << jes_unc_split[s_unc] << "," << endl;
-    //   }
-    //
-    // cout << "----- JET NUMERO " << jet_number << " -----" << endl;
-    // cout << "pT JesPt_UP = " << pt_jesup << endl;
-    // cout << "pT JesPt_DN = " << pt_jesdn << endl;
-    //
-    // for (unsigned s_unc = 0; s_unc < uncSources.size(); s_unc++)
-    //   {
-    // cout << s_unc << " pT JesPt_UP SPLIT = " << pt_jesup_split[s_unc] << endl;
-    // cout << s_unc << " pT JesPt_DN SPLIT = " << pt_jesdn_split[s_unc] << endl;
-    // cout << "------------------------------------------------" << endl;
-    //   }
+    cout << "=============================" << endl;
+    cout << "Previous total JES UNCERTAINTY = " << jes_unc << endl;
+    cout << "----- NUMBER of CONSIDERED UNCERTAINTIES = " << uncSources.size() << " -----" << endl;
+    cout << "JEC unc sources considered:\n";
+    for (unsigned s_unc = 0; s_unc < uncSources.size(); s_unc++)
+      {
+	cout << s_unc << " " << uncSources[s_unc] << '\t' << jes_unc_split[s_unc] << "," << endl;
+      }
 
-    //--- loose jet ID, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID13TeVRun2016
+    cout << "----- JET NUMERO " << jet_number << " -----" << endl;
+    cout << "pT JesPt_UP = " << pt_jesup << endl;
+    cout << "pT JesPt_DN = " << pt_jesdn << endl;
+
+    for (unsigned s_unc = 0; s_unc < uncSources.size(); s_unc++)
+      {
+	cout << s_unc << " pT JesPt_UP SPLIT = " << pt_jesup_split[s_unc] << endl;
+	cout << s_unc << " pT JesPt_DN SPLIT = " << pt_jesdn_split[s_unc] << endl;
+	cout << "------------------------------------------------" << endl;
+      }
+
+
+    //--- Loose jet ID, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID13TeVRun2016
     float NHF  = j.neutralHadronEnergyFraction();
     float NEMF = j.neutralEmEnergyFraction();
     float CHF  = j.chargedHadronEnergyFraction();
@@ -277,7 +277,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     bool JetID = true;
 
-	 if ( setup == 2016 )
+         if ( setup == 2016 )
 	 { // Tight jet ID https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2016
 	 	JetID      = ((NHF<0.90 && NEMF<0.90 && NumConst>1) && ((jabseta<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || jabseta>2.4) && jabseta<=2.7) ||
       				 ( NHF<0.98 && NEMF>0.01 && NumNeutralParticles>2 && jabseta>2.7 && jabseta<=3.0 ) ||
@@ -303,69 +303,69 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 	 else
 	 {
-     throw cms::Exception("JetID") << "Jet ID is not defined for the given setup (" << setup << ")!";
+	   throw cms::Exception("JetID") << "Jet ID is not defined for the given setup (" << setup << ")!";
 	 }
 
+      bool PUjetID = true;
+      float PUjetID_score = 0;
 
-    bool PUjetID = true;
-    float PUjetID_score = 0;
+      if ( applyJEC_ && ( setup == 2017 || setup == 2018 || (setup == 2016 && (!(isMC_)) )))
+	{
+	  PUjetID_score = j.userFloat("pileupJetIdUpdated:fullDiscriminant");
+	  PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0));
+	}
+      //if (applyJEC_) PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0)); // MODIFIED according to update jet collection for 2016 MC (needed to include DeepCSV)
+      else
+	{
+	  PUjetID_score = j.userFloat("pileupJetId:fullDiscriminant");
+	  PUjetID = bool(j.userInt("pileupJetId:fullId") & (1 << 0));
+	}
 
-    if ( applyJEC_ && ( setup == 2017 || setup == 2018 || (setup == 2016 && (!(isMC_)) )))
-    {
-      PUjetID_score = j.userFloat("pileupJetIdUpdated:fullDiscriminant");
-      PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0));
-    }
-        //if (applyJEC_) PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0)); // MODIFIED according to update jet collection for 2016 MC (needed to include DeepCSV)
-        else
-    {
-      PUjetID_score = j.userFloat("pileupJetId:fullDiscriminant");
-      PUjetID = bool(j.userInt("pileupJetId:fullId") & (1 << 0));
-    }
+      //Recommended tight PU JET ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
+      //Recommended tight WP for jet pileup ID taken from https://github.com/alefisico/cmssw/blob/PUID_102X/RecoJets/JetProducers/python/PileupJetIDCutParams_cfi.py
+      // Computed using 2016 81X training and used for all three years
+      //4 Eta Categories  0-2.5   2.5-2.75   2.75-3.0   3.0-5.0
+      //Tight Id
+      //Pt010_Tight    = cms.vdouble( 0.69, -0.35, -0.26, -0.21),
+      //Pt1020_Tight   = cms.vdouble( 0.69, -0.35, -0.26, -0.21),
+      //Pt2030_Tight   = cms.vdouble( 0.69, -0.35, -0.26, -0.21),
+      //Pt3050_Tight   = cms.vdouble( 0.86, -0.10, -0.05, -0.01),
+      /*
+	bool PUjetID = false;
+	float PUjetID_score = 0;
+	if ( applyJEC_ && ( setup == 2017 || setup == 2018 || (setup == 2016 && (!(isMC_)) )))
+	{
+	PUjetID_score = j.userFloat("pileupJetIdUpdated:fullDiscriminant");
+	}
+	else
+	{
+	PUjetID_score = j.userFloat("pileupJetId:fullDiscriminant");
+	}
+	// WP applied explicitely
+	//cout << "PU ID score = " << PUjetID_score << " PT = " << jpt << " ETA = " << jabseta << endl;
+	PUjetID       = (
+	(jpt > 0 && jpt <= 10 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.69  ||
+	(jpt > 10 && jpt <= 20 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.69 ||
+	(jpt > 20 && jpt <= 30 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.69 ||
+	(jpt > 30 && jpt <= 50 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.86 ||
+	(jpt > 0 && jpt <= 10 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.35  ||
+	(jpt > 10 && jpt <= 20 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.35 ||
+	(jpt > 20 && jpt <= 30 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.35 ||
+	(jpt > 30 && jpt <= 50 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.10 ||
+	(jpt > 0 && jpt <= 10 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.26  ||
+	(jpt > 10 && jpt <= 20 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.26 ||
+	(jpt > 20 && jpt <= 30 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.26 ||
+	(jpt > 30 && jpt <= 50 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.05 ||
+	(jpt > 0 && jpt <= 10 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21  ||
+	(jpt > 10 && jpt <= 20 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21 ||
+	(jpt > 20 && jpt <= 30 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21 ||
+	(jpt > 30 && jpt <= 50 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.01
+	);
+	//if (PUjetID) cout << "PUjetID!" << endl;
+	*/
 
-        //Recommended tight PU JET ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
-        //Recommended tight WP for jet pileup ID taken from https://github.com/alefisico/cmssw/blob/PUID_102X/RecoJets/JetProducers/python/PileupJetIDCutParams_cfi.py
-        // Computed using 2016 81X training and used for all three years
-        //4 Eta Categories  0-2.5   2.5-2.75   2.75-3.0   3.0-5.0
-        //Tight Id
-        //Pt010_Tight    = cms.vdouble( 0.69, -0.35, -0.26, -0.21),
-        //Pt1020_Tight   = cms.vdouble( 0.69, -0.35, -0.26, -0.21),
-        //Pt2030_Tight   = cms.vdouble( 0.69, -0.35, -0.26, -0.21),
-        //Pt3050_Tight   = cms.vdouble( 0.86, -0.10, -0.05, -0.01),
-        /*
-    bool PUjetID = false;
-    float PUjetID_score = 0;
-    if ( applyJEC_ && ( setup == 2017 || setup == 2018 || (setup == 2016 && (!(isMC_)) )))
-    {
-    PUjetID_score = j.userFloat("pileupJetIdUpdated:fullDiscriminant");
-    }
-    else
-    {
-    PUjetID_score = j.userFloat("pileupJetId:fullDiscriminant");
-    }
-    // WP applied explicitely
-    //cout << "PU ID score = " << PUjetID_score << " PT = " << jpt << " ETA = " << jabseta << endl;
-    PUjetID       = (
-    (jpt > 0 && jpt <= 10 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.69  ||
-    (jpt > 10 && jpt <= 20 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.69 ||
-    (jpt > 20 && jpt <= 30 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.69 ||
-    (jpt > 30 && jpt <= 50 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.86 ||
-    (jpt > 0 && jpt <= 10 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.35  ||
-    (jpt > 10 && jpt <= 20 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.35 ||
-    (jpt > 20 && jpt <= 30 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.35 ||
-    (jpt > 30 && jpt <= 50 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.10 ||
-    (jpt > 0 && jpt <= 10 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.26  ||
-    (jpt > 10 && jpt <= 20 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.26 ||
-    (jpt > 20 && jpt <= 30 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.26 ||
-    (jpt > 30 && jpt <= 50 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.05 ||
-    (jpt > 0 && jpt <= 10 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21  ||
-    (jpt > 10 && jpt <= 20 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21 ||
-    (jpt > 20 && jpt <= 30 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21 ||
-    (jpt > 30 && jpt <= 50 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.01
-    );
-    //if (PUjetID) cout << "PUjetID!" << endl;
-    */
+    //--- b-tagging and scaling factors
 
-    //--- b tagging and scaling factors
     float bTagger;
     bTagger = j.bDiscriminator(bTaggerName) + j.bDiscriminator((bTaggerName + "b")); //one should just sum for doing b tagging, the b and bb probabilities
     //cout << "b tag is = " << bTagger << endl;
@@ -470,6 +470,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
 
     //cout<<"jet pT="<<jpt<<", eta="<<jeta<<endl;
+
     //--- Embed user variables
     j.addUserFloat("qgLikelihood",qgLikelihood);
     j.addUserFloat("axis2",axis2);
@@ -541,8 +542,8 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
 
 
-    result->push_back(j);
-  }
+    result->push_back(j);}
+
 
   //--- Reorder jets by pT
   std::sort(result->begin(),result->end(), [](const Jet& j1, const Jet& j2){return j1.pt()>j2.pt();});

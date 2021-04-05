@@ -354,12 +354,12 @@ void GenFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup){
 
           // Leptons that are not selected leptons
           for(unsigned int i = 0; i<Lepts.size(); i++){
-            if(i!=L1 && i!=L2 && i!=L3 && i!=L4){
+            if(i!=L1 && i!=L2 && i!=L3 && i!=L4 && Lepts_RelIso[i]<0.35){
               theExtraLepts.push_back(Lepts.at(i));
               theExtraLeptsId.push_back(LeptsId.at(i));
             }
           }
-          
+
       compZ1.addDaughter(*LeptsReco.at(L1), "daughter1");
       compZ1.addDaughter(*LeptsReco.at(L2), "daughter2");
 
