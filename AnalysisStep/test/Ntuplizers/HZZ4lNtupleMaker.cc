@@ -1088,7 +1088,10 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       int L2 = (int)(*cand).userFloat("L2");
       int L3 = (int)(*cand).userFloat("L3");
       int L4 = (int)(*cand).userFloat("L4");
-      // cout << L1 << " " << L2 << " " << L3 << " " << L4 << endl;
+      GENlep_Hindex.push_back((Short_t)L1);
+      GENlep_Hindex.push_back((Short_t)L2);
+      GENlep_Hindex.push_back((Short_t)L3);
+      GENlep_Hindex.push_back((Short_t)L4);
       if(L1!=99 && L2!=99 && L3!=99 && L4!=99){
         GENmass4l = (GENlep_tetra.at(L1)+GENlep_tetra.at(L2)+GENlep_tetra.at(L3)+GENlep_tetra.at(L4)).M();
         GENpT4l = (GENlep_tetra.at(L1)+GENlep_tetra.at(L2)+GENlep_tetra.at(L3)+GENlep_tetra.at(L4)).Pt();

@@ -244,25 +244,25 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  }
       }
     // For DEBUG: JEC splitting
-    cout << "=============================" << endl;
-    cout << "Previous total JES UNCERTAINTY = " << jes_unc << endl;
-    cout << "----- NUMBER of CONSIDERED UNCERTAINTIES = " << uncSources.size() << " -----" << endl;
-    cout << "JEC unc sources considered:\n";
-    for (unsigned s_unc = 0; s_unc < uncSources.size(); s_unc++)
-      {
-	cout << s_unc << " " << uncSources[s_unc] << '\t' << jes_unc_split[s_unc] << "," << endl;
-      }
-
-    cout << "----- JET NUMERO " << jet_number << " -----" << endl;
-    cout << "pT JesPt_UP = " << pt_jesup << endl;
-    cout << "pT JesPt_DN = " << pt_jesdn << endl;
-
-    for (unsigned s_unc = 0; s_unc < uncSources.size(); s_unc++)
-      {
-	cout << s_unc << " pT JesPt_UP SPLIT = " << pt_jesup_split[s_unc] << endl;
-	cout << s_unc << " pT JesPt_DN SPLIT = " << pt_jesdn_split[s_unc] << endl;
-	cout << "------------------------------------------------" << endl;
-      }
+  //   cout << "=============================" << endl;
+  //   cout << "Previous total JES UNCERTAINTY = " << jes_unc << endl;
+  //   cout << "----- NUMBER of CONSIDERED UNCERTAINTIES = " << uncSources.size() << " -----" << endl;
+  //   cout << "JEC unc sources considered:\n";
+  //   for (unsigned s_unc = 0; s_unc < uncSources.size(); s_unc++)
+  //     {
+	// cout << s_unc << " " << uncSources[s_unc] << '\t' << jes_unc_split[s_unc] << "," << endl;
+  //     }
+  //
+  //   cout << "----- JET NUMERO " << jet_number << " -----" << endl;
+  //   cout << "pT JesPt_UP = " << pt_jesup << endl;
+  //   cout << "pT JesPt_DN = " << pt_jesdn << endl;
+  //
+  //   for (unsigned s_unc = 0; s_unc < uncSources.size(); s_unc++)
+  //     {
+	// cout << s_unc << " pT JesPt_UP SPLIT = " << pt_jesup_split[s_unc] << endl;
+	// cout << s_unc << " pT JesPt_DN SPLIT = " << pt_jesdn_split[s_unc] << endl;
+	// cout << "------------------------------------------------" << endl;
+  //     }
 
 
     //--- Loose jet ID, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID13TeVRun2016
