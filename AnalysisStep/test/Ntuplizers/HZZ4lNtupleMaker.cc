@@ -527,7 +527,8 @@ namespace {
   std::vector<float> GENZ_pt; std::vector<float> GENZ_eta; std::vector<float> GENZ_phi; std::vector<float> GENZ_mass;
   std::vector<short> GENZ_DaughtersId; std::vector<short> GENZ_MomId;
   float_t  GENmassZ1, GENmassZ2;
-  // GENpTZ1, GENpTZ2, GENdPhiZZ, GENmassZZ, GENpTZZ;
+  // GENpTZ1, GENpTZ2,
+  float_t GENdPhiZZ, GENmassZZ, GENpTZZ;
   // Jets
   // std::vector<float> GENjet_pt; std::vector<float> GENjet_eta; std::vector<float> GENjet_phi; std::vector<float> GENjet_mass;
   std::vector<float> GENjetsPt_pt30_eta4p7; std::vector<float> GENjetsEta_pt30_eta4p7; std::vector<float> GENjetsPhi_pt30_eta4p7; std::vector<float> GENjetsMass_pt30_eta4p7;
@@ -1047,6 +1048,8 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       passedFiducialSelection_bbf = *((*cand).userData<bool>("passedFiducial"));
       int nGENLeptons = (int)(*cand).userFloat("nLepts");
       int nGENHiggs = (int)(*cand).userFloat("nHiggs");
+      int nGENZs = (int)(*cand).userFloat("nZs");
+      int nGENZZ = (int)(*cand).userFloat("nZZ");
       int nGENJets4p7 = (int)(*cand).userFloat("nJets4p7");
       int nGENJets2p5 = (int)(*cand).userFloat("nJets2p5");
 
@@ -1061,6 +1064,21 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
         GENlep_MomId.push_back((short)(*cand).userFloat("GENlep_mom_"+to_string(i)));
         GENlep_MomMomId.push_back((short)(*cand).userFloat("GENlep_mommom_"+to_string(i)));
         GENlep_RelIso.push_back((*cand).userFloat("GENlep_reliso_"+to_string(i)));
+      }
+
+      for (int i=1; i<=nGENZs; i++){
+        GENZ_DaughtersId.push_back((*cand).userFloat("GENZ_DaughtersId_"+to_string(i)));
+        GENZ_MomId.push_back((*cand).userFloat("GENZ_MomId_"+to_string(i)));
+        GENZ_pt.push_back((*cand).userFloat("GENZ_pt_"+to_string(i)));
+        GENZ_eta.push_back((*cand).userFloat("GENZ_eta_"+to_string(i)));
+        GENZ_phi.push_back((*cand).userFloat("GENZ_phi_"+to_string(i)));
+        GENZ_mass.push_back((*cand).userFloat("GENZ_mass_"+to_string(i)));
+      }
+
+      for (int i=1; i<=nGENZZ; i++){
+        GENdPhiZZ = ((*cand).userFloat("GENdPhiZZ_"+to_string(i)));
+        GENmassZZ = ((*cand).userFloat("GENmassZZ_"+to_string(i)));
+        GENpTZZ = ((*cand).userFloat("GENpTZZ_"+to_string(i)));
       }
 
       for (int i=1; i<=nGENHiggs; i++){
@@ -3242,9 +3260,9 @@ void HZZ4lNtupleMaker::BookAllBranches(){
     myTree->Book("GENmassZ2",GENmassZ2,failedTreeLevel >= minimalFailedTree);
     // myTree->Book("GENpTZ1",GENpTZ1,failedTreeLevel >= minimalFailedTree);
     // myTree->Book("GENpTZ2",GENpTZ2,failedTreeLevel >= minimalFailedTree);
-    // myTree->Book("GENdPhiZZ",GENdPhiZZ,failedTreeLevel >= minimalFailedTree);
-    // myTree->Book("GENmassZZ",GENmassZZ,failedTreeLevel >= minimalFailedTree);
-    // myTree->Book("GENpTZZ",GENpTZZ,failedTreeLevel >= minimalFailedTree);
+    myTree->Book("GENdPhiZZ",GENdPhiZZ,failedTreeLevel >= minimalFailedTree);
+    myTree->Book("GENmassZZ",GENmassZZ,failedTreeLevel >= minimalFailedTree);
+    myTree->Book("GENpTZZ",GENpTZZ,failedTreeLevel >= minimalFailedTree);
     // Jets pt30_eta4p7
     myTree->Book("GENjetsPt_pt30_eta4p7",GENjetsPt_pt30_eta4p7,failedTreeLevel >= minimalFailedTree);
     myTree->Book("GENjetsEta_pt30_eta4p7",GENjetsEta_pt30_eta4p7,failedTreeLevel >= minimalFailedTree);

@@ -177,6 +177,8 @@ void GenFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup){
 
   int nGENLepts = 0;
   int nGENHiggs = 0;
+  int nGENZs = 0;
+  int nGENZZ = 0;
   int nGENJets2p5 = 0;
   int nGENJets4p7 = 0;
   for(genPart = genParticles->begin(); genPart != genParticles->end(); genPart++) {
@@ -252,6 +254,7 @@ void GenFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup){
           compZZ.addUserFloat("GENlep_reliso_"+to_string(nGENLepts), this_GENiso);
           // END GEN iso calculation
       } // leptons
+
       if (genPart->pdgId()==25) {
           v.SetPtEtaPhiM(genPart->pt(), genPart->eta(), genPart->phi(), genPart->mass());
           nGENHiggs++;
@@ -260,7 +263,9 @@ void GenFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup){
           compZZ.addUserFloat("GENhiggs_phi_"+to_string(nGENHiggs), genPart->phi());
           compZZ.addUserFloat("GENhiggs_mass_"+to_string(nGENHiggs), genPart->mass());
       }
+
       if ((genPart->pdgId()==23 || genPart->pdgId()==443 || genPart->pdgId()==553) && (genPart->status()>=20 && genPart->status()<30) ) {
+          nGENZs++;
           const reco::Candidate *Zdau0=genPart->daughter(0);
           int ZdauId = fabs(Zdau0->pdgId());
           if (fabs(Zdau0->pdgId())==23) {
@@ -278,12 +283,13 @@ void GenFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup){
           theZsMom.push_back(genAna.MotherID(&genParticles->at(j)));
           v.SetPtEtaPhiM(genPart->pt(), genPart->eta(), genPart->phi(), genPart->mass());
           theZs.push_back(v);
-          // if (Zdau0) _GENZ_DaughtersId.push_back(ZdauId);
-          // _GENZ_MomId.push_back(genAna.MotherID(&genParticles->at(j)));
-          // _GENZ_pt.push_back(genPart->pt());
-          // _GENZ_eta.push_back(genPart->eta());
-          // _GENZ_phi.push_back(genPart->phi());
-          // _GENZ_mass.push_back(genPart->mass());
+          if (Zdau0) compZZ.addUserFloat("GENZ_DaughtersId_"+to_string(nGENZs), (float)ZdauId);
+          else compZZ.addUserFloat("GENZ_DaughtersId_"+to_string(nGENZs), -1); //Dummy value
+          compZZ.addUserFloat("GENZ_MomId_"+to_string(nGENZs), (float)genAna.MotherID(&genParticles->at(j)));
+          compZZ.addUserFloat("GENZ_pt_"+to_string(nGENZs), genPart->pt());
+          compZZ.addUserFloat("GENZ_eta_"+to_string(nGENZs), genPart->eta());
+          compZZ.addUserFloat("GENZ_phi_"+to_string(nGENZs), genPart->phi());
+          compZZ.addUserFloat("GENZ_mass_"+to_string(nGENZs), genPart->mass());
       }
 
       // if (abs(genPart->pdgId())>500 && abs(genPart->pdgId())<600 && genPart->status()==2) {
@@ -292,22 +298,25 @@ void GenFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup){
   }
   compZZ.addUserFloat("nLepts", (float)nGENLepts);
   compZZ.addUserFloat("nHiggs", (float)nGENHiggs);
+  compZZ.addUserFloat("nZs", (float)nGENZs);
 
   if (Lepts.size()>=4) {
 
       unsigned int L1_nocuts=99; unsigned int L2_nocuts=99; unsigned int L3_nocuts=99; unsigned int L4_nocuts=99;
       bool passedFiducialSelectionNoCuts = mZ1_mZ2(L1_nocuts, L2_nocuts, L3_nocuts, L4_nocuts, false);
       if (passedFiducialSelectionNoCuts) {
+          nGENZZ++;
           TLorentzVector Z1_1, Z1_2, Z2_1, Z2_2;
           Z1_1.SetPtEtaPhiM(Lepts.at(L1_nocuts).Pt(),Lepts.at(L1_nocuts).Eta(),Lepts.at(L1_nocuts).Phi(),Lepts.at(L1_nocuts).M());
           Z1_2.SetPtEtaPhiM(Lepts.at(L2_nocuts).Pt(),Lepts.at(L2_nocuts).Eta(),Lepts.at(L2_nocuts).Phi(),Lepts.at(L2_nocuts).M());
           Z2_1.SetPtEtaPhiM(Lepts.at(L3_nocuts).Pt(),Lepts.at(L3_nocuts).Eta(),Lepts.at(L3_nocuts).Phi(),Lepts.at(L3_nocuts).M());
           Z2_2.SetPtEtaPhiM(Lepts.at(L4_nocuts).Pt(),Lepts.at(L4_nocuts).Eta(),Lepts.at(L4_nocuts).Phi(),Lepts.at(L4_nocuts).M());
-          // _GENdPhiZZ = deltaPhi((Z1_1+Z1_2).Phi(),(Z2_1+Z2_2).Phi());
-          // _GENmassZZ = (Z1_1+Z1_2+Z2_1+Z2_2).M();
-          // _GENpTZZ = (Z1_1+Z1_2+Z2_1+Z2_2).Pt();
+          compZZ.addUserFloat("GENdPhiZZ_"+to_string(nGENZZ), deltaPhi((Z1_1+Z1_2).Phi(),(Z2_1+Z2_2).Phi()));
+          compZZ.addUserFloat("GENmassZZ_"+to_string(nGENZZ), (Z1_1+Z1_2+Z2_1+Z2_2).M());
+          compZZ.addUserFloat("GENpTZZ_"+to_string(nGENZZ), (Z1_1+Z1_2+Z2_1+Z2_2).Pt());
       }
   }
+  compZZ.addUserFloat("nZZ", (float)nGENZZ);
 
   /////// DO THE FIDUCIAL VOLUME CALCULATION //////////////
   passedFiducial=false;
