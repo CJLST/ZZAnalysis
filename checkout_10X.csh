@@ -29,8 +29,8 @@ git cms-merge-topic asculac:Electron_XGBoost_MVA_16UL_17UL
 
 #### Please do not add any custom (non-CMSSW) package before this line ####
 #ZZAnalysis
-git clone https://github.com/bonanomi/ZZAnalysis.git ZZAnalysis
-(cd ZZAnalysis; git checkout UltraLegacy)
+git clone https://github.com/asculac/ZZAnalysis.git ZZAnalysis
+(cd ZZAnalysis; git checkout UltraLegacy_EleID_complete )
 
 # Muon MVA
 git cms-addpkg CondFormats/EgammaObjects
