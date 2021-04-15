@@ -95,7 +95,7 @@ elif (SAMPLE_TYPE == 2017):
 
 elif (SAMPLE_TYPE == 2018):
     if IsMC:
-        process.GlobalTag = GlobalTag(process.GlobalTag, '102X_upgrade2018_realistic_v21', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '106X_upgrade2018_realistic_v11_L1v1', '') #'102X_upgrade2018_realistic_v21', '')
     else:
         if (DATA_TAG == "PromptReco"):
             process.GlobalTag = GlobalTag(process.GlobalTag, '102X_dataRun2_Prompt_v16', '')
