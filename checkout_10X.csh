@@ -29,8 +29,8 @@ git cms-merge-topic asculac:Electron_XGBoost_MVA_16UL_17UL
 
 #### Please do not add any custom (non-CMSSW) package before this line ####
 #ZZAnalysis
-git clone https://github.com/asculac/ZZAnalysis.git ZZAnalysis
-(cd ZZAnalysis; git checkout UltraLegacy_EleID_complete )
+git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
+(cd ZZAnalysis; git checkout Run2_UltraLegacy )
 
 # Muon MVA
 git cms-addpkg CondFormats/EgammaObjects
@@ -42,6 +42,7 @@ git clone https://github.com/MELALabs/MelaAnalytics.git
 # (cd MelaAnalytics; git checkout -b from-v21 v2.1) # Correct release should be v2.2, but release is not available yet.
 
 #Common LHE tools
+#git clone https://github.com/acappati/CommonLHETools.git
 git clone https://github.com/usarica/CommonLHETools.git
 (cd CommonLHETools; git checkout -b from-v134 v1.3.4)
 
@@ -72,7 +73,7 @@ git clone https://github.com/JHUGen/JHUGenMELA.git JHUGenMELA
   mv libjhugenmela.so ../data/${SCRAM_ARCH}/                     ;\
 )
 (                                                                 \
-  cd ${CMSSW_BASE}/src/JHUGenMELA/MELA                           ;\
+  cd ${CMSSW_BASE}/src/JHUGenMELA/MELA/                          ;\
   ./downloadNNPDF.sh                                             ;\
 )
 
