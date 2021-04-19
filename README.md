@@ -11,7 +11,7 @@ Please use **CMSSW_10_6_20**.
 
 Download and execute the setup script:
 ```
-wget -O ${TMPDIR}/checkout_10X.csh https://raw.githubusercontent.com/asculac/ZZAnalysis/UltraLegacy_EleID_complete/checkout_10X.csh
+wget -O ${TMPDIR}/checkout_10X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/Run2_UltraLegacy/checkout_10X.csh
 cd $CMSSW_BASE/src
 cmsenv
 chmod u+x ${TMPDIR}/checkout_10X.csh
