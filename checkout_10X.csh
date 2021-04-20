@@ -39,7 +39,7 @@ git clone https://github.com/bonanomi/MuonMVAReader.git MuonMVAReader
 
 #MELA Analytics
 git clone https://github.com/MELALabs/MelaAnalytics.git
-# (cd MelaAnalytics; git checkout -b from-v21 v2.1) # Correct release should be v2.2, but release is not available yet.
+(cd MelaAnalytics; git checkout -b from-v22 v2.2)
 
 #Common LHE tools
 #git clone https://github.com/acappati/CommonLHETools.git
