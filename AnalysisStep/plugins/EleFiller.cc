@@ -122,7 +122,7 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     // Load correct RunII BDT ID+iso
     float BDT = -99;
     if      ( setup == 2016 ) BDT = l.userFloat("ElectronMVAEstimatorRun2Summer16ULIdIsoValues");
-    else if ( setup == 2017 ) BDT = l.userFloat("ElectronMVAEstimatorRun2Summer17ULIdIsoV2Values");
+    else if ( setup == 2017 ) BDT = l.userFloat("ElectronMVAEstimatorRun2Summer17ULIdIsoValues");
     else if ( setup == 2018 ) BDT = l.userFloat("ElectronMVAEstimatorRun2Summer18ULIdIsoValues");
     cout << "BDT = " << BDT << endl;
     
