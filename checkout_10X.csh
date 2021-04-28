@@ -7,16 +7,8 @@
 # chmod u+x ${TMPDIR}/checkout_10X.csh
 # ${TMPDIR}/checkout_10X.csh
 
-############## For CMSSW_10_2_18
+############## For CMSSW_10_6_20
 git cms-init
-
-#Preliminary electron scale and smearing corrections according to https://twiki.cern.ch/twiki/bin/view/CMS/EgammaPostRecoRecipes#2018_Preliminary_Energy_Correcti
-#We need the ElectronTools package to calculate smear and scale uncertainties so just download the ScaleAndSmearing files manualy 
-git cms-merge-topic cms-egamma:EgammaPostRecoTools
-git cms-merge-topic cms-egamma:PhotonIDValueMapSpeedup1029
-git cms-merge-topic cms-egamma:slava77-btvDictFix_10210
-git cms-addpkg EgammaAnalysis/ElectronTools
-(rm -rf EgammaAnalysis/ElectronTools/data;git clone https://github.com/cms-data/EgammaAnalysis-ElectronTools.git EgammaAnalysis/ElectronTools/data;)
 
 # New Jet PU ID: dedicated training for each year
 git cms-addpkg  RecoJets/JetProducers
@@ -25,31 +17,29 @@ git cms-addpkg  RecoJets/JetProducers
 git cms-addpkg GeneratorInterface/RivetInterface
 git cms-addpkg SimDataFormats/HTXS
 
-# 2016 and 2018 retraining for electron BDT
-git cms-merge-topic mkovac:Electron_XGBoost_MVA_2016_and_2018_CMSSW_10_2_15
+# Updated for UL. See: https://twiki.cern.ch/twiki/bin/view/CMS/EgammaUL2016To2018 
+git cms-addpkg RecoEgamma/EgammaTools
+git clone https://github.com/cms-egamma/EgammaPostRecoTools.git
+mv EgammaPostRecoTools/python/EgammaPostRecoTools.py RecoEgamma/EgammaTools/python/.
+git cms-addpkg EgammaAnalysis/ElectronTools
+(rm -rf EgammaAnalysis/ElectronTools/data;git clone https://github.com/jainshilpi/EgammaAnalysis-ElectronTools.git -b ULSSfiles_correctScaleSysMC EgammaAnalysis/ElectronTools/data;)
 
-#MET corrections according to https://twiki.cern.ch/twiki/bin/view/CMS/MissingETUncertaintyPrescription#Instructions_for_9_4_X_X_0_for_M
-git cms-merge-topic cms-met:METFixEE2017_949_v2_backport_to_102X
-
-#Simplified template cross section
-## need at least the first two lines
-# git cms-addpkg GeneratorInterface/RivetInterface
-# git cms-addpkg SimDataFormats/HTXS
-# git remote add bonanomi https://github.com/bonanomi/cmssw.git
-# git fetch bonanomi 
-# git checkout bonanomi/hstxs1p2_CMSSW_10_2_X GeneratorInterface/RivetInterface
-# git checkout bonanomi/hstxs1p2_CMSSW_10_2_X SimDataFormats/HTXS
+#UL 2016, 2017 and 2018 retraining for electron BDT
+git cms-merge-topic asculac:Electron_XGBoost_MVA_16UL_17UL
 
 #### Please do not add any custom (non-CMSSW) package before this line ####
 #ZZAnalysis
-git clone https://github.com/AlessandroTarabini/ZZAnalysis.git ZZAnalysis
-(cd ZZAnalysis; git checkout Run2_CutBased_BTag16_BBF)
+git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
+(cd ZZAnalysis; git checkout Run2_CutBased_UL )
 
 # Muon MVA
+git cms-addpkg CondFormats/EgammaObjects
+git cms-addpkg CommonTools/MVAUtils
 git clone https://github.com/bonanomi/MuonMVAReader.git MuonMVAReader
 
 #MELA Analytics
 git clone https://github.com/MELALabs/MelaAnalytics.git
+(cd MelaAnalytics; git checkout -b from-v22 v2.2)
 
 #Common LHE tools
 #git clone https://github.com/acappati/CommonLHETools.git

@@ -2590,7 +2590,7 @@ void HZZ4lNtupleMaker::endLuminosityBlock(edm::LuminosityBlock const& iLumi, edm
   edm::Handle<edm::MergeableCounter> preSkimCounter;
   if (iLumi.getByToken(preSkimToken, preSkimCounter)) { // Counter before skim. Does not exist for non-skimmed samples.
     Nevt_preskim = preSkimCounter->value;
-    // We do not use a filtering skim for the time being; so this is just left as a check in case we need it again in the future.
+   // We do not use a filtering skim for the time being; so this is just left as a check in case we need it again in the future.
     if (!std::uncaught_exception() && Nevt_preskim>=0.) assert(Nevt_preskim == Nevt_Gen_lumiBlock);
   }
 

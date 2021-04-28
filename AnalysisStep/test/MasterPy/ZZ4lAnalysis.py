@@ -95,7 +95,7 @@ elif (SAMPLE_TYPE == 2017):
 
 elif (SAMPLE_TYPE == 2018):
     if IsMC:
-        process.GlobalTag = GlobalTag(process.GlobalTag, '102X_upgrade2018_realistic_v21', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '106X_upgrade2018_realistic_v11_L1v1', '') #'102X_upgrade2018_realistic_v21', '')
     else:
         if (DATA_TAG == "PromptReco"):
             process.GlobalTag = GlobalTag(process.GlobalTag, '102X_dataRun2_Prompt_v16', '')
@@ -314,6 +314,8 @@ TIGHTMUON    = "userFloat('isPFMuon') || (userFloat('isTrackerHighPtMuon') && pt
 #------- MUONS -------
 
 #--- Set correct identifier for muon corrections
+#--- UL Rochester from: https://gitlab.cern.ch/akhukhun/roccor/-/tree/Run2.v5
+#--- Corresponding TWiki: https://twiki.cern.ch/twiki/bin/viewauth/CMS/RochcorMuon
 if LEPTON_SETUP == 2016: # Rochester corrections for 2016 data
       process.calibratedMuons = cms.EDProducer("RochesterPATMuonCorrector",
                                             src = cms.InputTag("slimmedMuons"),
@@ -324,14 +326,14 @@ if LEPTON_SETUP == 2016: # Rochester corrections for 2016 data
 elif LEPTON_SETUP == 2017:# Rochester corrections for 2017 data
      process.calibratedMuons = cms.EDProducer("RochesterPATMuonCorrector",
                                          src = cms.InputTag("slimmedMuons"),
-                                         identifier = cms.string("RoccoR2017"),
+                                         identifier = cms.string("RoccoR2017UL"),
                                          isMC = cms.bool(IsMC),
                                          isSynchronization = cms.bool(False),
                                          )
 elif LEPTON_SETUP == 2018:# Rochester corrections for 2018 data
      process.calibratedMuons = cms.EDProducer("RochesterPATMuonCorrector",
                                          src = cms.InputTag("slimmedMuons"),
-                                         identifier = cms.string("RoccoR2018"),
+                                         identifier = cms.string("RoccoR2018UL"),
                                          isMC = cms.bool(IsMC),
                                          isSynchronization = cms.bool(False),
                                          )
@@ -410,7 +412,7 @@ if (LEPTON_SETUP == 2016):
    setupEgammaPostRecoSeq(process,
                           runEnergyCorrections=True,
                           runVID=True,
-                          eleIDModules=['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Summer16_ID_ISO_cff','RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff'],
+                          eleIDModules=['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Summer16UL_ID_ISO_cff','RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff'],
                           phoIDModules=['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V2_cff'],
                           era='2016-Legacy')
 
@@ -419,17 +421,18 @@ if (LEPTON_SETUP == 2017):
    setupEgammaPostRecoSeq(process,
                           runEnergyCorrections=True,
                           runVID=True,
+                          eleIDModules=['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Summer17UL_ID_ISO_cff'],
                           phoIDModules=['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V2_cff'],
-                          era='2017-Nov17ReReco')
+                          era='2017-UL')
 
 if (LEPTON_SETUP == 2018):
    from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
    setupEgammaPostRecoSeq(process,
                           runEnergyCorrections=True,
                           runVID=True,
-                          eleIDModules=['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Autumn18_ID_ISO_cff','RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff'],
-                             phoIDModules=['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V2_cff'],
-                          era='2018-Prompt')
+                          eleIDModules=['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Summer18UL_ID_ISO_cff','RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff'],
+                          phoIDModules=['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V2_cff'],
+                          era='2018-UL')
 
 
 process.bareSoftElectrons = cms.EDFilter("PATElectronRefSelector",
@@ -1003,7 +1006,8 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
 
 # DEFAULT 2016 jet pileup ID training: _chsalgos_81x
 # 2017-2018: jet pileup ID trainings to be updated
-from RecoJets.JetProducers.PileupJetID_cfi import _chsalgos_94x, _chsalgos_102x
+# Updated for UL Training: _chsalgos_106X_UL17
+from RecoJets.JetProducers.PileupJetID_cfi import _chsalgos_106X_UL17 #_chsalgos_94x, _chsalgos_102x
 from RecoJets.JetProducers.PileupJetIDCutParams_cfi import full_81x_chs_wp
 from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
 
@@ -1049,26 +1053,25 @@ if (SAMPLE_TYPE == 2016 and IsMC):
                                        *process.pfDeepFlavourJetTagsWithDeepInfo
                                        *process.patJetCorrFactorsTransientCorrectedWithDeepInfo
                                        *process.updatedPatJetsTransientCorrectedWithDeepInfo
+    )    
+elif (SAMPLE_TYPE == 2017):
+    process.load("RecoJets.JetProducers.PileupJetID_cfi")
+    process.pileupJetIdUpdated = process.pileupJetId.clone(
+        jets=cms.InputTag("slimmedJets"),
+        inputIsCorrected=False,
+        applyJec=True,
+        vertexes=cms.InputTag("offlineSlimmedPrimaryVertices"),
+        algos=cms.VPSet(_chsalgos_106X_UL17)
     )
-
-# elif (SAMPLE_TYPE == 2017):
-#     process.load("RecoJets.JetProducers.PileupJetID_cfi")
-#     process.pileupJetIdUpdated = process.pileupJetId.clone(
-#         jets=cms.InputTag("slimmedJets"),
-#         inputIsCorrected=False,
-#         applyJec=True,
-#         vertexes=cms.InputTag("offlineSlimmedPrimaryVertices"),
-#         algos=cms.VPSet(_chsalgos_94x)
-#     )
-# elif (SAMPLE_TYPE == 2018):
-#     process.load("RecoJets.JetProducers.PileupJetID_cfi")
-#     process.pileupJetIdUpdated = process.pileupJetId.clone(
-#         jets=cms.InputTag("slimmedJets"),
-#         inputIsCorrected=False,
-#         applyJec=True,
-#         vertexes=cms.InputTag("offlineSlimmedPrimaryVertices"),
-#         algos=cms.VPSet(_chsalgos_102x)
-#     )
+elif (SAMPLE_TYPE == 2018):
+    process.load("RecoJets.JetProducers.PileupJetID_cfi")
+    process.pileupJetIdUpdated = process.pileupJetId.clone(
+        jets=cms.InputTag("slimmedJets"),
+        inputIsCorrected=False,
+        applyJec=True,
+        vertexes=cms.InputTag("offlineSlimmedPrimaryVertices"),
+        algos=cms.VPSet(_chsalgos_106X_UL17)
+    )
 else:
     process.load("RecoJets.JetProducers.PileupJetID_cfi")
     process.pileupJetIdUpdated = process.pileupJetId.clone(
@@ -1076,9 +1079,13 @@ else:
         inputIsCorrected=False,
         applyJec=True,
         vertexes=cms.InputTag("offlineSlimmedPrimaryVertices"),
+        # Make sure correct algo is used
+        algos=cms.VPSet(_chsalgos_106X_UL17)
     )
 
-
+#-- BTagging updated for 2018 and 2017 Following UL recipe:
+#-- 2018 DeepCSV, medium WP: https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation106XUL18
+#-- 2017 DeepCSV, medium WP: https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation106XUL17
 theBTagger=""
 theBTaggerThr=0
 theBTagSFFile=""
@@ -1088,16 +1095,16 @@ if (LEPTON_SETUP == 2016): #DeepCSV, from https://twiki.cern.ch/twiki/bin/viewau
    theBTaggerThr=0.6321
    theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_2016LegacySF_V1.csv"
    theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_2016_LegacyPaper.root"
-elif (LEPTON_SETUP == 2017): #DeepCSV, from https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+elif (LEPTON_SETUP == 2017):
    theBTagger="pfDeepCSVJetTags:probb"
-   theBTaggerThr=0.4941
-   theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_94XSF_V4_B_F.csv"
+   theBTaggerThr=0.4506
+   theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_106XUL17SF_WPonly_V2.csv"
    theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_2017_LegacyPaper.root"
-elif (LEPTON_SETUP == 2018): #DeepCSV, from https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X
+elif (LEPTON_SETUP == 2018):
    theBTagger="pfDeepCSVJetTags:probb"
-   theBTaggerThr=0.4184
-   theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_102XSF_V1.csv"
-   theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_2018_LegacyPaper.root"
+   theBTaggerThr=0.4168
+   theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_106XUL18SF_WPonly.csv"
+   theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_2018_LegacyPaper.root" 
 else:
    sys.exit("ZZ4lAnalysis.py: Need to define the btagging for the new setup!")
 
@@ -1126,7 +1133,8 @@ process.dressedJets = cms.EDProducer("JetFiller",
     src = cms.InputTag("slimmedJets"),
     sampleType = cms.int32(SAMPLE_TYPE),
     setup = cms.int32(LEPTON_SETUP),
-    cut = cms.string("pt>20 && abs(eta)<4.7 && userFloat('JetID') && (userFloat('PUjetID') || pt>50)"),
+    ## Moving pt>20 to pt>30 as we use these jets 
+    cut = cms.string("pt>30 && abs(eta)<4.7 && userFloat('JetID') && (userFloat('PUjetID') || pt>50)"),
     isMC = cms.bool(IsMC),
     bTaggerName = cms.string(theBTagger),
     bTaggerThreshold = cms.double(theBTaggerThr),
@@ -1232,11 +1240,11 @@ if (APPLYJEC and SAMPLE_TYPE == 2017):
             toGet = cms.VPSet(
                 cms.PSet(
                     record = cms.string('JetCorrectionsRecord'),
-                    tag    = cms.string('JetCorrectorParametersCollection_Fall17_17Nov2017_V32_94X_MC_AK4PFchs'),
+                    tag    = cms.string('JetCorrectorParametersCollection_Summer19UL17_V5_MC_AK4PFchs'),
                     label  = cms.untracked.string('AK4PFchs')
                     ),
                 ),
-              connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall17_17Nov2017_V32_94X_MC.db'),
+              connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Summer19UL17_V5_MC.db'),
             )
     else:
         process.jec = cms.ESSource("PoolDBESSource",
@@ -1247,11 +1255,11 @@ if (APPLYJEC and SAMPLE_TYPE == 2017):
             toGet = cms.VPSet(
                 cms.PSet(
                     record = cms.string('JetCorrectionsRecord'),
-                    tag    = cms.string('JetCorrectorParametersCollection_Fall17_17Nov2017_V32_94X_DATA_AK4PFchs'),
+                    tag    = cms.string('JetCorrectorParametersCollection_Summer19UL17_RunBCDEF_V5_DATA_AK4PFchs'),
                     label  = cms.untracked.string('AK4PFchs')
                     ),
                 ),
-            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Fall17_17Nov2017_V32_94X_DATA.db'),
+            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Summer19UL17_RunBCDEF_V5_DATA.db'),
             )
 
     ## Add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
@@ -1291,11 +1299,11 @@ if (APPLYJEC and SAMPLE_TYPE == 2018):
             toGet = cms.VPSet(
                 cms.PSet(
                     record = cms.string('JetCorrectionsRecord'),
-                    tag    = cms.string('JetCorrectorParametersCollection_Autumn18_V19_MC_AK4PFchs'), #for 10_2_X MC
+                    tag    = cms.string('JetCorrectorParametersCollection_Summer19UL18_V5_MC_AK4PFchs'), #for 10_2_X MC
                     label  = cms.untracked.string('AK4PFchs')
                     ),
                 ),
-              connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Autumn18_V19_MC.db'), #for 10_2_X MC
+              connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Summer19UL18_V5_MC.db'), #for Summer19UL MC
             )
     else: # [FIXME] Preliminary recommendation is to use no JEC for data, change this once it is available
         process.jec = cms.ESSource("PoolDBESSource",
@@ -1341,6 +1349,7 @@ if (APPLYJEC and SAMPLE_TYPE == 2018):
 
 
 # JER from https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#Smearing_procedures
+# Updated for UL for 2017 and 2018
 if (APPLYJER and SAMPLE_TYPE == 2016):
    process.load('Configuration.StandardSequences.Services_cff')
    process.load("JetMETCorrections.Modules.JetResolutionESProducer_cfi")
@@ -1374,21 +1383,21 @@ if (APPLYJER and SAMPLE_TYPE == 2017):
    from CondCore.DBCommon.CondDBSetup_cfi import *
    process.jer = cms.ESSource("PoolDBESSource",
                                  CondDBSetup,
-                                 connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JER/Fall17_V3_94X_MC.db'),
+                                 connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JER/Summer19UL17_JRV2_MC.db'),
                                  toGet = cms.VPSet(
                                                    cms.PSet(
                                                             record = cms.string('JetResolutionRcd'),
-                                                            tag    = cms.string('JR_Fall17_V3_94X_MC_PtResolution_AK4PFchs'),
+                                                            tag    = cms.string('JR_Summer19UL17_JRV2_MC_PtResolution_AK4PFchs'),
                                                             label  = cms.untracked.string('AK4PFchs_pt')
                                                             ),
                                                    cms.PSet(
                                                             record = cms.string('JetResolutionRcd'),
-                                                            tag    = cms.string('JR_Fall17_V3_94X_MC_PhiResolution_AK4PFchs'),
+                                                            tag    = cms.string('JR_Summer19UL17_JRV2_MC_PhiResolution_AK4PFchs'),
                                                             label  = cms.untracked.string('AK4PFchs_phi')
                                                             ),
                                                    cms.PSet(
                                                             record = cms.string('JetResolutionScaleFactorRcd'),
-                                                            tag    = cms.string('JR_Fall17_V3_94X_MC_SF_AK4PFchs'),
+                                                            tag    = cms.string('JR_Summer19UL17_JRV2_MC_SF_AK4PFchs'),
                                                             label  = cms.untracked.string('AK4PFchs')
                                                             )
                                                    )
@@ -1403,21 +1412,21 @@ if (APPLYJER and SAMPLE_TYPE == 2018):
     process.jer = cms.ESSource("PoolDBESSource",
                                CondDBSetup,
                                #connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JER/Autumn18_V1_MC.db'),
-                               connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JER/Autumn18_V7_MC.db'),
+                               connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JER/Summer19UL18_JRV2_MC.db'),
                                toGet = cms.VPSet(
                                                  cms.PSet(
                                                           record = cms.string('JetResolutionRcd'),
-                                                          tag    = cms.string('JR_Autumn18_V7_MC_PtResolution_AK4PFchs'),
+                                                          tag    = cms.string('JR_Summer19UL18_JRV2_MC_PtResolution_AK4PFchs'),
                                                           label  = cms.untracked.string('AK4PFchs_pt')
                                                           ),
                                                  cms.PSet(
                                                           record = cms.string('JetResolutionRcd'),
-                                                          tag    = cms.string('JR_Autumn18_V7_MC_PhiResolution_AK4PFchs'),
+                                                          tag    = cms.string('JR_Summer19UL18_JRV2_MC_PhiResolution_AK4PFchs'),
                                                           label  = cms.untracked.string('AK4PFchs_phi')
                                                           ),
                                                  cms.PSet(
                                                           record = cms.string('JetResolutionScaleFactorRcd'),
-                                                          tag    = cms.string('JR_Autumn18_V7_MC_SF_AK4PFchs'),
+                                                          tag    = cms.string('JR_Summer19UL18_JRV2_MC_SF_AK4PFchs'),
                                                           label  = cms.untracked.string('AK4PFchs')
                                                           )
                                                  )

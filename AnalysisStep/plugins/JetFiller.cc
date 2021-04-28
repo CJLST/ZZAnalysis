@@ -276,96 +276,149 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     //   float MUF  = j.muonEnergyFraction();
 
     bool JetID = true;
+	  
+    // if ( setup == 2016 )
+    // { // Tight jet ID https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2016
+    //   JetID    = ((NHF<0.90 && NEMF<0.90 && NumConst>1) && ((jabseta<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || jabseta>2.4) && jabseta<=2.7) ||
+    //              ( NHF<0.98 && NEMF>0.01 && NumNeutralParticles>2 && jabseta>2.7 && jabseta<=3.0 ) ||
+    //              ( NEMF<0.90 && NumNeutralParticles>10 && jabseta >3.0 );
+    // }
 
-         if ( setup == 2016 )
-	 { // Tight jet ID https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2016
-	 	JetID      = ((NHF<0.90 && NEMF<0.90 && NumConst>1) && ((jabseta<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || jabseta>2.4) && jabseta<=2.7) ||
-      				 ( NHF<0.98 && NEMF>0.01 && NumNeutralParticles>2 && jabseta>2.7 && jabseta<=3.0 ) ||
-						 ( NEMF<0.90 && NumNeutralParticles>10 && jabseta >3.0 );
-	 }
+    // else if ( setup == 2017 )
+    // {
+    //  // Tight jet ID https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2017 without JetIDLepVeto
+    //   JetID    = ((NHF<0.90 && NEMF<0.90 && NumConst>1) && ((jabseta<=2.4 && CHF>0 && CHM>0) || jabseta>2.4) && jabseta<=2.7) ||
+    //              ( NEMF<0.99 && NEMF>0.02 && NumNeutralParticles>2 && jabseta>2.7 && jabseta<=3.0 ) ||
+    //              ( NEMF<0.90 && NHF>0.02 && NumNeutralParticles>10 && jabseta>3.0 );
+    // }
 
-	 else if ( setup == 2017 )
-	 {
-	   // Tight jet ID https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2017 without JetIDLepVeto
-	 	JetID      = ((NHF<0.90 && NEMF<0.90 && NumConst>1) && ((jabseta<=2.4 && CHF>0 && CHM>0) || jabseta>2.4) && jabseta<=2.7) ||
-      				 ( NEMF<0.99 && NEMF>0.02 && NumNeutralParticles>2 && jabseta>2.7 && jabseta<=3.0 ) ||
-      				 ( NEMF<0.90 && NHF>0.02 && NumNeutralParticles>10 && jabseta>3.0 );
-	 }
+    // else if ( setup == 2018) 
+    // {
+    //  // Tight jet ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID13TeVRun2018 without JetIDLepVeto 
+    //   JetID    = ( CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && NHF < 0.9 && jabseta<=2.6) ||
+    //              ( CHM>0 && NEMF<0.99 && NHF < 0.9 && jabseta>2.6 && jabseta<=2.7) ||
+    //              ( NEMF>0.02 && NEMF<0.99 && NumNeutralParticles>2 && jabseta>2.7 && jabseta<=3.0 ) ||
+    //              ( NEMF<0.90 && NHF>0.2 && NumNeutralParticles>10 && jabseta>3.0 );
+    // }
 
-	 else if ( setup == 2018)
-	 {
-	   // Tight jet ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID13TeVRun2018 without JetIDLepVeto
-	 	JetID      =   ( CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && NHF < 0.9 && jabseta<=2.6) ||
-                     ( CHM>0 && NEMF<0.99 && NHF < 0.9 && jabseta>2.6 && jabseta<=2.7) ||
-                     ( NEMF>0.02 && NEMF<0.99 && NumNeutralParticles>2 && jabseta>2.7 && jabseta<=3.0 ) ||
-                     ( NEMF<0.90 && NHF>0.2 && NumNeutralParticles>10 && jabseta>3.0 );
-	 }
+    // else
+    // {
+    //  throw cms::Exception("JetID") << "Jet ID is not defined for the given setup (" << setup << ")!";
+    // }
+	 
+    //--- JetID for UL, only one WP provided. Cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID13TeVUL
+    //--- Lepton veto not included, as we perform our own cleaning and selection between leps and jets
+    if ( setup == 2016 )
+    {
+      JetID    =  (jabseta<=2.4 && CEMF<0.8 && CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && NHF<0.9) || 
+                  (jabseta>2.4 && jabseta<=2.7 && NEMF<0.99 && NHF < 0.9) ||
+                  (jabseta>2.7 && jabseta<=3.0 && NEMF>0.0 && NEMF<0.99 && NHF<0.9 && NumNeutralParticle>1) ||
+                  (jabseta>3.0 && NEMF<0.90 && NHF>0.2 && NumNeutralParticle>10);
+    }
 
-	 else
-	 {
-	   throw cms::Exception("JetID") << "Jet ID is not defined for the given setup (" << setup << ")!";
-	 }
+    else if ( (setup == 2017) || (setup == 2018) )
+    {
+      JetID    = (jabseta<=2.6 && CEMF<0.8 && CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && NHF<0.9) || 
+                 (jabseta>2.6 && jabseta<=2.7 && CEMF<0.8 && CHM>0 && NEMF<0.99 && NHF < 0.9) ||
+                 (jabseta>2.7 && jabseta<=3.0 && NEMF>0.01 && NEMF<0.99 && NumNeutralParticle>1) ||
+                 (jabseta>3.0 && NEMF<0.90 && NHF>0.2 && NumNeutralParticle>10);
+    }
 
-      bool PUjetID = true;
-      float PUjetID_score = 0;
+    else
+    {
+     throw cms::Exception("JetID") << "Jet ID is not defined for the given setup (" << setup << ")!";
+    } 
 
-      if ( applyJEC_ && ( setup == 2017 || setup == 2018 || (setup == 2016 && (!(isMC_)) )))
-	{
-	  PUjetID_score = j.userFloat("pileupJetIdUpdated:fullDiscriminant");
-	  PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0));
-	}
-      //if (applyJEC_) PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0)); // MODIFIED according to update jet collection for 2016 MC (needed to include DeepCSV)
+    bool PUjetID = false;
+    float PUjetID_score = 0;
+
+    //Recommended tight PU JET ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
+    //Recommended tight WP for jet pileup ID taken from https://github.com/alefisico/cmssw/blob/PUID_102X/RecoJets/JetProducers/python/PileupJetIDCutParams_cfi.py
+    // Computed using 2016 81X training and used for all three years
+    //4 Eta Categories  0-2.5   2.5-2.75   2.75-3.0   3.0-5.0
+    //Tight Id
+    //Pt010_Tight    = cms.vdouble( 0.69, -0.35, -0.26, -0.21),
+    //Pt1020_Tight   = cms.vdouble( 0.69, -0.35, -0.26, -0.21),
+    //Pt2030_Tight   = cms.vdouble( 0.69, -0.35, -0.26, -0.21),
+    //Pt3050_Tight   = cms.vdouble( 0.86, -0.10, -0.05, -0.01),
+
+    if ( applyJEC_ && ( setup == 2017 || setup == 2018 || (setup == 2016 && (!(isMC_)) )))
+    {
+      PUjetID_score = j.userFloat("pileupJetIdUpdated:fullDiscriminant");
+    }
+    else
+    {
+      PUjetID_score = j.userFloat("pileupJetId:fullDiscriminant");
+    }
+
+    // WP applied explicitely
+    //cout << "PU ID score = " << PUjetID_score << " PT = " << jpt << " ETA = " << jabseta << endl;
+    // PUjetID       = ( 
+		  //    (jpt > 0 && jpt <= 10 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.69  ||
+		  //    (jpt > 10 && jpt <= 20 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.69 ||
+		  //    (jpt > 20 && jpt <= 30 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.69 ||
+		  //    (jpt > 30 && jpt <= 50 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.86 ||
+
+		  //    (jpt > 0 && jpt <= 10 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.35  ||
+		  //    (jpt > 10 && jpt <= 20 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.35 ||
+		  //    (jpt > 20 && jpt <= 30 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.35 ||
+		  //    (jpt > 30 && jpt <= 50 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.10 ||
+
+		  //    (jpt > 0 && jpt <= 10 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.26  ||
+		  //    (jpt > 10 && jpt <= 20 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.26 ||
+		  //    (jpt > 20 && jpt <= 30 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.26 ||
+		  //    (jpt > 30 && jpt <= 50 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.05 ||
+
+		  //    (jpt > 0 && jpt <= 10 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21  ||
+		  //    (jpt > 10 && jpt <= 20 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21 ||
+		  //    (jpt > 20 && jpt <= 30 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21 ||
+		  //    (jpt > 30 && jpt <= 50 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.01 
+		  //   );
+
+    //--- UL Jet PU ID. Changed WPs and pT regions for the tranining. Cf. https://twiki.cern.ch/twiki/bin/view/CMS/PileupJetIDUL#Recommendations_for_2018_UL_data
+    //--- 4 Eta Categories: 0-2.5   2.5-2.75   2.75-3.0   3.0-5.0
+    //--- Tight Jet PU ID:
+    //--- Pt1020_Tight = cms.vdouble( 0.77, 0.38, -0.31, -0.21),
+    //--- Pt2030_Tight = cms.vdouble( 0.90, 0.60, -0.12, -0.13),
+    //--- Pt3040_Tight = cms.vdouble( 0.96, 0.82, 0.20, 0.09),
+    //--- Pt4050_Tight = cms.vdouble( 0.98, 0.92, 0.47, 0.29),
+    PUjetID = ( 
+         (jpt > 10 && jpt <= 20 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.77 ||
+         (jpt > 20 && jpt <= 30 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.90 ||
+         (jpt > 30 && jpt <= 40 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.96 ||
+         (jpt > 40 && jpt <= 50 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.98 ||
+
+         (jpt > 10 && jpt <= 20 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > 0.38 ||
+         (jpt > 20 && jpt <= 30 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > 0.60 ||
+         (jpt > 30 && jpt <= 40 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > 0.82 ||
+         (jpt > 40 && jpt <= 50 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > 0.92 ||
+
+         (jpt > 10 && jpt <= 20 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.31 ||
+         (jpt > 20 && jpt <= 30 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.12 ||
+         (jpt > 30 && jpt <= 40 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > 0.20  ||
+         (jpt > 40 && jpt <= 50 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > 0.47  ||
+
+         (jpt > 10 && jpt <= 20 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21 ||
+         (jpt > 20 && jpt <= 30 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.13 ||
+         (jpt > 30 && jpt <= 40 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > 0.09  ||
+         (jpt > 40 && jpt <= 50 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > 0.29 
+      );
+    //if (PUjetID) cout << "PUjetID!" << endl;
+    
+    /*if ( applyJEC_ && ( setup == 2017 || setup == 2018 || (setup == 2016 && (!(isMC_)) )))
+      {
+        PUjetID_score = j.userFloat("pileupJetIdUpdated:fullDiscriminant"); 
+        PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0));
+      }
+    //if (applyJEC_) PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0)); // MODIFIED according to update jet collection for 2016 MC (needed to include DeepCSV)                  
       else
-	{
-	  PUjetID_score = j.userFloat("pileupJetId:fullDiscriminant");
-	  PUjetID = bool(j.userInt("pileupJetId:fullId") & (1 << 0));
-	}
+      {
+        PUjetID_score = j.userFloat("pileupJetId:fullDiscriminant"); 
+        PUjetID = bool(j.userInt("pileupJetId:fullId") & (1 << 0));
+      }
+    */
 
-      //Recommended tight PU JET ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
-      //Recommended tight WP for jet pileup ID taken from https://github.com/alefisico/cmssw/blob/PUID_102X/RecoJets/JetProducers/python/PileupJetIDCutParams_cfi.py
-      // Computed using 2016 81X training and used for all three years
-      //4 Eta Categories  0-2.5   2.5-2.75   2.75-3.0   3.0-5.0
-      //Tight Id
-      //Pt010_Tight    = cms.vdouble( 0.69, -0.35, -0.26, -0.21),
-      //Pt1020_Tight   = cms.vdouble( 0.69, -0.35, -0.26, -0.21),
-      //Pt2030_Tight   = cms.vdouble( 0.69, -0.35, -0.26, -0.21),
-      //Pt3050_Tight   = cms.vdouble( 0.86, -0.10, -0.05, -0.01),
-      /*
-	bool PUjetID = false;
-	float PUjetID_score = 0;
-	if ( applyJEC_ && ( setup == 2017 || setup == 2018 || (setup == 2016 && (!(isMC_)) )))
-	{
-	PUjetID_score = j.userFloat("pileupJetIdUpdated:fullDiscriminant");
-	}
-	else
-	{
-	PUjetID_score = j.userFloat("pileupJetId:fullDiscriminant");
-	}
-	// WP applied explicitely
-	//cout << "PU ID score = " << PUjetID_score << " PT = " << jpt << " ETA = " << jabseta << endl;
-	PUjetID       = (
-	(jpt > 0 && jpt <= 10 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.69  ||
-	(jpt > 10 && jpt <= 20 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.69 ||
-	(jpt > 20 && jpt <= 30 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.69 ||
-	(jpt > 30 && jpt <= 50 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.86 ||
-	(jpt > 0 && jpt <= 10 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.35  ||
-	(jpt > 10 && jpt <= 20 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.35 ||
-	(jpt > 20 && jpt <= 30 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.35 ||
-	(jpt > 30 && jpt <= 50 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.10 ||
-	(jpt > 0 && jpt <= 10 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.26  ||
-	(jpt > 10 && jpt <= 20 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.26 ||
-	(jpt > 20 && jpt <= 30 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.26 ||
-	(jpt > 30 && jpt <= 50 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.05 ||
-	(jpt > 0 && jpt <= 10 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21  ||
-	(jpt > 10 && jpt <= 20 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21 ||
-	(jpt > 20 && jpt <= 30 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21 ||
-	(jpt > 30 && jpt <= 50 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.01
-	);
-	//if (PUjetID) cout << "PUjetID!" << endl;
-	*/
-
-    //--- b-tagging and scaling factors
-
+//--- b tagging and scaling factors
     float bTagger;
     bTagger = j.bDiscriminator(bTaggerName) + j.bDiscriminator((bTaggerName + "b")); //one should just sum for doing b tagging, the b and bb probabilities
     //cout << "b tag is = " << bTagger << endl;
@@ -443,29 +496,28 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       //- check matching to gen jets
       const reco::GenJet* genJet = j.genJet();
-      bool matchedJet = genJet
-	&& ( reco::deltaR(jeta,jphi,genJet->eta(),genJet->phi()) < 0.2 )
-	&& ( fabs(jpt-genJet->pt()) < 3*res_pt*jpt );
+      bool matchedJet = genJet 
+                        && ( reco::deltaR(jeta,jphi,genJet->eta(),genJet->phi()) < 0.2 ) 
+                        && ( fabs(jpt-genJet->pt()) < 3*res_pt*jpt );
 
       if(matchedJet){
-	//- apply scaling
-	float gen_pt = genJet->pt();
-	pt_jer   = max( 0., gen_pt + sf   *(jpt-gen_pt) );
-	pt_jerup = max( 0., gen_pt + sf_up*(jpt-gen_pt) );
-	pt_jerdn = max( 0., gen_pt + sf_dn*(jpt-gen_pt) );
+        //- apply scaling
+        float gen_pt = genJet->pt();
+        pt_jer   = max( 0., gen_pt + sf   *(jpt-gen_pt) );
+        pt_jerup = max( 0., gen_pt + sf_up*(jpt-gen_pt) );
+        pt_jerdn = max( 0., gen_pt + sf_dn*(jpt-gen_pt) );
       }else{
-	//- apply smearing
-	TRandom3 rand;
-	rand.SetSeed(abs(static_cast<int>(sin(jphi)*100000)));
-	float smear = rand.Gaus(0,1.);
-	float sigma   = sqrt(sf   *sf   -1.) * res_pt*jpt;
-	float sigmaup = sqrt(sf_up*sf_up-1.) * res_pt*jpt;
-	float sigmadn = sqrt(sf_dn*sf_dn-1.) * res_pt*jpt;
-	pt_jer   = max( 0., smear*sigma   + jpt );
-	pt_jerup = max( 0., smear*sigmaup + jpt );
-	pt_jerdn = max( 0., smear*sigmadn + jpt );
-      }
-
+        //- apply smearing
+        TRandom3 rand;
+        rand.SetSeed(abs(static_cast<int>(sin(jphi)*100000)));
+        float smear = rand.Gaus(0,1.);
+        float sigma   = sqrt(sf   *sf   -1.) * res_pt*jpt;
+        float sigmaup = sqrt(sf_up*sf_up-1.) * res_pt*jpt;
+        float sigmadn = sqrt(sf_dn*sf_dn-1.) * res_pt*jpt;
+        pt_jer   = max( 0., smear*sigma   + jpt );
+        pt_jerup = max( 0., smear*sigmaup + jpt );
+        pt_jerdn = max( 0., smear*sigmadn + jpt );
+      } 
       j.setP4(reco::Particle::PolarLorentzVector(pt_jer, jeta, jphi, (pt_jer/jpt)*j.mass()));
     }
 

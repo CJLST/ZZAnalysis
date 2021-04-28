@@ -8,8 +8,6 @@
 <use name="CommonTools/CandUtils"/>
 <use name="ZZAnalysis/AnalysisStep"/>
 <use name="JHUGenMELA/MELA"/>
-<!-- <use name="ZZMatrixElement/MEKD"/> -->
-<!-- <use name="ZZMatrixElement/MEMCalculators"/> -->
 <use name="MelaAnalytics/GenericMEComputer"/>
 <use name="EgammaAnalysis/ElectronTools"/>
 <use name="PhysicsTools/KinFitter"/>
