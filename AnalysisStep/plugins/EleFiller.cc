@@ -178,6 +178,7 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 
      
     //-- Scale and smearing corrections are now stored in the miniAOD https://twiki.cern.ch/twiki/bin/view/CMS/EgammaMiniAODV2#Energy_Scale_and_Smearing
+    //-- Unchanged in UL implementation TWiki accessed on 27/04
     float uncorrected_pt = l.pt();
     float corr_factor = l.userFloat("ecalTrkEnergyPostCorr") / l.energy();//get scale/smear correction factor directly from miniAOD
      
