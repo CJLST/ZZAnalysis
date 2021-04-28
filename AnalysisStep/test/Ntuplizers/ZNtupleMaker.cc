@@ -142,13 +142,61 @@ namespace {
   std::vector<float> AddMuCombRelIsoPF;
   Short_t nCleanedJetsPt30 = 0;
   Short_t nCleanedJetsPt30_jesUp = 0;
+  Short_t nCleanedJetsPt30_jesUp_Total = 0;
+  Short_t nCleanedJetsPt30_jesUp_Abs = 0;
+  Short_t nCleanedJetsPt30_jesUp_Abs_year = 0;
+  Short_t nCleanedJetsPt30_jesUp_BBEC1 = 0;
+  Short_t nCleanedJetsPt30_jesUp_BBEC1_year = 0;
+  Short_t nCleanedJetsPt30_jesUp_EC2 = 0;
+  Short_t nCleanedJetsPt30_jesUp_EC2_year = 0;
+  Short_t nCleanedJetsPt30_jesUp_FlavQCD = 0;
+  Short_t nCleanedJetsPt30_jesUp_HF = 0;
+  Short_t nCleanedJetsPt30_jesUp_HF_year = 0;
+  Short_t nCleanedJetsPt30_jesUp_RelBal = 0;
+  Short_t nCleanedJetsPt30_jesUp_RelSample_year = 0;
   Short_t nCleanedJetsPt30_jesDn = 0;
+  Short_t nCleanedJetsPt30_jesDn_Total = 0;
+  Short_t nCleanedJetsPt30_jesDn_Abs = 0;
+  Short_t nCleanedJetsPt30_jesDn_Abs_year = 0;
+  Short_t nCleanedJetsPt30_jesDn_BBEC1 = 0;
+  Short_t nCleanedJetsPt30_jesDn_BBEC1_year = 0;
+  Short_t nCleanedJetsPt30_jesDn_EC2 = 0;
+  Short_t nCleanedJetsPt30_jesDn_EC2_year = 0;
+  Short_t nCleanedJetsPt30_jesDn_FlavQCD = 0;
+  Short_t nCleanedJetsPt30_jesDn_HF = 0;
+  Short_t nCleanedJetsPt30_jesDn_HF_year = 0;
+  Short_t nCleanedJetsPt30_jesDn_RelBal = 0;
+  Short_t nCleanedJetsPt30_jesDn_RelSample_year = 0;
   Short_t nCleanedJetsPt30_jerUp = 0;
   Short_t nCleanedJetsPt30_jerDn = 0;
   Short_t nCleanedJetsPt30BTagged  = 0;
   Short_t nCleanedJetsPt30BTagged_bTagSF  = 0;
   Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp  = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_Total = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_Abs = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_Abs_year = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_BBEC1 = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_BBEC1_year = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_EC2 = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_EC2_year = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_FlavQCD = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_HF = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_HF_year = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_RelBal = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesUp_RelSample_year = 0;
   Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn  = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_Total = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_Abs = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_Abs_year = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_BBEC1 = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_BBEC1_year = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_EC2 = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_EC2_year = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_FlavQCD = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_HF = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_HF_year = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_RelBal = 0;
+  Short_t nCleanedJetsPt30BTagged_bTagSF_jesDn_RelSample_year = 0;
   Short_t nCleanedJetsPt30BTagged_bTagSF_jerUp  = 0;
   Short_t nCleanedJetsPt30BTagged_bTagSF_jerDn  = 0;
   Short_t nCleanedJetsPt30BTagged_bTagSFUp  = 0;
@@ -157,6 +205,7 @@ namespace {
   std::vector<float> JetEta;
   std::vector<float> JetPhi;
   std::vector<float> JetMass;
+  std::vector<float> JetEnergy;
   std::vector<float> JetBTagger;
   std::vector<float> JetIsBtagged;
   std::vector<float> JetIsBtaggedWithSF;
@@ -167,25 +216,61 @@ namespace {
   std::vector<float> JetMult;
   std::vector<float> JetPtD;
   std::vector<float> JetSigma;
+  std::vector<float> JetSigma_Total ;
+  std::vector<float> JetSigma_Abs ;
+  std::vector<float> JetSigma_Abs_year ;
+  std::vector<float> JetSigma_BBEC1 ;
+  std::vector<float> JetSigma_BBEC1_year ;
+  std::vector<float> JetSigma_EC2 ;
+  std::vector<float> JetSigma_EC2_year ;
+  std::vector<float> JetSigma_FlavQCD ;
+  std::vector<float> JetSigma_HF ;
+  std::vector<float> JetSigma_HF_year ;
+  std::vector<float> JetSigma_RelBal ;
+  std::vector<float> JetSigma_RelSample_year ;
   std::vector<short> JetHadronFlavour;
   std::vector<short> JetPartonFlavour;
   std::vector<float> JetPUValue;
   std::vector<short> JetPUID;
-  std::vector<float> JetPUID_score;
+  std::vector<short> JetPUID_score;
   std::vector<short> JetID;
-  std::vector<float> JetPt_JESUp;
-  std::vector<float> JetPt_JESDown;
+  std::vector<float> JetJESUp ;
+  std::vector<float> JetJESUp_Total ;
+  std::vector<float> JetJESUp_Abs ;
+  std::vector<float> JetJESUp_Abs_year ;
+  std::vector<float> JetJESUp_BBEC1 ;
+  std::vector<float> JetJESUp_BBEC1_year ;
+  std::vector<float> JetJESUp_EC2 ;
+  std::vector<float> JetJESUp_EC2_year ;
+  std::vector<float> JetJESUp_FlavQCD ;
+  std::vector<float> JetJESUp_HF ;
+  std::vector<float> JetJESUp_HF_year ;
+  std::vector<float> JetJESUp_RelBal ;
+  std::vector<float> JetJESUp_RelSample_year ;
+  std::vector<float> JetJESDown ;
+  std::vector<float> JetJESDown_Total ;
+  std::vector<float> JetJESDown_Abs ;
+  std::vector<float> JetJESDown_Abs_year ;
+  std::vector<float> JetJESDown_BBEC1 ;
+  std::vector<float> JetJESDown_BBEC1_year ;
+  std::vector<float> JetJESDown_EC2 ;
+  std::vector<float> JetJESDown_EC2_year ;
+  std::vector<float> JetJESDown_FlavQCD ;
+  std::vector<float> JetJESDown_HF ;
+  std::vector<float> JetJESDown_HF_year ;
+  std::vector<float> JetJESDown_RelBal ;
+  std::vector<float> JetJESDown_RelSample_year ;
   std::vector<float> JetPt_JERUp;
   std::vector<float> JetPt_JERDown;
   std::vector<float> JetPtJEC_noJER;
   std::vector<float> JetRawPt;
-   
+
   std::vector<float> PhotonPt;
   std::vector<float> PhotonEta;
   std::vector<float> PhotonPhi;
   std::vector<bool> PhotonIsCutBasedLooseID;
 
-	
+
   // Generic MET object
   METObject metobj;
   METObject metobj_corrected;
@@ -196,7 +281,7 @@ namespace {
   Float_t xsection = 0;
   Float_t dataMCWeight = 0;
   Float_t overallEventWeight = 0;
-   
+
   Float_t L1prefiringWeight = 0;
   Float_t L1prefiringWeightUp = 0;
   Float_t L1prefiringWeightDn = 0;
@@ -209,9 +294,9 @@ class ZNtupleMaker : public edm::EDAnalyzer {
 public:
   explicit ZNtupleMaker(const edm::ParameterSet&);
   ~ZNtupleMaker();
-	
+
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
-	
+
 private:
   virtual void beginJob() ;
   virtual void beginRun(edm::Run const&, edm::EventSetup const&);
@@ -244,7 +329,7 @@ private:
   Float_t xsec;
   int year;
   edm::InputTag metTag;
-   
+
   METCorrectionHandler* metCorrHandler;
 
   edm::EDGetTokenT<GenEventInfoProduct> genInfoToken;
@@ -261,7 +346,7 @@ private:
   const vector<pat::Electron>* softElectrons;
   edm::EDGetTokenT<vector<pat::Muon> > muonToken;
   const vector<pat::Muon>* softMuons;
-   
+
   edm::EDGetTokenT< double > prefweight_token;
   edm::EDGetTokenT< double > prefweightup_token;
   edm::EDGetTokenT< double > prefweightdown_token;
@@ -271,7 +356,7 @@ private:
   //counters
   Float_t Nevt_Gen;
   Float_t Nevt_Gen_lumiBlock;
-	
+
   Float_t gen_sumPUWeight;
   Float_t gen_sumGenMCWeight;
   Float_t gen_sumWeights;
@@ -303,7 +388,7 @@ ZNtupleMaker::ZNtupleMaker(const edm::ParameterSet& pset) :
   triggerResultToken = consumes<edm::TriggerResults>(edm::InputTag("TriggerResults"));
   vtxToken = consumes<vector<reco::Vertex> >(edm::InputTag("goodPrimaryVertices"));
   jetToken = consumes<edm::View<pat::Jet> >(edm::InputTag("cleanJets"));
-  
+
   metToken = consumes<pat::METCollection>(metTag);
   metCorrHandler = new METCorrectionHandler(Form("%i", year));
   photonToken = consumes<pat::PhotonCollection>(edm::InputTag("slimmedPhotons"));
@@ -324,7 +409,7 @@ ZNtupleMaker::ZNtupleMaker(const edm::ParameterSet& pset) :
   }
 
   isMC = myHelper.isMC();
-   
+
   if( isMC && (year == 2016 || year == 2017))
   {
      prefweight_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProb"));
@@ -341,7 +426,7 @@ ZNtupleMaker::ZNtupleMaker(const edm::ParameterSet& pset) :
 
    //Scale factors for data/MC efficiency
    if (!skipEleDataMCWeight && isMC) { lepSFHelper = new LeptonSFHelper(); }
-	
+
 }
 
 
@@ -363,7 +448,7 @@ void ZNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& eSetu
     vector<Handle<std::vector< PileupSummaryInfo > > >  PupInfos; //FIXME support for miniAOD v1/v2 where name changed; catch does not work...
     event.getManyByType(PupInfos);
     Handle<std::vector< PileupSummaryInfo > > PupInfo = PupInfos.front();
-	  
+
     std::vector<PileupSummaryInfo>::const_iterator PVI;
     for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
       if(PVI->getBunchCrossing() == 0) {
@@ -384,18 +469,18 @@ void ZNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& eSetu
     gen_sumPUWeight    += PUWeight;
     gen_sumGenMCWeight += genHEPMCweight;
     gen_sumWeights     += PUWeight*genHEPMCweight;
-     
+
     // L1 prefiring weights
     if( year == 2016 || year == 2017 )
     {
        edm::Handle< double > theprefweight;
        event.getByToken(prefweight_token, theprefweight ) ;
        L1prefiringWeight =(*theprefweight);
-        
+
        edm::Handle< double > theprefweightup;
        event.getByToken(prefweightup_token, theprefweightup ) ;
        L1prefiringWeightUp =(*theprefweightup);
-        
+
        edm::Handle< double > theprefweightdown;
        event.getByToken(prefweightdown_token, theprefweightdown ) ;
        L1prefiringWeightDn =(*theprefweightdown);
@@ -429,7 +514,7 @@ void ZNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& eSetu
   // Apply trigger request (skip event)
   bool evtPassTrigger = myHelper.passTrigger(event,triggerResults,trigWord);
   if (applyTrigger && !evtPassTrigger) return;
-	
+
   // Apply MET trigger request (skip event)
   evtPassMETTrigger = myHelper.passMETTrigger(event,triggerResults);
 
@@ -452,47 +537,180 @@ void ZNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& eSetu
    for(edm::View<pat::Jet>::const_iterator jet = CleanedJets->begin(); jet != CleanedJets->end(); ++jet){
       cleanedJets.push_back(&*jet);
    }
-   
+
    // Count and store jets, after additional cleaning for CRs...
    for (unsigned i=0; i<cleanedJets.size(); ++i) {
-       
-       // count jes up/down njets pt30
-       float jes_unc = cleanedJets[i]->userFloat("jes_unc");
-       
-       float pt_nominal = cleanedJets[i]->pt();
-       float pt_jes_up = pt_nominal * (1.0 + jes_unc);
-       float pt_jes_dn = pt_nominal * (1.0 - jes_unc);
-       
-       if(pt_nominal>30){
-          ++nCleanedJetsPt30;
-          if(cleanedJets[i]->userFloat("isBtagged")) ++nCleanedJetsPt30BTagged;
-          if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF;
-          if(cleanedJets[i]->userFloat("isBtaggedWithSF_Up")) ++nCleanedJetsPt30BTagged_bTagSFUp;
-          if(cleanedJets[i]->userFloat("isBtaggedWithSF_Dn")) ++nCleanedJetsPt30BTagged_bTagSFDn;
-       }
-       if(pt_jes_up>30){
-          ++nCleanedJetsPt30_jesUp;
-          if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp;
-       }
-       if(pt_jes_dn>30){
-          ++nCleanedJetsPt30_jesDn;
-          if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn;
-       }
-       
-       // count jer up/down njets pt30
-       float pt_jer_up = cleanedJets[i]->userFloat("pt_jerup");
-       float pt_jer_dn = cleanedJets[i]->userFloat("pt_jerdn");
-       
-       if(pt_jer_up>30){
-          ++nCleanedJetsPt30_jerUp;
-          if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jerUp;
-       }
-       if(pt_jer_dn>30){
-          ++nCleanedJetsPt30_jerDn;
-          if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jerDn;
-       }
-      if (addJets) FillJet(*(cleanedJets.at(i)));
-    }
+
+     // count jes up/down njets pt30
+     float jes_unc = cleanedJets[i]->userFloat("jes_unc");
+     float jes_unc_Total = cleanedJets[i]->userFloat("jes_unc_split_Total");
+     float jes_unc_Abs = cleanedJets[i]->userFloat("jes_unc_split_Abs");
+     float jes_unc_Abs_year = cleanedJets[i]->userFloat("jes_unc_split_Abs_year");
+     float jes_unc_BBEC1 = cleanedJets[i]->userFloat("jes_unc_split_BBEC1");
+     float jes_unc_BBEC1_year = cleanedJets[i]->userFloat("jes_unc_split_BBEC1_year");
+     float jes_unc_EC2 = cleanedJets[i]->userFloat("jes_unc_split_EC2");
+     float jes_unc_EC2_year = cleanedJets[i]->userFloat("jes_unc_split_EC2_year");
+     float jes_unc_FlavQCD = cleanedJets[i]->userFloat("jes_unc_split_FlavQCD");
+     float jes_unc_HF = cleanedJets[i]->userFloat("jes_unc_split_HF");
+     float jes_unc_HF_year = cleanedJets[i]->userFloat("jes_unc_split_HF_year");
+     float jes_unc_RelBal = cleanedJets[i]->userFloat("jes_unc_split_RelBal");
+     float jes_unc_RelSample_year = cleanedJets[i]->userFloat("jes_unc_split_RelSample_year");
+
+     float pt_nominal = cleanedJets[i]->pt();
+     float pt_jes_up = pt_nominal * (1.0 + jes_unc);
+     float pt_jes_up_Total = pt_nominal * (1.0 + jes_unc_Total);
+     float pt_jes_up_Abs = pt_nominal * (1.0 + jes_unc_Abs);
+     float pt_jes_up_Abs_year = pt_nominal * (1.0 + jes_unc_Abs_year);
+     float pt_jes_up_BBEC1 = pt_nominal * (1.0 + jes_unc_BBEC1);
+     float pt_jes_up_BBEC1_year = pt_nominal * (1.0 + jes_unc_BBEC1_year);
+     float pt_jes_up_EC2 = pt_nominal * (1.0 + jes_unc_EC2);
+     float pt_jes_up_EC2_year = pt_nominal * (1.0 + jes_unc_EC2_year);
+     float pt_jes_up_FlavQCD = pt_nominal * (1.0 + jes_unc_FlavQCD);
+     float pt_jes_up_HF = pt_nominal * (1.0 + jes_unc_HF);
+     float pt_jes_up_HF_year = pt_nominal * (1.0 + jes_unc_HF_year);
+     float pt_jes_up_RelBal = pt_nominal * (1.0 + jes_unc_RelBal);
+     float pt_jes_up_RelSample_year = pt_nominal * (1.0 + jes_unc_RelSample_year);
+     float pt_jes_dn = pt_nominal * (1.0 - jes_unc);
+     float pt_jes_dn_Total = pt_nominal * (1.0 - jes_unc_Total);
+     float pt_jes_dn_Abs = pt_nominal * (1.0 - jes_unc_Abs);
+     float pt_jes_dn_Abs_year = pt_nominal * (1.0 - jes_unc_Abs_year);
+     float pt_jes_dn_BBEC1 = pt_nominal * (1.0 - jes_unc_BBEC1);
+     float pt_jes_dn_BBEC1_year = pt_nominal * (1.0 - jes_unc_BBEC1_year);
+     float pt_jes_dn_EC2 = pt_nominal * (1.0 - jes_unc_EC2);
+     float pt_jes_dn_EC2_year = pt_nominal * (1.0 - jes_unc_EC2_year);
+     float pt_jes_dn_FlavQCD = pt_nominal * (1.0 - jes_unc_FlavQCD);
+     float pt_jes_dn_HF = pt_nominal * (1.0 - jes_unc_HF);
+     float pt_jes_dn_HF_year = pt_nominal * (1.0 - jes_unc_HF_year);
+     float pt_jes_dn_RelBal = pt_nominal * (1.0 - jes_unc_RelBal);
+     float pt_jes_dn_RelSample_year = pt_nominal * (1.0 - jes_unc_RelSample_year);
+
+     if(pt_nominal>30){
+       ++nCleanedJetsPt30;
+       if(cleanedJets[i]->userFloat("isBtagged")) ++nCleanedJetsPt30BTagged;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF_Up")) ++nCleanedJetsPt30BTagged_bTagSFUp;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF_Dn")) ++nCleanedJetsPt30BTagged_bTagSFDn;
+     }
+     if(pt_jes_up>30){
+       ++nCleanedJetsPt30_jesUp;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp;
+     }
+     if(pt_jes_up_Total>30){
+       ++nCleanedJetsPt30_jesUp_Total;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_Total;
+     }
+     if(pt_jes_up_Abs>30){
+       ++nCleanedJetsPt30_jesUp_Abs;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_Abs;
+     }
+     if(pt_jes_up_Abs_year>30){
+       ++nCleanedJetsPt30_jesUp_Abs_year;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_Abs_year;
+     }
+     if(pt_jes_up_BBEC1>30){
+       ++nCleanedJetsPt30_jesUp_BBEC1;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_BBEC1;
+     }
+     if(pt_jes_up_BBEC1_year>30){
+       ++nCleanedJetsPt30_jesUp_BBEC1_year;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_BBEC1_year;
+     }
+     if(pt_jes_up_EC2>30){
+       ++nCleanedJetsPt30_jesUp_EC2;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_EC2;
+     }
+     if(pt_jes_up_EC2_year>30){
+       ++nCleanedJetsPt30_jesUp_EC2_year;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_EC2_year;
+     }
+     if(pt_jes_up_FlavQCD>30){
+       ++nCleanedJetsPt30_jesUp_FlavQCD;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_FlavQCD;
+     }
+     if(pt_jes_up_HF>30){
+       ++nCleanedJetsPt30_jesUp_HF;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_HF;
+     }
+     if(pt_jes_up_HF_year>30){
+       ++nCleanedJetsPt30_jesUp_HF_year;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_HF_year;
+     }
+     if(pt_jes_up_RelBal>30){
+       ++nCleanedJetsPt30_jesUp_RelBal;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_RelBal;
+     }
+     if(pt_jes_up_RelSample_year>30){
+       ++nCleanedJetsPt30_jesUp_RelSample_year;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesUp_RelSample_year;
+     }
+     if(pt_jes_dn>30){
+       ++nCleanedJetsPt30_jesDn;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn;
+     }
+     if(pt_jes_dn_Total>30){
+       ++nCleanedJetsPt30_jesDn_Total;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_Total;
+     }
+     if(pt_jes_dn_Abs>30){
+       ++nCleanedJetsPt30_jesDn_Abs;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_Abs;
+     }
+     if(pt_jes_dn_Abs_year>30){
+       ++nCleanedJetsPt30_jesDn_Abs_year;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_Abs_year;
+     }
+     if(pt_jes_dn_BBEC1>30){
+       ++nCleanedJetsPt30_jesDn_BBEC1;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_BBEC1;
+     }
+     if(pt_jes_dn_BBEC1_year>30){
+       ++nCleanedJetsPt30_jesDn_BBEC1_year;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_BBEC1_year;
+     }
+     if(pt_jes_dn_EC2>30){
+       ++nCleanedJetsPt30_jesDn_EC2;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_EC2;
+     }
+     if(pt_jes_dn_EC2_year>30){
+       ++nCleanedJetsPt30_jesDn_EC2_year;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_EC2_year;
+     }
+     if(pt_jes_dn_FlavQCD>30){
+       ++nCleanedJetsPt30_jesDn_FlavQCD;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_FlavQCD;
+     }
+     if(pt_jes_dn_HF>30){
+       ++nCleanedJetsPt30_jesDn_HF;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_HF;
+     }
+     if(pt_jes_dn_HF_year>30){
+       ++nCleanedJetsPt30_jesDn_HF_year;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_HF_year;
+     }
+     if(pt_jes_dn_RelBal>30){
+       ++nCleanedJetsPt30_jesDn_RelBal;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_RelBal;
+     }
+     if(pt_jes_dn_RelSample_year>30){
+       ++nCleanedJetsPt30_jesDn_RelSample_year;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jesDn_RelSample_year;
+     }
+
+
+     // count jer up/down njets pt30
+     float pt_jer_up = cleanedJets[i]->userFloat("pt_jerup");
+     float pt_jer_dn = cleanedJets[i]->userFloat("pt_jerdn");
+
+     if(pt_jer_up>30){
+       ++nCleanedJetsPt30_jerUp;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jerUp;
+     }
+     if(pt_jer_dn>30){
+       ++nCleanedJetsPt30_jerDn;
+       if(cleanedJets[i]->userFloat("isBtaggedWithSF")) ++nCleanedJetsPt30BTagged_bTagSF_jerDn;
+     }
+     if (addJets) FillJet(*(cleanedJets.at(i)));
+   }
 
   // MET
   Handle<pat::METCollection> metHandle;
@@ -500,37 +718,37 @@ void ZNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& eSetu
   GenMET=GenMETPhi=-99;
   if (metHandle.isValid()){
      const pat::MET &met = metHandle->front();
-     
+
      metobj.extras.met = metobj.extras.met_original = metobj.extras.met_raw
      = metobj.extras.met_METup = metobj.extras.met_METdn
      = metobj.extras.met_JERup = metobj.extras.met_JERdn
      = metobj.extras.met_PUup = metobj.extras.met_PUdn
-     
+
      = metobj_corrected.extras.met = metobj_corrected.extras.met_original = metobj_corrected.extras.met_raw
      = metobj_corrected.extras.met_METup = metobj_corrected.extras.met_METdn
      = metobj_corrected.extras.met_JERup = metobj_corrected.extras.met_JERdn
      = metobj_corrected.extras.met_PUup = metobj_corrected.extras.met_PUdn
-     
+
      = met.pt();
      metobj.extras.phi = metobj.extras.phi_original = metobj.extras.phi_raw
      = metobj.extras.phi_METup = metobj.extras.phi_METdn
      = metobj.extras.phi_JECup = metobj.extras.phi_JECdn
      = metobj.extras.phi_JERup = metobj.extras.phi_JERdn
      = metobj.extras.phi_PUup = metobj.extras.phi_PUdn
-     
+
      = metobj_corrected.extras.phi = metobj_corrected.extras.phi_original = metobj_corrected.extras.phi_raw
      = metobj_corrected.extras.phi_METup = metobj_corrected.extras.phi_METdn
      = metobj_corrected.extras.phi_JECup = metobj_corrected.extras.phi_JECdn
      = metobj_corrected.extras.phi_JERup = metobj_corrected.extras.phi_JERdn
      = metobj_corrected.extras.phi_PUup = metobj_corrected.extras.phi_PUdn
-     
+
      = met.phi();
-     
+
      metobj.extras.met_JECup = metobj_corrected.extras.met_JECup = met.shiftedPt(pat::MET::JetEnUp);
      metobj.extras.met_JECdn = metobj_corrected.extras.met_JECdn = met.shiftedPt(pat::MET::JetEnDown);
      metobj.extras.phi_JECup = metobj_corrected.extras.phi_JECup = met.shiftedPhi(pat::MET::JetEnUp);
      metobj.extras.phi_JECdn = metobj_corrected.extras.phi_JECdn = met.shiftedPhi(pat::MET::JetEnDown);
-     
+
      if (isMC && metCorrHandler && met.genMET()){
         GenMET = met.genMET()->pt();
         GenMETPhi = met.genMET()->phi();
@@ -548,45 +766,45 @@ void ZNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& eSetu
      = metobj.extras.met_JECup = metobj.extras.met_JECdn
      = metobj.extras.met_JERup = metobj.extras.met_JERdn
      = metobj.extras.met_PUup = metobj.extras.met_PUdn
-     
+
      = metobj_corrected.extras.met = metobj_corrected.extras.met_original = metobj_corrected.extras.met_raw
      = metobj_corrected.extras.met_METup = metobj_corrected.extras.met_METdn
      = metobj_corrected.extras.met_JECup = metobj_corrected.extras.met_JECdn
      = metobj_corrected.extras.met_JERup = metobj_corrected.extras.met_JERdn
      = metobj_corrected.extras.met_PUup = metobj_corrected.extras.met_PUdn
-     
+
      = metobj.extras.phi = metobj.extras.phi_original = metobj.extras.phi_raw
      = metobj.extras.phi_METup = metobj.extras.phi_METdn
      = metobj.extras.phi_JECup = metobj.extras.phi_JECdn
      = metobj.extras.phi_JERup = metobj.extras.phi_JERdn
      = metobj.extras.phi_PUup = metobj.extras.phi_PUdn
-     
+
      = metobj_corrected.extras.phi = metobj_corrected.extras.phi_original = metobj_corrected.extras.phi_raw
      = metobj_corrected.extras.phi_METup = metobj_corrected.extras.phi_METdn
      = metobj_corrected.extras.phi_JECup = metobj_corrected.extras.phi_JECdn
      = metobj_corrected.extras.phi_JERup = metobj_corrected.extras.phi_JERdn
      = metobj_corrected.extras.phi_PUup = metobj_corrected.extras.phi_PUdn
-     
+
      = -99;
   }
-   
+
   // Photons
   Handle<pat::PhotonCollection> photonCands;
   event.getByToken(photonToken, photonCands);
   vector<const pat::Photon*> photons;
-   
+
   for(unsigned int i = 0; i< photonCands->size(); ++i){
      const pat::Photon* photon = &((*photonCands)[i]);
      photons.push_back(&*photon);
   }
-   
-   
+
+
   if (addPhotons){
      for (unsigned i=0; i<photons.size(); ++i) {
         FillPhoton(year, *(photons.at(i)));
      }
   }
-	
+
   // all soft leptons
   edm::Handle<vector<pat::Electron> > electronHandle;
   event.getByToken(electronToken, electronHandle);
@@ -607,7 +825,7 @@ void ZNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& eSetu
     myTree->FillCurrentTree();
     ++nFilled;
   }
-	
+
   // If no candidate was filled but we still want to keep gen-level and weights, we need to fill one entry anyhow.
   if (skipEmptyEvents==false && nFilled==0) myTree->FillCurrentTree();
 }
@@ -642,7 +860,7 @@ void ZNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool evtPa
   vector<short> fsrIndex;
   vector<string> labels;
   userdatahelpers::getSortedZLeptons(cand, leptons, labels, fsrPhot, fsrIndex);
-	
+
   LepPt.clear();
   LepEta.clear();
   LepPhi.clear();
@@ -816,6 +1034,7 @@ void ZNtupleMaker::FillJet(const pat::Jet& jet)
   JetEta .push_back( jet.eta());
   JetPhi .push_back( jet.phi());
   JetMass .push_back( jet.p4().M());
+  JetEnergy .push_back( jet.p4().energy());
   JetBTagger .push_back( jet.userFloat("bTagger"));
   JetIsBtagged .push_back( jet.userFloat("isBtagged"));
   JetIsBtaggedWithSF .push_back( jet.userFloat("isBtaggedWithSF"));
@@ -830,20 +1049,44 @@ void ZNtupleMaker::FillJet(const pat::Jet& jet)
   JetSigma .push_back(jet.userFloat("jes_unc"));
   JetHadronFlavour .push_back(jet.hadronFlavour());
   JetPartonFlavour .push_back(jet.partonFlavour());
-	
-  JetPt_JESUp .push_back(jet.userFloat("pt_jesup"));
-  JetPt_JESDown .push_back(jet.userFloat("pt_jesdn"));
-  
+
+  JetJESUp .push_back(jet.userFloat("pt_jesup"));
+  JetJESUp_Total .push_back(jet.userFloat("pt_jesup_split_Total"));
+  JetJESUp_Abs .push_back(jet.userFloat("pt_jesup_split_Abs"));
+  JetJESUp_Abs_year .push_back(jet.userFloat("pt_jesup_split_Abs_year"));
+  JetJESUp_BBEC1 .push_back(jet.userFloat("pt_jesup_split_BBEC1"));
+  JetJESUp_BBEC1_year .push_back(jet.userFloat("pt_jesup_split_BBEC1_year"));
+  JetJESUp_EC2 .push_back(jet.userFloat("pt_jesup_split_EC2"));
+  JetJESUp_EC2_year .push_back(jet.userFloat("pt_jesup_split_EC2_year"));
+  JetJESUp_FlavQCD .push_back(jet.userFloat("pt_jesup_split_FlavQCD"));
+  JetJESUp_HF .push_back(jet.userFloat("pt_jesup_split_HF"));
+  JetJESUp_HF_year .push_back(jet.userFloat("pt_jesup_split_HF_year"));
+  JetJESUp_RelBal .push_back(jet.userFloat("pt_jesup_split_RelBal"));
+  JetJESUp_RelSample_year .push_back(jet.userFloat("pt_jesup_split_RelSample_year"));
+  JetJESDown .push_back(jet.userFloat("pt_jesdn"));
+  JetJESDown_Total .push_back(jet.userFloat("pt_jesdn_split_Total"));
+  JetJESDown_Abs .push_back(jet.userFloat("pt_jesdn_split_Abs"));
+  JetJESDown_Abs_year .push_back(jet.userFloat("pt_jesdn_split_Abs_year"));
+  JetJESDown_BBEC1 .push_back(jet.userFloat("pt_jesdn_split_BBEC1"));
+  JetJESDown_BBEC1_year .push_back(jet.userFloat("pt_jesdn_split_BBEC1_year"));
+  JetJESDown_EC2 .push_back(jet.userFloat("pt_jesdn_split_EC2"));
+  JetJESDown_EC2_year .push_back(jet.userFloat("pt_jesdn_split_EC2_year"));
+  JetJESDown_FlavQCD .push_back(jet.userFloat("pt_jesdn_split_FlavQCD"));
+  JetJESDown_HF .push_back(jet.userFloat("pt_jesdn_split_HF"));
+  JetJESDown_HF_year .push_back(jet.userFloat("pt_jesdn_split_HF_year"));
+  JetJESDown_RelBal .push_back(jet.userFloat("pt_jesdn_split_RelBal"));
+  JetJESDown_RelSample_year .push_back(jet.userFloat("pt_jesdn_split_RelSample_year"));
+
   JetPt_JERUp .push_back(jet.userFloat("pt_jerup"));
   JetPt_JERDown .push_back(jet.userFloat("pt_jerdn"));
-   
+
   JetRawPt  .push_back( jet.userFloat("RawPt"));
   JetPtJEC_noJER .push_back( jet.userFloat("pt_JEC_noJER"));
-    
+
   JetID.push_back(jet.userFloat("JetID"));
   JetPUID.push_back(jet.userFloat("PUjetID"));
   JetPUID_score.push_back(jet.userFloat("PUjetID_score"));
-    
+
   if (jet.hasUserFloat("pileupJetIdUpdated:fullDiscriminant")) { // if JEC is reapplied, we set this
 	  JetPUValue.push_back(jet.userFloat("pileupJetIdUpdated:fullDiscriminant"));
    } else {
@@ -856,7 +1099,7 @@ void ZNtupleMaker::FillPhoton(int year, const pat::Photon& photon)
    PhotonPt  .push_back( photon.pt());
    PhotonEta .push_back( photon.eta());
    PhotonPhi .push_back( photon.phi());
-   
+
    PhotonIsCutBasedLooseID .push_back( PhotonIDHelper::isCutBasedID_Loose(year, photon) );
 }
 
@@ -934,7 +1177,7 @@ Float_t ZNtupleMaker::getAllWeight(const reco::Candidate* Lep)
 
  Float_t myLepPt = Lep->pt();
  Float_t myLepEta = Lep->eta();
-   
+
  float SF = 1.0;
  //float SF_Unc = 0.0;
 
@@ -942,22 +1185,22 @@ Float_t ZNtupleMaker::getAllWeight(const reco::Candidate* Lep)
  Float_t SCeta;
  if (myLepID == 11) SCeta = userdatahelpers::getUserFloat(Lep,"SCeta");
  else SCeta = myLepEta;
-   
+
  Float_t mySCeta;
-   
+
  // Deal with very rare cases when SCeta is out of 2.5 bonds
  if ( myLepEta <= 2.5 && SCeta >= 2.5) mySCeta = 2.49;
  else if ( myLepEta >= -2.5 && SCeta <= -2.5) mySCeta = -2.49;
  else mySCeta = SCeta;
-   
+
  bool isCrack;
  if (myLepID == 11) isCrack = userdatahelpers::getUserFloat(Lep,"isCrack");
  else isCrack = false;
-   
-   
+
+
  SF = lepSFHelper->getSF(year,myLepID,myLepPt,myLepEta, mySCeta, isCrack);
  //SF_Unc = lepSFHelper->getSFError(year,myLepID,myLepPt,myLepEta, mySCeta, isCrack);
-   
+
  return SF;
 }
 
@@ -1044,16 +1287,64 @@ void ZNtupleMaker::BookAllBranches(){
     myTree->Book("AddMuPhotonIso",AddMuPhotonIso);
     myTree->Book("AddMuCombRelIsoPF",AddMuCombRelIsoPF);
   }
-	
+
    myTree->Book("nCleanedJetsPt30",nCleanedJetsPt30);
    myTree->Book("nCleanedJetsPt30_jesUp",nCleanedJetsPt30_jesUp);
+   myTree->Book("nCleanedJetsPt30_jesUp_Total",nCleanedJetsPt30_jesUp_Total);
+   myTree->Book("nCleanedJetsPt30_jesUp_Abs",nCleanedJetsPt30_jesUp_Abs);
+   myTree->Book("nCleanedJetsPt30_jesUp_Abs_year",nCleanedJetsPt30_jesUp_Abs_year);
+   myTree->Book("nCleanedJetsPt30_jesUp_BBEC1",nCleanedJetsPt30_jesUp_BBEC1);
+   myTree->Book("nCleanedJetsPt30_jesUp_BBEC1_year",nCleanedJetsPt30_jesUp_BBEC1_year);
+   myTree->Book("nCleanedJetsPt30_jesUp_EC2",nCleanedJetsPt30_jesUp_EC2);
+   myTree->Book("nCleanedJetsPt30_jesUp_EC2_year",nCleanedJetsPt30_jesUp_EC2_year);
+   myTree->Book("nCleanedJetsPt30_jesUp_FlavQCD",nCleanedJetsPt30_jesUp_FlavQCD);
+   myTree->Book("nCleanedJetsPt30_jesUp_HF",nCleanedJetsPt30_jesUp_HF);
+   myTree->Book("nCleanedJetsPt30_jesUp_HF_year",nCleanedJetsPt30_jesUp_HF_year);
+   myTree->Book("nCleanedJetsPt30_jesUp_RelBal",nCleanedJetsPt30_jesUp_RelBal);
+   myTree->Book("nCleanedJetsPt30_jesUp_RelSample_year",nCleanedJetsPt30_jesUp_RelSample_year);
    myTree->Book("nCleanedJetsPt30_jesDn",nCleanedJetsPt30_jesDn);
+   myTree->Book("nCleanedJetsPt30_jesDn_Total",nCleanedJetsPt30_jesDn_Total);
+   myTree->Book("nCleanedJetsPt30_jesDn_Abs",nCleanedJetsPt30_jesDn_Abs);
+   myTree->Book("nCleanedJetsPt30_jesDn_Abs_year",nCleanedJetsPt30_jesDn_Abs_year);
+   myTree->Book("nCleanedJetsPt30_jesDn_BBEC1",nCleanedJetsPt30_jesDn_BBEC1);
+   myTree->Book("nCleanedJetsPt30_jesDn_BBEC1_year",nCleanedJetsPt30_jesDn_BBEC1_year);
+   myTree->Book("nCleanedJetsPt30_jesDn_EC2",nCleanedJetsPt30_jesDn_EC2);
+   myTree->Book("nCleanedJetsPt30_jesDn_EC2_year",nCleanedJetsPt30_jesDn_EC2_year);
+   myTree->Book("nCleanedJetsPt30_jesDn_FlavQCD",nCleanedJetsPt30_jesDn_FlavQCD);
+   myTree->Book("nCleanedJetsPt30_jesDn_HF",nCleanedJetsPt30_jesDn_HF);
+   myTree->Book("nCleanedJetsPt30_jesDn_HF_year",nCleanedJetsPt30_jesDn_HF_year);
+   myTree->Book("nCleanedJetsPt30_jesDn_RelBal",nCleanedJetsPt30_jesDn_RelBal);
+   myTree->Book("nCleanedJetsPt30_jesDn_RelSample_year",nCleanedJetsPt30_jesDn_RelSample_year);
    myTree->Book("nCleanedJetsPt30_jerUp",nCleanedJetsPt30_jerUp);
    myTree->Book("nCleanedJetsPt30_jerDn",nCleanedJetsPt30_jerDn);
    myTree->Book("nCleanedJetsPt30BTagged",nCleanedJetsPt30BTagged);
    myTree->Book("nCleanedJetsPt30BTagged_bTagSF",nCleanedJetsPt30BTagged_bTagSF);
    myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp",nCleanedJetsPt30BTagged_bTagSF_jesUp);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_Total",nCleanedJetsPt30BTagged_bTagSF_jesUp_Total);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_Abs",nCleanedJetsPt30BTagged_bTagSF_jesUp_Abs);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_Abs_year",nCleanedJetsPt30BTagged_bTagSF_jesUp_Abs_year);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_BBEC1",nCleanedJetsPt30BTagged_bTagSF_jesUp_BBEC1);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_BBEC1_year",nCleanedJetsPt30BTagged_bTagSF_jesUp_BBEC1_year);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_EC2",nCleanedJetsPt30BTagged_bTagSF_jesUp_EC2);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_EC2_year",nCleanedJetsPt30BTagged_bTagSF_jesUp_EC2_year);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_FlavQCD",nCleanedJetsPt30BTagged_bTagSF_jesUp_FlavQCD);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_HF",nCleanedJetsPt30BTagged_bTagSF_jesUp_HF);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_HF_year",nCleanedJetsPt30BTagged_bTagSF_jesUp_HF_year);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_RelBal",nCleanedJetsPt30BTagged_bTagSF_jesUp_RelBal);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesUp_RelSample_year",nCleanedJetsPt30BTagged_bTagSF_jesUp_RelSample_year);
    myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn",nCleanedJetsPt30BTagged_bTagSF_jesDn);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_Total",nCleanedJetsPt30BTagged_bTagSF_jesDn_Total);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_Abs",nCleanedJetsPt30BTagged_bTagSF_jesDn_Abs);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_Abs_year",nCleanedJetsPt30BTagged_bTagSF_jesDn_Abs_year);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_BBEC1",nCleanedJetsPt30BTagged_bTagSF_jesDn_BBEC1);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_BBEC1_year",nCleanedJetsPt30BTagged_bTagSF_jesDn_BBEC1_year);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_EC2",nCleanedJetsPt30BTagged_bTagSF_jesDn_EC2);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_EC2_year",nCleanedJetsPt30BTagged_bTagSF_jesDn_EC2_year);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_FlavQCD",nCleanedJetsPt30BTagged_bTagSF_jesDn_FlavQCD);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_HF",nCleanedJetsPt30BTagged_bTagSF_jesDn_HF);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_HF_year",nCleanedJetsPt30BTagged_bTagSF_jesDn_HF_year);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_RelBal",nCleanedJetsPt30BTagged_bTagSF_jesDn_RelBal);
+   myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jesDn_RelSample_year",nCleanedJetsPt30BTagged_bTagSF_jesDn_RelSample_year);
    myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jerUp",nCleanedJetsPt30BTagged_bTagSF_jerUp);
    myTree->Book("nCleanedJetsPt30BTagged_bTagSF_jerDn",nCleanedJetsPt30BTagged_bTagSF_jerDn);
    myTree->Book("nCleanedJetsPt30BTagged_bTagSFUp",nCleanedJetsPt30BTagged_bTagSFUp);
@@ -1064,6 +1355,7 @@ void ZNtupleMaker::BookAllBranches(){
     myTree->Book("JetEta",JetEta);
     myTree->Book("JetPhi",JetPhi);
     myTree->Book("JetMass",JetMass);
+    myTree->Book("JetEnergy",JetEnergy);
     myTree->Book("JetBTagger",JetBTagger);
     myTree->Book("JetIsBtagged",JetIsBtagged);
     myTree->Book("JetIsBtaggedWithSF",JetIsBtaggedWithSF);
@@ -1073,8 +1365,32 @@ void ZNtupleMaker::BookAllBranches(){
     myTree->Book("JetSigma",JetSigma);
     myTree->Book("JetHadronFlavour",JetHadronFlavour);
     myTree->Book("JetPartonFlavour",JetPartonFlavour);
-    myTree->Book("JetPt_JESUp",JetPt_JESUp);
-    myTree->Book("JetPt_JESDown",JetPt_JESDown);
+    myTree->Book("JetPt_JESUp",JetJESUp);
+    myTree->Book("JetPt_JESUp_Total",JetJESUp_Total);
+    myTree->Book("JetPt_JESUp_Abs",JetJESUp_Abs);
+    myTree->Book("JetPt_JESUp_Abs_year",JetJESUp_Abs_year);
+    myTree->Book("JetPt_JESUp_BBEC1",JetJESUp_BBEC1);
+    myTree->Book("JetPt_JESUp_BBEC1_year",JetJESUp_BBEC1_year);
+    myTree->Book("JetPt_JESUp_EC2",JetJESUp_EC2);
+    myTree->Book("JetPt_JESUp_EC2_year",JetJESUp_EC2_year);
+    myTree->Book("JetPt_JESUp_FlavQCD",JetJESUp_FlavQCD);
+    myTree->Book("JetPt_JESUp_HF",JetJESUp_HF);
+    myTree->Book("JetPt_JESUp_HF_year",JetJESUp_HF_year);
+    myTree->Book("JetPt_JESUp_RelBal",JetJESUp_RelBal);
+    myTree->Book("JetPt_JESUp_RelSample_year",JetJESUp_RelSample_year);
+    myTree->Book("JetPt_JESDown",JetJESDown);
+    myTree->Book("JetPt_JESDown_Total",JetJESDown_Total);
+    myTree->Book("JetPt_JESDown_Abs",JetJESDown_Abs);
+    myTree->Book("JetPt_JESDown_Abs_year",JetJESDown_Abs_year);
+    myTree->Book("JetPt_JESDown_BBEC1",JetJESDown_BBEC1);
+    myTree->Book("JetPt_JESDown_BBEC1_year",JetJESDown_BBEC1_year);
+    myTree->Book("JetPt_JESDown_EC2",JetJESDown_EC2);
+    myTree->Book("JetPt_JESDown_EC2_year",JetJESDown_EC2_year);
+    myTree->Book("JetPt_JESDown_FlavQCD",JetJESDown_FlavQCD);
+    myTree->Book("JetPt_JESDown_HF",JetJESDown_HF);
+    myTree->Book("JetPt_JESDown_HF_year",JetJESDown_HF_year);
+    myTree->Book("JetPt_JESDown_RelBal",JetJESDown_RelBal);
+    myTree->Book("JetPt_JESDown_RelSample_year",JetJESDown_RelSample_year);
     myTree->Book("JetPt_JERUp",JetPt_JERUp);
     myTree->Book("JetPt_JERDown",JetPt_JERDown);
     myTree->Book("JetRawPt",JetRawPt);
@@ -1110,14 +1426,14 @@ void ZNtupleMaker::BookAllBranches(){
     myTree->Book("PFMETPhi_corrected_metUp", metobj_corrected.extras.phi_METup);
     myTree->Book("PFMETPhi_corrected_metDn", metobj_corrected.extras.phi_METdn);
   }
-   
+
   if(addPhotons){
     myTree->Book("PhotonPt",PhotonPt);
     myTree->Book("PhotonEta",PhotonEta);
     myTree->Book("PhotonPhi",PhotonPhi);
     myTree->Book("PhotonIsCutBasedLooseID",PhotonIsCutBasedLooseID);
   }
-	
+
   if(addQGLInputs){
     myTree->Book("JetAxis2",JetAxis2);
     myTree->Book("JetMult",JetMult);
@@ -1136,4 +1452,3 @@ void ZNtupleMaker::BookAllBranches(){
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(ZNtupleMaker);
-

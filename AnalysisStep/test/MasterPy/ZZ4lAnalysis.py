@@ -49,7 +49,7 @@ declareDefault("SUPERMELA_MASS", 125, globals())
 declareDefault("SELSETUP", "allCutsAtOncePlusSmart", globals())
 
 #Best candidate comparator (see interface/Comparators.h)
-declareDefault("BESTCANDCOMPARATOR", "byBestKD", globals())
+declareDefault("BESTCANDCOMPARATOR", "byBestZ1bestZ2", globals()) #ATbbf
 
 # Set to True to make candidates with the full combinatorial of loose leptons (for debug; much slower)
 declareDefault("KEEPLOOSECOMB", False, globals())
@@ -590,7 +590,6 @@ process.softLeptons = cms.EDProducer("CandViewMerger",
 
 
 
-
 ### ----------------------------------------------------------------------
 ### ----------------------------------------------------------------------
 ### BUILD CANDIDATES
@@ -867,6 +866,15 @@ process.ZZCand = cms.EDProducer("ZZCandidateFiller",
 )
 
 
+### ----------------------------------------------------------------------
+### Gen-level (for fiducial measurements)
+### ----------------------------------------------------------------------
+
+process.GENLevel = cms.EDProducer("GenFiller",
+    superMelaMass = cms.double(SUPERMELA_MASS),
+    recoProbabilities = cms.vstring(),
+)
+
 
 ### ----------------------------------------------------------------------
 ### Z+LL Control regions.
@@ -1001,13 +1009,13 @@ from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
 
 process.load("CondCore.CondDB.CondDB_cfi")
 
-# Update jet collection in 2016 MC ntuples to include DeepCSV and DeepFlavour b tag algorithms                                                                                    
+# Update jet collection in 2016 MC ntuples to include DeepCSV and DeepFlavour b tag algorithms
 # NB: In 2016 Data we do not want to update jet collection to include DeepCSV info (it is already there!)
 
 if (SAMPLE_TYPE == 2016 and IsMC):
     # JEC corrections
     jecLevels = [ 'L1FastJet', 'L2Relative', 'L3Absolute' ]
-    
+
     btagVector = [
         'pfDeepFlavourJetTags:probb',
         'pfDeepFlavourJetTags:probbb',
@@ -1031,36 +1039,36 @@ if (SAMPLE_TYPE == 2016 and IsMC):
         postfix = 'WithDeepInfo'
     )
 
-    process.jetSequence = cms.Sequence(process.patJetCorrFactorsWithDeepInfo 
-                                       *process.updatedPatJetsWithDeepInfo 
-                                       *process.pfImpactParameterTagInfosWithDeepInfo 
-                                       *process.pfInclusiveSecondaryVertexFinderTagInfosWithDeepInfo 
+    process.jetSequence = cms.Sequence(process.patJetCorrFactorsWithDeepInfo
+                                       *process.updatedPatJetsWithDeepInfo
+                                       *process.pfImpactParameterTagInfosWithDeepInfo
+                                       *process.pfInclusiveSecondaryVertexFinderTagInfosWithDeepInfo
                                        *process.pfDeepCSVTagInfosWithDeepInfo
-                                       *process.pfDeepCSVJetTagsWithDeepInfo 
+                                       *process.pfDeepCSVJetTagsWithDeepInfo
                                        *process.pfDeepFlavourTagInfosWithDeepInfo
-                                       *process.pfDeepFlavourJetTagsWithDeepInfo 
-                                       *process.patJetCorrFactorsTransientCorrectedWithDeepInfo 
+                                       *process.pfDeepFlavourJetTagsWithDeepInfo
+                                       *process.patJetCorrFactorsTransientCorrectedWithDeepInfo
                                        *process.updatedPatJetsTransientCorrectedWithDeepInfo
     )
-    
-elif (SAMPLE_TYPE == 2017):
-    process.load("RecoJets.JetProducers.PileupJetID_cfi")
-    process.pileupJetIdUpdated = process.pileupJetId.clone(
-        jets=cms.InputTag("slimmedJets"),
-        inputIsCorrected=False,
-        applyJec=True,
-        vertexes=cms.InputTag("offlineSlimmedPrimaryVertices"),
-        algos=cms.VPSet(_chsalgos_94x)
-    )
-elif (SAMPLE_TYPE == 2018):
-    process.load("RecoJets.JetProducers.PileupJetID_cfi")
-    process.pileupJetIdUpdated = process.pileupJetId.clone(
-        jets=cms.InputTag("slimmedJets"),
-        inputIsCorrected=False,
-        applyJec=True,
-        vertexes=cms.InputTag("offlineSlimmedPrimaryVertices"),
-        algos=cms.VPSet(_chsalgos_102x)
-    )
+
+# elif (SAMPLE_TYPE == 2017):
+#     process.load("RecoJets.JetProducers.PileupJetID_cfi")
+#     process.pileupJetIdUpdated = process.pileupJetId.clone(
+#         jets=cms.InputTag("slimmedJets"),
+#         inputIsCorrected=False,
+#         applyJec=True,
+#         vertexes=cms.InputTag("offlineSlimmedPrimaryVertices"),
+#         algos=cms.VPSet(_chsalgos_94x)
+#     )
+# elif (SAMPLE_TYPE == 2018):
+#     process.load("RecoJets.JetProducers.PileupJetID_cfi")
+#     process.pileupJetIdUpdated = process.pileupJetId.clone(
+#         jets=cms.InputTag("slimmedJets"),
+#         inputIsCorrected=False,
+#         applyJec=True,
+#         vertexes=cms.InputTag("offlineSlimmedPrimaryVertices"),
+#         algos=cms.VPSet(_chsalgos_102x)
+#     )
 else:
     process.load("RecoJets.JetProducers.PileupJetID_cfi")
     process.pileupJetIdUpdated = process.pileupJetId.clone(
@@ -1089,7 +1097,7 @@ elif (LEPTON_SETUP == 2018): #DeepCSV, from https://twiki.cern.ch/twiki/bin/view
    theBTagger="pfDeepCSVJetTags:probb"
    theBTaggerThr=0.4184
    theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_102XSF_V1.csv"
-   theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_2018_LegacyPaper.root" 
+   theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_2018_LegacyPaper.root"
 else:
    sys.exit("ZZ4lAnalysis.py: Need to define the btagging for the new setup!")
 
@@ -1172,14 +1180,14 @@ if (APPLYJEC and SAMPLE_TYPE == 2016):
     ### REAPPLY JEC
     from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import updatedPatJetCorrFactors
     from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import updatedPatJets
-    
+
     if IsMC:
         process.jetCorrFactors = updatedPatJetCorrFactors.clone(
             # JEC applied on jets including also DeepCSV and DeepFlavour tagger
             src = cms.InputTag("updatedPatJetsTransientCorrectedWithDeepInfo"),
             levels = ['L1FastJet','L2Relative','L3Absolute'],
             payload = 'AK4PFchs' )
-            
+
         process.jetsWithJEC = updatedPatJets.clone(
             # JEC applied on jets including also DeepCSV and DeepFlavour tagger
             jetSource = cms.InputTag("updatedPatJetsTransientCorrectedWithDeepInfo"),
@@ -1188,13 +1196,13 @@ if (APPLYJEC and SAMPLE_TYPE == 2016):
             addBTagInfo          = cms.bool(True),  ## master switch
             addDiscriminators    = cms.bool(True)   ## addition of btag discriminators
         )
-        
+
         ### Replace inputs in QGTagger and dressedJets
         process.QGTagger.srcJets = cms.InputTag('jetsWithJEC')
         process.dressedJets.src = cms.InputTag('jetsWithJEC')
 
     # In 2016 Data we do not want to update jet collection to include DeepCSV info (it is already there!)
-    else:    
+    else:
         process.patJetCorrFactorsReapplyJEC = updatedPatJetCorrFactors.clone(
             src = cms.InputTag("slimmedJets"),
             levels = ['L1FastJet','L2Relative','L3Absolute','L2L3Residual'],
@@ -1208,7 +1216,7 @@ if (APPLYJEC and SAMPLE_TYPE == 2016):
         ### Add pileup id and discriminant to patJetsReapplyJEC
         process.patJetsReapplyJEC.userData.userFloats.src += ['pileupJetIdUpdated:fullDiscriminant']
         process.patJetsReapplyJEC.userData.userInts.src += ['pileupJetIdUpdated:fullId']
-        
+
         ### Replace inputs in QGTagger and dressedJets
         process.QGTagger.srcJets = cms.InputTag( 'patJetsReapplyJEC')
         process.dressedJets.src = cms.InputTag('patJetsReapplyJEC')
@@ -1452,29 +1460,29 @@ if (RECORRECTMET and SAMPLE_TYPE == 2016):
     metTag = cms.InputTag("slimmedMETs","","ZZ")
 
     # NB: removed to use properly update jet collection to include DeepCSV in 2016 ntuples
-    ### somehow MET recorrection gets this lost again...                          
+    ### somehow MET recorrection gets this lost again...
     if not IsMC:
         process.patJetsReapplyJEC.userData.userFloats.src += ['pileupJetIdUpdated:fullDiscriminant']
         process.patJetsReapplyJEC.userData.userInts.src += ['pileupJetIdUpdated:fullId']
 
-#[FIXME] Does not work in CMSSW_10_3_1 currently                                                                                                                                      
-### Recorrect MET, cf. https://indico.cern.ch/event/759372/contributions/3149378/attachments/1721436/2779341/metreport.pdf slide 10                                        
-###                and https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription#Instructions_for_9_4_X_X_9_for_2 
-#if (RECORRECTMET and SAMPLE_TYPE == 2017):                                                                                                                   
-#                                                                                                                                                                          
-#    from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD                                                        
-#                                                                                                                                                                         
-#    runMetCorAndUncFromMiniAOD(process,                                                                                                                              
-#                               isData=(not IsMC),                                                                                                                          
-#                               fixEE2017 = True,                                                                                                                 
-#                               fixEE2017Params = {'userawPt': True, 'ptThreshold':50.0, 'minEtaThreshold':2.65, 'maxEtaThreshold': 3.139} ,                          
-#                               postfix = "ModifiedMET"                                                                                                            
-#                               )                                                                                                                                            
-#    metTag = cms.InputTag("slimmedMETsModifiedMET","","ZZ")                                                                                                                 
-#                                                                                                                                                                      
-#    ### somehow MET recorrection gets this lost again...                                                                                                                 
-#    process.patJetsReapplyJEC.userData.userFloats.src += ['pileupJetIdUpdated:fullDiscriminant']                                                                       
-#    process.patJetsReapplyJEC.userData.userInts.src += ['pileupJetIdUpdated:fullId']                                                                                
+#[FIXME] Does not work in CMSSW_10_3_1 currently
+### Recorrect MET, cf. https://indico.cern.ch/event/759372/contributions/3149378/attachments/1721436/2779341/metreport.pdf slide 10
+###                and https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription#Instructions_for_9_4_X_X_9_for_2
+#if (RECORRECTMET and SAMPLE_TYPE == 2017):
+#
+#    from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
+#
+#    runMetCorAndUncFromMiniAOD(process,
+#                               isData=(not IsMC),
+#                               fixEE2017 = True,
+#                               fixEE2017Params = {'userawPt': True, 'ptThreshold':50.0, 'minEtaThreshold':2.65, 'maxEtaThreshold': 3.139} ,
+#                               postfix = "ModifiedMET"
+#                               )
+#    metTag = cms.InputTag("slimmedMETsModifiedMET","","ZZ")
+#
+#    ### somehow MET recorrection gets this lost again...
+#    process.patJetsReapplyJEC.userData.userFloats.src += ['pileupJetIdUpdated:fullDiscriminant']
+#    process.patJetsReapplyJEC.userData.userInts.src += ['pileupJetIdUpdated:fullId']
 
 if (RECORRECTMET and SAMPLE_TYPE == 2017):
 
@@ -1484,7 +1492,7 @@ if (RECORRECTMET and SAMPLE_TYPE == 2017):
                                )
     metTag = cms.InputTag("slimmedMETs","","ZZ")
 
-    ### somehow MET recorrection gets this lost again...                                                                                          
+    ### somehow MET recorrection gets this lost again...
     process.patJetsReapplyJEC.userData.userFloats.src += ['pileupJetIdUpdated:fullDiscriminant']
     process.patJetsReapplyJEC.userData.userInts.src += ['pileupJetIdUpdated:fullId']
 
@@ -1496,7 +1504,7 @@ if (RECORRECTMET and SAMPLE_TYPE == 2018):
                                )
     metTag = cms.InputTag("slimmedMETs","","ZZ")
 
-    ### somehow MET recorrection gets this lost again...                                                                                                             
+    ### somehow MET recorrection gets this lost again...
     process.patJetsReapplyJEC.userData.userFloats.src += ['pileupJetIdUpdated:fullDiscriminant']
     process.patJetsReapplyJEC.userData.userInts.src += ['pileupJetIdUpdated:fullId']
 
@@ -1525,12 +1533,12 @@ if (RECORRECTMET and SAMPLE_TYPE == 2016):
     else:
         process.MET = cms.Path(process.fullPatMetSequence)
 
-#[FIXME] Does not work in CMSSW_10_3_1 currently                                                                                                         
-#if (RECORRECTMET and SAMPLE_TYPE == 2017):                                                                                                                       
-#    if IsMC:                                                                                                                                                   
-#        process.MET = cms.Path(process.fullPatMetSequenceModifiedMET)                                                                                              
-#    else:                                                                                                                                                                  
-#        process.MET = cms.Path(process.fullPatMetSequenceModifiedMET)                                                                                                     
+#[FIXME] Does not work in CMSSW_10_3_1 currently
+#if (RECORRECTMET and SAMPLE_TYPE == 2017):
+#    if IsMC:
+#        process.MET = cms.Path(process.fullPatMetSequenceModifiedMET)
+#    else:
+#        process.MET = cms.Path(process.fullPatMetSequenceModifiedMET)
 
 if (RECORRECTMET and SAMPLE_TYPE == 2017):
     if IsMC:
@@ -1572,6 +1580,8 @@ process.Candidates = cms.Path(
        process.bareZCand         + process.ZCand     +
        process.bareZZCand        + process.ZZCand
     )
+
+process.GENCandidates = cms.Path(process.GENLevel)
 
 # Optional sequence to build control regions. To get it, add
 #process.CRPath = cms.Path(process.CRZl) # only trilepton
