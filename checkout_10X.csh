@@ -7,7 +7,7 @@
 # chmod u+x ${TMPDIR}/checkout_10X.csh
 # ${TMPDIR}/checkout_10X.csh
 
-############## For CMSSW_10_6_19
+############## For CMSSW_10_6_20
 git cms-init
 
 # New Jet PU ID: dedicated training for each year
@@ -30,7 +30,7 @@ git cms-merge-topic asculac:Electron_XGBoost_MVA_16UL_17UL
 #### Please do not add any custom (non-CMSSW) package before this line ####
 #ZZAnalysis
 git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
-(cd ZZAnalysis; git checkout Run2_UltraLegacy )
+(cd ZZAnalysis; git checkout Run2_CutBased_UL )
 
 # Muon MVA
 git cms-addpkg CondFormats/EgammaObjects

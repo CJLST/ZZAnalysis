@@ -3,7 +3,7 @@
  *  Retrieve information for boson decays to leptons from the genparticle collection, in the following way:
  *  genH is the generated H (if more than one is present, the last one with daughter = Z is taken)
  *  genZs are the Zs (required to have parent!=Z to avoid double counting)
- *  genLeps are the leptons, required to have either parent=Z or (for generators where the Z 
+ *  genLeps are the leptons, required to have either parent=Z or (for generators where the Z
  * is not explicit in the MC history) status = 3. beware of how FSR is described in the MC history...
  *
  *
@@ -15,6 +15,19 @@
 
 #include <DataFormats/HepMCCandidate/interface/GenParticle.h>
 #include <SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h>
+#include "DataFormats/PatCandidates/interface/PackedGenParticle.h" //Atbbf
+
+
+// AT Additional libraries for GenJet variables
+#include <DataFormats/PatCandidates/interface/Jet.h>
+#include <CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h>
+#include <CondFormats/JetMETObjects/interface/JetCorrectorParameters.h>
+#include <JetMETCorrections/Objects/interface/JetCorrectionsRecord.h>
+#include <JetMETCorrections/Modules/interface/JetResolution.h>
+#include "DataFormats/JetReco/interface/GenJet.h"
+#include "PhysicsTools/JetMCUtils/interface/JetMCTag.h"
+#include "PhysicsTools/JetMCUtils/interface/CandMCTag.h"
+
 
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
 
@@ -23,29 +36,34 @@
 using namespace std;
 using namespace reco;
 using namespace edm;
+// using namespace JetMCTagUtils; //ATjets
+// using namespace CandMCTagUtils; //Atjets
+
 
 namespace {
   bool dbg = false;
 }
 
 
-MCHistoryTools::MCHistoryTools(const edm::Event & event, std::string sampleName, edm::Handle<edm::View<reco::Candidate> > & genParticles, edm::Handle<GenEventInfoProduct> & gen) :
+MCHistoryTools::MCHistoryTools(const edm::Event & event, std::string sampleName, edm::Handle<edm::View<reco::Candidate> > & genParticles, edm::Handle<GenEventInfoProduct> & gen, edm::Handle<edm::View<reco::GenJet> > & genJets, edm::Handle<edm::View<pat::PackedGenParticle> > packedgenParticles) :
   ismc(false),
   processID(0),
   hepMCweight(1),
   isInit(false),
-  theGenH(0) 
+  theGenH(0)
 {
 
+  jets = genJets; //ATjets
+  packed = packedgenParticles; //ATbbf
   particles = genParticles;
   if(particles.isValid()){
 
     ismc=true;
-    
+
     processID = gen->signalProcessID();
-//   Process IDs for current samples (Fall11/Summer12) 
+//   Process IDs for current samples (Fall11/Summer12)
 //   Generally corresopond to MSUB for Pythia samples, cf. for example: http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/Configuration/GenProduction/python/EightTeV/WH_ZH_TTH_HToZZTo4L_M_115_TuneZ2star_8TeV_pythia6_tauola_cff.py?view=markup
-//   
+//
 //   0-5,35 = DYjets; also WZJets in Fall11
 //   0,1,2 = ZZJetsTo4L (MadGraph); ZZZ (Madgraph)
 //   66  =  WZZ_8TeV-aMCatNLO-herwig
@@ -72,21 +90,21 @@ MCHistoryTools::MCHistoryTools(const edm::Event & event, std::string sampleName,
     if (processID == 100) {
       // FIXME: fix gg2ZZ samples
       if (boost::starts_with(sampleName,"ZHiggs")) processID=900024;
-      if (boost::starts_with(sampleName,"WHiggs")) processID=900026; 
-      if (boost::starts_with(sampleName,"ggTo"))   processID=900661; 
+      if (boost::starts_with(sampleName,"WHiggs")) processID=900026;
+      if (boost::starts_with(sampleName,"ggTo"))   processID=900661;
     }
 
     if (processID == 0) {
-      if (boost::starts_with(sampleName,"ZZZJets")) processID=900101;      
+      if (boost::starts_with(sampleName,"ZZZJets")) processID=900101;
     }
 
     if (processID == 3) {
-      if (boost::starts_with(sampleName,"WWJets")) processID=900102;      
-      if (boost::starts_with(sampleName,"TTZJets")) processID=900103;      
+      if (boost::starts_with(sampleName,"WWJets")) processID=900102;
+      if (boost::starts_with(sampleName,"TTZJets")) processID=900103;
     }
-    
+
     if (processID == 5 || processID == 6) {
-      if (boost::starts_with(sampleName,"TTZJets")) processID=900103;      
+      if (boost::starts_with(sampleName,"TTZJets")) processID=900103;
     }
     // for TTZ (without jets sample)
     if (boost::starts_with(sampleName,"TTZ")) processID=900104;
@@ -101,7 +119,7 @@ MCHistoryTools::MCHistoryTools(const edm::Event & event, std::string sampleName,
     // take the MC weight
     GenEventInfoProduct  genInfo = *(gen.product());
     hepMCweight = genInfo.weight();
-      
+
   }
 }
 
@@ -110,11 +128,11 @@ MCHistoryTools::~MCHistoryTools(){}
 
 // Find the actual lepton parent (first parent in MC history with a different pdgID)
 const reco::GenParticle* MCHistoryTools::getParent(const reco::GenParticle* genLep) {
-  if(genLep==0) return 0; 
+  if(genLep==0) return 0;
   int flavor = genLep->pdgId();
-  
+
   while (genLep->mother()!=0 && genLep->mother()->pdgId() == flavor) {
-    //cout  << " getparent " << genLep->mother()->pdgId();
+    // cout  << " getparent " << genLep->mother()->pdgId() << endl;
     genLep = (const GenParticle*) genLep->mother();
   }
   //cout  << " getparent:ret: " << genLep->mother()->pdgId() << endl;
@@ -132,7 +150,7 @@ const reco::GenParticle* MCHistoryTools::getParent(const pat::Electron* lep, con
   return parent;
 }
 
-// Manual matching with closest same-flavour gen lepton (of any status). 
+// Manual matching with closest same-flavour gen lepton (of any status).
 // This was test to work great when the provided candidates are e.g. only the signal ones.
 //FIXME: check and charge!
 const reco::GenParticle* MCHistoryTools::getMatch(const pat::Electron* lep, const vector<const Candidate *>& gen4lep) {
@@ -155,12 +173,11 @@ const reco::GenParticle* MCHistoryTools::getMatch(const pat::Electron* lep, cons
 //Return the code of the particle's parent: 25 for H->Z->l; 23 for Z->l; +-15 for tau->l if genlep is e,mu.
 int MCHistoryTools::getParentCode(const reco::GenParticle* genLep) {
   int parentId = 0;
-  
+
   const Candidate* particle = getParent(genLep);
-  
+
   if (particle) {
     parentId = particle->pdgId();
-    //     cout << "getParentCode1 : " << parentId;
     if (parentId == 23 && particle->mother()!=0) {
       if (particle->mother()->pdgId() == 25) parentId = 25;
     }
@@ -173,7 +190,7 @@ int MCHistoryTools::getParentCode(const reco::GenParticle* genLep) {
 // Cf. getParent(lep, gen4lep) for details.
 int MCHistoryTools::getParentCode(const pat::Electron* lep, const vector<const Candidate *>& gen4lep) {
   int parentId = getParentCode((lep->genParticleRef()).get());
-  
+
   if (parentId==0) { // Recover for bad matching to status 1 electrons due to brems
     const Candidate * particle = getParent(lep, gen4lep);
     if (particle) {
@@ -212,13 +229,14 @@ MCHistoryTools::init() {
 	if (pid!=25) theAssociatedV.push_back(&*p);
       }
     }
-    
+
     // Prompt leptons
     else if ((id== 13 || id==11 || id==15) && (p->mother()!=0)) {
       int mid = abs(p->mother()->pdgId());
       int pid = abs(getParentCode((const GenParticle*)&*p));
       // Lepton from H->(Z->)ll; note that this is the first daughter in the H or Z line; ie pre-FSR
       if (mid == 25 || (mid == 23 && pid==25)) {
+  if(mid==25) cout << mid << endl;
 	theGenLeps.push_back(&*p);
       } else if ((mid==23&&pid==23)  // Leptons from Z, not from H->Z; note that this is the first daughter in the Z line; ie pre-FSR.
                                      // qqZZ and ggZZ will fall here so they have to be handled later.
@@ -240,7 +258,7 @@ MCHistoryTools::init() {
 	}
 	//Check that the lepton mother is a Z, W or H (for samples where intermediate bosons are not listed in the history). May not work correctly in some samples!
 	int origin = abs(fp->mother()->pdgId());
-	if (origin==23 || origin == 24 || origin == 25) {		
+	if (origin==23 || origin == 24 || origin == 25) {
 	  theGenFSR.push_back(&*p);
 	  theGenFSRParents.push_back(&*fp);
 	} else {
@@ -250,8 +268,8 @@ MCHistoryTools::init() {
       }
       //assert(pcode!=23); // just an xcheck that we don't get FSR listed with Z as a parent... // commented out to make Zgamma samples work
     }
-    
-      
+
+
     if (dbg){
       if (id==13 || id==11 || id ==23 || id==24) {
 	cout << "Genpart: id " << id << " pt " << p->pt() << " eta " << p->eta() << " phi " << p->phi()
@@ -287,14 +305,14 @@ MCHistoryTools::init() {
     }
     if (!found) cout << "ERROR: mismatch in FSR photon " << theGenFSR[j]->pt() << " " << theGenFSRParents[j]->pt() << " " << theGenFSRParents[j] << endl;
   }
-  
+
 
   // Sort leptons, as done for the signal, for cases where we have 4.
   if (theGenLeps.size()==4) {
-    const float ZmassValue = 91.1876;  
+    const float ZmassValue = 91.1876;
     float minDZMass=1E36;
     float iZ11=-1, iZ12=-1, iZ21=-1, iZ22=-1;
-    
+
     // Find Z1 as closest-to-mZ l+l- combination
     for (int i=0; i<4; ++i) {
       for (int j=i+1; j<4; ++j) {
@@ -307,7 +325,7 @@ MCHistoryTools::init() {
 	  }
 	}
       }
-    }    
+    }
 
     // Z2 is from remaining 2 leptons
     if (iZ11!=-1 && iZ12!=-1){
@@ -320,14 +338,14 @@ MCHistoryTools::init() {
     }
 
     bool do_SF_OS_check = true;
-    
+
     if (processID == 900104 || processID == 900105 || processID == 900106) do_SF_OS_check = false;
     if ( do_SF_OS_check && (iZ22==-1 || theGenLeps[iZ21]->pdgId()+theGenLeps[iZ22]->pdgId()!=0) ) {  //Test remaining conditions: Z2 is found and SF, OS
       cout << "MCHistoryTools: Cannot sort leptons ";
       for (int i=0; i<4; ++i) cout << theGenLeps[i]->pdgId() << " ";
       cout << iZ11 << " " << iZ12 << " " << iZ21 << " " << iZ22 << endl;
       abort();
-    }    
+    }
     if( (iZ11 != iZ12 && iZ21 != iZ22) || do_SF_OS_check) {// if do_SF_OS_check and same indexes something has gone bad, let's crash and check
        // Sort leptons by sign
        if (theGenLeps[iZ11]->pdgId() < 0 ) {
@@ -337,31 +355,68 @@ MCHistoryTools::init() {
          swap(iZ21,iZ22);
        }
     }
-    
+
     if(iZ11>=0) theSortedGenLepts.push_back(theGenLeps[iZ11]);
     if(iZ12>=0) theSortedGenLepts.push_back(theGenLeps[iZ12]);
     if(iZ21>=0) theSortedGenLepts.push_back(theGenLeps[iZ21]);
     if(iZ22>=0) theSortedGenLepts.push_back(theGenLeps[iZ22]);
 
-//     cout << " Gen Lepton sorting: " << sampleName << " " 
-// 	 << (theSortedGenLepts[0]->p4()+theSortedGenLepts[1]->p4()).mass() << " " 
+//     cout << " Gen Lepton sorting: " << sampleName << " "
+// 	 << (theSortedGenLepts[0]->p4()+theSortedGenLepts[1]->p4()).mass() << " "
 // 	 << (theSortedGenLepts[2]->p4()+theSortedGenLepts[3]->p4()).mass() << " | "
-// 	 << (theSortedGenLepts[0]->p4()+theSortedGenLepts[3]->p4()).mass() << " "  
+// 	 << (theSortedGenLepts[0]->p4()+theSortedGenLepts[3]->p4()).mass() << " "
 // 	 << (theSortedGenLepts[2]->p4()+theSortedGenLepts[1]->p4()).mass() << " "
-// 	 << theSortedGenLepts[0]->pdgId() << " " 
-// 	 << theSortedGenLepts[1]->pdgId() << " " 
-// 	 << theSortedGenLepts[2]->pdgId() << " " 
-// 	 << theSortedGenLepts[3]->pdgId() << " " 
+// 	 << theSortedGenLepts[0]->pdgId() << " "
+// 	 << theSortedGenLepts[1]->pdgId() << " "
+// 	 << theSortedGenLepts[2]->pdgId() << " "
+// 	 << theSortedGenLepts[3]->pdgId() << " "
 // 	 << endl;
   } else {
     theSortedGenLepts = theGenLeps;
   }
-  
+
+  //AT Isolation
+  for (unsigned int j=0; j<theSortedGenLepts.size(); ++j) {
+    float iso = 0; //AT Supporting varibale to sum the different components in the isolation (ISO) variable
+    std::vector<int> id;
+    std::vector<float> pt;
+    for( View<Candidate>::const_iterator p_iso = particles->begin(); p_iso != particles->end(); ++ p_iso) {
+      if(theSortedGenLepts[j] != &*p_iso){ //The lepton for which I am calculating the isolation is not included in the isolation itself
+        // cout << "Work in progress: isolation" << endl; //AT Uncomment just to check if the you actually enter in the loop
+        if(p_iso->status() != 1) continue; //Stable particles only (To check!)
+        if((abs(p_iso->pdgId()) == 12) || (abs(p_iso->pdgId()) == 14) || (abs(p_iso->pdgId()) == 16)) continue; //Exclude neutrinos
+        if((abs(p_iso->pdgId()) == 11) || (abs(p_iso->pdgId()) == 13)) continue; //Exclude leptons
+        if(std::find(theGenFSR.begin(), theGenFSR.end(), &*p_iso) != theGenFSR.end()) continue; //Exclude FSR photons
+        // if(std::find(theSortedGenLepts.begin(), theSortedGenLepts.end(), &*p_iso) != theSortedGenLepts.end()) continue; //Exclude prompt leptons
+        float dR = deltaR(*theSortedGenLepts[j], *p_iso);
+        if(dR < 0.3){ //AT Isolation cut for DR<0.3
+          iso += p_iso->pt();
+          id.push_back(p_iso->pdgId());
+          pt.push_back(p_iso->pt());
+        }
+      }
+    }
+    iso = iso / theSortedGenLepts[j]->pt();
+    isolation.push_back(iso);
+  }
+
+  for(View<reco::GenJet>::const_iterator genjet = jets->begin(); genjet != jets->end(); genjet++){
+    theGenJets.push_back(&* genjet);
+    std::vector<bool> dR_clean;
+    for(unsigned i = 0; i < theSortedGenLepts.size(); ++i){
+      float dR = deltaR(*theSortedGenLepts[i], *genjet);
+      if(dR<0.4) dR_clean.push_back(false);
+      else dR_clean.push_back(true);
+    }
+    if (!(std::find(dR_clean.begin(), dR_clean.end(), false)!=dR_clean.end())){
+      theCleanedGenJets.push_back(&* genjet);
+    }
+  } //ATjets
 
   isInit = true;
 
   if (dbg) {
-    cout << "MCHistoryTools: "  << processID << " " << genFinalState() << " " << (theGenH==0) << " " << theGenLeps.size() // << " " << nMu << " " << nEle << " " << nTau 
+    cout << "MCHistoryTools: "  << processID << " " << genFinalState() << " " << (theGenH==0) << " " << theGenLeps.size() // << " " << nMu << " " << nEle << " " << nTau
 	 << endl;
   }
 
@@ -369,7 +424,7 @@ MCHistoryTools::init() {
 
 void
 MCHistoryTools::genAcceptance(bool& gen_ZZ4lInEtaAcceptance, bool& gen_ZZ4lInEtaPtAcceptance){
-  if (!ismc) return;  
+  if (!ismc) return;
   init();
 
 //   float gen_mZ1 = -1.;
@@ -394,11 +449,11 @@ MCHistoryTools::genAcceptance(bool& gen_ZZ4lInEtaAcceptance, bool& gen_ZZ4lInEta
       int id = abs(theGenLeps[i]->pdgId());
       //FIXME should take the 2 gen l with status 1
       if ((id == 11 && theGenLeps[i]->pt() > 7. && abseta < 2.5) ||
-	  (id == 13 && theGenLeps[i]->pt() > 5. && abseta < 2.4)) { 
+	  (id == 13 && theGenLeps[i]->pt() > 5. && abseta < 2.4)) {
 	++nlInEtaPtAcceptance;
       }
       if ((id == 11 && abseta < 2.5) ||
-	  (id == 13 && abseta < 2.4)) { 
+	  (id == 13 && abseta < 2.4)) {
 	++nlInEtaAcceptance;
       }
     }
@@ -410,10 +465,10 @@ MCHistoryTools::genAcceptance(bool& gen_ZZ4lInEtaAcceptance, bool& gen_ZZ4lInEta
 
 int
 MCHistoryTools::genFinalState(){
-  if (!ismc) return -1;  
+  if (!ismc) return -1;
   init();
 
-  int gen_finalState = NONE;  
+  int gen_finalState = NONE;
   int ifs=1;
   if (theGenLeps.size()==4){
     for (int i=0; i<4; ++i) {
@@ -454,7 +509,7 @@ MCHistoryTools::genFinalState(){
 
 int
 MCHistoryTools::genAssociatedFS(){
-  if (!ismc) return -1;  
+  if (!ismc) return -1;
   init();
 
   if (theGenH==0) return -1;
@@ -472,18 +527,18 @@ MCHistoryTools::genAssociatedFS(){
       dau=genV->daughter(0);
     }
     id = abs(dau->pdgId());
-  
+
   }
-  
+
   return id;
 }
 
 // Find gen FSR matching (closest) to recoFSR.
-int MCHistoryTools::fsrMatch(const reco::Candidate* recoFSR, 
+int MCHistoryTools::fsrMatch(const reco::Candidate* recoFSR,
 		       const vector<const reco::Candidate*>& genFSRs) {
 
   //FIXME: cuts should be tuned; is pT matching also necessary?
-  const double dRMatchingCut = 0.3; // FIXME!!! 
+  const double dRMatchingCut = 0.3; // FIXME!!!
   const double ptMinCut = 2.;
 
   double minDR = 99999;
