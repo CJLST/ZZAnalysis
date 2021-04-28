@@ -22,7 +22,7 @@ git cms-addpkg RecoEgamma/EgammaTools
 git clone https://github.com/cms-egamma/EgammaPostRecoTools.git
 mv EgammaPostRecoTools/python/EgammaPostRecoTools.py RecoEgamma/EgammaTools/python/.
 git cms-addpkg EgammaAnalysis/ElectronTools
-(rm -rf EgammaAnalysis/ElectronTools/data;git clone https://github.com/jainshilpi/EgammaAnalysis-ElectronTools.git -b UL2018 EgammaAnalysis/ElectronTools/data;)
+(rm -rf EgammaAnalysis/ElectronTools/data;git clone https://github.com/jainshilpi/EgammaAnalysis-ElectronTools.git -b ULSSfiles_correctScaleSysMC EgammaAnalysis/ElectronTools/data;)
 
 #UL 2016, 2017 and 2018 retraining for electron BDT
 git cms-merge-topic asculac:Electron_XGBoost_MVA_16UL_17UL
