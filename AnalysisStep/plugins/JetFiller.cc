@@ -312,16 +312,16 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     {
       JetID    =  (jabseta<=2.4 && CEMF<0.8 && CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && NHF<0.9) || 
                   (jabseta>2.4 && jabseta<=2.7 && NEMF<0.99 && NHF < 0.9) ||
-                  (jabseta>2.7 && jabseta<=3.0 && NEMF>0.0 && NEMF<0.99 && NHF<0.9 && NumNeutralParticle>1) ||
-                  (jabseta>3.0 && NEMF<0.90 && NHF>0.2 && NumNeutralParticle>10);
+                  (jabseta>2.7 && jabseta<=3.0 && NEMF>0.0 && NEMF<0.99 && NHF<0.9 && NumNeutralParticles>1) ||
+                  (jabseta>3.0 && NEMF<0.90 && NHF>0.2 && NumNeutralParticles>10);
     }
 
     else if ( (setup == 2017) || (setup == 2018) )
     {
       JetID    = (jabseta<=2.6 && CEMF<0.8 && CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && NHF<0.9) || 
                  (jabseta>2.6 && jabseta<=2.7 && CEMF<0.8 && CHM>0 && NEMF<0.99 && NHF < 0.9) ||
-                 (jabseta>2.7 && jabseta<=3.0 && NEMF>0.01 && NEMF<0.99 && NumNeutralParticle>1) ||
-                 (jabseta>3.0 && NEMF<0.90 && NHF>0.2 && NumNeutralParticle>10);
+                 (jabseta>2.7 && jabseta<=3.0 && NEMF>0.01 && NEMF<0.99 && NumNeutralParticles>1) ||
+                 (jabseta>3.0 && NEMF<0.90 && NHF>0.2 && NumNeutralParticles>10);
     }
 
     else
@@ -383,25 +383,25 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     //--- Pt3040_Tight = cms.vdouble( 0.96, 0.82, 0.20, 0.09),
     //--- Pt4050_Tight = cms.vdouble( 0.98, 0.92, 0.47, 0.29),
     PUjetID = ( 
-         (jpt > 10 && jpt <= 20 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.77 ||
-         (jpt > 20 && jpt <= 30 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.90 ||
-         (jpt > 30 && jpt <= 40 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.96 ||
-         (jpt > 40 && jpt <= 50 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.98 ||
+         ((jpt > 10 && jpt <= 20 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.77) ||
+         ((jpt > 20 && jpt <= 30 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.90) ||
+         ((jpt > 30 && jpt <= 40 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.96) ||
+         ((jpt > 40 && jpt <= 50 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.98) ||
 
-         (jpt > 10 && jpt <= 20 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > 0.38 ||
-         (jpt > 20 && jpt <= 30 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > 0.60 ||
-         (jpt > 30 && jpt <= 40 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > 0.82 ||
-         (jpt > 40 && jpt <= 50 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > 0.92 ||
+         ((jpt > 10 && jpt <= 20 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > 0.38) ||
+         ((jpt > 20 && jpt <= 30 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > 0.60) ||
+         ((jpt > 30 && jpt <= 40 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > 0.82) ||
+         ((jpt > 40 && jpt <= 50 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > 0.92) ||
 
-         (jpt > 10 && jpt <= 20 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.31 ||
-         (jpt > 20 && jpt <= 30 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.12 ||
-         (jpt > 30 && jpt <= 40 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > 0.20  ||
-         (jpt > 40 && jpt <= 50 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > 0.47  ||
+         ((jpt > 10 && jpt <= 20 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.31) ||
+         ((jpt > 20 && jpt <= 30 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.12) ||
+         ((jpt > 30 && jpt <= 40 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > 0.20)  ||
+         ((jpt > 40 && jpt <= 50 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > 0.47)  ||
 
-         (jpt > 10 && jpt <= 20 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21 ||
-         (jpt > 20 && jpt <= 30 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.13 ||
-         (jpt > 30 && jpt <= 40 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > 0.09  ||
-         (jpt > 40 && jpt <= 50 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > 0.29 
+         ((jpt > 10 && jpt <= 20 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21) ||
+         ((jpt > 20 && jpt <= 30 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.13) ||
+         ((jpt > 30 && jpt <= 40 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > 0.09)  ||
+         ((jpt > 40 && jpt <= 50 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > 0.29) 
       );
     //if (PUjetID) cout << "PUjetID!" << endl;
     
