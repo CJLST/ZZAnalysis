@@ -124,7 +124,7 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     if      ( setup == 2016 ) BDT = l.userFloat("ElectronMVAEstimatorRun2Summer16ULIdIsoValues");
     else if ( setup == 2017 ) BDT = l.userFloat("ElectronMVAEstimatorRun2Summer17ULIdIsoValues");
     else if ( setup == 2018 ) BDT = l.userFloat("ElectronMVAEstimatorRun2Summer18ULIdIsoValues");
-    cout << "BDT = " << BDT << endl;
+    // cout << "BDT = " << BDT << endl;
     
     float pt = l.pt();
 
