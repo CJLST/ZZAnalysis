@@ -81,6 +81,7 @@ MUISOCUT  = 0.35 # [FIXME] Remove isolation cuts from the code completely
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 from Configuration.AlCa.GlobalTag import GlobalTag
 
+###### Global tags for 2016 are the same as ReReco (We will use 2016 ReReco samples)
 if (SAMPLE_TYPE == 2016):
     if IsMC:
         process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mcRun2_asymptotic_v3', '')
@@ -89,18 +90,19 @@ if (SAMPLE_TYPE == 2016):
 
 elif (SAMPLE_TYPE == 2017):
     if IsMC:
-        process.GlobalTag = GlobalTag(process.GlobalTag, '106X_mc2017_realistic_v6', '') #'94X_mc2017_realistic_v17', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '106X_mc2017_realistic_v6', '')
     else:
-        process.GlobalTag = GlobalTag(process.GlobalTag, '94X_dataRun2_v11', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '106X_dataRun2_v20', '')
 
 elif (SAMPLE_TYPE == 2018):
     if IsMC:
-        process.GlobalTag = GlobalTag(process.GlobalTag, '106X_upgrade2018_realistic_v11_L1v1', '') #'102X_upgrade2018_realistic_v21', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '106X_upgrade2018_realistic_v11_L1v1', '')
     else:
         if (DATA_TAG == "PromptReco"):
-            process.GlobalTag = GlobalTag(process.GlobalTag, '102X_dataRun2_Prompt_v16', '')
+            #This is not changed wrt to ReReco, probably for 2018 there is not anymore the difference between ReReco and PromptReco
+            process.GlobalTag = GlobalTag(process.GlobalTag, '102X_dataRun2_Prompt_v16', '') 
         else:
-            process.GlobalTag = GlobalTag(process.GlobalTag, '102X_dataRun2_v13', '')
+            process.GlobalTag = GlobalTag(process.GlobalTag, '106X_dataRun2_v24', '')
 
 print '\t',process.GlobalTag.globaltag
 
