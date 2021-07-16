@@ -100,7 +100,7 @@ elif (SAMPLE_TYPE == 2018):
     else:
         if (DATA_TAG == "PromptReco"):
             #This is not changed wrt to ReReco, probably for 2018 there is not anymore the difference between ReReco and PromptReco
-            process.GlobalTag = GlobalTag(process.GlobalTag, '102X_dataRun2_Prompt_v16', '') 
+            process.GlobalTag = GlobalTag(process.GlobalTag, '102X_dataRun2_Prompt_v16', '')
         else:
             process.GlobalTag = GlobalTag(process.GlobalTag, '106X_dataRun2_v24', '')
 
@@ -875,10 +875,11 @@ process.ZZCand = cms.EDProducer("ZZCandidateFiller",
 ### Gen-level (for fiducial measurements)
 ### ----------------------------------------------------------------------
 
-process.GENLevel = cms.EDProducer("GenFiller",
-    superMelaMass = cms.double(SUPERMELA_MASS),
-    recoProbabilities = cms.vstring(),
-)
+if IsMC:
+    process.GENLevel = cms.EDProducer("GenFiller",
+        superMelaMass = cms.double(SUPERMELA_MASS),
+        recoProbabilities = cms.vstring(),
+    )
 
 
 ### ----------------------------------------------------------------------
@@ -1592,7 +1593,7 @@ process.Candidates = cms.Path(
        process.bareZZCand        + process.ZZCand
     )
 
-process.GENCandidates = cms.Path(process.GENLevel)
+if IsMC: process.GENCandidates = cms.Path(process.GENLevel)
 
 # Optional sequence to build control regions. To get it, add
 #process.CRPath = cms.Path(process.CRZl) # only trilepton
