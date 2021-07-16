@@ -81,6 +81,7 @@ MUISOCUT  = 0.35 # [FIXME] Remove isolation cuts from the code completely
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 from Configuration.AlCa.GlobalTag import GlobalTag
 
+###### Global tags for 2016 are the same as ReReco (We will use 2016 ReReco samples)
 if (SAMPLE_TYPE == 2016):
     if IsMC:
         process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mcRun2_asymptotic_v3', '')
@@ -89,18 +90,19 @@ if (SAMPLE_TYPE == 2016):
 
 elif (SAMPLE_TYPE == 2017):
     if IsMC:
-        process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mc2017_realistic_v17', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '106X_mc2017_realistic_v6', '')
     else:
-        process.GlobalTag = GlobalTag(process.GlobalTag, '94X_dataRun2_v11', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '106X_dataRun2_v20', '')
 
 elif (SAMPLE_TYPE == 2018):
     if IsMC:
-        process.GlobalTag = GlobalTag(process.GlobalTag, '106X_upgrade2018_realistic_v11_L1v1', '') #'102X_upgrade2018_realistic_v21', '')
+        process.GlobalTag = GlobalTag(process.GlobalTag, '106X_upgrade2018_realistic_v11_L1v1', '')
     else:
         if (DATA_TAG == "PromptReco"):
+            #This is not changed wrt to ReReco, probably for 2018 there is not anymore the difference between ReReco and PromptReco
             process.GlobalTag = GlobalTag(process.GlobalTag, '102X_dataRun2_Prompt_v16', '')
         else:
-            process.GlobalTag = GlobalTag(process.GlobalTag, '102X_dataRun2_v13', '')
+            process.GlobalTag = GlobalTag(process.GlobalTag, '106X_dataRun2_v24', '')
 
 print '\t',process.GlobalTag.globaltag
 
@@ -873,10 +875,11 @@ process.ZZCand = cms.EDProducer("ZZCandidateFiller",
 ### Gen-level (for fiducial measurements)
 ### ----------------------------------------------------------------------
 
-process.GENLevel = cms.EDProducer("GenFiller",
-    superMelaMass = cms.double(SUPERMELA_MASS),
-    recoProbabilities = cms.vstring(),
-)
+if IsMC:
+    process.GENLevel = cms.EDProducer("GenFiller",
+        superMelaMass = cms.double(SUPERMELA_MASS),
+        recoProbabilities = cms.vstring(),
+    )
 
 
 ### ----------------------------------------------------------------------
@@ -1053,7 +1056,7 @@ if (SAMPLE_TYPE == 2016 and IsMC):
                                        *process.pfDeepFlavourJetTagsWithDeepInfo
                                        *process.patJetCorrFactorsTransientCorrectedWithDeepInfo
                                        *process.updatedPatJetsTransientCorrectedWithDeepInfo
-    )    
+    )
 elif (SAMPLE_TYPE == 2017):
     process.load("RecoJets.JetProducers.PileupJetID_cfi")
     process.pileupJetIdUpdated = process.pileupJetId.clone(
@@ -1104,7 +1107,7 @@ elif (LEPTON_SETUP == 2018):
    theBTagger="pfDeepCSVJetTags:probb"
    theBTaggerThr=0.4168
    theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_106XUL18SF_WPonly.csv"
-   theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_2018_LegacyPaper.root" 
+   theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_2018_LegacyPaper.root"
 else:
    sys.exit("ZZ4lAnalysis.py: Need to define the btagging for the new setup!")
 
@@ -1133,7 +1136,7 @@ process.dressedJets = cms.EDProducer("JetFiller",
     src = cms.InputTag("slimmedJets"),
     sampleType = cms.int32(SAMPLE_TYPE),
     setup = cms.int32(LEPTON_SETUP),
-    ## Moving pt>20 to pt>30 as we use these jets 
+    ## Moving pt>20 to pt>30 as we use these jets
     cut = cms.string("pt>30 && abs(eta)<4.7 && userFloat('JetID') && (userFloat('PUjetID') || pt>50)"),
     isMC = cms.bool(IsMC),
     bTaggerName = cms.string(theBTagger),
@@ -1383,21 +1386,21 @@ if (APPLYJER and SAMPLE_TYPE == 2017):
    from CondCore.DBCommon.CondDBSetup_cfi import *
    process.jer = cms.ESSource("PoolDBESSource",
                                  CondDBSetup,
-                                 connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JER/Summer19UL17_JRV2_MC.db'),
+                                 connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JER/Summer19UL17_JRV3_MC.db'),
                                  toGet = cms.VPSet(
                                                    cms.PSet(
                                                             record = cms.string('JetResolutionRcd'),
-                                                            tag    = cms.string('JR_Summer19UL17_JRV2_MC_PtResolution_AK4PFchs'),
+                                                            tag    = cms.string('JR_Summer19UL17_JRV3_MC_PtResolution_AK4PFchs'),
                                                             label  = cms.untracked.string('AK4PFchs_pt')
                                                             ),
                                                    cms.PSet(
                                                             record = cms.string('JetResolutionRcd'),
-                                                            tag    = cms.string('JR_Summer19UL17_JRV2_MC_PhiResolution_AK4PFchs'),
+                                                            tag    = cms.string('JR_Summer19UL17_JRV3_MC_PhiResolution_AK4PFchs'),
                                                             label  = cms.untracked.string('AK4PFchs_phi')
                                                             ),
                                                    cms.PSet(
                                                             record = cms.string('JetResolutionScaleFactorRcd'),
-                                                            tag    = cms.string('JR_Summer19UL17_JRV2_MC_SF_AK4PFchs'),
+                                                            tag    = cms.string('JR_Summer19UL17_JRV3_MC_SF_AK4PFchs'),
                                                             label  = cms.untracked.string('AK4PFchs')
                                                             )
                                                    )
@@ -1590,7 +1593,7 @@ process.Candidates = cms.Path(
        process.bareZZCand        + process.ZZCand
     )
 
-process.GENCandidates = cms.Path(process.GENLevel)
+if IsMC: process.GENCandidates = cms.Path(process.GENLevel)
 
 # Optional sequence to build control regions. To get it, add
 #process.CRPath = cms.Path(process.CRZl) # only trilepton
