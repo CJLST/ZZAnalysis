@@ -20,8 +20,8 @@
 <use name="MelaAnalytics/GenericMEComputer"/> <!--ATmela -->
 
 <!-- Damn syntax! -->
-<Flags CPPDEFINES="CMSSW_VERSION=$(shell echo ${CMSSW_VERSION}|sed -e s/CMSSW_// -e s/_//g -e s/patch\.//)"/>
-<Flags CPPDEFINES="CMSSW_VERSION_MAJOR=$(shell echo ${CMSSW_VERSION}|sed -e s/CMSSW_// -e s/_.*//g)"/>
+<!--Flags CPPDEFINES="CMSSW_VERSION=$(shell echo ${CMSSW_VERSION}|sed -e s/CMSSW_// -e s/_//g -e s/patch\.//)"/-->
+<!--Flags CPPDEFINES="CMSSW_VERSION_MAJOR=$(shell echo ${CMSSW_VERSION}|sed -e s/CMSSW_// -e s/_.*//g)"/-->
 <flags CPPFLAGS="-I$(CMSSW_BASE)/src/JHUGenMELA/MELA/interface/" />
 <!--Flags CXXFLAGS="-Wno-delete-non-virtual-dtor -Wno-error=unused-but-set-variable -Wno-error=unused-variable"/--> 
 
