@@ -108,12 +108,7 @@ void CompositeCandMassResolution::fillP3Covariance(const reco::Candidate &c, TMa
 }
 
 void CompositeCandMassResolution::fillP3Covariance(const reco::Muon &c, TMatrixDSym &bigCov, int offset) const {
-#if CMSSW_VERSION>500
     fillP3Covariance(c, *c.muonBestTrack(), bigCov, offset);
-#else
-    // FIXME: what should be done in this case? Probably we should search for the track with a pT matching the "default" muon pT among innerTrack() and globalTrack().
-    fillP3Covariance(c, *c.track(), bigCov, offset);
-#endif
 }
 
 

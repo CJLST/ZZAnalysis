@@ -192,11 +192,12 @@ Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    if(l.gsfTrack().isNonnull() && l.gsfTrack().isAvailable())
 	  {
-		#if CMSSW_VERSION_MAJOR < 9
-	   l.gsfTrack()->hitPattern().numberOfHits(HitPattern::MISSING_INNER_HITS);
-		#else
-	   l.gsfTrack()->hitPattern().numberOfAllHits(HitPattern::MISSING_INNER_HITS);
-		#endif
+// This is no longer supported.
+//		#if CMSSW_VERSION_MAJOR < 9 
+//	   l.gsfTrack()->hitPattern().numberOfHits(HitPattern::MISSING_INNER_HITS);
+// 		#else
+ 	   l.gsfTrack()->hitPattern().numberOfAllHits(HitPattern::MISSING_INNER_HITS);
+// 		#endif
 	  }
 	  
     //-- Flag for crack photons (which use different efficiency SFs)

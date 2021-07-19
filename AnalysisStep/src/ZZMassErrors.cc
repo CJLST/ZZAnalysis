@@ -31,11 +31,7 @@ namespace {
   float simpleParameterizationUncertainty(const pat::Electron* electron) {
     float error = 999. ;
 
-#if CMSSW_VERSION<500
-    double ecalEnergy = electron->ecalEnergy() ;
-#else
     double ecalEnergy = electron->correctedEcalEnergy() ;
-#endif
 
     if (electron->isEB()) {
       float parEB[3] = { 5.24e-02,  2.01e-01, 1.00e-02} ;

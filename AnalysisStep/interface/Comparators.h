@@ -31,6 +31,8 @@ namespace Comparators {
       theType(type)
     {}
 
+    virtual ~BestCandComparator() = default;
+
     // Helper function, implements the "legacy" Z1/Z2 selection logic
     bool bestZ1bestZ2(const pat::CompositeCandidate& cand_i, const pat::CompositeCandidate& cand_j){
 
