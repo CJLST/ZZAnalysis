@@ -42,13 +42,19 @@ git clone https://github.com/MELALabs/MelaAnalytics.git
 (cd MelaAnalytics; git checkout -b from-v22 v2.2)
 
 #Common LHE tools
-#git clone https://github.com/acappati/CommonLHETools.git
-git clone https://github.com/usarica/CommonLHETools.git
-(cd CommonLHETools; git checkout -b from-v134 v1.3.4)
+#git clone https://github.com/usarica/CommonLHETools.git
+#(cd CommonLHETools; git checkout -b from-v134 v1.3.4)
+#--->Hack for scram update preventing shell scripts in BuildFiles
+git clone https://github.com/namapane/CommonLHETools.git
+(cd CommonLHETools; git checkout v134-fixScram)
 
 #MELA
-git clone https://github.com/JHUGen/JHUGenMELA.git JHUGenMELA
-(cd JHUGenMELA; git checkout -b from-v231 v2.3.1)
+#git clone https://github.com/JHUGen/JHUGenMELA.git JHUGenMELA
+#(cd JHUGenMELA; git checkout -b from-v231 v2.3.1)
+#--->Hack for scram update preventing shell scripts in BuildFiles
+git clone https://github.com/namapane/JHUGenMELA.git JHUGenMELA
+(cd JHUGenMELA; git checkout v231-fixScram)
+
 # replace JHUGenMELA/MELA/setup.sh -j 8
 (                                                                 \
   cd ${CMSSW_BASE}/src/JHUGenMELA/MELA/COLLIER/                  ;\
@@ -76,6 +82,9 @@ git clone https://github.com/JHUGen/JHUGenMELA.git JHUGenMELA
   cd ${CMSSW_BASE}/src/JHUGenMELA/MELA/                          ;\
   ./downloadNNPDF.sh                                             ;\
 )
+
+#download MCFM lib (cannot be done in BuildFile.xml any longer)
+$CMSSW_BASE/src/JHUGenMELA/MELA/data/retrieve.csh $SCRAM_ARCH mcfm_707
 
 #kinematic refitting
 git clone https://github.com/mhl0116/KinZfitter-1.git KinZfitter
