@@ -28,33 +28,34 @@ git cms-merge-topic cms-met:METFixEE2017_949_v2_backport_to_102X
 ## need at least the first two lines
 git cms-addpkg GeneratorInterface/RivetInterface
 git cms-addpkg SimDataFormats/HTXS
-git remote add bonanomi https://github.com/bonanomi/cmssw.git
-git fetch bonanomi 
-git checkout bonanomi/hstxs1p2_CMSSW_10_2_X GeneratorInterface/RivetInterface
-git checkout bonanomi/hstxs1p2_CMSSW_10_2_X SimDataFormats/HTXS
+#git remote add bonanomi https://github.com/bonanomi/cmssw.git
+#git fetch bonanomi 
+#git checkout bonanomi/hstxs1p2_CMSSW_10_2_X GeneratorInterface/RivetInterface
+#git checkout bonanomi/hstxs1p2_CMSSW_10_2_X SimDataFormats/HTXS
 
 #### Please do not add any custom (non-CMSSW) package before this line ####
 #ZZAnalysis
 git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
 (cd ZZAnalysis; git checkout Run2Legacy)
 
-# Muon MVA
+#Muon MVA
 git clone https://github.com/bonanomi/MuonMVAReader.git MuonMVAReader
 
 #MELA Analytics
-git clone https://github.com/usarica/MelaAnalytics.git
-(cd MelaAnalytics; git checkout -b from-v19 v1.9)
+git clone https://github.com/MELALabs/MelaAnalytics.git
+(cd MelaAnalytics; git checkout -b from-v22 v2.2)
 
 #Common LHE tools
 git clone https://github.com/usarica/CommonLHETools.git
-(cd CommonLHETools; git checkout -b from-v131 v1.3.1)
+(cd CommonLHETools; git checkout -b from-v135 v1.3.5)
 
 #MELA
-git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
-(cd ZZMatrixElement; git checkout -b from-v222 v2.2.2)
-# replace ZZMatrixElement/MELA/setup.sh -j 8
+git clone https://github.com/JHUGen/JHUGenMELA.git JHUGenMELA
+(cd JHUGenMELA; git checkout -b from-v235 v2.3.5)
+
+# replace JHUGenMELA/MELA/setup.sh -j 8
 (                                                                 \
-  cd ${CMSSW_BASE}/src/ZZMatrixElement/MELA/COLLIER/             ;\
+  cd ${CMSSW_BASE}/src/JHUGenMELA/MELA/COLLIER/                  ;\
   set pkgname="collier-1.2.0"                                    ;\
   set pkgdir="COLLIER-1.2"                                       ;\
   set tarname=$pkgname".tar.gz"                                  ;\
@@ -71,10 +72,17 @@ git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMa
   mv $libname "../data/"$SCRAM_ARCH"/"$libname                   ;\
 )
 (                                                                 \
-  cd ${CMSSW_BASE}/src/ZZMatrixElement/MELA/fortran/             ;\
+  cd ${CMSSW_BASE}/src/JHUGenMELA/MELA/fortran/                  ;\
   make all                                                       ;\
   mv libjhugenmela.so ../data/${SCRAM_ARCH}/                     ;\
 )
+(                                                                 \
+  cd ${CMSSW_BASE}/src/JHUGenMELA/MELA/                          ;\
+  ./downloadNNPDF.sh                                             ;\
+)
+
+#download MCFM lib (cannot be done in BuildFile.xml any longer)
+$CMSSW_BASE/src/JHUGenMELA/MELA/data/retrieve.csh $SCRAM_ARCH mcfm_707
 
 #kinematic refitting
 git clone https://github.com/mhl0116/KinZfitter-1.git KinZfitter

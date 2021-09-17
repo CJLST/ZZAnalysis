@@ -26,9 +26,9 @@
 <use name="rootrflx"/>
 <use name="roofitcore"/>
 
-<Flags CPPDEFINES="CMSSW_VERSION=$(shell echo ${CMSSW_VERSION}|sed -e s/CMSSW_// -e s/_//g -e s/patch\.//)"/>
-<Flags CPPDEFINES="CMSSW_VERSION_MAJOR=$(shell echo ${CMSSW_VERSION}|sed -e s/CMSSW_// -e s/_.*//g)"/>
-<flags CPPFLAGS="-I$(CMSSW_BASE)/src/ZZMatrixElement/MELA/interface/" />
+<!--Flags CPPDEFINES="CMSSW_VERSION=$(shell echo ${CMSSW_VERSION}|sed -e s/CMSSW_// -e s/_//g -e s/patch\.//)"/-->
+<!--Flags CPPDEFINES="CMSSW_VERSION_MAJOR=$(shell echo ${CMSSW_VERSION}|sed -e s/CMSSW_// -e s/_.*//g)"/-->
+<flags CPPFLAGS="-I$(CMSSW_BASE)/src/JHUGenMELA/MELA/interface/" />
 
 <library   file="*.cc" name="ZZAnalysisAnalysisStepTest">
   <flags   EDM_PLUGIN="1"/>

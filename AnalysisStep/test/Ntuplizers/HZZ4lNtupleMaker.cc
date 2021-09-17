@@ -880,7 +880,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
    htxs_stage0_cat = htxs->stage0_cat;
    htxs_stage1p0_cat = htxs->stage1_cat_pTjet30GeV;
    htxs_stage1p1_cat = htxs->stage1_1_cat_pTjet30GeV;
-   htxs_stage1p2_cat = htxs->stage1_2_cat_pTjet30GeV;
+   //htxs_stage1p2_cat = htxs->stage1_2_cat_pTjet30GeV;
    htxs_errorCode=htxs->errorCode;
    htxs_prodMode= htxs->prodMode;
 
