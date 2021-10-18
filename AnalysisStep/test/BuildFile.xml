@@ -14,7 +14,7 @@
 <use name="MagneticField/Engine"/>
 <use name="MagneticField/Records"/>
 <use name="ZZAnalysis/AnalysisStep"/>
-<use name="ZZMatrixElement/MELA"/>
+<use name="JHUGenMELA/MELA"/>
 <use name="MelaAnalytics/CandidateLOCaster"/>
 <use name="MelaAnalytics/EventContainer"/>
 <use name="MelaAnalytics/GenericMEComputer"/>
