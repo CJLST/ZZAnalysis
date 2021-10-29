@@ -1,7 +1,7 @@
 #!/bin/tcsh -fe
 #
 # Instructions:
-# wget -O ${TMPDIR}/checkout_10X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/miniAOD_80X/checkout_10X.csh
+# wget -O ${TMPDIR}/checkout_10X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/Run2_CutBased_UL/checkout_10X.csh
 # cd $CMSSW_BASE/src
 # cmsenv
 # chmod u+x ${TMPDIR}/checkout_10X.csh
@@ -42,18 +42,12 @@ git clone https://github.com/MELALabs/MelaAnalytics.git
 (cd MelaAnalytics; git checkout -b from-v22 v2.2)
 
 #Common LHE tools
-#git clone https://github.com/usarica/CommonLHETools.git
-#(cd CommonLHETools; git checkout -b from-v134 v1.3.4)
-#--->Hack for scram update preventing shell scripts in BuildFiles
-git clone https://github.com/namapane/CommonLHETools.git
-(cd CommonLHETools; git checkout v134-fixScram)
+git clone https://github.com/usarica/CommonLHETools.git
+(cd CommonLHETools; git checkout -b from-v135 v1.3.5)
 
 #MELA
-#git clone https://github.com/JHUGen/JHUGenMELA.git JHUGenMELA
-#(cd JHUGenMELA; git checkout -b from-v231 v2.3.1)
-#--->Hack for scram update preventing shell scripts in BuildFiles
-git clone https://github.com/namapane/JHUGenMELA.git JHUGenMELA
-(cd JHUGenMELA; git checkout v231-fixScram)
+git clone https://github.com/JHUGen/JHUGenMELA.git JHUGenMELA
+(cd JHUGenMELA; git checkout -b from-v235 v2.3.5)
 
 # replace JHUGenMELA/MELA/setup.sh -j 8
 (                                                                 \
