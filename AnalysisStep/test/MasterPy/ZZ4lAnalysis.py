@@ -50,6 +50,7 @@ declareDefault("SELSETUP", "allCutsAtOncePlusSmart", globals())
 
 #Best candidate comparator (see interface/Comparators.h)
 declareDefault("BESTCANDCOMPARATOR", "byBestZ1bestZ2", globals()) #ATbbf
+# declareDefault("BESTCANDCOMPARATOR", "byBestKD", globals()) #ATbbf
 
 # Set to True to make candidates with the full combinatorial of loose leptons (for debug; much slower)
 declareDefault("KEEPLOOSECOMB", False, globals())
@@ -330,7 +331,7 @@ elif LEPTON_SETUP == 2017:# Rochester corrections for 2017 data
                                          src = cms.InputTag("slimmedMuons"),
                                          identifier = cms.string("RoccoR2017UL"),
                                          isMC = cms.bool(IsMC),
-                                         isSynchronization = cms.bool(False),
+                                         isSynchronization = cms.bool(True),
                                          )
 elif LEPTON_SETUP == 2018:# Rochester corrections for 2018 data
      process.calibratedMuons = cms.EDProducer("RochesterPATMuonCorrector",
@@ -423,7 +424,7 @@ if (LEPTON_SETUP == 2017):
    setupEgammaPostRecoSeq(process,
                           runEnergyCorrections=True,
                           runVID=True,
-                          eleIDModules=['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Summer17UL_ID_ISO_cff'],
+                          eleIDModules=['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Summer17UL_ID_ISO_cff', 'RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff'],
                           phoIDModules=['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V2_cff'],
                           era='2017-UL')
 
@@ -1137,7 +1138,7 @@ process.dressedJets = cms.EDProducer("JetFiller",
     sampleType = cms.int32(SAMPLE_TYPE),
     setup = cms.int32(LEPTON_SETUP),
     ## Moving pt>20 to pt>30 as we use these jets
-    cut = cms.string("pt>30 && abs(eta)<4.7 && userFloat('JetID') && (userFloat('PUjetID') || pt>50)"),
+    cut = cms.string("pt>30 && abs(eta)<4.7 && userFloat('JetID') && (userFloat('PUjetID') || userFloat('pt_JEC_noJER')>50)"),
     isMC = cms.bool(IsMC),
     bTaggerName = cms.string(theBTagger),
     bTaggerThreshold = cms.double(theBTaggerThr),

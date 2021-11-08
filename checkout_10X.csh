@@ -17,7 +17,7 @@ git cms-addpkg  RecoJets/JetProducers
 git cms-addpkg GeneratorInterface/RivetInterface
 git cms-addpkg SimDataFormats/HTXS
 
-# Updated for UL. See: https://twiki.cern.ch/twiki/bin/view/CMS/EgammaUL2016To2018 
+# Updated for UL. See: https://twiki.cern.ch/twiki/bin/view/CMS/EgammaUL2016To2018
 git cms-addpkg RecoEgamma/EgammaTools
 git clone https://github.com/cms-egamma/EgammaPostRecoTools.git
 mv EgammaPostRecoTools/python/EgammaPostRecoTools.py RecoEgamma/EgammaTools/python/.
@@ -42,15 +42,14 @@ git clone https://github.com/MELALabs/MelaAnalytics.git
 (cd MelaAnalytics; git checkout -b from-v22 v2.2)
 
 #Common LHE tools
-#git clone https://github.com/acappati/CommonLHETools.git
 git clone https://github.com/usarica/CommonLHETools.git
-(cd CommonLHETools; git checkout -b from-v134 v1.3.4)
+(cd CommonLHETools; git checkout -b from-v135 v1.3.5)
 
 #MELA
 git clone https://github.com/JHUGen/JHUGenMELA.git JHUGenMELA
-(cd JHUGenMELA; git checkout -b from-v231 v2.3.1)
-# replace JHUGenMELA/MELA/setup.sh -j 8
-(                                                                 \
+(cd JHUGenMELA; git checkout -b from-v235 v2.3.5)
+
+ (                                                                 \
   cd ${CMSSW_BASE}/src/JHUGenMELA/MELA/COLLIER/                  ;\
   set pkgname="collier-1.2.0"                                    ;\
   set pkgdir="COLLIER-1.2"                                       ;\
@@ -77,10 +76,9 @@ git clone https://github.com/JHUGen/JHUGenMELA.git JHUGenMELA
   ./downloadNNPDF.sh                                             ;\
 )
 
+#download MCFM lib (cannot be done in BuildFile.xml any longer)
+$CMSSW_BASE/src/JHUGenMELA/MELA/data/retrieve.csh $SCRAM_ARCH mcfm_707
+
 #kinematic refitting
 git clone https://github.com/mhl0116/KinZfitter-1.git KinZfitter
 (cd KinZfitter ; git checkout -b from-27daebb 27daebb)
-
-
-
-
