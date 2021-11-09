@@ -32,13 +32,13 @@ class Philler : public edm::EDProducer {
  public:
   /// Constructor
   explicit Philler(const edm::ParameterSet&);
-    
+
   /// Destructor
   ~Philler(){
-  };  
+  };
 
  private:
-  virtual void beginJob(){};  
+  virtual void beginJob(){};
   virtual void produce(edm::Event&, const edm::EventSetup&);
   virtual void endJob(){};
 
@@ -104,7 +104,7 @@ Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 
   // Output collection
-  auto result = std::make_unique<pat::PhotonCollection>(); 
+  auto result = std::make_unique<pat::PhotonCollection>();
 
   for (unsigned int i = 0; i< photonHandle->size(); ++i){
 
@@ -142,7 +142,7 @@ Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 //    float PFNeutralHadIso   = l.pfIsolationVariables().sumNeutralHadronEt;
 //    float PFPhotonIso       = l.pfIsolationVariables().sumPhotonEt;
 
-    //float fSCeta = fabs(l.eta()); 
+    //float fSCeta = fabs(l.eta());
     float fSCeta = fabs(l.superCluster()->eta());
 
     float combRelIsoPF = LeptonIsoHelper::combRelIsoPF(sampleType, setup, rho, l);
@@ -154,7 +154,7 @@ Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     //float dxy = 999.;
     //float dz  = 999.;
-    
+
     // RunII BDT ID
     float BDT = 0.;
 
@@ -166,27 +166,27 @@ Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     // temporary ID https://twiki.cern.ch/twiki/bin/view/CMS/MultivariatePhotonIdentificationRun2
 
     // WP for TLE ID v1
-    if(l.isEB() && fSCeta < 0.8 && BDT > -0.68) 
+    if(l.isEB() && fSCeta < 0.8 && BDT > -0.68)
         isBDT = true;// 0.374;
-    if(l.isEB() && fSCeta >= 0.8 && BDT > -0.66) 
+    if(l.isEB() && fSCeta >= 0.8 && BDT > -0.66)
         isBDT = true;// 0.374;
-    if(l.isEE() && BDT > -0.6) 
+    if(l.isEE() && BDT > -0.6)
         isBDT = true;// 0.336;
 
     // tighter WP for TLE ID v1
-    if(l.isEB() && fSCeta < 0.8 && BDT > -0.379) 
+    if(l.isEB() && fSCeta < 0.8 && BDT > -0.379)
         pass_WP_2 = true;
-    if(l.isEB() && fSCeta >= 0.8 && BDT > -0.369) 
+    if(l.isEB() && fSCeta >= 0.8 && BDT > -0.369)
         pass_WP_2 = true;
-    if(l.isEE() && BDT > -0.294) 
+    if(l.isEE() && BDT > -0.294)
         pass_WP_2 = true;
 
 
     // Photon 90% MVA ID
     /*
-    if(l.isEB() && BDT > 0.374) 
+    if(l.isEB() && BDT > 0.374)
         isBDT = true;// 0.374;
-    if(l.isEE() && BDT > 0.336) 
+    if(l.isEE() && BDT > 0.336)
         isBDT = true;// 0.336;
     */
 
@@ -199,9 +199,9 @@ Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	   l.gsfTrack()->hitPattern().numberOfAllHits(HitPattern::MISSING_INNER_HITS);
 //		#endif
 	  }
-	  
+
     //-- Flag for crack photons (which use different efficiency SFs)
-    bool isCrack = (l.isEBEEGap())||(l.isEBGap())||(l.isEEGap());// l.isGap(); 
+    bool isCrack = (l.isEBEEGap())||(l.isEBGap())||(l.isEEGap());// l.isGap();
     //--- Trigger matching
     int HLTMatch = 0; //FIXME
 
@@ -210,8 +210,8 @@ Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     /*
     float pfSCfbrem = 999.;
-   
-    if(superCluster.isAvailable() && superCluster.isNonnull() ) { 
+
+    if(superCluster.isAvailable() && superCluster.isNonnull() ) {
         //LogWarning("") << "in if";
         if (superCluster->clustersSize() > 1) {
             //LogWarning("") << "in 2nd if";
@@ -231,7 +231,7 @@ Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     l.addUserFloat("SIP",SIP);
     //l.addUserFloat("dxy",dxy);
     //l.addUserFloat("dz",dz);
-    l.addUserFloat("BDT",BDT);    
+    l.addUserFloat("BDT",BDT);
     l.addUserFloat("isBDT",isBDT);
     l.addUserFloat("isCrack",isCrack);
     l.addUserFloat("HLTMatch", HLTMatch);
@@ -249,7 +249,7 @@ Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         if(ele.hasUserFloat("combRelIsoPF")) ele_is_ISO = ele.userFloat("combRelIsoPF");
         if(ele.hasUserFloat("SIP")) ele_is_SIP = ele.userFloat("SIP");
         ele_charge = ele.charge();
-        ele_pt = ele.pt(); 
+        ele_pt = ele.pt();
     }
     l.addUserFloat("min_ele_dR", min_ele_dR);
     l.addUserFloat("ele_has_matching_ele", has_matching_ele);
@@ -267,7 +267,7 @@ Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     if(l.isEB() && fSCeta >= 0.8 && BDT2 > -0.66)
         isBDT2 = true;// 0.374;
     if(l.isEE() && BDT2 > -0.6)
-        isBDT2 = true;// 0.336; 
+        isBDT2 = true;// 0.336;
     l.addUserFloat("BDT2", BDT2);
     l.addUserFloat("isBDT2", isBDT2);
     l.addUserFloat("pass_WP_2", pass_WP_2);
@@ -292,4 +292,3 @@ Philler::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 #include <FWCore/Framework/interface/MakerMacros.h>
 DEFINE_FWK_MODULE(Philler);
-

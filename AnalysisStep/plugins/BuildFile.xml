@@ -21,5 +21,3 @@
 <flags CPPFLAGS="-I$(CMSSW_BASE)/src/JHUGenMELA/MELA/interface/" />
 <flags   EDM_PLUGIN="1"/>
 </library>
-
-  

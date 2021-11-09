@@ -269,14 +269,14 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     float NHF  = j.neutralHadronEnergyFraction();
     float NEMF = j.neutralEmEnergyFraction();
     float CHF  = j.chargedHadronEnergyFraction();
-    float CEMF = j.chargedEmEnergyFraction();
+    // float CEMF = j.chargedEmEnergyFraction();
     int NumConst = j.chargedMultiplicity()+j.neutralMultiplicity();
     int NumNeutralParticles = j.neutralMultiplicity();
     float CHM  = j.chargedMultiplicity();
     //   float MUF  = j.muonEnergyFraction();
 
     bool JetID = true;
-	  
+
     // if ( setup == 2016 )
     // { // Tight jet ID https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2016
     //   JetID    = ((NHF<0.90 && NEMF<0.90 && NumConst>1) && ((jabseta<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || jabseta>2.4) && jabseta<=2.7) ||
@@ -292,9 +292,9 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     //              ( NEMF<0.90 && NHF>0.02 && NumNeutralParticles>10 && jabseta>3.0 );
     // }
 
-    // else if ( setup == 2018) 
+    // else if ( setup == 2018)
     // {
-    //  // Tight jet ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID13TeVRun2018 without JetIDLepVeto 
+    //  // Tight jet ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID13TeVRun2018 without JetIDLepVeto
     //   JetID    = ( CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && NHF < 0.9 && jabseta<=2.6) ||
     //              ( CHM>0 && NEMF<0.99 && NHF < 0.9 && jabseta>2.6 && jabseta<=2.7) ||
     //              ( NEMF>0.02 && NEMF<0.99 && NumNeutralParticles>2 && jabseta>2.7 && jabseta<=3.0 ) ||
@@ -305,12 +305,12 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     // {
     //  throw cms::Exception("JetID") << "Jet ID is not defined for the given setup (" << setup << ")!";
     // }
-	 
+
     //--- JetID for UL, only one WP provided. Cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID13TeVUL
     //--- Lepton veto not included, as we perform our own cleaning and selection between leps and jets
     if ( setup == 2016 )
     {
-      JetID    =  (jabseta<=2.4 && CEMF<0.8 && CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && NHF<0.9) || 
+      JetID    =  (jabseta<=2.4 && CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && NHF<0.9) ||
                   (jabseta>2.4 && jabseta<=2.7 && NEMF<0.99 && NHF < 0.9) ||
                   (jabseta>2.7 && jabseta<=3.0 && NEMF>0.0 && NEMF<0.99 && NHF<0.9 && NumNeutralParticles>1) ||
                   (jabseta>3.0 && NEMF<0.90 && NHF>0.2 && NumNeutralParticles>10);
@@ -318,8 +318,8 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     else if ( (setup == 2017) || (setup == 2018) )
     {
-      JetID    = (jabseta<=2.6 && CEMF<0.8 && CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && NHF<0.9) || 
-                 (jabseta>2.6 && jabseta<=2.7 && CEMF<0.8 && CHM>0 && NEMF<0.99 && NHF < 0.9) ||
+      JetID    = (jabseta<=2.6 && CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && NHF<0.9) ||
+                 (jabseta>2.6 && jabseta<=2.7 && CHM>0 && NEMF<0.99 && NHF < 0.9) ||
                  (jabseta>2.7 && jabseta<=3.0 && NEMF>0.01 && NEMF<0.99 && NumNeutralParticles>1) ||
                  (jabseta>3.0 && NEMF<0.90 && NHF>0.2 && NumNeutralParticles>10);
     }
@@ -327,7 +327,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     else
     {
      throw cms::Exception("JetID") << "Jet ID is not defined for the given setup (" << setup << ")!";
-    } 
+    }
 
     bool PUjetID = false;
     float PUjetID_score = 0;
@@ -353,7 +353,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     // WP applied explicitely
     //cout << "PU ID score = " << PUjetID_score << " PT = " << jpt << " ETA = " << jabseta << endl;
-    // PUjetID       = ( 
+    // PUjetID       = (
 		  //    (jpt > 0 && jpt <= 10 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.69  ||
 		  //    (jpt > 10 && jpt <= 20 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.69 ||
 		  //    (jpt > 20 && jpt <= 30 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.69 ||
@@ -372,7 +372,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		  //    (jpt > 0 && jpt <= 10 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21  ||
 		  //    (jpt > 10 && jpt <= 20 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21 ||
 		  //    (jpt > 20 && jpt <= 30 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21 ||
-		  //    (jpt > 30 && jpt <= 50 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.01 
+		  //    (jpt > 30 && jpt <= 50 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.01
 		  //   );
 
     //--- UL Jet PU ID. Changed WPs and pT regions for the tranining. Cf. https://twiki.cern.ch/twiki/bin/view/CMS/PileupJetIDUL#Recommendations_for_2018_UL_data
@@ -382,7 +382,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     //--- Pt2030_Tight = cms.vdouble( 0.90, 0.60, -0.12, -0.13),
     //--- Pt3040_Tight = cms.vdouble( 0.96, 0.82, 0.20, 0.09),
     //--- Pt4050_Tight = cms.vdouble( 0.98, 0.92, 0.47, 0.29),
-    PUjetID = ( 
+    PUjetID = (
          ((jpt > 10 && jpt <= 20 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.77) ||
          ((jpt > 20 && jpt <= 30 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.90) ||
          ((jpt > 30 && jpt <= 40 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.96) ||
@@ -401,19 +401,19 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
          ((jpt > 10 && jpt <= 20 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21) ||
          ((jpt > 20 && jpt <= 30 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.13) ||
          ((jpt > 30 && jpt <= 40 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > 0.09)  ||
-         ((jpt > 40 && jpt <= 50 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > 0.29) 
+         ((jpt > 40 && jpt <= 50 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > 0.29)
       );
     //if (PUjetID) cout << "PUjetID!" << endl;
-    
+
     /*if ( applyJEC_ && ( setup == 2017 || setup == 2018 || (setup == 2016 && (!(isMC_)) )))
       {
-        PUjetID_score = j.userFloat("pileupJetIdUpdated:fullDiscriminant"); 
+        PUjetID_score = j.userFloat("pileupJetIdUpdated:fullDiscriminant");
         PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0));
       }
-    //if (applyJEC_) PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0)); // MODIFIED according to update jet collection for 2016 MC (needed to include DeepCSV)                  
+    //if (applyJEC_) PUjetID = bool(j.userInt("pileupJetIdUpdated:fullId") & (1 << 0)); // MODIFIED according to update jet collection for 2016 MC (needed to include DeepCSV)
       else
       {
-        PUjetID_score = j.userFloat("pileupJetId:fullDiscriminant"); 
+        PUjetID_score = j.userFloat("pileupJetId:fullDiscriminant");
         PUjetID = bool(j.userInt("pileupJetId:fullId") & (1 << 0));
       }
     */
@@ -496,8 +496,8 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       //- check matching to gen jets
       const reco::GenJet* genJet = j.genJet();
-      bool matchedJet = genJet 
-                        && ( reco::deltaR(jeta,jphi,genJet->eta(),genJet->phi()) < 0.2 ) 
+      bool matchedJet = genJet
+                        && ( reco::deltaR(jeta,jphi,genJet->eta(),genJet->phi()) < 0.2 )
                         && ( fabs(jpt-genJet->pt()) < 3*res_pt*jpt );
 
       if(matchedJet){
@@ -517,7 +517,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         pt_jer   = max( 0., smear*sigma   + jpt );
         pt_jerup = max( 0., smear*sigmaup + jpt );
         pt_jerdn = max( 0., smear*sigmadn + jpt );
-      } 
+      }
       j.setP4(reco::Particle::PolarLorentzVector(pt_jer, jeta, jphi, (pt_jer/jpt)*j.mass()));
     }
 

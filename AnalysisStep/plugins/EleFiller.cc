@@ -33,16 +33,17 @@ class EleFiller : public edm::EDProducer {
  public:
   /// Constructor
   explicit EleFiller(const edm::ParameterSet&);
-    
+
   /// Destructor
   ~EleFiller();
 
  private:
-  virtual void beginJob(){};  
+  virtual void beginJob(){};
   virtual void produce(edm::Event&, const edm::EventSetup&);
   virtual void endJob(){};
 
   edm::EDGetTokenT<pat::ElectronRefVector> electronToken;
+  edm::EDGetTokenT<pat::ElectronRefVector> electronToken_bis;
   int sampleType;
   int setup;
   const StringCutObjectSelector<pat::Electron, true> cut;
@@ -64,7 +65,7 @@ EleFiller::EleFiller(const edm::ParameterSet& iConfig) :
   rhoToken = consumes<double>(LeptonIsoHelper::getEleRhoTag(sampleType, setup));
   vtxToken = consumes<vector<Vertex> >(edm::InputTag("goodPrimaryVertices"));
   produces<pat::ElectronCollection>();
-	
+
 }
 EleFiller::~EleFiller(){
 }
@@ -72,7 +73,7 @@ EleFiller::~EleFiller(){
 
 void
 EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
-{  
+{
 
   // Get leptons and rho
   edm::Handle<pat::ElectronRefVector> electronHandle;
@@ -99,7 +100,7 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     float PFNeutralHadIso   = l.pfIsolationVariables().sumNeutralHadronEt;
     float PFPhotonIso       = l.pfIsolationVariables().sumPhotonEt;
 
-    float SCeta = l.superCluster()->eta(); 
+    float SCeta = l.superCluster()->eta();
     float fSCeta = fabs(SCeta);
 
     float combRelIsoPF = LeptonIsoHelper::combRelIsoPF(sampleType, setup, rho, l);
@@ -116,19 +117,19 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       vertex = &(vertices->front());
       dxy = fabs(l.gsfTrack()->dxy(vertex->position()));
       dz  = fabs(l.gsfTrack()->dz(vertex->position()));
-    } 
+    }
 
-	  
+
     // Load correct RunII BDT ID+iso
     float BDT = -99;
     if      ( setup == 2016 ) BDT = l.userFloat("ElectronMVAEstimatorRun2Summer16ULIdIsoValues");
     else if ( setup == 2017 ) BDT = l.userFloat("ElectronMVAEstimatorRun2Summer17ULIdIsoValues");
     else if ( setup == 2018 ) BDT = l.userFloat("ElectronMVAEstimatorRun2Summer18ULIdIsoValues");
     // cout << "BDT = " << BDT << endl;
-    
+
     float pt = l.pt();
 
-	  
+
     bool isBDT = false;
 
     if ( setup==2016 )
@@ -166,25 +167,24 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  	 std::cerr << "[ERROR] EleFiller: no BDT setup for: " << setup << " year!" << std::endl;
 	 }
 
-    //-- Missing hit  
+    //-- Missing hit
 	 int missingHit;
 	 missingHit = l.gsfTrack()->hitPattern().numberOfAllHits(HitPattern::MISSING_INNER_HITS);
-	 
+
     //-- Flag for crack electrons (which use different efficiency SFs)
     bool isCrack = l.isGap();
-     
+
     //--- Trigger matching
     int HLTMatch = 0; //FIXME
-	 
-     
+
+
     //-- Scale and smearing corrections are now stored in the miniAOD https://twiki.cern.ch/twiki/bin/view/CMS/EgammaMiniAODV2#Energy_Scale_and_Smearing
     //-- Unchanged in UL implementation TWiki accessed on 27/04
     float uncorrected_pt = l.pt();
     float corr_factor = l.userFloat("ecalTrkEnergyPostCorr") / l.energy();//get scale/smear correction factor directly from miniAOD
-     
     //scale and smsear electron
     l.setP4(reco::Particle::PolarLorentzVector(l.pt()*corr_factor, l.eta(), l.phi(), l.mass()*corr_factor));
-     
+
     //get all scale uncertainties and their breakdown
     float scale_total_up = l.userFloat("energyScaleUp") / l.energy();
     float scale_stat_up = l.userFloat("energyScaleStatUp") / l.energy();
@@ -194,7 +194,7 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     float scale_stat_dn = l.userFloat("energyScaleStatDown") / l.energy();
     float scale_syst_dn = l.userFloat("energyScaleSystDown") / l.energy();
     float scale_gain_dn = l.userFloat("energyScaleGainDown") / l.energy();
-     
+
     //get all smearing uncertainties and their breakdown
     float sigma_total_up = l.userFloat("energySigmaUp") / l.energy();
     float sigma_rho_up = l.userFloat("energySigmaRhoUp") / l.energy();
@@ -203,7 +203,7 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     float sigma_rho_dn = l.userFloat("energySigmaRhoDown") / l.energy();
     float sigma_phi_dn = l.userFloat("energySigmaPhiDown") / l.energy();
 
-	  
+
     //--- Embed user variables
     l.addUserFloat("PFChargedHadIso",PFChargedHadIso);
     l.addUserFloat("PFNeutralHadIso",PFNeutralHadIso);
@@ -214,7 +214,7 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     l.addUserFloat("SIP",SIP);
     l.addUserFloat("dxy",dxy);
     l.addUserFloat("dz",dz);
-    l.addUserFloat("BDT",BDT);    
+    l.addUserFloat("BDT",BDT);
     l.addUserFloat("isBDT",isBDT);
     l.addUserFloat("isCrack",isCrack);
     l.addUserFloat("HLTMatch", HLTMatch);
@@ -235,7 +235,7 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     l.addUserFloat("sigma_phi_up",sigma_phi_up);
     l.addUserFloat("sigma_phi_dn",sigma_phi_dn);
 
-    //--- MC parent code 
+    //--- MC parent code
 //     MCHistoryTools mch(iEvent);
 //     if (mch.isMC()) {
 //       int MCParentCode = 0;
@@ -243,7 +243,7 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 //       l.addUserFloat("MCParentCode",MCParentCode);
 //     }
 
-    //--- Check selection cut. Being done here, flags are not available; but this way we 
+    //--- Check selection cut. Being done here, flags are not available; but this way we
     //    avoid wasting time on rejected leptons.
     if (!cut(l)) continue;
 
@@ -260,4 +260,3 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 #include <FWCore/Framework/interface/MakerMacros.h>
 DEFINE_FWK_MODULE(EleFiller);
-
