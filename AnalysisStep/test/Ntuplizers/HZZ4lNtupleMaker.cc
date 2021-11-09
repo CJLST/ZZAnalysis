@@ -239,7 +239,6 @@ namespace {
   std::vector<float> LepPt;
   std::vector<float> LepEta;
   std::vector<float> LepPhi;
-  std::vector<float> LepMass;
   std::vector<float> LepSCEta;
   std::vector<short> LepLepId;
   std::vector<float> LepSIP;
@@ -362,7 +361,6 @@ namespace {
   std::vector<float> ExtraLepPt;
   std::vector<float> ExtraLepEta;
   std::vector<float> ExtraLepPhi ;
-  std::vector<float> ExtraLepMass ;
   std::vector<short> ExtraLepLepId;
 
   // Photon info
@@ -2161,7 +2159,6 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   LepPt.clear();
   LepEta.clear();
   LepPhi.clear();
-  LepMass.clear();
   LepSCEta.clear();
   LepLepId.clear();
   LepSIP.clear();
@@ -2207,7 +2204,6 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
   ExtraLepPt.clear();
   ExtraLepEta.clear();
   ExtraLepPhi.clear();
-  ExtraLepMass.clear();
   ExtraLepLepId.clear();
 
   CRflag = CRFLAG;
@@ -2363,7 +2359,6 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
     LepPt .push_back( leptons[i]->pt() );
     LepEta.push_back( leptons[i]->eta() );
     LepPhi.push_back( leptons[i]->phi() );
-    LepMass.push_back( leptons[i]->mass() );
     LepSCEta.push_back( lepFlav==11 ? userdatahelpers::getUserFloat(leptons[i],"SCeta") : -99. );
     int id =  leptons[i]->pdgId();
     if(id == 22 && (i == 1 || i == 3)) id=-22; //FIXME this assumes a standard ordering of leptons.
@@ -2449,7 +2444,6 @@ void HZZ4lNtupleMaker::FillCandidate(const pat::CompositeCandidate& cand, bool e
         ExtraLepPt.push_back(candPtr->pt());
         ExtraLepEta.push_back(candPtr->eta());
         ExtraLepPhi.push_back(candPtr->phi());
-        ExtraLepMass.push_back(candPtr->mass());
         ExtraLepLepId.push_back(candPtr->pdgId());
       }
     }
@@ -2978,7 +2972,6 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("LepPt",LepPt, false);
   myTree->Book("LepEta",LepEta, false);
   myTree->Book("LepPhi",LepPhi, false);
-  myTree->Book("LepMass",LepMass, false);
   myTree->Book("LepSCEta",LepSCEta, false);
   myTree->Book("LepLepId",LepLepId, false);
   myTree->Book("LepSIP",LepSIP, false);
@@ -3111,7 +3104,6 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("ExtraLepPt",ExtraLepPt, false);
   myTree->Book("ExtraLepEta",ExtraLepEta, false);
   myTree->Book("ExtraLepPhi",ExtraLepPhi, false);
-  myTree->Book("ExtraLepMass",ExtraLepMass, false);
   myTree->Book("ExtraLepLepId",ExtraLepLepId, false);
 
   myTree->Book("ZXFakeweight", ZXFakeweight, false);
