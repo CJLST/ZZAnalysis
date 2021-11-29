@@ -27,7 +27,7 @@ PileUpWeight::PileUpWeight(int MC, int target) {
 
  if (MC==2016 && target==2016)
  {
-    edm::FileInPath fip("ZZAnalysis/AnalysisStep/data/PileUpWeights/pu_weights_2016.root");
+    edm::FileInPath fip("ZZAnalysis/AnalysisStep/data/PileUpWeights/pileup_UL_2016.root");
 
     TFile *fPUWeight = TFile::Open(fip.fullPath().data(),"READ");
 
@@ -42,7 +42,7 @@ PileUpWeight::PileUpWeight(int MC, int target) {
 	
  else if (MC==2017 && target==2017)
  {
-		edm::FileInPath fip("ZZAnalysis/AnalysisStep/data/PileUpWeights/pu_weights_2017.root");
+		edm::FileInPath fip("ZZAnalysis/AnalysisStep/data/PileUpWeights/pileup_UL_2017.root");
 		
 		TFile *fPUWeight = TFile::Open(fip.fullPath().data(),"READ");
 		
@@ -55,7 +55,7 @@ PileUpWeight::PileUpWeight(int MC, int target) {
 	
  else if (MC==2018 && target==2018)
  {
-		edm::FileInPath fip("ZZAnalysis/AnalysisStep/data/PileUpWeights/pu_weights_2018.root");
+		edm::FileInPath fip("ZZAnalysis/AnalysisStep/data/PileUpWeights/pileup_UL_2018.root");
 	 
 		TFile *fPUWeight = TFile::Open(fip.fullPath().data(),"READ");
 	 
