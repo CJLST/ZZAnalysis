@@ -533,22 +533,34 @@ process.cleanSoftElectrons = cms.EDProducer("PATElectronCleaner",
 # Recipe taken from https://twiki.cern.ch/twiki/bin/viewauth/CMS/L1ECALPrefiringWeightRecipe#Recipe_details_10_2_X_X_10_or_9
 
 if(IsMC and LEPTON_SETUP == 2016):
-   from PhysicsTools.PatUtils.l1ECALPrefiringWeightProducer_cfi import l1ECALPrefiringWeightProducer
-   process.prefiringweight = l1ECALPrefiringWeightProducer.clone(
-                                                                 DataEra = cms.string("2016BtoH"),
+   from PhysicsTools.PatUtils.l1PrefiringWeightProducer_cfi import l1PrefiringWeightProducer
+   process.prefiringweight = l1PrefiringWeightProducer.clone(
+                                                                 DataEraECAL = cms.string("UL2016postVFP"),
+								 DataEraMuon = cms.string("2016postVFP"),
                                                                  UseJetEMPt = cms.bool(False),
-                                                                 PrefiringRateSystematicUncty = cms.double(0.2),
-                                                                 SkipWarnings = False)
+								 PrefiringRateSystematicUnctyECAL = cms.double(0.2),
+								 PrefiringRateSystematicUnctyMuon = cms.double(0.2))
 
 if(IsMC and LEPTON_SETUP == 2017):
-   from PhysicsTools.PatUtils.l1ECALPrefiringWeightProducer_cfi import l1ECALPrefiringWeightProducer
-   process.prefiringweight = l1ECALPrefiringWeightProducer.clone(
-                                                                 DataEra = cms.string("2017BtoF"),
+   from PhysicsTools.PatUtils.l1PrefiringWeightProducer_cfi import l1PrefiringWeightProducer
+   process.prefiringweight = l1PrefiringWeightProducer.clone(
+								 TheJets = cms.InputTag("patJetsReapplyJEC"),
+								 DataEraECAL = cms.string("UL2017BtoF"),
+								 DataEraMuon = cms.string("20172018"),
                                                                  UseJetEMPt = cms.bool(False),
-                                                                 PrefiringRateSystematicUncty = cms.double(0.2),
-                                                                 SkipWarnings = False)
+								 PrefiringRateSystematicUnctyECAL = cms.double(0.2),
+								 PrefiringRateSystematicUnctyMuon = cms.double(0.2))
+if(IsMC and LEPTON_SETUP == 2018):
+   from PhysicsTools.PatUtils.l1PrefiringWeightProducer_cfi import l1PrefiringWeightProducer
+   process.prefiringweight = l1PrefiringWeightProducer.clone(
+                                                                 TheJets = cms.InputTag("patJetsReapplyJEC"),
+                                                                 DataEraECAL = cms.string("None"),
+                                                                 DataEraMuon = cms.string("20172018"),
+                                                                 UseJetEMPt = cms.bool(False),
+                                                                 PrefiringRateSystematicUnctyECAL = cms.double(0.2),
+                                                                 PrefiringRateSystematicUnctyMuon = cms.double(0.2))
 
-if(IsMC and (LEPTON_SETUP == 2016 or LEPTON_SETUP == 2017)):
+if(IsMC and (LEPTON_SETUP == 2016 or LEPTON_SETUP == 2017 or LEPTON_SETUP == 2018)):
    process.Prefiring = cms.Path(process.prefiringweight)
 
 
@@ -1011,7 +1023,7 @@ process.ZLLCand = cms.EDProducer("ZZCandidateFiller",
 # DEFAULT 2016 jet pileup ID training: _chsalgos_81x
 # 2017-2018: jet pileup ID trainings to be updated
 # Updated for UL Training: _chsalgos_106X_UL17
-from RecoJets.JetProducers.PileupJetID_cfi import _chsalgos_106X_UL17 #_chsalgos_94x, _chsalgos_102x
+from RecoJets.JetProducers.PileupJetID_cfi import _chsalgos_106X_UL17, _chsalgos_106X_UL18 #_chsalgos_94x, _chsalgos_102x
 from RecoJets.JetProducers.PileupJetIDCutParams_cfi import full_81x_chs_wp
 from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
 
@@ -1074,7 +1086,7 @@ elif (SAMPLE_TYPE == 2018):
         inputIsCorrected=False,
         applyJec=True,
         vertexes=cms.InputTag("offlineSlimmedPrimaryVertices"),
-        algos=cms.VPSet(_chsalgos_106X_UL17)
+        algos=cms.VPSet(_chsalgos_106X_UL18)
     )
 else:
     process.load("RecoJets.JetProducers.PileupJetID_cfi")

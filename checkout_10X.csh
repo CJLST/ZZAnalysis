@@ -7,7 +7,7 @@
 # chmod u+x ${TMPDIR}/checkout_10X.csh
 # ${TMPDIR}/checkout_10X.csh
 
-############## For CMSSW_10_6_20
+############## For CMSSW_10_6_26
 git cms-init
 
 # New Jet PU ID: dedicated training for each year
@@ -25,7 +25,7 @@ git cms-addpkg EgammaAnalysis/ElectronTools
 (rm -rf EgammaAnalysis/ElectronTools/data;git clone https://github.com/jainshilpi/EgammaAnalysis-ElectronTools.git -b ULSSfiles_correctScaleSysMC EgammaAnalysis/ElectronTools/data;)
 
 #UL 2016, 2017 and 2018 retraining for electron BDT
-git cms-merge-topic asculac:Electron_XGBoost_MVA_16UL_17UL
+git cms-merge-topic bonanomi:ElectronsMVA_UL
 
 #### Please do not add any custom (non-CMSSW) package before this line ####
 #ZZAnalysis
