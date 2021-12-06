@@ -158,6 +158,7 @@ TreeSetup = cms.EDAnalyzer("HZZ4lNtupleMaker",
                            sampleName = cms.string(SAMPLENAME),
 									GenXSEC = cms.double(GENXSEC),
 									GenBR = cms.double(GENBR),
+                           dataTag=cms.string(DATA_TAG), #added for recognizing UL16 pre/post VFP
 
                            # MELA parameters
                            superMelaMass = cms.double(SUPERMELA_MASS),

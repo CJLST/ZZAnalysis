@@ -3,57 +3,87 @@
 using namespace std;
 //using namespace edm;
 
-LeptonSFHelper::LeptonSFHelper()
+LeptonSFHelper::LeptonSFHelper(bool preVFP)
 {
-   // 2016 Electrons
-   TString fipEleNotCracks_2016 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ElectronSF_Legacy_2016_NoGap.root");
-   root_file = TFile::Open(fipEleNotCracks_2016.Data(),"READ");
-   h_Ele_notCracks_2016 = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
+   // 2016 preVFP Electrons 
+   if(preVFP)
+   {  //ID
+      TString fipEleNotCracks_2016 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ElectronSF_UL2016preVFP_nogap.root");
+      root_file = TFile::Open(fipEleNotCracks_2016.Data(),"READ");
+      h_Ele_notCracks_2016 = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
       
-   TString fipEleCracks_2016 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ElectronSF_Legacy_2016_Gap.root");
-   root_file = TFile::Open(fipEleCracks_2016.Data(),"READ");
-   h_Ele_Cracks_2016 = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
-   
-   TString fipEleReco_highPt_2016 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/Ele_Reco_2016.root");
-   root_file = TFile::Open(fipEleReco_highPt_2016.Data(),"READ");
-   h_Ele_Reco_highPT_2016 = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
+      TString fipEleCracks_2016 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ElectronSF_UL2016preVFP_gap.root");
+      root_file = TFile::Open(fipEleCracks_2016.Data(),"READ");
+      h_Ele_Cracks_2016 = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
+
+      //RECO
+      TString fipEleReco_highPt_2016 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi_ptAbove20.txt_EGM2D_UL2016preVFP.root");
+      root_file = TFile::Open(fipEleReco_highPt_2016.Data(),"READ");
+      h_Ele_Reco_highPT_2016 = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
       
-   TString fipEleReco_lowPt_2016 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/Ele_Reco_LowEt_2016.root");
-   root_file = TFile::Open(fipEleReco_lowPt_2016.Data(),"READ");
-   h_Ele_Reco_lowPT_2016 = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
+      TString fipEleReco_lowPt_2016 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi_ptBelow20.txt_EGM2D_UL2016preVFP.root");
+      root_file = TFile::Open(fipEleReco_lowPt_2016.Data(),"READ");
+      h_Ele_Reco_lowPT_2016 = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
+      
+   }
+   // 2016 postVFP Electrons                                           
+   else
+   {  //ID
+      TString fipEleNotCracks_2016 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ElectronSF_UL2016postVFP_nogap.root");
+      root_file = TFile::Open(fipEleNotCracks_2016.Data(),"READ");
+      h_Ele_notCracks_2016 = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
+      
+      TString fipEleCracks_2016 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ElectronSF_UL2016postVFP_gap.root");
+      root_file = TFile::Open(fipEleCracks_2016.Data(),"READ");
+      h_Ele_Cracks_2016 = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
+      
+      //RECO
+      TString fipEleReco_highPt_2016 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi_ptAbove20.txt_EGM2D_UL2016postVFP.root");
+      root_file = TFile::Open(fipEleReco_highPt_2016.Data(),"READ");
+      h_Ele_Reco_highPT_2016 = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
+      
+      TString fipEleReco_lowPt_2016 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi_ptBelow20.txt_EGM2D_UL2016postVFP.root");
+      root_file = TFile::Open(fipEleReco_lowPt_2016.Data(),"READ");
+      h_Ele_Reco_lowPT_2016 = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
+      
+   }
+                                       
+
+                                              
+
    
    // 2017 Electrons
-   TString fipEleNotCracks_2017 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ElectronSF_Legacy_2017_NoGap.root");
+   TString fipEleNotCracks_2017 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ElectronSF_UL2017_nogap.root");
    root_file = TFile::Open(fipEleNotCracks_2017.Data(),"READ");
    h_Ele_notCracks_2017 = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
    
-   TString fipEleCracks_2017 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ElectronSF_Legacy_2017_Gap.root");
+   TString fipEleCracks_2017 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ElectronSF_UL2017_gap.root");
    root_file = TFile::Open(fipEleCracks_2017.Data(),"READ");
    h_Ele_Cracks_2017 = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
-   
-   TString fipEleReco_highPt_2017 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/Ele_Reco_2017.root");
+   //RECO
+   TString fipEleReco_highPt_2017 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi_ptAbove20.txt_EGM2D_UL2017.root");
    root_file = TFile::Open(fipEleReco_highPt_2017.Data(),"READ");
    h_Ele_Reco_highPT_2017 = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
    
-   TString fipEleReco_lowPt_2017 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/Ele_Reco_LowEt_2017.root");
+   TString fipEleReco_lowPt_2017 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi_ptBelow20.txt_EGM2D_UL2017.root");
    root_file = TFile::Open(fipEleReco_lowPt_2017.Data(),"READ");
    h_Ele_Reco_lowPT_2017 = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
       
 
    // 2018 Electrons
-   TString fipEleNotCracks_2018 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ElectronSF_Legacy_2018_NoGap.root");
+   TString fipEleNotCracks_2018 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ElectronSF_UL2018_nogap.root");
    root_file = TFile::Open(fipEleNotCracks_2018.Data(),"READ");
    h_Ele_notCracks_2018 = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
    
-   TString fipEleCracks_2018 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ElectronSF_Legacy_2018_Gap.root");
+   TString fipEleCracks_2018 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ElectronSF_UL2018_gap.root");
    root_file = TFile::Open(fipEleCracks_2018.Data(),"READ");
    h_Ele_Cracks_2018 = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
-   
-   TString fipEleReco_highPt_2018 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/Ele_Reco_2018.root");
+   //RECO
+   TString fipEleReco_highPt_2018 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi_ptAbove20.txt_EGM2D_UL2018.root");
    root_file = TFile::Open(fipEleReco_highPt_2018.Data(),"READ");
    h_Ele_Reco_highPT_2018 = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
    
-   TString fipEleReco_lowPt_2018 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/Ele_Reco_LowEt_2018.root");
+   TString fipEleReco_lowPt_2018 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/egammaEffi_ptBelow20.txt_EGM2D_UL2018.root");
    root_file = TFile::Open(fipEleReco_lowPt_2018.Data(),"READ");
    h_Ele_Reco_lowPT_2018 = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
    
