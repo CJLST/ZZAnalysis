@@ -30,7 +30,7 @@ git cms-merge-topic bonanomi:ElectronsMVA_UL
 #### Please do not add any custom (non-CMSSW) package before this line ####
 #ZZAnalysis
 git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
-(cd ZZAnalysis; git checkout Run2_CutBased_UL )
+(cd ZZAnalysis; git checkout ele_ID_SF )
 
 # Muon MVA
 git cms-addpkg CondFormats/EgammaObjects
