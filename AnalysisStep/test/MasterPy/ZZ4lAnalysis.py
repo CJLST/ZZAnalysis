@@ -535,32 +535,32 @@ process.cleanSoftElectrons = cms.EDProducer("PATElectronCleaner",
 if(IsMC and LEPTON_SETUP == 2016):
    from PhysicsTools.PatUtils.l1PrefiringWeightProducer_cfi import l1PrefiringWeightProducer
    process.prefiringweight = l1PrefiringWeightProducer.clone(
-                                                                 DataEraECAL = cms.string("UL2016postVFP"),
-								 DataEraMuon = cms.string("2016postVFP"),
-                                                                 UseJetEMPt = cms.bool(False),
-								 PrefiringRateSystematicUnctyECAL = cms.double(0.2),
-								 PrefiringRateSystematicUnctyMuon = cms.double(0.2))
+                                                            DataEraECAL = cms.string("UL2016postVFP"),
+                                                            DataEraMuon = cms.string("2016postVFP"),
+                                                            UseJetEMPt = cms.bool(False),
+                                                            PrefiringRateSystematicUnctyECAL = cms.double(0.2),
+                                                            PrefiringRateSystematicUnctyMuon = cms.double(0.2))
 
 if(IsMC and LEPTON_SETUP == 2017):
    from PhysicsTools.PatUtils.l1PrefiringWeightProducer_cfi import l1PrefiringWeightProducer
    process.prefiringweight = l1PrefiringWeightProducer.clone(
-								 TheJets = cms.InputTag("patJetsReapplyJEC"),
-								 DataEraECAL = cms.string("UL2017BtoF"),
-								 DataEraMuon = cms.string("20172018"),
-                                                                 UseJetEMPt = cms.bool(False),
-								 PrefiringRateSystematicUnctyECAL = cms.double(0.2),
-								 PrefiringRateSystematicUnctyMuon = cms.double(0.2))
+                                                            TheJets = cms.InputTag("patJetsReapplyJEC"),
+                                                            DataEraECAL = cms.string("UL2017BtoF"),
+                                                            DataEraMuon = cms.string("20172018"),
+                                                            UseJetEMPt = cms.bool(False),
+                                                            PrefiringRateSystematicUnctyECAL = cms.double(0.2),
+                                                            PrefiringRateSystematicUnctyMuon = cms.double(0.2))
 if(IsMC and LEPTON_SETUP == 2018):
    from PhysicsTools.PatUtils.l1PrefiringWeightProducer_cfi import l1PrefiringWeightProducer
    process.prefiringweight = l1PrefiringWeightProducer.clone(
-                                                                 TheJets = cms.InputTag("patJetsReapplyJEC"),
-                                                                 DataEraECAL = cms.string("None"),
-                                                                 DataEraMuon = cms.string("20172018"),
-                                                                 UseJetEMPt = cms.bool(False),
-                                                                 PrefiringRateSystematicUnctyECAL = cms.double(0.2),
-                                                                 PrefiringRateSystematicUnctyMuon = cms.double(0.2))
+                                                             TheJets = cms.InputTag("patJetsReapplyJEC"),
+                                                             DataEraECAL = cms.string("None"),
+                                                             DataEraMuon = cms.string("20172018"),
+                                                             UseJetEMPt = cms.bool(False),
+                                                             PrefiringRateSystematicUnctyECAL = cms.double(0.2),
+                                                             PrefiringRateSystematicUnctyMuon = cms.double(0.2))
 
-if(IsMC and (LEPTON_SETUP == 2016 or LEPTON_SETUP == 2017 or LEPTON_SETUP == 2018)):
+if(IsMC):
    process.Prefiring = cms.Path(process.prefiringweight)
 
 

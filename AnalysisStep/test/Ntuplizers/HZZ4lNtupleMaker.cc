@@ -432,6 +432,12 @@ namespace {
   Float_t L1prefiringWeight = 0;
   Float_t L1prefiringWeightUp = 0;
   Float_t L1prefiringWeightDn = 0;
+  Float_t L1prefiringWeight_ECAL = 0;
+  Float_t L1prefiringWeightUp_ECAL = 0;
+  Float_t L1prefiringWeightDn_ECAL = 0;
+  Float_t L1prefiringWeight_Mu = 0;
+  Float_t L1prefiringWeightUp_Mu = 0;
+  Float_t L1prefiringWeightDn_Mu = 0;
   Float_t GenHMass  = 0;
   Float_t GenHPt  = 0;
   Float_t GenHRapidity  = 0;
@@ -835,11 +841,21 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
 
   isMC = myHelper.isMC();
 
-  if( isMC && (year == 2016 || year == 2017))
+  if( isMC )
   {
      prefweight_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProb"));
      prefweightup_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProbUp"));
      prefweightdown_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProbDown"));
+
+     // CMSSW_10_6_26 stores ECAL and muon weights separately
+     // Access them here but not used in the analysis since prefiringweight = prefiringweightECAL*prefiringweightMuon
+     prefweightECAL_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProbECAL"));
+     prefweightupECAL_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProbECALUp"));
+     prefweightdownECAL_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProbECALDown"));
+
+     prefweightMuon_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProbMuon"));
+     prefweightupMuon_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProbMuonUp"));
+     prefweightdownMuon_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProbMuonDown"));
   }
 
 
@@ -1003,7 +1019,9 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     PUWeight_Dn = pileUpReweight->weight(NTrueInt, PileUpWeight::PUvar::VARDOWN);
 
     // L1 prefiring weights
-    if( year == 2016 || year == 2017 )
+    // From CMSSW_10_6_26 available for all the years
+    // ECAL and muon weights accessible separately
+    if( year == 2016 || year == 2017 || year == 2018 )
     {
        edm::Handle< double > theprefweight;
        event.getByToken(prefweight_token, theprefweight ) ;
@@ -1016,12 +1034,31 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
        edm::Handle< double > theprefweightdown;
        event.getByToken(prefweightdown_token, theprefweightdown ) ;
        L1prefiringWeightDn =(*theprefweightdown);
-    }
-    else if ( year == 2018 )
-    {
-       L1prefiringWeight   = 1.;
-       L1prefiringWeightUp = 1.;
-       L1prefiringWeightDn = 1.;
+
+       // ECAL and Mu weights (access for redundancy but not used)
+       edm::Handle< double > theprefweightECAL;
+       event.getByToken(prefweightECAL_token, theprefweightECAL ) ;
+       L1prefiringWeight_ECAL =(*theprefweightECAL);
+
+       edm::Handle< double > theprefweightupECAL;
+       event.getByToken(prefweightupECAL_token, theprefweightupECAL ) ;
+       L1prefiringWeightUp_ECAL =(*theprefweightupECAL);
+
+       edm::Handle< double > theprefweightdownECAL;
+       event.getByToken(prefweightdownECAL_token, theprefweightdownECAL ) ;
+       L1prefiringWeightDn_ECAL =(*theprefweightdownECAL);
+
+       edm::Handle< double > theprefweightMuon;
+       event.getByToken(prefweightMuon_token, theprefweightMuon ) ;
+       L1prefiringWeight_Mu =(*theprefweightMuon);
+
+       edm::Handle< double > theprefweightupMuon;
+       event.getByToken(prefweightupMuon_token, theprefweightupMuon ) ;
+       L1prefiringWeightUp_Mu =(*theprefweightupMuon);
+
+       edm::Handle< double > theprefweightdownMuon;
+       event.getByToken(prefweightdownMuon_token, theprefweightdownMuon ) ;
+       L1prefiringWeightDn_Mu =(*theprefweightdownMuon);
     }
 
     event.getByToken(genParticleToken, genParticles);
