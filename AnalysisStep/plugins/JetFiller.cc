@@ -332,77 +332,78 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     bool PUjetID = false;
     float PUjetID_score = 0;
 
-    //Recommended tight PU JET ID https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
-    //Recommended tight WP for jet pileup ID taken from https://github.com/alefisico/cmssw/blob/PUID_102X/RecoJets/JetProducers/python/PileupJetIDCutParams_cfi.py
-    // Computed using 2016 81X training and used for all three years
-    //4 Eta Categories  0-2.5   2.5-2.75   2.75-3.0   3.0-5.0
-    //Tight Id
-    //Pt010_Tight    = cms.vdouble( 0.69, -0.35, -0.26, -0.21),
-    //Pt1020_Tight   = cms.vdouble( 0.69, -0.35, -0.26, -0.21),
-    //Pt2030_Tight   = cms.vdouble( 0.69, -0.35, -0.26, -0.21),
-    //Pt3050_Tight   = cms.vdouble( 0.86, -0.10, -0.05, -0.01),
+    //---- Update for UL, now all the jets should be equal
+    // if ( applyJEC_ && ( setup == 2017 || setup == 2018 || (setup == 2016 && (!(isMC_)) )))
+    // {
+    //   PUjetID_score = j.userFloat("pileupJetIdUpdated:fullDiscriminant");
+    // }
+    // else
+    // {
+    //   PUjetID_score = j.userFloat("pileupJetId:fullDiscriminant");
+    // }
 
-    if ( applyJEC_ && ( setup == 2017 || setup == 2018 || (setup == 2016 && (!(isMC_)) )))
-    {
-      PUjetID_score = j.userFloat("pileupJetIdUpdated:fullDiscriminant");
-    }
-    else
-    {
-      PUjetID_score = j.userFloat("pileupJetId:fullDiscriminant");
-    }
+    PUjetID_score = j.userFloat("pileupJetIdUpdated:fullDiscriminant");
 
     // WP applied explicitely
-    //cout << "PU ID score = " << PUjetID_score << " PT = " << jpt << " ETA = " << jabseta << endl;
-    // PUjetID       = (
-		  //    (jpt > 0 && jpt <= 10 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.69  ||
-		  //    (jpt > 10 && jpt <= 20 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.69 ||
-		  //    (jpt > 20 && jpt <= 30 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.69 ||
-		  //    (jpt > 30 && jpt <= 50 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.86 ||
-
-		  //    (jpt > 0 && jpt <= 10 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.35  ||
-		  //    (jpt > 10 && jpt <= 20 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.35 ||
-		  //    (jpt > 20 && jpt <= 30 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.35 ||
-		  //    (jpt > 30 && jpt <= 50 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.10 ||
-
-		  //    (jpt > 0 && jpt <= 10 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.26  ||
-		  //    (jpt > 10 && jpt <= 20 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.26 ||
-		  //    (jpt > 20 && jpt <= 30 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.26 ||
-		  //    (jpt > 30 && jpt <= 50 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.05 ||
-
-		  //    (jpt > 0 && jpt <= 10 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21  ||
-		  //    (jpt > 10 && jpt <= 20 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21 ||
-		  //    (jpt > 20 && jpt <= 30 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21 ||
-		  //    (jpt > 30 && jpt <= 50 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.01
-		  //   );
-
     //--- UL Jet PU ID. Changed WPs and pT regions for the tranining. Cf. https://twiki.cern.ch/twiki/bin/view/CMS/PileupJetIDUL#Recommendations_for_2018_UL_data
     //--- 4 Eta Categories: 0-2.5   2.5-2.75   2.75-3.0   3.0-5.0
-    //--- Tight Jet PU ID:
+    //--- Tight Jet PU ID 17-18:
     //--- Pt1020_Tight = cms.vdouble( 0.77, 0.38, -0.31, -0.21),
     //--- Pt2030_Tight = cms.vdouble( 0.90, 0.60, -0.12, -0.13),
     //--- Pt3040_Tight = cms.vdouble( 0.96, 0.82, 0.20, 0.09),
     //--- Pt4050_Tight = cms.vdouble( 0.98, 0.92, 0.47, 0.29),
-    PUjetID = (
-         ((jpt > 10 && jpt <= 20 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.77) ||
-         ((jpt > 20 && jpt <= 30 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.90) ||
-         ((jpt > 30 && jpt <= 40 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.96) ||
-         ((jpt > 40 && jpt <= 50 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.98) ||
+    //--- Tight Jet PU ID 16:
+    //--- Pt1020_Tight = cms.vdouble(0.71, -0.32, -0.30, -0.22),
+    //--- Pt2030_Tight = cms.vdouble(0.87, -0.08, -0.16, -0.12),
+    //--- Pt3040_Tight = cms.vdouble(0.94, 0.24, 0.05, 0.10),
+    //--- Pt4050_Tight = cms.vdouble(0.97, 0.48, 0.26, 0.29)
+    if (setup == 2016)
+    {
+      PUjetID = (
+           ((jpt > 10 && jpt <= 20 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.71) ||
+           ((jpt > 20 && jpt <= 30 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.87) ||
+           ((jpt > 30 && jpt <= 40 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.94) ||
+           ((jpt > 40 && jpt <= 50 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.97) ||
 
-         ((jpt > 10 && jpt <= 20 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > 0.38) ||
-         ((jpt > 20 && jpt <= 30 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > 0.60) ||
-         ((jpt > 30 && jpt <= 40 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > 0.82) ||
-         ((jpt > 40 && jpt <= 50 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > 0.92) ||
+           ((jpt > 10 && jpt <= 20 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.32) ||
+           ((jpt > 20 && jpt <= 30 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > -0.08) ||
+           ((jpt > 30 && jpt <= 40 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > 0.24) ||
+           ((jpt > 40 && jpt <= 50 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > 0.48) ||
 
-         ((jpt > 10 && jpt <= 20 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.31) ||
-         ((jpt > 20 && jpt <= 30 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.12) ||
-         ((jpt > 30 && jpt <= 40 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > 0.20)  ||
-         ((jpt > 40 && jpt <= 50 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > 0.47)  ||
+           ((jpt > 10 && jpt <= 20 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.30) ||
+           ((jpt > 20 && jpt <= 30 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.16) ||
+           ((jpt > 30 && jpt <= 40 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > 0.05)  ||
+           ((jpt > 40 && jpt <= 50 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > 0.26)  ||
 
-         ((jpt > 10 && jpt <= 20 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21) ||
-         ((jpt > 20 && jpt <= 30 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.13) ||
-         ((jpt > 30 && jpt <= 40 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > 0.09)  ||
-         ((jpt > 40 && jpt <= 50 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > 0.29)
-      );
+           ((jpt > 10 && jpt <= 20 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.22) ||
+           ((jpt > 20 && jpt <= 30 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.12) ||
+           ((jpt > 30 && jpt <= 40 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > 0.10)  ||
+           ((jpt > 40 && jpt <= 50 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > 0.29)
+        );
+    } else {
+      PUjetID = (
+           ((jpt > 10 && jpt <= 20 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.77) ||
+           ((jpt > 20 && jpt <= 30 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.90) ||
+           ((jpt > 30 && jpt <= 40 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.96) ||
+           ((jpt > 40 && jpt <= 50 && jabseta > 0 && jabseta<=2.5) && PUjetID_score > 0.98) ||
+
+           ((jpt > 10 && jpt <= 20 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > 0.38) ||
+           ((jpt > 20 && jpt <= 30 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > 0.60) ||
+           ((jpt > 30 && jpt <= 40 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > 0.82) ||
+           ((jpt > 40 && jpt <= 50 && jabseta > 2.5 && jabseta<=2.75) && PUjetID_score > 0.92) ||
+
+           ((jpt > 10 && jpt <= 20 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.31) ||
+           ((jpt > 20 && jpt <= 30 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > -0.12) ||
+           ((jpt > 30 && jpt <= 40 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > 0.20)  ||
+           ((jpt > 40 && jpt <= 50 && jabseta > 2.75 && jabseta<=3.0) && PUjetID_score > 0.47)  ||
+
+           ((jpt > 10 && jpt <= 20 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.21) ||
+           ((jpt > 20 && jpt <= 30 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > -0.13) ||
+           ((jpt > 30 && jpt <= 40 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > 0.09)  ||
+           ((jpt > 40 && jpt <= 50 && jabseta > 3.0 && jabseta<=5.0) && PUjetID_score > 0.29)
+        );
+    }
+
     //if (PUjetID) cout << "PUjetID!" << endl;
 
     /*if ( applyJEC_ && ( setup == 2017 || setup == 2018 || (setup == 2016 && (!(isMC_)) )))
