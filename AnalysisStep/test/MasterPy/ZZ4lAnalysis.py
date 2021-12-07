@@ -1165,12 +1165,12 @@ if (LEPTON_SETUP == 2016):
 elif (LEPTON_SETUP == 2017):
    theBTagger="pfDeepCSVJetTags:probb"
    theBTaggerThr=0.4506
-   theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/wp_deepCSV_106XUL17_v3.csv"
+   theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/wp_deepCSV_106XUL17_v3_hzz.csv"
    theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_2017_LegacyPaper.root"
 elif (LEPTON_SETUP == 2018):
    theBTagger="pfDeepCSVJetTags:probb"
    theBTaggerThr=0.4168
-   theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/wp_deepCSV_106XUL18_v2.csv"
+   theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/wp_deepCSV_106XUL18_v2_hzz.csv"
    theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_2018_LegacyPaper.root"
 else:
    sys.exit("ZZ4lAnalysis.py: Need to define the btagging for the new setup!")
