@@ -1155,12 +1155,12 @@ if (LEPTON_SETUP == 2016):
    if( DATA_TAG == 'ULAPV'):
        theBTagger="pfDeepCSVJetTags:probb"
        theBTaggerThr=0.6001
-       theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_106XUL16preVFPSF_v1.csv"
+       theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_106XUL16preVFPSF_v1_hzz.csv"
        theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_2016_LegacyPaper.root"
    else:
        theBTagger="pfDeepCSVJetTags:probb"
        theBTaggerThr=0.5847
-       theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_106XUL16postVFPSF_v2.csv"
+       theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_106XUL16postVFPSF_v2_hzz.csv"
        theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_2016_LegacyPaper.root"
 elif (LEPTON_SETUP == 2017):
    theBTagger="pfDeepCSVJetTags:probb"
