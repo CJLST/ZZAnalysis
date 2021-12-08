@@ -649,6 +649,7 @@ private:
   TH1F *hCounter;
 
   bool isMC;
+  bool preVFP=false;
   bool is_loose_ele_selection; // Collection includes candidates with loose electrons/TLEs
   bool applySkim;       //   "     "      "         skim (if skipEmptyEvents=true)
   bool skipEmptyEvents; // Skip events whith no selected candidate (otherwise, gen info is preserved for all events; candidates not passing trigger&&skim are flagged with negative ZZsel)
@@ -722,7 +723,7 @@ private:
   edm::EDGetTokenT< double > prefweightMuon_token;
   edm::EDGetTokenT< double > prefweightupMuon_token;
   edm::EDGetTokenT< double > prefweightdownMuon_token;
-  
+
   PileUpWeight* pileUpReweight;
 
   //counters
@@ -749,7 +750,7 @@ private:
   Float_t gen_sumWeights;
 
   string sampleName;
-
+  string dataTag;
   std::vector<const reco::Candidate *> genFSR;
 
   std::vector<std::vector<float> > ewkTable;
@@ -805,6 +806,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
 
   pileUpReweight(nullptr),
   sampleName(pset.getParameter<string>("sampleName")),
+  dataTag(pset.getParameter<string>("dataTag")),
   h_weight(0),
 
   printedLHEweightwarning(false)
@@ -933,8 +935,11 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   gr_NNLOPSratio_pt_powheg_2jet = (TGraphErrors*)NNLOPS_weight_file->Get("gr_NNLOPSratio_pt_powheg_2jet");
   gr_NNLOPSratio_pt_powheg_3jet = (TGraphErrors*)NNLOPS_weight_file->Get("gr_NNLOPSratio_pt_powheg_3jet");
 
+  if(dataTag=="ULAPV"){
+    preVFP=true;
+  }
   //Scale factors for data/MC efficiency
-  if (!skipEleDataMCWeight && isMC) { lepSFHelper = new LeptonSFHelper(); }
+  if (!skipEleDataMCWeight && isMC) { lepSFHelper = new LeptonSFHelper(preVFP); }
 
   if (!skipHqTWeight) {
     //HqT weights

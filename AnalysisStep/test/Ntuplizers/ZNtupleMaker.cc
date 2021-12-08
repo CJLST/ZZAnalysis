@@ -322,6 +322,7 @@ private:
   TH1F *hCounter;
 
   Bool_t isMC;
+  bool preVFP = false;
 
   bool applyTrigger;    // Keep only events passing trigger
   bool applySkim;       //   "     "      "     skim
@@ -362,6 +363,7 @@ private:
   Float_t gen_sumWeights;
 
   string sampleName;
+  string dataTag;
 
   LeptonSFHelper *lepSFHelper;
 
@@ -378,6 +380,7 @@ ZNtupleMaker::ZNtupleMaker(const edm::ParameterSet& pset) :
   theFileName = pset.getUntrackedParameter<string>("fileName");
   skipEmptyEvents = pset.getParameter<bool>("skipEmptyEvents"); // Do not store
   sampleName = pset.getParameter<string>("sampleName");
+  dataTag = pset.getParameter<string>("dataTag");
   xsec = pset.getParameter<double>("xsec");
   year = pset.getParameter<int>("setup");
   metTag = pset.getParameter<edm::InputTag>("metSrc");
@@ -424,8 +427,12 @@ ZNtupleMaker::ZNtupleMaker(const edm::ParameterSet& pset) :
   gen_sumGenMCWeight = 0.f;
   gen_sumWeights =0.f;
 
+  if(dataTag=="ULAPV"){
+    preVFP=true;
+  }
+
    //Scale factors for data/MC efficiency
-   if (!skipEleDataMCWeight && isMC) { lepSFHelper = new LeptonSFHelper(); }
+   if (!skipEleDataMCWeight && isMC) { lepSFHelper = new LeptonSFHelper(preVFP); }
 
 }
 

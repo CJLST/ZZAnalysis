@@ -18,7 +18,7 @@ Plotter::Plotter():Tree()
    _current_final_state = -999;
    _current_category = -999;
 
-   lepSFHelper = new LeptonSFHelper();
+   lepSFHelper = new LeptonSFHelper(false);
 
    // Z+X SS factors
    /*****************************************

@@ -25,7 +25,7 @@ class LeptonSFHelper
 
  public:
 
-  LeptonSFHelper();
+  LeptonSFHelper(bool preVFP);
   ~LeptonSFHelper();
   
   float getSF (int year, int flav, float pt, float eta, float SCeta, bool isCrack);
