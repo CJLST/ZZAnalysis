@@ -723,6 +723,7 @@ private:
   edm::EDGetTokenT< double > prefweightMuon_token;
   edm::EDGetTokenT< double > prefweightupMuon_token;
   edm::EDGetTokenT< double > prefweightdownMuon_token;
+
   PileUpWeight* pileUpReweight;
 
   //counters
