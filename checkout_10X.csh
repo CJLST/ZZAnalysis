@@ -25,7 +25,8 @@ git cms-addpkg EgammaAnalysis/ElectronTools
 (rm -rf EgammaAnalysis/ElectronTools/data;git clone https://github.com/jainshilpi/EgammaAnalysis-ElectronTools.git -b ULSSfiles_correctScaleSysMC EgammaAnalysis/ElectronTools/data;)
 
 #UL 2016, 2017 and 2018 retraining for electron BDT
-git cms-merge-topic bonanomi:ElectronsMVA_UL
+#Not needed anymore, now MVA weights and cfg files are stored in CMSSW dataset and accessed directly via VID
+#git cms-merge-topic bonanomi:ElectronsMVA_UL
 
 #### Please do not add any custom (non-CMSSW) package before this line ####
 #ZZAnalysis
