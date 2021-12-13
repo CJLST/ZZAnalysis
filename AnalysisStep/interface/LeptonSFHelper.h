@@ -28,8 +28,8 @@ class LeptonSFHelper
   LeptonSFHelper(bool preVFP);
   ~LeptonSFHelper();
   
-  float getSF (int year, int flav, float pt, float eta, float SCeta, bool isCrack);
-  float getSFError (int year, int flav, float pt, float eta, float SCeta, bool isCrack);
+  float getSF (int year, int flav, float pt, float eta, float SCeta, bool isCrack) const;
+  float getSFError (int year, int flav, float pt, float eta, float SCeta, bool isCrack) const;
    
  private:
    TFile *root_file;
