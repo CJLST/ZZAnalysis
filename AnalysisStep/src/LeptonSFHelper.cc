@@ -115,7 +115,7 @@ LeptonSFHelper::~LeptonSFHelper()
 {
 }
 
-float LeptonSFHelper::getSF(int year, int flav, float pt, float eta, float SCeta, bool isCrack)
+float LeptonSFHelper::getSF(int year, int flav, float pt, float eta, float SCeta, bool isCrack) const
 {
    float RecoSF = 1.0;
    float SelSF = 1.0;
@@ -236,7 +236,7 @@ float LeptonSFHelper::getSF(int year, int flav, float pt, float eta, float SCeta
     return SF;
 }
 
-float LeptonSFHelper::getSFError(int year, int flav, float pt, float eta, float SCeta, bool isCrack)
+float LeptonSFHelper::getSFError(int year, int flav, float pt, float eta, float SCeta, bool isCrack) const
 {
    float RecoSF = 1.0;
    float SelSF = 1.0;
