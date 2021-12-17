@@ -68,9 +68,8 @@ eval $(scram ru -sh)
 cp run_cfg.py $_CONDOR_SCRATCH_DIR
 cd $_CONDOR_SCRATCH_DIR
 
-pwd
-
 echo 'Running at:' $(date)
+echo path: `pwd`
 
 cmsRunStatus=   #default for successful completion is an empty file
 cmsRun run_cfg.py |& grep -v -e 'MINUIT WARNING' -e 'Second derivative zero' -e 'Negative diagonal element' -e 'added to diagonal of error matrix' > log.txt || cmsRunStatus=$?
@@ -87,9 +86,15 @@ else
  mv ZZ4lAnalysis.root ZZ4lAnalysis.root.empty
 fi
 
+echo "Files on node:"
+ls -la
+
 #delete mela stuff and $USER.cc
 #I have no idea what $USER.cc is
 rm -f br.sm1 br.sm2 ffwarn.dat input.DAT process.DAT "$USER.cc"
+
+#delete submission scripts, so that they are not copied back (which fails sometimes)
+rm -f run_cfg.py batchScript.sh
 
 echo '...done at' $(date)
 
@@ -102,18 +107,82 @@ exit $cmsRunStatus
 """ 
    return script
 
+def batchScriptNano( index, remoteDir=''):
+   '''prepare the Condor version of the batch script, to run on HTCondor'''
+#   print "INDEX", index
+#   print "remotedir", remoteDir
+   script = '''#!/bin/bash
+set -euo pipefail
+
+if [ -z ${_CONDOR_SCRATCH_DIR+x} ]; then
+  #running locally
+  runninglocally=true
+  _CONDOR_SCRATCH_DIR=$(mktemp -d)
+  SUBMIT_DIR=$(pwd)
+else
+  runninglocally=false
+  SUBMIT_DIR=$1
+fi
+
+cd $SUBMIT_DIR
+eval $(scram ru -sh)
+
+cp run_cfg.py $_CONDOR_SCRATCH_DIR
+cd $_CONDOR_SCRATCH_DIR
+
+echo 'Running at:' $(date)
+echo path: `pwd`
+
+exitStatus=   #default for successful completion is an empty file
+python run_cfg.py >& log.txt || exitStatus=$?
+
+echo -n $exitStatus > exitStatus.txt
+echo 'job done at: ' $(date) with exit status: ${exitStatus+0}
+gzip log.txt
+
+export ROOT_HIST=0
+if [ -s ZZ4lAnalysis.root ]; then
+ root -q -b '${CMSSW_BASE}/src/ZZAnalysis/AnalysisStep/test/prod/rootFileIntegrity.r("ZZ4lAnalysis.root")'
+else
+ echo moving empty file
+ mv ZZ4lAnalysis.root ZZ4lAnalysis.root.empty
+fi
+
+echo "Files on node:"
+ls -la
+
+#delete temporary files
+rm -f br.sm1 br.sm2 ffwarn.dat input.DAT process.DAT "$USER.cc"
+
+#delete intermediate _Skim.root files
+rm -f *_Skim.root
+
+#delete submission scripts, so that they are not copied back (which fails sometimes)
+rm -f run_cfg.py batchScript.sh
+
+echo '...done at' $(date)
+
+##note cping back is handled automatically by condor
+#if $runninglocally; then
+#  cp ZZ4lAnalysis.root* *.txt *.gz $SUBMIT_DIR
+#fi
+
+exit $exitStatus
+'''
+   return script
 
 def condorSubScript( index, mainDir ):
    '''prepare the Condor submition script'''
-   script = """executable              = $(directory)/batchScript.sh
+   script = '''
+executable              = $(directory)/batchScript.sh
 arguments               = {mainDir}/$(directory) $(ClusterId)$(ProcId)
-output                  = output/$(ClusterId).$(ProcId).out
-error                   = error/$(ClusterId).$(ProcId).err
+output                  = log/$(ClusterId).$(ProcId).out
+error                   = log/$(ClusterId).$(ProcId).err
 log                     = log/$(ClusterId).log
 Initialdir              = $(directory)
-
-request_memory          = 4000M
-+JobFlavour             = "tomorrow"
+request_memory          = '''+str(batchManager.options_.jobmem)+'''
+#Possible values: https://batchdocs.web.cern.ch/local/submit.html
++JobFlavour             = "'''+batchManager.options_.jobflavour+'''"
 
 x509userproxy           = {home}/x509up_u{uid}
 
@@ -121,7 +190,7 @@ x509userproxy           = {home}/x509up_u{uid}
 periodic_remove         = JobStatus == 5
 
 ShouldTransferFiles     = NO
-"""
+'''   
    return script.format(home=os.path.expanduser("~"), uid=os.getuid(), mainDir=mainDir)
 
             
@@ -143,9 +212,13 @@ class MyBatchManager:
                                 dest="negate", default=False,
                                 help="create jobs, but does not submit the jobs.")
 
-        self.parser_.add_option("-b", "--batch", dest="batch",
-                                help="batch command. default is: 'bsub -q 8nh < batchScript.sh'. You can also use 'nohup < ./batchScript.sh &' to run locally.",
-                                default="bsub -q 8nh < ./batchScript.sh")
+        self.parser_.add_option("-q", "--queue", dest="jobflavour",
+                                help="Max duration (the shorter, the quicker the job will start.Default: tomorrow = 1d; use  microcentury or longlunch for quick jobs. Cf. https://batchdocs.web.cern.ch/local/submit.html",
+                                default="tomorrow")
+
+        self.parser_.add_option("-m", "--mem", dest="jobmem",
+                                help="Requested memory (smaller = more nodes available ). Use 0 for no request",
+                                default="4000M")
 
         self.parser_.add_option("-p", "--pdf", dest="PDFstep",
                                 help="Step of PDF systematic uncertainty evaluation. It could be 1 or 2.",
@@ -242,28 +315,34 @@ class MyBatchManager:
        
        calls PrepareJobUser, which should be overloaded by the user.
        '''
-       print '---PrepareJob N: ', value,  ' name: ', dirname 
+       print '---PrepareJob N: ', value,  ' name: ', dirname
+
+       inputType="miniAOD"
+       if "NANOAODSIM" in (splitComponents[value].files)[0] :
+           inputType="nanoAOD"
+
        dname = dirname
        if dname  is None:
            dname = 'Job_{value}'.format( value=value )
        jobDir = '/'.join( [self.outputDir_, dname])
-       print '\t',jobDir 
+#       print '\t',jobDir 
        self.mkdir( jobDir )
-       self.mkdir( jobDir + '/error' )
        self.mkdir( jobDir + '/log' )
-       self.mkdir( jobDir + '/output' )
        self.listOfJobs_.append( jobDir )
        if not self.secondaryInputDir_ == None: self.inputPDFDir_ = '/'.join( [self.secondaryInputDir_, dname])
 
 #       print 'self.outputDir_=',self.outputDir_
        if dirname.endswith('Chunk0'):
-           self.PrepareJobUserTemplate( jobDir, value )
-       self.PrepareJobUserFromTemplate(jobDir, value)
+           self.PrepareJobUserTemplate( jobDir, value, inputType)
+       self.PrepareJobUserFromTemplate(jobDir, value, inputType)
 
-    def PrepareJobUserFromTemplate(self, jobDir, value ):
+    def PrepareJobUserFromTemplate(self, jobDir, value, inputType="miniAOD"):
         scriptFileName = jobDir+'/batchScript.sh'
         scriptFile = open(scriptFileName,'w')
-        scriptFile.write( batchScript( value ) )
+        if inputType=="miniAOD" :
+            scriptFile.write( batchScript( value ) )
+        elif inputType=="nanoAOD":
+            scriptFile.write( batchScriptNano( value ) )            
         scriptFile.close()
         os.system('chmod +x %s' % scriptFileName)
         template_name = splitComponents[value].samplename + 'run_template_cfg.py'
@@ -281,11 +360,15 @@ class MyBatchManager:
 	    with open(template_file_name) as f:
 	        for line in f :
 		    if line.find('REPLACE')  > 1 :
-			actual_source_string = "fileNames = cms.untracked.vstring(%s),\n"%files 
+                        actual_source_string = ""
+                        if inputType=="miniAOD" :
+                            actual_source_string = "fileNames = cms.untracked.vstring(%s),\n"%files
+                        elif inputType=="nanoAOD" :
+                            actual_source_string = 'setConf("fileNames",%s)\n'%splitComponents[value].files
         	        line = actual_source_string
 		    new_job_cfg.write(line)
  
-    def PrepareJobUserTemplate(self, jobDir, value ):
+    def PrepareJobUserTemplate(self, jobDir, value, inputType="miniAOD" ):
        '''Prepare one job. This function is called by the base class.'''
 #       print value
 #       print splitComponents[value]
@@ -297,8 +380,6 @@ class MyBatchManager:
        scriptFile.close()
        os.system('chmod +x %s' % scriptFileName)
        
-       print '\t',splitComponents[value].pyFragments
-
        variables = splitComponents[value].variables
        pyFragments = splitComponents[value].pyFragments
        
@@ -314,46 +395,58 @@ class MyBatchManager:
        variables['XSEC'] = splitComponents[value].xsec 
        #variables = {'IsMC':IsMC, 'PD':PD, 'MCFILTER':MCFILTER, 'SUPERMELA_MASS':SUPERMELA_MASS, 'SAMPLENAME':SAMPLENAME, 'XSEC':XSEC, 'SKIM_REQUIRED':SKIM_REQUIRED}
 
-       print "\tParameters: ", variables
-
-       execfile(cfgFileName,variables)
-       
-       process = variables.get('process') 
-       process.source = splitComponents[value].source
-       process.source.fileNames = cms.untracked.vstring('REPLACE_WITH_FILES') # splitComponents[value].files
-
-       for fragment in pyFragments:
-           execfile('pyFragments/{0:s}'.format(fragment),variables)  
-
-       # PDF step 1 case: create also a snippet to be used later in step 2 phase
-       if splitComponents[value].pdfstep == 1:
-           cfgSnippetPDFStep2 = open(jobDir+'/inputForPDFstep2.py','w')
-           cfgSnippetPDFStep2.write('process.source.fileNames = ["file:{0:s}/{1:s}"]\n'.format(self.outputDir_+'/AAAOK'+jobDir.replace(self.outputDir_,''), process.weightout.fileName.value()))
-           cfgSnippetPDFStep2.write('process.source.secondaryFileNames = [')
-           for item in splitComponents[value].files: cfgSnippetPDFStep2.write("'%s',\n" % item)
-           cfgSnippetPDFStep2.write(']')
-           cfgSnippetPDFStep2.write( '\n' )
-           cfgSnippetPDFStep2.close()
-
-
        template_name = variables['SAMPLENAME'] + 'run_template_cfg.py'
-       print 'Saving template as=', '%s/%s'%(self.outputDir_, template_name)
-       print 'jobDir=',jobDir
+       print '\tSaving template as %s/%s'%(os.path.basename(self.outputDir_), template_name)
+       print "\tParameters: ", variables
+       print '\tpyFragments: ',splitComponents[value].pyFragments
+#       print 'jobDir=',jobDir
+
        cfgFile = open('%s/%s'%(self.outputDir_, template_name),'w')
-       cfgFile.write( process.dumpPython() )
-       cfgFile.write( '\n' )
 
-       del process
-
-       if splitComponents[value].pdfstep == 2:
-           cfgSnippetPDFStep2 = open(self.inputPDFDir_+'/inputForPDFstep2.py','r')
-           shutil.copyfileobj(cfgSnippetPDFStep2,cfgFile)
-           cfgSnippetPDFStep2.close()
-           
-
+       if inputType=="miniAOD" : 
+           execfile(cfgFileName,variables)
        
+           process = variables.get('process') 
+           process.source = splitComponents[value].source
+           process.source.fileNames = cms.untracked.vstring('REPLACE_WITH_FILES') # splitComponents[value].files
 
-        
+           for fragment in pyFragments:
+               execfile('pyFragments/{0:s}'.format(fragment),variables)
+               
+           # PDF step 1 case: create also a snippet to be used later in step 2 phase
+           if splitComponents[value].pdfstep == 1:
+               cfgSnippetPDFStep2 = open(jobDir+'/inputForPDFstep2.py','w')
+               cfgSnippetPDFStep2.write('process.source.fileNames = ["file:{0:s}/{1:s}"]\n'.format(self.outputDir_+'/AAAOK'+jobDir.replace(self.outputDir_,''), process.weightout.fileName.value()))
+               cfgSnippetPDFStep2.write('process.source.secondaryFileNames = [')
+               for item in splitComponents[value].files: cfgSnippetPDFStep2.write("'%s',\n" % item)
+               cfgSnippetPDFStep2.write(']')
+               cfgSnippetPDFStep2.write( '\n' )
+               cfgSnippetPDFStep2.close()
+
+
+           cfgFile.write( process.dumpPython() )
+           cfgFile.write( '\n' )
+
+           del process
+
+           if splitComponents[value].pdfstep == 2:               
+               cfgSnippetPDFStep2 = open(self.inputPDFDir_+'/inputForPDFstep2.py','r')
+               shutil.copyfileobj(cfgSnippetPDFStep2,cfgFile)
+               cfgSnippetPDFStep2.close()
+
+
+       elif inputType=="nanoAOD" :
+            cfgFile.write('from ZZAnalysis.NanoAnalysis.tools import setConf\n')
+            for var in variables.keys():
+                val = variables[var]
+                if type(val) == str :
+                    pval = '"'+val+'"'
+                else : pval = str(val)
+                cfgFile.write('setConf("'+var+'",'+pval+')\n')
+            cfgFile.write('setConf("files",REPLACE_WITH_FILES)\n')
+            cfgFile.write('from ZZAnalysis.NanoAnalysis.nanoZZ4lAnalysis import *\n')
+            cfgFile.write('p.run()\n')
+       
        cfgFile.close()
 
 
