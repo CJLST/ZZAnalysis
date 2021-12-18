@@ -318,7 +318,7 @@ class MyBatchManager:
        print '---PrepareJob N: ', value,  ' name: ', dirname
 
        inputType="miniAOD"
-       if "NANOAODSIM" in (splitComponents[value].files)[0] :
+       if "NANOAOD" in (splitComponents[value].files)[0] :
            inputType="nanoAOD"
 
        dname = dirname
@@ -467,7 +467,6 @@ class Component(object):
         else : # Query dbs, eos, etc. to get the file list
             self.source = datasetToSource( prefix, dataset, pattern)
             self.files = self.source.fileNames
-        print len(self.files)
         if len(self.files)==0 :
             sys.exit("ERROR: no input files found")
         self.splitFactor = int(splitFactor)
