@@ -42,10 +42,17 @@ def hadd(file, odir, idirs):
         return
     elif not file.endswith('.root'):
         return
-    haddCmd = ['hadd']
-    haddCmd.append( file.replace( idirs[0], odir ) )
-    for dir in idirs:
-        haddCmd.append( file.replace( idirs[0], dir ) )
+    ofile =  file.replace( idirs[0], odir ) 
+    destdir =os.path.dirname(ofile)
+    if not os.path.exists(destdir) :
+        os.mkdir(destdir)
+    if len(idirs) == 1 :
+        haddCmd = ['cp ',file,ofile]
+    else:
+        haddCmd = ['hadd -ff']
+        haddCmd.append(ofile)
+        for dir in idirs:
+            haddCmd.append( file.replace( idirs[0], dir ) )
     # import pdb; pdb.set_trace()
     cmd = ' '.join(haddCmd)
     print cmd
@@ -63,18 +70,10 @@ def haddRec(odir, idirs):
         os.mkdir( odir )
     except OSError:
         print 
-        print 'ERROR: directory in the way. Maybe you ran hadd already in this directory? Remove it and try again'
+        print 'ERROR: directory in the way. Maybe you ran hadd already in this directory? Remove it and try again, or run with -r'
         print 
         raise
     for root,dirs,files in os.walk( idirs[0] ):
-        # print root, dirs, files
-        for dir in dirs:
-            dir = '/'.join([root, dir])
-            dir = dir.replace(idirs[0], odir)
-            cmd = 'mkdir ' + dir 
-            # print cmd
-            # os.system(cmd)
-            os.mkdir(dir)
         for file in files:
             hadd('/'.join([root, file]), odir, idirs)
 
