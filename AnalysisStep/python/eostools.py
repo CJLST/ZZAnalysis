@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Some tools to handle accesing datasets information on dbs and files on eos
+Some tools to handle accesing dataset information on dbs and files on eos
 stolen from https://github.com/CERN-PH-CMG/cmg-cmssw/blob/CMGTools-from-CMSSW_7_4_0/CMGTools/Production/python/eostools.py
 and from CMGTools.Production.datasetToSource
 """
@@ -159,16 +159,22 @@ def listFiles(sample, path, rec = False, full_info = False):
                    result.append( eosToLFN(tokens[4]) )
         return result
 
+# Fill a cms.source with list of files. Arguments:
+# Prefix: where the list of files is obtained from. Can be dbs, dbs-USER, eos, list, or a local path
+# dataset: the dataset name if prefix is "dbs", the local path if "local", the file with a list if "list"
+# fileprefix: path to be prepended to each file. Normally empty; other options:
+# /eos/cms/ for files available on eos
+# root://cms-xrd-global.cern.ch/ to force global redirector
 
-def datasetToSource( prefix, dataset, pattern='', readCache=False):
+def datasetToSource( prefix, dataset, fileprefix=''):
 
-#    print user, dataset, pattern
+#    print user, dataset, fileprefix
     recursive=True #FIXME: this is needed for central production, but care is needed if other stuff is present in the EOS path
 
     data=listFiles(dataset, prefix, recursive)
 
     rootre = re.compile('.*root')
-    files = [f for f in data if rootre.match(f)]
+    files = [fileprefix+f for f in data if rootre.match(f)]
 
 #    print files
 
