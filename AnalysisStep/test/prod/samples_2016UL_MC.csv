@@ -110,22 +110,21 @@ VBFH125, ,3.782,0.0002745,,/VBF_HToZZTo4L_M125_TuneCP5_13TeV_powheg2_JHUGenV7011
 
 
 ###,,,,,,,,,,,VVV backgrounds
-#ZZZ,,0.01398,      ,,/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v1/MINIAODSIM ,dbs,,1,GENXSEC=1;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2016,RecoProbabilities.py,
-#ZZZext1,,0.01398,      ,,/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17_ext1-v1/MINIAODSIM ,dbs,,1,GENXSEC=1;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2016,RecoProbabilities.py,
-#WZZ,,0.05565,      ,,/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v1/MINIAODSIM ,dbs,,1,GENXSEC=1;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2016,RecoProbabilities.py,
-#WZZext1,,0.05565,      ,,/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17_ext1-v1/MINIAODSIM ,dbs,,1,GENXSEC=1;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2016,RecoProbabilities.py,
-#WWZ,,0.1651,      ,,-----missing-----,dbs,,1,GENXSEC=1;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2016,RecoProbabilities.py,
+ZZZ,,0.01398,,,/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v1/MINIAODSIM ,dbs,,1,GENXSEC=1;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2016,RecoProbabilities.py,
+ZZZext1,,0.01398,,,/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17_ext1-v1/MINIAODSIM ,dbs,,1,GENXSEC=1;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2016,RecoProbabilities.py,
+WZZ,,0.05565,,,/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v1/MINIAODSIM ,dbs,,1,GENXSEC=1;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2016,RecoProbabilities.py,
+WZZext1,,0.05565,,,/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17_ext1-v1/MINIAODSIM ,dbs,,1,GENXSEC=1;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2016,RecoProbabilities.py,
+#WWZ,,0.1651,,,-----missing-----,dbs,,1,GENXSEC=1;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2016,RecoProbabilities.py,
 
 ###,,,,,,,,,,,rare backgrounds targeting ttH categories
-#TTZZ,,0.001572,      ,,/TTZZ_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v1/MINIAODSIM,dbs,,1,GENXSEC=1.256;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2016,RecoProbabilities.py,
-#TTWW,,0.007883,      ,,/TTWW_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v1/MINIAODSIM ,dbs,,1,GENXSEC=1.256;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2016,RecoProbabilities.py,
-#TTZToLLNuNu_M10,,0.25271,,,/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v1/MINIAODSIM ,dbs,,1,GENXSEC=0.25271;GENBR=1;ADDZTREE=True;LEPTON_SETUP=2016,RecoProbabilities.py,
+TTZZ,,0.001572,,,/TTZZ_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v1/MINIAODSIM,dbs,,1,GENXSEC=1.256;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2016,RecoProbabilities.py,
+TTWW,,0.007883,,,/TTWW_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v1/MINIAODSIM ,dbs,,1,GENXSEC=1.256;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2016,RecoProbabilities.py,
+TTZToLLNuNu_M10,,0.25271,,,/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v1/MINIAODSIM ,dbs,,1,GENXSEC=0.25271;GENBR=1;ADDZTREE=True;LEPTON_SETUP=2016,RecoProbabilities.py,
 #TTZToLL_M1to1O_MLM,,0.04695,,,-----missing-----,dbs,,1,GENXSEC=0.04695;GENBR=1;ADDZTREE=True;LEPTON_SETUP=2016,RecoProbabilities.py,
 #TTZJets_M10_MLM,,0.259,,,-----missing-----,dbs,,4,GENXSEC=0.259;GENBR=1;ADDZTREE=True;LEPTON_SETUP=2016,RecoProbabilities.py,
 
-
 ###,,,,,,,,,,,background samples for Z+X studies
-#DYJetsToLL_M50,,     6225.4,    ,,/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v1/MINIAODSIM,dbs,,4,GENXSEC=6025.2;GENBR=1;PROCESS_CR=True;ADDZTREE=True;LEPTON_SETUP=2016,RecoProbabilities.py,
-#DYJetsToLL_M50_LO,,6225.4,    ,,/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16MiniAODv2-FlatPU0to75_106X_mcRun2_asymptotic_v17-v1/MINIAODSIM ,dbs,,4,GENXSEC=5765.4;GENBR=1;PROCESS_CR=True;ADDZTREE=True;LEPTON_SETUP=2016,RecoProbabilities.py,#this does not work because the weight indices are different.  It would have to be implemented in LHEHandler.cc to pick up the LO (not NLO) PDF weights.  If you need this sample ask Heshy.
-#TTTo2L2Nu,,87.3,,,/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v1/MINIAODSIM ,dbs,,1,GENXSEC=91.7701;GENBR=1;PROCESS_CR=True;ADDZTREE=True;LEPTON_SETUP=2016,RecoProbabilities.py,
-#WZTo3LNu,,4.670,,,/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v1/MINIAODSIM,dbs,,4,GENXSEC=4.67;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2016,RecoProbabilities.py,
+DYJetsToLL_M50,,6225.4,,,/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v1/MINIAODSIM,dbs,,4,GENXSEC=6025.2;GENBR=1;PROCESS_CR=True;ADDZTREE=True;LEPTON_SETUP=2016,RecoProbabilities.py,
+DYJetsToLL_M50_LO,,6225.4,,,/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL16MiniAODv2-FlatPU0to75_106X_mcRun2_asymptotic_v17-v1/MINIAODSIM ,dbs,,4,GENXSEC=5765.4;GENBR=1;PROCESS_CR=True;ADDZTREE=True;LEPTON_SETUP=2016,RecoProbabilities.py,#this does not work because the weight indices are different.  It would have to be implemented in LHEHandler.cc to pick up the LO (not NLO) PDF weights.  If you need this sample ask Heshy.
+TTTo2L2Nu,,87.3,,,/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v1/MINIAODSIM ,dbs,,5,GENXSEC=91.7701;GENBR=1;PROCESS_CR=True;ADDZTREE=True;LEPTON_SETUP=2016,RecoProbabilities.py,
+WZTo3LNu,,4.670,,,/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v1/MINIAODSIM,dbs,,4,GENXSEC=4.67;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2016,RecoProbabilities.py,
