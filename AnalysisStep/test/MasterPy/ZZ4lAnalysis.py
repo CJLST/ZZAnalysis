@@ -1410,7 +1410,7 @@ if (APPLYJEC and SAMPLE_TYPE == 2018):
                 ),
               connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Summer19UL18_V5_MC.db'), #for Summer19UL MC
             )
-    else: # [FIXME] Preliminary recommendation is to use no JEC for data, change this once it is available
+    else:
         process.jec = cms.ESSource("PoolDBESSource",
             DBParameters = cms.PSet(
                 messageLevel = cms.untracked.int32(1)
@@ -1419,11 +1419,11 @@ if (APPLYJEC and SAMPLE_TYPE == 2018):
             toGet = cms.VPSet(
                 cms.PSet(
                     record = cms.string('JetCorrectionsRecord'),
-                    tag    = cms.string('JetCorrectorParametersCollection_Autumn18_RunABCD_V19_DATA_AK4PFchs'),
+                    tag    = cms.string('JetCorrectorParametersCollection_Summer19UL18_V5_DATA_AK4PFchs'),
                     label  = cms.untracked.string('AK4PFchs')
                     ),
                 ),
-            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Autumn18_RunABCD_V19_DATA.db'),
+            connect = cms.string('sqlite_fip:ZZAnalysis/AnalysisStep/data/JEC/Summer19UL18_V5_DATA.db'),
             )
 
     ## Add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
