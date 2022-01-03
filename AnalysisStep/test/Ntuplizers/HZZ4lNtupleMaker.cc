@@ -875,7 +875,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
       ((MELAEvent::CandidateVVMode)(pset.getParameter<int>("VVMode")+1)), // FIXME: Need to pass strings and interpret them instead!
       pset.getParameter<int>("VVDecayMode"),
       (addLHEKinematics ? LHEHandler::doHiggsKinematics : LHEHandler::noKinematics),
-      year, LHEHandler::tryNNPDF30, LHEHandler::tryNLO
+      year, LHEHandler::tryNNPDF30, LHEHandler::tryNLO, LHEHandler::CMS_Run2_UL
     );
     metCorrHandler = new METCorrectionHandler(Form("%i", year));
     htxsToken = consumes<HTXS::HiggsClassification>(edm::InputTag("rivetProducerHTXS","HiggsClassification"));
