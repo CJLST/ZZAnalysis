@@ -770,6 +770,7 @@ private:
   TGraphErrors *gr_NNLOPSratio_pt_powheg_3jet;
 
   bool printedLHEweightwarning;
+  bool firstRun;
 };
 
 //
@@ -809,7 +810,8 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   dataTag(pset.getParameter<string>("dataTag")),
   h_weight(0),
 
-  printedLHEweightwarning(false)
+  printedLHEweightwarning(false),
+  firstRun(true)
 {
   //cout<< "Beginning Constructor\n\n\n" <<endl;
   consumesMany<std::vector< PileupSummaryInfo > >();
@@ -2621,7 +2623,6 @@ void HZZ4lNtupleMaker::endJob()
 // ------------ method called when starting to processes a run  ------------
 void HZZ4lNtupleMaker::beginRun(edm::Run const& iRun, edm::EventSetup const&)
 {
-  static bool firstRun=true;
   if (firstRun){
     if (lheHandler){
       edm::Handle<LHERunInfoProduct> lhe_runinfo;
