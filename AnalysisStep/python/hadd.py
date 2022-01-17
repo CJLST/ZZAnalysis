@@ -77,7 +77,9 @@ def haddRec(odir, idirs):
         for file in files:
             hadd('/'.join([root, file]), odir, idirs)
 
-def haddChunks(idir, removeDestDir, cleanUp=False):
+def haddChunks(idir, removeDestDir, cleanUp=False, destdir=None ):
+    if destdir == None : destdir = idir
+        
     chunks = {}
     for file in sorted(os.listdir(idir)):
         filepath = '/'.join( [idir, file] )
@@ -95,7 +97,7 @@ def haddChunks(idir, removeDestDir, cleanUp=False):
         print 'warning: no chunk found.'
         return
     for i, (comp, cchunks) in enumerate(chunks.iteritems(), start=1):
-        odir = '/'.join( [idir, comp] )
+        odir = '/'.join( [destdir, comp] )
         print
         print "======================"
         print "hadding folder", i, "/", len(chunks)
