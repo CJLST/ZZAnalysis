@@ -100,7 +100,7 @@ JetFiller::JetFiller(const edm::ParameterSet& iConfig) :
 
   if (setup == 2016)
     {
-      edm::FileInPath jecUncFile("ZZAnalysis/AnalysisStep/data/JEC/Regrouped_Summer16_07Aug2017_V11_MC_UncertaintySources_AK4PFchs.txt");
+      edm::FileInPath jecUncFile("ZZAnalysis/AnalysisStep/data/JEC/RegroupedV2_Summer16_07Aug2017_V11_MC_UncertaintySources_AK4PFchs.txt");
       jecUncFile_ = jecUncFile.fullPath();
       uncSources.push_back("Total");
       uncSources.push_back("Absolute"); uncSources.push_back("Absolute_2016");
@@ -113,7 +113,7 @@ JetFiller::JetFiller(const edm::ParameterSet& iConfig) :
     }
   else if (setup == 2017)
     {
-      edm::FileInPath jecUncFile("ZZAnalysis/AnalysisStep/data/JEC/Regrouped_Fall17_17Nov2017_V32_MC_UncertaintySources_AK4PFchs.txt");
+      edm::FileInPath jecUncFile("ZZAnalysis/AnalysisStep/data/JEC/RegroupedV2_Fall17_17Nov2017_V32_MC_UncertaintySources_AK4PFchs.txt");
       jecUncFile_ = jecUncFile.fullPath();
       uncSources.push_back("Total");
       uncSources.push_back("Absolute"); uncSources.push_back("Absolute_2017");
@@ -126,7 +126,7 @@ JetFiller::JetFiller(const edm::ParameterSet& iConfig) :
     }
   else if (setup == 2018)
     {
-      edm::FileInPath jecUncFile("ZZAnalysis/AnalysisStep/data/JEC/Regrouped_Autumn18_V19_MC_UncertaintySources_AK4PFchs.txt");
+      edm::FileInPath jecUncFile("ZZAnalysis/AnalysisStep/data/JEC/RegroupedV2_Autumn18_V19_MC_UncertaintySources_AK4PFchs.txt");
       jecUncFile_ = jecUncFile.fullPath();
       uncSources.push_back("Total");
       uncSources.push_back("Absolute"); uncSources.push_back("Absolute_2018");
@@ -174,7 +174,8 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   // JEC uncertainty (Part 2) - Splitting (May 2020)
   // Run 2 reduced set of uncertainties from here: https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECUncertaintySources#Run_2_reduced_set_of_uncertainty
   // List of uncertainties: ['Absolute', 'Absolute_201*', 'BBEC1', 'BBEC1_201*', 'EC2', 'EC2_201*', 'FlavorQCD', 'HF', 'HF_201*', 'RelativeBal', 'RelativeSample_201*'] + 'Total'
-  if(applyJEC_ && isMC_)
+  // if(applyJEC_ && isMC_)
+  if(applyJEC_)
     {
       for (unsigned s_unc = 0; s_unc < uncSources.size(); s_unc++)
 	{
@@ -208,41 +209,37 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     float ptD = (*ptDHandle)[jetRef];
 
 
-    //--- Get JEC uncertainties
-    jecUnc.setJetEta(jeta);
-    jecUnc.setJetPt(jpt);
-    float jes_unc = jecUnc.getUncertainty(true); //It takes as argument "bool fDirection": true = up, false = dn; symmetric values
-    float pt_jesup = jpt * (1.0 + jes_unc); // set the shifted pT up
-    float pt_jesdn = jpt * (1.0 - jes_unc); // set the shifted pT dn
-    //j.setP4(j.p4() * (1 + jes_unc)); // Checked that only pt and energy/mass are affected by JEC variations considering the p4() components, not eta/phi
+    // //--- Get JEC uncertainties
+    // jecUnc.setJetEta(jeta);
+    // jecUnc.setJetPt(jpt);
+    // float jes_unc = jecUnc.getUncertainty(true); //It takes as argument "bool fDirection": true = up, false = dn; symmetric values
+    // float pt_jesup = jpt * (1.0 + jes_unc); // set the shifted pT up
+    // float pt_jesdn = jpt * (1.0 - jes_unc); // set the shifted pT dn
+    // //j.setP4(j.p4() * (1 + jes_unc)); // Checked that only pt and energy/mass are affected by JEC variations considering the p4() components, not eta/phi
+    //
+    // vector<float> jes_unc_split {};
+    // vector<float> pt_jesup_split {};
+    // vector<float> pt_jesdn_split {};
+    // float singleContr_jes_unc = 0;
+    //
+    // if(applyJEC_ && isMC_){
+    //   for (unsigned s_unc = 0; s_unc < uncSources.size(); s_unc++){
+  	//     singleContr_jes_unc = 0;
+  	//     splittedUncerts_[s_unc]->setJetEta(jeta);
+  	//     splittedUncerts_[s_unc]->setJetPt(jpt);
+  	//     singleContr_jes_unc = splittedUncerts_[s_unc]->getUncertainty(true); //It takes as argument "bool fDirection": true = up, false = dn; symmetric values
+  	//     jes_unc_split.push_back(singleContr_jes_unc);
+  	//     pt_jesup_split.push_back( jpt * (1.0 + singleContr_jes_unc));
+  	//     pt_jesdn_split.push_back( jpt * (1.0 - singleContr_jes_unc));
+    //   }
+    // }else{
+    //   for(unsigned s_unc = 0; s_unc < uncSources.size(); s_unc++){
+  	//     jes_unc_split.push_back(-999.);
+  	//     pt_jesup_split.push_back(-999.);
+  	//     pt_jesdn_split.push_back(-999.);
+	  //    }
+    //  }
 
-    vector<float> jes_unc_split {};
-    vector<float> pt_jesup_split {};
-    vector<float> pt_jesdn_split {};
-    float singleContr_jes_unc = 0;
-
-    if(applyJEC_ && isMC_)
-      {
-	for (unsigned s_unc = 0; s_unc < uncSources.size(); s_unc++)
-	  {
-	    singleContr_jes_unc = 0;
-	    splittedUncerts_[s_unc]->setJetEta(jeta);
-	    splittedUncerts_[s_unc]->setJetPt(jpt);
-	    singleContr_jes_unc = splittedUncerts_[s_unc]->getUncertainty(true); //It takes as argument "bool fDirection": true = up, false = dn; symmetric values
-	    jes_unc_split.push_back(singleContr_jes_unc);
-	    pt_jesup_split.push_back( jpt * (1.0 + singleContr_jes_unc));
-	    pt_jesdn_split.push_back( jpt * (1.0 - singleContr_jes_unc));
-	  }
-      }
-    else
-      {
-	for(unsigned s_unc = 0; s_unc < uncSources.size(); s_unc++)
-	  {
-	    jes_unc_split.push_back(-999.);
-	    pt_jesup_split.push_back(-999.);
-	    pt_jesdn_split.push_back(-999.);
-	  }
-      }
     // For DEBUG: JEC splitting
   //   cout << "=============================" << endl;
   //   cout << "Previous total JES UNCERTAINTY = " << jes_unc << endl;
@@ -522,7 +519,38 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       j.setP4(reco::Particle::PolarLorentzVector(pt_jer, jeta, jphi, (pt_jer/jpt)*j.mass()));
     }
 
-    //cout<<"jet pT="<<jpt<<", eta="<<jeta<<endl;
+    //--- Get JEC uncertainties
+    jecUnc.setJetEta(j.eta());
+    jecUnc.setJetPt(j.pt());
+    float jes_unc = jecUnc.getUncertainty(true); //It takes as argument "bool fDirection": true = up, false = dn; symmetric values
+    float pt_jesup = j.pt() * (1.0 + jes_unc); // set the shifted pT up
+    float pt_jesdn = j.pt() * (1.0 - jes_unc); // set the shifted pT dn
+    //j.setP4(j.p4() * (1 + jes_unc)); // Checked that only pt and energy/mass are affected by JEC variations considering the p4() components, not eta/phi
+
+    vector<float> jes_unc_split {};
+    vector<float> pt_jesup_split {};
+    vector<float> pt_jesdn_split {};
+    float singleContr_jes_unc = 0;
+
+    // if(applyJEC_ && isMC_){
+    if(applyJEC_){
+      for (unsigned s_unc = 0; s_unc < uncSources.size(); s_unc++){
+        singleContr_jes_unc = 0;
+        splittedUncerts_[s_unc]->setJetEta(j.eta());
+        splittedUncerts_[s_unc]->setJetPt(j.pt());
+        singleContr_jes_unc = splittedUncerts_[s_unc]->getUncertainty(true); //It takes as argument "bool fDirection": true = up, false = dn; symmetric values
+        jes_unc_split.push_back(singleContr_jes_unc);
+        pt_jesup_split.push_back( j.pt() * (1.0 + singleContr_jes_unc));
+        pt_jesdn_split.push_back( j.pt() * (1.0 - singleContr_jes_unc));
+
+      }
+    }else{
+      for(unsigned s_unc = 0; s_unc < uncSources.size(); s_unc++){
+        jes_unc_split.push_back(-999.);
+        pt_jesup_split.push_back(-999.);
+        pt_jesdn_split.push_back(-999.);
+       }
+     }
 
     //--- Embed user variables
     j.addUserFloat("qgLikelihood",qgLikelihood);
