@@ -37,7 +37,6 @@
 #include <DataFormats/METReco/interface/PFMET.h>
 #include <DataFormats/METReco/interface/PFMETCollection.h>
 #include <ZZAnalysis/AnalysisStep/interface/METCorrectionHandler.h>
-#include <ZZAnalysis/AnalysisStep/interface/Fisher.h>
 #include <ZZAnalysis/AnalysisStep/interface/Comparators.h>
 #include <ZZAnalysis/AnalysisStep/interface/utils.h>
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
@@ -584,10 +583,9 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     Z14vec.Boost(-higgs.BoostVector());
     float xistar = Z14vec.Phi();
     // detaJJ, Mjj and Fisher. These are per-event variables in the SR, but not necessarily in the CR as we clean jets also
-    // for loose-but-not-tight leptons.
+    // for loose-but-not-tight leptons. FIXME: fisher was removed; these are likely useless as well - to be rechecked
     float DiJetMass  = -99;
     float DiJetDEta  = -99;
-    float DiJetFisher  = -99;
     float ZZjjPt     = -99;
 
     unsigned int nCandidates=0; // Should equal jecnum after the loop below
@@ -786,7 +784,6 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
         const pat::Jet& jet2 = *(cleanedJetsPt30Jec.at(1));
         DiJetDEta = jet1.eta()-jet2.eta();
         DiJetMass = (jet1.p4()+jet2.p4()).M();
-        DiJetFisher = fisher(DiJetMass, DiJetDEta);
       }
 
       vector<const pat::Jet*> cleanedJetsPt30;
@@ -994,8 +991,6 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     // Jet quantities
     myCand.addUserFloat("DiJetMass", DiJetMass);
     myCand.addUserFloat("DiJetDEta", DiJetDEta);
-    myCand.addUserFloat("DiJetFisher", DiJetFisher);
-
     myCand.addUserFloat("ZZjjPt", ZZjjPt);
 
     // MELA branches

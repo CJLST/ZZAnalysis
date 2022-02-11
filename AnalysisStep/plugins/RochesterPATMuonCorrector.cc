@@ -106,11 +106,11 @@ RochesterPATMuonCorrector::produce(edm::Event& iEvent, const edm::EventSetup& iS
       
     if(isSync_) u = 0.5;
 
-    if (calibrator != 0  && mu.muonBestTrackType() == 1 && oldpt <= 200.)
+    if (calibrator != 0)
     {
 		nl = mu.track()->hitPattern().trackerLayersWithMeasurement();
 		
-      if(isMC_ && nl > 5)//Protection against muons with low number of layers, they are not used in the analysis anyway as we apply thight muon ID
+      if(isMC_ && nl > 5)//Protection against muons with low number of layers, they are not used in the analysis anyway as we apply tight muon ID
       {
 			
             //cout << "pt = " << mu.pt() << " eta = " << mu.eta() << " phi = " << mu.phi() << "u = " << u << endl;
