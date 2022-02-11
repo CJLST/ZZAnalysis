@@ -114,19 +114,26 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       
       float combRelIsoPF = LeptonIsoHelper::combRelIsoPF(sampleType, setup, rho, l);
       
-      //--- SIP, dxy, dz
+      //--- SIP, dxy, dz. Note: The same values can be obtained in string selectors as:
+      // SIP: "abs(dB('PV3D')/edB('PV3D'))"  
+      // dxy: "abs(dB('PV2D'))"
+      // dz: "abs(dB('PVDZ'))"
       float IP      = std::abs(l.dB(pat::Muon::PV3D));
       float IPError = l.edB(pat::Muon::PV3D);
       float SIP     = IP/IPError;
+      float dxy = std::abs(l.dB(pat::Muon::PV2D));
+      float dz  = std::abs(l.dB(pat::Muon::PVDZ));;
       
-      float dxy = 999.;
-      float dz  = 999.;
-      const Vertex* vertex = 0;
-      if (vertices->size()>0) {
-         vertex = &(vertices->front());
-         dxy = fabs(l.muonBestTrack()->dxy(vertex->position()));
-         dz  = fabs(l.muonBestTrack()->dz(vertex->position()));
-      }
+
+     // Non-standard dxy, dz computed using a selected PV (obsolete recipe, kept here temporaryly for reference). 
+//       float custom_dxy = 999.;
+//       float custom_dz  = 999.;
+//       const Vertex* vertex = 0;
+//       if (vertices->size()>0) {
+//          vertex = &(vertices->front());
+//          custom_dxy = fabs(l.muonBestTrack()->dxy(vertex->position()));
+//          custom_dz  = fabs(l.muonBestTrack()->dz(vertex->position()));
+//       }
       
 
 //=================
@@ -252,24 +259,7 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       l.addUserFloat("isBDT",isBDT);
       l.addUserFloat("HLTMatch", HLTMatch);
       // l.addUserCand("MCMatch",genMatch); // FIXME
-      l.addUserFloat("time",muontime);
-      
-      
-      //--- isPFMuon flag - in old samples, l.isPFMuon() is not functional, so this has to be filled
-      //    beforehand with the module PATPFMuonEmbedder.
-      if(!l.hasUserFloat("isPFMuon")) {
-         l.addUserFloat("isPFMuon",l.isPFMuon());
-      }
-      
-      // isHighPtTrackerMuon - used in 2016 tight muon ID
-      bool isTrackerHighPt = ( l.numberOfMatchedStations() > 1
-                              && (l.muonBestTrack()->ptError()/l.muonBestTrack()->pt()) < 0.3
-                              && dxy < 0.2
-                              && dz < 0.5
-                              && l.innerTrack()->hitPattern().numberOfValidPixelHits() > 0
-                              && l.innerTrack()->hitPattern().trackerLayersWithMeasurement() > 5 );
-      l.addUserFloat("isTrackerHighPtMuon",isTrackerHighPt);
-      
+      l.addUserFloat("time",muontime);      
       
       if (!l.hasUserFloat("correctedPtError")) {
          l.addUserFloat("correctedPtError",l.muonBestTrack()->ptError()); //This is expected by the kin fitter
