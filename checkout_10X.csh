@@ -31,12 +31,13 @@ git cms-addpkg EgammaAnalysis/ElectronTools
 #### Please do not add any custom (non-CMSSW) package before this line ####
 #ZZAnalysis
 git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
-(cd ZZAnalysis; git checkout Run2_CutBased_UL )
+(cd ZZAnalysis; git checkout Run2UL_22)
 
 # Muon MVA
 git cms-addpkg CondFormats/EgammaObjects
 git cms-addpkg CommonTools/MVAUtils
 git clone https://github.com/bonanomi/MuonMVAReader.git MuonMVAReader
+(cd MuonMVAReader; git checkout 3d53269)
 
 #MELA Analytics
 git clone https://github.com/MELALabs/MelaAnalytics.git
@@ -83,3 +84,7 @@ $CMSSW_BASE/src/JHUGenMELA/MELA/data/retrieve.csh $SCRAM_ARCH mcfm_707
 #kinematic refitting
 git clone https://github.com/mhl0116/KinZfitter-1.git KinZfitter
 (cd KinZfitter ; git checkout -b from-27daebb 27daebb)
+
+#NanoAODTools
+git clone https://github.com/cms-nanoAOD/nanoAOD-tools.git PhysicsTools/NanoAODTools
+
