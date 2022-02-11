@@ -87,4 +87,5 @@ git clone https://github.com/mhl0116/KinZfitter-1.git KinZfitter
 
 #NanoAODTools
 git clone https://github.com/cms-nanoAOD/nanoAOD-tools.git PhysicsTools/NanoAODTools
+(cd PhysicsTools/NanoAODTools ; git checkout -b from-555b307 555b307)
 

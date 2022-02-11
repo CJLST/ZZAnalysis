@@ -335,8 +335,8 @@ LeptonNtupleMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     ele_isEB[nele] = e->isEB();
     ele_isEE[nele] = e->isEE();
     ele_phi[nele] = e->phi();
-    ele_dxy[nele] = e->userFloat("dxy");
-    ele_dz[nele] = e->userFloat("dz");
+    ele_dxy[nele] = e->dB(pat::Electron::PV2D);
+    ele_dz[nele] = e->dB(pat::Electron::PVDZ);
     ele_missingHit[nele] = e->userFloat("missingHit");
     ele_BDT[nele] = e->userFloat("BDT");
     ele_isBDT[nele] = e->userFloat("isBDT");
@@ -435,13 +435,13 @@ LeptonNtupleMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     mu_pt[nmu] = m->pt();
     mu_eta[nmu] = m->eta();
     mu_phi[nmu] = m->phi();
-    mu_dxy[nmu] = m->userFloat("dxy");
-    mu_dz[nmu] = m->userFloat("dz");
+    mu_dxy[nmu] = m->dB(pat::Muon::PV2D);
+    mu_dz[nmu] = m->dB(pat::Muon::PVDZ);
     mu_isGlobalMuon[nmu] = m->isGlobalMuon();
     mu_isTrackerMuon[nmu] = m->isTrackerMuon();
     mu_numberOfMatches[nmu] = m->numberOfMatches();
     mu_muonBestTrackType[nmu] = m->muonBestTrackType();
-    mu_isPFMuon[nmu] = m->userFloat("isPFMuon");
+    mu_isPFMuon[nmu] = m->isPFMuon();
     mu_SIP[nmu] = m->userFloat("SIP");
     mu_PFChargedHadIso[nmu] = m->userFloat("PFChargedHadIso");
     mu_PFNeutralHadIso[nmu] = m->userFloat("PFNeutralHadIso");

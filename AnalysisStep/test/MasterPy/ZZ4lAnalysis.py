@@ -318,11 +318,11 @@ if(IsMC):
 ### ----------------------------------------------------------------------
 ### ----------------------------------------------------------------------
 
-SIP =  "userFloat('SIP') < 4"
-#GOODMUON = "(userFloat('ID') || (userFloat('isTrackerHighPtMuon') && pt>200)) && " + SIP //used when MVA is applied
+DXY_DZ = "abs(dB('PV2D'))<0.5 && abs(dB('PVDZ'))<1." #dxy, dz cuts
+SIP =  "abs(dB('PV3D')/edB('PV3D')) < 4"
 GOODELECTRON = "userFloat('ID') && " + SIP
 GOODMUON     = "userFloat('ID') && " + SIP
-TIGHTMUON    = "userFloat('isPFMuon') || (userFloat('isTrackerHighPtMuon') && pt>200)"
+TIGHTMUON    = "isPFMuon || (passed('CutBasedIdTrkHighPt') && pt>200)"
 
 #------- MUONS -------
 
@@ -367,10 +367,9 @@ else:
 
 process.bareSoftMuons = cms.EDFilter("PATMuonRefSelector",
     src = cms.InputTag("calibratedMuons"),
-    cut = cms.string("pt>5 && abs(eta)<2.4 && (isGlobalMuon || (isTrackerMuon && numberOfMatches>0)) && muonBestTrackType!=2")
+    cut = cms.string("pt>5 && abs(eta)<2.4 && (isGlobalMuon || (isTrackerMuon && numberOfMatchedStations>0))")
 #    Lowering pT cuts
-#    cut = cms.string("(isGlobalMuon || (isTrackerMuon && numberOfMatches>0)) &&" +
-#                     "pt>3 && p>3.5 && abs(eta)<2.4")
+#    cut = cms.string("(isGlobalMuon || (isTrackerMuon && numberOfMatchedStations>0)) && pt>3 && p>3.5 && abs(eta)<2.4")
 )
 
 
@@ -391,7 +390,7 @@ process.softMuons = cms.EDProducer("MuFiller",
     src = cms.InputTag("bareSoftMuons"),
     sampleType = cms.int32(SAMPLE_TYPE),
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
-    cut = cms.string("userFloat('dxy')<0.5 && userFloat('dz')<1."),
+    cut = cms.string(DXY_DZ), #dxy, dz cuts
     TriggerResults = cms.InputTag('TriggerResults','','HLT'),
     flags = cms.PSet(
         ID = cms.string(TIGHTMUON), #"userFloat('isBDT')"), # muonMVA ID
@@ -477,7 +476,7 @@ process.softElectrons = cms.EDProducer("EleFiller",
    src    = cms.InputTag("bareSoftElectrons"),
    sampleType = cms.int32(SAMPLE_TYPE),
    setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
-   cut = cms.string("pt>7 && abs(eta) < 2.5 && userFloat('dxy')<0.5 && userFloat('dz')<1"),
+   cut = cms.string("pt>7 && abs(eta) < 2.5 &&"+ DXY_DZ),
    flags = cms.PSet(
         ID = cms.string("userFloat('isBDT')"),
         isSIP = cms.string(SIP),
@@ -510,9 +509,6 @@ process.softPhotons = cms.EDProducer("Philler",
         ID = cms.string("userFloat('isBDT')"),
         isSIP = cms.string(SIP),
         isGood = cms.string(GOODELECTRON),
-        pass_lepton_ID = cms.string("userFloat('isBDT')"),
-        pass_lepton_SIP = cms.string(SIP),
-#        isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<"+ELEISOCUT), #TLE isolation is not corrected for FSR gammas.
         ),
    )
 
@@ -949,8 +945,8 @@ Z2MM_SS = "daughter(1).daughter(0).pdgId()*daughter(1).daughter(1).pdgId()== 169
 Z2EE_OS = "daughter(1).daughter(0).pdgId()*daughter(1).daughter(1).pdgId()==-121" #Z2 = e+e-
 Z2EE_SS = "daughter(1).daughter(0).pdgId()*daughter(1).daughter(1).pdgId()== 121" #Z2 = e-e-/e+e+
 Z2ID    = "userFloat('d1.d0.ID')     && userFloat('d1.d1.ID')"                    #ID on LL leptons
-Z2SIP   = "userFloat('d1.d0.SIP')< 4 && userFloat('d1.d1.SIP')< 4"                #SIP on LL leptons
-CR_Z2MASS = "daughter(1).mass>4  && daughter(1).mass<120"                        #Mass on LL; cut at 4
+Z2SIP   = "userFloat('d1.d0.isSIP') && userFloat('d1.d1.isSIP')"                  #SIP on LL leptons
+CR_Z2MASS = "daughter(1).mass>4  && daughter(1).mass<120"                         #Mass on LL; cut at 4
 
 
 # Define cuts for selection of the candidates among which the best one is chosen.
