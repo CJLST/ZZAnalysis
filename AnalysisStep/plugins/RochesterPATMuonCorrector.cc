@@ -106,7 +106,7 @@ RochesterPATMuonCorrector::produce(edm::Event& iEvent, const edm::EventSetup& iS
       
     if(isSync_) u = 0.5;
 
-    if (calibrator != 0)
+    if (calibrator != 0  && mu.track().isNonnull())
     {
 		nl = mu.track()->hitPattern().trackerLayersWithMeasurement();
 		
