@@ -12,7 +12,7 @@ process = cms.Process("ZZ")
 declareDefault("IsMC", True, globals())
 
 # Set of effective areas, rho corrections, etc. (can be 2011, 2012, 2015 or 2016)
-declareDefault("LEPTON_SETUP", 2016, globals())
+declareDefault("LEPTON_SETUP", 2018, globals())
 
 # Flag that reflects the actual sqrts of the sample (can be 2011, 2012, 2015 or 2016)
 # Can differ from SAMPLE_TYPE for samples that are rescaled to a different sqrts.
@@ -63,6 +63,10 @@ declareDefault("ADDLOOSEELE", False, globals())
 
 # Activate trigger paths in MC; note that for 2016, only reHLT samples have the correct triggers!!!
 declareDefault("APPLYTRIG", True, globals())
+
+# Set to True to re-activate the now-deprecated PATMuonCleanerBySegments
+UseMuonCleanerBySegments = False 
+
 
 # CMSSW version 8X or 9X
 CMSSW_VERSION = os.environ['CMSSW_VERSION']
@@ -360,16 +364,9 @@ else:
         print "APPLYMUCORR not configured for LEPTON_SETUP =", LEPTON_SETUP
         sys.exit()
 
-#--- Mu Ghost cleaning
-process.cleanedMu = cms.EDProducer("PATMuonCleanerBySegments",
-                                   src = cms.InputTag("calibratedMuons"),
-                                   preselection = cms.string("track.isNonnull"),
-                                   passthrough = cms.string("isGlobalMuon && numberOfMatches >= 2"),
-                                   fractionOfSharedSegments = cms.double(0.499))
-
 
 process.bareSoftMuons = cms.EDFilter("PATMuonRefSelector",
-    src = cms.InputTag("cleanedMu"),
+    src = cms.InputTag("calibratedMuons"),
     cut = cms.string("pt>5 && abs(eta)<2.4 && (isGlobalMuon || (isTrackerMuon && numberOfMatches>0)) && muonBestTrackType!=2")
 #    Lowering pT cuts
 #    cut = cms.string("(isGlobalMuon || (isTrackerMuon && numberOfMatches>0)) &&" +
@@ -405,15 +402,24 @@ process.softMuons = cms.EDProducer("MuFiller",
     )
 )
 
+process.muons =  cms.Sequence(process.calibratedMuons + process.bareSoftMuons + process.softMuons)
 
-if APPLYMUCORR :
-    process.muons =  cms.Sequence(process.calibratedMuons + process.cleanedMu + process.bareSoftMuons + process.softMuons)
-else:
-    process.cleanedMu.src = cms.InputTag("slimmedMuons")
-    process.muons =  cms.Sequence(process.cleanedMu + process.bareSoftMuons + process.softMuons)
-
+if not APPLYMUCORR :
+    process.muons.replace(process.calibratedMuons, None)
+    process.bareSoftMuons.src = cms.InputTag("slimmedMuons")
 
 
+#--- Derecated muon cleaner; keep this option for future reference. 
+if UseMuonCleanerBySegments:
+    process.cleanedMu = cms.EDProducer("PATMuonCleanerBySegments",
+                                       src = cms.InputTag("calibratedMuons"),
+                                       preselection = cms.string("track.isNonnull"),
+                                       passthrough = cms.string("isGlobalMuon && numberOfMatches >= 2"),
+                                       fractionOfSharedSegments = cms.double(0.499))
+    process.muons.replace(process.bareSoftMuons,cms.Sequence(process.cleanedMu+process.bareSoftMuons))    
+    process.bareSoftMuons.src = "cleanedMu"
+    if not APPLYMUCORR:
+        process.cleanedMu.src = "slimmedMuons"
 
 #------- ELECTRONS -------
 
@@ -457,7 +463,7 @@ if (LEPTON_SETUP == 2018):
    setupEgammaPostRecoSeq(process,
                           runEnergyCorrections=True,
                           runVID=True,
-                          eleIDModules=['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Summer18UL_ID_ISO_cff','RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff'],
+                          eleIDModules=['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Summer18UL_ID_ISO_cff','RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff','RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_iso_V2_cff'],
                           phoIDModules=['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V2_cff'],
                           era='2018-UL')
 
