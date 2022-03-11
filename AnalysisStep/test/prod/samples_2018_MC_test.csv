@@ -1,0 +1,14 @@
+identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments,comment
+
+### See comment field,,,,,,,,,,,Unless otherwise stated; signal x-sections are taken from https://hypernews.cern.ch/HyperNews/CMS/get/higgs/1738.html
+###,,,,,,,,,,,in the [120;130] range they are taken from the YR4 SM 13TeV tab; i.e. they are N3LO QCD + NLO EW
+###,,,,,,,,,,,while for other mass points they are taken from the YR4 BSM 13TeV tab; i.e. they are in NWA and without EWK corrections; see https://hypernews.cern.ch/HyperNews/CMS/get/higgs/1738/1/1/1.html
+###,,,,,,,,,,,For ZH and ttH the BR is obtained as BR(H->ZZ->2L2X) = BR(H->4L) + BR(H->2L2q) + BR(H->ZZ*->2L2nu) * BR(H->2L2nu) / [ BR(H->ZZ*->2L2nu) + BR(H->WW*->2L2nu) ] where BR(H->4L) BR(H->2L2q) and BR(H->2L2nu) are taken from the YR3 Twikis.
+###,,,,,,,,,,,For ZH and ttH the BR column also includes the gen filter efficiency (0.15038 for ZH and 0.1544 for ttH).
+
+#ggH115, ,56.34,9.22E-05,,/GluGluHToZZTo4L_M115_13TeV_powheg2_JHUGenV7011_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM,dbs,,2,GENXSEC=34.6885;GENBR=9.22e-05;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;APPLY_K_NNLOQCD_ZZGG=2;APPLY_QCD_GGF_UNCERT=True;LEPTON_SETUP=2018,RecoProbabilities.py;LHEProbabilities_GG_SIG_0PM_H115_POWHEG.py,
+#ggH120, ,52.22,0.0001659,,/GluGluHToZZTo4L_M120_13TeV_powheg2_JHUGenV7011_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM,dbs,,2,GENXSEC=32.2185;GENBR=0.0001659;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;APPLY_K_NNLOQCD_ZZGG=2;APPLY_QCD_GGF_UNCERT=True;LEPTON_SETUP=2018,RecoProbabilities.py;LHEProbabilities_GG_SIG_0PM_H120_POWHEG.py,
+#ggH124, ,49.27,0.0002502,,/GluGluHToZZTo4L_M124_13TeV_powheg2_JHUGenV7011_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM,dbs,,2,GENXSEC=30.4414;GENBR=0.0002502;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;APPLY_K_NNLOQCD_ZZGG=2;APPLY_QCD_GGF_UNCERT=True;LEPTON_SETUP=2018,RecoProbabilities.py;LHEProbabilities_GG_SIG_0PM_H124_POWHEG.py,
+ggH125, ,48.58,0.0002745,,/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM,dbs,,2,GENXSEC=30.0188;GENBR=0.0002745;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;APPLY_K_NNLOQCD_ZZGG=2;APPLY_QCD_GGF_UNCERT=True;LEPTON_SETUP=2018,RecoProbabilities.py;LHEProbabilities_GG_SIG_0PM_H125_POWHEG.py,
+TTZZ,,0.001572,      ,,/TTZZ_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM,dbs,,1,GENXSEC=1.256;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2018,RecoProbabilities.py,
+

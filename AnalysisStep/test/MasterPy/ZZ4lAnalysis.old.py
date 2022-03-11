@@ -8,7 +8,7 @@ process = cms.Process("ZZ")
 ### Flags that need to be set
 ### ----------------------------------------------------------------------
 
-#Set defaults for variables used in this file (in case they are not defined by a caller script)
+# Set defaults for variables used in this file (in case they are not defined by a caller script)
 declareDefault("IsMC", True, globals())
 
 # Set of effective areas, rho corrections, etc. (can be 2011, 2012, 2015 or 2016)
@@ -17,8 +17,6 @@ declareDefault("LEPTON_SETUP", 2016, globals())
 # Flag that reflects the actual sqrts of the sample (can be 2011, 2012, 2015 or 2016)
 # Can differ from SAMPLE_TYPE for samples that are rescaled to a different sqrts.
 declareDefault("SAMPLE_TYPE", LEPTON_SETUP, globals())
-
-declareYear("YEAR", LEPTON_SETUP, globals())
 
 # Control global tag to be used for 2018 data to distinguish between ReReco (period A, B, C) and PromptReco (period D)
 declareDefault("DATA_TAG", "ReReco", globals())
@@ -138,31 +136,29 @@ import HLTrigger.HLTfilters.hltHighLevel_cfi
 
 process.hltFilterDiMu  = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 process.hltFilterDiEle = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
-#process.hltFilterMuEle = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
-#process.hltFilterMuEle2 = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
-#process.hltFilterMuEle3 = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
-#process.hltFilterTriEle = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
-#process.hltFilterTriMu  = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+process.hltFilterMuEle = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+process.hltFilterMuEle2 = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+process.hltFilterMuEle3 = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+process.hltFilterTriEle = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+process.hltFilterTriMu  = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 process.hltFilterSingleEle = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 process.hltFilterSingleMu  = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
-
 process.hltFilterDiMu.TriggerResultsTag  = cms.InputTag("TriggerResults","","HLT")
 process.hltFilterDiEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-#process.hltFilterMuEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-#process.hltFilterMuEle2.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-#process.hltFilterMuEle3.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-#process.hltFilterTriEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-#process.hltFilterTriMu.TriggerResultsTag  = cms.InputTag("TriggerResults","","HLT")
+process.hltFilterMuEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
+process.hltFilterMuEle2.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
+process.hltFilterMuEle3.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
+process.hltFilterTriEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
+process.hltFilterTriMu.TriggerResultsTag  = cms.InputTag("TriggerResults","","HLT")
 process.hltFilterSingleEle.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
 process.hltFilterSingleMu.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-
 process.hltFilterDiMu.throw  = cms.bool(False) #FIXME: beware of this!
 process.hltFilterDiEle.throw = cms.bool(False) #FIXME: beware of this!
-#process.hltFilterMuEle.throw = cms.bool(False) #FIXME: beware of this!
-#process.hltFilterMuEle2.throw = cms.bool(False) #FIXME: beware of this!
-#process.hltFilterMuEle3.throw = cms.bool(False) #FIXME: beware of this!
-#process.hltFilterTriEle.throw = cms.bool(False) #FIXME: beware of this!
-#process.hltFilterTriMu.throw  = cms.bool(False) #FIXME: beware of this!
+process.hltFilterMuEle.throw = cms.bool(False) #FIXME: beware of this!
+process.hltFilterMuEle2.throw = cms.bool(False) #FIXME: beware of this!
+process.hltFilterMuEle3.throw = cms.bool(False) #FIXME: beware of this!
+process.hltFilterTriEle.throw = cms.bool(False) #FIXME: beware of this!
+process.hltFilterTriMu.throw  = cms.bool(False) #FIXME: beware of this!
 process.hltFilterSingleEle.throw = cms.bool(False) #FIXME: beware of this!
 process.hltFilterSingleMu.throw  = cms.bool(False) #FIXME: beware of this!
 
@@ -170,14 +166,14 @@ process.hltFilterSingleMu.throw  = cms.bool(False) #FIXME: beware of this!
 if (LEPTON_SETUP == 2016):
    process.hltFilterDiEle.HLTPaths = ["HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v*"]
    process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*"]
-   #process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"]
-   #process.hltFilterTriEle.HLTPaths = ["HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v*"]
-   #process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_12_10_5_v*"]
+   process.hltFilterMuEle.HLTPaths = ["HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*"]
+   process.hltFilterTriEle.HLTPaths = ["HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v*"]
+   process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_12_10_5_v*"]
    process.hltFilterSingleEle.HLTPaths = ["HLT_Ele25_eta2p1_WPTight_Gsf_v*","HLT_Ele27_WPTight_Gsf_v*","HLT_Ele27_eta2p1_WPLoose_Gsf_v*", "HLT_Ele32_eta2p1_WPTight_Gsf_v*"]
    process.hltFilterSingleMu.HLTPaths = ["HLT_IsoMu20_v*","HLT_IsoTkMu20_v*","HLT_IsoMu22_v*","HLT_IsoTkMu22_v*","HLT_IsoMu24_v*","HLT_IsoTkMu24_v*"]
 
-   #process.triggerTriEle = cms.Path(process.hltFilterTriEle)
-   #process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
+   process.triggerTriEle = cms.Path(process.hltFilterTriEle)
+   process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
    process.triggerSingleEle = cms.Path(process.hltFilterSingleEle)
    process.triggerSingleMu  = cms.Path(process.hltFilterSingleMu )
 
@@ -185,14 +181,14 @@ if (LEPTON_SETUP == 2016):
 elif (LEPTON_SETUP == 2017):
    process.hltFilterDiEle.HLTPaths = ["HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_DoubleEle33_CaloIdL_MW_v*"]
    process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v*"]
-   #process.hltFilterMuEle.HLTPaths = ["HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ_v*"]
-   #process.hltFilterTriEle.HLTPaths = ["HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v*"]
-   #process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_10_5_5_DZ_v*","HLT_TripleMu_12_10_5_v*"]
+   process.hltFilterMuEle.HLTPaths = ["HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ_v*"]
+   process.hltFilterTriEle.HLTPaths = ["HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v*"]
+   process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_10_5_5_DZ_v*","HLT_TripleMu_12_10_5_v*"]
    process.hltFilterSingleEle.HLTPaths = ["HLT_Ele35_WPTight_Gsf_v*","HLT_Ele38_WPTight_Gsf_v*","HLT_Ele40_WPTight_Gsf_v*"]
    process.hltFilterSingleMu.HLTPaths = ["HLT_IsoMu27_v*"]
 
-   #process.triggerTriEle = cms.Path(process.hltFilterTriEle)
-   #process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
+   process.triggerTriEle = cms.Path(process.hltFilterTriEle)
+   process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
    process.triggerSingleEle = cms.Path(process.hltFilterSingleEle)
    process.triggerSingleMu  = cms.Path(process.hltFilterSingleMu )
 
@@ -200,14 +196,14 @@ elif (LEPTON_SETUP == 2017):
 elif (LEPTON_SETUP == 2018):
    process.hltFilterDiEle.HLTPaths = ["HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_DoubleEle25_CaloIdL_MW_v*"]
    process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*"]
-   #process.hltFilterMuEle.HLTPaths = ["HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ_v*"]
-   #process.hltFilterTriEle.HLTPaths = [""]
-   #process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_10_5_5_DZ_v*","HLT_TripleMu_12_10_5_v*"]
+   process.hltFilterMuEle.HLTPaths = ["HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ_v*"]
+   process.hltFilterTriEle.HLTPaths = [""]
+   process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_10_5_5_DZ_v*","HLT_TripleMu_12_10_5_v*"]
    process.hltFilterSingleEle.HLTPaths = ["HLT_Ele32_WPTight_Gsf_v*"]
    process.hltFilterSingleMu.HLTPaths = ["HLT_IsoMu24_v*"]
 
-   #process.triggerTriEle = cms.Path(process.hltFilterTriEle)
-   #process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
+   process.triggerTriEle = cms.Path(process.hltFilterTriEle)
+   process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
    process.triggerSingleEle = cms.Path(process.hltFilterSingleEle)
    process.triggerSingleMu  = cms.Path(process.hltFilterSingleMu )
 
@@ -215,7 +211,7 @@ elif (LEPTON_SETUP == 2018):
 
 process.triggerDiMu   = cms.Path(process.hltFilterDiMu)
 process.triggerDiEle  = cms.Path(process.hltFilterDiEle)
-#process.triggerMuEle  = cms.Path(process.hltFilterMuEle)
+process.triggerMuEle  = cms.Path(process.hltFilterMuEle)
 
 
 ### ----------------------------------------------------------------------
@@ -314,15 +310,6 @@ SIP =  "userFloat('SIP') < 4"
 GOODELECTRON = "userFloat('ID') && " + SIP
 GOODMUON     = "userFloat('ID') && " + SIP
 TIGHTMUON    = "userFloat('isPFMuon') || (userFloat('isTrackerHighPtMuon') && pt>200)"
-TAUCUT	     = "tauID('byCombinedIsolationDeltaBetaCorrRaw3Hits') < 1000.0 && pt>18"
-SOSOTAU	     = "tauID('decayModeFindingNewDMs') == 1 && userFloat('dz') < 10"
-GOODTAU	     = SOSOTAU + " && tauID('byVVVLooseDeepTau2017v2p1VSjet') == 1 && tauID('byVVVLooseDeepTau2017v2p1VSe') == 1 && tauID('byVLooseDeepTau2017v2p1VSmu') == 1"
-GOODTAU_MU   = SOSOTAU + " && tauID('byTightDeepTau2017v2p1VSmu') == 1 && tauID('byVLooseDeepTau2017v2p1VSe') == 1 && tauID('byMediumDeepTau2017v2p1VSjet') == 1"
-GOODTAU_ELE  = SOSOTAU + " && tauID('byTightDeepTau2017v2p1VSmu') == 1 && tauID('byVLooseDeepTau2017v2p1VSe') == 1 && tauID('byMediumDeepTau2017v2p1VSjet') == 1"
-GOODTAU_TAU  = SOSOTAU + " && tauID('byVLooseDeepTau2017v2p1VSmu') == 1 && tauID('byVVLooseDeepTau2017v2p1VSe') == 1 && tauID('byMediumDeepTau2017v2p1VSjet') == 1"
-
-
-APPLYTESCORRECTION = True
 
 #------- MUONS -------
 
@@ -533,90 +520,6 @@ process.cleanSoftElectrons = cms.EDProducer("PATElectronCleaner",
 )
 
 
-#------- TAU LEPTONS -------
-
-
-process.bareTaus = cms.EDFilter("PATTauRefSelector",
-    src = cms.InputTag("slimmedTaus"),
-    cut = cms.string(TAUCUT)
-    )
-
-
-##NOT USED FOR NOW, TBD Later
-process.cleanTaus = cms.EDProducer("PATTauCleaner",
-    src = cms.InputTag("bareTaus"),
-    # preselection (any string-based cut on pat::Tau)
-    preselection = cms.string(
-            'tauID("decayModeFinding") > 0.5 &'
-            ' tauID("byLooseCombinedIsolationDeltaBetaCorr3Hits") > 0.5 &'
-            ' tauID("againstMuonTight") > 0.5 &'
-            ' tauID("againstElectronMedium") > 0.5'
-        ),
- 
-   
-   # overlap checking configurables
-   checkOverlaps = cms.PSet(
-      muons = cms.PSet(
-          src       = cms.InputTag("cleanPatMuons"),
-          algorithm = cms.string("byDeltaR"),
-          preselection        = cms.string(""),
-          deltaR              = cms.double(0.3),
-          checkRecoComponents = cms.bool(False), # don't check if they share some AOD object ref
-          pairCut             = cms.string(""),
-          requireNoOverlaps   = cms.bool(False), # overlaps don't cause the electron to be discared
-          ),
-      electrons = cms.PSet(
-          src       = cms.InputTag("cleanPatElectrons"),
-          algorithm = cms.string("byDeltaR"),
-          preselection        = cms.string(""),
-          deltaR              = cms.double(0.3),
-          checkRecoComponents = cms.bool(False), # don't check if they share some AOD object ref
-          pairCut             = cms.string(""),
-          requireNoOverlaps   = cms.bool(False), # overlaps don't cause the electron to be discared
-          ),
-      ),
-        # finalCut (any string-based cut on pat::Tau)
-        finalCut = cms.string(' '),
-)
-
-
-APPLYTESCORRECTION = APPLYTESCORRECTION if IsMC else False # always false if data
-
-
-year = "2016Legacy"
-
-#if PERIOD=='postVFP':
-#    TESyear = 'UL2016_postVFP'
-
-if YEAR == 2017:
-    TESyear = "2017ReReco"
-
-if YEAR == 2018:
-    TESyear = "2018ReReco"
-
-
-process.softTaus = cms.EDProducer("TauFiller",
-   src = cms.InputTag("bareTaus"),
-   genCollection = cms.InputTag("prunedGenParticles"),
-   vtxCollection = cms.InputTag("goodPrimaryVertices"),
-   cut = cms.string(TAUCUT),
-   discriminator = cms.string(TAUDISCRIMINATOR),
-
-   ApplyTESCentralCorr = cms.bool(APPLYTESCORRECTION),
-   flags = cms.PSet(
-        isGood = cms.string(GOODTAU),
-	isGood_Mu  = cms.string(GOODTAU_MU),
-        isGood_Ele = cms.string(GOODTAU_ELE),
-        isGood_Tau = cms.string(GOODTAU_TAU)
-        ),
-
-   year = cms.string(TESyear)
-   )
-
-
-process.taus=cms.Sequence(process.bareTaus + process.softTaus)
-
-
 ### ----------------------------------------------------------------------
 ### L1 Prefiring issue for 2016 and 2017 data
 ### ----------------------------------------------------------------------
@@ -682,7 +585,7 @@ if ADDLOOSEELE:
 # overlaps between merged collections and the original ones.
 process.softLeptons = cms.EDProducer("CandViewMerger",
 #    src = cms.VInputTag(cms.InputTag("softMuons"), cms.InputTag("cleanSoftElectrons"))
-    src = cms.VInputTag(cms.InputTag("appendPhotons:muons"), cms.InputTag("appendPhotons:electrons"), cms.InputTag("softTaus"))
+    src = cms.VInputTag(cms.InputTag("appendPhotons:muons"), cms.InputTag("appendPhotons:electrons"))
 )
 
 
@@ -719,19 +622,19 @@ TWOGOODISOLEPTONS = ( TWOGOODLEPTONS + "&& userFloat('d0.passCombRelIsoPFFSRCorr
 
 # Cut to filter out unneeded ll combinations as upstream as possible
 if KEEPLOOSECOMB:
-    KEEPLOOSECOMB_CUT = 'mass > 0 && ( ( abs(daughter(0).pdgId())!=15 && abs(daughter(1).pdgId())!=15 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId()) ) || abs(daughter(0).pdgId())==15 || abs(daughter(1).pdgId())==15 )' # Propagate also combinations of loose leptons (for debugging); just require same-flavour
+    KEEPLOOSECOMB_CUT = 'mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId())' # Propagate also combinations of loose leptons (for debugging); just require same-flavour
 else:
     if FSRMODE == "RunII" : # Just keep combinations of tight leptons (passing ID, SIP and ISO)
-        KEEPLOOSECOMB_CUT = "mass > 0 && ( ( abs(daughter(0).pdgId())!=15 && abs(daughter(1).pdgId())!=15 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId()) ) || abs(daughter(0).pdgId())==15 || abs(daughter(1).pdgId())==15 ) && daughter(0).masterClone.userFloat('isGood') && daughter(1).masterClone.userFloat('isGood') && daughter(0).masterClone.userFloat('passCombRelIsoPFFSRCorr') &&  daughter(1).masterClone.userFloat('passCombRelIsoPFFSRCorr')"
+        KEEPLOOSECOMB_CUT = "mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId()) && daughter(0).masterClone.userFloat('isGood') && daughter(1).masterClone.userFloat('isGood') && daughter(0).masterClone.userFloat('passCombRelIsoPFFSRCorr') &&  daughter(1).masterClone.userFloat('passCombRelIsoPFFSRCorr')"
     else :
         print "KEEPLOOSECOMB == False && FSRMODE =! RunII", FSRMODE, "is no longer supported"
         sys.exit()
 
 ### ----------------------------------------------------------------------
-### Dileptons (Z->ee, Z->mm, Z->etau, Z->mutau, Z->tautau)
+### Dileptons (Z->ee, Z->mm)
 ### ----------------------------------------------------------------------
 
-# l+l- (SFOS, e and mu and tau)
+# l+l- (SFOS, both e and mu)
 process.bareZCand = cms.EDProducer("PATCandViewShallowCloneCombiner",
     decay = cms.string('softLeptons@+ softLeptons@-'),
     cut = cms.string(KEEPLOOSECOMB_CUT), # see below

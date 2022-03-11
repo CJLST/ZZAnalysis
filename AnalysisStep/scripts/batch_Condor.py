@@ -65,6 +65,21 @@ fi
 cd $SUBMIT_DIR
 eval $(scram ru -sh)
 
+###########Output folders#####################
+
+chunk=(${SUBMIT_DIR//// })
+
+chunk=${chunk[-1]}
+
+OutFolder="/eos/home-g/geliu/HZZ4l/Test/"$chunk"/"
+
+if [ ! -d $OutFolder ]; then
+  mkdir $OutFolder
+fi
+
+############End of the output folders########################
+
+
 cp run_cfg.py $_CONDOR_SCRATCH_DIR
 cd $_CONDOR_SCRATCH_DIR
 
@@ -95,7 +110,7 @@ echo '...done at' $(date)
 
 #note cping back is handled automatically by condor
 if $runninglocally; then
-  cp ZZ4lAnalysis.root* *.txt *.gz $SUBMIT_DIR
+  cp ZZ4lAnalysis.root* *.txt *.gz $OutFolder
 fi
 
 exit $cmsRunStatus
