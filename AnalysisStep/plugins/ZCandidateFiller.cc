@@ -114,7 +114,7 @@ ZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     int id0 = myCand.daughter(0)->pdgId();
     int id1 = myCand.daughter(1)->pdgId();
     bool OS = (id0*id1)<0;
-    bool SF = abs(id0)==abs(id1);
+    bool SF = ( abs(id0)!=15 && abs(id1)!=15 && abs(id0)==abs(id1) ) || abs(id0)==15 || abs(id0)==15;//ee, mumu, etau, mutau, tautau
 
     // ------------------------------
     // FSR recovery

@@ -50,6 +50,9 @@ class EleFiller : public edm::EDProducer {
   edm::EDGetTokenT<double> rhoToken;
   edm::EDGetTokenT<vector<Vertex> > vtxToken;
   TRandom3 rgen_;
+
+  vector<string> eleHLTPaths_;
+  vector<string> eleHLTFilters_;
 };
 
 
@@ -64,7 +67,65 @@ EleFiller::EleFiller(const edm::ParameterSet& iConfig) :
   rhoToken = consumes<double>(LeptonIsoHelper::getEleRhoTag(sampleType, setup));
   vtxToken = consumes<vector<Vertex> >(edm::InputTag("goodPrimaryVertices"));
   produces<pat::ElectronCollection>();
-	
+
+  if (sampleType == 2016)
+  {
+	eleHLTPaths_ = 
+	{
+	"HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*",
+	"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*",
+	"HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v*",
+	"HLT_Ele25_eta2p1_WPTight_Gsf_v*",
+	"HLT_Ele27_WPTight_Gsf_v*",
+	"HLT_Ele27_eta2p1_WPLoose_Gsf_v*",
+	"HLT_Ele32_eta2p1_WPTight_Gsf_v*",
+	}
+	eleFilters_ =
+	{
+	"hltEle17Ele12CaloIdLTrackIdLIsoVLDZFilter",
+	"hltEle23Ele12CaloIdLTrackIdLIsoVLDZFilter",
+	"hltDiEle33CaloIdLGsfTrkIdVLDPhiUnseededFilter",
+	"hltEle25erWPTightGsfTrackIsoFilter",
+	"hltEle27WPTightGsfTrackIsoFilter",
+	"hltEle27erWPLooseGsfTrackIsoFilter",
+	"hltEle32WPTightGsfTrackIsoFilter",
+	};
+  }
+  else if (sampleType == 2017)
+  {
+	eleHLTPaths_ = 
+	{
+	"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*",
+	"HLT_DoubleEle33_CaloIdL_MW_v*",
+	"HLT_Ele35_WPTight_Gsf_v*",
+	"HLT_Ele38_WPTight_Gsf_v*",
+	"HLT_Ele40_WPTight_Gsf_v*",
+	}
+        eleFilters_ =
+        {
+	"hltEle23Ele12CaloIdLTrackIdLIsoVLTrackIsoLeg1Filter","hltEle23Ele12CaloIdLTrackIdLIsoVLTrackIsoLeg2Filter",
+	"hltDiEle33CaloIdLMWPMS2UnseededFilter",
+	"hltEle35noerWPTightGsfTrackIsoFilter",
+	"hltEle38noerWPTightGsfTrackIsoFilter",
+	"hltEle40noerWPTightGsfTrackIsoFilter",
+        };
+  }
+  else if (sampleType == 2018)
+  {
+	eleHLTPaths_ = 
+	{
+	"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*",
+	"HLT_DoubleEle25_CaloIdL_MW_v*",
+	"HLT_Ele32_WPTight_Gsf_v*",
+	}
+        eleFilters_ =
+        {
+	"hltEle23Ele12CaloIdLTrackIdLIsoVLTrackIsoLeg1Filter","hltEle23Ele12CaloIdLTrackIdLIsoVLTrackIsoLeg2Filter",
+	"hltDiEle25CaloIdLMWPMS2UnseededFilter",
+	"hltEle32noerWPTightGsfTrackIsoFilter",
+        };
+  }
+
 }
 EleFiller::~EleFiller(){
 }
@@ -174,7 +235,22 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     bool isCrack = l.isGap();
      
     //--- Trigger matching
-    int HLTMatch = 0; //FIXME
+    bool HLTMatch = false;
+    pat::TriggerObjectStandAloneCollection obj= l.triggerObjectMatches();
+    for ( size_t iTrigObj = 0; iTrigObj < obj.size(); ++iTrigObj ) {
+       obj.at( iTrigObj ).unpackFilterLabels(iEvent,*triggerResults );
+    }
+    for ( size_t i = 0; i < obj.size(); ++i ) {
+         for (size_t j = 0; j < HLTPaths_.size(); ++j ) {
+            if (obj.at( i ).hasFilterLabel( eleHLTFilters_[j] )) {
+                HLTMatch=true;
+                l.addUserFloat(eleHLTPaths_[j],true);
+            }
+            else
+                l.addUserFloat(eleHLTPaths_[j],false);
+         }
+      }
+
 	 
      
     //-- Scale and smearing corrections are now stored in the miniAOD https://twiki.cern.ch/twiki/bin/view/CMS/EgammaMiniAODV2#Energy_Scale_and_Smearing

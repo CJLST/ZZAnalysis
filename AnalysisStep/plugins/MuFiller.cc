@@ -56,6 +56,10 @@ class MuFiller : public edm::EDProducer {
    
    // MVA Reader
    MuonGBRForestReader *r;
+   
+   //Trigger matching
+   vector<string> muHLTPaths_;
+   vector<string> muHLTFilters_;
 };
 
 
@@ -74,6 +78,65 @@ flags(iConfig.getParameter<edm::ParameterSet>("flags"))
    // MVA Reader
    r = new MuonGBRForestReader(setup, 2);
    
+   // Trigger matching
+   if (sampleType == 2016)
+   {
+	muHLTPaths_ = 
+	{
+	"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*",//DiMu
+	"HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*",
+	"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*",
+	"HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*",
+	"HLT_IsoMu20_v*",//SingleMu
+	"HLT_IsoTkMu20_v*",
+	"HLT_IsoMu22_v*",
+	"HLT_IsoTkMu22_v*",
+	"HLT_IsoMu24_v*",
+	"HLT_IsoTkMu24_v*"
+	};
+	muHLTFilters_ =
+	{
+	"hltDiMuonGlb17Glb8RelTrkIsoFiltered0p4DzFiltered0p2",
+	"hltDiMuonGlb17Trk8RelTrkIsoFiltered0p4DzFiltered0p2",
+	"hltDiMuonGlb17Glb8RelTrkIsoFiltered0p4",
+	"hltDiMuonGlb17Trk8RelTrkIsoFiltered0p4",
+	"hltL3crIsoL1sMu18L1f0L2f10QL3f20QL3trkIsoFiltered0p09",
+	"hltL3fL1sMu18L1f0Tkf20QL3trkIsoFiltered0p09",
+	"hltL3crIsoL1sMu20L1f0L2f10QL3f22QL3trkIsoFiltered0p09",
+	"hltL3fL1sMu20L1f0Tkf22QL3trkIsoFiltered0p09",
+	"hltL3crIsoL1sMu22L1f0L2f10QL3f24QL3trkIsoFiltered0p09",
+	"hltL3fL1sMu22L1f0Tkf24QL3trkIsoFiltered0p09",
+	};
+   }
+   else if (sampleType == 2017)
+   {
+        muHLTPaths_ =
+	{
+	"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*",
+	"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v*",
+	"HLT_IsoMu27_v*",
+	};
+	muHLTFilters_ =
+        {
+	"hltDiMuon178Mass3p8Filtered",
+	"hltDiMuon178Mass8Filtered",
+	"hltL3crIsoL1sMu22Or25L1f0L2f10QL3f27QL3trkIsoFiltered0p09",
+        };
+   }
+   else if (sampleType == 2018)
+   {
+	muHLTPaths_ = 
+	{
+	"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*",
+	"HLT_IsoMu24_v*",
+	};
+	muHLTFilters_ =
+        {
+	"hltDiMuon178Mass3p8Filtered",
+	"hltL3crIsoL1sMu22L1f0L2f10QL3f24QL3trkIsoFiltered0p09",
+        };
+   }
+	
 }
 
 MuFiller::~MuFiller(){}
@@ -223,15 +286,16 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
          obj.at( iTrigObj ).unpackFilterLabels(iEvent,*triggerResults );
       }
       for ( size_t i = 0; i < obj.size(); ++i ) {
-         if ( obj.at( i ).hasFilterLabel( "hltSingleMu13L3Filtered17"))
-         HLTMatch=true;
-         if ( obj.at( i ).hasFilterLabel( "hltSingleMu13L3Filtered13") && obj.at(i).pt()>17)
-         HLTMatch=true;
-         if ( obj.at( i ).hasFilterLabel( "hltDiMuonL3PreFiltered5") && obj.at(i).pt()>17)
-         HLTMatch=true;
-         if ( obj.at( i ).hasFilterLabel( "hltDiMuonL3PreFiltered7") && obj.at(i).pt()>17)
-         HLTMatch=true;
+	 for (size_t j = 0; j < HLTPaths_.size(); j++) {
+	    if (obj.at( i ).hasFilterLabel( muHLTFilters_[j] )) {
+		HLTMatch=true;
+		l.addUserFloat(muHLTPaths_[j],true);
+	    }
+	    else
+		l.addUserFloat(muHLTPaths_[j],false);
+	 }
       }
+
       
       //--- Muon Timing
       float muontime = 0;
