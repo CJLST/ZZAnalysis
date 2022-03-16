@@ -607,7 +607,7 @@ process.fsrPhotons = cms.EDProducer("PhotonFiller",
     electronSrc = cms.InputTag("cleanSoftElectrons"),
     sampleType = cms.int32(SAMPLE_TYPE),
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
-    photonSel = cms.string(FSRMODE)  # "skip", "passThrough", "Legacy", "RunII"
+    photonSel = cms.string(FSRMODE)  # "skip", "passThrough", "RunII"
 )
 
 import PhysicsTools.PatAlgos.producersLayer1.pfParticleProducer_cfi
@@ -621,7 +621,7 @@ process.appendPhotons = cms.EDProducer("LeptonPhotonMatcher",
     photonSrc = cms.InputTag("boostedFsrPhotons"),
     sampleType = cms.int32(SAMPLE_TYPE),
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
-    photonSel = cms.string(FSRMODE),  # "skip", "passThrough", "Legacy", "RunII"
+    photonSel = cms.string(FSRMODE),  # "skip", "passThrough", "RunII"
     muon_iso_cut = cms.double(MUISOCUT),
     electron_iso_cut = cms.double(ELEISOCUT),
     debug = cms.untracked.bool(False),
@@ -671,16 +671,6 @@ BESTZ_AMONG = ( Z1PRESEL + "&& userFloat('d0.passCombRelIsoPFFSRCorr') && userFl
 
 TWOGOODISOLEPTONS = ( TWOGOODLEPTONS + "&& userFloat('d0.passCombRelIsoPFFSRCorr') && userFloat('d1.passCombRelIsoPFFSRCorr')" )
 
-# Cut to filter out unneeded ll combinations as upstream as possible
-if KEEPLOOSECOMB:
-    KEEPLOOSECOMB_CUT = 'mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId())' # Propagate also combinations of loose leptons (for debugging); just require same-flavour
-else:
-    if FSRMODE == "RunII" : # Just keep combinations of tight leptons (passing ID, SIP and ISO)
-        KEEPLOOSECOMB_CUT = "mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId()) && daughter(0).masterClone.userFloat('isGood') && daughter(1).masterClone.userFloat('isGood') && daughter(0).masterClone.userFloat('passCombRelIsoPFFSRCorr') &&  daughter(1).masterClone.userFloat('passCombRelIsoPFFSRCorr')"
-    else :
-        print "KEEPLOOSECOMB == False && FSRMODE =! RunII", FSRMODE, "is no longer supported"
-        sys.exit()
-
 ### ----------------------------------------------------------------------
 ### Dileptons (Z->ee, Z->mm)
 ### ----------------------------------------------------------------------
@@ -688,17 +678,16 @@ else:
 # l+l- (SFOS, both e and mu)
 process.bareZCand = cms.EDProducer("PATCandViewShallowCloneCombiner",
     decay = cms.string('softLeptons@+ softLeptons@-'),
-    cut = cms.string(KEEPLOOSECOMB_CUT), # see below
+    cut = cms.string("True"), # see below
     checkCharge = cms.bool(True)
 )
-
 
 if KEEPLOOSECOMB:
     process.bareZCand.cut = cms.string('mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId())') # Propagate also combinations of loose leptons (for debugging)
 else:
     if FSRMODE == "RunII" : # Just keep combinations of tight leptons (passing ID, SIP and ISO)
         process.bareZCand.cut = cms.string("mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId()) && daughter(0).masterClone.userFloat('isGood') && daughter(1).masterClone.userFloat('isGood') && daughter(0).masterClone.userFloat('passCombRelIsoPFFSRCorr') &&  daughter(1).masterClone.userFloat('passCombRelIsoPFFSRCorr')")
-    else : # Just keep combinations of tight leptons (passing ID and SIP; iso cannot be required at this point, with the legacy FSR logic)
+    else : # Just keep combinations of tight leptons (passing ID and SIP; iso cannot be required at this point if FSRMode is "skip")
         process.bareZCand.cut = cms.string("mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId()) && daughter(0).masterClone.userFloat('isGood') && daughter(1).masterClone.userFloat('isGood')")
 
 process.ZCand = cms.EDProducer("ZCandidateFiller",
@@ -706,7 +695,7 @@ process.ZCand = cms.EDProducer("ZCandidateFiller",
     sampleType = cms.int32(SAMPLE_TYPE),
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
     bestZAmong = cms.string(BESTZ_AMONG),
-    FSRMode = cms.string(FSRMODE), # "skip", "Legacy", "RunII"
+    FSRMode = cms.string(FSRMODE), # "skip", "RunII"
     flags = cms.PSet(
         GoodLeptons = cms.string(ZLEPTONSEL),
         GoodIsoLeptons = cms.string(TWOGOODISOLEPTONS),
@@ -727,7 +716,7 @@ process.LLCand = cms.EDProducer("ZCandidateFiller",
     sampleType = cms.int32(SAMPLE_TYPE),
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
     bestZAmong = cms.string(BESTZ_AMONG),
-    FSRMode = cms.string(FSRMODE), # "skip", "Legacy", "RunII"
+    FSRMode = cms.string(FSRMODE), # "skip", "RunII"
     flags = cms.PSet(
         GoodLeptons = cms.string(ZLEPTONSEL),
         Z1Presel = cms.string(Z1PRESEL),
@@ -883,10 +872,6 @@ LLLLPRESEL = NOGHOST4l # Just suppress candidates with overlapping leptons
 
 
 # ZZ Candidates
-if FSRMODE == "Legacy":
-    print "\nERROR: FSRMODE=Legacy is no longer supported. Aborting...\n"
-    exit(1)
-
 
 process.bareZZCand= cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string('ZCand ZCand'),
@@ -1574,13 +1559,10 @@ process.cleanJets = cms.EDProducer("JetsWithLeptonsRemover",
                                    ElectronPreselection = cms.string("userFloat('isGood')"),
                                    DiBosonPreselection  = cms.string(""),
                                    MatchingType = cms.string("byDeltaR"),
-                                   cleanFSRFromLeptons = cms.bool(True),
+                                   cleanFSRFromLeptons = cms.bool(True), # FIXME this looks like a duplicate feature in the module.
                                    DebugPlots = cms.untracked.bool(False),
                                    DebugPrintOuts = cms.untracked.bool(False)
                                    )
-
-if FSRMODE=="Legacy" :
-    process.cleanJets.cleanFSRFromLeptons = False
 
 
 ### ----------------------------------------------------------------------

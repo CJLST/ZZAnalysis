@@ -74,7 +74,7 @@ PhotonFiller::PhotonFiller(const edm::ParameterSet& iConfig) :
   
   if      (mode == "skip")        selectionMode = 0; // no FSR
   else if (mode == "passThrough") selectionMode = 1; // for debug
-  else if (mode == "Legacy")      selectionMode = 2;
+  // "Legacy" Run I mode (2) is no longer supported.
   else if (mode == "RunII")       selectionMode = 3;
   else {
     cout << "PhotonFiller: mode " << mode << " not supported" << endl;
