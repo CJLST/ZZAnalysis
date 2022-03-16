@@ -64,7 +64,7 @@ ZCandidateFiller::ZCandidateFiller(const edm::ParameterSet& iConfig) :
   
   string mode = iConfig.getParameter<string>("FSRMode");
   if      (mode == "skip")   FSRMode = 0;
-  else if (mode == "Legacy") FSRMode = 1;
+  // "Legacy" Run I mode (1) is no longer supported.
   else if (mode == "RunII")  FSRMode = 2;
   else {
     cout << "ZCandidateFiller: FSRMode " << FSRMode << " not supported" << endl;
@@ -119,74 +119,7 @@ ZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     // ------------------------------
     // FSR recovery
     // ------------------------------
-
-    if (FSRMode==1) { // Legacy
-      //loop on the 2 daughters; apply mass cuts on (llg) and store 
-      // the highest-pT and the lowest-DR assocated gamma.
-      double    maxPT = -1.;
-      double    minDR = 9999.;
-      const pat::PFParticle* maxPTg=0;
-      const pat::PFParticle* minDRg=0;
-      int maxPTgLep=-1; // Index of daughter to which the above photons
-      int minDRgLep=-1; // are associated
-
-      for (int dauIdx=0; dauIdx<2; ++dauIdx) { 
-        const Candidate* d = myCand.daughter(dauIdx);
-        const PhotonPtrVector* gammas = userdatahelpers::getUserPhotons(d);
-        if (gammas==0) continue;
-        for (PhotonPtrVector::const_iterator g = gammas->begin();
-             g!= gammas->end(); ++g) {
-          const pat::PFParticle* gamma = g->get();
-          reco::Candidate::LorentzVector p4G = gamma->p4();
-          reco::Candidate::LorentzVector p4LL = myCand.p4();
-          double mLLG = (p4LL + p4G).M();
-          bool movesToZPeak = (fabs(mLLG-ZmassValue) < fabs(myCand.mass()-ZmassValue));
-          if (movesToZPeak && mLLG<100. && mLLG>4) { // Mass cuts (4 is implicit)
-
-            double pt = gamma->pt();
-            if (pt>maxPT) {
-              maxPT  = pt;
-              maxPTg = gamma;
-              maxPTgLep = dauIdx;
-            }
-
-            double dR = ROOT::Math::VectorUtil::DeltaR(gamma->momentum(),d->momentum());
-            if (dR<minDR) {
-              minDR  = dR;
-              minDRg = gamma;
-              minDRgLep = dauIdx;
-            }
-          }
-        } // end loop on photons
-      } // end loop on daughters (leptons)
-    
-      // Define the selected FSR photon.
-      const pat::PFParticle* fsr=0;    
-      int lepWithFsr=-1; 
-      if (maxPTg!=0) { // at least 1 photon selected
-        if (maxPT>4) { // First case: take highest-pT
-          fsr=maxPTg;
-          lepWithFsr=maxPTgLep;
-        } else {
-          fsr=minDRg;
-          lepWithFsr=minDRgLep;
-        }
-      }
-
-      myCand.addUserFloat("dauWithFSR",lepWithFsr); // Index of the cand daughter with associated FSR photon //FIXME must be removed
-
-      if (fsr!=0) {
-        // Add daughter and set p4.
-        myCand.addUserFloat("mll",myCand.mass()); // for debug purposes
-        myCand.setP4(myCand.p4()+fsr->p4());
-        //      myCand.addDaughter(reco::ShallowCloneCandidate(fsr->masterClone()),"FSR"); //FIXME: fsr does not have a masterClone
-        pat::PFParticle myFsr(*fsr);
-        myFsr.setPdgId(22); // Fix: photons that are isFromMu have abs(pdgId)=13!!!
-        myFsr.addUserFloat("leptIdx",lepWithFsr);
-        myCand.addDaughter(myFsr,"FSR");
-      }
-
-    } else if (FSRMode==2) { // Run II
+    if (FSRMode==2) { // Run II
       float mll = myCand.mass(); // pre-FSR mass
       for (int dauIdx=0; dauIdx<2; ++dauIdx) { 
         const Candidate* d = myCand.daughter(dauIdx);

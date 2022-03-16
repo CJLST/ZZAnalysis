@@ -61,7 +61,7 @@ SKIPPERMUTATIONS = "((daughter(0).pt>daughter(1).pt)||(!daughter(1).masterClone.
 
 process.bareZCandlooseEle = cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string('appendPhotons:electrons appendPhotons:looseElectrons'),
-    cut = cms.string(KEEPLOOSECOMB_CUT+"&&"+SKIPPERMUTATIONS),
+    cut = cms.string("mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId()) && daughter(0).masterClone.userFloat('isGood') && daughter(1).masterClone.userFloat('isGood') && daughter(0).masterClone.userFloat('passCombRelIsoPFFSRCorr') &&  daughter(1).masterClone.userFloat('passCombRelIsoPFFSRCorr') &&"+SKIPPERMUTATIONS),
     checkCharge = cms.bool(False)
 )
 
@@ -74,7 +74,7 @@ process.ZCandlooseEle = cms.EDProducer("ZCandidateFiller",
     sampleType = cms.int32(SAMPLE_TYPE),
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
     bestZAmong = cms.string(BESTZ_AMONG),
-    FSRMode = cms.string(FSRMODE), # "skip", "Legacy", "RunII"
+    FSRMode = cms.string(FSRMODE), # "skip", "RunII"
     flags = cms.PSet(
         GoodLeptons = cms.string(ZLEPTONSEL),
         Z1Presel = cms.string(Z1PRESEL),
@@ -213,7 +213,7 @@ process.LLCandlooseEle = cms.EDProducer("ZCandidateFiller",
     sampleType = cms.int32(SAMPLE_TYPE),                     
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
     bestZAmong = cms.string(BESTZ_AMONG),
-    FSRMode = cms.string(FSRMODE), # "skip", "Legacy", "RunII"
+    FSRMode = cms.string(FSRMODE), # "skip", "RunII"
     flags = cms.PSet(
         GoodLeptons = cms.string(ZLEPTONSEL),
         Z1Presel = cms.string(Z1PRESEL),

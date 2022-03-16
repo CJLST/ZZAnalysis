@@ -222,8 +222,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   vector<reco::CandidatePtr> goodisoleptonPtrs;
   for( View<reco::Candidate>::const_iterator lep = softleptoncoll->begin(); lep != softleptoncoll->end(); ++ lep ){
     if((bool)userdatahelpers::getUserFloat(&*lep,"isGood")
-       //       && (bool)userdatahelpers::getUserFloat(&*lep,"isIsoFSRUncorr") // with old FSR strategy
-       && (bool)userdatahelpers::getUserFloat(&*lep,"passCombRelIsoPFFSRCorr") // with new FSR strategy
+       && (bool)userdatahelpers::getUserFloat(&*lep,"passCombRelIsoPFFSRCorr") // FSR-corrected iso
        ){
       const reco::CandidatePtr lepPtr(softleptoncoll,lep-softleptoncoll->begin());
       goodisoleptonPtrs.push_back(lepPtr);
