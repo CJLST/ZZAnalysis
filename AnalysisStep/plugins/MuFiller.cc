@@ -286,7 +286,7 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
          obj.at( iTrigObj ).unpackFilterLabels(iEvent,*triggerResults );
       }
       for ( size_t i = 0; i < obj.size(); ++i ) {
-	 for (size_t j = 0; j < HLTPaths_.size(); j++) {
+	 for (size_t j = 0; j < muHLTPaths_.size(); j++) {
 	    if (obj.at( i ).hasFilterLabel( muHLTFilters_[j] )) {
 		HLTMatch=true;
 		l.addUserFloat(muHLTPaths_[j],true);

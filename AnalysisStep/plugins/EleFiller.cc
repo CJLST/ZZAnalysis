@@ -103,7 +103,7 @@ EleFiller::EleFiller(const edm::ParameterSet& iConfig) :
 	}
         eleFilters_ =
         {
-	"hltEle23Ele12CaloIdLTrackIdLIsoVLTrackIsoLeg1Filter","hltEle23Ele12CaloIdLTrackIdLIsoVLTrackIsoLeg2Filter",
+	"hltEle23Ele12CaloIdLTrackIdLIsoVLTrackIsoLeg",//"hltEle23Ele12CaloIdLTrackIdLIsoVLTrackIsoLeg2Filter",
 	"hltDiEle33CaloIdLMWPMS2UnseededFilter",
 	"hltEle35noerWPTightGsfTrackIsoFilter",
 	"hltEle38noerWPTightGsfTrackIsoFilter",
@@ -120,7 +120,7 @@ EleFiller::EleFiller(const edm::ParameterSet& iConfig) :
 	}
         eleFilters_ =
         {
-	"hltEle23Ele12CaloIdLTrackIdLIsoVLTrackIsoLeg1Filter","hltEle23Ele12CaloIdLTrackIdLIsoVLTrackIsoLeg2Filter",
+	"hltEle23Ele12CaloIdLTrackIdLIsoVLTrackIsoLeg",//"hltEle23Ele12CaloIdLTrackIdLIsoVLTrackIsoLeg2Filter",
 	"hltDiEle25CaloIdLMWPMS2UnseededFilter",
 	"hltEle32noerWPTightGsfTrackIsoFilter",
         };
@@ -241,13 +241,23 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
        obj.at( iTrigObj ).unpackFilterLabels(iEvent,*triggerResults );
     }
     for ( size_t i = 0; i < obj.size(); ++i ) {
-         for (size_t j = 0; j < HLTPaths_.size(); ++j ) {
-            if (obj.at( i ).hasFilterLabel( eleHLTFilters_[j] )) {
-                HLTMatch=true;
-                l.addUserFloat(eleHLTPaths_[j],true);
-            }
-            else
-                l.addUserFloat(eleHLTPaths_[j],false);
+         for (size_t j = 0; j < eleHLTPaths_.size(); ++j ) {
+	    if (eleHLTPaths_[j] == "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*") {
+		if (obj.at( i ).hasFilterLabel( eleHLTFilters_[j]+"1Filter" ) || obj.at( i ).hasFilterLabel( eleHLTFilters_[j]+"2Filter" )) {
+		    HLTMatch=true;
+		    l.addUserFloat(eleHLTPaths_[j],true);
+		}
+		else
+		    l.addUserFloat(eleHLTPaths_[j],false);
+	    }
+	    else {
+                if (obj.at( i ).hasFilterLabel( eleHLTFilters_[j] )) {
+                    HLTMatch=true;
+                    l.addUserFloat(eleHLTPaths_[j],true);
+                }
+                else
+                    l.addUserFloat(eleHLTPaths_[j],false);
+	    }
          }
       }
 
