@@ -181,22 +181,26 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       double dRMin(10e9);
       const reco::Candidate* closestLep = 0;
 
-      // Loop over pat::Muon
-      for (unsigned int j = 0; j< muonHandle->size(); ++j){
-        //      const pat::Muon* m = ((*muonHandle)[j]).get();
-        const pat::Muon* m = &((*muonHandle)[j]);
-        if (! m->userFloat("isSIP")) continue;
-        double dR = ROOT::Math::VectorUtil::DeltaR(m->momentum(),g->momentum());
-        if(debug) cout << "muon pt = " << m->pt() << " photon pt = " << g->pt() << " dR = " << dR << endl;
-        if (dR>0.5) continue;
-        if (dR<dRMin) {
-          dRMin = dR;
-          closestLep = m;
-        }
-      }//end loop over muon collection
-
       //---------------------
-      // Loop over pat::Electron
+      // Loop over pat::Muon. We consider only photons in the muon eta range (|eta|<2.4)
+      //---------------------
+      if (fabs(g->eta())<2.4) {
+        for (unsigned int j = 0; j< muonHandle->size(); ++j){
+          //      const pat::Muon* m = ((*muonHandle)[j]).get();
+          const pat::Muon* m = &((*muonHandle)[j]);
+          if (! m->userFloat("isSIP")) continue;
+          double dR = ROOT::Math::VectorUtil::DeltaR(m->momentum(),g->momentum());
+          if(debug) cout << "muon pt = " << m->pt() << " photon pt = " << g->pt() << " dR = " << dR << endl;
+          if (dR>0.5) continue;
+          if (dR<dRMin) {
+            dRMin = dR;
+            closestLep = m;
+          }
+        }//end loop over muon collection
+      }
+      
+      //---------------------
+      // Loop over pat::Electron (keeping all preselected photons up to |eta|<2.5)
       //---------------------
       for (unsigned int j = 0; j< electronHandle->size(); ++j){
         //      const pat::Electron* e = ((*electronHandle)[j]).get();

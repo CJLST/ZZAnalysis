@@ -114,8 +114,8 @@ PhotonFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       // We only want photons
       if (g->pdgId()!=22) continue;
 
-      // Photon preselection (is currently already applied on pat::PackedCandidate collection)
-      if (!(g->pt()>2. && fabs(g->eta())<2.4)) continue;
+      // Photon preselection
+      if (!(g->pt()>2. && fabs(g->eta())<2.5)) continue;
 
       //---------------------
       // // Supercluster veto
@@ -125,28 +125,17 @@ PhotonFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       if (electronHandle->size()>0) {
         for (unsigned int j = 0; j< electronHandle->size(); ++j){
           const pat::Electron* e = &((*electronHandle)[j]);
-          if (e->userFloat("isSIP")){
-            if (setup>=2016) {
-              if ((e->associatedPackedPFCandidates()).size()) {
-    	        edm::RefVector < pat::PackedCandidateCollection > pfcands = e->associatedPackedPFCandidates();
-    	        for ( auto itr: pfcands ) {
-                  if (g.get()==&(*itr)) {
-      	            SCVeto=true; 
-      	            if (debug) cout << "SC veto: " << itr->eta() << " " << itr->phi() << "   " 
-      	                	    << fabs(g->eta() - itr->eta()) << " " << reco::deltaPhi(g->phi(), itr->phi()) <<endl;
-      	            break;
-      	          }  
-                }
-              }
-            } else {
-      	      double dR = reco::deltaR(*(e->superCluster()), *g);
-              if ((fabs(g->eta() - e->superCluster()->eta())<0.05 && fabs(reco::deltaPhi(g->phi(), e->superCluster()->phi()))<2.) || dR<0.15) {
-    	        SCVeto=true;
-    	        if (debug) cout << "SC veto: "<< g->pt() << " " << e->pt() << " " << dR << " "
-    	  		        << fabs(g->eta() - e->superCluster()->eta()) << " " << reco::deltaPhi(g->phi(), e->superCluster()->phi()) <<endl;
-    	        break;
-    	      } 
-    	    }
+//          if (! e->userFloat("isSIP")) continue; // uncomment to skip non-prompt electrons from veto (as done up to HIG-19-001)
+	  if ((e->associatedPackedPFCandidates()).size()) {
+	    edm::RefVector < pat::PackedCandidateCollection > pfcands = e->associatedPackedPFCandidates();
+	    for ( auto itr: pfcands ) {
+	      if (g.get()==&(*itr)) {
+		SCVeto=true; 
+		if (debug) cout << "SC veto: " << itr->eta() << " " << itr->phi() << "   " 
+				<< fabs(g->eta() - itr->eta()) << " " << reco::deltaPhi(g->phi(), itr->phi()) <<endl;
+		break;
+	      }
+	    }
     	  }  
         }
       }
