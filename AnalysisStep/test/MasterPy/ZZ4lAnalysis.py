@@ -604,7 +604,7 @@ if(IsMC):
 
 # Create a photon collection; cfg extracted from "UFHZZAnalysisRun2.FSRPhotons.fsrPhotons_cff"
 process.fsrPhotons = cms.EDProducer("PhotonFiller",
-    electronSrc = cms.InputTag("cleanSoftElectrons"),
+    electronSrc = cms.InputTag("slimmedElectrons"),
     sampleType = cms.int32(SAMPLE_TYPE),
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
     photonSel = cms.string(FSRMODE)  # "skip", "passThrough", "RunII"
