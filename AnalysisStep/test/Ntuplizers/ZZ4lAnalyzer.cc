@@ -473,12 +473,13 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
 
     PUweight = pileUpReweight->weight(nTrueInt);
 
+    // These plots are intended to cross-check the PU reweighting procedure, 
+    // by comparison of the PU-reweighted and original distributions.
     hNvtxWeight->Fill(Nvtx,PUweight);
-    hNTrueIntWeight->Fill(nTrueInt,genHEPMCweight);
+    hNTrueIntWeight->Fill(nTrueInt,PUweight);
     hRhoWeight->Fill(*rhoHandle,PUweight);
 
   }
-
   hNvtxNoWeight->Fill(Nvtx);
   hNTrueIntNoWeight->Fill(nTrueInt);
   hRhoNoWeight->Fill(*rhoHandle);
