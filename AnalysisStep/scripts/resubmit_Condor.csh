@@ -29,6 +29,15 @@ set JOBNAME=`basename $PWD`
 set queue=' -queue directory in'
 
 foreach x (*Chunk*)
+ set nonomatch
+ set logFile = ( ${x}/log/*.log )
+ if ( -e $logFile[1] ) then
+    echo "\n${x}: job already submitted. If you want to resubmit, ensure all jobs are finished and run cleanup.csh.\nAborting."
+    exit 1
+ endif
+ unset nonomatch
+
+
  set queue="$queue $x"
 end
 

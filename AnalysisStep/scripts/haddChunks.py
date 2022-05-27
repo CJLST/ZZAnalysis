@@ -23,8 +23,16 @@ if __name__ == '__main__':
     parser.add_option("-c","--clean", dest="clean",
                       default=False,action="store_true",
                       help="move chunks to Chunks/ after processing.")
+    parser.add_option("-d","--destdir", dest="destdir",
+                      default=None,
+                      help="write to a destination directpory")
 
     (options,args) = parser.parse_args()
+
+    if options.destdir != None:
+        import click
+        if not click.confirm('Output will be written to '+options.destdir+'\nDo you want to continue?', default=True) :
+            sys.exit(0)
 
     if len(args)!=1:
         print 'provide exactly one directory in argument.'
@@ -32,5 +40,8 @@ if __name__ == '__main__':
 
     dir = args[0]
 
-    haddChunks(dir, options.remove, options.clean)
+
+
+
+    haddChunks(dir, options.remove, options.clean, options.destdir)
 

@@ -44,7 +44,7 @@ git clone https://github.com/MELALabs/MelaAnalytics.git
 
 #Common LHE tools
 git clone https://github.com/usarica/CommonLHETools.git
-(cd CommonLHETools; git checkout -b from-v135 v1.3.5)
+(cd CommonLHETools; git checkout -b from-v141 v1.4.1)
 
 #MELA
 git clone https://github.com/JHUGen/JHUGenMELA.git JHUGenMELA
