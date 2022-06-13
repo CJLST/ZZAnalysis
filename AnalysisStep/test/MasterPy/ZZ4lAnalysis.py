@@ -1188,7 +1188,7 @@ process.dressedJets = cms.EDProducer("JetFiller",
     sampleType = cms.int32(SAMPLE_TYPE),
     setup = cms.int32(LEPTON_SETUP),
     ## Moving pt>20 to pt>30 as we use these jets
-    cut = cms.string("pt>30 && abs(eta)<4.7 && userFloat('JetID') && (userFloat('PUjetID') || userFloat('pt_JEC_noJER')>50)"),
+    cut = cms.string("pt>20 && abs(eta)<4.7 && userFloat('JetID') && (userFloat('PUjetID') || userFloat('pt_JEC_noJER')>50)"),
     isMC = cms.bool(IsMC),
     bTaggerName = cms.string(theBTagger),
     bTaggerThreshold = cms.double(theBTaggerThr),
