@@ -110,7 +110,7 @@ LeptonPhotonMatcher::LeptonPhotonMatcher(const edm::ParameterSet& iConfig) :
   
   if      (mode == "skip")        selectionMode = 0; // no FSR
   else if (mode == "passThrough") selectionMode = 1; // for debug
-  else if (mode == "Legacy")      selectionMode = 2;
+  // "Legacy" Run I mode (2) is no longer supported.
   else if (mode == "RunII")       selectionMode = 3;
   else {
     cout << "LeptonPhotonMatcher: mode " << mode << " not supported" << endl;
@@ -181,22 +181,26 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       double dRMin(10e9);
       const reco::Candidate* closestLep = 0;
 
-      // Loop over pat::Muon
-      for (unsigned int j = 0; j< muonHandle->size(); ++j){
-        //      const pat::Muon* m = ((*muonHandle)[j]).get();
-        const pat::Muon* m = &((*muonHandle)[j]);
-        if (! m->userFloat("isSIP")) continue;
-        double dR = ROOT::Math::VectorUtil::DeltaR(m->momentum(),g->momentum());
-        if(debug) cout << "muon pt = " << m->pt() << " photon pt = " << g->pt() << " dR = " << dR << endl;
-        if (dR>0.5) continue;
-        if (dR<dRMin) {
-          dRMin = dR;
-          closestLep = m;
-        }
-      }//end loop over muon collection
-
       //---------------------
-      // Loop over pat::Electron
+      // Loop over pat::Muon. We consider only photons in the muon eta range (|eta|<2.4)
+      //---------------------
+      if (fabs(g->eta())<2.4) {
+        for (unsigned int j = 0; j< muonHandle->size(); ++j){
+          //      const pat::Muon* m = ((*muonHandle)[j]).get();
+          const pat::Muon* m = &((*muonHandle)[j]);
+          if (! m->userFloat("isSIP")) continue;
+          double dR = ROOT::Math::VectorUtil::DeltaR(m->momentum(),g->momentum());
+          if(debug) cout << "muon pt = " << m->pt() << " photon pt = " << g->pt() << " dR = " << dR << endl;
+          if (dR>0.5) continue;
+          if (dR<dRMin) {
+            dRMin = dR;
+            closestLep = m;
+          }
+        }//end loop over muon collection
+      }
+      
+      //---------------------
+      // Loop over pat::Electron (keeping all preselected photons up to |eta|<2.5)
       //---------------------
       for (unsigned int j = 0; j< electronHandle->size(); ++j){
         //      const pat::Electron* e = ((*electronHandle)[j]).get();
@@ -242,17 +246,6 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
             LeptonIsoHelper::fsrIso(&(*g), pfCands, neu, chg, chgByWorstPV);
             gRelIso = (neu + chg)/pT;
             if (gRelIso<1.8) accept = true;
-          }
-        } else if (selectionMode==2) { // Legacy
-          if( dRMin<0.07 ){
-            if (g->pt()>2.) accept = true;
-          } else if (g->pt()>4 && dRMin<0.5 ){ // DR<0.5 is implicit, but does not hurt
-            // double relIso = g->relIso(0.5); // This is buggy, needs to recompute it.
-            LeptonIsoHelper::fsrIso(&(*g), pfCands, neu, chg, chgByWorstPV);
-            gRelIso = (neu + chg)/g->pt();
-            // For collections where this is precomputed
-            // double gRelIso2 = (g->userFloat("fsrPhotonPFIsoChHadPUNoPU03pt02") + g->userFloat("fsrPhotonPFIsoNHadPhoton03")) / g->pt();
-            if (gRelIso<1.) accept = true;
           }
         }
 

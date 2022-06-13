@@ -12,7 +12,7 @@ process = cms.Process("ZZ")
 declareDefault("IsMC", True, globals())
 
 # Set of effective areas, rho corrections, etc. (can be 2011, 2012, 2015 or 2016)
-declareDefault("LEPTON_SETUP", 2016, globals())
+declareDefault("LEPTON_SETUP", 2018, globals())
 
 # Flag that reflects the actual sqrts of the sample (can be 2011, 2012, 2015 or 2016)
 # Can differ from SAMPLE_TYPE for samples that are rescaled to a different sqrts.
@@ -63,6 +63,10 @@ declareDefault("ADDLOOSEELE", False, globals())
 
 # Activate trigger paths in MC; note that for 2016, only reHLT samples have the correct triggers!!!
 declareDefault("APPLYTRIG", True, globals())
+
+# Set to True to re-activate the now-deprecated PATMuonCleanerBySegments
+UseMuonCleanerBySegments = False 
+
 
 # CMSSW version 8X or 9X
 CMSSW_VERSION = os.environ['CMSSW_VERSION']
@@ -314,11 +318,11 @@ if(IsMC):
 ### ----------------------------------------------------------------------
 ### ----------------------------------------------------------------------
 
-SIP =  "userFloat('SIP') < 4"
-#GOODMUON = "(userFloat('ID') || (userFloat('isTrackerHighPtMuon') && pt>200)) && " + SIP //used when MVA is applied
+DXY_DZ = "abs(dB('PV2D'))<0.5 && abs(dB('PVDZ'))<1." #dxy, dz cuts
+SIP =  "abs(dB('PV3D')/edB('PV3D')) < 4"
 GOODELECTRON = "userFloat('ID') && " + SIP
 GOODMUON     = "userFloat('ID') && " + SIP
-TIGHTMUON    = "userFloat('isPFMuon') || (userFloat('isTrackerHighPtMuon') && pt>200)"
+TIGHTMUON    = "isPFMuon || (passed('CutBasedIdTrkHighPt') && pt>200)"
 
 #------- MUONS -------
 
@@ -360,20 +364,12 @@ else:
         print "APPLYMUCORR not configured for LEPTON_SETUP =", LEPTON_SETUP
         sys.exit()
 
-#--- Mu Ghost cleaning
-process.cleanedMu = cms.EDProducer("PATMuonCleanerBySegments",
-                                   src = cms.InputTag("calibratedMuons"),
-                                   preselection = cms.string("track.isNonnull"),
-                                   passthrough = cms.string("isGlobalMuon && numberOfMatches >= 2"),
-                                   fractionOfSharedSegments = cms.double(0.499))
-
 
 process.bareSoftMuons = cms.EDFilter("PATMuonRefSelector",
-    src = cms.InputTag("cleanedMu"),
-    cut = cms.string("pt>5 && abs(eta)<2.4 && (isGlobalMuon || (isTrackerMuon && numberOfMatches>0)) && muonBestTrackType!=2")
+    src = cms.InputTag("calibratedMuons"),
+    cut = cms.string("pt>5 && abs(eta)<2.4 && (isGlobalMuon || (isTrackerMuon && numberOfMatchedStations>0))")
 #    Lowering pT cuts
-#    cut = cms.string("(isGlobalMuon || (isTrackerMuon && numberOfMatches>0)) &&" +
-#                     "pt>3 && p>3.5 && abs(eta)<2.4")
+#    cut = cms.string("(isGlobalMuon || (isTrackerMuon && numberOfMatchedStations>0)) && pt>3 && p>3.5 && abs(eta)<2.4")
 )
 
 
@@ -394,7 +390,7 @@ process.softMuons = cms.EDProducer("MuFiller",
     src = cms.InputTag("bareSoftMuons"),
     sampleType = cms.int32(SAMPLE_TYPE),
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
-    cut = cms.string("userFloat('dxy')<0.5 && userFloat('dz')<1."),
+    cut = cms.string(DXY_DZ), #dxy, dz cuts
     TriggerResults = cms.InputTag('TriggerResults','','HLT'),
     flags = cms.PSet(
         ID = cms.string(TIGHTMUON), #"userFloat('isBDT')"), # muonMVA ID
@@ -405,15 +401,24 @@ process.softMuons = cms.EDProducer("MuFiller",
     )
 )
 
+process.muons =  cms.Sequence(process.calibratedMuons + process.bareSoftMuons + process.softMuons)
 
-if APPLYMUCORR :
-    process.muons =  cms.Sequence(process.calibratedMuons + process.cleanedMu + process.bareSoftMuons + process.softMuons)
-else:
-    process.cleanedMu.src = cms.InputTag("slimmedMuons")
-    process.muons =  cms.Sequence(process.cleanedMu + process.bareSoftMuons + process.softMuons)
-
+if not APPLYMUCORR :
+    process.muons.replace(process.calibratedMuons, None)
+    process.bareSoftMuons.src = cms.InputTag("slimmedMuons")
 
 
+#--- Derecated muon cleaner; keep this option for future reference. 
+if UseMuonCleanerBySegments:
+    process.cleanedMu = cms.EDProducer("PATMuonCleanerBySegments",
+                                       src = cms.InputTag("calibratedMuons"),
+                                       preselection = cms.string("track.isNonnull"),
+                                       passthrough = cms.string("isGlobalMuon && numberOfMatches >= 2"),
+                                       fractionOfSharedSegments = cms.double(0.499))
+    process.muons.replace(process.bareSoftMuons,cms.Sequence(process.cleanedMu+process.bareSoftMuons))    
+    process.bareSoftMuons.src = "cleanedMu"
+    if not APPLYMUCORR:
+        process.cleanedMu.src = "slimmedMuons"
 
 #------- ELECTRONS -------
 
@@ -457,7 +462,7 @@ if (LEPTON_SETUP == 2018):
    setupEgammaPostRecoSeq(process,
                           runEnergyCorrections=True,
                           runVID=True,
-                          eleIDModules=['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Summer18UL_ID_ISO_cff','RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff'],
+                          eleIDModules=['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Summer18UL_ID_ISO_cff','RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff','RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_iso_V2_cff'],
                           phoIDModules=['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V2_cff'],
                           era='2018-UL')
 
@@ -471,7 +476,7 @@ process.softElectrons = cms.EDProducer("EleFiller",
    src    = cms.InputTag("bareSoftElectrons"),
    sampleType = cms.int32(SAMPLE_TYPE),
    setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
-   cut = cms.string("pt>7 && abs(eta) < 2.5 && userFloat('dxy')<0.5 && userFloat('dz')<1"),
+   cut = cms.string("pt>7 && abs(eta) < 2.5 &&"+ DXY_DZ),
    flags = cms.PSet(
         ID = cms.string("userFloat('isBDT')"),
         isSIP = cms.string(SIP),
@@ -504,9 +509,6 @@ process.softPhotons = cms.EDProducer("Philler",
         ID = cms.string("userFloat('isBDT')"),
         isSIP = cms.string(SIP),
         isGood = cms.string(GOODELECTRON),
-        pass_lepton_ID = cms.string("userFloat('isBDT')"),
-        pass_lepton_SIP = cms.string(SIP),
-#        isIsoFSRUncorr  = cms.string("userFloat('combRelIsoPF')<"+ELEISOCUT), #TLE isolation is not corrected for FSR gammas.
         ),
    )
 
@@ -602,10 +604,10 @@ if(IsMC):
 
 # Create a photon collection; cfg extracted from "UFHZZAnalysisRun2.FSRPhotons.fsrPhotons_cff"
 process.fsrPhotons = cms.EDProducer("PhotonFiller",
-    electronSrc = cms.InputTag("cleanSoftElectrons"),
+    electronSrc = cms.InputTag("slimmedElectrons"),
     sampleType = cms.int32(SAMPLE_TYPE),
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
-    photonSel = cms.string(FSRMODE)  # "skip", "passThrough", "Legacy", "RunII"
+    photonSel = cms.string(FSRMODE)  # "skip", "passThrough", "RunII"
 )
 
 import PhysicsTools.PatAlgos.producersLayer1.pfParticleProducer_cfi
@@ -619,7 +621,7 @@ process.appendPhotons = cms.EDProducer("LeptonPhotonMatcher",
     photonSrc = cms.InputTag("boostedFsrPhotons"),
     sampleType = cms.int32(SAMPLE_TYPE),
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
-    photonSel = cms.string(FSRMODE),  # "skip", "passThrough", "Legacy", "RunII"
+    photonSel = cms.string(FSRMODE),  # "skip", "passThrough", "RunII"
     muon_iso_cut = cms.double(MUISOCUT),
     electron_iso_cut = cms.double(ELEISOCUT),
     debug = cms.untracked.bool(False),
@@ -669,16 +671,6 @@ BESTZ_AMONG = ( Z1PRESEL + "&& userFloat('d0.passCombRelIsoPFFSRCorr') && userFl
 
 TWOGOODISOLEPTONS = ( TWOGOODLEPTONS + "&& userFloat('d0.passCombRelIsoPFFSRCorr') && userFloat('d1.passCombRelIsoPFFSRCorr')" )
 
-# Cut to filter out unneeded ll combinations as upstream as possible
-if KEEPLOOSECOMB:
-    KEEPLOOSECOMB_CUT = 'mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId())' # Propagate also combinations of loose leptons (for debugging); just require same-flavour
-else:
-    if FSRMODE == "RunII" : # Just keep combinations of tight leptons (passing ID, SIP and ISO)
-        KEEPLOOSECOMB_CUT = "mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId()) && daughter(0).masterClone.userFloat('isGood') && daughter(1).masterClone.userFloat('isGood') && daughter(0).masterClone.userFloat('passCombRelIsoPFFSRCorr') &&  daughter(1).masterClone.userFloat('passCombRelIsoPFFSRCorr')"
-    else :
-        print "KEEPLOOSECOMB == False && FSRMODE =! RunII", FSRMODE, "is no longer supported"
-        sys.exit()
-
 ### ----------------------------------------------------------------------
 ### Dileptons (Z->ee, Z->mm)
 ### ----------------------------------------------------------------------
@@ -686,17 +678,16 @@ else:
 # l+l- (SFOS, both e and mu)
 process.bareZCand = cms.EDProducer("PATCandViewShallowCloneCombiner",
     decay = cms.string('softLeptons@+ softLeptons@-'),
-    cut = cms.string(KEEPLOOSECOMB_CUT), # see below
+    cut = cms.string("True"), # see below
     checkCharge = cms.bool(True)
 )
-
 
 if KEEPLOOSECOMB:
     process.bareZCand.cut = cms.string('mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId())') # Propagate also combinations of loose leptons (for debugging)
 else:
     if FSRMODE == "RunII" : # Just keep combinations of tight leptons (passing ID, SIP and ISO)
         process.bareZCand.cut = cms.string("mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId()) && daughter(0).masterClone.userFloat('isGood') && daughter(1).masterClone.userFloat('isGood') && daughter(0).masterClone.userFloat('passCombRelIsoPFFSRCorr') &&  daughter(1).masterClone.userFloat('passCombRelIsoPFFSRCorr')")
-    else : # Just keep combinations of tight leptons (passing ID and SIP; iso cannot be required at this point, with the legacy FSR logic)
+    else : # Just keep combinations of tight leptons (passing ID and SIP; iso cannot be required at this point if FSRMode is "skip")
         process.bareZCand.cut = cms.string("mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId()) && daughter(0).masterClone.userFloat('isGood') && daughter(1).masterClone.userFloat('isGood')")
 
 process.ZCand = cms.EDProducer("ZCandidateFiller",
@@ -704,7 +695,7 @@ process.ZCand = cms.EDProducer("ZCandidateFiller",
     sampleType = cms.int32(SAMPLE_TYPE),
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
     bestZAmong = cms.string(BESTZ_AMONG),
-    FSRMode = cms.string(FSRMODE), # "skip", "Legacy", "RunII"
+    FSRMode = cms.string(FSRMODE), # "skip", "RunII"
     flags = cms.PSet(
         GoodLeptons = cms.string(ZLEPTONSEL),
         GoodIsoLeptons = cms.string(TWOGOODISOLEPTONS),
@@ -725,7 +716,7 @@ process.LLCand = cms.EDProducer("ZCandidateFiller",
     sampleType = cms.int32(SAMPLE_TYPE),
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
     bestZAmong = cms.string(BESTZ_AMONG),
-    FSRMode = cms.string(FSRMODE), # "skip", "Legacy", "RunII"
+    FSRMode = cms.string(FSRMODE), # "skip", "RunII"
     flags = cms.PSet(
         GoodLeptons = cms.string(ZLEPTONSEL),
         Z1Presel = cms.string(Z1PRESEL),
@@ -881,10 +872,6 @@ LLLLPRESEL = NOGHOST4l # Just suppress candidates with overlapping leptons
 
 
 # ZZ Candidates
-if FSRMODE == "Legacy":
-    print "\nERROR: FSRMODE=Legacy is no longer supported. Aborting...\n"
-    exit(1)
-
 
 process.bareZZCand= cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string('ZCand ZCand'),
@@ -943,8 +930,8 @@ Z2MM_SS = "daughter(1).daughter(0).pdgId()*daughter(1).daughter(1).pdgId()== 169
 Z2EE_OS = "daughter(1).daughter(0).pdgId()*daughter(1).daughter(1).pdgId()==-121" #Z2 = e+e-
 Z2EE_SS = "daughter(1).daughter(0).pdgId()*daughter(1).daughter(1).pdgId()== 121" #Z2 = e-e-/e+e+
 Z2ID    = "userFloat('d1.d0.ID')     && userFloat('d1.d1.ID')"                    #ID on LL leptons
-Z2SIP   = "userFloat('d1.d0.SIP')< 4 && userFloat('d1.d1.SIP')< 4"                #SIP on LL leptons
-CR_Z2MASS = "daughter(1).mass>4  && daughter(1).mass<120"                        #Mass on LL; cut at 4
+Z2SIP   = "userFloat('d1.d0.isSIP') && userFloat('d1.d1.isSIP')"                  #SIP on LL leptons
+CR_Z2MASS = "daughter(1).mass>4  && daughter(1).mass<120"                         #Mass on LL; cut at 4
 
 
 # Define cuts for selection of the candidates among which the best one is chosen.
@@ -1572,13 +1559,10 @@ process.cleanJets = cms.EDProducer("JetsWithLeptonsRemover",
                                    ElectronPreselection = cms.string("userFloat('isGood')"),
                                    DiBosonPreselection  = cms.string(""),
                                    MatchingType = cms.string("byDeltaR"),
-                                   cleanFSRFromLeptons = cms.bool(True),
+                                   cleanFSRFromLeptons = cms.bool(True), # FIXME this looks like a duplicate feature in the module.
                                    DebugPlots = cms.untracked.bool(False),
                                    DebugPrintOuts = cms.untracked.bool(False)
                                    )
-
-if FSRMODE=="Legacy" :
-    process.cleanJets.cleanFSRFromLeptons = False
 
 
 ### ----------------------------------------------------------------------

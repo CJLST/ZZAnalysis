@@ -105,19 +105,25 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     float combRelIsoPF = LeptonIsoHelper::combRelIsoPF(sampleType, setup, rho, l);
 
-    //--- SIP, dxy, dz
+      //--- SIP, dxy, dz. Note: The same values can be obtained in string selectors as:
+      // SIP: "abs(dB('PV3D')/edB('PV3D'))"  
+      // dxy: "abs(dB('PV2D'))"
+      // dz: "abs(dB('PVDZ'))"
     float IP      = fabs(l.dB(pat::Electron::PV3D));
     float IPError = l.edB(pat::Electron::PV3D);
     float SIP     = IP/IPError;
+    float dxy = std::abs(l.dB(pat::Electron::PV2D));
+    float dz  = std::abs(l.dB(pat::Electron::PVDZ));;
 
-    float dxy = 999.;
-    float dz  = 999.;
-    const Vertex* vertex = 0;
-    if (vertices->size()>0) {
-      vertex = &(vertices->front());
-      dxy = fabs(l.gsfTrack()->dxy(vertex->position()));
-      dz  = fabs(l.gsfTrack()->dz(vertex->position()));
-    }
+     // Non-standard dxy, dz computed using a selected PV (obsolete recipe, kept here temporaryly for reference). 
+//     float custom_dxy = 999.;
+//     float custom_dz  = 999.;
+//     const Vertex* vertex = 0;
+//     if (vertices->size()>0) {
+//       vertex = &(vertices->front());
+//       custom_dxy = fabs(l.gsfTrack()->dxy(vertex->position()));
+//       custom_dz  = fabs(l.gsfTrack()->dz(vertex->position()));
+//     }
 
 
     // Load correct RunII BDT ID+iso

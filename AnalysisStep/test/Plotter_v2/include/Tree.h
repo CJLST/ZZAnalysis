@@ -415,7 +415,6 @@ public :
    vector<short>   *JetID;
    Float_t         DiJetMass;
    Float_t         DiJetDEta;
-   Float_t         DiJetFisher;
    Short_t         nExtraLep;
    Short_t         nExtraZ;
    vector<float>   *ExtraLepPt;
@@ -913,7 +912,6 @@ public :
    TBranch        *b_JetPUID;   //!
    TBranch        *b_DiJetMass;   //!
    TBranch        *b_DiJetDEta;   //!
-   TBranch        *b_DiJetFisher;   //!
    TBranch        *b_nExtraLep;   //!
    TBranch        *b_nExtraZ;   //!
    TBranch        *b_ExtraLepPt;   //!
@@ -1508,7 +1506,6 @@ void Tree::Init(TTree *tree, TString input_file_name)
    fChain->SetBranchAddress("JetPUID", &JetPUID, &b_JetPUID);
    fChain->SetBranchAddress("DiJetMass", &DiJetMass, &b_DiJetMass);
    fChain->SetBranchAddress("DiJetDEta", &DiJetDEta, &b_DiJetDEta);
-   fChain->SetBranchAddress("DiJetFisher", &DiJetFisher, &b_DiJetFisher);
    fChain->SetBranchAddress("nExtraLep", &nExtraLep, &b_nExtraLep);
    fChain->SetBranchAddress("nExtraZ", &nExtraZ, &b_nExtraZ);
    fChain->SetBranchAddress("ExtraLepPt", &ExtraLepPt, &b_ExtraLepPt);

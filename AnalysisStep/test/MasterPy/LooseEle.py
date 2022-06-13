@@ -10,7 +10,7 @@ process.softLooseElectrons = cms.EDProducer("EleFiller",
    src    = cms.InputTag("bareSoftElectrons"),
    sampleType = cms.int32(SAMPLE_TYPE),
    setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
-   cut = cms.string("userFloat('dxy')<0.5 && userFloat('dz')<1"),# removed cut because variable is in Spring15 ID  && userFloat('missingHit')<=1"),
+   cut = cms.string(DXY_DZ),# removed cut because variable is in Spring15 ID  && userFloat('missingHit')<=1"),
    flags = cms.PSet(
         ID = cms.string("userFloat('isBDT')"),
         isSIP = cms.string(SIP_LOOSE),
@@ -61,7 +61,7 @@ SKIPPERMUTATIONS = "((daughter(0).pt>daughter(1).pt)||(!daughter(1).masterClone.
 
 process.bareZCandlooseEle = cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string('appendPhotons:electrons appendPhotons:looseElectrons'),
-    cut = cms.string(KEEPLOOSECOMB_CUT+"&&"+SKIPPERMUTATIONS),
+    cut = cms.string("mass > 0 && abs(daughter(0).pdgId())==abs(daughter(1).pdgId()) && daughter(0).masterClone.userFloat('isGood') && daughter(1).masterClone.userFloat('isGood') && daughter(0).masterClone.userFloat('passCombRelIsoPFFSRCorr') &&  daughter(1).masterClone.userFloat('passCombRelIsoPFFSRCorr') &&"+SKIPPERMUTATIONS),
     checkCharge = cms.bool(False)
 )
 
@@ -74,7 +74,7 @@ process.ZCandlooseEle = cms.EDProducer("ZCandidateFiller",
     sampleType = cms.int32(SAMPLE_TYPE),
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
     bestZAmong = cms.string(BESTZ_AMONG),
-    FSRMode = cms.string(FSRMODE), # "skip", "Legacy", "RunII"
+    FSRMode = cms.string(FSRMODE), # "skip", "RunII"
     flags = cms.PSet(
         GoodLeptons = cms.string(ZLEPTONSEL),
         Z1Presel = cms.string(Z1PRESEL),
@@ -175,7 +175,7 @@ Z2LL_SS_looseEle = Z2LL_looseEle #"daughter(1).daughter(0).pdgId()==daughter(1).
 Z2LL_OS_looseEle = "abs(1)"
 
 # Need to drop the SIP cut for teh Z2 candidate
-Z2SIP_looseEle = "userFloat('d1.d0.isSIP')< 4 && userFloat('d1.d1.isSIP')"  
+Z2SIP_looseEle = "userFloat('d1.d0.isSIP') && userFloat('d1.d1.isSIP')"
 CR_BESTCANDBASE_AA_looseEle = ("userFloat('d0.Z1Presel') && userFloat('d0.worstEleIso') <" + str(ELEISOCUT) +
                                "&& userFloat('d0.worstMuIso') <" + str(MUISOCUT) + "&&" +
                                 Z2SIP_looseEle) # base for AA CR: # Z1 with tight leptons passing SIP and ISO, mass cuts; SIP on Z2
@@ -213,7 +213,7 @@ process.LLCandlooseEle = cms.EDProducer("ZCandidateFiller",
     sampleType = cms.int32(SAMPLE_TYPE),                     
     setup = cms.int32(LEPTON_SETUP), # define the set of effective areas, rho corrections, etc.
     bestZAmong = cms.string(BESTZ_AMONG),
-    FSRMode = cms.string(FSRMODE), # "skip", "Legacy", "RunII"
+    FSRMode = cms.string(FSRMODE), # "skip", "RunII"
     flags = cms.PSet(
         GoodLeptons = cms.string(ZLEPTONSEL),
         Z1Presel = cms.string(Z1PRESEL),
