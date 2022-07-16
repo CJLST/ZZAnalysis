@@ -1,7 +1,7 @@
 #!/bin/tcsh -fe
 #
 # Instructions:
-# wget -O ${TMPDIR}/checkout_10X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/Run2_CutBased_UL/checkout_10X.csh
+# wget -O ${TMPDIR}/checkout_10X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/Run2UL_22/checkout_10X.csh
 # cd $CMSSW_BASE/src
 # cmsenv
 # chmod u+x ${TMPDIR}/checkout_10X.csh
@@ -23,10 +23,6 @@ git clone https://github.com/cms-egamma/EgammaPostRecoTools.git
 mv EgammaPostRecoTools/python/EgammaPostRecoTools.py RecoEgamma/EgammaTools/python/.
 git cms-addpkg EgammaAnalysis/ElectronTools
 (rm -rf EgammaAnalysis/ElectronTools/data;git clone https://github.com/jainshilpi/EgammaAnalysis-ElectronTools.git -b ULSSfiles_correctScaleSysMC EgammaAnalysis/ElectronTools/data;)
-
-#UL 2016, 2017 and 2018 retraining for electron BDT
-#Not needed anymore, now MVA weights and cfg files are stored in CMSSW dataset and accessed directly via VID
-#git cms-merge-topic bonanomi:ElectronsMVA_UL
 
 #### Please do not add any custom (non-CMSSW) package before this line ####
 #ZZAnalysis
@@ -87,5 +83,5 @@ git clone https://github.com/mhl0116/KinZfitter-1.git KinZfitter
 
 #NanoAODTools
 git clone https://github.com/cms-nanoAOD/nanoAOD-tools.git PhysicsTools/NanoAODTools
-(cd PhysicsTools/NanoAODTools ; git checkout -b from-555b307 555b307)
+(cd PhysicsTools/NanoAODTools ; git checkout -b from-c32f055 c32f055)
 
