@@ -1200,20 +1200,22 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
         throw e;
       }
       auto nominal = genweights[0];
-      PythiaWeight_isr_muRoneoversqrt2 = genweights[2] / nominal;
-      PythiaWeight_fsr_muRoneoversqrt2 = genweights[3] / nominal;
-      PythiaWeight_isr_muRsqrt2 = genweights[4] / nominal;
-      PythiaWeight_fsr_muRsqrt2 = genweights[5] / nominal;
+      
+      // see twiki here with definitions and order : https://twiki.cern.ch/twiki/bin/view/CMS/HowToPDF#Parton_shower_weights
+      PythiaWeight_isr_muRoneoversqrt2 = genweights[24] / nominal;
+      PythiaWeight_fsr_muRoneoversqrt2 = genweights[2] / nominal;
+      PythiaWeight_isr_muRsqrt2 = genweights[25] / nominal;
+      PythiaWeight_fsr_muRsqrt2 = genweights[3] / nominal;
 
-      PythiaWeight_isr_muR0p5 = genweights[6] / nominal;
-      PythiaWeight_fsr_muR0p5 = genweights[7] / nominal;
-      PythiaWeight_isr_muR2 = genweights[8] / nominal;
-      PythiaWeight_fsr_muR2 = genweights[9] / nominal;
+      PythiaWeight_isr_muR0p5 = genweights[26] / nominal;
+      PythiaWeight_fsr_muR0p5 = genweights[4] / nominal;
+      PythiaWeight_isr_muR2 = genweights[27] / nominal;
+      PythiaWeight_fsr_muR2 = genweights[5] / nominal;
 
-      PythiaWeight_isr_muR0p25 = genweights[10] / nominal;
-      PythiaWeight_fsr_muR0p25 = genweights[11] / nominal;
-      PythiaWeight_isr_muR4 = genweights[12] / nominal;
-      PythiaWeight_fsr_muR4 = genweights[13] / nominal;
+      PythiaWeight_isr_muR0p25 = genweights[28] / nominal;
+      PythiaWeight_fsr_muR0p25 = genweights[6] / nominal;
+      PythiaWeight_isr_muR4 = genweights[29] / nominal;
+      PythiaWeight_fsr_muR4 = genweights[7] / nominal;
     } else {
       PythiaWeight_isr_muRsqrt2 = PythiaWeight_isr_muRoneoversqrt2 = PythiaWeight_isr_muR2 =
       PythiaWeight_isr_muR0p5 = PythiaWeight_isr_muR4 = PythiaWeight_isr_muR0p25 =
