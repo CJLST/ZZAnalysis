@@ -1,0 +1,15 @@
+drop * # start with all
+keep run
+keep event
+keep luminosityBlock
+#keep LHE*
+#keep Generator*
+#keep Flag*
+#keep PV*
+#keep Pileup*
+#keep HLT*
+keep Electron*
+keep Muon*
+#keep Jet*
+keep FsrPhoton*
+keep Z* # Z and ZZ

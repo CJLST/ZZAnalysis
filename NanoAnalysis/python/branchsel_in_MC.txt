@@ -1,0 +1,10 @@
+drop FatJet_*
+drop GenDressedLepton_*
+drop GenIsolatedPhoton_*
+drop IsoTrack*
+drop L1_*
+drop Photon*
+drop SV_*
+drop SoftActivityJet_*
+drop SubJet*
+drop Tau*

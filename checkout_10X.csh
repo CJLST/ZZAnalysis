@@ -27,7 +27,7 @@ git cms-addpkg EgammaAnalysis/ElectronTools
 #### Please do not add any custom (non-CMSSW) package before this line ####
 #ZZAnalysis
 git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
-(cd ZZAnalysis; git checkout Run2UL_22)
+(cd ZZAnalysis; git checkout Run2UL_22_nano)
 
 # Muon MVA
 git cms-addpkg CondFormats/EgammaObjects

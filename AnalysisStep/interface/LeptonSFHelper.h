@@ -14,10 +14,6 @@
 #include "TH2F.h"
 #include "TH2D.h"
 
-#include <FWCore/ParameterSet/interface/FileInPath.h>
-#include <FWCore/MessageLogger/interface/MessageLogger.h>
-
-
 enum SFsyst {central = 0, up = 1, down = 2};
 
 class LeptonSFHelper
@@ -46,5 +42,14 @@ class LeptonSFHelper
    TH2D *h_Mu_Unc_2016, *h_Mu_Unc_2017, *h_Mu_Unc_2018;
 
 };
+
+
+// Add bindings to call from python
+extern "C" {
+  void* get_LeptonSFHelper(void);
+  void del_LeptonSFHelper(void* ptr);
+  float LeptonSFHelper_getSF(void* ptr, int year, int flav, float pt, float eta, float SCeta, bool isCrack);
+  float LeptonSFHelper_getSFError(void* ptr, int year, int flav, float pt, float eta, float SCeta, bool isCrack);
+}
 
 #endif
