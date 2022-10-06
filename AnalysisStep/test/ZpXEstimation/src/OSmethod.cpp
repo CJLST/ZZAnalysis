@@ -377,7 +377,7 @@ void OSmethod::MakeHistogramsZX( TString input_file_data_name, TString  input_fi
       if ( test_bit(CRflag, CRZLLos_3P1F) )
       {
 	//nevents_CRLLos_3P1F += 1;
-	if(LepisID->at(3))
+	if(LepisID->at(3) && ((fabs(LepLepId->at(3)) == 11) ? LepCombRelIsoPF->at(3) < 999999. : LepCombRelIsoPF->at(3) < 0.35))
 	  {
 	    _f4    = FR->GetFakeRate(LepPt->at(2),LepEta->at(2),LepLepId->at(2));
 	    _f4_Up = FR->GetFakeRate_Up(LepPt->at(2),LepEta->at(2),LepLepId->at(2));
@@ -480,7 +480,7 @@ void OSmethod::MakeZXMCContribution( TString input_file_data_name, TString  inpu
       _k_factor = calculate_K_factor(input_file_data_name);
       _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight * L1prefiringWeight) / gen_sum_weights;
       
-      if( LepisID->at(3) )
+      if( LepisID->at(3) && ((fabs(LepLepId->at(3)) == 11) ? LepCombRelIsoPF->at(3) < 999999. : LepCombRelIsoPF->at(3) < 0.35))
       {
 	_f4    = FR->GetFakeRate(LepPt->at(2),LepEta->at(2),LepLepId->at(2));
 	_f4_Up = FR->GetFakeRate_Up(LepPt->at(2),LepEta->at(2),LepLepId->at(2));
