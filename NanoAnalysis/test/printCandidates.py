@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 ##
 # Print a list of selected candidates from nanoAOD trees.
 ##

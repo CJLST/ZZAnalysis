@@ -53,7 +53,7 @@ cuts = dict(
 ### Get processing customizations, if defined in the including .py; use defaults otherwise 
 SAMPLENAME = getConf("SAMPLENAME", "test")
 LEPTON_SETUP = getConf("LEPTON_SETUP", 2018)
-if not (LEPTON_SETUP == 2016 or LEPTON_SETUP == 2017 or LEPTON_SETUP == 2018) :
+if not (LEPTON_SETUP == 2016 or LEPTON_SETUP == 2017 or LEPTON_SETUP == 2018 or LEPTON_SETUP == 2022) :
     print("Invalid LEPTON_SETUP", LEPTON_SETUP)
     exit(1)
 IsMC = getConf("IsMC", True)
@@ -62,6 +62,7 @@ XSEC = getConf("XSEC", 1.)
 SYNCMODE = getConf("SYNCMODE", False)
 runMELA = getConf("runMELA", True)
 bestCandByMELA = getConf("bestCandByMELA", True) # requires also runMELA=True
+APPLYTRIG = getConf("APPLYTRIG", True)
 
 # ggH NNLOPS weight
 APPLY_QCD_GGF_UNCERT = getConf("APPLY_QCD_GGF_UNCERT", False) 
@@ -94,21 +95,24 @@ if not IsMC :
     if LEPTON_SETUP == 2018 :
         jsonFile = localPath+"test/prod/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt"
     elif LEPTON_SETUP == 2022 :
-        jsonFile = None #FIXME 
+        jsonFile = localPath+"test/prod/Cert_Collisions2022_355100_357900_Golden.json"
     else:        
         exit(1) #2016-17 to be implemented
 
 ### Sequence to be run
-from ZZAnalysis.NanoAnalysis.muonScaleResProducer import muonScaleRes2016, muonScaleRes2017, muonScaleRes2018
-muonScaleRes = {2016:muonScaleRes2016, 2017:muonScaleRes2017, 2018:muonScaleRes2018}
+ZZSequence = [triggerAndSkim(isMC=IsMC, PD=PD, era=LEPTON_SETUP, passThru=APPLYTRIG)] # Filter for good PV and trigger requirements; apply PD precedence rules for data
 
-ZZSequence = [triggerAndSkim(isMC=IsMC, PD=PD, era=LEPTON_SETUP), # Filter for good PV and trigger requirements; apply PD precedence rules for data
-              muonScaleRes[LEPTON_SETUP](overwritePt=True, syncMode=SYNCMODE), # Sets corrected muon pT and scale uncertainty
-              lepFiller(cuts, LEPTON_SETUP), # FSR and FSR-corrected iso; flags for passing IDs
-              ZZFiller(runMELA, bestCandByMELA, IsMC, LEPTON_SETUP), # Build ZZ candidates; choose best candidate; filter events with candidates
-#              jetFiller(), # Jets cleaning with leptons, JES, JEC
-#              MELAFiller(), # Compute the full set of discriminants for the best candidate
-              ]
+if LEPTON_SETUP != 2022 : # not yet implemented
+    from ZZAnalysis.NanoAnalysis.muonScaleResProducer import muonScaleRes2016, muonScaleRes2017, muonScaleRes2018
+    muonScaleRes = {2016:muonScaleRes2016, 2017:muonScaleRes2017, 2018:muonScaleRes2018}
+    ZZSequence.append(muonScaleRes[LEPTON_SETUP](overwritePt=True, syncMode=SYNCMODE)) # Sets corrected muon pT and scale uncertainty
+
+
+ZZSequence.extend([lepFiller(cuts, LEPTON_SETUP), # FSR and FSR-corrected iso; flags for passing IDs
+                   ZZFiller(runMELA, bestCandByMELA, IsMC, LEPTON_SETUP), # Build ZZ candidates; choose best candidate; filter events with candidates
+#                  jetFiller(), # Jets cleaning with leptons, JES, JEC
+#                  MELAFiller(), # Compute the full set of discriminants for the best candidate
+                   ])
 
 if IsMC :
     from ZZAnalysis.NanoAnalysis.mcTruthAnalyzer import *

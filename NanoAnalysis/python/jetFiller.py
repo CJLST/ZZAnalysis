@@ -15,8 +15,10 @@ class jetFiller(Module):
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
-        self.out.branch("Jet_lepVeto", "I", lenVar="nJet")
-# ...
+        self.out.branch("Jet_lepVeto", "O", lenVar="nJet") # vetoed by one of the candidate's leptons
+        self.out.branch("Jet_uncorrectedPt", "I", lenVar="nJet") # Original pT
+        self.out.branch("Jet_Pt", "I", lenVar="nJet") # after correction        
+        # up/down variations...
 
     def analyze(self, event):
         jets = Collection(event, 'Jet')
@@ -25,9 +27,13 @@ class jetFiller(Module):
         leps = list(muons)+ list(electrons)
         nlep=len(leps)
 
-## Jet-lepton cleaning ...
+## Apply JES, JER...
 
 
-## JEC, JES...
+## Jet-lepton cleaning with best candidate's leptons and FSR..
+
+
+## b-tagging..
+
 
         return True
