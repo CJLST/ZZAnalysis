@@ -7,7 +7,7 @@ keep luminosityBlock
 #keep Flag*
 #keep PV*
 #keep Pileup*
-#keep HLT*
+keep HLT_passZZ*
 keep Electron*
 keep Muon*
 #keep Jet*

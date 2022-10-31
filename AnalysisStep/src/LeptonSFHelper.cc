@@ -202,8 +202,9 @@ float LeptonSFHelper::getSF(int year, int flav, float pt, float eta, float SCeta
             }
       }
 
-
-   else {
+      else if (year == 2022) {
+	  SelSF  = 1.; // FIXME not yet implemented
+      } else {
       edm::LogError("LeptonSFHelper::") << "Ele SFs for " << year << " is not supported!";
       abort();
       }
@@ -225,9 +226,10 @@ float LeptonSFHelper::getSF(int year, int flav, float pt, float eta, float SCeta
       else if(year == 2018)
       {
          SelSF = h_Mu_SF_2018->GetBinContent(h_Mu_SF_2018->GetXaxis()->FindBin(eta),h_Mu_SF_2018->GetYaxis()->FindBin(std::min(pt,199.f))); //last bin contains the overflow
-      }
-      else {
-         edm::LogError("LeptonSFHelper::") << "Ele SFs for " << year << " is not supported!";
+      } else if (year ==2022) {
+	 SelSF  = 1.; // FIXME not yet implemented
+      } else {
+         edm::LogError("LeptonSFHelper::") << "Muon SFs for " << year << " is not supported!";
          abort();
       }
 
