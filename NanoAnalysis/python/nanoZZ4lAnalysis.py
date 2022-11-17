@@ -62,7 +62,7 @@ XSEC = getConf("XSEC", 1.)
 SYNCMODE = getConf("SYNCMODE", False)
 runMELA = getConf("runMELA", True)
 bestCandByMELA = getConf("bestCandByMELA", True) # requires also runMELA=True
-APPLYTRIG = getConf("APPLYTRIG", True)
+APPLYTRIG = getConf("APPLYTRIG", False) # Do not filter events that do not pass triggers (HLT_passZZ4l records if they did)
 
 # ggH NNLOPS weight
 APPLY_QCD_GGF_UNCERT = getConf("APPLY_QCD_GGF_UNCERT", False) 
@@ -95,7 +95,7 @@ if not IsMC :
     if LEPTON_SETUP == 2018 :
         jsonFile = localPath+"test/prod/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt"
     elif LEPTON_SETUP == 2022 :
-        jsonFile = localPath+"test/prod/Cert_Collisions2022_355100_357900_Golden.json"
+        jsonFile = localPath+"test/prod/Cert_Collisions2022_355100_360491_Golden.json"
     else:        
         exit(1) #2016-17 to be implemented
 

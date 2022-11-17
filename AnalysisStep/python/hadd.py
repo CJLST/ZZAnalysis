@@ -4,6 +4,20 @@ import pprint
 import pickle
 import shutil
 
+# Check if the specified file is a nanoAOD file.
+def checkNano(file):
+    from ROOT import TFile
+    rf = TFile.Open(file)
+    keys = rf.GetListOfKeys()
+    if (keys.FindObject("Events") != None and keys.FindObject("Runs") != None and  keys.FindObject("LuminosityBlocks") != None) :
+        isNano = True
+    else :
+        isNano= False
+    rf.Close()
+    return isNano
+
+
+
 def haddPck(file, odir, idirs):
     '''add pck files in directories idirs to a directory outdir.
     All dirs in idirs must have the same subdirectory structure.
@@ -49,7 +63,10 @@ def hadd(file, odir, idirs):
     if len(idirs) == 1 :
         haddCmd = ['cp ',file,ofile]
     else:
-        haddCmd = ['hadd -ff']
+        if (checkNano(file.replace( idirs[0], idirs[1]))) : # Check if the first file to be hadded is a nanoAOD file
+            haddCmd = ['haddnano.py']
+        else:
+            haddCmd = ['hadd -ff']
         haddCmd.append(ofile)
         for dir in idirs:
             haddCmd.append( file.replace( idirs[0], dir ) )

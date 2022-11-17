@@ -109,7 +109,7 @@ class ZZFiller(Module):
         self.out.branch("ZZCand_Z2flav", "I", lenVar="nZZCand")
         self.out.branch("ZZCand_KD", "F", lenVar="nZZCand")
         self.out.branch("ZZCand_Z2sumpt", "F", lenVar="nZZCand")
-        # Note: lepton indices are numbered for leps=list(muons)+list(electrons) and run up to nlep=len(leps);
+        # Note: lepton indices are numbered for leps=list(electrons)+list(muons) and run up to nlep=len(leps);
         # no special ordering of l1, l2 is applied
         self.out.branch("ZZCand_Z1l1Idx", "I", lenVar="nZZCand") 
         self.out.branch("ZZCand_Z1l2Idx", "I", lenVar="nZZCand")
@@ -135,7 +135,7 @@ class ZZFiller(Module):
         electrons = Collection(event, "Electron")
         muons = Collection(event, "Muon")
         fsrPhotons = Collection(event, "FsrPhoton")
-        leps = list(muons)+ list(electrons)
+        leps = list(electrons)+list(muons)
         nlep=len(leps)
 
         ### Z combinatorial over selected leps (after FSR-corrected ISO cut for muons)
@@ -169,102 +169,14 @@ class ZZFiller(Module):
         if len(Zs) >= 2:
             for iZ,aZ in enumerate(Zs):
                 for jZ in range(iZ+1, len(Zs)):
-                    # check that these Zs are mutually exclusive (not sharing the same lepton) 
-                    if Zs[iZ].l1Idx==Zs[jZ].l1Idx or Zs[iZ].l2Idx==Zs[jZ].l2Idx or Zs[iZ].l2Idx==Zs[jZ].l1Idx or Zs[iZ].l2Idx==Zs[jZ].l2Idx: continue
-                    
-                    # set Z1 and Z2
-                    Z1Idx, Z2Idx = jZ, iZ
-                    if abs(Zs[iZ].M-self.ZmassValue) < abs(Zs[jZ].M-self.ZmassValue):
-                        Z1Idx, Z2Idx = Z2Idx, Z1Idx
+                    ZZ = self.makeCand(Zs[iZ],Zs[jZ])
+                    if ZZ == None: continue
 
-                    Z1=Zs[Z1Idx]
-                    Z2=Zs[Z2Idx]
-
-                    # Z1 mass cut
-                    if Z1.M <= 40. : continue
-
-                    zzleps = [Z1.l1, Z1.l2, Z2.l1, Z2.l2]
-                    lepPts = []
-                    # QCD suppression on all OS pairs, regardelss of flavour
-                    passQCD = True    # QCD suppression on all OS pairs, regardelss of flavour
-                    passDeltaR = True # DeltaR>0.02 cut among all leptons to protect against split tracks
-                    for k in range(4):
-                        lepPts.append(zzleps[k].pt)
-                        for l in range (k+1,4):
-                            if zzleps[k].pdgId*zzleps[l].pdgId < 0 and (zzleps[k].p4()+zzleps[l].p4()).M()<=4.:
-                                passQCD = False
-                                break
-                            if deltaR(zzleps[k].eta, zzleps[k].phi, zzleps[l].eta, zzleps[l].phi) <= 0.02 :
-                                passDeltaR = False
-                                break
-
-                    if not (passQCD and passDeltaR) : continue
-
-                    # trigger acceptance cuts (20,10 GeV)
-                    lepPts.sort()
-                    if not (lepPts[3]>20. and lepPts[2]>10.) : continue
-
-                    #"Smart cut" on alternate pairings for same-sign candidates
-                    if abs(Z1.l1.pdgId) == abs(Z2.l1.pdgId):
-                        mZa, mZb = 0., 0.
-                        if Z1.l1.pdgId == -Z2.l1.pdgId:
-                            mZa=(Z1.l1DressedP4+Z2.l1DressedP4).M()
-                            mZb=(Z1.l2DressedP4+Z2.l2DressedP4).M()
-                        elif Z1.l1.pdgId == -Z2.l2.pdgId:
-                            mZa=(Z1.l1DressedP4+Z2.l2DressedP4).M()
-                            mZb=(Z1.l2DressedP4+Z2.l1DressedP4).M()
-                        if (abs(mZa-self.ZmassValue)>abs(mZb-self.ZmassValue)) : mZa, mZb = mZb, mZa
-                        if (abs(mZa-self.ZmassValue)<abs(Z1.M-self.ZmassValue)) and mZb < 12.: continue
-
-                    #Compute D_bkg^kin
-                    p_GG_SIG_ghg2_1_ghz1_1_JHUGen = 0.
-                    p_QQB_BKG_MCFM = 1.
-                    if self.runMELA:
-                        daughters = SimpleParticleCollection_t()
-                        daughters.push_back(SimpleParticle_t(Z1.l1.pdgId, Z1.l1DressedP4))
-                        daughters.push_back(SimpleParticle_t(Z1.l2.pdgId, Z1.l2DressedP4))
-                        daughters.push_back(SimpleParticle_t(Z2.l1.pdgId, Z2.l1DressedP4))
-                        daughters.push_back(SimpleParticle_t(Z2.l2.pdgId, Z2.l2DressedP4))
-                        self.mela.setInputEvent(daughters, 0, 0, 0)
-                        self.mela.setProcess(TVar.HSMHiggs, TVar.JHUGen, TVar.ZZGG)
-                        p_GG_SIG_ghg2_1_ghz1_1_JHUGen = self.mela.computeP(True)
-                        self.mela.setProcess(TVar.bkgZZ, TVar.MCFM, TVar.ZZQQB)
-                        p_QQB_BKG_MCFM = self.mela.computeP(True)
-                        self.mela.resetInputEvent()
-                    ZZ = self.ZZCand(Z1, Z2, p_GG_SIG_ghg2_1_ghz1_1_JHUGen, p_QQB_BKG_MCFM)
-
-                    # If criteria for best cand are statisfied, check if this is the best cand and set bestCandIdx
-                    ZZ.passBestCandPresel = True
-                    for ilep in range(4):
-                        if not self.bestCandPresel(zzleps[ilep]) : ZZ.passBestCandPresel = False
                     if ZZ.passBestCandPresel :
                         if bestCandIdx<0 or self.bestCandCmp(ZZ,ZZs[bestCandIdx]) < 0:
                             bestCandIdx = len(ZZs)
 
-                    # Set flags for IDs passed by all leptons of candidate (muon only, for the time being)
-                    passId = [True]*len(self.muonIDs)
-                    for iID, ID in enumerate(self.muonIDs) :
-                        for ilep in range(4):
-                            if abs(zzleps[ilep].pdgId)==13 and not ID["sel"](zzleps[ilep]) :
-                                passId[iID] = False
-                                continue
-                    ZZ.passId = passId
-
-                    # Set worst value of specified selection variables (muon only, for the time being)
-                    worstVar = [99.]*len(self.muonIDVars)
-                    for iVar, var in enumerate(self.muonIDVars):
-                        if var["name"].startswith("max") : worstVar[iVar] = -1.
-                        for iilep in range(4) :
-                            if abs(zzleps[iilep].pdgId)==11 : continue
-                            else :
-                                if var["name"].startswith("max") :
-                                    worstVar[iVar] = max(worstVar[iVar], var["sel"](zzleps[iilep]))                                    
-                                else :
-                                    worstVar[iVar] = min(worstVar[iVar], var["sel"](zzleps[iilep]))
-                    ZZ.worstVar = worstVar
-
-
-                    if self.DEBUG: print("ZZ:", len(ZZs),  (Z1.p4+Z2.p4).M(), ZZ.Z1.M, ZZ.Z2.M, ZZ.Z2.sumpt(), ZZ.finalState(), p_GG_SIG_ghg2_1_ghz1_1_JHUGen, p_QQB_BKG_MCFM, ZZ.KD, ZZ.passBestCandPresel)
+                    if self.DEBUG: print("ZZ:", len(ZZs), ZZ.p4.M(), ZZ.Z1.M, ZZ.Z2.M, ZZ.Z2.sumpt(), ZZ.finalState(), ZZ.p_GG_SIG_ghg2_1_ghz1_1_JHUGen, ZZ.p_QQB_BKG_MCFM, ZZ.KD, ZZ.passBestCandPresel)
                     ZZs.append(ZZ)
 
 
@@ -276,6 +188,7 @@ class ZZFiller(Module):
                 ZZs = [ZZs[bestCandIdx]]
                 bestCandIdx = 0
 
+            ### Now fill the variables to be stored as output
             ZZCand_mass = [0.]*len(ZZs)
             ZZCand_massPreFSR = [0.]*len(ZZs)
             ZZCand_Z1mass = [0.]*len(ZZs)
@@ -310,7 +223,6 @@ class ZZFiller(Module):
                     ZZCand_passID[iID].append(ZZ.passId[iID])
                 for iVar, var in enumerate(self.muonIDVars) :
                     ZZCand_worstVar[iVar].append(ZZ.worstVar[iVar])
-                
 
             self.out.fillBranch("nZZCand", len(ZZs))
             self.out.fillBranch("ZZCand_mass", ZZCand_mass)
@@ -437,3 +349,101 @@ class ZZFiller(Module):
         else: return 1
         
 
+    # Build a ZZ object from given Za, Zb pair, if it passes selection cuts; None is returned otherwise.
+    # All relevant candidate variables are computed for the candidate. Options:
+    #  sortZsByMass : set Z1 and Z2 according to closest-Mz criteria (for SR); otherwise, specified order is
+    #                 kept (useful for CRs)
+    def makeCand(self, Za, Zb, sortZsByMass=True, fillIDVars=True) :
+        # check that these Zs are mutually exclusive (not sharing the same lepton) 
+        if Za.l1Idx==Zb.l1Idx or Za.l2Idx==Zb.l2Idx or Za.l2Idx==Zb.l1Idx or Za.l2Idx==Zb.l2Idx: return None
+        
+        # set Z1 and Z2
+        Z1, Z2 = Za, Zb
+        if sortZsByMass and abs(Zb.M-self.ZmassValue) < abs(Za.M-self.ZmassValue):
+            Z1, Z2 = Z2, Z1
+
+        # Z1 mass cut
+        if Z1.M <= 40. : return None
+
+        zzleps = [Z1.l1, Z1.l2, Z2.l1, Z2.l2]
+        lepPts = []
+        # QCD suppression on all OS pairs, regardelss of flavour
+        passQCD = True    # QCD suppression on all OS pairs, regardelss of flavour
+        passDeltaR = True # DeltaR>0.02 cut among all leptons to protect against split tracks
+        for k in range(4):
+            lepPts.append(zzleps[k].pt)
+            for l in range (k+1,4):
+                if zzleps[k].pdgId*zzleps[l].pdgId < 0 and (zzleps[k].p4()+zzleps[l].p4()).M()<=4.:
+                    passQCD = False
+                    break
+                if deltaR(zzleps[k].eta, zzleps[k].phi, zzleps[l].eta, zzleps[l].phi) <= 0.02 :
+                    passDeltaR = False
+                    break
+
+        if not (passQCD and passDeltaR) : return None
+
+        # trigger acceptance cuts (20,10 GeV)
+        lepPts.sort()
+        if not (lepPts[3]>20. and lepPts[2]>10.) : return None
+
+        #"Smart cut" on alternate pairings for same-sign candidates
+        if abs(Z1.l1.pdgId) == abs(Z2.l1.pdgId):
+            mZa, mZb = 0., 0.
+            if Z1.l1.pdgId == -Z2.l1.pdgId:
+                mZa=(Z1.l1DressedP4+Z2.l1DressedP4).M()
+                mZb=(Z1.l2DressedP4+Z2.l2DressedP4).M()
+            elif Z1.l1.pdgId == -Z2.l2.pdgId:
+                mZa=(Z1.l1DressedP4+Z2.l2DressedP4).M()
+                mZb=(Z1.l2DressedP4+Z2.l1DressedP4).M()
+            if (abs(mZa-self.ZmassValue)>abs(mZb-self.ZmassValue)) : mZa, mZb = mZb, mZa
+            if (abs(mZa-self.ZmassValue)<abs(Z1.M-self.ZmassValue)) and mZb < 12.: return None
+
+        #Compute D_bkg^kin
+        p_GG_SIG_ghg2_1_ghz1_1_JHUGen = 0.
+        p_QQB_BKG_MCFM = 1.
+        if self.runMELA:
+            daughters = SimpleParticleCollection_t()
+            daughters.push_back(SimpleParticle_t(Z1.l1.pdgId, Z1.l1DressedP4))
+            daughters.push_back(SimpleParticle_t(Z1.l2.pdgId, Z1.l2DressedP4))
+            daughters.push_back(SimpleParticle_t(Z2.l1.pdgId, Z2.l1DressedP4))
+            daughters.push_back(SimpleParticle_t(Z2.l2.pdgId, Z2.l2DressedP4))
+            self.mela.setInputEvent(daughters, 0, 0, 0)
+            self.mela.setProcess(TVar.HSMHiggs, TVar.JHUGen, TVar.ZZGG)
+            p_GG_SIG_ghg2_1_ghz1_1_JHUGen = self.mela.computeP(True)
+            self.mela.setProcess(TVar.bkgZZ, TVar.MCFM, TVar.ZZQQB)
+            p_QQB_BKG_MCFM = self.mela.computeP(True)
+            self.mela.resetInputEvent()
+        ZZ = self.ZZCand(Z1, Z2, p_GG_SIG_ghg2_1_ghz1_1_JHUGen, p_QQB_BKG_MCFM)
+
+        # Checl if criteria for best cand are statisfied
+        ZZ.passBestCandPresel = True
+        for ilep in range(4):
+            if not self.bestCandPresel(zzleps[ilep]) : ZZ.passBestCandPresel = False
+
+        # Set flags for IDs passed by all leptons of candidate (muon only for the time being), which are 
+        # used for studies on ID tuning
+        if fillIDVars:
+            passId = [True]*len(self.muonIDs)
+            for iID, ID in enumerate(self.muonIDs) :
+                for ilep in range(4):
+                    if abs(zzleps[ilep].pdgId)==13 and not ID["sel"](zzleps[ilep]) :
+                        passId[iID] = False
+                        continue
+            ZZ.passId = passId
+
+            # Set worst value of specified selection variables (muon only, for the time being)
+            worstVar = [99.]*len(self.muonIDVars)
+            for iVar, var in enumerate(self.muonIDVars):
+                if var["name"].startswith("max") : worstVar[iVar] = -1.
+                for iilep in range(4) :
+                    if abs(zzleps[iilep].pdgId)==11 : continue
+                    else :
+                        if var["name"].startswith("max") :
+                            worstVar[iVar] = max(worstVar[iVar], var["sel"](zzleps[iilep]))                                    
+                        else :
+                            worstVar[iVar] = min(worstVar[iVar], var["sel"](zzleps[iilep]))
+            ZZ.worstVar = worstVar
+
+
+
+        return ZZ
