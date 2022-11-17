@@ -6,7 +6,10 @@ import math
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
-Lum = 59.74 # 1/fb #FIXME
+
+pathMC = "/eos/user/n/namapane/H4lnano/220420/" # FIXME: Use 2018 MC for the time being
+pathDATA = "/eos/user/n/namapane/H4lnano/221102/Data2022/"
+
 ZmassValue = 91.1876
 
 maxEntriesPerSample = 1e12 # Use only up to this number of events in each MC sample, for quick tests.
@@ -85,34 +88,33 @@ def fillHistos(samplename, filename) :
     
     return h_ZZMass2,h_ZZMass4,h_ZZMass10
 
-def run():
-    
-    path = "/eos/user/n/namapane/H4lnano/220420/"
-    outFile = "H4l_220420.root" 
+def runMC():
+    outFile = "H4l_MC.root" 
+
     samples = [
-        dict(name = "WWZ",filename = path+"WWZ/ZZ4lAnalysis.root"),
-        dict(name = "WZZ",filename = path+"WZZ/ZZ4lAnalysis.root"),
-        dict(name = "ZZZ",filename = path+"ZZZ/ZZ4lAnalysis.root"),
+        dict(name = "WWZ",filename = pathMC+"WWZ/ZZ4lAnalysis.root"),
+        dict(name = "WZZ",filename = pathMC+"WZZ/ZZ4lAnalysis.root"),
+        dict(name = "ZZZ",filename = pathMC+"ZZZ/ZZ4lAnalysis.root"),
         
-        dict(name = "VBFToZZTo4l",filename = path + "VBFToContinToZZTo4l/ZZ4lAnalysis.root"),
-        dict(name = "TTZToLLNuNu",filename = path + "TTZToLLNuNu_M10ext1/ZZ4lAnalysis.root"),
-        dict(name = "TTZJets",filename = path + "TTZJets_M10_MLMext1/ZZ4lAnalysis.root"),
+        dict(name = "VBFToZZTo4l",filename = pathMC + "VBFToContinToZZTo4l/ZZ4lAnalysis.root"),
+        dict(name = "TTZToLLNuNu",filename = pathMC + "TTZToLLNuNu_M10ext1/ZZ4lAnalysis.root"),
+        dict(name = "TTZJets",filename = pathMC + "TTZJets_M10_MLMext1/ZZ4lAnalysis.root"),
 
-        dict(name = "ggTo4mu",filename = path+"ggTo4mu_Contin_MCFM701/ZZ4lAnalysis.root"),
-        dict(name = "ggTo4e",filename = path+"ggTo4e_Contin_MCFM701/ZZ4lAnalysis.root"),
-        dict(name = "ggTo4tau",filename = path+"ggTo4tau_Contin_MCFM701/ZZ4lAnalysis.root"),
-        dict(name = "ggTo2e2mu",filename = path+"ggTo2e2mu_Contin_MCFM701/ZZ4lAnalysis.root"),       
-        dict(name = "ggTo2e2tau",filename = path+"ggTo2e2tau_Contin_MCFM701/ZZ4lAnalysis.root"),
-        dict(name = "ggTo2mu2tau",filename = path+"ggTo2mu2tau_Contin_MCFM701/ZZ4lAnalysis.root"),
+        dict(name = "ggTo4mu",filename = pathMC+"ggTo4mu_Contin_MCFM701/ZZ4lAnalysis.root"),
+        dict(name = "ggTo4e",filename = pathMC+"ggTo4e_Contin_MCFM701/ZZ4lAnalysis.root"),
+        dict(name = "ggTo4tau",filename = pathMC+"ggTo4tau_Contin_MCFM701/ZZ4lAnalysis.root"),
+        dict(name = "ggTo2e2mu",filename = pathMC+"ggTo2e2mu_Contin_MCFM701/ZZ4lAnalysis.root"),       
+        dict(name = "ggTo2e2tau",filename = pathMC+"ggTo2e2tau_Contin_MCFM701/ZZ4lAnalysis.root"),
+        dict(name = "ggTo2mu2tau",filename = pathMC+"ggTo2mu2tau_Contin_MCFM701/ZZ4lAnalysis.root"),
 
-        dict(name = "ZZTo4l",filename = path+"ZZTo4lext1/ZZ4lAnalysis.root"),
+        dict(name = "ZZTo4l",filename = pathMC+"ZZTo4lext1/ZZ4lAnalysis.root"),
         
-        dict(name = "VBF125",filename = path+"VBFH125/ZZ4lAnalysis.root"),
-        dict(name = "ggH",filename = path+"ggH125/ZZ4lAnalysis.root"),
-        dict(name = "WplusH125",filename = path+"WplusH125/ZZ4lAnalysis.root"),
-        dict(name = "WminusH125",filename = path+"WminusH125/ZZ4lAnalysis.root"),
-        dict(name = "ZH125",filename = path+"ZH125/ZZ4lAnalysis.root"),
-        dict(name = "ttH125",filename = path+"ttH125/ZZ4lAnalysis.root"),
+        dict(name = "VBF125",filename = pathMC+"VBFH125/ZZ4lAnalysis.root"),
+        dict(name = "ggH",filename = pathMC+"ggH125/ZZ4lAnalysis.root"),
+        dict(name = "WplusH125",filename = pathMC+"WplusH125/ZZ4lAnalysis.root"),
+        dict(name = "WminusH125",filename = pathMC+"WminusH125/ZZ4lAnalysis.root"),
+        dict(name = "ZH125",filename = pathMC+"ZH125/ZZ4lAnalysis.root"),
+        dict(name = "ttH125",filename = pathMC+"ttH125/ZZ4lAnalysis.root"),
     ]
 
 
@@ -121,11 +123,16 @@ def run():
     for s in samples:
          histos = fillHistos(s["name"], s["filename"])
          for h in histos:
-             h.Scale(Lum*1000) 
              of.WriteObject(h,h.GetName())
-    
+
+    of.Close()
+
+def runData():
+    outFile = "H4l_Data.root" 
+
+    of = ROOT.TFile.Open(outFile,"recreate") 
                 
-    hs_data = fillHistos("Data", path+ "Data2018/ZZ4lAnalysis.root")
+    hs_data = fillHistos("Data", pathDATA+ "/ZZ4lAnalysis.root")
     for h in hs_data:
         h.SetBinErrorOption(ROOT.TH1.kPoisson)
         of.WriteObject(h,h.GetName())
@@ -133,4 +140,5 @@ def run():
     of.Close()
 
 if __name__ == "__main__" :
-    run()
+    runMC()
+    runData()

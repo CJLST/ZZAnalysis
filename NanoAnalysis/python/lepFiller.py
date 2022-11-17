@@ -9,28 +9,26 @@ from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
 from PhysicsTools.NanoAODTools.postprocessing.tools import deltaR
 
-
-def passEleBDT(ele, era) :
+def passEleBDT(ele, era, preUL=False) :
     pt = ele.pt
     fSCeta = abs(ele.eta + ele.deltaEtaSC)
     if era == 2017 or era == 2018: 
         BDT = ele.mvaFall17V2Iso     # FIXME Using 2017 WP and training (ElectronMVAEstimatorRun2Fall17IsoV2Values) since this is the only one available in Run2 UL nanoAODs.
-        # pre-UL WP (miniAOD branch: Run2_CutBased_BTag16)
-#         return (pt<=10. and     ((fSCeta<0.8                   and BDT > 0.85216885148) or \
-#                                  (fSCeta>=0.8 and fSCeta<1.479 and BDT > 0.82684550976) or \
-#                                  (fSCeta>=1.479                and BDT > 0.86937630022))) \
-#                 or (pt>10. and  ((fSCeta<0.8                   and BDT > 0.98248928759) or \
-#                                  (fSCeta>=0.8 and fSCeta<1.479 and BDT > 0.96919224579) or \
-#                                  (fSCeta>=1.479                and BDT > 0.79349796445)))
+        if preUL : # pre-UL WP (miniAOD branch: Run2_CutBased_BTag16)
+            return (pt<=10. and     ((fSCeta<0.8                   and BDT > 0.85216885148) or \
+                                     (fSCeta>=0.8 and fSCeta<1.479 and BDT > 0.82684550976) or \
+                                     (fSCeta>=1.479                and BDT > 0.86937630022))) \
+                    or (pt>10. and  ((fSCeta<0.8                   and BDT > 0.98248928759) or \
+                                     (fSCeta>=0.8 and fSCeta<1.479 and BDT > 0.96919224579) or \
+                                     (fSCeta>=1.479                and BDT > 0.79349796445)))
 
-        # UL WP (miniAOD branch Run2_CutBased_UL)
-        return (pt<=10. and     ((fSCeta<0.8                   and BDT > 0.9128577458) or \
-                                 (fSCeta>=0.8 and fSCeta<1.479 and BDT > 0.9056792368) or \
-                                 (fSCeta>=1.479                and BDT > 0.9439440575))) \
-                or (pt>10. and  ((fSCeta<0.8                   and BDT > 0.1559788054) or \
-                                 (fSCeta>=0.8 and fSCeta<1.479 and BDT > 0.0273863727) or \
-                                 (fSCeta>=1.479                and BDT > -0.5532483665)))
-
+        else: # UL WP (miniAOD branch Run2_CutBased_UL)
+            return (pt<=10. and     ((fSCeta<0.8                   and BDT > 0.9128577458) or \
+                                     (fSCeta>=0.8 and fSCeta<1.479 and BDT > 0.9056792368) or \
+                                     (fSCeta>=1.479                and BDT > 0.9439440575))) \
+                    or (pt>10. and  ((fSCeta<0.8                   and BDT > 0.1559788054) or \
+                                     (fSCeta>=0.8 and fSCeta<1.479 and BDT > 0.0273863727) or \
+                                     (fSCeta>=1.479                and BDT > -0.5532483665)))
 
     elif era == 2022 :
         BDT = ele.mvaHZZIso
