@@ -95,7 +95,7 @@ if not IsMC :
     if LEPTON_SETUP == 2018 :
         jsonFile = localPath+"test/prod/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt"
     elif LEPTON_SETUP == 2022 :
-        jsonFile = localPath+"test/prod/Cert_Collisions2022_355100_360491_Golden.json"
+        jsonFile = localPath+"test/prod/Cert_Collisions2022_355100_362104_Golden.json"
     else:        
         exit(1) #2016-17 to be implemented
 
