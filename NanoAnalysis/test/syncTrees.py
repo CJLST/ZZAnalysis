@@ -44,15 +44,15 @@ while treeMini.GetEntry(iEntryMini):
             break
 
 
-#        if treeNano.ZZBestCand_Idx < 0 : #no best candidate; ignore this event later on
+#        if treeNano.bestCandIdx < 0 : #no best candidate; ignore this event later on
 #            foundNano[iEntryNano-1] = True
 #            continue
 
     if found :
-        if treeNano.ZZBestCand_Idx < 0 : # no best candidate in this event
+        if treeNano.bestCandIdx < 0 : # no best candidate in this event
             print("Found in nano, but no best cand:"+str(treeMini.RunNumber)+":"+str(treeMini.LumiNumber)+":"+str(treeMini.EventNumber))
             continue
-        iBC = treeNano.ZZBestCand_Idx
+        iBC = treeNano.bestCandIdx
         
         t2_ZZMass=treeNano.ZZCand_mass[iBC]
         t2_ZZMassPreFSR=treeNano.ZZCand_massPreFSR[iBC]

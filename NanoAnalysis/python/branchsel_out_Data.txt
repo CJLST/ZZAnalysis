@@ -12,4 +12,5 @@ keep Electron*
 keep Muon*
 #keep Jet*
 keep FsrPhoton*
+keep best* # bestZ and ZZ indexes
 keep Z* # Z and ZZ

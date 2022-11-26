@@ -1,7 +1,7 @@
 #!/bin/tcsh -fe
 #
 # Instructions:
-# wget -O ${TMPDIR}/checkout_10X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/Run2UL_22/checkout_10X.csh
+# wget -O ${TMPDIR}/checkout_10X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/Run2UL_22_nano/checkout_10X.csh
 # cd $CMSSW_BASE/src
 # cmsenv
 # chmod u+x ${TMPDIR}/checkout_10X.csh
@@ -81,7 +81,8 @@ $CMSSW_BASE/src/JHUGenMELA/MELA/data/retrieve.csh $SCRAM_ARCH mcfm_707
 git clone https://github.com/mhl0116/KinZfitter-1.git KinZfitter
 (cd KinZfitter ; git checkout -b from-27daebb 27daebb)
 
-#NanoAODTools
-git clone https://github.com/cms-nanoAOD/nanoAOD-tools.git PhysicsTools/NanoAODTools
-(cd PhysicsTools/NanoAODTools ; git checkout -b from-c32f055 c32f055)
+#NanoAODTools 
+(cd PhysicsTools/NanoAODTools ; git checkout -b from-ded19d8 ded19d8)
+#We may have to switch to our fork at some point since the central version is unmaintained
+#git clone https://github.com/CJLST/nanoAOD-tools.git PhysicsTools/NanoAODTools
 

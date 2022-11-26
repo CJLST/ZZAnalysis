@@ -75,7 +75,7 @@ def fillHistos(samplename, filename) :
         iEntry+=1
         if iEntry%printEntries == 0 : print("Processing", iEntry)
 
-        bestCandIdx = events.ZZBestCand_Idx
+        bestCandIdx = events.bestCandIdx
         if(bestCandIdx != -1):
             weight = 1.
             if isMC : weight = (events.overallEventWeight*events.ZZCand_dataMCWeight[bestCandIdx])/genEventSumw

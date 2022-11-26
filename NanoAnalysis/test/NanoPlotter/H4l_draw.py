@@ -1,6 +1,11 @@
 ### Draw and decorate plots produced with H4l_fill.py.
+#
+# run from the python prompt:
+# execfile("H4l_draw.py")
+
 from __future__ import print_function
 import math
+import ctypes
 import ROOT
 import numpy as np
 from array import array
@@ -15,7 +20,7 @@ outFilename = "Plots.root"
 #pathMC = "/eos/user/n/namapane/H4lnano/220420/"
 #pathDATA = "/eos/user/n/namapane/H4lnano/220420/Data2018/"
 
-blindPlots=True
+blindPlots = True
 blindHLow = 105.
 blindHHi  = 140.
 blindHM   = 500.
@@ -189,7 +194,7 @@ for i, label in enumerate(xlabelsv):
 
 
 HStack = Stack(fMC)
-HData = dataGraph(fData)
+HData = dataGraph(fData, blind=blindPlots)
 HStack_hm = HStack.Clone()
 HData_hm = HData.Clone()
 
@@ -197,12 +202,12 @@ Canvas = ROOT.TCanvas("M4l","M4l",canvasSizeX,canvasSizeY)
 Canvas.SetTicks()
 Canvas.SetLogx()
 #ymaxd=HData.GetMaximum()
-xmin=ROOT.Double(0.)
-ymin=ROOT.Double(0.)
-xmax=ROOT.Double(0.)
-ymax=ROOT.Double(0.)
+xmin=ctypes.c_double(0.)
+ymin=ctypes.c_double(0.)
+xmax=ctypes.c_double(0.)
+ymax=ctypes.c_double(0.)
 HData.ComputeRange(xmin,ymin,xmax,ymax)
-HStack.SetMaximum(int(max(HStack.GetMaximum(), ymax+1)))
+HStack.SetMaximum(max(math.ceil(HStack.GetMaximum()), ymax.value+1))
 HStack.Draw("histo")
 HStack.GetXaxis().SetRangeUser(70., 500.)
 HData.Draw("samePE1")
@@ -215,11 +220,11 @@ print(HStack.GetMaximum(), HData.GetMaximum())
     
 ### Zoomed m4l
 HStack_z = Stack(fMC, "_2GeV_")
-HData_z = dataGraph(fData, "_2GeV_")
+HData_z = dataGraph(fData, "_2GeV_", blind=blindPlots)
 Canvas_z = ROOT.TCanvas("M4l_z","M4l_z",canvasSizeX,canvasSizeY)
 Canvas_z.SetTicks()
 HData_z.ComputeRange(xmin,ymin,xmax,ymax)
-HStack_z.SetMaximum(int(max(HStack_z.GetMaximum(), ymax+1)))
+HStack_z.SetMaximum(max(math.ceil(HStack_z.GetMaximum()), ymax.value+1))
 HStack_z.Draw("histo")
 HStack_z.GetXaxis().SetRangeUser(70., 170.)
 HData_z.Draw("samePE1")
@@ -234,7 +239,7 @@ HData_hm.Draw("samePE1")
 
 ### High mass, 10 Ge
 HStack10 = Stack(fMC, "_10GeV_")
-HData10 = dataGraph(fData, "_10GeV_")
+HData10 = dataGraph(fData, "_10GeV_", blind=blindPlots)
 Canvas10 = ROOT.TCanvas("M4l_hm10","M4l_hm10",canvasSizeX,canvasSizeY)
 Canvas10.SetTicks()
 Canvas10.SetLogy()
