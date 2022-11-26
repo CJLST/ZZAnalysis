@@ -47,7 +47,7 @@ class dumpEvents(Module):
                      end="")
                print(' combRelIsoPF={:.3g} combRelIsoPFFSRCorr={:.3g}'.format(lep.pfRelIso03_all, lep.pfRelIso03FsrCorr),
                      end="")
-               print(' relaxedId={} fullId={}'.format(lep.ZZRelaxedId,lep.ZZFullId),
+               print(' relaxedId={} FullId={} FullSel={}'.format(lep.ZZRelaxedId,lep.ZZFullId,lep.ZZFullSel),
                      end="")
                if (lep.fsrPhotonIdx>=0):
                    fsr=fsrPhotons[lep.fsrPhotonIdx]
@@ -68,7 +68,12 @@ class dumpEvents(Module):
                      end="")
                # FIXME must refactor this passBDT = passEleBDT(lep.pt, lep.eta+lep.deltaEtaSC, lep.mvaFall17V2Iso) 
                passBDT=True
-               print(' scEta={:.3g} BDT={:.3g} passBDT={} relaxedId={} fullId={}'.format(lep.eta+lep.deltaEtaSC, lep.mvaFall17V2Iso, passBDT, lep.ZZRelaxedId, lep.ZZFullId))
+               print(' scEta={:.3g} BDT={:.3g} passBDT={} relaxedId={} FullId={} FullSel={}'.format(lep.eta+lep.deltaEtaSC, lep.mvaFall17V2Iso, passBDT, lep.ZZRelaxedId, lep.ZZFullId, lep.ZZFullSel), end="")
+               if (lep.fsrPhotonIdx>=0):
+                   fsr=fsrPhotons[lep.fsrPhotonIdx]
+                   print(' FSR: pt={:.3g} eta={:.3g}, phi={:.3g}, dREt2={:.3g}, Iso={:.3g}, true={}'.format(fsr.pt, fsr.eta, fsr.phi, fsr.dROverEt2, fsr.relIso03, (fsr.genFsrIdx>=0)))
+               else:
+                   print()
    
 
         if self.level >=1 : # final candidates

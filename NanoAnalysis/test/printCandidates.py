@@ -26,7 +26,7 @@ while t.GetEntry(iEntry):
 
     eventId='{}:{}:{}'.format(t.run,t.luminosityBlock,t.event)
     
-    iZZ = t.ZZBestCand_Idx
+    iZZ = t.bestCandIdx
     if iZZ < 0 : continue # no candidate passes selection
 
     print('{}:{:.2f}:{:.2f}:{:.2f}:{:.3f}:{:.3f}:{:.3f}'.format(eventId,

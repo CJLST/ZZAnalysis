@@ -63,6 +63,7 @@ SYNCMODE = getConf("SYNCMODE", False)
 runMELA = getConf("runMELA", True)
 bestCandByMELA = getConf("bestCandByMELA", True) # requires also runMELA=True
 APPLYTRIG = getConf("APPLYTRIG", False) # Do not filter events that do not pass triggers (HLT_passZZ4l records if they did)
+PROCESS_CR = getConf("PROCESS_CR", False) # fill control regions
 
 # ggH NNLOPS weight
 APPLY_QCD_GGF_UNCERT = getConf("APPLY_QCD_GGF_UNCERT", False) 
@@ -109,7 +110,7 @@ if LEPTON_SETUP != 2022 : # not yet implemented
 
 
 ZZSequence.extend([lepFiller(cuts, LEPTON_SETUP), # FSR and FSR-corrected iso; flags for passing IDs
-                   ZZFiller(runMELA, bestCandByMELA, IsMC, LEPTON_SETUP), # Build ZZ candidates; choose best candidate; filter events with candidates
+                   ZZFiller(runMELA, bestCandByMELA, IsMC, LEPTON_SETUP, PROCESS_CR), # Build ZZ candidates; choose best candidate; filter events with candidates
 #                  jetFiller(), # Jets cleaning with leptons, JES, JEC
 #                  MELAFiller(), # Compute the full set of discriminants for the best candidate
                    ])

@@ -23,6 +23,7 @@ SampleToRun = "Data2022"
 #setConf("APPLY_K_NNLOEW_ZZQQB", True)
 #setConf("APPLY_QCD_GGF_UNCERT", True)
 
+#setConf("PROCESS_CR", True)
 
 ### 2022 data sample from /MuonEG/Run2022D-PromptNanoAODv10_v1-v1/NANOAOD
 if SampleToRun == "Data2022" :
