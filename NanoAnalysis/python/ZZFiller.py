@@ -259,7 +259,7 @@ class ZZFiller(Module):
                     if Z1.isSR : 
                         for iZ2,Z2 in enumerate(Zs):
                             if Z2.is1FCR or Z2.is2FCR or Z2.isSSCR or Z2.isSIPCR :
-                                ZLL = self.makeCand(Zs[iZ],Zs[jZ], sortZsByMass=False, fillIDVars=False)
+                                ZLL = self.makeCand(Z1, Z2, sortZsByMass=False, fillIDVars=False)
                                 if ZLL == None: continue
                                 ZLLs.append(ZLL)
                                 # Choose 1 candidate per each CR
@@ -609,7 +609,5 @@ class ZZFiller(Module):
                         else :
                             worstVar[iVar] = min(worstVar[iVar], var["sel"](zzleps[iilep]))
             ZZ.worstVar = worstVar
-
-
 
         return ZZ

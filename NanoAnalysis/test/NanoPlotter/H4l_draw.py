@@ -1,4 +1,6 @@
 ### Draw and decorate plots produced with H4l_fill.py.
+# This is just a quick example, for illustration purposes only!!!
+# It lacks all the plots and features of the full miniAOD plotter.
 #
 # run from the python prompt:
 # execfile("H4l_draw.py")
@@ -24,11 +26,53 @@ blindPlots = True
 blindHLow = 105.
 blindHHi  = 140.
 blindHM   = 500.
+epsilon=0.1
 
+
+#ZX estaimation parameters - taken from 2018 data - approx. normalization, just for visualization purposes
+
+def getZX(h_model) :
+    n_entries = 10000
+    bin_down  = 70.
+    bin_up    = 3000.
+    Lumi2018  = 59.7*1000. # to normalize
+   
+    f_4e_comb    = ROOT.TF1("f_4e_comb", "TMath::Landau(x, [0], [1])", bin_down, bin_up)
+    f_4mu_comb   = ROOT.TF1("f_4mu_comb","TMath::Landau(x, [0], [1])", bin_down, bin_up)
+    f_2e2mu_comb = ROOT.TF1("f_2e2mu_comb","[0]*TMath::Landau(x, [1], [2]) + [3]*TMath::Landau(x, [4], [5])", bin_down, bin_up)
+
+    f_4e_comb.SetParameters(141.9, 21.3)
+    f_4mu_comb.SetParameters(130.4, 15.6)
+    f_2e2mu_comb.SetParameters(0.45,131.1,18.1, 0.55,133.8,18.9)
+
+    yield_Comb_4e_2018    = 19.42/Lumi2018
+    yield_Comb_4mu_2018   = 50.72/Lumi2018
+    yield_Comb_2e2mu_2018 = 63.87/Lumi2018
+
+    h_4e=h_model.Clone("ZX_4e")
+    h_4e.Reset()
+#    h_4e.SetFillColor(ROOT.TColor.GetColor("#0331B9"))
+    h_4mu=h_4e.Clone("ZX_4mu")
+    h_2e2mu=h_4e.Clone("ZX_2e2mu")
+    
+    h_4e.FillRandom("f_4e_comb"   , n_entries)
+    h_4mu.FillRandom("f_4mu_comb"  , n_entries)
+    h_2e2mu.FillRandom("f_2e2mu_comb", n_entries)
+
+    h_4e.Scale(yield_Comb_4e_2018/h_4e.Integral())
+    h_4mu.Scale(yield_Comb_4mu_2018/h_4mu.Integral())
+    h_2e2mu.Scale(yield_Comb_2e2mu_2018/h_2e2mu.Integral())
+    
+
+    h_total=h_4e.Clone("ZX_tot")
+    h_total.Add(h_4mu)
+    h_total.Add(h_2e2mu)
+    print("Z+X integral", h_total.Integral())
+    return h_total
+    
 
 ### 2022 plots
-#Lum = 7.55 # 1/fb #2022 C-D
-Lum = 14.88 # 1/fb #2022 C-F
+Lum = 29.77 # 1/fb #2022 C-F 355100_362104 Golden json
 
 # Set style matching the one used for HZZ plots
 ROOT.TH1.SetDefaultSumw2()
@@ -129,6 +173,12 @@ def Stack (f, version = "_4GeV_"):
     signal.SetLineColor(ROOT.TColor.GetColor("#cc0000"))
     signal.SetFillColor(ROOT.TColor.GetColor("#ff9b9b"))
 
+    ### ZX
+    hzx=getZX(signal)
+    hzx.Scale(Lum*1000.)
+    hzx.SetLineColor(ROOT.TColor.GetColor("#003300"))
+    hzx.SetFillColor(ROOT.TColor.GetColor("#669966"))
+    
     
     #------------------Stack----------#
     if version=="_4GeV_" :
@@ -138,7 +188,7 @@ def Stack (f, version = "_4GeV_"):
     else:
         hs = ROOT.THStack("Stack_2GeV", "; m_{#it{4l}} (GeV) ; Events / 2 GeV" )
 
-    
+    hs.Add(hzx,"HISTO")
     hs.Add(EW,"HISTO")
     hs.Add(ggToZZ,"HISTO")
     hs.Add(ZZTo4l,"HISTO")
@@ -207,16 +257,23 @@ ymin=ctypes.c_double(0.)
 xmax=ctypes.c_double(0.)
 ymax=ctypes.c_double(0.)
 HData.ComputeRange(xmin,ymin,xmax,ymax)
-HStack.SetMaximum(max(math.ceil(HStack.GetMaximum()), ymax.value+1))
+yhmax=max(math.ceil(HStack.GetMaximum()), ymax.value+1)
+HStack.SetMaximum(yhmax)
 HStack.Draw("histo")
 HStack.GetXaxis().SetRangeUser(70., 500.)
+if blindPlots:
+     bblind = ROOT.TBox(blindHLow, 0, blindHHi, yhmax-epsilon)
+     bblind.SetFillColor(ROOT.kGray)
+     bblind.SetFillStyle(3002)
+     bblind.Draw()
 HData.Draw("samePE1")
 # Hide labels and rewrite them
 HStack.GetXaxis().SetLabelSize(0)
 for label in xlabels :
     label.Draw()
-Canvas.Write()
-print(HStack.GetMaximum(), HData.GetMaximum()) 
+ROOT.gPad.RedrawAxis()
+#Canvas.Write()
+
     
 ### Zoomed m4l
 HStack_z = Stack(fMC, "_2GeV_")
@@ -224,10 +281,18 @@ HData_z = dataGraph(fData, "_2GeV_", blind=blindPlots)
 Canvas_z = ROOT.TCanvas("M4l_z","M4l_z",canvasSizeX,canvasSizeY)
 Canvas_z.SetTicks()
 HData_z.ComputeRange(xmin,ymin,xmax,ymax)
+yhmax=max(math.ceil(HStack_z.GetMaximum()), ymax.value+1)
+HStack_z.SetMaximum(yhmax)
 HStack_z.SetMaximum(max(math.ceil(HStack_z.GetMaximum()), ymax.value+1))
 HStack_z.Draw("histo")
 HStack_z.GetXaxis().SetRangeUser(70., 170.)
+if blindPlots:
+     bblind_z = ROOT.TBox(blindHLow, 0, blindHHi, yhmax-epsilon)
+     bblind_z.SetFillColor(ROOT.kGray)
+     bblind_z.SetFillStyle(3002)
+     bblind_z.Draw()
 HData_z.Draw("samePE1")
+ROOT.gPad.RedrawAxis()
 
 ### Zoomed high mass
 Canvas_hm = ROOT.TCanvas("M4l_hm","M4l_hm",canvasSizeX,canvasSizeY)

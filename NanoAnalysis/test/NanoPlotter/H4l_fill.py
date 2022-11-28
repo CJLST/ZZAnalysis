@@ -8,7 +8,7 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 
 pathMC = "/eos/user/n/namapane/H4lnano/220420/" # FIXME: Use 2018 MC for the time being
-pathDATA = "/eos/user/n/namapane/H4lnano/221102/Data2022/"
+pathDATA = "/eos/user/n/namapane/H4lnano/221126/Data2022/"
 
 ZmassValue = 91.1876
 
@@ -42,7 +42,7 @@ def fillHistos(samplename, filename) :
     events.SetBranchStatus("luminosityBlock", 1)
     events.SetBranchStatus("event", 1)
     events.SetBranchStatus("ZZCand_*", 1)
-    events.SetBranchStatus("ZZBestCand_*", 1)
+    events.SetBranchStatus("bestCandIdx", 1)
     nEntries = events.GetEntries() 
 
     isMC = False
