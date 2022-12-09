@@ -8,7 +8,7 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 
 pathMC = "/eos/user/n/namapane/H4lnano/220420/" # FIXME: Use 2018 MC for the time being
-pathDATA = "/eos/user/n/namapane/H4lnano/221126/Data2022/"
+pathDATA = "/eos/user/n/namapane/H4lnano/221130/Data2022/"
 
 ZmassValue = 91.1876
 

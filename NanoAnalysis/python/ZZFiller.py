@@ -263,10 +263,10 @@ class ZZFiller(Module):
                                 if ZLL == None: continue
                                 ZLLs.append(ZLL)
                                 # Choose 1 candidate per each CR
-                                if Z2.is1FCR  and (best3P1FCRIdx<0 or self.bestCandCmp(ZLL,ZLLs[best3P1FCRIdx]) < 0) : best3P1FCRIdx = len(ZLLs)                        
-                                if Z2.is2FCR  and (best2P2FCRIdx<0 or self.bestCandCmp(ZLL,ZLLs[best2P2FCRIdx]) < 0) : best2P2FCRIdx = len(ZLLs)                        
-                                if Z2.isSSCR  and (bestSSCRIdx<0 or self.bestCandCmp(ZLL,ZLLs[bestSSCRIdx]) < 0) : bestSSCRIdx = len(ZLLs)                        
-                                if Z2.isSIPCR and (bestSIPCRIdx<0 or self.bestCandCmp(ZLL,ZLLs[bestSIPCRIdx]) < 0) : bestSIPCRIdx = len(ZLLs)                        
+                                if Z2.is1FCR  and (best3P1FCRIdx<0 or self.bestCandCmp(ZLL,ZLLs[best3P1FCRIdx]) < 0) : best3P1FCRIdx = len(ZLLs)-1
+                                if Z2.is2FCR  and (best2P2FCRIdx<0 or self.bestCandCmp(ZLL,ZLLs[best2P2FCRIdx]) < 0) : best2P2FCRIdx = len(ZLLs)-1
+                                if Z2.isSSCR  and (bestSSCRIdx<0 or self.bestCandCmp(ZLL,ZLLs[bestSSCRIdx]) < 0) : bestSSCRIdx = len(ZLLs)-1
+                                if Z2.isSIPCR and (bestSIPCRIdx<0 or self.bestCandCmp(ZLL,ZLLs[bestSIPCRIdx]) < 0) : bestSIPCRIdx = len(ZLLs)-1
 
 
             if self.candsToStore == StoreOption.BestCandOnly : # keep only the best cand as single element of the ZZ collection

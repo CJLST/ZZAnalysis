@@ -72,7 +72,8 @@ def getZX(h_model) :
     
 
 ### 2022 plots
-Lum = 29.77 # 1/fb #2022 C-F 355100_362104 Golden json
+Lum = 31.3  # 1/fb 2022 C-F 355100_362104 Golden json
+#Lum = 34.09 # 1/fb 2022 C-F 355100_362760 Golden json
 
 # Set style matching the one used for HZZ plots
 ROOT.TH1.SetDefaultSumw2()
@@ -257,12 +258,13 @@ ymin=ctypes.c_double(0.)
 xmax=ctypes.c_double(0.)
 ymax=ctypes.c_double(0.)
 HData.ComputeRange(xmin,ymin,xmax,ymax)
-yhmax=max(math.ceil(HStack.GetMaximum()), ymax.value+1)
+yhmax=math.ceil(max(HStack.GetMaximum(), ymax.value))
 HStack.SetMaximum(yhmax)
 HStack.Draw("histo")
-HStack.GetXaxis().SetRangeUser(70., 500.)
+HStack.GetXaxis().SetRangeUser(70., 300.)
 if blindPlots:
-     bblind = ROOT.TBox(blindHLow, 0, blindHHi, yhmax-epsilon)
+     ROOT.gPad.GetRangeAxis(xmin,ymin,xmax,ymax)
+     bblind = ROOT.TBox(blindHLow, 0, blindHHi, ymax.value-epsilon)
      bblind.SetFillColor(ROOT.kGray)
      bblind.SetFillStyle(3002)
      bblind.Draw()
@@ -281,13 +283,13 @@ HData_z = dataGraph(fData, "_2GeV_", blind=blindPlots)
 Canvas_z = ROOT.TCanvas("M4l_z","M4l_z",canvasSizeX,canvasSizeY)
 Canvas_z.SetTicks()
 HData_z.ComputeRange(xmin,ymin,xmax,ymax)
-yhmax=max(math.ceil(HStack_z.GetMaximum()), ymax.value+1)
+yhmax=math.ceil(max(HStack_z.GetMaximum(), ymax.value))
 HStack_z.SetMaximum(yhmax)
-HStack_z.SetMaximum(max(math.ceil(HStack_z.GetMaximum()), ymax.value+1))
 HStack_z.Draw("histo")
 HStack_z.GetXaxis().SetRangeUser(70., 170.)
 if blindPlots:
-     bblind_z = ROOT.TBox(blindHLow, 0, blindHHi, yhmax-epsilon)
+     ROOT.gPad.GetRangeAxis(xmin,ymin,xmax,ymax)
+     bblind_z = ROOT.TBox(blindHLow, 0, blindHHi, ymax.value-epsilon)
      bblind_z.SetFillColor(ROOT.kGray)
      bblind_z.SetFillStyle(3002)
      bblind_z.Draw()
