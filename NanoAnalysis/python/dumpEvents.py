@@ -51,7 +51,7 @@ class dumpEvents(Module):
                      end="")
                if (lep.fsrPhotonIdx>=0):
                    fsr=fsrPhotons[lep.fsrPhotonIdx]
-                   print(' FSR: pt={:.3g} eta={:.3g}, phi={:.3g}, dREt2={:.3g}, Iso={:.3g}, true={}'.format(fsr.pt, fsr.eta, fsr.phi, fsr.dROverEt2, fsr.relIso03, (fsr.genFsrIdx>=0)))
+                   print(' FSR: pt={:.3g} eta={:.3g}, phi={:.3g}, dREt2={:.3g}, Iso={:.3g}, isTrue={}'.format(fsr.pt, fsr.eta, fsr.phi, fsr.dROverEt2, fsr.relIso03, (fsr.genFsrIdx>=0)))
                else:
                    print()
    
@@ -71,7 +71,7 @@ class dumpEvents(Module):
                print(' scEta={:.3g} BDT={:.3g} passBDT={} relaxedId={} FullId={} FullSel={}'.format(lep.eta+lep.deltaEtaSC, lep.mvaFall17V2Iso, passBDT, lep.ZZRelaxedId, lep.ZZFullId, lep.ZZFullSel), end="")
                if (lep.fsrPhotonIdx>=0):
                    fsr=fsrPhotons[lep.fsrPhotonIdx]
-                   print(' FSR: pt={:.3g} eta={:.3g}, phi={:.3g}, dREt2={:.3g}, Iso={:.3g}, true={}'.format(fsr.pt, fsr.eta, fsr.phi, fsr.dROverEt2, fsr.relIso03, (fsr.genFsrIdx>=0)))
+                   print(' FSR: pt={:.3g} eta={:.3g}, phi={:.3g}, dREt2={:.3g}, Iso={:.3g}, isTrue={}'.format(fsr.pt, fsr.eta, fsr.phi, fsr.dROverEt2, fsr.relIso03, (fsr.genFsrIdx>=0)))
                else:
                    print()
    

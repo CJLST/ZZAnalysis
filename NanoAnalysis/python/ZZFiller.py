@@ -24,7 +24,7 @@ class StoreOption:
 
 class ZZFiller(Module):
 
-    def __init__(self, runMELA, bestCandByMELA, isMC, year, processCR):
+    def __init__(self, runMELA, bestCandByMELA, isMC, year, processCR, debug=False):
         self.writeHistFile = False
         self.isMC = isMC
         self.year = year
@@ -38,7 +38,7 @@ class ZZFiller(Module):
         self.addOSCR = processCR    
         self.addSIPCR = processCR
 
-        self.DEBUG = False
+        self.DEBUG = debug
         self.ZmassValue = 91.1876;
 
         self.candsToStore = StoreOption.BestCandOnly # Only store the best candidate for the SR
@@ -155,6 +155,7 @@ class ZZFiller(Module):
         if self.addSSCR or self. addOSCR or self.addSIPCR :
             self.out.branch("nZLLCand", "I")
             self.out.branch("ZLLCand_mass", "F", lenVar="nZLLCand")
+            self.out.branch("ZLLCand_massPreFSR", "F", lenVar="nZLLCand")
 #             self.out.branch("ZLLCand_pt", "F", lenVar="nZLLCand")
 #             self.out.branch("ZLLCand_eta", "F", lenVar="nZLLCand")
 #             self.out.branch("ZLLCand_phi", "F", lenVar="nZLLCand")
@@ -232,6 +233,7 @@ class ZZFiller(Module):
             bestCandIdx = -1
 
             ZLLs = []
+            ZLLsTemp = []
             best3P1FCRIdx = -1
             best2P2FCRIdx = -1
             bestSSCRIdx = -1
@@ -245,30 +247,53 @@ class ZZFiller(Module):
                         if ZZ == None: continue
                         ZZs.append(ZZ)
 
-                        #Search for the the best cand in the SR
+                        if self.DEBUG : print("ZZ:", len(ZZs)-1, ZZ.p4.M(), ZZ.Z1.M, ZZ.Z2.M, ZZ.Z2.sumpt(), ZZ.finalState(), ZZ.p_GG_SIG_ghg2_1_ghz1_1_JHUGen, ZZ.p_QQB_BKG_MCFM, ZZ.KD, (ZZ.Z1.isSR and ZZ.Z2.isSR))
+
+                        #Search for the the best cand in the SR (ie among those passing full ID cuts)
                         if ZZ.Z1.isSR and ZZ.Z2.isSR :
                             if bestCandIdx<0 or self.bestCandCmp(ZZ,ZZs[bestCandIdx]) < 0: bestCandIdx = len(ZZs)-1
 
-                        if self.DEBUG: print("ZZ:", len(ZZs)-1, ZZ.p4.M(), ZZ.Z1.M, ZZ.Z2.M, ZZ.Z2.sumpt(), ZZ.finalState(), ZZ.p_GG_SIG_ghg2_1_ghz1_1_JHUGen, ZZ.p_QQB_BKG_MCFM, ZZ.KD, (ZZ.Z1.isSR and ZZ.Z2.isSR))
+            if self.DEBUG : print("bestCand:", bestCandIdx)
 
 
-
-            ### ZLL combinations for control regions, made of 1 good Z + 1 ll pair
-            if self.addSSCR or self. addOSCR or self.addSIPCR :
+            ### ZLL combinations for control regions, made of 1 good Z + 1 ll pair;
+            ### these are considered only if no SR candidate is present in the event
+            if bestCandIdx < 0 and (self.addSSCR or self. addOSCR or self.addSIPCR) :
                 for iZ1,Z1 in enumerate(Zs):
                     if Z1.isSR : 
                         for iZ2,Z2 in enumerate(Zs):
                             if Z2.is1FCR or Z2.is2FCR or Z2.isSSCR or Z2.isSIPCR :
                                 ZLL = self.makeCand(Z1, Z2, sortZsByMass=False, fillIDVars=False)
                                 if ZLL == None: continue
-                                ZLLs.append(ZLL)
-                                # Choose 1 candidate per each CR
-                                if Z2.is1FCR  and (best3P1FCRIdx<0 or self.bestCandCmp(ZLL,ZLLs[best3P1FCRIdx]) < 0) : best3P1FCRIdx = len(ZLLs)-1
-                                if Z2.is2FCR  and (best2P2FCRIdx<0 or self.bestCandCmp(ZLL,ZLLs[best2P2FCRIdx]) < 0) : best2P2FCRIdx = len(ZLLs)-1
-                                if Z2.isSSCR  and (bestSSCRIdx<0 or self.bestCandCmp(ZLL,ZLLs[bestSSCRIdx]) < 0) : bestSSCRIdx = len(ZLLs)-1
-                                if Z2.isSIPCR and (bestSIPCRIdx<0 or self.bestCandCmp(ZLL,ZLLs[bestSIPCRIdx]) < 0) : bestSIPCRIdx = len(ZLLs)-1
+                                if ZLL.Z2.is2FCR  and (best2P2FCRIdx<0 or self.bestCandCmp(ZLL,ZLLsTemp[best2P2FCRIdx]) < 0) : best2P2FCRIdx = len(ZLLsTemp)
+                                if ZLL.Z2.is1FCR  and (best3P1FCRIdx<0 or self.bestCandCmp(ZLL,ZLLsTemp[best3P1FCRIdx]) < 0) : best3P1FCRIdx = len(ZLLsTemp)
+                                if ZLL.Z2.isSSCR  and (bestSSCRIdx<0 or self.bestCandCmp(ZLL,ZLLsTemp[bestSSCRIdx]) < 0) : bestSSCRIdx = len(ZLLsTemp)
+                                if ZLL.Z2.isSIPCR and (bestSIPCRIdx<0 or self.bestCandCmp(ZLL,ZLLsTemp[bestSIPCRIdx]) < 0) : bestSIPCRIdx = len(ZLLsTemp)
+                                ZLLsTemp.append(ZLL)
+                                
+                # Only one candidate per method should be selected per event: check if
+                if best2P2FCRIdx >= 0 and best3P1FCRIdx >= 0 :
+                    print ("WARNING: event", eventId, "has CR candidates in both 2P2F amd 3P1F regions")   #FIXME choose the best among the two
 
-
+                # Store only ZLL candidates that belong to at least 1 CR
+                for iZLL, ZLL in enumerate(ZLLsTemp) :
+                    select = False
+                    if iZLL == best2P2FCRIdx :
+                        best2P2FCRIdx = len(ZLLs)
+                        select = True
+                    if iZLL == best3P1FCRIdx :
+                        best3P1FCRIdx = len(ZLLs)
+                        select = True
+                    if iZLL == bestSSCRIdx :
+                        bestSSCRIdx = len(ZLLs)
+                        select = True
+                    if iZLL == bestSIPCRIdx :
+                        bestSSCRIdx = len(ZLLs)
+                        select = True
+                    if select : ZLLs.append(ZLL)
+                    if self.DEBUG: print("ZLL:", iZLL, ZLL.p4.M(), ZLL.Z1.M, ZLL.Z2.M, ZLL.Z2.sumpt(), ZLL.finalState(), ZLL.p_GG_SIG_ghg2_1_ghz1_1_JHUGen, ZLL.p_QQB_BKG_MCFM, ZLL.KD,
+                                         "2P2F:", int(iZLL==best2P2FCRIdx), "3P1F:", int(iZLL==best3P1FCRIdx), "SS:", int(iZLL == bestSSCRIdx), "SIP:", int(iZLL == bestSIPCRIdx))
+                    
             if self.candsToStore == StoreOption.BestCandOnly : # keep only the best cand as single element of the ZZ collection
                 if bestCandIdx >= 0 :
                     ZZs = [ZZs[bestCandIdx]]
@@ -276,13 +301,10 @@ class ZZFiller(Module):
                 else :
                     ZZs = []
 
+            ### Skip events with no candidates
             if len(ZZs) == 0 and len(ZLLs) == 0: return False
-            
-            if self.DEBUG: print("bestCand:", bestCandIdx)
-
 
             ### Now fill the variables to be stored as output
-
             # Fill Zs - we are only interested in signal ones
             bestZIdx = -1
             ZCand_mass = []
@@ -380,6 +402,7 @@ class ZZFiller(Module):
 
             if self.addSSCR or self. addOSCR or self.addSIPCR :
                 ZLLCand_mass   = [0.]*len(ZLLs)
+                ZLLCand_massPreFSR = [0.]*len(ZLLs)
 #                 ZLLCand_pt     = [0.]*len(ZLLs)
 #                 ZLLCand_eta    = [0.]*len(ZLLs)
 #                 ZLLCand_phi    = [0.]*len(ZLLs)
@@ -391,6 +414,7 @@ class ZZFiller(Module):
 
                 for iZLL, ZLL in enumerate(ZLLs) :
                     ZLLCand_mass[iZLL] = ZLL.p4.M()
+                    ZLLCand_massPreFSR[iZLL] = ZLL.massPreFSR()
 #                     ZLLCand_pt[iZLL] = ZLL.p4.pt()
 #                     ZLLCand_eta[iZLL] = ZLL.p4.eta()
 #                     ZLLCand_phi[iZLL] = ZLL.p4.phi()
@@ -402,6 +426,7 @@ class ZZFiller(Module):
 
                 self.out.fillBranch("nZLLCand", len(ZLLs))
                 self.out.fillBranch("ZLLCand_mass",   ZLLCand_mass)
+                self.out.fillBranch("ZLLCand_massPreFSR",   ZLLCand_massPreFSR)
 #                 self.out.fillBranch("ZLLCand_pt",     ZLLCand_pt)
 #                 self.out.fillBranch("ZLLCand_eta",    ZLLCand_eta)
 #                 self.out.fillBranch("ZLLCand_phi",    ZLLCand_phi)
