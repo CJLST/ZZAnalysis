@@ -6,6 +6,11 @@ from __future__ import print_function
 import math
 from ROOT import *
 
+region = 'SR'
+#region = '3P1F'
+#region = '2P2F'
+#region = 'SS'
+
 
 cjlstFile   = "../../AnalysisStep/test/ZZ4lAnalysis.root" 
 nanoFile = "nanoZZ4lAnalysis.root"
@@ -13,12 +18,26 @@ nanoFile = "nanoZZ4lAnalysis.root"
 compareWeights = False
 compareKD = False
 massTolerance = 0.1 # in GeV; account for rounding due to data packing
+massTolerance = 0.5 #FIXME
 
-treeMini = TChain("ZZTree/candTree")
+if region == 'SR' :
+    treeMiniName = 'ZZTree/candTree'
+    nanoPrefix = 'treeNano.ZZCand_'
+else :
+    treeMiniName = 'CRZLLTree/candTree'
+    nanoPrefix = 'treeNano.ZLLCand_'
+
+# definitions for CRs in mini
+CRdict = {"SS":21, "2P2F":22, "3P1F":23}
+def test_bit(mask, iBit):
+    return (mask >> iBit) & 1
+    
+treeMini = TChain(treeMiniName)
 treeMini.Add(cjlstFile)
 
 treeNano = TChain("Events")
 treeNano.Add(nanoFile)
+
 
 
 iEntryMini=0
@@ -27,40 +46,42 @@ foundNano=[False]*treeNano.GetEntries()
 
 while treeMini.GetEntry(iEntryMini):
 
-#    if treeMini.RunNumber!=297685 : continue     #FIXME
-    
     iEntryMini+=1
-    if treeMini.ZZsel<0 : continue
+    if region == 'SR' :
+        if treeMini.ZZsel<0 : continue
+    else :
+        if treeMini.ZZsel>=90: continue # Do not consider CRs in events with a SR candidate, as prescribed
+        if not test_bit(treeMini.CRflag,CRdict[region]) : continue
 
     iEntryNano=0
     found = False
     while treeNano.GetEntry(iEntryNano):
         iEntryNano+=1
         if foundNano[iEntryNano-1] : continue # was alredy found: skip
+
+        if region == 'SR' :     iBC = treeNano.bestCandIdx
+        elif region == 'SS' :   iBC = treeNano.ZLLbestSSIdx
+        elif region == '2P2F' : iBC = treeNano.ZLLbest2P2FIdx
+        elif region == '3P1F' : iBC = treeNano.ZLLbest3P1FIdx
+
+
+        if iBC < 0 : # no best candidate in this event
+            foundNano[iEntryNano-1] = True
+            continue
             
         if treeMini.RunNumber==treeNano.run and treeMini.LumiNumber==treeNano.luminosityBlock and treeMini.EventNumber==treeNano.event :
             foundNano[iEntryNano-1] = True
             found = True
             break
 
-
-#        if treeNano.bestCandIdx < 0 : #no best candidate; ignore this event later on
-#            foundNano[iEntryNano-1] = True
-#            continue
-
     if found :
-        if treeNano.bestCandIdx < 0 : # no best candidate in this event
-            print("Found in nano, but no best cand:"+str(treeMini.RunNumber)+":"+str(treeMini.LumiNumber)+":"+str(treeMini.EventNumber))
-            continue
-        iBC = treeNano.bestCandIdx
-        
-        t2_ZZMass=treeNano.ZZCand_mass[iBC]
-        t2_ZZMassPreFSR=treeNano.ZZCand_massPreFSR[iBC]
-        t2_Z1Mass=treeNano.ZZCand_Z1mass[iBC]
-        t2_Z2Mass=treeNano.ZZCand_Z2mass[iBC]
-        t2_Z1flav=treeNano.ZZCand_Z1flav[iBC]
-        t2_Z2flav=treeNano.ZZCand_Z2flav[iBC]
-        t2_dataMC=treeNano.ZZCand_dataMCWeight[iBC]
+        t2_ZZMass = eval(nanoPrefix+'mass[iBC]')
+        t2_ZZMassPreFSR=eval(nanoPrefix+'massPreFSR[iBC]')
+        t2_Z1Mass=eval(nanoPrefix+'Z1mass[iBC]')
+        t2_Z2Mass=eval(nanoPrefix+'Z2mass[iBC]')
+        t2_Z1flav=eval(nanoPrefix+'Z1flav[iBC]')
+        t2_Z2flav=eval(nanoPrefix+'Z2flav[iBC]')
+#        t2_dataMC=eval(nanoPrefix+'dataMCWeight[iBC]')
         t2_hasFSR = abs(t2_ZZMass-t2_ZZMassPreFSR)>0.02
 
         t1_hasFSR = treeMini.fsrPt.size()>0
@@ -80,17 +101,18 @@ while treeMini.GetEntry(iEntryMini):
             
             print("Mass Diff: "+str(treeMini.RunNumber)+":"+str(treeMini.LumiNumber)+":"+str(treeMini.EventNumber),
                   "mini:", '{:.2f} {:.2f} {:.2f} {:.4f} {:.4f} {:.2f}'.format(treeMini.ZZMass,treeMini.Z1Mass,treeMini.Z2Mass, ps1, pb1, KD_mini), "hasFSR:",t1_hasFSR ,
-                  "nano:", '{:.2f} {:.2f} {:.2f} {:.2f}'.format(t2_ZZMass, t2_Z1Mass, t2_Z2Mass, treeNano.ZZCand_KD[iBC]), "hasFSR:", t2_hasFSR)
-            print ("   mini ", end ="")
-            for i in range(4): print("lep"+str(i), treeMini.LepPt[i],treeMini.LepLepId[i], end=" ")
-            nanoLepIdxs = [treeNano.ZZCand_Z1l1Idx[iBC],treeNano.ZZCand_Z1l2Idx[iBC], treeNano.ZZCand_Z2l1Idx[iBC],treeNano.ZZCand_Z2l2Idx[iBC]]
-            lepPts = list(treeNano.Muon_pt) + list(treeNano.Electron_pt)
-            lepIds = list(treeNano.Muon_pdgId) + list(treeNano.Electron_pdgId)
-            print ("\n   nano ", end="")
-            for i, lIdx in enumerate(nanoLepIdxs) :
-                print(lepPts[lIdx], lepIds[lIdx], end=" ")
-            print()
-            print(lepPts)
+                  "nano:", '{:.2f} {:.2f} {:.2f} {:.2f}'.format(t2_ZZMass, t2_Z1Mass, t2_Z2Mass, eval(nanoPrefix+'KD[iBC]')), "hasFSR:", t2_hasFSR)
+            if region=='SR': #FIXME
+                print ("   mini ", end ="")
+                for i in range(4): print("lep"+str(i), treeMini.LepPt[i],treeMini.LepLepId[i], end=" ")
+                nanoLepIdxs = [eval(nanoPrefix+'Z1l1Idx[iBC]'),eval(nanoPrefix+'Z1l2Idx[iBC]'), eval(nanoPrefix+'Z2l1Idx[iBC]'),eval(nanoPrefix+'Z2l2Idx[iBC]')]
+                lepPts = list(treeNano.Muon_pt) + list(treeNano.Electron_pt)
+                lepIds = list(treeNano.Muon_pdgId) + list(treeNano.Electron_pdgId)
+                print ("\n   nano ", end="")
+                for i, lIdx in enumerate(nanoLepIdxs) :
+                    print(lepPts[lIdx], lepIds[lIdx], end=" ")
+                    print()
+                    print(lepPts)
 
 
 #treeMini.Z2Mass
@@ -113,4 +135,4 @@ for iEntryNano,found in enumerate(foundNano):
         treeNano.GetEntry(iEntryNano)
         print("Missing in mini: "+str(treeNano.run)+":"+str(treeNano.luminosityBlock)+":"+str(treeNano.event))
 
-print("Matches:", nMatch)
+print("Matches in", region, ":", nMatch)

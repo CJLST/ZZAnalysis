@@ -12,6 +12,7 @@ from ZZAnalysis.NanoAnalysis.tools import setConf, getConf
 from ZZAnalysis.NanoAnalysis.triggerAndSkim import * # Trigger requirements are defined here
 from ZZAnalysis.NanoAnalysis.lepFiller import *
 from ZZAnalysis.NanoAnalysis.ZZFiller import *
+from ZZAnalysis.NanoAnalysis.ZZExtraFiller import *
 
 
 ### Definition of analysis cuts
@@ -51,6 +52,7 @@ cuts = dict(
 
 
 ### Get processing customizations, if defined in the including .py; use defaults otherwise 
+DEBUG = getConf("DEBUG", False)
 SAMPLENAME = getConf("SAMPLENAME", "test")
 LEPTON_SETUP = getConf("LEPTON_SETUP", 2018)
 if not (LEPTON_SETUP == 2016 or LEPTON_SETUP == 2017 or LEPTON_SETUP == 2018 or LEPTON_SETUP == 2022) :
@@ -110,8 +112,9 @@ if LEPTON_SETUP != 2022 : # not yet implemented
 
 
 ZZSequence.extend([lepFiller(cuts, LEPTON_SETUP), # FSR and FSR-corrected iso; flags for passing IDs
-                   ZZFiller(runMELA, bestCandByMELA, IsMC, LEPTON_SETUP, PROCESS_CR), # Build ZZ candidates; choose best candidate; filter events with candidates
+                   ZZFiller(runMELA, bestCandByMELA, IsMC, LEPTON_SETUP, PROCESS_CR, debug=DEBUG), # Build ZZ candidates; choose best candidate; filter events with candidates
 #                  jetFiller(), # Jets cleaning with leptons, JES, JEC
+                   ZZExtraFiller('SR'),
 #                  MELAFiller(), # Compute the full set of discriminants for the best candidate
                    ])
 
