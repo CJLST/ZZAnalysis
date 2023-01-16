@@ -73,18 +73,18 @@ def hadd(file, odir, idirs):
     # import pdb; pdb.set_trace()
     cmd = ' '.join(haddCmd)
     print cmd
-    os.system(cmd)
+    exc = os.system(cmd)
+    if exc != 0 :
+        print '---> ABORTING <---'
+        exit(1)
 
 
 def haddRec(odir, idirs):
     print 'adding', idirs
     print 'to', odir 
 
-    cmd = ' '.join( ['mkdir', odir])
-    # import pdb; pdb.set_trace()
-    # os.system( cmd )
     try:
-        os.mkdir( odir )
+        os.makedirs( odir )
     except OSError:
         print 
         print 'ERROR: directory in the way. Maybe you ran hadd already in this directory? Remove it and try again, or run with -r'
