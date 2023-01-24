@@ -3,13 +3,13 @@
 ## - add sync mode
 ## - replace lepton pT instead of adding a new variable (overwritePt=true)
 
+from __future__ import print_function
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
 import ROOT
 import os
 import random
 ROOT.PyConfig.IgnoreCommandLineOptions = True
-
 
 def mk_safe(fct, *args):
     try:
@@ -37,6 +37,8 @@ class muonScaleResProducer(Module):
         self._roccor = ROOT.RoccoR(p_roccor + '/' + rc_corrections)
         self.overwritePt = overwritePt
         self.syncMode = syncMode
+
+        print("muonScaleResProducer configuration: dataYear=", dataYear, "overwritePt=", overwritePt, "syncMode=", self.syncMode)
 
     def beginJob(self):
         pass

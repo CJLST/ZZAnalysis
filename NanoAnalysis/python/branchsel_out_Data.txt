@@ -4,7 +4,7 @@ keep event
 keep luminosityBlock
 #keep LHE*
 #keep Generator*
-#keep Flag*
+keep Flag*
 #keep PV*
 #keep Pileup*
 keep HLT_passZZ*

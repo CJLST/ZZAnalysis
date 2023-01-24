@@ -7,8 +7,8 @@
 from __future__ import print_function
 from ZZAnalysis.NanoAnalysis.tools import setConf, getConf, insertAfter
 
-
-SampleToRun = "Data2022"
+#SampleToRun = "Data2022"
+SampleToRun = "MCsync_UL"
 
 ### Customize processing variables
 #setConf("runMELA", False)
@@ -25,68 +25,55 @@ SampleToRun = "Data2022"
 
 setConf("PROCESS_CR", True)
 setConf("DEBUG", False)
+setConf("SYNCMODE", True) # Force muon resolution correction with fixed +1 sigma smearing
 
-### 2022 data sample from /MuonEG/Run2022D-PromptNanoAODv10_v1-v1/NANOAOD
+
+################################################################################
 if SampleToRun == "Data2022" :
+    # 2022 data sample from /MuonEG/Run2022D-PromptNanoAODv10_v1-v1/NANOAOD
     setConf("IsMC", False)
     setConf("LEPTON_SETUP", 2022)
     setConf("PD", "any")
     setConf("SAMPLENAME", "test")
-    setConf("APPLYTRIG", False)
+    setConf("TRIGPASSTHROUGH", True)
     setConf("store","root://cms-xrd-global.cern.ch/")
     setConf("fileNames",[
         "/store/data/Run2022D/MuonEG/NANOAOD/PromptNanoAODv10_v2-v1/50000/68f42f42-3274-46ec-b23d-bfadc13012c2.root",
         ])
 
 
-elif SampleToRun == "ggh125_UL" : ### 2018 UL sync samples
+################################################################################
+elif SampleToRun == "ggh125_UL" : ### 2018 UL test sample
     setConf("SAMPLENAME", "ggH125")
     setConf("XSEC", 48.58*0.0002745)
-    setConf("syncMode", True)
     setConf("store","root://cms-xrd-global.cern.ch/")
     setConf("fileNames",[
         "/store/mc/RunIISummer20UL18NanoAODv2/WplusH_HToZZTo4L_M125_TuneCP5_13TeV_powheg2-minlo-HWJ_JHUGenV7011_pythia8/NANOAODSIM/106X_upgrade2018_realistic_v15_L1v1-v1/270000/3B6A5CB5-2B7C-924D-85B4-FC3B0C1F4909.root",
         ])
 
-
-elif SampleToRun == "MC_Rereco" :### Rereco sync samples. NOTE: by default, electron cuts are for UL in lepFiller.py!
+################################################################################
+elif SampleToRun == "MCsync_UL" :
+    # Custom-reprocessed Rereco nanoAOD file with updated FSR and electron MVA,
+    # no packing for genparticle p3; 26000 events
+    # corresponding to:/store/mc/RunIISummer20UL17MiniAODv2/GluGluHToZZTo4L_M125_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8/MINIAODSIM/106X_mc2017_realistic_v9-v2/130000/3E4E8D55-3993-2B43-AF3B-7AB45BBE0BDA.root
+    # Note that electron mva variable is electron_mvaHZZIso as for nanoAOD v10
     setConf("SAMPLENAME", "ggH125")
     setConf("XSEC", 48.58*0.0002745)
-#    setConf("syncMode", True)
+    setConf("LEPTON_SETUP", 2017)
+    setConf("store","")
+    setConf("fileNames",["/eos/user/n/namapane/H4lnano/ggH125_2017UL_fixedFSR.root"])
 
-### Custom-reprocessed Rereco nanoAOD file with updated FSR, corresponding to:/store/mc/RunIIAutumn18NanoAODv7/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/NANOAODSIM/Nano02Apr2020_102X_upgrade2018_realistic_v21-v1/260000/BA6D7F40-ED5E-7D4E-AB14-CE8A9C5DE7EC.root
+
+################################################################################
+elif SampleToRun == "MCsync_Rereco" :
+     # Custom-reprocessed Rereco nanoAOD file with updated FSR,
+     # corresponding to:/store/mc/RunIIAutumn18NanoAODv7/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/NANOAODSIM/Nano02Apr2020_102X_upgrade2018_realistic_v21-v1/260000/BA6D7F40-ED5E-7D4E-AB14-CE8A9C5DE7EC.root
+     # NOTE: by default, electron cuts are for UL in lepFiller.py!
+    setConf("SAMPLENAME", "ggH125")
+    setConf("XSEC", 48.58*0.0002745)
+
     setConf("store","")
     setConf("fileNames",["/eos/user/n/namapane/H4lnano/ggH125_fixedFSR.root"])
-
-    ### ggH125
-    # setConf("store","/eos/cms")
-    # setConf("fileNames",[
-    #     "/store/mc/RunIIAutumn18NanoAODv7/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/NANOAODSIM/Nano02Apr2020_102X_upgrade2018_realistic_v21-v1/260000/BA6D7F40-ED5E-7D4E-AB14-CE8A9C5DE7EC.root",
-    #     "/store/mc/RunIIAutumn18NanoAODv7/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/NANOAODSIM/Nano02Apr2020_102X_upgrade2018_realistic_v21-v1/100000/445F4788-F322-C443-AB54-699C7716976A.root",
-    #     "/store/mc/RunIIAutumn18NanoAODv7/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/NANOAODSIM/Nano02Apr2020_102X_upgrade2018_realistic_v21-v1/270000/1DA1D554-E919-0146-9873-77E0B1B08DB5.root", ])
-
-    ### ZH125
-    # setConf("SAMPLENAME", "ZH125")
-    # setConf("store","root://cms-xrd-global.cern.ch/")
-    # setConf("fileNames",["/store/mc/RunIIAutumn18NanoAODv7/ZH_HToZZ_4LFilter_M125_13TeV_powheg2-minlo-HZJ_JHUGenV7011_pythia8/NANOAODSIM/Nano02Apr2020_102X_upgrade2018_realistic_v21-v1/60000/C670B342-C02E-1848-AE6A-0B5550E3DFE3.root"])
-    
-    ### qqZZ: /ZZTo4L_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18NanoAODv7-Nano02Apr2020_102X_upgrade2018_realistic_v21_ext1-v1/NANOAODSIM
-    # setConf("SAMPLENAME", "qqZZ")
-    # setConf("XSEC", 1.256)
-    # setConf("fileNames",["/store/mc/RunIIAutumn18NanoAODv7/ZZTo4L_TuneCP5_13TeV_powheg_pythia8/NANOAODSIM/Nano02Apr2020_102X_upgrade2018_realistic_v21_ext1-v1/100000/3BD1674D-804E-0E45-B106-EAB3C0D59E32.root"])
-
-    ### High mass sample
-    # setConf("SAMPLENAME", "VBFH3000")
-    # setConf("fileNames",["/store/mc/RunIIAutumn18NanoAODv7/VBF_HToZZTo4L_M3000_13TeV_powheg2_JHUGenV7011_pythia8/NANOAODSIM/Nano02Apr2020_102X_upgrade2018_realistic_v21-v1/60000/A82C31DF-0A6F-B44F-857B-89BFD72CEFEA.root"])
-
-
-elif SampleToRun == "Data2018_Rereco" :
-    setConf("IsMC", False)
-    setConf("PD", "any")
-    setConf("SAMPLENAME", "test")
-    setConf("store","root://cms-xrd-global.cern.ch/")
-    setConf("fileNames",["/store/data/Run2018A/MuonEG/NANOAOD/02Apr2020-v1/50000/420527E8-C6CA-9745-AD5D-6ADF63B808B5.root"])
-#    setConf("fileNames",["/store/data/Run2018A/DoubleMuon/NANOAOD/02Apr2020-v1/30000/CD25F914-CA18-2847-989C-91E6BF71E22F.root"])
 
 
 #####################################################################

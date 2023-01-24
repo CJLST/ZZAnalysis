@@ -64,7 +64,7 @@ XSEC = getConf("XSEC", 1.)
 SYNCMODE = getConf("SYNCMODE", False)
 runMELA = getConf("runMELA", True)
 bestCandByMELA = getConf("bestCandByMELA", True) # requires also runMELA=True
-APPLYTRIG = getConf("APPLYTRIG", False) # Do not filter events that do not pass triggers (HLT_passZZ4l records if they did)
+TRIGPASSTHROUGH = getConf("TRIGPASSTHROUGH", False) # Do not filter events that do not pass triggers (HLT_passZZ4l records if they did)
 PROCESS_CR = getConf("PROCESS_CR", False) # fill control regions
 
 # ggH NNLOPS weight
@@ -103,7 +103,7 @@ if not IsMC :
         exit(1) #2016-17 to be implemented
 
 ### Sequence to be run
-ZZSequence = [triggerAndSkim(isMC=IsMC, PD=PD, era=LEPTON_SETUP, passThru=APPLYTRIG)] # Filter for good PV and trigger requirements; apply PD precedence rules for data
+ZZSequence = [triggerAndSkim(isMC=IsMC, PD=PD, era=LEPTON_SETUP, passThru=TRIGPASSTHROUGH)] # Filter for good PV and trigger requirements; apply PD precedence rules for data
 
 if LEPTON_SETUP != 2022 : # not yet implemented
     from ZZAnalysis.NanoAnalysis.muonScaleResProducer import muonScaleRes2016, muonScaleRes2017, muonScaleRes2018

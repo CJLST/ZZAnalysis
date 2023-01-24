@@ -23,5 +23,5 @@ EGamma2018C,,    -1, ,,/EGamma/Run2018C-02Apr2020-v1/NANOAOD,dbs,root://cms-xrd-
 ###,,,,,,,,,,,Run2018D-PromptReco-v2 - runs 320413-325175 - 31.75 fb-1
 DoubleMu2018D,,  -1, ,,/DoubleMuon/Run2018D-02Apr2020-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/, 4,DATA_TAG=PromptReco;PD=DoubleMu;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
 MuonEG2018D,,    -1, ,,/MuonEG/Run2018D-02Apr2020-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/,     4,DATA_TAG=PromptReco;PD=MuEG;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
-SingleMuon2018D,,-1, ,,/SingleMuon/Run2018D-02Apr2020-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/,10,DATA_TAG=PromptReco;PD=SingleMuon;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
+SingleMuon2018D,,-1, ,,/SingleMuon/Run2018D-02Apr2020-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/, 6,DATA_TAG=PromptReco;PD=SingleMuon;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
 EGamma2018D,,    -1, ,,/EGamma/Run2018D-02Apr2020-v1/NANOAOD ,dbs,/eos/cms,                         10,DATA_TAG=PromptReco;PD=EGamma;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
