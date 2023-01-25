@@ -18,3 +18,7 @@
 *.pyc
 __init__.py
 *.DS_Store
+Pdfdata
+br.sm?
+input.DAT
+ffwarn.dat

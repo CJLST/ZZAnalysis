@@ -526,7 +526,6 @@ class ZZFiller(Module):
     # Choose by abs(MZ1-MZ), or sum(PT) if same Z1
     def bestCandByZ1Z2(self,a,b): 
         if abs(a.Z1.M-b.Z1.M) < 1e-4 : # same Z1: choose the candidate with highest-pT Z2 leptons
-            print ("cmp by sumpt")
             if a.Z2.sumpt() > b.Z2.sumpt() :
                 return -1
             else :

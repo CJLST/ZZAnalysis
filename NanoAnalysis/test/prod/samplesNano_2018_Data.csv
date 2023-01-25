@@ -3,25 +3,25 @@ identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,spli
 ###,,,,,,,,,,,All Run2018 (golden JSON): 59.74 fb-1
 
 ###,,,,,,,,,,,Run2018A-17Sep2018-v2 - runs 315252-316995
-DoubleMu2018A,,  -1, ,,/DoubleMuon/Run2018A-02Apr2020-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/, 4,DATA_TAG=ReReco;PD=DoubleMu;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
-MuonEG2018A,,    -1, ,,/MuonEG/Run2018A-02Apr2020-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/,     4,DATA_TAG=ReReco;PD=MuEG;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
-SingleMuon2018A,,-1, ,,/SingleMuon/Run2018A-02Apr2020-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/,10,DATA_TAG=ReReco;PD=SingleMuon;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
-EGamma2018A,,    -1, ,,/EGamma/Run2018A-02Apr2020-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/,    10,DATA_TAG=ReReco;PD=EGamma;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
+DoubleMu2018A,,  -1, ,,/DoubleMuon/Run2018A-02Apr2020-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/, 4,DATA_TAG=ReReco;NANOVERISON=9;PD=DoubleMu;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
+MuonEG2018A,,    -1, ,,/MuonEG/Run2018A-02Apr2020-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/,     6,DATA_TAG=ReReco;NANOVERISON=9;PD=MuEG;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
+SingleMuon2018A,,-1, ,,/SingleMuon/Run2018A-02Apr2020-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/,12,DATA_TAG=ReReco;NANOVERISON=9;PD=SingleMuon;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
+EGamma2018A,,    -1, ,,/EGamma/Run2018A-02Apr2020-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/,    10,DATA_TAG=ReReco;NANOVERISON=9;PD=EGamma;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
 
 ###,,,,,,,,,,,Run2018B-17Sep2018-v1 - runs 317291-319310
-DoubleMu2018B,,  -1, ,,/DoubleMuon/Run2018B-02Apr2020-v1/NANOAOD,dbs,/eos/cms,                   4,DATA_TAG=ReReco;PD=DoubleMu;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
-MuonEG2018B,,    -1, ,,/MuonEG/Run2018B-02Apr2020-v1/NANOAOD,dbs,/eos/cms,                       4,DATA_TAG=ReReco;PD=MuEG;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
-SingleMuon2018B,,-1, ,,/SingleMuon/Run2018B-02Apr2020-v1/NANOAOD,dbs,/eos/cms,                  10,DATA_TAG=ReReco;PD=SingleMuon;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
-EGamma2018B,,    -1, ,,/EGamma/Run2018B-02Apr2020-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/,10,DATA_TAG=ReReco;PD=EGamma;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
+DoubleMu2018B,,  -1, ,,/DoubleMuon/Run2018B-02Apr2020-v1/NANOAOD,dbs,/eos/cms,                   4,DATA_TAG=ReReco;NANOVERISON=9;PD=DoubleMu;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
+MuonEG2018B,,    -1, ,,/MuonEG/Run2018B-02Apr2020-v1/NANOAOD,dbs,/eos/cms,                       6,DATA_TAG=ReReco;NANOVERISON=9;PD=MuEG;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
+SingleMuon2018B,,-1, ,,/SingleMuon/Run2018B-02Apr2020-v1/NANOAOD,dbs,/eos/cms,                  12,DATA_TAG=ReReco;NANOVERISON=9;PD=SingleMuon;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
+EGamma2018B,,    -1, ,,/EGamma/Run2018B-02Apr2020-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/,10,DATA_TAG=ReReco;NANOVERISON=9;PD=EGamma;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
 
 ###,,,,,,,,,,,Run2018C-17Sep2018-v1 - runs 319337-320191
-DoubleMu2018C,,  -1, ,,/DoubleMuon/Run2018C-02Apr2020-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/, 4,DATA_TAG=ReReco;PD=DoubleMu;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
-MuonEG2018C,,    -1, ,,/MuonEG/Run2018C-02Apr2020-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/,     4,DATA_TAG=ReReco;PD=MuEG;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
-SingleMuon2018C,,-1, ,,/SingleMuon/Run2018C-02Apr2020-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/,10,DATA_TAG=ReReco;PD=SingleMuon;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
-EGamma2018C,,    -1, ,,/EGamma/Run2018C-02Apr2020-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/,    10,DATA_TAG=ReReco;PD=EGamma;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
+DoubleMu2018C,,  -1, ,,/DoubleMuon/Run2018C-02Apr2020-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/, 4,DATA_TAG=ReReco;NANOVERISON=9;PD=DoubleMu;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
+MuonEG2018C,,    -1, ,,/MuonEG/Run2018C-02Apr2020-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/,     6,DATA_TAG=ReReco;NANOVERISON=9;PD=MuEG;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
+SingleMuon2018C,,-1, ,,/SingleMuon/Run2018C-02Apr2020-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/,12,DATA_TAG=ReReco;NANOVERISON=9;PD=SingleMuon;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
+EGamma2018C,,    -1, ,,/EGamma/Run2018C-02Apr2020-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/,    10,DATA_TAG=ReReco;NANOVERISON=9;PD=EGamma;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
 
 ###,,,,,,,,,,,Run2018D-PromptReco-v2 - runs 320413-325175 - 31.75 fb-1
-DoubleMu2018D,,  -1, ,,/DoubleMuon/Run2018D-02Apr2020-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/, 4,DATA_TAG=PromptReco;PD=DoubleMu;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
-MuonEG2018D,,    -1, ,,/MuonEG/Run2018D-02Apr2020-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/,     4,DATA_TAG=PromptReco;PD=MuEG;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
-SingleMuon2018D,,-1, ,,/SingleMuon/Run2018D-02Apr2020-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/,10,DATA_TAG=PromptReco;PD=SingleMuon;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
-EGamma2018D,,    -1, ,,/EGamma/Run2018D-02Apr2020-v1/NANOAOD ,dbs,/eos/cms,                         10,DATA_TAG=PromptReco;PD=EGamma;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
+DoubleMu2018D,,  -1, ,,/DoubleMuon/Run2018D-02Apr2020-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/, 4,DATA_TAG=PromptReco;NANOVERISON=9;PD=DoubleMu;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
+MuonEG2018D,,    -1, ,,/MuonEG/Run2018D-02Apr2020-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/,     5,DATA_TAG=PromptReco;NANOVERISON=9;PD=MuEG;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
+SingleMuon2018D,,-1, ,,/SingleMuon/Run2018D-02Apr2020-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/,10,DATA_TAG=PromptReco;NANOVERISON=9;PD=SingleMuon;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,
+EGamma2018D,,    -1, ,,/EGamma/Run2018D-02Apr2020-v1/NANOAOD ,dbs,/eos/cms,                          6,DATA_TAG=PromptReco;NANOVERISON=9;PD=EGamma;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2018;ADDZTREE=True,json_2018.py;RecoProbabilities.py,

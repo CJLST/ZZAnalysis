@@ -18,7 +18,7 @@ class triggerAndSkim(Module):
         self.PD = PD
         self.era = era
         self.passThru = passThru
-        print("triggerAndSkim configuration: IsMC=", self.isMC, "PD=", self.PD, "era=", self.era, "passThru=", passThru)
+        print("***INIT triggerAndSkim: IsMC:", self.isMC, "PD:", self.PD, "era:", self.era, "passThru:", passThru)
         
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
@@ -33,12 +33,20 @@ class triggerAndSkim(Module):
         PD = self.PD
 
         ### Good PV filter
-        if event.PV_npvsGood == 0 : return False
+        if not event.Flag_goodVertices : return False # equivalent to: event.PV_npvsGood == 0
 
 
         ### Trigger requirements
         passTrigger = False
-        if self.era == 2018 :
+        if self.era == 2017 :
+            passSingleEle = event.HLT_Ele35_WPTight_Gsf or event.HLT_Ele38_WPTight_Gsf or event.HLT_Ele40_WPTight_Gsf
+            passSingleMu = event.HLT_IsoMu27
+            passDiEle = event.HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL or event.HLT_DoubleEle33_CaloIdL_MW
+            passDiMu = event.HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8 or event.HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8
+            passMuEle = event.HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL or event.HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ or event.HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ or event.HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ or event.HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ or event.HLT_Mu8_DiEle12_CaloIdL_TrackIdL or event.HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ
+            passTriEle = event.HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL
+            passTriMu = event.HLT_TripleMu_10_5_5_DZ or event.HLT_TripleMu_12_10_5
+        elif self.era == 2018 :
             passSingleEle = event.HLT_Ele32_WPTight_Gsf
             passSingleMu = event.HLT_IsoMu24
             passDiEle = event.HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL or event.HLT_DoubleEle25_CaloIdL_MW
@@ -64,10 +72,10 @@ class triggerAndSkim(Module):
         else: # Data: ensure each event is taken only from a single PD
             if PD == "" : sys.exit("ERROR: PD must be set in data") # we may want to merge triggers for test runs 
             if ((PD=="DoubleEle" or PD=="DoubleEG"  or PD=="EGamma" ) and (passDiEle or passTriEle)) or \
-               ((PD=="Muon" or "DoubleMu"  or PD=="DoubleMuon") and (passDiMu or passTriMu) and not passDiEle and not passTriEle) or \
-               ((PD=="MuEG"      or PD=="MuonEG"    ) and passMuEle and not passDiMu and not passTriMu and not passDiEle and not passTriEle) or \
+               ((PD=="Muon" or PD=="DoubleMu"  or PD=="DoubleMuon") and (passDiMu or passTriMu) and not passDiEle and not passTriEle) or \
+               ((PD=="MuEG" or PD=="MuonEG") and passMuEle and not passDiMu and not passTriMu and not passDiEle and not passTriEle) or \
                ((PD=="SingleElectron" or PD=="EGamma") and passSingleEle and not passMuEle and not passDiMu and not passTriMu and not passDiEle and not passTriEle) or \
-               ( PD=="SingleMuon" and passSingleMu and not passSingleEle and not passMuEle and not passDiMu and not passTriMu and not passDiEle and not passTriEle) :
+               ((PD=="SingleMuon" or PD=="Muon") and passSingleMu and not passSingleEle and not passMuEle and not passDiMu and not passTriMu and not passDiEle and not passTriEle) :
                    passTrigger = True
 
 
