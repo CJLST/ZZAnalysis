@@ -175,4 +175,16 @@ class RoccoR{
 	double kScaleAndSmearMCerror(int Q, double pt, double eta, double phi, int n, double u, double w) const;  
 };
 
+// Add bindings to call from python
+extern "C" {
+  void* get_RoccoR(char* filename);
+  void del_RoccoR(void* ptr);
+  double RoccoR_kSpreadMC(void* ptr, int Q, double pt, double eta, double phi, double gt, int s=0, int m=0);
+  double RoccoR_kSmearMC(void* ptr, int Q, double pt, double eta, double phi, int n, double u, int s=0, int m=0);
+  double RoccoR_kSpreadMCerror(void* ptr, int Q, double pt, double eta, double phi, double gt);
+  double RoccoR_kSmearMCerror(void* ptr, int Q, double pt, double eta, double phi, int n, double u);
+  double RoccoR_kScaleDT(void* ptr, int Q, double pt, double eta, double phi, int s=0, int m=0);
+  double RoccoR_kScaleDTerror(void* ptr, int Q, double pt, double eta, double phi);
+}
+
 #endif

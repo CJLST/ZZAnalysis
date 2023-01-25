@@ -9,11 +9,14 @@ from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
 from PhysicsTools.NanoAODTools.postprocessing.tools import deltaR
 
-def passEleBDT(ele, era, preUL=False) :
+def eleBDTCut(ele, era, preUL, nanoVersion=10) :
     pt = ele.pt
     fSCeta = abs(ele.eta + ele.deltaEtaSC)
     if era == 2017 or era == 2018 :
-        BDT = ele.mvaFall17V2Iso     # FIXME Using 2017 WP and training (ElectronMVAEstimatorRun2Fall17IsoV2Values) since this is the only one available in Run2 UL nanoAODs.
+        if nanoVersion < 10:
+            BDT = ele.mvaFall17V2Iso     # Using 2017 WP and training (ElectronMVAEstimatorRun2Fall17IsoV2Values) since this is the only one available in Run2 UL nanoAODs.
+        else :
+            BDT = ele.mvaHZZIso
         if preUL : # pre-UL WP for Run II (miniAOD branch: Run2_CutBased_BTag16)
             return (pt<=10. and     ((fSCeta<0.8                   and BDT > 0.85216885148) or \
                                      (fSCeta>=0.8 and fSCeta<1.479 and BDT > 0.82684550976) or \
@@ -46,6 +49,7 @@ class lepFiller(Module):
     def __init__(self, cuts, era):
         self.writeHistFile=False
         self.cuts = cuts
+        self.passEleBDT = cuts["passEleBDT"]
         self.eleRelaxedIdNoSIP = cuts["eleRelaxedIdNoSIP"]
         self.eleRelaxedId = cuts["eleRelaxedId"]
         self.eleFullId = cuts["eleFullId"]
@@ -97,7 +101,7 @@ class lepFiller(Module):
         fsrPhotons = Collection(event, "FsrPhoton")
 
         # IDs (no iso)
-        eleBDT = list(passEleBDT(e, self.era) for e in electrons)
+        eleBDT = list(self.passEleBDT(e, self.era) for e in electrons)
         eleRelaxedIdNoSIP = list(self.eleRelaxedIdNoSIP(e) for e in electrons)
         muRelaxedIdNoSIP = list(self.muRelaxedIdNoSIP(m) for m in muons)
         eleRelaxedId = list(self.eleRelaxedId(e) for e in electrons)

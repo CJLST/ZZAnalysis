@@ -15,6 +15,35 @@ from ZZAnalysis.NanoAnalysis.ZZFiller import *
 from ZZAnalysis.NanoAnalysis.ZZExtraFiller import *
 
 
+### Get processing customizations, if defined in the including .py; use defaults otherwise 
+DEBUG = getConf("DEBUG", False)
+SAMPLENAME = getConf("SAMPLENAME", "test")
+LEPTON_SETUP = getConf("LEPTON_SETUP", 2018)
+DATA_TAG = getConf("DATA_TAG", "" ) # flavours; at the moment only used to mark UL Run 2 samples
+NANOVERSION = getConf("NANOVERSION", 10)
+if not (LEPTON_SETUP == 2016 or LEPTON_SETUP == 2017 or LEPTON_SETUP == 2018 or LEPTON_SETUP == 2022) :
+    print("Invalid LEPTON_SETUP", LEPTON_SETUP)
+    exit(1)
+IsMC = getConf("IsMC", True)
+PD = getConf("PD", "")
+XSEC = getConf("XSEC", 1.)
+SYNCMODE = getConf("SYNCMODE", False)
+runMELA = getConf("runMELA", True)
+bestCandByMELA = getConf("bestCandByMELA", True) # requires also runMELA=True
+TRIGPASSTHROUGH = getConf("TRIGPASSTHROUGH", False) # Do not filter events that do not pass triggers (HLT_passZZ4l records if they did)
+PROCESS_CR = getConf("PROCESS_CR", False) # fill control regions
+# ggH NNLOPS weight
+APPLY_QCD_GGF_UNCERT = getConf("APPLY_QCD_GGF_UNCERT", False) 
+# K factors for ggZZ (and old NLO ggH samples) 0:None; 1: NNLO/LO; 2: NNLO/NLO; 3: NLO/LO
+APPLY_K_NNLOQCD_ZZGG = getConf("APPLY_K_NNLOQCD_ZZGG", 0) 
+# K factors for qqZZ
+APPLY_K_NNLOQCD_ZZQQB = getConf("APPLY_K_NNLOQCD_ZZQQB", False) 
+APPLY_K_NNLOEW_ZZQQB  = getConf("APPLY_K_NNLOEW_ZZQQB", False) 
+
+
+if "UL" in DATA_TAG : preUL = False # used to set the correct electron selection
+else: preUL = True
+
 ### Definition of analysis cuts
 cuts = dict(
     ### lepton ID cuts
@@ -40,42 +69,18 @@ cuts = dict(
                                      and abs(l.dz) < cuts["dz"])),
 
 
+    passEleBDT = (lambda l, era : eleBDTCut(l, era, preUL, NANOVERSION)), #actual definition in lepFiller.py
+
     # Relaxed IDs used for CRs for fake rate method
     muRelaxedId  = (lambda l : cuts["muRelaxedIdNoSIP"](l) and abs(l.sip3d) < cuts["sip3d"]),
     eleRelaxedId = (lambda l : cuts["eleRelaxedIdNoSIP"](l) and abs(l.sip3d) < cuts["sip3d"]),
 
     # Full ID (without isolation - FSR-corrected iso has to be applied on top, for muons)
     muFullId  = (lambda l, era : cuts["muRelaxedId"](l) and (l.isPFcand or (l.highPtId>0 and l.pt>200.))),
-    eleFullId = (lambda l, era : cuts["eleRelaxedId"](l) and passEleBDT(l, era)), #FIXME: BDT definition available only for 2017!
-
+    eleFullId = (lambda l, era : cuts["eleRelaxedId"](l) and cuts["passEleBDT"](l, era)),
     )
 
 
-### Get processing customizations, if defined in the including .py; use defaults otherwise 
-DEBUG = getConf("DEBUG", False)
-SAMPLENAME = getConf("SAMPLENAME", "test")
-LEPTON_SETUP = getConf("LEPTON_SETUP", 2018)
-if not (LEPTON_SETUP == 2016 or LEPTON_SETUP == 2017 or LEPTON_SETUP == 2018 or LEPTON_SETUP == 2022) :
-    print("Invalid LEPTON_SETUP", LEPTON_SETUP)
-    exit(1)
-IsMC = getConf("IsMC", True)
-PD = getConf("PD", "")
-XSEC = getConf("XSEC", 1.)
-SYNCMODE = getConf("SYNCMODE", False)
-runMELA = getConf("runMELA", True)
-bestCandByMELA = getConf("bestCandByMELA", True) # requires also runMELA=True
-TRIGPASSTHROUGH = getConf("TRIGPASSTHROUGH", False) # Do not filter events that do not pass triggers (HLT_passZZ4l records if they did)
-PROCESS_CR = getConf("PROCESS_CR", False) # fill control regions
-
-# ggH NNLOPS weight
-APPLY_QCD_GGF_UNCERT = getConf("APPLY_QCD_GGF_UNCERT", False) 
-
-# K factors for ggZZ (and old NLO ggH samples) 0:None; 1: NNLO/LO; 2: NNLO/NLO; 3: NLO/LO
-APPLY_K_NNLOQCD_ZZGG = getConf("APPLY_K_NNLOQCD_ZZGG", 0) 
-
-# K factors for qqZZ
-APPLY_K_NNLOQCD_ZZQQB = getConf("APPLY_K_NNLOQCD_ZZQQB", False) 
-APPLY_K_NNLOEW_ZZQQB  = getConf("APPLY_K_NNLOEW_ZZQQB", False) 
 
 
 ### Preselection to speed up processing. Note: to be relaxed for CRs
@@ -106,9 +111,8 @@ if not IsMC :
 ZZSequence = [triggerAndSkim(isMC=IsMC, PD=PD, era=LEPTON_SETUP, passThru=TRIGPASSTHROUGH)] # Filter for good PV and trigger requirements; apply PD precedence rules for data
 
 if LEPTON_SETUP != 2022 : # not yet implemented
-    from ZZAnalysis.NanoAnalysis.muonScaleResProducer import muonScaleRes2016, muonScaleRes2017, muonScaleRes2018
-    muonScaleRes = {2016:muonScaleRes2016, 2017:muonScaleRes2017, 2018:muonScaleRes2018}
-    ZZSequence.append(muonScaleRes[LEPTON_SETUP](overwritePt=True, syncMode=SYNCMODE)) # Sets corrected muon pT and scale uncertainty
+    from ZZAnalysis.NanoAnalysis.muonScaleResProducer import muonScaleRes
+    ZZSequence.append(muonScaleRes(LEPTON_SETUP, DATA_TAG, overwritePt=True, syncMode=SYNCMODE)) # Sets corrected muon pT and scale uncertainty
 
 
 ZZSequence.extend([lepFiller(cuts, LEPTON_SETUP), # FSR and FSR-corrected iso; flags for passing IDs

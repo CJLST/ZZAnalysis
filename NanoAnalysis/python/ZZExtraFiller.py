@@ -16,15 +16,15 @@ class ZZExtraFiller(Module):
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
-        self.out.branch("ZZCand_nExtraLep", "O", lenVar="nZZCand") 
-        self.out.branch("ZZCand_nExtraZ", "O", lenVar="nZZCand") 
+        self.out.branch("ZZCand_nExtraLep", "I", lenVar="nZZCand") 
+        self.out.branch("ZZCand_nExtraZ", "I", lenVar="nZZCand") 
 
     def analyze(self, event):
         ZZs = Collection(event, 'ZZCand')
         Zs = Collection(event, 'ZCand')
         electrons = Collection(event, "Electron")
         muons = Collection(event, "Muon")
-        leps = list(muons)+ list(electrons)
+        leps = list(electrons) + list(muons)
         nlep=len(leps)
 
         candIdx = event.bestCandIdx
@@ -35,8 +35,12 @@ class ZZExtraFiller(Module):
         # Extra leps
         extraLeps = []
         for i in range(nlep) :
+ #           print(i, leps[i].pt, leps[i].ZZFullSel)
             if i in theZZleps : continue
             if leps[i].ZZFullSel : extraLeps.append(i)
+
+#        print("---ZZLeps:", theZZleps)
+#        print(extraLeps)
 
         # Extra Zs
         extraZs = []

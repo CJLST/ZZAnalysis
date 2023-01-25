@@ -333,5 +333,49 @@ double RoccoR::kScaleAndSmearMCerror(int Q, double pt, double eta, double phi, i
     return error([this, Q, pt, eta, phi, n, u, w](int s, int m) {return kScaleAndSmearMC(Q, pt, eta, phi, n, u, w, s, m);});
 }
 
+
+
+// Add C bindings for python
+#include <new>
+extern "C" {
+  void* get_RoccoR(char* filename) {
+    return new(std::nothrow) RoccoR(filename);
+  }
+
+  void del_RoccoR(void* ptr) {
+    delete (reinterpret_cast<RoccoR*>(ptr));
+  }
+
+  double RoccoR_kSpreadMC(void* ptr, int Q, double pt, double eta, double phi, double gt, int s, int m) {
+    RoccoR * ref = reinterpret_cast<RoccoR*>(ptr);
+    return ref->kSpreadMC(Q, pt, eta, phi, gt, s, m);
+  }
+  
+  double RoccoR_kSmearMC(void* ptr, int Q, double pt, double eta, double phi, int n, double u, int s, int m) {
+    RoccoR * ref = reinterpret_cast<RoccoR*>(ptr);
+    return ref->kSmearMC(Q, pt, eta, phi, n, u, s, m);
+  }
+  
+  double RoccoR_kSpreadMCerror(void* ptr, int Q, double pt, double eta, double phi, double gt) {
+    RoccoR * ref = reinterpret_cast<RoccoR*>(ptr);
+    return ref->kSpreadMCerror(Q, pt, eta, phi, gt);
+  }
+  
+  double RoccoR_kSmearMCerror(void* ptr, int Q, double pt, double eta, double phi, int n, double u) {
+    RoccoR * ref = reinterpret_cast<RoccoR*>(ptr);
+    return ref->kSmearMCerror(Q, pt, eta, phi, n, u);
+  }
+  
+  double RoccoR_kScaleDT(void* ptr, int Q, double pt, double eta, double phi, int s, int m) {
+    RoccoR * ref = reinterpret_cast<RoccoR*>(ptr);
+    return ref->kScaleDT(Q, pt, eta, phi, s, m);
+  }
+  
+  double RoccoR_kScaleDTerror(void* ptr, int Q, double pt, double eta, double phi) {
+    RoccoR * ref = reinterpret_cast<RoccoR*>(ptr);
+    return ref->kScaleDTerror(Q, pt, eta, phi);
+  }
+}
+
 #endif
 
