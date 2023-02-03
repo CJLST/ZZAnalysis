@@ -9,7 +9,7 @@ Used for analysis of 2016, 2017, and 2018 data
 
 Please use **CMSSW_10_6_26**. 
 
-For the NanoAnalysis package, clone the nanoAOD repo as follows:
+For the NanoAnalysis package, before downloading the setup script, clone the nanoAOD repo as follows:
 ```
 cd $CMSSW_BASE/src
 git clone https://github.com/cms-nanoAOD/nanoAOD-tools.git PhysicsTools/NanoAODTools
