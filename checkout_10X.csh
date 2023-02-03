@@ -1,7 +1,7 @@
 #!/bin/tcsh -fe
 #
 # Instructions:
-# wget -O ${TMPDIR}/checkout_10X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/Run2UL_22_nano/checkout_10X.csh
+# wget -O ${TMPDIR}/checkout_10X.csh https://raw.githubusercontent.com/acappati/ZZAnalysis/Run2UL_22_nano/checkout_10X.csh
 # cd $CMSSW_BASE/src
 # cmsenv
 # chmod u+x ${TMPDIR}/checkout_10X.csh
@@ -26,7 +26,7 @@ git cms-addpkg EgammaAnalysis/ElectronTools
 
 #### Please do not add any custom (non-CMSSW) package before this line ####
 #ZZAnalysis
-git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
+git clone https://github.com/acappati/ZZAnalysis.git ZZAnalysis
 (cd ZZAnalysis; git checkout Run2UL_22_nano)
 
 # Muon MVA
