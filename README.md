@@ -9,15 +9,25 @@ Used for analysis of 2016, 2017, and 2018 data
 
 Please use **CMSSW_10_6_26**. 
 
+For the NanoAnalysis package, clone the nanoAOD repo as follows:
+```
+cd $CMSSW_BASE/src
+git clone https://github.com/cms-nanoAOD/nanoAOD-tools.git PhysicsTools/NanoAODTools
+cd PhysicsTools/NanoAODTools
+cmsenv
+scram b
+```
+
 Download and execute the setup script:
 ```
-wget -O ${TMPDIR}/checkout_10X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/Run2UL_22_nano/checkout_10X.csh
+wget -O ${TMPDIR}/checkout_10X.csh https://raw.githubusercontent.com/acappati/ZZAnalysis/Run2UL_22_nano/checkout_10X.csh
 cd $CMSSW_BASE/src
 cmsenv
 chmod u+x ${TMPDIR}/checkout_10X.csh
 ${TMPDIR}/checkout_10X.csh
 scramv1 b -j 4
 ```
+
 
 To update this package from the release
 ------------------------------------------
