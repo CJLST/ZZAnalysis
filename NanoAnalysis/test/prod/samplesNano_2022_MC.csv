@@ -1,0 +1,48 @@
+identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments,comment
+
+###,,,,,,,,,,,xsec to be modified with 13.6 TeV values
+###,,,,,,,,,,,MC situation evolving here https://docs.google.com/spreadsheets/d/1StPLK3iVXZMx694qgEkl8QrZutFszvqT6ecN-MFZZKY/edit#gid=0
+
+###,,,,,,,,,,,H125 samples
+ 
+ggH124  ,,48.58,0.0002745,,,,,,,,
+ggH124p5,,48.58,0.0002745,,,,,,,,
+ggH125  ,,48.58,0.0002745,,,,,,,,
+ggH125p5,,48.58,0.0002745,,,,,,,,
+ggH126  ,,48.58,0.0002745,,,,,,,,
+
+VBFH124  ,,3.782,0.0002745,,,,,,,,
+VBFH124p5,,3.782,0.0002745,,,,,,,,
+VBFH125  ,,3.782,0.0002745,,,,,,,,
+VBFH125p5,,3.782,0.0002745,,,,,,,,
+VBFH126  ,,3.782,0.0002745,,,,,,,,
+
+WHminus
+
+WHplus
+
+ZH
+
+ttH
+
+
+###,,,,,,,,,,,qq->ZZ background
+ZZ,,,,,,,,,,,
+ZZTo4l,,1.256,,,,,,,,
+
+
+###,,,,,,,,,,,gg->ZZ background - Xsec from https://twiki.cern.ch/twiki/bin/viewauth/CMS/Run2MCProductionforHiggsProperties#MCFM_ZZ_4l_l_e_mu_tau
+ggTo4e_Contin_MCFM701,,0.00158549,         ,,/GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8/       ,dbs,root://cms-xrd-global.cern.ch/,1,GENXSEC=0.00158549;GENBR=1;PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;LEPTON_SETUP=2018,RecoProbabilities.py;LHEProbabilities_GG_BKG_MCFM.py,
+ggTo4mu_Contin_MCFM701,,0.00158549,        ,,/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/      ,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=0.00158549;GENBR=1;PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;LEPTON_SETUP=2018,RecoProbabilities.py;LHEProbabilities_GG_BKG_MCFM.py,
+ggTo4tau_Contin_MCFM701,,0.00158549,       ,,/GluGluToContinToZZTo4tau_13TeV_MCFM701_pythia8/     ,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=0.00158549;GENBR=1;PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;LEPTON_SETUP=2018,RecoProbabilities.py;LHEProbabilities_GG_BKG_MCFM.py,
+ggTo2e2mu_Contin_MCFM701,,0.0031942,       ,,/GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8/    ,dbs,root://cms-xrd-global.cern.ch/,1,GENXSEC=0.00319142;GENBR=1;PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;LEPTON_SETUP=2018,RecoProbabilities.py;LHEProbabilities_GG_BKG_MCFM.py,
+ggTo2e2tau_Contin_MCFM701,,0.0031942,      ,,/GluGluToContinToZZTo2e2tau_13TeV_MCFM701_pythia8/   ,dbs,root://cms-xrd-global.cern.ch/,1,GENXSEC=0.00319142;GENBR=1;PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;LEPTON_SETUP=2018,RecoProbabilities.py;LHEProbabilities_GG_BKG_MCFM.py,
+ggTo2mu2tau_Contin_MCFM701,,0.0031942,     ,,/GluGluToContinToZZTo2mu2tau_13TeV_MCFM701_pythia8/  ,dbs,root://cms-xrd-global.cern.ch/,4,GENXSEC=0.00319142;GENBR=1;PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;LEPTON_SETUP=2018,RecoProbabilities.py;LHEProbabilities_GG_BKG_MCFM.py,
+
+
+
+
+###,,,,,,,,DY
+DYJetsToLL_ext1,,,,,/DYJetsToLL_M-50_TuneCP5_13p6TeV-madgraphMLM-pythia8/Run3Winter22NanoAOD-122X_mcRun3_2021_realistic_v9_ext1-v1/NANOAODSIM ,,,,,,
+DYJetsToLL_ext2,,,,,/DYJetsToLL_M-50_TuneCP5_13p6TeV-madgraphMLM-pythia8/Run3Winter22NanoAOD-122X_mcRun3_2021_realistic_v9_ext2-v1/NANOAODSIM ,,,,,,
+
