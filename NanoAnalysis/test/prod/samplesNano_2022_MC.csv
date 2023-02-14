@@ -1,34 +1,53 @@
 identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments,comment
 
-###,,,,,,,,,,,xsec to be modified with 13.6 TeV values
+###,,,,,,,,,,,xsec scaled from 13 TeV to 13.6 TeV following this prescription: xsec_13p6 = xsec_13 * 0.4 + xsec_14 * 0.6 https://indico.cern.ch/event/1169286/contributions/5126668/attachments/2557560/4416316/HXSWG.pdf#page=5
 ###,,,,,,,,,,,MC situation evolving here https://docs.google.com/spreadsheets/d/1StPLK3iVXZMx694qgEkl8QrZutFszvqT6ecN-MFZZKY/edit#gid=0
 
-###,,,,,,,,,,,H125 samples
+###,,,,,,,,,,,signal samples
  
-ggH124  ,,48.58,0.0002745,,,,,,,,
-ggH124p5,,48.58,0.0002745,,,,,,,,
-ggH125  ,,48.58,0.0002745,,,,,,,,
-ggH125p5,,48.58,0.0002745,,,,,,,,
-ggH126  ,,48.58,0.0002745,,,,,,,,
+ggH124  ,,52.978,0.0002745,,,,,,,,
+ggH124p5,,52.604,0.0002745,,,,,,,,
+ggH125  ,,52.234,0.0002745,,,,,,,,
+ggH125p5,,51.866,0.0002745,,,,,,,,
+ggH126  ,,51.508,0.0002745,,,,,,,,
 
-VBFH124  ,,3.782,0.0002745,,,,,,,,
-VBFH124p5,,3.782,0.0002745,,,,,,,,
-VBFH125  ,,3.782,0.0002745,,,,,,,,
-VBFH125p5,,3.782,0.0002745,,,,,,,,
-VBFH126  ,,3.782,0.0002745,,,,,,,,
+VBFH124  ,,4.1114,0.0002745,,,,,,,,
+VBFH124p5,,4.0958,0.0002745,,,,,,,,
+VBFH125  ,,4.0796,0.0002745,,,,,,,,
+VBFH125p5,,4.064 ,0.0002745,,,,,,,,
+VBFH126  ,,4.0478,0.0002745,,,,,,,,
 
-WHminus
+WplusH124  ,,0.91186,0.0002745,,,,,,,,
+WplusH124p5,,0.90028,0.0002745,,,,,,,,
+WplusH125  ,,0.88908,0.0002745,,,,,,,,
+WplusH125p5,,0.87758,0.0002745,,,,,,,,
+WplusH126  ,,0.86676,0.0002745,,,,,,,,
 
-WHplus
+WHminus124  ,,0.58326,0.0002745,,,,,,,,
+WHminus124p5,,0.57562,0.0002745,,,,,,,,
+WHminus125  ,,0.56784,0.0002745,,,,,,,,
+WHminus125p5,,0.56082,0.0002745,,,,,,,,
+WHminus126  ,,0.55368,0.0002745,,,,,,,,
 
-ZH
+ZH124  ,,0.8301,0.0006991275831543255,,,,,,,,
+ZH124p5,,0.81964,0.0006991275831543255,,,,,,,,
+ZH125  ,,0.80956,0.0006991275831543255,,,,,,,,
+ZH125p5,,0.79952,0.0006991275831543255,,,,,,,,
+ZH126  ,,0.79584,0.0006991275831543255,,,,,,,,
 
-ttH
+ttH124  ,,0.58446,0.0007176792246182684,,,,,,,,
+ttH124p5,,0.5783 ,0.0007176792246182684,,,,,,,,
+ttH125	,,0.57106,0.0007176792246182684,,,,,,,,
+ttH125p5,,0.56542,0.0007176792246182684,,,,,,,,
+ttH126	,,0.5591 ,0.0007176792246182684,,,,,,,,
 
 
 ###,,,,,,,,,,,qq->ZZ background
-ZZ,,,,,,,,,,,
-ZZTo4l,,1.256,,,,,,,,
+#ZZ,,ZZ_TuneCP5_13p6TeV_pythia8,,,,,,,,,
+#ZZTo4l,,1.256,,,,,,,,
+
+#/ZZ_TuneCP5_13p6TeV_pythia8/Run3Summer22NanoAODv11-126X_mcRun3_2022_realistic_v2-v1/NANOAODSIM
+#/ZZ_TuneCP5_13p6TeV-pythia8/Run3Winter22NanoAOD-122X_mcRun3_2021_realistic_v9-v1/NANOAODSIM
 
 
 ###,,,,,,,,,,,gg->ZZ background - Xsec from https://twiki.cern.ch/twiki/bin/viewauth/CMS/Run2MCProductionforHiggsProperties#MCFM_ZZ_4l_l_e_mu_tau
@@ -43,6 +62,9 @@ ggTo2mu2tau_Contin_MCFM701,,0.0031942,     ,,/GluGluToContinToZZTo2mu2tau_13TeV_
 
 
 ###,,,,,,,,DY
-DYJetsToLL_ext1,,,,,/DYJetsToLL_M-50_TuneCP5_13p6TeV-madgraphMLM-pythia8/Run3Winter22NanoAOD-122X_mcRun3_2021_realistic_v9_ext1-v1/NANOAODSIM ,,,,,,
+DYJetsToLL_ext1,,,,,/DYJetsToLL_M-50_TuneCP5_13p6TeV-madgraphMLM-pythia8/Run3Winter22NanoAOD-122X_mcRun3_2021_realistic_v9_ext1-v1/NANOAODSIM ,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2018;ADDZTREE=True,RecoProbabilities.py,
 DYJetsToLL_ext2,,,,,/DYJetsToLL_M-50_TuneCP5_13p6TeV-madgraphMLM-pythia8/Run3Winter22NanoAOD-122X_mcRun3_2021_realistic_v9_ext2-v1/NANOAODSIM ,,,,,,
 
+
+
+/TTTo2L2Nu_CP5_13p6TeV_powheg-pythia8/Run3Winter22NanoAOD-122X_mcRun3_2021_realistic_v9-v1/NANOAODSIM
