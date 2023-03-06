@@ -229,18 +229,38 @@ process.triggerMuEle  = cms.Path(process.hltFilterMuEle)
 ### ----------------------------------------------------------------------
 ### MET FILTERS
 ### ----------------------------------------------------------------------
-#process.METFilters  = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
-#process.METFilters.TriggerResultsTag  = cms.InputTag("TriggerResults","","RECO")
-#if (IsMC):
-#   process.METFilters.TriggerResultsTag  = cms.InputTag("TriggerResults","","PAT")
-#
-#if (LEPTON_SETUP == 2017):#MET Filters available in miniAOD as described here https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2
-#   if (IsMC):
-#      process.METFilters.HLTPaths = ["Flag_goodVertices","Flag_globalSuperTightHalo2016Filter","Flag_HBHENoiseFilter","Flag_HBHENoiseIsoFilter","Flag_EcalDeadCellTriggerPrimitiveFilter","Flag_BadPFMuonFilter","Flag_BadChargedCandidateFilter"]
-#   else:
-#      process.METFilters.HLTPaths = ["Flag_goodVertices","Flag_globalSuperTightHalo2016Filter","Flag_HBHENoiseFilter","Flag_HBHENoiseIsoFilter","Flag_EcalDeadCellTriggerPrimitiveFilter","Flag_BadPFMuonFilter","Flag_BadChargedCandidateFilter","Flag_eeBadScFilter"]
-#
-#process.triggerMETFilters = cms.Path(process.METFilters)
+process.METFiltersHBHENoise  = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+process.METFiltersBadPF  = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+process.METFiltersEcal = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+process.METFiltersBadSc = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+process.METFiltersHalo = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+
+if IsMC :
+   METFilterTag = "PAT"
+else:
+   METFilterTag = "RECO"
+
+process.METFiltersHBHENoise.TriggerResultsTag  = cms.InputTag("TriggerResults","",METFilterTag)
+process.METFiltersBadPF.TriggerResultsTag = cms.InputTag("TriggerResults","",METFilterTag)
+process.METFiltersEcal.TriggerResultsTag = cms.InputTag("TriggerResults","",METFilterTag)
+process.METFiltersBadSc.TriggerResultsTag = cms.InputTag("TriggerResults","",METFilterTag)
+process.METFiltersHalo.TriggerResultsTag = cms.InputTag("TriggerResults","",METFilterTag)
+
+process.METFiltersHBHENoise.HLTPaths = ["Flag_HBHENoiseFilter","Flag_HBHENoiseIsoFilter"]
+process.METFiltersBadPF.HLTPaths = ["Flag_BadPFMuonFilter","Flag_BadPFMuonDzFilter"]
+process.METFiltersBadSc.HLTPaths = ["Flag_eeBadScFilter"]
+process.METFiltersHalo.HLTPaths = ["Flag_globalSuperTightHalo2016Filter"]
+
+if (LEPTON_SETUP == 2016):
+    process.METFiltersEcal.HLTPaths = ["Flag_EcalDeadCellTriggerPrimitiveFilter"]
+elif (LEPTON_SETUP == 2017 or LEPTON_SETUP == 2018):
+    process.METFiltersEcal = ["Flag_EcalDeadCellTriggerPrimitiveFilter","Flag_ecalBadCalibFilter"]
+
+process.triggerMETFiltersHBHENoise = cms.Path(process.METFiltersHBHENoise)
+process.triggerMETFiltersBadPF = cms.Path(process.METFiltersBadPF)
+process.triggerMETFiltersEcal = cms.Path(process.METFiltersEcal)
+process.triggerMETFiltersBadSc = cms.Path(process.METFiltersBadSc)
+process.triggerMETFiltersHalo = cms.Path(process.METFiltersHalo)
 
 ### ----------------------------------------------------------------------
 ### MC Filters and tools
