@@ -11,6 +11,7 @@ Please use **CMSSW_10_6_26**.
 
 Download and execute the setup script:
 ```
+cmsrel CMSSW_10_6_26
 wget -O ${TMPDIR}/checkout_10X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/Run2UL_22_nano/checkout_10X.csh
 cd $CMSSW_BASE/src
 cmsenv
