@@ -26,7 +26,7 @@ git cms-addpkg EgammaAnalysis/ElectronTools
 
 #### Please do not add any custom (non-CMSSW) package before this line ####
 #ZZAnalysis
-git clone https://github.com/acappati/ZZAnalysis.git ZZAnalysis
+git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
 (cd ZZAnalysis; git checkout Run2UL_22_nano)
 
 # Muon MVA
@@ -82,7 +82,6 @@ git clone https://github.com/mhl0116/KinZfitter-1.git KinZfitter
 (cd KinZfitter ; git checkout -b from-27daebb 27daebb)
 
 #NanoAODTools 
-git clone https://github.com/cms-nanoAOD/nanoAOD-tools.git PhysicsTools/NanoAODTools
+git clone https://github.com/CJLST/nanoAOD-tools.git PhysicsTools/NanoAODTools
+(cd PhysicsTools/NanoAODTools ; git checkout -b from-ded19d8 ded19d8)
 #We may have to switch to our fork at some point since the central version is unmaintained
-#git clone https://github.com/CJLST/nanoAOD-tools.git PhysicsTools/NanoAODTools
-#(cd PhysicsTools/NanoAODTools ; git checkout -b from-ded19d8 ded19d8)
