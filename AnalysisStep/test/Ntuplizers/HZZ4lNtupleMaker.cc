@@ -1407,7 +1407,7 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   if (applyTrigger && !evtPassTrigger) failed = true; //but gen information will still be recorded if failedTreeLevel != 0
 
   // Apply MET trigger request (skip event)
-  evtPassMETTrigger = myHelper.passMETTrigger(event,triggerResults);
+  evtPassMETTrigger = myHelper.passMETTrigger(event,triggerResults,trigWord);
 
   if (skipEmptyEvents && !failedTreeLevel && (cands->size() == 0 || failed)) return; // Skip events with no candidate, unless skipEmptyEvents = false or failedTreeLevel != 0
 

@@ -523,7 +523,7 @@ void ZNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& eSetu
   if (applyTrigger && !evtPassTrigger) return;
 
   // Apply MET trigger request (skip event)
-  evtPassMETTrigger = myHelper.passMETTrigger(event,triggerResults);
+  evtPassMETTrigger = myHelper.passMETTrigger(event,triggerResults,trigWord);
 
 
   // General event information
