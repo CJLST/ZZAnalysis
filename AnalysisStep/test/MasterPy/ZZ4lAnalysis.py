@@ -254,7 +254,7 @@ process.METFiltersHalo.HLTPaths = ["Flag_globalSuperTightHalo2016Filter"]
 if (LEPTON_SETUP == 2016):
     process.METFiltersEcal.HLTPaths = ["Flag_EcalDeadCellTriggerPrimitiveFilter"]
 elif (LEPTON_SETUP == 2017 or LEPTON_SETUP == 2018):
-    process.METFiltersEcal = ["Flag_EcalDeadCellTriggerPrimitiveFilter","Flag_ecalBadCalibFilter"]
+    process.METFiltersEcal.HLTPaths = ["Flag_EcalDeadCellTriggerPrimitiveFilter","Flag_ecalBadCalibFilter"]
 
 process.triggerMETFiltersHBHENoise = cms.Path(process.METFiltersHBHENoise)
 process.triggerMETFiltersBadPF = cms.Path(process.METFiltersBadPF)
