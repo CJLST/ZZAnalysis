@@ -130,13 +130,27 @@ ZZ4lConfigHelper::passTrigger(const edm::Event & event, edm::Handle<edm::Trigger
 }
 
 bool
-ZZ4lConfigHelper::passMETTrigger(const edm::Event & event, edm::Handle<edm::TriggerResults> & trigRes){
+ZZ4lConfigHelper::passMETTrigger(const edm::Event & event, edm::Handle<edm::TriggerResults> & trigRes, short& trigworld){
 
   bool passMETFilter  = true;
 	
 //  if (theSetup >= 2017) {
 //    passMETFilter = passFilter(event, trigRes, "triggerMETFilters");
 //  }
+// 8 -14 in trigword
+// Just sets the trigword based on what triggers are passed
+  bool passNoise  = passFilter(event, trigRes, "triggerMETFiltersHBHENoise");
+  bool passBadPF = passFilter(event, trigRes, "triggerMETFiltersBadPF");
+  bool passEcal  = passFilter(event, trigRes, "triggerMETFiltersEcal");
+  bool passBadSc  = passFilter(event, trigRes, "triggerMETFiltersBadSc");
+  bool passHalo = passFilter(event, trigRes, "triggerMETFiltersHalo");
+
+  if (passNoise) set_bit_16(trigworld,8);
+  if (passBadPF) set_bit_16(trigworld,9);
+  if (passEcal) set_bit_16(trigworld,10);
+  if (passBadSc) set_bit_16(trigworld,11);
+  if (passHalo) set_bit_16(trigworld,12);
+  
   return passMETFilter;
 }
 
