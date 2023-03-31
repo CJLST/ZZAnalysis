@@ -39,8 +39,8 @@ class ZZ4lConfigHelper {
   /// Pass trigger requests (and set bits in trigworld)
   bool passTrigger(const edm::Event & event, edm::Handle<edm::TriggerResults> & trigRes, short& trigworld);
 
-  /// Pass MET trigger requests
-  bool passMETTrigger(const edm::Event & event, edm::Handle<edm::TriggerResults> & trigRes);
+  /// Pass MET trigger requests (and set bits in trigworld)
+  bool passMETTrigger(const edm::Event & event, edm::Handle<edm::TriggerResults> & trigRes, short& trigworld);
 
 
   /// Pass MC filters specified in the card "MCFilterPath"
