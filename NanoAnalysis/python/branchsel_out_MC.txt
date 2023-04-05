@@ -11,7 +11,8 @@ keep GenPart*
 keep HLT_passZZ*
 keep Electron*
 keep Muon*
-#keep Jet*
+keep Jet*
+keep nCleanedJet*
 keep FsrPhoton*
 keep best* # bestZ and ZZ indexes
 keep Z* # Z and ZZ

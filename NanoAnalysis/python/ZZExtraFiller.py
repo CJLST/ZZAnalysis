@@ -3,6 +3,12 @@
 # -extra lepts
 # -extra Zs
 #
+# TODO:
+# -generalize to add the same quantities for CRs (ZLLCand) (move actual code into a function to be called for each candidate)
+# -add other categorization variables (MELA discriminants besides KD, etc)
+# -move here the computation of data/MC scale factors here from ZZFiller,
+# so that it is not called for the whole combinatorial
+#
 ###
 
 from __future__ import print_function
@@ -16,8 +22,8 @@ class ZZExtraFiller(Module):
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
-        self.out.branch("ZZCand_nExtraLep", "I", lenVar="nZZCand") 
-        self.out.branch("ZZCand_nExtraZ", "I", lenVar="nZZCand") 
+        self.out.branch("ZZCand_nExtraLep", "I", lenVar="nZZCand")
+        self.out.branch("ZZCand_nExtraZ", "I", lenVar="nZZCand")
 
     def analyze(self, event):
         ZZs = Collection(event, 'ZZCand')
