@@ -1,7 +1,8 @@
 ### 
-# -Jet-Lepton cross-cleaning
-# -Additional JES, JEC
-# FIXME: to be implemented.
+# -Jet-Lepton cross-cleaning. Should be called after JES/JEC modules.
+# TODO:
+# - to be implemented
+# - Add b-tagging info (?)
 ###
 
 from __future__ import print_function
@@ -10,14 +11,17 @@ from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collect
 from PhysicsTools.NanoAODTools.postprocessing.tools import deltaR
 
 class jetFiller(Module):
-    def __init__(self, era):
-        self.era = era
+    def __init__(self):
+        pass
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
-        self.out.branch("Jet_lepVeto", "O", lenVar="nJet") # vetoed by one of the candidate's leptons
-        self.out.branch("Jet_uncorrectedPt", "I", lenVar="nJet") # Original pT
-        self.out.branch("Jet_Pt", "I", lenVar="nJet") # after correction        
+        self.out.branch("Jet_ZZMask", "O", lenVar="nJet") # jet is vetoed by one of the candidate's leptons
+        self.out.branch("JetLeadingIdx", "I") # index of leading jet after cleaning
+        self.out.branch("JetSubleadingIdx", "I") #index of subleading jet after cleaning
+        self.out.branch("nCleanedJetsPt30", "B") #number of jets above 30 GeV
+        self.out.branch("nCleanedJetsPt30_jesUp", "B")
+        self.out.branch("nCleanedJetsPt30_jesDn", "B")
         # up/down variations...
 
     def analyze(self, event):
@@ -27,13 +31,23 @@ class jetFiller(Module):
         leps = list(muons)+ list(electrons)
         nlep=len(leps)
 
-## Apply JES, JER...
+        ## Jet-lepton cleaning with best candidate's leptons and FSR..
+        mask = [False]*event.nJet
+        leadingJetIdx = -1
+        subleadingJetIdx =-1
+        nCleanedJetsPt30=0
+        nCleanedJetsPt30_jesDn=0
+        nCleanedJetsPt30_jesUp=0
+        # TO BE IMPLEMENTED
+        # According to the analysis recipe at https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsZZ4lRunIILegacy#Jets, "[jets] must be cleaned with a DeltaR>0.4 cut wrt all tight leptons in the event passing the SIP and isolation cut computed after FSR correction, as well as with all FSR collected photons attached to these leptons."
+        # Note: the current implementation on miniAODs (https://github.com/CJLST/ZZAnalysis/blob/Run2UL_22_nano/AnalysisStep/plugins/JetsWithLeptonsRemover.cc) probably does something different than this. To be reviewed.
 
 
-## Jet-lepton cleaning with best candidate's leptons and FSR..
-
-
-## b-tagging..
-
-
+        self.out.fillBranch("Jet_ZZMask", mask)
+        self.out.fillBranch("JetLeadingIdx", leadingJetIdx)
+        self.out.fillBranch("JetSubleadingIdx", subleadingJetIdx)
+        self.out.fillBranch("nCleanedJetsPt30", nCleanedJetsPt30)
+        self.out.fillBranch("nCleanedJetsPt30_jesUp", nCleanedJetsPt30_jesUp)
+        self.out.fillBranch("nCleanedJetsPt30_jesDn", nCleanedJetsPt30_jesDn)
+        
         return True

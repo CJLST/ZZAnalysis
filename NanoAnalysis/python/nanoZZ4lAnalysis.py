@@ -11,6 +11,7 @@ from PhysicsTools.NanoAODTools.postprocessing.tools import *
 from ZZAnalysis.NanoAnalysis.tools import setConf, getConf
 from ZZAnalysis.NanoAnalysis.triggerAndSkim import * # Trigger requirements are defined here
 from ZZAnalysis.NanoAnalysis.lepFiller import *
+from ZZAnalysis.NanoAnalysis.jetFiller import *
 from ZZAnalysis.NanoAnalysis.ZZFiller import *
 from ZZAnalysis.NanoAnalysis.ZZExtraFiller import *
 
@@ -117,7 +118,7 @@ if LEPTON_SETUP != 2022 : # not yet implemented
 
 ZZSequence.extend([lepFiller(cuts, LEPTON_SETUP), # FSR and FSR-corrected iso; flags for passing IDs
                    ZZFiller(runMELA, bestCandByMELA, IsMC, LEPTON_SETUP, PROCESS_CR, debug=DEBUG), # Build ZZ candidates; choose best candidate; filter events with candidates
-#                  jetFiller(), # Jets cleaning with leptons, JES, JEC
+                   jetFiller(), # Jets cleaning with leptons
                    ZZExtraFiller('SR'),
 #                  MELAFiller(), # Compute the full set of discriminants for the best candidate
                    ])
