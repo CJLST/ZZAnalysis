@@ -1,3 +1,4 @@
+from __future__ import print_function
 import FWCore.ParameterSet.Config as cms
 from ZZAnalysis.AnalysisStep.defaults import *
 import os, sys
@@ -72,7 +73,7 @@ CMSSW_VERSION = os.environ['CMSSW_VERSION']
 CMSSWVERSION = int(CMSSW_VERSION.split("_")[1])
 
 if SELSETUP=="Legacy" and not BESTCANDCOMPARATOR=="byBestZ1bestZ2":
-    print "WARNING: In ZZ4lAnalysis.py the SELSETUP=\"Legacy\" flag is meant to reproduce the Legacy results, ignoring the setting of the BESTCANDCOMPARATOR: ",BESTCANDCOMPARATOR
+    print("WARNING: In ZZ4lAnalysis.py the SELSETUP=\"Legacy\" flag is meant to reproduce the Legacy results, ignoring the setting of the BESTCANDCOMPARATOR: ",BESTCANDCOMPARATOR)
     BESTCANDCOMPARATOR = "byBestZ1bestZ2"
 
 # The isolation cuts for electrons and muons. FIXME: there is an hardcoded instance of these values in src/LeptonIsoHelper.cc !!
@@ -114,7 +115,7 @@ elif (SAMPLE_TYPE == 2018):
         else:
             process.GlobalTag = GlobalTag(process.GlobalTag, '106X_dataRun2_v35', '')
 
-print '\t',process.GlobalTag.globaltag
+print('\t',process.GlobalTag.globaltag)
 
 
 ### ----------------------------------------------------------------------
@@ -380,7 +381,7 @@ elif LEPTON_SETUP == 2018:# Rochester corrections for 2018 data
 
 else:
     if APPLYMUCORR:
-        print "APPLYMUCORR not configured for LEPTON_SETUP =", LEPTON_SETUP
+        print("APPLYMUCORR not configured for LEPTON_SETUP =", LEPTON_SETUP)
         sys.exit()
 
 
@@ -790,7 +791,7 @@ M4l100            = "mass>100"
 
 
 if SELSETUP=="Legacy": # Default Configuration (Legacy paper): cut on selected best candidate
-    print "SELSETUP=Legacy no longer supported after 8fb591a because we now set combRelIsoPFFSRCorr at the level of ZZ; will need to re-introduce it at  the Z level so that ZZCand.bestZAmong (ie isBestZ flag) works again as before"
+    print("SELSETUP=Legacy no longer supported after 8fb591a because we now set combRelIsoPFFSRCorr at the level of ZZ; will need to re-introduce it at  the Z level so that ZZCand.bestZAmong (ie isBestZ flag) works again as before")
     sys.exit()
     HASBESTZ          = "daughter('Z1').masterClone.userFloat('isBestZ')"
     BESTCAND_AMONG = (FOURGOODLEPTONS + "&&" +
@@ -868,7 +869,7 @@ elif SELSETUP=="allCutsAtOncePlusSmart": # Apply smarter mZb cut
 
 
 else:
-    print "Please choose one of the following string for SELSETUP: 'Legacy', 'allCutsAtOnceButMZ2', 'allCutsAtOnce', 'allCutsAtOncePlusMZb', 'allCutsAtOncePlusSmart'"
+    print("Please choose one of the following string for SELSETUP: 'Legacy', 'allCutsAtOnceButMZ2', 'allCutsAtOnce', 'allCutsAtOncePlusMZb', 'allCutsAtOncePlusSmart'")
     sys.exit()
 
 
