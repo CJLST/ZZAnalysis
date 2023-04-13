@@ -268,6 +268,8 @@ namespace {
   std::vector<float> PhotonPt;
   std::vector<float> PhotonEta;
   std::vector<float> PhotonPhi;
+  std::vector<float> PhotonEnergyPostCorr ;
+  std::vector<float> PhotonEnergyErrPostCorr ;
   std::vector<float> PhotonScale_Total_Up ;
   std::vector<float> PhotonScale_Total_Down ;
   std::vector<float> PhotonSigma_Total_Up ;
@@ -1111,6 +1113,8 @@ void ZNtupleMaker::FillPhoton(int year, const pat::Photon& photon)
    PhotonPt  .push_back( photon.pt());
    PhotonEta .push_back( photon.eta());
    PhotonPhi .push_back( photon.phi());
+   PhotonEnergyPostCorr.push_back( photon.userFloat("PhotonEnergyErrPostCorr"));
+   PhotonEnergyErrPostCorr.push_back( photon.userFloat("PhotonEnergyErrPostCorr"));
    PhotonScale_Total_Up.push_back( photon.userFloat("energyScaleUp"));
    PhotonScale_Total_Down.push_back( photon.userFloat("energyScaleDown"));
    PhotonSigma_Total_Up.push_back( photon.userFloat("energySigmaUp"));
@@ -1449,6 +1453,8 @@ void ZNtupleMaker::BookAllBranches(){
     myTree->Book("PhotonPt",PhotonPt);
     myTree->Book("PhotonEta",PhotonEta);
     myTree->Book("PhotonPhi",PhotonPhi);
+    myTree->Book("PhotonEnergyPostCorr",PhotonEnergyPostCorr);
+    myTree->Book("PhotonEnergyErrPostCorr",PhotonEnergyErrPostCorr);
     myTree->Book("PhotonScale_Total_Up",PhotonScale_Total_Up);
     myTree->Book("PhotonScale_Total_Down",PhotonScale_Total_Down);
     myTree->Book("PhotonSigma_Total_Up",PhotonSigma_Total_Up);

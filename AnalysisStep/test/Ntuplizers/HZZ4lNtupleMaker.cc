@@ -366,6 +366,8 @@ namespace {
   std::vector<float> PhotonPt ;
   std::vector<float> PhotonEta ;
   std::vector<float> PhotonPhi ;
+  std::vector<float> PhotonEnergyPostCorr ;
+  std::vector<float> PhotonEnergyErrPostCorr ; 
   std::vector<float> PhotonScale_Total_Up ;
   std::vector<float> PhotonScale_Total_Down ;
   std::vector<float> PhotonSigma_Total_Up ;
@@ -1949,12 +1951,12 @@ void HZZ4lNtupleMaker::FillPhoton(int year, const pat::Photon& photon)
    PhotonPt  .push_back( photon.pt());
    PhotonEta .push_back( photon.eta());
    PhotonPhi .push_back( photon.phi());
+   PhotonEnergyPostCorr.push_back ( photon.userFloat("ecalEnergyPostCorr"));
+   PhotonEnergyErrPostCorr.push_back ( photon.userFloat("ecalEnergyErrPostCorr"));
    PhotonScale_Total_Up.push_back( photon.userFloat("energyScaleUp"));
    PhotonScale_Total_Down.push_back( photon.userFloat("energyScaleDown"));
    PhotonSigma_Total_Up.push_back( photon.userFloat("energySigmaUp"));
    PhotonSigma_Total_Down.push_back( photon.userFloat("energySigmaDown"));
-
-
    PhotonIsCutBasedLooseID .push_back( PhotonIDHelper::isCutBasedID_Loose(year, photon) );
    PhotonIsCutBasedMediumID .push_back( PhotonIDHelper::isCutBasedID_Medium(year, photon) );
    PhotonIsCutBasedTightID .push_back( PhotonIDHelper::isCutBasedID_Tight(year, photon) );
@@ -3157,6 +3159,8 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("PhotonPt",PhotonPt, failedTreeLevel >= fullFailedTree);
   myTree->Book("PhotonEta",PhotonEta, failedTreeLevel >= fullFailedTree);
   myTree->Book("PhotonPhi",PhotonPhi, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PhotonEnergyPostCorr",PhotonEnergyPostCorr, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PhotonEnergyErrPostCorr",PhotonEnergyErrPostCorr, failedTreeLevel >= fullFailedTree);
   myTree->Book("PhotonScale_Total_Up",PhotonScale_Total_Up, failedTreeLevel >= fullFailedTree);
   myTree->Book("PhotonScale_Total_Down",PhotonScale_Total_Down, failedTreeLevel >= fullFailedTree);
   myTree->Book("PhotonSigma_Total_Up",PhotonSigma_Total_Up, failedTreeLevel >= fullFailedTree);
