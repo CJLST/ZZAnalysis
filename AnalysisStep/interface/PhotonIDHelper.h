@@ -15,6 +15,8 @@
 namespace PhotonIDHelper {
 
    bool isCutBasedID_Loose(int year, const pat::Photon& photon);
+   bool isCutBasedID_Medium(int year, const pat::Photon& photon);
+   bool isCutBasedID_Tight(int year, const pat::Photon& photon);
 
 }
 #endif

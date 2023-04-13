@@ -366,8 +366,13 @@ namespace {
   std::vector<float> PhotonPt ;
   std::vector<float> PhotonEta ;
   std::vector<float> PhotonPhi ;
-  std::vector<bool> PhotonIsCutBasedLooseID;
-
+  std::vector<float> PhotonScale_Total_Up ;
+  std::vector<float> PhotonScale_Total_Down ;
+  std::vector<float> PhotonSigma_Total_Up ;
+  std::vector<float> PhotonSigma_Total_Down ;
+  std::vector<bool> PhotonIsCutBasedLooseID ;
+  std::vector<bool> PhotonIsCutBasedMediumID ;
+  std::vector<bool> PhotonIsCutBasedTightID ;
 
   Short_t genFinalState  = 0;
   Int_t genProcessId  = 0;
@@ -1944,8 +1949,15 @@ void HZZ4lNtupleMaker::FillPhoton(int year, const pat::Photon& photon)
    PhotonPt  .push_back( photon.pt());
    PhotonEta .push_back( photon.eta());
    PhotonPhi .push_back( photon.phi());
+   PhotonScale_Total_Up.push_back( photon.userFloat("energyScaleUp"));
+   PhotonScale_Total_Down.push_back( photon.userFloat("energyScaleDown"));
+   PhotonSigma_Total_Up.push_back( photon.userFloat("energySigmaUp"));
+   PhotonSigma_Total_Down.push_back( photon.userFloat("energySigmaDown"));
+
 
    PhotonIsCutBasedLooseID .push_back( PhotonIDHelper::isCutBasedID_Loose(year, photon) );
+   PhotonIsCutBasedMediumID .push_back( PhotonIDHelper::isCutBasedID_Medium(year, photon) );
+   PhotonIsCutBasedTightID .push_back( PhotonIDHelper::isCutBasedID_Tight(year, photon) );
 }
 
 float HZZ4lNtupleMaker::EvalSpline(TSpline3* const& sp, float xval){
@@ -3145,7 +3157,13 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("PhotonPt",PhotonPt, failedTreeLevel >= fullFailedTree);
   myTree->Book("PhotonEta",PhotonEta, failedTreeLevel >= fullFailedTree);
   myTree->Book("PhotonPhi",PhotonPhi, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PhotonScale_Total_Up",PhotonScale_Total_Up, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PhotonScale_Total_Down",PhotonScale_Total_Down, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PhotonSigma_Total_Up",PhotonSigma_Total_Up, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PhotonSigma_Total_Down",PhotonSigma_Total_Down, failedTreeLevel >= fullFailedTree);
   myTree->Book("PhotonIsCutBasedLooseID",PhotonIsCutBasedLooseID, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PhotonIsCutBasedMediumID",PhotonIsCutBasedMediumID, failedTreeLevel >= fullFailedTree);
+  myTree->Book("PhotonIsCutBasedTightID",PhotonIsCutBasedTightID, failedTreeLevel >= fullFailedTree);
 
   myTree->Book("nExtraLep",nExtraLep, false);
   myTree->Book("nExtraZ",nExtraZ, false);
