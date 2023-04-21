@@ -48,6 +48,7 @@
 #include "SimDataFormats/GeneratorProducts/interface/LHERunInfoProduct.h"
 #include <SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h>
 #include <SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h>
+#include <SimDataFormats/GeneratorProducts/interface/GenRunInfoProduct.h>
 
 #include <ZZAnalysis/AnalysisStep/interface/DaughterDataHelpers.h>
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
@@ -381,7 +382,7 @@ namespace {
   Float_t genHEPMCweight  = 0;
   Float_t genHEPMCweight_NNLO  = 0;
   Float_t genHEPMCweight_POWHEGonly = 0;
-
+  Float_t genWeightRescale =0.;
 
   std::vector<float> LHEMotherPz;
   std::vector<float> LHEMotherE;
@@ -714,6 +715,7 @@ private:
   edm::EDGetTokenT<HTXS::HiggsClassification> htxsToken;
   edm::EDGetTokenT<edm::MergeableCounter> preSkimToken;
   edm::EDGetTokenT<LHERunInfoProduct> lheRunInfoToken;
+  edm::EDGetTokenT<GenRunInfoProduct> theGenInfoTokenInRun;
 
   edm::EDGetTokenT<edm::View<pat::CompositeCandidate>> GENCandidatesToken; //ATMELA
   edm::Handle<edm::View<pat::CompositeCandidate> > GENCandidates; //ATMELA
@@ -753,6 +755,8 @@ private:
 
   Float_t gen_sumPUWeight;
   Float_t gen_sumGenMCWeight;
+  Float_t gen_sumGenMCWeightOriginal;
+  Float_t gen_sumGenWeightRescale;
   Float_t gen_sumWeights;
 
   string sampleName;
@@ -844,6 +848,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   electronToken = consumes<pat::ElectronCollection>(edm::InputTag("slimmedElectrons"));
   preSkimToken = consumes<edm::MergeableCounter,edm::InLumi>(edm::InputTag("preSkimCounter"));
   lheRunInfoToken = consumes<LHERunInfoProduct,edm::InRun>(edm::InputTag("externalLHEProducer"));
+  theGenInfoTokenInRun = consumes<GenRunInfoProduct,edm::InRun>(edm::InputTag("generator"));
 
   if (skipEmptyEvents) {
     applySkim=true;
@@ -911,6 +916,8 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
 
   gen_sumPUWeight = 0.f;
   gen_sumGenMCWeight = 0.f;
+  gen_sumGenMCWeightOriginal = 0.f;
+  gen_sumGenWeightRescale = 0.f;
   gen_sumWeights =0.f;
 
   std::string fipPath;
@@ -1342,6 +1349,8 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       // keep track of sum of weights
       addweight(gen_sumPUWeight, PUWeight);
       addweight(gen_sumGenMCWeight, genHEPMCweight);
+      addweight(gen_sumGenMCWeightOriginal, genHEPMCweight_NNLO);
+      addweight(gen_sumGenWeightRescale, genWeightRescale);
       addweight(gen_sumWeights, PUWeight*genHEPMCweight);
 
       mch.genAcceptance(gen_ZZ4lInEtaAcceptance, gen_ZZ4lInEtaPtAcceptance);
@@ -2198,7 +2207,8 @@ void HZZ4lNtupleMaker::FillLHECandidate(){
       edm::LogWarning("InconsistentWeights") << "Gen weight is 1, LHE weight is " << genHEPMCweight;
     }
   }
-  genHEPMCweight *= lheHandler->getWeightRescale();
+  genWeightRescale = lheHandler->getWeightRescale();
+  genHEPMCweight *= genWeightRescale;
 
   genHEPMCweight_POWHEGonly = lheHandler->getMemberZeroWeight();
   LHEweight_QCDscale_muR1_muF1 = lheHandler->getLHEWeight(0, 1.);
@@ -2602,9 +2612,11 @@ void HZZ4lNtupleMaker::endJob()
   hCounter->SetBinContent(19,gen_BUGGY);
   hCounter->SetBinContent(20,gen_Unknown);
 
-  hCounter->SetBinContent(40,gen_sumWeights); // Also stored in underflow bin; added here for convenience
-  hCounter->SetBinContent(41,gen_sumGenMCWeight);
+  hCounter->SetBinContent(40,gen_sumWeights); // Sum of overall event weights, to be used for normalization
+  hCounter->SetBinContent(41,gen_sumGenMCWeight); // sum of MC weight, including reweighting to NNPDF 3.0
   hCounter->SetBinContent(42,gen_sumPUWeight);
+  hCounter->SetBinContent(43,gen_sumGenMCWeightOriginal); // sum of orignal MC weitghs (without reweighting to NNPDF 3.0)
+  hCounter->SetBinContent(43,gen_sumGenWeightRescale);    // sum of weights applied to reweight to NNPDF 3.0
 
   TH1 *h[1] ={ hCounter };
   for (int i = 0; i < 1; i++) {
@@ -2645,6 +2657,10 @@ void HZZ4lNtupleMaker::beginRun(edm::Run const& iRun, edm::EventSetup const&)
     }
     firstRun=false;
   }
+
+  edm::Handle<GenRunInfoProduct> genRunInfo;
+  iRun.getByToken(theGenInfoTokenInRun, genRunInfo);
+  cout << "XSEC from GenRunInfoProduct: "  << genRunInfo->crossSection() << endl;
 }
 
 // ------------ method called when ending the processing of a run  ------------
@@ -2990,7 +3006,7 @@ void HZZ4lNtupleMaker::BookAllBranches(){
   myTree->Book("nCleanedJetsPt30BTagged_bTagSFUp",nCleanedJetsPt30BTagged_bTagSFUp, failedTreeLevel >= minimalFailedTree);
   myTree->Book("nCleanedJetsPt30BTagged_bTagSFDn",nCleanedJetsPt30BTagged_bTagSFDn, failedTreeLevel >= minimalFailedTree);
   myTree->Book("trigWord",trigWord, failedTreeLevel >= minimalFailedTree);
-  myTree->Book("evtPassMETFilter",evtPassMETTrigger, failedTreeLevel >= minimalFailedTree);
+  //  myTree->Book("evtPassMETFilter",evtPassMETTrigger, failedTreeLevel >= minimalFailedTree); # corresponding bits are stored in trigWord
   myTree->Book("ZZMass",ZZMass, false);
   myTree->Book("ZZMassErr",ZZMassErr, false);
   myTree->Book("ZZMassErrCorr",ZZMassErrCorr, false);
