@@ -299,8 +299,16 @@ class MyBatchManager:
         if self.eosTransferPath!="":
             #Check that the specified path is legal. Only /eos/user is supported for the time being
             if not self.eosTransferPath.startswith('/eos/user/'):
-                print('Invalid option ', self.eosTransferPath, ' : only paths on /eos/user/ are supported')
+                print('Invalid path for -t:', self.eosTransferPath, ': only paths on /eos/user/ are supported')
                 sys.exit(4)
+            #Check that the specified path is accessible
+            ret = os.system('mkdir -p '+ self.eosTransferPath)
+            if( ret != 0 ):
+                print('Cannot create transfer directory: ', self.eosTransferPath)
+                sys.exit(4)
+            #Create a link to transfer folder
+            ret = os.system('ln -s ' + self.eosTransferPath + " " + self.outputDir_ + "/trasnsferPath")
+            
 
     def mkdir( self, dirname ):
        mkdir = 'mkdir -p %s' % dirname
