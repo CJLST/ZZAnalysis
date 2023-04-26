@@ -12,11 +12,13 @@ parser = argparse.ArgumentParser(description='Print selected 4l events in the sp
 
 parser.add_argument('file', help='filename to read', nargs='?', default="ggH125_fixedFSR_Skim.root")
 parser.add_argument('-r', dest ='region', help='which region to print out: "SR"=signal (default), or CRs: "2P2F", "3P1F", "SS", "SIP"', default="SR")
+parser.add_argument('-f', dest ='outputFormat', help='format: "full", "eventID"', default="full")
 
 args = parser.parse_args()
 
 nanoFile = args.file
 region = args.region
+outputFormat = args.outputFormat
 
 if region != 'SR' and region != 'SS' and region != '2P2F' and region != '3P1F' and region != 'SIP' :
     print ('Region', region, 'not supported, must be"SR"=signal (default), or CRs: "2P2F", "3P1F", "SS", "SIP"')
@@ -31,6 +33,10 @@ n4mu=0
 n2e2mu=0
 n2mu2e=0
 
+isMC = False
+if (t.GetBranch("overallEventWeight")) :
+    isMC = True
+
 while t.GetEntry(iEntry):
     iEntry+=1
 
@@ -42,16 +48,19 @@ while t.GetEntry(iEntry):
     if region == 'SR' :
         iZZ = t.bestCandIdx
         if iZZ < 0 : continue # no candidate passes selection
-        flavZ1 = t.ZZCand_Z1flav[iZZ]
-        flavZ2 = t.ZZCand_Z2flav[iZZ]
-        print('{}:{:.2f}:{:.2f}:{:.2f}:{:.3f}:{:.3f}:{:.3f}'.format(eventId,
-                                                                    t.ZZCand_mass[iZZ],
-                                                                    t.ZZCand_Z1mass[iZZ],
-                                                                    t.ZZCand_Z2mass[iZZ],
-                                                                    t.ZZCand_KD[iZZ],
-                                                                    t.overallEventWeight,
-                                                                    t.ZZCand_dataMCWeight[iZZ],
-                                                                    ))        
+        if outputFormat == "eventID" :
+            print(eventId)
+        else : 
+            flavZ1 = t.ZZCand_Z1flav[iZZ]
+            flavZ2 = t.ZZCand_Z2flav[iZZ]
+            print('{}:{:.2f}:{:.2f}:{:.2f}:{:.3f}:{:.3f}:{:.3f}'.format(eventId,
+                                                                        t.ZZCand_mass[iZZ],
+                                                                        t.ZZCand_Z1mass[iZZ],
+                                                                        t.ZZCand_Z2mass[iZZ],
+                                                                        t.ZZCand_KD[iZZ],
+                                                                        t.overallEventWeight if isMC else 1.,
+                                                                        t.ZZCand_dataMCWeight[iZZ] if isMC else 1.,
+                                                                        ))
     else:
         iZLL = -1
         if   region == 'SS':   iZLL = t.ZLLbestSSIdx
@@ -59,16 +68,19 @@ while t.GetEntry(iEntry):
         elif region == '3P1F': iZLL = t.ZLLbest3P1FIdx
         elif region == 'SIP':  iZLL = t.ZLLbestSIPCRIdx
         if iZLL < 0 : continue
-        flavZ1 = t.ZLLCand_Z1flav[iZLL]
-        flavZ2 = t.ZLLCand_Z2flav[iZLL]
-        print('{}:{:.2f}:{:.2f}:{:.2f}:{:.3f}:{:.3f}'.format(eventId,
-                                                             t.ZLLCand_mass[iZLL],
-                                                             t.ZLLCand_Z1mass[iZLL],
-                                                             t.ZLLCand_Z2mass[iZLL],
-                                                             t.ZLLCand_KD[iZLL],
-                                                             t.overallEventWeight,
-                                                             # t.ZLLCand_dataMCWeight[iZLL],
-                                                             ))
+        if outputFormat == "eventID" :
+            print(eventId)
+        else : 
+            flavZ1 = t.ZLLCand_Z1flav[iZLL]
+            flavZ2 = t.ZLLCand_Z2flav[iZLL]
+            print('{}:{:.2f}:{:.2f}:{:.2f}:{:.3f}:{:.3f}'.format(eventId,
+                                                                 t.ZLLCand_mass[iZLL],
+                                                                 t.ZLLCand_Z1mass[iZLL],
+                                                                 t.ZLLCand_Z2mass[iZLL],
+                                                                 t.ZLLCand_KD[iZLL],
+                                                                 t.overallEventWeight if isMC else 1.,
+                                                                 # t.ZLLCand_dataMCWeight[iZLL],
+                                                                 ))
 
     flav = abs(flavZ1*flavZ2)
     if flav == 11**4 :

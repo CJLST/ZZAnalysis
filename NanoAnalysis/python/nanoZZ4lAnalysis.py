@@ -33,6 +33,7 @@ runMELA = getConf("runMELA", True)
 bestCandByMELA = getConf("bestCandByMELA", True) # requires also runMELA=True
 TRIGPASSTHROUGH = getConf("TRIGPASSTHROUGH", False) # Do not filter events that do not pass triggers (HLT_passZZ4l records if they did)
 PROCESS_CR = getConf("PROCESS_CR", False) # fill control regions
+APPLYMUCORR = getConf("APPLYMUCORR", True) # apply muon momentum scale/resolution corrections
 # ggH NNLOPS weight
 APPLY_QCD_GGF_UNCERT = getConf("APPLY_QCD_GGF_UNCERT", False) 
 # K factors for ggZZ (and old NLO ggH samples) 0:None; 1: NNLO/LO; 2: NNLO/NLO; 3: NLO/LO
@@ -111,7 +112,7 @@ if not IsMC :
 ### Sequence to be run
 ZZSequence = [triggerAndSkim(isMC=IsMC, PD=PD, era=LEPTON_SETUP, passThru=TRIGPASSTHROUGH)] # Filter for good PV and trigger requirements; apply PD precedence rules for data
 
-if LEPTON_SETUP != 2022 : # not yet implemented
+if APPLYMUCORR and LEPTON_SETUP != 2022 : # corrections not yet implemented for 2022
     from ZZAnalysis.NanoAnalysis.muonScaleResProducer import muonScaleRes
     ZZSequence.append(muonScaleRes(LEPTON_SETUP, DATA_TAG, overwritePt=True, syncMode=SYNCMODE)) # Sets corrected muon pT and scale uncertainty
 

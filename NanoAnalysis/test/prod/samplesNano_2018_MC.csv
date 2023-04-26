@@ -12,7 +12,7 @@ ttH125, ,0.5071,0.0007176792246182684,,/ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JH
 #bbH125, ,0.488,0.0002745,,/bbH_HToZZTo4L_M125_13TeV_JHUGenV7011_pythia8/RunIIAutumn18NanoAODv7-Nano02Apr2020_102X_upgrade2018_realistic_v21-v1/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,1,GENXSEC=0.488;GENBR=0.0002745;LEPTON_SETUP=2018,RecoProbabilities.py;LHEProbabilities_bbH_SIG_0PM_H125_JHUGen.py,
 
 
-# High mass ggH samples
+###,,,,,,,,,,,High mass ggH samples
 ggH300, ,7.083,3.11E-03,,   /GluGluHToZZTo4L_M300_13TeV_powheg2_JHUGenV7011_pythia8/RunIIAutumn18NanoAODv7-Nano02Apr2020_102X_upgrade2018_realistic_v21-v1/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=7.89731;GENBR=0.00304479;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;APPLY_QCD_GGF_UNCERT=True;LEPTON_SETUP=2018,RecoProbabilities.py;LHEProbabilities_GG_SIG_0PM_H300_POWHEG.py,
 #ggH400, ,3.396,2.73E-03,,  /GluGluHToZZTo4L_M400_13TeV_powheg2_JHUGenV7011_pythia8/RunIIAutumn18NanoAODv7-Nano02Apr2020_102X_upgrade2018_realistic_v21-v1/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=7.13892;GENBR=0.002456;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;APPLY_QCD_GGF_UNCERT=True;LEPTON_SETUP=2018,RecoProbabilities.py;LHEProbabilities_GG_SIG_0PM_H400_POWHEG.py,
 ggH500, ,1.837,2.65E-03,,   /GluGluHToZZTo4L_M500_13TeV_powheg2_JHUGenV7011_pythia8/RunIIAutumn18NanoAODv7-Nano02Apr2020_102X_upgrade2018_realistic_v21-v1/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=3.36127;GENBR=0.00219487;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;APPLY_QCD_GGF_UNCERT=True;LEPTON_SETUP=2018,RecoProbabilities.py;LHEProbabilities_GG_SIG_0PM_H500_POWHEG.py,

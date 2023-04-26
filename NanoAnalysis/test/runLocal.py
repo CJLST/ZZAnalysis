@@ -13,6 +13,7 @@ SampleToRun = "MCsync_UL"
 ### Customize processing variables
 #setConf("runMELA", False)
 #setConf("bestCandByMELA", False)
+setConf("APPLYMUCORR", False)
 
 ## Select specific events to debug
 #setConf("preselection","run==316239  && luminosityBlock==226 && event==284613817")
