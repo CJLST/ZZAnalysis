@@ -17,14 +17,14 @@ verbose = False
 #nanoFile = "ggH125_Rereco_fixedFSR.root"
 
 # 2017 UL ggH, 26000 events
-cjlstFile   = "../../AnalysisStep/test/ZZ4lAnalysis_sync_ggH_106X.root" 
-nanoFile = "ggH125_2017UL_fixedFSR_full.root"
+cjlstFile   = "../../AnalysisStep/test/ZZ4lAnalysis_sync_ggH2017_106X_nomuscale.root" 
+nanoFile = "ggH125_2017UL_fixedFSR_nomucorr_full.root"
 
 
 compareWeights = False
 compareKD = False
-compareExtra = True
-massTolerance = 0.1 # in GeV; account for rounding due to data packing
+compareExtra = True and region == 'SR' # FIXME to be implemented for CRs
+massTolerance = 0.03 # in GeV; account for rounding due to data packing
 
 if region == 'SR' :
     treeMiniName = 'ZZTree/candTree'
@@ -48,10 +48,13 @@ treeNano.Add(nanoFile)
 
 iEntryMini=0
 nMatch=0;
-foundNano=[False]*treeNano.GetEntries()
+foundNano=[False]*treeNano.GetEntries() # True = event in nano tree has already been found in mini tree, or can be skipped (no candidate, etc)
 maxM4lDiff = 0.
 
 lastfound = -1
+
+h_m4lDiff = TH1F("h_m4lDiff","h_m4lDiff", 2000, -1, 1)
+
 
 while treeMini.GetEntry(iEntryMini):
 
@@ -80,7 +83,9 @@ while treeMini.GetEntry(iEntryMini):
         elif region == '3P1F' : iBC = treeNano.ZLLbest3P1FIdx
 
 
-        if iBC < 0 : # no best candidate in this event
+        if iBC < 0 or treeNano.HLT_passZZ4l: # no candidate passes the selection
+            # in this event, or the event does not pass the required triggers
+            # (for samples processed with TRIGPASSTHROUGH=True)
             foundNano[iEntryNano] = True
             continue
             
@@ -99,8 +104,10 @@ while treeMini.GetEntry(iEntryMini):
         t2_Z2Mass=eval(nanoPrefix+'Z2mass[iBC]')
         t2_Z1flav=eval(nanoPrefix+'Z1flav[iBC]')
         t2_Z2flav=eval(nanoPrefix+'Z2flav[iBC]')
-        t2_nExtraLep=eval(nanoPrefix+'nExtraLep[iBC]')
-        t2_nExtraZ=eval(nanoPrefix+'nExtraZ[iBC]')
+
+        if compareExtra :
+            t2_nExtraLep=eval(nanoPrefix+'nExtraLep[iBC]')
+            t2_nExtraZ=eval(nanoPrefix+'nExtraZ[iBC]')
         
 #        t2_dataMC=eval(nanoPrefix+'dataMCWeight[iBC]')
         t2_hasFSR = abs(t2_ZZMass-t2_ZZMassPreFSR)>0.02
@@ -109,6 +116,8 @@ while treeMini.GetEntry(iEntryMini):
         ps1=treeMini.p_GG_SIG_ghg2_1_ghz1_1_JHUGen
         pb1=treeMini.p_QQB_BKG_MCFM
         KD_mini = ps1/(ps1+pb1)
+
+        h_m4lDiff.Fill(treeMini.ZZMass-t2_ZZMass)
 
         m4lDiff=abs(treeMini.ZZMass-t2_ZZMass)
         maxM4lDiff=max(m4lDiff,maxM4lDiff)

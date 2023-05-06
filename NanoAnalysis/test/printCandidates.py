@@ -19,6 +19,7 @@ args = parser.parse_args()
 nanoFile = args.file
 region = args.region
 outputFormat = args.outputFormat
+checkTrigger = True
 
 if region != 'SR' and region != 'SS' and region != '2P2F' and region != '3P1F' and region != 'SIP' :
     print ('Region', region, 'not supported, must be"SR"=signal (default), or CRs: "2P2F", "3P1F", "SS", "SIP"')
@@ -47,7 +48,10 @@ while t.GetEntry(iEntry):
 
     if region == 'SR' :
         iZZ = t.bestCandIdx
-        if iZZ < 0 : continue # no candidate passes selection
+        if iZZ < 0 : continue # no candidate passes selection in this event, or
+            # the event does not pass the required triggers (for samples processed
+            # with TRIGPASSTHROUGH=True)
+        if checkTrigger and not t.HLT_passZZ4l : continue 
         if outputFormat == "eventID" :
             print(eventId)
         else : 

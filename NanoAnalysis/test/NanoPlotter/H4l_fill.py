@@ -8,7 +8,7 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 
 pathMC = "/eos/user/n/namapane/H4lnano/220420/" # FIXME: Use 2018 MC for the time being
-pathDATA = "/eos/user/n/namapane/H4lnano/221130/Data2022/"
+pathDATA = "/eos/user/n/namapane/H4lnano/230506/Data2022/"
 
 ZmassValue = 91.1876
 
@@ -43,6 +43,7 @@ def fillHistos(samplename, filename) :
     events.SetBranchStatus("event", 1)
     events.SetBranchStatus("ZZCand_*", 1)
     events.SetBranchStatus("bestCandIdx", 1)
+    events.SetBranchStatus("HLT_passZZ4l", 1)
     nEntries = events.GetEntries() 
 
     isMC = False
@@ -76,7 +77,10 @@ def fillHistos(samplename, filename) :
         if iEntry%printEntries == 0 : print("Processing", iEntry)
 
         bestCandIdx = events.bestCandIdx
-        if(bestCandIdx != -1):
+        # Check that the event contains a selected candidate, and that
+        # passes the required triggers (which is necessary for samples
+        # processed with TRIGPASSTHROUGH=True)
+        if(bestCandIdx != -1 and events.HLT_passZZ4l): 
             weight = 1.
             if isMC : weight = (events.overallEventWeight*events.ZZCand_dataMCWeight[bestCandIdx])/genEventSumw
             m4l=events.ZZCand_mass[bestCandIdx]
@@ -140,5 +144,5 @@ def runData():
     of.Close()
 
 if __name__ == "__main__" :
-    runMC()
+#    runMC()
     runData()

@@ -33,7 +33,7 @@ def eleBDTCut(ele, era, preUL, nanoVersion=10) :
                                      (fSCeta>=0.8 and fSCeta<1.479 and BDT > 0.0273863727) or \
                                      (fSCeta>=1.479                and BDT > -0.5532483665)))
 
-    elif era == 2022 :
+    elif era >= 2022 :
         BDT = ele.mvaHZZIso
         #2018 UL tuning (ElectronMVAEstimatorRun2Summer18ULIdIsoValues)
         return (pt<=10. and     ((fSCeta<0.8                   and BDT > 0.9044286167) or \
@@ -50,12 +50,14 @@ class lepFiller(Module):
         self.writeHistFile=False
         self.cuts = cuts
         self.passEleBDT = cuts["passEleBDT"]
-        self.eleRelaxedIdNoSIP = cuts["eleRelaxedIdNoSIP"]
         self.eleRelaxedId = cuts["eleRelaxedId"]
+        self.eleRelaxedIdNoSIP = cuts["eleRelaxedIdNoSIP"]
         self.eleFullId = cuts["eleFullId"]
-        self.muRelaxedIdNoSIP = cuts["muRelaxedIdNoSIP"]
+        self.eleFullIdNoSIP = cuts["eleFullIdNoSIP"]
         self.muRelaxedId = cuts["muRelaxedId"]
+        self.muRelaxedIdNoSIP = cuts["muRelaxedIdNoSIP"]
         self.muFullId = cuts["muFullId"]
+        self.muFullIdNoSIP = cuts["muFullIdNoSIP"]
         self.era = era
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
@@ -67,16 +69,18 @@ class lepFiller(Module):
         self.out.branch("Electron_passBDT", "O", lenVar="nElectron")
         self.out.branch("Electron_ZZFullSel", "O", lenVar="nElectron")   # pass full SR selection (for electrons it is the same as FullID)
         self.out.branch("Electron_ZZFullId", "O", lenVar="nElectron")    # pass full ID selection
-        self.out.branch("Electron_ZZRelaxedIdNoSIP", "O", lenVar="nElectron") # pass relaxed ID, without SIP (base for CR SIP  method)
+        self.out.branch("Electron_ZZFullSelNoSIP", "O", lenVar="nElectron") # pass full ID without SIP (base for CR SIP  method)
         self.out.branch("Electron_ZZRelaxedId", "O", lenVar="nElectron") # pass relaxed ID including SIP (base for SS and OS CRs)
+        self.out.branch("Electron_ZZRelaxedIdNoSIP", "O", lenVar="nElectron") # pass relaxed ID without SIP (widest subset requirement for CRs)
         self.out.branch("Electron_fsrPhotonIdx", "I", lenVar="nElectron") # Overwrite existing value
         self.out.branch("Electron_pfRelIso03FsrCorr", "F", lenVar="nElectron")
         self.out.branch("Electron_passIso", "O", lenVar="nElectron")
 
         self.out.branch("Muon_ZZFullSel", "O", lenVar="nMuon")   # pass full SR selection (FullID + isolation)
         self.out.branch("Muon_ZZFullId", "O", lenVar="nMuon")    # pass full ID selection
-        self.out.branch("Muon_ZZRelaxedIdNoSIP", "O", lenVar="nMuon") # pass relaxed ID, without SIP (base for CR SIP  method)
+        self.out.branch("Muon_ZZFullSelNoSIP", "O", lenVar="nMuon") # pass full ID + iso, without SIP (base for CR SIP  method)
         self.out.branch("Muon_ZZRelaxedId", "O", lenVar="nMuon")  # pass relaxed ID including SIP (base for SS and OS CRs)
+        self.out.branch("Muon_ZZRelaxedIdNoSIP", "O", lenVar="nMuon")  # pass relaxed ID without SIP (widest subest requirement for CRs)
         self.out.branch("Muon_fsrPhotonIdx", "I", lenVar="nMuon") # Overwrite existing value
         self.out.branch("Muon_pfRelIso03FsrCorr", "F", lenVar="nMuon")
         self.out.branch("Muon_passIso", "O", lenVar="nMuon")
@@ -102,12 +106,14 @@ class lepFiller(Module):
 
         # IDs (no iso)
         eleBDT = list(self.passEleBDT(e, self.era) for e in electrons)
-        eleRelaxedIdNoSIP = list(self.eleRelaxedIdNoSIP(e) for e in electrons)
-        muRelaxedIdNoSIP = list(self.muRelaxedIdNoSIP(m) for m in muons)
         eleRelaxedId = list(self.eleRelaxedId(e) for e in electrons)
         muRelaxedId = list(self.muRelaxedId(m) for m in muons)
+        eleRelaxedIdNoSIP = list(self.eleRelaxedIdNoSIP(e) for e in electrons)
+        muRelaxedIdNoSIP = list(self.muRelaxedIdNoSIP(m) for m in muons)
         eleFullId = list(self.eleFullId(e, self.era) for e in electrons)
         muFullId = list(self.muFullId(m, self.era) for m in muons)
+        eleFullIdNoSIP = list(self.eleFullIdNoSIP(e, self.era) for e in electrons)
+        muFullIdNoSIP = list(self.muFullIdNoSIP(m, self.era) for m in muons)
 
         # Skip events that do not contain enough tight leptons (note: for CRs, this should be modified)
 #FIXME: a filter here could speed up things, but must be handled properly
@@ -166,7 +172,9 @@ class lepFiller(Module):
         ele_passIso = [False]*len(electrons)
         mu_passIso = [False]*len(muons)
         eleFullSel = [False]*len(electrons)
+        eleFullSelNoSIP = [False]*len(electrons)
         muFullSel = [False]*len(muons)
+        muFullSelNoSIP = [False]*len(muons)
 
         selectedFSR = []
         for ifsr in muFsrPhotonIdx + eleFsrPhotonIdx :
@@ -176,11 +184,13 @@ class lepFiller(Module):
             ele_isoFsrCorr[ilep] = self.isoFsrCorr(lep, selectedFSR) 
             ele_passIso[ilep] = True # no iso cut for electrons 
             eleFullSel[ilep] = eleFullId[ilep] and ele_passIso[ilep]
+            eleFullSelNoSIP[ilep] = eleFullIdNoSIP[ilep] and ele_passIso[ilep]
 
         for ilep,lep in enumerate(muons) :
             mu_isoFsrCorr[ilep] = self.isoFsrCorr(lep, selectedFSR)
             mu_passIso[ilep] = mu_isoFsrCorr[ilep] < self.cuts["relIso"]
             muFullSel[ilep] = muFullId[ilep] and mu_passIso[ilep]
+            muFullSelNoSIP[ilep] = muFullIdNoSIP[ilep] and mu_passIso[ilep]
 
         fsrM = [0.]*len(fsrPhotons)
         self.out.fillBranch("FsrPhoton_mass", fsrM)
@@ -191,6 +201,7 @@ class lepFiller(Module):
         self.out.fillBranch("Electron_ZZFullId", eleFullId)
         self.out.fillBranch("Electron_ZZRelaxedId", eleRelaxedId)
         self.out.fillBranch("Electron_ZZRelaxedIdNoSIP", eleRelaxedIdNoSIP)
+        self.out.fillBranch("Electron_ZZFullSelNoSIP", eleFullSelNoSIP)
         self.out.fillBranch("Electron_fsrPhotonIdx", eleFsrPhotonIdx)
         self.out.fillBranch("Electron_pfRelIso03FsrCorr", ele_isoFsrCorr)
         self.out.fillBranch("Electron_passIso", ele_passIso)
@@ -199,6 +210,7 @@ class lepFiller(Module):
         self.out.fillBranch("Muon_ZZFullId", muFullId)
         self.out.fillBranch("Muon_ZZRelaxedId", muRelaxedId)
         self.out.fillBranch("Muon_ZZRelaxedIdNoSIP", muRelaxedIdNoSIP)
+        self.out.fillBranch("Muon_ZZFullSelNoSIP", muFullSelNoSIP)
         self.out.fillBranch("Muon_fsrPhotonIdx", muFsrPhotonIdx)
         self.out.fillBranch("Muon_pfRelIso03FsrCorr", mu_isoFsrCorr)
         self.out.fillBranch("Muon_passIso", mu_passIso)
