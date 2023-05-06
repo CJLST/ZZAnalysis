@@ -22,7 +22,7 @@ SAMPLENAME = getConf("SAMPLENAME", "test")
 LEPTON_SETUP = getConf("LEPTON_SETUP", 2018)
 DATA_TAG = getConf("DATA_TAG", "" ) # flavours; at the moment only used to mark UL Run 2 samples
 NANOVERSION = getConf("NANOVERSION", 10)
-if not (LEPTON_SETUP == 2016 or LEPTON_SETUP == 2017 or LEPTON_SETUP == 2018 or LEPTON_SETUP == 2022) :
+if not (LEPTON_SETUP == 2016 or LEPTON_SETUP == 2017 or LEPTON_SETUP == 2018 or LEPTON_SETUP == 2022 or LEPTON_SETUP == 2023) :
     print("Invalid LEPTON_SETUP", LEPTON_SETUP)
     exit(1)
 IsMC = getConf("IsMC", True)
@@ -31,7 +31,7 @@ XSEC = getConf("XSEC", 1.)
 SYNCMODE = getConf("SYNCMODE", False)
 runMELA = getConf("runMELA", True)
 bestCandByMELA = getConf("bestCandByMELA", True) # requires also runMELA=True
-TRIGPASSTHROUGH = getConf("TRIGPASSTHROUGH", False) # Do not filter events that do not pass triggers (HLT_passZZ4l records if they did)
+TRIGPASSTHROUGH = getConf("TRIGPASSTHROUGH", True) # Do not filter events that do not pass triggers (HLT_passZZ4l records if they did)
 PROCESS_CR = getConf("PROCESS_CR", False) # fill control regions
 APPLYMUCORR = getConf("APPLYMUCORR", True) # apply muon momentum scale/resolution corrections
 # ggH NNLOPS weight
@@ -58,7 +58,7 @@ cuts = dict(
     fsr_dRET2 = 0.012,
     fsr_Iso = 1.8,
     
-    ## Relaxed IDs, without SIP (for SIP-less CRs)
+    ## Relaxed ID without SIP (starting point for SIP-less CR)
     # Notes: Muon.nStations is numberOfMatchedStation, not numberOfMatches; also, muonBestTrackType!=2 is not available in nanoAODs
     muRelaxedIdNoSIP = (lambda l : (l.pt > cuts["muPt"] 
                                     and abs(l.eta) < 2.4
@@ -77,7 +77,11 @@ cuts = dict(
     muRelaxedId  = (lambda l : cuts["muRelaxedIdNoSIP"](l) and abs(l.sip3d) < cuts["sip3d"]),
     eleRelaxedId = (lambda l : cuts["eleRelaxedIdNoSIP"](l) and abs(l.sip3d) < cuts["sip3d"]),
 
-    # Full ID (without isolation - FSR-corrected iso has to be applied on top, for muons)
+    # Full ID except for SIP (without isolation: FSR-corrected iso has to be applied on top, for muons)
+    muFullIdNoSIP  = (lambda l, era : cuts["muRelaxedIdNoSIP"](l) and (l.isPFcand or (l.highPtId>0 and l.pt>200.))),
+    eleFullIdNoSIP = (lambda l, era : cuts["eleRelaxedIdNoSIP"](l) and cuts["passEleBDT"](l, era)),
+
+    # Full ID (without isolation: FSR-corrected iso has to be applied on top, for muons)
     muFullId  = (lambda l, era : cuts["muRelaxedId"](l) and (l.isPFcand or (l.highPtId>0 and l.pt>200.))),
     eleFullId = (lambda l, era : cuts["eleRelaxedId"](l) and cuts["passEleBDT"](l, era)),
     )
@@ -106,13 +110,15 @@ if not IsMC :
         jsonFile = localPath+"test/prod/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt"
     elif LEPTON_SETUP == 2022 :
         jsonFile = localPath+"test/prod/Cert_Collisions2022_355100_362760_Golden.json"
+    elif LEPTON_SETUP == 2023 :
+        jsonFile = None
     else:        
         exit(1) #2016-17 to be implemented
 
 ### Sequence to be run
 ZZSequence = [triggerAndSkim(isMC=IsMC, PD=PD, era=LEPTON_SETUP, passThru=TRIGPASSTHROUGH)] # Filter for good PV and trigger requirements; apply PD precedence rules for data
 
-if APPLYMUCORR and LEPTON_SETUP != 2022 : # corrections not yet implemented for 2022
+if APPLYMUCORR and LEPTON_SETUP < 2022 : # corrections not yet implemented for Run 3
     from ZZAnalysis.NanoAnalysis.muonScaleResProducer import muonScaleRes
     ZZSequence.append(muonScaleRes(LEPTON_SETUP, DATA_TAG, overwritePt=True, syncMode=SYNCMODE)) # Sets corrected muon pT and scale uncertainty
 
@@ -128,9 +134,10 @@ if IsMC :
     from ZZAnalysis.NanoAnalysis.mcTruthAnalyzer import *
     ZZSequence.insert(0, mcTruthAnalyzer(dump=False)) # Gen final state
 
-    from PhysicsTools.NanoAODTools.postprocessing.modules.common.puWeightProducer import puWeight_2016, puWeight_2017, puWeight_2018
-    puWeight = {2016:puWeight_2016, 2017:puWeight_2017, 2018:puWeight_2018} # FIXME official weights are slightly different than the one we use (checked for 2018)
-    ZZSequence.append(puWeight[LEPTON_SETUP]()) # PU reweighting
+    if LEPTON_SETUP < 2022 : #FIXME: must update for 2022 MC!
+        from PhysicsTools.NanoAODTools.postprocessing.modules.common.puWeightProducer import puWeight_2016, puWeight_2017, puWeight_2018
+        puWeight = {2016:puWeight_2016, 2017:puWeight_2017, 2018:puWeight_2018} # FIXME official weights are slightly different than the one we use (checked for 2018)
+        ZZSequence.append(puWeight[LEPTON_SETUP]()) # PU reweighting
 
     from ZZAnalysis.NanoAnalysis.weightFiller import weightFiller
     ZZSequence.append(weightFiller(XSEC, APPLY_K_NNLOQCD_ZZGG, APPLY_K_NNLOQCD_ZZQQB, APPLY_K_NNLOEW_ZZQQB, APPLY_QCD_GGF_UNCERT)) # total weight

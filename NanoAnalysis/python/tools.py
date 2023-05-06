@@ -1,4 +1,5 @@
 ### Various helper funcions
+from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
 
 ## handle configuration variables
 _myConf = {}
@@ -28,3 +29,10 @@ def insertAfter(sequence, moduleName, module) :
             sequence.insert(im+1, module)
             return
 
+# Get the four leptons of a ZZ or ZLL candidate
+def getLeptons(aCand, event) :
+    idxs = [aCand.Z1l1Idx, aCand.Z1l2Idx, aCand.Z2l1Idx, aCand.Z2l2Idx]
+    electrons = Collection(event, "Electron")
+    muons = Collection(event, "Muon")
+    leps = list(electrons) + list(muons)
+    return [leps[i] for i in idxs]
