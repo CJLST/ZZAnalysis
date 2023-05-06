@@ -2658,10 +2658,13 @@ void HZZ4lNtupleMaker::beginRun(edm::Run const& iRun, edm::EventSetup const&)
     firstRun=false;
   }
 
-  edm::Handle<GenRunInfoProduct> genRunInfo;
-  iRun.getByToken(theGenInfoTokenInRun, genRunInfo);
-  cout << "XSEC from GenRunInfoProduct: "  << genRunInfo->crossSection() << endl;
+  if (isMC){
+    edm::Handle<GenRunInfoProduct> genRunInfo;
+    iRun.getByToken(theGenInfoTokenInRun, genRunInfo);
+    cout << "XSEC from GenRunInfoProduct: "  << genRunInfo->crossSection() << endl;
+  }
 }
+
 
 // ------------ method called when ending the processing of a run  ------------
 void HZZ4lNtupleMaker::endRun(edm::Run const& iRun, edm::EventSetup const&)
