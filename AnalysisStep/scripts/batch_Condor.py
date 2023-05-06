@@ -307,7 +307,7 @@ class MyBatchManager:
                 print('Cannot create transfer directory: ', self.eosTransferPath)
                 sys.exit(4)
             #Create a link to transfer folder
-            ret = os.system('ln -s ' + self.eosTransferPath + " " + self.outputDir_ + "/trasnsferPath")
+            ret = os.system('ln -s ' + self.eosTransferPath + " " + self.outputDir_ + "/transferPath")
             
 
     def mkdir( self, dirname ):
