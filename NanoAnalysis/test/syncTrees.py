@@ -19,6 +19,7 @@ verbose = False
 # 2017 UL ggH, 26000 events
 cjlstFile   = "../../AnalysisStep/test/ZZ4lAnalysis_sync_ggH2017_106X_nomuscale.root" 
 nanoFile = "ggH125_2017UL_fixedFSR_nomucorr_full.root"
+#nanoFile = "ggH125_2017UL_fixedFSR_Skim.root"
 
 
 compareWeights = False
@@ -83,7 +84,7 @@ while treeMini.GetEntry(iEntryMini):
         elif region == '3P1F' : iBC = treeNano.ZLLbest3P1FIdx
 
 
-        if iBC < 0 or treeNano.HLT_passZZ4l: # no candidate passes the selection
+        if iBC < 0 or not treeNano.HLT_passZZ4l: # no candidate passes the selection
             # in this event, or the event does not pass the required triggers
             # (for samples processed with TRIGPASSTHROUGH=True)
             foundNano[iEntryNano] = True

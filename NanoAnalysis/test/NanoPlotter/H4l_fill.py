@@ -5,6 +5,8 @@ from __future__ import print_function
 import math
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
+from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
+from ZZAnalysis.NanoAnalysis.tools import getLeptons
 
 
 pathMC = "/eos/user/n/namapane/H4lnano/220420/" # FIXME: Use 2018 MC for the time being
@@ -36,22 +38,23 @@ def fillHistos(samplename, filename) :
 
     f = ROOT.TFile.Open(filename)
 
-    events = f.Events
-    events.SetBranchStatus("*", 0)
-    events.SetBranchStatus("run", 1)
-    events.SetBranchStatus("luminosityBlock", 1)
-    events.SetBranchStatus("event", 1)
-    events.SetBranchStatus("ZZCand_*", 1)
-    events.SetBranchStatus("bestCandIdx", 1)
-    events.SetBranchStatus("HLT_passZZ4l", 1)
-    nEntries = events.GetEntries() 
+    event = f.Events
+    event.SetBranchStatus("*", 0)
+    event.SetBranchStatus("run", 1)
+    event.SetBranchStatus("luminosityBlock", 1)
+    event.SetBranchStatus("*Muon*", 1)
+    event.SetBranchStatus("*Electron*", 1)
+    event.SetBranchStatus("*ZZCand*", 1)
+    event.SetBranchStatus("bestCandIdx", 1)
+    event.SetBranchStatus("HLT_passZZ4l", 1)
+    nEntries = event.GetEntries() 
 
     isMC = False
     if(samplename == "Data"):
         print("Data: sel=", nEntries)
     else:
         isMC = True
-        events.SetBranchStatus("overallEventWeight",1)
+        event.SetBranchStatus("overallEventWeight",1)
 
         # Get sum of weights
         runs = f.Runs
@@ -72,21 +75,28 @@ def fillHistos(samplename, filename) :
 
     iEntry=0
     printEntries=max(5000,nEntries/10)
-    while iEntry<nEntries and events.GetEntry(iEntry):
+    while iEntry<nEntries and event.GetEntry(iEntry):
         iEntry+=1
         if iEntry%printEntries == 0 : print("Processing", iEntry)
 
-        bestCandIdx = events.bestCandIdx
+        bestCandIdx = event.bestCandIdx
+
         # Check that the event contains a selected candidate, and that
         # passes the required triggers (which is necessary for samples
         # processed with TRIGPASSTHROUGH=True)
-        if(bestCandIdx != -1 and events.HLT_passZZ4l): 
+        if(bestCandIdx != -1 and event.HLT_passZZ4l): 
             weight = 1.
-            if isMC : weight = (events.overallEventWeight*events.ZZCand_dataMCWeight[bestCandIdx])/genEventSumw
-            m4l=events.ZZCand_mass[bestCandIdx]
+            ZZs = Collection(event, 'ZZCand')
+            theZZ = ZZs[bestCandIdx]        
+            if isMC : weight = (event.overallEventWeight*theZZ.dataMCWeight/genEventSumw)
+            m4l=theZZ.mass
             h_ZZMass2.Fill(m4l,weight)
             h_ZZMass4.Fill(m4l,weight)
             h_ZZMass10.Fill(m4l,weight)
+            # Example on how to get the four leptons of the candidates, ordered as
+            # [Z1l1, Z2l2, Z2l1, Z2l2]
+            #leps = getLeptons(theZZ, event)
+            #print(leps[3].pt)
         
     f.Close()
     
