@@ -13,6 +13,7 @@ SampleToRun = "MCsync_UL"
 ### Customize processing variables
 #setConf("runMELA", False)
 #setConf("bestCandByMELA", False)
+setConf("APPLYMUCORR", False) #NOTE: mu corrections removed for comparision with mini since they are not deterministic on nanoAOD.
 
 ## Select specific events to debug
 #setConf("preselection","run==316239  && luminosityBlock==226 && event==284613817")

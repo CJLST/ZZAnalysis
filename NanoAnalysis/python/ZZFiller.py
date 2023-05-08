@@ -44,13 +44,11 @@ class ZZFiller(Module):
         self.candsToStore = StoreOption.BestCandOnly # Only store the best candidate for the SR
 
 
-        # Pre-selection of leptons to build Z candidates.
+        # Pre-selection of leptons to build Z and LL candidates.
         # Normally it is the full ID + iso if only the SR is considered, or the relaxed ID if CRs are also filled,
         # but can be relaxed further to store loose candidates for ID studies (see below)
-        if self.addSIPCR :
-            self.leptonPresel = (lambda l : l.ZZRelaxedIdNoSIP)
-        elif self.addOSCR or self.addSSCR :
-            self.leptonPresel = (lambda l : l.ZZRelaxedId)
+        if self.addSIPCR or self.addOSCR or self.addSSCR :
+            self.leptonPresel = (lambda l : l.ZZRelaxedIdNoSIP) # minimal selection good for all CRs: no SIP, no ID, no iso
         else : # SR only
             self.leptonPresel = (lambda l : l.ZZFullSel)
 
@@ -163,6 +161,10 @@ class ZZFiller(Module):
             self.out.branch("ZLLCand_Z1flav", "I", lenVar="nZLLCand")
             self.out.branch("ZLLCand_Z2mass", "F", lenVar="nZLLCand")
             self.out.branch("ZLLCand_Z2flav", "I", lenVar="nZLLCand")
+            self.out.branch("ZLLCand_Z1l1Idx", "I", lenVar="nZLLCand") 
+            self.out.branch("ZLLCand_Z1l2Idx", "I", lenVar="nZLLCand")
+            self.out.branch("ZLLCand_Z2l1Idx", "I", lenVar="nZLLCand")
+            self.out.branch("ZLLCand_Z2l2Idx", "I", lenVar="nZLLCand")
             self.out.branch("ZLLCand_KD", "F", lenVar="nZLLCand")
             self.out.branch("ZLLbestSSIdx", "I")
             self.out.branch("ZLLbest2P2FIdx", "I")
@@ -208,7 +210,7 @@ class ZZFiller(Module):
                                     elif nPassLep == 1 : is1FCR = True
                         elif l1.pdgId == l2.pdgId : # SS control regions
                             if self.addSSCR and l1.ZZRelaxedId and l2.ZZRelaxedId : isSSCR = True
-                            if self.addSIPCR and l1.ZZRelaxedIdNoSIP and l2.ZZRelaxedIdNoSIP : isSIPCR = True
+                            if self.addSIPCR and l1.ZZFullSelNoSIP and l2.ZZFullSelNoSIP : isSIPCR = True
                             if not (isSSCR or isSIPCR) : continue
                         else:
                             continue
@@ -410,6 +412,10 @@ class ZZFiller(Module):
                 ZLLCand_Z1flav = [0.]*len(ZLLs)
                 ZLLCand_Z2mass = [0.]*len(ZLLs)
                 ZLLCand_Z2flav = [0.]*len(ZLLs)
+                ZLLCand_Z1l1Idx = [-1]*len(ZLLs)
+                ZLLCand_Z1l2Idx = [-1]*len(ZLLs)
+                ZLLCand_Z2l1Idx = [-1]*len(ZLLs)
+                ZLLCand_Z2l2Idx = [-1]*len(ZLLs)
                 ZLLCand_KD     = [0.]*len(ZLLs)
 
                 for iZLL, ZLL in enumerate(ZLLs) :
@@ -422,6 +428,10 @@ class ZZFiller(Module):
                     ZLLCand_Z1flav[iZLL] = ZLL.Z1.finalState()
                     ZLLCand_Z2mass[iZLL] = ZLL.Z2.M
                     ZLLCand_Z2flav[iZLL] = ZLL.Z2.finalState()
+                    ZLLCand_Z1l1Idx[iZLL] = ZLL.Z1.l1Idx
+                    ZLLCand_Z1l2Idx[iZLL] = ZLL.Z1.l2Idx
+                    ZLLCand_Z2l1Idx[iZLL] = ZLL.Z2.l1Idx
+                    ZLLCand_Z2l2Idx[iZLL] = ZLL.Z2.l2Idx
                     ZLLCand_KD[iZLL] = ZLL.KD
 
                 self.out.fillBranch("nZLLCand", len(ZLLs))
@@ -434,6 +444,10 @@ class ZZFiller(Module):
                 self.out.fillBranch("ZLLCand_Z1flav", ZLLCand_Z1flav)
                 self.out.fillBranch("ZLLCand_Z2mass", ZLLCand_Z2mass)
                 self.out.fillBranch("ZLLCand_Z2flav", ZLLCand_Z2flav)
+                self.out.fillBranch("ZLLCand_Z1l1Idx", ZLLCand_Z1l1Idx)
+                self.out.fillBranch("ZLLCand_Z1l2Idx", ZLLCand_Z1l2Idx)
+                self.out.fillBranch("ZLLCand_Z2l1Idx", ZLLCand_Z2l1Idx)
+                self.out.fillBranch("ZLLCand_Z2l2Idx", ZLLCand_Z2l2Idx)
                 self.out.fillBranch("ZLLCand_KD",     ZLLCand_KD)
                 if self.addSSCR :
                     self.out.fillBranch("ZLLbestSSIdx",  bestSSCRIdx)
@@ -608,6 +622,9 @@ class ZZFiller(Module):
             self.mela.setProcess(TVar.bkgZZ, TVar.MCFM, TVar.ZZQQB)
             p_QQB_BKG_MCFM = self.mela.computeP(True)
             self.mela.resetInputEvent()
+        if (p_GG_SIG_ghg2_1_ghz1_1_JHUGen+p_QQB_BKG_MCFM == 0.) :
+            print ("ERROR", p_GG_SIG_ghg2_1_ghz1_1_JHUGen, p_QQB_BKG_MCFM)
+            p_QQB_BKG_MCFM = 1. # FIXME: fix for error with message: "TUtil::CheckPartonMomFraction: At least one of the parton momentum fractions is greater than 1."
         ZZ = self.ZZCand(Z1, Z2, p_GG_SIG_ghg2_1_ghz1_1_JHUGen, p_QQB_BKG_MCFM)
 
         # Set flags for IDs passed by all leptons of candidate (muon only for the time being), which are 

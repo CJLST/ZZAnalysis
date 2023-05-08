@@ -1,11 +1,9 @@
 identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments,comment
-
 ###,,,,,,,,,,,xsec scaled from 13 TeV to 13.6 TeV following this prescription: xsec_13p6 = xsec_13 * 0.4 + xsec_14 * 0.6 https://indico.cern.ch/event/1169286/contributions/5126668/attachments/2557560/4416316/HXSWG.pdf#page=5
 ###,,,,,,,,,,,MC situation evolving here https://docs.google.com/spreadsheets/d/1StPLK3iVXZMx694qgEkl8QrZutFszvqT6ecN-MFZZKY/edit#gid=0
 ###,,,,,,,,,,,signal BR values taken from https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageBR
 
 ###,,,,,,,,,,,signal samples
- 
 # ggH124  ,,52.978,0.0002502,,,,,,,,
 # ggH124p5,,52.604,0.0002622,,,,,,,,
 # ggH125  ,,52.234,0.0002745,,,,,,,,
@@ -61,11 +59,10 @@ identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,spli
 
 
 
-
-###,,,,,,,,DY
+###,,,,,,,,,,,DY
 # DYJetsToLL_ext1,,,,,/DYJetsToLL_M-50_TuneCP5_13p6TeV-madgraphMLM-pythia8/Run3Winter22NanoAOD-122X_mcRun3_2021_realistic_v9_ext1-v1/NANOAODSIM ,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2018;ADDZTREE=True,RecoProbabilities.py,
 # DYJetsToLL_ext2,,,,,/DYJetsToLL_M-50_TuneCP5_13p6TeV-madgraphMLM-pythia8/Run3Winter22NanoAOD-122X_mcRun3_2021_realistic_v9_ext2-v1/NANOAODSIM ,,,,,,
 
 
-
+###,,,,,,,,,,,TT
 # TT,,,,,/TTTo2L2Nu_CP5_13p6TeV_powheg-pythia8/Run3Winter22NanoAOD-122X_mcRun3_2021_realistic_v9-v1/NANOAODSIM,,,,,,

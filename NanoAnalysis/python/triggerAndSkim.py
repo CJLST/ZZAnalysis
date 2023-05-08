@@ -18,6 +18,7 @@ class triggerAndSkim(Module):
         self.PD = PD
         self.era = era
         self.passThru = passThru
+        self.debug = False
         print("***INIT triggerAndSkim: IsMC:", self.isMC, "PD:", self.PD, "era:", self.era, "passThru:", passThru)
         
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
@@ -54,8 +55,16 @@ class triggerAndSkim(Module):
             passMuEle = event.HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL or event.HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ or event.HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ or event.HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ or event.HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ or event.HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ
             passTriEle = False
             passTriMu = event.HLT_TripleMu_10_5_5_DZ or event.HLT_TripleMu_12_10_5
-        elif self.era == 2022 : #FIXME checked these are still unprescaled in run 359751, but should be updated
-            passSingleEle = event.HLT_Ele32_WPTight_Gsf #Note: Ele30 is also unprescaled?
+        elif self.era == 2022 : # Checked that these are unprescaled in run 359751
+            passSingleEle = event.HLT_Ele30_WPTight_Gsf #Note: we used Ele32 in 2018! 
+            passSingleMu = event.HLT_IsoMu24
+            passDiEle = event.HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL or event.HLT_DoubleEle25_CaloIdL_MW
+            passDiMu = event.HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8
+            passMuEle = event.HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL or event.HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ or event.HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ or event.HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ or event.HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ or event.HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ
+            passTriEle = False
+            passTriMu = event.HLT_TripleMu_10_5_5_DZ or event.HLT_TripleMu_12_10_5
+        elif self.era == 2023 : #FIXME check if some were prescaled
+            passSingleEle = event.HLT_Ele30_WPTight_Gsf or event.HLT_Ele32_WPTight_Gsf #FIXME: Ele30 was still prescaled?
             passSingleMu = event.HLT_IsoMu24
             passDiEle = event.HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL or event.HLT_DoubleEle25_CaloIdL_MW
             passDiMu = event.HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8
@@ -77,8 +86,13 @@ class triggerAndSkim(Module):
                ((PD=="SingleElectron" or PD=="EGamma") and passSingleEle and not passMuEle and not passDiMu and not passTriMu and not passDiEle and not passTriEle) or \
                ((PD=="SingleMuon" or PD=="Muon") and passSingleMu and not passSingleEle and not passMuEle and not passDiMu and not passTriMu and not passDiEle and not passTriEle) :
                    passTrigger = True
-
-
+            
+        if self.debug :
+            print(PD)
+            print((passDiEle or passTriEle))
+            print ((passDiMu or passTriMu) and not passDiEle and not passTriEle)
+            print(passDiEle, passDiMu , passMuEle , passTriEle , passTriMu , passSingleEle , passSingleMu)
+            print(passTrigger)
 
         self.out.fillBranch("HLT_passZZ4lEle", passSingleEle or passDiEle or passTriEle)
         self.out.fillBranch("HLT_passZZ4lMu", passSingleMu or passDiMu or passTriMu)

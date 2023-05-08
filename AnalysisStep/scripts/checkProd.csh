@@ -22,11 +22,22 @@ endif
 foreach chunk ( *Chunk* )
  set fail="false"
 
+ set OUTPATH=$chunk
+
+ # Find out if output was copied to /eos instead than to submit folder 
+ if (`grep ^TRANSFER_DIR ${chunk}/batchScript.sh` != "TRANSFER_DIR=" ) then
+    set nonomatch
+    set outFile = ( ${chunk}/log/*.out )
+    if ( -e $outFile[1] ) then
+	set OUTPATH=`grep "^Transferring output" $outFile[$#outFile] | sed s/^Transferring\ output\ to:\ //`
+    endif
+    unset nonomatch
+ endif
 
  # Check that root file is existing and not empty
- set filename=${chunk}/ZZ4lAnalysis.root
+ set filename=${OUTPATH}/ZZ4lAnalysis.root
  if ( ! -e $filename ) then
-#   echo "Missing root file in " ${chunk}
+#   echo "Missing root file in " ${filename}
    set fail="true"
  else if ( -z $filename ) then
 #   echo "Empty file: " $filename
@@ -35,10 +46,10 @@ foreach chunk ( *Chunk* )
 
  # Check job exit status. Cf. https://twiki.cern.ch/twiki/bin/view/CMSPublic/JobExitCodes , https://twiki.cern.ch/twiki/bin/view/CMSPublic/StandardExitCodes
  set exitStatus = 0
- if ( -es ${chunk}/exitStatus.txt ) then
-   set exitStatus=`cat ${chunk}/exitStatus.txt`
+ if ( -es ${OUTPATH}/exitStatus.txt ) then
+   set exitStatus=`cat ${OUTPATH}/exitStatus.txt`
    set fail="true"
- else if ( ! -e ${chunk}/exitStatus.txt ) then
+ else if ( ! -e ${OUTPATH}/exitStatus.txt ) then
    set fail="true"
  endif
 

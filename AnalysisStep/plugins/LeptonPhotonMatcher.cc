@@ -219,7 +219,7 @@ LeptonPhotonMatcher::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       // Loop over loose pat::Electron
       //---------------------
       if(do_RSE && do_FSR_for_RSE) {
-        for (unsigned int j = 0; j< electronHandle->size(); ++j){
+        for (unsigned int j = 0; j< looseElectronHandle->size(); ++j){
               const pat::Electron* e = &((*looseElectronHandle)[j]);
               if ( ! e->userFloat("isSIP")) continue;
               double dR = ROOT::Math::VectorUtil::DeltaR(e->momentum(),g->momentum());

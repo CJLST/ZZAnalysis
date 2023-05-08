@@ -72,8 +72,8 @@ def getZX(h_model) :
     
 
 ### 2022 plots
-Lum = 31.3  # 1/fb 2022 C-F 355100_362104 Golden json
-#Lum = 34.09 # 1/fb 2022 C-F 355100_362760 Golden json
+#Lum = 35.084 # 1/fb 2022 C-G 355100_362760 Golden json
+Lum = 21.1289 # 1/fb 2022 F-G Golden json (prompt v11)
 
 # Set style matching the one used for HZZ plots
 ROOT.TH1.SetDefaultSumw2()

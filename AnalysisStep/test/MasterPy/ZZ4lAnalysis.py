@@ -1,3 +1,4 @@
+from __future__ import print_function
 import FWCore.ParameterSet.Config as cms
 from ZZAnalysis.AnalysisStep.defaults import *
 import os, sys
@@ -72,7 +73,7 @@ CMSSW_VERSION = os.environ['CMSSW_VERSION']
 CMSSWVERSION = int(CMSSW_VERSION.split("_")[1])
 
 if SELSETUP=="Legacy" and not BESTCANDCOMPARATOR=="byBestZ1bestZ2":
-    print "WARNING: In ZZ4lAnalysis.py the SELSETUP=\"Legacy\" flag is meant to reproduce the Legacy results, ignoring the setting of the BESTCANDCOMPARATOR: ",BESTCANDCOMPARATOR
+    print("WARNING: In ZZ4lAnalysis.py the SELSETUP=\"Legacy\" flag is meant to reproduce the Legacy results, ignoring the setting of the BESTCANDCOMPARATOR: ",BESTCANDCOMPARATOR)
     BESTCANDCOMPARATOR = "byBestZ1bestZ2"
 
 # The isolation cuts for electrons and muons. FIXME: there is an hardcoded instance of these values in src/LeptonIsoHelper.cc !!
@@ -114,7 +115,7 @@ elif (SAMPLE_TYPE == 2018):
         else:
             process.GlobalTag = GlobalTag(process.GlobalTag, '106X_dataRun2_v35', '')
 
-print '\t',process.GlobalTag.globaltag
+print('\t',process.GlobalTag.globaltag)
 
 
 ### ----------------------------------------------------------------------
@@ -229,18 +230,38 @@ process.triggerMuEle  = cms.Path(process.hltFilterMuEle)
 ### ----------------------------------------------------------------------
 ### MET FILTERS
 ### ----------------------------------------------------------------------
-#process.METFilters  = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
-#process.METFilters.TriggerResultsTag  = cms.InputTag("TriggerResults","","RECO")
-#if (IsMC):
-#   process.METFilters.TriggerResultsTag  = cms.InputTag("TriggerResults","","PAT")
-#
-#if (LEPTON_SETUP == 2017):#MET Filters available in miniAOD as described here https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2
-#   if (IsMC):
-#      process.METFilters.HLTPaths = ["Flag_goodVertices","Flag_globalSuperTightHalo2016Filter","Flag_HBHENoiseFilter","Flag_HBHENoiseIsoFilter","Flag_EcalDeadCellTriggerPrimitiveFilter","Flag_BadPFMuonFilter","Flag_BadChargedCandidateFilter"]
-#   else:
-#      process.METFilters.HLTPaths = ["Flag_goodVertices","Flag_globalSuperTightHalo2016Filter","Flag_HBHENoiseFilter","Flag_HBHENoiseIsoFilter","Flag_EcalDeadCellTriggerPrimitiveFilter","Flag_BadPFMuonFilter","Flag_BadChargedCandidateFilter","Flag_eeBadScFilter"]
-#
-#process.triggerMETFilters = cms.Path(process.METFilters)
+process.METFiltersHBHENoise  = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+process.METFiltersBadPF  = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+process.METFiltersEcal = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+process.METFiltersBadSc = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+process.METFiltersHalo = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
+
+if IsMC :
+   METFilterTag = "PAT"
+else:
+   METFilterTag = "RECO"
+
+process.METFiltersHBHENoise.TriggerResultsTag  = cms.InputTag("TriggerResults","",METFilterTag)
+process.METFiltersBadPF.TriggerResultsTag = cms.InputTag("TriggerResults","",METFilterTag)
+process.METFiltersEcal.TriggerResultsTag = cms.InputTag("TriggerResults","",METFilterTag)
+process.METFiltersBadSc.TriggerResultsTag = cms.InputTag("TriggerResults","",METFilterTag)
+process.METFiltersHalo.TriggerResultsTag = cms.InputTag("TriggerResults","",METFilterTag)
+
+process.METFiltersHBHENoise.HLTPaths = ["Flag_HBHENoiseFilter","Flag_HBHENoiseIsoFilter"]
+process.METFiltersBadPF.HLTPaths = ["Flag_BadPFMuonFilter","Flag_BadPFMuonDzFilter"]
+process.METFiltersBadSc.HLTPaths = ["Flag_eeBadScFilter"]
+process.METFiltersHalo.HLTPaths = ["Flag_globalSuperTightHalo2016Filter"]
+
+if (LEPTON_SETUP == 2016):
+    process.METFiltersEcal.HLTPaths = ["Flag_EcalDeadCellTriggerPrimitiveFilter"]
+elif (LEPTON_SETUP == 2017 or LEPTON_SETUP == 2018):
+    process.METFiltersEcal.HLTPaths = ["Flag_EcalDeadCellTriggerPrimitiveFilter","Flag_ecalBadCalibFilter"]
+
+process.triggerMETFiltersHBHENoise = cms.Path(process.METFiltersHBHENoise)
+process.triggerMETFiltersBadPF = cms.Path(process.METFiltersBadPF)
+process.triggerMETFiltersEcal = cms.Path(process.METFiltersEcal)
+process.triggerMETFiltersBadSc = cms.Path(process.METFiltersBadSc)
+process.triggerMETFiltersHalo = cms.Path(process.METFiltersHalo)
 
 ### ----------------------------------------------------------------------
 ### MC Filters and tools
@@ -360,7 +381,7 @@ elif LEPTON_SETUP == 2018:# Rochester corrections for 2018 data
 
 else:
     if APPLYMUCORR:
-        print "APPLYMUCORR not configured for LEPTON_SETUP =", LEPTON_SETUP
+        print("APPLYMUCORR not configured for LEPTON_SETUP =", LEPTON_SETUP)
         sys.exit()
 
 
@@ -770,7 +791,7 @@ M4l100            = "mass>100"
 
 
 if SELSETUP=="Legacy": # Default Configuration (Legacy paper): cut on selected best candidate
-    print "SELSETUP=Legacy no longer supported after 8fb591a because we now set combRelIsoPFFSRCorr at the level of ZZ; will need to re-introduce it at  the Z level so that ZZCand.bestZAmong (ie isBestZ flag) works again as before"
+    print("SELSETUP=Legacy no longer supported after 8fb591a because we now set combRelIsoPFFSRCorr at the level of ZZ; will need to re-introduce it at  the Z level so that ZZCand.bestZAmong (ie isBestZ flag) works again as before")
     sys.exit()
     HASBESTZ          = "daughter('Z1').masterClone.userFloat('isBestZ')"
     BESTCAND_AMONG = (FOURGOODLEPTONS + "&&" +
@@ -848,7 +869,7 @@ elif SELSETUP=="allCutsAtOncePlusSmart": # Apply smarter mZb cut
 
 
 else:
-    print "Please choose one of the following string for SELSETUP: 'Legacy', 'allCutsAtOnceButMZ2', 'allCutsAtOnce', 'allCutsAtOncePlusMZb', 'allCutsAtOncePlusSmart'"
+    print("Please choose one of the following string for SELSETUP: 'Legacy', 'allCutsAtOnceButMZ2', 'allCutsAtOnce', 'allCutsAtOncePlusMZb', 'allCutsAtOncePlusSmart'")
     sys.exit()
 
 
@@ -1142,22 +1163,22 @@ if (LEPTON_SETUP == 2016):
        theBTagger="pfDeepCSVJetTags:probb"
        theBTaggerThr=0.6001
        theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_106XUL16preVFPSF_v1_hzz.csv"
-       theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_2016_LegacyPaper.root"
+       theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_2016_APV_Run2UL_22.root"
    else:
        theBTagger="pfDeepCSVJetTags:probb"
        theBTaggerThr=0.5847
        theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/DeepCSV_106XUL16postVFPSF_v2_hzz.csv"
-       theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_2016_LegacyPaper.root"
+       theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_2016_Run2UL_22.root"
 elif (LEPTON_SETUP == 2017):
    theBTagger="pfDeepCSVJetTags:probb"
    theBTaggerThr=0.4506
    theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/wp_deepCSV_106XUL17_v3_hzz.csv"
-   theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_2017_LegacyPaper.root"
+   theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_2017_Run2UL_22.root"
 elif (LEPTON_SETUP == 2018):
    theBTagger="pfDeepCSVJetTags:probb"
    theBTaggerThr=0.4168
    theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/wp_deepCSV_106XUL18_v2_hzz.csv"
-   theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_2018_LegacyPaper.root"
+   theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_2018_Run2UL_22.root"
 else:
    sys.exit("ZZ4lAnalysis.py: Need to define the btagging for the new setup!")
 
