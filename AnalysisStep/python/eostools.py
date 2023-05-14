@@ -20,8 +20,8 @@ class cmsFileManip:
                                       stderr=subprocess.PIPE,shell=setShell )
         ( out, err ) = myCommand.communicate()
         if myCommand.returncode != 0:
-            print >> sys.stderr, "Command (%s) failed with return code: %d" % ( cmd, myCommand.returncode )
-            print >> sys.stderr, err
+            print("Command (%s) failed with return code: %d" % ( cmd, myCommand.returncode),file=sys.stderr)
+            print(err,file=sys.stderr)
 
         return out,err,myCommand.returncode
 
@@ -117,8 +117,8 @@ def listFiles(sample, path, rec = False, full_info = False):
 
     # -- listing from user dbs --
     elif path=="dbs-USER" :
-	print 'Querying USER db'
-	files, _, _ =runDBS(sample, 'prod/phys03')
+        print('Querying USER db')
+        files, _, _ =runDBS(sample, 'prod/phys03')
         for line in files.split('\n'):
             result.append(line)
         return result
@@ -146,7 +146,7 @@ def listFiles(sample, path, rec = False, full_info = False):
         if rec:
             cmd = 'dirlistrec'
 
-        print path+sample, cmd
+        print(path+sample, cmd)
         files, _, _ = runXRDCommand(path+sample, cmd)
 
         for line in files.split('\n'):
@@ -179,10 +179,10 @@ def datasetToSource( prefix, dataset, fileprefix=''):
 #    print files
 
     source = cms.Source(
-	"PoolSource",
-	noEventSort = cms.untracked.bool(True),
-	duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
-	fileNames = cms.untracked.vstring(),
+        "PoolSource",
+        noEventSort = cms.untracked.bool(True),
+        duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
+        fileNames = cms.untracked.vstring(),
         secondaryFileNames = cms.untracked.vstring(),
         )
 

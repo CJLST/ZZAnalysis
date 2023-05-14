@@ -3,6 +3,7 @@
 ### Simple analyzer to inspect user data attached to candidates.
 ###
 ###----------------------------------------------------------------------
+from past.builtins import execfile
 
 LEPTON_SETUP = 2012
 PD = ""

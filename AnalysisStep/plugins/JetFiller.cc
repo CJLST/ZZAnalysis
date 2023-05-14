@@ -477,8 +477,9 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     float pt_jerdn = -1.;
 
     if(isMC_ && applyJER_){
-      resolution = JME::JetResolution::get(iSetup, jerType+"_pt");
-      resolution_sf = JME::JetResolutionScaleFactor::get(iSetup, jerType);
+      // FIXME: in CMSSW12, must pass a Token and not a string
+      // resolution = JME::JetResolution::get(iSetup, jerType+"_pt");
+      // resolution_sf = JME::JetResolutionScaleFactor::get(iSetup, jerType);
 
 
       JME::JetParameters res_parameters = {{JME::Binning::JetPt, jpt}, {JME::Binning::JetEta, jeta}, {JME::Binning::Rho, rho}};

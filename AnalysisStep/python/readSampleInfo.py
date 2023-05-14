@@ -43,7 +43,7 @@ def readSamplesInfo(infoFilePath = 'samples_8TeV.csv', indexBy = 'identifier'):
     # Assign info to the entry indexed by the dataset identifier
     if header:            
       if len(data) != len(header):
-        raise ValueError, "Inconsistent number of columns in data '" + line + "', expected header = " + str(header)
+        raise ValueError("Inconsistent number of columns in data '" + line + "', expected header = " + str(header))
 
       info                  = {}
       for (key, value) in zip(header, data):
@@ -58,10 +58,10 @@ def readSamplesInfo(infoFilePath = 'samples_8TeV.csv', indexBy = 'identifier'):
               if len(bareelement) == 2:
                 if isFloat(bareelement[1]):
                   try:
-							int(bareelement[1])==float(bareelement[1]) # int(float number) will return ValueError
-							dictionary[bareelement[0]] = int(bareelement[1]) # avoid turning integers to floats
+                                                        int(bareelement[1])==float(bareelement[1]) # int(float number) will return ValueError
+                                                        dictionary[bareelement[0]] = int(bareelement[1]) # avoid turning integers to floats
                   except ValueError:
-							dictionary[bareelement[0]] = float(bareelement[1])
+                                                        dictionary[bareelement[0]] = float(bareelement[1])
                 else:
                   dictionary[bareelement[0]] = checkBool(bareelement[1])
               else:
@@ -74,7 +74,7 @@ def readSamplesInfo(infoFilePath = 'samples_8TeV.csv', indexBy = 'identifier'):
 
       index                 = info[indexBy]
       if index in database:
-        raise ValueError, "Duplicate entries encountered for %d" % index
+        raise ValueError("Duplicate entries encountered for %d" % index)
       del info[indexBy]
       database[index]       = info
 
@@ -90,7 +90,7 @@ def readSamplesInfo(infoFilePath = 'samples_8TeV.csv', indexBy = 'identifier'):
 
 
   if len(database) == 0:
-    raise ValueError, "Invalid information file '" + infoFilePath + "', no entries found."
+    raise ValueError("Invalid information file '" + infoFilePath + "', no entries found.")
   return (database, defaults)
 
 
@@ -101,7 +101,7 @@ def readSampleInfo(sample, infoFilePath = 'samples_8TeV.csv', indexBy = 'identif
   if sample in db:
     return db[sample]
   else:
-    print "Unknown sample", sample
+    print("Unknown sample", sample)
     sys.exit(2)
 
 
@@ -141,7 +141,7 @@ def getSamplesBy(category, categoryvalue, infoFilePath = 'samples_8TeV.csv', ind
         samples.append(sample)
     else:
       if not category in DB[sample]: 
-        print "ERROR unknown category!"
+        print("ERROR unknown category!")
         return samples
       if DB[sample][category] == categoryvalue:
         samples.append(sample)

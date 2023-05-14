@@ -14,21 +14,15 @@
 <use name="MagneticField/Engine"/>
 <use name="MagneticField/Records"/>
 <use name="ZZAnalysis/AnalysisStep"/>
-<use name="JHUGenMELA/MELA"/>
-<use name="MelaAnalytics/CandidateLOCaster"/>
-<use name="MelaAnalytics/EventContainer"/>
-<use name="MelaAnalytics/GenericMEComputer"/>
 <use name="CommonLHETools/LHEHandler"/>
-<!--use name="RecoEcal/EgammaCoreTools"/-->
 
-<use   name="root"/>
-<use   name="roottmva"/>
+<use name="root"/>
+<use name="roottmva"/>
 <use name="rootrflx"/>
 <use name="roofitcore"/>
 
-<!--Flags CPPDEFINES="CMSSW_VERSION=$(shell echo ${CMSSW_VERSION}|sed -e s/CMSSW_// -e s/_//g -e s/patch\.//)"/-->
-<!--Flags CPPDEFINES="CMSSW_VERSION_MAJOR=$(shell echo ${CMSSW_VERSION}|sed -e s/CMSSW_// -e s/_.*//g)"/-->
 <flags CPPFLAGS="-I$(CMSSW_BASE)/src/JHUGenMELA/MELA/interface/" />
+<flags LDFLAGS="-lmcfm_707 -ljhugenmela -lcollier -lJHUGenMELAMELA -lMelaAnalyticsEventContainer -lMelaAnalyticsGenericMEComputer -lMelaAnalyticsCandidateLOCaster"/>
 
 <library   file="*.cc" name="ZZAnalysisAnalysisStepTest">
   <flags   EDM_PLUGIN="1"/>

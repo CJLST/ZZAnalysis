@@ -72,23 +72,23 @@ def hadd(file, odir, idirs):
             haddCmd.append( file.replace( idirs[0], dir ) )
     # import pdb; pdb.set_trace()
     cmd = ' '.join(haddCmd)
-    print cmd
+    print(cmd)
     exc = os.system(cmd)
     if exc != 0 :
-        print '---> ABORTING <---'
+        print('---> ABORTING <---')
         exit(1)
 
 
 def haddRec(odir, idirs):
-    print 'adding', idirs
-    print 'to', odir 
+    print('adding', idirs)
+    print('to', odir)
 
     try:
         os.makedirs( odir )
     except OSError:
-        print 
-        print 'ERROR: directory in the way. Maybe you ran hadd already in this directory? Remove it and try again, or run with -r'
-        print 
+        print() 
+        print('ERROR: directory in the way. Maybe you ran hadd already in this directory? Remove it and try again, or run with -r')
+        print()
         raise
     for root,dirs,files in os.walk( idirs[0] ):
         for file in files:
@@ -111,15 +111,15 @@ def haddChunks(idir, removeDestDir, cleanUp=False, destdir=None ):
             # print prefix, num
             chunks.setdefault( prefix, list() ).append(filepath)
     if len(chunks)==0:
-        print 'warning: no chunk found.'
+        print('warning: no chunk found.')
         return
     for i, (comp, cchunks) in enumerate(chunks.iteritems(), start=1):
         odir = '/'.join( [destdir, comp] )
-        print
-        print "======================"
-        print "hadding folder", i, "/", len(chunks)
-        print "======================"
-        print odir, cchunks
+        print()
+        print("======================")
+        print("hadding folder", i, "/", len(chunks))
+        print("======================")
+        print(odir, cchunks)
         if removeDestDir:
             if os.path.isdir( odir ):
                 shutil.rmtree(odir)
@@ -129,7 +129,7 @@ def haddChunks(idir, removeDestDir, cleanUp=False, destdir=None ):
         if os.path.isdir('Chunks'):
             shutil.rmtree(chunkDir)
         os.mkdir(chunkDir)
-        print chunks
+        print(chunks)
         for comp, chunks in chunks.iteritems():
             for chunk in chunks:
                 shutil.move(chunk, chunkDir)

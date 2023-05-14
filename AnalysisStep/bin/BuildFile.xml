@@ -1,7 +1,7 @@
 <use name="ZZAnalysis/AnalysisStep"/>
 
-<use   name="root"/>
-<use   name="roottmva"/>
+<use name="root"/>
+<use name="roottmva"/>
 <use name="rootrflx"/>
 <use name="roofitcore"/>
 

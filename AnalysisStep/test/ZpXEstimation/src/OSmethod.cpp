@@ -1,5 +1,6 @@
 // Include classes
 #include <ZZAnalysis/AnalysisStep/test/ZpXEstimation/include/OSmethod.h>
+#include <TF1.h>
 
 // Constructor
 //============================================================

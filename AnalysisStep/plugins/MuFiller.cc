@@ -22,8 +22,6 @@
 #include <ZZAnalysis/AnalysisStep/interface/CutSet.h>
 #include <ZZAnalysis/AnalysisStep/interface/LeptonIsoHelper.h>
 
-#include "MuonMVAReader/Reader/interface/MuonGBRForestReader.hpp"
-
 #include <vector>
 #include <string>
 
@@ -54,8 +52,6 @@ class MuFiller : public edm::EDProducer {
    edm::EDGetTokenT<double> rhoToken;
    edm::EDGetTokenT<vector<Vertex> > vtxToken;
    
-   // MVA Reader
-   MuonGBRForestReader *r;
 };
 
 
@@ -72,7 +68,7 @@ flags(iConfig.getParameter<edm::ParameterSet>("flags"))
    produces<pat::MuonCollection>();
    
    // MVA Reader
-   r = new MuonGBRForestReader(setup, 2);
+   // r = new MuonGBRForestReader(setup, 2);
    
 }
 
@@ -135,94 +131,6 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 //          custom_dz  = fabs(l.muonBestTrack()->dz(vertex->position()));
 //       }
       
-
-//=================
-// Begin MVA reader
-//=================
-
-      float glb_valid_mu_hits_, glb_chi2_, tk_valid_pixel_hits_, tk_valid_hits_;
-//      float glb_pT_error_, tk_tracker_lay_, tk_pixel_lay_, tk_chi2_, tk_pT_error_;
-      
-//      bool is_global_mu_  = l.isGlobalMuon();
-      
-      // GlobalTrackQualityVariables
-      if ( l.globalTrack().isNonnull() )
-      {
-         glb_valid_mu_hits_ = (l.globalTrack()->hitPattern().numberOfValidMuonHits());
-         glb_chi2_          = (l.globalTrack()->normalizedChi2());
-//         glb_pT_error_      = (l.globalTrack()->ptError()); 
-      }
-      else
-      {
-         glb_valid_mu_hits_ = -1;
-         glb_chi2_          = -1;
-//         glb_pT_error_      = -1;
-      }
-      
-      
-      // TrackQualityVariables
-      reco::TrackRef track = l.innerTrack();
-//      valid_KF = (myTrackRef.isAvailable());
-//      valid_KF = (myTrackRef.isNonnull());
-
-
-      if ( track.isNonnull() )
-      {
-         tk_valid_hits_       = l.innerTrack()->hitPattern().numberOfValidHits();
-         tk_valid_pixel_hits_ = l.innerTrack()->hitPattern().numberOfValidPixelHits();
-//         tk_tracker_lay_      = l.innerTrack()->hitPattern().trackerLayersWithMeasurement();
-//         tk_pixel_lay_        = l.innerTrack()->hitPattern().pixelLayersWithMeasurement();
-//         tk_chi2_             = l.innerTrack()->normalizedChi2();
-//         tk_pT_error_         = l.innerTrack()->ptError();
-      }
-      else
-      {
-         tk_valid_hits_       = -1;
-         tk_valid_pixel_hits_ = -1;
-//         tk_tracker_lay_      = -1;
-//         tk_pixel_lay_        = -1;
-//         tk_chi2_             = -1;
-//         tk_pT_error_         = -1;
-      }
-
-      
-      float BDT = -99;
-      float pt  = l.pt();
-      float eta = l.eta();
-
-      
-      BDT = r->Get_MVA_value_two_eta_bins(pt, eta, glb_valid_mu_hits_, glb_chi2_, tk_valid_pixel_hits_, tk_valid_hits_, PFPhotonIso, PFChargedHadIso, PFNeutralHadIso, rho);
-//       cout << BDT << endl;
-      
-      
-      bool isBDT = true;
-      // Save also BDT distributions, without any cut
-      /*
-      if ( setup == 2016 )
-      {  
-         isBDT = ((pt < 10 && abs(eta) < 1.2 && BDT > -0.798) || (pt < 10 && abs(eta) >= 1.2 && BDT > 0.226)
-              || (pt >= 10 && abs(eta) < 1.2 && BDT > -3.743) || (pt >= 10 && abs(eta) >= 1.2 && BDT > -3.522));
-      }
-      else if ( setup == 2017 )
-      {
-         isBDT = ((pt < 10 && abs(eta) < 1.2 && BDT > -0.578) || (pt < 10 && abs(eta) >= 1.2 && BDT > 0.252)
-              || (pt >= 10 && abs(eta) < 1.2 && BDT > -3.688)  || (pt >= 10 && abs(eta) >= 1.2 && BDT > -3.970));
-      }
-      else if ( setup == 2018 )
-      {
-         isBDT = ((pt < 10 && abs(eta) < 1.2 && BDT > -0.643)  || (pt < 10 && abs(eta) >= 1.2 && BDT > 0.197)
-              || (pt >= 10 && abs(eta) < 1.2 && BDT > -2.737) || (pt >= 10 && abs(eta) >= 1.2 && BDT > -3.804));
-      }
-      else
-      {
-         std::cerr << "[ERROR] MuFiller: no MVA setup for: " << setup << " year!" << std::endl;
-      }
-      */
-//=================
-// End MVA reader
-//================= 
-
-      
       //--- Trigger matching
       bool HLTMatch = false;
       pat::TriggerObjectStandAloneCollection obj= l.triggerObjectMatches();
@@ -255,8 +163,8 @@ MuFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       l.addUserFloat("SIP",SIP);
       l.addUserFloat("dxy",dxy);
       l.addUserFloat("dz",dz);
-      l.addUserFloat("BDT",BDT);
-      l.addUserFloat("isBDT",isBDT);
+      l.addUserFloat("BDT",-1.);
+      l.addUserFloat("isBDT",1.);
       l.addUserFloat("HLTMatch", HLTMatch);
       // l.addUserCand("MCMatch",genMatch); // FIXME
       l.addUserFloat("time",muontime);      

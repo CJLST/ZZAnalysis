@@ -30,5 +30,5 @@ def _():
     return result
 
 for enum in _():
-    exec enum
+    exec(enum)
 del enum, _

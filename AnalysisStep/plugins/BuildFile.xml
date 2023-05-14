@@ -7,17 +7,13 @@
 <use name="CommonTools/CandAlgos"/>
 <use name="CommonTools/CandUtils"/>
 <use name="ZZAnalysis/AnalysisStep"/>
-<use name="JHUGenMELA/MELA"/>
-<use name="MelaAnalytics/GenericMEComputer"/>
 <use name="EgammaAnalysis/ElectronTools"/>
 <use name="PhysicsTools/KinFitter"/>
 <use name="JetMETCorrections/Modules"/>
 <use name="KinZfitter/KinZfitter"/>
-<use name="MuonMVAReader/Reader"/>
 
 <library   file="*.cc" name="ZZAnalysisAnalysisStepPlugins">
-<!--Flags CPPDEFINES="CMSSW_VERSION=$(shell echo ${CMSSW_VERSION}|sed -e s/CMSSW_// -e s/_//g -e s/patch\.//)"/-->
-<!--Flags CPPDEFINES="CMSSW_VERSION_MAJOR=$(shell echo ${CMSSW_VERSION}|sed -e s/CMSSW_// -e s/_.*//g)"/-->
 <flags CPPFLAGS="-I$(CMSSW_BASE)/src/JHUGenMELA/MELA/interface/" />
+<flags LDFLAGS="-lmcfm_707 -ljhugenmela -lcollier -lJHUGenMELAMELA -lMelaAnalyticsEventContainer -lMelaAnalyticsGenericMEComputer"/>
 <flags   EDM_PLUGIN="1"/>
 </library>

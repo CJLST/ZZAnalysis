@@ -3,6 +3,7 @@
 #include <DataFormats/PatCandidates/interface/CompositeCandidate.h>
 #include <DataFormats/PatCandidates/interface/Muon.h>
 #include <DataFormats/PatCandidates/interface/Electron.h>
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 
 using namespace std;

@@ -3,7 +3,7 @@
 # Configuration for Run2
 #
 #----------------------------------------------------------------------
-
+from past.builtins import execfile
 
 # Load deafult job config
 import os

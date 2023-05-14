@@ -3,7 +3,7 @@
 ### An example to illustrate how one can implement event selection in the .py 
 ###
 ###----------------------------------------------------------------------
-
+from past.builtins import execfile
 
 ### ----------------------------------------------------------------------
 ### Standard sequence
