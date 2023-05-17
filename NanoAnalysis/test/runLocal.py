@@ -8,7 +8,8 @@ from __future__ import print_function
 from ZZAnalysis.NanoAnalysis.tools import setConf, getConf, insertAfter
 
 #SampleToRun = "Data2022"
-SampleToRun = "MCsync_UL"
+#SampleToRun = "MCsync_UL"
+SampleToRun = "MC2022"
 
 ### Customize processing variables
 #setConf("runMELA", False)
@@ -78,6 +79,20 @@ elif SampleToRun == "MCsync_Rereco" :
 
     setConf("store","")
     setConf("fileNames",["/eos/user/n/namapane/H4lnano/ggH125_fixedFSR.root"])
+
+
+################################################################################
+elif SampleToRun == "MC2022" :
+    # 2022 MC sample
+    setConf("SAMPLENAME", "ggH125")
+    setConf("XSEC", 52.234*0.0002745)
+    setConf("LEPTON_SETUP", 2022)
+    setConf("IsMC", True)
+    setConf("store","root://cms-xrd-global.cern.ch/")
+    setConf("fileNames",[
+        "/store/mc/Run3Summer22EENanoAODv11/GluGluHtoZZto4L_M-125_TuneCP5_13p6TeV_powheg2-JHUGenV752-pythia8/NANOAODSIM/126X_mcRun3_2022_realistic_postEE_v1-v1/2810000/61b94078-4705-425c-a7c5-c9add880b021.root",
+        ])
+
 
 
 #####################################################################

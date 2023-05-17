@@ -372,7 +372,10 @@ class ZZFiller(Module):
                 ZZCand_Z2l2Idx[iZZ] = ZZ.Z2.l2Idx
                 ZZCand_KD[iZZ] = ZZ.KD
                 ZZCand_Z2sumpt[iZZ] = ZZ.Z2.sumpt()
-                if self.isMC: ZZCand_wDataMC[iZZ] =  self.getDataMCWeight(ZZ.leps())
+                if self.year < 2022 : #FIXME
+                    if self.isMC: ZZCand_wDataMC[iZZ] =  self.getDataMCWeight(ZZ.leps())
+                else :
+                    ZZCand_wDataMC[iZZ] = 1.
                 for iID, ID in enumerate(self.muonIDs) :
                     ZZCand_passID[iID].append(ZZ.passId[iID])
                 for iVar, var in enumerate(self.muonIDVars) :
