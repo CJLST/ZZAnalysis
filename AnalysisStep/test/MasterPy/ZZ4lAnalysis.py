@@ -248,7 +248,8 @@ process.METFiltersBadSc.TriggerResultsTag = cms.InputTag("TriggerResults","",MET
 process.METFiltersHalo.TriggerResultsTag = cms.InputTag("TriggerResults","",METFilterTag)
 
 process.METFiltersHBHENoise.HLTPaths = ["Flag_HBHENoiseFilter","Flag_HBHENoiseIsoFilter"]
-process.METFiltersBadPF.HLTPaths = ["Flag_BadPFMuonFilter","Flag_BadPFMuonDzFilter"]
+process.METFiltersBadPF.HLTPaths = ["Flag_BadPFMuonFilter"]   
+#,"Flag_BadPFMuonDzFilter"] fails for DATA! 
 process.METFiltersBadSc.HLTPaths = ["Flag_eeBadScFilter"]
 process.METFiltersHalo.HLTPaths = ["Flag_globalSuperTightHalo2016Filter"]
 
