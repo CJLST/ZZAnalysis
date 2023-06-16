@@ -13,7 +13,7 @@ process = cms.Process("ZZ")
 declareDefault("IsMC", True, globals())
 
 # Set of effective areas, rho corrections, etc. (can be 2011, 2012, 2015 or 2016)
-declareDefault("LEPTON_SETUP", 2018, globals())
+declareDefault("LEPTON_SETUP", 2022, globals())
 
 # Flag that reflects the actual sqrts of the sample (can be 2011, 2012, 2015 or 2016)
 # Can differ from SAMPLE_TYPE for samples that are rescaled to a different sqrts.
@@ -64,9 +64,6 @@ declareDefault("ADDLOOSEELE", False, globals())
 # Activate trigger paths in MC; note that for 2016, only reHLT samples have the correct triggers!!!
 declareDefault("APPLYTRIG", True, globals())
 
-# Set to True to re-activate the now-deprecated PATMuonCleanerBySegments
-UseMuonCleanerBySegments = False 
-
 
 # CMSSW version 8X or 9X
 CMSSW_VERSION = os.environ['CMSSW_VERSION']
@@ -114,6 +111,12 @@ elif (SAMPLE_TYPE == 2018):
             process.GlobalTag = GlobalTag(process.GlobalTag, '106X_dataRun2_v35', '')
         else:
             process.GlobalTag = GlobalTag(process.GlobalTag, '106X_dataRun2_v35', '')
+
+elif (SAMPLE_TYPE >= 2022):
+    if IsMC:
+        process.GlobalTag = GlobalTag(process.GlobalTag, '124X_mcRun3_2022_realistic_v11', '') #FIXME2022: no autoCond for MC yet?
+    else:
+        process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run3_data', '')
 
 print('\t',process.GlobalTag.globaltag)
 
@@ -205,7 +208,7 @@ elif (LEPTON_SETUP == 2017):
    process.triggerSingleEle = cms.Path(process.hltFilterSingleEle)
    process.triggerSingleMu  = cms.Path(process.hltFilterSingleMu )
 
-### 2018 triggers - FIXME: to be updated (26/6/18)
+### 2018 triggers
 elif (LEPTON_SETUP == 2018):
    process.hltFilterDiEle.HLTPaths = ["HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_DoubleEle25_CaloIdL_MW_v*"]
    process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*"]
@@ -220,6 +223,22 @@ elif (LEPTON_SETUP == 2018):
    process.triggerSingleEle = cms.Path(process.hltFilterSingleEle)
    process.triggerSingleMu  = cms.Path(process.hltFilterSingleMu )
 
+# 2022 triggers: same as 2018, but use also HLT_Ele30_WPTight_Gsf_v, which was unprescaled for the whole year
+elif (LEPTON_SETUP == 2022): 
+   process.hltFilterDiEle.HLTPaths = ["HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_DoubleEle25_CaloIdL_MW_v*"]
+   process.hltFilterDiMu.HLTPaths = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*"]
+   process.hltFilterMuEle.HLTPaths = ["HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ_v*","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ_v*"]
+   process.hltFilterTriEle.HLTPaths = [""]
+   process.hltFilterTriMu.HLTPaths = ["HLT_TripleMu_10_5_5_DZ_v*","HLT_TripleMu_12_10_5_v*"]
+   process.hltFilterSingleEle.HLTPaths = ["HLT_Ele30_WPTight_Gsf_v*", "HLT_Ele32_WPTight_Gsf_v*"]
+   process.hltFilterSingleMu.HLTPaths = ["HLT_IsoMu24_v*"]
+
+   process.triggerTriEle = cms.Path(process.hltFilterTriEle)
+   process.triggerTriMu  = cms.Path(process.hltFilterTriMu )
+   process.triggerSingleEle = cms.Path(process.hltFilterSingleEle)
+   process.triggerSingleMu  = cms.Path(process.hltFilterSingleMu )
+elif (LEPTON_SETUP == 2023): 
+    pass #FIXME2022 to be implemented for 2023
 
 
 process.triggerDiMu   = cms.Path(process.hltFilterDiMu)
@@ -229,6 +248,7 @@ process.triggerMuEle  = cms.Path(process.hltFilterMuEle)
 
 ### ----------------------------------------------------------------------
 ### MET FILTERS
+### cf: https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2
 ### ----------------------------------------------------------------------
 process.METFiltersHBHENoise  = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
 process.METFiltersBadPF  = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
@@ -248,14 +268,17 @@ process.METFiltersBadSc.TriggerResultsTag = cms.InputTag("TriggerResults","",MET
 process.METFiltersHalo.TriggerResultsTag = cms.InputTag("TriggerResults","",METFilterTag)
 
 process.METFiltersHBHENoise.HLTPaths = ["Flag_HBHENoiseFilter","Flag_HBHENoiseIsoFilter"]
-process.METFiltersBadPF.HLTPaths = ["Flag_BadPFMuonFilter"]   
-#,"Flag_BadPFMuonDzFilter"] fails for DATA! 
 process.METFiltersBadSc.HLTPaths = ["Flag_eeBadScFilter"]
 process.METFiltersHalo.HLTPaths = ["Flag_globalSuperTightHalo2016Filter"]
 
+if (LEPTON_SETUP < 2022):
+    process.METFiltersBadPF.HLTPaths = ["Flag_BadPFMuonFilter"] #"Flag_BadPFMuonDzFilter" fails for 2016/2017 data, skipping for Run2
+else:
+    process.METFiltersBadPF.HLTPaths = ["Flag_BadPFMuonFilter","Flag_BadPFMuonDzFilter"]
+
 if (LEPTON_SETUP == 2016):
     process.METFiltersEcal.HLTPaths = ["Flag_EcalDeadCellTriggerPrimitiveFilter"]
-elif (LEPTON_SETUP == 2017 or LEPTON_SETUP == 2018):
+elif (LEPTON_SETUP >= 2017):
     process.METFiltersEcal.HLTPaths = ["Flag_EcalDeadCellTriggerPrimitiveFilter","Flag_ecalBadCalibFilter"]
 
 process.triggerMETFiltersHBHENoise = cms.Path(process.METFiltersHBHENoise)
@@ -380,6 +403,14 @@ elif LEPTON_SETUP == 2018:# Rochester corrections for 2018 data
                                          isSynchronization = cms.bool(False),
                                          )
 
+elif LEPTON_SETUP == 2022:
+     process.calibratedMuons = cms.EDProducer("RochesterPATMuonCorrector",
+                                         src = cms.InputTag("slimmedMuons"),
+                                         identifier = cms.string("FIXME_placeholder"),
+                                         isMC = cms.bool(IsMC),
+                                         isSynchronization = cms.bool(False),
+                                         )
+
 else:
     if APPLYMUCORR:
         print("APPLYMUCORR not configured for LEPTON_SETUP =", LEPTON_SETUP)
@@ -428,19 +459,6 @@ if not APPLYMUCORR :
     process.muons.replace(process.calibratedMuons, None)
     process.bareSoftMuons.src = cms.InputTag("slimmedMuons")
 
-
-#--- Derecated muon cleaner; keep this option for future reference. 
-if UseMuonCleanerBySegments:
-    process.cleanedMu = cms.EDProducer("PATMuonCleanerBySegments",
-                                       src = cms.InputTag("calibratedMuons"),
-                                       preselection = cms.string("track.isNonnull"),
-                                       passthrough = cms.string("isGlobalMuon && numberOfMatches >= 2"),
-                                       fractionOfSharedSegments = cms.double(0.499))
-    process.muons.replace(process.bareSoftMuons,cms.Sequence(process.cleanedMu+process.bareSoftMuons))    
-    process.bareSoftMuons.src = "cleanedMu"
-    if not APPLYMUCORR:
-        process.cleanedMu.src = "slimmedMuons"
-
 #------- ELECTRONS -------
 
 #--- Run2 electron momentum scale and resolution corrections
@@ -469,7 +487,7 @@ if (LEPTON_SETUP == 2016):
                               eleIDModules=['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Summer16UL_ID_ISO_cff','RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff'],
                               phoIDModules=['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V2_cff'],
                               era='2016postVFP-UL')
-if (LEPTON_SETUP == 2017):
+elif (LEPTON_SETUP == 2017):
    from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
    setupEgammaPostRecoSeq(process,
                           runEnergyCorrections=True,
@@ -478,7 +496,7 @@ if (LEPTON_SETUP == 2017):
                           phoIDModules=['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V2_cff'],
                           era='2017-UL')
 
-if (LEPTON_SETUP == 2018):
+elif (LEPTON_SETUP == 2018):
    from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
    setupEgammaPostRecoSeq(process,
                           runEnergyCorrections=True,
@@ -486,6 +504,15 @@ if (LEPTON_SETUP == 2018):
                           eleIDModules=['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Summer18UL_ID_ISO_cff','RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff','RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_iso_V2_cff'],
                           phoIDModules=['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V2_cff'],
                           era='2018-UL')
+
+elif (LEPTON_SETUP >= 2022):
+    from EgammaUser.EgammaPostRecoTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
+    setupEgammaPostRecoSeq(process,
+                           runEnergyCorrections=False, #FIXME2022: not yet available
+                           runVID=True,
+                           eleIDModules=['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Summer18UL_ID_ISO_cff'],
+                           phoIDModules=['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V2_cff'],
+                           era='run3')
 
 
 process.bareSoftElectrons = cms.EDFilter("PATElectronRefSelector",
@@ -615,7 +642,7 @@ if(IsMC and LEPTON_SETUP == 2018):
                                                              PrefiringRateSystematicUnctyECAL = cms.double(0.2),
                                                              PrefiringRateSystematicUnctyMuon = cms.double(0.2))
 
-if(IsMC):
+if(IsMC and LEPTON_SETUP < 2022):
    process.Prefiring = cms.Path(process.prefiringweight)
 
 
@@ -1175,7 +1202,7 @@ elif (LEPTON_SETUP == 2017):
    theBTaggerThr=0.4506
    theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/wp_deepCSV_106XUL17_v3_hzz.csv"
    theBTagMCEffFile="ZZAnalysis/AnalysisStep/data/BTagging/bTagEfficiencies_2017_Run2UL_22.root"
-elif (LEPTON_SETUP == 2018):
+elif (LEPTON_SETUP >= 2018): #FIXME2022
    theBTagger="pfDeepCSVJetTags:probb"
    theBTaggerThr=0.4168
    theBTagSFFile="ZZAnalysis/AnalysisStep/data/BTagging/wp_deepCSV_106XUL18_v2_hzz.csv"

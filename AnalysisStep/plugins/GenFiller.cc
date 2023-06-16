@@ -5,7 +5,7 @@
  */
 
 #include <FWCore/Framework/interface/Frameworkfwd.h>
-#include <FWCore/Framework/interface/EDProducer.h>
+#include <FWCore/Framework/interface/one/EDProducer.h>
 #include <FWCore/Framework/interface/Event.h>
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 #include <FWCore/Framework/interface/ESHandle.h>
@@ -34,7 +34,7 @@
 using namespace BranchHelpers;
 using namespace std;
 
-class GenFiller : public edm::EDProducer {
+class GenFiller : public edm::one::EDProducer<> {
   public:
     /// Constructor
     explicit GenFiller(const edm::ParameterSet&);

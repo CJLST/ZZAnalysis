@@ -19,8 +19,8 @@
 
 #include <TMatrixD.h>
 
-void CompositeCandMassResolution::init(const edm::EventSetup &iSetup) {
-    iSetup.get<IdealMagneticFieldRecord>().get(magfield_);
+void CompositeCandMassResolution::init(const edm::EventSetup &iSetup, const edm::ESGetToken<MagneticField, IdealMagneticFieldRecord> fieldToken) {
+    magfield_ = &iSetup.getData(fieldToken);
 }
 
 void CompositeCandMassResolution::getLeaves(const reco::Candidate &c, std::vector<const reco::Candidate *> &out) const {
@@ -133,11 +133,7 @@ void CompositeCandMassResolution::fillP3Covariance(const reco::GsfElectron &c, T
     } else {
         // Parametrization from Claude Charlot,
         // http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/CJLST/ZZAnalysis/AnalysisStep/src/ZZMassErrors.cc?revision=1.2&view=markup
-#if CMSSW_VERSION<500
-        double ecalEnergy = c.ecalEnergy() ;
-#else
         double ecalEnergy = c.correctedEcalEnergy() ;
-#endif
         double err2 = 0.0;
         if (c.isEB()) {
             err2 += (5.24e-02*5.24e-02)/ecalEnergy;
@@ -168,7 +164,7 @@ void CompositeCandMassResolution::fillP3Covariance(const reco::Candidate &c, con
       GlobalTrajectoryParameters gp(GlobalPoint(t.vx(), t.vy(),  t.vz()),
                     GlobalVector(t.px(),t.py(),t.pz()),
                     t.charge(),
-                    magfield_.product());
+                    magfield_);
       JacobianCurvilinearToCartesian curv2cart(gp);
       CartesianTrajectoryError cartErr= ROOT::Math::Similarity(curv2cart.jacobian(), t.covariance());
       const AlgebraicSymMatrix66 mat = cartErr.matrix();

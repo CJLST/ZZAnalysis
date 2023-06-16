@@ -7,7 +7,7 @@
  */
 
 
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/one/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
@@ -32,7 +32,7 @@
 #include <boost/foreach.hpp>
 #define foreach BOOST_FOREACH
 
-class  JetsWithLeptonsRemover: public edm::EDProducer {
+class  JetsWithLeptonsRemover: public edm::one::EDProducer<> {
 public:
   
   enum MatchingType{byConstituents, byDeltaR};

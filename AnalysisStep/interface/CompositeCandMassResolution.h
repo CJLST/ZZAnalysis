@@ -5,8 +5,9 @@ namespace reco { class Candidate; class Muon; class GsfElectron; class Track; cl
 namespace edm { class EventSetup; }
 
 #include <vector>
-#include "FWCore/Framework/interface/ESHandle.h"
+#include "FWCore/Framework/interface/EventSetup.h"
 #include "MagneticField/Engine/interface/MagneticField.h"
+#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
 #include <TMatrixDSym.h>
 
 /* Mutuated from 
@@ -18,7 +19,7 @@ class CompositeCandMassResolution  {
     public:
         CompositeCandMassResolution() {}
         ~CompositeCandMassResolution() {}
-        void init(const edm::EventSetup &iSetup);
+        void init(const edm::EventSetup &iSetup, const edm::ESGetToken<MagneticField, IdealMagneticFieldRecord> fieldToken);
         double getMassResolution(const reco::Candidate &c) const ;
         double getMassResolutionWithComponents(const reco::Candidate &c, std::vector<double> &errI) const;
     private:
@@ -29,7 +30,7 @@ class CompositeCandMassResolution  {
         void   fillP3Covariance(const reco::Candidate &c, const reco::Track &t, TMatrixDSym &bigCov, int offset) const ;
 	void   fillP3Covariance(const reco::LeafCandidate &c, TMatrixDSym &bigCov, int offset) const ;
 
-        edm::ESHandle<MagneticField> magfield_;
+        const MagneticField* magfield_;
 
         // 1 if this is a lead, recursive number of leafs if composite
         void getLeaves(const reco::Candidate &c, std::vector<const reco::Candidate *> &out) const ;

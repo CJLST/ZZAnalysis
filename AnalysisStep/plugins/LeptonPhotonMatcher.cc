@@ -9,7 +9,7 @@
  */
 
 #include <FWCore/Framework/interface/Frameworkfwd.h>
-#include <FWCore/Framework/interface/EDProducer.h>
+#include <FWCore/Framework/interface/one/EDProducer.h>
 #include <FWCore/Framework/interface/Event.h>
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 #include <FWCore/Framework/interface/ESHandle.h>
@@ -39,7 +39,7 @@ using namespace edm;
 using namespace std;
 using namespace reco;
 
-class LeptonPhotonMatcher : public edm::EDProducer {
+class LeptonPhotonMatcher : public edm::one::EDProducer<> {
  public:
   /// Constructor
   explicit LeptonPhotonMatcher(const edm::ParameterSet&);

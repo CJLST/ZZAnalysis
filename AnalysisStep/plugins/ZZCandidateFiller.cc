@@ -7,7 +7,7 @@
  */
 
 #include <FWCore/Framework/interface/Frameworkfwd.h>
-#include <FWCore/Framework/interface/EDProducer.h>
+#include <FWCore/Framework/interface/one/EDProducer.h>
 #include <FWCore/Framework/interface/Event.h>
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 #include <FWCore/Framework/interface/ESHandle.h>
@@ -16,8 +16,6 @@
 
 #include <ZZAnalysis/AnalysisStep/interface/CutSet.h>
 #include <ZZAnalysis/AnalysisStep/interface/DaughterDataHelpers.h>
-//#include <ZZAnalysis/AnalysisStep/interface/ZZMassErrors.h>
-//#include <ZZAnalysis/AnalysisStep/interface/MCHistoryTools.h>
 #include <ZZAnalysis/AnalysisStep/interface/FinalStates.h>
 #include <ZZAnalysis/AnalysisStep/interface/CompositeCandMassResolution.h>
 #include <FWCore/ParameterSet/interface/FileInPath.h>
@@ -56,7 +54,7 @@ using namespace BranchHelpers;
 
 bool doVtxFit = false;
 
-class ZZCandidateFiller : public edm::EDProducer {
+class ZZCandidateFiller : public edm::one::EDProducer<> {
 public:
   /// Constructor
   explicit ZZCandidateFiller(const edm::ParameterSet&);
@@ -82,6 +80,7 @@ private:
   void pushMELABranches(pat::CompositeCandidate& myCand);
   void clearMELA();
 
+  const edm::ESGetToken<MagneticField, IdealMagneticFieldRecord> fieldToken;
   edm::EDGetTokenT<edm::View<reco::CompositeCandidate> > candidateToken;
   const CutSet<pat::CompositeCandidate> preBestCandSelection;
   const CutSet<pat::CompositeCandidate> cuts;
@@ -118,6 +117,7 @@ private:
 
 
 ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
+  fieldToken(esConsumes()),
   candidateToken(consumes<edm::View<reco::CompositeCandidate> >(iConfig.getParameter<edm::InputTag>("src"))),
   preBestCandSelection(iConfig.getParameter<edm::ParameterSet>("bestCandAmong")),
   cuts(iConfig.getParameter<edm::ParameterSet>("flags")),
@@ -175,9 +175,6 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
 
   //-- kinematic refitter
   kinZfitter = new KinZfitter(!isMC);
-  // No longer used, but keept for future needs
-//   muon_iso_cut = iConfig.getParameter<double>("muon_iso_cut");
-//   electron_iso_cut = iConfig.getParameter<double>("electron_iso_cut");
 }
 
 ZZCandidateFiller::~ZZCandidateFiller(){
@@ -240,7 +237,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
   // to calculate mass resolution
   CompositeCandMassResolution errorBuilder;
-  errorBuilder.init(iSetup);
+  errorBuilder.init(iSetup,fieldToken);
 
   vector<int> bestCandIdx(preBestCandSelection.size(),-1);
   vector<float> maxPtSum(preBestCandSelection.size(),-1);

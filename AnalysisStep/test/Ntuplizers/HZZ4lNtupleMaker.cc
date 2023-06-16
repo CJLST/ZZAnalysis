@@ -94,7 +94,7 @@ bool verbose = false; //ATbbf
 
 namespace {
   bool writeJets = true;     // Write jets in the tree. FIXME: make this configurable
-  bool writePhotons = true; // Write photons in the tree. FIXME: make this configurable
+  bool writePhotons = false; // Write photons in the tree. FIXME: make this configurable FIXME2022: userfloats are missing
   bool addKinRefit = true;
   bool addVtxFit = false;
   bool addFSRDetails = false;
@@ -884,13 +884,15 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
 
   addLHEKinematics = addLHEKinematics || !lheMElist.empty();
   if (isMC){
-    lheHandler = new LHEHandler(
-      ((MELAEvent::CandidateVVMode)(pset.getParameter<int>("VVMode")+1)), // FIXME: Need to pass strings and interpret them instead!
-      pset.getParameter<int>("VVDecayMode"),
-      (addLHEKinematics ? LHEHandler::doHiggsKinematics : LHEHandler::noKinematics),
-      year, LHEHandler::tryNNPDF30, LHEHandler::tryNLO, LHEHandler::CMS_Run2_UL
-    );
-    metCorrHandler = new METCorrectionHandler(Form("%i", year));
+    if (year < 2022) { 
+      //FIXME2022 : LHEHandler not implemented for 2022 yet
+      lheHandler = new LHEHandler(((MELAEvent::CandidateVVMode)(pset.getParameter<int>("VVMode")+1)), // FIXME: Need to pass strings and interpret them instead!
+				  pset.getParameter<int>("VVDecayMode"),
+				  (addLHEKinematics ? LHEHandler::doHiggsKinematics : LHEHandler::noKinematics),
+				  year, LHEHandler::tryNNPDF30, LHEHandler::tryNLO, LHEHandler::CMS_Run2_UL);
+      //FIXME2022: METCorrectionHandler not implement 2022 yet
+      metCorrHandler = new METCorrectionHandler(Form("%i", year));
+    }
     htxsToken = consumes<HTXS::HiggsClassification>(edm::InputTag("rivetProducerHTXS","HiggsClassification"));
     pileUpReweight = new PileUpWeight(myHelper.sampleType(), myHelper.setup());
   }
@@ -1339,10 +1341,12 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
       event.getManyByType(lhe_handles);
       if (!lhe_handles.empty()){
         lhe_evt = lhe_handles.front();
-        lheHandler->setHandle(&lhe_evt);
-        lheHandler->extract();
-        FillLHECandidate(); // Also writes weights
-        lheHandler->clear();
+	if (lheHandler) {
+	  lheHandler->setHandle(&lhe_evt);
+	  lheHandler->extract();
+	  FillLHECandidate(); // Also writes weights
+	  lheHandler->clear();
+	}
       }
       //else cerr << "lhe_handles.size()==0" << endl;
 
@@ -1522,18 +1526,25 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
     metobj.extras.phi_JECup = metobj_corrected.extras.phi_JECup = met.shiftedPhi(pat::MET::JetEnUp);
     metobj.extras.phi_JECdn = metobj_corrected.extras.phi_JECdn = met.shiftedPhi(pat::MET::JetEnDown);
 
-    if (isMC && metCorrHandler && met.genMET()){
-      GenMET = met.genMET()->pt();
-      GenMETPhi = met.genMET()->phi();
-      metCorrHandler->correctMET(GenMET, GenMETPhi, &metobj_corrected, false); // FIXME: Last argument should be for isFastSim, but we don't have it yet
-    }
-    else if (isMC){
-      cms::Exception e("METCorrectionHandler");
-      e << "Either no met.genMET or metCorrHandler!";
-      throw e;
+    if (isMC) {
+      if (met.genMET()){
+	GenMET = met.genMET()->pt();
+	GenMETPhi = met.genMET()->phi();
+      } else {
+	cms::Exception e("METCorrectionHandler");
+	e << "No met.genMET";
+	throw e;
+      }
+      if (metCorrHandler) {
+	metCorrHandler->correctMET(GenMET, GenMETPhi, &metobj_corrected, false); // Last argument should be for isFastSim
+      } else if (year<2022) { //FIXME2022: not implemented yet for Run3
+	cms::Exception e("METCorrectionHandler");
+	e << "Either no met.genMET or metCorrHandler!";
+	throw e;
+      }
     }
   }
-  else{
+  else{ //FIXME2022: what's this stuff? 
     metobj.extras.met = metobj.extras.met_original = metobj.extras.met_raw
       = metobj.extras.met_METup = metobj.extras.met_METdn
       = metobj.extras.met_JECup = metobj.extras.met_JECdn
@@ -2113,8 +2124,10 @@ void HZZ4lNtupleMaker::FillLHECandidate(){
   LHEweight_QCDscale_muR0p5_muF2=0;
   LHEweight_QCDscale_muR0p5_muF0p5=0;
 
-  MELACandidate* cand = lheHandler->getBestCandidate();
-  if (cand!=0 && addLHEKinematics){
+  
+  MELACandidate* cand = nullptr;
+  if (lheHandler) lheHandler->getBestCandidate();
+  if (cand && addLHEKinematics){
     for (int imot=0; imot<cand->getNMothers(); imot++){
       MELAParticle* apart = cand->getMother(imot);
       if (apart==0){ LHEMotherPz.clear(); LHEMotherE.clear(); LHEMotherId.clear(); break; } // Something went wrong
@@ -2199,31 +2212,33 @@ void HZZ4lNtupleMaker::FillLHECandidate(){
     pushLHEMELABranches();
   }
 
-  LHEPDFScale = lheHandler->getPDFScale();
-  if (genHEPMCweight==1.){
-    genHEPMCweight_NNLO = genHEPMCweight = lheHandler->getLHEOriginalWeight();
-    if (!printedLHEweightwarning && genHEPMCweight!=1.) {
-      printedLHEweightwarning = true;
-      edm::LogWarning("InconsistentWeights") << "Gen weight is 1, LHE weight is " << genHEPMCweight;
+  if (lheHandler) {      
+    LHEPDFScale = lheHandler->getPDFScale();
+    if (genHEPMCweight==1.){
+      genHEPMCweight_NNLO = genHEPMCweight = lheHandler->getLHEOriginalWeight();
+      if (!printedLHEweightwarning && genHEPMCweight!=1.) {
+	printedLHEweightwarning = true;
+	edm::LogWarning("InconsistentWeights") << "Gen weight is 1, LHE weight is " << genHEPMCweight;
+      }
     }
-  }
-  genWeightRescale = lheHandler->getWeightRescale();
-  genHEPMCweight *= genWeightRescale;
+    genWeightRescale = lheHandler->getWeightRescale();
+    genHEPMCweight *= genWeightRescale;
 
-  genHEPMCweight_POWHEGonly = lheHandler->getMemberZeroWeight();
-  LHEweight_QCDscale_muR1_muF1 = lheHandler->getLHEWeight(0, 1.);
-  LHEweight_QCDscale_muR1_muF2 = lheHandler->getLHEWeight(1, 1.);
-  LHEweight_QCDscale_muR1_muF0p5 = lheHandler->getLHEWeight(2, 1.);
-  LHEweight_QCDscale_muR2_muF1 = lheHandler->getLHEWeight(3, 1.);
-  LHEweight_QCDscale_muR2_muF2 = lheHandler->getLHEWeight(4, 1.);
-  LHEweight_QCDscale_muR2_muF0p5 = lheHandler->getLHEWeight(5, 1.);
-  LHEweight_QCDscale_muR0p5_muF1 = lheHandler->getLHEWeight(6, 1.);
-  LHEweight_QCDscale_muR0p5_muF2 = lheHandler->getLHEWeight(7, 1.);
-  LHEweight_QCDscale_muR0p5_muF0p5 = lheHandler->getLHEWeight(8, 1.);
-  LHEweight_PDFVariation_Up = lheHandler->getLHEWeight_PDFVariationUpDn(1, 1.);
-  LHEweight_PDFVariation_Dn = lheHandler->getLHEWeight_PDFVariationUpDn(-1, 1.);
-  LHEweight_AsMZ_Up = lheHandler->getLHEWeigh_AsMZUpDn(1, 1.);
-  LHEweight_AsMZ_Dn = lheHandler->getLHEWeigh_AsMZUpDn(-1, 1.);
+    genHEPMCweight_POWHEGonly = lheHandler->getMemberZeroWeight();
+    LHEweight_QCDscale_muR1_muF1 = lheHandler->getLHEWeight(0, 1.);
+    LHEweight_QCDscale_muR1_muF2 = lheHandler->getLHEWeight(1, 1.);
+    LHEweight_QCDscale_muR1_muF0p5 = lheHandler->getLHEWeight(2, 1.);
+    LHEweight_QCDscale_muR2_muF1 = lheHandler->getLHEWeight(3, 1.);
+    LHEweight_QCDscale_muR2_muF2 = lheHandler->getLHEWeight(4, 1.);
+    LHEweight_QCDscale_muR2_muF0p5 = lheHandler->getLHEWeight(5, 1.);
+    LHEweight_QCDscale_muR0p5_muF1 = lheHandler->getLHEWeight(6, 1.);
+    LHEweight_QCDscale_muR0p5_muF2 = lheHandler->getLHEWeight(7, 1.);
+    LHEweight_QCDscale_muR0p5_muF0p5 = lheHandler->getLHEWeight(8, 1.);
+    LHEweight_PDFVariation_Up = lheHandler->getLHEWeight_PDFVariationUpDn(1, 1.);
+    LHEweight_PDFVariation_Dn = lheHandler->getLHEWeight_PDFVariationUpDn(-1, 1.);
+    LHEweight_AsMZ_Up = lheHandler->getLHEWeigh_AsMZUpDn(1, 1.);
+    LHEweight_AsMZ_Dn = lheHandler->getLHEWeigh_AsMZUpDn(-1, 1.);
+  }
 }
 
 

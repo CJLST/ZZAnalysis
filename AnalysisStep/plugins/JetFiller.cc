@@ -1,5 +1,5 @@
 #include <FWCore/Framework/interface/Frameworkfwd.h>
-#include <FWCore/Framework/interface/EDProducer.h>
+#include <FWCore/Framework/interface/one/EDProducer.h>
 #include <FWCore/Framework/interface/Event.h>
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 #include <FWCore/Framework/interface/ESHandle.h>
@@ -28,7 +28,7 @@ using namespace std;
 using namespace reco;
 
 
-class JetFiller : public edm::EDProducer {
+class JetFiller : public edm::one::EDProducer<> {
  public:
   /// Constructor
   explicit JetFiller(const edm::ParameterSet&);
@@ -98,46 +98,49 @@ JetFiller::JetFiller(const edm::ParameterSet& iConfig) :
 
   produces<pat::JetCollection>();
 
-  if (setup == 2016)
-    {
-      edm::FileInPath jecUncFile("ZZAnalysis/AnalysisStep/data/JEC/RegroupedV2_Summer16_07Aug2017_V11_MC_UncertaintySources_AK4PFchs.txt");
-      jecUncFile_ = jecUncFile.fullPath();
-      uncSources.push_back("Total");
-      uncSources.push_back("Absolute"); uncSources.push_back("Absolute_2016");
-      uncSources.push_back("BBEC1"); uncSources.push_back("BBEC1_2016");
-      uncSources.push_back("EC2"); uncSources.push_back("EC2_2016");
-      uncSources.push_back("FlavorQCD");
-      uncSources.push_back("HF"); uncSources.push_back("HF_2016");
-      uncSources.push_back("RelativeBal");
-      uncSources.push_back("RelativeSample_2016");
-    }
-  else if (setup == 2017)
-    {
-      edm::FileInPath jecUncFile("ZZAnalysis/AnalysisStep/data/JEC/RegroupedV2_Fall17_17Nov2017_V32_MC_UncertaintySources_AK4PFchs.txt");
-      jecUncFile_ = jecUncFile.fullPath();
-      uncSources.push_back("Total");
-      uncSources.push_back("Absolute"); uncSources.push_back("Absolute_2017");
-      uncSources.push_back("BBEC1"); uncSources.push_back("BBEC1_2017");
-      uncSources.push_back("EC2"); uncSources.push_back("EC2_2017");
-      uncSources.push_back("FlavorQCD");
-      uncSources.push_back("HF"); uncSources.push_back("HF_2017");
-      uncSources.push_back("RelativeBal");
-      uncSources.push_back("RelativeSample_2017");
-    }
-  else if (setup == 2018)
-    {
-      edm::FileInPath jecUncFile("ZZAnalysis/AnalysisStep/data/JEC/RegroupedV2_Autumn18_V19_MC_UncertaintySources_AK4PFchs.txt");
-      jecUncFile_ = jecUncFile.fullPath();
-      uncSources.push_back("Total");
-      uncSources.push_back("Absolute"); uncSources.push_back("Absolute_2018");
-      uncSources.push_back("BBEC1"); uncSources.push_back("BBEC1_2018");
-      uncSources.push_back("EC2"); uncSources.push_back("EC2_2018");
-      uncSources.push_back("FlavorQCD");
-      uncSources.push_back("HF"); uncSources.push_back("HF_2018");
-      uncSources.push_back("RelativeBal");
-      uncSources.push_back("RelativeSample_2018");
-    }
-  else cout << "jecUncFile NOT FOUND!";
+
+  if (applyJEC_) {
+    if (setup == 2016)
+      {
+	edm::FileInPath jecUncFile("ZZAnalysis/AnalysisStep/data/JEC/RegroupedV2_Summer16_07Aug2017_V11_MC_UncertaintySources_AK4PFchs.txt");
+	jecUncFile_ = jecUncFile.fullPath();
+	uncSources.push_back("Total");
+	uncSources.push_back("Absolute"); uncSources.push_back("Absolute_2016");
+	uncSources.push_back("BBEC1"); uncSources.push_back("BBEC1_2016");
+	uncSources.push_back("EC2"); uncSources.push_back("EC2_2016");
+	uncSources.push_back("FlavorQCD");
+	uncSources.push_back("HF"); uncSources.push_back("HF_2016");
+	uncSources.push_back("RelativeBal");
+	uncSources.push_back("RelativeSample_2016");
+      }
+    else if (setup == 2017)
+      {
+	edm::FileInPath jecUncFile("ZZAnalysis/AnalysisStep/data/JEC/RegroupedV2_Fall17_17Nov2017_V32_MC_UncertaintySources_AK4PFchs.txt");
+	jecUncFile_ = jecUncFile.fullPath();
+	uncSources.push_back("Total");
+	uncSources.push_back("Absolute"); uncSources.push_back("Absolute_2017");
+	uncSources.push_back("BBEC1"); uncSources.push_back("BBEC1_2017");
+	uncSources.push_back("EC2"); uncSources.push_back("EC2_2017");
+	uncSources.push_back("FlavorQCD");
+	uncSources.push_back("HF"); uncSources.push_back("HF_2017");
+	uncSources.push_back("RelativeBal");
+	uncSources.push_back("RelativeSample_2017");
+      }
+    else if (setup == 2018)
+      {
+	edm::FileInPath jecUncFile("ZZAnalysis/AnalysisStep/data/JEC/RegroupedV2_Autumn18_V19_MC_UncertaintySources_AK4PFchs.txt");
+	jecUncFile_ = jecUncFile.fullPath();
+	uncSources.push_back("Total");
+	uncSources.push_back("Absolute"); uncSources.push_back("Absolute_2018");
+	uncSources.push_back("BBEC1"); uncSources.push_back("BBEC1_2018");
+	uncSources.push_back("EC2"); uncSources.push_back("EC2_2018");
+	uncSources.push_back("FlavorQCD");
+	uncSources.push_back("HF"); uncSources.push_back("HF_2018");
+	uncSources.push_back("RelativeBal");
+	uncSources.push_back("RelativeSample_2018");
+      }
+    else cout << "jecUncFile NOT FOUND!";
+  }
 }
 
 
@@ -164,25 +167,20 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByToken(ptDToken, ptDHandle);
 
 
-  // JEC uncertainty (part 1) - No splitting
-  // JetCorrectorParametersCollection refers to the JEC file read from db in MasterPy/ZZ4lAnalysis.py
-  ESHandle<JetCorrectorParametersCollection> JetCorParColl;
-  iSetup.get<JetCorrectionsRecord>().get(jecType,JetCorParColl);
-  JetCorrectorParameters const & JetCorPar = (*JetCorParColl)["Uncertainty"];
-  JetCorrectionUncertainty jecUnc(JetCorPar);
+  JetCorrectionUncertainty* jecUnc(nullptr);
 
-  // JEC uncertainty (Part 2) - Splitting (May 2020)
-  // Run 2 reduced set of uncertainties from here: https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECUncertaintySources#Run_2_reduced_set_of_uncertainty
-  // List of uncertainties: ['Absolute', 'Absolute_201*', 'BBEC1', 'BBEC1_201*', 'EC2', 'EC2_201*', 'FlavorQCD', 'HF', 'HF_201*', 'RelativeBal', 'RelativeSample_201*'] + 'Total'
   // if(applyJEC_ && isMC_)
-  if(applyJEC_)
-    {
-      for (unsigned s_unc = 0; s_unc < uncSources.size(); s_unc++)
-	{
-	  JetCorrectorParameters corrParams = JetCorrectorParameters(jecUncFile_, uncSources[s_unc]);
-	  splittedUncerts_.push_back(new JetCorrectionUncertainty(corrParams));
-	}
+  if(applyJEC_) {    // JEC uncertainty (part 1) - No splitting
+    // JetCorrectorParametersCollection refers to the JEC file read from db in MasterPy/ZZ4lAnalysis.py
+    ESHandle<JetCorrectorParametersCollection> JetCorParColl;
+    iSetup.get<JetCorrectionsRecord>().get(jecType,JetCorParColl);
+    JetCorrectorParameters const & JetCorPar = (*JetCorParColl)["Uncertainty"];
+    jecUnc = new JetCorrectionUncertainty(JetCorPar);
+    for (unsigned s_unc = 0; s_unc < uncSources.size(); s_unc++) {
+      JetCorrectorParameters corrParams = JetCorrectorParameters(jecUncFile_, uncSources[s_unc]);
+      splittedUncerts_.push_back(new JetCorrectionUncertainty(corrParams));
     }
+  }
 
   //--- Output collection
   auto result = std::make_unique<pat::JetCollection>();
@@ -313,7 +311,7 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
                   (jabseta>3.0 && NEMF<0.90 && NHF>0.2 && NumNeutralParticles>10);
     }
 
-    else if ( (setup == 2017) || (setup == 2018) )
+    else if ( (setup >= 2017) ) //FIXME2022 : Not available for Run3? Official recipe to be rechecked
     {
       JetID    = (jabseta<=2.6 && CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && NHF<0.9) ||
                  (jabseta>2.6 && jabseta<=2.7 && CHM>0 && NEMF<0.99 && NHF < 0.9) ||
@@ -339,7 +337,11 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     //   PUjetID_score = j.userFloat("pileupJetId:fullDiscriminant");
     // }
 
-    PUjetID_score = j.userFloat("pileupJetIdUpdated:fullDiscriminant");
+    if (setup <=2018) {							
+      PUjetID_score = j.userFloat("pileupJetIdUpdated:fullDiscriminant");
+    } else {
+      PUjetID_score = j.userFloat("pileupJetId:fullDiscriminant");      
+    }    
 
     // WP applied explicitely
     //--- UL Jet PU ID. Changed WPs and pT regions for the tranining. Cf. https://twiki.cern.ch/twiki/bin/view/CMS/PileupJetIDUL#Recommendations_for_2018_UL_data
@@ -521,16 +523,19 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
 
     //--- Get JEC uncertainties
-    jecUnc.setJetEta(j.eta());
-    jecUnc.setJetPt(j.pt());
-    float jes_unc = jecUnc.getUncertainty(true); //It takes as argument "bool fDirection": true = up, false = dn; symmetric values
+    float jes_unc = 0.;    
+    if (applyJEC_) { 
+      jecUnc->setJetEta(j.eta());
+      jecUnc->setJetPt(j.pt());
+      jes_unc = jecUnc->getUncertainty(true); //It takes as argument "bool fDirection": true = up, false = dn; symmetric values
+    }
     float pt_jesup = j.pt() * (1.0 + jes_unc); // set the shifted pT up
     float pt_jesdn = j.pt() * (1.0 - jes_unc); // set the shifted pT dn
     //j.setP4(j.p4() * (1 + jes_unc)); // Checked that only pt and energy/mass are affected by JEC variations considering the p4() components, not eta/phi
 
-    vector<float> jes_unc_split {};
-    vector<float> pt_jesup_split {};
-    vector<float> pt_jesdn_split {};
+    vector<float> jes_unc_split {0.,12}; //FIXME2022 this should be completely redesigned.
+    vector<float> pt_jesup_split {0.,12};
+    vector<float> pt_jesdn_split {0.,12};
     float singleContr_jes_unc = 0;
 
     // if(applyJEC_ && isMC_){
@@ -626,11 +631,14 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     result->push_back(j);}
 
-
   //--- Reorder jets by pT
   std::sort(result->begin(),result->end(), [](const Jet& j1, const Jet& j2){return j1.pt()>j2.pt();});
 
   iEvent.put(std::move(result));
+
+  // cleanup allocated memory
+  delete jecUnc;
+  for (auto i : splittedUncerts_) delete i;
 }
 
 

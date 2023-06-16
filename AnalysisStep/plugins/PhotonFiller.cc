@@ -13,7 +13,7 @@
  */
 
 #include <FWCore/Framework/interface/Frameworkfwd.h>
-#include <FWCore/Framework/interface/EDProducer.h>
+#include <FWCore/Framework/interface/one/EDProducer.h>
 #include <FWCore/Framework/interface/Event.h>
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 #include <FWCore/Framework/interface/ESHandle.h>
@@ -40,7 +40,7 @@ using namespace edm;
 using namespace std;
 using namespace reco;
 
-class PhotonFiller : public edm::EDProducer {
+class PhotonFiller : public edm::one::EDProducer<> {
  public:
   /// Constructor
   explicit PhotonFiller(const edm::ParameterSet&);

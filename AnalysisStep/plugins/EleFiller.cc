@@ -11,7 +11,7 @@
  */
 
 #include <FWCore/Framework/interface/Frameworkfwd.h>
-#include <FWCore/Framework/interface/EDProducer.h>
+#include <FWCore/Framework/interface/one/EDProducer.h>
 #include <FWCore/Framework/interface/Event.h>
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 #include <FWCore/Framework/interface/ESHandle.h>
@@ -29,7 +29,7 @@ using namespace reco;
 
 
 
-class EleFiller : public edm::EDProducer {
+class EleFiller : public edm::one::EDProducer<> {
  public:
   /// Constructor
   explicit EleFiller(const edm::ParameterSet&);
@@ -131,6 +131,7 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     if      ( setup == 2016 ) BDT = l.userFloat("ElectronMVAEstimatorRun2Summer16ULIdIsoValues");
     else if ( setup == 2017 ) BDT = l.userFloat("ElectronMVAEstimatorRun2Summer17ULIdIsoValues");
     else if ( setup == 2018 ) BDT = l.userFloat("ElectronMVAEstimatorRun2Summer18ULIdIsoValues");
+    else if ( setup >= 2022 ) BDT = l.userFloat("ElectronMVAEstimatorRun2Summer18ULIdIsoValues"); //FIXME2022
     // cout << "BDT = " << BDT << endl;
 
     float pt = l.pt();
@@ -158,7 +159,7 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
                                    (fSCeta>=0.8 && fSCeta<1.479 && BDT >  0.0273863727) ||
                                    (fSCeta>=1.479               && BDT >  -0.5532483665)));
 	 }
-    else if ( setup==2018 )
+	 else if ( setup>=2018 ) //FIXME2022
     {
        //WP taken from https://github.com/asculac/cmssw/blob/e379e4dd45bb70374cae460a44caff784da92e94/RecoEgamma/ElectronIdentification/python/Identification/mvaElectronID_Summer18UL_ID_ISO_cff.py#L27-L34 and transfered with https://github.com/cms-sw/cmssw/blob/CMSSW_9_4_X/RecoEgamma/EgammaTools/interface/MVAValueMapProducer.h#L145 so that they are between -1 and 1
        isBDT         = (pt<=10 && ((fSCeta<0.8                  && BDT >  0.9044286167) ||
@@ -186,28 +187,47 @@ EleFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     //-- Scale and smearing corrections are now stored in the miniAOD https://twiki.cern.ch/twiki/bin/view/CMS/EgammaMiniAODV2#Energy_Scale_and_Smearing
     //-- Unchanged in UL implementation TWiki accessed on 27/04
-    float uncorrected_pt = l.pt();
-    float corr_factor = l.userFloat("ecalTrkEnergyPostCorr") / l.energy();//get scale/smear correction factor directly from miniAOD
+    float uncorrected_pt = l.pt();    
+    float corr_factor = 1.;
+    float scale_total_up = 1.;
+    float scale_stat_up  = 1.;
+    float scale_syst_up  = 1.;
+    float scale_gain_up  = 1.;
+    float scale_total_dn = 1.;
+    float scale_stat_dn  = 1.;
+    float scale_syst_dn  = 1.;
+    float scale_gain_dn  = 1.;
+    float sigma_total_up = 1.;
+    float sigma_rho_up   = 1.;
+    float sigma_phi_up   = 1.;
+    float sigma_total_dn = 1.;
+    float sigma_rho_dn   = 1.;
+    float sigma_phi_dn   = 1.;
+
+
+    if (setup <= 2018) { //FIXME2022 all these are not present in 2022
+      corr_factor = l.userFloat("ecalTrkEnergyPostCorr") / l.energy();//get scale/smear correction factor directly from miniAOD
+      //get all scale uncertainties and their breakdown
+      scale_total_up = l.userFloat("energyScaleUp") / l.energy();
+      scale_stat_up = l.userFloat("energyScaleStatUp") / l.energy();
+      scale_syst_up = l.userFloat("energyScaleSystUp") / l.energy();
+      scale_gain_up = l.userFloat("energyScaleGainUp") / l.energy();
+      scale_total_dn = l.userFloat("energyScaleDown") / l.energy();
+      scale_stat_dn = l.userFloat("energyScaleStatDown") / l.energy();
+      scale_syst_dn = l.userFloat("energyScaleSystDown") / l.energy();
+      scale_gain_dn = l.userFloat("energyScaleGainDown") / l.energy();
+
+      //get all smearing uncertainties and their breakdown
+      sigma_total_up = l.userFloat("energySigmaUp") / l.energy();
+      sigma_rho_up = l.userFloat("energySigmaRhoUp") / l.energy();
+      sigma_phi_up = l.userFloat("energySigmaPhiUp") / l.energy();
+      sigma_total_dn = l.userFloat("energySigmaDown") / l.energy();
+      sigma_rho_dn = l.userFloat("energySigmaRhoDown") / l.energy();
+      sigma_phi_dn = l.userFloat("energySigmaPhiDown") / l.energy();
+    }
     //scale and smsear electron
     l.setP4(reco::Particle::PolarLorentzVector(l.pt()*corr_factor, l.eta(), l.phi(), l.mass()*corr_factor));
 
-    //get all scale uncertainties and their breakdown
-    float scale_total_up = l.userFloat("energyScaleUp") / l.energy();
-    float scale_stat_up = l.userFloat("energyScaleStatUp") / l.energy();
-    float scale_syst_up = l.userFloat("energyScaleSystUp") / l.energy();
-    float scale_gain_up = l.userFloat("energyScaleGainUp") / l.energy();
-    float scale_total_dn = l.userFloat("energyScaleDown") / l.energy();
-    float scale_stat_dn = l.userFloat("energyScaleStatDown") / l.energy();
-    float scale_syst_dn = l.userFloat("energyScaleSystDown") / l.energy();
-    float scale_gain_dn = l.userFloat("energyScaleGainDown") / l.energy();
-
-    //get all smearing uncertainties and their breakdown
-    float sigma_total_up = l.userFloat("energySigmaUp") / l.energy();
-    float sigma_rho_up = l.userFloat("energySigmaRhoUp") / l.energy();
-    float sigma_phi_up = l.userFloat("energySigmaPhiUp") / l.energy();
-    float sigma_total_dn = l.userFloat("energySigmaDown") / l.energy();
-    float sigma_rho_dn = l.userFloat("energySigmaRhoDown") / l.energy();
-    float sigma_phi_dn = l.userFloat("energySigmaPhiDown") / l.energy();
 
 
     //--- Embed user variables

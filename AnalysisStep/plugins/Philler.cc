@@ -5,7 +5,7 @@
  */
 
 #include <FWCore/Framework/interface/Frameworkfwd.h>
-#include <FWCore/Framework/interface/EDProducer.h>
+#include <FWCore/Framework/interface/one/EDProducer.h>
 #include <FWCore/Framework/interface/Event.h>
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 #include <FWCore/Framework/interface/ESHandle.h>
@@ -28,7 +28,7 @@ using namespace reco;
 
 
 
-class Philler : public edm::EDProducer {
+class Philler : public edm::one::EDProducer<> {
  public:
   /// Constructor
   explicit Philler(const edm::ParameterSet&);

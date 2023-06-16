@@ -19,11 +19,10 @@ ZZ4lConfigHelper::ZZ4lConfigHelper(const ParameterSet& pset) :
   theChannel = finalState(channel);
   
   // Check for inconsistent configurations
-  if ( ( theSampleType!=2011 && theSampleType!=2012 && theSampleType!=2015 && theSampleType!=2016 && theSampleType!=2017 && theSampleType!=2018) ||
-       ( theSetup!=2011 && theSetup!=2012 && theSetup!=2015 && theSetup!=2016 && theSetup!=2017 && theSetup!=2018) ||
-       ( theSampleType!=theSetup ) // No sample rescaling supported as of now.
-       // We may add exception for MC only when needed.
-       ) {
+  list<int> years = {2011,2012,2015,2016,2017,2018,2022,2023};
+  if (theSampleType!=theSetup or // No sample rescaling supported as of now.
+      find(years.begin(), years.end(), theSampleType)==years.end() or 
+      find(years.begin(), years.end(), theSetup)==years.end()) {
     cout << "ERROR: ZZ4lConfigHelper: inconsistent setup: sampleType=" << theSampleType << ", setup=" << theSetup << ", isMC=" <<isMC_ << endl;
     abort();
   }
