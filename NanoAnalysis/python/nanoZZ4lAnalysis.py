@@ -134,9 +134,20 @@ if IsMC :
     from ZZAnalysis.NanoAnalysis.mcTruthAnalyzer import *
     ZZSequence.insert(0, mcTruthAnalyzer(dump=False)) # Gen final state
 
-    if LEPTON_SETUP < 2023 : #FIXME: must update for 2022 MC!
+    if LEPTON_SETUP < 2022 :
         from PhysicsTools.NanoAODTools.postprocessing.modules.common.puWeightProducer import puWeight_2016, puWeight_2017, puWeight_2018
-        puWeight = {2016:puWeight_2016, 2017:puWeight_2017, 2018:puWeight_2018, 2022:puWeight_2018} # FIXME official weights are slightly different than the one we use (checked for 2018)
+        puWeight = {2016:puWeight_2016, 2017:puWeight_2017, 2018:puWeight_2018} # FIXME official weights are slightly different than the one we use (checked for 2018)
+        ZZSequence.append(puWeight[LEPTON_SETUP]()) # PU reweighting
+    elif LEPTON_SETUP == 2022 : #FIXME: must update for 2023 MC! 
+        from PhysicsTools.NanoAODTools.postprocessing.modules.common.puWeightProducer import *
+        pufile_2022 = "%s/src/ZZAnalysis/AnalysisStep/data/PileUpWeights/pu_weights_2022.root" % os.environ['CMSSW_BASE']
+        puWeight_2022 = lambda : puWeightProducer(pufile_2022,
+                                                  pufile_2022,
+                                                  "MC_out_of_the_box",
+                                                  "Data",
+                                                  verbose=False,
+                                                  doSysVar=True)
+        puWeight = {2022:puWeight_2022} # 2022 weights non official, still preliminary
         ZZSequence.append(puWeight[LEPTON_SETUP]()) # PU reweighting
 
     from ZZAnalysis.NanoAnalysis.weightFiller import weightFiller
