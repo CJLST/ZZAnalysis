@@ -3,6 +3,8 @@
 # 2017MC_PUscenario taken from https://github.com/cms-sw/cmssw/blob/CMSSW_9_4_X/SimGeneral/MixingModule/python/mix_2017_25ns_WinterMC_PUScenarioV1_PoissonOOTPU_cfi.py#L13
 # 2018MC_PUscenatio taken from https://github.com/cms-sw/cmssw/blob/CMSSW_10_4_X/SimGeneral/MixingModule/python/mix_2018_25ns_JuneProjectionFull18_PoissonOOTPU_cfi.py#L11
 
+# 2022MC_PUscenario taken from https://github.com/cms-sw/cmssw/blob/master/SimGeneral/MixingModule/python/Run3_2022_LHC_Simulation_10h_2h_cfi.py#L33
+
 
 # To obtain DataPileup root histogram run pileupCalc.py:
 
@@ -22,6 +24,12 @@
 #pileupCalc.py -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt --inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/PileUp/pileup_latest.txt --calcMode true --minBiasXsec 69200 --maxPileupBin 100 --numPileupBins 100 DataPileupHistogram2018_69200_100bins.root
 #pileupCalc.py -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt --inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/PileUp/pileup_latest.txt --calcMode true --minBiasXsec 66017 --maxPileupBin 100 --numPileupBins 100 DataPileupHistogram2018_66017_100bins.root
 #pileupCalc.py -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt --inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/PileUp/pileup_latest.txt --calcMode true --minBiasXsec 72383 --maxPileupBin 100 --numPileupBins 100 DataPileupHistogram2018_72383_100bins.root
+
+
+# For 2022 data: (nothing is certified yet of course) - pileup_JSON computed privately
+# pileupCalc.py -i /eos/user/c/cmsdqm/www/CAF/certification/Collisions22/Cert_Collisions2022_355100_362760_Golden.json --inputLumiJSON pileup_JSON.txt --calcMode true --minBiasXsec 69200 --maxPileupBin 100 --numPileupBins 100 DataPileupHistogram2022_69200_100bins.root
+# pileupCalc.py -i /eos/user/c/cmsdqm/www/CAF/certification/Collisions22/Cert_Collisions2022_355100_362760_Golden.json --inputLumiJSON pileup_JSON.txt --calcMode true --minBiasXsec 66000 --maxPileupBin 100 --numPileupBins 100 DataPileupHistogram2022_66000_100bins.root
+# pileupCalc.py -i /eos/user/c/cmsdqm/www/CAF/certification/Collisions22/Cert_Collisions2022_355100_362760_Golden.json --inputLumiJSON pileup_JSON.txt --calcMode true --minBiasXsec 72400 --maxPileupBin 100 --numPileupBins 100 DataPileupHistogram2022_72400_100bins.root
 
 
 # Afetrwards run this script to produce root file which contains PU weights
@@ -80,12 +88,35 @@ puMC = {
     								5.350694e-07, 3.808318e-07, 2.781785e-07, 2.098661e-07, 1.642811e-07,
     								1.312835e-07, 1.081326e-07, 9.141993e-08, 7.890983e-08, 6.91468e-08,
     								6.119019e-08, 5.443693e-08, 4.85036e-08, 4.31486e-08, 3.822112e-08],
+
+        '2022MC_PUscenario' : [7.075550618391933e-8, 1.8432226484975646e-7, 4.6156514471969593e-7, 0.0000011111611991838491, 
+                              0.0000025719752161798103, 0.000005724865812608344, 0.000012255841383374045, 0.000025239403069596116, 0.00005001054998201597, 
+                              0.00009536530158990567, 0.00017505633393457624, 0.00030942214916825035, 0.0005268123536229287, 0.0008642843968521786, 
+                              0.0013669182280399903, 0.0020851167548246985, 0.0030695148409245446, 0.004363635945105083, 0.005995143197404548, 
+                              0.007967247822222358, 0.010252302872826594, 0.01278957659177177, 0.015488544412469806, 0.01823784978331645, 
+                              0.020918669702105028, 0.023420019399650906, 0.025652949149203495, 0.027560835627835043, 0.02912397347687914, 
+                              0.030358091266301533, 0.03130778480604892, 0.03203676872496023, 0.0326170853351521, 0.03311902652393314, 
+                              0.033602777248239, 0.0341120235754556, 0.03466927947785801, 0.03527261707506484, 0.035893786618889145, 
+                              0.03647817900850185, 0.036947435730750315, 0.03720550450678737, 0.037148460727673235, 0.03667753703450604, 
+                              0.03571377296329832, 0.034211859754226276, 0.032170439241889726, 0.029636506070368274, 0.02670262519076345, 
+                              0.023497154911314072, 0.020169158697337236, 0.016870783471647905, 0.013740289679427057, 0.010888563843704815, 
+                              0.008390977574442656, 0.006285186751143873, 0.004574246293656772, 0.003233538335807419, 0.002219622271900557, 
+                              0.0014792038980537092, 0.0009568560481315006, 0.0006007171037926386, 0.00036596934105178995, 0.0002163349104153549, 
+                              0.00012407362512604619, 0.0000690356949524181, 0.000037263645547231494, 0.00001951170588910065, 0.000009910336118978026, 
+                              0.0000048826244075428666, 0.0000023333596885075797, 0.0000010816029570543702, 4.863048449289416e-7, 2.1208148308081624e-7, 
+                              8.97121135679932e-8, 3.6809172420519874e-8, 1.4649459937201982e-8, 5.655267024863598e-9, 2.117664468591336e-9, 
+                              7.692038404370259e-10, 2.7102837405697987e-10, 9.263749466613295e-11, 3.071624552355945e-11, 9.880298997379985e-12, 
+                              3.0832214331312204e-12, 9.33436314183754e-13, 2.7417209623761203e-13, 7.813293248960901e-14, 2.1603865264197903e-14, 
+                              5.796018523167997e-15, 1.5088422256459697e-15, 3.811436255838504e-16, 9.342850737730402e-17, 2.2224464483477953e-17, 
+                              5.130498608124184e-18, 1.1494216669980747e-18, 2.499227229379666e-19, 5.2741621866055994e-20, 1.080281961755894e-20, 
+                              2.1476863811171814e-21],
 }
 
 ### MC pu scenario to be used
 #puMCscenario = puMC['2016MC_PUscenario']
 #puMCscenario = puMC['2017MC_PUscenario']
-puMCscenario = puMC['2018MC_PUscenario']
+#puMCscenario = puMC['2018MC_PUscenario']
+puMCscenario = puMC['2022MC_PUscenario']
 len_mc = len(puMCscenario)
 
 #--- 2016 data
@@ -99,16 +130,22 @@ len_mc = len(puMCscenario)
 #data_file_name_varDn = 'DataPileupHistogram2017_66017_100bins.root'
 
 #--- 2018 data
-data_file_name       = 'DataPileupHistogram2018_69200_100bins.root'
-data_file_name_varUp = 'DataPileupHistogram2018_72383_100bins.root'
-data_file_name_varDn = 'DataPileupHistogram2018_66017_100bins.root'
+# data_file_name       = 'DataPileupHistogram2018_69200_100bins.root'
+# data_file_name_varUp = 'DataPileupHistogram2018_72383_100bins.root'
+# data_file_name_varDn = 'DataPileupHistogram2018_66017_100bins.root'
+
+#--- 2022 data
+data_file_name       = 'DataPUProfile/DataPileupHistogram2022_69200_100bins.root'
+data_file_name_varUp = 'DataPUProfile/DataPileupHistogram2022_72400_100bins.root'
+data_file_name_varDn = 'DataPUProfile/DataPileupHistogram2022_66000_100bins.root'
+
 
 
 rt.TH1.SetDefaultSumw2(True)
 
 h_d = rt.TH1F('Data', '', len_mc , 0, len_mc) 
-h_d_varUp = rt.TH1F('Data_varUp', '', len_mc , 0, len_mc) 
-h_d_varDn = rt.TH1F('Data_varDn', '', len_mc , 0, len_mc) 
+h_d_varUp = rt.TH1F('Data_plus', '', len_mc , 0, len_mc) # varUp
+h_d_varDn = rt.TH1F('Data_minus', '', len_mc , 0, len_mc) # varDn
 
 
 fpu = rt.TFile.Open(data_file_name,'read')
@@ -188,7 +225,8 @@ leg.Draw('SAME')
 
 #f_out = rt.TFile.Open('pu_weights_2016.root', 'recreate')
 #f_out = rt.TFile.Open('pu_weights_2017.root', 'recreate')
-f_out = rt.TFile.Open('pu_weights_2018.root', 'recreate')
+#f_out = rt.TFile.Open('pu_weights_2018.root', 'recreate')
+f_out = rt.TFile.Open('pu_weights_2022.root', 'recreate')
 
 h_w.Write()
 h_w_varDn.Write()
@@ -196,6 +234,8 @@ h_w_varUp.Write()
 
 h_mc.Write()
 h_d.Write()
+h_d_varUp.Write()
+h_d_varDn.Write()
 h_mc_rw.Write()
 can.Write()
 f_out.Close()
