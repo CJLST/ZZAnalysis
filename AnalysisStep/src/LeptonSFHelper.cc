@@ -291,7 +291,7 @@ float LeptonSFHelper::getSFError(int year, int flav, float pt, float eta, float 
          }
       }
       else if(year >= 2022) {
-	RecoSF =1.;
+	RecoSF =1.; // FIXME2022 not yet implemented
 	RecoSF_Unc=0.;
       }
       else {
@@ -343,7 +343,7 @@ float LeptonSFHelper::getSFError(int year, int flav, float pt, float eta, float 
          }
       }
       else if(year >= 2022) {
-	SelSF =1.;
+	SelSF =1.; // FIXME2022 not yet implemented
 	SelSF_Unc=0.;
       }
       else {
@@ -373,7 +373,7 @@ float LeptonSFHelper::getSFError(int year, int flav, float pt, float eta, float 
          SelSF_Unc = h_Mu_Unc_2018->GetBinContent(h_Mu_Unc_2018->GetXaxis()->FindBin(eta),h_Mu_Unc_2018->GetYaxis()->FindBin(std::min(pt,199.f))); //last bin contains the overflow
       }
       else if(year >= 2022) {
-	SelSF =1.;
+	SelSF =1.; //FIXME2022
 	SelSF_Unc=0.;
       }
       else {
@@ -385,28 +385,5 @@ float LeptonSFHelper::getSFError(int year, int flav, float pt, float eta, float 
    }
 
    return SFError;
-}
-
-// Add C bindings for python
-#include <new>
-extern "C" {
-  void* get_LeptonSFHelper(void) {
-    return new(std::nothrow) LeptonSFHelper(false);
-  }
-
-  void del_LeptonSFHelper(void* ptr) {
-    delete (reinterpret_cast<LeptonSFHelper*>(ptr));
-  }
-
-  float LeptonSFHelper_getSF(void* ptr, int year, int flav, float pt, float eta, float SCeta, bool isCrack) {
-    LeptonSFHelper * ref = reinterpret_cast<LeptonSFHelper*>(ptr);
-    return ref->getSF(year, flav, pt, eta, SCeta, isCrack);
-  }
-
-  float LeptonSFHelper_getSFError(void* ptr, int year, int flav, float pt, float eta, float SCeta, bool isCrack) {
-    LeptonSFHelper * ref = reinterpret_cast<LeptonSFHelper*>(ptr);
-    return ref->getSFError(year, flav, pt, eta, SCeta, isCrack);
-  }
-
 }
 
