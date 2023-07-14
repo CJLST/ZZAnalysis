@@ -8,7 +8,7 @@ APPLYJEC = False     # Switch off JEC
 APPLYJER = False     # Switch off JER
 RECORRECTMET = False # Switch off MET corr
 #KINREFIT = True    # control KinZFitter (very slow)
-PROCESS_CR = False   # False = Skip CR paths and trees
+PROCESS_CR = True   # False = Skip CR paths and trees
 #ADDLOOSEELE = True  # Run paths for loose electrons
 #APPLYTRIG = False    # Skip events failing required triggers. They are stored with sel<0 if set to False
 #KEEPLOOSECOMB = True # Do not skip loose lepton ZZ combinations (for debugging)
@@ -35,6 +35,10 @@ PyFilePath = os.environ['CMSSW_BASE'] + "/src/ZZAnalysis/AnalysisStep/test/"
 execfile(PyFilePath + "analyzer.py")
 #execfile(PyFilePath + "prod/pyFragments/RecoProbabilities.py") #FIXME2022: fails as 13.6 TeV is unknown to SuperDijetMela::SetupResolutionModel: Model MELADifermionResolutionModel
 
+theRecoProbabilities = ["Name:GG_SIG_ghg2_1_ghz1_1_JHUGen Alias:<Name> Process:HSMHiggs Production:ZZGG MatrixElement:JHUGen Options:AddPConst=1", "Name:QQB_BKG_MCFM Alias:<Name> Process:bkgZZ Production:ZZQQB MatrixElement:MCFM Options:AddPConst=1"]
+
+
+
 if not IsMC:
 	process.source.inputCommands = cms.untracked.vstring("keep *", "drop LHERunInfoProduct_*_*_*", "drop LHEEventProduct_*_*_*") ###FIXME In 9X this removes all collections for MC
 
@@ -43,7 +47,7 @@ if not IsMC:
 ### ----------------------------------------------------------------------
 
 process.source.fileNames = cms.untracked.vstring(
-	"/store/mc/Run3Summer22EEMiniAODv3/GluGluHtoZZto4L_M-125_TuneCP5_13p6TeV_powheg2-JHUGenV752-pythia8/MINIAODSIM/124X_mcRun3_2022_realistic_postEE_v1-v2/2540000/0b3804ca-2ae7-46df-bfab-49f92f76b047.root" #ggH, 43129 evts
+	"/store/mc/Run3Summer22EEMiniAODv3/GluGluHtoZZto4L_M-125_TuneCP5_13p6TeV_powheg2-JHUGenV752-pythia8/MINIAODSIM/124X_mcRun3_2022_realistic_postEE_v1-v2/2540000/176092bc-4768-4033-8b59-1c85cff0615f.root" #ggH, 13889 evts
 ### 
 
     )
@@ -113,3 +117,17 @@ process.dumpUserData =  cms.EDAnalyzer("dumpUserData",
 #process.SimpleMemoryCheck = cms.Service("SimpleMemoryCheck",
 #    ignoreTotal = cms.untracked.int32(1)
 #)
+
+# FIXME2022: append recoProbabilities manually
+for name in (
+             "ZZCand",          "ZZTree",
+             "ZLLCand",         "CRZLLTree",
+             "ZZCandlooseEle",  "ZZTreelooseEle",
+             "ZLLCandlooseEle", "CRZLLTreelooseEle",
+             "ZLLCandZ1RSE",    "CRZLLTreeZ1RSE",
+             "ZZCandtle",       "ZZTreetle",
+             "ZLLCandtle",      "CRZLLTreetle",
+             "GENLevel",
+            ):
+    if hasattr(process, name):
+        getattr(process, name).recoProbabilities.extend(theRecoProbabilities)

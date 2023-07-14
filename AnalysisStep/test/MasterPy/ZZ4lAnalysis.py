@@ -1762,11 +1762,23 @@ if IsMC: process.GENCandidates = cms.Path(process.GENLevel)
 #process.CRPath = cms.Path(process.CR)   # trilep+4lep CRs
 
 process.CRZl = cms.Sequence(
+       process.muons             +
+       process.electrons         + process.cleanSoftElectrons +
+       process.fsrPhotons        + process.boostedFsrPhotons +
+       process.appendPhotons     +
+       process.softLeptons       +
+       process.cleanJets         +
        process.bareZCand         + process.ZCand     +
        process.ZlCand
    )
 
 process.CR = cms.Sequence(
+       process.muons             +
+       process.electrons         + process.cleanSoftElectrons +
+       process.fsrPhotons        + process.boostedFsrPhotons +
+       process.appendPhotons     +
+       process.softLeptons       +
+       process.cleanJets         +
        process.bareZCand         + process.ZCand     +
        process.bareLLCand        + process.LLCand    +
        process.bareZLLCand       + process.ZLLCand   +

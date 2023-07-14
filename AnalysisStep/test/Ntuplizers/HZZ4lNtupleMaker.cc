@@ -13,7 +13,7 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Framework/interface/Event.h"
@@ -580,7 +580,7 @@ using namespace edm;
 //
 // class declaration
 //
-class HZZ4lNtupleMaker : public edm::EDAnalyzer {
+class HZZ4lNtupleMaker : public edm::one::EDAnalyzer<> {
 public:
   explicit HZZ4lNtupleMaker(const edm::ParameterSet&);
   ~HZZ4lNtupleMaker();

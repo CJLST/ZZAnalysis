@@ -1,7 +1,7 @@
 #!/bin/bash 
 #
 # Instructions:
-# wget -O ${TMPDIR}/checkout_12X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/Run3_dev/checkout_12X.csh
+# wget -O ${TMPDIR}/checkout_12X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/Run3/checkout_12X.csh
 # cd $CMSSW_BASE/src
 # cmsenv
 # chmod u+x ${TMPDIR}/checkout_12X.csh
