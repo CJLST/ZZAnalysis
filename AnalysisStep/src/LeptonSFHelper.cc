@@ -159,7 +159,9 @@ float LeptonSFHelper::getSF(int year, int flav, float pt, float eta, float SCeta
             RecoSF = h_Ele_Reco_highPT_2018->GetBinContent(h_Ele_Reco_highPT_2018->GetXaxis()->FindBin(SCeta),h_Ele_Reco_highPT_2018->GetYaxis()->FindBin(std::min(pt,499.f)));
          }
       }
-      else {
+      else if (year >= 2022) {
+	  RecoSF  = 1.; // FIXME2022 not yet implemented
+      } else {
          edm::LogError("LeptonSFHelper::") << "Ele SFs for " << year << " is not supported!";
          abort();
       }
@@ -202,11 +204,11 @@ float LeptonSFHelper::getSF(int year, int flav, float pt, float eta, float SCeta
             }
       }
 
-      else if (year == 2022) {
-	  SelSF  = 1.; // FIXME not yet implemented
+      else if (year >= 2022) {
+	  SelSF  = 1.; // FIXME2022 not yet implemented
       } else {
-      edm::LogError("LeptonSFHelper::") << "Ele SFs for " << year << " is not supported!";
-      abort();
+	edm::LogError("LeptonSFHelper::") << "Ele SFs for " << year << " is not supported!";
+	abort();
       }
 
       SF = RecoSF*SelSF;
@@ -226,7 +228,7 @@ float LeptonSFHelper::getSF(int year, int flav, float pt, float eta, float SCeta
       else if(year == 2018)
       {
          SelSF = h_Mu_SF_2018->GetBinContent(h_Mu_SF_2018->GetXaxis()->FindBin(eta),h_Mu_SF_2018->GetYaxis()->FindBin(std::min(pt,199.f))); //last bin contains the overflow
-      } else if (year ==2022) {
+      } else if (year >=2022) {
 	 SelSF  = 1.; // FIXME not yet implemented
       } else {
          edm::LogError("LeptonSFHelper::") << "Muon SFs for " << year << " is not supported!";
@@ -288,6 +290,10 @@ float LeptonSFHelper::getSFError(int year, int flav, float pt, float eta, float 
             RecoSF_Unc = h_Ele_Reco_highPT_2018->GetBinError(h_Ele_Reco_highPT_2018->GetXaxis()->FindBin(SCeta),h_Ele_Reco_highPT_2018->GetYaxis()->FindBin(std::min(pt,499.f)));
          }
       }
+      else if(year >= 2022) {
+	RecoSF =1.; // FIXME2022 not yet implemented
+	RecoSF_Unc=0.;
+      }
       else {
          edm::LogError("LeptonSFHelper::") << "Ele SFs for " << year << " is not supported!";
          abort();
@@ -336,8 +342,10 @@ float LeptonSFHelper::getSFError(int year, int flav, float pt, float eta, float 
             SelSF_Unc = h_Ele_notCracks_2018->GetBinError(h_Ele_notCracks_2018->FindFixBin(SCeta, std::min(pt,499.f)));
          }
       }
-
-
+      else if(year >= 2022) {
+	SelSF =1.; // FIXME2022 not yet implemented
+	SelSF_Unc=0.;
+      }
       else {
          edm::LogError("LeptonSFHelper::") << "Ele SFs for " << year << " is not supported!";
          abort();
@@ -373,28 +381,5 @@ float LeptonSFHelper::getSFError(int year, int flav, float pt, float eta, float 
    }
 
    return SFError;
-}
-
-// Add C bindings for python
-#include <new>
-extern "C" {
-  void* get_LeptonSFHelper(void) {
-    return new(std::nothrow) LeptonSFHelper(false);
-  }
-
-  void del_LeptonSFHelper(void* ptr) {
-    delete (reinterpret_cast<LeptonSFHelper*>(ptr));
-  }
-
-  float LeptonSFHelper_getSF(void* ptr, int year, int flav, float pt, float eta, float SCeta, bool isCrack) {
-    LeptonSFHelper * ref = reinterpret_cast<LeptonSFHelper*>(ptr);
-    return ref->getSF(year, flav, pt, eta, SCeta, isCrack);
-  }
-
-  float LeptonSFHelper_getSFError(void* ptr, int year, int flav, float pt, float eta, float SCeta, bool isCrack) {
-    LeptonSFHelper * ref = reinterpret_cast<LeptonSFHelper*>(ptr);
-    return ref->getSFError(year, flav, pt, eta, SCeta, isCrack);
-  }
-
 }
 
