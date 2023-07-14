@@ -36,18 +36,10 @@ class weightFiller(Module):
             for i in range(0,9) :
                  for i in range(0,9) :
                      self.spkfactor_ggzz_nlo[i] = (ggZZKFactorFile.Get('sp_kfactor_%s' % strZZGGKFVar[i])).Clone('sp_kfactor_%s_NNLO' % strZZGGKFVar[i])
-            ggZZKFactorFile.Close()            
-
-        # qqZZ QCD K-fatcors (for qqZZ)
-        # We include these using plain root, but the code could be called directly from the .so lib
-        if self.APPLY_K_NNLOQCD_ZZQQB :
-            if "/kFactors_C.so" not in ROOT.gSystem.GetLibraries() :
-                p_helper = basePath+'src/kFactors.C+'
-                print('Loading C++ helper from ' + p_helper)
-                ROOT.gROOT.ProcessLine('.L ' + p_helper)
-            self.kfactor_qqZZ_qcd_M = ROOT.kfactor_qqZZ_qcd_M
+            ggZZKFactorFile.Close()
 
         if self.APPLY_K_NNLOEW_ZZQQB :
+            #FIXME: TO BE IMPLEMENTED
             #ewkTable = EwkCorrections::readFile_and_loadEwkTable(basePath+'data/kfactors/ZZ_EwkCorrections.dat')
             pass
 
@@ -116,7 +108,7 @@ class weightFiller(Module):
             flavor = 1 # same Z flavors
             if event.GenZZ_FinalState == 14641 or event.GenZZ_FinalState == 28561 or event.GenZZ_FinalState == 50625 :
                 flavor = 2 # differenr Z flavors
-            KFactor_QCD_qqZZ_M = self.kfactor_qqZZ_qcd_M(event.GenZZ_mass, flavor, 2)/self.kfactor_qqZZ_qcd_M(event.GenZZ_mass, flavor, 1)
+            KFactor_QCD_qqZZ_M = ROOT.KFactors.kfactor_qqZZ_qcd_M(event.GenZZ_mass, flavor, 2)/ROOT.KFactors.kfactor_qqZZ_qcd_M(event.GenZZ_mass, flavor, 1)
 
         if self.APPLY_K_NNLOEW_ZZQQB :
             KFactor_EW_qqZZ = 1 #FIXME: this is 1 up to 2*mZ. To be implemented for higher masses.

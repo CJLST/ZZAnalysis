@@ -1,4 +1,6 @@
- float kfactor_qqZZ_qcd_dPhi(float GENabsdPhiZZ, int finalState)
+#include <ZZAnalysis/AnalysisStep/interface/kFactors.h>
+
+float KFactors::kfactor_qqZZ_qcd_dPhi(float GENabsdPhiZZ, int finalState)
 {
 
     // finalState=1 : 4e/4mu/4tau
@@ -76,7 +78,7 @@
 
 }
 
-float xsec_qqZZ_qcd_M(float GenMassZZ, int finalState, int order){ // Order: 0=LO, 1=NLO, 2=NNLO
+float KFactors::xsec_qqZZ_qcd_M(float GenMassZZ, int finalState, int order){ // Order: 0=LO, 1=NLO, 2=NNLO
   const int nbins=20;
   static const float xsec[2][nbins][4]={
     {
@@ -131,7 +133,7 @@ float xsec_qqZZ_qcd_M(float GenMassZZ, int finalState, int order){ // Order: 0=L
   if (cbin<0) cbin=nbins-1;
   return xsec[finalState-1][cbin][order+1];
 }
-float kfactor_qqZZ_qcd_M(float GENmassZZ, int finalState, int order) // Order: 1=NLO, 2=NNLO
+float KFactors::kfactor_qqZZ_qcd_M(float GENmassZZ, int finalState, int order) // Order: 1=NLO, 2=NNLO
 {
   // finalState=1 : 4e/4mu/4tau
   // finalState=2 : 2e2mu/2mutau/2e2tau
@@ -144,7 +146,7 @@ float kfactor_qqZZ_qcd_M(float GENmassZZ, int finalState, int order) // Order: 1
 }
 
 
-float kfactor_qqZZ_qcd_Pt(float GENpTZZ, int finalState)
+float KFactors::kfactor_qqZZ_qcd_Pt(float GENpTZZ, int finalState)
 {
 
     // finalState=1 : 4e/4mu/4tau
