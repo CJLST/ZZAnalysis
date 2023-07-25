@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/bin/env python3
 # Add data files for different PDs, after archiving the Chunk folders.
 # Assumes that haddChunks has already been run to merge chunks.
 #

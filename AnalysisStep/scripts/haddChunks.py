@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/bin/env python3
 
 from ZZAnalysis.AnalysisStep.hadd import haddChunks
 
@@ -35,7 +35,7 @@ if __name__ == '__main__':
             sys.exit(0)
 
     if len(args)!=1:
-        print 'provide exactly one directory in argument.'
+        print('provide exactly one directory in argument.')
         sys.exit(1)
 
     dir = args[0]

@@ -119,7 +119,7 @@ if not IsMC :
 ZZSequence = [triggerAndSkim(isMC=IsMC, PD=PD, era=LEPTON_SETUP, passThru=TRIGPASSTHROUGH)] # Filter for good PV and trigger requirements; apply PD precedence rules for data
 
 if APPLYMUCORR and LEPTON_SETUP < 2022 : # corrections not yet implemented for Run 3
-    from ZZAnalysis.NanoAnalysis.muonScaleResProducer import muonScaleRes
+    from ZZAnalysis.NanoAnalysis.modules.muonScaleResProducer import muonScaleRes
     ZZSequence.append(muonScaleRes(LEPTON_SETUP, DATA_TAG, overwritePt=True, syncMode=SYNCMODE)) # Sets corrected muon pT and scale uncertainty
 
 
@@ -134,12 +134,11 @@ if IsMC :
     from ZZAnalysis.NanoAnalysis.mcTruthAnalyzer import *
     ZZSequence.insert(0, mcTruthAnalyzer(dump=False)) # Gen final state
 
+    from ZZAnalysis.NanoAnalysis.modules.puWeightProducer import *
     if LEPTON_SETUP < 2022 :
-        from PhysicsTools.NanoAODTools.postprocessing.modules.common.puWeightProducer import puWeight_2016, puWeight_2017, puWeight_2018
         puWeight = {2016:puWeight_2016, 2017:puWeight_2017, 2018:puWeight_2018} # FIXME official weights are slightly different than the one we use (checked for 2018)
         ZZSequence.append(puWeight[LEPTON_SETUP]()) # PU reweighting
     elif LEPTON_SETUP == 2022 : #FIXME: must update for 2023 MC! 
-        from PhysicsTools.NanoAODTools.postprocessing.modules.common.puWeightProducer import *
         pufile_2022 = "%s/src/ZZAnalysis/AnalysisStep/data/PileUpWeights/pu_weights_2022.root" % os.environ['CMSSW_BASE']
         puWeight_2022 = lambda : puWeightProducer(pufile_2022,
                                                   pufile_2022,

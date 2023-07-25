@@ -58,6 +58,10 @@ ln -s ${CMSSW_BASE}/src/JHUGenMELA/MELA/data/*/*.so \
       ${CMSSW_BASE}/src/MelaAnalytics/EventContainer/lib/*.so \
       ${CMSSW_BASE}/lib/${SCRAM_ARCH}
 
+#hack for missing 13.6 TeV files
+ln -s JHUGenMELA/MELA/data/resolution_mJJ_recoVStrue_ZH_13TeV.root JHUGenMELA/MELA/data/resolution_mJJ_recoVStrue_ZH_14TeV.root
+ln -s JHUGenMELA/MELA/data/resolution_mJJ_recoVStrue_WH_13TeV.root JHUGenMELA/MELA/data/resolution_mJJ_recoVStrue_WH_14TeV.root
+
 #kinematic refitting (obsolete?)
 git clone https://github.com/mhl0116/KinZfitter-1.git KinZfitter
 (cd KinZfitter ; git checkout -b from-27daebb 27daebb)

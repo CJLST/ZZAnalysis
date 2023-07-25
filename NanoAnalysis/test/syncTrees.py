@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 ###
 # compare events in a nanoAOD and a miniAOD CJLST file and print out differences.
 ##
@@ -11,15 +11,14 @@ region = 'SR'
 #region = '2P2F'
 #region = 'SS'
 
-verbose = 1
+verbose = 0
 
 #cjlstFile   = "../../AnalysisStep/test/ZZ4lAnalysis_sync_ggH_102X.root" 
 #nanoFile = "ggH125_Rereco_fixedFSR.root"
 
 # 2017 UL ggH, 26000 events
-cjlstFile   = "../../AnalysisStep/test/ZZ4lAnalysis_sync_ggH2017_106X_nomuscale.root" 
-nanoFile = "ggH125_2017UL_fixedFSR_nomucorr_full.root"
-#nanoFile = "ggH125_2017UL_fixedFSR_Skim.root"
+cjlstFile   = "~/work/H4lnano/CMSSW_10_6_26/src/ZZAnalysis/AnalysisStep/test/ZZ4lAnalysis_sync_ggH2017_106X_nomuscale.root" 
+nanoFile = "ggH125_2017UL_fixedFSR_Skim.root"
 
 #2022 MC ggH, 13k events
 #cjlstFile = "../../AnalysisStep/test/ZZ4lAnalysis_sync_SRCR.root"

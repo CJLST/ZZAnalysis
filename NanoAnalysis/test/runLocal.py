@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 ###
 # Example for running the analysis locally, after customizing variables.
 # Run with: 
