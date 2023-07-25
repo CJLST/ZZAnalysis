@@ -27,7 +27,7 @@ blindHLow = 105.
 blindHHi  = 140.
 blindHM   = 500.
 epsilon=0.1
-
+addEmptyBins = True
 
 #ZX estaimation parameters - taken from 2018 data - approx. normalization, just for visualization purposes
 
@@ -213,6 +213,7 @@ def dataGraph (f, version = "_4GeV_", blind = True):
 
     for i in range (1, nbinsIn):
         if blind and ((hd.GetBinCenter(i)>=blindHLow and hd.GetBinCenter(i)<=blindHHi) or hd.GetBinCenter(i)>=blindHM) : continue
+        if not addEmptyBins and hd.GetBinContent(i) == 0 : continue 
         x[nbins] = hd.GetBinCenter(i)
         y[nbins] = hd.GetBinContent(i)
         UpErr[nbins] = hd.GetBinErrorUp(i)
@@ -235,7 +236,7 @@ of = ROOT.TFile.Open(outFilename,"recreate")
 
 # Labels for log plots
 xlabelsv = [80, 100, 200, 300, 400, 500]
-label_margin = -0.4
+label_margin = -0.1
 xlabels=[None]*len(xlabelsv)
 for i, label in enumerate(xlabelsv): 
     xlabels[i] = ROOT.TLatex(label, label_margin , str(label));
