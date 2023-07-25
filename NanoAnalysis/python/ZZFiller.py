@@ -89,7 +89,10 @@ class ZZFiller(Module):
         self.lepSFHelper = LeptonSFHelper(False) # FIXME for 2016 UL samples: requires passing bool preVFP
 
         if self.runMELA :
-            self.mela = Mela(13, 125, TVar.ERROR)
+            sqrts=13.;
+            if year>=2022 :
+                sqrts=13.6
+            self.mela = Mela(sqrts, 125, TVar.ERROR)
             self.mela.setCandidateDecayMode(TVar.CandidateDecay_ZZ)
 
 

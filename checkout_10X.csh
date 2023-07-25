@@ -77,6 +77,11 @@ git clone https://github.com/JHUGen/JHUGenMELA.git JHUGenMELA
 #download MCFM lib (cannot be done in BuildFile.xml any longer)
 $CMSSW_BASE/src/JHUGenMELA/MELA/data/retrieve.csh $SCRAM_ARCH mcfm_707
 
+
+#hack for missing 13.6 TeV files
+ln -s JHUGenMELA/MELA/data/resolution_mJJ_recoVStrue_ZH_13TeV.root JHUGenMELA/MELA/data/resolution_mJJ_recoVStrue_ZH_14TeV.root
+ln -s JHUGenMELA/MELA/data/resolution_mJJ_recoVStrue_WH_13TeV.root JHUGenMELA/MELA/data/resolution_mJJ_recoVStrue_WH_14TeV.root
+
 #kinematic refitting
 git clone https://github.com/mhl0116/KinZfitter-1.git KinZfitter
 (cd KinZfitter ; git checkout -b from-27daebb 27daebb)

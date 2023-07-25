@@ -21,7 +21,7 @@ DEBUG = getConf("DEBUG", False)
 SAMPLENAME = getConf("SAMPLENAME", "test")
 LEPTON_SETUP = getConf("LEPTON_SETUP", 2018)
 DATA_TAG = getConf("DATA_TAG", "" ) # flavours; at the moment only used to mark UL Run 2 samples
-NANOVERSION = getConf("NANOVERSION", 10)
+NANOVERSION = getConf("NANOVERSION", 11)
 if not (LEPTON_SETUP == 2016 or LEPTON_SETUP == 2017 or LEPTON_SETUP == 2018 or LEPTON_SETUP == 2022 or LEPTON_SETUP == 2023) :
     print("Invalid LEPTON_SETUP", LEPTON_SETUP)
     exit(1)
@@ -111,7 +111,7 @@ if not IsMC :
     elif LEPTON_SETUP == 2022 :
         jsonFile = localPath+"test/prod/Cert_Collisions2022_355100_362760_Golden.json"
     elif LEPTON_SETUP == 2023 :
-        jsonFile = localPath+"test/prod/Cert_Collisions2023_366442_368823_Golden.json"
+        jsonFile = localPath+"test/prod/Cert_Collisions2023_366442_370355_Golden.json"
     else:        
         exit(1) #2016-17 to be implemented
 

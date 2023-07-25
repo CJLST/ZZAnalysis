@@ -59,11 +59,11 @@ maxM4lDiff = 0.
 
 lastfound = -1
 
-h_m4lDiff = TH1F("h_m4lDiff","h_m4lDiff", 2000, -1, 1)
+h_m4lDiff = TH1F("h_m4lDiff","m4l_mini-m4l_nano", 2000, -1, 1)
 
 def printLeps_mini(treeMini, prefix="") :
     print(prefix, end="")
-    for i in range(4): print(treeMini.LepLepId[i], '{:.3f} {:.3f}'.format(treeMini.LepPt[i], treeMini.LepEta[i]), end=" ")
+    for i in range(4): print(treeMini.LepLepId[i], '{:.5f} {:.3f} {:.3f}'.format(treeMini.LepPt[i], treeMini.LepEta[i], treeMini.LepPhi[i]), end=" ")
     print()
 
 def printLeps_nano(treeNano, prefix) :
@@ -71,26 +71,26 @@ def printLeps_nano(treeNano, prefix) :
     lepPts = list(treeNano.Electron_pt) + list(treeNano.Muon_pt)
     lepIds = list(treeNano.Electron_pdgId) + list(treeNano.Muon_pdgId)
     lepEtas = list(treeNano.Electron_eta) + list(treeNano.Muon_eta)
+    lepPhis = list(treeNano.Electron_phi) + list(treeNano.Muon_phi)
     nanoLepIdxs = [eval(nanoPrefix+'Z1l1Idx[iBC]'),eval(nanoPrefix+'Z1l2Idx[iBC]'), eval(nanoPrefix+'Z2l1Idx[iBC]'),eval(nanoPrefix+'Z2l2Idx[iBC]')]
     case1 = False
     case2 = False
-    if verbose>0 : 
-        for i, lIdx in enumerate(nanoLepIdxs) :
-            print(lepIds[lIdx], '{:.3f} {:.3f}'.format(lepPts[lIdx], lepEtas[lIdx]), end=" ")        
+    for i, lIdx in enumerate(nanoLepIdxs) :
+        print(lepIds[lIdx], '{:.5f} {:.3f} {:.3f}'.format(lepPts[lIdx], lepEtas[lIdx], lepPhis[lIdx]), end=" ")
+        if verbose>0 : 
             laId = abs(lepIds[lIdx])
             lPt = lepPts[lIdx]
             laEta = abs(lepEtas[lIdx])
-
             if (laId == 11 and laEta>2.49) or laEta > 2.39 :
                 case1 = True
                 print ("*", end="")
             if laId == 11 and lPt > 9. and lPt < 11.:
                 case2 = True
                 print ("**", end="")
-        print()
-        if case1 : print ("   * : close to eta bound")
-        if case2 : print ("   ** : electron close to 10 GeV pt threshold")
-
+            print()
+            if case1 : print ("   * : close to eta bound")
+            if case2 : print ("   ** : electron close to 10 GeV pt threshold",end="")
+    print()
 
 while treeMini.GetEntry(iEntryMini):
 
@@ -165,7 +165,7 @@ while treeMini.GetEntry(iEntryMini):
             
 
         elif m4lDiff>massTolerance or abs(treeMini.Z1Mass-t2_Z1Mass)>massTolerance or abs(treeMini.Z2Mass-t2_Z2Mass)>massTolerance:
-            # check for FSR
+#            if t2_Z1flav*t2_Z2flav != 13*13*13*13 : continue
             
             print("Mass Diff: "+str(treeMini.RunNumber)+":"+str(treeMini.LumiNumber)+":"+str(treeMini.EventNumber), m4lDiff)
             print("   mini:", '{:.2f} {:.2f} {:.2f} {:.4f} {:.4f} {:.2f}'.format(treeMini.ZZMass,treeMini.Z1Mass,treeMini.Z2Mass, ps1, pb1, KD_mini), "hasFSR:",t1_hasFSR , "\n"
@@ -209,3 +209,10 @@ for iEntryNano,found in enumerate(foundNano):
 
 print("Matches in", region, ":", nMatch)
 print("max m4l diff:", maxM4lDiff)
+
+# c1 = TCanvas("M4ldiff","M4ldiff")
+# c1.SetLogy()
+# h_m4lDiff.GetXaxis().SetRangeUser(-0.1, 0.1)
+# h_m4lDiff.GetXaxis().SetTitle("m_{mini} - m_{nano} [GeV]")
+# h_m4lDiff.Draw()
+# c1.Print("m4ldiff_"+flavour+".png")
