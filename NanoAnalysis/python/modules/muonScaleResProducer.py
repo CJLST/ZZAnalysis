@@ -9,7 +9,7 @@ from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
 import os
 import random
-from ctypes import CDLL, c_double, c_int, c_float
+from ctypes import CDLL, c_double, c_int, c_float, c_char_p
 #import ROOT
 #ROOT.PyConfig.IgnoreCommandLineOptions = True
 
@@ -44,7 +44,7 @@ class muonScaleResProducer(Module):
 #         self._roccor = ROOT.RoccoR(p_roccor + '/' + rc_corrections)
 
         self.lib = CDLL('pluginZZAnalysisAnalysisStepPlugins.so')
-        self._roccor = self.lib.get_RoccoR(fpath)
+        self._roccor = self.lib.get_RoccoR(c_char_p(fpath.encode("ascii")))
         self.lib.RoccoR_kSpreadMC.restype = c_double
         self.lib.RoccoR_kSmearMC.restype = c_double
         self.lib.RoccoR_kSpreadMCerror.restype = c_double

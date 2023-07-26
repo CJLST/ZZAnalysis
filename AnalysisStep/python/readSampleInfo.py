@@ -1,7 +1,7 @@
 # Imported from:
 # https://raw.githubusercontent.com/bellan/VVXAnalysis/master/Producers/python/readSampleInfo.py
 #
-import sys, os, commands, math
+import sys, os, math
 
 
 def checkBool(val):
@@ -27,8 +27,6 @@ def readSamplesInfo(infoFilePath = 'samples_8TeV.csv', indexBy = 'identifier'):
   (csv) file.
   """
 
-  import string
-
   infoFile                  = open(infoFilePath, "r")
   database                  = {}
   defaults                  = {}
@@ -52,9 +50,9 @@ def readSamplesInfo(infoFilePath = 'samples_8TeV.csv', indexBy = 'identifier'):
           if len(value.strip()) == 0:
             value           = []
           else:
-            value           = map(string.strip, value.split(";"))
+            value           = map(str.strip, value.split(";"))
             for v in value:
-              bareelement = map(string.strip, v.split("="))
+              bareelement = list(map(str.strip, v.split("=")))
               if len(bareelement) == 2:
                 if isFloat(bareelement[1]):
                   try:
@@ -112,7 +110,7 @@ def crossSection(sample, infoFilePath = 'samples_8TeV.csv', indexBy = 'identifie
 def readSampleDB(infoFilePath = 'samples_8TeV.csv', indexBy = 'identifier'):
   db,defaults = readSamplesInfo(infoFilePath, indexBy)
   for sample in db:
-    for key,val in db[sample].iteritems():
+    for key,val in db[sample].items():
       if key in defaults:
         if val == "":
           db[sample][key] = defaults[key]

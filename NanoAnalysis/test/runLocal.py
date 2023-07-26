@@ -7,8 +7,9 @@
 from __future__ import print_function
 from ZZAnalysis.NanoAnalysis.tools import setConf, getConf, insertAfter
 
-#SampleToRun = "Data2022"
+#SampleToRun = "MCsync_Rereco"
 #SampleToRun = "MCsync_UL"
+#SampleToRun = "Data2022"
 SampleToRun = "MC2022"
 
 ### Customize processing variables
@@ -76,10 +77,10 @@ elif SampleToRun == "MCsync_UL" :
 elif SampleToRun == "MCsync_Rereco" :
      # Custom-reprocessed Rereco nanoAOD file with updated FSR,
      # corresponding to:/store/mc/RunIIAutumn18NanoAODv7/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/NANOAODSIM/Nano02Apr2020_102X_upgrade2018_realistic_v21-v1/260000/BA6D7F40-ED5E-7D4E-AB14-CE8A9C5DE7EC.root
-     # NOTE: by default, electron cuts are for UL in lepFiller.py!
+    setConf("APPLYMUCORR", True)
     setConf("SAMPLENAME", "ggH125")
     setConf("XSEC", 48.58*0.0002745)
-
+    setConf("NANOVERSION", 9)
     setConf("store","")
     setConf("fileNames",["/eos/user/n/namapane/H4lnano/ggH125_fixedFSR.root"])
 
@@ -106,8 +107,8 @@ from ZZAnalysis.NanoAnalysis.nanoZZ4lAnalysis import *
 ######################################################################
 
 ### Tweak postprocessor parameters as necessary
-p.prefetch=False # Skip local prefetching
-#p.longTermCache=True # keep prefetched file (useful for rerunning tests several times)
+p.prefetch=True # Prefetch remote files
+p.longTermCache=True # keep prefetched files (useful for rerunning tests several times)
 if len(p.inputFiles) == 1 :
     p.haddFileName = None # Skip final hadd
 #p.maxEntries = 1000

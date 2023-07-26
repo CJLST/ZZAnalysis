@@ -129,7 +129,7 @@ echo SUBMIT_DIR: $SUBMIT_DIR
 echo path: `pwd`
 
 exitStatus=   #default for successful completion is an empty file
-python run_cfg.py >& log.txt || exitStatus=$?
+python3 run_cfg.py >& log.txt || exitStatus=$?
 
 echo -n $exitStatus > exitStatus.txt
 echo 'job done at: ' $(date) with exit status: ${{exitStatus+0}}
@@ -270,16 +270,16 @@ class MyBatchManager:
 #             today = date.today()
 #             outputDir = 'OutCmsBatch_%s' % today.strftime("%d%h%y_%H%M")
             gitrevision = subprocess.check_output(['git', "rev-parse", "--short", "HEAD"]) #revision of the git area where the command is exectuted
-            outputDir = "PROD_" + csvfile.replace('.csv','') + "_"+gitrevision.rstrip()
+            outputDir = "PROD_" + csvfile.replace('.csv','') + "_"+gitrevision.decode('utf-8').rstrip()
             print('output directory not specified, using %s' % outputDir)
         self.outputDir_ = os.path.abspath(outputDir)
         self.workingDir = str(self.outputDir_)
         if( os.path.isdir(self.outputDir_) == True ):
-            input = ''
+            inputyn = ''
             if not self.options_.force:
-                while input != 'y' and input != 'n':
-                    input = raw_input( 'The directory ' + self.outputDir_ + ' exists. Are you sure you want to continue? its contents will be overwritten [y/n] ' )
-            if input == 'n':
+                while inputyn != 'y' and inputyn != 'n':
+                    inputyn = input( 'The directory ' + self.outputDir_ + ' exists. Are you sure you want to continue? its contents will be overwritten [y/n] ' )
+            if inputyn == 'n':
                 sys.exit(1)
             else:
                 os.system( 'rm -rf ' + self.outputDir_)
@@ -374,26 +374,26 @@ class MyBatchManager:
         os.system('chmod +x %s' % scriptFileName)
         template_name = splitComponents[value].samplename + 'run_template_cfg.py'
 
-#	working_dir = os.path.dirname(self.outputDir_)
+#       working_dir = os.path.dirname(self.outputDir_)
 
 
-	template_file_name = '%s/%s'%(self.outputDir_, template_name) #splitComponents[value].samplename + '_run_template_cfg.py' 
+        template_file_name = '%s/%s'%(self.outputDir_, template_name) #splitComponents[value].samplename + '_run_template_cfg.py' 
 #        shutil.copyfile(template_file_name, '%s/run_cfg.py'%jobDir)  
         new_job_path = '%s/run_cfg.py'%jobDir
-	files = splitComponents[value].files 
-	files = ["'%s'"%f for f in files]
-	files = ', '.join(files)
-	with open(new_job_path, 'w') as new_job_cfg :
-	    with open(template_file_name) as f:
-	        for line in f :
-		    if line.find('REPLACE')  > 1 :
+        files = splitComponents[value].files 
+        files = ["'%s'"%f for f in files]
+        files = ', '.join(files)
+        with open(new_job_path, 'w') as new_job_cfg :
+            with open(template_file_name) as f:
+                for line in f :
+                    if line.find('REPLACE')  > 1 :
                         actual_source_string = ""
                         if inputType=="miniAOD" :
                             actual_source_string = "fileNames = cms.untracked.vstring(%s),\n"%files
                         elif inputType=="nanoAOD" :
                             actual_source_string = 'setConf("fileNames",%s)\n'%splitComponents[value].files
-        	        line = actual_source_string
-		    new_job_cfg.write(line)
+                        line = actual_source_string
+                    new_job_cfg.write(line)
  
     def PrepareJobUserTemplate(self, jobDir, value, inputType="miniAOD" ):
        '''Prepare one job. This function is called by the base class.'''
@@ -513,7 +513,7 @@ if __name__ == '__main__':
 
     components = []
     sampleDB = readSampleDB(sampleCSV)
-    for sample, settings in sampleDB.iteritems():
+    for sample, settings in sampleDB.items():
         if settings['execute']:
             pdfstep = batchManager.options_.PDFstep
             components.append(Component(sample, settings['prefix'], settings['dataset'], settings['pattern'], settings['splitLevel'], settings['::variables'],settings['::pyFragments'],settings['crossSection'], settings['BR'], pdfstep,cfgFileName)) #FIXME-RB not bool(settings['pdf']))) #settings['pdf'] used here as full sel, without cuts.

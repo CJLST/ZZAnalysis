@@ -109,7 +109,7 @@ def listFiles(sample, path, rec = False, full_info = False):
     # -- listing from dbs --
     elif path=="dbs" :
         files, _, _ =runDBS(sample)
-        for line in files.split('\n'):
+        for line in files.decode('utf-8').split('\n'):
 #            print line
 #            result.append("root://cms-xrd-global.cern.ch//"+line)
             result.append(line)
@@ -119,7 +119,7 @@ def listFiles(sample, path, rec = False, full_info = False):
     elif path=="dbs-USER" :
         print('Querying USER db')
         files, _, _ =runDBS(sample, 'prod/phys03')
-        for line in files.split('\n'):
+        for line in files.decode('utf-8').split('\n'):
             result.append(line)
         return result
 

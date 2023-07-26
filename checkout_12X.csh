@@ -65,10 +65,13 @@ ln -s JHUGenMELA/MELA/data/resolution_mJJ_recoVStrue_WH_13TeV.root JHUGenMELA/ME
 #kinematic refitting (obsolete?)
 git clone https://github.com/mhl0116/KinZfitter-1.git KinZfitter
 (cd KinZfitter ; git checkout -b from-27daebb 27daebb)
+sed -i '/SimTracker\/Records/d' KinZfitter/HelperFunction/BuildFile.xml
+sed -i '/SimTracker\/Records/d' KinZfitter/KinZfitter/BuildFile.xml
+
 
 #NanoAODTools
-git clone https://github.com/cms-nanoAOD/nanoAOD-tools.git PhysicsTools/NanoAODTools
-(cd PhysicsTools/NanoAODTools ; git checkout -b from-c32f055 c32f055)
+git clone https://github.com/namapane/nanoAOD-tools.git PhysicsTools/NanoAODTools
+(cd PhysicsTools/NanoAODTools ; git checkout py3)
 
 #CommonLHETools requires the MELA env to be set for compilation
 (eval `MelaAnalytics/setup.sh env`; cd CommonLHETools; scram b -j4)
