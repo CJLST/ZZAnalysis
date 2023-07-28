@@ -1,8 +1,11 @@
 identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments,comment
 
 
-###,,,,,,,,,,,Run2032B runs 366365-
-Muon2023B  ,,-1,,,/Muon0/Run2023B-PromptNanoAODv11p9_v1-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/,2,DATA_TAG=PromptReco;PD=Muon;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2023;ADDZTREE=False,RecoProbabilities.py,
+###,,,,,,,,,,,Run2032B runs 366365-367079
+Muon02023B  ,,-1,,,/Muon0/Run2023B-PromptNanoAODv11p9_v1-v2/NANOAOD,dbs,root://cms-xrd-global.cern.ch/,2,DATA_TAG=PromptReco;PD=Muon;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2023;ADDZTREE=False,RecoProbabilities.py,
+Muon12023B  ,,-1,,,/Muon1/Run2023B-PromptNanoAODv11p9_v1-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/,2,DATA_TAG=PromptReco;PD=Muon;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2023;ADDZTREE=False,RecoProbabilities.py,
 MuonEG2023B,,-1,,,/MuonEG/Run2023B-PromptNanoAODv11p9_v1-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/,2,DATA_TAG=PromptReco;PD=MuEG;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2023;ADDZTREE=False,RecoProbabilities.py,
-EGamma2023B,,  -1,,,/EGamma0/Run2023B-PromptNanoAODv11p9_v1-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/,2,DATA_TAG=PromptReco;PD=EGamma;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2023;ADDZTREE=False,RecoProbabilities.py,
+EGamma02023B,,  -1,,,/EGamma0/Run2023B-PromptNanoAODv11p9_v1-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/,2,DATA_TAG=PromptReco;PD=EGamma;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2023;ADDZTREE=False,RecoProbabilities.py,
+EGamma12023B,,  -1,,,/EGamma1/Run2023B-PromptNanoAODv11p9_v1-v1/NANOAOD,dbs,root://cms-xrd-global.cern.ch/,2,DATA_TAG=PromptReco;PD=EGamma;PROCESS_CR=True;ADDLOOSEELE=False;LEPTON_SETUP=2023;ADDZTREE=False,RecoProbabilities.py,
 
+###,,,,,,,,,,,Run2032C runs 367095 - 

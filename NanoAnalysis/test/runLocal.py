@@ -69,6 +69,7 @@ elif SampleToRun == "MCsync_UL" :
     setConf("DATA_TAG", "UL")
     setConf("store","")
     setConf("fileNames",["/eos/user/n/namapane/H4lnano/ggH125_2017UL_fixedFSR.root"])
+#    setConf("fileNames",["/eos/user/n/namapane/H4lnano/ggH125_2017UL_fixedFSR_nopacking.root"]) # with no packing of muon eta, phi, mass
 
 
 ################################################################################
@@ -114,7 +115,7 @@ if len(p.inputFiles) == 1 :
 ### Print out detailed candidate information for debug purposes
 #p.cut = None # Remove preselction
 #from ZZAnalysis.NanoAnalysis.dumpEvents import dumpEvents
-#insertAfter(p.modules,"lepFiller",dumpEvents(level=-1)) 
+#insertAfter(p.modules,"lepFiller",dumpEvents(level=-1),getConf("NANOVERSION", 11)) 
 
 #p.branchsel=None #Read all branches
 #p.outputbranchsel=None #Output all branches

@@ -14,9 +14,10 @@ from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collect
 charge={1:"+", -1:"-"}
 
 class dumpEvents(Module):
-    def __init__(self, level=1):
+    def __init__(self, level=1, nanoVersion=11):
         self.writeHistFile = False
         self.level=level
+        self.nanoVersion=nanoVersion
         
     def analyze(self, event):
 
@@ -66,9 +67,13 @@ class dumpEvents(Module):
                                                                                                        abs(lep.dz),
                                                                                                        lep.sip3d),
                      end="")
-               # FIXME must refactor this passBDT = passEleBDT(lep.pt, lep.eta+lep.deltaEtaSC, lep.mvaFall17V2Iso) 
-               passBDT=True
-               print(' scEta={:.3g} BDT={:.3g} passBDT={} relaxedId={} FullId={} FullSel={}'.format(lep.eta+lep.deltaEtaSC, lep.mvaFall17V2Iso, passBDT, lep.ZZRelaxedId, lep.ZZFullId, lep.ZZFullSel), end="")
+
+               passBDT=lep.passBDT
+               if nanoVersion < 10:
+                   BDT = lep.mvaFall17V2Iso
+               else: 
+                   BDT = lep.mvaHZZIso
+               print(' scEta={:.3g} BDT={:.3g} passBDT={} relaxedId={} FullId={} FullSel={}'.format(lep.eta+lep.deltaEtaSC, BDT, passBDT, lep.ZZRelaxedId, lep.ZZFullId, lep.ZZFullSel), end="")
                if (lep.fsrPhotonIdx>=0):
                    fsr=fsrPhotons[lep.fsrPhotonIdx]
                    print(' FSR: pt={:.3g} eta={:.3g}, phi={:.3g}, dREt2={:.3g}, Iso={:.3g}, isTrue={}'.format(fsr.pt, fsr.eta, fsr.phi, fsr.dROverEt2, fsr.relIso03, (fsr.genFsrIdx>=0)))

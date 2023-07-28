@@ -8,10 +8,11 @@ from __future__ import print_function
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
 from PhysicsTools.NanoAODTools.postprocessing.tools import *
+from ROOT import LeptonSFHelper
 
 from functools import cmp_to_key
-from ctypes import CDLL, c_float, c_int, c_bool
-from JHUGenMELA.MELA.mela import Mela, SimpleParticle_t, SimpleParticleCollection_t, TVar
+from ROOT import Mela, SimpleParticle_t, SimpleParticleCollection_t, TVar, TLorentzVector
+from ctypes import c_float
 
 class StoreOption:
     # Define which candidates should be stored:
@@ -85,15 +86,14 @@ class ZZFiller(Module):
         # Data-MC SFs. 
         # NanoAODTools provides a module based on LeptonEfficiencyCorrector.cc, but that does not seem to be flexible enough for us:
         # https://github.com/cms-nanoAOD/nanoAOD-tools/blob/master/python/postprocessing/modules/common/lepSFProducer.py
-        self.lib = CDLL('libZZAnalysisAnalysisStep.so') # used for also for MELA c-constants
-        self.lepSFHelper = self.lib.get_LeptonSFHelper() # Note for 2016 UL samples: requires passing bool preVFP
-        self.lib.LeptonSFHelper_getSF.restype = c_float
-        self.lib.LeptonSFHelper_getSFError.restype = c_float
+        self.lepSFHelper = LeptonSFHelper(False) # FIXME for 2016 UL samples: requires passing bool preVFP
 
         if self.runMELA :
-            self.mela = Mela(13, 125, TVar.ERROR)
+            sqrts=13.;
+            if year>=2022 :
+                sqrts=13.6
+            self.mela = Mela(sqrts, 125, TVar.ERROR)
             self.mela.setCandidateDecayMode(TVar.CandidateDecay_ZZ)
-            self.lib.D_bkg_kin.restype = c_float        
 
 
         # Example of adding control histograms (requires self.writeHistFile = True)
@@ -105,7 +105,7 @@ class ZZFiller(Module):
 
 
     def endJob(self):
-        self.lib.del_LeptonSFHelper(self.lepSFHelper)
+        pass
 
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
@@ -215,7 +215,12 @@ class ZZFiller(Module):
                         else:
                             continue
                         
-                        aZ = self.ZCand(i, j, leps, fsrPhotons)
+                        # Set a default order for OS leptons in the Z candidate: 1=l+, 2=l-
+                        idx1, idx2 = i, j
+                        if (l1.pdgId*l2.pdgId<0 and l1.pdgId>0) :
+                            idx1, idx2 = idx2, idx1
+                        
+                        aZ = self.ZCand(idx1, idx2, leps, fsrPhotons)
                         aZ.isOSSF = isOSSF
                         aZ.isSR   = isSR
                         aZ.is1FCR = is1FCR
@@ -473,7 +478,6 @@ class ZZFiller(Module):
     # NOTE: We may need to move Zs into the Event as persistent objects, and to be re-used for CRs. They would be built by a separate module in that case.
     class ZCand: 
         def __init__(self, l1Idx, l2Idx, leps, fsrPhotons):
-            # FIXME: we may want to set a default order for i, j (eg 1=-, 2=+)
             self.l1Idx = l1Idx
             self.l2Idx = l2Idx
             self.l1 = leps[l1Idx]
@@ -532,8 +536,8 @@ class ZZFiller(Module):
            mySCeta = min(mySCeta,2.49)
            mySCeta = max(mySCeta,-2.49)
 
-           SF = self.lib.LeptonSFHelper_getSF(self.lepSFHelper, c_int(self.year), c_int(myLepID), c_float(lep.pt), c_float(lep.eta), c_float(mySCeta), c_bool(isCrack))
-#           SF_Unc = lepSFHelper.getSFError(year,myLepID,lep.pt,lep.eta, mySCeta, isCrack)
+           SF = self.lepSFHelper.getSF(self.year, myLepID, lep.pt, lep.eta, mySCeta, isCrack)
+#           SF_Unc = self.lepSFHelper.getSFError(year, myLepID, lep.pt, lep.eta, mySCeta, isCrack)
            dataMCWeight *= SF
 
        return dataMCWeight
@@ -621,9 +625,12 @@ class ZZFiller(Module):
             daughters.push_back(SimpleParticle_t(Z2.l2.pdgId, Z2.l2DressedP4))
             self.mela.setInputEvent(daughters, 0, 0, 0)
             self.mela.setProcess(TVar.HSMHiggs, TVar.JHUGen, TVar.ZZGG)
-            p_GG_SIG_ghg2_1_ghz1_1_JHUGen = self.mela.computeP(True)
+            res = c_float(0.)
+            self.mela.computeP(res,True)
+            p_GG_SIG_ghg2_1_ghz1_1_JHUGen = res.value
             self.mela.setProcess(TVar.bkgZZ, TVar.MCFM, TVar.ZZQQB)
-            p_QQB_BKG_MCFM = self.mela.computeP(True)
+            self.mela.computeP(res,True)
+            p_QQB_BKG_MCFM = res.value
             self.mela.resetInputEvent()
         if (p_GG_SIG_ghg2_1_ghz1_1_JHUGen+p_QQB_BKG_MCFM == 0.) :
             print ("ERROR", p_GG_SIG_ghg2_1_ghz1_1_JHUGen, p_QQB_BKG_MCFM)
