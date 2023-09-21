@@ -102,7 +102,12 @@ elif (SAMPLE_TYPE == 2017):
     if IsMC:
         process.GlobalTag = GlobalTag(process.GlobalTag, '106X_mc2017_realistic_v9', '')
     else:
-        process.GlobalTag = GlobalTag(process.GlobalTag, '106X_dataRun2_v35', '')
+        if (DATA_TAG == "GT36"):
+            # further UL reprocessing
+            # Use DATA_TAG (include in MC csv files) to select this reprocessing
+            process.GlobalTag = GlobalTag(process.GlobalTag, '106X_dataRun2_v36', '')
+        else:        
+            process.GlobalTag = GlobalTag(process.GlobalTag, '106X_dataRun2_v35', '')
 
 elif (SAMPLE_TYPE == 2018):
     if IsMC:
@@ -112,6 +117,10 @@ elif (SAMPLE_TYPE == 2018):
             #In UL probably not needed anymore. Leaving it here for consistency with ReReco
             #This is not changed wrt to ReReco, probably for 2018 there is not anymore the difference between ReReco and PromptReco
             process.GlobalTag = GlobalTag(process.GlobalTag, '106X_dataRun2_v35', '')
+        elif (DATA_TAG == "GT36"):
+            # further UL reprocessing
+            # Use DATA_TAG (include in MC csv files) to select this reprocessing
+            process.GlobalTag = GlobalTag(process.GlobalTag, '106X_dataRun2_v36', '')
         else:
             process.GlobalTag = GlobalTag(process.GlobalTag, '106X_dataRun2_v35', '')
 
