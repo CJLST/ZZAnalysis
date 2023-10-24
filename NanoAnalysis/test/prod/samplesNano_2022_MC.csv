@@ -2,7 +2,9 @@ identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,spli
 ###,,,,,,,,,,,xsec for H125 samples is taken from this ad interim prescription: https://twiki.cern.ch/twiki/bin/view/LHCPhysics/LHCHWG136TeVxsec_extrap
 ###,,,,,,,,,,,for the other mass points the xsec is scaled from 13 TeV to 13.6 TeV following this prescription: xsec_13p6 = xsec_13 * 0.4 + xsec_14 * 0.6 https://indico.cern.ch/event/1169286/contributions/5126668/attachments/2557560/4416316/HXSWG.pdf#page=5
 ###,,,,,,,,,,,MC situation evolving here https://docs.google.com/spreadsheets/d/1StPLK3iVXZMx694qgEkl8QrZutFszvqT6ecN-MFZZKY/edit#gid=0
-###,,,,,,,,,,,signal BR values taken from https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageBR
+###,,,,,,,,,,,signal BR values taken from YR4 https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageBR
+###,,,,,,,,,,,for ZH and ttH the BR is obtained as BR(H->ZZ->2L2X) = BR(H->4L) + BR(H->2L2q) + BR(H->ZZ*->2L2nu) * BR(H->2L2nu) / [ BR(H->ZZ*->2L2nu) + BR(H->WW*->2L2nu) ] where BR(H->4L) BR(H->2L2q) and BR(H->2L2nu) are taken from the YR4 twiki
+###,,,,,,,,,,,for ZH the BR column will include also the gen filter efficiency (under computation)
 
 ###,,,,,,,,,,,These samples correspond to the B-C-D data taking periods - before the ECAL leak (called Run3)
 
@@ -31,23 +33,25 @@ WHminus125  ,,0.5677,0.0002745,,/WminusH_Hto2Zto4L_M-125_TuneCP5_13p6TeV_powheg2
 WHminus125p5,,0.5608,0.0002872,,/WminusH_Hto2Zto4L_M-125p5_TuneCP5_13p6TeV_powheg2-minlo-HWJ-JHUGenV752-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;LEPTON_SETUP=2022,RecoProbabilities.py,
 WHminus126  ,,0.5537,0.0003001,,/WminusH_Hto2Zto4L_M-126_TuneCP5_13p6TeV_powheg2-minlo-HWJ-JHUGenV752-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM  ,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;LEPTON_SETUP=2022,RecoProbabilities.py,
 
-# ZH124  ,,0.8301,,,,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;LEPTON_SETUP=2022,RecoProbabilities.py,#TODO filter efficiency to be understood and multiplied by the BR
-# ZH124p5,,0.8196,,,/ZHto2Zto4L_M124p5_TuneCP5_13p6TeV_powheg2-minlo-HZJ-JHUGenV752-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;LEPTON_SETUP=2022,RecoProbabilities.py,
-# ZH125  ,,0.9439,,,,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;LEPTON_SETUP=2022,RecoProbabilities.py,
-# ZH125p5,,0.7995,,,,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;LEPTON_SETUP=2022,RecoProbabilities.py,
-# ZH126  ,,0.7958,,,,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;LEPTON_SETUP=2022,RecoProbabilities.py,
+# ,,,,,,,,,,,samples produced with filtering -> filter efficiency under estimation by MC contacts - it will be multiplied to the BR
+# ZH124  ,,0.8301,0.00497758,,,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;LEPTON_SETUP=2022,RecoProbabilities.py,
+# ZH124p5,,0.8196,0.00522057,,/ZHto2Zto4L_M124p5_TuneCP5_13p6TeV_powheg2-minlo-HZJ-JHUGenV752-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;LEPTON_SETUP=2022,RecoProbabilities.py,
+# ZH125  ,,0.9439,0.00547102,,,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;LEPTON_SETUP=2022,RecoProbabilities.py,
+# ZH125p5,,0.7995,0.00572694,,,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;LEPTON_SETUP=2022,RecoProbabilities.py,
+# ZH126  ,,0.7958,0.00600253,,,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;LEPTON_SETUP=2022,RecoProbabilities.py,
 
-# ttH124  ,,0.5845,,,/TTH_Hto2Z_M-124_4LFilter_TuneCP5_13p6TeV_powheg2-JHUGenV752-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM  ,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;LEPTON_SETUP=2022,RecoProbabilities.py,#filter not applied:filter eff=1
-# ttH124p5,,0.5783,,,/TTH_Hto2Z_M-124p5_4LFilter_TuneCP5_13p6TeV_powheg2-JHUGenV752-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;LEPTON_SETUP=2022,RecoProbabilities.py,
-# ttH125  ,,0.5700,,,/TTH_Hto2Z_M-125_4LFilter_TuneCP5_13p6TeV_powheg2-JHUGenV752-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM  ,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;LEPTON_SETUP=2022,RecoProbabilities.py,
-# ttH125p5,,0.5654,,,/TTH_Hto2Z_M-125p5_4LFilter_TuneCP5_13p6TeV_powheg2-JHUGenV752-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;LEPTON_SETUP=2022,RecoProbabilities.py,
-# ttH126  ,,0.5591,,,/TTH_Hto2Z_M-126_4LFilter_TuneCP5_13p6TeV_powheg2-JHUGenV752-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM  ,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;LEPTON_SETUP=2022,RecoProbabilities.py,
+# ,,,,,,,,,,,samples produced without filtering -> filter efficiency=1
+ttH124  ,,0.5845,0.00497758,,/TTH_Hto2Z_M-124_4LFilter_TuneCP5_13p6TeV_powheg2-JHUGenV752-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM  ,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;LEPTON_SETUP=2022,RecoProbabilities.py,
+ttH124p5,,0.5783,0.00522057,,/TTH_Hto2Z_M-124p5_4LFilter_TuneCP5_13p6TeV_powheg2-JHUGenV752-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;LEPTON_SETUP=2022,RecoProbabilities.py,
+ttH125  ,,0.5700,0.00547102,,/TTH_Hto2Z_M-125_4LFilter_TuneCP5_13p6TeV_powheg2-JHUGenV752-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM  ,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;LEPTON_SETUP=2022,RecoProbabilities.py,
+ttH125p5,,0.5654,0.00572694,,/TTH_Hto2Z_M-125p5_4LFilter_TuneCP5_13p6TeV_powheg2-JHUGenV752-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;LEPTON_SETUP=2022,RecoProbabilities.py,
+ttH126  ,,0.5591,0.00600253,,/TTH_Hto2Z_M-126_4LFilter_TuneCP5_13p6TeV_powheg2-JHUGenV752-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM  ,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;LEPTON_SETUP=2022,RecoProbabilities.py,
 
-# bbH124  ,,0.5403,0.0002502,,/bbH_Hto2Zto4L_M-124_TuneCP5_13p6TeV_JHUGenV752-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM  ,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;LEPTON_SETUP=2022,RecoProbabilities.py,
-# bbH124p5,,0.5330,0.0002622,,/bbH_Hto2Zto4L_M-124p5_TuneCP5_13p6TeV_JHUGenV752-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;LEPTON_SETUP=2022,RecoProbabilities.py,
-# bbH125  ,,0.5266,0.0002745,,/bbH_Hto2Zto4L_M-125_TuneCP5_13p6TeV_JHUGenV752-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM  ,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;LEPTON_SETUP=2022,RecoProbabilities.py,
-# bbH125p5,,0.5195,0.0002872,,/bbH_Hto2Zto4L_M-125p5_TuneCP5_13p6TeV_JHUGenV752-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;LEPTON_SETUP=2022,RecoProbabilities.py,
-# bbH126  ,,0.5134,0.0003001,,/bbH_Hto2Zto4L_M-126_TuneCP5_13p6TeV_JHUGenV752-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM  ,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;LEPTON_SETUP=2022,RecoProbabilities.py,
+bbH124  ,,0.5403,0.0002502,,/bbH_Hto2Zto4L_M-124_TuneCP5_13p6TeV_JHUGenV752-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM  ,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;LEPTON_SETUP=2022,RecoProbabilities.py,
+bbH124p5,,0.5330,0.0002622,,/bbH_Hto2Zto4L_M-124p5_TuneCP5_13p6TeV_JHUGenV752-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;LEPTON_SETUP=2022,RecoProbabilities.py,
+bbH125  ,,0.5266,0.0002745,,/bbH_Hto2Zto4L_M-125_TuneCP5_13p6TeV_JHUGenV752-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM  ,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;LEPTON_SETUP=2022,RecoProbabilities.py,
+bbH125p5,,0.5195,0.0002872,,/bbH_Hto2Zto4L_M-125p5_TuneCP5_13p6TeV_JHUGenV752-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;LEPTON_SETUP=2022,RecoProbabilities.py,
+bbH126  ,,0.5134,0.0003001,,/bbH_Hto2Zto4L_M-126_TuneCP5_13p6TeV_JHUGenV752-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM  ,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;LEPTON_SETUP=2022,RecoProbabilities.py,
 
 
 ###,,,,,,,,,,,qq->ZZ background - xsec taken from powheg gridpack
@@ -63,7 +67,7 @@ ZZTo4l,,1.39,,,/ZZto4L_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130
 
 
 ###,,,,,,,,,,,DY
-DYJetsToLL,,5558.0,,,/DYJetsToLL_M-50_TuneCP5_13p6TeV-madgraphMLM-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;ADDZTREE=True;LEPTON_SETUP=2022,RecoProbabilities.py,xsec from XSDB 
+#DYJetsToLL,,5558.0,,,,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;ADDZTREE=True;LEPTON_SETUP=2022,RecoProbabilities.py,xsec from XSDB 
 
 ###,,,,,,,,,,,TT
 # TT,,,,,,,,,,,xsec info missing from XSDB
