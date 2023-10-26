@@ -10,6 +10,7 @@ from PhysicsTools.NanoAODTools.postprocessing.tools import *
 
 from ZZAnalysis.NanoAnalysis.tools import setConf, getConf
 from ZZAnalysis.NanoAnalysis.triggerAndSkim import * # Trigger requirements are defined here
+from ZZAnalysis.NanoAnalysis.genFiller import *
 from ZZAnalysis.NanoAnalysis.lepFiller import *
 from ZZAnalysis.NanoAnalysis.jetFiller import *
 from ZZAnalysis.NanoAnalysis.ZZFiller import *
@@ -133,6 +134,7 @@ ZZSequence.extend([lepFiller(cuts, LEPTON_SETUP), # FSR and FSR-corrected iso; f
 if IsMC :
     from ZZAnalysis.NanoAnalysis.mcTruthAnalyzer import *
     ZZSequence.insert(0, mcTruthAnalyzer(dump=False)) # Gen final state
+    ZZSequence.append(genFiller())
 
     from ZZAnalysis.NanoAnalysis.modules.puWeightProducer import *
     if LEPTON_SETUP < 2022 :

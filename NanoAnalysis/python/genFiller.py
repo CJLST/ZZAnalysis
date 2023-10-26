@@ -1,9 +1,7 @@
-### Analyze MC Truth
-# -Optionally dump MC history
-# -Add ZZ gen valriables:
-# -GenZZFinalState: product of IDs of the four gen ZZ leptons
-# -GenZZ_*Idx: ZZ lepton indices in the GenPart collection (FIXME: unsorted)
-# -FsrPhoton_genFsrIdx: index of the closest gen FSR from Z->l (e, mu)
+### Gen Filler
+# -Define fiducial selection at gen-level
+# -Save bool for events that pass fiducial sel:
+# -Save properties of Gen Z cands and corresponding leptons
 # 
 ###
 
@@ -20,22 +18,33 @@ MIN_MZ2 = 12
 MAX_MZ2 = 120
 
 class genFiller(Module):
-    def __init__(self, dump=False):
-        print("-----> INIT GEN FILLER <-----")
-        self.writeHistFile = False
+    '''
+        Module that builds gen-level Z and ZZ candidates
+        that satisfy the fiducial selection for the HZZ analysis.
+    '''
+    def __init__(self):
+        pass
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
         self.out.branch("nDressedLeptons", "I")
         self.out.branch("DressedLeptons_pt", "F", lenVar="nDressedLeptons")
         self.out.branch("GenRelIso", "F", lenVar="nDressedLeptons")
-        self.out.branch("GenZ1Mass", "F")
-        self.out.branch("GenZ2Mass", "F")
-        self.out.branch("GenZZMass", "F")
+        self.out.branch("GENmass4l", "F")
+        self.out.branch("GENpT4l", "F")
+        self.out.branch("GENeta4l", "F")
+        self.out.branch("GENphi4l", "F")
+        self.out.branch("GENrapidity4l", "F")
+        self.out.branch("GENmassZ1", "F")
+        self.out.branch("GENmassZ2", "F")
         self.out.branch("passedFiducial", "B")
 
-    # Find particle's real mother, (first parent in MC history with a different pdgID)
-    def Mother(self, part, gen) :
+    def Mother(self, part, gen):
+        '''
+            Find the ID and Idx of the mother of a given GenPart (`part`)
+            amongst all the particles in GenPart (`gen`) collection.
+            The function returns Idx and ID of the mother.
+        '''
         idxMother= part.genPartIdxMother
         while idxMother>=0 and gen[idxMother].pdgId == part.pdgId:
             idxMother = gen[idxMother].genPartIdxMother
@@ -43,19 +52,16 @@ class genFiller(Module):
         if idxMother >=0 : idMother = gen[idxMother].pdgId
         return idxMother, idMother
 
-    # Return the ID of the leptons's parent: 25 for H->Z->l; 23 for Z->l; +-15 for tau->l if genlep is e,mu.
-    def getParentID(self, part, gen) :
-        pIdx, pID = self.Mother(part, gen)
-        if pIdx < 0 : return 0
-        ppIdx = gen[pIdx].genPartIdxMother
-        if pID == 23 and ppIdx>=0 and gen[ppIdx].pdgId == 25 :
-            pID = 25
-        return pID
-
     def dressLeptons(self, genpart, packedpart):
+        '''
+            Dress leptons from gammas with dR(l,gamma)<0.3
+            Save the dressed leptons collection and the
+            indices of the gammas used to dress the leptons
+        '''
+        fsr_gamma_idx = []
         lep_dressed = TLorentzVector()
         lep_dressed.SetPtEtaPhiM(genpart.pt, genpart.eta, genpart.phi, genpart.mass)
-        for pp in packedpart :
+        for idx, pp in enumerate(packedpart) :
             if pp.status != 1: continue
             if pp.pdgId != 22: continue
             dR_lgamma = deltaR(genpart.eta, genpart.phi, pp.eta, pp.phi)
@@ -66,20 +72,26 @@ class genFiller(Module):
             if not idMatch: continue
 
             if dR_lgamma < 0.3:
+                fsr_gamma_idx.append(idx)
                 lep_dressed += pp.p4()
 
-        return lep_dressed
+        return lep_dressed, fsr_gamma_idx
 
-    def computeGenIso(self, current_lepton, packedpart):
+    def computeGenIso(self, current_lepton, packedpart, fsr_gamma_idx):
+        '''
+            Compute isolation for gen-level leptons.
+            Exclude photons used for FSR recovery from the computation.
+        '''
         genIso = 0.0
-        for pp in packedpart :
+        for idx, pp in enumerate(packedpart) :
             if pp.status != 1: continue
             if ((abs(pp.pdgId) != 12) or (abs(pp.pdgId) != 14) or (abs(pp.pdgId) != 16)): continue 
             if ((abs(pp.pdgId) == 11) or (abs(pp.pdgId) == 13)): continue
-            # TODO: include if (gen_fsrset.find(k)!=gen_fsrset.end()) continue;
+            if (idx in fsr_gamma_idx): continue
             dRvL = deltaR(current_lepton.Eta(), current_lepton.Phi(), pp.eta, pp.phi)
             if dRvL<0.3:
                 genIso += pp.pt
+        genIso = genIso / current_lepton.Pt()
         return genIso
 
     def GenHiggsCounter(self, nGENHiggs):
@@ -87,6 +99,9 @@ class genFiller(Module):
         # TODO : Create H cand from gp
 
     def buildLLPair(self, l1, l2):
+        '''
+            Util function that returns a pair of TLorentzVectors. 
+        '''
         l_a = TLorentzVector()
         l_b = TLorentzVector()
         l_a.SetPtEtaPhiM(l1.Pt(), l1.Eta(), l1.Phi(), l1.M())
@@ -95,10 +110,20 @@ class genFiller(Module):
         return l_a, l_b
 
     def unzipLeptons(self, LeptonsCollection):
+        '''
+            Util function that unzips a LeptonsCollection.
+            LeptonsCollection contains Leptons, LeptonsId and
+            Lepts_RelIso.
+        '''
         Leptons, LeptonsId, Lepts_RelIso = LeptonsCollection
         return Leptons, LeptonsId, Lepts_RelIso
 
     def checkCuts(self, LeptonsCollection, idx_1, idx_2):
+        '''
+            Util function that checks if two leptons satisfy the
+            quality (kinematics and Iso) cuts used to define the
+            fiducial volume.
+        '''
         passCuts = True
         Leptons, LeptonsId, Lepts_RelIso = self.unzipLeptons(LeptonsCollection)
         id_1 = LeptonsId[idx_1]; id_2 = LeptonsId[idx_2]
@@ -122,6 +147,12 @@ class genFiller(Module):
         return passCuts
 
     def buildZ1Mass(self, LeptonsCollection, makeCuts):
+        '''
+            Build the Z1 candidate (neareast to true Z mass).
+            Returns the difference in mass between Z1 and Z,
+            a bool that specifies if a Z1 is present in the event
+            and the indices of the two leptons used to build Z1.
+        '''
         Leptons, LeptonsId, Lepts_RelIso = self.unzipLeptons(LeptonsCollection)
         offshell = 999.0
         findZ1 = False
@@ -134,7 +165,8 @@ class genFiller(Module):
                 l_i, l_j = self.buildLLPair(l1, l2)
 
                 passCuts = self.checkCuts(LeptonsCollection, i, j)
-                if (makeCuts and not passCuts) : continue
+                if makeCuts :
+                    if not passCuts : continue
 
                 mll = TLorentzVector()
                 mll = l_i + l_j
@@ -148,6 +180,11 @@ class genFiller(Module):
         return offshell, findZ1, idx_l1, idx_l2
 
     def buildZ2Mass(self, LeptonsCollection, idx_l1, idx_l2, makeCuts):
+        '''
+            Build the Z2 candidate (skip leptons used for Z1).
+            Returns a bool that specifies if a Z2 is present in the event
+            and the indices of the two leptons used to build Z2.
+        '''
         Leptons, LeptonsId, Lepts_RelIso = self.unzipLeptons(LeptonsCollection)
         pT_l3l4 = 0.0
         idx_l3 = 0
@@ -165,7 +202,8 @@ class genFiller(Module):
                 Z2 = l_i + l_j
 
                 passCuts = self.checkCuts(LeptonsCollection, i, j)
-                if (makeCuts and not passCuts) : continue
+                if makeCuts :
+                    if not passCuts : continue
 
                 if (l_i.Pt() + l_j.Pt() >= pT_l3l4):
                     mass_Z2 = Z2.M()
@@ -181,6 +219,13 @@ class genFiller(Module):
         return findZ2, idx_l3, idx_l4
 
     def buildZMasses(self, LeptonsCollection, makeCuts = False):
+        '''
+            Builds the Z candidates and checks if the event passes
+            the fiducial selection.
+            The function returns the (sorted) indices of the four leptons
+            used to define Z1 and Z2 and a bool that specifies if the
+            event passes the fiducial selection.
+        '''
         Leptons, LeptonsId, Lepts_RelIso = self.unzipLeptons(LeptonsCollection)
         passFidSel = False
         passZ1 = False
@@ -205,6 +250,10 @@ class genFiller(Module):
         return passFidSel, z_leps_idx
 
     def getZCands(self, Leptons, z_leps_idx):
+        '''
+            Util function that returns the leptons that
+            compose the Z1 and Z2 candidates.
+        '''
         l1 = Leptons[z_leps_idx[0]]; l2 = Leptons[z_leps_idx[1]]
         l3 = Leptons[z_leps_idx[2]]; l4 = Leptons[z_leps_idx[3]]
         Z1_l1, Z1_l2 = self.buildLLPair(l1, l2)
@@ -213,12 +262,20 @@ class genFiller(Module):
         return Z1_l1, Z1_l2, Z2_l1, Z2_l2
 
     def getZIndex(self, LeptonsId, z_leps_idx):
+        '''
+            Util function that returns the IDs of the leptons that
+            compose the Z1 and Z2 candidates.
+        '''
         idx_1 = LeptonsId[z_leps_idx[0]]; idx_2 = LeptonsId[z_leps_idx[1]]
         idx_3 = LeptonsId[z_leps_idx[2]]; idx_4 = LeptonsId[z_leps_idx[3]]
 
         return idx_1, idx_2, idx_3, idx_4
 
     def getExtraLeps(self, LeptonsCollection, passFidSel, z_leps_idx):
+        '''
+            Function used to count the number of extra leptons in the event.
+            Retruns the collection of extra leptons and of their IDs.
+        '''
         Leptons, LeptonsId, Lepts_RelIso = self.unzipLeptons(LeptonsCollection)
 
         ExtraLeps = [-1]*len(Leptons)
@@ -233,8 +290,15 @@ class genFiller(Module):
         return ExtraLeps, ExtraLepsId
 
     def buildZCands(self, LeptonsCollection, passFidSel, z_idx):
+        '''
+            Util function that combines `getZCands` and `getZIndex`
+            and returns the collection of sorted leptons that make
+            the two Z cands in the event and their IDs.
+            For events that do not pass the fiducial selection,
+            dummy collections filled with -1 are returned.
+        '''
         Leptons, LeptonsId, Lepts_RelIso = self.unzipLeptons(LeptonsCollection)
-        # TODO: Add a return if the event doesnt pass selection
+
         if passFidSel:
             Z1_l1, Z1_l2, Z2_l1, Z2_l2 = self.getZCands(Leptons, z_idx)
             idx_1, idx_2, idx_3, idx_4 = self.getZIndex(LeptonsId, z_idx)
@@ -245,6 +309,12 @@ class genFiller(Module):
             return [-1]*len(Leptons), [-1]*len(Leptons)
 
     def countFiducialLeps(self, LeptonsCollection):
+        '''
+            Function that returns the number of leptons that
+            pass the pT, eta and Iso criteria required by the HZZ analysis.
+            The function also returns the nr of leading (pT>20) and
+            subleading (pT>10) leptons that satisfy the pT, eta and Iso criteria.
+        '''
         Leptons, LeptonsId, Lepts_RelIso = self.unzipLeptons(LeptonsCollection)
 
         nFidLeps = 0; nFidPtLead = 0; nFidPtSubLead = 0
@@ -261,6 +331,11 @@ class genFiller(Module):
         return nFidLeps, nFidPtLead, nFidPtSubLead
 
     def checkEventTopology(self, LeptonsCollection, zFid_leps_idx):
+        '''
+            Util function that checks topology criteria for leptons and
+            returns booleans that specify if mll(OS)>4 GeV, and dR(l,l)>0.02
+            for all the pairs of leptons in the event.
+        '''
         Leptons, LeptonsId, Lepts_RelIso = self.unzipLeptons(LeptonsCollection)
         passedMassOS = True; passedElMuDeltaR = True; passedDeltaR = True;
 
@@ -292,14 +367,54 @@ class genFiller(Module):
         return passedMassOS, passedElMuDeltaR, passedDeltaR
 
     def init_collections(self):
+        '''
+            Util function to return empty lists for the
+            Leptons information needed.
+        '''
         Leptons = []
         LeptonsId = []
         LeptonsReco = []
 
         return Leptons, LeptonsId, LeptonsReco
 
+    def fill_HCand_branches(self, ZCands_fidSel):
+        '''
+            Function that fills branches for gen-level
+            Higgs boson candindate.
+        '''
+        if ZCands_fidSel[0] == -1:
+            z1mass = -1
+            z2mass = -1
+            zzmass = -1
+            zzmass = -1
+            zzrapidity = -1
+            zzpt = -1
+            zzeta = -1
+            zzphi = -1
+        else:
+            gen_H_cand = ZCands_fidSel[0]+ZCands_fidSel[1]+ZCands_fidSel[2]+ZCands_fidSel[3]
+            zzmass = (gen_H_cand).M()
+            zzrapidity = (gen_H_cand).Rapidity()
+            zzpt = (gen_H_cand).Pt()
+            zzeta = (gen_H_cand).Eta()
+            zzphi = (gen_H_cand).Phi()
+            z1mass = (ZCands_fidSel[0]+ZCands_fidSel[1]).M()
+            z2mass = (ZCands_fidSel[2]+ZCands_fidSel[3]).M()
+
+        self.out.fillBranch("GENmass4l", zzmass)
+        self.out.fillBranch("GENpT4l", zzpt)
+        self.out.fillBranch("GENeta4l", zzeta)
+        self.out.fillBranch("GENphi4l", zzphi)
+        self.out.fillBranch("GENrapidity4l", zzrapidity)
+        self.out.fillBranch("GENmassZ1", z1mass)
+        self.out.fillBranch("GENmassZ2", z2mass)
+
     def analyze(self, event):
-        """process event, return True (go to next module) or False (fail, go to next event)"""
+        '''
+            Process event and return True (go to next module)
+            or False (fail, go to next event).
+            Stores to branches the relevant gen-level observables.
+        '''
 
         genpart=Collection(event,"GenPart")
 
@@ -313,20 +428,20 @@ class genFiller(Module):
         for i, gp in enumerate(genpart) :
             if ((abs(gp.pdgId) == 11) or (abs(gp.pdgId) == 13) or (abs(gp.pdgId) == 15)) :
                 if (not((gp.status == 1) or (abs(gp.pdgId) == 15))): continue
-                # TODO: Check conditions on motherID
-                # if (!(genAna.MotherID(&genParticles->at(j))==23 || genAna.MotherID(&genParticles->at(j))==443 || genAna.MotherID(&genParticles->at(j))==553 || abs(genAna.MotherID(&genParticles->at(j)))==24) ) continue;
+                mom_idx, mom_id = self.Mother(gp, genpart)
+                if (not((mom_id==23) or (mom_id==443) or (mom_id==553) or (abs(mom_id)==24))): continue
 
                 # Dress leptons
                 # PackedGenParticles in miniAOD is GenPart.status == 1
-                lep_dressed = self.dressLeptons(gp, genpart)
+                lep_dressed, fsr_gamma_idx = self.dressLeptons(gp, genpart)
                 Leptons.append(lep_dressed)
                 LeptonsId.append(gp.pdgId)
 
                 current_lepton = lep_dressed
-                genIso = self.computeGenIso(current_lepton, genpart)
-                genIso = genIso / current_lepton.Pt()
+                genIso = self.computeGenIso(current_lepton, genpart, fsr_gamma_idx)
 
                 if (gp.pdgId == 25): self.GenHiggsCounter(nGENHiggs)
+                # TODO: Add GENZ variables (if needed for the analysis)
 
                 Lepts_RelIso[i] = genIso
                 dressedLeptons[i] = lep_dressed.Pt()
@@ -347,25 +462,15 @@ class genFiller(Module):
 
             passedMassOS, passedElMuDeltaR, passedDeltaR = self.checkEventTopology(LeptonsCollection, zFid_leps_idx)
             if((passedMassOS == False) or (passedElMuDeltaR == False) or (passedDeltaR == False)): passFidSel = False
-            if ZCands_fidSel[0] == -1:
-                z1mass = -1
-                z2mass = -1
-                zzmass = -1
-            else:
-                z1mass = (ZCands_fidSel[0]+ZCands_fidSel[1]).M()
-                z2mass = (ZCands_fidSel[2]+ZCands_fidSel[3]).M()
-                zzmass = (ZCands_fidSel[0]+ZCands_fidSel[1]+ZCands_fidSel[2]+ZCands_fidSel[3]).M()
 
-            self.out.fillBranch("GenZ1Mass", z1mass)
-            self.out.fillBranch("GenZ2Mass", z2mass)
-            self.out.fillBranch("GenZZMass", zzmass)
+            self.fill_HCand_branches(ZCands_fidSel)
 
             # TODO: Add GenJets
+            # TODO: Add MELA
 
         self.out.fillBranch("nDressedLeptons", len(dressedLeptons))
         self.out.fillBranch("DressedLeptons_pt", dressedLeptons)
         self.out.fillBranch("GenRelIso", Lepts_RelIso)
         self.out.fillBranch("passedFiducial", passFidSel)
+
         return True
-
-
