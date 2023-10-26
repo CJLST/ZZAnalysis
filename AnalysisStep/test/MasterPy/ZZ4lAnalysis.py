@@ -123,7 +123,12 @@ elif (SAMPLE_TYPE == 2018):
 
 elif (SAMPLE_TYPE >= 2022):
     if IsMC:
-        process.GlobalTag = GlobalTag(process.GlobalTag, '124X_mcRun3_2022_realistic_v11', '') #FIXME2022: no autoCond for MC yet?
+        if (DATA_TAG == "postEE"):
+            # samples corresponding to the E-F-G 2022 eras - after the ECAL leak
+            # Use DATA_TAG (include in MC csv files) to select this reprocessing
+            process.GlobalTag = GlobalTag(process.GlobalTag, '130X_mcRun3_2022_realistic_postEE_v6', '')
+        else:
+            process.GlobalTag = GlobalTag(process.GlobalTag, '130X_mcRun3_2022_realistic_v5', '')
     else:
         process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run3_data', '')
 
