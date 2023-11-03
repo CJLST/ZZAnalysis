@@ -286,7 +286,7 @@ ZZZ,,0.01398,              ,,/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL
 ZZZext1,,0.01398,              ,,/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1_ext1-v2/MINIAODSIM,dbs,,1,GENXSEC=0.01398;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2018,RecoProbabilities.py,
 WZZ,,0.05565,              ,,/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v3/MINIAODSIM,dbs,,1,GENXSEC=0.05565;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2018,RecoProbabilities.py,
 WZZext1,,0.05565,              ,,/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1_ext1-v2/MINIAODSIM,dbs,,1,GENXSEC=0.05565;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2018,RecoProbabilities.py,
-WWZ,,0.1651,              ,,/WWZJetsTo4L2Nu_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM,dbs,,1,GENXSEC=0.1651;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2018,RecoProbabilities.py,
+WWZ,,0.00177,              ,,/WWZJetsTo4L2Nu_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM,dbs,,1,GENXSEC=0.1651;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2018,RecoProbabilities.py,
 WWZ_4F,,0.1651,,,/WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v1/MINIAODSIM,dbs,,1,GENXSEC=0.1651;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2018,RecoProbabilities.py,
 WWZ_4Fext1,,0.1651,,,/WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1_ext1-v2/MINIAODSIM,dbs,,1,GENXSEC=0.1651;GENBR=1;PROCESS_CR=True;LEPTON_SETUP=2018,RecoProbabilities.py,
 
