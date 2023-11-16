@@ -134,7 +134,7 @@ ZZSequence.extend([lepFiller(cuts, LEPTON_SETUP), # FSR and FSR-corrected iso; f
 if IsMC :
     from ZZAnalysis.NanoAnalysis.mcTruthAnalyzer import *
     ZZSequence.insert(0, mcTruthAnalyzer(dump=False)) # Gen final state
-    ZZSequence.append(genFiller())
+    ZZSequence.append(genFiller(dump=False))
 
     from ZZAnalysis.NanoAnalysis.modules.puWeightProducer import *
     if LEPTON_SETUP < 2022 :

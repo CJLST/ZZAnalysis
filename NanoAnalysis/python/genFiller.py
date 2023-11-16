@@ -22,21 +22,25 @@ class genFiller(Module):
         Module that builds gen-level Z and ZZ candidates
         that satisfy the fiducial selection for the HZZ analysis.
     '''
-    def __init__(self):
-        pass
+    def __init__(self, dump=False):
+        self.printGenHist = dump # print MC history
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
         self.out.branch("nDressedLeptons", "I")
-        self.out.branch("DressedLeptons_pt", "F", lenVar="nDressedLeptons")
-        self.out.branch("GenRelIso", "F", lenVar="nDressedLeptons")
-        self.out.branch("GENmass4l", "F")
-        self.out.branch("GENpT4l", "F")
-        self.out.branch("GENeta4l", "F")
-        self.out.branch("GENphi4l", "F")
-        self.out.branch("GENrapidity4l", "F")
-        self.out.branch("GENmassZ1", "F")
-        self.out.branch("GENmassZ2", "F")
+        self.out.branch("GenDressedLeps_pt", "F", lenVar="nDressedLeptons")
+        self.out.branch("GenDressedLeps_RelIso", "F", lenVar="nDressedLeptons")
+        self.out.branch("GenZZ_Z1l1Idx", "I") # Indices in the GenPart
+        self.out.branch("GenZZ_Z1l2Idx", "I")
+        self.out.branch("GenZZ_Z2l1Idx", "I")
+        self.out.branch("GenZZ_Z2l2Idx", "I")
+        self.out.branch("GenZZ_mass", "F")
+        self.out.branch("GenZZ_pt", "F")
+        self.out.branch("GenZZ_eta", "F")
+        self.out.branch("GenZZ_phi", "F")
+        self.out.branch("GenZZ_rapidity", "F")
+        self.out.branch("GenZ1_mass", "F")
+        self.out.branch("GenZ2_mass", "F")
         self.out.branch("passedFiducial", "B")
 
     def Mother(self, part, gen):
@@ -51,6 +55,22 @@ class genFiller(Module):
         idMother=0
         if idxMother >=0 : idMother = gen[idxMother].pdgId
         return idxMother, idMother
+
+    def lhe_logger(self, genpart):
+        print ("---Gen:")
+        for i, gp in enumerate(genpart) :
+            motherId=-1
+            gmotherId=-1
+            if gp.genPartIdxMother >= 0 :
+                motherId = genpart[gp.genPartIdxMother].pdgId
+                if genpart[gp.genPartIdxMother].genPartIdxMother >= 0 :
+                    gmotherId = genpart[genpart[gp.genPartIdxMother].genPartIdxMother].pdgId
+            print (i, gp.pdgId, gp.genPartIdxMother, gp.pt, gp.eta, gp.phi, gp.p4().M(), gp.status)
+
+        print("---------LHEPart---------")
+        LHEPart = Collection (event, "LHEPart")
+        for i, Lp in enumerate(LHEPart):
+            print(i, Lp.pdgId, Lp.pt, Lp.eta, Lp.status, Lp.incomingpz)
 
     def dressLeptons(self, genpart, packedpart):
         '''
@@ -261,15 +281,29 @@ class genFiller(Module):
 
         return Z1_l1, Z1_l2, Z2_l1, Z2_l2
 
-    def getZIndex(self, LeptonsId, z_leps_idx):
+    def getZIndex(self, z_leps_idx):
+        '''
+            Util function that returns the index of the leptons that
+            compose the Z1 and Z2 candidates.
+        '''
+        idx_1 = z_leps_idx[0]; idx_2 = z_leps_idx[1]
+        idx_3 = z_leps_idx[2]; idx_4 = z_leps_idx[3]
+
+        return idx_1, idx_2, idx_3, idx_4
+
+    def getZFlav(self, LeptonsId, z_leps_idx):
         '''
             Util function that returns the IDs of the leptons that
             compose the Z1 and Z2 candidates.
         '''
-        idx_1 = LeptonsId[z_leps_idx[0]]; idx_2 = LeptonsId[z_leps_idx[1]]
-        idx_3 = LeptonsId[z_leps_idx[2]]; idx_4 = LeptonsId[z_leps_idx[3]]
+        # TODO: Store info in ntuples
+        id_1 = LeptonsId[z_leps_idx[0]]; id_2 = LeptonsId[z_leps_idx[1]]
+        id_3 = LeptonsId[z_leps_idx[2]]; id_4 = LeptonsId[z_leps_idx[3]]
 
-        return idx_1, idx_2, idx_3, idx_4
+        z1_flav = id_1*id_2
+        z2_flav = id_3*id_4
+
+        return id_1, id_2, id_3, id_4
 
     def getExtraLeps(self, LeptonsCollection, passFidSel, z_leps_idx):
         '''
@@ -301,7 +335,7 @@ class genFiller(Module):
 
         if passFidSel:
             Z1_l1, Z1_l2, Z2_l1, Z2_l2 = self.getZCands(Leptons, z_idx)
-            idx_1, idx_2, idx_3, idx_4 = self.getZIndex(LeptonsId, z_idx)
+            idx_1, idx_2, idx_3, idx_4 = self.getZIndex(z_idx)
             ZCands = [Z1_l1, Z1_l2, Z2_l1, Z2_l2]
             ZIdx   = [idx_1, idx_2, idx_3, idx_4]
             return ZCands, ZIdx
@@ -401,13 +435,17 @@ class genFiller(Module):
             z1mass = (ZCands_fidSel[0]+ZCands_fidSel[1]).M()
             z2mass = (ZCands_fidSel[2]+ZCands_fidSel[3]).M()
 
-        self.out.fillBranch("GENmass4l", zzmass)
-        self.out.fillBranch("GENpT4l", zzpt)
-        self.out.fillBranch("GENeta4l", zzeta)
-        self.out.fillBranch("GENphi4l", zzphi)
-        self.out.fillBranch("GENrapidity4l", zzrapidity)
-        self.out.fillBranch("GENmassZ1", z1mass)
-        self.out.fillBranch("GENmassZ2", z2mass)
+        self.out.fillBranch("GenZZ_mass", zzmass)
+        self.out.fillBranch("GenZZ_Z1l1Idx", ZCands_fidSel[0])
+        self.out.fillBranch("GenZZ_Z1l2Idx", ZCands_fidSel[1])
+        self.out.fillBranch("GenZZ_Z2l1Idx", ZCands_fidSel[2])
+        self.out.fillBranch("GenZZ_Z2l2Idx", ZCands_fidSel[3])
+        self.out.fillBranch("GenZZ_pt", zzpt)
+        self.out.fillBranch("GenZZ_eta", zzeta)
+        self.out.fillBranch("GenZZ_phi", zzphi)
+        self.out.fillBranch("GenZZ_rapidity", zzrapidity)
+        self.out.fillBranch("GenZ1_mass", z1mass)
+        self.out.fillBranch("GenZ2_mass", z2mass)
 
     def analyze(self, event):
         '''
@@ -417,6 +455,8 @@ class genFiller(Module):
         '''
 
         genpart=Collection(event,"GenPart")
+
+        if self.printGenHist : self.lhe_logger()
 
         dressedLeptons = [-1]*len(genpart)
         Lepts_RelIso   = [-1]*len(genpart)
@@ -469,8 +509,8 @@ class genFiller(Module):
             # TODO: Add MELA
 
         self.out.fillBranch("nDressedLeptons", len(dressedLeptons))
-        self.out.fillBranch("DressedLeptons_pt", dressedLeptons)
-        self.out.fillBranch("GenRelIso", Lepts_RelIso)
+        self.out.fillBranch("GenDressedLeps_pt", dressedLeptons)
+        self.out.fillBranch("GenDressedLeps_RelIso", Lepts_RelIso)
         self.out.fillBranch("passedFiducial", passFidSel)
 
         return True

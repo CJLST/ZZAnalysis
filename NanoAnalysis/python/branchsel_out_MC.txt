@@ -19,8 +19,5 @@ keep Z* # Z and ZZ
 keep GenZZ*
 keep *eight # Generator_weight + custom weights
 keep nDressedLeptons
-keep DressedLeptons_pt
-keep GenRelIso
-keep passedFiducial
+keep GenDressedLeps_*
 keep GenZ*
-keep GEN* # Gen-level observables for H cand
