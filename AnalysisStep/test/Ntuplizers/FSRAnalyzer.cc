@@ -3,7 +3,7 @@
  */
 
 #include <FWCore/Framework/interface/Frameworkfwd.h>
-#include <FWCore/Framework/interface/EDAnalyzer.h>
+#include <FWCore/Framework/interface/one/EDAnalyzer.h>
 #include <FWCore/Framework/interface/ESHandle.h>
 #include <FWCore/Framework/interface/Event.h>
 #include <FWCore/Framework/interface/LuminosityBlock.h>
@@ -34,7 +34,7 @@
 
 //bool debug = true;
 
-class FSRAnalyzer : public edm::EDAnalyzer {
+class FSRAnalyzer : public edm::one::EDAnalyzer<> {
  public:
   /// Constructor
   FSRAnalyzer(const edm::ParameterSet& pset);

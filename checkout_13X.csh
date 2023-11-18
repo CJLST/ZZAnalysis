@@ -1,13 +1,13 @@
 #!/bin/bash 
 #
 # Instructions:
-# wget -O ${TMPDIR}/checkout_12X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/Run3/checkout_12X.csh
+# wget -O ${TMPDIR}/checkout.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/Run3/checkout_13X.csh
 # cd $CMSSW_BASE/src
 # cmsenv
-# chmod u+x ${TMPDIR}/checkout_12X.csh
-# ${TMPDIR}/checkout_12X.csh
+# chmod u+x ${TMPDIR}/checkout.csh
+# ${TMPDIR}/checkout.csh
 
-############## For CMSSW_12_6_5
+############## For CMSSW_13_0_13
 
 #exit when any command fails
 set -e
@@ -43,7 +43,7 @@ git clone https://github.com/usarica/CommonLHETools.git
 
 #MELA
 git clone https://github.com/JHUGen/JHUGenMELA.git JHUGenMELA
-(cd JHUGenMELA; git checkout -b from-v238 v2.3.8; ./setup.sh)
+(cd JHUGenMELA; git checkout -b from-v240 v2.4.0; ./setup.sh)
 
 #MELA Analytics
 git clone https://github.com/MELALabs/MelaAnalytics.git
@@ -58,10 +58,6 @@ ln -s ${CMSSW_BASE}/src/JHUGenMELA/MELA/data/*/*.so \
       ${CMSSW_BASE}/src/MelaAnalytics/EventContainer/lib/*.so \
       ${CMSSW_BASE}/lib/${SCRAM_ARCH}
 
-#hack for missing 13.6 TeV files
-ln -s JHUGenMELA/MELA/data/resolution_mJJ_recoVStrue_ZH_13TeV.root JHUGenMELA/MELA/data/resolution_mJJ_recoVStrue_ZH_14TeV.root
-ln -s JHUGenMELA/MELA/data/resolution_mJJ_recoVStrue_WH_13TeV.root JHUGenMELA/MELA/data/resolution_mJJ_recoVStrue_WH_14TeV.root
-
 #kinematic refitting (obsolete?)
 git clone https://github.com/mhl0116/KinZfitter-1.git KinZfitter
 (cd KinZfitter ; git checkout -b from-27daebb 27daebb)
@@ -70,7 +66,7 @@ sed -i '/SimTracker\/Records/d' KinZfitter/KinZfitter/BuildFile.xml
 
 
 #NanoAODTools
-git clone https://github.com/namapane/nanoAOD-tools.git PhysicsTools/NanoAODTools
+#git clone https://github.com/namapane/nanoAOD-tools.git PhysicsTools/NanoAODTools
 (cd PhysicsTools/NanoAODTools ; git checkout py3)
 
 #CommonLHETools requires the MELA env to be set for compilation

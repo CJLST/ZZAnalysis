@@ -47,7 +47,7 @@ if not IsMC:
 ### ----------------------------------------------------------------------
 
 process.source.fileNames = cms.untracked.vstring(
-	"/store/mc/Run3Summer22EEMiniAODv3/GluGluHtoZZto4L_M-125_TuneCP5_13p6TeV_powheg2-JHUGenV752-pythia8/MINIAODSIM/124X_mcRun3_2022_realistic_postEE_v1-v2/2540000/176092bc-4768-4033-8b59-1c85cff0615f.root" #ggH, 13889 evts
+	"/store/mc/Run3Summer22EEMiniAODv4/GluGluHtoZZto4L_M-125_TuneCP5_13p6TeV_powheg2-JHUGenV752-pythia8/MINIAODSIM/130X_mcRun3_2022_realistic_postEE_v6-v2/2540000/8f613c0a-c81c-4050-9c2d-5db08005de15.root" #ggH, 13156 evts
 ### 
 
     )

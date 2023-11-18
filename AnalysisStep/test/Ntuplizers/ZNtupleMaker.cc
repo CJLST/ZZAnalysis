@@ -6,7 +6,7 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Framework/interface/Event.h"
@@ -17,6 +17,9 @@
 #include <DataFormats/Common/interface/TriggerResults.h>
 #include <FWCore/Common/interface/TriggerNames.h>
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
+#include <FWCore/Framework/interface/GetterOfProducts.h>
+#include <FWCore/Framework/interface/ProcessMatch.h>
+
 
 #include <DataFormats/Common/interface/View.h>
 #include <DataFormats/Candidate/interface/Candidate.h>
@@ -290,7 +293,7 @@ namespace {
 //
 // class declaration
 //
-class ZNtupleMaker : public edm::EDAnalyzer {
+class ZNtupleMaker : public edm::one::EDAnalyzer<> {
 public:
   explicit ZNtupleMaker(const edm::ParameterSet&);
   ~ZNtupleMaker();
@@ -351,6 +354,7 @@ private:
   edm::EDGetTokenT< double > prefweight_token;
   edm::EDGetTokenT< double > prefweightup_token;
   edm::EDGetTokenT< double > prefweightdown_token;
+  edm::GetterOfProducts<std::vector<PileupSummaryInfo> > getterOfProducts_;
 
   PileUpWeight pileUpReweight;
 
@@ -374,8 +378,10 @@ private:
 //
 ZNtupleMaker::ZNtupleMaker(const edm::ParameterSet& pset) :
   myHelper(pset),
+  getterOfProducts_(edm::ProcessMatch("*"), this),
   pileUpReweight(myHelper.sampleType(), myHelper.setup())
 {
+  callWhenNewProductsRegistered(getterOfProducts_);
   theCandLabel = pset.getUntrackedParameter<string>("CandCollection"); // Name of input Z collection
   theFileName = pset.getUntrackedParameter<string>("fileName");
   skipEmptyEvents = pset.getParameter<bool>("skipEmptyEvents"); // Do not store
@@ -385,7 +391,6 @@ ZNtupleMaker::ZNtupleMaker(const edm::ParameterSet& pset) :
   year = pset.getParameter<int>("setup");
   metTag = pset.getParameter<edm::InputTag>("metSrc");
 
-  consumesMany<std::vector< PileupSummaryInfo > >();
   genInfoToken = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
   candToken = consumes<edm::View<pat::CompositeCandidate> >(edm::InputTag(theCandLabel));
   triggerResultToken = consumes<edm::TriggerResults>(edm::InputTag("TriggerResults"));
@@ -452,8 +457,8 @@ void ZNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& eSetu
   if(isMC){
 
     // get PU weights
-    vector<Handle<std::vector< PileupSummaryInfo > > >  PupInfos; //FIXME support for miniAOD v1/v2 where name changed; catch does not work...
-    event.getManyByType(PupInfos);
+    vector<Handle<std::vector< PileupSummaryInfo > > >  PupInfos;
+    getterOfProducts_.fillHandles(event, PupInfos);
     Handle<std::vector< PileupSummaryInfo > > PupInfo = PupInfos.front();
 
     std::vector<PileupSummaryInfo>::const_iterator PVI;

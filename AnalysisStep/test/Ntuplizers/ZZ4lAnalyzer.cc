@@ -9,7 +9,7 @@
  */
 
 #include <FWCore/Framework/interface/Frameworkfwd.h>
-#include <FWCore/Framework/interface/EDAnalyzer.h>
+#include <FWCore/Framework/interface/one/EDAnalyzer.h>
 #include <FWCore/Framework/interface/ESHandle.h>
 #include <FWCore/Framework/interface/Event.h>
 #include <FWCore/Framework/interface/LuminosityBlock.h>
@@ -27,8 +27,11 @@
 #include <DataFormats/JetReco/interface/PFJet.h>
 #include <DataFormats/METReco/interface/PFMETCollection.h>
 #include <DataFormats/JetReco/interface/PFJetCollection.h>
-#include "FWCore/ServiceRegistry/interface/Service.h"
+#include <FWCore/ServiceRegistry/interface/Service.h>
 #include <FWCore/ParameterSet/interface/FileInPath.h>
+#include <FWCore/Framework/interface/GetterOfProducts.h>
+#include <FWCore/Framework/interface/ProcessMatch.h>
+
 
 //ATjets Additional libraries for GenJet variables
 #include <DataFormats/PatCandidates/interface/Jet.h>
@@ -79,7 +82,7 @@ namespace {
 }
 
 
-class ZZ4lAnalyzer: public edm::EDAnalyzer {
+class ZZ4lAnalyzer: public edm::one::EDAnalyzer<> {
 public:
 
   explicit ZZ4lAnalyzer(const edm::ParameterSet& pset);
@@ -190,6 +193,7 @@ private:
   edm::EDGetTokenT<edm::View<reco::Candidate> > softLeptonToken;
 
   edm::EDGetTokenT<edm::MergeableCounter> preSkimToken;
+  edm::GetterOfProducts<std::vector<PileupSummaryInfo> > getterOfProducts_;
 
   string sampleName;
   bool dumpForSync;
@@ -221,9 +225,11 @@ ZZ4lAnalyzer::ZZ4lAnalyzer(const ParameterSet& pset) :
   Nevt_passTriMu(0),
   Nevt_passSingleEle(0),
   Nevt_4l(0),
+  getterOfProducts_(edm::ProcessMatch("*"), this),
   sampleName(pset.getParameter<string>("sampleName")),
   dumpForSync(pset.getUntrackedParameter<bool>("dumpForSync",false))
 {
+  callWhenNewProductsRegistered(getterOfProducts_);
 
   vtxToken = consumes<vector<Vertex> >(edm::InputTag("goodPrimaryVertices"));
   rhoToken = consumes<double>(edm::InputTag("fixedGridRhoFastjetAll",""));
@@ -231,7 +237,6 @@ ZZ4lAnalyzer::ZZ4lAnalyzer(const ParameterSet& pset) :
   genInfoToken = consumes<GenEventInfoProduct>( edm::InputTag("generator"));
   genJetsToken = consumes<edm::View<reco::GenJet> >(edm::InputTag("slimmedGenJets")); //AT jets (Word between "" not so sure, BBF puts "genJetsSrc")
   packedgenParticlesToken = consumes<edm::View<pat::PackedGenParticle> > (edm::InputTag("packedGenParticles")); //ATbbf
-  consumesMany<std::vector< PileupSummaryInfo > >();
   //jetToken = consumes<edm::View<pat::Jet> >(edm::InputTag("cleanJets"));
   triggerResultToken = consumes<edm::TriggerResults>(edm::InputTag("TriggerResults"));
   softLeptonToken = consumes<edm::View<reco::Candidate> >(edm::InputTag("softLeptons"));
@@ -451,16 +456,9 @@ void ZZ4lAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
       return;
     }
 
-    vector<Handle<std::vector< PileupSummaryInfo > > >  PupInfos; //FIXME support for miniAOD v1/v2 where name changed; catch does not work...
-    event.getManyByType(PupInfos);
+    vector<Handle<std::vector< PileupSummaryInfo > > >  PupInfos;
+    getterOfProducts_.fillHandles(event, PupInfos);
     Handle<std::vector< PileupSummaryInfo > > PupInfo = PupInfos.front();
-//     try {
-//       cout << "TRY HZZ4lNtupleMaker" <<endl;
-//       event.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
-//     } catch (const cms::Exception& e){
-//       cout << "FAIL HZZ4lNtupleMaker" <<endl;
-//       event.getByLabel(edm::InputTag("slimmedAddPileupInfo"), PupInfo);
-//     }
 
     std::vector<PileupSummaryInfo>::const_iterator PVI;
     for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {

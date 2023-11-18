@@ -87,17 +87,17 @@ elif SampleToRun == "MCsync_Rereco" :
 
 ################################################################################
 elif SampleToRun == "MC2022" :
-    # 2022 MC sample; for sync purposes, we use a JSON to select events matching the nanoAOD file:
+    # 2022 MC sample
     #/store/mc/Run3Summer22EEMiniAODv3/GluGluHtoZZto4L_M-125_TuneCP5_13p6TeV_powheg2-JHUGenV752-pythia8/MINIAODSIM/124X_mcRun3_2022_realistic_postEE_v1-v2/2540000/0b3804ca-2ae7-46df-bfab-49f92f76b047.root
     setConf("SAMPLENAME", "ggH125")
-    setConf("XSEC", 52.234*0.0002745)
+    setConf("XSEC", 52.23*0.0002745)
     setConf("LEPTON_SETUP", 2022)
     setConf("IsMC", True)
     setConf("store","root://cms-xrd-global.cern.ch/")
     setConf("fileNames",[
-        "/store/mc/Run3Summer22EENanoAODv11/GluGluHtoZZto4L_M-125_TuneCP5_13p6TeV_powheg2-JHUGenV752-pythia8/NANOAODSIM/126X_mcRun3_2022_realistic_postEE_v1-v1/2810000/e5e2fe04-7fb1-43ed-a81a-3acded81f0e7.root",
+        "/store/mc/Run3Summer22EENanoAODv12/GluGluHtoZZto4L_M-125_TuneCP5_13p6TeV_powheg2-JHUGenV752-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_postEE_v6-v2/2540000/25c8f5ff-9de0-4a0c-9e2f-757332ad392f.root",
         ])
-    json = {"1": [[1245, 1245],[1306, 1306],[1410, 1410],[1692, 1692],[1903, 1903],[1910, 1910],[1915, 1915],[1927, 1927],[1939, 1939],[1940, 1940],[1944, 1944],[1945, 1945],[1956, 1956],[1960, 1960],[1965, 1965],[1967, 1967],[1968, 1968],[1969, 1969],[2104, 2104]]}
+#    json = {"1": [[1245, 1245],[1306, 1306],[1410, 1410],[1692, 1692],[1903, 1903],[1910, 1910],[1915, 1915],[1927, 1927],[1939, 1939],[1940, 1940],[1944, 1944],[1945, 1945],[1956, 1956],[1960, 1960],[1965, 1965],[1967, 1967],[1968, 1968],[1969, 1969],[2104, 2104]]}
 
 
 

@@ -111,7 +111,8 @@ private:
   edm::EDGetTokenT<pat::METCollection> metToken;
   edm::EDGetTokenT<edm::View<reco::Candidate> > softLeptonToken;
   edm::EDGetTokenT<edm::View<reco::CompositeCandidate> > ZCandToken;
-
+  edm::ESGetToken<TransientTrackBuilder, TransientTrackRecord> ttBuilderToken_;
+  
   int _num_of_JEC_variations;
 };
 
@@ -142,7 +143,8 @@ ZZCandidateFiller::ZZCandidateFiller(const edm::ParameterSet& iConfig) :
   metToken = consumes<pat::METCollection>(edm::InputTag("slimmedMETs"));
   softLeptonToken = consumes<edm::View<reco::Candidate> >(edm::InputTag("softLeptons"));
   ZCandToken = consumes<edm::View<reco::CompositeCandidate> >(edm::InputTag("ZCand"));
-
+  ttBuilderToken_ = esConsumes(edm::ESInputTag("", "TransientTrackBuilder"));
+ 
   rolesZ1Z2 = {"Z1", "Z2"};
   rolesZ2Z1 = {"Z2", "Z1"};
 
@@ -874,8 +876,7 @@ void ZZCandidateFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     //CandConstraintFit::fit(&myCand, iSetup);
     if (doVtxFit && abs(id11)==13 && abs(id12)==13 && abs(id21)==13 && abs(id22)==13) {
 
-      edm::ESHandle<TransientTrackBuilder> theTTBuilder;
-      iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theTTBuilder);
+      edm::ESHandle<TransientTrackBuilder> theTTBuilder = iSetup.getHandle(ttBuilderToken_);
 
       //Creating a KinematicParticleFactory
       KinematicParticleFactoryFromTransientTrack factory;

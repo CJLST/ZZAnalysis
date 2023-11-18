@@ -12,11 +12,11 @@ Please use **CMSSW_13_0_13**.
 Download and execute the setup script:
 ```
 cmsrel CMSSW_13_0_13
-wget -O ${TMPDIR}/checkout_12X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/Run3/checkout_12X.csh
+wget -O ${TMPDIR}/checkout.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/Run3/checkout_13X.csh
 cd $CMSSW_BASE/src
 cmsenv
-chmod u+x ${TMPDIR}/checkout_12X.csh
-${TMPDIR}/checkout_12X.csh
+chmod u+x ${TMPDIR}/checkout.csh
+${TMPDIR}/checkout.csh
 scramv1 b -j 4
 ```
 

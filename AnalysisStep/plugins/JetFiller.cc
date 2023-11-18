@@ -61,7 +61,8 @@ class JetFiller : public edm::one::EDProducer<> {
   edm::EDGetTokenT<edm::ValueMap<float> > axis2Token;
   edm::EDGetTokenT<edm::ValueMap<int> > multToken;
   edm::EDGetTokenT<edm::ValueMap<float> > ptDToken;
-
+  edm::ESGetToken<JetCorrectorParametersCollection, JetCorrectionsRecord> jcpToken;
+  
   JME::JetResolution resolution;
   JME::JetResolutionScaleFactor resolution_sf;
 
@@ -95,7 +96,8 @@ JetFiller::JetFiller(const edm::ParameterSet& iConfig) :
   axis2Token = consumes<edm::ValueMap<float> >(edm::InputTag("QGTagger", "axis2"));
   multToken = consumes<edm::ValueMap<int> >(edm::InputTag("QGTagger", "mult"));
   ptDToken = consumes<edm::ValueMap<float> >(edm::InputTag("QGTagger", "ptD"));
-
+  jcpToken = esConsumes(edm::ESInputTag("",jecType));
+  
   produces<pat::JetCollection>();
 
 
@@ -172,8 +174,8 @@ JetFiller::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   // if(applyJEC_ && isMC_)
   if(applyJEC_) {    // JEC uncertainty (part 1) - No splitting
     // JetCorrectorParametersCollection refers to the JEC file read from db in MasterPy/ZZ4lAnalysis.py
-    ESHandle<JetCorrectorParametersCollection> JetCorParColl;
-    iSetup.get<JetCorrectionsRecord>().get(jecType,JetCorParColl);
+    ESHandle<JetCorrectorParametersCollection> JetCorParColl = iSetup.getHandle(jcpToken);
+    
     JetCorrectorParameters const & JetCorPar = (*JetCorParColl)["Uncertainty"];
     jecUnc = new JetCorrectionUncertainty(JetCorPar);
     for (unsigned s_unc = 0; s_unc < uncSources.size(); s_unc++) {

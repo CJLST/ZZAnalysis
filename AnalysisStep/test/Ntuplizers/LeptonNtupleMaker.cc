@@ -3,11 +3,13 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include <FWCore/Framework/interface/GetterOfProducts.h>
+#include <FWCore/Framework/interface/ProcessMatch.h>
 
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
@@ -25,7 +27,7 @@
 using namespace std;
 using namespace edm;
 
-class LeptonNtupleMaker : public edm::EDAnalyzer {
+class LeptonNtupleMaker : public edm::one::EDAnalyzer<> {
 
 public:
   explicit LeptonNtupleMaker(const edm::ParameterSet&);
@@ -50,6 +52,8 @@ private:
   edm::EDGetTokenT<reco::GenParticleCollection> genParticleToken;
   edm::EDGetTokenT<vector<reco::Vertex> > vtxToken;
   edm::EDGetTokenT<GenEventInfoProduct> genInfoToken;
+  edm::GetterOfProducts<std::vector<PileupSummaryInfo> > getterOfProducts_;
+
   TString theFileName;
   TTree* myTree;
   TH1F *hCounter;
@@ -166,14 +170,15 @@ private:
 LeptonNtupleMaker::LeptonNtupleMaker(const edm::ParameterSet& iConfig) :
   electronToken(consumes<pat::ElectronCollection>(iConfig.getParameter<edm::InputTag>("electronSrc"))),
   muonToken(consumes<pat::MuonCollection>(iConfig.getParameter<edm::InputTag>("muonSrc"))),
-  genParticleToken(consumes<reco::GenParticleCollection>(iConfig.getParameter<edm::InputTag>("genParticleSrc")))
+  genParticleToken(consumes<reco::GenParticleCollection>(iConfig.getParameter<edm::InputTag>("genParticleSrc"))),
+  getterOfProducts_(edm::ProcessMatch("*"), this)
 {
+  callWhenNewProductsRegistered(getterOfProducts_);
+
   theFileName = iConfig.getUntrackedParameter<string>("fileName"); 
 
   vtxToken = consumes<vector<reco::Vertex> >(edm::InputTag("goodPrimaryVertices"));
   genInfoToken = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
-  consumesMany<std::vector< PileupSummaryInfo > >();
-
 }
 
 
@@ -216,7 +221,8 @@ LeptonNtupleMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   nLumi  = iEvent.luminosityBlock();
 
   vector<Handle<std::vector< PileupSummaryInfo > > > PupInfos;
-  iEvent.getManyByType(PupInfos);
+  getterOfProducts_.fillHandles(iEvent, PupInfos);
+
   Handle<std::vector< PileupSummaryInfo > > PupInfo = PupInfos.front();   
   std::vector<PileupSummaryInfo>::const_iterator PVI;
   for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
