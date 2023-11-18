@@ -37,9 +37,8 @@ git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
 #git clone https://github.com/bonanomi/MuonMVAReader.git MuonMVAReader
 #(cd MuonMVAReader; git checkout 3d53269)
 
-#Common LHE tools
-git clone https://github.com/usarica/CommonLHETools.git
-(cd CommonLHETools; git checkout -b from-v142 v1.4.2)
+#Common LHE tools (private FW update, based on v1.4.2)
+git clone https://github.com/namapane/CommonLHETools.git
 
 #MELA
 git clone https://github.com/JHUGen/JHUGenMELA.git JHUGenMELA
@@ -66,7 +65,7 @@ sed -i '/SimTracker\/Records/d' KinZfitter/KinZfitter/BuildFile.xml
 
 
 #NanoAODTools
-#git clone https://github.com/namapane/nanoAOD-tools.git PhysicsTools/NanoAODTools
+git clone https://github.com/namapane/nanoAOD-tools.git PhysicsTools/NanoAODTools
 (cd PhysicsTools/NanoAODTools ; git checkout py3)
 
 #CommonLHETools requires the MELA env to be set for compilation
