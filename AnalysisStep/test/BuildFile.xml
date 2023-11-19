@@ -22,7 +22,7 @@
 <use name="roofitcore"/>
 
 <flags CPPFLAGS="-I$(CMSSW_BASE)/src/JHUGenMELA/MELA/interface/" />
-<flags LDFLAGS="-lmcfm_707 -ljhugenmela -lcollier -lJHUGenMELAMELA -lMelaAnalyticsEventContainer -lMelaAnalyticsGenericMEComputer -lMelaAnalyticsCandidateLOCaster"/>
+<flags LDFLAGS="-lJHUGenMELAMELA -lMelaAnalyticsEventContainer -lMelaAnalyticsGenericMEComputer -lMelaAnalyticsCandidateLOCaster"/>
 
 <library   file="*.cc" name="ZZAnalysisAnalysisStepTest">
   <flags   EDM_PLUGIN="1"/>

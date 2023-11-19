@@ -14,6 +14,6 @@
 
 <library   file="*.cc" name="ZZAnalysisAnalysisStepPlugins">
 <flags CPPFLAGS="-I$(CMSSW_BASE)/src/JHUGenMELA/MELA/interface/" />
-<flags LDFLAGS="-lmcfm_707 -ljhugenmela -lcollier -lJHUGenMELAMELA -lMelaAnalyticsEventContainer -lMelaAnalyticsGenericMEComputer"/>
+<flags LDFLAGS="-lJHUGenMELAMELA -lMelaAnalyticsEventContainer -lMelaAnalyticsGenericMEComputer"/>
 <flags   EDM_PLUGIN="1"/>
 </library>
