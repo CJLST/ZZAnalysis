@@ -61,12 +61,12 @@ class genFiller(Module):
         for i, gp in enumerate(genpart) :
             motherId=-1
             gmotherId=-1
-            if gp.genPartIdxMother >= 0 :
+            if gp.genPartIdxMother >= 0 : 
                 motherId = genpart[gp.genPartIdxMother].pdgId
                 if genpart[gp.genPartIdxMother].genPartIdxMother >= 0 :
                     gmotherId = genpart[genpart[gp.genPartIdxMother].genPartIdxMother].pdgId
             print (i, gp.pdgId, gp.genPartIdxMother, gp.pt, gp.eta, gp.phi, gp.p4().M(), gp.status)
-
+    
         print("---------LHEPart---------")
         LHEPart = Collection (event, "LHEPart")
         for i, Lp in enumerate(LHEPart):
@@ -281,29 +281,17 @@ class genFiller(Module):
 
         return Z1_l1, Z1_l2, Z2_l1, Z2_l2
 
-    def getZIndex(self, z_leps_idx):
-        '''
-            Util function that returns the index of the leptons that
-            compose the Z1 and Z2 candidates.
-        '''
-        idx_1 = z_leps_idx[0]; idx_2 = z_leps_idx[1]
-        idx_3 = z_leps_idx[2]; idx_4 = z_leps_idx[3]
-
-        return idx_1, idx_2, idx_3, idx_4
-
-    def getZFlav(self, LeptonsId, z_leps_idx):
+    def getZIndex(self, LeptonsId, z_leps_idx):
         '''
             Util function that returns the IDs of the leptons that
             compose the Z1 and Z2 candidates.
         '''
-        # TODO: Store info in ntuples
-        id_1 = LeptonsId[z_leps_idx[0]]; id_2 = LeptonsId[z_leps_idx[1]]
-        id_3 = LeptonsId[z_leps_idx[2]]; id_4 = LeptonsId[z_leps_idx[3]]
+        # idx_1 = LeptonsId[z_leps_idx[0]]; idx_2 = LeptonsId[z_leps_idx[1]]
+        # idx_3 = LeptonsId[z_leps_idx[2]]; idx_4 = LeptonsId[z_leps_idx[3]]
+        idx_1 = z_leps_idx[0]; idx_2 = z_leps_idx[1]
+        idx_3 = z_leps_idx[2]; idx_4 = z_leps_idx[3]
 
-        z1_flav = id_1*id_2
-        z2_flav = id_3*id_4
-
-        return id_1, id_2, id_3, id_4
+        return idx_1, idx_2, idx_3, idx_4
 
     def getExtraLeps(self, LeptonsCollection, passFidSel, z_leps_idx):
         '''
@@ -335,7 +323,7 @@ class genFiller(Module):
 
         if passFidSel:
             Z1_l1, Z1_l2, Z2_l1, Z2_l2 = self.getZCands(Leptons, z_idx)
-            idx_1, idx_2, idx_3, idx_4 = self.getZIndex(z_idx)
+            idx_1, idx_2, idx_3, idx_4 = self.getZIndex(LeptonsId, z_idx)
             ZCands = [Z1_l1, Z1_l2, Z2_l1, Z2_l2]
             ZIdx   = [idx_1, idx_2, idx_3, idx_4]
             return ZCands, ZIdx
@@ -411,7 +399,7 @@ class genFiller(Module):
 
         return Leptons, LeptonsId, LeptonsReco
 
-    def fill_HCand_branches(self, ZCands_fidSel):
+    def fill_HCand_branches(self, ZCands_fidSel, ZIdx_fidSel):
         '''
             Function that fills branches for gen-level
             Higgs boson candindate.
@@ -420,7 +408,10 @@ class genFiller(Module):
             z1mass = -1
             z2mass = -1
             zzmass = -1
-            zzmass = -1
+            z1l1idx = -1
+            z1l2idx = -1
+            z2l1idx = -1
+            z2l2idx = -1
             zzrapidity = -1
             zzpt = -1
             zzeta = -1
@@ -428,6 +419,10 @@ class genFiller(Module):
         else:
             gen_H_cand = ZCands_fidSel[0]+ZCands_fidSel[1]+ZCands_fidSel[2]+ZCands_fidSel[3]
             zzmass = (gen_H_cand).M()
+            z1l1idx = ZIdx_fidSel[0]
+            z1l2idx = ZIdx_fidSel[1]
+            z2l1idx = ZIdx_fidSel[2]
+            z2l2idx = ZIdx_fidSel[3]
             zzrapidity = (gen_H_cand).Rapidity()
             zzpt = (gen_H_cand).Pt()
             zzeta = (gen_H_cand).Eta()
@@ -436,10 +431,10 @@ class genFiller(Module):
             z2mass = (ZCands_fidSel[2]+ZCands_fidSel[3]).M()
 
         self.out.fillBranch("GenZZ_mass", zzmass)
-        self.out.fillBranch("GenZZ_Z1l1Idx", ZCands_fidSel[0])
-        self.out.fillBranch("GenZZ_Z1l2Idx", ZCands_fidSel[1])
-        self.out.fillBranch("GenZZ_Z2l1Idx", ZCands_fidSel[2])
-        self.out.fillBranch("GenZZ_Z2l2Idx", ZCands_fidSel[3])
+        self.out.fillBranch("GenZZ_Z1l1Idx", z1l1idx) #FIXME: to be sorted with standard criteria
+        self.out.fillBranch("GenZZ_Z1l2Idx", z1l2idx)
+        self.out.fillBranch("GenZZ_Z2l1Idx", z2l1idx)
+        self.out.fillBranch("GenZZ_Z2l2Idx", z2l2idx)
         self.out.fillBranch("GenZZ_pt", zzpt)
         self.out.fillBranch("GenZZ_eta", zzeta)
         self.out.fillBranch("GenZZ_phi", zzphi)
@@ -503,7 +498,7 @@ class genFiller(Module):
             passedMassOS, passedElMuDeltaR, passedDeltaR = self.checkEventTopology(LeptonsCollection, zFid_leps_idx)
             if((passedMassOS == False) or (passedElMuDeltaR == False) or (passedDeltaR == False)): passFidSel = False
 
-            self.fill_HCand_branches(ZCands_fidSel)
+            self.fill_HCand_branches(ZCands_fidSel, ZIdx_fidSel)
 
             # TODO: Add GenJets
             # TODO: Add MELA
@@ -514,3 +509,4 @@ class genFiller(Module):
         self.out.fillBranch("passedFiducial", passFidSel)
 
         return True
+
