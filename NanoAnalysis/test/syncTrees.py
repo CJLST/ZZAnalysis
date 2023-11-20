@@ -21,8 +21,8 @@ cjlstFile   = "~/work/H4lnano/CMSSW_10_6_26/src/ZZAnalysis/AnalysisStep/test/ZZ4
 nanoFile = "ggH125_2017UL_fixedFSR_Skim.root"
 
 #2022 MC ggH, 13k events
-#cjlstFile = "../../AnalysisStep/test/ZZ4lAnalysis_sync_SRCR.root"
-#nanoFile = "e5e2fe04-7fb1-43ed-a81a-3acded81f0e7_Skim.root"
+cjlstFile = "../../AnalysisStep/test/ZZ4lAnalysis_sync.root"
+nanoFile = "25c8f5ff-9de0-4a0c-9e2f-757332ad392f_Skim.root"
 
 
 
@@ -92,7 +92,7 @@ def printLeps_nano(treeNano, prefix) :
     print()
 
 while treeMini.GetEntry(iEntryMini):
-
+#    print("MINI: "+str(treeMini.RunNumber)+":"+str(treeMini.LumiNumber)+":"+str(treeMini.EventNumber))
     iEntryMini+=1
 
     if verbose>=2 and iEntryMini%100==0 :
@@ -105,32 +105,30 @@ while treeMini.GetEntry(iEntryMini):
         if not test_bit(treeMini.CRflag,CRdict[region]) : continue
 
     found = False
-    iEntryNano = lastfound # Assume events are ordered in both files to speed up things
-    end = treeNano.GetEntries()-1
-    while iEntryNano < end :
+    iEntryNano = max(0,lastfound-3) # Assume events are approximately ordered in both files to speed up things
+#    iEntryNano = 0 # Random order (very slow)
+    while treeNano.GetEntry(iEntryNano) :
+        thisEntryNano = iEntryNano
         iEntryNano += 1
-#        if foundNano[iEntryNano] : continue # was alredy found: skip
-        treeNano.GetEntry(iEntryNano)
+        if foundNano[thisEntryNano] : continue # was alredy found: skip
+#        print(" NANO: "+str(treeNano.run)+":"+str(treeNano.luminosityBlock)+":"+str(treeNano.event))
         
         if region == 'SR' :     iBC = treeNano.bestCandIdx
         elif region == 'SS' :   iBC = treeNano.ZLLbestSSIdx
         elif region == '2P2F' : iBC = treeNano.ZLLbest2P2FIdx
         elif region == '3P1F' : iBC = treeNano.ZLLbest3P1FIdx
 
-
         if iBC < 0 or not treeNano.HLT_passZZ4l: # no candidate passes the selection
             # in this event, or the event does not pass the required triggers
             # (for samples processed with TRIGPASSTHROUGH=True)
-            foundNano[iEntryNano] = True
+            foundNano[thisEntryNano] = True
             continue
             
         if treeMini.RunNumber==treeNano.run and treeMini.LumiNumber==treeNano.luminosityBlock and treeMini.EventNumber==treeNano.event :
-            foundNano[iEntryNano] = True
+            foundNano[thisEntryNano] = True
             found = True
-            lastfound=iEntryNano;
+            lastfound=thisEntryNano;
             break
-
-        # FIXME: handle case where events are not ordered: at end ol loop (iEntryNano=treeNano.GetEntries()-1), set iEntryNano=-1, end=lastfound
     
     if found :
         t2_ZZMass = eval(nanoPrefix+'mass[iBC]')

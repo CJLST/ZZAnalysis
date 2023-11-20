@@ -9,7 +9,7 @@
  */
 
 #include <FWCore/Framework/interface/Frameworkfwd.h>
-#include <FWCore/Framework/interface/EDAnalyzer.h>
+#include <FWCore/Framework/interface/one/EDAnalyzer.h>
 #include <FWCore/Framework/interface/ESHandle.h>
 #include <FWCore/Framework/interface/Event.h>
 #include <FWCore/Framework/interface/LuminosityBlock.h>
@@ -53,7 +53,7 @@ using namespace edm;
 using namespace reco;
 
 
-class ZZ4lAnalyzerCR: public edm::EDAnalyzer {
+class ZZ4lAnalyzerCR: public edm::one::EDAnalyzer<> {
 public:
 
   explicit ZZ4lAnalyzerCR(const edm::ParameterSet& pset);

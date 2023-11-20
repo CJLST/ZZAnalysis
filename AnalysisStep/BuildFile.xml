@@ -14,7 +14,7 @@
 <use name="rootrflx"/>
 
 <flags CPPFLAGS="-I$(CMSSW_BASE)/src/JHUGenMELA/MELA/interface/" />
-<flags LDFLAGS="-lmcfm_707 -ljhugenmela -lcollier -lJHUGenMELAMELA -lMelaAnalyticsEventContainer"/>
+<flags LDFLAGS="-lJHUGenMELAMELA -lMelaAnalyticsEventContainer"/>
 <!--Flags CXXFLAGS="-Wno-delete-non-virtual-dtor -Wno-error=unused-but-set-variable -Wno-error=unused-variable"/--> 
 
 <export>

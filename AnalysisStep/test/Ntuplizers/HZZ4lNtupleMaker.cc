@@ -25,6 +25,8 @@
 #include <DataFormats/Common/interface/TriggerResults.h>
 #include <FWCore/Common/interface/TriggerNames.h>
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
+#include <FWCore/Framework/interface/GetterOfProducts.h>
+#include <FWCore/Framework/interface/ProcessMatch.h>
 
 #include <DataFormats/Common/interface/View.h>
 #include <DataFormats/Candidate/interface/Candidate.h>
@@ -732,6 +734,9 @@ private:
   edm::EDGetTokenT< double > prefweightupMuon_token;
   edm::EDGetTokenT< double > prefweightdownMuon_token;
 
+  edm::GetterOfProducts<std::vector<PileupSummaryInfo> > getterOfProductsPU;
+  edm::GetterOfProducts<LHEEventProduct> getterOfProductsLHE;
+  
   PileUpWeight* pileUpReweight;
 
   //counters
@@ -815,6 +820,8 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   apply_K_NLOEW_ZZQQB(pset.getParameter<bool>("Apply_K_NLOEW_ZZQQB")),
   apply_QCD_GGF_UNCERT(pset.getParameter<bool>("Apply_QCD_GGF_UNCERT")),
 
+  getterOfProductsPU(edm::ProcessMatch("*"), this),
+  getterOfProductsLHE(edm::ProcessMatch("*"), this),
   pileUpReweight(nullptr),
   sampleName(pset.getParameter<string>("sampleName")),
   dataTag(pset.getParameter<string>("dataTag")),
@@ -824,14 +831,17 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   firstRun(true)
 {
   //cout<< "Beginning Constructor\n\n\n" <<endl;
-  consumesMany<std::vector< PileupSummaryInfo > >();
+  callWhenNewProductsRegistered([this](edm::BranchDescription const& bd) {
+    getterOfProductsPU(bd);
+    getterOfProductsLHE(bd);
+  });
+  
   genParticleToken = consumes<edm::View<reco::Candidate> >(edm::InputTag("prunedGenParticles"));
   genParticleToken_bbf = consumes<reco::GenParticleCollection>(edm::InputTag("prunedGenParticles"));
   packedgenParticlesToken = consumes<edm::View<pat::PackedGenParticle> > (edm::InputTag("packedGenParticles")); //ATbbf
   genInfoToken = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
   genJetsToken = consumes<edm::View<reco::GenJet> >(edm::InputTag("slimmedGenJets")); //ATjets
   GENCandidatesToken = consumes<edm::View<pat::CompositeCandidate> >(edm::InputTag("GENLevel"));
-  consumesMany<LHEEventProduct>();
   candToken = consumes<edm::View<pat::CompositeCandidate> >(edm::InputTag(theCandLabel));
 
   is_loose_ele_selection = false;
@@ -1024,7 +1034,8 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
   if (isMC) {
     // get PU weights
     vector<Handle<std::vector< PileupSummaryInfo > > >  PupInfos; //FIXME support for miniAOD v1/v2 where name changed; catch does not work...
-    event.getManyByType(PupInfos);
+    getterOfProductsPU.fillHandles(event, PupInfos);
+
     Handle<std::vector< PileupSummaryInfo > > PupInfo = PupInfos.front();
 //     try {
 //       cout << "TRY HZZ4lNtupleMaker" <<endl;
@@ -1336,11 +1347,10 @@ void HZZ4lNtupleMaker::analyze(const edm::Event& event, const edm::EventSetup& e
         FillLepGenIso(-1, -1, -1, -1);
       }
       // LHE information
-      edm::Handle<LHEEventProduct> lhe_evt;
       vector<edm::Handle<LHEEventProduct> > lhe_handles;
-      event.getManyByType(lhe_handles);
+      getterOfProductsLHE.fillHandles(event, lhe_handles);
       if (!lhe_handles.empty()){
-        lhe_evt = lhe_handles.front();
+        edm::Handle<LHEEventProduct> lhe_evt = lhe_handles.front();
 	if (lheHandler) {
 	  lheHandler->setHandle(&lhe_evt);
 	  lheHandler->extract();

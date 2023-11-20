@@ -4,7 +4,6 @@
 from __future__ import print_function
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
-from PhysicsTools.NanoAODTools.postprocessing.tools import *
 import os
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True

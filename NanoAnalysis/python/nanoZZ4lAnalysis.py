@@ -4,9 +4,9 @@
 ####
 
 from __future__ import print_function
+import os
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
-from PhysicsTools.NanoAODTools.postprocessing.tools import *
 
 from ZZAnalysis.NanoAnalysis.tools import setConf, getConf
 from ZZAnalysis.NanoAnalysis.triggerAndSkim import * # Trigger requirements are defined here
@@ -21,7 +21,7 @@ DEBUG = getConf("DEBUG", False)
 SAMPLENAME = getConf("SAMPLENAME", "test")
 LEPTON_SETUP = getConf("LEPTON_SETUP", 2018)
 DATA_TAG = getConf("DATA_TAG", "" ) # flavours; at the moment only used to mark UL Run 2 samples
-NANOVERSION = getConf("NANOVERSION", 11)
+NANOVERSION = getConf("NANOVERSION", 12)
 if not (LEPTON_SETUP == 2016 or LEPTON_SETUP == 2017 or LEPTON_SETUP == 2018 or LEPTON_SETUP == 2022 or LEPTON_SETUP == 2023) :
     print("Invalid LEPTON_SETUP", LEPTON_SETUP)
     exit(1)

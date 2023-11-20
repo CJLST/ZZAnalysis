@@ -9,7 +9,7 @@
 
 
 #include <FWCore/Framework/interface/Frameworkfwd.h>
-#include <FWCore/Framework/interface/EDAnalyzer.h>
+#include <FWCore/Framework/interface/one/EDAnalyzer.h>
 #include <FWCore/Framework/interface/ESHandle.h>
 #include <FWCore/Framework/interface/Event.h>
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
@@ -32,7 +32,7 @@ using namespace edm;
 using namespace reco;
 
 
-class dumpUserData: public edm::EDAnalyzer {
+class dumpUserData: public edm::one::EDAnalyzer<> {
 public:
   dumpUserData(const ParameterSet& pset);
 

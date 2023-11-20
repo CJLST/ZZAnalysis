@@ -8,7 +8,7 @@
 from __future__ import print_function
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
-from PhysicsTools.NanoAODTools.postprocessing.tools import deltaR
+from PhysicsTools.HeppyCore.utils.deltar import deltaR
 
 class jetFiller(Module):
     def __init__(self):

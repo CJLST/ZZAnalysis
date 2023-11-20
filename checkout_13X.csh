@@ -1,13 +1,13 @@
 #!/bin/bash 
 #
 # Instructions:
-# wget -O ${TMPDIR}/checkout_12X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/Run3/checkout_12X.csh
+# wget -O ${TMPDIR}/checkout.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/Run3/checkout_13X.csh
 # cd $CMSSW_BASE/src
 # cmsenv
-# chmod u+x ${TMPDIR}/checkout_12X.csh
-# ${TMPDIR}/checkout_12X.csh
+# chmod u+x ${TMPDIR}/checkout.csh
+# ${TMPDIR}/checkout.csh
 
-############## For CMSSW_12_6_5
+############## For CMSSW_13_0_13
 
 #exit when any command fails
 set -e
@@ -23,8 +23,8 @@ git cms-init
 
 # Updated for UL. See: https://twiki.cern.ch/twiki/bin/view/CMS/EgammaUL2016To2018
 git clone -b run3ID https://github.com/swagata87/EgammaPostRecoTools.git  EgammaUser/EgammaPostRecoTools
-#git cms-addpkg EgammaAnalysis/ElectronTools
-#(rm -rf EgammaAnalysis/ElectronTools/data;git clone https://github.com/jainshilpi/EgammaAnalysis-ElectronTools.git -b ULSSfiles_correctScaleSysMC EgammaAnalysis/ElectronTools/data;)
+#FIXME: hack to run in 13X; recipe should be fixed
+sed -i s/"12 : \[0,1,6\]"/"12 : [0,1,6],13 : [0,1,2,3]"/ EgammaUser/EgammaPostRecoTools/python/EgammaPostRecoTools.py
 
 #### Please do not add any custom (non-CMSSW) package before this line ####
 #ZZAnalysis
@@ -37,13 +37,12 @@ git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
 #git clone https://github.com/bonanomi/MuonMVAReader.git MuonMVAReader
 #(cd MuonMVAReader; git checkout 3d53269)
 
-#Common LHE tools
-git clone https://github.com/usarica/CommonLHETools.git
-(cd CommonLHETools; git checkout -b from-v142 v1.4.2)
+#Common LHE tools (private FW update, based on v1.4.2)
+git clone https://github.com/namapane/CommonLHETools.git
 
 #MELA
 git clone https://github.com/JHUGen/JHUGenMELA.git JHUGenMELA
-(cd JHUGenMELA; git checkout -b from-v238 v2.3.8; ./setup.sh)
+(cd JHUGenMELA; git checkout -b from-v240 v2.4.0; ./setup.sh)
 
 #MELA Analytics
 git clone https://github.com/MELALabs/MelaAnalytics.git
@@ -57,10 +56,6 @@ ln -s ${CMSSW_BASE}/src/JHUGenMELA/MELA/data/*/*.so \
       ${CMSSW_BASE}/src/MelaAnalytics/GenericMEComputer/lib/*.so \
       ${CMSSW_BASE}/src/MelaAnalytics/EventContainer/lib/*.so \
       ${CMSSW_BASE}/lib/${SCRAM_ARCH}
-
-#hack for missing 13.6 TeV files
-ln -s JHUGenMELA/MELA/data/resolution_mJJ_recoVStrue_ZH_13TeV.root JHUGenMELA/MELA/data/resolution_mJJ_recoVStrue_ZH_14TeV.root
-ln -s JHUGenMELA/MELA/data/resolution_mJJ_recoVStrue_WH_13TeV.root JHUGenMELA/MELA/data/resolution_mJJ_recoVStrue_WH_14TeV.root
 
 #kinematic refitting (obsolete?)
 git clone https://github.com/mhl0116/KinZfitter-1.git KinZfitter
