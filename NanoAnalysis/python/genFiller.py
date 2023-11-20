@@ -11,6 +11,8 @@ from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collect
 from PhysicsTools.NanoAODTools.postprocessing.tools import deltaR
 from ROOT import TLorentzVector
 
+from ZZAnalysis.NanoAnalysis.tools import Mother
+
 ZMASS = 91.1876
 MIN_MZ1 = 40
 MAX_MZ1 = 120
@@ -28,49 +30,20 @@ class genFiller(Module):
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
         self.out.branch("nDressedLeptons", "I")
-        self.out.branch("GenDressedLeps_pt", "F", lenVar="nDressedLeptons")
-        self.out.branch("GenDressedLeps_RelIso", "F", lenVar="nDressedLeptons")
-        self.out.branch("GenZZ_Z1l1Idx", "I") # Indices in the GenPart
-        self.out.branch("GenZZ_Z1l2Idx", "I")
-        self.out.branch("GenZZ_Z2l1Idx", "I")
-        self.out.branch("GenZZ_Z2l2Idx", "I")
-        self.out.branch("GenZZ_mass", "F")
-        self.out.branch("GenZZ_pt", "F")
-        self.out.branch("GenZZ_eta", "F")
-        self.out.branch("GenZZ_phi", "F")
-        self.out.branch("GenZZ_rapidity", "F")
-        self.out.branch("GenZ1_mass", "F")
-        self.out.branch("GenZ2_mass", "F")
+        self.out.branch("FidDressedLeps_pt", "F", lenVar="nDressedLeptons")
+        self.out.branch("FidDressedLeps_RelIso", "F", lenVar="nDressedLeptons")
+        self.out.branch("FidZZ_Z1l1Idx", "I") # Indices in the GenPart
+        self.out.branch("FidZZ_Z1l2Idx", "I")
+        self.out.branch("FidZZ_Z2l1Idx", "I")
+        self.out.branch("FidZZ_Z2l2Idx", "I")
+        self.out.branch("FidZZ_mass", "F")
+        self.out.branch("FidZZ_pt", "F")
+        self.out.branch("FidZZ_eta", "F")
+        self.out.branch("FidZZ_phi", "F")
+        self.out.branch("FidZZ_rapidity", "F")
+        self.out.branch("FidZ1_mass", "F")
+        self.out.branch("FidZ2_mass", "F")
         self.out.branch("passedFiducial", "B")
-
-    def Mother(self, part, gen):
-        '''
-            Find the ID and Idx of the mother of a given GenPart (`part`)
-            amongst all the particles in GenPart (`gen`) collection.
-            The function returns Idx and ID of the mother.
-        '''
-        idxMother= part.genPartIdxMother
-        while idxMother>=0 and gen[idxMother].pdgId == part.pdgId:
-            idxMother = gen[idxMother].genPartIdxMother
-        idMother=0
-        if idxMother >=0 : idMother = gen[idxMother].pdgId
-        return idxMother, idMother
-
-    def lhe_logger(self, genpart):
-        print ("---Gen:")
-        for i, gp in enumerate(genpart) :
-            motherId=-1
-            gmotherId=-1
-            if gp.genPartIdxMother >= 0 : 
-                motherId = genpart[gp.genPartIdxMother].pdgId
-                if genpart[gp.genPartIdxMother].genPartIdxMother >= 0 :
-                    gmotherId = genpart[genpart[gp.genPartIdxMother].genPartIdxMother].pdgId
-            print (i, gp.pdgId, gp.genPartIdxMother, gp.pt, gp.eta, gp.phi, gp.p4().M(), gp.status)
-    
-        print("---------LHEPart---------")
-        LHEPart = Collection (event, "LHEPart")
-        for i, Lp in enumerate(LHEPart):
-            print(i, Lp.pdgId, Lp.pt, Lp.eta, Lp.status, Lp.incomingpz)
 
     def dressLeptons(self, genpart, packedpart):
         '''
@@ -430,17 +403,17 @@ class genFiller(Module):
             z1mass = (ZCands_fidSel[0]+ZCands_fidSel[1]).M()
             z2mass = (ZCands_fidSel[2]+ZCands_fidSel[3]).M()
 
-        self.out.fillBranch("GenZZ_mass", zzmass)
-        self.out.fillBranch("GenZZ_Z1l1Idx", z1l1idx) #FIXME: to be sorted with standard criteria
-        self.out.fillBranch("GenZZ_Z1l2Idx", z1l2idx)
-        self.out.fillBranch("GenZZ_Z2l1Idx", z2l1idx)
-        self.out.fillBranch("GenZZ_Z2l2Idx", z2l2idx)
-        self.out.fillBranch("GenZZ_pt", zzpt)
-        self.out.fillBranch("GenZZ_eta", zzeta)
-        self.out.fillBranch("GenZZ_phi", zzphi)
-        self.out.fillBranch("GenZZ_rapidity", zzrapidity)
-        self.out.fillBranch("GenZ1_mass", z1mass)
-        self.out.fillBranch("GenZ2_mass", z2mass)
+        self.out.fillBranch("FidZZ_mass", zzmass)
+        self.out.fillBranch("FidZZ_Z1l1Idx", z1l1idx) #FIXME: to be sorted with standard criteria
+        self.out.fillBranch("FidZZ_Z1l2Idx", z1l2idx)
+        self.out.fillBranch("FidZZ_Z2l1Idx", z2l1idx)
+        self.out.fillBranch("FidZZ_Z2l2Idx", z2l2idx)
+        self.out.fillBranch("FidZZ_pt", zzpt)
+        self.out.fillBranch("FidZZ_eta", zzeta)
+        self.out.fillBranch("FidZZ_phi", zzphi)
+        self.out.fillBranch("FidZZ_rapidity", zzrapidity)
+        self.out.fillBranch("FidZ1_mass", z1mass)
+        self.out.fillBranch("FidZ2_mass", z2mass)
 
     def analyze(self, event):
         '''
@@ -450,8 +423,6 @@ class genFiller(Module):
         '''
 
         genpart=Collection(event,"GenPart")
-
-        if self.printGenHist : self.lhe_logger()
 
         dressedLeptons = [-1]*len(genpart)
         Lepts_RelIso   = [-1]*len(genpart)
@@ -463,7 +434,7 @@ class genFiller(Module):
         for i, gp in enumerate(genpart) :
             if ((abs(gp.pdgId) == 11) or (abs(gp.pdgId) == 13) or (abs(gp.pdgId) == 15)) :
                 if (not((gp.status == 1) or (abs(gp.pdgId) == 15))): continue
-                mom_idx, mom_id = self.Mother(gp, genpart)
+                mom_idx, mom_id = Mother(gp, genpart)
                 if (not((mom_id==23) or (mom_id==443) or (mom_id==553) or (abs(mom_id)==24))): continue
 
                 # Dress leptons
@@ -504,8 +475,8 @@ class genFiller(Module):
             # TODO: Add MELA
 
         self.out.fillBranch("nDressedLeptons", len(dressedLeptons))
-        self.out.fillBranch("GenDressedLeps_pt", dressedLeptons)
-        self.out.fillBranch("GenDressedLeps_RelIso", Lepts_RelIso)
+        self.out.fillBranch("FidDressedLeps_pt", dressedLeptons)
+        self.out.fillBranch("FidDressedLeps_RelIso", Lepts_RelIso)
         self.out.fillBranch("passedFiducial", passFidSel)
 
         return True
