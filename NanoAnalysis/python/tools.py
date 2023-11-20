@@ -36,3 +36,45 @@ def getLeptons(aCand, event) :
     muons = Collection(event, "Muon")
     leps = list(electrons) + list(muons)
     return [leps[i] for i in idxs]
+
+def Mother(part, gen):
+    '''
+        Find the ID and Idx of the mother of a given GenPart (`part`)
+        amongst all the particles in GenPart (`gen`) collection.
+        The function returns Idx and ID of the mother.
+    '''
+    idxMother= part.genPartIdxMother
+    while idxMother>=0 and gen[idxMother].pdgId == part.pdgId:
+        idxMother = gen[idxMother].genPartIdxMother
+    idMother=0
+    if idxMother >=0 : idMother = gen[idxMother].pdgId
+    return idxMother, idMother
+
+def getParentID(part, gen) :
+    '''
+        Return the ID of the leptons's parent:
+        25 for H->Z->l; 23 for Z->l; +-15 for
+        tau->l if genlep is e,mu.
+    '''
+    pIdx, pID = Mother(part, gen)
+    if pIdx < 0 : return 0
+    ppIdx = gen[pIdx].genPartIdxMother
+    if pID == 23 and ppIdx>=0 and gen[ppIdx].pdgId == 25 :
+        pID = 25
+    return pID
+
+def lhe_logger(genpart):
+    print ("---Gen:")
+    for i, gp in enumerate(genpart) :
+        motherId=-1
+        gmotherId=-1
+        if gp.genPartIdxMother >= 0 : 
+            motherId = genpart[gp.genPartIdxMother].pdgId
+            if genpart[gp.genPartIdxMother].genPartIdxMother >= 0 :
+                gmotherId = genpart[genpart[gp.genPartIdxMother].genPartIdxMother].pdgId
+        print (i, gp.pdgId, gp.genPartIdxMother, gp.pt, gp.eta, gp.phi, gp.p4().M(), gp.status)
+
+    print("---------LHEPart---------")
+    LHEPart = Collection (event, "LHEPart")
+    for i, Lp in enumerate(LHEPart):
+        print(i, Lp.pdgId, Lp.pt, Lp.eta, Lp.status, Lp.incomingpz)

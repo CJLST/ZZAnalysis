@@ -18,4 +18,6 @@ keep best* # bestZ and ZZ indexes
 keep Z* # Z and ZZ
 keep GenZZ*
 keep *eight # Generator_weight + custom weights
-
+keep nDressedLeptons
+keep FidDressedLeps_*
+keep FidZ*

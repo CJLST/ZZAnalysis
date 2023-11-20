@@ -13,6 +13,7 @@ from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collect
 from PhysicsTools.HeppyCore.utils.deltar import deltaR
 from ROOT import TLorentzVector
 
+from ZZAnalysis.NanoAnalysis.tools import Mother, getParentID
 
 class mcTruthAnalyzer(Module):
     def __init__(self, dump=False):
@@ -30,24 +31,6 @@ class mcTruthAnalyzer(Module):
         self.out.branch("GenZZ_Z2l2Idx", "I")
         self.out.branch("FsrPhoton_genFsrIdx", "I", lenVar="nFsrPhoton")
 
-    # Find particle's real mother, (first parent in MC history with a different pdgID)
-    def Mother(self, part, gen) :
-        idxMother= part.genPartIdxMother
-        while idxMother>=0 and gen[idxMother].pdgId == part.pdgId:
-            idxMother = gen[idxMother].genPartIdxMother
-        idMother=0
-        if idxMother >=0 : idMother = gen[idxMother].pdgId
-        return idxMother, idMother
-
-    # Return the ID of the leptons's parent: 25 for H->Z->l; 23 for Z->l; +-15 for tau->l if genlep is e,mu.
-    def getParentID(self, part, gen) :
-        pIdx, pID = self.Mother(part, gen)
-        if pIdx < 0 : return 0
-        ppIdx = gen[pIdx].genPartIdxMother
-        if pID == 23 and ppIdx>=0 and gen[ppIdx].pdgId == 25 :
-            pID = 25
-        return pID
-
     def analyze(self, event):
         """process event, return True (go to next module) or False (fail, go to next event)"""
 
@@ -55,22 +38,8 @@ class mcTruthAnalyzer(Module):
 
         ### Print Gen history and LHE particles.
         ### See also: https://github.com/cms-nanoAOD/nanoAOD-tools/blob/master/python/postprocessing/modules/common/hepmcDump.py
-        if self.printGenHist : 
-            print ("---Gen:")
-            for i, gp in enumerate(genpart) :
-                motherId=-1
-                gmotherId=-1
-                if gp.genPartIdxMother >= 0 : 
-                    motherId = genpart[gp.genPartIdxMother].pdgId
-                    if genpart[gp.genPartIdxMother].genPartIdxMother >= 0 :
-                        gmotherId = genpart[genpart[gp.genPartIdxMother].genPartIdxMother].pdgId
-                print (i, gp.pdgId, gp.genPartIdxMother, gp.pt, gp.eta, gp.phi, gp.p4().M(), gp.status)
-        
-            print("---------LHEPart---------")
-            LHEPart = Collection (event, "LHEPart")
-            for i, Lp in enumerate(LHEPart):
-                print(i, Lp.pdgId, Lp.pt, Lp.eta, Lp.status, Lp.incomingpz)
-
+        if self.printGenHist :
+            lhe_logger(genpart)
 
         ## Search for gen FSR from Z->ll (e, mu)
         genFSRIdxs = []
@@ -79,7 +48,7 @@ class mcTruthAnalyzer(Module):
             if gp.pdgId==22 and gp.pt > 2. and midx >= 0 :
                 mid = genpart[midx].pdgId
                 if abs(mid) == 11 or abs(mid) == 13 :
-                    mmidx, mmid = self.Mother(genpart[midx], genpart) # possibly skip intermediate rows
+                    mmidx, mmid = Mother(genpart[midx], genpart) # possibly skip intermediate rows
                     if mmid == 23 :
                         genFSRIdxs.append(i)
 
@@ -115,7 +84,7 @@ class mcTruthAnalyzer(Module):
             if (p.pdgId)==25 : theGenH = p
             if (abs(p.pdgId)==11 or abs(p.pdgId)==13 or abs(p.pdgId)==15) and p.genPartIdxMother >=0 :
                 mid = genpart[p.genPartIdxMother].pdgId
-                pid = self.getParentID(p, genpart)
+                pid = getParentID(p, genpart)
                 if mid == 25 or (mid == 23 and pid == 25) : # Lepton from H->(Z->)ll; note that this is the first daughter in the H or Z line; ie pre-FSR
                     theGenZZLeps.append(ip)
                 elif ((mid == 23 and pid == 23) or mid == 24): # Associated production, or ZZ (sorted out below).
