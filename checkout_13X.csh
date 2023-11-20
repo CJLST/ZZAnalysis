@@ -23,8 +23,8 @@ git cms-init
 
 # Updated for UL. See: https://twiki.cern.ch/twiki/bin/view/CMS/EgammaUL2016To2018
 git clone -b run3ID https://github.com/swagata87/EgammaPostRecoTools.git  EgammaUser/EgammaPostRecoTools
-#git cms-addpkg EgammaAnalysis/ElectronTools
-#(rm -rf EgammaAnalysis/ElectronTools/data;git clone https://github.com/jainshilpi/EgammaAnalysis-ElectronTools.git -b ULSSfiles_correctScaleSysMC EgammaAnalysis/ElectronTools/data;)
+#FIXME: hack to run in 13X; recipe should be fixed
+sed -i s/"12 : \[0,1,6\]"/"12 : [0,1,6],13 : [0,1,2,3]"/ EgammaUser/EgammaPostRecoTools/python/EgammaPostRecoTools.py
 
 #### Please do not add any custom (non-CMSSW) package before this line ####
 #ZZAnalysis
