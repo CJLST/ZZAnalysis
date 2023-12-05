@@ -65,9 +65,16 @@ ZZTo4l,,1.39,,,/ZZto4L_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130
 # ggTo2e2tau_Contin_MCFM701 ,,,,,,dbs,root://cms-xrd-global.cern.ch/,1,GENXSEC=0.00319142;GENBR=1;PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;LEPTON_SETUP=2022,RecoProbabilities.py;LHEProbabilities_GG_BKG_MCFM.py,
 # ggTo2mu2tau_Contin_MCFM701,,,,,,dbs,root://cms-xrd-global.cern.ch/,4,GENXSEC=0.00319142;GENBR=1;PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;LEPTON_SETUP=2022,RecoProbabilities.py;LHEProbabilities_GG_BKG_MCFM.py,
 
+###,,,,,,,,,,,VVV bkg
+WWZ,,0.1851,,,/WWZ_4F_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;LEPTON_SETUP=2022,RecoProbabilities.py, #xsec from XSDB
+WZZ,,0.0621,,,/WZZ_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM   ,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;LEPTON_SETUP=2022,RecoProbabilities.py, #xsec from XSDB
+ZZZ,,0.0159,,,/ZZZ_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM   ,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;LEPTON_SETUP=2022,RecoProbabilities.py, #xsec from XSDB
 
-###,,,,,,,,,,,DY
-#DYJetsToLL,,5558.0,,,,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;ADDZTREE=True;LEPTON_SETUP=2022,RecoProbabilities.py,xsec from XSDB 
+###,,,,,,,,,,,rare bkg targeting ttH categories
+TTWW,,0.008203,,,/TTWW_TuneCP5_13p6TeV_madgraph-madspin-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;LEPTON_SETUP=2022,RecoProbabilities.py, #xsec from XSDB
+TTZZ,,0.001579,,,/TTZZ_TuneCP5_13p6TeV_madgraph-madspin-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;LEPTON_SETUP=2022,RecoProbabilities.py, #xsec from XSDB
 
-###,,,,,,,,,,,TT
-# TT,,,,,,,,,,,xsec info missing from XSDB
+###,,,,,,,,,,,bkg for Z+X studies
+WZto3LNu,,4.924,,,/WZto3LNu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;LEPTON_SETUP=2022,RecoProbabilities.py, #xsec to extract from the sample - not available from XSDB
+DYJetsToLL,,5558.0,,,/DYJetsToLL_M-50_TuneCP5_13p6TeV-madgraphMLM-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;LEPTON_SETUP=2022,RecoProbabilities.py,xsec from XSDB 
+TTto2L2Nu,,762.1,,,/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;LEPTON_SETUP=2022,RecoProbabilities.py,xsec from XSDB

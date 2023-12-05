@@ -55,7 +55,7 @@ ttH126  ,,0.5591,0.00600253,,/TTH_Hto2Z_M-126_4LFilter_TuneCP5_13p6TeV_powheg2-J
 
 
 ###,,,,,,,,,,,qq->ZZ background - xsec taken from powheg gridpack
-ZZTo4l,,1.39,,,/ZZto4L_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv11-126X_mcRun3_2022_realistic_postEE_v1-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,3,GENXSEC=1.39;GENBR=1;PROCESS_CR=True;APPLY_K_NNLOQCD_ZZQQB=True;APPLY_K_NLOEW_ZZQQB=True;LEPTON_SETUP=2022,RecoProbabilities.py,
+ZZTo4l,,1.39,,,/ZZto4L_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,3,GENXSEC=1.39;GENBR=1;PROCESS_CR=True;APPLY_K_NNLOQCD_ZZQQB=True;APPLY_K_NLOEW_ZZQQB=True;LEPTON_SETUP=2022,RecoProbabilities.py,
 
 ###,,,,,,,,,,,gg->ZZ background - Xsec from https://twiki.cern.ch/twiki/bin/viewauth/CMS/Run2MCProductionforHiggsProperties#MCFM_ZZ_4l_l_e_mu_tau
 # ggTo4e_Contin_MCFM701     ,,,,,,dbs,root://cms-xrd-global.cern.ch/,1,GENXSEC=0.00158549;GENBR=1;PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;LEPTON_SETUP=2022,RecoProbabilities.py;LHEProbabilities_GG_BKG_MCFM.py,
@@ -65,9 +65,16 @@ ZZTo4l,,1.39,,,/ZZto4L_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv11-1
 # ggTo2e2tau_Contin_MCFM701 ,,,,,,dbs,root://cms-xrd-global.cern.ch/,1,GENXSEC=0.00319142;GENBR=1;PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;LEPTON_SETUP=2022,RecoProbabilities.py;LHEProbabilities_GG_BKG_MCFM.py,
 # ggTo2mu2tau_Contin_MCFM701,,,,,,dbs,root://cms-xrd-global.cern.ch/,4,GENXSEC=0.00319142;GENBR=1;PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;LEPTON_SETUP=2022,RecoProbabilities.py;LHEProbabilities_GG_BKG_MCFM.py,
 
+###,,,,,,,,,,,VVV bkg
+WWZ,,0.1851,,,/WWZ_4F_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;LEPTON_SETUP=2022,RecoProbabilities.py,xsec from XSDB 
+# WZZ,,0.0621,,,/WZZ_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;LEPTON_SETUP=2022,RecoProbabilities.py,xsec from XSDB - still in production
+ZZZ,,0.0159,,,/ZZZ_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;LEPTON_SETUP=2022,RecoProbabilities.py,xsec from XSDB
 
-###,,,,,,,,,,,DY
-DYJetsToLL,,5558.0,,,/DYJetsToLL_M-50_TuneCP5_13p6TeV-madgraphMLM-pythia8/Run3Summer22EENanoAODv12-forPOG_130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;ADDZTREE=True;LEPTON_SETUP=2022,RecoProbabilities.py,xsec from XSDB 
+###,,,,,,,,,,,rare bkg targeting ttH categories
+TTWW,,0.008203,,,/TTWW_TuneCP5_13p6TeV_madgraph-madspin-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;LEPTON_SETUP=2022,RecoProbabilities.py,xsec from XSDB
+# TTZZ,,0.001579,,,/TTZZ_TuneCP5_13p6TeV_madgraph-madspin-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;LEPTON_SETUP=2022,RecoProbabilities.py,xsec from XSDB - invalid on DAS
 
-###,,,,,,,,,,,TT
-# TT,,,,,,,,,,,xsec info missing from XSDB
+###,,,,,,,,,,,bkg for Z+X studies
+WZto3LNu,,4.924,,,/WZto3LNu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;LEPTON_SETUP=2022,RecoProbabilities.py,xsec from ?
+DYJetsToLL,,5558.0,,,/DYJetsToLL_M-50_TuneCP5_13p6TeV-madgraphMLM-pythia8/Run3Summer22EENanoAODv12-forPOG_130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;LEPTON_SETUP=2022,RecoProbabilities.py,xsec from XSDB 
+TTto2L2Nu,,762.1,,,/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;LEPTON_SETUP=2022,RecoProbabilities.py,xsec from XSDB
