@@ -111,9 +111,10 @@ class mcTruthAnalyzer(Module):
 
         self.out.fillBranch("GenZZ_FinalState", genZZFinalState)
         self.out.fillBranch("GenZZ_mass", genZZMass)
-        self.out.fillBranch("GenZZ_Z1l1Idx", theGenZZLeps[0]) #FIXME: to be sorted with standard criteria
-        self.out.fillBranch("GenZZ_Z1l2Idx", theGenZZLeps[1])
-        self.out.fillBranch("GenZZ_Z2l1Idx", theGenZZLeps[2])
-        self.out.fillBranch("GenZZ_Z2l2Idx", theGenZZLeps[3])
+        if (len(theGenZZLeps) == 4):
+            self.out.fillBranch("GenZZ_Z1l1Idx", theGenZZLeps[0]) #FIXME: to be sorted with standard criteria
+            self.out.fillBranch("GenZZ_Z1l2Idx", theGenZZLeps[1])
+            self.out.fillBranch("GenZZ_Z2l1Idx", theGenZZLeps[2])
+            self.out.fillBranch("GenZZ_Z2l2Idx", theGenZZLeps[3])
 
         return True
