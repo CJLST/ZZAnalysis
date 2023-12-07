@@ -195,7 +195,7 @@ while treeMini.GetEntry(iEntryMini):
         nMatch+=1
     else :
         print("Missing in nano: "+str(treeMini.RunNumber)+":"+str(treeMini.LumiNumber)+":"+str(treeMini.EventNumber), treeMini.ZZsel)
-        print('   {:.2f} {:.2f} {:.2f}'.format(treeMini.ZZMass,treeMini.Z1Mass,treeMini.Z2Mass), "hasFSR:",t1_hasFSR)
+        print('   {:.2f} {:.2f} {:.2f}'.format(treeMini.ZZMass,treeMini.Z1Mass,treeMini.Z2Mass), "hasFSR:",treeMini.fsrPt.size()>0)
         printLeps_mini(treeMini, "   ")
 
 for iEntryNano,found in enumerate(foundNano):
