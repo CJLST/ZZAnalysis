@@ -263,7 +263,7 @@ class MyBatchManager:
 
         self.parser_.add_option("-i", "--input", dest="cfgFileName",
                                 help="input cfg",
-                                default="analyzer_Run2.py")
+                                default="analyzer_batch.py")
 
         self.parser_.add_option("-d", "--debug", action="store_true",
                                 dest="verbose",default =False,
@@ -531,7 +531,7 @@ class Component(object):
 if __name__ == '__main__':
     batchManager = MyBatchManager()
     
-    cfgFileName = batchManager.options_.cfgFileName #"analyzer_Run2.py" # This is the python job config. FIXME make it configurable.
+    cfgFileName = batchManager.options_.cfgFileName # This is the python job config.
     sampleCSV  = batchManager.args_[0]            # This is the csv file with samples to be analyzed./
 
     components = []
