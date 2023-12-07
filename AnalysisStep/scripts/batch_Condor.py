@@ -1,5 +1,6 @@
 #!/bin/env python3
 from __future__ import print_function
+from past.builtins import execfile
 
 import sys
 import imp
