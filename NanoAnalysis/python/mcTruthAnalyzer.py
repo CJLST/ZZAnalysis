@@ -106,15 +106,16 @@ class mcTruthAnalyzer(Module):
                 genZZFinalState *= genpart[lep].pdgId
                 #        print("Gen: {:} leps M={:.4g} In Acc: {:} e, {:} mu,  {:} FSR".format(len(GenHLeps),gen_p4.M(), len(GenEl_acc), len(GenMu_acc), len (GenFSR)), "\n")
             genZZMass = gen_p4.M()
+        else:
+            theGenZZLeps = [-1]*4
 
 #        print(theGenH.p4().M(), genZZMass, "nFSR: ", len(genFSRIdxs))
 
         self.out.fillBranch("GenZZ_FinalState", genZZFinalState)
         self.out.fillBranch("GenZZ_mass", genZZMass)
-        if (len(theGenZZLeps) == 4):
-            self.out.fillBranch("GenZZ_Z1l1Idx", theGenZZLeps[0]) #FIXME: to be sorted with standard criteria
-            self.out.fillBranch("GenZZ_Z1l2Idx", theGenZZLeps[1])
-            self.out.fillBranch("GenZZ_Z2l1Idx", theGenZZLeps[2])
-            self.out.fillBranch("GenZZ_Z2l2Idx", theGenZZLeps[3])
+        self.out.fillBranch("GenZZ_Z1l1Idx", theGenZZLeps[0]) #FIXME: to be sorted with standard criteria
+        self.out.fillBranch("GenZZ_Z1l2Idx", theGenZZLeps[1])
+        self.out.fillBranch("GenZZ_Z2l1Idx", theGenZZLeps[2])
+        self.out.fillBranch("GenZZ_Z2l2Idx", theGenZZLeps[3])
 
         return True
