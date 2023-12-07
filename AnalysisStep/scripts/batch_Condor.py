@@ -51,10 +51,16 @@ def batchScript( index, remoteDir=''):
 #Note: ${VAR} in the script have to be escaped as ${{VAR}}
 # as the string is parsed through .format
    script = """#!/bin/bash
-set -euo pipefail
-
 SUBMIT_DIR=$1
 TRANSFER_DIR={remoteDir}
+
+uname -srm
+
+# CMS env needs to be set manually in al9
+export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
+source $VO_CMS_SW_DIR/cmsset_default.sh 
+
+set -euo pipefail
 
 cd $SUBMIT_DIR
 eval $(scram ru -sh)
@@ -113,10 +119,16 @@ exit $cmsRunStatus
 def batchScriptNano( index, remoteDir=''):
    '''prepare the Condor version of the batch script, to run on HTCondor'''
    script = '''#!/bin/bash
-set -euo pipefail
-
 SUBMIT_DIR=$1
 TRANSFER_DIR={remoteDir}
+
+uname -srm
+
+# CMS env needs to be set manually in al9
+export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
+source $VO_CMS_SW_DIR/cmsset_default.sh 
+
+set -euo pipefail
 
 cd $SUBMIT_DIR
 eval $(scram ru -sh)
@@ -189,7 +201,7 @@ Initialdir              = $(directory)
 request_memory          = '''+str(batchManager.options_.jobmem)+'''
 #Possible values: longlunch, workday, tomorrow, etc.; cf. https://batchdocs.web.cern.ch/local/submit.html
 +JobFlavour             = "'''+batchManager.options_.jobflavour+'''"
-
+{requirements}
 x509userproxy           = {home}/x509up_u{uid}
 
 #cf. https://www-auth.cs.wisc.edu/lists/htcondor-users/2010-September/msg00009.shtml
@@ -201,7 +213,17 @@ periodic_remove         = JobStatus == 5
        transfer=''
    else:
        transfer='transfer_output_files   = ""'       
-   return script.format(home=os.path.expanduser("~"), uid=os.getuid(), mainDir=mainDir, transfer=transfer)
+
+   release=open('/etc/redhat-release','r').read()
+   req = ""
+   if "release 7" in release:
+       req = "requirements = (OpSysAndVer =?= \"CentOS7\")"
+   elif "release 8" in release: #use a Singularity container
+       req = "MY.WantOS = \"el8\""
+   elif "release 9" in release:
+       req = "requirements = (OpSysAndVer =?= \"AlmaLinux9\")"    
+
+   return script.format(home=os.path.expanduser("~"), uid=os.getuid(), mainDir=mainDir, transfer=transfer, requirements=req)
 
             
 class MyBatchManager:
