@@ -51,10 +51,16 @@ def batchScript( index, remoteDir=''):
 #Note: ${VAR} in the script have to be escaped as ${{VAR}}
 # as the string is parsed through .format
    script = """#!/bin/bash
-set -euo pipefail
-
 SUBMIT_DIR=$1
 TRANSFER_DIR={remoteDir}
+
+uname -srm
+
+# CMS env needs to be set manually in al9
+export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
+source $VO_CMS_SW_DIR/cmsset_default.sh 
+
+set -euo pipefail
 
 cd $SUBMIT_DIR
 eval $(scram ru -sh)
@@ -113,10 +119,16 @@ exit $cmsRunStatus
 def batchScriptNano( index, remoteDir=''):
    '''prepare the Condor version of the batch script, to run on HTCondor'''
    script = '''#!/bin/bash
-set -euo pipefail
-
 SUBMIT_DIR=$1
 TRANSFER_DIR={remoteDir}
+
+uname -srm
+
+# CMS env needs to be set manually in al9
+export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
+source $VO_CMS_SW_DIR/cmsset_default.sh 
+
+set -euo pipefail
 
 cd $SUBMIT_DIR
 eval $(scram ru -sh)
@@ -189,7 +201,7 @@ Initialdir              = $(directory)
 request_memory          = '''+str(batchManager.options_.jobmem)+'''
 #Possible values: longlunch, workday, tomorrow, etc.; cf. https://batchdocs.web.cern.ch/local/submit.html
 +JobFlavour             = "'''+batchManager.options_.jobflavour+'''"
-
+{requirements}
 x509userproxy           = {home}/x509up_u{uid}
 
 #cf. https://www-auth.cs.wisc.edu/lists/htcondor-users/2010-September/msg00009.shtml
@@ -201,7 +213,17 @@ periodic_remove         = JobStatus == 5
        transfer=''
    else:
        transfer='transfer_output_files   = ""'       
-   return script.format(home=os.path.expanduser("~"), uid=os.getuid(), mainDir=mainDir, transfer=transfer)
+
+   release=open('/etc/redhat-release','r').read()
+   req = ""
+   if "release 7" in release:
+       req = "requirements = (OpSysAndVer =?= \"CentOS7\")"
+   elif "release 8" in release: #use a Singularity container
+       req = "MY.WantOS = \"el8\""
+   elif "release 9" in release:
+       req = "requirements = (OpSysAndVer =?= \"AlmaLinux9\")"    
+
+   return script.format(home=os.path.expanduser("~"), uid=os.getuid(), mainDir=mainDir, transfer=transfer, requirements=req)
 
             
 class MyBatchManager:
@@ -275,11 +297,11 @@ class MyBatchManager:
         self.outputDir_ = os.path.abspath(outputDir)
         self.workingDir = str(self.outputDir_)
         if( os.path.isdir(self.outputDir_) == True ):
-            input = ''
+            inputyn = ''
             if not self.options_.force:
-                while input != 'y' and input != 'n':
-                    input = raw_input( 'The directory ' + self.outputDir_ + ' exists. Are you sure you want to continue? its contents will be overwritten [y/n] ' )
-            if input == 'n':
+                while inputyn != 'y' and inputyn != 'n':
+                    inputyn = input( 'The directory ' + self.outputDir_ + ' exists. Are you sure you want to continue? its contents will be overwritten [y/n] ' )
+            if inputyn == 'n':
                 sys.exit(1)
             else:
                 os.system( 'rm -rf ' + self.outputDir_)
@@ -374,26 +396,26 @@ class MyBatchManager:
         os.system('chmod +x %s' % scriptFileName)
         template_name = splitComponents[value].samplename + 'run_template_cfg.py'
 
-#	working_dir = os.path.dirname(self.outputDir_)
+#       working_dir = os.path.dirname(self.outputDir_)
 
 
-	template_file_name = '%s/%s'%(self.outputDir_, template_name) #splitComponents[value].samplename + '_run_template_cfg.py' 
+        template_file_name = '%s/%s'%(self.outputDir_, template_name) #splitComponents[value].samplename + '_run_template_cfg.py' 
 #        shutil.copyfile(template_file_name, '%s/run_cfg.py'%jobDir)  
         new_job_path = '%s/run_cfg.py'%jobDir
-	files = splitComponents[value].files 
-	files = ["'%s'"%f for f in files]
-	files = ', '.join(files)
-	with open(new_job_path, 'w') as new_job_cfg :
-	    with open(template_file_name) as f:
-	        for line in f :
-		    if line.find('REPLACE')  > 1 :
+        files = splitComponents[value].files 
+        files = ["'%s'"%f for f in files]
+        files = ', '.join(files)
+        with open(new_job_path, 'w') as new_job_cfg :
+            with open(template_file_name) as f:
+                for line in f :
+                    if line.find('REPLACE')  > 1 :
                         actual_source_string = ""
                         if inputType=="miniAOD" :
                             actual_source_string = "fileNames = cms.untracked.vstring(%s),\n"%files
                         elif inputType=="nanoAOD" :
                             actual_source_string = 'setConf("fileNames",%s)\n'%splitComponents[value].files
-        	        line = actual_source_string
-		    new_job_cfg.write(line)
+                        line = actual_source_string
+                    new_job_cfg.write(line)
  
     def PrepareJobUserTemplate(self, jobDir, value, inputType="miniAOD" ):
        '''Prepare one job. This function is called by the base class.'''
