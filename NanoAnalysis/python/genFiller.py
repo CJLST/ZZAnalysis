@@ -29,9 +29,9 @@ class genFiller(Module):
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
-        self.out.branch("nDressedLeptons", "I")
-        self.out.branch("FidDressedLeps_pt", "F", lenVar="nDressedLeptons")
-        self.out.branch("FidDressedLeps_RelIso", "F", lenVar="nDressedLeptons")
+        self.out.branch("nFidDressedLeps", "I")
+        self.out.branch("FidDressedLeps_pt", "F", lenVar="nFidDressedLeps")
+        self.out.branch("FidDressedLeps_RelIso", "F", lenVar="nFidDressedLeps")
         self.out.branch("FidZZ_Z1l1Idx", "I") # Indices in the GenPart
         self.out.branch("FidZZ_Z1l2Idx", "I")
         self.out.branch("FidZZ_Z2l1Idx", "I")
@@ -474,7 +474,7 @@ class genFiller(Module):
             # TODO: Add GenJets
             # TODO: Add MELA
 
-        self.out.fillBranch("nDressedLeptons", len(dressedLeptons))
+        self.out.fillBranch("nFidDressedLeps", len(dressedLeptons))
         self.out.fillBranch("FidDressedLeps_pt", dressedLeptons)
         self.out.fillBranch("FidDressedLeps_RelIso", Lepts_RelIso)
         self.out.fillBranch("passedFiducial", passFidSel)
