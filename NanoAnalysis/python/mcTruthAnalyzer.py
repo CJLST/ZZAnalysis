@@ -106,6 +106,8 @@ class mcTruthAnalyzer(Module):
                 genZZFinalState *= genpart[lep].pdgId
                 #        print("Gen: {:} leps M={:.4g} In Acc: {:} e, {:} mu,  {:} FSR".format(len(GenHLeps),gen_p4.M(), len(GenEl_acc), len(GenMu_acc), len (GenFSR)), "\n")
             genZZMass = gen_p4.M()
+        else:
+            theGenZZLeps = [-1]*4
 
 #        print(theGenH.p4().M(), genZZMass, "nFSR: ", len(genFSRIdxs))
 
