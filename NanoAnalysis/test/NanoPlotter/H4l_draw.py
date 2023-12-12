@@ -3,6 +3,7 @@
 # It lacks all the plots and features of the full miniAOD plotter.
 #
 # run from the python prompt:
+# from past.builtins import execfile
 # execfile("H4l_draw.py")
 
 from __future__ import print_function
@@ -72,8 +73,8 @@ def getZX(h_model) :
     
 
 ### 2022 plots
-#Lum = 35.084 # 1/fb 2022 C-G 355100_362760 Golden json
-Lum = 21.1289 # 1/fb 2022 F-G Golden json (prompt v11)
+Lum = 35.08424 # 1/fb 2022 C-G  (= 35.181930231/fb of full 355100_362760 Golden json - 0.097685694 of eraB that we don't use
+#Lum = 21.1289 # 1/fb 2022 F-G Golden json (prompt v11)
 
 # Set style matching the one used for HZZ plots
 ROOT.TH1.SetDefaultSumw2()

@@ -42,12 +42,12 @@ if __name__ == '__main__':
                     cpustring=cpustring.replace(",","")
                     tt=time.strptime(cpustring,"%H:%M:%S")
                     cpu=tt.tm_hour*3600 + tt.tm_min*60 + tt.tm_sec
-    #                print(line.split()[2], cpu)
+#                    print(chunkname, dataset,  line.split()[2], cpu)
                     if dataset in datasets:
                         datasets[dataset] = [min(cpu,datasets[dataset][0]),cpu+datasets[dataset][1],max(cpu,datasets[dataset][2]),datasets[dataset][3]+1]
                     else:
                         datasets[dataset] = [cpu, cpu, cpu, 1]
     
-    print("CPU usage: njobs, min/avg/max :")
+    print("CPU usage: njobs, min/avg/max (s):")
     for dataset in datasets:
-        print(dataset,  datasets[dataset][3], datasets[dataset][0],datasets[dataset][1]/datasets[dataset][3],datasets[dataset][2])
+        print(dataset,  datasets[dataset][3], "{:.1f}/{:.1f}/{:.1f}".format(datasets[dataset][0],datasets[dataset][1]/datasets[dataset][3],datasets[dataset][2]))
