@@ -119,7 +119,7 @@ def haddChunks(idir, removeDestDir, cleanUp=False, destdir=None ):
         print("======================")
         print("hadding folder", i, "/", len(chunks))
         print("======================")
-        print(odir, cchunks)
+#        print(odir, cchunks)
         if removeDestDir:
             if os.path.isdir( odir ):
                 shutil.rmtree(odir)

@@ -1,3 +1,4 @@
+#!/bin/env python3
 ### Example macro for filling standard histograms from H4l nanoAODs.
 ### Histograms are stored on a file and can then be plotted with
 
@@ -10,7 +11,7 @@ from ZZAnalysis.NanoAnalysis.tools import getLeptons
 
 
 pathMC = "/eos/user/n/namapane/H4lnano/220420/" # FIXME: Use 2018 MC for the time being
-pathDATA = "/eos/user/n/namapane/H4lnano/230506/Data2022/"
+pathDATA = "/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIII/231209_nano/Data2022/"
 
 ZmassValue = 91.1876
 

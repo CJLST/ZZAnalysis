@@ -94,7 +94,7 @@ class ZZFiller(Module):
                 sqrts=13.6
             self.mela = Mela(sqrts, 125, TVar.ERROR)
             self.mela.setCandidateDecayMode(TVar.CandidateDecay_ZZ)
-
+            print("", flush=True) # avoids MELA init messages to mix with job output 
 
         # Example of adding control histograms (requires self.writeHistFile = True)
         # def beginJob(self,histFile=None, histDirName=None):
@@ -105,7 +105,7 @@ class ZZFiller(Module):
 
 
     def endJob(self):
-        pass
+         print("", flush=True)
 
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
