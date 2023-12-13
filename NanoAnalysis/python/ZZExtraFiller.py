@@ -52,7 +52,7 @@ class ZZExtraFiller(Module):
         extraZs = []
         for iZ, Z in enumerate(Zs) :
             if Z.l1Idx in theZZleps or Z.l2Idx in theZZleps : continue
-            extraZs.append[iZ]
+            extraZs.append(iZ)
 
         # Store the result as a collection variable, even if it is filled only for the best candidate
         nExtraLepsA = [-1]*event.nZZCand
