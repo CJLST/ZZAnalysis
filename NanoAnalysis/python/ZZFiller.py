@@ -295,7 +295,7 @@ class ZZFiller(Module):
                         bestSSCRIdx = len(ZLLs)
                         select = True
                     if iZLL == bestSIPCRIdx :
-                        bestSSCRIdx = len(ZLLs)
+                        bestSIPCRIdx = len(ZLLs)
                         select = True
                     if select : ZLLs.append(ZLL)
                     if self.DEBUG: print("ZLL:", iZLL, ZLL.p4.M(), ZLL.Z1.M, ZLL.Z2.M, ZLL.Z2.sumpt(), ZLL.finalState(), ZLL.p_GG_SIG_ghg2_1_ghz1_1_JHUGen, ZLL.p_QQB_BKG_MCFM, ZLL.KD,
