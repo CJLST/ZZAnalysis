@@ -31,11 +31,18 @@ class genFiller(Module):
         self.out = wrappedOutputTree
         self.out.branch("nFidDressedLeps", "I")
         self.out.branch("FidDressedLeps_pt", "F", lenVar="nFidDressedLeps")
+        self.out.branch("FidDressedLeps_eta", "F", lenVar="nFidDressedLeps")
+        self.out.branch("FidDressedLeps_phi", "F", lenVar="nFidDressedLeps")
+        self.out.branch("FidDressedLeps_mass", "F", lenVar="nFidDressedLeps")
+        self.out.branch("FidDressedLeps_id", "F", lenVar="nFidDressedLeps")
+        self.out.branch("FidDressedLeps_momid", "F", lenVar="nFidDressedLeps")
+        # self.out.branch("FidDressedLeps_mommomid", "F", lenVar="nFidDressedLeps") # TODO
         self.out.branch("FidDressedLeps_RelIso", "F", lenVar="nFidDressedLeps")
         self.out.branch("FidZZ_Z1l1Idx", "I") # Indices in the GenPart
         self.out.branch("FidZZ_Z1l2Idx", "I")
         self.out.branch("FidZZ_Z2l1Idx", "I")
         self.out.branch("FidZZ_Z2l2Idx", "I")
+        # self.out.branch("FidZZ_Hindex", "I") # TODO: How to define a list
         self.out.branch("FidZZ_mass", "F")
         self.out.branch("FidZZ_pt", "F")
         self.out.branch("FidZZ_eta", "F")
@@ -403,11 +410,14 @@ class genFiller(Module):
             z1mass = (ZCands_fidSel[0]+ZCands_fidSel[1]).M()
             z2mass = (ZCands_fidSel[2]+ZCands_fidSel[3]).M()
 
+        # hindex = [z1l1idx, z1l2idx, z2l1idx, z2l2idx] # TODO: maybe just do this in the skimmer
+
         self.out.fillBranch("FidZZ_mass", zzmass)
-        self.out.fillBranch("FidZZ_Z1l1Idx", z1l1idx) #FIXME: to be sorted with standard criteria
+        self.out.fillBranch("FidZZ_Z1l1Idx", z1l1idx)
         self.out.fillBranch("FidZZ_Z1l2Idx", z1l2idx)
         self.out.fillBranch("FidZZ_Z2l1Idx", z2l1idx)
         self.out.fillBranch("FidZZ_Z2l2Idx", z2l2idx)
+        # self.out.fillBranch("FidZZ_Hindex", hindex) # TODO: Here or in the skimmer?
         self.out.fillBranch("FidZZ_pt", zzpt)
         self.out.fillBranch("FidZZ_eta", zzeta)
         self.out.fillBranch("FidZZ_phi", zzphi)
@@ -424,7 +434,13 @@ class genFiller(Module):
 
         genpart=Collection(event,"GenPart")
 
-        dressedLeptons = [-1]*len(genpart)
+        dressedLeptons_pt = [-1]*len(genpart)
+        dressedLeptons_eta = [-1]*len(genpart)
+        dressedLeptons_phi = [-1]*len(genpart)
+        dressedLeptons_mass = [-1]*len(genpart)
+        dressedLeptons_id = [-1]*len(genpart)
+        dressedLeptons_momId = [-1]*len(genpart)
+        # dressedLeptons_mommomId = [-1]*len(genpart) # TODO
         Lepts_RelIso   = [-1]*len(genpart)
 
         nGENHiggs = 0.0
@@ -450,7 +466,14 @@ class genFiller(Module):
                 # TODO: Add GENZ variables (if needed for the analysis)
 
                 Lepts_RelIso[i] = genIso
-                dressedLeptons[i] = lep_dressed.Pt()
+                dressedLeptons_pt[i] = lep_dressed.Pt()
+                dressedLeptons_eta[i] = lep_dressed.Eta()
+                dressedLeptons_phi[i] = lep_dressed.Phi()
+                dressedLeptons_mass[i] = lep_dressed.M()
+                dressedLeptons_id[i] = gp.pdgId
+
+                dressedLeptons_momId = mom_id
+                # dressedLeptons_mommomId = mommom_id # TODO
 
         LeptonsCollection = [Leptons, LeptonsId, Lepts_RelIso]
 
@@ -475,7 +498,13 @@ class genFiller(Module):
             # TODO: Add MELA
 
         self.out.fillBranch("nFidDressedLeps", len(dressedLeptons))
-        self.out.fillBranch("FidDressedLeps_pt", dressedLeptons)
+        self.out.fillBranch("FidDressedLeps_pt", dressedLeptons_pt)
+        self.out.fillBranch("FidDressedLeps_eta", dressedLeptons_eta)
+        self.out.fillBranch("FidDressedLeps_phi", dressedLeptons_phi)
+        self.out.fillBranch("FidDressedLeps_mass", dressedLeptons_mass)
+        self.out.fillBranch("FidDressedLeps_id", dressedLeptons_id)
+        self.out.fillBranch("FidDressedLeps_momid", dressedLeptons_momId)
+        # self.out.fillBranch("FidDressedLeps_mommomid", dressedLeptons_mommomId) # TODO
         self.out.fillBranch("FidDressedLeps_RelIso", Lepts_RelIso)
         self.out.fillBranch("passedFiducial", passFidSel)
 
