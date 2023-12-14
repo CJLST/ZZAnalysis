@@ -10,7 +10,6 @@ from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collect
 
 from ZZAnalysis.NanoAnalysis.tools import setConf, getConf
 from ZZAnalysis.NanoAnalysis.triggerAndSkim import * # Trigger requirements are defined here
-from ZZAnalysis.NanoAnalysis.genFiller import *
 from ZZAnalysis.NanoAnalysis.lepFiller import *
 from ZZAnalysis.NanoAnalysis.jetFiller import *
 from ZZAnalysis.NanoAnalysis.ZZFiller import *
@@ -134,6 +133,7 @@ ZZSequence.extend([lepFiller(cuts, LEPTON_SETUP), # FSR and FSR-corrected iso; f
 if IsMC :
     from ZZAnalysis.NanoAnalysis.mcTruthAnalyzer import *
     ZZSequence.insert(0, mcTruthAnalyzer(dump=False)) # Gen final state
+    from ZZAnalysis.NanoAnalysis.genFiller import *
     ZZSequence.append(genFiller(dump=False))
 
     from ZZAnalysis.NanoAnalysis.modules.puWeightProducer import *
@@ -175,13 +175,12 @@ branchsel_out = ['drop *',
                  'keep Jet*',
                  'keep nCleanedJet*',
                  'keep FsrPhoton*',
-                 'keep HLT_passZZ*',
+                 'keep HLT_*',
                  'keep best*', # best candidate indices
                  'keep Z*', # Z, ZZ, ZLL candidates
-                 #'keep LHE*',
-                 #'keep Generator*',
+                 'keep Pileup*',
                  #'keep PV*',
-                 #'keep Pileup*',
+                 #'keep Flag*',
                  ]
 
 if IsMC:
@@ -194,11 +193,10 @@ if IsMC:
                           'keep nFidDressedLeps',
                           'keep FidDressedLeps_*',
                           'keep FidZ*',
-                          #'keep Flag*',
+                          'keep passedFiducial',
                           #'keep LHE*',
                           #'keep Generator*',
                           #'keep PV*',
-                          #'keep Pileup*',
                         ])
 
 from PhysicsTools.NanoAODTools.postprocessing.framework.postprocessor import PostProcessor
@@ -214,6 +212,7 @@ p = PostProcessor(".", fileNames,
 #                  histFileName="histos.root", histDirName="plots", # file containing histograms
                   maxEntries=0, # Number of events to be read
                   firstEntry=0, # First event to be read
+                  provenance = False
                   ) 
 
 ### Run command should be issued by the calling scripy
