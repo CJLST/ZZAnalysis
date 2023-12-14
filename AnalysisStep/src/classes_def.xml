@@ -5,4 +5,5 @@
   <class name="LeptonSFHelper"/>
   <class name="KFactors"/>
   <class name="Mela" />
+  <class name="WeightCalculatorFromHistogram"/>
 </lcgdict>

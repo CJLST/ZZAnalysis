@@ -155,15 +155,51 @@ if IsMC :
     ZZSequence.append(weightFiller(XSEC, APPLY_K_NNLOQCD_ZZGG, APPLY_K_NNLOQCD_ZZQQB, APPLY_K_NNLOEW_ZZQQB, APPLY_QCD_GGF_UNCERT)) # total weight
 
 ### Branches to be read and written to output
-branchsel_in = ""
+branchsel_in = ['drop FatJet_*',
+                'drop IsoTrack*',
+                'drop L1_*',
+                'drop Photon*',
+                'drop SV_*',
+                'drop SoftActivityJet_*',
+                'drop SubJet*',
+                'drop Tau*',]
+
+branchsel_out = ['drop *',
+                 'keep run',
+                 'keep event',
+                 'keep luminosityBlock',
+                 'keep Flag*',
+                 'keep HLT_passZZ*',
+                 'keep Electron*',
+                 'keep Muon*',
+                 'keep Jet*',
+                 'keep nCleanedJet*',
+                 'keep FsrPhoton*',
+                 'keep HLT_passZZ*',
+                 'keep best*', # best candidate indices
+                 'keep Z*', # Z, ZZ, ZLL candidates
+                 #'keep LHE*',
+                 #'keep Generator*',
+                 #'keep PV*',
+                 #'keep Pileup*',
+                 ]
+
 if IsMC:
-    branchsel_in  = localPath+"python/branchsel_in_MC.txt"
-    branchsel_out = localPath+"python/branchsel_out_MC.txt"
-else:
-    branchsel_in  = localPath+"python/branchsel_in_Data.txt"
-    branchsel_out = localPath+"python/branchsel_out_Data.txt"
-
-
+    branchsel_in.extend(['drop GenDressedLepton_*',
+                         'drop GenIsolatedPhoton_*',
+                         ])
+    branchsel_out.extend(['keep GenPart*',
+                          'keep GenZZ*',
+                          'keep *eight', # Generator_weight + custom weights
+                          'keep nFidDressedLeps',
+                          'keep FidDressedLeps_*',
+                          'keep FidZ*',
+                          #'keep Flag*',
+                          #'keep LHE*',
+                          #'keep Generator*',
+                          #'keep PV*',
+                          #'keep Pileup*',
+                        ])
 
 from PhysicsTools.NanoAODTools.postprocessing.framework.postprocessor import PostProcessor
 p = PostProcessor(".", fileNames,

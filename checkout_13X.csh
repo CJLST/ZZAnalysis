@@ -1,13 +1,13 @@
 #!/bin/bash 
 #
 # Instructions:
+# cmsenv
 # wget -O ${TMPDIR}/checkout.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/Run3/checkout_13X.csh
 # cd $CMSSW_BASE/src
-# cmsenv
 # chmod u+x ${TMPDIR}/checkout.csh
 # ${TMPDIR}/checkout.csh
 
-############## For CMSSW_13_0_13
+############## For CMSSW_13_0_16
 
 #exit when any command fails
 set -e
@@ -64,9 +64,11 @@ sed -i '/SimTracker\/Records/d' KinZfitter/HelperFunction/BuildFile.xml
 sed -i '/SimTracker\/Records/d' KinZfitter/KinZfitter/BuildFile.xml
 
 
-#NanoAODTools
-git clone https://github.com/namapane/nanoAOD-tools.git PhysicsTools/NanoAODTools
-(cd PhysicsTools/NanoAODTools ; git checkout py3)
+#Pick the fix from #43536, until it is merged
+git cms-cherry-pick-pr 43536 CMSSW_13_0_X
+
+#get nanoAODTools modules
+git clone https://github.com/IzaakWN/nanoAOD-tools-modules.git PhysicsTools/NATModules
 
 #CommonLHETools requires the MELA env to be set for compilation
 (eval `MelaAnalytics/setup.sh env`; cd CommonLHETools; scram b -j4)
