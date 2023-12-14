@@ -36,13 +36,14 @@ class genFiller(Module):
         self.out.branch("FidDressedLeps_mass", "F", lenVar="nFidDressedLeps")
         self.out.branch("FidDressedLeps_id", "F", lenVar="nFidDressedLeps")
         self.out.branch("FidDressedLeps_momid", "F", lenVar="nFidDressedLeps")
-        # self.out.branch("FidDressedLeps_mommomid", "F", lenVar="nFidDressedLeps") # TODO
+        self.out.branch("FidDressedLeps_mommomid", "F", lenVar="nFidDressedLeps")
         self.out.branch("FidDressedLeps_RelIso", "F", lenVar="nFidDressedLeps")
-        self.out.branch("FidZZ_Z1l1Idx", "I") # Indices in the GenPart
+        self.out.branch("FidZ_DauPdgId", "I", lenVar="nDressedLeptons")
+        self.out.branch("FidZ_MomPdgId", "I", lenVar="nDressedLeptons")
+        self.out.branch("FidZZ_Z1l1Idx", "I")
         self.out.branch("FidZZ_Z1l2Idx", "I")
         self.out.branch("FidZZ_Z2l1Idx", "I")
         self.out.branch("FidZZ_Z2l2Idx", "I")
-        # self.out.branch("FidZZ_Hindex", "I") # TODO: How to define a list
         self.out.branch("FidZZ_mass", "F")
         self.out.branch("FidZZ_pt", "F")
         self.out.branch("FidZZ_eta", "F")
@@ -97,6 +98,34 @@ class genFiller(Module):
     def GenHiggsCounter(self, nGENHiggs):
         nGENHiggs += 1
         # TODO : Create H cand from gp
+
+    def _getDaughters(self, gp, genpart):
+        '''
+            Util function to get the number of daughters.
+            Inspired from:
+            https://github.com/cms-nanoAOD/nanoAOD-tools/blob/master/python/postprocessing/examples/exampleGenDump.py#L33-49
+        '''
+        ndaus = 0
+        all_daus = []
+        for idau in range(gp._index, len(genpart)):
+            dau=genpart[idau]
+            if dau.genPartIdxMother==gp._index: # found daughter
+                ndaus+=1
+                all_daus.append(dau)
+        return ndaus, all_daus
+
+    def GenZDaughters(self, gp, genpart):
+        '''
+            Getter function to retrieve the pdgID of Z daughters.
+        '''
+        ndaus, all_daus = self._getDaughters(gp, genpart)
+        ZdauId = -999
+        for d in all_daus:
+            if(abs(d.pdgId)<17):
+                ZdauId=abs(d.pdgId)
+                break
+
+        return ZdauId
 
     def buildLLPair(self, l1, l2):
         '''
@@ -266,8 +295,6 @@ class genFiller(Module):
             Util function that returns the IDs of the leptons that
             compose the Z1 and Z2 candidates.
         '''
-        # idx_1 = LeptonsId[z_leps_idx[0]]; idx_2 = LeptonsId[z_leps_idx[1]]
-        # idx_3 = LeptonsId[z_leps_idx[2]]; idx_4 = LeptonsId[z_leps_idx[3]]
         idx_1 = z_leps_idx[0]; idx_2 = z_leps_idx[1]
         idx_3 = z_leps_idx[2]; idx_4 = z_leps_idx[3]
 
@@ -410,14 +437,11 @@ class genFiller(Module):
             z1mass = (ZCands_fidSel[0]+ZCands_fidSel[1]).M()
             z2mass = (ZCands_fidSel[2]+ZCands_fidSel[3]).M()
 
-        # hindex = [z1l1idx, z1l2idx, z2l1idx, z2l2idx] # TODO: maybe just do this in the skimmer
-
         self.out.fillBranch("FidZZ_mass", zzmass)
         self.out.fillBranch("FidZZ_Z1l1Idx", z1l1idx)
         self.out.fillBranch("FidZZ_Z1l2Idx", z1l2idx)
         self.out.fillBranch("FidZZ_Z2l1Idx", z2l1idx)
         self.out.fillBranch("FidZZ_Z2l2Idx", z2l2idx)
-        # self.out.fillBranch("FidZZ_Hindex", hindex) # TODO: Here or in the skimmer?
         self.out.fillBranch("FidZZ_pt", zzpt)
         self.out.fillBranch("FidZZ_eta", zzeta)
         self.out.fillBranch("FidZZ_phi", zzphi)
@@ -440,10 +464,14 @@ class genFiller(Module):
         dressedLeptons_mass = [-1]*len(genpart)
         dressedLeptons_id = [-1]*len(genpart)
         dressedLeptons_momId = [-1]*len(genpart)
-        # dressedLeptons_mommomId = [-1]*len(genpart) # TODO
+        dressedLeptons_mommomId = [-1]*len(genpart)
         Lepts_RelIso   = [-1]*len(genpart)
 
+        zdau_pdg_id = [-1]*len(genpart)
+        zmom_pdg_id = [-1]*len(genpart)
+
         nGENHiggs = 0.0
+        nGENZ     = 0.0
 
         Leptons, LeptonsId, LeptonsReco = self.init_collections()
 
@@ -452,6 +480,7 @@ class genFiller(Module):
                 if (not((gp.status == 1) or (abs(gp.pdgId) == 15))): continue
                 mom_idx, mom_id = Mother(gp, genpart)
                 if (not((mom_id==23) or (mom_id==443) or (mom_id==553) or (abs(mom_id)==24))): continue
+                mommom_idx, mommom_id = Mother(genpart[mom_idx], genpart)
 
                 # Dress leptons
                 # PackedGenParticles in miniAOD is GenPart.status == 1
@@ -462,9 +491,6 @@ class genFiller(Module):
                 current_lepton = lep_dressed
                 genIso = self.computeGenIso(current_lepton, genpart, fsr_gamma_idx)
 
-                if (gp.pdgId == 25): self.GenHiggsCounter(nGENHiggs)
-                # TODO: Add GENZ variables (if needed for the analysis)
-
                 Lepts_RelIso[i] = genIso
                 dressedLeptons_pt[i] = lep_dressed.Pt()
                 dressedLeptons_eta[i] = lep_dressed.Eta()
@@ -472,8 +498,15 @@ class genFiller(Module):
                 dressedLeptons_mass[i] = lep_dressed.M()
                 dressedLeptons_id[i] = gp.pdgId
 
-                dressedLeptons_momId = mom_id
-                # dressedLeptons_mommomId = mommom_id # TODO
+                dressedLeptons_momId[i] = mom_id
+                dressedLeptons_mommomId[i] = mommom_id
+
+            if (gp.pdgId == 25): self.GenHiggsCounter(nGENHiggs)
+            if (((gp.pdgId==23) or (gp.pdgId==443) or (gp.pdgId==553)) and ((gp.status>=20) and (gp.status<30))):
+                z_mom_idx, z_mom_id = Mother(gp, genpart)
+                d_pdgId = self.GenZDaughters(gp, genpart)
+                zdau_pdg_id[i] = d_pdgId
+                zmom_pdg_id[i] = z_mom_id
 
         LeptonsCollection = [Leptons, LeptonsId, Lepts_RelIso]
 
@@ -504,8 +537,10 @@ class genFiller(Module):
         self.out.fillBranch("FidDressedLeps_mass", dressedLeptons_mass)
         self.out.fillBranch("FidDressedLeps_id", dressedLeptons_id)
         self.out.fillBranch("FidDressedLeps_momid", dressedLeptons_momId)
-        # self.out.fillBranch("FidDressedLeps_mommomid", dressedLeptons_mommomId) # TODO
+        self.out.fillBranch("FidDressedLeps_mommomid", dressedLeptons_mommomId)
         self.out.fillBranch("FidDressedLeps_RelIso", Lepts_RelIso)
+        self.out.fillBranch("FidZ_DauPdgId", zdau_pdg_id)
+        self.out.fillBranch("FidZ_MomPdgId", zmom_pdg_id)
         self.out.fillBranch("passedFiducial", passFidSel)
 
         return True
