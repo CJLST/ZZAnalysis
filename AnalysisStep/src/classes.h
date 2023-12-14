@@ -2,6 +2,7 @@
 #include <DataFormats/PatCandidates/interface/UserData.h>
 #include <ZZAnalysis/AnalysisStep/interface/LeptonSFHelper.h>
 #include <ZZAnalysis/AnalysisStep/interface/kFactors.h>
+#include <ZZAnalysis/AnalysisStep/interface/WeightCalculatorFromHistogram.h>
 #include <vector>
 
 

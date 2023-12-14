@@ -1,4 +1,5 @@
-# Imported from  PhysicsTools.NanoAODTools.postprocessing.modules.common because it requires modifications for py3
+# Imported from the standalone version of PhysicsTools.NanoAODTools.postprocessing.modules.common.
+# FIXME: to be replaced with a correctionlib-based module
 
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
@@ -44,7 +45,7 @@ class puWeightProducer(Module):
 
         # Try to load module via python dictionaries
         try:
-            ROOT.gSystem.Load("libPhysicsToolsNanoAODTools")
+            ROOT.gSystem.Load("libZZAnalysisAnalysisStep")
             dummy = ROOT.WeightCalculatorFromHistogram
         # Load it via ROOT ACLIC. NB: this creates the object file in the
         # CMSSW directory, causing problems if many jobs are working from the
