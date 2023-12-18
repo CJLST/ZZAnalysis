@@ -38,8 +38,8 @@ class genFiller(Module):
         self.out.branch("FidDressedLeps_momid", "F", lenVar="nFidDressedLeps")
         self.out.branch("FidDressedLeps_mommomid", "F", lenVar="nFidDressedLeps")
         self.out.branch("FidDressedLeps_RelIso", "F", lenVar="nFidDressedLeps")
-        self.out.branch("FidZ_DauPdgId", "I", lenVar="nDressedLeptons")
-        self.out.branch("FidZ_MomPdgId", "I", lenVar="nDressedLeptons")
+        self.out.branch("FidZ_DauPdgId", "I", lenVar="nFidDressedLeps")
+        self.out.branch("FidZ_MomPdgId", "I", lenVar="nFidDressedLeps")
         self.out.branch("FidZZ_Z1l1Idx", "I")
         self.out.branch("FidZZ_Z1l2Idx", "I")
         self.out.branch("FidZZ_Z2l1Idx", "I")
@@ -530,7 +530,7 @@ class genFiller(Module):
             # TODO: Add GenJets
             # TODO: Add MELA
 
-        self.out.fillBranch("nFidDressedLeps", len(dressedLeptons))
+        self.out.fillBranch("nFidDressedLeps", len(dressedLeptons_pt))
         self.out.fillBranch("FidDressedLeps_pt", dressedLeptons_pt)
         self.out.fillBranch("FidDressedLeps_eta", dressedLeptons_eta)
         self.out.fillBranch("FidDressedLeps_phi", dressedLeptons_phi)
