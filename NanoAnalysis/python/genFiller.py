@@ -530,7 +530,7 @@ class genFiller(Module):
             # TODO: Add GenJets
             # TODO: Add MELA
 
-        self.out.fillBranch("nFidDressedLeps", len(dressedLeptons))
+        self.out.fillBranch("nFidDressedLeps", len(dressedLeptons_pt))
         self.out.fillBranch("FidDressedLeps_pt", dressedLeptons_pt)
         self.out.fillBranch("FidDressedLeps_eta", dressedLeptons_eta)
         self.out.fillBranch("FidDressedLeps_phi", dressedLeptons_phi)
