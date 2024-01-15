@@ -47,6 +47,7 @@ def eleBDTCut(ele, era, preUL, nanoVersion=10) :
 
 class lepFiller(Module):
     def __init__(self, cuts, era):
+        print("***lepFiller: era:", era, flush=True)
         self.writeHistFile=False
         self.cuts = cuts
         self.passEleBDT = cuts["passEleBDT"]

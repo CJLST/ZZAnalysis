@@ -19,7 +19,7 @@ class triggerAndSkim(Module):
         self.era = era
         self.passThru = passThru
         self.debug = False
-        print("***INIT triggerAndSkim: IsMC:", self.isMC, "PD:", self.PD, "era:", self.era, "passThru:", passThru)
+        print("***triggerAndSkim: IsMC:", self.isMC, "PD:", self.PD, "era:", self.era, "passThru:", passThru, flush=True)
         
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
