@@ -18,6 +18,7 @@ from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collect
 
 class ZZExtraFiller(Module):
     def __init__(self, region):
+        print("***ZZExtraFiller", flush=True)
         self.region = region
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):

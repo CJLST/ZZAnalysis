@@ -12,7 +12,7 @@ from PhysicsTools.HeppyCore.utils.deltar import deltaR
 
 class jetFiller(Module):
     def __init__(self):
-        pass
+        print("***jetFiller", flush=True)
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree

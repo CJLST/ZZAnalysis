@@ -17,6 +17,7 @@ from ZZAnalysis.NanoAnalysis.tools import Mother, getParentID
 
 class mcTruthAnalyzer(Module):
     def __init__(self, dump=False):
+        print("***mcTruthAnalyzer", flush=True)
         self.writeHistFile = False
         self.printGenHist  = dump # print MC history
 

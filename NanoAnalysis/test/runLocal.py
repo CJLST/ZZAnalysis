@@ -17,8 +17,6 @@ SampleToRun = "MC2022"
 #setConf("bestCandByMELA", False)
 setConf("APPLYMUCORR", False) #NOTE: mu corrections removed for comparision with mini since they are not deterministic on nanoAOD.
 
-## Select specific events to debug
-#setConf("preselection","run==316239  && luminosityBlock==226 && event==284613817")
 
 ## Force filling K factors and weights (default: all off)
 #setConf("APPLY_K_NNLOQCD_ZZGG", 1) # 0:None; 1: NNLO/LO; 2: NNLO/NLO; 3: NLO/LO
@@ -29,6 +27,7 @@ setConf("APPLYMUCORR", False) #NOTE: mu corrections removed for comparision with
 setConf("PROCESS_CR", True)
 setConf("DEBUG", False)
 setConf("SYNCMODE", True) # Force muon resolution correction with fixed +1 sigma smearing
+#setConf("ADD_ALLEVENTS", True) # Add extra tree of gen info for all events
 
 json = None #replace this if needed
 
@@ -96,6 +95,7 @@ elif SampleToRun == "MC2022" :
     setConf("store","root://cms-xrd-global.cern.ch/")
     setConf("fileNames",[
         "/store/mc/Run3Summer22EENanoAODv12/GluGluHtoZZto4L_M-125_TuneCP5_13p6TeV_powheg2-JHUGenV752-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_postEE_v6-v2/2540000/25c8f5ff-9de0-4a0c-9e2f-757332ad392f.root",
+#        "/store/mc/Run3Summer22EENanoAODv12/GluGluHtoZZto4L_M-125_TuneCP5_13p6TeV_powheg2-JHUGenV752-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_postEE_v6-v2/2530000/8f306f2b-1284-41b8-a98f-744267f64b9c.root",
         ])
 #    json = {"1": [[1245, 1245],[1306, 1306],[1410, 1410],[1692, 1692],[1903, 1903],[1910, 1910],[1915, 1915],[1927, 1927],[1939, 1939],[1940, 1940],[1944, 1944],[1945, 1945],[1956, 1956],[1960, 1960],[1965, 1965],[1967, 1967],[1968, 1968],[1969, 1969],[2104, 2104]]}
 
@@ -113,9 +113,12 @@ if len(p.inputFiles) == 1 :
     p.haddFileName = None # Skip final hadd
 #p.maxEntries = 1000
 
+### Select specific events to debug
+#p.cut = "run==316239  && luminosityBlock==226 && event==284613817"
+
 ### Print out detailed candidate information for debug purposes
-#p.cut = None # Remove preselction
 #from ZZAnalysis.NanoAnalysis.dumpEvents import dumpEvents
+#p.cut = None # Remove preselction
 #insertAfter(p.modules,"lepFiller",dumpEvents(level=-1),getConf("NANOVERSION", 11)) 
 
 #p.branchsel=None #Read all branches
