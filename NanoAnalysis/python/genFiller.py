@@ -30,6 +30,7 @@ class genFiller(Module):
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
+        self.out.branch("nFidZ", "I")
         self.out.branch("nFidDressedLeps", "I")
         self.out.branch("FidDressedLeps_pt", "F", lenVar="nFidDressedLeps")
         self.out.branch("FidDressedLeps_eta", "F", lenVar="nFidDressedLeps")
@@ -39,8 +40,8 @@ class genFiller(Module):
         self.out.branch("FidDressedLeps_momid", "F", lenVar="nFidDressedLeps")
         self.out.branch("FidDressedLeps_mommomid", "F", lenVar="nFidDressedLeps")
         self.out.branch("FidDressedLeps_RelIso", "F", lenVar="nFidDressedLeps")
-        self.out.branch("FidZ_DauPdgId", "I", lenVar="nFidDressedLeps")
-        self.out.branch("FidZ_MomPdgId", "I", lenVar="nFidDressedLeps")
+        self.out.branch("FidZ_DauPdgId", "I", lenVar="nFidZ")
+        self.out.branch("FidZ_MomPdgId", "I", lenVar="nFidZ")
         self.out.branch("FidZZ_Z1l1Idx", "I")
         self.out.branch("FidZZ_Z1l2Idx", "I")
         self.out.branch("FidZZ_Z2l1Idx", "I")
@@ -468,11 +469,11 @@ class genFiller(Module):
         dressedLeptons_mommomId = [-1]*len(genpart)
         Lepts_RelIso   = [-1]*len(genpart)
 
-        zdau_pdg_id = [-1]*len(genpart)
-        zmom_pdg_id = [-1]*len(genpart)
+        zdau_pdg_id = []
+        zmom_pdg_id = []
 
-        nGENHiggs = 0.0
-        nGENZ     = 0.0
+        nGENHiggs = 0
+        nGENZ     = 0
 
         Leptons, LeptonsId, LeptonsReco = self.init_collections()
 
@@ -504,10 +505,11 @@ class genFiller(Module):
 
             if (gp.pdgId == 25): self.GenHiggsCounter(nGENHiggs)
             if (((gp.pdgId==23) or (gp.pdgId==443) or (gp.pdgId==553)) and ((gp.status>=20) and (gp.status<30))):
+                nGENZ+=1
                 z_mom_idx, z_mom_id = Mother(gp, genpart)
                 d_pdgId = self.GenZDaughters(gp, genpart)
-                zdau_pdg_id[i] = d_pdgId
-                zmom_pdg_id[i] = z_mom_id
+                zdau_pdg_id.append(d_pdgId)
+                zmom_pdg_id.append(z_mom_id)
 
         LeptonsCollection = [Leptons, LeptonsId, Lepts_RelIso]
 
@@ -531,6 +533,7 @@ class genFiller(Module):
             # TODO: Add GenJets
             # TODO: Add MELA
 
+        self.out.fillBranch("nFidZ", nGENZ)
         self.out.fillBranch("nFidDressedLeps", len(dressedLeptons_pt))
         self.out.fillBranch("FidDressedLeps_pt", dressedLeptons_pt)
         self.out.fillBranch("FidDressedLeps_eta", dressedLeptons_eta)
