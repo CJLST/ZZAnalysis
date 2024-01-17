@@ -25,6 +25,7 @@ class genFiller(Module):
         that satisfy the fiducial selection for the HZZ analysis.
     '''
     def __init__(self, dump=False):
+        print("***genFiller", flush=True)
         self.printGenHist = dump # print MC history
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):

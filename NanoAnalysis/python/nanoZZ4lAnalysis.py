@@ -10,12 +10,11 @@ from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collect
 
 from ZZAnalysis.NanoAnalysis.tools import setConf, getConf
 from ZZAnalysis.NanoAnalysis.triggerAndSkim import * # Trigger requirements are defined here
-from ZZAnalysis.NanoAnalysis.genFiller import *
 from ZZAnalysis.NanoAnalysis.lepFiller import *
 from ZZAnalysis.NanoAnalysis.jetFiller import *
 from ZZAnalysis.NanoAnalysis.ZZFiller import *
 from ZZAnalysis.NanoAnalysis.ZZExtraFiller import *
-
+from ZZAnalysis.NanoAnalysis.weightFiller import weightFiller
 
 ### Get processing customizations, if defined in the including .py; use defaults otherwise 
 DEBUG = getConf("DEBUG", False)
@@ -42,7 +41,8 @@ APPLY_K_NNLOQCD_ZZGG = getConf("APPLY_K_NNLOQCD_ZZGG", 0)
 # K factors for qqZZ
 APPLY_K_NNLOQCD_ZZQQB = getConf("APPLY_K_NNLOQCD_ZZQQB", False) 
 APPLY_K_NNLOEW_ZZQQB  = getConf("APPLY_K_NNLOEW_ZZQQB", False) 
-
+# Add separate tree with gen info for all events
+ADD_ALLEVENTS = getConf("ADD_ALLEVENTS", False)
 
 if "UL" in DATA_TAG : preUL = False # used to set the correct electron selection
 else: preUL = True
@@ -87,14 +87,11 @@ cuts = dict(
     eleFullId = (lambda l, era : cuts["eleRelaxedId"](l) and cuts["passEleBDT"](l, era)),
     )
 
-
-
-
 ### Preselection to speed up processing. Note: to be relaxed for CRs
-preselection = getConf("preselection", "nMuon + nElectron >= 4 &&" +
-                       "Sum$(Muon_pt > {muPt}-2.) +" + # Allow for variations due to scale calib
-                       "Sum$(Electron_pt > {elePt})" +
-                       ">= 4").format(**cuts)
+if ADD_ALLEVENTS :
+    preselection = None
+else:
+    preselection = "nMuon+nElectron >= 4 && Sum$(Muon_pt > {muPt}-2.)+Sum$(Electron_pt>{elePt})>= 4".format(**cuts)
 
 ### Input file specification
 store = getConf("store","") # "/eos/cms/" for files available on eos; "root://cms-xrd-global.cern.ch/" for remote files
@@ -116,43 +113,64 @@ if not IsMC :
     else:        
         exit(1) #2016-17 to be implemented
 
-### Sequence to be run
-ZZSequence = [triggerAndSkim(isMC=IsMC, PD=PD, era=LEPTON_SETUP, passThru=TRIGPASSTHROUGH)] # Filter for good PV and trigger requirements; apply PD precedence rules for data
+### Modules to be run
 
-if APPLYMUCORR and LEPTON_SETUP < 2022 : # corrections not yet implemented for Run 3
+# Standard sequence used for both data and MC
+reco_sequence = [lepFiller(cuts, LEPTON_SETUP), # FSR and FSR-corrected iso; flags for passing IDs
+                 ZZFiller(runMELA, bestCandByMELA, IsMC, LEPTON_SETUP, PROCESS_CR, debug=DEBUG), # Build ZZ candidates; choose best candidate; filter events with candidates
+                 jetFiller(), # Jets cleaning with leptons
+                 ZZExtraFiller('SR'), # Add information on extra objects to the selected best candidate
+                 # MELAFiller(), # Compute the full set of discriminants for the best candidate
+                 ]
+
+# Add muon scale corrections for Run 2 (not yet available for Run 3)
+if APPLYMUCORR and LEPTON_SETUP < 2022 : 
     from ZZAnalysis.NanoAnalysis.modules.muonScaleResProducer import muonScaleRes
-    ZZSequence.append(muonScaleRes(LEPTON_SETUP, DATA_TAG, overwritePt=True, syncMode=SYNCMODE)) # Sets corrected muon pT and scale uncertainty
+    reco_sequence.insert(0, muonScaleRes(LEPTON_SETUP, DATA_TAG, overwritePt=True, syncMode=SYNCMODE))
 
+# Special modules to be applied before the reco_sequence, that may filter events
+pre_sequence = [triggerAndSkim(isMC=IsMC, PD=PD, era=LEPTON_SETUP, passThru=TRIGPASSTHROUGH), # Filter for good PV and trigger requirements; apply PD precedence rules for data
+                ]
+# Special modules to be applied after the reco_sequence (ie only for selected events)
+post_sequence = []
 
-ZZSequence.extend([lepFiller(cuts, LEPTON_SETUP), # FSR and FSR-corrected iso; flags for passing IDs
-                   ZZFiller(runMELA, bestCandByMELA, IsMC, LEPTON_SETUP, PROCESS_CR, debug=DEBUG), # Build ZZ candidates; choose best candidate; filter events with candidates
-                   jetFiller(), # Jets cleaning with leptons
-                   ZZExtraFiller('SR'),
-#                  MELAFiller(), # Compute the full set of discriminants for the best candidate
-                   ])
+# Weights computation, to be placed in pre or post sequences based on the configuration
+weights = weightFiller(XSEC, APPLY_K_NNLOQCD_ZZGG, APPLY_K_NNLOQCD_ZZQQB, APPLY_K_NNLOEW_ZZQQB, APPLY_QCD_GGF_UNCERT)
 
-if IsMC :
-    from ZZAnalysis.NanoAnalysis.mcTruthAnalyzer import *
-    ZZSequence.insert(0, mcTruthAnalyzer(dump=False)) # Gen final state
-    ZZSequence.append(genFiller(dump=False))
-
+if IsMC:
     from ZZAnalysis.NanoAnalysis.modules.puWeightProducer import *
-    if LEPTON_SETUP < 2022 :
-        puWeight = {2016:puWeight_2016, 2017:puWeight_2017, 2018:puWeight_2018} # FIXME official weights are slightly different than the one we use (checked for 2018)
-        ZZSequence.append(puWeight[LEPTON_SETUP]()) # PU reweighting
-    elif LEPTON_SETUP == 2022 : #FIXME: must update for 2023 MC! 
-        pufile_2022 = "%s/src/ZZAnalysis/AnalysisStep/data/PileUpWeights/pu_weights_2022.root" % os.environ['CMSSW_BASE']
-        puWeight_2022 = lambda : puWeightProducer(pufile_2022,
-                                                  pufile_2022,
-                                                  "MC_out_of_the_box",
-                                                  "Data",
-                                                  verbose=False,
-                                                  doSysVar=True)
-        puWeight = {2022:puWeight_2022} # 2022 weights non official, still preliminary
-        ZZSequence.append(puWeight[LEPTON_SETUP]()) # PU reweighting
+    from ZZAnalysis.NanoAnalysis.mcTruthAnalyzer import *
+    post_sequence.append(mcTruthAnalyzer(dump=False)) # Gen final state etc.
+    
+    if ADD_ALLEVENTS: # Add modules that produce the variables to be stored for all events at the beginni
+        from ZZAnalysis.NanoAnalysis.genFiller import *
+        from ZZAnalysis.NanoAnalysis.cloneBranches import *
+        pre_sequence = [puWeight[LEPTON_SETUP](),
+                        weights,
+                        genFiller(dump=False),
+                        cloneBranches(treeName='AllEvents',
+                                      varlist=['run', 'luminosityBlock', 'event',
+                                               'nFidDressedLeps',
+                                               'FidDressedLeps_*',
+                                               'FidZ*',
+                                               'passedFiducial',
+                                               '*Weight',
+                                               'Generator_weight'],
+                                      #Stop further processing for events that don't have 4 reco leps
+                                      continueFor = lambda evt : (evt.nMuon+evt.nElectron>=4) 
+                                      ),
+                        ] + pre_sequence
 
-    from ZZAnalysis.NanoAnalysis.weightFiller import weightFiller
-    ZZSequence.append(weightFiller(XSEC, APPLY_K_NNLOQCD_ZZGG, APPLY_K_NNLOQCD_ZZQQB, APPLY_K_NNLOEW_ZZQQB, APPLY_QCD_GGF_UNCERT)) # total weight
+    else : # Add them at the end, so that they are run only for selected events
+        post_sequence.extend([puWeight[LEPTON_SETUP](),
+                              weights,
+                              #genFiller(dump=False), # Not required when ADD_ALLEVENTS = False?
+                              ])
+else : # Data
+    post_sequence = [weights]
+
+        
+ZZSequence = pre_sequence + reco_sequence + post_sequence
 
 ### Branches to be read and written to output
 branchsel_in = ['drop FatJet_*',
@@ -175,13 +193,12 @@ branchsel_out = ['drop *',
                  'keep Jet*',
                  'keep nCleanedJet*',
                  'keep FsrPhoton*',
-                 'keep HLT_passZZ*',
+                 'keep HLT_*',
                  'keep best*', # best candidate indices
                  'keep Z*', # Z, ZZ, ZLL candidates
-                 #'keep LHE*',
-                 #'keep Generator*',
+                 'keep Pileup*',
                  #'keep PV*',
-                 #'keep Pileup*',
+                 #'keep Flag*',
                  ]
 
 if IsMC:
@@ -191,16 +208,18 @@ if IsMC:
     branchsel_out.extend(['keep GenPart*',
                           'keep GenZZ*',
                           'keep *eight', # Generator_weight + custom weights
-                          'keep nFidDressedLeps',
-                          'keep FidDressedLeps_*',
-                          'keep FidZ*',
-                          #'keep Flag*',
                           #'keep LHE*',
                           #'keep Generator*',
                           #'keep PV*',
-                          #'keep Pileup*',
                         ])
 
+    if ADD_ALLEVENTS :
+        branchsel_out.extend(['keep nFidDressedLeps',
+                              'keep FidDressedLeps_*',
+                              'keep FidZ*',
+                              'keep passedFiducial',
+                              ])
+    
 from PhysicsTools.NanoAODTools.postprocessing.framework.postprocessor import PostProcessor
 p = PostProcessor(".", fileNames,
                   prefetch=True, longTermCache=False,
@@ -214,6 +233,7 @@ p = PostProcessor(".", fileNames,
 #                  histFileName="histos.root", histDirName="plots", # file containing histograms
                   maxEntries=0, # Number of events to be read
                   firstEntry=0, # First event to be read
+                  provenance = False
                   ) 
 
 ### Run command should be issued by the calling scripy

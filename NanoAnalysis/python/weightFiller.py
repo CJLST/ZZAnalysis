@@ -10,6 +10,7 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 class weightFiller(Module):
     def __init__(self, XS, APPLY_K_NNLOQCD_ZZGG, APPLY_K_NNLOQCD_ZZQQB, APPLY_K_NNLOEW_ZZQQB, APPLY_QCD_GGF_UNCERT):
+        print("***weightFiller: XS:", XS, flush=True)
         self.writeHistFile = False
         self.XS = XS
         self.APPLY_K_NNLOQCD_ZZGG = APPLY_K_NNLOQCD_ZZGG

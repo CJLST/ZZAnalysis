@@ -26,6 +26,7 @@ class StoreOption:
 class ZZFiller(Module):
 
     def __init__(self, runMELA, bestCandByMELA, isMC, year, processCR, debug=False):
+        print("***ZZFiller: isMC:", isMC, "year:", year, flush=True)
         self.writeHistFile = False
         self.isMC = isMC
         self.year = year

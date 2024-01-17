@@ -67,6 +67,10 @@ sed -i '/SimTracker\/Records/d' KinZfitter/KinZfitter/BuildFile.xml
 #Pick the fix from #43536, until it is merged
 git cms-cherry-pick-pr 43536 CMSSW_13_0_X
 
+#Pick more fixes in NanoAODTools
+git fetch https://github.com/namapane/cmssw.git NAT-dev:namapane_NAT-dev
+git cherry-pick 3e73ca4c2f8
+
 #get nanoAODTools modules
 git clone https://github.com/IzaakWN/nanoAOD-tools-modules.git PhysicsTools/NATModules
 
