@@ -460,20 +460,21 @@ class genFiller(Module):
 
         genpart=Collection(event,"GenPart")
 
-        dressedLeptons_pt = [-1]*len(genpart)
-        dressedLeptons_eta = [-1]*len(genpart)
-        dressedLeptons_phi = [-1]*len(genpart)
-        dressedLeptons_mass = [-1]*len(genpart)
-        dressedLeptons_id = [-1]*len(genpart)
-        dressedLeptons_momId = [-1]*len(genpart)
-        dressedLeptons_mommomId = [-1]*len(genpart)
-        Lepts_RelIso   = [-1]*len(genpart)
+        dressedLeptons_pt = []
+        dressedLeptons_eta = []
+        dressedLeptons_phi = []
+        dressedLeptons_mass = []
+        dressedLeptons_id = []
+        dressedLeptons_momId = []
+        dressedLeptons_mommomId = []
+        Lepts_RelIso   = []
 
         zdau_pdg_id = []
         zmom_pdg_id = []
 
         nGENHiggs = 0
         nGENZ     = 0
+        nFidDressedLeps = 0
 
         Leptons, LeptonsId, LeptonsReco = self.init_collections()
 
@@ -487,21 +488,22 @@ class genFiller(Module):
                 # Dress leptons
                 # PackedGenParticles in miniAOD is GenPart.status == 1
                 lep_dressed, fsr_gamma_idx = self.dressLeptons(gp, genpart)
+                nFidDressedLeps += 1
                 Leptons.append(lep_dressed)
                 LeptonsId.append(gp.pdgId)
 
                 current_lepton = lep_dressed
                 genIso = self.computeGenIso(current_lepton, genpart, fsr_gamma_idx)
 
-                Lepts_RelIso[i] = genIso
-                dressedLeptons_pt[i] = lep_dressed.Pt()
-                dressedLeptons_eta[i] = lep_dressed.Eta()
-                dressedLeptons_phi[i] = lep_dressed.Phi()
-                dressedLeptons_mass[i] = lep_dressed.M()
-                dressedLeptons_id[i] = gp.pdgId
+                Lepts_RelIso.append(genIso)
+                dressedLeptons_pt.append(lep_dressed.Pt())
+                dressedLeptons_eta.append(lep_dressed.Eta())
+                dressedLeptons_phi.append(lep_dressed.Phi())
+                dressedLeptons_mass.append(lep_dressed.M())
+                dressedLeptons_id.append(gp.pdgId)
 
-                dressedLeptons_momId[i] = mom_id
-                dressedLeptons_mommomId[i] = mommom_id
+                dressedLeptons_momId.append(mom_id)
+                dressedLeptons_mommomId.append(mommom_id)
 
             if (gp.pdgId == 25): self.GenHiggsCounter(nGENHiggs)
             if (((gp.pdgId==23) or (gp.pdgId==443) or (gp.pdgId==553)) and ((gp.status>=20) and (gp.status<30))):
@@ -534,7 +536,7 @@ class genFiller(Module):
             # TODO: Add MELA
 
         self.out.fillBranch("nFidZ", nGENZ)
-        self.out.fillBranch("nFidDressedLeps", len(dressedLeptons_pt))
+        self.out.fillBranch("nFidDressedLeps", nFidDressedLeps)
         self.out.fillBranch("FidDressedLeps_pt", dressedLeptons_pt)
         self.out.fillBranch("FidDressedLeps_eta", dressedLeptons_eta)
         self.out.fillBranch("FidDressedLeps_phi", dressedLeptons_phi)
