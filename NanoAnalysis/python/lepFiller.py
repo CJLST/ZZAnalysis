@@ -67,24 +67,24 @@ class lepFiller(Module):
         self.out.branch("FsrPhoton_mass", "F", lenVar="nFsrPhoton") # Hack so that photon.p4() works
         self.out.branch("FsrPhoton_dROverEt2", "F", lenVar="nFsrPhoton") # Overwrite existing value
 
-        self.out.branch("Electron_passBDT", "O", lenVar="nElectron")
-        self.out.branch("Electron_ZZFullSel", "O", lenVar="nElectron")   # pass full SR selection (for electrons it is the same as FullID)
-        self.out.branch("Electron_ZZFullId", "O", lenVar="nElectron")    # pass full ID selection
-        self.out.branch("Electron_ZZFullSelNoSIP", "O", lenVar="nElectron") # pass full ID without SIP (base for CR SIP  method)
-        self.out.branch("Electron_ZZRelaxedId", "O", lenVar="nElectron") # pass relaxed ID including SIP (base for SS and OS CRs)
-        self.out.branch("Electron_ZZRelaxedIdNoSIP", "O", lenVar="nElectron") # pass relaxed ID without SIP (widest subset requirement for CRs)
-        self.out.branch("Electron_fsrPhotonIdx", "I", lenVar="nElectron") # Overwrite existing value
-        self.out.branch("Electron_pfRelIso03FsrCorr", "F", lenVar="nElectron")
-        self.out.branch("Electron_passIso", "O", lenVar="nElectron")
+        self.out.branch("Electron_passBDT", "O", lenVar="nElectron", title="pass H4l BDT cut")
+        self.out.branch("Electron_ZZFullSel", "O", lenVar="nElectron", title="pass H4l full SR selection (for electrons,=FullID)")
+        self.out.branch("Electron_ZZFullId", "O", lenVar="nElectron", title="pass H4l full ID selection")
+        self.out.branch("Electron_ZZFullSelNoSIP", "O", lenVar="nElectron", title="pass H4l full ID without SIP (base for CR SIP  method)")
+        self.out.branch("Electron_ZZRelaxedId", "O", lenVar="nElectron", title="pass H4l relaxed ID including SIP (base for SS and OS CRs)")
+        self.out.branch("Electron_ZZRelaxedIdNoSIP", "O", lenVar="nElectron", title="pass H4l relaxed ID without SIP (widest subset of cuts commont to all CRs)")
+        self.out.branch("Electron_fsrPhotonIdx", "S", lenVar="nElectron") # Overwrite existing value
+        self.out.branch("Electron_pfRelIso03FsrCorr", "F", lenVar="nElectron", title="FSR-subtracted pfRelIso03")
+        self.out.branch("Electron_passIso", "O", lenVar="nElectron", title="always True for electrons")
 
-        self.out.branch("Muon_ZZFullSel", "O", lenVar="nMuon")   # pass full SR selection (FullID + isolation)
-        self.out.branch("Muon_ZZFullId", "O", lenVar="nMuon")    # pass full ID selection
-        self.out.branch("Muon_ZZFullSelNoSIP", "O", lenVar="nMuon") # pass full ID + iso, without SIP (base for CR SIP  method)
-        self.out.branch("Muon_ZZRelaxedId", "O", lenVar="nMuon")  # pass relaxed ID including SIP (base for SS and OS CRs)
-        self.out.branch("Muon_ZZRelaxedIdNoSIP", "O", lenVar="nMuon")  # pass relaxed ID without SIP (widest subest requirement for CRs)
-        self.out.branch("Muon_fsrPhotonIdx", "I", lenVar="nMuon") # Overwrite existing value
-        self.out.branch("Muon_pfRelIso03FsrCorr", "F", lenVar="nMuon")
-        self.out.branch("Muon_passIso", "O", lenVar="nMuon")
+        self.out.branch("Muon_ZZFullSel", "O", lenVar="nMuon" , title="pass H4l full SR selection (FullID + isolation)")
+        self.out.branch("Muon_ZZFullId", "O", lenVar="nMuon", title="pass H4l full ID selection")
+        self.out.branch("Muon_ZZFullSelNoSIP", "O", lenVar="nMuon", title="pass H4l full ID without SIP (base for CR SIP  method)")
+        self.out.branch("Muon_ZZRelaxedId", "O", lenVar="nMuon", title="pass H4l relaxed ID including SIP (base for SS and OS CRs)")
+        self.out.branch("Muon_ZZRelaxedIdNoSIP", "O", lenVar="nMuon", title="pass H4l relaxed ID without SIP (widest subset of cuts commont to all CRs)")
+        self.out.branch("Muon_fsrPhotonIdx", "S", lenVar="nMuon") # Overwrite existing value
+        self.out.branch("Muon_pfRelIso03FsrCorr", "F", lenVar="nMuon", title="FSR-subtracted pfRelIso03")
+        self.out.branch("Muon_passIso", "O", lenVar="nMuon", title="Pass ZZ isolation cut")
 
 #    def endFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
 #        pass

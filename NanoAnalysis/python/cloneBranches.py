@@ -9,12 +9,13 @@ from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 class cloneBranches(Module):
 
     def __init__(self, treeName, varlist, continueFor = lambda evt : (True)) :
-        print("***cloneBranches: varlist:", varlist, flush=True)
         self.treeName = treeName
         self.varlist = varlist
         self.continueFor = continueFor
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
+        self.inputTree = inputTree
+        # Clone the requested branches into the new tree.
         eventsTree = wrappedOutputTree.tree()
         eventsTree.SetBranchStatus("*", 0)
         for var in self.varlist :
@@ -27,6 +28,7 @@ class cloneBranches(Module):
         self.newTree.Write()
         
     def analyze(self, event) :
+        self.inputTree.readAllBranches()        
         self.newTree.Fill()
         
         return self.continueFor(event) 

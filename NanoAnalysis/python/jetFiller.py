@@ -17,8 +17,8 @@ class jetFiller(Module):
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
         self.out.branch("Jet_ZZMask", "O", lenVar="nJet") # jet is vetoed by one of the candidate's leptons
-        self.out.branch("JetLeadingIdx", "I") # index of leading jet after cleaning
-        self.out.branch("JetSubleadingIdx", "I") #index of subleading jet after cleaning
+        self.out.branch("JetLeadingIdx", "S") # index of leading jet after cleaning
+        self.out.branch("JetSubleadingIdx", "S") #index of subleading jet after cleaning
         self.out.branch("nCleanedJetsPt30", "B") #number of jets above 30 GeV
         self.out.branch("nCleanedJetsPt30_jesUp", "B")
         self.out.branch("nCleanedJetsPt30_jesDn", "B")
