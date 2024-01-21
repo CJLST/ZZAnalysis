@@ -65,6 +65,7 @@ sed -i '/SimTracker\/Records/d' KinZfitter/KinZfitter/BuildFile.xml
 
 
 #Pick the fix from #43536, until it is merged
+git cms-addpkg PhysicsTools/NanoAODTools
 git cms-cherry-pick-pr 43536 CMSSW_13_0_X
 
 #Pick more fixes in NanoAODTools
