@@ -73,13 +73,13 @@ class weightFiller(Module):
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
         if self.APPLY_K_NNLOQCD_ZZQQB :
-           self.out.branch("KFactor_QCD_qqZZ_M_Weight", "F")            
-        if self.APPLY_K_NNLOQCD_ZZGG > 0 : 
-            self.out.branch("KFactor_QCD_ggZZ_Nominal_Weight", "F")
+           self.out.branch("KFactor_QCD_qqZZ_M_Weight", "F", title="QCD k-factor for qqZZ")
+        if self.APPLY_K_NNLOQCD_ZZGG > 0 :
+            self.out.branch("KFactor_QCD_ggZZ_Nominal_Weight", "F", title="QCD k-factor for ggZZ")
         if self.APPLY_K_NNLOEW_ZZQQB :
-            self.out.branch("KFactor_EW_qqZZ_Weight", "F")
+            self.out.branch("KFactor_EW_qqZZ_Weight", "F", title="EW k-factor for qqZZ")
         if self.APPLY_QCD_GGF_UNCERT :
-            self.out.branch("ggH_NNLOPS_Weight", "F")
+            self.out.branch("ggH_NNLOPS_Weight", "F", title="for ggH")
 
             
         self.out.branch("overallEventWeight", "F") #Overall weight, including relevant k-factors and corrections

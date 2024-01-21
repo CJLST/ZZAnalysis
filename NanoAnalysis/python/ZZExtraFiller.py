@@ -23,8 +23,8 @@ class ZZExtraFiller(Module):
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
-        self.out.branch("ZZCand_nExtraLep", "I", lenVar="nZZCand")
-        self.out.branch("ZZCand_nExtraZ", "I", lenVar="nZZCand")
+        self.out.branch("ZZCand_nExtraLep", "I", lenVar="nZZCand", title="number of extra leptons passing H4l full sel")
+        self.out.branch("ZZCand_nExtraZ", "I", lenVar="nZZCand", title="number of extra Zs passing H4l full sel")
 
     def analyze(self, event):
         ZZs = Collection(event, 'ZZCand')

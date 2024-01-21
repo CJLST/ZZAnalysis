@@ -72,7 +72,7 @@ git fetch https://github.com/namapane/cmssw.git NAT-dev:namapane_NAT-dev
 git cherry-pick 3e73ca4c2f8
 
 #get nanoAODTools modules
-git clone https://github.com/IzaakWN/nanoAOD-tools-modules.git PhysicsTools/NATModules
+git clone https://github.com/cms-cat/nanoAOD-tools-modules.git PhysicsTools/NATModules
 
 #CommonLHETools requires the MELA env to be set for compilation
 (eval `MelaAnalytics/setup.sh env`; cd CommonLHETools; scram b -j4)

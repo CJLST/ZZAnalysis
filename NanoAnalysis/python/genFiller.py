@@ -30,30 +30,35 @@ class genFiller(Module):
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
-        self.out.branch("nFidZ", "I")
-        self.out.branch("nFidDressedLeps", "I")
-        self.out.branch("FidDressedLeps_pt", "F", lenVar="nFidDressedLeps")
-        self.out.branch("FidDressedLeps_eta", "F", lenVar="nFidDressedLeps")
-        self.out.branch("FidDressedLeps_phi", "F", lenVar="nFidDressedLeps")
-        self.out.branch("FidDressedLeps_mass", "F", lenVar="nFidDressedLeps")
-        self.out.branch("FidDressedLeps_id", "F", lenVar="nFidDressedLeps")
-        self.out.branch("FidDressedLeps_momid", "F", lenVar="nFidDressedLeps")
-        self.out.branch("FidDressedLeps_mommomid", "F", lenVar="nFidDressedLeps")
-        self.out.branch("FidDressedLeps_RelIso", "F", lenVar="nFidDressedLeps")
-        self.out.branch("FidZ_DauPdgId", "I", lenVar="nFidZ")
-        self.out.branch("FidZ_MomPdgId", "I", lenVar="nFidZ")
-        self.out.branch("FidZZ_Z1l1Idx", "I")
-        self.out.branch("FidZZ_Z1l2Idx", "I")
-        self.out.branch("FidZZ_Z2l1Idx", "I")
-        self.out.branch("FidZZ_Z2l2Idx", "I")
-        self.out.branch("FidZZ_mass", "F")
+        # Size of the branch buffers to be pre-allocated. This should be large enough to avoid
+        # reallocations during the job, which break branch cloning in the cloneBranches module.        
+        self.bufsize = 20
+
+        bs=self.bufsize
+        self.out.branch("nFidDressedLeps", "I", title="gen dressed leps for fiducial analysis")
+        self.out.branch("FidDressedLeps_pt", "F", lenVar="nFidDressedLeps", n=bs)
+        self.out.branch("FidDressedLeps_eta", "F", lenVar="nFidDressedLeps", n=bs)
+        self.out.branch("FidDressedLeps_phi", "F", lenVar="nFidDressedLeps", n=bs)
+        self.out.branch("FidDressedLeps_mass", "F", lenVar="nFidDressedLeps", n=bs)
+        self.out.branch("FidDressedLeps_id", "F", lenVar="nFidDressedLeps", n=bs)
+        self.out.branch("FidDressedLeps_momid", "F", lenVar="nFidDressedLeps", n=bs)
+        self.out.branch("FidDressedLeps_mommomid", "F", lenVar="nFidDressedLeps", n=bs)
+        self.out.branch("FidDressedLeps_RelIso", "F", lenVar="nFidDressedLeps", n=bs)
+        self.out.branch("nFidZ", "I", title = "Zs made of FidDressedLeps")
+        self.out.branch("FidZ_DauPdgId", "I", lenVar="nFidZ", n=bs, title="FidZ decay flavour")
+        self.out.branch("FidZ_MomPdgId", "I", lenVar="nFidZ", n=bs, title="FidZ mother Id")
+        self.out.branch("FidZZ_Z1l1Idx", "S", title="Index of 1st Z1 daughter in FidDressedLeps collection")
+        self.out.branch("FidZZ_Z1l2Idx", "S", title="Index of 2nd Z1 daughter in FidDressedLeps collection")
+        self.out.branch("FidZZ_Z2l1Idx", "S", title="Index of 1st Z2 daughter in FidDressedLeps collection")
+        self.out.branch("FidZZ_Z2l2Idx", "S", title="Index of 2nd Z1 daughter in FidDressedLeps collection")
+        self.out.branch("FidZZ_mass", "F", title="mass of gen ZZ made with FidDressedLeps")
         self.out.branch("FidZZ_pt", "F")
         self.out.branch("FidZZ_eta", "F")
         self.out.branch("FidZZ_phi", "F")
         self.out.branch("FidZZ_rapidity", "F")
         self.out.branch("FidZ1_mass", "F")
         self.out.branch("FidZ2_mass", "F")
-        self.out.branch("passedFiducial", "B")
+        self.out.branch("passedFiducial", "B", title="event passes fiducial selection at gen level")
 
     def dressLeptons(self, genpart, packedpart):
         '''
@@ -535,8 +540,10 @@ class genFiller(Module):
             # TODO: Add GenJets
             # TODO: Add MELA
 
-        self.out.fillBranch("nFidZ", nGENZ)
-        self.out.fillBranch("nFidDressedLeps", nFidDressedLeps)
+        if len(dressedLeptons_pt) > self.bufsize or len(zdau_pdg_id) > self.bufsize :
+            print("ERROR: genFiller: bufsize not large enough: increase to", len(dressedLeptons_pt), "for nFidDressedLeps,", len(zdau_pdg_id), "for nFidZ", flush=True)
+            exit(1)
+            
         self.out.fillBranch("FidDressedLeps_pt", dressedLeptons_pt)
         self.out.fillBranch("FidDressedLeps_eta", dressedLeptons_eta)
         self.out.fillBranch("FidDressedLeps_phi", dressedLeptons_phi)

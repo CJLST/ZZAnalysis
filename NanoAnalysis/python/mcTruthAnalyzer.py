@@ -24,13 +24,13 @@ class mcTruthAnalyzer(Module):
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
-        self.out.branch("GenZZ_FinalState", "I")
-        self.out.branch("GenZZ_mass", "F")
-        self.out.branch("GenZZ_Z1l1Idx", "I") # Indices in the GenPart
-        self.out.branch("GenZZ_Z1l2Idx", "I")
-        self.out.branch("GenZZ_Z2l1Idx", "I")
-        self.out.branch("GenZZ_Z2l2Idx", "I")
-        self.out.branch("FsrPhoton_genFsrIdx", "I", lenVar="nFsrPhoton")
+        self.out.branch("GenZZ_FinalState", "I", title="product of pdgId of the four gen leptons from ZZ decay")
+        self.out.branch("GenZZ_mass", "F", title="mass of the 4l system (pre-FSR)")
+        self.out.branch("GenZZ_Z1l1Idx", "S", title="index of the 1st gen lepton from ZZ decay in the GenPart collection (pre-FSR)")
+        self.out.branch("GenZZ_Z1l2Idx", "S", title="index of the 2nd gen lepton from ZZ decay in the GenPart collection (pre-FSR)")
+        self.out.branch("GenZZ_Z2l1Idx", "S", title="index of the 3rd gen lepton from ZZ decay in the GenPart collection (pre-FSR)")
+        self.out.branch("GenZZ_Z2l2Idx", "S", title="index of the 4th gen lepton from ZZ decay in the GenPart collection (pre-FSR)")
+        self.out.branch("FsrPhoton_genFsrIdx", "S", lenVar="nFsrPhoton", title="index of GenPart matched to FSRPhoton (ie closest gen FSR of a lepton from Z decay)")
 
     def analyze(self, event):
         """process event, return True (go to next module) or False (fail, go to next event)"""

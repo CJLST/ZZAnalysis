@@ -199,9 +199,9 @@ output                  = log/$(ClusterId).$(ProcId).out
 error                   = log/$(ClusterId).$(ProcId).err
 log                     = log/$(ClusterId).log
 Initialdir              = $(directory)
-request_memory          = '''+str(batchManager.options_.jobmem)+'''
+request_memory          = '''+str(batchManager.jobmem)+'''
 #Possible values: longlunch, workday, tomorrow, etc.; cf. https://batchdocs.web.cern.ch/local/submit.html
-+JobFlavour             = "'''+batchManager.options_.jobflavour+'''"
++JobFlavour             = "'''+batchManager.jobflavour+'''"
 {requirements}
 x509userproxy           = {home}/x509up_u{uid}
 
@@ -246,12 +246,12 @@ class MyBatchManager:
                                 help="create jobs, but does not submit the jobs.")
 
         self.parser_.add_option("-q", "--queue", dest="jobflavour",
-                                help="Max duration (the shorter, the quicker the job will start.Default: tomorrow = 1d; use  microcentury or longlunch for quick jobs. Cf. https://batchdocs.web.cern.ch/local/submit.html",
-                                default="tomorrow")
+                                help="Max duration (the shorter, the quicker the job will start.Default: 'tomorrow' for mini; 'longlunch' for nano.  Cf. https://batchdocs.web.cern.ch/local/submit.html",
+                                default=None) # default set below
 
         self.parser_.add_option("-m", "--mem", dest="jobmem",
                                 help="Requested memory (smaller = more nodes available ). Use 0 for no request",
-                                default="4000M")
+                                default=None)# default set below
 
         self.parser_.add_option("-p", "--pdf", dest="PDFstep",
                                 help="Step of PDF systematic uncertainty evaluation. It could be 1 or 2.",
@@ -331,7 +331,10 @@ class MyBatchManager:
                 sys.exit(4)
             #Create a link to transfer folder
             ret = os.system('ln -s ' + self.eosTransferPath + " " + self.outputDir_ + "/transferPath")
-            
+
+        # Default values for the following are set later, depending on mini/nano
+        self.jobmem = None 
+        self.jobflavour = None 
 
     def mkdir( self, dirname ):
        mkdir = 'mkdir -p %s' % dirname
@@ -369,10 +372,28 @@ class MyBatchManager:
        '''
        print('---PrepareJob N: ', value,  ' name: ', dirname)
 
-       inputType="miniAOD"
+       # Set requirements
+       inputType='miniAOD'
        if "NANOAOD" in (splitComponents[value].files)[0] :
-           inputType="nanoAOD"
+           inputType='nanoAOD'
+       if self.jobmem == None:
+           if batchManager.options_.jobmem != None :
+               self.jobmem = batchManager.options_.jobmem
+           else :
+               if inputType == 'miniAOD' :
+                   self.jobmem = '4000M'
+               else :
+                   self.jobmem = '0'
 
+       if self.jobflavour == None:
+           if batchManager.options_.jobflavour != None:
+               self.jobflavour = batchManager.options_.jobflavour
+           else :
+               if inputType == 'miniAOD' :
+                   self.jobflavour = 'tomorrow'
+               else :
+                   self.jobflavour = 'longlunch'
+           
        dname = dirname
        if dname  is None:
            dname = 'Job_{value}'.format( value=value )
