@@ -155,6 +155,7 @@ if IsMC:
                                                'passedFiducial',
                                                'Generator_weight',
                                                'puWeight',
+                                               'ggH_NNLOPS_Weight',
                                                'overallEventWeight',
                                                'KFactor*'
                                                ],
