@@ -78,3 +78,20 @@ def lhe_logger(genpart):
     LHEPart = Collection (event, "LHEPart")
     for i, Lp in enumerate(LHEPart):
         print(i, Lp.pdgId, Lp.pt, Lp.eta, Lp.status, Lp.incomingpz)
+
+def get_genEventSumw(filename):
+    f = ROOT.TFile.Open(filename)
+
+    runs = f.Runs
+    nRuns = runs.GetEntries()
+    iRun = 0
+    genEventCount = 0
+    genEventSumw = 0.
+
+    while iRun < nRuns and runs.GetEntry(iRun) :
+        genEventCount += runs.genEventCount
+        genEventSumw += runs.genEventSumw
+        iRun +=1
+    print ("gen=", genEventCount, "sumw=", genEventSumw)
+
+    return genEventSumw
