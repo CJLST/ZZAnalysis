@@ -477,6 +477,9 @@ class genFiller(Module):
         zdau_pdg_id = []
         zmom_pdg_id = []
 
+        ZCands_fidSel = [-1, -1, -1, -1]
+        ZIdx_fidSel   = [-1, -1, -1, -1]
+
         nGENHiggs = 0
         nGENZ     = 0
         nFidDressedLeps = 0
@@ -535,7 +538,7 @@ class genFiller(Module):
             passedMassOS, passedElMuDeltaR, passedDeltaR = self.checkEventTopology(LeptonsCollection, zFid_leps_idx)
             if((passedMassOS == False) or (passedElMuDeltaR == False) or (passedDeltaR == False)): passFidSel = False
 
-            self.fill_HCand_branches(ZCands_fidSel, ZIdx_fidSel)
+        self.fill_HCand_branches(ZCands_fidSel, ZIdx_fidSel)
 
             # TODO: Add GenJets
             # TODO: Add MELA
