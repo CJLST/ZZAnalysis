@@ -7,7 +7,7 @@ import math
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
-from ZZAnalysis.NanoAnalysis.tools import getLeptons
+from ZZAnalysis.NanoAnalysis.tools import getLeptons, get_genEventSumw
 
 
 pathMC = "/eos/user/n/namapane/H4lnano/220420/" # FIXME: Use 2018 MC for the time being
@@ -58,21 +58,7 @@ def fillHistos(samplename, filename) :
         event.SetBranchStatus("overallEventWeight",1)
 
         # Get sum of weights
-        runs = f.Runs
-        nRuns = runs.GetEntries()
-        iRun = 0
-        genEventCount = 0
-        genEventSumw = 0.
-        while iRun < nRuns and runs.GetEntry(iRun) :
-            genEventCount += runs.genEventCount
-            genEventSumw += runs.genEventSumw
-            iRun +=1
-        print (samplename, ": gen=", genEventCount, "sel=",nEntries, "sumw=", genEventSumw)
-        if nEntries>maxEntriesPerSample :
-            genEventSumw = genEventSumw*maxEntriesPerSample/nEntries
-            nEntries=maxEntriesPerSample
-            print("   scaling to:", nEntries, "sumw=", genEventSumw )
-
+        genEventSumw = get_genEventSumw(f, maxEntriesPerSample)
 
     iEntry=0
     printEntries=max(5000,nEntries/10)
