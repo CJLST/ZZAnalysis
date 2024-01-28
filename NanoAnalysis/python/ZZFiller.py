@@ -15,17 +15,17 @@ from ROOT import Mela, SimpleParticle_t, SimpleParticleCollection_t, TVar, TLore
 from ctypes import c_float
 
 class StoreOption:
-    # Define which candidates should be stored:
-    # BestCandSRCR = only the best SR candidate and the best candidate for each of the ZLL CRs are stored. This is normally the default for production jobs
-    # BestCandOnly = only the best SR candidate in the event is retained (useful for development/debugging)
-    # AllSRCands   = keep all SR candidates passing the full selection cuts (including permutation of leptons); no CR
-    # AllWithRelaxedMuId = keep any SR candidate that can be made, even if leptons don't pass ID cuts (for ID cut optimization).
-    BestCandSRCR, BestCandOnly, AllCands, AllWithRelaxedMuId = range(0,4)
+    # Define which SR candidates should be stored:
+    # BestCandOnly = only the best SR candidate in the event is retained. This is normally the default for production jobs.
+    # AllSRCands   = keep all SR candidates passing the full selection cuts (including permutation of leptons)
+    # AllWithRelaxedMuId = keep any SR candidate that can be made, even if leptons don't pass ID cuts (useful for ID cut optimization studies).
+    # Note: For CRs the best candidate for each of the ZLL CRs that is activated with addSSCR, addOSCR, addSIPCR is stored. 
+    BestCandOnly, AllCands, AllWithRelaxedMuId = range(0,3)
 
 
 class ZZFiller(Module):
 
-    def __init__(self, runMELA, bestCandByMELA, isMC, year, processCR, debug=False):
+    def __init__(self, runMELA, bestCandByMELA, isMC, year, processCR, addZL=False, debug=False):
         print("***ZZFiller: isMC:", isMC, "year:", year, flush=True)
         self.writeHistFile = False
         self.isMC = isMC
@@ -37,8 +37,9 @@ class ZZFiller(Module):
             self.bestCandCmp = self.bestCandByZ1Z2
 
         self.addSSCR = processCR
-        self.addOSCR = processCR    
+        self.addOSCR = processCR
         self.addSIPCR = processCR
+        self.addZLCR = addZL
 
         self.DEBUG = debug
         self.ZmassValue = 91.1876;
@@ -172,6 +173,8 @@ class ZZFiller(Module):
             self.out.branch("ZLLbest3P1FIdx", "S", title="best candidate for the 3P1F CR")
             self.out.branch("ZLLbestSIPCRIdx", "S", title="best candidate for the SIP CR")
 
+        if self.addZLCR :            
+            self.out.branch("ZLCand_lepIdx", "S", title="Index of extra lep for the ZL CR")
 
 
     def analyze(self, event):
@@ -187,8 +190,14 @@ class ZZFiller(Module):
         leps = list(electrons)+list(muons)
         nlep=len(leps)
 
+        ### Skip events with too few leptons (min 3 if ZL is included, 4 otherwise) 
+        if nlep < 3 or (not self.addZLCR and nlep < 4) : 
+            return False
+        
         ### Z combinatorial over selected leps (after FSR-corrected ISO cut for muons)
-        Zs = []
+        Zs = [] # all Z cands
+        SRZs = [] # Selected Zs, to be written out
+        bestZIdx = -1 # index of the best Z in the event, among SRZs
         for i,l1 in enumerate(leps):
             if self.leptonPresel(l1) :
                 for j in range(i+1,nlep):
@@ -233,7 +242,11 @@ class ZZFiller(Module):
                         if self.DEBUG: print('Z={:.4g} pt1={:.3g} pt2={:.3g} fsr1={} fsr2={} SR={} 1F={} 2F={} SS={} SSSIP={}'.format(zmass, l1.pt, l2.pt, l1.fsrPhotonIdx,  l2.fsrPhotonIdx, isSR, is1FCR, is2FCR, isSSCR, isSIPCR))
                         if (zmass>12. and zmass<120.):
                             Zs.append(aZ)
-
+                            if aZ.isSR : # those that will be written in the event
+                                if (bestZIdx<0 or abs(zmass-self.ZmassValue)<abs(Zs[bestZIdx].M-self.ZmassValue)) :
+                                    bestZIdx = len(SRZs)
+                                SRZs.append(aZ)
+                                
 
         ### Build ZZ and ZLL combinations passing the ZZ selection
         if len(Zs) >= 2:
@@ -309,12 +322,34 @@ class ZZFiller(Module):
                 else :
                     ZZs = []
 
+            ### Z+L CR, for fake rate. This is considered only for events with a Z + exactly 1 additional lepton passing the relaxed selection.
+            ### This ensures that there is no overlap with the SR and OS, 3P1F and 2P2F CRs (there can be an overlap with the SIP CR
+            ### as that keeps leptons failing SIP)
+            ZLCand_lIdx = -1
+            if self.addZLCR and bestZIdx >= 0 :
+                aZ = SRZs[bestZIdx]
+                for i,aL in enumerate(leps):
+                    # Search for additional lepton, with ghost suppression DR cut 
+                    if i != aZ.l1Idx and i!= aZ.l2Idx and aL.ZZRelaxedId and \
+                       deltaR(aL.eta, aL.phi, aZ.l1.eta, aZ.l1.phi) > 0.02 and \
+                       deltaR(aL.eta, aL.phi, aZ.l2.eta, aZ.l2.phi) > 0.02 :
+                        if ZLCand_lIdx < 0 :
+                            ZLCand_lIdx = i
+                        else : # more than 1 additional lepton, drop the CR
+                            ZLCand_lIdx = -1
+                            break
+                if ZLCand_lIdx >= 0 :
+                    aL = leps[ZLCand_lIdx]
+                    #Apply QCD suppression cut (mLL>4 cut on all OS pairs) 
+                    if (aL.charge != aZ.l1.charge and (aL.p4()+aZ.l1.p4()).M() <= 4) or \
+                       (aL.charge != aZ.l2.charge and (aL.p4()+aZ.l2.p4()).M() <= 4) :
+                        ZLCand_lIdx = -1
+                        
             ### Skip events with no candidates
-            if len(ZZs) == 0 and len(ZLLs) == 0: return False
+            if len(ZZs) == 0 and len(ZLLs) == 0 and ZLCand_lIdx < 0: return False
 
             ### Now fill the variables to be stored as output
             # Fill Zs - we are only interested in signal ones
-            bestZIdx = -1
             ZCand_mass = []
             ZCand_flav = []
             ZCand_l1Idx = []
@@ -322,21 +357,17 @@ class ZZFiller(Module):
             ZCand_fsr1Idx = []
             ZCand_fsr2Idx = []
 
-            for iZ, aZ in enumerate(Zs) :
-                if aZ.isSR :
-                    if bestZIdx<0 or abs(aZ.M-self.ZmassValue)<abs(ZCand_mass[bestZIdx]-self.ZmassValue) :
-                        bestZIdx = len(ZCand_mass)
-                    ZCand_mass.append(aZ.p4.M())
-#                     ZCand_pt.append(aZ.p4.pt())
-#                     ZCand_eta.append(aZ.p4.eta())
-#                     ZCand_phi.append(aZ.p4.phi())
-                    ZCand_flav.append(aZ.finalState())
-                    ZCand_l1Idx.append(aZ.l1Idx)
-                    ZCand_l2Idx.append(aZ.l2Idx)
-                    ZCand_fsr1Idx.append(aZ.fsr1Idx)
-                    ZCand_fsr2Idx.append(aZ.fsr2Idx)
+            for iZ, aZ in enumerate(SRZs) :
+                ZCand_mass.append(aZ.p4.M())
+#                ZCand_pt.append(aZ.p4.pt())
+#                ZCand_eta.append(aZ.p4.eta())
+#                ZCand_phi.append(aZ.p4.phi())
+                ZCand_flav.append(aZ.finalState())
+                ZCand_l1Idx.append(aZ.l1Idx)
+                ZCand_l2Idx.append(aZ.l2Idx)
+                ZCand_fsr1Idx.append(aZ.fsr1Idx)
+                ZCand_fsr2Idx.append(aZ.fsr2Idx)
 
-            self.out.fillBranch("nZCand", len(ZZs))
             self.out.fillBranch("ZCand_mass", ZCand_mass)
 #             self.out.fillBranch("ZCand_pt", ZCand_pt)
 #             self.out.fillBranch("ZCand_eta", ZCand_eta)
@@ -387,7 +418,6 @@ class ZZFiller(Module):
                 for iVar, var in enumerate(self.muonIDVars) :
                     ZZCand_worstVar[iVar].append(ZZ.worstVar[iVar])
 
-            self.out.fillBranch("nZZCand", len(ZZs))
             self.out.fillBranch("ZZCand_mass", ZZCand_mass)
             self.out.fillBranch("ZZCand_massPreFSR", ZZCand_massPreFSR)
             self.out.fillBranch("ZZCand_Z1mass", ZZCand_Z1mass)
@@ -443,7 +473,6 @@ class ZZFiller(Module):
                     ZLLCand_Z2l2Idx[iZLL] = ZLL.Z2.l2Idx
                     ZLLCand_KD[iZLL] = ZLL.KD
 
-                self.out.fillBranch("nZLLCand", len(ZLLs))
                 self.out.fillBranch("ZLLCand_mass",   ZLLCand_mass)
                 self.out.fillBranch("ZLLCand_massPreFSR",   ZLLCand_massPreFSR)
 #                 self.out.fillBranch("ZLLCand_pt",     ZLLCand_pt)
@@ -466,6 +495,8 @@ class ZZFiller(Module):
                 if self.addSIPCR :
                     self.out.fillBranch("ZLLbestSIPCRIdx", bestSIPCRIdx)
 
+            if self.addZLCR :
+                self.out.fillBranch("ZLCand_lepIdx", ZLCand_lIdx)
 
             ### Fill control plot (example)
             # self.h_ZZMass.Fill(ZZCand_mass[bestCandIdx])
@@ -590,7 +621,7 @@ class ZZFiller(Module):
         for k in range(4):
             lepPts.append(zzleps[k].pt)
             for l in range (k+1,4):
-                if zzleps[k].pdgId*zzleps[l].pdgId < 0 and (zzleps[k].p4()+zzleps[l].p4()).M()<=4.:
+                if zzleps[k].charge!=zzleps[l].charge and (zzleps[k].p4()+zzleps[l].p4()).M()<=4.:
                     passQCD = False
                     break
                 if deltaR(zzleps[k].eta, zzleps[k].phi, zzleps[l].eta, zzleps[l].phi) <= 0.02 :
