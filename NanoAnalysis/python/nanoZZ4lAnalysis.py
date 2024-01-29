@@ -216,7 +216,8 @@ if IsMC:
     branchsel_out.extend(['keep GenPart*',
                           'keep GenZZ*',
                           'keep *eight', # Generator_weight + custom weights
-                          'keep HTXS*',
+                          'keep HTXS_Higgs*',
+                          'keep HTXS_njets30',
                           #'keep LHE*',
                           #'keep Generator*',
                           #'keep PV*',

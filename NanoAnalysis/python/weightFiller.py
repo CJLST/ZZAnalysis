@@ -79,7 +79,7 @@ class weightFiller(Module):
         if self.APPLY_K_NNLOEW_ZZQQB :
             self.out.branch("KFactor_EW_qqZZ_Weight", "F", title="EW k-factor for qqZZ")
         if self.APPLY_QCD_GGF_UNCERT :
-            self.out.branch("ggH_NNLOPS_Weight", "F", title="for ggH")
+            self.out.branch("ggH_NNLOPS_Weight", "F", title="Reweighting for ggH as a function of njets and pT")
 
             
         self.out.branch("overallEventWeight", "F") #Overall weight, including relevant k-factors and corrections
