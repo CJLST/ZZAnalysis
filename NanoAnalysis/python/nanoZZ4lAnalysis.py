@@ -171,7 +171,7 @@ if IsMC:
                               #genFiller(dump=False), # Not required when ADD_ALLEVENTS = False?
                               ])
 else : # Data
-    post_sequence = [weights]
+    post_sequence = []
 
         
 ZZSequence = pre_sequence + reco_sequence + post_sequence
@@ -205,7 +205,6 @@ branchsel_out = ['drop *',
                  'keep HLT_passZZ*',
                  'keep best*', # best candidate indices
                  'keep Z*', # Z, ZZ, ZLL candidates
-                 'keep Pileup*',
                  #'keep PV*',
                  #'keep Flag*',
                  ]
@@ -218,6 +217,7 @@ if IsMC:
                           'keep *eight', # Generator_weight + custom weights
                           'keep HTXS_Higgs*',
                           'keep HTXS_njets30',
+                          'keep Pileup*',
                           #'keep LHE*',
                           #'keep Generator*',
                           #'keep PV*',
