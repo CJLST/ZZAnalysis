@@ -33,6 +33,7 @@ runMELA = getConf("runMELA", True)
 bestCandByMELA = getConf("bestCandByMELA", True) # requires also runMELA=True
 TRIGPASSTHROUGH = getConf("TRIGPASSTHROUGH", True) # Do not filter events that do not pass triggers (HLT_passZZ4l records if they did)
 PROCESS_CR = getConf("PROCESS_CR", False) # fill control regions
+PROCESS_ZL = getConf("PROCESS_ZL", False) # fill ZL control region
 APPLYMUCORR = getConf("APPLYMUCORR", True) # apply muon momentum scale/resolution corrections
 # ggH NNLOPS weight
 APPLY_QCD_GGF_UNCERT = getConf("APPLY_QCD_GGF_UNCERT", False) 
@@ -117,7 +118,7 @@ if not IsMC :
 
 # Standard sequence used for both data and MC
 reco_sequence = [lepFiller(cuts, LEPTON_SETUP), # FSR and FSR-corrected iso; flags for passing IDs
-                 ZZFiller(runMELA, bestCandByMELA, IsMC, LEPTON_SETUP, PROCESS_CR, debug=DEBUG), # Build ZZ candidates; choose best candidate; filter events with candidates
+                 ZZFiller(runMELA, bestCandByMELA, IsMC, LEPTON_SETUP, PROCESS_CR, addZL=PROCESS_ZL, debug=DEBUG), # Build ZZ candidates; choose best candidate; filter events with candidates
                  jetFiller(), # Jets cleaning with leptons
                  ZZExtraFiller('SR'), # Add information on extra objects to the selected best candidate
                  # MELAFiller(), # Compute the full set of discriminants for the best candidate
@@ -150,6 +151,7 @@ if IsMC:
                         genFiller(dump=False),
                         cloneBranches(treeName='AllEvents',
                                       varlist=['run', 'luminosityBlock', 'event',
+                                               'GenDressedLepton_*',
                                                'FidDressedLeps_*',
                                                'FidZ*',
                                                'passedFiducial',
@@ -157,7 +159,6 @@ if IsMC:
                                                'puWeight',
                                                'ggH_NNLOPS_Weight',
                                                'overallEventWeight',
-                                               'KFactor*'
                                                ],
                                       #Stop further processing for events that don't have 4 reco leps
                                       continueFor = lambda evt : (evt.nMuon+evt.nElectron>=4) 
@@ -201,25 +202,26 @@ branchsel_out = ['drop *',
                  'keep HLT_passZZ*',
                  'keep best*', # best candidate indices
                  'keep Z*', # Z, ZZ, ZLL candidates
-                 'keep Pileup*',
                  #'keep PV*',
                  #'keep Flag*',
                  ]
 
 if IsMC:
-    branchsel_in.extend(['drop GenDressedLepton_*',
-                         'drop GenIsolatedPhoton_*',
+    branchsel_in.extend(['drop GenIsolatedPhoton_*',
                          ])
     branchsel_out.extend(['keep GenPart*',
                           'keep GenZZ*',
                           'keep *eight', # Generator_weight + custom weights
+                          'keep HTXS_Higgs*',
+                          'keep HTXS_njets30',
+                          'keep Pileup*',
                           #'keep LHE*',
                           #'keep Generator*',
                           #'keep PV*',
                         ])
 
     if ADD_ALLEVENTS :
-        branchsel_out.extend(['keep nFidDressedLeps',
+        branchsel_out.extend(['keep GenDressedLepton_*',
                               'keep FidDressedLeps_*',
                               'keep FidZ*',
                               'keep passedFiducial',

@@ -21,7 +21,7 @@ cjlstFile   = "~/work/H4lnano/CMSSW_10_6_26/src/ZZAnalysis/AnalysisStep/test/ZZ4
 nanoFile = "ggH125_2017UL_fixedFSR_Skim.root"
 
 #2022 MC ggH, 13k events
-cjlstFile = "../../AnalysisStep/test/ZZ4lAnalysis_sync.root"
+cjlstFile = "/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIII/sync/ZZ4lAnalysis_sync_25c8f5ff-9de0-4a0c-9e2f-757332ad392f.root"
 nanoFile = "25c8f5ff-9de0-4a0c-9e2f-757332ad392f_Skim.root"
 
 
@@ -195,14 +195,16 @@ while treeMini.GetEntry(iEntryMini):
         nMatch+=1
     else :
         print("Missing in nano: "+str(treeMini.RunNumber)+":"+str(treeMini.LumiNumber)+":"+str(treeMini.EventNumber), treeMini.ZZsel)
-        print('   {:.2f} {:.2f} {:.2f}'.format(treeMini.ZZMass,treeMini.Z1Mass,treeMini.Z2Mass), "hasFSR:",treeMini.fsrPt.size()>0)
-        printLeps_mini(treeMini, "   ")
+        if verbose > 0 :
+            print('   {:.2f} {:.2f} {:.2f}'.format(treeMini.ZZMass,treeMini.Z1Mass,treeMini.Z2Mass), "hasFSR:",treeMini.fsrPt.size()>0)
+            printLeps_mini(treeMini, "   ")
 
 for iEntryNano,found in enumerate(foundNano):
     if not found:
         treeNano.GetEntry(iEntryNano)
         print("Missing in mini: "+str(treeNano.run)+":"+str(treeNano.luminosityBlock)+":"+str(treeNano.event))
-        printLeps_nano(treeNano, "   ")
+        if verbose > 0 :
+            printLeps_nano(treeNano, "   ")
 
 print("Matches in", region, ":", nMatch)
 print("max m4l diff:", maxM4lDiff)
