@@ -20,10 +20,12 @@ Jump to:
 | [**FidZZ**](#fidzz) | Index of 1st Z1 daughter in FidDressedLeps collection |
 | [**Flag**](#flag) | Trigger/flag bit (process: PAT) |
 | [**FsrPhoton**](#fsrphoton) | Final state radiation photons emitted by muons or electrons |
+| [**GenDressedLepton**](#gendressedlepton) | Dressed leptons from Rivet-based ParticleLevelProducer |
 | [**GenPart**](#genpart) | interesting gen particles  |
 | [**GenZZ**](#genzz) | product of pdgId of the four gen leptons from ZZ decay |
 | [**Generator**](#generator) | MC generator weight |
 | [**HLT**](#hlt) | Trigger/flag bit (process: HLT) |
+| [**HTXS**](#htxs) | number of jets with pt>30 GeV as identified in HTXS |
 | [**Jet**](#jet) | slimmedJetsPuppi, i.e. ak4 PFJets Puppi with JECs applied, after basic selection (pt > 15) |
 | [**JetLeadingIdx**](#jetleadingidx) | JetLeadingIdx/S |
 | [**JetSubleadingIdx**](#jetsubleadingidx) | JetSubleadingIdx/S |
@@ -34,6 +36,7 @@ Jump to:
 | [**PSWeight**](#psweight) | PS weights (w_var / w_nominal);   [0] is ISR=2 FSR=1; [1] is ISR=1 FSR=2[2] is ISR=0.5 FSR=1; [3] is ISR=1 FSR=0.5; |
 | [**Pileup**](#pileup) | the number of pileup interactions that have been added to the event in the current bunch crossing |
 | [**ZCand**](#zcand) | Z candidates passing the full H4l selection |
+| [**ZLCand**](#zlcand) | Index of extra lep for the ZL CR |
 | [**ZLLCand**](#zllcand) | Z+LL control region candidates |
 | [**ZLLbest2P2FIdx**](#zllbest2p2fidx) | best candidate for the 2P2F CR |
 | [**ZLLbest3P1FIdx**](#zllbest3p1fidx) | best candidate for the 3P1F CR |
@@ -44,6 +47,7 @@ Jump to:
 | [**bestZIdx**](#bestzidx) | Best Z in the event (mass closest to mZ) |
 | [**event**](#event) | event/l |
 | [**genWeight**](#genweight) | generator weight |
+| [**ggH**](#ggh) | Reweighting for ggH as a function of njets and pT |
 | [**luminosityBlock**](#luminosityblock) | luminosityBlock/i |
 | [**nCleanedJetsPt30**](#ncleanedjetspt30) | nCleanedJetsPt30/B |
 | [**overallEventWeight**](#overalleventweight) | overallEventWeight/F |
@@ -209,6 +213,17 @@ Jump to:
 | **FsrPhoton_pt** | Float_t| pt |
 | **FsrPhoton_relIso03** | Float_t| relative isolation in a 0.3 cone without CHS |
 | **nFsrPhoton** | Int_t| Final state radiation photons emitted by muons or electrons |
+
+### <a id='gendressedlepton'></a>GenDressedLepton [<sup>[back to top]</sup>](#events-tree-content)
+| Object property | Type | Description |
+| - | - | - |
+| **GenDressedLepton_eta** | Float_t| eta |
+| **GenDressedLepton_hasTauAnc** | Bool_t| true if Dressed lepton has a tau as ancestor |
+| **GenDressedLepton_mass** | Float_t| mass |
+| **GenDressedLepton_pdgId** | Int_t| PDG id |
+| **GenDressedLepton_phi** | Float_t| phi |
+| **GenDressedLepton_pt** | Float_t| pt |
+| **nGenDressedLepton** | Int_t| Dressed leptons from Rivet-based ParticleLevelProducer |
 
 ### <a id='genpart'></a>GenPart [<sup>[back to top]</sup>](#events-tree-content)
 | Object property | Type | Description |
@@ -422,6 +437,13 @@ Jump to:
 | **HLT_passZZ4lMu** | Bool_t| HLT_passZZ4lMu/O |
 | **HLT_passZZ4lMuEle** | Bool_t| HLT_passZZ4lMuEle/O |
 
+### <a id='htxs'></a>HTXS [<sup>[back to top]</sup>](#events-tree-content)
+| Object property | Type | Description |
+| - | - | - |
+| **HTXS_Higgs_pt** | Float_t| pt of the Higgs boson as identified in HTXS |
+| **HTXS_Higgs_y** | Float_t| rapidity of the Higgs boson as identified in HTXS |
+| **HTXS_njets30** | UChar_t| number of jets with pt>30 GeV as identified in HTXS |
+
 ### <a id='jet'></a>Jet [<sup>[back to top]</sup>](#events-tree-content)
 | Object property | Type | Description |
 | - | - | - |
@@ -601,6 +623,11 @@ Jump to:
 | **ZCand_mass** | Float_t| mass |
 | **nZCand** | Int_t| Z candidates passing the full H4l selection |
 
+### <a id='zlcand'></a>ZLCand [<sup>[back to top]</sup>](#events-tree-content)
+| Object property | Type | Description |
+| - | - | - |
+| **ZLCand_lepIdx** | Short_t(index to Lep)| Index of extra lep for the ZL CR |
+
 ### <a id='zllcand'></a>ZLLCand [<sup>[back to top]</sup>](#events-tree-content)
 | Object property | Type | Description |
 | - | - | - |
@@ -677,6 +704,11 @@ Jump to:
 | - | - | - |
 | **genWeight** | Float_t| generator weight |
 
+### <a id='ggh'></a>ggH [<sup>[back to top]</sup>](#events-tree-content)
+| Object property | Type | Description |
+| - | - | - |
+| **ggH_NNLOPS_Weight** | Float_t| Reweighting for ggH as a function of njets and pT |
+
 ### <a id='luminosityblock'></a>luminosityBlock [<sup>[back to top]</sup>](#events-tree-content)
 | Object property | Type | Description |
 | - | - | - |
@@ -718,8 +750,10 @@ Jump to:
 | [**FidZ1**](#fidz1) | FidZ1_mass/F |
 | [**FidZ2**](#fidz2) | FidZ2_mass/F |
 | [**FidZZ**](#fidzz) | Index of 1st Z1 daughter in FidDressedLeps collection |
+| [**GenDressedLepton**](#gendressedlepton) | Dressed leptons from Rivet-based ParticleLevelProducer |
 | [**Generator**](#generator) | MC generator weight |
 | [**event**](#event) | event/l |
+| [**ggH**](#ggh) | Reweighting for ggH as a function of njets and pT |
 | [**luminosityBlock**](#luminosityblock) | luminosityBlock/i |
 | [**overallEventWeight**](#overalleventweight) | overallEventWeight/F |
 | [**passedFiducial**](#passedfiducial) | event passes fiducial selection at gen level |
@@ -771,6 +805,17 @@ Jump to:
 | **FidZZ_pt** | Float_t| FidZZ_pt/F |
 | **FidZZ_rapidity** | Float_t| FidZZ_rapidity/F |
 
+### <a id='gendressedlepton'></a>GenDressedLepton [<sup>[back to top]</sup>](#allevents-tree-content)
+| Object property | Type | Description |
+| - | - | - |
+| **GenDressedLepton_eta** | Float_t| eta |
+| **GenDressedLepton_hasTauAnc** | Bool_t| true if Dressed lepton has a tau as ancestor |
+| **GenDressedLepton_mass** | Float_t| mass |
+| **GenDressedLepton_pdgId** | Int_t| PDG id |
+| **GenDressedLepton_phi** | Float_t| phi |
+| **GenDressedLepton_pt** | Float_t| pt |
+| **nGenDressedLepton** | Int_t| Dressed leptons from Rivet-based ParticleLevelProducer |
+
 ### <a id='generator'></a>Generator [<sup>[back to top]</sup>](#allevents-tree-content)
 | Object property | Type | Description |
 | - | - | - |
@@ -780,6 +825,11 @@ Jump to:
 | Object property | Type | Description |
 | - | - | - |
 | **event** | ULong64_t| event/l |
+
+### <a id='ggh'></a>ggH [<sup>[back to top]</sup>](#allevents-tree-content)
+| Object property | Type | Description |
+| - | - | - |
+| **ggH_NNLOPS_Weight** | Float_t| Reweighting for ggH as a function of njets and pT |
 
 ### <a id='luminosityblock'></a>luminosityBlock [<sup>[back to top]</sup>](#allevents-tree-content)
 | Object property | Type | Description |

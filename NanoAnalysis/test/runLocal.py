@@ -25,6 +25,7 @@ setConf("APPLYMUCORR", False) #NOTE: mu corrections removed for comparision with
 #setConf("APPLY_QCD_GGF_UNCERT", True)
 
 setConf("PROCESS_CR", True)
+setConf("PROCESS_ZL", True)
 setConf("DEBUG", False)
 setConf("SYNCMODE", True) # Force muon resolution correction with fixed +1 sigma smearing
 #setConf("ADD_ALLEVENTS", True) # Add extra tree of gen info for all events
