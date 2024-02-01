@@ -392,7 +392,7 @@ class MyBatchManager:
                if inputType == 'miniAOD' :
                    self.jobflavour = 'tomorrow'
                else :
-                   self.jobflavour = 'longlunch'
+                   self.jobflavour = 'workday'
            
        dname = dirname
        if dname  is None:
