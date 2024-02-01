@@ -88,11 +88,19 @@ cuts = dict(
     eleFullId = (lambda l, era : cuts["eleRelaxedId"](l) and cuts["passEleBDT"](l, era)),
     )
 
-### Preselection to speed up processing. Note: to be relaxed for CRs
-if ADD_ALLEVENTS :
+### Preselection to speed up processing.
+if ADD_ALLEVENTS : # move preselection after cloneBranches 
     preselection = None
+    if PROCESS_ZL :
+        postPresel = lambda evt : (evt.nMuon+evt.nElectron>=3)
+    else :
+        postPresel = lambda evt : (evt.nMuon+evt.nElectron>=4)        
 else:
-    preselection = "nMuon+nElectron >= 4 && Sum$(Muon_pt > {muPt}-2.)+Sum$(Electron_pt>{elePt})>= 4".format(**cuts)
+    postPresel = None
+    if PROCESS_ZL :
+        preselection = "nMuon+nElectron >= 3 && Sum$(Muon_pt > {muPt}-2.)+Sum$(Electron_pt>{elePt})>= 3".format(**cuts)
+    else :
+        preselection = "nMuon+nElectron >= 4 && Sum$(Muon_pt > {muPt}-2.)+Sum$(Electron_pt>{elePt})>= 4".format(**cuts)
 
 ### Input file specification
 store = getConf("store","") # "/eos/cms/" for files available on eos; "root://cms-xrd-global.cern.ch/" for remote files
@@ -161,7 +169,7 @@ if IsMC:
                                                'overallEventWeight',
                                                ],
                                       #Stop further processing for events that don't have 4 reco leps
-                                      continueFor = lambda evt : (evt.nMuon+evt.nElectron>=4) 
+                                      continueFor = postPresel
                                       ),
                         ] + pre_sequence
 
