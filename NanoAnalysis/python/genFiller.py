@@ -192,8 +192,8 @@ class genFiller(Module):
         Leptons, LeptonsId, Lepts_RelIso = self.unzipLeptons(LeptonsCollection)
         offshell = 999.0
         findZ1 = False
-        idx_l1 = 0
-        idx_l2 = 0
+        idx_l1 = 999
+        idx_l2 = 999
         for i, l1 in enumerate(Leptons):
             for j, l2 in enumerate(Leptons):
                 if j <= i : continue
@@ -223,8 +223,8 @@ class genFiller(Module):
         '''
         Leptons, LeptonsId, Lepts_RelIso = self.unzipLeptons(LeptonsCollection)
         pT_l3l4 = 0.0
-        idx_l3 = 0
-        idx_l4 = 0
+        idx_l3 = 999
+        idx_l4 = 999
         findZ2 = False
         for i, l1 in enumerate(Leptons):
             if ((i == idx_l1) or (i == idx_l2)) : continue
@@ -330,19 +330,14 @@ class genFiller(Module):
             Util function that combines `getZCands` and `getZIndex`
             and returns the collection of sorted leptons that make
             the two Z cands in the event and their IDs.
-            For events that do not pass the fiducial selection,
-            dummy collections filled with -1 are returned.
         '''
         Leptons, LeptonsId, Lepts_RelIso = self.unzipLeptons(LeptonsCollection)
 
-        if passFidSel:
-            Z1_l1, Z1_l2, Z2_l1, Z2_l2 = self.getZCands(Leptons, z_idx)
-            idx_1, idx_2, idx_3, idx_4 = self.getZIndex(LeptonsId, z_idx)
-            ZCands = [Z1_l1, Z1_l2, Z2_l1, Z2_l2]
-            ZIdx   = [idx_1, idx_2, idx_3, idx_4]
-            return ZCands, ZIdx
-        else:
-            return [-1]*len(Leptons), [-1]*len(Leptons)
+        Z1_l1, Z1_l2, Z2_l1, Z2_l2 = self.getZCands(Leptons, z_idx)
+        idx_1, idx_2, idx_3, idx_4 = self.getZIndex(LeptonsId, z_idx)
+        ZCands = [Z1_l1, Z1_l2, Z2_l1, Z2_l2]
+        ZIdx   = [idx_1, idx_2, idx_3, idx_4]
+        return ZCands, ZIdx
 
     def countFiducialLeps(self, LeptonsCollection):
         '''
