@@ -213,6 +213,7 @@ branchsel_out = ['drop *',
                  'keep HLT_passZZ*',
                  'keep best*', # best candidate indices
                  'keep Z*', # Z, ZZ, ZLL candidates
+                 'keep MET_pt',
                  #'keep PV*',
                  #'keep Flag*',
                  ]
