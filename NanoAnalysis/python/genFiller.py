@@ -191,8 +191,8 @@ class genFiller(Module):
         Leptons, LeptonsId, Lepts_RelIso = self.unzipLeptons(LeptonsCollection)
         offshell = 999.0
         findZ1 = False
-        idx_l1 = 99
-        idx_l2 = 99
+        idx_l1 = 0
+        idx_l2 = 0
         for i, l1 in enumerate(Leptons):
             for j, l2 in enumerate(Leptons):
                 if j <= i : continue
@@ -330,14 +330,14 @@ class genFiller(Module):
         '''
         Leptons, LeptonsId, Lepts_RelIso = self.unzipLeptons(LeptonsCollection)
 
-        if passFidSel:
+        idx_1, idx_2, idx_3, idx_4 = self.getZIndex(LeptonsId, z_idx)
+        ZIdx   = [idx_1, idx_2, idx_3, idx_4]
+
+        if (idx_1!=99 and idx_2!=99 and idx_3!=99 and idx_4!=99):
             Z1_l1, Z1_l2, Z2_l1, Z2_l2 = self.getZCands(Leptons, z_idx)
             ZCands = [Z1_l1, Z1_l2, Z2_l1, Z2_l2]
         else:
             ZCands = [-1]*len(Leptons)
-
-        idx_1, idx_2, idx_3, idx_4 = self.getZIndex(LeptonsId, z_idx)
-        ZIdx   = [idx_1, idx_2, idx_3, idx_4]
 
         return ZCands, ZIdx
 
