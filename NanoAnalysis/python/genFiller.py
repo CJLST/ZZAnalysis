@@ -10,7 +10,6 @@ from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
 from PhysicsTools.HeppyCore.utils.deltar import deltaR
 from ROOT import TLorentzVector
-
 from ZZAnalysis.NanoAnalysis.tools import Mother
 
 ZMASS = 91.1876
@@ -178,7 +177,7 @@ class genFiller(Module):
         if (abs(id_2) == 11 and (l_2.Pt() < 7.0 or abs(l_2.Eta()) > 2.5)) :
             passCuts = False
         if (iso_2 > 0.35) :
-            passCuts = False
+           passCuts = False
 
         return passCuts
 
@@ -192,21 +191,20 @@ class genFiller(Module):
         Leptons, LeptonsId, Lepts_RelIso = self.unzipLeptons(LeptonsCollection)
         offshell = 999.0
         findZ1 = False
-        idx_l1 = 999
-        idx_l2 = 999
+        idx_l1 = 0
+        idx_l2 = 0
         for i, l1 in enumerate(Leptons):
             for j, l2 in enumerate(Leptons):
                 if j <= i : continue
                 if ((LeptonsId[i] + LeptonsId[j]) != 0) : continue
                 l_i, l_j = self.buildLLPair(l1, l2)
-
                 passCuts = self.checkCuts(LeptonsCollection, i, j)
                 if makeCuts :
-                    if not passCuts : continue
+                   if not passCuts : continue
 
                 mll = TLorentzVector()
                 mll = l_i + l_j
-                if(abs(mll.M() - ZMASS) < offshell) :
+                if(abs(mll.M() - ZMASS) <= offshell) :
                     mZ1 = mll.M()
                     idx_l1 = i
                     idx_l2 = j
@@ -223,8 +221,8 @@ class genFiller(Module):
         '''
         Leptons, LeptonsId, Lepts_RelIso = self.unzipLeptons(LeptonsCollection)
         pT_l3l4 = 0.0
-        idx_l3 = 999
-        idx_l4 = 999
+        idx_l3 = 99
+        idx_l4 = 99
         findZ2 = False
         for i, l1 in enumerate(Leptons):
             if ((i == idx_l1) or (i == idx_l2)) : continue
@@ -233,17 +231,15 @@ class genFiller(Module):
                 if ((j == idx_l1) or (j == idx_l2)) : continue
                 if ((LeptonsId[i] + LeptonsId[j]) != 0) : continue
                 l_i, l_j = self.buildLLPair(l1, l2)
-
                 Z2 = TLorentzVector()
                 Z2 = l_i + l_j
 
                 passCuts = self.checkCuts(LeptonsCollection, i, j)
                 if makeCuts :
-                    if not passCuts : continue
-
+                   if not passCuts : continue
                 if (l_i.Pt() + l_j.Pt() >= pT_l3l4):
                     mass_Z2 = Z2.M()
-                    if ((mass_Z2>MIN_MZ2 and mass_Z2<MAX_MZ2) or (not makeCuts)) :
+                    if ((mass_Z2>=MIN_MZ2 and mass_Z2<=MAX_MZ2) or (not makeCuts)) :
                         findZ2 = True
                         idx_l3 = i
                         idx_l4 = j
@@ -278,7 +274,6 @@ class genFiller(Module):
         if not makeCuts : passZ1 = True
 
         findZ2, idx_l3, idx_l4 = self.buildZ2Mass(LeptonsCollection, idx_l1, idx_l2, makeCuts)
-
         z_leps_idx = [idx_l1, idx_l2, idx_l3, idx_l4]
 
         if (passZ1 and findZ2) : passFidSel = True
@@ -330,13 +325,20 @@ class genFiller(Module):
             Util function that combines `getZCands` and `getZIndex`
             and returns the collection of sorted leptons that make
             the two Z cands in the event and their IDs.
+            For events that do not pass the fiducial selection,
+            dummy collections filled with -1 are returned for the Z cands.
         '''
         Leptons, LeptonsId, Lepts_RelIso = self.unzipLeptons(LeptonsCollection)
 
-        Z1_l1, Z1_l2, Z2_l1, Z2_l2 = self.getZCands(Leptons, z_idx)
         idx_1, idx_2, idx_3, idx_4 = self.getZIndex(LeptonsId, z_idx)
-        ZCands = [Z1_l1, Z1_l2, Z2_l1, Z2_l2]
         ZIdx   = [idx_1, idx_2, idx_3, idx_4]
+
+        if (idx_1!=99 and idx_2!=99 and idx_3!=99 and idx_4!=99):
+            Z1_l1, Z1_l2, Z2_l1, Z2_l2 = self.getZCands(Leptons, z_idx)
+            ZCands = [Z1_l1, Z1_l2, Z2_l1, Z2_l2]
+        else:
+            ZCands = [-1]*len(Leptons)
+
         return ZCands, ZIdx
 
     def countFiducialLeps(self, LeptonsCollection):
@@ -412,28 +414,28 @@ class genFiller(Module):
         '''
             Function that fills branches for gen-level
             Higgs boson candindate.
+            For events that do not pass the fiducial selection
+            only the indices of the leptons are saved.
+            idx = 99 when Z1 or Z2 cannot be built.
         '''
+        z1l1idx = ZIdx_fidSel[0]
+        z1l2idx = ZIdx_fidSel[1]
+        z2l1idx = ZIdx_fidSel[2]
+        z2l2idx = ZIdx_fidSel[3]
+
         if ZCands_fidSel[0] == -1:
-            z1mass = -1
-            z2mass = -1
             zzmass = -1
-            z1l1idx = -1
-            z1l2idx = -1
-            z2l1idx = -1
-            z2l2idx = -1
             zzrapidity = -1
             zzpt = -1
             zzeta = -1
             zzphi = -1
+            z1mass = -1
+            z2mass = -1
         else:
             gen_H_cand = ZCands_fidSel[0]+ZCands_fidSel[1]+ZCands_fidSel[2]+ZCands_fidSel[3]
             zzmass = (gen_H_cand).M()
-            z1l1idx = ZIdx_fidSel[0]
-            z1l2idx = ZIdx_fidSel[1]
-            z2l1idx = ZIdx_fidSel[2]
-            z2l2idx = ZIdx_fidSel[3]
             zzrapidity = (gen_H_cand).Rapidity()
-            zzpt = (gen_H_cand).Pt()
+            zzpt  = (gen_H_cand).Pt()
             zzeta = (gen_H_cand).Eta()
             zzphi = (gen_H_cand).Phi()
             z1mass = (ZCands_fidSel[0]+ZCands_fidSel[1]).M()
@@ -485,9 +487,8 @@ class genFiller(Module):
             if ((abs(gp.pdgId) == 11) or (abs(gp.pdgId) == 13) or (abs(gp.pdgId) == 15)) :
                 if (not((gp.status == 1) or (abs(gp.pdgId) == 15))): continue
                 mom_idx, mom_id = Mother(gp, genpart)
-                if (not((mom_id==23) or (mom_id==443) or (mom_id==553) or (abs(mom_id)==24))): continue
+                if (not((mom_id==25) or (mom_id==23) or (mom_id==443) or (mom_id==553) or (abs(mom_id)==24))): continue
                 mommom_idx, mommom_id = Mother(genpart[mom_idx], genpart)
-
                 # Dress leptons
                 # PackedGenParticles in miniAOD is GenPart.status == 1
                 lep_dressed, fsr_gamma_idx = self.dressLeptons(gp, genpart)
@@ -499,6 +500,8 @@ class genFiller(Module):
                 genIso = self.computeGenIso(current_lepton, genpart, fsr_gamma_idx)
 
                 Lepts_RelIso.append(genIso)
+                # TODO: Change the line above as soon as iso is in the GenPart collection
+                # Lepts_RelIso.append(gp.iso)
                 dressedLeptons_pt.append(lep_dressed.Pt())
                 dressedLeptons_eta.append(lep_dressed.Eta())
                 dressedLeptons_phi.append(lep_dressed.Phi())
@@ -518,13 +521,8 @@ class genFiller(Module):
 
         LeptonsCollection = [Leptons, LeptonsId, Lepts_RelIso]
 
-        if(len(Leptons)>=4):
-            passFidSel_noCut, z_leps_idx = self.buildZMasses(LeptonsCollection)
-            ZCands_noCut, ZIdx_noCut = self.buildZCands(LeptonsCollection, passFidSel_noCut, z_leps_idx)
-
         nFidLeps, nFidPtLead, nFidPtSubLead = self.countFiducialLeps(LeptonsCollection)
         passFidSel = False
-
         if(nFidLeps >= 4 and nFidPtLead >= 1 and nFidPtSubLead >= 2) :
             passFidSel, zFid_leps_idx = self.buildZMasses(LeptonsCollection, makeCuts = True)
             ZCands_fidSel, ZIdx_fidSel = self.buildZCands(LeptonsCollection, passFidSel, zFid_leps_idx)
@@ -555,4 +553,3 @@ class genFiller(Module):
         self.out.fillBranch("passedFiducial", passFidSel)
 
         return True
-
