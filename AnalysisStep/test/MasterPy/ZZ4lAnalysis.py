@@ -28,6 +28,10 @@ declareDefault("SAMPLENAME", "", globals())
 #Apply muon scale correction
 declareDefault("APPLYMUCORR", True, globals())
 
+#Apply same muon selections as in NanoAOD
+#https://github.com/cms-sw/cmssw/blob/3db814726516bc6276ef0fd623d89c9250d0b75e/PhysicsTools/NanoAOD/python/muons_cff.py#L84
+declareDefault("APPLYNANOSEL", False, globals())
+
 #Reapply JEC
 declareDefault("APPLYJEC", True, globals())
 
@@ -384,6 +388,13 @@ TIGHTMUON    = "isPFMuon || (passed('CutBasedIdTrkHighPt') && pt>200)"
 
 #------- MUONS -------
 
+# Same preselections as Nano
+process.slimmedMuonsNano = cms.EDFilter("PATMuonSelector",
+    src = cms.InputTag("slimmedMuons"),
+    cut = cms.string("pt > 15 || (pt > 3 && (passed('CutBasedIdLoose') || passed('SoftCutBasedId') || passed('SoftMvaId') || passed('CutBasedIdGlobalHighPt') || passed('CutBasedIdTrkHighPt')))")
+)
+
+
 #--- Set correct identifier for muon corrections
 #--- UL Rochester from: https://gitlab.cern.ch/akhukhun/roccor/-/tree/Run2.v5
 #--- Corresponding TWiki: https://twiki.cern.ch/twiki/bin/viewauth/CMS/RochcorMuon
@@ -469,9 +480,15 @@ process.softMuons = cms.EDProducer("MuFiller",
 
 process.muons =  cms.Sequence(process.calibratedMuons + process.bareSoftMuons + process.softMuons)
 
+if APPLYNANOSEL:
+    process.muons.replace(process.calibratedMuons, process.slimmedMuonsNano + process.calibratedMuons)
+    process.calibratedMuons.src = cms.InputTag("slimmedMuonsNano")
+
 if not APPLYMUCORR :
     process.muons.replace(process.calibratedMuons, None)
     process.bareSoftMuons.src = cms.InputTag("slimmedMuons")
+    if APPLYNANOSEL:
+        process.bareSoftMuons.src = cms.InputTag("slimmedMuonsNano")
 
 #------- ELECTRONS -------
 
