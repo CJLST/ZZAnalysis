@@ -31,7 +31,7 @@ XSEC = getConf("XSEC", 1.)
 SYNCMODE = getConf("SYNCMODE", False)
 runMELA = getConf("runMELA", True)
 bestCandByMELA = getConf("bestCandByMELA", True) # requires also runMELA=True
-TRIGPASSTHROUGH = getConf("TRIGPASSTHROUGH", True) # Do not filter events that do not pass triggers (HLT_passZZ4l records if they did)
+TRIGPASSTHROUGH = getConf("TRIGPASSTHROUGH", False) # Do not filter events that do not pass triggers (HLT_passZZ4l records if they did)
 PROCESS_CR = getConf("PROCESS_CR", False) # fill control regions
 PROCESS_ZL = getConf("PROCESS_ZL", False) # fill ZL control region
 APPLYMUCORR = getConf("APPLYMUCORR", True) # apply muon momentum scale/resolution corrections
