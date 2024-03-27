@@ -6,6 +6,7 @@ LEPTON_SETUP = 2022
 APPLYMUCORR = False  # Switch off muon scale corrections
 APPLYJEC = False     # Switch off JEC
 APPLYJER = False     # Switch off JER
+APPLYNANOSEL = False # Apply same muon selection as in the NanoAOD collection
 RECORRECTMET = False # Switch off MET corr
 #KINREFIT = True    # control KinZFitter (very slow)
 PROCESS_CR = True   # False = Skip CR paths and trees

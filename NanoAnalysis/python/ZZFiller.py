@@ -324,10 +324,10 @@ class ZZFiller(Module):
         ### Z+L CR, for fake rate. This is considered only for events with a Z + exactly 1 additional lepton passing the relaxed selection.
         ### This ensures that there is no overlap with the SR and OS, 3P1F and 2P2F CRs (there can be an overlap with the SIP CR
         ### as that keeps leptons failing SIP)
-        if self.addZLCR and bestZIdx >= 0 :
+        if self.addZLCR and bestZIdx >= 0 and SRZs[bestZIdx].M > 40 and SRZs[bestZIdx].M < 120:
             aZ = SRZs[bestZIdx]
             for i,aL in enumerate(leps):
-                # Search for additional lepton, with ghost suppression DR cut 
+                # Search for additional lepton, with ghost suppression DR cut
                 if i != aZ.l1Idx and i!= aZ.l2Idx and aL.ZZRelaxedId and \
                    deltaR(aL.eta, aL.phi, aZ.l1.eta, aZ.l1.phi) > 0.02 and \
                    deltaR(aL.eta, aL.phi, aZ.l2.eta, aZ.l2.phi) > 0.02 :
