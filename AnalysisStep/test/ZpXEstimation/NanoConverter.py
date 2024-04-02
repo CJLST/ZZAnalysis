@@ -10,7 +10,7 @@ parser = optparse.OptionParser(usage)
 parser.add_option('',   '--mc', action='store_true', dest='MC', default=False, help='MC samples')
 parser.add_option('',   '--input',dest='INPUT',type='string',default='', help='Name and path to the input file')
 parser.add_option('',   '--output',dest='OUTPUT',type='string',default='', help='Name and path to the output file')
-parser.add_option('',   '--skipZL', action='store_true', dest='SKIPZL', default=False, help='Skip the ZL tree (necessary for ZZto4l samples)')
+parser.add_option('',   '--skipZL', action='store_true', dest='SKIPZL', default=False, help='Skip the ZL tree (e.g., necessary for ZZto4l samples)')
 (opt, args) = parser.parse_args()
 
 def makeCR(_df, _flag):
@@ -25,7 +25,7 @@ def makeCR(_df, _flag):
     elif _flag == 'SS':
         bit = '2097152'
     elif _flag == 'SIPCR':
-        bit = '22'
+        bit = '21'
     else:
         raise Exception("The CR "+_flag+" is not known")
 
@@ -47,6 +47,10 @@ def makeCR(_df, _flag):
                                                    .Define('Leptons_sip', "concatenate(Electron_sip3d,Muon_sip3d)")
                                                    .Define('Leptons_iso', "concatenate(Electron_pfRelIso03FsrCorr,Muon_pfRelIso03FsrCorr)")
                                                    .Define('Leptons_isid', "concatenate(Electron_passBDT,Muon_ZZFullId)")
+                                                   ## Need to add the LepMissingHit branch for SS FR method
+                                                   ## First create a dummy branch for muons filled with zeroes
+                                                   .Define('Muon_lostHits', "addDummyBranch(Muon_pt)")
+                                                   .Define('Leptons_missinghit', "concatenate(Electron_lostHits, Muon_lostHits)")
                                                    ## Variable miniAOD-style
                                                    .Define('LepPt', "std::vector<float> LepPt{Leptons_pt[ZLLCand_Z1l1Idx[ZLLbest"+_flag+"Idx]], Leptons_pt[ZLLCand_Z1l2Idx[ZLLbest"+_flag+"Idx]], Leptons_pt[ZLLCand_Z2l1Idx[ZLLbest"+_flag+"Idx]], Leptons_pt[ZLLCand_Z2l2Idx[ZLLbest"+_flag+"Idx]]}; return LepPt")
                                                    .Define('LepEta', "std::vector<float> LepEta{Leptons_eta[ZLLCand_Z1l1Idx[ZLLbest"+_flag+"Idx]], Leptons_eta[ZLLCand_Z1l2Idx[ZLLbest"+_flag+"Idx]], Leptons_eta[ZLLCand_Z2l1Idx[ZLLbest"+_flag+"Idx]], Leptons_eta[ZLLCand_Z2l2Idx[ZLLbest"+_flag+"Idx]]}; return LepEta")
@@ -57,6 +61,7 @@ def makeCR(_df, _flag):
                                                    .Define('LepSIP', "std::vector<float> LepSIP{Leptons_sip[ZLLCand_Z1l1Idx[ZLLbest"+_flag+"Idx]], Leptons_sip[ZLLCand_Z1l2Idx[ZLLbest"+_flag+"Idx]], Leptons_sip[ZLLCand_Z2l1Idx[ZLLbest"+_flag+"Idx]], Leptons_sip[ZLLCand_Z2l2Idx[ZLLbest"+_flag+"Idx]]}; return LepSIP")
                                                    .Define('LepCombRelIsoPF', "std::vector<float> LepCombRelIsoPF{Leptons_iso[ZLLCand_Z1l1Idx[ZLLbest"+_flag+"Idx]], Leptons_iso[ZLLCand_Z1l2Idx[ZLLbest"+_flag+"Idx]], Leptons_iso[ZLLCand_Z2l1Idx[ZLLbest"+_flag+"Idx]], Leptons_iso[ZLLCand_Z2l2Idx[ZLLbest"+_flag+"Idx]]}; return LepCombRelIsoPF")
                                                    .Define('LepisID', "std::vector<bool> LepisID{Leptons_isid[ZLLCand_Z1l1Idx[ZLLbest"+_flag+"Idx]], Leptons_isid[ZLLCand_Z1l2Idx[ZLLbest"+_flag+"Idx]], Leptons_isid[ZLLCand_Z2l1Idx[ZLLbest"+_flag+"Idx]], Leptons_isid[ZLLCand_Z2l2Idx[ZLLbest"+_flag+"Idx]]}; return Leptons_isid")
+                                                   .Define('LepMissingHit', "std::vector<unsigned char> LepMissingHit{Leptons_missinghit[ZLLCand_Z1l1Idx[ZLLbest"+_flag+"Idx]], Leptons_missinghit[ZLLCand_Z1l2Idx[ZLLbest"+_flag+"Idx]], Leptons_missinghit[ZLLCand_Z2l1Idx[ZLLbest"+_flag+"Idx]], Leptons_missinghit[ZLLCand_Z2l2Idx[ZLLbest"+_flag+"Idx]]}; return LepMissingHit")
                                                    .Define('PFMET', "MET_pt")
                                                    ## overallEventWeight contains everything in NanoAODs
                                                    .Define('L1prefiringWeight', "1") ## Dummy
@@ -121,17 +126,47 @@ ROOT::RVec<bool> concatenate(ROOT::RVec<bool> &A, ROOT::RVec<bool> &B){
 }
 """)
 
+ROOT.gInterpreter.Declare("""
+ROOT::RVec<unsigned char> concatenate(ROOT::RVec<unsigned char> &A, ROOT::RVec<unsigned char> &B){
+    int sizeA = A.size();
+    int sizeB = B.size();
+    int sizeC = sizeA + sizeB;
+    ROOT::RVec<float> C(sizeC);
+
+    for (int i = 0; i < sizeA; ++i) {
+        C[i] = A[i];
+    }
+    for (int i = 0; i < sizeB; ++i) {
+        C[sizeA+i] = B[i];
+    }
+
+    return C;
+}
+""")
+
+
+ROOT.gInterpreter.Declare("""
+ROOT::RVec<unsigned char> addDummyBranch(ROOT::RVec<float> &A){
+    int sizeA = A.size();
+    ROOT::RVec<unsigned char> B(sizeA);
+
+    for (int i = 0; i < sizeA; ++i) {
+        B[i] = 0;
+    }
+
+    return B;
+}
+""")
+
+
 
 ##################################### MAIN #####################################
 MC = opt.MC
 
-# inFileName = '/eos/user/a/atarabin/Data2022/ZZ4lAnalysis.root'
 inFileName = opt.INPUT
 outFileName = opt.OUTPUT
 
 df = ROOT.RDataFrame('Events', inFileName)
-# df = df.Filter("ZLLbest"+_flag+"Idx>-1").Define('LepPt', "concatenate(Electron_pt,Muon_pt)")
-# df.Snapshot('debug', 'debug.root', {'Leptons_pt','Electron_pt', 'Muon_pt'})
 
 df_3P1F = makeCR(df, "3P1F")
 df_2P2F = makeCR(df, "2P2F")
@@ -140,6 +175,7 @@ df_SIP = makeCR(df, "SIPCR")
 
 opts = ROOT.RDF.RSnapshotOptions()
 opts.fMode = 'RECREATE'
+## Variables to store in the output root file
 vars = {'RunNumber',
         'EventNumber',
         'LumiNumber',
@@ -159,14 +195,16 @@ vars = {'RunNumber',
         'LepLepId',
         'LepSIP',
         'LepCombRelIsoPF',
-        'xsec', ## [FIXME] move it to MC only (also below for ZL)
-        'L1prefiringWeight', ## [FIXME] move it to MC only (also below for ZL)
-        'KFactor_EW_qqZZ', ## [FIXME] move it to MC only (also below for ZL)
-        'KFactor_QCD_qqZZ_M', ## [FIXME] move it to MC only (also below for ZL)
-        'KFactor_QCD_ggZZ_Nominal' ## [FIXME] move it to MC only (also below for ZL)
+        'LepMissingHit',
         }
 if MC:
     vars.add('overallEventWeight')
+    vars.add('xsec')
+    vars.add('L1prefiringWeight')
+    vars.add('KFactor_EW_qqZZ')
+    vars.add('KFactor_QCD_qqZZ_M')
+    vars.add('KFactor_QCD_ggZZ_Nominal')
+
 
 df_3P1F.Snapshot('CRZLLTree/candTree', "test_3P1F.root", vars, opts)
 df_2P2F.Snapshot('CRZLLTree/candTree', "test_2P2F.root", vars, opts)
@@ -185,6 +223,54 @@ if df_bis.Count().GetValue() != 0:
     skip_ZLL = False
 ## Remove the intermediate files, we don't need them anymore
 os.system('rm test_*.root')
+
+## SR
+df_SR = ( df.Filter('bestCandIdx>=0').Define("ZZMass", "ZZCand_mass[bestCandIdx]") ## Dummy
+                                     .Define("CRflag", "0") ## Dummy
+                                     .Define("Z1Flav", "ZZCand_Z1flav[bestCandIdx]")
+                                     .Define("Z2Flav", "ZZCand_Z2flav[bestCandIdx]") ## Dummy
+                                     .Define("Z1Mass", "ZZCand_Z1mass[bestCandIdx]")
+                                     .Define("Z2Mass", "ZZCand_Z2mass[bestCandIdx]") ## Dummy
+                                     .Define("RunNumber", "run")
+                                     .Define("EventNumber", "event")
+                                     .Define("LumiNumber", "luminosityBlock")
+                                     .Define('Leptons_pt', "concatenate(Electron_pt,Muon_pt)")
+                                     .Define('Leptons_eta', "concatenate(Electron_eta,Muon_eta)")
+                                     .Define('Leptons_phi', "concatenate(Electron_phi,Muon_phi)")
+                                     .Define('Leptons_dxy', "concatenate(Electron_dxy,Muon_dxy)")
+                                     .Define('Leptons_dz', "concatenate(Electron_dz,Muon_dz)")
+                                     .Define('Leptons_id', "concatenate(Electron_pdgId,Muon_pdgId)")
+                                     .Define('Leptons_sip', "concatenate(Electron_sip3d,Muon_sip3d)")
+                                     .Define('Leptons_iso', "concatenate(Electron_pfRelIso03FsrCorr,Muon_pfRelIso03FsrCorr)")
+                                     .Define('Leptons_isid', "concatenate(Electron_passBDT,Muon_ZZFullId)")
+                                     ## Need to add the LepMissingHit branch for SS FR method
+                                     ## First create a dummy branch for muons filled with zeroes
+                                     .Define('Muon_lostHits', "addDummyBranch(Muon_pt)")
+                                     .Define('Leptons_missinghit', "concatenate(Electron_lostHits, Muon_lostHits)")
+                                     ## Variable miniAOD-style
+                                     .Define('LepPt', "std::vector<float> LepPt{Leptons_pt[ZZCand_Z1l1Idx[bestCandIdx]], Leptons_pt[ZZCand_Z1l2Idx[bestCandIdx]], Leptons_pt[ZZCand_Z2l1Idx[bestCandIdx]], Leptons_pt[ZZCand_Z2l2Idx[bestCandIdx]]}; return LepPt")
+                                     .Define('LepEta', "std::vector<float> LepEta{Leptons_eta[ZZCand_Z1l1Idx[bestCandIdx]], Leptons_eta[ZZCand_Z1l2Idx[bestCandIdx]], Leptons_eta[ZZCand_Z2l1Idx[bestCandIdx]], Leptons_eta[ZZCand_Z2l2Idx[bestCandIdx]]}; return LepEta")
+                                     .Define('LepPhi', "std::vector<float> LepPhi{Leptons_phi[ZZCand_Z1l1Idx[bestCandIdx]], Leptons_phi[ZZCand_Z1l2Idx[bestCandIdx]], Leptons_phi[ZZCand_Z2l1Idx[bestCandIdx]], Leptons_phi[ZZCand_Z2l2Idx[bestCandIdx]]}; return LepPhi")
+                                     .Define('Lepdxy', "std::vector<float> Lepdxy{Leptons_dxy[ZZCand_Z1l1Idx[bestCandIdx]], Leptons_dxy[ZZCand_Z1l2Idx[bestCandIdx]], Leptons_dxy[ZZCand_Z2l1Idx[bestCandIdx]], Leptons_dxy[ZZCand_Z2l2Idx[bestCandIdx]]}; return Lepdxy")
+                                     .Define('Lepdz', "std::vector<float> Lepdz{Leptons_dz[ZZCand_Z1l1Idx[bestCandIdx]], Leptons_dz[ZZCand_Z1l2Idx[bestCandIdx]], Leptons_dz[ZZCand_Z2l1Idx[bestCandIdx]], Leptons_dz[ZZCand_Z2l2Idx[bestCandIdx]]}; return Lepdz")
+                                     .Define('LepLepId', "std::vector<short> LepLepId{Leptons_id[ZZCand_Z1l1Idx[bestCandIdx]], Leptons_id[ZZCand_Z1l2Idx[bestCandIdx]], Leptons_id[ZZCand_Z2l1Idx[bestCandIdx]], Leptons_id[ZZCand_Z2l2Idx[bestCandIdx]]}; return LepLepId")
+                                     .Define('LepSIP', "std::vector<float> LepSIP{Leptons_sip[ZZCand_Z1l1Idx[bestCandIdx]], Leptons_sip[ZZCand_Z1l2Idx[bestCandIdx]], Leptons_sip[ZZCand_Z2l1Idx[bestCandIdx]], Leptons_sip[ZZCand_Z2l2Idx[bestCandIdx]]}; return LepSIP")
+                                     .Define('LepCombRelIsoPF', "std::vector<float> LepCombRelIsoPF{Leptons_iso[ZZCand_Z1l1Idx[bestCandIdx]], Leptons_iso[ZZCand_Z1l2Idx[bestCandIdx]], Leptons_iso[ZZCand_Z2l1Idx[bestCandIdx]], Leptons_iso[ZZCand_Z2l2Idx[bestCandIdx]]}; return LepCombRelIsoPF")
+                                     .Define('LepisID', "std::vector<bool> LepisID{Leptons_isid[ZZCand_Z1l1Idx[bestCandIdx]], Leptons_isid[ZZCand_Z1l2Idx[bestCandIdx]], Leptons_isid[ZZCand_Z2l1Idx[bestCandIdx]], Leptons_isid[ZZCand_Z2l2Idx[bestCandIdx]]}; return LepisID")
+                                     .Define('LepMissingHit', "std::vector<unsigned char> LepMissingHit{Leptons_missinghit[ZZCand_Z1l1Idx[bestCandIdx]], Leptons_missinghit[ZZCand_Z1l2Idx[bestCandIdx]], Leptons_missinghit[ZZCand_Z2l1Idx[bestCandIdx]], Leptons_missinghit[ZZCand_Z2l2Idx[bestCandIdx]]}; return LepMissingHit")
+                                     .Define('PFMET', "MET_pt")
+                                     ## overallEventWeight contains everything in NanoAODs
+                                     .Define('L1prefiringWeight', "1") ## Dummy
+                                     .Define('KFactor_EW_qqZZ', "1") ## Dummy
+                                     .Define('KFactor_QCD_qqZZ_M', "1") ## Dummy
+                                     .Define('KFactor_QCD_ggZZ_Nominal', '1') ## Dummy
+                                     .Define('xsec', '1') ## Dummy
+                                     )
+
+opts.fMode = 'UPDATE'
+df_SR.Snapshot('ZZTree/candTree', outFileName, vars, opts)
+
+
 
 ## ZL CR for the computation of fake rates
 if not opt.SKIPZL:
@@ -206,6 +292,10 @@ if not opt.SKIPZL:
                                            .Define('Leptons_sip', "concatenate(Electron_sip3d,Muon_sip3d)")
                                            .Define('Leptons_iso', "concatenate(Electron_pfRelIso03FsrCorr,Muon_pfRelIso03FsrCorr)")
                                            .Define('Leptons_isid', "concatenate(Electron_passBDT,Muon_ZZFullId)")
+                                           ## Need to add the LepMissingHit branch for SS FR method
+                                           ## First create a dummy branch for muons filled with zeroes
+                                           .Define('Muon_lostHits', "addDummyBranch(Muon_pt)")
+                                           .Define('Leptons_missinghit', "concatenate(Electron_lostHits, Muon_lostHits)")
                                            ## Variable miniAOD-style
                                            .Define('LepPt', "std::vector<float> LepPt{Leptons_pt[ZCand_l1Idx[bestZIdx]], Leptons_pt[ZCand_l2Idx[bestZIdx]], Leptons_pt[ZLCand_lepIdx]}; return LepPt")
                                            .Define('LepEta', "std::vector<float> LepEta{Leptons_eta[ZCand_l1Idx[bestZIdx]], Leptons_eta[ZCand_l2Idx[bestZIdx]], Leptons_eta[ZLCand_lepIdx]}; return LepEta")
@@ -216,6 +306,7 @@ if not opt.SKIPZL:
                                            .Define('LepSIP', "std::vector<float> LepSIP{Leptons_sip[ZCand_l1Idx[bestZIdx]], Leptons_sip[ZCand_l2Idx[bestZIdx]], Leptons_sip[ZLCand_lepIdx]}; return LepSIP")
                                            .Define('LepCombRelIsoPF', "std::vector<float> LepCombRelIsoPF{Leptons_iso[ZCand_l1Idx[bestZIdx]], Leptons_iso[ZCand_l2Idx[bestZIdx]], Leptons_iso[ZLCand_lepIdx]}; return LepCombRelIsoPF")
                                            .Define('LepisID', "std::vector<bool> LepisID{Leptons_isid[ZCand_l1Idx[bestZIdx]], Leptons_isid[ZCand_l2Idx[bestZIdx]], Leptons_isid[ZLCand_lepIdx]}; return LepisID")
+                                           .Define('LepMissingHit', "std::vector<unsigned char> LepMissingHit{Leptons_missinghit[ZCand_l1Idx[bestZIdx]], Leptons_missinghit[ZCand_l2Idx[bestZIdx]], Leptons_missinghit[ZLCand_lepIdx]}; return LepMissingHit")
                                            .Define('PFMET', "MET_pt")
                                            ## overallEventWeight contains everything in NanoAODs
                                            .Define('L1prefiringWeight', "1") ## Dummy
@@ -226,37 +317,7 @@ if not opt.SKIPZL:
                                            )
 
     opts.fMode = 'UPDATE'
-    vars = {
-            'RunNumber',
-            'EventNumber',
-            'LumiNumber',
-            'ZZMass',
-            'Z1Flav',
-            'Z2Flav',
-            'Z1Mass',
-            'Z2Mass',
-            'LepisID',
-            'PFMET',
-            'CRflag',
-            'LepPt',
-            'LepEta',
-            'LepPhi',
-            'Lepdxy',
-            'Lepdz',
-            'LepLepId',
-            'LepSIP',
-            'LepCombRelIsoPF',
-            'L1prefiringWeight',
-            'xsec',
-            'KFactor_EW_qqZZ',
-            'KFactor_QCD_qqZZ_M',
-            'KFactor_QCD_ggZZ_Nominal'
-            }
-    if MC:
-        vars.add('overallEventWeight')
     df_ZL.Snapshot('CRZLTree/candTree', outFileName, vars, opts)
-
-
 
 ## Add counter only with the 40th entry
 counters = ROOT.TH1F("Counters", "Counters", 50, 0, 100)
