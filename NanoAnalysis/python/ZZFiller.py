@@ -25,7 +25,7 @@ class StoreOption:
 
 class ZZFiller(Module):
 
-    def __init__(self, runMELA, bestCandByMELA, isMC, year, processCR, addZL=False, debug=False):
+    def __init__(self, runMELA, bestCandByMELA, isMC, year, processCR, data_tag, addZL=False, debug=False):
         print("***ZZFiller: isMC:", isMC, "year:", year, flush=True)
         self.writeHistFile = False
         self.isMC = isMC
@@ -40,6 +40,8 @@ class ZZFiller(Module):
         self.addOSCR = processCR
         self.addSIPCR = processCR
         self.addZLCR = addZL
+
+        self.DATA_TAG = data_tag
 
         self.DEBUG = debug
         self.ZmassValue = 91.1876;
@@ -88,8 +90,11 @@ class ZZFiller(Module):
         # Data-MC SFs. 
         # NanoAODTools provides a module based on LeptonEfficiencyCorrector.cc, but that does not seem to be flexible enough for us:
         # https://github.com/cms-nanoAOD/nanoAOD-tools/blob/master/python/postprocessing/modules/common/lepSFProducer.py
-        # TODO: Find a way to switch between 2022 and 2022EE (or 2016 pre/postVFP)
-        self.lepSFHelper = LeptonSFHelper(False)
+        # UL16pre/postVFP and 2022pre/postEE have different SFs
+        if (self.DATA_TAG=="ULAPV" or self.DATA_TAG=="pre_EE"):
+            self.lepSFHelper = LeptonSFHelper(True)
+        else:
+            self.lepSFHelper = LeptonSFHelper(False)
 
         if self.runMELA :
             sqrts=13.;
