@@ -91,10 +91,7 @@ class ZZFiller(Module):
         # NanoAODTools provides a module based on LeptonEfficiencyCorrector.cc, but that does not seem to be flexible enough for us:
         # https://github.com/cms-nanoAOD/nanoAOD-tools/blob/master/python/postprocessing/modules/common/lepSFProducer.py
         # UL16pre/postVFP and 2022pre/postEE have different SFs
-        if (self.DATA_TAG=="ULAPV" or self.DATA_TAG=="pre_EE"):
-            self.lepSFHelper = LeptonSFHelper(True)
-        else:
-            self.lepSFHelper = LeptonSFHelper(False)
+        self.lepSFHelper = LeptonSFHelper(self.DATA_TAG)
 
         if self.runMELA :
             sqrts=13.;

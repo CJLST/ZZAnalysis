@@ -21,7 +21,7 @@ class LeptonSFHelper
 
  public:
 
-  LeptonSFHelper(bool preVFP);
+  LeptonSFHelper(std::string const &data_tag);
   ~LeptonSFHelper();
   
   float getSF (int year, int flav, float pt, float eta, float SCeta, bool isCrack) const;

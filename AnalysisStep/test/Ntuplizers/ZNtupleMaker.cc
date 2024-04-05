@@ -325,7 +325,6 @@ private:
   TH1F *hCounter;
 
   Bool_t isMC;
-  bool preVFP = false;
 
   bool applyTrigger;    // Keep only events passing trigger
   bool applySkim;       //   "     "      "     skim
@@ -432,12 +431,8 @@ ZNtupleMaker::ZNtupleMaker(const edm::ParameterSet& pset) :
   gen_sumGenMCWeight = 0.f;
   gen_sumWeights =0.f;
 
-  if(dataTag=="ULAPV"){
-    preVFP=true;
-  }
-
    //Scale factors for data/MC efficiency
-   if (!skipEleDataMCWeight && isMC) { lepSFHelper = new LeptonSFHelper(preVFP); }
+   if (!skipEleDataMCWeight && isMC) { lepSFHelper = new LeptonSFHelper(dataTag); }
 
 }
 

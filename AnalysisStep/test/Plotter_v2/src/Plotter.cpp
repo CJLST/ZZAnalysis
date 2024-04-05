@@ -18,7 +18,9 @@ Plotter::Plotter():Tree()
    _current_final_state = -999;
    _current_category = -999;
 
-   lepSFHelper = new LeptonSFHelper(false);
+   // TODO: Maybe get dataTag from config
+   std::string dataTag = "ReReco";
+   lepSFHelper = new LeptonSFHelper(dataTag);
 
    // Z+X SS factors
    /*****************************************
