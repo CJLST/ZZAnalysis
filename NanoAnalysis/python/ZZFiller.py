@@ -360,10 +360,10 @@ class ZZFiller(Module):
         ZCand_rapidity = [0.]*len(SRZs)
         ZCand_phi = [0.]*len(SRZs)
         ZCand_flav = [0.]*len(SRZs)
-        ZCand_l1Idx = [0.]*len(SRZs)
-        ZCand_l2Idx = [0.]*len(SRZs)
-        ZCand_fsr1Idx = [0.]*len(SRZs)
-        ZCand_fsr2Idx = [0.]*len(SRZs)
+        ZCand_l1Idx = [-1]*len(SRZs)
+        ZCand_l2Idx = [-1]*len(SRZs)
+        ZCand_fsr1Idx = [-1]*len(SRZs)
+        ZCand_fsr2Idx = [-1]*len(SRZs)
 
         for iZ, aZ in enumerate(SRZs) :
             ZCand_mass[iZ] = aZ.p4.M()
