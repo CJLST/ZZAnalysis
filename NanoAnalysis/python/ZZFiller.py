@@ -120,6 +120,7 @@ class ZZFiller(Module):
         self.out.branch("ZCand_mass", "F", lenVar="nZCand", title="mass")
         self.out.branch("ZCand_pt", "F", lenVar="nZCand")
         self.out.branch("ZCand_eta", "F", lenVar="nZCand")
+        self.out.branch("ZCand_rapidity", "F", lenVar="nZCand")
         self.out.branch("ZCand_phi", "F", lenVar="nZCand")
         self.out.branch("ZCand_flav", "F", lenVar="nZCand", title="Product of the pdgIds of the 2 daughters")
         self.out.branch("ZCand_l1Idx", "S", lenVar="nZCand", title="index of 1st daughter in Electron+Muon merged collection")
@@ -162,6 +163,7 @@ class ZZFiller(Module):
             self.out.branch("ZLLCand_massPreFSR", "F", lenVar="nZLLCand")
             self.out.branch("ZLLCand_pt", "F", lenVar="nZLLCand")
             self.out.branch("ZLLCand_eta", "F", lenVar="nZLLCand")
+            self.out.branch("ZLLCand_rapidity", "F", lenVar="nZLLCand")
             self.out.branch("ZLLCand_phi", "F", lenVar="nZLLCand")
             self.out.branch("ZLLCand_Z1mass", "F", lenVar="nZLLCand")
             self.out.branch("ZLLCand_Z1flav", "I", lenVar="nZLLCand")
@@ -352,30 +354,33 @@ class ZZFiller(Module):
 
         ### Now fill the variables to be stored as output
         # Fill selected Zs
-        ZCand_mass = []
-        ZCand_pt = []
-        ZCand_eta = []
-        ZCand_phi = []
-        ZCand_flav = []
-        ZCand_l1Idx = []
-        ZCand_l2Idx = []
-        ZCand_fsr1Idx = []
-        ZCand_fsr2Idx = []
+        ZCand_mass = [0.]*len(SRZs)
+        ZCand_pt = [0.]*len(SRZs)
+        ZCand_eta = [0.]*len(SRZs)
+        ZCand_rapidity = [0.]*len(SRZs)
+        ZCand_phi = [0.]*len(SRZs)
+        ZCand_flav = [0.]*len(SRZs)
+        ZCand_l1Idx = [0.]*len(SRZs)
+        ZCand_l2Idx = [0.]*len(SRZs)
+        ZCand_fsr1Idx = [0.]*len(SRZs)
+        ZCand_fsr2Idx = [0.]*len(SRZs)
 
         for iZ, aZ in enumerate(SRZs) :
-            ZCand_mass.append(aZ.p4.M())
-            ZCand_pt.append(aZ.p4.Pt())
-            ZCand_eta.append(aZ.p4.Eta())
-            ZCand_phi.append(aZ.p4.Phi())
-            ZCand_flav.append(aZ.finalState())
-            ZCand_l1Idx.append(aZ.l1Idx)
-            ZCand_l2Idx.append(aZ.l2Idx)
-            ZCand_fsr1Idx.append(aZ.fsr1Idx)
-            ZCand_fsr2Idx.append(aZ.fsr2Idx)
+            ZCand_mass[iZ] = aZ.p4.M()
+            ZCand_pt[iZ] = aZ.p4.Pt()
+            ZCand_eta[iZ] = aZ.p4.Eta()
+            ZCand_rapidity[iZ] = aZ.p4.Rapidity()
+            ZCand_phi[iZ] = aZ.p4.Phi()
+            ZCand_flav[iZ] = aZ.finalState()
+            ZCand_l1Idx[iZ] = aZ.l1Idx
+            ZCand_l2Idx[iZ] = aZ.l2Idx
+            ZCand_fsr1Idx[iZ] = aZ.fsr1Idx
+            ZCand_fsr2Idx[iZ] = aZ.fsr2Idx
 
         self.out.fillBranch("ZCand_mass", ZCand_mass)
         self.out.fillBranch("ZCand_pt", ZCand_pt)
         self.out.fillBranch("ZCand_eta", ZCand_eta)
+        self.out.fillBranch("ZCand_rapidity", ZCand_rapidity)
         self.out.fillBranch("ZCand_phi", ZCand_phi)
         self.out.fillBranch("ZCand_flav", ZCand_flav)
         self.out.fillBranch("ZCand_l1Idx", ZCand_l1Idx)
@@ -463,6 +468,7 @@ class ZZFiller(Module):
             ZLLCand_massPreFSR = [0.]*len(ZLLs)
             ZLLCand_pt     = [0.]*len(ZLLs)
             ZLLCand_eta    = [0.]*len(ZLLs)
+            ZLLCand_rapidity = [0.]*len(ZLLs)
             ZLLCand_phi    = [0.]*len(ZLLs)
             ZLLCand_Z1mass = [0.]*len(ZLLs)
             ZLLCand_Z1flav = [0.]*len(ZLLs)
@@ -479,6 +485,7 @@ class ZZFiller(Module):
                 ZLLCand_massPreFSR[iZLL] = ZLL.massPreFSR()
                 ZLLCand_pt[iZLL] = ZLL.p4.Pt()
                 ZLLCand_eta[iZLL] = ZLL.p4.Eta()
+                ZLLCand_rapidity[iZLL] = ZLL.p4.Rapidity()
                 ZLLCand_phi[iZLL] = ZLL.p4.Phi()
                 ZLLCand_Z1mass[iZLL] = ZLL.Z1.M
                 ZLLCand_Z1flav[iZLL] = ZLL.Z1.finalState()
@@ -494,6 +501,7 @@ class ZZFiller(Module):
             self.out.fillBranch("ZLLCand_massPreFSR",   ZLLCand_massPreFSR)
             self.out.fillBranch("ZLLCand_pt",     ZLLCand_pt)
             self.out.fillBranch("ZLLCand_eta",    ZLLCand_eta)
+            self.out.fillBranch("ZLLCand_rapidity",    ZLLCand_rapidity)
             self.out.fillBranch("ZLLCand_phi",    ZLLCand_phi)
             self.out.fillBranch("ZLLCand_Z1mass", ZLLCand_Z1mass)
             self.out.fillBranch("ZLLCand_Z1flav", ZLLCand_Z1flav)
