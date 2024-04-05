@@ -658,7 +658,6 @@ private:
   TH1F *hCounter;
 
   bool isMC;
-  bool preVFP=false;
   bool is_loose_ele_selection; // Collection includes candidates with loose electrons/TLEs
   bool applySkim;       //   "     "      "         skim (if skipEmptyEvents=true)
   bool skipEmptyEvents; // Skip events whith no selected candidate (otherwise, gen info is preserved for all events; candidates not passing trigger&&skim are flagged with negative ZZsel)
@@ -962,11 +961,8 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   gr_NNLOPSratio_pt_powheg_2jet = (TGraphErrors*)NNLOPS_weight_file->Get("gr_NNLOPSratio_pt_powheg_2jet");
   gr_NNLOPSratio_pt_powheg_3jet = (TGraphErrors*)NNLOPS_weight_file->Get("gr_NNLOPSratio_pt_powheg_3jet");
 
-  if(dataTag=="ULAPV"){
-    preVFP=true;
-  }
   //Scale factors for data/MC efficiency
-  if (!skipEleDataMCWeight && isMC) { lepSFHelper = new LeptonSFHelper(preVFP); }
+  if (!skipEleDataMCWeight && isMC) { lepSFHelper = new LeptonSFHelper(dataTag); }
 
   if (!skipHqTWeight) {
     //HqT weights

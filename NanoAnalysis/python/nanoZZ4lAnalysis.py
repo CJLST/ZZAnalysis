@@ -20,7 +20,7 @@ from ZZAnalysis.NanoAnalysis.weightFiller import weightFiller
 DEBUG = getConf("DEBUG", False)
 SAMPLENAME = getConf("SAMPLENAME", "test")
 LEPTON_SETUP = getConf("LEPTON_SETUP", 2018)
-DATA_TAG = getConf("DATA_TAG", "" ) # flavours; at the moment only used to mark UL Run 2 samples
+DATA_TAG = getConf("DATA_TAG", "" ) # used to distinguish UL16pre/postVFP 2022pre/postEE
 NANOVERSION = getConf("NANOVERSION", 12)
 if not (LEPTON_SETUP == 2016 or LEPTON_SETUP == 2017 or LEPTON_SETUP == 2018 or LEPTON_SETUP == 2022 or LEPTON_SETUP == 2023) :
     print("Invalid LEPTON_SETUP", LEPTON_SETUP)
@@ -126,7 +126,7 @@ if not IsMC :
 
 # Standard sequence used for both data and MC
 reco_sequence = [lepFiller(cuts, LEPTON_SETUP), # FSR and FSR-corrected iso; flags for passing IDs
-                 ZZFiller(runMELA, bestCandByMELA, IsMC, LEPTON_SETUP, PROCESS_CR, addZL=PROCESS_ZL, debug=DEBUG), # Build ZZ candidates; choose best candidate; filter events with candidates
+                 ZZFiller(runMELA, bestCandByMELA, IsMC, LEPTON_SETUP, PROCESS_CR, DATA_TAG, addZL=PROCESS_ZL, debug=DEBUG), # Build ZZ candidates; choose best candidate; filter events with candidates
                  jetFiller(), # Jets cleaning with leptons
                  ZZExtraFiller('SR'), # Add information on extra objects to the selected best candidate
                  # MELAFiller(), # Compute the full set of discriminants for the best candidate

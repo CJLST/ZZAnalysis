@@ -25,7 +25,7 @@ class StoreOption:
 
 class ZZFiller(Module):
 
-    def __init__(self, runMELA, bestCandByMELA, isMC, year, processCR, addZL=False, debug=False):
+    def __init__(self, runMELA, bestCandByMELA, isMC, year, processCR, data_tag, addZL=False, debug=False):
         print("***ZZFiller: isMC:", isMC, "year:", year, flush=True)
         self.writeHistFile = False
         self.isMC = isMC
@@ -40,6 +40,8 @@ class ZZFiller(Module):
         self.addOSCR = processCR
         self.addSIPCR = processCR
         self.addZLCR = addZL
+
+        self.DATA_TAG = data_tag
 
         self.DEBUG = debug
         self.ZmassValue = 91.1876;
@@ -88,7 +90,8 @@ class ZZFiller(Module):
         # Data-MC SFs. 
         # NanoAODTools provides a module based on LeptonEfficiencyCorrector.cc, but that does not seem to be flexible enough for us:
         # https://github.com/cms-nanoAOD/nanoAOD-tools/blob/master/python/postprocessing/modules/common/lepSFProducer.py
-        self.lepSFHelper = LeptonSFHelper(False) # FIXME for 2016 UL samples: requires passing bool preVFP
+        # UL16pre/postVFP and 2022pre/postEE have different SFs
+        self.lepSFHelper = LeptonSFHelper(self.DATA_TAG)
 
         if self.runMELA :
             sqrts=13.;
@@ -407,7 +410,7 @@ class ZZFiller(Module):
             ZZCand_Z2l2Idx[iZZ] = ZZ.Z2.l2Idx
             ZZCand_KD[iZZ] = ZZ.KD
             ZZCand_Z2sumpt[iZZ] = ZZ.Z2.sumpt()
-            if self.year < 2022 : #FIXME
+            if self.year < 2023 : #FIXME
                 if self.isMC: ZZCand_wDataMC[iZZ] =  self.getDataMCWeight(ZZ.leps())
             else :
                 ZZCand_wDataMC[iZZ] = 1.
