@@ -8,19 +8,46 @@ import correctionlib
 
 class eleScaleResProducer(Module):
     def __init__(self, dataYear, tag, is_mc, overwritePt=False):
-
-        # TODO: this is for promptreco FG. Load correctly (using DATA_TAG should be easy).
-        self.fpath = ("%s/src/ZZAnalysis/NanoAnalysis/data/SS.json" % os.environ['CMSSW_BASE'])
+        self.fname = self.get_fname(tag)
+        self.fpath = ("%s/src/ZZAnalysis/NanoAnalysis/data/%s" % (os.environ['CMSSW_BASE'], self.fname))
         self.overwritePt = overwritePt
         self.is_mc = is_mc
-        print("***INIT eleScaleResProducer: dataYear:", dataYear, "tag:", tag, "overwritePt:", overwritePt)
+        self.evaluator = self._get_evaluator
+        self.evaluator_scale = self._get_scale_evaluator
+        self.evaluator_smear = self._get_smear_evaluator 
+        print("***INIT eleScaleResProducer: dataYear:", dataYear, "tag:", tag, "is MC:", is_mc, "overwritePt:", overwritePt)
+        print("***INIT eleScaleResProducer for: ", self.fpath)
+
+    @property
+    def _get_evaluator(self):
+        evaluator = correctionlib.CorrectionSet.from_file(self.fpath)
+        return evaluator
 
     @property    
-    def createEvaluator(self):
-        evaluator = correctionlib.CorrectionSet.from_file(self.fpath)
-        print(list(evaluator.keys()))
+    def _get_smear_evaluator(self):
+        if "preEE" in self.fname:
+            smear_evaluator = self.evaluator["2022Re-recoBCD_SmearingJSON"]
+        elif "postEE" in self.fname:
+            smear_evaluator = self.evaluator["2022Re-recoE+PromptFG_SmearingJSON"]
 
-        return evaluator
+        return smear_evaluator
+
+    @property
+    def _get_scale_evaluator(self):
+        if "preEE" in self.fname:
+            scale_evaluator = self.evaluator["2022Re-recoBCD_ScaleJSON"]
+        elif "postEE" in self.fname:
+            scale_evaluator = self.evaluator["2022Re-recoE+PromptFG_ScaleJSON"]
+
+        return scale_evaluator
+
+    def get_fname(self, tag):
+        if tag=="pre_EE":
+            fname = "electronSS_preEE.json"
+        elif tag=="post_EE":
+            fname = "electronSS_postEE.json"
+
+        return fname
 
     def beginJob(self):
         pass
@@ -35,38 +62,45 @@ class eleScaleResProducer(Module):
             self.out.branch("Electron_uncorrected_pt", "F", lenVar="nElectron")
         else:
             self.out.branch("Electron_corrected_pt", "F", lenVar="nElectron")
-        # self.out.branch("Electron_correctedUp_pt", "F", lenVar="nElectron")
-        # self.out.branch("Electron_correctedDown_pt", "F", lenVar="nElectron")
+        if self.is_mc:
+            self.out.branch("Electron_scaleUp_pt", "F", lenVar="nElectron")
+            self.out.branch("Electron_scaleDn_pt", "F", lenVar="nElectron")
+            self.out.branch("Electron_smearUp_pt", "F", lenVar="nElectron")
+            self.out.branch("Electron_smearDn_pt", "F", lenVar="nElectron")
 
     def endFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         pass
 
     def analyze(self, event):
         electrons = Collection(event, "Electron")
-        evaluator = self.createEvaluator
 
-        evaluator_smearing = evaluator["Prompt2022FG_SmearingJSON"] # TODO: Correct loading
-        evaluator_scale = evaluator["Prompt2022FG_ScaleJSON"] # TODO: Correct loading
-
+        # TODO: Per event or per electron?
         rng = np.random.default_rng(seed=125)
 
         pt_corr = []
+        pt_smear_up = []
+        pt_smear_dn = []
+        pt_scale_up = []
+        pt_scale_dn = []
+
         for ele in electrons:
             if self.is_mc:
-                rho = evaluator_smearing.evaluate("rho", ele.eta, ele.r9)
+                rho = self.evaluator_smear.evaluate("rho", ele.eta, ele.r9)
                 smearing = rng.normal(loc=1., scale=rho)
                 pt_corr.append(smearing * ele.pt)
-                print("Nominal/Smeared pT for this lepton (MC):", ele.pt/(smearing * ele.pt))
 
-                # TODO: Uncertainties
+                unc_rho = self.evaluator_smear.evaluate("err_rho", ele.eta, ele.r9)
+                smearing_up = rng.normal(loc=1., scale=rho + unc_rho)
+                smearing_dn = rng.normal(loc=1., scale=rho - unc_rho)
+                pt_smear_up.append(smearing_up * ele.pt)
+                pt_smear_dn.append(smearing_dn * ele.pt)
 
+                scale_MC_unc = self.evaluator_scale.evaluate("total_uncertainty", ele.seedGain, float(event.run), ele.eta, ele.r9, ele.pt)
+                pt_scale_up.append((1+scale_MC_unc) * ele.pt)
+                pt_scale_dn.append((1-scale_MC_unc) * ele.pt)
             else:
-                # TODO: Check if cast to float is safe for event.run
-                scale = evaluator_scale.evaluate("total_correction", ele.seedGain, float(event.run), ele.eta, ele.r9, ele.pt)
+                scale = self.evaluator_scale.evaluate("total_correction", ele.seedGain, float(event.run), ele.eta, ele.r9, ele.pt)
                 pt_corr.append(scale * ele.pt)
-                print("Nominal/Smeared pT for this lepton (DATA):", ele.pt/(scale * ele.pt))
-
-                # TODO: Uncertainties
 
         if self.overwritePt :
             pt_uncorr = list(ele.pt for ele in electrons)
@@ -74,6 +108,12 @@ class eleScaleResProducer(Module):
             self.out.fillBranch("Electron_pt", pt_corr)
         else :
             self.out.fillBranch("Electron_corrected_pt", pt_corr)
+
+        if self.is_mc:
+            self.out.fillBranch("Electron_smearUp_pt", pt_smear_up)
+            self.out.fillBranch("Electron_smearDn_pt", pt_smear_dn)
+            self.out.fillBranch("Electron_scaleUp_pt", pt_scale_up)
+            self.out.fillBranch("Electron_scaleDn_pt", pt_scale_dn)
 
         return True
 
