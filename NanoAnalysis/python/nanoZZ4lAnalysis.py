@@ -35,6 +35,7 @@ TRIGPASSTHROUGH = getConf("TRIGPASSTHROUGH", False) # Do not filter events that 
 PROCESS_CR = getConf("PROCESS_CR", False) # fill control regions
 PROCESS_ZL = getConf("PROCESS_ZL", False) # fill ZL control region
 APPLYMUCORR = getConf("APPLYMUCORR", True) # apply muon momentum scale/resolution corrections
+APPLYELECORR = getConf("APPLYELECORR", True) # apply electron momentum scale/resolution corrections
 # ggH NNLOPS weight
 APPLY_QCD_GGF_UNCERT = getConf("APPLY_QCD_GGF_UNCERT", False) 
 # K factors for ggZZ (and old NLO ggH samples) 0:None; 1: NNLO/LO; 2: NNLO/NLO; 3: NLO/LO
@@ -136,6 +137,9 @@ reco_sequence = [lepFiller(cuts, LEPTON_SETUP), # FSR and FSR-corrected iso; fla
 if APPLYMUCORR and LEPTON_SETUP < 2022 : 
     from ZZAnalysis.NanoAnalysis.modules.muonScaleResProducer import muonScaleRes
     reco_sequence.insert(0, muonScaleRes(LEPTON_SETUP, DATA_TAG, overwritePt=True, syncMode=SYNCMODE))
+if APPLYELECORR:
+    from ZZAnalysis.NanoAnalysis.modules.eleScaleResProducer import eleScaleRes
+    reco_sequence.insert(0, eleScaleRes(LEPTON_SETUP, DATA_TAG, IsMC, overwritePt=True))
 
 # Special modules to be applied before the reco_sequence, that may filter events
 pre_sequence = [triggerAndSkim(isMC=IsMC, PD=PD, era=LEPTON_SETUP, passThru=TRIGPASSTHROUGH), # Filter for good PV and trigger requirements; apply PD precedence rules for data
