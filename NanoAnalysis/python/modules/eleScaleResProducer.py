@@ -12,9 +12,12 @@ class eleScaleResProducer(Module):
         self.fpath = ("%s/src/ZZAnalysis/NanoAnalysis/data/%s" % (os.environ['CMSSW_BASE'], self.fname))
         self.overwritePt = overwritePt
         self.is_mc = is_mc
+
+        self.rng = np.random.default_rng()
         self.evaluator = self._get_evaluator
         self.evaluator_scale = self._get_scale_evaluator
-        self.evaluator_smear = self._get_smear_evaluator 
+        self.evaluator_smear = self._get_smear_evaluator
+
         print("***INIT eleScaleResProducer: dataYear:", dataYear, "tag:", tag, "is MC:", is_mc, "overwritePt:", overwritePt)
         print("***INIT eleScaleResProducer for: ", self.fpath)
 
@@ -74,9 +77,6 @@ class eleScaleResProducer(Module):
     def analyze(self, event):
         electrons = Collection(event, "Electron")
 
-        # TODO: Per event or per electron?
-        rng = np.random.default_rng(seed=125)
-
         pt_corr = []
         pt_smear_up = []
         pt_smear_dn = []
@@ -86,7 +86,7 @@ class eleScaleResProducer(Module):
         for ele in electrons:
             if self.is_mc:
                 rho = self.evaluator_smear.evaluate("rho", ele.eta, ele.r9)
-                smearing = rng.normal(loc=1., scale=rho)
+                smearing = self.rng.normal(loc=1., scale=rho)
                 pt_corr.append(smearing * ele.pt)
 
                 unc_rho = self.evaluator_smear.evaluate("err_rho", ele.eta, ele.r9)
