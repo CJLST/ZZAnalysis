@@ -162,7 +162,7 @@ void dumpUserData::analyze(const Event & event, const EventSetup& eventSetup){
          dxy = fabs(lep->muonBestTrack()->dxy(vertex->position()));
          dz  = fabs(lep->muonBestTrack()->dz(vertex->position()));
       }
-      cout << "#" << i << " mu"  << ((lep->charge()>0)?"+ ":"- ") << " pt= " << lep->pt() << " eta= " << lep->eta() << " phi= " << lep->phi() << " GLB= " << lep->isGlobalMuon() << " TK= " << lep->isTrackerMuon() << " matches= " << lep->numberOfMatches() << " BTT= " << lep->muonBestTrackType() << " t0_nDof: " << lep->time().nDof << " t0(ns): " << lep->time().timeAtIpInOut << " genID= " << genID <<  " genPT= " << genPT << " combRelIsoPF=" << combRelIsoPF << " SIP=" << SIP << " dxy=" << dxy << " dz=" << dz << " isPFMuon= " << lep->isPFMuon() << " muonBestTrackType= " << lep->muonBestTrackType();
+      cout << "#" << i << " mu"  << ((lep->charge()>0)?"+ ":"- ") << " pt= " << lep->pt() << " eta= " << lep->eta() << " phi= " << lep->phi() << " GLB= " << lep->isGlobalMuon() << " TK= " << lep->isTrackerMuon() << " matchedSt= " << lep->numberOfMatchedStations() << " BTT= " << lep->muonBestTrackType() << " t0_nDof: " << lep->time().nDof << " t0(ns): " << lep->time().timeAtIpInOut << " genID= " << genID <<  " genPT= " << genPT << " combRelIsoPF=" << combRelIsoPF << " SIP=" << SIP << " dxy=" << dxy << " dz=" << dz << " isPFMuon= " << lep->isPFMuon() << " muonBestTrackType= " << lep->muonBestTrackType();
 
 //	 << " BTPT: " <<  lep->muonBestTrack()->pt() << " " << lep->innerTrack()->pt() << " " <<  lep->innerTrack()->eta() << " " << lep->innerTrack()->phi();
       dumpUserVal(*lep);

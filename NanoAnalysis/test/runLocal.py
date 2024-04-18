@@ -88,13 +88,13 @@ elif SampleToRun == "MCsync_Rereco" :
 ################################################################################
 elif SampleToRun == "MC2022" :
     # 2022 MC sample
-    #/store/mc/Run3Summer22EEMiniAODv3/GluGluHtoZZto4L_M-125_TuneCP5_13p6TeV_powheg2-JHUGenV752-pythia8/MINIAODSIM/124X_mcRun3_2022_realistic_postEE_v1-v2/2540000/0b3804ca-2ae7-46df-bfab-49f92f76b047.root
     setConf("SAMPLENAME", "ggH125")
-    setConf("DATA_TAG", "pre_EE")
+    setConf("DATA_TAG", "post_EE")
     setConf("XSEC", 52.23*0.0002745)
     setConf("LEPTON_SETUP", 2022)
     setConf("IsMC", True)
     setConf("store","root://cms-xrd-global.cern.ch/")
+    setConf("APPLY_QCD_GGF_UNCERT", True) # for ggH
     setConf("fileNames",[
         "/store/mc/Run3Summer22EENanoAODv12/GluGluHtoZZto4L_M-125_TuneCP5_13p6TeV_powheg2-JHUGenV752-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_postEE_v6-v2/2540000/25c8f5ff-9de0-4a0c-9e2f-757332ad392f.root",
 #        "/store/mc/Run3Summer22EENanoAODv12/GluGluHtoZZto4L_M-125_TuneCP5_13p6TeV_powheg2-JHUGenV752-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_postEE_v6-v2/2530000/8f306f2b-1284-41b8-a98f-744267f64b9c.root",

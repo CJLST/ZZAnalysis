@@ -32,6 +32,7 @@ Jump to:
 | [**LHEPdfWeight**](#lhepdfweight) | LHE pdf variation weights (w_var / w_nominal) for LHA IDs 325300 - 325402 |
 | [**LHEReweightingWeight**](#lhereweightingweight) |  |
 | [**LHEScaleWeight**](#lhescaleweight) | LHE scale variation weights (w_var / w_nominal); [0] is renscfact=0.5d0 facscfact=0.5d0 ; [1] is renscfact=0.5d0 facscfact=1d0 ; [2] is renscfact=0.5d0 facscfact=2d0 ; [3] is renscfact=1d0 facscfact=0.5d0 ; [4] is renscfact=1d0 facscfact=1d0 ; [5] is renscfact=1d0 facscfact=2d0 ; [6] is renscfact=2d0 facscfact=0.5d0 ; [7] is renscfact=2d0 facscfact=1d0 ; [8] is renscfact=2d0 facscfact=2d0  |
+| [**MET**](#met) | pt |
 | [**Muon**](#muon) | slimmedMuons after basic selection (pt > 15 || (pt > 3 && (passed('CutBasedIdLoose') || passed('SoftCutBasedId') || passed('SoftMvaId') || passed('CutBasedIdGlobalHighPt') || passed('CutBasedIdTrkHighPt')))) |
 | [**PSWeight**](#psweight) | PS weights (w_var / w_nominal);   [0] is ISR=2 FSR=1; [1] is ISR=1 FSR=2[2] is ISR=0.5 FSR=1; [3] is ISR=1 FSR=0.5; |
 | [**Pileup**](#pileup) | the number of pileup interactions that have been added to the event in the current bunch crossing |
@@ -114,13 +115,18 @@ Jump to:
 | **Electron_pt** | Float_t| pt |
 | **Electron_r9** | Float_t| R9 of the supercluster, calculated with full 5x5 region |
 | **Electron_scEtOverPt** | Float_t| (supercluster transverse energy)/pt-1 |
+| **Electron_scaleDn_pt** | Float_t| Electron_scaleDn_pt[nElectron]/F |
+| **Electron_scaleUp_pt** | Float_t| Electron_scaleUp_pt[nElectron]/F |
 | **Electron_seedGain** | UChar_t| Gain of the seed crystal |
 | **Electron_seediEtaOriX** | Char_t| iEta or iX of seed crystal. iEta is barrel-only, iX is endcap-only. iEta runs from -85 to +85, with no crystal at iEta=0. iX runs from 1 to 100. |
 | **Electron_seediPhiOriY** | Int_t| iPhi or iY of seed crystal. iPhi is barrel-only, iY is endcap-only. iPhi runs from 1 to 360. iY runs from 1 to 100. |
 | **Electron_sieie** | Float_t| sigma_IetaIeta of the supercluster, calculated with full 5x5 region |
 | **Electron_sip3d** | Float_t| 3D impact parameter significance wrt first PV, in cm |
+| **Electron_smearDn_pt** | Float_t| Electron_smearDn_pt[nElectron]/F |
+| **Electron_smearUp_pt** | Float_t| Electron_smearUp_pt[nElectron]/F |
 | **Electron_svIdx** | Short_t(index to Sv)| index of matching secondary vertex |
 | **Electron_tightCharge** | UChar_t| Tight charge criteria (0:none, 1:isGsfScPixChargeConsistent, 2:isGsfCtfScPixChargeConsistent) |
+| **Electron_uncorrected_pt** | Float_t| Electron_uncorrected_pt[nElectron]/F |
 | **Electron_vidNestedWPBitmap** | Int_t| VID compressed bitmap (MinPtCut,GsfEleSCEtaMultiRangeCut,GsfEleEBEECut,GsfEleEBEECut,GsfEleEBEECut,GsfEleHadronicOverEMEnergyScaledCut,GsfEleEBEECut,GsfEleRelPFIsoScaledCut,GsfEleConversionVetoCut,GsfEleMissingHitsCut), 3 bits per cut |
 | **Electron_vidNestedWPBitmapHEEP** | Int_t| VID compressed bitmap (MinPtCut,GsfEleSCEtaMultiRangeCut,GsfEleEBEECut,GsfEleEBEECut,GsfEleFull5x5SigmaIEtaIEtaWithSatCut,GsfEleFull5x5E2x5OverE5x5WithSatCut,GsfEleHadronicOverEMLinearCut,GsfEleTrkPtIsoCut,GsfEleEmHadD1IsoRhoCut,GsfEleDxyCut,GsfEleMissingHitsCut,GsfEleEcalDrivenCut), 1 bits per cut |
 | **nElectron** | Int_t| slimmedElectrons after basic selection (pt > 5 ) |
@@ -524,6 +530,11 @@ Jump to:
 | **LHEScaleWeight** | Float_t| LHE scale variation weights (w_var / w_nominal); [0] is renscfact=0.5d0 facscfact=0.5d0 ; [1] is renscfact=0.5d0 facscfact=1d0 ; [2] is renscfact=0.5d0 facscfact=2d0 ; [3] is renscfact=1d0 facscfact=0.5d0 ; [4] is renscfact=1d0 facscfact=1d0 ; [5] is renscfact=1d0 facscfact=2d0 ; [6] is renscfact=2d0 facscfact=0.5d0 ; [7] is renscfact=2d0 facscfact=1d0 ; [8] is renscfact=2d0 facscfact=2d0  |
 | **nLHEScaleWeight** | Int_t|  |
 
+### <a id='met'></a>MET [<sup>[back to top]</sup>](#events-tree-content)
+| Object property | Type | Description |
+| - | - | - |
+| **MET_pt** | Float_t| pt |
+
 ### <a id='muon'></a>Muon [<sup>[back to top]</sup>](#events-tree-content)
 | Object property | Type | Description |
 | - | - | - |
@@ -594,7 +605,7 @@ Jump to:
 | **Muon_tkRelIso** | Float_t| Tracker-based relative isolation dR=0.3 for highPt, trkIso/tunePpt |
 | **Muon_triggerIdLoose** | Bool_t| TriggerIdLoose ID |
 | **Muon_tunepRelPt** | Float_t| TuneP relative pt, tunePpt/pt |
-| **nMuon** | Int_t| slimmedMuons after basic selection (pt > 15 || (pt > 3 && (passed('CutBasedIdLoose') || passed('SoftCutBasedId') || passed('SoftMvaId') || passed('CutBasedIdGlobalHighPt') || passed('CutBasedIdTrkHighPt')))) |
+| **nMuon** | Int_t| slimmedMuons after basic selection (pt > 15 \|\| (pt > 3 && (passed("CutBasedIdLoose") \|\| passed("SoftCutBasedId") \|\| passed("SoftMvaId") \|\| passed("CutBasedIdGlobalHighPt") \|\| passed("CutBasedIdTrkHighPt")))) |
 
 ### <a id='psweight'></a>PSWeight [<sup>[back to top]</sup>](#events-tree-content)
 | Object property | Type | Description |
@@ -615,12 +626,16 @@ Jump to:
 ### <a id='zcand'></a>ZCand [<sup>[back to top]</sup>](#events-tree-content)
 | Object property | Type | Description |
 | - | - | - |
+| **ZCand_eta** | Float_t| ZCand_eta[nZCand]/F |
 | **ZCand_flav** | Float_t| Product of the pdgIds of the 2 daughters |
 | **ZCand_fsr1Idx** | Short_t(index to Fsr1)| index of FSR associated to l1 (-1 if none) |
 | **ZCand_fsr2Idx** | Short_t(index to Fsr2)| index of FSR associated to l2 (-1 if none) |
 | **ZCand_l1Idx** | Short_t(index to L1)| index of 1st daughter in Electron+Muon merged collection |
 | **ZCand_l2Idx** | Short_t(index to L2)| index of 2nd daughter in Electron+Muon merged collection |
 | **ZCand_mass** | Float_t| mass |
+| **ZCand_phi** | Float_t| ZCand_phi[nZCand]/F |
+| **ZCand_pt** | Float_t| ZCand_pt[nZCand]/F |
+| **ZCand_rapidity** | Float_t| ZCand_rapidity[nZCand]/F |
 | **nZCand** | Int_t| Z candidates passing the full H4l selection |
 
 ### <a id='zlcand'></a>ZLCand [<sup>[back to top]</sup>](#events-tree-content)
@@ -640,8 +655,12 @@ Jump to:
 | **ZLLCand_Z2l1Idx** | Short_t(index to Z2L1)| ZLLCand_Z2l1Idx[nZLLCand]/S |
 | **ZLLCand_Z2l2Idx** | Short_t(index to Z2L2)| ZLLCand_Z2l2Idx[nZLLCand]/S |
 | **ZLLCand_Z2mass** | Float_t| ZLLCand_Z2mass[nZLLCand]/F |
+| **ZLLCand_eta** | Float_t| ZLLCand_eta[nZLLCand]/F |
 | **ZLLCand_mass** | Float_t| ZLLCand_mass[nZLLCand]/F |
 | **ZLLCand_massPreFSR** | Float_t| ZLLCand_massPreFSR[nZLLCand]/F |
+| **ZLLCand_phi** | Float_t| ZLLCand_phi[nZLLCand]/F |
+| **ZLLCand_pt** | Float_t| ZLLCand_pt[nZLLCand]/F |
+| **ZLLCand_rapidity** | Float_t| ZLLCand_rapidity[nZLLCand]/F |
 | **nZLLCand** | Int_t| Z+LL control region candidates |
 
 ### <a id='zllbest2p2fidx'></a>ZLLbest2P2FIdx [<sup>[back to top]</sup>](#events-tree-content)
@@ -678,10 +697,14 @@ Jump to:
 | **ZZCand_Z2mass** | Float_t| Z2 mass |
 | **ZZCand_Z2sumpt** | Float_t| sum of Z2 daughter pts (used in the choice of best candidate) |
 | **ZZCand_dataMCWeight** | Float_t| data/MC efficiency correction weight |
+| **ZZCand_eta** | Float_t| ZZCand_eta[nZZCand]/F |
 | **ZZCand_mass** | Float_t| mass |
 | **ZZCand_massPreFSR** | Float_t| mass without FSR photons |
 | **ZZCand_nExtraLep** | Int_t| number of extra leptons passing H4l full sel |
 | **ZZCand_nExtraZ** | Int_t| number of extra Zs passing H4l full sel |
+| **ZZCand_phi** | Float_t| ZZCand_phi[nZZCand]/F |
+| **ZZCand_pt** | Float_t| ZZCand_pt[nZZCand]/F |
+| **ZZCand_rapidity** | Float_t| ZZCand_rapidity[nZZCand]/F |
 | **nZZCand** | Int_t| ZZ candidates passing the full H4l selection |
 
 ### <a id='bestcandidx'></a>bestCandIdx [<sup>[back to top]</sup>](#events-tree-content)
