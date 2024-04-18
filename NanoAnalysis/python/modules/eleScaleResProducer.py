@@ -49,6 +49,9 @@ class eleScaleResProducer(Module):
             fname = "electronSS_preEE.json"
         elif tag=="post_EE":
             fname = "electronSS_postEE.json"
+        else:
+            fname = ""
+            raise ValueError('[eleScaleResProducer]: specify 2022 period!')
 
         return fname
 
@@ -90,8 +93,8 @@ class eleScaleResProducer(Module):
                 pt_corr.append(smearing * ele.pt)
 
                 unc_rho = self.evaluator_smear.evaluate("err_rho", ele.eta, ele.r9)
-                smearing_up = rng.normal(loc=1., scale=rho + unc_rho)
-                smearing_dn = rng.normal(loc=1., scale=rho - unc_rho)
+                smearing_up = self.rng.normal(loc=1., scale=rho + unc_rho)
+                smearing_dn = self.rng.normal(loc=1., scale=rho - unc_rho)
                 pt_smear_up.append(smearing_up * ele.pt)
                 pt_smear_dn.append(smearing_dn * ele.pt)
 
