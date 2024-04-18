@@ -8,6 +8,8 @@ import correctionlib
 
 class eleScaleResProducer(Module):
     def __init__(self, dataYear, tag, is_mc, overwritePt=False):
+        print("***INIT eleScaleResProducer: dataYear:", dataYear, "tag:", tag, "is MC:", is_mc, "overwritePt:", overwritePt)
+        self.tag = tag
         self.fname = self.get_fname(tag)
         self.fpath = ("%s/src/ZZAnalysis/NanoAnalysis/data/%s" % (os.environ['CMSSW_BASE'], self.fname))
         self.overwritePt = overwritePt
@@ -17,8 +19,6 @@ class eleScaleResProducer(Module):
         self.evaluator = self._get_evaluator
         self.evaluator_scale = self._get_scale_evaluator
         self.evaluator_smear = self._get_smear_evaluator
-
-        print("***INIT eleScaleResProducer: dataYear:", dataYear, "tag:", tag, "is MC:", is_mc, "overwritePt:", overwritePt)
         print("***INIT eleScaleResProducer for: ", self.fpath)
 
     @property
@@ -28,18 +28,18 @@ class eleScaleResProducer(Module):
 
     @property    
     def _get_smear_evaluator(self):
-        if "preEE" in self.fname:
+        if self.tag == "pre_EE" :
             smear_evaluator = self.evaluator["2022Re-recoBCD_SmearingJSON"]
-        elif "postEE" in self.fname:
+        elif self.tag == "post_EE" :
             smear_evaluator = self.evaluator["2022Re-recoE+PromptFG_SmearingJSON"]
 
         return smear_evaluator
 
     @property
     def _get_scale_evaluator(self):
-        if "preEE" in self.fname:
+        if self.tag == "pre_EE" :
             scale_evaluator = self.evaluator["2022Re-recoBCD_ScaleJSON"]
-        elif "postEE" in self.fname:
+        elif self.tag == "post_EE" :
             scale_evaluator = self.evaluator["2022Re-recoE+PromptFG_ScaleJSON"]
 
         return scale_evaluator

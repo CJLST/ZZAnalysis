@@ -20,8 +20,12 @@ class FileData:
             setattr(self,k,v)
         self.Events = self.trees["Events"]
         self.nevents = self.Events["entries"]
-        self.AllEvents = self.trees["AllEvents"]
-        self.nAllevents = self.AllEvents["entries"]
+        try:
+            self.AllEvents = self.trees["AllEvents"]
+            self.nAllevents = self.AllEvents["entries"]
+        except:
+            self.AllEvents = None
+            self.nAllevents = -1
         self.Runs = self.trees["Runs"]
         self.nruns = self.Runs["entries"]
         self.LuminosityBlocks = self.trees["LuminosityBlocks"]
@@ -101,6 +105,7 @@ def inspectRootFile(infile):
     for treeName in "Events", "AllEvents", "Runs", "LuminosityBlocks":
         toplevelDoc={}
         tree = tfile.Get(treeName)
+        if treeName == "AllEvents" and tree == None : continue # may not be present
         entries = tree.GetEntries()
         trees[treeName] = tree
         branchList = tree.GetListOfBranches()
@@ -436,7 +441,7 @@ def writeMarkdownDocReport(trees, stream):
             stream.write("| - | - | - |\n")
             subs = [treeData['branches'][b] for b in s['subs']]
             for b in sorted(subs, key = lambda s : s['name']):
-                stream.write("| **%s** | %s| %s |\n" % (b['name'], b['kind'], b['doc']))
+                stream.write("| **%s** | %s| %s |\n" % (b['name'], b['kind'], b['doc'].replace('|', '\|').replace('\'', '\"')))
         stream.write("\n")
 
 def _maybeOpen(filename):
@@ -465,7 +470,7 @@ if __name__ == '__main__':
 
     treedata = {}  # trees for (HTML or markdown) doc report
     treedata["Events"] = filedata.Events
-    if len(filedata.AllEvents["branches"]) > 1:
+    if filedata.AllEvents != None and len(filedata.AllEvents["branches"]) > 1:
         treedata["AllEvents"] = filedata.AllEvents
     if len(filedata.Runs["branches"]) > 1:  # default: run number
         treedata["Runs"] = filedata.Runs
