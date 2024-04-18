@@ -90,6 +90,7 @@ elif SampleToRun == "MC2022" :
     # 2022 MC sample
     #/store/mc/Run3Summer22EEMiniAODv3/GluGluHtoZZto4L_M-125_TuneCP5_13p6TeV_powheg2-JHUGenV752-pythia8/MINIAODSIM/124X_mcRun3_2022_realistic_postEE_v1-v2/2540000/0b3804ca-2ae7-46df-bfab-49f92f76b047.root
     setConf("SAMPLENAME", "ggH125")
+    setConf("DATA_TAG", "pre_EE")
     setConf("XSEC", 52.23*0.0002745)
     setConf("LEPTON_SETUP", 2022)
     setConf("IsMC", True)
