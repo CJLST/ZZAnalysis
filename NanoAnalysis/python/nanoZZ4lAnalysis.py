@@ -8,7 +8,8 @@ import os
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
 
-from ZZAnalysis.NanoAnalysis.tools import setConf, getConf
+from ZZAnalysis.NanoAnalysis.tools import setConf, getConf, insertAfter
+from ZZAnalysis.NanoAnalysis.getEleBDTCut import * 
 from ZZAnalysis.NanoAnalysis.triggerAndSkim import * # Trigger requirements are defined here
 from ZZAnalysis.NanoAnalysis.lepFiller import *
 from ZZAnalysis.NanoAnalysis.jetFiller import *
@@ -20,7 +21,11 @@ from ZZAnalysis.NanoAnalysis.weightFiller import weightFiller
 DEBUG = getConf("DEBUG", False)
 SAMPLENAME = getConf("SAMPLENAME", "test")
 LEPTON_SETUP = getConf("LEPTON_SETUP", 2018)
-DATA_TAG = getConf("DATA_TAG", "" ) # used to distinguish UL16pre/postVFP 2022pre/postEE
+DATA_TAG = getConf("DATA_TAG", "" ) # used to distinguish different subperiods/reprocessings.
+                                    # Specific values currently recognized (other values->use defaults for era)
+                                    # "UL" (used by muonScaleResProducer, getEleBDTCut)
+                                    # "ULAPV", (used by LeptonSFHelper)
+                                    # "pre_EE" (used by LeptonSFHelper, eleScaleResProducer)
 NANOVERSION = getConf("NANOVERSION", 12)
 if not (LEPTON_SETUP == 2016 or LEPTON_SETUP == 2017 or LEPTON_SETUP == 2018 or LEPTON_SETUP == 2022 or LEPTON_SETUP == 2023) :
     print("Invalid LEPTON_SETUP", LEPTON_SETUP)
@@ -46,9 +51,6 @@ APPLY_K_NNLOEW_ZZQQB  = getConf("APPLY_K_NNLOEW_ZZQQB", False)
 # Add separate tree with gen info for all events
 ADD_ALLEVENTS = getConf("ADD_ALLEVENTS", False)
 
-if "UL" in DATA_TAG : preUL = False # used to set the correct electron selection
-else: preUL = True
-
 ### Definition of analysis cuts
 cuts = dict(
     ### lepton ID cuts
@@ -73,8 +75,7 @@ cuts = dict(
                                      and abs(l.dxy) < cuts["dxy"]
                                      and abs(l.dz) < cuts["dz"])),
 
-
-    passEleBDT = (lambda l, era : eleBDTCut(l, era, preUL, NANOVERSION)), #actual definition in lepFiller.py
+    passEleBDT = getEleBDTCut(LEPTON_SETUP, DATA_TAG, NANOVERSION),
 
     # Relaxed IDs used for CRs for fake rate method
     muRelaxedId  = (lambda l : cuts["muRelaxedIdNoSIP"](l) and abs(l.sip3d) < cuts["sip3d"]),
@@ -82,11 +83,11 @@ cuts = dict(
 
     # Full ID except for SIP (without isolation: FSR-corrected iso has to be applied on top, for muons)
     muFullIdNoSIP  = (lambda l, era : cuts["muRelaxedIdNoSIP"](l) and (l.isPFcand or (l.highPtId>0 and l.pt>200.))),
-    eleFullIdNoSIP = (lambda l, era : cuts["eleRelaxedIdNoSIP"](l) and cuts["passEleBDT"](l, era)),
+    eleFullIdNoSIP = (lambda l, era : cuts["eleRelaxedIdNoSIP"](l) and cuts["passEleBDT"](l)),
 
     # Full ID (without isolation: FSR-corrected iso has to be applied on top, for muons)
     muFullId  = (lambda l, era : cuts["muRelaxedId"](l) and (l.isPFcand or (l.highPtId>0 and l.pt>200.))),
-    eleFullId = (lambda l, era : cuts["eleRelaxedId"](l) and cuts["passEleBDT"](l, era)),
+    eleFullId = (lambda l, era : cuts["eleRelaxedId"](l) and cuts["passEleBDT"](l)),
     )
 
 ### Preselection to speed up processing.
@@ -137,9 +138,10 @@ reco_sequence = [lepFiller(cuts, LEPTON_SETUP), # FSR and FSR-corrected iso; fla
 if APPLYMUCORR and LEPTON_SETUP < 2022 : 
     from ZZAnalysis.NanoAnalysis.modules.muonScaleResProducer import muonScaleRes
     reco_sequence.insert(0, muonScaleRes(LEPTON_SETUP, DATA_TAG, overwritePt=True, syncMode=SYNCMODE))
-if APPLYELECORR:
+# Add ele scale corrections for Run 3. It should be applied after passBDT is checked, but before running ZZFiller
+if APPLYELECORR and LEPTON_SETUP >=2022 :
     from ZZAnalysis.NanoAnalysis.modules.eleScaleResProducer import eleScaleRes
-    reco_sequence.insert(0, eleScaleRes(LEPTON_SETUP, DATA_TAG, IsMC, overwritePt=True))
+    insertAfter(reco_sequence, 'lepFiller', eleScaleRes(LEPTON_SETUP, DATA_TAG, IsMC, overwritePt=True))
 
 # Special modules to be applied before the reco_sequence, that may filter events
 pre_sequence = [triggerAndSkim(isMC=IsMC, PD=PD, era=LEPTON_SETUP, passThru=TRIGPASSTHROUGH), # Filter for good PV and trigger requirements; apply PD precedence rules for data

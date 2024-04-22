@@ -433,8 +433,8 @@ def writeMarkdownDocReport(trees, stream):
         groups = list(treeData['branchgroups'].values())
         groups.sort(key = lambda s : s['name'])
         for s in groups:
-            stream.write("| [**%s**](#%s) | %s |\n" % (s['name'], s['name'].lower(), s['doc']))
-        stream.write("\n# %s tree detail\n" % treename)
+            stream.write("| [**%s**](#%s) | %s |\n" % (s['name'], s['name'].lower(), s['doc'].replace('|', '\|').replace('\'', '\"')))
+        stream.write("\n## %s tree detail\n" % treename)
         for s in groups:
             stream.write("\n### <a id='%s'></a>%s [<sup>[back to top]</sup>](#%s-tree-content)\n" % (s['name'].lower(), s['name'],treename.lower()))
             stream.write("| Object property | Type | Description |\n")

@@ -28,30 +28,27 @@ class eleScaleResProducer(Module):
 
     @property    
     def _get_smear_evaluator(self):
-        if self.tag == "pre_EE" :
+        if "pre_EE" in self.tag :
             smear_evaluator = self.evaluator["2022Re-recoBCD_SmearingJSON"]
-        elif self.tag == "post_EE" :
+        else :
             smear_evaluator = self.evaluator["2022Re-recoE+PromptFG_SmearingJSON"]
 
         return smear_evaluator
 
     @property
     def _get_scale_evaluator(self):
-        if self.tag == "pre_EE" :
+        if "pre_EE" in self.tag :
             scale_evaluator = self.evaluator["2022Re-recoBCD_ScaleJSON"]
-        elif self.tag == "post_EE" :
+        else :
             scale_evaluator = self.evaluator["2022Re-recoE+PromptFG_ScaleJSON"]
 
         return scale_evaluator
 
     def get_fname(self, tag):
-        if tag=="pre_EE":
+        if "pre_EE" in tag :
             fname = "electronSS_preEE.json"
-        elif tag=="post_EE":
+        else :
             fname = "electronSS_postEE.json"
-        else:
-            fname = ""
-            raise ValueError('[eleScaleResProducer]: specify 2022 period!')
 
         return fname
 

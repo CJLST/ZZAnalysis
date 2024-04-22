@@ -16,6 +16,8 @@ def setConf(name,value=True):
 
 # Insert a module in a processing sequence before the specified module
 def insertBefore(sequence, moduleName, module) :
+    if type(moduleName)!=str :
+        raise ValueError("insertBefore: moduleName should be a string")
     for im, m in enumerate(sequence) :
         if type(m).__name__ == moduleName :
             sequence.insert(im, module)
@@ -24,6 +26,8 @@ def insertBefore(sequence, moduleName, module) :
 
 # Insert a module in a processing sequence after the specified module
 def insertAfter(sequence, moduleName, module) :
+    if type(moduleName)!=str :
+        raise ValueError("insertAfter: moduleName should be a string")
     for im, m in enumerate(sequence) :
         if type(m).__name__ == moduleName :
             sequence.insert(im+1, module)

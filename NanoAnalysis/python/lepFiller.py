@@ -9,41 +9,6 @@ from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
 from PhysicsTools.HeppyCore.utils.deltar import deltaR
 
-def eleBDTCut(ele, era, preUL, nanoVersion=10) :
-    pt = ele.pt
-    fSCeta = abs(ele.eta + ele.deltaEtaSC)
-    if era == 2017 or era == 2018 :
-        if nanoVersion < 10:
-            BDT = ele.mvaFall17V2Iso     # Using 2017 WP and training (ElectronMVAEstimatorRun2Fall17IsoV2Values) since this is the only one available in Run2 UL nanoAODs.
-        else :
-            BDT = ele.mvaHZZIso
-        if preUL : # pre-UL WP for Run II (miniAOD branch: Run2_CutBased_BTag16)
-            return (pt<=10. and     ((fSCeta<0.8                   and BDT > 0.85216885148) or \
-                                     (fSCeta>=0.8 and fSCeta<1.479 and BDT > 0.82684550976) or \
-                                     (fSCeta>=1.479                and BDT > 0.86937630022))) \
-                    or (pt>10. and  ((fSCeta<0.8                   and BDT > 0.98248928759) or \
-                                     (fSCeta>=0.8 and fSCeta<1.479 and BDT > 0.96919224579) or \
-                                     (fSCeta>=1.479                and BDT > 0.79349796445)))
-
-        else: # UL WP (miniAOD branch Run2_CutBased_UL)
-            return (pt<=10. and     ((fSCeta<0.8                   and BDT > 0.9128577458) or \
-                                     (fSCeta>=0.8 and fSCeta<1.479 and BDT > 0.9056792368) or \
-                                     (fSCeta>=1.479                and BDT > 0.9439440575))) \
-                    or (pt>10. and  ((fSCeta<0.8                   and BDT > 0.1559788054) or \
-                                     (fSCeta>=0.8 and fSCeta<1.479 and BDT > 0.0273863727) or \
-                                     (fSCeta>=1.479                and BDT > -0.5532483665)))
-
-    elif era >= 2022 :
-        BDT = ele.mvaHZZIso
-        #2018 UL tuning (ElectronMVAEstimatorRun2Summer18ULIdIsoValues)
-        return (pt<=10. and     ((fSCeta<0.8                   and BDT > 0.9044286167) or \
-                                 (fSCeta>=0.8 and fSCeta<1.479 and BDT > 0.9094166886) or \
-                                 (fSCeta>=1.479                and BDT > 0.9443653660))) \
-                or (pt>10. and  ((fSCeta<0.8                   and BDT > 0.1968600840) or \
-                                 (fSCeta>=0.8 and fSCeta<1.479 and BDT > 0.0759172100) or \
-                                 (fSCeta>=1.479                and BDT > -0.5169136775)))
-
-
 
 class lepFiller(Module):
     def __init__(self, cuts, era):
@@ -62,7 +27,7 @@ class lepFiller(Module):
         self.era = era
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
-        self.out = wrappedOutputTree        
+        self.out = wrappedOutputTree
         
         self.out.branch("FsrPhoton_mass", "F", lenVar="nFsrPhoton") # Hack so that photon.p4() works
         self.out.branch("FsrPhoton_dROverEt2", "F", lenVar="nFsrPhoton") # Overwrite existing value
@@ -106,7 +71,7 @@ class lepFiller(Module):
         fsrPhotons = Collection(event, "FsrPhoton")
 
         # IDs (no iso)
-        eleBDT = list(self.passEleBDT(e, self.era) for e in electrons)
+        eleBDT = list(self.passEleBDT(e) for e in electrons)
         eleRelaxedId = list(self.eleRelaxedId(e) for e in electrons)
         muRelaxedId = list(self.muRelaxedId(m) for m in muons)
         eleRelaxedIdNoSIP = list(self.eleRelaxedIdNoSIP(e) for e in electrons)

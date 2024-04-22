@@ -7,7 +7,7 @@ using namespace std;
 LeptonSFHelper::LeptonSFHelper(std::string const &data_tag)
 {
    // 2016 preVFP Electrons
-   if(data_tag == "ULAPV")
+  if(data_tag.find("ULAPV") != std::string::npos)
    {  //ID
       TString fipEleNotCracks_2016 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/ElectronSF_UL2016preVFP_nogap.root");
       root_file = TFile::Open(fipEleNotCracks_2016.Data(),"READ");
@@ -84,7 +84,7 @@ LeptonSFHelper::LeptonSFHelper(std::string const &data_tag)
    h_Ele_Reco_lowPT_2018 = (TH2F*) root_file->Get("EGamma_SF2D")->Clone();
 
    // 2022 preEE
-   if(data_tag=="pre_EE")
+   if(data_tag.find("pre_EE") != std::string::npos)
    {  //ID
       TString fipEleNotCracks_2022 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/SF2D_preEE_RMS.root");
       root_file = TFile::Open(fipEleNotCracks_2022.Data(),"READ");
@@ -151,7 +151,7 @@ LeptonSFHelper::LeptonSFHelper(std::string const &data_tag)
    h_Mu_Unc_2018 = (TH2D*)root_file->Get("ERROR")->Clone();
 
    // 2022 Muons preEE
-   if(data_tag == "pre_EE")
+   if(data_tag.find("pre_EE") != std::string::npos)
    {  
       TString fipMu_2022 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/final_HZZ_SF_Run3_2022_mupogsysts_newLoose_abseta3_fix_BCD.root");
       root_file = TFile::Open(fipMu_2022.Data(),"READ");
