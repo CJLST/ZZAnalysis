@@ -149,12 +149,12 @@ pre_sequence = [triggerAndSkim(isMC=IsMC, PD=PD, era=LEPTON_SETUP, passThru=TRIG
 # Special modules to be applied after the reco_sequence (ie only for selected events)
 post_sequence = []
 
-# Weights computation, to be placed in pre or post sequences based on the configuration
-weights = weightFiller(XSEC, APPLY_K_NNLOQCD_ZZGG, APPLY_K_NNLOQCD_ZZQQB, APPLY_K_NNLOEW_ZZQQB, APPLY_QCD_GGF_UNCERT)
-
 if IsMC:
     from ZZAnalysis.NanoAnalysis.modules.puWeightProducer import *
     from ZZAnalysis.NanoAnalysis.mcTruthAnalyzer import *
+    # Weights computation, to be placed in pre or post sequences based on the configuration
+    weights = weightFiller(XSEC, APPLY_K_NNLOQCD_ZZGG, APPLY_K_NNLOQCD_ZZQQB, APPLY_K_NNLOEW_ZZQQB, APPLY_QCD_GGF_UNCERT)
+
     post_sequence.append(mcTruthAnalyzer(dump=False)) # Gen final state etc.
     
     if ADD_ALLEVENTS: # Add modules that produce the variables to be stored for all events at the beginni
