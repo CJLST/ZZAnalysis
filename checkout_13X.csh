@@ -72,6 +72,9 @@ git cms-cherry-pick-pr 43536 CMSSW_13_0_X
 git cms-addpkg PhysicsTools/NanoAODTools
 git fetch https://github.com/namapane/cmssw.git NAT-dev:namapane_NAT-dev
 git cherry-pick 3e73ca4c2f8
+#Fix some memory ownership issues
+git fetch https://github.com/namapane/cmssw.git nanoAOD_memfix
+git cherry-pick ed6112b942d
 
 #get nanoAODTools modules
 git clone https://github.com/cms-cat/nanoAOD-tools-modules.git PhysicsTools/NATModules

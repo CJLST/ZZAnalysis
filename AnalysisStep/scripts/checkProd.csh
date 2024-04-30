@@ -82,9 +82,14 @@ foreach chunk ( *Chunk* )
      # is the job terminated?
      set nonomatch
      set logFile = ( ${chunk}/log/*.log )
+     set errFile = ( ${chunk}/log/*.err )
      if ( -e $logFile[1] ) then
         if ( `grep -c -e "Job terminated" $logFile[$#logFile]` != 0 ) then
-	    echo $chunk ": terminated, unknown failure"
+            if ( `grep -c -e "mkdir: cannot create directory '/eos" $errFile[$#errFile]` != 0 ) then
+		echo $chunk ": eos transfer problem, see " $errFile[$#errFile]
+	    else
+		echo $chunk ": terminated, unknown failure"
+	    endif
         else
 	    echo $chunk ": still running (or unknown failure)"
 	endif
