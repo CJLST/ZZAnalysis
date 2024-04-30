@@ -16,6 +16,7 @@ SampleToRun = "MC2022"
 #setConf("runMELA", False)
 #setConf("bestCandByMELA", False)
 setConf("APPLYMUCORR", False) #NOTE: mu corrections removed for comparision with mini since they are not deterministic on nanoAOD.
+setConf("APPLYELECORR", False) #NOTE: ele corrections removed for comparision with mini since they are not deterministic on nanoAOD.
 
 
 ## Force filling K factors and weights (default: all off)

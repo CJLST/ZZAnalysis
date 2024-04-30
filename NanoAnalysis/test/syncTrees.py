@@ -52,7 +52,9 @@ treeNano.Add(nanoFile)
 
 
 iEntryMini=0
-nMatch=0;
+nMatch=0
+missing_mini=0
+missing_nano=0
 foundNano=[False]*treeNano.GetEntries() # True = event in nano tree has already been found in mini tree, or can be skipped (no candidate, etc)
 maxM4lDiff = 0.
 
@@ -195,6 +197,7 @@ while treeMini.GetEntry(iEntryMini):
         nMatch+=1
     else :
         print("Missing in nano: "+str(treeMini.RunNumber)+":"+str(treeMini.LumiNumber)+":"+str(treeMini.EventNumber), treeMini.ZZsel)
+        missing_nano +=1
         if verbose > 0 :
             print('   {:.2f} {:.2f} {:.2f}'.format(treeMini.ZZMass,treeMini.Z1Mass,treeMini.Z2Mass), "hasFSR:",treeMini.fsrPt.size()>0)
             printLeps_mini(treeMini, "   ")
@@ -203,10 +206,11 @@ for iEntryNano,found in enumerate(foundNano):
     if not found:
         treeNano.GetEntry(iEntryNano)
         print("Missing in mini: "+str(treeNano.run)+":"+str(treeNano.luminosityBlock)+":"+str(treeNano.event))
+        missing_mini +=1
         if verbose > 0 :
             printLeps_nano(treeNano, "   ")
 
-print("Matches in", region, ":", nMatch)
+print("Matches in", region, ":", nMatch, '(+'+str(missing_mini)+',-'+str(missing_nano)+')')
 print("max m4l diff:", maxM4lDiff)
 
 # c1 = TCanvas("M4ldiff","M4ldiff")

@@ -6,7 +6,7 @@ identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,spli
 ###,,,,,,,,,,,for ZH and ttH the BR is obtained as BR(H->ZZ->2L2X) = BR(H->4L) + BR(H->2L2q) + BR(H->ZZ*->2L2nu) * BR(H->2L2nu) / [ BR(H->ZZ*->2L2nu) + BR(H->WW*->2L2nu) ] where BR(H->4L) BR(H->2L2q) and BR(H->2L2nu) are taken from the YR4 twiki
 ###,,,,,,,,,,,for ZH the BR column includes also the gen filter efficiency: values for mH=124-126 = 0.15093 0.15069; 0.15012; 0.15058; 0.15045
 
-###,,,,,,,,,,,These samples correspond to the B-C-D data taking periods - before the ECAL leak (called Run3)
+###,,,,,,,,,,,These samples correspond to the B-C-D data taking periods - before the ECAL leak (called pre_EE)
 
 ###,,,,,,,,,,,signal samples
 ggH124  ,,52.98,0.0002502,,/GluGluHtoZZto4L_M-124_TuneCP5_13p6TeV_powheg2-JHUGenV752-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;APPLY_QCD_GGF_UNCERT=True;LEPTON_SETUP=2022;ADD_ALLEVENTS=True;DATA_TAG=pre_EE,RecoProbabilities.py, #still in production
@@ -76,5 +76,5 @@ TTZZ,,0.001579,,,/TTZZ_TuneCP5_13p6TeV_madgraph-madspin-pythia8/Run3Summer22Nano
 
 ###,,,,,,,,,,,bkg for Z+X studies
 WZto3LNu,,4.924,,,/WZto3LNu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;PROCESS_ZL=True;LEPTON_SETUP=2022;DATA_TAG=pre_EE,RecoProbabilities.py, #xsec to extract from the sample - not available from XSDB
-DYJetsToLL,,5558.0,,,/DYJetsToLL_M-50_TuneCP5_13p6TeV-madgraphMLM-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;PROCESS_ZL=True;LEPTON_SETUP=2022;DATA_TAG=pre_EE,RecoProbabilities.py,xsec from XSDB 
-TTto2L2Nu,,762.1,,,/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;PROCESS_ZL=True;LEPTON_SETUP=2022;DATA_TAG=pre_EE,RecoProbabilities.py,xsec from XSDB
+DYJetsToLL,,5558.0,,,/DYJetsToLL_M-50_TuneCP5_13p6TeV-madgraphMLM-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;PROCESS_ZL=True;LEPTON_SETUP=2022;DATA_TAG=pre_EE,RecoProbabilities.py, #xsec from XSDB 
+TTto2L2Nu,,762.1,,,/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;PROCESS_ZL=True;LEPTON_SETUP=2022;DATA_TAG=pre_EE,RecoProbabilities.py, #xsec from XSDB

@@ -77,16 +77,21 @@ cmsRunStatus=   #default for successful completion is an empty file
 cmsRun run_cfg.py |& grep -v -e 'MINUIT WARNING' -e 'Second derivative zero' -e 'Negative diagonal element' -e 'added to diagonal of error matrix' > log.txt || cmsRunStatus=$?
 
 echo -n $cmsRunStatus > exitStatus.txt
-echo 'cmsRun done at: ' $(date) with exit status: ${{cmsRunStatus+0}}
+if [ -z $cmsRunStatus ]; then cmsRunStatus=0; fi
+echo 'cmsRun done at: ' $(date) with exit status: $cmsRunStatus
 gzip log.txt
 
 export ROOT_HIST=0
 if [ -s ZZ4lAnalysis.root ]; then
  root -q -b '${{CMSSW_BASE}}/src/ZZAnalysis/AnalysisStep/test/prod/rootFileIntegrity.r("ZZ4lAnalysis.root")'
-else
- echo moving empty file
+elif [ -f  ZZ4lAnalysis.root ]; then
+ echo moving away empty ZZ4lAnalysis.root file
  mv ZZ4lAnalysis.root ZZ4lAnalysis.root.empty
+else
+ echo ERROR: ZZ4lAnalysis.root file is missing
 fi
+
+set +euo pipefail
 
 echo "Files on node:"
 ls -la
@@ -145,16 +150,21 @@ exitStatus=   #default for successful completion is an empty file
 python3 run_cfg.py >& log.txt || exitStatus=$?
 
 echo -n $exitStatus > exitStatus.txt
-echo 'job done at: ' $(date) with exit status: ${{exitStatus+0}}
+if [ -z $exitStatus ]; then exitStatus=0; fi
+echo 'job done at: ' $(date) with exit status: $exitStatus
 gzip log.txt
 
 export ROOT_HIST=0
 if [ -s ZZ4lAnalysis.root ]; then
  root -q -b '${{CMSSW_BASE}}/src/ZZAnalysis/AnalysisStep/test/prod/rootFileIntegrity.r("ZZ4lAnalysis.root")'
-else
- echo moving empty file
+elif [ -f  ZZ4lAnalysis.root ]; then
+ echo moving away empty ZZ4lAnalysis.root file
  mv ZZ4lAnalysis.root ZZ4lAnalysis.root.empty
+else
+ echo ERROR: ZZ4lAnalysis.root file is missing
 fi
+
+set +euo pipefail
 
 echo "Files on node:"
 ls -la
@@ -383,7 +393,7 @@ class MyBatchManager:
                if inputType == 'miniAOD' :
                    self.jobmem = '4000M'
                else :
-                   self.jobmem = '0'
+                   self.jobmem = '3000M'
 
        if self.jobflavour == None:
            if batchManager.options_.jobflavour != None:
@@ -392,7 +402,7 @@ class MyBatchManager:
                if inputType == 'miniAOD' :
                    self.jobflavour = 'tomorrow'
                else :
-                   self.jobflavour = 'workday'
+                   self.jobflavour = 'tomorrow'
            
        dname = dirname
        if dname  is None:

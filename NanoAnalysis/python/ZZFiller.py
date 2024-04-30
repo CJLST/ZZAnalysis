@@ -297,9 +297,10 @@ class ZZFiller(Module):
                                 if ZLL.Z2.isSIPCR and (bestSIPCRIdx<0 or self.bestCandCmp(ZLL,ZLLsTemp[bestSIPCRIdx]) < 0) : bestSIPCRIdx = len(ZLLsTemp)
                                 ZLLsTemp.append(ZLL)
                                 
-                # Only one candidate per method should be selected per event: check if
-                if best2P2FCRIdx >= 0 and best3P1FCRIdx >= 0 :
-                    print ('WARNING: event {}:{}:{} has CR candidates in both 2P2F and 3P1F regions'.format(event.run,event.luminosityBlock,event.event))   #FIXME choose the best among the two
+                # Check that only one candidate is selected in each event for the 2 CRs of the OS method?
+                # Actually not needed, at the overlap is accounted for in the method
+#                if best2P2FCRIdx >= 0 and best3P1FCRIdx >= 0 :
+#                    print ('WARNING: event {}:{}:{} has CR candidates in both 2P2F and 3P1F regions'.format(event.run,event.luminosityBlock,event.event))   #FIXME choose the best among the two
 
                 # Store only ZLL candidates that belong to at least 1 CR
                 for iZLL, ZLL in enumerate(ZLLsTemp) :

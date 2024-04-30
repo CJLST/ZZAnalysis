@@ -33,7 +33,7 @@ Jump to:
 | [**LHEReweightingWeight**](#lhereweightingweight) |  |
 | [**LHEScaleWeight**](#lhescaleweight) | LHE scale variation weights (w_var / w_nominal); [0] is renscfact=0.5d0 facscfact=0.5d0 ; [1] is renscfact=0.5d0 facscfact=1d0 ; [2] is renscfact=0.5d0 facscfact=2d0 ; [3] is renscfact=1d0 facscfact=0.5d0 ; [4] is renscfact=1d0 facscfact=1d0 ; [5] is renscfact=1d0 facscfact=2d0 ; [6] is renscfact=2d0 facscfact=0.5d0 ; [7] is renscfact=2d0 facscfact=1d0 ; [8] is renscfact=2d0 facscfact=2d0  |
 | [**MET**](#met) | pt |
-| [**Muon**](#muon) | slimmedMuons after basic selection (pt > 15 || (pt > 3 && (passed('CutBasedIdLoose') || passed('SoftCutBasedId') || passed('SoftMvaId') || passed('CutBasedIdGlobalHighPt') || passed('CutBasedIdTrkHighPt')))) |
+| [**Muon**](#muon) | slimmedMuons after basic selection (pt > 15 \|\| (pt > 3 && (passed("CutBasedIdLoose") \|\| passed("SoftCutBasedId") \|\| passed("SoftMvaId") \|\| passed("CutBasedIdGlobalHighPt") \|\| passed("CutBasedIdTrkHighPt")))) |
 | [**PSWeight**](#psweight) | PS weights (w_var / w_nominal);   [0] is ISR=2 FSR=1; [1] is ISR=1 FSR=2[2] is ISR=0.5 FSR=1; [3] is ISR=1 FSR=0.5; |
 | [**Pileup**](#pileup) | the number of pileup interactions that have been added to the event in the current bunch crossing |
 | [**ZCand**](#zcand) | Z candidates passing the full H4l selection |
@@ -56,7 +56,7 @@ Jump to:
 | [**puWeight**](#puweight) | puWeight/F |
 | [**run**](#run) | run/i |
 
-# Events tree detail
+## Events tree detail
 
 ### <a id='electron'></a>Electron [<sup>[back to top]</sup>](#events-tree-content)
 | Object property | Type | Description |
@@ -783,7 +783,7 @@ Jump to:
 | [**puWeight**](#puweight) | puWeight/F |
 | [**run**](#run) | run/i |
 
-# AllEvents tree detail
+## AllEvents tree detail
 
 ### <a id='fiddressedleps'></a>FidDressedLeps [<sup>[back to top]</sup>](#allevents-tree-content)
 | Object property | Type | Description |
@@ -891,7 +891,7 @@ Jump to:
 | [**genEventSumw2**](#geneventsumw2) | sum of gen (weight^2) |
 | [**run**](#run) | run/i |
 
-# Runs tree detail
+## Runs tree detail
 
 ### <a id='lhepdfsumw'></a>LHEPdfSumw [<sup>[back to top]</sup>](#runs-tree-content)
 | Object property | Type | Description |
@@ -939,7 +939,7 @@ Jump to:
 | [**luminosityBlock**](#luminosityblock) | luminosityBlock/i |
 | [**run**](#run) | run/i |
 
-# LuminosityBlocks tree detail
+## LuminosityBlocks tree detail
 
 ### <a id='genfilter'></a>GenFilter [<sup>[back to top]</sup>](#luminosityblocks-tree-content)
 | Object property | Type | Description |
