@@ -384,7 +384,7 @@ class MyBatchManager:
 
        # Set requirements
        inputType='miniAOD'
-       if "NANOAOD" in (splitComponents[value].files)[0] :
+       if 'nanoaod' in (splitComponents[value].files)[0].casefold() :
            inputType='nanoAOD'
        if self.jobmem == None:
            if batchManager.options_.jobmem != None :
