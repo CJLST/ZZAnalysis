@@ -33,6 +33,12 @@ class genFiller(Module):
         # reallocations during the job, which break branch cloning in the cloneBranches module.        
         self.bufsize = 20
 
+        # Find out if GenPart_iso is already present in the sample (v14 onwards) otherwise it has to be computed (which is not really possible as GenPart is filtered)
+        self.readGenIso = False
+        if inputTree.GetBranch("GenPart_iso") != None :
+            self.readGenIso = True
+            print("***genFiller: using GenPart_iso")
+        
         bs=self.bufsize
         self.out.branch("nFidDressedLeps", "I", title="gen dressed leps for fiducial analysis")
         self.out.branch("FidDressedLeps_pt", "F", lenVar="nFidDressedLeps", n=bs)
@@ -88,6 +94,9 @@ class genFiller(Module):
         '''
             Compute isolation for gen-level leptons.
             Exclude photons used for FSR recovery from the computation.
+            NOTE: as the genpart collection in nano is filtered,  
+            some contrubution is missing. GenPart_iso has been added 
+            in nanoAOD v14 to solve this problem
         '''
         genIso = 0.0
         for idx, pp in enumerate(packedpart) :
@@ -497,11 +506,11 @@ class genFiller(Module):
                 LeptonsId.append(gp.pdgId)
 
                 current_lepton = lep_dressed
-                genIso = self.computeGenIso(current_lepton, genpart, fsr_gamma_idx)
+                if self.readGenIso :
+                    Lepts_RelIso.append(gp.iso)
+                else :
+                    Lepts_RelIso.append(self.computeGenIso(current_lepton, genpart, fsr_gamma_idx))
 
-                Lepts_RelIso.append(genIso)
-                # TODO: Change the line above as soon as iso is in the GenPart collection
-                # Lepts_RelIso.append(gp.iso)
                 dressedLeptons_pt.append(lep_dressed.Pt())
                 dressedLeptons_eta.append(lep_dressed.Eta())
                 dressedLeptons_phi.append(lep_dressed.Phi())
