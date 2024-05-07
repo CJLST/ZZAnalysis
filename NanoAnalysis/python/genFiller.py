@@ -433,13 +433,13 @@ class genFiller(Module):
         z2l2idx = ZIdx_fidSel[3]
 
         if ZCands_fidSel[0] == -1:
-            zzmass = -1
-            zzrapidity = -1
-            zzpt = -1
-            zzeta = -1
-            zzphi = -1
-            z1mass = -1
-            z2mass = -1
+            zzmass = -99
+            zzrapidity = -99
+            zzpt = -99
+            zzeta = -99
+            zzphi = -99
+            z1mass = -99
+            z2mass = -99
         else:
             gen_H_cand = ZCands_fidSel[0]+ZCands_fidSel[1]+ZCands_fidSel[2]+ZCands_fidSel[3]
             zzmass = (gen_H_cand).M()
