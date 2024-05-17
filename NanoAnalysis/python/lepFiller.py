@@ -20,6 +20,7 @@ class lepFiller(Module):
         self.eleRelaxedIdNoSIP = cuts["eleRelaxedIdNoSIP"]
         self.eleFullId = cuts["eleFullId"]
         self.eleFullIdNoSIP = cuts["eleFullIdNoSIP"]
+        self.passMuID = cuts["passMuID"]
         self.muRelaxedId = cuts["muRelaxedId"]
         self.muRelaxedIdNoSIP = cuts["muRelaxedIdNoSIP"]
         self.muFullId = cuts["muFullId"]
@@ -42,6 +43,7 @@ class lepFiller(Module):
         self.out.branch("Electron_pfRelIso03FsrCorr", "F", lenVar="nElectron", title="FSR-subtracted pfRelIso03")
         self.out.branch("Electron_passIso", "O", lenVar="nElectron", title="always True for electrons")
 
+        self.out.branch("Muon_passID", "O", lenVar="nMuon" , title="pass H4l muon ID")
         self.out.branch("Muon_ZZFullSel", "O", lenVar="nMuon" , title="pass H4l full SR selection (FullID + isolation)")
         self.out.branch("Muon_ZZFullId", "O", lenVar="nMuon", title="pass H4l full ID selection")
         self.out.branch("Muon_ZZFullSelNoSIP", "O", lenVar="nMuon", title="pass H4l full ID without SIP (base for CR SIP  method)")
@@ -72,6 +74,7 @@ class lepFiller(Module):
 
         # IDs (no iso)
         eleBDT = list(self.passEleBDT(e) for e in electrons)
+        muID = list(self.passMuID(m) for m in muons)
         eleRelaxedId = list(self.eleRelaxedId(e) for e in electrons)
         muRelaxedId = list(self.muRelaxedId(m) for m in muons)
         eleRelaxedIdNoSIP = list(self.eleRelaxedIdNoSIP(e) for e in electrons)
@@ -172,6 +175,7 @@ class lepFiller(Module):
         self.out.fillBranch("Electron_pfRelIso03FsrCorr", ele_isoFsrCorr)
         self.out.fillBranch("Electron_passIso", ele_passIso)
 
+        self.out.fillBranch("Muon_passID", muID)
         self.out.fillBranch("Muon_ZZFullSel", muFullSel)
         self.out.fillBranch("Muon_ZZFullId", muFullId)
         self.out.fillBranch("Muon_ZZRelaxedId", muRelaxedId)

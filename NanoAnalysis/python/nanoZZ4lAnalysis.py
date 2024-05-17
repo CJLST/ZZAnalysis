@@ -77,6 +77,8 @@ cuts = dict(
 
     passEleBDT = getEleBDTCut(LEPTON_SETUP, DATA_TAG, NANOVERSION),
 
+    passMuID = (lambda l: (l.isPFcand or (l.highPtId>0 and l.pt>200.))),
+
     # Relaxed IDs used for CRs for fake rate method
     muRelaxedId  = (lambda l : cuts["muRelaxedIdNoSIP"](l) and abs(l.sip3d) < cuts["sip3d"]),
     eleRelaxedId = (lambda l : cuts["eleRelaxedIdNoSIP"](l) and abs(l.sip3d) < cuts["sip3d"]),

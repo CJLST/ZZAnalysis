@@ -46,7 +46,7 @@ def makeCR(_df, _flag):
                                                    .Define('Leptons_id', "concatenate(Electron_pdgId,Muon_pdgId)")
                                                    .Define('Leptons_sip', "concatenate(Electron_sip3d,Muon_sip3d)")
                                                    .Define('Leptons_iso', "concatenate(Electron_pfRelIso03FsrCorr,Muon_pfRelIso03FsrCorr)")
-                                                   .Define('Leptons_isid', "concatenate(Electron_passBDT,Muon_ZZFullId)")
+                                                   .Define('Leptons_isid', "concatenate(Electron_passBDT,Muon_passID)")
                                                    ## Need to add the LepMissingHit branch for SS FR method
                                                    ## First create a dummy branch for muons filled with zeroes
                                                    .Define('Muon_lostHits', "addDummyBranch(Muon_pt)")
@@ -242,7 +242,7 @@ df_SR = ( df.Filter('bestCandIdx>=0').Define("ZZMass", "ZZCand_mass[bestCandIdx]
                                      .Define('Leptons_id', "concatenate(Electron_pdgId,Muon_pdgId)")
                                      .Define('Leptons_sip', "concatenate(Electron_sip3d,Muon_sip3d)")
                                      .Define('Leptons_iso', "concatenate(Electron_pfRelIso03FsrCorr,Muon_pfRelIso03FsrCorr)")
-                                     .Define('Leptons_isid', "concatenate(Electron_passBDT,Muon_ZZFullId)")
+                                     .Define('Leptons_isid', "concatenate(Electron_passBDT,Muon_passID)")
                                      ## Need to add the LepMissingHit branch for SS FR method
                                      ## First create a dummy branch for muons filled with zeroes
                                      .Define('Muon_lostHits', "addDummyBranch(Muon_pt)")
@@ -291,7 +291,7 @@ if not opt.SKIPZL:
                                            .Define('Leptons_id', "concatenate(Electron_pdgId,Muon_pdgId)")
                                            .Define('Leptons_sip', "concatenate(Electron_sip3d,Muon_sip3d)")
                                            .Define('Leptons_iso', "concatenate(Electron_pfRelIso03FsrCorr,Muon_pfRelIso03FsrCorr)")
-                                           .Define('Leptons_isid', "concatenate(Electron_passBDT,Muon_ZZFullId)")
+                                           .Define('Leptons_isid', "concatenate(Electron_passBDT,Muon_passID)")
                                            ## Need to add the LepMissingHit branch for SS FR method
                                            ## First create a dummy branch for muons filled with zeroes
                                            .Define('Muon_lostHits', "addDummyBranch(Muon_pt)")
