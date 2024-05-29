@@ -8,8 +8,8 @@ import os
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
 
-from ZZAnalysis.NanoAnalysis.tools import setConf, getConf, insertAfter
-from ZZAnalysis.NanoAnalysis.getEleBDTCut import * 
+from ZZAnalysis.NanoAnalysis.tools import setConf, getConf, insertBefore
+from ZZAnalysis.NanoAnalysis.getEleBDTCut import *
 from ZZAnalysis.NanoAnalysis.triggerAndSkim import * # Trigger requirements are defined here
 from ZZAnalysis.NanoAnalysis.lepFiller import *
 from ZZAnalysis.NanoAnalysis.jetFiller import *
@@ -137,13 +137,13 @@ reco_sequence = [lepFiller(cuts, LEPTON_SETUP), # FSR and FSR-corrected iso; fla
                  ]
 
 # Add muon scale corrections for Run 2 (not yet available for Run 3)
-if APPLYMUCORR and LEPTON_SETUP < 2022 : 
+if APPLYMUCORR and LEPTON_SETUP < 2022 :
     from ZZAnalysis.NanoAnalysis.modules.muonScaleResProducer import muonScaleRes
     reco_sequence.insert(0, muonScaleRes(LEPTON_SETUP, DATA_TAG, overwritePt=True, syncMode=SYNCMODE))
 # Add ele scale corrections for Run 3. It should be applied after passBDT is checked, but before running ZZFiller
 if APPLYELECORR and LEPTON_SETUP >=2022 :
     from ZZAnalysis.NanoAnalysis.modules.eleScaleResProducer import eleScaleRes
-    insertAfter(reco_sequence, 'lepFiller', eleScaleRes(LEPTON_SETUP, DATA_TAG, IsMC, overwritePt=True))
+    insertBefore(reco_sequence, 'lepFiller', eleScaleRes(LEPTON_SETUP, DATA_TAG, IsMC, overwritePt=True))
 
 # Special modules to be applied before the reco_sequence, that may filter events
 pre_sequence = [triggerAndSkim(isMC=IsMC, PD=PD, era=LEPTON_SETUP, passThru=TRIGPASSTHROUGH), # Filter for good PV and trigger requirements; apply PD precedence rules for data
