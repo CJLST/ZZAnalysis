@@ -15,6 +15,8 @@ from optparse import OptionParser
 from ZZAnalysis.AnalysisStep.eostools import *
 from ZZAnalysis.AnalysisStep.readSampleInfo import *
 
+if(sys.version_info.major < 3):
+    input = raw_input
 
 def chunks(l, n):
     return [l[i:i+n] for i in range(0, len(l), n)]
