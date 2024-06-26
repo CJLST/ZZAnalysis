@@ -15,6 +15,7 @@ from datetime import date
 from optparse import OptionParser
 from ZZAnalysis.AnalysisStep.eostools import *
 from ZZAnalysis.AnalysisStep.readSampleInfo import *
+from ZZAnalysis.AnalysisStep.validateCheckout import validateCheckout 
 
 
 def chunks(l, n):
@@ -560,6 +561,10 @@ class Component(object):
         
       
 if __name__ == '__main__':
+    # Check that the checkout recipe has been properly updated 
+    if not validateCheckout() :
+        exit(1)
+
     batchManager = MyBatchManager()
     
     cfgFileName = batchManager.options_.cfgFileName # This is the python job config.

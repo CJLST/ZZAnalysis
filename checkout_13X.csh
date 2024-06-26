@@ -68,7 +68,7 @@ sed -i '/#include "RooMinuit.h"/d' KinZfitter/KinZfitter/interface/KinZfitter.h
 git cms-addpkg PhysicsTools/NanoAOD
 git cms-cherry-pick-pr 43536 CMSSW_13_0_X
 
-#Pick more fixes in NanoAODTools (support for "S" branch types); in release since 13_3_18, 14_0_0, 14_1_0
+#Pick more fixes in NanoAODTools (support for "S" branch types); in release since 14_0_0, 14_1_0; queued in 13_3_X (X>3)
 git cms-addpkg PhysicsTools/NanoAODTools
 git fetch https://github.com/namapane/cmssw.git NAT-dev:namapane_NAT-dev
 git cherry-pick 3e73ca4c2f8
@@ -85,3 +85,5 @@ git clone https://github.com/cms-cat/nanoAOD-tools-modules.git PhysicsTools/NATM
 #Now we can compile everything
 scram b -j4
 
+#Set up protection for user pulling but missing that this recipe has been updated
+python3 ZZAnalysis/AnalysisStep/python/validateCheckout.py

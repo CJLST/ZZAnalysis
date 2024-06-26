@@ -7,6 +7,11 @@
 from __future__ import print_function
 from ZZAnalysis.NanoAnalysis.tools import setConf, getConf, insertAfter
 
+# Check that the checkout recipe has been properly updated 
+from ZZAnalysis.AnalysisStep.validateCheckout import validateCheckout 
+if not validateCheckout() :
+    exit(1)
+
 #SampleToRun = "MCsync_Rereco"
 #SampleToRun = "MCsync_UL"
 #SampleToRun = "Data2022"
