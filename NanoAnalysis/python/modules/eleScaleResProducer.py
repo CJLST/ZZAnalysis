@@ -2,9 +2,9 @@ from __future__ import print_function
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
 import os
-import random
 import numpy as np
 import correctionlib
+from math import pi
 
 class eleScaleResProducer(Module):
     def __init__(self, dataYear, tag, is_mc, overwritePt=False):
@@ -15,7 +15,6 @@ class eleScaleResProducer(Module):
         self.overwritePt = overwritePt
         self.is_mc = is_mc
 
-        self.rng = np.random.default_rng()
         self.evaluator = self._get_evaluator
         self.evaluator_scale = self._get_scale_evaluator
         self.evaluator_smear = self._get_smear_evaluator
@@ -28,27 +27,19 @@ class eleScaleResProducer(Module):
 
     @property    
     def _get_smear_evaluator(self):
-        if "pre_EE" in self.tag :
-            smear_evaluator = self.evaluator["2022Re-recoBCD_SmearingJSON"]
-        else :
-            smear_evaluator = self.evaluator["2022Re-recoE+PromptFG_SmearingJSON"]
-
+        smear_evaluator = self.evaluator["Smearing"]
         return smear_evaluator
 
     @property
     def _get_scale_evaluator(self):
-        if "pre_EE" in self.tag :
-            scale_evaluator = self.evaluator["2022Re-recoBCD_ScaleJSON"]
-        else :
-            scale_evaluator = self.evaluator["2022Re-recoE+PromptFG_ScaleJSON"]
-
+        scale_evaluator = self.evaluator["Scale"]
         return scale_evaluator
 
     def get_fname(self, tag):
         if "pre_EE" in tag :
-            fname = "electronSS_preEE.json"
+            fname = "electronSS_preEE.json.gz"
         else :
-            fname = "electronSS_postEE.json"
+            fname = "electronSS_postEE.json.gz"
 
         return fname
 
@@ -85,13 +76,17 @@ class eleScaleResProducer(Module):
 
         for ele in electrons:
             if self.is_mc:
+                # Set up a deterministic random seed.
+                # The seed is unique by event and electron.
+                # A fixed entropy value is also included to decorrelate different modules doing similar things.
+                rng = np.random.default_rng(seed=np.random.SeedSequence([event.luminosityBlock, event.event, int(abs((ele.phi/pi)%1)*1e12), 5402201385]))
                 rho = self.evaluator_smear.evaluate("rho", ele.eta, ele.r9)
-                smearing = self.rng.normal(loc=1., scale=rho)
+                smearing = rng.normal(loc=1., scale=rho)
                 pt_corr.append(smearing * ele.pt)
 
                 unc_rho = self.evaluator_smear.evaluate("err_rho", ele.eta, ele.r9)
-                smearing_up = self.rng.normal(loc=1., scale=rho + unc_rho)
-                smearing_dn = self.rng.normal(loc=1., scale=rho - unc_rho)
+                smearing_up = rng.normal(loc=1., scale=rho + unc_rho)
+                smearing_dn = rng.normal(loc=1., scale=rho - unc_rho)
                 pt_smear_up.append(smearing_up * ele.pt)
                 pt_smear_dn.append(smearing_dn * ele.pt)
 
@@ -117,4 +112,25 @@ class eleScaleResProducer(Module):
 
         return True
 
-eleScaleRes = lambda era, tag, is_mc, overwritePt=False : eleScaleResProducer(era, tag, is_mc, overwritePt)
+# Set up the NATModules eleScaleRes module
+def getEleScaleRes(era, tag, is_mc, overwritePt=True) :
+    from PhysicsTools.NATModules.modules.eleScaleRes import eleScaleRes
+
+    if era != 2022:
+        raise ValueError("getEleScaleRes: Era", era, "not supported")
+
+    scaleKey = "Scale" 
+    if is_mc :
+        smearKey = "Smearing"
+    else :
+        smearKey=None
+
+    if "pre_EE" in tag :
+        fname = "electronSS_preEE.json.gz"
+    else:
+        fname = "electronSS_postEE.json.gz"
+ 
+    json = "%s/src/ZZAnalysis/NanoAnalysis/data/%s" % (os.environ['CMSSW_BASE'], fname)
+
+    print("***eleScaleRes: era:", era, "tag:", tag, "is MC:", is_mc, "overwritePt:", overwritePt, "json:", json)
+    return eleScaleRes(json, scaleKey, smearKey, overwritePt)
