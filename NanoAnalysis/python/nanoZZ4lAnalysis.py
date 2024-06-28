@@ -132,7 +132,7 @@ if not IsMC :
 reco_sequence = [lepFiller(cuts, LEPTON_SETUP), # FSR and FSR-corrected iso; flags for passing IDs
                  ZZFiller(runMELA, bestCandByMELA, IsMC, LEPTON_SETUP, PROCESS_CR, DATA_TAG, addZL=PROCESS_ZL, debug=DEBUG), # Build ZZ candidates; choose best candidate; filter events with candidates
                  jetFiller(), # Jets cleaning with leptons
-                 ZZExtraFiller('SR'), # Add information on extra objects to the selected best candidate
+                 ZZExtraFiller(IsMC, LEPTON_SETUP, DATA_TAG, PROCESS_CR), # Additional variables to selected candidates
                  # MELAFiller(), # Compute the full set of discriminants for the best candidate
                  ]
 
