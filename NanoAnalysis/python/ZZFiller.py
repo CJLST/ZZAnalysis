@@ -8,7 +8,6 @@ from __future__ import print_function
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
 from PhysicsTools.HeppyCore.utils.deltar import deltaR
-from ROOT import LeptonSFHelper
 
 from functools import cmp_to_key
 from ROOT import Mela, SimpleParticle_t, SimpleParticleCollection_t, TVar, TLorentzVector
@@ -26,7 +25,7 @@ class StoreOption:
 class ZZFiller(Module):
 
     def __init__(self, runMELA, bestCandByMELA, isMC, year, processCR, data_tag, addZL=False, debug=False):
-        print("***ZZFiller: isMC:", isMC, "year:", year, "bestCandByMELA:", bestCandByMELA, flush=True)
+        print("***ZZFiller: isMC:", isMC, "year:", year, "data_tag:", data_tag, "bestCandByMELA:", bestCandByMELA, flush=True)
         self.writeHistFile = False
         self.isMC = isMC
         self.year = year
@@ -85,14 +84,6 @@ class ZZFiller(Module):
                              dict(name="maxpfRelIso03FsrCorr", sel=lambda l : l.pfRelIso03FsrCorr),
                              dict(name="mvaLowPt", sel=lambda l : l.mvaLowPt if (l.looseId and l.sip3d<4. and l.dxy<0.5 and l.dz < 1) else -2.), # additional presel required, cf: https://cmssdt.cern.ch/dxr/CMSSW/source/PhysicsTools/PatAlgos/plugins/PATMuonProducer.cc#1027-1046
                              ]
-
-
-        # Data-MC SFs. 
-        # NanoAODTools provides a module based on LeptonEfficiencyCorrector.cc, but that does not seem to be flexible enough for us:
-        # https://github.com/cms-nanoAOD/nanoAOD-tools/blob/master/python/postprocessing/modules/common/lepSFProducer.py
-        # UL16pre/postVFP and 2022pre/postEE have different SFs
-        self.lepSFHelper = LeptonSFHelper(self.DATA_TAG)
-
         if self.runMELA :
             sqrts=13.;
             if year>=2022 :
@@ -152,8 +143,6 @@ class ZZFiller(Module):
             self.out.branch("ZZCand_mu"+ID["name"], "O", lenVar="nZZCand")
         for var in self.muonIDVars :
             self.out.branch("ZZCand_mu"+var["name"], "F", lenVar="nZZCand")
-        if self.isMC :
-            self.out.branch("ZZCand_dataMCWeight", "F", lenVar="nZZCand", title="data/MC efficiency correction weight")
         self.out.branch("bestCandIdx", "S", title="Seleced ZZ candidate in the event")
 
 
@@ -407,7 +396,6 @@ class ZZFiller(Module):
         ZZCand_Z2l2Idx = [-1]*len(ZZs)
         ZZCand_KD = [0.]*len(ZZs)
         ZZCand_Z2sumpt = [0.]*len(ZZs)
-        ZZCand_wDataMC = [0.]*len(ZZs)
         ZZCand_passID    = [[] for il in range(len(self.muonIDs))]
         ZZCand_worstVar  = [[] for il in range(len(self.muonIDVars))]
         
@@ -428,10 +416,6 @@ class ZZFiller(Module):
             ZZCand_Z2l2Idx[iZZ] = ZZ.Z2.l2Idx
             ZZCand_KD[iZZ] = ZZ.KD
             ZZCand_Z2sumpt[iZZ] = ZZ.Z2.sumpt()
-            if self.year < 2023 : #FIXME
-                if self.isMC: ZZCand_wDataMC[iZZ] =  self.getDataMCWeight(ZZ.leps())
-            else :
-                ZZCand_wDataMC[iZZ] = 1.
             for iID, ID in enumerate(self.muonIDs) :
                 ZZCand_passID[iID].append(ZZ.passId[iID])
             for iVar, var in enumerate(self.muonIDVars) :
@@ -458,11 +442,7 @@ class ZZFiller(Module):
         for iVar, var in enumerate(self.muonIDVars) :
             self.out.fillBranch("ZZCand_mu"+var["name"], ZZCand_worstVar[iVar])
 
-        if self.isMC:
-            self.out.fillBranch("ZZCand_dataMCWeight", ZZCand_wDataMC)
-
         self.out.fillBranch("bestCandIdx", bestCandIdx)
-
 
         if self.addSSCR or self. addOSCR or self.addSIPCR :
             ZLLCand_mass   = [0.]*len(ZLLs)
@@ -575,28 +555,6 @@ class ZZFiller(Module):
 
         def leps(self) :
             return([self.Z1.l1, self.Z1.l2, self.Z2.l1, self.Z2.l2])
-
-
-    ### Compute lepton efficiency scale factor
-    def getDataMCWeight(self, leps) :
-       dataMCWeight = 1.
-       for lep in leps:           
-           myLepID = abs(lep.pdgId)
-           mySCeta = lep.eta
-           isCrack = False
-           if myLepID==11 :
-               mySCeta = lep.eta + lep.deltaEtaSC
-               # FIXME: isGap() is not available in nanoAODs, and cannot be recomputed easily based on eta, phi. We thus use the non-gap SFs for all electrons.
-
-           # Deal with very rare cases when SCeta is out of 2.5 bounds
-           mySCeta = min(mySCeta,2.49)
-           mySCeta = max(mySCeta,-2.49)
-
-           SF = self.lepSFHelper.getSF(self.year, myLepID, lep.pt, lep.eta, mySCeta, isCrack)
-#           SF_Unc = self.lepSFHelper.getSFError(year, myLepID, lep.pt, lep.eta, mySCeta, isCrack)
-           dataMCWeight *= SF
-
-       return dataMCWeight
 
 
     ### Comparators to select the best candidate in the event. Return -1 if a is better than b, +1 otherwise
