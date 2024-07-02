@@ -207,7 +207,7 @@ puWeight_UL2018 = lambda: puWeightProducer(pufile_mcUL2018,
 puAutoWeight_UL2018 = lambda: puWeightProducer(
     "auto", pufile_dataUL2018, "pu_mc", "pileup", verbose=False)
 
-# 2022 weights non official, still preliminary
+# 2022 weights non official, merged pre and post-EE, obsolete
 puWeight_2022 = lambda : puWeightProducer(pufile_2022,
                                           pufile_2022,
                                           "MC_out_of_the_box",
@@ -215,4 +215,23 @@ puWeight_2022 = lambda : puWeightProducer(pufile_2022,
                                           verbose=False,
                                           doSysVar=True)
 
-puWeight = {2016:puWeight_UL2016, 2017:puWeight_UL2017, 2018:puWeight_UL2018, 2022:puWeight_2022} 
+def puWeight(era, data_tag):
+    print("***puWeight: era", era, "dataTag:", data_tag)
+    if era == 2016:
+        return puWeight_UL2016()
+    elif era == 2017 : 
+        return puWeight_UL2017()
+    elif era == 2018 :
+        return puWeight_UL2018()
+    elif era == 2022 :
+#        return puWeight_2022() # Merged pre and postEE - obsolete
+        
+#        from PhysicsTools.NATModules.modules.puWeightProducer import puWeightProducer as puWeightProducer_corrlib
+        from ZZAnalysis.NanoAnalysis.modules.puWeightProducer_corrlib import puWeightProducer as puWeightProducer_corrlib
+        if "pre_EE" in data_tag :
+            json = "%s/src/ZZAnalysis/NanoAnalysis/data/puWeights_2022_Summer22.json.gz" % os.environ['CMSSW_BASE']
+            key = "Collisions2022_355100_357900_eraBCD_GoldenJson"
+        else :
+            json = "%s/src/ZZAnalysis/NanoAnalysis/data/puWeights_2022_Summer22EE.json.gz" % os.environ['CMSSW_BASE']
+            key = "Collisions2022_359022_362760_eraEFG_GoldenJson"
+        return puWeightProducer_corrlib(json, key)

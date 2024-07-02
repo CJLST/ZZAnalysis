@@ -25,7 +25,7 @@ DATA_TAG = getConf("DATA_TAG", "" ) # used to distinguish different subperiods/r
                                     # Specific values currently recognized (other values->use defaults for era)
                                     # "UL" (used by muonScaleResProducer, getEleBDTCut)
                                     # "ULAPV", (used by LeptonSFHelper)
-                                    # "pre_EE" (used by LeptonSFHelper, eleScaleResProducer)
+                                    # "pre_EE" (used by LeptonSFHelper, eleScaleResProducer, puWeightProducer)
 NANOVERSION = getConf("NANOVERSION", 12)
 if not (LEPTON_SETUP == 2016 or LEPTON_SETUP == 2017 or LEPTON_SETUP == 2018 or LEPTON_SETUP == 2022 or LEPTON_SETUP == 2023) :
     print("Invalid LEPTON_SETUP", LEPTON_SETUP)
@@ -164,7 +164,7 @@ if IsMC:
     if ADD_ALLEVENTS: # Add modules that produce the variables to be stored for all events at the beginni
         from ZZAnalysis.NanoAnalysis.genFiller import *
         from ZZAnalysis.NanoAnalysis.cloneBranches import *
-        pre_sequence = [puWeight[LEPTON_SETUP](),
+        pre_sequence = [puWeight(LEPTON_SETUP, DATA_TAG),
                         weights,
                         genFiller(dump=False),
                         cloneBranches(treeName='AllEvents',
@@ -174,9 +174,10 @@ if IsMC:
                                                'FidZ*',
                                                'passedFiducial',
                                                'Generator_weight',
-                                               'puWeight',
+                                               'puWeight*',
                                                'ggH_NNLOPS_Weight',
                                                'overallEventWeight',
+                                               'Pileup_nTrueInt'
                                                ],
                                       #Stop further processing for events that don't have 4 reco leps
                                       continueFor = postPresel
@@ -184,7 +185,7 @@ if IsMC:
                         ] + pre_sequence
 
     else : # Add them at the end, so that they are run only for selected events
-        post_sequence.extend([puWeight[LEPTON_SETUP](),
+        post_sequence.extend([puWeight(LEPTON_SETUP,DATA_TAG),
                               weights,
                               #genFiller(dump=False), # Not required when ADD_ALLEVENTS = False?
                               ])
@@ -234,6 +235,7 @@ if IsMC:
     branchsel_out.extend(['keep GenPart*',
                           'keep GenZZ*',
                           'keep *eight', # Generator_weight + custom weights
+                          'keep puWeight*',
                           'keep HTXS_Higgs*',
                           'keep HTXS_njets30',
                           'keep Pileup*',
