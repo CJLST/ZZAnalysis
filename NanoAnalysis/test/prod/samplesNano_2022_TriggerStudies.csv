@@ -1,0 +1,9 @@
+identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments,comment
+###,,,,,,,,,,,Samples for trigger studies, to be processed with TRIGPASSTHROUGH=True;FILTER_EVENTS=3L_20_10; and PD=any for data
+
+# JetMET data
+JetMET2022G,,-1,,,/JetMET/Run2022G-22Sep2023-v2/NANOAOD,dbs,root://cms-xrd-global.cern.ch/,2,PD=any;PROCESS_CR=True;PROCESS_ZL=True;ADDLOOSEELE=False;LEPTON_SETUP=2022;ADDZTREE=False;TRIGPASSTHROUGH=True;FILTER_EVENTS=3L_20_10;runMELA=False;bestCandByMELA=False,RecoProbabilities.py,
+
+# Selected MCs, postEE
+DYJetsToLL,,6275.1,,,/DYJetsToLL_M-50_TuneCP5_13p6TeV-madgraphMLM-pythia8/Run3Summer22EENanoAODv12-forPOG_130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;PROCESS_ZL=True;LEPTON_SETUP=2022;TRIGPASSTHROUGH=True;FILTER_EVENTS=3L_20_10;runMELA=False;bestCandByMELA=False,RecoProbabilities.py,
+#TTto2L2Nu,,98.0,,,/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;PROCESS_ZL=True;LEPTON_SETUP=2022;TRIGPASSTHROUGH=True;FILTER_EVENTS=3L_20_10;runMELA=False;bestCandByMELA=False,RecoProbabilities.py,

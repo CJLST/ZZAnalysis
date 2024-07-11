@@ -50,6 +50,9 @@ APPLY_K_NNLOQCD_ZZQQB = getConf("APPLY_K_NNLOQCD_ZZQQB", False)
 APPLY_K_NNLOEW_ZZQQB  = getConf("APPLY_K_NNLOEW_ZZQQB", False) 
 # Add separate tree with gen info for all events
 ADD_ALLEVENTS = getConf("ADD_ALLEVENTS", False)
+FILTER_EVENTS = getConf("FILTER_EVENTS", 'Cands') # Filter to be applied to filter events to be applied on output. Currently supported:
+                                                  # 'Cands' = any event with a SR or CR candidate (default)
+                                                  # '3L_20_10' = any event with  with 3 good leptons, pt1>20, pt2>10 (useful for trigger studies)
 
 ### Definition of analysis cuts
 cuts = dict(
@@ -93,18 +96,17 @@ cuts = dict(
     )
 
 ### Preselection to speed up processing.
-if ADD_ALLEVENTS : # move preselection after cloneBranches 
+if ADD_ALLEVENTS : # Remove preselection and filter events after cloneBranches, which needs to see all events
     preselection = None
     if PROCESS_ZL :
         postPresel = lambda evt : (evt.nMuon+evt.nElectron>=3)
     else :
         postPresel = lambda evt : (evt.nMuon+evt.nElectron>=4)        
-else:
-    postPresel = None
+else: # Set a preselection for the postprocessor
     if PROCESS_ZL :
-        preselection = "nMuon+nElectron >= 3 && Sum$(Muon_pt > {muPt}-2.)+Sum$(Electron_pt>{elePt})>= 3".format(**cuts)
+        preselection = "nMuon+nElectron >= 3 && Sum$(Muon_pt > {muPt}-2.)+Sum$(Electron_pt>{elePt}-2.)>= 3".format(**cuts)
     else :
-        preselection = "nMuon+nElectron >= 4 && Sum$(Muon_pt > {muPt}-2.)+Sum$(Electron_pt>{elePt})>= 4".format(**cuts)
+        preselection = "nMuon+nElectron >= 4 && Sum$(Muon_pt > {muPt}-2.)+Sum$(Electron_pt>{elePt}-2.)>= 4".format(**cuts)
 
 ### Input file specification
 store = getConf("store","") # "/eos/cms/" for files available on eos; "root://cms-xrd-global.cern.ch/" for remote files
@@ -130,7 +132,14 @@ if not IsMC :
 
 # Standard sequence used for both data and MC
 reco_sequence = [lepFiller(cuts, LEPTON_SETUP), # FSR and FSR-corrected iso; flags for passing IDs
-                 ZZFiller(runMELA, bestCandByMELA, IsMC, LEPTON_SETUP, PROCESS_CR, DATA_TAG, addZL=PROCESS_ZL, debug=DEBUG), # Build ZZ candidates; choose best candidate; filter events with candidates
+                 ZZFiller(runMELA, bestCandByMELA,
+                          isMC=IsMC,
+                          year=LEPTON_SETUP,
+                          data_tag=DATA_TAG,
+                          processCR=PROCESS_CR,
+                          addZL=PROCESS_ZL,
+                          filter=FILTER_EVENTS,
+                          debug=DEBUG), # Build ZZ candidates; choose best candidate; filter events with candidates
                  jetFiller(), # Jets cleaning with leptons
                  ZZExtraFiller(IsMC, LEPTON_SETUP, DATA_TAG, PROCESS_CR), # Additional variables to selected candidates
                  # MELAFiller(), # Compute the full set of discriminants for the best candidate
@@ -266,6 +275,11 @@ p = PostProcessor(".", fileNames,
                   firstEntry=0, # First event to be read
                   provenance = False
                   ) 
+
+# Print sequence to be run:
+print("Sequence to be run:")
+for mod in p.modules:
+    print(" ", mod.__class__.__name__)
 
 ### Run command should be issued by the calling scripy
 # p.run()

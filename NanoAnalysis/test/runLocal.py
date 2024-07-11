@@ -20,8 +20,8 @@ SampleToRun = "MC2022"
 ### Customize processing variables
 #setConf("runMELA", False)
 #setConf("bestCandByMELA", False)
-setConf("APPLYMUCORR", False) #NOTE: mu corrections removed for comparision with mini since they are not deterministic on nanoAOD.
-setConf("APPLYELECORR", False) #NOTE: ele corrections removed for comparision with mini since they are not deterministic on nanoAOD.
+#setConf("APPLYMUCORR", False)
+#setConf("APPLYELECORR", False)
 
 
 ## Force filling K factors and weights (default: all off)
@@ -119,7 +119,7 @@ p.prefetch=True # Prefetch remote files
 p.longTermCache=True # keep prefetched files (useful for rerunning tests several times)
 if len(p.inputFiles) == 1 :
     p.haddFileName = None # Skip final hadd
-#p.maxEntries = 1000
+#p.maxEntries = 10000
 
 ### Select specific events to debug
 #p.cut = "run==316239  && luminosityBlock==226 && event==284613817"
