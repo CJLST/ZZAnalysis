@@ -1,17 +1,17 @@
-### 
-# Clone the branches listed in "varlist" to a new tree named "treeName" in the output file,
-# and stop processing event that do not satisfy the condition "continueFor".
-# This is useul in particular to store gen variables for all events in a separate tree.
-###
-
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 
 class cloneBranches(Module):
 
     def __init__(self, treeName, varlist, continueFor = lambda evt : (True)) :
+        '''Clone the branches listed in "varlist" to a new tree named "treeName" in the output file,
+        and stop processing events that do not satisfy the condition "continueFor".
+        This is useul in particular to store gen variables for all events in a separate tree.
+        '''
+
         self.treeName = treeName
         self.varlist = varlist
         self.continueFor = continueFor
+        print("***cloneBranches: cloning into tree:", treeName, "- This module filters events.", flush=True )
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.inputTree = inputTree

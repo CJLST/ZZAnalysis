@@ -1,11 +1,3 @@
-####
-# -Apply PV filter
-# -Apply trigger requirements, and PD precedence rules for data.
-#
-# Option passThru: do not filter for trigger, to be used to check for missing triggers in data
-# (note: does not skip good PV filter!) 
-#
-####
 from __future__ import print_function
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
@@ -13,13 +5,20 @@ import sys
 
 class triggerAndSkim(Module):
     def __init__(self, isMC=True, PD="", era=2018, passThru=False):
+        '''Apply good PV filter + Check trigger requirements and PD precedence rules for data.
+        Parameters:
+        PD: for data, should be "Muon", "EGamma", "MuonEG" to apply the PD precedence rules, or 
+            "any" to select events passing any of the selected triggers regardless of PD precedence rules.
+        passThru: do not filter events failing triggers (just store the module's variables). 
+             Note that the good PV filter is still applied even if passThru = True.
+        '''
         self.writeHistFile = False
         self.isMC = isMC
         self.PD = PD
         self.era = era
         self.passThru = passThru
         self.debug = False
-        print("***triggerAndSkim: IsMC:", self.isMC, "PD:", self.PD, "era:", self.era, "passThru:", passThru, flush=True)
+        print("***triggerAndSkim: IsMC:", self.isMC, "PD:", self.PD, "era:", self.era, "passThru:", passThru, "- This module filters events.", flush=True)
         
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
