@@ -78,16 +78,21 @@ cmsRunStatus=   #default for successful completion is an empty file
 cmsRun run_cfg.py |& grep -v -e 'MINUIT WARNING' -e 'Second derivative zero' -e 'Negative diagonal element' -e 'added to diagonal of error matrix' > log.txt || cmsRunStatus=$?
 
 echo -n $cmsRunStatus > exitStatus.txt
-echo 'cmsRun done at: ' $(date) with exit status: ${{cmsRunStatus+0}}
+if [ -z $cmsRunStatus ]; then cmsRunStatus=0; fi
+echo 'cmsRun done at: ' $(date) with exit status: $cmsRunStatus
 gzip log.txt
 
 export ROOT_HIST=0
 if [ -s ZZ4lAnalysis.root ]; then
  root -q -b '${{CMSSW_BASE}}/src/ZZAnalysis/AnalysisStep/test/prod/rootFileIntegrity.r("ZZ4lAnalysis.root")'
-else
- echo moving empty file
+elif [ -f  ZZ4lAnalysis.root ]; then
+ echo moving away empty ZZ4lAnalysis.root file
  mv ZZ4lAnalysis.root ZZ4lAnalysis.root.empty
+else
+ echo ERROR: ZZ4lAnalysis.root file is missing
 fi
+
+set +euo pipefail
 
 echo "Files on node:"
 ls -la
@@ -146,16 +151,21 @@ exitStatus=   #default for successful completion is an empty file
 python run_cfg.py >& log.txt || exitStatus=$?
 
 echo -n $exitStatus > exitStatus.txt
-echo 'job done at: ' $(date) with exit status: ${{exitStatus+0}}
+if [ -z $exitStatus ]; then exitStatus=0; fi
+echo 'job done at: ' $(date) with exit status: $exitStatus
 gzip log.txt
 
 export ROOT_HIST=0
 if [ -s ZZ4lAnalysis.root ]; then
  root -q -b '${{CMSSW_BASE}}/src/ZZAnalysis/AnalysisStep/test/prod/rootFileIntegrity.r("ZZ4lAnalysis.root")'
-else
- echo moving empty file
+elif [ -f  ZZ4lAnalysis.root ]; then
+ echo moving away empty ZZ4lAnalysis.root file
  mv ZZ4lAnalysis.root ZZ4lAnalysis.root.empty
+else
+ echo ERROR: ZZ4lAnalysis.root file is missing
 fi
+
+set +euo pipefail
 
 echo "Files on node:"
 ls -la
@@ -200,9 +210,9 @@ output                  = log/$(ClusterId).$(ProcId).out
 error                   = log/$(ClusterId).$(ProcId).err
 log                     = log/$(ClusterId).log
 Initialdir              = $(directory)
-request_memory          = '''+str(batchManager.options_.jobmem)+'''
+request_memory          = '''+str(batchManager.jobmem)+'''
 #Possible values: longlunch, workday, tomorrow, etc.; cf. https://batchdocs.web.cern.ch/local/submit.html
-+JobFlavour             = "'''+batchManager.options_.jobflavour+'''"
++JobFlavour             = "'''+batchManager.jobflavour+'''"
 {requirements}
 x509userproxy           = {home}/x509up_u{uid}
 
@@ -247,12 +257,12 @@ class MyBatchManager:
                                 help="create jobs, but does not submit the jobs.")
 
         self.parser_.add_option("-q", "--queue", dest="jobflavour",
-                                help="Max duration (the shorter, the quicker the job will start.Default: tomorrow = 1d; use  microcentury or longlunch for quick jobs. Cf. https://batchdocs.web.cern.ch/local/submit.html",
-                                default="tomorrow")
+                                help="Max duration (the shorter, the quicker the job will start.Default: 'tomorrow' for mini; 'longlunch' for nano.  Cf. https://batchdocs.web.cern.ch/local/submit.html",
+                                default=None) # default set below
 
         self.parser_.add_option("-m", "--mem", dest="jobmem",
                                 help="Requested memory (smaller = more nodes available ). Use 0 for no request",
-                                default="4000M")
+                                default=None)# default set below
 
         self.parser_.add_option("-p", "--pdf", dest="PDFstep",
                                 help="Step of PDF systematic uncertainty evaluation. It could be 1 or 2.",
@@ -332,7 +342,10 @@ class MyBatchManager:
                 sys.exit(4)
             #Create a link to transfer folder
             ret = os.system('ln -s ' + self.eosTransferPath + " " + self.outputDir_ + "/transferPath")
-            
+
+        # Default values for the following are set later, depending on mini/nano
+        self.jobmem = None 
+        self.jobflavour = None 
 
     def mkdir( self, dirname ):
        mkdir = 'mkdir -p %s' % dirname
@@ -370,10 +383,28 @@ class MyBatchManager:
        '''
        print('---PrepareJob N: ', value,  ' name: ', dirname)
 
-       inputType="miniAOD"
-       if "NANOAOD" in (splitComponents[value].files)[0] :
-           inputType="nanoAOD"
+       # Set requirements
+       inputType='miniAOD'
+       if 'nanoaod' in (splitComponents[value].files)[0].lower() :
+           inputType='nanoAOD'
+       if self.jobmem == None:
+           if batchManager.options_.jobmem != None :
+               self.jobmem = batchManager.options_.jobmem
+           else :
+               if inputType == 'miniAOD' :
+                   self.jobmem = '4000M'
+               else :
+                   self.jobmem = '3000M'
 
+       if self.jobflavour == None:
+           if batchManager.options_.jobflavour != None:
+               self.jobflavour = batchManager.options_.jobflavour
+           else :
+               if inputType == 'miniAOD' :
+                   self.jobflavour = 'tomorrow'
+               else :
+                   self.jobflavour = 'tomorrow'
+           
        dname = dirname
        if dname  is None:
            dname = 'Job_{value}'.format( value=value )
@@ -532,7 +563,7 @@ class Component(object):
 if __name__ == '__main__':
     batchManager = MyBatchManager()
     
-    cfgFileName = batchManager.options_.cfgFileName #"analyzer_Run2.py" # This is the python job config. FIXME make it configurable.
+    cfgFileName = batchManager.options_.cfgFileName # This is the python job config.
     sampleCSV  = batchManager.args_[0]            # This is the csv file with samples to be analyzed./
 
     components = []
