@@ -7,12 +7,12 @@ To install a complete CMSSW 13X area (including this package)
 ------------------------------
 Used for analysis of 2022 data and beyond
 
-Please use **CMSSW_13_0_16**. 
+Please use **CMSSW_13_3_3**. 
 
 Download and execute the setup script:
 ```
-cmsrel CMSSW_13_0_16
-cd CMSSW_13_0_16/src
+cmsrel CMSSW_13_3_3
+cd CMSSW_13_3_3/src
 cmsenv
 wget -O ${TMPDIR}/checkout.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/Run3/checkout_13X.csh
 chmod u+x ${TMPDIR}/checkout.csh
@@ -27,6 +27,7 @@ In the package directory, simply issue
 ```
 git pull
 ```
+Please note that for major updates (is when the checkout_13X.csh file is modified), pulling is not enough and it is necessary to make a new area.
 
 To commit and push new changes
 ------------------------------
