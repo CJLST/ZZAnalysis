@@ -1,5 +1,8 @@
+# Legacy implementation based on root histograms, kept for older MC
 # Imported from the standalone version of PhysicsTools.NanoAODTools.postprocessing.modules.common.
-# FIXME: to be replaced with a correctionlib-based module
+#
+# NOTE: The helpers at the end set up the new correctionlib-based module from
+# PhysicsTools/NATModusles.
 
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
@@ -7,7 +10,6 @@ import ROOT
 import os
 import numpy as np
 ROOT.PyConfig.IgnoreCommandLineOptions = True
-
 
 class puWeightProducer(Module):
     def __init__(self,
@@ -207,7 +209,7 @@ puWeight_UL2018 = lambda: puWeightProducer(pufile_mcUL2018,
 puAutoWeight_UL2018 = lambda: puWeightProducer(
     "auto", pufile_dataUL2018, "pu_mc", "pileup", verbose=False)
 
-# 2022 weights non official, merged pre and post-EE, obsolete
+# 2022 weights non official, merged pre and post-EE, obsolete (replaced by the split correctionlib versions, see below)
 puWeight_2022 = lambda : puWeightProducer(pufile_2022,
                                           pufile_2022,
                                           "MC_out_of_the_box",
@@ -226,8 +228,7 @@ def puWeight(era, data_tag):
     elif era == 2022 :
 #        return puWeight_2022() # Merged pre and postEE - obsolete
         
-#        from PhysicsTools.NATModules.modules.puWeightProducer import puWeightProducer as puWeightProducer_corrlib
-        from ZZAnalysis.NanoAnalysis.modules.puWeightProducer_corrlib import puWeightProducer as puWeightProducer_corrlib
+        from PhysicsTools.NATModules.modules.puWeightProducer import puWeightProducer as puWeightProducer_corrlib
         if "pre_EE" in data_tag :
             json = "%s/src/ZZAnalysis/NanoAnalysis/data/puWeights_2022_Summer22.json.gz" % os.environ['CMSSW_BASE']
             key = "Collisions2022_355100_357900_eraBCD_GoldenJson"
