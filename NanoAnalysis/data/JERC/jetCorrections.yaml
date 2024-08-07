@@ -1,0 +1,23 @@
+tagsMC:
+  pre_EE:
+    folder: 2022
+    prefix: Summer22_22Sep2023_V2_MC
+    prefix_JER: Summer22_22Sep2023_JRV1_MC
+  post_EE:
+    folder: 2022EE
+    prefix: Summer22EE_22Sep2023_V2_MC
+    prefix_JER: Summer22EE_22Sep2023_JRV1_MC
+
+tagsDATA:
+  pre_EE:
+    folder: 2022
+    prefix: Summer22_22Sep2023_RunCD_V2_DATA
+  E:
+    folder: 2022EE
+    prefix: Summer22EE_22Sep2023_RunE_V2_DATA
+  F:
+    folder: 2022EE
+    prefix: Summer22EE_22Sep2023_RunF_V2_DATA
+  G:
+    folder: 2022EE
+    prefix: Summer22EE_22Sep2023_RunG_V2_DATA

@@ -17,7 +17,7 @@ from ZZAnalysis.NanoAnalysis.ZZFiller import *
 from ZZAnalysis.NanoAnalysis.ZZExtraFiller import *
 from ZZAnalysis.NanoAnalysis.weightFiller import weightFiller
 
-### Get processing customizations, if defined in the including .py; use defaults otherwise 
+### Get processing customizations, if defined in the including .py; use defaults otherwise
 DEBUG = getConf("DEBUG", False)
 SAMPLENAME = getConf("SAMPLENAME", "test")
 LEPTON_SETUP = getConf("LEPTON_SETUP", 2018)
@@ -41,13 +41,14 @@ PROCESS_CR = getConf("PROCESS_CR", False) # fill control regions
 PROCESS_ZL = getConf("PROCESS_ZL", False) # fill ZL control region
 APPLYMUCORR = getConf("APPLYMUCORR", True) # apply muon momentum scale/resolution corrections
 APPLYELECORR = getConf("APPLYELECORR", True) # apply electron momentum scale/resolution corrections
+APPLYJETCORR = getConf("APPLYJETCORR", True) # apply jet corrections
 # ggH NNLOPS weight
-APPLY_QCD_GGF_UNCERT = getConf("APPLY_QCD_GGF_UNCERT", False) 
+APPLY_QCD_GGF_UNCERT = getConf("APPLY_QCD_GGF_UNCERT", False)
 # K factors for ggZZ (and old NLO ggH samples) 0:None; 1: NNLO/LO; 2: NNLO/NLO; 3: NLO/LO
-APPLY_K_NNLOQCD_ZZGG = getConf("APPLY_K_NNLOQCD_ZZGG", 0) 
+APPLY_K_NNLOQCD_ZZGG = getConf("APPLY_K_NNLOQCD_ZZGG", 0)
 # K factors for qqZZ
-APPLY_K_NNLOQCD_ZZQQB = getConf("APPLY_K_NNLOQCD_ZZQQB", False) 
-APPLY_K_NNLOEW_ZZQQB  = getConf("APPLY_K_NNLOEW_ZZQQB", False) 
+APPLY_K_NNLOQCD_ZZQQB = getConf("APPLY_K_NNLOQCD_ZZQQB", False)
+APPLY_K_NNLOEW_ZZQQB  = getConf("APPLY_K_NNLOEW_ZZQQB", False)
 # Add separate tree with gen info for all events
 ADD_ALLEVENTS = getConf("ADD_ALLEVENTS", False)
 FILTER_EVENTS = getConf("FILTER_EVENTS", 'Cands') # Filter to be applied to filter events to be applied on output. Currently supported:
@@ -65,10 +66,10 @@ cuts = dict(
     dz = 1.,
     fsr_dRET2 = 0.012,
     fsr_Iso = 1.8,
-    
+
     ## Relaxed ID without SIP (starting point for SIP-less CR)
     # Notes: Muon.nStations is numberOfMatchedStation, not numberOfMatches; also, muonBestTrackType!=2 is not available in nanoAODs
-    muRelaxedIdNoSIP = (lambda l : (l.pt > cuts["muPt"] 
+    muRelaxedIdNoSIP = (lambda l : (l.pt > cuts["muPt"]
                                     and abs(l.eta) < 2.4
                                     and abs(l.dxy) < cuts["dxy"]
                                     and abs(l.dz) < cuts["dz"]
@@ -101,7 +102,7 @@ if ADD_ALLEVENTS : # Remove preselection and filter events after cloneBranches, 
     if PROCESS_ZL :
         postPresel = lambda evt : (evt.nMuon+evt.nElectron>=3)
     else :
-        postPresel = lambda evt : (evt.nMuon+evt.nElectron>=4)        
+        postPresel = lambda evt : (evt.nMuon+evt.nElectron>=4)
 else: # Set a preselection for the postprocessor
     if PROCESS_ZL :
         preselection = "nMuon+nElectron >= 3 && Sum$(Muon_pt > {muPt}-2.)+Sum$(Electron_pt>{elePt}-2.)>= 3".format(**cuts)
@@ -125,7 +126,7 @@ if not IsMC :
         jsonFile = localPath+"test/prod/Cert_Collisions2022_355100_362760_Golden.json"
     elif LEPTON_SETUP == 2023 :
         jsonFile = localPath+"test/prod/Cert_Collisions2023_366442_370355_Golden.json"
-    else:        
+    else:
         exit(1) #2016-17 to be implemented
 
 ### Modules to be run
@@ -153,6 +154,10 @@ if APPLYMUCORR and LEPTON_SETUP < 2022 :
 if APPLYELECORR and LEPTON_SETUP >=2022 :
     from ZZAnalysis.NanoAnalysis.modules.eleScaleResProducer import getEleScaleRes
     insertBefore(reco_sequence, 'lepFiller', getEleScaleRes(LEPTON_SETUP, DATA_TAG, IsMC, overwritePt=True))
+# Add jet corrections for Run 3
+if APPLYJETCORR and LEPTON_SETUP >=2022 :
+    from ZZAnalysis.NanoAnalysis.modules.jetJERC import jetCorrected
+    insertBefore(reco_sequence, 'jetFiller', jetCorrected(LEPTON_SETUP, DATA_TAG, IsMC, overwritePt=True))
 
 # Special modules to be applied before the reco_sequence, that may filter events
 pre_sequence = [triggerAndSkim(isMC=IsMC, PD=PD, era=LEPTON_SETUP, passThru=TRIGPASSTHROUGH), # Filter for good PV and trigger requirements; apply PD precedence rules for data
@@ -167,7 +172,7 @@ if IsMC:
     weights = weightFiller(XSEC, APPLY_K_NNLOQCD_ZZGG, APPLY_K_NNLOQCD_ZZQQB, APPLY_K_NNLOEW_ZZQQB, APPLY_QCD_GGF_UNCERT)
 
     post_sequence.append(mcTruthAnalyzer(dump=False)) # Gen final state etc.
-    
+
     if ADD_ALLEVENTS: # Add modules that produce the variables to be stored for all events at the beginni
         from ZZAnalysis.NanoAnalysis.genFiller import *
         from ZZAnalysis.NanoAnalysis.cloneBranches import *
@@ -199,7 +204,7 @@ if IsMC:
 else : # Data
     post_sequence = []
 
-        
+
 ZZSequence = pre_sequence + reco_sequence + post_sequence
 
 ### Branches to be read and written to output
@@ -222,8 +227,8 @@ branchsel_out = ['drop *',
                  'keep Jet*',
                  'keep nCleanedJet*',
                  'keep FsrPhoton*',
-                 'keep HLT_Ele*', 
-                 'keep HLT_DoubleEle*', 
+                 'keep HLT_Ele*',
+                 'keep HLT_DoubleEle*',
                  'keep HLT_Mu*',
                  'keep HLT_DiMu*',
                  'keep HLT_TripleMu*',
@@ -257,7 +262,7 @@ if IsMC:
                               'keep FidZ*',
                               'keep passedFiducial',
                               ])
-    
+
 from PhysicsTools.NanoAODTools.postprocessing.framework.postprocessor import PostProcessor
 p = PostProcessor(".", fileNames,
                   prefetch=True, longTermCache=False,
@@ -272,7 +277,7 @@ p = PostProcessor(".", fileNames,
                   maxEntries=0, # Number of events to be read
                   firstEntry=0, # First event to be read
                   provenance = False
-                  ) 
+                  )
 
 # Print sequence to be run:
 print("Sequence to be run:")
