@@ -145,10 +145,10 @@ reco_sequence = [lepFiller(cuts, LEPTON_SETUP), # FSR and FSR-corrected iso; fla
                  # MELAFiller(), # Compute the full set of discriminants for the best candidate
                  ]
 
-# Add muon scale corrections for Run 2 (not yet available for Run 3)
-if APPLYMUCORR and LEPTON_SETUP < 2022 :
+# Add muon scale corrections for Run 3
+if APPLYMUCORR and LEPTON_SETUP >= 2022 :
     from ZZAnalysis.NanoAnalysis.modules.muonScaleResProducer import muonScaleRes
-    reco_sequence.insert(0, muonScaleRes(LEPTON_SETUP, DATA_TAG, overwritePt=True, syncMode=SYNCMODE))
+    insertBefore(reco_sequence, 'lepFiller', muonScaleRes(LEPTON_SETUP, DATA_TAG, IsMC, overwritePt=True))
 # Add ele scale corrections for Run 3. It should be applied after passBDT is checked, but before running ZZFiller
 if APPLYELECORR and LEPTON_SETUP >=2022 :
     from ZZAnalysis.NanoAnalysis.modules.eleScaleResProducer import getEleScaleRes
@@ -179,6 +179,7 @@ if IsMC:
                                                'GenDressedLepton_*',
                                                'FidDressedLeps_*',
                                                'FidZ*',
+                                               'LHE*',
                                                'passedFiducial',
                                                'Generator_weight',
                                                'puWeight*',
