@@ -35,7 +35,11 @@ class muonScaleResProducer(Module):
         return fname
 
     def getPtCorr(self, event, muons, var = "nom"):
-        scale_corr = pt_scale(0, np.array(list(event.Muon_pt)),
+        is_data = 1
+        if self.is_mc:
+            is_data = 0
+
+        scale_corr = pt_scale(is_data, np.array(list(event.Muon_pt)),
                               np.array(list(event.Muon_eta)),
                               np.array(list(event.Muon_phi)),
                               np.array(list(event.Muon_charge)),
