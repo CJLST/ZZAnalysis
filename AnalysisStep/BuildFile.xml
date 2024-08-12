@@ -12,6 +12,7 @@
 <use name="roofit"/>
 <use name="CLHEP"/>
 <use name="rootrflx"/>
+<use name="correctionlib"/>
 
 <flags CPPFLAGS="-I$(CMSSW_BASE)/src/JHUGenMELA/MELA/interface/" />
 <flags LDFLAGS="-lJHUGenMELAMELA -lMelaAnalyticsEventContainer"/>
