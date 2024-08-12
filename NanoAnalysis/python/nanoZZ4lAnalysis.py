@@ -25,7 +25,8 @@ DATA_TAG = getConf("DATA_TAG", "" ) # used to distinguish different subperiods/r
                                     # Specific values currently recognized (other values->use defaults for era)
                                     # "UL" (used by muonScaleResProducer, getEleBDTCut)
                                     # "ULAPV", (used by LeptonSFHelper)
-                                    # "pre_EE" (used by LeptonSFHelper, eleScaleResProducer, puWeightProducer)
+                                    # "pre_EE" (used by LeptonSFHelper, eleScaleResProducer, puWeightProducer, jetJERC)
+                                    # "2022E", "2022F", "2022G" (used by jetJERC)
 NANOVERSION = getConf("NANOVERSION", 12)
 if not (LEPTON_SETUP == 2016 or LEPTON_SETUP == 2017 or LEPTON_SETUP == 2018 or LEPTON_SETUP == 2022 or LEPTON_SETUP == 2023) :
     print("Invalid LEPTON_SETUP", LEPTON_SETUP)

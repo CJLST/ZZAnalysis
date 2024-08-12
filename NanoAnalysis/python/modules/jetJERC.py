@@ -7,7 +7,7 @@ def getJetCorrected(era, tag, is_mc, overwritePt=True) :
         raise ValueError("getJetCorrected: Era", era, "not supported")
 
     if is_mc :
-        if tag == "pre_EE":
+        if "pre_EE" in tag:
             folderKey = "2022_Summer22"
             L1Key = "Summer22_22Sep2023_V2_MC_L1FastJet_AK4PFPuppi"
             L2Key = "Summer22_22Sep2023_V2_MC_L2Relative_AK4PFPuppi"
@@ -16,7 +16,7 @@ def getJetCorrected(era, tag, is_mc, overwritePt=True) :
             smearKey = "JERSmear"
             JERKey = "Summer22_22Sep2023_JRV1_MC_PtResolution_AK4PFPuppi"
             JERsfKey = "Summer22_22Sep2023_JRV1_MC_ScaleFactor_AK4PFPuppi"
-        elif tag == "post_EE":
+        else:
             folderKey = "2022_Summer22EE"
             L1Key = "Summer22EE_22Sep2023_V2_MC_L1FastJet_AK4PFPuppi"
             L2Key = "Summer22EE_22Sep2023_V2_MC_L2Relative_AK4PFPuppi"
@@ -28,7 +28,7 @@ def getJetCorrected(era, tag, is_mc, overwritePt=True) :
     ## Data
     ## JER are not applied to data
     else :
-        if tag == "pre_EE":
+        if "pre_EE" in tag:
             folderKey = "2022_Summer22"
             L1Key = "Summer22_22Sep2023_RunCD_V2_DATA_L1FastJet_AK4PFPuppi"
             L2Key = "Summer22_22Sep2023_RunCD_V2_DATA_L2Relative_AK4PFPuppi"
@@ -37,7 +37,7 @@ def getJetCorrected(era, tag, is_mc, overwritePt=True) :
             smearKey = None
             JERKey = None
             JERsfKey = None
-        elif tag == "E":
+        elif "2022E" in tag:
             folderKey = "2022_Summer22EE"
             L1Key = "Summer22EE_22Sep2023_RunE_V2_DATA_L1FastJet_AK4PFPuppi"
             L2Key = "Summer22EE_22Sep2023_RunE_V2_DATA_L2Relative_AK4PFPuppi"
@@ -46,7 +46,7 @@ def getJetCorrected(era, tag, is_mc, overwritePt=True) :
             smearKey = None
             JERKey = None
             JERsfKey = None
-        elif tag == "F":
+        elif "2022F" in tag:
             folderKey = "2022_Summer22EE"
             L1Key = "Summer22EE_22Sep2023_RunF_V2_DATA_L1FastJet_AK4PFPuppi"
             L2Key = "Summer22EE_22Sep2023_RunF_V2_DATA_L2Relative_AK4PFPuppi"
@@ -55,7 +55,7 @@ def getJetCorrected(era, tag, is_mc, overwritePt=True) :
             smearKey = None
             JERKey = None
             JERsfKey = None
-        elif tag == "G":
+        elif "2022G" in tag:
             folderKey = "2022_Summer22EE"
             L1Key = "Summer22EE_22Sep2023_RunG_V2_DATA_L1FastJet_AK4PFPuppi"
             L2Key = "Summer22EE_22Sep2023_RunG_V2_DATA_L2Relative_AK4PFPuppi"
@@ -64,6 +64,8 @@ def getJetCorrected(era, tag, is_mc, overwritePt=True) :
             smearKey = None
             JERKey = None
             JERsfKey = None
+        else:
+            raise ValueError("getJetCorrected: tag", era, "not supported")
 
 
     json_JERC = "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/%s/jet_jerc.json.gz" % (folderKey)

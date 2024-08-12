@@ -17,16 +17,16 @@ MuonEG2022D,,-1,,,/MuonEG/Run2022D-22Sep2023-v1/NANOAOD ,dbs,root://cms-xrd-glob
 EGamma2022D,,-1,,,/EGamma/Run2022D-22Sep2023-v1/NANOAOD ,dbs,root://cms-xrd-global.cern.ch/,2,PD=EGamma;PROCESS_CR=True;PROCESS_ZL=True;ADDLOOSEELE=False;LEPTON_SETUP=2022;ADDZTREE=False;DATA_TAG=pre_EE,RecoProbabilities.py,
 
 ###,,,,,,,,,,,Run2022E-22Sep2023-v1 - nanoAODv12 - runs 359356 - 360327
-Muon2022E  ,,-1,,,/Muon/Run2022E-22Sep2023-v1/NANOAOD   ,dbs,root://cms-xrd-global.cern.ch/,2,PD=Muon;PROCESS_CR=True;PROCESS_ZL=True;ADDLOOSEELE=False;LEPTON_SETUP=2022;ADDZTREE=False;DATA_TAG=E,RecoProbabilities.py,
-MuonEG2022E,,-1,,,/MuonEG/Run2022E-22Sep2023-v1/NANOAOD ,dbs,root://cms-xrd-global.cern.ch/,2,PD=MuEG;PROCESS_CR=True;PROCESS_ZL=True;ADDLOOSEELE=False;LEPTON_SETUP=2022;ADDZTREE=False;DATA_TAG=E,RecoProbabilities.py,
-EGamma2022E,,-1,,,/EGamma/Run2022E-22Sep2023-v1/NANOAOD ,dbs,root://cms-xrd-global.cern.ch/,2,PD=EGamma;PROCESS_CR=True;PROCESS_ZL=True;ADDLOOSEELE=False;LEPTON_SETUP=2022;ADDZTREE=False;DATA_TAG=E,RecoProbabilities.py,
+Muon2022E  ,,-1,,,/Muon/Run2022E-22Sep2023-v1/NANOAOD   ,dbs,root://cms-xrd-global.cern.ch/,2,PD=Muon;PROCESS_CR=True;PROCESS_ZL=True;ADDLOOSEELE=False;LEPTON_SETUP=2022;ADDZTREE=False;DATA_TAG=2022E,RecoProbabilities.py,
+MuonEG2022E,,-1,,,/MuonEG/Run2022E-22Sep2023-v1/NANOAOD ,dbs,root://cms-xrd-global.cern.ch/,2,PD=MuEG;PROCESS_CR=True;PROCESS_ZL=True;ADDLOOSEELE=False;LEPTON_SETUP=2022;ADDZTREE=False;DATA_TAG=2022E,RecoProbabilities.py,
+EGamma2022E,,-1,,,/EGamma/Run2022E-22Sep2023-v1/NANOAOD ,dbs,root://cms-xrd-global.cern.ch/,2,PD=EGamma;PROCESS_CR=True;PROCESS_ZL=True;ADDLOOSEELE=False;LEPTON_SETUP=2022;ADDZTREE=False;DATA_TAG=2022E,RecoProbabilities.py,
 
 ###,,,,,,,,,,,Run2022F-22Sep2023-v1 - nanoAODv12 - runs 360335 - 362167
-Muon2022F  ,,-1,,,/Muon/Run2022F-22Sep2023-v2/NANOAOD   ,dbs,root://cms-xrd-global.cern.ch/,2,PD=Muon;PROCESS_CR=True;PROCESS_ZL=True;ADDLOOSEELE=False;LEPTON_SETUP=2022;ADDZTREE=False;DATA_TAG=F,RecoProbabilities.py,
-MuonEG2022F,,-1,,,/MuonEG/Run2022F-22Sep2023-v1/NANOAOD ,dbs,root://cms-xrd-global.cern.ch/,2,PD=MuEG;PROCESS_CR=True;PROCESS_ZL=True;ADDLOOSEELE=False;LEPTON_SETUP=2022;ADDZTREE=False;DATA_TAG=F,RecoProbabilities.py,
-EGamma2022F,,-1,,,/EGamma/Run2022F-22Sep2023-v1/NANOAOD ,dbs,root://cms-xrd-global.cern.ch/,2,PD=EGamma;PROCESS_CR=True;PROCESS_ZL=True;ADDLOOSEELE=False;LEPTON_SETUP=2022;ADDZTREE=False;DATA_TAG=F,RecoProbabilities.py,
+Muon2022F  ,,-1,,,/Muon/Run2022F-22Sep2023-v2/NANOAOD   ,dbs,root://cms-xrd-global.cern.ch/,2,PD=Muon;PROCESS_CR=True;PROCESS_ZL=True;ADDLOOSEELE=False;LEPTON_SETUP=2022;ADDZTREE=False;DATA_TAG=2022F,RecoProbabilities.py,
+MuonEG2022F,,-1,,,/MuonEG/Run2022F-22Sep2023-v1/NANOAOD ,dbs,root://cms-xrd-global.cern.ch/,2,PD=MuEG;PROCESS_CR=True;PROCESS_ZL=True;ADDLOOSEELE=False;LEPTON_SETUP=2022;ADDZTREE=False;DATA_TAG=2022F,RecoProbabilities.py,
+EGamma2022F,,-1,,,/EGamma/Run2022F-22Sep2023-v1/NANOAOD ,dbs,root://cms-xrd-global.cern.ch/,2,PD=EGamma;PROCESS_CR=True;PROCESS_ZL=True;ADDLOOSEELE=False;LEPTON_SETUP=2022;ADDZTREE=False;DATA_TAG=2022F,RecoProbabilities.py,
 
 ###,,,,,,,,,,,Run2022G-22Sep2023-v1 - nanoAODv12 - runs 362353 - 362760
-Muon2022G  ,,-1,,,/Muon/Run2022G-22Sep2023-v1/NANOAOD   ,dbs,root://cms-xrd-global.cern.ch/,2,PD=Muon;PROCESS_CR=True;PROCESS_ZL=True;ADDLOOSEELE=False;LEPTON_SETUP=2022;ADDZTREE=False;DATA_TAG=G,RecoProbabilities.py,
-MuonEG2022G,,-1,,,/MuonEG/Run2022G-22Sep2023-v1/NANOAOD ,dbs,root://cms-xrd-global.cern.ch/,2,PD=MuEG;PROCESS_CR=True;PROCESS_ZL=True;ADDLOOSEELE=False;LEPTON_SETUP=2022;ADDZTREE=False;DATA_TAG=G,RecoProbabilities.py,
-EGamma2022G,,-1,,,/EGamma/Run2022G-22Sep2023-v2/NANOAOD ,dbs,root://cms-xrd-global.cern.ch/,2,PD=EGamma;PROCESS_CR=True;PROCESS_ZL=True;ADDLOOSEELE=False;LEPTON_SETUP=2022;ADDZTREE=False;DATA_TAG=G,RecoProbabilities.py,
+Muon2022G  ,,-1,,,/Muon/Run2022G-22Sep2023-v1/NANOAOD   ,dbs,root://cms-xrd-global.cern.ch/,2,PD=Muon;PROCESS_CR=True;PROCESS_ZL=True;ADDLOOSEELE=False;LEPTON_SETUP=2022;ADDZTREE=False;DATA_TAG=2022G,RecoProbabilities.py,
+MuonEG2022G,,-1,,,/MuonEG/Run2022G-22Sep2023-v1/NANOAOD ,dbs,root://cms-xrd-global.cern.ch/,2,PD=MuEG;PROCESS_CR=True;PROCESS_ZL=True;ADDLOOSEELE=False;LEPTON_SETUP=2022;ADDZTREE=False;DATA_TAG=2022G,RecoProbabilities.py,
+EGamma2022G,,-1,,,/EGamma/Run2022G-22Sep2023-v2/NANOAOD ,dbs,root://cms-xrd-global.cern.ch/,2,PD=EGamma;PROCESS_CR=True;PROCESS_ZL=True;ADDLOOSEELE=False;LEPTON_SETUP=2022;ADDZTREE=False;DATA_TAG=2022G,RecoProbabilities.py,
