@@ -33,7 +33,7 @@ if not (LEPTON_SETUP == 2016 or LEPTON_SETUP == 2017 or LEPTON_SETUP == 2018 or 
 IsMC = getConf("IsMC", True)
 PD = getConf("PD", "")
 XSEC = getConf("XSEC", 1.)
-SYNCMODE = getConf("SYNCMODE", False)
+SYNCMODE = getConf("SYNCMODE", False) # fake smearing in Run2 correction modules, for synchronization purposes. No longer needed for Run3 modules.
 runMELA = getConf("runMELA", True)
 bestCandByMELA = getConf("bestCandByMELA", True) # requires also runMELA=True
 TRIGPASSTHROUGH = getConf("TRIGPASSTHROUGH", False) # Do not filter events that do not pass triggers (HLT_passZZ4l records if they did)

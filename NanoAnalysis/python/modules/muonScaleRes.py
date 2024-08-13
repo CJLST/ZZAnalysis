@@ -3,7 +3,8 @@ from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
 import os
 import numpy as np
-from ROOT import MuonScaleRe
+from math import pi
+from ROOT import MuonScaRe
 
 class muonScaleRes(Module):
     def __init__(self, json, is_mc, overwritePt=False):
@@ -17,19 +18,17 @@ class muonScaleRes(Module):
         self.overwritePt = overwritePt
         self.is_mc = is_mc
         
-        self.corrModule = MuonScaleRe(json)
+        self.corrModule = MuonScaRe(json)
 
 
-    def getPtCorr(self, event, muons, var = "nom") :
+    def getPtCorr(self, event, muon, var = "nom") :
         isData = int(not self.is_mc)
-        pt_corr = [0.]*len(muons)
-        for imu, muon in enumerate(muons):
-            scale_corr = self.corrModule.pt_scale(isData, muon.pt, muon.eta, muon.phi, muon.charge, var)
-            pt_corr[imu] = scale_corr
+        scale_corr = self.corrModule.pt_scale(isData, muon.pt, muon.eta, muon.phi, muon.charge, var)
+        pt_corr = scale_corr
 
-            if self.is_mc:
-                smear_corr = self.corrModule.pt_resol(scale_corr, muon.eta, muon.nTrackerLayers, var)
-                pt_corr[imu] = smear_corr
+        if self.is_mc:
+            smear_corr = self.corrModule.pt_resol(scale_corr, muon.eta, muon.nTrackerLayers, var)
+            pt_corr = smear_corr
 
         return pt_corr
 
@@ -52,12 +51,24 @@ class muonScaleRes(Module):
 
         muons = Collection(event, "Muon")
 
-        pt_corr = self.getPtCorr(event, muons, "nom")
-
+        pt_corr = [0.]*len(muons)
         if self.is_mc:
-            # TODO: Check. Are we assuming up=dn?
-            pt_syst = self.getPtCorr(event, muons, "syst")
-            pt_stat = self.getPtCorr(event, muons, "stat")
+            pt_syst = [0.]*len(muons)
+            pt_stat = [0.]*len(muons)
+                
+        for imu, muon in enumerate(muons):
+            # Set up a deterministic random seed.
+            # The seed is unique by event and muon.
+            # A fixed entropy value is also included to decorrelate different modules doing similar things.
+            seedSeq = np.random.SeedSequence([event.luminosityBlock, event.event, int(abs((muon.phi/pi*100.)%1)*1e10), 351740215])
+            self.corrModule.setSeed(int(seedSeq.generate_state(1,np.uint64)[0]))
+
+            pt_corr[imu] = self.getPtCorr(event, muon, "nom")
+
+            if self.is_mc:
+                # TODO: Check. Are we assuming up=dn?
+                pt_syst[imu] = self.getPtCorr(event, muon, "syst")
+                pt_stat[imu] = self.getPtCorr(event, muon, "stat")
 
         if self.overwritePt :
             pt_uncorr = list(mu.pt for mu in muons)

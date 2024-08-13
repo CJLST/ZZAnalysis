@@ -1,11 +1,27 @@
+/*  
+ * Run3 Muon correction module, imported from:
+ * https://gitlab.cern.ch/cms-muonPOG/muonscarekit/-/blob/82cc2a4ec97c93ee4e791398f4bc5fbe24859bb3/scripts/MuonScaRe.cc
+ * with the following modifications:
+ * -encapsulated in a class so that the correctionSet and RNG are kept 
+ *  internally
+ * -add function to optionally set the RNG seed, so that the user can implement 
+ *  deterministic pseudo-random smearing. If desired, a proper seed should 
+ *  be passed once for each muon before calling pt_resol the first time for 
+ *  that mu.
+ *  Note: setting the seed is left to the user since in the current 
+ *  implementation get_rndm, which normally getsis called 3 times for each mu 
+ *  (for var = norm, syst, stat), does not have access to enough sources of 
+ *  entropy to create a decent seed internally.
+ * -avoid trivial string manipulations in pt_scale
+ */
+
 #include <boost/math/special_functions/erf.hpp>
 #include <string>
-#include <TRandom3.h>
-#include <ZZAnalysis/AnalysisStep/interface/MuonScaleRe.h>
+#include <ZZAnalysis/AnalysisStep/interface/MuonScaRe.h>
 
 using namespace std;
 
-MuonScaleRe::MuonScaleRe(string json) : cset(correction::CorrectionSet::from_file(json)){}
+MuonScaRe::MuonScaRe(string json) : cset(correction::CorrectionSet::from_file(json)){}
  
 
 struct CrystalBall{
@@ -80,7 +96,7 @@ double invcdf(double u) const{
 }
 };
 
-double MuonScaleRe::get_rndm(double eta, float nL) {
+double MuonScaRe::get_rndm(double eta, float nL) {
 
     // obtain parameters from correctionlib
     double mean = cset->at("cb_params")->evaluate({abs(eta), nL, 0});
@@ -90,13 +106,11 @@ double MuonScaleRe::get_rndm(double eta, float nL) {
     
     // instantiate CB and get random number following the CB
     CrystalBall cb(mean, sigma, alpha, n);
-    TRandom3 rnd(time(0));
-    double rndm = gRandom->Rndm();
-    return cb.invcdf(rndm);
+    return cb.invcdf(rng.Rndm());
 }
 
 
-double MuonScaleRe::get_std(double pt, double eta, float nL) {
+double MuonScaRe::get_std(double pt, double eta, float nL) {
 
     // obtain paramters from correctionlib
     double param_0 = cset->at("poly_params")->evaluate({abs(eta), nL, 0});
@@ -110,7 +124,7 @@ double MuonScaleRe::get_std(double pt, double eta, float nL) {
 }
 
 
-double MuonScaleRe::get_k(double eta, string var) {
+double MuonScaRe::get_k(double eta, string var) {
 
     // obtain parameters from correctionlib
     double k_data = cset->at("k_data")->evaluate({abs(eta), var});
@@ -124,7 +138,7 @@ double MuonScaleRe::get_k(double eta, string var) {
 }
 
 
-double MuonScaleRe::pt_resol(double pt, double eta, float nL, string var) {
+double MuonScaRe::pt_resol(double pt, double eta, float nL, string var) {
 
     // load correction values
     double rndm = (double) get_rndm(eta, nL);
@@ -138,12 +152,9 @@ double MuonScaleRe::pt_resol(double pt, double eta, float nL, string var) {
 }
 
 
-double MuonScaleRe::pt_scale(bool is_data, double pt, double eta, double phi, int charge, string var) {
-        
-    // use right correction
-    string dtmc = "mc";
-    if (is_data) dtmc = "data";
-    double a = cset->at("a_"+dtmc)->evaluate({eta, phi, var});
-    double m = cset->at("m_"+dtmc)->evaluate({eta, phi, var});
+double MuonScaRe::pt_scale(bool is_data, double pt, double eta, double phi, int charge, string var) {
+  
+    double a = cset->at(is_data?"a_data":"a_mc")->evaluate({eta, phi, var});
+    double m = cset->at(is_data?"m_data":"m_mc")->evaluate({eta, phi, var});
     return 1. / (m/pt + charge * a);
 }

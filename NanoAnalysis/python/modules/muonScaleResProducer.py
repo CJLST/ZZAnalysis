@@ -9,12 +9,6 @@ def getMuonScaleRes(era, tag, is_mc, overwritePt=True) :
     if era != 2022: #FIXME add 2023
         raise ValueError("getMuonScaleRes: Era", era, "not supported")
 
-    scaleKey = "Scale" 
-    if is_mc :
-        smearKey = "Smearing"
-    else :
-        smearKey=None
-
     if "pre_EE" in tag :
         fname = "2022_schemaV2.json.gz"
     else :
