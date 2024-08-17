@@ -2,7 +2,7 @@
 # Imported from the standalone version of PhysicsTools.NanoAODTools.postprocessing.modules.common.
 #
 # NOTE: The helpers at the end set up the new correctionlib-based module from
-# PhysicsTools/NATModusles.
+# PhysicsTools/NATModules.
 
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module

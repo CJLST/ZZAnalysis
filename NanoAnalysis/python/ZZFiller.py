@@ -64,7 +64,7 @@ class ZZFiller(Module):
         self.ZmassValue = 91.1876;
 
         self.candsToStore = StoreOption.BestCandOnly # Only store the best candidate for the SR
-
+#        self.candsToStore = StoreOption.AllWithRelaxedMuId # Use this for ID optimization studies
 
         # Pre-selection of leptons to build Z and LL candidates.
         # Normally it is the full ID + iso if only the SR is considered, or the relaxed ID if CRs are also filled,
@@ -94,12 +94,16 @@ class ZZFiller(Module):
                           dict(name="isGlobal", sel=lambda l : l.isGlobal),  # Note: this is looser than nanoAOD presel.
                           dict(name="isTracker", sel=lambda l : l.isTracker),# Note: this is looser than nanoAOD presel.
                           dict(name="isTrackerArb", sel=lambda l : l.isTracker and l.nStations>0), # Arbitrated tracker muon. Note: this is looser than nanoAOD presel.
+                          dict(name="inTimeMuon", sel=lambda l : l.inTimeMuon), # 
                           ]
 
             # Add variable to store the worst value of a given quantity among the 4 leptons of a candidate, for optimization studies.
             # Worst is intended as lowest value (as for an MVA), unless the variable's name starts with "max".
             self.muonIDVars=[dict(name="maxsip3d", sel=lambda l : l.sip3d if (abs(l.dxy)<0.5 and abs(l.dz) < 1) else 999.), # dxy, dz cuts included with SIP
                              dict(name="maxpfRelIso03FsrCorr", sel=lambda l : l.pfRelIso03FsrCorr),
+                             dict(name="maxminiPFRelIso_all", sel=lambda l : l.miniPFRelIso_all),
+                             # Can also try: puppiIsoId, multiIsoId
+                             dict(name="mvaMuID", sel=lambda l : l.mvaMuID if (l.looseId and l.sip3d<4. and l.dxy<0.5 and l.dz < 1) else -2.), # additional presel required?
                              dict(name="mvaLowPt", sel=lambda l : l.mvaLowPt if (l.looseId and l.sip3d<4. and l.dxy<0.5 and l.dz < 1) else -2.), # additional presel required, cf: https://cmssdt.cern.ch/dxr/CMSSW/source/PhysicsTools/PatAlgos/plugins/PATMuonProducer.cc#1027-1046
                              ]
         if self.runMELA :
