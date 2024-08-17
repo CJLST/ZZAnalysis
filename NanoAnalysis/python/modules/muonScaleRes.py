@@ -21,7 +21,10 @@ class muonScaleRes(Module):
         self.corrModule = MuonScaRe(json)
 
 
-    def getPtCorr(self, event, muon, var = "nom") :
+    def getPtCorr(self, muon, var = "nom") :
+        # No correction for pt>200 according to current recipe (8/24)
+        if muon.pt > 200. : 
+            return muon.pt
         isData = int(not self.is_mc)
         scale_corr = self.corrModule.pt_scale(isData, muon.pt, muon.eta, muon.phi, muon.charge, var)
         pt_corr = scale_corr
@@ -63,12 +66,12 @@ class muonScaleRes(Module):
             seedSeq = np.random.SeedSequence([event.luminosityBlock, event.event, int(abs((muon.phi/pi*100.)%1)*1e10), 351740215])
             self.corrModule.setSeed(int(seedSeq.generate_state(1,np.uint64)[0]))
 
-            pt_corr[imu] = self.getPtCorr(event, muon, "nom")
+            pt_corr[imu] = self.getPtCorr(muon, "nom")
 
             if self.is_mc:
                 # TODO: Check. Are we assuming up=dn?
-                pt_syst[imu] = self.getPtCorr(event, muon, "syst")
-                pt_stat[imu] = self.getPtCorr(event, muon, "stat")
+                pt_syst[imu] = self.getPtCorr(muon, "syst")
+                pt_stat[imu] = self.getPtCorr(muon, "stat")
 
         if self.overwritePt :
             pt_uncorr = list(mu.pt for mu in muons)
