@@ -23,9 +23,9 @@ SAMPLENAME = getConf("SAMPLENAME", "test")
 LEPTON_SETUP = getConf("LEPTON_SETUP", 2018)
 DATA_TAG = getConf("DATA_TAG", "" ) # used to distinguish different subperiods/reprocessings.
                                     # Specific values currently recognized (other values->use defaults for era)
-                                    # "UL" (used by muonScaleResProducer, getEleBDTCut)
+                                    # "UL" (used by muonScaleResProducer_Rochester, getEleBDTCut)
                                     # "ULAPV", (used by LeptonSFHelper)
-                                    # "pre_EE" (used by LeptonSFHelper, eleScaleResProducer, puWeightProducer, jetJERC)
+                                    # "pre_EE" (used by LeptonSFHelper, eleScaleResProducer, muonScaleResProducer, puWeightProducer, jetJERC)
                                     # "2022E", "2022F", "2022G" (used by jetJERC)
 NANOVERSION = getConf("NANOVERSION", 12)
 if not (LEPTON_SETUP == 2016 or LEPTON_SETUP == 2017 or LEPTON_SETUP == 2018 or LEPTON_SETUP == 2022 or LEPTON_SETUP == 2023) :
@@ -34,7 +34,7 @@ if not (LEPTON_SETUP == 2016 or LEPTON_SETUP == 2017 or LEPTON_SETUP == 2018 or 
 IsMC = getConf("IsMC", True)
 PD = getConf("PD", "")
 XSEC = getConf("XSEC", 1.)
-SYNCMODE = getConf("SYNCMODE", False)
+SYNCMODE = getConf("SYNCMODE", False) # fake smearing in Run2 correction modules, for synchronization purposes. No longer needed for Run3 modules.
 runMELA = getConf("runMELA", True)
 bestCandByMELA = getConf("bestCandByMELA", True) # requires also runMELA=True
 TRIGPASSTHROUGH = getConf("TRIGPASSTHROUGH", False) # Do not filter events that do not pass triggers (HLT_passZZ4l records if they did)
@@ -147,10 +147,15 @@ reco_sequence = [lepFiller(cuts, LEPTON_SETUP), # FSR and FSR-corrected iso; fla
                  # MELAFiller(), # Compute the full set of discriminants for the best candidate
                  ]
 
-# Add muon scale corrections for Run 2 (not yet available for Run 3)
-if APPLYMUCORR and LEPTON_SETUP < 2022 :
-    from ZZAnalysis.NanoAnalysis.modules.muonScaleResProducer import muonScaleRes
-    reco_sequence.insert(0, muonScaleRes(LEPTON_SETUP, DATA_TAG, overwritePt=True, syncMode=SYNCMODE))
+# Add muon scale corrections
+if APPLYMUCORR :
+    if LEPTON_SETUP < 2022 : # use Run2 Rochester corrections
+        from ZZAnalysis.NanoAnalysis.modules.muonScaleResProducer_Rochester import muonScaleRes
+        insertBefore(reco_sequence, 'lepFiller', muonScaleRes(LEPTON_SETUP, DATA_TAG, overwritePt=True, syncMode=SYNCMODE))
+    else : # Run3 correction module
+        from ZZAnalysis.NanoAnalysis.modules.muonScaleResProducer import getMuonScaleRes
+        insertBefore(reco_sequence, 'lepFiller', getMuonScaleRes(LEPTON_SETUP, DATA_TAG, IsMC, overwritePt=True))
+        
 # Add ele scale corrections for Run 3. It should be applied after passBDT is checked, but before running ZZFiller
 if APPLYELECORR and LEPTON_SETUP >=2022 :
     from ZZAnalysis.NanoAnalysis.modules.eleScaleResProducer import getEleScaleRes
@@ -185,6 +190,7 @@ if IsMC:
                                                'GenDressedLepton_*',
                                                'FidDressedLeps_*',
                                                'FidZ*',
+                                               'LHE*Weight',
                                                'passedFiducial',
                                                'Generator_weight',
                                                'puWeight*',

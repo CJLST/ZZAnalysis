@@ -6,4 +6,5 @@
   <class name="KFactors"/>
   <class name="Mela" />
   <class name="WeightCalculatorFromHistogram"/>
+  <class name="MuonScaRe"/>
 </lcgdict>
