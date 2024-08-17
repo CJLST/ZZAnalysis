@@ -80,7 +80,7 @@ cuts = dict(
                                      and abs(l.dxy) < cuts["dxy"]
                                      and abs(l.dz) < cuts["dz"])),
 
-    passEleBDT = getEleBDTCut(LEPTON_SETUP, DATA_TAG, NANOVERSION),
+    passEleBDT = getEleBDTCut(LEPTON_SETUP, DATA_TAG, NANOVERSION, APPLYELECORR),
 
     passMuID = (lambda l: (l.isPFcand or (l.highPtId>0 and l.pt>200.))),
 
@@ -156,7 +156,7 @@ if APPLYMUCORR :
         from ZZAnalysis.NanoAnalysis.modules.muonScaleResProducer import getMuonScaleRes
         insertBefore(reco_sequence, 'lepFiller', getMuonScaleRes(LEPTON_SETUP, DATA_TAG, IsMC, overwritePt=True))
         
-# Add ele scale corrections for Run 3. It should be applied after passBDT is checked, but before running ZZFiller
+# Add ele scale corrections for Run 3
 if APPLYELECORR and LEPTON_SETUP >=2022 :
     from ZZAnalysis.NanoAnalysis.modules.eleScaleResProducer import getEleScaleRes
     insertBefore(reco_sequence, 'lepFiller', getEleScaleRes(LEPTON_SETUP, DATA_TAG, IsMC, overwritePt=True))

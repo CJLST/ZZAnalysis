@@ -82,6 +82,8 @@ if [ -z $cmsRunStatus ]; then cmsRunStatus=0; fi
 echo 'cmsRun done at: ' $(date) with exit status: $cmsRunStatus
 gzip log.txt
 
+set +euo pipefail
+
 export ROOT_HIST=0
 if [ -s ZZ4lAnalysis.root ]; then
  root -q -b '${{CMSSW_BASE}}/src/ZZAnalysis/AnalysisStep/test/prod/rootFileIntegrity.r("ZZ4lAnalysis.root")'
@@ -91,8 +93,6 @@ elif [ -f  ZZ4lAnalysis.root ]; then
 else
  echo ERROR: ZZ4lAnalysis.root file is missing
 fi
-
-set +euo pipefail
 
 echo "Files on node:"
 ls -la
@@ -150,6 +150,8 @@ echo path: `pwd`
 exitStatus=   #default for successful completion is an empty file
 python3 run_cfg.py >& log.txt || exitStatus=$?
 
+set +euo pipefail
+
 echo -n $exitStatus > exitStatus.txt
 if [ -z $exitStatus ]; then exitStatus=0; fi
 echo 'job done at: ' $(date) with exit status: $exitStatus
@@ -164,8 +166,6 @@ elif [ -f  ZZ4lAnalysis.root ]; then
 else
  echo ERROR: ZZ4lAnalysis.root file is missing
 fi
-
-set +euo pipefail
 
 echo "Files on node:"
 ls -la
