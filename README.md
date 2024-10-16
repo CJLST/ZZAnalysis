@@ -9,15 +9,20 @@ Used for analysis of 2016, 2017, and 2018 data
 
 Please use **CMSSW_10_6_30**. 
 
-Download and execute the setup script:
+Download and execute the setup script in a el7 Singularity container:
 ```
-wget -O ${TMPDIR}/checkout_10X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/Run2UL_22/checkout_10X.csh
-cd $CMSSW_BASE/src
+cmssw-el7
+cmsrel CMSSW_10_6_30
+cd CMSSW_10_6_30/src
 cmsenv
-chmod u+x ${TMPDIR}/checkout_10X.csh
-${TMPDIR}/checkout_10X.csh
+wget -O ${TMPDIR}/checkout_10X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/Run2UL_22/checkout.csh
+chmod u+x ${TMPDIR}/checkout.csh
+${TMPDIR}/checkout.csh
 scramv1 b -j 4
 ```
+
+Please use `ZZAnalysis/start_el7.sh` to open a slc7 container in new shells, in order to have access to the Condor queues.
+
 
 To update this package from the release
 ------------------------------------------
