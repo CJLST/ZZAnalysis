@@ -1,13 +1,15 @@
 #!/bin/tcsh -fe
 #
 # Instructions:
-# wget -O ${TMPDIR}/checkout_10X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/Run2UL_22/checkout_10X.csh
-# cd $CMSSW_BASE/src
+# cmssw-el7
+# cmsrel CMSSW_10_6_30
+# cd CMSSW_10_6_30/src
 # cmsenv
-# chmod u+x ${TMPDIR}/checkout_10X.csh
-# ${TMPDIR}/checkout_10X.csh
+# wget -O ${TMPDIR}/checkout_10X.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/Run2UL_22/checkout.csh
+# chmod u+x ${TMPDIR}/checkout.csh
+# ${TMPDIR}/checkout.csh
 
-############## For CMSSW_10_6_26
+############## For CMSSW_10_6_30
 git cms-init
 
 # New Jet PU ID: dedicated training for each year
@@ -85,3 +87,5 @@ git clone https://github.com/mhl0116/KinZfitter-1.git KinZfitter
 git clone https://github.com/cms-nanoAOD/nanoAOD-tools.git PhysicsTools/NanoAODTools
 (cd PhysicsTools/NanoAODTools ; git checkout -b from-c32f055 c32f055)
 
+echo
+echo "***Note: Please use ZZAnalysis/start_el7.sh to open a slc7 container in new shells, in order to have access to the Condor queues.***"

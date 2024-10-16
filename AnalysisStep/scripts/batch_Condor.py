@@ -155,6 +155,8 @@ if [ -z $exitStatus ]; then exitStatus=0; fi
 echo 'job done at: ' $(date) with exit status: $exitStatus
 gzip log.txt
 
+set +euo pipefail
+
 export ROOT_HIST=0
 if [ -s ZZ4lAnalysis.root ]; then
  root -q -b '${{CMSSW_BASE}}/src/ZZAnalysis/AnalysisStep/test/prod/rootFileIntegrity.r("ZZ4lAnalysis.root")'
@@ -164,8 +166,6 @@ elif [ -f  ZZ4lAnalysis.root ]; then
 else
  echo ERROR: ZZ4lAnalysis.root file is missing
 fi
-
-set +euo pipefail
 
 echo "Files on node:"
 ls -la
@@ -229,7 +229,7 @@ periodic_remove         = JobStatus == 5
    release=open('/etc/redhat-release','r').read()
    req = ""
    if "release 7" in release:
-       req = "requirements = (OpSysAndVer =?= \"CentOS7\")"
+       req = "MY.SingularityImage = \"/cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/cms-cat/cmssw-lxplus/cmssw-el7-lxplus:latest/\""
    elif "release 8" in release: #use a Singularity container
        req = "MY.WantOS = \"el8\""
    elif "release 9" in release:
