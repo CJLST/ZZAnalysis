@@ -10,9 +10,11 @@ class genAngProbFiller(Module):
     MELA = Pointer to MELA passed from nanoZZ4lAnalysis.py 
     """
     
-    def __init__(self, MELA):
+    def __init__(self, MELA, settingsDict = None):
         print("***genAngProbFiller", flush=True)
         self.MELA = MELA
+        self.MELAsettings = settingsDict
+            
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
         self.out.branch("LHEMela_qH", "F")
@@ -23,6 +25,8 @@ class genAngProbFiller(Module):
         self.out.branch("LHEMela_Phi", "F")
         self.out.branch("LHEMela_costhetastar", "F")
         self.out.branch("LHEMela_Phi1", "F")
+        self.out.branch("LHEMela_nativeProb", "F")
+        self.out.branch("LHEMela_nativeProbprop", "F")
         
     def analyze(self, event):
         LHEPart = Collection(event, 'LHEPart')
@@ -46,18 +50,53 @@ class genAngProbFiller(Module):
             temp_particle = Mela.SimpleParticle_t(ap.pdgId, ap.pt, ap.eta, ap.phi, ap.mass, True)
             associated.add_particle(temp_particle)
         
-
+        
         self.MELA.setInputEvent(daughters, associated, mothers, 1)
-        self.MELA.setProcess(Mela.Process.SelfDefine_spin0, Mela.MatrixElement.JHUGen, Mela.Production.ZZGG)
         qH, mZ1, mZ2, costheta1, costheta2, Phi, costhetastar, Phi1 = self.MELA.computeDecayAngles()
-        
-        self.MELA.resetInputEvent()
-        
         self.out.fillBranch("LHEMela_costheta1", costheta1)
         self.out.fillBranch("LHEMela_costheta2", costheta2)
         self.out.fillBranch("LHEMela_Phi", Phi)
-        self.out.fillBranch("LHEMela_costhetastar", costhetastar)
         self.out.fillBranch("LHEMela_Phi1", Phi1)
+        self.out.fillBranch("LHEMela_costhetastar", costhetastar)
+        
+        if self.MELAsettings != None: 
+            self.MELA.differentiate_HWW_HZZ = self.MELAsettings["separatewwzz"]
+            self.MELA.setProcess(self.MELAsettings["process"], self.MELAsettings["matrixelement"], self.MELAsettings["production"])
+            for coupling, vals, in self.MELAsettings["couplings"].items():
+                setattr(self.MELA, coupling, vals)
+
+            # ME = getattr(Mela, 'MatrixElement')
+            # PROC = getattr(Mela, 'Process')
+            # ghz1 = getattr(self.MELA, 'ghz1')
+            # ghg2 = getattr(self.MELA, 'ghg2')
+
+            # print("Matrix Element: ", ME, "process: ", PROC, "ghz1: ", ghz1, "ghg2: ", ghg2)
+
+            if self.MELAsettings["prod"] and self.MELAsettings["dec"]: 
+                nativeprob = self.MELA.computeProdDecP(False)
+            elif self.MELAsettings["prod"]: 
+                nativeprob = self.MELA.computeProdP(False)
+            elif self.MELAsettings["dec"]:
+                nativeprob = self.MELA.computeP(False)
+                # print(nativeprob)
+            else:
+                raise KeyError("Need to specify either production, decay, or computeprop!")
+            
+            if self.MELAsettings["computeprop"] and (self.MELAsettings["prod"] or self.MELAsettings["dec"]):
+                    nativeprob_prop = self.MELA.getXPropagator(self.MELAsettings["propscheme"])
+                    self.out.fillBranch("LHEMela_nativeProbprop", nativeprob_prop)
+            elif self.MELAsettings["computeprop"]:
+                nativeprob = self.MELA.getXPropagator(self.MELAsettings["propscheme"])
+            
+            self.out.fillBranch("LHEMela_nativeProb", nativeprob)
+            
+        
+
+        self.MELA.resetInputEvent()
+        
+       
+        
+        
         return True
     
 

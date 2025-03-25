@@ -71,7 +71,17 @@ CANDSTOSTORE = getConf("CANDSTOSTORE", 'BestCandOnly') # which candidates should
                                                   # Note that this option does not affect the ZLLCand collection: for each
                                                   # CR that is activated, only the best candidate is stored.
 
-mela = initializeMELA(runMELA, LEPTON_SETUP)
+# MELA Parameters: 
+MATRIXELEMENT = getConf("matrixelement", "")
+PROCESS = getConf("process", "")
+COUPLINGS = getConf("couplings", "")
+PRODUCTION = getConf("production", "")
+PROD = getConf("prod", False)
+DEC = getConf("dec", False)
+COMPUTEPROP = getConf("computeprop", False)
+
+mela, melaSettings = initializeMELA(runMELA, LEPTON_SETUP, matrixelement = MATRIXELEMENT, process = PROCESS, couplings = COUPLINGS, production = PRODUCTION, prod = PROD, dec = DEC, computeprop = COMPUTEPROP)
+
                                                   
 ### Definition of analysis cuts
 cuts = dict(
@@ -231,8 +241,8 @@ if IsMC:
                                                'puWeight*',
                                                'ggH_NNLOPS_Weight',
                                                'overallEventWeight',
-                                               'Pileup_nTrueInt'
-                                               'LHEPart*'
+                                               'Pileup_nTrueInt',
+                                               'LHEPart*',
                                                'LHEMela*'
                                                ],
                                       #Stop further processing for events that don't have 4 reco leps
@@ -241,7 +251,7 @@ if IsMC:
                         ] + pre_sequence
         if NANOVERSION >= 15: 
             insertBefore(pre_sequence, 'cloneBranches', LHEFiller())
-            insertBefore(pre_sequence, 'cloneBranches', genAngProbFiller(mela))
+            insertBefore(pre_sequence, 'cloneBranches', genAngProbFiller(mela, melaSettings))
 
     else : # Add them at the end, so that they are run only for selected events
         post_sequence.extend([puWeight(LEPTON_SETUP,DATA_TAG),
@@ -305,7 +315,7 @@ if IsMC:
                           'keep HTXS_njets30',
                           'keep Pileup*',
                           'keep GenJet*',
-                          #'keep LHEMela*', 
+                          'keep LHEMela*', 
                         #  'keep LHEPart*',
                           #'keep Generator*',
                           #'keep PV*',
