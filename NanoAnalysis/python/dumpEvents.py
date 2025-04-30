@@ -14,11 +14,11 @@ from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collect
 charge={1:"+", -1:"-"}
 
 class dumpEvents(Module):
-    def __init__(self, level=1, nanoVersion=11):
+    def __init__(self, level=1, nanoVersion=11, printTrigger=False):
         self.writeHistFile = False
         self.level=level
         self.nanoVersion=nanoVersion
-        self.printTrigger = True
+        self.printTrigger = printTrigger
         
     def analyze(self, event):
 

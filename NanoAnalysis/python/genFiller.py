@@ -11,6 +11,7 @@ from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collect
 from PhysicsTools.HeppyCore.utils.deltar import deltaR
 from ROOT import TLorentzVector
 from ZZAnalysis.NanoAnalysis.tools import Mother
+import Mela
 
 ZMASS = 91.1876
 MIN_MZ1 = 40
@@ -23,9 +24,10 @@ class genFiller(Module):
         Module that builds gen-level Z and ZZ candidates
         that satisfy the fiducial selection for the HZZ analysis.
     '''
-    def __init__(self, dump=False):
+    def __init__(self, MELA, dump=False):
         print("***genFiller", flush=True)
         self.printGenHist = dump # print MC history
+        self.MELA = MELA
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
@@ -64,6 +66,12 @@ class genFiller(Module):
         self.out.branch("FidZ1_mass", "F")
         self.out.branch("FidZ2_mass", "F")
         self.out.branch("passedFiducial", "B", title="event passes fiducial selection at gen level")
+        # Angular variables
+        self.out.branch("FidZZ_costheta1", "F", limitedPrecision=12)
+        self.out.branch("FidZZ_costheta2", "F", limitedPrecision=12)
+        self.out.branch("FidZZ_Phi", "F", limitedPrecision=12)
+        self.out.branch("FidZZ_costhetastar", "F", limitedPrecision=12)
+        self.out.branch("FidZZ_Phi1", "F", limitedPrecision=12)
 
     def dressLeptons(self, genpart, packedpart):
         '''
@@ -462,6 +470,41 @@ class genFiller(Module):
         self.out.fillBranch("FidZ1_mass", z1mass)
         self.out.fillBranch("FidZ2_mass", z2mass)
 
+    def computeMELAangles(self, ZIdx_fidSel, Leptons, dressedLeptons_id):
+        '''
+        Compute and store MELA angles using FidDressedLeps and associated indices.
+        '''
+        z1l1idx = ZIdx_fidSel[0]
+        z1l2idx = ZIdx_fidSel[1]
+        z2l1idx = ZIdx_fidSel[2]
+        z2l2idx = ZIdx_fidSel[3]
+
+        # Get leptons and their IDs using the provided arrays
+        leptons = [Leptons[z1l1idx], Leptons[z1l2idx], Leptons[z2l1idx], Leptons[z2l2idx]]
+        pdg_ids = [dressedLeptons_id[z1l1idx], dressedLeptons_id[z1l2idx], dressedLeptons_id[z2l1idx], dressedLeptons_id[z2l2idx]]
+
+        # Create MELA particle collection
+        daughters = Mela.SimpleParticleCollection_t()
+        for lep, pdgId in zip(leptons, pdg_ids):
+            daughters.add_particle(
+                Mela.SimpleParticle_t(
+                    pdgId,
+                    lep.Px(), lep.Py(), lep.Pz(), lep.E()
+                )
+            )
+
+        # Compute angles
+        self.MELA.setInputEvent(daughters, None, None, 0)
+        qH, mZ1, mZ2, helcosthetaZ1, helcosthetaZ2, helPhi, costhetastar, phistarZ1 = self.MELA.computeDecayAngles()
+        self.MELA.resetInputEvent()
+
+        # Fill output branches
+        self.out.fillBranch("FidZZ_costheta1", helcosthetaZ1)
+        self.out.fillBranch("FidZZ_costheta2", helcosthetaZ2)
+        self.out.fillBranch("FidZZ_Phi", helPhi)
+        self.out.fillBranch("FidZZ_costhetastar", costhetastar)
+        self.out.fillBranch("FidZZ_Phi1", phistarZ1)
+
     def analyze(self, event):
         '''
             Process event and return True (go to next module)
@@ -560,5 +603,15 @@ class genFiller(Module):
         self.out.fillBranch("FidZ_DauPdgId", zdau_pdg_id)
         self.out.fillBranch("FidZ_MomPdgId", zmom_pdg_id)
         self.out.fillBranch("passedFiducial", passFidSel)
+
+        if self.MELA is not None and ZCands_fidSel[0] != -1:
+            self.computeMELAangles(ZIdx_fidSel, Leptons, dressedLeptons_id)
+        else:
+            # For events that do not pass the fiducial selection, variables are set to -99
+            self.out.fillBranch("FidZZ_costheta1", -99)
+            self.out.fillBranch("FidZZ_costheta2", -99)
+            self.out.fillBranch("FidZZ_Phi", -99)
+            self.out.fillBranch("FidZZ_costhetastar", -99)
+            self.out.fillBranch("FidZZ_Phi1", -99)
 
         return True

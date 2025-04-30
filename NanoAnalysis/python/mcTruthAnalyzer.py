@@ -13,7 +13,7 @@ from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collect
 from PhysicsTools.HeppyCore.utils.deltar import deltaR
 from ROOT import TLorentzVector
 
-from ZZAnalysis.NanoAnalysis.tools import Mother, getParentID
+from ZZAnalysis.NanoAnalysis.tools import Mother, getParentID, lhe_logger
 
 class mcTruthAnalyzer(Module):
     def __init__(self, dump=False):
@@ -40,7 +40,8 @@ class mcTruthAnalyzer(Module):
         ### Print Gen history and LHE particles.
         ### See also: https://github.com/cms-nanoAOD/nanoAOD-tools/blob/master/python/postprocessing/modules/common/hepmcDump.py
         if self.printGenHist :
-            lhe_logger(genpart)
+            LHE=Collection(event,"LHEPart")
+            lhe_logger(genpart, LHE)
 
         ## Search for gen FSR from Z->ll (e, mu)
         genFSRIdxs = []

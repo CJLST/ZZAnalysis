@@ -546,7 +546,19 @@ class MyBatchManager:
 
 
        elif inputType=="nanoAOD" :
-            cfgFile.write('from ZZAnalysis.NanoAnalysis.tools import setConf\n')
+            cfgFile.write('from ZZAnalysis.NanoAnalysis.tools import getConf, setConf\n')
+            # Copy fragments in their specified order
+            for fragment in pyFragments:
+                try: 
+                    icfg = open(f"pyFragments/{fragment}")
+                except :
+                    print(f"ERROR: fragment not found: {fragment}")
+                    exit(1)
+                cfgFile.write(f"### From pyFragment {fragment}:\n")
+                cfgFile.write(icfg.read())
+                cfgFile.write("\n")
+                icfg.close()
+            # Add variables from the ::variables field in the csv (possibly overriding the setting in fragments)
             for var in variables.keys():
                 val = variables[var]
                 if type(val) == str :
@@ -557,7 +569,7 @@ class MyBatchManager:
             if cfgFileName == '' : # Default: run nanoAODTools
                 cfgFile.write('from ZZAnalysis.NanoAnalysis.nanoZZ4lAnalysis import *\n')
                 cfgFile.write('p.run()\n')
-            else :
+            else : # use the specified script to be run
                 icfg = open(cfgFileName)
                 cfgFile.write(icfg.read())
                 icfg.close()

@@ -8,11 +8,19 @@ def getConf(name,default=None):
     global _myConf
     return _myConf[name] if name in _myConf else default
 
-def setConf(name,value=True):
+def setConf(name,value=True, append=False):
     global _myConf
-    _myConf[name] = value
-"root://cms-xrd-global.cern.ch/"
-
+    if append == True :
+        if name in _myConf :
+            if type(_myConf[name]) == list :
+                _myConf[name].append(value)
+            else :
+                print(f"ERROR setConf: cannot append to variable {name}, since it is not a list")
+                exit(1)
+        else :
+            _myConf[name] = [value]
+    else : # replace value, if already set
+        _myConf[name] = value
 
 # Insert a module in a processing sequence before the specified module
 def insertBefore(sequence, moduleName, module) :

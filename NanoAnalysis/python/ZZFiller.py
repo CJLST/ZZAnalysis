@@ -115,10 +115,10 @@ class ZZFiller(Module):
         self.out.branch("nZCand", "I", title="Z candidates passing the full H4l selection")
         self.out.branch("ZCand_mass", "F", lenVar="nZCand", title="mass")
         self.out.branch("ZCand_pt", "F", lenVar="nZCand")
-        self.out.branch("ZCand_eta", "F", lenVar="nZCand")
-        self.out.branch("ZCand_rapidity", "F", lenVar="nZCand")
-        self.out.branch("ZCand_phi", "F", lenVar="nZCand")
-        self.out.branch("ZCand_flav", "F", lenVar="nZCand", title="Product of the pdgIds of the 2 daughters")
+        self.out.branch("ZCand_eta", "F", lenVar="nZCand", limitedPrecision=16)
+        self.out.branch("ZCand_rapidity", "F", lenVar="nZCand", limitedPrecision=12)
+        self.out.branch("ZCand_phi", "F", lenVar="nZCand", limitedPrecision=16)
+        self.out.branch("ZCand_flav", "I", lenVar="nZCand", title="Product of the pdgIds of the 2 daughters")
         self.out.branch("ZCand_l1Idx", "S", lenVar="nZCand", title="index of 1st daughter in Electron+Muon merged collection")
         self.out.branch("ZCand_l2Idx", "S", lenVar="nZCand", title="index of 2nd daughter in Electron+Muon merged collection")
         self.out.branch("ZCand_fsr1Idx", "S", lenVar="nZCand", title="index of FSR associated to l1 (-1 if none)")
@@ -128,16 +128,16 @@ class ZZFiller(Module):
         self.out.branch("nZZCand", "I", title="ZZ candidates passing the full H4l selection")
         self.out.branch("ZZCand_mass", "F", lenVar="nZZCand", title="mass")
         self.out.branch("ZZCand_pt", "F", lenVar="nZZCand")
-        self.out.branch("ZZCand_eta", "F", lenVar="nZZCand")
-        self.out.branch("ZZCand_rapidity", "F", lenVar="nZZCand")
-        self.out.branch("ZZCand_phi", "F", lenVar="nZZCand")
+        self.out.branch("ZZCand_eta", "F", lenVar="nZZCand", limitedPrecision=16)
+        self.out.branch("ZZCand_rapidity", "F", lenVar="nZZCand", limitedPrecision=12)
+        self.out.branch("ZZCand_phi", "F", lenVar="nZZCand", limitedPrecision=16)
         self.out.branch("ZZCand_massPreFSR", "F", lenVar="nZZCand", title="mass without FSR photons")
         self.out.branch("ZZCand_Z1mass", "F", lenVar="nZZCand", title="Z1 mass")
         self.out.branch("ZZCand_Z1flav", "I", lenVar="nZZCand", title="Product of the pdgIds of the 2 Z1 daughters")
         self.out.branch("ZZCand_Z2mass", "F", lenVar="nZZCand", title="Z2 mass")
         self.out.branch("ZZCand_Z2flav", "I", lenVar="nZZCand", title="Product of the pdgIds of the 2 Z2 daughters")
-        self.out.branch("ZZCand_KD", "F", lenVar="nZZCand", title="Kinematic discriminant for the choice of best candidate")
-        self.out.branch("ZZCand_Z2sumpt", "F", lenVar="nZZCand", title="sum of Z2 daughter pts (used in the choice of best candidate)")
+        self.out.branch("ZZCand_KD", "F", lenVar="nZZCand", title="Kinematic discriminant for the choice of best candidate", limitedPrecision=12)
+        self.out.branch("ZZCand_Z2sumpt", "F", lenVar="nZZCand", title="sum of Z2 daughter pts (used in the choice of best candidate)", limitedPrecision=10)
         # Note: lepton indices are numbered for leps=list(electrons)+list(muons) and run up to nlep=len(leps);
         # no special ordering of l1, l2 is applied
         self.out.branch("ZZCand_Z1l1Idx", "S", lenVar="nZZCand", title="Index of 1st Z1 daughter in the Electron+Muon merged collection")
@@ -151,18 +151,18 @@ class ZZFiller(Module):
             self.out.branch("ZLLCand_mass", "F", lenVar="nZLLCand")
             self.out.branch("ZLLCand_massPreFSR", "F", lenVar="nZLLCand")
             self.out.branch("ZLLCand_pt", "F", lenVar="nZLLCand")
-            self.out.branch("ZLLCand_eta", "F", lenVar="nZLLCand")
-            self.out.branch("ZLLCand_rapidity", "F", lenVar="nZLLCand")
-            self.out.branch("ZLLCand_phi", "F", lenVar="nZLLCand")
+            self.out.branch("ZLLCand_eta", "F", lenVar="nZLLCand", limitedPrecision=16)
+            self.out.branch("ZLLCand_rapidity", "F", lenVar="nZLLCand", limitedPrecision=12)
+            self.out.branch("ZLLCand_phi", "F", lenVar="nZLLCand", limitedPrecision=16)
             self.out.branch("ZLLCand_Z1mass", "F", lenVar="nZLLCand")
             self.out.branch("ZLLCand_Z1flav", "I", lenVar="nZLLCand")
             self.out.branch("ZLLCand_Z2mass", "F", lenVar="nZLLCand")
-            self.out.branch("ZLLCand_Z2flav", "S", lenVar="nZLLCand")
+            self.out.branch("ZLLCand_Z2flav", "I", lenVar="nZLLCand")
             self.out.branch("ZLLCand_Z1l1Idx", "S", lenVar="nZLLCand") 
             self.out.branch("ZLLCand_Z1l2Idx", "S", lenVar="nZLLCand")
             self.out.branch("ZLLCand_Z2l1Idx", "S", lenVar="nZLLCand")
             self.out.branch("ZLLCand_Z2l2Idx", "S", lenVar="nZLLCand")
-            self.out.branch("ZLLCand_KD", "F", lenVar="nZLLCand")
+            self.out.branch("ZLLCand_KD", "F", lenVar="nZLLCand", limitedPrecision=12)
             self.out.branch("ZLLbestSSIdx", "S", title="best candidate for the SS CR")
             self.out.branch("ZLLbest2P2FIdx", "S", title="best candidate for the 2P2F CR")
             self.out.branch("ZLLbest3P1FIdx", "S", title="best candidate for the 3P1F CR")
@@ -631,6 +631,7 @@ class ZZFiller(Module):
                     passDeltaR = False
                     break
 
+        if self.DEBUG : print(f"ZZ: Z1: {Z1.M}, Z2: {Z2.M}, pTs: {lepPts}, passDR: {passDeltaR} passQCD: {passQCD}")
         if not (passQCD and passDeltaR) : return None
 
         # trigger acceptance cuts (20,10 GeV)
@@ -647,7 +648,9 @@ class ZZFiller(Module):
                 mZa=(Z1.l1DressedP4+Z2.l2DressedP4).M()
                 mZb=(Z1.l2DressedP4+Z2.l1DressedP4).M()
             if (abs(mZa-self.ZmassValue)>abs(mZb-self.ZmassValue)) : mZa, mZb = mZb, mZa
-            if (abs(mZa-self.ZmassValue)<abs(Z1.M-self.ZmassValue)) and mZb < 12.: return None
+            if (abs(mZa-self.ZmassValue)<abs(Z1.M-self.ZmassValue)) and mZb < 12.:
+                if self.DEBUG : print(f"  fails smart cut: {mZa}, {mZb}")
+                return None
 
         #Compute D_bkg^kin
         p_GG_SIG_ghg2_1_ghz1_1_JHUGen = 0.

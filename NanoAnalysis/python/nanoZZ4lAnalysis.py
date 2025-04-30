@@ -219,6 +219,10 @@ post_sequence = []
 if IsMC:
     from ZZAnalysis.NanoAnalysis.modules.puWeightProducer import *
     from ZZAnalysis.NanoAnalysis.mcTruthAnalyzer import *
+    from ZZAnalysis.NanoAnalysis.lepDataMCWeight import *
+
+    insertBefore(reco_sequence, 'ZZExtraFiller', lepDataMCWeight(LEPTON_SETUP, DATA_TAG))
+    
     # Weights computation, to be placed in pre or post sequences based on the configuration
     weights = weightFiller(XSEC, APPLY_K_NNLOQCD_ZZGG, APPLY_K_NNLOQCD_ZZQQB, APPLY_K_NNLOEW_ZZQQB, APPLY_QCD_GGF_UNCERT)
 
@@ -229,7 +233,7 @@ if IsMC:
         from ZZAnalysis.NanoAnalysis.cloneBranches import *
         pre_sequence = [puWeight(LEPTON_SETUP, DATA_TAG),
                         weights, 
-                        genFiller(dump=False),
+                        genFiller(mela, dump=False),
                         cloneBranches(treeName='AllEvents',
                                       varlist=['run', 'luminosityBlock', 'event',
                                                'GenDressedLepton_*',
@@ -242,8 +246,8 @@ if IsMC:
                                                'ggH_NNLOPS_Weight',
                                                'overallEventWeight',
                                                'Pileup_nTrueInt',
-                                               'LHEPart*',
-                                               'LHEMela*'
+                                               'LHEPart*', #FIXME: should be removed from AllEvents once development is completed
+                                               'LHEMela*',
                                                ],
                                       #Stop further processing for events that don't have 4 reco leps
                                       continueFor = postPresel
@@ -256,7 +260,7 @@ if IsMC:
     else : # Add them at the end, so that they are run only for selected events
         post_sequence.extend([puWeight(LEPTON_SETUP,DATA_TAG),
                               weights,
-                              #genFiller(dump=False), # Not required when ADD_ALLEVENTS = False?
+                              #genFiller(mela, dump=False), # Not required when ADD_ALLEVENTS = False?
                               ])
 else : # Data
     post_sequence = []
@@ -314,8 +318,8 @@ if IsMC:
                           'keep HTXS_Higgs*',
                           'keep HTXS_njets30',
                           'keep Pileup*',
-                          'keep GenJet*',
-                          'keep LHEMela*', 
+                          'keep GenJet_*',
+                          #'keep LHEMela*', 
                         #  'keep LHEPart*',
                           #'keep Generator*',
                           #'keep PV*',

@@ -46,7 +46,7 @@ if __name__ == '__main__' :
             data = line.split(",")
             if header:            
                 if len(data) != len(header):
-                    raise ValueError, "Inconsistent number of columns in data '" + line + "', expected header = " + str(header)
+                    raise ValueError("Inconsistent number of columns in data '" + line + "', expected header = " + str(header))
 
                 dataset = data[datasetIdx]
                 instance = 'prod/global'
@@ -56,21 +56,21 @@ if __name__ == '__main__' :
                 runner = cmsFileManip()
                 cmdout, _, _ = runner.runCommand(run_command)
                 result = []
-                for line in cmdout.split('\n'):
+                for line in cmdout.decode('utf-8').split('\n'):
                     if line != "" : result.append(line)
                 if len(result) != 1 :
                     print("ERROR: das output", cmdout, "contains >1 child") # FIXME extend script to ask for choice
                     exit(1)                    
                 data[datasetIdx] = result[0]
 
-                # Now find if nanoAODs are accessible at CERN
-                cmd = '"site dataset='+ data[datasetIdx] +' instance=%s"'%instance
-                command = ['/cvmfs/cms.cern.ch/common/dasgoclient' , '--limit=0', '--query', cmd]
-                run_command = ' '.join(command)
-                cmdout, _, _ = runner.runCommand(run_command)
-                for line in cmdout.split('\n'):
-                    if "CERN" in line :
-                        print("NOTE:", data[0], "available at", line)
+#                # Now find if nanoAODs are accessible at CERN
+#                cmd = '"site dataset='+ data[datasetIdx] +' instance=%s"'%instance
+#                command = ['/cvmfs/cms.cern.ch/common/dasgoclient' , '--limit=0', '--query', cmd]
+#                run_command = ' '.join(command)
+#                cmdout, _, _ = runner.runCommand(run_command)
+#                for line in cmdout.decode('utf-8').split('\n'):
+#                    if "CERN" in line :
+#                        print("NOTE:", data[0], "available at", line)
 
 #                data[prefixIdx] = "dbs"
                 data[patternIdx] = "root://cms-xrd-global.cern.ch/"

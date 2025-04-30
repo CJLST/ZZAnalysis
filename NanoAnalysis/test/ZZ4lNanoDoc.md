@@ -21,17 +21,20 @@ Jump to:
 | [**Flag**](#flag) | Trigger/flag bit (process: PAT) |
 | [**FsrPhoton**](#fsrphoton) | Final state radiation photons emitted by muons or electrons |
 | [**GenDressedLepton**](#gendressedlepton) | Dressed leptons from Rivet-based ParticleLevelProducer |
+| [**GenJet**](#genjet) | slimmedGenJets, i.e. ak4 Jets made with visible genparticles |
 | [**GenPart**](#genpart) | interesting gen particles  |
 | [**GenZZ**](#genzz) | product of pdgId of the four gen leptons from ZZ decay |
 | [**Generator**](#generator) | MC generator weight |
-| [**HLT**](#hlt) | Trigger/flag bit (process: HLT) |
+| [**HLT**](#hlt) | pass ZZ Ele triggers |
 | [**HTXS**](#htxs) | number of jets with pt>30 GeV as identified in HTXS |
 | [**Jet**](#jet) | slimmedJetsPuppi, i.e. ak4 PFJets Puppi with JECs applied, after basic selection (pt > 15) |
-| [**JetLeadingIdx**](#jetleadingidx) | JetLeadingIdx/S |
-| [**JetSubleadingIdx**](#jetsubleadingidx) | JetSubleadingIdx/S |
+| [**JetLeadingIdx**](#jetleadingidx) | index of leading jet after cleaning |
+| [**JetSubleadingIdx**](#jetsubleadingidx) | index of subleading jet after cleaning |
+| [**KFactor**](#kfactor) | EW k-factor for qqZZ |
 | [**LHEPdfWeight**](#lhepdfweight) | LHE pdf variation weights (w_var / w_nominal) for LHA IDs 325300 - 325402 |
 | [**LHEReweightingWeight**](#lhereweightingweight) |  |
 | [**LHEScaleWeight**](#lhescaleweight) | LHE scale variation weights (w_var / w_nominal); [0] is renscfact=0.5d0 facscfact=0.5d0 ; [1] is renscfact=0.5d0 facscfact=1d0 ; [2] is renscfact=0.5d0 facscfact=2d0 ; [3] is renscfact=1d0 facscfact=0.5d0 ; [4] is renscfact=1d0 facscfact=1d0 ; [5] is renscfact=1d0 facscfact=2d0 ; [6] is renscfact=2d0 facscfact=0.5d0 ; [7] is renscfact=2d0 facscfact=1d0 ; [8] is renscfact=2d0 facscfact=2d0  |
+| [**Lepton**](#lepton) | Merged Electron + Muon collection |
 | [**MET**](#met) | pt |
 | [**Muon**](#muon) | slimmedMuons after basic selection (pt > 15 \|\| (pt > 3 && (passed("CutBasedIdLoose") \|\| passed("SoftCutBasedId") \|\| passed("SoftMvaId") \|\| passed("CutBasedIdGlobalHighPt") \|\| passed("CutBasedIdTrkHighPt")))) |
 | [**PSWeight**](#psweight) | PS weights (w_var / w_nominal);   [0] is ISR=2 FSR=1; [1] is ISR=1 FSR=2[2] is ISR=0.5 FSR=1; [3] is ISR=1 FSR=0.5; |
@@ -44,16 +47,18 @@ Jump to:
 | [**ZLLbestSIPCRIdx**](#zllbestsipcridx) | best candidate for the SIP CR |
 | [**ZLLbestSSIdx**](#zllbestssidx) | best candidate for the SS CR |
 | [**ZZCand**](#zzcand) | ZZ candidates passing the full H4l selection |
-| [**bestCandIdx**](#bestcandidx) | Seleced ZZ candidate in the event |
+| [**bestCandIdx**](#bestcandidx) | Index of seleced ZZCand candidate in the event |
 | [**bestZIdx**](#bestzidx) | Best Z in the event (mass closest to mZ) |
 | [**event**](#event) | event/l |
 | [**genWeight**](#genweight) | generator weight |
 | [**ggH**](#ggh) | Reweighting for ggH as a function of njets and pT |
 | [**luminosityBlock**](#luminosityblock) | luminosityBlock/i |
-| [**nCleanedJetsPt30**](#ncleanedjetspt30) | nCleanedJetsPt30/B |
+| [**nCleanedJetsPt30**](#ncleanedjetspt30) | number of cleaned jets above 30 GeV |
 | [**overallEventWeight**](#overalleventweight) | overallEventWeight/F |
 | [**passedFiducial**](#passedfiducial) | event passes fiducial selection at gen level |
 | [**puWeight**](#puweight) | puWeight/F |
+| [**puWeightDn**](#puweightdn) | puWeightDn/F |
+| [**puWeightUp**](#puweightup) | puWeightUp/F |
 | [**run**](#run) | run/i |
 
 ## Events tree detail
@@ -70,6 +75,7 @@ Jump to:
 | **Electron_convVeto** | Bool_t| pass conversion veto |
 | **Electron_cutBased** | UChar_t| cut-based ID RunIII Winter22 (0:fail, 1:veto, 2:loose, 3:medium, 4:tight) |
 | **Electron_cutBased_HEEP** | Bool_t| cut-based HEEP ID |
+| **Electron_dataMC** | Float_t| data/MC correction |
 | **Electron_deltaEtaSC** | Float_t| delta eta (SC,ele) with sign |
 | **Electron_dr03EcalRecHitSumEt** | Float_t| Non-PF Ecal isolation within a delta R cone of 0.3 with electron pt > 35 GeV |
 | **Electron_dr03HcalDepth1TowerSumEt** | Float_t| Non-PF Hcal isolation within a delta R cone of 0.3 with electron pt > 35 GeV |
@@ -164,10 +170,15 @@ Jump to:
 ### <a id='fidzz'></a>FidZZ [<sup>[back to top]</sup>](#events-tree-content)
 | Object property | Type | Description |
 | - | - | - |
+| **FidZZ_Phi** | Float_t| FidZZ_Phi/F |
+| **FidZZ_Phi1** | Float_t| FidZZ_Phi1/F |
 | **FidZZ_Z1l1Idx** | Short_t(index to Z1L1)| Index of 1st Z1 daughter in FidDressedLeps collection |
 | **FidZZ_Z1l2Idx** | Short_t(index to Z1L2)| Index of 2nd Z1 daughter in FidDressedLeps collection |
 | **FidZZ_Z2l1Idx** | Short_t(index to Z2L1)| Index of 1st Z2 daughter in FidDressedLeps collection |
 | **FidZZ_Z2l2Idx** | Short_t(index to Z2L2)| Index of 2nd Z1 daughter in FidDressedLeps collection |
+| **FidZZ_costheta1** | Float_t| FidZZ_costheta1/F |
+| **FidZZ_costheta2** | Float_t| FidZZ_costheta2/F |
+| **FidZZ_costhetastar** | Float_t| FidZZ_costhetastar/F |
 | **FidZZ_eta** | Float_t| FidZZ_eta/F |
 | **FidZZ_mass** | Float_t| mass of gen ZZ made with FidDressedLeps |
 | **FidZZ_phi** | Float_t| FidZZ_phi/F |
@@ -190,6 +201,7 @@ Jump to:
 | **Flag_HBHENoiseFilter** | Bool_t| Trigger/flag bit (process: PAT) |
 | **Flag_HBHENoiseIsoFilter** | Bool_t| Trigger/flag bit (process: PAT) |
 | **Flag_HcalStripHaloFilter** | Bool_t| Trigger/flag bit (process: PAT) |
+| **Flag_JetVetoed** | Int_t| Event veto flag from Jet Veto Map |
 | **Flag_METFilters** | Bool_t| Trigger/flag bit (process: PAT) |
 | **Flag_chargedHadronTrackResolutionFilter** | Bool_t| Trigger/flag bit (process: PAT) |
 | **Flag_ecalBadCalibFilter** | Bool_t| Trigger/flag bit (process: PAT) |
@@ -231,6 +243,17 @@ Jump to:
 | **GenDressedLepton_pt** | Float_t| pt |
 | **nGenDressedLepton** | Int_t| Dressed leptons from Rivet-based ParticleLevelProducer |
 
+### <a id='genjet'></a>GenJet [<sup>[back to top]</sup>](#events-tree-content)
+| Object property | Type | Description |
+| - | - | - |
+| **GenJet_eta** | Float_t| eta |
+| **GenJet_hadronFlavour** | UChar_t| flavour from hadron ghost clustering |
+| **GenJet_mass** | Float_t| mass |
+| **GenJet_partonFlavour** | Short_t| flavour from parton matching |
+| **GenJet_phi** | Float_t| phi |
+| **GenJet_pt** | Float_t| pt |
+| **nGenJet** | Int_t| slimmedGenJets, i.e. ak4 Jets made with visible genparticles |
+
 ### <a id='genpart'></a>GenPart [<sup>[back to top]</sup>](#events-tree-content)
 | Object property | Type | Description |
 | - | - | - |
@@ -262,186 +285,10 @@ Jump to:
 ### <a id='hlt'></a>HLT [<sup>[back to top]</sup>](#events-tree-content)
 | Object property | Type | Description |
 | - | - | - |
-| **HLT_DiMu4_Ele9_CaloIdL_TrackIdL_DZ_Mass3p8** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_DiMu9_Ele9_CaloIdL_TrackIdL** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_DoubleEle10_eta1p22_mMax6** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_DoubleEle24_eta2p1_WPTight_Gsf** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_DoubleEle25_CaloIdL_MW** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_DoubleEle27_CaloIdL_MW** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_DoubleEle33_CaloIdL_MW** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_DoubleEle4_eta1p22_mMax6** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_DoubleEle4p5_eta1p22_mMax6** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_DoubleEle5_eta1p22_mMax6** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_DoubleEle5p5_eta1p22_mMax6** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_DoubleEle6_eta1p22_mMax6** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_DoubleEle6p5_eta1p22_mMax6** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_DoubleEle7_eta1p22_mMax6** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_DoubleEle7p5_eta1p22_mMax6** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_DZ_PFHT350** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT350** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_DoubleEle8_eta1p22_mMax6** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_DoubleEle8p5_eta1p22_mMax6** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_DoubleEle9_eta1p22_mMax6** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_DoubleEle9p5_eta1p22_mMax6** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele115_CaloIdVT_GsfTrkIdT** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele12_CaloIdL_TrackIdL_IsoVL_PFJet30** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele135_CaloIdVT_GsfTrkIdT** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele15_IsoVVVL_PFHT450** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele15_IsoVVVL_PFHT450_CaloBTagDeepCSV_4p5** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele15_IsoVVVL_PFHT450_PFMET50** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele15_IsoVVVL_PFHT600** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele15_WPLoose_Gsf** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele17_CaloIdM_TrackIdM_PFJet30** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele20_WPLoose_Gsf** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele23_CaloIdL_TrackIdL_IsoVL_PFJet30** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele23_CaloIdM_TrackIdM_PFJet30** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele24_eta2p1_WPTight_Gsf_LooseDeepTauPFTauHPS30_eta2p1_CrossL1** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele24_eta2p1_WPTight_Gsf_TightChargedIsoPFTauHPS30_eta2p1_CrossL1** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele27_WPTight_Gsf** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele28_HighEta_SC20_Mass55** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele28_WPTight_Gsf** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele28_eta2p1_WPTight_Gsf_HT150** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele30_WPTight_Gsf** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele30_eta2p1_WPTight_Gsf_CentralPFJet35_EleCleaned** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele32_WPTight_Gsf** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele32_WPTight_Gsf_L1DoubleEG** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele35_WPTight_Gsf** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele35_WPTight_Gsf_L1EGMT** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele38_WPTight_Gsf** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele40_WPTight_Gsf** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele50_CaloIdVT_GsfTrkIdT_AK8PFJet230_SoftDropMass40** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele50_CaloIdVT_GsfTrkIdT_AK8PFJet230_SoftDropMass40_PFAK8ParticleNetBB0p35** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele50_IsoVVVL_PFHT450** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele8_CaloIdL_TrackIdL_IsoVL_PFJet30** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Ele8_CaloIdM_TrackIdM_PFJet30** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_IsoMu20** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_IsoMu20_eta2p1_LooseDeepTauPFTauHPS27_eta2p1_CrossL1** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_CrossL1** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_TightID_CrossL1** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_IsoMu24** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_IsoMu24_TwoProngs35** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_IsoMu24_eta2p1** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_IsoMu24_eta2p1_LooseDeepTauPFTauHPS180_eta2p1** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_IsoMu24_eta2p1_LooseDeepTauPFTauHPS30_eta2p1_CrossL1** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS20_eta2p1_SingleL1** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS30_L2NN_eta2p1_CrossL1** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS30_L2NN_eta2p1_PFJet60_CrossL1** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS30_L2NN_eta2p1_PFJet75_CrossL1** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS35_L2NN_eta2p1_CrossL1** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS45_L2NN_eta2p1_CrossL1** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_IsoMu27** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_IsoMu27_MediumDeepTauPFTauHPS20_eta2p1_SingleL1** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_IsoMu50_AK8PFJet230_SoftDropMass40** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_IsoMu50_AK8PFJet230_SoftDropMass40_PFAK8ParticleNetBB0p35** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu0_L1DoubleMu** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu10_TrkIsoVVL_DiPFJet40_DEta3p5_MJJ750_HTT350_PFMETNoMu60** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu12_DoublePFJets100_PFBTagDeepCSV_p71** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu12_DoublePFJets100_PFBTagDeepJet_p71** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu12_DoublePFJets200_PFBTagDeepCSV_p71** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu12_DoublePFJets200_PFBTagDeepJet_p71** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu12_DoublePFJets350_PFBTagDeepCSV_p71** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu12_DoublePFJets350_PFBTagDeepJet_p71** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu12_DoublePFJets40MaxDeta1p6_DoublePFBTagDeepCSV_p71** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu12_DoublePFJets40MaxDeta1p6_DoublePFBTagDeepJet_p71** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu12_DoublePFJets40_PFBTagDeepCSV_p71** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu12_DoublePFJets40_PFBTagDeepJet_p71** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu12_DoublePFJets54MaxDeta1p6_DoublePFBTagDeepCSV_p71** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu12_DoublePFJets54MaxDeta1p6_DoublePFBTagDeepJet_p71** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu12_IP6** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu12eta2p3** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu12eta2p3_PFJet40** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu15** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu15_IsoVVVL_PFHT450** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu15_IsoVVVL_PFHT450_CaloBTagDeepCSV_4p5** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu15_IsoVVVL_PFHT450_PFMET50** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu15_IsoVVVL_PFHT600** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu17** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu17_Photon30_IsoCaloId** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu17_TrkIsoVVL** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu18_Mu9_SameSign** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu19** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu19_TrkIsoVVL** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu19_TrkIsoVVL_Mu9_TrkIsoVVL** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu19_TrkIsoVVL_Mu9_TrkIsoVVL_DZ** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu19_TrkIsoVVL_Mu9_TrkIsoVVL_DZ_Mass3p8** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu19_TrkIsoVVL_Mu9_TrkIsoVVL_DZ_Mass8** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu20** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu20NoFiltersNoVtxDisplaced_Photon20_CaloCustomId** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu20_TkMu0_Phi** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu25_TkMu0_Onia** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu25_TkMu0_Phi** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu27** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu27_Ele37_CaloIdL_MW** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu30_TkMu0_Psi** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu30_TkMu0_Upsilon** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu37_Ele27_CaloIdL_MW** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu37_TkMu27** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu38NoFiltersNoVtxDisplaced_Photon38_CaloIdL** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu3_L1SingleMu5orSingleMu7** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu3_PFJet40** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu3er1p5_PFJet100er2p5_PFMET100_PFMHT100_IDTight** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu3er1p5_PFJet100er2p5_PFMET70_PFMHT70_IDTight** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu3er1p5_PFJet100er2p5_PFMET80_PFMHT80_IDTight** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu3er1p5_PFJet100er2p5_PFMET90_PFMHT90_IDTight** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu3er1p5_PFJet100er2p5_PFMETNoMu100_PFMHTNoMu100_IDTight** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu3er1p5_PFJet100er2p5_PFMETNoMu70_PFMHTNoMu70_IDTight** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu3er1p5_PFJet100er2p5_PFMETNoMu80_PFMHTNoMu80_IDTight** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu3er1p5_PFJet100er2p5_PFMETNoMu90_PFMHTNoMu90_IDTight** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu43NoFiltersNoVtxDisplaced_Photon43_CaloIdL** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu43NoFiltersNoVtx_Photon43_CaloIdL** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu48NoFiltersNoVtx_Photon48_CaloIdL** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu4_L1DoubleMu** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu4_TrkIsoVVL_DiPFJet90_40_DEta3p5_MJJ750_HTT300_PFMETNoMu60** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu50** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu50_IsoVVVL_PFHT450** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu50_L1SingleMuShower** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu55** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu6HT240_DisplacedDijet30_Inclusive0PtrkShortSig5** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu6HT240_DisplacedDijet30_Inclusive1PtrkShortSig5_DisplacedLoose** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu6HT240_DisplacedDijet35_Inclusive0PtrkShortSig5** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu6HT240_DisplacedDijet35_Inclusive1PtrkShortSig5_DisplacedLoose** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu6HT240_DisplacedDijet40_Inclusive0PtrkShortSig5** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu6HT240_DisplacedDijet40_Inclusive1PtrkShortSig5_DisplacedLoose** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu7p5_L2Mu2_Jpsi** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu7p5_L2Mu2_Upsilon** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu8** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu8_DiEle12_CaloIdL_TrackIdL** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT350** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT350_DZ** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu8_TrkIsoVVL** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu8_TrkIsoVVL_DiPFJet40_DEta3p5_MJJ750_HTT300_PFMETNoMu60** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_CaloDiJet30** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_CaloDiJet30_CaloBtagDeepCSV_1p5** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_PFDiJet30** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_PFDiJet30_PFBTagParticleNet_2BTagSum0p65** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_PFDiJet30_PFBtagDeepCSV_1p5** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_PFDiJet30_PFBtagDeepJet_1p5** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_QuadPFJet70_50_40_30** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_QuadPFJet70_50_40_30_PFBTagParticleNet_2BTagSum0p65** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_TripleMu_10_5_5_DZ** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_TripleMu_12_10_5** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_TripleMu_5_3_3_Mass3p8_DCA** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_TripleMu_5_3_3_Mass3p8_DZ** | Bool_t| Trigger/flag bit (process: HLT) |
-| **HLT_passZZ4l** | Bool_t| HLT_passZZ4l/O |
-| **HLT_passZZ4lEle** | Bool_t| HLT_passZZ4lEle/O |
-| **HLT_passZZ4lMu** | Bool_t| HLT_passZZ4lMu/O |
-| **HLT_passZZ4lMuEle** | Bool_t| HLT_passZZ4lMuEle/O |
+| **HLT_passZZ4l** | Bool_t| pass ZZ triggers (with PD precedence vetos) |
+| **HLT_passZZ4lEle** | Bool_t| pass ZZ Ele triggers |
+| **HLT_passZZ4lMu** | Bool_t| pass ZZ Muon triggers |
+| **HLT_passZZ4lMuEle** | Bool_t| pass ZZ MuEle triggers |
 
 ### <a id='htxs'></a>HTXS [<sup>[back to top]</sup>](#events-tree-content)
 | Object property | Type | Description |
@@ -456,7 +303,8 @@ Jump to:
 | **Jet_PNetRegPtRawCorr** | Float_t| ParticleNet universal flavor-aware visible pT regression (no neutrinos), correction relative to raw jet pT |
 | **Jet_PNetRegPtRawCorrNeutrino** | Float_t| ParticleNet universal flavor-aware pT regression neutrino correction, relative to visible. To apply full regression, multiply raw jet pT by both PNetRegPtRawCorr and PNetRegPtRawCorrNeutrino. |
 | **Jet_PNetRegPtRawRes** | Float_t| ParticleNet universal flavor-aware jet pT resolution estimator, (q84 - q16)/2 |
-| **Jet_ZZMask** | Bool_t| Jet_ZZMask[nJet]/O |
+| **Jet_ZZLepEF** | Float_t| Fraction of jet pt carried by the vetoing leptons or FSR photons |
+| **Jet_ZZMask** | Bool_t| jet is vetoed by selected leptons or FSR photons |
 | **Jet_area** | Float_t| jet catchment area, for JECs |
 | **Jet_btagDeepFlavB** | Float_t| DeepJet b+bb+lepb tag discriminator |
 | **Jet_btagDeepFlavCvB** | Float_t| DeepJet c vs b+bb+lepb discriminator |
@@ -482,7 +330,8 @@ Jump to:
 | **Jet_hfcentralEtaStripSize** | Int_t| eta size of the central tower strip in HF (noise discriminating variable) |
 | **Jet_hfsigmaEtaEta** | Float_t| sigmaEtaEta for HF jets (noise discriminating variable) |
 | **Jet_hfsigmaPhiPhi** | Float_t| sigmaPhiPhi for HF jets (noise discriminating variable) |
-| **Jet_jetId** | UChar_t| Jet ID flag: bit2 is tight, bit3 is tightLepVeto |
+| **Jet_jetId** | UChar_t| Corrected Jet ID based on manual recipe for NanoAODv12 |
+| **Jet_jetIdOriginal** | UChar_t| Original Jet ID from NanoAOD |
 | **Jet_mass** | Float_t| mass |
 | **Jet_muEF** | Float_t| muon Energy Fraction |
 | **Jet_muonIdx1** | Short_t(index to Muon)| index of first matching muon |
@@ -498,19 +347,34 @@ Jump to:
 | **Jet_phi** | Float_t| phi |
 | **Jet_pt** | Float_t| pt |
 | **Jet_rawFactor** | Float_t| 1 - Factor to get back to raw pT |
+| **Jet_scaleDn_mass** | Float_t| Jet_scaleDn_mass[nJet]/F |
+| **Jet_scaleDn_pt** | Float_t| Jet_scaleDn_pt[nJet]/F |
+| **Jet_scaleUp_mass** | Float_t| Jet_scaleUp_mass[nJet]/F |
+| **Jet_scaleUp_pt** | Float_t| Jet_scaleUp_pt[nJet]/F |
+| **Jet_smearDn_mass** | Float_t| Jet_smearDn_mass[nJet]/F |
+| **Jet_smearDn_pt** | Float_t| Jet_smearDn_pt[nJet]/F |
+| **Jet_smearUp_mass** | Float_t| Jet_smearUp_mass[nJet]/F |
+| **Jet_smearUp_pt** | Float_t| Jet_smearUp_pt[nJet]/F |
 | **Jet_svIdx1** | Short_t(index to Sv)| index of first matching secondary vertex |
 | **Jet_svIdx2** | Short_t(index to Sv)| index of second matching secondary vertex |
+| **Jet_uncorrected_mass** | Float_t| Jet_uncorrected_mass[nJet]/F |
+| **Jet_uncorrected_pt** | Float_t| Jet_uncorrected_pt[nJet]/F |
 | **nJet** | Int_t| slimmedJetsPuppi, i.e. ak4 PFJets Puppi with JECs applied, after basic selection (pt > 15) |
 
 ### <a id='jetleadingidx'></a>JetLeadingIdx [<sup>[back to top]</sup>](#events-tree-content)
 | Object property | Type | Description |
 | - | - | - |
-| **JetLeadingIdx** | Short_t(index to Jetleading)| JetLeadingIdx/S |
+| **JetLeadingIdx** | Short_t(index to Jetleading)| index of leading jet after cleaning |
 
 ### <a id='jetsubleadingidx'></a>JetSubleadingIdx [<sup>[back to top]</sup>](#events-tree-content)
 | Object property | Type | Description |
 | - | - | - |
-| **JetSubleadingIdx** | Short_t(index to Jetsubleading)| JetSubleadingIdx/S |
+| **JetSubleadingIdx** | Short_t(index to Jetsubleading)| index of subleading jet after cleaning |
+
+### <a id='kfactor'></a>KFactor [<sup>[back to top]</sup>](#events-tree-content)
+| Object property | Type | Description |
+| - | - | - |
+| **KFactor_EW_qqZZ_Weight** | Float_t| EW k-factor for qqZZ |
 
 ### <a id='lhepdfweight'></a>LHEPdfWeight [<sup>[back to top]</sup>](#events-tree-content)
 | Object property | Type | Description |
@@ -530,6 +394,19 @@ Jump to:
 | **LHEScaleWeight** | Float_t| LHE scale variation weights (w_var / w_nominal); [0] is renscfact=0.5d0 facscfact=0.5d0 ; [1] is renscfact=0.5d0 facscfact=1d0 ; [2] is renscfact=0.5d0 facscfact=2d0 ; [3] is renscfact=1d0 facscfact=0.5d0 ; [4] is renscfact=1d0 facscfact=1d0 ; [5] is renscfact=1d0 facscfact=2d0 ; [6] is renscfact=2d0 facscfact=0.5d0 ; [7] is renscfact=2d0 facscfact=1d0 ; [8] is renscfact=2d0 facscfact=2d0  |
 | **nLHEScaleWeight** | Int_t|  |
 
+### <a id='lepton'></a>Lepton [<sup>[back to top]</sup>](#events-tree-content)
+| Object property | Type | Description |
+| - | - | - |
+| **Lepton_ZZFullSel** | Int_t| pass H4l full SR selection (FullID + isolation) |
+| **Lepton_ZZRelaxedId** | Int_t| pass H4l relaxed ID including SIP (base for SS and OS CRs) |
+| **Lepton_eta** | Float_t| eta |
+| **Lepton_fsrPhotonIdx** | Short_t(index to Fsrphoton)| Index of the lowest-dR/ET2 among associated FSR photons |
+| **Lepton_mass** | Float_t| mass |
+| **Lepton_pdgId** | Int_t| PDG code assigned by the event reconstruction (not by MC truth) |
+| **Lepton_phi** | Float_t| phi |
+| **Lepton_pt** | Float_t| pt |
+| **nLepton** | Int_t| Merged Electron + Muon collection |
+
 ### <a id='met'></a>MET [<sup>[back to top]</sup>](#events-tree-content)
 | Object property | Type | Description |
 | - | - | - |
@@ -547,6 +424,7 @@ Jump to:
 | **Muon_bsConstrainedPt** | Float_t| pT with beamspot constraint |
 | **Muon_bsConstrainedPtErr** | Float_t| pT error with beamspot constraint  |
 | **Muon_charge** | Int_t| electric charge |
+| **Muon_dataMC** | Float_t| data/MC correction |
 | **Muon_dxy** | Float_t| dxy (with sign) wrt first PV, in cm |
 | **Muon_dxyErr** | Float_t| dxy uncertainty, in cm |
 | **Muon_dxybs** | Float_t| dxy (with sign) wrt the beam spot, in cm |
@@ -582,6 +460,7 @@ Jump to:
 | **Muon_mvaTTH** | Float_t| TTH MVA lepton ID score |
 | **Muon_nStations** | UChar_t| number of matched stations with default arbitration (segment & track) |
 | **Muon_nTrackerLayers** | UChar_t| number of layers in the tracker |
+| **Muon_passID** | Bool_t| pass H4l muon ID |
 | **Muon_passIso** | Bool_t| Pass ZZ isolation cut |
 | **Muon_pdgId** | Int_t| PDG code assigned by the event reconstruction (not by MC truth) |
 | **Muon_pfIsoId** | UChar_t| PFIso ID from miniAOD selector (1=PFIsoVeryLoose, 2=PFIsoLoose, 3=PFIsoMedium, 4=PFIsoTight, 5=PFIsoVeryTight, 6=PFIsoVeryVeryTight) |
@@ -590,7 +469,7 @@ Jump to:
 | **Muon_pfRelIso03_chg** | Float_t| PF relative isolation dR=0.3, charged component |
 | **Muon_pfRelIso04_all** | Float_t| PF relative isolation dR=0.4, total (deltaBeta corrections) |
 | **Muon_phi** | Float_t| phi |
-| **Muon_pt** | Float_t| pt |
+| **Muon_pt** | Float_t| corrected pT |
 | **Muon_ptErr** | Float_t| ptError of the muon track |
 | **Muon_puppiIsoId** | UChar_t| PuppiIsoId from miniAOD selector (1=Loose, 2=Medium, 3=Tight) |
 | **Muon_segmentComp** | Float_t| muon segment compatibility |
@@ -598,13 +477,16 @@ Jump to:
 | **Muon_softId** | Bool_t| soft cut-based ID |
 | **Muon_softMva** | Float_t| soft MVA ID score |
 | **Muon_softMvaId** | Bool_t| soft MVA ID |
+| **Muon_stat_pt** | Float_t| correction uncertainty |
 | **Muon_svIdx** | Short_t(index to Sv)| index of matching secondary vertex |
+| **Muon_syst_pt** | Float_t| correction uncertainty |
 | **Muon_tightCharge** | UChar_t| Tight charge criterion using pterr/pt of muonBestTrack (0:fail, 2:pass) |
 | **Muon_tightId** | Bool_t| cut-based ID, tight WP |
 | **Muon_tkIsoId** | UChar_t| TkIso ID (1=TkIsoLoose, 2=TkIsoTight) |
 | **Muon_tkRelIso** | Float_t| Tracker-based relative isolation dR=0.3 for highPt, trkIso/tunePpt |
 | **Muon_triggerIdLoose** | Bool_t| TriggerIdLoose ID |
 | **Muon_tunepRelPt** | Float_t| TuneP relative pt, tunePpt/pt |
+| **Muon_uncorrected_pt** | Float_t| original (uncorrected) pT |
 | **nMuon** | Int_t| slimmedMuons after basic selection (pt > 15 \|\| (pt > 3 && (passed("CutBasedIdLoose") \|\| passed("SoftCutBasedId") \|\| passed("SoftMvaId") \|\| passed("CutBasedIdGlobalHighPt") \|\| passed("CutBasedIdTrkHighPt")))) |
 
 ### <a id='psweight'></a>PSWeight [<sup>[back to top]</sup>](#events-tree-content)
@@ -627,7 +509,7 @@ Jump to:
 | Object property | Type | Description |
 | - | - | - |
 | **ZCand_eta** | Float_t| ZCand_eta[nZCand]/F |
-| **ZCand_flav** | Float_t| Product of the pdgIds of the 2 daughters |
+| **ZCand_flav** | Int_t| Product of the pdgIds of the 2 daughters |
 | **ZCand_fsr1Idx** | Short_t(index to Fsr1)| index of FSR associated to l1 (-1 if none) |
 | **ZCand_fsr2Idx** | Short_t(index to Fsr2)| index of FSR associated to l2 (-1 if none) |
 | **ZCand_l1Idx** | Short_t(index to L1)| index of 1st daughter in Electron+Muon merged collection |
@@ -647,17 +529,25 @@ Jump to:
 | Object property | Type | Description |
 | - | - | - |
 | **ZLLCand_KD** | Float_t| ZLLCand_KD[nZLLCand]/F |
+| **ZLLCand_Phi** | Float_t| ZLLCand_Phi[nZLLCand]/F |
+| **ZLLCand_Phi1** | Float_t| ZLLCand_Phi1[nZLLCand]/F |
 | **ZLLCand_Z1flav** | Int_t| ZLLCand_Z1flav[nZLLCand]/I |
 | **ZLLCand_Z1l1Idx** | Short_t(index to Z1L1)| ZLLCand_Z1l1Idx[nZLLCand]/S |
 | **ZLLCand_Z1l2Idx** | Short_t(index to Z1L2)| ZLLCand_Z1l2Idx[nZLLCand]/S |
 | **ZLLCand_Z1mass** | Float_t| ZLLCand_Z1mass[nZLLCand]/F |
-| **ZLLCand_Z2flav** | Short_t| ZLLCand_Z2flav[nZLLCand]/S |
+| **ZLLCand_Z2flav** | Int_t| ZLLCand_Z2flav[nZLLCand]/I |
 | **ZLLCand_Z2l1Idx** | Short_t(index to Z2L1)| ZLLCand_Z2l1Idx[nZLLCand]/S |
 | **ZLLCand_Z2l2Idx** | Short_t(index to Z2L2)| ZLLCand_Z2l2Idx[nZLLCand]/S |
 | **ZLLCand_Z2mass** | Float_t| ZLLCand_Z2mass[nZLLCand]/F |
+| **ZLLCand_costheta1** | Float_t| ZLLCand_costheta1[nZLLCand]/F |
+| **ZLLCand_costheta2** | Float_t| ZLLCand_costheta2[nZLLCand]/F |
+| **ZLLCand_costhetastar** | Float_t| ZLLCand_costhetastar[nZLLCand]/F |
+| **ZLLCand_dataMCWeight** | Float_t| data/MC efficiency correction weight |
 | **ZLLCand_eta** | Float_t| ZLLCand_eta[nZLLCand]/F |
 | **ZLLCand_mass** | Float_t| ZLLCand_mass[nZLLCand]/F |
 | **ZLLCand_massPreFSR** | Float_t| ZLLCand_massPreFSR[nZLLCand]/F |
+| **ZLLCand_nExtraLep** | Int_t| number of extra leptons passing H4l full sel |
+| **ZLLCand_nExtraZ** | Int_t| number of extra Zs passing H4l full sel |
 | **ZLLCand_phi** | Float_t| ZLLCand_phi[nZLLCand]/F |
 | **ZLLCand_pt** | Float_t| ZLLCand_pt[nZLLCand]/F |
 | **ZLLCand_rapidity** | Float_t| ZLLCand_rapidity[nZLLCand]/F |
@@ -687,6 +577,8 @@ Jump to:
 | Object property | Type | Description |
 | - | - | - |
 | **ZZCand_KD** | Float_t| Kinematic discriminant for the choice of best candidate |
+| **ZZCand_Phi** | Float_t| ZZCand_Phi[nZZCand]/F |
+| **ZZCand_Phi1** | Float_t| ZZCand_Phi1[nZZCand]/F |
 | **ZZCand_Z1flav** | Int_t| Product of the pdgIds of the 2 Z1 daughters |
 | **ZZCand_Z1l1Idx** | Short_t(index to Z1L1)| Index of 1st Z1 daughter in the Electron+Muon merged collection |
 | **ZZCand_Z1l2Idx** | Short_t(index to Z1L2)| Index of 2nd Z1 daughter in the Electron+Muon merged collection |
@@ -696,6 +588,9 @@ Jump to:
 | **ZZCand_Z2l2Idx** | Short_t(index to Z2L2)| Index of 2nd Z2 daughter in the Electron+Muon merged collection |
 | **ZZCand_Z2mass** | Float_t| Z2 mass |
 | **ZZCand_Z2sumpt** | Float_t| sum of Z2 daughter pts (used in the choice of best candidate) |
+| **ZZCand_costheta1** | Float_t| ZZCand_costheta1[nZZCand]/F |
+| **ZZCand_costheta2** | Float_t| ZZCand_costheta2[nZZCand]/F |
+| **ZZCand_costhetastar** | Float_t| ZZCand_costhetastar[nZZCand]/F |
 | **ZZCand_dataMCWeight** | Float_t| data/MC efficiency correction weight |
 | **ZZCand_eta** | Float_t| ZZCand_eta[nZZCand]/F |
 | **ZZCand_mass** | Float_t| mass |
@@ -710,7 +605,7 @@ Jump to:
 ### <a id='bestcandidx'></a>bestCandIdx [<sup>[back to top]</sup>](#events-tree-content)
 | Object property | Type | Description |
 | - | - | - |
-| **bestCandIdx** | Short_t(index to Bestcand)| Seleced ZZ candidate in the event |
+| **bestCandIdx** | Short_t(index to Bestcand)| Index of seleced ZZCand candidate in the event |
 
 ### <a id='bestzidx'></a>bestZIdx [<sup>[back to top]</sup>](#events-tree-content)
 | Object property | Type | Description |
@@ -740,9 +635,9 @@ Jump to:
 ### <a id='ncleanedjetspt30'></a>nCleanedJetsPt30 [<sup>[back to top]</sup>](#events-tree-content)
 | Object property | Type | Description |
 | - | - | - |
-| **nCleanedJetsPt30** | Char_t| nCleanedJetsPt30/B |
-| **nCleanedJetsPt30_jesDn** | Char_t| nCleanedJetsPt30_jesDn/B |
-| **nCleanedJetsPt30_jesUp** | Char_t| nCleanedJetsPt30_jesUp/B |
+| **nCleanedJetsPt30** | Char_t| number of cleaned jets above 30 GeV |
+| **nCleanedJetsPt30_jesDn** | Char_t| number of cleaned jets, down JES variation |
+| **nCleanedJetsPt30_jesUp** | Char_t| number of cleaned jets, up JES variation |
 
 ### <a id='overalleventweight'></a>overallEventWeight [<sup>[back to top]</sup>](#events-tree-content)
 | Object property | Type | Description |
@@ -758,6 +653,16 @@ Jump to:
 | Object property | Type | Description |
 | - | - | - |
 | **puWeight** | Float_t| puWeight/F |
+
+### <a id='puweightdn'></a>puWeightDn [<sup>[back to top]</sup>](#events-tree-content)
+| Object property | Type | Description |
+| - | - | - |
+| **puWeightDn** | Float_t| puWeightDn/F |
+
+### <a id='puweightup'></a>puWeightUp [<sup>[back to top]</sup>](#events-tree-content)
+| Object property | Type | Description |
+| - | - | - |
+| **puWeightUp** | Float_t| puWeightUp/F |
 
 ### <a id='run'></a>run [<sup>[back to top]</sup>](#events-tree-content)
 | Object property | Type | Description |
@@ -775,12 +680,19 @@ Jump to:
 | [**FidZZ**](#fidzz) | Index of 1st Z1 daughter in FidDressedLeps collection |
 | [**GenDressedLepton**](#gendressedlepton) | Dressed leptons from Rivet-based ParticleLevelProducer |
 | [**Generator**](#generator) | MC generator weight |
+| [**LHEPart**](#lhepart) | PDG ID of LHE particles |
+| [**LHEPdfWeight**](#lhepdfweight) | LHE pdf variation weights (w_var / w_nominal) for LHA IDs 325300 - 325402 |
+| [**LHEReweightingWeight**](#lhereweightingweight) |  |
+| [**LHEScaleWeight**](#lhescaleweight) | LHE scale variation weights (w_var / w_nominal); [0] is renscfact=0.5d0 facscfact=0.5d0 ; [1] is renscfact=0.5d0 facscfact=1d0 ; [2] is renscfact=0.5d0 facscfact=2d0 ; [3] is renscfact=1d0 facscfact=0.5d0 ; [4] is renscfact=1d0 facscfact=1d0 ; [5] is renscfact=1d0 facscfact=2d0 ; [6] is renscfact=2d0 facscfact=0.5d0 ; [7] is renscfact=2d0 facscfact=1d0 ; [8] is renscfact=2d0 facscfact=2d0  |
+| [**Pileup**](#pileup) | the true mean number of the poisson distribution for this event from which the number of interactions each bunch crossing has been sampled |
 | [**event**](#event) | event/l |
 | [**ggH**](#ggh) | Reweighting for ggH as a function of njets and pT |
 | [**luminosityBlock**](#luminosityblock) | luminosityBlock/i |
 | [**overallEventWeight**](#overalleventweight) | overallEventWeight/F |
 | [**passedFiducial**](#passedfiducial) | event passes fiducial selection at gen level |
 | [**puWeight**](#puweight) | puWeight/F |
+| [**puWeightDn**](#puweightdn) | puWeightDn/F |
+| [**puWeightUp**](#puweightup) | puWeightUp/F |
 | [**run**](#run) | run/i |
 
 ## AllEvents tree detail
@@ -818,10 +730,15 @@ Jump to:
 ### <a id='fidzz'></a>FidZZ [<sup>[back to top]</sup>](#allevents-tree-content)
 | Object property | Type | Description |
 | - | - | - |
+| **FidZZ_Phi** | Float_t| FidZZ_Phi/F |
+| **FidZZ_Phi1** | Float_t| FidZZ_Phi1/F |
 | **FidZZ_Z1l1Idx** | Short_t(index to Z1L1)| Index of 1st Z1 daughter in FidDressedLeps collection |
 | **FidZZ_Z1l2Idx** | Short_t(index to Z1L2)| Index of 2nd Z1 daughter in FidDressedLeps collection |
 | **FidZZ_Z2l1Idx** | Short_t(index to Z2L1)| Index of 1st Z2 daughter in FidDressedLeps collection |
 | **FidZZ_Z2l2Idx** | Short_t(index to Z2L2)| Index of 2nd Z1 daughter in FidDressedLeps collection |
+| **FidZZ_costheta1** | Float_t| FidZZ_costheta1/F |
+| **FidZZ_costheta2** | Float_t| FidZZ_costheta2/F |
+| **FidZZ_costhetastar** | Float_t| FidZZ_costhetastar/F |
 | **FidZZ_eta** | Float_t| FidZZ_eta/F |
 | **FidZZ_mass** | Float_t| mass of gen ZZ made with FidDressedLeps |
 | **FidZZ_phi** | Float_t| FidZZ_phi/F |
@@ -843,6 +760,42 @@ Jump to:
 | Object property | Type | Description |
 | - | - | - |
 | **Generator_weight** | Float_t| MC generator weight |
+
+### <a id='lhepart'></a>LHEPart [<sup>[back to top]</sup>](#allevents-tree-content)
+| Object property | Type | Description |
+| - | - | - |
+| **LHEPart_eta** | Float_t| Pseodorapidity of LHE particles |
+| **LHEPart_incomingpz** | Float_t| Pz of incoming LHE particles |
+| **LHEPart_mass** | Float_t| Mass of LHE particles |
+| **LHEPart_pdgId** | Int_t| PDG ID of LHE particles |
+| **LHEPart_phi** | Float_t| Phi of LHE particles |
+| **LHEPart_pt** | Float_t| Pt of LHE particles |
+| **LHEPart_spin** | Int_t| Spin of LHE particles |
+| **LHEPart_status** | Int_t| LHE particle status; -1:incoming, 1:outgoing |
+| **nLHEPart** | Int_t|  |
+
+### <a id='lhepdfweight'></a>LHEPdfWeight [<sup>[back to top]</sup>](#allevents-tree-content)
+| Object property | Type | Description |
+| - | - | - |
+| **LHEPdfWeight** | Float_t| LHE pdf variation weights (w_var / w_nominal) for LHA IDs 325300 - 325402 |
+| **nLHEPdfWeight** | Int_t|  |
+
+### <a id='lhereweightingweight'></a>LHEReweightingWeight [<sup>[back to top]</sup>](#allevents-tree-content)
+| Object property | Type | Description |
+| - | - | - |
+| **LHEReweightingWeight** | Float_t|  |
+| **nLHEReweightingWeight** | Int_t|  |
+
+### <a id='lhescaleweight'></a>LHEScaleWeight [<sup>[back to top]</sup>](#allevents-tree-content)
+| Object property | Type | Description |
+| - | - | - |
+| **LHEScaleWeight** | Float_t| LHE scale variation weights (w_var / w_nominal); [0] is renscfact=0.5d0 facscfact=0.5d0 ; [1] is renscfact=0.5d0 facscfact=1d0 ; [2] is renscfact=0.5d0 facscfact=2d0 ; [3] is renscfact=1d0 facscfact=0.5d0 ; [4] is renscfact=1d0 facscfact=1d0 ; [5] is renscfact=1d0 facscfact=2d0 ; [6] is renscfact=2d0 facscfact=0.5d0 ; [7] is renscfact=2d0 facscfact=1d0 ; [8] is renscfact=2d0 facscfact=2d0  |
+| **nLHEScaleWeight** | Int_t|  |
+
+### <a id='pileup'></a>Pileup [<sup>[back to top]</sup>](#allevents-tree-content)
+| Object property | Type | Description |
+| - | - | - |
+| **Pileup_nTrueInt** | Float_t| the true mean number of the poisson distribution for this event from which the number of interactions each bunch crossing has been sampled |
 
 ### <a id='event'></a>event [<sup>[back to top]</sup>](#allevents-tree-content)
 | Object property | Type | Description |
@@ -873,6 +826,16 @@ Jump to:
 | Object property | Type | Description |
 | - | - | - |
 | **puWeight** | Float_t| puWeight/F |
+
+### <a id='puweightdn'></a>puWeightDn [<sup>[back to top]</sup>](#allevents-tree-content)
+| Object property | Type | Description |
+| - | - | - |
+| **puWeightDn** | Float_t| puWeightDn/F |
+
+### <a id='puweightup'></a>puWeightUp [<sup>[back to top]</sup>](#allevents-tree-content)
+| Object property | Type | Description |
+| - | - | - |
+| **puWeightUp** | Float_t| puWeightUp/F |
 
 ### <a id='run'></a>run [<sup>[back to top]</sup>](#allevents-tree-content)
 | Object property | Type | Description |

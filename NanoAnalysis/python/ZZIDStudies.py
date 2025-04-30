@@ -31,6 +31,7 @@ class ZZIDStudies (Module):
         self.muonIDVars=[dict(name="maxdxy", sel=lambda l : abs(l.dxy)),
                          dict(name="maxdz", sel=lambda l : abs(l.dz)),
                          dict(name="maxsip3d", sel=lambda l : abs(l.sip3d)),
+                         dict(name="maxip3d", sel=lambda l : abs(l.ip3d)),
                          dict(name="maxpfRelIso03FsrCorr", sel=lambda l : l.pfRelIso03FsrCorr), # FSR-corrected iso, DR=0.3
                          dict(name="maxpfRelIso03_all", sel=lambda l : l.pfRelIso03_all),
                          dict(name="maxpfRelIso04_all", sel=lambda l : l.pfRelIso04_all),
@@ -47,7 +48,7 @@ class ZZIDStudies (Module):
         for ID in self.muonIDs :
             self.out.branch("ZZCand_mu"+ID["name"], "O", lenVar="nZZCand", title=f'True if all muons of the cand pass {ID["name"]}')
         for var in self.muonIDVars :
-            self.out.branch("ZZCand_mu"+var["name"], "F", lenVar="nZZCand", title=f'Worst value of {var["name"].removeprefix("max")} among all muons of the cand')
+            self.out.branch("ZZCand_mu"+var["name"], "F", lenVar="nZZCand", title=f'Worst value of {var["name"].removeprefix("max")} among all muons of the cand', limitedPrecision=16)
 
         self.out.branch("ZExtraMu1Idx", "S", title="Index of leading extra muon in Z events, for data/MC studies")
         self.out.branch("ZExtraMu2Idx", "S", title="Index of subleading extra muon in Z events, for data/MC studies")
