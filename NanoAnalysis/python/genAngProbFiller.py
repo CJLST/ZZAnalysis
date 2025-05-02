@@ -10,10 +10,12 @@ class genAngProbFiller(Module):
     MELA = Pointer to MELA passed from nanoZZ4lAnalysis.py 
     """
     
-    def __init__(self, MELA, settingsDict = None):
+    def __init__(self, MELA, NANOVERSION, settingsDict = None):
         print("***genAngProbFiller", flush=True)
         self.MELA = MELA
         self.MELAsettings = settingsDict
+        self.NANOVERSION = NANOVERSION
+        print("THIS IS NANOVERSION: ", self.NANOVERSION)
             
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
@@ -30,69 +32,119 @@ class genAngProbFiller(Module):
         
     def analyze(self, event):
         LHEPart = Collection(event, 'LHEPart')
-        LHEMothers = filter(lambda p: p.MELAStatus==1, LHEPart)
-        LHEDaughters = filter(lambda p: p.MELAStatus==2, LHEPart)
-        LHEAssociated = filter(lambda p: p.MELAStatus==3, LHEPart)
+        
         mothers = Mela.SimpleParticleCollection_t()
         daughters = Mela.SimpleParticleCollection_t()
         associated = Mela.SimpleParticleCollection_t()
-        
 
-        for i, mp in enumerate(LHEMothers): 
-            temp_particle = Mela.SimpleParticle_t(mp.pdgId, mp.pt, mp.eta, mp.phi, mp.mass, True)
-            mothers.add_particle(temp_particle)
+
         
-        for i, dp in enumerate(LHEDaughters): 
-            temp_particle = Mela.SimpleParticle_t(dp.pdgId, dp.pt, dp.eta, dp.phi, dp.mass, True)
-            daughters.add_particle(temp_particle)
+        ## Only run if mother-daughter associations are available, i.e. nanoAODv15 or newer. 
+        if self.NANOVERSION >= 15: 
+            LHEMothers = filter(lambda p: p.MELAStatus==1, LHEPart)
+            LHEDaughters = filter(lambda p: p.MELAStatus==2, LHEPart)
+            LHEAssociated = filter(lambda p: p.MELAStatus==3, LHEPart)
+            for i, mp in enumerate(LHEMothers): 
+                temp_particle = Mela.SimpleParticle_t(mp.pdgId, mp.pt, mp.eta, mp.phi, mp.mass, True)
+                mothers.add_particle(temp_particle)
+            
+            for i, dp in enumerate(LHEDaughters): 
+                temp_particle = Mela.SimpleParticle_t(dp.pdgId, dp.pt, dp.eta, dp.phi, dp.mass, True)
+                daughters.add_particle(temp_particle)
+            
+            for i, ap in enumerate(LHEAssociated): 
+                temp_particle = Mela.SimpleParticle_t(ap.pdgId, ap.pt, ap.eta, ap.phi, ap.mass, True)
+                associated.add_particle(temp_particle)
+        else: 
+            # print("genAngProbFiller: NANOAODv14 or older, using workaround")
+            for i, lp in enumerate(LHEPart): 
+                temp_particle = Mela.SimpleParticle_t(lp.pdgId, lp.pt, lp.eta, lp.phi, lp.mass, True)
+                if lp.status == -1: 
+                    mothers.add_particle(temp_particle)
+                elif lp.status == 1: 
+                    if abs(lp.pdgId) in [11, 13, 15] and i >= len(LHEPart) - 4:
+                        daughters.add_particle(temp_particle)
+                    
+                elif lp.status == 2: 
+                    if lp.pdgId == 25: 
+                        higgs = temp_particle
+                        hMass = lp.mass
+                    else:
+                        continue
         
-        for i, ap in enumerate(LHEAssociated): 
-            temp_particle = Mela.SimpleParticle_t(ap.pdgId, ap.pt, ap.eta, ap.phi, ap.mass, True)
-            associated.add_particle(temp_particle)
+                
+        #Check if selected 4-leps match the higgs: 
+        if abs(hMass - daughters.MTotal()) < 0.01:
+            # self.MELA.setInputEvent(daughters, associated, mothers, 1)
+            self.MELA.setInputEvent(daughters, None, None, 0)
+            qH, mZ1, mZ2, costheta1, costheta2, Phi, costhetastar, Phi1 = self.MELA.computeDecayAngles()
+            self.out.fillBranch("LHEMela_costheta1", costheta1)
+            self.out.fillBranch("LHEMela_costheta2", costheta2)
+            self.out.fillBranch("LHEMela_Phi", Phi)
+            self.out.fillBranch("LHEMela_Phi1", Phi1)
+            self.out.fillBranch("LHEMela_costhetastar", costhetastar)
+        else: 
+            print(hMass - daughters.MTotal())
+            
         
-        
-        self.MELA.setInputEvent(daughters, associated, mothers, 1)
-        qH, mZ1, mZ2, costheta1, costheta2, Phi, costhetastar, Phi1 = self.MELA.computeDecayAngles()
-        self.out.fillBranch("LHEMela_costheta1", costheta1)
-        self.out.fillBranch("LHEMela_costheta2", costheta2)
-        self.out.fillBranch("LHEMela_Phi", Phi)
-        self.out.fillBranch("LHEMela_Phi1", Phi1)
-        self.out.fillBranch("LHEMela_costhetastar", costhetastar)
+        # self.MELA.setInputEvent(daughters, associated, mothers, 1)
+        # qH, mZ1, mZ2, costheta1, costheta2, Phi, costhetastar, Phi1 = self.MELA.computeDecayAngles()
+        # self.out.fillBranch("LHEMela_costheta1", costheta1)
+        # self.out.fillBranch("LHEMela_costheta2", costheta2)
+        # self.out.fillBranch("LHEMela_Phi", Phi)
+        # self.out.fillBranch("LHEMela_Phi1", Phi1)
+        # self.out.fillBranch("LHEMela_costhetastar", costhetastar)
+
         
         if self.MELAsettings != None: 
+            
             self.MELA.differentiate_HWW_HZZ = self.MELAsettings["separatewwzz"]
             self.MELA.setProcess(self.MELAsettings["process"], self.MELAsettings["matrixelement"], self.MELAsettings["production"])
-            for coupling, vals, in self.MELAsettings["couplings"].items():
-                setattr(self.MELA, coupling, vals)
 
-            # ME = getattr(Mela, 'MatrixElement')
-            # PROC = getattr(Mela, 'Process')
-            # ghz1 = getattr(self.MELA, 'ghz1')
-            # ghg2 = getattr(self.MELA, 'ghg2')
+            # Needs to be changed:
+            # for coupling, vals, in self.MELAsettings["couplings"].items():
+            #     setattr(self.MELA, coupling, vals)
 
-            # print("Matrix Element: ", ME, "process: ", PROC, "ghz1: ", ghz1, "ghg2: ", ghg2)
+            #Need to loop over all dictionaries in the "probabilities" list passed by the pyFragment. 
+            for i, prob in enumerate(self.MELAsettings["probabilities"]):
 
-            if self.MELAsettings["prod"] and self.MELAsettings["dec"]: 
-                nativeprob = self.MELA.computeProdDecP(False)
-            elif self.MELAsettings["prod"]: 
-                nativeprob = self.MELA.computeProdP(False)
-            elif self.MELAsettings["dec"]:
-                nativeprob = self.MELA.computeP(False)
-                # print(nativeprob)
-            else:
-                raise KeyError("Need to specify either production, decay, or computeprop!")
-            
-            if self.MELAsettings["computeprop"] and (self.MELAsettings["prod"] or self.MELAsettings["dec"]):
-                    nativeprob_prop = self.MELA.getXPropagator(self.MELAsettings["propscheme"])
-                    self.out.fillBranch("LHEMela_nativeProbprop", nativeprob_prop)
-            elif self.MELAsettings["computeprop"]:
-                nativeprob = self.MELA.getXPropagator(self.MELAsettings["propscheme"])
-            
-            self.out.fillBranch("LHEMela_nativeProb", nativeprob)
+                for coupling, vals, in prob:
+                    if coupling != 'name': 
+                        setattr(self.MELA, coupling, vals)
+
+
+                
+
+                eventSide = ""
+                if self.MELAsettings["prod"] and self.MELAsettings["dec"]: 
+                    probability = self.MELA.computeProdDecP(False)
+                    eventSide = "ProdDec"
+                elif self.MELAsettings["prod"]: 
+                    probability = self.MELA.computeProdP(False)
+                    eventSide = "Prod"
+                elif self.MELAsettings["dec"]:
+                    probability = self.MELA.computeP(False)
+                    eventSide = "Dec"
+                    # print(nativeprob)
+                else:
+                    raise KeyError("Need to specify either production, decay, or computeprop!")
+                
+                
+                
+                if self.MELAsettings["computeprop"] and (self.MELAsettings["prod"] or self.MELAsettings["dec"]):
+                        proabilityprop = self.MELA.getXPropagator(self.MELAsettings["propscheme"])
+                        self.out.branch("LHEMela_"+prob["name"]+eventSide, "F")
+                        self.out.fillBranch("LHEMela_"+prob["name"]+eventSide, proabilityprop)
+                elif self.MELAsettings["computeprop"]:
+                    probability = self.MELA.getXPropagator(self.MELAsettings["propscheme"])
+                
+                # self.out.fillBranch("LHEMela_nativeProb", nativeprob)
+                self.out.branch("LHEMela_"+prob["name"]+eventSide, "F")
+                self.out.fillBranch("LHEMela_"+prob["name"]+eventSide, probability)
             
         
 
-        self.MELA.resetInputEvent()
+                self.MELA.resetInputEvent()
         
        
         

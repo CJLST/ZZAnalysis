@@ -220,6 +220,7 @@ if IsMC:
     from ZZAnalysis.NanoAnalysis.modules.puWeightProducer import *
     from ZZAnalysis.NanoAnalysis.mcTruthAnalyzer import *
     from ZZAnalysis.NanoAnalysis.lepDataMCWeight import *
+    from ZZAnalysis.NanoAnalysis.genExtraFiller import *
 
     insertBefore(reco_sequence, 'ZZExtraFiller', lepDataMCWeight(LEPTON_SETUP, DATA_TAG))
     
@@ -227,6 +228,7 @@ if IsMC:
     weights = weightFiller(XSEC, APPLY_K_NNLOQCD_ZZGG, APPLY_K_NNLOQCD_ZZQQB, APPLY_K_NNLOEW_ZZQQB, APPLY_QCD_GGF_UNCERT)
 
     post_sequence.append(mcTruthAnalyzer(dump=False)) # Gen final state etc.
+    insertAfter(post_sequence, "mcTruthAnalyzer", genExtraFiller(mela))
 
     if ADD_ALLEVENTS: # Add modules that produce the variables to be stored for all events at the beginning
         from ZZAnalysis.NanoAnalysis.genFiller import *
@@ -255,7 +257,8 @@ if IsMC:
                         ] + pre_sequence
         if NANOVERSION >= 15: 
             insertBefore(pre_sequence, 'cloneBranches', LHEFiller())
-            insertBefore(pre_sequence, 'cloneBranches', genAngProbFiller(mela, melaSettings))
+        
+        insertBefore(pre_sequence, 'cloneBranches', genAngProbFiller(mela, NANOVERSION, melaSettings))
 
     else : # Add them at the end, so that they are run only for selected events
         post_sequence.extend([puWeight(LEPTON_SETUP,DATA_TAG),
@@ -319,7 +322,7 @@ if IsMC:
                           'keep HTXS_njets30',
                           'keep Pileup*',
                           'keep GenJet_*',
-                          #'keep LHEMela*', 
+                          'keep LHEMela*', 
                         #  'keep LHEPart*',
                           #'keep Generator*',
                           #'keep PV*',
@@ -331,7 +334,7 @@ if IsMC:
                               'keep FidZ*',
                               'keep passedFiducial',
                             #   'keep LHEPart*',
-                            #   'keep LHEMela*'
+                              'keep LHEMela*'
                               ])
 
 from PhysicsTools.NanoAODTools.postprocessing.framework.postprocessor import PostProcessor

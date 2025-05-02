@@ -20,13 +20,14 @@ def initializeMELA(runMELA, year, matrixelement = None, process = None, coupling
         os.dup2(saved_stdout, stdout_fd)
         os.close(devnull)
         os.close(saved_stdout)
-        print(f"initializeMELA: created Mela({sqrts:.1f},125,TVar.CandidateDecay_ZZ)", flush=True)
-        print("initializeMELA: ", "MATRIXELEMENT: ", matrixelement, " PROCESS: ", process) 
+        print(f"***initializeMELA: created Mela({sqrts:.1f},125,TVar.CandidateDecay_ZZ)", flush=True)
+        print("***initializeMELA: ", "MATRIXELEMENT: ", matrixelement, " PROCESS: ", process) 
 
         requiredSettings = [matrixelement, process, couplings, production, prod, dec, computeprop]
+        print("This is requiredSettings: " ,requiredSettings)
     
         ### If at least one of the essential settings to calculate probabilities are set, make clear that only angles will be computed. 
-        if any(elem is None for elem in requiredSettings): 
+        if any(elem == "" for elem in requiredSettings): 
             print("initializeMELA: The required settings to compute probabilites have not been given. Only angles will be computed.")
             probSettingsDict = None
         else: 
@@ -57,7 +58,7 @@ def check_enum(entry, enum):
         errortext = "Unknown matrix element given!"
         errortext += "\nThe following are valid matrix elements"
         errortext += "\n" + "\n".join(possible_value)
-        errortext = help.print_msg_box(errortext, title="ERROR")
+        errortext = print_msg_box(errortext, title="ERROR")
         raise ValueError("\n" + errortext)
     return mapping[entry]
 
@@ -89,3 +90,33 @@ def settingsParser(matrixelement, process, couplings, production, prod, dec, com
         settingsDict["lepton_interference"] = check_enum(lepton_interference, Mela.LeptonInterference)
 
     return settingsDict
+
+
+
+def print_msg_box(msg, indent=1, width=0, title=""):
+    """returns message-box with optional title.
+    Ripped from https://stackoverflow.com/questions/39969064/how-to-print-a-message-box-in-python
+    
+    Parameters
+    ----------
+    msg : str
+        The message to use
+    indent : int, optional
+        indent size, by default 1
+    width : int, optional
+        box width, by default 0
+    title : str, optional
+        box title, by default ""
+    """
+    
+    lines = msg.split('\n')
+    space = " " * indent
+    if not width:
+        width = max(map(len, lines + title.split("\n")))
+    box = f'╔{"═" * (width + indent * 2)}╗\n'  # upper_border
+    if title:
+        box += f'║{space}{title:<{width}}{space}║\n'  # title
+        box += f'║{space}{"-" * len(title):<{width}}{space}║\n'  # underscore
+    box += ''.join([f'║{space}{line:<{width}}{space}║\n' for line in lines])
+    box += f'╚{"═" * (width + indent * 2)}╝'  # lower_border
+    return box
