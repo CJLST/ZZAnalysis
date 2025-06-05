@@ -77,60 +77,47 @@ def getJetCorrected(era, tag, is_mc, overwritePt=True) :
         if is_mc :
             if "pre_BPix" in tag:
                 folderKey = "2023_Summer23"
-                L1Key = "Summer23Prompt23_V1_MC_L1FastJet_AK4PFPuppi"
-                L2Key = "Summer23Prompt23_V1_MC_L2Relative_AK4PFPuppi"
-                L3Key = "Summer23Prompt23_V1_MC_L3Absolute_AK4PFPuppi"
-                L2L3Key = "Summer23Prompt23_V1_MC_L2L3Residual_AK4PFPuppi"
-                scaleTotalKey = "Summer23Prompt23_V1_MC_Total_AK4PFPuppi"
+                L1Key = "Summer23Prompt23_V2_MC_L1FastJet_AK4PFPuppi"
+                L2Key = "Summer23Prompt23_V2_MC_L2Relative_AK4PFPuppi"
+                L3Key = "Summer23Prompt23_V2_MC_L3Absolute_AK4PFPuppi"
+                L2L3Key = "Summer23Prompt23_V2_MC_L2L3Residual_AK4PFPuppi"
+                scaleTotalKey = "Summer23Prompt23_V2_MC_Total_AK4PFPuppi"
                 smearKey = "JERSmear"
                 JERKey = "Summer23Prompt23_RunCv1234_JRV1_MC_PtResolution_AK4PFPuppi"
                 JERsfKey = "Summer23Prompt23_RunCv1234_JRV1_MC_ScaleFactor_AK4PFPuppi"
             else:
                 folderKey = "2023_Summer23BPix"
-                L1Key = "Summer23BPixPrompt23_V1_MC_L1FastJet_AK4PFPuppi"
-                L2Key = "Summer23BPixPrompt23_V1_MC_L2Relative_AK4PFPuppi"
-                L3Key = "Summer23BPixPrompt23_V1_MC_L3Absolute_AK4PFPuppi"
-                L2L3Key = "Summer23BPixPrompt23_V1_MC_L2L3Residual_AK4PFPuppi"
-                scaleTotalKey = "Summer23BPixPrompt23_V1_MC_Total_AK4PFPuppi"
+                L1Key = "Summer23BPixPrompt23_V3_MC_L1FastJet_AK4PFPuppi"
+                L2Key = "Summer23BPixPrompt23_V3_MC_L2Relative_AK4PFPuppi"
+                L3Key = "Summer23BPixPrompt23_V3_MC_L3Absolute_AK4PFPuppi"
+                L2L3Key = "Summer23BPixPrompt23_V3_MC_L2L3Residual_AK4PFPuppi"
+                scaleTotalKey = "Summer23BPixPrompt23_V3_MC_Total_AK4PFPuppi"
                 smearKey = "JERSmear"
                 JERKey = "Summer23BPixPrompt23_RunD_JRV1_MC_PtResolution_AK4PFPuppi"
                 JERsfKey = "Summer23BPixPrompt23_RunD_JRV1_MC_ScaleFactor_AK4PFPuppi"
         ## Data
         ## JER are not applied to data
         else :
-            if "post_BPix" in tag:
-                folderKey = "2023_Summer23BPix"
-                L1Key = "Summer23BPixPrompt23_RunD_V1_DATA_L1FastJet_AK4PFPuppi"
-                L2Key = "Summer23BPixPrompt23_RunD_V1_DATA_L2Relative_AK4PFPuppi"
-                L3Key = "Summer23BPixPrompt23_RunD_V1_DATA_L3Absolute_AK4PFPuppi"
-                L2L3Key = "Summer23BPixPrompt23_RunD_V1_DATA_L2L3Residual_AK4PFPuppi"
-                scaleTotalKey = None
-                smearKey = None
-                JERKey = None
-                JERsfKey = None
-            elif "2023Cv123" in tag:
+            if "pre_BPix" in tag:
                 folderKey = "2023_Summer23"
-                L1Key = "Summer23Prompt23_RunCv123_V1_DATA_L1FastJet_AK4PFPuppi"
-                L2Key = "Summer23Prompt23_RunCv123_V1_DATA_L2Relative_AK4PFPuppi"
-                L3Key = "Summer23Prompt23_RunCv123_V1_DATA_L3Absolute_AK4PFPuppi"
-                L2L3Key = "Summer23Prompt23_RunCv123_V1_DATA_L2L3Residual_AK4PFPuppi"
-                scaleTotalKey = None
-                smearKey = None
-                JERKey = None
-                JERsfKey = None
-            elif "2023Cv4" in tag:
-                folderKey = "2023_Summer23"
-                L1Key = "Summer23Prompt23_RunCv4_V1_DATA_L1FastJet_AK4PFPuppi"
-                L2Key = "Summer23Prompt23_RunCv4_V1_DATA_L2Relative_AK4PFPuppi"
-                L3Key = "Summer23Prompt23_RunCv4_V1_DATA_L3Absolute_AK4PFPuppi"
-                L2L3Key = "Summer23Prompt23_RunCv4_V1_DATA_L2L3Residual_AK4PFPuppi"
+                L1Key = "Summer23Prompt23_V2_DATA_L1FastJet_AK4PFPuppi"
+                L2Key = "Summer23Prompt23_V2_DATA_L2Relative_AK4PFPuppi"
+                L3Key = "Summer23Prompt23_V2_DATA_L3Absolute_AK4PFPuppi"
+                L2L3Key = "Summer23Prompt23_V2_DATA_L2L3Residual_AK4PFPuppi"
                 scaleTotalKey = None
                 smearKey = None
                 JERKey = None
                 JERsfKey = None
             else:
-                raise ValueError("getJetCorrected: tag", era, "not supported")
-
+                folderKey = "2023_Summer23BPix"
+                L1Key = "Summer23BPixPrompt23_V3_DATA_L1FastJet_AK4PFPuppi"
+                L2Key = "Summer23BPixPrompt23_V3_DATA_L2Relative_AK4PFPuppi"
+                L3Key = "Summer23BPixPrompt23_V3_DATA_L3Absolute_AK4PFPuppi"
+                L2L3Key = "Summer23BPixPrompt23_V3_DATA_L2L3Residual_AK4PFPuppi"
+                scaleTotalKey = None
+                smearKey = None
+                JERKey = None
+                JERsfKey = None
 
     json_JERC = "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/%s/jet_jerc.json.gz" % (folderKey)
     json_JERsmear = "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/jer_smear.json.gz"
