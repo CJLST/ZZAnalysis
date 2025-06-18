@@ -71,17 +71,11 @@ CANDSTOSTORE = getConf("CANDSTOSTORE", 'BestCandOnly') # which candidates should
                                                   # Note that this option does not affect the ZLLCand collection: for each
                                                   # CR that is activated, only the best candidate is stored.
 
-# MELA Parameters: 
-MATRIXELEMENT = getConf("matrixelement", "")
-PROCESS = getConf("process", "")
-COUPLINGS = getConf("couplings", "")
-PRODUCTION = getConf("production", "")
-PROD = getConf("prod", False)
-DEC = getConf("dec", False)
-COMPUTEPROP = getConf("computeprop", False)
+# MELA Probabilities Dictionary:
+MELAprobabilities = getConf("probabilities", None) 
 
-mela, melaSettings = initializeMELA(runMELA, LEPTON_SETUP, matrixelement = MATRIXELEMENT, process = PROCESS, couplings = COUPLINGS, production = PRODUCTION, prod = PROD, dec = DEC, computeprop = COMPUTEPROP)
 
+mela, melaSettings = initializeMELA(runMELA, LEPTON_SETUP, probabilities=MELAprobabilities)
                                                   
 ### Definition of analysis cuts
 cuts = dict(

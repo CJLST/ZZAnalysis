@@ -2,6 +2,7 @@ from __future__ import print_function
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
 from PhysicsTools.HeppyCore.utils.deltar import deltaR
+import ZZAnalysis.NanoAnalysis.initializeMELA
 import Mela
 
 
@@ -27,8 +28,9 @@ class genAngProbFiller(Module):
         self.out.branch("LHEMela_Phi", "F")
         self.out.branch("LHEMela_costhetastar", "F")
         self.out.branch("LHEMela_Phi1", "F")
-        self.out.branch("LHEMela_nativeProb", "F")
-        self.out.branch("LHEMela_nativeProbprop", "F")
+        for i, prob in enumerate(self.MELAsettings): 
+            self.out.branch(f"LHEMela_{prob['Name']}", "F")
+    
         
     def analyze(self, event):
         LHEPart = Collection(event, 'LHEPart')
@@ -55,22 +57,27 @@ class genAngProbFiller(Module):
             for i, ap in enumerate(LHEAssociated): 
                 temp_particle = Mela.SimpleParticle_t(ap.pdgId, ap.pt, ap.eta, ap.phi, ap.mass, True)
                 associated.add_particle(temp_particle)
-        else: 
+        elif self.NANOVERSION < 15: 
             # print("genAngProbFiller: NANOAODv14 or older, using workaround")
             for i, lp in enumerate(LHEPart): 
                 temp_particle = Mela.SimpleParticle_t(lp.pdgId, lp.pt, lp.eta, lp.phi, lp.mass, True)
                 if lp.status == -1: 
                     mothers.add_particle(temp_particle)
                 elif lp.status == 1: 
-                    if abs(lp.pdgId) in [11, 13, 15] and i >= len(LHEPart) - 4:
+                    if abs(lp.pdgId) in [11, 13] and i >= len(LHEPart) - 4:
                         daughters.add_particle(temp_particle)
-                    
+                    elif i < len(LHEPart) - 4: 
+                        associated.add_particle(temp_particle)
                 elif lp.status == 2: 
                     if lp.pdgId == 25: 
                         higgs = temp_particle
                         hMass = lp.mass
                     else:
                         continue
+                else: 
+                    continue
+        else: 
+            print("**genAngProbFiller: No version of NANOAOD specified!")
         
                 
         #Check if selected 4-leps match the higgs: 
@@ -83,68 +90,126 @@ class genAngProbFiller(Module):
             self.out.fillBranch("LHEMela_Phi", Phi)
             self.out.fillBranch("LHEMela_Phi1", Phi1)
             self.out.fillBranch("LHEMela_costhetastar", costhetastar)
+            self.MELA.resetInputEvent()
         else: 
-            print(hMass - daughters.MTotal())
-            
-        
-        # self.MELA.setInputEvent(daughters, associated, mothers, 1)
-        # qH, mZ1, mZ2, costheta1, costheta2, Phi, costhetastar, Phi1 = self.MELA.computeDecayAngles()
-        # self.out.fillBranch("LHEMela_costheta1", costheta1)
-        # self.out.fillBranch("LHEMela_costheta2", costheta2)
-        # self.out.fillBranch("LHEMela_Phi", Phi)
-        # self.out.fillBranch("LHEMela_Phi1", Phi1)
-        # self.out.fillBranch("LHEMela_costhetastar", costhetastar)
+            print("Selected 4 leptons too different from H-mass in LHE: ", hMass - daughters.MTotal())
+            self.MELA.resetInputEvent()
 
-        
         if self.MELAsettings != None: 
+            self.MELA.setInputEvent(daughters, associated, mothers, 1)
+            setupInputs = {
+                "Name": "Default_SHOULDBERENAMED",
+                "Process": None, 
+                "MatrixElement": None, 
+                "Production":None, 
+                "Prod": None, 
+                "Dec": None, 
+                "Couplings": None, 
+                "isgen": None, 
+                "computeprop": None, 
+                "propscheme": Mela.ResonancePropagatorScheme.FixedWidth, 
+                "decaymode": Mela.CandidateDecayMode.CandidateDecay_ZZ,
+                "separatewwzz":False,
+                "useconstant":False,
+                "match_mX":False,
+                "lepton_interference":Mela.LeptonInterference.DefaultLeptonInterf,
+                "ispm4l": None,
+                "dividep": None 
+            }
             
-            self.MELA.differentiate_HWW_HZZ = self.MELAsettings["separatewwzz"]
-            self.MELA.setProcess(self.MELAsettings["process"], self.MELAsettings["matrixelement"], self.MELAsettings["production"])
 
-            # Needs to be changed:
-            # for coupling, vals, in self.MELAsettings["couplings"].items():
-            #     setattr(self.MELA, coupling, vals)
+            for p, prob in enumerate(self.MELAsettings):
+                ### Only calculate LHE-level probabilities in this function. 
+                if prob["isgen"]:  
+                    ### Parse MELA settings for the desired probability and overwrite setup for all given parameters:
+                    for key, val in prob.items(): setupInputs[key] = prob[key]
 
-            #Need to loop over all dictionaries in the "probabilities" list passed by the pyFragment. 
-            for i, prob in enumerate(self.MELAsettings["probabilities"]):
+                    ### Define everything 
+                    MELA_Name = setupInputs["Name"]
+                    MELA_Process = initializeMELA.check_enum(setupInputs["Process"], Mela.Process)
+                    MELA_MatrixElement = initializeMELA.check_enum(setupInputs["MatrixElement"], Mela.MatrixElement)
+                    MELA_Production = initializeMELA.check_enum(setupInputs["Production"], Mela.Production)
+                    MELA_prod = setupInputs["Prod"]
+                    MELA_dec = setupInputs["Dec"]
+                    MELA_computeprop = setupInputs["computeprop"]
+                    MELA_propscheme = initializeMELA.check_enum(setupInputs["propscheme"], Mela.ResonancePropagatorScheme)
+                    MELA_decaymode = initializeMELA.check_enum(setupInputs["decaymode"], Mela.CandidateDecayMode)
+                    MELA_separatewwzz = setupInputs["separatewwzz"]
+                    MELA_useconstant = setupInputs["useconstant"]
+                    MELA_matchMx = setupInputs["match_mX"]
+                    MELA_leptoninterference = initializeMELA.check_enum(setupInputs["lepton_interference"], Mela.LeptonInterference)
+                    MELA_ispm4l = setupInputs["ispm4l"]
+                    MELA_divideP = setupInputs["dividep"]
 
-                for coupling, vals, in prob:
-                    if coupling != 'name': 
-                        setattr(self.MELA, coupling, vals)
 
+                    ### Configure MELA for the event. 
+                    self.MELA.setProcess(MELA_Process, MELA_MatrixElement, MELA_Production)
+                    self.MELA.differentiate_HWW_HZZ = MELA_separatewwzz
+                    self.MELA.setCandidateDecayMode(MELA_decaymode)
+                    self.MELA.setMelaLeptonInterference(MELA_leptoninterference)
 
-                
+                    if MELA_matchMx: 
+                        self.MELA.setMelaHiggsMassWidth(daughters.MTotal(), 0.00001, 0)
+                        self.MELA.setMelaHiggsMassWidth(daughters.MTotal(), 0.00001, 1)
 
-                eventSide = ""
-                if self.MELAsettings["prod"] and self.MELAsettings["dec"]: 
-                    probability = self.MELA.computeProdDecP(False)
-                    eventSide = "ProdDec"
-                elif self.MELAsettings["prod"]: 
-                    probability = self.MELA.computeProdP(False)
-                    eventSide = "Prod"
-                elif self.MELAsettings["dec"]:
-                    probability = self.MELA.computeP(False)
-                    eventSide = "Dec"
-                    # print(nativeprob)
-                else:
-                    raise KeyError("Need to specify either production, decay, or computeprop!")
-                
-                
-                
-                if self.MELAsettings["computeprop"] and (self.MELAsettings["prod"] or self.MELAsettings["dec"]):
-                        proabilityprop = self.MELA.getXPropagator(self.MELAsettings["propscheme"])
-                        self.out.branch("LHEMela_"+prob["name"]+eventSide, "F")
-                        self.out.fillBranch("LHEMela_"+prob["name"]+eventSide, proabilityprop)
-                elif self.MELAsettings["computeprop"]:
-                    probability = self.MELA.getXPropagator(self.MELAsettings["propscheme"])
-                
-                # self.out.fillBranch("LHEMela_nativeProb", nativeprob)
-                self.out.branch("LHEMela_"+prob["name"]+eventSide, "F")
-                self.out.fillBranch("LHEMela_"+prob["name"]+eventSide, probability)
-            
+                    for coupl, coupl_val in setupInputs["Couplings"]: 
+                        setattr(self.MELA, coupl, coupl_val)
+
         
+                    if MELA_prod and MELA_dec: 
+                        probability = self.MELA.computeProdDecP(MELA_useconstant)
+                    elif MELA_prod: 
+                        probability = self.MELA.computeProdP(MELA_useconstant)
+                    elif MELA_dec:
+                        probability = self.MELA.computeP(MELA_useconstant)
+                    elif MELA_ispm4l: 
+                        probability = self.MELA.computePM4L(Mela.SuperMelaSyst.SMSyst_None)
+                        probability_ScaleUp = self.MELA.computePM4l(Mela.SuperMelaSyst.SMSyst_ScaleUp)
+                        probability_ScaleDown = self.MELA.computePM4l(Mela.SuperMelaSyst.SMSyst_ScaleDown)
+                        probability_SystUp = self.MELA.computePM4l(Mela.SuperMelaSyst.SMSyst_ResUp)
+                        probability_SystDown = self.MELA.computePM4l(Mela.SuperMelaSyst.SMSyst_ResDown)
 
-                self.MELA.resetInputEvent()
+                        self.out.branch("LHEMela_"+setupInputs["Name"]+"_ScaleUp", "F")
+                        self.out.fillBranch("LHEMela_"+setupInputs["Name"]+"_ScaleUp", probability_ScaleUp)
+
+                        self.out.branch("LHEMela_"+setupInputs["Name"]+"_ScaleDown", "F")
+                        self.out.fillBranch("LHEMela_"+setupInputs["Name"]+"_ScaleDown", probability_ScaleDown)
+
+                        self.out.branch("LHEMela_"+setupInputs["Name"]+"_SystUp", "F")
+                        self.out.fillBranch("LHEMela_"+setupInputs["Name"]+"_SystUp", probability_SystUp)
+
+                        self.out.branch("LHEMela_"+setupInputs["Name"]+"_SystDown", "F")
+                        self.out.fillBranch("LHEMela_"+setupInputs["Name"]+"_SystDown", probability_SystDown)
+
+
+                    else:
+                        raise KeyError("Need to specify either production, decay, pm4l, or computeprop!")
+                    
+                    if MELA_computeprop and (MELA_prod or MELA_dec): 
+                        probabilityprop = self.MELA.getXPropagator(MELA_propscheme)
+                        self.out.branch("LHEMela_"+setupInputs["Name"]+"_prop", "F")
+                        self.out.fillBranch("LHEMela_"+setupInputs["Name"]+"_prop", probabilityprop)
+                    elif MELA_computeprop: 
+                        probability = self.MELA.getXPropagator(MELA_propscheme)
+                    
+
+                    #TODO: Figure out a way to ensure that denominator probability is always computed before the probability to be normalized. 
+                    if MELA_divideP is not None:
+                        if MELA_divideP == MELA_Name: 
+                            denominator = probability
+                        elif MELA_divideP != MELA_Name: 
+                            probability /= denominator
+
+
+                
+                
+                
+                
+                
+                    # self.out.fillBranch("LHEMela_nativeProb", nativeprob)
+                    # self.out.branch("LHEMela_"+prob["name"], "F")
+                    self.out.fillBranch("LHEMela_"+prob["name"], probability)
+                    self.MELA.resetInputEvent()
         
        
         
@@ -154,27 +219,3 @@ class genAngProbFiller(Module):
 
 
 
-
-    # def analyze(self, event):
-    #     LHEPart = Collection(event, 'LHEPart')
-    #     for i, lp in enumerate(LHEPart):
-    #         MELA_Stati = []
-    #         if lp.status == -1: 
-    #             MELA_Stati.append(1)
-    #         elif lp.status == 1: 
-    #             parentIdx = lp.firstMotherIdx
-    #             parentPdg = LHEPart[parentIdx].pdgId
-
-    #             gParentIdx = LHEPart[parentIdx].firstMotherIdx 
-    #             if gParentIdx == -1: 
-    #                 gParentPdg = 0
-    #             else: 
-    #                 gParentPdg = LHEPart[gParentIdx].pdgId 
-    #             if parentPdg == 23 and gParentPdg == 25:
-    #                 MELA_Stati.append(2)
-    #             else: 
-    #                 MELA_Stati.append(3)
-    #         else: 
-    #             MELA_Stati.append(-1)
-    #         self.out.fillBranch("LHEPart_MELAStatus", MELA_Stati)
-    #     return True
