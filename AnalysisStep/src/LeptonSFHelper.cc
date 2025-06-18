@@ -221,6 +221,23 @@ LeptonSFHelper::LeptonSFHelper(std::string const &data_tag)
       h_Mu_Unc_2022 = (TH2D*)root_file->Get("ERROR")->Clone();
    }
 
+   // 2023 Muons preBPix - root files taken from /afs/cern.ch/user/y/yujil/public/SF2023/
+   if(data_tag.find("pre_BPix") != std::string::npos)
+   {
+      TString fipMu_2023 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/final_HZZ_SF_2023C_RMS_mupogsysts.root");
+      root_file = TFile::Open(fipMu_2023.Data(),"READ");
+      h_Mu_SF_2023  = (TH2D*)root_file->Get("FINAL")->Clone();
+      h_Mu_Unc_2023 = (TH2D*)root_file->Get("ERROR")->Clone();
+   }
+   // 2023 Muons postBPix - root files taken from /afs/cern.ch/user/y/yujil/public/SF2023/
+   else
+   {
+      TString fipMu_2023 = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/final_HZZ_SF_2023D_RMS_mupogsysts.root");
+      root_file = TFile::Open(fipMu_2023.Data(),"READ");
+      h_Mu_SF_2023  = (TH2D*)root_file->Get("FINAL")->Clone();
+      h_Mu_Unc_2023 = (TH2D*)root_file->Get("ERROR")->Clone();
+   }
+
    cout << "[LeptonSFHelper] SF maps opened from root files." << endl;
 }
 
@@ -396,7 +413,7 @@ float LeptonSFHelper::getSF(int year, int flav, float pt, float eta, float SCeta
       }
       else if (year == 2023)
       {
-         SelSF  = 1.; // FIXME2022 not yet implemented
+         SelSF = h_Mu_SF_2023->GetBinContent(h_Mu_SF_2023->GetXaxis()->FindBin(eta),h_Mu_SF_2023->GetYaxis()->FindBin(std::min(pt,199.f))); //last bin contains the overflow
       }
       else
       {
@@ -602,8 +619,8 @@ float LeptonSFHelper::getSFError(int year, int flav, float pt, float eta, float 
       }
       else if(year == 2023)
       {
-         SelSF =1.;
-         SelSF_Unc=0.;
+         SelSF = h_Mu_SF_2023->GetBinContent(h_Mu_SF_2023->GetXaxis()->FindBin(eta),h_Mu_SF_2023->GetYaxis()->FindBin(std::min(pt,199.f))); //last bin contains the overflow
+         SelSF_Unc = h_Mu_Unc_2023->GetBinContent(h_Mu_Unc_2023->GetXaxis()->FindBin(eta),h_Mu_Unc_2023->GetYaxis()->FindBin(std::min(pt,199.f))); //last bin contains the overflow
       }
       else
       {

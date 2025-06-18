@@ -82,6 +82,7 @@ fi
    
 #get nanoAODTools modules
 git clone https://github.com/cms-cat/nanoAOD-tools-modules.git PhysicsTools/NATModules
+(cd PhysicsTools/NATModules; git checkout -b from-8ff7617 8ff7617)
 
 #CommonLHETools requires the MELA env to be set for compilation
 (eval `MelaAnalytics/setup.sh env`; cd CommonLHETools; scram b -j4)

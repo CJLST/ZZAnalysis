@@ -250,6 +250,7 @@ if IsMC:
                                                'Pileup_nTrueInt',
                                                'LHEPart*', #FIXME: should be removed from AllEvents once development is completed
                                                'LHEMela*',
+                                               'GenJet*',
                                                ],
                                       #Stop further processing for events that don't have 4 reco leps
                                       continueFor = postPresel
@@ -323,6 +324,8 @@ if IsMC:
                           'keep Pileup*',
                           'keep GenJet_*',
                           'keep LHEMela*', 
+                          'keep GenJet*',
+                          #'keep LHEMela*', 
                         #  'keep LHEPart*',
                           #'keep Generator*',
                           #'keep PV*',
@@ -334,6 +337,8 @@ if IsMC:
                               'keep FidZ*',
                               'keep passedFiducial',
                             #   'keep LHEPart*',
+                            #   'keep LHEMela*'
+                              'keep GenJet*',
                               'keep LHEMela*'
                               ])
 

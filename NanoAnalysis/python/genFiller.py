@@ -72,7 +72,11 @@ class genFiller(Module):
         self.out.branch("FidZZ_Phi", "F", limitedPrecision=12)
         self.out.branch("FidZZ_costhetastar", "F", limitedPrecision=12)
         self.out.branch("FidZZ_Phi1", "F", limitedPrecision=12)
-
+        # GenJets
+        self.out.branch("FidZZ_nCleanedGenJetsPt30", "B")
+        self.out.branch("FidZZ_GenJetLeadingIdx", "S")
+        self.out.branch("FidZZ_GenJetSubleadingIdx", "S")
+        
     def dressLeptons(self, genpart, packedpart):
         '''
             Dress leptons from gammas with dR(l,gamma)<0.3
@@ -513,7 +517,8 @@ class genFiller(Module):
         '''
 
         genpart=Collection(event,"GenPart")
-
+        genjets = Collection(event, "GenJet")
+        
         dressedLeptons_pt = []
         dressedLeptons_eta = []
         dressedLeptons_phi = []
@@ -572,6 +577,46 @@ class genFiller(Module):
                 zmom_pdg_id.append(z_mom_id)
 
         LeptonsCollection = [Leptons, LeptonsId, Lepts_RelIso]
+
+        # gen jets
+        # FIXME: atm moment only cleaning with the 4 leps from H decay, need to additionally clean with leps passing full sel
+        
+        nCleanedGenJetsPt30 = 0
+        leadingGenJetIdx = -1
+        subleadingGenJetIdx = -1
+        leadingGenJetPt = 0.
+        subleadingGenJetPt = 0.
+
+        # NOTE: The 50 GeV pT cut in the forward eta region (2.5 < |eta| < 3.0)
+        # was introduced following JME recommendations
+        # Ref: https://gitlab.cern.ch/cms-jetmet/coordination/coordination/-/issues/113
+        # TODO: This should be removed once a JSON-level fix is implemented.
+
+        for ij, genjet in enumerate(genjets):
+            pt_cut = 50.0 if (2.5 < abs(genjet.eta) < 3.0) else 30.0
+            if genjet.pt < pt_cut:
+                continue
+            mask = False
+            for genlep in Leptons:
+                if deltaR(genlep.Eta(), genlep.Phi(), genjet.eta, genjet.phi) < 0.4: 
+                    mask = True
+                    break
+            if mask:
+                continue
+            else:
+                nCleanedGenJetsPt30 += 1
+                if genjet.pt > leadingGenJetPt:
+                    subleadingGenJetPt = leadingGenJetPt
+                    subleadingGenJetIdx = leadingGenJetIdx
+                    leadingGenJetPt = genjet.pt
+                    leadingGenJetIdx = ij
+                elif genjet.pt > subleadingGenJetPt:
+                    subleadingGenJetPt = genjet.pt
+                    subleadingGenJetIdx = ij
+
+        self.out.fillBranch("FidZZ_nCleanedGenJetsPt30", nCleanedGenJetsPt30)
+        self.out.fillBranch("FidZZ_GenJetLeadingIdx", leadingGenJetIdx)
+        self.out.fillBranch("FidZZ_GenJetSubleadingIdx", subleadingGenJetIdx)
 
         nFidLeps, nFidPtLead, nFidPtSubLead = self.countFiducialLeps(LeptonsCollection)
         passFidSel = False

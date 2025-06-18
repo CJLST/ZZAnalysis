@@ -58,14 +58,14 @@ class genExtraFiller(Module):
         if self.MELA != None: 
 
             daughters = Mela.SimpleParticleCollection_t()
-            daughters.add_particle(Mela.SimpleParticle_t(genLeps[0].pdgId, genLeps[0].pt, genLeps[0].eta, genLeps[0].phi, getMass(genLeps[0].pdgId)))
+            daughters.add_particle(Mela.SimpleParticle_t(genLeps[0].pdgId, genLeps[0].pt, genLeps[0].eta, genLeps[0].phi, genLeps[0].mass))
             # print("daughter 1: ", [genLeps[0].pdgId, genLeps[0].pt, genLeps[0].eta, genLeps[0].phi, getMass(genLeps[0].pdgId)])
             
-            daughters.add_particle(Mela.SimpleParticle_t(genLeps[1].pdgId, genLeps[1].pt, genLeps[1].eta, genLeps[1].phi, getMass(genLeps[1].pdgId)))
+            daughters.add_particle(Mela.SimpleParticle_t(genLeps[1].pdgId, genLeps[1].pt, genLeps[1].eta, genLeps[1].phi, genLeps[1].mass))
             # print("daughter 2: ", [genLeps[1].pdgId, genLeps[1].pt, genLeps[1].eta, genLeps[1].phi, getMass(genLeps[1].pdgId)])
-            daughters.add_particle(Mela.SimpleParticle_t(genLeps[2].pdgId, genLeps[2].pt, genLeps[2].eta, genLeps[2].phi, getMass(genLeps[2].pdgId)))
+            daughters.add_particle(Mela.SimpleParticle_t(genLeps[2].pdgId, genLeps[2].pt, genLeps[2].eta, genLeps[2].phi, genLeps[2].mass))
             # print("daughter 3: ", [genLeps[2].pdgId, genLeps[2].pt, genLeps[2].eta, genLeps[2].phi, getMass(genLeps[2].pdgId)])
-            daughters.add_particle(Mela.SimpleParticle_t(genLeps[3].pdgId, genLeps[3].pt, genLeps[3].eta, genLeps[3].phi, getMass(genLeps[3].pdgId)))
+            daughters.add_particle(Mela.SimpleParticle_t(genLeps[3].pdgId, genLeps[3].pt, genLeps[3].eta, genLeps[3].phi, genLeps[3].mass))
             # print("daughter 4: ", [genLeps[3].pdgId, genLeps[3].pt, genLeps[3].eta, genLeps[3].phi, getMass(genLeps[3].pdgId)])
             
 

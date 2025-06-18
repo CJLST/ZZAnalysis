@@ -39,8 +39,8 @@ class LeptonSFHelper
    TH2F *h_Ele_Reco_midPT_2022, *h_Ele_Reco_midPT_2023;
    
    // Muons SF map histograms
-   TH2D *h_Mu_SF_2016, *h_Mu_SF_2017, *h_Mu_SF_2018, *h_Mu_SF_2022;
-   TH2D *h_Mu_Unc_2016, *h_Mu_Unc_2017, *h_Mu_Unc_2018, *h_Mu_Unc_2022;
+   TH2D *h_Mu_SF_2016, *h_Mu_SF_2017, *h_Mu_SF_2018, *h_Mu_SF_2022, *h_Mu_SF_2023;
+   TH2D *h_Mu_Unc_2016, *h_Mu_Unc_2017, *h_Mu_Unc_2018, *h_Mu_Unc_2022, *h_Mu_Unc_2023;
 
 };
 

@@ -63,8 +63,18 @@ class jetFiller(Module):
             if jet_lepPtF[ij] > self.EFthreshold :                
                 mask[ij] = True
             else : 
-                if jet.pt > 30 : nCleanedJetsPt30 += 1
+                # Decide pt cut based on jet eta:
+                if 2.5 < abs(jet.eta) < 3.0:
+                    pt_cut = 50.0
+                else:
+                    pt_cut = 30.0
+                if jet.pt > pt_cut : nCleanedJetsPt30 += 1
                 #FIXME: add jesUp, jesDn
+
+                # NOTE: The 50 GeV pT cut in the forward eta region (2.5 < |eta| < 3.0)
+                # was introduced following JME recommendations
+                # Ref: https://gitlab.cern.ch/cms-jetmet/coordination/coordination/-/issues/113
+                # TODO: This should be removed once a JSON-level fix is implemented.
                 
                 # Note: we cannot rely on the fact that the jet collection is sorted by pt since JES can change this.  
                 if jet.pt > leadingJetPt:

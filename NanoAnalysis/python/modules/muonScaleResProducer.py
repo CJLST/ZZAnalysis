@@ -9,16 +9,16 @@ def getMuonScaleRes(era, tag, is_mc, overwritePt=True) :
 
     if era == 2022:
         if "pre_EE" in tag :
-            fname = "2022_schemaV2.json.gz"
+            fname = "2022_Summer22.json.gz"
         else :
-            fname = "2022EE_schemaV2.json.gz"
+            fname = "2022_Summer22EE.json.gz"
     elif era == 2023:
         if "pre_BPix" in tag:
-            fname = "2023_schemaV2.json.gz"
+            fname = "2023_Summer23.json.gz"
         else:
-            fname = "2023BPix_schemaV2.json.gz"
+            fname = "2023_Summer23BPix.json.gz"
 
- 
+    # Json files for Muons Scale and Smearing corrections are taken from https://gitlab.cern.ch/cms-muonPOG/muonscarekit/-/tree/master/corrections
     json = "%s/src/ZZAnalysis/NanoAnalysis/data/MuonScale/%s" % (os.environ['CMSSW_BASE'], fname)
 
     print("***muonScaleRes: era:", era, "tag:", tag, "is MC:", is_mc, "overwritePt:", overwritePt, "json:", json)
