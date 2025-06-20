@@ -22,11 +22,11 @@ def initializeMELA(runMELA, year, probabilities=None):
         os.close(saved_stdout)
         print(f"***initializeMELA: created Mela({sqrts:.1f},125,TVar.CandidateDecay_ZZ)", flush=True)
         ### If at least one of the essential settings to calculate probabilities are set, make clear that only angles will be computed. 
-        if probabilites == None: 
+        if probabilities == None: 
             print("***initializeMELA: No probabilities have been given. Only angles will be computed.")
             probSettingsDict = None
         else: 
-            probSettingsDict = probabiltiies 
+            probSettingsDict = probabilities 
 
     else: 
         m = None
