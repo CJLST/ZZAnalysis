@@ -116,6 +116,9 @@ MCHistoryTools::MCHistoryTools(const edm::Event & event, std::string sampleName,
     //for ttWW
     if (boost::starts_with(sampleName,"TTWW")) processID=900106;
 
+    //ZHWW has processID=9999 as other powheg15jhuGenV3
+    if (boost::starts_with(sampleName,"ZHWW")) processID=900107;
+
     // take the MC weight
     GenEventInfoProduct  genInfo = *(gen.product());
     hepMCweight = genInfo.weight();
@@ -339,9 +342,9 @@ MCHistoryTools::init() {
 
     bool do_SF_OS_check = true;
 
-    if (processID == 900104 || processID == 900105 || processID == 900106) do_SF_OS_check = false;
+    if (processID == 900104 || processID == 900105 || processID == 900106 || processID == 900107 ) do_SF_OS_check = false;
     if ( do_SF_OS_check && (iZ22==-1 || theGenLeps[iZ21]->pdgId()+theGenLeps[iZ22]->pdgId()!=0) ) {  //Test remaining conditions: Z2 is found and SF, OS
-      cout << "MCHistoryTools: Cannot sort leptons ";
+      cout << "MCHistoryTools: Cannot sort leptons. processID: " << processID << " " ;
       for (int i=0; i<4; ++i) cout << theGenLeps[i]->pdgId() << " ";
       cout << iZ11 << " " << iZ12 << " " << iZ21 << " " << iZ22 << endl;
       abort();
