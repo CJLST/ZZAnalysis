@@ -2,7 +2,7 @@ from __future__ import print_function
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
 from PhysicsTools.HeppyCore.utils.deltar import deltaR
-import ZZAnalysis.NanoAnalysis.initializeMELA
+from  ZZAnalysis.NanoAnalysis.initializeMELA import check_enum
 import Mela
 
 
@@ -30,7 +30,7 @@ class genAngProbFiller(Module):
         self.out.branch("LHEMela_Phi1", "F")
         for i, prob in enumerate(self.MELAsettings): 
             self.out.branch(f"LHEMela_{prob['Name']}", "F")
-    
+
         
     def analyze(self, event):
         LHEPart = Collection(event, 'LHEPart')
@@ -40,12 +40,15 @@ class genAngProbFiller(Module):
         associated = Mela.SimpleParticleCollection_t()
 
 
-        
         ## Only run if mother-daughter associations are available, i.e. nanoAODv15 or newer. 
         if self.NANOVERSION >= 15: 
             LHEMothers = filter(lambda p: p.MELAStatus==1, LHEPart)
             LHEDaughters = filter(lambda p: p.MELAStatus==2, LHEPart)
             LHEAssociated = filter(lambda p: p.MELAStatus==3, LHEPart)
+
+            
+
+            status2 = filter(lambda p: p.status==2, LHEPart)
             for i, mp in enumerate(LHEMothers): 
                 temp_particle = Mela.SimpleParticle_t(mp.pdgId, mp.pt, mp.eta, mp.phi, mp.mass, True)
                 mothers.add_particle(temp_particle)
@@ -53,10 +56,20 @@ class genAngProbFiller(Module):
             for i, dp in enumerate(LHEDaughters): 
                 temp_particle = Mela.SimpleParticle_t(dp.pdgId, dp.pt, dp.eta, dp.phi, dp.mass, True)
                 daughters.add_particle(temp_particle)
+
+
+                
             
             for i, ap in enumerate(LHEAssociated): 
                 temp_particle = Mela.SimpleParticle_t(ap.pdgId, ap.pt, ap.eta, ap.phi, ap.mass, True)
                 associated.add_particle(temp_particle)
+            
+            for i, hp in enumerate(status2): 
+                temp_particle = Mela.SimpleParticle_t(hp.pdgId, hp.pt, hp.eta, hp.phi, hp.mass, True)
+                if hp.pdgId == 25: 
+                        higgs = temp_particle
+                        hMass = hp.mass
+
         elif self.NANOVERSION < 15: 
             # print("genAngProbFiller: NANOAODv14 or older, using workaround")
             for i, lp in enumerate(LHEPart): 
@@ -64,8 +77,9 @@ class genAngProbFiller(Module):
                 if lp.status == -1: 
                     mothers.add_particle(temp_particle)
                 elif lp.status == 1: 
-                    if abs(lp.pdgId) in [11, 13] and i >= len(LHEPart) - 4:
+                    if i >= len(LHEPart) - 4: 
                         daughters.add_particle(temp_particle)
+
                     elif i < len(LHEPart) - 4: 
                         associated.add_particle(temp_particle)
                 elif lp.status == 2: 
@@ -79,9 +93,13 @@ class genAngProbFiller(Module):
         else: 
             print("**genAngProbFiller: No version of NANOAOD specified!")
         
-                
+
+
+
+        # print("Dau len: ", len(daughters.toList()))
+
         #Check if selected 4-leps match the higgs: 
-        if abs(hMass - daughters.MTotal()) < 0.01:
+        if abs(hMass - daughters.MTotal()) < 0.01 and len(daughters.toList()) == 4:
             # self.MELA.setInputEvent(daughters, associated, mothers, 1)
             self.MELA.setInputEvent(daughters, None, None, 0)
             qH, mZ1, mZ2, costheta1, costheta2, Phi, costhetastar, Phi1 = self.MELA.computeDecayAngles()
@@ -92,33 +110,36 @@ class genAngProbFiller(Module):
             self.out.fillBranch("LHEMela_costhetastar", costhetastar)
             self.MELA.resetInputEvent()
         else: 
-            print("Selected 4 leptons too different from H-mass in LHE: ", hMass - daughters.MTotal())
+            if len(daughters.toList()) != 4: 
+                print("Fewer than 4 leptons were selected for this event.")
+            elif abs(hMass - daughters.MTotal()) < 0.01: 
+                print("Selected 4 leptons too different from H-mass in LHE: ", hMass - daughters.MTotal())
             self.MELA.resetInputEvent()
 
-        if self.MELAsettings != None: 
-            self.MELA.setInputEvent(daughters, associated, mothers, 1)
-            setupInputs = {
-                "Name": "Default_SHOULDBERENAMED",
-                "Process": None, 
-                "MatrixElement": None, 
-                "Production":None, 
-                "Prod": None, 
-                "Dec": None, 
-                "Couplings": None, 
-                "isgen": None, 
-                "computeprop": None, 
-                "propscheme": Mela.ResonancePropagatorScheme.FixedWidth, 
-                "decaymode": Mela.CandidateDecayMode.CandidateDecay_ZZ,
-                "separatewwzz":False,
-                "useconstant":False,
-                "match_mX":False,
-                "lepton_interference":Mela.LeptonInterference.DefaultLeptonInterf,
-                "ispm4l": None,
-                "dividep": None 
-            }
-            
-
+        if self.MELAsettings != None and len(daughters.toList()) == 4: 
             for p, prob in enumerate(self.MELAsettings):
+
+                ### Reset the event and the default probability settings per probability to be calculated. 
+                self.MELA.setInputEvent(daughters, associated, mothers, 1)
+                setupInputs = {
+                    "Name": "Default_You_Should_Rename_This",
+                    "Process": None, 
+                    "MatrixElement": None, 
+                    "Production":None, 
+                    "Prod": None, 
+                    "Dec": None, 
+                    "Couplings": None, 
+                    "isgen": None, 
+                    "computeprop": None, 
+                    "propscheme": "FixedWidth", 
+                    "decaymode": "CandidateDecay_ZZ",
+                    "separatewwzz":False,
+                    "useconstant":False,
+                    "match_mX":False,
+                    "lepton_interference":"DefaultLeptonInterf",
+                    "ispm4l": None,
+                    "dividep": None 
+                }
                 ### Only calculate LHE-level probabilities in this function. 
                 if prob["isgen"]:  
                     ### Parse MELA settings for the desired probability and overwrite setup for all given parameters:
@@ -126,36 +147,35 @@ class genAngProbFiller(Module):
 
                     ### Define everything 
                     MELA_Name = setupInputs["Name"]
-                    MELA_Process = initializeMELA.check_enum(setupInputs["Process"], Mela.Process)
-                    MELA_MatrixElement = initializeMELA.check_enum(setupInputs["MatrixElement"], Mela.MatrixElement)
-                    MELA_Production = initializeMELA.check_enum(setupInputs["Production"], Mela.Production)
+                    MELA_Process = check_enum(setupInputs["Process"], Mela.Process)
+                    MELA_MatrixElement = check_enum(setupInputs["MatrixElement"], Mela.MatrixElement)
+                    MELA_Production = check_enum(setupInputs["Production"], Mela.Production)
                     MELA_prod = setupInputs["Prod"]
                     MELA_dec = setupInputs["Dec"]
                     MELA_computeprop = setupInputs["computeprop"]
-                    MELA_propscheme = initializeMELA.check_enum(setupInputs["propscheme"], Mela.ResonancePropagatorScheme)
-                    MELA_decaymode = initializeMELA.check_enum(setupInputs["decaymode"], Mela.CandidateDecayMode)
+                    MELA_propscheme = check_enum(setupInputs["propscheme"], Mela.ResonancePropagatorScheme)
                     MELA_separatewwzz = setupInputs["separatewwzz"]
                     MELA_useconstant = setupInputs["useconstant"]
                     MELA_matchMx = setupInputs["match_mX"]
-                    MELA_leptoninterference = initializeMELA.check_enum(setupInputs["lepton_interference"], Mela.LeptonInterference)
+                    MELA_leptoninterference = check_enum(setupInputs["lepton_interference"], Mela.LeptonInterference)
                     MELA_ispm4l = setupInputs["ispm4l"]
                     MELA_divideP = setupInputs["dividep"]
-
 
                     ### Configure MELA for the event. 
                     self.MELA.setProcess(MELA_Process, MELA_MatrixElement, MELA_Production)
                     self.MELA.differentiate_HWW_HZZ = MELA_separatewwzz
-                    self.MELA.setCandidateDecayMode(MELA_decaymode)
                     self.MELA.setMelaLeptonInterference(MELA_leptoninterference)
+
+                    
 
                     if MELA_matchMx: 
                         self.MELA.setMelaHiggsMassWidth(daughters.MTotal(), 0.00001, 0)
                         self.MELA.setMelaHiggsMassWidth(daughters.MTotal(), 0.00001, 1)
-
-                    for coupl, coupl_val in setupInputs["Couplings"]: 
+                    
+                    for coupl, coupl_val in setupInputs["Couplings"].items(): 
                         setattr(self.MELA, coupl, coupl_val)
 
-        
+                    
                     if MELA_prod and MELA_dec: 
                         probability = self.MELA.computeProdDecP(MELA_useconstant)
                     elif MELA_prod: 
@@ -194,11 +214,11 @@ class genAngProbFiller(Module):
                     
 
                     #TODO: Figure out a way to ensure that denominator probability is always computed before the probability to be normalized. 
-                    if MELA_divideP is not None:
-                        if MELA_divideP == MELA_Name: 
-                            denominator = probability
-                        elif MELA_divideP != MELA_Name: 
-                            probability /= denominator
+                    # if MELA_divideP is not None:
+                    #     if MELA_divideP == MELA_Name: 
+                    #         denominator = probability
+                    #     elif MELA_divideP != MELA_Name: 
+                    #         probability /= denominator
 
 
                 
@@ -206,9 +226,8 @@ class genAngProbFiller(Module):
                 
                 
                 
-                    # self.out.fillBranch("LHEMela_nativeProb", nativeprob)
-                    # self.out.branch("LHEMela_"+prob["name"], "F")
-                    self.out.fillBranch("LHEMela_"+prob["name"], probability)
+
+                    self.out.fillBranch("LHEMela_"+prob["Name"], probability)
                     self.MELA.resetInputEvent()
         
        

@@ -38,12 +38,12 @@ git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
 #(cd MuonMVAReader; git checkout 3d53269)
 
 #Common LHE tools (private FW update, based on v1.4.2)
-git clone https://github.com/namapane/CommonLHETools.git
-(cd CommonLHETools; git checkout for_Mela_2.4.2)
+git clone https://github.com/pianonick411/CommonLHETools
+(cd CommonLHETools; git checkout master)
 
 #MELA
 git clone https://github.com/JHUGen/JHUGenMELA.git JHUGenMELA
-(cd JHUGenMELA; git checkout -b from-v242 v2.4.2; ./setup.sh)
+(cd JHUGenMELA; git checkout -b from-v243 v2.4.3; ./setup.sh)
 
 #MELA Analytics
 git clone https://github.com/MELALabs/MelaAnalytics.git

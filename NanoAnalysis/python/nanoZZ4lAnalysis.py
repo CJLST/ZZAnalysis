@@ -222,7 +222,7 @@ if IsMC:
     weights = weightFiller(XSEC, APPLY_K_NNLOQCD_ZZGG, APPLY_K_NNLOQCD_ZZQQB, APPLY_K_NNLOEW_ZZQQB, APPLY_QCD_GGF_UNCERT)
 
     post_sequence.append(mcTruthAnalyzer(dump=False)) # Gen final state etc.
-    insertAfter(post_sequence, "mcTruthAnalyzer", genExtraFiller(mela))
+    # insertAfter(post_sequence, "mcTruthAnalyzer", genExtraFiller(mela))
 
     if ADD_ALLEVENTS: # Add modules that produce the variables to be stored for all events at the beginning
         from ZZAnalysis.NanoAnalysis.genFiller import *
@@ -242,7 +242,6 @@ if IsMC:
                                                'ggH_NNLOPS_Weight',
                                                'overallEventWeight',
                                                'Pileup_nTrueInt',
-                                               'LHEPart*', #FIXME: should be removed from AllEvents once development is completed
                                                'LHEMela*',
                                                'GenJet*',
                                                ],
@@ -319,8 +318,7 @@ if IsMC:
                           'keep GenJet_*',
                           'keep LHEMela*', 
                           'keep GenJet*',
-                          #'keep LHEMela*', 
-                        #  'keep LHEPart*',
+                          'keep LHEPart*',
                           #'keep Generator*',
                           #'keep PV*',
                         ])
@@ -330,7 +328,7 @@ if IsMC:
                               'keep FidDressedLeps_*',
                               'keep FidZ*',
                               'keep passedFiducial',
-                            #   'keep LHEPart*',
+                              'keep LHEPart*',
                             #   'keep LHEMela*'
                               'keep GenJet*',
                               'keep LHEMela*'
