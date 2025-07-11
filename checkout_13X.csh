@@ -39,7 +39,7 @@ git clone https://github.com/CJLST/ZZAnalysis.git ZZAnalysis
 
 #Common LHE tools (private FW update, based on v1.4.2)
 git clone https://github.com/pianonick411/CommonLHETools
-(cd CommonLHETools; git checkout master)
+(cd CommonLHETools; git checkout -b from-v135 v1.3.5)
 
 #MELA
 git clone https://github.com/JHUGen/JHUGenMELA.git JHUGenMELA

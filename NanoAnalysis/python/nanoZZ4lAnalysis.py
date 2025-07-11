@@ -17,7 +17,7 @@ from ZZAnalysis.NanoAnalysis.ZZFiller import *
 from ZZAnalysis.NanoAnalysis.ZZExtraFiller import *
 from ZZAnalysis.NanoAnalysis.weightFiller import weightFiller
 from ZZAnalysis.NanoAnalysis.LHEFiller import * 
-from ZZAnalysis.NanoAnalysis.genAngProbFiller import * 
+from ZZAnalysis.NanoAnalysis.LHEAngProbFiller import * 
 from ZZAnalysis.NanoAnalysis.initializeMELA import * 
 
 
@@ -252,7 +252,7 @@ if IsMC:
         if NANOVERSION >= 15: 
             insertBefore(pre_sequence, 'cloneBranches', LHEFiller())
         
-        insertBefore(pre_sequence, 'cloneBranches', genAngProbFiller(mela, NANOVERSION, melaSettings))
+        insertBefore(pre_sequence, 'cloneBranches', LHEAngProbFiller(mela, NANOVERSION, melaSettings))
 
     else : # Add them at the end, so that they are run only for selected events
         post_sequence.extend([puWeight(LEPTON_SETUP,DATA_TAG),
