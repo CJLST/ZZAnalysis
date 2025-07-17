@@ -44,6 +44,7 @@ class genExtraFiller(Module):
 
  
         # MELA angle arrays
+        qH = -999. 
         helcosthetaZ1 = -999.
         helcosthetaZ2 = -999.
         helPhi = -999.
