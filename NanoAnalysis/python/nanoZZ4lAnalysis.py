@@ -230,6 +230,7 @@ if IsMC:
         pre_sequence = [puWeight(LEPTON_SETUP, DATA_TAG),
                         weights, 
                         genFiller(mela, dump=False),
+                        LHEAngProbFiller(mela, NANOVERSION, melaSettings),
                         cloneBranches(treeName='AllEvents',
                                       varlist=['run', 'luminosityBlock', 'event',
                                                'GenDressedLepton_*',
@@ -252,7 +253,7 @@ if IsMC:
         if NANOVERSION >= 15: 
             insertBefore(pre_sequence, 'cloneBranches', LHEFiller())
         
-        insertBefore(pre_sequence, 'cloneBranches', LHEAngProbFiller(mela, NANOVERSION, melaSettings))
+        
 
     else : # Add them at the end, so that they are run only for selected events
         post_sequence.extend([puWeight(LEPTON_SETUP,DATA_TAG),
@@ -317,7 +318,6 @@ if IsMC:
                           'keep Pileup*',
                           'keep GenJet_*',
                           'keep LHEMela*', 
-                          'keep GenJet*',
                           'keep LHEPart*',
                           #'keep Generator*',
                           #'keep PV*',
@@ -328,10 +328,8 @@ if IsMC:
                               'keep FidDressedLeps_*',
                               'keep FidZ*',
                               'keep passedFiducial',
-                              'keep LHEPart*',
+                            #   'keep LHEPart*',
                             #   'keep LHEMela*'
-                              'keep GenJet*',
-                              'keep LHEMela*'
                               ])
 
 from PhysicsTools.NanoAODTools.postprocessing.framework.postprocessor import PostProcessor

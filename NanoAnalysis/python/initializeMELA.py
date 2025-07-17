@@ -54,34 +54,6 @@ def check_enum(entry, enum):
         raise ValueError("\n" + errortext)
     return mapping[entry]
 
-# def couplingsParser(couplings):
-#     couplings = couplings.replace("|", ",")
-#     couplings = couplings.replace("+", ",")
-
-#     coupling_list = eval(couplings)
-    
-#     return coupling_list
-
-
-# def settingsParser(matrixelement, process, couplings, production, prod, dec, computeprop, propscheme, dividep, separatewwzz, useconstant, match_MX, lepton_interference):
-#     settingsDict = {}
-#     settingsDict["matrixelement"] = check_enum(matrixelement, Mela.MatrixElement)
-#     settingsDict["process"] = check_enum(process, Mela.Process)
-#     settingsDict["couplings"] = couplingsParser(couplings)
-#     settingsDict["production"] = check_enum(production, Mela.Production)
-#     settingsDict["prod"] = prod
-#     settingsDict["dec"] = dec
-#     settingsDict["computeprop"] = computeprop 
-#     if type(propscheme) == str: 
-#         settingsDict["propscheme"] = check_enum(propscheme, Mela.ResonancePropagatorScheme)
-#     settingsDict["dividep"] = dividep ###TODO is this really useful if we're only just calculating the native probability? 
-#     settingsDict["separatewwzz"] = separatewwzz 
-#     settingsDict["useconstant"] = useconstant
-#     settingsDict["match_MX"] = match_MX
-#     if type (lepton_interference) == str:
-#         settingsDict["lepton_interference"] = check_enum(lepton_interference, Mela.LeptonInterference)
-
-#     return settingsDict
 
 
 

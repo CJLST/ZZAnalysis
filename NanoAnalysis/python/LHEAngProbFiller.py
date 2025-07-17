@@ -6,13 +6,13 @@ from  ZZAnalysis.NanoAnalysis.initializeMELA import check_enum
 import Mela
 
 
-class genAngProbFiller(Module):
+class LHEAngProbFiller(Module):
     """Calculates angles and proabilities with LHE-level information. 
     MELA = Pointer to MELA passed from nanoZZ4lAnalysis.py 
     """
     
     def __init__(self, MELA, NANOVERSION, settingsDict = None):
-        print("***genAngProbFiller", flush=True)
+        print("***LHEAngProbFiller", flush=True)
         self.MELA = MELA
         self.MELAsettings = settingsDict
         self.NANOVERSION = NANOVERSION
@@ -20,16 +20,23 @@ class genAngProbFiller(Module):
             
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
-        self.out.branch("LHEMela_qH", "F")
-        self.out.branch("LHEMela_mZ1", "F")
-        self.out.branch("LHEMela_mZ2", "F")
-        self.out.branch("LHEMela_costheta1", "F")
-        self.out.branch("LHEMela_costheta2", "F")
-        self.out.branch("LHEMela_Phi", "F")
-        self.out.branch("LHEMela_costhetastar", "F")
-        self.out.branch("LHEMela_Phi1", "F")
+        self.out.branch("LHEMela_qH", "F", title="The mass of the Higgs candidate as reconstructed by the 4-leptons at LHE-level.")
+        self.out.branch("LHEMela_mZ1", "F", title="The mass of the first decay particle as reconstructed by 2 of the LHE-level leptons.")
+        self.out.branch("LHEMela_mZ2", "F", title="The mass of the second decay particle as reconstructed by 2 of the LHE-level leptons.")
+        self.out.branch("LHEMela_costheta1", "F", limitedPrecision=16, title="In the Higgs' rest frame, theta_1 is the angle between the momentum of Z1 and the momentum of one of its decay products.")
+        self.out.branch("LHEMela_costheta2", "F", limitedPrecision=16, title="In the Higgs' rest frame, theta_2 is the angle between the momentum of Z2 and the momentum of one of its decay products.")
+        self.out.branch("LHEMela_Phi", "F", limitedPrecision=16, title="In the Higgs' rest frame, phi is the angle between the planes formed by the decay products of the two Z bosons.")
+        self.out.branch("LHEMela_costhetastar", "F", limitedPrecision=16, title="In the Higgs' rest frame, theta_star is the angle between the beamline and the momentum of one of the Higgs' decay products.")
+        self.out.branch("LHEMela_Phi1", "F", limitedPrecision=16, title="In the Higgs' rest frame, phi_1 is the angle between the decay plane of Z1 and the beamline.")
         for i, prob in enumerate(self.MELAsettings): 
-            self.out.branch(f"LHEMela_{prob['Name']}", "F")
+            self.out.branch(f"LHEMela_{prob['Name']}", "F", limitedPrecision=16, title="User-defined LHE-level probability")
+            if prob["ispm4l"]: 
+                self.out.branch("LHEMela_"+prob["Name"]+"_ScaleUp", "F", limitedPrecision=16, title="User-defined LHE-level m4l probability with Scale uncertainties up")
+                self.out.branch("LHEMela_"+prob["Name"]+"_ScaleDown", "F", limitedPrecision=16, title="User-defined LHE-level m4l probability with Scale uncertainties down")
+                self.out.branch("LHEMela_"+prob["Name"]+"_SystUp", "F", limitedPrecision=16, title="User-defined LHE-level m4l probability with Systematic uncertainties up")
+                self.out.branch("LHEMela_"+prob["Name"]+"_SystDown", "F", limitedPrecision=16, title="User-defined LHE-level m4l probability with Systematic uncertainties down")
+            if prob["computeprop"]: 
+                self.out.branch("LHEMela_"+prob["Name"]+"_prop", "F", limitedPrecision=16, title="User-defined LHE-level probability with non-default propagator scheme")
 
         
     def analyze(self, event):
@@ -111,9 +118,9 @@ class genAngProbFiller(Module):
             self.MELA.resetInputEvent()
         else: 
             if len(daughters.toList()) != 4: 
-                print("Fewer than 4 leptons were selected for this event.")
+                print(f"WARNING: LHEAngProbFiller: {len(daughters.toList())} LHE-leptons were selected for this event (4 expected)!")
             elif abs(hMass - daughters.MTotal()) < 0.01: 
-                print("Selected 4 leptons too different from H-mass in LHE: ", hMass - daughters.MTotal())
+                print(f"WARNING: LHEAngProbFiller: The invariant mass of the four LHE-leptons, {daughters.MTotal()}, is too different from the mass of the LHE-Higgs {hMass}! Expected a difference of less than 0.01, obtained a difference of ", hMass - daughters.MTotal())
             self.MELA.resetInputEvent()
 
         if self.MELAsettings != None and len(daughters.toList()) == 4: 
@@ -189,16 +196,9 @@ class genAngProbFiller(Module):
                         probability_SystUp = self.MELA.computePM4l(Mela.SuperMelaSyst.SMSyst_ResUp)
                         probability_SystDown = self.MELA.computePM4l(Mela.SuperMelaSyst.SMSyst_ResDown)
 
-                        self.out.branch("LHEMela_"+setupInputs["Name"]+"_ScaleUp", "F")
                         self.out.fillBranch("LHEMela_"+setupInputs["Name"]+"_ScaleUp", probability_ScaleUp)
-
-                        self.out.branch("LHEMela_"+setupInputs["Name"]+"_ScaleDown", "F")
                         self.out.fillBranch("LHEMela_"+setupInputs["Name"]+"_ScaleDown", probability_ScaleDown)
-
-                        self.out.branch("LHEMela_"+setupInputs["Name"]+"_SystUp", "F")
                         self.out.fillBranch("LHEMela_"+setupInputs["Name"]+"_SystUp", probability_SystUp)
-
-                        self.out.branch("LHEMela_"+setupInputs["Name"]+"_SystDown", "F")
                         self.out.fillBranch("LHEMela_"+setupInputs["Name"]+"_SystDown", probability_SystDown)
 
 
@@ -207,7 +207,6 @@ class genAngProbFiller(Module):
                     
                     if MELA_computeprop and (MELA_prod or MELA_dec): 
                         probabilityprop = self.MELA.getXPropagator(MELA_propscheme)
-                        self.out.branch("LHEMela_"+setupInputs["Name"]+"_prop", "F")
                         self.out.fillBranch("LHEMela_"+setupInputs["Name"]+"_prop", probabilityprop)
                     elif MELA_computeprop: 
                         probability = self.MELA.getXPropagator(MELA_propscheme)
