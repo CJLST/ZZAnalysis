@@ -43,7 +43,7 @@ class genExtraFiller(Module):
         genLeps = [genpart[event.GenZZ_Z1l1Idx], genpart[event.GenZZ_Z1l2Idx], genpart[event.GenZZ_Z2l1Idx], genpart[event.GenZZ_Z2l2Idx]]
 
  
-        # MELA angle arrays
+        # MELA angles
         qH = -999. 
         helcosthetaZ1 = -999.
         helcosthetaZ2 = -999.
