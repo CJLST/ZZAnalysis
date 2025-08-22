@@ -36,6 +36,7 @@ def customizeBranchselForSync_(p) :
                                        'drop ZZCand_Phi*',
                                        'drop ZZCand_costheta*',
                                        'drop ZZCand_nExtra*',
+                                       'keep bestCandIdx',
                                        'keep Generator_weight',                                   
                                        'keep puWeight',
                                        'keep ggH_NNLOPS_Weight', # save if filled 

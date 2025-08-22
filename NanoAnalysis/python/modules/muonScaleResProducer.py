@@ -25,5 +25,5 @@ def getMuonScaleRes(era, tag, is_mc, overwritePt=True) :
     json = "%s/src/ZZAnalysis/NanoAnalysis/data/MuonScale/%s" % (os.environ['CMSSW_BASE'], fname)
 
     print("***muonScaleRes: era:", era, "tag:", tag, "is MC:", is_mc, "overwritePt:", overwritePt, "json:", json)
-    return muonScaleRes(json, is_mc, overwritePt)
+    return muonScaleRes(json, is_mc, overwritePt, minPt=3.)
 

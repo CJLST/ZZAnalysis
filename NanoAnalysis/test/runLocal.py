@@ -76,7 +76,9 @@ elif SampleToRun == "Data2024" :
     setConf("IsMC",False)
     setConf("SAMPLENAME","MuonEG2024Cv1")
     setConf("XSEC",-1.0)
-    setConf("fileNames",['root://cms-xrd-global.cern.ch//store/data/Run2024C/MuonEG/NANOAOD/MINIv6NANOv15-v1/2530000/694ee48f-c22e-4ae3-83f8-19f98edb481b.root', 'root://cms-xrd-global.cern.ch//store/data/Run2024C/MuonEG/NANOAOD/MINIv6NANOv15-v1/2530000/d5d27820-494a-4dba-aadb-d1d210a90a33.root'])
+    setConf("fileNames",['root://cms-xrd-global.cern.ch//store/data/Run2024C/MuonEG/NANOAOD/MINIv6NANOv15-v1/2530000/694ee48f-c22e-4ae3-83f8-19f98edb481b.root',
+                         #'root://cms-xrd-global.cern.ch//store/data/Run2024C/MuonEG/NANOAOD/MINIv6NANOv15-v1/2530000/d5d27820-494a-4dba-aadb-d1d210a90a33.root'
+                         ])
 
 ################################################################################
 elif SampleToRun == "ggh125_2018UL" : ### 2018 UL test sample
