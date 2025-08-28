@@ -21,8 +21,8 @@ def getJetVetoMap(era, tag) :
                 corrName = "Summer23BPixPrompt23_RunD_V1"
 
     elif era == 2024:
-       folderKey = "2024_Winter24"
-       corrName = "Winter24Prompt2024BCDEFGHI_V1"
+       folderKey = "2024_Summer24"
+       corrName = "Summer24Prompt24_RunBCDEFGHI_V1"
 
     json_JVMAP = "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/%s/jetvetomaps.json.gz" % (folderKey)
     veto_map_name= "jetvetomap"

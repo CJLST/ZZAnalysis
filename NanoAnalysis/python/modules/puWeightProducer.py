@@ -246,3 +246,12 @@ def puWeight(era, data_tag):
             json = "%s/src/ZZAnalysis/NanoAnalysis/data/puWeights_2023_Summer23postBPix.json.gz" % os.environ['CMSSW_BASE']
             key = "Collisions2023_369803_370790_eraD_GoldenJson"
         return puWeightProducer_corrlib(json, key)
+
+    elif era == 2024:
+        from PhysicsTools.NATModules.modules.puWeightProducer import puWeightProducer as puWeightProducer_corrlib
+        json = "%s/src/ZZAnalysis/NanoAnalysis/data/puWeights_2024.json.gz" % os.environ['CMSSW_BASE']
+        key = "Collisions2024_378981_386951_GoldenJson"
+        return puWeightProducer_corrlib(json, key)
+
+    else:
+        raise ValueError(f"Era {era} not supported yet")

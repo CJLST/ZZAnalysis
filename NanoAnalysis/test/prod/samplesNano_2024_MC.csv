@@ -1,0 +1,61 @@
+identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments,comment
+###,,,,,,,,,,,xsec for H125 samples is taken from this ad interim prescription: https://twiki.cern.ch/twiki/bin/view/LHCPhysics/LHCHWG136TeVxsec_extrap
+###,,,,,,,,,,,for the other mass points the xsec is scaled from 13 TeV to 13.6 TeV following this prescription: xsec_13p6 = xsec_13 * 0.4 + xsec_14 * 0.6 https://indico.cern.ch/event/1169286/contributions/5126668/attachments/2557560/4416316/HXSWG.pdf#page=5
+###,,,,,,,,,,,signal BR values taken from YR4 https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageBR
+###,,,,,,,,,,,for ZH and ttH the BR is obtained as BR(H->ZZ->2L2X) = BR(H->4L) + BR(H->2L2q) + BR(H->ZZ*->2L2nu) * BR(H->2L2nu) / [ BR(H->ZZ*->2L2nu) + BR(H->WW*->2L2nu) ] where BR(H->4L) BR(H->2L2q) and BR(H->2L2nu) are taken from the YR4 twiki
+###,,,,,,,,,,,for ZH the BR column includes also the gen filter efficiency: values for mH=124-126 = 0.15093 0.15069; 0.15012; 0.15058; 0.15045
+
+###,,,,,,,,,,,samples for postBPix data taking period (ERA D)
+###,,,,,,,,,,,signal samples
+ggH125                   ,,52.23,0.0002745,,/GluGluH-Hto2Zto4L_Par-M-125_TuneCP5_13p6TeV_powheg-jhugen-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE
+=0;APPLY_QCD_GGF_UNCERT=True;LEPTON_SETUP=2024;ADD_ALLEVENTS=True;APPLYELECORR=True;APPLYMUCORR=True;APPLYJETCORR = True,,
+
+VBFH125                 ,,4.078,0.0002745,,/VBFH-Hto2Zto4L_Par-M-125_TuneCP5_13p6TeV_powheg-jhugen-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;L
+EPTON_SETUP=2024;ADD_ALLEVENTS=True;APPLYELECORR=True;APPLYMUCORR=True;APPLYJETCORR = True,,
+
+WplusH125               ,,0.8889,0.0002745,,/WplusH-Hto2Zto4L_Par-M-125_TuneCP5_13p6TeV_powhegMINLO-jhugen-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMO
+DE=1;VVDECAYMODE=0;LEPTON_SETUP=2024;ADD_ALLEVENTS=True;APPLYELECORR=True;APPLYMUCORR=True;APPLYJETCORR = True,,
+
+WminusH125                  ,,0.5677,0.0002745,,/WminusH-Hto2Zto4L_Par-M-125_TuneCP5_13p6TeV_powhegMINLO-jhugen-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True
+;VVMODE=1;VVDECAYMODE=0;LEPTON_SETUP=2024;ADD_ALLEVENTS=True;APPLYELECORR=True;APPLYMUCORR=True;APPLYJETCORR = True,,
+
+ttH125                      ,,0.5700,0.0002745,,/TTH-Hto2Zto4L_Par-M-125_TuneCP5_13p6TeV_powheg-jhugen-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;
+VVDECAYMODE=-2;LEPTON_SETUP=2024;ADD_ALLEVENTS=True;APPLYELECORR=True;APPLYMUCORR=True;APPLYJETCORR = True,,
+
+bbH125                      ,,0.5266,0.0002745,,/BBH-Hto2Zto4L_Par-M-125_TuneCP5_13p6TeV_jhugen-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=
+0;LEPTON_SETUP=2024;ADD_ALLEVENTS=True;APPLYELECORR=True;APPLYMUCORR=True;APPLYJETCORR = True,,
+
+
+###,,,,,,,,,,,qq->ZZ background  - xsec taken from powheg gridpack
+ZZTo4l                          ,,1.39,,,/ZZto4L_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.39;GENBR=1;PROCESS_CR=True;APPLY_K_NNLOQCD_ZZQQB=True;APPLY_K_NLOEW_ZZQQB=Tru
+e;LEPTON_SETUP=2024;APPLYELECORR=True;APPLYMUCORR=True;APPLYJETCORR = True,,
+
+###,,,,,,,,,,,gg->ZZ background - xsec taken from gridpack
+
+#ggTo4e_Contin_MCFM701           ,,0.00305851,,,/GluGlutoContinto2Zto4E_TuneCP5_13p6TeV_mcfm701-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=0.00319142;GENBR=1;PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;LEPTON_SETUP=2023;DATA_TAG=post_BPix;APPLYELECORR=True;APPLYMUCORR=True;APPLYJETCORR = True,,
+#ggTo4mu_Contin_MCFM701          ,,0.00303575,,,/GluGlutoContinto2Zto4Mu_TuneCP5_13p6TeV_mcfm701-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=0.00319142;GENBR=1;PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;LEPTON_SETUP=2023;DATA_TAG=post_BPix;APPLYELECORR=True;APPLYMUCORR=True;APPLYJETCORR = True,,
+#ggTo4tau_Contin_MCFM701         ,,0.00303575,,,/GluGlutoContinto2Zto4Tau_TuneCP5_13p6TeV_mcfm701-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=0.00319142;GENBR=1;PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;LEPTON_SETUP=2023;DATA_TAG=post_BPix;APPLYELECORR=True;APPLYMUCORR=True;APPLYJETCORR = True,,
+#ggTo2e2mu_Contin_MCFM701        ,,0.00624157,,,/GluGluToContinto2Zto2E2Mu_TuneCP5_13p6TeV_mcfm701-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=0.00319142;GENBR=1;PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;LEPTON_SETUP=2023;DATA_TAG=post_BPix;APPLYELECORR=True;APPLYMUCORR=True;APPLYJETCORR = True,,
+#ggTo2e2tau_Contin_MCFM701       ,,0.00624157,,,/GluGlutoContinto2Zto2E2Tau_TuneCP5_13p6TeV_mcfm701-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=0.00319142;GENBR=1;PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;LEPTON_SETUP=2023;DATA_TAG=post_BPix;APPLYELECORR=True;APPLYMUCORR=True;APPLYJETCORR = True,,
+#ggTo2mu2tau_Contin_MCFM701      ,,0.00624157,,,/GluGlutoContinto2Zto2Mu2Tau_TuneCP5_13p6TeV_mcfm701-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=0.00319142;GENBR=1;PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;LEPTON_SETUP=2023;DATA_TAG=post_BPix;APPLYELECORR=True;APPLYMUCORR=True;APPLYJETCORR = True,,
+
+###,,,,,,,,,,,VVV bkg
+WWZ                             ,,0.1851,,,/WWZ-4F_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;LEPTON_SETUP=2024;APPLYELECO
+RR=True;APPLYMUCORR=True;APPLYJETCORR = True,,
+WZZ                             ,,0.0621,,,/WZZ-5F_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;LEPTON_SETUP=2024;APPLYELECORR=
+True;APPLYMUCORR=True;APPLYJETCORR = True,,
+ZZZ                             ,,0.0159,,,/ZZZ-5F_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;LEPTON_SETUP=2024;APPLYELECORR=
+True;APPLYMUCORR=True;APPLYJETCORR = True,,
+
+###,,,,,,,,,,,rare bkg targeting ttH categories
+TTWW                            ,,0.008203,,,/TTWW_TuneCP5_13p6TeV_madgraph-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;LEPTON_SETUP=2024;APPLYELECORR=True;APPLYMUCORR=True;APPLYJETCORR = True,,
+#TTZZ                            ,,0.001579,,,/TTZZ_TuneCP5_13p6TeV_madgraph-madspin-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;LEPTON_SETUP=2023;DATA_TAG=post_BPix;APPLYELECORR=True;APPLYMUCORR=True;APPLYJETCORR = True,,
+
+###,,,,,,,,,,,bkg for Z+X studies
+WZto3LNu                        ,,4.924,,,/WZto3LNu_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;PROCESS_ZL=True;FILTER_EVENTS=Z;LEPTON_SETUP=202
+4;APPLYELECORR=True;APPLYMUCORR=True;APPLYJETCORR = True,,
+
+#DYJetsToLL                      ,,5558.0,,,/DYto2L-4Jets_MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v3/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;PROCESS_ZL=True;FILTER_EVENTS=Z;LEPTON_SETUP=2023;DATA_TAG=post_BPix;APPLYELECORR=True;APPLYMUCORR=True;APPLYJETCORR = True,,
+
+TTto2L2Nu                       ,,762.1,,,/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,GENXSEC=1.;GENBR=1.;PROCESS_CR=True;PROCESS_ZL=True;FILTER_EVENTS=Z;LEPTON_SETUP=20
+24;APPLYELECORR=True;APPLYMUCORR=True;APPLYJETCORR = True,,

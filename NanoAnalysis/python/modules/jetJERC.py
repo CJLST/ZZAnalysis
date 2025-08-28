@@ -73,13 +73,21 @@ def getJetCorrected(era, tag, is_mc, overwritePt=True) :
                 raise ValueError("getJetCorrected: tag", era, "not supported")
     elif era == 2024:
         if is_mc :
-            raise ValueError("getJetCorrected: 2024 MC not yet supported")
+            folderKey = "2024_Summer24"
+            L1Key = "Summer24Prompt24_V1_MC_L1FastJet_AK4PFPuppi"
+            L2Key = "Summer24Prompt24_V1_MC_L2Relative_AK4PFPuppi"
+            L3Key = "Summer24Prompt24_V1_MC_L3Absolute_AK4PFPuppi"
+            L2L3Key = "Summer24Prompt24_V1_MC_L2L3Residual_AK4PFPuppi"
+            scaleTotalKey = "Summer24Prompt24_V1_MC_Total_AK4PFPuppi"
+            smearKey = "JERSmear"
+            JERKey = "Summer23Prompt23_RunCv1234_JRV1_MC_PtResolution_AK4PFPuppi" # it is correct, string found in 2024 files
+            JERsfKey = "Summer23Prompt23_RunCv1234_JRV1_MC_ScaleFactor_AK4PFPuppi" # it is correct, string found in 2024 files
         else :
-            folderKey = "2024_Winter24"
-            L1Key = "Winter24Prompt24_V3_DATA_L1FastJet_AK4PFPuppi"
-            L2Key = "Winter24Prompt24_V3_DATA_L2Relative_AK4PFPuppi"
-            L3Key = "Winter24Prompt24_V3_DATA_L3Absolute_AK4PFPuppi"
-            L2L3Key = "Winter24Prompt24_V3_DATA_L2L3Residual_AK4PFPuppi"
+            folderKey = "2024_Summer24"
+            L1Key = "Summer24Prompt24_V1_DATA_L1FastJet_AK4PFPuppi"
+            L2Key = "Summer24Prompt24_V1_DATA_L2Relative_AK4PFPuppi"
+            L3Key = "Summer24Prompt24_V1_DATA_L3Absolute_AK4PFPuppi"
+            L2L3Key = "Summer24Prompt24_V1_DATA_L2L3Residual_AK4PFPuppi"
             scaleTotalKey = None
             smearKey = None
             JERKey = None
