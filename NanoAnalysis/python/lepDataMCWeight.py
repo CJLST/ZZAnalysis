@@ -7,12 +7,12 @@ from ROOT import LeptonSFHelper
 
 
 class lepDataMCWeight(Module):
-    def __init__(self, year, data_tag):
+    def __init__(self, year, data_tag, muonIdByMVA = False):
         '''Add data/MC weights to leptons.'''
         
-        print("***lepDataMCWeight: year:", year, "data_tag:", data_tag, flush=True)
+        print("***lepDataMCWeight: year:", year, "data_tag:", data_tag, "muonIdByMVA:", muonIdByMVA, flush=True)
         self.year = year
-        self.lepSFHelper = LeptonSFHelper(year, data_tag)
+        self.lepSFHelper = LeptonSFHelper(year, data_tag+("MUON_ID_BYMVA" if muonIdByMVA else "")) # Squeeze muonIdByMVA in data_tag to avoid changing the C++ interface
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree

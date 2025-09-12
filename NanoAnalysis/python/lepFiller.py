@@ -11,7 +11,7 @@ from PhysicsTools.HeppyCore.utils.deltar import deltaR
 from ZZAnalysis.NanoAnalysis.tools import branchCollection
 
 class lepFiller(Module):
-    def __init__(self, cuts, era):
+    def __init__(self, cuts, era, muonIdByMVA):
         print("***lepFiller: era:", era, flush=True)
         self.writeHistFile=False
         self.cuts = cuts
@@ -25,6 +25,7 @@ class lepFiller(Module):
         self.muRelaxedIdNoSIP = cuts["muRelaxedIdNoSIP"]
         self.muFullId = cuts["muFullId"]
         self.muFullIdNoSIP = cuts["muFullIdNoSIP"]
+        self.muonIdByMVA = muonIdByMVA
         self.era = era
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
@@ -164,8 +165,8 @@ class lepFiller(Module):
         for ilep,lep in enumerate(muons) :
             mu_isoFsrCorr[ilep] = self.isoFsrCorr(lep, selectedFSR)
             mu_passIso[ilep] = mu_isoFsrCorr[ilep] < self.cuts["relIso"]
-            muFullSel[ilep] = muFullId[ilep] and mu_passIso[ilep]
-            muFullSelNoSIP[ilep] = muFullIdNoSIP[ilep] and mu_passIso[ilep]
+            muFullSel[ilep] = ((muFullId[ilep] and lep.mvaLowPt > self.cuts["muMva"]) if self.muonIdByMVA else (muFullId[ilep] and mu_passIso[ilep]))
+            muFullSelNoSIP[ilep] = ((muFullIdNoSIP[ilep] and lep.mvaLowPt > self.cuts["muMva"]) if self.muonIdByMVA else (muFullIdNoSIP[ilep] and mu_passIso[ilep]))
 
         fsrM = [0.]*len(fsrPhotons)
         self.out.fillBranch("FsrPhoton_mass", fsrM)

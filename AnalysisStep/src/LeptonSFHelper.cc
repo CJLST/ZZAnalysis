@@ -140,7 +140,11 @@ LeptonSFHelper::LeptonSFHelper(int year, std::string const &data_tag) :
     if(data_tag.find("pre_EE") != std::string::npos) { // 2022 Muons preEE
       f_mu = basePath+"final_HZZ_SF_Run3_2022_mupogsysts_newLoose_abseta3_fix_BCD_RMS.root";
     } else { // 2022 Muons postEE
-      f_mu = basePath+"final_HZZ_SF_Run3_2022_mupogsysts_newLoose_abseta3_fix_EFG_RMS.root";
+      if (data_tag.find("MUON_ID_BYMVA") != std::string::npos) {
+        f_mu = basePath + "mu_HZZ_2022_post_EE_MVA_ID.root"; // Muon MVA WP (2022postEE)
+      } else {
+        f_mu = basePath+"final_HZZ_SF_Run3_2022_mupogsysts_newLoose_abseta3_fix_EFG_RMS.root";
+      }
     }
   } else if (year>=2023) { // 2023 Muons FIXME: add 2024
     // 2023 Muons preBPix/postBPix/ - root files taken from /afs/cern.ch/user/y/yujil/public/SF2023/

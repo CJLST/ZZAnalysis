@@ -44,6 +44,7 @@ PROCESS_ZL = getConf("PROCESS_ZL", False) # fill ZL control region
 APPLYMUCORR = getConf("APPLYMUCORR", True) # apply muon momentum scale/resolution corrections
 APPLYELECORR = getConf("APPLYELECORR", True) # apply electron momentum scale/resolution corrections
 APPLYJETCORR = getConf("APPLYJETCORR", True) # apply jet corrections
+MUON_ID_BYMVA = getConf("MUON_ID_BYMVA", False) # if false - standard selection for muons ; if true - new WP (Muon_mvalowPt > -0.6, sip < 8, no iso)
 # ggH NNLOPS weight
 APPLY_QCD_GGF_UNCERT = getConf("APPLY_QCD_GGF_UNCERT", False)
 # K factors for ggZZ (and old NLO ggH samples) 0:None; 1: NNLO/LO; 2: NNLO/NLO; 3: NLO/LO
@@ -87,11 +88,13 @@ cuts = dict(
     muPt = 5.,
     elePt = 7.,
     relIso = 0.35,
-    sip3d = 4.,
+    sip3d_ele = 4.,
+    sip3d_mu = (8. if MUON_ID_BYMVA else 4.),
     dxy =  0.5,
     dz = 1.,
     fsr_dRET2 = 0.012,
     fsr_Iso = 1.8,
+    muMva = -0.6,
 
     ## Relaxed ID without SIP (starting point for SIP-less CR)
     # Notes: Muon.nStations is numberOfMatchedStation, not numberOfMatches; also, muonBestTrackType!=2 is not available in nanoAODs
@@ -110,8 +113,8 @@ cuts = dict(
     passMuID = (lambda l: (l.isPFcand or (l.highPtId>0 and l.pt>200.))),
 
     # Relaxed IDs used for CRs for fake rate method
-    muRelaxedId  = (lambda l : cuts["muRelaxedIdNoSIP"](l) and abs(l.sip3d) < cuts["sip3d"]),
-    eleRelaxedId = (lambda l : cuts["eleRelaxedIdNoSIP"](l) and abs(l.sip3d) < cuts["sip3d"]),
+    muRelaxedId  = (lambda l : cuts["muRelaxedIdNoSIP"](l) and abs(l.sip3d) < cuts["sip3d_mu"]),
+    eleRelaxedId = (lambda l : cuts["eleRelaxedIdNoSIP"](l) and abs(l.sip3d) < cuts["sip3d_ele"]),
 
     # Full ID except for SIP (without isolation: FSR-corrected iso has to be applied on top, for muons)
     muFullIdNoSIP  = (lambda l, era : cuts["muRelaxedIdNoSIP"](l) and (l.isPFcand or (l.highPtId>0 and l.pt>200.))),
@@ -170,7 +173,7 @@ if not IsMC :
 ### Modules to be run
 
 # Standard sequence used for both data and MC
-reco_sequence = [lepFiller(cuts, LEPTON_SETUP), # FSR and FSR-corrected iso; flags for passing IDs
+reco_sequence = [lepFiller(cuts, LEPTON_SETUP, MUON_ID_BYMVA), # FSR and FSR-corrected iso; flags for passing IDs
                  ZZFiller(bestCandByMELA, mela,
                           isMC=IsMC,
                           year=LEPTON_SETUP,
@@ -223,7 +226,7 @@ post_sequence = []
 if IsMC:
     from ZZAnalysis.NanoAnalysis.modules.puWeightProducer import *
     from ZZAnalysis.NanoAnalysis.lepDataMCWeight import *
-    insertBefore(reco_sequence, 'ZZExtraFiller', lepDataMCWeight(LEPTON_SETUP, DATA_TAG))
+    insertBefore(reco_sequence, 'ZZExtraFiller', lepDataMCWeight(LEPTON_SETUP, DATA_TAG, muonIdByMVA = MUON_ID_BYMVA))
 
     # Weights computation, to be placed in pre or post sequences based on the configuration
     from ZZAnalysis.NanoAnalysis.weightFiller import weightFiller
