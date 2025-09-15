@@ -74,6 +74,10 @@ MELAprobabilities = getConf("probabilities", None)
 # Process customizations - list of functions that operate on process
 customizations = getConf("customizations", [])
 
+# Keep GenXS and GenBr for properly scaling samples with AC. 
+genXS = getConf("GENXSEC", 1.)
+genBR = getConf("GENBR", 1.)
+
 from ZZAnalysis.NanoAnalysis.initializeMELA import * 
 mela, melaSettings = initializeMELA(runMELA, LEPTON_SETUP, probabilities=MELAprobabilities)
                                                   
@@ -224,6 +228,12 @@ if IsMC:
     # Weights computation, to be placed in pre or post sequences based on the configuration
     from ZZAnalysis.NanoAnalysis.weightFiller import weightFiller
     weights = weightFiller(XSEC, APPLY_K_NNLOQCD_ZZGG, APPLY_K_NNLOQCD_ZZQQB, APPLY_K_NNLOEW_ZZQQB, APPLY_QCD_GGF_UNCERT)
+    
+    #Protect against writing a bunch of 1's. 
+    if (genXS != 1) and (genBR != 1): 
+        from ZZAnalysis.NanoAnalysis.genXSFiller import * 
+        post_sequence.append(genXSFiller(genXS,genBR))
+    
 
     from ZZAnalysis.NanoAnalysis.mcTruthAnalyzer import *
     post_sequence.append(mcTruthAnalyzer()) # Gen final state etc.
@@ -325,6 +335,8 @@ if IsMC:
                           'keep HTXS_njets30',
                           'keep Pileup*',
                           'keep GenJet_*',
+                          'keep genxsec', 
+                          'keep genbr',
                           #'keep Generator*',
                           #'keep PV*',
                         ])

@@ -230,22 +230,23 @@ def puWeight(era, data_tag):
         
         from PhysicsTools.NATModules.modules.puWeightProducer import puWeightProducer as puWeightProducer_corrlib
         if "pre_EE" in data_tag :
-            json = "%s/src/ZZAnalysis/NanoAnalysis/data/puWeights_2022_Summer22.json.gz" % os.environ['CMSSW_BASE']
+            json = "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2022_Summer22/puWeights.json.gz" # md5sum: 4ace5f732cc3fe8ba2ed816b6f76d60a
             key = "Collisions2022_355100_357900_eraBCD_GoldenJson"
         else :
-            json = "%s/src/ZZAnalysis/NanoAnalysis/data/puWeights_2022_Summer22EE.json.gz" % os.environ['CMSSW_BASE']
+            json = "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2022_Summer22EE/puWeights.json.gz" # md5sum: d959ba71b4f10fbe8517bff06f5bd11f  
             key = "Collisions2022_359022_362760_eraEFG_GoldenJson"
         return puWeightProducer_corrlib(json, key)
 
     elif era == 2023 :
         from PhysicsTools.NATModules.modules.puWeightProducer import puWeightProducer as puWeightProducer_corrlib
         if "pre_BPix" in data_tag :
-            json = "%s/src/ZZAnalysis/NanoAnalysis/data/puWeights_2023_Summer23preBPix.json.gz" % os.environ['CMSSW_BASE']
+            json = "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2023_Summer23/puWeights.json.gz" # md5sum: 6c70dd5f5b08e0d7c49a47282f2b64a9
             key = "Collisions2023_366403_369802_eraBC_GoldenJson"
         else :
-            json = "%s/src/ZZAnalysis/NanoAnalysis/data/puWeights_2023_Summer23postBPix.json.gz" % os.environ['CMSSW_BASE']
+            json = "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2023_Summer23BPix/puWeights.json.gz" # md5sum: fe3eb93fc147cf30247980325869145a
             key = "Collisions2023_369803_370790_eraD_GoldenJson"
         return puWeightProducer_corrlib(json, key)
+
 
     elif era == 2024:
         from PhysicsTools.NATModules.modules.puWeightProducer import puWeightProducer as puWeightProducer_corrlib
@@ -255,3 +256,4 @@ def puWeight(era, data_tag):
 
     else:
         raise ValueError(f"Era {era} not supported yet")
+

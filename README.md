@@ -3,16 +3,16 @@ ZZAnalysis
 
 This is the CJLST framework for analysis of Run 3 data.
 
-To install a complete CMSSW 13X area (including this package)
+To install a complete CMSSW area (including this package)
 ------------------------------
 Used for analysis of 2022 data and beyond
 
-Please use **CMSSW_13_3_3**. 
+Please use **CMSSW_14_1_6**. 
 
 Download and execute the setup script:
 ```
-cmsrel CMSSW_13_3_3
-cd CMSSW_13_3_3/src
+cmsrel CMSSW_14_1_6
+cd CMSSW_14_1_6/src
 cmsenv
 wget -O ${TMPDIR}/checkout.csh https://raw.githubusercontent.com/CJLST/ZZAnalysis/Run3/checkout_13X.csh
 chmod u+x ${TMPDIR}/checkout.csh
