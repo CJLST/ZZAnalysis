@@ -43,8 +43,9 @@ TTWW                            ,,0.008203,,,/TTWW_TuneCP5_13p6TeV_madgraph-pyth
 ###,,,,,,,,,,,bkg for Z+X studies
 WZto3LNu                        ,,4.924,,,/WZto3LNu_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,PROCESS_CR=True;PROCESS_ZL=True;FILTER_EVENTS=Z;LEPTON_SETUP=2024,,
 
-DYJetsTo2E                      ,,5558.0,0.033658,,/DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,  2,PROCESS_CR=True;PROCESS_ZL=True;FILTER_EVENTS=Z;LEPTON_SETUP=2024,,
-DYJetsTo2Mu                     ,,5558.0,0.033658,,/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/, 2,PROCESS_CR=True;PROCESS_ZL=True;FILTER_EVENTS=Z;LEPTON_SETUP=2024,,
-DYJetsTo2Tau                    ,,5558.0,0.033658,,/DYto2Tau-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,PROCESS_CR=True;PROCESS_ZL=True;FILTER_EVENTS=Z;LEPTON_SETUP=2024,,
+###,,,,,,,,,,,BR: assuming that XS is for Z->ll (ll=e,mu,tau); then Z->mumu an additional 1/3. factor is needed
+DYJetsTo2E                      ,,5558.0,0.33333,,/DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,  2,PROCESS_CR=True;PROCESS_ZL=True;FILTER_EVENTS=Z;LEPTON_SETUP=2024,,
+DYJetsTo2Mu                     ,,5558.0,0.33333,,/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/, 2,PROCESS_CR=True;PROCESS_ZL=True;FILTER_EVENTS=Z;LEPTON_SETUP=2024,,
+DYJetsTo2Tau                    ,,5558.0,0.33333,,/DYto2Tau-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,PROCESS_CR=True;PROCESS_ZL=True;FILTER_EVENTS=Z;LEPTON_SETUP=2024,,
 
 TTto2L2Nu                       ,,762.1,,,/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,PROCESS_CR=True;PROCESS_ZL=True;FILTER_EVENTS=Z;LEPTON_SETUP=2024,,
