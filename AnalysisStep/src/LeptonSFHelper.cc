@@ -58,28 +58,28 @@ LeptonSFHelper::LeptonSFHelper(int year, std::string const &data_tag) :
     //The most recent ID scale factors used in this context, calculated by Andro using the 2018UL MVA training, can be found at: /eos/user/a/anpetkov/SF2022eleID_EGMapproved/
      f_eleID           = basePath+"SF2022eleID_preEE.root";
 
-     f_eleReco_highPt  = basePath+"egammaEffi_ptAbove75.txt_EGM2D_2022preEE.root";
-     f_eleReco_midPt   = basePath+"egammaEffi_ptBelow75.txt_EGM2D_2022preEE.root";
-     f_eleReco_lowPt   = basePath+"egammaEffi_ptBelow20.txt_EGM2D_2022preEE.root";
+     f_eleReco_highPt  = "/eos/cms/store/group/phys_egamma/validation/web/Run3_egm_reco_SF/New_SF_19122023/highpT/Run3_2022BCD_New_highpt6/passingRECO/egammaEffi.txt_EGM2D.root"; //md5sum: 62342dcf014bcc737ae53e0a866c3d02
+     f_eleReco_midPt   = "/eos/cms/store/group/phys_egamma/validation/web/Run3_egm_reco_SF/New_SF_19122023/midpT/Run3_2022BCD_New_midpT7/passingRECO/egammaEffi.txt_EGM2D.root"; //md5sum: 7734c3dc688da66c5a94b2368506436f
+     f_eleReco_lowPt   = "/eos/cms/store/group/phys_egamma/validation/web/Run3_egm_reco_SF/New_SF_19122023/lowpT/Run3_2022BCD_PreEEMC/passingRECO/egammaEffi.txt_EGM2D.root"; //md5sum: 5e871afa376cd2e837f635a606351f04
 
    } else { // 2022 postEE
      f_eleID           = basePath+"SF2022eleID_postEE.root";
 
-     f_eleReco_highPt  = basePath+"egammaEffi_ptAbove75.txt_EGM2D_2022postEE.root";
-     f_eleReco_midPt   = basePath+"egammaEffi_ptBelow75.txt_EGM2D_2022postEE.root";
-     f_eleReco_lowPt   = basePath+"egammaEffi_ptBelow20.txt_EGM2D_2022postEE.root";
+     f_eleReco_highPt  = "/eos/cms/store/group/phys_egamma/validation/web/Run3_egm_reco_SF/New_SF_19122023/highpT/Run3_2022EFG_New_highpt5/passingRECO/egammaEffi.txt_EGM2D.root"; //md5sum: aee0d53f73f0af0bf8ac1c2aa18ddba5
+     f_eleReco_midPt   = "/eos/cms/store/group/phys_egamma/validation/web/Run3_egm_reco_SF/New_SF_19122023/midpT/Run3_2022EFG_New_midpT5/passingRECO/egammaEffi.txt_EGM2D.root"; //md5sum: 8069bdb4014e6e2c622c829dda336952
+     f_eleReco_lowPt   = "/eos/cms/store/group/phys_egamma/validation/web/Run3_egm_reco_SF/New_SF_19122023/lowpT/Run3_2022EFG_PostEEMC/passingRECO/egammaEffi.txt_EGM2D.root"; //md5sum: dc040a1d86cf83a8344a391a30646686
    }
    
-  } else if (year >= 2023) { // FIXME: add 2024!
+  } else if (year == 2023) {
     if(data_tag.find("pre_BPix") != std::string::npos) { // 2023 preBPix
       //ID - for now using 2022 postEE
       std::cout<<"WARNING 2023 preBPix Electron ID SFs - for now using 2022postEE"<<std::endl;
       f_eleID          = basePath+"SF2022eleID_postEE.root";
 
       //RECO - SFs for Electrons in 2023PromptC from EG - https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammSFandSSRun3
-      f_eleReco_highPt = basePath+"egammaEffi_ptAbove75.txt_EGM2D_2023preBPix.root";
-      f_eleReco_midPt  = basePath+"egammaEffi_ptBelow75.txt_EGM2D_2023preBPix.root";
-      f_eleReco_lowPt  = basePath+"egammaEffi_ptBelow20.txt_EGM2D_2023preBPix.root";
+      f_eleReco_highPt = "/eos/cms/store/group/phys_egamma/validation/web/Run3_egm_reco_SF/SF_prompt_2023_19012024/highpT/Run3_2023C_New_highpt1_eta/passingRECO/egammaEffi.txt_EGM2D.root"; //md5sum: a6dddbbeea48f2f9c97c4138f8a657f3
+      f_eleReco_midPt  = "/eos/cms/store/group/phys_egamma/validation/web/Run3_egm_reco_SF/SF_prompt_2023_19012024/midpT/Run3_2023C_New_midpT2_eta/passingRECO/egammaEffi.txt_EGM2D.root"; //md5sum: fdf4776ae0c6c9d14e2eb34c357a0e42
+      f_eleReco_lowPt  = "/eos/cms/store/group/phys_egamma/validation/web/Run3_egm_reco_SF/SF_prompt_2023_19012024/lowpT/Run3_2023C_New_lowpT_mergeEta_Added_symmetrizationsystEta_29052024/passingRECO/egammaEffi.txt_EGM2D.root"; //md5sum: c957e0c3f7a1f77bd5ce76e2088fd435 
 
     } else { // 2023 postBPix
       //ID - for now using 2022 postEE
@@ -87,12 +87,23 @@ LeptonSFHelper::LeptonSFHelper(int year, std::string const &data_tag) :
       f_eleID          = basePath+"SF2022eleID_postEE.root";
 
       //RECO - SFs for Electrons in 2023PromptD from EG - https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammSFandSSRun3
-      f_eleReco_highPt = basePath+"egammaEffi_ptAbove75.txt_EGM2D_2023postBPix.root";
-      f_eleReco_midPt  = basePath+"egammaEffi_ptBelow75.txt_EGM2D_2023postBPix.root";
-      f_eleReco_lowPt  = basePath+"egammaEffi_ptBelow20.txt_EGM2D_2023postBPix.root";
+      f_eleReco_highPt = "/eos/cms/store/group/phys_egamma/validation/web/Run3_egm_reco_SF/SF_prompt_2023_19012024/highpT/Run3_2023D_New_highpt_eta2/passingRECO/egammaEffi.txt_EGM2D.root"; //md5sum: 91384c01e7c3be3f549431bd960323cf
+      f_eleReco_midPt  = "/eos/cms/store/group/phys_egamma/validation/web/Run3_egm_reco_SF/SF_prompt_2023_19012024/midpT/Run3_2023D_New_midpT_eta2/passingRECO/egammaEffi.txt_EGM2D.root"; //md5sum: 726fb5a382e8b84fc318f319fd0e8359
+      f_eleReco_lowPt  = "/eos/cms/store/group/phys_egamma/validation/web/Run3_egm_reco_SF/SF_prompt_2023_19012024/lowpT/Run3_2023D_New_lowpT_mergeEta_Added_symmetrizationsystEta_29052024/passingRECO/egammaEffi.txt_EGM2D.root"; //md5sum: 50dae0da2428c0fd92548bcfe968cb92
     }
 
-  } else if (year<2016 or year>2024 ) {
+  } else if (year == 2024) {
+      //ID - for now using 2022 postEE
+      std::cout<<"WARNING 2024 Electron ID SFs - for now using 2022postEE"<<std::endl;
+      f_eleID          = basePath+"SF2022eleID_postEE.root";
+
+      //RECO - SFs for Electrons for 2024 from EG - https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammSFandSSRun3
+      //TO FIX: at the moment 2024 Ele RECO SF for pt below 20 GeV are not available yet, using 2023postBPix for now
+      f_eleReco_highPt = "/eos/cms/store/group/phys_egamma/ScaleFactors/Data2024/EleReco/highPt/egammaEffi.txt_EGM2D.root"; //md5sum: 6f5574bf1ec83d6c9bdc7225bfffe633
+      f_eleReco_midPt  = "/eos/cms/store/group/phys_egamma/ScaleFactors/Data2024/EleReco/midPt/egammaEffi.txt_EGM2D.root"; //md5sum: 2c2e7580a331cec6dbe1c0704aeffbc9
+      f_eleReco_lowPt  = "/eos/cms/store/group/phys_egamma/validation/web/Run3_egm_reco_SF/SF_prompt_2023_19012024/lowpT/Run3_2023D_New_lowpT_mergeEta_Added_symmetrizationsystEta_29052024/passingRECO/egammaEffi.txt_EGM2D.root"; //md5sum: 50dae0da2428c0fd92548bcfe968cb92
+
+  } else if (year<2016 or year>2024) {
     edm::LogError("LeptonSFHelper::") << "Ele SFs for " << year << " is not supported!";
     abort();
   }

@@ -4,6 +4,7 @@ identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,spli
 ###,,,,,,,,,,,signal BR values taken from YR4 https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageBR
 ###,,,,,,,,,,,for ZH and ttH the BR is obtained as BR(H->ZZ->2L2X) = BR(H->4L) + BR(H->2L2q) + BR(H->ZZ*->2L2nu) * BR(H->2L2nu) / [ BR(H->ZZ*->2L2nu) + BR(H->WW*->2L2nu) ] where BR(H->4L) BR(H->2L2q) and BR(H->2L2nu) are taken from the YR4 twiki
 ###,,,,,,,,,,,for ZH the BR column includes also the gen filter efficiency: values for mH=124-126 = 0.15093 0.15069; 0.15012; 0.15058; 0.15045
+###,,,,,,,,,,,for ttH the BR column includes also the gen filter efficiency: values for mH=124-126 = 0.1643 0.1540 0.1543 0.1545 0.1537
 
 ###,,,,,,,,,,,signal samples
 ggH125                   ,,52.23,0.0002745,,/GluGluH-Hto2Zto4L_Par-M-125_TuneCP5_13p6TeV_powheg-jhugen-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;APPLY_QCD_GGF_UNCERT=True;NANOVERSION=15;LEPTON_SETUP=2024;ADD_ALLEVENTS=True,,
@@ -14,7 +15,7 @@ WplusH125               ,,0.8889,0.0002745,,/WplusH-Hto2Zto4L_Par-M-125_TuneCP5_
 
 WminusH125                  ,,0.5677,0.0002745,,/WminusH-Hto2Zto4L_Par-M-125_TuneCP5_13p6TeV_powhegMINLO-jhugen-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;NANOVERSION=15;LEPTON_SETUP=2024;ADD_ALLEVENTS=True,,
 
-ttH125                      ,,0.5700,0.0002745,,/TTH-Hto2Zto4L_Par-M-125_TuneCP5_13p6TeV_powheg-jhugen-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;NANOVERSION=15;LEPTON_SETUP=2024;ADD_ALLEVENTS=True,,
+ttH125                      ,,0.5700,0.0007689,,/TTH-Hto2Zto4L_Par-M-125_TuneCP5_13p6TeV_powheg-jhugen-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;NANOVERSION=15;LEPTON_SETUP=2024;ADD_ALLEVENTS=True,,
 
 bbH125                      ,,0.5266,0.0002745,,/BBH-Hto2Zto4L_Par-M-125_TuneCP5_13p6TeV_jhugen-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;NANOVERSION=15;LEPTON_SETUP=2024;ADD_ALLEVENTS=True,,
 
@@ -41,12 +42,12 @@ TTWW                            ,,0.008203,,,/TTWW_TuneCP5_13p6TeV_madgraph-pyth
 #TTZZ                            ,,0.001579,,,/TTZZ_TuneCP5_13p6TeV_madgraph-madspin-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,PROCESS_CR=True;NANOVERSION=15;LEPTON_SETUP=2024,,
 
 ###,,,,,,,,,,,bkg for Z+X studies
-WZto3LNu                        ,,4.924,,,/WZto3LNu_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,PROCESS_CR=True;PROCESS_ZL=True;FILTER_EVENTS=Z;NANOVERSION=15;LEPTON_SETUP=2024,,
+WZto3LNu                        ,,5.27,,,/WZto3LNu_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,PROCESS_CR=True;PROCESS_ZL=True;FILTER_EVENTS=Z;NANOVERSION=15;LEPTON_SETUP=2024,,
 
 ###,,,,,,,,,,,BR: assuming that XS is for Z->ll (ll=e;mu;tau); then Z->mumu an additional 1/3. factor is needed
-DYJetsTo2E                      ,,5558.0,0.33333,,/DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,  2,PROCESS_CR=True;PROCESS_ZL=True;FILTER_EVENTS=Z;NANOVERSION=15;LEPTON_SETUP=2024,,
-DYJetsTo2Mu                     ,,5558.0,0.33333,,/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/, 2,PROCESS_CR=True;PROCESS_ZL=True;FILTER_EVENTS=Z;NANOVERSION=15;LEPTON_SETUP=2024,,
-DYJetsTo2Tau                    ,,5558.0,0.33333,,/DYto2Tau-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,PROCESS_CR=True;PROCESS_ZL=True;FILTER_EVENTS=Z;NANOVERSION=15;LEPTON_SETUP=2024,,
+DYJetsTo2E                      ,,6275.1,0.33333,,/DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,  2,PROCESS_CR=True;PROCESS_ZL=True;FILTER_EVENTS=Z;NANOVERSION=15;LEPTON_SETUP=2024,,
+DYJetsTo2Mu                     ,,6275.1,0.33333,,/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/, 2,PROCESS_CR=True;PROCESS_ZL=True;FILTER_EVENTS=Z;NANOVERSION=15;LEPTON_SETUP=2024,,
+DYJetsTo2Tau                    ,,6275.1,0.33333,,/DYto2Tau-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,PROCESS_CR=True;PROCESS_ZL=True;FILTER_EVENTS=Z;NANOVERSION=15;LEPTON_SETUP=2024,,
 
 TTto2L2Nu                       ,,762.1,,,/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,PROCESS_CR=True;PROCESS_ZL=True;FILTER_EVENTS=Z;NANOVERSION=15;LEPTON_SETUP=2024,,
 
