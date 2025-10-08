@@ -3,7 +3,7 @@ from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
 from PhysicsTools.HeppyCore.utils.deltar import deltaR
 from  ZZAnalysis.NanoAnalysis.initializeMELA import check_enum
-from ZZAnalysis.NanoAnalysis.ZZExtraFiller import getDressedP4, getDataMCWeight
+# from ZZAnalysis.NanoAnalysis.ZZExtraFiller import getDressedP4, getDataMCWeight
 import Mela
 
 
@@ -61,7 +61,7 @@ class RecoProbFiller(Module):
                 if prob["isgen"] == False: 
                     ### Define parameters for the probability to be computed. They don't need to be changed on a per-candidate level. 
                     self.MELA.setInputEvent(daughters, None, None, 0)
-                        setupInputs = {
+                    setupInputs = {
                             "Name": "Default_You_Should_Rename_This",
                             "Process": None, 
                             "MatrixElement": None, 
@@ -81,41 +81,40 @@ class RecoProbFiller(Module):
                             "dividep": None 
                         }
                         
-                            ### Parse MELA settings for the desired probability and overwrite setup for all given parameters:
-                            for key, val in prob.items(): setupInputs[key] = prob[key]
+                    ### Parse MELA settings for the desired probability and overwrite setup for all given parameters:
+                    for key, val in prob.items(): setupInputs[key] = prob[key]
 
-                            # Define branches per prob here 
-                            
+                    
 
-                            ### Define everything 
-                            MELA_Name = setupInputs["Name"]
-                            MELA_Process = check_enum(setupInputs["Process"], Mela.Process)
-                            MELA_MatrixElement = check_enum(setupInputs["MatrixElement"], Mela.MatrixElement)
-                            MELA_Production = check_enum(setupInputs["Production"], Mela.Production)
-                            MELA_prod = setupInputs["Prod"]
-                            MELA_dec = setupInputs["Dec"]
-                            MELA_computeprop = setupInputs["computeprop"]
-                            MELA_propscheme = check_enum(setupInputs["propscheme"], Mela.ResonancePropagatorScheme)
-                            MELA_separatewwzz = setupInputs["separatewwzz"]
-                            MELA_useconstant = setupInputs["useconstant"]
-                            MELA_matchMx = setupInputs["match_mX"]
-                            MELA_leptoninterference = check_enum(setupInputs["lepton_interference"], Mela.LeptonInterference)
-                            MELA_ispm4l = setupInputs["ispm4l"]
-                            MELA_divideP = setupInputs["dividep"]
+                    ### Define everything 
+                    MELA_Name = setupInputs["Name"]
+                    MELA_Process = check_enum(setupInputs["Process"], Mela.Process)
+                    MELA_MatrixElement = check_enum(setupInputs["MatrixElement"], Mela.MatrixElement)
+                    MELA_Production = check_enum(setupInputs["Production"], Mela.Production)
+                    MELA_prod = setupInputs["Prod"]
+                    MELA_dec = setupInputs["Dec"]
+                    MELA_computeprop = setupInputs["computeprop"]
+                    MELA_propscheme = check_enum(setupInputs["propscheme"], Mela.ResonancePropagatorScheme)
+                    MELA_separatewwzz = setupInputs["separatewwzz"]
+                    MELA_useconstant = setupInputs["useconstant"]
+                    MELA_matchMx = setupInputs["match_mX"]
+                    MELA_leptoninterference = check_enum(setupInputs["lepton_interference"], Mela.LeptonInterference)
+                    MELA_ispm4l = setupInputs["ispm4l"]
+                    MELA_divideP = setupInputs["dividep"]
 
-                            ### Configure MELA for the event. 
-                            self.MELA.setProcess(MELA_Process, MELA_MatrixElement, MELA_Production)
-                            self.MELA.differentiate_HWW_HZZ = MELA_separatewwzz
-                            self.MELA.setMelaLeptonInterference(MELA_leptoninterference)
+                    ### Configure MELA for the event. 
+                    self.MELA.setProcess(MELA_Process, MELA_MatrixElement, MELA_Production)
+                    self.MELA.differentiate_HWW_HZZ = MELA_separatewwzz
+                    self.MELA.setMelaLeptonInterference(MELA_leptoninterference)
 
-                            
+                    
 
-                            if MELA_matchMx: 
-                                self.MELA.setMelaHiggsMassWidth(daughters.MTotal(), 0.00001, 0)
-                                self.MELA.setMelaHiggsMassWidth(daughters.MTotal(), 0.00001, 1)
-                            
-                            for coupl, coupl_val in setupInputs["Couplings"].items(): 
-                                setattr(self.MELA, coupl, coupl_val)
+                    if MELA_matchMx: 
+                        self.MELA.setMelaHiggsMassWidth(daughters.MTotal(), 0.00001, 0)
+                        self.MELA.setMelaHiggsMassWidth(daughters.MTotal(), 0.00001, 1)
+                    
+                    for coupl, coupl_val in setupInputs["Couplings"].items(): 
+                        setattr(self.MELA, coupl, coupl_val)
 
                     # Define an array to fill with a probability for each candidate
                     probVec = [-999.]*len(cands)
@@ -153,51 +152,51 @@ class RecoProbFiller(Module):
                         daughters.add_particle(Mela.SimpleParticle_t(theCandLeps[3].pdgId, dressedLepsp4[3].Px(), dressedLepsp4[3].Py(), dressedLepsp4[3].Pz(), dressedLepsp4[3].E()))
                         
                         ### Reset the event and the default probability settings per probability to be calculated. 
-                            if MELA_prod and MELA_dec: 
-                                probVec[iCand] = self.MELA.computeProdDecP(MELA_useconstant)
-                            elif MELA_prod: 
-                                probVec[iCand] = self.MELA.computeProdP(MELA_useconstant)
-                            elif MELA_dec:
-                                probVec[iCand] = self.MELA.computeP(MELA_useconstant)
-                            elif MELA_ispm4l: 
-                                probVec[iCand] = self.MELA.computePM4L(Mela.SuperMelaSyst.SMSyst_None)
-                                probVec_ScaleUp[iCand] = self.MELA.computePM4l(Mela.SuperMelaSyst.SMSyst_ScaleUp)
-                                probVec_ScaleDown[iCand] = self.MELA.computePM4l(Mela.SuperMelaSyst.SMSyst_ScaleDown)
-                                probVec_SystUp[iCand] = self.MELA.computePM4l(Mela.SuperMelaSyst.SMSyst_ResUp)
-                                probVec_SystDown[iCand] = self.MELA.computePM4l(Mela.SuperMelaSyst.SMSyst_ResDown)
-
-                                
-
-
-                            else:
-                                raise KeyError("Need to specify either production, decay, pm4l, or computeprop!")
-                            
-                            if MELA_computeprop and (MELA_prod or MELA_dec): 
-                                probPropVec[iCand] = self.MELA.getXPropagator(MELA_propscheme)
-
-                            elif MELA_computeprop: 
-                                probVec[iCand] = self.MELA.getXPropagator(MELA_propscheme)
-                            
-
-
-                            # Handling divideP 
-                            if MELA_Name == denominator_name: 
-                                denomVec[iCand] = probVec[iCand]
-                            
-                            if MELA_divideP != None: 
-                                probVec[iCand] /= denomVec[iCand]
-
-
-
-                        
-                        
-                        
-                        
-                        
+                        if MELA_prod and MELA_dec: 
+                            probVec[iCand] = self.MELA.computeProdDecP(MELA_useconstant)
+                        elif MELA_prod: 
+                            probVec[iCand] = self.MELA.computeProdP(MELA_useconstant)
+                        elif MELA_dec:
+                            probVec[iCand] = self.MELA.computeP(MELA_useconstant)
+                        elif MELA_ispm4l: 
+                            probVec[iCand] = self.MELA.computePM4L(Mela.SuperMelaSyst.SMSyst_None)
+                            probVec_ScaleUp[iCand] = self.MELA.computePM4l(Mela.SuperMelaSyst.SMSyst_ScaleUp)
+                            probVec_ScaleDown[iCand] = self.MELA.computePM4l(Mela.SuperMelaSyst.SMSyst_ScaleDown)
+                            probVec_SystUp[iCand] = self.MELA.computePM4l(Mela.SuperMelaSyst.SMSyst_ResUp)
+                            probVec_SystDown[iCand] = self.MELA.computePM4l(Mela.SuperMelaSyst.SMSyst_ResDown)
 
                             
-                            ### Reset the input event on a per-candidate basis. 
-                            self.MELA.resetInputEvent()
+
+
+                        else:
+                            raise KeyError("Need to specify either production, decay, pm4l, or computeprop!")
+                        
+                        if MELA_computeprop and (MELA_prod or MELA_dec): 
+                            probPropVec[iCand] = self.MELA.getXPropagator(MELA_propscheme)
+
+                        elif MELA_computeprop: 
+                            probVec[iCand] = self.MELA.getXPropagator(MELA_propscheme)
+                        
+
+
+                        # Handling divideP 
+                        if MELA_Name == denominator_name: 
+                            denomVec[iCand] = probVec[iCand]
+                        
+                        if MELA_divideP != None: 
+                            probVec[iCand] /= denomVec[iCand]
+
+
+
+                        
+                        
+                        
+                        
+                        
+
+                            
+                        ### Reset the input event on a per-candidate basis. 
+                        self.MELA.resetInputEvent()
 
                     # Write out all branches for this probability
                     self.out.fillBranch("RecoMela_"+prob["Name"], probVec)
