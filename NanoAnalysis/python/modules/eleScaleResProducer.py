@@ -19,13 +19,13 @@ def getEleScaleRes(era, tag, is_mc, overwritePt=True, EtDependent=None):
                 if "pre_EE" in tag :
                     scaleKey = "EGMScale_Compound_Ele_2022preEE"
                     smearKey = "EGMSmearAndSyst_ElePTsplit_2022preEE" if is_mc else None
-                    fname = "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2022_Summer22/electronSS_EtDependent.json.gz" # md5sum: ccbe63a9c79802df5ff1c217d799a435
+                    fname = "/cvmfs/cms-griddata.cern.ch/cat/metadata/EGM/Run3-22CDSep23-Summer22-NanoAODv12/2025-04-15/electronSS_EtDependent.json.gz"
                 else:
                     scaleKey = "EGMScale_Compound_Ele_2022postEE"
                     smearKey = "EGMSmearAndSyst_ElePTsplit_2022postEE" if is_mc else None
-                    fname = "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2022_Summer22EE/electronSS_EtDependent.json.gz" # md5sum: 24f3e4b18fcf2589050edc6b35284437  
+                    fname = "/cvmfs/cms-griddata.cern.ch/cat/metadata/EGM/Run3-22EFGSep23-Summer22EE-NanoAODv12/2025-04-15/electronSS_EtDependent.json.gz"
 
-            else: # Older "standard" version, used for early results, now superseeded by ET-dependent version
+            else: # Older "standard" version, used for early results, now superseeded by ET-dependent version. Kept here only for future reference, no longer maintained.
                 if "pre_EE" in tag :
                     scaleKey = "2022Re-recoBCD_ScaleJSON"
                     smearKey = "2022Re-recoBCD_SmearingJSON" if is_mc else None
@@ -40,19 +40,18 @@ def getEleScaleRes(era, tag, is_mc, overwritePt=True, EtDependent=None):
         if "pre_BPix" in tag:
             scaleKey = "EGMScale_Compound_Ele_2023preBPIX"
             smearKey = "EGMSmearAndSyst_ElePTsplit_2023preBPIX" if is_mc else None
-            fname = "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2023_Summer23/electronSS_EtDependent.json.gz" # md5sum: e16d16f9ab0abe13cca28432417f3a48
+            fname = "/cvmfs/cms-griddata.cern.ch/cat/metadata/EGM/Run3-23CSep23-Summer23-NanoAODv12/2025-04-15/electronSS_EtDependent.json.gz"
 
         else:
             scaleKey = "EGMScale_Compound_Ele_2023postBPIX"
             smearKey = "EGMSmearAndSyst_ElePTsplit_2023postBPIX" if is_mc else None
-            fname = "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2023_Summer23BPix/electronSS_EtDependent.json.gz" #md5sum: 19be4932b71f55eb9353eb01d9fbeaca
+            fname = "/cvmfs/cms-griddata.cern.ch/cat/metadata/EGM/Run3-23DSep23-Summer23BPix-NanoAODv12/2025-04-15/electronSS_EtDependent.json.gz"
 
     elif era == 2024:
-        print(f"WARNING {era} electron SS - for now using 2023BPix")
-        scaleKey = "EGMScale_Compound_Ele_2023postBPIX"
-        smearKey = "EGMSmearAndSyst_ElePTsplit_2023postBPIX" if is_mc else None
-        fname = "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2023_Summer23BPix/electronSS_EtDependent.json.gz" #md5sum: 19be4932b71f55eb9353eb01d9fbeaca
+        scaleKey = "EGMScale_Compound_Ele_2024"
+        smearKey = "EGMSmearAndSyst_ElePTsplit_2024" if is_mc else None
+        fname = "/cvmfs/cms-griddata.cern.ch/cat/metadata/EGM/Run3-24CDEReprocessingFGHIPrompt-Summer24-NanoAODv15/2025-08-15/electronSS_EtDependent_v1.json.gz"
 
 
     print("***eleScaleRes: era:", era, "tag:", tag, "is MC:", is_mc, "overwritePt:", overwritePt, "EtDependent:", EtDependent, "json:", fname)
-    return eleScaleRes(fname, scaleKey, smearKey, overwritePt, EtDependent)
+    return eleScaleRes(fname, scaleKey, smearKey, overwritePt)

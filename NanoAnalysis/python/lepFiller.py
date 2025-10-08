@@ -158,15 +158,15 @@ class lepFiller(Module):
             
         for ilep,lep in enumerate(electrons) :
             ele_isoFsrCorr[ilep] = self.isoFsrCorr(lep, selectedFSR) 
-            ele_passIso[ilep] = True # no iso cut for electrons 
+            ele_passIso[ilep] = ele_isoFsrCorr[ilep] < self.cuts["relIso_ele"]
             eleFullSel[ilep] = eleFullId[ilep] and ele_passIso[ilep]
             eleFullSelNoSIP[ilep] = eleFullIdNoSIP[ilep] and ele_passIso[ilep]
 
         for ilep,lep in enumerate(muons) :
             mu_isoFsrCorr[ilep] = self.isoFsrCorr(lep, selectedFSR)
-            mu_passIso[ilep] = mu_isoFsrCorr[ilep] < self.cuts["relIso"]
-            muFullSel[ilep] = ((muFullId[ilep] and lep.mvaLowPt > self.cuts["muMva"]) if self.muonIdByMVA else (muFullId[ilep] and mu_passIso[ilep]))
-            muFullSelNoSIP[ilep] = ((muFullIdNoSIP[ilep] and lep.mvaLowPt > self.cuts["muMva"]) if self.muonIdByMVA else (muFullIdNoSIP[ilep] and mu_passIso[ilep]))
+            mu_passIso[ilep] = mu_isoFsrCorr[ilep] < self.cuts["relIso_mu"]
+            muFullSel[ilep] = muFullId[ilep] and mu_passIso[ilep]
+            muFullSelNoSIP[ilep] = muFullIdNoSIP[ilep] and mu_passIso[ilep]
 
         fsrM = [0.]*len(fsrPhotons)
         self.out.fillBranch("FsrPhoton_mass", fsrM)

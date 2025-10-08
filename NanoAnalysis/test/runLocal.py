@@ -15,12 +15,13 @@ if not validateCheckout() :
 #SampleToRun = "MCsync_2018Rereco" # for mini vs nano sync
 #SampleToRun = "MCsync_2017UL" # for mini vs nano sync
 #SampleToRun = "Data2022"
-SampleToRun = "MC2022"
+SampleToRun = "MC2022EE"
 #SampleToRun = "MC2023postBPix"
 #SampleToRun = "MELA_Test"
 #SampleToRun = "ggh125_2018UL"
 #SampleToRun = "forNanoDoc" # To prepare variable lists with inspectNanoFile.py
 #SampleToRun = "Data2024"
+#SampleToRun = "MC2024"
 
 ### Customize processing variables.
 #setConf("runMELA", False)
@@ -120,10 +121,10 @@ elif SampleToRun == "MCsync_2018Rereco" :
 
 
 ################################################################################
-elif SampleToRun == "MC2022" :
+elif SampleToRun == "MC2022EE" :
     # 2022 MC sample
     setConf("SAMPLENAME", "ggH125")
-    setConf("DATA_TAG", "post_EE")
+    setConf("DATA_TAG", "")
     setConf("XSEC", 52.23*0.0002745)
     setConf("LEPTON_SETUP", 2022)
     setConf("IsMC", True)
@@ -131,7 +132,7 @@ elif SampleToRun == "MC2022" :
     setConf("APPLY_QCD_GGF_UNCERT", True) # for ggH
 #   setConf("MUON_ID_BYMVA", True)
     setConf("fileNames",[
-        "/store/mc/Run3Summer22EENanoAODv12/GluGluHtoZZto4L_M-125_TuneCP5_13p6TeV_powheg2-JHUGenV752-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_postEE_v6-v2/2540000/25c8f5ff-9de0-4a0c-9e2f-757332ad392f.root",
+        "/store/mc/Run3Summer22EENanoAODv12/GluGluHtoZZto4L_M-125_TuneCP5_13p6TeV_powheg2-JHUGenV752-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_postEE_v6-v2/2540000/25c8f5ff-9de0-4a0c-9e2f-757332ad392f.root", # 13158 events
 #        "/store/mc/Run3Summer22EENanoAODv12/GluGluHtoZZto4L_M-125_TuneCP5_13p6TeV_powheg2-JHUGenV752-pythia8/NANOAODSIM/130X_mcRun3_2022_realistic_postEE_v6-v2/2530000/8f306f2b-1284-41b8-a98f-744267f64b9c.root",
         ])
 #    json = {"1": [[1245, 1245],[1306, 1306],[1410, 1410],[1692, 1692],[1903, 1903],[1910, 1910],[1915, 1915],[1927, 1927],[1939, 1939],[1940, 1940],[1944, 1944],[1945, 1945],[1956, 1956],[1960, 1960],[1965, 1965],[1967, 1967],[1968, 1968],[1969, 1969],[2104, 2104]]}
@@ -148,6 +149,18 @@ elif SampleToRun == "MC2023postBPix" :
     setConf("APPLY_QCD_GGF_UNCERT", True) # for ggH
     setConf("fileNames",[
         "/store/mc/Run3Summer23BPixNanoAODv12/GluGluHtoZZto4L_M-125_TuneCP5_13p6TeV_powheg-jhugen-pythia8/NANOAODSIM/130X_mcRun3_2023_realistic_postBPix_v6-v2/50000/4daf03b4-93c9-4d35-bf53-738bb6cba90e.root", # 12 kevts
+        ])
+
+################################################################################
+elif SampleToRun == "MC2024" :
+    setConf("NANOVERSION", 15)
+    setConf("DATA_TAG", "")
+    setConf("XSEC", 0.5677*0.0002745)
+    setConf("LEPTON_SETUP", 2024)
+    setConf("IsMC", True)
+    setConf("store","root://cms-xrd-global.cern.ch/")
+    setConf("fileNames",[
+        "/store/mc/RunIII2024Summer24NanoAODv15/WminusH-Hto2Zto4L_Par-M-125_TuneCP5_13p6TeV_powhegMINLO-jhugen-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/cbb0799a-f7e4-49cb-b5ba-71693538169b.root", # 11520 events
         ])
 
 
