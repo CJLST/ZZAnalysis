@@ -93,9 +93,8 @@ LeptonSFHelper::LeptonSFHelper(int year, std::string const &data_tag) :
     }
 
   } else if (year == 2024) {
-      //ID - for now using 2022 postEE
-      std::cout<<"WARNING 2024 Electron ID SFs - for now using 2022postEE"<<std::endl;
-      f_eleID          = basePath+"SF2022eleID_postEE.root";
+      std::cout<<"WARNING 2024 Electron ID SFs - preliminary version"<<std::endl;
+      f_eleID          = basePath+"SF2024eleID.root"; // provided by Christophe 6/10/25; preliminary
 
       //RECO - SFs for Electrons for 2024 from EG - https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammSFandSSRun3
       //TO FIX: at the moment 2024 Ele RECO SF for pt below 20 GeV are not available yet, using 2023postBPix for now
@@ -149,22 +148,25 @@ LeptonSFHelper::LeptonSFHelper(int year, std::string const &data_tag) :
     f_mu = basePath+"final_HZZ_SF_2018UL_mupogsysts_newLoose.root";
   } else if (year==2022) { // 2022 Muons
     if(data_tag.find("pre_EE") != std::string::npos) { // 2022 Muons preEE
-      f_mu = basePath+"final_HZZ_SF_Run3_2022_mupogsysts_newLoose_abseta3_fix_BCD_RMS.root";
+      f_mu = basePath+"final_HZZ_SF_Run3_2022_mupogsysts_newLoose_abseta3_fix_BCD_RMS.root"; // from /afs/cern.ch/user/y/yujil/public/SF2022/final_HZZ_SF_Run3_2022_mupogsysts_newLoose_abseta3_fix_BCD_RMS.root
     } else { // 2022 Muons postEE
-      if (data_tag.find("MUON_ID_BYMVA") != std::string::npos) {
-        f_mu = basePath + "mu_HZZ_2022_post_EE_MVA_ID.root"; // Muon MVA WP (2022postEE)
+      if (data_tag.find("MUON_ID_BYMVA") != std::string::npos) { 
+        f_mu = basePath + "mu_HZZ_2022_post_EE_MVA_ID.root"; // Muon MVA WP (2022postEE), from /afs/cern.ch/user/y/yujil/public/SF2022EEMVA/final_HZZ_SF_Run3_2022_mupogsysts_newLoose_abseta3_fix_EFG_RMS.root
       } else {
-        f_mu = basePath+"final_HZZ_SF_Run3_2022_mupogsysts_newLoose_abseta3_fix_EFG_RMS.root";
+        f_mu = basePath+"final_HZZ_SF_Run3_2022_mupogsysts_newLoose_abseta3_fix_EFG_RMS.root"; // from /afs/cern.ch/user/y/yujil/public/SF2022/final_HZZ_SF_Run3_2022_mupogsysts_newLoose_abseta3_fix_EFG_RMS.root
       }
     }
-  } else if (year>=2023) { // 2023 Muons FIXME: add 2024
-    // 2023 Muons preBPix/postBPix/ - root files taken from /afs/cern.ch/user/y/yujil/public/SF2023/
+  } else if (year==2023) { // 2023 Muons
+    // 2023 Muons preBPix/postBPix - root files taken from /afs/cern.ch/user/y/yujil/public/SF2023/
     if(data_tag.find("pre_BPix") != std::string::npos) { 
-      f_mu = basePath+"final_HZZ_SF_2023C_RMS_mupogsysts.root";
+      f_mu = basePath+"final_HZZ_SF_2023C_RMS_mupogsysts.root"; // md5sum: e66052503a1f6a02caec1edd6c16097b
     } else {
-      f_mu = basePath+"final_HZZ_SF_2023D_RMS_mupogsysts.root";
+      f_mu = basePath+"final_HZZ_SF_2023D_RMS_mupogsysts.root"; // md5sum: 20a4b2522bc53c2260a94fc35f69f1d9
     }
-  } else if (year<2016 or year>2024 ) {
+  } else if (year==2024 ) {
+    std::cout<<"WARNING 2024 muon ID SFs - preliminary version"<<std::endl;
+    f_mu = basePath+"prelimiary_HZZ_SF_2024_RMS_mupogsystsC.root"; // md5sum: c7a92b90d46ac34d5375ef9f86a50f85
+  } else {
     edm::LogError("LeptonSFHelper::") << "Mu SFs for " << theYear << " is not supported!";
     abort();
   }

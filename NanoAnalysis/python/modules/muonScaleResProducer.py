@@ -21,9 +21,9 @@ def getMuonScaleRes(era, tag, is_mc, overwritePt=True) :
         else:
             fname = "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2023_Summer23BPix/muon_scalesmearing.json.gz" # md5sum: 50684fe80408116aa9f59c308433b8d6
 
-    elif era == 2024:
-        print(f"WARNING {era} muonScaleRes - for now using 2023BPix")
-        fname = "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2023_Summer23BPix/muon_scalesmearing.json.gz"
+    elif era >= 2024:
+        print(f"WARNING {era} muonScaleRes - preliminary, unreleased version")
+        fname = f"{os.environ['CMSSW_BASE']}/src/ZZAnalysis/NanoAnalysis/data/MuonScale/2024_muon_scalesmearing_preliminary.json.gz"
 
     print("***muonScaleRes: era:", era, "tag:", tag, "is MC:", is_mc, "overwritePt:", overwritePt, "json:", fname)
     return muonScaleRes(fname, is_mc, overwritePt, minPt=3.)
