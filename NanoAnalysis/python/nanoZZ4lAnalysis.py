@@ -15,8 +15,6 @@ from ZZAnalysis.NanoAnalysis.lepFiller import *
 from ZZAnalysis.NanoAnalysis.jetFiller import *
 from ZZAnalysis.NanoAnalysis.ZZFiller import *
 from ZZAnalysis.NanoAnalysis.ZZExtraFiller import *
-# from ZZAnalysis.NanoAnalysis.RecoProbFiller import RecoProbFiller
-
 
 
 ### Get processing customizations, if defined in the including .py; use defaults otherwise
@@ -177,7 +175,7 @@ if not IsMC :
 ### Modules to be run
 
 # Standard sequence used for both data and MC
-
+from ZZAnalysis.NanoAnalysis.RecoProbFiller import * 
 reco_sequence = [lepFiller(cuts, LEPTON_SETUP, MUON_ID_BYMVA), # FSR and FSR-corrected iso; flags for passing IDs
                  ZZFiller(bestCandByMELA, mela,
                           isMC=IsMC,
@@ -190,7 +188,7 @@ reco_sequence = [lepFiller(cuts, LEPTON_SETUP, MUON_ID_BYMVA), # FSR and FSR-cor
                           debug=DEBUG), # Build ZZ candidates; choose best candidate; filter events with candidates
                  jetFiller(), # Jets cleaning with leptons
                  ZZExtraFiller(mela, IsMC, LEPTON_SETUP, DATA_TAG, PROCESS_CR), # Additional variables to selected candidates
-                #  RecoProbFiller(mela, NANOVERSION, melaSettings)
+                 RecoProbFiller(mela, NANOVERSION, melaSettings)
                  # MELAFiller(), # Compute the full set of discriminants for the best candidate
                  ]
 
