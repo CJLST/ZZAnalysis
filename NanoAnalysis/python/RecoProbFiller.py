@@ -1,9 +1,8 @@
 from __future__ import print_function
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
-from PhysicsTools.HeppyCore.utils.deltar import deltaR
 from  ZZAnalysis.NanoAnalysis.initializeMELA import check_enum
-# from ZZAnalysis.NanoAnalysis.ZZExtraFiller import getDressedP4, getDataMCWeight
+from ZZAnalysis.NanoAnalysis.ZZExtraFiller import *
 import Mela
 
 
@@ -22,7 +21,7 @@ class RecoProbFiller(Module):
         self.out = wrappedOutputTree
         for p, prob in enumerate(self.MELAsettings): 
             self.out.branch(f"RecoMela_{prob['Name']}", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level probability")
-            if prob["ispm4l"]: 
+            if prob.get("ispm4l", False): 
                 self.out.branch("RecoMela_"+prob["Name"]+"_ScaleUp", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Scale uncertainties up")
                 self.out.branch("RecoMela_"+prob["Name"]+"_ScaleDown", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Scale uncertainties down")
                 self.out.branch("RecoMela_"+prob["Name"]+"_SystUp", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Systematic uncertainties up")
@@ -39,6 +38,7 @@ class RecoProbFiller(Module):
             electrons = Collection(event, "Electron")
             muons = Collection(event, "Muon")
             self.leps = list(electrons) + list(muons)
+            fsrPhotons = Collection(event, "FsrPhoton")
             
             mothers = Mela.SimpleParticleCollection_t()
             daughters = Mela.SimpleParticleCollection_t()
@@ -50,12 +50,12 @@ class RecoProbFiller(Module):
             sortedSettings = []
             denominator_name = ""
             for p, prob in enumerate(self.MELAsettings): 
-                if "dividep" in prob: 
+                if ("dividep" in prob) and (prob["isgen"] == False): 
                     sortedSettings.append(prob)
                     denominator_name = prob["dividep"]
                 else: 
                     sortedSettings.insert(0,prob)
-
+            print("**RecoProbFiller: ", sortedSettings)
             for p, prob in enumerate(sortedSettings):
                 ### Only calculate Reco-level probabilities in this function. 
                 if prob["isgen"] == False: 
@@ -141,7 +141,7 @@ class RecoProbFiller(Module):
                         theCandLeps = [self.leps[i] for i in theCandLepIdxs] 
                         
                         
-                        dressedLepsp4 = [self.getDressedP4(l, fsrPhotons) for l in theCandLeps]
+                        dressedLepsp4 = [ZZExtraFiller.getDressedP4(self = None, lep = l, fsrPhotons=fsrPhotons) for l in theCandLeps]
 
                         daughters.add_particle(Mela.SimpleParticle_t(theCandLeps[0].pdgId, dressedLepsp4[0].Px(), dressedLepsp4[0].Py(), dressedLepsp4[0].Pz(), dressedLepsp4[0].E()))
                             
@@ -180,11 +180,16 @@ class RecoProbFiller(Module):
 
 
                         # Handling divideP 
+
+                        print("***RecoProbFiller: ", MELA_Name)
                         if MELA_Name == denominator_name: 
                             denomVec[iCand] = probVec[iCand]
                         
                         if MELA_divideP != None: 
-                            probVec[iCand] /= denomVec[iCand]
+                            if denomVec[iCand] != 0: 
+                                probVec[iCand] /= denomVec[iCand]
+                            else: 
+                                print("**RecoProbFiller: Protecting against division by 0.")
 
 
 
@@ -217,6 +222,3 @@ class RecoProbFiller(Module):
         
         return True
     
-
-
-

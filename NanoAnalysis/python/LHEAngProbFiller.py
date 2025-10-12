@@ -32,7 +32,7 @@ class LHEAngProbFiller(Module):
             for i, prob in enumerate(self.MELAsettings):
                 if prob["isgen"]:  
                     self.out.branch(f"LHEMela_{prob['Name']}", "F", limitedPrecision=16, title="User-defined LHE-level probability")
-                    if prob["ispm4l"]: 
+                    if prob.get("ispm4l", False): 
                         self.out.branch("LHEMela_"+prob["Name"]+"_ScaleUp", "F", limitedPrecision=16, title="User-defined LHE-level m4l probability with Scale uncertainties up")
                         self.out.branch("LHEMela_"+prob["Name"]+"_ScaleDown", "F", limitedPrecision=16, title="User-defined LHE-level m4l probability with Scale uncertainties down")
                         self.out.branch("LHEMela_"+prob["Name"]+"_SystUp", "F", limitedPrecision=16, title="User-defined LHE-level m4l probability with Systematic uncertainties up")
@@ -130,12 +130,13 @@ class LHEAngProbFiller(Module):
             sortedSettings = []
             denominator_name = ""
             for p, prob in enumerate(self.MELAsettings): 
-                if "dividep" in prob: 
+                if ("dividep" in prob) and (prob["isgen"] == True): 
                     sortedSettings.append(prob)
                     denominator_name = prob["dividep"]
                 else: 
                     sortedSettings.insert(0,prob)
 
+            print("**LHEProbFiller: ", sortedSettings)
             for p, prob in enumerate(sortedSettings):
 
                 ### Reset the event and the default probability settings per probability to be calculated. 
@@ -194,6 +195,8 @@ class LHEAngProbFiller(Module):
                     for coupl, coupl_val in setupInputs["Couplings"].items(): 
                         setattr(self.MELA, coupl, coupl_val)
 
+
+
                     
                     if MELA_prod and MELA_dec: 
                         probability = self.MELA.computeProdDecP(MELA_useconstant)
@@ -225,11 +228,20 @@ class LHEAngProbFiller(Module):
                     
 
                     # Save probability for DivideP purposes: 
-                    if MELA_Name == denominator_name: 
+                    # print("**LHEProbFiller: Mela_name is ", MELA_Name)
+                    # print("**LHEProbFiller: denominator name is ", denominator_name)
+                    if MELA_Name == denominator_name:
+                        # print("**LHEProbFiller: ", "getting called for ", MELA_Name)
                         denominator = probability
+                        # print("**LHEProblFiller: Denominator = ", denominator)
                     
                     if MELA_divideP is not None:
-                        probability /= denominator
+                        # print("**LHEProbFiller: ", MELA_Name)
+                        # print("**LHEProbFiller: ", MELA_divideP)
+                        if denominator != 0: 
+                            probability /= denominator
+                        else: 
+                            print("**LHEAngProbFiller: Protecting against division by 0!")
 
 
                 
@@ -246,6 +258,3 @@ class LHEAngProbFiller(Module):
         
         return True
     
-
-
-
