@@ -29,15 +29,16 @@ class LHEAngProbFiller(Module):
         self.out.branch("LHEMela_costhetastar", "F", limitedPrecision=16, title="In the Higgs' rest frame, theta_star is the angle between the beamline and the momentum of one of the Higgs' decay products.")
         self.out.branch("LHEMela_Phi1", "F", limitedPrecision=16, title="In the Higgs' rest frame, phi_1 is the angle between the decay plane of Z1 and the beamline.")
         if self.MELAsettings != None: 
-            for i, prob in enumerate(self.MELAsettings): 
-                self.out.branch(f"LHEMela_{prob['Name']}", "F", limitedPrecision=16, title="User-defined LHE-level probability")
-                if prob["ispm4l"]: 
-                    self.out.branch("LHEMela_"+prob["Name"]+"_ScaleUp", "F", limitedPrecision=16, title="User-defined LHE-level m4l probability with Scale uncertainties up")
-                    self.out.branch("LHEMela_"+prob["Name"]+"_ScaleDown", "F", limitedPrecision=16, title="User-defined LHE-level m4l probability with Scale uncertainties down")
-                    self.out.branch("LHEMela_"+prob["Name"]+"_SystUp", "F", limitedPrecision=16, title="User-defined LHE-level m4l probability with Systematic uncertainties up")
-                    self.out.branch("LHEMela_"+prob["Name"]+"_SystDown", "F", limitedPrecision=16, title="User-defined LHE-level m4l probability with Systematic uncertainties down")
-                if prob["computeprop"]: 
-                    self.out.branch("LHEMela_"+prob["Name"]+"_prop", "F", limitedPrecision=16, title="User-defined LHE-level probability with non-default propagator scheme")
+            for i, prob in enumerate(self.MELAsettings):
+                if prob["isgen"]:  
+                    self.out.branch(f"LHEMela_{prob['Name']}", "F", limitedPrecision=16, title="User-defined LHE-level probability")
+                    if prob.get("ispm4l", False): 
+                        self.out.branch("LHEMela_"+prob["Name"]+"_ScaleUp", "F", limitedPrecision=16, title="User-defined LHE-level m4l probability with Scale uncertainties up")
+                        self.out.branch("LHEMela_"+prob["Name"]+"_ScaleDown", "F", limitedPrecision=16, title="User-defined LHE-level m4l probability with Scale uncertainties down")
+                        self.out.branch("LHEMela_"+prob["Name"]+"_SystUp", "F", limitedPrecision=16, title="User-defined LHE-level m4l probability with Systematic uncertainties up")
+                        self.out.branch("LHEMela_"+prob["Name"]+"_SystDown", "F", limitedPrecision=16, title="User-defined LHE-level m4l probability with Systematic uncertainties down")
+                    if prob["computeprop"]: 
+                        self.out.branch("LHEMela_"+prob["Name"]+"_prop", "F", limitedPrecision=16, title="User-defined LHE-level probability with non-default propagator scheme")
 
         
     def analyze(self, event):
@@ -125,7 +126,18 @@ class LHEAngProbFiller(Module):
             self.MELA.resetInputEvent()
 
         if self.MELAsettings != None and len(daughters.toList()) == 4: 
-            for p, prob in enumerate(self.MELAsettings):
+            ### Sort the MELASettings dictionary so that all probabilities with divideP are last
+            sortedSettings = []
+            denominator_name = ""
+            for p, prob in enumerate(self.MELAsettings): 
+                if ("dividep" in prob) and (prob["isgen"] == True): 
+                    sortedSettings.append(prob)
+                    denominator_name = prob["dividep"]
+                else: 
+                    sortedSettings.insert(0,prob)
+
+            print("**LHEProbFiller: ", sortedSettings)
+            for p, prob in enumerate(sortedSettings):
 
                 ### Reset the event and the default probability settings per probability to be calculated. 
                 self.MELA.setInputEvent(daughters, associated, mothers, 1)
@@ -183,6 +195,8 @@ class LHEAngProbFiller(Module):
                     for coupl, coupl_val in setupInputs["Couplings"].items(): 
                         setattr(self.MELA, coupl, coupl_val)
 
+
+
                     
                     if MELA_prod and MELA_dec: 
                         probability = self.MELA.computeProdDecP(MELA_useconstant)
@@ -213,12 +227,21 @@ class LHEAngProbFiller(Module):
                         probability = self.MELA.getXPropagator(MELA_propscheme)
                     
 
-                    #TODO: Figure out a way to ensure that denominator probability is always computed before the probability to be normalized. 
-                    # if MELA_divideP is not None:
-                    #     if MELA_divideP == MELA_Name: 
-                    #         denominator = probability
-                    #     elif MELA_divideP != MELA_Name: 
-                    #         probability /= denominator
+                    # Save probability for DivideP purposes: 
+                    # print("**LHEProbFiller: Mela_name is ", MELA_Name)
+                    # print("**LHEProbFiller: denominator name is ", denominator_name)
+                    if MELA_Name == denominator_name:
+                        # print("**LHEProbFiller: ", "getting called for ", MELA_Name)
+                        denominator = probability
+                        # print("**LHEProblFiller: Denominator = ", denominator)
+                    
+                    if MELA_divideP is not None:
+                        # print("**LHEProbFiller: ", MELA_Name)
+                        # print("**LHEProbFiller: ", MELA_divideP)
+                        if denominator != 0: 
+                            probability /= denominator
+                        else: 
+                            print("**LHEAngProbFiller: Protecting against division by 0!")
 
 
                 
@@ -235,6 +258,3 @@ class LHEAngProbFiller(Module):
         
         return True
     
-
-
-
