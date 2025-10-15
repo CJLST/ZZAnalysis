@@ -19,16 +19,17 @@ class RecoProbFiller(Module):
             
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
-        for p, prob in enumerate(self.MELAsettings): 
-            self.out.branch(f"RecoMela_{prob['Name']}", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level probability")
-            if prob.get("ispm4l", False): 
-                self.out.branch("RecoMela_"+prob["Name"]+"_ScaleUp", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Scale uncertainties up")
-                self.out.branch("RecoMela_"+prob["Name"]+"_ScaleDown", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Scale uncertainties down")
-                self.out.branch("RecoMela_"+prob["Name"]+"_SystUp", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Systematic uncertainties up")
-                self.out.branch("RecoMela_"+prob["Name"]+"_SystDown", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Systematic uncertainties down")
-            if prob["computeprop"]: 
-                self.out.branch("RecoMela_"+prob["Name"]+"_prop", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level probability with non-default propagator scheme")
-                    
+        if self.MELAsettings != None: 
+            for p, prob in enumerate(self.MELAsettings): 
+                self.out.branch(f"RecoMela_{prob['Name']}", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level probability")
+                if prob.get("ispm4l", False): 
+                    self.out.branch("RecoMela_"+prob["Name"]+"_ScaleUp", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Scale uncertainties up")
+                    self.out.branch("RecoMela_"+prob["Name"]+"_ScaleDown", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Scale uncertainties down")
+                    self.out.branch("RecoMela_"+prob["Name"]+"_SystUp", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Systematic uncertainties up")
+                    self.out.branch("RecoMela_"+prob["Name"]+"_SystDown", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Systematic uncertainties down")
+                if prob["computeprop"]: 
+                    self.out.branch("RecoMela_"+prob["Name"]+"_prop", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level probability with non-default propagator scheme")
+                        
 
         
     def analyze(self, event):
