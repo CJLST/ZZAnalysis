@@ -39,8 +39,6 @@ ZH124p5                      ,,0.8196,0.00071657,,/ZH-Hto2Zto4L_Par-M-124p5_Tune
 #ZH125                       ,,0.9439,0.00074812,,,dbs,root://cms-xrd-global.cern.ch/,2,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;NANOVERSION=15;LEPTON_SETUP=2024;ADD_ALLEVENTS=True,,
 ZH125p5                     ,,0.7995,0.00078556,,/ZH-Hto2Zto4L_Par-M-125p5_TuneCP5_13p6TeV_powhegMINLO-jhugen-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;NANOVERSION=15;LEPTON_SETUP=2024;ADD_ALLEVENTS=True,,
 ZH126                       ,,0.7958,0.00082086,,/ZH-Hto2Zto4L_Par-M-126_TuneCP5_13p6TeV_powhegMINLO-jhugen-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;NANOVERSION=15;LEPTON_SETUP=2024;ADD_ALLEVENTS=True,,
->>>>>>> 30411535 (My local changes before configuring remote)
-
 
 ###,,,,,,,,,,,qq->ZZ background  - xsec taken from powheg gridpack
 ZZTo4l                          ,,1.39,,,/ZZto4L_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,PROCESS_CR=True;APPLY_K_NNLOQCD_ZZQQB=True;APPLY_K_NLOEW_ZZQQB=True;NANOVERSION=15;LEPTON_SETUP=2024,,
