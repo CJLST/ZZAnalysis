@@ -953,7 +953,7 @@ HZZ4lNtupleMaker::HZZ4lNtupleMaker(const edm::ParameterSet& pset) :
   for (unsigned int ikf=0; ikf<9; ikf++) spkfactor_ggzz_nlo[ikf] = (TSpline3*)ggZZKFactorFile->Get(Form("sp_kfactor_%s", strZZGGKFVar[ikf].Data()))->Clone(Form("sp_kfactor_%s_NLO", strZZGGKFVar[ikf].Data()));
   ggZZKFactorFile->Close();
 
-  edm::FileInPath NNLOPS_weight_path("ZZAnalysis/AnalysisStep/data/ggH_NNLOPS_Weights/NNLOPS_reweight_13p6.root");
+  edm::FileInPath NNLOPS_weight_path("ZZAnalysis/AnalysisStep/data/ggH_NNLOPS_Weights/NNLOPS_reweight.root");
   fipPath=NNLOPS_weight_path.fullPath();
   TFile* NNLOPS_weight_file = TFile::Open(fipPath.data());
   gr_NNLOPSratio_pt_powheg_0jet = (TGraphErrors*)NNLOPS_weight_file->Get("gr_NNLOPSratio_pt_powheg_0jet");
