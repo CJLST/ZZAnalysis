@@ -59,7 +59,7 @@ ZZZ                             ,,0.0159,,,/ZZZ-5F_TuneCP5_13p6TeV_amcatnlo-pyth
 
 ###,,,,,,,,,,,rare bkg targeting ttH categories
 TTWW                            ,,0.008203,,,/TTWW_TuneCP5_13p6TeV_madgraph-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,PROCESS_CR=True;NANOVERSION=15;LEPTON_SETUP=2024,,
-TTZZ                            ,,0.001579,,,/TTZZ_TuneCP5_13p6TeV_madgraph-madspin-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,PROCESS_CR=True;NANOVERSION=15;LEPTON_SETUP=2024,,
+#TTZZ                            ,,0.001579,,,/TTZZ_TuneCP5_13p6TeV_madgraph-madspin-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,PROCESS_CR=True;NANOVERSION=15;LEPTON_SETUP=2024,,
 
 ###,,,,,,,,,,,bkg for Z+X studies
 WZto3LNu                        ,,5.27,,,/WZto3LNu_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,PROCESS_CR=True;PROCESS_ZL=True;FILTER_EVENTS=Z;NANOVERSION=15;LEPTON_SETUP=2024,,
