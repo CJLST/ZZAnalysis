@@ -20,15 +20,23 @@ class RecoProbFiller(Module):
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
         if self.MELAsettings != None: 
+            self.sortedSettings = []
+            self.denominator_name = ""
             for p, prob in enumerate(self.MELAsettings): 
-                self.out.branch(f"RecoMela_{prob['Name']}", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level probability")
+                ### Sort the MELASettings dictionary so that all probabilities with divideP are last 
+                if ("dividep" in prob) and (prob["isgen"] == False): 
+                    self.sortedSettings.append(prob)
+                    self.denominator_name = prob["dividep"]
+                else: 
+                    self.sortedSettings.insert(0,prob)
+                self.out.branch(f"ZZCand_RecoMela_{prob['Name']}", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level probability")
                 if prob.get("ispm4l", False): 
-                    self.out.branch("RecoMela_"+prob["Name"]+"_ScaleUp", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Scale uncertainties up")
-                    self.out.branch("RecoMela_"+prob["Name"]+"_ScaleDown", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Scale uncertainties down")
-                    self.out.branch("RecoMela_"+prob["Name"]+"_SystUp", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Systematic uncertainties up")
-                    self.out.branch("RecoMela_"+prob["Name"]+"_SystDown", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Systematic uncertainties down")
+                    self.out.branch("ZZCand_RecoMela_"+prob["Name"]+"_ScaleUp", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Scale uncertainties up")
+                    self.out.branch("ZZCand_RecoMela_"+prob["Name"]+"_ScaleDown", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Scale uncertainties down")
+                    self.out.branch("ZZCand_RecoMela_"+prob["Name"]+"_SystUp", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Systematic uncertainties up")
+                    self.out.branch("ZZCand_RecoMela_"+prob["Name"]+"_SystDown", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Systematic uncertainties down")
                 if prob["computeprop"]: 
-                    self.out.branch("RecoMela_"+prob["Name"]+"_prop", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level probability with non-default propagator scheme")
+                    self.out.branch("ZZCand_RecoMela_"+prob["Name"]+"_prop", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level probability with non-default propagator scheme")
                         
 
         
@@ -47,17 +55,8 @@ class RecoProbFiller(Module):
 
             
 
-            ### Sort the MELASettings dictionary so that all probabilities with divideP are last 
-            sortedSettings = []
-            denominator_name = ""
-            for p, prob in enumerate(self.MELAsettings): 
-                if ("dividep" in prob) and (prob["isgen"] == False): 
-                    sortedSettings.append(prob)
-                    denominator_name = prob["dividep"]
-                else: 
-                    sortedSettings.insert(0,prob)
-            print("**RecoProbFiller: ", sortedSettings)
-            for p, prob in enumerate(sortedSettings):
+
+            for p, prob in enumerate(self.sortedSettings):
                 ### Only calculate Reco-level probabilities in this function. 
                 if prob["isgen"] == False: 
                     ### Define parameters for the probability to be computed. They don't need to be changed on a per-candidate level. 
@@ -121,7 +120,7 @@ class RecoProbFiller(Module):
                     probVec = [-999.]*len(cands)
                     
 
-                    if MELA_Name == denominator_name: 
+                    if MELA_Name == self.denominator_name: 
                         denomVec = [-999.]*len(cands)
                     # Do so again for special cases where additional output is needed
                     if MELA_ispm4l: 
@@ -181,9 +180,7 @@ class RecoProbFiller(Module):
 
 
                         # Handling divideP 
-
-                        print("***RecoProbFiller: ", MELA_Name)
-                        if MELA_Name == denominator_name: 
+                        if MELA_Name == self.denominator_name: 
                             denomVec[iCand] = probVec[iCand]
                         
                         if MELA_divideP != None: 
@@ -205,16 +202,16 @@ class RecoProbFiller(Module):
                         self.MELA.resetInputEvent()
 
                     # Write out all branches for this probability
-                    self.out.fillBranch("RecoMela_"+prob["Name"], probVec)
+                    self.out.fillBranch("ZZCand_RecoMela_"+prob["Name"], probVec)
 
                     if MELA_ispm4l: 
-                        self.out.fillBranch("RecoMela_"+setupInputs["Name"]+"_ScaleUp", probVec_ScaleUp)
-                        self.out.fillBranch("RecoMela_"+setupInputs["Name"]+"_ScaleDown", probVec_ScaleDown)
-                        self.out.fillBranch("RecoMela_"+setupInputs["Name"]+"_SystUp", probVec_SystUp)
-                        self.out.fillBranch("RecoMela_"+setupInputs["Name"]+"_SystDown", probVec_SystDown)
+                        self.out.fillBranch("ZZCand_RecoMela_"+setupInputs["Name"]+"_ScaleUp", probVec_ScaleUp)
+                        self.out.fillBranch("ZZCand_RecoMela_"+setupInputs["Name"]+"_ScaleDown", probVec_ScaleDown)
+                        self.out.fillBranch("ZZCand_RecoMela_"+setupInputs["Name"]+"_SystUp", probVec_SystUp)
+                        self.out.fillBranch("ZZCand_RecoMela_"+setupInputs["Name"]+"_SystDown", probVec_SystDown)
                     
                     if MELA_computeprop and (MELA_prod or MELA_dec): 
-                        self.out.fillBranch("RecoMela_"+setupInputs["Name"]+"_prop", probPropVec)
+                        self.out.fillBranch("ZZCand_RecoMela_"+setupInputs["Name"]+"_prop", probPropVec)
 
 
 
