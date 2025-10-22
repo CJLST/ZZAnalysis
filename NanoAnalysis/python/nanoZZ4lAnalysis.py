@@ -232,7 +232,7 @@ if IsMC:
 
     # Weights computation, to be placed in pre or post sequences based on the configuration
     from ZZAnalysis.NanoAnalysis.weightFiller import weightFiller
-    weights = weightFiller(XSEC, APPLY_K_NNLOQCD_ZZGG, APPLY_K_NNLOQCD_ZZQQB, APPLY_K_NNLOEW_ZZQQB, APPLY_QCD_GGF_UNCERT)
+    weights = weightFiller(XSEC, APPLY_K_NNLOQCD_ZZGG, APPLY_K_NNLOQCD_ZZQQB, APPLY_K_NNLOEW_ZZQQB, APPLY_QCD_GGF_UNCERT, LEPTON_SETUP)
     
     #Protect against writing a bunch of 1's. 
     if (genXS != 1) and (genBR != 1): 
