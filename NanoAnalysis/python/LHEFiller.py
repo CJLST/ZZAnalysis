@@ -25,7 +25,7 @@ class LHEFiller(Module):
                 parentIdx = lp.firstMotherIdx
 
                 # guard against invalid parent index
-                if parentIdx < 0 or parentIdx >= len(LHEPart):
+                if parentIdx < 0 :
                     parentPdg = 0
                     gParentPdg = 0
                     MELA_Status[i] = -1  # or 0 if you prefer a neutral code
@@ -34,7 +34,7 @@ class LHEFiller(Module):
                     gParentIdx = LHEPart[parentIdx].firstMotherIdx
 
                     # guard against invalid grandparent index
-                    if gParentIdx < 0 or gParentIdx >= len(LHEPart):
+                    if gParentIdx < 0 :
                         gParentPdg = 0
                     else:
                         gParentPdg = LHEPart[gParentIdx].pdgId
