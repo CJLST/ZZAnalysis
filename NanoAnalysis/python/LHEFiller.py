@@ -15,24 +15,37 @@ class LHEFiller(Module):
     def analyze(self, event):
         LHEPart = Collection(event, 'LHEPart')
         MELA_Status = [0.]*len(LHEPart)
-        for i, lp in enumerate(LHEPart):
-            if lp.status == -1: 
-                MELA_Status[i] = 1
-            elif lp.status == 1: 
-                parentIdx = lp.firstMotherIdx
-                parentPdg = LHEPart[parentIdx].pdgId
 
-                gParentIdx = LHEPart[parentIdx].firstMotherIdx 
-                if gParentIdx == -1: 
+        for i, lp in enumerate(LHEPart):
+            if lp.status == -1:
+                # intermediate or initial particle
+                MELA_Status[i] = 1
+
+            elif lp.status == 1:
+                parentIdx = lp.firstMotherIdx
+
+                # guard against invalid parent index
+                if parentIdx < 0 :
+                    parentPdg = 0
                     gParentPdg = 0
-                else: 
-                    gParentPdg = LHEPart[gParentIdx].pdgId 
-                if parentPdg == 23 and gParentPdg == 25:
-                    MELA_Status[i] = 2
-                else: 
-                    MELA_Status[i] = 3
-            else: 
-                MELA_Status[i] = -1 
-        
+                    MELA_Status[i] = -1  # or 0 if you prefer a neutral code
+                else:
+                    parentPdg = LHEPart[parentIdx].pdgId
+                    gParentIdx = LHEPart[parentIdx].firstMotherIdx
+
+                    # guard against invalid grandparent index
+                    if gParentIdx < 0 :
+                        gParentPdg = 0
+                    else:
+                        gParentPdg = LHEPart[gParentIdx].pdgId
+
+                    if parentPdg == 23 and gParentPdg == 25:
+                        MELA_Status[i] = 2  # Z from Higgs
+                    else:
+                        MELA_Status[i] = 3  # other final-state particle
+
+            else:
+                MELA_Status[i] = -1
+
         self.out.fillBranch("LHEPart_MELAStatus", MELA_Status)
         return True

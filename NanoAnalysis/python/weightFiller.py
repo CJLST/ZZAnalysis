@@ -9,7 +9,7 @@ import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 class weightFiller(Module):
-    def __init__(self, XS, APPLY_K_NNLOQCD_ZZGG, APPLY_K_NNLOQCD_ZZQQB, APPLY_K_NNLOEW_ZZQQB, APPLY_QCD_GGF_UNCERT):
+    def __init__(self, XS, APPLY_K_NNLOQCD_ZZGG, APPLY_K_NNLOQCD_ZZQQB, APPLY_K_NNLOEW_ZZQQB, APPLY_QCD_GGF_UNCERT, LEPTON_SETUP):
         print("***weightFiller: XS:", XS, flush=True)
         self.writeHistFile = False
         self.XS = XS
@@ -17,6 +17,7 @@ class weightFiller(Module):
         self.APPLY_K_NNLOQCD_ZZQQB = APPLY_K_NNLOQCD_ZZQQB
         self.APPLY_K_NNLOEW_ZZQQB = APPLY_K_NNLOEW_ZZQQB
         self.APPLY_QCD_GGF_UNCERT = APPLY_QCD_GGF_UNCERT
+        self.LEPTON_SETUP = LEPTON_SETUP
 
         basePath='%s/src/ZZAnalysis/AnalysisStep/' % os.environ['CMSSW_BASE']
 
@@ -44,8 +45,11 @@ class weightFiller(Module):
             pass
 
         # ggH NNLOPS weights
-        if self.APPLY_QCD_GGF_UNCERT :        
-            NNLOPS_weight_file = ROOT.TFile.Open(basePath+'data/ggH_NNLOPS_Weights/NNLOPS_reweight.root')
+        if self.APPLY_QCD_GGF_UNCERT :
+            if self.LEPTON_SETUP >= 2022:
+                NNLOPS_weight_file = ROOT.TFile.Open(basePath+'data/ggH_NNLOPS_Weights/NNLOPS_reweight_13p6.root')
+            else:
+                NNLOPS_weight_file = ROOT.TFile.Open(basePath+'data/ggH_NNLOPS_Weights/NNLOPS_reweight.root')
             self.gr_NNLOPSratio_pt_powheg_0jet = NNLOPS_weight_file.Get("gr_NNLOPSratio_pt_powheg_0jet")
             self.gr_NNLOPSratio_pt_powheg_1jet = NNLOPS_weight_file.Get("gr_NNLOPSratio_pt_powheg_1jet")
             self.gr_NNLOPSratio_pt_powheg_2jet = NNLOPS_weight_file.Get("gr_NNLOPSratio_pt_powheg_2jet")
