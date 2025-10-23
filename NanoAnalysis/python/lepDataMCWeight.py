@@ -49,14 +49,20 @@ class lepDataMCWeight(Module):
         myLepID = abs(lep.pdgId)
         mySCeta = lep.eta
         isCrack = False # FIXME: isGap() is not available in nanoAODs, and cannot be recomputed easily based on eta, phi. We thus use the non-gap SFs for all electrons.
+        isHoleBPix = False  # default
+
         if myLepID==11 :
             mySCeta = lep.eta + lep.deltaEtaSC # Use the SC eta and not the electron eta
+            phi = lep.phi
+
+            if -1.5 < mySCeta < 0 and -1.2 < phi < -0.8:
+                isHoleBPix = True
 
         # Deal with very rare cases when SCeta is out of 2.5 bounds
         mySCeta = min(mySCeta,2.49)
         mySCeta = max(mySCeta,-2.49)
 
-        pair = self.lepSFHelper.getSF(myLepID, lep.pt, lep.eta, mySCeta, isCrack)
+        pair = self.lepSFHelper.getSF(myLepID, lep.pt, lep.eta, mySCeta, isCrack, isHoleBPix)
         SF = pair.first
         SFerror = pair.second
 

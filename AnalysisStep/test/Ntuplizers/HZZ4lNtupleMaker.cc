@@ -2752,8 +2752,8 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const vector<const reco::Candidate*>& lep
     if (myLepID == 11) isCrack = userdatahelpers::getUserFloat(leptons[i],"isCrack");
     else isCrack = false;
 
-
-    auto SFandUnc = lepSFHelper->getSF(myLepID,myLepPt,myLepEta, mySCeta, isCrack);
+    bool isHoleBPix = false; // TODO: implement logic to set this if needed
+    auto SFandUnc = lepSFHelper->getSF(myLepID,myLepPt,myLepEta, mySCeta, isCrack, isHoleBPix);
     SF = SFandUnc.first;
     SF_Unc = SFandUnc.second;
 
