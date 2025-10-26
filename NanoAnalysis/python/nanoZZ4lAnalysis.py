@@ -188,9 +188,10 @@ reco_sequence = [lepFiller(cuts, LEPTON_SETUP, MUON_ID_BYMVA), # FSR and FSR-cor
                           debug=DEBUG), # Build ZZ candidates; choose best candidate; filter events with candidates
                  jetFiller(), # Jets cleaning with leptons
                  ZZExtraFiller(mela, IsMC, LEPTON_SETUP, DATA_TAG, PROCESS_CR), # Additional variables to selected candidates
-                 RecoProbFiller(mela, NANOVERSION, melaSettings) #Reco level probabilities. 
-                 # MELAFiller(), # Compute the full set of discriminants for the best candidate
                  ]
+
+if MELAprobabilities != None:
+    reco_sequence.append(RecoProbFiller(mela, NANOVERSION, melaSettings))  #Reco level probabilities. 
 
 # Add muon scale corrections
 if APPLYMUCORR :
