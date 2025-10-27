@@ -42,7 +42,9 @@
 
 #The first probability calculates the lhe-level (isgen=True), decay-side probability (Dec=True) for a gluon fusion to Higgs sample (Production=ZZGG) decayed in JHUGen (MatrixElement=JHUGen) to ZZ {by default, decaymode=CandiateDecayMode_ZZ}.
 # The final probability will be named "LHEMela_Native" ("Name= 'Native'")
-# 
+#
+
+from ZZAnalysis.NanoAnalysis.tools import setConf
 setConf("probabilities", {'Name': "Native", 
                           "Process": "SelfDefine_spin0", 
                           "MatrixElement":"JHUGen",

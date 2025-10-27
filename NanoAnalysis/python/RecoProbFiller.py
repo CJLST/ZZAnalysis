@@ -22,9 +22,10 @@ class RecoProbFiller(Module):
         if self.MELAsettings != None: 
             self.sortedSettings = []
             self.denominator_name = ""
-            for p, prob in enumerate(self.MELAsettings): 
+            for p, prob in enumerate(self.MELAsettings):
+                if (prob["isgen"]) : continue 
                 ### Sort the MELASettings dictionary so that all probabilities with divideP are last 
-                if ("dividep" in prob) and (prob["isgen"] == False): 
+                if ("dividep" in prob) : 
                     self.sortedSettings.append(prob)
                     self.denominator_name = prob["dividep"]
                 else: 

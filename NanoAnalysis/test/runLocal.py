@@ -159,8 +159,12 @@ elif SampleToRun == "MC2024" :
     setConf("LEPTON_SETUP", 2024)
     setConf("IsMC", True)
     setConf("store","root://cms-xrd-global.cern.ch/")
+    setConf("APPLY_QCD_GGF_UNCERT", True) # for ggH
     setConf("fileNames",[
-        "/store/mc/RunIII2024Summer24NanoAODv15/WminusH-Hto2Zto4L_Par-M-125_TuneCP5_13p6TeV_powhegMINLO-jhugen-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/cbb0799a-f7e4-49cb-b5ba-71693538169b.root", # 11520 events
+        "/store/mc/RunIII2024Summer24NanoAODv15/GluGluH-Hto2Zto4L_Par-M-125_TuneCP5_13p6TeV_powheg-jhugen-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/110000/fcc025d8-d80b-4d98-a1b7-d0ea0a6df703.root" # 10000 evts
+        #"/store/mc/RunIII2024Summer24NanoAODv15/WminusH-Hto2Zto4L_Par-M-125_TuneCP5_13p6TeV_powhegMINLO-jhugen-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/120000/cbb0799a-f7e4-49cb-b5ba-71693538169b.root", # 11520 events
+        #"/store/mc/RunIII2024Summer24NanoAODv15/TTH-Hto2Zto4L_Par-M-124p5_TuneCP5_13p6TeV_powheg-jhugen-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/2560000/710f4c8a-1f0f-42aa-845c-b0f227f3ffdc.root" # ttH
+        # "/store/mc/RunIII2024Summer24NanoAODv15/DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v3/2530000/3586853d-64ed-4ad6-b8c6-3f3688d10398.root" # DY file with large event numbers, for debugging
         ])
 
 
@@ -194,9 +198,14 @@ elif SampleToRun == "MELA_Test" :
     setConf("XSEC", 290.58626*0.0002745)
     setConf("IsMC", True)
     setConf("ADD_ALLEVENTS", True)
+    setConf("APPLY_QCD_GGF_UNCERT", True) # for ggH
     setConf("NANOVERSION", 15)
-    setConf("store", "")
-    setConf("fileNames", ["/eos/user/n/nipinto/old_CMSSW_13_3_3/src/ggH_test.root"]) # private reprocessing to add LHE mothers/daughters as in v15
+    setConf("store","root://cms-xrd-global.cern.ch/")
+    # Add probabilities 
+    import prod.pyFragments.exampleProbabilities
+    setConf("fileNames", [
+        "/store/mc/RunIII2024Summer24NanoAODv15/GluGluH-Hto2Zto4L_Par-M-125_TuneCP5_13p6TeV_powheg-jhugen-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/110000/a9e03ff9-2146-4aff-bd26-69abcb98359f.root" # 10000 evts
+    ])
     
 
 ################################################################################
