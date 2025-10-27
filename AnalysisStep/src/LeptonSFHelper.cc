@@ -192,7 +192,7 @@ LeptonSFHelper::LeptonSFHelper(int year, std::string const &data_tag) :
 
 LeptonSFHelper::~LeptonSFHelper() {}
 
-pair<float, float> LeptonSFHelper::getSF(int flav, float pt, float eta, float SCeta, bool isCrack, bool isHoleBPix) const
+pair<float, float> LeptonSFHelper::getSF(int flav, float pt, float eta, float SCeta, float phi, bool isCrack) const
 {
    float RecoSF = 1.0;
    float SelSF = 1.0;
@@ -218,11 +218,12 @@ pair<float, float> LeptonSFHelper::getSF(int flav, float pt, float eta, float SC
      }
      
      // Electron HZZ selection SF
+     bool isHoleBPixRegion = (SCeta > -1.5 && SCeta < 0.0 && phi > -1.2 && phi < -0.8);
      if (isCrack && h_Ele_ID_Cracks!=nullptr) {
        SelSF     = h_Ele_ID_Cracks->GetBinContent(h_Ele_ID_Cracks->FindFixBin(SCeta, std::min(pt,499.f)));
        SelSF_Unc = h_Ele_ID_Cracks->GetBinError  (h_Ele_ID_Cracks->FindFixBin(SCeta, std::min(pt,199.f)));
      }
-     else if (isHoleBPix && h_Ele_ID_HoleBPix!=nullptr) {
+     else if (isHoleBPixRegion && h_Ele_ID_HoleBPix!=nullptr) {
        SelSF     = h_Ele_ID_HoleBPix->GetBinContent(h_Ele_ID_HoleBPix->FindFixBin(SCeta, std::min(pt,499.f)));
        SelSF_Unc = h_Ele_ID_HoleBPix->GetBinError  (h_Ele_ID_HoleBPix->FindFixBin(SCeta, std::min(pt,499.f)));
      }
