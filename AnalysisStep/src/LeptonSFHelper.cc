@@ -115,10 +115,10 @@ LeptonSFHelper::LeptonSFHelper(int year, std::string const &data_tag) :
   root_file->Close();
 
   if (f_eleID_HoleBPix != "") {
-  TFile* root_file = TFile::Open(f_eleID_HoleBPix.Data(),"READ");
-  h_Ele_ID_HoleBPix = (TH2F*) root_file->Get("EGamma_SF2D")->Clone("h_Ele_ID");
-  h_Ele_ID_HoleBPix->SetDirectory(nullptr); // This is required to detach the clone from the file
-  root_file->Close();
+    TFile* root_file = TFile::Open(f_eleID_HoleBPix.Data(),"READ");
+    h_Ele_ID_HoleBPix = (TH2F*) root_file->Get("EGamma_SF2D")->Clone("h_Ele_ID");
+    h_Ele_ID_HoleBPix->SetDirectory(nullptr); // This is required to detach the clone from the file
+    root_file->Close();
    }
   
   if (f_eleID_Cracks != "") {
@@ -218,12 +218,11 @@ pair<float, float> LeptonSFHelper::getSF(int flav, float pt, float eta, float SC
      }
      
      // Electron HZZ selection SF
-     bool isHoleBPixRegion = (SCeta > -1.5 && SCeta < 0.0 && phi > -1.2 && phi < -0.8);
      if (isCrack && h_Ele_ID_Cracks!=nullptr) {
        SelSF     = h_Ele_ID_Cracks->GetBinContent(h_Ele_ID_Cracks->FindFixBin(SCeta, std::min(pt,499.f)));
        SelSF_Unc = h_Ele_ID_Cracks->GetBinError  (h_Ele_ID_Cracks->FindFixBin(SCeta, std::min(pt,199.f)));
      }
-     else if (isHoleBPixRegion && h_Ele_ID_HoleBPix!=nullptr) {
+     else if (h_Ele_ID_HoleBPix!=nullptr && (SCeta > -1.5 && SCeta < 0.0 && phi > -1.2 && phi < -0.8)) { //BPix hole region
        SelSF     = h_Ele_ID_HoleBPix->GetBinContent(h_Ele_ID_HoleBPix->FindFixBin(SCeta, std::min(pt,499.f)));
        SelSF_Unc = h_Ele_ID_HoleBPix->GetBinError  (h_Ele_ID_HoleBPix->FindFixBin(SCeta, std::min(pt,499.f)));
      }
