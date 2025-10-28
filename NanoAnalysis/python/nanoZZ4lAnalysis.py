@@ -175,7 +175,6 @@ if not IsMC :
 ### Modules to be run
 
 # Standard sequence used for both data and MC
-from ZZAnalysis.NanoAnalysis.RecoProbFiller import * 
 reco_sequence = [lepFiller(cuts, LEPTON_SETUP, MUON_ID_BYMVA), # FSR and FSR-corrected iso; flags for passing IDs
                  ZZFiller(bestCandByMELA, mela,
                           isMC=IsMC,
@@ -191,6 +190,7 @@ reco_sequence = [lepFiller(cuts, LEPTON_SETUP, MUON_ID_BYMVA), # FSR and FSR-cor
                  ]
 
 if MELAprobabilities != None:
+    from ZZAnalysis.NanoAnalysis.RecoProbFiller import *
     reco_sequence.append(RecoProbFiller(mela, NANOVERSION, melaSettings))  #Reco level probabilities. 
 
 # Add muon scale corrections
