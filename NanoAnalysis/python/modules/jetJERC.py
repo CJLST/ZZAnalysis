@@ -36,7 +36,7 @@ def getJetCorrected(era, tag, is_mc, overwritePt=True) :
                 JERKey = "Summer22_22Sep2023_JRV1_MC_PtResolution_AK4PFPuppi"
                 JERsfKey = "Summer22_22Sep2023_JRV1_MC_ScaleFactor_AK4PFPuppi"
             else:
-                folderKey = "Run3-22EFGSep23-Summer22EE-NanoAODv12/2025-10-07" # JERC file md5sum: baa619665139acf05fc326aaaa0571cd
+                folderKey = "Run3-22EFGSep23-Summer22EE-NanoAODv12/2025-10-07"
                 L1Key = "Summer22EE_22Sep2023_V3_MC_L1FastJet_AK4PFPuppi"
                 L2Key = "Summer22EE_22Sep2023_V3_MC_L2Relative_AK4PFPuppi"
                 L3Key = "Summer22EE_22Sep2023_V3_MC_L3Absolute_AK4PFPuppi"
@@ -63,7 +63,7 @@ def getJetCorrected(era, tag, is_mc, overwritePt=True) :
                 JERKey = None
                 JERsfKey = None
             elif "2022E" in tag:
-                folderKey = "Run3-22EFGSep23-Summer22EE-NanoAODv12/2025-10-07" # JERC file md5sum: baa619665139acf05fc326aaaa0571cd
+                folderKey = "Run3-22EFGSep23-Summer22EE-NanoAODv12/2025-10-07"
                 L1Key = "Summer22EE_22Sep2023_RunE_V3_DATA_L1FastJet_AK4PFPuppi"
                 L2Key = "Summer22EE_22Sep2023_RunE_V3_DATA_L2Relative_AK4PFPuppi"
                 L3Key = "Summer22EE_22Sep2023_RunE_V3_DATA_L3Absolute_AK4PFPuppi"
@@ -101,7 +101,7 @@ def getJetCorrected(era, tag, is_mc, overwritePt=True) :
     elif era == 2023:
         if is_mc :
             if "pre_BPix" in tag:
-                folderKey = "Run3-23CSep23-Summer23-NanoAODv12/2025-10-07" # JERC file md5sum: b35c2108478e49da5d46f679c28f1111
+                folderKey = "Run3-23CSep23-Summer23-NanoAODv12/2025-10-07"
                 L1Key = "Summer23Prompt23_V2_MC_L1FastJet_AK4PFPuppi"
                 L2Key = "Summer23Prompt23_V2_MC_L2Relative_AK4PFPuppi"
                 L3Key = "Summer23Prompt23_V2_MC_L3Absolute_AK4PFPuppi"
@@ -114,7 +114,7 @@ def getJetCorrected(era, tag, is_mc, overwritePt=True) :
                 JERKey = "Summer23Prompt23_RunCv1234_JRV1_MC_PtResolution_AK4PFPuppi"
                 JERsfKey = "Summer23Prompt23_RunCv1234_JRV1_MC_ScaleFactor_AK4PFPuppi"
             else:
-                folderKey = "Run3-23DSep23-Summer23BPix-NanoAODv12/2025-10-07" # JERC file md5sum: eef8019335e15d48a7963c47f7ad306c
+                folderKey = "Run3-23DSep23-Summer23BPix-NanoAODv12/2025-10-07"
                 L1Key = "Summer23BPixPrompt23_V3_MC_L1FastJet_AK4PFPuppi"
                 L2Key = "Summer23BPixPrompt23_V3_MC_L2Relative_AK4PFPuppi"
                 L3Key = "Summer23BPixPrompt23_V3_MC_L3Absolute_AK4PFPuppi"
@@ -130,7 +130,7 @@ def getJetCorrected(era, tag, is_mc, overwritePt=True) :
         ## JER are not applied to data
         else :
             if "pre_BPix" in tag:
-                folderKey = "Run3-23CSep23-Summer23-NanoAODv12/2025-10-07" # JERC file md5sum: b35c2108478e49da5d46f679c28f1111
+                folderKey = "Run3-23CSep23-Summer23-NanoAODv12/2025-10-07"
                 L1Key = "Summer23Prompt23_V2_DATA_L1FastJet_AK4PFPuppi"
                 L2Key = "Summer23Prompt23_V2_DATA_L2Relative_AK4PFPuppi"
                 L3Key = "Summer23Prompt23_V2_DATA_L3Absolute_AK4PFPuppi"
@@ -141,7 +141,7 @@ def getJetCorrected(era, tag, is_mc, overwritePt=True) :
                 JERKey = None
                 JERsfKey = None
             else:
-                folderKey = "Run3-23DSep23-Summer23BPix-NanoAODv12/2025-10-07" # JERC file md5sum: eef8019335e15d48a7963c47f7ad306c
+                folderKey = "Run3-23DSep23-Summer23BPix-NanoAODv12/2025-10-07"
                 L1Key = "Summer23BPixPrompt23_V3_DATA_L1FastJet_AK4PFPuppi"
                 L2Key = "Summer23BPixPrompt23_V3_DATA_L2Relative_AK4PFPuppi"
                 L3Key = "Summer23BPixPrompt23_V3_DATA_L3Absolute_AK4PFPuppi"
@@ -174,7 +174,7 @@ def getJetCorrected(era, tag, is_mc, overwritePt=True) :
             # L2Key = "Winter24Prompt24_V3_DATA_L2Relative_AK4PFPuppi"
             # L3Key = "Winter24Prompt24_V3_DATA_L3Absolute_AK4PFPuppi"
             # L2L3Key = "Winter24Prompt24_V3_DATA_L2L3Residual_AK4PFPuppi"
-            folderKey = "Run3-24CDEReprocessingFGHIPrompt-Summer24-NanoAODv15/2025-07-17" # JERC file md5sum: 754fd45c85b197ff9f7d33f68e7cd9a2
+            folderKey = "Run3-24CDEReprocessingFGHIPrompt-Summer24-NanoAODv15/2025-07-17"
             L1Key = "Summer24Prompt24_V1_DATA_L1FastJet_AK4PFPuppi"
             L2Key = "Summer24Prompt24_V1_DATA_L2Relative_AK4PFPuppi"
             L3Key = "Summer24Prompt24_V1_DATA_L3Absolute_AK4PFPuppi"
@@ -193,8 +193,10 @@ def getJetCorrected(era, tag, is_mc, overwritePt=True) :
     # Apply run-dependent JEC only for 2023 data (not MC)
     useRunDependentJEC = (era == 2023 or era == 2024 or era == 2025) and (not is_mc)
     # Use Splittign scheme for Jets uncertainties (11 sources)
-    useJesSplittingScheme11=True # Default
+    useJesSplittingScheme11 = False # Default
+
+    scaleKey = scaleKeyRegrouped11 if useJesSplittingScheme11 else scaleTotalKey
 
     print("***jetJERC: era:", era, "tag:", tag, "is MC:", is_mc, "overwritePt:", overwritePt, "phiDependent:", usePhiDependentJEC, "runDependent:", useRunDependentJEC, "JesSplittingScheme11:", useJesSplittingScheme11,"json_JERC:", json_JERC, "json_JERsmear:", json_JERsmear)
     
-    return jetJERC(json_JERC, json_JERsmear, L1Key, L2Key, L3Key, L2L3Key, scaleTotalKey, scaleKeyRegrouped11, smearKey, JERKey, JERsfKey, overwritePt, usePhiDependentJEC, useRunDependentJEC, useJesSplittingScheme11)
+    return jetJERC(json_JERC, json_JERsmear, L1Key, L2Key, L3Key, L2L3Key, scaleKey, smearKey, JERKey, JERsfKey, overwritePt, usePhiDependentJEC, useRunDependentJEC)
