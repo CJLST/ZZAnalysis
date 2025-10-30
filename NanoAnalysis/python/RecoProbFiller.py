@@ -35,7 +35,7 @@ class RecoProbFiller(Module):
                 "useconstant":False,
                 "match_mX":False,
                 "lepton_interference":"DefaultLeptonInterf",
-                "ispm4l": False,
+                "ispm4l": None,
                 "dividep": None 
             }
 
@@ -56,13 +56,13 @@ class RecoProbFiller(Module):
                 else: 
                     self.sortedSettings.append(fprob)
 
-            ### Create name-index dictionary, to retrieve the probabilities to be used for dividep.
-            self.namesDict = {}
-            for iprob, prob in enumerate(self.sortedSettings):
-                self.namesDict[prob["Name"]] = iprob
+            ### Add index of probability to be used for dividep.
+            names = [d["Name"] for d in self.sortedSettings]
+            for prob in self.sortedSettings:
+                dp = prob["dividep"]
+                prob["dividep_idx"] = (-1 if dp == None else names.index(dp))
 
-            print(f"***RecoProbFiller: probs: {list(self.namesDict.keys())}", flush=True)
-
+            print(f"***RecoProbFiller: probs: {names}", flush=True)
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
@@ -93,7 +93,8 @@ class RecoProbFiller(Module):
             daughters = Mela.SimpleParticleCollection_t()
             associated = Mela.SimpleParticleCollection_t()
 
-            for prob in self.sortedSettings:
+            for iprob, prob in enumerate(self.sortedSettings):
+                vprob = [0.]*len(self.sortedSettings) # to be used to retrieve denominators for probs whith dividep
                 self.MELA.setInputEvent(daughters, None, None, 0)
                 
                 ### Parse MELA settings for the desired probability
@@ -110,7 +111,7 @@ class RecoProbFiller(Module):
                 MELA_matchMx = prob["match_mX"]
                 MELA_leptoninterference = check_enum(prob["lepton_interference"], Mela.LeptonInterference)
                 MELA_ispm4l = prob["ispm4l"]
-                MELA_divideP = prob["dividep"]
+                MELA_divideP_idx = prob["dividep_idx"]
 
                 ### Configure MELA for the event. 
                 self.MELA.setProcess(MELA_Process, MELA_MatrixElement, MELA_Production)
@@ -162,7 +163,7 @@ class RecoProbFiller(Module):
                         probVec_SystUp[iCand] = self.MELA.computePM4l(Mela.SuperMelaSyst.SMSyst_ResUp)
                         probVec_SystDown[iCand] = self.MELA.computePM4l(Mela.SuperMelaSyst.SMSyst_ResDown)
                     else:
-                        raise KeyError(f"RecoProbFiller: {MELA_Name}: Need to specify either production, decay, pm4l, or computeprop!")
+                        raise KeyError(f"RecoProbFiller: {MELA_Name}: Need to specify either production, decay, pm4l, or computeprop!") # FIXME: then the next 2 cases should come before this else? 
                         
                     if MELA_computeprop and (MELA_prod or MELA_dec): 
                         probPropVec[iCand] = self.MELA.getXPropagator(MELA_propscheme)
@@ -170,8 +171,9 @@ class RecoProbFiller(Module):
                         probVec[iCand] = self.MELA.getXPropagator(MELA_propscheme)
 
                     # Handle divideP
-                    if MELA_divideP != None:
-                        den = probVec[self.namesDict[MELA_divideP]]
+                    vprob[iprob] = probVec[iCand]
+                    if MELA_divideP_idx != -1:
+                        den = vprob[MELA_divideP_idx] #Because of prob sorting, this has already been computed
                         if den != 0: 
                             probVec[iCand] /= den
                         else: 
