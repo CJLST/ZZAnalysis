@@ -49,6 +49,9 @@ class LHEAngProbFiller(Module):
                     else:
                         raise(ValueError(f"LHEAngProbFiller: unknown parameter {key} in {prob['Name']}"))
 
+                # Add branch name so it does not need to be remade within loops
+                fprob["branchname"] = f"LHEMela_P_{prob['Name']}"
+
                 ### Sort the MELASettings dictionary so that all probabilities with divideP are last 
                 if (fprob["dividep"]==None):
                     self.sortedSettings.insert(0,fprob)
@@ -76,14 +79,14 @@ class LHEAngProbFiller(Module):
         self.out.branch("LHEMela_Phi1", "F", limitedPrecision=16, title="In the Higgs' rest frame, phi_1 is the angle between the decay plane of Z1 and the beamline.")
         if len(self.sortedSettings) !=0 :
             for i, prob in enumerate(self.sortedSettings):
-                self.out.branch(f"LHEMela_{prob['Name']}", "F", limitedPrecision=16, title="User-defined LHE-level probability")
+                self.out.branch(prob["branchname"], "F", limitedPrecision=16, title="User-defined LHE-level probability")
                 if prob.get("ispm4l", False): 
-                    self.out.branch("LHEMela_"+prob["Name"]+"_ScaleUp", "F", limitedPrecision=16, title="User-defined LHE-level m4l probability with Scale uncertainties up")
-                    self.out.branch("LHEMela_"+prob["Name"]+"_ScaleDown", "F", limitedPrecision=16, title="User-defined LHE-level m4l probability with Scale uncertainties down")
-                    self.out.branch("LHEMela_"+prob["Name"]+"_SystUp", "F", limitedPrecision=16, title="User-defined LHE-level m4l probability with Systematic uncertainties up")
-                    self.out.branch("LHEMela_"+prob["Name"]+"_SystDown", "F", limitedPrecision=16, title="User-defined LHE-level m4l probability with Systematic uncertainties down")
+                    self.out.branch(prob["branchname"]+"_ScaleUp", "F", limitedPrecision=16, title="User-defined LHE-level m4l probability with Scale uncertainties up")
+                    self.out.branch(prob["branchname"]+"_ScaleDown", "F", limitedPrecision=16, title="User-defined LHE-level m4l probability with Scale uncertainties down")
+                    self.out.branch(prob["branchname"]+"_SystUp", "F", limitedPrecision=16, title="User-defined LHE-level m4l probability with Systematic uncertainties up")
+                    self.out.branch(prob["branchname"]+"_SystDown", "F", limitedPrecision=16, title="User-defined LHE-level m4l probability with Systematic uncertainties down")
                 if prob["computeprop"]: 
-                    self.out.branch("LHEMela_"+prob["Name"]+"_prop", "F", limitedPrecision=16, title="User-defined LHE-level probability with non-default propagator scheme")
+                    self.out.branch(prob["branchname"]+"_prop", "F", limitedPrecision=16, title="User-defined LHE-level probability with non-default propagator scheme")
 
         
     def analyze(self, event):
@@ -182,6 +185,7 @@ class LHEAngProbFiller(Module):
                 MELA_leptoninterference = check_enum(prob["lepton_interference"], Mela.LeptonInterference)
                 MELA_ispm4l = prob["ispm4l"]
                 MELA_divideP_idx = prob["dividep_idx"]
+                MELA_branchname = prob["branchname"]
 
                 ### Configure MELA for the event. 
                 self.MELA.setProcess(MELA_Process, MELA_MatrixElement, MELA_Production)
@@ -194,8 +198,7 @@ class LHEAngProbFiller(Module):
                     self.MELA.setMelaHiggsMassWidth(daughters.MTotal(), 0.00001, 1)
                 
                 for coupl, coupl_val in prob["Couplings"].items(): 
-                    setattr(self.MELA, coupl, coupl_val) # FIXME: This needs to be reset at the beginning of the loop?
-
+                    setattr(self.MELA, coupl, coupl_val)
                 
                 if MELA_prod and MELA_dec: 
                     probability = self.MELA.computeProdDecP(MELA_useconstant)
@@ -210,20 +213,19 @@ class LHEAngProbFiller(Module):
                     probability_SystUp = self.MELA.computePM4l(Mela.SuperMelaSyst.SMSyst_ResUp)
                     probability_SystDown = self.MELA.computePM4l(Mela.SuperMelaSyst.SMSyst_ResDown)
 
-                    self.out.fillBranch("LHEMela_"+prob["Name"]+"_ScaleUp", probability_ScaleUp)
-                    self.out.fillBranch("LHEMela_"+prob["Name"]+"_ScaleDown", probability_ScaleDown)
-                    self.out.fillBranch("LHEMela_"+prob["Name"]+"_SystUp", probability_SystUp)
-                    self.out.fillBranch("LHEMela_"+prob["Name"]+"_SystDown", probability_SystDown)
-
-
-                else:
-                    raise KeyError("Need to specify either production, decay, pm4l, or computeprop!")
+                    self.out.fillBranch(MELA_branchname+"_ScaleUp", probability_ScaleUp)
+                    self.out.fillBranch(MELA_branchname+"_ScaleDown", probability_ScaleDown)
+                    self.out.fillBranch(MELA_branchname+"_SystUp", probability_SystUp)
+                    self.out.fillBranch(MELA_branchname+"_SystDown", probability_SystDown)
+                elif MELA_computeprop==False :
+                    raise KeyError(f"LHEAngProbFiller: need to specify either (production and/or decay) or pm4l or computeprop for {MELA_Name}")
                 
-                if MELA_computeprop and (MELA_prod or MELA_dec): 
-                    probabilityprop = self.MELA.getXPropagator(MELA_propscheme)
-                    self.out.fillBranch("LHEMela_"+prob["Name"]+"_prop", probabilityprop)
-                elif MELA_computeprop: 
-                    probability = self.MELA.getXPropagator(MELA_propscheme)
+                if MELA_computeprop and not MELA_ispm4l:
+                    if (MELA_prod or MELA_dec): 
+                        probabilityprop = self.MELA.getXPropagator(MELA_propscheme)
+                        self.out.fillBranch(MELA_branchname+"_prop", probabilityprop)
+                    elif MELA_computeprop: 
+                        probability = self.MELA.getXPropagator(MELA_propscheme)
                 
                 # Handle divideP 
                 vprob[iprob] = probability
@@ -235,7 +237,7 @@ class LHEAngProbFiller(Module):
                         print("**LHEAngProbFiller: Protecting against division by 0!")
                 
 
-                self.out.fillBranch("LHEMela_"+prob["Name"], probability)
+                self.out.fillBranch(MELA_branchname, probability)
                 self.MELA.resetInputEvent()
         
        

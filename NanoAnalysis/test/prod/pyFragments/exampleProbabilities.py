@@ -58,7 +58,7 @@ setConf("probabilities", {'Name': "Native",
                           }, 
                           append=True)
 
-setConf("probabilities", {'Name': "P_Gen_ggH_ghg2_1_ghz4_1", 
+setConf("probabilities", {'Name': "ggH_ghg2_1_ghz4_1", 
                         "Process": "SelfDefine_spin0", 
                         "MatrixElement":"JHUGen",
                         "Production": "ZZGG", 
