@@ -1,10 +1,11 @@
 <lcgdict>
   <class name="edm::Ptr<pat::PFParticle>"/>
   <class name="std::vector<edm::Ptr<pat::PFParticle> >"/>
-  <class name="pat::UserHolder<std::vector<edm::Ptr<pat::PFParticle> > >" />
+  <class name="pat::UserHolder<std::vector<edm::Ptr<pat::PFParticle> > >"/>
   <class name="LeptonSFHelper"/>
   <class name="KFactors"/>
-  <class name="Mela" />
-  <class name="TUtil" />
+  <class name="Mela"/>
+  <class name="TUtil"/>
   <class name="WeightCalculatorFromHistogram"/>
+  <class name="Dataset"/>
 </lcgdict>
