@@ -7,6 +7,7 @@ using namespace std;
 LeptonSFHelper::LeptonSFHelper(int year, std::string const &data_tag) :
   theYear(year),
   h_Ele_ID(nullptr),
+  h_Ele_ID_HoleBPix(nullptr),
   h_Ele_ID_Cracks(nullptr),
   h_Ele_Reco_lowPt(nullptr),
   h_Ele_Reco_midPt(nullptr),
@@ -17,7 +18,7 @@ LeptonSFHelper::LeptonSFHelper(int year, std::string const &data_tag) :
   TString basePath = Form("$CMSSW_BASE/src/ZZAnalysis/AnalysisStep/data/LeptonEffScaleFactors/");
 
   // -----ELECTRONS
-  TString f_eleID, f_eleID_Cracks, f_eleReco_lowPt, f_eleReco_midPt, f_eleReco_highPt; // filenames
+  TString f_eleID, f_eleID_HoleBPix, f_eleID_Cracks, f_eleReco_lowPt, f_eleReco_midPt, f_eleReco_highPt; // filenames
   
   if (year == 2016) {
     // 2016 preVFP Electrons
@@ -73,8 +74,8 @@ LeptonSFHelper::LeptonSFHelper(int year, std::string const &data_tag) :
   } else if (year == 2023) {
     if(data_tag.find("pre_BPix") != std::string::npos) { // 2023 preBPix
       //ID - for now using 2022 postEE
-      std::cout<<"WARNING 2023 preBPix Electron ID SFs - for now using 2022postEE"<<std::endl;
-      f_eleID          = basePath+"SF2022eleID_postEE.root";
+      std::cout<<"WARNING 2023 preBPix Electron ID SFs - preliminary version"<<std::endl;
+      f_eleID          = basePath+"SF2023eleID_preBPix.root"; // provided by Martina 23/10/25; preliminary
 
       //RECO - SFs for Electrons in 2023PromptC from EG - https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammSFandSSRun3
       f_eleReco_highPt = "/eos/cms/store/group/phys_egamma/validation/web/Run3_egm_reco_SF/SF_prompt_2023_19012024/highpT/Run3_2023C_New_highpt1_eta/passingRECO/egammaEffi.txt_EGM2D.root"; //md5sum: a6dddbbeea48f2f9c97c4138f8a657f3
@@ -83,8 +84,9 @@ LeptonSFHelper::LeptonSFHelper(int year, std::string const &data_tag) :
 
     } else { // 2023 postBPix
       //ID - for now using 2022 postEE
-      std::cout<<"WARNING 2023 postBPix Electron ID SFs - for now using 2022postEE"<<std::endl;
-      f_eleID          = basePath+"SF2022eleID_postEE.root";
+      std::cout<<"WARNING 2023 postBPix Electron ID SFs - preliminary version "<<std::endl;
+      f_eleID          = basePath+"SF2023eleID_postBPix.root"; // provided by Martina 23/10/25; preliminary
+      f_eleID_HoleBPix = basePath+"SF2023eleID_postBPix_Hole.root"; // provided by Martina 23/10/25; preliminary
 
       //RECO - SFs for Electrons in 2023PromptD from EG - https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammSFandSSRun3
       f_eleReco_highPt = "/eos/cms/store/group/phys_egamma/validation/web/Run3_egm_reco_SF/SF_prompt_2023_19012024/highpT/Run3_2023D_New_highpt_eta2/passingRECO/egammaEffi.txt_EGM2D.root"; //md5sum: 91384c01e7c3be3f549431bd960323cf
@@ -111,6 +113,13 @@ LeptonSFHelper::LeptonSFHelper(int year, std::string const &data_tag) :
   h_Ele_ID = (TH2F*) root_file->Get("EGamma_SF2D")->Clone("h_Ele_ID");
   h_Ele_ID->SetDirectory(nullptr); // This is required to detach the clone from the file
   root_file->Close();
+
+  if (f_eleID_HoleBPix != "") {
+    TFile* root_file = TFile::Open(f_eleID_HoleBPix.Data(),"READ");
+    h_Ele_ID_HoleBPix = (TH2F*) root_file->Get("EGamma_SF2D")->Clone("h_Ele_ID");
+    h_Ele_ID_HoleBPix->SetDirectory(nullptr); // This is required to detach the clone from the file
+    root_file->Close();
+   }
   
   if (f_eleID_Cracks != "") {
     root_file = TFile::Open(f_eleID_Cracks.Data(),"READ");
@@ -183,7 +192,7 @@ LeptonSFHelper::LeptonSFHelper(int year, std::string const &data_tag) :
 
 LeptonSFHelper::~LeptonSFHelper() {}
 
-pair<float, float> LeptonSFHelper::getSF(int flav, float pt, float eta, float SCeta, bool isCrack) const
+pair<float, float> LeptonSFHelper::getSF(int flav, float pt, float eta, float SCeta, float phi, bool isCrack) const
 {
    float RecoSF = 1.0;
    float SelSF = 1.0;
@@ -212,7 +221,12 @@ pair<float, float> LeptonSFHelper::getSF(int flav, float pt, float eta, float SC
      if (isCrack && h_Ele_ID_Cracks!=nullptr) {
        SelSF     = h_Ele_ID_Cracks->GetBinContent(h_Ele_ID_Cracks->FindFixBin(SCeta, std::min(pt,499.f)));
        SelSF_Unc = h_Ele_ID_Cracks->GetBinError  (h_Ele_ID_Cracks->FindFixBin(SCeta, std::min(pt,199.f)));
-     } else {
+     }
+     else if (h_Ele_ID_HoleBPix!=nullptr && (SCeta > -1.5 && SCeta < 0.0 && phi > -1.2 && phi < -0.8)) { //BPix hole region
+       SelSF     = h_Ele_ID_HoleBPix->GetBinContent(h_Ele_ID_HoleBPix->FindFixBin(SCeta, std::min(pt,499.f)));
+       SelSF_Unc = h_Ele_ID_HoleBPix->GetBinError  (h_Ele_ID_HoleBPix->FindFixBin(SCeta, std::min(pt,499.f)));
+     }
+     else {
        SelSF = h_Ele_ID->GetBinContent(h_Ele_ID->FindFixBin(SCeta, std::min(pt,499.f)));
        SelSF_Unc = h_Ele_ID->GetBinError  (h_Ele_ID->FindFixBin(SCeta, std::min(pt,499.f)));
      }

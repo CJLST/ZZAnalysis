@@ -23,12 +23,13 @@ class LeptonSFHelper
   ~LeptonSFHelper();
 
   /// return pair<SF, SFError>
-  std::pair<float, float> getSF (int flav, float pt, float eta, float SCeta, bool isCrack) const; 
+  std::pair<float, float> getSF (int flav, float pt, float eta, float SCeta, float phi, bool isCrack) const;
    
  private:
   int theYear;
  
   TH2F *h_Ele_ID;
+  TH2F *h_Ele_ID_HoleBPix;
   TH2F *h_Ele_ID_Cracks;
   TH2F *h_Ele_Reco_lowPt;
   TH2F *h_Ele_Reco_midPt;

@@ -175,9 +175,10 @@ void Plotter::MakeHistograms( TString input_file_name , int year)
               float lid = LepLepId->at(lepl);
               float lpt = LepPt->at(lepl);
               float leta = LepEta->at(lepl);
+              float lphi= LepPhi->at(lepl);
               if(abs(lid) == 11) leta = LepSCEta->at(lepl);
               bool isCrack = LepisCrack->at(lepl);
-              _updatedSF *= lepSFHelper->getSF(lid, lpt, leta, leta, isCrack).first;
+              _updatedSF *= lepSFHelper->getSF(lid, lpt, leta, leta, lphi, isCrack).first;
       }
       // check very rare cases in which _updatedSF = 0 and use the old one
       if(_updatedSF == 0) _updatedSF = dataMCWeight;

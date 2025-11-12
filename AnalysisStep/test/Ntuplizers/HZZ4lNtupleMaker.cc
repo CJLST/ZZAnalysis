@@ -2736,6 +2736,7 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const vector<const reco::Candidate*>& lep
 
     Float_t myLepPt = leptons[i]->pt();
     Float_t myLepEta = leptons[i]->eta();
+    Float_t myLepPhi = leptons[i]->phi();
 
     Float_t SCeta;
     if (myLepID == 11) SCeta = userdatahelpers::getUserFloat(leptons[i],"SCeta");
@@ -2752,8 +2753,7 @@ Float_t HZZ4lNtupleMaker::getAllWeight(const vector<const reco::Candidate*>& lep
     if (myLepID == 11) isCrack = userdatahelpers::getUserFloat(leptons[i],"isCrack");
     else isCrack = false;
 
-
-    auto SFandUnc = lepSFHelper->getSF(myLepID,myLepPt,myLepEta, mySCeta, isCrack);
+    auto SFandUnc = lepSFHelper->getSF(myLepID,myLepPt,myLepEta, mySCeta, myLepPhi, isCrack);
     SF = SFandUnc.first;
     SF_Unc = SFandUnc.second;
 

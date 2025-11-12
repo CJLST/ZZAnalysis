@@ -70,7 +70,7 @@ CANDSTOSTORE = getConf("CANDSTOSTORE", 'BestCandOnly') # which candidates should
                                                   # CR that is activated, only the best candidate is stored.
 
 # MELA Probabilities Dictionary:
-MELAprobabilities = getConf("probabilities", None)
+melaSettings = getConf("probabilities", None)
 
 # Process customizations - list of functions that operate on process
 customizations = getConf("customizations", [])
@@ -80,7 +80,7 @@ genXS = getConf("GENXSEC", 1.)
 genBR = getConf("GENBR", 1.)
 
 from ZZAnalysis.NanoAnalysis.initializeMELA import * 
-mela, melaSettings = initializeMELA(runMELA, LEPTON_SETUP, probabilities=MELAprobabilities)
+mela = initializeMELA(runMELA, LEPTON_SETUP)
                                                   
 ### Definition of analysis cuts
 cuts = dict(
@@ -175,7 +175,6 @@ if not IsMC :
 ### Modules to be run
 
 # Standard sequence used for both data and MC
-from ZZAnalysis.NanoAnalysis.RecoProbFiller import * 
 reco_sequence = [lepFiller(cuts, LEPTON_SETUP, MUON_ID_BYMVA), # FSR and FSR-corrected iso; flags for passing IDs
                  ZZFiller(bestCandByMELA, mela,
                           isMC=IsMC,
@@ -190,7 +189,8 @@ reco_sequence = [lepFiller(cuts, LEPTON_SETUP, MUON_ID_BYMVA), # FSR and FSR-cor
                  ZZExtraFiller(mela, IsMC, LEPTON_SETUP, DATA_TAG, PROCESS_CR), # Additional variables to selected candidates
                  ]
 
-if MELAprobabilities != None:
+if melaSettings != None:
+    from ZZAnalysis.NanoAnalysis.RecoProbFiller import *
     reco_sequence.append(RecoProbFiller(mela, NANOVERSION, melaSettings))  #Reco level probabilities. 
 
 # Add muon scale corrections

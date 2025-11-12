@@ -1184,6 +1184,7 @@ Float_t ZNtupleMaker::getAllWeight(const reco::Candidate* Lep)
 
  Float_t myLepPt = Lep->pt();
  Float_t myLepEta = Lep->eta();
+ Float_t myLepPhi = Lep->phi();
 
  float SF = 1.0;
  //float SF_Unc = 0.0;
@@ -1204,8 +1205,7 @@ Float_t ZNtupleMaker::getAllWeight(const reco::Candidate* Lep)
  if (myLepID == 11) isCrack = userdatahelpers::getUserFloat(Lep,"isCrack");
  else isCrack = false;
 
-
- SF = (lepSFHelper->getSF(myLepID,myLepPt,myLepEta, mySCeta, isCrack)).first;
+ SF = (lepSFHelper->getSF(myLepID,myLepPt,myLepEta, mySCeta, myLepPhi, isCrack)).first;
  //SF_Unc = (lepSFHelper->getSFError(myLepID,myLepPt,myLepEta, mySCeta, isCrack)).second;
 
  return SF;

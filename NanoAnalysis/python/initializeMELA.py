@@ -1,11 +1,8 @@
 import Mela
 
 
-
-### initializes a pointer to a MELA object given parameters set by the user. 
-def initializeMELA(runMELA, year, probabilities=None): 
-
-   
+def initializeMELA(runMELA, year):
+    """initializes a pointer to a MELA object."""
     if runMELA == True:
         sqrts = 13. 
         if year >= 2022:
@@ -21,17 +18,9 @@ def initializeMELA(runMELA, year, probabilities=None):
         os.close(devnull)
         os.close(saved_stdout)
         print(f"***initializeMELA: created Mela({sqrts:.1f},125,TVar.CandidateDecay_ZZ)", flush=True)
-        ### If at least one of the essential settings to calculate probabilities are set, make clear that only angles will be computed. 
-        if probabilities == None: 
-            print("***initializeMELA: No probabilities have been given. Only angles will be computed.")
-            probSettingsDict = None
-        else: 
-            probSettingsDict = probabilities 
-
     else: 
         m = None
-        probSettingsDict = None
-    return m, probSettingsDict
+    return m
 
 
 
