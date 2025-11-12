@@ -15,9 +15,9 @@ if not validateCheckout() :
 #SampleToRun = "MCsync_2018Rereco" # for mini vs nano sync
 #SampleToRun = "MCsync_2017UL" # for mini vs nano sync
 #SampleToRun = "Data2022"
-SampleToRun = "MC2022EE"
+# SampleToRun = "MC2022EE"
 #SampleToRun = "MC2023postBPix"
-#SampleToRun = "MELA_Test"
+SampleToRun = "MELA_Test"
 #SampleToRun = "ggh125_2018UL"
 #SampleToRun = "forNanoDoc" # To prepare variable lists with inspectNanoFile.py
 #SampleToRun = "Data2024"
@@ -202,7 +202,7 @@ elif SampleToRun == "MELA_Test" :
     setConf("NANOVERSION", 15)
     setConf("store","root://cms-xrd-global.cern.ch/")
     # Add probabilities 
-    import prod.pyFragments.exampleProbabilities
+    import prod.pyFragments.LHE_Probs_ggH0PM_M125
     setConf("fileNames", [
         "/store/mc/RunIII2024Summer24NanoAODv15/GluGluH-Hto2Zto4L_Par-M-125_TuneCP5_13p6TeV_powheg-jhugen-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v2/110000/a9e03ff9-2146-4aff-bd26-69abcb98359f.root" # 10000 evts
     ])
