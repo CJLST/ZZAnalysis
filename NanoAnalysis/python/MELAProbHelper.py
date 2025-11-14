@@ -74,17 +74,30 @@ class MELAProbHelper(Module):
         print(f"***MELAProbHelper: probs: {names}", flush=True)
         
     def bookProbs(self, wrappedOutputTree): 
+        #this needs a per-module lenVar. 
         self.out = wrappedOutputTree
         if len(self.sortedSettings) !=0 :
             for p, prob in enumerate(self.sortedSettings):
-                self.out.branch(prob["branchname"], "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined probability")
-                if prob.get("ispm4l", False):
-                    self.out.branch(prob["branchname"]+"_ScaleUp", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Scale uncertainties up")
-                    self.out.branch(prob["branchname"]+"_ScaleDown", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Scale uncertainties down")
-                    self.out.branch(prob["branchname"]+"_SystUp", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Systematic uncertainties up")
-                    self.out.branch(prob["branchname"]+"_SystDown", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Systematic uncertainties down")
-                if prob["computeprop"]: 
-                    self.out.branch(prob["branchname"]+"_prop", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined weight to translate from POWHEG complex propagator scheme to JHUGen Breit-Wigner scheme")
+                print(prob["branchname"])
+                if self.isGen: 
+                    self.out.branch(prob["branchname"], "F", lenVar = None, limitedPrecision=16, title="User-defined LHE-level probability")
+                    if prob.get("ispm4l", False):
+                        self.out.branch(prob["branchname"]+"_ScaleUp", "F", lenVar = None, limitedPrecision=16, title="User-defined Reco-level m4l probability with Scale uncertainties up")
+                        self.out.branch(prob["branchname"]+"_ScaleDown", "F", lenVar = None, limitedPrecision=16, title="User-defined Reco-level m4l probability with Scale uncertainties down")
+                        self.out.branch(prob["branchname"]+"_SystUp", "F", lenVar = None, limitedPrecision=16, title="User-defined Reco-level m4l probability with Systematic uncertainties up")
+                        self.out.branch(prob["branchname"]+"_SystDown", "F", lenVar = None, limitedPrecision=16, title="User-defined Reco-level m4l probability with Systematic uncertainties down")
+                    if prob["computeprop"]: 
+                        self.out.branch(prob["branchname"]+"_prop", "F", limitedPrecision=16, title="User-defined weight to translate from POWHEG complex propagator scheme to JHUGen Breit-Wigner scheme")
+
+                else: 
+                    self.out.branch(prob["branchname"], "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined LHE-level probability")
+                    if prob.get("ispm4l", False):
+                        self.out.branch(prob["branchname"]+"_ScaleUp", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Scale uncertainties up")
+                        self.out.branch(prob["branchname"]+"_ScaleDown", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Scale uncertainties down")
+                        self.out.branch(prob["branchname"]+"_SystUp", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Systematic uncertainties up")
+                        self.out.branch(prob["branchname"]+"_SystDown", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Systematic uncertainties down")
+                    if prob["computeprop"]: 
+                        self.out.branch(prob["branchname"]+"_prop", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined weight to translate from POWHEG complex propagator scheme to JHUGen Breit-Wigner scheme")
     
     def fillProbs(self, candDaughters, candAssociated, candMothers): 
         if len(self.sortedSettings) == 0: return True
@@ -137,7 +150,7 @@ class MELAProbHelper(Module):
 
                     ### Reset the event and the default probability settings per probability to be calculated. 
 
-                    if self.isGen():
+                    if self.isGen:
                         self.MELA.setInputEvent(candDaughters[iCand], candAssociated[iCand], candMothers[iCand], 1)
                     else: 
                         self.MELA.setInputEvent(candDaughters[iCand], candAssociated[iCand], None, 0)
@@ -173,16 +186,28 @@ class MELAProbHelper(Module):
                             print("**MELAProbHelper: Protecting against division by 0.")
 
                 # Write out all branches for this probability
-                self.out.fillBranch(MELA_branchname, probVec)
+                if self.isGen: 
+                    self.out.fillBranch(MELA_branchname, probVec[0])
+                    if MELA_ispm4l: 
+                        self.out.fillBranch(MELA_branchname+"_ScaleUp", probVec_ScaleUp[0])
+                        self.out.fillBranch(MELA_branchname+"_ScaleDown", probVec_ScaleDown[0])
+                        self.out.fillBranch(MELA_branchname+"_SystUp", probVec_SystUp[0])
+                        self.out.fillBranch(MELA_branchname+"_SystDown", probVec_SystDown[0])
+                    if MELA_computeprop and (MELA_prod or MELA_dec): 
+                        self.out.fillBranch(MELA_branchname+"_prop", probPropVec[0])
+                else: 
+                    self.out.fillBranch(MELA_branchname, probVec)
 
-                if MELA_ispm4l: 
-                    self.out.fillBranch(MELA_branchname+"_ScaleUp", probVec_ScaleUp)
-                    self.out.fillBranch(MELA_branchname+"_ScaleDown", probVec_ScaleDown)
-                    self.out.fillBranch(MELA_branchname+"_SystUp", probVec_SystUp)
-                    self.out.fillBranch(MELA_branchname+"_SystDown", probVec_SystDown)
-                        
-                if MELA_computeprop and (MELA_prod or MELA_dec): 
-                    self.out.fillBranch(MELA_branchname+"_prop", probPropVec)
+                    if MELA_ispm4l: 
+                        self.out.fillBranch(MELA_branchname+"_ScaleUp", probVec_ScaleUp)
+                        self.out.fillBranch(MELA_branchname+"_ScaleDown", probVec_ScaleDown)
+                        self.out.fillBranch(MELA_branchname+"_SystUp", probVec_SystUp)
+                        self.out.fillBranch(MELA_branchname+"_SystDown", probVec_SystDown)
+                            
+                    if MELA_computeprop and (MELA_prod or MELA_dec): 
+                        self.out.fillBranch(MELA_branchname+"_prop", probPropVec)
+                
+                
         return True
         
 
