@@ -33,12 +33,15 @@ WminusH126   ,,0.5677,0.0002745,,/WminusH-Hto2Zto4L_Par-M-126_TuneCP5_13p6TeV_po
 
 ZH124        ,,0.8301,0.00068429,,/ZH-Hto2Zto4L_Par-M-124_TuneCP5_13p6TeV_powhegMINLO-jhugen-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;NANOVERSION=15;LEPTON_SETUP=2024;ADD_ALLEVENTS=True,,
 ZH124p5      ,,0.8196,0.00071657,,/ZH-Hto2Zto4L_Par-M-124p5_TuneCP5_13p6TeV_powhegMINLO-jhugen-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;NANOVERSION=15;LEPTON_SETUP=2024;ADD_ALLEVENTS=True,,
-#ZH125       ,,0.9439,0.00074812,,,dbs,root://cms-xrd-global.cern.ch/,2,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;NANOVERSION=15;LEPTON_SETUP=2024;ADD_ALLEVENTS=True,,
+ZH125       ,,0.9439,0.00074812,,/ZH-Hto2Z_Fil-4L_Par-M-125_TuneCP5_13p6TeV_powhegMINLO-jhugen-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;NANOVERSION=15;LEPTON_SETUP=2024;ADD_ALLEVENTS=True,,
 ZH125p5      ,,0.7995,0.00078556,,/ZH-Hto2Zto4L_Par-M-125p5_TuneCP5_13p6TeV_powhegMINLO-jhugen-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;NANOVERSION=15;LEPTON_SETUP=2024;ADD_ALLEVENTS=True,,
 ZH126        ,,0.7958,0.00082086,,/ZH-Hto2Zto4L_Par-M-126_TuneCP5_13p6TeV_powhegMINLO-jhugen-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;NANOVERSION=15;LEPTON_SETUP=2024;ADD_ALLEVENTS=True,,
 
+ttH124       ,,0.5845,0.0007449,,/TTH-Hto2Zto4L_Par-M-124_TuneCP5_13p6TeV_powheg-jhugen-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v1/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;NANOVERSION=15;LEPTON_SETUP=2024;ADD_ALLEVENTS=True,,
 ttH124p5     ,,0.5783,0.0007323,,/TTH-Hto2Zto4L_Par-M-124p5_TuneCP5_13p6TeV_powheg-jhugen-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;NANOVERSION=15;LEPTON_SETUP=2024;ADD_ALLEVENTS=True,,
 ttH125       ,,0.5700,0.0007689,,/TTH-Hto2Zto4L_Par-M-125_TuneCP5_13p6TeV_powheg-jhugen-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;NANOVERSION=15;LEPTON_SETUP=2024;ADD_ALLEVENTS=True,,
+ttH125p5     ,,0.5654,0.0008060,,/TTH-Hto2Zto4L_Par-M-125p5_TuneCP5_13p6TeV_powheg-jhugen-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v1/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;NANOVERSION=15;LEPTON_SETUP=2024;ADD_ALLEVENTS=True,,
+ttH126       ,,0.5591,0.0008386,,/TTH-Hto2Zto4L_Par-M-126_TuneCP5_13p6TeV_powheg-jhugen-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v1/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=-2;NANOVERSION=15;LEPTON_SETUP=2024;ADD_ALLEVENTS=True,,
 
 #bbH125      ,,0.5266,0.0002745,,/BBH-Hto2Zto4L_Par-M-125_TuneCP5_13p6TeV_jhugen-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,ADDLHEKINEMATICS=True;VVMODE=1;VVDECAYMODE=0;NANOVERSION=15;LEPTON_SETUP=2024;ADD_ALLEVENTS=True,,
 
@@ -62,7 +65,7 @@ ZZZ                             ,,0.0159,,,/ZZZ-5F_TuneCP5_13p6TeV_amcatnlo-pyth
 
 ###,,,,,,,,,,,rare bkg targeting ttH categories
 TTWW                            ,,0.008203,,,/TTWW_TuneCP5_13p6TeV_madgraph-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,PROCESS_CR=True;NANOVERSION=15;LEPTON_SETUP=2024,,
-#TTZZ                            ,,0.001579,,,/TTZZ_TuneCP5_13p6TeV_madgraph-madspin-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,PROCESS_CR=True;NANOVERSION=15;LEPTON_SETUP=2024,,
+#TTZZ                            ,,0.001579,,,/TTZZ_TuneCP5_13p6TeV_madgraph-madspin-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,PROCESS_CR=True;NANOVERSION=15;LEPTON_SETUP=2024,, #Still in validation stage
 
 ###,,,,,,,,,,,bkg for Z+X studies
 WZto3LNu                        ,,5.27,,,/WZto3LNu_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,PROCESS_CR=True;PROCESS_ZL=True;FILTER_EVENTS=Z;NANOVERSION=15;LEPTON_SETUP=2024,,

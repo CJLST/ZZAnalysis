@@ -1,8 +1,6 @@
 def getJetCorrected(era, tag, is_mc, overwritePt=True) :
     from PhysicsTools.NATModules.modules.jetCorr import jetJERC
 
-    if era not in [2022, 2023, 2024]:
-        raise ValueError("getJetCorrected: Era", era, "not supported")
 
 # Regrouped uncertainties (11 sources) - The {year} part indicates those uncertainties that need to be kept uncorrelated between these datasets.
 # Taken from https://gitlab.cern.ch/cms-nanoAOD/jsonpog-integration/-/merge_requests/120#9968ad259fd43c9ba2351d217c42dec468fe273f
@@ -20,7 +18,43 @@ def getJetCorrected(era, tag, is_mc, overwritePt=True) :
         "Regrouped_RelativeSample_{year}",
     ]
 
-    if era == 2022:
+    if era == 2016 and "UL" in tag:
+        if "ULAPV" in tag:
+            pass
+        else:
+            pass
+        raise ValueError("jetJERC: 2016 to be implemented")
+    elif era == 2017 and "UL" in tag:
+        raise ValueError("jetJERC: 2017 to be implemented")
+    elif era == 2018 and  "UL" in tag:
+        # FIXME: to be confirmed that v9 corrections are to be used for v15 as well
+        folderKey = "Run2-2018-UL-NanoAODv9/2025-04-11"
+        if is_mc :
+            L1Key = "Summer19UL18_V5_MC_L1FastJet_AK4PFchs"
+            L2Key = "Summer19UL18_V5_MC_L2Relative_AK4PFchs"
+            L3Key = "Summer19UL18_V5_MC_L3Absolute_AK4PFchs"
+            L2L3Key = "Summer19UL18_V5_MC_L2L3Residual_AK4PFchs"
+            scaleTotalKey = "Summer19UL18_V5_MC_Total_AK4PFchs"
+            scaleKeyRegrouped11 = [
+                f"Summer19UL18_V5_MC_{label.format(year='2018')}_AK4PFchs" for label in jes_systematics_11split
+                ]
+            smearKey = "JERSmear"
+            # It appears the most recent 23Bpix files are used in the following cases: 
+            JERKey = "Summer19UL18_JRV2_MC_PtResolution_AK4PFchs"
+            JERsfKey = "Summer19UL18_JRV2_MC_ScaleFactor_AK4PFchs"
+ 
+        else :
+            L1Key = "Summer19UL18_RunA_V5_DATA_L1FastJet_AK4PFchs"
+            L2Key = "Summer19UL18_RunA_V5_DATA_L2Relative_AK4PFchs"
+            L3Key = "Summer19UL18_RunA_V5_DATA_L3Absolute_AK4PFchs"
+            L2L3Key = "Summer19UL18_RunA_V5_DATA_L2L3Residual_AK4PFchs"
+            scaleTotalKey = None
+            scaleKeyRegrouped11 = None 
+            smearKey = None
+            JERKey = None
+            JERsfKey = None
+        
+    elif era == 2022:
         if is_mc :
             if "pre_EE" in tag:
                 folderKey = "Run3-22CDSep23-Summer22-NanoAODv12/2025-09-23"
@@ -164,7 +198,7 @@ def getJetCorrected(era, tag, is_mc, overwritePt=True) :
                 f"Summer24Prompt24_V1_MC_{label.format(year='2024')}_AK4PFPuppi" for label in jes_systematics_11split
                 ]
             smearKey = "JERSmear"
-            # It appears the most recent 23Bpix files are used in the following cases: 
+            # It appears the 23Bpix keys are used for the following:
             JERKey = "Summer23BPixPrompt23_RunD_JRV1_MC_PtResolution_AK4PFPuppi"
             JERsfKey = "Summer23BPixPrompt23_RunD_JRV1_MC_ScaleFactor_AK4PFPuppi"
  
@@ -185,6 +219,10 @@ def getJetCorrected(era, tag, is_mc, overwritePt=True) :
             JERKey = None
             JERsfKey = None
 
+    else:
+        raise ValueError("getJetCorrected: Era", era, tag, "not supported")
+
+            
     json_JERC = "/cvmfs/cms-griddata.cern.ch/cat/metadata/JME/%s/jet_jerc.json.gz" % (folderKey)
     json_JERsmear = "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/jer_smear.json.gz" # md5sum: 390e4be4be109bb1a2d3a116f2c9386a
 

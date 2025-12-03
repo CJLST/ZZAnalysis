@@ -6,8 +6,8 @@
 ##
 
 def getEleBDTCut(era, dataTag, nanoVersion, useUncorrPt=False) :
-    # nanoAODv9 includes mvaFall17V2Iso = 2017 WP and training (ElectronMVAEstimatorRun2Fall17IsoV2Values)
 
+    # nanoAODv9 and older include only mvaFall17V2Iso = 2017 WP and training (ElectronMVAEstimatorRun2Fall17IsoV2Values), for all years
     def eleBDTCut_RunIIpreUL_v9(ele) :
         # pre-UL WP for Run II (miniAOD branch: Run2_CutBased_BTag16)
         fSCeta = abs(ele.eta + ele.deltaEtaSC)
@@ -30,6 +30,35 @@ def getEleBDTCut(era, dataTag, nanoVersion, useUncorrPt=False) :
                                      (fSCeta>=0.8 and fSCeta<1.479 and BDT > 0.0273863727) or \
                                      (fSCeta>=1.479                and BDT > -0.5532483665)))
 
+    def eleBDTCut_RunII2016UL_v15(ele) :
+        fSCeta = ele.superclusterEta
+        BDT = ele.mvaHZZIso
+        return (ele.pt<=10. and     ((fSCeta<0.8                   and BDT > 0.9557993256) or \
+                                     (fSCeta>=0.8 and fSCeta<1.479 and BDT > 0.9475406570) or \
+                                     (fSCeta>=1.479                and BDT > 0.9285158721))) \
+                or (ele.pt>10. and  ((fSCeta<0.8                   and BDT > 0.3272075608) or \
+                                     (fSCeta>=0.8 and fSCeta<1.479 and BDT > 0.2468345995) or \
+                                     (fSCeta>=1.479                and BDT > -0.5955762814)))
+
+    def eleBDTCut_RunII2017UL_v15(ele) :
+        fSCeta = ele.superclusterEta
+        BDT = ele.mvaHZZIso
+        return (ele.pt<=10. and     ((fSCeta<0.8                   and BDT > 0.9128577458 ) or \
+                                     (fSCeta>=0.8 and fSCeta<1.479 and BDT > 0.9056792368 ) or \
+                                     (fSCeta>=1.479                and BDT > 0.9439440575 ))) \
+                or (ele.pt>10. and  ((fSCeta<0.8                   and BDT > 0.1559788054 ) or \
+                                     (fSCeta>=0.8 and fSCeta<1.479 and BDT > 0.0273863727 ) or \
+                                     (fSCeta>=1.479                and BDT > -0.5532483665)))
+
+    def eleBDTCut_RunII2018UL_v15(ele) :
+        fSCeta = ele.superclusterEta
+        BDT = ele.mvaHZZIso
+        return (ele.pt<=10. and     ((fSCeta<0.8                   and BDT > 0.9044286167) or \
+                                     (fSCeta>=0.8 and fSCeta<1.479 and BDT > 0.9094166886) or \
+                                     (fSCeta>=1.479                and BDT > 0.9443653660))) \
+                or (ele.pt>10. and  ((fSCeta<0.8                   and BDT > 0.1968600840) or \
+                                     (fSCeta>=0.8 and fSCeta<1.479 and BDT > 0.0759172100) or \
+                                     (fSCeta>=1.479                and BDT > -0.5169136775)))
 
     # Run3 nanoAODv12 samples have the 2018 UL tuning (ElectronMVAEstimatorRun2Summer18ULIdIsoValues)
     # The WP was derived before scale corrections, so the uncorrected pt should be used when available.
@@ -49,13 +78,20 @@ def getEleBDTCut(era, dataTag, nanoVersion, useUncorrPt=False) :
 
     def eleBDTCut_RunIII_2022Training_WP(ele):
         return ele.mvaIso_WPHZZ
-    if era == 2017 or era == 2018 :
-        if "UL" in dataTag :
-            if nanoVersion <10 :
+
+    
+    if era >= 2016 and era <= 2018 :
+        if nanoVersion < 10 :
+            if "UL" in dataTag :
                 return eleBDTCut_RunIIUL_v9
-        else :
-            if nanoVersion <10 :
+            else :
                 return eleBDTCut_RunIIpreUL_v9
+        elif nanoVersion == 15 :
+            cutsv15 = {2016: eleBDTCut_RunII2016UL_v15, 2017: eleBDTCut_RunII2017UL_v15, 2018: eleBDTCut_RunII2018UL_v15}
+            return cutsv15[era]
+        else :
+            raise ValueError('getEleBDTCut: era '+ str(era)+', dataTag ' + dataTag + ', nanoVersion ' + str(nanoVersion) + ' not supported')
+          
 
     elif era >=2022 :
         if nanoVersion <14:

@@ -8,11 +8,12 @@ from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collect
 from prettytable import PrettyTable
 
 class mcHistoryDump(Module):
-    def __init__(self, printGen=True, printLHE=False) :
+    def __init__(self, printGen=True, printLHE=False, nanoversion=12) :
         """Print Gen history and LHE particles.
         """ 
         self.printGen=printGen
         self.printLHE=printLHE
+        self.nanoversion = nanoversion
 
     def analyze(self, event):
         if self.printGen :
@@ -50,10 +51,16 @@ class mcHistoryDump(Module):
         '''Print LHE particle history on output
         '''
 
-        print("---LHEPart---") 
-        table = PrettyTable(['i', 'pdgId', 'pT', 'eta', 'phi', 'status', 'incomingpz'])
+        print("---LHEPart---")
+        if self.nanoversion<15:
+            table = PrettyTable(['i', 'pdgId', 'pT', 'eta', 'phi', 'status', 'incomingpz'])
+        else:
+            table = PrettyTable(['i', 'pdgId', 'mother', 'pT', 'eta', 'phi', 'status', 'incomingpz'])
         for i, Lp in enumerate(LHEPart):
-            table.add_row([self.format_value(val) for val in [i, Lp.pdgId, Lp.pt, Lp.eta, Lp.mass, Lp.status, Lp.incomingpz]])
+            if self.nanoversion<15:
+                table.add_row([self.format_value(val) for val in [i, Lp.pdgId, Lp.pt, Lp.eta, Lp.mass, Lp.status, Lp.incomingpz]])
+            else:
+                table.add_row([self.format_value(val) for val in [i, Lp.pdgId, Lp.firstMotherIdx, Lp.pt, Lp.eta, Lp.mass, Lp.status, Lp.incomingpz]])
         for col in table.field_names:
             table.align[col] = "l"
         print(table)

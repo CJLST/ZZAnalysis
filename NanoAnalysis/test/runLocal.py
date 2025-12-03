@@ -12,16 +12,20 @@ from ZZAnalysis.AnalysisStep.validateCheckout import validateCheckout
 if not validateCheckout() :
     exit(1)
 
-#SampleToRun = "MCsync_2018Rereco" # for mini vs nano sync
-#SampleToRun = "MCsync_2017UL" # for mini vs nano sync
+#SampleToRun = "MCsync_2018UL" # v15 2018UL nano
 #SampleToRun = "Data2022"
 # SampleToRun = "MC2022EE"
 #SampleToRun = "MC2023postBPix"
-SampleToRun = "MELA_Test"
-#SampleToRun = "ggh125_2018UL"
-#SampleToRun = "forNanoDoc" # To prepare variable lists with inspectNanoFile.py
 #SampleToRun = "Data2024"
 #SampleToRun = "MC2024"
+#SampleToRun = "MELA_Test"
+#SampleToRun = "forNanoDoc" # To prepare variable lists with inspectNanoFile.py
+
+### Obsolete Run2 samples
+#SampleToRun = "ggh125_2018UL_v2"
+#SampleToRun = "MCsync_2018Rereco_v7" # for mini vs nano sync
+#SampleToRun = "MCsync_2017UL_v9" # for mini vs nano sync
+
 
 ### Customize processing variables.
 #setConf("runMELA", False)
@@ -82,7 +86,7 @@ elif SampleToRun == "Data2024" :
                          ])
 
 ################################################################################
-elif SampleToRun == "ggh125_2018UL" : ### 2018 UL test sample
+elif SampleToRun == "ggh125_2018UL_v2" : ### 2018 UL test sample
     setConf("SAMPLENAME", "ggH125")
     setConf("XSEC", 48.58*0.0002745)
     setConf("LEPTON_SETUP", 2018)
@@ -94,7 +98,7 @@ elif SampleToRun == "ggh125_2018UL" : ### 2018 UL test sample
         ])
 
 ################################################################################
-elif SampleToRun == "MCsync_2017UL" :
+elif SampleToRun == "MCsync_2017UL_v9" :
     # Custom-reprocessed Rereco nanoAOD file with updated FSR and electron MVA,
     # no packing for genparticle p3; 26000 events
     # corresponding to:/store/mc/RunIISummer20UL17MiniAODv2/GluGluHToZZTo4L_M125_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8/MINIAODSIM/106X_mc2017_realistic_v9-v2/130000/3E4E8D55-3993-2B43-AF3B-7AB45BBE0BDA.root
@@ -109,7 +113,7 @@ elif SampleToRun == "MCsync_2017UL" :
 
 
 ################################################################################
-elif SampleToRun == "MCsync_2018Rereco" :
+elif SampleToRun == "MCsync_2018Rereco_v7" :
      # Custom-reprocessed Rereco nanoAOD file with updated FSR,
      # corresponding to:/store/mc/RunIIAutumn18NanoAODv7/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/NANOAODSIM/Nano02Apr2020_102X_upgrade2018_realistic_v21-v1/260000/BA6D7F40-ED5E-7D4E-AB14-CE8A9C5DE7EC.root
     setConf("APPLYMUCORR", True)
@@ -119,6 +123,19 @@ elif SampleToRun == "MCsync_2018Rereco" :
     setConf("store","")
     setConf("fileNames",["/eos/user/n/namapane/H4lnano/ggH125_fixedFSR.root"])
 
+################################################################################
+elif SampleToRun == "MCsync_2018UL" :
+    # 2018 UL, v15; LSs in json are included in parent /store/mc/RunIISummer20UL18MiniAODv2/GluGluHToZZTo4L_M125_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8/MINIAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/240000/E6F5DEE7-DAC9-E14E-8362-8A0EFF7B38CD.root
+    setConf("SAMPLENAME", "ggH125")
+    setConf("XSEC", 48.58*0.0002745)
+    setConf("NANOVERSION", 15)
+    setConf("DATA_TAG", "UL") 
+    setConf("LEPTON_SETUP", 2018)
+    setConf("APPLY_QCD_GGF_UNCERT", True) # for ggH
+    setConf("APPLYJETCORR", False) #FIXME
+    setConf("store","root://cms-xrd-global.cern.ch/")
+    setConf("fileNames",["/store/mc/RunIISummer20UL18NanoAODv15/GluGluHToZZTo4L_M125_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8/NANOAODSIM/150X_mc2018_realistic_v1-v1/130000/501e594d-38c4-4ab1-8a86-ec8b2663173c.root"])
+    json = {"1": [[847,848],[871,873],[874,875],[901,902]]}
 
 ################################################################################
 elif SampleToRun == "MC2022EE" :

@@ -23,13 +23,12 @@ SAMPLENAME = getConf("SAMPLENAME", "test")
 LEPTON_SETUP = getConf("LEPTON_SETUP", 2018)
 DATA_TAG = getConf("DATA_TAG", "" ) # used to distinguish different subperiods/reprocessings.
                                     # Specific values currently recognized (other values->use defaults for era)
-                                    # "UL" (used by muonScaleResProducer_Rochester, getEleBDTCut)
-                                    # "ULAPV", (used by LeptonSFHelper)
-                                    # "pre_EE" (used by LeptonSFHelper, eleScaleResProducer, muonScaleResProducer, puWeightProducer, jetJERC)
+                                    # "UL" (used by muonScaleResProducer_Rochester, getEleBDTCut, jetJERC)
+                                    # "ULAPV", (used by LeptonSFHelper, jetJERC)
+                                    # "pre_EE", "pre_BPix" (used by LeptonSFHelper, eleScaleResProducer, muonScaleResProducer, puWeightProducer, jetJERC, jetVMAP)
                                     # "2022E", "2022F", "2022G" (used by jetJERC)
 NANOVERSION = getConf("NANOVERSION", 12)
-#NANOVERSION = getConf("NANOVERSION", 15)
-if not (LEPTON_SETUP == 2016 or LEPTON_SETUP == 2017 or LEPTON_SETUP == 2018 or LEPTON_SETUP == 2022 or LEPTON_SETUP == 2023 or LEPTON_SETUP == 2024 or LEPTON_SETUP == 2025) :
+if LEPTON_SETUP not in [2016, 2017, 2018, 2022, 2023, 2024, 2025] :
     print("Invalid LEPTON_SETUP", LEPTON_SETUP)
     exit(1)
 IsMC = getConf("IsMC", True)
@@ -216,6 +215,7 @@ elif NANOVERSION >=13 :
     insertBefore(reco_sequence, 'jetFiller', getJetIdProducer(LEPTON_SETUP, DATA_TAG))   
 
 # Add jet corrections for Run 3
+# FIXME: jet corrs for Run2 v15 to be added
 if APPLYJETCORR and LEPTON_SETUP >=2022 :
     from ZZAnalysis.NanoAnalysis.modules.jetJERC import getJetCorrected
     insertBefore(reco_sequence, 'jetFiller', getJetCorrected(LEPTON_SETUP, DATA_TAG, IsMC, overwritePt=True))
@@ -265,11 +265,11 @@ if IsMC:
                                                'passedFiducial',
                                                'Generator_weight',
                                                'puWeight*',
-                                               'ggH_NNLOPS_Weight',
                                                'overallEventWeight',
                                                'Pileup_nTrueInt',
                                                'LHEMela*',
                                                'GenJet*',
+                                               *(['ggH_NNLOPS_Weight'] if APPLY_QCD_GGF_UNCERT else []),
                                                ],
                                       #Stop further processing for events that don't have 4 reco leps
                                       continueFor = postPresel
@@ -327,9 +327,9 @@ branchsel_out = ['drop *',
                  'keep HLT_passZZ*',
                  'keep best*', # best candidate indices
                  'keep Z*', # Z, ZZ, ZLL candidates
-                 'keep MET_pt',
                  #'keep PV*',
                  #'keep Flag*',
+                 *(['keep MET_pt'] if NANOVERSION <=12 else ['keep PFMET_pt']),
                  ]
 
 if IsMC:
@@ -339,14 +339,12 @@ if IsMC:
                           'keep GenZZ*',
                           'keep *eight', # Generator_weight + custom weights
                           'keep puWeight*',
-                          'keep HTXS_Higgs*',
-                          'keep HTXS_njets30',
+                          'keep HTXS_*',
                           'keep Pileup*',
                           'keep GenJet_*',
-                          'keep genxsec', 
-                          'keep genbr',
                           #'keep Generator*',
                           #'keep PV*',
+                          *(['keep genxsec','keep genbr'] if (genXS != 1) and (genBR != 1) else [])
                         ])
 
     if ADD_ALLEVENTS : # Gen-level variables that are relevant only for signals

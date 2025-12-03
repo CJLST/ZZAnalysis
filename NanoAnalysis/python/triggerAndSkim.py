@@ -37,6 +37,14 @@ class triggerAndSkim(Module):
 
         ### Trigger requirements
         passTrigger = False
+        if self.era == 2016 :
+            passSingleEle = event.HLT_Ele25_eta2p1_WPTight_Gsf or event.HLT_Ele27_WPTight_Gsf or event.HLT_Ele27_eta2p1_WPLoose_Gsf or event.HLT_Ele32_eta2p1_WPTight_Gsf
+            passSingleMu = event.HLT_IsoMu20 or event.HLT_IsoTkMu20 or event.HLT_IsoMu22 or event.HLT_IsoTkMu22 or event.HLT_IsoMu24 or event.HLT_IsoTkMu24
+            passDiEle = event.HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ or event.HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ or event.HLT_DoubleEle33_CaloIdL_GsfTrkIdVL
+            passDiMu = event.HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ or event.HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ or event.HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL or event.HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL
+            passMuEle = event.HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL or event.HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL or event.HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ or event.HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL or event.HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL or event.HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ or event.HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL or event.HLT_Mu8_DiEle12_CaloIdL_TrackIdL or event.HLT_DiMu9_Ele9_CaloIdL_TrackIdL
+            passTriEle = event.HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL
+            passTriMu = event.HLT_TripleMu_12_10_5
         if self.era == 2017 :
             passSingleEle = event.HLT_Ele35_WPTight_Gsf or event.HLT_Ele38_WPTight_Gsf or event.HLT_Ele40_WPTight_Gsf
             passSingleMu = event.HLT_IsoMu27
