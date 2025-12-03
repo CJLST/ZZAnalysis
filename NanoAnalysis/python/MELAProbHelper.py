@@ -1,22 +1,22 @@
 from __future__ import print_function
 import copy
-from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
 from  ZZAnalysis.NanoAnalysis.initializeMELA import check_enum
 from ZZAnalysis.NanoAnalysis.ZZExtraFiller import *
 import Mela
 
-class MELAProbHelper(Module): 
+class MELAProbHelper(): 
     """Class for handling computation of probabilities with MELA.
     MELA = MELA Object passed from nanoZZ4lAnalysis.py 
     MELASettings = dictionary with settings for the probabilities to be computed
-    isGen = The level of information with which the probability is calculated. Possible values are True (for LHE-level) and False (for reco-level).  
+    ModuleContext = The level of information with which the probability is calculated. Possible values are "LHE" (for LHE-level) and "Reco" (for reco-level). These are passed from the module calling the computation. 
+    A probability with context defined as "Any" will be computed at lhe and reco level.  
     """
 
-    def __init__(self, MELA, MELASettings, isGen):
+    def __init__(self, MELA, MELASettings, ModuleContext):
         self.MELA = MELA
         self.sortedSettings = []
-        self.isGen = isGen
+        self.ModuleContext = ModuleContext
 
         if MELASettings != None:
             defaults = {
@@ -27,7 +27,8 @@ class MELAProbHelper(Module):
                 "Prod": None, 
                 "Dec": None, 
                 "Couplings": None, 
-                "isgen": None, 
+                # "isgen": None, 
+                "context": None, 
                 "computeprop": None, 
                 "propscheme": "FixedWidth", 
                 "decaymode": "CandidateDecay_ZZ",
@@ -42,7 +43,7 @@ class MELAProbHelper(Module):
 
         ### Split into reco and LHE probs
         for prob in MELASettings:
-            if (prob["isgen"] != self.isGen): continue 
+            if (prob["context"] != self.ModuleContext) and (prob["context"] != "Any"): continue 
 
             ### Merge specific settings with defaults and check for unsupported values
             fprob=copy.deepcopy(defaults)
@@ -53,7 +54,7 @@ class MELAProbHelper(Module):
                     raise(ValueError(f"MELAProbHelper: unknown parameter {key} in {prob['Name']}"))
 
             # Add branch name so it does not need to be remade within loops
-            if self.isGen: 
+            if self.ModuleContext == "LHE": 
                 fprob["branchname"] = f"LHEMela_P_{prob['Name']}"
             else: 
                 fprob["branchname"] = f"ZZCand_P_{prob['Name']}"
@@ -69,28 +70,33 @@ class MELAProbHelper(Module):
         for prob in self.sortedSettings:
             dp = prob["dividep"]
             prob["dividep_eval"] = (None if dp == None else f"aCand.P_{dp}") # string to be evaluated to extract denominator
-            # prob["dividep_idx"] = (-1 if dp == None else names.index(dp)) # prob index, more efficient but would require keeping probs for all cands
+            # print("***MELAPROBHELPER: ", prob["dividep_eval"])
+            prob["dividep_idx"] = (-1 if dp == None else names.index(dp)) # prob index, more efficient but would require keeping probs for all cands
 
         print(f"***MELAProbHelper: probs: {names}", flush=True)
         
     def bookProbs(self, wrappedOutputTree): 
         #this needs a per-module lenVar. 
         self.out = wrappedOutputTree
+        # print("***MELAHELPER: ", len(self.sortedSettings))
         if len(self.sortedSettings) !=0 :
             for p, prob in enumerate(self.sortedSettings):
                 print(prob["branchname"])
-                if self.isGen: 
+                if self.ModuleContext == "LHE": 
                     self.out.branch(prob["branchname"], "F", lenVar = None, limitedPrecision=16, title="User-defined LHE-level probability")
+                    # print("***MELAProbHelper: wrote out ", prob["branchname"])
                     if prob.get("ispm4l", False):
-                        self.out.branch(prob["branchname"]+"_ScaleUp", "F", lenVar = None, limitedPrecision=16, title="User-defined Reco-level m4l probability with Scale uncertainties up")
-                        self.out.branch(prob["branchname"]+"_ScaleDown", "F", lenVar = None, limitedPrecision=16, title="User-defined Reco-level m4l probability with Scale uncertainties down")
-                        self.out.branch(prob["branchname"]+"_SystUp", "F", lenVar = None, limitedPrecision=16, title="User-defined Reco-level m4l probability with Systematic uncertainties up")
-                        self.out.branch(prob["branchname"]+"_SystDown", "F", lenVar = None, limitedPrecision=16, title="User-defined Reco-level m4l probability with Systematic uncertainties down")
+                        self.out.branch(prob["branchname"]+"_ScaleUp", "F", lenVar = None, limitedPrecision=16, title="User-defined LHE-level m4l probability with Scale uncertainties up")
+                        self.out.branch(prob["branchname"]+"_ScaleDown", "F", lenVar = None, limitedPrecision=16, title="User-defined LHE-level m4l probability with Scale uncertainties down")
+                        self.out.branch(prob["branchname"]+"_SystUp", "F", lenVar = None, limitedPrecision=16, title="User-defined LHE-level m4l probability with Systematic uncertainties up")
+                        self.out.branch(prob["branchname"]+"_SystDown", "F", lenVar = None, limitedPrecision=16, title="User-defined LHE-level m4l probability with Systematic uncertainties down")
                     if prob["computeprop"]: 
                         self.out.branch(prob["branchname"]+"_prop", "F", limitedPrecision=16, title="User-defined weight to translate from POWHEG complex propagator scheme to JHUGen Breit-Wigner scheme")
 
                 else: 
-                    self.out.branch(prob["branchname"], "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined LHE-level probability")
+                    # print("***MELAProbHelper", prob["branchname"])
+                    self.out.branch(prob["branchname"], "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level probability")
+                    # print("***MELAProbHelper: wrote out ", prob["branchname"])
                     if prob.get("ispm4l", False):
                         self.out.branch(prob["branchname"]+"_ScaleUp", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Scale uncertainties up")
                         self.out.branch(prob["branchname"]+"_ScaleDown", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Scale uncertainties down")
@@ -102,6 +108,7 @@ class MELAProbHelper(Module):
     def fillProbs(self, candDaughters, candAssociated, candMothers): 
         if len(self.sortedSettings) == 0: return True
         else: 
+            vprob = [0.]*len(self.sortedSettings) # to be used to retrieve denominators for probs whith dividep for the current cand
             for iprob, prob in enumerate(self.sortedSettings):
             ### Parse MELA settings for the desired probability
                 MELA_Name = prob["Name"]
@@ -117,7 +124,7 @@ class MELAProbHelper(Module):
                 MELA_matchMx = prob["match_mX"]
                 MELA_leptoninterference = check_enum(prob["lepton_interference"], Mela.LeptonInterference)
                 MELA_ispm4l = prob["ispm4l"]
-                MELA_divideP_eval = prob["dividep_eval"]
+                MELA_divideP_idx = prob["dividep_idx"]
                 MELA_branchname = prob["branchname"]
 
                 ### Configure MELA for the event. 
@@ -127,8 +134,7 @@ class MELAProbHelper(Module):
 
                 
 
-                for coupl, coupl_val in prob["Couplings"].items(): 
-                    setattr(self.MELA, coupl, coupl_val)
+                
 
                 # Define arrays to fill with the probabilites for each candidate
                 probVec = [-999.]*len(candDaughters)
@@ -140,9 +146,12 @@ class MELAProbHelper(Module):
                 if MELA_computeprop and (MELA_prod or MELA_dec): 
                     probPropVec = [-999.]*len(candDaughters)
 
+                
                 # Compute prob for each candidate
                 for iCand, aCand in enumerate(candDaughters):
-                    vprob = [0.]*len(self.sortedSettings) # to be used to retrieve denominators for probs whith dividep for the current cand
+                    
+                    for coupl, coupl_val in prob["Couplings"].items(): 
+                        setattr(self.MELA, coupl, coupl_val)
 
                     if MELA_matchMx: 
                         self.MELA.setMelaHiggsMassWidth(candDaughters[iCand].MTotal(), 0.00001, 0)
@@ -150,7 +159,7 @@ class MELAProbHelper(Module):
 
                     ### Reset the event and the default probability settings per probability to be calculated. 
 
-                    if self.isGen:
+                    if self.ModuleContext == "LHE":
                         self.MELA.setInputEvent(candDaughters[iCand], candAssociated[iCand], candMothers[iCand], 1)
                     else: 
                         self.MELA.setInputEvent(candDaughters[iCand], candAssociated[iCand], None, 0)
@@ -162,7 +171,7 @@ class MELAProbHelper(Module):
                     elif MELA_dec:
                         probVec[iCand] = self.MELA.computeP(MELA_useconstant)
                     elif MELA_ispm4l: 
-                        probVec[iCand] = self.MELA.computePM4L(Mela.SuperMelaSyst.SMSyst_None)
+                        probVec[iCand] = self.MELA.computePM4l(Mela.SuperMelaSyst.SMSyst_None)
                         probVec_ScaleUp[iCand] = self.MELA.computePM4l(Mela.SuperMelaSyst.SMSyst_ScaleUp)
                         probVec_ScaleDown[iCand] = self.MELA.computePM4l(Mela.SuperMelaSyst.SMSyst_ScaleDown)
                         probVec_SystUp[iCand] = self.MELA.computePM4l(Mela.SuperMelaSyst.SMSyst_ResUp)
@@ -177,16 +186,20 @@ class MELAProbHelper(Module):
                             probVec[iCand] = self.MELA.getXPropagator(MELA_propscheme)
 
                     # Handle divideP
-                    vprob[iprob] = probVec[iCand]
-                    if MELA_divideP_eval != None:
-                        den = eval(MELA_divideP_eval) #Because of prob sorting, this has already been stored
-                        if den != 0: 
-                            probVec[iCand] /= den
-                        else: 
-                            print("**MELAProbHelper: Protecting against division by 0.")
+                    if self.ModuleContext == "LHE": 
+                        vprob[iprob] = probVec[0]#probVec[iCand]
+                    
+                        if MELA_divideP_idx != -1:
+                            den = vprob[MELA_divideP_idx] 
+                            if den != 0: 
+                                probVec[iCand] /= den
+                            else: 
+                                print("***MELAProbHelper: Protecting against division by 0.")
+                    # else: 
+                    #     print("***MELAProbHelper: Cannot run divideP for reco-level probability!")
 
                 # Write out all branches for this probability
-                if self.isGen: 
+                if self.ModuleContext == "LHE": 
                     self.out.fillBranch(MELA_branchname, probVec[0])
                     if MELA_ispm4l: 
                         self.out.fillBranch(MELA_branchname+"_ScaleUp", probVec_ScaleUp[0])

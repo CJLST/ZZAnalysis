@@ -1,0 +1,5 @@
+from ZZAnalysis.NanoAnalysis.tools import setConf
+setConf("probabilities", {'Process': 'bkgZZ', 'Production': 'ZZGG', 'MatrixElement': 'JHUGen', 'Couplings': {}, 'Prod': False, 'Dec': False, 'ispm4l': True, 'context': "Reco", 'computeprop': False, 'useconstant': True, 'Name': 'm4l_BKG'}, append=True)
+setConf("probabilities", {'Process': 'HSMHiggs', 'Production': 'ZZGG', 'MatrixElement': 'JHUGen', 'Couplings': {}, 'Prod': False, 'Dec': False, 'ispm4l': True, 'context': "Reco", 'computeprop': False, 'useconstant': True, 'Name': 'm4l_SIG'}, append=True)
+setConf("probabilities", {'Process': 'bkgZZ', 'Production': 'ZZQQB', 'MatrixElement': 'MCFM', 'Couplings': {'ghg2': [1, 0], 'ghz1': [1, 0]}, 'Prod': False, 'Dec': True, 'context': "Reco", 'computeprop': False, 'useconstant': True, 'Name': 'QQB_BKG_MCFM'}, append=True)
+setConf("probabilities", {'Process': 'SelfDefine_spin0', 'Production': 'ZZGG', 'MatrixElement': 'JHUGen', 'Couplings': {'ghg2': [1, 0], 'ghz1': [1, 0]}, 'Prod': False, 'Dec': True, 'context': "LHE", 'computeprop': False, 'useconstant': True, 'Name': 'GG_SIG_ghg2_1_ghz1_1_JHUGen_P_Constant'}, append=True)

@@ -18,7 +18,7 @@ class LHEAngProbFiller(Module):
         self.NANOVERSION = NANOVERSION
         self.MELASettings = MELASettings
         self.sortedSettings = []
-        self.ProbHelper = MELAProbHelper(self.MELA, self.MELASettings, True)
+        self.ProbHelper = MELAProbHelper(self.MELA, self.MELASettings, "LHE")
 
         # if MELASettings != None:
         #     defaults = {
