@@ -14,11 +14,11 @@ if not validateCheckout() :
 
 #SampleToRun = "MCsync_2018UL" # v15 2018UL nano
 #SampleToRun = "Data2022"
-SampleToRun = "MC2022EE"
+# SampleToRun = "MC2022EE"
 #SampleToRun = "MC2023postBPix"
 #SampleToRun = "Data2024"
 #SampleToRun = "MC2024"
-SampleToRun = "MELA_Test"
+# SampleToRun = "MELA_Test"
 #SampleToRun = "forNanoDoc" # To prepare variable lists with inspectNanoFile.py
 
 ### Obsolete Run2 samples
