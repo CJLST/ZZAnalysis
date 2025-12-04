@@ -222,6 +222,10 @@ elif SampleToRun == "MELA_Test" :
     setConf("store","root://cms-xrd-global.cern.ch/")
     # Add probabilities 
     # import prod.pyFragments.LHE_Probs_ggH0PM_M125
+    import prod.pyFragments.EFT_RecoProbs
+    # import prod.pyFragments.contextTest
+    # import prod.pyFragments.DefaultProbs
+    # import prod.pyFragments.LHE_Probs_ggH0PM_M125
     # import prod.pyFragments.EFT_RecoProbs
     # import prod.pyFragments.contextTest
     # import prod.pyFragments.DefaultProbs
