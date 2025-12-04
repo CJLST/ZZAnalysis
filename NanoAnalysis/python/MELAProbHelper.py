@@ -42,38 +42,38 @@ class MELAProbHelper():
         
 
         ### Split into reco and LHE probs
-        for prob in MELASettings:
-            if (prob["context"] != self.ModuleContext) and (prob["context"] != "Any"): continue 
+            for prob in MELASettings:
+                if (prob["context"] != self.ModuleContext) and (prob["context"] != "Any"): continue 
 
-            ### Merge specific settings with defaults and check for unsupported values
-            fprob=copy.deepcopy(defaults)
-            for key, value in prob.items():
-                if key in defaults:
-                    fprob[key] = value
-                else:
-                    raise(ValueError(f"MELAProbHelper: unknown parameter {key} in {prob['Name']}"))
+                ### Merge specific settings with defaults and check for unsupported values
+                fprob=copy.deepcopy(defaults)
+                for key, value in prob.items():
+                    if key in defaults:
+                        fprob[key] = value
+                    else:
+                        raise(ValueError(f"MELAProbHelper: unknown parameter {key} in {prob['Name']}"))
 
-            # Add branch name so it does not need to be remade within loops
-            if self.ModuleContext == "LHE": 
-                fprob["branchname"] = f"LHEMela_P_{prob['Name']}"
-            else: 
-                fprob["branchname"] = f"ZZCand_P_{prob['Name']}"
-            
-            ### Sort the MELASettings dictionary so that all probabilities with divideP are last 
-            if (fprob["dividep"]==None):
-                self.sortedSettings.insert(0,fprob)
-            else: 
-                self.sortedSettings.append(fprob)
+                # Add branch name so it does not need to be remade within loops
+                if self.ModuleContext == "LHE": 
+                    fprob["branchname"] = f"LHEMela_P_{prob['Name']}"
+                else: 
+                    fprob["branchname"] = f"ZZCand_P_{prob['Name']}"
+                
+                ### Sort the MELASettings dictionary so that all probabilities with divideP are last 
+                if (fprob["dividep"]==None):
+                    self.sortedSettings.insert(0,fprob)
+                else: 
+                    self.sortedSettings.append(fprob)
 
-        ### Add index of probability to be used for dividep.
-        names = [d["Name"] for d in self.sortedSettings]
-        for prob in self.sortedSettings:
-            dp = prob["dividep"]
-            prob["dividep_eval"] = (None if dp == None else f"aCand.P_{dp}") # string to be evaluated to extract denominator
-            # print("***MELAPROBHELPER: ", prob["dividep_eval"])
-            prob["dividep_idx"] = (-1 if dp == None else names.index(dp)) # prob index, more efficient but would require keeping probs for all cands
+            ### Add index of probability to be used for dividep.
+            names = [d["Name"] for d in self.sortedSettings]
+            for prob in self.sortedSettings:
+                dp = prob["dividep"]
+                prob["dividep_eval"] = (None if dp == None else f"aCand.P_{dp}") # string to be evaluated to extract denominator
+                # print("***MELAPROBHELPER: ", prob["dividep_eval"])
+                prob["dividep_idx"] = (-1 if dp == None else names.index(dp)) # prob index, more efficient but would require keeping probs for all cands
 
-        print(f"***MELAProbHelper: probs: {names}", flush=True)
+            print(f"***MELAProbHelper: probs: {names}", flush=True)
         
     def bookProbs(self, wrappedOutputTree): 
         #this needs a per-module lenVar. 
