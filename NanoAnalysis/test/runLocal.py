@@ -14,7 +14,7 @@ if not validateCheckout() :
 
 #SampleToRun = "MCsync_2018UL" # v15 2018UL nano
 #SampleToRun = "Data2022"
-# SampleToRun = "MC2022EE"
+SampleToRun = "MC2022EE"
 #SampleToRun = "MC2023postBPix"
 #SampleToRun = "Data2024"
 #SampleToRun = "MC2024"
