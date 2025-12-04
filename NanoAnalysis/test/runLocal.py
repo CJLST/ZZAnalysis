@@ -18,7 +18,7 @@ if not validateCheckout() :
 #SampleToRun = "MC2023postBPix"
 #SampleToRun = "Data2024"
 #SampleToRun = "MC2024"
-#SampleToRun = "MELA_Test"
+SampleToRun = "MELA_Test"
 #SampleToRun = "forNanoDoc" # To prepare variable lists with inspectNanoFile.py
 
 ### Obsolete Run2 samples
@@ -222,7 +222,7 @@ elif SampleToRun == "MELA_Test" :
     setConf("store","root://cms-xrd-global.cern.ch/")
     # Add probabilities 
     # import prod.pyFragments.LHE_Probs_ggH0PM_M125
-    import prod.pyFragments.EFT_RecoProbs
+    # import prod.pyFragments.EFT_RecoProbs
     # import prod.pyFragments.contextTest
     # import prod.pyFragments.DefaultProbs
     setConf("fileNames", [

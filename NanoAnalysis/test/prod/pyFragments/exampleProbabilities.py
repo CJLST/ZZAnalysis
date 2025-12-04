@@ -18,7 +18,8 @@
 #       - Prod=True, Dec=False: calls computeProdP(), which gives the production side probability. 
 #       - Prod=False, Dec=True: calls computeP(), which gives decay side probability. 
 #       - Prod=True, Dec=True: calls computeProdDecP(), which gives the combined production and decay probability. 
-# - isgen: Boolean. When true, will compute LHE-level probabilities, using particles from the LHEPart collection. NOTE: IMPORTANT-- isgen=False is not currently implemented, but will eventually compute reco-level probabilities using the ZZCand collection. 
+#
+# - context: String. When "LHE", will compute LHE-level probabilities, using particles from the LHEPart collection. When "Reco", will compute Reco-level probabilities using the ZZCands. When "Any", will compute the same probability at both levels.
 #
 # - computeprop:  Boolean. When true, will allow for a different propagator scheme to be used. This should be done in conjunction with the variable propscheme. 
 # - propscheme:  The propagator scheme that defines resonancnes. By default, set to FixedWidth. The values can be found here: https://spin.pha.jhu.edu/MELA/tvar_enums.html#reso_enum
@@ -41,8 +42,9 @@
 
 
 #The first probability calculates the lhe-level (isgen=True), decay-side probability (Dec=True) for a gluon fusion to Higgs sample (Production=ZZGG) decayed in JHUGen (MatrixElement=JHUGen) to ZZ {by default, decaymode=CandiateDecayMode_ZZ}.
-# The final probability will be named "LHEMela_Native" ("Name= 'Native'")
+# The final probability will be named "LHEMela_P_Native" ("Name= 'Native'")
 #
+
 
 from ZZAnalysis.NanoAnalysis.tools import setConf
 setConf("probabilities", {'Name': "Native", 
@@ -53,7 +55,7 @@ setConf("probabilities", {'Name': "Native",
                                         'ghg2':[1,0]}, 
                           "Prod": False,
                           "Dec": True, 
-                          "isgen": True, 
+                          "context": "LHE", 
                           "computeprop": False 
                           }, 
                           append=True)
@@ -66,6 +68,6 @@ setConf("probabilities", {'Name': "ggH_ghg2_1_ghz4_1",
                                         'ghg2':[1,0]}, 
                         "Prod": False,
                         "Dec": True, 
-                        "isgen": True,
+                        "context": "LHE",
                         "dividep": "Native",
                         "computeprop": False }, append=True)
