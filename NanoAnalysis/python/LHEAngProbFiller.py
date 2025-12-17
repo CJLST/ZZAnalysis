@@ -19,6 +19,7 @@ class LHEAngProbFiller(Module):
         self.MELASettings = MELASettings
         self.sortedSettings = []
         self.ProbHelper = MELAProbHelper(self.MELA, self.MELASettings, "LHE")
+        print("***LHEAngProbFiller: set for: ", self.ProbHelper.names, flush=True)
 
         # if MELASettings != None:
         #     defaults = {

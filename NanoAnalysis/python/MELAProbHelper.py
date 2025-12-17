@@ -17,6 +17,10 @@ class MELAProbHelper():
         self.MELA = MELA
         self.sortedSettings = []
         self.ModuleContext = ModuleContext
+        self.names = []
+        
+        if ModuleContext not in ["LHE", "Reco"] :
+            raise valueError("MELAProbHelper: invalid ModuleContext", ModuleContext)
 
         if MELASettings != None:
             defaults = {
@@ -27,7 +31,6 @@ class MELAProbHelper():
                 "Prod": None, 
                 "Dec": None, 
                 "Couplings": None, 
-                # "isgen": None, 
                 "context": None, 
                 "computeprop": None, 
                 "propscheme": "FixedWidth", 
@@ -44,9 +47,12 @@ class MELAProbHelper():
             }
         
 
-        ### Split into reco and LHE probs
+            ### Split into reco and LHE probs
             for prob in MELASettings:
-                if (prob["context"] != self.ModuleContext) and (prob["context"] != "Any"): continue 
+                if prob["context"] not in ["LHE", "Reco", "Any"] :
+                    raise valueError(f"MELAProbHelper: invalid context {prob['context']} for {prob['Name']}")
+                    
+                if (prob["context"] != ModuleContext) and (prob["context"] != "Any"): continue 
 
                 ### Merge specific settings with defaults and check for unsupported values
                 fprob=copy.deepcopy(defaults)
@@ -69,14 +75,15 @@ class MELAProbHelper():
                     self.sortedSettings.append(fprob)
 
             ### Add index of probability to be used for dividep.
-            names = [d["Name"] for d in self.sortedSettings]
+            self.names = [d["Name"] for d in self.sortedSettings]
             for prob in self.sortedSettings:
                 dp = prob["dividep"]
-                prob["dividep_eval"] = (None if dp == None else f"aCand.P_{dp}") # string to be evaluated to extract denominator
-                # print("***MELAPROBHELPER: ", prob["dividep_eval"])
-                prob["dividep_idx"] = (-1 if dp == None else names.index(dp)) # prob index, more efficient but would require keeping probs for all cands
-
-            print(f"***MELAProbHelper: probs: {names}", flush=True)
+                if dp == None :
+                    prob["dividep_idx"] = -1
+                elif ModuleContext != "LHE" :
+                        raise(ValueError(f"MELAProbHelper: for {prob['Name']}: 'dividep' is supported only for 'context=LHE'"))                    
+                else:
+                    prob["dividep_idx"] = self.names.index(dp) # Index of probability to be used as denominator.
         
     def bookProbs(self, wrappedOutputTree): 
         #this needs a per-module lenVar. 
@@ -84,35 +91,26 @@ class MELAProbHelper():
         # print("***MELAHELPER: ", len(self.sortedSettings))
         if len(self.sortedSettings) !=0 :
             for p, prob in enumerate(self.sortedSettings):
-                print(prob["branchname"])
-                if self.ModuleContext == "LHE": 
-                    self.out.branch(prob["branchname"], "F", lenVar = None, limitedPrecision=16, title="User-defined LHE-level probability")
-                    # print("***MELAProbHelper: wrote out ", prob["branchname"])
-                    if prob.get("ispm4l", False):
-                        self.out.branch(prob["branchname"]+"_ScaleUp", "F", lenVar = None, limitedPrecision=16, title="User-defined LHE-level m4l probability with Scale uncertainties up")
-                        self.out.branch(prob["branchname"]+"_ScaleDown", "F", lenVar = None, limitedPrecision=16, title="User-defined LHE-level m4l probability with Scale uncertainties down")
-                        self.out.branch(prob["branchname"]+"_SystUp", "F", lenVar = None, limitedPrecision=16, title="User-defined LHE-level m4l probability with Systematic uncertainties up")
-                        self.out.branch(prob["branchname"]+"_SystDown", "F", lenVar = None, limitedPrecision=16, title="User-defined LHE-level m4l probability with Systematic uncertainties down")
-                    if prob["computeprop"]: 
-                        self.out.branch(prob["branchname"]+"_prop", "F", limitedPrecision=16, title="User-defined weight to translate from POWHEG complex propagator scheme to JHUGen Breit-Wigner scheme")
-
-                else: 
-                    # print("***MELAProbHelper", prob["branchname"])
-                    self.out.branch(prob["branchname"], "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level probability")
-                    # print("***MELAProbHelper: wrote out ", prob["branchname"])
-                    if prob.get("ispm4l", False):
-                        self.out.branch(prob["branchname"]+"_ScaleUp", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Scale uncertainties up")
-                        self.out.branch(prob["branchname"]+"_ScaleDown", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Scale uncertainties down")
-                        self.out.branch(prob["branchname"]+"_SystUp", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Systematic uncertainties up")
-                        self.out.branch(prob["branchname"]+"_SystDown", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined Reco-level m4l probability with Systematic uncertainties down")
-                    if prob["computeprop"]: 
-                        self.out.branch(prob["branchname"]+"_prop", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined weight to translate from POWHEG complex propagator scheme to JHUGen Breit-Wigner scheme")
-                    if prob["addPAux"]:
-                        self.out.branch(prob["branchname"]+"_aux", "F", lenVar = "nZZCand", limitedPrecision=16, title="User-defined auxiliary probability")
-                    if prob["addPmavjj"]:
-                        self.out.branch(prob["branchname"]+"_mavjj", "F", lenVar = "nZZCand", title="User-defined mavjj probability")
-                    if prob["addPmavjj_true"]:
-                        self.out.branch(prob["branchname"]+"_mvajj_true", "F", lenVar = "nZZCand", title="User-defined mvajj_true probability")
+                # print(prob["branchname"])
+                if self.ModuleContext == "LHE":
+                    lenVar_ = None
+                else:
+                    lenVar_ = "nZZCand"
+                    
+                self.out.branch(prob["branchname"], "F", lenVar=lenVar_, limitedPrecision=16, title=f"User-defined {self.ModuleContext}-level probability")
+                if prob.get("ispm4l", False):
+                    self.out.branch(prob["branchname"]+"_ScaleUp", "F", lenVar=lenVar_, limitedPrecision=16, title="User-defined {self.ModuleContext}-level m4l probability with Scale uncertainties up")
+                    self.out.branch(prob["branchname"]+"_ScaleDown", "F", lenVar=lenVar_, limitedPrecision=16, title="User-defined {self.ModuleContext}-level m4l probability with Scale uncertainties down")
+                    self.out.branch(prob["branchname"]+"_SystUp", "F", lenVar=lenVar_, limitedPrecision=16, title="User-defined {self.ModuleContext}-level m4l probability with Systematic uncertainties up")
+                    self.out.branch(prob["branchname"]+"_SystDown", "F", lenVar=lenVar_, limitedPrecision=16, title="User-defined {self.ModuleContext}-level m4l probability with Systematic uncertainties down")
+                if prob["computeprop"]: 
+                    self.out.branch(prob["branchname"]+"_prop", "F", lenVar=lenVar_, limitedPrecision=16, title="User-defined weight to translate from POWHEG complex propagator scheme to JHUGen Breit-Wigner scheme")
+                if prob["addPAux"]:
+                    self.out.branch(prob["branchname"]+"_aux", "F", lenVar=lenVar_, limitedPrecision=16, title="User-defined auxiliary probability")
+                if prob["addPmavjj"]:
+                    self.out.branch(prob["branchname"]+"_mavjj", "F", lenVar=lenVar_, title="User-defined mavjj probability")
+                if prob["addPmavjj_true"]:
+                    self.out.branch(prob["branchname"]+"_mvajj_true", "F", lenVar=lenVar_, title="User-defined mvajj_true probability")
     def fillProbs(self, candDaughters, candAssociated, candMothers): 
         if len(self.sortedSettings) == 0: return True
         else: 
@@ -141,8 +139,7 @@ class MELAProbHelper():
                 ### Configure MELA for the event. 
                 self.MELA.setProcess(MELA_Process, MELA_MatrixElement, MELA_Production)
                 self.MELA.differentiate_HWW_HZZ = MELA_separatewwzz
-                self.MELA.setMelaLeptonInterference(MELA_leptoninterference)                    
-                
+                self.MELA.setMelaLeptonInterference(MELA_leptoninterference)
 
                 # Define arrays to fill with the probabilites for each candidate
                 probVec = [-999.]*len(candDaughters)
@@ -208,47 +205,49 @@ class MELAProbHelper():
 
                     # Handle divideP
                     if self.ModuleContext == "LHE": 
-                        vprob[iprob] = probVec[0]#probVec[iCand]
-                    
+                        vprob[iprob] = probVec[0] # Note: iCand is always 0 for LHE
+                     
                         if MELA_divideP_idx != -1:
                             den = vprob[MELA_divideP_idx] 
                             if den != 0: 
-                                probVec[iCand] /= den
+                                probVec[0] /= den
                             else: 
                                 print("***MELAProbHelper: Protecting against division by 0.")
-                    # else: 
-                    #     print("***MELAProbHelper: Cannot run divideP for reco-level probability!")
 
                 # Write out all branches for this probability
-                if self.ModuleContext == "LHE": 
-                    self.out.fillBranch(MELA_branchname, probVec[0])
+                if self.ModuleContext == "LHE": # Branches are not collections in this case
+                    probVec=probVec[0]
                     if MELA_ispm4l: 
-                        self.out.fillBranch(MELA_branchname+"_ScaleUp", probVec_ScaleUp[0])
-                        self.out.fillBranch(MELA_branchname+"_ScaleDown", probVec_ScaleDown[0])
-                        self.out.fillBranch(MELA_branchname+"_SystUp", probVec_SystUp[0])
-                        self.out.fillBranch(MELA_branchname+"_SystDown", probVec_SystDown[0])
-                    if MELA_computeprop: 
-                        self.out.fillBranch(MELA_branchname+"_prop", probPropVec[0])
-                else: 
-                    self.out.fillBranch(MELA_branchname, probVec)
-
-                    if MELA_ispm4l: 
-                        self.out.fillBranch(MELA_branchname+"_ScaleUp", probVec_ScaleUp)
-                        self.out.fillBranch(MELA_branchname+"_ScaleDown", probVec_ScaleDown)
-                        self.out.fillBranch(MELA_branchname+"_SystUp", probVec_SystUp)
-                        self.out.fillBranch(MELA_branchname+"_SystDown", probVec_SystDown)
-                            
-                    if MELA_computeprop: 
-                        self.out.fillBranch(MELA_branchname+"_prop", probPropVec)
-
+                        probVec_ScaleUp   = probVec_ScaleUp[0]
+                        probVec_ScaleDown = probVec_ScaleDown[0]
+                        probVec_SystUp    = probVec_SystUp[0]
+                        probVec_SystDown  = probVec_SystDown[0]
+                    if MELA_computeprop and (MELA_prod or MELA_dec): 
+                        probPropVec = probPropVec[0]
                     if MELA_addPAux:
-                        self.out.fillBranch(MELA_branchname+"_aux", probVec_PAux)
-
+                        probVec_PAux = probVec_PAux[0]
                     if MELA_addPmavjj:
-                        self.out.fillBranch(MELA_branchname+"_mavjj", probVec_mavjj)
+                        probVec_mavjj = probVec_mavjj[0]
                     if MELA_addPmavjj_true:
-                        self.out.fillBranch(MELA_branchname+"_mvajj_true", probVec_mvajj_true)
-                
+                        probVec_mvajj_true = probVec_mvajj_true[0]
+
+                self.out.fillBranch(MELA_branchname, probVec)
+
+                if MELA_ispm4l: 
+                    self.out.fillBranch(MELA_branchname+"_ScaleUp", probVec_ScaleUp)
+                    self.out.fillBranch(MELA_branchname+"_ScaleDown", probVec_ScaleDown)
+                    self.out.fillBranch(MELA_branchname+"_SystUp", probVec_SystUp)
+                    self.out.fillBranch(MELA_branchname+"_SystDown", probVec_SystDown)
+
+                if MELA_computeprop and (MELA_prod or MELA_dec): 
+                    self.out.fillBranch(MELA_branchname+"_prop", probPropVec)
+
+                if MELA_addPAux:
+                    self.out.fillBranch(MELA_branchname+"_aux", probVec_PAux)
+                if MELA_addPmavjj:
+                    self.out.fillBranch(MELA_branchname+"_mavjj", probVec_mavjj)
+                if MELA_addPmavjj_true:
+                    self.out.fillBranch(MELA_branchname+"_mvajj_true", probVec_mvajj_true)
                 
         return True
         

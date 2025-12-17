@@ -30,11 +30,11 @@
 
 # - "useconstant": Boolean. This turns on the calculation of a corrective constant to different probabilities through Mela::getConstant. If you would like the "pure" MELA calculation to be run, set useConstant to false. By default true.
  
-# -  "match_mX": Boolean. If true, will set the Higgs mass to match the invariant mass of the daughter particles in each event. 
+# - "match_mX": Boolean. If true, will set the Higgs mass to match the invariant mass of the daughter particles in each event. 
 # - "lepton_interference":"DefaultLeptonInterf",
 # - "ispm4l": Boolean. When True, causes a call to computePM4l(), which is a probability useful in calculating a signal-background discrimimant. 
-#  - "dividep": NOTE: WIP. When finished, will take the "Name" variable of one probability and divide all probabilities with divdep=True by this probability. This is typically most useful for normalizing to a native probability.   
-                
+# - "dividep": Take the "Name" variable of one probability and divide all probabilities with divdep=True by this probability. This is typically most useful for normalizing to a native probability. Supported only for context="LHE".
+# - "addPAux": also store the result of MELA.getPAux() (???)
 
 #As a couple of general notes: 
 # - append=True should always be set for each instance of setConf. 

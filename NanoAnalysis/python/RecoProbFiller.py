@@ -20,17 +20,15 @@ class RecoProbFiller(Module):
         self.sortedSettings = []
         self.MELASettings = MELASettings
         self.ProbHelper = MELAProbHelper(self.MELA, self.MELASettings, "Reco")
+        print("***RecoProbFiller: set for: ", self.ProbHelper.names, flush=True)
 
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
         if self.MELASettings != None: 
-            # print("***RecoProbFiller: Booking Probs")
             self.ProbHelper.bookProbs(wrappedOutputTree)
-
-                        
-
         
+
     def analyze(self, event):
         if event.nZZCand==0: return True
         cands = Collection(event, 'ZZCand')
