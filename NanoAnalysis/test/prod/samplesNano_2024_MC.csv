@@ -82,3 +82,8 @@ TTto2L2Nu                       ,,98.0,,,/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythi
 # ttZJets Equivalent from run 2
 TTLL_MLL-4to50                            ,,0.03949,,,/TTLL_Bin-MLL-4to50_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,PROCESS_CR=True;LEPTON_SETUP=2024,, #xsec obtained from xsdb
 TTLL_MLL-50                            ,,0.08646,,,/TTLL_Bin-MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,PROCESS_CR=True;LEPTON_SETUP=2024,, #xsec obtained from xsdb 
+
+###,,,,,,,,,,,VBS
+ZZTo4l_2Jets_EW_QCD,,0.02158,,,/ZZJJto4L-EWK-QCD_TuneCP5_13p6TeV_madgraph-pythia8/RunIII2024Summer24NanoAOD-140X_mcRun3_2024_realistic_v26-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,3,PROCESS_CR=True;LEPTON_SETUP=2024,,#xsec from xsdb
+ZZTo4l_2Jets_EW,,0.001144,,,/ZZJJto4L-EWK_TuneCP5_13p6TeV_madgraph-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,3,PROCESS_CR=True;LEPTON_SETUP=2024,,#xsec from xsdb
+ZZTo4l_2Jets_QCD,,0.02029,,,/ZZJJto4L-EWK_TuneCP5_13p6TeV_madgraph-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,3,PROCESS_CR=True;LEPTON_SETUP=2024,,#xsec from xsdb
