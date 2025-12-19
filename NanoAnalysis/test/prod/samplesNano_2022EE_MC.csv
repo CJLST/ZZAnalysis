@@ -90,3 +90,8 @@ TTto2L2Nu,,98.0,,,/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAO
 ###,,,,,,,,,,,Equivalent of ttZJets in Run2
 TTLL_MLL-4to50 ,,0.03949,,,/TTLL_MLL-4to50_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,PROCESS_CR=True;LEPTON_SETUP=2022,,xsec from XSDB
 TTLL_MLL-50 ,,0.08646,,,/TTLL_MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,PROCESS_CR=True;LEPTON_SETUP=2022,,xsec from XSDB
+
+###,,,,,,,,,,,VBS
+ZZTo4l_2Jets_EW_QCD,,0.02157,,,/ZZto4L-2Jets_EW-QCD_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,3,PROCESS_CR=True;LEPTON_SETUP=2022,,#xsec from XSDB
+ZZTo4l_2Jets_EW,,0.001142,,,/ZZto4L-2Jets_EW_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,3,PROCESS_CR=True;LEPTON_SETUP=2022,,#xsec from XSDB
+ZZTo4l_2Jets_QCD,,0.02029,,,/ZZto4L-2Jets_QCD_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v3/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,3,PROCESS_CR=True;LEPTON_SETUP=2022,,#xsec from XSDB
