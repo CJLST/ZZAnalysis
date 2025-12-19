@@ -78,3 +78,8 @@ TTto2L2Nu                   ,,98.0,,,/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/R
 ###,,,,,,,,,,,Equivalent of ttZJets in Run2
 TTLL_MLL-4to50                         ,,0.03949,,,/TTLL_MLL-4to50_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,PROCESS_CR=True;LEPTON_SETUP=2023;DATA_TAG=pre_BPix,, #xsec obtained from xsdb
 TTLL_MLL-50                            ,,0.08646,,,/TTLL_MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,PROCESS_CR=True;LEPTON_SETUP=2023;DATA_TAG=pre_BPix,, #xsec obtained from xsdb
+
+###,,,,,,,,,,,VBS
+ZZTo4l_2Jets_EW_QCD,,0.02157,,,/ZZto4L-2Jets_EW-QCD_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,3,PROCESS_CR=True;LEPTON_SETUP=2023;DATA_TAG=pre_BPix,,#xsec from xsdb
+ZZTo4l_2Jets_EW,,0.001142,,,/ZZto4L-2Jets_EW_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,3,PROCESS_CR=True;LEPTON_SETUP=2023;DATA_TAG=pre_BPix,,#xsec from xsdb
+ZZTo4l_2Jets_QCD,,0.02029,,,/ZZto4L-2Jets_QCD_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,3,PROCESS_CR=True;LEPTON_SETUP=2023;DATA_TAG=pre_BPix,,#xsec from xsdb
