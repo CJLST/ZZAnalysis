@@ -254,15 +254,20 @@ if IsMC:
     post_sequence.append(mcTruthAnalyzer()) # Gen final state etc.
     # from ZZAnalysis.NanoAnalysis.genExtraFiller import *
     # post_sequence.append(genExtraFiller(mela)) Gen-level angles (not to be confused with LHE-level angles, filled by LHEAngProbFiller
-
+    
+    if runMELA:
+        from ZZAnalysis.NanoAnalysis.LHEAngProbFiller import * 
+        if NANOVERSION >= 15:
+            from ZZAnalysis.NanoAnalysis.LHEFiller import * 
+            post_sequence.append(LHEFiller())
+        post_sequence.append(LHEAngProbFiller(mela, NANOVERSION, melaSettings))
+    
     if ADD_ALLEVENTS: # Add modules that produce the variables to be stored for all events at the beginning
         from ZZAnalysis.NanoAnalysis.genFiller import *
         from ZZAnalysis.NanoAnalysis.cloneBranches import *
-        from ZZAnalysis.NanoAnalysis.LHEAngProbFiller import * 
         pre_sequence = [puWeight(LEPTON_SETUP, DATA_TAG),
                         weights, 
                         genFiller(mela, dump=False),
-                        LHEAngProbFiller(mela, NANOVERSION, melaSettings),
                         cloneBranches(treeName='AllEvents',
                                       varlist=['run', 'luminosityBlock', 'event',
                                                'GenDressedLepton_*',
@@ -274,7 +279,6 @@ if IsMC:
                                                'puWeight*',
                                                'overallEventWeight',
                                                'Pileup_nTrueInt',
-                                               'LHEMela*',
                                                'GenJet*',
                                                *(['ggH_NNLOPS_Weight'] if APPLY_QCD_GGF_UNCERT else []),
                                                ],
@@ -282,11 +286,6 @@ if IsMC:
                                       continueFor = postPresel
                                       ),
                         ] + pre_sequence
-        if NANOVERSION >= 15:
-            from ZZAnalysis.NanoAnalysis.LHEFiller import * 
-            insertBefore(pre_sequence, 'LHEAngProbFiller', LHEFiller())
-        
-        
 
     else : # Add them at the end, so that they are run only for selected events
         post_sequence.extend([puWeight(LEPTON_SETUP,DATA_TAG),
@@ -337,6 +336,7 @@ branchsel_out = ['drop *',
                  #'keep PV*',
                  #'keep Flag*',
                  *(['keep MET_pt'] if NANOVERSION <=12 else ['keep PFMET_pt']),
+                 *(['keep LHEMela*'] if runMELA else []),
                  ]
 
 if IsMC:
