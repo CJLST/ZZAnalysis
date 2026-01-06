@@ -34,7 +34,10 @@
 # - "lepton_interference":"DefaultLeptonInterf",
 # - "ispm4l": Boolean. When True, causes a call to computePM4l(), which is a probability useful in calculating a signal-background discrimimant. 
 # - "dividep": Take the "Name" variable of one probability and divide all probabilities with divdep=True by this probability. This is typically most useful for normalizing to a native probability. Supported only for context="LHE".
-# - "addPAux": also store the result of MELA.getPAux() (???)
+# - "addPAux": also store the result of MELA.getPAux() - cf. slide 5 of https://indico.cern.ch/event/1619963/#11-hzz4l-legacy-signal-strengh
+# - "addPmavjj": also store the result of computeDijetConvBW(False) - cf. slide 8 of https://indico.cern.ch/event/1619963/contributions/6826626/attachments/3190935/5678923/STXSupdate.pdf
+# - "addPmavjj_true": also store the result of computeDijetConvBW(False)
+
 
 #As a couple of general notes: 
 # - append=True should always be set for each instance of setConf. 
