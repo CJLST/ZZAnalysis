@@ -30,7 +30,6 @@ class RecoProbFiller(Module):
         
 
     def analyze(self, event):
-        if event.nZZCand==0: return True
         cands = Collection(event, 'ZZCand')
         leps = Collection(event, 'Lepton')
         fsrPhotons = Collection(event, "FsrPhoton")
