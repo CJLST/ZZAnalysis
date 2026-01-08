@@ -53,6 +53,8 @@ APPLY_K_NNLOQCD_ZZQQB = getConf("APPLY_K_NNLOQCD_ZZQQB", False)
 APPLY_K_NNLOEW_ZZQQB  = getConf("APPLY_K_NNLOEW_ZZQQB", False)
 # Add separate tree with gen info for all events
 ADD_ALLEVENTS = getConf("ADD_ALLEVENTS", False)
+ADD_LHE_PROB = getConf("ADD_LHE_PROB", ADD_ALLEVENTS) # Add LHE angles and probabilities. This is in general the case whenever ADD_ALLEVENTS is true (ie for signals)
+
 FILTER_EVENTS = getConf("FILTER_EVENTS", 'Cands') # Filter to be applied on events. Currently supported:
                                                   # 'Cands' = any event with a SR or CR candidate (default)
                                                   # 'Z' = any event with a good Z candidate (passing the analysis Z selection criteria)
@@ -255,7 +257,10 @@ if IsMC:
     # from ZZAnalysis.NanoAnalysis.genExtraFiller import *
     # post_sequence.append(genExtraFiller(mela)) Gen-level angles (not to be confused with LHE-level angles, filled by LHEAngProbFiller
     
-    if runMELA:
+    if ADD_LHE_PROB:
+        if runMELA == False:
+            print("ADD_LHE_PROB requires runMELA=True")
+            exit(1)
         from ZZAnalysis.NanoAnalysis.LHEAngProbFiller import * 
         if NANOVERSION >= 15:
             from ZZAnalysis.NanoAnalysis.LHEFiller import * 
@@ -336,7 +341,7 @@ branchsel_out = ['drop *',
                  #'keep PV*',
                  #'keep Flag*',
                  *(['keep MET_pt'] if NANOVERSION <=12 else ['keep PFMET_pt']),
-                 *(['keep LHEMela*'] if runMELA else []),
+                 *(['keep LHEMela*'] if ADD_LHE_PROB else []),
                  ]
 
 if IsMC:
