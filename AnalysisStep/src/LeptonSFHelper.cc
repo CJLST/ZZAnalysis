@@ -157,7 +157,11 @@ LeptonSFHelper::LeptonSFHelper(int year, std::string const &data_tag) :
     f_mu = basePath+"final_HZZ_SF_2018UL_mupogsysts_newLoose.root";
   } else if (year==2022) { // 2022 Muons
     if(data_tag.find("pre_EE") != std::string::npos) { // 2022 Muons preEE
-      f_mu = basePath+"final_HZZ_SF_Run3_2022_mupogsysts_newLoose_abseta3_fix_BCD_RMS.root"; // from /afs/cern.ch/user/y/yujil/public/SF2022/final_HZZ_SF_Run3_2022_mupogsysts_newLoose_abseta3_fix_BCD_RMS.root
+      if (data_tag.find("MUON_ID_BYMVA") != std::string::npos) {
+        f_mu = basePath + "mu_HZZ_2022_pre_EE_MVA_ID.root"; // from /afs/cern.ch/user/y/yujil/public/SF2022PreEEMVA/final_HZZ_SF_Run3_2022_mupogsysts_newLoose_abseta3_fix_BCD_RMS.root
+      } else {
+        f_mu = basePath + "final_HZZ_SF_Run3_2022_mupogsysts_newLoose_abseta3_fix_BCD_RMS.root"; // from /afs/cern.ch/user/y/yujil/public/SF2022/final_HZZ_SF_Run3_2022_mupogsysts_newLoose_abseta3_fix_BCD_RMS.root
+      }
     } else { // 2022 Muons postEE
       if (data_tag.find("MUON_ID_BYMVA") != std::string::npos) { 
         f_mu = basePath + "mu_HZZ_2022_post_EE_MVA_ID.root"; // Muon MVA WP (2022postEE), from /afs/cern.ch/user/y/yujil/public/SF2022EEMVA/final_HZZ_SF_Run3_2022_mupogsysts_newLoose_abseta3_fix_EFG_RMS.root

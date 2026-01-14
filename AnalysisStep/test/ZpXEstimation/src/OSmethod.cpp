@@ -2,6 +2,10 @@
 #include <ZZAnalysis/AnalysisStep/test/ZpXEstimation/include/OSmethod.h>
 #include <TF1.h>
 
+static int g_isMVA = 0;// regulates muon selection =0 <=> ZZFullSel or =1 <=> Muon_ID_byMVA 
+static inline double muonSipCut() { return g_isMVA ? 8.0 : 4.0; }
+static inline double muonIsoCut() { return g_isMVA ? 999999.0 : 0.35; }
+
 // Constructor
 //============================================================
 OSmethod::OSmethod():Tree()
@@ -113,7 +117,10 @@ void OSmethod::FillFRHistos( TString input_file_data_name )
 	Int_t _passingSelection = 0;
 	Int_t _faillingSelection = 0;
 	Int_t _faillingJPsiMassCut = 0;
-
+	
+	const double muon_sip_cut = muonSipCut();
+	const double muon_iso_cut = muonIsoCut();
+	
    for (Long64_t jentry=0; jentry<nentries;jentry++)
    {
       Long64_t ientry = LoadTree(jentry);
@@ -133,7 +140,7 @@ void OSmethod::FillFRHistos( TString input_file_data_name )
       if ( (LepPt->at(1) > LepPt->at(0)) && (LepPt->at(1) < 20. || LepPt->at(0) < 10.) ) {_failLepPtCut++; continue;}
       if ( (fabs(LepEta->at(2)) > 2.5 ) && ( fabs(LepLepId->at(2)) == 11 || fabs(LepLepId->at(2)) == 13 )) {_failEtaCut++; continue;}
       if ( (LepSIP->at(2) > 4. || Lepdxy->at(2) > 0.5 || Lepdz->at(2) > 1.0) && (fabs(LepLepId->at(2)) == 11)) { _failSipVtxCut++; continue;} // Included dxy/dz cuts for ele       
-      if ( (LepSIP->at(2) > 4. || Lepdxy->at(2) > 0.5 || Lepdz->at(2) > 1.0) && (fabs(LepLepId->at(2)) == 13)) { _failSipVtxCut++; continue;} // Included dxy/dz cuts for mu   
+      if ( (LepSIP->at(2) > muon_sip_cut || Lepdxy->at(2) > 0.5 || Lepdz->at(2) > 1.0) && (fabs(LepLepId->at(2)) == 13)) { _failSipVtxCut++; continue;} // Included dxy/dz cuts for mu   
       // NB: Included SIP cut on muons that was removed when it was included in the muon BDT
       if ( PFMET > 25. ) {_failMETCut++; continue;}
       if ( (LepLepId->at(2) < 0 && LepLepId->at(0) > 0 && (p1+p3).M() < 4.) || (LepLepId->at(2) < 0 && LepLepId->at(1) > 0 && (p2+p3).M() < 4.) ) {_faillingJPsiMassCut++; continue;}
@@ -145,7 +152,7 @@ void OSmethod::FillFRHistos( TString input_file_data_name )
          _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight * L1prefiringWeight) / gen_sum_weights;
 
          //if( LepisID->at(2) ) // Changed because we are not using BDT-based muon ID but PF+ISO            
-         if(LepisID->at(2) && ((fabs(LepLepId->at(2)) == 11) ? LepCombRelIsoPF->at(2) < 999999. : LepCombRelIsoPF->at(2) < 0.35))
+         if(LepisID->at(2) && ((fabs(LepLepId->at(2)) == 11) ? LepCombRelIsoPF->at(2) < 999999. : LepCombRelIsoPF->at(2) < muon_iso_cut))
          {
 	   _passingSelection++;
 	   if(fabs(LepLepId->at(2)) == 11 ) passing[_current_process][Settings::ele]->Fill(LepPt->at(2), (abs(LepEta->at(2)) < 1.479) ? 0.5 : 1.5 , (_current_process == Settings::Data) ? 1 :  _event_weight);
@@ -280,7 +287,9 @@ void OSmethod::MakeHistogramsZX( TString input_file_data_name, TString  input_fi
    input_tree_data = (TTree*)input_file_data->Get("CRZLLTree/candTree");
    Init( input_tree_data, input_file_data_name , true);
    
-   
+   const double muon_sip_cut = muonSipCut();
+   const double muon_iso_cut = muonIsoCut();
+
    if (fChain == 0) return;
    
    Long64_t nentries = fChain->GetEntriesFast();
@@ -303,10 +312,10 @@ void OSmethod::MakeHistogramsZX( TString input_file_data_name, TString  input_fi
       //nevents_CRLLos += 1;	
 
       // Included SIP and dxy/dz cuts for 3rd and 4th lepton                                                                                                                         
-      if ( (fabs(LepEta->at(2)) > 2.5) || (fabs(LepEta->at(3)) > 2.5) ) {continue;}
-      if ( ( LepSIP->at(2) > 4. || Lepdxy->at(2) > 0.5 || Lepdz->at(2) > 1.0) && (fabs(LepLepId->at(2)) == 11 || fabs(LepLepId->at(2)) == 13)) {continue;}
-      if ( ( LepSIP->at(3) > 4. || Lepdxy->at(3) > 0.5 || Lepdz->at(3) > 1.0) && (fabs(LepLepId->at(3)) == 11 || fabs(LepLepId->at(3)) == 13)) {continue;}
-		
+      if ( (fabs(LepEta->at(2)) > 2.5) || (fabs(LepEta->at(3)) > 2.5) ) {continue;}      
+      if ( ( LepSIP->at(2) > ( (fabs(LepLepId->at(2))==13) ? muon_sip_cut : 4.0 ) || Lepdxy->at(2) > 0.5 || Lepdz->at(2) > 1.0) && (fabs(LepLepId->at(2)) == 11 || fabs(LepLepId->at(2)) == 13)) {continue;}
+      if ( ( LepSIP->at(3) > ( (fabs(LepLepId->at(3))==13) ? muon_sip_cut : 4.0 ) || Lepdxy->at(3) > 0.5 || Lepdz->at(3) > 1.0) && (fabs(LepLepId->at(3)) == 11 || fabs(LepLepId->at(3)) == 13)) {continue;}
+      
       if ( ZZMass < 70. ) continue;
 
       _current_final_state = FindFinalState();
@@ -378,7 +387,7 @@ void OSmethod::MakeHistogramsZX( TString input_file_data_name, TString  input_fi
       if ( test_bit(CRflag, CRZLLos_3P1F) )
       {
 	//nevents_CRLLos_3P1F += 1;
-	if(LepisID->at(3) && ((fabs(LepLepId->at(3)) == 11) ? LepCombRelIsoPF->at(3) < 999999. : LepCombRelIsoPF->at(3) < 0.35))
+	if(LepisID->at(3) && ((fabs(LepLepId->at(3)) == 11) ? LepCombRelIsoPF->at(3) < 999999. : LepCombRelIsoPF->at(3) < muon_iso_cut))
 	  {
 	    _f4    = FR->GetFakeRate(LepPt->at(2),LepEta->at(2),LepLepId->at(2));
 	    _f4_Up = FR->GetFakeRate_Up(LepPt->at(2),LepEta->at(2),LepLepId->at(2));
@@ -421,6 +430,8 @@ void OSmethod::MakeZXMCContribution( TString input_file_data_name, TString  inpu
    input_tree_data = (TTree*)input_file_data->Get("CRZLLTree/candTree");
    Init( input_tree_data, input_file_data_name , true);
    
+   const double muon_sip_cut = muonSipCut();
+   const double muon_iso_cut = muonIsoCut();
    
    if (fChain == 0) return;
    
@@ -437,6 +448,10 @@ void OSmethod::MakeZXMCContribution( TString input_file_data_name, TString  inpu
       nbytes += nb;
       
       if (!(test_bit(CRflag, CRZLLos_3P1F))) continue;
+      
+      if ((fabs(LepEta->at(2)) > 2.5) || (fabs(LepEta->at(3)) > 2.5)) { continue; }
+      if ((LepSIP->at(2) > ((fabs(LepLepId->at(2))==13) ? muon_sip_cut : 4.0) || Lepdxy->at(2) > 0.5 || Lepdz->at(2) > 1.0) && (fabs(LepLepId->at(2)) == 11 || fabs(LepLepId->at(2)) == 13)) { continue; }
+      if ((LepSIP->at(3) > ((fabs(LepLepId->at(3))==13) ? muon_sip_cut : 4.0) || Lepdxy->at(3) > 0.5 || Lepdz->at(3) > 1.0) && (fabs(LepLepId->at(3)) == 11 || fabs(LepLepId->at(3)) == 13)) { continue; }
       
       _current_final_state = FindFinalState();
       
@@ -481,7 +496,7 @@ void OSmethod::MakeZXMCContribution( TString input_file_data_name, TString  inpu
       _k_factor = calculate_K_factor(input_file_data_name);
       _event_weight = (_lumi * 1000 * xsec * _k_factor * overallEventWeight * L1prefiringWeight) / gen_sum_weights;
       
-      if( LepisID->at(3) && ((fabs(LepLepId->at(3)) == 11) ? LepCombRelIsoPF->at(3) < 999999. : LepCombRelIsoPF->at(3) < 0.35))
+      if( LepisID->at(3) && ((fabs(LepLepId->at(3)) == 11) ? LepCombRelIsoPF->at(3) < 999999. : LepCombRelIsoPF->at(3) < muon_iso_cut))
       {
 	_f4    = FR->GetFakeRate(LepPt->at(2),LepEta->at(2),LepLepId->at(2));
 	_f4_Up = FR->GetFakeRate_Up(LepPt->at(2),LepEta->at(2),LepLepId->at(2));
@@ -1607,7 +1622,7 @@ int OSmethod::find_current_process( TString input_file_name )
    if ( input_file_name.Contains("ZZTo4l") )         current_process = Settings::qqZZ;
    if ( input_file_name.Contains("DYJetsToLL") )     current_process = Settings::DY;
    if ( input_file_name.Contains("TTJets") )         current_process = Settings::ttbar;
-   if ( input_file_name.Contains("TTTo2L2Nu") )      current_process = Settings::ttbar;
+   if ( input_file_name.Contains("TTto2L2Nu") )      current_process = Settings::ttbar;
    
    return current_process;
 }
