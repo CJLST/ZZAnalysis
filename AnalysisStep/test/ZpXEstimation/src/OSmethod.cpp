@@ -449,9 +449,6 @@ void OSmethod::MakeZXMCContribution( TString input_file_data_name, TString  inpu
       
       if (!(test_bit(CRflag, CRZLLos_3P1F))) continue;
       
-      if ((fabs(LepEta->at(2)) > 2.5) || (fabs(LepEta->at(3)) > 2.5)) { continue; }
-      if ((LepSIP->at(2) > ((fabs(LepLepId->at(2))==13) ? muon_sip_cut : 4.0) || Lepdxy->at(2) > 0.5 || Lepdz->at(2) > 1.0) && (fabs(LepLepId->at(2)) == 11 || fabs(LepLepId->at(2)) == 13)) { continue; }
-      if ((LepSIP->at(3) > ((fabs(LepLepId->at(3))==13) ? muon_sip_cut : 4.0) || Lepdxy->at(3) > 0.5 || Lepdz->at(3) > 1.0) && (fabs(LepLepId->at(3)) == 11 || fabs(LepLepId->at(3)) == 13)) { continue; }
       
       _current_final_state = FindFinalState();
       
