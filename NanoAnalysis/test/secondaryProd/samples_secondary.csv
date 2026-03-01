@@ -1,0 +1,5 @@
+identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern,splitLevel,::variables,::pyFragments,comment
+
+2022preEE_Data,,-1,,,/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/HIG-25-015/RunIII_byZ1Z2/Moriond26_JES/2022_Data/Data_eraCD_preEE.root,pylist,,1,NANOVERSION=12;LEPTON_SETUP=2023;JOBTYPE=nanoAOD,../prod/pyFragments/DefaultProbs.py,# Example to run on a single hadded file
+2023_Data,,-1,,,/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/HIG-25-015/RunIII_byZ1Z2/Moriond26_JES/2023_Data/Chunks,local,,1,NANOVERSION=12;LEPTON_SETUP=2023;JOBTYPE=nanoAOD,../prod/pyFragments/DefaultProbs.py,# Example to run on individual Chunks. The specified folder must contain all *and only* the Chunks folders.
+

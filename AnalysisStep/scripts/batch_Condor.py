@@ -550,8 +550,11 @@ class MyBatchManager:
             cfgFile.write('from ZZAnalysis.NanoAnalysis.tools import getConf, setConf\n')
             # Copy fragments in their specified order
             for fragment in pyFragments:
+                frpath=f"pyFragments/{fragment}" # First search under ./pyFragments/
+                if not os.path.exists(frpath) and os.path.exists(fragment) : # otherwise, assume fragment is a relative path
+                    frpath = fragment
                 try: 
-                    icfg = open(f"pyFragments/{fragment}")
+                    icfg = open(frpath)
                 except :
                     print(f"ERROR: fragment not found: {fragment}")
                     exit(1)
