@@ -182,7 +182,7 @@ LeptonSFHelper::LeptonSFHelper(int year, std::string const &data_tag) :
     if (data_tag.find("MUON_ID_BYMVA") != std::string::npos) {
       f_mu = basePath+"prelimiary_HZZ_SF_2024_RMS_mupogsystsC_lowPtMVA.root"; // from /afs/cern.ch/user/y/yujil/public/SF2024LowpTMVA/HZZ_HZZ_SF_2024_RMS_mupogsystsC.root (md5sum: 49213f9776c22a58c14267dbd4d8aaac)
     } else {
-      f_mu = basePath+"prelimiary_HZZ_SF_2024_RMS_mupogsystsC.root"; // from /afs/cern.ch/user/y/yujil/public/SF2024/SF2024/HZZ_HZZ_SF_2024_RMS_mupogsystsC.root (md5sum: c7a92b90d46ac34d5375ef9f86a50f85)
+      f_mu = basePath+"HZZ_HZZ_SF_2024_RMS_mupogsystsC.root"; // from  /afs/cern.ch/user/y/yujil/public/Tahir/SF2024/HZZ_HZZ_SF_2024_RMS_mupogsystsC.root (md5sum: 3b3522770e1c71e213285e261ec2b980)
     }
   } else {
     edm::LogError("LeptonSFHelper::") << "Mu SFs for " << theYear << " is not supported!";
