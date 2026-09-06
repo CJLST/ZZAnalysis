@@ -57,6 +57,7 @@ IsSIGNAL = getConf("IsSIGNAL", False)
 ADD_ALLEVENTS = getConf("ADD_ALLEVENTS", IsSIGNAL) # if true, add a separate tree with gen-level variables for all events (not just those passing the candidate selection); by default, this is done for signal samples
 ADD_LHE_PROB = getConf("ADD_LHE_PROB", ADD_ALLEVENTS) # Add LHE angles and probabilities. This is in general the case whenever ADD_ALLEVENTS is true (ie for signals)
 JES_SPLITTING = getConf("JES_SPLITTING", True) # Whether to split JES variations into 11 components (if false, only up/down variations are produced, by summing all components in quadrature)
+COMPUTE_JET_VARIATIONS_MELA = getConf("COMPUTE_JET_VARIATIONS_MELA", False) # Compute MELA probabilities for JES/JER shifted jets
 
 FILTER_EVENTS = getConf("FILTER_EVENTS", 'Cands') # Filter to be applied on events. Currently supported:
                                                   # 'Cands' = any event with a SR or CR candidate (default)
@@ -207,9 +208,11 @@ reco_sequence = [lepFiller(cuts, LEPTON_SETUP, MUON_ID_BYMVA), # FSR and FSR-cor
                  jetFiller(year=LEPTON_SETUP), # Jets cleaning with leptons
                  ZZExtraFiller(IsMC, LEPTON_SETUP, DATA_TAG, PROCESS_CR, APPLYELECORR, APPLYMUCORR), # Additional variables to selected candidates
                  ]
+recoProbFiller = None
 if runMELA is not None:
     from ZZAnalysis.NanoAnalysis.RecoProbFiller import *
-    reco_sequence.append(RecoProbFiller(mela, NANOVERSION, melaSettings, processCR=PROCESS_CR))  #Reco level angles and probabilities. 
+    recoProbFiller = RecoProbFiller(mela, NANOVERSION, melaSettings, processCR=PROCESS_CR)
+    reco_sequence.append(recoProbFiller)  #Reco level angles and probabilities.
 
 # Add muon scale corrections
 if APPLYMUCORR :
@@ -225,13 +228,17 @@ if APPLYELECORR and (LEPTON_SETUP >=2022 or NANOVERSION>=15):
     from ZZAnalysis.NanoAnalysis.modules.eleScaleResProducer import getEleScaleRes
     insertBefore(reco_sequence, 'lepFiller', getEleScaleRes(LEPTON_SETUP, DATA_TAG, IsMC, overwritePt=True))
 
-# Add jet corrections for Run 3
-if APPLYJETCORR :
+# Add jet corrections and veto maps
+if APPLYJETCORR:
+    if LEPTON_SETUP >= 2022:  # FIXME: To be set up for Run2
+        from ZZAnalysis.NanoAnalysis.modules.jetJERC import getJetCorrected
+        jetCorrector = getJetCorrected(LEPTON_SETUP, DATA_TAG, IsMC, JES_SPLITTING, overwritePt=True)
+        insertBefore(reco_sequence, 'jetFiller', jetCorrector)
+        if recoProbFiller is not None and COMPUTE_JET_VARIATIONS_MELA:
+            recoProbFiller.setJetVariations(jetCorrector)
+
     from ZZAnalysis.NanoAnalysis.modules.jetVMAP import getJetVetoMap
     insertBefore(reco_sequence, 'jetFiller', getJetVetoMap(LEPTON_SETUP, DATA_TAG))
-    if LEPTON_SETUP >=2022 : # FIXME: To be set up for Run2
-        from ZZAnalysis.NanoAnalysis.modules.jetJERC import getJetCorrected    
-        insertBefore(reco_sequence, 'jetFiller', getJetCorrected(LEPTON_SETUP, DATA_TAG, IsMC, JES_SPLITTING, overwritePt=True))
 
 if LEPTON_SETUP >=2022 :
     from ZZAnalysis.NanoAnalysis.modules.jetBtagProducer import getJetBtagProducer

@@ -13,12 +13,26 @@ class MELAProbHelper():
     A probability with context defined as "Any" will be computed at lhe and reco level.  
     """
 
+    # These production modes consume associated jets in MELA.  ``Prod`` alone
+    # is not sufficient in the general helper because production modes can
+    # instead use associated leptons, photons, or heavy quarks.
+    jetDependentProductions = {
+        "JQCD", "JJQCD", "JJVBF", "JJEW", "JJEWQCD",
+        "JJQCD_S", "JJVBF_S", "JJEW_S", "JJEWQCD_S",
+        "JJQCD_TU", "JJVBF_TU", "JJEW_TU", "JJEWQCD_TU",
+        "Had_WH", "Had_ZH", "Had_WH_S", "Had_ZH_S",
+        "Had_WH_TU", "Had_ZH_TU",
+    }
+    # Persisted value when the selected-jet multiplicity cannot support a ME.
+    notApplicableValue = -999.
+
     def __init__(self, MELA, MELASettings, ModuleContext, candColl="ZZCand"):
         self.MELA = MELA
         self.sortedSettings = []
         self.ModuleContext = ModuleContext
         self.candColl = candColl
         self.names = []
+        self.jetVariations = []
         
         if ModuleContext not in ["LHE", "Reco"] :
             raise valueError("MELAProbHelper: invalid ModuleContext", ModuleContext)
@@ -85,6 +99,51 @@ class MELAProbHelper():
                         raise(ValueError(f"MELAProbHelper: for {prob['Name']}: 'dividep' is supported only for 'context=LHE'"))                    
                 else:
                     prob["dividep_idx"] = self.names.index(dp) # Index of probability to be used as denominator.
+
+    def setJetVariations(self, jetVariations):
+        self.jetVariations = list(jetVariations)
+
+    def _isJetDependent(self, prob):
+        return (
+            self.ModuleContext == "Reco"
+            and bool(prob["Prod"])
+            and prob["Production"] in self.jetDependentProductions
+        )
+
+    @staticmethod
+    def _jetProbabilitySignature(prob):
+        """Identify settings that have the same matrix-element calculation."""
+        couplings = tuple(sorted(
+            (name, tuple(value) if isinstance(value, (list, tuple)) else value)
+            for name, value in prob["Couplings"].items()
+        ))
+        return (
+            prob["Process"], prob["MatrixElement"], prob["Production"],
+            bool(prob["Prod"]), bool(prob["Dec"]), couplings,
+            bool(prob["useconstant"]), bool(prob["match_mX"]),
+            bool(prob["separatewwzz"]), prob["lepton_interference"],
+        )
+
+    @staticmethod
+    def _variedBranchName(branchname, variation):
+        nominalSuffix = "_JECNominal"
+        if branchname.endswith(nominalSuffix):
+            return branchname[:-len(nominalSuffix)] + "_" + variation
+        return branchname + "_" + variation
+
+    def _bookVariedOutputs(self, prob, lenVar):
+        if not self._isJetDependent(prob):
+            return
+        for variation in self.jetVariations:
+            branchname = self._variedBranchName(prob["branchname"], variation)
+            title = f"User-defined Reco-level probability for jet variation {variation}"
+            self.out.branch(branchname, "F", lenVar=lenVar, limitedPrecision=16, title=title)
+            if prob["addPAux"]:
+                self.out.branch(branchname + "_aux", "F", lenVar=lenVar, limitedPrecision=16, title=title + " auxiliary")
+            if prob["addPmavjj"]:
+                self.out.branch(branchname + "_mavjj", "F", lenVar=lenVar, title=title + " mavjj")
+            if prob["addPmavjj_true"]:
+                self.out.branch(branchname + "_mavjj_true", "F", lenVar=lenVar, title=title + " mavjj true")
         
     def bookProbs(self, wrappedOutputTree): 
         #this needs a per-module lenVar. 
@@ -112,9 +171,152 @@ class MELAProbHelper():
                     self.out.branch(prob["branchname"]+"_mavjj", "F", lenVar=lenVar_, title="User-defined mavjj probability")
                 if prob["addPmavjj_true"]:
                     self.out.branch(prob["branchname"]+"_mavjj_true", "F", lenVar=lenVar_, title="User-defined mavjj_true probability")
-    def fillProbs(self, candDaughters, candAssociated, candMothers): 
+                self._bookVariedOutputs(prob, lenVar_)
+
+    @staticmethod
+    def _minimumSelectedJets(production):
+        if production in {"JQCD"}:
+            return 1
+        if production.startswith(("JJQCD", "JJVBF", "JJEW")):
+            return 1
+        if production.startswith(("Had_WH", "Had_ZH")):
+            return 2
+        return 0
+
+    def _fillJetVariedProbs(self, candDaughters, candAssociatedVariations, selectedJetCounts):
+        """Set each shifted event once, then evaluate all jet probabilities."""
+        if not self.jetVariations:
+            return
+
+        states = []
+        for prob in self.sortedSettings:
+            if not self._isJetDependent(prob):
+                continue
+            states.append({
+                "prob": prob,
+                "signature": self._jetProbabilitySignature(prob),
+                "minimumJets": self._minimumSelectedJets(prob["Production"]),
+                "process": check_enum(prob["Process"], Mela.Process),
+                "matrixElement": check_enum(prob["MatrixElement"], Mela.MatrixElement),
+                "production": check_enum(prob["Production"], Mela.Production),
+                "leptonInterference": check_enum(prob["lepton_interference"], Mela.LeptonInterference),
+            })
+        if not states:
+            return
+
+        signaturesNeedingPAux = {
+            state["signature"] for state in states if state["prob"]["addPAux"]
+        }
+        signaturesNeedingMavjj = {
+            state["signature"] for state in states if state["prob"]["addPmavjj"]
+        }
+        signaturesNeedingMavjjTrue = {
+            state["signature"] for state in states if state["prob"]["addPmavjj_true"]
+        }
+
+        outputs = {}
+        for state in states:
+            prob = state["prob"]
+            for variation in self.jetVariations:
+                outputs[(prob["branchname"], variation)] = {
+                    "probability": [self.notApplicableValue]*len(candDaughters),
+                    "aux": [self.notApplicableValue]*len(candDaughters) if prob["addPAux"] else None,
+                    "mavjj": [self.notApplicableValue]*len(candDaughters) if prob["addPmavjj"] else None,
+                    "mavjj_true": [self.notApplicableValue]*len(candDaughters) if prob["addPmavjj_true"] else None,
+                }
+
+        for variation in self.jetVariations:
+            nSelectedJets = selectedJetCounts[variation]
+            for iCand in range(len(candDaughters)):
+                eligibleStates = [
+                    state for state in states
+                    if nSelectedJets >= state["minimumJets"]
+                ]
+
+                for state in states:
+                    if state in eligibleStates:
+                        continue
+                    result = outputs[(state["prob"]["branchname"], variation)]
+                    result["probability"][iCand] = self.notApplicableValue
+                    for name in ("aux", "mavjj", "mavjj_true"):
+                        if result[name] is not None:
+                            result[name][iCand] = self.notApplicableValue
+
+                if not eligibleStates:
+                    continue
+
+                self.MELA.setInputEvent(
+                    candDaughters[iCand],
+                    candAssociatedVariations[variation][iCand],
+                    None,
+                    0,
+                )
+                try:
+                    cache = {}
+                    for state in eligibleStates:
+                        prob = state["prob"]
+                        signature = state["signature"]
+                        result = outputs[(prob["branchname"], variation)]
+
+                        if signature not in cache:
+                            self.MELA.setProcess(
+                                state["process"],
+                                state["matrixElement"],
+                                state["production"],
+                            )
+                            self.MELA.differentiate_HWW_HZZ = prob["separatewwzz"]
+                            self.MELA.setMelaLeptonInterference(state["leptonInterference"])
+                            for coupl, coupl_val in prob["Couplings"].items():
+                                setattr(self.MELA, coupl, coupl_val)
+                            if prob["match_mX"]:
+                                mass = candDaughters[iCand].MTotal()
+                                self.MELA.setMelaHiggsMassWidth(mass, 0.00001, 0)
+                                self.MELA.setMelaHiggsMassWidth(mass, 0.00001, 1)
+
+                            if prob["Prod"] and prob["Dec"]:
+                                probability = self.MELA.computeProdDecP(prob["useconstant"])
+                            else:
+                                probability = self.MELA.computeProdP(prob["useconstant"])
+                            cached = {
+                                "probability": probability,
+                                "aux": None,
+                                "mavjj": None,
+                                "mavjj_true": None,
+                            }
+                            if signature in signaturesNeedingPAux:
+                                cached["aux"] = self.MELA.getPAux()
+                            if signature in signaturesNeedingMavjj:
+                                cached["mavjj"] = self.MELA.computeDijetConvBW(False)
+                            if signature in signaturesNeedingMavjjTrue:
+                                cached["mavjj_true"] = self.MELA.computeDijetConvBW(True)
+                            cache[signature] = cached
+
+                        cached = cache[signature]
+                        result["probability"][iCand] = cached["probability"]
+                        for name in ("aux", "mavjj", "mavjj_true"):
+                            if result[name] is not None:
+                                result[name][iCand] = cached[name]
+                finally:
+                    self.MELA.resetInputEvent()
+
+        for state in states:
+            prob = state["prob"]
+            for variation in self.jetVariations:
+                result = outputs[(prob["branchname"], variation)]
+                branchname = self._variedBranchName(prob["branchname"], variation)
+                self.out.fillBranch(branchname, result["probability"])
+                if result["aux"] is not None:
+                    self.out.fillBranch(branchname + "_aux", result["aux"])
+                if result["mavjj"] is not None:
+                    self.out.fillBranch(branchname + "_mavjj", result["mavjj"])
+                if result["mavjj_true"] is not None:
+                    self.out.fillBranch(branchname + "_mavjj_true", result["mavjj_true"])
+
+    def fillProbs(self, candDaughters, candAssociated, candMothers,
+                  candAssociatedVariations=None, selectedJetCounts=None,
+                  selectedJetCountNominal=None):
         if len(self.sortedSettings) == 0: return True
-        else: 
+        else:
             vprob = [0.]*len(self.sortedSettings) # to be used to retrieve denominators for probs whith dividep for the current cand
             for iprob, prob in enumerate(self.sortedSettings):
             ### Parse MELA settings for the desired probability
@@ -143,25 +345,33 @@ class MELAProbHelper():
                 self.MELA.setMelaLeptonInterference(MELA_leptoninterference)
 
                 # Define arrays to fill with the probabilites for each candidate
-                probVec = [-999.]*len(candDaughters)
+                probVec = [self.notApplicableValue]*len(candDaughters)
                 if MELA_ispm4l: 
-                    probVec_ScaleUp = [-999.]*len(candDaughters)
-                    probVec_ScaleDown = [-999.]*len(candDaughters)
-                    probVec_SystUp = [-999.]*len(candDaughters)
-                    probVec_SystDown = [-999.]*len(candDaughters)
+                    probVec_ScaleUp = [self.notApplicableValue]*len(candDaughters)
+                    probVec_ScaleDown = [self.notApplicableValue]*len(candDaughters)
+                    probVec_SystUp = [self.notApplicableValue]*len(candDaughters)
+                    probVec_SystDown = [self.notApplicableValue]*len(candDaughters)
                 if MELA_computeprop: 
-                    probPropVec = [-999.]*len(candDaughters)
+                    probPropVec = [self.notApplicableValue]*len(candDaughters)
 
                 if MELA_addPAux:
-                    probVec_PAux = [-999.]*len(candDaughters)
+                    probVec_PAux = [self.notApplicableValue]*len(candDaughters)
 
                 if MELA_addPmavjj:
-                    probVec_mavjj = [-999.]*len(candDaughters)
+                    probVec_mavjj = [self.notApplicableValue]*len(candDaughters)
                 if MELA_addPmavjj_true:
-                    probVec_mavjj_true = [-999.]*len(candDaughters)
+                    probVec_mavjj_true = [self.notApplicableValue]*len(candDaughters)
+
+                nominalProbabilityIsApplicable = (
+                    selectedJetCountNominal is None
+                    or not self._isJetDependent(prob)
+                    or selectedJetCountNominal >= self._minimumSelectedJets(prob["Production"])
+                )
 
                 # Compute prob for each candidate
                 for iCand, aCand in enumerate(candDaughters):
+                    if not nominalProbabilityIsApplicable:
+                        continue
                     
                     for coupl, coupl_val in prob["Couplings"].items(): 
                         setattr(self.MELA, coupl, coupl_val)
@@ -249,9 +459,15 @@ class MELAProbHelper():
                     self.out.fillBranch(MELA_branchname+"_mavjj", probVec_mavjj)
                 if MELA_addPmavjj_true:
                     self.out.fillBranch(MELA_branchname+"_mavjj_true", probVec_mavjj_true)
-                
+
+            if candAssociatedVariations is not None and selectedJetCounts is not None:
+                self._fillJetVariedProbs(
+                    candDaughters,
+                    candAssociatedVariations,
+                    selectedJetCounts,
+                )
+
         return True
         
 
                         
-

@@ -15,7 +15,13 @@ class jetFiller(Module):
     def __init__(self, year):
         print("***jetFiller", flush=True)
         self.dRMin = 0.4 # dR between lepton (or FSR) and jet to assume overlap
-        self.EFthreshold = 0.5 # threshold of leptons pt over jet pt to veto the jet
+        self.EFthreshold = 0.5 
+        #############################################################################
+        # NOTE: This is the threshold of leptons pt over jet pt to veto the jet. It #
+        # is also used in RecoProbFiller to reapply the veto to the varied jets, and#
+        # should be kept consistent with this one.                                  #
+        #############################################################################
+
         self.year = year
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
@@ -91,6 +97,10 @@ class jetFiller(Module):
                 # Consider only jets passing  tight ID and tightLepVeto ID, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID13p6TeV#nanoAOD_Flags
                 # FIXME: To be checked/updated for Run2 
                 if jet.jetId == 6 :
+                    #############################################################################
+                    # NOTE: RecoProbFiller also uses the jet ID requirement, and should be kept #
+                    #consistent with this one.                                                  #
+                    #############################################################################
                     #Summary of applied pT cuts following JME recommendations:
                     #Jets with abs(eta) < 2.5 -> pt_cut = 30
                     #Jets with 2.5 <= abs(eta) < 3.0 -> pt_cut = 50 , Ref: https://gitlab.cern.ch/cms-jetmet/coordination/coordination/-/issues/113
