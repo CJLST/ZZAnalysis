@@ -57,7 +57,7 @@ IsSIGNAL = getConf("IsSIGNAL", False)
 ADD_ALLEVENTS = getConf("ADD_ALLEVENTS", IsSIGNAL) # if true, add a separate tree with gen-level variables for all events (not just those passing the candidate selection); by default, this is done for signal samples
 ADD_LHE_PROB = getConf("ADD_LHE_PROB", ADD_ALLEVENTS) # Add LHE angles and probabilities. This is in general the case whenever ADD_ALLEVENTS is true (ie for signals)
 JES_SPLITTING = getConf("JES_SPLITTING", True) # Whether to split JES variations into 11 components (if false, only up/down variations are produced, by summing all components in quadrature)
-COMPUTE_JET_VARIATIONS_MELA = getConf("COMPUTE_JET_VARIATIONS_MELA", True) # Compute MELA probabilities for JES/JER shifted jets
+COMPUTE_JET_VARIATIONS_MELA = getConf("COMPUTE_JET_VARIATIONS_MELA", False) # Compute MELA probabilities for JES/JER shifted jets
 
 FILTER_EVENTS = getConf("FILTER_EVENTS", 'Cands') # Filter to be applied on events. Currently supported:
                                                   # 'Cands' = any event with a SR or CR candidate (default)
@@ -236,8 +236,6 @@ if APPLYJETCORR:
         insertBefore(reco_sequence, 'jetFiller', jetCorrector)
         if recoProbFiller is not None and COMPUTE_JET_VARIATIONS_MELA:
             recoProbFiller.setJetVariations(jetCorrector)
-        elif recoProbFiller is not None:
-            print("***RecoProbFiller: jet-varied MELA computation disabled", flush=True)
 
     from ZZAnalysis.NanoAnalysis.modules.jetVMAP import getJetVetoMap
     insertBefore(reco_sequence, 'jetFiller', getJetVetoMap(LEPTON_SETUP, DATA_TAG))

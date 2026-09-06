@@ -5,6 +5,7 @@ from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collect
 from ZZAnalysis.NanoAnalysis.MELAProbHelper import MELAProbHelper
 from ZZAnalysis.NanoAnalysis.tools import branchCollection
 import Mela
+from operator import itemgetter
 
 
 class RecoProbFiller(Module):
@@ -19,6 +20,7 @@ class RecoProbFiller(Module):
         self.NANOVERSION = NANOVERSION
         self.MELASettings = MELASettings
         self.processCR = processCR
+        self.EFthreshold = 0.5 # threshold of leptons pt over jet pt to veto the jet, to be reapplied to the varied jets. See the nominal one in jetFiller.py
         self.probHelpers = {"ZZCand": MELAProbHelper(self.MELA, self.MELASettings, "Reco", candColl="ZZCand")}
         if self.processCR:
             self.probHelpers["ZLLCand"] = MELAProbHelper(self.MELA, self.MELASettings, "Reco", candColl="ZLLCand")
@@ -112,13 +114,6 @@ class RecoProbFiller(Module):
 
         return candsDaughters, candsAssociated
 
-    @staticmethod
-    def _particleFromPtEtaPhiM(pdgId, pt, eta, phi, mass):
-        px = pt * math.cos(phi)
-        py = pt * math.sin(phi)
-        pz = pt * math.sinh(eta)
-        energy = math.sqrt(max(mass * mass + px * px + py * py + pz * pz, 0.))
-        return Mela.SimpleParticle_t(pdgId, px, py, pz, energy)
 
     def _selectVariedJets(self, jets, variation):
         """Return shifted leading/subleading jets after the nominal selection.
@@ -128,40 +123,51 @@ class RecoProbFiller(Module):
         selection is written to the output tree.
         """
         selected = []
+        pt_name = variation + "_pt"
+        mass_name = variation + "_mass"
         for idx, jet in enumerate(jets):
-            pt = getattr(jet, variation + "_pt")
-            mass = getattr(jet, variation + "_mass")
-            leptonPt = jet.ZZLepEF * jet.pt
-            overlapsLeptons = pt <= 0. or leptonPt / pt > 0.5
-            if overlapsLeptons or jet.jetId != 6 or pt <= jet.ptThreshold:
+            if jet.jetId != 6:
                 continue
+            pt = getattr(jet, pt_name)
+            leptonPt = jet.ZZLepEF * jet.pt
+            overlapsLeptons = pt <= 0. or leptonPt / pt > self.EFthreshold
+            if overlapsLeptons or pt <= jet.ptThreshold:
+                continue
+            mass = getattr(jet, mass_name)
             selected.append((pt, idx, mass))
-        selected.sort(key=lambda item: item[0], reverse=True)
+        selected.sort(key=itemgetter(0), reverse=True)
         return selected[:2]
 
     def _buildVariedAssociated(self, cands, leps, jets):
         """Build per-candidate associated objects for every jet variation."""
         associatedVariations = {}
         selectedJetCounts = {}
+        associatedLeptons = {}
+        for iCand, aCand in enumerate(cands):
+            associatedLeptons[iCand] = []
+            for idx in (aCand.extraLep1Idx, aCand.extraLep2Idx):
+                if idx < 0:
+                    continue
+                lep = leps[idx]
+                p4 = lep.p4()
+                associatedLeptons[iCand].append(Mela.SimpleParticle_t(
+                    lep.pdgId, p4.Px(), p4.Py(), p4.Pz(), p4.E()
+                ))
         for variation in self.jetVariations:
             selectedJets = self._selectVariedJets(jets, variation)
             selectedJetCounts[variation] = len(selectedJets)
             varied = []
-            for aCand in cands:
+            for iCand, aCand in enumerate(cands):
                 associated = Mela.SimpleParticleCollection_t()
                 for pt, idx, mass in selectedJets:
                     jet = jets[idx]
-                    associated.add_particle(self._particleFromPtEtaPhiM(
-                        0, pt, jet.eta, jet.phi, mass
-                    ))
-                for idx in (aCand.extraLep1Idx, aCand.extraLep2Idx):
-                    if idx < 0:
-                        continue
-                    lep = leps[idx]
-                    p4 = lep.p4()
-                    associated.add_particle(Mela.SimpleParticle_t(
-                        lep.pdgId, p4.Px(), p4.Py(), p4.Pz(), p4.E()
-                    ))
+                    px = pt * math.cos(jet.phi)
+                    py = pt * math.sin(jet.phi)
+                    pz = pt * math.sinh(jet.eta)
+                    energy = math.sqrt(max(mass * mass + px * px + py * py + pz * pz, 0.))
+                    associated.add_particle(Mela.SimpleParticle_t(0, px, py, pz, energy))
+                for lep in associatedLeptons[iCand]:
+                    associated.add_particle(lep)
                 varied.append(associated)
             associatedVariations[variation] = varied
         return associatedVariations, selectedJetCounts
