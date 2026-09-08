@@ -46,16 +46,22 @@ APPLYJETCORR = getConf("APPLYJETCORR", True) # apply jet corrections
 MUON_ID_BYMVA = getConf("MUON_ID_BYMVA", False) # if false - standard selection for muons ; if true - new WP (Muon_mvalowPt > -0.6, sip < 8, no iso)
 # ggH NNLOPS weight
 APPLY_QCD_GGF_UNCERT = getConf("APPLY_QCD_GGF_UNCERT", False)
-# K factors for ggZZ (and old NLO ggH samples) 0:None; 1: NNLO/LO; 2: NNLO/NLO; 3: NLO/LO
+# K factors for ggZZ (and old NLO ggH samples) 0:None; 1: NNLO/LO; 2: NNLO/NLO
 APPLY_K_NNLOQCD_ZZGG = getConf("APPLY_K_NNLOQCD_ZZGG", 0)
 # K factors for qqZZ
-APPLY_K_NNLOQCD_ZZQQB = getConf("APPLY_K_NNLOQCD_ZZQQB", False)
-APPLY_K_NNLOEW_ZZQQB  = getConf("APPLY_K_NNLOEW_ZZQQB", False)
+APPLY_K_NNLOQCD_NLOEW_ZZQQB = getConf("APPLY_K_NNLOQCD_NLOEW_ZZQQB", False)
+if getConf("APPLY_K_NNLOQCD_ZZQQB") or getConf("APPLY_K_NLOEW_ZZQQB"): 
+   print("ERROR: flags 'APPLY_K_NNLOQCD_ZZQQB' and 'APPLY_K_NLOEW_ZZQQB' no longer supported")
+   print("Please use the new all-encompassing flag 'APPLY_K_NNLOQCD_NLOEW_ZZQQB'")
+   exit(1)
 # Add separate tree with gen info for all events
 
 IsSIGNAL = getConf("IsSIGNAL", False)
 ADD_ALLEVENTS = getConf("ADD_ALLEVENTS", IsSIGNAL) # if true, add a separate tree with gen-level variables for all events (not just those passing the candidate selection); by default, this is done for signal samples
-ADD_LHE_PROB = getConf("ADD_LHE_PROB", ADD_ALLEVENTS) # Add LHE angles and probabilities. This is in general the case whenever ADD_ALLEVENTS is true (ie for signals)
+
+# Add LHE angles and probabilities. This is in general the case whenever ADD_ALLEVENTS is true (ie for signals)
+# This is also generally true when APPLY_K_NNLOQCD_NLOEW_ZZQQB is applied
+ADD_LHE_PROB = getConf("ADD_LHE_PROB", ADD_ALLEVENTS or APPLY_K_NNLOQCD_NLOEW_ZZQQB)
 JES_SPLITTING = getConf("JES_SPLITTING", True) # Whether to split JES variations into 11 components (if false, only up/down variations are produced, by summing all components in quadrature)
 
 FILTER_EVENTS = getConf("FILTER_EVENTS", 'Cands') # Filter to be applied on events. Currently supported:
@@ -250,7 +256,7 @@ if IsMC:
 
     # Weights computation, to be placed in pre or post sequences based on the configuration
     from ZZAnalysis.NanoAnalysis.weightFiller import weightFiller
-    weights = weightFiller(XSEC, APPLY_K_NNLOQCD_ZZGG, APPLY_K_NNLOQCD_ZZQQB, APPLY_K_NNLOEW_ZZQQB, APPLY_QCD_GGF_UNCERT, LEPTON_SETUP)
+    weights = weightFiller(XSEC, APPLY_K_NNLOQCD_ZZGG, APPLY_K_NNLOQCD_NLOEW_ZZQQB, APPLY_QCD_GGF_UNCERT, LEPTON_SETUP)
     
     #Protect against writing a bunch of 1's. 
     if (genXS != 1) and (genBR != 1): 

@@ -12,7 +12,7 @@ VBFH125, ,3.782,0.0002745,,/VBF_HToZZTo4L_M125_TuneCP5_13TeV_powheg2_JHUGenV7011
 
 
 ###,,,,,,,,,,,qq->ZZ background
-ZZTo4l,,1.256,  ,,/ZZTo4L_TuneCP5_13TeV_powheg_pythia8/RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-v1/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,3,GENXSEC=1.256;GENBR=1;PROCESS_CR=True;APPLY_K_NNLOQCD_ZZQQB=True;APPLY_K_NLOEW_ZZQQB=True;NANOVERSION=15;LEPTON_SETUP=2018,, # 99191000 events
+ZZTo4l,,1.256,  ,,/ZZTo4L_TuneCP5_13TeV_powheg_pythia8/RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-v1/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,3,GENXSEC=1.256;GENBR=1;PROCESS_CR=True;APPLY_K_NNLOQCD_NLOEW_ZZQQB=True;NANOVERSION=15;LEPTON_SETUP=2018,, # 99191000 events
 
 
 ###,,,,,,,,,,,gg->ZZ background - Xsec from https://twiki.cern.ch/twiki/bin/viewauth/CMS/Run2MCProductionforHiggsProperties#MCFM_ZZ_4l_l_e_mu_tau

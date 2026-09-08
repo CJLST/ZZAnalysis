@@ -25,8 +25,8 @@ ggH3000,,0.00101,3.33E-03,, /GluGluHToZZTo4L_M3000_13TeV_powheg2_JHUGenV7011_pyt
 
 
 ###,,,,,,,,,,,qq->ZZ background
-ZZTo4lext1,,1.256,  ,,/ZZTo4L_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18NanoAODv7-Nano02Apr2020_102X_upgrade2018_realistic_v21_ext1-v1/NANOAODSIM,dbs,/eos/cms,3,GENXSEC=1.256;GENBR=1;PROCESS_CR=True;APPLY_K_NNLOQCD_ZZQQB=True;APPLY_K_NLOEW_ZZQQB=True;NANOVERSION=7;LEPTON_SETUP=2018,,
-##ZZTo4lext2,,1.256, ,,/ZZTo4L_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18NanoAODv7-Nano02Apr2020_102X_upgrade2018_realistic_v21_ext2-v1/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,3,GENXSEC=1.256;GENBR=1;PROCESS_CR=True;APPLY_K_NNLOQCD_ZZQQB=True;APPLY_K_NLOEW_ZZQQB=True;NANOVERSION=7;LEPTON_SETUP=2018,,
+ZZTo4lext1,,1.256,  ,,/ZZTo4L_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18NanoAODv7-Nano02Apr2020_102X_upgrade2018_realistic_v21_ext1-v1/NANOAODSIM,dbs,/eos/cms,3,GENXSEC=1.256;GENBR=1;PROCESS_CR=True;APPLY_K_NNLOQCD_NLOEW_ZZQQB=True;NANOVERSION=7;LEPTON_SETUP=2018,,
+##ZZTo4lext2,,1.256, ,,/ZZTo4L_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18NanoAODv7-Nano02Apr2020_102X_upgrade2018_realistic_v21_ext2-v1/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,3,GENXSEC=1.256;GENBR=1;PROCESS_CR=True;APPLY_K_NNLOQCD_NLOEW_ZZQQB=True;NANOVERSION=7;LEPTON_SETUP=2018,,
 
 ###,,,,,,,,,,,gg->ZZ background - Xsec from https://twiki.cern.ch/twiki/bin/viewauth/CMS/Run2MCProductionforHiggsProperties#MCFM_ZZ_4l_l_e_mu_tau
 ggTo4e_Contin_MCFM701,,0.00158549,   ,,/GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8/RunIIAutumn18NanoAODv7-Nano02Apr2020_EXT_102X_upgrade2018_realistic_v21-v1/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,1,GENXSEC=0.00158549;GENBR=1;PROCESS_CR=False;APPLY_K_NNLOQCD_ZZGG=1;NANOVERSION=7;LEPTON_SETUP=2018,,
