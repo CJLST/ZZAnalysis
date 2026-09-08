@@ -14,7 +14,7 @@ class weightFiller(Module):
     def __init__(self, XS, APPLY_K_NNLOQCD_ZZGG, APPLY_K_NNLOQCD_NLOEW_ZZQQB, APPLY_QCD_GGF_UNCERT, LEPTON_SETUP):
         print(
             "***weightFiller: XS:", XS, 
-            "APPLY_K_NNLOQCD_NLOEW_ZZQQB:", APPLY_K_NNLOQCD_ZZGG, 
+            "APPLY_K_NNLOQCD_NLOEW_ZZQQB:", APPLY_K_NNLOQCD_NLOEW_ZZQQB, 
             "APPLY_QCD_GGF_UNCERT:", APPLY_QCD_GGF_UNCERT, 
             flush=True
         )
