@@ -13,10 +13,10 @@ import scipy.interpolate as interp
 class weightFiller(Module):
     def __init__(self, XS, APPLY_K_NNLOQCD_ZZGG, APPLY_K_NNLOQCD_NLOEW_ZZQQB, APPLY_QCD_GGF_UNCERT, LEPTON_SETUP):
         print(
-            "***weightFiller: XS:", XS, 
+            "***weightFiller: XS:", XS,
             "APPLY_K_NNLOQCD_ZZGG:", APPLY_K_NNLOQCD_ZZGG,
-            "APPLY_K_NNLOQCD_NLOEW_ZZQQB:", APPLY_K_NNLOQCD_NLOEW_ZZQQB, 
-            "APPLY_QCD_GGF_UNCERT:", APPLY_QCD_GGF_UNCERT, 
+            "APPLY_K_NNLOQCD_NLOEW_ZZQQB:", APPLY_K_NNLOQCD_NLOEW_ZZQQB,
+            "APPLY_QCD_GGF_UNCERT:", APPLY_QCD_GGF_UNCERT,
             "LEPTON_SETUP:", LEPTON_SETUP
             flush=True
         )
@@ -58,7 +58,7 @@ class weightFiller(Module):
             exit(1)
 
         if self.APPLY_K_NNLOQCD_NLOEW_ZZQQB :
-            strQQZZKFVar = ["nominal", "QCD_up", "QCD_dn", "EW_factor", "smoothing_factor"]
+            strQQZZKFVar = ["nominal", "QCD_up", "QCD_dn", "EW_factor", "smoothing_factor", "alpha_S_factor"]
             self.spkfactor_qqzz = [[None]*len(strQQZZKFVar)]*4
             for i in range(4):
                 #cos(theta^*) is symmetric around 0, but
@@ -99,33 +99,36 @@ class weightFiller(Module):
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
         if self.APPLY_K_NNLOQCD_ZZGG > 0 :
-            self.out.branch("KFactor_QCD_ggZZ_Nominal_Weight", "F", title="QCD k-factor for ggZZ")
-            self.out.branch("KFactor_QCD_ggZZ_PDF_Factor", "F", title="Multiplicative factor for PDF variation")
-            self.out.branch("KFactor_QCD_ggZZ_QCD_Factor", "F", title="Multiplicative factor for QCD variation")
-            self.out.branch("KFactor_QCD_ggZZ_aS_Factor", "F", title="Multiplicative factor for aS variation")
+            self.out.branch("KFactor_QCD_ggZZ_Nominal", "F", title="QCD k-factor for ggZZ")
+            for direction in ("up", "dn"):
+                self.out.branch(f"KFactor_QCD_ggZZ_PDF_{direction}", "F", title="Multiplicative factor for PDF variation")
+                self.out.branch(f"KFactor_QCD_ggZZ_QCD_{direction}", "F", title="Multiplicative factor for QCD variation")
+                self.out.branch(f"KFactor_QCD_ggZZ_aS_{direction}", "F", title="Multiplicative factor for aS variation")
         if self.APPLY_K_NNLOQCD_NLOEW_ZZQQB :
-            self.out.branch("KFactor_qqZZ_Nominal_Weight", "F", title="Combined EW/QCD k-factor for qqZZ, with proper treatment of EW=1 below 2mZ")
-            self.out.branch("KFactor_qqZZ_QCDup_Factor", "F", title="Multiplicative factor for QCD_up variation")
-            self.out.branch("KFactor_qqZZ_QCDdn_Factor", "F", title="Multiplicative factor for QCD_down variation")
-            self.out.branch("KFactor_qqZZ_EW_Factor", "F", title="Multiplicative factor for EW factorization variation")
-            self.out.branch("KFactor_qqZZ_smooth_Factor", "F", title="Multiplicative factor for EW smoothing variation")
+            self.out.branch("KFactor_ZZQQB_Nominal", "F", title="Combined EW/QCD k-factor for qqZZ, with proper treatment of EW=1 below 2mZ")
+            for direction in ("up", "dn"):
+                self.out.branch(f"KFactor_ZZQQB_QCD_{direction}", "F", title="Multiplicative factor for QCD_up variation")
+                self.out.branch(f"KFactor_ZZQQB_EW_{direction}", "F", title="Multiplicative factor for EW factorization variation")
+                self.out.branch(f"KFactor_ZZQQB_aS_{direction}", "F", title="Multiplicative factor for EW factorization variation")
+                self.out.branch(f"KFactor_ZZQQB_smoothing_{direction}", "F", title="Multiplicative factor for EW smoothing variation")
         if self.APPLY_QCD_GGF_UNCERT :
             self.out.branch("ggH_NNLOPS_Weight", "F", title="Reweighting for ggH as a function of njets and pT")
 
-            
+
         self.out.branch("overallEventWeight", "F", title="Event weight: Generator_weight*XS*puWeight*(relevant k-factors where applicable). Must be normalized by sum of genEventSumw in the Runs tree")
 
     def analyze(self, event):
         KFactor_ZZQQB_Nominal = 1.
         KFactor_ZZQQB_QCD_up = 1.
         KFactor_ZZQQB_QCD_dn = 1.
-        KFactor_ZZQQB_EW_factor = 1.
-        KFactor_ZZQQB_smooth_factor = 1.
+        KFactor_ZZQQB_EW = 0.
+        KFactor_ZZQQB_smoothing = 0.
+        KFactor_ZZQQB_aS = 0.
     ############ GLUON FUSION KFACTOR VALUES ##########
         KFactor_QCD_ggZZ_Nominal = 1.
-        KFactor_QCD_ggZZ_PDF = 1.
-        KFactor_QCD_ggZZ_aS = 1.
-        KFactor_QCD_ggZZ_QCD = 1.
+        KFactor_QCD_ggZZ_PDF = 0.
+        KFactor_QCD_ggZZ_aS = 0.
+        KFactor_QCD_ggZZ_QCD = 0.
 
         ggH_NNLOPS_Weight = 1.
 
@@ -147,10 +150,13 @@ class weightFiller(Module):
             KFactor_ZZQQB_QCD_dn = self.evalSpline(
                 event.LHEMela_costhetastar,event.GenZZ_mass, 2
             )
-            KFactor_ZZQQB_EW_factor = self.evalSpline(
+            KFactor_ZZQQB_EW = self.evalSpline(
                 event.LHEMela_costhetastar,event.GenZZ_mass, 3
             )
-            KFactor_ZZQQB_smooth_factor = self.evalSpline(
+            KFactor_ZZQQB_smoothing = self.evalSpline(
+                event.LHEMela_costhetastar,event.GenZZ_mass, 4
+            )
+            KFactor_ZZQQB_aS = self.evalSpline(
                 event.LHEMela_costhetastar,event.GenZZ_mass, 4
             )
 
@@ -172,24 +178,32 @@ class weightFiller(Module):
         # L1prefiringWeight = event.L1PreFiringWeight_Nom
         # L1prefiringWeightUp = event.L1PreFiringWeight_Up
         # L1prefiringWeightDn = event.L1PreFiringWeight_Dn
-        
+
         #FIXME: event.ZZ_dataMCWeight is not included, since that can be stored per-candidate if storeAllCands=True.
         w_total = self.XS * event.Generator_weight * event.puWeight * KFactor_ZZQQB_Nominal * KFactor_QCD_ggZZ_Nominal * ggH_NNLOPS_Weight
 
-        if self.APPLY_K_NNLOQCD_ZZGG : 
-            self.out.fillBranch("KFactor_QCD_ggZZ_Nominal_Weight", KFactor_QCD_ggZZ_Nominal)
+        if self.APPLY_K_NNLOQCD_ZZGG :
+            self.out.fillBranch("KFactor_QCD_ggZZ_Nominal", KFactor_QCD_ggZZ_Nominal)
+
             #For systematic variations, multiply w_total by either (1+factor) or (1-factor)
-            self.out.fillBranch("KFactor_QCD_ggZZ_PDF_Factor", KFactor_QCD_ggZZ_PDF)
-            self.out.fillBranch("KFactor_QCD_ggZZ_aS_Factor", KFactor_QCD_ggZZ_aS)
-            self.out.fillBranch("KFactor_QCD_ggZZ_QCD_Factor", KFactor_QCD_ggZZ_QCD)
+            for variation in ["KFactor_QCD_ggZZ_PDF", "KFactor_QCD_ggZZ_aS", "KFactor_QCD_ggZZ_QCD"]:
+                factor = eval(variation)
+                self.out.fillBranch(f"{variation}_up", 1 + factor)
+                self.out.fillBranch(f"{variation}_dn", 1 - factor)
+
         if self.APPLY_K_NNLOQCD_NLOEW_ZZQQB :
-            self.out.fillBranch("KFactor_qqZZ_Nominal_Weight", KFactor_ZZQQB_Nominal)
+            self.out.fillBranch("KFactor_ZZQQB_Nominal", KFactor_ZZQQB_Nominal)
+
             #for QCD variations multiply w_total by factor up or down
-            self.out.fillBranch("KFactor_qqZZ_QCDup_Factor", KFactor_ZZQQB_QCD_up)
-            self.out.fillBranch("KFactor_qqZZ_QCDdn_Factor", KFactor_ZZQQB_QCD_dn)
+            self.out.fillBranch("KFactor_ZZQQB_QCD_up", KFactor_ZZQQB_QCD_up)
+            self.out.fillBranch("KFactor_ZZQQB_QCD_dn", KFactor_ZZQQB_QCD_dn)
+
             #for these variations multiply w_total by (1+factor) or (1-factor)
-            self.out.fillBranch("KFactor_qqZZ_EW_Factor", KFactor_ZZQQB_EW_factor)
-            self.out.fillBranch("KFactor_qqZZ_smooth_Factor", KFactor_ZZQQB_smooth_factor)
+            for variation in ["KFactor_ZZQQB_EW", "KFactor_ZZQQB_smoothing", "KFactor_ZZQQB_aS"]:
+                factor = eval(variation)
+                self.out.fillBranch(f"{variation}_up", 1 + factor)
+                self.out.fillBranch(f"{variation}_dn", 1 - factor)
+
         if self.APPLY_QCD_GGF_UNCERT :
             self.out.fillBranch("ggH_NNLOPS_Weight", ggH_NNLOPS_Weight)
 
