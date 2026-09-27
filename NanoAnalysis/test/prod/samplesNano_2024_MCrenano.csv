@@ -1,0 +1,12 @@
+identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern=root://cms-xrd-global.cern.ch/,splitLevel,::variables=NANOVERSION=15;LEPTON_SETUP=2024,::pyFragments,comment
+###,,,,,,,,,,,Re-nano of signal MCs to add STXS1.3. Replace the corresponding samples in samplesNano_2024_MC.csv.
+###,,,,,,,,,,,Note that DEFAULT SETTINGS are set in the format line above!
+
+###,,,,,,,,,,,signal samples
+ggH125       ,,52.23,0.0002745,,/GluGluH-Hto2Zto4L_Par-M-125_TuneCP5_13p6TeV_powheg-jhugen-pythia8/atarabin-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True;APPLY_QCD_GGF_UNCERT=True;,,
+VBFH125      ,,4.078,0.0002745,,/VBFH-Hto2Zto4L_Par-M-125_TuneCP5_13p6TeV_powheg-jhugen-pythia8/atarabin-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True,,
+WplusH125    ,,0.8889,0.0002745,,/WplusH-Hto2Zto4L_Par-M-125_TuneCP5_13p6TeV_powhegMINLO-jhugen-pythia8/atarabin-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True,,
+WminusH125   ,,0.5677,0.0002745,,/WminusH-Hto2Zto4L_Par-M-125_TuneCP5_13p6TeV_powhegMINLO-jhugen-pythia8/atarabin-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True,,
+ZH125        ,,0.9439,0.00074812,,/ZH-Hto2Z_Fil-4L_Par-M-125_TuneCP5_13p6TeV_powhegMINLO-jhugen-pythia8/atarabin-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True,,
+ttH125       ,,0.5700,0.0007689,,/TTH-Hto2Zto4L_Par-M-125_TuneCP5_13p6TeV_powheg-jhugen-pythia8/atarabin-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True,,
+

@@ -41,6 +41,10 @@ def getJetVetoMap(era, tag) :
         folderKey = "Run3-25Prompt-Summer24-NanoAODv15/2026-07-16/"
         corrName = "Summer24Prompt25_RunCDEFG_V1"
 
+    elif era == 2026:
+        folderKey = "Run3-26Prompt-Summer24-NanoAODv15/2026-07-15/"
+        corrName = "Summer24Prompt26_RunBCD_V1"
+
     else :
         raise ValueError("getJetvetoMap: Era", era, "not supported")
         

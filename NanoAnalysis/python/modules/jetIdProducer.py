@@ -27,16 +27,15 @@ def getJetIdProducer(era, tag, nanoVersion) :
 
         elif era == 2025:
            json = "/cvmfs/cms-griddata.cern.ch/cat/metadata/JME/Run3-25Prompt-Summer24-NanoAODv15/2026-07-16/jetid.json.gz"
+
+        elif era == 2026:
+           json = "/cvmfs/cms-griddata.cern.ch/cat/metadata/JME/Run3-26Prompt-Summer24-NanoAODv15/2026-07-15/jetid.json.gz"
            
         elif era >= 2016 and era <=2018:
-            # FIXME: Assume the same as 2022_Summer22 since json file is not yet available for Run2/v15,
-            # cf: https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVUL#NanoAODv15
-            print("WARNING: official jetid json not available for Run2, using the one for 2022_Summer22")
-            json = "/cvmfs/cms-griddata.cern.ch/cat/metadata/JME/Run3-22CDSep23-Summer22-NanoAODv12/2026-06-05/jetid.json.gz"
-
+            json = None
         else: 
             raise ValueError("getJetIdProducer: get: Era:", era, "tag:", tag, "nanoVersion:", nanoVersion, "not supported")  
 
     print("***jetId: era:", era, "tag:", tag, "nanoVersion:", nanoVersion, "json:", json)
        
-    return jetId(json, nanoVersion=nanoVersion)
+    return jetId(json, nanoVersion=nanoVersion, era=era)
