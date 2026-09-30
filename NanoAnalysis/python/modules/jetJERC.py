@@ -297,8 +297,8 @@ def getJetCorrected(era, tag, is_mc, useJesSplittingScheme11, overwritePt=True) 
 
     # Determine usePhiDependentJEC based on the tag
     usePhiDependentJEC = era >= 2023 and not ("pre_BPix" in tag) # False up to 2023 pre_BPix, True in 2023 post_BPix and afterwards
-    # Apply run-dependent JEC only for 2023 data (not MC)
-    useRunDependentJEC = (era == 2022 or era == 2023 or era == 2024 or era == 2025) and (not is_mc)
+    # Use run-dependent L2L3Relative JEC for data (currently the case for all eras)
+    useRunDependentJEC = (not is_mc)
     
     # Use Splittigng scheme for Jets uncertainties (11 sources)
     scaleKey = scaleKeyRegrouped11 if useJesSplittingScheme11 else scaleTotalKey
