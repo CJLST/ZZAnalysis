@@ -1,6 +1,7 @@
 from ZZAnalysis.NanoAnalysis.tools import setConf
 
 setConf("bestCandByMELA",True)
+setConf("COMPUTE_JET_VARIATIONS_MELA", True)
 
 setConf("probabilities", {
     "Name": "m4l_BKG",
