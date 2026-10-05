@@ -1,12 +1,11 @@
 import copy
-import math
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
 from ZZAnalysis.NanoAnalysis.MELAProbHelper import MELAProbHelper
 from ZZAnalysis.NanoAnalysis.tools import branchCollection
 import Mela
 from operator import itemgetter
-
+from ROOT import TLorentzVector
 
 class RecoProbFiller(Module):
     """Calculates proabilities with Reco-level information. 
@@ -161,11 +160,9 @@ class RecoProbFiller(Module):
                 associated = Mela.SimpleParticleCollection_t()
                 for pt, idx, mass in selectedJets:
                     jet = jets[idx]
-                    px = pt * math.cos(jet.phi)
-                    py = pt * math.sin(jet.phi)
-                    pz = pt * math.sinh(jet.eta)
-                    energy = math.sqrt(max(mass * mass + px * px + py * py + pz * pz, 0.))
-                    associated.add_particle(Mela.SimpleParticle_t(0, px, py, pz, energy))
+                    p4= TLorentzVector()
+                    p4.SetPtEtaPhiM(pt, jet.eta, jet.phi, mass)
+                    associated.add_particle(Mela.SimpleParticle_t(0, p4.Px(), p4.Py(), p4.Pz(), p4.E()))
                 for lep in associatedLeptons[iCand]:
                     associated.add_particle(lep)
                 varied.append(associated)
