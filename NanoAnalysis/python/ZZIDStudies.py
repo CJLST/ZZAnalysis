@@ -6,7 +6,7 @@ from ZZAnalysis.NanoAnalysis.tools import getLeptons
 
 
 class ZZIDStudies (Module):
-    def __init__(self, doMuons=False, doElectrons=True):
+    def __init__(self, doMuons, doElectrons):
         """Add variables for specific ID studies, to be able to quickly draw ROC curves.
         """
         self.doMuons = doMuons
