@@ -323,7 +323,7 @@ ZZSequence = pre_sequence + reco_sequence + post_sequence
 
 if CANDSTOSTORE == 'AllWithRelaxedMuId' : # Add extra variables for ID studies
     from ZZAnalysis.NanoAnalysis.ZZIDStudies import *
-    insertAfter(ZZSequence, 'ZZFiller', ZZIDStudies())
+    insertAfter(ZZSequence, 'ZZFiller', ZZIDStudies(doMuons=False, doElectrons=True))
 
 ### Branches to be read and written to output
 branchsel_in = ['drop FatJet_*',

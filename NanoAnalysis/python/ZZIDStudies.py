@@ -6,9 +6,11 @@ from ZZAnalysis.NanoAnalysis.tools import getLeptons
 
 
 class ZZIDStudies (Module):
-    def __init__(self):
+    def __init__(self, doMuons, doElectrons):
         """Add variables for specific ID studies, to be able to quickly draw ROC curves.
         """
+        self.doMuons = doMuons
+        self.doElectrons = doElectrons
 
         # ZZCand flags for muon ID studies. Each Flag will be set to true for a candidate if all of its muons pass the specified ID.
         self.muonIDs=[dict(name="ZZFullSel", sel=lambda l : l.ZZFullId and l.passIso), # Standard ZZ selection; this is used for setting default bestCandIdx
@@ -26,6 +28,16 @@ class ZZIDStudies (Module):
                       dict(name="inTimeMuon", sel=lambda l : l.inTimeMuon), # 
                       ]
 
+
+        self.electronIDs = [dict(name="ZZFullSel", sel=lambda l : l.ZZFullSel),
+                            dict(name="ZZFullIDOnly", sel=lambda l : l.pt > 7 and abs(l.eta) < 2.5 and l.passBDT),#OK
+                            dict(name="mvaHZZ", sel=lambda l : l.passBDT), #HZZ mva ISO (boolean)
+                            dict(name="mvaIsoWP80", sel=lambda l : l.mvaIso_WP80), #POG mva ISO (boolean)
+                            dict(name="mvaIsoWP90", sel=lambda l : l.mvaIso_WP90), #POG mva ISO (boolean)
+                            dict(name="mvaNoIsoWP80", sel=lambda l : l.mvaNoIso_WP80), #POG mva ISO (boolean)
+                            dict(name="mvaNoIsoWP90", sel=lambda l : l.mvaNoIso_WP90),#POG mva ISO (boolean)
+]
+
         # ZZCand variables storing the worst value of a given quantity among all muons of of a candidate, for cut optimization studies.
         # Worst is intended as lowest value (as for an MVA), unless the variable's name starts with "max".
         self.muonIDVars=[dict(name="maxdxy", sel=lambda l : abs(l.dxy)),
@@ -40,58 +52,128 @@ class ZZIDStudies (Module):
                          # dict(name="promptMVA", sel=lambda l : l.mvaTTH), # should add H4l preselection for consistencty with mvaLowPt; this is looser than the original recommendation (https://twiki.cern.ch/twiki/bin/viewauth/CMS/LeptonMVA). Was retrained and renamed "promptMVA" in v14
                          # dict(name="mvaMuID", sel=lambda l : l.mvaMuID), # muon MVA from 22-001. Note: Was retrained in v14; using H4l preselection for consistency, see above
                          ]
+        # ZZCand variables storing the worst value of a given quantity among all ELECTRONS of of a candidate, for cut optimization studies.
+        # Worst is intended as lowest value (as for an MVA), unless the variable's name starts with "max".
+        self.eleIDVars=[dict(name="maxdxy", sel=lambda l : abs(l.dxy)),
+                         dict(name="maxdz", sel=lambda l : abs(l.dz)),
+                         dict(name="maxsip3d", sel=lambda l : abs(l.sip3d)),
+                         dict(name="maxip3d", sel=lambda l : abs(l.ip3d)),
+                         dict(name="maxpfRelIso03FsrCorr", sel=lambda l : l.pfRelIso03FsrCorr), # FSR-corrected iso, DR=0.3
+                         dict(name="maxminiPFRelIso_all", sel=lambda l : l.miniPFRelIso_all), # miniIso #OK
+                         dict(name="mvaHZZIso", sel=lambda l : l.mvaIso), #MVA HZZ ID score 
+                         dict(name="mvaIso", sel=lambda l : l.mvaIso), #MVA EGM ID score 
+                         dict(name="mvaNoIso", sel=lambda l : l.mvaNoIso), #MVA EGM ID score 
+
+
+                         # dict(name="mvaLowPt", sel=lambda l : l.mvaLowPt), # additional presel (l.looseId and l.sip3d<4. and l.dxy<0.5 and l.dz < 1) is required, cf: https://github.com/cms-sw/cmssw/blob/90f498af750cf4271c0a988fef352b0698012a40/PhysicsTools/PatAlgos/plugins/PATMuonProducer.cc#L762-L764
+                         # dict(name="promptMVA", sel=lambda l : l.mvaTTH), # should add H4l preselection for consistencty with mvaLowPt; this is looser than the original recommendation (https://twiki.cern.ch/twiki/bin/viewauth/CMS/LeptonMVA). Was retrained and renamed "promptMVA" in v14
+                         # dict(name="mvaMuID", sel=lambda l : l.mvaMuID), # muon MVA from 22-001. Note: Was retrained in v14; using H4l preselection for consistency, see above
+                         ]
 
         
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
 
-        for ID in self.muonIDs :
-            self.out.branch("ZZCand_mu"+ID["name"], "O", lenVar="nZZCand", title=f'True if all muons of the cand pass {ID["name"]}')
-        for var in self.muonIDVars :
-            self.out.branch("ZZCand_mu"+var["name"], "F", lenVar="nZZCand", title=f'Worst value of {var["name"].removeprefix("max")} among all muons of the cand', limitedPrecision=16)
+        if self.doMuons:
+            for ID in self.muonIDs :
+                self.out.branch("ZZCand_mu"+ID["name"], "O", lenVar="nZZCand", title=f'True if all muons of the cand pass {ID["name"]}')
+            for var in self.muonIDVars :
+                self.out.branch("ZZCand_mu"+var["name"], "F", lenVar="nZZCand", title=f'Worst value of {var["name"].removeprefix("max")} among all muons of the cand', limitedPrecision=16)
 
-        self.out.branch("ZExtraMu1Idx", "S", title="Index of leading extra muon in Z events, for data/MC studies")
-        self.out.branch("ZExtraMu2Idx", "S", title="Index of subleading extra muon in Z events, for data/MC studies")
+            self.out.branch("ZExtraMu1Idx", "S", title="Index of leading extra muon in Z events, for data/MC studies")
+            self.out.branch("ZExtraMu2Idx", "S", title="Index of subleading extra muon in Z events, for data/MC studies")
+
+        if self.doElectrons:
+            for ID in self.electronIDs:
+                self.out.branch("ZZCand_ele"+ID["name"],"O", lenVar="nZZCand", title=f'True if all electrons of the cand pass {ID["name"]}'
+                )
+            for var in self.eleIDVars:
+                self.out.branch("ZZCand_ele"+var["name"], "F", lenVar="nZZCand", title=f'Worst value of {var["name"].removeprefix("max")} among all electrons of the cand', limitedPrecision=16
+                )
+            
+            self.out.branch("ZExtraEle1Idx", "S", title="Index of leading extra electron in Z events, for data/MC studies")
+            self.out.branch("ZExtraEle2Idx", "S", title="Index of subleading extra electron in Z events, for data/MC studies")
 
         
     def analyze(self, event):
 
-        ZZCand_passID    = [[] for il in range(len(self.muonIDs))]
-        ZZCand_worstVar  = [[] for il in range(len(self.muonIDVars))]
+        if self.doMuons:
+            ZZCand_passID    = [[] for il in range(len(self.muonIDs))]
+            ZZCand_worstVar  = [[] for il in range(len(self.muonIDVars))]
+        if self.doElectrons:
+            ZZCand_ele_passID    = [[] for il in range(len(self.electronIDs))]
+            ZZCand_ele_worstVar  = [[] for il in range(len(self.eleIDVars))]
 
         ZZs = Collection(event, 'ZZCand')
 
         # Set flags for IDs passed by all muons of candidate
         for iZZ, ZZ in enumerate(ZZs) :
             zzleps = getLeptons(ZZ, event)
-            for iID, ID in enumerate(self.muonIDs) :
-                passId = True
-                for ilep in range(4):
-                    lep = zzleps[ilep]
-                    if (abs(lep.pdgId)==13 and not ID["sel"](lep)) or \
-                       (abs(lep.pdgId)==11 and not lep.ZZFullSel) : # Protection in case a looser preselection for electrons was used
-                        passId = False
-                        continue
-                ZZCand_passID[iID].append(passId)
+
+            if self.doMuons:
+                for iID, ID in enumerate(self.muonIDs) :
+                    passId = True
+                    for ilep in range(4):
+                        lep = zzleps[ilep]
+                        if (abs(lep.pdgId)==13 and not ID["sel"](lep)) or \
+                        (abs(lep.pdgId)==11 and not lep.ZZFullSel) : # Protection in case a looser preselection for electrons was used
+                            passId = False
+                            continue
+                    ZZCand_passID[iID].append(passId)
+            
+            if self.doElectrons:
+                for iID, ID in enumerate(self.electronIDs):
+                    passId = True
+                    for ilep in range(4):
+                        lep = zzleps[ilep]
+                        if abs(lep.pdgId) == 11 and not ID["sel"](lep) or \
+                        (abs(lep.pdgId) == 13 and not lep.ZZFullSel):
+                            # protection in case looser muon preselection used
+                            passId = False
+                            continue
+                    ZZCand_ele_passID[iID].append(passId)
 
             # Set worst value of selection variable among all candidate's muons
-            for iVar, var in enumerate(self.muonIDVars):
-                worstVar = 99999.
-                if var["name"].startswith("max") : worstVar = -99999.
-                for ilep in range(4) :
-                    if abs(zzleps[ilep].pdgId)==11 : continue # Consider only muons
-                    else :
-                        if var["name"].startswith("max") :
-                            worstVar = max(worstVar, var["sel"](zzleps[ilep]))                                    
+            if self.doMuons:
+                for iVar, var in enumerate(self.muonIDVars):
+                    worstVar = 99999.
+                    if var["name"].startswith("max") : worstVar = -99999.
+                    for ilep in range(4) :
+                        if abs(zzleps[ilep].pdgId)==11 : continue # Consider only muons
                         else :
-                            worstVar = min(worstVar, var["sel"](zzleps[ilep]))
-                ZZCand_worstVar[iVar].append(worstVar)
- 
-        for iID, ID in enumerate(self.muonIDs) :
-            self.out.fillBranch("ZZCand_mu"+ID["name"], ZZCand_passID[iID])
-        for iVar, var in enumerate(self.muonIDVars) :
-            self.out.fillBranch("ZZCand_mu"+var["name"], ZZCand_worstVar[iVar])
+                            if var["name"].startswith("max") :
+                                worstVar = max(worstVar, var["sel"](zzleps[ilep]))                                    
+                            else :
+                                worstVar = min(worstVar, var["sel"](zzleps[ilep]))
+                    ZZCand_worstVar[iVar].append(worstVar)
 
+            if self.doElectrons:
+                for iVar, var in enumerate(self.eleIDVars):
+                    worstVar = 99999.
+                    if var["name"].startswith("max"):
+                        worstVar = -99999.
+                    for ilep in range(4):
+                        lep = zzleps[ilep]
+                        if abs(lep.pdgId) == 13:
+                            continue
+                        if var["name"].startswith("max"):
+                            worstVar = max(worstVar, var["sel"](lep))
+                        else:
+                            worstVar = min(worstVar, var["sel"](lep))
+
+                    ZZCand_ele_worstVar[iVar].append(worstVar)
+ 
+        if self.doMuons:
+            for iID, ID in enumerate(self.muonIDs) :
+                self.out.fillBranch("ZZCand_mu"+ID["name"], ZZCand_passID[iID])
+            for iVar, var in enumerate(self.muonIDVars) :
+                self.out.fillBranch("ZZCand_mu"+var["name"], ZZCand_worstVar[iVar])
+
+        if self.doElectrons:
+            for iID, ID in enumerate(self.electronIDs):
+                self.out.fillBranch("ZZCand_ele"+ID["name"], ZZCand_ele_passID[iID])
+            for iVar, var in enumerate(self.eleIDVars):
+                self.out.fillBranch("ZZCand_ele"+var["name"], ZZCand_ele_worstVar[iVar])
 
         ### Search for an additional muons in Z events, to be used for data-MC studies.
         # 
@@ -100,30 +182,63 @@ class ZZIDStudies (Module):
         # -no QCD suppression (the mLL>4 cut on all OS pairs) cut is applied
         # -do not discard events where >1 extra lepton is present (but store the leading
         # and subleading extra leptons so that it is still possible to consider only events with exactly 1)
-
-        ZExtraMu1Idx = ZExtraMu2Idx = -1
-        ZExtraMu1Pt = ZExtraMu2Pt = -1.
-        if event.bestZIdx >= 0 and event.nMuon+event.nElectron>2 :
-            Zs = Collection(event, 'ZCand')
-            theZ = Zs[event.bestZIdx]
-            if theZ.mass > 40 and theZ.mass < 120:
-                leps = Collection(event, 'Lepton')
-                Zl1 = leps[theZ.l1Idx]
-                Zl2 = leps[theZ.l2Idx]
-                for i,aL in enumerate(leps):
-                    # Search for additional muons, with ghost suppression DR cut
-                    if i != theZ.l1Idx and i!= theZ.l2Idx and abs(aL.pdgId)==13 and aL.pt>5. and abs(aL.eta) < 2.4 and \
-                       deltaR(aL.eta, aL.phi, Zl1.eta, Zl1.phi) > 0.02 and \
-                       deltaR(aL.eta, aL.phi, Zl2.eta, Zl2.phi) > 0.02 :
-                       if aL.pt > ZExtraMu1Pt :
-                           ZExtraMu2Pt, ZExtraMu2Idx = ZExtraMu1Pt, ZExtraMu1Idx
-                           ZExtraMu1Pt = aL.pt
-                           ZExtraMu1Idx = i
-                       elif aL.pt > ZExtraMu2Pt :
-                           ZExtraMu2Pt = aL.pt
-                           ZExtraMu2Idx = i
-
-        self.out.fillBranch("ZExtraMu1Idx", ZExtraMu1Idx)
-        self.out.fillBranch("ZExtraMu2Idx", ZExtraMu2Idx)
         
+        if self.doMuons:
+            ZExtraMu1Idx = ZExtraMu2Idx = -1
+            ZExtraMu1Pt = ZExtraMu2Pt = -1.
+            if event.bestZIdx >= 0 and event.nMuon+event.nElectron>2 :
+                Zs = Collection(event, 'ZCand')
+                theZ = Zs[event.bestZIdx]
+                if theZ.mass > 40 and theZ.mass < 120:
+                    leps = Collection(event, 'Lepton')
+                    Zl1 = leps[theZ.l1Idx]
+                    Zl2 = leps[theZ.l2Idx]
+                    for i,aL in enumerate(leps):
+                        # Search for additional muons, with ghost suppression DR cut
+                        if (i != theZ.l1Idx and i != theZ.l2Idx and abs(aL.pdgId)==13 and aL.pt > 5. and abs(aL.eta) < 2.4 and deltaR(aL.eta, aL.phi, Zl1.eta, Zl1.phi) > 0.02 and deltaR(aL.eta, aL.phi, Zl2.eta, Zl2.phi) > 0.02):
+                            if aL.pt > ZExtraMu1Pt :
+                                ZExtraMu2Pt, ZExtraMu2Idx = ZExtraMu1Pt, ZExtraMu1Idx
+                                ZExtraMu1Pt = aL.pt
+                                ZExtraMu1Idx = i
+                            elif aL.pt > ZExtraMu2Pt :
+                                ZExtraMu2Pt = aL.pt
+                                ZExtraMu2Idx = i
+
+            self.out.fillBranch("ZExtraMu1Idx", ZExtraMu1Idx)
+            self.out.fillBranch("ZExtraMu2Idx", ZExtraMu2Idx)
+        
+        ### Search for additional electrons in Z events
+        if self.doElectrons:
+            ZExtraEle1Idx = ZExtraEle2Idx = -1
+            ZExtraEle1Pt  = ZExtraEle2Pt  = -1.
+            if event.bestZIdx >= 0 and event.nMuon + event.nElectron > 2:
+                Zs   = Collection(event, 'ZCand')
+                theZ = Zs[event.bestZIdx]
+                if 40 < theZ.mass < 120:
+                    leps = Collection(event, 'Lepton')
+                    Zl1 = leps[theZ.l1Idx]
+                    Zl2 = leps[theZ.l2Idx]
+                    for i, aL in enumerate(leps):
+                        # Search for additional electrons with ghost suppression
+                        if (
+                            i != theZ.l1Idx and
+                            i != theZ.l2Idx and
+                            abs(aL.pdgId) == 11 and
+                            aL.pt > 7. and
+                            abs(aL.eta) < 2.5 and
+                            deltaR(aL.eta, aL.phi, Zl1.eta, Zl1.phi) > 0.02 and
+                            deltaR(aL.eta, aL.phi, Zl2.eta, Zl2.phi) > 0.02
+                        ):
+                            if aL.pt > ZExtraEle1Pt:
+                                ZExtraEle2Pt  = ZExtraEle1Pt
+                                ZExtraEle2Idx = ZExtraEle1Idx
+                                ZExtraEle1Pt  = aL.pt
+                                ZExtraEle1Idx = i
+                            elif aL.pt > ZExtraEle2Pt:
+                                ZExtraEle2Pt  = aL.pt
+                                ZExtraEle2Idx = i
+
+            self.out.fillBranch("ZExtraEle1Idx", ZExtraEle1Idx)
+            self.out.fillBranch("ZExtraEle2Idx", ZExtraEle2Idx)
+
         return True
