@@ -17,7 +17,7 @@ class weightFiller(Module):
             "APPLY_K_NNLOQCD_ZZGG:", APPLY_K_NNLOQCD_ZZGG,
             "APPLY_K_NNLOQCD_NLOEW_ZZQQB:", APPLY_K_NNLOQCD_NLOEW_ZZQQB,
             "APPLY_QCD_GGF_UNCERT:", APPLY_QCD_GGF_UNCERT,
-            "LEPTON_SETUP:", LEPTON_SETUP
+            "LEPTON_SETUP:", LEPTON_SETUP,
             flush=True
         )
         self.writeHistFile = False
@@ -30,10 +30,10 @@ class weightFiller(Module):
         # Just use the lepton setup as an analog for the run number
         if LEPTON_SETUP in (2016, 2017, 2018):
             run_number = 2
-        elif LEPTON_SETUP in (2022, 2023, 2024, 2025):
+        elif LEPTON_SETUP >= 2022 :
             run_number = 3
 
-        basePath_nano=f'{os.environ['CMSSW_BASE']}/src/ZZAnalysis/NanoAnalysis/data/kFactors'
+        basePath=f"{os.environ['CMSSW_BASE']}/src/ZZAnalysis/"
 
         if self.APPLY_K_NNLOQCD_ZZGG in (1,2):
             ## ggZZ QCD k-factors
@@ -42,9 +42,9 @@ class weightFiller(Module):
             #Apart from the nominal case, the other 3 are simply up and down factors
             strZZGGKFVar = ["nominal", "PDF", "PDF_aS", "QCD_mu"]
             if self.APPLY_K_NNLOQCD_ZZGG == 1:
-                raw_dat = h5py.File(f"{basePath_nano}/gluonFusion/Run{run_number}-NNLO.h5")
+                raw_dat = h5py.File(f"{basePath}NanoAnalysis/data/kFactors/gluonFusion/Run{run_number}-NNLO.h5")
             elif self.APPLY_K_NNLOQCD_ZZGG == 2:
-                raw_dat = h5py.File(f"{basePath_nano}/gluonFusion/Run{run_number}-NLO-NNLO.h5")
+                raw_dat = h5py.File(f"{basePath}NanoAnalysis/data/kFactors/gluonFusion/Run{run_number}-NLO-NNLO.h5")
 
             for i, var in enumerate(strZZGGKFVar):
                 self.spkfactor_ggzz[i] = interp.make_interp_spline(
@@ -63,7 +63,7 @@ class weightFiller(Module):
             for i in range(4):
                 #cos(theta^*) is symmetric around 0, but
                 #the actual files go from -1 to 0, so just reverse them for aesthetic reasons
-                with h5py.File(f"{basePath_nano}/qqBarToZZ/Run{run_number}/kfac_m4l__cos{3-i}.h5") as raw_dat:
+                with h5py.File(f"{basePath}NanoAnalysis/data/kFactors/qqBarToZZ/Run{run_number}/kfac_m4l__cos{3-i}.h5") as raw_dat:
                     for j, var in enumerate(strQQZZKFVar):
                         self.spkfactor_qqzz[i][j] = interp.make_interp_spline(
                             raw_dat['zzmass'], raw_dat[var], k=1
@@ -72,11 +72,10 @@ class weightFiller(Module):
 
         # ggH NNLOPS weights
         if self.APPLY_QCD_GGF_UNCERT :
-            basePath = f'{os.environ['CMSSW_BASE']}/src/ZZAnalysis/AnalysisStep/'
             if self.LEPTON_SETUP >= 2022:
-                NNLOPS_weight_file = ROOT.TFile.Open(basePath+'data/ggH_NNLOPS_Weights/NNLOPS_reweight_13p6.root')
+                NNLOPS_weight_file = ROOT.TFile.Open(f'{basePath}AnalysisStep/data/ggH_NNLOPS_Weights/NNLOPS_reweight_13p6.root')
             else:
-                NNLOPS_weight_file = ROOT.TFile.Open(basePath+'data/ggH_NNLOPS_Weights/NNLOPS_reweight.root')
+                NNLOPS_weight_file = ROOT.TFile.Open(f'{basePath}AnalysisStep/data/ggH_NNLOPS_Weights/NNLOPS_reweight.root')
             self.gr_NNLOPSratio_pt_powheg_0jet = NNLOPS_weight_file.Get("gr_NNLOPSratio_pt_powheg_0jet")
             self.gr_NNLOPSratio_pt_powheg_1jet = NNLOPS_weight_file.Get("gr_NNLOPSratio_pt_powheg_1jet")
             self.gr_NNLOPSratio_pt_powheg_2jet = NNLOPS_weight_file.Get("gr_NNLOPSratio_pt_powheg_2jet")
@@ -157,7 +156,7 @@ class weightFiller(Module):
                 event.LHEMela_costhetastar,event.GenZZ_mass, 4
             )
             KFactor_ZZQQB_aS = self.evalSpline(
-                event.LHEMela_costhetastar,event.GenZZ_mass, 4
+                event.LHEMela_costhetastar,event.GenZZ_mass, 5
             )
 
 
