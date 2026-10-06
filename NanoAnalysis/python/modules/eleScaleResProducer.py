@@ -38,6 +38,9 @@ def getEleScaleRes(era, tag, is_mc, overwritePt=True):
     elif era == 2025:
         fname = "/cvmfs/cms-griddata.cern.ch/cat/metadata/EGM/Run3-25Prompt-Summer24-NanoAODv15/2026-06-26/electronSS_EtDependent.json.gz"
 
+    elif era == 2026:
+        fname = "/cvmfs/cms-griddata.cern.ch/cat/metadata/EGM/Run3-25Prompt-Summer24-NanoAODv15/2026-06-08/electronSS_EtDependent.json.gz"
+
     else :
         raise ValueError(f"getEleScaleRes: Era {era}, tag {tag} not supported")
 

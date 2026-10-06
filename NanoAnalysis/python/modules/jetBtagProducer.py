@@ -38,7 +38,7 @@ def getJetBtagProducer(era, tag, is_mc, is_signal, WP="M"):
     elif era == 2025:
         tagger = "UParTAK4"
         tagger_name = "btagUParTAK4B"
-        json_SF = "/cvmfs/cms-griddata.cern.ch/cat/metadata/BTV/Run3-24CDEReprocessingFGHIPrompt-Summer24-NanoAODv15/2026-03-10/btagging.json.gz"
+        json_SF = "/cvmfs/cms-griddata.cern.ch/cat/metadata/BTV/Run3-25Prompt-Summer24-NanoAODv15/2026-09-21/btagging.json.gz"
         print("JetBTag: WARNING: efficiency file not yet available, using the one for 2024")
         json_eff = os.path.join(data_dir, f"btag_{'signal' if is_signal else 'background'}_2024.json.gz")
         

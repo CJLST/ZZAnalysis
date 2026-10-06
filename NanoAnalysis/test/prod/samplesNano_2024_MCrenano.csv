@@ -1,0 +1,42 @@
+identifier,process,crossSection=-1,BR=1,execute=True,dataset,prefix,pattern=root://cms-xrd-global.cern.ch/,splitLevel,::variables=NANOVERSION=15;LEPTON_SETUP=2024,::pyFragments,comment
+###,,,,,,,,,,,Re-nano of signal MCs to add STXS1.3. Replace the corresponding samples in samplesNano_2024_MC.csv.
+###,,,,,,,,,,,Note that DEFAULT SETTINGS are set in the format line above!
+
+###,,,,,,,,,,,signal samples
+ggH124       ,,52.98,0.0002502,,/GluGluH-Hto2Zto4L_Par-M-124_TuneCP5_13p6TeV_powheg-jhugen-pythia8/mbonanom-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True;APPLY_QCD_GGF_UNCERT=True,,
+ggH124p5     ,,52.60,0.0002622,,/GluGluH-Hto2Zto4L_Par-M-124p5_TuneCP5_13p6TeV_powheg-jhugen-pythia8/mbonanom-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True;APPLY_QCD_GGF_UNCERT=True,,
+ggH125       ,,52.23,0.0002745,,/GluGluH-Hto2Zto4L_Par-M-125_TuneCP5_13p6TeV_powheg-jhugen-pythia8/mbonanom-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True;APPLY_QCD_GGF_UNCERT=True,,
+ggH125p5     ,,51.87,0.0002872,,/GluGluH-Hto2Zto4L_Par-M-125p5_TuneCP5_13p6TeV_powheg-jhugen-pythia8/mbonanom-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True;APPLY_QCD_GGF_UNCERT=True,,
+ggH126       ,,51.51,0.0003001,,/GluGluH-Hto2Zto4L_Par-M-126_TuneCP5_13p6TeV_powheg-jhugen-pythia8/mbonanom-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True;APPLY_QCD_GGF_UNCERT=True,,
+
+VBFH124      ,,4.111,0.0002502,,/VBFH-Hto2Zto4L_Par-M-124_TuneCP5_13p6TeV_powheg-jhugen-pythia8/mbonanom-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True,,
+VBFH124p5    ,,4.096,0.0002622,,/VBFH-Hto2Zto4L_Par-M-124p5_TuneCP5_13p6TeV_powheg-jhugen-pythia8/mbonanom-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True,,
+VBFH125      ,,4.078,0.0002745,,/VBFH-Hto2Zto4L_Par-M-125_TuneCP5_13p6TeV_powheg-jhugen-pythia8/mbonanom-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True,,
+VBFH125p5    ,,4.064,0.0002872,,/VBFH-Hto2Zto4L_Par-M-125p5_TuneCP5_13p6TeV_powheg-jhugen-pythia8/mbonanom-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True,,
+VBFH126      ,,4.048,0.0003001,,/VBFH-Hto2Zto4L_Par-M-126_TuneCP5_13p6TeV_powheg-jhugen-pythia8/mbonanom-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True,,
+
+WplusH124    ,,0.9119,0.0002502,,/WplusH-Hto2Zto4L_Par-M-124_TuneCP5_13p6TeV_powhegMINLO-jhugen-pythia8/mbonanom-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True,,
+WplusH124p5  ,,0.9003,0.0002622,,/WplusH-Hto2Zto4L_Par-M-124p5_TuneCP5_13p6TeV_powhegMINLO-jhugen-pythia8/mbonanom-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True,,
+WplusH125    ,,0.8889,0.0002745,,/WplusH-Hto2Zto4L_Par-M-125_TuneCP5_13p6TeV_powhegMINLO-jhugen-pythia8/mbonanom-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True,,
+WplusH125p5  ,,0.8776,0.0002872,,/WplusH-Hto2Zto4L_Par-M-125p5_TuneCP5_13p6TeV_powhegMINLO-jhugen-pythia8/mbonanom-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True,,
+WplusH126    ,,0.8668,0.0003001,,/WplusH-Hto2Zto4L_Par-M-126_TuneCP5_13p6TeV_powhegMINLO-jhugen-pythia8/mbonanom-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True,,
+
+WminusH124   ,,0.5677,0.0002745,,/WminusH-Hto2Zto4L_Par-M-124_TuneCP5_13p6TeV_powhegMINLO-jhugen-pythia8/mbonanom-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True,,
+WminusH124p5 ,,0.5677,0.0002745,,/WminusH-Hto2Zto4L_Par-M-124p5_TuneCP5_13p6TeV_powhegMINLO-jhugen-pythia8/mbonanom-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True,,
+WminusH125   ,,0.5677,0.0002745,,/WminusH-Hto2Zto4L_Par-M-125_TuneCP5_13p6TeV_powhegMINLO-jhugen-pythia8/mbonanom-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True,,
+WminusH125p5 ,,0.5677,0.0002745,,/WminusH-Hto2Zto4L_Par-M-125p5_TuneCP5_13p6TeV_powhegMINLO-jhugen-pythia8/mbonanom-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True,,
+WminusH126   ,,0.5677,0.0002745,,/WminusH-Hto2Zto4L_Par-M-126_TuneCP5_13p6TeV_powhegMINLO-jhugen-pythia8/mbonanom-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True,,
+
+###,,,,,,,,,,,Filtered samples - BR includes filter eff from https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsZZ4lRunIII#Signal
+ZH124        ,,0.8301,0.00068429,,/ZH-Hto2Zto4L_Par-M-124_TuneCP5_13p6TeV_powhegMINLO-jhugen-pythia8/mbonanom-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True,,
+ZH124p5      ,,0.8196,0.00071657,,/ZH-Hto2Zto4L_Par-M-124p5_TuneCP5_13p6TeV_powhegMINLO-jhugen-pythia8/mbonanom-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True,,
+ZH125        ,,0.9439,0.00074812,,/ZH-Hto2Z_Fil-4L_Par-M-125_TuneCP5_13p6TeV_powhegMINLO-jhugen-pythia8/mbonanom-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True,, # Different naming as other mass points had to be remade because of wrong mass value in gridpacks
+ZH125p5      ,,0.7995,0.00078556,,/ZH-Hto2Zto4L_Par-M-125p5_TuneCP5_13p6TeV_powhegMINLO-jhugen-pythia8/mbonanom-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True,,
+ZH126        ,,0.7958,0.00082086,,/ZH-Hto2Zto4L_Par-M-126_TuneCP5_13p6TeV_powhegMINLO-jhugen-pythia8/mbonanom-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True,,
+
+###,,,,,,,,,,,Filtered samples - BR includes filter eff from https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsZZ4lRunIII#Signal
+ttH124       ,,0.5845,0.0007449,,/TTH-Hto2Zto4L_Par-M-124_TuneCP5_13p6TeV_powheg-jhugen-pythia8/mbonanom-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True,,
+ttH124p5     ,,0.5783,0.0007323,,/TTH-Hto2Zto4L_Par-M-124p5_TuneCP5_13p6TeV_powheg-jhugen-pythia8/mbonanom-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True,,
+ttH125       ,,0.5700,0.0007689,,/TTH-Hto2Zto4L_Par-M-125_TuneCP5_13p6TeV_powheg-jhugen-pythia8/mbonanom-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True,,
+ttH125p5     ,,0.5654,0.0008060,,/TTH-Hto2Zto4L_Par-M-125p5_TuneCP5_13p6TeV_powheg-jhugen-pythia8/mbonanom-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True,,
+ttH126       ,,0.5591,0.0008386,,/TTH-Hto2Zto4L_Par-M-126_TuneCP5_13p6TeV_powheg-jhugen-pythia8/mbonanom-RunIII2024Summer24NanoAODv15_ReNano-00000000000000000000000000000000/USER,dbs-USER,,2,IsSIGNAL=True,,
