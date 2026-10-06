@@ -5,8 +5,10 @@ from __future__ import print_function
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
 import os
-import ROOT
-ROOT.PyConfig.IgnoreCommandLineOptions = True
+from ROOT import TFile
+# Suppress warning that that is issued when importing h5py, or ROOT+scipy
+import warnings 
+warnings.filterwarnings("ignore",message=r"The value of the smallest subnormal for .* type is zero\.")
 import h5py
 import scipy.interpolate as interp
 
@@ -73,14 +75,14 @@ class weightFiller(Module):
         # ggH NNLOPS weights
         if self.APPLY_QCD_GGF_UNCERT :
             if self.LEPTON_SETUP >= 2022:
-                NNLOPS_weight_file = ROOT.TFile.Open(f'{basePath}AnalysisStep/data/ggH_NNLOPS_Weights/NNLOPS_reweight_13p6.root')
+                NNLOPS_weight_file = TFile.Open(f'{basePath}AnalysisStep/data/ggH_NNLOPS_Weights/NNLOPS_reweight_13p6.root')
             else:
-                NNLOPS_weight_file = ROOT.TFile.Open(f'{basePath}AnalysisStep/data/ggH_NNLOPS_Weights/NNLOPS_reweight.root')
-            self.gr_NNLOPSratio_pt_powheg_0jet = NNLOPS_weight_file.Get("gr_NNLOPSratio_pt_powheg_0jet")
-            self.gr_NNLOPSratio_pt_powheg_1jet = NNLOPS_weight_file.Get("gr_NNLOPSratio_pt_powheg_1jet")
-            self.gr_NNLOPSratio_pt_powheg_2jet = NNLOPS_weight_file.Get("gr_NNLOPSratio_pt_powheg_2jet")
-            self.gr_NNLOPSratio_pt_powheg_3jet = NNLOPS_weight_file.Get("gr_NNLOPSratio_pt_powheg_3jet")
-
+                NNLOPS_weight_file = TFile.Open(f'{basePath}AnalysisStep/data/ggH_NNLOPS_Weights/NNLOPS_reweight.root')
+            self.gr_NNLOPSratio_pt_powheg_0jet = NNLOPS_weight_file.Get("gr_NNLOPSratio_pt_powheg_0jet").Clone()
+            self.gr_NNLOPSratio_pt_powheg_1jet = NNLOPS_weight_file.Get("gr_NNLOPSratio_pt_powheg_1jet").Clone()
+            self.gr_NNLOPSratio_pt_powheg_2jet = NNLOPS_weight_file.Get("gr_NNLOPSratio_pt_powheg_2jet").Clone()
+            self.gr_NNLOPSratio_pt_powheg_3jet = NNLOPS_weight_file.Get("gr_NNLOPSratio_pt_powheg_3jet").Clone()
+            NNLOPS_weight_file.Close()
 
     def evalSpline(self, cStar, zzMass, j):
         cStar = abs(cStar)
