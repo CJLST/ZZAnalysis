@@ -125,7 +125,7 @@ class RecoProbFiller(Module):
         pt_name = variation + "_pt"
         mass_name = variation + "_mass"
         for idx, jet in enumerate(jets):
-            if jet.jetId != 6:
+            if jet.jetId != 6 and abs(jet.eta) <= 5.0 :
                 continue
             pt = getattr(jet, pt_name)
             leptonPt = jet.ZZLepEF * jet.pt

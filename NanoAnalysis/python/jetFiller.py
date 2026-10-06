@@ -78,7 +78,14 @@ class jetFiller(Module):
         # According to the analysis recipe at https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsZZ4lRunIILegacy#Jets, "[jets] must be cleaned with a DeltaR>0.4 cut wrt all tight leptons in the event passing the SIP and isolation cut computed after FSR correction, as well as with all FSR collected photons attached to these leptons."
         # Note: the current implementation on miniAODs (https://github.com/CJLST/ZZAnalysis/blob/Run2UL_22_nano/AnalysisStep/plugins/JetsWithLeptonsRemover.cc) probably does something different than this. To be reviewed.
         for ij, jet in enumerate(jets) :
-            if self.year >=2022 : #Larger pT threshold at high eta, only for Run3
+            # Mitigation for HF spikes, cf https://indico.cern.ch/event/1624984/#30-jet-performance-calibration, slide 14.
+            # Summary of applied pT cuts following JME recommendations:
+            # Jets with abs(eta) < 2.5 -> pt_cut = 30
+            # Jets with 2.5 <= abs(eta) < 3.0 -> pt_cut = 50 in 2022 to 2024 (*), Ref: https://gitlab.cern.ch/cms-jetmet/coordination/coordination/-/issues/113
+            # Jets with abs(eta) >= 3.0 in 2022/2023 -> pt_cut = 50
+            # Jets with abs(eta) >= 3.0 in other years -> pt_cut = 30
+            # (*) For 2025 and 26 it should be rechecked, cf. slides linked above.
+            if self.year >= 2022 and self.year <= 2024 :
                 if 2.5 <= abs(jet.eta) < 3.0 or (abs(jet.eta) >= 3.0 and self.year in [2022, 2023]):
                     jet_ptThreshold[ij] = 50.
 
@@ -95,18 +102,13 @@ class jetFiller(Module):
                 mask[ij] = True
             else :
                 # Consider only jets passing  tight ID and tightLepVeto ID, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID13p6TeV#nanoAOD_Flags
-                # FIXME: To be checked/updated for Run2 
-                if jet.jetId == 6 :
+                # This is the same in Run2 v15 samples (Note: in Run2 v9 samples individual bits had to be checked instead)
+                # The cut at |eta|<=5 is explicitly added as it is not implemented consistently in the different jetID recipes.
+                if jet.jetId == 6 and abs(jet.eta) <= 5.0 :
                     #############################################################################
                     # NOTE: RecoProbFiller also uses the jet ID requirement, and should be kept #
                     #consistent with this one.                                                  #
                     #############################################################################
-                    #Summary of applied pT cuts following JME recommendations:
-                    #Jets with abs(eta) < 2.5 -> pt_cut = 30
-                    #Jets with 2.5 <= abs(eta) < 3.0 -> pt_cut = 50 , Ref: https://gitlab.cern.ch/cms-jetmet/coordination/coordination/-/issues/113
-                    #Jets with abs(eta) >= 3.0 in 2022/2023 -> pt_cut = 50
-                    #Jets with abs(eta) >= 3.0 in other years -> pt_cut = 30
-                    #See slide 14: https://indico.cern.ch/event/1615783/contributions/6811120/attachments/3186812/5672346/20251204_JetMET_PerformanceRun3.pdf
 
                     if jet.pt > jet_ptThreshold[ij]:
                         nCleanedJetsPt30 += 1
