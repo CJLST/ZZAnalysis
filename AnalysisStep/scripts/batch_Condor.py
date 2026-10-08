@@ -70,6 +70,8 @@ cp run_cfg.py $_CONDOR_SCRATCH_DIR
 cd $_CONDOR_SCRATCH_DIR
 
 echo 'Running at:' $(date)
+echo "HOST=$(hostname)"
+eos version 2>/dev/null || true
 echo SUBMIT_DIR: $SUBMIT_DIR
 echo path: `pwd`
 
@@ -142,6 +144,8 @@ cp run_cfg.py $_CONDOR_SCRATCH_DIR
 cd $_CONDOR_SCRATCH_DIR
 
 echo 'Running at:' $(date)
+echo "HOST=$(hostname)"
+eos version 2>/dev/null || true
 echo SUBMIT_DIR: $SUBMIT_DIR
 echo path: `pwd`
 
@@ -184,12 +188,12 @@ exit $exitStatus
 def condorSubScript( index, mainDir, eosTransferPath="") :
    '''prepare the Condor submition script'''
    script = '''
-executable              = $(directory)/batchScript.sh
+executable              = {mainDir}/$(directory)/batchScript.sh
 arguments               = {mainDir}/$(directory) $(ClusterId)$(ProcId)
-output                  = log/$(ClusterId).$(ProcId).out
-error                   = log/$(ClusterId).$(ProcId).err
+output                  = {mainDir}/$(directory)/log/$(ClusterId).$(ProcId).out
+error                   = {mainDir}/$(directory)/log/$(ClusterId).$(ProcId).err
 log                     = {mainDir}/log/$(ClusterId).log
-Initialdir              = $(directory)
+Initialdir              = {mainDir}/$(directory)
 MY.ChunkDir             = "$(directory)"
 request_memory          = '''+str(batchManager.jobmem)+'''
 #Possible values: longlunch, workday, tomorrow, etc.; cf. https://batchdocs.web.cern.ch/local/submit.html
@@ -211,6 +215,8 @@ transfer_output_files = log.txt.gz, exitStatus.txt, ZZ4lAnalysis.root
 
    if batchManager.max_materialize > 0 :
        materialize = 'max_materialize = '+str(batchManager.max_materialize)
+       if batchManager.eosSubmit and transfer == "" : # eossubmit schedd has a bug with setting relative paths with late materialization
+           transfer = f"output_destination = root://eosuser.cern.ch/{mainDir}/$(directory)"
    else :
        materialize = ''
        
@@ -273,6 +279,10 @@ class MyBatchManager:
         self.parser_.add_option("-t", "--transfer", dest="transferPath",
                                 default="",
                                 help="full path of /eos/user area to transfer output files, in the respective PROD/Chunk subfolders. Note that log files will still be sent back to the submission folder.",)
+
+        self.parser_.add_option("-M", "--max_materialize", dest="max_materialize",
+                                default=200,
+                                help="cap the number of concurrently running jobs to mitigate load on AFS or /eos mount",)
 
         self.parser_.add_option("-a", "--add-variables", dest="variables",
                                 default="",
@@ -407,17 +417,14 @@ class MyBatchManager:
        if ('JOBTYPE' in variables and variables['JOBTYPE'].casefold() == 'nanoaod') or \
            'nanoaod' in (splitComponents[value].files)[0].casefold() : 
            inputType='nanoAOD'
-       if self.jobmem == None:
-           if self.options_.jobmem != None :
-               self.jobmem = self.options_.jobmem
-           else :
-               self.max_materialize = 0
-               if inputType == 'miniAOD' :
-                   self.jobmem = '4000M'
-               else :
-                   self.jobmem = '3000M'
-                   if not self.eosSubmit  :
-                       self.max_materialize = 300 # need to cap the number of concurrently running jobs if running from AFS because of AFS load problems
+       # set default values based on mini/nano
+       self.max_materialize =  self.options_.max_materialize
+       if inputType == 'miniAOD' :
+           self.jobmem = '4000M'
+       else : # nanoAOD
+           self.jobmem = '3000M'
+       if self.options_.jobmem != None :
+           self.jobmem = self.options_.jobmem
 
        if self.jobflavour == None:
            if self.options_.jobflavour != None:
