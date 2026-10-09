@@ -60,7 +60,7 @@ ttH126                       ,,0.5591,0.0008386,,/TTH_Hto2Z_4LFilter_M-126_TuneC
 #bbH126                       ,,0.5134,0.0003001,,/bbH_Hto2Zto4L_M-126_TuneCP5_13p6TeV_JHUGenV752-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,IsSIGNAL=True;LEPTON_SETUP=2023;DATA_TAG=pre_BPix,,Buggy; unusable
 
 ###,,,,,,,,,,,qq->ZZ background - xsec taken from powheg gridpack
-ZZTo4l                      ,,1.39,,,/ZZto4L_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v3/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,PROCESS_CR=True;PROCESS_ZL=True;APPLY_K_NNLOQCD_ZZQQB=True;APPLY_K_NLOEW_ZZQQB=True;LEPTON_SETUP=2023;DATA_TAG=pre_BPix,,
+ZZTo4l                      ,,1.39,,,/ZZto4L_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v3/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,PROCESS_CR=True;PROCESS_ZL=True;APPLY_K_NNLOQCD_NLOEW_ZZQQB=True;LEPTON_SETUP=2023;DATA_TAG=pre_BPix,,
 
 ###,,,,,,,,,,,gg->ZZ background - xsec taken from gridpack
 ggTo4e_Contin_MCFM701       ,,0.00305851,,,/GluGlutoContinto2Zto4E_TuneCP5_13p6TeV_mcfm701-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v3/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,PROCESS_CR=True;PROCESS_ZL=True;APPLY_K_NNLOQCD_ZZGG=1;LEPTON_SETUP=2023;DATA_TAG=pre_BPix,,
@@ -89,6 +89,6 @@ TTto2L2Nu                   ,,98.0,,,/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/R
 # TTLL_MLL-50                 ,,0.08646,,,/TTLL_MLL-50_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,2,PROCESS_CR=False;LEPTON_SETUP=2023;DATA_TAG=pre_BPix,, #xsec obtained from xsdb
 
 ###,,,,,,,,,,,VBS
-# ZZTo4l_2Jets_EW_QCD,,0.02157 ,,,/ZZto4L-2Jets_EW-QCD_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,3,PROCESS_CR=True;LEPTON_SETUP=2023;DATA_TAG=pre_BPix,,#xsec from xsdb
-# ZZTo4l_2Jets_EW    ,,0.001142,,,/ZZto4L-2Jets_EW_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,3,PROCESS_CR=True;LEPTON_SETUP=2023;DATA_TAG=pre_BPix,,#xsec from xsdb
-# ZZTo4l_2Jets_QCD   ,,0.02029 ,,,/ZZto4L-2Jets_QCD_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,3,PROCESS_CR=True;LEPTON_SETUP=2023;DATA_TAG=pre_BPix,,#xsec from xsdb
+# ZZTo4l_2Jets_EW_QCD,,0.02157 ,,,/ZZto4L-2Jets_EW-QCD_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,3,PROCESS_CR=True;APPLY_K_NNLOQCD_NLOEW_ZZQQB=True;LEPTON_SETUP=2023;DATA_TAG=pre_BPix,,#xsec from xsdb
+# ZZTo4l_2Jets_EW    ,,0.001142,,,/ZZto4L-2Jets_EW_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,3,PROCESS_CR=True;APPLY_K_NNLOQCD_NLOEW_ZZQQB=True;LEPTON_SETUP=2023;DATA_TAG=pre_BPix,,#xsec from xsdb
+# ZZTo4l_2Jets_QCD   ,,0.02029 ,,,/ZZto4L-2Jets_QCD_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,3,PROCESS_CR=True;APPLY_K_NNLOQCD_NLOEW_ZZQQB=True;LEPTON_SETUP=2023;DATA_TAG=pre_BPix,,#xsec from xsdb
