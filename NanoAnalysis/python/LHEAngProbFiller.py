@@ -55,43 +55,38 @@ class LHEAngProbFiller(Module):
             for i, mp in enumerate(LHEMothers): 
                 temp_particle = Mela.SimpleParticle_t(mp.pdgId, mp.pt, mp.eta, mp.phi, mp.mass, True)
                 mothers.add_particle(temp_particle)
-            
+
+            for i, hp in enumerate(status2): 
+                if hp.pdgId == 25: 
+                        hMass = hp.mass
+
             for i, dp in enumerate(LHEDaughters): 
                 temp_particle = Mela.SimpleParticle_t(dp.pdgId, dp.pt, dp.eta, dp.phi, dp.mass, True)
                 daughters.add_particle(temp_particle)
-            
+
+            nDaughters = len(daughters.toList())
             for i, ap in enumerate(LHEAssociated): 
                 temp_particle = Mela.SimpleParticle_t(ap.pdgId, ap.pt, ap.eta, ap.phi, ap.mass, True)
-                associated.add_particle(temp_particle)
-            
-            for i, hp in enumerate(status2): 
-                temp_particle = Mela.SimpleParticle_t(hp.pdgId, hp.pt, hp.eta, hp.phi, hp.mass, True)
-                if hp.pdgId == 25: 
-                        higgs = temp_particle
-                        hMass = hp.mass
-
+                if nDaughters == 0 and hMass < 0. and abs(ap.pdgId) in [11, 13, 15] : # For ZZ bkg samples, compute angles from the 4 leptons from Z decays
+                    daughters.add_particle(temp_particle)
+                else:
+                    associated.add_particle(temp_particle)
+                        
         elif self.NANOVERSION < 15: 
-            # print("genAngProbFiller: NANOAODv14 or older, using workaround")
+            # NANOAODv14 or older, using workaround"
             statusOneLepsIdx = []
             statusOneAssocIdx = []
             for i, lp in enumerate(LHEPart): 
-                temp_particle = Mela.SimpleParticle_t(lp.pdgId, lp.pt, lp.eta, lp.phi, lp.mass, True)
                 if lp.status == -1: 
-                    mothers.add_particle(temp_particle)
+                    mothers.add_particle(Mela.SimpleParticle_t(lp.pdgId, lp.pt, lp.eta, lp.phi, lp.mass, True))
                 elif lp.status == 1: 
                     ## Build a list of all status one leptons and associated and handle collections at the end. 
                     if abs(lp.pdgId) in [11, 13, 15]:
                         statusOneLepsIdx.append(i)
                     else: 
                         statusOneAssocIdx.append(i)
-                elif lp.status == 2: 
-                    if lp.pdgId == 25: 
-                        higgs = temp_particle
+                elif lp.status == 2 and lp.pdgId == 25: 
                         hMass = lp.mass
-                    else:
-                        continue
-                else: 
-                    continue
             
             ## Add last four leptons as daughters, remaining leptons are associated. 
             for i in statusOneLepsIdx[-4:]: 
@@ -118,12 +113,11 @@ class LHEAngProbFiller(Module):
         if len(daughters.toList()) == 4:
             self.MELA.setInputEvent(daughters, None, None, 0)
             qH, mZ1, mZ2, costheta1, costheta2, Phi, costhetastar, Phi1 = self.MELA.computeDecayAngles()
-        else: 
+            if (hMass > 0.) and (abs(hMass - daughters.MTotal()) > 0.01) : # Don't trigger this when there is no Higgs present. Some samples, such as ggF produced with MCFM-JHUGen, produce the four lepton system without the intermediate higgs. 
+                print(f"WARNING: LHEAngProbFiller: The invariant mass of the four LHE-leptons, {daughters.MTotal()}, is  different from the mass of the LHE-Higgs {hMass}! Expected a difference of less than 0.01, obtained a difference of ", abs(hMass - daughters.MTotal()))
+        else:
             qH, mZ1, mZ2, costheta1, costheta2, Phi, costhetastar, Phi1 = 0.,0.,0.,-999.,-999.,-999.,-999.,-999.
-            if len(daughters.toList()) != 4: 
-                print(f"WARNING: LHEAngProbFiller: {len(daughters.toList())} LHE-leptons were selected for this event (4 expected)!")
-        if (abs(hMass - daughters.MTotal()) > 0.01) and (hMass != -999.0): # Don't trigger this when there is no Higgs present. Some samples, such as ggF produced with MCFM-JHUGen, produce the four lepton system without the intermediate higgs. 
-            print(f"WARNING: LHEAngProbFiller: The invariant mass of the four LHE-leptons, {daughters.MTotal()}, is  different from the mass of the LHE-Higgs {hMass}! Expected a difference of less than 0.01, obtained a difference of ", abs(hMass - daughters.MTotal()))
+            print(f"WARNING: LHEAngProbFiller: {len(daughters.toList())} LHE-leptons were selected for this event (4 expected)!", len(associated.toList()))
 
         self.out.fillBranch("LHEMela_costheta1", costheta1)
         self.out.fillBranch("LHEMela_costheta2", costheta2)
@@ -134,12 +128,6 @@ class LHEAngProbFiller(Module):
         self.MELA.resetInputEvent()
 
         self.ProbHelper.fillProbs([daughters], [associated], [mothers])
-
-
-
-        
-       
-        
         
         return True
     
