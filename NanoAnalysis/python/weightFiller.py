@@ -44,9 +44,9 @@ class weightFiller(Module):
             #Apart from the nominal case, the other 3 are simply up and down factors
             strZZGGKFVar = ["nominal", "PDF", "PDF_aS", "QCD_mu"]
             if self.APPLY_K_NNLOQCD_ZZGG == 1:
-                raw_dat = h5py.File(f"{basePath}NanoAnalysis/data/kFactors/gluonFusion/Run{run_number}-NNLO.h5")
+                raw_dat = h5py.File(f"{basePath}NanoAnalysis/data/kFactors/gluonFusion/Run{run_number}_K-NNLO.h5")
             elif self.APPLY_K_NNLOQCD_ZZGG == 2:
-                raw_dat = h5py.File(f"{basePath}NanoAnalysis/data/kFactors/gluonFusion/Run{run_number}-NLO-NNLO.h5")
+                raw_dat = h5py.File(f"{basePath}NanoAnalysis/data/kFactors/gluonFusion/Run{run_number}_K-NLO-NNLO.h5")
 
             for i, var in enumerate(strZZGGKFVar):
                 self.spkfactor_ggzz[i] = interp.make_interp_spline(
