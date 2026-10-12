@@ -70,7 +70,7 @@ ttH125_4l,,  0.5700,0.0002745,,/TTH_Hto2Z_M-125_4LFilter_TuneCP5_13p6TeV_powheg2
 
 
 ###,,,,,,,,,,,qq->ZZ background - xsec taken from powheg gridpack
-ZZTo4l,,1.39,,,/ZZto4L_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,3,PROCESS_CR=True;PROCESS_ZL=True;APPLY_K_NNLOQCD_ZZQQB=True;APPLY_K_NLOEW_ZZQQB=True;LEPTON_SETUP=2022;DATA_TAG=pre_EE,,
+ZZTo4l,,1.39,,,/ZZto4L_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM,dbs,root://cms-xrd-global.cern.ch/,3,PROCESS_CR=True;PROCESS_ZL=True;APPLY_K_NNLOQCD_NLOEW_ZZQQB=True;LEPTON_SETUP=2022;DATA_TAG=pre_EE,,
 
 ###,,,,,,,,,,,gg->ZZ background - xsec taken from gridpack
 ggTo4e_Contin_MCFM701     ,,0.00305851,,,/GluGlutoContinto2Zto4E_TuneCP5_13p6TeV_mcfm-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM        ,dbs,root://cms-xrd-global.cern.ch/,4,PROCESS_CR=True;PROCESS_ZL=True;APPLY_K_NNLOQCD_ZZGG=1;LEPTON_SETUP=2022;DATA_TAG=pre_EE,,
